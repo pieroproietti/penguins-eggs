@@ -1,13 +1,13 @@
 /*
 https://www.npmjs.com/package/dhcp
 
-PATH
+ATTENTION PATCH node_modules/dhcp
 file lib/dhcp.js.js
-line 320, 365
+replace: in line 320 and 365
+search
+file: '',
+replace
 file: this.config('bootFile'),
-
-sudo route add -host 255.255.255.255 dev ens19
-sudo apt-get install pxelinux
 */
 
 "use strict";
