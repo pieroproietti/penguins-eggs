@@ -42,6 +42,10 @@ Will install the egg, or better will hatch the egg and it will became a penguin!
 
 ## options
 * -d --distroname <distroname>
+If you dont use this option, the computer hostname will used as distroname.
+The image iso generated, will be called distroname-YYYY-MM-DD-HHMM-ZZ
+Where YYYY-MM-DD-HHMM is year, MM mount, DD day. HHMM is your local time and
+ZZ the difference betwen your local time and the greenwich one.
 
 
 ## Testing penguins-eggs
@@ -69,15 +73,16 @@ or
 ``` bash
 ./eggs
 ```
-
-Soon, but not today,  will be possible also to use it directly from npm
+## npm
+Soon, but not today,  will be possible also to install it, directly from npm.
 ``` bash
 sudo npm i penguins-egg -g
 sudo eggs
 ```
 Of course, you need NodeJs omstalled.
 
-Later, I hope in december, we will releas a Debian/Ubuntu packages for it.
+## packages
+Later, I hope in december, to release a Debian/Ubuntu packages for penguins-eggs.
 
 No need other configurations, penguins-eggs are battery included or better, the live is inside! :-D
 
