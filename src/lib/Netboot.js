@@ -180,7 +180,7 @@ include common.cfg`;
     utils.exec(`ln -s ${this.tftpRoot}/../iso/live ${this.tftpRoot}/.`);
 
     utils.exec(`ln -s /usr/lib/PXELINUX/pxelinux.0  ${this.tftpRoot}/.`);
-    utils.exec(`ln /usr/lib/PXELINUX/lpxelinux.0  ${this.tftpRoot}/.`);
+    utils.exec(`ln -s /usr/lib/PXELINUX/lpxelinux.0  ${this.tftpRoot}/.`);
 
     utils.exec(
       `ln -s /usr/lib/syslinux/modules/bios/vesamenu.c32 ${this.tftpRoot}/.`

@@ -22,10 +22,6 @@ let username = "artisan";
 let password = "evolution";
 
 if (utils.isRoot()) {
-  program.option(
-    "-d, --distroname <distroname>"
-  );
-
   program
     // <mandatory> [optional]
     .command("create")
@@ -34,8 +30,9 @@ if (utils.isRoot()) {
     .command("serve")
     .command("hatch");
 
-  program.parse(process.argv);
+  program.option("-d, --distroname <distroname>");
 
+  program.parse(process.argv);
   if (program.distroname) {
     distroName = program.distroname;
   }
@@ -63,40 +60,33 @@ if (utils.isRoot()) {
 
     utils.exec(`route add -host 255.255.255.255 dev ens19`);
     tftpd.start(host, pxeRoot);
-    let range = ["10.0.0.2", oSubnet.lastAddress];
 
+    let range = ["10.0.0.2", oSubnet.lastAddress];
     dhcpd.start(host, netmask, oSubnet.broadcastAddress, range);
 
     var app = express();
     app.use(serveStatic(pxeRoot));
-    console.log("Starting http server...");
+    console.log("Starting http...");
     app.listen(80);
   } else if (command == "destroy") {
     e.erase();
     n.erase();
     i.erase();
   } else if (command == "show") {
-    if (program.netboot) {
-      n.show();
-    } else if (program.iso) {
-      i.show();
-    } else {
-      console.log("Usage: eggs show <netboot|iso>");
-    }
+    n.show();
+    i.show();
   } else if (command == "hatch") {
     hatch();
   } else {
-    console.log(
-      "Usage: eggs <show|create|install|purge|start|stop|restart|hatch>"
-    );
+    console.log("Usage: eggs <create|destroy|serve|hatch|show>");
   }
 } else {
   console.log(
     `${name} need to run with supervisor privileges! You need to prefix it with sudo`
   );
   console.log("Example: ");
-  console.log(">>> sudo eggs install netboot");
   console.log(">>> sudo eggs create --distroname cell");
+  console.log(">>> sudo eggs serve");
   console.log(">>> sudo eggs hatch");
 }
 
@@ -122,12 +112,12 @@ async function buildIso(i) {
   await i.makeIso();
 }
 
-function netbootConfigure(n) {
-  n.erase();
-  n.create();
-  n.vmlinuz();
-  n.initramfs();
-  n.pxelinux();
+async function netbootConfigure(n) {
+  await n.erase();
+  await n.create();
+  await n.vmlinuz();
+  await n.initramfs();
+  await n.pxelinux();
   //n.dnsmasq();
   //n.exports();
 }

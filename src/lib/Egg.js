@@ -9,7 +9,7 @@ import utils from "./utils.js";
 
 class Egg {
   constructor(
-    homeDir = "/srv/penguins-eggs",
+    homeDir,
     distroName,
     clientUserFullName,
     clientUserName,
