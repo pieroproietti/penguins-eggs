@@ -87,5 +87,4 @@ For other informations, write me.
 The author
 
 (Mail) author: piero.proietti@gmail.com
-(F) author: [Facebook](https://www.facebook.com/thewind61)
-(F) group:  [Penguin's Eggs on Facebook](https://www.facebook.com/groups/128861437762355/)
+(Facebook group):  [Penguin's Eggs](https://www.facebook.com/groups/128861437762355/)
