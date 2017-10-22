@@ -49,25 +49,6 @@ if (utils.isRoot()) {
   }
   if (command == "serve") {
     netbootConfigure(n);
-    var express = require("express");
-    var serveStatic = require("serve-static");
-    var http = require("http");
-    var host = "10.0.0.1"; //ip.address();
-    var netmask = "255.255.255.0"; //utils.netNetmask();
-    var oSubnet = ip.subnet(host, netmask);
-    var subnet = oSubnet.networkAddress + "/" + oSubnet.subnetMaskLength;
-    var pxeRoot = `${homeDir}${distroName}/pxe`;
-
-    utils.exec(`route add -host 255.255.255.255 dev ens19`);
-    tftpd.start(host, pxeRoot);
-
-    let range = ["10.0.0.2", oSubnet.lastAddress];
-    dhcpd.start(host, netmask, oSubnet.broadcastAddress, range);
-
-    var app = express();
-    app.use(serveStatic(pxeRoot));
-    console.log("Starting http...");
-    app.listen(80);
   } else if (command == "destroy") {
     e.erase();
     n.erase();
@@ -118,6 +99,26 @@ async function netbootConfigure(n) {
   await n.vmlinuz();
   await n.initramfs();
   await n.pxelinux();
+
+  var express = require("express");
+  var serveStatic = require("serve-static");
+  var http = require("http");
+  var host = "10.0.0.1"; //ip.address();
+  var netmask = "255.255.255.0"; //utils.netNetmask();
+  var oSubnet = ip.subnet(host, netmask);
+  var subnet = oSubnet.networkAddress + "/" + oSubnet.subnetMaskLength;
+  var pxeRoot = `${homeDir}${distroName}/pxe`;
+
+  utils.exec(`route add -host 255.255.255.255 dev ens19`);
+  tftpd.start(host, pxeRoot);
+
+  let range = ["10.0.0.2", oSubnet.lastAddress];
+  dhcpd.start(host, netmask, oSubnet.broadcastAddress, range);
+
+  var app = express();
+  app.use(serveStatic(pxeRoot));
+  console.log("Starting http...");
+  app.listen(80);
   //n.dnsmasq();
   //n.exports();
 }
