@@ -51,7 +51,7 @@ eg: host ``penguin`` will produce an iso called ``penguin-2017-10-22_2047_02.iso
 ## Testing penguins-eggs
 Well, it is time to try it!
 ### Prerequisites
-Penguins-eggs on Debian depend from this packages, you need to install it, in this way:
+Penguins-eggs on Debian depend from this packages, you need to install them before to start to create.
 ``` bash
 sudo apt-get update
 sudo apt-get install squashfs-tools xorriso live-boot syslinux syslinux-common isolinux pxelinux
@@ -82,7 +82,7 @@ sudo eggs
 Of course, you need a working NodeJs 8.x or better installed.
 
 ## Packages
-Later, I hope in december, to be able to release a Debian/Ubuntu package.
+Later, I hope in december, to release a Debian/Ubuntu installation package.
 
 ## It's all Folks!
 No need other configurations, penguins-eggs are battery included or better, as in the real, the live is inside! :-D
