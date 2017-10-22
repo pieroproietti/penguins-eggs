@@ -14,7 +14,7 @@ penguins-eggs, at the moment 2017 october 22 is in a joung state, and can have s
 
 You can, also easily create your organization/school distro and deploy it on the lan, give it to your friend as usb key or publish in the internet!
 
-I build and test it on a customized version of [Proxmox VE](https://pve.proxmox.com/wiki/Main_Page) who let me to  create/destroy a lot of virtual PCs with different configurations: one or more net cards, processor, memory and so on.
+I build and test it on a customized version of [Proxmox VE](https://pve.proxmox.com/wiki/Main_Page) who let me to  create/destroy a lot of virtual PCs with different configurations: one or more net cards, processor, memory and so on. This version of Proxmox VE, called Fabrica who consist in PVE plus Cinnamon Desktop and all the necessary to develop is build with eggs.
 
 You can test now penguins-eggs, it is a console utility - no GUI yet - but don't be scared, all you need is to install [node](https://nodejs.org/en/download/package-manager/#debian-and-ubuntu-based-linux-distributions)
 
