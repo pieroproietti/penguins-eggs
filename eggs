@@ -1,0 +1,2 @@
+npm run build
+sudo node build/index.js $1 $2 $3 $4 $5
