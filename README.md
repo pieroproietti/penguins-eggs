@@ -14,7 +14,7 @@ penguins-eggs, at the moment october 22, is again under construction and can hav
 already extremely usefull: imagine to install it on an lan and start to manage the computers with it, You can easily install clonezilla on it, or clamav and
 you have a tool to backup/restore/sanityze your entire infrastructure. You can, also easily create your organization version of Linux and deploy it on the lan.
 
-You can test it, is a console utility, but don't be scared, it is easy and battery included! All you need is to have to install ![node](https://nodejs.org/en/download/package-manager/#debian-and-ubuntu-based-linux-distributions)
+You can test it, is a console utility, but don't be scared, all you need is to have to install [node](https://nodejs.org/en/download/package-manager/#debian-and-ubuntu-based-linux-distributions)
 
 penguins-eggs is a console command - but really with very simple usage, you have only this commands and an option:
 * create
@@ -43,7 +43,8 @@ sudo apt-get update
 sudo apt-get install squashfs-tools xorriso live-boot syslinux syslinux-common isolinux pxelinux
 ```
 
-To test it, you need a functional installation of Linux Debian version 8 or 9, and download eggs from github:
+To test it, you need a functional installation of Linux Debian version 8 or 9:
+
 ``` bash
  git clone https://github.com/pieroproietti/penguins-eggs
  cd penguins-eggs
@@ -64,22 +65,11 @@ Soon, but not today,  will be possible also to use it directly from npm
 sudo npm i penguins-egg -g
 sudo eggs
 ```
-
-
-
 Of course, you need NodeJs omstalled.
 
-No need other configurations, penguins-eggs are battery included!
+Later, we will releas a Debian package for it.
 
-## development
-If you want the branch develop, give this command before to try:
-```
- git clone http://github.com/pieroproietti/penguins-eggs
- cd penguins-eggs
- git checkout develop
-```
-## [version](src/lib/README.md)
-* master at V.0.4.x
+No need other configurations, penguins-eggs are battery included!
 
 ## informations
 For other informations, write me.
