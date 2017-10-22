@@ -48,7 +48,7 @@ ZZ the difference betwen your local time and the greenwich one.
 
 eg: host ``penguin`` will produce an iso called ``penguin-2017-10-22_2047_02.iso``
 
-## Testing penguins-eggs
+## Install penguins-eggs
 Well, it is time to try it!
 ### Prerequisites
 Penguins-eggs on Debian depend from this packages, you need to install them before to start to create.
