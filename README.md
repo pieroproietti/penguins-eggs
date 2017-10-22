@@ -42,11 +42,13 @@ Will install the egg, or better will hatch the egg and it will became a penguin!
 
 ## options
 * -d --distroname <distroname>
+
 If you dont use this option, the computer hostname will used as distroname.
 The image iso generated, will be called distroname-YYYY-MM-DD-HHMM-ZZ
 Where YYYY-MM-DD-HHMM is year, MM mount, DD day. HHMM is your local time and
 ZZ the difference betwen your local time and the greenwich one.
 
+eg: host ''penguin'' will produce an iso called ''penguin-2017-10-22_2047_02.iso''
 
 ## Testing penguins-eggs
 Well, it is time to try it!
