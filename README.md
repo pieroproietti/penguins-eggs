@@ -2,7 +2,7 @@
 
 ![penguins-eggs](https://github.com/pieroproietti/penguins-eggs/blob/master/src/assets/penguins-eggs.png?raw=true)
 
-penguins-eggs is a console utility, still not relead, who let you to remaster your system and redistrribuite it with as iso images or distribuite it from the lan with PXE.
+penguins-eggs is a console utility, in active development, who let you to remaster your system and redistrribuite it with as iso images or distribuite it from the lan with PXE.
 
 It include all the necessary services dhcp, dhcp-proxy, tftp and http to realize a fast and powerfull PXE server who can work alone or in a preesistent architecture LAN.
 
@@ -87,5 +87,5 @@ For other informations, write me.
 The author
 piero.proietti@gmail.com
 
-[Facebook](https://www.facebook.com/thewind61)
-[Penguin's Eggs on Facebook](https://www.facebook.com/groups/128861437762355/)
+(F) author: [Facebook](https://www.facebook.com/thewind61)
+(F) group:  [Penguin's Eggs on Facebook](https://www.facebook.com/groups/128861437762355/)
