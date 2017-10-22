@@ -1,3 +1,8 @@
+/*
+  penguins-eggs:
+  depend on: squashfs-tools xorriso live-boot syslinux syslinux-common isolinux pxelinux
+
+*/
 "use strict";
 
 // import { install } from "source-map-support";

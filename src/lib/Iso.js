@@ -26,7 +26,7 @@ class Iso {
   }
 
   show() {
-    console.log("eggs: incubator iso parameters ");
+    console.log("eggs: iso parameters ");
     console.log(">>> kernelVer: " + this.kernelVer);
     console.log(">>> netDomainName: " + this.netDomainName);
   }
@@ -35,11 +35,7 @@ class Iso {
     console.log("==========================================");
     console.log("Incubator iso: create");
     console.log("==========================================");
-    /*    utils.exec(`apt-get update`);
-    utils.exec(
-      `apt-get install squashfs-tools xorriso live-boot syslinux syslinux-common isolinux -y`
-    );
-*/
+
     if (!fs.existsSync(this.isoDir)) {
       utils.exec(`mkdir -p ${this.isoDir}/live`);
       utils.exec(`mkdir -p ${this.isoDir}/isolinux`);
@@ -53,20 +49,6 @@ class Iso {
     console.log("Incubator iso: erase");
     console.log("==========================================");
     utils.exec(`rm -rf ${this.isoDir}`);
-  }
-
-  async install() {
-    utils.exec(`apt-get update`);
-    utils.exec(
-      `apt-get install squashfs-tools xorriso live-boot syslinux syslinux-common isolinux -y`
-    );
-  }
-
-  async purge() {
-    utils.exec(
-      //live-boot-initramfs-tools live-config live-config-systemd`
-      `apt-get remove --purge squashfs-tools xorriso live-boot syslinux syslinux-common isolinux -y`
-    );
   }
 
   async isolinux() {

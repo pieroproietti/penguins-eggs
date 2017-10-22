@@ -121,7 +121,8 @@ LABEL
 MENU DEFAULT
 MENU LABEL ${this.distroName} live squash
 KERNEL live/vmlinuz
-APPEND initrd=live/initrd.img boot=live fetch=http://${this.netBootServer}/live/filesystem.squashfs
+APPEND initrd=live/initrd.img boot=live fetch=http://${this
+      .netBootServer}/live/filesystem.squashfs
 TEXT HELP
 Distro live: ${this.distroName} squashfs, da http://${this.netBootServer}
 ENDTEXT
@@ -137,7 +138,8 @@ ENDTEXT
 # LABEL
 # MENU LABEL ${this.distroName} NFS
 # KERNEL ${this.distroName}/vmlinuz-${this.kernelVer}
-# APPEND root=/dev/nfs initrd=${this.distroName}/initrd.img-${this.kernelVer} nfsroot=${this.netBootServer}:${this.fsDir} ip=dhcp rw
+# APPEND root=/dev/nfs initrd=${this.distroName}/initrd.img-${this
+      .kernelVer} nfsroot=${this.netBootServer}:${this.fsDir} ip=dhcp rw
 # TEXT HELP
 #   Distro: ${this.distroName} avviata con NSF
 # ENDTEXT
@@ -176,7 +178,9 @@ include common.cfg`;
       `cp ${utils.path()}/src/assets/netboot.xyz.kpxe ${this.tftpRoot}/.`
     );
     utils.exec(`cp ${utils.path()}/src/assets/eggs.png ${this.tftpRoot}/.`);
-    utils.exec(`ln -s ${this.tftpRoot}/../${this.distroName}*.iso ${this.tftpRoot}/.`);
+    utils.exec(
+      `ln -s ${this.tftpRoot}/../${this.distroName}*.iso ${this.tftpRoot}/.`
+    );
     utils.exec(`ln -s ${this.tftpRoot}/../iso/live ${this.tftpRoot}/.`);
 
     utils.exec(`ln -s /usr/lib/PXELINUX/pxelinux.0  ${this.tftpRoot}/.`);
@@ -195,49 +199,6 @@ include common.cfg`;
       `ln -s /usr/lib/syslinux/modules/bios/libutil.c32 ${this.tftpRoot}/.`
     );
     utils.exec(`ln -s /usr/lib/syslinux/memdisk ${this.tftpRoot}/.`);
-  }
-
-  exports() {
-    let file = `/etc/exports`;
-    let text = `${this.fsDir} ${this.net}/${this
-      .netNetmask}(rw,no_root_squash,async,no_subtree_check)
-# >>> Attenzione NON lasciare spazi tra le opzioni nfs <<<`;
-
-    utils.bashwrite(file, text);
-  }
-
-  dnsmasq() {
-    let file = `/etc/dnsmasq.conf`;
-    let text = `
-interface=${this.netDeviceName}
-domain=lan
-dhcp-range=${this.net}, proxy, ${this.netNetmask}
-pxe-service=x86PC, "Eggs and penguins...", pxelinux
-# enable-tftp
-port=0
-tftp-root=${this.tftpRoot}
-# IF dhcp-match=set:ipxe,175 THEN
-dhcp-match=set:ipxe,175 # iPXE sends a 175 option.
-      dhcp-boot=tag:!ipxe,netboot.xyz.kpxe
-#ELSE
-      #dhcp-boot=http://${this.netBootServer}/lpxelinux.0
-      dhcp-boot=http://${this.netBootServer}/netboot.xyz-undionly.kpxe
-# ENDIF`;
-
-    utils.bashwrite(file, text);
-  }
-
-  install() {
-    utils.exec(`apt-get update`);
-    utils.exec(
-      `apt-get install nfs-kernel-server dnsmasq syslinux pxelinux -y`
-    );
-  }
-
-  purge() {
-    utils.exec(
-      `apt-get remove --purge nfs-kernel-server dnsmasq syslinux pxelinux --purge -y`
-    );
   }
 }
 
