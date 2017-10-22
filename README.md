@@ -18,12 +18,11 @@ you have a tool to backup/restore/sanityze your entire infrastructure.
 
 You can, also easily create your organization/school distro and deploy it on the lan, give it to your friend as usb key or publish in the internet!
 
-I build and test it on a customized version of [Proxmox VE](https://pve.proxmox.com/wiki/Main_Page) environment who let me to can create/destroy a lot of
-virtual PCs with differnt configurations: one or more net cards, processor and so on.
+I build and test it on a customized version of [Proxmox VE](https://pve.proxmox.com/wiki/Main_Page) who let me to  create/destroy a lot of virtual PCs with different configurations: one or more net cards, processor, memory and so on.
 
 You can test now penguins-eggs, it is a console utility - no GUI yet - but don't be scared, all you need is to install [node](https://nodejs.org/en/download/package-manager/#debian-and-ubuntu-based-linux-distributions)
 
-penguins-eggs is a console command - really with very simple usage. If you are able to open a terminal, you can use it.
+penguins-eggs is a console command - really very simple usage - if you are able to open a terminal, you can use it.
 
 ## Commands
 * create
@@ -35,23 +34,23 @@ penguins-eggs is a console command - really with very simple usage. If you are a
 Will create an iso image of your system
 
 ### destroy
-Ad the name, will destroy all the infrastructure created
+As the name say, will destroy (delete) all the infrastructure created.
 
 ### serve
-Will start a PXE server, serving the eggs created (and others if You want)!
+Will start a PXE server, serving the eggs created (and others if You want)-
 
 ### hatch
-Will install the egg, or better will hatch the egg and it will became a penguin!
+Will install your system on the computer, or better will hatch the egg and it will became a penguin! Attetion: using penguins-eggs is safe and sure, but the operation of hacthing (installation of a new operative system, will erase all your previous one). 
 
 ## options
 * -d --distroname <distroname>
 
 If you dont use this option, the computer hostname will used as distroname.
-The image iso generated, will be called distroname-YYYY-MM-DD-HHMM-ZZ
+The image iso generated, will be called distroname-YYYY-MM-DD_HHMM-ZZ
 Where YYYY-MM-DD-HHMM is year, MM mount, DD day. HHMM is your local time and
 ZZ the difference betwen your local time and the greenwich one.
 
-eg: host ''penguin'' will produce an iso called ''penguin-2017-10-22_2047_02.iso''
+eg: host ``penguin`` will produce an iso called ``penguin-2017-10-22_2047_02.iso``
 
 ## Testing penguins-eggs
 Well, it is time to try it!
