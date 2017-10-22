@@ -85,7 +85,7 @@ Of course, you need a working NodeJs 8.x or better installed.
 Later, I hope in december, to be able to release a Debian/Ubuntu package.
 
 ## It's all Folks!
-No need other configurations, penguins-eggs are battery included or better, the live is inside! :-D
+No need other configurations, penguins-eggs are battery included or better, as in the real, the live is inside! :-D
 
 ## informations
 For other informations, write me.
