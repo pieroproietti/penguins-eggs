@@ -2,21 +2,24 @@
 
 ![penguins-eggs](https://github.com/pieroproietti/penguins-eggs/blob/master/src/assets/penguins-eggs.png?raw=true)
 
-penguins-eggs is a console utility, in active development, who let you to remaster your system and redistrribuite it with as iso images or distribuite it from the lan with PXE.
+penguins-eggs is a console utility, in active development, who let you to remaster your system and redistribuite it as iso images or from the lan with PXE remote boot.
 
-It include all the necessary services dhcp, dhcp-proxy, tftp and http to realize a fast and powerfull PXE server who can work alone or in a preesistent architecture LAN.
+It include all the necessary services dhcp, dhcp-proxy, tftp and http to realize a fast and powerfull PXE server who can work alone or inside a preesistent LAN architecture.
 
-it is written in nodejs, so ideally can be used with different Linux distro. At the moment it work well with Debian 8 Jessie and Debian 9 Stretch, soon
-will include Ubuntu and derivates. For others distros we need to find collaboratores.
+it is written in nodejs, so ideally can be used with different Linux distro. At the moment it work with Debian 8 Jessie and Debian 9 Stretch, soon
+will include Ubuntu and derivates. For others distros we need to find collaboration.
 
 The scope of this project is to implement the process of remastering your version of Linux, generate it as ISO images, burn it on a DVD/install or a usb key or
 perform a remote boot on your entire lan.
 
-penguins-eggs, at the moment october 22, is not release yet, and can have same troubles for people not in confidence with Linux system administration, but can be
+penguins-eggs, at the moment 2017 october 22, is in a joung state, and can have same troubles for people not in confidence with Linux system administration, but can be
 already extremely usefull: imagine to install it on an lan and start to manage the computers with it. You can easily install clonezilla on it, or clamav and
 you have a tool to backup/restore/sanityze your entire infrastructure.
 
 You can, also easily create your organization/school distro and deploy it on the lan, give it to your friend as usb key or publish in the internet!
+
+I build and test it on a [Proxmox VE](https://pve.proxmox.com/wiki/Main_Page) environment who let me to can create/destroy a lot of virtual PCs with differnt configurations:
+one or more net cards, processor and so on.
 
 You can test now penguins-eggs, it is a console utility - no GUI yet - but don't be scared, all you need is to install [node](https://nodejs.org/en/download/package-manager/#debian-and-ubuntu-based-linux-distributions)
 
