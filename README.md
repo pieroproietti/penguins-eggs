@@ -84,10 +84,10 @@ Of course, you need a working NodeJs 8.x or better installed.
 ## Packages
 Later, I hope in december, to release a Debian/Ubuntu installation package.
 
-## It's all Folks!
+# It's all Folks!
 No need other configurations, penguins-eggs are battery included or better, as in the real, the live is inside! :-D
 
-## informations
+# informations
 For other informations, write me.
 
 The author
