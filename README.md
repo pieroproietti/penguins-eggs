@@ -2,7 +2,7 @@
 
 ![penguins-eggs](https://github.com/pieroproietti/penguins-eggs/blob/master/src/assets/penguins-eggs.png?raw=true)
 
-penguins-eggs is a console utility, still in development, who let you to remaster your system and redistrribuite it with iso images or by the net with PXE.
+penguins-eggs is a console utility, still not relead, who let you to remaster your system and redistrribuite it with iso images or by the net with PXE.
 It include all the necessary service dhcp, dhcp-proxy, tftp and http to realize a fast PXE server who can work alone or in a preesistent architecture LAN.
 it is written in nodejs, so ideally can be used with different Linux distro, at the moment it work well with Debian 8 Jessie and Debian 9 Stretch, soon
 will include Ubuntu and derivates. For others distros we need to find collaboratores.
