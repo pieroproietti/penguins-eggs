@@ -86,3 +86,6 @@ For other informations, write me.
 
 The author
 piero.proietti@gmail.com
+
+Facebook: https://www.facebook.com/thewind61
+Penguin's Eggs group on Facebook: https://www.facebook.com/groups/128861437762355/
