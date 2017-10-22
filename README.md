@@ -91,4 +91,5 @@ No need other configurations, penguins-eggs are battery included or better, as i
 For other informations, write me. The author
 
 (Mail) author: piero.proietti@gmail.com
-(Facebook group):  [Penguin's Eggs](https://www.facebook.com/groups/128861437762355/)
+(Facebook group):  [Pinguino Eggs](https://www.facebook.com/groups/128861437762355/)
+(gitter) [gitter](https://gitter.im/penguins-eggs/Lobby)
