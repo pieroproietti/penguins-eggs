@@ -37,10 +37,10 @@ Will install the egg, or better will hatch the egg and it will became a penguin!
 
 ## Testing penguins-eggs
 ### Prerequisites
+Penguins-eggs on Debian depend from this packages, you need to install it, in this way:
 ``` bash
 sudo apt-get update
 sudo apt-get install squashfs-tools xorriso live-boot syslinux syslinux-common isolinux pxelinux
-
 ```
 
 To test it, you need a functional installation of Linux Debian version 8 or 9, and download eggs from github:
@@ -69,7 +69,7 @@ sudo eggs
 
 Of course, you need NodeJs omstalled.
 
-No need other configurations, or better, all the necessary configurations will be created from the application.
+No need other configurations, penguins-eggs are battery included!
 
 ## development
 If you want the branch develop, give this command before to try:
