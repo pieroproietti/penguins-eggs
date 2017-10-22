@@ -85,7 +85,7 @@ No need other configurations, penguins-eggs are battery included or better, the 
 For other informations, write me.
 
 The author
-piero.proietti@gmail.com
 
+(Mail) author: piero.proietti@gmail.com
 (F) author: [Facebook](https://www.facebook.com/thewind61)
 (F) group:  [Penguin's Eggs on Facebook](https://www.facebook.com/groups/128861437762355/)
