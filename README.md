@@ -36,7 +36,7 @@ As the name say, will destroy (delete) all the infrastructure created.
 Will start a PXE server, serving the eggs created (and others if You want)-
 
 ### hatch
-Will install your system on the computer, or better will hatch the egg and it will became a penguin! Attetion: using penguins-eggs is safe and sure (as everyone other live distro), but the operation of hacthing ( or installation will erase all your previous one). 
+Will install your system on the computer, or better will hatch the egg and it will became a penguin! Attetion: using penguins-eggs is safe and sure (as everyone other live distro), but the operation of hacthing (or installation) will erase all your previous system and datas. 
 
 ## Options
 * -d --distroname <distroname>
