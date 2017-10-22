@@ -81,7 +81,7 @@ sudo eggs
 ```
 Of course, you need a working NodeJs 8.x or better installed.
 
-## packages
+## Packages
 Later, I hope in december, to be able to release a Debian/Ubuntu package.
 
 ## It's all Folks!
