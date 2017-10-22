@@ -18,8 +18,8 @@ you have a tool to backup/restore/sanityze your entire infrastructure.
 
 You can, also easily create your organization/school distro and deploy it on the lan, give it to your friend as usb key or publish in the internet!
 
-I build and test it on a [Proxmox VE](https://pve.proxmox.com/wiki/Main_Page) environment who let me to can create/destroy a lot of virtual PCs with differnt configurations:
-one or more net cards, processor and so on.
+I build and test it on a customized version of [Proxmox VE](https://pve.proxmox.com/wiki/Main_Page) environment who let me to can create/destroy a lot of
+virtual PCs with differnt configurations: one or more net cards, processor and so on.
 
 You can test now penguins-eggs, it is a console utility - no GUI yet - but don't be scared, all you need is to install [node](https://nodejs.org/en/download/package-manager/#debian-and-ubuntu-based-linux-distributions)
 
