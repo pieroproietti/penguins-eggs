@@ -115,7 +115,7 @@ KBDMAP it.kbd
 DISPLAY display.txt
 SAY Uso la tastiera e locale per italiano.
 MENU TITLE NETBOOT ${name} ${version} ${utils.date4label()}
-MENU BACKGROUND eggs.png
+MENU BACKGROUND turtle.png
 
 LABEL
 MENU DEFAULT
@@ -177,7 +177,7 @@ include common.cfg`;
     utils.exec(
       `cp ${utils.path()}/src/assets/netboot.xyz.kpxe ${this.tftpRoot}/.`
     );
-    utils.exec(`cp ${utils.path()}/src/assets/eggs.png ${this.tftpRoot}/.`);
+    utils.exec(`cp ${utils.path()}/src/assets/turtle.png ${this.tftpRoot}/.`);
     utils.exec(
       `ln -s ${this.tftpRoot}/../${this.distroName}*.iso ${this.tftpRoot}/.`
     );

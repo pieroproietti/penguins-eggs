@@ -84,7 +84,7 @@ PROMPT 0
 TIMEOUT 30
 MENU TITLE CD/DVD ${name} ${version} ${utils.date4label()}
 MENU TABMSG Press TAB key to edit
-MENU BACKGROUND eggs.png
+MENU BACKGROUND turtle.png
 
 LABEL ${this.distroName}
   MENU LABEL ^${this.distroName}
@@ -103,7 +103,7 @@ label ${this.distroName} safe
     utils.bashwrite(file, text);
 
     let path = utils.path();
-    utils.exec(`cp ${path}/src/assets/eggs.png ${this.isoDir}/isolinux`);
+    utils.exec(`cp ${path}/src/assets/turtle.png ${this.isoDir}/isolinux`);
   }
 
   async alive() {
