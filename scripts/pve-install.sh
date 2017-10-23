@@ -9,4 +9,5 @@ apt-get autoremove
 apt-get update
 apt-get dist-upgrade
 apt-get install proxmox-ve postfix open-iscsi
-wget https://github.com/pieroproietti/penguins-wallpapers/blob/master/fabrica.jpg /usr/share/wallpapers
+wget https://github.com/pieroproietti/penguins-wallpapers/blob/master/fabrica.jpg
+mv fabrica.jpg /usr/share/wallpapers
