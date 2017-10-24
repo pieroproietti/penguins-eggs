@@ -1,6 +1,6 @@
 /*
   penguins-eggs:
-  depend on: squashfs-tools xorriso live-boot syslinux syslinux-common isolinux pxelinux
+  depend on: parted squashfs-tools xorriso live-boot syslinux syslinux-common isolinux pxelinux
 
 */
 "use strict";

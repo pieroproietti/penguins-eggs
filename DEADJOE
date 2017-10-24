@@ -1,0 +1,25 @@
+
+*** These modified files were found in JOE when it aborted on Mon Oct 23 20:05:59 2017
+*** JOE was aborted by UNIX signal 1
+
+*** File '(Unnamed)'
+artisan
+
+*** File '(Unnamed)'
+/home/artisan/penguins-wallpapers/.git/COMMIT_EDITMSG
+/home/artisan/penguins-eggs.github.io/.git/COMMIT_EDITMSG
+index.html
+/home/artisan/pieroproietti.github.io/.git/COMMIT_EDITMSG
+/home/artisan/pieroproietti.github.io/.git/COMMIT_EDITMSG
+/home/artisan/pieroproietti.github.io/.git/COMMIT_EDITMSG
+/home/artisan/pieroproietti.github.io/.git/MERGE_MSG
+/home/artisan/pieroproietti.github.io/.git/COMMIT_EDITMSG
+/home/artisan/pieroproietti.github.io/.git/COMMIT_EDITMSG
+/home/artisan/penguins-eggs/.git/COMMIT_EDITMSG
+/etc/lightdm/lightdm.conf
+
+*** File '* Startup Log *'
+Processing '/etc/joe/joerc'...
+Processing '/etc/joe/ftyperc'...
+Finished processing /etc/joe/ftyperc
+Finished processing /etc/joe/joerc
