@@ -64,14 +64,14 @@ if (utils.isRoot()) {
   } else if (command == "hatch") {
     hatch();
   } else {
-    console.log("Usage: eggs <create|destroy|serve|hatch|show>");
+    console.log("Usage: eggs <create | destroy | serve | hatch >");
   }
 } else {
   console.log(
     `${name} need to run with supervisor privileges! You need to prefix it with sudo`
   );
   console.log("Example: ");
-  console.log(">>> sudo eggs create --distroname cell");
+  console.log(">>> sudo eggs create --distroname penguin");
   console.log(">>> sudo eggs serve");
   console.log(">>> sudo eggs hatch");
 }
