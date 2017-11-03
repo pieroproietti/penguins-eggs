@@ -30,7 +30,7 @@ if (utils.isRoot()) {
   program
     // <mandatory> [optional]
     .command("create")
-    .command("destroy")
+    .command("abort")
     .command("show")
     .command("serve")
     .command("hatch");
@@ -54,7 +54,7 @@ if (utils.isRoot()) {
   }
   if (command == "serve") {
     netbootConfigure(n);
-  } else if (command == "destroy") {
+  } else if (command == "abort") {
     e.erase();
     n.erase();
     i.erase();
@@ -64,7 +64,7 @@ if (utils.isRoot()) {
   } else if (command == "hatch") {
     hatch();
   } else {
-    console.log("Usage: eggs <create | destroy | serve | hatch >");
+    console.log("Usage: eggs <create | abort | serve | hatch >");
   }
 } else {
   console.log(
