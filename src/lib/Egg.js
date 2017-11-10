@@ -69,16 +69,13 @@ class Egg {
   }
 
   async copy() {
-    let command="";
     let aCommands = [];
-    command =`
-rsync -aq / ${this.fsDir}
---exclude=${this.homeDir}
---delete-before
---delete-excluded
-${excludes}
-`;
-    aCommands.push(command);
+    aCommands.push(`rsync -aq
+    --exclude=${this.homeDir}
+    --delete-before
+    --delete-excluded ${excludes}
+    / ${this.fsDir}
+`);
     await utils.rsync(aCommands);
     return aCommands;
   }
