@@ -29,8 +29,8 @@ let password = "evolution";
 if (utils.isRoot()) {
   program
     // <mandatory> [optional]
-    .command("create")
-    .command("abort")
+    .command("spawn")
+    .command("break")
     .command("show")
     .command("serve")
     .command("hatch");
@@ -48,13 +48,13 @@ if (utils.isRoot()) {
 
   let command = process.argv[2];
 
-  if (command == "create") {
+  if (command == "spawn") {
     buildEgg(e);
     buildIso(i);
   }
   if (command == "serve") {
     netbootConfigure(n);
-  } else if (command == "abort") {
+  } else if (command == "break") {
     e.erase();
     n.erase();
     i.erase();
@@ -64,14 +64,14 @@ if (utils.isRoot()) {
   } else if (command == "hatch") {
     hatch();
   } else {
-    console.log("Usage: eggs <create | abort | serve | hatch >");
+    console.log("Usage: eggs <spawn | break | serve | hatch >");
   }
 } else {
   console.log(
     `${name} need to run with supervisor privileges! You need to prefix it with sudo`
   );
   console.log("Example: ");
-  console.log(">>> sudo eggs create --distroname penguin");
+  console.log(">>> sudo eggs spawn --distroname penguin");
   console.log(">>> sudo eggs serve");
   console.log(">>> sudo eggs hatch");
 }

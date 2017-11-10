@@ -6,6 +6,7 @@
 
 import fs from "fs";
 import utils from "./utils.js";
+import excludes from "./excludes.js";
 
 class Egg {
   constructor(
@@ -31,7 +32,7 @@ class Egg {
 
   async erase() {
     console.log("==========================================");
-    console.log("eggs erase");
+    console.log("eggs break");
     console.log("==========================================");
     utils.exec(`rm -rf ${this.homeDir}`);
   }
@@ -39,7 +40,7 @@ class Egg {
   // Check or create a nest
   async create() {
     console.log("==========================================");
-    console.log("eggs create");
+    console.log("eggs spawn");
     console.log("==========================================");
     if (!fs.existsSync(this.homeDir)) {
       utils.exec(`mkdir -p ${this.homeDir}`);
@@ -69,16 +70,15 @@ class Egg {
   }
 
   async copy() {
-    console.log("==========================================");
-    console.log("Egg copy");
-    console.log("==========================================");
+    let command="";
     let aCommands = [];
-    let path = utils.path();
-    console.log("Percorso: " + path);
-    aCommands.push(
-      `rsync -aq / ${this.fsDir} --exclude="${this
-        .homeDir}" --exclude-from="${path}/src/lib/excludes" --delete-before --delete-excluded`
-    );
+    command =`
+rsync -aq / ${this.fsDir}
+--exclude=${this.homeDir} ${excludes}
+--delete-before
+--delete-excluded
+`;
+    aCommands.push(command);
     await utils.rsync(aCommands);
     return aCommands;
   }
