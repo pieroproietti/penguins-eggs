@@ -73,9 +73,10 @@ class Egg {
     let aCommands = [];
     command =`
 rsync -aq / ${this.fsDir}
---exclude=${this.homeDir} ${excludes}
+--exclude=${this.homeDir}
 --delete-before
 --delete-excluded
+${excludes}
 `;
     aCommands.push(command);
     await utils.rsync(aCommands);
