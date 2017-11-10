@@ -48,7 +48,7 @@ class Netboot {
 
   create() {
     console.log("==========================================");
-    console.log("Incubator netboot: create");
+    console.log("Incubator netboot: spawn");
     console.log("==========================================");
     if (!fs.existsSync(this.tftpRoot)) {
       utils.exec(`mkdir -p ${this.tftpRoot}`);
@@ -68,7 +68,7 @@ class Netboot {
 
   erase() {
     console.log("==========================================");
-    console.log("Incubator netboot: erase");
+    console.log("Incubator netboot: break");
     console.log("==========================================");
     utils.exec(`rm -rf ${this.tftpRoot}`);
   }

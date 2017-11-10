@@ -33,7 +33,7 @@ class Iso {
 
   async create() {
     console.log("==========================================");
-    console.log("Incubator iso: create");
+    console.log("Incubator iso: spawn");
     console.log("==========================================");
 
     if (!fs.existsSync(this.isoDir)) {
@@ -46,7 +46,7 @@ class Iso {
 
   async erase() {
     console.log("==========================================");
-    console.log("Incubator iso: erase");
+    console.log("Incubator iso: break");
     console.log("==========================================");
     utils.exec(`rm -rf ${this.isoDir}`);
   }

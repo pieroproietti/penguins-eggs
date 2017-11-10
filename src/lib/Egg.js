@@ -44,12 +44,11 @@ class Egg {
     console.log("==========================================");
     if (!fs.existsSync(this.homeDir)) {
       utils.exec(`mkdir -p ${this.homeDir}`);
-      utils.exec(`ln -s ${this.homeDir} /srv/penguins-eggs`);
+      //utils.exec(`ln -s ${this.homeDir} /srv/penguins-eggs`);
     }
 
     if (fs.existsSync(this.fsDir)) {
       // Remove and create /var ed /etc
-
       utils.exec(`rm -rf ${this.fsDir}/var`);
       utils.exec(`mkdir -p ${this.fsDir}/var`);
       utils.exec(`rm -rf ${this.fsDir}/etc`);

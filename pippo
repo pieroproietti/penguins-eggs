@@ -1,4 +1,5 @@
-const excludesRoot=`
+rsync -aq / /var/lib/vz/penguins-eggs/penguin/fs
+--exclude=/var/lib/vz/penguins-eggs/
 --exclude="/dev/*"
 --exclude="/cdrom/*"
 --exclude="/media/*"
@@ -11,16 +12,12 @@ const excludesRoot=`
 --exclude="/sys/*"
 --exclude="/live"
 --exclude="/swapfile"
---exclude="/persistence.conf"`;
-
-const excludesBoot=`
+--exclude="/persistence.conf"
 --exclude="/boot/grub/grub.cfg"
 --exclude="/boot/grub/menu.lst"
 --exclude="/boot/grub/device.map"
 --exclude="/boot/*.bak"
---exclude="/boot/*.old-dkms"`;
-
-const excludesEtc=`
+--exclude="/boot/*.old-dkms"
 --exclude="/etc/udev/rules.d/70-persistent-cd.rules"
 --exclude="/etc/udev/rules.d/70-persistent-net.rules"
 --exclude="/etc/fstab"
@@ -35,18 +32,12 @@ const excludesEtc=`
 --exclude="/etc/popularity-contest.conf"
 --exclude="/etc/pve/*"
 --exclude="/etc/ssh/ssh_host_*_key*"
---exclude="/etc/ssh/ssh_host_key*"`;
-
-const excludesLib=`
+--exclude="/etc/ssh/ssh_host_key*"
 --exclude="/lib/live/overlay"
 --exclude="/lib/live/image"
 --exclude="/lib/live/rootfs"
---exclude="/lib/live/mount"`;
-
-const excludesUsr=`
---exclude="/usr/share/icons/*/icon-theme.cache" `;
-
-const excludesVar=`
+--exclude="/lib/live/mount"
+--exclude="/usr/share/icons/*/icon-theme.cache"
 --exclude="/var/lib/lxcfs/*"
 --exclude="/var/lib/vz/*"
 --exclude="/var/cache/apt/archives/*.deb"
@@ -66,9 +57,7 @@ const excludesVar=`
 --exclude="/var/backups/*.gz"
 --exclude="/var/backups/*.bak"
 --exclude="/var/lib/dbus/machine-id"
---exclude="/var/lib/live/config/*"`;
-
-const excludesHome=`
+--exclude="/var/lib/live/config/*"
 --exclude="/home/*/.local/share/Trash/*"
 --exclude="/home/*/.config/google-chrome/*"
 --exclude="/home/*/.bash_history"
@@ -76,16 +65,6 @@ const excludesHome=`
 --exclude="/home/*/.ICEauthority"
 --exclude="/home/*/.Xauthority"
 --exclude="/home/*/.gnupg"
---exclude="/home/*/.ssh"`;
-
-
-const excludes= excludesRoot +
-                excludesBoot +
-                excludesEtc +
-                excludesLib +
-                excludesUsr +
-                excludesVar +
-                excludesHome;
-
-
-export default excludes;
+--exclude="/home/*/.ssh"
+--delete-before
+--delete-excluded

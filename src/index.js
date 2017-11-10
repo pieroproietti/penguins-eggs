@@ -31,7 +31,6 @@ if (utils.isRoot()) {
     // <mandatory> [optional]
     .command("spawn")
     .command("break")
-    .command("show")
     .command("serve")
     .command("hatch");
 
@@ -58,13 +57,10 @@ if (utils.isRoot()) {
     e.erase();
     n.erase();
     i.erase();
-  } else if (command == "show") {
-    n.show();
-    i.show();
   } else if (command == "hatch") {
     hatch();
   } else {
-    console.log("Usage: eggs <spawn | break | serve | hatch >");
+    console.log("Usage: eggs < spawn | break | serve | hatch >");
   }
 } else {
   console.log(

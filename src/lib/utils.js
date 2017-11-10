@@ -8,6 +8,7 @@ import ip from "ip";
 import fs from "fs";
 import os from "os";
 import dns from "dns";
+import network from "network";
 const path = require("path");
 
 //import network from "network";
@@ -52,7 +53,12 @@ utils.prototype.netDns = function() {
 };
 
 utils.prototype.netGateway = function() {
-  return "192.168.0.1";
+  let ip;
+  let err;
+  network.get_gateway_ip(function(err, ip) {
+    console.log(err || ip); // err may be 'No active network interface found.'
+  })
+  return ip;
 };
 
 utils.prototype.netDomainName = function() {
@@ -105,7 +111,7 @@ utils.prototype.exec = function(cmd) {
 };
 
 utils.prototype.rsync = async function(commands) {
-  //console.log(`[utils] >>> rsync ${commands}`);
+  console.log(`[utils] >>> ${commands}`);
   commands.forEach(function(cmd) {
     // Questa riga, mandava rsync in async...
     //const { stdout, stderr, code } =  shell.exec(cmd, { silent: true });
