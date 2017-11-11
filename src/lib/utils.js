@@ -56,7 +56,7 @@ utils.prototype.netGateway = function() {
   let ip;
   let err;
   network.get_gateway_ip(function(err, ip) {
-    console.log(err || ip); // err may be 'No active network interface found.'
+    //console.log(err || ip); // err may be 'No active network interface found.'
   })
   return ip;
 };

@@ -6,7 +6,7 @@
 
 import fs from "fs";
 import utils from "./utils.js";
-import excludes from "./excludes.js";
+import filters from "./filters.js";
 
 class Egg {
   constructor(
@@ -70,12 +70,10 @@ class Egg {
 
   async copy() {
     let aCommands = [];
-    aCommands.push(`rsync -aq
-    --exclude=${this.homeDir}
-    --delete-before
-    --delete-excluded ${excludes}
-    / ${this.fsDir}
-`);
+    aCommands.push(`rsync -aq  \
+    --filter="- ${this.homeDir}"  \
+    --delete-before  \
+    --delete-excluded  \ ${filters} / ${this.fsDir}`);
     await utils.rsync(aCommands);
     return aCommands;
   }
@@ -120,8 +118,9 @@ iface this.netDeviceName inet manual
     let file = `${this.fsDir}/etc/hosts`;
     let text = `
 127.0.0.1 localhost.localdomain localhost
-${this.clientIpAddress} ${this.distroName}.${this.netDomainName} ${this
-      .distroName}
+${this.clientIpAddress} ${this.distroName}.${this.netDomainName} ${
+      this.distroName
+    }
 # The following lines are desirable for IPv6 capable hosts
 ::1     ip6-localhost ip6-loopback
 fe00::0 ip6-localnet
