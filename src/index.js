@@ -30,7 +30,7 @@ if (utils.isRoot()) {
   program
     // <mandatory> [optional]
     .command("spawn")
-    .command("break")
+    .command("kill")
     .command("serve")
     .command("hatch");
 
@@ -53,14 +53,14 @@ if (utils.isRoot()) {
   }
   if (command == "serve") {
     netbootConfigure(n);
-  } else if (command == "break") {
+  } else if (command == "kill") {
     e.erase();
     n.erase();
     i.erase();
   } else if (command == "hatch") {
     hatch();
   } else {
-    console.log("Usage: eggs < spawn | break | serve | hatch >");
+    console.log("Usage: eggs < spawn | kill | serve | hatch >");
   }
 } else {
   console.log(
@@ -68,6 +68,7 @@ if (utils.isRoot()) {
   );
   console.log("Example: ");
   console.log(">>> sudo eggs spawn --distroname penguin");
+  console.log(">>> sudo eggs kill");
   console.log(">>> sudo eggs serve");
   console.log(">>> sudo eggs hatch");
 }

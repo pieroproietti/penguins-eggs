@@ -3,8 +3,9 @@
 */
 
 "use strict";
-
+import os from "os";
 import fs from "fs";
+import shell from "shelljs";
 import utils from "./utils.js";
 import filters from "./filters.js";
 
@@ -69,6 +70,19 @@ class Egg {
   }
 
   async copy() {
+    let cmd="";
+    cmd=`
+    rsync -aq  \
+    --filter="- ${this.homeDir}"  \
+    --delete-before  \
+    --delete-excluded  \ ${filters} / ${this.fsDir}`;
+    console.log("================================================")
+    console.log(cmd.trim());
+    console.log("================================================")
+    shell.exec(cmd.trim(), { async: false });
+  }
+
+  async oldCopy() {
     let aCommands = [];
     aCommands.push(`rsync -aq  \
     --filter="- ${this.homeDir}"  \
@@ -133,5 +147,15 @@ ff02::3 ip6-allhosts
     utils.bashwrite(file, text);
   }
 }
+
+function execute(command) {
+  return new Promise(function(resolve, reject) {
+    var exec = require("child_process").exec;
+    exec(command, function(error, stdout, stderr) {
+      resolve(stdout);
+    });
+  });
+}
+
 
 export default Egg;

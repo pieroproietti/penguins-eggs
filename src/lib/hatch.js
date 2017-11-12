@@ -1,6 +1,7 @@
 "use strict";
 
 import utils from "./utils.js";
+import filters from "./filters.js";
 import fs from "fs";
 import os from "os";
 const inquirer = require("inquirer");
@@ -207,8 +208,30 @@ async function getIsLive() {
 }
 
 async function rsync(target) {
-  console.log(`rsync -a / ${target} --exclude-from ./scripts/excludes.list`);
-  await execute(`rsync -a / ${target} --exclude-from ./scripts/excludes.list`);
+  let cmd="";
+  cmd=`
+  rsync -aq  \
+  --filter="- ${this.homeDir}"  \
+  --delete-before  \
+  --delete-excluded  \ ${filters} / ${target}`;
+  console.log("================================================")
+  console.log(cmd.trim());
+  console.log("================================================")
+  shell.exec(cmd.trim(), { async: false });
+}
+
+async function oldRsync(target) {
+  let command="";
+  command=`
+  rsync -a  \
+  --filter="- ${this.homeDir}"  \
+  --delete-before  \
+  --delete-excluded  \ ${filters} / ${target}`;
+  console.log(command.trim());
+  await execute(command.trim());
+
+  // console.log(`rsync -a / ${target} --exclude-from ./scripts/excludes.list`);
+  // await execute(`rsync -a / ${target} --exclude-from ./scripts/excludes.list`);
 }
 
 async function mkfs(devices) {
