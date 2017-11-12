@@ -2,6 +2,7 @@
 
 import utils from "./utils.js";
 import filters from "./filters.js";
+import shell from "shelljs";
 import fs from "fs";
 import os from "os";
 const inquirer = require("inquirer");
@@ -211,7 +212,6 @@ async function rsync(target) {
   let cmd="";
   cmd=`
   rsync -aq  \
-  --filter="- ${this.homeDir}"  \
   --delete-before  \
   --delete-excluded  \ ${filters} / ${target}`;
   console.log("================================================")
