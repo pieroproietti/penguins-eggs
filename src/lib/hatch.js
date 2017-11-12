@@ -220,20 +220,6 @@ async function rsync(target) {
   shell.exec(cmd.trim(), { async: false });
 }
 
-async function oldRsync(target) {
-  let command="";
-  command=`
-  rsync -a  \
-  --filter="- ${this.homeDir}"  \
-  --delete-before  \
-  --delete-excluded  \ ${filters} / ${target}`;
-  console.log(command.trim());
-  await execute(command.trim());
-
-  // console.log(`rsync -a / ${target} --exclude-from ./scripts/excludes.list`);
-  // await execute(`rsync -a / ${target} --exclude-from ./scripts/excludes.list`);
-}
-
 async function mkfs(devices) {
   let result = true;
   await execute(`mkfs -t ${devices.root.fstype} ${devices.root.device}`);
