@@ -33,7 +33,7 @@ class Egg {
 
   async erase() {
     console.log("==========================================");
-    console.log("eggs break");
+    console.log("eggs kill");
     console.log("==========================================");
     utils.exec(`rm -rf ${this.homeDir}`);
   }

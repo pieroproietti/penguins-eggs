@@ -82,14 +82,6 @@ export async function hatch() {
   await umount(target, devices);
 }
 
-async function purge(target) {
-  console.log("Removing unecessary live configuration...");
-  utils.exec(
-    `chroot ${target} apt-get remove --purge squashfs-tools xorriso live-boot syslinux syslinux-common isolinux -y`
-  );
-  utils.exec(`chroot ${target} apt-get autoremove -y`);
-}
-
 async function grubInstall(target, options) {
   await execute(`chroot ${target} grub-install ${options.installationDevice}`);
   await execute(`chroot ${target} update-grub`);
@@ -186,7 +178,7 @@ async function hosts(target, options) {
     text += `
 ${options.netAddress} ${options.hostname} ${options.hostname}.${options.domain} pvelocalhost`;
   } else {
-    text +=`
+    text += `
 127.0.1.1 localhost localhost.localdomain ${options.hostname} ${options.hostname}.${options.domain}`;
   }
   text += `
@@ -209,14 +201,14 @@ async function getIsLive() {
 }
 
 async function rsync(target) {
-  let cmd="";
-  cmd=`
+  let cmd = "";
+  cmd = `
   rsync -aq  \
   --delete-before  \
   --delete-excluded  \ ${filters} / ${target}`;
-  console.log("================================================")
+  console.log("================================================");
   console.log(cmd.trim());
-  console.log("================================================")
+  console.log("================================================");
   shell.exec(cmd.trim(), { async: false });
 }
 

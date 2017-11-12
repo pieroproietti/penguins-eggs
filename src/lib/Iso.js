@@ -46,7 +46,7 @@ class Iso {
 
   async erase() {
     console.log("==========================================");
-    console.log("Incubator iso: break");
+    console.log("Incubator iso: kill");
     console.log("==========================================");
     utils.exec(`rm -rf ${this.isoDir}`);
   }

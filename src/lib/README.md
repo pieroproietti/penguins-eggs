@@ -1,9 +1,9 @@
 # API
 
-# eggs spawn (depone)
+# eggs spawn (genera/depone)
 Depone l'uovo... (genera una file iso della tua distribuzione)
 
-# eggs breack (rompe)
+# eggs kill (uccide/rompe)
 Rompe l'uovo... (rimuove l'intera infrastruttura di penguins-eggs)
 
 # eggs serve (serve)
