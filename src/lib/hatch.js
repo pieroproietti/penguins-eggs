@@ -178,7 +178,7 @@ async function hosts(target, options) {
     text += `
 ${options.netAddress} ${options.hostname} ${options.hostname}.${options.domain} pvelocalhost`;
   } else {
-    text +=`
+    text += `
 127.0.1.1 localhost localhost.localdomain ${options.hostname} ${options.hostname}.${options.domain}`;
   }
   text += `
@@ -201,8 +201,8 @@ async function getIsLive() {
 }
 
 async function rsync(target) {
-  let cmd="";
-  cmd=`
+  let cmd = "";
+  cmd = `
   rsync -aq  \
   --delete-before  \
   --delete-excluded  \ ${filters} / ${target}`;

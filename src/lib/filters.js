@@ -75,7 +75,23 @@ const filterHome = `
 --filter="- /home/*/.ICEauthority" \
 --filter="- /home/*/.Xauthority" \
 --filter="- /home/*/.gnupg" \
---filter="- /home/*/.ssh"`;
+--filter="- /home/*/.ssh" \ `;
+
+const filterPersonalDatas =`
+--filter="- /home/*/Documenti/*" \
+--filter="- /home/*/Immagini/*" \
+--filter="- /home/*/iso/*" \
+--filter="- /home/*/Modelli/*" \
+--filter="- /home/*/Notebooks/*" \
+--filter="- /home/*/Musica/*" \
+--filter="- /home/*/penguins-eggs/" \
+--filter="- /home/*/pieroproietti.github.io/" \
+--filter="- /home/*/Pubblici/*" \
+--filter="- /home/*/Scaricati/*" \
+--filter="- /home/*/Scrivania/*" \
+--filter="- /home/*/Video/*" `;
+
+
 
 const filters =
   filterRoot.trim() +
@@ -84,6 +100,7 @@ const filters =
   filterLib.trim() +
   filterUsr.trim() +
   filterVar.trim() +
-  filterHome.trim();
+  filterHome.trim()+
+  filterPersonalDatas.trim();
 
 export default filters;
