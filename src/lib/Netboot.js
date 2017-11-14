@@ -46,7 +46,7 @@ class Netboot {
     console.log(">>> net: " + utils.net(this.netBootServer, this.netNetmask));
   }
 
-  create() {
+  spawn() {
     console.log("==========================================");
     console.log("Incubator netboot: spawn");
     console.log("==========================================");
@@ -66,9 +66,9 @@ class Netboot {
     fs.writeFileSync(file, text);
   }
 
-  erase() {
+  kill() {
     console.log("==========================================");
-    console.log("Incubator netboot: break");
+    console.log("Incubator netboot: kill");
     console.log("==========================================");
     utils.exec(`rm -rf ${this.tftpRoot}`);
   }

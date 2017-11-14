@@ -9,20 +9,14 @@ import fs from "fs";
 import os from "os";
 import dns from "dns";
 import network from "network";
-const path = require("path");
+const path = require('path');
 
 //import network from "network";
 
 let utils = function() {};
 
 utils.prototype.path = function() {
-  let path = "/usr/lib/node_modules/penguins-eggs";
-  if (getCurrentDirectoryName() == "lib") {
-    path = ".";
-  } else {
-    // "build"
-    path = "..";
-  }
+  let path="/usr/lib/node_modules/penguins-eggs";
   return path;
 };
 
@@ -57,7 +51,7 @@ utils.prototype.netGateway = function() {
   let err;
   network.get_gateway_ip(function(err, ip) {
     //console.log(err || ip); // err may be 'No active network interface found.'
-  })
+  });
   return ip;
 };
 
@@ -230,20 +224,6 @@ function qdotToInt(ip) {
   x += +ip[3] >>> 0;
 
   return x;
-}
-
-function getCurrentDirectoryName() {
-  var fullPath = __dirname;
-  var path = fullPath.split("/");
-  var cwd = path[path.length - 1];
-  console.log("Full path: " + fullPath);
-
-  // Se  fullPath comprende node_moduels
-  if (!fullPath.indexOf("node_modules") > -1) {
-    // restituisco lib
-    cwd = "lib";
-  }
-  return cwd;
 }
 
 function pad(number) {

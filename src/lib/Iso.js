@@ -31,7 +31,7 @@ class Iso {
     console.log(">>> netDomainName: " + this.netDomainName);
   }
 
-  async create() {
+  async spawn() {
     console.log("==========================================");
     console.log("Incubator iso: spawn");
     console.log("==========================================");
@@ -44,9 +44,9 @@ class Iso {
     }
   }
 
-  async erase() {
+  async kill() {
     console.log("==========================================");
-    console.log("Incubator iso: break");
+    console.log("Incubator iso: kill");
     console.log("==========================================");
     utils.exec(`rm -rf ${this.isoDir}`);
   }
@@ -90,11 +90,6 @@ LABEL ${this.distroName}
   MENU LABEL ^${this.distroName}
   kernel /live/vmlinuz
   append boot=live initrd=/live/initrd.img quiet splash
-
-label ${this.distroName} install
-  MENU LABEL ^${this.distroName} install
-  kernel /live/vmlinuz
-  append boot=live initrd=/live/initrd.img quiet splash finstall
 
 label ${this.distroName} safe
   MENU LABEL ^${this.distroName} safe

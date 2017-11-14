@@ -31,15 +31,15 @@ class Egg {
     this.netDns = utils.netDns();
   }
 
-  async erase() {
+  async kill() {
     console.log("==========================================");
-    console.log("eggs break");
+    console.log("eggs kill");
     console.log("==========================================");
     utils.exec(`rm -rf ${this.homeDir}`);
   }
 
   // Check or create a nest
-  async create() {
+  async spawn() {
     console.log("==========================================");
     console.log("eggs spawn");
     console.log("==========================================");
@@ -76,9 +76,7 @@ class Egg {
     --filter="- ${this.homeDir}"  \
     --delete-before  \
     --delete-excluded  \ ${filters} / ${this.fsDir}`;
-    console.log("================================================")
-    console.log(cmd.trim());
-    console.log("================================================")
+    console.log("cloning system to egg...");
     shell.exec(cmd.trim(), { async: false });
   }
 

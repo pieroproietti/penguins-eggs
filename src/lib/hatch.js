@@ -82,14 +82,6 @@ export async function hatch() {
   await umount(target, devices);
 }
 
-async function purge(target) {
-  console.log("Removing unecessary live configuration...");
-  utils.exec(
-    `chroot ${target} apt-get remove --purge squashfs-tools xorriso live-boot syslinux syslinux-common isolinux -y`
-  );
-  utils.exec(`chroot ${target} apt-get autoremove -y`);
-}
-
 async function grubInstall(target, options) {
   await execute(`chroot ${target} grub-install ${options.installationDevice}`);
   await execute(`chroot ${target} update-grub`);
@@ -214,9 +206,7 @@ async function rsync(target) {
   rsync -aq  \
   --delete-before  \
   --delete-excluded  \ ${filters} / ${target}`;
-  console.log("================================================")
-  console.log(cmd.trim());
-  console.log("================================================")
+  console.log("cloning egg to system...");
   shell.exec(cmd.trim(), { async: false });
 }
 
@@ -257,28 +247,28 @@ async function umount(target, devices) {
 }
 
 async function diskPreparePve(device) {
-  await execute(`./scripts/disk_prepare_pve.sh ${device}`);
+  await execute(`${utils.path()}/scripts/disk_prepare_pve.sh ${device}`);
   return true;
 }
 
 async function diskPreparePartitionLvm(device, sizeMb) {
-  console.log(`./scripts/disk_prepare_partition_lvm.sh ${device} ${sizeMb}`);
-  await execute(`./scripts/disk_prepare_partition_lvm.sh ${device} ${sizeMb}`);
+  console.log(`disk_prepare_partition_lvm.sh ${device} ${sizeMb}`);
+  await execute(`${utils.path()}/scripts/disk_prepare_partition_lvm.sh ${device} ${sizeMb}`);
   return true;
 }
 async function diskPreparePartitionBoot(device) {
-  await execute(`./scripts/disk_prepare_partition_boot.sh ${device}`);
+  await execute(`${utils.path()}/scripts/disk_prepare_partition_boot.sh ${device}`);
   return true;
 }
 
 async function diskPrepare(device) {
-  await execute(`./scripts/disk_prepare.sh ${device}`);
+  await execute(`${utils.path()}/scripts/disk_prepare.sh ${device}`);
   return true;
 }
 
 async function getDiskSize(device) {
   let result = "";
-  result = await execute(`./scripts/disk_get_size.sh ${device}`);
+  result = await execute(`${utils.path()}/scripts/disk_get_size.sh ${device}`);
   result = result.replace("B", "").trim();
   return result;
 }

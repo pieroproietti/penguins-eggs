@@ -26,6 +26,8 @@ let userfullname = "artisan";
 let username = "artisan";
 let password = "evolution";
 
+utils.path();
+
 if (utils.isRoot()) {
   program
     // <mandatory> [optional]
@@ -54,9 +56,9 @@ if (utils.isRoot()) {
   if (command == "serve") {
     netbootConfigure(n);
   } else if (command == "kill") {
-    e.erase();
-    n.erase();
-    i.erase();
+    e.kill();
+    n.kill();
+    i.kill();
   } else if (command == "hatch") {
     hatch();
   } else {
@@ -77,7 +79,7 @@ bye();
 // END MAIN
 
 async function buildEgg(e) {
-  await e.create();
+  await e.spawn();
   await e.copy();
   await e.fstab();
   await e.hostname();
@@ -87,7 +89,7 @@ async function buildEgg(e) {
 }
 
 async function buildIso(i) {
-  await i.create();
+  await i.spawn();
   await i.isolinux();
   await i.isolinuxCfg();
   await i.alive();
@@ -96,8 +98,8 @@ async function buildIso(i) {
 }
 
 async function netbootConfigure(n) {
-  await n.erase();
-  await n.create();
+  await n.kill();
+  await n.spawn();
   await n.vmlinuz();
   await n.initramfs();
   await n.pxelinux();
