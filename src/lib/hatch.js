@@ -206,7 +206,7 @@ async function rsync(target) {
   rsync -aq  \
   --delete-before  \
   --delete-excluded  \ ${filters} / ${target}`;
-  console.log("cloning egg to system...");
+  console.log("hatching the egg...");
   shell.exec(cmd.trim(), { async: false });
 }
 

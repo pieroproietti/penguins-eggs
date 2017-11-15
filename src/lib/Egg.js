@@ -76,7 +76,7 @@ class Egg {
     --filter="- ${this.homeDir}"  \
     --delete-before  \
     --delete-excluded  \ ${filters} / ${this.fsDir}`;
-    console.log("cloning system to egg...");
+    console.log("spawning the system to egg...");
     shell.exec(cmd.trim(), { async: false });
   }
 

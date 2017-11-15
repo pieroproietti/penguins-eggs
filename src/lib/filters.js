@@ -85,10 +85,8 @@ const filterPersonalDatas =`
 --filter="- /home/*/Notebooks/*" \
 --filter="- /home/*/Musica/*" \
 --filter="- /home/*/penguins-eggs/" \
---filter="- /home/*/pieroproietti.github.io/" \
 --filter="- /home/*/Pubblici/*" \
 --filter="- /home/*/Scaricati/*" \
---filter="- /home/*/Scrivania/*" \
 --filter="- /home/*/Video/*" `;
 
 
