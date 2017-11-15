@@ -4,8 +4,8 @@
 */
 "use strict";
 
-import { install } from "source-map-support";
-install
+// import { install } from "source-map-support";
+// install
 
 import { version, name, author, mail, homepage } from "../package.json";
 import { hatch } from "./lib/hatch.js";
