@@ -1,12 +1,11 @@
 /*
   penguins-eggs:
   depend on: lvm2 parted squashfs-tools xorriso live-boot syslinux syslinux-common isolinux pxelinux
-
 */
 "use strict";
 
-// import { install } from "source-map-support";
-// install
+import { install } from "source-map-support";
+install
 
 import { version, name, author, mail, homepage } from "../package.json";
 import { hatch } from "./lib/hatch.js";
@@ -30,7 +29,6 @@ utils.path();
 
 if (utils.isRoot()) {
   program
-    // <mandatory> [optional]
     .command("spawn")
     .command("kill")
     .command("serve")

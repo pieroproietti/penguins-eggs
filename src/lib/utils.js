@@ -11,8 +11,6 @@ import dns from "dns";
 import network from "network";
 const path = require('path');
 
-//import network from "network";
-
 let utils = function() {};
 
 utils.prototype.path = function() {
