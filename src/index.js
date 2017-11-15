@@ -66,7 +66,7 @@ if (utils.isRoot()) {
   console.log(
     `${name} need to run with supervisor privileges! You need to prefix it with sudo`
   );
-  console.log("Example: ");
+  console.log("Examples: ");
   console.log(">>> sudo eggs spawn --distroname penguin");
   console.log(">>> sudo eggs kill");
   console.log(">>> sudo eggs serve");
