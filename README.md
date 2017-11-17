@@ -21,15 +21,15 @@ You can test now penguins-eggs, it is a console utility - no GUI yet - but don't
 penguins-eggs is a console command - really very simple usage - if you are able to open a terminal, you can use it.
 
 ## Commands
-* create
-* destroy
+* spawn
+* kill
 * serve
 * hatch
 
-### create
+### spawn
 Will create an iso image of your system
 
-### destroy
+### kill
 As the name say, will destroy (delete) all the infrastructure created.
 
 ### serve
@@ -50,6 +50,8 @@ eg: host ``penguin`` will produce an iso called ``penguin-2017-10-22_2047_02.iso
 
 ## Install penguins-eggs
 Well, it is time to try it!
+```sudo npm install penguins-eggs -g~```
+
 ### Prerequisites
 Penguins-eggs on Debian depend from this packages, you need to install them before to start to create.
 ``` bash
