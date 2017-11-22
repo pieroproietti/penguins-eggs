@@ -31,8 +31,8 @@ if (utils.isRoot()) {
   program
     .command("spawn")
     .command("kill")
-    .command("serve")
-    .command("hatch");
+    .command("hatch")
+    .command("cuckoo");
 
   program.option("-d, --distroname <distroname>");
 
@@ -51,7 +51,7 @@ if (utils.isRoot()) {
     buildEgg(e);
     buildIso(i);
   }
-  if (command == "serve") {
+  if (command == "cuckoo") {
     netbootConfigure(n);
   } else if (command == "kill") {
     e.kill();
@@ -60,7 +60,7 @@ if (utils.isRoot()) {
   } else if (command == "hatch") {
     hatch();
   } else {
-    console.log("Usage: eggs < spawn | kill | serve | hatch >");
+    console.log("Usage: eggs < spawn | kill | hatch | cuckoo  >");
   }
 } else {
   console.log(
@@ -69,8 +69,8 @@ if (utils.isRoot()) {
   console.log("Examples: ");
   console.log(">>> sudo eggs spawn --distroname penguin");
   console.log(">>> sudo eggs kill");
-  console.log(">>> sudo eggs serve");
   console.log(">>> sudo eggs hatch");
+  console.log(">>> sudo eggs cuckoo");
 }
 
 bye();
