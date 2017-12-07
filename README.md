@@ -106,7 +106,7 @@ Let's go to install them, before to start to use it. Copy and paste the followin
 
 ### Install from the source
 To try it, you need a functional installation of Linux Debian version 8 or 9, Ubuntu or derivates.
-You can download last version on github.com. Copy and path the following lines:
+You can download last version on github.com. Copy and past the following lines:
 
 ``` bash
  git clone https://github.com/pieroproietti/penguins-eggs
