@@ -74,7 +74,7 @@ Yes, there is another action possible on the egg, we can start our egg from the
 net by PXE, in this case, in the system we need to give the action:
 
 Example:
-```eggs cuckoo```
+```sudo eggs cuckoo```
 
 And boot via PXE a remote computer in the same net. The PC will be booted with
 our egg and we will hatch it on the new pc. In same way, it's like the behaviour
@@ -98,7 +98,9 @@ Well, it is time to try it!
 Of course penguins-eggs need [nodejs](https://nodejs.org/en/download/package-manager/) installed.
 
 You need also to install this packages, before to can start to use penguins-eggs.
+
 ```sudo apt-get update```
+
 ```sudo apt-get install lvm2 parted squashfs-tools xorriso live-boot syslinux syslinux-common isolinux pxelinux```
 
 ### Install from the source
