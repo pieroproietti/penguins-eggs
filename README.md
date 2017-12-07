@@ -130,7 +130,8 @@ You can install it with npm (node package manager). Copy and past the following 
 ```sudo npm i penguins-egg -g```
 
 ```sudo eggs```
-Due a problem in a node package, can be necessary to breack the installation [Ctrl-C] and restart.
+
+Attention: Due a problem in a node package, can be necessary to break the installation [Ctrl-C] and restart it.
 
 ## Packages
 You can download the package in format .deb. (Not ready yet)
