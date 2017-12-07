@@ -3,22 +3,22 @@
 ![penguins-eggs](https://github.com/pieroproietti/penguins-eggs/blob/master/src/assets/penguins-eggs.png?raw=true)
 
 penguins-eggs is a console utility, in active development, who let you to
-remaster your system and redistribuite it as iso images or from the lan with PXE
+remaster your system and redistribuite it as iso images or from the lan via PXE
 remote boot.
-
-It include all the necessary services dhcp, dhcp-proxy, tftp and http to realize
-a fast and powerfull PXE server who can work alone or inside a preesistent LAN
-architecture.
-
-it is written in nodejs, so ideally can be used with different Linux distro.
-At the moment it work with Debian 8 Jessie and Debian 9 Stretch, Ubuntu and
-derivates as Linux Mint. For others distros we need to find collaboration.
 
 The scope of this project is to implement the process of remastering your
 version of Linux, generate it as ISO images, burn it on a DVD/install or a usb
-key or perform a remote boot on your entire lan.
+key to boot your system or, alternately, remote boot it on your entire lan.
 
-penguins-eggs, at the moment 2017 november 22 is in a joung state, and can have
+It can create your iso image of your system, but also include all the necessary 
+services dhcp, dhcp-proxy, tftp and http to realize a fast and powerfull PXE 
+server who can work alone or inside a preesistent LAN architecture.
+
+it is written in nodejs, so ideally can be used with differents Linux distros.
+At the moment it is tested with Debian 9 Stretch, Debian 8 Jessie, Ubuntu and
+derivates as Linux Mint. For others distros we need to find collaboration.
+
+penguins-eggs, at the moment 2017 december 7 is in a joung state, and can have
 same troubles for people not in confidence with Linux system administration, but
 can be already extremely usefull: imagine to install it on an lan and start to
 manage the computers with it. You can easily install clonezilla on it, or clamav
@@ -27,7 +27,7 @@ and you have a tool to backup/restore/sanityze your entire infrastructure.
 You can, also easily create your organization/school distro and deploy it on the
 lan, give it to your friend as usb key or publish in the internet!
 
-I build and test it on a customized version of
+I build and test penguins-eggs on a customized version of
 [Proxmox VE](https://pve.proxmox.com/wiki/Main_Page) who let me to  
 create/destroy a lot of virtual PCs with different configurations: one or more
 net cards, processor, memory and so on. This version of Proxmox VE, called
@@ -94,12 +94,15 @@ eg: host ``penguin`` will produce an iso called ``penguin-2017-10-22_2047_02.iso
 ## Install penguins-eggs
 Well, it is time to try it!
 
-### Prerequisites
-Penguins-eggs on Debian depend from this packages, you need to install them before to start to create.
+### Install prerequisites
+Of course penguins-eggs need [nodejs](https://nodejs.org/en/download/package-manager/) installed.
+
+You need also to install this packages, before to can start to use penguins-eggs.
 ```sudo apt-get update```
 ```sudo apt-get install lvm2 parted squashfs-tools xorriso live-boot syslinux syslinux-common isolinux pxelinux```
 
-To test it, you need a functional installation of Linux Debian version 8 or 9.
+### Install from the source
+To try it, you need a functional installation of Linux Debian version 8 or 9, Ubuntu or derivates.
 You can download last version on github.com. Example:
 
 ``` bash
@@ -107,26 +110,22 @@ You can download last version on github.com. Example:
  cd penguins-eggs
  npm i
 ```
-To launch egg
+To launch egg, in developer mode:
+ ```sudo npm  start spawn```
+or, build and link it, before to use:
+```npm run build```
+```sudo npm link```
+```sudo eggs spawn```
 
-``` bash
- sudo npm  start
-```
-or
-``` bash
-./eggs
-```
-## npm
+## Installation via npm
 You can install it with npm (node package manager). Eg:
-``` bash
-sudo npm i penguins-egg -g
-sudo eggs
-```
-Of course, you need a working NodeJs 8.x or better.
+``` bash```
+```sudo npm i penguins-egg -g```
+```sudo eggs```
+Of course, you need a working NodeJs 6.x, 8.x or better.
 
 ## Packages
-You can download the package in format .deb.
-
+You can download the package in format .deb. (Not ready yet)
 
 # It's all Folks!
 No need other configurations, penguins-eggs are battery included or better, as in the real, the live is inside! :-D
