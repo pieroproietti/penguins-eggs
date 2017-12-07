@@ -118,16 +118,17 @@ To launch egg, in developer mode:
 or, build and link it, before to use:
 
 ```npm run build```
+
 ```sudo npm link```
+
 ```sudo eggs spawn```
 
 ## Installation via npm
 You can install it with npm (node package manager). Eg:
-``` bash```
 ```sudo npm i penguins-egg -g```
+
 ```sudo eggs```
 
-Of course, you need a working NodeJs 6.x, 8.x or better.
 
 ## Packages
 You can download the package in format .deb. (Not ready yet)
