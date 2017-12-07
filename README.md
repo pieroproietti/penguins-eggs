@@ -114,7 +114,9 @@ You can download last version on github.com. Example:
 ```
 To launch egg, in developer mode:
  ```sudo npm  start spawn```
+ 
 or, build and link it, before to use:
+
 ```npm run build```
 ```sudo npm link```
 ```sudo eggs spawn```
@@ -124,6 +126,7 @@ You can install it with npm (node package manager). Eg:
 ``` bash```
 ```sudo npm i penguins-egg -g```
 ```sudo eggs```
+
 Of course, you need a working NodeJs 6.x, 8.x or better.
 
 ## Packages
