@@ -35,8 +35,8 @@ Incubator (previous name was Fabrica) who consist in PVE plus Cinnamon Desktop
 and all the necessary to develop is build with eggs.
 
 You can test now penguins-eggs, it is a console utility - no GUI - but don't be
-scared, all you need is to install [node](https://nodejs.org/en/download/package-manager/#debian-and-ubuntu-based-linux-distributions)
-penguins-eggs is a console command - really very simple usage - if you are able to open a terminal, you can use it.
+scared, penguins-eggs is a console command - really very simple usage - if you 
+are able to open a terminal, you can use it.
 
 ## Commands
 * spawn
@@ -97,7 +97,8 @@ Well, it is time to try it!
 ### Install prerequisites
 Of course penguins-eggs need [nodejs](https://nodejs.org/en/download/package-manager/) installed.
 
-You need also to install this packages, before to can start to use penguins-eggs.
+penguins-eggs depend on this packages (lvm2 parted squashfs-tools xorriso live-boot syslinux syslinux-common isolinux pxelinux).
+Let's go to install them, before to start to use it. Copy and paste the following two lines:
 
 ```sudo apt-get update```
 
@@ -105,7 +106,7 @@ You need also to install this packages, before to can start to use penguins-eggs
 
 ### Install from the source
 To try it, you need a functional installation of Linux Debian version 8 or 9, Ubuntu or derivates.
-You can download last version on github.com. Example:
+You can download last version on github.com. Copy and path the following lines:
 
 ``` bash
  git clone https://github.com/pieroproietti/penguins-eggs
@@ -115,7 +116,7 @@ You can download last version on github.com. Example:
 To launch egg, in developer mode:
  ```sudo npm  start spawn```
  
-or, build and link it, before to use:
+or, to build and link it, before to use:
 
 ```npm run build```
 
