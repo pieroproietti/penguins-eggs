@@ -125,11 +125,12 @@ or, to build and link it, before to use:
 ```sudo eggs spawn```
 
 ## Installation via npm
-You can install it with npm (node package manager). Eg:
+You can install it with npm (node package manager). Copy and past the following lines:
+
 ```sudo npm i penguins-egg -g```
 
 ```sudo eggs```
-
+Due a problem in a node package, can be necessary to breack the installation [Ctrl-C] and restart.
 
 ## Packages
 You can download the package in format .deb. (Not ready yet)
