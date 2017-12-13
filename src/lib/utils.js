@@ -21,7 +21,8 @@ utils.prototype.path = function() {
 
 utils.prototype.getIsLive = async function() {
   let result;
-  result = shell.exec(`./scripts/is_live.sh`, { async: false });
+  let path = utils.path();
+  result = shell.exec(`${path}/scripts/is_live.sh`, { async: false });
   return result;
 }
 

@@ -25,7 +25,6 @@ let userfullname = "artisan";
 let username = "artisan";
 let password = "evolution";
 
-utils.path();
 
 if (utils.isRoot()) {
   program
