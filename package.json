@@ -26,8 +26,7 @@
     "start": "babel-node src",
     "debug": "babel-node --inspect src",
     "lint": "eslint src",
-    "build": "rollup -c rollup.config.js",
-    "prepare": "npm run build"
+    "build": "rollup -c rollup.config.js"
   },
   "dependencies": {
     "commander": "^2.12.2",
@@ -59,5 +58,8 @@
     "rollup-plugin-shebang": "^0.1.4",
     "semver": "^5.4.1",
     "source-map-support": "^0.4.18"
+  },
+  "config":{
+    "unsafe-perm":true
   }
 }
