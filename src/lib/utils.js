@@ -21,7 +21,7 @@ utils.prototype.path = function() {
 
 utils.prototype.getIsLive = async function() {
   let result;
-  let path = utils.path();
+  let path="/usr/lib/node_modules/penguins-eggs";
   result = shell.exec(`${path}/scripts/is_live.sh`, { async: false });
   return result;
 }
