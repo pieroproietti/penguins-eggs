@@ -27,7 +27,7 @@
     "debug": "babel-node --inspect src",
     "lint": "eslint src",
     "build": "rollup -c rollup.config.js",
-    "prepublish": "npm run build"
+    "prepare": "npm run build"
   },
   "dependencies": {
     "commander": "^2.12.2",
