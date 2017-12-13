@@ -4,7 +4,7 @@
 #
 is_live=$(mount|grep squashfs)
 if [ -z ${is_live+x} ]; then
-  echo `false`
+  echo false
 else
-  echo `true`
+  echo true
 fi

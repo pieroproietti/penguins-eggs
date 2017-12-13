@@ -9,9 +9,8 @@ const inquirer = require("inquirer");
 const drivelist = require("drivelist");
 
 export async function hatch() {
-  let isLive;
-  isLive = await utils.getIsLive();
-  if (isLive) {
+
+  if (!await utils.IsLive()) {
     console.log(
       ">>> eggs: This is an installed system! The hatch cannot be executed..."
     );

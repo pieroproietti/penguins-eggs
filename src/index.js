@@ -75,9 +75,7 @@ bye();
 // END MAIN
 
 async function spawn(e,i) {
-  let isLive;
-  //isLive = await utils.getIsLive();
-  if (!await utils.getIsLive()) {
+  if (await utils.IsLive()) {
     console.log(">>> eggs: This is a live system! The spawn cannot be executed...");
   } else {
     await buildEgg(e);
