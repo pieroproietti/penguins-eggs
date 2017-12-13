@@ -48,23 +48,22 @@ if (utils.isRoot()) {
   let command = process.argv[2];
 
   if (command == "spawn") {
-    buildEgg(e);
-    buildIso(i);
+    spawn(e,i);
   }
   if (command == "cuckoo") {
-    netbootConfigure(n);
+    cuckoo(n);
   } else if (command == "kill") {
     e.kill();
     n.kill();
     i.kill();
   } else if (command == "hatch") {
     hatch();
-  } else {
-    console.log("Usage: eggs < spawn | kill | hatch | cuckoo  >");
   }
 } else {
   console.log(
-    `${name} need to run with supervisor privileges! You need to prefix it with sudo`
+    `${
+      name
+    } need to run with supervisor privileges! You need to prefix it with sudo`
   );
   console.log("Examples: ");
   console.log(">>> sudo eggs spawn --distroname penguin");
@@ -75,6 +74,17 @@ if (utils.isRoot()) {
 
 bye();
 // END MAIN
+
+async function spawn(e,i) {
+  let isLive;
+  //isLive = await utils.getIsLive();
+  if (!await utils.getIsLive()) {
+    console.log(">>> eggs: This is a live system! The spawn cannot be executed...");
+  } else {
+    await buildEgg(e);
+    await buildIso(i);
+  }
+}
 
 async function buildEgg(e) {
   await e.spawn();
@@ -95,7 +105,7 @@ async function buildIso(i) {
   await i.makeIso();
 }
 
-async function netbootConfigure(n) {
+async function cuckoo(n) {
   await n.kill();
   await n.spawn();
   await n.vmlinuz();

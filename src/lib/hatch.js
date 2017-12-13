@@ -9,6 +9,13 @@ const inquirer = require("inquirer");
 const drivelist = require("drivelist");
 
 export async function hatch() {
+  let isLive;
+  isLive = await utils.getIsLive();
+  if (isLive) {
+    console.log(
+      ">>> eggs: This is an installed system! The hatch cannot be executed..."
+    );
+  } else {
   let target = "/TARGET";
   let devices = {
     root: {
@@ -33,53 +40,51 @@ export async function hatch() {
     }
   };
 
-  let isLive;
-  isLive = await getIsLive();
+    let driveList;
+    driveList = await getDrives();
 
-  let driveList;
-  driveList = await getDrives();
+    let varOptions;
+    varOptions = await getOptions(driveList);
+    let options = JSON.parse(varOptions);
 
-  let varOptions;
-  varOptions = await getOptions(driveList);
-  let options = JSON.parse(varOptions);
+    let isDiskPreoared;
+    isDiskPreoared = await diskPrepare(options.installationDevice);
 
-  let isDiskPreoared;
-  isDiskPreoared = await diskPrepare(options.installationDevice);
+    let diskSize;
+    diskSize = await getDiskSize(options.installationDevice);
+    console.log(
+      `hatch diskSize: ${diskSize} Byte, equal at ${Math.round(
+        diskSize / 1024 / 1024 / 1024
+      )} GB`
+    );
 
-  let diskSize;
-  diskSize = await getDiskSize(options.installationDevice);
-  console.log(
-    `hatch diskSize: ${diskSize} Byte, equal at ${Math.round(
-      diskSize / 1024 / 1024 / 1024
-    )} GB`
-  );
+    let isPartitionBootPrepared;
+    isPartitionBootPrepared = await diskPreparePartitionBoot(
+      options.installationDevice
+    );
 
-  let isPartitionBootPrepared;
-  isPartitionBootPrepared = await diskPreparePartitionBoot(
-    options.installationDevice
-  );
+    await diskPreparePartitionLvm(
+      options.installationDevice,
+      Math.floor(diskSize / 1024 / 1024)
+    );
+    await diskPreparePve(options.installationDevice);
 
-  await diskPreparePartitionLvm(
-    options.installationDevice,
-    Math.floor(diskSize / 1024 / 1024)
-  );
-  await diskPreparePve(options.installationDevice);
+    await mkfs(devices);
+    await mount(target, devices);
+    await rsync(target);
+    await fstab(target, devices);
 
-  await mkfs(devices);
-  await mount(target, devices);
-  await rsync(target);
-  await fstab(target, devices);
-
-  await hostname(target, options);
-  await resolvConf(target, options);
-  await interfaces(target, options);
-  await hosts(target, options);
-  await mount4chroot(target);
-  await mkinitramfs(target);
-  await grubInstall(target, options);
-  //await purge(target);
-  await umount4chroot(target);
-  await umount(target, devices);
+    await hostname(target, options);
+    await resolvConf(target, options);
+    await interfaces(target, options);
+    await hosts(target, options);
+    await mount4chroot(target);
+    await mkinitramfs(target);
+    await grubInstall(target, options);
+    //await purge(target);
+    await umount4chroot(target);
+    await umount(target, devices);
+  }
 }
 
 async function grubInstall(target, options) {
@@ -120,14 +125,18 @@ async function fstab(target, devices) {
   let file = `${target}/etc/fstab`;
   let text = `
 proc /proc proc defaults 0 0
-${devices.root.device} ${devices.root.mountPoint} ${devices.root
-    .fstype} relatime,errors=remount-ro 0 1
-${devices.boot.device} ${devices.boot.mountPoint} ${devices.boot
-    .fstype} relatime 0 0
-${devices.data.device} ${devices.data.mountPoint} ${devices.data
-    .fstype} relatime 0 0
-${devices.swap.device} ${devices.swap.mountPoint} ${devices.swap
-    .fstype} sw 0 0`;
+${devices.root.device} ${devices.root.mountPoint} ${
+    devices.root.fstype
+  } relatime,errors=remount-ro 0 1
+${devices.boot.device} ${devices.boot.mountPoint} ${
+    devices.boot.fstype
+  } relatime 0 0
+${devices.data.device} ${devices.data.mountPoint} ${
+    devices.data.fstype
+  } relatime 0 0
+${devices.swap.device} ${devices.swap.mountPoint} ${
+    devices.swap.fstype
+  } sw 0 0`;
 
   utils.bashwrite(file, text);
 }
@@ -176,10 +185,14 @@ async function hosts(target, options) {
   let text = `127.0.0.1 localhost localhost.localdomain`;
   if (options.netAddressType === "static") {
     text += `
-${options.netAddress} ${options.hostname} ${options.hostname}.${options.domain} pvelocalhost`;
+${options.netAddress} ${options.hostname} ${options.hostname}.${
+      options.domain
+    } pvelocalhost`;
   } else {
     text += `
-127.0.1.1 localhost localhost.localdomain ${options.hostname} ${options.hostname}.${options.domain}`;
+127.0.1.1 localhost localhost.localdomain ${options.hostname} ${
+      options.hostname
+    }.${options.domain}`;
   }
   text += `
 # The following lines are desirable for IPv6 capable hosts
@@ -253,11 +266,15 @@ async function diskPreparePve(device) {
 
 async function diskPreparePartitionLvm(device, sizeMb) {
   console.log(`disk_prepare_partition_lvm.sh ${device} ${sizeMb}`);
-  await execute(`${utils.path()}/scripts/disk_prepare_partition_lvm.sh ${device} ${sizeMb}`);
+  await execute(
+    `${utils.path()}/scripts/disk_prepare_partition_lvm.sh ${device} ${sizeMb}`
+  );
   return true;
 }
 async function diskPreparePartitionBoot(device) {
-  await execute(`${utils.path()}/scripts/disk_prepare_partition_boot.sh ${device}`);
+  await execute(
+    `${utils.path()}/scripts/disk_prepare_partition_boot.sh ${device}`
+  );
   return true;
 }
 
@@ -378,7 +395,7 @@ async function getOptions(driveList) {
         type: "input",
         name: "netGateway",
         message: "Insert gateway: ",
-        default: "192.168.0.1",
+        default: utils.netGateway(),
         when: function(answers) {
           return answers.netAddressType === "static";
         }
@@ -387,7 +404,7 @@ async function getOptions(driveList) {
         type: "input",
         name: "netDns",
         message: "Insert DNS: ",
-        default: "192.168.0.1",
+        default: utils.netDns(),
         when: function(answers) {
           return answers.netAddressType === "static";
         }

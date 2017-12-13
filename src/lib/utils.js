@@ -18,6 +18,13 @@ utils.prototype.path = function() {
   return path;
 };
 
+
+utils.prototype.getIsLive = async function() {
+  let result;
+  result = shell.exec(`./scripts/is_live.sh`, { async: false });
+  return result;
+}
+
 utils.prototype.netNetmask = function() {
   var netMask = "";
   var ifaces = os.networkInterfaces();
