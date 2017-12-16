@@ -9,21 +9,25 @@ import fs from "fs";
 import os from "os";
 import dns from "dns";
 import network from "network";
-const path = require('path');
+const path = require("path");
 
 let utils = function() {};
 
 utils.prototype.path = function() {
-  let path="/usr/lib/node_modules/penguins-eggs";
+  let path = "/usr/lib/node_modules/penguins-eggs";
   return path;
 };
 
-
 utils.prototype.IsLive = async function() {
-  let path="/usr/lib/node_modules/penguins-eggs";
-  const { stdout, stderr, code } = shell.exec(`${path}/scripts/is_live.sh`, { async: false }.stdout);
-  return stdout;
-}
+  let result;
+  let path = "/usr/lib/node_modules/penguins-eggs";
+  result = shell.exec(`${path}/scripts/is_live.sh`, { async: false }.stdout);
+  if (result.stdout=="true") {
+    return true;
+  } else {
+    return false;
+  }
+};
 
 utils.prototype.netNetmask = function() {
   var netMask = "";
