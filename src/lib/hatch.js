@@ -9,12 +9,6 @@ const inquirer = require("inquirer");
 const drivelist = require("drivelist");
 
 export async function hatch() {
-
-  if (!await utils.IsLive()) {
-    console.log(
-      ">>> eggs: This is an installed system! The hatch cannot be executed..."
-    );
-  } else {
   let target = "/TARGET";
   let devices = {
     root: {
@@ -39,51 +33,50 @@ export async function hatch() {
     }
   };
 
-    let driveList;
-    driveList = await getDrives();
+  let driveList;
+  driveList = await getDrives();
 
-    let varOptions;
-    varOptions = await getOptions(driveList);
-    let options = JSON.parse(varOptions);
+  let varOptions;
+  varOptions = await getOptions(driveList);
+  let options = JSON.parse(varOptions);
 
-    let isDiskPreoared;
-    isDiskPreoared = await diskPrepare(options.installationDevice);
+  let isDiskPreoared;
+  isDiskPreoared = await diskPrepare(options.installationDevice);
 
-    let diskSize;
-    diskSize = await getDiskSize(options.installationDevice);
-    console.log(
-      `hatch diskSize: ${diskSize} Byte, equal at ${Math.round(
-        diskSize / 1024 / 1024 / 1024
-      )} GB`
-    );
+  let diskSize;
+  diskSize = await getDiskSize(options.installationDevice);
+  console.log(
+    `hatch diskSize: ${diskSize} Byte, equal at ${Math.round(
+      diskSize / 1024 / 1024 / 1024
+    )} GB`
+  );
 
-    let isPartitionBootPrepared;
-    isPartitionBootPrepared = await diskPreparePartitionBoot(
-      options.installationDevice
-    );
+  let isPartitionBootPrepared;
+  isPartitionBootPrepared = await diskPreparePartitionBoot(
+    options.installationDevice
+  );
 
-    await diskPreparePartitionLvm(
-      options.installationDevice,
-      Math.floor(diskSize / 1024 / 1024)
-    );
-    await diskPreparePve(options.installationDevice);
+  await diskPreparePartitionLvm(
+    options.installationDevice,
+    Math.floor(diskSize / 1024 / 1024)
+  );
+  await diskPreparePve(options.installationDevice);
 
-    await mkfs(devices);
-    await mount(target, devices);
-    await rsync(target);
-    await fstab(target, devices);
+  await mkfs(devices);
+  await mount(target, devices);
+  await rsync(target);
+  await fstab(target, devices);
 
-    await hostname(target, options);
-    await resolvConf(target, options);
-    await interfaces(target, options);
-    await hosts(target, options);
-    await mount4chroot(target);
-    await mkinitramfs(target);
-    await grubInstall(target, options);
-    //await purge(target);
-    await umount4chroot(target);
-    await umount(target, devices);
-  }
+  await hostname(target, options);
+  await resolvConf(target, options);
+  await interfaces(target, options);
+  await hosts(target, options);
+  await mount4chroot(target);
+  await mkinitramfs(target);
+  await grubInstall(target, options);
+  //await purge(target);
+  await umount4chroot(target);
+  await umount(target, devices);
 }
 
 async function grubInstall(target, options) {

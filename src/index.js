@@ -25,7 +25,6 @@ let userfullname = "artisan";
 let username = "artisan";
 let password = "evolution";
 
-
 if (utils.isRoot()) {
   program
     .command("spawn")
@@ -47,7 +46,7 @@ if (utils.isRoot()) {
   let command = process.argv[2];
 
   if (command == "spawn") {
-    spawn(e,i);
+    spawn(e, i);
   }
   if (command == "cuckoo") {
     cuckoo(n);
@@ -56,13 +55,11 @@ if (utils.isRoot()) {
     n.kill();
     i.kill();
   } else if (command == "hatch") {
-    hatch();
+    startHatch();
   }
 } else {
   console.log(
-    `${
-      name
-    } need to run with supervisor privileges! You need to prefix it with sudo`
+    `${name} need to run with supervisor privileges! You need to prefix it with sudo`
   );
   console.log("Examples: ");
   console.log(">>> sudo eggs spawn --distroname penguin");
@@ -74,12 +71,24 @@ if (utils.isRoot()) {
 bye();
 // END MAIN
 
-async function spawn(e,i) {
+async function spawn(e, i) {
   if (await utils.IsLive()) {
-    console.log(">>> eggs: This is a live system! The spawn cannot be executed...");
+    console.log(
+      ">>> eggs: This is a live system! The spawn command cannot be executed..."
+    );
   } else {
     await buildEgg(e);
     await buildIso(i);
+  }
+}
+
+async function startHatch() {
+  if (!await utils.IsLive()) {
+    console.log(
+      ">>> eggs: This is an installed system! The hatch command cannot be executed..."
+    );
+  } else {
+    hatch();
   }
 }
 
