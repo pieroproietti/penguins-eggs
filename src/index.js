@@ -74,7 +74,7 @@ bye();
 async function spawn(e, i) {
   if (!await utils.IsLive()) {
     console.log(
-      ">>> eggs: This is a live system! The spawn command cannot be executed..."
+      ">>> eggs: This is a live system! The spawn command cannot be executed."
     );
   } else {
     await buildEgg(e);
@@ -85,7 +85,7 @@ async function spawn(e, i) {
 async function startHatch() {
   if (await utils.IsLive()) {
     console.log(
-      ">>> eggs: This is an installed system! The hatch command cannot be executed..."
+      ">>> eggs: This is an installed system! The hatch command cannot be executed."
     );
   } else {
     hatch();
