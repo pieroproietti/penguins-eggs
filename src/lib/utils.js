@@ -22,7 +22,7 @@ utils.prototype.IsLive = async function() {
   let result;
   let path = "/usr/lib/node_modules/penguins-eggs";
   result = shell.exec(`${path}/scripts/is_live.sh`, { async: false }.stdout);
-  if (result.stdout=="true") {
+  if (result.stdout=="1") {
     return true;
   } else {
     return false;
