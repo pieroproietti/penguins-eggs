@@ -19,10 +19,12 @@ utils.prototype.path = function() {
 };
 
 utils.prototype.IsLive = async function() {
+  let test="1";
   let result;
   let path = "/usr/lib/node_modules/penguins-eggs";
   result = shell.exec(`${path}/scripts/is_live.sh`, { async: false });
-  if (result.stdout=="1") {
+
+  if (test.indexOf(result)<-1) {
     return true;
   } else {
     return false;
