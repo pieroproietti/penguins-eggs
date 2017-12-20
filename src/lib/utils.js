@@ -30,6 +30,19 @@ utils.prototype.IsLive = async function() {
   }
 };
 
+utils.prototype.IsMounted = async function( check ) {
+  let test="1";
+  let result;
+  let path = "/usr/lib/node_modules/penguins-eggs";
+  result = shell.exec(`${path}/scripts/is_mounted.sh ${check}`, { async: false });
+  if (result.indexOf(test)>-1) {
+    return true;
+  } else {
+    return false;
+  }
+};
+
+
 utils.prototype.netNetmask = function() {
   var netMask = "";
   var ifaces = os.networkInterfaces();
