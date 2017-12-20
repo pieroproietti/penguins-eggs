@@ -24,7 +24,7 @@ utils.prototype.IsLive = async function() {
   let path = "/usr/lib/node_modules/penguins-eggs";
   result = shell.exec(`${path}/scripts/is_live.sh`, { async: false });
 
-  if (test.indexOf(result)>-1) {
+  if (result.indexOf(test)>-1) {
     return true;
   } else {
     return false;
