@@ -1,6 +1,6 @@
 {
   "name": "penguins-eggs",
-  "version": "0.8.30",
+  "version": "0.8.31",
   "author": "Piero Proietti",
   "mail": "piero.proietti@gmail.com",
   "description": "remaster your system and distribuite it by iso or via PXE",
