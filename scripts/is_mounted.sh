@@ -3,8 +3,9 @@
 # parameter: none
 #
 CHECK=$1
+echo $CHECK
 IS_MOUNTED=$(mount|grep $CHECK)
-#echo $IS_MOUNTED
+echo $IS_MOUNTED
 if [[ -z $IS_MOUNTED ]]; then
   # False
   echo "0"

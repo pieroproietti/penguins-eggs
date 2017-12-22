@@ -8,9 +8,9 @@
 // install
 
 import { version, name, author, mail, homepage } from "../package.json";
-import { hatch } from "./lib/hatch.js";
 import ip from "ip";
 import os from "os";
+import { hatch } from "./lib/hatch.js";
 import Egg from "./lib/Egg.js";
 import Netboot from "./lib/Netboot.js";
 import Iso from "./lib/Iso.js";
@@ -19,13 +19,29 @@ import tftpd from "./lib/tftpd.js";
 import utils from "./lib/utils.js";
 
 let program = require("commander").version(version);
-const homeDir = "/var/lib/vz/penguins-eggs/";
+let homeDir = "/var/lib/vz/penguins-eggs/";
 let distroName = os.hostname;
 let userfullname = "artisan";
 let username = "artisan";
 let password = "evolution";
 
 if (utils.isRoot()) {
+  config();
+} else {
+  console.log(
+    `${name} need to run with supervisor privileges! You need to prefix it with sudo`
+  );
+  console.log("Examples: ");
+  console.log(">>> sudo eggs spawn --distroname penguin");
+  console.log(">>> sudo eggs kill");
+  console.log(">>> sudo eggs hatch");
+  console.log(">>> sudo eggs cuckoo");
+}
+
+bye();
+// END MAIN
+
+async function config() {
   program
     .command("spawn")
     .command("kill")
@@ -37,6 +53,10 @@ if (utils.isRoot()) {
   program.parse(process.argv);
   if (program.distroname) {
     distroName = program.distroname;
+  }
+
+  if (await utils.IsMounted("home")) {
+    homeDir = "/home/penguins-eggs/";
   }
 
   let e = new Egg(homeDir, distroName, userfullname, username, password);
@@ -57,19 +77,7 @@ if (utils.isRoot()) {
   } else if (command == "hatch") {
     startHatch();
   }
-} else {
-  console.log(
-    `${name} need to run with supervisor privileges! You need to prefix it with sudo`
-  );
-  console.log("Examples: ");
-  console.log(">>> sudo eggs spawn --distroname penguin");
-  console.log(">>> sudo eggs kill");
-  console.log(">>> sudo eggs hatch");
-  console.log(">>> sudo eggs cuckoo");
 }
-
-bye();
-// END MAIN
 
 async function spawn(e, i) {
   if (!await utils.IsLive()) {
