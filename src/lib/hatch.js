@@ -40,6 +40,10 @@ export async function hatch() {
   varOptions = await getOptions(driveList);
   let options = JSON.parse(varOptions);
 
+  if (options.mountType=="workstation"){
+    devices.data.mountPoint="/home";
+  }
+
   let isDiskPreoared;
   isDiskPreoared = await diskPrepare(options.installationDevice);
 
@@ -234,17 +238,17 @@ async function mount(target, devices) {
   await execute(`mount ${devices.boot.device} ${target}/boot`);
   await execute(`tune2fs -c 0 -i 0 ${devices.boot.device}`);
 
-  await execute(`mkdir -p ${target}/var/lib/vz`);
-  await execute(`mount ${devices.data.device} ${target}/var/lib/vz`);
+  await execute(`mkdir -p ${target}${devices.data.mountPoint}`);
+  await execute(`mount ${devices.data.device} ${target}${devices.data.mountPoint}`);
   await execute(`tune2fs -c 0 -i 0 ${devices.data.device}`);
-  await execute(`rm -rf ${target}/var/lib/vz/lost+found`);
+  await execute(`rm -rf ${target}${devices.data.mountPoint}/lost+found`);
 
   return true;
 }
 async function tune2fs(target, devices) {}
 
 async function umount(target, devices) {
-  await execute(`umount ${devices.data.device} ${target}/var/lib/vz`);
+  await execute(`umount ${devices.data.device} ${target}${devices.data.mountPoint}`);
   await execute(`umount ${devices.boot.device} ${target}boot`);
   await execute(`umount ${devices.root.device} ${target}`);
   await execute(`rmdir ${target} -rf`);
@@ -407,6 +411,13 @@ async function getOptions(driveList) {
         message: "Select the installation disk: ",
         choices: driveList,
         default: driveList[0]
+      },
+      {
+        type: "list",
+        name: "mountType",
+        message: "Select the tipology: ",
+        choices: ["workstation","PVE"],
+        default: "workstation"
       },
       {
         type: "list",
