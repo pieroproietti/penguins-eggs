@@ -2,10 +2,9 @@
 #
 # parameter: none
 #
-IS_MOUNTED=$(mount|grep $CHECK)
-echo $IS_MOUNTED
+IS_MOUNTED=$(mount|grep $1)
 if [[ -z $IS_MOUNTED ]]; then
-  echo "1"
-else
   echo "0"
+else
+  echo "1"
 fi
