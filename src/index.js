@@ -151,6 +151,6 @@ async function cuckoo(n) {
 
 function bye() {
   console.log(
-    `${name} version ${version} (C) 2017 ${author} <${mail}> site ${homepage}`
+    `${name} version ${version} (C) 2017 ${author} <${mail}> [${homepage}]`
   );
 }

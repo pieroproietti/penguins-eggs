@@ -5,7 +5,7 @@
   "mail": "piero.proietti@gmail.com",
   "description": "remaster your system and distribuite it by iso or via PXE",
   "license": "MIT",
-  "homepage": "http://www.piojoris15.com",
+  "homepage": "http://pieroproietti.github.io",
   "repository": {
     "type": "git",
     "url": "https://github.com/pieroproietti/penguins-eggs"
