@@ -31,7 +31,7 @@
   "dependencies": {
     "commander": "^2.12.2",
     "dhcp": "^0.2.9",
-    "drivelist": "^5.2.7",
+    "drivelist": "^5.2.12",
     "express": "^4.16.2",
     "inquirer": "^3.3.0",
     "io": "^0.1.10",
@@ -47,7 +47,7 @@
     "babel-plugin-external-helpers": "^6.22.0",
     "babel-plugin-transform-runtime": "^6.23.0",
     "babel-preset-node8": "^1.2.0",
-    "eslint": "^4.13.1",
+    "eslint": "^4.15.0",
     "rollup": "^0.50.1",
     "rollup-plugin-babel": "^3.0.3",
     "rollup-plugin-commonjs": "^8.2.6",
