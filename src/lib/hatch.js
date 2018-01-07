@@ -248,7 +248,8 @@ async function mount(target, devices) {
 async function tune2fs(target, devices) {}
 
 async function umount(target, devices) {
-  await execute(`umount ${devices.data.device} ${target}${devices.data.mountPoint}`);
+  //await execute(`umount ${devices.data.device} ${target}${devices.data.mountPoint}`);
+  await execute(`umount ${devices.data.device}`);
   await execute(`umount ${devices.boot.device} ${target}boot`);
   await execute(`umount ${devices.root.device} ${target}`);
   await execute(`rmdir ${target} -rf`);

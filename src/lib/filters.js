@@ -88,10 +88,10 @@ const filterPersonalDatas =`
 --filter="- /home/*/Pubblici/*" \
 --filter="- /home/*/Scaricati/*" \
 --filter="- /home/*/Scrivania/*" \
---filter="- /home/*/Scrivania/*" \
 --filter="+ /home/*/Scrivania/*.desktop" \
 --filter="- /home/*/Video/*" `;
 
+//--filter="- /home/*/Scrivania/*" \
 
 
 const filters =
