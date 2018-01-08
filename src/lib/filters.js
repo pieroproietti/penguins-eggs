@@ -78,15 +78,15 @@ const filterHome = `
 --filter="- /home/*/.ssh" \ `;
 
 const filterPersonalDatas =`
---filter="+ /home/artisan/" \
---filter="+ /home/artisan/Documenti/" \
---filter="+ /home/artisan/Immagini/" \
---filter="+ /home/artisan/Modelli/" \
---filter="+ /home/artisan/Musica/" \
---filter="+ /home/artisan/Pubblici/" \
---filter="+ /home/artisan/Scrivania/" \
---filter="+ /home/artisan/Scaricati/" \
---filter="- /home/artisan/*" `;
+--filter="+ /home/*/" \
+--filter="+ /home/*/Documenti/" \
+--filter="+ /home/*/Immagini/" \
+--filter="+ /home/*/Modelli/" \
+--filter="+ /home/*/Musica/" \
+--filter="+ /home/*/Pubblici/" \
+--filter="+ /home/*/Scrivania/" \
+--filter="+ /home/*/Scaricati/" \
+--filter="- /home/*/*" `;
 
 
 const filters =
