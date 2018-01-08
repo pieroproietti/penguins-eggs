@@ -82,7 +82,6 @@ const filterPersonalDatas =`
 --filter="- /home/*/Immagini/*" \
 --filter="- /home/*/iso/*" \
 --filter="- /home/*/Modelli/*" \
---filter="- /home/*/Notebooks/*" \
 --filter="- /home/*/Musica/*" \
 --filter="- /home/*/penguins-eggs/" \
 --filter="- /home/*/Pubblici/*" \
@@ -90,6 +89,9 @@ const filterPersonalDatas =`
 --filter="- /home/*/Scrivania/*" \
 --filter="+ /home/*/Scrivania/*" \
 --filter="+ /home/*/Scrivania/*.desktop" \
+--filter="- /home/*/Desktop/*" \
+--filter="+ /home/*/Desktop/*" \
+--filter="+ /home/*/Desktop/*.desktop" \
 --filter="- /home/*/Video/*" `;
 
 
