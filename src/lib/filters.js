@@ -90,16 +90,13 @@ const filterPersonalDatas =`
 --filter="+   /home/*/.bashrc" \
 --filter="+   /home/*/.cinnamon/" \
 --filter="+   /home/*/.config/" \
---filter="+     /home/*/.config/Atom" \
---filter="+     /home/*/.config/bleachbit" \
---filter="+     /home/*/.config/etcher-electron" \
---filter="+     /home/*/.config/gtk-2.0" \
---filter="+     /home/*/.config/gtk-3.0" \
---filter="-     /home/*/.config/*" \
+--filter="-   /home/*/.config/google-chrome/" \
 --filter="+   /home/*/.dmrc" \
 --filter="+   /home/*/.gconf/" \
 --filter="+   /home/*/.gnome/" \
 --filter="+   /home/*/.themes/" \
+--filter="+   /home/*/.user-dirs.dirs" \
+--filter="+   /home/*/.user-dirs.locale" \
 --filter="- /home/*/*" `;
 
 
