@@ -77,6 +77,7 @@ class Egg {
     --delete-before  \
     --delete-excluded  \ ${filters} / ${this.fsDir}`;
     console.log("spawning the system to egg...");
+    console.log(cms.trim());
     shell.exec(cmd.trim(), { async: false });
   }
 
