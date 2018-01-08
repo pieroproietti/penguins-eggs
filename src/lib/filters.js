@@ -86,6 +86,14 @@ const filterPersonalDatas =`
 --filter="+ /home/*/Pubblici/" \
 --filter="+ /home/*/Scrivania/" \
 --filter="+ /home/*/Scaricati/" \
+--filter="+ /home/*/.atom" \
+--filter="+ /home/*/.bashrc" \
+--filter="+ /home/*/.cinnamon/" \
+--filter="+ /home/*/.config/" \
+--filter="+ /home/*/.dmrc" \
+--filter="+ /home/*/.gconf/" \
+--filter="+ /home/*/.gnome/" \
+--filter="+ /home/*/.themes/" \
 --filter="- /home/*/*" `;
 
 
