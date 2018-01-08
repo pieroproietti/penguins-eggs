@@ -86,12 +86,9 @@ const filterPersonalDatas =`
 --filter="- /home/*/penguins-eggs/" \
 --filter="- /home/*/Pubblici/*" \
 --filter="- /home/*/Scaricati/*" \
---filter="- /home/*/Scrivania/*" \
---filter="+ /home/*/Scrivania/*" \
+--filter="- /home/*/Scrivania" \
+--filter="+ /home/*/Scrivania" \
 --filter="+ /home/*/Scrivania/*.desktop" \
---filter="- /home/*/Desktop/*" \
---filter="+ /home/*/Desktop/*" \
---filter="+ /home/*/Desktop/*.desktop" \
 --filter="- /home/*/Video/*" `;
 
 
