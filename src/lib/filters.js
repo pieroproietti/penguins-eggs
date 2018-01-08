@@ -78,18 +78,15 @@ const filterHome = `
 --filter="- /home/*/.ssh" \ `;
 
 const filterPersonalDatas =`
---filter="- /home/*/Documenti/*" \
---filter="- /home/*/Immagini/*" \
---filter="- /home/*/iso/*" \
---filter="- /home/*/Modelli/*" \
---filter="- /home/*/Musica/*" \
---filter="- /home/*/penguins-eggs/" \
---filter="- /home/*/Pubblici/*" \
---filter="- /home/*/Scaricati/*" \
---filter="- /home/*/Scrivania" \
---filter="+ /home/*/Scrivania" \
---filter="+ /home/*/Scrivania/*.desktop" \
---filter="- /home/*/Video/*" `;
+--filter="+ /home/artisan/" \
+--filter="+ /home/artisan/Documenti/" \
+--filter="+ /home/artisan/Immagini/" \
+--filter="+ /home/artisan/Modelli/" \
+--filter="+ /home/artisan/Musica/" \
+--filter="+ /home/artisan/Pubblici/" \
+--filter="+ /home/artisan/Scrivania/" \
+--filter="+ /home/artisan/Scaricati/" \
+--filter="- /home/artisan/*" `;
 
 
 const filters =
@@ -99,7 +96,7 @@ const filters =
   filterLib.trim() +
   filterUsr.trim() +
   filterVar.trim() +
-  filterHome.trim()+
+  // filterHome.trim()+
   filterPersonalDatas.trim();
 
 export default filters;
