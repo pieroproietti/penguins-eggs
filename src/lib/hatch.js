@@ -107,6 +107,7 @@ async function updateInitramfs(target) {
 }
 
 async function mount4chroot(target) {
+  console.log("mount4chroot");
   await execute(`mount -o bind /dev ${target}/dev`);
   await execute(`mount -o bind /devpts ${target}/dev/pts`);
   await execute(`mount -o bind /proc ${target}/proc`);
@@ -116,6 +117,7 @@ async function mount4chroot(target) {
 }
 
 async function umount4chroot(target) {
+  console.log("umount4chroot");
   await execute(`umount ${target}/dev/pts`);
   await execute(`sleep 1`);
   await execute(`umount ${target}/dev`);
@@ -259,6 +261,7 @@ async function mount(target, devices) {
 async function tune2fs(target, devices) {}
 
 async function umount(target, devices) {
+  console.log("umount");
   //await execute(`umount ${devices.data.device} ${target}${devices.data.mountPoint}`);
   await execute(`umount ${devices.data.device}`);
   await execute(`umount ${devices.boot.device} ${target}boot`);
