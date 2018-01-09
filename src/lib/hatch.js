@@ -78,6 +78,7 @@ export async function hatch() {
   await mount4chroot(target);
   await mkinitramfs(target);
   await grubInstall(target, options);
+  await updateInitramfs(target); // path per problema LVM resume
   //await purge(target);
   await umount4chroot(target);
   await umount(target, devices);
@@ -93,6 +94,12 @@ async function mkinitramfs(target) {
     `chroot ${target} mkinitramfs -k -o /tmp/initramfs-$(uname -r)`
   );
   await execute(`cp ${target}/tmp/initramfs-$(uname -r) /TARGET/boot`);
+}
+
+async function updateInitramfs(target) {
+  await execute(
+    `chroot ${target} update-initramfs -u`
+  );
 }
 
 async function mount4chroot(target) {
