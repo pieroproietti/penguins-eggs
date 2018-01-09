@@ -120,13 +120,13 @@ async function umount4chroot(target) {
   console.log("umount4chroot");
   await execute(`umount ${target}/dev/pts`);
   await execute(`sleep 1`);
-  await execute(`umount ${target}/dev`);
-  await execute(`sleep 1`);
   await execute(`umount ${target}/proc`);
   await execute(`sleep 1`);
   await execute(`umount ${target}/sys`);
   await execute(`sleep 1`);
   await execute(`umount ${target}/run`);
+  await execute(`sleep 1`);
+  await execute(`umount ${target}/dev`);
   await execute(`sleep 1`);
 }
 
