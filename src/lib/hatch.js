@@ -85,11 +85,14 @@ export async function hatch() {
 }
 
 async function grubInstall(target, options) {
+  console.log("grub-install");
   await execute(`chroot ${target} grub-install ${options.installationDevice}`);
+  console.log("update-grub");
   await execute(`chroot ${target} update-grub`);
 }
 
 async function mkinitramfs(target) {
+  console.log("mkinitramfs");
   await execute(
     `chroot ${target} mkinitramfs -k -o /tmp/initramfs-$(uname -r)`
   );
@@ -97,6 +100,7 @@ async function mkinitramfs(target) {
 }
 
 async function updateInitramfs(target) {
+  console.log("updateInitramfs");
   await execute(
     `chroot ${target} update-initramfs -u`
   );
