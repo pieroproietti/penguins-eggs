@@ -42,8 +42,9 @@ export async function hatch() {
 
   if (options.mountType=="workstation"){
     devices.data.mountPoint="/home";
+  } elseif(options.mountType=="docker"){
+    devices.data.mountPoint="/var/lib/docker";
   }
-
   let isDiskPreoared;
   isDiskPreoared = await diskPrepare(options.installationDevice);
 
@@ -431,7 +432,7 @@ async function getOptions(driveList) {
         type: "list",
         name: "mountType",
         message: "Select the tipology: ",
-        choices: ["workstation","PVE"],
+        choices: ["workstation","docker","ve"],
         default: "workstation"
       },
       {
