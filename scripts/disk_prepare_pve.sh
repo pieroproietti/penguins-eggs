@@ -8,9 +8,9 @@ echo "LVM_SIZE=$LVM_SIZE"
 LVM_SIZE=$(($LVM_SIZE/1024))
 echo "LVM_SIZE=$LVM_SIZE"
 
-PVE_SWAP="/dev/pve/swap"
-PVE_ROOT="/dev/pve/root"
-PVE_DATA="dev/pve/data"
+PVE_SWAP="/dev/penguin/swap"
+PVE_ROOT="/dev/penguin/root"
+PVE_DATA="dev/penguin/data"
 
 # La partizione di root viene posta ad 1/4 della partizione LVM.
 # Viene limitata fino ad un massimo di 100 GB
