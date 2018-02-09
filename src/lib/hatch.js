@@ -12,7 +12,7 @@ export async function hatch() {
   let target = "/TARGET";
   let devices = {
     root: {
-      device: "/dev/pve/root",
+      device: "/dev/penguin/root",
       fstype: "ext4",
       mountPoint: "/"
     },
@@ -22,12 +22,12 @@ export async function hatch() {
       mountPoint: "/boot"
     },
     data: {
-      device: "/dev/pve/data",
+      device: "/dev/penguin/data",
       fstype: "ext4",
       mountPoint: "/var/lib/vz"
     },
     swap: {
-      device: "/dev/pve/swap",
+      device: "/dev/penguin/swap",
       fstype: "swap",
       mountPoint: "none"
     }
@@ -40,11 +40,13 @@ export async function hatch() {
   varOptions = await getOptions(driveList);
   let options = JSON.parse(varOptions);
 
+  // default mount /var/lib/pve
   if (options.mountType=="workstation"){
     devices.data.mountPoint="/home";
-  } elseif(options.mountType=="docker"){
+  } else if(options.mountType=="docker"){
     devices.data.mountPoint="/var/lib/docker";
   }
+
   let isDiskPreoared;
   isDiskPreoared = await diskPrepare(options.installationDevice);
 
@@ -432,7 +434,7 @@ async function getOptions(driveList) {
         type: "list",
         name: "mountType",
         message: "Select the tipology: ",
-        choices: ["workstation","docker","ve"],
+        choices: ["workstation","docker","pve"],
         default: "workstation"
       },
       {
