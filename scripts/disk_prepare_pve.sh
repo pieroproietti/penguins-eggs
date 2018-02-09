@@ -8,9 +8,9 @@ echo "LVM_SIZE=$LVM_SIZE"
 LVM_SIZE=$(($LVM_SIZE/1024))
 echo "LVM_SIZE=$LVM_SIZE"
 
-PVE_SWAP="/dev/penguin/swap"
-PVE_ROOT="/dev/penguin/root"
-PVE_DATA="dev/penguin/data"
+PENGUIN_SWAP="/dev/penguin/swap"
+PENGUIN_ROOT="/dev/penguin/root"
+PENGUIN_DATA="dev/penguin/data"
 
 # La partizione di root viene posta ad 1/4 della partizione LVM.
 # Viene limitata fino ad un massimo di 100 GB
@@ -40,17 +40,17 @@ echo "LVM_DATA_SIZE=$(($LVM_DATA_SIZE/$GB)) GB, $LVM_DATA_SIZE"
 
 
 echo "pvcreate /dev/$LVM_PARTNAME"
-echo "vgcreate pve /dev/$LVM_PARTNAME"
+echo "vgcreate penguin /dev/$LVM_PARTNAME"
 echo "vgchange -an"
-echo "lvcreate -L $LVM_SWAP_SIZE  -nswap pve"
-echo "lvcreate -L $LVM_ROOT_SIZE -nroot pve"
-echo "lvcreate -l 100%FREE -ndata pve"
-echo "vgchange -a y pve"
+echo "lvcreate -L $LVM_SWAP_SIZE  -nswap penguin"
+echo "lvcreate -L $LVM_ROOT_SIZE -nroot penguin"
+echo "lvcreate -l 100%FREE -ndata penguin"
+echo "vgchange -a y penguin"
 
 pvcreate /dev/$LVM_PARTNAME
-vgcreate pve /dev/$LVM_PARTNAME
+vgcreate penguin /dev/$LVM_PARTNAME
 vgchange -an
-lvcreate -L $LVM_SWAP_SIZE  -nswap pve
-lvcreate -L $LVM_ROOT_SIZE -nroot pve
-lvcreate -l 100%FREE -ndata pve
-vgchange -a y pve
+lvcreate -L $LVM_SWAP_SIZE  -nswap penguin
+lvcreate -L $LVM_ROOT_SIZE -nroot penguin
+lvcreate -l 100%FREE -ndata penguin
+vgchange -a y penguin

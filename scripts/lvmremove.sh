@@ -1,6 +1,6 @@
 lvremove /dev/penguin/swap
 lvremove /dev/penguin/data
 lvremove /dev/penguin/root
-vgremove /dev/pve
+vgremove /dev/penguin
 pvremove /dev/sda2
 rm /TARGET -rf
