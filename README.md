@@ -5,7 +5,7 @@
 [![NPM Package](https://img.shields.io/npm/v/penguins-eggs.svg?style=flat)](https://npmjs.org/package/penguins-eggs "View this project on npm")
 [![MIT license](http://img.shields.io/badge/license-MIT-brightgreen.svg)](http://opensource.org/licenses/MIT)
 
-
+## Presentation
 penguins-eggs is a console utility, in active development, who let you to
 remaster your system and redistribuite it as iso images or from the lan via PXE
 remote boot.
@@ -22,7 +22,7 @@ it is written in nodejs, so ideally can be used with differents Linux distros.
 At the moment it is tested with Debian 9 Stretch, Debian 8 Jessie, Ubuntu and
 derivates as Linux Mint. For others distros we need to find collaboration.
 
-penguins-eggs, at the moment 2017 december 7 is in a joung state, and can have
+penguins-eggs, at the moment 2018 february 19 is in a joung state, and can have
 same troubles for people not in confidence with Linux system administration, but
 can be already extremely usefull: imagine to install it on an lan and start to
 manage the computers with it. You can easily install clonezilla on it, or clamav
@@ -108,6 +108,12 @@ Let's go to install them, before to start to use it. Copy and paste the followin
 
 ```sudo apt-get install lvm2 parted squashfs-tools xorriso live-boot syslinux syslinux-common isolinux pxelinux```
 
+### Installation via npm
+You can install it with npm (node package manager). Copy and past the following lines:
+
+```sudo npm i penguins-egg -g```
+
+
 ### Install from the source
 To try it, you need a functional installation of Linux Debian version 8 or 9, Ubuntu or derivates.
 You can download last version on github.com. Copy and past the following lines:
@@ -128,15 +134,6 @@ or, to build and link it, before to use:
 
 ```sudo eggs spawn```
 
-## Installation via npm
-You can install it with npm (node package manager). Copy and past the following lines:
-
-```sudo npm i penguins-egg -g```
-
-```sudo eggs```
-
-Attention: Due a problem in a node package, can be necessary to break the installation [Ctrl-C] and restart it.
-
 ## Packages
 You can download the package in format .deb. (Not ready yet)
 
@@ -146,6 +143,6 @@ No need other configurations, penguins-eggs are battery included or better, as i
 ## More informations
 For other informations, look at http://pieroproietti.github.com or write me. The author
 
-(Mail) author: piero.proietti@gmail.com
-(Facebook group):  [Pinguino Eggs](https://www.facebook.com/groups/128861437762355/)
-(gitter) [gitter](https://gitter.im/penguins-eggs/Lobby)
+* (Mail) author: piero.proietti@gmail.com
+* (Facebook group):  [Pinguino Eggs](https://www.facebook.com/groups/128861437762355/)
+* (gitter) [gitter](https://gitter.im/penguins-eggs/Lobby)
