@@ -1,4 +1,4 @@
-# penguins-eggs
+## penguin's eggs
 
 ![penguins-eggs](https://github.com/pieroproietti/penguins-eggs/blob/master/src/assets/penguins-eggs.png?raw=true)
 
