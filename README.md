@@ -149,4 +149,4 @@ For other informations, look at [Piero Proietti's blog](http://pieroproietti.git
 * facebook group:  [Penguin's Eggs](https://www.facebook.com/groups/128861437762355/)
 * gitter: [gitter](https://gitter.im/penguins-eggs/Lobby)
 
-Piero
+The author
