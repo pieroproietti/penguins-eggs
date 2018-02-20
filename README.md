@@ -2,6 +2,9 @@
 
 ![penguins-eggs](https://github.com/pieroproietti/penguins-eggs/blob/master/src/assets/penguins-eggs.png?raw=true)
 
+[![NPM Package](https://img.shields.io/npm/v/dhcp.svg?style=flat)](https://npmjs.org/package/dhcp "View this project on npm")
+
+
 penguins-eggs is a console utility, in active development, who let you to
 remaster your system and redistribuite it as iso images or from the lan via PXE
 remote boot.
