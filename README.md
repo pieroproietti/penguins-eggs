@@ -148,6 +148,6 @@ For other informations, look at [Piero Proietti](http://pieroproietti.github.com
 
 The author
 
-* (Mail) author: piero.proietti@gmail.com
-* (Facebook group):  [Penguin's Eggs](https://www.facebook.com/groups/128861437762355/)
-* (gitter) [gitter](https://gitter.im/penguins-eggs/Lobby)
+* mail: piero.proietti@gmail.com
+* facebook group:  [Penguin's Eggs](https://www.facebook.com/groups/128861437762355/)
+* gitter: [gitter](https://gitter.im/penguins-eggs/Lobby)
