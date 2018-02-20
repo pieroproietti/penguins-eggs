@@ -140,7 +140,7 @@ You can download the package in format .deb. (Not ready yet)
 # It's all Folks!
 No need other configurations, penguins-eggs are battery included or better, as in the real, the live is inside! :-D
 
-## More informations
+# More informations
 For other informations, look at http://pieroproietti.github.com or write me. The author
 
 * (Mail) author: piero.proietti@gmail.com
