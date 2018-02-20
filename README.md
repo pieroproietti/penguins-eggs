@@ -140,8 +140,13 @@ You can download the package in format .deb. (Not ready yet)
 # It's all Folks!
 No need other configurations, penguins-eggs are battery included or better, as in the real, the live is inside! :-D
 
+# Copyright and licenses
+Copyright (c) 2017, [Piero Proietti](http://pieroproietti.github.com), dual licensed under the MIT or GPL Version 2 licenses.
+
 # More informations
-For other informations, look at http://pieroproietti.github.com or write me. The author
+For other informations, look at [Piero Proietti](http://pieroproietti.github.com) or write me. 
+
+The author
 
 * (Mail) author: piero.proietti@gmail.com
 * (Facebook group):  [Penguin's Eggs](https://www.facebook.com/groups/128861437762355/)
