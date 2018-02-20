@@ -144,10 +144,9 @@ No need other configurations, penguins-eggs are battery included or better, as i
 Copyright (c) 2017, [Piero Proietti](http://pieroproietti.github.com), dual licensed under the MIT or GPL Version 2 licenses.
 
 # More informations
-For other informations, look at [Piero Proietti](http://pieroproietti.github.com) or write me. 
-
-The author
-
+For other informations, look at [Piero Proietti's blog](http://pieroproietti.github.com) or write me. 
 * mail: piero.proietti@gmail.com
 * facebook group:  [Penguin's Eggs](https://www.facebook.com/groups/128861437762355/)
 * gitter: [gitter](https://gitter.im/penguins-eggs/Lobby)
+
+Piero
