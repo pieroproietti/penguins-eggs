@@ -12,25 +12,27 @@ remaster your system and redistribuite it as iso images or from the lan via PXE
 remote boot.
 
 The scope of this project is to implement the process of remastering your
-version of Linux, generate it as ISO images, burn it on a DVD/install or a usb
-key to boot your system or, alternately, remote boot it on your entire lan.
+version of Linux, generate it as ISO image to burn on a CD/DVD or copy to a usb
+key to boot your system. You can also boot your egg - via remote boot - on your
+LAN.
 
 It can create your iso image of your system, but also include all the necessary
 services dhcp, dhcp-proxy, tftp and http to realize a fast and powerfull PXE
 server who can work alone or inside a preesistent LAN architecture.
 
-it is written in nodejs, so ideally can be used with differents Linux distros.
-At the moment it is tested with Debian 9 Stretch, Debian 8 Jessie, Ubuntu and
-derivates as Linux Mint. For others distros we need to find collaboration.
+All it is written in pure nodejs, so ideally can be used with differents Linux
+distros. At the moment it is tested with Debian 9 Stretch, Debian 8 Jessie,
+Ubuntu and derivates as Linux Mint. For others distros we need to find
+collaboration.
 
-penguins-eggs, at the moment 2018 february 19 is in a joung state, and can have
+penguins-eggs, at the moment 2018 february 20 is in a joung state, and can have
 same troubles for people not in confidence with Linux system administration, but
 can be already extremely usefull: imagine to install it on an lan and start to
 manage the computers with it. You can easily install clonezilla on it, or clamav
 and you have a tool to backup/restore/sanityze your entire infrastructure.
 
 You can, also easily create your organization/school distro and deploy it on the
-lan, give it to your friend as usb key or publish in the internet!
+LAN, give it to your friends as usb key or publish eggs in the internet!
 
 I build and test penguins-eggs on a customized version of
 [Proxmox VE](https://pve.proxmox.com/wiki/Main_Page) who let me to  
@@ -99,11 +101,12 @@ eg: host ``penguin`` will produce an iso called ``penguin-2017-10-22_2047_02.iso
 ## Install penguins-eggs
 Well, it is time to try it!
 
-### Install prerequisites
+### Prerequisites
 Of course penguins-eggs need [nodejs](https://nodejs.org/en/download/package-manager/) installed.
 
-penguins-eggs depend on this packages (lvm2 parted squashfs-tools xorriso live-boot syslinux syslinux-common isolinux pxelinux).
-Let's go to install them, before to start to use it. Copy and paste the following two lines:
+penguins-eggs depend on varios packages, you need to install them, before to
+start to use it. Before to install penguins-eggs, simply copy and paste the
+following lines:
 
 ```sudo apt-get update```
 
@@ -115,7 +118,7 @@ You can install it with npm (node package manager). Copy and past the following 
 ```sudo npm i penguins-egg -g```
 
 
-### Install from the source
+### Installation from the source
 To try it, you need a functional installation of Linux Debian version 8 or 9, Ubuntu or derivates.
 You can download last version on github.com. Copy and past the following lines:
 
@@ -124,25 +127,22 @@ You can download last version on github.com. Copy and past the following lines:
  cd penguins-eggs
  npm i
 ```
-To launch egg, in developer mode:
+
+You can launch egg, in developer mode,
+
  ```sudo npm  start spawn```
 
-or, to build and link it, before to use:
+or you can build and link it:
 
 ```npm run build```
 
 ```sudo npm link```
-
-```sudo eggs spawn```
 
 ## Packages
 You can download the package in format .deb. (Not ready yet)
 
 # It's all Folks!
 No need other configurations, penguins-eggs are battery included or better, as in the real, the live is inside! :-D
-
-# Copyright and licenses
-Copyright (c) 2017, [Piero Proietti](http://pieroproietti.github.com), dual licensed under the MIT or GPL Version 2 licenses.
 
 ### More informations
 For other informations, look at [Piero Proietti's blog](http://pieroproietti.github.com) or write me.
@@ -151,3 +151,6 @@ For other informations, look at [Piero Proietti's blog](http://pieroproietti.git
 * gitter: [gitter](https://gitter.im/penguins-eggs/Lobby)
 
 The author
+
+# Copyright and licenses
+Copyright (c) 2017, [Piero Proietti](http://pieroproietti.github.com), dual licensed under the MIT or GPL Version 2 licenses.
