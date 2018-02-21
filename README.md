@@ -38,6 +38,47 @@ You can try now penguins-eggs, it is a console utility - no GUI - but don't be
 scared, penguins-eggs is a console command - really very simple usage - if you
 are able to open a terminal, you can use it.
 
+## Install penguins-eggs
+Well, it is time to try it!
+
+### Prerequisites
+Of course penguins-eggs need [nodejs](https://nodejs.org/en/download/package-manager/) installed.
+
+penguins-eggs depend on various packages, you need to install them, before to
+start to use it. Before to install penguins-eggs, simply copy and paste the
+following lines:
+
+```sudo apt-get update```
+
+```sudo apt-get install lvm2 parted squashfs-tools xorriso live-boot syslinux syslinux-common isolinux pxelinux```
+
+### Installation via npm
+You can install it with npm (node package manager). Copy and past the following lines:
+
+```sudo npm i penguins-egg -g```
+
+
+### Installation from the source
+To try it, you need a functional installation of Linux Debian version 8 or 9,
+Ubuntu or derivates. You can download last version on github.com. Copy and past
+the following lines:
+
+``` bash
+ git clone https://github.com/pieroproietti/penguins-eggs
+ cd penguins-eggs
+ npm i
+```
+
+You can launch egg, in developer mode, for example:
+
+ ```sudo npm  start spawn```
+
+or you can build and link it:
+
+```npm run build```
+
+```sudo npm link```
+
 ## Commands
 * spawn
 * kill
@@ -91,46 +132,6 @@ ZZ the difference betwen your local time and the greenwich one.
 
 eg: host ``penguin`` will produce an iso called ``penguin-2017-10-22_2047_02.iso``
 
-## Install penguins-eggs
-Well, it is time to try it!
-
-### Prerequisites
-Of course penguins-eggs need [nodejs](https://nodejs.org/en/download/package-manager/) installed.
-
-penguins-eggs depend on various packages, you need to install them, before to
-start to use it. Before to install penguins-eggs, simply copy and paste the
-following lines:
-
-```sudo apt-get update```
-
-```sudo apt-get install lvm2 parted squashfs-tools xorriso live-boot syslinux syslinux-common isolinux pxelinux```
-
-### Installation via npm
-You can install it with npm (node package manager). Copy and past the following lines:
-
-```sudo npm i penguins-egg -g```
-
-
-### Installation from the source
-To try it, you need a functional installation of Linux Debian version 8 or 9,
-Ubuntu or derivates. You can download last version on github.com. Copy and past
-the following lines:
-
-``` bash
- git clone https://github.com/pieroproietti/penguins-eggs
- cd penguins-eggs
- npm i
-```
-
-You can launch egg, in developer mode, for example:
-
- ```sudo npm  start spawn```
-
-or you can build and link it:
-
-```npm run build```
-
-```sudo npm link```
 
 ## Development
 I build and test penguins-eggs on a customized version of
