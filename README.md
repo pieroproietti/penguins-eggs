@@ -141,10 +141,10 @@ or you can build and link it:
 ## Packages
 You can download the package in format .deb. (Not ready yet)
 
-# It's all Folks!
+# That's all Folks!
 No need other configurations, penguins-eggs are battery included or better, as in the real, the live is inside! :-D
 
-### More informations
+## More informations
 For other informations, look at [Piero Proietti's blog](http://pieroproietti.github.com) or write me.
 * mail: piero.proietti@gmail.com
 * facebook group:  [Penguin's Eggs](https://www.facebook.com/groups/128861437762355/)
@@ -152,5 +152,5 @@ For other informations, look at [Piero Proietti's blog](http://pieroproietti.git
 
 The author
 
-# Copyright and licenses
+## Copyright and licenses
 Copyright (c) 2017, [Piero Proietti](http://pieroproietti.github.com), dual licensed under the MIT or GPL Version 2 licenses.
