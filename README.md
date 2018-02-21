@@ -113,7 +113,7 @@ Example:
 domain, networking, installation device and type. Usually, you can accept the
 defaults.
 
-''Attention``: Don't be scared, but be attent to that you are doing here,
+``Attention``: Don't be scared, but be attent to that you are doing here,
 the operation of hatch is destructive and irreversible, and will format your
 disk and destroy your data to prepare the machine for the installation of your
 new penguin. ``Be sure to have backup of your data before``.
