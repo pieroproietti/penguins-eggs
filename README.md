@@ -38,14 +38,6 @@ You can try now penguins-eggs, it is a console utility - no GUI - but don't be
 scared, penguins-eggs is a console command - really very simple usage - if you
 are able to open a terminal, you can use it.
 
-### Development
-I build and test penguins-eggs on a customized version of
-[Proxmox VE](https://pve.proxmox.com/wiki/Main_Page) who let me to  
-create/destroy a lot of virtual PCs with different configurations: one or more
-net cards, processor, memory and so on. It is easy to have, install Debian Stretch
-with your preferedd GUI, I use cinnamon, and follow this
-[howto](https://pve.proxmox.com/wiki/Install_Proxmox_VE_on_Debian_Stretch) in their site.
-
 ## Commands
 * spawn
 * kill
@@ -140,8 +132,13 @@ or you can build and link it:
 
 ```sudo npm link```
 
-## Packages
-You can download the package in format .deb. (Not ready yet)
+## Development
+I build and test penguins-eggs on a customized version of
+[Proxmox VE](https://pve.proxmox.com/wiki/Main_Page) who let me to  create/destroy
+a lot of virtual PCs with different configurations: one or more net cards,
+processor, memory and so on. It is easy to have, install Debian Stretch
+with your preferedd GUI, I use cinnamon, and follow this
+[howto](https://pve.proxmox.com/wiki/Install_Proxmox_VE_on_Debian_Stretch) in their site.
 
 # That's all Folks!
 No need other configurations, penguins-eggs are battery included or better, as
