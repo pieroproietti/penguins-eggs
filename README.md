@@ -155,10 +155,11 @@ No need other configurations, penguins-eggs are battery included or better, as
 in the real, the live is inside! :-D
 
 ## More informations
-For other informations, look at [Piero Proietti's blog](http://pieroproietti.github.com) or write me.
+For other informations, look at [Piero Proietti's blog](http://pieroproietti.github.com)
+or write me. You are invited also to open an [issue](https://github.com/pieroproietti/penguins-eggs/issues) on github.
 * mail: piero.proietti@gmail.com
 * facebook group:  [Penguin's Eggs](https://www.facebook.com/groups/128861437762355/)
-* gitter: [gitter](https://gitter.im/penguins-eggs/Lobby)
+* twitter: [@piero.proeitti](https://twitter.com/pieroproietti)
 
 The author
 
