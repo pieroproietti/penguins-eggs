@@ -109,14 +109,15 @@ to the egg the informations for installation and - in few minuts - (far
 
 Example:
 ```sudo eggs hatch```
-°You will be prompted to various parameters like: username, password, hostname,
+
+You will be prompted to various parameters like: username, password, hostname,
 domain, networking, installation device and type. Usually, you can accept the
 defaults.
 
-``Attention``: Don't be scared, but be attent to that you are doing here,
+**Attention**: Don't be scared, but be attent to that you are doing here,
 the operation of hatch is destructive and irreversible, and will format your
 disk and destroy your data to prepare the machine for the installation of your
-new penguin. ``Be sure to have backup of your data before``.
+new penguin. **Be sure to have backup of your data before**.
 
 ### cuckoo
 Yes, there is another action possible on the egg, we can start our egg from the
