@@ -3,6 +3,7 @@
 # penguin's eggs
 
 [![NPM Package](https://img.shields.io/npm/v/penguins-eggs.svg?style=flat)](https://npmjs.org/package/penguins-eggs "View this project on npm")
+[![Build Status](https://travis-ci.org/pieroproietti/penguins-eggs.svg?branch=master)](https://travis-ci.org/pieroproietti/penguins-eggs)
 [![MIT license](http://img.shields.io/badge/license-MIT-brightgreen.svg)](http://opensource.org/licenses/MIT)
 
 ## Presentation
@@ -14,8 +15,8 @@ The scope of this project is to implement the process of remastering your
 version of Linux, generate it as ISO images, burn it on a DVD/install or a usb
 key to boot your system or, alternately, remote boot it on your entire lan.
 
-It can create your iso image of your system, but also include all the necessary 
-services dhcp, dhcp-proxy, tftp and http to realize a fast and powerfull PXE 
+It can create your iso image of your system, but also include all the necessary
+services dhcp, dhcp-proxy, tftp and http to realize a fast and powerfull PXE
 server who can work alone or inside a preesistent LAN architecture.
 
 it is written in nodejs, so ideally can be used with differents Linux distros.
@@ -39,7 +40,7 @@ Incubator (previous name was Fabrica) who consist in PVE plus Cinnamon Desktop
 and all the necessary to develop is build with eggs.
 
 You can test now penguins-eggs, it is a console utility - no GUI - but don't be
-scared, penguins-eggs is a console command - really very simple usage - if you 
+scared, penguins-eggs is a console command - really very simple usage - if you
 are able to open a terminal, you can use it.
 
 ## Commands
@@ -125,7 +126,7 @@ You can download last version on github.com. Copy and past the following lines:
 ```
 To launch egg, in developer mode:
  ```sudo npm  start spawn```
- 
+
 or, to build and link it, before to use:
 
 ```npm run build```
@@ -144,7 +145,7 @@ No need other configurations, penguins-eggs are battery included or better, as i
 Copyright (c) 2017, [Piero Proietti](http://pieroproietti.github.com), dual licensed under the MIT or GPL Version 2 licenses.
 
 ### More informations
-For other informations, look at [Piero Proietti's blog](http://pieroproietti.github.com) or write me. 
+For other informations, look at [Piero Proietti's blog](http://pieroproietti.github.com) or write me.
 * mail: piero.proietti@gmail.com
 * facebook group:  [Penguin's Eggs](https://www.facebook.com/groups/128861437762355/)
 * gitter: [gitter](https://gitter.im/penguins-eggs/Lobby)
