@@ -156,9 +156,12 @@ in the real, the live is inside! :-D
 
 ## More informations
 For other informations, look at [Piero Proietti's blog](http://pieroproietti.github.com)
-or write me. You are invited also to open an [issue](https://github.com/pieroproietti/penguins-eggs/issues) on github.
-* mail: piero.proietti@gmail.com
+or write me.
+For improvments and other issues, You are invited to open an [issue](https://github.com/pieroproietti/penguins-eggs/issues) on github.
+
+* blog: [Piero Proietti's blog](http://pieroproietti.github.com)
 * facebook group:  [Penguin's Eggs](https://www.facebook.com/groups/128861437762355/)
+* mail: piero.proietti@gmail.com
 * twitter: [@piero.proeitti](https://twitter.com/pieroproietti)
 
 The author
