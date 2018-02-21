@@ -34,16 +34,17 @@ and you have a tool to backup/restore/sanityze your entire infrastructure.
 You can, also easily create your organization/school distro and deploy it on the
 LAN, give it to your friends as usb key or publish eggs in the internet!
 
+You can try now penguins-eggs, it is a console utility - no GUI - but don't be
+scared, penguins-eggs is a console command - really very simple usage - if you
+are able to open a terminal, you can use it.
+
+### Development
 I build and test penguins-eggs on a customized version of
 [Proxmox VE](https://pve.proxmox.com/wiki/Main_Page) who let me to  
 create/destroy a lot of virtual PCs with different configurations: one or more
-net cards, processor, memory and so on. This version of Proxmox VE, called
-Incubator (previous name was Fabrica) who consist in PVE plus Cinnamon Desktop
-and all the necessary to develop is build with eggs.
-
-You can test now penguins-eggs, it is a console utility - no GUI - but don't be
-scared, penguins-eggs is a console command - really very simple usage - if you
-are able to open a terminal, you can use it.
+net cards, processor, memory and so on. It is easy to have, install Debian Stretch
+with your preferedd GUI, I use cinnamon, and follow this
+[howto](https://pve.proxmox.com/wiki/Install_Proxmox_VE_on_Debian_Stretch) in their site.
 
 ## Commands
 * spawn
@@ -104,7 +105,7 @@ Well, it is time to try it!
 ### Prerequisites
 Of course penguins-eggs need [nodejs](https://nodejs.org/en/download/package-manager/) installed.
 
-penguins-eggs depend on varios packages, you need to install them, before to
+penguins-eggs depend on various packages, you need to install them, before to
 start to use it. Before to install penguins-eggs, simply copy and paste the
 following lines:
 
@@ -119,8 +120,9 @@ You can install it with npm (node package manager). Copy and past the following 
 
 
 ### Installation from the source
-To try it, you need a functional installation of Linux Debian version 8 or 9, Ubuntu or derivates.
-You can download last version on github.com. Copy and past the following lines:
+To try it, you need a functional installation of Linux Debian version 8 or 9,
+Ubuntu or derivates. You can download last version on github.com. Copy and past
+the following lines:
 
 ``` bash
  git clone https://github.com/pieroproietti/penguins-eggs
@@ -128,7 +130,7 @@ You can download last version on github.com. Copy and past the following lines:
  npm i
 ```
 
-You can launch egg, in developer mode,
+You can launch egg, in developer mode, for example:
 
  ```sudo npm  start spawn```
 
@@ -142,7 +144,8 @@ or you can build and link it:
 You can download the package in format .deb. (Not ready yet)
 
 # That's all Folks!
-No need other configurations, penguins-eggs are battery included or better, as in the real, the live is inside! :-D
+No need other configurations, penguins-eggs are battery included or better, as
+in the real, the live is inside! :-D
 
 ## More informations
 For other informations, look at [Piero Proietti's blog](http://pieroproietti.github.com) or write me.
