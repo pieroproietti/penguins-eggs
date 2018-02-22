@@ -63,7 +63,7 @@ You can install it with npm (node package manager). Copy and past the following 
 
 ### Installation from source
 You need a functional installation of Linux Debian version 8 or 9,
-Ubuntu or derivates, all the prerequisites plus the *build-essential* package.
+Ubuntu or derivates, all the prerequisites plus the ``build-essential`` package.
 
 ```apt-get install build-essential```
 
