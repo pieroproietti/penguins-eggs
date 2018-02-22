@@ -6,7 +6,7 @@
 [![NPM Package](https://img.shields.io/npm/v/penguins-eggs.svg?style=flat)](https://npmjs.org/package/penguins-eggs "View this project on npm")
 [![Build Status](https://travis-ci.org/pieroproietti/penguins-eggs.svg?branch=master)](https://travis-ci.org/pieroproietti/penguins-eggs)
 [![MIT license](http://img.shields.io/badge/license-MIT-brightgreen.svg)](http://opensource.org/licenses/MIT)
-[![Join the chat at https://gitter.im/penguins-eggs/Lobby](https://badges.gitter.im/pieroproietti/penguins-eggs.svg)](https://gitter.im/penguins-eggs/Lobby?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge))
+[![Join the chat at https://gitter.im/penguins-eggs/Lobby](https://badges.gitter.im/pieroproietti/penguins-eggs.svg)](https://gitter.im/penguins-eggs/Lobby?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
 
 ## Presentation
@@ -70,22 +70,28 @@ Ubuntu or derivates, all the prerequisites plus the ``build-essential`` package.
 At this point You can download last version on github.com. Copy and past the
 following lines:
 
-``` bash
- git clone https://github.com/pieroproietti/penguins-eggs
- cd penguins-eggs
- npm i
+```
+git clone https://github.com/pieroproietti/penguins-eggs
+cd penguins-eggs
+npm i
 ```
 
 At this point, You can launch egg, in developer mode, for example:
 
- ```sudo npm  start spawn```
+```sudo npm  start spawn```
 
 or you can build and link it:
 
-```npm run build```
-```sudo npm link```
+```
+npm run build
+sudo npm link
+```
+And you can run eggs in usual way:
+
+```sudo eggs spawn```
 
 ## Commands
+On the eggs you can do four actions:
 * spawn
 * cuckoo
 * kill
@@ -102,15 +108,16 @@ of your live system.
 ```sudo eggs spawn -d mydistroname```
 
 ### cuckoo
-Yes, there is another action possible on the egg, we can boot our egg from the
-net by PXE, in this case, in the system we need to give the action:
+Yes, after we have the egg, there is another action possible for it, before to
+``hatch`` or ``kill`` it, we can use our egg to boot from the net other computers.
+In the system mother, we need to give the action:
 
 ```sudo eggs cuckoo```
 
-And boot via PXE a remote computer in the same net. The PC will be booted with
+And netboot via PXE a remote computer in the same net. The PC will be booted with
 our egg and we will hatch it on the new pc. In same way, it's like the behaviour
-of the cuckoo, who leave is egg in a nest of the another bird. From this the name of
-the action.
+of the cuckoo, who leave is egg in a nest of the another bird. From this the
+name of the action.
 
 ### kill
 As the name say is the operation of break and kill the egg created. You will
@@ -168,7 +175,7 @@ or contact me.
 
 For improvements and other issues, You are invited to open an [issue](https://github.com/pieroproietti/penguins-eggs/issues) on github.
 
-    **The author**
+The author
 
 ## Copyright and licenses
 Copyright (c) 2017, [Piero Proietti](http://pieroproietti.github.com), dual licensed under the MIT or GPL Version 2 licenses.
