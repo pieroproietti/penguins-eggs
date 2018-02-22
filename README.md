@@ -2,7 +2,6 @@
 ![penguins-eggs](https://github.com/pieroproietti/penguins-eggs/blob/master/src/assets/penguins-eggs.png?raw=true)
 # penguin's eggs
 
-[![Join the chat at
 [![NPM Package](https://img.shields.io/npm/v/penguins-eggs.svg?style=flat)](https://npmjs.org/package/penguins-eggs "View this project on npm")
 [![Build Status](https://travis-ci.org/pieroproietti/penguins-eggs.svg?branch=master)](https://travis-ci.org/pieroproietti/penguins-eggs)
 [![MIT license](http://img.shields.io/badge/license-MIT-brightgreen.svg)](http://opensource.org/licenses/MIT)
@@ -166,16 +165,15 @@ No need other configurations, penguins-eggs are battery included or better, as
 in the real, the live is inside! :-D
 
 ## More informations
-For other informations, look at [Piero Proietti's blog](http://pieroproietti.github.com)
-or contact me.
+For other informations, look at [Piero Proietti's blog](http://pieroproietti.github.com),
+contact me, or open an [issue](https://github.com/pieroproietti/penguins-eggs/issues) on github.
 
 * facebook group:  [Penguin's Eggs](https://www.facebook.com/groups/128861437762355/)
+* twitter: [@pieroproietti](https://twitter.com/pieroproietti)
+* google+: [PieroProietti](https://plus.google.com/+PieroProietti)
 * mail: piero.proietti@gmail.com
-* twitter: [@pieroproeitti](https://twitter.com/pieroproietti)
 
-For improvements and other issues, You are invited to open an [issue](https://github.com/pieroproietti/penguins-eggs/issues) on github.
-
-The author
+**artisan**
 
 ## Copyright and licenses
 Copyright (c) 2017, [Piero Proietti](http://pieroproietti.github.com), dual licensed under the MIT or GPL Version 2 licenses.
