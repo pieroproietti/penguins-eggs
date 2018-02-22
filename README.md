@@ -2,12 +2,11 @@
 ![penguins-eggs](https://github.com/pieroproietti/penguins-eggs/blob/master/src/assets/penguins-eggs.png?raw=true)
 # penguin's eggs
 
-[![Join the chat at https://gitter.im/penguins-eggs-dev/Lobby](https://badges.gitter.im/penguins-eggs-dev/Lobby.svg)](https://gitter.im/penguins-eggs-dev/Lobby?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
-
+[![Join the chat at
 [![NPM Package](https://img.shields.io/npm/v/penguins-eggs.svg?style=flat)](https://npmjs.org/package/penguins-eggs "View this project on npm")
 [![Build Status](https://travis-ci.org/pieroproietti/penguins-eggs.svg?branch=master)](https://travis-ci.org/pieroproietti/penguins-eggs)
 [![MIT license](http://img.shields.io/badge/license-MIT-brightgreen.svg)](http://opensource.org/licenses/MIT)
-[![Join the chat at https://gitter.im/penguins-eggs/Lobby](https://badges.gitter.im/pieroproietti/penguins-eggs.svg)](https://gitter.im/penguins-eggs/Lobby)
+[![Join the chat at https://gitter.im/penguins-eggs/Lobby](https://badges.gitter.im/pieroproietti/penguins-eggs.svg)](https://gitter.im/penguins-eggs/Lobby?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge))
 
 
 ## Presentation
@@ -20,7 +19,7 @@ version of Linux, generate it as ISO image to burn on a CD/DVD or copy to a usb
 key to boot your system. You can also boot your egg - via remote boot - on your
 LAN.
 
-It can create your iso image of your system, but also include all the necessary
+It can create your ISO image of your system, but also include all the necessary
 services dhcp, dhcp-proxy, tftp and http to realize a fast and powerfull PXE
 server who can work alone or inside a preesistent LAN architecture.
 
@@ -35,7 +34,7 @@ can be already extremely usefull: imagine to install it on an lan and start to
 manage the computers with it. You can easily install clonezilla on it, or clamav
 and you have a tool to backup/restore/sanityze your entire infrastructure.
 
-You can, also easily create your organization/school distro and deploy it on the
+You can, also easily create your organization/school distro and deploy it on your
 LAN, give it to your friends as usb key or publish eggs in the internet!
 
 You can try now penguins-eggs, it is a console utility - no GUI - but don't be
@@ -48,7 +47,7 @@ Well, it is time to try it!
 ### Prerequisites
 Of course penguins-eggs need [nodejs](https://nodejs.org/en/download/package-manager/) installed.
 
-penguins-eggs depend on various packages, you need to install them, before to
+penguins-eggs depend on various packages, you need to install them before to
 start to use it. Before to install penguins-eggs, simply copy and paste the
 following lines:
 
@@ -57,15 +56,19 @@ following lines:
 ```sudo apt-get install lvm2 parted squashfs-tools xorriso live-boot syslinux syslinux-common isolinux pxelinux```
 
 ### Installation via npm
-You can install it with npm (node package manager). Copy and past the following lines:
+You can install it with npm (node package manager). Copy and past the following line:
 
 ```sudo npm i penguins-egg -g```
 
 
-### Installation from the source
-To try it, you need a functional installation of Linux Debian version 8 or 9,
-Ubuntu or derivates. You can download last version on github.com. Copy and past
-the following lines:
+### Installation from source
+You need a functional installation of Linux Debian version 8 or 9,
+Ubuntu or derivates, all the prerequisites plus the *build-essential* package.
+
+```apt-get install build-essential```
+
+At this point You can download last version on github.com. Copy and past the
+following lines:
 
 ``` bash
  git clone https://github.com/pieroproietti/penguins-eggs
@@ -73,21 +76,20 @@ the following lines:
  npm i
 ```
 
-You can launch egg, in developer mode, for example:
+At this point, You can launch egg, in developer mode, for example:
 
  ```sudo npm  start spawn```
 
 or you can build and link it:
 
 ```npm run build```
-
 ```sudo npm link```
 
 ## Commands
 * spawn
+* cuckoo
 * kill
 * hatch
-* cuckoo
 
 ### spawn
 The function of spawn is to generate the egg. Your system is copied and packaged
@@ -97,21 +99,30 @@ everyone computer. The command spawn accept the parameter ```-d``` or
 ```--distroname``` who, as the name implies is the name and, also, the hostname
 of your live system.
 
-Example:
 ```sudo eggs spawn -d mydistroname```
+
+### cuckoo
+Yes, there is another action possible on the egg, we can boot our egg from the
+net by PXE, in this case, in the system we need to give the action:
+
+```sudo eggs cuckoo```
+
+And boot via PXE a remote computer in the same net. The PC will be booted with
+our egg and we will hatch it on the new pc. In same way, it's like the behaviour
+of the cuckoo, who leave is egg in a nest of the another bird. From this the name of
+the action.
 
 ### kill
 As the name say is the operation of break and kill the egg created. You will
 free your system from the egg.
 
-Example: ```sudo eggs kill```
+```sudo eggs kill```
 
 ### hatch
 An egg to became penguin need to be hatched! In our case we simply need to give
 to the egg the informations for installation and - in few minuts - (far
   before the fatitical 21 days) we will have a new penguin.
 
-Example:
 ```sudo eggs hatch```
 
 You will be prompted to various parameters like: username, password, hostname,
@@ -123,17 +134,6 @@ the operation of hatch is destructive and irreversible, and will format your
 disk and destroy your data to prepare the machine for the installation of your
 new penguin. **Be sure to have backup of your data before**.
 
-### cuckoo
-Yes, there is another action possible on the egg, we can start our egg from the
-net by PXE, in this case, in the system we need to give the action:
-
-Example:
-```sudo eggs cuckoo```
-
-And boot via PXE a remote computer in the same net. The PC will be booted with
-our egg and we will hatch it on the new pc. In same way, it's like the behaviour
-of the cuckoo, who leave is egg in a nest of the another bird. From this the name of
-the action.
 
 ## Options
 * -d --distroname <distroname>
@@ -168,7 +168,7 @@ or contact me.
 
 For improvements and other issues, You are invited to open an [issue](https://github.com/pieroproietti/penguins-eggs/issues) on github.
 
-**The author**
+    **The author**
 
 ## Copyright and licenses
 Copyright (c) 2017, [Piero Proietti](http://pieroproietti.github.com), dual licensed under the MIT or GPL Version 2 licenses.
