@@ -27,7 +27,7 @@
     "test": "mocha",
     "debug": "babel-node --inspect src",
     "lint": "eslint src",
-    "build prepublish": "rm -rf ./dist && npm run build",: "rollup -c rollup.config.js"
+    "build": "rollup -c rollup.config.js"
   },
   "dependencies": {
     "commander": "^2.14.1",

@@ -1,0 +1,8 @@
+[Desktop Entry]
+Encoding=UTF-8
+Name=Penguin's eggs site
+Type=Link
+URL=https://pieroproietti.github.io/
+Icon=/usr/lib/node_modules/penguins-eggs/src/assets/eggs.png
+Name[it_IT]=Penguin's eggs
+Categories=GNOME;GTK;Utility;TextEditor;Development;
