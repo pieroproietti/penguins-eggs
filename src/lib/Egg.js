@@ -1,7 +1,8 @@
 /*
-  Egg.js V. 0.3.0
+  penguins-eggs: Eggs.js
+  author: Piero Proietti 
+  mail: piero.proietti@gmail.com
 */
-
 "use strict";
 import os from "os";
 import fs from "fs";
@@ -70,15 +71,17 @@ class Egg {
   }
 
   async copy() {
-    let cmd="";
-    cmd=`
+    let cmd = "";
+    cmd = `
     rsync -aq  \
     --filter="- ${this.homeDir}"  \
     --delete-before  \
     --delete-excluded  \ ${filters} / ${this.fsDir}`;
     console.log("spawning the system to egg...");
     // console.log(cmd.trim());
-    shell.exec(cmd.trim(), { async: false });
+    shell.exec(cmd.trim(), {
+      async: false
+    });
   }
 
   async fstab() {

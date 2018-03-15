@@ -1,8 +1,13 @@
+/*
+  penguins-eggs: dhcp.js
+  author: Piero Proietti 
+  mail: piero.proietti@gmail.com
+*/
 "use strict";
 
 let dhcp = require("dhcp");
-let dhcpd = function() {};
-dhcpd.prototype.start = function(host, netmask, broadcast, range) {
+let dhcpd = function () {};
+dhcpd.prototype.start = function (host, netmask, broadcast, range) {
   console.log("netmask: " + netmask);
   console.log("broadcast: " + broadcast);
   console.log("range: " + range);
@@ -32,28 +37,28 @@ dhcpd.prototype.start = function(host, netmask, broadcast, range) {
   });
 
 
-  s.on("message", function(data) {
+  s.on("message", function (data) {
     console.log("<DATA>\n" + data)
     console.log(data);
     console.log("</DATA>")
   });
 
-  s.on("bound", function(state) {
+  s.on("bound", function (state) {
     console.log("BOUND:");
     console.log(state);
   });
 
-  s.on("error", function(err, data) {
+  s.on("error", function (err, data) {
     //console.log("ERR:" + err);
     //console.log(err, data);
   });
 
-  s.on("listening", function(sock) {
+  s.on("listening", function (sock) {
     var address = sock.address();
     console.info("Server Listening: " + address.address + ":" + address.port);
   });
 
-  s.on("close", function() {
+  s.on("close", function () {
     console.log("close");
   });
 

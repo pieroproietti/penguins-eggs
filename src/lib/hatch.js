@@ -1,3 +1,8 @@
+/*
+  penguins-eggs: hatch.js
+  author: Piero Proietti 
+  mail: piero.proietti@gmail.com
+*/
 "use strict";
 
 import utils from "./utils.js";
@@ -41,10 +46,10 @@ export async function hatch() {
   let options = JSON.parse(varOptions);
 
   // default mount /var/lib/pve
-  if (options.mountType=="workstation"){
-    devices.data.mountPoint="/home";
-  } else if(options.mountType=="docker"){
-    devices.data.mountPoint="/var/lib/docker";
+  if (options.mountType == "workstation") {
+    devices.data.mountPoint = "/home";
+  } else if (options.mountType == "docker") {
+    devices.data.mountPoint = "/var/lib/docker";
   }
 
   let isDiskPreoared;
@@ -232,7 +237,9 @@ async function rsync(target) {
   --delete-before  \
   --delete-excluded  \ ${filters} / ${target}`;
   console.log("hatching the egg...");
-  shell.exec(cmd.trim(), { async: false });
+  shell.exec(cmd.trim(), {
+    async: false
+  });
 }
 
 async function mkfs(devices) {
@@ -305,16 +312,16 @@ async function getDiskSize(device) {
 }
 
 function execute(command) {
-  return new Promise(function(resolve, reject) {
+  return new Promise(function (resolve, reject) {
     var exec = require("child_process").exec;
-    exec(command, function(error, stdout, stderr) {
+    exec(command, function (error, stdout, stderr) {
       resolve(stdout);
     });
   });
 }
 
 function getDrives() {
-  return new Promise(function(resolve, reject) {
+  return new Promise(function (resolve, reject) {
     let aDriveList = [];
     drivelist.list((error, drives) => {
       if (error) {
@@ -329,9 +336,8 @@ function getDrives() {
 }
 
 async function getOptions(driveList) {
-  return new Promise(function(resolve, reject) {
-    var questions = [
-      {
+  return new Promise(function (resolve, reject) {
+    var questions = [{
         type: "input",
         name: "username",
         message: "user name: ",
@@ -392,7 +398,7 @@ async function getOptions(driveList) {
         name: "netAddress",
         message: "Insert IP address: ",
         default: "192.168.0.2",
-        when: function(answers) {
+        when: function (answers) {
           return answers.netAddressType === "static";
         }
       },
@@ -401,7 +407,7 @@ async function getOptions(driveList) {
         name: "netMask",
         message: "Insert netmask: ",
         default: "255.255.255.0",
-        when: function(answers) {
+        when: function (answers) {
           return answers.netAddressType === "static";
         }
       },
@@ -410,7 +416,7 @@ async function getOptions(driveList) {
         name: "netGateway",
         message: "Insert gateway: ",
         default: utils.netGateway(),
-        when: function(answers) {
+        when: function (answers) {
           return answers.netAddressType === "static";
         }
       },
@@ -419,7 +425,7 @@ async function getOptions(driveList) {
         name: "netDns",
         message: "Insert DNS: ",
         default: utils.netDns(),
-        when: function(answers) {
+        when: function (answers) {
           return answers.netAddressType === "static";
         }
       },
@@ -434,7 +440,7 @@ async function getOptions(driveList) {
         type: "list",
         name: "mountType",
         message: "Select the tipology: ",
-        choices: ["workstation","docker","pve"],
+        choices: ["workstation", "docker", "pve"],
         default: "workstation"
       },
       {
@@ -445,7 +451,7 @@ async function getOptions(driveList) {
         default: "ext4"
       }
     ];
-    inquirer.prompt(questions).then(function(options) {
+    inquirer.prompt(questions).then(function (options) {
       resolve(JSON.stringify(options));
     });
   });

@@ -1,5 +1,16 @@
+/*
+  penguins-eggs: iso.js
+  author: Piero Proietti 
+  mail: piero.proietti@gmail.com
+*/
 "use strict";
-import { version, name, author, mail, homepage } from "../../package.json";
+import {
+  version,
+  name,
+  author,
+  mail,
+  homepage
+} from "../../package.json";
 import fs from "fs";
 import utils from "./utils.js";
 

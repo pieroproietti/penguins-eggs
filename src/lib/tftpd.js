@@ -1,4 +1,7 @@
 /*
+  penguins-eggs: tftpd.js
+  author: Piero Proietti 
+  mail: piero.proietti@gmail.com
   pagina git: https://github.com/gagle/node-tftp#server_listen
 */
 

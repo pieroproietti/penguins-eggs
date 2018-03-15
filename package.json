@@ -3,7 +3,7 @@
   "version": "0.8.82",
   "author": "Piero Proietti",
   "mail": "piero.proietti@gmail.com",
-  "description": "remaster your system and distribuite it by iso or via PXE",
+  "description": "remaster your system and distribuite it by ISO or via PXE",
   "license": "MIT",
   "homepage": "http://pieroproietti.github.io",
   "repository": {

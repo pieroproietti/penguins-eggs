@@ -1,3 +1,9 @@
+/*
+  penguins-eggs: filters.js
+  author: Piero Proietti 
+  mail: piero.proietti@gmail.com
+*/
+
 const filterRoot = `
 --filter="- /dev/*" \
 --filter="- /cdrom/*" \
@@ -77,7 +83,7 @@ const filterHome = `
 --filter="- /home/*/.gnupg" \
 --filter="- /home/*/.ssh" \ `;
 
-const filterPersonalDatas =`
+const filterPersonalDatas = `
 --filter="+ /home/*/" \
 --filter="+ /home/*/Documenti/" \
 --filter="+ /home/*/Immagini/" \

@@ -1,4 +1,16 @@
-import { version, name, author, mail, homepage } from "../../package.json";
+/*
+  penguins-eggs: Netboot.js
+  author: Piero Proietti 
+  mail: piero.proietti@gmail.com
+*/
+
+import {
+  version,
+  name,
+  author,
+  mail,
+  homepage
+} from "../../package.json";
 
 ("use strict");
 //import os from "os";
