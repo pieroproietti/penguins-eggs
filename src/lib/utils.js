@@ -1,6 +1,6 @@
 /*
   penguins-eggs: utils.js
-  author: Piero Proietti 
+  author: Piero Proietti
   mail: piero.proietti@gmail.com
 */
 "use strict";
@@ -23,8 +23,7 @@ utils.prototype.path = function () {
 utils.prototype.IsLive = async function () {
   let test = "1";
   let result;
-  let path = "/usr/lib/node_modules/penguins-eggs";
-  result = shell.exec(`${path}/scripts/is_live.sh`, {
+  result = shell.exec(`${utils.path()}/scripts/is_live.sh`, {
     async: false
   });
   if (result.indexOf(test) > -1) {
@@ -37,8 +36,7 @@ utils.prototype.IsLive = async function () {
 utils.prototype.IsMounted = async function (check) {
   let test = "1";
   let result;
-  let path = "/usr/lib/node_modules/penguins-eggs";
-  result = shell.exec(`${path}/scripts/is_mounted.sh ${check}`, {
+  result = shell.exec(`${utils.path()}/scripts/is_mounted.sh ${check}`, {
     async: false
   });
   if (result.indexOf(test) > -1) {
