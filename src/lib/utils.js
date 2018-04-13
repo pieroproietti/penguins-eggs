@@ -12,18 +12,18 @@ import os from "os";
 import dns from "dns";
 import network from "network";
 const path = require("path");
+const pathScripts="/usr/lib/node_modules/penguins-eggs";
 
 let utils = function () {};
 
 utils.prototype.path = function () {
-  let path = "/usr/lib/node_modules/penguins-eggs";
-  return path;
+  return pathScripts;
 };
 
 utils.prototype.IsLive = async function () {
   let test = "1";
   let result;
-  result = shell.exec(`${utils.path()}/scripts/is_live.sh`, {
+  result = shell.exec(`${pathScripts}/scripts/is_live.sh`, {
     async: false
   });
   if (result.indexOf(test) > -1) {
@@ -36,7 +36,7 @@ utils.prototype.IsLive = async function () {
 utils.prototype.IsMounted = async function (check) {
   let test = "1";
   let result;
-  result = shell.exec(`${utils.path()}/scripts/is_mounted.sh ${check}`, {
+  result = shell.exec(`${pathScripts}/scripts/is_mounted.sh ${check}`, {
     async: false
   });
   if (result.indexOf(test) > -1) {
