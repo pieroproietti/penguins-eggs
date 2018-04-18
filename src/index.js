@@ -10,7 +10,7 @@
                 syslinux-common \
                 isolinux \
                 pxelinux
-  author: Piero Proietti 
+  author: Piero Proietti
   mail: piero.proietti@gmail.com
 */
 "use strict";
@@ -18,18 +18,10 @@
 // import { install } from "source-map-support";
 // install
 
-import {
-  version,
-  name,
-  author,
-  mail,
-  homepage
-} from "../package.json";
+import { version, name, author, mail, homepage } from "../package.json";
 import ip from "ip";
 import os from "os";
-import {
-  hatch
-} from "./lib/hatch.js";
+import { hatch } from "./lib/hatch.js";
 import Egg from "./lib/Egg.js";
 import Netboot from "./lib/Netboot.js";
 import Iso from "./lib/Iso.js";
@@ -76,6 +68,10 @@ async function config() {
 
   if (await utils.IsMounted("home")) {
     homeDir = "/home/penguins-eggs/";
+  } else if (await utils.IsMounted("docker")) {
+    homeDir = "/var/lib/docker/penguins-eggs";
+  } else if (await utils.IsMounted("www")) {
+    homeDir = "/var/www/penguins-eggs/";
   }
 
   let e = new Egg(homeDir, distroName, userfullname, username, password);
