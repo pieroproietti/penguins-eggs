@@ -1,6 +1,6 @@
 /*
   penguins-eggs: hatch.js
-  author: Piero Proietti 
+  author: Piero Proietti
   mail: piero.proietti@gmail.com
 */
 "use strict";
@@ -50,6 +50,8 @@ export async function hatch() {
     devices.data.mountPoint = "/home";
   } else if (options.mountType == "docker") {
     devices.data.mountPoint = "/var/lib/docker";
+  } else if (options.mountType == "www") {
+    devices.data.mountPoint = "/var/www";
   }
 
   let isDiskPreoared;
@@ -109,9 +111,7 @@ async function mkinitramfs(target) {
 
 async function updateInitramfs(target) {
   console.log("updateInitramfs");
-  await execute(
-    `chroot ${target} update-initramfs -u`
-  );
+  await execute(`chroot ${target} update-initramfs -u`);
 }
 
 async function mount4chroot(target) {
@@ -142,18 +142,14 @@ async function fstab(target, devices) {
   let file = `${target}/etc/fstab`;
   let text = `
 proc /proc proc defaults 0 0
-${devices.root.device} ${devices.root.mountPoint} ${
-    devices.root.fstype
-  } relatime,errors=remount-ro 0 1
-${devices.boot.device} ${devices.boot.mountPoint} ${
-    devices.boot.fstype
-  } relatime 0 0
-${devices.data.device} ${devices.data.mountPoint} ${
-    devices.data.fstype
-  } relatime 0 0
-${devices.swap.device} ${devices.swap.mountPoint} ${
-    devices.swap.fstype
-  } sw 0 0`;
+${devices.root.device} ${devices.root.mountPoint} ${devices.root
+    .fstype} relatime,errors=remount-ro 0 1
+${devices.boot.device} ${devices.boot.mountPoint} ${devices.boot
+    .fstype} relatime 0 0
+${devices.data.device} ${devices.data.mountPoint} ${devices.data
+    .fstype} relatime 0 0
+${devices.swap.device} ${devices.swap.mountPoint} ${devices.swap
+    .fstype} sw 0 0`;
 
   utils.bashwrite(file, text);
 }
@@ -202,14 +198,10 @@ async function hosts(target, options) {
   let text = `127.0.0.1 localhost localhost.localdomain`;
   if (options.netAddressType === "static") {
     text += `
-${options.netAddress} ${options.hostname} ${options.hostname}.${
-      options.domain
-    } pvelocalhost`;
+${options.netAddress} ${options.hostname} ${options.hostname}.${options.domain} pvelocalhost`;
   } else {
     text += `
-127.0.1.1 localhost localhost.localdomain ${options.hostname} ${
-      options.hostname
-    }.${options.domain}`;
+127.0.1.1 localhost localhost.localdomain ${options.hostname} ${options.hostname}.${options.domain}`;
   }
   text += `
 # The following lines are desirable for IPv6 capable hosts
@@ -262,7 +254,9 @@ async function mount(target, devices) {
   await execute(`tune2fs -c 0 -i 0 ${devices.boot.device}`);
 
   await execute(`mkdir -p ${target}${devices.data.mountPoint}`);
-  await execute(`mount ${devices.data.device} ${target}${devices.data.mountPoint}`);
+  await execute(
+    `mount ${devices.data.device} ${target}${devices.data.mountPoint}`
+  );
   await execute(`tune2fs -c 0 -i 0 ${devices.data.device}`);
   await execute(`rm -rf ${target}${devices.data.mountPoint}/lost+found`);
 
@@ -312,16 +306,16 @@ async function getDiskSize(device) {
 }
 
 function execute(command) {
-  return new Promise(function (resolve, reject) {
+  return new Promise(function(resolve, reject) {
     var exec = require("child_process").exec;
-    exec(command, function (error, stdout, stderr) {
+    exec(command, function(error, stdout, stderr) {
       resolve(stdout);
     });
   });
 }
 
 function getDrives() {
-  return new Promise(function (resolve, reject) {
+  return new Promise(function(resolve, reject) {
     let aDriveList = [];
     drivelist.list((error, drives) => {
       if (error) {
@@ -336,8 +330,9 @@ function getDrives() {
 }
 
 async function getOptions(driveList) {
-  return new Promise(function (resolve, reject) {
-    var questions = [{
+  return new Promise(function(resolve, reject) {
+    var questions = [
+      {
         type: "input",
         name: "username",
         message: "user name: ",
@@ -398,7 +393,7 @@ async function getOptions(driveList) {
         name: "netAddress",
         message: "Insert IP address: ",
         default: "192.168.0.2",
-        when: function (answers) {
+        when: function(answers) {
           return answers.netAddressType === "static";
         }
       },
@@ -407,7 +402,7 @@ async function getOptions(driveList) {
         name: "netMask",
         message: "Insert netmask: ",
         default: "255.255.255.0",
-        when: function (answers) {
+        when: function(answers) {
           return answers.netAddressType === "static";
         }
       },
@@ -416,7 +411,7 @@ async function getOptions(driveList) {
         name: "netGateway",
         message: "Insert gateway: ",
         default: utils.netGateway(),
-        when: function (answers) {
+        when: function(answers) {
           return answers.netAddressType === "static";
         }
       },
@@ -425,7 +420,7 @@ async function getOptions(driveList) {
         name: "netDns",
         message: "Insert DNS: ",
         default: utils.netDns(),
-        when: function (answers) {
+        when: function(answers) {
           return answers.netAddressType === "static";
         }
       },
@@ -440,7 +435,7 @@ async function getOptions(driveList) {
         type: "list",
         name: "mountType",
         message: "Select the tipology: ",
-        choices: ["workstation", "docker", "pve"],
+        choices: ["workstation", "docker", "pve", "www"],
         default: "workstation"
       },
       {
@@ -451,7 +446,7 @@ async function getOptions(driveList) {
         default: "ext4"
       }
     ];
-    inquirer.prompt(questions).then(function (options) {
+    inquirer.prompt(questions).then(function(options) {
       resolve(JSON.stringify(options));
     });
   });
