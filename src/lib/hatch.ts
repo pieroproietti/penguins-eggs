@@ -2,48 +2,60 @@
   penguins-eggs: hatch.js
   author: Piero Proietti
   mail: piero.proietti@gmail.com
-*/
+
+  https://codeburst.io/how-to-build-a-command-line-app-in-node-js-using-typescript-google-cloud-functions-and-firebase-4c13b1699a27
+
+  */
 "use strict";
 
-import utils from "./utils.js";
-import filters from "./filters.js";
 import shell from "shelljs";
 import fs from "fs";
 import os from "os";
-const inquirer = require("inquirer");
-const drivelist = require("drivelist");
+import inquirer from "inquirer";
+import drivelist from "drivelist";
+
+import utils from "./utils";
+import filters from "./filters";
+import { IDevice, IDevices, IDriveList } from "../interfaces";
+import { description } from "pjson";
 
 export async function hatch() {
   let target = "/TARGET";
-  let devices = {
-    root: {
-      device: "/dev/penguin/root",
-      fstype: "ext4",
-      mountPoint: "/"
-    },
-    boot: {
-      device: "/dev/sda1",
-      fstype: "ext2",
-      mountPoint: "/boot"
-    },
-    data: {
-      device: "/dev/penguin/data",
-      fstype: "ext4",
-      mountPoint: "/var/lib/vz"
-    },
-    swap: {
-      device: "/dev/penguin/swap",
-      fstype: "swap",
-      mountPoint: "none"
-    }
-  };
+  let devices = {} as IDevices;
+  devices.root = {} as IDevice;
+  devices.boot = {} as IDevice;
+  devices.data = {} as IDevice;
+  devices.swap = {} as IDevice;
 
-  let driveList;
-  driveList = await getDrives();
+  devices.root.device = "/dev/penguin/root";
+  devices.root.fsType = "ext4";
+  devices.root.mountPoint = "/";
+  devices.boot.device = "/dev/sda1";
+  devices.boot.fsType = "ext2";
+  devices.boot.mountPoint = "/boot";
+  devices.data.device = "/dev/penguin/data";
+  devices.data.fsType = "ext4";
+  devices.data.mountPoint = "/var/lib/vz";
+  devices.swap.device = "/dev/penguin/swap";
+  devices.swap.fsType = "swap";
+  devices.swap.mountPoint = "none";
 
-  let varOptions;
-  varOptions = await getOptions(driveList);
-  let options = JSON.parse(varOptions);
+  let driveList: string[]=[];
+  await drivelist.list(
+    (error: boolean, drives: IDriveList[]) => {
+      if (error) {
+        throw error;
+      }
+      let aDrives: string[] = [];
+
+      drives.forEach((drive) => {
+        driveList.push(drive.device);
+      });
+   });
+  
+
+  let varOptions: any =  await getOptions(driveList);
+  let options: any = JSON.parse(varOptions);
 
   // default mount /var/lib/pve
   if (options.mountType == "workstation") {
@@ -54,10 +66,10 @@ export async function hatch() {
     devices.data.mountPoint = "/var/www";
   }
 
-  let isDiskPreoared;
-  isDiskPreoared = await diskPrepare(options.installationDevice);
+  let isDiskPrepared: boolean;
+  isDiskPrepared = await diskPrepare(options.installationDevice);
 
-  let diskSize;
+  let diskSize: number;
   diskSize = await getDiskSize(options.installationDevice);
   console.log(
     `hatch diskSize: ${diskSize} Byte, equal at ${Math.round(
@@ -94,14 +106,14 @@ export async function hatch() {
   await umount(target, devices);
 }
 
-async function grubInstall(target, options) {
+async function grubInstall(target: string, options: any) {
   console.log("grub-install");
   await execute(`chroot ${target} grub-install ${options.installationDevice}`);
   console.log("update-grub");
   await execute(`chroot ${target} update-grub`);
 }
 
-async function mkinitramfs(target) {
+async function mkinitramfs(target: string) {
   console.log("mkinitramfs");
   await execute(
     `chroot ${target} mkinitramfs -k -o /tmp/initramfs-$(uname -r)`
@@ -109,12 +121,12 @@ async function mkinitramfs(target) {
   await execute(`cp ${target}/tmp/initramfs-$(uname -r) /TARGET/boot`);
 }
 
-async function updateInitramfs(target) {
+async function updateInitramfs(target: string) {
   console.log("updateInitramfs");
   await execute(`chroot ${target} update-initramfs -u`);
 }
 
-async function mount4chroot(target) {
+async function mount4chroot(target: string) {
   console.log("mount4chroot");
   await execute(`mount -o bind /dev ${target}/dev`);
   await execute(`mount -o bind /devpts ${target}/dev/pts`);
@@ -124,7 +136,7 @@ async function mount4chroot(target) {
   await execute(`mount -o bind /run ${target}/run`);
 }
 
-async function umount4chroot(target) {
+async function umount4chroot(target: string) {
   console.log("umount4chroot");
   await execute(`umount ${target}/dev/pts`);
   await execute(`sleep 1`);
@@ -138,23 +150,19 @@ async function umount4chroot(target) {
   await execute(`sleep 1`);
 }
 
-async function fstab(target, devices) {
+async function fstab(target: string, devices: IDevices) {
   let file = `${target}/etc/fstab`;
   let text = `
 proc /proc proc defaults 0 0
-${devices.root.device} ${devices.root.mountPoint} ${devices.root
-    .fstype} relatime,errors=remount-ro 0 1
-${devices.boot.device} ${devices.boot.mountPoint} ${devices.boot
-    .fstype} relatime 0 0
-${devices.data.device} ${devices.data.mountPoint} ${devices.data
-    .fstype} relatime 0 0
-${devices.swap.device} ${devices.swap.mountPoint} ${devices.swap
-    .fstype} sw 0 0`;
+${devices.root.device} ${devices.root.mountPoint} ${devices.root.fsType} relatime,errors=remount-ro 0 1
+${devices.boot.device} ${devices.boot.mountPoint} ${devices.boot.fsType} relatime 0 0
+${devices.data.device} ${devices.data.mountPoint} ${devices.data.fsType} relatime 0 0
+${devices.swap.device} ${devices.swap.mountPoint} ${devices.swap.fsType} sw 0 0`;
 
-  utils.bashwrite(file, text);
+  utils.bashWrite(file, text);
 }
 
-async function hostname(target, options) {
+async function hostname(target: string, options: any) {
   let file = `${target}/etc/hostname`;
   let text = options.hostname;
 
@@ -162,7 +170,7 @@ async function hostname(target, options) {
   fs.writeFileSync(file, text);
 }
 
-async function resolvConf(target, options) {
+async function resolvConf(target: string, options: any) {
   if (options.netAddressType === "static") {
     let file = `${target}/etc/resolv.conf`;
     let text = `
@@ -172,11 +180,11 @@ nameserver ${options.netDns}
 nameserver 8.8.8.8
 nameserver 8.8.4.4
 `;
-    utils.bashwrite(file, text);
+    utils.bashWrite(file, text);
   }
 }
 
-async function interfaces(target, options) {
+async function interfaces(target: string, options: any) {
   if (options.netAddressType === "static") {
     let file = `${target}/etc/network/interfaces`;
     let text = `
@@ -189,11 +197,11 @@ iface ${options.netInterface} inet ${options.netAddressType}
     gateway ${options.netGateway}
 `;
 
-    utils.bashwrite(file, text);
+    utils.bashWrite(file, text);
   }
 }
 
-async function hosts(target, options) {
+async function hosts(target: string, options: any) {
   let file = `${target}/etc/hosts`;
   let text = `127.0.0.1 localhost localhost.localdomain`;
   if (options.netAddressType === "static") {
@@ -213,16 +221,16 @@ ff02::2 ip6-allrouters
 ff02::3 ip6-allhosts
 `;
 
-  utils.bashwrite(file, text);
+  utils.bashWrite(file, text);
 }
 
-async function getIsLive() {
+async function getIsLive(): Promise<string> {
   let result;
   result = await execute(`./scripts/is_live.sh`);
   return result;
 }
 
-async function rsync(target) {
+async function rsync(target: string): Promise<void> {
   let cmd = "";
   cmd = `
   rsync -aq  \
@@ -234,16 +242,16 @@ async function rsync(target) {
   });
 }
 
-async function mkfs(devices) {
+async function mkfs(devices: IDevices): Promise<boolean> {
   let result = true;
-  await execute(`mkfs -t ${devices.root.fstype} ${devices.root.device}`);
-  await execute(`mkfs -t ${devices.boot.fstype} ${devices.boot.device}`);
-  await execute(`mkfs -t ${devices.data.fstype} ${devices.data.device}`);
+  await execute(`mkfs -t ${devices.root.fsType} ${devices.root.device}`);
+  await execute(`mkfs -t ${devices.boot.fsType} ${devices.boot.device}`);
+  await execute(`mkfs -t ${devices.data.fsType} ${devices.data.device}`);
   await execute(`mkswap ${devices.swap.device}`);
   return result;
 }
 
-async function mount(target, devices) {
+async function mount(target: string, devices: IDevices): Promise<boolean> {
   await execute(`mkdir ${target}`);
   await execute(`mount ${devices.root.device} ${target}`);
   await execute(`tune2fs -c 0 -i 0 ${devices.root.device}`);
@@ -262,9 +270,11 @@ async function mount(target, devices) {
 
   return true;
 }
-async function tune2fs(target, devices) {}
+async function tune2fs(target: string, devices: IDevices): Promise<boolean> {
+  return true;
+}
 
-async function umount(target, devices) {
+async function umount(target: string, devices: IDevices): Promise<boolean> {
   console.log("umount");
   //await execute(`umount ${devices.data.device} ${target}${devices.data.mountPoint}`);
   await execute(`umount ${devices.data.device}`);
@@ -274,64 +284,52 @@ async function umount(target, devices) {
   return true;
 }
 
-async function diskPreparePve(device) {
+async function diskPreparePve(device: string): Promise<boolean> {
   await execute(`${utils.path()}/scripts/disk_prepare_pve.sh ${device}`);
   return true;
 }
 
-async function diskPreparePartitionLvm(device, sizeMb) {
+async function diskPreparePartitionLvm(device: string, sizeMb: number): Promise<boolean> {
   console.log(`disk_prepare_partition_lvm.sh ${device} ${sizeMb}`);
   await execute(
     `${utils.path()}/scripts/disk_prepare_partition_lvm.sh ${device} ${sizeMb}`
   );
   return true;
 }
-async function diskPreparePartitionBoot(device) {
+async function diskPreparePartitionBoot(device: string): Promise<boolean> {
   await execute(
     `${utils.path()}/scripts/disk_prepare_partition_boot.sh ${device}`
   );
   return true;
 }
 
-async function diskPrepare(device) {
+async function diskPrepare(device: string) {
   await execute(`${utils.path()}/scripts/disk_prepare.sh ${device}`);
   return true;
 }
 
-async function getDiskSize(device) {
-  let result = "";
-  result = await execute(`${utils.path()}/scripts/disk_get_size.sh ${device}`);
-  result = result.replace("B", "").trim();
-  return result;
+async function getDiskSize(device: string): Promise<number> {
+  let response: string;
+  let bytes: number;
+
+  response = await execute(`${utils.path()}/scripts/disk_get_size.sh ${device}`);
+  response = response.replace("B", "").trim();
+  bytes = Number(response);
+  return bytes;
 }
 
-function execute(command) {
-  return new Promise(function(resolve, reject) {
+function execute(command: string): Promise<string> {
+  return new Promise(function (resolve, reject) {
     var exec = require("child_process").exec;
-    exec(command, function(error, stdout, stderr) {
+    exec(command, function (error: string, stdout: string, stderr: string) {
       resolve(stdout);
     });
   });
 }
 
-function getDrives() {
-  return new Promise(function(resolve, reject) {
-    let aDriveList = [];
-    drivelist.list((error, drives) => {
-      if (error) {
-        reject(error);
-      }
-      for (var key in drives) {
-        aDriveList.push(drives[key].device);
-      }
-      resolve(aDriveList);
-    });
-  });
-}
-
-async function getOptions(driveList) {
-  return new Promise(function(resolve, reject) {
-    var questions = [
+async function getOptions(driveList: string[]): Promise<any> {
+  return new Promise(function (resolve, reject) {
+    let questions: Array<Object> = [
       {
         type: "input",
         name: "username",
@@ -347,20 +345,20 @@ async function getOptions(driveList) {
       {
         type: "password",
         name: "userpassword",
-        message: "Enter a password for the user :",
+        message: "Enter a password for the user: ",
         default: "evolution"
       },
       {
         type: "list",
         name: "autologin",
-        message: "Did you want autolongin :",
+        message: "Did you want autolongin: ",
         choices: ["Yes", "No"],
         default: "Yes"
       },
       {
         type: "password",
         name: "rootpassword",
-        message: "Enter a password for root :",
+        message: "Enter a password for root: ",
         default: "evolution"
       },
       {
@@ -393,7 +391,7 @@ async function getOptions(driveList) {
         name: "netAddress",
         message: "Insert IP address: ",
         default: "192.168.0.2",
-        when: function(answers) {
+        when: function (answers: any) {
           return answers.netAddressType === "static";
         }
       },
@@ -402,7 +400,7 @@ async function getOptions(driveList) {
         name: "netMask",
         message: "Insert netmask: ",
         default: "255.255.255.0",
-        when: function(answers) {
+        when: function (answers: any) {
           return answers.netAddressType === "static";
         }
       },
@@ -411,7 +409,7 @@ async function getOptions(driveList) {
         name: "netGateway",
         message: "Insert gateway: ",
         default: utils.netGateway(),
-        when: function(answers) {
+        when: function (answers: any) {
           return answers.netAddressType === "static";
         }
       },
@@ -420,7 +418,7 @@ async function getOptions(driveList) {
         name: "netDns",
         message: "Insert DNS: ",
         default: utils.netDns(),
-        when: function(answers) {
+        when: function (answers: any) {
           return answers.netAddressType === "static";
         }
       },
@@ -446,10 +444,11 @@ async function getOptions(driveList) {
         default: "ext4"
       }
     ];
-    inquirer.prompt(questions).then(function(options) {
+
+    inquirer.prompt(questions).then(function (options) {
       resolve(JSON.stringify(options));
     });
   });
 }
 
-var ifaces = fs.readdirSync("/sys/class/net/");
+var ifaces: string[] = fs.readdirSync("/sys/class/net/");

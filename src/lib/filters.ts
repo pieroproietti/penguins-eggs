@@ -1,6 +1,6 @@
 /*
-  penguins-eggs: filters.js
-  author: Piero Proietti 
+  penguins-eggs: filters.ts
+  author: Piero Proietti
   mail: piero.proietti@gmail.com
 */
 
@@ -16,14 +16,14 @@ const filterRoot = `
 --filter="- /sys/*" \
 --filter="- /tmp/*" \
 --filter="- /swapfile" \
---filter="- /persistence.conf"  \ `;
+--filter="- /persistence.conf" `;
 
 const filterBoot = `
 --filter="- /boot/grub/grub.cfg"  \
 --filter="- /boot/grub/device.map" \
 --filter="- /boot/grub/menu.lst" \
 --filter="- /boot/*.bak" \
---filter="- /boot/*.old-dkms" \ `;
+--filter="- /boot/*.old-dkms" `;
 
 const filterEtc = `
 --filter="- /etc/apt/sources.list~" \
@@ -40,16 +40,16 @@ const filterEtc = `
 --filter="- /etc/ssh/ssh_host_*_key*" \
 --filter="- /etc/ssh/ssh_host_key*" \
 --filter="- /etc/udev/rules.d/70-persistent-cd.rules" \
---filter="- /etc/udev/rules.d/70-persistent-net.rules" \ `;
+--filter="- /etc/udev/rules.d/70-persistent-net.rules" `;
 
 const filterLib = `
 --filter="- /lib/live/image" \
 --filter="- /lib/live/mount" \
 --filter="- /lib/live/overlay" \
---filter="- /lib/live/rootfs" \ `;
+--filter="- /lib/live/rootfs" `;
 
 const filterUsr = `
---filter="- /usr/share/icons/*/icon-theme.cache" \ `;
+--filter="- /usr/share/icons/*/icon-theme.cache" `;
 
 const filterVar = `
 --filter="- /var/backups/*.gz" \
@@ -71,17 +71,7 @@ const filterVar = `
 --filter="- /var/lib/vz/*" \
 --filter="- /var/log/*" \
 --filter="- /var/spool/mail/*" \
---filter="- /var/mail/*" \ `;
-
-const filterHome = `
---filter="- /home/*/.local/share/Trash/*" \
---filter="- /home/*/.config/google-chrome/*" \
---filter="- /home/*/.bash_history" \
---filter="- /home/*/.xsession-errors*" \
---filter="- /home/*/.ICEauthority" \
---filter="- /home/*/.Xauthority" \
---filter="- /home/*/.gnupg" \
---filter="- /home/*/.ssh" \ `;
+--filter="- /var/mail/*" `;
 
 const filterPersonalDatas = `
 --filter="+ /home/*/" \
@@ -103,7 +93,6 @@ const filterPersonalDatas = `
 --filter="+ /home/*/.user-dirs.dirs" \
 --filter="+ /home/*/.user-dirs.locale" \
 --filter="- /home/*/*" `;
-
 
 const filters =
   filterRoot.trim() +

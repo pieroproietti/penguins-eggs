@@ -1,0 +1,22 @@
+{
+  "compilerOptions": {
+    "module": "commonjs",
+    "allowJs": true,
+    "allowSyntheticDefaultImports": true,
+    "diagnostics": true,
+    "esModuleInterop": true,
+    "moduleResolution": "node",
+    "noImplicitAny": true,
+    "outDir": "./esnext",
+    "sourceMap": true,
+    "target": "esnext"
+  },
+  "include": [
+    "src/**/*"
+  ],
+  "exclude": [
+    "esnext",
+    "build",
+    "node_modules"
+  ]
+}
