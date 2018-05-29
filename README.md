@@ -1,6 +1,6 @@
 
 ![penguins-eggs-ts](https://github.com/pieroproietti/penguins-eggs-ts/blob/master/src/assets/penguins-eggs.png?raw=true)
-# penguin's eggs typescript
+# penguin's eggs
 
 [![NPM Package](https://img.shields.io/npm/v/penguins-eggs.svg?style=flat)](https://npmjs.org/package/penguins-eggs-ts "View this project on npm")
 [![Build Status](https://travis-ci.org/pieroproietti/penguins-eggs.svg?branch=master)](https://travis-ci.org/pieroproietti/penguins-eggs-ts)
