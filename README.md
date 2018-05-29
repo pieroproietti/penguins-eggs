@@ -1,15 +1,15 @@
 
-![penguins-eggs-ts](https://github.com/pieroproietti/penguins-eggs-ts/blob/master/src/assets/penguins-eggs.png?raw=true)
+![penguins-eggs](https://github.com/pieroproietti/penguins-eggs/blob/master/src/assets/penguins-eggs.png?raw=true)
 # penguin's eggs
 
-[![NPM Package](https://img.shields.io/npm/v/penguins-eggs.svg?style=flat)](https://npmjs.org/package/penguins-eggs-ts "View this project on npm")
-[![Build Status](https://travis-ci.org/pieroproietti/penguins-eggs.svg?branch=master)](https://travis-ci.org/pieroproietti/penguins-eggs-ts)
+[![NPM Package](https://img.shields.io/npm/v/penguins-eggs.svg?style=flat)](https://npmjs.org/package/penguins-eggs "View this project on npm")
+[![Build Status](https://travis-ci.org/pieroproietti/penguins-eggs.svg?branch=master)](https://travis-ci.org/pieroproietti/penguins-eggs)
 [![MIT license](http://img.shields.io/badge/license-MIT-brightgreen.svg)](http://opensource.org/licenses/MIT)
-[![Join the chat at https://gitter.im/penguins-eggs-ts/Lobby](https://badges.gitter.im/pieroproietti/penguins-eggs.svg)](https://gitter.im/penguins-eggs-ts/Lobby?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+[![Join the chat at https://gitter.im/penguins-eggs/Lobby](https://badges.gitter.im/pieroproietti/penguins-eggs.svg)](https://gitter.im/penguins-eggs/Lobby?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
 
 ## Presentation
-penguins-eggs-ts is a console utility, in active development, who let you to
+penguins-eggs is a console utility, in active development, who let you to
 remaster your system and redistribuite it as iso images or from the lan via PXE
 remote boot.
 
@@ -27,7 +27,7 @@ distros. At the moment it is tested with Debian 9 Stretch, Debian 8 Jessie,
 Ubuntu and derivates as Linux Mint. For others distros we need to find
 collaboration.
 
-penguins-eggs-ts, at the moment 2018 february 20 is in a joung state, and can have
+penguins-eggs, at the moment 2018 february 20 is in a joung state, and can have
 same troubles for people not in confidence with Linux system administration, but
 can be already extremely usefull: imagine to install it on an lan and start to
 manage the computers with it. You can easily install clonezilla on it, or clamav
@@ -36,18 +36,18 @@ and you have a tool to backup/restore/sanityze your entire infrastructure.
 You can, also easily create your organization/school distro and deploy it on your
 LAN, give it to your friends as usb key or publish eggs in the internet!
 
-You can try now penguins-eggs-ts, it is a console utility - no GUI - but don't be
-scared, penguins-eggs-ts is a console command - really very simple usage - if you
+You can try now penguins-eggs, it is a console utility - no GUI - but don't be
+scared, penguins-eggs is a console command - really very simple usage - if you
 are able to open a terminal, you can use it.
 
-## Install penguins-eggs-ts
+## Install penguins-eggs
 Well, it is time to try it!
 
 ### Prerequisites
-Of course penguins-eggs-ts need [nodejs](https://nodejs.org/en/download/package-manager/) installed.
+Of course penguins-eggs need [nodejs](https://nodejs.org/en/download/package-manager/) installed.
 
-penguins-eggs-ts depend on various packages, you need to install them before to
-start to use it. Before to install penguins-eggs-ts, simply copy and paste the
+penguins-eggs depend on various packages, you need to install them before to
+start to use it. Before to install penguins-eggs, simply copy and paste the
 following lines:
 
 ```sudo apt-get update```
@@ -70,8 +70,8 @@ At this point You can download last version on github.com. Copy and past the
 following lines:
 
 ```
-git clone https://github.com/pieroproietti/penguins-eggs-ts
-cd penguins-eggs-ts
+git clone https://github.com/pieroproietti/penguins-eggs
+cd penguins-eggs
 npm i
 ```
 
@@ -153,7 +153,7 @@ eg: host ``penguin`` will produce an iso called ``penguin-2017-10-22_2047_02.iso
 
 
 ## Development
-I build and test penguins-eggs-ts on a customized version of
+I build and test penguins-eggs on a customized version of
 [Proxmox VE](https://pve.proxmox.com/wiki/Main_Page) who let me to  create/destroy
 a lot of virtual PCs with different configurations: one or more net cards,
 processor, memory and so on. It is easy to have, install Debian Stretch
@@ -161,12 +161,12 @@ with your preferedd GUI, I use cinnamon, and follow this
 [howto](https://pve.proxmox.com/wiki/Install_Proxmox_VE_on_Debian_Stretch) in their site.
 
 # That's all Folks!
-No need other configurations, penguins-eggs-ts are battery included or better, as
+No need other configurations, penguins-eggs are battery included or better, as
 in the real, the live is inside! :-D
 
 ## More informations
 For other informations, look at [Piero Proietti's blog](http://pieroproietti.github.com),
-contact me, or open an [issue](https://github.com/pieroproietti/penguins-eggs-ts/issues) on github.
+contact me, or open an [issue](https://github.com/pieroproietti/penguins-eggs/issues) on github.
 
 * facebook group:  [Penguin's Eggs](https://www.facebook.com/groups/128861437762355/)
 * twitter: [@pieroproietti](https://twitter.com/pieroproietti)
