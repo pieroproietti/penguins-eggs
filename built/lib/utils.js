@@ -17,9 +17,9 @@ const network_1 = __importDefault(require("network"));
 const path_1 = __importDefault(require("path"));
 class utils {
     constructor() {
-        //pathScripts: String = "/usr/lib/node_modules/penguins-eggs";
-        this.pathScripts = "/home/artisan/penguins-eggs";
+        this.pathScripts = "/usr/lib/node_modules/penguins-eggs";
     }
+    //pathScripts: String = "/home/artisan/penguins-eggs";
     // metodi
     path() {
         return this.pathScripts;
