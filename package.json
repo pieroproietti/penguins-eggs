@@ -52,16 +52,16 @@
     "@types/inquirer": "0.0.41",
     "@types/ip": "0.0.30",
     "@types/netmask": "^1.0.30",
-    "@types/node": "^10.1.3",
+    "@types/node": "^10.12.23",
     "@types/shelljs": "^0.7.9",
     "@types/source-map-support": "^0.4.1",
     "babel-cli": "^6.26.0",
     "babel-core": "^6.26.3",
     "babel-preset-env": "^1.7.0",
     "eslint": "^4.19.1",
-    "eslint-plugin-import": "^2.12.0",
-    "ts-loader": "^4.3.0",
-    "ts-node": "^6.0.5",
-    "typescript": "^2.8.3"
+    "eslint-plugin-import": "^2.16.0",
+    "ts-loader": "^4.5.0",
+    "ts-node": "^6.2.0",
+    "typescript": "^2.9.2"
   }
 }
