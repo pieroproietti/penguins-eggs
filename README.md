@@ -57,6 +57,8 @@ following lines:
 ### Installation via npm
 You can install it with npm (node package manager). Copy and past the following line:
 
+For same reason we need to do this operation before to install eggs
+```sudo npm config set unsafe-perm true```
 ```sudo npm i penguins-egg -g```
 
 
@@ -177,3 +179,6 @@ contact me, or open an [issue](https://github.com/pieroproietti/penguins-eggs/is
 
 ## Copyright and licenses
 Copyright (c) 2017, [Piero Proietti](http://pieroproietti.github.com), dual licensed under the MIT or GPL Version 2 licenses.
+
+
+# npm set
