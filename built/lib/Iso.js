@@ -138,7 +138,7 @@ label ${this.distro.name} safe
         let volid = `"${this.distro.name}"`;
         let isoName = `${this.workDir}/${this.distro.name}`;
         isoName += utils_1.default.date4file() + ".iso";
-        utils_1.default.exec(`xorriso -as mkisofs -r -J -joliet-long -l -cache-inodes ${isoHybridOption} -partition_offset 16 -A ${volid} -b isolinux/isolinux.bin -c isolinux/boot.cat -no-emul-boot -boot-load-size 4 -boot-info-table -o ${isoName} ${this.distro.pathIso}`);
+        utils_1.default.exec(`xorriso -as mkisofs -r -J -joliet-long -l -cache-inodes ${isoHybridOption} -partition_offset 16 -volid ${volid} -b isolinux/isolinux.bin -c isolinux/boot.cat -no-emul-boot -boot-load-size 4 -boot-info-table -o ${isoName} ${this.distro.pathIso}`);
     }
 }
 exports.default = Iso;
