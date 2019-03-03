@@ -178,12 +178,12 @@ label ${this.distro.name} safe
     let isoHybridOption = "-isohybrid-mbr /usr/lib/ISOLINUX/isohdpfx.bin ";
     //let uefiOption = "";
     //"-eltorito-alt-boot -e boot/grub/efiboot.img -isohybrid-gpt-basdat -no-emul-boot";
-    let volid = `"${this.distro.name}"`;
+    let volid = `"CholitOS ${this.distro.name}"`;
     let isoName = `${this.workDir}/${this.distro.name}`;
     isoName += utils.date4file() + ".iso";
 
     utils.exec(
-      `xorriso -as mkisofs -r -J -joliet-long -l -cache-inodes ${isoHybridOption} -partition_offset 16 -volid CholitOS-${volid} -b isolinux/isolinux.bin -c isolinux/boot.cat -no-emul-boot -boot-load-size 4 -boot-info-table -o ${isoName} ${this.distro.pathIso}`
+      `xorriso -as mkisofs -r -J -joliet-long -l -cache-inodes ${isoHybridOption} -partition_offset 16 -volid ${volid} -b isolinux/isolinux.bin -c isolinux/boot.cat -no-emul-boot -boot-load-size 4 -boot-info-table -o ${isoName} ${this.distro.pathIso}`
     );
   }
 }
