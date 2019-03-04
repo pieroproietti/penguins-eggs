@@ -114,36 +114,6 @@ class Egg {
             async: false
         });
     }
-    async fstab() {
-        let file = `${this.distro.pathFs}/etc/fstab`;
-        let text = `
-#proc /proc proc defaults 0 0
-/dev/nfs / nfs defaults 1 1
-`;
-        utils_1.default.bashWrite(file, text);
-    }
-    async hostname() {
-        utils_1.default.hostname(this.distro.pathFs, this.distro.name);
-    }
-    async resolvConf() {
-        let file = `${this.distro.pathFs}/etc/resolv.conf`;
-        let text = `
-search ${this.net.domainName}
-nameserver ${this.net.dnsAddress}
-nameserver 8.8.8.8
-nameserver 8.8.4.4
-`;
-        utils_1.default.bashWrite(file, text);
-    }
-    async interfaces() {
-        let file = `${this.distro.pathFs}/etc/network/interfaces`;
-        let text = `
-auto lo
-iface lo inet loopback
-iface ${this.net.name} inet manual
-`;
-        utils_1.default.bashWrite(file, text);
-    }
 }
 exports.default = Egg;
 //# sourceMappingURL=Egg.js.map
