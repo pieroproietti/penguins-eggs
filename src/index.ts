@@ -138,11 +138,6 @@ async function startHatch() {
 async function buildEgg(e: any) {
   await e.spawn();
   await e.copy();
-  await e.fstab();
-  await e.hostname();
-  await e.resolvConf();
-  await e.interfaces();
-  await e.hosts();
 }
 
 async function buildIso(i: any) {
