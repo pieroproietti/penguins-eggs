@@ -209,7 +209,7 @@ async function hosts(target: string, options: any) {
 ${options.netAddress} ${options.hostname} ${options.hostname}.${options.domain} pvelocalhost`;
   } else {
     text += `
-127.0.1.1 localhost localhost.localdomain ${options.hostname} ${options.hostname}.${options.domain}`;
+127.0.1.1 ${options.hostname} ${options.hostname}.${options.domain}`;
   }
   text += `
 # The following lines are desirable for IPv6 capable hosts

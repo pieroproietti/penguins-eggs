@@ -23,7 +23,7 @@ const Iso_1 = __importDefault(require("./lib/Iso"));
 const Egg_1 = __importDefault(require("./lib/Egg"));
 const hatch_1 = require("./lib/hatch");
 let program = require("commander").version(app.version);
-let workDir = "/var/lib/vz/eggs/";
+let workDir = "/home/eggs/";
 let distro = {};
 let net = {};
 let user = {};
@@ -55,8 +55,8 @@ async function config() {
     if (program.distroname) {
         distro.name = program.distroname;
     }
-    if (await utils_1.default.isMounted("home")) {
-        workDir = "/home/eggs/";
+    if (await utils_1.default.isMounted("vz")) {
+        workDir = "/var/lib/vz/eggs/";
     } else if (await utils_1.default.isMounted("docker")) {
         workDir = "/var/lib/docker/eggs/";
     } else if (await utils_1.default.isMounted("www")) {

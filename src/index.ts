@@ -42,7 +42,7 @@ import { hatch } from "./lib/hatch";
 import { IDistro, INet, IUser } from "./interfaces";
 
 let program = require("commander").version(app.version);
-let workDir = "/var/lib/vz/eggs/";
+let workDir = "/home/eggs/";
 let distro = {} as IDistro;
 let net = {} as INet;
 let user = {} as IUser;
@@ -90,8 +90,8 @@ async function config() {
     distro.name = program.distroname;
   }
 
-  if (await utils.isMounted("home")) {
-    workDir = "/home/eggs/";
+  if (await utils.isMounted("vz")) {
+    workDir = "/var/lib/vz/eggs/";
   } else if (await utils.isMounted("docker")) {
     workDir = "/var/lib/docker/eggs/";
   } else if (await utils.isMounted("www")) {

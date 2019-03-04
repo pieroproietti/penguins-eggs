@@ -175,6 +175,7 @@ iface ${this.net.name} inet manual
     utils.bashWrite(file, text);
   }
 
+  /*
   public async hosts() {
     let file = `${this.distro.pathFs}/etc/hosts`;
     let text = `
@@ -191,6 +192,7 @@ ff02::3 ip6-allhosts
 
     utils.bashWrite(file, text);
   }
-}
+  */
 
+}
 export default Egg;
