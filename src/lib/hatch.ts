@@ -103,7 +103,8 @@ export async function hatch() {
   await updateInitramfs(target); // path per problema LVM resume
   //await purge(target);
   await umount4chroot(target);
-  await umount(target, devices);
+  await umount4target(target, devices);
+  await rm4target();
 }
 
 async function grubInstall(target: string, options: any) {
@@ -125,6 +126,7 @@ async function updateInitramfs(target: string) {
   console.log("updateInitramfs");
   await execute(`chroot ${target} update-initramfs -u`);
 }
+
 
 async function mount4chroot(target: string) {
   console.log("mount4chroot");
@@ -274,13 +276,19 @@ async function tune2fs(target: string, devices: IDevices): Promise<boolean> {
   return true;
 }
 
-async function umount(target: string, devices: IDevices): Promise<boolean> {
-  console.log("umount");
+async function umount4target(target: string, devices: IDevices): Promise<boolean> {
+  console.log("umount4target");
   //await execute(`umount ${devices.data.device} ${target}${devices.data.mountPoint}`);
   await execute(`umount ${devices.data.device}`);
   await execute(`umount ${devices.boot.device} ${target}boot`);
   await execute(`umount ${devices.root.device} ${target}`);
   await execute(`rmdir ${target} -rf`);
+  return true;
+}
+
+async function rm4target(): Promise<boolean> {
+  console.log("rm4target");
+  await execute(`rm /TARGET -rf`);
   return true;
 }
 
