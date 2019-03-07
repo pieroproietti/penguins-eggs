@@ -68,8 +68,8 @@ async function config() {
         spawn(e, i);
     }
     if (command == "kill") {
-        e.kill();
         i.kill();
+        e.kill();
     } else if (command == "hatch") {
         startHatch();
     }

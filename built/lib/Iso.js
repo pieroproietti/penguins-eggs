@@ -85,7 +85,7 @@ class Iso {
     }
     async kill() {
         console.log("==========================================");
-        console.log("Incubator iso: kill");
+        console.log("iso kill: rm -rf ${this.distro.pathIso}");
         console.log("==========================================");
         utils_1.default.exec(`rm -rf ${this.distro.pathIso}`);
     }

@@ -68,7 +68,7 @@ class Egg {
     }
     async kill() {
         console.log("==========================================");
-        console.log("eggs kill");
+        console.log("eggs kill: rm -rf ${this.distro.pathHome}");
         console.log("==========================================");
         utils_1.default.exec(`rm -rf ${this.distro.pathHome}`);
     }

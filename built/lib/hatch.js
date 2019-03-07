@@ -234,7 +234,7 @@ async function umount4target(target, devices) {
     await execute(`sleep 1`);
     await execute(`umount ${devices.root.device} ${target}`);
     await execute(`sleep 1`);
-    await execute(`rmdir ${target} -rf`);
+    await execute(`rm ${target} -rf`);
     return true;
 }
 async function diskPreparePve(device) {
