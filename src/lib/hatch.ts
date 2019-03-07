@@ -104,7 +104,7 @@ export async function hatch() {
   //await purge(target);
   await umount4chroot(target);
   await umount4target(target, devices);
-  await rm4target();
+  
 }
 
 async function grubInstall(target: string, options: any) {
@@ -280,17 +280,12 @@ async function umount4target(target: string, devices: IDevices): Promise<boolean
   console.log("umount4target");
   //await execute(`umount ${devices.data.device} ${target}${devices.data.mountPoint}`);
   await execute(`umount ${devices.data.device}`);
-  await execute(`umount ${devices.boot.device} ${target}boot`);
+  await execute(`umount ${devices.boot.device} ${target}/boot`);
   await execute(`umount ${devices.root.device} ${target}`);
   await execute(`rmdir ${target} -rf`);
   return true;
 }
 
-async function rm4target(): Promise<boolean> {
-  console.log("rm4target");
-  await execute(`rm /TARGET -rf`);
-  return true;
-}
 
 async function diskPreparePve(device: string): Promise<boolean> {
   await execute(`${utils.path()}/scripts/disk_prepare_pve.sh ${device}`);
