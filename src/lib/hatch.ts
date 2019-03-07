@@ -283,7 +283,7 @@ async function umount4target(target: string, devices: IDevices): Promise<boolean
   await execute(`sleep 1`);
   await execute(`umount ${devices.root.device} ${target}`);
   await execute(`sleep 1`);
-  await execute(`rmdir ${target} -rf`);
+  await execute(`rm ${target} -rf`);
   return true;
 }
 
