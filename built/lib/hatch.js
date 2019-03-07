@@ -103,7 +103,6 @@ async function mount4chroot(target) {
     await execute(`mount -o bind /dev ${target}/dev`);
     await execute(`mount -o bind /devpts ${target}/dev/pts`);
     await execute(`mount -o bind /proc ${target}/proc`);
-    await execute(`mount -o bind /dev ${target}/dev`);
     await execute(`mount -o bind /sys ${target}/sys`);
     await execute(`mount -o bind /run ${target}/run`);
 }
@@ -111,13 +110,13 @@ async function umount4chroot(target) {
     console.log("umount4chroot");
     await execute(`umount ${target}/dev/pts`);
     await execute(`sleep 1`);
+    await execute(`umount ${target}/dev`);
+    await execute(`sleep 1`);
     await execute(`umount ${target}/proc`);
     await execute(`sleep 1`);
     await execute(`umount ${target}/sys`);
     await execute(`sleep 1`);
     await execute(`umount ${target}/run`);
-    await execute(`sleep 1`);
-    await execute(`umount ${target}/dev`);
     await execute(`sleep 1`);
 }
 async function fstab(target, devices) {
@@ -228,13 +227,13 @@ async function tune2fs(target, devices) {
 }
 async function umount4target(target, devices) {
     console.log("umount4target");
-    //await execute(`umount ${devices.data.device} ${target}${devices.data.mountPoint}`);
-    await execute(`umount ${devices.data.device}`);
-    await execute(`umount ${devices.boot.device} ${target}/boot`);
+    await execute(`mount ${devices.boot.device} ${target}/boot`);
     await execute(`sleep 1`);
-    await execute(`umount ${devices.root.device} ${target}`);
+    await execute(`mount ${devices.data.device} ${target}${devices.data.mountPoint}`);
     await execute(`sleep 1`);
-    await execute(`rm ${target} -rf`);
+    await execute(`mount ${devices.root.device} ${target}`);
+    await execute(`sleep 1`);
+    await execute(`rm -rf ${target}`);
     return true;
 }
 async function diskPreparePve(device) {
