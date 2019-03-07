@@ -71,8 +71,7 @@ if (utils.isRoot()) {
   console.log(">>> sudo eggs spawn --distroname penguin");
   console.log(">>> sudo eggs kill");
   console.log(">>> sudo eggs hatch");
-  console.log(">>> sudo eggs cuckoo");
-}
+  }
 
 bye();
 // END MAIN
@@ -151,6 +150,6 @@ async function buildIso(i: any) {
 
 function bye() {
   console.log(
-    `${app.name} V. ${app.version} (C) 2018 ${app.author} <${app.mail}>`
+    `${app.name} v. ${app.version} (C) 2018/2019 ${app.author} <${app.mail}>`
   );
 }

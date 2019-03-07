@@ -89,7 +89,7 @@ export async function hatch() {
   await diskPreparePve(options.installationDevice);
 
   await mkfs(devices);
-  await mount(target, devices);
+  await mount4target(target, devices);
   await rsync(target);
   await fstab(target, devices);
 
@@ -100,8 +100,7 @@ export async function hatch() {
   await mount4chroot(target);
   await mkinitramfs(target);
   await grubInstall(target, options);
-  await updateInitramfs(target); // path per problema LVM resume
-  //await purge(target);
+  //await updateInitramfs(target); // path per problema LVM resume
   await umount4chroot(target);
   await umount4target(target, devices);
   
@@ -253,7 +252,7 @@ async function mkfs(devices: IDevices): Promise<boolean> {
   return result;
 }
 
-async function mount(target: string, devices: IDevices): Promise<boolean> {
+async function mount4target(target: string, devices: IDevices): Promise<boolean> {
   await execute(`mkdir ${target}`);
   await execute(`mount ${devices.root.device} ${target}`);
   await execute(`tune2fs -c 0 -i 0 ${devices.root.device}`);
@@ -281,7 +280,9 @@ async function umount4target(target: string, devices: IDevices): Promise<boolean
   //await execute(`umount ${devices.data.device} ${target}${devices.data.mountPoint}`);
   await execute(`umount ${devices.data.device}`);
   await execute(`umount ${devices.boot.device} ${target}/boot`);
+  await execute(`sleep 1`);
   await execute(`umount ${devices.root.device} ${target}`);
+  await execute(`sleep 1`);
   await execute(`rmdir ${target} -rf`);
   return true;
 }
