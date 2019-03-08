@@ -285,6 +285,9 @@ async function umount4target(target: string, devices: IDevices): Promise<boolean
   await execute(`sleep 1`);
   await execute(`umount ${devices.root.device} ${target}`);
   await execute(`sleep 1`);
+
+  await execute(`rm -rf ${target}/home`);
+  await execute(`rm -rf ${target}/boot`);
   //await execute(`rm -rf ${target}`);
   return true;
 }
