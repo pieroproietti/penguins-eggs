@@ -277,10 +277,10 @@ async function tune2fs(target: string, devices: IDevices): Promise<boolean> {
 async function umount4target(target: string, devices: IDevices): Promise<boolean> {
   console.log("umount4target");
 
-  await execute(`mount ${devices.boot.device} ${target}/boot`);
+  await execute(`umount ${devices.boot.device} ${target}/boot`);
   await execute(`sleep 1`);
   await execute(
-    `mount ${devices.data.device} ${target}${devices.data.mountPoint}`
+    `umount ${devices.data.device} ${target}${devices.data.mountPoint}`
   );
   await execute(`sleep 1`);
   await execute(`umount ${devices.root.device} ${target}`);
