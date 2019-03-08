@@ -285,7 +285,7 @@ async function umount4target(target: string, devices: IDevices): Promise<boolean
   await execute(`sleep 1`);
   await execute(`umount ${devices.root.device} ${target}`);
   await execute(`sleep 1`);
-  await execute(`rm -rf ${target}`);
+  //await execute(`rm -rf ${target}`);
   return true;
 }
 
@@ -396,7 +396,7 @@ async function getOptions(driveList: string[]): Promise<any> {
         type: "input",
         name: "netAddress",
         message: "Insert IP address: ",
-        default: "192.168.0.2",
+        default: "192.168.61.100",
         when: function (answers: any) {
           return answers.netAddressType === "static";
         }
