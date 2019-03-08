@@ -231,7 +231,7 @@ async function umount4target(target, devices) {
     await execute(`sleep 1`);
     await execute(`mount ${devices.data.device} ${target}${devices.data.mountPoint}`);
     await execute(`sleep 1`);
-    await execute(`mount ${devices.root.device} ${target}`);
+    await execute(`umount ${devices.root.device} ${target}`);
     await execute(`sleep 1`);
     await execute(`rm -rf ${target}`);
     return true;
