@@ -1,0 +1,1 @@
+echo fusermount -u /home/artisan/devel
