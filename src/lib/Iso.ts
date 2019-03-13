@@ -96,9 +96,9 @@ class Iso {
     console.log(">>> netDomainName: " + this.net.domainName);
   }
 
-  async spawn() {
+  async createStructure() {
     console.log("==========================================");
-    console.log("Incubator iso: spawn");
+    console.log("Incubator iso: createStructure");
     console.log("==========================================");
 
     if (!fs.existsSync(this.distro.pathIso)) {

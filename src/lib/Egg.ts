@@ -95,7 +95,7 @@ class Egg {
   }
 
   // Check or create a nest
-  public async spawn() {
+  public async createStructure() {
     console.log("==========================================");
     console.log("eggs spawn");
     console.log("==========================================");

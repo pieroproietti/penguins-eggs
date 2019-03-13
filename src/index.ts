@@ -69,9 +69,9 @@ if (utils.isRoot()) {
   );
   console.log("Examples: ");
   console.log(">>> sudo eggs spawn --distroname penguin");
-  console.log(">>> sudo eggs kill");
   console.log(">>> sudo eggs hatch");
-  }
+  console.log(">>> sudo eggs kill");
+}
 
 bye();
 // END MAIN
@@ -79,8 +79,8 @@ bye();
 async function config() {
   program
     .command("spawn")
-    .command("kill")
-    .command("hatch");
+    .command("hatch")
+    .command("kill");
 
   program.option("-d, --distroname <distroname>");
 
@@ -104,8 +104,7 @@ async function config() {
 
   if (command == "spawn") {
     spawn(e, i);
-  }
-  if (command == "kill") {
+  } else if (command == "kill") {
     i.kill();
     e.kill();
   } else if (command == "hatch") {
@@ -113,14 +112,23 @@ async function config() {
   }
 }
 
+
+
 async function spawn(e: any, i: any) {
   if (!await utils.isLive()) {
     console.log(
       ">>> eggs: This is a live system! The spawn command cannot be executed."
     );
   } else {
-    await buildEgg(e);
-    await buildIso(i);
+    await e.createStructure();
+    await e.copy();
+
+    await i.createStructure();
+    await i.isolinux();
+    await i.isolinuxCfg();
+    await i.alive();
+    await i.squashFs();
+    await i.makeIso();
   }
 }
 
@@ -134,19 +142,6 @@ async function startHatch() {
   }
 }
 
-async function buildEgg(e: any) {
-  await e.spawn();
-  await e.copy();
-}
-
-async function buildIso(i: any) {
-  await i.spawn();
-  await i.isolinux();
-  await i.isolinuxCfg();
-  await i.alive();
-  await i.squashFs();
-  await i.makeIso();
-}
 
 function bye() {
   console.log(
