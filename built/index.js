@@ -42,13 +42,13 @@ if (utils_1.default.isRoot()) {
     console.log(`${app.name} need to run with supervisor privileges! You need to prefix it with sudo`);
     console.log("Examples: ");
     console.log(">>> sudo eggs spawn --distroname penguin");
-    console.log(">>> sudo eggs kill");
     console.log(">>> sudo eggs hatch");
+    console.log(">>> sudo eggs kill");
 }
 bye();
 // END MAIN
 async function config() {
-    program.command("spawn").command("kill").command("hatch");
+    program.command("spawn").command("hatch").command("kill");
     program.option("-d, --distroname <distroname>");
     program.parse(process.argv);
     if (program.distroname) {
@@ -66,8 +66,7 @@ async function config() {
     let command = process.argv[2];
     if (command == "spawn") {
         spawn(e, i);
-    }
-    if (command == "kill") {
+    } else if (command == "kill") {
         i.kill();
         e.kill();
     } else if (command == "hatch") {
@@ -78,8 +77,14 @@ async function spawn(e, i) {
     if (!(await utils_1.default.isLive())) {
         console.log(">>> eggs: This is a live system! The spawn command cannot be executed.");
     } else {
-        await buildEgg(e);
-        await buildIso(i);
+        await e.createStructure();
+        await e.copy();
+        await i.createStructure();
+        await i.isolinux();
+        await i.isolinuxCfg();
+        await i.alive();
+        await i.squashFs();
+        await i.makeIso();
     }
 }
 async function startHatch() {
@@ -88,18 +93,6 @@ async function startHatch() {
     } else {
         hatch_1.hatch();
     }
-}
-async function buildEgg(e) {
-    await e.spawn();
-    await e.copy();
-}
-async function buildIso(i) {
-    await i.spawn();
-    await i.isolinux();
-    await i.isolinuxCfg();
-    await i.alive();
-    await i.squashFs();
-    await i.makeIso();
 }
 function bye() {
     console.log(`${app.name} v. ${app.version} (C) 2018/2019 ${app.author} <${app.mail}>`);

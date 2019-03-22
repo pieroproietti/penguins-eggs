@@ -70,26 +70,9 @@ const filterVar = `
 --filter="- /var/spool/mail/*" \
 --filter="- /var/mail/*" `;
 const filterPersonalDatas = `
---filter="+ /home/*/" \
---filter="+ /home/*/Documenti/" \
---filter="+ /home/*/Immagini/" \
---filter="+ /home/*/Modelli/" \
---filter="+ /home/*/Musica/" \
---filter="+ /home/*/Pubblici/" \
---filter="+ /home/*/Scaricati/" \
---filter="+ /home/*/Scrivania/" \
---filter="+ /home/*/Video/" \
---filter="+ /home/*/.atom" \
---filter="+ /home/*/.bashrc" \
---filter="+ /home/*/.cinnamon/" \
---filter="+ /home/*/.config/" \
---filter="+ /home/*/.gconf/" \
---filter="+ /home/*/.gnome/" \
---filter="+ /home/*/.themes/" \
---filter="+ /home/*/.user-dirs.dirs" \
---filter="+ /home/*/.user-dirs.locale" \
---filter="- /home/*/*" `;
-const filters = filterRoot.trim() + filterBoot.trim() + filterEtc.trim() + filterLib.trim() + filterUsr.trim() + filterVar.trim() +
+--filter="- /home/*/ 
+          +/home/live/*" `;
+const filters = filterRoot.trim() + " " + filterBoot.trim() + " " + filterEtc.trim() + " " + filterLib.trim() + " " + filterUsr.trim() + " " + filterVar.trim() + " " +
 // filterHome.trim()+
 filterPersonalDatas.trim();
 exports.default = filters;

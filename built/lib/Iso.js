@@ -72,9 +72,9 @@ class Iso {
         console.log(">>> kernelVer: " + this.distro.kernel);
         console.log(">>> netDomainName: " + this.net.domainName);
     }
-    async spawn() {
+    async createStructure() {
         console.log("==========================================");
-        console.log("Incubator iso: spawn");
+        console.log("Incubator iso: createStructure");
         console.log("==========================================");
         if (!fs_1.default.existsSync(this.distro.pathIso)) {
             utils_1.default.exec(`mkdir -p ${this.distro.pathIso}/live`);
