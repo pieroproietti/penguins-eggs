@@ -133,10 +133,13 @@ class Egg {
     --delete-before  \
     --delete-excluded  \ ${filters} / ${this.distro.pathFs}`;
     console.log("spawning the system to egg...");
-    //console.log(cmd.trim());
+    console.log(cmd.trim());
     shell.exec(cmd.trim(), {
       async: false
     });
   }
 }
 export default Egg;
+
+
+
