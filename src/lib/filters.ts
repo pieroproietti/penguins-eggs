@@ -75,8 +75,8 @@ const filterVar = `
 
 
 const filterPersonalDatas = `
---filter="- /home/*/ 
-          +/home/live/*" ` ;
+--filter="- /home/*/" \
+--filter="+ /home/live/*" ` ;
 
 const filters =
   filterRoot.trim() + " " +
