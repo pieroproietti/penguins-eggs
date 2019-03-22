@@ -108,7 +108,7 @@ class Egg {
     --filter="- ${this.distro.pathHome}"  \
     --delete-before  \
     --delete-excluded  \ ${filters_1.default} / ${this.distro.pathFs}`;
-        console.log("spawning the system to egg...");
+        console.log("spawning the system into  the egg... This process can be very long, you can take a coffee!");
         // console.log(cmd.trim());
         shelljs_1.default.exec(cmd.trim(), {
             async: false
