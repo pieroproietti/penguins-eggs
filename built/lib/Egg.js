@@ -109,7 +109,7 @@ class Egg {
     --delete-before  \
     --delete-excluded  \ ${filters_1.default} / ${this.distro.pathFs}`;
         console.log("spawning the system to egg...");
-        //console.log(cmd.trim());
+        console.log(cmd.trim());
         shelljs_1.default.exec(cmd.trim(), {
             async: false
         });
