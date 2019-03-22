@@ -178,7 +178,7 @@ label ${this.distro.name} safe
     let isoHybridOption = "-isohybrid-mbr /usr/lib/ISOLINUX/isohdpfx.bin ";
     //let uefiOption = "";
     //"-eltorito-alt-boot -e boot/grub/efiboot.img -isohybrid-gpt-basdat -no-emul-boot";
-    let volid = `"Penguins eggs ${this.distro.name}"`;
+    let volid = `"Penguin's eggs ${this.distro.name}"`;
     let isoName = `${this.workDir}/${this.distro.name}`;
     isoName += utils.date4file() + ".iso";
 
