@@ -2,7 +2,7 @@
 #
 # parameter: none
 #
-IS_LIVE=$(mount|grep squashfs)
+IS_LIVE=$(mount|grep /run/live/medium/live/)
 if [[ -z $IS_LIVE ]]; then
   # True
   echo "1"
