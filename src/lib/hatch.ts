@@ -343,13 +343,13 @@ async function getOptions(driveList: string[]): Promise<any> {
         type: "input",
         name: "username",
         message: "user name: ",
-        default: "artisan"
+        default: "live"
       },
       {
         type: "input",
         name: "userfullname",
         message: "user full name: ",
-        default: "artisan"
+        default: "live user"
       },
       {
         type: "password",

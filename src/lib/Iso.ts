@@ -150,7 +150,7 @@ MENU BACKGROUND turtle.png
 LABEL ${this.distro.name}
   MENU LABEL ^${this.distro.name}
   kernel /live/vmlinuz
-  append boot=live initrd=/live/initrd.img quiet splash
+  append boot=live initrd=/live/initrd.img quiet splash nouveau.modeset=0
 
 label ${this.distro.name} safe
   MENU LABEL ^${this.distro.name} safe

@@ -2,11 +2,11 @@
 #
 # parameter: none
 #
-IS_LIVE=$(mount|grep /run/live/medium/live/)
+IS_LIVE=$(ls /lib/live|grep mount)
 if [[ -z $IS_LIVE ]]; then
-  # True
-  echo "1"
-else
-  ## False
+  # Non esiste mount
   echo "0"
+else
+  ## mount
+  echo "1"
 fi
