@@ -277,12 +277,12 @@ async function getOptions(driveList) {
             type: "input",
             name: "username",
             message: "user name: ",
-            default: "artisan"
+            default: "live"
         }, {
             type: "input",
             name: "userfullname",
             message: "user full name: ",
-            default: "artisan"
+            default: "live user"
         }, {
             type: "password",
             name: "userpassword",
