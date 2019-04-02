@@ -50,7 +50,6 @@ async function hatch() {
     });
     let varOptions = await getOptions(driveList);
     let options = JSON.parse(varOptions);
-    // default mount /var/lib/pve
     if (options.mountType == "workstation") {
         devices.data.mountPoint = "/home";
     } else if (options.mountType == "docker") {
