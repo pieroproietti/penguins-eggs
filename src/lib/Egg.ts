@@ -97,7 +97,7 @@ class Egg {
   // Check or create a nest
   public async createStructure() {
     console.log("==========================================");
-    console.log("eggs spawn");
+    console.log("eggs: createStructure");
     console.log("==========================================");
     if (!fs.existsSync(this.distro.pathHome)) {
       utils.exec(`mkdir -p ${this.distro.pathHome}`);
@@ -105,34 +105,32 @@ class Egg {
     }
 
     if (fs.existsSync(this.distro.pathFs)) {
-      // Remove and create /var ed /etc
-      utils.exec(`rm -rf ${this.distro.pathFs}/var`);
-      utils.exec(`mkdir -p ${this.distro.pathFs}/var`);
-      utils.exec(`rm -rf ${this.distro.pathFs}/etc`);
-      utils.exec(`mkdir -p ${this.distro.pathFs}/etc/live`);
-    } else {
-      utils.exec(`mkdir -p ${this.distro.pathFs}`);
-      utils.exec(`mkdir -p ${this.distro.pathFs}/dev`);
-      utils.exec(`mkdir -p ${this.distro.pathFs}/etc`);
-      utils.exec(`mkdir -p ${this.distro.pathFs}/etc/intefaces`);
-      utils.exec(`mkdir -p ${this.distro.pathFs}/etc/live`);
-      utils.exec(`mkdir -p ${this.distro.pathFs}/proc`);
-      utils.exec(`mkdir -p ${this.distro.pathFs}/sys`);
-      utils.exec(`mkdir -p ${this.distro.pathFs}/media`);
-      utils.exec(`mkdir -p ${this.distro.pathFs}/run`);
-      utils.exec(`mkdir -p ${this.distro.pathFs}/var`);
-      utils.exec(`mkdir -p ${this.distro.pathFs}/tmp`);
+      utils.exec(`rm -rf ${this.distro.pathFs}`);
     }
+    utils.exec(`mkdir -p ${this.distro.pathFs}`);
+    utils.exec(`mkdir -p ${this.distro.pathFs}/dev`);
+    utils.exec(`mkdir -p ${this.distro.pathFs}/etc`);
+    utils.exec(`mkdir -p ${this.distro.pathFs}/etc/intefaces`);
+    utils.exec(`mkdir -p ${this.distro.pathFs}/etc/live`);
+    utils.exec(`mkdir -p ${this.distro.pathFs}/proc`);
+    utils.exec(`mkdir -p ${this.distro.pathFs}/sys`);
+    utils.exec(`mkdir -p ${this.distro.pathFs}/media`);
+    utils.exec(`mkdir -p ${this.distro.pathFs}/run`);
+    utils.exec(`mkdir -p ${this.distro.pathFs}/var`);
+    utils.exec(`mkdir -p ${this.distro.pathFs}/tmp`);
   }
 
-  public async copy() {
+  public async systemCopy() {
     let cmd = "";
     cmd = `
     rsync -aq  \
     --filter="- ${this.distro.pathHome}"  \
     --delete-before  \
     --delete-excluded  \ ${filters} / ${this.distro.pathFs}`;
-    console.log("spawning the system into  the egg... This process can be very long, you can take a coffee!");
+    console.log("==========================================");
+    console.log("eggs: systemCopy");
+    console.log("==========================================");
+    console.log("Spawning the system into  the egg... \nThis process can be very long, perhaps it's time for a coffee!");
     // console.log(cmd.trim());
     shell.exec(cmd.trim(), {
       async: false

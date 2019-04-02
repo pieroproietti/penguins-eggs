@@ -73,10 +73,13 @@ const filterVar = `
 --filter="- /var/spool/mail/*" \
 --filter="- /var/mail/*" `;
 
-
+/**
+ * Copia sia live che artisan
+ */
 const filterPersonalDatas = `
-  --filter="+ /home/live/" \
-  --filter="- /home/*"` ;
+--filter="+ /home/live/" \
+--filter="+ /home/artisan/" \
+--filter="- /home/*"` ;
 
 const filters =
   filterRoot.trim() + " " +
@@ -85,7 +88,6 @@ const filters =
   filterLib.trim() + " " +
   filterUsr.trim() + " " +
   filterVar.trim() + " " +
-  // filterHome.trim()+
   filterPersonalDatas.trim();
 
 export default filters;

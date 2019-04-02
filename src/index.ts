@@ -120,9 +120,9 @@ async function spawn(e: any, i: any) {
       ">>> eggs: This is a live system! The spawn command cannot be executed."
     );
   } else {
+    console.log("Spawning the system into  the egg... \nThis process can be very long, perhaps it's time for a coffee!");
     await e.createStructure();
-    await e.copy();
-
+    await e.systemCopy();
     await i.createStructure();
     await i.isolinuxPrepare();
     await i.isolinuxCfg();
