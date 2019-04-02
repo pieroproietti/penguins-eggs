@@ -69,11 +69,13 @@ const filterVar = `
 --filter="- /var/log/*" \
 --filter="- /var/spool/mail/*" \
 --filter="- /var/mail/*" `;
+/**
+ * Copia sia live che artisan
+ */
 const filterPersonalDatas = `
-  --filter="+ /home/live/" \
-  --filter="- /home/*"`;
-const filters = filterRoot.trim() + " " + filterBoot.trim() + " " + filterEtc.trim() + " " + filterLib.trim() + " " + filterUsr.trim() + " " + filterVar.trim() + " " +
-// filterHome.trim()+
-filterPersonalDatas.trim();
+--filter="+ /home/live/" \
+--filter="+ /home/artisan/" \
+--filter="- /home/*"`;
+const filters = filterRoot.trim() + " " + filterBoot.trim() + " " + filterEtc.trim() + " " + filterLib.trim() + " " + filterUsr.trim() + " " + filterVar.trim() + " " + filterPersonalDatas.trim();
 exports.default = filters;
 //# sourceMappingURL=filters.js.map

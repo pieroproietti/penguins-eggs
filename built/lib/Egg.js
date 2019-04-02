@@ -75,40 +75,38 @@ class Egg {
     // Check or create a nest
     async createStructure() {
         console.log("==========================================");
-        console.log("eggs spawn");
+        console.log("eggs: createStructure");
         console.log("==========================================");
         if (!fs_1.default.existsSync(this.distro.pathHome)) {
             utils_1.default.exec(`mkdir -p ${this.distro.pathHome}`);
             //utils.exec(`ln -s ${this.distro.pathHome} /srv/penguins-eggs`);
         }
         if (fs_1.default.existsSync(this.distro.pathFs)) {
-            // Remove and create /var ed /etc
-            utils_1.default.exec(`rm -rf ${this.distro.pathFs}/var`);
-            utils_1.default.exec(`mkdir -p ${this.distro.pathFs}/var`);
-            utils_1.default.exec(`rm -rf ${this.distro.pathFs}/etc`);
-            utils_1.default.exec(`mkdir -p ${this.distro.pathFs}/etc/live`);
-        } else {
-            utils_1.default.exec(`mkdir -p ${this.distro.pathFs}`);
-            utils_1.default.exec(`mkdir -p ${this.distro.pathFs}/dev`);
-            utils_1.default.exec(`mkdir -p ${this.distro.pathFs}/etc`);
-            utils_1.default.exec(`mkdir -p ${this.distro.pathFs}/etc/intefaces`);
-            utils_1.default.exec(`mkdir -p ${this.distro.pathFs}/etc/live`);
-            utils_1.default.exec(`mkdir -p ${this.distro.pathFs}/proc`);
-            utils_1.default.exec(`mkdir -p ${this.distro.pathFs}/sys`);
-            utils_1.default.exec(`mkdir -p ${this.distro.pathFs}/media`);
-            utils_1.default.exec(`mkdir -p ${this.distro.pathFs}/run`);
-            utils_1.default.exec(`mkdir -p ${this.distro.pathFs}/var`);
-            utils_1.default.exec(`mkdir -p ${this.distro.pathFs}/tmp`);
+            utils_1.default.exec(`rm -rf ${this.distro.pathFs}`);
         }
+        utils_1.default.exec(`mkdir -p ${this.distro.pathFs}`);
+        utils_1.default.exec(`mkdir -p ${this.distro.pathFs}/dev`);
+        utils_1.default.exec(`mkdir -p ${this.distro.pathFs}/etc`);
+        utils_1.default.exec(`mkdir -p ${this.distro.pathFs}/etc/intefaces`);
+        utils_1.default.exec(`mkdir -p ${this.distro.pathFs}/etc/live`);
+        utils_1.default.exec(`mkdir -p ${this.distro.pathFs}/proc`);
+        utils_1.default.exec(`mkdir -p ${this.distro.pathFs}/sys`);
+        utils_1.default.exec(`mkdir -p ${this.distro.pathFs}/media`);
+        utils_1.default.exec(`mkdir -p ${this.distro.pathFs}/run`);
+        utils_1.default.exec(`mkdir -p ${this.distro.pathFs}/var`);
+        utils_1.default.exec(`mkdir -p ${this.distro.pathFs}/tmp`);
     }
-    async copy() {
+    async systemCopy() {
         let cmd = "";
         cmd = `
     rsync -aq  \
     --filter="- ${this.distro.pathHome}"  \
     --delete-before  \
     --delete-excluded  \ ${filters_1.default} / ${this.distro.pathFs}`;
-        console.log("spawning the system into  the egg... This process can be very long, you can take a coffee!");
+        console.log("==========================================");
+        console.log("eggs: systemCopy");
+        console.log("==========================================");
+        console.log("Spawning the system into  the egg... \nThis process can be very long, perhaps it's time for a coffee!");
         // console.log(cmd.trim());
         shelljs_1.default.exec(cmd.trim(), {
             async: false
