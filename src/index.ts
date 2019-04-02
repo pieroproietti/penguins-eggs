@@ -124,11 +124,11 @@ async function spawn(e: any, i: any) {
     await e.copy();
 
     await i.createStructure();
-    await i.isolinux();
+    await i.isolinuxPrepare();
     await i.isolinuxCfg();
-    await i.alive();
-    await i.squashFs();
-    await i.makeIso();
+    await i.liveKernel();
+    await i.liveSquashFs();
+    await i.makeIsoFs();
   }
 }
 

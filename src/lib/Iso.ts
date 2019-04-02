@@ -2,6 +2,12 @@
   penguins-eggs: iso.ts
   author: Piero Proietti
   mail: piero.proietti@gmail.com
+
+  Al momento popolo solo le directory live ed isolinux, mentre boot ed EFI no!
+  createStructure
+  isolinuxPrepare, isolinuxCfg
+  liveKernel, liveSquashFs
+   makeIso
 */
 "use strict";
 
@@ -116,7 +122,7 @@ class Iso {
     utils.exec(`rm -rf ${this.distro.pathIso}`);
   }
 
-  async isolinux() {
+  async isolinuxPrepare() {
     let isolinuxbin = "/usr/lib/ISOLINUX/isolinux.bin";
     let vesamenu = "/usr/lib/syslinux/modules/bios/vesamenu.c32";
 
@@ -162,19 +168,25 @@ label ${this.distro.name} safe
     utils.exec(`cp ${path}/src/assets/turtle.png ${this.distro.pathIso}/isolinux`);
   }
 
-  async alive() {
+  /**
+   * alive: rende live 
+   */
+  async liveKernel() {
     utils.exec(`cp /vmlinuz ${this.distro.pathIso}/live/`);
     utils.exec(`cp /initrd.img ${this.distro.pathIso}/live/`);
   }
 
-  async squashFs() {
+  /**
+   * squashFs: crea in live filesystem.squashfs
+   */
+  async liveSquashFs() {
     let option = "-comp xz";
     utils.exec(
       `mksquashfs ${this.distro.pathFs} ${this.distro.pathIso}/live/filesystem.squashfs ${option} -noappend`
     );
   }
 
-  async makeIso() {
+  async makeIsoFs() {
     let isoHybridOption = "-isohybrid-mbr /usr/lib/ISOLINUX/isohdpfx.bin ";
     //let uefiOption = "";
     //"-eltorito-alt-boot -e boot/grub/efiboot.img -isohybrid-gpt-basdat -no-emul-boot";

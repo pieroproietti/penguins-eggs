@@ -80,11 +80,11 @@ async function spawn(e, i) {
         await e.createStructure();
         await e.copy();
         await i.createStructure();
-        await i.isolinux();
+        await i.isolinuxPrepare();
         await i.isolinuxCfg();
-        await i.alive();
-        await i.squashFs();
-        await i.makeIso();
+        await i.liveKernel();
+        await i.liveSquashFs();
+        await i.makeIsoFs();
     }
 }
 async function startHatch() {
