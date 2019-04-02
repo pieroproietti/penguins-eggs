@@ -130,7 +130,6 @@ class Egg {
     console.log("==========================================");
     console.log("eggs: systemCopy");
     console.log("==========================================");
-    console.log("Spawning the system into  the egg... \nThis process can be very long, perhaps it's time for a coffee!");
     // console.log(cmd.trim());
     shell.exec(cmd.trim(), {
       async: false
