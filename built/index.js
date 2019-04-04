@@ -81,7 +81,7 @@ async function spawn(e, i, c) {
     if (!(await utils_1.default.isLive())) {
         console.log(">>> eggs: This is a live system! The spawn command cannot be executed.");
     } else {
-        console.log("Configure calamares");
+        console.log("calamares-settings-eggs");
         await c.settingsConf();
         await c.brandingDesc();
         console.log("Spawning the system into  the egg... \nThis process can be very long, perhaps it's time for a coffee!");
