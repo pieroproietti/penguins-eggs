@@ -21,6 +21,7 @@ const os_1 = __importDefault(require("os"));
 const utils_1 = __importDefault(require("./lib/utils"));
 const Iso_1 = __importDefault(require("./lib/Iso"));
 const Egg_1 = __importDefault(require("./lib/Egg"));
+const Calamares_1 = __importDefault(require("./lib/Calamares"));
 const hatch_1 = require("./lib/hatch");
 let program = require("commander").version(app.version);
 let workDir = "/home/eggs/";
@@ -29,6 +30,8 @@ let net = {};
 let user = {};
 let root = {};
 distro.name = os_1.default.hostname();
+distro.versionName = "Emperor";
+distro.versionNumber = "0.0.1";
 net.dhcp = true;
 user.fullName = "Artisan";
 user.name = "artisan";
@@ -63,9 +66,10 @@ async function config() {
     }
     let e = new Egg_1.default(workDir, distro);
     let i = new Iso_1.default(app, workDir, distro);
+    let c = new Calamares_1.default(distro.name, distro.versionName, distro.versionNumber);
     let command = process.argv[2];
     if (command == "spawn") {
-        spawn(e, i);
+        spawn(e, i, c);
     } else if (command == "kill") {
         i.kill();
         e.kill();
@@ -73,10 +77,13 @@ async function config() {
         startHatch();
     }
 }
-async function spawn(e, i) {
+async function spawn(e, i, c) {
     if (!(await utils_1.default.isLive())) {
         console.log(">>> eggs: This is a live system! The spawn command cannot be executed.");
     } else {
+        console.log("Configure calamares");
+        await c.settingsConf();
+        await c.brandingDesc();
         console.log("Spawning the system into  the egg... \nThis process can be very long, perhaps it's time for a coffee!");
         await e.createStructure();
         await e.systemCopy();

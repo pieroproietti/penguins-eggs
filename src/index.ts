@@ -38,6 +38,7 @@ import os from "os";
 import utils from "./lib/utils";
 import Iso from "./lib/Iso";
 import Egg from "./lib/Egg";
+import Calamares from "./lib/Calamares";
 import { hatch } from "./lib/hatch";
 import { IDistro, INet, IUser } from "./interfaces";
 
@@ -49,6 +50,8 @@ let user = {} as IUser;
 let root = {} as IUser;
 
 distro.name = os.hostname();
+distro.versionName="Emperor";
+distro.versionNumber="0.0.1";
 
 net.dhcp = true;
 
@@ -99,11 +102,12 @@ async function config() {
 
   let e: Egg = new Egg(workDir, distro);
   let i: Iso = new Iso(app, workDir, distro);
+  let c: Calamares = new Calamares(distro.name, distro.versionName, distro.versionNumber);
 
   let command = process.argv[2];
 
   if (command == "spawn") {
-    spawn(e, i);
+    spawn(e, i, c);
   } else if (command == "kill") {
     i.kill();
     e.kill();
@@ -114,12 +118,15 @@ async function config() {
 
 
 
-async function spawn(e: any, i: any) {
+async function spawn(e: any, i: any, c: any) {
   if (!await utils.isLive()) {
     console.log(
       ">>> eggs: This is a live system! The spawn command cannot be executed."
     );
   } else {
+    console.log("Configure calamares");
+    await c.settingsConf();
+    await c.brandingDesc();
     console.log("Spawning the system into  the egg... \nThis process can be very long, perhaps it's time for a coffee!");
     await e.createStructure();
     await e.systemCopy();
@@ -139,6 +146,7 @@ async function startHatch() {
     );
   } else {
     hatch();
+
   }
 }
 
