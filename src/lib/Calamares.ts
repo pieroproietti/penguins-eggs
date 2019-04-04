@@ -25,7 +25,7 @@ class Calamares {
   }
 
   async settingsConf() {
-    let settingsPath = '/etc/calamares/settings.cfg'
+    let settingsPath = '/etc/calamares/settings.conf'
     let
       settings = {
         'modules-search': ['local', '/usr/lib/calamares/modules'],
@@ -45,7 +45,7 @@ class Calamares {
       };
     console.log("Configurazione settings.cfg");
     try {
-      fs.writeFile(settingsPath, yaml.safeDump(settings), 'utf8', (err: any) => {
+      fs.writeFileSync(settingsPath, yaml.safeDump(settings), 'utf8', (err: any) => {
         if (err) console.log(err)
       })
     } catch (e) {
@@ -110,7 +110,7 @@ class Calamares {
 
     console.log("Configurazione branding.desc");
     try {
-      fs.writeFile(brandingPath, yaml.safeDump(branding), 'utf8', (err: any) => {
+      fs.writeFileSync(brandingPath, yaml.safeDump(branding), 'utf8', (err: any) => {
         if (err) console.log(err)
       })
 

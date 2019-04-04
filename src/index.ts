@@ -41,6 +41,7 @@ import Egg from "./lib/Egg";
 import Calamares from "./lib/Calamares";
 import { hatch } from "./lib/hatch";
 import { IDistro, INet, IUser } from "./interfaces";
+import { exit } from "shelljs";
 
 let program = require("commander").version(app.version);
 let workDir = "/home/eggs/";
@@ -124,9 +125,10 @@ async function spawn(e: any, i: any, c: any) {
       ">>> eggs: This is a live system! The spawn command cannot be executed."
     );
   } else {
-    console.log("Configure calamares");
+    console.log("calamares-settings-eggs");
     await c.settingsConf();
     await c.brandingDesc();
+
     console.log("Spawning the system into  the egg... \nThis process can be very long, perhaps it's time for a coffee!");
     await e.createStructure();
     await e.systemCopy();
