@@ -14,6 +14,16 @@ class Calamares {
         this.shortVersion = versionNumber;
         this.versionedName = versionName;
     }
+    isCalamaresInstalled() {
+        const path = '/etc/calamares/branding/eggs/branding.desc';
+        try {
+            if (fs.existsSync(path)) {
+                return true;
+            }
+        } catch (err) {
+            console.error(err);
+        }
+    }
     async settingsConf() {
         let settingsPath = '/etc/calamares/settings.conf';
         let settings = {

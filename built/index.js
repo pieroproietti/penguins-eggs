@@ -81,9 +81,24 @@ async function spawn(e, i, c) {
     if (!(await utils_1.default.isLive())) {
         console.log(">>> eggs: This is a live system! The spawn command cannot be executed.");
     } else {
-        console.log("calamares-settings-eggs");
-        await c.settingsConf();
-        await c.brandingDesc();
+        if (c.isCalamaresInstalled()) {
+            console.log("==========================================");
+            console.log("eggs: calamares configuration");
+            console.log("You can use the gui Installation:");
+            console.log("$sudo calamares");
+            console.log("or the cli installation:");
+            console.log("$sudo eggs hatch");
+            console.log("==========================================");
+            await c.settingsConf();
+            await c.brandingDesc();
+        } else {
+            console.log("==========================================");
+            console.log("eggs: calamares-eggs is not installed!");
+            console.log(">>>>Skipping calamares configuration<<<<<");
+            console.log("Use the cli installation cli:");
+            console.log("$sudo eggs hatch");
+            console.log("==========================================");
+        }
         console.log("Spawning the system into  the egg... \nThis process can be very long, perhaps it's time for a coffee!");
         await e.createStructure();
         await e.systemCopy();
