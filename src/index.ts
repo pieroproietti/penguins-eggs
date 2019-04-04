@@ -51,8 +51,8 @@ let user = {} as IUser;
 let root = {} as IUser;
 
 distro.name = os.hostname();
-distro.versionName="Emperor";
-distro.versionNumber="0.0.1";
+distro.versionName= 'Emperor';
+distro.versionNumber= utils.date4label();
 
 net.dhcp = true;
 
