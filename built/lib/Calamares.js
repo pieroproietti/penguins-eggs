@@ -25,7 +25,7 @@ class Calamares {
             'prompt-install': false,
             'dont-chroot': false
         };
-        console.log("Configurazione settings.cfg");
+        console.log("Configurazione settings.conf");
         try {
             fs.writeFileSync(settingsPath, yaml.safeDump(settings), 'utf8', err => {
                 if (err) console.log(err);
@@ -37,13 +37,13 @@ class Calamares {
     async brandingDesc() {
         // Configurazione branding.desc
         let brandingPath = '/etc/calamares/branding/eggs/branding.desc';
-        let productName = this.productName;
+        let productName = 'Penguin\'s eggs' + ' ' + this.productName;
         let shortProductName = this.productName;
         let version = this.shortVersion + ' (' + this.versionedName + ')';
         let shortVersion = this.shortVersion;
         let versionedName = this.versionedName;
         let shortVersionedName = this.versionedName;
-        let bootloaderEntryName = this.productName + this.shortVersion;
+        let bootloaderEntryName = productName;
         let productUrl = 'https://penguin-s-eggs.gitbook.io/project/';
         let supportUrl = 'https://github.com/pieroproietti/penguins-eggs';
         let releaseNotesUrl = 'https://github.com/pieroproietti/penguins-eggs';
