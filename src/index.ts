@@ -51,8 +51,8 @@ let user = {} as IUser;
 let root = {} as IUser;
 
 distro.name = os.hostname();
-distro.versionName= 'Emperor';
-distro.versionNumber= utils.date4label();
+distro.versionName = 'Emperor';
+distro.versionNumber = utils.date4label();
 
 net.dhcp = true;
 
@@ -125,9 +125,26 @@ async function spawn(e: any, i: any, c: any) {
       ">>> eggs: This is a live system! The spawn command cannot be executed."
     );
   } else {
-    console.log("calamares-settings-eggs");
-    await c.settingsConf();
-    await c.brandingDesc();
+
+    if (c.isCalamaresInstalled()) {
+      console.log("==========================================");
+      console.log("eggs: calamares configuration");
+      console.log("You can use the gui Installation:");
+      console.log("$sudo calamares");
+      console.log("or the cli installation:");
+      console.log("$sudo eggs hatch");
+      console.log("==========================================");
+  
+      await c.settingsConf();
+      await c.brandingDesc();
+    } else {
+      console.log("==========================================");
+      console.log("eggs: calamares-eggs is not installed!");
+      console.log(">>>>Skipping calamares configuration<<<<<");
+      console.log("Use the cli installation cli:");
+      console.log("$sudo eggs hatch");
+      console.log("==========================================");
+    }
 
     console.log("Spawning the system into  the egg... \nThis process can be very long, perhaps it's time for a coffee!");
     await e.createStructure();

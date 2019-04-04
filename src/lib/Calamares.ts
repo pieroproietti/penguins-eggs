@@ -24,6 +24,19 @@ class Calamares {
     this.versionedName = versionName;
   }
 
+
+  public isCalamaresInstalled(): boolean {
+    const path = '/etc/calamares/branding/eggs/branding.desc';
+
+    try {
+      if (fs.existsSync(path)) {
+        return true;
+      }
+    } catch (err) {
+      console.error(err)
+    }
+  }
+
   async settingsConf() {
     let settingsPath = '/etc/calamares/settings.conf'
     let
@@ -59,7 +72,7 @@ class Calamares {
 
     let productName = 'Penguin\'s eggs' + ' ' + this.productName;
     let shortProductName = this.productName;
-    let version = this.shortVersion + ' (' + this.versionedName +')';
+    let version = this.shortVersion + ' (' + this.versionedName + ')';
     let shortVersion = this.shortVersion;
     let versionedName = this.versionedName;
     let shortVersionedName = this.versionedName;
