@@ -68,22 +68,31 @@ root.password = "evolution";
 if (utils.isRoot()) {
   config();
 } else {
-  console.log(
-    `${app.name} need to run with supervisor privileges! You need to prefix it with sudo`
-  );
-  console.log("Examples: ");
-  console.log(">>> sudo eggs spawn --distroname penguin");
-  console.log(">>> sudo eggs hatch");
-  console.log(">>> sudo eggs kill");
+  usage();
 }
 
 bye();
 // END MAIN
 
+
+function usage(){
+  console.log(
+    `${app.name} need to run with supervisor privileges! You need to prefix it with sudo`
+  );
+  console.log("Usage: ");
+  console.log(">>> sudo eggs spawn --distroname penguin");
+  console.log(">>> sudo eggs hatch");
+  console.log(">>> sudo eggs calamares");
+  console.log(">>> sudo eggs kill");
+}
+
+
+
 async function config() {
   program
     .command("spawn")
     .command("hatch")
+    .command("calamares")
     .command("kill");
 
   program.option("-d, --distroname <distroname>");
@@ -112,11 +121,36 @@ async function config() {
   } else if (command == "kill") {
     i.kill();
     e.kill();
+  } else if (command == "calamares") {
+    calamares(c);
   } else if (command == "hatch") {
     startHatch();
+  } else{
+    usage();
   }
 }
 
+async function calamares(c: any){
+  if (c.isCalamaresInstalled()) {
+    console.log("==========================================");
+    console.log("eggs: calamares configuration");
+    console.log("You can use the gui Installation:");
+    console.log("$sudo calamares");
+    console.log("or the cli installation:");
+    console.log("$sudo eggs hatch");
+    console.log("==========================================");
+
+    await c.settingsConf();
+    await c.brandingDesc();
+  } else {
+    console.log("==========================================");
+    console.log("eggs: calamares-eggs is not installed!");
+    console.log(">>>>Skipping calamares configuration<<<<<");
+    console.log("Use the cli installation cli:");
+    console.log("$sudo eggs hatch");
+    console.log("==========================================");
+  }
+}
 
 
 async function spawn(e: any, i: any, c: any) {
@@ -126,25 +160,7 @@ async function spawn(e: any, i: any, c: any) {
     );
   } else {
 
-    if (c.isCalamaresInstalled()) {
-      console.log("==========================================");
-      console.log("eggs: calamares configuration");
-      console.log("You can use the gui Installation:");
-      console.log("$sudo calamares");
-      console.log("or the cli installation:");
-      console.log("$sudo eggs hatch");
-      console.log("==========================================");
-  
-      await c.settingsConf();
-      await c.brandingDesc();
-    } else {
-      console.log("==========================================");
-      console.log("eggs: calamares-eggs is not installed!");
-      console.log(">>>>Skipping calamares configuration<<<<<");
-      console.log("Use the cli installation cli:");
-      console.log("$sudo eggs hatch");
-      console.log("==========================================");
-    }
+    await calamares(c);
 
     console.log("Spawning the system into  the egg... \nThis process can be very long, perhaps it's time for a coffee!");
     await e.createStructure();
