@@ -1,8 +1,9 @@
-rm ./esnext
-#rm ./built -rf
+rm ./esnext -rf
+rm ./built -rf
 npm run compile
 npm run esnext-compile
-rm ./esnext -rf
-ln -s ./assets ./built/assets
-ln -s ./scripts ./built/scripts
+cd built
+ln -s  ../assets ./assets
+ln -s  ../scripts ./scripts 
+cd ..
 
