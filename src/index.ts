@@ -53,6 +53,13 @@ let root = {} as IUser;
 distro.name = os.hostname();
 distro.versionName = 'Emperor';
 distro.versionNumber = utils.date4label();
+// Debian/Ubuntu
+distro.isolinux = '/usr/share/ISOLINUX/';
+distro.syslinux = '/usr/lib/syslinux/modules/bios/';
+// Redhat
+// distro.isolinux='/usr/share/syslinux/';
+// distro.syslinux='/usr/share/syslinux/';
+
 
 net.dhcp = true;
 
@@ -64,6 +71,7 @@ root.fullName = "Root";
 root.name = "root";
 root.password = "evolution";
 
+utils.pathScripts = __dirname;
 
 if (utils.isRoot()) {
   config();
@@ -75,7 +83,7 @@ bye();
 // END MAIN
 
 
-function usage(){
+function usage() {
   console.log(
     `${app.name} need to run with supervisor privileges! You need to prefix it with sudo`
   );
@@ -125,12 +133,12 @@ async function config() {
     calamares(c);
   } else if (command == "hatch") {
     startHatch();
-  } else{
+  } else {
     usage();
   }
 }
 
-async function calamares(c: any){
+async function calamares(c: any) {
   if (c.isCalamaresInstalled()) {
     console.log("==========================================");
     console.log("eggs: calamares configuration");

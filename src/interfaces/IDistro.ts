@@ -6,4 +6,6 @@ export interface IDistro {
     pathHome: string;
     pathFs: string;
     pathIso: string;
+    isolinux: string;
+    syslinux: string;
 }

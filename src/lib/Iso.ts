@@ -1,21 +1,24 @@
-/*
-  penguins-eggs: iso.ts
-  author: Piero Proietti
-  mail: piero.proietti@gmail.com
+/**
+ * penguins-eggs: iso.ts 
+ * author: Piero Proietti
+ * mail: piero.proietti@gmail.com
+ * 
+ * Al momento popolo solo le directory live ed isolinux, mentre boot ed EFI no!  
+ * createStructure 
+ * isolinuxPrepare, isolinuxCfg 
+ * liveKernel, liveSquashFs 
+ * makeIso
+ */
 
-  Al momento popolo solo le directory live ed isolinux, mentre boot ed EFI no!
-  createStructure
-  isolinuxPrepare, isolinuxCfg
-  liveKernel, liveSquashFs
-   makeIso
-*/
 "use strict";
 
 import fs from "fs";
 import utils from "./utils";
 import { IDistro, INet, IUser, IPackage } from "../interfaces";
 
-
+/**
+ * Iso: 
+ */
 class Iso {
   // Properties
   private app: IPackage;
@@ -96,6 +99,11 @@ class Iso {
 
   }
 
+
+  type(){
+    
+  }
+
   show() {
     console.log("eggs: iso parameters ");
     console.log(">>> kernelVer: " + this.distro.kernel);
@@ -127,20 +135,20 @@ class Iso {
     console.log("iso: isolinuxPrepare");
     console.log("==========================================");
 
-    let isolinuxbin = "/usr/lib/ISOLINUX/isolinux.bin";
-    let vesamenu = "/usr/lib/syslinux/modules/bios/vesamenu.c32";
+    let isolinuxbin = `${this.distro.isolinux}isolinux.bin`;
+    let vesamenu = `${this.distro.syslinux}vesamenu.c32`;
 
     utils.exec(
-      `rsync -a /usr/lib/syslinux/modules/bios/chain.c32 ${this.distro.pathIso}/isolinux/`
+      `rsync -a ${this.distro.syslinux}chain.c32 ${this.distro.pathIso}/isolinux/`
     );
     utils.exec(
-      `rsync -a /usr/lib/syslinux/modules/bios/ldlinux.c32 ${this.distro.pathIso}/isolinux/`
+      `rsync -a ${this.distro.syslinux}ldlinux.c32 ${this.distro.pathIso}/isolinux/`
     );
     utils.exec(
-      `rsync -a /usr/lib/syslinux/modules/bios/libcom32.c32 ${this.distro.pathIso}/isolinux/`
+      `rsync -a ${this.distro.syslinux}libcom32.c32 ${this.distro.pathIso}/isolinux/`
     );
     utils.exec(
-      `rsync -a /usr/lib/syslinux/modules/bios/libutil.c32 ${this.distro.pathIso}/isolinux/`
+      `rsync -a ${this.distro.syslinux}libutil.c32 ${this.distro.pathIso}/isolinux/`
     );
     utils.exec(`rsync -a ${isolinuxbin} ${this.distro.pathIso}/isolinux/`);
     utils.exec(`rsync -a ${vesamenu} ${this.distro.pathIso}/isolinux/`);
@@ -205,8 +213,9 @@ label ${this.distro.name} safe
     console.log("iso: makeIsoFs");
     console.log("==========================================");
 
-    let isoHybridOption = "-isohybrid-mbr /usr/lib/ISOLINUX/isohdpfx.bin ";
+    let isoHybridOption = `-isohybrid-mbr ${this.distro.isolinux}isohdpfx.bin `;
     //let uefiOption = "";
+
     //"-eltorito-alt-boot -e boot/grub/efiboot.img -isohybrid-gpt-basdat -no-emul-boot";
     let volid = `"Penguin's eggs ${this.distro.name}"`;
     let isoName = `${this.workDir}/${this.distro.name}`;

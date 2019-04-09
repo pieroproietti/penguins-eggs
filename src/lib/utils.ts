@@ -15,8 +15,9 @@ import path from "path";
 
 
 class utils {
-  pathScripts: String = "/usr/lib/node_modules/penguins-eggs";
+  //pathScripts: String = "/usr/lib/node_modules/penguins-eggs";
   //pathScripts: String = "/home/artisan/penguins-eggs";
+  pathScripts: String;
 
   // metodi
   path(): String {
