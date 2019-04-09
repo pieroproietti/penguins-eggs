@@ -23,6 +23,7 @@
 
 import "babel-polyfill";
 
+
 import pjson from "pjson";
 import { IPackage } from "./interfaces";
 let app = {} as IPackage;
@@ -34,6 +35,7 @@ app.version = pjson.version;
 
 import ip from "ip";
 import os from "os";
+import  fs  from "fs";
 
 import utils from "./lib/utils";
 import Iso from "./lib/Iso";
@@ -42,6 +44,8 @@ import Calamares from "./lib/Calamares";
 import { hatch } from "./lib/hatch";
 import { IDistro, INet, IUser } from "./interfaces";
 import { exit } from "shelljs";
+
+
 
 let program = require("commander").version(app.version);
 let workDir = "/home/eggs/";
@@ -53,13 +57,16 @@ let root = {} as IUser;
 distro.name = os.hostname();
 distro.versionName = 'Emperor';
 distro.versionNumber = utils.date4label();
-// Debian/Ubuntu
-distro.isolinux = '/usr/lib/ISOLINUX/';
-distro.syslinux = '/usr/lib/syslinux/modules/bios/';
 
-// Redhat
-// distro.isolinux='/usr/share/syslinux/';
-// distro.syslinux='/usr/share/syslinux/';
+if (fs.existsSync('/etc/debian_version')) {
+  // Debian/Ubuntu
+  distro.isolinux = '/usr/lib/ISOLINUX/';
+  distro.syslinux = '/usr/lib/syslinux/modules/bios/';
+} else {
+  // Redhat
+  distro.isolinux = '/usr/share/syslinux/';
+  distro.syslinux = '/usr/share/syslinux/';
+}
 
 
 net.dhcp = true;
