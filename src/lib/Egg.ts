@@ -33,9 +33,9 @@ class Egg {
     this.user = {} as IUser;
     this.root = {} as IUser;
 
-    if (workDir == undefined){
+    if (workDir == undefined) {
       this.workDir = "/var/lib/vz/eggs/";
-    } else{
+    } else {
       this.workDir = workDir;
     }
 
@@ -104,20 +104,20 @@ class Egg {
       //utils.exec(`ln -s ${this.distro.pathHome} /srv/penguins-eggs`);
     }
 
-    if (fs.existsSync(this.distro.pathFs)) {
-      utils.exec(`rm -rf ${this.distro.pathFs}`);
+    if (!fs.existsSync(this.distro.pathFs)) {
+      //utils.exec(`rm -rf ${this.distro.pathFs}`);
+      utils.exec(`mkdir -p ${this.distro.pathFs}`);
+      utils.exec(`mkdir -p ${this.distro.pathFs}/dev`);
+      utils.exec(`mkdir -p ${this.distro.pathFs}/etc`);
+      utils.exec(`mkdir -p ${this.distro.pathFs}/etc/intefaces`);
+      utils.exec(`mkdir -p ${this.distro.pathFs}/etc/live`);
+      utils.exec(`mkdir -p ${this.distro.pathFs}/proc`);
+      utils.exec(`mkdir -p ${this.distro.pathFs}/sys`);
+      utils.exec(`mkdir -p ${this.distro.pathFs}/media`);
+      utils.exec(`mkdir -p ${this.distro.pathFs}/run`);
+      utils.exec(`mkdir -p ${this.distro.pathFs}/var`);
+      utils.exec(`mkdir -p ${this.distro.pathFs}/tmp`);
     }
-    utils.exec(`mkdir -p ${this.distro.pathFs}`);
-    utils.exec(`mkdir -p ${this.distro.pathFs}/dev`);
-    utils.exec(`mkdir -p ${this.distro.pathFs}/etc`);
-    utils.exec(`mkdir -p ${this.distro.pathFs}/etc/intefaces`);
-    utils.exec(`mkdir -p ${this.distro.pathFs}/etc/live`);
-    utils.exec(`mkdir -p ${this.distro.pathFs}/proc`);
-    utils.exec(`mkdir -p ${this.distro.pathFs}/sys`);
-    utils.exec(`mkdir -p ${this.distro.pathFs}/media`);
-    utils.exec(`mkdir -p ${this.distro.pathFs}/run`);
-    utils.exec(`mkdir -p ${this.distro.pathFs}/var`);
-    utils.exec(`mkdir -p ${this.distro.pathFs}/tmp`);
   }
 
   public async systemCopy() {

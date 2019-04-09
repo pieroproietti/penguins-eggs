@@ -1,14 +1,14 @@
-/*
-  penguins-eggs: iso.ts
-  author: Piero Proietti
-  mail: piero.proietti@gmail.com
-
-  Al momento popolo solo le directory live ed isolinux, mentre boot ed EFI no!
-  createStructure
-  isolinuxPrepare, isolinuxCfg
-  liveKernel, liveSquashFs
-   makeIso
-*/
+/**
+ * penguins-eggs: iso.ts
+ * author: Piero Proietti
+ * mail: piero.proietti@gmail.com
+ *
+ * Al momento popolo solo le directory live ed isolinux, mentre boot ed EFI no!
+ * createStructure
+ * isolinuxPrepare, isolinuxCfg
+ * liveKernel, liveSquashFs
+ * makeIso
+ */
 "use strict";
 
 var __importDefault = undefined && undefined.__importDefault || function (mod) {
@@ -17,6 +17,9 @@ var __importDefault = undefined && undefined.__importDefault || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const fs_1 = __importDefault(require("fs"));
 const utils_1 = __importDefault(require("./utils"));
+/**
+ * Iso:
+ */
 class Iso {
     constructor(app, workDir, distro, net, user, root) {
         this.app = {};
@@ -40,6 +43,8 @@ class Iso {
         this.distro.pathHome = workDir + `${this.distro.name}`;
         this.distro.pathFs = this.distro.pathHome + `/fs`;
         this.distro.pathIso = this.distro.pathHome + `/iso`;
+        this.distro.syslinux = distro.syslinux;
+        this.distro.isolinux = distro.isolinux;
         if (net == undefined) {
             this.net.dhcp = false;
             this.net.address = "192.168.61.100";
@@ -73,6 +78,7 @@ class Iso {
             this.root.password = user.password;
         }
     }
+    type() {}
     show() {
         console.log("eggs: iso parameters ");
         console.log(">>> kernelVer: " + this.distro.kernel);
@@ -99,12 +105,12 @@ class Iso {
         console.log("==========================================");
         console.log("iso: isolinuxPrepare");
         console.log("==========================================");
-        let isolinuxbin = "/usr/lib/ISOLINUX/isolinux.bin";
-        let vesamenu = "/usr/lib/syslinux/modules/bios/vesamenu.c32";
-        utils_1.default.exec(`rsync -a /usr/lib/syslinux/modules/bios/chain.c32 ${this.distro.pathIso}/isolinux/`);
-        utils_1.default.exec(`rsync -a /usr/lib/syslinux/modules/bios/ldlinux.c32 ${this.distro.pathIso}/isolinux/`);
-        utils_1.default.exec(`rsync -a /usr/lib/syslinux/modules/bios/libcom32.c32 ${this.distro.pathIso}/isolinux/`);
-        utils_1.default.exec(`rsync -a /usr/lib/syslinux/modules/bios/libutil.c32 ${this.distro.pathIso}/isolinux/`);
+        let isolinuxbin = `${this.distro.isolinux}isolinux.bin`;
+        let vesamenu = `${this.distro.syslinux}vesamenu.c32`;
+        utils_1.default.exec(`rsync -a ${this.distro.syslinux}chain.c32 ${this.distro.pathIso}/isolinux/`);
+        utils_1.default.exec(`rsync -a ${this.distro.syslinux}ldlinux.c32 ${this.distro.pathIso}/isolinux/`);
+        utils_1.default.exec(`rsync -a ${this.distro.syslinux}libcom32.c32 ${this.distro.pathIso}/isolinux/`);
+        utils_1.default.exec(`rsync -a ${this.distro.syslinux}libutil.c32 ${this.distro.pathIso}/isolinux/`);
         utils_1.default.exec(`rsync -a ${isolinuxbin} ${this.distro.pathIso}/isolinux/`);
         utils_1.default.exec(`rsync -a ${vesamenu} ${this.distro.pathIso}/isolinux/`);
     }
@@ -133,7 +139,7 @@ label ${this.distro.name} safe
   append boot=live initrd=/live/initrd.img xforcevesa nomodeset quiet splash`;
         utils_1.default.bashWrite(file, text);
         let path = utils_1.default.path();
-        utils_1.default.exec(`cp ${path}/src/assets/turtle.png ${this.distro.pathIso}/isolinux`);
+        utils_1.default.exec(`cp ${path}/assets/turtle.png ${this.distro.pathIso}/isolinux`);
     }
     /**
      * alive: rende live
@@ -159,7 +165,7 @@ label ${this.distro.name} safe
         console.log("==========================================");
         console.log("iso: makeIsoFs");
         console.log("==========================================");
-        let isoHybridOption = "-isohybrid-mbr /usr/lib/ISOLINUX/isohdpfx.bin ";
+        let isoHybridOption = `-isohybrid-mbr ${this.distro.isolinux}isohdpfx.bin `;
         //let uefiOption = "";
         //"-eltorito-alt-boot -e boot/grub/efiboot.img -isohybrid-gpt-basdat -no-emul-boot";
         let volid = `"Penguin's eggs ${this.distro.name}"`;

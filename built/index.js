@@ -32,6 +32,12 @@ let root = {};
 distro.name = os_1.default.hostname();
 distro.versionName = 'Emperor';
 distro.versionNumber = utils_1.default.date4label();
+// Debian/Ubuntu
+distro.isolinux = '/usr/lib/ISOLINUX/';
+distro.syslinux = '/usr/lib/syslinux/modules/bios/';
+// Redhat
+// distro.isolinux='/usr/share/syslinux/';
+// distro.syslinux='/usr/share/syslinux/';
 net.dhcp = true;
 user.fullName = "Artisan";
 user.name = "artisan";
@@ -39,6 +45,7 @@ user.password = "evolution";
 root.fullName = "Root";
 root.name = "root";
 root.password = "evolution";
+utils_1.default.pathScripts = __dirname;
 if (utils_1.default.isRoot()) {
     config();
 } else {

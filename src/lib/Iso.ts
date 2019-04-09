@@ -15,6 +15,7 @@
 import fs from "fs";
 import utils from "./utils";
 import { IDistro, INet, IUser, IPackage } from "../interfaces";
+import { dist } from "pjson";
 
 /**
  * Iso: 
@@ -61,7 +62,10 @@ class Iso {
     this.distro.pathHome = workDir + `${this.distro.name}`;
     this.distro.pathFs = this.distro.pathHome + `/fs`;
     this.distro.pathIso = this.distro.pathHome + `/iso`;
-  
+    
+    this.distro.syslinux = distro.syslinux;
+    this.distro.isolinux = distro.isolinux;
+
     if (net == undefined) {
       this.net.dhcp = false;
       this.net.address = "192.168.61.100";
@@ -181,7 +185,7 @@ label ${this.distro.name} safe
     utils.bashWrite(file, text);
 
     let path = utils.path();
-    utils.exec(`cp ${path}/src/assets/turtle.png ${this.distro.pathIso}/isolinux`);
+    utils.exec(`cp ${path}/assets/turtle.png ${this.distro.pathIso}/isolinux`);
   }
 
   /**

@@ -81,20 +81,20 @@ class Egg {
             utils_1.default.exec(`mkdir -p ${this.distro.pathHome}`);
             //utils.exec(`ln -s ${this.distro.pathHome} /srv/penguins-eggs`);
         }
-        if (fs_1.default.existsSync(this.distro.pathFs)) {
-            utils_1.default.exec(`rm -rf ${this.distro.pathFs}`);
+        if (!fs_1.default.existsSync(this.distro.pathFs)) {
+            //utils.exec(`rm -rf ${this.distro.pathFs}`);
+            utils_1.default.exec(`mkdir -p ${this.distro.pathFs}`);
+            utils_1.default.exec(`mkdir -p ${this.distro.pathFs}/dev`);
+            utils_1.default.exec(`mkdir -p ${this.distro.pathFs}/etc`);
+            utils_1.default.exec(`mkdir -p ${this.distro.pathFs}/etc/intefaces`);
+            utils_1.default.exec(`mkdir -p ${this.distro.pathFs}/etc/live`);
+            utils_1.default.exec(`mkdir -p ${this.distro.pathFs}/proc`);
+            utils_1.default.exec(`mkdir -p ${this.distro.pathFs}/sys`);
+            utils_1.default.exec(`mkdir -p ${this.distro.pathFs}/media`);
+            utils_1.default.exec(`mkdir -p ${this.distro.pathFs}/run`);
+            utils_1.default.exec(`mkdir -p ${this.distro.pathFs}/var`);
+            utils_1.default.exec(`mkdir -p ${this.distro.pathFs}/tmp`);
         }
-        utils_1.default.exec(`mkdir -p ${this.distro.pathFs}`);
-        utils_1.default.exec(`mkdir -p ${this.distro.pathFs}/dev`);
-        utils_1.default.exec(`mkdir -p ${this.distro.pathFs}/etc`);
-        utils_1.default.exec(`mkdir -p ${this.distro.pathFs}/etc/intefaces`);
-        utils_1.default.exec(`mkdir -p ${this.distro.pathFs}/etc/live`);
-        utils_1.default.exec(`mkdir -p ${this.distro.pathFs}/proc`);
-        utils_1.default.exec(`mkdir -p ${this.distro.pathFs}/sys`);
-        utils_1.default.exec(`mkdir -p ${this.distro.pathFs}/media`);
-        utils_1.default.exec(`mkdir -p ${this.distro.pathFs}/run`);
-        utils_1.default.exec(`mkdir -p ${this.distro.pathFs}/var`);
-        utils_1.default.exec(`mkdir -p ${this.distro.pathFs}/tmp`);
     }
     async systemCopy() {
         let cmd = "";

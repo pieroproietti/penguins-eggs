@@ -54,8 +54,9 @@ distro.name = os.hostname();
 distro.versionName = 'Emperor';
 distro.versionNumber = utils.date4label();
 // Debian/Ubuntu
-distro.isolinux = '/usr/share/ISOLINUX/';
+distro.isolinux = '/usr/lib/ISOLINUX/';
 distro.syslinux = '/usr/lib/syslinux/modules/bios/';
+
 // Redhat
 // distro.isolinux='/usr/share/syslinux/';
 // distro.syslinux='/usr/share/syslinux/';
