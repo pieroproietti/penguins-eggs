@@ -1,5 +1,5 @@
 
-![penguins-eggs](https://github.com/pieroproietti/penguins-eggs/assets/penguins-eggs.png?raw=true)
+![penguins-eggs](https://github.com/pieroproietti/penguins-eggs/assets/eggs.png?raw=true)
 # penguin's eggs
 
 [![NPM Package](https://img.shields.io/npm/v/penguins-eggs.svg?style=flat)](https://npmjs.org/package/penguins-eggs "View this project on npm")
