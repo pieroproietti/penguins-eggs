@@ -182,3 +182,8 @@ Copyright (c) 2017, [Piero Proietti](http://pieroproietti.github.com), dual lice
 
 
 # npm set
+
+Fedora 
+* wget https://fedora.mirror.garr.it/fedora/linux/releases/29/Workstation/x86_64/os/isolinux/vmlinuz
+* wget https://fedora.mirror.garr.it/fedora/linux/releases/29/Workstation/x86_64/os/isolinux/initrd.img
+ 
