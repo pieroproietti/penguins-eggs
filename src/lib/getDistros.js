@@ -57,7 +57,7 @@ read('/etc/os-release', function (data) {
   }
   var oJson = "{ ";
   oJson += '"prettyName": ' + os['PRETTY_NAME'] + ', ';
-  oJson += '"name": ' + os['NAME'] + ', ';
+  oJson += '"name": "' + os['NAME'] + '", ';
   oJson += '"id": "' + os['ID'] + '", ';
   oJson += '"versionId": ' + os['VERSION_ID'] + ', ';
   oJson += '"homeUrl": ' + os['HOME_URL'] + ', ';
