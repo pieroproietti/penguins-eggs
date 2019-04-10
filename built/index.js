@@ -18,6 +18,7 @@ app.mail = "piero.proietti@gmail.com";
 app.name = pjson_1.default.name;
 app.version = pjson_1.default.version;
 const os_1 = __importDefault(require("os"));
+const fs_1 = __importDefault(require("fs"));
 const utils_1 = __importDefault(require("./lib/utils"));
 const Iso_1 = __importDefault(require("./lib/Iso"));
 const Egg_1 = __importDefault(require("./lib/Egg"));
@@ -32,12 +33,45 @@ let root = {};
 distro.name = os_1.default.hostname();
 distro.versionName = 'Emperor';
 distro.versionNumber = utils_1.default.date4label();
-// Debian/Ubuntu
-distro.isolinux = '/usr/lib/ISOLINUX/';
-distro.syslinux = '/usr/lib/syslinux/modules/bios/';
-// Redhat
-// distro.isolinux='/usr/share/syslinux/';
-// distro.syslinux='/usr/share/syslinux/';
+/**
+ * /etc/os-release
+ * PRETTY_NAME="LMDE 3 (cindy)"
+ * NAME="LMDE"
+ * ID=linuxmint
+ * VERSION_ID="3"
+ * VERSION="3 (cindy)"
+ * HOME_URL="https://www.linuxmint.com/"
+ * SUPPORT_URL="https://forums.linuxmint.com/"
+ * BUG_REPORT_URL="http://linuxmint-troubleshooting-guide.readthedocs.io/en/latest/"
+ *
+ * PRETTY_NAME="Debian GNU/Linux buster/sid"
+ * NAME="Debian GNU/Linux"
+ * ID=debian
+ * VERSION_ID="10"
+ * VERSION="10 (buster)"
+ * HOME_URL="https://www.debian.org/"
+ * SUPPORT_URL="https://www.debian.org/support"
+ * BUG_REPORT_URL="https://bugs.debian.org/"
+ *
+ *
+ * PRETTY_NAME="Fedora 29 (Workstation Edition)"
+ * NAME=Fedora
+ * ID=fedora
+ * VERSION_ID=29
+ * VERSION="29 (Workstation Edition)"
+ * HOME_URL="https://fedoraproject.org/"
+ * SUPPORT_URL="https://fedoraproject.org/wiki/Communicating_and_getting_help"
+ * BUG_REPORT_URL="https://bugzilla.redhat.com/"
+ */
+if (fs_1.default.existsSync('/etc/debian_version')) {
+    // Debian/Ubuntu
+    distro.isolinux = '/usr/lib/ISOLINUX/';
+    distro.syslinux = '/usr/lib/syslinux/modules/bios/';
+} else {
+    // Redhat
+    distro.isolinux = '/usr/share/syslinux/';
+    distro.syslinux = '/usr/share/syslinux/';
+}
 net.dhcp = true;
 user.fullName = "Artisan";
 user.name = "artisan";
