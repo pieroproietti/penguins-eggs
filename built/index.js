@@ -122,6 +122,16 @@ async function config() {
         calamares(c);
     } else if (command == "hatch") {
         startHatch();
+    } else if (command == "distro") {
+        utils_1.default.distroInfo();
+        /**
+            console.log("NAME = " + o.name);
+            console.log("ID = " + o.id);
+            console.log("HOME_URL = " + o.homeUrl);
+            console.log("SUPPORT_URL = " + o.supportUrl);
+            console.log("BUG_REPORT_URL = " + o.bugReportUrl);
+            console.log("PRETTY_NAME = " + o.prettyName);
+        */
     } else {
         usage();
     }
