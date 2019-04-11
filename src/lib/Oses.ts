@@ -3,18 +3,15 @@
  */
 
 "use strict";
-
-import shell from "shelljs";
-import ip from "ip";
 import fs from "fs";
-import os from "os";
-import dns from "dns";
-import network from "network";
-import path from "path";
-
+import { IDistro} from "../interfaces";
 
 class Oses {
+    private distro = {} as IDistro;
+    
+
     constructor (){
+        this.distro.isolinux
         //empty        
     }
 
