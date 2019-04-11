@@ -45,6 +45,9 @@ import { hatch } from "./lib/hatch";
 import { IDistro, INet, IUser } from "./interfaces";
 import { exit } from "shelljs";
 
+import Oses from "./lib/Oses";
+
+let oses = new Oses();
 
 let program = require("commander").version(app.version);
 let workDir = "/home/eggs/";
@@ -53,52 +56,12 @@ let net = {} as INet;
 let user = {} as IUser;
 let root = {} as IUser;
 
+
 distro.name = os.hostname();
 distro.versionName = 'Emperor';
 distro.versionNumber = utils.date4label();
-
-
-/**
- * /etc/os-release
- * PRETTY_NAME="LMDE 3 (cindy)"
- * NAME="LMDE"
- * ID=linuxmint
- * VERSION_ID="3"
- * VERSION="3 (cindy)"
- * HOME_URL="https://www.linuxmint.com/"
- * SUPPORT_URL="https://forums.linuxmint.com/"
- * BUG_REPORT_URL="http://linuxmint-troubleshooting-guide.readthedocs.io/en/latest/"
- *
- * PRETTY_NAME="Debian GNU/Linux buster/sid"
- * NAME="Debian GNU/Linux"
- * ID=debian
- * VERSION_ID="10"
- * VERSION="10 (buster)"
- * HOME_URL="https://www.debian.org/"
- * SUPPORT_URL="https://www.debian.org/support"
- * BUG_REPORT_URL="https://bugs.debian.org/"
- * 
- * 
- * PRETTY_NAME="Fedora 29 (Workstation Edition)"
- * NAME=Fedora
- * ID=fedora
- * VERSION_ID=29
- * VERSION="29 (Workstation Edition)"
- * HOME_URL="https://fedoraproject.org/"
- * SUPPORT_URL="https://fedoraproject.org/wiki/Communicating_and_getting_help"
- * BUG_REPORT_URL="https://bugzilla.redhat.com/"
- */
-
-if (fs.existsSync('/etc/debian_version')) {
-  // Debian/Ubuntu
-  distro.isolinux = '/usr/lib/ISOLINUX/';
-  distro.syslinux = '/usr/lib/syslinux/modules/bios/';
-} else {
-  // Redhat
-  distro.isolinux = '/usr/share/syslinux/';
-  distro.syslinux = '/usr/share/syslinux/';
-} 
-
+distro.isolinux = oses.isolinux();
+distro.syslinux = oses.syslinux();
 
 net.dhcp = true;
 
@@ -130,6 +93,7 @@ function usage() {
   console.log(">>> sudo eggs spawn --distroname penguin");
   console.log(">>> sudo eggs hatch");
   console.log(">>> sudo eggs calamares");
+  console.log(">>> sudo eggs info");
   console.log(">>> sudo eggs kill");
 }
 
@@ -140,6 +104,7 @@ async function config() {
     .command("spawn")
     .command("hatch")
     .command("calamares")
+    .command("info")
     .command("kill");
 
   program.option("-d, --distroname <distroname>");
@@ -172,16 +137,8 @@ async function config() {
     calamares(c);
   } else if (command == "hatch") {
     startHatch();
-  } else if (command == "distro") {
-    utils.distroInfo();
-/**
-    console.log("NAME = " + o.name);
-    console.log("ID = " + o.id);
-    console.log("HOME_URL = " + o.homeUrl);
-    console.log("SUPPORT_URL = " + o.supportUrl);
-    console.log("BUG_REPORT_URL = " + o.bugReportUrl);
-    console.log("PRETTY_NAME = " + o.prettyName);
-*/
+  } else if (command == "info") {
+    oses.info();
   } else {
     usage();
   }
