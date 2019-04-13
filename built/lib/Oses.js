@@ -10,6 +10,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const fs_1 = __importDefault(require("fs"));
 class Oses {
     constructor() {
+        this.distro = {};
+        this.distro.isolinux;
         //empty        
     }
     isolinux() {
@@ -31,6 +33,15 @@ class Oses {
         return retval;
     }
     info() {
+        let o = {};
+        o = {
+            "prettyName": "",
+            "name": "",
+            "id": "",
+            "homeUrl": "",
+            "supportUrl": "",
+            "bugReportUrl": ""
+        };
         let d;
         (function (d) {
             d[d["PRETTY_NAME"] = 0] = "PRETTY_NAME";
@@ -41,14 +52,6 @@ class Oses {
             d[d["BUG_REPORT_URL"] = 5] = "BUG_REPORT_URL";
         })(d || (d = {}));
         ;
-        let o = {
-            "prettyName": "",
-            "name": "",
-            "id": "",
-            "homeUrl": "",
-            "supportUrl": "",
-            "bugReportUrl": ""
-        };
         let os = new Array();
         os[d.PRETTY_NAME] = "PRETTY_NAME=";
         os[d.NAME] = "NAME=";
@@ -93,8 +96,15 @@ class Oses {
             console.log("SUPPORT_URL = " + o.supportUrl);
             console.log("BUG_REPORT_URL = " + o.bugReportUrl);
             console.log("==========================================");
-            return o;
         });
+        return {
+            "prettyName": o.prettyName,
+            "name": o.name,
+            "id": o.id,
+            "homeUrl": o.homeUrl,
+            "supportUrl": o.supportUrl,
+            "bugReportUrl": o.bugReportUrl
+        };
     }
 }
 exports.default = Oses;

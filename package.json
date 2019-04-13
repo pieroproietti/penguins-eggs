@@ -31,6 +31,7 @@
     "node-start": "nodejs ./built"
   },
   "dependencies": {
+    "@types/js-yaml": "^3.12.1",
     "babel-polyfill": "^6.26.0",
     "commander": "^2.15.1",
     "date-fns": "^1.29.0",

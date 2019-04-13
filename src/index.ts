@@ -138,7 +138,7 @@ async function config() {
   } else if (command == "hatch") {
     startHatch();
   } else if (command == "info") {
-    oses.info();
+    console.log(oses.info());
   } else {
     usage();
   }

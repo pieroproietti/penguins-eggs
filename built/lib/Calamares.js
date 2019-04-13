@@ -5,9 +5,13 @@
 */
 "use strict";
 
+var __importDefault = undefined && undefined.__importDefault || function (mod) {
+    return mod && mod.__esModule ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
-const yaml = require('js-yaml');
-const fs = require('fs');
+const js_yaml_1 = __importDefault(require("js-yaml"));
+const fs_1 = __importDefault(require("fs"));
+const utils_1 = __importDefault(require("./utils"));
 class Calamares {
     constructor(distroName = "Penguin's eggs", versionName = "emperor", versionNumber = "0.0.1") {
         this.productName = distroName;
@@ -17,32 +21,61 @@ class Calamares {
     isCalamaresInstalled() {
         const path = '/etc/calamares/branding/eggs/branding.desc';
         try {
-            if (fs.existsSync(path)) {
+            if (fs_1.default.existsSync(path)) {
                 return true;
             }
         } catch (err) {
             console.error(err);
         }
     }
-    async settingsConf() {
+    /**
+     * create
+     */
+    async create() {
+        utils_1.default.exec(`mkdir -p /etc/calamares`);
+        utils_1.default.exec(`mkdir -p /etc/calamares/branding`);
+        utils_1.default.exec(`mkdir -p /etc/calamares/branding/eggs`);
+        utils_1.default.exec(`mkdir -p /etc/calamares/modules`);
+    }
+    /**
+     * show()
+     */
+    async show() {
+        utils_1.default.exec(`cp /usr/lib/node_modules/penguins-eggs/templates/show /etc/calamares/branding/eggs`);
+    }
+    /**
+     * modules()
+     */
+    async modules() {}
+    /**
+     * settingsConf
+     */
+    async settingsConf(distro) {
         let settingsPath = '/etc/calamares/settings.conf';
-        let settings = {
-            'modules-search': ['local', '/usr/lib/calamares/modules'],
-            sequence: [{ show: ['welcome', 'locale', 'keyboard', 'partition', 'users', 'summary'] }, {
-                exec: ['partition', 'mount', 'unpackfs', 'sources-media', 'machineid', 'fstab', 'locale', 'keyboard', 'localecfg', 'users', 'networkcfg', 'hwclock', 'services-systemd', 'bootloader-config', 'grubcfg', 'bootloader', 'packages', 'luksbootkeyfile', 'plymouthcfg', 'initramfscfg', 'initramfs', 'sources-media-unmount', 'sources-final', 'removeuser', 'umount']
-            }, { show: ['finished'] }],
-            branding: 'eggs',
-            'prompt-install': false,
-            'dont-chroot': false
-        };
-        console.log("Configurazione settings.conf");
-        try {
-            fs.writeFileSync(settingsPath, yaml.safeDump(settings), 'utf8', err => {
-                if (err) console.log(err);
-            });
-        } catch (e) {
-            console.log(e);
+        let settings = {};
+        if (distro == 'debian') {
+            settings = {
+                'modules-search': ['local', '/usr/lib/calamares/modules'],
+                sequence: [{ show: ['welcome', 'locale', 'keyboard', 'partition', 'users', 'summary'] }, {
+                    exec: ['partition', 'mount', 'unpackfs', 'sources-media', 'machineid', 'fstab', 'locale', 'keyboard', 'localecfg', 'users', 'networkcfg', 'hwclock', 'services-systemd', 'bootloader-config', 'grubcfg', 'bootloader', 'packages', 'luksbootkeyfile', 'plymouthcfg', 'initramfscfg', 'initramfs', 'sources-media-unmount', 'sources-final', 'removeuser', 'umount']
+                }, { show: ['finished'] }],
+                branding: 'eggs',
+                'prompt-install': false,
+                'dont-chroot': false
+            };
+        } else if (distro == 'ubuntu') {
+            settings = {
+                'modules-search': ['local', '/usr/lib/calamares/modules'],
+                sequence: [{ show: ['welcome', 'locale', 'keyboard', 'partition', 'users', 'summary'] }, {
+                    exec: ['partition', 'mount', 'unpackfs', 'machineid', 'fstab', 'locale', 'keyboard', 'localecfg', 'users', 'networkcfg', 'hwclock', 'services-systemd', 'grubcfg', 'bootloader', 'packages', 'luksbootkeyfile', 'plymouthcfg', 'initramfscfg', 'initramfs', 'removeuser', 'umount']
+                }, { show: ['finished'] }],
+                branding: 'eggs',
+                'prompt-install': false,
+                'dont-chroot': false
+            };
         }
+        console.log("Configurazione settings.conf");
+        fs_1.default.writeFileSync(settingsPath, js_yaml_1.default.safeDump(settings), 'utf8');
     }
     async brandingDesc() {
         // Configurazione branding.desc
@@ -90,9 +123,12 @@ class Calamares {
         };
         console.log("Configurazione branding.desc");
         try {
-            fs.writeFileSync(brandingPath, yaml.safeDump(branding), 'utf8', err => {
-                if (err) console.log(err);
-            });
+            fs_1.default.writeFileSync(brandingPath, js_yaml_1.default.safeDump(branding), 'utf8');
+            /*
+            , (err: any) => {
+              if (err) console.log(err)
+            })
+            */
         } catch (e) {
             console.log(e);
         }

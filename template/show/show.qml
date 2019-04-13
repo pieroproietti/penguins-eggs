@@ -39,7 +39,7 @@ Presentation
             height: 485
             fillMode: Image.PreserveAspectFit
             smooth: true
-            source: "penguins-1.png"
+            source: "penguins1.png"
         }
     }
     Slide {
@@ -52,7 +52,7 @@ Presentation
             height: 485
             fillMode: Image.PreserveAspectFit
             smooth: true
-            source: "penguins-2.png"
+            source: "penguins2.png"
         }
     }
     Slide {
@@ -65,7 +65,7 @@ Presentation
             height: 485
             fillMode: Image.PreserveAspectFit
             smooth: true
-            source: "penguins-3.png"
+            source: "penguins3.png"
         }
     }
     Slide {
@@ -78,7 +78,7 @@ Presentation
             height: 485
             fillMode: Image.PreserveAspectFit
             smooth: true
-            source: "penguins-4.png"
+            source: "penguins4.png"
         }
     }
     Slide {
@@ -91,7 +91,7 @@ Presentation
             height: 485
             fillMode: Image.PreserveAspectFit
             smooth: true
-            source: "penguins-5.png"
+            source: "penguins5.png"
         }
     }
     Slide {
@@ -104,7 +104,7 @@ Presentation
             height: 485
             fillMode: Image.PreserveAspectFit
             smooth: true
-            source: "penguins-6.png"
+            source: "penguins6.png"
         }
 
     }
@@ -118,7 +118,7 @@ Presentation
             height: 485
             fillMode: Image.PreserveAspectFit
             smooth: true
-            source: "penguins-7.png"
+            source: "penguins7.png"
         }
     }
 }

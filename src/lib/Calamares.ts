@@ -5,8 +5,11 @@
 */
 "use strict";
 
-const yaml = require('js-yaml');
-const fs = require('fs');
+
+import yaml from 'js-yaml';
+import fs from 'fs';
+import utils from "./utils";
+
 
 
 class Calamares {
@@ -37,9 +40,38 @@ class Calamares {
     }
   }
 
-  async settingsConf() {
+  /**
+   * create
+   */
+  async create() {
+    utils.exec(`mkdir -p /etc/calamares`);
+    utils.exec(`mkdir -p /etc/calamares/branding`);
+    utils.exec(`mkdir -p /etc/calamares/branding/eggs`);
+    utils.exec(`mkdir -p /etc/calamares/modules`);
+  }
+
+  /**
+   * show()
+   */
+  async show() {
+    utils.exec(`cp /usr/lib/node_modules/penguins-eggs/templates/show /etc/calamares/branding/eggs`);
+  }
+
+  /**
+   * modules()
+   */
+  async modules() {
+
+  }
+
+  /**
+   * settingsConf
+   */
+  async settingsConf(distro: string) {
     let settingsPath = '/etc/calamares/settings.conf'
-    let
+    let settings = {};
+
+    if (distro == 'debian') {
       settings = {
         'modules-search': ['local', '/usr/lib/calamares/modules'],
         sequence: [
@@ -56,14 +88,25 @@ class Calamares {
         'prompt-install': false,
         'dont-chroot': false
       };
-    console.log("Configurazione settings.conf");
-    try {
-      fs.writeFileSync(settingsPath, yaml.safeDump(settings), 'utf8', (err: any) => {
-        if (err) console.log(err)
-      })
-    } catch (e) {
-      console.log(e);
+    } else if (distro == 'ubuntu') {
+      settings = {
+        'modules-search': ['local', '/usr/lib/calamares/modules'],
+        sequence: [
+          { show: ['welcome', 'locale', 'keyboard', 'partition', 'users', 'summary'] },
+          {
+            exec: ['partition', 'mount', 'unpackfs', 'machineid', 'fstab', 'locale',
+              'keyboard', 'localecfg', 'users', 'networkcfg', 'hwclock', 'services-systemd',
+              'grubcfg', 'bootloader', 'packages', 'luksbootkeyfile',
+              'plymouthcfg', 'initramfscfg', 'initramfs', 'removeuser', 'umount']
+          },
+          { show: ['finished'] }],
+        branding: 'eggs',
+        'prompt-install': false,
+        'dont-chroot': false
+      };
     }
+    console.log("Configurazione settings.conf");
+    fs.writeFileSync(settingsPath, yaml.safeDump(settings), 'utf8');
   }
 
   async brandingDesc() {
@@ -123,10 +166,12 @@ class Calamares {
 
     console.log("Configurazione branding.desc");
     try {
-      fs.writeFileSync(brandingPath, yaml.safeDump(branding), 'utf8', (err: any) => {
+      fs.writeFileSync(brandingPath, yaml.safeDump(branding), 'utf8');
+      /*
+      , (err: any) => {
         if (err) console.log(err)
       })
-
+      */
     } catch (e) {
       console.log(e);
     }
