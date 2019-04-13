@@ -11,7 +11,6 @@ import { TIMEOUT } from "dns";
 class Oses {
     private distro = {} as IDistro;
 
-
     constructor() {
         this.distro.isolinux
         //empty        
@@ -38,7 +37,7 @@ class Oses {
         return retval;
     }
 
-    async info(): Promise<any> {
+    info(): any {
         enum info { PRETTY_NAME = 0, NAME, ID, HOME_URL, SUPPORT_URL, BUG_REPORT_URL };
         let os: Array<string> = new Array();
         os[info.PRETTY_NAME] = "PRETTY_NAME=";
@@ -81,14 +80,9 @@ class Oses {
                 if (!data[temp].search(os[info.BUG_REPORT_URL])) {
                     o.bugReportUrl = data[temp].substring(os[info.BUG_REPORT_URL].length).replace(/"/g, "");
                 };
-                //console.log("inside function:");
-                //console.log(o);
+   
             }
-            return (o);
         });
-
-        console.log("Outside read")
-        console.log(o);
         return (o);
     }
 }
@@ -100,13 +94,6 @@ export default Oses;
  * @param file Utilizzata da info()
  */
 function read(file: string, cb: any) {
-    fs.readFile(file, 'utf8', function (err, data) {
-        if (!err) {
-            cb(data.toString().split('\n'))
-        } else {
-            console.log(err)
-        }
-    });
+    let data = fs.readFileSync(file, 'utf8');
+    cb(data.toString().split('\n'))
 }
-
-
