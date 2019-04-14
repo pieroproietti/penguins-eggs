@@ -41,7 +41,7 @@ class Calamares {
         // /usr/lib/calamares
         utils_1.default.exec(`cp -r ../templates/debian/usr/lib/* /usr/lib/calamares/`);
         // /usr/sbin 
-        utils_1.default.exec(`cp -r ../templates/debian/usr/sbin/* /usr/`);
+        utils_1.default.exec(`cp -r ../templates/debian/usr/sbin/* /usr/sbin`);
     }
     /**
      * settingsConf
