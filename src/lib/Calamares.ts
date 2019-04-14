@@ -67,11 +67,11 @@ class Calamares {
   /**
    * settingsConf
    */
-  async settingsConf(distro: string) {
+  async settingsConf(distroType: string) {
     let settingsPath = '/etc/calamares/settings.conf'
     let settings = {};
 
-    if (distro == 'debian') {
+    if (distroType == 'debian') {
       settings = {
         'modules-search': ['local', '/usr/lib/calamares/modules'],
         sequence: [
@@ -88,7 +88,7 @@ class Calamares {
         'prompt-install': false,
         'dont-chroot': false
       };
-    } else if (distro == 'ubuntu') {
+    } else if (distroType == 'ubuntu') {
       settings = {
         'modules-search': ['local', '/usr/lib/calamares/modules'],
         sequence: [
@@ -109,7 +109,7 @@ class Calamares {
     fs.writeFileSync(settingsPath, yaml.safeDump(settings), 'utf8');
   }
 
-  async brandingDesc() {
+  async brandingDesc(distroType: string, homeUrl: string, supportUrl: string, bugReportUrl: string) {
     // Configurazione branding.desc
     let brandingPath = '/etc/calamares/branding/eggs/branding.desc';
 
@@ -120,9 +120,9 @@ class Calamares {
     let versionedName = this.versionedName;
     let shortVersionedName = this.versionedName;
     let bootloaderEntryName = productName;
-    let productUrl = 'https://penguin-s-eggs.gitbook.io/project/';
-    let supportUrl = 'https://github.com/pieroproietti/penguins-eggs';
-    let releaseNotesUrl = 'https://github.com/pieroproietti/penguins-eggs';
+    let productUrl = homeUrl; //'https://penguin-s-eggs.gitbook.io/project/';
+    //let supportUrl = supportUrl; // 'https://github.com/pieroproietti/penguins-eggs';
+    let releaseNotesUrl = bugReportUrl; //'https://github.com/pieroproietti/penguins-eggs';
 
     let productLogo = 'logo.png';
     let productIcon = 'logo.png';

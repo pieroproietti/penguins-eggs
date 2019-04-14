@@ -40,6 +40,7 @@ import  fs  from "fs";
 import utils from "./lib/utils";
 import Iso from "./lib/Iso";
 import Egg from "./lib/Egg";
+
 import Calamares from "./lib/Calamares";
 import { hatch } from "./lib/hatch";
 import { IDistro, INet, IUser } from "./interfaces";
@@ -138,24 +139,39 @@ async function config() {
   } else if (command == "hatch") {
     startHatch();
   } else if (command == "info") {
-    console.log(await oses.info());
+    console.log(oses.info());
   } else {
     usage();
   }
 }
 
 async function calamares(c: any) {
+  let o:any={};
+  let distroType:string="unknown";
+
   if (c.isCalamaresInstalled()) {
+
     console.log("==========================================");
     console.log("eggs: calamares configuration");
-    console.log("You can use the gui Installation:");
-    console.log("$sudo calamares");
-    console.log("or the cli installation:");
-    console.log("$sudo eggs hatch");
-    console.log("==========================================");
+    o = oses.info();
+    if (o.id==='linuxmint'){
+      distroType = "debian";
+    } else if (o.id==='linuxmint'){
+      distroType = "debian";
+    } else if (o.id==='ubuntu'){
+      distroType = "ubuntu";
+    } else if (o.id==='fedora'){
+      distroType = "fedora";
+    }
+    console.log(`distro type: ${distroType} id: ${o.id} name: ${o.name} prettyName: ${o.prettyName}`);
 
-    await c.settingsConf();
-    await c.brandingDesc();
+    console.log("You can use the gui Installation:");
+    console.log("sudo calamares");
+    console.log("or the cli installation:");
+    console.log("sudo eggs hatch");
+    console.log("==========================================");
+    await c.settingsConf(distroType);
+    await c.brandingDesc(distroType, o.homeUrl, o.supportUrl, o.bugReportUrl );
   } else {
     console.log("==========================================");
     console.log("eggs: calamares-eggs is not installed!");
