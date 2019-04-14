@@ -185,7 +185,7 @@ label ${this.distro.name} safe
     utils.bashWrite(file, text);
 
     let path = utils.path();
-    utils.exec(`cp ${path}/assets/turtle.png ${this.distro.pathIso}/isolinux`);
+    utils.exec(`cp ${__dirname}/../../assets/turtle.png ${this.distro.pathIso}/isolinux`);
   }
 
   /**
