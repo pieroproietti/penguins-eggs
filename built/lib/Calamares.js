@@ -36,24 +36,20 @@ class Calamares {
         utils_1.default.exec(`mkdir -p /etc/calamares/branding`);
         utils_1.default.exec(`mkdir -p /etc/calamares/branding/eggs`);
         utils_1.default.exec(`mkdir -p /etc/calamares/modules`);
+        utils_1.default.exec(`cp /home/live/penguins-eggs/templates/show/* /etc/calamares/branding/eggs`);
+        utils_1.default.exec(`cp /home/live/penguins-eggs/templates/debian/etc/modules/* /etc/calamares/modules`);
+        // /usr/lib crea calamares
+        utils_1.default.exec(`cp -r /home/live/penguins-eggs/templates/debian/usr/lib/* /usr/lib/calamares/`);
+        // /usr/sbin 
+        utils_1.default.exec(`cp -r /home/live/penguins-eggs/templates/debian/usr/sbin/* /usr/lib/`);
     }
-    /**
-     * show()
-     */
-    async show() {
-        utils_1.default.exec(`cp /usr/lib/node_modules/penguins-eggs/templates/show /etc/calamares/branding/eggs`);
-    }
-    /**
-     * modules()
-     */
-    async modules() {}
     /**
      * settingsConf
      */
-    async settingsConf(distro) {
+    async settingsConf(distroType) {
         let settingsPath = '/etc/calamares/settings.conf';
         let settings = {};
-        if (distro == 'debian') {
+        if (distroType === 'debian') {
             settings = {
                 'modules-search': ['local', '/usr/lib/calamares/modules'],
                 sequence: [{ show: ['welcome', 'locale', 'keyboard', 'partition', 'users', 'summary'] }, {
@@ -63,7 +59,7 @@ class Calamares {
                 'prompt-install': false,
                 'dont-chroot': false
             };
-        } else if (distro == 'ubuntu') {
+        } else if (distroType === 'ubuntu') {
             settings = {
                 'modules-search': ['local', '/usr/lib/calamares/modules'],
                 sequence: [{ show: ['welcome', 'locale', 'keyboard', 'partition', 'users', 'summary'] }, {
@@ -77,7 +73,7 @@ class Calamares {
         console.log("Configurazione settings.conf");
         fs_1.default.writeFileSync(settingsPath, js_yaml_1.default.safeDump(settings), 'utf8');
     }
-    async brandingDesc() {
+    async brandingDesc(distroType, homeUrl, supportUrl, bugReportUrl) {
         // Configurazione branding.desc
         let brandingPath = '/etc/calamares/branding/eggs/branding.desc';
         let productName = 'Penguin\'s eggs' + ' ' + this.productName;
@@ -87,9 +83,9 @@ class Calamares {
         let versionedName = this.versionedName;
         let shortVersionedName = this.versionedName;
         let bootloaderEntryName = productName;
-        let productUrl = 'https://penguin-s-eggs.gitbook.io/project/';
-        let supportUrl = 'https://github.com/pieroproietti/penguins-eggs';
-        let releaseNotesUrl = 'https://github.com/pieroproietti/penguins-eggs';
+        let productUrl = homeUrl; //'https://penguin-s-eggs.gitbook.io/project/';
+        //let supportUrl = supportUrl; // 'https://github.com/pieroproietti/penguins-eggs';
+        let releaseNotesUrl = bugReportUrl; //'https://github.com/pieroproietti/penguins-eggs';
         let productLogo = 'logo.png';
         let productIcon = 'logo.png';
         let productWelcome = 'welcome.png';

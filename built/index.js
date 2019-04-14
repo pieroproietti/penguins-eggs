@@ -94,24 +94,38 @@ async function config() {
     }
 }
 async function calamares(c) {
-    if (c.isCalamaresInstalled()) {
-        console.log("==========================================");
-        console.log("eggs: calamares configuration");
-        console.log("You can use the gui Installation:");
-        console.log("$sudo calamares");
-        console.log("or the cli installation:");
-        console.log("$sudo eggs hatch");
-        console.log("==========================================");
-        await c.settingsConf();
-        await c.brandingDesc();
-    } else {
+    let o = {};
+    let distroType = "unknown";
+    c.create();
+    //if (c.isCalamaresInstalled()) {
+    console.log("==========================================");
+    console.log("eggs: calamares configuration");
+    o = oses.info();
+    if (o.id === 'linuxmint') {
+        distroType = "debian";
+    } else if (o.id === 'debian') {
+        distroType = "debian";
+    } else if (o.id === 'ubuntu') {
+        distroType = "ubuntu";
+    } else if (o.id === 'fedora') {
+        distroType = "fedora";
+    }
+    console.log(`distro type: ${distroType} id: ${o.id} name: ${o.name} prettyName: ${o.prettyName}`);
+    console.log("You can use the gui Installation:");
+    console.log("sudo calamares");
+    console.log("or the cli installation:");
+    console.log("sudo eggs hatch");
+    console.log("==========================================");
+    await c.settingsConf(distroType);
+    await c.brandingDesc(distroType, o.homeUrl, o.supportUrl, o.bugReportUrl);
+    /*  } else {
         console.log("==========================================");
         console.log("eggs: calamares-eggs is not installed!");
         console.log(">>>>Skipping calamares configuration<<<<<");
         console.log("Use the cli installation cli:");
         console.log("$sudo eggs hatch");
         console.log("==========================================");
-    }
+      }*/
 }
 async function spawn(e, i, c) {
     if (!(await utils_1.default.isLive())) {

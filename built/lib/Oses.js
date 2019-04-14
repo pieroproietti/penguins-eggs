@@ -33,8 +33,24 @@ class Oses {
         return retval;
     }
     info() {
-        let o = {};
-        o = {
+        let info;
+        (function (info) {
+            info[info["PRETTY_NAME"] = 0] = "PRETTY_NAME";
+            info[info["NAME"] = 1] = "NAME";
+            info[info["ID"] = 2] = "ID";
+            info[info["HOME_URL"] = 3] = "HOME_URL";
+            info[info["SUPPORT_URL"] = 4] = "SUPPORT_URL";
+            info[info["BUG_REPORT_URL"] = 5] = "BUG_REPORT_URL";
+        })(info || (info = {}));
+        ;
+        let os = new Array();
+        os[info.PRETTY_NAME] = "PRETTY_NAME=";
+        os[info.NAME] = "NAME=";
+        os[info.ID] = "ID=";
+        os[info.HOME_URL] = "HOME_URL=";
+        os[info.SUPPORT_URL] = "SUPPORT_URL=";
+        os[info.BUG_REPORT_URL] = "BUG_REPORT_URL=";
+        let o = {
             "prettyName": "",
             "name": "",
             "id": "",
@@ -42,69 +58,35 @@ class Oses {
             "supportUrl": "",
             "bugReportUrl": ""
         };
-        let d;
-        (function (d) {
-            d[d["PRETTY_NAME"] = 0] = "PRETTY_NAME";
-            d[d["NAME"] = 1] = "NAME";
-            d[d["ID"] = 2] = "ID";
-            d[d["HOME_URL"] = 3] = "HOME_URL";
-            d[d["SUPPORT_URL"] = 4] = "SUPPORT_URL";
-            d[d["BUG_REPORT_URL"] = 5] = "BUG_REPORT_URL";
-        })(d || (d = {}));
-        ;
-        let os = new Array();
-        os[d.PRETTY_NAME] = "PRETTY_NAME=";
-        os[d.NAME] = "NAME=";
-        os[d.ID] = "ID=";
-        os[d.HOME_URL] = "HOME_URL=";
-        os[d.SUPPORT_URL] = "SUPPORT_URL=";
-        os[d.BUG_REPORT_URL] = "BUG_REPORT_URL=";
         read('/etc/os-release', function (data) {
             for (var temp in data) {
-                if (!data[temp].search(os[d.PRETTY_NAME])) {
-                    o.prettyName = data[temp].substring(os[d.PRETTY_NAME].length).replace(/"/g, "");
+                if (!data[temp].search(os[info.PRETTY_NAME])) {
+                    o.prettyName = data[temp].substring(os[info.PRETTY_NAME].length).replace(/"/g, "");
                 }
                 ;
-                if (!data[temp].search(os[d.NAME])) {
-                    o.name = data[temp].substring(os[d.NAME].length).replace(/"/g, "");
+                if (!data[temp].search(os[info.NAME])) {
+                    o.name = data[temp].substring(os[info.NAME].length).replace(/"/g, "");
                 }
                 ;
-                if (!data[temp].search(os[d.ID])) {
-                    o.id = data[temp].substring(os[d.ID].length).replace(/"/g, "");
+                if (!data[temp].search(os[info.ID])) {
+                    o.id = data[temp].substring(os[info.ID].length).replace(/"/g, "");
                 }
                 ;
-                if (!data[temp].search(os[d.HOME_URL])) {
-                    o.homeUrl = data[temp].substring(os[d.HOME_URL].length).replace(/"/g, "");
+                if (!data[temp].search(os[info.HOME_URL])) {
+                    o.homeUrl = data[temp].substring(os[info.HOME_URL].length).replace(/"/g, "");
                 }
                 ;
-                if (!data[temp].search(os[d.SUPPORT_URL])) {
-                    o.supportUrl = data[temp].substring(os[d.SUPPORT_URL].length).replace(/"/g, "");
+                if (!data[temp].search(os[info.SUPPORT_URL])) {
+                    o.supportUrl = data[temp].substring(os[info.SUPPORT_URL].length).replace(/"/g, "");
                 }
                 ;
-                if (!data[temp].search(os[d.BUG_REPORT_URL])) {
-                    o.bugReportUrl = data[temp].substring(os[d.BUG_REPORT_URL].length).replace(/"/g, "");
+                if (!data[temp].search(os[info.BUG_REPORT_URL])) {
+                    o.bugReportUrl = data[temp].substring(os[info.BUG_REPORT_URL].length).replace(/"/g, "");
                 }
                 ;
             }
-            console.log("==========================================");
-            console.log("eggs distro informations: ");
-            console.log("==========================================");
-            console.log("PRETTY_NAME = " + o.prettyName);
-            console.log("NAME = " + o.name);
-            console.log("ID = " + o.id);
-            console.log("HOME_URL = " + o.homeUrl);
-            console.log("SUPPORT_URL = " + o.supportUrl);
-            console.log("BUG_REPORT_URL = " + o.bugReportUrl);
-            console.log("==========================================");
         });
-        return {
-            "prettyName": o.prettyName,
-            "name": o.name,
-            "id": o.id,
-            "homeUrl": o.homeUrl,
-            "supportUrl": o.supportUrl,
-            "bugReportUrl": o.bugReportUrl
-        };
+        return o;
     }
 }
 exports.default = Oses;
@@ -113,12 +95,7 @@ exports.default = Oses;
  * @param file Utilizzata da info()
  */
 function read(file, cb) {
-    fs_1.default.readFile(file, 'utf8', function (err, data) {
-        if (!err) {
-            cb(data.toString().split('\n'));
-        } else {
-            console.log(err);
-        }
-    });
+    let data = fs_1.default.readFileSync(file, 'utf8');
+    cb(data.toString().split('\n'));
 }
 //# sourceMappingURL=Oses.js.map
