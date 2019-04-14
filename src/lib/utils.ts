@@ -17,6 +17,7 @@ import path from "path";
 class utils {
   //pathScripts: String = "/usr/lib/node_modules/penguins-eggs";
   //pathScripts: String = "/home/artisan/penguins-eggs";
+
   pathScripts: String;
 
   // metodi
@@ -28,7 +29,7 @@ class utils {
   async isLive(): Promise<Boolean> {
     let test: string = "1";
     let result: any;
-    result = shell.exec(`${this.pathScripts}/scripts/is_live.sh`, {
+    result = shell.exec(`${__dirname}/../../scripts/is_live.sh`, {
       async: false
     });
     if (result.indexOf(test) > -1) {
@@ -44,7 +45,7 @@ class utils {
   async isMounted(check: string): Promise<boolean> {
     let test: string = "1";
     let result: any;
-    result = shell.exec(`${this.pathScripts}/scripts/is_mounted.sh ${check}`, {
+    result = shell.exec(`${__dirname}/../../scripts/is_mounted.sh ${check}`, {
       async: false
     });
     if (result.indexOf(test) > -1) {
