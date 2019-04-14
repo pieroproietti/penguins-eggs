@@ -149,7 +149,8 @@ async function calamares(c: any) {
   let o:any={};
   let distroType:string="unknown";
 
-  if (c.isCalamaresInstalled()) {
+  c.create();
+  //if (c.isCalamaresInstalled()) {
 
     console.log("==========================================");
     console.log("eggs: calamares configuration");
@@ -172,14 +173,14 @@ async function calamares(c: any) {
     console.log("==========================================");
     await c.settingsConf(distroType);
     await c.brandingDesc(distroType, o.homeUrl, o.supportUrl, o.bugReportUrl );
-  } else {
+/*  } else {
     console.log("==========================================");
     console.log("eggs: calamares-eggs is not installed!");
     console.log(">>>>Skipping calamares configuration<<<<<");
     console.log("Use the cli installation cli:");
     console.log("$sudo eggs hatch");
     console.log("==========================================");
-  }
+  }*/
 }
 
 
