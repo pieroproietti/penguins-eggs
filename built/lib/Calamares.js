@@ -36,10 +36,10 @@ class Calamares {
         utils_1.default.exec(`mkdir -p /etc/calamares/branding`);
         utils_1.default.exec(`mkdir -p /etc/calamares/branding/eggs`);
         utils_1.default.exec(`mkdir -p /etc/calamares/modules`);
-        utils_1.default.exec(`cp ../templates/show/* /etc/calamares/branding/eggs`);
-        utils_1.default.exec(`cp ../templates/debian/etc/modules/* /etc/calamares/modules`);
+        utils_1.default.exec(`cp -r ../templates/commons/etc/* /etc/`);
+        utils_1.default.exec(`cp -r ../templates/debian/etc/* /etc/`);
         // /usr/lib/calamares
-        utils_1.default.exec(`cp -r ../templates/debian/usr/lib/* /usr/lib/calamares/`);
+        utils_1.default.exec(`cp -r ../templates/debian/usr/lib/calamares/* /usr/lib/calamares/`);
         // /usr/sbin 
         utils_1.default.exec(`cp -r ../templates/debian/usr/sbin/* /usr/sbin`);
     }
