@@ -187,3 +187,5 @@ Fedora
 * wget https://fedora.mirror.garr.it/fedora/linux/releases/29/Workstation/x86_64/os/isolinux/vmlinuz
 * wget https://fedora.mirror.garr.it/fedora/linux/releases/29/Workstation/x86_64/os/isolinux/initrd.img
  
+Su ubuntu:
+apt-get install qml-module-qtquick2
