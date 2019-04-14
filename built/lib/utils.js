@@ -23,7 +23,7 @@ class utils {
     async isLive() {
         let test = "1";
         let result;
-        result = shelljs_1.default.exec(`${this.pathScripts}/scripts/is_live.sh`, {
+        result = shelljs_1.default.exec(`${__dirname}/../../scripts/is_live.sh`, {
             async: false
         });
         if (result.indexOf(test) > -1) {
@@ -38,7 +38,7 @@ class utils {
     async isMounted(check) {
         let test = "1";
         let result;
-        result = shelljs_1.default.exec(`${this.pathScripts}/scripts/is_mounted.sh ${check}`, {
+        result = shelljs_1.default.exec(`${__dirname}/../../scripts/is_mounted.sh ${check}`, {
             async: false
         });
         if (result.indexOf(test) > -1) {
