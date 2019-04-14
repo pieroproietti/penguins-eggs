@@ -53,7 +53,7 @@ class Calamares {
     // /usr/lib/calamares
     utils.exec(`cp -r ../templates/debian/usr/lib/* /usr/lib/calamares/`);
     // /usr/sbin 
-    utils.exec(`cp -r ../templates/debian/usr/sbin/* /usr/`);
+    utils.exec(`cp -r ../templates/debian/usr/sbin/* /usr/sbin`);
   }
 
 
