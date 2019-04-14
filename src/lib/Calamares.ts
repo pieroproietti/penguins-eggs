@@ -60,7 +60,7 @@ class Calamares {
     let settingsPath = '/etc/calamares/settings.conf'
     let settings = {};
 
-    if (distroType == 'debian') {
+    if (distroType === 'debian') {
       settings = {
         'modules-search': ['local', '/usr/lib/calamares/modules'],
         sequence: [
@@ -77,7 +77,7 @@ class Calamares {
         'prompt-install': false,
         'dont-chroot': false
       };
-    } else if (distroType == 'ubuntu') {
+    } else if (distroType === 'ubuntu') {
       settings = {
         'modules-search': ['local', '/usr/lib/calamares/modules'],
         sequence: [

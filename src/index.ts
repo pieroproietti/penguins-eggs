@@ -157,7 +157,7 @@ async function calamares(c: any) {
     o = oses.info();
     if (o.id==='linuxmint'){
       distroType = "debian";
-    } else if (o.id==='linuxmint'){
+    } else if (o.id==='debian'){
       distroType = "debian";
     } else if (o.id==='ubuntu'){
       distroType = "ubuntu";
