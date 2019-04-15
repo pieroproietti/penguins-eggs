@@ -120,14 +120,14 @@ class Calamares {
     }
 
     let file = `/etc/calamares/modules/unpackfs.conf`;
-    let text = `---`;
-    text += `unpack:`;
-    text += `-   source: "${squashfsMountpoint}\n"`;
-    text += `        sourcefs: "squashfs"\n`;
-    text += `        unpack:\n`;
-    text += `             destination: ""\n`;
-    fs.writeFileSync(file, text);
-//    utils.bashWrite(file, text);
+    let text = `---\n`;
+    text += `unpack:\n`;
+    text += `-   source: "${squashfsMountpoint}"\n`;
+    text += `    sourcefs: "squashfs"\n`;
+    text += `    unpack:\n`;
+    text += `    destination: ""\n`;
+    text += `# distroType: ${distroType}\n`;
+    fs.writeFileSync(file, text, 'utf8');
   }
   
 
