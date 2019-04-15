@@ -106,6 +106,30 @@ class Calamares {
     fs.writeFileSync(settingsPath, yaml.safeDump(settings), 'utf8');
   }
 
+  unpackModule(distroType: string){
+    let squashfsDebian ="/run/live/medium/live/filesystem.squashfs";
+    let squashfsUbuntu ="/lib/live/medium/live/filesystem.squashfs";
+    let squashfsMountpoint = "";
+
+    if (distroType==="debian"){
+      squashfsMountpoint = squashfsDebian;
+    } else if (distroType==="debian"){
+      squashfsMountpoint = squashfsUbuntu;
+    } else {
+      squashfsMountpoint = squashfsDebian;
+    }
+
+    let file = `/etc/calamares/modules/unpackfs.conf`;
+    let text = `---`;
+    text += `unpack:`;
+    text += `-   source: "${squashfsMountpoint}"`;
+    text += `        sourcefs: "squashfs"`;
+    text += `        unpack:`;
+    text += `             destination: ""`;
+    utils.bashWrite(file, text);
+  }
+  
+
   async brandingDesc(distroType: string, homeUrl: string, supportUrl: string, bugReportUrl: string) {
     // Configurazione branding.desc
     let brandingPath = '/etc/calamares/branding/eggs/branding.desc';
@@ -117,9 +141,9 @@ class Calamares {
     let versionedName = this.versionedName;
     let shortVersionedName = this.versionedName;
     let bootloaderEntryName = productName;
-    let productUrl = homeUrl; //'https://penguin-s-eggs.gitbook.io/project/';
-    //let supportUrl = supportUrl; // 'https://github.com/pieroproietti/penguins-eggs';
-    let releaseNotesUrl = bugReportUrl; //'https://github.com/pieroproietti/penguins-eggs';
+    let productUrl = homeUrl; 
+    //let supportUrl = supportUrl; 
+    let releaseNotesUrl = 'https://github.com/pieroproietti/penguins-eggs';
 
     let productLogo = 'logo.png';
     let productIcon = 'logo.png';
@@ -159,7 +183,6 @@ class Calamares {
         sidebarTextSelect: '#4d7079'
       }
     };
-
 
     console.log("Configurazione branding.desc");
     try {

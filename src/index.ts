@@ -145,7 +145,7 @@ async function config() {
   }
 }
 
-async function calamares(c: any) {
+function calamares(c: any): any {
   let o:any={};
   let distroType:string="unknown";
 
@@ -155,24 +155,27 @@ async function calamares(c: any) {
     console.log("==========================================");
     console.log("eggs: calamares configuration");
     o = oses.info();
-    if (o.id==='linuxmint'){
+    if (o.idLike==='linuxmint'){
       distroType = "debian";
-    } else if (o.id==='debian'){
+    } else if (o.idLike==='debian'){
       distroType = "debian";
-    } else if (o.id==='ubuntu'){
+    } else if (o.idLike==='ubuntu'){
       distroType = "ubuntu";
-    } else if (o.id==='fedora'){
+    } else if (o.idLike==='fedora'){
       distroType = "fedora";
     }
-    console.log(`distro type: ${distroType} id: ${o.id} name: ${o.name} prettyName: ${o.prettyName}`);
+    console.log(`distro type: ${distroType} id: ${o.id} idLike: ${o.idLike} name: ${o.name} prettyName: ${o.prettyName} versionCodename: ${o.versionCodename}`);
 
     console.log("You can use the gui Installation:");
     console.log("sudo calamares");
     console.log("or the cli installation:");
     console.log("sudo eggs hatch");
     console.log("==========================================");
-    await c.settingsConf(distroType);
-    await c.brandingDesc(distroType, o.homeUrl, o.supportUrl, o.bugReportUrl );
+    c.settingsConf(distroType);
+    c.brandingDesc(distroType, o.homeUrl, o.supportUrl, o.bugReportUrl );
+    c.unpackModule(distroType);
+    return o;
+
 /*  } else {
     console.log("==========================================");
     console.log("eggs: calamares-eggs is not installed!");
@@ -185,13 +188,16 @@ async function calamares(c: any) {
 
 
 async function spawn(e: any, i: any, c: any) {
+  let o:any ={};
+
   if (!await utils.isLive()) {
     console.log(
       ">>> eggs: This is a live system! The spawn command cannot be executed."
     );
   } else {
 
-    await calamares(c);
+
+    o = calamares(c);
 
     console.log("Spawning the system into  the egg... \nThis process can be very long, perhaps it's time for a coffee!");
     await e.createStructure();
