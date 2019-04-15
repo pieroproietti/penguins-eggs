@@ -56,8 +56,12 @@ following lines:
 
 If you want to use the gui installer (calamares), you must to install it:
 
-```apt-get install qml-module-qtquick2 qml-module-qtquick-controls```
+```apt-get install calamares qml-module-qtquick2 qml-module-qtquick-controls```
 
+Note: It is also possible to installa calamares on the live system and configure it
+with the command:
+
+```sudo eggs calamares```
 
 ### Installation penguins-eggs via npm
 You can install it with npm (node package manager). Copy and past the following line:
