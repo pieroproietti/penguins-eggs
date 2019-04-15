@@ -55,6 +55,7 @@ following lines:
 ```sudo apt-get install lvm2 parted squashfs-tools xorriso live-boot syslinux syslinux-common isolinux pxelinux```
 
 If you want to use the gui installer (calamares), you must to install it:
+
 ```apt-get install qml-module-qtquick2 qml-module-qtquick-controls```
 
 
@@ -62,7 +63,9 @@ If you want to use the gui installer (calamares), you must to install it:
 You can install it with npm (node package manager). Copy and past the following line:
 
 For same reason we need to do this operation before to install eggs
+
 ```sudo npm config set unsafe-perm true```
+
 ```sudo npm i penguins-egg -g```
 
 
@@ -107,6 +110,7 @@ of your live system.
 
 ### info
 You will get the main information about your system. This information will be used in the process of spawn and configure the installer.
+
 ```sudo eggs info```
 
 
@@ -118,6 +122,7 @@ free your system from the egg.
 
 ### calamares
 This command is usefull during develepment, it generate the calamares configuration. 
+
 ```sudo eggs calamares```
 
 ### hatch
@@ -181,9 +186,14 @@ At the moment penguins-eggs is working on:
 * Linux Mint
 * LMDE
 
-## Fedora 
-I'm trying to support Fedora, Suse and others distros. With Fedora I'm a good point, the system is complete but lack just the boot of the live CD. If someone can help.
+## Distribution in progress
+* Fedora 
+I'm trying to support Fedora, Suse and others distros. With Fedora I'm a good point, the system is complete but lack just the boot of the live CD. 
 
 * wget https://fedora.mirror.garr.it/fedora/linux/releases/29/Workstation/x86_64/os/isolinux/vmlinuz
 * wget https://fedora.mirror.garr.it/fedora/linux/releases/29/Workstation/x86_64/os/isolinux/initrd.img
+
+If someone can help.
+
+
  
