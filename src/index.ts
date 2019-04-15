@@ -181,7 +181,7 @@ function calamares(c: any): any {
     console.log("eggs: calamares-eggs is not installed!");
     console.log(">>>>Skipping calamares configuration<<<<<");
     console.log("Use the cli installation cli:");
-    console.log("$sudo eggs hatch");
+    console.log("sudo eggs hatch");
     console.log("==========================================");
   }*/
 }

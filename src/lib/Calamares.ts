@@ -125,10 +125,6 @@ class Calamares {
     text += `    unpack:\n`;
     text += `    destination: ""\n`;
     text += `# distroType: ${distroType}\n`;
-    // let isDebian: any= distroType.localeCompare('debian')==0;
-    // let isUbuntu: any= distroType.localeCompare('ubuntu')==0;
-    // text += `#debian: ${isDebian}\n`;
-    // text += `#ubuntu: ${isUbuntu}\n`;
 
     fs.writeFileSync(file, text, 'utf8');
   }
@@ -189,17 +185,7 @@ class Calamares {
     };
 
     console.log("Configurazione branding.desc");
-    try {
-      fs.writeFileSync(brandingPath, yaml.safeDump(branding), 'utf8');
-      /*
-      , (err: any) => {
-        if (err) console.log(err)
-      })
-      */
-    } catch (e) {
-      console.log(e);
-    }
-
+    fs.writeFileSync(brandingPath, yaml.safeDump(branding), 'utf8');
   }
 
 }
