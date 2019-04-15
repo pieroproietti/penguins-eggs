@@ -54,7 +54,11 @@ following lines:
 
 ```sudo apt-get install lvm2 parted squashfs-tools xorriso live-boot syslinux syslinux-common isolinux pxelinux```
 
-### Installation via npm
+If you want to use the gui installer (calamares), you must to install it:
+```apt-get install qml-module-qtquick2 qml-module-qtquick-controls```
+
+
+### Installation penguins-eggs via npm
 You can install it with npm (node package manager). Copy and past the following line:
 
 For same reason we need to do this operation before to install eggs
@@ -62,8 +66,8 @@ For same reason we need to do this operation before to install eggs
 ```sudo npm i penguins-egg -g```
 
 
-### Installation from source
-You need a functional installation of Linux Debian version 8 or 9,
+### Installation penguins-eggs from source
+You need a functional installation of Linux Debian version 8 or 9, LinuxMint, LMDE, 
 Ubuntu or derivates, all the prerequisites plus the ``build-essential`` package.
 
 ```apt-get install build-essential```
@@ -79,24 +83,17 @@ npm i
 
 At this point, You can launch egg, in developer mode, for example:
 
-```sudo npm  start spawn```
+```sudo npm run ts-start spawn```
 
-or you can build and link it:
-
-```
-npm run build
-sudo npm link
-```
-And you can run eggs in usual way:
-
-```sudo eggs spawn```
+or you can build it or link it:
 
 ## Commands
 On the eggs you can do four actions:
 * spawn
-* cuckoo
+* info
 * kill
-* hatch
+* calamares (configure gui installer gui calamares)
+* hatch (the cli installer)
 
 ### spawn
 The function of spawn is to generate the egg. Your system is copied and packaged
@@ -108,23 +105,20 @@ of your live system.
 
 ```sudo eggs spawn -d mydistroname```
 
-### cuckoo
-Yes, after we have the egg, there is another action possible for it, before to
-``hatch`` or ``kill`` it, we can use our egg to boot from the net other computers.
-In the system mother, we need to give the action:
+### info
+You will get the main information about your system. This information will be used in the process of spawn and configure the installer.
+```sudo eggs info```
 
-```sudo eggs cuckoo```
-
-And netboot via PXE a remote computer in the same net. The PC will be booted with
-our egg and we will hatch it on the new pc. In same way, it's like the behaviour
-of the cuckoo, who leave is egg in a nest of the another bird. From this the
-name of the action.
 
 ### kill
 As the name say is the operation of break and kill the egg created. You will
 free your system from the egg.
 
 ```sudo eggs kill```
+
+### calamares
+This command is usefull during develepment, it generate the calamares configuration. 
+```sudo eggs calamares```
 
 ### hatch
 An egg to became penguin need to be hatched! In our case we simply need to give
@@ -180,12 +174,16 @@ contact me, or open an [issue](https://github.com/pieroproietti/penguins-eggs/is
 ## Copyright and licenses
 Copyright (c) 2017, [Piero Proietti](http://pieroproietti.github.com), dual licensed under the MIT or GPL Version 2 licenses.
 
+# Distribution supported
+At the moment penguins-eggs is working on:
+* Debian
+* Ubuntu
+* Linux Mint
+* LMDE
 
-# npm set
+## Fedora 
+I'm trying to support Fedora, Suse and others distros. With Fedora I'm a good point, the system is complete but lack just the boot of the live CD. If someone can help.
 
-Fedora 
 * wget https://fedora.mirror.garr.it/fedora/linux/releases/29/Workstation/x86_64/os/isolinux/vmlinuz
 * wget https://fedora.mirror.garr.it/fedora/linux/releases/29/Workstation/x86_64/os/isolinux/initrd.img
  
-Su ubuntu:
-apt-get install qml-module-qtquick2 qml-module-qtquick-controls 
