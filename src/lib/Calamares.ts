@@ -113,7 +113,7 @@ class Calamares {
 
     if (distroType==="debian"){
       squashfsMountpoint = squashfsDebian;
-    } else if (distroType==="debian"){
+    } else if (distroType==="ubuntu"){
       squashfsMountpoint = squashfsUbuntu;
     } else {
       squashfsMountpoint = squashfsDebian;
@@ -122,11 +122,12 @@ class Calamares {
     let file = `/etc/calamares/modules/unpackfs.conf`;
     let text = `---`;
     text += `unpack:`;
-    text += `-   source: "${squashfsMountpoint}"`;
-    text += `        sourcefs: "squashfs"`;
-    text += `        unpack:`;
-    text += `             destination: ""`;
-    utils.bashWrite(file, text);
+    text += `-   source: "${squashfsMountpoint}\n"`;
+    text += `        sourcefs: "squashfs"\n`;
+    text += `        unpack:\n`;
+    text += `             destination: ""\n`;
+    fs.writeFileSync(file, text);
+//    utils.bashWrite(file, text);
   }
   
 
