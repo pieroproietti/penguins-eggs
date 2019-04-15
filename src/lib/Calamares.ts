@@ -75,7 +75,7 @@ class Calamares {
           { show: ['welcome', 'locale', 'keyboard', 'partition', 'users', 'summary'] },
           {
             exec: ['partition', 'mount', 'unpackfs', 'sources-media', 'machineid', 'fstab', 'locale',
-              'keyboard', 'localecfg', 'users', 'networkcfg', 'hwclock', 'services-systemd',
+              'keyboard', 'localecfg', 'users', 'networkcfg', 'hwclock', 
               'bootloader-config', 'grubcfg', 'bootloader', 'packages', 'luksbootkeyfile',
               'plymouthcfg', 'initramfscfg', 'initramfs', 'sources-media-unmount',
               'sources-final', 'removeuser', 'umount']
