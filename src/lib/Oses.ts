@@ -109,7 +109,7 @@ class Oses {
 
                 if (!data[temp].search(os[info.ID_LIKE])) {
                     o.idLike = data[temp].substring(os[info.ID_LIKE].length).replace(/"/g, "");
-                    if (o.idLike === '') {
+                    if (o.idLike.trim() === '') {
                         o.idLike = o.id;
                     }
                 };
