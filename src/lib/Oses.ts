@@ -57,7 +57,7 @@ class Oses {
     }
 
     info(): any {
-        enum info { PRETTY_NAME = 0, NAME, VERSION_CODENAME, VERSION_ID, ID, ID_LIKE, HOME_URL, SUPPORT_URL, BUG_REPORT_URL, DEBIAN_CODENAME };
+        enum info { PRETTY_NAME = 0, NAME, VERSION_CODENAME, VERSION_ID, ID, ID_LIKE, HOME_URL, SUPPORT_URL, BUG_REPORT_URL, DEBIAN_CODENAME, UBUNTU_CODENAME };
         let os: Array<string> = new Array();
         os[info.PRETTY_NAME] = "PRETTY_NAME=";
         os[info.NAME] = "NAME=";
@@ -69,6 +69,7 @@ class Oses {
         os[info.SUPPORT_URL] = "SUPPORT_URL=";
         os[info.BUG_REPORT_URL] = "BUG_REPORT_URL=";
         os[info.DEBIAN_CODENAME] = "DEBIAN_CODENAME=";
+        os[info.UBUNTU_CODENAME] = "UBUNTU_CODENAME=";
 
         let o = {
             "prettyName": "",
@@ -78,6 +79,7 @@ class Oses {
             "id": "",
             "idLike": "",
             "debianCodename": "",
+            "ubuntuCodename": "",
             "homeUrl": "",
             "supportUrl": "",
             "bugReportUrl": ""
@@ -126,41 +128,37 @@ class Oses {
 
                 if (!data[temp].search(os[info.DEBIAN_CODENAME])) {
                     o.debianCodename = data[temp].substring(os[info.DEBIAN_CODENAME].length).replace(/"/g, "");
-                    if (o.debianCodename === '') {
-                        if (o.versionId === "19.04") {
-                            o.debianCodename = 'buster';
-                        } else if (o.versionId === "18.10") {
-                            o.debianCodename = 'buster';
-                        } else if (o.versionId === "18.04") {
-                            o.debianCodename = 'buster';
-                        } else if (o.versionId === "17.10") {
-                            o.debianCodename = 'stretch';
-                        } else if (o.versionId === "17.04") {
-                            o.debianCodename = 'stretch';
-                        } else if (o.versionId === "16.10") {
-                            o.debianCodename = 'stretch';
-                        } else if (o.versionId === "16.04") {
-                            o.debianCodename = 'stretch';
-                        } else if (o.versionId === "15.10") {
-                            o.debianCodename = 'jessie';
-                        } else if (o.versionId === "15.04") {
-                            o.debianCodename = 'jessie';
-                        } else if (o.versionId === "14.10") {
-                            o.debianCodename = 'wheezy';
-                        } else if (o.versionId === "14.04") {
-                            o.debianCodename = 'wheezy';
-                        } else if (o.versionId === "13.10") {
-                            o.debianCodename = 'wheezy';
-                        } else if (o.versionId === "13.04") {
-                            o.debianCodename = 'wheezy';
-                        } else if (o.versionId === "12.10") {
-                            o.debianCodename = 'wheezy';
-                        } else if (o.versionId === "12.04") {
-                            o.debianCodename = 'wheezy';
-                        }
-                    }
                 };
 
+                if (!data[temp].search(os[info.UBUNTU_CODENAME])) {
+                    o.ubuntuCodename = data[temp].substring(os[info.UBUNTU_CODENAME].length).replace(/"/g, "");
+                };
+
+                if (o.debianCodename === '') {
+                    if (o.ubuntuCodename == 'disco') {
+                        o.debianCodename = 'buster';
+                    } else if (o.ubuntuCodename == 'cosmic') {
+                        o.debianCodename = 'buster';
+                    } else if (o.ubuntuCodename == 'bionic') {
+                        o.debianCodename = 'buster';
+                    } else if (o.ubuntuCodename == 'artful') {
+                        o.debianCodename = 'stretch';
+                    } else if (o.ubuntuCodename == 'zesty') {
+                        o.debianCodename = 'stretch';
+                    } else if (o.ubuntuCodename == 'yakkety') {
+                        o.debianCodename = 'stretch';
+                    } else if (o.ubuntuCodename == 'xenial') {
+                        o.debianCodename = 'stretch';
+                    } else if (o.ubuntuCodename == 'wily') {
+                        o.debianCodename = 'jessie';
+                    } else if (o.ubuntuCodename == 'vivid') {
+                        o.debianCodename = 'jessie';
+                    } else if (o.ubuntuCodename == 'utopic') {
+                        o.debianCodename = 'jessie';
+                    } else if (o.ubuntuCodename == 'trusty') {
+                        o.debianCodename = 'jessie';
+                    }
+                };
             }
         });
         return (o);
