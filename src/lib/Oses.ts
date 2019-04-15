@@ -21,9 +21,9 @@ class Oses {
      */
     squashFsMountPoint(distroType: string): string {
         let retval: string;
-        if (distroType==='debian') {
+        if (distroType === 'debian') {
             retval = '/run/live/medium/live/filesystem.squashfs';
-        } else if (distroType==='ubuntu') {
+        } else if (distroType === 'ubuntu') {
             retval = '/lib/live/medium/live/filesystem.squashfs';
         } else {
             retval = '/run/live/medium/live/filesystem.squashfs';
@@ -57,7 +57,7 @@ class Oses {
     }
 
     info(): any {
-        enum info { PRETTY_NAME = 0, NAME, VERSION_CODENAME, VERSION_ID, ID, ID_LIKE, HOME_URL, SUPPORT_URL, BUG_REPORT_URL };
+        enum info { PRETTY_NAME = 0, NAME, VERSION_CODENAME, VERSION_ID, ID, ID_LIKE, HOME_URL, SUPPORT_URL, BUG_REPORT_URL, DEBIAN_CODENAME };
         let os: Array<string> = new Array();
         os[info.PRETTY_NAME] = "PRETTY_NAME=";
         os[info.NAME] = "NAME=";
@@ -68,13 +68,16 @@ class Oses {
         os[info.HOME_URL] = "HOME_URL=";
         os[info.SUPPORT_URL] = "SUPPORT_URL=";
         os[info.BUG_REPORT_URL] = "BUG_REPORT_URL=";
+        os[info.DEBIAN_CODENAME] = "DEBIAN_CODENAME=";
+
         let o = {
             "prettyName": "",
             "name": "",
-            "versionCodename" : "",
+            "versionCodename": "",
             "versionId": "",
             "id": "",
             "idLike": "",
+            "debianCodename": "",
             "homeUrl": "",
             "supportUrl": "",
             "bugReportUrl": ""
@@ -104,8 +107,8 @@ class Oses {
 
                 if (!data[temp].search(os[info.ID_LIKE])) {
                     o.idLike = data[temp].substring(os[info.ID_LIKE].length).replace(/"/g, "");
-                    if (o.idLike===''){
-                        o.idLike=o.id;
+                    if (o.idLike === '') {
+                        o.idLike = o.id;
                     }
                 };
 
@@ -120,7 +123,44 @@ class Oses {
                 if (!data[temp].search(os[info.BUG_REPORT_URL])) {
                     o.bugReportUrl = data[temp].substring(os[info.BUG_REPORT_URL].length).replace(/"/g, "");
                 };
-   
+
+                if (!data[temp].search(os[info.DEBIAN_CODENAME])) {
+                    o.debianCodename = data[temp].substring(os[info.DEBIAN_CODENAME].length).replace(/"/g, "");
+                    if (o.debianCodename === '') {
+                        if (o.versionId === "19.04") {
+                            o.debianCodename = 'buster';
+                        } else if (o.versionId === "18.10") {
+                            o.debianCodename = 'buster';
+                        } else if (o.versionId === "18.04") {
+                            o.debianCodename = 'buster';
+                        } else if (o.versionId === "17.10") {
+                            o.debianCodename = 'stretch';
+                        } else if (o.versionId === "17.04") {
+                            o.debianCodename = 'stretch';
+                        } else if (o.versionId === "16.10") {
+                            o.debianCodename = 'stretch';
+                        } else if (o.versionId === "16.04") {
+                            o.debianCodename = 'stretch';
+                        } else if (o.versionId === "15.10") {
+                            o.debianCodename = 'jessie';
+                        } else if (o.versionId === "15.04") {
+                            o.debianCodename = 'jessie';
+                        } else if (o.versionId === "14.10") {
+                            o.debianCodename = 'wheezy';
+                        } else if (o.versionId === "14.04") {
+                            o.debianCodename = 'wheezy';
+                        } else if (o.versionId === "13.10") {
+                            o.debianCodename = 'wheezy';
+                        } else if (o.versionId === "13.04") {
+                            o.debianCodename = 'wheezy';
+                        } else if (o.versionId === "12.10") {
+                            o.debianCodename = 'wheezy';
+                        } else if (o.versionId === "12.04") {
+                            o.debianCodename = 'wheezy';
+                        }
+                    }
+                };
+
             }
         });
         return (o);
