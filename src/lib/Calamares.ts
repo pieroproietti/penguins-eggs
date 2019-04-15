@@ -108,15 +108,13 @@ class Calamares {
 
   unpackModule(distroType: string){
     let squashfsDebian ="/run/live/medium/live/filesystem.squashfs";
-    let squashfsUbuntu ="/lib/live/medium/live/filesystem.squashfs";
+    let squashfsUbuntu ="/lib/live/mount/medium/live/filesystem.squashfs";
     let squashfsMountpoint = "";
 
-    if (distroType==="debian"){
+    if (distroType.localeCompare('debian')==0){
       squashfsMountpoint = squashfsDebian;
-    } else if (distroType==="ubuntu"){
+    } else if (distroType.localeCompare('ubuntu')==0){
       squashfsMountpoint = squashfsUbuntu;
-    } else {
-      squashfsMountpoint = squashfsDebian;
     }
 
     let file = `/etc/calamares/modules/unpackfs.conf`;
@@ -127,6 +125,11 @@ class Calamares {
     text += `    unpack:\n`;
     text += `    destination: ""\n`;
     text += `# distroType: ${distroType}\n`;
+    // let isDebian: any= distroType.localeCompare('debian')==0;
+    // let isUbuntu: any= distroType.localeCompare('ubuntu')==0;
+    // text += `#debian: ${isDebian}\n`;
+    // text += `#ubuntu: ${isUbuntu}\n`;
+
     fs.writeFileSync(file, text, 'utf8');
   }
   
