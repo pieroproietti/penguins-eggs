@@ -44,7 +44,7 @@ are able to open a terminal, you can use it.
 Well, it is time to try it!
 
 ### Prerequisites
-Of course penguins-eggs need [nodejs](https://nodejs.org/en/download/package-manager/) installed.
+Of course penguins-eggs need [nodejs](https://github.com/nodesource/distributions/blob/master/README.md#deb) installed.
 
 penguins-eggs depend on various packages, you need to install them before to
 start to use it. Before to install penguins-eggs, simply copy and paste the
