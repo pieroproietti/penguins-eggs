@@ -134,7 +134,7 @@ class Oses {
                     o.ubuntuCodename = data[temp].substring(os[info.UBUNTU_CODENAME].length).replace(/"/g, "");
                 };
 
-                if (o.debianCodename === '') {
+                if (o.id === 'linuxmint') {
                     if (o.ubuntuCodename == 'disco') {
                         o.debianCodename = 'buster';
                     } else if (o.ubuntuCodename == 'cosmic') {
@@ -158,6 +158,9 @@ class Oses {
                     } else if (o.ubuntuCodename == 'trusty') {
                         o.debianCodename = 'jessie';
                     }
+                } else if (o.id==='ubuntu'){
+                    if (o.ubuntuCodename == 'disco') {
+
                 };
             }
         });
