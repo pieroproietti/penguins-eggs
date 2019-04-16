@@ -56,7 +56,7 @@ following lines:
 
 If you want to use the gui installer (calamares), you must to install it:
 
-```apt-get install calamares qml-module-qtquick2 qml-module-qtquick-controls```
+```sudo apt-get install calamares qml-module-qtquick2 qml-module-qtquick-controls```
 
 Note: It is also possible to installa calamares on the live system and configure it
 with the command:
