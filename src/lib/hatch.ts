@@ -293,26 +293,26 @@ async function umount4target(target: string, devices: IDevices): Promise<boolean
 
 
 async function diskPreparePve(device: string): Promise<boolean> {
-  await execute(`${utils.path()}/scripts/disk_prepare_pve.sh ${device}`);
+  await execute(`${__dirname}/../../scripts/disk_prepare_pve.sh ${device}`);
   return true;
 }
 
 async function diskPreparePartitionLvm(device: string, sizeMb: number): Promise<boolean> {
   console.log(`disk_prepare_partition_lvm.sh ${device} ${sizeMb}`);
   await execute(
-    `${utils.path()}/scripts/disk_prepare_partition_lvm.sh ${device} ${sizeMb}`
+    `${__dirname}/../../scripts/disk_prepare_partition_lvm.sh ${device} ${sizeMb}`
   );
   return true;
 }
 async function diskPreparePartitionBoot(device: string): Promise<boolean> {
   await execute(
-    `${utils.path()}/scripts/disk_prepare_partition_boot.sh ${device}`
+    `${__dirname}/../../scripts/disk_prepare_partition_boot.sh ${device}`
   );
   return true;
 }
 
 async function diskPrepare(device: string) {
-  await execute(`${utils.path()}/scripts/disk_prepare.sh ${device}`);
+  await execute(`${__dirname}/../../scripts/disk_prepare.sh ${device}`);
   return true;
 }
 
@@ -320,7 +320,7 @@ async function getDiskSize(device: string): Promise<number> {
   let response: string;
   let bytes: number;
 
-  response = await execute(`${utils.path()}/scripts/disk_get_size.sh ${device}`);
+  response = await execute(`${__dirname}/../../scripts/disk_get_size.sh ${device}`);
   response = response.replace("B", "").trim();
   bytes = Number(response);
   return bytes;
