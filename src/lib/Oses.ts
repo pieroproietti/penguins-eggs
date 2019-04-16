@@ -85,8 +85,9 @@ class Oses {
             "bugReportUrl": ""
         };
 
-        read('/etc/os-release', function (data: any) {
-            for (var temp in data) {
+//        read(`${__dirname}/../../etc/os-release-ubuntu-18.10`, function (data: any) {
+        read(`/etc/os-release`, function (data: any) {
+                for (var temp in data) {
                 if (!data[temp].search(os[info.PRETTY_NAME])) {
                     o.prettyName = data[temp].substring(os[info.PRETTY_NAME].length).replace(/"/g, "");
                 };
@@ -159,9 +160,32 @@ class Oses {
                         o.debianCodename = 'jessie';
                     }
                 } else if (o.id==='ubuntu'){
+                    // idLike=ubuntu se ubuntu
+                    o.idLike='ubuntu';
                     if (o.ubuntuCodename == 'disco') {
-
-                };
+                        o.debianCodename = 'buster';
+                    } else if (o.ubuntuCodename == 'cosmic') {
+                        o.debianCodename = 'buster';
+                    } else if (o.ubuntuCodename == 'bionic') {
+                        o.debianCodename = 'buster';
+                    } else if (o.ubuntuCodename == 'artful') {
+                        o.debianCodename = 'stretch';
+                    } else if (o.ubuntuCodename == 'zesty') {
+                        o.debianCodename = 'stretch';
+                    } else if (o.ubuntuCodename == 'yakkety') {
+                        o.debianCodename = 'stretch';
+                    } else if (o.ubuntuCodename == 'xenial') {
+                        o.debianCodename = 'stretch';
+                    } else if (o.ubuntuCodename == 'wily') {
+                        o.debianCodename = 'jessie';
+                    } else if (o.ubuntuCodename == 'vivid') {
+                        o.debianCodename = 'jessie';
+                    } else if (o.ubuntuCodename == 'utopic') {
+                        o.debianCodename = 'jessie';
+                    } else if (o.ubuntuCodename == 'trusty') {
+                        o.debianCodename = 'jessie';
+                    }
+                }
             }
         });
         return (o);

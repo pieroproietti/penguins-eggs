@@ -1,0 +1,1 @@
+sudo rm /home/eggs/ /etc/calamares/ -rf

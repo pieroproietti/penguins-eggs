@@ -103,7 +103,7 @@ class Calamares {
       };
     }
     console.log("Configurazione settings.conf");
-    fs.writeFileSync(settingsPath, yaml.safeDump(settings), 'utf8');
+    fs.writeFileSync(settingsPath, `# distroType: ${distroType}\n`+ yaml.safeDump(settings), 'utf8');
   }
 
   unpackModule(distroType: string){
