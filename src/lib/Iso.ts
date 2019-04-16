@@ -129,9 +129,10 @@ class Iso {
 
   async kill() {
     console.log("==========================================");
-    console.log("iso: kill rm -rf ${this.distro.pathIso}");
+    console.log("iso: kill ");
     console.log("==========================================");
-    utils.exec(`rm -rf ${this.distro.pathIso}`);
+    utils.exec(`rm -rf ${this.workDir}`);
+    utils.exec(`rm -rf /etc/calamares`);
   }
 
   async isolinuxPrepare() {

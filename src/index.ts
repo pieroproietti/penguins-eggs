@@ -133,7 +133,6 @@ async function config() {
     spawn(e, i, c);
   } else if (command == "kill") {
     i.kill();
-    e.kill();
   } else if (command == "calamares") {
     calamares(c);
   } else if (command == "hatch") {
@@ -164,16 +163,17 @@ function calamares(c: any): any {
     } else if (o.idLike==='fedora'){
       distroType = "fedora";
     }
-    console.log(`distro type: ${distroType} id: ${o.id} idLike: ${o.idLike} name: ${o.name} prettyName: ${o.prettyName} versionCodename: ${o.versionCodename}`);
+    
+    console.log(`distro type: ${o.debianCodename} id: ${o.id} idLike: ${o.idLike} name: ${o.name} prettyName: ${o.prettyName} versionCodename: ${o.versionCodename}`);
 
     console.log("You can use the gui Installation:");
     console.log("sudo calamares");
     console.log("or the cli installation:");
     console.log("sudo eggs hatch");
     console.log("==========================================");
-    c.settingsConf(distroType);
-    c.brandingDesc(distroType, o.homeUrl, o.supportUrl, o.bugReportUrl );
-    c.unpackModule(distroType);
+    c.settingsConf(o.debianCodename);
+    c.brandingDesc(o.debianCodename, o.homeUrl, o.supportUrl, o.bugReportUrl );
+    c.unpackModule(o.debianCodename);
     return o;
 
 /*  } else {

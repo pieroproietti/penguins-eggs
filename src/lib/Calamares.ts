@@ -64,11 +64,11 @@ class Calamares {
   /**
    * settingsConf
    */
-  async settingsConf(distroType: string) {
+  async settingsConf(debianCodename: string) {
     let settingsPath = '/etc/calamares/settings.conf'
     let settings = {};
 
-    if (distroType === 'debian') {
+    if (debianCodename === 'buster') {
       settings = {
         'modules-search': ['local', '/usr/lib/calamares/modules'],
         sequence: [
@@ -85,7 +85,7 @@ class Calamares {
         'prompt-install': false,
         'dont-chroot': false
       };
-    } else if (distroType === 'ubuntu') {
+    } else {
       settings = {
         'modules-search': ['local', '/usr/lib/calamares/modules'],
         sequence: [
@@ -103,18 +103,18 @@ class Calamares {
       };
     }
     console.log("Configurazione settings.conf");
-    fs.writeFileSync(settingsPath, `# distroType: ${distroType}\n`+ yaml.safeDump(settings), 'utf8');
+    fs.writeFileSync(settingsPath, `# distroType: ${debianCodename}\n`+ yaml.safeDump(settings), 'utf8');
   }
 
-  unpackModule(distroType: string){
-    let squashfsDebian ="/run/live/medium/live/filesystem.squashfs";
-    let squashfsUbuntu ="/lib/live/mount/medium/live/filesystem.squashfs";
+  unpackModule(debianCodename: string){
+    let squashfsBuster ="/run/live/medium/live/filesystem.squashfs";
+    let squashfsStretch ="/lib/live/mount/medium/live/filesystem.squashfs";
     let squashfsMountpoint = "";
 
-    if (distroType.localeCompare('debian')==0){
-      squashfsMountpoint = squashfsDebian;
-    } else if (distroType.localeCompare('ubuntu')==0){
-      squashfsMountpoint = squashfsUbuntu;
+    if (debianCodename.localeCompare('stretch')==0){
+      squashfsMountpoint = squashfsStretch;
+    } else if (debianCodename.localeCompare('buster')==0){
+      squashfsMountpoint = squashfsBuster;
     }
 
     let file = `/etc/calamares/modules/unpackfs.conf`;
@@ -124,13 +124,13 @@ class Calamares {
     text += `    sourcefs: "squashfs"\n`;
     text += `    unpack:\n`;
     text += `    destination: ""\n`;
-    text += `# distroType: ${distroType}\n`;
+    text += `# debianCodename: ${debianCodename}\n`;
 
     fs.writeFileSync(file, text, 'utf8');
   }
   
 
-  async brandingDesc(distroType: string, homeUrl: string, supportUrl: string, bugReportUrl: string) {
+  async brandingDesc(debianCodename: string, homeUrl: string, supportUrl: string, bugReportUrl: string) {
     // Configurazione branding.desc
     let brandingPath = '/etc/calamares/branding/eggs/branding.desc';
 
@@ -185,7 +185,7 @@ class Calamares {
     };
 
     console.log("Configurazione branding.desc");
-    fs.writeFileSync(brandingPath, yaml.safeDump(branding), 'utf8');
+    fs.writeFileSync(brandingPath, `#debianCodename: ${debianCodename}\n` + yaml.safeDump(branding), 'utf8');
   }
 
 }
