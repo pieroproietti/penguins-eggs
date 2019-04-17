@@ -88,8 +88,8 @@ class Oses {
         };
 
 
-         read(`${__dirname}/../../etc/os-release-ubuntu-19.04`, function (data: any) {
-        //read(`/etc/os-release`, function (data: any) {
+        // read(`${__dirname}/../../etc/os-release-ubuntu-19.04`, function (data: any) {
+        read(`/etc/os-release`, function (data: any) {
                 for (var temp in data) {
                 if (!data[temp].search(os[info.PRETTY_NAME])) {
                     o.prettyName = data[temp].substring(os[info.PRETTY_NAME].length).replace(/"/g, "");
