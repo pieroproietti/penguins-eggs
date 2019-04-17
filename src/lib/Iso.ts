@@ -63,8 +63,6 @@ class Iso {
     this.distro.pathFs = this.distro.pathHome + `/fs`;
     this.distro.pathIso = this.distro.pathHome + `/iso`;
     
-    this.distro.syslinux = distro.syslinux;
-    this.distro.isolinux = distro.isolinux;
 
     if (net == undefined) {
       this.net.dhcp = false;
@@ -208,12 +206,12 @@ label ${this.distro.name} safe
     );
   }
 
-  async makeIsoFs() {
+  async makeIsoFs(isolinuxPath: string) {
     console.log("==========================================");
     console.log("iso: makeIsoFs");
     console.log("==========================================");
 
-    let isoHybridOption = `-isohybrid-mbr ${this.distro.isolinux}isohdpfx.bin `;
+    let isoHybridOption = `-isohybrid-mbr ${isolinuxPath}isohdpfx.bin `;
     //let uefiOption = "";
 
     //"-eltorito-alt-boot -e boot/grub/efiboot.img -isohybrid-gpt-basdat -no-emul-boot";

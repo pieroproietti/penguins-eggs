@@ -179,7 +179,7 @@ async function spawn(e: any, i: any, c: any) {
     await i.isolinuxCfg();
     await i.liveKernel();
     await i.liveSquashFs();
-    await i.makeIsoFs();
+    await i.makeIsoFs(o.isolinuxPath);
   }
 }
 
