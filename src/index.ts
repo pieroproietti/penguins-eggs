@@ -175,7 +175,7 @@ async function spawn(e: any, i: any, c: any) {
     await e.createStructure();
     await e.systemCopy();
     await i.createStructure();
-    await i.isolinuxPrepare(o.syslinuxPath, o.isolinuxPath);
+    await i.isolinuxPrepare(o.isolinuxPath, o.syslinuxPath);
     await i.isolinuxCfg();
     await i.liveKernel();
     await i.liveSquashFs();
