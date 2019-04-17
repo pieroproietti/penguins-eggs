@@ -74,8 +74,6 @@ root.fullName = "Root";
 root.name = "root";
 root.password = "evolution";
 
-utils.pathScripts = __dirname;
-
 if (utils.isRoot()) {
   config();
 } else {
@@ -92,9 +90,10 @@ function usage() {
   );
   console.log("Usage: ");
   console.log(">>> sudo eggs spawn --distroname penguin");
-  console.log(">>> sudo eggs hatch");
-  console.log(">>> sudo eggs calamares");
   console.log(">>> sudo eggs info");
+  console.log(">>> sudo eggs hatch");
+  console.log(">>> sudo eggs prerequisites");
+  console.log(">>> sudo eggs calamares");
   console.log(">>> sudo eggs kill");
 }
 
@@ -103,9 +102,10 @@ function usage() {
 async function config() {
   program
     .command("spawn")
-    .command("hatch")
-    .command("calamares")
     .command("info")
+    .command("hatch")
+    .command("prerequisites")
+    .command("calamares")
     .command("kill");
 
   program.option("-d, --distroname <distroname>");
@@ -137,6 +137,8 @@ async function config() {
     calamares(c);
   } else if (command == "hatch") {
     startHatch();
+  } else if (command == "prerequisites") {
+    prerequisites();
   } else if (command == "info") {
     console.log(oses.info());
   } else {
@@ -222,9 +224,32 @@ async function startHatch() {
   }
 }
 
+async function prerequisites(){
+  console.log(
+    ">>> eggs: Installing the prerequisites packages..."
+  );
+  await utils.exec('apt-get update');
+  await utils.exec(`apt-get --yes install lvm2 \
+                      parted \
+                      squashfs-tools \
+                      xorriso \
+                      live-boot \
+                      syslinux \
+                      syslinux-common \
+                      isolinux pxelinux`);
+
+  await utils.exec(`apt-get --yes install calamares \
+                      qml-module-qtquick2 \
+                      qml-module-qtquick-controls`);
+
+  await utils.exec('apt-get clean');
+  await utils.exec('apt-get autoclean');
+}
+
 
 function bye() {
   console.log(
     `${app.name} v. ${app.version} (C) 2018/2019 ${app.author} <${app.mail}>`
   );
 }
+

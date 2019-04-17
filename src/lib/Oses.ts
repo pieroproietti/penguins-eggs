@@ -6,7 +6,6 @@
 import fs from "fs";
 import { IDistro } from "../interfaces";
 
-
 class Oses {
     private distro = {} as IDistro;
 
@@ -82,11 +81,15 @@ class Oses {
             "ubuntuCodename": "",
             "homeUrl": "",
             "supportUrl": "",
-            "bugReportUrl": ""
+            "bugReportUrl": "",
+            "isolinuxPath": "",
+            "syslinuxPath" : "",
+            "mountpointSquashFs": ""
         };
 
-//        read(`${__dirname}/../../etc/os-release-ubuntu-18.10`, function (data: any) {
-        read(`/etc/os-release`, function (data: any) {
+
+         read(`${__dirname}/../../etc/os-release-ubuntu-19.04`, function (data: any) {
+        //read(`/etc/os-release`, function (data: any) {
                 for (var temp in data) {
                 if (!data[temp].search(os[info.PRETTY_NAME])) {
                     o.prettyName = data[temp].substring(os[info.PRETTY_NAME].length).replace(/"/g, "");
@@ -188,6 +191,14 @@ class Oses {
                 }
             }
         });
+
+        if (o.id==="linuxmint"){
+
+            o.isolinuxPath="linuxmint";
+            o.syslinuxPath="linuxmint";
+            o.mountpointSquashFs="linuxmint";
+        }
+        console.log(`o: ${o} `);
         return (o);
     }
 }

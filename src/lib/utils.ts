@@ -13,18 +13,10 @@ import dns from "dns";
 import network from "network";
 import path from "path";
 
-
+/**
+ * utils
+ */
 class utils {
-  //pathScripts: String = "/usr/lib/node_modules/penguins-eggs";
-  //pathScripts: String = "/home/artisan/penguins-eggs";
-
-  pathScripts: String;
-
-  // metodi
-  path(): String {
-    return this.pathScripts;
-  }
-
 
   async isLive(): Promise<Boolean> {
     let test: string = "1";

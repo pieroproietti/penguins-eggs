@@ -185,7 +185,6 @@ label ${this.distro.name} safe
   append boot=live initrd=/live/initrd.img xforcevesa nomodeset quiet splash`;
     utils.bashWrite(file, text);
 
-    let path = utils.path();
     utils.exec(`cp ${__dirname}/../../assets/turtle.png ${this.distro.pathIso}/isolinux`);
   }
 
