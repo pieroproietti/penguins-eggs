@@ -61,8 +61,8 @@ let root = {} as IUser;
 distro.name = os.hostname();
 distro.versionName = 'Emperor';
 distro.versionNumber = utils.date4label();
-distro.isolinux = oses.isolinux();
-distro.syslinux = oses.syslinux();
+//distro.isolinux = oses.isolinux();
+//distro.syslinux = oses.syslinux();
 
 net.dhcp = true;
 

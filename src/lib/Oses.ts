@@ -5,119 +5,38 @@
 "use strict";
 import fs from "fs";
 import { IDistro } from "../interfaces";
+import shell from "shelljs";
 
 class Oses {
-    private distro = {} as IDistro;
+    private o={} as object;
 
     constructor() {
-        this.distro.isolinux
-        //empty        
-    }
-
-    /**
-     * squashFsMountPoint: mount point per filesystemsquash
-     * da sistemare! 
-     */
-    squashFsMountPoint(distroType: string): string {
-        let retval: string;
-        if (distroType === 'debian') {
-            retval = '/run/live/medium/live/filesystem.squashfs';
-        } else if (distroType === 'ubuntu') {
-            retval = '/lib/live/medium/live/filesystem.squashfs';
-        } else {
-            retval = '/run/live/medium/live/filesystem.squashfs';
-        }
-        return retval;
-    }
-
-    isolinux(): string {
-        let retval: string;
-
-        if (fs.existsSync('/etc/debian_version')) {
-            // Debian
-            retval = '/usr/lib/ISOLINUX/';
-        } else {
-            // Fedora
-            retval = '/usr/share/syslinux/';
-        }
-        return retval;
-    }
-
-    syslinux(): string {
-        let retval: string;
-        if (fs.existsSync('/etc/debian_version')) {
-            // Debian
-            retval = '/usr/lib/syslinux/modules/bios/';
-        } else {
-            // Fedora
-            retval = '/usr/share/syslinux/';
-        }
-        return retval;
     }
 
     info(): any {
-        enum info { PRETTY_NAME = 0, NAME, VERSION_CODENAME, VERSION_ID, ID, ID_LIKE, HOME_URL, SUPPORT_URL, BUG_REPORT_URL, DEBIAN_CODENAME, UBUNTU_CODENAME };
+        enum info { HOME_URL, SUPPORT_URL, BUG_REPORT_URL };
+
         let os: Array<string> = new Array();
-        os[info.PRETTY_NAME] = "PRETTY_NAME=";
-        os[info.NAME] = "NAME=";
-        os[info.VERSION_CODENAME] = "VERSION_CODENAME=";
-        os[info.VERSION_ID] = "VERSION_ID=";
-        os[info.ID] = "ID=";
-        os[info.ID_LIKE] = "ID_LIKE=";
         os[info.HOME_URL] = "HOME_URL=";
         os[info.SUPPORT_URL] = "SUPPORT_URL=";
         os[info.BUG_REPORT_URL] = "BUG_REPORT_URL=";
-        os[info.DEBIAN_CODENAME] = "DEBIAN_CODENAME=";
-        os[info.UBUNTU_CODENAME] = "UBUNTU_CODENAME=";
 
         let o = {
-            "prettyName": "",
-            "name": "",
-            "versionCodename": "",
+            "distroId": "",
+            "distroLike": "",
             "versionId": "",
-            "id": "",
-            "idLike": "",
-            "debianCodename": "",
-            "ubuntuCodename": "",
+            "versionLike": "",
+            "isolinuxPath": "",
+            "syslinuxPath": "",
+            "mountpointSquashFs": "",
             "homeUrl": "",
             "supportUrl": "",
-            "bugReportUrl": "",
-            "isolinuxPath": "",
-            "syslinuxPath" : "",
-            "mountpointSquashFs": ""
+            "bugReportUrl": ""
         };
-
 
         // read(`${__dirname}/../../etc/os-release-ubuntu-19.04`, function (data: any) {
         read(`/etc/os-release`, function (data: any) {
-                for (var temp in data) {
-                if (!data[temp].search(os[info.PRETTY_NAME])) {
-                    o.prettyName = data[temp].substring(os[info.PRETTY_NAME].length).replace(/"/g, "");
-                };
-
-                if (!data[temp].search(os[info.NAME])) {
-                    o.name = data[temp].substring(os[info.NAME].length).replace(/"/g, "");
-                };
-
-                if (!data[temp].search(os[info.VERSION_CODENAME])) {
-                    o.versionCodename = data[temp].substring(os[info.VERSION_CODENAME].length).replace(/"/g, "");
-                };
-
-                if (!data[temp].search(os[info.VERSION_ID])) {
-                    o.versionId = data[temp].substring(os[info.VERSION_ID].length).replace(/"/g, "");
-                };
-
-                if (!data[temp].search(os[info.ID])) {
-                    o.id = data[temp].substring(os[info.ID].length).replace(/"/g, "");
-                };
-
-                if (!data[temp].search(os[info.ID_LIKE])) {
-                    o.idLike = data[temp].substring(os[info.ID_LIKE].length).replace(/"/g, "");
-                    if (o.idLike.trim() === '') {
-                        o.idLike = o.id;
-                    }
-                };
-
+            for (var temp in data) {
                 if (!data[temp].search(os[info.HOME_URL])) {
                     o.homeUrl = data[temp].substring(os[info.HOME_URL].length).replace(/"/g, "");
                 };
@@ -129,76 +48,218 @@ class Oses {
                 if (!data[temp].search(os[info.BUG_REPORT_URL])) {
                     o.bugReportUrl = data[temp].substring(os[info.BUG_REPORT_URL].length).replace(/"/g, "");
                 };
-
-                if (!data[temp].search(os[info.DEBIAN_CODENAME])) {
-                    o.debianCodename = data[temp].substring(os[info.DEBIAN_CODENAME].length).replace(/"/g, "");
-                };
-
-                if (!data[temp].search(os[info.UBUNTU_CODENAME])) {
-                    o.ubuntuCodename = data[temp].substring(os[info.UBUNTU_CODENAME].length).replace(/"/g, "");
-                };
-
-                if (o.id === 'linuxmint') {
-                    if (o.ubuntuCodename == 'disco') {
-                        o.debianCodename = 'buster';
-                    } else if (o.ubuntuCodename == 'cosmic') {
-                        o.debianCodename = 'buster';
-                    } else if (o.ubuntuCodename == 'bionic') {
-                        o.debianCodename = 'buster';
-                    } else if (o.ubuntuCodename == 'artful') {
-                        o.debianCodename = 'stretch';
-                    } else if (o.ubuntuCodename == 'zesty') {
-                        o.debianCodename = 'stretch';
-                    } else if (o.ubuntuCodename == 'yakkety') {
-                        o.debianCodename = 'stretch';
-                    } else if (o.ubuntuCodename == 'xenial') {
-                        o.debianCodename = 'stretch';
-                    } else if (o.ubuntuCodename == 'wily') {
-                        o.debianCodename = 'jessie';
-                    } else if (o.ubuntuCodename == 'vivid') {
-                        o.debianCodename = 'jessie';
-                    } else if (o.ubuntuCodename == 'utopic') {
-                        o.debianCodename = 'jessie';
-                    } else if (o.ubuntuCodename == 'trusty') {
-                        o.debianCodename = 'jessie';
-                    }
-                } else if (o.id==='ubuntu'){
-                    // idLike=ubuntu se ubuntu
-                    o.idLike='ubuntu';
-                    if (o.ubuntuCodename == 'disco') {
-                        o.debianCodename = 'buster';
-                    } else if (o.ubuntuCodename == 'cosmic') {
-                        o.debianCodename = 'buster';
-                    } else if (o.ubuntuCodename == 'bionic') {
-                        o.debianCodename = 'buster';
-                    } else if (o.ubuntuCodename == 'artful') {
-                        o.debianCodename = 'stretch';
-                    } else if (o.ubuntuCodename == 'zesty') {
-                        o.debianCodename = 'stretch';
-                    } else if (o.ubuntuCodename == 'yakkety') {
-                        o.debianCodename = 'stretch';
-                    } else if (o.ubuntuCodename == 'xenial') {
-                        o.debianCodename = 'stretch';
-                    } else if (o.ubuntuCodename == 'wily') {
-                        o.debianCodename = 'jessie';
-                    } else if (o.ubuntuCodename == 'vivid') {
-                        o.debianCodename = 'jessie';
-                    } else if (o.ubuntuCodename == 'utopic') {
-                        o.debianCodename = 'jessie';
-                    } else if (o.ubuntuCodename == 'trusty') {
-                        o.debianCodename = 'jessie';
-                    }
-                }
             }
         });
 
-        // lsb_release -cs
-        if (o.id==="linuxmint"){
-
-            o.isolinuxPath="linuxmint";
-            o.syslinuxPath="linuxmint";
-            o.mountpointSquashFs="linuxmint";
+        /**
+         * lsb_release -c -s
+         */
+        o.versionId = (shell.exec('lsb_release -c -s', { silent: true }).stdout).toString().trim();
+        console.log(o.versionId);
+        o.syslinuxPath = "/usr/lib/syslinux/modules/bios/";
+        o.isolinuxPath = "/usr/lib/ISOLINUX/";
+        o.mountpointSquashFs = "/lib/live/mount/medium/live/filesystem.squashfs";
+        if (o.versionId === "solydxk-9") {
+            o.distroId = "SolydXK";
+            o.distroLike = "Debian";
+            o.versionLike = "stretch";
+        } else if (o.versionId === "sana") {
+            o.distroId = "Kali";
+            o.distroLike = "Debian";
+            o.versionLike = "jessie";
+        } else if (o.versionId === "sana") {
+            o.distroId = "Kali";
+            o.distroLike = "Debian";
+            o.versionLike = "jessie";
+        } else if (o.versionId === "kali-rolling") {
+            o.distroId = "Kali";
+            o.distroLike = "Debian";
+            o.versionLike = "jessie";
+        } else if (o.versionId === "Nibiru") {
+            o.distroId = "Sparky Linux";
+            o.distroLike = "Debian";
+            o.versionLike = "buster";
+        } else if (o.versionId === "Horizon") {
+            o.distroId = "MX Linux 17";
+            o.distroLike = "Debian";
+            o.versionLike = "stretch";
+        } else if (o.versionId === "maya") {
+            o.distroId = "Linux Mint";
+            o.distroLike = "Ubuntu";
+            o.versionLike = "precise";
+        } else if (o.versionId === "qiana" || o.versionId === "rafaela" || o.versionId === "rebecca" || o.versionId === "rosa") {
+            o.distroId = "Linux Mint";
+            o.distroLike = "Ubuntu";
+            o.versionLike = "trusty";
+        } else if (o.versionId === "sarah" || o.versionId === "serena" || o.versionId === "sonya" || o.versionId === "sylvia") {
+            o.distroId = "Linux Mint";
+            o.distroLike = "Ubuntu";
+            o.versionLike = "xenial";
+        } else if (o.versionId === "tara" || o.versionId === "tessa") {
+            o.distroId = "Linux Mint";
+            o.distroLike = "Ubuntu";
+            o.versionLike = "bionic";
+            // LMDE
+        } else if (o.versionId == "cindy") {
+            o.distroId = "LMDE";
+            o.distroLike = "Debian";
+            o.versionLike = "stretch";
+        } else if (o.versionId === "cindy") {
+            o.distroId = "LMDE";
+            o.distroLike = "Debian";
+            o.versionLike = "jessie";
+            // elementaryOS
+        } else if (o.versionId === "luna") {
+            o.distroId = "elementaryOS";
+            o.distroLike = "Ubuntu";
+            o.versionLike = "precise";
+        } else if (o.versionId === "freya") {
+            o.distroId = "elementaryOS";
+            o.distroLike = "Ubuntu";
+            o.versionLike = "trusty";
+        } else if (o.versionId === "loki") {
+            o.distroId = "elementaryOS";
+            o.distroLike = "Ubuntu";
+            o.versionLike = "xenial";
+        } else if (o.versionId === "toutatis") {
+            o.distroId = "Trisquel";
+            o.distroLike = "Ubuntu";
+            o.versionLike = "precise";
+        } else if (o.versionId === "belenos") {
+            o.distroId = "Trisquel";
+            o.distroLike = "Ubuntu";
+            o.versionLike = "trusty";
+        } else if (o.versionId === "lugalbanda") {
+            o.distroId = "Uruk GNU/Linux";
+            o.distroLike = "Ubuntu";
+            o.versionLike = "xenial";
+        } else if (o.versionId === "anokha") {
+            o.distroId = "BOSS";
+            o.distroLike = "Debian";
+            o.versionLike = "wheezy";
+        } else if (o.versionId === "anoop") {
+            o.distroId = "BOSS";
+            o.distroLike = "Debian";
+            o.versionLike = "jessie";
+        } else if (o.versionId === "bunsen-hydrogen") {
+            o.distroId = "bunsenlabs";
+            o.distroLike = "Debian";
+            o.versionLike = "jessie";
+        } else if (o.versionId === "helium") {
+            o.distroId = "bunsenlabs";
+            o.distroLike = "Debian";
+            o.versionLike = "stretch";
+        } else if (o.versionId === "chromodoris") {
+            o.distroId = "Tanglu";
+            o.distroLike = "Debian";
+            o.versionLike = "jessie";
+        } else if (o.versionId === "greenchromodoris") {
+            o.distroId = "PureOS";
+            o.distroLike = "Debian";
+            o.versionLike = "sid";
+        } else if (o.versionId === "jessie") {
+            o.distroId = "Devuan";
+            o.distroLike = "Debian";
+            o.versionLike = "jessie";
+        } else if (o.versionId === "ascii") {
+            o.distroId = "Devuan";
+            o.distroLike = "Debian";
+            o.versionLike = "stretch";
+        } else if (o.versionId === "ceres") {
+            o.distroId = "Devuan";
+            o.distroLike = "Debian";
+            o.versionLike = "sid";
+        } else if (o.versionId === "panda") {
+            o.distroId = "Deepin";
+            o.distroLike = "Debian";
+            o.versionLike = "sid";
+        } else if (o.versionId === "unstable") {
+            o.distroId = "Deepin";
+            o.distroLike = "Debian";
+            o.versionLike = "sid";
+        } else if (o.versionId === "onyedi") {
+            o.distroId = "Pardus";
+            o.distroLike = "Debian";
+            o.versionLike = "stretch";
+        } else if (o.versionId === "lemur-3") {
+            o.distroId = "Liquid Lemur";
+            o.distroLike = "Debian";
+            o.versionLike = "stretch";
+        } else if (o.versionId === "mx-linux") {
+            o.distroId = "Continuum";
+            o.distroLike = "Debian";
+            o.versionLike = "stretch";
+        } else if (o.versionId === "buster") {
+            o.distroId = "Debian";
+            o.distroLike = "Debian";
+            o.versionLike = "buster";
+            o.mountpointSquashFs = "/run/live/medium/live/filesystem.squashfs";
+        } else if (o.versionId === "stretch") {
+            o.distroId = "Debian";
+            o.distroLike = "Debian";
+            o.versionLike = "stretch";
+        } else if (o.versionId === "jessie") {
+            o.distroId = "Debian";
+            o.distroLike = "Debian";
+            o.versionLike = "jessie";
+        } else if (o.versionId === "wheezy") {
+            o.distroId = "Debian";
+            o.distroLike = "Debian";
+            o.versionLike = "wheezy";
+        } else if (o.versionId === "wheezy") {
+            o.distroId = "Debian";
+            o.distroLike = "Debian";
+            o.versionLike = "wheezy";
+        } else if (o.versionId === "disco") {
+            o.distroId = "Ubuntu";
+            o.distroLike = "Ubuntu";
+            o.versionLike = "disco";
+        } else if (o.versionId === "cosmic") {
+            o.distroId = "Ubuntu";
+            o.distroLike = "Ubuntu";
+            o.versionLike = "cosmic";
+        } else if (o.versionId === "bionic") {
+            o.distroId = "Ubuntu";
+            o.distroLike = "Ubuntu";
+            o.versionLike = "bionic";
+        } else if (o.versionId === "artful") {
+            o.distroId = "Ubuntu";
+            o.distroLike = "Ubuntu";
+            o.versionLike = "artful";
+        } else if (o.versionId === "zesty") {
+            o.distroId = "Ubuntu";
+            o.distroLike = "Ubuntu";
+            o.versionLike = "zesty";
+        } else if (o.versionId === "zesty") {
+            o.distroId = "Ubuntu";
+            o.distroLike = "Ubuntu";
+            o.versionLike = "zesty";
+        } else if (o.versionId === "yakkety") {
+            o.distroId = "Ubuntu";
+            o.distroLike = "Ubuntu";
+            o.versionLike = "yakkety";
+        } else if (o.versionId === "xenial") {
+            o.distroId = "Ubuntu";
+            o.distroLike = "Ubuntu";
+            o.versionLike = "xenial";
+        } else if (o.versionId === "wily") {
+            o.distroId = "Ubuntu";
+            o.distroLike = "Ubuntu";
+            o.versionLike = "wily";
+        } else if (o.versionId === "vivid") {
+            o.distroId = "Ubuntu";
+            o.distroLike = "Ubuntu";
+            o.versionLike = "vivid";
+        } else if (o.versionId === "utopic") {
+            o.distroId = "Ubuntu";
+            o.distroLike = "Ubuntu";
+            o.versionLike = "utopic";
+        } else if (o.versionId === "trusty") {
+            o.distroId = "Ubuntu";
+            o.distroLike = "Ubuntu";
+            o.versionLike = "trusty";
         }
+
         console.log(`o: ${o} `);
         return (o);
     }

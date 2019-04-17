@@ -101,7 +101,6 @@ class Egg {
     console.log("==========================================");
     if (!fs.existsSync(this.distro.pathHome)) {
       utils.exec(`mkdir -p ${this.distro.pathHome}`);
-      //utils.exec(`ln -s ${this.distro.pathHome} /srv/penguins-eggs`);
     }
 
     if (!fs.existsSync(this.distro.pathFs)) {
@@ -130,7 +129,6 @@ class Egg {
     console.log("==========================================");
     console.log("eggs: systemCopy");
     console.log("==========================================");
-    // console.log(cmd.trim());
     shell.exec(cmd.trim(), {
       async: false
     });
