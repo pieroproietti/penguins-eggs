@@ -135,20 +135,20 @@ class Iso {
     console.log("iso: isolinuxPrepare");
     console.log("==========================================");
 
-    let isolinuxbin = `${isolinuxPath}/isolinux.bin`;
-    let vesamenu = `${syslinuxPath}/vesamenu.c32`;
+    let isolinuxbin = `${isolinuxPath}isolinux.bin`;
+    let vesamenu = `${syslinuxPath}vesamenu.c32`;
 
     utils.exec(
-      `rsync -a ${syslinuxPath}/chain.c32 ${this.distro.pathIso}/isolinux/`
+      `rsync -a ${syslinuxPath}chain.c32 ${this.distro.pathIso}/isolinux/`
     );
     utils.exec(
-      `rsync -a ${syslinuxPath}/ldlinux.c32 ${this.distro.pathIso}/isolinux/`
+      `rsync -a ${syslinuxPath}ldlinux.c32 ${this.distro.pathIso}/isolinux/`
     );
     utils.exec(
-      `rsync -a ${isolinuxPath}/libcom32.c32 ${this.distro.pathIso}/isolinux/`
+      `rsync -a ${isolinuxPath}libcom32.c32 ${this.distro.pathIso}/isolinux/`
     );
     utils.exec(
-      `rsync -a ${syslinuxPath}/libutil.c32 ${this.distro.pathIso}/isolinux/`
+      `rsync -a ${syslinuxPath}libutil.c32 ${this.distro.pathIso}/isolinux/`
     );
     utils.exec(`rsync -a ${isolinuxbin} ${this.distro.pathIso}/isolinux/`);
     utils.exec(`rsync -a ${vesamenu} ${this.distro.pathIso}/isolinux/`);

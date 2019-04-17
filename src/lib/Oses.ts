@@ -49,8 +49,8 @@ class Oses {
          * lsb_release -c -s
          */
         o.versionId = (shell.exec('lsb_release -c -s', { silent: true }).stdout).toString().trim();
-        o.syslinuxPath = "/usr/lib/syslinux/modules/bios/";
         o.isolinuxPath = "/usr/lib/ISOLINUX/";
+        o.syslinuxPath = "/usr/lib/syslinux/modules/bios/";
         o.mountpointSquashFs = "/lib/live/mount/medium/live/filesystem.squashfs";
         if (o.versionId === "solydxk-9") {
             o.distroId = "SolydXK";
