@@ -113,7 +113,6 @@ class Calamares {
     let o: any = {};
     o = oses.info();
 
-
     let file = `/etc/calamares/modules/unpackfs.conf`;
     let text = `---\n`;
     text += `unpack:\n`;

@@ -148,15 +148,13 @@ async function config() {
 
 function calamares(c: any): any {
   let o: any = {};
-  let distroType: string = "unknown";
-
-  c.create();
-  o = oses.info();
 
   console.log("==========================================");
   console.log("eggs: calamares configuration");
   console.log("==========================================");
+  o = oses.info();
   console.log(`distro: [${o.distroId}/${o.versionId}]->[${o.distroLike}/${o.versionLike}]`);
+  c.create();
   c.settingsConf(o.versionLike);
   c.brandingDesc(o.versionLike, o.homeUrl, o.supportUrl, o.bugReportUrl);
   c.unpackModule(o.versionLike);
@@ -172,11 +170,12 @@ async function spawn(e: any, i: any, c: any) {
     );
   } else {
     o = calamares(c);
+
     console.log("Spawning the system into  the egg... \nThis process can be very long, perhaps it's time for a coffee!");
     await e.createStructure();
     await e.systemCopy();
     await i.createStructure();
-    await i.isolinuxPrepare();
+    await i.isolinuxPrepare(o.syslinuxPath, o.isolinuxPath);
     await i.isolinuxCfg();
     await i.liveKernel();
     await i.liveSquashFs();

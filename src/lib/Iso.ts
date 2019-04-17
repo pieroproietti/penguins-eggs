@@ -104,10 +104,6 @@ class Iso {
   }
 
 
-  type(){
-    
-  }
-
   show() {
     console.log("eggs: iso parameters ");
     console.log(">>> kernelVer: " + this.distro.kernel);
@@ -135,25 +131,25 @@ class Iso {
     utils.exec(`rm -rf /etc/calamares`);
   }
 
-  async isolinuxPrepare() {
+  async isolinuxPrepare(isolinuxPath: string, syslinuxPath: string) {
     console.log("==========================================");
     console.log("iso: isolinuxPrepare");
     console.log("==========================================");
 
-    let isolinuxbin = `${this.distro.isolinux}isolinux.bin`;
-    let vesamenu = `${this.distro.syslinux}vesamenu.c32`;
+    let isolinuxbin = `${isolinuxPath}isolinux.bin`;
+    let vesamenu = `${syslinuxPath}vesamenu.c32`;
 
     utils.exec(
-      `rsync -a ${this.distro.syslinux}chain.c32 ${this.distro.pathIso}/isolinux/`
+      `rsync -a ${syslinuxPath}chain.c32 ${this.distro.pathIso}/isolinux/`
     );
     utils.exec(
-      `rsync -a ${this.distro.syslinux}ldlinux.c32 ${this.distro.pathIso}/isolinux/`
+      `rsync -a ${syslinuxPath}ldlinux.c32 ${this.distro.pathIso}/isolinux/`
     );
     utils.exec(
-      `rsync -a ${this.distro.syslinux}libcom32.c32 ${this.distro.pathIso}/isolinux/`
+      `rsync -a ${syslinuxPath}libcom32.c32 ${this.distro.pathIso}/isolinux/`
     );
     utils.exec(
-      `rsync -a ${this.distro.syslinux}libutil.c32 ${this.distro.pathIso}/isolinux/`
+      `rsync -a ${syslinuxPath}libutil.c32 ${this.distro.pathIso}/isolinux/`
     );
     utils.exec(`rsync -a ${isolinuxbin} ${this.distro.pathIso}/isolinux/`);
     utils.exec(`rsync -a ${vesamenu} ${this.distro.pathIso}/isolinux/`);
