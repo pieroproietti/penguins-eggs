@@ -192,6 +192,7 @@ class Oses {
             }
         });
 
+        // lsb_release -cs
         if (o.id==="linuxmint"){
 
             o.isolinuxPath="linuxmint";
