@@ -6,9 +6,12 @@
 "use strict";
 
 
+
 import yaml from 'js-yaml';
 import fs from 'fs';
 import utils from "./utils";
+import Oses from './Oses';
+let oses = new Oses();
 
 
 
@@ -51,11 +54,11 @@ class Calamares {
 
     utils.exec(`cp ${__dirname}/../../templates/commons/etc/* /etc/ -R`);
     utils.exec(`cp ${__dirname}/../../templates/debian/etc/* /etc/ -R`);
-    
+
 
     // /usr/lib/calamares
     utils.exec(`cp ${__dirname}/../../templates/debian/usr/lib/calamares/* /usr/lib/calamares/ -R`);
-    
+
     // /usr/sbin 
     utils.exec(`cp ${__dirname}/../../templates/debian/usr/sbin/* /usr/sbin`);
   }
@@ -64,18 +67,18 @@ class Calamares {
   /**
    * settingsConf
    */
-  async settingsConf(debianCodename: string) {
+  async settingsConf(versionLike: string) {
     let settingsPath = '/etc/calamares/settings.conf'
     let settings = {};
 
-    if (debianCodename === 'buster') {
+    if (versionLike === 'buster') {
       settings = {
         'modules-search': ['local', '/usr/lib/calamares/modules'],
         sequence: [
           { show: ['welcome', 'locale', 'keyboard', 'partition', 'users', 'summary'] },
           {
             exec: ['partition', 'mount', 'unpackfs', 'sources-media', 'machineid', 'fstab', 'locale',
-              'keyboard', 'localecfg', 'users', 'networkcfg', 'hwclock', 
+              'keyboard', 'localecfg', 'users', 'networkcfg', 'hwclock',
               'bootloader-config', 'grubcfg', 'bootloader', 'packages', 'luksbootkeyfile',
               'plymouthcfg', 'initramfscfg', 'initramfs', 'sources-media-unmount',
               'sources-final', 'removeuser', 'umount']
@@ -92,7 +95,7 @@ class Calamares {
           { show: ['welcome', 'locale', 'keyboard', 'partition', 'users', 'summary'] },
           {
             exec: ['partition', 'mount', 'unpackfs', 'machineid', 'fstab', 'locale',
-              'keyboard', 'localecfg', 'users', 'networkcfg', 'hwclock', 
+              'keyboard', 'localecfg', 'users', 'networkcfg', 'hwclock',
               'grubcfg', 'bootloader', 'packages', 'luksbootkeyfile',
               'plymouthcfg', 'initramfscfg', 'initramfs', 'removeuser', 'umount']
           },
@@ -103,34 +106,28 @@ class Calamares {
       };
     }
     console.log("Configurazione settings.conf");
-    fs.writeFileSync(settingsPath, `# distroType: ${debianCodename}\n`+ yaml.safeDump(settings), 'utf8');
+    fs.writeFileSync(settingsPath, `# distroType: ${versionLike}\n` + yaml.safeDump(settings), 'utf8');
   }
 
-  unpackModule(debianCodename: string){
-    let squashfsBuster ="/run/live/medium/live/filesystem.squashfs";
-    let squashfsStretch ="/lib/live/mount/medium/live/filesystem.squashfs";
-    let squashfsMountpoint = "";
+  unpackModule(versionLike: string) {
+    let o: any = {};
+    o = oses.info();
 
-    if (debianCodename.localeCompare('stretch')==0){
-      squashfsMountpoint = squashfsStretch;
-    } else if (debianCodename.localeCompare('buster')==0){
-      squashfsMountpoint = squashfsBuster;
-    }
 
     let file = `/etc/calamares/modules/unpackfs.conf`;
     let text = `---\n`;
     text += `unpack:\n`;
-    text += `-   source: "${squashfsMountpoint}"\n`;
+    text += `-   source: "${o.mountpointSquashFs}"\n`;
     text += `    sourcefs: "squashfs"\n`;
     text += `    unpack:\n`;
     text += `    destination: ""\n`;
-    text += `# debianCodename: ${debianCodename}\n`;
+    text += `# versionLike: ${versionLike}\n`;
 
     fs.writeFileSync(file, text, 'utf8');
   }
-  
 
-  async brandingDesc(debianCodename: string, homeUrl: string, supportUrl: string, bugReportUrl: string) {
+
+  async brandingDesc(versionLike: string, homeUrl: string, supportUrl: string, bugReportUrl: string) {
     // Configurazione branding.desc
     let brandingPath = '/etc/calamares/branding/eggs/branding.desc';
 
@@ -141,7 +138,7 @@ class Calamares {
     let versionedName = this.versionedName;
     let shortVersionedName = this.versionedName;
     let bootloaderEntryName = productName;
-    let productUrl = homeUrl; 
+    let productUrl = homeUrl;
     //let supportUrl = supportUrl; 
     let releaseNotesUrl = 'https://github.com/pieroproietti/penguins-eggs';
 
@@ -185,7 +182,7 @@ class Calamares {
     };
 
     console.log("Configurazione branding.desc");
-    fs.writeFileSync(brandingPath, `#debianCodename: ${debianCodename}\n` + yaml.safeDump(branding), 'utf8');
+    fs.writeFileSync(brandingPath, `#versionLike: ${versionLike}\n` + yaml.safeDump(branding), 'utf8');
   }
 
 }

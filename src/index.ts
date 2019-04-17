@@ -35,7 +35,7 @@ app.version = pjson.version;
 
 import ip from "ip";
 import os from "os";
-import  fs  from "fs";
+import fs from "fs";
 
 import utils from "./lib/utils";
 import Iso from "./lib/Iso";
@@ -147,50 +147,24 @@ async function config() {
 }
 
 function calamares(c: any): any {
-  let o:any={};
-  let distroType:string="unknown";
+  let o: any = {};
+  let distroType: string = "unknown";
 
   c.create();
-  //if (c.isCalamaresInstalled()) {
+  o = oses.info();
 
-    console.log("==========================================");
-    console.log("eggs: calamares configuration");
-    o = oses.info();
-    if (o.idLike==='linuxmint'){
-      distroType = "debian";
-    } else if (o.idLike==='debian'){
-      distroType = "debian";
-    } else if (o.idLike==='ubuntu'){
-      distroType = "ubuntu";
-    } else if (o.idLike==='fedora'){
-      distroType = "fedora";
-    }
-    
-    console.log(`distro type: ${o.debianCodename} id: ${o.id} idLike: ${o.idLike} name: ${o.name} prettyName: ${o.prettyName} versionCodename: ${o.versionCodename}`);
-
-    console.log("You can use the gui Installation:");
-    console.log("sudo calamares");
-    console.log("or the cli installation:");
-    console.log("sudo eggs hatch");
-    console.log("==========================================");
-    c.settingsConf(o.debianCodename);
-    c.brandingDesc(o.debianCodename, o.homeUrl, o.supportUrl, o.bugReportUrl );
-    c.unpackModule(o.debianCodename);
-    return o;
-
-/*  } else {
-    console.log("==========================================");
-    console.log("eggs: calamares-eggs is not installed!");
-    console.log(">>>>Skipping calamares configuration<<<<<");
-    console.log("Use the cli installation cli:");
-    console.log("sudo eggs hatch");
-    console.log("==========================================");
-  }*/
+  console.log("==========================================");
+  console.log("eggs: calamares configuration");
+  console.log("==========================================");
+  console.log(`distro: [${o.distroId}/${o.versionId}]->[${o.distroLike}/${o.versionLike}]`);
+  c.settingsConf(o.versionLike);
+  c.brandingDesc(o.versionLike, o.homeUrl, o.supportUrl, o.bugReportUrl);
+  c.unpackModule(o.versionLike);
+  return o;
 }
 
-
 async function spawn(e: any, i: any, c: any) {
-  let o:any ={};
+  let o: any = {};
 
   if (!await utils.isLive()) {
     console.log(
@@ -224,7 +198,7 @@ async function startHatch() {
   }
 }
 
-async function prerequisites(){
+async function prerequisites() {
   console.log(
     ">>> eggs: Installing the prerequisites packages..."
   );
