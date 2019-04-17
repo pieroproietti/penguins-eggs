@@ -171,10 +171,7 @@ async function spawn(e: any, i: any, c: any) {
       ">>> eggs: This is a live system! The spawn command cannot be executed."
     );
   } else {
-
-
     o = calamares(c);
-
     console.log("Spawning the system into  the egg... \nThis process can be very long, perhaps it's time for a coffee!");
     await e.createStructure();
     await e.systemCopy();

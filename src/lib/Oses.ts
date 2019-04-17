@@ -8,11 +8,6 @@ import { IDistro } from "../interfaces";
 import shell from "shelljs";
 
 class Oses {
-    private o={} as object;
-
-    constructor() {
-    }
-
     info(): any {
         enum info { HOME_URL, SUPPORT_URL, BUG_REPORT_URL };
 
@@ -34,7 +29,6 @@ class Oses {
             "bugReportUrl": ""
         };
 
-        // read(`${__dirname}/../../etc/os-release-ubuntu-19.04`, function (data: any) {
         read(`/etc/os-release`, function (data: any) {
             for (var temp in data) {
                 if (!data[temp].search(os[info.HOME_URL])) {
@@ -55,7 +49,6 @@ class Oses {
          * lsb_release -c -s
          */
         o.versionId = (shell.exec('lsb_release -c -s', { silent: true }).stdout).toString().trim();
-        console.log(o.versionId);
         o.syslinuxPath = "/usr/lib/syslinux/modules/bios/";
         o.isolinuxPath = "/usr/lib/ISOLINUX/";
         o.mountpointSquashFs = "/lib/live/mount/medium/live/filesystem.squashfs";
@@ -259,8 +252,6 @@ class Oses {
             o.distroLike = "Ubuntu";
             o.versionLike = "trusty";
         }
-
-        console.log(`o: ${o} `);
         return (o);
     }
 }
