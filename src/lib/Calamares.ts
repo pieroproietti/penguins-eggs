@@ -109,14 +109,14 @@ class Calamares {
     fs.writeFileSync(settingsPath, `# distroType: ${versionLike}\n` + yaml.safeDump(settings), 'utf8');
   }
 
-  unpackModule(versionLike: string) {
+  unpackModule(mountpointSquashFs: string) {
     let o: any = {};
     o = oses.info();
 
     let file = `/etc/calamares/modules/unpackfs.conf`;
     let text = `---\n`;
     text += `unpack:\n`;
-    text += `-   source: "${o.mountpointSquashFs}"\n`;
+    text += `-   source: "${mountpointSquashFs}"\n`;
     text += `    sourcefs: "squashfs"\n`;
     text += `    unpack:\n`;
     text += `    destination: ""\n`;

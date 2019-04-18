@@ -155,7 +155,7 @@ function calamares(c: any): any {
   c.create();
   c.settingsConf(o.versionLike);
   c.brandingDesc(o.versionLike, o.homeUrl, o.supportUrl, o.bugReportUrl);
-  c.unpackModule(o.versionLike);
+  c.unpackModule(o.mountpointSquashFs);
   console.log("==========================================");
   return o;
 }

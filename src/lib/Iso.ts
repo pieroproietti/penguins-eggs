@@ -217,7 +217,7 @@ label ${this.distro.name} safe
 
     //"-eltorito-alt-boot -e boot/grub/efiboot.img -isohybrid-gpt-basdat -no-emul-boot";
     let volid = `"Penguin's eggs ${this.distro.name}"`;
-    let isoName = `${this.workDir}/${this.distro.name}`;
+    let isoName = `${this.workDir}${this.distro.name}`;
     isoName += utils.date4file() + ".iso";
 
     utils.exec(
