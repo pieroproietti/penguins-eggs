@@ -120,8 +120,6 @@ class Calamares {
     text += `    sourcefs: "squashfs"\n`;
     text += `    unpack:\n`;
     text += `    destination: ""\n`;
-    text += `# versionLike: ${versionLike}\n`;
-
     fs.writeFileSync(file, text, 'utf8');
   }
 
@@ -134,7 +132,7 @@ class Calamares {
     let shortProductName = this.productName;
     let version = this.shortVersion + ' (' + this.versionedName + ')';
     let shortVersion = this.shortVersion;
-    let versionedName = this.versionedName;
+    let versionedName = this.productName;
     let shortVersionedName = this.versionedName;
     let bootloaderEntryName = productName;
     let productUrl = homeUrl;
