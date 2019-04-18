@@ -207,6 +207,7 @@ class Oses {
             o.distroId = "Ubuntu";
             o.distroLike = "Ubuntu";
             o.versionLike = "disco";
+            o.mountpointSquashFs = "/run/live/medium/live/filesystem.squashfs";
         } else if (o.versionId === "cosmic") {
             o.distroId = "Ubuntu";
             o.distroLike = "Ubuntu";
