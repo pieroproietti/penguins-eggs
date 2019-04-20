@@ -15,7 +15,7 @@ Il progetto è pensato non solo per la creazione dell'immagine ISO del sistema (
 
 Essendo scritto in puro javascript, può essere idealmente utilizzato per distribuzioni Linux differenti. Al momento, è testato su Debian 10 Buster (in sviluppo), Debian 9 Stretch (stable), Debian 8 Jessie (old stable), Ubuntu 19.04, 18.10 etc, LMDE 2 e LMDE 3, Linux Mint 19.1. Vorremmo estendere il supporto ad altre versioni di Linux, in particolare a Fedora (per ragioni di diffusione) ed ad Arch, ma abbiamo bisogno di aiuto.
 
-penguins-eggs, al momento "aprile 2019" è in uno stato maturo, anche se può presentare qualche problema con persone senza sufficienti capacità di gestione di Linux. D'altra parte, per sua natura, penguins-eggs non è adatto ad un utente finale ma è sostanzialemte uno strumento tecnico per tecnici.
+penguins-eggs, al momento "aprile 2019" è in uno stato maturo, anche se può presentare qualche problema con persone senza sufficienti capacità di gestione di Linux. D'altra parte, per sua natura, penguins-eggs non è adatto ad un utente finale ma è sostanzialmente uno strumento tecnico per tecnici.
 
 Con esso potrete facilmente creare la propria distribuzione Linux per la scuola, l'azienda, financo il proprio gruppo di amici, distribuendolo attraverso le immagini iso su chiavetta o su internet. Mentre il processo di creazione dell'immagine ISO è sostanzialmente un processo cli, per quanto riguarda l'installazione si può procedere in due modalità: modalità cli o gui. Difatti, grazie alla integrazione con calamares, l'installazione del vostro sistema live sarà professionale, allo stesso livello se non superiore, al sistema di installazione originale.
 
@@ -86,11 +86,11 @@ esempio: host ``penguin`` will produce an iso called ``penguin-2017-10-22_2047_0
 **Attenzione**: Non impauritevi, ma fate attenzione, l'operazione di hatch è distruttiva ed irreversibile, verrà formattato i vostro disco rigido e gli eventuali dati presenti.  **Assicuratevi di avere il backup dei vostri dati prima di operare**.
 
 ### calamares (installazione gui)
-Probabilmente preferirete l'installatore grafico per le vostre esigenze, anche se a volte scoprirete la praticità del sistema cli. Per avviare l'installer grafico, se 
+Probabilmente preferirete l'installatore grafico per le vostre esigenze, anche se a volte scoprirete la praticità del sistema cli. Per avviare l'installer grafico, date il seguente comando:
+
 ```sudo calamares```
-calamares è un programma di installazione grafico molto avanzato. Eggs esegue la configurazione di esso, equivale ed è incompatibile con calamares-settings-debian, calamares-settings-ubuntu, etc, in quanto fornisce le stesse informazioni costruite "al volo" a seconda della distribuzione in uso.
 
-
+calamares è un programma di installazione grafico molto avanzato. Eggs lo installa con i prerequisites ed esegue la configurazione di esso con l'opzione calamares.
 
 ## Sviluppo
 Fate riferimento a quanto riportato nella versione in inglese.
