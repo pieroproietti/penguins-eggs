@@ -9,15 +9,15 @@
 
 
 ## Presentazione
-penguins-eggs è uno strumento a riga di comando, in sviluppo attivo, che ri permette di rimasterizzare il tuo sistema e redistribuirlo come una immagine iso oppure di avviare un computer remoto via pxe.
+penguins-eggs è uno strumento a riga di comando, in sviluppo attivo, che vi permette di rimasterizzare il vostro sistema e redistribuirlo come una immagine iso.
 
-Il progetto è pensato non solo per la creazione dell'immagine ISO del tuo sistema (l'uovo di pinguino) ma anche per includere tutti i necessari servizi (dhcp, dhcp-proxy, tftp e https) per realizzare un server PXE veloce e potente che può lavorare da solo, oppure in sovrapposizione ad un server dhcp preesistente all'interno della tua lan aziendale o domestica.
+Il progetto è pensato non solo per la creazione dell'immagine ISO del sistema (l'uovo di pinguino) ma anche per includere tutti i necessari servizi (dhcp, dhcp-proxy, tftp e https) per realizzare un server PXE veloce e potente che può lavorare da solo, o integrarsi in una rete preesistente all'interno della tua azienda o in casa.
 
-Essendo scritto in puro javascript, può essere idealmente utilizzato per distribuzioni Linux differenti. Al momento, è testato su Debian 10 Buster (in sviluppo), Debian 9 Stretch (stable), Debian 8 Jessie (old stable), Ubuntu 19.04, 18.10 etc, LMDE 2 e LMDE 3, Linux Mint 19.1. Vorremmo estendere il supporto ad altre versioni, in particolare a Fedora (per ragioni di diffusione) ed Arch, ma abbiamo bisogno di aiuto.
+Essendo scritto in puro javascript, può essere idealmente utilizzato per distribuzioni Linux differenti. Al momento, è testato su Debian 10 Buster (in sviluppo), Debian 9 Stretch (stable), Debian 8 Jessie (old stable), Ubuntu 19.04, 18.10 etc, LMDE 2 e LMDE 3, Linux Mint 19.1. Vorremmo estendere il supporto ad altre versioni di Linux, in particolare a Fedora (per ragioni di diffusione) ed ad Arch, ma abbiamo bisogno di aiuto.
 
-penguins-eggs, al momento "aprile 2019" è in uno stato maturo, anche se può avere presentare ancora qualche problema con persone senza sufficienti capacità di gestione di Linux. D'altra parte, per sua natura, penguins-eggs non è adatto ad un utente finale ma è sostanzialemte uno strumento tecnico per tecnici.
+penguins-eggs, al momento "aprile 2019" è in uno stato maturo, anche se può presentare qualche problema con persone senza sufficienti capacità di gestione di Linux. D'altra parte, per sua natura, penguins-eggs non è adatto ad un utente finale ma è sostanzialemte uno strumento tecnico per tecnici.
 
-Con esso potrete facilmente creare la propria distribuzione Linux per la scuola, l'azienda, financo il proprio gruppo di amici, distribuendolo attraverso le immagini iso su chiavetta o su internet. Mentre il processo di creazione dell'immagine ISO è sostanzialmente un processo cli, per quanto riguarda l'installazione si può procedere in due modalità: modalità carattere o gui. Difatti, grazie alla integrazione con calamares, l'installazione del vostro sistema live è professionale, allo stesso livello se non superiore all'originale.
+Con esso potrete facilmente creare la propria distribuzione Linux per la scuola, l'azienda, financo il proprio gruppo di amici, distribuendolo attraverso le immagini iso su chiavetta o su internet. Mentre il processo di creazione dell'immagine ISO è sostanzialmente un processo cli, per quanto riguarda l'installazione si può procedere in due modalità: modalità cli o gui. Difatti, grazie alla integrazione con calamares, l'installazione del vostro sistema live sarà professionale, allo stesso livello se non superiore, al sistema di installazione originale.
 
 
 ## Installazione di penguins-eggs
@@ -26,29 +26,29 @@ Con esso potrete facilmente creare la propria distribuzione Linux per la scuola,
  Per prima cosa è necessario installare nodejs e npm, si consiglia l'installazione a partire dalla repository di [nodesource](https://github.com/nodesource/distributions/blob/master/README.md#deb).
  
 
-A questo punto potremo installare penguins-eggs con il comando:
+A questo punto potremo installare penguins-eggs con i comandi:
 
 ```sudo npm config set unsafe-perm true```
 
 ```sudo npm i penguins-egg -g```
 
 ## Installazione dei prerequisiti
-penguins-eggs il suo funzionamento ha bisogno di alcuni programmi, che dovremo istallare. Potete procedere semplicemente con il comando:
+penguins-eggs per il suo funzionamento ha bisogno di alcuni programmi, che dovremo istallare. Potete procedere semplicemente con il comando:
 
 ```sudo eggs prerequisites```
 
 
-## Commandi
+## Comandi
 Su eggs potete agire con i seguenti comandi:
+* prerequisites
 * spawn
 * info
 * kill
-* calamares (configure gui installer gui calamares)
-* hatch (the cli installer)
+* calamares
+* hatch
 
 ### spawn
-La funzione di spawm è la "deposizione" dell'uovo ovvero la creazione della Iso contenente l'immagine del sistema. Il comando spawn accetta il parametro  ```-d``` or
-```--distroname``` che definisce il nome della distro.
+La funzione di spawm è la "deposizione" dell'uovo ovvero la creazione della Iso contenente l'immagine del sistema. Il comando spawn accetta il parametro ```-d``` o ```--distroname``` che definisce il nome della distro.
 
 ```sudo eggs spawn -d mydistroname```
 
@@ -63,12 +63,12 @@ Si intende l'operazione di cancellazione dell'uovo creato con l'operazione di sp
 
 ```sudo eggs kill```
 
-### calamares
+### calamares (configurazione calamares)
 Questo comando è utile soprattutto in fase di sviluppo e debugging, genera la configurazione di calamares anche "al volo" permettendo così di correggere errori presenti nell'immagine stessa.
 
 ```sudo eggs calamares```
 
-### hatch (installazione cli)
+### hatch (avvio installazione cli)
 Un uovo per diventare un pinguino necessita del processo di "cova" hatch! Nel nostro caso avremo bisogno semplicemente di definire all'uovo le informazioni necessarie e, in pochi minuti, avremo un nuovo pinguino installato.
 
 ```sudo eggs hatch```
