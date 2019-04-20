@@ -7,6 +7,7 @@
 [![MIT license](http://img.shields.io/badge/license-MIT-brightgreen.svg)](http://opensource.org/licenses/MIT)
 [![Join the chat at https://gitter.im/penguins-eggs/Lobby](https://badges.gitter.im/pieroproietti/penguins-eggs.svg)](https://gitter.im/penguins-eggs/Lobby?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
+[English version](./README.md)
 
 ## Presentazione
 penguins-eggs è uno strumento a riga di comando, in sviluppo attivo, che vi permette di rimasterizzare il vostro sistema e redistribuirlo come una immagine iso.
