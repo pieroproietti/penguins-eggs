@@ -65,11 +65,11 @@ distro.versionNumber = utils.date4label();
 
 net.dhcp = true;
 
-user.fullName = "Artisan";
-user.name = "artisan";
+user.fullName = "live";
+user.name = "live";
 user.password = "evolution";
 
-root.fullName = "Root";
+root.fullName = "root";
 root.name = "root";
 root.password = "evolution";
 
@@ -197,7 +197,6 @@ async function startHatch() {
 
 async function installPrerequisites() {
   let o = oses.info();
-  console.log(o);
   if (o.distroLike==="Arch"){
     Prerequisites.manjaro();
   } else {
