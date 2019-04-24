@@ -172,14 +172,17 @@ async function spawn(e: any, i: any, c: any) {
     o = calamares(c);
 
     console.log("------------------------------------------");
-    console.log(`Spawning the system into  the egg...\nThis process can be very long, \nperhaps it's time for a coffee!`);
+    console.log(`Spawning the system into the egg...`);
     console.log("------------------------------------------");
     await e.createStructure();
     await i.createStructure();
     await i.isolinuxPrepare(o.isolinuxPath, o.syslinuxPath);
-    await e.systemCopy();
     await i.isolinuxCfg();
     await i.liveKernel();
+    console.log("------------------------------------------");
+    console.log(`Spawning the system into the egg...\nThis process can be very long, \nperhaps it's time for a coffee!`);
+    console.log("------------------------------------------");
+    await e.systemCopy();
     await i.liveSquashFs();
     await i.makeIsoFs(o.isolinuxPath);
   }
