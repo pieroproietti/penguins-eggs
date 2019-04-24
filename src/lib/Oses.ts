@@ -253,6 +253,12 @@ class Oses {
             o.distroId = "Ubuntu";
             o.distroLike = "Ubuntu";
             o.versionLike = "trusty";
+        } else if (o.versionId === "Illyria") {
+            o.distroId = "Manjaro";
+            o.distroLike = "Arch";
+            o.versionLike = "Illyria";
+            o.syslinuxPath="/usr/lib/syslinux/";
+            o.isolinuxPath="/usr/share/manjaro-tools/isolinux/";
         }
         return (o);
     }

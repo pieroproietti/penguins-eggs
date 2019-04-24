@@ -47,6 +47,7 @@ import { IDistro, INet, IUser } from "./interfaces";
 import { exit } from "shelljs";
 
 import Oses from "./lib/Oses";
+import Prerequisites from "./lib/Prerequisites";
 
 let oses = new Oses();
 
@@ -136,7 +137,7 @@ async function config() {
   } else if (command == "hatch") {
     startHatch();
   } else if (command == "prerequisites") {
-    prerequisites();
+    installPrerequisites();
   } else if (command == "info") {
     console.log(oses.info());
   } else {
@@ -191,30 +192,18 @@ async function startHatch() {
     );
   } else {
     hatch();
-
   }
 }
 
-async function prerequisites() {
-  console.log(
-    ">>> eggs: Installing the prerequisites packages..."
-  );
-  await utils.exec('apt-get update');
-  await utils.exec(`apt-get --yes install lvm2 \
-                      parted \
-                      squashfs-tools \
-                      xorriso \
-                      live-boot \
-                      syslinux \
-                      syslinux-common \
-                      isolinux pxelinux`);
-
-  await utils.exec(`apt-get --yes install calamares \
-                      qml-module-qtquick2 \
-                      qml-module-qtquick-controls`);
-
-  await utils.exec('apt-get clean');
-  await utils.exec('apt-get autoclean');
+async function installPrerequisites() {
+  let o = oses.info();
+  console.log(o);
+  if (o.distroLike==="Arch"){
+    Prerequisites.manjaro();
+  } else {
+    Prerequisites.debian();
+  }
+  
 }
 
 
