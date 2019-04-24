@@ -259,6 +259,12 @@ class Oses {
             o.versionLike = "Illyria";
             o.syslinuxPath="/usr/lib/syslinux/";
             o.isolinuxPath="/usr/share/manjaro-tools/isolinux/";
+        } else if (o.versionId === "TwentyNine") {
+            o.distroId = "Fedora";
+            o.distroLike = "RedHat";
+            o.versionLike = "TwentyNine";
+            o.syslinuxPath="/usr/share/syslinux/";
+            o.isolinuxPath="/usr/share/syslinux/";
         }
         return (o);
     }

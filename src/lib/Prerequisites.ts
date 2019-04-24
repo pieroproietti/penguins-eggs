@@ -10,7 +10,7 @@ class Prerequisites {
     // Properties
 
     // Methods
-    static manjaro(): void {
+    static arch(): void {
         console.log(
             ">>> eggs: Installing the prerequisites packages..."
         );
@@ -25,6 +25,7 @@ class Prerequisites {
          utils.exec(`pacman -S isolinux --noconfirm`);
         //await utils.exec(`pacman -S pxelinux --noconfirm`);
     }
+
 
     static debian(): void {
         console.log(
@@ -47,6 +48,34 @@ class Prerequisites {
          utils.exec('apt-get clean');
          utils.exec('apt-get autoclean');
     }
+
+    static redhat(): void {
+        console.log(
+            ">>> eggs: Installing the prerequisites packages..."
+        );
+        utils.exec(`dnf check-update`);
+        utils.exec(`dnf upgrade`);
+        utils.exec(`dnf install -y lvm2`);
+        utils.exec(`dnf install -y parted`);
+        utils.exec(`dnf install -y squashfs-tools`);
+        utils.exec(`dnf install -y xorriso`);
+        // utils.exec(`dnf install -y live-boot`);
+        utils.exec(`dnf install -y syslinux`);
+        // utils.exec(`dnf install -y isolinux`);
+        // utils.exec(`dnf install -y pxelinux`);
+        utils.exec(`dnf install -y calamares`);
+        // utils.exec(`dnf install -y qml-module-qtquick2`);
+        // utils.exec(`dnf install -y qml-module-qtquick-controls`);
+    }
+
+    /**
+     * Centos
+     * 
+     * yum check-update
+     * yum update
+     * yum install package
+     */
+    
 
 }
 export default Prerequisites;

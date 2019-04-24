@@ -198,11 +198,14 @@ async function startHatch() {
 async function installPrerequisites() {
   let o = oses.info();
   if (o.distroLike==="Arch"){
-    Prerequisites.manjaro();
-  } else {
+    Prerequisites.arch();
+  } else if (o.distroLike==="Debian"){
     Prerequisites.debian();
+  } else if (o.distroLike==="Ubuntu"){
+    Prerequisites.debian();
+  } else if (o.distroLike==="RedHat"){
+    Prerequisites.redhat();
   }
-  
 }
 
 
