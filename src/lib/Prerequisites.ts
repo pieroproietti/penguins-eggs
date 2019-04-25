@@ -20,10 +20,10 @@ class Prerequisites {
          utils.exec(`pacman -S parted --noconfirm`);
          utils.exec(`pacman -S squashfs-tools --noconfirm`);
          utils.exec(`pacman -S xorriso --noconfirm`);
-        // await utils.exec(`pacman -S live-boot --noconfirm`);
          utils.exec(`pacman -S syslinux --noconfirm`);
          utils.exec(`pacman -S isolinux --noconfirm`);
-        //await utils.exec(`pacman -S pxelinux --noconfirm`);
+        //https://wiki.manjaro.org/index.php?title=Manjaro-tools
+        //https://gitlab.manjaro.org/tools/development-tools/manjaro-tools-livecd
     }
 
 
