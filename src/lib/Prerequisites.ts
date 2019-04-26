@@ -31,7 +31,7 @@ class Prerequisites {
         console.log(
             ">>> eggs: Installing the prerequisites packages..."
         );
-         utils.exec('apt-get update');
+         utils.exec(`apt-get update`);
          utils.exec(`apt-get --yes install lvm2 \
                             parted \
                             squashfs-tools \
@@ -45,8 +45,8 @@ class Prerequisites {
                             qml-module-qtquick2 \
                             qml-module-qtquick-controls`);
 
-         utils.exec('apt-get clean');
-         utils.exec('apt-get autoclean');
+         utils.exec(`apt-get clean`);
+         utils.exec(`apt-get autoclean`);
     }
 
     static redhat(): void {
@@ -76,6 +76,16 @@ class Prerequisites {
      * yum install package
      */
     
+     static mule(): void {
+        utils.exec(`apt-get remove --purge --yes calamares`);
+        utils.exec(`apt-get remove --purge --yes isolinux`);
+        utils.exec(`apt-get remove --purge --yes live-boot`);
+        utils.exec(`apt-get remove --purge --yes pxelinux`);
+        utils.exec(`apt-get remove --purge --yes qml-module-qtgraphicaleffects`);
+        utils.exec(`apt-get remove --purge --yes qml-module-qtquick-controls `);
+        utils.exec(`apt-get remove --purge --yes qml-module-qtquick2 `);
+        utils.exec(`apt-get remove --purge --yes syslinux`);
+     }
 
 }
 export default Prerequisites;
