@@ -6,6 +6,8 @@
 
 ```apt-get install python3-dev libboost-dev libboost-python-dev libpythonqt-dev libkf5plasma-dev libkf5package-data libkf5config-bin```
 
+apt-get install libkf5activities-dev
+```apt-get install cmake```
 
 ## Scaricare sorgenti
 ```git clone https://github.com/calamares/calamares```
