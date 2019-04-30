@@ -265,7 +265,11 @@ class Oses {
             o.versionLike = "TwentyNine";
             o.syslinuxPath="/usr/share/syslinux/";
             o.isolinuxPath="/usr/share/syslinux/";
-        }
+        } else if (o.versionId === "stable") {
+            o.distroId = "Deepin";
+            o.distroLike = "Debian";
+            o.versionLike = "stretch";
+        }    
         return (o);
     }
 }
