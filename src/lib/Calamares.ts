@@ -1,8 +1,10 @@
-/*
-  penguins-eggs: Calamares.ts
-  author: Piero Proietti
-  mail: piero.proietti@gmail.com
-*/
+/**
+ * penguins-eggs: Calamares.ts
+ * 
+ * author: Piero Proietti 
+ * mail: piero.proietti@gmail.com
+ */
+
 "use strict";
 
 

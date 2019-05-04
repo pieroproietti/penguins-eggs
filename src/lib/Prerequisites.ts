@@ -1,6 +1,8 @@
 /**
- * Prerequisites
+ * penguins-eggs: Prerequisites.ts
  * 
+ * author: Piero Proietti
+ * mail: piero.proietti@gmail.com
  */
 
 "use strict";
@@ -15,13 +17,13 @@ class Prerequisites {
             ">>> eggs: Installing the prerequisites packages..."
         );
 
-         utils.exec(`pacman -Sy`);
-         utils.exec(`pacman -S lvm2 --noconfirm`);
-         utils.exec(`pacman -S parted --noconfirm`);
-         utils.exec(`pacman -S squashfs-tools --noconfirm`);
-         utils.exec(`pacman -S xorriso --noconfirm`);
-         utils.exec(`pacman -S syslinux --noconfirm`);
-         utils.exec(`pacman -S isolinux --noconfirm`);
+        utils.exec(`pacman -Sy`);
+        utils.exec(`pacman -S lvm2 --noconfirm`);
+        utils.exec(`pacman -S parted --noconfirm`);
+        utils.exec(`pacman -S squashfs-tools --noconfirm`);
+        utils.exec(`pacman -S xorriso --noconfirm`);
+        utils.exec(`pacman -S syslinux --noconfirm`);
+        utils.exec(`pacman -S isolinux --noconfirm`);
         //https://wiki.manjaro.org/index.php?title=Manjaro-tools
         //https://gitlab.manjaro.org/tools/development-tools/manjaro-tools-livecd
     }
@@ -31,8 +33,8 @@ class Prerequisites {
         console.log(
             ">>> eggs: Installing the prerequisites packages..."
         );
-         utils.exec(`apt-get update`);
-         utils.exec(`apt-get --yes install lvm2 \
+        utils.exec(`apt-get update`);
+        utils.exec(`apt-get --yes install lvm2 \
                             parted \
                             squashfs-tools \
                             xorriso \
@@ -41,12 +43,12 @@ class Prerequisites {
                             syslinux-common \
                             isolinux pxelinux`);
 
-         utils.exec(`apt-get --yes install calamares \
+        utils.exec(`apt-get --yes install calamares \
                             qml-module-qtquick2 \
                             qml-module-qtquick-controls`);
 
-         utils.exec(`apt-get clean`);
-         utils.exec(`apt-get autoclean`);
+        utils.exec(`apt-get clean`);
+        utils.exec(`apt-get autoclean`);
     }
 
     static redhat(): void {
@@ -75,8 +77,8 @@ class Prerequisites {
      * yum update
      * yum install package
      */
-    
-     static mule(): void {
+
+    static mule(): void {
         utils.exec(`apt-get remove --purge --yes calamares`);
         utils.exec(`apt-get remove --purge --yes isolinux`);
         utils.exec(`apt-get remove --purge --yes live-boot`);
@@ -85,7 +87,7 @@ class Prerequisites {
         utils.exec(`apt-get remove --purge --yes qml-module-qtquick-controls `);
         utils.exec(`apt-get remove --purge --yes qml-module-qtquick2 `);
         utils.exec(`apt-get remove --purge --yes syslinux`);
-     }
+    }
 
 }
 export default Prerequisites;

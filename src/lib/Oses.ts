@@ -1,5 +1,8 @@
 /**
- * Oses
+ * penguins-eggs: Oses.ts
+ * 
+ * author: Piero Proietti
+ * mail: piero.proietti@gmail.com
  */
 
 "use strict";

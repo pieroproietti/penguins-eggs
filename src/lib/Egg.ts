@@ -1,8 +1,10 @@
-/*
-  penguins-eggs: Eggs.js
-  author: Piero Proietti
-  mail: piero.proietti@gmail.com
-*/
+/**
+ * penguins-eggs: Eggs.js 
+ * 
+ * author: Piero Proietti
+ * mail: piero.proietti@gmail.com
+ */
+
 "use strict";
 
 import fs from "fs";
@@ -34,7 +36,7 @@ class Egg {
     this.root = {} as IUser;
 
     if (workDir == undefined) {
-      this.workDir = "/var/lib/vz/eggs/";
+      this.workDir = "/home/eggs/";
     } else {
       this.workDir = workDir;
     }

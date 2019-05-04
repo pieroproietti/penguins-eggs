@@ -46,10 +46,10 @@ class Iso {
     this.root = {} as IUser;
 
     this.app = app;
-    
-    if (workDir == undefined){
-      this.workDir = "/var/lib/vz/eggs/";
-    } else{
+
+    if (workDir == undefined) {
+      this.workDir = "/home/eggs/";
+    } else {
       this.workDir = workDir;
     }
 
@@ -63,7 +63,7 @@ class Iso {
     this.distro.pathHome = workDir + `${this.distro.name}`;
     this.distro.pathFs = this.distro.pathHome + `/fs`;
     this.distro.pathIso = this.distro.pathHome + `/iso`;
-    
+
 
     if (net == undefined) {
       this.net.dhcp = false;

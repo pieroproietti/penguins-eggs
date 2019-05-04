@@ -1,9 +1,11 @@
-/*
-  penguins-eggs: filters.ts
-  author: Piero Proietti
-  mail: piero.proietti@gmail.com
-*/
-
+/**
+ * penguins-eggs: filters.ts 
+ * 
+ * author: Piero Proietti
+ * mail: piero.proietti@gmail.com  
+ */
+ 
+ 
 const filterRoot = `
 --filter="- /dev/*" \
 --filter="- /cdrom/*" \

@@ -1,26 +1,18 @@
 #!/usr/bin/env node
-/*
-  penguins-eggs: main
 
-  prerequisite: apt-get install \
-                lvm2 parted \
-                squashfs-tools \
-                xorriso \
-                live-boot \
-                syslinux \
-                syslinux-common \
-                isolinux \
-                pxelinux
-  author: Piero Proietti
-  mail: piero.proietti@gmail.com
-*/
+/**
+ * penguins-eggs: main
+ * 
+ * author: Piero Proietti  
+ * mail: piero.proietti@gmail.com
+ * 
+ */
 
 "use strict";
 
 /**
  * babel-polyfill: va inserito per primo!
  */
-
 import "babel-polyfill";
 
 
@@ -58,31 +50,30 @@ let net = {} as INet;
 let user = {} as IUser;
 let root = {} as IUser;
 
-
 distro.name = os.hostname();
 distro.versionName = 'Emperor';
 distro.versionNumber = utils.date4label();
-
 net.dhcp = true;
-
 user.fullName = "live";
 user.name = "live";
 user.password = "evolution";
-
 root.fullName = "root";
 root.name = "root";
 root.password = "evolution";
 
 if (utils.isRoot()) {
-  config();
+  start();
 } else {
   usage();
 }
 
 bye();
-// END MAIN
+// End main
 
 
+/**
+ * usage
+ */
 function usage() {
   console.log(
     `${app.name} need to run with supervisor privileges! You need to prefix it with sudo`
@@ -97,8 +88,10 @@ function usage() {
 }
 
 
-
-async function config() {
+/**
+ * start
+ */
+async function start() {
   program
     .command("spawn")
     .command("info")
@@ -108,7 +101,6 @@ async function config() {
     .command("kill");
 
   program.option("-d, --distroname <distroname>");
-
   program.parse(process.argv);
   if (program.distroname) {
     distro.name = program.distroname;
@@ -120,8 +112,11 @@ async function config() {
     workDir = "/var/lib/docker/eggs/";
   } else if (await utils.isMounted("www")) {
     workDir = "/var/www/eggs/";
+  } else {
+    workDir = "/home/eggs/";
   }
 
+  let o = oses.info();
   let e: Egg = new Egg(workDir, distro);
   let i: Iso = new Iso(app, workDir, distro);
   let c: Calamares = new Calamares(distro.name, distro.versionName, distro.versionNumber);
@@ -145,6 +140,10 @@ async function config() {
   }
 }
 
+/**
+ * 
+ * calamares
+ */
 function calamares(c: any): any {
   let o: any = {};
 
@@ -161,6 +160,9 @@ function calamares(c: any): any {
   return o;
 }
 
+/**
+ * spawn(
+ */
 async function spawn(e: any, i: any, c: any) {
   let o: any = {};
 
@@ -200,13 +202,13 @@ async function startHatch() {
 
 async function installPrerequisites() {
   let o = oses.info();
-  if (o.distroLike==="Arch"){
+  if (o.distroLike === "Arch") {
     Prerequisites.arch();
-  } else if (o.distroLike==="Debian"){
+  } else if (o.distroLike === "Debian") {
     Prerequisites.debian();
-  } else if (o.distroLike==="Ubuntu"){
+  } else if (o.distroLike === "Ubuntu") {
     Prerequisites.debian();
-  } else if (o.distroLike==="RedHat"){
+  } else if (o.distroLike === "RedHat") {
     Prerequisites.redhat();
   }
 }

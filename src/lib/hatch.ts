@@ -1,11 +1,12 @@
-/*
-  penguins-eggs: hatch.js
-  author: Piero Proietti
-  mail: piero.proietti@gmail.com
+/**
+ * penguins-eggs: hatch.js 
+ * 
+ * author: Piero Proietti
+ * mail: piero.proietti@gmail.com
+ * https://codeburst.io/how-to-build-a-command-line-app-in-node-js-using-typescript-google-cloud-functions-and-firebase-4c13b1699a27
+ * 
+ */
 
-  https://codeburst.io/how-to-build-a-command-line-app-in-node-js-using-typescript-google-cloud-functions-and-firebase-4c13b1699a27
-
-  */
 "use strict";
 
 import shell from "shelljs";
@@ -40,7 +41,7 @@ export async function hatch() {
   devices.swap.fsType = "swap";
   devices.swap.mountPoint = "none";
 
-  let driveList: string[]=[];
+  let driveList: string[] = [];
   await drivelist.list(
     (error: boolean, drives: IDriveList[]) => {
       if (error) {
@@ -51,10 +52,10 @@ export async function hatch() {
       drives.forEach((drive) => {
         driveList.push(drive.device);
       });
-   });
-  
+    });
 
-  let varOptions: any =  await getOptions(driveList);
+
+  let varOptions: any = await getOptions(driveList);
   let options: any = JSON.parse(varOptions);
 
   if (options.mountType == "workstation") {
@@ -102,7 +103,7 @@ export async function hatch() {
   //await updateInitramfs(target); // path per problema LVM resume
   await umount4chroot(target);
   await umount4target(target, devices);
-  
+
 }
 
 async function grubInstall(target: string, options: any) {

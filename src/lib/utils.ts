@@ -1,8 +1,10 @@
-/*
-  penguins-eggs: utils.js
-  author: Piero Proietti
-  mail: piero.proietti@gmail.com
-*/
+/**
+ * penguins-eggs: utils.js 
+ * 
+ * author: Piero Proietti
+ * mail: piero.proietti@gmail.com
+ */
+
 "use strict";
 
 import shell from "shelljs";
