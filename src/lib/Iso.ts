@@ -154,7 +154,12 @@ class Iso {
     utils.exec(`rsync -a ${vesamenu} ${this.distro.pathIso}/isolinux/`);
   }
 
-  async isolinuxCfg() {
+  /**
+   * 
+   * @param menuTitle 
+   * @param kernelAppend 
+   */
+  async isolinuxCfg(menuTitle: string = "", kernelAppend: string = "") {
     console.log("==========================================");
     console.log("iso: isolinuxCfg");
     console.log("==========================================");
@@ -207,7 +212,7 @@ label ${this.distro.name} safe
     );
   }
 
-  async makeIsoFs(isolinuxPath: string) {
+  async makeIsoFs(isolinuxPath: string, cdlabel: string = "") {
     console.log("==========================================");
     console.log("iso: makeIsoFs");
     console.log("==========================================");

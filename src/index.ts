@@ -18,28 +18,28 @@ import "babel-polyfill";
 
 import pjson from "pjson";
 import { IPackage } from "./interfaces";
+import ip from "ip";
+import os from "os";
+import fs from "fs";
+
+import Calamares from "./lib/Calamares";
+import Egg from "./lib/Egg";
+import Iso from "./lib/Iso";
+import Oses from "./lib/Oses";
+import Prerequisites from "./lib/Prerequisites";
+
+import utils from "./lib/utils";
+import { hatch } from "./lib/hatch";
+import { IDistro, INet, IUser } from "./interfaces";
+import { exit } from "shelljs";
+
+
 let app = {} as IPackage;
 app.author = "Piero Proietti";
 app.homepage = "https://pieroproietti.github.io/";
 app.mail = "piero.proietti@gmail.com";
 app.name = pjson.name as string;
 app.version = pjson.version;
-
-import ip from "ip";
-import os from "os";
-import fs from "fs";
-
-import utils from "./lib/utils";
-import Iso from "./lib/Iso";
-import Egg from "./lib/Egg";
-
-import Calamares from "./lib/Calamares";
-import { hatch } from "./lib/hatch";
-import { IDistro, INet, IUser } from "./interfaces";
-import { exit } from "shelljs";
-
-import Oses from "./lib/Oses";
-import Prerequisites from "./lib/Prerequisites";
 
 let oses = new Oses();
 
@@ -49,6 +49,7 @@ let distro = {} as IDistro;
 let net = {} as INet;
 let user = {} as IUser;
 let root = {} as IUser;
+
 
 distro.name = os.hostname();
 distro.versionName = 'Emperor';
@@ -124,15 +125,15 @@ async function start() {
   let command = process.argv[2];
 
   if (command == "spawn") {
-    spawn(e, i, c);
+    spawn(e, i, c, o);
   } else if (command == "kill") {
     i.kill();
   } else if (command == "calamares") {
-    calamares(c);
+    calamares(c, o);
   } else if (command == "hatch") {
     startHatch();
   } else if (command == "prerequisites") {
-    installPrerequisites();
+    installPrerequisites(o);
   } else if (command == "info") {
     console.log(oses.info());
   } else {
@@ -144,9 +145,7 @@ async function start() {
  * 
  * calamares
  */
-function calamares(c: any): any {
-  let o: any = {};
-
+function calamares(c: any, o: any): any {
   console.log("==========================================");
   console.log("eggs: calamares configuration");
   console.log("------------------------------------------");
@@ -157,21 +156,19 @@ function calamares(c: any): any {
   c.brandingDesc(o.versionLike, o.homeUrl, o.supportUrl, o.bugReportUrl);
   c.unpackModule(o.mountpointSquashFs);
   console.log("==========================================");
-  return o;
 }
 
 /**
  * spawn(
  */
-async function spawn(e: any, i: any, c: any) {
-  let o: any = {};
+async function spawn(e: any, i: any, c: any, o: any) {
 
   if (!await utils.isLive()) {
     console.log(
       ">>> eggs: This is a live system! The spawn command cannot be executed."
     );
   } else {
-    o = calamares(c);
+    calamares(c, o);
 
     console.log("------------------------------------------");
     console.log(`Spawning the system into the egg...`);
@@ -200,8 +197,7 @@ async function startHatch() {
   }
 }
 
-async function installPrerequisites() {
-  let o = oses.info();
+async function installPrerequisites(o: any) {
   if (o.distroLike === "Arch") {
     Prerequisites.arch();
   } else if (o.distroLike === "Debian") {
