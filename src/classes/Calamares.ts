@@ -30,7 +30,12 @@ class Calamares {
     this.versionedName = versionName;
   }
 
-  static install(c: any, o: any){
+  /**
+   * configure calamares-settings-eggs
+   * @param c 
+   * @param o 
+   */
+  static configure(c: any, o: any) {
     console.log("==========================================");
     console.log("eggs: calamares configuration");
     console.log("------------------------------------------");

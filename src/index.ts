@@ -123,11 +123,11 @@ async function start() {
   let command = process.argv[2];
 
   if (command == "spawn") {
-    spawn(e, i, c, o);
+    i.spawn(e, i, c, o);
   } else if (command == "kill") {
     i.kill();
   } else if (command == "calamares") {
-    Calamares.install(c, o);
+    Calamares.configure(c, o);
   } else if (command == "hatch") {
     startHatch();
   } else if (command == "prerequisites") {
@@ -136,35 +136,6 @@ async function start() {
     console.log(oses.info());
   } else {
     usage();
-  }
-}
-
-/**
- * spawn(
- */
-async function spawn(e: any, i: any, c: any, o: any) {
-
-  if (!await utils.isLive()) {
-    console.log(
-      ">>> eggs: This is a live system! The spawn command cannot be executed."
-    );
-  } else {
-    Calamares.install(c, o);
-
-    console.log("------------------------------------------");
-    console.log(`Spawning the system into the egg...`);
-    console.log("------------------------------------------");
-    await e.createStructure();
-    await i.createStructure();
-    await i.isolinuxPrepare(o.isolinuxPath, o.syslinuxPath);
-    await i.isolinuxCfg();
-    await i.liveKernel();
-    console.log("------------------------------------------");
-    console.log(`Spawning the system into the egg...\nThis process can be very long, \nperhaps it's time for a coffee!`);
-    console.log("------------------------------------------");
-    await e.systemCopy();
-    await i.liveSquashFs();
-    await i.makeIsoFs(o.isolinuxPath);
   }
 }
 

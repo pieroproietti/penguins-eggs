@@ -109,6 +109,39 @@ class Iso {
     console.log(">>> netDomainName: " + this.net.domainName);
   }
 
+  async kill() {
+    console.log("==========================================");
+    console.log("iso: kill ");
+    console.log("==========================================");
+    utils.exec(`rm -rf ${this.workDir}`);
+    utils.exec(`rm -rf /etc/calamares`);
+  }
+
+  async spawn(e: any, i: any, c: any, o: any) {
+
+    if (!await utils.isLive()) {
+      console.log(
+        ">>> eggs: This is a live system! The spawn command cannot be executed."
+      );
+    } else {
+      console.log("------------------------------------------");
+      console.log(`Spawning the system into the egg...`);
+      console.log("------------------------------------------");
+      await e.createStructure();
+      await i.createStructure();
+      await i.isolinuxPrepare(o.isolinuxPath, o.syslinuxPath);
+      await i.isolinuxCfg();
+      await i.liveKernel();
+      console.log("------------------------------------------");
+      console.log(`Spawning the system into the egg...\nThis process can be very long, \nperhaps it's time for a coffee!`);
+      console.log("------------------------------------------");
+      await e.systemCopy();
+      await i.liveSquashFs();
+      await i.makeIsoFs(o.isolinuxPath);
+    }
+  }
+  
+
   async createStructure() {
     console.log("==========================================");
     console.log("iso: createStructure");
@@ -122,14 +155,7 @@ class Iso {
     }
   }
 
-  async kill() {
-    console.log("==========================================");
-    console.log("iso: kill ");
-    console.log("==========================================");
-    utils.exec(`rm -rf ${this.workDir}`);
-    utils.exec(`rm -rf /etc/calamares`);
-  }
-
+  
   async isolinuxPrepare(isolinuxPath: string, syslinuxPath: string) {
     console.log("==========================================");
     console.log("iso: isolinuxPrepare");
