@@ -127,33 +127,16 @@ async function start() {
   } else if (command == "kill") {
     i.kill();
   } else if (command == "calamares") {
-    calamares(c, o);
+    Calamares.install(c, o);
   } else if (command == "hatch") {
     startHatch();
   } else if (command == "prerequisites") {
-    installPrerequisites(o);
+    Prerequisites.install(o);
   } else if (command == "info") {
     console.log(oses.info());
   } else {
     usage();
   }
-}
-
-/**
- * 
- * calamares
- */
-function calamares(c: any, o: any): any {
-  console.log("==========================================");
-  console.log("eggs: calamares configuration");
-  console.log("------------------------------------------");
-  o = oses.info();
-  console.log(`distro: [${o.distroId}/${o.versionId}]->[${o.distroLike}/${o.versionLike}]`);
-  c.create();
-  c.settingsConf(o.versionLike);
-  c.brandingDesc(o.versionLike, o.homeUrl, o.supportUrl, o.bugReportUrl);
-  c.unpackModule(o.mountpointSquashFs);
-  console.log("==========================================");
 }
 
 /**
@@ -166,7 +149,7 @@ async function spawn(e: any, i: any, c: any, o: any) {
       ">>> eggs: This is a live system! The spawn command cannot be executed."
     );
   } else {
-    calamares(c, o);
+    Calamares.install(c, o);
 
     console.log("------------------------------------------");
     console.log(`Spawning the system into the egg...`);
@@ -194,19 +177,6 @@ async function startHatch() {
     hatch();
   }
 }
-
-async function installPrerequisites(o: any) {
-  if (o.distroLike === "Arch") {
-    Prerequisites.arch();
-  } else if (o.distroLike === "Debian") {
-    Prerequisites.debian();
-  } else if (o.distroLike === "Ubuntu") {
-    Prerequisites.debian();
-  } else if (o.distroLike === "RedHat") {
-    Prerequisites.redhat();
-  }
-}
-
 
 function bye() {
   console.log(

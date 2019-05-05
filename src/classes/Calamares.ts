@@ -30,6 +30,18 @@ class Calamares {
     this.versionedName = versionName;
   }
 
+  static install(c: any, o: any){
+    console.log("==========================================");
+    console.log("eggs: calamares configuration");
+    console.log("------------------------------------------");
+    o = oses.info();
+    console.log(`distro: [${o.distroId}/${o.versionId}]->[${o.distroLike}/${o.versionLike}]`);
+    c.create();
+    c.settingsConf(o.versionLike);
+    c.brandingDesc(o.versionLike, o.homeUrl, o.supportUrl, o.bugReportUrl);
+    c.unpackModule(o.mountpointSquashFs);
+    console.log("==========================================");
+  }
 
   public isCalamaresInstalled(): boolean {
     const path = '/etc/calamares/branding/eggs/branding.desc';

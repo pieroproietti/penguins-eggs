@@ -11,7 +11,20 @@ import utils from "../lib/utils";
 class Prerequisites {
     // Properties
 
+
     // Methods
+    static async install(o: any ) {
+        if (o.distroLike === "Arch") {
+            Prerequisites.arch();
+          } else if (o.distroLike === "Debian") {
+            Prerequisites.debian();
+          } else if (o.distroLike === "Ubuntu") {
+            Prerequisites.debian();
+          } else if (o.distroLike === "RedHat") {
+            Prerequisites.redhat();
+          }
+    }
+
     static arch(): void {
         console.log(
             ">>> eggs: Installing the prerequisites packages..."
