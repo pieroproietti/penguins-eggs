@@ -14,7 +14,7 @@
 "use strict";
 
 import fs from "fs";
-import utils from "./utils";
+import utils from "../lib/utils";
 import { IDistro, INet, IUser, IPackage } from "../interfaces";
 import { dist } from "pjson";
 

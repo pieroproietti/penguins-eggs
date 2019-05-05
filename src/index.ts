@@ -14,24 +14,21 @@
  * babel-polyfill: va inserito per primo!
  */
 import "babel-polyfill";
-
-
 import pjson from "pjson";
 import { IPackage } from "./interfaces";
 import ip from "ip";
 import os from "os";
 import fs from "fs";
 
-import Calamares from "./lib/Calamares";
-import Egg from "./lib/Egg";
-import Iso from "./lib/Iso";
-import Oses from "./lib/Oses";
-import Prerequisites from "./lib/Prerequisites";
+import Calamares from "./classes/Calamares";
+import Egg from "./classes/Egg";
+import Iso from "./classes/Iso";
+import Oses from "./classes/Oses";
+import Prerequisites from "./classes/Prerequisites";
 
 import utils from "./lib/utils";
 import { hatch } from "./lib/hatch";
 import { IDistro, INet, IUser } from "./interfaces";
-import { exit } from "shelljs";
 
 
 let app = {} as IPackage;
@@ -41,23 +38,24 @@ app.mail = "piero.proietti@gmail.com";
 app.name = pjson.name as string;
 app.version = pjson.version;
 
-let oses = new Oses();
-
 let program = require("commander").version(app.version);
+let oses = new Oses();
 let workDir = "/home/eggs/";
+
 let distro = {} as IDistro;
-let net = {} as INet;
-let user = {} as IUser;
-let root = {} as IUser;
-
-
 distro.name = os.hostname();
 distro.versionName = 'Emperor';
 distro.versionNumber = utils.date4label();
+
+let net = {} as INet;
 net.dhcp = true;
+
+let user = {} as IUser;
 user.fullName = "live";
 user.name = "live";
 user.password = "evolution";
+
+let root = {} as IUser;
 root.fullName = "root";
 root.name = "root";
 root.password = "evolution";

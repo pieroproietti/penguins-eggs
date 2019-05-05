@@ -9,8 +9,8 @@
 
 import fs from "fs";
 import shell from "shelljs";
-import utils from "./utils";
-import filters from "./filters";
+import utils from "../lib/utils";
+import filters from "../lib/filters";
 
 import { IDistro, INet, IUser } from "../interfaces";
 

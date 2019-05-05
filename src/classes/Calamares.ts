@@ -7,11 +7,9 @@
 
 "use strict";
 
-
-
 import yaml from 'js-yaml';
 import fs from 'fs';
-import utils from "./utils";
+import utils from "../lib/utils";
 import Oses from './Oses';
 let oses = new Oses();
 

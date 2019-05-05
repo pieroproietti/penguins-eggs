@@ -6,7 +6,7 @@
  */
 
 "use strict";
-import utils from "./utils";
+import utils from "../lib/utils";
 
 class Prerequisites {
     // Properties
