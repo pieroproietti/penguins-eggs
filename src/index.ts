@@ -25,6 +25,7 @@ import Egg from "./classes/Egg";
 import Iso from "./classes/Iso";
 import Oses from "./classes/Oses";
 import Prerequisites from "./classes/Prerequisites";
+import Update from "./classes/Update";
 
 import utils from "./lib/utils";
 import { hatch } from "./lib/hatch";
@@ -83,6 +84,7 @@ function usage() {
   console.log(">>> sudo eggs hatch");
   console.log(">>> sudo eggs prerequisites");
   console.log(">>> sudo eggs calamares");
+  console.log(">>> sudo eggs update");
   console.log(">>> sudo eggs kill");
 }
 
@@ -97,6 +99,7 @@ async function start() {
     .command("hatch")
     .command("prerequisites")
     .command("calamares")
+    .command("update")
     .command("kill");
 
   program.option("-d, --distroname <distroname>");
@@ -134,6 +137,8 @@ async function start() {
     Prerequisites.install(o);
   } else if (command == "info") {
     console.log(oses.info());
+  } else if (command == "update") {
+    Update.go();
   } else {
     usage();
   }
