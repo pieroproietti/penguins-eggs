@@ -15,6 +15,7 @@
 
 import fs from "fs";
 import utils from "../lib/utils";
+import Calamares from "./Calamares";
 import { IDistro, INet, IUser, IPackage } from "../interfaces";
 import { dist } from "pjson";
 
@@ -124,6 +125,7 @@ class Iso {
         ">>> eggs: This is a live system! The spawn command cannot be executed."
       );
     } else {
+      Calamares.configure(c, o);
       console.log("------------------------------------------");
       console.log(`Spawning the system into the egg...`);
       console.log("------------------------------------------");
