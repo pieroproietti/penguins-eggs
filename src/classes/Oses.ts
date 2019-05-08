@@ -35,6 +35,7 @@ class Oses {
             "supportUrl": "",
             "bugReportUrl": "",
             "append": "",
+            "appendSafe": "",
             "menuTitle": ""
         };
 
@@ -278,23 +279,18 @@ class Oses {
             o.versionLike = "TwentyNine";
             o.syslinuxPath = "/usr/share/syslinux/";
             o.isolinuxPath = "/usr/share/syslinux/";
-        } else if (o.versionId === "TwentyNine") {
-            o.distroId = "Fedora";
-            o.distroLike = "RedHat";
-            o.versionLike = "TwentyNine";
-            o.syslinuxPath = "/usr/share/syslinux/";
-            o.isolinuxPath = "/usr/share/syslinux/";
         }
 
 
         if (o.distroLike === "RedHat") {
-            o.append = `append initrd=/live/initrd.img root=live:CDLABEL=${o.distroLike} rd.live.image quiet`;
+            o.append = `append initrd=/live/initrd.img root=live:CDLABEL=${o.distroId} rd.live.image quiet`;
         } else if (o.distroLike === "Arch") {
-            o.append = `append initrd=/live/initrd.img boot=live`;
+            o.append = `append initrd=/live/initrd.img boot=live quiet splash`;
         } else if (o.distroLike === "Ubuntu") {
-            o.append = `append initrd=/live/initrd.img boot=live`;
+            o.append = `append initrd=/live/initrd.img boot=live quiet splash`;
         } else if (o.distroLike === "Debian") {
-            o.append = `append initrd=/live/initrd.img boot=live`;
+            o.append = `append initrd=/live/initrd.img boot=live quiet splash`;
+            o.appendSafe =`append initrd=/live/initrd.img boot=live xforcevesa nomodeset verbose`;
         }
         o.menuTitle = `MENU TITLE Penguin's Eggs ${o.distroId}/${o.versionId} created at ${utils.date4label()}`;
         return (o);
