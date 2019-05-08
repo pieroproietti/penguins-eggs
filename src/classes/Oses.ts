@@ -1,6 +1,6 @@
 /**
  * penguins-eggs: Oses.ts
- * 
+ *
  * author: Piero Proietti
  * mail: piero.proietti@gmail.com
  */
@@ -8,6 +8,10 @@
 "use strict";
 import fs from "fs";
 import { IDistro } from "../interfaces";
+
+import utils from "../lib/utils";
+
+
 import shell from "shelljs";
 
 class Oses {
@@ -15,7 +19,7 @@ class Oses {
         enum info { HOME_URL, SUPPORT_URL, BUG_REPORT_URL };
 
         let os: Array<string> = new Array();
-        os[info.HOME_URL] = "HOME_URL=";
+        os[info.HOME_URL] = "HO ME_URL=";
         os[info.SUPPORT_URL] = "SUPPORT_URL=";
         os[info.BUG_REPORT_URL] = "BUG_REPORT_URL=";
 
@@ -29,7 +33,9 @@ class Oses {
             "mountpointSquashFs": "",
             "homeUrl": "",
             "supportUrl": "",
-            "bugReportUrl": ""
+            "bugReportUrl": "",
+            "append": "",
+            "menuTitle": ""
         };
 
         read(`/etc/os-release`, function (data: any) {
@@ -264,15 +270,33 @@ class Oses {
             o.distroId = "Manjaro";
             o.distroLike = "Arch";
             o.versionLike = "Illyria";
-            o.syslinuxPath="/usr/lib/syslinux/";
-            o.isolinuxPath="/usr/share/manjaro-tools/isolinux/";
+            o.syslinuxPath = "/usr/lib/syslinux/";
+            o.isolinuxPath = "/usr/share/manjaro-tools/isolinux/";
         } else if (o.versionId === "TwentyNine") {
             o.distroId = "Fedora";
             o.distroLike = "RedHat";
             o.versionLike = "TwentyNine";
-            o.syslinuxPath="/usr/share/syslinux/";
-            o.isolinuxPath="/usr/share/syslinux/";
-        }    
+            o.syslinuxPath = "/usr/share/syslinux/";
+            o.isolinuxPath = "/usr/share/syslinux/";
+        } else if (o.versionId === "TwentyNine") {
+            o.distroId = "Fedora";
+            o.distroLike = "RedHat";
+            o.versionLike = "TwentyNine";
+            o.syslinuxPath = "/usr/share/syslinux/";
+            o.isolinuxPath = "/usr/share/syslinux/";
+        }
+
+
+        if (o.distroLike === "RedHat") {
+            o.append = `append initrd=/live/initrd.img root=live:CDLABEL=${o.distroLike} rd.live.image quiet`;
+        } else if (o.distroLike === "Arch") {
+            o.append = `append initrd=/live/initrd.img boot=live`;
+        } else if (o.distroLike === "Ubuntu") {
+            o.append = `append initrd=/live/initrd.img boot=live`;
+        } else if (o.distroLike === "Debian") {
+            o.append = `append initrd=/live/initrd.img boot=live`;
+        }
+        o.menuTitle = `MENU TITLE Penguin's Eggs ${o.distroId}/${o.versionId} created at ${utils.date4label()}`;
         return (o);
     }
 }
@@ -280,7 +304,7 @@ class Oses {
 export default Oses;
 
 /**
- * 
+ *
  * @param file Utilizzata da info()
  */
 function read(file: string, cb: any) {
