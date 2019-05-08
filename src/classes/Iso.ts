@@ -132,7 +132,7 @@ class Iso {
       await e.createStructure();
       await i.createStructure();
       await i.isolinuxPrepare(o.isolinuxPath, o.syslinuxPath);
-      await i.isolinuxCfg();
+      await i.isolinuxCfg(o);
       await i.liveKernel();
       console.log("------------------------------------------");
       console.log(`Spawning the system into the egg...\nThis process can be very long, \nperhaps it's time for a coffee!`);
@@ -187,7 +187,7 @@ class Iso {
    * @param menuTitle 
    * @param kernelAppend 
    */
-  async isolinuxCfg(menuTitle: string = "", kernelAppend: string = "") {
+  async isolinuxCfg(o: any) {
     console.log("==========================================");
     console.log("iso: isolinuxCfg");
     console.log("==========================================");
@@ -198,19 +198,19 @@ class Iso {
 DEFAULT vesamenu.c32
 PROMPT 0
 TIMEOUT 30
-MENU TITLE CD/DVD ${this.app.name} ${this.app.version} ${utils.date4label()}
+${o.menuTitle}
 MENU TABMSG Press TAB key to edit
 MENU BACKGROUND turtle.png
 
 LABEL ${this.distro.name}
   MENU LABEL ^${this.distro.name}
   kernel /live/vmlinuz
-  append boot=live initrd=/live/initrd.img quiet splash nouveau.modeset=0
+  ${o.append}
 
 label ${this.distro.name} safe
   MENU LABEL ^${this.distro.name} safe
   kernel /live/vmlinuz
-  append boot=live initrd=/live/initrd.img xforcevesa nomodeset quiet splash`;
+  ${o.appendSafe}`;
     utils.bashWrite(file, text);
 
     utils.exec(`cp ${__dirname}/../../assets/turtle.png ${this.distro.pathIso}/isolinux`);

@@ -284,10 +284,13 @@ class Oses {
 
         if (o.distroLike === "RedHat") {
             o.append = `append initrd=/live/initrd.img root=live:CDLABEL=${o.distroId} rd.live.image quiet`;
+            o.appendSafe =`append initrd=/live/initrd.img root=live:CDLABEL=${o.distroId} rd.live.image quiet`;
         } else if (o.distroLike === "Arch") {
             o.append = `append initrd=/live/initrd.img boot=live quiet splash`;
+            o.appendSafe =`append initrd=/live/initrd.img boot=live xforcevesa nomodeset verbose`;
         } else if (o.distroLike === "Ubuntu") {
             o.append = `append initrd=/live/initrd.img boot=live quiet splash`;
+            o.appendSafe =`append initrd=/live/initrd.img boot=live xforcevesa nomodeset verbose`;
         } else if (o.distroLike === "Debian") {
             o.append = `append initrd=/live/initrd.img boot=live quiet splash`;
             o.appendSafe =`append initrd=/live/initrd.img boot=live xforcevesa nomodeset verbose`;
