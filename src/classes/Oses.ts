@@ -288,8 +288,8 @@ class Oses {
 
 
         if (o.distroLike === "RedHat") {
-            o.append = `append initrd=/live/initrd.img root=live:CDLABEL=${o.distroId} rd.live.image rd.live.check quiet`;
-            o.appendSafe = `append initrd=/live/initrd.img root=live:CDLABEL=${o.distroId} rd.live.image nomodeset quiet`;
+            o.append = `append initrd=/live/initrd.img root=live:CDLABEL=${o.distroName} rd.live.image rd.live.check quiet`;
+            o.appendSafe = `append initrd=/live/initrd.img root=live:CDLABEL=${o.distroName} rd.live.image nomodeset quiet`;
         } else if (o.distroLike === "Arch") {
             o.append = `append initrd=/live/initrd.img boot=live quiet splash`;
             o.appendSafe = `append initrd=/live/initrd.img boot=live xforcevesa nomodeset verbose`;
@@ -300,7 +300,7 @@ class Oses {
             o.append = `append initrd=/live/initrd.img boot=live quiet splash`;
             o.appendSafe = `append initrd=/live/initrd.img boot=live xforcevesa nomodeset verbose`;
         }
-        o.menuTitle = `MENU TITLE Penguin's Eggs ${o.distroId}/${o.versionId}/${o.distroName} created at ${utils.date4label()}`;
+        o.menuTitle = `MENU TITLE Penguin's Eggs ${o.distroName} a ${o.distroId}/${o.versionId} derivated, created at ${utils.date4label()}`;
         return (o);
     }
 }

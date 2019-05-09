@@ -257,7 +257,7 @@ label ${this.distro.name} safe
     //let isoName = `${this.workDir}${this.distro.name}`;
     // isoName += utils.date4file() + ".iso";
 
-    let volid = o.distroId + utils.date4file();
+    let volid = o.distroName + utils.date4file();
     let isoName = `${this.workDir}${volid}.iso`;
 
     utils.exec(
