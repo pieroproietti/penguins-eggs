@@ -6,4 +6,5 @@ export  {IQuestions} from "./IQuestions";
 export  {IUser} from "./IUser";
 export {IPackage} from "./IPackage";
 export {IDriveList} from "./IDriveList";
+export {IOses} from "./IOses";
 

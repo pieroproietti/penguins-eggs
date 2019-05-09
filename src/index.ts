@@ -28,7 +28,7 @@ import Update from "./classes/Update";
 
 import utils from "./lib/utils";
 import { hatch } from "./lib/hatch";
-import { IDistro, INet, IUser } from "./interfaces";
+import { IDistro, IOses, INet, IUser } from "./interfaces";
 
 
 let app = {} as IPackage;
@@ -117,7 +117,7 @@ async function start() {
     workDir = "/home/eggs/";
   }
 
-  let o = oses.info(distro);
+  let o: IOses = oses.info(distro);
   //let e: Egg = new Egg(workDir, distro);
   let i: Iso = new Iso(app, workDir, distro);
   let c: Calamares = new Calamares(distro);

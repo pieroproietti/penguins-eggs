@@ -19,7 +19,7 @@ import fs from "fs";
 import shell from "shelljs";
 import utils from "../lib/utils";
 import Calamares from "./Calamares";
-import { IDistro, INet, IUser, IPackage } from "../interfaces";
+import { IDistro, IOses, INet, IUser, IPackage } from "../interfaces";
 import { dist } from "pjson";
 import Oses from "./Oses";
 
@@ -107,7 +107,7 @@ class Iso {
 
   }
 
-  async spawn(o: any, c: any) {
+  async spawn(o: IOses, c: any) {
 
     if (!await utils.isLive()) {
       console.log(
@@ -120,7 +120,7 @@ class Iso {
       console.log(`Spawning the system into the egg...`);
       console.log("------------------------------------------");
       await this.eggCreateStructure();
-      await this.createStructure();
+      await this.isoCreateStructure();
       await this.isolinuxPrepare(o);
       await this.isolinuxCfg(o);
       await this.liveKernel();
@@ -196,7 +196,7 @@ class Iso {
 
 
 
-  async createStructure() {
+  async isoCreateStructure() {
     console.log("==========================================");
     console.log("iso: createStructure");
     console.log("==========================================");
@@ -239,7 +239,7 @@ class Iso {
    * @param menuTitle 
    * @param kernelAppend 
    */
-  async isolinuxCfg(o: any) {
+  async isolinuxCfg(o: IOses) {
     console.log("==========================================");
     console.log("iso: isolinuxCfg");
     console.log("==========================================");
@@ -292,7 +292,7 @@ label ${this.distro.name} safe
     );
   }
 
-  async makeIsoFs(o: any) {
+  async makeIsoFs(o: IOses) {
     console.log("==========================================");
     console.log("iso: makeIsoFs");
     console.log("==========================================");

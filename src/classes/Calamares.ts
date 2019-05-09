@@ -9,7 +9,7 @@
 
 import yaml from 'js-yaml';
 import fs from 'fs';
-import { IDistro} from "../interfaces";
+import { IDistro } from "../interfaces";
 import utils from "../lib/utils";
 import Oses from './Oses';
 let oses = new Oses();
@@ -18,8 +18,7 @@ let oses = new Oses();
 
 class Calamares {
   private distro: IDistro;
-  constructor( distro: IDistro)
- {
+  constructor(distro: IDistro) {
     this.distro = distro;
   }
 
@@ -45,7 +44,7 @@ class Calamares {
   public isCalamaresInstalled(): boolean {
     const path = '/etc/calamares/branding/eggs/branding.desc';
 
-    
+
     try {
       if (fs.existsSync(path)) {
         return true;

@@ -7,9 +7,10 @@
 
 "use strict";
 import fs from "fs";
-import { IDistro } from "../interfaces";
+import { IDistro, IOses } from "../interfaces";
 
 import utils from "../lib/utils";
+
 
 
 import shell from "shelljs";
@@ -23,7 +24,7 @@ class Oses {
         os[info.SUPPORT_URL] = "SUPPORT_URL=";
         os[info.BUG_REPORT_URL] = "BUG_REPORT_URL=";
 
-        let o = {
+        let o: IOses = {
             "distroId": "",
             "distroLike": "",
             "versionId": "",
