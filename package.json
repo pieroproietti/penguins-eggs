@@ -23,7 +23,7 @@
   },
   "main": "./src/index.ts",
   "scripts": {
-    "lint": "eslint src",
+    "lint": "eslint src/",
     "compile": "tsc",
     "esnext-compile": "babel ./esnext/ --out-dir ./built",
     "ts-start": "ts-node -- ./src/index.ts",
@@ -57,6 +57,8 @@
     "@types/node": "^10.14.4",
     "@types/shelljs": "^0.7.9",
     "@types/source-map-support": "^0.4.2",
+    "@typescript-eslint/eslint-plugin": "^1.7.0",
+    "@typescript-eslint/parser": "^1.7.0",
     "babel-cli": "^6.26.0",
     "babel-core": "^6.26.3",
     "babel-preset-env": "^1.7.0",

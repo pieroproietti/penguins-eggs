@@ -7,23 +7,23 @@
 
 "use strict";
 import utils from "../lib/utils";
-import {IOses} from "../interfaces";
+import { IOses } from "../interfaces";
 
 class Prerequisites {
     // Properties
 
 
     // Methods
-    static async install(o: IOses ) {
+    static async install(o: IOses) {
         if (o.distroLike === "Arch") {
             Prerequisites.arch();
-          } else if (o.distroLike === "Debian") {
+        } else if (o.distroLike === "Debian") {
             Prerequisites.debian();
-          } else if (o.distroLike === "Ubuntu") {
+        } else if (o.distroLike === "Ubuntu") {
             Prerequisites.debian();
-          } else if (o.distroLike === "RedHat") {
+        } else if (o.distroLike === "RedHat") {
             Prerequisites.redhat();
-          }
+        }
     }
 
     static arch(): void {
