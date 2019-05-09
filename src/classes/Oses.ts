@@ -88,8 +88,8 @@ class Oses {
             o.distroId = "Sparky Linux";
             o.distroLike = "Debian";
             o.versionLike = "buster";
-        } else if (o.versionId === "Horizon") {
-            o.distroId = "MX Linux 17";
+        } else if (o.versionId === "Horizon" || o.versionId === "Continuum") {
+            o.distroId = "MX-Linux";
             o.distroLike = "Debian";
             o.versionLike = "stretch";
         } else if (o.versionId === "maya") {
@@ -109,10 +109,6 @@ class Oses {
             o.distroLike = "Ubuntu";
             o.versionLike = "bionic";
             // MX-LINUX 18.2
-        } else if (o.versionId === "Continuum") {
-            o.distroId = "MX-Linux";
-            o.distroLike = "Debian";
-            o.versionLike = "stretch";
             // LMDE
         } else if (o.versionId == "cindy") {
             o.distroId = "LMDE";
