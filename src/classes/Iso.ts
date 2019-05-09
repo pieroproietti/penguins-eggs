@@ -18,6 +18,7 @@ import utils from "../lib/utils";
 import Calamares from "./Calamares";
 import { IDistro, INet, IUser, IPackage } from "../interfaces";
 import { dist } from "pjson";
+import Oses from "./Oses";
 
 /**
  * Iso: 
@@ -139,7 +140,7 @@ class Iso {
       console.log("------------------------------------------");
       await e.systemCopy();
       await i.liveSquashFs();
-      await i.makeIsoFs(o.isolinuxPath);
+      await i.makeIsoFs(o);
     }
   }
   
@@ -240,18 +241,21 @@ label ${this.distro.name} safe
     );
   }
 
-  async makeIsoFs(isolinuxPath: string, cdlabel: string = "") {
+  async makeIsoFs(o: any) {
     console.log("==========================================");
     console.log("iso: makeIsoFs");
     console.log("==========================================");
 
-    let isoHybridOption = `-isohybrid-mbr ${isolinuxPath}isohdpfx.bin `;
-    //let uefiOption = "";
 
+    let isoHybridOption = `-isohybrid-mbr ${o.isolinuxPath}isohdpfx.bin `;
+    //let uefiOption = "";
     //"-eltorito-alt-boot -e boot/grub/efiboot.img -isohybrid-gpt-basdat -no-emul-boot";
-    let volid = `"Penguin's eggs ${this.distro.name}"`;
-    let isoName = `${this.workDir}${this.distro.name}`;
-    isoName += utils.date4file() + ".iso";
+
+    // let volid = `"Penguin's eggs ${this.distro.name}"`;
+    // let isoName = `${this.workDir}${this.distro.name}`;
+    let volid = o.distroLike;
+    let isoname=volid+utils.date4file() + ".iso";
+    // isoName += utils.date4file() + ".iso";
 
     utils.exec(
       `xorriso -as mkisofs -r -J -joliet-long -l -cache-inodes ${isoHybridOption} -partition_offset 16 -volid ${volid} -b isolinux/isolinux.bin -c isolinux/boot.cat -no-emul-boot -boot-load-size 4 -boot-info-table -o ${isoName} ${this.distro.pathIso}`
