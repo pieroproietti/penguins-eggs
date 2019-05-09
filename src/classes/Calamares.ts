@@ -17,14 +17,10 @@ let oses = new Oses();
 
 
 class Calamares {
-  private productName: string;
-  private shortVersion: string;
-  private versionedName: string;
+  private distro: IDistro;
   constructor( distro: IDistro)
  {
-    this.productName = distro.name;
-    this.shortVersion = distro.versionNumber;
-    this.versionedName = distro.versionName;
+    this.distro = distro;
   }
 
   /**
@@ -32,11 +28,12 @@ class Calamares {
    * @param c 
    * @param o 
    */
-  static configure(c: any, o: any) {
+  public configure(c: any, o: any) {
     console.log("==========================================");
     console.log("eggs: calamares configuration");
     console.log("------------------------------------------");
-    o = oses.info();
+
+    o = oses.info(this.distro);
     console.log(`distro: [${o.distroId}/${o.versionId}]->[${o.distroLike}/${o.versionLike}]`);
     c.create();
     c.settingsConf(o.versionLike);
@@ -48,6 +45,7 @@ class Calamares {
   public isCalamaresInstalled(): boolean {
     const path = '/etc/calamares/branding/eggs/branding.desc';
 
+    
     try {
       if (fs.existsSync(path)) {
         return true;
@@ -125,7 +123,7 @@ class Calamares {
 
   unpackModule(mountpointSquashFs: string) {
     let o: any = {};
-    o = oses.info();
+    o = oses.info(this.distro);
 
     let file = `/etc/calamares/modules/unpackfs.conf`;
     let text = `---\n`;
@@ -142,12 +140,12 @@ class Calamares {
     // Configurazione branding.desc
     let brandingPath = '/etc/calamares/branding/eggs/branding.desc';
 
-    let productName = 'Penguin\'s eggs' + ' ' + this.productName;
-    let shortProductName = this.productName;
-    let version = this.shortVersion + ' (' + this.versionedName + ')';
-    let shortVersion = this.shortVersion;
-    let versionedName = this.productName;
-    let shortVersionedName = this.versionedName;
+    let productName = 'Penguin\'s eggs' + ' ' + this.distro.name;
+    let shortProductName = this.distro.name;
+    let version = this.distro.versionNumber + ' ( ' + this.distro.versionName + ')';
+    let shortVersion = this.distro.versionNumber;
+    let versionedName = this.distro.name;
+    let shortVersionedName = this.distro.versionName;
     let bootloaderEntryName = productName;
     let productUrl = homeUrl;
     //let supportUrl = supportUrl; 

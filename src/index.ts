@@ -118,7 +118,7 @@ async function start() {
     workDir = "/home/eggs/";
   }
 
-  let o = oses.info();
+  let o = oses.info(distro);
   let e: Egg = new Egg(workDir, distro);
   let i: Iso = new Iso(app, workDir, distro);
   let c: Calamares = new Calamares(distro);
@@ -130,13 +130,13 @@ async function start() {
   } else if (command == "kill") {
     i.kill();
   } else if (command == "calamares") {
-    Calamares.configure(c, o);
+    c.configure(c, o);
   } else if (command == "hatch") {
     startHatch();
   } else if (command == "prerequisites") {
     Prerequisites.install(o);
   } else if (command == "info") {
-    console.log(oses.info());
+    console.log(oses.info(distro));
   } else if (command == "update") {
     Update.go();
   } else {

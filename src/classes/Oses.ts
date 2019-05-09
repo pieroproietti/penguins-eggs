@@ -15,7 +15,7 @@ import utils from "../lib/utils";
 import shell from "shelljs";
 
 class Oses {
-    info(): any {
+    info(distro: IDistro): any {
         enum info { HOME_URL, SUPPORT_URL, BUG_REPORT_URL };
 
         let os: Array<string> = new Array();
@@ -36,7 +36,9 @@ class Oses {
             "bugReportUrl": "",
             "append": "",
             "appendSafe": "",
-            "menuTitle": ""
+            "menuTitle": "",
+            "distroName": "",
+            "distroVersionNumber": "",
         };
 
         read(`/etc/os-release`, function (data: any) {
@@ -62,6 +64,9 @@ class Oses {
         o.isolinuxPath = "/usr/lib/ISOLINUX/";
         o.syslinuxPath = "/usr/lib/syslinux/modules/bios/";
         o.mountpointSquashFs = "/lib/live/mount/medium/live/filesystem.squashfs";
+        o.distroName = distro.name;
+        o.distroVersionNumber = distro.versionNumber;
+
         if (o.versionId === "solydxk-9") {
             o.distroId = "SolydXK";
             o.distroLike = "Debian";
@@ -284,18 +289,18 @@ class Oses {
 
         if (o.distroLike === "RedHat") {
             o.append = `append initrd=/live/initrd.img root=live:CDLABEL=${o.distroId} rd.live.image rd.live.check quiet`;
-            o.appendSafe =`append initrd=/live/initrd.img root=live:CDLABEL=${o.distroId} rd.live.image nomodeset quiet`;
+            o.appendSafe = `append initrd=/live/initrd.img root=live:CDLABEL=${o.distroId} rd.live.image nomodeset quiet`;
         } else if (o.distroLike === "Arch") {
             o.append = `append initrd=/live/initrd.img boot=live quiet splash`;
-            o.appendSafe =`append initrd=/live/initrd.img boot=live xforcevesa nomodeset verbose`;
+            o.appendSafe = `append initrd=/live/initrd.img boot=live xforcevesa nomodeset verbose`;
         } else if (o.distroLike === "Ubuntu") {
             o.append = `append initrd=/live/initrd.img boot=live quiet splash`;
-            o.appendSafe =`append initrd=/live/initrd.img boot=live xforcevesa nomodeset verbose`;
+            o.appendSafe = `append initrd=/live/initrd.img boot=live xforcevesa nomodeset verbose`;
         } else if (o.distroLike === "Debian") {
             o.append = `append initrd=/live/initrd.img boot=live quiet splash`;
-            o.appendSafe =`append initrd=/live/initrd.img boot=live xforcevesa nomodeset verbose`;
+            o.appendSafe = `append initrd=/live/initrd.img boot=live xforcevesa nomodeset verbose`;
         }
-        o.menuTitle = `MENU TITLE Penguin's Eggs ${o.distroId}/${o.versionId} created at ${utils.date4label()}`;
+        o.menuTitle = `MENU TITLE Penguin's Eggs ${o.distroId}/${o.versionId}/${o.distroName} created at ${utils.date4label()}`;
         return (o);
     }
 }

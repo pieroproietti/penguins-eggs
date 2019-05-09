@@ -126,7 +126,9 @@ class Iso {
         ">>> eggs: This is a live system! The spawn command cannot be executed."
       );
     } else {
-      Calamares.configure(c, o);
+
+      c.configure(c,o);
+      //Calamares.configure(c, o);
       console.log("------------------------------------------");
       console.log(`Spawning the system into the egg...`);
       console.log("------------------------------------------");
@@ -252,13 +254,11 @@ label ${this.distro.name} safe
     //"-eltorito-alt-boot -e boot/grub/efiboot.img -isohybrid-gpt-basdat -no-emul-boot";
 
     // let volid = `"Penguin's eggs ${this.distro.name}"`;
-    // let isoName = `${this.workDir}${this.distro.name}`;
+    //let isoName = `${this.workDir}${this.distro.name}`;
     // isoName += utils.date4file() + ".iso";
 
     let volid = o.distroId + utils.date4file();
-    console.log (`Volid: ${volid}`);
-    let isoName = volid + ".iso";
-    console.log (`IsoName: ${isoName}`);
+    let isoName = `${this.workDir}${volid}.iso`;
 
     utils.exec(
       `xorriso -as mkisofs -r -J -joliet-long -l -cache-inodes ${isoHybridOption} -partition_offset 16 -volid ${volid} -b isolinux/isolinux.bin -c isolinux/boot.cat -no-emul-boot -boot-load-size 4 -boot-info-table -o ${isoName} ${this.distro.pathIso}`
