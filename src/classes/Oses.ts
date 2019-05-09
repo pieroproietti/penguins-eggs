@@ -283,8 +283,8 @@ class Oses {
 
 
         if (o.distroLike === "RedHat") {
-            o.append = `append initrd=/live/initrd.img root=live:CDLABEL=${o.distroId} rd.live.image quiet`;
-            o.appendSafe =`append initrd=/live/initrd.img root=live:CDLABEL=${o.distroId} rd.live.image quiet`;
+            o.append = `append initrd=/live/initrd.img root=live:CDLABEL=${o.distroId} rd.live.image rd.live.check quiet`;
+            o.appendSafe =`append initrd=/live/initrd.img root=live:CDLABEL=${o.distroId} rd.live.image nomodeset quiet`;
         } else if (o.distroLike === "Arch") {
             o.append = `append initrd=/live/initrd.img boot=live quiet splash`;
             o.appendSafe =`append initrd=/live/initrd.img boot=live xforcevesa nomodeset verbose`;

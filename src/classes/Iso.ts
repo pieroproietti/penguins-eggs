@@ -143,7 +143,7 @@ class Iso {
       await i.makeIsoFs(o);
     }
   }
-  
+
 
   async createStructure() {
     console.log("==========================================");
@@ -158,7 +158,7 @@ class Iso {
     }
   }
 
-  
+
   async isolinuxPrepare(isolinuxPath: string, syslinuxPath: string) {
     console.log("==========================================");
     console.log("iso: isolinuxPrepare");
@@ -253,8 +253,8 @@ label ${this.distro.name} safe
 
     // let volid = `"Penguin's eggs ${this.distro.name}"`;
     // let isoName = `${this.workDir}${this.distro.name}`;
-    let volid = o.distroLike;
-    let isoname=volid+utils.date4file() + ".iso";
+    let volid = o.distroId;
+    let isoname = o.distroId + utils.date4file() + ".iso";
     // isoName += utils.date4file() + ".iso";
 
     utils.exec(
