@@ -108,15 +108,16 @@ class Oses {
             o.distroId = "Linux Mint";
             o.distroLike = "Ubuntu";
             o.versionLike = "bionic";
+            // MX-LINUX 18.2
+        } else if (o.versionId === "Continuum") {
+            o.distroId = "MX-Linux";
+            o.distroLike = "Debian";
+            o.versionLike = "stretch";
             // LMDE
         } else if (o.versionId == "cindy") {
             o.distroId = "LMDE";
             o.distroLike = "Debian";
             o.versionLike = "stretch";
-        } else if (o.versionId === "cindy") {
-            o.distroId = "LMDE";
-            o.distroLike = "Debian";
-            o.versionLike = "jessie";
             // elementaryOS
         } else if (o.versionId === "luna") {
             o.distroId = "elementaryOS";
