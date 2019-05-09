@@ -31,7 +31,7 @@ import { hatch } from "./lib/hatch";
 import { IDistro, IOses, INet, IUser } from "./interfaces";
 
 
-let app = {} as IPackage;
+let app = {} as  IPackage;
 app.author = "Piero Proietti";
 app.homepage = "https://pieroproietti.github.io/";
 app.mail = "piero.proietti@gmail.com";
