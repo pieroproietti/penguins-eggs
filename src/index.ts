@@ -126,11 +126,11 @@ async function start() {
   let command = process.argv[2];
 
   if (command == "spawn") {
-    i.spawn(e, i, c, o);
+    i.spawn(o, c);
   } else if (command == "kill") {
     i.kill();
   } else if (command == "calamares") {
-    c.configure(c, o);
+    c.configure(o);
   } else if (command == "hatch") {
     startHatch();
   } else if (command == "prerequisites") {

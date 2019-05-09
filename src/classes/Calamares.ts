@@ -28,17 +28,17 @@ class Calamares {
    * @param c 
    * @param o 
    */
-  public configure(c: any, o: any) {
+  public configure(o: any) {
     console.log("==========================================");
     console.log("eggs: calamares configuration");
     console.log("------------------------------------------");
 
     o = oses.info(this.distro);
     console.log(`distro: [${o.distroId}/${o.versionId}]->[${o.distroLike}/${o.versionLike}]`);
-    c.create();
-    c.settingsConf(o.versionLike);
-    c.brandingDesc(o.versionLike, o.homeUrl, o.supportUrl, o.bugReportUrl);
-    c.unpackModule(o.mountpointSquashFs);
+    this.create();
+    this.settingsConf(o.versionLike);
+    this.brandingDesc(o.versionLike, o.homeUrl, o.supportUrl, o.bugReportUrl);
+    this.unpackModule(o.mountpointSquashFs);
     console.log("==========================================");
   }
 

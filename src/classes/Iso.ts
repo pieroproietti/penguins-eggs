@@ -13,7 +13,10 @@
 
 "use strict";
 
+import filters from "../lib/filters";
+
 import fs from "fs";
+import shell from "shelljs";
 import utils from "../lib/utils";
 import Calamares from "./Calamares";
 import { IDistro, INet, IUser, IPackage } from "../interfaces";
@@ -104,6 +107,78 @@ class Iso {
 
   }
 
+  async spawn(o: any, c: any) {
+
+    if (!await utils.isLive()) {
+      console.log(
+        ">>> eggs: This is a live system! The spawn command cannot be executed."
+      );
+    } else {
+
+      c.configure(o);
+      console.log("------------------------------------------");
+      console.log(`Spawning the system into the egg...`);
+      console.log("------------------------------------------");
+      await this.eggCreateStructure();
+      await this.createStructure();
+      await this.isolinuxPrepare(o);
+      await this.isolinuxCfg(o);
+      await this.liveKernel();
+      console.log("------------------------------------------");
+      console.log(`Spawning the system into the egg...\nThis process can be very long, \nperhaps it's time for a coffee!`);
+      console.log("------------------------------------------");
+      await this.eggSystemCopy();
+      await this.liveSquashFs();
+      await this.makeIsoFs(o);
+    }
+  }
+
+
+  /**
+   * eggCreateStructue
+   */
+  public async eggCreateStructure() {
+    console.log("==========================================");
+    console.log("eggs: createStructure");
+    console.log("==========================================");
+    if (!fs.existsSync(this.distro.pathHome)) {
+      utils.exec(`mkdir -p ${this.distro.pathHome}`);
+    }
+
+    if (!fs.existsSync(this.distro.pathFs)) {
+      //utils.exec(`rm -rf ${this.distro.pathFs}`);
+      utils.exec(`mkdir -p ${this.distro.pathFs}`);
+      utils.exec(`mkdir -p ${this.distro.pathFs}/dev`);
+      utils.exec(`mkdir -p ${this.distro.pathFs}/etc`);
+      utils.exec(`mkdir -p ${this.distro.pathFs}/etc/intefaces`);
+      utils.exec(`mkdir -p ${this.distro.pathFs}/etc/live`);
+      utils.exec(`mkdir -p ${this.distro.pathFs}/proc`);
+      utils.exec(`mkdir -p ${this.distro.pathFs}/sys`);
+      utils.exec(`mkdir -p ${this.distro.pathFs}/media`);
+      utils.exec(`mkdir -p ${this.distro.pathFs}/run`);
+      utils.exec(`mkdir -p ${this.distro.pathFs}/var`);
+      utils.exec(`mkdir -p ${this.distro.pathFs}/tmp`);
+    }
+  }
+
+  /**
+   * eggSystemCopy
+   */
+  public async eggSystemCopy() {
+    let cmd = "";
+    cmd = `
+      rsync -aq  \
+      --filter="- ${this.distro.pathHome}"  \
+      --delete-before  \
+      --delete-excluded  \ ${filters} / ${this.distro.pathFs}`;
+    console.log("==========================================");
+    console.log("eggs: systemCopy");
+    console.log("==========================================");
+    shell.exec(cmd.trim(), {
+      async: false
+    });
+  }
+
 
   show() {
     console.log("eggs: iso parameters ");
@@ -119,37 +194,6 @@ class Iso {
     utils.exec(`rm -rf /etc/calamares`);
   }
 
-  async spawn(e: any, i: any, c: any, o: any) {
-
-    if (!await utils.isLive()) {
-      console.log(
-        ">>> eggs: This is a live system! The spawn command cannot be executed."
-      );
-    } else {
-
-      c.configure(c,o);
-      console.log("------------------------------------------");
-      console.log(`Spawning the system into the egg...`);
-      console.log("------------------------------------------");
-      await e.createStructure();
-      await this.createStructure();
-      // await i.createStructure();
-      // await i.isolinuxPrepare(o.isolinuxPath, o.syslinuxPath);
-      // await i.isolinuxCfg(o);
-      // await i.liveKernel();
-      await this.isolinuxPrepare(o);
-      await this.isolinuxCfg(o);
-      await this.liveKernel();
-      console.log("------------------------------------------");
-      console.log(`Spawning the system into the egg...\nThis process can be very long, \nperhaps it's time for a coffee!`);
-      console.log("------------------------------------------");
-      await e.systemCopy();
-      // await i.liveSquashFs();
-      // await i.makeIsoFs(o);
-      await this.liveSquashFs();
-      await this.makeIsoFs(o);
-    }
-  }
 
 
   async createStructure() {
