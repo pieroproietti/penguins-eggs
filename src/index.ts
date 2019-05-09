@@ -21,7 +21,6 @@ import os from "os";
 import fs from "fs";
 
 import Calamares from "./classes/Calamares";
-import Egg from "./classes/Egg";
 import Iso from "./classes/Iso";
 import Oses from "./classes/Oses";
 import Prerequisites from "./classes/Prerequisites";
@@ -119,7 +118,7 @@ async function start() {
   }
 
   let o = oses.info(distro);
-  let e: Egg = new Egg(workDir, distro);
+  //let e: Egg = new Egg(workDir, distro);
   let i: Iso = new Iso(app, workDir, distro);
   let c: Calamares = new Calamares(distro);
 
