@@ -9,6 +9,7 @@
 
 import yaml from 'js-yaml';
 import fs from 'fs';
+import { IDistro} from "../interfaces";
 import utils from "../lib/utils";
 import Oses from './Oses';
 let oses = new Oses();
@@ -19,15 +20,11 @@ class Calamares {
   private productName: string;
   private shortVersion: string;
   private versionedName: string;
-
-  constructor(
-    distroName = "Penguin's eggs" as string,
-    versionName = "emperor" as string,
-    versionNumber = "0.0.1" as string,
-  ) {
-    this.productName = distroName;
-    this.shortVersion = versionNumber;
-    this.versionedName = versionName;
+  constructor( distro: IDistro)
+ {
+    this.productName = distro.name;
+    this.shortVersion = distro.versionNumber;
+    this.versionedName = distro.versionName;
   }
 
   /**

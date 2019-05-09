@@ -121,7 +121,7 @@ async function start() {
   let o = oses.info();
   let e: Egg = new Egg(workDir, distro);
   let i: Iso = new Iso(app, workDir, distro);
-  let c: Calamares = new Calamares(distro.name, distro.versionName, distro.versionNumber);
+  let c: Calamares = new Calamares(distro);
 
   let command = process.argv[2];
 
