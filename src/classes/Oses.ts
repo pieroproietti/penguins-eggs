@@ -300,7 +300,7 @@ class Oses {
             o.append = `append initrd=/live/initrd.img boot=live quiet splash`;
             o.appendSafe = `append initrd=/live/initrd.img boot=live xforcevesa nomodeset verbose`;
         }
-        o.menuTitle = `MENU TITLE Penguin's Eggs ${o.distroName} a ${o.distroId}/${o.versionId} derivated, created at ${utils.date4label()}`;
+        o.menuTitle = `MENU TITLE ${o.distroName} a ${o.distroId}/${o.versionId} derivated, created at ${utils.date4label()}`;
         return (o);
     }
 }

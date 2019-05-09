@@ -128,21 +128,26 @@ class Iso {
     } else {
 
       c.configure(c,o);
-      //Calamares.configure(c, o);
       console.log("------------------------------------------");
       console.log(`Spawning the system into the egg...`);
       console.log("------------------------------------------");
       await e.createStructure();
-      await i.createStructure();
-      await i.isolinuxPrepare(o.isolinuxPath, o.syslinuxPath);
-      await i.isolinuxCfg(o);
-      await i.liveKernel();
+      await this.createStructure();
+      // await i.createStructure();
+      // await i.isolinuxPrepare(o.isolinuxPath, o.syslinuxPath);
+      // await i.isolinuxCfg(o);
+      // await i.liveKernel();
+      await this.isolinuxPrepare(o);
+      await this.isolinuxCfg(o);
+      await this.liveKernel();
       console.log("------------------------------------------");
       console.log(`Spawning the system into the egg...\nThis process can be very long, \nperhaps it's time for a coffee!`);
       console.log("------------------------------------------");
       await e.systemCopy();
-      await i.liveSquashFs();
-      await i.makeIsoFs(o);
+      // await i.liveSquashFs();
+      // await i.makeIsoFs(o);
+      await this.liveSquashFs();
+      await this.makeIsoFs(o);
     }
   }
 
@@ -161,25 +166,25 @@ class Iso {
   }
 
 
-  async isolinuxPrepare(isolinuxPath: string, syslinuxPath: string) {
+  async isolinuxPrepare(o: any) {
     console.log("==========================================");
     console.log("iso: isolinuxPrepare");
     console.log("==========================================");
 
-    let isolinuxbin = `${isolinuxPath}isolinux.bin`;
-    let vesamenu = `${syslinuxPath}vesamenu.c32`;
+    let isolinuxbin = `${o.isolinuxPath}isolinux.bin`;
+    let vesamenu = `${o.syslinuxPath}vesamenu.c32`;
 
     utils.exec(
-      `rsync -a ${syslinuxPath}chain.c32 ${this.distro.pathIso}/isolinux/`
+      `rsync -a ${o.syslinuxPath}chain.c32 ${this.distro.pathIso}/isolinux/`
     );
     utils.exec(
-      `rsync -a ${syslinuxPath}ldlinux.c32 ${this.distro.pathIso}/isolinux/`
+      `rsync -a ${o.syslinuxPath}ldlinux.c32 ${this.distro.pathIso}/isolinux/`
     );
     utils.exec(
-      `rsync -a ${syslinuxPath}libcom32.c32 ${this.distro.pathIso}/isolinux/`
+      `rsync -a ${o.syslinuxPath}libcom32.c32 ${this.distro.pathIso}/isolinux/`
     );
     utils.exec(
-      `rsync -a ${syslinuxPath}libutil.c32 ${this.distro.pathIso}/isolinux/`
+      `rsync -a ${o.syslinuxPath}libutil.c32 ${this.distro.pathIso}/isolinux/`
     );
     utils.exec(`rsync -a ${isolinuxbin} ${this.distro.pathIso}/isolinux/`);
     utils.exec(`rsync -a ${vesamenu} ${this.distro.pathIso}/isolinux/`);
