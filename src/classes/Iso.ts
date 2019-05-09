@@ -256,7 +256,9 @@ label ${this.distro.name} safe
     // isoName += utils.date4file() + ".iso";
 
     let volid = o.distroId + utils.date4file();
+    console.log (`Volid: ${volid}`);
     let isoName = volid + ".iso";
+    console.log (`IsoName: ${isoName}`);
 
     utils.exec(
       `xorriso -as mkisofs -r -J -joliet-long -l -cache-inodes ${isoHybridOption} -partition_offset 16 -volid ${volid} -b isolinux/isolinux.bin -c isolinux/boot.cat -no-emul-boot -boot-load-size 4 -boot-info-table -o ${isoName} ${this.distro.pathIso}`
