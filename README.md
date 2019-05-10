@@ -168,6 +168,14 @@ processor, memory and so on. It is easy to have, install Debian Stretch
 with your preferedd GUI, I use cinnamon, and follow this
 [howto](https://pve.proxmox.com/wiki/Install_Proxmox_VE_on_Debian_Stretch) in their site.
 
+# Distributions supported
+At the moment penguins-eggs is working on:
+* Debian
+* Ubuntu
+* Linux Mint
+* LMDE
+* LMDE + Proxmox VE
+
 # That's all Folks!
 No need other configurations, penguins-eggs are battery included or better, as
 in the real, the live is inside! :-D
@@ -185,67 +193,3 @@ contact me, or open an [issue](https://github.com/pieroproietti/penguins-eggs/is
 
 ## Copyright and licenses
 Copyright (c) 2017, [Piero Proietti](http://pieroproietti.github.com), dual licensed under the MIT or GPL Version 2 licenses.
-
-# Distribution supported
-At the moment penguins-eggs is working on:
-* Debian
-* Ubuntu
-* Linux Mint
-* LMDE
-* LMDE + Proxmox VE
-
-## Proxmox ve
-Per installare LMDE+ProxmoxVE utilizzare il comando ```eggs hatch``` 
-
-Sistemare la rete copiando/adattando le seguenti istruzioni in /etc/network/interfaces
-
-```
-iface enp0s31f6 inet manual
-
-auto vmbr0
-iface vmbr0 inet static
-	address  192.168.61.2
-	netmask  255.255.255.0
-	gateway  192.168.61.1
-	bridge-ports enp0s31f6
-	bridge-stp off
-	bridge-fd 0
-
-```
-### Sistemare i log di pveproxy
-
-```mkdir /var/log/pveproxy```
-
-```touch /var/log/pveproxy/access.log```
-
-```chown www-data:www-data /var/log/pveproxy -R```
-
-```chmod 0664 /var/log/pveproxy/access.log ```
-
-Aggiornare inoltre la password di root
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-## Distribution in progress
-* Fedora 
-I'm trying to support Fedora, Suse and others distros. With Fedora I'm a good point, the system is complete but lack just the boot of the live CD. 
-
-* wget https://fedora.mirror.garr.it/fedora/linux/releases/29/Workstation/x86_64/os/isolinux/vmlinuz
-* wget https://fedora.mirror.garr.it/fedora/linux/releases/29/Workstation/x86_64/os/isolinux/initrd.img
-
-If someone can help.
-
-
- 
