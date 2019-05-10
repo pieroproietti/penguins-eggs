@@ -18,8 +18,16 @@ With live systems, it's an operating system, built for one of the supported arch
 
 ## Creazione Environment:
 
-*  sudo mkdir $HOME/debian_live
+* sudo mkdir $HOME/debian_live
 * sudo debootstrap --arch=amd64 --variant=minbase stretch $HOME/debian_live/chroot
+
+cd 
+* sudo mount -o /dev /root/debian_live/chroot/dev
+* sudo mount -o /dev/pts /root/debian_live/chroot/dev/pts
+* sudo mount -o /proc /root/debian_live/chroot/proc
+* sudo mount -o /sys /root/debian_live/chroot/sys
+* sudo mount -o /run /root/debian_live/chroot/run
+
 * sudo chroot $HOME/debian_live/chroot
 * echo "debian-live" > /etc/hostname
 * echo 'deb https://ftp.it.debian.org/debian/ stretch main contrib non-free' > /etc/apt/sources.list
