@@ -11,10 +11,18 @@ Solo una nota, installate - se potete - proxmox ve su una macchina con almeno 4 
 
 ## Installazione
 
-''ATTENZIONE:'' L'utilizzo dell'installazione da CLI con il comando sudo eggs hatch è distruttivo, nel senso che cancellerà completamente il vostro disco rigido.
+``ATTENZIONE:`` L'utilizzo dell'installazione da CLI con il comando ```sudo eggs hatch``` è distruttivo, nel senso che cancellerà completamente il vostro disco rigido.
 
 
-Per installare LMDE+Proxmox VE utilizzare il comando ```eggs hatch``` (tenuto conto di quanto riportato sopra) che creerà su /dev/sda una partizione LVM (/dev/sda2), un gruppo di volumi di nome penguin e tre differenti device: /dev/penguin/root partizione di root (formattata ext4), /dev/penguin/data (partizione mountata sotto /var/lib/vz formattata ext4) ed una partizione /dev/penguin/swap. Inoltre, in /dev/sda1 verrà creata una piccola partizione di boot per l'avvio del sistema.
+Per installare LMDE+Proxmox VE utilizzare il comando ```eggs hatch``` (tenuto conto di quanto riportato sopra) che creerà su /dev/sda:
+
+* una partizione LVM (/dev/sda2);
+* un gruppo di volumi di nome penguin;
+  * tre differenti device: /dev/penguin/root partizione di root (formattata ext4);
+  * /dev/penguin/data (partizione mountata sotto /var/lib/vz formattata ext4);
+  * una partizione /dev/penguin/swap
+
+Inoltre, in /dev/sda1 verrà creata una piccola partizione di boot per l'avvio del sistema.
 
 ### Networking
 Nel corso dell'installazione, verranno poste alcune domande ed opzioni, ad esempio nome utente, password utente, password root, etc. Accettare SEMPRE i valori di default.
