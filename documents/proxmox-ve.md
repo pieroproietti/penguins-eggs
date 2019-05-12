@@ -16,11 +16,11 @@ Solo una nota, installate - se potete - proxmox ve su una macchina con almeno 4 
 
 Per installare LMDE+Proxmox VE utilizzare il comando ```eggs hatch``` (tenuto conto di quanto riportato sopra) che creerà su /dev/sda:
 
-* una partizione LVM (/dev/sda2);
-* un gruppo di volumi di nome penguin;
-  * tre differenti device: /dev/penguin/root partizione di root (formattata ext4);
-  * /dev/penguin/data (partizione mountata sotto /var/lib/vz formattata ext4);
-  * una partizione /dev/penguin/swap
+* una partizione LVM (```/dev/sda2```);
+* un gruppo di volumi di nome penguin e tre differenti device: 
+  * ```/dev/penguin/root``` partizione di root (formattata ext4);
+  * ```/dev/penguin/data``` partizione mountata sotto /var/lib/vz (formattata ext4);
+  * ```/dev/penguin/swap``` partizione di swap.
 
 Inoltre, in /dev/sda1 verrà creata una piccola partizione di boot per l'avvio del sistema.
 
