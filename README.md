@@ -47,34 +47,34 @@ Well, it is time to try it!
 ### Prerequisites
 Of course penguins-eggs need [nodejs](https://github.com/nodesource/distributions/blob/master/README.md#deb) installed.
 
-penguins-eggs depend on various packages, you need to install them before to
-start to use it. Before to install penguins-eggs, simply copy and paste the
-following lines:
+You need also to install the ``build-essential`` package.
 
-```sudo apt-get update```
+```apt-get install build-essential```
 
-```sudo apt-get install lvm2 parted squashfs-tools xorriso live-boot syslinux syslinux-common isolinux pxelinux```
 
-If you want to use the gui installer (calamares), you must to install it:
+penguins-eggs depend on various packages, you don't need to install them before it, but 
+they are necessary during the use.
 
-```sudo apt-get install calamares qml-module-qtquick2 qml-module-qtquick-controls```
+You can simply install them with the command:
 
-Note: It is also possible to installa calamares on the live system and configure it
-with the command:
+```eggs prerequisites```
 
-```sudo eggs calamares```
+After the installation of eggs. This is the list of packages: 
+
+```lvm2 parted squashfs-tools xorriso live-boot syslinux syslinux-common isolinux pxelinux`calamares qml-module-qtquick2 qml-module-qtquick-controls```
 
 ### Installation penguins-eggs via npm
-You can install it with npm (node package manager). Copy and past the following line:
 
-For same reason we need to do this operation before to install eggs
+You can install it with npm (node package manager). Copy and past the following lines:
 
 ```sudo npm config set unsafe-perm true```
 
+Now we can install our package:
+
 ```sudo npm i penguins-egg -g```
 
-
 ### Installation penguins-eggs from source
+
 You need a functional installation of Linux Debian version 8 or 9, LinuxMint, LMDE, 
 Ubuntu or derivates, all the prerequisites plus the ``build-essential`` package.
 
@@ -89,11 +89,19 @@ cd penguins-eggs
 npm i
 ```
 
-At this point, You can launch egg, in developer mode, for example:
+You can launch egg, in developer mode, in this way:
+
+```cd penguins-eggs```
 
 ```sudo npm run ts-start spawn```
 
-or you can build it or link it:
+or, in short: 
+
+```./eggs spawn```
+
+Of course, you can build it or link it.
+
+
 
 ## Commands
 On the eggs you can do four actions:
