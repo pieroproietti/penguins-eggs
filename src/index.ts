@@ -119,11 +119,9 @@ async function start() {
   }
 
   let o: IOses = oses.info(distro);
-  console.log(o);
-  //let e: Egg = new Egg(workDir, distro);
   let i: Iso = new Iso(app, workDir, distro);
   let c: Calamares = new Calamares(distro);
-  let p: any = new Prerequisites(o);
+  let p: Prerequisites = new Prerequisites(o);
 
   let command = process.argv[2];
 
