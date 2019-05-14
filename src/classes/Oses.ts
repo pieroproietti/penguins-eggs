@@ -68,7 +68,11 @@ class Oses {
         o.distroName = distro.name;
         o.distroVersionNumber = distro.versionNumber;
 
-        if (o.versionId === "solydxk-9") {
+        if  (o.versionId === "juno") {
+            o.distroId = "elementary";
+            o.distroLike = "Ubuntu";
+            o.versionLike = "bionic";
+        } else if(o.versionId === "solydxk-9") {
             o.distroId = "SolydXK";
             o.distroLike = "Debian";
             o.versionLike = "stretch";
@@ -282,6 +286,8 @@ class Oses {
             o.versionLike = "TwentyNine";
             o.syslinuxPath = "/usr/share/syslinux/";
             o.isolinuxPath = "/usr/share/syslinux/";
+        } else {
+            console.log("Sorry, distro non supported!");
         }
 
 

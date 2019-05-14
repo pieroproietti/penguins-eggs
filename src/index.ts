@@ -29,6 +29,7 @@ import Update from "./classes/Update";
 import utils from "./lib/utils";
 import { hatch } from "./lib/hatch";
 import { IDistro, IOses, INet, IUser } from "./interfaces";
+import { Netmask } from "netmask";
 
 
 let app = {} as  IPackage;
@@ -118,9 +119,11 @@ async function start() {
   }
 
   let o: IOses = oses.info(distro);
+  console.log(o);
   //let e: Egg = new Egg(workDir, distro);
   let i: Iso = new Iso(app, workDir, distro);
   let c: Calamares = new Calamares(distro);
+  let p: any = new Prerequisites(o);
 
   let command = process.argv[2];
 
@@ -133,7 +136,8 @@ async function start() {
   } else if (command == "hatch") {
     startHatch();
   } else if (command == "prerequisites") {
-    Prerequisites.install(o);
+    console.log("Installing prerequisites...");
+    p.install();
   } else if (command == "info") {
     console.log(oses.info(distro));
   } else if (command == "update") {
