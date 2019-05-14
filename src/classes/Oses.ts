@@ -68,11 +68,7 @@ class Oses {
         o.distroName = distro.name;
         o.distroVersionNumber = distro.versionNumber;
 
-        if  (o.versionId === "juno") {
-            o.distroId = "elementary";
-            o.distroLike = "Ubuntu";
-            o.versionLike = "bionic";
-        } else if(o.versionId === "solydxk-9") {
+        if (o.versionId === "solydxk-9") {
             o.distroId = "SolydXK";
             o.distroLike = "Debian";
             o.versionLike = "stretch";
@@ -119,6 +115,10 @@ class Oses {
             o.distroLike = "Debian";
             o.versionLike = "stretch";
             // elementaryOS
+        } else if (o.versionId === "juno") {
+            o.distroId = "elementaryOS";
+            o.distroLike = "Ubuntu";
+            o.versionLike = "bionic";
         } else if (o.versionId === "luna") {
             o.distroId = "elementaryOS";
             o.distroLike = "Ubuntu";
