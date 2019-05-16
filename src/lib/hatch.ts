@@ -101,9 +101,19 @@ export async function hatch() {
   await mkinitramfs(target);
   await grubInstall(target, options);
   //await updateInitramfs(target); // path per problema LVM resume
+  
+  await patchPve(target);
+
   await umount4chroot(target);
   await umount4target(target, devices);
 
+}
+
+async function patchPve(target: string){
+  await execute(`chroot ${target} mkdir /var/log/pveproxy`);
+  await execute(`chroot ${target} touch /var/log/pveproxy/access.log`);
+  await execute(`chroot ${target} chown www-data:www-data /var/log/pveproxy -R`);
+  await execute(`chroot ${target} chmod 0664 /var/log/pveproxy/access.log`);
 }
 
 async function grubInstall(target: string, options: any) {
@@ -184,22 +194,39 @@ nameserver 8.8.4.4
   }
 }
 
+/**
+ * 
+  auto vmbr0
+  iface vmbr0 inet static
+	address  192.168.61.2
+	netmask  255.255.255.0
+	gateway  192.168.61.1
+	bridge-ports enp0s31f6
+	bridge-stp off
+  bridge-fd 0
+*/
+
 async function interfaces(target: string, options: any) {
   if (options.netAddressType === "static") {
     let file = `${target}/etc/network/interfaces`;
     let text = `
-auto lo
-iface lo inet loopback
-auto ${options.netInterface}
-iface ${options.netInterface} inet ${options.netAddressType}
+auto lo loopback
+auto ${options.netInterface} manual
+iface vmbr0 inet ${options.netAddressType}
     address ${options.netAddress}
     netmask ${options.netMask}
     gateway ${options.netGateway}
-`;
+    bridge-ports ${options.netInterface}
+    bridge-stp off
+    bridge-fd 0
+  `;
 
     utils.bashWrite(file, text);
   }
 }
+
+
+
 
 async function hosts(target: string, options: any) {
   let file = `${target}/etc/hosts`;
@@ -335,6 +362,9 @@ function execute(command: string): Promise<string> {
     });
   });
 }
+
+
+
 
 async function getOptions(driveList: string[]): Promise<any> {
   return new Promise(function (resolve, reject) {
