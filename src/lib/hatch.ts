@@ -97,18 +97,23 @@ export async function hatch() {
   await resolvConf(target, options);
   await interfaces(target, options);
   await hosts(target, options);
-  await mount4chroot(target);
+  await mountVFS(target);
   await mkinitramfs(target);
   await grubInstall(target, options);
   //await updateInitramfs(target); // path per problema LVM resume
   
   await patchPve(target);
 
-  await umount4chroot(target);
+  await umountVFS(target);
   await umount4target(target, devices);
 
 }
 
+/**
+ * patchPve patch per proxypve che non crea la directory
+ *          e che ricrea i codici di ssh della macchina
+ * @param target 
+ */
 async function patchPve(target: string){
   await execute(`chroot ${target} mkdir /var/log/pveproxy`);
   await execute(`chroot ${target} touch /var/log/pveproxy/access.log`);
@@ -117,6 +122,11 @@ async function patchPve(target: string){
   await execute(`chroot ${target} dpkg-reconfigure openssh-server`);
 }
 
+/**
+ * grubInstall()
+ * @param target 
+ * @param options 
+ */
 async function grubInstall(target: string, options: any) {
   console.log("grub-install");
   await execute(`chroot ${target} grub-install ${options.installationDevice}`);
@@ -124,6 +134,10 @@ async function grubInstall(target: string, options: any) {
   await execute(`chroot ${target} update-grub`);
 }
 
+/**
+ * mkinitramfs()
+ * @param target 
+ */
 async function mkinitramfs(target: string) {
   console.log("mkinitramfs");
   await execute(
@@ -132,14 +146,21 @@ async function mkinitramfs(target: string) {
   await execute(`cp ${target}/tmp/initramfs-$(uname -r) /TARGET/boot`);
 }
 
+/**
+ * updateInitramfs()
+ * @param target 
+ */
 async function updateInitramfs(target: string) {
   console.log("updateInitramfs");
   await execute(`chroot ${target} update-initramfs -u`);
 }
 
-
-async function mount4chroot(target: string) {
-  console.log("mount4chroot");
+/**
+ * mountVFS()
+ * @param target 
+ */
+async function mountVFS(target: string) {
+  console.log("mount VFS");
   await execute(`mount -o bind /dev ${target}/dev`);
   await execute(`mount -o bind /devpts ${target}/dev/pts`);
   await execute(`mount -o bind /proc ${target}/proc`);
@@ -147,8 +168,12 @@ async function mount4chroot(target: string) {
   await execute(`mount -o bind /run ${target}/run`);
 }
 
-async function umount4chroot(target: string) {
-  console.log("umount4chroot");
+/**
+ * umountVFS()
+ * @param target 
+ */
+async function umountVFS(target: string) {
+  console.log("umount VFS");
   await execute(`umount ${target}/dev/pts`);
   await execute(`sleep 1`);
   await execute(`umount ${target}/dev`);
@@ -161,6 +186,11 @@ async function umount4chroot(target: string) {
   await execute(`sleep 1`);
 }
 
+/**
+ * fstab()
+ * @param target 
+ * @param devices 
+ */
 async function fstab(target: string, devices: IDevices) {
   let file = `${target}/etc/fstab`;
   let text = `
@@ -173,6 +203,11 @@ ${devices.swap.device} ${devices.swap.mountPoint} ${devices.swap.fsType} sw 0 0`
   utils.bashWrite(file, text);
 }
 
+/**
+ * hostname()
+ * @param target 
+ * @param options 
+ */
 async function hostname(target: string, options: any) {
   let file = `${target}/etc/hostname`;
   let text = options.hostname;
@@ -181,6 +216,11 @@ async function hostname(target: string, options: any) {
   fs.writeFileSync(file, text);
 }
 
+/**
+ * resolvConf()
+ * @param target 
+ * @param options 
+ */
 async function resolvConf(target: string, options: any) {
   console.log(`tipo di resolv.con: ${options.netAddressType}`);
   if (options.netAddressType === "static") {
@@ -197,17 +237,10 @@ nameserver 8.8.4.4
 }
 
 /**
- * 
-  auto vmbr0
-  iface vmbr0 inet static
-	address  192.168.61.2
-	netmask  255.255.255.0
-	gateway  192.168.61.1
-	bridge-ports enp0s31f6
-	bridge-stp off
-  bridge-fd 0
-*/
-
+ * interfaces()
+ * @param target 
+ * @param options 
+ */
 async function interfaces(target: string, options: any) {
   if (options.netAddressType === "static") {
     let file = `${target}/etc/network/interfaces`;
@@ -227,9 +260,11 @@ iface vmbr0 inet ${options.netAddressType}
   }
 }
 
-
-
-
+/**
+ * hosts()
+ * @param target 
+ * @param options 
+ */
 async function hosts(target: string, options: any) {
   let file = `${target}/etc/hosts`;
   let text = `127.0.0.1 localhost localhost.localdomain`;
@@ -253,12 +288,19 @@ ff02::3 ip6-allhosts
   utils.bashWrite(file, text);
 }
 
+/**
+ * getIsLive()
+ */
 async function getIsLive(): Promise<string> {
   let result;
   result = await execute(`./scripts/is_live.sh`);
   return result;
 }
 
+/**
+ * rsync()
+ * @param target 
+ */
 async function rsync(target: string): Promise<void> {
   let cmd = "";
   cmd = `
@@ -271,6 +313,10 @@ async function rsync(target: string): Promise<void> {
   });
 }
 
+/**
+ * 
+ * @param devices 
+ */
 async function mkfs(devices: IDevices): Promise<boolean> {
   let result = true;
   await execute(`mkfs -t ${devices.root.fsType} ${devices.root.device}`);
@@ -280,6 +326,11 @@ async function mkfs(devices: IDevices): Promise<boolean> {
   return result;
 }
 
+/**
+ * 
+ * @param target 
+ * @param devices 
+ */
 async function mount4target(target: string, devices: IDevices): Promise<boolean> {
   await execute(`mkdir ${target}`);
   await execute(`mount ${devices.root.device} ${target}`);
@@ -299,10 +350,21 @@ async function mount4target(target: string, devices: IDevices): Promise<boolean>
 
   return true;
 }
+
+/**
+ * tune2fs()
+ * @param target 
+ * @param devices 
+ */
 async function tune2fs(target: string, devices: IDevices): Promise<boolean> {
   return true;
 }
 
+/**
+ * 
+ * @param target 
+ * @param devices 
+ */
 async function umount4target(target: string, devices: IDevices): Promise<boolean> {
   console.log("umount4target");
 
@@ -321,12 +383,20 @@ async function umount4target(target: string, devices: IDevices): Promise<boolean
   return true;
 }
 
-
+/**
+ * 
+ * @param device 
+ */
 async function diskPreparePve(device: string): Promise<boolean> {
   await execute(`${__dirname}/../../scripts/disk_prepare_pve.sh ${device}`);
   return true;
 }
 
+/**
+ * 
+ * @param device 
+ * @param sizeMb 
+ */
 async function diskPreparePartitionLvm(device: string, sizeMb: number): Promise<boolean> {
   console.log(`disk_prepare_partition_lvm.sh ${device} ${sizeMb}`);
   await execute(
@@ -334,6 +404,11 @@ async function diskPreparePartitionLvm(device: string, sizeMb: number): Promise<
   );
   return true;
 }
+
+/**
+ * 
+ * @param device 
+ */
 async function diskPreparePartitionBoot(device: string): Promise<boolean> {
   await execute(
     `${__dirname}/../../scripts/disk_prepare_partition_boot.sh ${device}`
@@ -341,11 +416,20 @@ async function diskPreparePartitionBoot(device: string): Promise<boolean> {
   return true;
 }
 
+
+/**
+ * 
+ * @param device 
+ */
 async function diskPrepare(device: string) {
   await execute(`${__dirname}/../../scripts/disk_prepare.sh ${device}`);
   return true;
 }
 
+/**
+ * 
+ * @param device 
+ */
 async function getDiskSize(device: string): Promise<number> {
   let response: string;
   let bytes: number;
@@ -356,6 +440,10 @@ async function getDiskSize(device: string): Promise<number> {
   return bytes;
 }
 
+/**
+ * 
+ * @param command 
+ */
 function execute(command: string): Promise<string> {
   return new Promise(function (resolve, reject) {
     var exec = require("child_process").exec;
@@ -365,9 +453,10 @@ function execute(command: string): Promise<string> {
   });
 }
 
-
-
-
+/**
+ * 
+ * @param driveList 
+ */
 async function getOptions(driveList: string[]): Promise<any> {
   return new Promise(function (resolve, reject) {
     let questions: Array<Object> = [
