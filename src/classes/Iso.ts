@@ -134,10 +134,15 @@ class Iso {
     }
   }
 
-  async liveDhcp(){
+  /**
+   * 
+   */
+  public async liveDhcp() {
+    console.log("==========================================");
     console.log(`liveDhcp: `);
+    console.log("==========================================");
     let text = `auto lo\niface lo inet loopback`;
-    utils.bashWrite(`${this.distro.pathFs}+/etc/network/interfaces`, text);
+    utils.bashWrite(`${this.distro.pathFs}/etc/network/interfaces`, text);
   }
 
   /**
