@@ -237,6 +237,9 @@ nameserver 8.8.4.4
 }
 
 /**
+ * 
+ * auto lo
+ * 
  * interfaces()
  * @param target 
  * @param options 
@@ -245,17 +248,26 @@ async function interfaces(target: string, options: any) {
   if (options.netAddressType === "static") {
     let file = `${target}/etc/network/interfaces`;
     let text = `
-auto lo loopback
-auto ${options.netInterface} manual
+auto lo
+iface lo inet manual
+
+auto ${options.netInterface}
+iface ${options.netInterface} inet manual
+
 auto vmbr0 
-iface vmbr0 inet ${options.netAddressType}
+iface vmbr0 inet ${options.netAddressType} static
     address ${options.netAddress}
     netmask ${options.netMask}
     gateway ${options.netGateway}
     bridge-ports ${options.netInterface}
     bridge-stp off
     bridge-fd 0
-  `;
+
+auto loopback
+iface loopback inet manual
+    
+auto manual
+iface manual inet manual`;
 
     utils.bashWrite(file, text);
   }
