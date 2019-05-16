@@ -182,6 +182,7 @@ async function hostname(target: string, options: any) {
 }
 
 async function resolvConf(target: string, options: any) {
+  console.log(`tipo di resolv.con: ${options.netAddressType}`);
   if (options.netAddressType === "static") {
     let file = `${target}/etc/resolv.conf`;
     let text = `
