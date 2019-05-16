@@ -128,11 +128,17 @@ class Iso {
       console.log(`Spawning the system into the egg...\nThis process can be very long, \nperhaps it's time for a coffee!`);
       console.log("------------------------------------------");
       await this.eggSystemCopy();
+      await this.liveDhcp();
       await this.liveSquashFs();
       await this.makeIsoFs(o);
     }
   }
 
+  async liveDhcp(){
+    console.log(`liveDhcp: `);
+    let text = `auto lo\niface lo inet loopback`;
+    utils.bashWrite(`${this.distro.pathFs}+/etc/network/interfaces`, text);
+  }
 
   /**
    * eggCreateStructue

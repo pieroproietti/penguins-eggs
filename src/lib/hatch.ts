@@ -247,6 +247,7 @@ async function interfaces(target: string, options: any) {
     let text = `
 auto lo loopback
 auto ${options.netInterface} manual
+auto vmbr0 
 iface vmbr0 inet ${options.netAddressType}
     address ${options.netAddress}
     netmask ${options.netMask}
