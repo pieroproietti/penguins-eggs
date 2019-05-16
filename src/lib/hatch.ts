@@ -114,6 +114,7 @@ async function patchPve(target: string){
   await execute(`chroot ${target} touch /var/log/pveproxy/access.log`);
   await execute(`chroot ${target} chown www-data:www-data /var/log/pveproxy -R`);
   await execute(`chroot ${target} chmod 0664 /var/log/pveproxy/access.log`);
+  await execute(`chroot ${target} dpkg-reconfigure openssh-server`);
 }
 
 async function grubInstall(target: string, options: any) {
