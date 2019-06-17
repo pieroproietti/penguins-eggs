@@ -115,6 +115,9 @@ export async function hatch() {
  * @param target 
  */
 async function patchPve(target: string){
+  // patch per apache2
+  await execute(`chroot ${target} mkdir /var/log/apache2`);
+
   await execute(`chroot ${target} mkdir /var/log/pveproxy`);
   await execute(`chroot ${target} touch /var/log/pveproxy/access.log`);
   await execute(`chroot ${target} chown www-data:www-data /var/log/pveproxy -R`);
