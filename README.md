@@ -71,7 +71,7 @@ You can install it with npm (node package manager). Copy and past the following 
 
 Now we can install our package:
 
-```sudo npm i penguins-egg -g```
+```sudo npm i penguins-eggs -g```
 
 ### Installation penguins-eggs from source
 
