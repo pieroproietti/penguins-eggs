@@ -55,11 +55,10 @@ penguins-eggs depend on various packages too, you must install them using once t
 
 ### Installation penguins-eggs via npm
 
-You can install it with npm (node package manager). Copy and past the following lines:
+After You have installed nodejs, you can install penguins-eggs with the utility npm (node package manager). 
+Simply copy and past the following lines:
 
 ```sudo npm config set unsafe-perm true```
-
-Now we can install our package:
 
 ```sudo npm i penguins-eggs -g```
 
