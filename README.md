@@ -45,23 +45,16 @@ are able to open a terminal, you can use it.
 Well, it is time to try it!
 
 ### Prerequisites
-Of course penguins-eggs need [nodejs](https://github.com/nodesource/distributions/blob/master/README.md#deb) installed.
+penguins-eggs need nodejs installed, use the version on the nodesource [repository](https://github.com/nodesource/distributions/blob/master/README.md#deb). You can install version 12 for AMD64, or the version 8 for i386 (i386 is not available for Node.js 10 and later) according your computer architecture.
 
-You need also to install the ``build-essential`` package.
+If not already installed, You need also to install the ``build-essential`` package too.
 
 ```apt-get install build-essential```
 
 
+
 penguins-eggs depend on various packages, you don't need to install them before it, but 
 they are necessary during the use.
-
-You can simply install them with the command:
-
-```eggs prerequisites```
-
-After the installation of eggs. This is the list of packages: 
-
-```lvm2 parted squashfs-tools xorriso live-boot syslinux syslinux-common isolinux pxelinux`calamares qml-module-qtquick2 qml-module-qtquick-controls```
 
 ### Installation penguins-eggs via npm
 
@@ -105,13 +98,27 @@ Of course, you can build it or link it.
 
 ## Commands
 On the eggs you can do four actions:
-* spawn
 * info
-* kill
-* calamares (configure gui installer gui calamares)
+* prerequisites
+* spawn
 * hatch (the cli installer)
+* calamares (configure gui installer gui calamares)
+* kill
 
-### spawn
+
+### info
+You will get the main information about your system. This information will be used in the process of spawn and configure the installer.
+
+```sudo eggs info```
+
+### prerequisites (installa i prerequisiti)
+You must use it once before to use eggs, it will install various Debian packages needing for the process of building iso.
+
+```sudo eggs prerequisites```
+
+The following packages will be installed: ```lvm2 parted squashfs-tools xorriso live-boot syslinux syslinux-common isolinux pxelinux`calamares qml-module-qtquick2 qml-module-qtquick-controls```
+
+### spawn (produzione dell'uovo)
 The function of spawn is to generate the egg. Your system is copied and packaged
 as an iso file. This is a live system version of your real system, and you can
 masterize it or put in a USB key and use, and install your version of linux on
@@ -121,24 +128,7 @@ of your live system.
 
 ```sudo eggs spawn -d mydistroname```
 
-### info
-You will get the main information about your system. This information will be used in the process of spawn and configure the installer.
-
-```sudo eggs info```
-
-
-### kill
-As the name say is the operation of break and kill the egg created. You will
-free your system from the egg.
-
-```sudo eggs kill```
-
-### calamares
-This command is usefull during develepment, it generate the calamares configuration. 
-
-```sudo eggs calamares```
-
-### hatch
+### hatch (cova dell'uovo - sul pc avviato con la iso installa il sistema)
 An egg to became penguin need to be hatched! In our case we simply need to give
 to the egg the informations for installation and - in few minuts - (far
   before the fatitical 21 days) we will have a new penguin.
@@ -149,10 +139,24 @@ You will be prompted to various parameters like: username, password, hostname,
 domain, networking, installation device and type. Usually, you can accept the
 defaults.
 
+If is installed the package calamares, you can use it to install the system. 
+Calamares is a GUI installer, pretty good and pratical. 
+
 **Attention**: Don't be scared, but be attent to that you are doing here,
 the operation of hatch is destructive and irreversible, and will format your
 disk and destroy your data to prepare the machine for the installation of your
 new penguin. **Be sure to have backup of your data before**.
+
+### calamares (crea i file di configurazione per calamares)
+This command is usefull during develepment, it generate the calamares configuration. 
+
+```sudo eggs calamares```
+
+### kill (libera lo spazio occupato sul disco)
+As the name say is the operation of break and kill the egg created. You will
+free your system from the egg.
+
+```sudo eggs kill```
 
 
 ## Options
