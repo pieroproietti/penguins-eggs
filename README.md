@@ -143,12 +143,12 @@ the operation of hatch is destructive and irreversible, and will format your
 disk and destroy your data to prepare the machine for the installation of your
 new penguin. **Be sure to have backup of your data before**.
 
-### calamares (crea i file di configurazione per calamares)
-This command is usefull during develepment, it generate the calamares configuration. 
+### calamares (crea la configurazione di calamares)
+This command is usefull during develepment, it generate the calamares configuration on fly.
 
 ```sudo eggs calamares```
 
-### kill (libera lo spazio occupato sul disco)
+### kill (libera lo spazio occupato)
 As the name say is the operation of break and kill the egg created. You will
 free your system from the egg.
 
