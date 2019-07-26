@@ -114,7 +114,7 @@ You must use it once before to use eggs, it will install various Debian packages
 
 The following packages will be installed: ```lvm2 parted squashfs-tools xorriso live-boot syslinux syslinux-common isolinux pxelinux`calamares qml-module-qtquick2 qml-module-qtquick-controls```
 
-### spawn (produzione dell'uovo)
+### spawn (produzione dell'uovo/creazione ISO)
 The function of spawn is to generate the egg. Your system is copied and packaged
 as an iso file. This is a live system version of your real system, and you can
 masterize it or put in a USB key and use, and install your version of linux on
@@ -124,7 +124,7 @@ of your live system.
 
 ```sudo eggs spawn -d mydistroname```
 
-### hatch (cova dell'uovo - sul pc avviato con la iso installa il sistema)
+### hatch (cova dell'uovo/installazione)
 An egg to became penguin need to be hatched! In our case we simply need to give
 to the egg the informations for installation and - in few minuts - (far
   before the fatitical 21 days) we will have a new penguin.
