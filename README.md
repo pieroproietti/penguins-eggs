@@ -51,10 +51,7 @@ If not already installed, You need also to install the ``build-essential`` packa
 
 ```apt-get install build-essential```
 
-
-
-penguins-eggs depend on various packages, you don't need to install them before it, but 
-they are necessary during the use.
+penguins-eggs depend on various packages too, you must install them using once the option prerequisites.
 
 ### Installation penguins-eggs via npm
 
