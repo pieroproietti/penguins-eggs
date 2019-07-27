@@ -40,15 +40,15 @@ class Iso {
     app: IPackage,
     workDir?: string,
     distro?: IDistro,
-    net?: INet,
     user?: IUser,
-    root?: IUser
+    root?: IUser,
+    net?: INet
   ) {
     this.app = {} as IPackage;
     this.distro = {} as IDistro;
-    this.net = {} as INet;
     this.user = {} as IUser;
     this.root = {} as IUser;
+    this.net = {} as INet;
 
     this.app = app;
 
@@ -176,17 +176,17 @@ class Iso {
    * eggSystemCopy
    */
   public async eggSystemCopy() {
-    let f: string;
+    let specificFilters:string;
+    let cmd:string = "";
 
-    let cmd = "";
-    f = filters + `--filter="+ "/home/${this.user.name}" \
-            --filter="- /home/*"` ;
+    specificFilters = filters + ` --filter="+ /home/${this.user.name}" --filter="- /home/*"` ;
 
     cmd = `
       rsync -aq  \
       --filter="- ${this.distro.pathHome}"  \
       --delete-before  \
-      --delete-excluded  \ ${filters} / ${this.distro.pathFs}`;
+      --delete-excluded  \ ${specificFilters} / ${this.distro.pathFs}`;
+
     console.log("==========================================");
     console.log("eggs: systemCopy");
     console.log("==========================================");

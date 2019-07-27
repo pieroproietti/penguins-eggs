@@ -124,7 +124,7 @@ async function start() {
   }
 
   let o: IOses = oses.info(distro);
-  let i: Iso = new Iso(app, workDir, distro);
+  let i: Iso = new Iso(app, workDir, distro, user);
   let c: Calamares = new Calamares(distro);
   let p: Prerequisites = new Prerequisites(o);
 
