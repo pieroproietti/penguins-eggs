@@ -52,9 +52,14 @@ let net = {} as INet;
 net.dhcp = true;
 
 let user = {} as IUser;
-user.fullName = "live";
-user.name = "live";
-user.password = "evolution";
+
+user.name = process.env.SUDO_USER;
+if (user.name==""){
+  user.name = "live";
+  user.fullName = "live";
+  user.password = "evolution";
+}
+console.log("we are working with user: "+ user.name);
 
 let root = {} as IUser;
 root.fullName = "root";

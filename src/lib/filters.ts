@@ -78,10 +78,12 @@ const filterVar = `
 /**
  * Copia sia live che artisan
  */
-const filterPersonalDatas = `
---filter="+ /home/live/" \
---filter="+ /home/artisan/" \
+
+ /*
+ const filterPersonalDatas = `
+--filter="+ "/home/${user.name}" \
 --filter="- /home/*"` ;
+*/
 
 const filters =
   filterRoot.trim() + " " +
@@ -89,7 +91,8 @@ const filters =
   filterEtc.trim() + " " +
   filterLib.trim() + " " +
   filterUsr.trim() + " " +
-  filterVar.trim() + " " +
-  filterPersonalDatas.trim();
+  filterVar.trim() + " ";
+  /* +
+  filterPersonalDatas.trim();*/
 
 export default filters;

@@ -86,8 +86,8 @@ class Iso {
     this.net.dnsAddress = utils.netDns();
 
     if (user == undefined) {
-      this.user.name = "artisan";
-      this.user.fullName = "Artisan";
+      this.user.name = "live";
+      this.user.fullName = "live";
       this.user.password = "evolution"
     } else {
       this.user.name = user.name;
@@ -176,7 +176,12 @@ class Iso {
    * eggSystemCopy
    */
   public async eggSystemCopy() {
+    let f: string;
+
     let cmd = "";
+    f = filters + `--filter="+ "/home/${this.user.name}" \
+            --filter="- /home/*"` ;
+
     cmd = `
       rsync -aq  \
       --filter="- ${this.distro.pathHome}"  \
