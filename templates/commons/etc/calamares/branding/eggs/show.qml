@@ -42,7 +42,8 @@ Presentation
             anchors.horizontalCenter: image1.horizontalCenter
             anchors.top: background1.bottom
             text: "<h1>Benvenuto in Penguin's eggs</h1> .<br/>"+
-                  "<b>Penguin's eggs</b> è fatto dalla comunità.<br/>"+
+                  "<b>Penguin's eggs</b> creato da Piero Proietti, sviluppato per la comunità.<br/>"+
+                  "<br/><p>Il pinguino fa le uova e riproduce se stesso! Utilizza penguin's eggs per creare il tuo sistema.</p></br>" +
                   "<p></p>."
             wrapMode: Text.WordWrap
             width: 600
@@ -62,7 +63,8 @@ Presentation
             anchors.horizontalCenter: image2.horizontalCenter
             anchors.top: background2.bottom
             text: "<h1>Benvenuto in Penguin's eggs</h1> .<br/>"+
-                    "<p>Questo programma è mantenuto dalla comunità</p>" +
+                  "<b>Penguin's eggs</b> creato da Piero Proietti, sviluppato per la comunità.<br/>"+
+                  "<br/><p>Con eggs update puoi sempre scaricare l'ultima versione di penguin's eggs.</p></br>" +
                     "<b>slide 2</p"
             wrapMode: Text.WordWrap
             width: 600
@@ -83,7 +85,8 @@ Presentation
             anchors.horizontalCenter: image3.horizontalCenter
             anchors.top: background3.bottom
             text: "<h1>Benvenuto in Penguin's eggs</h1> .<br/>"+
-                    "<p>Questo programma è mantenuto dalla comunità</p>" +
+                  "<b>Penguin's eggs</b> creato da Piero Proietti, sviluppato per la comunità.<br/>"+
+                  "<br/><p>Con eggs puoi ottenere una copia del tuo sistema da portare in tasca o da installare ad un amico.</p></br>" +
                     "<b>slide 3</p"
             wrapMode: Text.WordWrap
             width: 600
@@ -104,7 +107,8 @@ Presentation
             anchors.horizontalCenter: image3.horizontalCenter
             anchors.top: background4.bottom
             text: "<h1>Benvenuto in Penguin's eggs</h1> .<br/>"+
-                    "<p>Questo programma è mantenuto dalla comunità</p>" +
+                  "<b>Penguin's eggs</b> creato da Piero Proietti, sviluppato per la comunità.<br/>"+
+                  "<br/><p>Con eggs il tuo sistema si riproduce, crea l'immagine iso del tuo sistema e reinstallala su un altro pc. Puoi farlo, è semplice e legale.</p></br>" +
                     "<b>slide 4</p"
             wrapMode: Text.WordWrap
             width: 600
@@ -125,7 +129,8 @@ Presentation
             anchors.horizontalCenter: image3.horizontalCenter
             anchors.top: background5.bottom
             text: "<h1>Benvenuto in Penguin's eggs</h1> .<br/>"+
-                    "<p>Questo programma è mantenuto dalla comunità</p>" +
+                  "<b>Penguin's eggs</b> creato da Piero Proietti, sviluppato per la comunità.<br/>"+
+                  "<br/><p>Penguin's eggs, o meglio il suo sviluppatore cerca aiuto. Usa questo prodotto e, se puoi fatti sentire.</p></br>" +
                     "<b>slide 5</p"
             wrapMode: Text.WordWrap
             width: 600
@@ -146,7 +151,8 @@ Presentation
             anchors.horizontalCenter: image3.horizontalCenter
             anchors.top: background6.bottom
             text: "<h1>Benvenuto in Penguin's eggs</h1> .<br/>"+
-                    "<p>Questo programma è mantenuto dalla comunità</p>" +
+                  "<b>Penguin's eggs</b> creato da Piero Proietti, sviluppato per la comunità.<br/>"+
+                  "<br/><p>Eggs ha pochi comandi, usa eggs senza parametri per avere l'elenco completo</p></br>" +
                     "<b>slide 6</p"
             wrapMode: Text.WordWrap
             width: 600
@@ -167,7 +173,8 @@ Presentation
             anchors.horizontalCenter: image3.horizontalCenter
             anchors.top: background7.bottom
             text: "<h1>Benvenuto in Penguin's eggs</h1> .<br/>"+
-                    "<p>Questo programma è mantenuto dalla comunità</p>" +
+                  "<b>Penguin's eggs</b> creato da Piero Proietti, sviluppato per la comunità.<br/>"+
+                  "<br/><p>eggs un sistema riproduttivo per pinguini!</p></br>" +
                     "<b>slide 7</p"
             wrapMode: Text.WordWrap
             width: 600
