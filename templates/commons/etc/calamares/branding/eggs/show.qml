@@ -31,95 +31,148 @@ Presentation
     }
     Slide {
         Image {
-            anchors.centerIn: parent
             id: image1
-            x:0
-            y:0
-            width: 810
-            height: 485
-            fillMode: Image.PreserveAspectFit
-            smooth: true
             source: "penguins1.png"
+            anchors.centerIn: parent
+            width: 810
+            height: 485
+            fillMode: Image.PreserveAspectFit
+        }
+         Text {
+            anchors.horizontalCenter: image1.horizontalCenter
+            anchors.top: background1.bottom
+            text: "<h1>Benvenuto in Penguin's eggs</h1> .<br/>"+
+                  "<b>Penguin's eggs</b> è fatto dalla comunità.<br/>"+
+                  "<p></p>."
+            wrapMode: Text.WordWrap
+            width: 600
+            horizontalAlignment: Text.Center
         }
     }
     Slide {
         Image {
-            anchors.centerIn: parent
             id: image2
-            x: 0
-            y: 0
-            width: 810
-            height: 485
-            fillMode: Image.PreserveAspectFit
-            smooth: true
             source: "penguins2.png"
+            anchors.centerIn: parent
+            width: 810
+            height: 485
+            fillMode: Image.PreserveAspectFit
+        }
+         Text {
+            anchors.horizontalCenter: image2.horizontalCenter
+            anchors.top: background2.bottom
+            text: "<h1>Benvenuto in Penguin's eggs</h1> .<br/>"+
+                    "<p>Questo programma è mantenuto dalla comunità</p>" +
+                    "<b>slide 2</p"
+            wrapMode: Text.WordWrap
+            width: 600
+            horizontalAlignment: Text.Center
         }
     }
+
     Slide {
         Image {
-            anchors.centerIn: parent
             id: image3
-            x: 0
-            y: 0
-            width: 810
-            height: 485
-            fillMode: Image.PreserveAspectFit
-            smooth: true
             source: "penguins3.png"
+            anchors.centerIn: parent
+            width: 810
+            height: 485
+            fillMode: Image.PreserveAspectFit
+        }
+         Text {
+            anchors.horizontalCenter: image3.horizontalCenter
+            anchors.top: background3.bottom
+            text: "<h1>Benvenuto in Penguin's eggs</h1> .<br/>"+
+                    "<p>Questo programma è mantenuto dalla comunità</p>" +
+                    "<b>slide 3</p"
+            wrapMode: Text.WordWrap
+            width: 600
+            horizontalAlignment: Text.Center
         }
     }
+
     Slide {
         Image {
-            anchors.centerIn: parent
             id: image4
-            x: 0
-            y: 0
-            width: 810
-            height: 485
-            fillMode: Image.PreserveAspectFit
-            smooth: true
             source: "penguins4.png"
+            anchors.centerIn: parent
+            width: 810
+            height: 485
+            fillMode: Image.PreserveAspectFit
+        }
+         Text {
+            anchors.horizontalCenter: image3.horizontalCenter
+            anchors.top: background4.bottom
+            text: "<h1>Benvenuto in Penguin's eggs</h1> .<br/>"+
+                    "<p>Questo programma è mantenuto dalla comunità</p>" +
+                    "<b>slide 4</p"
+            wrapMode: Text.WordWrap
+            width: 600
+            horizontalAlignment: Text.Center
         }
     }
+
     Slide {
         Image {
-            anchors.centerIn: parent
             id: image5
-            x: 0
-            y: 0
-            width: 810
-            height: 485
-            fillMode: Image.PreserveAspectFit
-            smooth: true
             source: "penguins5.png"
+            anchors.centerIn: parent
+            width: 810
+            height: 485
+            fillMode: Image.PreserveAspectFit
+        }
+         Text {
+            anchors.horizontalCenter: image3.horizontalCenter
+            anchors.top: background5.bottom
+            text: "<h1>Benvenuto in Penguin's eggs</h1> .<br/>"+
+                    "<p>Questo programma è mantenuto dalla comunità</p>" +
+                    "<b>slide 5</p"
+            wrapMode: Text.WordWrap
+            width: 600
+            horizontalAlignment: Text.Center
         }
     }
+
     Slide {
         Image {
-            anchors.centerIn: parent
             id: image6
-            x: 0
-            y: 0
+            source: "penguins6.png"
+            anchors.centerIn: parent
             width: 810
             height: 485
             fillMode: Image.PreserveAspectFit
-            smooth: true
-            source: "penguins6.png"
         }
-
+         Text {
+            anchors.horizontalCenter: image3.horizontalCenter
+            anchors.top: background6.bottom
+            text: "<h1>Benvenuto in Penguin's eggs</h1> .<br/>"+
+                    "<p>Questo programma è mantenuto dalla comunità</p>" +
+                    "<b>slide 6</p"
+            wrapMode: Text.WordWrap
+            width: 600
+            horizontalAlignment: Text.Center
+        }
     }
+
     Slide {
         Image {
-            anchors.centerIn: parent
             id: image7
-            x: 0
-            y: 0
+            source: "penguins7.png"
+            anchors.centerIn: parent
             width: 810
             height: 485
             fillMode: Image.PreserveAspectFit
-            smooth: true
-            source: "penguins7.png"
+        }
+         Text {
+            anchors.horizontalCenter: image3.horizontalCenter
+            anchors.top: background7.bottom
+            text: "<h1>Benvenuto in Penguin's eggs</h1> .<br/>"+
+                    "<p>Questo programma è mantenuto dalla comunità</p>" +
+                    "<b>slide 7</p"
+            wrapMode: Text.WordWrap
+            width: 600
+            horizontalAlignment: Text.Center
         }
     }
-}
 
+}
