@@ -39,6 +39,7 @@ Presentation
             fillMode: Image.PreserveAspectFit
         }
          Text {
+            color: "#ff2a00"
             anchors.horizontalCenter: image1.horizontalCenter
             anchors.top: background1.bottom
             text: "<h1>Benvenuto in Penguin's eggs</h1> .<br/>"+
@@ -60,6 +61,7 @@ Presentation
             fillMode: Image.PreserveAspectFit
         }
          Text {
+            color: "#ff2a00"
             anchors.horizontalCenter: image2.horizontalCenter
             anchors.top: background2.bottom
             text: "<h1>Benvenuto in Penguin's eggs</h1> .<br/>"+
@@ -82,6 +84,7 @@ Presentation
             fillMode: Image.PreserveAspectFit
         }
          Text {
+            color: "#ff2a00"
             anchors.horizontalCenter: image3.horizontalCenter
             anchors.top: background3.bottom
             text: "<h1>Benvenuto in Penguin's eggs</h1> .<br/>"+
@@ -104,6 +107,7 @@ Presentation
             fillMode: Image.PreserveAspectFit
         }
          Text {
+            color: "#ff2a00"
             anchors.horizontalCenter: image3.horizontalCenter
             anchors.top: background4.bottom
             text: "<h1>Benvenuto in Penguin's eggs</h1> .<br/>"+
@@ -126,6 +130,7 @@ Presentation
             fillMode: Image.PreserveAspectFit
         }
          Text {
+            color: "#ff2a00"
             anchors.horizontalCenter: image3.horizontalCenter
             anchors.top: background5.bottom
             text: "<h1>Benvenuto in Penguin's eggs</h1> .<br/>"+
@@ -148,6 +153,7 @@ Presentation
             fillMode: Image.PreserveAspectFit
         }
          Text {
+            color: "#ff2a00"
             anchors.horizontalCenter: image3.horizontalCenter
             anchors.top: background6.bottom
             text: "<h1>Benvenuto in Penguin's eggs</h1> .<br/>"+
@@ -170,6 +176,7 @@ Presentation
             fillMode: Image.PreserveAspectFit
         }
          Text {
+            color: "#ff2a00"
             anchors.horizontalCenter: image3.horizontalCenter
             anchors.top: background7.bottom
             text: "<h1>Benvenuto in Penguin's eggs</h1> .<br/>"+
