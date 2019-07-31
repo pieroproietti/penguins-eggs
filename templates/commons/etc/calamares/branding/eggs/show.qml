@@ -41,7 +41,7 @@ Presentation
          Text {
             color: "#ff2a00"
             anchors.horizontalCenter: image1.horizontalCenter
-            anchors.top: background1.bottom
+            anchors.top: image1.verticalCenter
             text: "<h1>Benvenuto in Penguin's eggs</h1> .<br/>"+
                   "<b>Penguin's eggs</b> creato da Piero Proietti, sviluppato per la comunità.<br/>"+
                   "<br/><p>Il pinguino fa le uova e riproduce se stesso! Utilizza penguin's eggs per creare il tuo sistema.</p></br>" +
@@ -63,7 +63,7 @@ Presentation
          Text {
             color: "#ff2a00"
             anchors.horizontalCenter: image2.horizontalCenter
-            anchors.top: background2.bottom
+            anchors.top: image2.verticalCenter
             text: "<h1>Benvenuto in Penguin's eggs</h1> .<br/>"+
                   "<b>Penguin's eggs</b> creato da Piero Proietti, sviluppato per la comunità.<br/>"+
                   "<br/><p>Con eggs update puoi sempre scaricare l'ultima versione di penguin's eggs.</p></br>" +
@@ -86,7 +86,7 @@ Presentation
          Text {
             color: "#ff2a00"
             anchors.horizontalCenter: image3.horizontalCenter
-            anchors.top: background3.bottom
+            anchors.top: image3.verticalCenter
             text: "<h1>Benvenuto in Penguin's eggs</h1> .<br/>"+
                   "<b>Penguin's eggs</b> creato da Piero Proietti, sviluppato per la comunità.<br/>"+
                   "<br/><p>Con eggs puoi ottenere una copia del tuo sistema da portare in tasca o da installare ad un amico.</p></br>" +
@@ -108,8 +108,8 @@ Presentation
         }
          Text {
             color: "#ff2a00"
-            anchors.horizontalCenter: image3.horizontalCenter
-            anchors.top: background4.bottom
+            anchors.horizontalCenter: image4.horizontalCenter
+            anchors.top: image4.verticalCenter
             text: "<h1>Benvenuto in Penguin's eggs</h1> .<br/>"+
                   "<b>Penguin's eggs</b> creato da Piero Proietti, sviluppato per la comunità.<br/>"+
                   "<br/><p>Con eggs il tuo sistema si riproduce, crea l'immagine iso del tuo sistema e reinstallala su un altro pc. Puoi farlo, è semplice e legale.</p></br>" +
@@ -131,8 +131,8 @@ Presentation
         }
          Text {
             color: "#ff2a00"
-            anchors.horizontalCenter: image3.horizontalCenter
-            anchors.top: background5.bottom
+            anchors.horizontalCenter: image5.horizontalCenter
+            anchors.top: image5.verticalCenter
             text: "<h1>Benvenuto in Penguin's eggs</h1> .<br/>"+
                   "<b>Penguin's eggs</b> creato da Piero Proietti, sviluppato per la comunità.<br/>"+
                   "<br/><p>Penguin's eggs, o meglio il suo sviluppatore cerca aiuto. Usa questo prodotto e, se puoi fatti sentire.</p></br>" +
@@ -154,11 +154,11 @@ Presentation
         }
          Text {
             color: "#ff2a00"
-            anchors.horizontalCenter: image3.horizontalCenter
-            anchors.top: background6.bottom
+            anchors.horizontalCenter: image6.horizontalCenter
+            anchors.top: image6.verticalCenter
             text: "<h1>Benvenuto in Penguin's eggs</h1> .<br/>"+
                   "<b>Penguin's eggs</b> creato da Piero Proietti, sviluppato per la comunità.<br/>"+
-                  "<br/><p>Eggs ha pochi comandi, usa eggs senza parametri per avere l'elenco completo</p></br>" +
+                  "<br/><p>Eggs è semplice, ha pochi comandi. Usa eggs senza parametri per avere l'elenco completo</p></br>" +
                     "<b>slide 6</p"
             wrapMode: Text.WordWrap
             width: 600
@@ -177,11 +177,11 @@ Presentation
         }
          Text {
             color: "#ff2a00"
-            anchors.horizontalCenter: image3.horizontalCenter
-            anchors.top: background7.bottom
+            anchors.horizontalCenter: image7.horizontalCenter
+            anchors.top: image7.verticalCenter
             text: "<h1>Benvenuto in Penguin's eggs</h1> .<br/>"+
                   "<b>Penguin's eggs</b> creato da Piero Proietti, sviluppato per la comunità.<br/>"+
-                  "<br/><p>eggs un sistema riproduttivo per pinguini!</p></br>" +
+                  "<br/><p>eggs: un sistema riproduttivo per pinguini!</p></br>" +
                     "<b>slide 7</p"
             wrapMode: Text.WordWrap
             width: 600
