@@ -100,14 +100,31 @@ export async function hatch() {
   await mountVFS(target);
   await mkinitramfs(target);
   await grubInstall(target, options);
-  //await updateInitramfs(target); // path per problema LVM resume
-  
+
+  await addUser(options.username, options.userfullname, options.userpassword);
+  await setRootPassword(options.rootpassword);
+  await delUserLive();
+
   await patchPve(target);
 
   await umountVFS(target);
   await umount4target(target, devices);
 
 }
+
+async function delUserLive() {
+  console.log("Cancellazione utente live\n");
+}
+
+async function addUser(username: String, userfullname: String, userpassword: String){
+  console.log('Configurazione utente\n');
+}
+async function setRootPassword(rootpassword: String){
+  console.log('Impostazione password di root\n');
+}
+
+
+
 
 /**
  * patchPve patch per proxypve che non crea la directory
@@ -480,13 +497,13 @@ async function getOptions(driveList: string[]): Promise<any> {
         type: "input",
         name: "username",
         message: "user name: ",
-        default: "live"
+        default: "artisan"
       },
       {
         type: "input",
         name: "userfullname",
         message: "user full name: ",
-        default: "live user"
+        default: "artisan user"
       },
       {
         type: "password",

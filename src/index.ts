@@ -70,7 +70,8 @@ if (utils.isRoot()) {
   start();
 } else {
   usage();
-}
+} 
+
 
 bye();
 // End main
