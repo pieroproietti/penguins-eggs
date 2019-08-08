@@ -107,17 +107,17 @@ class Iso {
 
   }
 
-  async spawn(o: IOses, c: any) {
+  async produce(o: IOses, c: any) {
 
     if (!await utils.isLive()) {
       console.log(
-        ">>> eggs: This is a live system! The spawn command cannot be executed."
+        ">>> eggs: This is a live system! An egg from egg cannot be produced."
       );
     } else {
 
       c.configure(o);
       console.log("------------------------------------------");
-      console.log(`Spawning the system into the egg...`);
+      console.log(`Laying the system into the egg...`);
       console.log("------------------------------------------");
       await this.eggCreateStructure();
       await this.isoCreateStructure();
@@ -268,7 +268,7 @@ PROMPT 0
 TIMEOUT 30
 ${o.menuTitle}
 MENU TABMSG Press TAB key to edit
-MENU BACKGROUND turtle.png
+MENU BACKGROUND penguins-eggs-3-syslinux.png
 
 LABEL ${this.distro.name}
   MENU LABEL ^${this.distro.name}
@@ -281,7 +281,7 @@ label ${this.distro.name} safe
   ${o.appendSafe}`;
     utils.bashWrite(file, text);
 
-    utils.exec(`cp ${__dirname}/../../assets/turtle.png ${this.distro.pathIso}/isolinux`);
+    utils.exec(`cp ${__dirname}/../../assets/penguins-eggs-3-syslinux.png ${this.distro.pathIso}/isolinux`);
   }
 
   /**

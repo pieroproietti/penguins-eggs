@@ -93,28 +93,16 @@ Of course, you can build it or link it.
 
 
 ## Commands
-On the eggs you can do four actions:
+On the eggs you can do same actions:
+* produce
 * info
+* hatch
 * prerequisites
-* spawn
-* hatch (the cli installer)
-* calamares (configure gui installer gui calamares)
+* calamares
+* update
 * kill
 
-
-### info
-You will get the main information about your system. This information will be used in the process of spawn and configure the installer.
-
-```sudo eggs info```
-
-### prerequisites (installa i prerequisiti)
-You must use it once before to use eggs, it will install various Debian packages needing for the process of building iso.
-
-```sudo eggs prerequisites```
-
-The following packages will be installed: ```lvm2 parted squashfs-tools xorriso live-boot syslinux syslinux-common isolinux pxelinux`calamares qml-module-qtquick2 qml-module-qtquick-controls```
-
-### spawn (produzione dell'uovo/creazione ISO)
+### produce (preparazione dell'uovo/creazione ISO)
 The function of spawn is to generate the egg. Your system is copied and packaged
 as an iso file. This is a live system version of your real system, and you can
 masterize it or put in a USB key and use, and install your version of linux on
@@ -122,7 +110,12 @@ everyone computer. The command spawn accept the parameter ```-d``` or
 ```--distroname``` who, as the name implies is the name and, also, the hostname
 of your live system.
 
-```sudo eggs spawn -d mydistroname```
+```sudo eggs produce -d mydistroname```
+
+### info
+You will get the main information about your system. This information will be used in the process of spawn and configure the installer.
+
+```sudo eggs info```
 
 ### hatch (cova dell'uovo/installazione)
 An egg to became penguin need to be hatched! In our case we simply need to give
@@ -143,10 +136,22 @@ the operation of hatch is destructive and irreversible, and will format your
 disk and destroy your data to prepare the machine for the installation of your
 new penguin. **Be sure to have backup of your data before**.
 
+### prerequisites (installa i prerequisiti)
+You must use it once before to use eggs, it will install various Debian packages needing for the process of building iso.
+
+```sudo eggs prerequisites```
+
+The following packages will be installed: ```lvm2 parted squashfs-tools xorriso live-boot syslinux syslinux-common isolinux pxelinux`calamares qml-module-qtquick2 qml-module-qtquick-controls```
+
+
 ### calamares (crea la configurazione di calamares)
 This command is usefull during develepment, it generate the calamares configuration on fly.
 
 ```sudo eggs calamares```
+
+### update (aggionamento di penguin's eggs)
+```sudo eggs update```
+
 
 ### kill (libera lo spazio occupato)
 As the name say is the operation of break and kill the egg created. You will
@@ -195,7 +200,7 @@ contact me, or open an [issue](https://github.com/pieroproietti/penguins-eggs/is
 * google+: [PieroProietti](https://plus.google.com/+PieroProietti)
 * mail: piero.proietti@gmail.com
 
-**artisan**
+**sarcazzo**
 
 ## Copyright and licenses
-Copyright (c) 2017, [Piero Proietti](http://pieroproietti.github.com), dual licensed under the MIT or GPL Version 2 licenses.
+Copyright (c) 2017, 2019 [Piero Proietti](http://pieroproietti.github.com), dual licensed under the MIT or GPL Version 2 licenses.

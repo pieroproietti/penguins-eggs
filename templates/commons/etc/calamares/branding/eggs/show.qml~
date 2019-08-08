@@ -16,12 +16,8 @@
  *   along with Calamares. If not, see <http://www.gnu.org/licenses/>.
  */
 
-
-// https://github.com/calamares/calamares-extensions
-
-
 import QtQuick 2.0;
-import calamares.slideshow 1.0;
+//import calamares.slideshow 1.0;
 
 Presentation
 {
@@ -48,10 +44,10 @@ Presentation
             color: "#ff2a00"
             anchors.horizontalCenter: slide1.horizontalCenter
             anchors.top: image1.verticalCenter
-            text: qsTr("<h1>Benvenuto in Penguin's eggs</h1> .<br/>"+
+            text: "<h1>Benvenuto in Penguin's eggs</h1> .<br/>"+
                   "<b>Penguin's eggs</b> creato da Piero Proietti, sviluppato per la comunità.<br/>"+
                   "<br/><p>Il pinguino fa le uova e riproduce se stesso! Utilizza penguin's eggs per creare il tuo sistema.</p></br>" +
-                  "<p></p>.")
+                  "<p></p>."
             wrapMode: Text.WordWrap
             width: 600
             horizontalAlignment: Text.Center
@@ -72,10 +68,10 @@ Presentation
             color: "#ff2a00"
             anchors.horizontalCenter: slide2.horizontalCenter
             anchors.top: image2.verticalCenter
-            text: qsTr("<h1>Benvenuto in Penguin's eggs</h1> .<br/>"+
+            text: "<h1>Benvenuto in Penguin's eggs</h1> .<br/>"+
                   "<b>Penguin's eggs</b> creato da Piero Proietti, sviluppato per la comunità.<br/>"+
                   "<br/><p>Con eggs update puoi sempre scaricare l'ultima versione di penguin's eggs.</p></br>" +
-                    "<b>slide 2</p")
+                    "<b>slide 2</p"
             wrapMode: Text.WordWrap
             width: 600
             horizontalAlignment: Text.Center

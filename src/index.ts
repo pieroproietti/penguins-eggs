@@ -84,7 +84,7 @@ function usage() {
     `${app.name} need to run with supervisor privileges! You need to prefix it with sudo`
   );
   console.log("Usage: ");
-  console.log(">>> sudo eggs spawn --distroname penguin");
+  console.log(">>> sudo eggs produce --distroname penguin");
   console.log(">>> sudo eggs info");
   console.log(">>> sudo eggs hatch");
   console.log(">>> sudo eggs prerequisites");
@@ -99,7 +99,7 @@ function usage() {
  */
 async function start() {
   program
-    .command("spawn")
+    .command("produce")
     .command("info")
     .command("hatch")
     .command("prerequisites")
@@ -130,21 +130,25 @@ async function start() {
 
   let command = process.argv[2];
 
-  if (command == "spawn") {
-    i.spawn(o, c);
-  } else if (command == "kill") {
-    i.kill();
-  } else if (command == "calamares") {
-    c.configure(o);
+  if (command == "produce") {
+    i.produce(o, c);
+  } else if (command == "spawn") {
+    i.produce(o, c);
+  } else if (command == "lay") {
+    i.produce(o, c);
+  } else if (command == "info") {
+    console.log(oses.info(distro));
   } else if (command == "hatch") {
     startHatch();
   } else if (command == "prerequisites") {
     console.log("Installing prerequisites...");
     p.install();
-  } else if (command == "info") {
-    console.log(oses.info(distro));
+  } else if (command == "calamares") {
+    c.configure(o);
   } else if (command == "update") {
     Update.go();
+  } else if (command == "kill") {
+    i.kill();
   } else {
     usage();
   }
