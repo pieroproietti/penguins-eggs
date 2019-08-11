@@ -63,7 +63,10 @@ class Calamares {
 //    utils.exec(`mkdir -p /etc/calamares/branding/eggs`);
 //    utils.exec(`mkdir -p /etc/calamares/modules`);
 
-    utils.exec(`cp ${__dirname}/../../templates/commons/etc/* /etc/ -R`);
+
+utils.exec(`cp ${__dirname}/../../templates/* /etc/ -R`);
+
+//utils.exec(`cp ${__dirname}/../../templates/commons/etc/* /etc/ -R`);
 //    utils.exec(`cp ${__dirname}/../../templates/debian/etc/* /etc/ -R`);
 
 
