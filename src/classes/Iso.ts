@@ -207,7 +207,7 @@ class Iso {
     console.log("iso: kill ");
     console.log("==========================================");
     utils.exec(`rm -rf ${this.workDir}`);
-    utils.exec(`rm -rf /etc/calamares`);
+    //utils.exec(`rm -rf /etc/calamares`);
   }
 
 
