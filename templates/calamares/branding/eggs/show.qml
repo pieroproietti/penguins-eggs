@@ -48,10 +48,11 @@ Presentation
             color: "#ff2a00"
             anchors.horizontalCenter: slide1.horizontalCenter
             anchors.top: image1.verticalCenter
-            text: qsTr("<h1>Benvenuto in Penguin's eggs</h1> .<br/>"+
-                  "<b>Penguin's eggs</b> creato da Piero Proietti, sviluppato per la comunità.<br/>"+
-                  "<br/><p>Il pinguino fa le uova e riproduce se stesso! Utilizza penguin's eggs per creare il tuo sistema.</p></br>" +
-                  "<p></p>.")
+            text: qsTr("<h1>Penguin's eggs power</h1> .<br/>"+
+                  "Creato da Piero Proietti, sviluppato per la comunità.<br/>")
+            color: "#002439"
+            text: qsTr("<br/><p>Il pinguino fa le uova e riproduce se stesso! Utilizza penguin's eggs per creare il tuo sistema.</p></br>")
+
             wrapMode: Text.WordWrap
             width: 600
             horizontalAlignment: Text.Center
@@ -74,8 +75,7 @@ Presentation
             anchors.top: image2.verticalCenter
             text: qsTr("<h1>Benvenuto in Penguin's eggs</h1> .<br/>"+
                   "<b>Penguin's eggs</b> creato da Piero Proietti, sviluppato per la comunità.<br/>"+
-                  "<br/><p>Con eggs update puoi sempre scaricare l'ultima versione di penguin's eggs.</p></br>" +
-                    "<b>slide 2</p")
+                  "<br/><p>Con eggs update puoi sempre scaricare l'ultima versione di penguin's eggs.</p></br>")
             wrapMode: Text.WordWrap
             width: 600
             horizontalAlignment: Text.Center
@@ -97,10 +97,9 @@ Presentation
             color: "#ff2a00"
             anchors.horizontalCenter: slide3.horizontalCenter
             anchors.top: image3.verticalCenter
-            text: "<h1>Benvenuto in Penguin's eggs</h1> .<br/>"+
+            text: qsTr( "<h1>Benvenuto in Penguin's eggs</h1> .<br/>"+
                   "<b>Penguin's eggs</b> creato da Piero Proietti, sviluppato per la comunità.<br/>"+
-                  "<br/><p>Con eggs puoi ottenere una copia del tuo sistema da portare in tasca o da installare ad un amico.</p></br>" +
-                    "<b>slide 3</p"
+                  "<br/><p>Con eggs puoi ottenere una copia del tuo sistema da portare in tasca o da installare ad un amico.</p></br>")
             wrapMode: Text.WordWrap
             width: 600
             horizontalAlignment: Text.Center
@@ -122,10 +121,9 @@ Presentation
             color: "#ff2a00"
             anchors.horizontalCenter: slide4.horizontalCenter
             anchors.top: image4.verticalCenter
-            text: "<h1>Benvenuto in Penguin's eggs</h1> .<br/>"+
+            text: qsTr("<h1>Benvenuto in Penguin's eggs</h1> .<br/>"+
                   "<b>Penguin's eggs</b> creato da Piero Proietti, sviluppato per la comunità.<br/>"+
-                  "<br/><p>Con eggs il tuo sistema si riproduce, crea l'immagine iso del tuo sistema e reinstallala su un altro pc. Puoi farlo, è semplice e legale.</p></br>" +
-                    "<b>slide 4</p"
+                  "<br/><p>Con eggs il tuo sistema si riproduce, crea l'immagine iso del tuo sistema e reinstallala su un altro pc. Puoi farlo, è semplice e legale.</p></br>")
             wrapMode: Text.WordWrap
             width: 600
             horizontalAlignment: Text.Center
@@ -147,10 +145,9 @@ Presentation
             color: "#ff2a00"
             anchors.horizontalCenter: slide5.horizontalCenter
             anchors.top: image5.verticalCenter
-            text: "<h1>Benvenuto in Penguin's eggs</h1> .<br/>"+
+            text: qsTr("<h1>Benvenuto in Penguin's eggs</h1> .<br/>"+
                   "<b>Penguin's eggs</b> creato da Piero Proietti, sviluppato per la comunità.<br/>"+
-                  "<br/><p>Penguin's eggs, o meglio il suo sviluppatore cerca aiuto. Usa questo prodotto e, se puoi fatti sentire.</p></br>" +
-                    "<b>slide 5</p"
+                  "<br/><p>Penguin's eggs, o meglio il suo sviluppatore cerca aiuto. Usa questo prodotto e, se puoi fatti sentire.</p></br>")
             wrapMode: Text.WordWrap
             width: 600
             horizontalAlignment: Text.Center
@@ -172,10 +169,9 @@ Presentation
             color: "#ff2a00"
             anchors.horizontalCenter: slide6.horizontalCenter
             anchors.top: image6.verticalCenter
-            text: "<h1>Benvenuto in Penguin's eggs</h1> .<br/>"+
+            text: qsTr("<h1>Benvenuto in Penguin's eggs</h1> .<br/>"+
                   "<b>Penguin's eggs</b> creato da Piero Proietti, sviluppato per la comunità.<br/>"+
-                  "<br/><p>Eggs è semplice, ha pochi comandi. Usa eggs senza parametri per avere l'elenco completo</p></br>" +
-                    "<b>slide 6</p"
+                  "<br/><p>Eggs è semplice, ha pochi comandi. Usa eggs senza parametri per avere l'elenco completo</p></br>")
             wrapMode: Text.WordWrap
             width: 600
             horizontalAlignment: Text.Center
@@ -197,10 +193,9 @@ Presentation
             color: "#ff2a00"
             anchors.horizontalCenter: slide7.horizontalCenter
             anchors.top: image7.verticalCenter
-            text: "<h1>Benvenuto in Penguin's eggs</h1> .<br/>"+
+            text: qsTr("<h1>Benvenuto in Penguin's eggs</h1> .<br/>"+
                   "<b>Penguin's eggs</b> creato da Piero Proietti, sviluppato per la comunità.<br/>"+
-                  "<br/><p>eggs: un sistema riproduttivo per pinguini!</p></br>" +
-                    "<b>slide 7</p"
+                  "<br/><p>eggs: un sistema riproduttivo per pinguini!</p></br>")
             wrapMode: Text.WordWrap
             width: 600
             horizontalAlignment: Text.Center
