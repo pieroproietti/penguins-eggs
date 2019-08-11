@@ -1,0 +1,26 @@
+Moduli di calamares-settings-debian
+
+bootloader.conf
+finished.conf
+fstab.conf
+luksopenswaphookcfg.conf
+machineid.conf
+mount.conf
+packages.conf
+unpackfs.conf
+users.conf
+welcome.conf
+
+
+bootloader.conf
+finished.conf
+fstab.conf
+* locale.conf
+luksopenswaphookcfg.conf
+machineid.conf
+mount.conf
+packages.conf
+* removeuser.conf
+unpackfs.conf
+users.conf
+welcome.conf

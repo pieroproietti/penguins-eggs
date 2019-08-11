@@ -58,20 +58,20 @@ class Calamares {
    * create
    */
   async create() {
-    utils.exec(`mkdir -p /etc/calamares`);
-    utils.exec(`mkdir -p /etc/calamares/branding`);
-    utils.exec(`mkdir -p /etc/calamares/branding/eggs`);
-    utils.exec(`mkdir -p /etc/calamares/modules`);
+//    utils.exec(`mkdir -p /etc/calamares`);
+//    utils.exec(`mkdir -p /etc/calamares/branding`);
+//    utils.exec(`mkdir -p /etc/calamares/branding/eggs`);
+//    utils.exec(`mkdir -p /etc/calamares/modules`);
 
     utils.exec(`cp ${__dirname}/../../templates/commons/etc/* /etc/ -R`);
-    utils.exec(`cp ${__dirname}/../../templates/debian/etc/* /etc/ -R`);
+//    utils.exec(`cp ${__dirname}/../../templates/debian/etc/* /etc/ -R`);
 
 
     // /usr/lib/calamares
-    utils.exec(`cp ${__dirname}/../../templates/debian/usr/lib/calamares/* /usr/lib/calamares/ -R`);
+//    utils.exec(`cp ${__dirname}/../../templates/debian/usr/lib/calamares/* /usr/lib/calamares/ -R`);
 
     // /usr/sbin 
-    utils.exec(`cp ${__dirname}/../../templates/debian/usr/sbin/* /usr/sbin`);
+//    utils.exec(`cp ${__dirname}/../../templates/debian/usr/sbin/* /usr/sbin`);
   }
 
 
