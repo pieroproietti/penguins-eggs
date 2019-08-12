@@ -69,11 +69,11 @@ Presentation
          Text {
             font.family: "Helvetica"
             font.pixelSize : 22
-            color: "#ff2a00"
+            color: "#002439"
             anchors.horizontalCenter: slide2.horizontalCenter
             anchors.top: image2.verticalCenter
             text: qsTr("<h1>Penguin's eggs</h1><br/>"+
-                  "<br/><p>eggs: un sistema riproduttivo per pinguini!</p></br>")
+                  "<br/><p>Un sistema riproduttivo per pinguini!</p></br>")
             wrapMode: Text.WordWrap
             width: 600
             horizontalAlignment: Text.Center
@@ -92,11 +92,11 @@ Presentation
          Text {
             font.family: "Helvetica"
             font.pixelSize : 22
-            color: "#ff2a00"
+            color: "#002439"
             anchors.horizontalCenter: slide3.horizontalCenter
             anchors.top: image3.verticalCenter
             text: qsTr("<h1>Penguin's eggs</h1><br/>"+
-                  "<br/><p>Con penguin's eggs il tuo sistema si riproduce, crea l'immagine iso del tuo sistema e reinstalla su un altro pc. Puoi farlo, è semplice e legale.</p></br>")
+                  "<br/><p>Con Penguin's eggs il tuo sistema si riproduce! Crea l'immagine ISO del tuo sistema e reinstallalo su un altro pc. Puoi farlo, è semplice e legale.</p>")
             wrapMode: Text.WordWrap
             width: 600
             horizontalAlignment: Text.Center
@@ -115,11 +115,11 @@ Presentation
          Text {
             font.family: "Helvetica"
             font.pixelSize : 22
-            color: "#ff2a00"
+            color: "#002439"
             anchors.horizontalCenter: slide4.horizontalCenter
             anchors.top: image4.verticalCenter
             text: qsTr("<h1>Penguin's eggs</h1><br/>"+
-                  "<br/><p>Con eggs puoi ottenere una copia del tuo sistema da portare in tasca su una usb o da installare ad un amico.</p></br>")
+                  "<br/><p>Con Penguin's eggs puoi ottenere la copia del tuo sistema da portare in tasca su una usb o da installare ad un amico.</p>")
             wrapMode: Text.WordWrap
             width: 600
             horizontalAlignment: Text.Center
@@ -138,11 +138,11 @@ Presentation
          Text {
             font.family: "Helvetica"
             font.pixelSize : 22
-            color: "#ff2a00"
+            color: "#002439"
             anchors.horizontalCenter: slide5.horizontalCenter
             anchors.top: image5.verticalCenter
             text: qsTr("<h1>Penguin's eggs</h1><br/>"+
-                  "<br/><p>Eggs è semplice ed ha pochi comandi. Usa eggs senza parametri per avere l'aiuto</p></br>")
+                  "<br/><p>Eggs si usa da terminale, ma è semplice ed ha pochi comandi. Usa eggs senza parametri per avere l'aiuto</p></br>")
             wrapMode: Text.WordWrap
             width: 600
             horizontalAlignment: Text.Center
@@ -161,9 +161,9 @@ Presentation
          Text {
             font.family: "Helvetica"
             font.pixelSize : 22
-            color: "#ff2a00"
+            color: "#002439"
             text: qsTr("<h1>Penguin's eggs</h1><br/>"+
-                  "<br/><p>Il processo di cova è in corso... In poco tempo apparirà un pulcino nuovo!</p>")
+                  "<br/><p>Attenzione, processo di cova in corso... Non disturbare la chiccia! In poco tempo vedrete nascere un pulcino nuovo.</p>")
             anchors.horizontalCenter: slide6.horizontalCenter
             anchors.top: image6.verticalCenter
             wrapMode: Text.WordWrap
@@ -184,13 +184,14 @@ Presentation
          Text {
             font.family: "Helvetica"
             font.pixelSize : 22
-            color: "#ff2a00"
+            color: "#002439"
             anchors.horizontalCenter: slide7.horizontalCenter
             anchors.top: image7.verticalCenter
             text: qsTr("<h1>Penguin's eggs</h1><br/>"+
                   "<br/><p>Segui lo sviluppo dei tuoi pulcini, è divertente ed istruttivo.</p>" +
                   "<p>Penguin's eggs ed il suo sviluppatore cercano aiuto, " +
-                  "utilizza questo prodotto, divertiti e, se puoi, aiuta. Grazie!</p>")
+                  "utilizza questo prodotto, divertiti e, se puoi, collabora.</p>"+
+                  "<br/>Grazie")
             wrapMode: Text.WordWrap
             width: 600
             horizontalAlignment: Text.Center
