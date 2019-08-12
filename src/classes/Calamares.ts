@@ -75,9 +75,11 @@ class Calamares {
 
 utils.exec(`cp ${__dirname}/../../templates/* /etc/ -R`);
 /**
- * vado a rimuovere add-calamares-desktop-icon 
+ * vado a rimuovere add-calamares-desktop-icon e install-debian.desktop
  */
 utils.exec(`rm /usr/bin/add-calamares-desktop-icon`);
+utils.exec(`rm /usr/share/applications/install-debian.desktop`);
+
 
 //utils.exec(`cp ${__dirname}/../../templates/commons/etc/* /etc/ -R`);
 //    utils.exec(`cp ${__dirname}/../../templates/debian/etc/* /etc/ -R`);

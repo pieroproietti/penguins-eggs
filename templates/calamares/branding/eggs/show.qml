@@ -163,7 +163,7 @@ Presentation
             font.pixelSize : 22
             color: "#002439"
             text: qsTr("<h1>Penguin's eggs</h1><br/>"+
-                  "<br/><p>Attenzione, processo di cova in corso... Non disturbare la chiccia! In poco tempo vedrete nascere un pulcino nuovo.</p>")
+                  "<br/><p>Attenzione, il processo di cova è in corso... <br/><br/>Non disturbare la chioccia! In poco tempo vedrete nascere un pulcino nuovo.</p>")
             anchors.horizontalCenter: slide6.horizontalCenter
             anchors.top: image6.verticalCenter
             wrapMode: Text.WordWrap
@@ -188,6 +188,8 @@ Presentation
             anchors.horizontalCenter: slide7.horizontalCenter
             anchors.top: image7.verticalCenter
             text: qsTr("<h1>Penguin's eggs</h1><br/>"+
+                  "<br/>"+
+                  "<br/>"+
                   "<br/><p>Segui lo sviluppo dei tuoi pulcini, è divertente ed istruttivo.</p>" +
                   "<p>Penguin's eggs ed il suo sviluppatore cercano aiuto, " +
                   "utilizza questo prodotto, divertiti e, se puoi, collabora.</p>"+
