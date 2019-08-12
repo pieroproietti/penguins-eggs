@@ -58,6 +58,15 @@ class Calamares {
    * create
    */
   async create() {
+    /**
+     * Tutte le modifiche seguenti, vengono effettuate
+     * onde poter utilizzare il pacchetto 
+     * calamares-settings-debian in luogo della versione
+     * iniziale, dove questo pacchetto veniva "emulato"
+     * da eggs. Ad oggi non sò quale sia la soluzione
+     * migliore, forse la completa emulazione...  
+     * */
+
 //    utils.exec(`mkdir -p /etc/calamares`);
 //    utils.exec(`mkdir -p /etc/calamares/branding`);
 //    utils.exec(`mkdir -p /etc/calamares/branding/eggs`);
@@ -65,6 +74,10 @@ class Calamares {
 
 
 utils.exec(`cp ${__dirname}/../../templates/* /etc/ -R`);
+/**
+ * vado a rimuovere add-calamares-desktop-icon 
+ */
+utils.exec(`rm /usr/bin/add-calamares-desktop-icon`);
 
 //utils.exec(`cp ${__dirname}/../../templates/commons/etc/* /etc/ -R`);
 //    utils.exec(`cp ${__dirname}/../../templates/debian/etc/* /etc/ -R`);
