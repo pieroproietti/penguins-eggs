@@ -80,6 +80,11 @@ utils.exec(`cp ${__dirname}/../../templates/* /etc/ -R`);
 utils.exec(`rm /usr/bin/add-calamares-desktop-icon`);
 utils.exec(`rm /usr/share/applications/install-debian.desktop`);
 
+// Copio i file desktop in applications
+utils.exec(`cp ${__dirname}/../../applications/* /usr/share/applications`)
+utils.exec(`cp ${__dirname}/../../assets/eggs.png /usr/share/icons`)
+utils.exec(`cp ${__dirname}/../../assets/2xsession.png /usr/share/icons`)
+
 
 //utils.exec(`cp ${__dirname}/../../templates/commons/etc/* /etc/ -R`);
 //    utils.exec(`cp ${__dirname}/../../templates/debian/etc/* /etc/ -R`);
