@@ -47,7 +47,7 @@ Presentation
             font.pixelSize : 22
             color: "#002439"
             anchors.horizontalCenter: slide1.horizontalCenter
-            anchors.top: image1.verticalCenter
+            anchors.top: slide1.verticalCenter
             text: qsTr("<h1>Penguin's eggs</h1><br/>"+
                   "<br/>Creato da Piero Proietti, pensato per la comunità.<br/>"+
                   "<br/>sources: htts://github.com/pieroproietti/penguins-eggs"+
@@ -71,7 +71,7 @@ Presentation
             font.pixelSize : 22
             color: "#002439"
             anchors.horizontalCenter: slide2.horizontalCenter
-            anchors.top: image2.verticalCenter
+            anchors.top: slide2.verticalCenter
             text: qsTr("<h1>Penguin's eggs</h1><br/>"+
                   "<br/><p>Un sistema riproduttivo per pinguini!</p></br>")
             wrapMode: Text.WordWrap
@@ -94,7 +94,7 @@ Presentation
             font.pixelSize : 22
             color: "#002439"
             anchors.horizontalCenter: slide3.horizontalCenter
-            anchors.top: image3.verticalCenter
+            anchors.top: slide3.verticalCenter
             text: qsTr("<h1>Penguin's eggs</h1><br/>"+
                   "<br/><p>Con Penguin's eggs il tuo sistema si riproduce! Crea l'immagine ISO del tuo sistema e reinstallalo su un altro pc. Puoi farlo, è semplice e legale.</p>")
             wrapMode: Text.WordWrap
@@ -117,7 +117,7 @@ Presentation
             font.pixelSize : 22
             color: "#002439"
             anchors.horizontalCenter: slide4.horizontalCenter
-            anchors.top: image4.verticalCenter
+            anchors.top: slide4.verticalCenter
             text: qsTr("<h1>Penguin's eggs</h1><br/>"+
                   "<br/><p>Con Penguin's eggs puoi ottenere la copia del tuo sistema da portare in tasca su una usb o da installare ad un amico.</p>")
             wrapMode: Text.WordWrap
@@ -140,7 +140,7 @@ Presentation
             font.pixelSize : 22
             color: "#002439"
             anchors.horizontalCenter: slide5.horizontalCenter
-            anchors.top: image5.verticalCenter
+            anchors.top: slide5.verticalCenter
             text: qsTr("<h1>Penguin's eggs</h1><br/>"+
                   "<br/><p>Eggs si usa da terminale, ma è semplice ed ha pochi comandi. Usa eggs senza parametri per avere l'aiuto</p></br>")
             wrapMode: Text.WordWrap
@@ -165,7 +165,7 @@ Presentation
             text: qsTr("<h1>Penguin's eggs</h1><br/>"+
                   "<br/><p>Attenzione, il processo di cova è in corso... <br/><br/>Non disturbare la chioccia! In poco tempo vedrete nascere un pulcino nuovo.</p>")
             anchors.horizontalCenter: slide6.horizontalCenter
-            anchors.top: image6.verticalCenter
+            anchors.top: slide6.verticalCenter
             wrapMode: Text.WordWrap
             width: 600
             horizontalAlignment: Text.Center
@@ -186,7 +186,7 @@ Presentation
             font.pixelSize : 22
             color: "#002439"
             anchors.horizontalCenter: slide7.horizontalCenter
-            anchors.top: image7.verticalCenter
+            anchors.top: slide7.verticalCenter
             text: qsTr("<h1>Penguin's eggs</h1><br/>"+
                   "<br/>"+
                   "<br/>"+
