@@ -114,8 +114,8 @@ utils.exec(`cp ${__dirname}/../../assets/2xsession.png /usr/share/icons`)
             exec: ['partition', 'mount', 'unpackfs', 'sources-media', 'machineid', 'fstab', 'locale',
               'keyboard', 'localecfg', 'users', 'networkcfg', 'hwclock',
               'bootloader-config', 'grubcfg', 'bootloader', 'packages', 'luksbootkeyfile',
-              'plymouthcfg', 'initramfscfg', 'initramfs', 'sources-media-unmount',
-              'sources-final', 'removeuser', 'umount']
+              'plymouthcfg', 'initramfscfg', 'initramfs', 'displaymanager', 
+              'sources-media-unmount', 'sources-final', 'removeuser', 'umount']
           },
           { show: ['finished'] }],
         branding: 'eggs',
