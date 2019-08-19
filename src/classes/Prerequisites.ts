@@ -67,6 +67,7 @@ debian(): void {
                             isolinux pxelinux`);
 
     utils.exec(`apt-get --yes install calamares \
+                            calamares-settings-debian \
                             qml-module-qtquick2 \
                             qml-module-qtquick-controls`);
 
@@ -110,6 +111,8 @@ mule(): void {
     utils.exec(`apt-get remove --purge --yes qml-module-qtquick-controls `);
     utils.exec(`apt-get remove --purge --yes qml-module-qtquick2 `);
     utils.exec(`apt-get remove --purge --yes syslinux`);
+    utils.exec(`apt-get autoclean`);
+
 }
 
 }
