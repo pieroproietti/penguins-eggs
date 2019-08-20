@@ -162,7 +162,7 @@ utils.exec(`cp ${__dirname}/../../assets/eggs.png /usr/share/icons`)
     // Configurazione branding.desc
     let brandingPath = '/etc/calamares/branding/eggs/branding.desc';
 
-    let productName = 'Penguin\'s eggs' + ' ' + this.distro.name;
+    let productName = this.distro.name;
     let shortProductName = this.distro.name;
     let version = this.distro.versionNumber + ' ( ' + this.distro.versionName + ')';
     let shortVersion = this.distro.versionNumber;
