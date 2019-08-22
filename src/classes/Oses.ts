@@ -203,10 +203,10 @@ class Oses {
             o.distroId = "Continuum";
             o.distroLike = "Debian";
             o.versionLike = "stretch";
-        } else if (o.versionId === "bullseys") {
+        } else if (o.versionId === "bullseye") {
             o.distroId = "Debian";
             o.distroLike = "Debian";
-            o.versionLike = "bullseys";
+            o.versionLike = "bullseye";
             o.mountpointSquashFs = "/run/live/medium/live/filesystem.squashfs";
         } else if (o.versionId === "buster") {
             o.distroId = "Debian";
