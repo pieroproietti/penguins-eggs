@@ -332,17 +332,17 @@ utils.bashWrite(file, text);
     LABEL Albanian (sq) (kernel ${kernel})
           SAY "Booting Albanian (sq)..."
           linux /live/vmlinuz
-          ${o.append} components locales=sq_AL.UTF-8;
+          append initrd=/live/initrd.img boot=live components locales=sq_AL.UTF-8
 
     LABEL Amharic (am) 
           SAY "Booting Amharic (am)..."
           linux /live/vmlinuz
-          ${o.append} components locales=am_ET.UTF-8
+          append initrd=/live/initrd.img boot=live components locales=am_ET.UTF-8 
           
     LABEL Arabic (ar) 
           SAY "Booting Arabic (ar)..."
           linux /live/vmlinuz
-          ${o.append} components locales=ar_EG.UTF-8
+          append initrd=/live/initrd.img boot=live components locales=ar_EG.UTF-8
     
     LABEL Asturian (ast)
           SAY "Booting Asturian (ast)..."  
