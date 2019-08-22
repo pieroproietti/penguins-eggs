@@ -307,6 +307,7 @@ utils.bashWrite(file, text);
   }
 
   async menuCfg(o: IOses) {
+    let kernel = utils.kernerlVersion();
 
     // o.append = `append initrd=/live/initrd.img boot=live quiet splash`;
     // o.appendSafe = `append initrd=/live/initrd.img boot=live xforcevesa nomodeset verbose`;
@@ -320,7 +321,7 @@ utils.bashWrite(file, text);
     INCLUDE stdmenu.cfg
     MENU title Main Menu
     DEFAULT ^${this.distro.name} 
-    LABEL ${this.distro.name} (kernel ${this.distro.kernel})
+    LABEL ${this.distro.name} (kernel ${kernel})
         SAY "Booting ${this.distro.name}"
         linux /live/vmlinuz
         ${o.append}
@@ -328,37 +329,37 @@ utils.bashWrite(file, text);
     MENU begin advanced
     MENU title ${this.distro.name} with Localisation Support
     
-    LABEL Albanian (sq) (kernel ${this.distro.kernel})
+    LABEL Albanian (sq) (kernel ${kernel})
           SAY "Booting Albanian (sq)..."
           linux /live/vmlinuz
           ${o.append} components locales=sq_AL.UTF-8;
 
-    LABEL Amharic (am) (kernel ${this.distro.kernel})
+    LABEL Amharic (am) 
           SAY "Booting Amharic (am)..."
           linux /live/vmlinuz
           ${o.append} components locales=am_ET.UTF-8
           
-    LABEL Arabic (ar) (kernel ${this.distro.kernel})
+    LABEL Arabic (ar) 
           SAY "Booting Arabic (ar)..."
           linux /live/vmlinuz
           ${o.append} components locales=ar_EG.UTF-8
     
-    LABEL Asturian (ast) (kernel ${this.distro.kernel})
+    LABEL Asturian (ast)
           SAY "Booting Asturian (ast)..."  
           linux /live/vmlinuz
           ${o.append} components locales=ast_ES.UTF-8
     
-    LABEL Basque (eu) (kernel ${this.distro.kernel})
+    LABEL Basque (eu)
           SAY "Booting Basque (eu)..."
           linux /live/vmlinuz
           ${o.append} components locales=eu_ES.UTF-8
           
-    LABEL Belarusian (be) (kernel ${this.distro.kernel})
+    LABEL Belarusian (be)
           SAY "Booting Belarusian (be)..."
           linux /live/vmlinuz
           ${o.append}components locales=be_BY.UTF-8
     
-    LABEL Bangla (bn) (kernel ${this.distro.kernel})
+    LABEL Bangla (bn)
           SAY "Booting Bangla (bn)..."
           linux /live/vmlinuz
           ${o.append}components locales=bn_BD
