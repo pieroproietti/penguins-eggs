@@ -303,11 +303,11 @@ class Oses {
             o.append = `append initrd=/live/initrd.img boot=live quiet splash`;
             o.appendSafe = `append initrd=/live/initrd.img boot=live xforcevesa nomodeset verbose`;
         } else if (o.distroLike === "Ubuntu") {
-            o.append = `append initrd=/live/initrd.img boot=live quiet splash`;
-            o.appendSafe = `append initrd=/live/initrd.img boot=live xforcevesa nomodeset verbose`;
+            o.append = `append initrd=/live/initrd.img boot=live live-config quiet splash`;
+            o.appendSafe = `append initrd=/live/initrd.img boot=live live-config xforcevesa nomodeset verbose`;
         } else if (o.distroLike === "Debian") {
-            o.append = `append initrd=/live/initrd.img boot=live quiet splash`;
-            o.appendSafe = `append initrd=/live/initrd.img boot=live xforcevesa nomodeset verbose`;
+            o.append = `append initrd=/live/initrd.img boot=live live-config quiet splash`;
+            o.appendSafe = `append initrd=/live/initrd.img boot=live live-config xforcevesa nomodeset verbose`;
         }
         o.menuTitle = `MENU TITLE ${o.distroName} a ${o.distroId}/${o.versionId} derivated. ${utils.date4label()}`;
         return (o);
