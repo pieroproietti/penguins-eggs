@@ -62,6 +62,7 @@ debian(): void {
                             squashfs-tools \
                             xorriso \
                             live-boot \
+                            live-config \
                             syslinux \
                             syslinux-common \
                             isolinux pxelinux`);
