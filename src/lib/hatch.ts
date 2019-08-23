@@ -160,9 +160,11 @@ async function grubInstall(target: string, options: any) {
  */
 async function mkinitramfs(target: string) {
   console.log("mkinitramfs");
+  /*
   await execute(
     `chroot ${target} mkinitramfs -k -o /tmp/initramfs-$(uname -r)`
-  );
+  );*/
+  await execute(`chroot ${target} live-update-initramfs -k -o /tmp/initramfs-$(uname -r)`)
   await execute(`cp ${target}/tmp/initramfs-$(uname -r) /TARGET/boot`);
 }
 
