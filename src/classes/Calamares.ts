@@ -144,8 +144,8 @@ class Calamares {
     //let supportUrl = supportUrl; 
     let releaseNotesUrl = 'https://github.com/pieroproietti/penguins-eggs';
 
-    let productLogo = `logo-${this.distro.branding}.png`;
-    let productIcon = `logo-${this.distro.branding}.png`;
+    let productLogo = `${this.distro.branding}-logo.png`;
+    let productIcon = `${this.distro.branding}-logo.png`;
     let productWelcome = 'welcome.png';
 
     let slideshow = 'show.qml';
