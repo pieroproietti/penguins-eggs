@@ -59,7 +59,6 @@ if (user.name==""){
   user.fullName = "live";
   user.password = "evolution";
 }
-console.log("we are working with user: "+ user.name);
 
 let root = {} as IUser;
 root.fullName = "root";

@@ -321,10 +321,10 @@ utils.bashWrite(file, text);
     INCLUDE stdmenu.cfg
     MENU title Main Menu
     DEFAULT ^${this.distro.name} 
-    LABEL ${this.distro.name} (kernel ${kernel})
-        SAY "Booting ${this.distro.name}"
+    LABEL ${this.distro.name} (kernel ${kernel}) Italian (it)
+        SAY "Booting ${this.distro.name} Italian (it)"
         linux /live/vmlinuz
-        ${o.append}
+        ${o.append}  components locales=it_IT.UTF-8
     
     MENU begin advanced
     MENU title ${this.distro.name} with Localisation Support
