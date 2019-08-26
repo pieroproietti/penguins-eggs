@@ -58,43 +58,10 @@ class Calamares {
    * create
    */
   async create() {
-    /**
-     * Tutte le modifiche seguenti, vengono effettuate
-     * onde poter utilizzare il pacchetto 
-     * calamares-settings-debian in luogo della versione
-     * iniziale, dove questo pacchetto veniva "emulato"
-     * da eggs. Ad oggi non sò quale sia la soluzione
-     * migliore, forse la completa emulazione...  
-     * */
-
-//    utils.exec(`mkdir -p /etc/calamares`);
-//    utils.exec(`mkdir -p /etc/calamares/branding`);
-//    utils.exec(`mkdir -p /etc/calamares/branding/eggs`);
-//    utils.exec(`mkdir -p /etc/calamares/modules`);
-
-
-utils.exec(`cp ${__dirname}/../../templates/* /etc/ -R`);
-/**
- * vado a rimuovere add-calamares-desktop-icon e install-debian.desktop
- */
-utils.exec(`rm /usr/bin/add-calamares-desktop-icon`);
-utils.exec(`rm /usr/share/applications/install-debian.desktop`);
-
-// Copio i file desktop in applications
-utils.exec(`cp ${__dirname}/../../applications/* /usr/share/applications`)
-utils.exec(`cp ${__dirname}/../../assets/eggs.png /usr/share/icons`)
-//utils.exec(`cp ${__dirname}/../../assets/2xsession.png /usr/share/icons`)
-
-
-//utils.exec(`cp ${__dirname}/../../templates/commons/etc/* /etc/ -R`);
-//    utils.exec(`cp ${__dirname}/../../templates/debian/etc/* /etc/ -R`);
-
-
-    // /usr/lib/calamares
-//    utils.exec(`cp ${__dirname}/../../templates/debian/usr/lib/calamares/* /usr/lib/calamares/ -R`);
-
-    // /usr/sbin 
-//    utils.exec(`cp ${__dirname}/../../templates/debian/usr/sbin/* /usr/sbin`);
+    utils.exec(`cp ${__dirname}/../../templates/* /etc/ -R`);
+    utils.exec(`rm /usr/bin/add-calamares-desktop-icon`);
+    utils.exec(`rm /usr/share/applications/install-debian.desktop`);
+    utils.exec(`cp ${__dirname}/../../applications/* /usr/share/applications`)
   }
 
 
@@ -118,10 +85,11 @@ utils.exec(`cp ${__dirname}/../../assets/eggs.png /usr/share/icons`)
               'sources-media-unmount', 'sources-final', 'removeuser', 'umount']
           },
           { show: ['finished'] }],
-        branding: 'eggs',
+        branding: this.distro.name,
         'prompt-install': false,
         'dont-chroot': false
       };
+      
     } else {
       settings = {
         'modules-search': ['local', '/usr/lib/calamares/modules'],
@@ -134,7 +102,7 @@ utils.exec(`cp ${__dirname}/../../assets/eggs.png /usr/share/icons`)
               'plymouthcfg', 'initramfscfg', 'initramfs', 'removeuser', 'umount']
           },
           { show: ['finished'] }],
-        branding: 'eggs',
+        branding: this.distro.name,
         'prompt-install': false,
         'dont-chroot': false
       };
@@ -159,8 +127,13 @@ utils.exec(`cp ${__dirname}/../../assets/eggs.png /usr/share/icons`)
 
 
   async brandingDesc(versionLike: string, homeUrl: string, supportUrl: string, bugReportUrl: string) {
+    let brandingPath = `/etc/calamares/branding/${this.distro.name}`;
+
+    if (!fs.existsSync(brandingPath)){
+      fs.mkdirSync(brandingPath);
+    }
     // Configurazione branding.desc
-    let brandingPath = '/etc/calamares/branding/eggs/branding.desc';
+    let brandingFile = `${brandingPath}/branding.desc`;
 
     let productName = this.distro.name;
     let shortProductName = this.distro.name;
@@ -182,7 +155,7 @@ utils.exec(`cp ${__dirname}/../../assets/eggs.png /usr/share/icons`)
 
     let branding =
     {
-      componentName: 'eggs',
+      componentName: this.distro.name,
       welcomeStyleCalamares: true,
       strings:
       {
@@ -213,7 +186,7 @@ utils.exec(`cp ${__dirname}/../../assets/eggs.png /usr/share/icons`)
     };
 
     console.log("Configurazione branding.desc");
-    fs.writeFileSync(brandingPath, `#versionLike: ${versionLike}\n` + yaml.safeDump(branding), 'utf8');
+    fs.writeFileSync(brandingFile, `#versionLike: ${versionLike}\n` + yaml.safeDump(branding), 'utf8');
   }
 
 }
