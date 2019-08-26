@@ -108,11 +108,30 @@ async function start() {
     .command("update")
     .command("kill");
 
-  program.option("-d, --distroname <distroname>");
+  program
+    .option("-d, --distroname <distroname>")
+    .option("-b, --branding <branding>")
+    .option("-t, --testing");
+
   program.parse(process.argv);
   if (program.distroname) {
     distro.name = program.distroname;
   }
+  if (program.branding) {
+    distro.branding = program.branding;
+  }
+
+  /**
+   * sudo npx ts-node src/index.ts produce -b deblinux -t
+   */
+  console.log(`user: ${user.name}`);
+  console.log(`distroname: ${distro.name}`);
+  console.log(`branding: ${distro.branding}`);
+
+  if (program.testing) {
+    process.exit();
+  }
+
 
   if (await utils.isMounted("vz")) {
     workDir = "/var/lib/vz/eggs/";
