@@ -43,8 +43,6 @@ class Calamares {
 
   public isCalamaresInstalled(): boolean {
     const path = '/etc/calamares/branding/eggs/branding.desc';
-
-
     try {
       if (fs.existsSync(path)) {
         return true;
@@ -85,7 +83,7 @@ class Calamares {
               'sources-media-unmount', 'sources-final', 'removeuser', 'umount']
           },
           { show: ['finished'] }],
-        branding: this.distro.name,
+        branding: this.distro.branding,
         'prompt-install': false,
         'dont-chroot': false
       };
@@ -102,7 +100,7 @@ class Calamares {
               'plymouthcfg', 'initramfscfg', 'initramfs', 'removeuser', 'umount']
           },
           { show: ['finished'] }],
-        branding: this.distro.name,
+        branding: this.distro.branding,
         'prompt-install': false,
         'dont-chroot': false
       };
@@ -127,7 +125,7 @@ class Calamares {
 
 
   async brandingDesc(versionLike: string, homeUrl: string, supportUrl: string, bugReportUrl: string) {
-    let brandingPath = `/etc/calamares/branding/${this.distro.name}`;
+    let brandingPath = `/etc/calamares/branding/${this.distro.branding}`;
 
     if (!fs.existsSync(brandingPath)){
       fs.mkdirSync(brandingPath);
@@ -155,7 +153,7 @@ class Calamares {
 
     let branding =
     {
-      componentName: this.distro.name,
+      componentName: this.distro.branding,
       welcomeStyleCalamares: true,
       strings:
       {

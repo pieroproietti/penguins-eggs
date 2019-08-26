@@ -109,12 +109,18 @@ async function start() {
     .command("kill");
 
   program
-    .option("-d, --distroname <distroname>")
-    .option("-t, --testing");
+  .option("-d, --distroname <distroname>")
+  .option("-b, --branding <branding>")
+  .option("-t, --testing");
 
   program.parse(process.argv);
   if (program.distroname) {
     distro.name = program.distroname;
+  }
+  if (program.branding) {
+    distro.branding = program.branding;
+  } else {
+    distro.branding = "eggs";
   }
 
   /**
@@ -122,7 +128,7 @@ async function start() {
    */
   console.log(`user: ${user.name}`);
   console.log(`distroname: ${distro.name}`);
-  //console.log(`branding: ${distro.branding}`);
+  console.log(`branding: ${distro.branding}`);
 
   if (program.testing) {
     process.exit();
