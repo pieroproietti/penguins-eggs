@@ -101,9 +101,9 @@ export async function hatch() {
   await mkinitramfs(target);
   await grubInstall(target, options);
 
-  await addUser(options.username, options.userfullname, options.userpassword);
-  await setRootPassword(options.rootpassword);
-  await delUserLive();
+  //await addUser(options.username, options.userfullname, options.userpassword);
+  //await setRootPassword(options.rootpassword);
+  //await delUserLive();
 
   await patchPve(target);
 
@@ -116,12 +116,6 @@ async function delUserLive() {
   console.log("Cancellazione utente live\n");
 }
 
-async function addUser(username: String, userfullname: String, userpassword: String){
-  console.log('Configurazione utente\n');
-}
-async function setRootPassword(rootpassword: String){
-  console.log('Impostazione password di root\n');
-}
 
 
 
@@ -131,7 +125,7 @@ async function setRootPassword(rootpassword: String){
  *          e che ricrea i codici di ssh della macchina
  * @param target 
  */
-async function patchPve(target: string){
+async function patchPve(target: string) {
   // patch per apache2
   await execute(`chroot ${target} mkdir /var/log/apache2`);
 

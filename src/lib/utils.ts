@@ -20,6 +20,21 @@ import path from "path";
  */
 class utils {
 
+  async addUser(username: string, 
+                password: string,
+                fullName: string="", 
+                roomNumber: string="", 
+                workPhone: string="", 
+                homePhone: string="" ) {
+    let result: any;
+
+
+
+    let command: string =`adduser  ${username} --password ${password} --gecos ${fullName},${roomNumber},${workPhone},${homePhone}`;
+    result = shell.exec(command);
+    console.log(command);
+  }
+
   async isLive(): Promise<Boolean> {
     let test: string = "1";
     let result: any;
@@ -102,8 +117,8 @@ class utils {
   }
 
   bashWrite(file: string, text: string): void {
-    const head: string = 
-    `########################################################START##\n# penguins-eggs: ${path.basename(file.trim())}\n###############################################################\n`;
+    const head: string =
+      `########################################################START##\n# penguins-eggs: ${path.basename(file.trim())}\n###############################################################\n`;
     const footer: string = `######################################################## END ##
     `;
 

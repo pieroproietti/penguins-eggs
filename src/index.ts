@@ -84,9 +84,9 @@ function usage() {
     `${app.name} need to run with supervisor privileges! You need to prefix it with sudo`
   );
   console.log("Usage: ");
-  console.log(">>> sudo eggs produce --distroname penguin");
+  console.log(">>> sudo eggs produce --distroname penguin --branding debian");
   console.log(">>> sudo eggs info");
-  console.log(">>> sudo eggs hatch");
+  console.log(">>> sudo eggs install");
   console.log(">>> sudo eggs prerequisites");
   console.log(">>> sudo eggs calamares");
   console.log(">>> sudo eggs update");
@@ -101,11 +101,12 @@ async function start() {
   program
     .command("produce")
     .command("info")
-    .command("hatch")
+    .command("install")
     .command("prerequisites")
     .command("calamares")
     .command("update")
-    .command("kill");
+    .command("kill")
+    .command("user");
 
   program
   .option("-d, --distroname <distroname>")
@@ -159,6 +160,8 @@ async function start() {
     i.produce(o, c);
   } else if (command == "info") {
     console.log(oses.info(distro));
+  } else if (command == "install") {
+    startHatch();
   } else if (command == "hatch") {
     startHatch();
   } else if (command == "prerequisites") {
@@ -170,6 +173,8 @@ async function start() {
     Update.go();
   } else if (command == "kill") {
     i.kill();
+  } else if (command == "user") {
+    utils.addUser("pippo","pluto");
   } else {
     usage();
   }
