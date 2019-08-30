@@ -20,8 +20,8 @@ import path from "path";
  */
 class utils {
 
-  async addUser(username: string, 
-                password: string,
+  async addUser(username: string="live", 
+                password: string="evolution",
                 fullName: string="", 
                 roomNumber: string="", 
                 workPhone: string="", 
@@ -29,11 +29,44 @@ class utils {
     let result: any;
 
 
+    let usrCommand: string =`sudo adduser --home /home/${username} \
+                                  --shell /bin/bash \
+                                  --disabled-password \
+                                  --gecos "${fullName}","${roomNumber}","${workPhone}","${homePhone}" \
+                                  ${username}`;
+    
+    result = shell.exec(usrCommand);
+    console.log(usrCommand);
 
-    let command: string =`adduser  ${username} --password ${password} --gecos ${fullName},${roomNumber},${workPhone},${homePhone}`;
-    result = shell.exec(command);
-    console.log(command);
+    /**
+     * let rmPassword: string = `passwd -d ${username}`;
+     * shell.exec(rmPassword);
+     * console.log(rmPassword);
+     */
+
+    let pwdCommand: string=`echo ${username}:${password} | chpasswd `;
+    shell.exec(pwdCommand);
+    console.log(pwdCommand);
+
+    let sudoCommand: string=`addgroup ${username} sudo`;
+    shell.exec(sudoCommand);
+    console.log(sudoCommand);
   }
+
+  async changePassword(username: string="live", 
+                  newPassword: string="evolution"){
+
+      let pwdCommand: string=`echo ${username}:${newPassword} | chpasswd `;
+      shell.exec(pwdCommand);
+      console.log(pwdCommand);
+  }
+
+  async delUser(username: string="live"){
+    let delCommand: string=`deluser ${username}`;
+    shell.exec(delCommand);
+    console.log(delCommand);
+  }
+
 
   async isLive(): Promise<Boolean> {
     let test: string = "1";

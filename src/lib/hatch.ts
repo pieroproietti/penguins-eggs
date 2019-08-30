@@ -101,9 +101,9 @@ export async function hatch() {
   await mkinitramfs(target);
   await grubInstall(target, options);
 
-  //await addUser(options.username, options.userfullname, options.userpassword);
-  //await setRootPassword(options.rootpassword);
-  //await delUserLive();
+  await utils.addUser(options.username, options.userpassword);
+  await utils.changePassword(`root`, options.rootpassword);
+  await delUserLive();
 
   await patchPve(target);
 
