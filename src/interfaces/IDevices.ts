@@ -12,7 +12,7 @@ export interface IDevice {
 
 export interface IDevices {
     root: IDevice;
-    boot: IDevice;
-    data: IDevice;
+//    boot: IDevice;
+//    data: IDevice;
     swap: IDevice;
 }

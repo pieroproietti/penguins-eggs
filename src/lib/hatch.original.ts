@@ -24,17 +24,24 @@ export async function hatch() {
   let target = "/TARGET";
   let devices = {} as IDevices;
   devices.root = {} as IDevice;
+  devices.boot = {} as IDevice;
+  devices.data = {} as IDevice;
   devices.swap = {} as IDevice;
 
-  devices.root.device = "/dev/sda1";
+  devices.root.device = "/dev/penguin/root";
   devices.root.fsType = "ext4";
   devices.root.mountPoint = "/";
-  devices.swap.device = "/dev/sda2";
+  devices.boot.device = "/dev/sda1";
+  devices.boot.fsType = "ext2";
+  devices.boot.mountPoint = "/boot";
+  devices.data.device = "/dev/penguin/data";
+  devices.data.fsType = "ext4";
+  devices.data.mountPoint = "/var/lib/vz";
+  devices.swap.device = "/dev/penguin/swap";
   devices.swap.fsType = "swap";
   devices.swap.mountPoint = "none";
 
-
-  let dl: string[] = [];
+  let driveList: string[] = [];
   await drivelist.list(
     (error: boolean, drives: IDriveList[]) => {
       if (error) {
@@ -43,48 +50,74 @@ export async function hatch() {
       let aDrives: string[] = [];
 
       drives.forEach((drive) => {
-        dl.push(drive.device);
+        driveList.push(drive.device);
       });
     });
 
 
-  let varOptions: any = await getOptions(dl);
+  let varOptions: any = await getOptions(driveList);
   let options: any = JSON.parse(varOptions);
 
+  if (options.mountType == "workstation") {
+    devices.data.mountPoint = "/home";
+  } else if (options.mountType == "docker") {
+    devices.data.mountPoint = "/var/lib/docker";
+  } else if (options.mountType == "www") {
+    devices.data.mountPoint = "/var/www";
+  }
 
   let isDiskPrepared: boolean;
-  isDiskPrepared = await diskPrepareNoLvm(options.installationDevice);
+  isDiskPrepared = await diskPrepare(options.installationDevice);
 
-  /**
-   * indentazione secondo installazione
-   */
+  let diskSize: number;
+  diskSize = await getDiskSize(options.installationDevice);
+  console.log(
+    `hatch diskSize: ${diskSize} Byte, equal at ${Math.round(
+      diskSize / 1024 / 1024 / 1024
+    )} GB`
+  );
+
+  let isPartitionBootPrepared;
+  isPartitionBootPrepared = await diskPreparePartitionBoot(
+    options.installationDevice
+  );
+
+  await diskPreparePartitionLvm(
+    options.installationDevice,
+    Math.floor(diskSize / 1024 / 1024)
+  );
+  await diskPreparePve(options.installationDevice);
+
   await mkfs(devices);
   await mount4target(target, devices);
-    await rsync(target);
-    await fstab(target, devices);
-    await hostname(target, options);
-    await resolvConf(target, options);
-    await interfaces(target, options);
-    await hosts(target, options);
-    await mountVFS(target);
-      await mkinitramfs(target);
-      await grubInstall(target, options);
-      await utils.addUser(options.username, options.userpassword);
-      await utils.changePassword(`root`, options.rootpassword);
-      await delUserLive();
-      await patchPve(target);
-    await umountVFS(target);
+  await rsync(target);
+  await fstab(target, devices);
+
+  await hostname(target, options);
+  await resolvConf(target, options);
+  await interfaces(target, options);
+  await hosts(target, options);
+  await mountVFS(target);
+  await mkinitramfs(target);
+  await grubInstall(target, options);
+
+  await utils.addUser(options.username, options.userpassword);
+  await utils.changePassword(`root`, options.rootpassword);
+  await delUserLive();
+
+  await patchPve(target);
+
+  await umountVFS(target);
   await umount4target(target, devices);
 
 }
 
-
-/**
- * delUserLive
- */
 async function delUserLive() {
   console.log("Cancellazione utente live\n");
 }
+
+
+
 
 
 /**
@@ -179,6 +212,8 @@ async function fstab(target: string, devices: IDevices) {
   let text = `
 proc /proc proc defaults 0 0
 ${devices.root.device} ${devices.root.mountPoint} ${devices.root.fsType} relatime,errors=remount-ro 0 1
+${devices.boot.device} ${devices.boot.mountPoint} ${devices.boot.fsType} relatime 0 0
+${devices.data.device} ${devices.data.mountPoint} ${devices.data.fsType} relatime 0 0
 ${devices.swap.device} ${devices.swap.mountPoint} ${devices.swap.fsType} sw 0 0`;
 
   utils.bashWrite(file, text);
@@ -307,58 +342,130 @@ async function rsync(target: string): Promise<void> {
   });
 }
 
+/**
+ * 
+ * @param devices 
+ */
 async function mkfs(devices: IDevices): Promise<boolean> {
   let result = true;
   await execute(`mkfs -t ${devices.root.fsType} ${devices.root.device}`);
+  await execute(`mkfs -t ${devices.boot.fsType} ${devices.boot.device}`);
+  await execute(`mkfs -t ${devices.data.fsType} ${devices.data.device}`);
   await execute(`mkswap ${devices.swap.device}`);
   return result;
 }
 
+/**
+ * 
+ * @param target 
+ * @param devices 
+ */
 async function mount4target(target: string, devices: IDevices): Promise<boolean> {
   await execute(`mkdir ${target}`);
   await execute(`mount ${devices.root.device} ${target}`);
   await execute(`tune2fs -c 0 -i 0 ${devices.root.device}`);
   await execute(`rm -rf ${target}/lost+found`);
 
+  await execute(`mkdir ${target}/boot`);
+  await execute(`mount ${devices.boot.device} ${target}/boot`);
+  await execute(`tune2fs -c 0 -i 0 ${devices.boot.device}`);
+
+  await execute(`mkdir -p ${target}${devices.data.mountPoint}`);
+  await execute(
+    `mount ${devices.data.device} ${target}${devices.data.mountPoint}`
+  );
+  await execute(`tune2fs -c 0 -i 0 ${devices.data.device}`);
+  await execute(`rm -rf ${target}${devices.data.mountPoint}/lost+found`);
+
   return true;
 }
 
+/**
+ * tune2fs()
+ * @param target 
+ * @param devices 
+ */
 async function tune2fs(target: string, devices: IDevices): Promise<boolean> {
   return true;
 }
 
+/**
+ * 
+ * @param target 
+ * @param devices 
+ */
 async function umount4target(target: string, devices: IDevices): Promise<boolean> {
   console.log("umount4target");
 
+  await execute(`umount ${devices.boot.device} ${target}/boot`);
+  await execute(`sleep 1`);
+  await execute(
+    `umount ${devices.data.device} ${target}${devices.data.mountPoint}`
+  );
+  await execute(`sleep 1`);
   await execute(`umount ${devices.root.device} ${target}`);
   await execute(`sleep 1`);
 
-  //await execute(`rm -rf ${target}/home`);
-  //await execute(`rm -rf ${target}/boot`);
+  await execute(`rm -rf ${target}/home`);
+  await execute(`rm -rf ${target}/boot`);
   //await execute(`rm -rf ${target}`);
   return true;
 }
 
-
-async function diskPrepareNoLvm(device: string) {
-
-  await execute(`parted --script ${device} mklabel msdos`);
-  await execute(`parted --script --align optimal ${device} mkpart primary 1MiB 95%`);
-  await execute(`parted --script ${device} set 1 boot on`);
-  await execute(`parted --script --align optimal ${device} mkpart primary 95% 100%`);
+/**
+ * 
+ * @param device 
+ */
+async function diskPreparePve(device: string): Promise<boolean> {
+  await execute(`${__dirname}/../../scripts/disk_prepare_pve.sh ${device}`);
   return true;
 }
 
+/**
+ * 
+ * @param device 
+ * @param sizeMb 
+ */
+async function diskPreparePartitionLvm(device: string, sizeMb: number): Promise<boolean> {
+  console.log(`disk_prepare_partition_lvm.sh ${device} ${sizeMb}`);
+  await execute(
+    `${__dirname}/../../scripts/disk_prepare_partition_lvm.sh ${device} ${sizeMb}`
+  );
+  return true;
+}
+
+/**
+ * 
+ * @param device 
+ */
+async function diskPreparePartitionBoot(device: string): Promise<boolean> {
+  await execute(
+    `${__dirname}/../../scripts/disk_prepare_partition_boot.sh ${device}`
+  );
+  return true;
+}
+
+
+/**
+ * 
+ * @param device 
+ */
+async function diskPrepare(device: string) {
+  await execute(`${__dirname}/../../scripts/disk_prepare.sh ${device}`);
+  return true;
+}
+
+/**
+ * 
+ * @param device 
+ */
 async function getDiskSize(device: string): Promise<number> {
   let response: string;
   let bytes: number;
 
-  response = await execute(`parted -s ${device} unit b print free | grep Free | awk '{print $3}' | cut -d "M" -f1`);
-  console.log(`response: ${response}`);
+  response = await execute(`${__dirname}/../../scripts/disk_get_size.sh ${device}`);
   response = response.replace("B", "").trim();
-  console.log(`response senza B: ${response}`);
   bytes = Number(response);
-  console.log(`bytes: ${bytes}`);
   return bytes;
 }
 
@@ -369,8 +476,6 @@ async function getDiskSize(device: string): Promise<number> {
 function execute(command: string): Promise<string> {
   return new Promise(function (resolve, reject) {
     var exec = require("child_process").exec;
-    console.log(`executing command: ${command}`);
-
     exec(command, function (error: string, stdout: string, stderr: string) {
       resolve(stdout);
     });
@@ -394,7 +499,7 @@ async function getOptions(driveList: string[]): Promise<any> {
         type: "input",
         name: "userfullname",
         message: "user full name: ",
-        default: "artisan"
+        default: "artisan user"
       },
       {
         type: "password",
@@ -485,6 +590,13 @@ async function getOptions(driveList: string[]): Promise<any> {
       },
       {
         type: "list",
+        name: "mountType",
+        message: "Select the tipology: ",
+        choices: ["workstation", "docker", "pve", "www"],
+        default: "workstation"
+      },
+      {
+        type: "list",
         name: "fsType",
         message: "Select format type: ",
         choices: ["ext2", "ext3", "ext4"],
@@ -499,6 +611,3 @@ async function getOptions(driveList: string[]): Promise<any> {
 }
 
 var ifaces: string[] = fs.readdirSync("/sys/class/net/");
-
-
-
