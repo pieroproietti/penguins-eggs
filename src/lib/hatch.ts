@@ -26,15 +26,8 @@ export async function hatch() {
   devices.root = {} as IDevice;
   devices.swap = {} as IDevice;
 
-  devices.root.device = "/dev/sda1";
-  devices.root.fsType = "ext4";
-  devices.root.mountPoint = "/";
-  devices.swap.device = "/dev/sda2";
-  devices.swap.fsType = "swap";
-  devices.swap.mountPoint = "none";
 
-
-  let dl: string[] = [];
+  let driveList: string[] = [];
   await drivelist.list(
     (error: boolean, drives: IDriveList[]) => {
       if (error) {
@@ -43,7 +36,7 @@ export async function hatch() {
       let aDrives: string[] = [];
 
       drives.forEach((drive) => {
-        dl.push(drive.device);
+        driveList.push(drive.device);
       });
     });
 
@@ -51,15 +44,20 @@ export async function hatch() {
   let varOptions: any = await getOptions(dl);
   let options: any = JSON.parse(varOptions);
 
+  devices.root.device = `${options.installationDevice}1`;
+  devices.root.fsType = `ext`;
+  devices.root.mountPoint = `/`;
+  devices.swap.device = `${options.installationDevice}2`
+  devices.swap.fsType = `swap`;
+  devices.swap.mountPoint = `none`;
+
 
   let isDiskPrepared: boolean;
-  isDiskPrepared = await diskPrepareNoLvm(options.installationDevice);
-
-  /**
-   * indentazione secondo installazione
-   */
-  await mkfs(devices);
-  await mount4target(target, devices);
+  
+  isDiskPrepared = await diskPartition(options.installationDevice);
+  if (isDiskPrepared) {
+    await mkfs(devices);
+    await mount4target(target, devices);
     await rsync(target);
     await fstab(target, devices);
     await hostname(target, options);
@@ -67,14 +65,15 @@ export async function hatch() {
     await interfaces(target, options);
     await hosts(target, options);
     await mountVFS(target);
-      await mkinitramfs(target);
-      await grubInstall(target, options);
-      await utils.addUser(options.username, options.userpassword);
-      await utils.changePassword(`root`, options.rootpassword);
-      await delUserLive();
-      await patchPve(target);
+    await mkinitramfs(target);
+    await grubInstall(target, options);
+    await utils.addUser(options.username, options.userpassword);
+    await utils.changePassword(`root`, options.rootpassword);
+    await delUserLive();
+    await patchPve(target);
     await umountVFS(target);
-  await umount4target(target, devices);
+    await umount4target(target, devices);
+  }
 
 }
 
@@ -332,7 +331,7 @@ async function umount4target(target: string, devices: IDevices): Promise<boolean
 }
 
 
-async function diskPrepareNoLvm(device: string) {
+async function diskPartition(device: string) {
 
   await utils.execute(`parted --script ${device} mklabel msdos`);
   await utils.execute(`parted --script --align optimal ${device} mkpart primary 1MiB 95%`);
