@@ -94,13 +94,13 @@ async function delUserLive() {
  */
 async function patchPve(target: string) {
   // patch per apache2
-  await execute(`chroot ${target} mkdir /var/log/apache2`);
+  await utils.execute(`chroot ${target} mkdir /var/log/apache2`);
 
-  await execute(`chroot ${target} mkdir /var/log/pveproxy`);
-  await execute(`chroot ${target} touch /var/log/pveproxy/access.log`);
-  await execute(`chroot ${target} chown www-data:www-data /var/log/pveproxy -R`);
-  await execute(`chroot ${target} chmod 0664 /var/log/pveproxy/access.log`);
-  await execute(`chroot ${target} dpkg-reconfigure openssh-server`);
+  await utils.execute(`chroot ${target} mkdir /var/log/pveproxy`);
+  await utils.execute(`chroot ${target} touch /var/log/pveproxy/access.log`);
+  await utils.execute(`chroot ${target} chown www-data:www-data /var/log/pveproxy -R`);
+  await utils.execute(`chroot ${target} chmod 0664 /var/log/pveproxy/access.log`);
+  await utils.execute(`chroot ${target} dpkg-reconfigure openssh-server`);
 }
 
 /**
@@ -110,9 +110,9 @@ async function patchPve(target: string) {
  */
 async function grubInstall(target: string, options: any) {
   console.log("grub-install");
-  await execute(`chroot ${target} grub-install ${options.installationDevice}`);
+  await utils.execute(`chroot ${target} grub-install ${options.installationDevice}`);
   console.log("update-grub");
-  await execute(`chroot ${target} update-grub`);
+  await utils.execute(`chroot ${target} update-grub`);
 }
 
 /**
@@ -122,11 +122,11 @@ async function grubInstall(target: string, options: any) {
 async function mkinitramfs(target: string) {
   console.log("mkinitramfs");
   /*
-  await execute(
+  await utils.execute(
     `chroot ${target} mkinitramfs -k -o /tmp/initramfs-$(uname -r)`
   );*/
-  await execute(`chroot ${target} live-update-initramfs -k -o /tmp/initramfs-$(uname -r)`)
-  await execute(`cp ${target}/tmp/initramfs-$(uname -r) /TARGET/boot`);
+  await utils.execute(`chroot ${target} live-update-initramfs -k -o /tmp/initramfs-$(uname -r)`)
+  await utils.execute(`cp ${target}/tmp/initramfs-$(uname -r) /TARGET/boot`);
 }
 
 /**
@@ -135,7 +135,7 @@ async function mkinitramfs(target: string) {
  */
 async function updateInitramfs(target: string) {
   console.log("updateInitramfs");
-  await execute(`chroot ${target} update-initramfs -u`);
+  await utils.execute(`chroot ${target} update-initramfs -u`);
 }
 
 /**
@@ -144,11 +144,11 @@ async function updateInitramfs(target: string) {
  */
 async function mountVFS(target: string) {
   console.log("mount VFS");
-  await execute(`mount -o bind /dev ${target}/dev`);
-  await execute(`mount -o bind /devpts ${target}/dev/pts`);
-  await execute(`mount -o bind /proc ${target}/proc`);
-  await execute(`mount -o bind /sys ${target}/sys`);
-  await execute(`mount -o bind /run ${target}/run`);
+  await utils.execute(`mount -o bind /dev ${target}/dev`);
+  await utils.execute(`mount -o bind /devpts ${target}/dev/pts`);
+  await utils.execute(`mount -o bind /proc ${target}/proc`);
+  await utils.execute(`mount -o bind /sys ${target}/sys`);
+  await utils.execute(`mount -o bind /run ${target}/run`);
 }
 
 /**
@@ -157,16 +157,16 @@ async function mountVFS(target: string) {
  */
 async function umountVFS(target: string) {
   console.log("umount VFS");
-  await execute(`umount ${target}/dev/pts`);
-  await execute(`sleep 1`);
-  await execute(`umount ${target}/dev`);
-  await execute(`sleep 1`);
-  await execute(`umount ${target}/proc`);
-  await execute(`sleep 1`);
-  await execute(`umount ${target}/sys`);
-  await execute(`sleep 1`);
-  await execute(`umount ${target}/run`);
-  await execute(`sleep 1`);
+  await utils.execute(`umount ${target}/dev/pts`);
+  await utils.execute(`sleep 1`);
+  await utils.execute(`umount ${target}/dev`);
+  await utils.execute(`sleep 1`);
+  await utils.execute(`umount ${target}/proc`);
+  await utils.execute(`sleep 1`);
+  await utils.execute(`umount ${target}/sys`);
+  await utils.execute(`sleep 1`);
+  await utils.execute(`umount ${target}/run`);
+  await utils.execute(`sleep 1`);
 }
 
 /**
@@ -283,16 +283,6 @@ ff02::3 ip6-allhosts
 }
 
 /**
- * getIsLive()
- */
-async function getIsLive(): Promise<string> {
-  let result;
-  result=await execute(`ls /lib/live|grep mount`);
-  //result = await execute(`./scripts/is_live.sh`);
-  return result;
-}
-
-/**
  * rsync()
  * @param target 
  */
@@ -311,16 +301,16 @@ async function rsync(target: string): Promise<void> {
 
 async function mkfs(devices: IDevices): Promise<boolean> {
   let result = true;
-  await execute(`mkfs -t ${devices.root.fsType} ${devices.root.device}`);
-  await execute(`mkswap ${devices.swap.device}`);
+  await utils.execute(`mkfs -t ${devices.root.fsType} ${devices.root.device}`);
+  await utils.execute(`mkswap ${devices.swap.device}`);
   return result;
 }
 
 async function mount4target(target: string, devices: IDevices): Promise<boolean> {
-  await execute(`mkdir ${target}`);
-  await execute(`mount ${devices.root.device} ${target}`);
-  await execute(`tune2fs -c 0 -i 0 ${devices.root.device}`);
-  await execute(`rm -rf ${target}/lost+found`);
+  await utils.execute(`mkdir ${target}`);
+  await utils.execute(`mount ${devices.root.device} ${target}`);
+  await utils.execute(`tune2fs -c 0 -i 0 ${devices.root.device}`);
+  await utils.execute(`rm -rf ${target}/lost+found`);
 
   return true;
 }
@@ -332,22 +322,22 @@ async function tune2fs(target: string, devices: IDevices): Promise<boolean> {
 async function umount4target(target: string, devices: IDevices): Promise<boolean> {
   console.log("umount4target");
 
-  await execute(`umount ${devices.root.device} ${target}`);
-  await execute(`sleep 1`);
+  await utils.execute(`umount ${devices.root.device} ${target}`);
+  await utils.execute(`sleep 1`);
 
-  //await execute(`rm -rf ${target}/home`);
-  //await execute(`rm -rf ${target}/boot`);
-  //await execute(`rm -rf ${target}`);
+  //await utils.execute(`rm -rf ${target}/home`);
+  //await utils.execute(`rm -rf ${target}/boot`);
+  //await utils.execute(`rm -rf ${target}`);
   return true;
 }
 
 
 async function diskPrepareNoLvm(device: string) {
 
-  await execute(`parted --script ${device} mklabel msdos`);
-  await execute(`parted --script --align optimal ${device} mkpart primary 1MiB 95%`);
-  await execute(`parted --script ${device} set 1 boot on`);
-  await execute(`parted --script --align optimal ${device} mkpart primary 95% 100%`);
+  await utils.execute(`parted --script ${device} mklabel msdos`);
+  await utils.execute(`parted --script --align optimal ${device} mkpart primary 1MiB 95%`);
+  await utils.execute(`parted --script ${device} set 1 boot on`);
+  await utils.execute(`parted --script --align optimal ${device} mkpart primary 95% 100%`);
   return true;
 }
 
@@ -355,26 +345,12 @@ async function getDiskSize(device: string): Promise<number> {
   let response: string;
   let bytes: number;
 
-  response = await execute(`parted -s ${device} unit b print free | grep Free | awk '{print $3}' | cut -d "M" -f1`);
+  response = await utils.execute(`parted -s ${device} unit b print free | grep Free | awk '{print $3}' | cut -d "M" -f1`);
   response = response.replace("B", "").trim();
   bytes = Number(response);
   return bytes;
 }
 
-/**
- * 
- * @param command 
- */
-function execute(command: string): Promise<string> {
-  return new Promise(function (resolve, reject) {
-    var exec = require("child_process").exec;
-    console.log(`executing: ${command}`);
-
-    exec(command, function (error: string, stdout: string, stderr: string) {
-      resolve(stdout);
-    });
-  });
-}
 
 /**
  * 

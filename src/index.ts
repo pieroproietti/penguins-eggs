@@ -61,8 +61,8 @@ if (user.name==""){
 }
 
 let root = {} as IUser;
-root.fullName = "root";
 root.name = "root";
+root.fullName = "root";
 root.password = "evolution";
 
 if (utils.isRoot()) {

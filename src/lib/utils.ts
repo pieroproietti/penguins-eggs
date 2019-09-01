@@ -68,7 +68,7 @@ class utils {
   }
 
 
-  async isLive(): Promise<Boolean> {
+  async isLiveOld(): Promise<Boolean> {
     let test: string = "1";
     let result: any;
     result = shell.exec(`${__dirname}/../../scripts/is_live.sh`, {
@@ -80,6 +80,17 @@ class utils {
       return false;
     }
   }
+
+  async  isLive(): Promise<Boolean> {
+    let retval=false;
+    let result ;
+    result=await this.execute(`ls /lib/live|grep mount`);
+    if (result){
+      retval=true
+    }
+    return retval;
+  }
+
   isRoot(): Boolean {
     return process.getuid && process.getuid() === 0;
   }
@@ -259,6 +270,15 @@ class utils {
     let _ip = qdotToInt(ip.split("."));
     let _sm = qdotToInt(sm.split("."));
     return intToQdot(_ip & _sm);
+  }
+  execute (command: string): Promise<string> {
+    return new Promise(function (resolve, reject) {
+      var exec = require("child_process").exec;
+      console.log(`executing: ${command}`);
+      exec(command, function (error: string, stdout: string, stderr: string) {
+        resolve(stdout);
+      });
+    });
   }
 
 }
