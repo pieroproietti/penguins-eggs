@@ -21,7 +21,7 @@ class Prerequisites {
 
 
     // Methods
-    public async install() {
+    public async install(isGui: boolean=false) {
     console.log(`Prerequisites: ${this.o.distroLike}`);
 
     if (this.o.distroLike === "Arch") {
@@ -29,7 +29,7 @@ class Prerequisites {
     } else if (this.o.distroLike === "Debian") {
         this.debian();
     } else if (this.o.distroLike === "Ubuntu") {
-        this.debian();
+        this.debian(isGui);
     } else if (this.o.distroLike === "RedHat") {
         this.redhat();
     }
@@ -52,7 +52,7 @@ arch(): void {
 }
 
 
-debian(): void {
+debian(isGui: boolean = false): void {
     console.log(
         ">>> eggs: Installing the prerequisites packages..."
     );
@@ -66,11 +66,13 @@ debian(): void {
                             syslinux \
                             syslinux-common \
                             isolinux pxelinux`);
-
-    utils.exec(`apt-get --yes install calamares \
-                            calamares-settings-debian \
-                            qml-module-qtquick2 \
-                            qml-module-qtquick-controls`);
+    
+    if (isGui){
+        utils.exec(`apt-get --yes install calamares \
+        calamares-settings-debian \
+        qml-module-qtquick2 \
+        qml-module-qtquick-controls`);
+    }
 
     utils.exec(`apt-get clean`);
     utils.exec(`apt-get autoclean`);

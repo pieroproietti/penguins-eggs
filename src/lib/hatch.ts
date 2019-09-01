@@ -41,7 +41,7 @@ export async function hatch() {
     });
 
 
-  let varOptions: any = await getOptions(dl);
+  let varOptions: any = await getOptions(driveList);
   let options: any = JSON.parse(varOptions);
 
   devices.root.device = `${options.installationDevice}1`;
