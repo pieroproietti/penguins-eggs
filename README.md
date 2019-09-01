@@ -72,15 +72,19 @@ Node.js v8.x:
 #### Using Debian, as root
 
 ```curl -sL https://deb.nodesource.com/setup_8.x | bash -```
+
 ```apt-get install -y nodejs```
 
+speriamo
+
 ```apt-cache policy nodejs
+
 nodejs:
   Installato: 8.16.1-1nodesource1
   Candidato:  8.16.1-1nodesource1
   Tabella versione:
  *** 8.16.1-1nodesource1 100
-        100 /var/lib/dpkg/status```
+        100 /var/lib/dpkg/status ```
 
 ```apt install nodejs=8.16.1-1nodesource1```
 
