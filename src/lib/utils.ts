@@ -67,28 +67,12 @@ class utils {
     console.log(delCommand);
   }
 
-
-  async isLiveOld(): Promise<Boolean> {
-    let test: string = "1";
-    let result: any;
-    result = shell.exec(`${__dirname}/../../scripts/is_live.sh`, {
-      async: false
-    });
-    if (result.indexOf(test) > -1) {
-      return true;
-    } else {
-      return false;
-    }
-  }
-
   async  isLive(): Promise<Boolean> {
-    let retval=false;
-    let result ;
-    result=await this.execute(`ls /lib/live|grep mount`);
-    if (result){
-      retval=true
+    let result=false;    
+    if (fs.existsSync(`/lib/live/mount`)) {
+      result=true;
     }
-    return retval;
+    return result;
   }
 
   isRoot(): Boolean {
