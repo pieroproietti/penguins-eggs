@@ -287,7 +287,8 @@ ff02::3 ip6-allhosts
  */
 async function getIsLive(): Promise<string> {
   let result;
-  result = await execute(`./scripts/is_live.sh`);
+  result=await execute(`ls /lib/live|grep mount`);
+  //result = await execute(`./scripts/is_live.sh`);
   return result;
 }
 
@@ -299,6 +300,7 @@ async function rsync(target: string): Promise<void> {
   let cmd = "";
   cmd = `
   rsync -aq  \
+  --progress \
   --delete-before  \
   --delete-excluded  \ ${filters} / ${target}`;
   console.log("hatching the egg...");
@@ -354,11 +356,8 @@ async function getDiskSize(device: string): Promise<number> {
   let bytes: number;
 
   response = await execute(`parted -s ${device} unit b print free | grep Free | awk '{print $3}' | cut -d "M" -f1`);
-  console.log(`response: ${response}`);
   response = response.replace("B", "").trim();
-  console.log(`response senza B: ${response}`);
   bytes = Number(response);
-  console.log(`bytes: ${bytes}`);
   return bytes;
 }
 
@@ -369,7 +368,7 @@ async function getDiskSize(device: string): Promise<number> {
 function execute(command: string): Promise<string> {
   return new Promise(function (resolve, reject) {
     var exec = require("child_process").exec;
-    console.log(`executing command: ${command}`);
+    console.log(`executing: ${command}`);
 
     exec(command, function (error: string, stdout: string, stderr: string) {
       resolve(stdout);
