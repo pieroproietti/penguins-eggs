@@ -109,7 +109,7 @@ class Iso {
 
   async produce(o: IOses, c: any) {
 
-    if (!await utils.isLive()) {
+    if (await utils.isLive()) {
       console.log(
         ">>> eggs: This is a live system! An egg cannot be produced from an egg!"
       );

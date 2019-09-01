@@ -180,11 +180,11 @@ async function start() {
 
 async function startHatch() {
   if (await utils.isLive()) {
+    hatch();
+  } else {
     console.log(
       ">>> eggs: This is an installed system! The hatch command cannot be executed."
     );
-  } else {
-    hatch();
   }
 }
 
