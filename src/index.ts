@@ -122,10 +122,8 @@ async function start() {
   } else {
     distro.branding = "eggs";
   }
+  workDir = "/home/eggs/";
 
-  /**
-   *sudo npx ts-node src/index.ts produce -b deblinux  -t
-   */
   console.log(`user: ${user.name}`);
   console.log(`distroname: ${distro.name}`);
   console.log(`branding: ${distro.branding}`);
@@ -133,17 +131,9 @@ async function start() {
   if (program.testing) {
     process.exit();
   }
-
-
-  if (await utils.isMounted("vz")) {
-    workDir = "/var/lib/vz/eggs/";
-  } else if (await utils.isMounted("docker")) {
-    workDir = "/var/lib/docker/eggs/";
-  } else if (await utils.isMounted("www")) {
-    workDir = "/var/www/eggs/";
-  } else {
-    workDir = "/home/eggs/";
-  }
+  /**
+   *sudo npx ts-node src/index.ts produce -b deblinux  -t
+   */
 
   let o: IOses = oses.info(distro);
   let i: Iso = new Iso(app, workDir, distro, user);
