@@ -173,10 +173,6 @@ async function start() {
     Update.go();
   } else if (command == "kill") {
     i.kill();
-/*  } else if (command == "user") {
-    utils.addUser();
-    utils.changePassword("live", "password");
-    utils.delUser(); */
   } else {
     usage();
   }

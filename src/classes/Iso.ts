@@ -111,7 +111,7 @@ class Iso {
 
     if (!await utils.isLive()) {
       console.log(
-        ">>> eggs: This is a live system! An egg from egg cannot be produced."
+        ">>> eggs: This is a live system! An egg cannot be produced from an egg!"
       );
     } else {
 
