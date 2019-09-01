@@ -62,6 +62,24 @@ Simply copy and past the following lines:
 
 ```sudo npm i penguins-eggs -g```
 
+### Intel 386
+Node.js v8.x:
+
+#### Using Ubuntu
+```curl -sL https://deb.nodesource.com/setup_8.x | sudo -E bash -```
+```sudo apt-get install -y nodejs```
+
+#### Using Debian, as root
+
+```curl -sL https://deb.nodesource.com/setup_8.x | bash -```
+```apt-get install -y nodejs```
+
+```apt-cache policy nodejs```
+
+```apt install nodejs=8.16.1-1nodesource1```
+
+
+
 ### Installation penguins-eggs from source
 
 You need a functional installation of Linux Debian version 8 or 9, LinuxMint, LMDE, 
