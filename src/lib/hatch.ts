@@ -52,6 +52,11 @@ export async function hatch() {
   devices.swap.mountPoint = `none`;
 
 
+  let diskSize;
+  diskSize=getDiskSize(options.installationDevice);
+  console.log(`diskSize: ${diskSize}`);
+  
+  
   let isDiskPrepared: boolean;
   
   isDiskPrepared = await diskPartition(options.installationDevice);
@@ -82,7 +87,7 @@ export async function hatch() {
  * delUserLive
  */
 async function delUserLive() {
-  console.log("Cancellazione utente live\n");
+  console.log("Cancellazione utente live. Da fare!\n");
 }
 
 

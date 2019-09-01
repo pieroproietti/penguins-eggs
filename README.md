@@ -77,14 +77,14 @@ Node.js v8.x:
 
 speriamo
 
-```apt-cache policy nodejs
+```apt-cache policy nodejs ```
 
-nodejs:
-  Installato: 8.16.1-1nodesource1
-  Candidato:  8.16.1-1nodesource1
-  Tabella versione:
- *** 8.16.1-1nodesource1 100
-        100 /var/lib/dpkg/status ```
+ ```nodejs: ```
+ ```  Installato: 8.16.1-1nodesource1 ```
+ ```  Candidato:  8.16.1-1nodesource1 ```
+ ```  Tabella versione: ```
+ ``` *** 8.16.1-1nodesource1 100 ```
+ ```        100 /var/lib/dpkg/status ```
 
 ```apt install nodejs=8.16.1-1nodesource1```
 
