@@ -45,7 +45,7 @@ export async function hatch() {
   let options: any = JSON.parse(varOptions);
 
   devices.root.device = `${options.installationDevice}1`;
-  devices.root.fsType = `ext`;
+  devices.root.fsType = `ext4`;
   devices.root.mountPoint = `/`;
   devices.swap.device = `${options.installationDevice}2`
   devices.swap.fsType = `swap`;
