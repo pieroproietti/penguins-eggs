@@ -305,6 +305,7 @@ async function rsync(target: string): Promise<void> {
 
 async function mkfs(devices: IDevices): Promise<boolean> {
   let result = true;
+  devices.root.fsType=`ext4`;
   await utils.execute(`mkfs -t ${devices.root.fsType} ${devices.root.device}`);
   await utils.execute(`mkswap ${devices.swap.device}`);
   return result;
