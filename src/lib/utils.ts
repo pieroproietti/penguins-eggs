@@ -67,7 +67,7 @@ class utils {
     console.log(delCommand);
   }
 
-  async  isLive(): Promise<Boolean> {
+  async isLive(): Promise<Boolean> {
     let result=false;    
     if (fs.existsSync(`/lib/live/mount`)) {
       result=true;
@@ -255,7 +255,7 @@ class utils {
     let _sm = qdotToInt(sm.split("."));
     return intToQdot(_ip & _sm);
   }
-  execute (command: string): Promise<string> {
+  async execute (command: string): Promise<string> {
     return new Promise(function (resolve, reject) {
       var exec = require("child_process").exec;
       console.log(`executing: ${command}`);
