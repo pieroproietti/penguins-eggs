@@ -103,7 +103,6 @@ async function start() {
     .command("info")
     .command("install")
     .command("prerequisites")
-    .command("prerequisites-gui")
     .command("calamares")
     .command("update")
     .command("kill")
@@ -156,9 +155,7 @@ async function start() {
   } else if (command == "hatch") {
     startHatch();
   } else if (command == "prerequisites") {
-    p.install(false);
-  } else if (command == "prerequisites-gui") {
-    p.install(true);
+    p.install();
   } else if (command == "calamares") {
     c.configure(o);
   } else if (command == "update") {

@@ -32,29 +32,23 @@ class Prerequisites {
     }
 
 
-    async debian(isGui: boolean = false): Promise<void> {
+    async debian(): Promise<void> {
         console.log(
             ">>> eggs: Installing the prerequisites packages..."
         );
-        await utils.execute(`apt-get update`);
-
-        await utils.execute(`apt-get --yes install \
+        utils.execute(`apt-get update`);
+        utils.execute(`apt-get --yes install \
                             lvm2 \
                             parted \
                             squashfs-tools \
                             xorriso \
                             syslinux \
-                            isolinux `);
-
-        await utils.execute(`apt-get install --yes live-boot`);
-        
-        if (isGui) {
-
-            await utils.execute(`apt-get --yes install calamares \
-                    calamares-settings-debian \
-                    qml-module-qtquick2 \
-                    qml-module-qtquick-controls`);
-        }
+                            isolinux \
+                            live-boot \
+                            calamares \
+                            calamares-settings-debian \
+                            qml-module-qtquick2 \
+                            qml-module-qtquick-controls`);
 
         utils.execute(`apt-get clean`);
         utils.execute(`apt-get autoclean`);
