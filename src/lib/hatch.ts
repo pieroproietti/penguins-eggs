@@ -479,6 +479,3 @@ async function getOptions(driveList: string[]): Promise<any> {
 }
 
 var ifaces: string[] = fs.readdirSync("/sys/class/net/");
-
-
-
