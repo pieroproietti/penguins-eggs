@@ -37,7 +37,9 @@ class Prerequisites {
             ">>> eggs: Installing the prerequisites packages..."
         );
         utils.execute(`apt-get update`);
+
         utils.execute(`apt-get --yes install \
+                            lvm2 \
                             parted \
                             squashfs-tools \
                             xorriso \
