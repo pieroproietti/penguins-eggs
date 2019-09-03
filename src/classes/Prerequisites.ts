@@ -47,8 +47,9 @@ class Prerequisites {
                             isolinux \
                             pxelinux`);
 
+        utils.execute(`apt-get install --yes live-boot`);
+        
         if (isGui) {
-            utils.execute(`apt-get install --yes live-boot`);
 
             utils.execute(`apt-get --yes install calamares \
                     calamares-settings-debian \
