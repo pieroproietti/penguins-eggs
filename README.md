@@ -9,7 +9,7 @@
 &nbsp;[gitbook](https://penguin-s-eggs.gitbook.io/project/) &nbsp;[Leggimi](./README.it_IT.md)&nbsp;[trends](https://www.npmtrends.com/penguins-eggs) 
 
 
-[Developer notes](https://github.com/pieroproietti/penguins-eggs/developer.md)
+[Developer notes](https://github.com/pieroproietti/penguins-eggs/blob/master/developer.md)
 
 
 ## Presentation
