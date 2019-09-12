@@ -1,4 +1,0 @@
-rm ./esnext ./built -rf
-npm run compile
-npm run esnext-compile
-

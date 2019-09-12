@@ -19,21 +19,22 @@
     "systemback"
   ],
   "bin": {
-    "eggs": "./built/index.js"
+    "eggs": "./lib/index.js"
   },
   "main": "./src/index.ts",
   "scripts": {
-    "lint": "eslint src/",
-    "compile": "tsc",
-    "esnext-compile": "babel ./esnext/ --out-dir ./built",
-    "ts-start": "ts-node -- ./src/index.ts",
-    "esnext-start": "npx babel-node ./esnext/",
-    "node-start": "nodejs ./built"
+    "start": "ts-node src/index.ts",
+    "produce": "ts-node src/index.ts produce -d eggs -b debian",
+    "info": "ts-node src/index.ts info",
+    "install": "ts-node src/index.ts install",
+    "calamares": "ts-node src/index.ts calamares",
+    "kill": "ts-node src/index.ts kill",
+    "create": "npm run build",
+    "build": "tsc -p .",
+    "refresh": "rm -rf ./node_modules ./package-lock.json && npm install"
   },
   "dependencies": {
-    "@types/js-yaml": "^3.12.1",
-    "babel-polyfill": "^6.26.0",
-    "commander": "^2.20.0",
+    "commander": "^3.0.1",
     "date-fns": "^1.29.0",
     "drivelist": "^5.2.12",
     "inquirer": "^5.2.0",
@@ -44,28 +45,23 @@
     "network": "^0.4.1",
     "pjson": "^1.0.9",
     "shelljs": "^0.8.2",
-    "xml2js": "^0.4.19"
+    "xml2js": "^0.4.22"
   },
   "config": {
     "unsafe-perm": true
   },
   "devDependencies": {
-    "@types/commander": "^2.12.2",
     "@types/inquirer": "0.0.41",
     "@types/ip": "0.0.30",
+    "@types/js-yaml": "^3.12.1",
     "@types/netmask": "^1.0.30",
-    "@types/node": "^10.14.4",
+    "@types/node": "^12.7.5",
     "@types/shelljs": "^0.7.9",
     "@types/source-map-support": "^0.4.2",
-    "@typescript-eslint/eslint-plugin": "^1.7.0",
-    "@typescript-eslint/parser": "^1.7.0",
-    "babel-cli": "^6.26.0",
-    "babel-core": "^6.26.3",
-    "babel-preset-env": "^1.7.0",
-    "eslint": "^4.19.1",
-    "eslint-plugin-import": "^2.17.1",
     "ts-loader": "^4.5.0",
-    "ts-node": "^6.2.0",
-    "typescript": "^2.9.2"
+    "nodemon": "^1.18.7",
+    "ts-node": "^7.0.1",
+    "tslint": "^5.11.0",
+    "typescript": "^3.6.3"
   }
 }
