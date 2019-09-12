@@ -26,7 +26,6 @@
     "start": "ts-node src/index.ts",
     "produce": "ts-node src/index.ts produce -d eggs -b debian",
     "info": "ts-node src/index.ts info",
-    "install": "ts-node src/index.ts install",
     "calamares": "ts-node src/index.ts calamares",
     "kill": "ts-node src/index.ts kill",
     "create": "npm run build",
