@@ -9,6 +9,9 @@
 &nbsp;[gitbook](https://penguin-s-eggs.gitbook.io/project/) &nbsp;[Leggimi](./README.it_IT.md)&nbsp;[trends](https://www.npmtrends.com/penguins-eggs) 
 
 
+[Developer notes](https://github.com/pieroproietti/penguins-eggs/developer.md)
+
+
 ## Presentation
 penguins-eggs is a console utility, in active development, who let you to
 remaster your system and redistribuite it as iso images or from the lan via PXE
