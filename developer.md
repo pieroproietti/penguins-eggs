@@ -9,7 +9,7 @@
 
 
 ## Versione 5.X.X
-Ho tolto tutti i riferimentia Babylon precedentemente utilizzata per la compilazione, adesso utilizzo esclusivamente typescript.
+Ho tolto tutti i riferimenti a babel6 e babel7, rispettivamente  precedentemente utilizzata  e presa in esame per la compilazione. Alla fine sto utilizzando esclusivamente typescript, spero di essere nel giusto.
 
 Ho avuto problemi ultimamente e questo ha portato ad azzerare e, quindi a ripristinare la repository penguins-eggs, al momento è stata ricomposta.
 
