@@ -9,8 +9,7 @@
 const filterRoot = `
 --filter="- /dev/*" \
 --filter="- /cdrom/*" \
---filter="- /live" \
---filter="- /lib/live" \
+--filter="- /lib/live/*" \
 --filter="- /media/*" \
 --filter="- /mnt/*" \
 --filter="- /proc/*" \
@@ -20,6 +19,8 @@ const filterRoot = `
 --filter="- /tmp/*" \
 --filter="- /swapfile" \
 --filter="- /persistence.conf" `;
+
+//--filter="- /live" \
 
 const filterBoot = `
 --filter="- /boot/grub/grub.cfg"  \
