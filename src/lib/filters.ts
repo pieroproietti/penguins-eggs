@@ -20,8 +20,7 @@ const filterRoot = `
 --filter="- /persistence.conf" `;
 
 const filterLib = `
---filter="+ /lib/*" \
---filter="- /lib/live/*" `;
+--filter="- /lib/live/***" `;
  
 
 const filterBoot = `
@@ -85,9 +84,9 @@ const filterVar = `
 
 const filters =
   filterRoot.trim() + " " +
+  filterLib.trim() + " " +
   filterBoot.trim() + " " +
   filterEtc.trim() + " " +
-  filterLib.trim() + " " +
   filterUsr.trim() + " " +
   filterVar.trim() + " ";
   /* +
