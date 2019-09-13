@@ -9,7 +9,6 @@
 const filterRoot = `
 --filter="- /dev/*" \
 --filter="- /cdrom/*" \
---filter="- /lib/live/*" \
 --filter="- /media/*" \
 --filter="- /mnt/*" \
 --filter="- /proc/*" \
@@ -47,10 +46,11 @@ const filterEtc = `
 --filter="- /etc/udev/rules.d/70-persistent-net.rules" `;
 
 const filterLib = `
---filter="- /lib/live/image" \
---filter="- /lib/live/mount" \
+--filter="+ /lib/live" \
 --filter="- /lib/live/overlay" \
---filter="- /lib/live/rootfs" `;
+--filter="- /lib/live/image" \
+--filter="- /lib/live/rootfs" \
+--filter="- /lib/live/mount" `;
 
 const filterUsr = `
 --filter="- /usr/share/icons/*/icon-theme.cache" `;

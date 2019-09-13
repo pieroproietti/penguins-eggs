@@ -298,6 +298,7 @@ async function rsync(target: string): Promise<void> {
   --delete-before  \
   --delete-excluded  \ ${filters} / ${target}`;
   console.log("hatching the egg...");
+  console.log(cmd);
   shell.exec(cmd.trim(), {
     async: false
   });
