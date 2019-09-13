@@ -130,7 +130,7 @@ class Iso {
       await this.menuCfg(o);
       await this.liveKernel();
       console.log("------------------------------------------");
-      console.log(`Spawning the system into the egg...\nThis process can be very long, \nperhaps it's time for a coffee!`);
+      console.log(`Spawning the system into the egg...\nThis process can be very long, perhaps it's time for a coffee!`);
       console.log("------------------------------------------");
       await this.eggSystemCopy();
       await this.liveDhcp();
