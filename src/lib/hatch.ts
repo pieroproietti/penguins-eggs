@@ -62,13 +62,13 @@ export async function hatch() {
   isDiskPrepared = await diskPartition(options.installationDevice);
   if (isDiskPrepared) {
     await mkfs(devices);
-    await mount4target(target, devices);
-    await rsync(target);
+    await egg2system(target);
     await fstab(target, devices);
     await hostname(target, options);
     await resolvConf(target, options);
     await interfaces(target, options);
     await hosts(target, options);
+    await mount4target(target, devices);
     await mountVFS(target);
     await mkinitramfs(target);
     await grubInstall(target, options);
@@ -290,7 +290,7 @@ ff02::3 ip6-allhosts
  * rsync()
  * @param target 
  */
-async function rsync(target: string): Promise<void> {
+async function egg2system(target: string): Promise<void> {
   let cmd = "";
   cmd = `
   rsync -aq  \

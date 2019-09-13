@@ -132,7 +132,7 @@ class Iso {
       console.log("------------------------------------------");
       console.log(`Spawning the system into the egg...\nThis process can be very long, perhaps it's time for a coffee!`);
       console.log("------------------------------------------");
-      await this.eggSystemCopy();
+      await this.system2egg();
       await this.liveDhcp();
       await this.liveSquashFs();
       await this.makeIsoFs(o);
@@ -178,9 +178,9 @@ class Iso {
   }
 
   /**
-   * eggSystemCopy
+   * system2egg
    */
-  public async eggSystemCopy() {
+  public async system2egg() {
     let specificFilters:string;
     let cmd:string = "";
 
