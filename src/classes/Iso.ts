@@ -192,7 +192,6 @@ class Iso {
       --delete-before  \
       --delete-excluded  \ ${specificFilters} / ${this.distro.pathFs}`;
     console.log("==========================================");
-    console.log("eggs: systemCopy");
     console.log(`cmd: ${cmd}`);
     console.log("==========================================");
     shell.exec(cmd.trim(), {
