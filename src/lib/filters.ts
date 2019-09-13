@@ -19,7 +19,10 @@ const filterRoot = `
 --filter="- /swapfile" \
 --filter="- /persistence.conf" `;
 
-//--filter="- /live" \
+const filterLib = `
+--filter="+ /lib/*" \
+--filter="- /lib/live/*" `;
+ 
 
 const filterBoot = `
 --filter="- /boot/grub/grub.cfg"  \
@@ -44,13 +47,6 @@ const filterEtc = `
 --filter="- /etc/ssh/ssh_host_key*" \
 --filter="- /etc/udev/rules.d/70-persistent-cd.rules" \
 --filter="- /etc/udev/rules.d/70-persistent-net.rules" `;
-
-const filterLib = `
---filter="+ /lib/live" \
---filter="- /lib/live/overlay" \
---filter="- /lib/live/image" \
---filter="- /lib/live/rootfs" \
---filter="- /lib/live/mount" `;
 
 const filterUsr = `
 --filter="- /usr/share/icons/*/icon-theme.cache" `;
