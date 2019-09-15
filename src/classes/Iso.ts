@@ -187,9 +187,16 @@ class Iso {
     
 
     cmd = `
-      rsync -as --delete-before --delete-excluded / ${this.distro.pathFs} \
+      rsync \
+      --archive \
+      --verbose \
+      --delete-before \
+      --delete-excluded \
       --filter="- ${this.distro.pathHome}" \
-      ${filters}`;
+      ${filters} \
+      / ${this.distro.pathFs}`;
+      
+      
 
     console.log("==========================================");
     console.log(`system2egg: ${cmd}`);
