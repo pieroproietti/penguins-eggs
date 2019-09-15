@@ -187,12 +187,12 @@ class Iso {
     specificFilters = filters + ` --filter="+ /home/${this.user.name}" --filter="- /home/*"` ;
 
     cmd = `
-      rsync -aq  \
+      rsync -av / ${this.distro.pathFs} \
       --filter="- ${this.distro.pathHome}"  \
       --delete-before  \
-      --delete-excluded  \ ${specificFilters} / ${this.distro.pathFs}`;
+      --delete-excluded  \ ${specificFilters}`;
     console.log("==========================================");
-    console.log(`cmd: ${cmd}`);
+    console.log(`system2egg: ${cmd}`);
     console.log("==========================================");
     shell.exec(cmd.trim(), {
       async: false

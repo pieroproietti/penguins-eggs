@@ -9,7 +9,6 @@
 const filterRoot = `
 --filter="- /dev/*" \
 --filter="- /cdrom/*" \
---filter="- /lib/*" \
 --filter="- /media/*" \
 --filter="- /mnt/*" \
 --filter="- /proc/*" \
