@@ -292,12 +292,9 @@ ff02::3 ip6-allhosts
  */
 async function egg2system(target: string): Promise<void> {
   let cmd = "";
-  cmd = `
-  rsync -av / ${target} \
-  ${filters} \
-  --progress \
-  --delete-before \
-  --delete-excluded`;
+  cmd = `rsync -as --progress --delete-before --delete-excluded \
+  / ${target} ${filters}`;
+
   console.log("==========================================");
   console.log(`egg2system: ${cmd}`);
   console.log("==========================================");

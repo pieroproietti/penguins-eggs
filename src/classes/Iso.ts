@@ -184,13 +184,13 @@ class Iso {
     let specificFilters:string;
     let cmd:string = "";
 
-    specificFilters = filters + ` --filter="+ /home/${this.user.name}" --filter="- /home/*"` ;
+    
 
     cmd = `
-      rsync -av / ${this.distro.pathFs} \
-      --filter="- ${this.distro.pathHome}"  \
-      --delete-before  \
-      --delete-excluded  \ ${specificFilters}`;
+      rsync -as --delete-before --delete-excluded / ${this.distro.pathFs} \
+      --filter="- ${this.distro.pathHome}" \
+      ${filters}`;
+
     console.log("==========================================");
     console.log(`system2egg: ${cmd}`);
     console.log("==========================================");
