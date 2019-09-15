@@ -19,7 +19,10 @@ const filterRoot = `
 --filter="- /swapfile" \
 --filter="- /persistence.conf" `;
 
-const filterLib = ``;
+const filterLib = `
+--filter="- /live/*" \ 
+--filter="- /lib/live/*" \ 
+--filter="- /usr/lib/live/*" `;
 
 const filterBoot = `
 --filter="- /boot/grub/grub.cfg"  \
@@ -63,7 +66,6 @@ const filterVar = `
 --filter="- /var/lib/dbus/machine-id" \
 --filter="- /var/lib/dhcp/*" \
 --filter="- /var/lib/dpkg/*~old" \
---filter="- /var/lib/live/config/*" \
 --filter="- /var/lib/lxcfs/*" \
 --filter="- /var/lib/vz/*" \
 --filter="- /var/log/*" \
