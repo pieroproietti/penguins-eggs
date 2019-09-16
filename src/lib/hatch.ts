@@ -72,8 +72,10 @@ export async function hatch() {
     await mountVFS(target);
     await mkinitramfs(target);
     await grubInstall(target, options);
+
     await utils.addUser(options.username, options.userpassword);
     await utils.changePassword(`root`, options.rootpassword);
+    
     await delUserLive();
     await patchPve(target);
     await umountVFS(target);
