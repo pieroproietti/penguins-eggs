@@ -296,14 +296,13 @@ async function egg2system(target: string): Promise<void> {
   cmd = `\
   rsync \
   --archive \
-  --verbose \
   --delete-before \
   --delete-excluded \
   ${filters} \
   / ${target}`;
 
   console.log("==========================================");
-  console.log(`egg2system: copyng... ${cmd}`);
+  console.log(`egg2system: copyng...`);
   console.log("==========================================");
   shell.exec(cmd.trim(), {
     async: false
