@@ -20,16 +20,17 @@ import path from "path";
  */
 class utils {
 
-  async addUser(username: string="live", 
+  async addUser(target: string "/TARGET",
+                username: string="live", 
                 password: string="evolution",
                 fullName: string="", 
                 roomNumber: string="", 
                 workPhone: string="", 
                 homePhone: string="" ) {
     let result: any;
-
-
-    let cmd: string =`sudo adduser --home /home/${username} \
+    
+    
+    let cmd: string =`sudo chroot ${target} adduser --home /home/${username} \
                                   --shell /bin/bash \
                                   --disabled-password \
                                   --gecos "${fullName}","${roomNumber}","${workPhone}","${homePhone}" \
@@ -38,23 +39,17 @@ class utils {
     console.log(`addUser: ${cmd}`);
     result = shell.exec(cmd);
 
+    let cmdPass: string=`echo ${username}:${password} | chroot ${target} chpasswd `;
+    console.log(`addUser cmdPass: ${cmdPass}`);
+    shell.exec(cmdPass);
 
-    /**
-     * let rmPassword: string = `passwd -d ${username}`;
-     * shell.exec(rmPassword);
-     * console.log(rmPassword);
-     */
-
-    let pwdCommand: string=`echo ${username}:${password} | chpasswd `;
-    console.log(`addUser pwdCommand: ${pwdCommand}`);
-    shell.exec(pwdCommand);
-
-    let sudoCommand: string=`addgroup ${username} sudo`;
-    console.log(`addUser sudoCommand: ${sudoCommand}`);
-    shell.exec(sudoCommand);
+    let cmdSudo: string=`chroot ${target} addgroup ${username} sudo`;
+    console.log(`addUser sudoCommand: ${cmdSudo}`);
+    shell.exec(cmdSudo);
   }
 
-  async changePassword(username: string="live", 
+  async changePassword(target: string="/TARGET", 
+                  username: string="live", 
                   newPassword: string="evolution"){
 
       let cmd: string=`echo ${username}:${newPassword} | chpasswd `;
