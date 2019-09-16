@@ -89,7 +89,8 @@ export async function hatch() {
  * delUserLive
  */
 async function delUserLive() {
-  console.log("Cancellazione utente live. Da fare!\n");
+  let cmd: string="deluser live";
+  await utils.execute(`cmd`);
 }
 
 
