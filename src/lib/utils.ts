@@ -44,7 +44,7 @@ class utils {
     shell.exec(cmdPass);
 
     let cmdSudo: string=`chroot ${target} addgroup ${username} sudo`;
-    console.log(`addUser sudoCommand: ${cmdSudo}`);
+    console.log(`addUser cmdSudo: ${cmdSudo}`);
     shell.exec(cmdSudo);
   }
 
@@ -52,7 +52,7 @@ class utils {
                   username: string="live", 
                   newPassword: string="evolution"){
 
-      let cmd: string=`echo ${username}:${newPassword} | chpasswd `;
+      let cmd: string=`echo ${username}:${newPassword} | chroot ${target} chpasswd `;
       console.log(`changePassword: ${cmd}`);
       shell.exec(cmd);
   }
