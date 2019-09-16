@@ -6,7 +6,8 @@
  */
  
 
-const filters=`
+
+const filters=`\
 --filter="- /dev/*" \
 --filter="- /cdrom/*" \
 --filter="- /media/*" \
@@ -22,7 +23,7 @@ const filters=`
 --filter="- /lib/live/*" \
 --filter="- /usr/lib/live/*" \
 --filter="- /boot/grub/grub.cfg" \
---filter="- /boot/grub/device.map" \ 
+--filter="- /boot/grub/device.map" \
 --filter="- /boot/grub/menu.lst" \
 --filter="- /boot/*.bak"  \
 --filter="- /boot/*.old-dkms" \

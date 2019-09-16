@@ -293,7 +293,7 @@ ff02::3 ip6-allhosts
 async function egg2system(target: string): Promise<void> {
   let cmd = "";
 
-  cmd = `
+  cmd = `\
   rsync \
   --archive \
   --verbose \
@@ -303,7 +303,7 @@ async function egg2system(target: string): Promise<void> {
   / ${target}`;
 
   console.log("==========================================");
-  console.log(`egg2system: ${cmd}`);
+  console.log(`egg2system: copyng... ${cmd}`);
   console.log("==========================================");
   shell.exec(cmd.trim(), {
     async: false
