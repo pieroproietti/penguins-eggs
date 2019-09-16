@@ -20,7 +20,7 @@ import path from "path";
  */
 class utils {
 
-  async addUser(target: string "/TARGET",
+  async addUser(target: string ="/TARGET",
                 username: string="live", 
                 password: string="evolution",
                 fullName: string="", 
