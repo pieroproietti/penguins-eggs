@@ -30,14 +30,15 @@ class utils {
     let result: any;
     
     
-    let cmd: string =`sudo chroot ${target} adduser --home /home/${username} \
+    let cmd: string =`sudo chroot ${target} adduser ${username}\
+                                  --home /home/${username} \
                                   --shell /bin/bash \
                                   --disabled-password \
-                                  --gecos "${fullName}",\
-                                          "${roomNumber}",\
-                                          "${workPhone}",\
-                                          "${homePhone}" \
-                                          ${username}`;
+                                  --gecos "${fullName},\
+                                          ${roomNumber},\
+                                          ${workPhone},\
+                                          ${homePhone}"`;
+                                          
     
     console.log(`addUser: ${cmd}`);
     result = shell.exec(cmd);
