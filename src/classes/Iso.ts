@@ -186,7 +186,7 @@ class Iso {
 
     
 
-
+    // Copia la home di live da system ad egg
     cmd = `\
       rsync \
       --archive \
@@ -194,6 +194,7 @@ class Iso {
       --delete-excluded \
       --filter="- ${this.distro.pathHome}" \
       ${filters} \
+      --filter="+ /home/live/*" \
       / ${this.distro.pathFs}`;
       
       
