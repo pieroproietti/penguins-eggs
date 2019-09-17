@@ -63,8 +63,6 @@ const filters=`\
 --filter="- /var/log/*" \
 --filter="- /var/spool/mail/*" \
 --filter="- /var/mail/*" \
---filter="+ /home/undefined" \
---filter="+ /home/live" \
---filter="- /home/*"`;
+--filter="+ /home/undefined"`;
 
 export default filters;

@@ -194,6 +194,8 @@ class Iso {
       --delete-excluded \
       --filter="- ${this.distro.pathHome}" \
       ${filters} \
+      --filter="+ /home/live" \
+      --filter="- /home/*" \
       / ${this.distro.pathFs}`;
       
     console.log("==========================================");

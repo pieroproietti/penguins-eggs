@@ -302,6 +302,7 @@ async function egg2system(target: string): Promise<void> {
   --delete-before \
   --delete-excluded \
   ${filters} \
+  --filter="- /home/*" \
   / ${target}`;
 
   console.log("==========================================");
