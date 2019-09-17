@@ -21,6 +21,7 @@ const filters=`\
 --filter="- /persistence.conf" \
 --filter="- /live/*" \
 --filter="- /lib/live/*" \
+--filter="+ /lib/live/boot/*" \
 --filter="- /usr/lib/live/*" \
 --filter="- /boot/grub/grub.cfg" \
 --filter="- /boot/grub/device.map" \
