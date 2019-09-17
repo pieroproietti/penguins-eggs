@@ -33,8 +33,11 @@ class utils {
     let cmd: string =`sudo chroot ${target} adduser --home /home/${username} \
                                   --shell /bin/bash \
                                   --disabled-password \
-                                  --gecos "${fullName}","${roomNumber}","${workPhone}","${homePhone}" \
-                                  ${username}`;
+                                  --gecos "${fullName}",\
+                                          "${roomNumber}",\
+                                          "${workPhone}",\
+                                          "${homePhone}" \
+                                          ${username}`;
     
     console.log(`addUser: ${cmd}`);
     result = shell.exec(cmd);
