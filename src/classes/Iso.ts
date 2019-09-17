@@ -200,7 +200,7 @@ class Iso {
       
 
     console.log("==========================================");
-    console.log(`system2egg: copyng...`);
+    console.log(`system2egg: copyng... ${cmd}`);
     console.log("==========================================");
     shell.exec(cmd.trim(), {
       async: false
