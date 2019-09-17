@@ -194,13 +194,10 @@ class Iso {
       --delete-excluded \
       --filter="- ${this.distro.pathHome}" \
       ${filters} \
-      --filter="+ /home/live/*" \
       / ${this.distro.pathFs}`;
       
-      
-
     console.log("==========================================");
-    console.log(`system2egg: copyng... ${cmd}`);
+    console.log(`system2egg: copyng...`);
     console.log("==========================================");
     shell.exec(cmd.trim(), {
       async: false
