@@ -77,7 +77,7 @@ export async function hatch() {
     await utils.changePassword(target, `root`, options.rootpassword);
     await autologinConfig(target,"live",options.username);
 
-    await delUserLive();
+    await delUserLive(target);
     await patchPve(target);
     await umountVFS(target);
     await umount4target(target, devices);
@@ -110,8 +110,8 @@ async function autologinConfig(target: string, oldUser: string="live", newUser: 
 /**
  * delUserLive
  */
-async function delUserLive() {
-  let cmd: string="deluser live";
+async function delUserLive(target: string) {
+  let cmd: string=`chroot ${target} deluser live`;
   await utils.execute(cmd);
 }
 
