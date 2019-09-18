@@ -103,12 +103,7 @@ async function autologinDisable(target: string){
  */
 async function autologinConfig(target: string, oldUser: string="live", newUser: string="artisan"){
   let cmd: string=`sed -i "/autologin-user/s/=${oldUser}/=${newUser}/" ${target}/etc/lightdm/lightdm.conf`;
-  console.log("================================");
-  console.log(cmd);
-  console.log("================================");
-  shell.exec(cmd.trim(), {
-    async: false
-  });
+  await utils.execute(cmd);
 }
 
 
@@ -117,7 +112,7 @@ async function autologinConfig(target: string, oldUser: string="live", newUser: 
  */
 async function delUserLive() {
   let cmd: string="deluser live";
-  await utils.execute(`cmd`);
+  await utils.execute(cmd);
 }
 
 
