@@ -88,8 +88,13 @@ export async function hatch() {
 /**
  * autologin
  */
-async function disableAutologin(target: string){
-  let cmd: string=`sed -i 's/^autologin/#autologin/g' ${target}/etc/lightdm/lightdm.conf`;
+async function autologinEnable(target: string){
+  let cmd: string=`sed -i 's/^#autologin-user/autologin-user/g' ${target}/etc/lightdm/lightdm.conf`;
+  await utils.execute(`cmd`);  
+}
+
+async function autologinDisable(target: string){
+  let cmd: string=`sed -i 's/^autologin-user/#autologin-user/g' ${target}/etc/lightdm/lightdm.conf`;
   await utils.execute(`cmd`);  
 }
 
@@ -101,7 +106,9 @@ async function autologinConfig(target: string, oldUser: string="live", newUser: 
   console.log("================================");
   console.log(cmd);
   console.log("================================");
-  await utils.execute(`cmd`);  
+  shell.exec(cmd.trim(), {
+    async: false
+  });
 }
 
 
