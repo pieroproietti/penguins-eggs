@@ -97,7 +97,7 @@ async function disableAutologin(target: string){
  * autologin
  */
 async function autologinConfig(target: string, oldUser: string="live", newUser: string="artisan"){
-  let cmd: string=`sed -i "/autologin/s/=${oldUser}/=${newUser}/" ${target}/etc/lightdm/lightdm.conf`;
+  let cmd: string=`sed -i "/autologin-user/s/=${oldUser}/=${newUser}/" ${target}/etc/lightdm/lightdm.conf`;
   console.log("================================");
   console.log(cmd);
   console.log("================================");
