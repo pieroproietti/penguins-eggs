@@ -75,7 +75,7 @@ export async function hatch() {
 
     await utils.addUser(target, options.username, options.userpassword);
     await utils.changePassword(target, `root`, options.rootpassword);
-    await autologin(target,"live",options.username);
+    await autologinConfig(target,"live",options.username);
 
     await delUserLive();
     await patchPve(target);
@@ -96,13 +96,13 @@ async function disableAutologin(target: string){
 /**
  * autologin
  */
-async function autologin(target: string, oldUser: string="live", newUser: string="artisan"){
+async function autologinConfig(target: string, oldUser: string="live", newUser: string="artisan"){
   let cmd: string=`sed -i "/autologin/s/=${oldUser}/=${newUser}/" ${target}/etc/lightdm/lightdm.conf`;
+  console.log("================================");
+  console.log(cmd);
+  console.log("================================");
   await utils.execute(`cmd`);  
 }
-
-
-
 
 
 /**

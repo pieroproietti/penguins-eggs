@@ -20,6 +20,19 @@ import path from "path";
  */
 class utils {
 
+  async uname(target:string="/TARGET", oUser: string="live",nUser:string){
+    if (nUser==""){
+      nUser=oUser;
+    }
+  
+    if (oUser!=nUser){
+      shell.exec(`chroot ${target} usermod -l ${nUser} ${oUser}`);
+      shell.exec(`chroot ${target} groupmod -n ${nUser} ${oUser}`);
+      shell.exec(`chroot ${target} usermod -d /home/${nUser} -m ${oUser}`);
+    }
+  }
+  
+
   async addUser(target: string ="/TARGET",
                 username: string="live", 
                 password: string="evolution",
