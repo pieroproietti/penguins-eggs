@@ -7,9 +7,8 @@
 [![MIT license](http://img.shields.io/badge/license-MIT-brightgreen.svg)](http://opensource.org/licenses/MIT)
 [![Join the chat at https://gitter.im/penguins-eggs/Lobby](https://badges.gitter.im/pieroproietti/penguins-eggs.svg)](https://gitter.im/penguins-eggs/Lobby?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 &nbsp;[gitbook](https://penguin-s-eggs.gitbook.io/project/) &nbsp;[Leggimi](./README.it_IT.md)&nbsp;[trends](https://www.npmtrends.com/penguins-eggs) 
-
-
-[Developer notes](https://github.com/pieroproietti/penguins-eggs/blob/master/developer.md)
+[sourceforge](https://sourceforge.net/projects/penguins-eggs/)
+[notes](https://github.com/pieroproietti/penguins-eggs/blob/master/developer.md)
 
 
 ## Presentation
