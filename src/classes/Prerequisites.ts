@@ -6,38 +6,18 @@
  */
 
 "use strict";
-import utils from "../lib/utils";
+
+import shell from "shelljs";
 import { IOses } from "../interfaces";
 
 class Prerequisites {
-    // Properties
 
-    private o: IOses;
-
-    constructor(o: IOses) {
-        this.o = o;
-    }
-
-
-
-    // Methods
-    public async install() {
-        console.log(`Prerequisites: ${this.o.distroLike}`);
-
-        if (this.o.distroLike === "Debian") {
-            this.debian();
-        } else if (this.o.distroLike === "Ubuntu") {
-            this.debian();
-        }
-    }
-
-
-    async debian(): Promise<void> {
+    public async prerequisitesCli(): Promise<void> {
         console.log(
             ">>> eggs: Installing the prerequisites packages..."
         );
-        utils.execute(`apt-get update`);
-        utils.execute(`apt-get --yes install \
+        shell.exec(`apt-get update`);
+        shell.exec(`apt-get --yes install \
                             lvm2 \
                             parted \
                             squashfs-tools \
@@ -45,13 +25,28 @@ class Prerequisites {
                             syslinux \
                             isolinux \
                             live-boot \
-                            calamares \
-                            calamares-settings-debian \
-                            qml-module-qtquick2 \
-                            qml-module-qtquick-controls`);
+                            live-config`);
 
-        utils.execute(`apt-get clean`);
-        utils.execute(`apt-get autoclean`);
+
+                            shell.exec(`apt-get clean`);
+                            shell.exec(`apt-get autoclean`);
+                        }
+
+    public async prerequisitesCalamares(){
+        console.log(
+            ">>> eggs: Installing the prerequisites calamares..."
+        );
+
+        shell.exec(`apt-get update`);
+        shell.exec(`apt-get --yes install \
+        calamares \
+        calamares-settings-debian \
+        qml-module-qtquick2 \
+        qml-module-qtquick-controls`);
+        shell.exec(`apt-get clean`);
+        shell.exec(`apt-get autoclean`);
+    
     }
+
 }
 export default Prerequisites;

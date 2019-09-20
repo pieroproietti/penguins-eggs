@@ -84,8 +84,8 @@ function usage() {
   console.log(">>> sudo eggs produce --distroname penguin --branding debian");
   console.log(">>> sudo eggs info");
   console.log(">>> sudo eggs install");
-  console.log(">>> sudo eggs prerequisites");
-  console.log(">>> sudo eggs calamares");
+  console.log(">>> sudo eggs prerequisites-cli");
+  console.log(">>> sudo eggs prerequisites-calamares");
   console.log(">>> sudo eggs update");
   console.log(">>> sudo eggs kill");
 }
@@ -101,8 +101,8 @@ async function start() {
     .command("produce")
     .command("info")
     .command("install")
-    .command("prerequisites")
-    .command("calamares")
+    .command("prerequisites-cli")
+    .command("prerequisites-calamares")
     .command("update")
     .command("kill")
     .command("user");
@@ -162,10 +162,10 @@ async function start() {
     install(force);
   } else if (command == "hatch") {
     install(force);
-  } else if (command == "prerequisites") {
-    p.install();
-  } else if (command == "calamares") {
-    c.configure(o);
+  } else if (command == "prerequisites-cli") {
+    p.prerequisitesCli();
+  } else if (command == "prerequisites-calamares") {
+    p.prerequisitesCalamares();
   } else if (command == "update") {
     Update.go();
   } else if (command == "kill") {
