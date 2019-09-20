@@ -146,7 +146,7 @@ async function start() {
   const o: IOses = oses.info(distro);
   const i: Iso = new Iso(app, workDir, distro, user);
   const c: Calamares = new Calamares(distro);
-  const p: Prerequisites = new Prerequisites(o);
+  const p: Prerequisites = new Prerequisites();
 
   const command = process.argv[2];
 
