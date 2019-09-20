@@ -24,11 +24,11 @@ services dhcp, dhcp-proxy, tftp and http to realize a fast and powerfull PXE
 server who can work alone or inside a preesistent LAN architecture.
 
 All it is written in pure nodejs, so ideally can be used with differents Linux
-distros. At the moment it is tested with Debian 9 Stretch, Debian 8 Jessie,
-Ubuntu and derivates as Linux Mint. For others distros we need to find
-collaboration.
+distros. At the moment it is tested with Debian 10 Buster, Debian 9 Stretch, Debian 8 Jessie,
+Ubuntu and derivates as Linux Mint and Bunsenlabs Helium. For others distros we need to find
+collaborations.
 
-penguins-eggs, at the moment 2018 february 20 is in a joung state, and can have
+penguins-eggs, at the moment 2019 september 20 is in a beta state, and can have again
 same troubles for people not in confidence with Linux system administration, but
 can be already extremely usefull: imagine to install it on an lan and start to
 manage the computers with it. You can easily install clonezilla on it, or clamav
@@ -92,8 +92,8 @@ speriamo
 
 ### Installation penguins-eggs from source
 
-You need a functional installation of Linux Debian version 8 or 9, LinuxMint, LMDE, 
-Ubuntu or derivates, all the prerequisites plus the ``build-essential`` package.
+You need a functional installation of Linux Debian version 10, 9 or 8, LinuxMint, LMDE, 
+Ubuntu 19.04 or derivates and install all the prerequisites plus the ``build-essential`` package.
 
 ```apt-get install build-essential```
 
@@ -124,13 +124,13 @@ Of course, you can build it or link it.
 On the eggs you can do same actions:
 * produce
 * info
-* hatch
-* prerequisites
-* calamares
+* install
+* prerequisites-cli
+* prerequisites-calamares
 * update
 * kill
 
-### produce (preparazione dell'uovo/creazione ISO)
+### spawn/produce (preparazione dell'uovo/creazione ISO)
 The function of spawn is to generate the egg. Your system is copied and packaged
 as an iso file. This is a live system version of your real system, and you can
 masterize it or put in a USB key and use, and install your version of linux on
@@ -145,7 +145,7 @@ You will get the main information about your system. This information will be us
 
 ```sudo eggs info```
 
-### hatch (cova dell'uovo/installazione)
+### hatch/install (cova dell'uovo/installazione)
 An egg to became penguin need to be hatched! In our case we simply need to give
 to the egg the informations for installation and - in few minuts - (far
   before the fatitical 21 days) we will have a new penguin.
