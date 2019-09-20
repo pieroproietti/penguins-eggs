@@ -63,19 +63,19 @@ Simply copy and past the following lines:
 ```sudo npm i penguins-eggs -g```
 
 ### Intel 386
-Node.js v8.x:
+The last version is Node.js v8.x:
 
-#### Using Ubuntu
+#### Ubuntu
 ```curl -sL https://deb.nodesource.com/setup_8.x | sudo -E bash -```
 ```sudo apt-get install -y nodejs```
 
-#### Using Debian, as root
+#### Debian
 
 ```curl -sL https://deb.nodesource.com/setup_8.x | bash -```
 
 ```apt-get install -y nodejs```
 
-speriamo
+and finally, we check the nodejs version:
 
 ```apt-cache policy nodejs ```
 
@@ -86,8 +86,9 @@ speriamo
  ``` *** 8.16.1-1nodesource1 100 ```
  ```        100 /var/lib/dpkg/status ```
 
-```apt install nodejs=8.16.1-1nodesource1```
+and install it:
 
+```apt install nodejs=8.16.1-1nodesource1```
 
 
 ### Installation penguins-eggs from source
@@ -164,20 +165,16 @@ the operation of hatch is destructive and irreversible, and will format your
 disk and destroy your data to prepare the machine for the installation of your
 new penguin. **Be sure to have backup of your data before**.
 
-### prerequisites (installa i prerequisiti)
+### prerequisites-cli (command-line-interface)
 You must use it once before to use eggs, it will install various Debian packages needing for the process of building iso.
 
-```sudo eggs prerequisites```
+### prerequisites-calamares (calamares installer)
+On Debian Buster and other distros where the package calamares exist, You need to install the
+prerequisites to can use it as installer.
 
-The following packages will be installed: ```lvm2 parted squashfs-tools xorriso live-boot syslinux syslinux-common isolinux pxelinux`calamares qml-module-qtquick2 qml-module-qtquick-controls```
+### update (aggiornamento di penguin's eggs)
+You can update your version of penguins-eggs with the last version published.
 
-
-### calamares (crea la configurazione di calamares)
-This command is usefull during develepment, it generate the calamares configuration on fly.
-
-```sudo eggs calamares```
-
-### update (aggionamento di penguin's eggs)
 ```sudo eggs update```
 
 
@@ -190,6 +187,7 @@ free your system from the egg.
 
 ## Options
 * -d --distroname <distroname>
+* -b --branding <branding>
 
 If you dont use this option, the computer hostname will used as distroname.
 The image iso generated, will be called distroname-YYYY-MM-DD_HHMM-ZZ
@@ -209,15 +207,13 @@ with your preferedd GUI, I use cinnamon, and follow this
 
 # Distributions supported
 At the moment penguins-eggs is working on:
-* Debian
-* Ubuntu
-* Linux Mint
-* LMDE
-* LMDE + Proxmox VE
+* Debian 10, 9, 8 and sid
+* Ubuntu 19.04
+* Linux Mint 19.2, LMDE 3
+* Busenlabs helium (all versions)
 
 # That's all Folks!
-No need other configurations, penguins-eggs are battery included or better, as
-in the real, the live is inside! :-D
+No need other configurations, penguins-eggs are battery included or better, as in the real, the live is inside! :-D
 
 ## More informations
 For other informations, look at [Piero Proietti's blog](http://pieroproietti.github.com),
