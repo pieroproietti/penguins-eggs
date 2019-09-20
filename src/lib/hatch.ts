@@ -21,13 +21,33 @@ import { IDevice, IDevices, IDriveList } from "../interfaces";
 import { description } from "pjson";
 
 export async function hatch() {
+
+  let msg1 = "\nThe process of installation will format your disk and destroy all datas on it.\n Did You are sure?\n";
+  let msg2 = "\nWe need to be absolutely sure, did You saved your data before to proced?\n";
+  let msg3 = "\nConfirm you want to continue?\n";
+  let varResult: any = await confirm(msg1);
+  let result = JSON.parse(varResult);
+  if (result.confirm === 'Yes') {
+    varResult = await confirm(msg2);
+    result = JSON.parse(varResult);
+    if (result.confirm === `Yes`) {
+      varResult = await confirm(msg3);
+      result = JSON.parse(varResult);
+      if (result.confirm === `Yes`) {
+        await install();
+      }
+    }
+  }
+}
+
+/**
+ * install
+ */
+async function install() {
   let target = "/TARGET";
   let devices = {} as IDevices;
   devices.root = {} as IDevice;
   devices.swap = {} as IDevice;
-
-
-  
 
   let driveList: string[] = [];
   await drivelist.list(
@@ -41,11 +61,6 @@ export async function hatch() {
         driveList.push(drive.device);
       });
     });
-
-  let confirm: any = await confirmInstallazion();
-
-  console.log(`confirm: ${confirm}`);
-
   let varOptions: any = await getOptions(driveList);
   let options: any = JSON.parse(varOptions);
 
@@ -58,12 +73,12 @@ export async function hatch() {
 
 
   let diskSize;
-  diskSize=getDiskSize(options.installationDevice);
+  diskSize = getDiskSize(options.installationDevice);
   console.log(`diskSize: ${diskSize}`);
-  
-  
+
+
   let isDiskPrepared: boolean;
-  
+
   isDiskPrepared = await diskPartition(options.installationDevice);
   if (isDiskPrepared) {
     await mkfs(devices);
@@ -80,7 +95,7 @@ export async function hatch() {
 
     await utils.addUser(target, options.username, options.userpassword);
     await utils.changePassword(target, `root`, options.rootpassword);
-    await autologinConfig(target,"live",options.username);
+    await autologinConfig(target, "live", options.username);
 
     await delUserLive(target);
     await patchPve(target);
@@ -93,21 +108,21 @@ export async function hatch() {
 /**
  * autologin
  */
-async function autologinEnable(target: string){
-  let cmd: string=`sed -i 's/^#autologin-user/autologin-user/g' ${target}/etc/lightdm/lightdm.conf`;
-  await utils.execute(`cmd`);  
+async function autologinEnable(target: string) {
+  let cmd: string = `sed -i 's/^#autologin-user/autologin-user/g' ${target}/etc/lightdm/lightdm.conf`;
+  await utils.execute(`cmd`);
 }
 
-async function autologinDisable(target: string){
-  let cmd: string=`sed -i 's/^autologin-user/#autologin-user/g' ${target}/etc/lightdm/lightdm.conf`;
-  await utils.execute(`cmd`);  
+async function autologinDisable(target: string) {
+  let cmd: string = `sed -i 's/^autologin-user/#autologin-user/g' ${target}/etc/lightdm/lightdm.conf`;
+  await utils.execute(`cmd`);
 }
 
 /**
  * autologin
  */
-async function autologinConfig(target: string, oldUser: string="live", newUser: string="artisan"){
-  let cmd: string=`sed -i "/autologin-user/s/=${oldUser}/=${newUser}/" ${target}/etc/lightdm/lightdm.conf`;
+async function autologinConfig(target: string, oldUser: string = "live", newUser: string = "artisan") {
+  let cmd: string = `sed -i "/autologin-user/s/=${oldUser}/=${newUser}/" ${target}/etc/lightdm/lightdm.conf`;
   await utils.execute(cmd);
 }
 
@@ -116,7 +131,7 @@ async function autologinConfig(target: string, oldUser: string="live", newUser: 
  * delUserLive
  */
 async function delUserLive(target: string) {
-  let cmd: string=`chroot ${target} deluser live`;
+  let cmd: string = `chroot ${target} deluser live`;
   await utils.execute(cmd);
 }
 
@@ -380,13 +395,13 @@ async function getDiskSize(device: string): Promise<number> {
   return bytes;
 }
 
-async function confirmInstallazion(): Promise<any> {
+async function confirm(msg: string): Promise<any> {
   return new Promise(function (resolve, reject) {
     let questions: Array<Object> = [
       {
         type: "list",
         name: "confirm",
-        message: "The install will format all your disk, without cure of the data. Did You confirm?",
+        message: msg,
         choices: ["No", "Yes"],
         default: "No"
       }
@@ -397,6 +412,7 @@ async function confirmInstallazion(): Promise<any> {
     });
   });
 }
+
 
 /**
  * 
@@ -528,7 +544,7 @@ auto lo
 iface lo inet manual
 auto ${options.netInterface}
 iface ${options.netInterface} inet manual
-auto vmbr0 
+auto vmbr0
 iface vmbr0 inet ${options.netAddressType} static
     address ${options.netAddress}
     netmask ${options.netMask}
