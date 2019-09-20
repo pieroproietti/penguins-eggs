@@ -159,9 +159,9 @@ async function start() {
   } else if (command == "info") {
     console.log(oses.info(distro));
   } else if (command == "install") {
-    install(force);
+    install();
   } else if (command == "hatch") {
-    install(force);
+    install();
   } else if (command == "prerequisites-cli") {
     p.prerequisitesCli();
   } else if (command == "prerequisites-calamares") {
@@ -175,10 +175,8 @@ async function start() {
   }
 }
 
-async function install(force: boolean=false) {
-  if (force){
-    hatch();
-  } else if (!await utils.isLive()) {
+async function install() {
+  if (!await utils.isLive()) {
     console.log(
       ">>> eggs: This is an installed system! The hatch command cannot be executed.",
     );

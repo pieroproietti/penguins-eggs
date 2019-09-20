@@ -27,6 +27,8 @@ export async function hatch() {
   devices.swap = {} as IDevice;
 
 
+  
+
   let driveList: string[] = [];
   await drivelist.list(
     (error: boolean, drives: IDriveList[]) => {
@@ -40,6 +42,9 @@ export async function hatch() {
       });
     });
 
+  let confirm: any = await confirmInstallazion();
+
+  console.log(`confirm: ${confirm}`);
 
   let varOptions: any = await getOptions(driveList);
   let options: any = JSON.parse(varOptions);
@@ -257,27 +262,14 @@ nameserver 8.8.4.4
 async function interfaces(target: string, options: any) {
   if (options.netAddressType === "static") {
     let file = `${target}/etc/network/interfaces`;
-    let text = `
+    let text = `\
 auto lo
 iface lo inet manual
-
 auto ${options.netInterface}
-iface ${options.netInterface} inet manual
-
-auto vmbr0 
-iface vmbr0 inet ${options.netAddressType} static
+iface ${options.netInterface} inet ${options.netAddressType}
     address ${options.netAddress}
     netmask ${options.netMask}
-    gateway ${options.netGateway}
-    bridge-ports ${options.netInterface}
-    bridge-stp off
-    bridge-fd 0
-
-auto loopback
-iface loopback inet manual
-    
-auto manual
-iface manual inet manual`;
+    gateway ${options.netGateway}`;
 
     utils.bashWrite(file, text);
   }
@@ -388,6 +380,23 @@ async function getDiskSize(device: string): Promise<number> {
   return bytes;
 }
 
+async function confirmInstallazion(): Promise<any> {
+  return new Promise(function (resolve, reject) {
+    let questions: Array<Object> = [
+      {
+        type: "list",
+        name: "confirm",
+        message: "The install will format all your disk, without cure of the data. Did You confirm?",
+        choices: ["No", "Yes"],
+        default: "No"
+      }
+    ];
+
+    inquirer.prompt(questions).then(function (options) {
+      resolve(JSON.stringify(options));
+    });
+  });
+}
 
 /**
  * 
@@ -511,3 +520,24 @@ async function getOptions(driveList: string[]): Promise<any> {
 }
 
 var ifaces: string[] = fs.readdirSync("/sys/class/net/");
+
+/*
+Configurazione rete Proxmox
+let text = `\
+auto lo
+iface lo inet manual
+auto ${options.netInterface}
+iface ${options.netInterface} inet manual
+auto vmbr0 
+iface vmbr0 inet ${options.netAddressType} static
+    address ${options.netAddress}
+    netmask ${options.netMask}
+    gateway ${options.netGateway}
+    bridge-ports ${options.netInterface}
+    bridge-stp off
+    bridge-fd 0
+auto loopback
+iface loopback inet manual
+auto manual
+iface manual inet manual`;
+*/

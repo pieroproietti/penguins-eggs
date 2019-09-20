@@ -69,7 +69,6 @@ class Iso {
     this.distro.pathFs = this.distro.pathHome + `/fs`;
     this.distro.pathIso = this.distro.pathHome + `/iso`;
 
-
     if (net == undefined) {
       this.net.dhcp = false;
       this.net.address = "192.168.61.100";
@@ -107,17 +106,13 @@ class Iso {
 
   }
 
-  async produce(o: IOses, c: any, force:boolean=false) {
+  async produce(o: IOses, c: any) {
 
     if (await utils.isLive()) {
       console.log(
         ">>> eggs: This is a live system! An egg cannot be produced from an egg!"
       );
     } else {
-      force=true;
-    }
-
-    if (force){
       c.configure(o);
       console.log("------------------------------------------");
       console.log(`Laying the system into the egg...`);
