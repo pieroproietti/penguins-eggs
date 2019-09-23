@@ -189,7 +189,11 @@ class Iso {
       --delete-excluded \
       --filter="- ${this.distro.pathHome}" \
       ${filters} \
-      --filter="+ /home/live" \
+      --filter="- /lib/live/*" \
+      --filter="+ /lib/live/boot/*" \
+      --filter="+ /lib/live/config/*" \
+      --filter="+ /lib/live/init-config-sh" \
+      --filter="+ /lib/live/setup-network.sh" \
       --filter="- /home/*" \
       / ${this.distro.pathFs}`;
       
