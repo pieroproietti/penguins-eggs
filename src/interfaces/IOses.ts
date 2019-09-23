@@ -11,6 +11,7 @@ export interface IOses {
     bugReportUrl: string,
     append: string,
     appendSafe: string,
+    aqs: string,
     menuTitle: string,
     distroName: string,
     distroVersionNumber: string
