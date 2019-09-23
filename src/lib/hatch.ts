@@ -340,7 +340,7 @@ async function egg2system(target: string): Promise<void> {
   / ${target}`;
 
   console.log("==========================================");
-  console.log(`egg2system: copyng...`);
+  console.log(`egg2system: copyng... ${cmd}`);
   console.log("==========================================");
   shell.exec(cmd.trim(), {
     async: false

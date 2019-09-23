@@ -199,7 +199,7 @@ class Iso {
       / ${this.distro.pathFs}`;
       
     console.log("==========================================");
-    console.log(`system2egg: copyng...\n`);
+    console.log(`system2egg: copyng... ${cmd}\n`);
     console.log("==========================================");
     shell.exec(cmd.trim(), {
       async: false
