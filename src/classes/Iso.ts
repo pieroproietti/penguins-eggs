@@ -206,6 +206,22 @@ class Iso {
       });
   
 
+      cmd = `cp ${this.distro.pathFs}/etc/skel cp ${this.distro.pathFs}/home -R`;
+      shell.exec(cmd.trim(), {
+        async: false
+      });
+      cmd = `mv ${this.distro.pathFs}/home/skel ${this.distro.pathFs}/home/live`;
+      shell.exec(cmd.trim(), {
+        async: false
+      });
+      
+      cmd = `chown live:live ${this.distro.pathFs}/home/live -R`;
+      shell.exec(cmd.trim(), {
+        async: false
+      });
+
+      /*
+
       cmd = `\
       rsync \
       --archive \
@@ -221,7 +237,7 @@ class Iso {
       shell.exec(cmd.trim(), {
         async: false
       });
-
+      */
   }
 
 
