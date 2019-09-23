@@ -179,17 +179,20 @@ class Iso {
     let specificFilters:string;
     let cmd:string = "";
 
+    cmd = `mkdir ${this.distro.pathFs}/home`;
+    console.log(`system2egg: creating... home ${cmd} \n`);
+    shell.exec(cmd.trim(), {
+      async: false
+    });
+
     cmd = `\
       rsync \
       --archive \
       --delete-before \
       --delete-excluded \
       --filter="- ${this.distro.pathHome}" \
-      /home/live/* ${this.distro.pathFs}/fs/home/live/*`;
-
-      console.log("==========================================");
+      /home/live/* ${this.distro.pathFs}/home/live/*`;
       console.log(`system2egg: copyng... home ${cmd} \n`);
-      console.log("==========================================");
       shell.exec(cmd.trim(), {
         async: false
       });
