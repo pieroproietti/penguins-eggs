@@ -335,7 +335,7 @@ async function egg2system(target: string): Promise<void> {
   --filter="+ /lib/live/config/*" \
   --filter="+ /lib/live/init-config-sh" \
   --filter="+ /lib/live/setup-network.sh" \
-  --filter="- /home/*" \
+  --filter="+ /home/live/*" \
   ${filters} \
   / ${target}`;
 
