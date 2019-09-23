@@ -194,6 +194,7 @@ class Iso {
       --filter="+ /lib/live/config/*" \
       --filter="+ /lib/live/init-config-sh" \
       --filter="+ /lib/live/setup-network.sh" \
+      --filter="- /home/eggs" \
       --filter="+ /home/live/*" \
       / ${this.distro.pathFs}`;
       
