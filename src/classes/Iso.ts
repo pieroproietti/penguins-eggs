@@ -179,23 +179,6 @@ class Iso {
     let specificFilters:string;
     let cmd:string = "";
 
-    cmd = `mkdir ${this.distro.pathFs}/home`;
-    console.log(`system2egg: creating... home ${cmd} \n`);
-    shell.exec(cmd.trim(), {
-      async: false
-    });
-
-    cmd = `\
-      rsync \
-      --archive \
-      --delete-before \
-      --delete-excluded \
-      /home/live/ ${this.distro.pathFs}/home/live/`;
-      console.log(`system2egg: copyng... home ${cmd} \n`);
-      shell.exec(cmd.trim(), {
-        async: false
-      });
-    
 
     // Copia la home di live da system ad egg
     cmd = `\
@@ -206,21 +189,38 @@ class Iso {
       --filter="- ${this.distro.pathHome}" \
       ${filters} \
       --filter="- /lib/live/*" \
-      --filter="- /home/*" \
       --filter="+ /lib/live/boot/*" \
       --filter="+ /lib/live/config/*" \
       --filter="+ /lib/live/init-config-sh" \
       --filter="+ /lib/live/setup-network.sh" \
-      / ${this.distro.pathFs}`;
+      --filter="- /home/*" \
+        / ${this.distro.pathFs}`;
       
+
+      //-filter="- ${this.distro.pathHome}" \
       console.log("==========================================");
-      console.log(`system2egg: copyng...\n`);
+      console.log(`system2egg: copyng... ${cmd}\n`);
       console.log("==========================================");
       shell.exec(cmd.trim(), {
         async: false
       });
   
-  
+
+      cmd = `\
+      rsync \
+      --archive \
+      --delete-before \
+      --delete-excluded \
+      --filter="- /home/*" \
+      --filter="+ /home/live" \
+      /home/live/ ${this.distro.pathFs}/home/live`;
+
+      console.log("==========================================");
+      console.log(`system2egg: copyng home... ${cmd}\n`);
+      console.log("==========================================");
+      shell.exec(cmd.trim(), {
+        async: false
+      });
 
   }
 
