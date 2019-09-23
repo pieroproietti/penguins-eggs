@@ -195,10 +195,11 @@ class Iso {
       --filter="+ /lib/live/init-config-sh" \
       --filter="+ /lib/live/setup-network.sh" \
       --filter="- /home/*" \
+      --filter="+ /home/live/*" \
       / ${this.distro.pathFs}`;
       
     console.log("==========================================");
-    console.log(`system2egg: copyng...\n ${cmd}`);
+    console.log(`system2egg: copyng...\n`);
     console.log("==========================================");
     shell.exec(cmd.trim(), {
       async: false
