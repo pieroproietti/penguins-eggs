@@ -198,14 +198,13 @@ class Iso {
       
 
       //-filter="- ${this.distro.pathHome}" \
-      console.log("==========================================");
-      console.log(`system2egg: copyng... ${cmd}\n`);
-      console.log("==========================================");
+      console.log(`system2egg: copyng... \n`);
       shell.exec(cmd.trim(), {
         async: false
       });
   
 
+      console.log(`system2egg: creating home... \n`);
       cmd = `cp ${this.distro.pathFs}/etc/skel cp ${this.distro.pathFs}/home -R`;
       shell.exec(cmd.trim(), {
         async: false
