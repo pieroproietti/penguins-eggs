@@ -330,13 +330,13 @@ async function egg2system(target: string): Promise<void> {
   --archive \
   --delete-before \
   --delete-excluded \
+  ${filters} \
   --filter="- /lib/live/*" \
   --filter="+ /lib/live/boot/*" \
   --filter="+ /lib/live/config/*" \
   --filter="+ /lib/live/init-config-sh" \
   --filter="+ /lib/live/setup-network.sh" \
   --filter="+ /home/live/*" \
-  ${filters} \
   / ${target}`;
 
   console.log("==========================================");
