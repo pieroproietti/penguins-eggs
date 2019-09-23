@@ -185,7 +185,7 @@ class Iso {
       --delete-before \
       --delete-excluded \
       --filter="- ${this.distro.pathHome}" \
-      /home/live/* ${this.distro.pathFs}/home/live/*`;
+      /home/live/* ${this.distro.pathFs}/fs/home/live/*`;
 
       console.log("==========================================");
       console.log(`system2egg: copyng... home ${cmd} \n`);
