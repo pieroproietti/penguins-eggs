@@ -37,6 +37,7 @@ class Oses {
             "bugReportUrl": "",
             "append": "",
             "appendSafe": "",
+            "aqs":"",
             "menuTitle": "",
             "distroName": "",
             "distroVersionNumber": "",
