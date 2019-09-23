@@ -198,12 +198,27 @@ class Iso {
       --filter="+ /home/live/*" \
       / ${this.distro.pathFs}`;
       
-    console.log("==========================================");
-    console.log(`system2egg: copyng... ${cmd}\n`);
-    console.log("==========================================");
-    shell.exec(cmd.trim(), {
-      async: false
-    });
+      console.log("==========================================");
+      console.log(`system2egg: copyng... ${cmd}\n`);
+      console.log("==========================================");
+      shell.exec(cmd.trim(), {
+        async: false
+      });
+  
+    cmd = `\
+      rsync \
+      --archive \
+      --filter="+ /home/live/*" \
+      /home/live/* ${this.distro.pathFs}/home/live/*`;
+
+      console.log("==========================================");
+      console.log(`system2egg: copyng... ${cmd}\n`);
+      console.log("==========================================");
+      shell.exec(cmd.trim(), {
+        async: false
+      });
+  
+
   }
 
 
