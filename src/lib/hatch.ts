@@ -337,10 +337,10 @@ async function egg2system(target: string): Promise<void> {
   --filter="+ /lib/live/setup-network.sh" \
   --filter="- /lib/live/*" \
   --filter="- /home/*" \
-/ ${target}`;
+  / ${target}`;
 
   console.log("==========================================");
-  console.log(`egg2system: copyng... ${cmd}`);
+  console.log(`egg2system: copyng...`);
   console.log("==========================================");
   shell.exec(cmd.trim(), {
     async: false

@@ -195,11 +195,10 @@ class Iso {
       --filter="+ /lib/live/config/*" \
       --filter="+ /lib/live/init-config-sh" \
       --filter="+ /lib/live/setup-network.sh" \
-      --filter="+ /home/live/*" \
       / ${this.distro.pathFs}`;
       
       console.log("==========================================");
-      console.log(`system2egg: copyng... ${cmd}\n`);
+      console.log(`system2egg: copyng...\n`);
       console.log("==========================================");
       shell.exec(cmd.trim(), {
         async: false
@@ -208,7 +207,6 @@ class Iso {
     cmd = `\
       rsync \
       --archive \
-      --filter="+ /home/live/*" \
       /home/live/* ${this.distro.pathFs}/home/live/*`;
 
       console.log("==========================================");
