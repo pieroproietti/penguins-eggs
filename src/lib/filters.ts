@@ -58,6 +58,6 @@ const filters=`\
 --filter="- /var/lib/vz/*" \
 --filter="- /var/log/*" \
 --filter="- /var/spool/mail/*" \
---filter="- /var/mail/*"`;
+--filter="- /var/mail/*" `;
 
 export default filters;
