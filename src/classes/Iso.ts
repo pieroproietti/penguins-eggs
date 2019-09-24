@@ -195,7 +195,6 @@ class Iso {
       --filter="+ /lib/live/setup-network.sh" \
       --filter="- /home/*" \
       / ${this.distro.pathFs}`;
-      
       console.log(`system2egg: copyng system... \n`);
       shell.exec(cmd.trim(), {
         async: false
@@ -212,41 +211,6 @@ class Iso {
       shell.exec(`chown live:live ${this.distro.pathFs}/home/live -R`, {
         async: false
       });
-
-      shell.exec(`chroot /TARGET su - live -c /usr/bin/xdg-user-dirs-update`, {
-        async: false
-      });
-
-      shell.exec(`chroot /TARGET su - live -c xdg-desktop-icon install --novendor /usr/share/applications/calamares.desktop`, {
-        async: false
-      });
-      shell.exec(`chroot /TARGET su - live -c xdg-desktop-icon install --novendor /usr/share/applications/calamares.desktop`, {
-        async: false
-      });
-      shell.exec(`chroot /TARGET su - live -c xdg-desktop-icon install --novendor /usr/share/applications/dwagent-sh.desktop`, {
-        async: false
-      });
-      shell.exec(`chroot /TARGET su - live -c xdg-desktop-icon install --novendor /usr/share/applications/penguins-eggs.desktop`, {
-        async: false
-      });
-
-      /*
-      cmd = `\
-      rsync \
-      --archive \
-      --delete-before \
-      --delete-excluded \
-      --filter="- /home/*" \
-      --filter="+ /home/live" \
-      /home/live/ ${this.distro.pathFs}/home/live`;
-
-      console.log("==========================================");
-      console.log(`system2egg: copyng home... ${cmd}\n`);
-      console.log("==========================================");
-      shell.exec(cmd.trim(), {
-        async: false
-      });
-      */
   }
 
 
