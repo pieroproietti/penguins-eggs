@@ -194,33 +194,43 @@ class Iso {
       --filter="+ /lib/live/init-config-sh" \
       --filter="+ /lib/live/setup-network.sh" \
       --filter="- /home/*" \
-        / ${this.distro.pathFs}`;
+      / ${this.distro.pathFs}`;
       
-
-      //-filter="- ${this.distro.pathHome}" \
-      console.log(`system2egg: copyng... \n`);
+      console.log(`system2egg: copyng system... \n`);
       shell.exec(cmd.trim(), {
         async: false
       });
   
 
       console.log(`system2egg: creating home... \n`);
-      cmd = `cp ${this.distro.pathFs}/etc/skel cp ${this.distro.pathFs}/home -R`;
-      shell.exec(cmd.trim(), {
+      shell.exec(`cp ${this.distro.pathFs}/etc/skel ${this.distro.pathFs}/home -R`, {
         async: false
       });
-      cmd = `mv ${this.distro.pathFs}/home/skel ${this.distro.pathFs}/home/live`;
-      shell.exec(cmd.trim(), {
+      shell.exec(`mv ${this.distro.pathFs}/home/skel ${this.distro.pathFs}/home/live`, {
         async: false
       });
-      
-      cmd = `chown live:live ${this.distro.pathFs}/home/live -R`;
-      shell.exec(cmd.trim(), {
+      shell.exec(`chown live:live ${this.distro.pathFs}/home/live -R`, {
+        async: false
+      });
+
+      shell.exec(`chroot /TARGET su - live -c /usr/bin/xdg-user-dirs-update`, {
+        async: false
+      });
+
+      shell.exec(`chroot /TARGET su - live -c xdg-desktop-icon install --novendor /usr/share/applications/calamares.desktop`, {
+        async: false
+      });
+      shell.exec(`chroot /TARGET su - live -c xdg-desktop-icon install --novendor /usr/share/applications/calamares.desktop`, {
+        async: false
+      });
+      shell.exec(`chroot /TARGET su - live -c xdg-desktop-icon install --novendor /usr/share/applications/dwagent-sh.desktop`, {
+        async: false
+      });
+      shell.exec(`chroot /TARGET su - live -c xdg-desktop-icon install --novendor /usr/share/applications/penguins-eggs.desktop`, {
         async: false
       });
 
       /*
-
       cmd = `\
       rsync \
       --archive \
