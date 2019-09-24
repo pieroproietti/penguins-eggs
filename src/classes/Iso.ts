@@ -202,13 +202,10 @@ class Iso {
   
 
       console.log(`system2egg: creating home... \n`);
-      shell.exec(`cp ${this.distro.pathFs}/etc/skel ${this.distro.pathFs}/home -R`, {
+      shell.exec(`cp -r /etc/skel/. ${this.distro.pathFs}/home/live`, {
         async: false
       });
-      shell.exec(`mv ${this.distro.pathFs}/home/skel ${this.distro.pathFs}/home/live`, {
-        async: false
-      });
-      shell.exec(`chown live:live ${this.distro.pathFs}/home/live -R`, {
+      shell.exec(`chown -R live:live ${this.distro.pathFs}/home/live`, {
         async: false
       });
   }
