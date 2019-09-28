@@ -25,7 +25,8 @@ class Prerequisites {
                             syslinux \
                             isolinux \
                             live-boot \
-                            live-config`);
+                            open-infrastructure-system-config`);
+                            //live-config`);
 
 
                             shell.exec(`apt-get clean`);

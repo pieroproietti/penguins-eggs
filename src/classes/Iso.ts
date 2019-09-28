@@ -208,10 +208,7 @@ class Iso {
 
       console.log(`system2egg: creating initial live link... \n`);
       shell.exec(`cp /usr/share/applications/calamares.desktop ${this.distro.pathFs}/home/live/Desktop`, {async: false});
-      shell.exec(`cp /usr/share/applications/dwagent-sh.desktop ${this.distro.pathFs}/home/live/Desktop`, {async: false});
-      shell.exec(`cp /usr/share/applications/penguins-eggs.desktop ${this.distro.pathFs}/home/live/Desktop`, {async: false});
-
-
+      //shell.exec(`xdg-desktop-icon install --novendor /usr/share/applications/calamares.desktop`, {async: false});
   }
 
 
