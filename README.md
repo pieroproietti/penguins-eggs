@@ -19,23 +19,16 @@ version of Linux, generate it as ISO image to burn on a CD/DVD or copy to a usb
 key to boot your system. You can also boot your egg - via remote boot - on your
 LAN.
 
-It can create your ISO image of your system, but also include all the necessary
-services dhcp, dhcp-proxy, tftp and http to realize a fast and powerfull PXE
-server who can work alone or inside a preesistent LAN architecture.
-
 All it is written in pure nodejs, so ideally can be used with differents Linux
 distros. At the moment it is tested with Debian 10 Buster, Debian 9 Stretch, Debian 8 Jessie,
-Ubuntu and derivates as Linux Mint and Bunsenlabs Helium. For others distros we need to find
-collaborations.
+Ubuntu 19.04 and derivates as Linux Mint and Bunsenlabs Helium. 
+For others distros we need to find collaborations.
 
 penguins-eggs, at the moment 2019 september 20 is in a beta state, and can have again
 same troubles for people not in confidence with Linux system administration, but
-can be already extremely usefull: imagine to install it on an lan and start to
-manage the computers with it. You can easily install clonezilla on it, or clamav
-and you have a tool to backup/restore/sanityze your entire infrastructure.
-
-You can, also easily create your organization/school distro and deploy it on your
-LAN, give it to your friends as usb key or publish eggs in the internet!
+can be already extremely usefull, You can easily create your organization/school 
+version of Linux and deploy it on your LAN, give it to your friends as usb key 
+or publish eggs in the internet!
 
 You can try now penguins-eggs, it is a console utility - no GUI - but don't be
 scared, penguins-eggs is a console command - really very simple usage - if you
