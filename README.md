@@ -44,7 +44,8 @@ If not already installed, You need also to install the ``build-essential`` packa
 
 ```apt-get install build-essential```
 
-penguins-eggs depend on various packages too, you must install them using once the option prerequisites.
+penguins-eggs depend on various packages too, you must install them using once the options
+prerequisites-cli and prerequisites-calamares, if you want to use the GUI installer.
 
 ### Installation penguins-eggs via npm
 
