@@ -346,6 +346,7 @@ async function egg2system(target: string): Promise<void> {
     async: false
   });
 
+  /*
   cmd=`rsync \
   --relative \
   --archive \
@@ -369,7 +370,7 @@ async function egg2system(target: string): Promise<void> {
   shell.exec(cmd.trim(), {
     async: false
   });
-
+  */
 }
 
 async function mkfs(devices: IDevices): Promise<boolean> {
