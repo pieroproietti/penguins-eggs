@@ -1,0 +1,42 @@
+# install/hatch rsync excludes file 
+
+- /dev/*
+- /cdrom/*
+- /media/*
+- /TARGET
+- /swapfile
+- /mnt/*
+- /sys/*
+- /proc/*
+- /tmp/*
+- /live
+- /boot/grub/grub.cfg
+- /boot/grub/menu.lst
+- /boot/grub/device.map
+- /etc/udev/rules.d/70-persistent-cd.rules
+- /etc/udev/rules.d/70-persistent-net.rules
+- /etc/fstab
+- /etc/fstab.d/*
+- /etc/mtab
+- /etc/PolicyKit/PolicyKit.conf
+- /home/snapshot/
+- /home/*/.gvfs
+- /home/*/.su-to-rootrc
+- /var/lib/dbus/machine-id
+- /var/lib/polkit-1/localauthority/10-vendor.d/10-live-cd.pkla
+- /etc/PolicyKit/PolicyKit.conf
+- /etc/popularity-contest.conf
+
+# Added for newer version of live-config/live-boot
+# in sid (to become Jessie)
+- /lib/live/overlay
+- /lib/live/image
+- /lib/live/rootfs
+- /lib/live/mount
+- /run/*
+
+# Added for symlink /lib
+- /usr/lib/live/overlay
+- /usr/lib/live/image
+- /usr/lib/live/rootfs
+- /usr/lib/live/mount

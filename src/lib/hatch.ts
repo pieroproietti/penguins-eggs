@@ -16,7 +16,7 @@ import inquirer from "inquirer";
 import drivelist from "drivelist";
 
 import utils from "./utils";
-import filters from "./filters";
+// import filters from "./filters";
 import { IDevice, IDevices, IDriveList } from "../interfaces";
 import { description } from "pjson";
 
@@ -324,6 +324,40 @@ ff02::3 ip6-allhosts
  */
 async function egg2system(target: string): Promise<void> {
   let cmd = "";
+  let filters=`\ 
+  --filter="- /dev/*" \
+  --filter="- /cdrom/*" \
+  --filter="- /media/*" \
+  --filter="- /TARGET" \
+  --filter="- /swapfile" \
+  --filter="- /mnt/*" \
+  --filter="- /sys/*" \
+  --filter="- /proc/*" \
+  --filter="- /tmp/*" \
+  --filter="- /live" \
+  --filter="- /home/*" \
+  --filter="- /boot/grub/grub.cfg" \
+  --filter="- /boot/grub/menu.lst" \
+  --filter="- /boot/grub/device.map" \
+  --filter="- /etc/udev/rules.d/70-persistent-cd.rules" \
+  --filter="- /etc/udev/rules.d/70-persistent-net.rules" \
+  --filter="- /etc/fstab" \
+  --filter="- /etc/fstab.d/*" \
+  --filter="- /etc/mtab" \
+  --filter="- /etc/PolicyKit/PolicyKit.conf" \
+  --filter="- /var/lib/dbus/machine-id" \
+  --filter="- /var/lib/polkit-1/localauthority/10-vendor.d/10-live-cd.pkla" \
+  --filter="- /etc/PolicyKit/PolicyKit.conf" \
+  --filter="- /etc/popularity-contest.conf" \
+  --filter="- /lib/live/overlay" \
+  --filter="- /lib/live/image" \
+  --filter="- /lib/live/rootfs" \
+  --filter="- /lib/live/mount" \
+  --filter="- /run/*" \
+  --filter="- /usr/lib/live/overlay" \
+  --filter="- /usr/lib/live/image" \
+  --filter="- /usr/lib/live/rootfs" \
+  --filter="- /usr/lib/live/mount" `;
 
   cmd = `\
   rsync \
@@ -331,12 +365,6 @@ async function egg2system(target: string): Promise<void> {
   --delete-before \
   --delete-excluded \
   ${filters} \
-  --filter="+ /lib/live/boot/*" \
-  --filter="+ /lib/live/config/*" \
-  --filter="+ /lib/live/init-config-sh" \
-  --filter="+ /lib/live/setup-network.sh" \
-  --filter="- /lib/live/*" \
-  --filter="- /home/*" \
   / ${target}`;
 
   console.log("==========================================");
@@ -588,3 +616,5 @@ iface loopback inet manual
 auto manual
 iface manual inet manual`;
 */
+
+
