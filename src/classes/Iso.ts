@@ -234,7 +234,7 @@ class Iso {
     --filter="- /root/*" \
     --filter="- /home/*" \
     --filter="- /etc/ssh/ssh_host_*_key*" \
-    --filter="- /etc/ssh/ssh_host_key*" \`;
+    --filter="- /etc/ssh/ssh_host_key*"`;
 
     // Copia la home di live da system ad egg
     cmd = `\
