@@ -324,7 +324,7 @@ ff02::3 ip6-allhosts
  */
 async function egg2system(target: string): Promise<void> {
   let cmd = "";
-  let filters=`--filter="- /dev/*" \
+  const filters=`--filter="- /dev/*" \
   --filter="- /cdrom/*" \
   --filter="- /media/*" \
   --filter="- /TARGET" \

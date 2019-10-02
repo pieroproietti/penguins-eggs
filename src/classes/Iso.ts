@@ -13,7 +13,7 @@
 
 "use strict";
 
-import filters from "../lib/filters";
+//import filters from "../lib/filters";
 
 import fs from "fs";
 import shell from "shelljs";
@@ -176,9 +176,65 @@ class Iso {
    * system2egg
    */
   public async system2egg() {
-    let specificFilters:string;
     let cmd:string = "";
-
+    const filters=`--filter="- /dev/*" \
+    --filter="- /cdrom/*" \
+    --filter="- /media/*" \
+    --filter="- /swapfile" \
+    --filter="- /mnt/*" \
+    --filter="- /sys/*" \
+    --filter="- /proc/*" \
+    --filter="- /tmp/*" \
+    --filter="- /live" \
+    --filter="- /persistence.conf" \
+    --filter="- /boot/grub/grub.cfg" \
+    --filter="- /boot/grub/menu.lst" \
+    --filter="- /boot/grub/device.map" \
+    --filter="- /boot/*.bak" \
+    --filter="- /boot/*.old-dkms" \
+    --filter="- /etc/udev/rules.d/70-persistent-cd.rules" \
+    --filter="- /etc/udev/rules.d/70-persistent-net.rules" \
+    --filter="- /etc/fstab" \
+    --filter="- /etc/fstab.d/*" \
+    --filter="- /etc/mtab" \
+    --filter="- /etc/blkid.tab" \
+    --filter="- /etc/blkid.tab.old" \
+    --filter="- /etc/apt/sources.list~" \
+    --filter="- /etc/crypttab" \
+    --filter="- /etc/initramfs-tools/conf.d/resume" \
+    --filter="- /etc/initramfs-tools/conf.d/cryptroot" \
+    --filter="- /etc/popularity-contest.conf" \
+    --filter="- /home/snapshot" \
+    --filter="- /lib/live/overlay" \
+    --filter="- /lib/live/image" \
+    --filter="- /lib/live/rootfs" \
+    --filter="- /lib/live/mount" \
+    --filter="- /run/*" \
+    --filter="- /usr/lib/live/overlay" \
+    --filter="- /usr/lib/live/image" \
+    --filter="- /usr/lib/live/rootfs" \
+    --filter="- /usr/lib/live/mount" \
+    --filter="- /var/cache/apt/archives/*.deb" \
+    --filter="- /var/cache/apt/pkgcache.bin" \
+    --filter="- /var/cache/apt/srcpkgcache.bin" \
+    --filter="- /var/cache/apt/apt-file/*" \
+    --filter="- /var/cache/debconf/*~old" \
+    --filter="- /var/lib/apt/lists/*" \
+    --filter="- /var/lib/apt/*~" \
+    --filter="- /var/lib/apt/cdroms.list" \
+    --filter="- /var/lib/aptitude/*.old" \
+    --filter="- /var/lib/dhcp/*" \
+    --filter="- /var/lib/dpkg/*~old" \
+    --filter="- /var/spool/mail/*" \
+    --filter="- /var/mail/*" \
+    --filter="- /var/backups/*.gz" \
+    --filter="- /var/lib/dbus/machine-id" \
+    --filter="- /var/lib/live/config/*" \
+    --filter="- /usr/share/icons/*/icon-theme.cache" \
+    --filter="- /root/*" \
+    --filter="- /home/*" \
+    --filter="- /etc/ssh/ssh_host_*_key*" \
+    --filter="- /etc/ssh/ssh_host_key*" \`;
 
     // Copia la home di live da system ad egg
     cmd = `\
