@@ -367,37 +367,12 @@ async function egg2system(target: string): Promise<void> {
   / ${target}`;
 
   console.log("==========================================");
-  console.log(`egg2system: copyng... ${cmd}`);
+  console.log(`egg2system: copyng...`);
   console.log("==========================================");
   shell.exec(cmd.trim(), {
     async: false
   });
 
-  /*
-  cmd=`rsync \
-  --relative \
-  --archive \
-  --verbose \
-  --filter="+ /" \
-  --filter="+ /lib/" \
-  --filter="+ /lib/live/" \
-  --filter="+ /lib/live/boot/***" \
-  --filter="+ /lib/live/config/***" \
-  --filter="+ /lib/live/init-config.sh/***" \
-  --filter="+ /lib/live/setup-network.sh/***" \
-  --filter="- /lib/live/*" \
-  --filter="- /lib/*" \
-  --filter="- /*" \
-  /lib/live \
-  ${target}`;
-
-  console.log("==========================================");
-  console.log(`egg2system: live copyng...`);
-  console.log("==========================================");
-  shell.exec(cmd.trim(), {
-    async: false
-  });
-  */
 }
 
 async function mkfs(devices: IDevices): Promise<boolean> {

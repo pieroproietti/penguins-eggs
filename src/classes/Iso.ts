@@ -204,7 +204,6 @@ class Iso {
     --filter="- /etc/initramfs-tools/conf.d/resume" \
     --filter="- /etc/initramfs-tools/conf.d/cryptroot" \
     --filter="- /etc/popularity-contest.conf" \
-    --filter="- /home/snapshot" \
     --filter="- /lib/live/overlay" \
     --filter="- /lib/live/image" \
     --filter="- /lib/live/rootfs" \
