@@ -13,8 +13,6 @@
 
 "use strict";
 
-//import filters from "../lib/filters";
-
 import fs from "fs";
 import shell from "shelljs";
 import utils from "../lib/utils";
@@ -177,63 +175,77 @@ class Iso {
    */
   public async system2egg() {
     let cmd:string = "";
-    const filters=`--filter="- /dev/*" \
-    --filter="- /cdrom/*" \
-    --filter="- /media/*" \
-    --filter="- /swapfile" \
-    --filter="- /mnt/*" \
-    --filter="- /sys/*" \
-    --filter="- /proc/*" \
-    --filter="- /tmp/*" \
-    --filter="- /live" \
-    --filter="- /persistence.conf" \
-    --filter="- /boot/grub/grub.cfg" \
-    --filter="- /boot/grub/menu.lst" \
-    --filter="- /boot/grub/device.map" \
-    --filter="- /boot/*.bak" \
-    --filter="- /boot/*.old-dkms" \
-    --filter="- /etc/udev/rules.d/70-persistent-cd.rules" \
-    --filter="- /etc/udev/rules.d/70-persistent-net.rules" \
-    --filter="- /etc/fstab" \
-    --filter="- /etc/fstab.d/*" \
-    --filter="- /etc/mtab" \
-    --filter="- /etc/blkid.tab" \
-    --filter="- /etc/blkid.tab.old" \
-    --filter="- /etc/apt/sources.list~" \
-    --filter="- /etc/crypttab" \
-    --filter="- /etc/initramfs-tools/conf.d/resume" \
-    --filter="- /etc/initramfs-tools/conf.d/cryptroot" \
-    --filter="- /etc/popularity-contest.conf" \
-    --filter="- /lib/live/overlay" \
-    --filter="- /lib/live/image" \
-    --filter="- /lib/live/rootfs" \
-    --filter="- /lib/live/mount" \
-    --filter="- /run/*" \
-    --filter="- /usr/lib/live/overlay" \
-    --filter="- /usr/lib/live/image" \
-    --filter="- /usr/lib/live/rootfs" \
-    --filter="- /usr/lib/live/mount" \
-    --filter="- /var/cache/apt/archives/*.deb" \
-    --filter="- /var/cache/apt/pkgcache.bin" \
-    --filter="- /var/cache/apt/srcpkgcache.bin" \
-    --filter="- /var/cache/apt/apt-file/*" \
-    --filter="- /var/cache/debconf/*~old" \
-    --filter="- /var/lib/apt/lists/*" \
-    --filter="- /var/lib/apt/*~" \
-    --filter="- /var/lib/apt/cdroms.list" \
-    --filter="- /var/lib/aptitude/*.old" \
-    --filter="- /var/lib/dhcp/*" \
-    --filter="- /var/lib/dpkg/*~old" \
-    --filter="- /var/spool/mail/*" \
-    --filter="- /var/mail/*" \
-    --filter="- /var/backups/*.gz" \
-    --filter="- /var/lib/dbus/machine-id" \
-    --filter="- /var/lib/live/config/*" \
-    --filter="- /usr/share/icons/*/icon-theme.cache" \
-    --filter="- /root/*" \
-    --filter="- /home/*" \
-    --filter="- /etc/ssh/ssh_host_*_key*" \
-    --filter="- /etc/ssh/ssh_host_key*"`;
+    let f=``;
+    // root
+    f += ` --filter="- /cdrom/*"`;
+    f += ` --filter="- /dev/*"`;
+    f += ` --filter="- /live"`;
+    f += ` --filter="- /media/*"`;
+    f += ` --filter="- /mnt/*"`;
+    f += ` --filter="- /proc/*"`;
+    f += ` --filter="- /sys/*"`;
+    f += ` --filter="- /swapfile"`;
+    f += ` --filter="- /tmp/*"`;
+    f += ` --filter="- /persistence.conf"`;
+
+    // boot
+    f += ` --filter="- /boot/grub/grub.cfg"`;
+    f += ` --filter="- /boot/grub/menu.lst"`;
+    f += ` --filter="- /boot/grub/device.map"`;
+    f += ` --filter="- /boot/*.bak"`;
+    f += ` --filter="- /boot/*.old-dkms"`;
+    
+    // etc
+    f += ` --filter="- /etc/apt/sources.list~"`;
+    f += ` --filter="- /etc/blkid.tab"`;
+    f += ` --filter="- /etc/blkid.tab.old"`;
+    f += ` --filter="- /etc/crypttab"`;
+    f += ` --filter="- /etc/fstab"`;
+    f += ` --filter="- /etc/fstab.d/*"`;
+    f += ` --filter="- /etc/initramfs-tools/conf.d/resume"`; // see remove-cryptroot and nocrypt.sh
+    f += ` --filter="- /etc/initramfs-tools/conf.d/cryptroot"`; // see remove-cryptroot and nocrypt.sh
+    f += ` --filter="- /etc/mtab"`;
+    f += ` --filter="- /etc/popularity-contest.conf"`; 
+    f += ` --filter="- /etc/ssh/ssh_host_*_key*"`; // Exclude ssh_host_keys. New ones will be generated upon live boot.
+    f += ` --filter="- /etc/ssh/ssh_host_key*"`; // Exclude ssh_host_keys. New ones will be generated upon live boot.
+    
+
+    // lib
+    f += ` --filter="- /lib/live/image"`;
+    f += ` --filter="- /lib/live/mount"`;
+    f += ` --filter="- /lib/live/overlay"`;
+    f += ` --filter="- /lib/live/rootfs"`;
+    
+    f += ` --filter="- /home/*"`;
+    f += ` --filter="- /root/*"`;
+    f += ` --filter="- /run/*"`;
+
+    // var
+    f += ` --filter="- /var/backups/*.gz"`;
+    f += ` --filter="- /var/cache/apt/archives/*.deb"`;
+    f += ` --filter="- /var/cache/apt/pkgcache.bin"`;
+    f += ` --filter="- /var/cache/apt/srcpkgcache.bin"`;
+    f += ` --filter="- /var/cache/apt/apt-file/*"`;
+    f += ` --filter="- /var/cache/debconf/*~old"`;
+    f += ` --filter="- /var/lib/apt/*~"`;
+    f += ` --filter="- /var/lib/apt/cdroms.list"`;
+    f += ` --filter="- /var/lib/apt/lists/*"`;
+    f += ` --filter="- /var/lib/aptitude/*.old"`;
+    f += ` --filter="- /var/lib/dbus/machine-id"`;
+    f += ` --filter="- /var/lib/dhcp/*"`;
+    f += ` --filter="- /var/lib/dpkg/*~old"`;
+    f += ` --filter="- /var/lib/live/config/*"`;
+    f += ` --filter="- /var/log/*"`;
+    f += ` --filter="- /var/mail/*"`;
+    f += ` --filter="- /var/spool/mail/*"`;
+
+    // usr
+    f += ` --filter="- /usr/share/icons/*/icon-theme.cache"`;
+    f += ` --filter="- /usr/lib/live/image"`;
+    f += ` --filter="- /usr/lib/live/mount"`;
+    f += ` --filter="- /usr/lib/live/overlay"`;
+    f += ` --filter="- /usr/lib/live/rootfs"`;
+
 
     // Copia la home di live da system ad egg
     cmd = `\
@@ -242,7 +254,7 @@ class Iso {
       --delete-before \
       --delete-excluded \
       --filter="- ${this.distro.pathHome}" \
-      ${filters} \
+      ${f} \
       --filter="- /lib/live/*" \
       --filter="+ /lib/live/boot/*" \
       --filter="+ /lib/live/config/*" \
@@ -823,15 +835,7 @@ utils.bashWrite(file, text);
     console.log("iso: makeIsoFs");
     console.log("==========================================");
 
-
     let isoHybridOption = `-isohybrid-mbr ${o.isolinuxPath}isohdpfx.bin `;
-    //let uefiOption = "";
-    //"-eltorito-alt-boot -e boot/grub/efiboot.img -isohybrid-gpt-basdat -no-emul-boot";
-
-    // let volid = `"Penguin's eggs ${this.distro.name}"`;
-    //let isoName = `${this.workDir}${this.distro.name}`;
-    // isoName += utils.date4file() + ".iso";
-
     let volid = o.distroName + utils.date4file();
     let isoName = `${this.workDir}${volid}.iso`;
 

@@ -16,7 +16,6 @@ import inquirer from "inquirer";
 import drivelist from "drivelist";
 
 import utils from "./utils";
-// import filters from "./filters";
 import { IDevice, IDevices, IDriveList } from "../interfaces";
 import { description } from "pjson";
 
@@ -324,46 +323,56 @@ ff02::3 ip6-allhosts
  */
 async function egg2system(target: string): Promise<void> {
   let cmd = "";
-  const filters=`--filter="- /dev/*" \
-  --filter="- /cdrom/*" \
-  --filter="- /media/*" \
-  --filter="- /TARGET" \
-  --filter="- /swapfile" \
-  --filter="- /mnt/*" \
-  --filter="- /sys/*" \
-  --filter="- /proc/*" \
-  --filter="- /tmp/*" \
-  --filter="- /live" \
-  --filter="- /home/*" \
-  --filter="- /boot/grub/grub.cfg" \
-  --filter="- /boot/grub/menu.lst" \
-  --filter="- /boot/grub/device.map" \
-  --filter="- /etc/udev/rules.d/70-persistent-cd.rules" \
-  --filter="- /etc/udev/rules.d/70-persistent-net.rules" \
-  --filter="- /etc/fstab" \
-  --filter="- /etc/fstab.d/*" \
-  --filter="- /etc/mtab" \
-  --filter="- /etc/PolicyKit/PolicyKit.conf" \
-  --filter="- /var/lib/dbus/machine-id" \
-  --filter="- /var/lib/polkit-1/localauthority/10-vendor.d/10-live-cd.pkla" \
-  --filter="- /etc/PolicyKit/PolicyKit.conf" \
-  --filter="- /etc/popularity-contest.conf" \
-  --filter="- /lib/live/overlay" \
-  --filter="- /lib/live/image" \
-  --filter="- /lib/live/rootfs" \
-  --filter="- /lib/live/mount" \
-  --filter="- /run/*" \
-  --filter="- /usr/lib/live/overlay" \
-  --filter="- /usr/lib/live/image" \
-  --filter="- /usr/lib/live/rootfs" \
-  --filter="- /usr/lib/live/mount" `;
+  let f = ``;
+  f += ` --filter="- /cdrom/*"`;
+  f += ` --filter="- /dev/*"`;
+  f += ` --filter="- /home/*"`;
+  f += ` --filter="- /live"`;
+  f += ` --filter="- /media/*"`;
+  f += ` --filter="- /mnt/*"`;
+  f += ` --filter="- /proc/*"`;
+  f += ` --filter="- /swapfile"`;
+  f += ` --filter="- /sys/*"`;
+  f += ` --filter="- /tmp/*"`;
+  f += ` --filter="- /TARGET"`;
+
+  // boot
+  f += ` --filter="- /boot/grub/device.map"`;
+  f += ` --filter="- /boot/grub/grub.cfg"`;
+  f += ` --filter="- /boot/grub/menu.lst"`;
+
+  // etc
+  f += ` --filter="- /etc/fstab"`;
+  f += ` --filter="- /etc/fstab.d/*"`;
+  f += ` --filter="- /etc/mtab"`;
+  f += ` --filter="- /etc/popularity-contest.conf"`;
+  f += ` --filter="- /etc/PolicyKit/PolicyKit.conf"`;
+
+  // var
+  f += ` --filter="- /var/lib/dbus/machine-id"`;
+
+  // Added for newer version of live-config/live-boot
+  // in sid (to become Jessie)
+  f += ` --filter="- /lib/live/image"`;
+  f += ` --filter="- /lib/live/mount"`;
+  f += ` --filter="- /lib/live/overlay"`;
+  f += ` --filter="- /lib/live/rootfs"`;
+
+  // Added for symlink /lib
+  f += ` --filter="- /usr/lib/live/image"`;
+  f += ` --filter="- /usr/lib/live/mount"`;
+  f += ` --filter="- /usr/lib/live/overlay"`;
+  f += ` --filter="- /usr/lib/live/rootfs"`;
+
+  f += ` --filter="- /run/*"`;
+
 
   cmd = `\
   rsync \
   --archive \
   --delete-before \
   --delete-excluded \
-  ${filters} \
+  ${f} \
   / ${target}`;
 
   console.log("==========================================");
@@ -590,5 +599,3 @@ iface loopback inet manual
 auto manual
 iface manual inet manual`;
 */
-
-
