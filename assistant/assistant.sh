@@ -7,24 +7,22 @@
 zenity --title="Assistente Penguin's eggs" \
     --text-info \
     --html \
-    --filename=assistant.html \
+    --filename=/usr/lib/node_modules/penguins-eggs/assistant/assistant.html \
     --width=700 \
     --height=500
 
 ans=$(zenity --list \
     --title="Assistente di Penguin's eggs" \
-    --text "<span foreground='black' font='14'>Devi scegliere la tua opzione.\
-    Puoi selezionare:\
+    --text "Puoi selezionare: \
     <i>calamares</i> installer grafico,\
-    <i>hatch</i> installazione da terminale\
-    oppure <i>live</i> per continuare ad utilizzare il sistema.</span>"\
+    <i>hatch</i> installazione da terminale"\
     --radiolist \
     --column "Scelta" \
     --column "Opzioni" \
     FALSE "calamares" \
     FALSE "hatch" \
     TRUE "live" --separator=":" \
-    --width=400 \
+    --width=700 \
     --height=200)
 
 
@@ -41,7 +39,7 @@ case "$ans" in
         --height=100
         case $? in 
             0)
-            calamares
+            sudo calamares
             ;; 
         1) 
             ;; 
@@ -53,7 +51,7 @@ case "$ans" in
         --title="Assistente di Penguin's eggs" \
         --question \
         --text "E' stato selezionato l'installer da terminale <b>eggs hatch</b>. \
-        <i>Attenzione, questo installer può cancellare il vostro disco rigido</i>\
+        <i>Attenzione, questo installer può cancellare il vostro disco rigido</i> \
         Sicuri di voler continuare?"\
         --ok-label="Si, continua con eggs hatch" \
         --cancel-label="No" \
@@ -61,11 +59,14 @@ case "$ans" in
         --height=100
         case $? in 
             0)
-            eggs hatch
+            sudo eggs hatch
                 ;; 
             1) 
                 ;; 
         esac
         ;;
 esac
+
+firefox-esr https://penguin-s-eggs.gitbook.io/project/
+
 
