@@ -16,7 +16,6 @@
 import fs from "fs";
 import shell from "shelljs";
 import utils from "../lib/utils";
-import Calamares from "./Calamares";
 import { IDistro, IOses, INet, IUser, IPackage } from "../interfaces";
 import { dist } from "pjson";
 import Oses from "./Oses";
@@ -274,8 +273,7 @@ class Iso {
       shell.exec(`mkdir ${this.distro.pathFs}/home/live/Desktop`, {async: false});
 
       console.log(`system2egg: creating initial live link... \n`);
-      shell.exec(`cp /usr/share/applications/calamares.desktop ${this.distro.pathFs}/home/live/Desktop`, {async: false});
-      //shell.exec(`xdg-desktop-icon install --novendor /usr/share/applications/calamares.desktop`, {async: false});
+      shell.exec(`cp /etc/penguins-eggs/live/Desktop/* ${this.distro.pathFs}/home/live/Desktop`, {async: false});
   }
 
 
@@ -290,7 +288,6 @@ class Iso {
     console.log("iso: kill ");
     console.log("==========================================");
     utils.exec(`rm -rf ${this.workDir}`);
-    //utils.exec(`rm -rf /etc/calamares`);
   }
 
 
