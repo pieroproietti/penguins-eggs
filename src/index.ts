@@ -114,7 +114,7 @@ async function start() {
     .option("-t, --testing");
 
   program.parse(process.argv);
-  console.log(process.argv);
+  //console.log(process.argv);
 
   if (program.distroname) {
     distro.name = program.distroname;
