@@ -132,11 +132,11 @@ async function start() {
   }
 
   workDir = "/home/eggs/";
-  console.log(`user: ${user.name}`);
-  console.log(`distroname: ${distro.name}`);
-  console.log(`branding: ${distro.branding}`);
-  console.log(`force: ${force}`);
-  console.log(`testing: ${testing}`);
+  // console.log(`user: ${user.name}`);
+  // console.log(`distroname: ${distro.name}`);
+  // console.log(`branding: ${distro.branding}`);
+  // console.log(`force: ${force}`);
+  // console.log(`testing: ${testing}`);
 
   
   if (testing) {
