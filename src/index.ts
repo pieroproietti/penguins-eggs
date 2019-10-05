@@ -78,10 +78,12 @@ bye();
  */
 function usage() {
   console.log(
-    `${app.name} need to run with supervisor privileges! Prefix it with sudo`,
+    `${app.name} need to run with supervisor privileges, prefix it with sudo.`,
   );
   console.log("Usage: ");
-  console.log(">>> sudo eggs produce --distroname penguin --branding debian");
+  console.log(">>> sudo eggs produce --distroname penguin \\");
+  console.log(">>>                   --branding debian \\");
+  console.log(">>>                   --dry-run");
   console.log(">>> sudo eggs info");
   console.log(">>> sudo eggs install");
   console.log(">>> sudo eggs prerequisites");
@@ -94,8 +96,7 @@ function usage() {
  * start
  */
 async function start() {
-  let force: boolean = false;
-  let testing: boolean = false;
+  let dryRun: boolean = false;
 
   program
     .command("produce")
@@ -104,14 +105,12 @@ async function start() {
     .command("prerequisites")
     .command("calamares")
     .command("update")
-    .command("kill")
-    .command("user");
+    .command("kill");
 
   program
     .option("-d, --distroname <distroname>")
     .option("-b, --branding <branding>")
-    .option("-f, --force")
-    .option("-t, --testing");
+    .option("--dry-run");
 
   program.parse(process.argv);
   //console.log(process.argv);
@@ -124,22 +123,18 @@ async function start() {
   } else {
     distro.branding = "eggs";
   }
-  if (program.force) {
-    force = true;
-  }
-  if (program.testing) {
-    testing = true;
+  if (program.dryRun) {
+    dryRun = true;
   }
 
   workDir = "/home/eggs/";
-  // console.log(`user: ${user.name}`);
-  // console.log(`distroname: ${distro.name}`);
-  // console.log(`branding: ${distro.branding}`);
-  // console.log(`force: ${force}`);
-  // console.log(`testing: ${testing}`);
 
   
-  if (testing) {
+  if (dryRun) {
+    console.log(`user: ${user.name}`);
+    console.log(`distroname: ${distro.name}`);
+    console.log(`branding: ${distro.branding}`);
+    console.log(`--dry-run: ${dryRun}`);
     process.exit();
   }
   
