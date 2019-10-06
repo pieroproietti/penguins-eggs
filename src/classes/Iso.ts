@@ -274,6 +274,8 @@ class Iso {
 
       console.log(`system2egg: creating initial live link... \n`);
       shell.exec(`cp /etc/penguins-eggs/live/Desktop/* ${this.distro.pathFs}/home/live/Desktop`, {async: false});
+      shell.exec(`chmod +x ${this.distro.pathFs}/home/live/Desktop/*.desktop`, {async: false});
+      shell.exec(`chown live:live ${this.distro.pathFs}/home/live/Desktop/*`, {async: false});
   }
 
 
