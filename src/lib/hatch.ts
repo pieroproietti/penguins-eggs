@@ -224,16 +224,19 @@ async function umountVFS(target: string) {
  */
 async function fstab(target: string, devices: IDevices, installDevice: string) {
   const file: string = `${target}/etc/fstab`;
-  let mountOpts = ``;
+  let mountOptsRoot = ``;
+  let mountOptsSwap = ``;
 
   if (await isRotational(installDevice)) {
-    mountOpts = `relatime,errors=remount-ro 0 1`;
+    mountOptsRoot = `defaults,relatime 0 1`;
+    mountOptsRoot = `defaults,relatime 0 2`;
   } else {
-    mountOpts = `noatime,errors=remount-ro 0 1`;
+    mountOptsRoot = `defaults,noatime,discard 0 1`;
+    mountOptsSwap = `defaults,noatime,discard 0 2`;
   }
   let text: string = `\
-${devices.root.device} ${devices.root.mountPoint} ${devices.root.fsType} ${mountOpts}
-${devices.swap.device} ${devices.swap.mountPoint} ${devices.swap.fsType} sw 0 0`;
+${devices.root.device} ${devices.root.mountPoint} ${devices.root.fsType} ${mountOptsRoot}
+${devices.swap.device} ${devices.swap.mountPoint} ${devices.swap.fsType} ${mountOptsSwap}`;
 
   utils.bashWrite(file, text);
 }
