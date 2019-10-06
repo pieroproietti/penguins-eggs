@@ -391,7 +391,7 @@ utils.bashWrite(file, text);
 
     o.append = `append initrd=/live/initrd.img boot=live `;
     o.appendSafe = `append initrd=/live/initrd.img boot=live components username=live xforcevesa nomodeset verbose`;
-    o.aqs =`quit splash`
+    o.aqs =`username=live quit splash`
 
     console.log("==========================================");
     console.log("iso: menuCfg");
