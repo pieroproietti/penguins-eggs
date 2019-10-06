@@ -14,7 +14,7 @@ export interface IQuestion {
     choices: string[];
     validate: any;
     transformer: any;
-    when: any; // Funtion/Boolean
+    when: any; // Function/boolean
     pageSize: number;
     prefix: string;
     suffix: string;

@@ -83,7 +83,7 @@ async function install() {
     await mkfs(devices);
     await mount4target(target, devices);
     await egg2system(target);
-    await fstab(target, devices);
+    await fstab(target, devices, options.installationDevice);
     await hostname(target, options);
     await resolvConf(target, options);
     await interfaces(target, options);
@@ -222,11 +222,17 @@ async function umountVFS(target: string) {
  * @param target 
  * @param devices 
  */
-async function fstab(target: string, devices: IDevices) {
-  let file = `${target}/etc/fstab`;
-  let text = `
-proc /proc proc defaults 0 0
-${devices.root.device} ${devices.root.mountPoint} ${devices.root.fsType} relatime,errors=remount-ro 0 1
+async function fstab(target: string, devices: IDevices, installDevice: string) {
+  const file: string = `${target}/etc/fstab`;
+  let mountOpts = ``;
+
+  if (await isRotational(installDevice)) {
+    mountOpts = `relatime,errors=remount-ro 0 1`;
+  } else {
+    mountOpts = `noatime,errors=remount-ro 0 1`;
+  }
+  let text: string = `\
+${devices.root.device} ${devices.root.mountPoint} ${devices.root.fsType} ${mountOpts}
 ${devices.swap.device} ${devices.swap.mountPoint} ${devices.swap.fsType} sw 0 0`;
 
   utils.bashWrite(file, text);
@@ -425,6 +431,17 @@ async function diskPartition(device: string) {
   await utils.execute(`parted --script ${device} set 1 boot on`);
   await utils.execute(`parted --script --align optimal ${device} mkpart primary 95% 100%`);
   return true;
+}
+
+async function isRotational(device: string): Promise<boolean> {
+  let response: any;
+  let retVal: boolean = false;
+
+  response = await utils.exec(`cat /sys/block/${device}/queue/rotational`);
+  if (response == "1") {
+    retVal = true;
+  }
+  return retVal;
 }
 
 async function getDiskSize(device: string): Promise<number> {

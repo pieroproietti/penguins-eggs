@@ -388,8 +388,8 @@ utils.bashWrite(file, text);
     let kernel = utils.kernerlVersion();
 
     o.append = `append initrd=/live/initrd.img boot=live `;
-    o.appendSafe = `append initrd=/live/initrd.img boot=live xforcevesa nomodeset verbose`;
-    o.aqs =`username=live quit splash`
+    o.appendSafe = `append initrd=/live/initrd.img boot=live components username=live xforcevesa nomodeset verbose`;
+    o.aqs =`quit splash`
 
     console.log("==========================================");
     console.log("iso: menuCfg");
