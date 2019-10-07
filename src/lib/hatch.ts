@@ -89,7 +89,7 @@ async function install() {
     await interfaces(target, options);
     await hosts(target, options);
     await mountVFS(target);
-    await mkinitramfs(target);
+    await updateInitramfs(target);
     await grubInstall(target, options);
 
     await utils.addUser(target, options.username, options.userpassword);
@@ -164,27 +164,12 @@ async function grubInstall(target: string, options: any) {
 }
 
 /**
- * mkinitramfs()
- * @param target 
- */
-async function mkinitramfs(target: string) {
-  console.log("mkinitramfs");
-  /*
-  await utils.execute(
-    `chroot ${target} mkinitramfs -k $(uname -r) -o /tmp/initramfs-$(uname -r)`
-  );
-  await utils.execute(`cp ${target}/tmp/initramfs-$(uname -r) /TARGET/boot`);
-  */
-  await utils.execute(`chroot ${target} live-update-initramfs -u -k $(uname -r)`); // -o /tmp/initramfs-$(uname -r)
-}
-
-/**
  * updateInitramfs()
  * @param target 
  */
 async function updateInitramfs(target: string) {
-  console.log("updateInitramfs");
-  await utils.execute(`chroot ${target} update-initramfs -u`);
+  console.log("update-initramfs/n");
+  await utils.execute(`chroot ${target}  update-initramfs -u -k $(uname -r)`);
 }
 
 /**
