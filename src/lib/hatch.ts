@@ -173,7 +173,7 @@ async function mkinitramfs(target: string) {
   await utils.execute(
     `chroot ${target} mkinitramfs -k -o /tmp/initramfs-$(uname -r)`
   );*/
-  await utils.execute(`chroot ${target} live-update-initramfs -u -k -o /tmp/initramfs-$(uname -r)`)
+  await utils.execute(`chroot ${target} live-update-initramfs -u -k $(uname -r) -o /tmp/initramfs-$(uname -r)`)
   await utils.execute(`cp ${target}/tmp/initramfs-$(uname -r) /TARGET/boot`);
 }
 
