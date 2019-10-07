@@ -171,10 +171,11 @@ async function mkinitramfs(target: string) {
   console.log("mkinitramfs");
   /*
   await utils.execute(
-    `chroot ${target} mkinitramfs -k -o /tmp/initramfs-$(uname -r)`
-  );*/
+    `chroot ${target} mkinitramfs -k $(uname -r) -o /tmp/initramfs-$(uname -r)`
+  );
+  await utils.execute(`cp ${target}/tmp/initramfs-$(uname -r) /TARGET/boot`);
+  */
   await utils.execute(`chroot ${target} live-update-initramfs -u -k $(uname -r)`); // -o /tmp/initramfs-$(uname -r)
-  //await utils.execute(`cp ${target}/tmp/initramfs-$(uname -r) /TARGET/boot`);
 }
 
 /**
