@@ -207,6 +207,7 @@ class Iso {
     f += ` --filter="- /etc/popularity-contest.conf"`; 
     f += ` --filter="- /etc/ssh/ssh_host_*_key*"`; // Exclude ssh_host_keys. New ones will be generated upon live boot.
     f += ` --filter="- /etc/ssh/ssh_host_key*"`; // Exclude ssh_host_keys. New ones will be generated upon live boot.
+    f += ` --filter="- /etc/sudoers.d/live"`; // Exclude live da sudoers.d non serve se installato
     
 
     // lib

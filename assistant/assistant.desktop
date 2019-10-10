@@ -1,9 +1,9 @@
 [Desktop Entry]
-Name=Assistente
+Name=Aiuto installazione
 Comment=Assistente scelta installazione
-GenericName=Pre installazione
+GenericName=Aiuto installazione
 Exec=/usr/lib/node_modules/penguins-eggs/assistant/assistant.sh 
 Terminal=false
 Type=Application
-Icon=help
+Icon=calamares
 Categories=system
