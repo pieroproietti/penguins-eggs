@@ -60,6 +60,21 @@ case "$ans" in
         case $? in 
             0)
             xterm -title "Assistant CLI installer" -e sudo eggs hatch
+            zenity \
+            --title="Assistente di Penguin's eggs" \
+            --question \
+            --text "L'installazione si è conclusa. \
+            Puoi riavviare il tuo pc o continuare ad usare la live" \
+            --ok-label="Continua con la live" \
+            --cancel-label="Reboot" \
+            --width=400 \
+            --height=100
+            case $? in
+                0)
+                    ;;
+                1)
+                    reboot
+                    ;;
                 ;; 
             1) 
                 ;; 
