@@ -39,7 +39,7 @@ case "$ans" in
         --height=100
         case $? in 
             0)
-            sudo calamares
+            xterm -title "Assistant GUI installer" -e sudo calamares
             ;; 
         1) 
             ;; 
@@ -59,14 +59,11 @@ case "$ans" in
         --height=100
         case $? in 
             0)
-            sudo eggs hatch
+            xterm -title "Assistant CLI installer" -e sudo eggs hatch
                 ;; 
             1) 
                 ;; 
         esac
         ;;
 esac
-
-firefox-esr https://penguin-s-eggs.gitbook.io/project/
-
 
