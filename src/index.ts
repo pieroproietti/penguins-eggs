@@ -160,6 +160,7 @@ async function start() {
   } else if (command == "prerequisites") {
     p.cli();
   } else if (command == "calamares") {
+    c.configure(o);
     p.calamares();
   } else if (command == "update") {
     Update.go();
