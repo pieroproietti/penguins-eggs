@@ -125,21 +125,13 @@ class Iso {
       console.log(`Spawning the system into the egg...\nThis process can be very long, perhaps it's time for a coffee!`);
       console.log("------------------------------------------");
       await this.system2egg();
-      await this.setTimezone();
       await this.makeDhcp();
       await this.makeSquashFs();
       await this.makeIsoFs(o);
     }
   }
 
-  public async setTimezone(){
-    let cmd:string=`unlink ${this.distro.pathFs}/etc/localtime`;
-    utils.exec(cmd);
-    cmd=`ln -sf ${this.distro.pathFs}/usr/share/zoneinfo/Europe/Rome ${this.distro.pathFs}/etc/localtime`;
-    utils.exec(cmd);
-  }
-  
-  /**
+    /**
    * 
    */
   public async makeDhcp() {
