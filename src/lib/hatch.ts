@@ -83,6 +83,7 @@ async function install() {
     await mkfs(devices);
     await mount4target(target, devices);
     await egg2system(target);
+    await setTimezone(target);
     await fstab(target, devices, options.installationDevice);
     await hostname(target, options);
     await resolvConf(target, options);
@@ -103,6 +104,14 @@ async function install() {
   }
 
 }
+
+async function setTimezone(target: string){
+  let cmd:string=`unlink ${target}/etc/localtime`;
+  utils.exec(cmd);
+  cmd=`ln -sf ${target}/usr/share/zoneinfo/Europe/Rome ${target}/etc/localtime`;
+  utils.exec(cmd);
+}
+
 
 /**
  * autologin

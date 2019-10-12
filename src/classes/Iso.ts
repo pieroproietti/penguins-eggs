@@ -120,23 +120,31 @@ class Iso {
       await this.stdMenuCfg(o);
       await this.isolinuxCfg(o);
       await this.menuCfg(o);
-      await this.liveKernel();
+      await this.copyKernel();
       console.log("------------------------------------------");
       console.log(`Spawning the system into the egg...\nThis process can be very long, perhaps it's time for a coffee!`);
       console.log("------------------------------------------");
       await this.system2egg();
-      await this.liveDhcp();
-      await this.liveSquashFs();
+      await this.setTimezone();
+      await this.makeDhcp();
+      await this.makeSquashFs();
       await this.makeIsoFs(o);
     }
   }
 
+  public async setTimezone(){
+    let cmd:string=`unlink ${this.distro.pathFs}/etc/localtime`;
+    utils.exec(cmd);
+    cmd=`ln -sf ${this.distro.pathFs}/usr/share/zoneinfo/Europe/Rome ${this.distro.pathFs}/etc/localtime`;
+    utils.exec(cmd);
+  }
+  
   /**
    * 
    */
-  public async liveDhcp() {
+  public async makeDhcp() {
     console.log("==========================================");
-    console.log(`liveDhcp: `);
+    console.log(`makeDhcp: `);
     console.log("==========================================");
     let text = `auto lo\niface lo inet loopback`;
     utils.bashWrite(`${this.distro.pathFs}/etc/network/interfaces`, text);
@@ -809,7 +817,7 @@ utils.bashWrite(file, text);
   /**
    * alive: rende live 
    */
-  async liveKernel() {
+  async copyKernel() {
     console.log("==========================================");
     console.log("iso: liveKernel");
     console.log("==========================================");
@@ -820,9 +828,9 @@ utils.bashWrite(file, text);
   /**
    * squashFs: crea in live filesystem.squashfs
    */
-  async liveSquashFs() {
+  async makeSquashFs() {
     console.log("==========================================");
-    console.log("iso: liveSquashFs");
+    console.log("iso: makeSquashFs");
     console.log("==========================================");
     let option = "-comp xz";
     utils.exec(
