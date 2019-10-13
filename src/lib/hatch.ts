@@ -106,9 +106,9 @@ async function install() {
 }
 
 async function setTimezone(target: string){
-  let cmd:string=`unlink ${target}/etc/localtime`;
+  let cmd:string=`chroot ${target} unlink ${target}/etc/localtime`;
   utils.exec(cmd);
-  cmd=`ln -sf ${target}/usr/share/zoneinfo/Europe/Rome ${target}/etc/localtime`;
+  cmd=`chroot ${target} ln -sf /usr/share/zoneinfo/Europe/Rome /etc/localtime`;
   utils.exec(cmd);
 }
 

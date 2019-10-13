@@ -24,6 +24,8 @@ class Prerequisites {
         syslinux \
         isolinux \
         live-boot \
+        xterm \
+        zenity \
         open-infrastructure-system-config`;
         
         shell.exec(`apt-get update`);
