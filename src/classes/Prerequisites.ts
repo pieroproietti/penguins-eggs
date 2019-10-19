@@ -16,7 +16,7 @@ class Prerequisites {
         console.log(
             ">>> eggs: Installing the prerequisites packages..."
         );
-        let cmd=`apt-get --yes install \
+        let cmd=`apt --yes install \
         lvm2 \
         parted \
         squashfs-tools \
@@ -28,36 +28,35 @@ class Prerequisites {
         zenity \
         open-infrastructure-system-config`;
         
-        shell.exec(`apt-get update`);
+        shell.exec(`apt update`);
         console.log(cmd);
         shell.exec(cmd);
 
-
-                            shell.exec(`apt-get clean`);
-                            shell.exec(`apt-get autoclean`);
+        shell.exec(`apt clean`);
+        shell.exec(`apt autoclean`);
                         }
 
     public async calamares(){
         console.log(
             ">>> eggs: Installing the prerequisites calamares..."
         );
-        let cmd=`apt-get --yes install \
+        let cmd=`apt --yes install \
         calamares \
         calamares-settings-debian \
         qml-module-qtquick2 \
         qml-module-qtquick-controls`;
 
-        shell.exec(`apt-get update`);
+        shell.exec(`apt update`);
         shell.exec(cmd);
         console.log(cmd);
-        shell.exec(`apt-get clean`);
-        shell.exec(`apt-get autoclean`);
+        shell.exec(`apt clean`);
+        shell.exec(`apt autoclean`);
     
     }
 
     public async sterilize(){
         console.log(`>>> eggs: removing eggs prerequisites...`);
-        let cmd=`apt-get remove --purge \
+        let cmd=`apt --yes remove --purge \
         calamares \
         calamares-settings-debian \
         qml-module-qtquick2 \
@@ -65,7 +64,7 @@ class Prerequisites {
         shell.exec(cmd);
         console.log(cmd);
 
-        cmd=`apt-get remove --purge \
+        cmd=`apt --yes --purge remove  \
         squashfs-tools \
         xorriso \
         syslinux \
@@ -76,7 +75,7 @@ class Prerequisites {
         console.log(cmd);
 
 
-        cmd=`apt-get autoremove`;
+        cmd=`apt --yes autoremove`;
         shell.exec(cmd);
         console.log(cmd);
 
