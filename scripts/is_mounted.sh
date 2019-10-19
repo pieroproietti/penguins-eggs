@@ -1,10 +1,6 @@
 #!/bin/bash
-#
-# parameter: none
-#
-IS_MOUNTED=$(mount|grep $1)
-if [[ -z $IS_MOUNTED ]]; then
-  echo "0"
+if mount | grep $1 > /dev/null; then
+    echo "1"
 else
-  echo "1"
+    echo "0"
 fi

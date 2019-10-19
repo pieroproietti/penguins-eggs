@@ -89,6 +89,7 @@ function usage() {
   console.log(">>> sudo eggs prerequisites");
   console.log(">>> sudo eggs calamares");
   console.log(">>> sudo eggs update");
+  console.log(">>> sudo eggs sterilize");
   console.log(">>> sudo eggs kill");
 }
 
@@ -105,6 +106,7 @@ async function start() {
     .command("prerequisites")
     .command("calamares")
     .command("update")
+    .command("sterilize")
     .command("kill");
 
   program
@@ -164,6 +166,8 @@ async function start() {
     p.calamares();
   } else if (command == "update") {
     Update.go();
+  } else if (command == "sterilize") {
+    p.sterilize();
   } else if (command == "kill") {
     i.kill();
   } else {

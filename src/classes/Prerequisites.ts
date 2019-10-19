@@ -55,5 +55,26 @@ class Prerequisites {
     
     }
 
+    public async sterilize(){
+        console.log(`>>> eggs: removing eggs prerequisites...`);
+        let cmd=`apt-get remove --purge \
+        calamares \
+        calamares-settings-debian \
+        qml-module-qtquick2 \
+        qml-module-qtquick-controls`;
+        shell.exec(cmd);
+        console.log(cmd);
+
+        cmd=`apt-get remove --purge \
+        squashfs-tools \
+        xorriso \
+        syslinux \
+        isolinux \
+        live-boot \
+        open-infrastructure-system-config`;
+        shell.exec(cmd);
+        console.log(cmd);
+    }
+
 }
 export default Prerequisites;
