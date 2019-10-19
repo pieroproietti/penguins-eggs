@@ -74,6 +74,12 @@ class Prerequisites {
         open-infrastructure-system-config`;
         shell.exec(cmd);
         console.log(cmd);
+
+
+        cmd=`apt-get autoremove`;
+        shell.exec(cmd);
+        console.log(cmd);
+
     }
 
 }
