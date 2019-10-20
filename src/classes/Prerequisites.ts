@@ -82,6 +82,7 @@ class Prerequisites {
         qml-module-qtquick-controls`;
         console.log(cmd);
         shell.exec(cmd, {async: true});
+        shell.exec(`sleep 1`);
         
 
         cmd = `apt-get --yes --purge remove  \
@@ -93,19 +94,23 @@ class Prerequisites {
         open-infrastructure-system-config`;
         console.log(cmd);
         shell.exec(cmd, {async: true});
+        shell.exec(`sleep 1`);
 
 
         cmd = `apt-get --yes autoremove`;
         console.log(cmd);
         shell.exec(cmd, {async: true});
+        shell.exec(`sleep 1`);
 
         cmd = `apt-get clean`;
         console.log(cmd);
         shell.exec(cmd, {async: true});
+        shell.exec(`sleep 1`);
 
         cmd = `apt-get autoclean`;
         console.log(cmd);
         shell.exec(cmd, {async: true});
+        shell.exec(`sleep 1`);
         
     }
 
