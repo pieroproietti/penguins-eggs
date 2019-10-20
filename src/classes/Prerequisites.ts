@@ -16,7 +16,7 @@ class Prerequisites {
         console.log(
             ">>> eggs: Installing the prerequisites packages..."
         );
-        let cmd=`apt --yes install \
+        let cmd = `apt --yes install \
         lvm2 \
         parted \
         squashfs-tools \
@@ -27,57 +27,78 @@ class Prerequisites {
         xterm \
         zenity \
         open-infrastructure-system-config`;
-        
+
         shell.exec(`apt update`);
         console.log(cmd);
         shell.exec(cmd);
 
-        shell.exec(`apt clean`);
-        shell.exec(`apt autoclean`);
-                        }
+        cmd = `apt-get clean`;
+        console.log(cmd);
+        shell.exec(cmd);
 
-    public async calamares(){
+        cmd = `apt-get autoclean`;
+        console.log(cmd);
+        shell.exec(cmd);
+    }
+
+    public async calamares() {
         console.log(
             ">>> eggs: Installing the prerequisites calamares..."
         );
-        let cmd=`apt --yes install \
+        let cmd = `apt-get update`;
+        console.log(cmd);
+        shell.exec(cmd);
+
+
+        cmd = `apt-get --yes install \
         calamares \
         calamares-settings-debian \
         qml-module-qtquick2 \
         qml-module-qtquick-controls`;
-
-        shell.exec(`apt update`);
-        shell.exec(cmd);
         console.log(cmd);
-        shell.exec(`apt clean`);
-        shell.exec(`apt autoclean`);
-    
+        shell.exec(cmd);
+
+        cmd = `apt-get clean`;
+        console.log(cmd);
+        shell.exec(cmd);
+
+        cmd = `apt-get autoclean`;
+        console.log(cmd);
+        shell.exec(cmd);
     }
 
-    public async sterilize(){
+    public async sterilize() {
         console.log(`>>> eggs: removing eggs prerequisites...`);
-        let cmd=`apt --yes remove --purge \
+        let cmd = `apt-get --yes remove --purge \
         calamares \
         calamares-settings-debian \
         qml-module-qtquick2 \
         qml-module-qtquick-controls`;
-        shell.exec(cmd);
         console.log(cmd);
+        shell.exec(cmd);
 
-        cmd=`apt --yes --purge remove  \
+        cmd = `apt-get --yes --purge remove  \
         squashfs-tools \
         xorriso \
         syslinux \
         isolinux \
         live-boot \
         open-infrastructure-system-config`;
-        shell.exec(cmd);
         console.log(cmd);
+        shell.exec(cmd);
 
 
-        cmd=`apt --yes autoremove`;
-        shell.exec(cmd);
+        cmd = `apt-get --yes autoremove`;
         console.log(cmd);
+        shell.exec(cmd);
+
+        cmd = `apt-get clean`;
+        console.log(cmd);
+        shell.exec(cmd);
+
+        cmd = `apt-get autoclean`;
+        console.log(cmd);
+        shell.exec(cmd);
 
     }
 
