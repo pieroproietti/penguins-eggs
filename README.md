@@ -159,18 +159,19 @@ the operation of hatch is destructive and irreversible, and will format your
 disk and destroy your data to prepare the machine for the installation of your
 new penguin. **Be sure to have backup of your data before**.
 
-### prerequisites-cli (command-line-interface)
+### prerequisites
 You must use it once before to use eggs, it will install various Debian packages needing for the process of building iso.
 
-### prerequisites-calamares (calamares installer)
-On Debian Buster and other distros where the package calamares exist, You need to install the
-prerequisites to can use it as installer.
+### calamares
+On Debian Buster and other distros where the package calamares exist,this option install calamares and configure it. 
 
 ### update (aggiornamento di penguin's eggs)
 You can update your version of penguins-eggs with the last version published.
 
 ```sudo eggs update```
 
+### sterilize (remove live packages)
+When you decide your system is ok, you can remove the live packages and sterilize your penguing. 
 
 ### kill (libera lo spazio occupato)
 As the name say is the operation of break and kill the egg created. You will
