@@ -20,7 +20,7 @@ class Prerequisites {
         let cmd=`apt-get update`;
         console.log(cmd);
         shell.exec(cmd, {async: true});
-
+        shell.exec(`sleep 1`,{async: true});
 
         cmd = `apt-get --yes install \
         lvm2 \
@@ -33,15 +33,18 @@ class Prerequisites {
         xterm \
         zenity \
         open-infrastructure-system-config`;
-
+        shell.exec(cmd, {async: true});
+        shell.exec(`sleep 1`,{async: true});
 
         cmd = `apt-get clean`;
         console.log(cmd);
         shell.exec(cmd, {async: true});
+        shell.exec(`sleep 1`,{async: true});
 
         cmd = `apt-get autoclean`;
         console.log(cmd);
         shell.exec(cmd, {async: true});
+        shell.exec(`sleep 1`,{async: true});
     }
 
     public async calamares() {
@@ -51,7 +54,7 @@ class Prerequisites {
         let cmd = `apt-get update`;
         console.log(cmd);
         shell.exec(cmd, {async: true});
-        shell.exec(`sleep 1`);
+        shell.exec(`sleep 1`,{async: true});
 
 
         cmd = `apt-get --yes install \
@@ -61,16 +64,17 @@ class Prerequisites {
         qml-module-qtquick-controls`;
         console.log(cmd);
         shell.exec(cmd, {async: true});
-        shell.exec(`sleep 1`);
+        shell.exec(`sleep 1`,{async: true});
 
         cmd = `apt-get clean`;
         console.log(cmd);
         shell.exec(cmd, {async: true});
-        shell.exec(`sleep 1`);
+        shell.exec(`sleep 1`,{async: true});
 
         cmd = `apt-get autoclean`;
         console.log(cmd);
         shell.exec(cmd, {async: true});
+        shell.exec(`sleep 1`,{async: true});
     }
 
     public async sterilize() {
@@ -82,8 +86,7 @@ class Prerequisites {
         qml-module-qtquick-controls`;
         console.log(cmd);
         shell.exec(cmd, {async: true});
-        shell.exec(`sleep 1`);
-        
+        shell.exec(`sleep 1`,{async: true});
 
         cmd = `apt-get --yes --purge remove  \
         squashfs-tools \
@@ -94,24 +97,24 @@ class Prerequisites {
         open-infrastructure-system-config`;
         console.log(cmd);
         shell.exec(cmd, {async: true});
-        shell.exec(`sleep 1`);
+        shell.exec(`sleep 1`,{async: true});
 
 
         cmd = `apt-get --yes autoremove`;
         console.log(cmd);
         shell.exec(cmd, {async: true});
-        shell.exec(`sleep 1`);
+        shell.exec(`sleep 1`,{async: true});
 
         cmd = `apt-get clean`;
         console.log(cmd);
         shell.exec(cmd, {async: true});
-        shell.exec(`sleep 1`);
+        shell.exec(`sleep 1`,{async: true});
 
         cmd = `apt-get autoclean`;
         console.log(cmd);
         shell.exec(cmd, {async: true});
-        shell.exec(`sleep 1`);
-        
+        shell.exec(`sleep 1`,{async: true});
+      
     }
 
 }
