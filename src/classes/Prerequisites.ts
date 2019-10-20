@@ -71,7 +71,7 @@ class Prerequisites {
 
     public async sterilize() {
         console.log(`>>> eggs: removing eggs prerequisites...`);
-        let cmd = `apt-get --yes remove --purge \
+        let cmd = `apt-get --yes --purge remove  \
         calamares \
         calamares-settings-debian \
         qml-module-qtquick2 \
@@ -101,6 +101,7 @@ class Prerequisites {
         cmd = `apt-get autoclean`;
         console.log(cmd);
         shell.exec(cmd, {async: true});
+        
     }
 
 }

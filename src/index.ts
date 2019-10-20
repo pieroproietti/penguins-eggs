@@ -53,10 +53,16 @@ net.dhcp = true;
 const user = {} as IUser;
 
 user.name = process.env.SUDO_USER;
-if (user.name == "") {
+if (user.name == "live") {
   user.name = "live";
   user.fullName = "live";
   user.password = "evolution";
+} else {
+  console.log(`Eggs è pensato per essere avviato da un utente denominato live che faccia parte del gruppo sudo.\n`);
+  console.log(`Puoi creare l'utente live con i seguenti comandi: \n`);
+  console.log(`>>> sudo adduser live`);
+  console.log(`>>> sudo addgroup live sudo`);
+  bye();
 }
 
 const root = {} as IUser;
