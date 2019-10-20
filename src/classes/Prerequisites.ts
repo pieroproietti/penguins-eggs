@@ -16,7 +16,12 @@ class Prerequisites {
         console.log(
             ">>> eggs: Installing the prerequisites packages..."
         );
-        let cmd = `apt --yes install \
+        let cmd=`apt-get update`;
+        console.log(cmd);
+        shell.exec(cmd, {async: true});
+
+
+        cmd = `apt-get --yes install \
         lvm2 \
         parted \
         squashfs-tools \
@@ -28,9 +33,6 @@ class Prerequisites {
         zenity \
         open-infrastructure-system-config`;
 
-        shell.exec(`apt update`);
-        console.log(cmd);
-        shell.exec(cmd, {async: true});
 
         cmd = `apt-get clean`;
         console.log(cmd);
@@ -99,7 +101,6 @@ class Prerequisites {
         cmd = `apt-get autoclean`;
         console.log(cmd);
         shell.exec(cmd, {async: true});
-
     }
 
 }
