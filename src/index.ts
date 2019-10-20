@@ -199,7 +199,7 @@ function isUserLive(): boolean {
     console.log(`${app.name} ${app.version}`);
     console.log(`ATTENZIONE: stai utilizzando l'utente ${user.name}`);
     console.log(`${app.name} è pensato per essere avviato con utente denominato "live" che faccia parte del gruppo "sudo".\n`);
-    console.log(`Puoi creare l'utente live con i seguenti comandi: \n`);
+    console.log(`Puoi creare l'utente live ed aggiungerlo al gruppo sudo con i seguenti comandi: \n`);
     console.log(`>>> sudo adduser live`);
     console.log(`>>> sudo addgroup live sudo`);
     console.log(`Se disponi di autologin, potrebbe essere necessario impostare l'autologin a live`);
