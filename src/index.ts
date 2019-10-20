@@ -144,15 +144,15 @@ async function start() {
   const command = process.argv[2];
 
   if (command == "produce") {
-    if(isUserLive) {
+    if (isUserLive()) {
       i.produce(o, c);
     }
   } else if (command == "spawn") {
-    if(isUserLive) {
+    if (isUserLive()) {
       i.produce(o, c);
     }
   } else if (command == "lay") {
-    if(isUserLive) {
+    if (isUserLive()) {
       i.produce(o, c);
     }
   } else if (command == "info") {
