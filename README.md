@@ -171,7 +171,7 @@ You can update your version of penguins-eggs with the last version published.
 ```sudo eggs update```
 
 ### sterilize (remove live packages)
-When you decide your system is ok, you can remove the live packages and sterilize your penguing. 
+When you decide your system is ok, you can remove the live packages and sterilize your penguin. 
 
 ### kill (libera lo spazio occupato)
 As the name say is the operation of break and kill the egg created. You will
