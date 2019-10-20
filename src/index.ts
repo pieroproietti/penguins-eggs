@@ -54,12 +54,16 @@ const user = {} as IUser;
 
 user.name = process.env.SUDO_USER;
 if (user.name != "live") {
-  console.log(`Eggs è pensato per essere avviato da un utente denominato live che faccia parte del gruppo sudo.\n`);
+  console.log(`${app.name} ${app.version}`);
+  console.log(`ATTENZIONE: stai utilizzando l'utente ${user.name}`);
+  console.log(`${app.name} è pensato per essere avviato con utente denominato "live" che faccia parte del gruppo "sudo".\n`);
   console.log(`Puoi creare l'utente live con i seguenti comandi: \n`);
   console.log(`>>> sudo adduser live`);
   console.log(`>>> sudo addgroup live sudo`);
-  bye();
+  console.log(`Se disponi di autologin, potrebbe essere necessario impostare l'autologin a live`);
+  process.exit(1);
 }
+
 
 const root = {} as IUser;
 root.name = "root";
