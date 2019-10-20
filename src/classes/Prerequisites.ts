@@ -9,6 +9,7 @@
 
 import shell from "shelljs";
 import { IOses } from "../interfaces";
+import utils from "util";
 
 class Prerequisites {
 
@@ -50,6 +51,7 @@ class Prerequisites {
         let cmd = `apt-get update`;
         console.log(cmd);
         shell.exec(cmd, {async: true});
+        shell.exec(`sleep 1`);
 
 
         cmd = `apt-get --yes install \
@@ -59,10 +61,12 @@ class Prerequisites {
         qml-module-qtquick-controls`;
         console.log(cmd);
         shell.exec(cmd, {async: true});
+        shell.exec(`sleep 1`);
 
         cmd = `apt-get clean`;
         console.log(cmd);
         shell.exec(cmd, {async: true});
+        shell.exec(`sleep 1`);
 
         cmd = `apt-get autoclean`;
         console.log(cmd);
@@ -78,6 +82,7 @@ class Prerequisites {
         qml-module-qtquick-controls`;
         console.log(cmd);
         shell.exec(cmd, {async: true});
+        
 
         cmd = `apt-get --yes --purge remove  \
         squashfs-tools \
