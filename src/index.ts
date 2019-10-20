@@ -53,16 +53,6 @@ net.dhcp = true;
 const user = {} as IUser;
 
 user.name = process.env.SUDO_USER;
-if (user.name != "live") {
-  console.log(`${app.name} ${app.version}`);
-  console.log(`ATTENZIONE: stai utilizzando l'utente ${user.name}`);
-  console.log(`${app.name} è pensato per essere avviato con utente denominato "live" che faccia parte del gruppo "sudo".\n`);
-  console.log(`Puoi creare l'utente live con i seguenti comandi: \n`);
-  console.log(`>>> sudo adduser live`);
-  console.log(`>>> sudo addgroup live sudo`);
-  console.log(`Se disponi di autologin, potrebbe essere necessario impostare l'autologin a live`);
-  process.exit(1);
-}
 
 
 const root = {} as IUser;
@@ -137,7 +127,7 @@ async function start() {
 
   workDir = "/home/eggs/";
 
-  
+
   if (dryRun) {
     console.log(`user: ${user.name}`);
     console.log(`distroname: ${distro.name}`);
@@ -145,7 +135,7 @@ async function start() {
     console.log(`--dry-run: ${dryRun}`);
     process.exit();
   }
-  
+
   const o: IOses = oses.info(distro);
   const i: Iso = new Iso(app, workDir, distro, user);
   const c: Calamares = new Calamares(distro);
@@ -154,11 +144,17 @@ async function start() {
   const command = process.argv[2];
 
   if (command == "produce") {
-    i.produce(o, c);
+    if(isUserLive) {
+      i.produce(o, c);
+    }
   } else if (command == "spawn") {
-    i.produce(o, c);
+    if(isUserLive) {
+      i.produce(o, c);
+    }
   } else if (command == "lay") {
-    i.produce(o, c);
+    if(isUserLive) {
+      i.produce(o, c);
+    }
   } else if (command == "info") {
     console.log(oses.info(distro));
   } else if (command == "install") {
@@ -195,4 +191,19 @@ function bye() {
   console.log(
     `${app.name} v. ${app.version} (C) 2018/2019 ${app.author} <${app.mail}>`,
   );
+}
+
+function isUserLive(): boolean {
+  let retval: boolean = true;
+  if (user.name != "live") {
+    console.log(`${app.name} ${app.version}`);
+    console.log(`ATTENZIONE: stai utilizzando l'utente ${user.name}`);
+    console.log(`${app.name} è pensato per essere avviato con utente denominato "live" che faccia parte del gruppo "sudo".\n`);
+    console.log(`Puoi creare l'utente live con i seguenti comandi: \n`);
+    console.log(`>>> sudo adduser live`);
+    console.log(`>>> sudo addgroup live sudo`);
+    console.log(`Se disponi di autologin, potrebbe essere necessario impostare l'autologin a live`);
+    retval = false;
+  }
+  return retval;
 }
