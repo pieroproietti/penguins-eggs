@@ -164,8 +164,8 @@ async function start() {
   } else if (command == "prerequisites") {
     p.cli();
   } else if (command == "calamares") {
-    c.configure(o);
     p.calamares();
+    c.configure(o);
   } else if (command == "update") {
     Update.go();
   } else if (command == "sterilize") {
