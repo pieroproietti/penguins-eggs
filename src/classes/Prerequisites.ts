@@ -17,7 +17,7 @@ class Prerequisites {
         console.log(
             ">>> eggs: Installing the prerequisites packages..."
         );
-        shell.exec(`${__dirname}/../../scripts/prerequisites.sh ${check}`, {
+        shell.exec(`${__dirname}/../../scripts/prerequisites.sh`, {
             async: false
           });
     }
@@ -25,7 +25,7 @@ class Prerequisites {
     public async calamares() {
         console.log(`>>> eggs: installing calamares...`);
 
-        shell.exec(`${__dirname}/../../scripts/prerequisites_calamares.sh ${check}`, {
+        shell.exec(`${__dirname}/../../scripts/prerequisites_calamares.sh`, {
             async: false
           });
         /*
@@ -38,7 +38,7 @@ class Prerequisites {
     public async sterilize() {
         console.log(`>>> eggs: removing eggs prerequisites...`);
 
-        shell.exec(`${__dirname}/../../scripts/prerequisites_sterilize.sh ${check}`, {
+        shell.exec(`${__dirname}/../../scripts/prerequisites_sterilize.sh`, {
             async: false
           });
         /*
