@@ -35,46 +35,12 @@ class Prerequisites {
         open-infrastructure-system-config`;
         shell.exec(cmd, {async: true});
         shell.exec(`sleep 1`,{async: true});
-
-        cmd = `apt-get clean`;
-        console.log(cmd);
-        shell.exec(cmd, {async: true});
-        shell.exec(`sleep 1`,{async: true});
-
-        cmd = `apt-get autoclean`;
-        console.log(cmd);
-        shell.exec(cmd, {async: true});
-        shell.exec(`sleep 1`,{async: true});
     }
 
     public async calamares() {
-        console.log(
-            ">>> eggs: Installing the prerequisites calamares..."
-        );
-        let cmd = `apt-get update`;
-        console.log(cmd);
-        shell.exec(cmd, {async: true});
-        shell.exec(`sleep 1`,{async: true});
-
-
-        cmd = `apt-get --yes install \
-        calamares \
-        calamares-settings-debian \
-        qml-module-qtquick2 \
-        qml-module-qtquick-controls`;
-        console.log(cmd);
-        shell.exec(cmd, {async: true});
-        shell.exec(`sleep 1`,{async: true});
-
-        cmd = `apt-get clean`;
-        console.log(cmd);
-        shell.exec(cmd, {async: true});
-        shell.exec(`sleep 1`,{async: true});
-
-        cmd = `apt-get autoclean`;
-        console.log(cmd);
-        shell.exec(cmd, {async: true});
-        shell.exec(`sleep 1`,{async: true});
+        console.log(">>> eggs: to install calamares: ");
+        console.log(`sudo apt update`);
+        console.log(`sudo apt install calamares`);
     }
 
     public async sterilize() {
