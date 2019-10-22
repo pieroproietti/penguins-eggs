@@ -17,35 +17,32 @@ class Prerequisites {
         console.log(
             ">>> eggs: Installing the prerequisites packages..."
         );
-        let cmd=`apt-get update`;
-        console.log(cmd);
-        shell.exec(cmd, {async: true});
-        shell.exec(`sleep 1`,{async: true});
-
-        cmd = `apt-get --yes install \
-        lvm2 \
-        parted \
-        squashfs-tools \
-        xorriso \
-        syslinux \
-        isolinux \
-        live-boot \
-        xterm \
-        zenity \
-        open-infrastructure-system-config`;
-        shell.exec(cmd, {async: true});
-        shell.exec(`sleep 1`,{async: true});
+        shell.exec(`${__dirname}/../../scripts/prerequisites.sh ${check}`, {
+            async: false
+          });
     }
 
     public async calamares() {
+        console.log(`>>> eggs: installing calamares...`);
+
+        shell.exec(`${__dirname}/../../scripts/prerequisites_calamares.sh ${check}`, {
+            async: false
+          });
+        /*
         console.log(">>> eggs: to install calamares: ");
         console.log(`sudo apt update`);
         console.log(`sudo apt install calamares`);
+        */
     }
 
     public async sterilize() {
         console.log(`>>> eggs: removing eggs prerequisites...`);
-        let cmd = `apt-get --yes --purge remove  \
+
+        shell.exec(`${__dirname}/../../scripts/prerequisites_sterilize.sh ${check}`, {
+            async: false
+          });
+        /*
+          let cmd = `apt-get --yes --purge remove  \
         calamares \
         calamares-settings-debian \
         qml-module-qtquick2 \
@@ -80,7 +77,7 @@ class Prerequisites {
         console.log(cmd);
         shell.exec(cmd, {async: true});
         shell.exec(`sleep 1`,{async: true});
-      
+        */
     }
 
 }
