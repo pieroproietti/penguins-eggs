@@ -56,10 +56,10 @@ class Calamares {
    * create
    */
   async create() {
-    //utils.exec(`cp ${__dirname}/../../templates/* /etc/ -R`);
-    //utils.exec(`rm /usr/bin/add-calamares-desktop-icon`);
-    //utils.exec(`rm /usr/share/applications/install-debian.desktop`);
-    //utils.exec(`cp ${__dirname}/../../applications/* /usr/share/applications`)
+    utils.exec(`cp ${__dirname}/../../templates/* /etc/ -R`);
+    utils.exec(`rm /usr/bin/add-calamares-desktop-icon`);
+    utils.exec(`rm /usr/share/applications/install-debian.desktop`);
+    utils.exec(`cp ${__dirname}/../../applications/* /usr/share/applications`)
   }
 
 
