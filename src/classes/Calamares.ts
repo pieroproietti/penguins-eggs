@@ -94,10 +94,11 @@ class Calamares {
         sequence: [
           { show: ['welcome', 'locale', 'keyboard', 'partition', 'users', 'summary'] },
           {
-            exec: ['partition', 'mount', 'unpackfs', 'machineid', 'fstab', 'locale',
+            exec: ['partition', 'mount', 'unpackfs', 'sources-media', 'machineid', 'fstab', 'locale',
               'keyboard', 'localecfg', 'users', 'networkcfg', 'hwclock',
-              'grubcfg', 'bootloader', 'packages', 'luksbootkeyfile',
-              'plymouthcfg', 'initramfscfg', 'initramfs', 'removeuser', 'umount']
+              'services-systemd', 'bootloader-config', 'packages', 'luksbootkeyfile',
+              'plymouthcfg', 'initramfscfg', 'initramfs', 
+              'sources-media-unmount', 'sources-final', 'removeuser', 'umount']
           },
           { show: ['finished'] }],
         branding: this.distro.branding,
