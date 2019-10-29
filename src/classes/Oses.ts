@@ -230,10 +230,10 @@ class Oses {
             o.distroId = "Debian";
             o.distroLike = "Debian";
             o.versionLike = "wheezy";
-        } else if (o.versionId === "eon") {
+        } else if (o.versionId === "eoan") {
             o.distroId = "Ubuntu";
             o.distroLike = "Ubuntu";
-            o.versionLike = "eon";
+            o.versionLike = "eoan";
             o.mountpointSquashFs = "/run/live/medium/live/filesystem.squashfs";
         } else if (o.versionId === "disco") {
             o.distroId = "Ubuntu";
