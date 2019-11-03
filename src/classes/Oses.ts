@@ -105,7 +105,7 @@ class Oses {
             o.distroId = "Linux Mint";
             o.distroLike = "Ubuntu";
             o.versionLike = "xenial";
-        } else if (o.versionId === "tara" || o.versionId === "tessa") {
+        } else if (o.versionId === "tara" || o.versionId === "tessa"|| o.versionId === "tina") {
             o.distroId = "Linux Mint";
             o.distroLike = "Ubuntu";
             o.versionLike = "bionic";
