@@ -12,8 +12,33 @@ import fs from 'fs';
 import { IDistro } from "../interfaces";
 import utils from "../lib/utils";
 import Oses from './Oses';
+import shell from "shelljs";
+
 let oses = new Oses();
 
+/**
+ *  Calamares
+ * isInstalled()
+ * configure()
+ * create() copia templates ed altro
+ * settingsConf() // versioni
+ * unpackModule()
+ * brandingDesk()
+ * 
+ * in templates abbiamo:
+ * calamares
+ * + branding + eggs
+ * + modules + 
+ * - settings.conf
+ */
+
+/**
+ * templates/branding (copiare in /etc/calamares)
+ *          /distros/bionic
+ *                  /buster/calamares/settings.conf (copiare in /etc/calamares)
+ *                         /calamares/modules/ (copiare in /etc/calamares)
+ *                  /eoan
+ */
 
 
 class Calamares {
@@ -28,41 +53,35 @@ class Calamares {
    * @param o 
    */
   public configure(o: any) {
-    console.log("==========================================");
-    console.log("eggs: calamares configuration");
-    console.log("------------------------------------------");
+    if (this.isInstalled()) {
+      console.log("==========================================");
+      console.log("eggs: calamares configuration");
+      console.log("------------------------------------------");
 
-    o = oses.info(this.distro);
-    console.log(`distro: [${o.distroId}/${o.versionId}]->[${o.distroLike}/${o.versionLike}]`);
-    this.create();
-    this.settingsConf(o.versionLike);
-    this.brandingDesc(o.versionLike, o.homeUrl, o.supportUrl, o.bugReportUrl);
-    this.unpackModule(o.mountpointSquashFs);
-    console.log("==========================================");
-  }
-
-  public isCalamaresInstalled(): boolean {
-    const path = '/etc/calamares/branding/eggs/branding.desc';
-    try {
-      if (fs.existsSync(path)) {
-        return true;
-      }
-    } catch (err) {
-      console.error(err)
+      o = oses.info(this.distro);
+      console.log(`distro: [${o.distroId}/${o.versionId}]->[${o.distroLike}/${o.versionLike}]`);
+      this.settingsConf(o.versionLike);
+      this.brandingDesc(o.versionLike, o.homeUrl, o.supportUrl, o.bugReportUrl);
+      this.unpackfsConf(o.mountpointSquashFs);
+      this.links();
+      console.log("==========================================");
     }
   }
 
-  /**
-   * create
-   */
-  async create() {
-    utils.exec(`cp ${__dirname}/../../templates/* /etc/ -R`);
-    utils.exec(`rm /usr/bin/add-calamares-desktop-icon`);
-    utils.exec(`rm /usr/share/applications/install-debian.desktop`);
-    utils.exec(`cp ${__dirname}/../../applications/* /usr/share/applications`)
+  async isInstalled(): Promise<boolean> {
+    let test: string = "1";
+    let result: any;
+    result = shell.exec(`${__dirname}/../../scripts/is_calamares.sh`, {
+      async: false
+    });
+    if (result.indexOf(test) > -1) {
+      return true;
+    } else {
+      return false;
+    }
   }
 
-
+  
   /**
    * settingsConf
    */
@@ -71,25 +90,27 @@ class Calamares {
     let settings = {};
 
     if (versionLike === 'buster') {
+      utils.exec(`cp ${__dirname}/../../templates/distros/buster/* /etc/ -R`);
       settings = {
         'modules-search': ['local', '/usr/lib/calamares/modules'],
         sequence: [
           { show: ['welcome', 'locale', 'keyboard', 'partition', 'users', 'summary'] },
           {
-            exec: ['partition', 'mount', 'unpackfs', 'sources-media', 'machineid', 'fstab', 'locale',
-              'keyboard', 'localecfg', 'users', 'networkcfg', 'hwclock',
-              'bootloader-config', 'grubcfg', 'bootloader', 'packages', 'luksbootkeyfile',
-              'plymouthcfg', 'initramfscfg', 'initramfs', 'displaymanager', 
-              'sources-media-unmount', 'sources-final', 'removeuser', 'umount']
+            exec: ['partition', 'mount', 'unpackfs', 'machineid', 'fstab', 'locale',
+                'keyboard', 'localecfg', 'users', 'networkcfg', 'hwclock',
+                'grubcfg', 'bootloader', 'packages', 'luksbootkeyfile',
+                'plymouthcfg', 'initramfscfg', 'initramfs', 'removeuser', 'umount']
           },
           { show: ['finished'] }],
         branding: this.distro.branding,
         'prompt-install': false,
         'dont-chroot': false
       };
-      
-    } else {
+
+    } else if (versionLike === 'bionic') {
+      utils.exec(`cp ${__dirname}/../../templates/distros/bionic/* /etc/ -R`);
       settings = {
+
         'modules-search': ['local', '/usr/lib/calamares/modules'],
         sequence: [
           { show: ['welcome', 'locale', 'keyboard', 'partition', 'users', 'summary'] },
@@ -97,7 +118,26 @@ class Calamares {
             exec: ['partition', 'mount', 'unpackfs', 'sources-media', 'machineid', 'fstab', 'locale',
               'keyboard', 'localecfg', 'users', 'networkcfg', 'hwclock',
               'services-systemd', 'bootloader-config', 'packages', 'luksbootkeyfile',
-              'plymouthcfg', 'initramfscfg', 'initramfs', 
+              'plymouthcfg', 'initramfscfg', 'initramfs',
+              'sources-media-unmount', 'sources-final', 'removeuser', 'umount']
+          },
+          { show: ['finished'] }],
+        branding: this.distro.branding,
+        'prompt-install': false,
+        'dont-chroot': false
+      };
+    } else if (versionLike===`eoan`){
+      utils.exec(`cp ${__dirname}/../../templates/distros/eoan/* /etc/ -R`);
+      settings = {
+
+        'modules-search': ['local', '/usr/lib/calamares/modules'],
+        sequence: [
+          { show: ['welcome', 'locale', 'keyboard', 'partition', 'users', 'summary'] },
+          {
+            exec: ['partition', 'mount', 'unpackfs', 'sources-media', 'machineid', 'fstab', 'locale',
+              'keyboard', 'localecfg', 'users', 'networkcfg', 'hwclock',
+              'services-systemd', 'bootloader-config', 'packages', 'luksbootkeyfile',
+              'plymouthcfg', 'initramfscfg', 'initramfs',
               'sources-media-unmount', 'sources-final', 'removeuser', 'umount']
           },
           { show: ['finished'] }],
@@ -106,29 +146,20 @@ class Calamares {
         'dont-chroot': false
       };
     }
+    /**
+     * branding è uguale per tutte
+     */
+    utils.exec(`cp ${__dirname}/../../templates/branding /etc/calamares -R`);
+
     console.log("Configurazione settings.conf");
     fs.writeFileSync(settingsPath, `# distroType: ${versionLike}\n` + yaml.safeDump(settings), 'utf8');
-  }
-
-  unpackModule(mountpointSquashFs: string) {
-    let o: any = {};
-    o = oses.info(this.distro);
-
-    let file = `/etc/calamares/modules/unpackfs.conf`;
-    let text = `---\n`;
-    text += `unpack:\n`;
-    text += `-   source: "${mountpointSquashFs}"\n`;
-    text += `    sourcefs: "squashfs"\n`;
-    text += `    unpack:\n`;
-    text += `    destination: ""\n`;
-    fs.writeFileSync(file, text, 'utf8');
   }
 
 
   async brandingDesc(versionLike: string, homeUrl: string, supportUrl: string, bugReportUrl: string) {
     let brandingPath = `/etc/calamares/branding/${this.distro.branding}`;
 
-    if (!fs.existsSync(brandingPath)){
+    if (!fs.existsSync(brandingPath)) {
       fs.mkdirSync(brandingPath);
     }
     // Configurazione branding.desc
@@ -187,6 +218,35 @@ class Calamares {
     console.log("Configurazione branding.desc");
     fs.writeFileSync(brandingFile, `#versionLike: ${versionLike}\n` + yaml.safeDump(branding), 'utf8');
   }
+
+  /**
+   * unpackfsConf
+   * @param mountpointSquashFs 
+   */
+  unpackfsConf(mountpointSquashFs: string) {
+    let o: any = {};
+    o = oses.info(this.distro);
+
+    let file = `/etc/calamares/modules/unpackfs.conf`;
+    let text = `---\n`;
+    text += `unpack:\n`;
+    text += `-   source: "${mountpointSquashFs}"\n`;
+    text += `    sourcefs: "squashfs"\n`;
+    text += `    unpack:\n`;
+    text += `    destination: ""\n`;
+    fs.writeFileSync(file, text, 'utf8');
+  }
+
+  /**
+   * links
+   */
+  async links() {
+    // utils.exec(`cp ${__dirname}/../../templates/* /etc/ -R`);
+    utils.exec(`rm /usr/bin/add-calamares-desktop-icon`);
+    utils.exec(`rm /usr/share/applications/install-debian.desktop`);
+    utils.exec(`cp ${__dirname}/../../applications/* /usr/share/applications`)
+  }
+
 
 }
 
