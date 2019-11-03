@@ -91,17 +91,40 @@ class Calamares {
 
     if (versionLike === 'buster') {
       // rimosso packages (rimozione pacchetti, dopo bootloader)
+      // mi manca removeuser
       utils.exec(`cp ${__dirname}/../../templates/distros/buster/* /etc/ -R`);
       settings = {
         'modules-search': ['local', '/usr/lib/calamares/modules'],
         sequence: [
-          { show: ['welcome', 'locale', 'keyboard', 'partition', 'users', 'summary'] },
+          { show: ['welcome', 
+                  'locale', 
+                  'keyboard', 
+                  'partition', 
+                  'users', 
+                  'summary'] },
           {
             
-            exec: ['partition', 'mount', 'unpackfs', 'machineid', 'fstab', 'locale',
-                'keyboard', 'localecfg', 'users', 'networkcfg', 'hwclock',
-                'grubcfg', 'bootloader', 'luksbootkeyfile',
-                'plymouthcfg', 'initramfscfg', 'initramfs', 'removeuser', 'umount']
+            exec: [ 'partition', 
+                    'mount', 
+                    'unpackfs', 
+                    'sources-media',
+                    'machineid', 
+                    'fstab', 
+                    'locale',
+                    'keyboard', 
+                    'localecfg', 
+                    'users', 
+                    'networkcfg', 
+                    'hwclock',
+                    'grubcfg', 
+                    'bootloader', 
+                    'luksbootkeyfile',
+                    'plymouthcfg', 
+                    'initramfscfg', 
+                    'initramfs', 
+                    'sources-media-unmount',
+                    'sources-final',
+                    'umount']
           },
           { show: ['finished'] }],
         branding: this.distro.branding,
@@ -136,6 +159,10 @@ class Calamares {
 
         'modules-search': ['local', '/usr/lib/calamares/modules'],
         sequence: [
+
+
+
+
           { show: ['welcome', 'locale', 'keyboard', 'partition', 'users', 'summary'] },
           {
             exec: ['partition', 'mount', 'unpackfs', 'sources-media', 'machineid', 'fstab', 'locale',
