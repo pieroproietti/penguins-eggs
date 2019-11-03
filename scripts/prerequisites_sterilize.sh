@@ -14,3 +14,4 @@ apt-get --yes --purge remove  \
 apt-get --yes autoremove        
 apt-get clean
 apt-get autoclean
+rm /etc/calamares -rf
