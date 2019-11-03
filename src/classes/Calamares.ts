@@ -81,7 +81,7 @@ class Calamares {
     }
   }
 
-  
+
   /**
    * settingsConf
    */
@@ -96,82 +96,46 @@ class Calamares {
       settings = {
         'modules-search': ['local', '/usr/lib/calamares/modules'],
         sequence: [
-          { show: ['welcome', 
-                  'locale', 
-                  'keyboard', 
-                  'partition', 
-                  'users', 
-                  'summary'] },
-          {
-            
-            exec: [ 'partition', 
-                    'mount', 
-                    'unpackfs', 
-                    'sources-media',
-                    'machineid', 
-                    'fstab', 
-                    'locale',
-                    'keyboard', 
-                    'localecfg', 
-                    'users', 
-                    'networkcfg', 
-                    'hwclock',
-                    'grubcfg', 
-                    'bootloader', 
-                    'luksbootkeyfile',
-                    'plymouthcfg', 
-                    'initramfscfg', 
-                    'initramfs', 
-                    'sources-media-unmount',
-                    'sources-final',
-                    'umount']
-          },
-          { show: ['finished'] }],
+          { show: ['welcome', 'locale', 'keyboard', 'partition', 'users', 'summary'] },
+          { exec: ['partition', 'mount', 'unpackfs', 'machineid', 'fstab', 'locale', 'keyboard', 'localecfg', 'users', 'networkcfg', 'hwclock', 'grubcfg', 'bootloader', 'luksbootkeyfile', 'plymouthcfg', 'initramfscfg', 'initramfs', 'removeuser', 'umount'] },
+          { show: ['finished'] }
+        ],
         branding: this.distro.branding,
         'prompt-install': false,
         'dont-chroot': false
       };
 
+      /**
+       * UBUNTU BIONIC
+       */
     } else if (versionLike === 'bionic') {
       // rimosso packages (rimozione pacchetti, dopo bootloader-config)
       utils.exec(`cp ${__dirname}/../../templates/distros/bionic/* /etc/ -R`);
       settings = {
-
         'modules-search': ['local', '/usr/lib/calamares/modules'],
         sequence: [
           { show: ['welcome', 'locale', 'keyboard', 'partition', 'users', 'summary'] },
-          {
-            exec: ['partition', 'mount', 'unpackfs', 'sources-media', 'machineid', 'fstab', 'locale',
-              'keyboard', 'localecfg', 'users', 'networkcfg', 'hwclock',
-              'services-systemd', 'bootloader-config',  'luksbootkeyfile',
-              'plymouthcfg', 'initramfscfg', 'initramfs',
-              'sources-media-unmount', 'sources-final', 'removeuser', 'umount']
-          },
-          { show: ['finished'] }],
+          { exec: ['partition', 'mount', 'unpackfs', 'sources-media', 'machineid', 'fstab', 'locale', 'keyboard', 'localecfg', 'users', 'networkcfg', 'hwclock', 'services-systemd', 'bootloader-config', 'luksbootkeyfile', 'plymouthcfg', 'initramfscfg', 'initramfs', 'sources-media-unmount', 'sources-final', 'removeuser', 'umount'] },
+          { show: ['finished'] }
+        ],
         branding: this.distro.branding,
         'prompt-install': false,
         'dont-chroot': false
       };
-    } else if (versionLike===`eoan`){
+
+      /**
+       * UBUNTU EOAN
+       */
+    } else if (versionLike === `eoan`) {
       // rimosso packages (rimozione pacchetti, dopo bootloader-config)
       utils.exec(`cp ${__dirname}/../../templates/distros/eoan/* /etc/ -R`);
       settings = {
-
         'modules-search': ['local', '/usr/lib/calamares/modules'],
         sequence: [
-
-
-
-
           { show: ['welcome', 'locale', 'keyboard', 'partition', 'users', 'summary'] },
-          {
-            exec: ['partition', 'mount', 'unpackfs', 'sources-media', 'machineid', 'fstab', 'locale',
-              'keyboard', 'localecfg', 'users', 'networkcfg', 'hwclock',
-              'services-systemd', 'bootloader-config', 'luksbootkeyfile',
-              'plymouthcfg', 'initramfscfg', 'initramfs',
-              'sources-media-unmount', 'sources-final', 'removeuser', 'umount']
-          },
-          { show: ['finished'] }],
+          { exec: ['partition', 'mount', 'unpackfs', 'sources-media', 'machineid', 'fstab', 'locale', 'keyboard', 'localecfg', 'users', 'networkcfg', 'hwclock', 'grubcfg', 'bootloader', 'luksbootkeyfile', 'plymouthcfg', 'initramfscfg', 'initramfs', 'sources-media-unmount', 'sources-final', 'umount'] },
+          { show: ['finished'] }
+        ],
         branding: this.distro.branding,
         'prompt-install': false,
         'dont-chroot': false
