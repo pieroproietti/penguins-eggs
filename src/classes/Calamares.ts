@@ -90,15 +90,17 @@ class Calamares {
     let settings = {};
 
     if (versionLike === 'buster') {
+      // rimosso packages (rimozione pacchetti, dopo bootloader)
       utils.exec(`cp ${__dirname}/../../templates/distros/buster/* /etc/ -R`);
       settings = {
         'modules-search': ['local', '/usr/lib/calamares/modules'],
         sequence: [
           { show: ['welcome', 'locale', 'keyboard', 'partition', 'users', 'summary'] },
           {
+            
             exec: ['partition', 'mount', 'unpackfs', 'machineid', 'fstab', 'locale',
                 'keyboard', 'localecfg', 'users', 'networkcfg', 'hwclock',
-                'grubcfg', 'bootloader', 'packages', 'luksbootkeyfile',
+                'grubcfg', 'bootloader', 'luksbootkeyfile',
                 'plymouthcfg', 'initramfscfg', 'initramfs', 'removeuser', 'umount']
           },
           { show: ['finished'] }],
@@ -108,6 +110,7 @@ class Calamares {
       };
 
     } else if (versionLike === 'bionic') {
+      // rimosso packages (rimozione pacchetti, dopo bootloader-config)
       utils.exec(`cp ${__dirname}/../../templates/distros/bionic/* /etc/ -R`);
       settings = {
 
@@ -117,7 +120,7 @@ class Calamares {
           {
             exec: ['partition', 'mount', 'unpackfs', 'sources-media', 'machineid', 'fstab', 'locale',
               'keyboard', 'localecfg', 'users', 'networkcfg', 'hwclock',
-              'services-systemd', 'bootloader-config', 'packages', 'luksbootkeyfile',
+              'services-systemd', 'bootloader-config',  'luksbootkeyfile',
               'plymouthcfg', 'initramfscfg', 'initramfs',
               'sources-media-unmount', 'sources-final', 'removeuser', 'umount']
           },
@@ -127,6 +130,7 @@ class Calamares {
         'dont-chroot': false
       };
     } else if (versionLike===`eoan`){
+      // rimosso packages (rimozione pacchetti, dopo bootloader-config)
       utils.exec(`cp ${__dirname}/../../templates/distros/eoan/* /etc/ -R`);
       settings = {
 
@@ -136,7 +140,7 @@ class Calamares {
           {
             exec: ['partition', 'mount', 'unpackfs', 'sources-media', 'machineid', 'fstab', 'locale',
               'keyboard', 'localecfg', 'users', 'networkcfg', 'hwclock',
-              'services-systemd', 'bootloader-config', 'packages', 'luksbootkeyfile',
+              'services-systemd', 'bootloader-config', 'luksbootkeyfile',
               'plymouthcfg', 'initramfscfg', 'initramfs',
               'sources-media-unmount', 'sources-final', 'removeuser', 'umount']
           },
