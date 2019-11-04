@@ -106,7 +106,7 @@ class Calamares {
       };
 
       /**
-       * UBUNTU BIONIC
+       * UBUNTU BIONIC / LINUX MINT 19.1/2/3
        */
     } else if (versionLike === 'bionic') {
       // rimosso packages (rimozione pacchetti, dopo bootloader) aggiunto removeuser prima di umount
@@ -115,7 +115,7 @@ class Calamares {
         'modules-search': ['local', '/usr/lib/calamares/modules'],
         sequence: [
           { show: ['welcome', 'locale', 'keyboard', 'partition', 'users', 'summary'] },
-          { exec: [`partition`, `mount`, `unpackfs`, `machineid`, `fstab`, `locale`, `keyboard`, `localecfg`, `users`, `displaymanager`, `networkcfg`, `hwclock`, `services`, `initramfs`, `grubcfg`, `bootloader`, `removeuser`, `umount`] },
+          { exec: [`partition`, `mount`, `unpackfs`, `machineid`, `fstab`, `locale`, `keyboard`, `localecfg`, `luksbootkeyfile`, `users`, `displaymanager`, `networkcfg`, `hwclock`, `services`, `initramfs`, `grubcfg`, `bootloader`, `automirror`, `removeuser`, `umount`] },
           { show: ['finished'] }
         ],
         branding: this.distro.branding,
@@ -133,7 +133,7 @@ class Calamares {
         'modules-search': ['local', '/usr/lib/calamares/modules'],
         sequence: [
           { show: ['welcome', 'locale', 'keyboard', 'partition', 'users', 'summary'] },
-          { exec: ['partition', 'mount', 'unpackfs', 'sources-media', 'machineid', 'fstab', 'locale', 'keyboard', 'localecfg', 'users', 'networkcfg', 'hwclock', 'grubcfg', 'bootloader', 'luksbootkeyfile', 'plymouthcfg', 'initramfscfg', 'initramfs', 'sources-media-unmount', 'sources-final', 'umount'] },
+          { exec: ['partition', 'mount', 'unpackfs', 'sources-media', 'machineid', 'fstab', 'locale', 'keyboard', 'localecfg', 'users', 'networkcfg', 'hwclock', 'grubcfg', 'bootloader', 'luksbootkeyfile', 'plymouthcfg', 'initramfscfg', 'initramfs', 'sources-media-unmount', 'sources-final', 'removeuser', 'umount'] },
           { show: ['finished'] }
         ],
         branding: this.distro.branding,
