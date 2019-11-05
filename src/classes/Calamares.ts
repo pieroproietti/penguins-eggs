@@ -114,8 +114,8 @@ class Calamares {
       settings = {
         'modules-search': ['local', '/usr/lib/calamares/modules'],
         sequence: [
-          { show: ['welcome', 'locale', 'keyboard', 'partition', 'users', 'summary'] },
-          { exec: [`partition`, `mount`, `unpackfs`, `machineid`, `fstab`, `locale`, `keyboard`, `localecfg`, `luksbootkeyfile`, `users`, `displaymanager`, `networkcfg`, `hwclock`, `services`, `initramfs`, `grubcfg`, `bootloader`, `removeuser`, `umount`] },
+          { show: [`welcome`, `locale`, `keyboard`, `partition`, `users`, `summary`]},
+          { exec: [`partition`, `mount`, `unpackfs`, `machineid`, `fstab`, `locale`, `keyboard`, `localecfg`, `users`, `displaymanager`, `networkcfg`, `hwclock`, `services`, `initramfs`, `grubcfg`, `bootloader`, `removeuser`, `umount`] },
           { show: ['finished'] }
         ],
         branding: this.distro.branding,
