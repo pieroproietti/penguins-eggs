@@ -112,14 +112,14 @@ class Calamares {
       // rimosso packages (rimozione pacchetti, dopo bootloader) aggiunto removeuser prima di umount
       utils.exec(`cp ${__dirname}/../../templates/distros/bionic/* /etc/ -R`);
       settings = {
-        'modules-search': ['local', '/usr/lib/calamares/modules'],
+        'modules-search': ['local',],
         sequence: [
           { show: [`welcome`, `locale`, `keyboard`, `partition`, `users`, `summary`]},
           { exec: [`partition`, `mount`, `unpackfs`, `machineid`, `fstab`, `locale`, `keyboard`, `localecfg`, `users`, `displaymanager`, `networkcfg`, `hwclock`, `services`, `initramfs`, `grubcfg`, `bootloader`, `removeuser`, `umount`] },
           { show: ['finished'] }
         ],
         branding: this.distro.branding,
-        'prompt-install': false,
+        'prompt-install': true,
         'dont-chroot': false
       };
 
