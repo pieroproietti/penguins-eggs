@@ -86,6 +86,12 @@ class Calamares {
    * settingsConf
    */
   async settingsConf(versionLike: string) {
+    /**
+    * branding è uguale per tutte
+    */
+    utils.exec(`cp ${__dirname}/../../templates/branding /etc/calamares -R`);
+
+
     let settingsPath = '/etc/calamares/settings.conf'
     let settings = {};
 
@@ -114,7 +120,7 @@ class Calamares {
       settings = {
         'modules-search': ['local',],
         sequence: [
-          { show: [`welcome`, `locale`, `keyboard`, `partition`, `users`, `summary`]},
+          { show: [`welcome`, `locale`, `keyboard`, `partition`, `users`, `summary`] },
           { exec: [`partition`, `mount`, `unpackfs`, `machineid`, `fstab`, `locale`, `keyboard`, `localecfg`, `users`, `displaymanager`, `networkcfg`, `hwclock`, `services`, `initramfs`, `grubcfg`, `bootloader`, `removeuser`, `umount`] },
           { show: ['finished'] }
         ],
@@ -140,11 +146,8 @@ class Calamares {
         'prompt-install': false,
         'dont-chroot': false
       };
+      this.ubuntuSourcesFinal(`eoan`);
     }
-    /**
-     * branding è uguale per tutte
-     */
-    utils.exec(`cp ${__dirname}/../../templates/branding /etc/calamares -R`);
 
     console.log("Configurazione settings.conf");
     fs.writeFileSync(settingsPath, `# distroType: ${versionLike}\n` + yaml.safeDump(settings), 'utf8');
@@ -243,7 +246,110 @@ class Calamares {
   }
 
 
-}
+  /**
+   * impostazione di sources.list per Debian
+   */
+  async debianSourcesFinal(release: string) {
+    const file = `/usr/sbin/sources-final`;
+    const text: string = `\
+#!/bin/sh
+#
+# Writes the final sources.list file
+#
 
+CHROOT=$(mount | grep proc | grep calamares | awk '{print $3}' | sed -e "s#/proc##g")
+RELEASE="buster"
+
+cat << EOF > $CHROOT/etc/apt/sources.list
+# See https://wiki.debian.org/SourcesList for more information.
+deb http://deb.debian.org/debian $RELEASE main
+deb-src http://deb.debian.org/debian $RELEASE main
+
+deb http://deb.debian.org/debian $RELEASE-updates main
+deb-src http://deb.debian.org/debian $RELEASE-updates main
+
+deb http://security.debian.org/debian-security/ $RELEASE/updates main
+deb-src http://security.debian.org/debian-security/ $RELEASE/updates main
+EOF
+
+exit 0`;
+  fs.writeFileSync(file, text, 'utf8');
+    
+  }
+
+  async ubuntuSourcesFinal(release: string) {
+    const file = `/usr/sbin/sources-final`;
+    const text: string = `
+#!/bin/sh
+#
+# Writes the final sources.list file
+#
+
+CHROOT=$(mount | grep proc | grep calamares | awk '{print $3}' | sed -e "s#/proc##g")
+RELEASE="eoan"
+
+cat << EOF > $CHROOT/etc/apt/sources.list
+
+# penguins-eggs made
+# deb http://it.archive.ubuntu.com/ubuntu/ ${RELEASE} main restricted
+
+# deb http://it.archive.ubuntu.com/ubuntu/ ${RELEASE}-updates main restricted
+# deb http://security.ubuntu.com/ubuntu ${RELEASE}-security main restricted
+
+# See http://help.ubuntu.com/community/UpgradeNotes for how to upgrade to
+# newer versions of the distribution.
+deb http://it.archive.ubuntu.com/ubuntu/ ${RELEASE} main restricted
+# deb-src http://it.archive.ubuntu.com/ubuntu/ ${RELEASE} main restricted
+
+## Major bug fix updates produced after the final release of the
+## distribution.
+deb http://it.archive.ubuntu.com/ubuntu/ ${RELEASE}-updates main restricted
+# deb-src http://it.archive.ubuntu.com/ubuntu/ ${RELEASE}-updates main restricted
+
+## N.B. software from this repository is ENTIRELY UNSUPPORTED by the Ubuntu
+## team. Also, please note that software in universe WILL NOT receive any
+## review or updates from the Ubuntu security team.
+deb http://it.archive.ubuntu.com/ubuntu/ ${RELEASE} universe
+# deb-src http://it.archive.ubuntu.com/ubuntu/ ${RELEASE} universe
+deb http://it.archive.ubuntu.com/ubuntu/ ${RELEASE}-updates universe
+# deb-src http://it.archive.ubuntu.com/ubuntu/ ${RELEASE}-updates universe
+
+## N.B. software from this repository is ENTIRELY UNSUPPORTED by the Ubuntu 
+## team, and may not be under a free licence. Please satisfy yourself as to 
+## your rights to use the software. Also, please note that software in 
+## multiverse WILL NOT receive any review or updates from the Ubuntu
+## security team.
+deb http://it.archive.ubuntu.com/ubuntu/ ${RELEASE} multiverse
+# deb-src http://it.archive.ubuntu.com/ubuntu/ ${RELEASE} multiverse
+deb http://it.archive.ubuntu.com/ubuntu/ ${RELEASE}-updates multiverse
+# deb-src http://it.archive.ubuntu.com/ubuntu/ ${RELEASE}-updates multiverse
+
+## N.B. software from this repository may not have been tested as
+## extensively as that contained in the main release, although it includes
+## newer versions of some applications which may provide useful features.
+## Also, please note that software in backports WILL NOT receive any review
+## or updates from the Ubuntu security team.
+deb http://it.archive.ubuntu.com/ubuntu/ ${RELEASE}-backports main restricted universe multiverse
+# deb-src http://it.archive.ubuntu.com/ubuntu/ ${RELEASE}-backports main restricted universe multiverse
+
+## Uncomment the following two lines to add software from Canonical's
+## 'partner' repository.
+## This software is not part of Ubuntu, but is offered by Canonical and the
+## respective vendors as a service to Ubuntu users.
+# deb http://archive.canonical.com/ubuntu ${RELEASE} partner
+# deb-src http://archive.canonical.com/ubuntu ${RELEASE} partner
+
+deb http://security.ubuntu.com/ubuntu ${RELEASE}-security main restricted
+# deb-src http://security.ubuntu.com/ubuntu ${RELEASE}-security main restricted
+deb http://security.ubuntu.com/ubuntu ${RELEASE}-security universe
+# deb-src http://security.ubuntu.com/ubuntu ${RELEASE}-security universe
+deb http://security.ubuntu.com/ubuntu ${RELEASE}-security multiverse
+# deb-src http://security.ubuntu.com/ubuntu ${RELEASE}-security multiverse
+
+
+exit 0`;
+  fs.writeFileSync(file, text, 'utf8');
+  }
+}
 
 export default Calamares;
