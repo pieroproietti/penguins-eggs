@@ -249,7 +249,7 @@ class Calamares {
   /**
    * impostazione di sources.list per Debian
    */
-  async debianSourcesFinal(release: string) {
+  async debianSourcesFinal(debianRelease: string) {
     const file = `/usr/sbin/sources-final`;
     const text: string = `\
 #!/bin/sh
@@ -258,7 +258,7 @@ class Calamares {
 #
 
 CHROOT=$(mount | grep proc | grep calamares | awk '{print $3}' | sed -e "s#/proc##g")
-RELEASE="buster"
+RELEASE=${debianRelease}
 
 cat << EOF > $CHROOT/etc/apt/sources.list
 # See https://wiki.debian.org/SourcesList for more information.
@@ -277,7 +277,7 @@ exit 0`;
     
   }
 
-  async ubuntuSourcesFinal(release: string) {
+  async ubuntuSourcesFinal(ubuntuRelease: string) {
     const file = `/usr/sbin/sources-final`;
     const text: string = `
 #!/bin/sh
@@ -286,7 +286,7 @@ exit 0`;
 #
 
 CHROOT=$(mount | grep proc | grep calamares | awk '{print $3}' | sed -e "s#/proc##g")
-RELEASE="eoan"
+RELEASE=${ubuntuRelease}
 
 cat << EOF > $CHROOT/etc/apt/sources.list
 
