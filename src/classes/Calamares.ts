@@ -345,7 +345,7 @@ deb http://security.ubuntu.com/ubuntu $RELEASE-security universe
 # deb-src http://security.ubuntu.com/ubuntu $RELEASE-security universe
 deb http://security.ubuntu.com/ubuntu $RELEASE-security multiverse
 # deb-src http://security.ubuntu.com/ubuntu $RELEASE-security multiverse
-
+EOF
 
 exit 0`;
   fs.writeFileSync(file, text, 'utf8');
