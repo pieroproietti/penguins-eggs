@@ -1,11 +1,12 @@
+#!/usr/bin/env xdg-open
 [Desktop Entry]
 Encoding=UTF-8
 Name=Assistenza remota
 Type=Application
-Icon=2xsession.png
+Icon=assistenza-remota
 Name[it_IT]=Assistenza remota
 Categories=GNOME;GTK;Network
 TryExec=dwagent.sh
-Exec=sudo -H /usr/local/bin/dwagent.sh
+Exec=dwagent.sh
 Comment=Richiesta assistenza remota
 Terminal=false

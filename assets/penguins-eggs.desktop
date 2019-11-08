@@ -1,8 +1,8 @@
+#!/usr/bin/env xdg-open
 [Desktop Entry]
 Encoding=UTF-8
-Name=Penguin's eggs site
-Type=Link
-URL=https://pieroproietti.github.io/
-Icon=/usr/lib/node_modules/penguins-eggs/src/assets/eggs.png
-Name[it_IT]=Penguin's eggs
-Categories=GNOME;GTK;Utility;TextEditor;Development;
+Name=Penguin's eggs book
+Type=Application
+Exec=firefox https://penguin-s-eggs.gitbook.io/project
+Icon=eggs
+Categories=GNOME;GTK;Utility;
