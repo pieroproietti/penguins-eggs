@@ -195,7 +195,7 @@ function bye() {
 
 function isUserLive(): boolean {
   let retval: boolean = true;
-  if (user.name != "live") {
+  if (user.name != "root") {
     console.log(`${app.name} ${app.version}`);
     console.log(`ATTENZIONE: stai utilizzando l'utente ${user.name}`);
     console.log(`${app.name} è pensato per essere avviato con utente denominato "live" che faccia parte del gruppo "sudo".\n`);
@@ -207,3 +207,5 @@ function isUserLive(): boolean {
   }
   return retval;
 }
+
+// xorriso -as mkisofs -r -J -joliet-long -l -cache-inodes -isohybrid-mbr /usr/lib/ISOLINUX/isohdpfx.bin  -partition_offset 16 -volid debu_2020-01-31_0451-01 -b isolinux/isolinux.bin -c isolinux/boot.cat -no-emul-boot -boot-load-size 4 -boot-info-table -o /home/eggs/debu_2020-01-31_0451-01.iso /home/eggs/debu/iso
