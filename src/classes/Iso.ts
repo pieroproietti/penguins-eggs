@@ -110,24 +110,24 @@ class Iso {
         ">>> eggs: This is a live system! An egg cannot be produced from an egg!"
       );
     } else {
-      c.configure(o);
-      console.log("------------------------------------------");
-      console.log(`Laying the system into the egg...`);
-      console.log("------------------------------------------");
-      await this.eggCreateStructure();
-      await this.isoCreateStructure();
-      await this.isolinuxPrepare(o);
-      await this.stdMenuCfg(o);
-      await this.isolinuxCfg(o);
-      await this.menuCfg(o);
-      await this.copyKernel();
-      console.log("------------------------------------------");
-      console.log(`Spawning the system into the egg...\nThis process can be very long, perhaps it's time for a coffee!`);
-      console.log("------------------------------------------");
-      await this.system2egg();
-      await this.makeDhcp();
-      await this.makeSquashFs();
-      await this.makeIsoFs(o);
+      c.configure(o)
+      console.log("------------------------------------------")
+      console.log(`Laying the system into the egg...`)
+      console.log("------------------------------------------")
+      await this.eggCreateStructure()
+      await this.isoCreateStructure()
+      await this.isolinuxPrepare(o)
+      // await this.isoStdmenuCfg(o)
+      // await this.isolinuxCfg(o)
+      // await this.IsoMenuCfg(o) 
+      await this.copyKernel()
+      console.log("------------------------------------------")
+      console.log(`Spawning the system into the egg...\nThis process can be very long, perhaps it's time for a coffee!`)
+      console.log("------------------------------------------")
+      await this.system2egg()
+      await this.makeDhcp()
+      await this.makeSquashFs()
+      await this.makeIsoFs(o)
     }
   }
 
@@ -334,9 +334,9 @@ class Iso {
   }
 
 
-  async stdMenuCfg(o: IOses){
+  async isoStdmenuCfg(o: IOses){
     console.log("==========================================");
-    console.log("iso: stdMenuCfg");
+    console.log("iso: isoStdmenuCfg");
     console.log("==========================================");
 
     let file = `${this.distro.pathIso}/boot/isolinux/stdmenu.cfg`;
@@ -387,7 +387,7 @@ utils.bashWrite(file, text);
 
   }
 
-  async menuCfg(o: IOses) {
+  async IsoMenuCfg(o: IOses) {
     let kernel = utils.kernerlVersion();
 
     o.append = `append initrd=/antiX/initrd.gz `;
@@ -395,7 +395,7 @@ utils.bashWrite(file, text);
     o.aqs =`quiet splash`
 
     console.log("==========================================");
-    console.log("iso: menuCfg");
+    console.log("iso: IsoMenuCfg");
     console.log("==========================================");
 
     let file = `${this.distro.pathIso}/boot/isolinux/menu.cfg`;
@@ -439,7 +439,17 @@ utils.bashWrite(file, text);
     console.log("iso: liveKernel");
     console.log("==========================================");
     utils.exec(`cp /vmlinuz ${this.distro.pathIso}/antiX/`);
-    utils.exec(`cp ../template-initrd.gz ${this.distro.pathIso}/antiX/initrd.gz`);
+    // Attenzione alle seguenti istruzioni solo X64 
+    utils.exec(`mv ../mx/iso-template/boot/grub/grub.cfg_x64 ../mx/iso-template/boot/grub/grub.cfg`)
+    utils.exec(`mv ../mx/iso-template/boot/syslinux/syslinux.cfg_x64 ../mx/iso-template/boot/syslinux/syslinux.cfg`)
+    utils.exec(`mv ../mx/iso-template/boot/isolinux/isolinux.cfg_x64 ../mx/iso-template/boot/isolinux/isolinux.cfg`)
+    // Fine 
+    // utils.exec(`cp ../mx/template-initrd.gz ${this.distro.pathIso}/antiX/initrd.gz`) Non dovrebbe servire, anzi...
+    utils.exec(`cp /initrd.img ${this.distro.pathIso}/antiX/initrd.gz`);
+
+    utils.exec(`cp -r ../mx/iso-template/boot/ ${this.distro.pathIso}/`)
+
+    
   }
 
   /**
