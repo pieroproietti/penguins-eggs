@@ -117,9 +117,9 @@ class Iso {
       await this.eggCreateStructure()
       await this.isoCreateStructure()
       await this.isolinuxPrepare(o)
-      // await this.isoStdmenuCfg(o)
-      // await this.isolinuxCfg(o)
-      // await this.IsoMenuCfg(o) 
+      await this.isoStdmenuCfg(o)
+      await this.isolinuxCfg(o)
+      await this.IsoMenuCfg(o) 
       await this.copyKernel()
       console.log("------------------------------------------")
       console.log(`Spawning the system into the egg...\nThis process can be very long, perhaps it's time for a coffee!`)
@@ -301,10 +301,11 @@ class Iso {
     console.log("==========================================");
 
     if (!fs.existsSync(this.distro.pathIso)) {
-      utils.exec(`mkdir -p ${this.distro.pathIso}/antiX`);
+      utils.exec(`mkdir -p ${this.distro.pathIso}/live`);
       utils.exec(`mkdir -p ${this.distro.pathIso}/EFI`);
       utils.exec(`mkdir -p ${this.distro.pathIso}/boot`);
       utils.exec(`mkdir -p ${this.distro.pathIso}/boot/isolinux`);
+      utils.exec(`ln -s ${this.distro.pathIso}/live  ${this.distro.pathIso}/antiX`)
     }
   }
 
@@ -390,9 +391,9 @@ utils.bashWrite(file, text);
   async IsoMenuCfg(o: IOses) {
     let kernel = utils.kernerlVersion();
 
-    o.append = `append initrd=/antiX/initrd.gz `;
-    o.appendSafe = `append initrd=/antiX/initrd.gz verbose`;
-    o.aqs =`quiet splash`
+    o.append = `append initrd=/live/initrd.img boot=live `;
+    o.appendSafe = `append initrd=/live/initrd.img boot=live components username=live xforcevesa nomodeset verbose`;
+    o.aqs =`username=live quit splash`
 
     console.log("==========================================");
     console.log("iso: IsoMenuCfg");
@@ -405,25 +406,27 @@ utils.bashWrite(file, text);
     DEFAULT ^${this.distro.name} 
     LABEL ${this.distro.name} (kernel ${kernel}) Italian (it)
         SAY "Booting ${this.distro.name} Italian (it)"
-        linux /antiX/vmlinuz
-        ${o.append} ${o.aqs}
+        linux /live/vmlinuz
+        ${o.append} components locales=it_IT.UTF-8 ${o.aqs}
+            
     
     MENU begin advanced
     MENU title ${this.distro.name} with Localisation Support
     
-        LABEL English (en)
+      LABEL English (en)
           SAY "Booting English (en)..."
-          linux /antiX/vmlinuz
-          ${o.append} components locales=it_IT.UTF-8 ${o.aqs}
-              
+          linux /live/vmlinuz
+          ${o.append} components locales=en_US.UTF-8 ${o.aqs}
+                      
          LABEL mainmenu 
           MENU label Back
           MENU exit
           MENU end
          
     LABEL ${this.distro.name} safe
+      SAY "Booting ${this.distro.name} safe"
       MENU LABEL ^${this.distro.name} safe
-      kernel /antiX/vmlinuz
+      kernel /live/vmlinuz
       ${o.append} ${o.aqs}`;
 
 
@@ -438,18 +441,19 @@ utils.bashWrite(file, text);
     console.log("==========================================");
     console.log("iso: liveKernel");
     console.log("==========================================");
-    utils.exec(`cp /vmlinuz ${this.distro.pathIso}/antiX/`);
+    utils.exec(`cp /vmlinuz ${this.distro.pathIso}/live/`);
+    utils.exec(`cp /initrd.img ${this.distro.pathIso}/live/`);
+
     // Attenzione alle seguenti istruzioni solo X64 
-    utils.exec(`mv ../mx/iso-template/boot/grub/grub.cfg_x64 ../mx/iso-template/boot/grub/grub.cfg`)
-    utils.exec(`mv ../mx/iso-template/boot/syslinux/syslinux.cfg_x64 ../mx/iso-template/boot/syslinux/syslinux.cfg`)
-    utils.exec(`mv ../mx/iso-template/boot/isolinux/isolinux.cfg_x64 ../mx/iso-template/boot/isolinux/isolinux.cfg`)
+    // utils.exec(`mv ../mx/iso-template/boot/grub/grub.cfg_x64 ../mx/iso-template/boot/grub/grub.cfg`)
+    // utils.exec(`mv ../mx/iso-template/boot/syslinux/syslinux.cfg_x64 ../mx/iso-template/boot/syslinux/syslinux.cfg`)
+    // utils.exec(`mv ../mx/iso-template/boot/isolinux/isolinux.cfg_x64 ../mx/iso-template/boot/isolinux/isolinux.cfg`)
     // Fine 
-    // utils.exec(`cp ../mx/template-initrd.gz ${this.distro.pathIso}/antiX/initrd.gz`) Non dovrebbe servire, anzi...
-    utils.exec(`cp /initrd.img ${this.distro.pathIso}/antiX/initrd.gz`);
-
-    utils.exec(`cp -r ../mx/iso-template/boot/ ${this.distro.pathIso}/`)
-
-    
+    // utils.exec(`cp ../mx/template-initrd.gz ${this.distro.pathIso}/live/initrd.gz`)
+    // utils.exec(`cp -r ../mx/iso-template/live ${this.distro.pathIso}/`)
+    // utils.exec(`cp -r ../mx/iso-template/boot ${this.distro.pathIso}/`)
+    // utils.exec(`cp -r ../mx/iso-template/EFI ${this.distro.pathIso}/`)
+    // utils.exec(`cp ../mx/iso-template/* ${this.distro.pathIso}/`)
   }
 
   /**
@@ -461,7 +465,7 @@ utils.bashWrite(file, text);
     console.log("==========================================");
     let option = "-comp lz4";
     utils.exec(
-      `mksquashfs ${this.distro.pathFs} ${this.distro.pathIso}/antiX/linuxfs ${option} -noappend`
+      `mksquashfs ${this.distro.pathFs} ${this.distro.pathIso}/live/filesystem.squashfs ${option} -noappend`
     );
   }
 
@@ -478,6 +482,8 @@ utils.bashWrite(file, text);
       `xorriso -as mkisofs -r -J -joliet-long -l -cache-inodes ${isoHybridOption} -partition_offset 16 -volid ${volid} -b boot/isolinux/isolinux.bin -c boot/isolinux/boot.cat -no-emul-boot -boot-load-size 4 -boot-info-table -o ${isoName} ${this.distro.pathIso}`
     );
   }
+
+  
 }
 
 export default Iso;
