@@ -304,8 +304,10 @@ class Iso {
       utils.exec(`mkdir -p ${this.distro.pathIso}/live`);
       utils.exec(`mkdir -p ${this.distro.pathIso}/EFI`);
       utils.exec(`mkdir -p ${this.distro.pathIso}/boot`);
-      utils.exec(`mkdir -p ${this.distro.pathIso}/boot/isolinux`);
-      utils.exec(`ln -s ${this.distro.pathIso}/live  ${this.distro.pathIso}/antiX`)
+      utils.exec(`mkdir -p ${this.distro.pathIso}/boot/isolinux`)
+      utils.exec(`mkdir -p ${this.distro.pathIso}/boot/grub`)
+      utils.exec(`mkdir -p ${this.distro.pathIso}/boot/syslinux`)
+      // utils.exec(`ln -s ${this.distro.pathIso}/live  ${this.distro.pathIso}/antiX`)
     }
   }
 
@@ -387,16 +389,59 @@ timeout 0
 utils.bashWrite(file, text);
 
   }
-
+  
   async IsoMenuCfg(o: IOses) {
+
+    /**
+     * 
+    * debconf                 allows one to apply arbitrary preseed files placed on the live media or an http/ftp server.
+    * hostname                configura i file /etc/hostname e /etc/hosts.
+    * user-setup              aggiunge un account per l'utente live.
+    * sudo                    concede i privilegi per sudo all'utente live.
+    * locales                 configura la localizzazione.
+    * locales-all             configura locales-all.
+    * tzdata                  configura il file /etc/timezone.
+    * gdm3                    configura il login automatico per gdm3.
+    * kdm                     configura il login automatico per kdm.
+    * lightdm                 configura il login automatico per lightdm.
+    * lxdm                    configura il login automatico per lxdm.
+    * nodm                    configura il login automatico per nodm.
+    * slim                    configura il login automatico per slim.
+    * xinit                   configura il login automatico con xinit.
+    * keyboard-configuration  configura la tastiera.
+    * systemd                 configura il login automatico con systemd.
+    * sysvinit                configura sysvinit.
+    * sysv-rc                 configura sysv-rc disabilitando i servizi elencati.
+    * login                   disabilita lastlog.
+    * apport                  disabilita apport.
+    * gnome-panel-data        disabilita il pulsante di blocco dello schermo.
+    * gnome-power-manager     disabilita l'ibernazione.
+    * gnome-screensaver       disabilita lo screensaver che blocca lo schermo.
+    * kaboom                  disabilita la procedura guidata di migrazione di KDE (squeeze e successive).
+    * kde-services            disabilita i servizi di KDE non voluti (squeeze e successive).
+    * policykit               concede i privilegi per l'utente tramite policykit.
+    * ssl-cert                rigenera certificati ssl snake-oil.
+    * anacron                 disabilita anacron.
+    * util-linux              disabilita hwclock (parte di util-linux).
+    * login                   disabilita lastlog.
+    * xserver-xorg            configura xserver-xorg.
+    * broadcom-sta            configura il driver per broadcom-sta WLAN.
+    * openssh-server          ricrea le chiavi di openssh-server.
+    * xfce4-panel             configura xfce4-panel con le impostazioni predefinite.
+    * xscreensaver            disabilita lo screensaver che blocca lo schermo.
+    * hooks                   allows one to run arbitrary commands from a file placed on the live media or an http/ftp server.
+    * 
+    */
+    
+
     let kernel = utils.kernerlVersion();
 
-    o.append = `append initrd=/live/initrd.img boot=live `;
-    o.appendSafe = `append initrd=/live/initrd.img boot=live components username=live xforcevesa nomodeset verbose`;
-    o.aqs =`username=live quit splash`
-
+    o.append = `append initrd=/live/initrd.img boot=live components username=live `;
+    o.appendSafe = `append initrd=/live/initrd.img boot=live components username=live xforcevesa verbose`;
+    o.aqs =`quit splash debug=true nocomponents `
+ 
     console.log("==========================================");
-    console.log("iso: IsoMenuCfg");
+    console.log("iso: menuCfg");
     console.log("==========================================");
 
     let file = `${this.distro.pathIso}/boot/isolinux/menu.cfg`;
@@ -407,28 +452,400 @@ utils.bashWrite(file, text);
     LABEL ${this.distro.name} (kernel ${kernel}) Italian (it)
         SAY "Booting ${this.distro.name} Italian (it)"
         linux /live/vmlinuz
-        ${o.append} components locales=it_IT.UTF-8 ${o.aqs}
-            
+        ${o.append} locales=it_IT.UTF-8 timezone=Europe/Rome ${o.aqs}
     
     MENU begin advanced
     MENU title ${this.distro.name} with Localisation Support
     
-      LABEL English (en)
+    LABEL Albanian (sq) (kernel ${kernel})
+          SAY "Booting Albanian (sq)..."
+          linux /live/vmlinuz
+          ${o.append} locales=sq_AL.UTF-8 ${o.aqs}
+    LABEL Amharic (am) 
+          SAY "Booting Amharic (am)..."
+          linux /live/vmlinuz
+          ${o.append}  locales=am_ET.UTF-8 ${o.aqs}
+          
+    LABEL Arabic (ar) 
+          SAY "Booting Arabic (ar)..."
+          linux /live/vmlinuz
+          ${o.append} locales=ar_EG.UTF-8 ${o.aqs}
+    
+    LABEL Asturian (ast)
+          SAY "Booting Asturian (ast)..."  
+          linux /live/vmlinuz
+          ${o.append}  locales=ast_ES.UTF-8 ${o.aqs}
+    
+    LABEL Basque (eu)
+          SAY "Booting Basque (eu)..."
+          linux /live/vmlinuz
+          ${o.append}  locales=eu_ES.UTF-8 ${o.aqs}
+          
+    LABEL Belarusian (be)
+          SAY "Booting Belarusian (be)..."
+          linux /live/vmlinuz
+          ${o.append}  locales=be_BY.UTF-8 ${o.aqs}
+    
+    LABEL Bangla (bn)
+          SAY "Booting Bangla (bn)..."
+          linux /live/vmlinuz
+          ${o.append} locales=bn_BD ${o.aqs}
+    
+    LABEL Bosnian (bs)
+          SAY "Booting Bosnian (bs)..."
+          linux /live/vmlinuz
+          ${o.append}  locales=bs_BA.UTF-8 ${o.aqs}
+    
+    LABEL Bulgarian (bg)
+          SAY "Booting Bulgarian (bg)..."
+          linux /live/vmlinuz
+          ${o.append}  locales=bg_BG.UTF-8 ${o.aqs}
+        
+    LABEL Tibetan (bo)
+          SAY "Booting Tibetan (bo)..."
+          linux /live/vmlinuz
+          ${o.append}  locales=bo_IN ${o.aqs}
+        
+        LABEL C (C)
+          SAY "Booting C (C)..."
+          linux /live/vmlinuz
+          ${o.append}  locales=C ${o.aqs}
+        
+        LABEL Catalan (ca)
+          SAY "Booting Catalan (ca)..."
+          linux /live/vmlinuz
+          ${o.append}  locales=ca_ES.UTF-8 ${o.aqs}
+        
+        LABEL Chinese (Simplified) (zh_CN)
+          SAY "Booting Chinese (Simplified) (zh_CN)..."
+          linux /live/vmlinuz
+          ${o.append}  locales=zh_CN.UTF-8 ${o.aqs}
+        
+        LABEL Chinese (Traditional) (zh_TW)
+          SAY "Booting Chinese (Traditional) (zh_TW)..."
+          linux /live/vmlinuz
+          ${o.append}  locales=zh_TW.UTF-8 ${o.aqs}
+        
+        LABEL Croatian (hr)
+          SAY "Booting Croatian (hr)..."
+          linux /live/vmlinuz
+          ${o.append}  locales=hr_HR.UTF-8 ${o.aqs}
+        
+        LABEL Czech (cs)
+          SAY "Booting Czech (cs)..."
+          linux /live/vmlinuz
+          ${o.append}  locales=cs_CZ.UTF-8 ${o.aqs}
+        
+        LABEL Danish (da)
+          SAY "Booting Danish (da)..."
+          linux /live/vmlinuz
+          ${o.append}  locales=da_DK.UTF-8 ${o.aqs}
+        
+        LABEL Dutch (nl)
+          SAY "Booting Dutch (nl)..."
+          linux /live/vmlinuz
+          ${o.append}  locales=nl_NL.UTF-8 ${o.aqs}
+        
+        LABEL Dzongkha (dz)
+          SAY "Booting Dzongkha (dz)..."
+          linux /live/vmlinuz
+          ${o.append}  locales=dz_BT ${o.aqs}
+        
+        LABEL English (en)
           SAY "Booting English (en)..."
           linux /live/vmlinuz
-          ${o.append} components locales=en_US.UTF-8 ${o.aqs}
-                      
+          ${o.append}  locales=en_US.UTF-8 ${o.aqs}
+        
+        LABEL Esperanto (eo)
+          SAY "Booting Esperanto (eo)..."
+          linux /live/vmlinuz
+          ${o.append}  locales=eo.UTF-8 ${o.aqs}
+        
+        LABEL Estonian (et)
+          SAY "Booting Estonian (et)..."
+          linux /live/vmlinuz
+          ${o.append}  locales=et_EE.UTF-8 ${o.aqs}
+        
+        LABEL Finnish (fi)
+          SAY "Booting Finnish (fi)..."
+          linux /live/vmlinuz
+          ${o.append}  locales=fi_FI.UTF-8 ${o.aqs}
+        
+        LABEL French (fr)
+          SAY "Booting French (fr)..."
+          linux /live/vmlinuz
+          ${o.append}  locales=fr_FR.UTF-8 ${o.aqs}
+        
+        LABEL Galician (gl)
+          SAY "Booting Galician (gl)..."
+          linux /live/vmlinuz
+          ${o.append}  locales=gl_ES.UTF-8 ${o.aqs}
+        
+        LABEL Georgian (ka)
+          SAY "Booting Georgian (ka)..."
+          linux /live/vmlinuz
+          ${o.append}  locales=ka_GE.UTF-8 ${o.aqs}
+        
+        LABEL German (de)
+          SAY "Booting German (de)..."
+          linux /live/vmlinuz
+          ${o.append}  locales=de_DE.UTF-8 ${o.aqs}
+        
+        LABEL Greek (el)
+          SAY "Booting Greek (el)..."
+          linux /live/vmlinuz
+          ${o.append}  locales=el_GR.UTF-8 ${o.aqs}
+        
+        LABEL Gujarati (gu)
+          SAY "Booting Gujarati (gu)..."
+          linux /live/vmlinuz
+          ${o.append}  locales=gu_IN ${o.aqs}
+        
+        LABEL Hebrew (he)
+          SAY "Booting Hebrew (he)..."
+          linux /live/vmlinuz
+          ${o.append}  locales=he_IL.UTF-8 ${o.aqs}
+        
+        LABEL Hindi (hi)
+          SAY "Booting Hindi (hi)..."
+          linux /live/vmlinuz
+          ${o.append}  locales=hi_IN ${o.aqs}
+        
+        LABEL Hungarian (hu)
+          SAY "Booting Hungarian (hu)..."
+          linux /live/vmlinuz
+          ${o.append}  locales=hu_HU.UTF-8 ${o.aqs}
+        
+        LABEL Icelandic (is)
+          SAY "Booting Icelandic (is)..."
+          linux /live/vmlinuz
+          ${o.append}  locales=is_IS.UTF-8 ${o.aqs}
+        
+        LABEL Indonesian (id)
+          SAY "Booting Indonesian (id)..."
+          linux /live/vmlinuz
+          ${o.append}  locales=id_ID.UTF-8 ${o.aqs}
+        
+        LABEL Irish (ga)
+          SAY "Booting Irish (ga)..."
+          linux /live/vmlinuz
+          ${o.append}  locales=ga_IE.UTF-8 ${o.aqs}
+        
+        LABEL Italian (it)
+          SAY "Booting Italian (it)..."
+          linux /live/vmlinuz
+          ${o.append}  locales=it_IT.UTF-8 ${o.aqs}
+        
+        LABEL Japanese (ja)
+          SAY "Booting Japanese (ja)..."
+          linux /live/vmlinuz
+          ${o.append}  locales=ja_JP.UTF-8 ${o.aqs}
+        
+        LABEL Kazakh (kk)
+          SAY "Booting Kazakh (kk)..."
+          linux /live/vmlinuz
+          ${o.append}  locales=kk_KZ.UTF-8 ${o.aqs}
+        
+        LABEL Khmer (km)
+          SAY "Booting Khmer (km)..."
+          linux /live/vmlinuz
+          ${o.append}  locales=km_KH ${o.aqs}
+        
+        LABEL Kannada (kn)
+          SAY "Booting Kannada (kn)..."
+          linux /live/vmlinuz
+          ${o.append}  locales=kn_IN ${o.aqs}
+        
+        LABEL Korean (ko)
+          SAY "Booting Korean (ko)..."
+          linux /live/vmlinuz
+          ${o.append}  locales=ko_KR.UTF-8 ${o.aqs}
+        
+        LABEL Kurdish (ku)
+          SAY "Booting Kurdish (ku)..."
+          linux /live/vmlinuz
+          ${o.append}  locales=ku_TR.UTF-8 ${o.aqs}
+        
+        LABEL Lao (lo)
+          SAY "Booting Lao (lo)..."
+          linux /live/vmlinuz
+          ${o.append}  locales=lo_LA ${o.aqs}
+        
+        LABEL Latvian (lv)
+          SAY "Booting Latvian (lv)..."
+          linux /live/vmlinuz
+          ${o.append}  locales=lv_LV.UTF-8 ${o.aqs}
+        
+        LABEL Lithuanian (lt)
+          SAY "Booting Lithuanian (lt)..."
+          linux /live/vmlinuz
+          ${o.append}  locales=lt_LT.UTF-8 ${o.aqs}
+        
+        LABEL Malayalam (ml)
+          SAY "Booting Malayalam (ml)..."
+          linux /live/vmlinuz
+          ${o.append}  locales=ml_IN ${o.aqs}
+        
+        LABEL Marathi (mr)
+          SAY "Booting Marathi (mr)..."
+          linux /live/vmlinuz
+          ${o.append}  locales=mr_IN ${o.aqs}
+        
+        LABEL Macedonian (mk)
+          SAY "Booting Macedonian (mk)..."
+          linux /live/vmlinuz
+          ${o.append}  locales=mk_MK.UTF-8 ${o.aqs}
+        
+        LABEL Burmese (my)
+          SAY "Booting Burmese (my)..."
+          linux /live/vmlinuz
+          ${o.append}  locales=my_MM ${o.aqs}
+        
+        LABEL Nepali (ne)
+          SAY "Booting Nepali (ne)..."
+          linux /live/vmlinuz
+          ${o.append}  locales=ne_NP ${o.aqs}
+        
+        LABEL Northern Sami (se_NO)
+          SAY "Booting Northern Sami (se_NO)..."
+          linux /live/vmlinuz
+          ${o.append}  locales=se_NO ${o.aqs}
+        
+        LABEL Norwegian Bokmaal (nb_NO)
+          SAY "Booting Norwegian Bokmaal (nb_NO)..."
+          linux /live/vmlinuz
+          ${o.append}  locales=nb_NO.UTF-8 ${o.aqs}
+        
+        LABEL Norwegian Nynorsk (nn_NO)
+          SAY "Booting Norwegian Nynorsk (nn_NO)..."
+          linux /live/vmlinuz
+          ${o.append}  locales=nn_NO.UTF-8 ${o.aqs}
+        
+        LABEL Persian (fa)
+          SAY "Booting Persian (fa)..."
+          linux /live/vmlinuz
+          ${o.append}  locales=fa_IR ${o.aqs}
+        
+        LABEL Polish (pl)
+          SAY "Booting Polish (pl)..."
+          linux /live/vmlinuz
+          ${o.append}  locales=pl_PL.UTF-8 ${o.aqs}
+        
+        LABEL Portuguese (pt)
+          SAY "Booting Portuguese (pt)..."
+          linux /live/vmlinuz
+          ${o.append}  locales=pt_PT.UTF-8 ${o.aqs}
+        
+        LABEL Portuguese (Brazil) (pt_BR)
+          SAY "Booting Portuguese (Brazil) (pt_BR)..."
+          linux /live/vmlinuz
+          ${o.append}  locales=pt_BR.UTF-8 ${o.aqs}
+        
+        LABEL Punjabi (Gurmukhi) (pa)
+          SAY "Booting Punjabi (Gurmukhi) (pa)..."
+          linux /live/vmlinuz
+          ${o.append}  locales=pa_IN ${o.aqs}
+        
+        LABEL Romanian (ro)
+          SAY "Booting Romanian (ro)..."
+          linux /live/vmlinuz
+          ${o.append}  locales=ro_RO.UTF-8 ${o.aqs}
+        
+        LABEL Russian (ru)
+          SAY "Booting Russian (ru)..."
+          linux /live/vmlinuz
+          ${o.append}  locales=ru_RU.UTF-8 ${o.aqs}
+        
+        LABEL Sinhala (si)
+          SAY "Booting Sinhala (si)..."
+          linux /live/vmlinuz
+          ${o.append}  locales=si_LK ${o.aqs}
+        
+        LABEL Serbian (Cyrillic) (sr)
+          SAY "Booting Serbian (Cyrillic) (sr)..."
+          linux /live/vmlinuz
+          ${o.append}  locales=sr_RS ${o.aqs}
+        
+        LABEL Slovak (sk)
+          SAY "Booting Slovak (sk)..."
+          linux /live/vmlinuz
+          ${o.append}  locales=sk_SK.UTF-8 ${o.aqs}
+        
+        LABEL Slovenian (sl)
+          SAY "Booting Slovenian (sl)..."
+          linux /live/vmlinuz
+          ${o.append}  locales=sl_SI.UTF-8 ${o.aqs}
+        
+        LABEL Spanish (es)
+          SAY "Booting Spanish (es)..."
+          linux /live/vmlinuz
+          ${o.append}  locales=es_ES.UTF-8 ${o.aqs}
+        
+        LABEL Swedish (sv)
+          SAY "Booting Swedish (sv)..."
+          linux /live/vmlinuz
+          ${o.append}  locales=sv_SE.UTF-8 ${o.aqs}
+        
+        LABEL Tagalog (tl)
+          SAY "Booting Tagalog (tl)..."
+          linux /live/vmlinuz
+          ${o.append}  locales=tl_PH.UTF-8 ${o.aqs}
+        
+        LABEL Tamil (ta)
+          SAY "Booting Tamil (ta)..."
+          linux /live/vmlinuz
+          ${o.append}  locales=ta_IN ${o.aqs}
+        
+        LABEL Telugu (te)
+          SAY "Booting Telugu (te)..."
+          linux /live/vmlinuz
+          ${o.append}  locales=te_IN ${o.aqs}
+        
+        LABEL Tajik (tg)
+          SAY "Booting Tajik (tg)..."
+          linux /live/vmlinuz
+          ${o.append}  locales=tg_TJ.UTF-8 ${o.aqs}
+        
+        LABEL Thai (th)
+          SAY "Booting Thai (th)..."
+          linux /live/vmlinuz
+          ${o.append}  locales=th_TH.UTF-8 ${o.aqs}
+        
+        LABEL Turkish (tr)
+          SAY "Booting Turkish (tr)..."
+          linux /live/vmlinuz
+          ${o.append}  locales=tr_TR.UTF-8 ${o.aqs}
+        
+        LABEL Uyghur (ug)
+          SAY "Booting Uyghur (ug)..."
+          linux /live/vmlinuz
+          ${o.append}  locales=ug_CN ${o.aqs}
+        
+        LABEL Ukrainian (uk)
+          SAY "Booting Ukrainian (uk)..."
+          linux /live/vmlinuz
+          ${o.append}  locales=uk_UA.UTF-8 ${o.aqs}
+        
+        LABEL Vietnamese (vi)
+          SAY "Booting Vietnamese (vi)..."
+          linux /live/vmlinuz
+          ${o.append}  locales=vi_VN ${o.aqs}
+        
+        LABEL Welsh (cy)
+          SAY "Booting Welsh (cy)..."
+          linux /live/vmlinuz
+          ${o.append}  locales=cy_GB.UTF-8 ${o.aqs}
+        
          LABEL mainmenu 
           MENU label Back
           MENU exit
           MENU end
          
     LABEL ${this.distro.name} safe
-      SAY "Booting ${this.distro.name} safe"
       MENU LABEL ^${this.distro.name} safe
       kernel /live/vmlinuz
-      ${o.append} ${o.aqs}`;
-
+      ${o.appendSafe}`;      
+    
 
     utils.bashWrite(file, text);
     utils.exec(`cp ${__dirname}/../../assets/penguins-eggs-3-syslinux.png ${this.distro.pathIso}/boot/isolinux`);
