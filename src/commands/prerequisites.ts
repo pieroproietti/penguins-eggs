@@ -34,7 +34,19 @@ install the prerequisites packages to run penguin's eggs
         this.log(`udapte executed`)
         this.log(`now we install the prerequisites packages...`)
         console.log('>>> eggs: Installing the prerequisites packages...')
-        shx.exec(`${__dirname}/../../scripts/prerequisites.sh`, {async: false})
+        shx.exec(`apt update`, { async: false })
+        shx.exec(`\
+                  apt-get --yes install \
+                  lvm2 \
+                  parted \
+                  squashfs-tools \
+                  xorriso \
+                  syslinux \
+                  isolinux \
+                  live-boot \
+                  xterm \
+                  zenity \
+                  open-infrastructure-system-config`, { async: false })
       } else {
         this.log(`error updating the system... Error: ${codeUpdate}`)
       }

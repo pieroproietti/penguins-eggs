@@ -4,7 +4,7 @@
  * email: piero.proietti@gmail.com
  * license: MIT
  */
-import {Command, flags} from '@oclif/command'
+import { Command, flags } from '@oclif/command'
 import shx = require('shelljs')
 import Utils from '../classes/utils'
 import { SSL_OP_COOKIE_EXCHANGE } from 'constants'
@@ -13,17 +13,19 @@ export default class Calamares extends Command {
   static description = 'Install calamares installer and configure it'
 
   static flags = {
-    help: flags.help({char: 'h'}),
+    help: flags.help({ char: 'h' }),
   }
 
   async run() {
-    const {args, flags} = this.parse(Calamares)
+    const { args, flags } = this.parse(Calamares)
 
-    // prerequisites 
-    console.log(`>>> eggs: installing calamares...`);
-
-    shx.exec(`${__dirname}/../../scripts/prerequisites_calamares.sh`, {
-        async: false
-      });
+    if (Utils.isRoot()) {
+      console.log(`>>> eggs: installing calamares...`)
+      shx.exec(`apt-get update`, { async: false })
+      shx.exec(`apt-get install --yes \
+              calamares \
+              calamares-settings-debian`, { async: false })
+      shx.exec(`apt update`, { async: false })
+    }
   }
 }

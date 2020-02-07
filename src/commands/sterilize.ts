@@ -4,28 +4,40 @@
  * email: piero.proietti@gmail.com
  * license: MIT
  */
-import {Command, flags} from '@oclif/command'
+import { Command, flags } from '@oclif/command'
+import shx = require('shelljs')
+import Utils from '../classes/utils'
 
 export default class Sterilize extends Command {
   static description = 'describe the command here'
 
   static flags = {
-    help: flags.help({char: 'h'}),
-    // flag with a value (-n, --name=VALUE)
-    name: flags.string({char: 'n', description: 'name to print'}),
-    // flag with no value (-f, --force)
-    force: flags.boolean({char: 'f'}),
+    help: flags.help({ char: 'h' }),
   }
 
-  static args = [{name: 'file'}]
-
   async run() {
-    const {args, flags} = this.parse(Sterilize)
+    const { flags } = this.parse(Sterilize)
 
-    const name = flags.name || 'world'
-    this.log(`hello ${name} from /home/live/penguins-eggs/src/commands/sterilize.ts`)
-    if (args.file && flags.force) {
-      this.log(`you input --force and --file: ${args.file}`)
+    if (Utils.isRoot()) {
+      this.log('sterilize the penguin...')
+      shx.exec('apt-get --yes --purge remove  \
+                calamares \
+                calamares-settings-debian \
+                qml-module-qtquick2 \
+                qml-module-qtquick-controls', { async: false })
+
+      shx.exec('apt-get --yes --purge remove  \
+                  squashfs-tools \
+                  xorriso \
+                  syslinux \
+                  isolinux \
+                  live-boot \
+                  open-infrastructure-system-config', { async: false })
+
+      shx.exec('apt-get --yes autoremove', { async: false })
+      shx.exec('apt-get clean', { async: false })
+      shx.exec('apt-get autoclean', { async: false })
+      shx.exec('rm /etc/calamares -rf', { async: false })
     }
   }
 }
