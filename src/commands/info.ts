@@ -24,11 +24,11 @@ You will find here informations about penguin's eggs!
   ]
 
   async run() {
-    let message='this is an INSTALLED system. You can use produce to create an egg'
+    let message='You are on an INSTALLED system.'
     this.log(Utils.getPackageName())
     shx.exec('lsb_release -a')
     if (Utils.isLive()){
-      message = "This is a LIVE system. You can hatch it to install"
+      message = "This is a LIVE system."
     }
     shx.echo (`Status:         ${message}`)
     shx.exit(0)

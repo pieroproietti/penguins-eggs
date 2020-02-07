@@ -15,20 +15,20 @@ import pjson = require('pjson')
 export default class Utils {
 
     /**
-   * Return true if live system
+   * Return true if live system - Versione Debian Live
    * @remarks to move in Utils
    * @returns {boolean} isLive
    */
   static isLive(): boolean {
     let retVal = false
     let result : number = 1
-    result = shx.exec(`mountpoint -q /live/aufs`).code
+    result = shx.exec(`mountpoint -q /lib/live/mount/`).code
     retVal =  result === 0
     return retVal
   }
 
   /**
-  * return the name of the package: penguins-eggs-v8
+  * return the name of the package: penguins-eggs
   * @returns penguins-eggs-v8
   */
   static getPackageName(): string {
@@ -45,7 +45,7 @@ export default class Utils {
 
   /**
    * return the version of the package
-   * @returns version example 8.0.0
+   * @returns version example 7.0.0
    */
   static getPackageVersion(): string {
     return pjson.version

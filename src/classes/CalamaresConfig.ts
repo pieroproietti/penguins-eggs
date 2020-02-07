@@ -5,12 +5,10 @@
  * mail: piero.proietti@gmail.com
  */
 
-"use strict";
-
 import yaml from 'js-yaml';
 import fs from 'fs';
 import { IDistro } from "../interfaces";
-import utils from "../lib/utils";
+import utils from "./utils";
 import Oses from './Oses';
 import shell from "shelljs";
 

@@ -1,13 +1,40 @@
 penguins-eggs
 =============
 
-remaster your system and distribuite it
+Penguin&#39;s eggs are generated and new birds are ready to fly...
 
 [![oclif](https://img.shields.io/badge/cli-oclif-brightgreen.svg)](https://oclif.io)
 [![Version](https://img.shields.io/npm/v/penguins-eggs.svg)](https://npmjs.org/package/penguins-eggs)
 [![CircleCI](https://circleci.com/gh/pieroproietti/penguins-eggs/tree/master.svg?style=shield)](https://circleci.com/gh/pieroproietti/penguins-eggs/tree/master)
 [![Downloads/week](https://img.shields.io/npm/dw/penguins-eggs.svg)](https://npmjs.org/package/penguins-eggs)
 [![License](https://img.shields.io/npm/l/penguins-eggs.svg)](https://github.com/pieroproietti/penguins-eggs/blob/master/package.json)
+
+
+## Same git tips...
+* git pull
+* git checkout -b [name_of_your_new_branch]
+* git push origin [name_of_your_new_branch]
+* git branch -d [name_of_branch_to_remove]
+* git push origin --delete [name_of_branch_to_remove]
+* git config credential.helper store
+
+## How to test this repo
+* git clone https://github.com/pieroproietti/penguins-eggs
+* cd penguins-eggs
+
+### install nodejs packages 
+* npm install
+
+### ask informations
+* sudo ./eggs info
+
+### install prerequisites (deb packages)
+* sudo ./eggs prerequisites
+
+### produce an egg
+* sudo ./eggs spawn
+
+penguins-eggs will make a snapshot (egg) of your system
 
 <!-- toc -->
 * [Usage](#usage)
