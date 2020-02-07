@@ -7,7 +7,7 @@
 import { Command, flags } from '@oclif/command'
 import shx = require('shelljs')
 import Utils from '../classes/utils'
-// import Hatching from '../classes/hatching'
+import Hatching from '../classes/hatching'
 
 /**
  * Class Install
@@ -35,16 +35,11 @@ penguin's eggs installation
     if (Utils.isRoot()) {
 
       if (flags.gui) {
-        cmd = 'minstall'
+        cmd = 'calamares'
+      } else {
+        const hatching = new Hatching()
+        hatching.question()
       }
-
-      const hatching = new Hatching()
-      hatching.question()
-
-      if (!shx.which(cmd)) {
-        shx.echo(`Sorry, this script requires ${cmd}`)
-      }
-      // shx.exec(cmd)
     }
   }
 }

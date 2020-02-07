@@ -33,12 +33,8 @@ install the prerequisites packages to run penguin's eggs
       if (codeUpdate === 0) {
         this.log(`udapte executed`)
         this.log(`now we install the prerequisites packages...`)
-        const codeInstall: number = shx.exec(`/usr/bin/apt-get install -y menu xdg-utils squashfs-tools syslinux-utils xdg-user-dirs xorriso ntfs-3g smartmontools`).code
-        if (codeInstall === 0) {
-          this.log(`prerequisites installed...`)
-        } else {
-          this.log(`There was a problem installing the prerequisistes... Error: ${codeInstall}`)
-        }
+        console.log('>>> eggs: Installing the prerequisites packages...')
+        shx.exec(`${__dirname}/../../scripts/prerequisites.sh`, {async: false})
       } else {
         this.log(`error updating the system... Error: ${codeUpdate}`)
       }

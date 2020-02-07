@@ -29,14 +29,31 @@ USAGE
 <!-- usagestop -->
 # Commands
 <!-- commands -->
+* [`eggs calamares [FILE]`](#eggs-calamares-file)
 * [`eggs help [COMMAND]`](#eggs-help-command)
-* [`eggs info [FILE]`](#eggs-info-file)
-* [`eggs install [FILE]`](#eggs-install-file)
-* [`eggs kill [FILE]`](#eggs-kill-file)
-* [`eggs prerequisites [FILE]`](#eggs-prerequisites-file)
-* [`eggs produce [FILE]`](#eggs-produce-file)
+* [`eggs info`](#eggs-info)
+* [`eggs install`](#eggs-install)
+* [`eggs kill`](#eggs-kill)
+* [`eggs prerequisites`](#eggs-prerequisites)
+* [`eggs produce`](#eggs-produce)
 * [`eggs sterilize [FILE]`](#eggs-sterilize-file)
-* [`eggs update [FILE]`](#eggs-update-file)
+* [`eggs update`](#eggs-update)
+
+## `eggs calamares [FILE]`
+
+describe the command here
+
+```
+USAGE
+  $ eggs calamares [FILE]
+
+OPTIONS
+  -f, --force
+  -h, --help       show CLI help
+  -n, --name=name  name to print
+```
+
+_See code: [src/commands/calamares.ts](https://github.com/pieroproietti/penguins-eggs/blob/v7.1.0/src/commands/calamares.ts)_
 
 ## `eggs help [COMMAND]`
 
@@ -55,82 +72,95 @@ OPTIONS
 
 _See code: [@oclif/plugin-help](https://github.com/oclif/plugin-help/blob/v2.2.3/src/commands/help.ts)_
 
-## `eggs info [FILE]`
+## `eggs info`
 
-describe the command here
+informations about penguin's eggs
 
 ```
 USAGE
-  $ eggs info [FILE]
+  $ eggs info
 
-OPTIONS
-  -f, --force
-  -h, --help       show CLI help
-  -n, --name=name  name to print
+EXAMPLE
+  $ eggs info
+  You will find here informations about penguin's eggs!
 ```
 
 _See code: [src/commands/info.ts](https://github.com/pieroproietti/penguins-eggs/blob/v7.1.0/src/commands/info.ts)_
 
-## `eggs install [FILE]`
+## `eggs install`
 
-describe the command here
+penguin's eggs installation
 
 ```
 USAGE
-  $ eggs install [FILE]
+  $ eggs install
 
 OPTIONS
-  -f, --force
-  -h, --help       show CLI help
-  -n, --name=name  name to print
+  -g, --gui  use the gui installer
+
+ALIASES
+  $ eggs hatch
+
+EXAMPLE
+  $ eggs install
+  penguin's eggs installation
 ```
 
 _See code: [src/commands/install.ts](https://github.com/pieroproietti/penguins-eggs/blob/v7.1.0/src/commands/install.ts)_
 
-## `eggs kill [FILE]`
+## `eggs kill`
 
-describe the command here
+kill the eggs/free the nest
 
 ```
 USAGE
-  $ eggs kill [FILE]
+  $ eggs kill
 
-OPTIONS
-  -f, --force
-  -h, --help       show CLI help
-  -n, --name=name  name to print
+ALIASES
+  $ eggs clean
+
+EXAMPLE
+  $ eggs kill
+  kill the eggs/free the nest
 ```
 
 _See code: [src/commands/kill.ts](https://github.com/pieroproietti/penguins-eggs/blob/v7.1.0/src/commands/kill.ts)_
 
-## `eggs prerequisites [FILE]`
+## `eggs prerequisites`
 
-describe the command here
+install the prerequisites packages to run penguin's eggs
 
 ```
 USAGE
-  $ eggs prerequisites [FILE]
+  $ eggs prerequisites
 
-OPTIONS
-  -f, --force
-  -h, --help       show CLI help
-  -n, --name=name  name to print
+EXAMPLE
+  $ eggs prerequisites
+  install the prerequisites packages to run penguin's eggs
 ```
 
 _See code: [src/commands/prerequisites.ts](https://github.com/pieroproietti/penguins-eggs/blob/v7.1.0/src/commands/prerequisites.ts)_
 
-## `eggs produce [FILE]`
+## `eggs produce`
 
-describe the command here
+the penguin produce an egg
 
 ```
 USAGE
-  $ eggs produce [FILE]
+  $ eggs produce
 
 OPTIONS
-  -f, --force
-  -h, --help       show CLI help
-  -n, --name=name  name to print
+  -b, --basename=basename  basename egg
+  -f, --fast               compression fast
+  -h, --info               show CLI help
+
+ALIASES
+  $ eggs spawn
+  $ eggs lay
+
+EXAMPLE
+  $ eggs produce --basename uovo
+  the penguin produce an egg called uovo-i386-2020-01-18_2000.iso
 ```
 
 _See code: [src/commands/produce.ts](https://github.com/pieroproietti/penguins-eggs/blob/v7.1.0/src/commands/produce.ts)_
@@ -151,18 +181,17 @@ OPTIONS
 
 _See code: [src/commands/sterilize.ts](https://github.com/pieroproietti/penguins-eggs/blob/v7.1.0/src/commands/sterilize.ts)_
 
-## `eggs update [FILE]`
+## `eggs update`
 
-describe the command here
+update/upgrade the penguin's eggs tool
 
 ```
 USAGE
-  $ eggs update [FILE]
+  $ eggs update
 
-OPTIONS
-  -f, --force
-  -h, --help       show CLI help
-  -n, --name=name  name to print
+EXAMPLE
+  $ eggs update
+  update/upgrade the penguin's eggs tool
 ```
 
 _See code: [src/commands/update.ts](https://github.com/pieroproietti/penguins-eggs/blob/v7.1.0/src/commands/update.ts)_
