@@ -1,4 +1,3 @@
-/* eslint-disable no-console */
 /**
  * penguins-eggs: hatch.js
  *
@@ -100,7 +99,7 @@ export default class Hatching {
     devices.root = {} as IDevice
     devices.swap = {} as IDevice
 
-    const drives: any  = await drivelist.list()
+    const drives: any = await drivelist.list()
     let aDrives: string[]
     drives.forEach((element: { device: string[] }) => {
       aDrives = element.device

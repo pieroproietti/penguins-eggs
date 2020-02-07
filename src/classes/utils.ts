@@ -13,17 +13,50 @@ import pjson = require('pjson')
  * @remarks all the utilities
   */
 export default class Utils {
+  /**
+ * Check if the package debPackage is already unstalled
+ * @param debPackage {string} Pacchetto Debian  da cercare
+ * @returns {boolean} True if installed
+ */
+  static checkInstalled(debPackage: string): boolean {
 
-    /**
-   * Return true if live system - Versione Debian Live
-   * @remarks to move in Utils
-   * @returns {boolean} isLive
+    const cmd = `/usr/bin/dpkg -s ${debPackage} | grep Status`
+    const stdout = Utils.shxExec(cmd).stdout
+    let isInstalled = false
+
+    if (stdout.trim() === 'Status: install ok installed') {
+      isInstalled = true
+    }
+    return isInstalled
+  }
+
+  /**
+   * Install the package debPackage
+   * @param debPackage {string} Pacchetto Debian da installare
+   * @returns {boolean} True if success
    */
+  static installPackage(debPackage: string): boolean {
+    let retVal = false
+
+    if (Utils.shxExec('/usr/bin/apt-get update') === '0') {
+      if (Utils.shxExec(`/usr/bin/apt-get install -y ${debPackage}`) === '0') {
+        retVal = true
+      }
+    }
+    return retVal
+  }
+
+
+  /**
+ * Return true if live system - Versione Debian Live
+ * @remarks to move in Utils
+ * @returns {boolean} isLive
+ */
   static isLive(): boolean {
     let retVal = false
-    let result : number = 1
+    let result: number = 1
     result = shx.exec(`mountpoint -q /lib/live/mount/`).code
-    retVal =  result === 0
+    retVal = result === 0
     return retVal
   }
 
@@ -124,7 +157,7 @@ export default class Utils {
   * @param cmd
   * @param silent
   */
-  static shxExec(cmd: string, silent: object = {silent: false}): any {
+  static shxExec(cmd: string, silent: object = { silent: false }): any {
     this.showCmd(cmd)
     return shx.exec(cmd, silent)
   }
@@ -153,28 +186,12 @@ export default class Utils {
   }
 
   /**
-   * Check if the package debPackage is already unstalled
-   * @param debPackage {string} Pacchetto Debian  da cercare
-   * @returns {boolean} True if installed
-   */
-  static checkInstalled(debPackage: string): boolean {
-    const cmd = `/usr/bin/dpkg -s ${debPackage} | grep Status`
-    const stdout = shx.exec(cmd).stdout
-    let isInstalled = false
-
-    if (stdout.trim() === 'Status: install ok installed') {
-      isInstalled = true
-    }
-    return isInstalled
-  }
-
-  /**
-   * addUser
-   * @param target
-   * @param username
-   * @param password
-   * @param fullName
-   */
+ * addUser
+ * @param target
+ * @param username
+ * @param password
+ * @param fullName
+ */
   static addUser(target = '/TARGET',
     username = 'live',
     password = 'evolution',
@@ -205,13 +222,13 @@ export default class Utils {
    * netDns
    */
   static netDns(): string {
-    return '192.168.61.1'    
+    return '192.168.61.1'
   }
 
   /**
    * netGateway
    */
-  static  netGateway(): string {
+  static netGateway(): string {
     return '192.168.61.1'
   }
 }
