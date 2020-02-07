@@ -195,7 +195,7 @@ function bye() {
 
 function isUserLive(): boolean {
   let retval: boolean = true;
-  if (user.name != "root") {
+  if (user.name != "live") {
     console.log(`${app.name} ${app.version}`);
     console.log(`ATTENZIONE: stai utilizzando l'utente ${user.name}`);
     console.log(`${app.name} è pensato per essere avviato con utente denominato "live" che faccia parte del gruppo "sudo".\n`);
