@@ -1,1 +1,0 @@
-sshfs artisan@$1:/home/artisan ~/remote

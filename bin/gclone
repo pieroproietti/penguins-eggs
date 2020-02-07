@@ -1,3 +1,0 @@
-git clone http://github.com/pieroproietti/$1
-#cd $1
-#git checkout develop

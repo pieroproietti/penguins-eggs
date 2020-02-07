@@ -1,4 +1,0 @@
-xdg-user-dirs-update
-xdg-desktop-icon install --novendor /usr/share/applications/calamares.desktop
-xdg-desktop-icon install --novendor /usr/share/applications/dwagent-sh.desktop
-xdg-desktop-icon install --novendor /usr/share/applications/penguins-eggs.desktop
