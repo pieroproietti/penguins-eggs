@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 /**
  * penguins-eggs: hatch.js
  *
@@ -119,29 +120,29 @@ export default class Hatching {
     const diskSize = this.getDiskSize(options.installationDevice)
     console.log(`diskSize: ${diskSize}`)
 
-    const isDiskPrepared: boolean = await diskPartition(options.installationDevice)
+    const isDiskPrepared: boolean = await Hatching.diskPartition(options.installationDevice)
     if (isDiskPrepared) {
-      await this.mkfs(devices)
-      await this.mount4target(target, devices)
-      await this.egg2system(target)
+      await Hatching.mkfs(devices)
+      await Hatching.mount4target(target, devices)
+      await Hatching.egg2system(target)
       await this.setTimezone(target)
-      await this.fstab(target, devices, options.installationDevice)
-      await this.hostname(target, options)
-      await this.resolvConf(target, options)
-      await this.interfaces(target, options)
-      await this.hosts(target, options)
-      await this.mountVFS(target)
-      await this.updateInitramfs(target)
-      await this.grubInstall(target, options)
+      await Hatching.fstab(target, devices, options.installationDevice)
+      await Hatching.hostname(target, options)
+      await Hatching.resolvConf(target, options)
+      await Hatching.interfaces(target, options)
+      await Hatching.hosts(target, options)
+      await Hatching.mountVFS(target)
+      await Hatching.updateInitramfs(target)
+      await Hatching.grubInstall(target, options)
 
       // await Utils.addUser(target, options.username, options.userpassword)
       // await Utils.changePassword(target, 'root', options.rootpassword)
-      await this.autologinConfig(target, 'live', options.username)
+      await Hatching.autologinConfig(target, 'live', options.username)
 
-      await this.delUserLive(target)
-      await this.patchPve(target)
-      await this.mountVFS(target)
-      await this.umount4target(target, devices)
+      await Hatching.delUserLive(target)
+      await Hatching.patchPve(target)
+      await Hatching.mountVFS(target)
+      await Hatching.umount4target(target, devices)
     }
   }
 
@@ -251,7 +252,7 @@ export default class Hatching {
     let mountOptsRoot = ''
     let mountOptsSwap = ''
 
-    if (await isRotational(installDevice)) {
+    if (await Hatching.isRotational(installDevice)) {
       mountOptsRoot = 'defaults,relatime 0 1'
       mountOptsRoot = 'defaults,relatime 0 2'
     } else {
@@ -615,4 +616,5 @@ ff02::3 ip6-allhosts
     })
   }
 }
+
 var ifaces: string[] = fs.readdirSync('/sys/class/net/')

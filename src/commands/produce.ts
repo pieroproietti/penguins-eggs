@@ -9,10 +9,6 @@ import Utils from '../classes/utils'
 import Ovary from '../classes/ovary'
 import os = require('os')
 
-interface Param {
-  basename: string;
-}
-
 export default class Produce extends Command {
   static flags = {
     info: flags.help({char: 'h'}),
@@ -20,7 +16,6 @@ export default class Produce extends Command {
     basename: flags.string({char: 'b', description: 'basename egg'}),
   }
 
-  
   static description = 'the penguin produce an egg'
 
   static aliases = ['spawn', 'lay']

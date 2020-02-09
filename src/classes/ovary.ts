@@ -17,11 +17,12 @@ import os = require('os')
 import ini = require('ini')
 import shx = require('shelljs')
 import pjson = require('pjson')
+
 import Utils from './utils'
-import {IDistro, IOses, INet, IUser, IPackage} from '../interfaces'
 import Calamares from './calamares-config'
 import Oses from './oses'
 import Prerequisites from '../commands/prerequisites'
+import {IDistro, IOses, IPackage} from '../interfaces'
 
 /**
  * Iso:
@@ -94,7 +95,8 @@ export default class Ovary {
    * Egg
    * @param compression
    */
-  constructor(compression: string) {
+  constructor(compression = 'xz') {
+    this.compression = compression
 
     this.app.author = 'Piero Proietti'
     this.app.homepage = 'https://github.com/pieroproietti/penguins-eggs'
@@ -127,7 +129,6 @@ export default class Ovary {
   * @returns {boolean} success
   */
   async fertilization(): Promise<boolean> {
-
     this.oses = new Oses()
     this.iso = this.oses.info(this.distro)
     this.calamares = new Calamares(this.distro, this.iso)
@@ -192,8 +193,13 @@ export default class Ovary {
 
   /**
    * 
+   * @param basename 
    */
-  async produce() {
+  async produce(basename = '') {
+    if (basename !== '') {
+      this.distro.name = basename
+    }
+
     if (await Utils.isLive()) {
       console.log(
         '>>> eggs: This is a live system! An egg cannot be produced from an egg!'
@@ -935,17 +941,6 @@ timeout 0
     console.log('==========================================')
     Utils.shxExec(`cp /vmlinuz ${this.distro.pathIso}/live/`)
     Utils.shxExec(`cp /initrd.img ${this.distro.pathIso}/live/`)
-
-    // Attenzione alle seguenti istruzioni solo X64
-    // Utils.shxExec(`mv ../mx/iso-template/boot/grub/grub.cfg_x64 ../mx/iso-template/boot/grub/grub.cfg`)
-    // Utils.shxExec(`mv ../mx/iso-template/boot/syslinux/syslinux.cfg_x64 ../mx/iso-template/boot/syslinux/syslinux.cfg`)
-    // Utils.shxExec(`mv ../mx/iso-template/boot/isolinux/isolinux.cfg_x64 ../mx/iso-template/boot/isolinux/isolinux.cfg`)
-    // Fine
-    // Utils.shxExec(`cp ../mx/template-initrd.gz ${this.distro.pathIso}/live/initrd.gz`)
-    // Utils.shxExec(`cp -r ../mx/iso-template/live ${this.distro.pathIso}/`)
-    // Utils.shxExec(`cp -r ../mx/iso-template/boot ${this.distro.pathIso}/`)
-    // Utils.shxExec(`cp -r ../mx/iso-template/EFI ${this.distro.pathIso}/`)
-    // Utils.shxExec(`cp ../mx/iso-template/* ${this.distro.pathIso}/`)
   }
 
   /**
@@ -955,7 +950,7 @@ timeout 0
     console.log('==========================================')
     console.log('iso: makeSquashFs')
     console.log('==========================================')
-    const option = '-comp lz4'
+    const option = `-comp ${this.compression}`
     Utils.shxExec(
       `mksquashfs ${this.distro.pathFs} ${this.distro.pathIso}/live/filesystem.squashfs ${option} -noappend`
     )
@@ -977,7 +972,7 @@ timeout 0
 
   /**
    * Return the eggName with architecture and date
-   * @param basename 
+   * @param basename
    * @returns eggName
    */
   getFilename(basename = ''): string {
@@ -989,8 +984,6 @@ timeout 0
     if (basename === '') {
       basename = this.snapshot_basename
     }
-    return `${basename}-${arch}-lv_${Utils.formatDate((today))}.iso`
+    return `${basename}-${arch}-lv_${Utils.formatDate(today)}.iso`
   }
 }
-// xorriso -as mkisofs -r -J -joliet-long -l -cache-inodes -isohybrid-mbr /usr/lib/ISOLINUX/isohdpfx.bin  -partition_offset 16 -volid debuX_2020-01-31_0851-01 -b boot/isolinux/isolinux.bin -c boot/isolinux/boot.cat -no-emul-boot -boot-load-size 4 -boot-info-table -o /home/eggs/debuX_2020-01-31_0851-01.iso /home/eggs/debuX/iso
-

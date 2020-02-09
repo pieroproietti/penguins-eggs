@@ -9,7 +9,7 @@
 import fs = require('fs')
 import {IDistro, IOses} from '../interfaces'
 
-import utils from '../lib/utils_old'
+import Utils from '../classes/utils'
 
 import shell = require('shelljs')
 
@@ -321,7 +321,9 @@ class Oses {
           o.append = 'append initrd=/live/initrd.img boot=live live-config quiet splash'
           o.appendSafe = 'append initrd=/live/initrd.img boot=live live-config xforcevesa nomodeset verbose'
         }
-        o.menuTitle = `MENU TITLE ${o.distroName} a ${o.distroId}/${o.versionId} derivated. ${utils.date4label()}`
+
+        const today: Date = new Date()
+        o.menuTitle = `MENU TITLE ${o.distroName} a ${o.distroId}/${o.versionId} derivated. ${Utils.formatDate(today)}`
         return (o)
   }
 }

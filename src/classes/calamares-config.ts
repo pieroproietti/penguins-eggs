@@ -10,7 +10,6 @@ import yaml = require('js-yaml')
 import fs = require('fs')
 import {IDistro, IOses} from '../interfaces'
 import Utils from './utils'
-import Oses from './oses'
 
 /**
  *  Calamares
