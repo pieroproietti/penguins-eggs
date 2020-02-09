@@ -968,7 +968,7 @@ timeout 0
 
     const isoHybridOption = `-isohybrid-mbr ${this.iso.isolinuxPath}isohdpfx.bin `
     const volid = this.getFilename(this.iso.distroName)
-    const isoName = `${this.workDir}${volid}.iso`
+    const isoName = `${this.workDir}${volid}`
 
     Utils.shxExec(
       `xorriso -as mkisofs -r -J -joliet-long -l -cache-inodes ${isoHybridOption} -partition_offset 16 -volid ${volid} -b boot/isolinux/isolinux.bin -c boot/isolinux/boot.cat -no-emul-boot -boot-load-size 4 -boot-info-table -o ${isoName} ${this.distro.pathIso}`
@@ -989,7 +989,7 @@ timeout 0
     if (basename === '') {
       basename = this.snapshot_basename
     }
-    return `${basename}-${arch}-${Utils.formatDate((today))}.iso`
+    return `${basename}-${arch}-lv_${Utils.formatDate((today))}.iso`
   }
 }
 // xorriso -as mkisofs -r -J -joliet-long -l -cache-inodes -isohybrid-mbr /usr/lib/ISOLINUX/isohdpfx.bin  -partition_offset 16 -volid debuX_2020-01-31_0851-01 -b boot/isolinux/isolinux.bin -c boot/isolinux/boot.cat -no-emul-boot -boot-load-size 4 -boot-info-table -o /home/eggs/debuX_2020-01-31_0851-01.iso /home/eggs/debuX/iso
