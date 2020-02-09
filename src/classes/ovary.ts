@@ -976,7 +976,6 @@ timeout 0
    * @returns eggName
    */
   getFilename(basename = ''): string {
-    const today: Date = new Date()
     let arch = 'x64'
     if (Utils.isi686()) {
       arch = 'i386'
@@ -984,6 +983,6 @@ timeout 0
     if (basename === '') {
       basename = this.snapshot_basename
     }
-    return `${basename}-${arch}-lv_${Utils.formatDate(today)}.iso`
+    return `${basename}-${arch}-lv_${Utils.formatDate(new Date())}.iso`
   }
 }

@@ -9,7 +9,6 @@
 import shx = require('shelljs')
 import fs = require('fs')
 import os = require('os')
-import Utils from './utils'
 import ini = require('ini')
 import pjson = require('pjson')
 

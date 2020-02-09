@@ -45,9 +45,9 @@
  *                    ->BOOTia64.efi
  *                    ->grubx64.efi
  *************************************************
- * inoltre è presente 
+ * inoltre è presente
  *************************************************
- * template-initrd.gz che pari pari è initrd.gz 
+ * template-initrd.gz che pari pari è initrd.gz
  * e dove sta tutto il sistema di menu iniziale
  *************************************************/
 
@@ -56,14 +56,12 @@ import fs = require('fs')
 import os = require('os')
 import inquirer = require('inquirer')
 import drivelist = require('drivelist')
-import Utils from './utils'
-import { IDrivelist, IDevices, IDevice } from '../interfaces'
+import Utils from './utils'import {IDevices, IDevice} from '../interfaces'
 
 /**
  * hatch, installazione
  */
 export default class Hatching {
-
   constructor() {
     console.log('constructor di hatching')
   }
@@ -158,10 +156,10 @@ export default class Hatching {
   }
 
   /**
-   * autologinConfig 
-   * @param target 
-   * @param oldUser 
-   * @param newUser 
+   * autologinConfig
+   * @param target
+   * @param oldUser
+   * @param newUser
    */
   static async autologinConfig(target: string, oldUser = 'live', newUser = 'artisan') {
     await Utils.shxExec(`sed -i "/autologin-user/s/=${oldUser}/=${newUser}/" ${target}/etc/lightdm/lightdm.conf`)
@@ -460,8 +458,8 @@ ff02::3 ip6-allhosts
   }
 
   /**
-   * 
-   * @param device 
+   *
+   * @param device
    */
   async getDiskSize(device: string): Promise<number> {
     let response: string
@@ -474,8 +472,8 @@ ff02::3 ip6-allhosts
   }
 
   /**
-   * 
-   * @param msg 
+   *
+   * @param msg
    */
   customConfirm(msg: string): Promise<any> {
     return new Promise(function (resolve) {
@@ -599,7 +597,7 @@ ff02::3 ip6-allhosts
           name: 'installationDevice',
           message: 'Select the installation disk: ',
           choices: driveList,
-          default: driveList[0]
+          default: driveList[0],
         },
         {
           type: 'list',

@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 /**
  * penguins-eggs: Oses.ts
  *
@@ -117,7 +118,7 @@ class Oses {
           o.versionLike = 'bionic'
           // MX-LINUX 18.2
           // LMDE
-        } else if (o.versionId == 'cindy') {
+        } else if (o.versionId === 'cindy') {
           o.distroId = 'LMDE'
           o.distroLike = 'Debian'
           o.versionLike = 'stretch'
@@ -304,7 +305,6 @@ class Oses {
           o.syslinuxPath = '/usr/share/syslinux/'
           o.isolinuxPath = '/usr/share/syslinux/'
         } else {
-          // eslint-disable-next-line no-console
           console.log('Sorry, distro non supported!')
         }
 
@@ -322,8 +322,7 @@ class Oses {
           o.appendSafe = 'append initrd=/live/initrd.img boot=live live-config xforcevesa nomodeset verbose'
         }
 
-        const today: Date = new Date()
-        o.menuTitle = `MENU TITLE ${o.distroName} a ${o.distroId}/${o.versionId} derivated. ${Utils.formatDate(today)}`
+        o.menuTitle = `MENU TITLE ${o.distroName} a ${o.distroId}/${o.versionId} derivated. ${Utils.formatDate(new Date())}`
         return (o)
   }
 }
