@@ -48,10 +48,14 @@
     "node": ">=8.0.0"
   },
   "files": [
+    "/assets",
+    "/assistant",
     "/bin",
-    "/lib",
+    "/documents",
     "/npm-shrinkwrap.json",
-    "/oclif.manifest.json"
+    "/oclif.manifest.json",
+    "/scripts",
+    "/templates"
   ],
   "homepage": "https://github.com/pieroproietti/penguins-eggs",
   "keywords": [

@@ -56,7 +56,8 @@ import fs = require('fs')
 import os = require('os')
 import inquirer = require('inquirer')
 import drivelist = require('drivelist')
-import Utils from './utils'import {IDevices, IDevice} from '../interfaces'
+import Utils from './utils'
+import {IDevices, IDevice} from '../interfaces'
 
 /**
  * hatch, installazione
