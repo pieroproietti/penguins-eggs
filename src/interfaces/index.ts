@@ -1,10 +1,10 @@
 
-export  {IDevice, IDevices} from "./IDevices";
-export  {IDistro} from "./IDistro";
-export  {INet} from "./INet";
-export  {IQuestions} from "./IQuestions";
-export  {IUser} from "./IUser";
-export {IPackage} from "./IPackage";
-export {IDriveList} from "./IDriveList";
-export {IOses} from "./IOses";
+export  {IDevice, IDevices} from './i-devices'
+export  {IDistro} from './i-distro'
+export  {INet} from './i-net'
+export  {IQuestions} from './i-questions'
+export  {IUser} from './i-user'
+export {IPackage} from './i-packcage'
+export {IDriveList} from './i-drive-list'
+export {IOses} from './i-oses'
 

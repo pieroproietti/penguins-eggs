@@ -6,7 +6,7 @@
  */
 import {Command, flags} from '@oclif/command'
 import Utils from '../classes/utils'
-// import Ovary from '../classes/ovary'
+import Ovary from '../classes/ovary'
 import os = require('os')
 
 interface Param {

@@ -1,18 +1,16 @@
+/* eslint-disable no-console */
 /**
  * penguins-eggs: Calamares.ts
- * 
- * author: Piero Proietti 
+ *
+ * author: Piero Proietti
  * mail: piero.proietti@gmail.com
  */
 
-import yaml from 'js-yaml'
-import fs from 'fs'
-import { IDistro } from '../interfaces'
-import utils from './utils'
+import yaml = require('js-yaml')
+import fs = require('fs')
+import {IDistro, IOses} from '../interfaces'
+import Utils from './utils'
 import Oses from './oses'
-import shell from "shelljs"
-
-let oses = new Oses()
 
 /**
  *  Calamares
@@ -22,11 +20,11 @@ let oses = new Oses()
  * settingsConf() // versioni
  * unpackModule()
  * brandingDesk()
- * 
+ *
  * in templates abbiamo:
  * calamares
  * + branding + eggs
- * + modules + 
+ * + modules +
  * - settings.conf
  */
 
@@ -38,69 +36,64 @@ let oses = new Oses()
  *                  /eoan
  */
 
-
 class Calamares {
-  private distro: IDistro
+  distro: IDistro
 
-  constructor(distro: IDistro) {
+  oses: IOses
+
+  constructor(distro: IDistro, oses: IOses) {
     this.distro = distro
+    this.oses = oses
   }
 
   /**
    * configure calamares-settings-eggs
-   * @param c 
-   * @param o 
    */
-  public configure(o: any) {
+  public configure() {
     if (this.isInstalled()) {
-      console.log("==========================================")
-      console.log("eggs: calamares configuration")
-      console.log("------------------------------------------")
+      console.log('==========================================')
+      console.log('eggs: calamares configuration')
+      console.log('------------------------------------------')
 
-      o = oses.info(this.distro)
-      console.log(`distro: [${o.distroId}/${o.versionId}]->[${o.distroLike}/${o.versionLike}]`)
-      this.settingsConf(o.versionLike)
-      this.brandingDesc(o.versionLike, o.homeUrl, o.supportUrl, o.bugReportUrl)
-      this.unpackfsConf(o.mountpointSquashFs)
+      console.log(`distro: [${this.oses.distroId}/${this.oses.versionId}]->[${this.oses.distroLike}/${this.oses.versionLike}]`)
+      this.settingsConf(this.oses.versionLike)
+      this.brandingDesc(this.oses.versionLike, this.oses.homeUrl, this.oses.supportUrl, this.oses.bugReportUrl)
+      this.unpackfsConf(this.oses.mountpointSquashFs)
       this.links()
-      console.log("==========================================")
+      console.log('==========================================')
     }
   }
 
   async isInstalled(): Promise<boolean> {
-    return utils.checkInstalled('calamares')
-    }
+    return Utils.packageIsInstalled('calamares')
   }
-
 
   /**
    * settingsConf
    */
   async settingsConf(versionLike: string) {
-    
     /**
     * branding è uguale per tutte
     */
-    utils.exec(`cp ${__dirname}/../../templates/branding /etc/calamares -R`)
+    Utils.shxExec(`cp ${__dirname}/../../templates/branding /etc/calamares -R`)
 
-
-    let settingsPath = '/etc/calamares/settings.conf'
+    const settingsPath = '/etc/calamares/settings.conf'
     let settings = {}
 
     if (versionLike === 'buster') {
       // rimosso packages (rimozione pacchetti, dopo bootloader)
       // mi manca removeuser
-      utils.exec(`cp ${__dirname}/../../templates/distros/buster/* /etc/ -R`)
+      Utils.shxExec(`cp ${__dirname}/../../templates/distros/buster/* /etc/ -R`)
       settings = {
         'modules-search': ['local', '/usr/lib/calamares/modules'],
         sequence: [
-          { show: ['welcome', 'locale', 'keyboard', 'partition', 'users', 'summary'] },
-          { exec: ['partition', 'mount', 'unpackfs', 'machineid', 'fstab', 'locale', 'keyboard', 'localecfg', 'users', 'displaymanager', 'networkcfg', 'hwclock', 'grubcfg', 'bootloader', 'luksbootkeyfile', 'plymouthcfg', 'initramfscfg', 'initramfs', 'removeuser', 'umount'] },
-          { show: ['finished'] }
+          {show: ['welcome', 'locale', 'keyboard', 'partition', 'users', 'summary']},
+          {exec: ['partition', 'mount', 'unpackfs', 'machineid', 'fstab', 'locale', 'keyboard', 'localecfg', 'users', 'displaymanager', 'networkcfg', 'hwclock', 'grubcfg', 'bootloader', 'luksbootkeyfile', 'plymouthcfg', 'initramfscfg', 'initramfs', 'removeuser', 'umount']},
+          {show: ['finished']},
         ],
         branding: this.distro.branding,
         'prompt-install': false,
-        'dont-chroot': false
+        'dont-chroot': false,
       }
 
       /**
@@ -108,72 +101,70 @@ class Calamares {
        */
     } else if (versionLike === 'bionic') {
       // rimosso packages (rimozione pacchetti, dopo bootloader) aggiunto removeuser prima di umount
-      utils.exec(`cp ${__dirname}/../../templates/distros/bionic/* /etc/ -R`)
+      Utils.shxExec(`cp ${__dirname}/../../templates/distros/bionic/* /etc/ -R`)
       settings = {
-        'modules-search': ['local',],
+        'modules-search': ['local'],
         sequence: [
-          { show: [`welcome`, `locale`, `keyboard`, `partition`, `users`, `summary`] },
-          { exec: [`partition`, `mount`, `unpackfs`, `machineid`, `fstab`, `locale`, `keyboard`, `localecfg`, `users`, `displaymanager`, `networkcfg`, `hwclock`, `services`, `initramfs`, `grubcfg`, `bootloader`, `removeuser`, `umount`] },
-          { show: ['finished'] }
+          {show: ['welcome', 'locale', 'keyboard', 'partition', 'users', 'summary']},
+          {exec: ['partition', 'mount', 'unpackfs', 'machineid', 'fstab', 'locale', 'keyboard', 'localecfg', 'users', 'displaymanager', 'networkcfg', 'hwclock', 'services', 'initramfs', 'grubcfg', 'bootloader', 'removeuser', 'umount']},
+          {show: ['finished']},
         ],
         branding: this.distro.branding,
         'prompt-install': true,
-        'dont-chroot': false
+        'dont-chroot': false,
       }
 
       /**
        * UBUNTU EOAN
        */
-    } else if (versionLike === `eoan`) {
+    } else if (versionLike === 'eoan') {
       // rimosso packages (rimozione pacchetti, dopo bootloader-config)
-      utils.exec(`cp ${__dirname}/../../templates/distros/eoan/* /etc/ -R`)
+      Utils.shxExec(`cp ${__dirname}/../../templates/distros/eoan/* /etc/ -R`)
       settings = {
         'modules-search': ['local', '/usr/lib/calamares/modules'],
         sequence: [
-          { show: ['welcome', 'locale', 'keyboard', 'partition', 'users', 'summary'] },
-          { exec: ['partition', 'mount', 'unpackfs', 'sources-media', 'machineid', 'fstab', 'locale', 'keyboard', 'localecfg', 'users', 'networkcfg', 'hwclock', 'grubcfg', 'bootloader', 'luksbootkeyfile', 'plymouthcfg', 'initramfscfg', 'initramfs', 'sources-media-unmount', 'sources-final', 'removeuser', 'umount'] },
-          { show: ['finished'] }
+          {show: ['welcome', 'locale', 'keyboard', 'partition', 'users', 'summary']},
+          {exec: ['partition', 'mount', 'unpackfs', 'sources-media', 'machineid', 'fstab', 'locale', 'keyboard', 'localecfg', 'users', 'networkcfg', 'hwclock', 'grubcfg', 'bootloader', 'luksbootkeyfile', 'plymouthcfg', 'initramfscfg', 'initramfs', 'sources-media-unmount', 'sources-final', 'removeuser', 'umount']},
+          {show: ['finished']},
         ],
         branding: this.distro.branding,
         'prompt-install': false,
-        'dont-chroot': false
+        'dont-chroot': false,
       }
-      this.ubuntuSourcesFinal(`eoan`)
+      this.ubuntuSourcesFinal('eoan')
     }
 
-    console.log("Configurazione settings.conf")
+    console.log('Configurazione settings.conf')
     fs.writeFileSync(settingsPath, `# distroType: ${versionLike}\n` + yaml.safeDump(settings), 'utf8')
   }
 
-
   async brandingDesc(versionLike: string, homeUrl: string, supportUrl: string, bugReportUrl: string) {
-    let brandingPath = `/etc/calamares/branding/${this.distro.branding}`
+    const brandingPath = `/etc/calamares/branding/${this.distro.branding}`
 
     if (!fs.existsSync(brandingPath)) {
       fs.mkdirSync(brandingPath)
     }
     // Configurazione branding.desc
-    let brandingFile = `${brandingPath}/branding.desc`
+    const brandingFile = `${brandingPath}/branding.desc`
 
-    let productName = this.distro.name
-    let shortProductName = this.distro.name
-    let version = this.distro.versionNumber + ' ( ' + this.distro.versionName + ')'
-    let shortVersion = this.distro.versionNumber
-    let versionedName = this.distro.name
-    let shortVersionedName = this.distro.versionName
-    let bootloaderEntryName = productName
-    let productUrl = homeUrl
-    //let supportUrl = supportUrl; 
-    let releaseNotesUrl = 'https://github.com/pieroproietti/penguins-eggs'
+    const productName = this.distro.name
+    const shortProductName = this.distro.name
+    const version = this.distro.versionNumber + ' ( ' + this.distro.versionName + ')'
+    const shortVersion = this.distro.versionNumber
+    const versionedName = this.distro.name
+    const shortVersionedName = this.distro.versionName
+    const bootloaderEntryName = productName
+    const productUrl = homeUrl
+    // let supportUrl = supportUrl;
+    const releaseNotesUrl = 'https://github.com/pieroproietti/penguins-eggs'
 
-    let productLogo = `${this.distro.branding}-logo.png`
-    let productIcon = `${this.distro.branding}-logo.png`
-    let productWelcome = 'welcome.png'
+    const productLogo = `${this.distro.branding}-logo.png`
+    const productIcon = `${this.distro.branding}-logo.png`
+    const productWelcome = 'welcome.png'
 
-    let slideshow = 'show.qml'
+    const slideshow = 'show.qml'
 
-
-    let branding =
+    const branding =
     {
       componentName: this.distro.branding,
       welcomeStyleCalamares: true,
@@ -188,42 +179,39 @@ class Calamares {
         bootloaderEntryName: bootloaderEntryName,
         productUrl: productUrl,
         supportUrl: supportUrl,
-        releaseNotesUrl: releaseNotesUrl
+        releaseNotesUrl: releaseNotesUrl,
       },
       images:
       {
         productLogo: productLogo,
         productIcon: productIcon,
-        productWelcome: productWelcome
+        productWelcome: productWelcome,
       },
       slideshow: slideshow,
       style:
       {
         sidebarBackground: '#2c3133',
         sidebarText: '#FFFFFF',
-        sidebarTextSelect: '#4d7079'
-      }
+        sidebarTextSelect: '#4d7079',
+      },
     }
 
-    console.log("Configurazione branding.desc")
+    console.log('Configurazione branding.desc')
     fs.writeFileSync(brandingFile, `#versionLike: ${versionLike}\n` + yaml.safeDump(branding), 'utf8')
   }
 
   /**
    * unpackfsConf
-   * @param mountpointSquashFs 
+   * @param mountpointSquashFs
    */
   unpackfsConf(mountpointSquashFs: string) {
-    let o: any = {}
-    o = oses.info(this.distro)
-
-    let file = `/etc/calamares/modules/unpackfs.conf`
-    let text = `---\n`
-    text += `unpack:\n`
+    const file = '/etc/calamares/modules/unpackfs.conf'
+    let text = '---\n'
+    text += 'unpack:\n'
     text += `-   source: "${mountpointSquashFs}"\n`
-    text += `    sourcefs: "squashfs"\n`
-    text += `    unpack:\n`
-    text += `    destination: ""\n`
+    text += '    sourcefs: "squashfs"\n'
+    text += '    unpack:\n'
+    text += '    destination: ""\n'
     fs.writeFileSync(file, text, 'utf8')
   }
 
@@ -231,19 +219,18 @@ class Calamares {
    * links
    */
   async links() {
-    // utils.exec(`cp ${__dirname}/../../templates/* /etc/ -R`);
-    utils.exec(`rm /usr/bin/add-calamares-desktop-icon`)
-    utils.exec(`rm /usr/share/applications/install-debian.desktop`)
-    utils.exec(`cp ${__dirname}/../../applications/* /usr/share/applications`)
+    // Utils.shxExec(`cp ${__dirname}/../../templates/* /etc/ -R`);
+    Utils.shxExec('rm /usr/bin/add-calamares-desktop-icon')
+    Utils.shxExec('rm /usr/share/applications/install-debian.desktop')
+    Utils.shxExec(`cp ${__dirname}/../../applications/* /usr/share/applications`)
   }
-
 
   /**
    * impostazione di sources.list per Debian
    */
   async debianSourcesFinal(debianRelease: string) {
-    const file = `/usr/sbin/sources-final`
-    const text: string = `\
+    const file = '/usr/sbin/sources-final'
+    const text = `\
 #!/bin/sh
 #
 # Writes the final sources.list file
@@ -265,13 +252,12 @@ deb-src http://security.debian.org/debian-security/ $RELEASE/updates main
 EOF
 
 exit 0`
-  fs.writeFileSync(file, text, 'utf8')
-    
+    fs.writeFileSync(file, text, 'utf8')
   }
 
   async ubuntuSourcesFinal(ubuntuRelease: string) {
-    const file = `/usr/sbin/sources-final`
-    const text: string = `
+    const file = '/usr/sbin/sources-final'
+    const text = `
 #!/bin/sh
 #
 # Writes the final sources.list file
@@ -340,10 +326,8 @@ deb http://security.ubuntu.com/ubuntu $RELEASE-security multiverse
 EOF
 
 exit 0`
-  fs.writeFileSync(file, text, 'utf8')
+    fs.writeFileSync(file, text, 'utf8')
   }
-
-
 }
 
 export default Calamares
