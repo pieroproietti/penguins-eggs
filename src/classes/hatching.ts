@@ -104,7 +104,7 @@ export default class Hatching {
     let aDrives: string[] = []
 
     drives.forEach((element: { device: string[] }) => {
-      aDrives = element.device
+      aDrives.push(element.device)
     })
     console.log(aDrives)
 
