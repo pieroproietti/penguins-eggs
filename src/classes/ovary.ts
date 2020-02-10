@@ -916,7 +916,7 @@ timeout 0
       ${this.iso.appendSafe}`
 
     Utils.bashWrite(file, text)
-    Utils.shxExec(`cp ${__dirname}/../../assets/penguins-eggs-3-syslinux.png ${this.distro.pathIso}/boot/isolinux`)
+    Utils.shxExec(`cp ${__dirname}/../../assets/penguins-eggs-syslinux.png ${this.distro.pathIso}/boot/isolinux`)
   }
 
   /**
