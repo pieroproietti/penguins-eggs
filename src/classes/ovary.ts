@@ -371,19 +371,6 @@ export default class Ovary {
     shx.exec(`chown live:live ${this.distro.pathFs}/home/live/Desktop/*`, {async: false})
   }
 
-  show() {
-    console.log('eggs: iso parameters ')
-    console.log('>>> kernelVer: ' + this.distro.kernel)
-    console.log('>>> netDomainName: ' + this.net.domainName)
-  }
-
-  async kill() {
-    console.log('==========================================')
-    console.log('iso: kill ')
-    console.log('==========================================')
-    Utils.shxExec(`rm -rf ${this.workDir}`)
-  }
-
   async isoCreateStructure() {
     console.log('==========================================')
     console.log('iso: createStructure')

@@ -100,7 +100,9 @@ export default class Hatching {
     devices.swap = {} as IDevice
 
     const drives: any = await drivelist.list()
-    let aDrives: string[]
+    
+    let aDrives: string[] = []
+
     drives.forEach((element: { device: string[] }) => {
       aDrives = element.device
     })

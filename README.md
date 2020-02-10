@@ -67,6 +67,7 @@ penguins-eggs will make a snapshot (egg) of your system
 <!-- toc -->
 * [Usage](#usage)
 * [Commands](#commands)
+* [That's all Folks!](#thats-all-folks)
 <!-- tocstop -->
 # Usage
 <!-- usage -->
@@ -84,28 +85,27 @@ USAGE
 <!-- usagestop -->
 # Commands
 <!-- commands -->
-* [`eggs calamares [FILE]`](#eggs-calamares-file)
+* [`eggs calamares`](#eggs-calamares)
 * [`eggs help [COMMAND]`](#eggs-help-command)
 * [`eggs info`](#eggs-info)
 * [`eggs install`](#eggs-install)
 * [`eggs kill`](#eggs-kill)
 * [`eggs prerequisites`](#eggs-prerequisites)
 * [`eggs produce`](#eggs-produce)
-* [`eggs sterilize [FILE]`](#eggs-sterilize-file)
+* [`eggs sterilize`](#eggs-sterilize)
+* [`eggs test`](#eggs-test)
 * [`eggs update`](#eggs-update)
 
-## `eggs calamares [FILE]`
+## `eggs calamares`
 
-describe the command here
+Install calamares installer and configure it
 
 ```
 USAGE
-  $ eggs calamares [FILE]
+  $ eggs calamares
 
 OPTIONS
-  -f, --force
-  -h, --help       show CLI help
-  -n, --name=name  name to print
+  -h, --help  show CLI help
 ```
 
 _See code: [src/commands/calamares.ts](https://github.com/pieroproietti/penguins-eggs/blob/v7.1.0/src/commands/calamares.ts)_
@@ -220,21 +220,30 @@ EXAMPLE
 
 _See code: [src/commands/produce.ts](https://github.com/pieroproietti/penguins-eggs/blob/v7.1.0/src/commands/produce.ts)_
 
-## `eggs sterilize [FILE]`
+## `eggs sterilize`
 
 describe the command here
 
 ```
 USAGE
-  $ eggs sterilize [FILE]
+  $ eggs sterilize
 
 OPTIONS
-  -f, --force
-  -h, --help       show CLI help
-  -n, --name=name  name to print
+  -h, --help  show CLI help
 ```
 
 _See code: [src/commands/sterilize.ts](https://github.com/pieroproietti/penguins-eggs/blob/v7.1.0/src/commands/sterilize.ts)_
+
+## `eggs test`
+
+test pourpouse...
+
+```
+USAGE
+  $ eggs test
+```
+
+_See code: [src/commands/test.ts](https://github.com/pieroproietti/penguins-eggs/blob/v7.1.0/src/commands/test.ts)_
 
 ## `eggs update`
 
