@@ -3,6 +3,21 @@
   "description": "remaster your system and distribuite it",
   "version": "7.1.0",
   "author": "Piero Proietti @pieroproietti",
+  "mail": "piero.proietti@gmail.com",
+  "license": "MIT",
+  "homepage": "http://pieroproietti.github.io",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/pieroproietti/penguins-eggs"
+  },
+  "keywords": [
+    "remastering",
+    "pxe-server",
+    "pxe-boot",
+    "iso",
+    "backup",
+    "systemback"
+  ],
   "bin": {
     "eggs": "./bin/run"
   },
