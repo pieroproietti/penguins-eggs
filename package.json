@@ -52,6 +52,7 @@
     "/assistant",
     "/bin",
     "/documents",
+    "/lib",
     "/npm-shrinkwrap.json",
     "/oclif.manifest.json",
     "/scripts",
