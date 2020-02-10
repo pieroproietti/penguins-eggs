@@ -464,7 +464,7 @@ ff02::3 ip6-allhosts
    *
    * @param device
    */
-  getDiskSize(device: string): Promise<number> {
+  async getDiskSize(device: string): Promise<number> {
     let response: string
     let bytes: number
 
