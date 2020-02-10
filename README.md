@@ -5,7 +5,6 @@ Penguin&#39;s eggs are generated and new birds are ready to fly...
 
 [![oclif](https://img.shields.io/badge/cli-oclif-brightgreen.svg)](https://oclif.io)
 [![Version](https://img.shields.io/npm/v/penguins-eggs.svg)](https://npmjs.org/package/penguins-eggs)
-[![CircleCI](https://circleci.com/gh/pieroproietti/penguins-eggs/tree/master.svg?style=shield)](https://circleci.com/gh/pieroproietti/penguins-eggs/tree/master)
 [![Downloads/week](https://img.shields.io/npm/dw/penguins-eggs.svg)](https://npmjs.org/package/penguins-eggs)
 [![License](https://img.shields.io/npm/l/penguins-eggs.svg)](https://github.com/pieroproietti/penguins-eggs/blob/master/package.json)
 
