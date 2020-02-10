@@ -7,6 +7,7 @@
  */
 import {Command, flags} from '@oclif/command'
 import shx = require('shelljs')
+import path = require('path')
 import Utils from '../classes/utils'
 
 export default class Prerequisites extends Command {
@@ -24,7 +25,6 @@ install the prerequisites packages to run penguin's eggs
       /**
        * Debian live
        */
-
       const codeUpdate: number = shx.exec('/usr/bin/apt-get update -y').code
       if (codeUpdate === 0) {
         this.log('udapte executed')
@@ -43,6 +43,11 @@ install the prerequisites packages to run penguin's eggs
                   xterm \
                   zenity \
                   open-infrastructure-system-config', {async: false})
+
+        // Copia della configurazione
+        shx.cp(path.resolve(__dirname, '../../conf/penguins-eggs.conf'), '/etc')
+        shx.mkdir('-p', '/usr/local/share/excludes/')
+        shx.cp(path.resolve(__dirname, '../../conf/penguins-eggs-exclude.list'), '/usr/local/share/excludes')
       } else {
         this.log(`error updating the system... Error: ${codeUpdate}`)
       }

@@ -58,11 +58,11 @@ export default class Ovary {
 
   snapshot_dir = '' as string // /home/snapshot
 
-  config_file = '/etc/mx-snapshot.conf' as string
+  config_file = '/etc/penguins-eggs-snapshot.conf' as string
 
   gui_editor = '/usr/bin/joe' as string
 
-  snapshot_excludes = '/etc/mx-snapshot-exclude.list' as string
+  snapshot_excludes = '/usr/local/share/excludes/penguins-eggs-snapshot-exclude.list' as string
 
   edit_boot_menu = '' as string
 
@@ -383,7 +383,6 @@ export default class Ovary {
       Utils.shxExec(`mkdir -p ${this.distro.pathIso}/boot/isolinux`)
       Utils.shxExec(`mkdir -p ${this.distro.pathIso}/boot/grub`)
       Utils.shxExec(`mkdir -p ${this.distro.pathIso}/boot/syslinux`)
-      // Utils.shxExec(`ln -s ${this.distro.pathIso}/live  ${this.distro.pathIso}/antiX`)
     }
   }
 
@@ -418,25 +417,31 @@ export default class Ovary {
 
     const file = `${this.distro.pathIso}/boot/isolinux/stdmenu.cfg`
     const text = `
-menu background penguins-eggs-syslinux.png
-menu color title	* #FFFFFFFF *
-menu color border	* #00000000 #00000000 none
-menu color sel		* #ffffffff #76a1d0ff *
-menu color hotsel	1;7;37;40 #ffffffff #76a1d0ff *
-menu color tabmsg	* #ffffffff #00000000 *
-menu color help		37;40 #ffdddd00 #00000000 none
-# XXX When adjusting vshift, take care that rows is set to a small
-# enough value so any possible menu will fit on the screen,
-# rather than falling off the bottom.
-menu vshift 8
-menu rows 8
-# The help line must be at least one line from the bottom.
-menu helpmsgrow 14
-# The command line must be at least one line from the help line.
-menu cmdlinerow 16
-menu timeoutrow 16
-menu tabmsgrow 18
-menu tabmsg Press ENTER to boot or TAB to edit a menu entry
+# Refer to http://www.syslinux.org/wiki/index.php/Comboot/menu.c32
+MENU BACKGROUND penguins-eggs-syslinux.png
+TIMEOUT 50
+ 
+MENU WIDTH 78
+MENU MARGIN 4
+MENU ROWS 8
+MENU VSHIFT 10
+MENU TIMEOUTROW 16
+MENU TABMSGROW 18
+MENU CMDLINEROW 16
+MENU HELPMSGROW 16
+MENU HELPMSGENDROW 29
+
+MENU COLOR border       30;44   #40ffffff #a0000000 std
+MENU COLOR title        1;36;44 #9033ccff #a0000000 std
+MENU COLOR sel          7;37;40 #e0ffffff #20ffffff all
+MENU COLOR unsel        37;44   #50ffffff #a0000000 std
+MENU COLOR help         37;40   #c0ffffff #a0000000 std
+MENU COLOR timeout_msg  37;40   #80ffffff #00000000 std
+MENU COLOR timeout      1;37;40 #c0ffffff #00000000 std
+MENU COLOR msg07        37;40   #90ffffff #a0000000 std
+MENU COLOR tabmsg       31;40   #30ffffff #00000000 std
+MENU VSHIFT 8
+MENU TABMSG Press ENTER to boot or TAB to edit a menu entry
   `
 
     Utils.bashWrite(file, text)
