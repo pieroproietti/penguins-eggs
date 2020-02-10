@@ -10,6 +10,34 @@ Penguin&#39;s eggs are generated and new birds are ready to fly...
 [![License](https://img.shields.io/npm/l/penguins-eggs.svg)](https://github.com/pieroproietti/penguins-eggs/blob/master/package.json)
 
 
+## Presentation
+penguins-eggs is a console utility, in active development, who let you to
+remaster your system and redistribuite it as iso images or from the lan via PXE
+remote boot.
+
+The scope of this project is to implement the process of remastering your
+version of Linux, generate it as ISO image to burn on a CD/DVD or copy to a usb
+key to boot your system. You can also boot your egg - via remote boot - on your
+LAN.
+
+All it is written in pure nodejs, so ideally can be used with differents Linux
+distros. At the moment it is tested with Debian 10 Buster, Debian 9 Stretch, Debian 8 Jessie,
+Ubuntu 19.04 and derivates as Linux Mint and Bunsenlabs Helium. 
+For others distros we need to find collaborations.
+
+penguins-eggs, at the moment 2019 september 20 is in a beta state, and can have again
+same troubles for people not in confidence with Linux system administration, but
+can be already extremely usefull, You can easily create your organization/school 
+version of Linux and deploy it on your LAN, give it to your friends as usb key 
+or publish eggs in the internet!
+
+You can try now penguins-eggs, it is a console utility - no GUI - but don't be
+scared, penguins-eggs is a console command - really very simple usage - if you
+are able to open a terminal, you can use it.
+
+## Install penguins-eggs
+Well, it is time to try it!
+
 ## Same git tips...
 * git pull
 * git checkout -b [name_of_your_new_branch]
