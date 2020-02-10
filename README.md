@@ -251,3 +251,19 @@ EXAMPLE
 
 _See code: [src/commands/update.ts](https://github.com/pieroproietti/penguins-eggs/blob/v7.1.0/src/commands/update.ts)_
 <!-- commandsstop -->
+
+# That's all Folks!
+No need other configurations, penguins-eggs are battery included or better, as in the real, live is inside! :-D
+
+## More informations
+For other informations, look at [Piero Proietti's blog](http://pieroproietti.github.com),
+contact me, or open an [issue](https://github.com/pieroproietti/penguins-eggs/issues) on github.
+
+* facebook group:  [Penguin's Eggs](https://www.facebook.com/groups/128861437762355/)
+* twitter: [@pieroproietti](https://twitter.com/pieroproietti)
+* google+: [PieroProietti](https://plus.google.com/+PieroProietti)
+* mail: piero.proietti@gmail.com
+
+
+## Copyright and licenses
+Copyright (c) 2017, 2020 [Piero Proietti](http://pieroproietti.github.com), dual licensed under the MIT or GPL Version 2 licenses.
