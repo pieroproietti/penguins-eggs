@@ -1,3 +1,4 @@
+/* eslint-disable max-params */
 /* eslint-disable no-console */
 /**
  * penguins-eggs: hatch.js
@@ -100,8 +101,8 @@ export default class Hatching {
     devices.swap = {} as IDevice
 
     const drives: any = await drivelist.list()
-    
-    let aDrives: string[] = []
+
+    const aDrives: string[] = []
 
     drives.forEach((element: {device: string}) => {
       aDrives.push(element.device)
@@ -135,14 +136,12 @@ export default class Hatching {
       await this.mountVFS(target)
       await this.updateInitramfs(target)
       await this.grubInstall(target, options)
-
-      // await Utils.addUser(target, options.username, options.userpassword)
-      // await Utils.changePassword(target, 'root', options.rootpassword)
+      await this.addUser(target, options.username, options.userpassword)
+      await this.changePassword(target, 'root', options.rootpassword)
       await this.autologinConfig(target, 'live', options.username)
-
       await this.delUserLive(target)
       await this.patchPve(target)
-      await this.mountVFS(target)
+      await this.umountVFS(target)
       await this.umount4target(target, devices)
     }
   }
@@ -166,6 +165,63 @@ export default class Hatching {
    */
   async autologinConfig(target: string, oldUser = 'live', newUser = 'artisan') {
     await Utils.shxExec(`sed -i "/autologin-user/s/=${oldUser}/=${newUser}/" ${target}/etc/lightdm/lightdm.conf`)
+  }
+
+  /**
+   * 
+   * @param target 
+   * @param username 
+   * @param password 
+   * @param fullName 
+   * @param roomNumber 
+   * @param workPhone 
+   * @param homePhone 
+   */
+  async addUser(target = '/TARGET', username = 'live', password = 'evolution', fullName = '', roomNumber = '', workPhone = '', homePhone = '') {
+
+    const cmd = `sudo chroot ${target} adduser ${username}\
+                                  --home /home/${username} \
+                                  --shell /bin/bash \
+                                  --disabled-password \
+                                  --gecos "${fullName},\
+                                          ${roomNumber},\
+                                          ${workPhone},\
+                                          ${homePhone}"`
+
+    console.log(`addUser: ${cmd}`)
+    shell.exec(cmd)
+
+    const cmdPass = `echo ${username}:${password} | chroot ${target} chpasswd `
+    console.log(`addUser cmdPass: ${cmdPass}`)
+    shell.exec(cmdPass)
+
+    const cmdSudo = `chroot ${target} addgroup ${username} sudo`
+    console.log(`addUser cmdSudo: ${cmdSudo}`)
+    shell.exec(cmdSudo)
+  }
+
+  /**
+   * changePassword
+   * @param target 
+   * @param username 
+   * @param newPassword 
+   */
+  async changePassword(target = '/TARGET',
+    username = 'live',
+    newPassword = 'evolution') {
+    const cmd = `echo ${username}:${newPassword} | chroot ${target} chpasswd `
+    console.log(`changePassword: ${cmd}`)
+    shell.exec(cmd)
+  }
+
+  /**
+   * delete username
+   * @param username 
+   */
+  async delUser(username = 'live') {
+    const cmd = `deluser ${username}`
+    console.log(`delUser: ${cmd}`)
+    shell.exec(cmd)
   }
 
   /**
