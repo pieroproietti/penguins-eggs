@@ -58,11 +58,11 @@ export default class Ovary {
 
   snapshot_dir = '' as string // /home/snapshot
 
-  config_file = '/etc/penguins-eggs-snapshot.conf' as string
+  config_file = '/etc/penguins-eggs.conf' as string
 
   gui_editor = '/usr/bin/joe' as string
 
-  snapshot_excludes = '/usr/local/share/excludes/penguins-eggs-snapshot-exclude.list' as string
+  snapshot_excludes = '/usr/local/share/excludes/penguins-eggs-exclude.list' as string
 
   edit_boot_menu = '' as string
 
