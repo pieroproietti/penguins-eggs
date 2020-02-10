@@ -103,7 +103,7 @@ export default class Hatching {
     
     let aDrives: string[] = []
 
-    drives.forEach((element: { device: string[] }) => {
+    drives.forEach((element: {device: string}) => {
       aDrives.push(element.device)
     })
     console.log(aDrives)
@@ -121,29 +121,29 @@ export default class Hatching {
     const diskSize = this.getDiskSize(options.installationDevice)
     console.log(`diskSize: ${diskSize}`)
 
-    const isDiskPrepared: boolean = await Hatching.diskPartition(options.installationDevice)
+    const isDiskPrepared: boolean = await this.diskPartition(options.installationDevice)
     if (isDiskPrepared) {
       await Hatching.mkfs(devices)
-      await Hatching.mount4target(target, devices)
-      await Hatching.egg2system(target)
+      await this.mount4target(target, devices)
+      await this.egg2system(target)
       await this.setTimezone(target)
-      await Hatching.fstab(target, devices, options.installationDevice)
-      await Hatching.hostname(target, options)
-      await Hatching.resolvConf(target, options)
-      await Hatching.interfaces(target, options)
-      await Hatching.hosts(target, options)
-      await Hatching.mountVFS(target)
-      await Hatching.updateInitramfs(target)
-      await Hatching.grubInstall(target, options)
+      await this.fstab(target, devices, options.installationDevice)
+      await this.hostname(target, options)
+      await this.resolvConf(target, options)
+      await this.interfaces(target, options)
+      await this.hosts(target, options)
+      await this.mountVFS(target)
+      await this.updateInitramfs(target)
+      await this.grubInstall(target, options)
 
       // await Utils.addUser(target, options.username, options.userpassword)
       // await Utils.changePassword(target, 'root', options.rootpassword)
-      await Hatching.autologinConfig(target, 'live', options.username)
+      await this.autologinConfig(target, 'live', options.username)
 
-      await Hatching.delUserLive(target)
-      await Hatching.patchPve(target)
-      await Hatching.mountVFS(target)
-      await Hatching.umount4target(target, devices)
+      await this.delUserLive(target)
+      await this.patchPve(target)
+      await this.mountVFS(target)
+      await this.umount4target(target, devices)
     }
   }
 
@@ -164,14 +164,14 @@ export default class Hatching {
    * @param oldUser
    * @param newUser
    */
-  static async autologinConfig(target: string, oldUser = 'live', newUser = 'artisan') {
+  async autologinConfig(target: string, oldUser = 'live', newUser = 'artisan') {
     await Utils.shxExec(`sed -i "/autologin-user/s/=${oldUser}/=${newUser}/" ${target}/etc/lightdm/lightdm.conf`)
   }
 
   /**
    * delUserLive
    */
-  static async delUserLive(target: string) {
+  async delUserLive(target: string) {
     await Utils.shxExec(`chroot ${target} deluser live`)
   }
 
@@ -180,7 +180,7 @@ export default class Hatching {
    *          e che ricrea i codici di ssh della macchina
    * @param target
    */
-  static async patchPve(target: string) {
+  async patchPve(target: string) {
     // patch per apache2
     await Utils.shxExec(`chroot ${target} mkdir /var/log/apache2`)
 
@@ -196,7 +196,7 @@ export default class Hatching {
    * @param target
    * @param options
    */
-  static async grubInstall(target: string, options: any) {
+  async grubInstall(target: string, options: any) {
     console.log('grub-install')
     await Utils.shxExec(`chroot ${target} grub-install ${options.installationDevice}`)
     console.log('update-grub')
@@ -207,7 +207,7 @@ export default class Hatching {
    * updateInitramfs()
    * @param target
    */
-  static async updateInitramfs(target: string) {
+  async updateInitramfs(target: string) {
     console.log('update-initramfs/n')
     await Utils.shxExec(`chroot ${target}  update-initramfs -u -k $(uname -r)`)
   }
@@ -216,7 +216,7 @@ export default class Hatching {
    * mountVFS()
    * @param target
    */
-  static async mountVFS(target: string) {
+  async mountVFS(target: string) {
     console.log('mount VFS')
     await Utils.shxExec(`mount -o bind /dev ${target}/dev`)
     await Utils.shxExec(`mount -o bind /devpts ${target}/dev/pts`)
@@ -229,7 +229,7 @@ export default class Hatching {
    * umountVFS()
    * @param target
    */
-  static async umountVFS(target: string) {
+  async umountVFS(target: string) {
     console.log('umount VFS')
     await Utils.shxExec(`umount ${target}/dev/pts`)
     await Utils.shxExec('sleep 1')
@@ -248,7 +248,7 @@ export default class Hatching {
    * @param target
    * @param devices
    */
-  static async fstab(target: string, devices: IDevices, installDevice: string) {
+  async fstab(target: string, devices: IDevices, installDevice: string) {
     const file = `${target}/etc/fstab`
     let mountOptsRoot = ''
     let mountOptsSwap = ''
@@ -272,7 +272,7 @@ ${devices.swap.device} ${devices.swap.mountPoint} ${devices.swap.fsType} ${mount
    * @param target
    * @param options
    */
-  static async hostname(target: string, options: any) {
+  async hostname(target: string, options: any) {
     const file = `${target}/etc/hostname`
     const text = options.hostname
 
@@ -285,7 +285,7 @@ ${devices.swap.device} ${devices.swap.mountPoint} ${devices.swap.fsType} ${mount
    * @param target
    * @param options
    */
-  static async resolvConf(target: string, options: any) {
+  async resolvConf(target: string, options: any) {
     console.log(`tipo di resolv.con: ${options.netAddressType}`)
     if (options.netAddressType === 'static') {
       const file = `${target}/etc/resolv.conf`
@@ -308,7 +308,7 @@ nameserver 8.8.4.4
    * @param target
    * @param options
    */
-  static async interfaces(target: string, options: any) {
+  async interfaces(target: string, options: any) {
     if (options.netAddressType === 'static') {
       const file = `${target}/etc/network/interfaces`
       const text = `\
@@ -329,7 +329,7 @@ iface ${options.netInterface} inet ${options.netAddressType}
    * @param target
    * @param options
    */
-  static async hosts(target: string, options: any) {
+  async hosts(target: string, options: any) {
     const file = `${target}/etc/hosts`
     let text = '127.0.0.1 localhost localhost.localdomain'
     if (options.netAddressType === 'static') {
@@ -355,7 +355,7 @@ ff02::3 ip6-allhosts
    * rsync()
    * @param target
    */
-  static async egg2system(target: string): Promise<void> {
+  async egg2system(target: string): Promise<void> {
     let cmd = ''
     let f = ''
     f += ' --filter="- /cdrom/*"'
@@ -416,7 +416,7 @@ ff02::3 ip6-allhosts
     })
   }
 
-  static async mkfs(devices: IDevices): Promise<boolean> {
+  async mkfs(devices: IDevices): Promise<boolean> {
     const result = true
     // devices.root.fsType=`ext4`
     await Utils.shxExec(`mkfs -t ${devices.root.fsType} ${devices.root.device}`)
@@ -424,7 +424,7 @@ ff02::3 ip6-allhosts
     return result
   }
 
-  static async mount4target(target: string, devices: IDevices): Promise<boolean> {
+  async mount4target(target: string, devices: IDevices): Promise<boolean> {
     await Utils.shxExec(`mkdir ${target}`)
     await Utils.shxExec(`mount ${devices.root.device} ${target}`)
     await Utils.shxExec(`tune2fs -c 0 -i 0 ${devices.root.device}`)
@@ -433,7 +433,7 @@ ff02::3 ip6-allhosts
     return true
   }
 
-  static async umount4target(target: string, devices: IDevices): Promise<boolean> {
+  async umount4target(target: string, devices: IDevices): Promise<boolean> {
     console.log('umount4target')
 
     await Utils.shxExec(`umount ${devices.root.device} ${target}`)
@@ -441,7 +441,7 @@ ff02::3 ip6-allhosts
     return true
   }
 
-  static async diskPartition(device: string) {
+  diskPartition(device: string) {
     await Utils.shxExec(`parted --script ${device} mklabel msdos`)
     await Utils.shxExec(`parted --script --align optimal ${device} mkpart primary 1MiB 95%`)
     await Utils.shxExec(`parted --script ${device} set 1 boot on`)
@@ -449,7 +449,7 @@ ff02::3 ip6-allhosts
     return true
   }
 
-  static async isRotational(device: string): Promise<boolean> {
+  async isRotational(device: string): Promise<boolean> {
     let response: any
     let retVal = false
 
@@ -464,7 +464,7 @@ ff02::3 ip6-allhosts
    *
    * @param device
    */
-  async getDiskSize(device: string): Promise<number> {
+  getDiskSize(device: string): Promise<number> {
     let response: string
     let bytes: number
 
