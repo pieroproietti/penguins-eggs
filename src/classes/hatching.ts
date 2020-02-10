@@ -253,7 +253,7 @@ export default class Hatching {
     let mountOptsRoot = ''
     let mountOptsSwap = ''
 
-    if (await Hatching.isRotational(installDevice)) {
+    if (await this.isRotational(installDevice)) {
       mountOptsRoot = 'defaults,relatime 0 1'
       mountOptsRoot = 'defaults,relatime 0 2'
     } else {
