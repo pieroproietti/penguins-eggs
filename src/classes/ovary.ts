@@ -418,7 +418,7 @@ export default class Ovary {
 
     const file = `${this.distro.pathIso}/boot/isolinux/stdmenu.cfg`
     const text = `
-menu background penguins-eggs-3-syslinux.png
+menu background penguins-eggs-syslinux.png
 menu color title	* #FFFFFFFF *
 menu color border	* #00000000 #00000000 none
 menu color sel		* #ffffffff #76a1d0ff *
