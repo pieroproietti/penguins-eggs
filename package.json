@@ -51,6 +51,7 @@
     "/assets",
     "/assistant",
     "/bin",
+    "/conf",
     "/documents",
     "/lib",
     "/npm-shrinkwrap.json",
