@@ -441,7 +441,7 @@ ff02::3 ip6-allhosts
     return true
   }
 
-  diskPartition(device: string) {
+  async diskPartition(device: string) {
     await Utils.shxExec(`parted --script ${device} mklabel msdos`)
     await Utils.shxExec(`parted --script --align optimal ${device} mkpart primary 1MiB 95%`)
     await Utils.shxExec(`parted --script ${device} set 1 boot on`)
