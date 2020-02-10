@@ -123,7 +123,7 @@ export default class Hatching {
 
     const isDiskPrepared: boolean = await this.diskPartition(options.installationDevice)
     if (isDiskPrepared) {
-      await Hatching.mkfs(devices)
+      await this.mkfs(devices)
       await this.mount4target(target, devices)
       await this.egg2system(target)
       await this.setTimezone(target)
