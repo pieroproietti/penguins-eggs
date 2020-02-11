@@ -56,7 +56,7 @@ export default class Ovary {
 
   snapshot_dir = '/home/eggs/' as string // /home/snapshot
 
-  work_dir ='/home/eggs/debu7/'
+  work_dir = '/tmp/work_dir/'
 
   config_file = '/etc/penguins-eggs.conf' as string
 
@@ -106,10 +106,6 @@ export default class Ovary {
     this.distro.versionNumber = 'zero' // Utils.formatDate()
     this.distro.branding = 'eggs'
     this.distro.kernel = Utils.kernerlVersion()
-    this.distro.pathHome = this.snapshot_dir + this.distro.name
-    this.distro.pathFs = this.distro.pathHome + '/fs'
-    this.distro.pathIso = this.distro.pathHome + '/iso'
-
     this.compression = compression || ''
     this.live = Utils.isLive()
     this.users = Utils.usersList()
@@ -133,7 +129,10 @@ export default class Ovary {
     const loadSettings = await this.loadSettings()
     const listFreeSpace = await this.listFreeSpace()
 
-    if (loadSettings && listFreeSpace) {
+    if (this.loadSettings() && this.listFreeSpace()) {
+      this.work_dir = this.snapshot_dir
+      this.distro.pathHome = this.work_dir + '.' +this.distro.name
+      this.distro.pathIso = this.distro.pathHome + '/iso'
       return true
     }
     return false
@@ -159,6 +158,9 @@ export default class Ovary {
       this.compression = settings.General.compression
     }
     this.snapshot_dir = settings.General.snapshot_dir.trim()
+    if (!this.snapshot_dir.endsWith('/')){
+      this.snapshot_dir += '/'
+    }
     this.snapshot_excludes = settings.General.snapshot_excludes
     this.snapshot_basename = settings.General.snapshot_basename
     this.make_md5sum = settings.General.make_md5sum
@@ -233,33 +235,6 @@ export default class Ovary {
     console.log('==========================================')
     const text = 'auto lo\niface lo inet loopback'
     Utils.bashWrite('/.bind-root/etc/network/interfaces', text)
-  }
-
-  /**
-   * eggCreateStructue
-   */
-  public async eggCreateStructure() {
-    console.log('==========================================')
-    console.log('eggs: createStructure')
-    console.log('==========================================')
-    if (!fs.existsSync(this.distro.pathHome)) {
-      Utils.shxExec(`mkdir -p ${this.distro.pathHome}`)
-    }
-
-    if (!fs.existsSync(this.distro.pathFs)) {
-      // Utils.shxExec(`rm -rf ${this.distro.pathFs}`);
-      Utils.shxExec(`mkdir -p ${this.distro.pathFs}`)
-      Utils.shxExec(`mkdir -p ${this.distro.pathFs}/dev`)
-      Utils.shxExec(`mkdir -p ${this.distro.pathFs}/etc`)
-      Utils.shxExec(`mkdir -p ${this.distro.pathFs}/etc/intefaces`)
-      Utils.shxExec(`mkdir -p ${this.distro.pathFs}/etc/live`)
-      Utils.shxExec(`mkdir -p ${this.distro.pathFs}/proc`)
-      Utils.shxExec(`mkdir -p ${this.distro.pathFs}/sys`)
-      Utils.shxExec(`mkdir -p ${this.distro.pathFs}/media`)
-      Utils.shxExec(`mkdir -p ${this.distro.pathFs}/run`)
-      Utils.shxExec(`mkdir -p ${this.distro.pathFs}/var`)
-      Utils.shxExec(`mkdir -p ${this.distro.pathFs}/tmp`)
-    }
   }
 
   /**
@@ -838,6 +813,7 @@ timeout 0
     console.log('==========================================')
 
     this.addRemoveExclusion(true, this.snapshot_dir /* .absolutePath() */)
+    this.addRemoveExclusion(true, this.work_dir /* .absolutePath() */)
 
     if (this.reset_accounts) {
       this.addRemoveExclusion(true, '/etc/minstall.conf')
@@ -864,7 +840,7 @@ timeout 0
     const isoName = `${this.snapshot_dir}${volid}`
 
     Utils.shxExec(
-      `xorriso -as mkisofs -r -J -joliet-long -l -cache-inodes ${isoHybridOption} -partition_offset 16 -volid ${volid} -b boot/isolinux/isolinux.bin -c boot/isolinux/boot.cat -no-emul-boot -boot-load-size 4 -boot-info-table -o ${isoName}/${this.distro.pathIso}`
+      `xorriso -as mkisofs -r -J -joliet-long -l -cache-inodes ${isoHybridOption} -partition_offset 16 -volid ${volid} -b boot/isolinux/isolinux.bin -c boot/isolinux/boot.cat -no-emul-boot -boot-load-size 4 -boot-info-table -o ${isoName} ${this.distro.pathIso}`
     )
   }
 
@@ -933,10 +909,12 @@ timeout 0
     if (this.reset_accounts) {
       console.log(' - resetting accounts ')
       //              installed-to-live -b /.bind-root start ${bind_boot} empty=/home general version-file read-only);
+      console.log(`Comando: sbin/installed-to-live -b /.bind-root start ${bind_boot} empty=/home general version-file read-write`)
       Utils.shxExec(`/sbin/installed-to-live -b /.bind-root start ${bind_boot} empty=/home general version-file read-write`)
     } else {
       console.log(' - using old accounts ')
       //             /sbin/installed-to-live -b /.bind-root start bind=/home${bind_boot_too} live-files version-file adjtime read-only
+      console.log(`Comando: /sbin/installed-to-live -b /.bind-root start bind=/home${bind_boot_too} live-files version-file adjtime read-write`)
       Utils.shxExec(`/sbin/installed-to-live -b /.bind-root start bind=/home${bind_boot_too} live-files version-file adjtime read-write`)
     }
   }
