@@ -37,7 +37,13 @@ scared, penguins-eggs is a console command - really very simple usage - if you
 are able to open a terminal, you can use it.
 
 ## Install penguins-eggs
-Well, it is time to try it!
+This simplest way in to download the package eggs in package and install it
+
+''' sudo dpkg -i eggs_7.1.11-1_amd64.deb  '''
+
+The deb packase is made with the tool oclif-dev
+
+npm i @oclif/dev-cli
 
 ## Same git tips...
 * git pull

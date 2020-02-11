@@ -26,6 +26,7 @@ coverage
 esnext/
 lib-cov
 lib/
+dist/
 logs
 node_modules
 node_modules/
