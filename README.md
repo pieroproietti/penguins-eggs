@@ -87,6 +87,7 @@ USAGE
 # Commands
 <!-- commands -->
 * [`eggs calamares`](#eggs-calamares)
+* [`eggs cleanup [FILE]`](#eggs-cleanup-file)
 * [`eggs help [COMMAND]`](#eggs-help-command)
 * [`eggs info`](#eggs-info)
 * [`eggs install`](#eggs-install)
@@ -109,6 +110,22 @@ OPTIONS
 ```
 
 _See code: [src/commands/calamares.ts](https://github.com/pieroproietti/penguins-eggs/blob/v7.1.11/src/commands/calamares.ts)_
+
+## `eggs cleanup [FILE]`
+
+describe the command here
+
+```
+USAGE
+  $ eggs cleanup [FILE]
+
+OPTIONS
+  -f, --force
+  -h, --help       show CLI help
+  -n, --name=name  name to print
+```
+
+_See code: [src/commands/cleanup.ts](https://github.com/pieroproietti/penguins-eggs/blob/v7.1.11/src/commands/cleanup.ts)_
 
 ## `eggs help [COMMAND]`
 

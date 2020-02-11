@@ -221,7 +221,7 @@ class Calamares {
     // Utils.shxExec(`cp ${__dirname}/../../templates/* /etc/ -R`);
     Utils.shxExec('rm /usr/bin/add-calamares-desktop-icon')
     Utils.shxExec('rm /usr/share/applications/install-debian.desktop')
-    Utils.shxExec(`cp ${__dirname}/../../applications/* /usr/share/applications`)
+    // Utils.shxExec(`cp ${__dirname}/../../applications/* /usr/share/applications`)
   }
 
   /**

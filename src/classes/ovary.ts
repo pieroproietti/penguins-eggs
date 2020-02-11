@@ -30,8 +30,6 @@ import {IDistro, IOses, IPackage} from '../interfaces'
 export default class Ovary {
   app = {} as IPackage
 
-  workDir = '/home/snapshot/'
-
   distro = {} as IDistro
 
   oses = {} as Oses
@@ -56,7 +54,9 @@ export default class Ovary {
 
   lib_mod_dir = '' as string
 
-  snapshot_dir = '' as string // /home/snapshot
+  snapshot_dir = '/home/eggs/' as string // /home/snapshot
+
+  work_dir ='/home/eggs/debu7/'
 
   config_file = '/etc/penguins-eggs.conf' as string
 
@@ -86,8 +86,6 @@ export default class Ovary {
 
   version = '' as string
 
-  work_dir = '' as string
-
   // Altre mie
   users: string[] = []
 
@@ -96,8 +94,7 @@ export default class Ovary {
    * @param compression
    */
   constructor(compression = 'xz') {
-    this.compression = compression
-
+    this.compression = compression || ''
     this.app.author = 'Piero Proietti'
     this.app.homepage = 'https://github.com/pieroproietti/penguins-eggs'
     this.app.mail = 'piero.proietti@gmail.com'
@@ -109,7 +106,7 @@ export default class Ovary {
     this.distro.versionNumber = 'zero' // Utils.formatDate()
     this.distro.branding = 'eggs'
     this.distro.kernel = Utils.kernerlVersion()
-    this.distro.pathHome = this.workDir + `${this.distro.name}`
+    this.distro.pathHome = this.snapshot_dir + this.distro.name
     this.distro.pathFs = this.distro.pathHome + '/fs'
     this.distro.pathIso = this.distro.pathHome + '/iso'
 
@@ -118,7 +115,7 @@ export default class Ovary {
     this.users = Utils.usersList()
     this.i686 = Utils.isi686()
     this.debian_version = Utils.getDebianVersion()
-    // this.reset_accounts = true
+    this.reset_accounts = true
     // const name = shx.exec(`cat /etc/mx-version | /usr/bin/cut -f1 -d' '`).stdout.trim()
     console.log(`Space: ${Utils.getUsedSpace()}`)
   }
@@ -192,8 +189,8 @@ export default class Ovary {
   }
 
   /**
-   * 
-   * @param basename 
+   *
+   * @param basename
    */
   async produce(basename = '') {
     if (basename !== '') {
@@ -209,18 +206,19 @@ export default class Ovary {
       console.log('------------------------------------------')
       console.log('Laying the system into the egg...')
       console.log('------------------------------------------')
-      await this.eggCreateStructure()
+      // await this.eggCreateStructure()
       await this.isoCreateStructure()
       await this.isolinuxPrepare()
       await this.isoStdmenuCfg()
       await this.isolinuxCfg()
       await this.isoMenuCfg()
       await this.copyKernel()
+      // await this.system2egg()
+      await this.setupEnv()
+      await this.makeDhcp()
       console.log('------------------------------------------')
       console.log('Spawning the system into the egg...\nThis process can be very long, perhaps it\'s time for a coffee!')
       console.log('------------------------------------------')
-      await this.system2egg()
-      await this.makeDhcp()
       await this.makeSquashFs()
       await this.makeIsoFs()
     }
@@ -234,7 +232,7 @@ export default class Ovary {
     console.log('makeDhcp: ')
     console.log('==========================================')
     const text = 'auto lo\niface lo inet loopback'
-    Utils.bashWrite(`${this.distro.pathFs}/etc/network/interfaces`, text)
+    Utils.bashWrite('/.bind-root/etc/network/interfaces', text)
   }
 
   /**
@@ -265,112 +263,8 @@ export default class Ovary {
   }
 
   /**
-   * system2egg
+   *  async isoCreateStructure() {
    */
-  public async system2egg() {
-    let cmd = ''
-    let f = ''
-    // root
-    f += ' --filter="- /cdrom/*"'
-    f += ' --filter="- /dev/*"'
-    f += ' --filter="- /live"'
-    f += ' --filter="- /media/*"'
-    f += ' --filter="- /mnt/*"'
-    f += ' --filter="- /proc/*"'
-    f += ' --filter="- /sys/*"'
-    f += ' --filter="- /swapfile"'
-    f += ' --filter="- /tmp/*"'
-    f += ' --filter="- /persistence.conf"'
-
-    // boot
-    f += ' --filter="- /boot/grub/grub.cfg"'
-    f += ' --filter="- /boot/grub/menu.lst"'
-    f += ' --filter="- /boot/grub/device.map"'
-    f += ' --filter="- /boot/*.bak"'
-    f += ' --filter="- /boot/*.old-dkms"'
-
-    // etc
-    f += ' --filter="- /etc/apt/sources.list~"'
-    f += ' --filter="- /etc/blkid.tab"'
-    f += ' --filter="- /etc/blkid.tab.old"'
-    f += ' --filter="- /etc/crypttab"'
-    f += ' --filter="- /etc/fstab"'
-    f += ' --filter="- /etc/fstab.d/*"'
-    f += ' --filter="- /etc/initramfs-tools/conf.d/resume"' // see remove-cryptroot and nocrypt.sh
-    f += ' --filter="- /etc/initramfs-tools/conf.d/cryptroot"' // see remove-cryptroot and nocrypt.sh
-    f += ' --filter="- /etc/mtab"'
-    f += ' --filter="- /etc/popularity-contest.conf"'
-    f += ' --filter="- /etc/ssh/ssh_host_*_key*"' // Exclude ssh_host_keys. New ones will be generated upon live boot.
-    f += ' --filter="- /etc/ssh/ssh_host_key*"' // Exclude ssh_host_keys. New ones will be generated upon live boot.
-    f += ' --filter="- /etc/sudoers.d/live"' // Exclude live da sudoers.d non serve se installato
-
-    // lib
-    f += ' --filter="- /lib/live/image"'
-    f += ' --filter="- /lib/live/mount"'
-    f += ' --filter="- /lib/live/overlay"'
-    f += ' --filter="- /lib/live/rootfs"'
-
-    f += ' --filter="- /home/*"'
-    f += ' --filter="- /root/*"'
-    f += ' --filter="- /run/*"'
-
-    // var
-    f += ' --filter="- /var/backups/*.gz"'
-    f += ' --filter="- /var/cache/apt/archives/*.deb"'
-    f += ' --filter="- /var/cache/apt/pkgcache.bin"'
-    f += ' --filter="- /var/cache/apt/srcpkgcache.bin"'
-    f += ' --filter="- /var/cache/apt/apt-file/*"'
-    f += ' --filter="- /var/cache/debconf/*~old"'
-    f += ' --filter="- /var/lib/apt/*~"'
-    f += ' --filter="- /var/lib/apt/cdroms.list"'
-    f += ' --filter="- /var/lib/apt/lists/*"'
-    f += ' --filter="- /var/lib/aptitude/*.old"'
-    f += ' --filter="- /var/lib/dbus/machine-id"'
-    f += ' --filter="- /var/lib/dhcp/*"'
-    f += ' --filter="- /var/lib/dpkg/*~old"'
-    f += ' --filter="- /var/lib/live/config/*"'
-    f += ' --filter="- /var/log/*"'
-    f += ' --filter="- /var/mail/*"'
-    f += ' --filter="- /var/spool/mail/*"'
-
-    // usr
-    f += ' --filter="- /usr/share/icons/*/icon-theme.cache"'
-    f += ' --filter="- /usr/lib/live/image"'
-    f += ' --filter="- /usr/lib/live/mount"'
-    f += ' --filter="- /usr/lib/live/overlay"'
-    f += ' --filter="- /usr/lib/live/rootfs"'
-
-    // Copia la home di live da system ad egg
-    cmd = `\
-      rsync \
-      --archive \
-      --delete-before \
-      --delete-excluded \
-      --filter="- ${this.distro.pathHome}" \
-      ${f} \
-      --filter="- /lib/live/*" \
-      --filter="+ /lib/live/boot/*" \
-      --filter="+ /lib/live/config/*" \
-      --filter="+ /lib/live/init-config-sh" \
-      --filter="+ /lib/live/setup-network.sh" \
-      --filter="- /home/*" \
-      / ${this.distro.pathFs}`
-    console.log('system2egg: copyng system... \n')
-    shx.exec(cmd.trim(), {
-      async: false,
-    })
-
-    console.log('system2egg: creating home... \n')
-    shx.exec(`cp -r /etc/skel/. ${this.distro.pathFs}/home/live`, {async: false})
-    shx.exec(`chown -R live:live ${this.distro.pathFs}/home/live`, {async: false})
-    shx.exec(`mkdir ${this.distro.pathFs}/home/live/Desktop`, {async: false})
-
-    console.log('system2egg: creating initial live link... \n')
-    shx.exec(`cp /etc/penguins-eggs/live/Desktop/* ${this.distro.pathFs}/home/live/Desktop`, {async: false})
-    shx.exec(`chmod +x ${this.distro.pathFs}/home/live/Desktop/*.desktop`, {async: false})
-    shx.exec(`chown live:live ${this.distro.pathFs}/home/live/Desktop/*`, {async: false})
-  }
-
   async isoCreateStructure() {
     console.log('==========================================')
     console.log('iso: createStructure')
@@ -942,9 +836,21 @@ timeout 0
     console.log('==========================================')
     console.log('iso: makeSquashFs')
     console.log('==========================================')
-    const option = `-comp ${this.compression}`
+
+    this.addRemoveExclusion(true, this.snapshot_dir /* .absolutePath() */)
+
+    if (this.reset_accounts) {
+      this.addRemoveExclusion(true, '/etc/minstall.conf')
+      // exclude /etc/localtime if link and timezone not America/New_York
+      if (Utils.shxExec('/usr/bin/test -L /etc/localtime') && Utils.shxExec('cat /etc/timezone') !== 'America/New_York') {
+        this.addRemoveExclusion(true, '/etc/localtime')
+      }
+    }
+
+    const option = `-comp ${this.compression} `
     Utils.shxExec(
-      `mksquashfs ${this.distro.pathFs} ${this.distro.pathIso}/live/filesystem.squashfs ${option} -noappend`
+      `mksquashfs /.bind-root ${this.distro.pathIso}/live/filesystem.squashfs ${option} -wildcards -ef ${this.snapshot_excludes} ${this.session_excludes} `
+      // usr/bin/mksquashfs /.bind-root iso-template/antiX/linuxfs -comp ${this.compression} ${(this.mksq_opt === '' ? '' : ' ' + this.mksq_opt)} -wildcards -ef ${this.snapshot_excludes} ${this.session_excludes}`)
     )
   }
 
@@ -955,10 +861,10 @@ timeout 0
 
     const isoHybridOption = `-isohybrid-mbr ${this.iso.isolinuxPath}isohdpfx.bin `
     const volid = this.getFilename(this.iso.distroName)
-    const isoName = `${this.workDir}${volid}`
+    const isoName = `${this.snapshot_dir}${volid}`
 
     Utils.shxExec(
-      `xorriso -as mkisofs -r -J -joliet-long -l -cache-inodes ${isoHybridOption} -partition_offset 16 -volid ${volid} -b boot/isolinux/isolinux.bin -c boot/isolinux/boot.cat -no-emul-boot -boot-load-size 4 -boot-info-table -o ${isoName} ${this.distro.pathIso}`
+      `xorriso -as mkisofs -r -J -joliet-long -l -cache-inodes ${isoHybridOption} -partition_offset 16 -volid ${volid} -b boot/isolinux/isolinux.bin -c boot/isolinux/boot.cat -no-emul-boot -boot-load-size 4 -boot-info-table -o ${isoName}/${this.distro.pathIso}`
     )
   }
 
@@ -976,5 +882,86 @@ timeout 0
       basename = this.snapshot_basename
     }
     return `${basename}-${arch}-lv_${Utils.formatDate(new Date())}.iso`
+  }
+
+  /**
+   * Kill mksquashfs and md5sum...
+   * Execute installed-to-live cleanup
+   * Remove mx-snapshot in work_dir
+   * if backup mode delete minstall.desktop in user
+   */
+  async cleanUp() {
+    console.log('==========================================')
+    console.log('ovary: cleanUp')
+    console.log('==========================================')
+
+    Utils.shxExec('sync')
+    Utils.shxExec('/usr/bin/pkill mksquashfs; /usr/bin/pkill md5sum')
+    Utils.shxExec('/usr/bin/[ -f /tmp/installed-to-live/cleanup.conf ] && /sbin/installed-to-live cleanup')
+
+    if (fs.existsSync(`${this.work_dir}/mx-snapshot`)) {
+      Utils.shxExec(`rm -r ${this.work_dir}`)
+    }
+    shx.echo('Done')
+  }
+
+  /**
+   * Check if exist mx-snapshot in work_dir;
+   * If respin mode remove all the users
+   */
+  async setupEnv() {
+    console.log('==========================================')
+    console.log('ovary: setupEnv')
+    console.log('==========================================')
+
+    Utils.shxExec(`mkdir -r ${this.work_dir}/mx-snapshot`)
+
+    // checks if work_dir looks OK
+    // if (!this.work_dir.includes('/mx-snapshot')) { // Se non contiene /mx-snapshot
+    //  console.log(`${this.work_dir} NON contiene mx-snapshot!`)
+    //  return
+    // }
+
+    let bind_boot = ''
+    let bind_boot_too = ''
+    if (shx.exec('mountpoint /boot').code) {
+      bind_boot = 'bind=/boot'
+      bind_boot_too = ',/boot'
+    }
+
+    // setup environment if creating a respin (reset root/demo, remove personal accounts)
+    if (this.reset_accounts) {
+      console.log(' - resetting accounts ')
+      //              installed-to-live -b /.bind-root start ${bind_boot} empty=/home general version-file read-only);
+      Utils.shxExec(`/sbin/installed-to-live -b /.bind-root start ${bind_boot} empty=/home general version-file read-write`)
+    } else {
+      console.log(' - using old accounts ')
+      //             /sbin/installed-to-live -b /.bind-root start bind=/home${bind_boot_too} live-files version-file adjtime read-only
+      Utils.shxExec(`/sbin/installed-to-live -b /.bind-root start bind=/home${bind_boot_too} live-files version-file adjtime read-write`)
+    }
+  }
+
+  /**
+   * Add or remove exclusion
+   * @param add {boolean} true = add, false remove
+   * @param exclusion {atring} path to add/remove
+   */
+  addRemoveExclusion(add: boolean, exclusion: string): void {
+    if (exclusion.startsWith('/')) {
+      exclusion = exclusion.substring(1) // remove / initial Non compatible with
+    }
+
+    if (add) {
+      if (this.session_excludes === '') {
+        this.session_excludes += `-e '${exclusion}' `
+      } else {
+        this.session_excludes += ` '${exclusion}' `
+      }
+    } else {
+      this.session_excludes.replace(` '${exclusion}'`, '')
+      if (this.session_excludes === '-e') {
+        this.session_excludes = ''
+      }
+    }
   }
 }

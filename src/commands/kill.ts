@@ -4,7 +4,7 @@
  * email: piero.proietti@gmail.com
  * license: MIT
  */
-import { Command, flags } from '@oclif/command'
+import {Command} from '@oclif/command'
 import shx = require('shelljs')
 import Utils from '../classes/utils'
 
@@ -21,9 +21,9 @@ kill the eggs/free the nest
 
   async run() {
     if (Utils.isRoot()) {
-      const cmd = 'rm /home/snapshot/ -rf'
       this.log(`${Utils.getFriendName()}: deleting old eggs...`)
-      shx.exec(cmd)
+      shx.exec('installed-to-live cleanup')
+      shx.exec('rm /home/snapshot/ -rf')
     }
   }
 }
