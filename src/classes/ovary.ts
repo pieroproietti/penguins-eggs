@@ -857,7 +857,10 @@ timeout 0
     if (basename === '') {
       basename = this.snapshot_basename
     }
-    return `${basename}-${arch}-lv_${Utils.formatDate(new Date())}.iso`
+    let isoName = `${basename}-${arch}_${Utils.formatDate(new Date())}`
+    if (isoName.length >= 34)
+      isoName = isoName.substr(1,34)
+    return `${isoName}.iso`
   }
 
   /**

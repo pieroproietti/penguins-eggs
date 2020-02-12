@@ -33,9 +33,9 @@ install the prerequisites packages to run penguin's eggs
        * live-files/*         /usr/local/share/live-files
        */
       shx.echo('mx-remaster')
-      shx.cp(path.resolve(__dirname, '../../mx-linux/mx-remaster/installed-to-live'), '/usr/sbin') // installed-to-live
-      shx.cp('-R', path.resolve(__dirname, '../../mx-linux/mx-remaster/live-files'), '/usr/local/share') // live-files
-
+      // shx.cp(path.resolve(__dirname, '../../mx-linux/mx-remaster/installed-to-live'), '/usr/sbin') // installed-to-live
+      // shx.cp('-R', path.resolve(__dirname, '../../mx-linux/mx-remaster/live-files'), '/usr/local/share') // live-files
+      shx.cp(path.resolve(__dirname, '../../scripts/installed-to-live'), '/usr/sbin') // installed-to-live
       const codeUpdate: number = shx.exec('/usr/bin/apt-get update -y').code
       if (codeUpdate === 0) {
         this.log('udapte executed')
