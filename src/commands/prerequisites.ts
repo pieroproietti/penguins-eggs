@@ -53,7 +53,8 @@ install the prerequisites packages to run penguin's eggs
                   live-boot \
                   xterm \
                   zenity \
-                  open-infrastructure-system-config', {async: false})
+                  open-infrastructure-system-config \
+                  whois ', {async: false})
 
         // Copia della configurazione
         shx.cp(path.resolve(__dirname, '../../conf/penguins-eggs.conf'), '/etc')

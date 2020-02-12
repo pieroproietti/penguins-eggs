@@ -48,7 +48,7 @@ export default class Ovary {
 
   force_installer = false
 
-  reset_accounts = false
+  reset_accounts = true
 
   debian_version = 10 as number
 
@@ -111,7 +111,6 @@ export default class Ovary {
     this.users = Utils.usersList()
     this.i686 = Utils.isi686()
     this.debian_version = Utils.getDebianVersion()
-    this.reset_accounts = true
     // const name = shx.exec(`cat /etc/mx-version | /usr/bin/cut -f1 -d' '`).stdout.trim()
     console.log(`Space: ${Utils.getUsedSpace()}`)
   }
@@ -171,6 +170,7 @@ export default class Ovary {
     this.gui_editor = settings.General.gui_editor
     this.stamp = settings.General.stamp
     this.force_installer = settings.General.force_installer
+    this.reset_accounts = settings.General.reset_accounts
 
     return foundSettings
   }
@@ -216,7 +216,7 @@ export default class Ovary {
       await this.isoMenuCfg()
       await this.copyKernel()
       // await this.system2egg()
-      await this.setupEnv()
+      await this.system2live()
       await this.makeDhcp()
       console.log('------------------------------------------')
       console.log('Spawning the system into the egg...\nThis process can be very long, perhaps it\'s time for a coffee!')
@@ -881,16 +881,16 @@ timeout 0
     if (fs.existsSync(`${this.work_dir}/mx-snapshot`)) {
       Utils.shxExec(`rm -r ${this.work_dir}`)
     }
-    shx.echo('Done')
+
   }
 
   /**
    * Check if exist mx-snapshot in work_dir;
    * If respin mode remove all the users
    */
-  async setupEnv() {
+  async system2live() {
     console.log('==========================================')
-    console.log('ovary: setupEnv')
+    console.log('ovary: system2live')
     console.log('==========================================')
 
     Utils.shxExec(`mkdir -r ${this.work_dir}/mx-snapshot`)
@@ -908,18 +908,31 @@ timeout 0
       bind_boot_too = ',/boot'
     }
 
-    // setup environment if creating a respin (reset root/demo, remove personal accounts)
+    /**
+     * setup environment if creating a respin 
+     * (reset root/demo, remove personal accounts) 
+     * */ 
     if (this.reset_accounts) {
-      console.log(' - resetting accounts ')
-      //              installed-to-live -b /.bind-root start ${bind_boot} empty=/home general version-file read-only);
-      console.log(`Comando: sbin/installed-to-live -b /.bind-root start ${bind_boot} empty=/home general version-file read-write`)
+      /**
+       * Se resettiamo gli account e NON copiamo home, BISOGNA ricreare la home di live!
+       */
       Utils.shxExec(`/sbin/installed-to-live -b /.bind-root start ${bind_boot} empty=/home general version-file read-write`)
+      // creazione di home per user live
+      shx.exec(`cp -r /etc/skel/. ${this.distro.pathFs}/home/live`, {async: false})
+      shx.exec(`chown -R live:live ${this.distro.pathFs}/home/live`, {async: false})
+      shx.exec(`mkdir ${this.distro.pathFs}/home/live/Desktop`, {async: false})
+  
+      // creazione dei link per user live
+      console.log('system2live: creating initial live link... \n')
+      shx.exec(`cp /etc/penguins-eggs/live/Desktop/* ${this.distro.pathFs}/home/live/Desktop`, {async: false})
+      shx.exec(`chmod +x ${this.distro.pathFs}/home/live/Desktop/*.desktop`, {async: false})
+      shx.exec(`chown live:live ${this.distro.pathFs}/home/live/Desktop/*`, {async: false})
     } else {
-      console.log(' - using old accounts ')
-      //             /sbin/installed-to-live -b /.bind-root start bind=/home${bind_boot_too} live-files version-file adjtime read-only
-      console.log(`Comando: /sbin/installed-to-live -b /.bind-root start bind=/home${bind_boot_too} live-files version-file adjtime read-write`)
       Utils.shxExec(`/sbin/installed-to-live -b /.bind-root start bind=/home${bind_boot_too} live-files version-file adjtime read-write`)
     }
+
+    shx.echo('Done')
+
   }
 
   /**
