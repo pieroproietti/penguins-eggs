@@ -25,7 +25,6 @@ export default class Calamares extends Command {
       shx.exec(`apt-get install --yes \
               calamares \
               calamares-settings-debian`, { async: false })
-      shx.exec(`apt update`, { async: false })
     }
   }
 }

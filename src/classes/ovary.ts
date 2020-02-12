@@ -918,15 +918,15 @@ timeout 0
        */
       Utils.shxExec(`/sbin/installed-to-live -b /.bind-root start ${bind_boot} empty=/home general version-file read-write`)
       // creazione di home per user live
-      shx.exec(`cp -r /etc/skel/. ${this.distro.pathFs}/home/live`, {async: false})
-      shx.exec(`chown -R live:live ${this.distro.pathFs}/home/live`, {async: false})
-      shx.exec(`mkdir ${this.distro.pathFs}/home/live/Desktop`, {async: false})
+      shx.exec(`cp -r /etc/skel/. /.bind-root/home/live`, {async: false})
+      shx.exec(`chown -R live:live /.bind-root/home/live`, {async: false})
+      shx.exec(`mkdir /.bind-root/home/live/Desktop`, {async: false})
   
       // creazione dei link per user live
       console.log('system2live: creating initial live link... \n')
-      shx.exec(`cp /etc/penguins-eggs/live/Desktop/* ${this.distro.pathFs}/home/live/Desktop`, {async: false})
-      shx.exec(`chmod +x ${this.distro.pathFs}/home/live/Desktop/*.desktop`, {async: false})
-      shx.exec(`chown live:live ${this.distro.pathFs}/home/live/Desktop/*`, {async: false})
+      shx.exec(`cp /etc/penguins-eggs/live/Desktop/* /.bind-root/home/live/Desktop`, {async: false})
+      shx.exec(`chmod +x /.bind-root/home/live/Desktop/*.desktop`, {async: false})
+      shx.exec(`chown live:live /.bind-root/home/live/Desktop/*`, {async: false})
     } else {
       Utils.shxExec(`/sbin/installed-to-live -b /.bind-root start bind=/home${bind_boot_too} live-files version-file adjtime read-write`)
     }
