@@ -126,7 +126,10 @@ export default class Ovary {
     this.iso = this.oses.info(this.distro)
 
     const loadSettings = await this.loadSettings()
-    console.log(`Space: ${Utils.getUsedSpace()}`)
+    if (!Utils.isLive()) {
+      // Lo spazio usato da SquashFS non è stimabile da live errore buffer troppo piccolo
+      console.log(`Space: ${Utils.getUsedSpace()}`)
+    }
     const listFreeSpace = await this.listFreeSpace()
 
     if (this.loadSettings() && this.listFreeSpace()) {
