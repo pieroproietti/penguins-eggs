@@ -48,8 +48,8 @@ class Calamares {
   /**
    * configure calamares-settings-eggs
    */
-  public configure() {
-    if (this.isInstalled()) {
+  public async configure() {
+    if (await this.isInstalled()) {
       console.log('==========================================')
       console.log('eggs: calamares configuration')
       console.log('------------------------------------------')

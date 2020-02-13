@@ -22,7 +22,7 @@ export default class Calamares extends Command {
     if (Utils.isRoot()) {
       console.log(`>>> eggs: removing calamares...`)
       shx.exec('rm /etc/calamares -rf')
-      shx.exec('apt-get remove --purge calamares calamares-settings-debian')
+      shx.exec('apt-get remove --yes --purge calamares calamares-settings-debian')
       shx.exec(`apt-get update`, { async: false })
       shx.exec(`apt-get install --yes \
               calamares \

@@ -53,6 +53,7 @@ kill the eggs/free the nest
     }
 
     this.snapshot_dir = settings.General.snapshot_dir.trim()
+  
     if (!this.snapshot_dir.endsWith('/')) {
       this.snapshot_dir += '/'
     }
