@@ -86,6 +86,8 @@ export default class Ovary {
 
   version = '' as string
 
+  bindRoot = '/.bind-root'
+
   // Altre mie
   users: string[] = []
 
@@ -234,7 +236,16 @@ export default class Ovary {
     console.log('makeDhcp: ')
     console.log('==========================================')
     const text = 'auto lo\niface lo inet loopback'
-    Utils.bashWrite('/.bind-root/etc/network/interfaces', text)
+    const bindRoot = '/.bind-root'
+    Utils.bashWrite(`${bindRoot}/etc/network/interfaces`, text)
+    /**
+     * Clear configs from /etc/network/interfaces, wicd and NetworkManager
+     * and netman, so they aren't stealthily included in the snapshot.
+     */
+    shx.exec(`rm -f ${bindRoot}/var/lib/wicd/configurations/*`)
+    shx.exec(`rm -f ${bindRoot}/etc/wicd/wireless-settings.conf`)
+    shx.exec(`rm -f ${bindRoot}/etc/NetworkManager/system-connections/*`)
+    shx.exec(`rm -f ${bindRoot}/etc/network/wifi/*`)
   }
 
   /**
@@ -917,19 +928,19 @@ timeout 0
        * Se resettiamo gli account e NON copiamo home, BISOGNA ricreare la home dell'user primario 1000:1000
        */
       const user: string = Utils.getPrimaryUser()
-      Utils.shxExec(`/sbin/installed-to-live -b /.bind-root start ${bind_boot} empty=/home general version-file read-write`)
+      Utils.shxExec(`/sbin/installed-to-live -b ${this.bindRoot} start ${bind_boot} empty=/home general version-file read-write`)
       // creazione di home per user live
-      shx.exec(`cp -r /etc/skel/. /.bind-root/home/${user}`, {async: false})
-      shx.exec(`chown -R live:live /.bind-root/home/${user}`, {async: false})
-      shx.exec(`mkdir /.bind-root/home/${user}/Desktop`, {async: false})
+      shx.exec(`cp -r /etc/skel/. ${this.bindRoot}/home/${user}`, {async: false})
+      shx.exec(`chown -R live:live ${this.bindRoot}/home/${user}`, {async: false})
+      shx.exec(`mkdir ${this.bindRoot}/home/${user}/Desktop`, {async: false})
   
       // creazione dei link per user live
       console.log('system2live: creating initial live link... \n')
-      shx.exec(`cp /etc/penguins-eggs/${user}/Desktop/* /.bind-root/home/live/Desktop`, {async: false})
-      shx.exec(`chmod +x /.bind-root/home/${user}/Desktop/*.desktop`, {async: false})
-      shx.exec(`chown live:live /.bind-root/home/${user}/Desktop/*`, {async: false})
+      shx.exec(`cp /etc/penguins-eggs/${user}/Desktop/* ${this.bindRoot}/home/${user}/Desktop`, {async: false})
+      shx.exec(`chmod +x ${this.bindRoot}/home/${user}/Desktop/*.desktop`, {async: false})
+      shx.exec(`chown ${user}:${user} ${this.bindRoot}/home/${user}/Desktop/*`, {async: false})
     } else {
-      Utils.shxExec(`/sbin/installed-to-live -b /.bind-root start bind=/home${bind_boot_too} live-files version-file adjtime read-write`)
+      Utils.shxExec(`/sbin/installed-to-live -b ${this.bindRoot} start bind=/home${bind_boot_too} live-files version-file adjtime read-write`)
     }
 
     shx.echo('Done')

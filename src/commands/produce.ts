@@ -13,6 +13,7 @@ export default class Produce extends Command {
   static flags = {
     info: flags.help({char: 'h'}),
     fast: flags.boolean({char: 'f', description: 'compression fast'}),
+    compress: flags.boolean({char: 'c', description: 'max compression'}),
     basename: flags.string({char: 'b', description: 'basename egg'}),
   }
 
@@ -34,6 +35,10 @@ the penguin produce an egg called uovo-i386-2020-01-18_2000.iso`]
       if (flags.fast) {
         compression = 'lz4'
       } 
+      if (flags.compress){
+        compression = '-comp xz -Xbcj x86'
+      }
+      
       const ovary = new Ovary(compression)
       await ovary.fertilization()
       const eggName = ovary.produce(basename)
