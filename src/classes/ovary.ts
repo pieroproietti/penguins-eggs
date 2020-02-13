@@ -114,7 +114,6 @@ export default class Ovary {
     this.i686 = Utils.isi686()
     this.debian_version = Utils.getDebianVersion()
     // const name = shx.exec(`cat /etc/mx-version | /usr/bin/cut -f1 -d' '`).stdout.trim()
-    console.log(`Space: ${Utils.getUsedSpace()}`)
   }
 
   /**
@@ -127,6 +126,7 @@ export default class Ovary {
     this.iso = this.oses.info(this.distro)
 
     const loadSettings = await this.loadSettings()
+    console.log(`Space: ${Utils.getUsedSpace()}`)
     const listFreeSpace = await this.listFreeSpace()
 
     if (this.loadSettings() && this.listFreeSpace()) {
@@ -833,7 +833,6 @@ timeout 0
     console.log('==========================================')
 
     this.addRemoveExclusion(true, this.snapshot_dir /* .absolutePath() */)
-    this.addRemoveExclusion(true, this.work_dir /* .absolutePath() */)
 
     if (this.reset_accounts) {
       this.addRemoveExclusion(true, '/etc/minstall.conf')

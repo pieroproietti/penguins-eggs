@@ -28,7 +28,7 @@ kill the eggs/free the nest
 
   async run() {
     if (Utils.isRoot()) {
-      shx.exec('installed-to-live cleanup > null')
+      shx.exec('installed-to-live cleanup > /dev/null')
       this.log(`${Utils.getFriendName()}: deleting old eggs...`)
       if (this.loadSettings()){
         shx.exec(`rm ${this.snapshot_dir} -rf`)
@@ -60,3 +60,4 @@ kill the eggs/free the nest
     return foundSettings
   }
 }
+
