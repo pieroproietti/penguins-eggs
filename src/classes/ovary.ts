@@ -232,7 +232,9 @@ export default class Ovary {
    * 
    */
   async  calamaresConfigure(){
-    this.calamares.configure()  // c.configure(o)
+    if (Utils.packageIsInstalled('calamares')){
+      this.calamares.configure()  // c.configure(o)
+    }
   } 
 
 
