@@ -31,7 +31,6 @@ export default class Calamares extends Command {
 
     const ovary = new Ovary
     await ovary.loadSettings()
-    await ovary.fertilization()
     await ovary.calamaresConfigure()
   }
 }

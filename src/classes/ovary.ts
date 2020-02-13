@@ -125,7 +125,6 @@ export default class Ovary {
   async fertilization(): Promise<boolean> {
     this.oses = new Oses()
     this.iso = this.oses.info(this.distro)
-    this.calamares = new Calamares(this.distro, this.iso)
 
     const loadSettings = await this.loadSettings()
     const listFreeSpace = await this.listFreeSpace()
@@ -225,6 +224,7 @@ export default class Ovary {
       console.log('------------------------------------------')
       await this.makeSquashFs()
       await this.makeIsoFs()
+      await this.cleanUp()
     }
   }
 
@@ -233,6 +233,7 @@ export default class Ovary {
    */
   async  calamaresConfigure(){
     if (Utils.packageIsInstalled('calamares')){
+      this.calamares = new Calamares(this.distro, this.iso)
       this.calamares.configure()  // c.configure(o)
     }
   } 
