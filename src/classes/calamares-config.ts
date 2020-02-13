@@ -219,8 +219,8 @@ class Calamares {
    */
   async links() {
     // Utils.shxExec(`cp ${__dirname}/../../templates/* /etc/ -R`);
-    Utils.shxExec('rm /usr/bin/add-calamares-desktop-icon')
-    Utils.shxExec('rm /usr/share/applications/install-debian.desktop')
+    // Utils.shxExec('rm /usr/bin/add-calamares-desktop-icon')
+    // Utils.shxExec('rm /usr/share/applications/install-debian.desktop')
     // Utils.shxExec(`cp ${__dirname}/../../applications/* /usr/share/applications`)
   }
 
