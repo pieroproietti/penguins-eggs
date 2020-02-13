@@ -150,8 +150,8 @@ export default class Utils {
      * @returns {number} Byte
      */
   static getLiveRootSpace(type = 'debian-live'): number {
-    let squashFs = '/run/live/etc.../filesystem.squashfs'
-
+    let squashFs = '/run/live/medium/live/filesystem.squashfs'
+    
     if (type === 'mx') {
       squashFs = '/live/boot-dev/antiX/linuxfs'
     }
