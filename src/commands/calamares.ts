@@ -7,7 +7,7 @@
 import { Command, flags } from '@oclif/command'
 import shx = require('shelljs')
 import Utils from '../classes/utils'
-import { SSL_OP_COOKIE_EXCHANGE } from 'constants'
+import Ovary from '../classes/ovary'
 
 export default class Calamares extends Command {
   static description = 'Install calamares installer and configure it'
@@ -20,11 +20,18 @@ export default class Calamares extends Command {
     const { args, flags } = this.parse(Calamares)
 
     if (Utils.isRoot()) {
-      console.log(`>>> eggs: installing calamares...`)
+      console.log(`>>> eggs: removing calamares...`)
+      shx.exec('rm /etc/calamares -rf')
+      shx.exec('apt-get remove --purge calamares calamares-settings-debian')
       shx.exec(`apt-get update`, { async: false })
       shx.exec(`apt-get install --yes \
               calamares \
               calamares-settings-debian`, { async: false })
     }
+
+    const ovary = new Ovary
+    await ovary.loadSettings()
+    await ovary.fertilization()
+    await ovary.calamaresConfigure()
   }
 }

@@ -34,8 +34,7 @@ the penguin produce an egg called uovo-i386-2020-01-18_2000.iso`]
       let compression = '' // se vuota, compression viene definita da loadsettings
       if (flags.fast) {
         compression = 'lz4'
-      } 
-      if (flags.compress){
+      } else if (flags.compress){
         compression = 'xz -Xbcj x86'
       }
       

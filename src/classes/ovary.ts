@@ -143,7 +143,7 @@ export default class Ovary {
    * Load configuration from /etc/penguins-eggs.conf
    * @returns {boolean} Success
    */
-  async loadSettings(): Promise<boolean> {
+  public async loadSettings(): Promise<boolean> {
     let foundSettings: boolean
 
     const settings = ini.parse(fs.readFileSync(this.config_file, 'utf-8'))
@@ -206,11 +206,11 @@ export default class Ovary {
         '>>> eggs: This is a live system! An egg cannot be produced from an egg!'
       )
     } else {
-      this.calamares.configure()  // c.configure(o)
       console.log('------------------------------------------')
       console.log('Laying the system into the egg...')
       console.log('------------------------------------------')
       // await this.eggCreateStructure()
+      await this.calamaresConfigure()
       await this.isoCreateStructure()
       await this.isolinuxPrepare()
       await this.isoStdmenuCfg()
@@ -227,6 +227,14 @@ export default class Ovary {
       await this.makeIsoFs()
     }
   }
+
+  /**
+   * 
+   */
+  async  calamaresConfigure(){
+    this.calamares.configure()  // c.configure(o)
+  } 
+
 
   /**
  *
