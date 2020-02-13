@@ -24,15 +24,7 @@ export default class Utils {
   static getPrimaryUser(): string {
     return shx.exec(`echo $(awk -F":" '/1000:1000/ { print $1 }' /etc/passwd)`).stdout.trim()
   }
-  /**
-   * bashWrite solo per compatibilità
-   * @param file
-   * @param text
-   */
-  static bashWrite(file: string, text: string) {
-    this.write(file, text)
-  }
-
+  
   /**
     *
     * @param date

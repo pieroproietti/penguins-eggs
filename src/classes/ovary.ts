@@ -208,7 +208,6 @@ export default class Ovary {
       console.log('------------------------------------------')
       console.log('Laying the system into the egg...')
       console.log('------------------------------------------')
-      // await this.eggCreateStructure()
       await this.calamaresConfigure()
       await this.isoCreateStructure()
       await this.isolinuxPrepare()
@@ -216,15 +215,14 @@ export default class Ovary {
       await this.isolinuxCfg()
       await this.isoMenuCfg()
       await this.copyKernel()
-      // await this.system2egg()
       await this.system2live()
       await this.makeDhcp()
       console.log('------------------------------------------')
       console.log('Spawning the system into the egg...\nThis process can be very long, perhaps it\'s time for a coffee!')
       console.log('------------------------------------------')
       await this.makeSquashFs()
-      await this.makeIsoFs()
       await this.cleanUp()
+      await this.makeIsoFs()
     }
   }
 
@@ -248,7 +246,7 @@ export default class Ovary {
     console.log('==========================================')
     const text = 'auto lo\niface lo inet loopback'
     const bindRoot = '/.bind-root'
-    Utils.bashWrite(`${bindRoot}/etc/network/interfaces`, text)
+    Utils.write(`${bindRoot}/etc/network/interfaces`, text)
     /**
      * Clear configs from /etc/network/interfaces, wicd and NetworkManager
      * and netman, so they aren't stealthily included in the snapshot.
@@ -335,7 +333,7 @@ MENU VSHIFT 8
 MENU TABMSG Press ENTER to boot or TAB to edit a menu entry
   `
 
-    Utils.bashWrite(file, text)
+    Utils.write(file, text)
   }
 
   isolinuxCfg() {
@@ -354,7 +352,7 @@ default vesamenu.c32
 prompt 0
 timeout 0
 `
-    Utils.bashWrite(file, text)
+    Utils.write(file, text)
   }
 
   async isoMenuCfg() {
@@ -811,7 +809,7 @@ timeout 0
       kernel /live/vmlinuz
       ${this.iso.appendSafe}`
 
-    Utils.bashWrite(file, text)
+    Utils.write(file, text)
     Utils.shxExec(`cp ${__dirname}/../../assets/penguins-eggs-syslinux.png ${this.distro.pathIso}/boot/isolinux`)
   }
 
