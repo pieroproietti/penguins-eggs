@@ -1,1 +1,0 @@
-scp dist/deb/eggs_7.1.??-?_amd64.deb root@192.168.61.2:/home/artisan/sourceforge/DEBS
