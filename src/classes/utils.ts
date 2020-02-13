@@ -17,6 +17,13 @@ import pjson = require('pjson')
  * @remarks all the utilities
   */
 export default class Utils {
+
+  /**
+   * Return the primary user's name
+   */
+  static getPrimaryUser(): string {
+    return shx.exec(`echo $(awk -F":" '/1000:1000/ { print $1 }' /etc/passwd)`).stdout.trim()
+  }
   /**
    * bashWrite solo per compatibilità
    * @param file

@@ -914,19 +914,20 @@ timeout 0
      * */ 
     if (this.reset_accounts) {
       /**
-       * Se resettiamo gli account e NON copiamo home, BISOGNA ricreare la home di live!
+       * Se resettiamo gli account e NON copiamo home, BISOGNA ricreare la home dell'user primario 1000:1000
        */
+      const user: string = Utils.getPrimaryUser()
       Utils.shxExec(`/sbin/installed-to-live -b /.bind-root start ${bind_boot} empty=/home general version-file read-write`)
       // creazione di home per user live
-      shx.exec(`cp -r /etc/skel/. /.bind-root/home/live`, {async: false})
-      shx.exec(`chown -R live:live /.bind-root/home/live`, {async: false})
-      shx.exec(`mkdir /.bind-root/home/live/Desktop`, {async: false})
+      shx.exec(`cp -r /etc/skel/. /.bind-root/home/${user}`, {async: false})
+      shx.exec(`chown -R live:live /.bind-root/home/${user}`, {async: false})
+      shx.exec(`mkdir /.bind-root/home/${user}/Desktop`, {async: false})
   
       // creazione dei link per user live
       console.log('system2live: creating initial live link... \n')
-      shx.exec(`cp /etc/penguins-eggs/live/Desktop/* /.bind-root/home/live/Desktop`, {async: false})
-      shx.exec(`chmod +x /.bind-root/home/live/Desktop/*.desktop`, {async: false})
-      shx.exec(`chown live:live /.bind-root/home/live/Desktop/*`, {async: false})
+      shx.exec(`cp /etc/penguins-eggs/${user}/Desktop/* /.bind-root/home/live/Desktop`, {async: false})
+      shx.exec(`chmod +x /.bind-root/home/${user}/Desktop/*.desktop`, {async: false})
+      shx.exec(`chown live:live /.bind-root/home/${user}/Desktop/*`, {async: false})
     } else {
       Utils.shxExec(`/sbin/installed-to-live -b /.bind-root start bind=/home${bind_boot_too} live-files version-file adjtime read-write`)
     }
