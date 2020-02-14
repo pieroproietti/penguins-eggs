@@ -880,8 +880,8 @@ timeout 0
       basename = this.snapshot_basename
     }
     let isoName = `${basename}-${arch}_${Utils.formatDate(new Date())}`
-    if (isoName.length >= 32)
-      isoName = isoName.substr(0,32)
+    if (isoName.length >= 28)
+      isoName = isoName.substr(0,28) // 28 +  4 .iso = 32 lunghezza max di volid
     return `${isoName}.iso`
   }
 
