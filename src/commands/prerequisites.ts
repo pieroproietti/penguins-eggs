@@ -25,11 +25,22 @@ install the prerequisites packages to run penguin's eggs
       /**
        * Debian live
        */
+
+      /**
+       * https://github.com/MX-Linux/mx-remaster
+       *
+       * installed-to-live    /usr/sbin
+       * live-files/*         /usr/local/share/live-files
+       */
+      shx.echo('mx-remaster')
+      // shx.cp(path.resolve(__dirname, '../../mx-linux/mx-remaster/installed-to-live'), '/usr/sbin') // installed-to-live
+      // shx.cp('-R', path.resolve(__dirname, '../../mx-linux/mx-remaster/live-files'), '/usr/local/share') // live-files
+      shx.cp(path.resolve(__dirname, '../../scripts/installed-to-live'), '/usr/sbin') // installed-to-live
       const codeUpdate: number = shx.exec('/usr/bin/apt-get update -y').code
       if (codeUpdate === 0) {
         this.log('udapte executed')
         this.log('now we install the prerequisites packages...')
-        console.log('>>> eggs: Installing the prerequisites packages...')
+        this.log('>>> eggs: Installing the prerequisites packages...')
         shx.exec('apt update', {async: false})
         shx.exec('\
                   apt-get --yes install \
@@ -41,8 +52,8 @@ install the prerequisites packages to run penguin's eggs
                   isolinux \
                   live-boot \
                   xterm \
-                  zenity \
-                  open-infrastructure-system-config', {async: false})
+                  open-infrastructure-system-config \
+                  whois ', {async: false})
 
         // Copia della configurazione
         shx.cp(path.resolve(__dirname, '../../conf/penguins-eggs.conf'), '/etc')

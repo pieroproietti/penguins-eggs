@@ -1,0 +1,3 @@
+[submodule "mx-linux/mx-remaster"]
+	path = mx-linux/mx-remaster
+	url = https://github.com/MX-Linux/mx-remaster

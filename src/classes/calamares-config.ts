@@ -48,8 +48,8 @@ class Calamares {
   /**
    * configure calamares-settings-eggs
    */
-  public configure() {
-    if (this.isInstalled()) {
+  public async configure() {
+    if (await this.isInstalled()) {
       console.log('==========================================')
       console.log('eggs: calamares configuration')
       console.log('------------------------------------------')
@@ -81,13 +81,14 @@ class Calamares {
 
     if (versionLike === 'buster') {
       // rimosso packages (rimozione pacchetti, dopo bootloader)
-      // mi manca removeuser
       Utils.shxExec(`cp ${__dirname}/../../templates/distros/buster/* /etc/ -R`)
       settings = {
         'modules-search': ['local', '/usr/lib/calamares/modules'],
         sequence: [
           {show: ['welcome', 'locale', 'keyboard', 'partition', 'users', 'summary']},
-          {exec: ['partition', 'mount', 'unpackfs', 'machineid', 'fstab', 'locale', 'keyboard', 'localecfg', 'users', 'displaymanager', 'networkcfg', 'hwclock', 'grubcfg', 'bootloader', 'luksbootkeyfile', 'plymouthcfg', 'initramfscfg', 'initramfs', 'removeuser', 'umount']},
+          //  riferimento {exec: ['partition', 'mount', 'unpackfs', 'SOURCES-MEDIA', 'machineid', 'fstab', 'locale', 'keyboard', 'localecfg', 'users', 'networkcfg', 'hwclock', 'SERVICES-SYSTEMD', 'BOOTLOADER-CONFIG', 'grubcfg', 'bootloader', 'PACKAGES', 'luksbootkeyfile', 'plymouthcfg', 'initramfscfg', 'initramfs', 'SOURCE-MEDIA-UNMOUNT', 'SOURCE-FINAL', 'removeuser', 'umount']},
+          //  predecente {exec: ['partition', 'mount', 'unpackfs', 'machineid', 'fstab', 'locale', 'keyboard', 'localecfg', 'users', 'displaymanager', 'networkcfg', 'hwclock', 'grubcfg', 'bootloader', 'luksbootkeyfile', 'plymouthcfg', 'initramfscfg', 'initramfs', 'removeuser', 'umount']},
+          {exec: ['partition', 'mount', 'unpackfs', 'machineid', 'fstab', 'locale', 'keyboard', 'localecfg', 'users', 'networkcfg', 'hwclock', 'grubcfg', 'bootloader', 'luksbootkeyfile', 'plymouthcfg', 'initramfscfg', 'initramfs', 'removeuser', 'umount']},
           {show: ['finished']},
         ],
         branding: this.distro.branding,
@@ -219,9 +220,9 @@ class Calamares {
    */
   async links() {
     // Utils.shxExec(`cp ${__dirname}/../../templates/* /etc/ -R`);
-    Utils.shxExec('rm /usr/bin/add-calamares-desktop-icon')
-    Utils.shxExec('rm /usr/share/applications/install-debian.desktop')
-    Utils.shxExec(`cp ${__dirname}/../../applications/* /usr/share/applications`)
+    // Utils.shxExec('rm /usr/bin/add-calamares-desktop-icon')
+    // Utils.shxExec('rm /usr/share/applications/install-debian.desktop')
+    // Utils.shxExec(`cp ${__dirname}/../../applications/* /usr/share/applications`)
   }
 
   /**

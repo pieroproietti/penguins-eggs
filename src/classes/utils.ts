@@ -17,13 +17,23 @@ import pjson = require('pjson')
  * @remarks all the utilities
   */
 export default class Utils {
+
   /**
-   * bashWrite solo per compatibilità
-   * @param file
-   * @param text
+   * prerequisistesInstalled
    */
-  static bashWrite(file: string, text: string) {
-    this.write(file, text)
+  static prerequisitesInstalled(): boolean {
+    const retVal : boolean = fs.existsSync('/etc/penguins-eggs.conf') && (fs.existsSync('/usr/local/share/excludes/penguins-eggs-exclude.list'))
+    if (!retVal){
+      console.log('You need to install the prerequisites for eggs. \nTry: sudo eggs prerequisites')
+    }
+    return retVal
+  }
+
+  /**
+   * Return the primary user's name
+   */
+  static getPrimaryUser(): string {
+    return shx.exec(`echo $(awk -F":" '/1000:1000/ { print $1 }' /etc/passwd)`).stdout.trim()
   }
 
   /**
@@ -151,53 +161,53 @@ export default class Utils {
      * @returns {number} Byte
      */
   static getLiveRootSpace(type = 'debian-live'): number {
-    let squashFs = '/run/live/etc.../filesystem.squashfs'
+    let squashFs = '/run/live/medium/live/filesystem.squashfs'
 
     if (type === 'mx') {
       squashFs = '/live/boot-dev/antiX/linuxfs'
     }
 
-    /**
-       * root-space-needed is the size of the linuxfs file * a compression factor +
-       * contents of the rootfs. Conservative but fast factors are same as used in
-       * live-remaster
-       */
-    const sqfile_full = ini.parse(fs.readFileSync(squashFs, 'utf-8'))
-
-    // get compression factor by reading the linuxfs squasfs file, if available
-    const linuxfs_compression_type = shx.exec(`dd if=${sqfile_full} bs=1 skip=20 count=2 status=none 2>/dev/null| /usr/bin/od -An -tdI`)
-
-    let compression_factor = 0
-
-    if (linuxfs_compression_type === '1') {
-      compression_factor = 37 // gzip
-    } else if (linuxfs_compression_type === '2') {
-      compression_factor = 52 // lzo, not used by antiX
-    } else if (linuxfs_compression_type === '3') {
-      compression_factor = 52  // lzma, not used by antiX
-    } else if (linuxfs_compression_type === '4') {
-      compression_factor = 31 // xz
-    } else if (linuxfs_compression_type === '5') {
-      compression_factor = 52 // lz4
-    } else {
-      compression_factor = 30 // anything else or linuxfs not reachable (toram), should be pretty conservative
-    }
-    let rootfs_file_size = 0
-    const linuxfs_file_size = Number(shx.exec('df /live/linux --output=used --total | /usr/bin/tail -n1').stdout.trim()) * 1024 * 100 / compression_factor
-
-    if (fs.existsSync('/live/persist-root')) {
-      rootfs_file_size = Number(shx.exec('df /live/persist-root --output=used --total | /usr/bin/tail -n1').stdout.trim()) * 1024
-    }
-
-    let rootSpaceNeeded: number
-    if (type === 'mx') {
       /**
-       * add rootfs file size to the calculated linuxfs file size. Probaby conservative, as rootfs will likely have some overlap with linuxfs
-       */
-      rootSpaceNeeded = linuxfs_file_size + rootfs_file_size
-    } else {
-      rootSpaceNeeded = linuxfs_file_size
-    }
+         * root-space-needed is the size of the linuxfs file * a compression factor +
+         * contents of the rootfs. Conservative but fast factors are same as used in
+         * live-remaster
+         */
+      const sqfile_full = ini.parse(fs.readFileSync(squashFs, 'utf-8'))
+
+      // get compression factor by reading the linuxfs squasfs file, if available
+      const linuxfs_compression_type = shx.exec(`dd if=${sqfile_full} bs=1 skip=20 count=2 status=none 2>/dev/null| /usr/bin/od -An -tdI`)
+
+      let compression_factor = 0
+
+      if (linuxfs_compression_type === '1') {
+        compression_factor = 37 // gzip
+      } else if (linuxfs_compression_type === '2') {
+        compression_factor = 52 // lzo, not used by antiX
+      } else if (linuxfs_compression_type === '3') {
+        compression_factor = 52  // lzma, not used by antiX
+      } else if (linuxfs_compression_type === '4') {
+        compression_factor = 31 // xz
+      } else if (linuxfs_compression_type === '5') {
+        compression_factor = 52 // lz4
+      } else {
+        compression_factor = 30 // anything else or linuxfs not reachable (toram), should be pretty conservative
+      }
+      let rootfs_file_size = 0
+      const linuxfs_file_size = Number(shx.exec('df /live/linux --output=used --total | /usr/bin/tail -n1').stdout.trim()) * 1024 * 100 / compression_factor
+
+      if (fs.existsSync('/live/persist-root')) {
+        rootfs_file_size = Number(shx.exec('df /live/persist-root --output=used --total | /usr/bin/tail -n1').stdout.trim()) * 1024
+      }
+
+      let rootSpaceNeeded: number
+      if (type === 'mx') {
+        /**
+         * add rootfs file size to the calculated linuxfs file size. Probaby conservative, as rootfs will likely have some overlap with linuxfs
+         */
+        rootSpaceNeeded = linuxfs_file_size + rootfs_file_size
+      } else {
+        rootSpaceNeeded = linuxfs_file_size
+      }
     return rootSpaceNeeded / 1073741824.0 // Converte in GB
   }
 
@@ -274,7 +284,7 @@ export default class Utils {
   /**
    * @returns gateway
    */
-  static  netGateway(): string {
+  static netGateway(): string {
     return '192.168.61.1'
   }
 
@@ -323,7 +333,7 @@ export default class Utils {
   * @param cmd
   * @param silent
   */
-  static shxExec(cmd: string, silent: object = {silent: false}): any {
+  static shxExec(cmd: string, silent: object = { silent: false }): any {
     this.showCmd(cmd)
     return shx.exec(cmd, silent)
   }
