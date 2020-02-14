@@ -39,7 +39,7 @@ are able to open a terminal, you can use it.
 # Install penguins-eggs
 
 ## Debian package
-This simplest way to installe eggs is to download the [package eggs](https://sourceforge.net/projects/penguins-eggs/files/DEBS/) and install it
+This simplest way to installe eggs is to download the [package eggs](https://sourceforge.net/projects/penguins-eggs/files/DEBS/) from [sourceforge](https://sourceforge.net/projects/penguins-eggs/files/DEBS/) and install it
 
 ```sudo dpkg -i eggs_7.1.XX-1_amd64.deb```
 
@@ -265,12 +265,14 @@ _See code: [src/commands/update.ts](https://github.com/pieroproietti/penguins-eg
 No need other configurations, penguins-eggs are battery included or better, as in the real, live is inside! :-D
 
 ## More informations
-For other informations, look at [Piero Proietti's blog](http://pieroproietti.github.com),
+For other informations, there is same documentation i the document folder of this repository,
+look at [Piero Proietti's blog](http://pieroproietti.github.com),
 contact me, or open an [issue](https://github.com/pieroproietti/penguins-eggs/issues) on github.
+
+I mostly use Facebook.
 
 * facebook group:  [Penguin's Eggs](https://www.facebook.com/groups/128861437762355/)
 * twitter: [@pieroproietti](https://twitter.com/pieroproietti)
-* google+: [PieroProietti](https://plus.google.com/+PieroProietti)
 * mail: piero.proietti@gmail.com
 
 
