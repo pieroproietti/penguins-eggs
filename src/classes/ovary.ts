@@ -880,8 +880,8 @@ timeout 0
       basename = this.snapshot_basename
     }
     let isoName = `${basename}-${arch}_${Utils.formatDate(new Date())}`
-    if (isoName.length >= 34)
-      isoName = isoName.substr(1,34)
+    if (isoName.length > 32)
+      isoName = isoName.substr(1,32)
     return `${isoName}.iso`
   }
 
