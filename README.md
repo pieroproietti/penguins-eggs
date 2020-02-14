@@ -37,39 +37,43 @@ scared, penguins-eggs is a console command - really very simple usage - if you
 are able to open a terminal, you can use it.
 
 ## Install penguins-eggs
-This simplest way in to download the [package eggs](https://sourceforge.net/projects/penguins-eggs/files/DEBS/) and install it
 
-''' sudo dpkg -i eggs_7.1.11-1_amd64.deb  '''
+### Debian package
+This simplest way to installe eggs is to download the [package eggs](https://sourceforge.net/projects/penguins-eggs/files/DEBS/) and install it
 
-The deb packase is made with the tool oclif-dev
+''' sudo dpkg -i eggs_7.1.XX-1_amd64.deb  '''
 
-npm i @oclif/dev-cli
+the most recent package, is usually the right choice.
 
-## Same git tips...
-* git pull
-* git checkout -b [name_of_your_new_branch]
-* git push origin [name_of_your_new_branch]
-* git branch -d [name_of_branch_to_remove]
-* git push origin --delete [name_of_branch_to_remove]
-* git config credential.helper store
+### Install penguins-eggs with npm (require nodejs)
 
-## How to test this repo
-* git clone https://github.com/pieroproietti/penguins-eggs
-* cd penguins-eggs
+If you have nodejs installed, you can install penguins-eggs with the utility npm (node package manager). 
+Simply copy and past the following lines:
 
-### install nodejs packages 
-* npm install
+```sudo npm config set unsafe-perm true```
 
-### ask informations
-* sudo ./eggs info
+```sudo npm i penguins-eggs -g```
 
-### install prerequisites (deb packages)
-* sudo ./eggs prerequisites
+#### Note on Intel 386
+The last official version for this architecture is Node.js v8.x 
 
-### produce an egg
-* sudo ./eggs spawn
+##### Ubuntu
+```curl -sL https://deb.nodesource.com/setup_8.x | sudo -E bash -```
+```sudo apt-get install -y nodejs```
 
-penguins-eggs will make a snapshot (egg) of your system
+##### Debian
+
+```curl -sL https://deb.nodesource.com/setup_8.x | bash -```
+
+```apt-get install -y nodejs```
+
+and finally, we check the nodejs version:
+
+```apt-cache policy nodejs ```
+
+and install the nodejs version 8.
+
+# Usage
 
 <!-- toc -->
 * [Usage](#usage)
