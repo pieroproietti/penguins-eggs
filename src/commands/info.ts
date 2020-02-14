@@ -31,12 +31,12 @@ You will find here informations about penguin's eggs!
       message = "This is a LIVE system."
     }
     shx.echo (`Status:         ${message}`)
+
+    message = 'OK, installed.'
     if (!Utils.prerequisitesInstalled){
       message = 'NOT installed. Use: sudo eggs prerequisites'
     }
-    message = 'OK, installed.'
     shx.echo (`Prerequisites:  ${message}`)
-
     shx.exit(0)
   }
 }
