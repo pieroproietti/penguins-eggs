@@ -52,7 +52,6 @@ install the prerequisites packages to run penguin's eggs
                   isolinux \
                   live-boot \
                   xterm \
-                  zenity \
                   open-infrastructure-system-config \
                   whois ', {async: false})
 

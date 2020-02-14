@@ -27,7 +27,7 @@ kill the eggs/free the nest
   ]
 
   async run() {
-    if (Utils.isRoot()) {
+    if (Utils.isRoot() && Utils.prerequisitesInstalled()) {
       // shx.exec('installed-to-live cleanup > /dev/null')
       this.log(`${Utils.getFriendName()}: deleting old eggs...`)
       if (this.loadSettings()){

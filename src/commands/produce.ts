@@ -26,8 +26,7 @@ export default class Produce extends Command {
 the penguin produce an egg called uovo-i386-2020-01-18_2000.iso`]
 
   async run() {
-    if (Utils.isRoot()) {
-
+    if (Utils.isRoot() && Utils.prerequisitesInstalled()) {
       const {flags} = this.parse(Produce)
 
       const basename = flags.basename ||  os.hostname()
