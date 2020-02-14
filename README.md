@@ -37,7 +37,7 @@ scared, penguins-eggs is a console command - really very simple usage - if you
 are able to open a terminal, you can use it.
 
 ## Install penguins-eggs
-This simplest way in to download the package eggs in package and install it
+This simplest way in to download the [package eggs](https://sourceforge.net/projects/penguins-eggs/files/DEBS/= and install it
 
 ''' sudo dpkg -i eggs_7.1.11-1_amd64.deb  '''
 
