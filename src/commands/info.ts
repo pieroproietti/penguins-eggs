@@ -32,11 +32,7 @@ You will find here informations about penguin's eggs!
     }
     shx.echo (`System:         ${message}`)
 
-    message = 'Installed.'
-    if (!Utils.prerequisitesInstalled()){
-      message = 'NOT installed. Use: sudo eggs prerequisites'
-    }
-    shx.echo (`Prerequisites:  ${message}`)
+    Utils.prerequisitesInstalled()
     shx.exit(0)
   }
 }
