@@ -22,7 +22,7 @@ export default class Utils {
    * prerequisistesInstalled
    */
   static prerequisitesInstalled(): boolean {
-    const retVal : boolean = fs.existsSync('/etc/penguins-eggs.conf') && (fs.existsSync('//usr/local/share/excludes/penguins-eggs-exclude.list'))
+    const retVal : boolean = fs.existsSync('/etc/penguins-eggs.conf') && (fs.existsSync('/usr/local/share/excludes/penguins-eggs-exclude.list'))
     if (!retVal){
       console.log('You need to install the prerequisites for eggs. \nTry: sudo eggs prerequisites')
     }

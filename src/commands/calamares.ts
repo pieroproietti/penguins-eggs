@@ -27,10 +27,10 @@ export default class Calamares extends Command {
       shx.exec(`apt-get install --yes \
               calamares \
               calamares-settings-debian`, { async: false })
-    }
 
-    const ovary = new Ovary
-    await ovary.fertilization()
-    await ovary.calamaresConfigure()
+      const ovary = new Ovary
+      await ovary.fertilization()
+      await ovary.calamaresConfigure()
+    }
   }
 }
