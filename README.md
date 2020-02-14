@@ -11,7 +11,7 @@ Penguin&#39;s eggs are generated and new birds are ready to fly...
 [![License](https://img.shields.io/npm/l/penguins-eggs.svg)](https://github.com/pieroproietti/penguins-eggs/blob/master/package.json)
 
 
-## Presentation
+# Presentation
 penguins-eggs is a console utility, in active development, who let you to
 remaster your system and redistribuite it as iso images or from the lan via PXE
 remote boot.
@@ -36,42 +36,42 @@ You can try now penguins-eggs, it is a console utility - no GUI - but don't be
 scared, penguins-eggs is a console command - really very simple usage - if you
 are able to open a terminal, you can use it.
 
-## Install penguins-eggs
+# Install penguins-eggs
 
-### Debian package
+## Debian package
 This simplest way to installe eggs is to download the [package eggs](https://sourceforge.net/projects/penguins-eggs/files/DEBS/) and install it
 
-''' sudo dpkg -i eggs_7.1.XX-1_amd64.deb  '''
+```sudo dpkg -i eggs_7.1.XX-1_amd64.deb```
 
 the most recent package, is usually the right choice.
 
-### Install penguins-eggs with npm (require nodejs)
+## NPM package (require nodejs)
 
-If you have nodejs installed, you can install penguins-eggs with the utility npm (node package manager). 
+If you have already nodejs installed, you can install penguins-eggs with the utility npm (node package manager). 
 Simply copy and past the following lines:
 
 ```sudo npm config set unsafe-perm true```
 
 ```sudo npm i penguins-eggs -g```
 
-#### Note on Intel 386
-The last official version for this architecture is Node.js v8.x 
+### Note on i386 architecture
+The last official version for this architecture is Node.js v8.x, we can install it.
 
 ##### Ubuntu
 ```curl -sL https://deb.nodesource.com/setup_8.x | sudo -E bash -```
 ```sudo apt-get install -y nodejs```
 
 ##### Debian
-
 ```curl -sL https://deb.nodesource.com/setup_8.x | bash -```
-
 ```apt-get install -y nodejs```
 
 and finally, we check the nodejs version:
 
 ```apt-cache policy nodejs ```
 
-and install the nodejs version 8.
+```apt install nodejs=8.17.0-1nodesource1```
+
+to install the nodejs version 8.
 
 # Usage
 
