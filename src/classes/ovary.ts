@@ -13,6 +13,7 @@
  */
 
 import fs = require('fs')
+import path = require('path')
 import os = require('os')
 import ini = require('ini')
 import shx = require('shelljs')
@@ -52,9 +53,7 @@ export default class Ovary {
 
   debian_version = 10 as number
 
-  lib_mod_dir = '' as string
-
-  snapshot_dir = '/home/eggs/' as string // /home/snapshot
+  snapshot_dir = '/home/eggs/' as string
 
   work_dir = '/tmp/work_dir/'
 
@@ -64,13 +63,15 @@ export default class Ovary {
 
   snapshot_excludes = '/usr/local/share/excludes/penguins-eggs-exclude.list' as string
 
-  edit_boot_menu = '' as string
+  edit_boot_menu = false
 
-  kernel_used = '' as string
+  kernel_image = '' as string
 
-  make_isohybrid = 'yes' as string
+  initrd_image = '' as string
 
-  make_md5sum = 'yes' as string
+  make_isohybrid = false
+
+  make_md5sum = false
 
   compression = '' as string
 
@@ -82,14 +83,9 @@ export default class Ovary {
 
   snapshot_basename = '' as string
 
-  stamp = '' as string
-
   version = '' as string
 
   bindRoot = '/.bind-root'
-
-  // Altre mie
-  users: string[] = []
 
   /**
    * Egg
@@ -166,19 +162,43 @@ export default class Ovary {
     }
     this.snapshot_excludes = settings.General.snapshot_excludes
     this.snapshot_basename = settings.General.snapshot_basename
-    this.make_md5sum = settings.General.make_md5sum
-    this.make_isohybrid = settings.General.make_isohybrid
+    this.make_md5sum = settings.General.make_md5sum === "yes"
+    this.make_isohybrid = settings.General.make_isohybrid === "yes"
+    this.compression = settings.General.compression
     this.mksq_opt = settings.General.mksq_opt
-    this.edit_boot_menu = settings.General.edit_boot_menu
-    this.lib_mod_dir = settings.General.lib_mod_dir
+    this.edit_boot_menu = settings.General.edit_boot_menu === "yes"
     this.gui_editor = settings.General.gui_editor
-    this.stamp = settings.General.stamp
-    this.force_installer = settings.General.force_installer
-    this.reset_accounts = settings.General.reset_accounts
-
+    this.force_installer = settings.General.force_installer === "yes"
+    this.reset_accounts = settings.General.reset_accounts === "yes"
+    this.kernel_image = settings.General.kernel_image
+    this.initrd_image = settings.General.initrd_image
     return foundSettings
   }
 
+  /**
+   * showSettings
+   */
+  public async showSettings(){
+    console.log(`application_nane:  ${this.app.name} ${this.app.version}`)
+    console.log(`config_file:       ${this.config_file}`)
+    console.log(`snapshot_dir:      ${this.snapshot_dir}`)
+    console.log(`snapshot_exclude:  ${this.snapshot_excludes}`)
+    if (this.snapshot_basename === 'hostname') {
+      console.log(`snapshot_basename: ${os.hostname} (hostname)`)  
+    } else {
+      console.log(`snapshot_basename: ${this.snapshot_basename}`)
+    }
+    console.log(`md5sum:            ${this.make_md5sum}`)
+    console.log(`make_isohybrid:    ${this.make_isohybrid}`)
+    console.log(`compression:       ${this.compression}`)
+    console.log(`mksq_opt:          ${this.mksq_opt}`)
+    console.log(`edit_boot_menu:    ${this.edit_boot_menu}`)
+    console.log(`gui_editor:        ${this.gui_editor}`)
+    console.log(`force_installer:   ${this.force_installer}`)
+    console.log(`reset_accounts:    ${this.reset_accounts}`)
+    console.log(`kernel_image:      ${this.kernel_image}`)
+    console.log(`initrd_image:      ${this.initrd_image}`)
+  }
   /**
    * Calculate and show free space on the disk
    * @returns {void}
@@ -400,10 +420,12 @@ timeout 0
     *
     */
 
-    const kernel = Utils.kernerlVersion()
+    const kernelVersion = Utils.kernerlVersion()
+    const kernel_name = path.basename(this.kernel_image)
+    const initrd_name = path.basename(this.kernel_image)
 
-    this.iso.append = 'append initrd=/live/initrd.img boot=live components username=live '
-    this.iso.appendSafe = 'append initrd=/live/initrd.img boot=live components username=live xforcevesa verbose'
+    this.iso.append = `append initrd=/live/${initrd_name} boot=live components username=live `
+    this.iso.appendSafe = `append initrd=/live/${initrd_name} boot=live components username=live xforcevesa verbose`
     this.iso.aqs = 'quit splash debug=true nocomponents '
 
     console.log('==========================================')
@@ -415,391 +437,391 @@ timeout 0
     INCLUDE stdmenu.cfg
     MENU title Main Menu
     DEFAULT ^${this.distro.name} 
-    LABEL ${this.distro.name} (kernel ${kernel}) Italian (it)
+    LABEL ${this.distro.name} (kernel ${kernelVersion}) Italian (it)
         SAY "Booting ${this.distro.name} Italian (it)"
-        linux /live/vmlinuz
+        linux /live/${kernel_name}
         ${this.iso.append} locales=it_IT.UTF-8 timezone=Europe/Rome ${this.iso.aqs}
     
     MENU begin advanced
     MENU title ${this.distro.name} with Localisation Support
     
-    LABEL Albanian (sq) (kernel ${kernel})
+    LABEL Albanian (sq)
           SAY "Booting Albanian (sq)..."
-          linux /live/vmlinuz
+          linux /live/${kernel_name}
           ${this.iso.append} locales=sq_AL.UTF-8 ${this.iso.aqs}
     LABEL Amharic (am) 
           SAY "Booting Amharic (am)..."
-          linux /live/vmlinuz
+          linux /live/${kernel_name}
           ${this.iso.append}  locales=am_ET.UTF-8 ${this.iso.aqs}
           
     LABEL Arabic (ar) 
           SAY "Booting Arabic (ar)..."
-          linux /live/vmlinuz
+          linux /live/${kernel_name}
           ${this.iso.append} locales=ar_EG.UTF-8 ${this.iso.aqs}
     
     LABEL Asturian (ast)
           SAY "Booting Asturian (ast)..."  
-          linux /live/vmlinuz
+          linux /live/${kernel_name}
           ${this.iso.append}  locales=ast_ES.UTF-8 ${this.iso.aqs}
     
     LABEL Basque (eu)
           SAY "Booting Basque (eu)..."
-          linux /live/vmlinuz
+          linux /live/${kernel_name}
           ${this.iso.append}  locales=eu_ES.UTF-8 ${this.iso.aqs}
           
     LABEL Belarusian (be)
           SAY "Booting Belarusian (be)..."
-          linux /live/vmlinuz
+          linux /live/${kernel_name}
           ${this.iso.append}  locales=be_BY.UTF-8 ${this.iso.aqs}
     
     LABEL Bangla (bn)
           SAY "Booting Bangla (bn)..."
-          linux /live/vmlinuz
+          linux /live/${kernel_name}
           ${this.iso.append} locales=bn_BD ${this.iso.aqs}
     
     LABEL Bosnian (bs)
           SAY "Booting Bosnian (bs)..."
-          linux /live/vmlinuz
+          linux /live/${kernel_name}
           ${this.iso.append}  locales=bs_BA.UTF-8 ${this.iso.aqs}
     
     LABEL Bulgarian (bg)
           SAY "Booting Bulgarian (bg)..."
-          linux /live/vmlinuz
+          linux /live/${kernel_name}
           ${this.iso.append}  locales=bg_BG.UTF-8 ${this.iso.aqs}
         
     LABEL Tibetan (bo)
           SAY "Booting Tibetan (bo)..."
-          linux /live/vmlinuz
+          linux /live/${kernel_name}
           ${this.iso.append}  locales=bo_IN ${this.iso.aqs}
         
         LABEL C (C)
           SAY "Booting C (C)..."
-          linux /live/vmlinuz
+          linux /live/${kernel_name}
           ${this.iso.append}  locales=C ${this.iso.aqs}
         
         LABEL Catalan (ca)
           SAY "Booting Catalan (ca)..."
-          linux /live/vmlinuz
+          linux /live/${kernel_name}
           ${this.iso.append}  locales=ca_ES.UTF-8 ${this.iso.aqs}
         
         LABEL Chinese (Simplified) (zh_CN)
           SAY "Booting Chinese (Simplified) (zh_CN)..."
-          linux /live/vmlinuz
+          linux /live/${kernel_name}
           ${this.iso.append}  locales=zh_CN.UTF-8 ${this.iso.aqs}
         
         LABEL Chinese (Traditional) (zh_TW)
           SAY "Booting Chinese (Traditional) (zh_TW)..."
-          linux /live/vmlinuz
+          linux /live/${kernel_name}
           ${this.iso.append}  locales=zh_TW.UTF-8 ${this.iso.aqs}
         
         LABEL Croatian (hr)
           SAY "Booting Croatian (hr)..."
-          linux /live/vmlinuz
+          linux /live/${kernel_name}
           ${this.iso.append}  locales=hr_HR.UTF-8 ${this.iso.aqs}
         
         LABEL Czech (cs)
           SAY "Booting Czech (cs)..."
-          linux /live/vmlinuz
+          linux /live/${kernel_name}
           ${this.iso.append}  locales=cs_CZ.UTF-8 ${this.iso.aqs}
         
         LABEL Danish (da)
           SAY "Booting Danish (da)..."
-          linux /live/vmlinuz
+          linux /live/${kernel_name}
           ${this.iso.append}  locales=da_DK.UTF-8 ${this.iso.aqs}
         
         LABEL Dutch (nl)
           SAY "Booting Dutch (nl)..."
-          linux /live/vmlinuz
+          linux /live/${kernel_name}
           ${this.iso.append}  locales=nl_NL.UTF-8 ${this.iso.aqs}
         
         LABEL Dzongkha (dz)
           SAY "Booting Dzongkha (dz)..."
-          linux /live/vmlinuz
+          linux /live/${kernel_name}
           ${this.iso.append}  locales=dz_BT ${this.iso.aqs}
         
         LABEL English (en)
           SAY "Booting English (en)..."
-          linux /live/vmlinuz
+          linux /live/${kernel_name}
           ${this.iso.append}  locales=en_US.UTF-8 ${this.iso.aqs}
         
         LABEL Esperanto (eo)
           SAY "Booting Esperanto (eo)..."
-          linux /live/vmlinuz
+          linux /live/${kernel_name}
           ${this.iso.append}  locales=eo.UTF-8 ${this.iso.aqs}
         
         LABEL Estonian (et)
           SAY "Booting Estonian (et)..."
-          linux /live/vmlinuz
+          linux /live/${kernel_name}
           ${this.iso.append}  locales=et_EE.UTF-8 ${this.iso.aqs}
         
         LABEL Finnish (fi)
           SAY "Booting Finnish (fi)..."
-          linux /live/vmlinuz
+          linux /live/${kernel_name}
           ${this.iso.append}  locales=fi_FI.UTF-8 ${this.iso.aqs}
         
         LABEL French (fr)
           SAY "Booting French (fr)..."
-          linux /live/vmlinuz
+          linux /live/${kernel_name}
           ${this.iso.append}  locales=fr_FR.UTF-8 ${this.iso.aqs}
         
         LABEL Galician (gl)
           SAY "Booting Galician (gl)..."
-          linux /live/vmlinuz
+          linux /live/${kernel_name}
           ${this.iso.append}  locales=gl_ES.UTF-8 ${this.iso.aqs}
         
         LABEL Georgian (ka)
           SAY "Booting Georgian (ka)..."
-          linux /live/vmlinuz
+          linux /live/${kernel_name}
           ${this.iso.append}  locales=ka_GE.UTF-8 ${this.iso.aqs}
         
         LABEL German (de)
           SAY "Booting German (de)..."
-          linux /live/vmlinuz
+          linux /live/${kernel_name}
           ${this.iso.append}  locales=de_DE.UTF-8 ${this.iso.aqs}
         
         LABEL Greek (el)
           SAY "Booting Greek (el)..."
-          linux /live/vmlinuz
+          linux /live/${kernel_name}
           ${this.iso.append}  locales=el_GR.UTF-8 ${this.iso.aqs}
         
         LABEL Gujarati (gu)
           SAY "Booting Gujarati (gu)..."
-          linux /live/vmlinuz
+          linux /live/${kernel_name}
           ${this.iso.append}  locales=gu_IN ${this.iso.aqs}
         
         LABEL Hebrew (he)
           SAY "Booting Hebrew (he)..."
-          linux /live/vmlinuz
+          linux /live/${kernel_name}
           ${this.iso.append}  locales=he_IL.UTF-8 ${this.iso.aqs}
         
         LABEL Hindi (hi)
           SAY "Booting Hindi (hi)..."
-          linux /live/vmlinuz
+          linux /live/${kernel_name}
           ${this.iso.append}  locales=hi_IN ${this.iso.aqs}
         
         LABEL Hungarian (hu)
           SAY "Booting Hungarian (hu)..."
-          linux /live/vmlinuz
+          linux /live/${kernel_name}
           ${this.iso.append}  locales=hu_HU.UTF-8 ${this.iso.aqs}
         
         LABEL Icelandic (is)
           SAY "Booting Icelandic (is)..."
-          linux /live/vmlinuz
+          linux /live/${kernel_name}
           ${this.iso.append}  locales=is_IS.UTF-8 ${this.iso.aqs}
         
         LABEL Indonesian (id)
           SAY "Booting Indonesian (id)..."
-          linux /live/vmlinuz
+          linux /live/${kernel_name}
           ${this.iso.append}  locales=id_ID.UTF-8 ${this.iso.aqs}
         
         LABEL Irish (ga)
           SAY "Booting Irish (ga)..."
-          linux /live/vmlinuz
+          linux /live/${kernel_name}
           ${this.iso.append}  locales=ga_IE.UTF-8 ${this.iso.aqs}
         
         LABEL Italian (it)
           SAY "Booting Italian (it)..."
-          linux /live/vmlinuz
+          linux /live/${kernel_name}
           ${this.iso.append}  locales=it_IT.UTF-8 ${this.iso.aqs}
         
         LABEL Japanese (ja)
           SAY "Booting Japanese (ja)..."
-          linux /live/vmlinuz
+          linux /live/${kernel_name}
           ${this.iso.append}  locales=ja_JP.UTF-8 ${this.iso.aqs}
         
         LABEL Kazakh (kk)
           SAY "Booting Kazakh (kk)..."
-          linux /live/vmlinuz
+          linux /live/${kernel_name}
           ${this.iso.append}  locales=kk_KZ.UTF-8 ${this.iso.aqs}
         
         LABEL Khmer (km)
           SAY "Booting Khmer (km)..."
-          linux /live/vmlinuz
+          linux /live/${kernel_name}
           ${this.iso.append}  locales=km_KH ${this.iso.aqs}
         
         LABEL Kannada (kn)
           SAY "Booting Kannada (kn)..."
-          linux /live/vmlinuz
+          linux /live/${kernel_name}
           ${this.iso.append}  locales=kn_IN ${this.iso.aqs}
         
         LABEL Korean (ko)
           SAY "Booting Korean (ko)..."
-          linux /live/vmlinuz
+          linux /live/${kernel_name}
           ${this.iso.append}  locales=ko_KR.UTF-8 ${this.iso.aqs}
         
         LABEL Kurdish (ku)
           SAY "Booting Kurdish (ku)..."
-          linux /live/vmlinuz
+          linux /live/${kernel_name}
           ${this.iso.append}  locales=ku_TR.UTF-8 ${this.iso.aqs}
         
         LABEL Lao (lo)
           SAY "Booting Lao (lo)..."
-          linux /live/vmlinuz
+          linux /live/${kernel_name}
           ${this.iso.append}  locales=lo_LA ${this.iso.aqs}
         
         LABEL Latvian (lv)
           SAY "Booting Latvian (lv)..."
-          linux /live/vmlinuz
+          linux /live/${kernel_name}
           ${this.iso.append}  locales=lv_LV.UTF-8 ${this.iso.aqs}
         
         LABEL Lithuanian (lt)
           SAY "Booting Lithuanian (lt)..."
-          linux /live/vmlinuz
+          linux /live/${kernel_name}
           ${this.iso.append}  locales=lt_LT.UTF-8 ${this.iso.aqs}
         
         LABEL Malayalam (ml)
           SAY "Booting Malayalam (ml)..."
-          linux /live/vmlinuz
+          linux /live/${kernel_name}
           ${this.iso.append}  locales=ml_IN ${this.iso.aqs}
         
         LABEL Marathi (mr)
           SAY "Booting Marathi (mr)..."
-          linux /live/vmlinuz
+          linux /live/${kernel_name}
           ${this.iso.append}  locales=mr_IN ${this.iso.aqs}
         
         LABEL Macedonian (mk)
           SAY "Booting Macedonian (mk)..."
-          linux /live/vmlinuz
+          linux /live/${kernel_name}
           ${this.iso.append}  locales=mk_MK.UTF-8 ${this.iso.aqs}
         
         LABEL Burmese (my)
           SAY "Booting Burmese (my)..."
-          linux /live/vmlinuz
+          linux /live/${kernel_name}
           ${this.iso.append}  locales=my_MM ${this.iso.aqs}
         
         LABEL Nepali (ne)
           SAY "Booting Nepali (ne)..."
-          linux /live/vmlinuz
+          linux /live/${kernel_name}
           ${this.iso.append}  locales=ne_NP ${this.iso.aqs}
         
         LABEL Northern Sami (se_NO)
           SAY "Booting Northern Sami (se_NO)..."
-          linux /live/vmlinuz
+          linux /live/${kernel_name}
           ${this.iso.append}  locales=se_NO ${this.iso.aqs}
         
         LABEL Norwegian Bokmaal (nb_NO)
           SAY "Booting Norwegian Bokmaal (nb_NO)..."
-          linux /live/vmlinuz
+          linux /live/${kernel_name}
           ${this.iso.append}  locales=nb_NO.UTF-8 ${this.iso.aqs}
         
         LABEL Norwegian Nynorsk (nn_NO)
           SAY "Booting Norwegian Nynorsk (nn_NO)..."
-          linux /live/vmlinuz
+          linux /live/${kernel_name}
           ${this.iso.append}  locales=nn_NO.UTF-8 ${this.iso.aqs}
         
         LABEL Persian (fa)
           SAY "Booting Persian (fa)..."
-          linux /live/vmlinuz
+          linux /live/${kernel_name}
           ${this.iso.append}  locales=fa_IR ${this.iso.aqs}
         
         LABEL Polish (pl)
           SAY "Booting Polish (pl)..."
-          linux /live/vmlinuz
+          linux /live/${kernel_name}
           ${this.iso.append}  locales=pl_PL.UTF-8 ${this.iso.aqs}
         
         LABEL Portuguese (pt)
           SAY "Booting Portuguese (pt)..."
-          linux /live/vmlinuz
+          linux /live/${kernel_name}
           ${this.iso.append}  locales=pt_PT.UTF-8 ${this.iso.aqs}
         
         LABEL Portuguese (Brazil) (pt_BR)
           SAY "Booting Portuguese (Brazil) (pt_BR)..."
-          linux /live/vmlinuz
+          linux /live/${kernel_name}
           ${this.iso.append}  locales=pt_BR.UTF-8 ${this.iso.aqs}
         
         LABEL Punjabi (Gurmukhi) (pa)
           SAY "Booting Punjabi (Gurmukhi) (pa)..."
-          linux /live/vmlinuz
+          linux /live/${kernel_name}
           ${this.iso.append}  locales=pa_IN ${this.iso.aqs}
         
         LABEL Romanian (ro)
           SAY "Booting Romanian (ro)..."
-          linux /live/vmlinuz
+          linux /live/${kernel_name}
           ${this.iso.append}  locales=ro_RO.UTF-8 ${this.iso.aqs}
         
         LABEL Russian (ru)
           SAY "Booting Russian (ru)..."
-          linux /live/vmlinuz
+          linux /live/${kernel_name}
           ${this.iso.append}  locales=ru_RU.UTF-8 ${this.iso.aqs}
         
         LABEL Sinhala (si)
           SAY "Booting Sinhala (si)..."
-          linux /live/vmlinuz
+          linux /live/${kernel_name}
           ${this.iso.append}  locales=si_LK ${this.iso.aqs}
         
         LABEL Serbian (Cyrillic) (sr)
           SAY "Booting Serbian (Cyrillic) (sr)..."
-          linux /live/vmlinuz
+          linux /live/${kernel_name}
           ${this.iso.append}  locales=sr_RS ${this.iso.aqs}
         
         LABEL Slovak (sk)
           SAY "Booting Slovak (sk)..."
-          linux /live/vmlinuz
+          linux /live/${kernel_name}
           ${this.iso.append}  locales=sk_SK.UTF-8 ${this.iso.aqs}
         
         LABEL Slovenian (sl)
           SAY "Booting Slovenian (sl)..."
-          linux /live/vmlinuz
+          linux /live/${kernel_name}
           ${this.iso.append}  locales=sl_SI.UTF-8 ${this.iso.aqs}
         
         LABEL Spanish (es)
           SAY "Booting Spanish (es)..."
-          linux /live/vmlinuz
+          linux /live/${kernel_name}
           ${this.iso.append}  locales=es_ES.UTF-8 ${this.iso.aqs}
         
         LABEL Swedish (sv)
           SAY "Booting Swedish (sv)..."
-          linux /live/vmlinuz
+          linux /live/${kernel_name}
           ${this.iso.append}  locales=sv_SE.UTF-8 ${this.iso.aqs}
         
         LABEL Tagalog (tl)
           SAY "Booting Tagalog (tl)..."
-          linux /live/vmlinuz
+          linux /live/${kernel_name}
           ${this.iso.append}  locales=tl_PH.UTF-8 ${this.iso.aqs}
         
         LABEL Tamil (ta)
           SAY "Booting Tamil (ta)..."
-          linux /live/vmlinuz
+          linux /live/${kernel_name}
           ${this.iso.append}  locales=ta_IN ${this.iso.aqs}
         
         LABEL Telugu (te)
           SAY "Booting Telugu (te)..."
-          linux /live/vmlinuz
+          linux /live/${kernel_name}
           ${this.iso.append}  locales=te_IN ${this.iso.aqs}
         
         LABEL Tajik (tg)
           SAY "Booting Tajik (tg)..."
-          linux /live/vmlinuz
+          linux /live/${kernel_name}
           ${this.iso.append}  locales=tg_TJ.UTF-8 ${this.iso.aqs}
         
         LABEL Thai (th)
           SAY "Booting Thai (th)..."
-          linux /live/vmlinuz
+          linux /live/${kernel_name}
           ${this.iso.append}  locales=th_TH.UTF-8 ${this.iso.aqs}
         
         LABEL Turkish (tr)
           SAY "Booting Turkish (tr)..."
-          linux /live/vmlinuz
+          linux /live/${kernel_name}
           ${this.iso.append}  locales=tr_TR.UTF-8 ${this.iso.aqs}
         
         LABEL Uyghur (ug)
           SAY "Booting Uyghur (ug)..."
-          linux /live/vmlinuz
+          linux /live/${kernel_name}
           ${this.iso.append}  locales=ug_CN ${this.iso.aqs}
         
         LABEL Ukrainian (uk)
           SAY "Booting Ukrainian (uk)..."
-          linux /live/vmlinuz
+          linux /live/${kernel_name}
           ${this.iso.append}  locales=uk_UA.UTF-8 ${this.iso.aqs}
         
         LABEL Vietnamese (vi)
           SAY "Booting Vietnamese (vi)..."
-          linux /live/vmlinuz
+          linux /live/${kernel_name}
           ${this.iso.append}  locales=vi_VN ${this.iso.aqs}
         
         LABEL Welsh (cy)
           SAY "Booting Welsh (cy)..."
-          linux /live/vmlinuz
+          linux /live/${kernel_name}
           ${this.iso.append}  locales=cy_GB.UTF-8 ${this.iso.aqs}
         
          LABEL mainmenu 
@@ -823,8 +845,8 @@ timeout 0
     console.log('==========================================')
     console.log('iso: liveKernel')
     console.log('==========================================')
-    Utils.shxExec(`cp /vmlinuz ${this.distro.pathIso}/live/`)
-    Utils.shxExec(`cp /initrd.img ${this.distro.pathIso}/live/`)
+    Utils.shxExec(`cp ${this.kernel_image} ${this.distro.pathIso}/live/`)
+    Utils.shxExec(`cp ${this.initrd_image} ${this.distro.pathIso}/live/`)
   }
 
   /**
