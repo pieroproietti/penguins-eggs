@@ -106,7 +106,7 @@ export default class Ovary {
     this.distro.kernel = Utils.kernerlVersion()
     this.compression = compression || ''
     this.live = Utils.isLive()
-    this.users = Utils.usersList()
+    // this.users = Utils.usersList()
     this.i686 = Utils.isi686()
     this.debian_version = Utils.getDebianVersion()
     // const name = shx.exec(`cat /etc/mx-version | /usr/bin/cut -f1 -d' '`).stdout.trim()
@@ -867,12 +867,11 @@ timeout 0
         this.addRemoveExclusion(true, '/etc/localtime')
       }
     }
-
+    console.log(`${this.snapshot_excludes} ${this.session_excludes}`)
     const option = `-comp ${this.compression} `
-    Utils.shxExec(
-      `mksquashfs /.bind-root ${this.distro.pathIso}/live/filesystem.squashfs ${option} -wildcards -ef ${this.snapshot_excludes} ${this.session_excludes} `
-      // usr/bin/mksquashfs /.bind-root iso-template/antiX/linuxfs -comp ${this.compression} ${(this.mksq_opt === '' ? '' : ' ' + this.mksq_opt)} -wildcards -ef ${this.snapshot_excludes} ${this.session_excludes}`)
-    )
+    let cmd = `mksquashfs /.bind-root ${this.distro.pathIso}/live/filesystem.squashfs ${option} -wildcards -ef ${this.snapshot_excludes} ${this.session_excludes} `
+    shx.exec(cmd, {silent: false})
+    // usr/bin/mksquashfs /.bind-root iso-template/antiX/linuxfs -comp ${this.compression} ${(this.mksq_opt === '' ? '' : ' ' + this.mksq_opt)} -wildcards -ef ${this.snapshot_excludes} ${this.session_excludes}`)
   }
 
   async makeIsoFs() {
