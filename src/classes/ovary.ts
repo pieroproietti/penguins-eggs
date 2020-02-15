@@ -269,6 +269,7 @@ export default class Ovary {
     console.log('==========================================')
     const text = 'auto lo\niface lo inet loopback'
     const bindRoot = '/.bind-root'
+    shx.exec(`touch ${bindRoot}/etc/network/interfaces`, {silent: true})
     Utils.write(`${bindRoot}/etc/network/interfaces`, text)
     /**
      * Clear configs from /etc/network/interfaces, wicd and NetworkManager
@@ -422,7 +423,7 @@ timeout 0
 
     const kernelVersion = Utils.kernerlVersion()
     const kernel_name = path.basename(this.kernel_image)
-    const initrd_name = path.basename(this.kernel_image)
+    const initrd_name = path.basename(this.initrd_image)
 
     this.iso.append = `append initrd=/live/${initrd_name} boot=live components username=live `
     this.iso.appendSafe = `append initrd=/live/${initrd_name} boot=live components username=live xforcevesa verbose`
@@ -955,13 +956,16 @@ timeout 0
     /**
      * setup environment if creating a respin 
      * (reset root/demo, remove personal accounts) 
-     * */ 
+     */ 
+    let cmd = ''
     if (this.reset_accounts) {
       /**
-       * Se resettiamo gli account e NON copiamo home, BISOGNA ricreare la home dell'user primario 1000:1000
+       * Se resettiamo gli account e NON copiamo home, BISOGNA ricreare la home dell user primario 1000:1000
        */
+      
       const user: string = Utils.getPrimaryUser()
-      Utils.shxExec(`/sbin/installed-to-live -b ${this.bindRoot} start ${bind_boot} empty=/home general version-file read-write`)
+      cmd = `/sbin/installed-to-live -b ${this.bindRoot} start ${bind_boot} empty=/home general version-file read-write`
+      Utils.shxExec(cmd)
       // creazione di home per user live
       shx.exec(`cp -r /etc/skel/. ${this.bindRoot}/home/${user}`, {async: false})
       shx.exec(`chown -R live:live ${this.bindRoot}/home/${user}`, {async: false})
@@ -973,11 +977,11 @@ timeout 0
       shx.exec(`chmod +x ${this.bindRoot}/home/${user}/Desktop/*.desktop`, {async: false})
       shx.exec(`chown ${user}:${user} ${this.bindRoot}/home/${user}/Desktop/*`, {async: false})
     } else {
-      Utils.shxExec(`/sbin/installed-to-live -b ${this.bindRoot} start bind=/home${bind_boot_too} live-files version-file adjtime read-write`)
+      cmd = `/sbin/installed-to-live -b ${this.bindRoot} start bind=/home${bind_boot_too} live-files version-file adjtime read-write`
+      Utils.shxExec(cmd)
     }
-
+    shx.echo(cmd)
     shx.echo('Done')
-
   }
 
   /**
