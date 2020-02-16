@@ -892,8 +892,8 @@ timeout 0
         this.addRemoveExclusion(true, '/etc/localtime')
       }
     }
-    const option = `-comp ${this.compression} `
-    let cmd = `mksquashfs /.bind-root ${this.distro.pathIso}/live/filesystem.squashfs ${option} -wildcards -ef ${this.snapshot_excludes} ${this.session_excludes} `
+    const compression = `-comp ${this.compression} `
+    let cmd = `mksquashfs /.bind-root ${this.distro.pathIso}/live/filesystem.squashfs ${compression} ${(this.mksq_opt === '' ? '' : ' ' + this.mksq_opt)} -wildcards -ef ${this.snapshot_excludes} ${this.session_excludes} `
     console.log(cmd)
     Utils.shxExec(cmd, {silent: false})
     // usr/bin/mksquashfs /.bind-root iso-template/antiX/linuxfs -comp ${this.compression} ${(this.mksq_opt === '' ? '' : ' ' + this.mksq_opt)} -wildcards -ef ${this.snapshot_excludes} ${this.session_excludes}`)
