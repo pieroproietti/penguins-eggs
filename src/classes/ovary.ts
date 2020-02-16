@@ -26,7 +26,7 @@ import Prerequisites from '../commands/prerequisites'
 import {IDistro, IOses, IPackage} from '../interfaces'
 
 /**
- * Iso:
+ * Ovary:
  */
 export default class Ovary {
   app = {} as IPackage
@@ -238,7 +238,8 @@ export default class Ovary {
       await this.isoMenuCfg()
       await this.copyKernel()
       await this.system2live()
-      await this.makeDhcp()
+      await this.makeFsTab()
+      await this.makeInterfaces()
       console.log('------------------------------------------')
       console.log('Spawning the system into the egg...\nThis process can be very long, perhaps it\'s time for a coffee!')
       console.log('------------------------------------------')
@@ -252,6 +253,15 @@ export default class Ovary {
    * 
    */
   async  calamaresConfigure(){
+    // Se force_installer e calamares non è installato
+    if (this.force_installer && !Utils.packageIsInstalled('calamares')){
+      shx.exec(`apt-get update`, { async: false })
+      shx.exec(`apt-get install --yes \
+              calamares \
+              calamares-settings-debian`, { async: false })
+    }
+
+    // Se calamares è installato lo configura
     if (Utils.packageIsInstalled('calamares')){
       this.calamares = new Calamares(this.distro, this.iso)
       await this.calamares.configure()
@@ -259,21 +269,36 @@ export default class Ovary {
   } 
 
 
-  /**
- *
- */
-  public async makeDhcp() {
+  async makeFsTab(){
     console.log('==========================================')
-    console.log('makeDhcp: ')
+    console.log('ovary: makeFsTab')
+    console.log('==========================================')
+
+    const text = ''
+   
+    // /etc/fstab should exist, even if it's empty,
+    // to prevent error messages at boot
+    shx.exec(`touch "$work_dir"/myfs/etc/fstab`)
+    const bindRoot = '/.bind-root'
+    shx.exec(`touch ${bindRoot}/etc/fstab`, {silent: true})
+    Utils.write(`${bindRoot}/etc/fstab`, text)
+
+  }
+
+  /**
+   * makeInterfaces
+   * Clear configs from /etc/network/interfaces, wicd and NetworkManager
+   * and netman, so they aren't stealthily included in the snapshot.
+   */
+  public async makeInterfaces() {
+    console.log('==========================================')
+    console.log('ovary: makeInterfaces')
     console.log('==========================================')
     const text = 'auto lo\niface lo inet loopback'
     const bindRoot = '/.bind-root'
     shx.exec(`touch ${bindRoot}/etc/network/interfaces`, {silent: true})
     Utils.write(`${bindRoot}/etc/network/interfaces`, text)
-    /**
-     * Clear configs from /etc/network/interfaces, wicd and NetworkManager
-     * and netman, so they aren't stealthily included in the snapshot.
-     */
+
     shx.exec(`rm -f ${bindRoot}/var/lib/wicd/configurations/*`)
     shx.exec(`rm -f ${bindRoot}/etc/wicd/wireless-settings.conf`)
     shx.exec(`rm -f ${bindRoot}/etc/NetworkManager/system-connections/*`)
@@ -285,7 +310,7 @@ export default class Ovary {
    */
   async isoCreateStructure() {
     console.log('==========================================')
-    console.log('iso: createStructure')
+    console.log('ovary: createStructure')
     console.log('==========================================')
 
     if (!fs.existsSync(this.distro.pathIso)) {
@@ -300,7 +325,7 @@ export default class Ovary {
 
   async isolinuxPrepare() {
     console.log('==========================================')
-    console.log('iso: isolinuxPrepare')
+    console.log('ovary: isolinuxPrepare')
     console.log('==========================================')
 
     const isolinuxbin = `${this.iso.isolinuxPath}isolinux.bin`
@@ -324,7 +349,7 @@ export default class Ovary {
 
   async isoStdmenuCfg() {
     console.log('==========================================')
-    console.log('iso: isoStdmenuCfg')
+    console.log('ovary: isoStdmenuCfg')
     console.log('==========================================')
 
     const file = `${this.distro.pathIso}/boot/isolinux/stdmenu.cfg`
@@ -361,7 +386,7 @@ MENU TABMSG Press ENTER to boot or TAB to edit a menu entry
 
   isolinuxCfg() {
     console.log('==========================================')
-    console.log('iso: isolinuxCfg')
+    console.log('ovary: isolinuxCfg')
     console.log('==========================================')
 
     const file = `${this.distro.pathIso}/boot/isolinux/isolinux.cfg`
@@ -429,7 +454,7 @@ timeout 0
     this.iso.aqs = 'quit splash debug=true nocomponents '
 
     console.log('==========================================')
-    console.log('iso: menuCfg')
+    console.log('ovary: menuCfg')
     console.log('==========================================')
 
     const file = `${this.distro.pathIso}/boot/isolinux/menu.cfg`
@@ -843,11 +868,12 @@ timeout 0
    */
   async copyKernel() {
     console.log('==========================================')
-    console.log('iso: liveKernel')
+    console.log('ovary: liveKernel')
     console.log('==========================================')
     Utils.shxExec(`cp ${this.kernel_image} ${this.distro.pathIso}/live/`)
     Utils.shxExec(`cp ${this.initrd_image} ${this.distro.pathIso}/live/`)
   }
+
 
   /**
    * squashFs: crea in live filesystem.squashfs
@@ -875,7 +901,7 @@ timeout 0
 
   async makeIsoFs() {
     console.log('==========================================')
-    console.log('iso: makeIsoFs')
+    console.log('ovary: makeIsoFs')
     console.log('==========================================')
 
     const isoHybridOption = `-isohybrid-mbr ${this.iso.isolinuxPath}isohdpfx.bin `
