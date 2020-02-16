@@ -49,7 +49,7 @@ export default class Ovary {
 
   force_installer = false
 
-  reset_accounts = true
+  reset_accounts = false
 
   debian_version = 10 as number
 
@@ -91,8 +91,9 @@ export default class Ovary {
    * Egg
    * @param compression
    */
-  constructor(compression = 'xz') {
-    this.compression = compression || ''
+  constructor(compression = '') {
+    this.compression = compression
+
     this.app.author = 'Piero Proietti'
     this.app.homepage = 'https://github.com/pieroproietti/penguins-eggs'
     this.app.mail = 'piero.proietti@gmail.com'
@@ -104,7 +105,6 @@ export default class Ovary {
     this.distro.versionNumber = 'zero' // Utils.formatDate()
     this.distro.branding = 'eggs'
     this.distro.kernel = Utils.kernerlVersion()
-    this.compression = compression || ''
     this.live = Utils.isLive()
     // this.users = Utils.usersList()
     this.i686 = Utils.isi686()
@@ -153,9 +153,6 @@ export default class Ovary {
     }
 
     this.session_excludes = ''
-    if (this.compression === '') {
-      this.compression = settings.General.compression
-    }
     this.snapshot_dir = settings.General.snapshot_dir.trim()
     if (!this.snapshot_dir.endsWith('/')){
       this.snapshot_dir += '/'
@@ -164,7 +161,9 @@ export default class Ovary {
     this.snapshot_basename = settings.General.snapshot_basename
     this.make_md5sum = settings.General.make_md5sum === "yes"
     this.make_isohybrid = settings.General.make_isohybrid === "yes"
-    this.compression = settings.General.compression
+    if (this.compression === '') {
+      this.compression = settings.General.compression
+    }
     this.mksq_opt = settings.General.mksq_opt
     this.edit_boot_menu = settings.General.edit_boot_menu === "yes"
     this.gui_editor = settings.General.gui_editor
@@ -855,7 +854,7 @@ timeout 0
    */
   async makeSquashFs() {
     console.log('==========================================')
-    console.log('iso: makeSquashFs')
+    console.log('ovary: makeSquashFs')
     console.log('==========================================')
 
     this.addRemoveExclusion(true, this.snapshot_dir /* .absolutePath() */)
@@ -867,10 +866,10 @@ timeout 0
         this.addRemoveExclusion(true, '/etc/localtime')
       }
     }
-    console.log(`${this.snapshot_excludes} ${this.session_excludes}`)
     const option = `-comp ${this.compression} `
     let cmd = `mksquashfs /.bind-root ${this.distro.pathIso}/live/filesystem.squashfs ${option} -wildcards -ef ${this.snapshot_excludes} ${this.session_excludes} `
-    shx.exec(cmd, {silent: false})
+    console.log(cmd)
+    Utils.shxExec(cmd, {silent: false})
     // usr/bin/mksquashfs /.bind-root iso-template/antiX/linuxfs -comp ${this.compression} ${(this.mksq_opt === '' ? '' : ' ' + this.mksq_opt)} -wildcards -ef ${this.snapshot_excludes} ${this.session_excludes}`)
   }
 

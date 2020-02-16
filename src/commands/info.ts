@@ -33,7 +33,7 @@ You will find here informations about penguin's eggs!
     if (Utils.isLive()){
       message = "This is a LIVE system."
     }
-    shx.echo (`System:         ${message}`)
+    shx.echo (`System:            ${message}`)
 
     Utils.prerequisitesInstalled()
     
