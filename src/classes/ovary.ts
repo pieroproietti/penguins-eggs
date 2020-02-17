@@ -250,7 +250,8 @@ export default class Ovary {
   }
 
   /**
-   * 
+   * calamaresConfigura
+   * Installa calamares se force_installer=yes e lo configura
    */
   async  calamaresConfigure(){
     // Se force_installer e calamares non è installato
