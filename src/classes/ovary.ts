@@ -86,13 +86,15 @@ export default class Ovary {
   version = '' as string
 
   bindRoot = '' // '/.bind-root'
+  bindedFs = false 
 
   /**
    * Egg
    * @param compression
    */
-  constructor(compression = '') {
+  constructor(compression = '', bindedFs = false) {
     this.compression = compression
+    this.bindedFs = bindedFs
 
     this.app.author = 'Piero Proietti'
     this.app.homepage = 'https://github.com/pieroproietti/penguins-eggs'
@@ -241,13 +243,13 @@ export default class Ovary {
       await this.isolinuxCfg()
       await this.isoMenuCfg()
       await this.copyKernel()
-      //await this.makeLiveFs()
-      await this.bindLiveFs()
+      if (this.bindedFs){
+        await this.bindFs() // bind FS
+      } else {
+        await this.makeFs() // copy fs
+      }
       await this.makeFsTab()
       await this.makeInterfaces()
-      console.log('------------------------------------------')
-      console.log('Spawning the system into the egg...\nThis process can be very long, perhaps it\'s time for a coffee!')
-      console.log('------------------------------------------')
       await this.makeSquashFs()
       await this.cleanUp()
       await this.makeIsoFs()
@@ -960,9 +962,9 @@ timeout 0
    * makeLiveFs
    * Crea il LiveFs mediante copia (lento ma preciso)
    */
-  public async makeLiveFs() {
+  public async makeFs() {
     console.log('==========================================')
-    console.log('ovary: makeLiveFs')
+    console.log('ovary: makeFs')
     console.log('==========================================')
 
     let f = ''
@@ -1068,7 +1070,7 @@ timeout 0
    * Check if exist mx-snapshot in work_dir;
    * If respin mode remove all the users
    */
-  async bindLiveFs() {
+  async bindFs() {
     console.log('==========================================')
     console.log('ovary: bindLiveFs')
     console.log('==========================================')
