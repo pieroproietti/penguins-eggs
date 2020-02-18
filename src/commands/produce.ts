@@ -38,11 +38,11 @@ the penguin produce an egg called uovo-i386-2020-01-18_2000.iso`]
         compression = 'xz -Xbcj x86'
       }
 
-      let bindedLiveFs = false'' // se vuota viene eseguita la copia
-      if (flags.bindLiveFs){
-        bindedLiveFs = true
+      let bindedFs = false // se vuota viene eseguita la copia
+      if (flags.bindFs){
+        bindedFs = true
       }
-      const ovary = new Ovary(compression, bindedLiveFs)
+      const ovary = new Ovary(compression, bindedFs)
       await ovary.fertilization()
       const eggName = ovary.produce(basename)
 

@@ -297,6 +297,19 @@ export default class Ovary {
    * and netman, so they aren't stealthily included in the snapshot.
    */
   public async makeInterfaces() {
+    /**
+    #
+    # Use 'blkid' to print the universally unique identifier for a device; this may
+    # be used with UUID= as a more robust way to name devices that works even if
+    # disks are added and removed. See fstab(5).
+    #
+    # <file system>             <mount point>  <type>  <options>  <dump>  <pass>
+    /dev/sda1 /              ext4    defaults,noatime 0 1
+    /dev/sda2 swap           swap    defaults,noatime 0 2
+    UUID=6358a9df-f848-41cc-9475-a2b0a45f3bda /              ext4    defaults,noatime 0 1
+    UUID=558e98b7-06ac-4931-a893-b18018c59dda swap           swap    defaults,noatime 0 2
+    */
+
     console.log('==========================================')
     console.log('ovary: makeInterfaces')
     console.log('==========================================')
