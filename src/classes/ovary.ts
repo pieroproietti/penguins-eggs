@@ -300,6 +300,10 @@ export default class Ovary {
      * to prevent error messages at boot
      */
     const text = ''
+    if (fs.existsSync(`${this.bindRoot}/etc/fstab`)){
+      shx.mkdir('/tmp/penguins-eggs')
+      shx.cp(`${this.bindRoot}/etc/fstab`,`/tmp/penguins-eggs` )
+    }
     shx.exec(`touch ${this.bindRoot}/etc/fstab`, { silent: true })
     Utils.write(`${this.bindRoot}/etc/fstab`, text)
 
@@ -963,7 +967,11 @@ timeout 0
     console.log('==========================================')
 
     Utils.shxExec('sync')
-    Utils.shxExec('/usr/bin/pkill mksquashfs; /usr/bin/pkill md5sum')
+    if (this.bindedFs){
+      Utils.shxExec('/usr/bin/pkill mksquashfs; /usr/bin/pkill md5sum')
+      shx.cp('/tmp/penguins-eggs/fstab', '/etc/fstab') // Pezza a colori
+    }
+
     Utils.shxExec('/usr/bin/[ -f /tmp/installed-to-live/cleanup.conf ] && /sbin/installed-to-live cleanup')
 
     if (fs.existsSync(`${this.work_dir}/mx-snapshot`)) {
@@ -1111,18 +1119,18 @@ timeout 0
     let cmd = ''
     if (this.reset_accounts) {
       cmd = `/sbin/installed-to-live -b ${this.bindRoot} start ${bindBoot} empty=/home general version-file read-write`
-      Utils.shxExec(cmd)
-      this.makeLiveHome()
+      await Utils.shxExec(cmd)
+      await this.makeLiveHome()
     } else {
       cmd = `/sbin/installed-to-live -b ${this.bindRoot} start bind=/home${bindBootToo} live-files version-file adjtime read-write`
-      Utils.shxExec(cmd)
+      await Utils.shxExec(cmd)
     }
   }
 
     /**
    * 
    */
-  makeLiveHome() {
+  async makeLiveHome() {
     const user: string = Utils.getPrimaryUser()
 
     // Copiamo i link su /usr/share/applications
