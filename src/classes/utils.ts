@@ -400,7 +400,5 @@ export default class Utils {
     text = text.trim() + '\n'
     file = file.trim()
     fs.writeFileSync(file, text)
-    console.log(text)
-    console.log(`>>> Fine creazione ${file}  ===`)
   }
 }

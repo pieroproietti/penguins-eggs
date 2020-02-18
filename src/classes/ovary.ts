@@ -23,7 +23,7 @@ import Utils from './utils'
 import Calamares from './calamares-config'
 import Oses from './oses'
 import Prerequisites from '../commands/prerequisites'
-import {IDistro, IOses, IPackage} from '../interfaces'
+import { IDistro, IOses, IPackage } from '../interfaces'
 
 /**
  * Ovary:
@@ -85,7 +85,7 @@ export default class Ovary {
 
   version = '' as string
 
-  bindRoot = '/.bind-root'
+  bindRoot = '' // '/.bind-root'
 
   /**
    * Egg
@@ -105,7 +105,9 @@ export default class Ovary {
     this.distro.versionNumber = 'zero' // Utils.formatDate()
     this.distro.branding = 'eggs'
     this.distro.kernel = Utils.kernerlVersion()
+
     this.live = Utils.isLive()
+    
     // this.users = Utils.usersList()
     this.i686 = Utils.isi686()
     this.debian_version = Utils.getDebianVersion()
@@ -130,7 +132,9 @@ export default class Ovary {
 
     if (this.loadSettings() && this.listFreeSpace()) {
       this.work_dir = this.snapshot_dir
-      this.distro.pathHome = this.work_dir + '.' +this.distro.name
+      this.distro.pathHome = this.work_dir + '.' + this.distro.name
+      this.distro.pathFs = this.distro.pathHome + '/fs'
+      this.bindRoot = this.distro.pathFs
       this.distro.pathIso = this.distro.pathHome + '/iso'
       return true
     }
@@ -154,7 +158,7 @@ export default class Ovary {
 
     this.session_excludes = ''
     this.snapshot_dir = settings.General.snapshot_dir.trim()
-    if (!this.snapshot_dir.endsWith('/')){
+    if (!this.snapshot_dir.endsWith('/')) {
       this.snapshot_dir += '/'
     }
     this.snapshot_excludes = settings.General.snapshot_excludes
@@ -177,13 +181,13 @@ export default class Ovary {
   /**
    * showSettings
    */
-  public async showSettings(){
+  public async showSettings() {
     console.log(`application_nane:  ${this.app.name} ${this.app.version}`)
     console.log(`config_file:       ${this.config_file}`)
     console.log(`snapshot_dir:      ${this.snapshot_dir}`)
     console.log(`snapshot_exclude:  ${this.snapshot_excludes}`)
     if (this.snapshot_basename === 'hostname') {
-      console.log(`snapshot_basename: ${os.hostname} (hostname)`)  
+      console.log(`snapshot_basename: ${os.hostname} (hostname)`)
     } else {
       console.log(`snapshot_basename: ${this.snapshot_basename}`)
     }
@@ -237,7 +241,8 @@ export default class Ovary {
       await this.isolinuxCfg()
       await this.isoMenuCfg()
       await this.copyKernel()
-      await this.system2live()
+      //await this.makeLiveFs()
+      await this.bindLiveFs()
       await this.makeFsTab()
       await this.makeInterfaces()
       console.log('------------------------------------------')
@@ -253,9 +258,9 @@ export default class Ovary {
    * calamaresConfigura
    * Installa calamares se force_installer=yes e lo configura
    */
-  async  calamaresConfigure(){
+  async  calamaresConfigure() {
     // Se force_installer e calamares non è installato
-    if (this.force_installer && !Utils.packageIsInstalled('calamares')){
+    if (this.force_installer && !Utils.packageIsInstalled('calamares')) {
       shx.exec(`apt-get update`, { async: false })
       shx.exec(`apt-get install --yes \
               calamares \
@@ -263,26 +268,24 @@ export default class Ovary {
     }
 
     // Se calamares è installato lo configura
-    if (Utils.packageIsInstalled('calamares')){
+    if (Utils.packageIsInstalled('calamares')) {
       this.calamares = new Calamares(this.distro, this.iso)
       await this.calamares.configure()
     }
-  } 
+  }
 
 
-  async makeFsTab(){
+  async makeFsTab() {
     console.log('==========================================')
     console.log('ovary: makeFsTab')
     console.log('==========================================')
-
+    /**
+     * /etc/fstab should exist, even if it's empty,
+     * to prevent error messages at boot
+     */
     const text = ''
-   
-    // /etc/fstab should exist, even if it's empty,
-    // to prevent error messages at boot
-    shx.exec(`touch "$work_dir"/myfs/etc/fstab`)
-    const bindRoot = '/.bind-root'
-    shx.exec(`touch ${bindRoot}/etc/fstab`, {silent: true})
-    Utils.write(`${bindRoot}/etc/fstab`, text)
+    shx.exec(`touch ${this.bindRoot}/etc/fstab`, { silent: true })
+    Utils.write(`${this.bindRoot}/etc/fstab`, text)
 
   }
 
@@ -296,14 +299,13 @@ export default class Ovary {
     console.log('ovary: makeInterfaces')
     console.log('==========================================')
     const text = 'auto lo\niface lo inet loopback'
-    const bindRoot = '/.bind-root'
-    shx.exec(`touch ${bindRoot}/etc/network/interfaces`, {silent: true})
-    Utils.write(`${bindRoot}/etc/network/interfaces`, text)
+    shx.exec(`touch ${this.bindRoot}/etc/network/interfaces`, { silent: true })
+    Utils.write(`${this.bindRoot}/etc/network/interfaces`, text)
 
-    shx.exec(`rm -f ${bindRoot}/var/lib/wicd/configurations/*`)
-    shx.exec(`rm -f ${bindRoot}/etc/wicd/wireless-settings.conf`)
-    shx.exec(`rm -f ${bindRoot}/etc/NetworkManager/system-connections/*`)
-    shx.exec(`rm -f ${bindRoot}/etc/network/wifi/*`)
+    shx.exec(`rm -f ${this.bindRoot}/var/lib/wicd/configurations/*`)
+    shx.exec(`rm -f ${this.bindRoot}/etc/wicd/wireless-settings.conf`)
+    shx.exec(`rm -f ${this.bindRoot}/etc/NetworkManager/system-connections/*`)
+    shx.exec(`rm -f ${this.bindRoot}/etc/network/wifi/*`)
   }
 
   /**
@@ -894,9 +896,9 @@ timeout 0
       }
     }
     const compression = `-comp ${this.compression} `
-    let cmd = `mksquashfs /.bind-root ${this.distro.pathIso}/live/filesystem.squashfs ${compression} ${(this.mksq_opt === '' ? '' : ' ' + this.mksq_opt)} -wildcards -ef ${this.snapshot_excludes} ${this.session_excludes} `
+    let cmd = `mksquashfs ${this.bindRoot} ${this.distro.pathIso}/live/filesystem.squashfs ${compression} ${(this.mksq_opt === '' ? '' : ' ' + this.mksq_opt)} -wildcards -ef ${this.snapshot_excludes} ${this.session_excludes} `
     console.log(cmd)
-    Utils.shxExec(cmd, {silent: false})
+    Utils.shxExec(cmd, { silent: false })
     // usr/bin/mksquashfs /.bind-root iso-template/antiX/linuxfs -comp ${this.compression} ${(this.mksq_opt === '' ? '' : ' ' + this.mksq_opt)} -wildcards -ef ${this.snapshot_excludes} ${this.session_excludes}`)
   }
 
@@ -929,7 +931,7 @@ timeout 0
     }
     let isoName = `${basename}-${arch}_${Utils.formatDate(new Date())}`
     if (isoName.length >= 28)
-      isoName = isoName.substr(0,28) // 28 +  4 .iso = 32 lunghezza max di volid
+      isoName = isoName.substr(0, 28) // 28 +  4 .iso = 32 lunghezza max di volid
     return `${isoName}.iso`
   }
 
@@ -955,15 +957,123 @@ timeout 0
   }
 
   /**
+   * makeLiveFs
+   * Crea il LiveFs mediante copia (lento ma preciso)
+   */
+  public async makeLiveFs() {
+    console.log('==========================================')
+    console.log('ovary: makeLiveFs')
+    console.log('==========================================')
+
+    let f = ''
+    // root
+    f += ' --filter="- /cdrom/*"'
+    f += ' --filter="- /dev/*"'
+    f += ' --filter="- /live"'
+    f += ' --filter="- /media/*"'
+    f += ' --filter="- /mnt/*"'
+    f += ' --filter="- /proc/*"'
+    f += ' --filter="- /sys/*"'
+    f += ' --filter="- /swapfile"'
+    f += ' --filter="- /tmp/*"'
+    f += ' --filter="- /persistence.conf"'
+
+    // boot
+    f += ' --filter="- /boot/grub/grub.cfg"'
+    f += ' --filter="- /boot/grub/menu.lst"'
+    f += ' --filter="- /boot/grub/device.map"'
+    f += ' --filter="- /boot/*.bak"'
+    f += ' --filter="- /boot/*.old-dkms"'
+
+    // etc
+    f += ' --filter="- /etc/apt/sources.list~"'
+    f += ' --filter="- /etc/blkid.tab"'
+    f += ' --filter="- /etc/blkid.tab.old"'
+    f += ' --filter="- /etc/crypttab"'
+    f += ' --filter="- /etc/fstab"'
+    f += ' --filter="- /etc/fstab.d/*"'
+    f += ' --filter="- /etc/initramfs-tools/conf.d/resume"' // see remove-cryptroot and nocrypt.sh
+    f += ' --filter="- /etc/initramfs-tools/conf.d/cryptroot"' // see remove-cryptroot and nocrypt.sh
+    f += ' --filter="- /etc/mtab"'
+    f += ' --filter="- /etc/popularity-contest.conf"'
+    f += ' --filter="- /etc/ssh/ssh_host_*_key*"' // Exclude ssh_host_keys. New ones will be generated upon live boot.
+    f += ' --filter="- /etc/ssh/ssh_host_key*"' // Exclude ssh_host_keys. New ones will be generated upon live boot.
+    f += ' --filter="- /etc/sudoers.d/live"' // Exclude live da sudoers.d non serve se installato
+
+    // lib
+    f += ' --filter="- /lib/live/image"'
+    f += ' --filter="- /lib/live/mount"'
+    f += ' --filter="- /lib/live/overlay"'
+    f += ' --filter="- /lib/live/rootfs"'
+
+    f += ' --filter="- /home/*"'
+    f += ' --filter="- /root/*"'
+    f += ' --filter="- /run/*"'
+
+    // var
+    f += ' --filter="- /var/backups/*.gz"'
+    f += ' --filter="- /var/cache/apt/archives/*.deb"'
+    f += ' --filter="- /var/cache/apt/pkgcache.bin"'
+    f += ' --filter="- /var/cache/apt/srcpkgcache.bin"'
+    f += ' --filter="- /var/cache/apt/apt-file/*"'
+    f += ' --filter="- /var/cache/debconf/*~old"'
+    f += ' --filter="- /var/lib/apt/*~"'
+    f += ' --filter="- /var/lib/apt/cdroms.list"'
+    f += ' --filter="- /var/lib/apt/lists/*"'
+    f += ' --filter="- /var/lib/aptitude/*.old"'
+    f += ' --filter="- /var/lib/dbus/machine-id"'
+    f += ' --filter="- /var/lib/dhcp/*"'
+    f += ' --filter="- /var/lib/dpkg/*~old"'
+    f += ' --filter="- /var/lib/live/config/*"'
+    f += ' --filter="- /var/log/*"'
+    f += ' --filter="- /var/mail/*"'
+    f += ' --filter="- /var/spool/mail/*"'
+
+    // usr
+    f += ' --filter="- /usr/share/icons/*/icon-theme.cache"'
+    f += ' --filter="- /usr/lib/live/image"'
+    f += ' --filter="- /usr/lib/live/mount"'
+    f += ' --filter="- /usr/lib/live/overlay"'
+    f += ' --filter="- /usr/lib/live/rootfs"'
+
+    let home = ''
+    if (this.reset_accounts) {
+      home = '--filter="- /home/*"'
+    } else {
+      home = '--filter="+/home/*"'
+    }
+
+    const cmd = `\
+      rsync \
+      --archive \
+      --delete-before \
+      --delete-excluded \
+      --filter="- ${this.distro.pathHome}" \
+      ${f} \
+      --filter="- /lib/live/*" \
+      --filter="+ /lib/live/boot/*" \
+      --filter="+ /lib/live/config/*" \
+      --filter="+ /lib/live/init-config-sh" \
+      --filter="+ /lib/live/setup-network.sh" \
+      ${home} \
+      / ${this.distro.pathFs}`
+    shx.exec(cmd.trim(), { async: false })
+    if (this.reset_accounts) {
+      this.makeLiveHome()
+    }
+  }
+
+
+  /**
    * Check if exist mx-snapshot in work_dir;
    * If respin mode remove all the users
    */
-  async system2live() {
+  async bindLiveFs() {
     console.log('==========================================')
-    console.log('ovary: system2live')
+    console.log('ovary: bindLiveFs')
     console.log('==========================================')
 
-    Utils.shxExec(`mkdir -r ${this.work_dir}/mx-snapshot`)
+    // Utils.shxExec(`mkdir -r ${this.work_dir}/mx-snapshot`)
 
     // checks if work_dir looks OK
     // if (!this.work_dir.includes('/mx-snapshot')) { // Se non contiene /mx-snapshot
@@ -971,42 +1081,53 @@ timeout 0
     //  return
     // }
 
-    let bind_boot = ''
-    let bind_boot_too = ''
+    let bindBoot = ''
+    let bindBootToo = ''
     if (shx.exec('mountpoint /boot').code) {
-      bind_boot = 'bind=/boot'
-      bind_boot_too = ',/boot'
+      bindBoot = 'bind=/boot'
+      bindBootToo = ',/boot'
     }
 
     /**
      * setup environment if creating a respin 
      * (reset root/demo, remove personal accounts) 
-     */ 
+     */
     let cmd = ''
     if (this.reset_accounts) {
-      /**
-       * Se resettiamo gli account e NON copiamo home, BISOGNA ricreare la home dell user primario 1000:1000
-       */
-      
-      const user: string = Utils.getPrimaryUser()
-      cmd = `/sbin/installed-to-live -b ${this.bindRoot} start ${bind_boot} empty=/home general version-file read-write`
+      cmd = `/sbin/installed-to-live -b ${this.bindRoot} start ${bindBoot} empty=/home general version-file read-write`
       Utils.shxExec(cmd)
-      // creazione di home per user live
-      shx.exec(`cp -r /etc/skel/. ${this.bindRoot}/home/${user}`, {async: false})
-      shx.exec(`chown -R live:live ${this.bindRoot}/home/${user}`, {async: false})
-      shx.exec(`mkdir ${this.bindRoot}/home/${user}/Desktop`, {async: false})
-  
-      // creazione dei link per user live
-      console.log('system2live: creating initial live link... \n')
-      shx.exec(`cp /etc/penguins-eggs/${user}/Desktop/* ${this.bindRoot}/home/${user}/Desktop`, {async: false})
-      shx.exec(`chmod +x ${this.bindRoot}/home/${user}/Desktop/*.desktop`, {async: false})
-      shx.exec(`chown ${user}:${user} ${this.bindRoot}/home/${user}/Desktop/*`, {async: false})
+      this.makeLiveHome()
     } else {
-      cmd = `/sbin/installed-to-live -b ${this.bindRoot} start bind=/home${bind_boot_too} live-files version-file adjtime read-write`
+      cmd = `/sbin/installed-to-live -b ${this.bindRoot} start bind=/home${bindBootToo} live-files version-file adjtime read-write`
       Utils.shxExec(cmd)
     }
-    shx.echo(cmd)
-    shx.echo('Done')
+  }
+
+    /**
+   * 
+   */
+  makeLiveHome() {
+    const user: string = Utils.getPrimaryUser()
+
+    // Copiamo i link su /usr/share/applications
+    shx.cp(`${__dirname}../../assets/dw-agent-sh.desktop`, `/usr/share/applications/`)
+    shx.cp(`${__dirname}../../assets/assistenza-remota.png`, `/usr/share/icons/`)
+    shx.cp(`${__dirname}../../assets/penguins-eggs.desktop`, `/usr/share/applications/`)
+    shx.cp(`${__dirname}../../assets/eggs.png`, `/usr/share/icons/`)
+
+    // creazione della home per user live
+    shx.exec(`cp -r /etc/skel/. ${this.bindRoot}/home/${user}`, { async: false })
+    shx.exec(`chown -R live:live ${this.bindRoot}/home/${user}`, { async: false })
+    shx.exec(`mkdir ${this.bindRoot}/home/${user}/Desktop`, { async: false })
+
+    // Copiare i link sul desktop
+    shx.cp('/usr/share/applications/dw-agent.desktop', `${this.bindRoot}/home/${user}/Desktop`)
+    shx.cp('/usr/share/applications/penguins-eggs.desktop', `${this.bindRoot}/home/${user}/Desktop`)
+
+    // creazione dei link per user live da /etc/penguins-eggs/
+    shx.exec(`cp /etc/penguins-eggs/${user}/Desktop/* ${this.bindRoot}/home/${user}/Desktop`, { async: false })
+    shx.exec(`chmod +x ${this.bindRoot}/home/${user}/Desktop/*.desktop`, { async: false })
+    shx.exec(`chown ${user}:${user} ${this.bindRoot}/home/${user}/Desktop/*`, { async: false })
   }
 
   /**
