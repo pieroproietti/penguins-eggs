@@ -1,7 +1,7 @@
 {
   "name": "penguins-eggs",
   "description": "remaster your system and distribuite it",
-  "version": "7.1.40",
+  "version": "7.1.41",
   "author": "Piero Proietti @pieroproietti",
   "bin": {
     "eggs": "./bin/run"
