@@ -9,7 +9,7 @@ Penguin&#39;s eggs are generated and new birds are ready to fly...
 [![Version](https://img.shields.io/npm/v/penguins-eggs.svg)](https://npmjs.org/package/penguins-eggs)
 [![Downloads/week](https://img.shields.io/npm/dw/penguins-eggs.svg)](https://npmjs.org/package/penguins-eggs)
 [![License](https://img.shields.io/npm/l/penguins-eggs.svg)](https://github.com/pieroproietti/penguins-eggs/blob/master/package.json)
-[![Documentation](https://raw.githubusercontent.com/pieroproietti/penguins-eggs/master/assets/typedoc.svg)](https://penguins-eggs.sourceforge.io/index.html)
+[![Documentation](https://penguins-eggs.sourceforge.io/typedoc.svg)](https://penguins-eggs.sourceforge.io/index.html)
 
 # Presentation
 penguins-eggs is a console utility, in active development, who let you to
