@@ -48,13 +48,35 @@ install the prerequisites packages to run penguin's eggs
                   parted \
                   squashfs-tools \
                   xorriso \
-                  syslinux \
                   isolinux \
                   live-boot \
-                  xterm \
+                  live-boot-initramfs-tools \
                   open-infrastructure-system-config \
-                  whois ', {async: false})
+                  xterm \
+                  whois ', {async: false}) 
 
+                  /**
+                   * rimosso 
+                   * syslinux OK incluse on isolinux
+                   * live-config live-config-systemd conflict open-infrastructure-system-config 
+                   */
+
+                  /**
+                   * dipendenze di refracta
+                   * 
+                   * bash
+                   * mount
+                   * rsync
+                   * squashfs-tools
+                   * xorriso
+                   * gawk | mawk
+                   * live-boot
+                   * live-config 
+                   * live-boot-initramfs-tools
+                   * live-config-sysvinit | live-config-systemd | live-config-upstart
+                   * syslinux-common
+                   * syslinux | isolinux
+                   */
         // Copia della configurazione
         shx.cp(path.resolve(__dirname, '../../conf/penguins-eggs.conf'), '/etc')
         shx.mkdir('-p', '/usr/local/share/excludes/')

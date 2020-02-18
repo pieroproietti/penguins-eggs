@@ -1,7 +1,7 @@
 {
   "name": "penguins-eggs",
   "description": "remaster your system and distribuite it",
-  "version": "7.1.39",
+  "version": "7.1.40",
   "author": "Piero Proietti @pieroproietti",
   "bin": {
     "eggs": "./bin/run"
@@ -42,6 +42,7 @@
     "mocha": "^5.2.0",
     "nyc": "^14.1.1",
     "ts-node": "^8.6.2",
+    "typedoc": "^0.16.8",
     "typescript": "^3.7.5"
   },
   "engines": {

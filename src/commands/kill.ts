@@ -5,11 +5,12 @@
  * license: MIT
  */
 import { Command } from '@oclif/command'
+
 import fs = require('fs')
 import ini = require('ini')
 import shx = require('shelljs')
 import Utils from '../classes/utils'
-
+import Ovary from '../classes/ovary'
 
 
 export default class Kill extends Command {
@@ -28,7 +29,8 @@ kill the eggs/free the nest
 
   async run() {
     if (Utils.isRoot() && Utils.prerequisitesInstalled()) {
-      // shx.exec('installed-to-live cleanup > /dev/null')
+      const ovary = new Ovary
+      ovary.cleanUp()
       this.log(`${Utils.getFriendName()}: deleting old eggs...`)
       if (this.loadSettings()){
         shx.exec(`rm ${this.snapshot_dir} -rf`)

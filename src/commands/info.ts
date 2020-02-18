@@ -8,7 +8,7 @@
 import {Command,flags} from '@oclif/command'
 import shx = require('shelljs')
 import Utils from '../classes/utils'
-import { SSL_OP_COOKIE_EXCHANGE } from 'constants'
+import Ovary from '../classes/ovary'
 
 /**
  * Get informations about system
@@ -24,15 +24,19 @@ You will find here informations about penguin's eggs!
   ]
 
   async run() {
+    const ovary = new Ovary
+
+    ovary.loadSettings()
+    ovary.showSettings()
+
     let message='You are on an INSTALLED system.'
-    this.log(Utils.getPackageName())
-    shx.exec('lsb_release -a')
     if (Utils.isLive()){
       message = "This is a LIVE system."
     }
-    shx.echo (`System:         ${message}`)
+    shx.echo (`System:            ${message}`)
 
     Utils.prerequisitesInstalled()
-    shx.exit(0)
+    
+    shx.exec('lsb_release -a')
   }
 }

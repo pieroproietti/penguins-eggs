@@ -22,8 +22,8 @@ export default class Utils {
    * prerequisistesInstalled
    */
   static prerequisitesInstalled(): boolean {
-    const retVal : boolean = fs.existsSync('/etc/penguins-eggs.conf') && (fs.existsSync('/usr/local/share/excludes/penguins-eggs-exclude.list'))
-    if (!retVal){
+    const retVal: boolean = fs.existsSync('/etc/penguins-eggs.conf') && (fs.existsSync('/usr/local/share/excludes/penguins-eggs-exclude.list'))
+    if (!retVal) {
       console.log('You need to install the prerequisites for eggs. \nTry: sudo eggs prerequisites')
     }
     return retVal
@@ -122,7 +122,7 @@ export default class Utils {
  * Get author name
  */
   static getAuthorName(): string {
-    return ''
+    return 'Piero Proietti piero.proietti@gmail.com'
   }
 
   /**
@@ -132,7 +132,7 @@ export default class Utils {
      */
   static getDebianVersion(): number {
     const cmd = 'cat /etc/debian_version | /usr/bin/cut -f1 -d\'.\''
-    const version = Number(shx.exec(cmd).stdout)
+    const version = Number(shx.exec(cmd, {silent: true}).stdout)
     return version
   }
 
@@ -167,47 +167,47 @@ export default class Utils {
       squashFs = '/live/boot-dev/antiX/linuxfs'
     }
 
+    /**
+       * root-space-needed is the size of the linuxfs file * a compression factor +
+       * contents of the rootfs. Conservative but fast factors are same as used in
+       * live-remaster
+       */
+    const sqfile_full = ini.parse(fs.readFileSync(squashFs, 'utf-8'))
+
+    // get compression factor by reading the linuxfs squasfs file, if available
+    const linuxfs_compression_type = shx.exec(`dd if=${sqfile_full} bs=1 skip=20 count=2 status=none 2>/dev/null| /usr/bin/od -An -tdI`)
+
+    let compression_factor = 0
+
+    if (linuxfs_compression_type === '1') {
+      compression_factor = 37 // gzip
+    } else if (linuxfs_compression_type === '2') {
+      compression_factor = 52 // lzo, not used by antiX
+    } else if (linuxfs_compression_type === '3') {
+      compression_factor = 52  // lzma, not used by antiX
+    } else if (linuxfs_compression_type === '4') {
+      compression_factor = 31 // xz
+    } else if (linuxfs_compression_type === '5') {
+      compression_factor = 52 // lz4
+    } else {
+      compression_factor = 30 // anything else or linuxfs not reachable (toram), should be pretty conservative
+    }
+    let rootfs_file_size = 0
+    const linuxfs_file_size = Number(shx.exec('df /live/linux --output=used --total | /usr/bin/tail -n1').stdout.trim()) * 1024 * 100 / compression_factor
+
+    if (fs.existsSync('/live/persist-root')) {
+      rootfs_file_size = Number(shx.exec('df /live/persist-root --output=used --total | /usr/bin/tail -n1').stdout.trim()) * 1024
+    }
+
+    let rootSpaceNeeded: number
+    if (type === 'mx') {
       /**
-         * root-space-needed is the size of the linuxfs file * a compression factor +
-         * contents of the rootfs. Conservative but fast factors are same as used in
-         * live-remaster
-         */
-      const sqfile_full = ini.parse(fs.readFileSync(squashFs, 'utf-8'))
-
-      // get compression factor by reading the linuxfs squasfs file, if available
-      const linuxfs_compression_type = shx.exec(`dd if=${sqfile_full} bs=1 skip=20 count=2 status=none 2>/dev/null| /usr/bin/od -An -tdI`)
-
-      let compression_factor = 0
-
-      if (linuxfs_compression_type === '1') {
-        compression_factor = 37 // gzip
-      } else if (linuxfs_compression_type === '2') {
-        compression_factor = 52 // lzo, not used by antiX
-      } else if (linuxfs_compression_type === '3') {
-        compression_factor = 52  // lzma, not used by antiX
-      } else if (linuxfs_compression_type === '4') {
-        compression_factor = 31 // xz
-      } else if (linuxfs_compression_type === '5') {
-        compression_factor = 52 // lz4
-      } else {
-        compression_factor = 30 // anything else or linuxfs not reachable (toram), should be pretty conservative
-      }
-      let rootfs_file_size = 0
-      const linuxfs_file_size = Number(shx.exec('df /live/linux --output=used --total | /usr/bin/tail -n1').stdout.trim()) * 1024 * 100 / compression_factor
-
-      if (fs.existsSync('/live/persist-root')) {
-        rootfs_file_size = Number(shx.exec('df /live/persist-root --output=used --total | /usr/bin/tail -n1').stdout.trim()) * 1024
-      }
-
-      let rootSpaceNeeded: number
-      if (type === 'mx') {
-        /**
-         * add rootfs file size to the calculated linuxfs file size. Probaby conservative, as rootfs will likely have some overlap with linuxfs
-         */
-        rootSpaceNeeded = linuxfs_file_size + rootfs_file_size
-      } else {
-        rootSpaceNeeded = linuxfs_file_size
-      }
+       * add rootfs file size to the calculated linuxfs file size. Probaby conservative, as rootfs will likely have some overlap with linuxfs
+       */
+      rootSpaceNeeded = linuxfs_file_size + rootfs_file_size
+    } else {
+      rootSpaceNeeded = linuxfs_file_size
+    }
     return rootSpaceNeeded / 1073741824.0 // Converte in GB
   }
 
@@ -218,7 +218,7 @@ export default class Utils {
        */
   static isi686(): boolean {
     let retVal = false
-    if (shx.exec('uname -m').stdout.trim() === 'i686') {
+    if (shx.exec('uname -m', {silent: true}).stdout.trim() === 'i686') {
       retVal = true
     }
     return retVal
@@ -333,8 +333,8 @@ export default class Utils {
   * @param cmd
   * @param silent
   */
-  static shxExec(cmd: string, silent: object = { silent: false }): any {
-    this.showCmd(cmd)
+  static shxExec(cmd: string, silent: object = { silent: true }): any {
+    // this.showCmd(cmd)
     return shx.exec(cmd, silent)
   }
 
@@ -371,12 +371,12 @@ export default class Utils {
   }
 
   /**
-       * Return an array of the users of the system
-       * @remarks to move in Utils
-       * @returns {string[]} array di utenti
-       */
+   * Return an array of the users of the system
+   * @remarks to move in Utils
+   * @returns {string[]} array di utenti
+   */
   static usersList(): string[] {
-    const out = Utils.shxExec('/usr/bin/lslogins --noheadings -u -o user | grep -vw root').stdout
+    const out = Utils.shxExec('/usr/bin/lslogins --noheadings -u -o user | grep -vw root', { silent: true }).stdout
     const users: string[] = out.split('\n')
     return users
   }
@@ -400,7 +400,5 @@ export default class Utils {
     text = text.trim() + '\n'
     file = file.trim()
     fs.writeFileSync(file, text)
-    console.log(text)
-    console.log(`>>> Fine creazione ${file}  ===`)
   }
 }

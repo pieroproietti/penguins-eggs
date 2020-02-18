@@ -13,6 +13,7 @@
  */
 
 import fs = require('fs')
+import path = require('path')
 import os = require('os')
 import ini = require('ini')
 import shx = require('shelljs')
@@ -22,10 +23,10 @@ import Utils from './utils'
 import Calamares from './calamares-config'
 import Oses from './oses'
 import Prerequisites from '../commands/prerequisites'
-import {IDistro, IOses, IPackage} from '../interfaces'
+import { IDistro, IOses, IPackage } from '../interfaces'
 
 /**
- * Iso:
+ * Ovary:
  */
 export default class Ovary {
   app = {} as IPackage
@@ -48,13 +49,11 @@ export default class Ovary {
 
   force_installer = false
 
-  reset_accounts = true
+  reset_accounts = false
 
   debian_version = 10 as number
 
-  lib_mod_dir = '' as string
-
-  snapshot_dir = '/home/eggs/' as string // /home/snapshot
+  snapshot_dir = '/home/eggs/' as string
 
   work_dir = '/tmp/work_dir/'
 
@@ -64,13 +63,15 @@ export default class Ovary {
 
   snapshot_excludes = '/usr/local/share/excludes/penguins-eggs-exclude.list' as string
 
-  edit_boot_menu = '' as string
+  edit_boot_menu = false
 
-  kernel_used = '' as string
+  kernel_image = '' as string
 
-  make_isohybrid = 'yes' as string
+  initrd_image = '' as string
 
-  make_md5sum = 'yes' as string
+  make_isohybrid = false
+
+  make_md5sum = false
 
   compression = '' as string
 
@@ -82,21 +83,19 @@ export default class Ovary {
 
   snapshot_basename = '' as string
 
-  stamp = '' as string
-
   version = '' as string
 
-  bindRoot = '/.bind-root'
-
-  // Altre mie
-  users: string[] = []
+  bindRoot = '' // '/.bind-root'
+  bindedFs = false 
 
   /**
    * Egg
    * @param compression
    */
-  constructor(compression = 'xz') {
-    this.compression = compression || ''
+  constructor(compression = '', bindedFs = false) {
+    this.compression = compression
+    this.bindedFs = bindedFs
+
     this.app.author = 'Piero Proietti'
     this.app.homepage = 'https://github.com/pieroproietti/penguins-eggs'
     this.app.mail = 'piero.proietti@gmail.com'
@@ -108,9 +107,10 @@ export default class Ovary {
     this.distro.versionNumber = 'zero' // Utils.formatDate()
     this.distro.branding = 'eggs'
     this.distro.kernel = Utils.kernerlVersion()
-    this.compression = compression || ''
+
     this.live = Utils.isLive()
-    this.users = Utils.usersList()
+    
+    // this.users = Utils.usersList()
     this.i686 = Utils.isi686()
     this.debian_version = Utils.getDebianVersion()
     // const name = shx.exec(`cat /etc/mx-version | /usr/bin/cut -f1 -d' '`).stdout.trim()
@@ -134,7 +134,9 @@ export default class Ovary {
 
     if (this.loadSettings() && this.listFreeSpace()) {
       this.work_dir = this.snapshot_dir
-      this.distro.pathHome = this.work_dir + '.' +this.distro.name
+      this.distro.pathHome = this.work_dir + '.' + this.distro.name
+      this.distro.pathFs = this.distro.pathHome + '/fs'
+      this.bindRoot = this.distro.pathFs
       this.distro.pathIso = this.distro.pathHome + '/iso'
       return true
     }
@@ -157,28 +159,51 @@ export default class Ovary {
     }
 
     this.session_excludes = ''
-    if (this.compression === '') {
-      this.compression = settings.General.compression
-    }
     this.snapshot_dir = settings.General.snapshot_dir.trim()
-    if (!this.snapshot_dir.endsWith('/')){
+    if (!this.snapshot_dir.endsWith('/')) {
       this.snapshot_dir += '/'
     }
     this.snapshot_excludes = settings.General.snapshot_excludes
     this.snapshot_basename = settings.General.snapshot_basename
-    this.make_md5sum = settings.General.make_md5sum
-    this.make_isohybrid = settings.General.make_isohybrid
+    this.make_md5sum = settings.General.make_md5sum === "yes"
+    this.make_isohybrid = settings.General.make_isohybrid === "yes"
+    if (this.compression === '') {
+      this.compression = settings.General.compression
+    }
     this.mksq_opt = settings.General.mksq_opt
-    this.edit_boot_menu = settings.General.edit_boot_menu
-    this.lib_mod_dir = settings.General.lib_mod_dir
+    this.edit_boot_menu = settings.General.edit_boot_menu === "yes"
     this.gui_editor = settings.General.gui_editor
-    this.stamp = settings.General.stamp
-    this.force_installer = settings.General.force_installer
-    this.reset_accounts = settings.General.reset_accounts
-
+    this.force_installer = settings.General.force_installer === "yes"
+    this.reset_accounts = settings.General.reset_accounts === "yes"
+    this.kernel_image = settings.General.kernel_image
+    this.initrd_image = settings.General.initrd_image
     return foundSettings
   }
 
+  /**
+   * showSettings
+   */
+  public async showSettings() {
+    console.log(`application_nane:  ${this.app.name} ${this.app.version}`)
+    console.log(`config_file:       ${this.config_file}`)
+    console.log(`snapshot_dir:      ${this.snapshot_dir}`)
+    console.log(`snapshot_exclude:  ${this.snapshot_excludes}`)
+    if (this.snapshot_basename === 'hostname') {
+      console.log(`snapshot_basename: ${os.hostname} (hostname)`)
+    } else {
+      console.log(`snapshot_basename: ${this.snapshot_basename}`)
+    }
+    console.log(`md5sum:            ${this.make_md5sum}`)
+    console.log(`make_isohybrid:    ${this.make_isohybrid}`)
+    console.log(`compression:       ${this.compression}`)
+    console.log(`mksq_opt:          ${this.mksq_opt}`)
+    console.log(`edit_boot_menu:    ${this.edit_boot_menu}`)
+    console.log(`gui_editor:        ${this.gui_editor}`)
+    console.log(`force_installer:   ${this.force_installer}`)
+    console.log(`reset_accounts:    ${this.reset_accounts}`)
+    console.log(`kernel_image:      ${this.kernel_image}`)
+    console.log(`initrd_image:      ${this.initrd_image}`)
+  }
   /**
    * Calculate and show free space on the disk
    * @returns {void}
@@ -218,11 +243,13 @@ export default class Ovary {
       await this.isolinuxCfg()
       await this.isoMenuCfg()
       await this.copyKernel()
-      await this.system2live()
-      await this.makeDhcp()
-      console.log('------------------------------------------')
-      console.log('Spawning the system into the egg...\nThis process can be very long, perhaps it\'s time for a coffee!')
-      console.log('------------------------------------------')
+      if (this.bindedFs){
+        await this.bindFs() // bind FS
+      } else {
+        await this.makeFs() // copy fs
+      }
+      await this.makeFsTab()
+      await this.makeInterfaces()
       await this.makeSquashFs()
       await this.cleanUp()
       await this.makeIsoFs()
@@ -230,34 +257,71 @@ export default class Ovary {
   }
 
   /**
-   * 
+   * calamaresConfigura
+   * Installa calamares se force_installer=yes e lo configura
    */
-  async  calamaresConfigure(){
-    if (Utils.packageIsInstalled('calamares')){
+  async  calamaresConfigure() {
+    // Se force_installer e calamares non è installato
+    if (this.force_installer && !Utils.packageIsInstalled('calamares')) {
+      shx.exec(`apt-get update`, { async: false })
+      shx.exec(`apt-get install --yes \
+              calamares \
+              calamares-settings-debian`, { async: false })
+    }
+
+    // Se calamares è installato lo configura
+    if (Utils.packageIsInstalled('calamares')) {
       this.calamares = new Calamares(this.distro, this.iso)
       await this.calamares.configure()
     }
-  } 
+  }
 
+
+  async makeFsTab() {
+    console.log('==========================================')
+    console.log('ovary: makeFsTab')
+    console.log('==========================================')
+
+    /**
+    #
+    # Use 'blkid' to print the universally unique identifier for a device; this may
+    # be used with UUID= as a more robust way to name devices that works even if
+    # disks are added and removed. See fstab(5).
+    #
+    # <file system>             <mount point>  <type>  <options>  <dump>  <pass>
+    /dev/sda1 /              ext4    defaults,noatime 0 1
+    /dev/sda2 swap           swap    defaults,noatime 0 2
+    UUID=6358a9df-f848-41cc-9475-a2b0a45f3bda /              ext4    defaults,noatime 0 1
+    UUID=558e98b7-06ac-4931-a893-b18018c59dda swap           swap    defaults,noatime 0 2
+    */
+
+    /**
+     * /etc/fstab should exist, even if it's empty,
+     * to prevent error messages at boot
+     */
+    const text = ''
+    shx.exec(`touch ${this.bindRoot}/etc/fstab`, { silent: true })
+    Utils.write(`${this.bindRoot}/etc/fstab`, text)
+
+  }
 
   /**
- *
- */
-  public async makeDhcp() {
+   * makeInterfaces
+   * Clear configs from /etc/network/interfaces, wicd and NetworkManager
+   * and netman, so they aren't stealthily included in the snapshot.
+   */
+  public async makeInterfaces() {
     console.log('==========================================')
-    console.log('makeDhcp: ')
+    console.log('ovary: makeInterfaces')
     console.log('==========================================')
     const text = 'auto lo\niface lo inet loopback'
-    const bindRoot = '/.bind-root'
-    Utils.write(`${bindRoot}/etc/network/interfaces`, text)
-    /**
-     * Clear configs from /etc/network/interfaces, wicd and NetworkManager
-     * and netman, so they aren't stealthily included in the snapshot.
-     */
-    shx.exec(`rm -f ${bindRoot}/var/lib/wicd/configurations/*`)
-    shx.exec(`rm -f ${bindRoot}/etc/wicd/wireless-settings.conf`)
-    shx.exec(`rm -f ${bindRoot}/etc/NetworkManager/system-connections/*`)
-    shx.exec(`rm -f ${bindRoot}/etc/network/wifi/*`)
+    shx.exec(`touch ${this.bindRoot}/etc/network/interfaces`, { silent: true })
+    Utils.write(`${this.bindRoot}/etc/network/interfaces`, text)
+
+    shx.exec(`rm -f ${this.bindRoot}/var/lib/wicd/configurations/*`)
+    shx.exec(`rm -f ${this.bindRoot}/etc/wicd/wireless-settings.conf`)
+    shx.exec(`rm -f ${this.bindRoot}/etc/NetworkManager/system-connections/*`)
+    shx.exec(`rm -f ${this.bindRoot}/etc/network/wifi/*`)
   }
 
   /**
@@ -265,7 +329,7 @@ export default class Ovary {
    */
   async isoCreateStructure() {
     console.log('==========================================')
-    console.log('iso: createStructure')
+    console.log('ovary: createStructure')
     console.log('==========================================')
 
     if (!fs.existsSync(this.distro.pathIso)) {
@@ -280,7 +344,7 @@ export default class Ovary {
 
   async isolinuxPrepare() {
     console.log('==========================================')
-    console.log('iso: isolinuxPrepare')
+    console.log('ovary: isolinuxPrepare')
     console.log('==========================================')
 
     const isolinuxbin = `${this.iso.isolinuxPath}isolinux.bin`
@@ -304,7 +368,7 @@ export default class Ovary {
 
   async isoStdmenuCfg() {
     console.log('==========================================')
-    console.log('iso: isoStdmenuCfg')
+    console.log('ovary: isoStdmenuCfg')
     console.log('==========================================')
 
     const file = `${this.distro.pathIso}/boot/isolinux/stdmenu.cfg`
@@ -341,7 +405,7 @@ MENU TABMSG Press ENTER to boot or TAB to edit a menu entry
 
   isolinuxCfg() {
     console.log('==========================================')
-    console.log('iso: isolinuxCfg')
+    console.log('ovary: isolinuxCfg')
     console.log('==========================================')
 
     const file = `${this.distro.pathIso}/boot/isolinux/isolinux.cfg`
@@ -400,14 +464,16 @@ timeout 0
     *
     */
 
-    const kernel = Utils.kernerlVersion()
+    const kernelVersion = Utils.kernerlVersion()
+    const kernel_name = path.basename(this.kernel_image)
+    const initrd_name = path.basename(this.initrd_image)
 
-    this.iso.append = 'append initrd=/live/initrd.img boot=live components username=live '
-    this.iso.appendSafe = 'append initrd=/live/initrd.img boot=live components username=live xforcevesa verbose'
+    this.iso.append = `append initrd=/live/${initrd_name} boot=live components username=live `
+    this.iso.appendSafe = `append initrd=/live/${initrd_name} boot=live components username=live xforcevesa verbose`
     this.iso.aqs = 'quit splash debug=true nocomponents '
 
     console.log('==========================================')
-    console.log('iso: menuCfg')
+    console.log('ovary: menuCfg')
     console.log('==========================================')
 
     const file = `${this.distro.pathIso}/boot/isolinux/menu.cfg`
@@ -415,391 +481,391 @@ timeout 0
     INCLUDE stdmenu.cfg
     MENU title Main Menu
     DEFAULT ^${this.distro.name} 
-    LABEL ${this.distro.name} (kernel ${kernel}) Italian (it)
+    LABEL ${this.distro.name} (kernel ${kernelVersion}) Italian (it)
         SAY "Booting ${this.distro.name} Italian (it)"
-        linux /live/vmlinuz
+        linux /live/${kernel_name}
         ${this.iso.append} locales=it_IT.UTF-8 timezone=Europe/Rome ${this.iso.aqs}
     
     MENU begin advanced
     MENU title ${this.distro.name} with Localisation Support
     
-    LABEL Albanian (sq) (kernel ${kernel})
+    LABEL Albanian (sq)
           SAY "Booting Albanian (sq)..."
-          linux /live/vmlinuz
+          linux /live/${kernel_name}
           ${this.iso.append} locales=sq_AL.UTF-8 ${this.iso.aqs}
     LABEL Amharic (am) 
           SAY "Booting Amharic (am)..."
-          linux /live/vmlinuz
+          linux /live/${kernel_name}
           ${this.iso.append}  locales=am_ET.UTF-8 ${this.iso.aqs}
           
     LABEL Arabic (ar) 
           SAY "Booting Arabic (ar)..."
-          linux /live/vmlinuz
+          linux /live/${kernel_name}
           ${this.iso.append} locales=ar_EG.UTF-8 ${this.iso.aqs}
     
     LABEL Asturian (ast)
           SAY "Booting Asturian (ast)..."  
-          linux /live/vmlinuz
+          linux /live/${kernel_name}
           ${this.iso.append}  locales=ast_ES.UTF-8 ${this.iso.aqs}
     
     LABEL Basque (eu)
           SAY "Booting Basque (eu)..."
-          linux /live/vmlinuz
+          linux /live/${kernel_name}
           ${this.iso.append}  locales=eu_ES.UTF-8 ${this.iso.aqs}
           
     LABEL Belarusian (be)
           SAY "Booting Belarusian (be)..."
-          linux /live/vmlinuz
+          linux /live/${kernel_name}
           ${this.iso.append}  locales=be_BY.UTF-8 ${this.iso.aqs}
     
     LABEL Bangla (bn)
           SAY "Booting Bangla (bn)..."
-          linux /live/vmlinuz
+          linux /live/${kernel_name}
           ${this.iso.append} locales=bn_BD ${this.iso.aqs}
     
     LABEL Bosnian (bs)
           SAY "Booting Bosnian (bs)..."
-          linux /live/vmlinuz
+          linux /live/${kernel_name}
           ${this.iso.append}  locales=bs_BA.UTF-8 ${this.iso.aqs}
     
     LABEL Bulgarian (bg)
           SAY "Booting Bulgarian (bg)..."
-          linux /live/vmlinuz
+          linux /live/${kernel_name}
           ${this.iso.append}  locales=bg_BG.UTF-8 ${this.iso.aqs}
         
     LABEL Tibetan (bo)
           SAY "Booting Tibetan (bo)..."
-          linux /live/vmlinuz
+          linux /live/${kernel_name}
           ${this.iso.append}  locales=bo_IN ${this.iso.aqs}
         
         LABEL C (C)
           SAY "Booting C (C)..."
-          linux /live/vmlinuz
+          linux /live/${kernel_name}
           ${this.iso.append}  locales=C ${this.iso.aqs}
         
         LABEL Catalan (ca)
           SAY "Booting Catalan (ca)..."
-          linux /live/vmlinuz
+          linux /live/${kernel_name}
           ${this.iso.append}  locales=ca_ES.UTF-8 ${this.iso.aqs}
         
         LABEL Chinese (Simplified) (zh_CN)
           SAY "Booting Chinese (Simplified) (zh_CN)..."
-          linux /live/vmlinuz
+          linux /live/${kernel_name}
           ${this.iso.append}  locales=zh_CN.UTF-8 ${this.iso.aqs}
         
         LABEL Chinese (Traditional) (zh_TW)
           SAY "Booting Chinese (Traditional) (zh_TW)..."
-          linux /live/vmlinuz
+          linux /live/${kernel_name}
           ${this.iso.append}  locales=zh_TW.UTF-8 ${this.iso.aqs}
         
         LABEL Croatian (hr)
           SAY "Booting Croatian (hr)..."
-          linux /live/vmlinuz
+          linux /live/${kernel_name}
           ${this.iso.append}  locales=hr_HR.UTF-8 ${this.iso.aqs}
         
         LABEL Czech (cs)
           SAY "Booting Czech (cs)..."
-          linux /live/vmlinuz
+          linux /live/${kernel_name}
           ${this.iso.append}  locales=cs_CZ.UTF-8 ${this.iso.aqs}
         
         LABEL Danish (da)
           SAY "Booting Danish (da)..."
-          linux /live/vmlinuz
+          linux /live/${kernel_name}
           ${this.iso.append}  locales=da_DK.UTF-8 ${this.iso.aqs}
         
         LABEL Dutch (nl)
           SAY "Booting Dutch (nl)..."
-          linux /live/vmlinuz
+          linux /live/${kernel_name}
           ${this.iso.append}  locales=nl_NL.UTF-8 ${this.iso.aqs}
         
         LABEL Dzongkha (dz)
           SAY "Booting Dzongkha (dz)..."
-          linux /live/vmlinuz
+          linux /live/${kernel_name}
           ${this.iso.append}  locales=dz_BT ${this.iso.aqs}
         
         LABEL English (en)
           SAY "Booting English (en)..."
-          linux /live/vmlinuz
+          linux /live/${kernel_name}
           ${this.iso.append}  locales=en_US.UTF-8 ${this.iso.aqs}
         
         LABEL Esperanto (eo)
           SAY "Booting Esperanto (eo)..."
-          linux /live/vmlinuz
+          linux /live/${kernel_name}
           ${this.iso.append}  locales=eo.UTF-8 ${this.iso.aqs}
         
         LABEL Estonian (et)
           SAY "Booting Estonian (et)..."
-          linux /live/vmlinuz
+          linux /live/${kernel_name}
           ${this.iso.append}  locales=et_EE.UTF-8 ${this.iso.aqs}
         
         LABEL Finnish (fi)
           SAY "Booting Finnish (fi)..."
-          linux /live/vmlinuz
+          linux /live/${kernel_name}
           ${this.iso.append}  locales=fi_FI.UTF-8 ${this.iso.aqs}
         
         LABEL French (fr)
           SAY "Booting French (fr)..."
-          linux /live/vmlinuz
+          linux /live/${kernel_name}
           ${this.iso.append}  locales=fr_FR.UTF-8 ${this.iso.aqs}
         
         LABEL Galician (gl)
           SAY "Booting Galician (gl)..."
-          linux /live/vmlinuz
+          linux /live/${kernel_name}
           ${this.iso.append}  locales=gl_ES.UTF-8 ${this.iso.aqs}
         
         LABEL Georgian (ka)
           SAY "Booting Georgian (ka)..."
-          linux /live/vmlinuz
+          linux /live/${kernel_name}
           ${this.iso.append}  locales=ka_GE.UTF-8 ${this.iso.aqs}
         
         LABEL German (de)
           SAY "Booting German (de)..."
-          linux /live/vmlinuz
+          linux /live/${kernel_name}
           ${this.iso.append}  locales=de_DE.UTF-8 ${this.iso.aqs}
         
         LABEL Greek (el)
           SAY "Booting Greek (el)..."
-          linux /live/vmlinuz
+          linux /live/${kernel_name}
           ${this.iso.append}  locales=el_GR.UTF-8 ${this.iso.aqs}
         
         LABEL Gujarati (gu)
           SAY "Booting Gujarati (gu)..."
-          linux /live/vmlinuz
+          linux /live/${kernel_name}
           ${this.iso.append}  locales=gu_IN ${this.iso.aqs}
         
         LABEL Hebrew (he)
           SAY "Booting Hebrew (he)..."
-          linux /live/vmlinuz
+          linux /live/${kernel_name}
           ${this.iso.append}  locales=he_IL.UTF-8 ${this.iso.aqs}
         
         LABEL Hindi (hi)
           SAY "Booting Hindi (hi)..."
-          linux /live/vmlinuz
+          linux /live/${kernel_name}
           ${this.iso.append}  locales=hi_IN ${this.iso.aqs}
         
         LABEL Hungarian (hu)
           SAY "Booting Hungarian (hu)..."
-          linux /live/vmlinuz
+          linux /live/${kernel_name}
           ${this.iso.append}  locales=hu_HU.UTF-8 ${this.iso.aqs}
         
         LABEL Icelandic (is)
           SAY "Booting Icelandic (is)..."
-          linux /live/vmlinuz
+          linux /live/${kernel_name}
           ${this.iso.append}  locales=is_IS.UTF-8 ${this.iso.aqs}
         
         LABEL Indonesian (id)
           SAY "Booting Indonesian (id)..."
-          linux /live/vmlinuz
+          linux /live/${kernel_name}
           ${this.iso.append}  locales=id_ID.UTF-8 ${this.iso.aqs}
         
         LABEL Irish (ga)
           SAY "Booting Irish (ga)..."
-          linux /live/vmlinuz
+          linux /live/${kernel_name}
           ${this.iso.append}  locales=ga_IE.UTF-8 ${this.iso.aqs}
         
         LABEL Italian (it)
           SAY "Booting Italian (it)..."
-          linux /live/vmlinuz
+          linux /live/${kernel_name}
           ${this.iso.append}  locales=it_IT.UTF-8 ${this.iso.aqs}
         
         LABEL Japanese (ja)
           SAY "Booting Japanese (ja)..."
-          linux /live/vmlinuz
+          linux /live/${kernel_name}
           ${this.iso.append}  locales=ja_JP.UTF-8 ${this.iso.aqs}
         
         LABEL Kazakh (kk)
           SAY "Booting Kazakh (kk)..."
-          linux /live/vmlinuz
+          linux /live/${kernel_name}
           ${this.iso.append}  locales=kk_KZ.UTF-8 ${this.iso.aqs}
         
         LABEL Khmer (km)
           SAY "Booting Khmer (km)..."
-          linux /live/vmlinuz
+          linux /live/${kernel_name}
           ${this.iso.append}  locales=km_KH ${this.iso.aqs}
         
         LABEL Kannada (kn)
           SAY "Booting Kannada (kn)..."
-          linux /live/vmlinuz
+          linux /live/${kernel_name}
           ${this.iso.append}  locales=kn_IN ${this.iso.aqs}
         
         LABEL Korean (ko)
           SAY "Booting Korean (ko)..."
-          linux /live/vmlinuz
+          linux /live/${kernel_name}
           ${this.iso.append}  locales=ko_KR.UTF-8 ${this.iso.aqs}
         
         LABEL Kurdish (ku)
           SAY "Booting Kurdish (ku)..."
-          linux /live/vmlinuz
+          linux /live/${kernel_name}
           ${this.iso.append}  locales=ku_TR.UTF-8 ${this.iso.aqs}
         
         LABEL Lao (lo)
           SAY "Booting Lao (lo)..."
-          linux /live/vmlinuz
+          linux /live/${kernel_name}
           ${this.iso.append}  locales=lo_LA ${this.iso.aqs}
         
         LABEL Latvian (lv)
           SAY "Booting Latvian (lv)..."
-          linux /live/vmlinuz
+          linux /live/${kernel_name}
           ${this.iso.append}  locales=lv_LV.UTF-8 ${this.iso.aqs}
         
         LABEL Lithuanian (lt)
           SAY "Booting Lithuanian (lt)..."
-          linux /live/vmlinuz
+          linux /live/${kernel_name}
           ${this.iso.append}  locales=lt_LT.UTF-8 ${this.iso.aqs}
         
         LABEL Malayalam (ml)
           SAY "Booting Malayalam (ml)..."
-          linux /live/vmlinuz
+          linux /live/${kernel_name}
           ${this.iso.append}  locales=ml_IN ${this.iso.aqs}
         
         LABEL Marathi (mr)
           SAY "Booting Marathi (mr)..."
-          linux /live/vmlinuz
+          linux /live/${kernel_name}
           ${this.iso.append}  locales=mr_IN ${this.iso.aqs}
         
         LABEL Macedonian (mk)
           SAY "Booting Macedonian (mk)..."
-          linux /live/vmlinuz
+          linux /live/${kernel_name}
           ${this.iso.append}  locales=mk_MK.UTF-8 ${this.iso.aqs}
         
         LABEL Burmese (my)
           SAY "Booting Burmese (my)..."
-          linux /live/vmlinuz
+          linux /live/${kernel_name}
           ${this.iso.append}  locales=my_MM ${this.iso.aqs}
         
         LABEL Nepali (ne)
           SAY "Booting Nepali (ne)..."
-          linux /live/vmlinuz
+          linux /live/${kernel_name}
           ${this.iso.append}  locales=ne_NP ${this.iso.aqs}
         
         LABEL Northern Sami (se_NO)
           SAY "Booting Northern Sami (se_NO)..."
-          linux /live/vmlinuz
+          linux /live/${kernel_name}
           ${this.iso.append}  locales=se_NO ${this.iso.aqs}
         
         LABEL Norwegian Bokmaal (nb_NO)
           SAY "Booting Norwegian Bokmaal (nb_NO)..."
-          linux /live/vmlinuz
+          linux /live/${kernel_name}
           ${this.iso.append}  locales=nb_NO.UTF-8 ${this.iso.aqs}
         
         LABEL Norwegian Nynorsk (nn_NO)
           SAY "Booting Norwegian Nynorsk (nn_NO)..."
-          linux /live/vmlinuz
+          linux /live/${kernel_name}
           ${this.iso.append}  locales=nn_NO.UTF-8 ${this.iso.aqs}
         
         LABEL Persian (fa)
           SAY "Booting Persian (fa)..."
-          linux /live/vmlinuz
+          linux /live/${kernel_name}
           ${this.iso.append}  locales=fa_IR ${this.iso.aqs}
         
         LABEL Polish (pl)
           SAY "Booting Polish (pl)..."
-          linux /live/vmlinuz
+          linux /live/${kernel_name}
           ${this.iso.append}  locales=pl_PL.UTF-8 ${this.iso.aqs}
         
         LABEL Portuguese (pt)
           SAY "Booting Portuguese (pt)..."
-          linux /live/vmlinuz
+          linux /live/${kernel_name}
           ${this.iso.append}  locales=pt_PT.UTF-8 ${this.iso.aqs}
         
         LABEL Portuguese (Brazil) (pt_BR)
           SAY "Booting Portuguese (Brazil) (pt_BR)..."
-          linux /live/vmlinuz
+          linux /live/${kernel_name}
           ${this.iso.append}  locales=pt_BR.UTF-8 ${this.iso.aqs}
         
         LABEL Punjabi (Gurmukhi) (pa)
           SAY "Booting Punjabi (Gurmukhi) (pa)..."
-          linux /live/vmlinuz
+          linux /live/${kernel_name}
           ${this.iso.append}  locales=pa_IN ${this.iso.aqs}
         
         LABEL Romanian (ro)
           SAY "Booting Romanian (ro)..."
-          linux /live/vmlinuz
+          linux /live/${kernel_name}
           ${this.iso.append}  locales=ro_RO.UTF-8 ${this.iso.aqs}
         
         LABEL Russian (ru)
           SAY "Booting Russian (ru)..."
-          linux /live/vmlinuz
+          linux /live/${kernel_name}
           ${this.iso.append}  locales=ru_RU.UTF-8 ${this.iso.aqs}
         
         LABEL Sinhala (si)
           SAY "Booting Sinhala (si)..."
-          linux /live/vmlinuz
+          linux /live/${kernel_name}
           ${this.iso.append}  locales=si_LK ${this.iso.aqs}
         
         LABEL Serbian (Cyrillic) (sr)
           SAY "Booting Serbian (Cyrillic) (sr)..."
-          linux /live/vmlinuz
+          linux /live/${kernel_name}
           ${this.iso.append}  locales=sr_RS ${this.iso.aqs}
         
         LABEL Slovak (sk)
           SAY "Booting Slovak (sk)..."
-          linux /live/vmlinuz
+          linux /live/${kernel_name}
           ${this.iso.append}  locales=sk_SK.UTF-8 ${this.iso.aqs}
         
         LABEL Slovenian (sl)
           SAY "Booting Slovenian (sl)..."
-          linux /live/vmlinuz
+          linux /live/${kernel_name}
           ${this.iso.append}  locales=sl_SI.UTF-8 ${this.iso.aqs}
         
         LABEL Spanish (es)
           SAY "Booting Spanish (es)..."
-          linux /live/vmlinuz
+          linux /live/${kernel_name}
           ${this.iso.append}  locales=es_ES.UTF-8 ${this.iso.aqs}
         
         LABEL Swedish (sv)
           SAY "Booting Swedish (sv)..."
-          linux /live/vmlinuz
+          linux /live/${kernel_name}
           ${this.iso.append}  locales=sv_SE.UTF-8 ${this.iso.aqs}
         
         LABEL Tagalog (tl)
           SAY "Booting Tagalog (tl)..."
-          linux /live/vmlinuz
+          linux /live/${kernel_name}
           ${this.iso.append}  locales=tl_PH.UTF-8 ${this.iso.aqs}
         
         LABEL Tamil (ta)
           SAY "Booting Tamil (ta)..."
-          linux /live/vmlinuz
+          linux /live/${kernel_name}
           ${this.iso.append}  locales=ta_IN ${this.iso.aqs}
         
         LABEL Telugu (te)
           SAY "Booting Telugu (te)..."
-          linux /live/vmlinuz
+          linux /live/${kernel_name}
           ${this.iso.append}  locales=te_IN ${this.iso.aqs}
         
         LABEL Tajik (tg)
           SAY "Booting Tajik (tg)..."
-          linux /live/vmlinuz
+          linux /live/${kernel_name}
           ${this.iso.append}  locales=tg_TJ.UTF-8 ${this.iso.aqs}
         
         LABEL Thai (th)
           SAY "Booting Thai (th)..."
-          linux /live/vmlinuz
+          linux /live/${kernel_name}
           ${this.iso.append}  locales=th_TH.UTF-8 ${this.iso.aqs}
         
         LABEL Turkish (tr)
           SAY "Booting Turkish (tr)..."
-          linux /live/vmlinuz
+          linux /live/${kernel_name}
           ${this.iso.append}  locales=tr_TR.UTF-8 ${this.iso.aqs}
         
         LABEL Uyghur (ug)
           SAY "Booting Uyghur (ug)..."
-          linux /live/vmlinuz
+          linux /live/${kernel_name}
           ${this.iso.append}  locales=ug_CN ${this.iso.aqs}
         
         LABEL Ukrainian (uk)
           SAY "Booting Ukrainian (uk)..."
-          linux /live/vmlinuz
+          linux /live/${kernel_name}
           ${this.iso.append}  locales=uk_UA.UTF-8 ${this.iso.aqs}
         
         LABEL Vietnamese (vi)
           SAY "Booting Vietnamese (vi)..."
-          linux /live/vmlinuz
+          linux /live/${kernel_name}
           ${this.iso.append}  locales=vi_VN ${this.iso.aqs}
         
         LABEL Welsh (cy)
           SAY "Booting Welsh (cy)..."
-          linux /live/vmlinuz
+          linux /live/${kernel_name}
           ${this.iso.append}  locales=cy_GB.UTF-8 ${this.iso.aqs}
         
          LABEL mainmenu 
@@ -821,18 +887,19 @@ timeout 0
    */
   async copyKernel() {
     console.log('==========================================')
-    console.log('iso: liveKernel')
+    console.log('ovary: liveKernel')
     console.log('==========================================')
-    Utils.shxExec(`cp /vmlinuz ${this.distro.pathIso}/live/`)
-    Utils.shxExec(`cp /initrd.img ${this.distro.pathIso}/live/`)
+    Utils.shxExec(`cp ${this.kernel_image} ${this.distro.pathIso}/live/`)
+    Utils.shxExec(`cp ${this.initrd_image} ${this.distro.pathIso}/live/`)
   }
+
 
   /**
    * squashFs: crea in live filesystem.squashfs
    */
   async makeSquashFs() {
     console.log('==========================================')
-    console.log('iso: makeSquashFs')
+    console.log('ovary: makeSquashFs')
     console.log('==========================================')
 
     this.addRemoveExclusion(true, this.snapshot_dir /* .absolutePath() */)
@@ -844,17 +911,16 @@ timeout 0
         this.addRemoveExclusion(true, '/etc/localtime')
       }
     }
-
-    const option = `-comp ${this.compression} `
-    Utils.shxExec(
-      `mksquashfs /.bind-root ${this.distro.pathIso}/live/filesystem.squashfs ${option} -wildcards -ef ${this.snapshot_excludes} ${this.session_excludes} `
-      // usr/bin/mksquashfs /.bind-root iso-template/antiX/linuxfs -comp ${this.compression} ${(this.mksq_opt === '' ? '' : ' ' + this.mksq_opt)} -wildcards -ef ${this.snapshot_excludes} ${this.session_excludes}`)
-    )
+    const compression = `-comp ${this.compression} `
+    let cmd = `mksquashfs ${this.bindRoot} ${this.distro.pathIso}/live/filesystem.squashfs ${compression} ${(this.mksq_opt === '' ? '' : ' ' + this.mksq_opt)} -wildcards -ef ${this.snapshot_excludes} ${this.session_excludes} `
+    console.log(cmd)
+    Utils.shxExec(cmd, { silent: false })
+    // usr/bin/mksquashfs /.bind-root iso-template/antiX/linuxfs -comp ${this.compression} ${(this.mksq_opt === '' ? '' : ' ' + this.mksq_opt)} -wildcards -ef ${this.snapshot_excludes} ${this.session_excludes}`)
   }
 
   async makeIsoFs() {
     console.log('==========================================')
-    console.log('iso: makeIsoFs')
+    console.log('ovary: makeIsoFs')
     console.log('==========================================')
 
     const isoHybridOption = `-isohybrid-mbr ${this.iso.isolinuxPath}isohdpfx.bin `
@@ -881,7 +947,7 @@ timeout 0
     }
     let isoName = `${basename}-${arch}_${Utils.formatDate(new Date())}`
     if (isoName.length >= 28)
-      isoName = isoName.substr(0,28) // 28 +  4 .iso = 32 lunghezza max di volid
+      isoName = isoName.substr(0, 28) // 28 +  4 .iso = 32 lunghezza max di volid
     return `${isoName}.iso`
   }
 
@@ -907,15 +973,123 @@ timeout 0
   }
 
   /**
+   * makeLiveFs
+   * Crea il LiveFs mediante copia (lento ma preciso)
+   */
+  public async makeFs() {
+    console.log('==========================================')
+    console.log('ovary: makeFs')
+    console.log('==========================================')
+
+    let f = ''
+    // root
+    f += ' --filter="- /cdrom/*"'
+    f += ' --filter="- /dev/*"'
+    f += ' --filter="- /live"'
+    f += ' --filter="- /media/*"'
+    f += ' --filter="- /mnt/*"'
+    f += ' --filter="- /proc/*"'
+    f += ' --filter="- /sys/*"'
+    f += ' --filter="- /swapfile"'
+    f += ' --filter="- /tmp/*"'
+    f += ' --filter="- /persistence.conf"'
+
+    // boot
+    f += ' --filter="- /boot/grub/grub.cfg"'
+    f += ' --filter="- /boot/grub/menu.lst"'
+    f += ' --filter="- /boot/grub/device.map"'
+    f += ' --filter="- /boot/*.bak"'
+    f += ' --filter="- /boot/*.old-dkms"'
+
+    // etc
+    f += ' --filter="- /etc/apt/sources.list~"'
+    f += ' --filter="- /etc/blkid.tab"'
+    f += ' --filter="- /etc/blkid.tab.old"'
+    f += ' --filter="- /etc/crypttab"'
+    f += ' --filter="- /etc/fstab"'
+    f += ' --filter="- /etc/fstab.d/*"'
+    f += ' --filter="- /etc/initramfs-tools/conf.d/resume"' // see remove-cryptroot and nocrypt.sh
+    f += ' --filter="- /etc/initramfs-tools/conf.d/cryptroot"' // see remove-cryptroot and nocrypt.sh
+    f += ' --filter="- /etc/mtab"'
+    f += ' --filter="- /etc/popularity-contest.conf"'
+    f += ' --filter="- /etc/ssh/ssh_host_*_key*"' // Exclude ssh_host_keys. New ones will be generated upon live boot.
+    f += ' --filter="- /etc/ssh/ssh_host_key*"' // Exclude ssh_host_keys. New ones will be generated upon live boot.
+    f += ' --filter="- /etc/sudoers.d/live"' // Exclude live da sudoers.d non serve se installato
+
+    // lib
+    f += ' --filter="- /lib/live/image"'
+    f += ' --filter="- /lib/live/mount"'
+    f += ' --filter="- /lib/live/overlay"'
+    f += ' --filter="- /lib/live/rootfs"'
+
+    f += ' --filter="- /home/*"'
+    f += ' --filter="- /root/*"'
+    f += ' --filter="- /run/*"'
+
+    // var
+    f += ' --filter="- /var/backups/*.gz"'
+    f += ' --filter="- /var/cache/apt/archives/*.deb"'
+    f += ' --filter="- /var/cache/apt/pkgcache.bin"'
+    f += ' --filter="- /var/cache/apt/srcpkgcache.bin"'
+    f += ' --filter="- /var/cache/apt/apt-file/*"'
+    f += ' --filter="- /var/cache/debconf/*~old"'
+    f += ' --filter="- /var/lib/apt/*~"'
+    f += ' --filter="- /var/lib/apt/cdroms.list"'
+    f += ' --filter="- /var/lib/apt/lists/*"'
+    f += ' --filter="- /var/lib/aptitude/*.old"'
+    f += ' --filter="- /var/lib/dbus/machine-id"'
+    f += ' --filter="- /var/lib/dhcp/*"'
+    f += ' --filter="- /var/lib/dpkg/*~old"'
+    f += ' --filter="- /var/lib/live/config/*"'
+    f += ' --filter="- /var/log/*"'
+    f += ' --filter="- /var/mail/*"'
+    f += ' --filter="- /var/spool/mail/*"'
+
+    // usr
+    f += ' --filter="- /usr/share/icons/*/icon-theme.cache"'
+    f += ' --filter="- /usr/lib/live/image"'
+    f += ' --filter="- /usr/lib/live/mount"'
+    f += ' --filter="- /usr/lib/live/overlay"'
+    f += ' --filter="- /usr/lib/live/rootfs"'
+
+    let home = ''
+    if (this.reset_accounts) {
+      home = '--filter="- /home/*"'
+    } else {
+      home = '--filter="+/home/*"'
+    }
+
+    const cmd = `\
+      rsync \
+      --archive \
+      --delete-before \
+      --delete-excluded \
+      --filter="- ${this.distro.pathHome}" \
+      ${f} \
+      --filter="- /lib/live/*" \
+      --filter="+ /lib/live/boot/*" \
+      --filter="+ /lib/live/config/*" \
+      --filter="+ /lib/live/init-config-sh" \
+      --filter="+ /lib/live/setup-network.sh" \
+      ${home} \
+      / ${this.distro.pathFs}`
+    shx.exec(cmd.trim(), { async: false })
+    if (this.reset_accounts) {
+      this.makeLiveHome()
+    }
+  }
+
+
+  /**
    * Check if exist mx-snapshot in work_dir;
    * If respin mode remove all the users
    */
-  async system2live() {
+  async bindFs() {
     console.log('==========================================')
-    console.log('ovary: system2live')
+    console.log('ovary: bindLiveFs')
     console.log('==========================================')
 
-    Utils.shxExec(`mkdir -r ${this.work_dir}/mx-snapshot`)
+    // Utils.shxExec(`mkdir -r ${this.work_dir}/mx-snapshot`)
 
     // checks if work_dir looks OK
     // if (!this.work_dir.includes('/mx-snapshot')) { // Se non contiene /mx-snapshot
@@ -923,39 +1097,53 @@ timeout 0
     //  return
     // }
 
-    let bind_boot = ''
-    let bind_boot_too = ''
+    let bindBoot = ''
+    let bindBootToo = ''
     if (shx.exec('mountpoint /boot').code) {
-      bind_boot = 'bind=/boot'
-      bind_boot_too = ',/boot'
+      bindBoot = 'bind=/boot'
+      bindBootToo = ',/boot'
     }
 
     /**
      * setup environment if creating a respin 
      * (reset root/demo, remove personal accounts) 
-     * */ 
+     */
+    let cmd = ''
     if (this.reset_accounts) {
-      /**
-       * Se resettiamo gli account e NON copiamo home, BISOGNA ricreare la home dell'user primario 1000:1000
-       */
-      const user: string = Utils.getPrimaryUser()
-      Utils.shxExec(`/sbin/installed-to-live -b ${this.bindRoot} start ${bind_boot} empty=/home general version-file read-write`)
-      // creazione di home per user live
-      shx.exec(`cp -r /etc/skel/. ${this.bindRoot}/home/${user}`, {async: false})
-      shx.exec(`chown -R live:live ${this.bindRoot}/home/${user}`, {async: false})
-      shx.exec(`mkdir ${this.bindRoot}/home/${user}/Desktop`, {async: false})
-  
-      // creazione dei link per user live
-      console.log('system2live: creating initial live link... \n')
-      shx.exec(`cp /etc/penguins-eggs/${user}/Desktop/* ${this.bindRoot}/home/${user}/Desktop`, {async: false})
-      shx.exec(`chmod +x ${this.bindRoot}/home/${user}/Desktop/*.desktop`, {async: false})
-      shx.exec(`chown ${user}:${user} ${this.bindRoot}/home/${user}/Desktop/*`, {async: false})
+      cmd = `/sbin/installed-to-live -b ${this.bindRoot} start ${bindBoot} empty=/home general version-file read-write`
+      Utils.shxExec(cmd)
+      this.makeLiveHome()
     } else {
-      Utils.shxExec(`/sbin/installed-to-live -b ${this.bindRoot} start bind=/home${bind_boot_too} live-files version-file adjtime read-write`)
+      cmd = `/sbin/installed-to-live -b ${this.bindRoot} start bind=/home${bindBootToo} live-files version-file adjtime read-write`
+      Utils.shxExec(cmd)
     }
+  }
 
-    shx.echo('Done')
+    /**
+   * 
+   */
+  makeLiveHome() {
+    const user: string = Utils.getPrimaryUser()
 
+    // Copiamo i link su /usr/share/applications
+    shx.cp(`${__dirname}../../assets/dw-agent-sh.desktop`, `/usr/share/applications/`)
+    shx.cp(`${__dirname}../../assets/assistenza-remota.png`, `/usr/share/icons/`)
+    shx.cp(`${__dirname}../../assets/penguins-eggs.desktop`, `/usr/share/applications/`)
+    shx.cp(`${__dirname}../../assets/eggs.png`, `/usr/share/icons/`)
+
+    // creazione della home per user live
+    shx.exec(`cp -r /etc/skel/. ${this.bindRoot}/home/${user}`, { async: false })
+    shx.exec(`chown -R live:live ${this.bindRoot}/home/${user}`, { async: false })
+    shx.exec(`mkdir ${this.bindRoot}/home/${user}/Desktop`, { async: false })
+
+    // Copiare i link sul desktop
+    shx.cp('/usr/share/applications/dw-agent.desktop', `${this.bindRoot}/home/${user}/Desktop`)
+    shx.cp('/usr/share/applications/penguins-eggs.desktop', `${this.bindRoot}/home/${user}/Desktop`)
+
+    // creazione dei link per user live da /etc/penguins-eggs/
+    shx.exec(`cp /etc/penguins-eggs/${user}/Desktop/* ${this.bindRoot}/home/${user}/Desktop`, { async: false })
+    shx.exec(`chmod +x ${this.bindRoot}/home/${user}/Desktop/*.desktop`, { async: false })
+    shx.exec(`chown ${user}:${user} ${this.bindRoot}/home/${user}/Desktop/*`, { async: false })
   }
 
   /**
