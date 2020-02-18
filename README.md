@@ -12,6 +12,16 @@ Penguin&#39;s eggs are generated and new birds are ready to fly...
 [![book](https://img.shields.io/badge/book-penguin's%20eggs-blue)](https://penguin-s-eggs.gitbook.io/project/)
 [![License](https://img.shields.io/npm/l/penguins-eggs.svg)](https://github.com/pieroproietti/penguins-eggs/blob/master/package.json)
 
+# Index
+<!-- toc -->
+* [Index](#index)
+* [Presentation](#presentation)
+* [Install penguins-eggs](#install-penguins-eggs)
+* [Usage](#usage)
+* [Commands](#commands)
+* [That's all Folks!](#thats-all-folks)
+<!-- tocstop -->
+
 # Presentation
 penguins-eggs is a console utility, in active development, who let you to
 remaster your system and redistribuite it as iso images or from the lan via PXE
@@ -74,16 +84,6 @@ and finally, we check the nodejs version:
 
 to install the nodejs version 8.
 
-# Usage
-
-<!-- toc -->
-* [Presentation](#presentation)
-* [Install penguins-eggs](#install-penguins-eggs)
-* [Usage](#usage)
-* [Usage](#usage-1)
-* [Commands](#commands)
-* [That's all Folks!](#thats-all-folks)
-<!-- tocstop -->
 # Usage
 <!-- usage -->
 ```sh-session
