@@ -5,6 +5,6 @@ export interface IDistro {
     versionNumber: string;
     kernel: string;
     pathHome: string;
-    pathFs: string;
+    pathLiveFs: string;
     pathIso: string;
 }

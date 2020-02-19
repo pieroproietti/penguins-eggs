@@ -67,6 +67,10 @@ export default class Ovary {
 
   kernel_image = '' as string
 
+  pmount_fixed = false
+
+  ssh_pass = false
+
   initrd_image = '' as string
 
   make_isohybrid = false
@@ -85,7 +89,6 @@ export default class Ovary {
 
   version = '' as string
 
-  bindRoot = '' // '/.bind-root'
   bindedFs = false 
 
   /**
@@ -135,8 +138,7 @@ export default class Ovary {
     if (this.loadSettings() && this.listFreeSpace()) {
       this.work_dir = this.snapshot_dir
       this.distro.pathHome = this.work_dir + '.' + this.distro.name
-      this.distro.pathFs = this.distro.pathHome + '/fs'
-      this.bindRoot = this.distro.pathFs
+      this.distro.pathLiveFs = this.distro.pathHome + '/fs'
       this.distro.pathIso = this.distro.pathHome + '/iso'
       return true
     }
@@ -177,6 +179,8 @@ export default class Ovary {
     this.reset_accounts = settings.General.reset_accounts === "yes"
     this.kernel_image = settings.General.kernel_image
     this.initrd_image = settings.General.initrd_image
+    this.pmount_fixed = settings.General.pmount_system === "yes"
+    this.ssh_pass = settings.General.ssh_pass === "yes"
     return foundSettings
   }
 
@@ -203,7 +207,10 @@ export default class Ovary {
     console.log(`reset_accounts:    ${this.reset_accounts}`)
     console.log(`kernel_image:      ${this.kernel_image}`)
     console.log(`initrd_image:      ${this.initrd_image}`)
+    console.log(`pmount_fixed:      ${this.pmount_fixed}`)
+    console.log(`ssh_pass:          ${this.ssh_pass}`)
   }
+
   /**
    * Calculate and show free space on the disk
    * @returns {void}
@@ -248,8 +255,9 @@ export default class Ovary {
       } else {
         await this.makeFs() // copy fs
       }
-      await this.makeFsTab()
-      await this.makeInterfaces()
+      await this.editLiveFs()
+      // await this.makeFsTab()
+      // await this.makeInterfaces()
       await this.makeSquashFs()
       await this.cleanUp()
       await this.makeIsoFs()
@@ -276,36 +284,120 @@ export default class Ovary {
     }
   }
 
-
-  async makeFsTab() {
+  /**
+   * editLiveFs
+   * - Truncate logs, remove archived log
+   * - Allow all fixed drives to be mounted with pmount
+   * - Enable or disable password login trhough ssh for users (not root)
+   * - Create an empty /etc/fstab
+   * - Blanck /etc/machine-id
+   * - Add some basic files to /dev
+   * - Clear configs from /etc/network/interfaces, wicd and NetworkManager and netman
+   */
+  async editLiveFs(){
     console.log('==========================================')
-    console.log('ovary: makeFsTab')
+    console.log('ovary: editLiveFs')
     console.log('==========================================')
 
-    /**
-    #
-    # Use 'blkid' to print the universally unique identifier for a device; this may
-    # be used with UUID= as a more robust way to name devices that works even if
-    # disks are added and removed. See fstab(5).
-    #
-    # <file system>             <mount point>  <type>  <options>  <dump>  <pass>
-    /dev/sda1 /              ext4    defaults,noatime 0 1
-    /dev/sda2 swap           swap    defaults,noatime 0 2
-    UUID=6358a9df-f848-41cc-9475-a2b0a45f3bda /              ext4    defaults,noatime 0 1
-    UUID=558e98b7-06ac-4931-a893-b18018c59dda swap           swap    defaults,noatime 0 2
-    */
+    // Truncate logs, remove archived logs.
+    shx.exec(`find myfs/var/log -name "*gz" -print0 | xargs -0r rm -f`)
+    shx.exec(`find myfs/var/log/ -type f -exec truncate -s 0 {} \;`)
+
+
+    // Allow all fixed drives to be mounted with pmount
+    if (this.pmount_fixed){
+      if(fs.existsSync(`${this.distro.pathLiveFs}/etc/pmount.allow`))
+        shx.exec(`sed -i 's:#/dev/sd\[a-z\]:/dev/sd\[a-z\]:' ${this.distro.pathLiveFs}/pmount.allow`)
+    }
+
+    // Enable or disable password login through ssh for users (not root)
+    // Remove obsolete live-config file
+    if (fs.existsSync(`${this.distro.pathLiveFs}lib/live/config/1161-openssh-server`)){
+      shx.exec(`rm -f "$work_dir"/myfs/lib/live/config/1161-openssh-server`)
+    }
+
+    shx.exec(`sed -i 's/PermitRootLogin yes/PermitRootLogin prohibit-password/' "$work_dir"/myfs/etc/ssh/sshd_config`)
+    if(this.ssh_pass){
+      shx.exec(`sed -i 's|.*PasswordAuthentication.*no|PasswordAuthentication yes|' ${this.distro.pathLiveFs}/etc/ssh/sshd_config`)
+    } else {
+      shx.exec(`sed -i 's|.*PasswordAuthentication.*yes|PasswordAuthentication no|' ${this.distro.pathLiveFs}/etc/ssh/sshd_config`)
+    }
 
     /**
      * /etc/fstab should exist, even if it's empty,
      * to prevent error messages at boot
      */
     const text = ''
-    if (fs.existsSync(`${this.bindRoot}/etc/fstab`)){
+    if (fs.existsSync(`${this.distro.pathLiveFs}/etc/fstab`)){
       shx.mkdir('/tmp/penguins-eggs')
-      shx.cp(`${this.bindRoot}/etc/fstab`,`/tmp/penguins-eggs` )
+      shx.cp(`${this.distro.pathLiveFs}/etc/fstab`,`/tmp/penguins-eggs` )
     }
-    shx.exec(`touch ${this.bindRoot}/etc/fstab`, { silent: true })
-    Utils.write(`${this.bindRoot}/etc/fstab`, text)
+    shx.exec(`touch ${this.distro.pathLiveFs}/etc/fstab`, { silent: true })
+    Utils.write(`${this.distro.pathLiveFs}/etc/fstab`, text)
+
+    /**
+     * Blank out systemd machine id. If it does not exist, systemd-journald
+     * will fail, but if it exists and is empty, systemd will automatically
+     * set up a new unique ID.
+     */
+    if(fs.existsSync(`${this.distro.pathLiveFs}/etc/machine-id`)){
+      shx.exec(`touch ${this.distro.pathLiveFs}/etc/machine-id`, { silent: true })
+      Utils.write(`${this.distro.pathLiveFs}/etc/machine-id`, `:`)
+    }
+
+    /**
+     * add some basic files to /dev
+     */
+    shx.exec(`mknod -m 622 ${this.distro.pathLiveFs}/dev/console c 5 1`)
+    shx.exec(`mknod -m 666 ${this.distro.pathLiveFs}/dev/null c 1 3`)
+    shx.exec(`mknod -m 666 ${this.distro.pathLiveFs}/dev/zero c 1 5`)
+    shx.exec(`mknod -m 666 ${this.distro.pathLiveFs}/dev/ptmx c 5 2`)
+    shx.exec(`mknod -m 666 ${this.distro.pathLiveFs}/dev/tty c 5 0`)
+    shx.exec(`mknod -m 444 ${this.distro.pathLiveFs}/dev/random c 1 8`)
+    shx.exec(`mknod -m 444 ${this.distro.pathLiveFs}/dev/urandom c 1 9`)
+    shx.exec(`chown -v root:tty ${this.distro.pathLiveFs}/dev/{console,ptmx,tty}`)
+
+    shx.exec(`ln -sv /proc/self/fd ${this.distro.pathLiveFs}/dev/fd`)
+    shx.exec(`ln -sv ${this.distro.pathLiveFs}/proc/self/fd/0 /dev/stdin`)
+    shx.exec(`ln -sv ${this.distro.pathLiveFs}/proc/self/fd/1 /dev/stdout`)
+    shx.exec(`ln -sv ${this.distro.pathLiveFs}/proc/self/fd/2 /dev/stderr`)
+    shx.exec(`ln -sv ${this.distro.pathLiveFs}/proc/kcore /dev/core`)
+    shx.exec(`mkdir -v ${this.distro.pathLiveFs}/dev/shm`)
+    shx.exec(`mkdir -v ${this.distro.pathLiveFs}/dev/pts`)
+    shx.exec(`chmod 1777 ${this.distro.pathLiveFs}/dev/shm`)
+
+    /**
+     * Clear configs from /etc/network/interfaces, wicd and NetworkManager
+     * and netman, so they aren't stealthily included in the snapshot.
+    */
+    shx.exec(`touch ${this.distro.pathLiveFs}/etc/network/interfaces`, { silent: true })
+    Utils.write(`${this.distro.pathLiveFs}/etc/network/interfaces`, `auto lo\niface lo inet loopback` )
+
+    shx.exec(`rm -f ${this.distro.pathLiveFs}/var/lib/wicd/configurations/*`)
+    shx.exec(`rm -f ${this.distro.pathLiveFs}/etc/wicd/wireless-settings.conf`)
+    shx.exec(`rm -f ${this.distro.pathLiveFs}/etc/NetworkManager/system-connections/*`)
+    shx.exec(`rm -f ${this.distro.pathLiveFs}/etc/network/wifi/*`)
+  }
+
+  /**
+   * makeFsTab
+   */
+  async makeFsTab() {
+    console.log('==========================================')
+    console.log('ovary: makeFsTab')
+    console.log('==========================================')
+
+    /**
+     * /etc/fstab should exist, even if it's empty,
+     * to prevent error messages at boot
+     */
+    const text = ''
+    if (fs.existsSync(`${this.distro.pathLiveFs}/etc/fstab`)){
+      shx.mkdir('/tmp/penguins-eggs')
+      shx.cp(`${this.distro.pathLiveFs}/etc/fstab`,`/tmp/penguins-eggs` )
+    }
+    shx.exec(`touch ${this.distro.pathLiveFs}/etc/fstab`, { silent: true })
+    Utils.write(`${this.distro.pathLiveFs}/etc/fstab`, text)
 
   }
 
@@ -319,13 +411,13 @@ export default class Ovary {
     console.log('ovary: makeInterfaces')
     console.log('==========================================')
     const text = 'auto lo\niface lo inet loopback'
-    shx.exec(`touch ${this.bindRoot}/etc/network/interfaces`, { silent: true })
-    Utils.write(`${this.bindRoot}/etc/network/interfaces`, text)
+    shx.exec(`touch ${this.distro.pathLiveFs}/etc/network/interfaces`, { silent: true })
+    Utils.write(`${this.distro.pathLiveFs}/etc/network/interfaces`, text)
 
-    shx.exec(`rm -f ${this.bindRoot}/var/lib/wicd/configurations/*`)
-    shx.exec(`rm -f ${this.bindRoot}/etc/wicd/wireless-settings.conf`)
-    shx.exec(`rm -f ${this.bindRoot}/etc/NetworkManager/system-connections/*`)
-    shx.exec(`rm -f ${this.bindRoot}/etc/network/wifi/*`)
+    shx.exec(`rm -f ${this.distro.pathLiveFs}/var/lib/wicd/configurations/*`)
+    shx.exec(`rm -f ${this.distro.pathLiveFs}/etc/wicd/wireless-settings.conf`)
+    shx.exec(`rm -f ${this.distro.pathLiveFs}/etc/NetworkManager/system-connections/*`)
+    shx.exec(`rm -f ${this.distro.pathLiveFs}/etc/network/wifi/*`)
   }
 
   /**
@@ -916,7 +1008,7 @@ timeout 0
       }
     }
     const compression = `-comp ${this.compression} `
-    let cmd = `mksquashfs ${this.bindRoot} ${this.distro.pathIso}/live/filesystem.squashfs ${compression} ${(this.mksq_opt === '' ? '' : ' ' + this.mksq_opt)} -wildcards -ef ${this.snapshot_excludes} ${this.session_excludes} `
+    let cmd = `mksquashfs ${this.distro.pathLiveFs} ${this.distro.pathIso}/live/filesystem.squashfs ${compression} ${(this.mksq_opt === '' ? '' : ' ' + this.mksq_opt)} -wildcards -ef ${this.snapshot_excludes} ${this.session_excludes} `
     console.log(cmd)
     Utils.shxExec(cmd, { silent: false })
     // usr/bin/mksquashfs /.bind-root iso-template/antiX/linuxfs -comp ${this.compression} ${(this.mksq_opt === '' ? '' : ' ' + this.mksq_opt)} -wildcards -ef ${this.snapshot_excludes} ${this.session_excludes}`)
@@ -1080,7 +1172,7 @@ timeout 0
       --filter="+ /lib/live/init-config-sh" \
       --filter="+ /lib/live/setup-network.sh" \
       ${home} \
-      / ${this.distro.pathFs}`
+      / ${this.distro.pathLiveFs}`
     shx.exec(cmd.trim(), { async: false })
     if (this.reset_accounts) {
       this.makeLiveHome()
@@ -1118,11 +1210,11 @@ timeout 0
      */
     let cmd = ''
     if (this.reset_accounts) {
-      cmd = `/sbin/installed-to-live -b ${this.bindRoot} start ${bindBoot} empty=/home general version-file read-write`
+      cmd = `/sbin/installed-to-live -b ${this.distro.pathLiveFs} start ${bindBoot} empty=/home general version-file read-write`
       await Utils.shxExec(cmd)
       await this.makeLiveHome()
     } else {
-      cmd = `/sbin/installed-to-live -b ${this.bindRoot} start bind=/home${bindBootToo} live-files version-file adjtime read-write`
+      cmd = `/sbin/installed-to-live -b ${this.distro.pathLiveFs} start bind=/home${bindBootToo} live-files version-file adjtime read-write`
       await Utils.shxExec(cmd)
     }
   }
@@ -1140,18 +1232,18 @@ timeout 0
     shx.cp(`${__dirname}../../assets/eggs.png`, `/usr/share/icons/`)
 
     // creazione della home per user live
-    shx.exec(`cp -r /etc/skel/. ${this.bindRoot}/home/${user}`, { async: false })
-    shx.exec(`chown -R live:live ${this.bindRoot}/home/${user}`, { async: false })
-    shx.exec(`mkdir ${this.bindRoot}/home/${user}/Desktop`, { async: false })
+    shx.exec(`cp -r /etc/skel/. ${this.distro.pathLiveFs}/home/${user}`, { async: false })
+    shx.exec(`chown -R live:live ${this.distro.pathLiveFs}/home/${user}`, { async: false })
+    shx.exec(`mkdir ${this.distro.pathLiveFs}/home/${user}/Desktop`, { async: false })
 
     // Copiare i link sul desktop
-    shx.cp('/usr/share/applications/dw-agent.desktop', `${this.bindRoot}/home/${user}/Desktop`)
-    shx.cp('/usr/share/applications/penguins-eggs.desktop', `${this.bindRoot}/home/${user}/Desktop`)
+    shx.cp('/usr/share/applications/dw-agent.desktop', `${this.distro.pathLiveFs}/home/${user}/Desktop`)
+    shx.cp('/usr/share/applications/penguins-eggs.desktop', `${this.distro.pathLiveFs}/home/${user}/Desktop`)
 
     // creazione dei link per user live da /etc/penguins-eggs/
-    shx.exec(`cp /etc/penguins-eggs/${user}/Desktop/* ${this.bindRoot}/home/${user}/Desktop`, { async: false })
-    shx.exec(`chmod +x ${this.bindRoot}/home/${user}/Desktop/*.desktop`, { async: false })
-    shx.exec(`chown ${user}:${user} ${this.bindRoot}/home/${user}/Desktop/*`, { async: false })
+    shx.exec(`cp /etc/penguins-eggs/${user}/Desktop/* ${this.distro.pathLiveFs}/home/${user}/Desktop`, { async: false })
+    shx.exec(`chmod +x ${this.distro.pathLiveFs}/home/${user}/Desktop/*.desktop`, { async: false })
+    shx.exec(`chown ${user}:${user} ${this.distro.pathLiveFs}/home/${user}/Desktop/*`, { async: false })
   }
 
   /**
