@@ -1314,18 +1314,20 @@ timeout 0
     shx.cp(path.resolve(__dirname, '../../assets/penguins-eggs-syslinux.png'), `${this.efi_work}/boot/grub/spash.png`)
 
     // second grub.cfg file
-    shx.exec(`for i in $(ls /usr/lib/grub/x86_64-efi|grep part_|grep \.mod|sed 's/.mod//'); do echo "insmod $i" >> ${this.efi_work}/boot/grub/x86_64-efi/grub.cfg; done`)
+    let cmd = `for i in $(ls /usr/lib/grub/x86_64-efi|grep part_|grep \.mod|sed 's/.mod//'); do echo "insmod $i" >> ${this.efi_work}/boot/grub/x86_64-efi/grub.cfg; done`
+    shx.exec(cmd)
+    
+    // Additional modules so we don't boot in blind mode. I don't know which ones are really needed.
+    cmd = `for i in efi_gop efi_uga ieee1275_fb vbe vga video_bochs video_cirrus jpeg png gfxterm ; do echo "insmod $i" >> ${this.efi_work}/boot/grub/x86_64-efi/grub.cfg ; done`
+    shx.exec(cmd)
+
+    shx.echo(`"source /boot/grub/grub.cfg" >> ${this.efi_work}boot/grub/x86_64-efi/grub.cfg`)
   }
 }
 
 
     /*
  	
-    # second grub.cfg file
-    for i in $(ls /usr/lib/grub/x86_64-efi|grep part_|grep \.mod|sed 's/.mod//'); do echo "insmod $i" >> boot/grub/x86_64-efi/grub.cfg; done
-    # Additional modules so we don't boot in blind mode. I don't know which ones are really needed.
-    for i in efi_gop efi_uga ieee1275_fb vbe vga video_bochs video_cirrus jpeg png gfxterm ; do echo "insmod $i" >> boot/grub/x86_64-efi/grub.cfg ; done
-  
     echo "source /boot/grub/grub.cfg" >> boot/grub/x86_64-efi/grub.cfg
   	
     pushd "$tempdir"
