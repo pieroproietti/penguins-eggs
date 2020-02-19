@@ -1269,19 +1269,20 @@ timeout 0
    * Create /boot and /efi for UEFI
    */
   async makeEfi() {
-
     this.efi_work = '/home/eggs/.work/efi_files'
-    console.log(`efi_work: ${this.efi_work}`)
+    // console.log(`efi_work: ${this.efi_work}`)
 
     // create /boot and /efi for uefi.
     const uefiOption = '-eltorito-alt-boot -e boot/grub/efiboot.img -isohybrid-gpt-basdat -no-emul-boot'
     const tempDir = shx.exec('mktemp -d /tmp/work_temp.XXXX').stdout.trim()
-    console.log(`tempDir: ${tempDir}`)
+    // console.log(`tempDir: ${tempDir}`)
+    // shx.rm('_temp')
+    // shx.ln('-s', tempDir, '_temp')
 
     // for initial grub.cfg
     shx.mkdir('-p', `${tempDir}/boot/grub`)
     const grubCfg = `${tempDir}/boot/grub/grub.cfg`
-    console.log(`grubCfs: ${grubCfg}`)
+    // console.log(`grubCfg: ${grubCfg}`)
 
     shx.touch(grubCfg)
     let text = ''
@@ -1291,7 +1292,7 @@ timeout 0
     Utils.write(grubCfg, text)
 
     if (!fs.existsSync(this.efi_work)) {
-      console.log(`creazione di: ${this.efi_work}`)
+      // console.log(`creazione di: ${this.efi_work}`)
       fs.mkdirSync(this.efi_work)
     }
 
@@ -1299,90 +1300,67 @@ timeout 0
     // start with empty directories
     const files = fs.readdirSync(this.efi_work);
     for (var i in files) {
-      if (files[i]=== 'boot'){
+      if (files[i] === 'boot') {
         shx.exec(`rm ${this.efi_work}/boot -rf`)
       }
-      if (files[i]=== 'efi'){
+      if (files[i] === 'efi') {
         shx.exec(`rm ${this.efi_work}/efi -rf`)
       }
     }
-    shx.mkdir(`-p`,`${this.efi_work}/boot/grub/x86_64-efi`)
-    shx.mkdir(`-p`,`${this.efi_work}efi/boot`)
+    shx.mkdir(`-p`, `${this.efi_work}/boot/grub/x86_64-efi`)
+    shx.mkdir(`-p`, `${this.efi_work}/efi/boot`)
 
     // copy splash
-
     shx.cp(path.resolve(__dirname, '../../assets/penguins-eggs-syslinux.png'), `${this.efi_work}/boot/grub/spash.png`)
 
     // second grub.cfg file
     let cmd = `for i in $(ls /usr/lib/grub/x86_64-efi|grep part_|grep \.mod|sed 's/.mod//'); do echo "insmod $i" >> ${this.efi_work}/boot/grub/x86_64-efi/grub.cfg; done`
     shx.exec(cmd)
-    
+
     // Additional modules so we don't boot in blind mode. I don't know which ones are really needed.
     cmd = `for i in efi_gop efi_uga ieee1275_fb vbe vga video_bochs video_cirrus jpeg png gfxterm ; do echo "insmod $i" >> ${this.efi_work}/boot/grub/x86_64-efi/grub.cfg ; done`
     shx.exec(cmd)
 
-    shx.echo(`"source /boot/grub/grub.cfg" >> ${this.efi_work}boot/grub/x86_64-efi/grub.cfg`)
+    shx.echo(`source /boot/grub/grub.cfg >> ${this.efi_work}/boot/grub/x86_64-efi/grub.cfg`)
+
+    // pushd "$tempdir"
+    // make a tarred "memdisk" to embed in the grub image
+    // Ci potrebbero essere problemi di path 
+    shx.exec(`tar -cvf ${tempDir}/memdisk ${tempDir}/boot`)
+
+    // make the grub image
+    shx.exec(`grub-mkimage -O x86_64-efi -m ${tempDir}/memdisk -o ${tempDir}/bootx64.efi -p '(memdisk)/boot/grub' search iso9660 configfile normal memdisk tar cat part_msdos part_gpt fat ext2 ntfs ntfscomp hfsplus chain boot linux`)
+
+    // copy the grub image to efi/boot (to go later in the device's root)
+    shx.cp(`${tempDir}/bootx64.efi`, `${this.efi_work}/efi/boot`)
+
+    // Do the boot image "boot/grub/efiboot.img"
+    shx.exec(`dd if=/dev/zero of=${this.efi_work}/boot/grub/efiboot.img bs=1K count=1440`)
+    shx.exec(`/sbin/mkdosfs -F 12 ${this.efi_work}/boot/grub/efiboot.img`)
+    shx.mkdir(`${this.efi_work}/img-mnt`)
+    shx.exec(`mount -o loop ${this.efi_work}/boot/grub/efiboot.img ${this.efi_work}/img-mnt`)
+    shx.mkdir('-p', `${this.efi_work}/img-mnt/efi/boot`)
+    shx.cp(`${tempDir}/bootx64.efi`, `${this.efi_work}/img-mnt/efi/boot/`)
+    // #######################
+    // copy modules and font
+    shx.cp(`-r`, `/usr/lib/grub/x86_64-efi/*`, `${this.efi_work}/boot/grub/x86_64-efi/`)
+
+    // if this doesn't work try another font from the same place (grub's default, unicode.pf2, is much larger)
+    // Either of these will work, and they look the same to me. Unicode seems to work with qemu. -fsr
+    shx.cp(`-r`, `/usr/share/grub/unicode.pf2`, `${this.efi_work}/boot/grub/font.pf2`)
+
+    // doesn't need to be root-owned
+    shx.exec(`chown -R 1000:1000 $(pwd) `) // 2>/dev/null`)
+
+    // Cleanup efi temps
+    shx.exec(`umount ${this.efi_work}/img-mnt`)
+    shx.exec(`rmdir ${this.efi_work}/img-mnt`)
+
+    //   # Copy efi files to iso
+    shx.exec(`rsync -avx ${this.efi_work}/boot ${this.work_dir}/iso/`)
+    shx.exec(`rsync -avx ${this.efi_work}/efi  ${this.work_dir}/iso/`)
+
+    // Do the main grub.cfg (which gets loaded last):
+    shx.cp(path.resolve(__dirname, '../../conf/grub.cfg.template'), `${this.work_dir}/iso/boot/grub/grub.cfg`)
   }
 }
-
-
-    /*
- 	
-    echo "source /boot/grub/grub.cfg" >> boot/grub/x86_64-efi/grub.cfg
-  	
-    pushd "$tempdir"
-  	
-      # make a tarred "memdisk" to embed in the grub image
-      tar -cvf memdisk boot
-    	
-      # make the grub image
-      grub-mkimage -O "x86_64-efi" -m "memdisk" -o "bootx64.efi" -p '(memdisk)/boot/grub' search iso9660 configfile normal memdisk tar cat part_msdos part_gpt fat ext2 ntfs ntfscomp hfsplus chain boot linux
-    	
-    popd
-  	
-    # copy the grub image to efi/boot (to go later in the device's root)
-    cp "$tempdir"/bootx64.efi efi/boot
-  	
-    #######################
-  	
-    ## Do the boot image "boot/grub/efiboot.img"
-  	
-    dd if=/dev/zero of=boot/grub/efiboot.img bs=1K count=1440
-    /sbin/mkdosfs -F 12 boot/grub/efiboot.img
-  	
-    mkdir img-mnt
-  	
-    mount -o loop boot/grub/efiboot.img img-mnt
-  	
-    mkdir -p img-mnt/efi/boot
-  	
-    cp "$tempdir"/bootx64.efi img-mnt/efi/boot/
-  	
-    #######################
-  	
-    # copy modules and font
-    cp /usr/lib/grub/x86_64-efi/* boot/grub/x86_64-efi/
-  	
-    # if this doesn't work try another font from the same place (grub's default, unicode.pf2, is much larger)
-    # Either of these will work, and they look the same to me. Unicode seems to work with qemu. -fsr
-  #	cp /usr/share/grub/ascii.pf2 boot/grub/font.pf2
-    cp /usr/share/grub/unicode.pf2 boot/grub/font.pf2
-  	
-    # doesn't need to be root-owned
-    chown -R 1000:1000 $(pwd) 2>/dev/null
-  	
-    # Cleanup efi temps
-    umount img-mnt
-    rmdir img-mnt
-    rm -rf "$tempdir"
-  
-  popd
-  
-  
-  # Copy efi files to iso
-  rsync -avx "$efi_work"/boot "$work_dir"/iso/
-  rsync -avx "$efi_work"/efi  "$work_dir"/iso/
-  
-  # Do the main grub.cfg (which gets loaded last):
-  cp "$grub_template" "$work_dir"/iso/boot/grub/grub.cfg
-  */

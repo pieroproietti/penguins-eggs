@@ -53,7 +53,8 @@ install the prerequisites packages to run penguin's eggs
                   live-boot-initramfs-tools \
                   open-infrastructure-system-config \
                   xterm \
-                  whois ', {async: false}) 
+                  whois \
+                  grub-efi-amd64', {async: false}) 
 
                   /**
                    * rimosso 
