@@ -15,7 +15,8 @@ import Ovary from '../classes/ovary'
 
 export default class Kill extends Command {
   config_file = '/etc/penguins-eggs.conf' as string
-  snapshot_dir = '/home/eggs/' as string
+  snapshot_dir = '' as string
+  work_dir = ''
 
   static description = 'kill the eggs/free the nest'
 
@@ -33,6 +34,7 @@ kill the eggs/free the nest
       ovary.cleanUp()
       this.log(`${Utils.getFriendName()}: deleting old eggs...`)
       if (this.loadSettings()){
+        shx.exec(`rm ${this.work_dir} -rf`)
         shx.exec(`rm ${this.snapshot_dir} -rf`)
       }
       
@@ -55,6 +57,7 @@ kill the eggs/free the nest
     }
 
     this.snapshot_dir = settings.General.snapshot_dir.trim()
+    this.work_dir = settings.General.work_dir.trim()
   
     if (!this.snapshot_dir.endsWith('/')) {
       this.snapshot_dir += '/'

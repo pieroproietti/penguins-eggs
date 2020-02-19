@@ -101,6 +101,7 @@ USAGE
 # Commands
 <!-- commands -->
 * [`eggs calamares`](#eggs-calamares)
+* [`eggs efi [FILE]`](#eggs-efi-file)
 * [`eggs help [COMMAND]`](#eggs-help-command)
 * [`eggs info`](#eggs-info)
 * [`eggs install`](#eggs-install)
@@ -123,6 +124,22 @@ OPTIONS
 ```
 
 _See code: [src/commands/calamares.ts](https://github.com/pieroproietti/penguins-eggs/blob/v7.1.43/src/commands/calamares.ts)_
+
+## `eggs efi [FILE]`
+
+describe the command here
+
+```
+USAGE
+  $ eggs efi [FILE]
+
+OPTIONS
+  -f, --force
+  -h, --help       show CLI help
+  -n, --name=name  name to print
+```
+
+_See code: [src/commands/efi.ts](https://github.com/pieroproietti/penguins-eggs/blob/v7.1.43/src/commands/efi.ts)_
 
 ## `eggs help [COMMAND]`
 

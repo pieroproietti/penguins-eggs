@@ -51,11 +51,13 @@ export default class Ovary {
 
   reset_accounts = false
 
-  debian_version = 10 as number
+  debian_version = 10
 
-  snapshot_dir = '/home/eggs/' as string
+  snapshot_dir = ''
 
-  work_dir = '/tmp/work_dir/'
+  work_dir = ''
+
+  efi_work = ''
 
   config_file = '/etc/penguins-eggs.conf' as string
 
@@ -73,6 +75,8 @@ export default class Ovary {
 
   initrd_image = '' as string
 
+  make_efi = false
+
   make_isohybrid = false
 
   make_md5sum = false
@@ -89,7 +93,7 @@ export default class Ovary {
 
   version = '' as string
 
-  bindedFs = false 
+  bindedFs = false
 
   /**
    * Egg
@@ -112,7 +116,7 @@ export default class Ovary {
     this.distro.kernel = Utils.kernerlVersion()
 
     this.live = Utils.isLive()
-    
+
     // this.users = Utils.usersList()
     this.i686 = Utils.isi686()
     this.debian_version = Utils.getDebianVersion()
@@ -136,7 +140,6 @@ export default class Ovary {
     const listFreeSpace = await this.listFreeSpace()
 
     if (this.loadSettings() && this.listFreeSpace()) {
-      this.work_dir = this.snapshot_dir
       this.distro.pathHome = this.work_dir + '.' + this.distro.name
       this.distro.pathLiveFs = this.distro.pathHome + '/fs'
       this.distro.pathIso = this.distro.pathHome + '/iso'
@@ -165,10 +168,19 @@ export default class Ovary {
     if (!this.snapshot_dir.endsWith('/')) {
       this.snapshot_dir += '/'
     }
+    this.work_dir = settings.General.work_dir.trim()
+    if (!this.work_dir.endsWith('/')) {
+      this.work_dir += '/'
+    }
+    this.efi_work = settings.General.efi_work.trim()
+    if (!this.efi_work.endsWith('/')) {
+      this.efi_work += '/'
+    }
     this.snapshot_excludes = settings.General.snapshot_excludes
     this.snapshot_basename = settings.General.snapshot_basename
-    this.make_md5sum = settings.General.make_md5sum === "yes"
+    this.make_efi = settings.General.make_efi === "yes"
     this.make_isohybrid = settings.General.make_isohybrid === "yes"
+    this.make_md5sum = settings.General.make_md5sum === "yes"
     if (this.compression === '') {
       this.compression = settings.General.compression
     }
@@ -197,7 +209,10 @@ export default class Ovary {
     } else {
       console.log(`snapshot_basename: ${this.snapshot_basename}`)
     }
-    console.log(`md5sum:            ${this.make_md5sum}`)
+    console.log(`work_dir:          ${this.work_dir}`)
+    console.log(`efi_work:          ${this.efi_work}`)
+    console.log(`make_efi:          ${this.make_efi}`)
+    console.log(`make_md5sum:       ${this.make_md5sum}`)
     console.log(`make_isohybrid:    ${this.make_isohybrid}`)
     console.log(`compression:       ${this.compression}`)
     console.log(`mksq_opt:          ${this.mksq_opt}`)
@@ -231,6 +246,10 @@ export default class Ovary {
    * @param basename
    */
   async produce(basename = '') {
+    if (!fs.existsSync(this.snapshot_dir)) {
+      shx.mkdir('-p', this.snapshot_dir)
+    }
+
     if (basename !== '') {
       this.distro.name = basename
     }
@@ -250,12 +269,13 @@ export default class Ovary {
       await this.isolinuxCfg()
       await this.isoMenuCfg()
       await this.copyKernel()
-      if (this.bindedFs){
+      if (this.bindedFs) {
         await this.bindFs() // bind FS
       } else {
         await this.makeFs() // copy fs
       }
       await this.editLiveFs()
+      await this.editBootMenu()
       // await this.makeFsTab()
       // await this.makeInterfaces()
       await this.makeSquashFs()
@@ -294,7 +314,7 @@ export default class Ovary {
    * - Add some basic files to /dev
    * - Clear configs from /etc/network/interfaces, wicd and NetworkManager and netman
    */
-  async editLiveFs(){
+  async editLiveFs() {
     console.log('==========================================')
     console.log('ovary: editLiveFs')
     console.log('==========================================')
@@ -305,32 +325,33 @@ export default class Ovary {
 
 
     // Allow all fixed drives to be mounted with pmount
-    if (this.pmount_fixed){
-      if(fs.existsSync(`${this.distro.pathLiveFs}/etc/pmount.allow`))
+    if (this.pmount_fixed) {
+      if (fs.existsSync(`${this.distro.pathLiveFs}/etc/pmount.allow`))
         shx.exec(`sed -i 's:#/dev/sd\[a-z\]:/dev/sd\[a-z\]:' ${this.distro.pathLiveFs}/pmount.allow`)
     }
 
     // Enable or disable password login through ssh for users (not root)
     // Remove obsolete live-config file
-    if (fs.existsSync(`${this.distro.pathLiveFs}lib/live/config/1161-openssh-server`)){
+    if (fs.existsSync(`${this.distro.pathLiveFs}lib/live/config/1161-openssh-server`)) {
       shx.exec(`rm -f "$work_dir"/myfs/lib/live/config/1161-openssh-server`)
     }
 
     shx.exec(`sed -i 's/PermitRootLogin yes/PermitRootLogin prohibit-password/' "$work_dir"/myfs/etc/ssh/sshd_config`)
-    if(this.ssh_pass){
+    if (this.ssh_pass) {
       shx.exec(`sed -i 's|.*PasswordAuthentication.*no|PasswordAuthentication yes|' ${this.distro.pathLiveFs}/etc/ssh/sshd_config`)
     } else {
       shx.exec(`sed -i 's|.*PasswordAuthentication.*yes|PasswordAuthentication no|' ${this.distro.pathLiveFs}/etc/ssh/sshd_config`)
     }
+
 
     /**
      * /etc/fstab should exist, even if it's empty,
      * to prevent error messages at boot
      */
     const text = ''
-    if (fs.existsSync(`${this.distro.pathLiveFs}/etc/fstab`)){
+    if (fs.existsSync(`${this.distro.pathLiveFs}/etc/fstab`)) {
       shx.mkdir('/tmp/penguins-eggs')
-      shx.cp(`${this.distro.pathLiveFs}/etc/fstab`,`/tmp/penguins-eggs` )
+      shx.cp(`${this.distro.pathLiveFs}/etc/fstab`, `/tmp/penguins-eggs`)
     }
     shx.exec(`touch ${this.distro.pathLiveFs}/etc/fstab`, { silent: true })
     Utils.write(`${this.distro.pathLiveFs}/etc/fstab`, text)
@@ -340,7 +361,7 @@ export default class Ovary {
      * will fail, but if it exists and is empty, systemd will automatically
      * set up a new unique ID.
      */
-    if(fs.existsSync(`${this.distro.pathLiveFs}/etc/machine-id`)){
+    if (fs.existsSync(`${this.distro.pathLiveFs}/etc/machine-id`)) {
       shx.exec(`touch ${this.distro.pathLiveFs}/etc/machine-id`, { silent: true })
       Utils.write(`${this.distro.pathLiveFs}/etc/machine-id`, `:`)
     }
@@ -371,7 +392,7 @@ export default class Ovary {
      * and netman, so they aren't stealthily included in the snapshot.
     */
     shx.exec(`touch ${this.distro.pathLiveFs}/etc/network/interfaces`, { silent: true })
-    Utils.write(`${this.distro.pathLiveFs}/etc/network/interfaces`, `auto lo\niface lo inet loopback` )
+    Utils.write(`${this.distro.pathLiveFs}/etc/network/interfaces`, `auto lo\niface lo inet loopback`)
 
     shx.exec(`rm -f ${this.distro.pathLiveFs}/var/lib/wicd/configurations/*`)
     shx.exec(`rm -f ${this.distro.pathLiveFs}/etc/wicd/wireless-settings.conf`)
@@ -380,44 +401,20 @@ export default class Ovary {
   }
 
   /**
-   * makeFsTab
+   * editBootMenu
    */
-  async makeFsTab() {
-    console.log('==========================================')
-    console.log('ovary: makeFsTab')
-    console.log('==========================================')
-
-    /**
-     * /etc/fstab should exist, even if it's empty,
-     * to prevent error messages at boot
-     */
-    const text = ''
-    if (fs.existsSync(`${this.distro.pathLiveFs}/etc/fstab`)){
-      shx.mkdir('/tmp/penguins-eggs')
-      shx.cp(`${this.distro.pathLiveFs}/etc/fstab`,`/tmp/penguins-eggs` )
+  async editBootMenu() {
+    let cmd = ''
+    if (this.edit_boot_menu) {
+      cmd = `${this.gui_editor} ${this.distro.pathHome}/iso/boot/isolinux/menu.cfg`
+      console.log(cmd)
+      shx.exec(cmd)
+      if (this.make_efi) {
+        cmd = `${this.gui_editor} ${this.distro.pathHome}/iso/boot/grub/grub.cfg`
+        console.log(cmd)
+        shx.exec(cmd)
+      }
     }
-    shx.exec(`touch ${this.distro.pathLiveFs}/etc/fstab`, { silent: true })
-    Utils.write(`${this.distro.pathLiveFs}/etc/fstab`, text)
-
-  }
-
-  /**
-   * makeInterfaces
-   * Clear configs from /etc/network/interfaces, wicd and NetworkManager
-   * and netman, so they aren't stealthily included in the snapshot.
-   */
-  public async makeInterfaces() {
-    console.log('==========================================')
-    console.log('ovary: makeInterfaces')
-    console.log('==========================================')
-    const text = 'auto lo\niface lo inet loopback'
-    shx.exec(`touch ${this.distro.pathLiveFs}/etc/network/interfaces`, { silent: true })
-    Utils.write(`${this.distro.pathLiveFs}/etc/network/interfaces`, text)
-
-    shx.exec(`rm -f ${this.distro.pathLiveFs}/var/lib/wicd/configurations/*`)
-    shx.exec(`rm -f ${this.distro.pathLiveFs}/etc/wicd/wireless-settings.conf`)
-    shx.exec(`rm -f ${this.distro.pathLiveFs}/etc/NetworkManager/system-connections/*`)
-    shx.exec(`rm -f ${this.distro.pathLiveFs}/etc/network/wifi/*`)
   }
 
   /**
@@ -1001,7 +998,6 @@ timeout 0
     this.addRemoveExclusion(true, this.snapshot_dir /* .absolutePath() */)
 
     if (this.reset_accounts) {
-      this.addRemoveExclusion(true, '/etc/minstall.conf')
       // exclude /etc/localtime if link and timezone not America/New_York
       if (Utils.shxExec('/usr/bin/test -L /etc/localtime') && Utils.shxExec('cat /etc/timezone') !== 'America/New_York') {
         this.addRemoveExclusion(true, '/etc/localtime')
@@ -1015,17 +1011,17 @@ timeout 0
   }
 
   async makeIsoFs() {
-    console.log('==========================================')
-    console.log('ovary: makeIsoFs')
-    console.log('==========================================')
-
     const isoHybridOption = `-isohybrid-mbr ${this.iso.isolinuxPath}isohdpfx.bin `
     const volid = this.getFilename(this.iso.distroName)
     const isoName = `${this.snapshot_dir}${volid}`
 
+    console.log('==========================================')
+    console.log(`ovary: makeIsoFs ${isoName}`)
+    console.log('==========================================')
+
     Utils.shxExec(
       `xorriso -as mkisofs -r -J -joliet-long -l -cache-inodes ${isoHybridOption} -partition_offset 16 -volid ${volid} -b boot/isolinux/isolinux.bin -c boot/isolinux/boot.cat -no-emul-boot -boot-load-size 4 -boot-info-table -o ${isoName} ${this.distro.pathIso}`
-    )
+      , { silent: false })
   }
 
   /**
@@ -1051,7 +1047,7 @@ timeout 0
    * Kill mksquashfs and md5sum...
    * Execute installed-to-live cleanup
    * Remove mx-snapshot in work_dir
-   * if backup mode delete minstall.desktop in user
+   
    */
   async cleanUp() {
     console.log('==========================================')
@@ -1059,17 +1055,15 @@ timeout 0
     console.log('==========================================')
 
     Utils.shxExec('sync')
-    if (this.bindedFs){
+    if (this.bindedFs) {
       Utils.shxExec('/usr/bin/pkill mksquashfs; /usr/bin/pkill md5sum')
       shx.cp('/tmp/penguins-eggs/fstab', '/etc/fstab') // Pezza a colori
     }
-
     Utils.shxExec('/usr/bin/[ -f /tmp/installed-to-live/cleanup.conf ] && /sbin/installed-to-live cleanup')
 
     if (fs.existsSync(`${this.work_dir}/mx-snapshot`)) {
       Utils.shxExec(`rm -r ${this.work_dir}`)
     }
-
   }
 
   /**
@@ -1078,7 +1072,7 @@ timeout 0
    */
   public async makeFs() {
     console.log('==========================================')
-    console.log('ovary: makeFs')
+    console.log(`ovary: makeFs ${this.distro.pathLiveFs}`)
     console.log('==========================================')
 
     let f = ''
@@ -1219,9 +1213,9 @@ timeout 0
     }
   }
 
-    /**
-   * 
-   */
+  /**
+ * 
+ */
   async makeLiveHome() {
     const user: string = Utils.getPrimaryUser()
 
@@ -1269,4 +1263,124 @@ timeout 0
       }
     }
   }
+
+  /**
+   * makeEfi
+   * Create /boot and /efi for UEFI
+   */
+  async makeEfi() {
+
+    this.efi_work = '/home/eggs/.work/efi_files'
+    console.log(`efi_work: ${this.efi_work}`)
+
+    // create /boot and /efi for uefi.
+    const uefiOption = '-eltorito-alt-boot -e boot/grub/efiboot.img -isohybrid-gpt-basdat -no-emul-boot'
+    const tempDir = shx.exec('mktemp -d /tmp/work_temp.XXXX').stdout.trim()
+    console.log(`tempDir: ${tempDir}`)
+
+    // for initial grub.cfg
+    shx.mkdir('-p', `${tempDir}/boot/grub`)
+    const grubCfg = `${tempDir}/boot/grub/grub.cfg`
+    console.log(`grubCfs: ${grubCfg}`)
+
+    shx.touch(grubCfg)
+    let text = ''
+    text += 'search --file --set=root /isolinux/isolinux.cfg'
+    text += 'set prefix=(\$root)/boot/grub'
+    text += 'source \$prefix/x86_64-efi/grub.cfg'
+    Utils.write(grubCfg, text)
+
+    if (!fs.existsSync(this.efi_work)) {
+      console.log(`creazione di: ${this.efi_work}`)
+      fs.mkdirSync(this.efi_work)
+    }
+
+    // pushd this.efi_work
+    // start with empty directories
+    const files = fs.readdirSync(this.efi_work);
+    for (var i in files) {
+      if (files[i]=== 'boot'){
+        shx.exec(`rm ${this.efi_work}/boot -rf`)
+      }
+      if (files[i]=== 'efi'){
+        shx.exec(`rm ${this.efi_work}/efi -rf`)
+      }
+    }
+    shx.mkdir(`-p`,`${this.efi_work}/boot/grub/x86_64-efi`)
+    shx.mkdir(`-p`,`${this.efi_work}efi/boot`)
+
+    // copy splash
+
+    shx.cp(path.resolve(__dirname, '../../assets/penguins-eggs-syslinux.png'), `${this.efi_work}/boot/grub/spash.png`)
+
+    // second grub.cfg file
+    shx.exec(`for i in $(ls /usr/lib/grub/x86_64-efi|grep part_|grep \.mod|sed 's/.mod//'); do echo "insmod $i" >> ${this.efi_work}/boot/grub/x86_64-efi/grub.cfg; done`)
+  }
 }
+
+
+    /*
+ 	
+    # second grub.cfg file
+    for i in $(ls /usr/lib/grub/x86_64-efi|grep part_|grep \.mod|sed 's/.mod//'); do echo "insmod $i" >> boot/grub/x86_64-efi/grub.cfg; done
+    # Additional modules so we don't boot in blind mode. I don't know which ones are really needed.
+    for i in efi_gop efi_uga ieee1275_fb vbe vga video_bochs video_cirrus jpeg png gfxterm ; do echo "insmod $i" >> boot/grub/x86_64-efi/grub.cfg ; done
+  
+    echo "source /boot/grub/grub.cfg" >> boot/grub/x86_64-efi/grub.cfg
+  	
+    pushd "$tempdir"
+  	
+      # make a tarred "memdisk" to embed in the grub image
+      tar -cvf memdisk boot
+    	
+      # make the grub image
+      grub-mkimage -O "x86_64-efi" -m "memdisk" -o "bootx64.efi" -p '(memdisk)/boot/grub' search iso9660 configfile normal memdisk tar cat part_msdos part_gpt fat ext2 ntfs ntfscomp hfsplus chain boot linux
+    	
+    popd
+  	
+    # copy the grub image to efi/boot (to go later in the device's root)
+    cp "$tempdir"/bootx64.efi efi/boot
+  	
+    #######################
+  	
+    ## Do the boot image "boot/grub/efiboot.img"
+  	
+    dd if=/dev/zero of=boot/grub/efiboot.img bs=1K count=1440
+    /sbin/mkdosfs -F 12 boot/grub/efiboot.img
+  	
+    mkdir img-mnt
+  	
+    mount -o loop boot/grub/efiboot.img img-mnt
+  	
+    mkdir -p img-mnt/efi/boot
+  	
+    cp "$tempdir"/bootx64.efi img-mnt/efi/boot/
+  	
+    #######################
+  	
+    # copy modules and font
+    cp /usr/lib/grub/x86_64-efi/* boot/grub/x86_64-efi/
+  	
+    # if this doesn't work try another font from the same place (grub's default, unicode.pf2, is much larger)
+    # Either of these will work, and they look the same to me. Unicode seems to work with qemu. -fsr
+  #	cp /usr/share/grub/ascii.pf2 boot/grub/font.pf2
+    cp /usr/share/grub/unicode.pf2 boot/grub/font.pf2
+  	
+    # doesn't need to be root-owned
+    chown -R 1000:1000 $(pwd) 2>/dev/null
+  	
+    # Cleanup efi temps
+    umount img-mnt
+    rmdir img-mnt
+    rm -rf "$tempdir"
+  
+  popd
+  
+  
+  # Copy efi files to iso
+  rsync -avx "$efi_work"/boot "$work_dir"/iso/
+  rsync -avx "$efi_work"/efi  "$work_dir"/iso/
+  
+  # Do the main grub.cfg (which gets loaded last):
+  cp "$grub_template" "$work_dir"/iso/boot/grub/grub.cfg
+  */
