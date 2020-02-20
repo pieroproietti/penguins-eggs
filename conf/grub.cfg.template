@@ -16,15 +16,15 @@ set menu_color_highlight=dark-gray/white
 set timeout=15
 
 
-menuentry "${DISTRO} (defaults) US English" {
+menuentry "{{DISTRONAME}} (defaults) US English" {
     set gfxpayload=keep
-    linux   /live/vmlinuz boot=live ${ifnames_opt} ${netconfig_opt} ${username_opt}    
+    linux   /live/vmlinuz boot=live {{IFNAMES_OPT}} {{NETCONFIG_OPT}} {{USERNAME_OPT}}
     initrd  /live/initrd.img
 }
 
 menuentry "Other language (Press e to edit)" {
     set gfxpayload=keep
-    linux   /live/vmlinuz boot=live ${ifnames_opt} ${netconfig_opt} ${username_opt} locales=it_IT.UTF-8 keyboard-layouts=it 
+    linux   /live/vmlinuz boot=live {{IFNAMES_OPT}} {{NETCONFIG_OPT}} {{USERNAME_OPT}} locales=it_IT.UTF-8 keyboard-layouts=it 
     initrd  /live/initrd.img
 }
 
@@ -32,13 +32,13 @@ submenu 'Advanced options ...' {
 
     menuentry "${DISTRO} (load to RAM)" {
 	set gfxpayload=keep
-	linux   /live/vmlinuz boot=live toram ${ifnames_opt} ${netconfig_opt} ${username_opt}    
+	linux   /live/vmlinuz boot=live toram {{IFNAMES_OPT}} {{NETCONFIG_OPT}} {{USERNAME_OPT}}
 	initrd  /live/initrd.img
     }
 
     menuentry "${DISTRO} (failsafe)" {
 	set gfxpayload=keep
-	linux   /live/vmlinuz boot=live nocomponents=xinit noapm noapic nolapic nodma nosmp forcepae nomodeset vga=normal ${ifnames_opt} ${netconfig_opt} ${username_opt} 
+	linux   /live/vmlinuz boot=live nocomponents=xinit noapm noapic nolapic nodma nosmp forcepae nomodeset vga=normal {{IFNAMES_OPT}} {{NETCONFIG_OPT}} {{USERNAME_OPT}} 
 	initrd  /live/initrd.img
     }
 

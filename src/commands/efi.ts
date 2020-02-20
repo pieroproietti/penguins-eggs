@@ -6,8 +6,10 @@ export default class Efi extends Command {
 
   async run() {
     const ovary = new Ovary
-    ovary.loadSettings()
-    ovary.makeEfi()
+    await ovary.fertilization()
+    await ovary.isoCreateStructure()
+    await ovary.isolinuxPrepare()
+    await ovary.makeEfi()
   }
 }
 
