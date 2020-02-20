@@ -69,9 +69,17 @@ export default class Ovary {
 
   kernel_image = '' as string
 
+  user_live = '' as string
+
+  username_opt = '' as string
+
   pmount_fixed = false
 
   ssh_pass = false
+
+  netconfig_opt = ''
+
+  ifnames_opt = ''
 
   initrd_image = '' as string
 
@@ -191,8 +199,25 @@ export default class Ovary {
     this.reset_accounts = settings.General.reset_accounts === "yes"
     this.kernel_image = settings.General.kernel_image
     this.initrd_image = settings.General.initrd_image
+    this.user_live = settings.General.user_live
+    this.netconfig_opt = settings.General.netconfig_opt
+    this.ifnames_opt = settings.General.ifnames_opt
     this.pmount_fixed = settings.General.pmount_system === "yes"
     this.ssh_pass = settings.General.ssh_pass === "yes"
+
+    /**
+     * Use the login name set in the config file. If not set, use the primary 
+     * user's name. If the name is not "user" then add boot option. ALso use
+     * the same username for cleaning geany history.
+     */
+    if (this.user_live != ``) {
+      this.username_opt = this.user_live
+    } else {
+      this.user_live = shx.exec(`username=$(awk -F":" '/1000:1000/ { print $1 }' /etc/passwd)`).stdout.trim()
+      if (this.user_live != 'live' ){
+        this.username_opt =  `username= ${this.user_live}`
+      }
+    }
     return foundSettings
   }
 
@@ -221,7 +246,10 @@ export default class Ovary {
     console.log(`force_installer:   ${this.force_installer}`)
     console.log(`reset_accounts:    ${this.reset_accounts}`)
     console.log(`kernel_image:      ${this.kernel_image}`)
+    console.log(`user_live:         ${this.user_live}`)
     console.log(`initrd_image:      ${this.initrd_image}`)
+    console.log(`netconfig_opt:     ${this.netconfig_opt}`)
+    console.log(`ifnames_opt:       ${this.ifnames_opt}`)
     console.log(`pmount_fixed:      ${this.pmount_fixed}`)
     console.log(`ssh_pass:          ${this.ssh_pass}`)
   }
@@ -276,10 +304,11 @@ export default class Ovary {
       }
       await this.editLiveFs()
       await this.editBootMenu()
-      // await this.makeFsTab()
-      // await this.makeInterfaces()
       await this.makeSquashFs()
       await this.cleanUp()
+      if (this.make_efi){
+        await this.makeEfi()
+      }
       await this.makeIsoFs()
     }
   }
@@ -320,8 +349,8 @@ export default class Ovary {
     console.log('==========================================')
 
     // Truncate logs, remove archived logs.
-    shx.exec(`find myfs/var/log -name "*gz" -print0 | xargs -0r rm -f`)
-    shx.exec(`find myfs/var/log/ -type f -exec truncate -s 0 {} \;`)
+    shx.exec(`find ${this.distro.pathLiveFs}/var/log -name "*gz" -print0 | xargs -0r rm -f`)
+    shx.exec(`find ${this.distro.pathLiveFs}/var/log/ -type f -exec truncate -s 0 {} \;`)
 
 
     // Allow all fixed drives to be mounted with pmount
@@ -336,7 +365,7 @@ export default class Ovary {
       shx.exec(`rm -f "$work_dir"/myfs/lib/live/config/1161-openssh-server`)
     }
 
-    shx.exec(`sed -i 's/PermitRootLogin yes/PermitRootLogin prohibit-password/' "$work_dir"/myfs/etc/ssh/sshd_config`)
+    shx.exec(`sed -i 's/PermitRootLogin yes/PermitRootLogin prohibit-password/' ${this.distro.pathLiveFs}/etc/ssh/sshd_config`)
     if (this.ssh_pass) {
       shx.exec(`sed -i 's|.*PasswordAuthentication.*no|PasswordAuthentication yes|' ${this.distro.pathLiveFs}/etc/ssh/sshd_config`)
     } else {
@@ -350,7 +379,7 @@ export default class Ovary {
      */
     const text = ''
     if (fs.existsSync(`${this.distro.pathLiveFs}/etc/fstab`)) {
-      shx.mkdir('/tmp/penguins-eggs')
+      shx.mkdir('-p', '/tmp/penguins-eggs')
       shx.cp(`${this.distro.pathLiveFs}/etc/fstab`, `/tmp/penguins-eggs`)
     }
     shx.exec(`touch ${this.distro.pathLiveFs}/etc/fstab`, { silent: true })
@@ -366,9 +395,11 @@ export default class Ovary {
       Utils.write(`${this.distro.pathLiveFs}/etc/machine-id`, `:`)
     }
 
+    
     /**
      * add some basic files to /dev
      */
+    /*
     shx.exec(`mknod -m 622 ${this.distro.pathLiveFs}/dev/console c 5 1`)
     shx.exec(`mknod -m 666 ${this.distro.pathLiveFs}/dev/null c 1 3`)
     shx.exec(`mknod -m 666 ${this.distro.pathLiveFs}/dev/zero c 1 5`)
@@ -386,6 +417,7 @@ export default class Ovary {
     shx.exec(`mkdir -v ${this.distro.pathLiveFs}/dev/shm`)
     shx.exec(`mkdir -v ${this.distro.pathLiveFs}/dev/pts`)
     shx.exec(`chmod 1777 ${this.distro.pathLiveFs}/dev/shm`)
+    */
 
     /**
      * Clear configs from /etc/network/interfaces, wicd and NetworkManager
@@ -426,12 +458,12 @@ export default class Ovary {
     console.log('==========================================')
 
     if (!fs.existsSync(this.distro.pathIso)) {
-      Utils.shxExec(`mkdir -p ${this.distro.pathIso}/live`)
-      Utils.shxExec(`mkdir -p ${this.distro.pathIso}/EFI`)
-      Utils.shxExec(`mkdir -p ${this.distro.pathIso}/boot`)
-      Utils.shxExec(`mkdir -p ${this.distro.pathIso}/boot/isolinux`)
-      Utils.shxExec(`mkdir -p ${this.distro.pathIso}/boot/grub`)
-      Utils.shxExec(`mkdir -p ${this.distro.pathIso}/boot/syslinux`)
+      shx.mkdir(`-p`, `${this.distro.pathIso}/live`)
+      shx.mkdir(`-p`, `${this.distro.pathIso}/efi`)
+      shx.mkdir(`-p`, `${this.distro.pathIso}/boot`)
+      shx.mkdir(`-p`, `${this.distro.pathIso}/boot/isolinux`)
+      shx.mkdir(`-p`, `${this.distro.pathIso}/boot/grub`)
+      shx.mkdir(`-p`, `${this.distro.pathIso}/boot/syslinux`)
     }
   }
 
@@ -1217,18 +1249,24 @@ timeout 0
  * 
  */
   async makeLiveHome() {
+    console.log('==========================================')
+    console.log('ovary: makeLiveHome')
+    console.log('==========================================')
+
     const user: string = Utils.getPrimaryUser()
 
     // Copiamo i link su /usr/share/applications
-    shx.cp(`${__dirname}../../assets/dw-agent-sh.desktop`, `/usr/share/applications/`)
-    shx.cp(`${__dirname}../../assets/assistenza-remota.png`, `/usr/share/icons/`)
-    shx.cp(`${__dirname}../../assets/penguins-eggs.desktop`, `/usr/share/applications/`)
-    shx.cp(`${__dirname}../../assets/eggs.png`, `/usr/share/icons/`)
+    shx.cp(path.resolve(__dirname, '../../conf/grub.cfg.template'), `${this.work_dir}/iso/boot/grub/grub.cfg`)
+
+    shx.cp(path.resolve(__dirname, `../../assets/dw-agent-sh.desktop`), `/usr/share/applications/`)
+    shx.cp(path.resolve(__dirname, `../../assets/assistenza-remota.png`), `/usr/share/icons/`)
+    shx.cp(path.resolve(__dirname, `../../assets/penguins-eggs.desktop`), `/usr/share/applications/`)
+    shx.cp(path.resolve(__dirname, `../../assets/eggs.png`), `/usr/share/icons/`)
 
     // creazione della home per user live
-    shx.exec(`cp -r /etc/skel/. ${this.distro.pathLiveFs}/home/${user}`, { async: false })
+    shx.cp(`-r`, `/etc/skel/.`, `${this.distro.pathLiveFs}/home/${user}`)
     shx.exec(`chown -R live:live ${this.distro.pathLiveFs}/home/${user}`, { async: false })
-    shx.exec(`mkdir ${this.distro.pathLiveFs}/home/${user}/Desktop`, { async: false })
+    shx.mkdir(`-p`, `${this.distro.pathLiveFs}/home/${user}/Desktop`)
 
     // Copiare i link sul desktop
     shx.cp('/usr/share/applications/dw-agent.desktop', `${this.distro.pathLiveFs}/home/${user}/Desktop`)
@@ -1236,7 +1274,7 @@ timeout 0
 
     // creazione dei link per user live da /etc/penguins-eggs/
     shx.exec(`cp /etc/penguins-eggs/${user}/Desktop/* ${this.distro.pathLiveFs}/home/${user}/Desktop`, { async: false })
-    shx.exec(`chmod +x ${this.distro.pathLiveFs}/home/${user}/Desktop/*.desktop`, { async: false })
+    shx.chmod(`+x`, `${this.distro.pathLiveFs}/home/${user}/Desktop/*.desktop`)
     shx.exec(`chown ${user}:${user} ${this.distro.pathLiveFs}/home/${user}/Desktop/*`, { async: false })
   }
 
@@ -1269,6 +1307,13 @@ timeout 0
    * Create /boot and /efi for UEFI
    */
   async makeEfi() {
+    console.log('==========================================')
+    console.log('ovary: makeEfi')
+    console.log('==========================================')
+    await this.fertilization()
+    await this.isoCreateStructure()
+    await this.isolinuxPrepare()
+
     this.efi_work = '/home/eggs/.work/efi_files'
     // console.log(`efi_work: ${this.efi_work}`)
 
@@ -1293,7 +1338,7 @@ timeout 0
 
     if (!fs.existsSync(this.efi_work)) {
       // console.log(`creazione di: ${this.efi_work}`)
-      fs.mkdirSync(this.efi_work)
+      shx.mkdir(`-p`, this.efi_work)
     }
 
     // pushd this.efi_work
@@ -1336,8 +1381,8 @@ timeout 0
 
     // Do the boot image "boot/grub/efiboot.img"
     shx.exec(`dd if=/dev/zero of=${this.efi_work}/boot/grub/efiboot.img bs=1K count=1440`)
-    shx.exec(`/sbin/mkdosfs -F 12 ${this.efi_work}/boot/grub/efiboot.img`)
-    shx.mkdir(`${this.efi_work}/img-mnt`)
+    shx.exec(`/sbin/mkdosfs -F 12 ${this.efi_work}/boot/grub/efiboot.img`, {silent: true})
+    shx.mkdir(`-p`, `${this.efi_work}/img-mnt`)
     shx.exec(`mount -o loop ${this.efi_work}/boot/grub/efiboot.img ${this.efi_work}/img-mnt`)
     shx.mkdir('-p', `${this.efi_work}/img-mnt/efi/boot`)
     shx.cp(`${tempDir}/bootx64.efi`, `${this.efi_work}/img-mnt/efi/boot/`)
@@ -1352,15 +1397,24 @@ timeout 0
     // doesn't need to be root-owned
     shx.exec(`chown -R 1000:1000 $(pwd) `) // 2>/dev/null`)
 
+    console.log('Cleanup efi temps')
     // Cleanup efi temps
     shx.exec(`umount ${this.efi_work}/img-mnt`)
     shx.exec(`rmdir ${this.efi_work}/img-mnt`)
 
-    //   # Copy efi files to iso
-    shx.exec(`rsync -avx ${this.efi_work}/boot ${this.work_dir}/iso/`)
-    shx.exec(`rsync -avx ${this.efi_work}/efi  ${this.work_dir}/iso/`)
+    // Copy efi files to iso
+    console.log('Copy efi files to iso')
+    shx.exec(`rsync -avx ${this.efi_work}/boot ${this.distro.pathIso}/`)
+    shx.exec(`rsync -avx ${this.efi_work}/efi  ${this.distro.pathIso}/`)
 
     // Do the main grub.cfg (which gets loaded last):
-    shx.cp(path.resolve(__dirname, '../../conf/grub.cfg.template'), `${this.work_dir}/iso/boot/grub/grub.cfg`)
+    shx.cp(path.resolve(__dirname, '../../conf/grub.cfg.template'), `${this.distro.pathIso}/boot/grub/grub.cfg`)
+
+    // edit menu
+    shx.exec(`sed -i "s:\\${this.distro.name}:$DISTRO:g" ${this.distro.pathIso}/iso/boot/grub/grub.cfg`)
+		shx.exec(`sed -i "s:\\${this.netconfig_opt}:$netconfig_opt:g" ${this.distro.pathIso}/iso/boot/grub/grub.cfg`)
+		shx.exec(`sed -i "s:\${username_opt}:$username_opt:g" ${this.distro.pathIso}/iso/boot/grub/grub.cfg`)
+		shx.exec(`sed -i "s:\\${this.ifnames_opt}:$ifnames_opt:g" ${this.distro.pathIso}/iso/boot/grub/grub.cfg`)
+	fi
   }
 }

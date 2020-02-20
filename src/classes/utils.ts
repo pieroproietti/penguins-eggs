@@ -395,7 +395,7 @@ export default class Utils {
   }
 
   static write(file: string, text: string): void {
-    console.log(`[utils]\n>>> Creazione ${file}`)
+    // console.log(`[utils]\n>>> Creazione ${file}`)
     text = text.trim() + '\n'
     text = text.trim() + '\n'
     file = file.trim()

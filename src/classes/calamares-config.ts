@@ -51,15 +51,14 @@ class Calamares {
   public async configure() {
     if (await this.isInstalled()) {
       console.log('==========================================')
-      console.log('eggs: calamares configuration')
-      console.log('------------------------------------------')
+      console.log('calamares: configuration')
+      console.log('==========================================')
 
       console.log(`distro: [${this.oses.distroId}/${this.oses.versionId}]->[${this.oses.distroLike}/${this.oses.versionLike}]`)
       this.settingsConf(this.oses.versionLike)
       this.brandingDesc(this.oses.versionLike, this.oses.homeUrl, this.oses.supportUrl, this.oses.bugReportUrl)
       this.unpackfsConf(this.oses.mountpointSquashFs)
       this.links()
-      console.log('==========================================')
     }
   }
 
@@ -71,6 +70,10 @@ class Calamares {
    * settingsConf
    */
   async settingsConf(versionLike: string) {
+    console.log('==========================================')
+    console.log('calamares: settingsConf')
+    console.log('==========================================')
+
     /**
     * branding è uguale per tutte
     */
@@ -134,12 +137,16 @@ class Calamares {
       this.ubuntuSourcesFinal('eoan')
     }
 
-    console.log('Configurazione settings.conf')
     fs.writeFileSync(settingsPath, `# distroType: ${versionLike}\n` + yaml.safeDump(settings), 'utf8')
   }
 
   async brandingDesc(versionLike: string, homeUrl: string, supportUrl: string, bugReportUrl: string) {
+    console.log('==========================================')
+    console.log('calamares: brandingDesc')
+    console.log('==========================================')
+
     const brandingPath = `/etc/calamares/branding/${this.distro.branding}`
+
 
     if (!fs.existsSync(brandingPath)) {
       fs.mkdirSync(brandingPath)
