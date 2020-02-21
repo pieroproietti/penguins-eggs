@@ -11,6 +11,7 @@ import fs = require('fs')
 import os = require('os')
 import ini = require('ini')
 import pjson = require('pjson')
+import inquires = require('inquirer')
 
 /**
  * Utils: general porpourse utils
@@ -400,5 +401,27 @@ export default class Utils {
     text = text.trim() + '\n'
     file = file.trim()
     fs.writeFileSync(file, text)
+  }
+
+   /**
+   *
+   * @param msg
+   */
+  static customConfirm(msg: string): Promise<any> {
+    return new Promise(function (resolve) {
+      const questions: Array<Record<string, any>> = [
+        {
+          type: 'list',
+          name: 'confirm',
+          message: msg,
+          choices: ['No', 'Yes'],
+          default: 'No',
+        },
+      ]
+
+      inquirer.prompt(questions).then(function (options) {
+        resolve(JSON.stringify(options))
+      })
+    })
   }
 }

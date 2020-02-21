@@ -141,8 +141,9 @@ export default class Ovary {
     this.iso = this.oses.info(this.distro)
 
     const loadSettings = await this.loadSettings()
+    
+    // Lo spazio usato da SquashFS non è stimabile da live errore buffer troppo piccolo
     if (!Utils.isLive()) {
-      // Lo spazio usato da SquashFS non è stimabile da live errore buffer troppo piccolo
       console.log(`Space: ${Utils.getUsedSpace()}`)
     }
     const listFreeSpace = await this.listFreeSpace()
@@ -151,7 +152,9 @@ export default class Ovary {
       this.distro.pathHome = this.work_dir + '.' + this.distro.name
       this.distro.pathLiveFs = this.distro.pathHome + '/fs'
       this.distro.pathIso = this.distro.pathHome + '/iso'
-      return true
+      if (Utils.customConfirm(`buongiorno?`)){
+        return true
+      }
     }
     return false
   }
@@ -170,20 +173,13 @@ export default class Ovary {
     } else {
       foundSettings = true
     }
-
     this.session_excludes = ''
     this.snapshot_dir = settings.General.snapshot_dir.trim()
     if (!this.snapshot_dir.endsWith('/')) {
       this.snapshot_dir += '/'
     }
-    this.work_dir = settings.General.work_dir.trim()
-    if (!this.work_dir.endsWith('/')) {
-      this.work_dir += '/'
-    }
-    this.efi_work = settings.General.efi_work.trim()
-    if (!this.efi_work.endsWith('/')) {
-      this.efi_work += '/'
-    }
+    this.work_dir = this.snapshot_dir + '.work/'
+    this.efi_work = this.work_dir + 'efi-work/'
     this.snapshot_excludes = settings.General.snapshot_excludes
     this.snapshot_basename = settings.General.snapshot_basename
     this.make_efi = settings.General.make_efi === "yes"
@@ -199,13 +195,12 @@ export default class Ovary {
     this.reset_accounts = settings.General.reset_accounts === "yes"
     this.kernel_image = settings.General.kernel_image
     this.initrd_image = settings.General.initrd_image
-    this.user_live = settings.General.user_live
     this.netconfig_opt = settings.General.netconfig_opt
-    if (this.netconfig_opt === undefined ){
+    if (this.netconfig_opt === undefined) {
       this.netconfig_opt = ''
     }
     this.ifnames_opt = settings.General.ifnames_opt
-    if (this.ifnames_opt === undefined){
+    if (this.ifnames_opt === undefined) {
       this.ifnames_opt = ''
     }
     this.pmount_fixed = settings.General.pmount_system === "yes"
@@ -216,18 +211,15 @@ export default class Ovary {
      * user's name. If the name is not "user" then add boot option. ALso use
      * the same username for cleaning geany history.
      */
-    if (this.user_live === undefined) {
-      this.user_live = 'live'
-    }
+    this.user_live = settings.General.user_live
 
-    if (this.user_live != ``) {
-      this.username_opt = this.user_live
-    } else {
-      this.user_live = shx.exec(`username=$(awk -F":" '/1000:1000/ { print $1 }' /etc/passwd)`).stdout.trim()
-      if (this.user_live != 'live' ){
-        this.username_opt =  `username=${this.user_live}`
+    if (this.user_live === undefined || this.user_live === '') {
+      this.user_live = shx.exec(`awk -F":" '/1000:1000/ { print $1 }' /etc/passwd`).stdout.trim()
+      if (this.user_live === '') {
+        this.user_live = 'live'
       }
     }
+    this.username_opt = `username=${this.user_live}`
     return foundSettings
   }
 
@@ -277,6 +269,7 @@ export default class Ovary {
     console.log('If necessary, you can create more available space')
     console.log('by removing previous snapshots and saved copies:')
     console.log(`${Utils.getSnapshotCount(this.snapshot_dir)} snapshots are taking up ${Utils.getSnapshotSize(this.snapshot_dir)} of disk space.`)
+
   }
 
   /**
@@ -316,10 +309,10 @@ export default class Ovary {
       await this.editBootMenu()
       await this.makeSquashFs()
       await this.cleanUp()
-      if (this.make_efi){
+      if (this.make_efi) {
         await this.makeEfi()
       }
-      await this.makeIsoFs()
+      await this.makeIsoImage()
     }
   }
 
@@ -359,8 +352,12 @@ export default class Ovary {
     console.log('==========================================')
 
     // Truncate logs, remove archived logs.
-    shx.exec(`find ${this.distro.pathLiveFs}/var/log -name "*gz" -print0 | xargs -0r rm -f`)
-    shx.exec(`find ${this.distro.pathLiveFs}/var/log/ -type f -exec truncate -s 0 {} \;`)
+    let cmd =`find ${this.distro.pathLiveFs}/var/log -name "*gz" -print0 | xargs -0r rm -f` 
+    console.log(cmd)
+    shx.exec(cmd)
+    cmd =`find ${this.distro.pathLiveFs}/var/log/ -type f -exec truncate -s 0 {} \\;`
+    console.log(cmd)
+    shx.exec(cmd)
 
 
     // Allow all fixed drives to be mounted with pmount
@@ -405,7 +402,7 @@ export default class Ovary {
       Utils.write(`${this.distro.pathLiveFs}/etc/machine-id`, `:`)
     }
 
-    
+
     /**
      * add some basic files to /dev
      */
@@ -1052,20 +1049,6 @@ timeout 0
     // usr/bin/mksquashfs /.bind-root iso-template/antiX/linuxfs -comp ${this.compression} ${(this.mksq_opt === '' ? '' : ' ' + this.mksq_opt)} -wildcards -ef ${this.snapshot_excludes} ${this.session_excludes}`)
   }
 
-  async makeIsoFs() {
-    const isoHybridOption = `-isohybrid-mbr ${this.iso.isolinuxPath}isohdpfx.bin `
-    const volid = this.getFilename(this.iso.distroName)
-    const isoName = `${this.snapshot_dir}${volid}`
-
-    console.log('==========================================')
-    console.log(`ovary: makeIsoFs ${isoName}`)
-    console.log('==========================================')
-
-    Utils.shxExec(
-      `xorriso -as mkisofs -r -J -joliet-long -l -cache-inodes ${isoHybridOption} -partition_offset 16 -volid ${volid} -b boot/isolinux/isolinux.bin -c boot/isolinux/boot.cat -no-emul-boot -boot-load-size 4 -boot-info-table -o ${isoName} ${this.distro.pathIso}`
-      , { silent: false })
-  }
-
   /**
    * Return the eggName with architecture and date
    * @param basename
@@ -1320,17 +1303,14 @@ timeout 0
     console.log('==========================================')
     console.log('ovary: makeEfi')
     console.log('==========================================')
-
-    this.efi_work = '/home/eggs/.work/efi_files'
-
+    
     // create /boot and /efi for uefi.
     const uefiOption = '-eltorito-alt-boot -e boot/grub/efiboot.img -isohybrid-gpt-basdat -no-emul-boot'
-    const tempDir = shx.exec('mktemp -d /tmp/work_temp.XXXX', {silent: true}).stdout.trim()
+    const tempDir = shx.exec('mktemp -d /tmp/work_temp.XXXX', { silent: true }).stdout.trim()
 
     // for initial grub.cfg
     shx.mkdir('-p', `${tempDir}/boot/grub`)
     const grubCfg = `${tempDir}/boot/grub/grub.cfg`
-
     shx.touch(grubCfg)
     let text = ''
     text += 'search --file --set=root /isolinux/isolinux.cfg'
@@ -1342,15 +1322,14 @@ timeout 0
       shx.mkdir(`-p`, this.efi_work)
     }
 
-    // pushd this.efi_work
-    // start with empty directories
+    // start with empty directories Clear dir boot and efi
     const files = fs.readdirSync(this.efi_work);
     for (var i in files) {
       if (files[i] === 'boot') {
-        shx.exec(`rm ${this.efi_work}/boot -rf`, {silent: true})
+        shx.exec(`rm ${this.efi_work}/boot -rf`, { silent: true })
       }
       if (files[i] === 'efi') {
-        shx.exec(`rm ${this.efi_work}/efi -rf`, {silent: true})
+        shx.exec(`rm ${this.efi_work}/efi -rf`, { silent: true })
       }
     }
     shx.mkdir(`-p`, `${this.efi_work}/boot/grub/x86_64-efi`)
@@ -1361,30 +1340,30 @@ timeout 0
 
     // second grub.cfg file
     let cmd = `for i in $(ls /usr/lib/grub/x86_64-efi|grep part_|grep \.mod|sed 's/.mod//'); do echo "insmod $i" >> ${this.efi_work}/boot/grub/x86_64-efi/grub.cfg; done`
-    shx.exec(cmd, {silent: true})
+    shx.exec(cmd, { silent: true })
 
     // Additional modules so we don't boot in blind mode. I don't know which ones are really needed.
     cmd = `for i in efi_gop efi_uga ieee1275_fb vbe vga video_bochs video_cirrus jpeg png gfxterm ; do echo "insmod $i" >> ${this.efi_work}/boot/grub/x86_64-efi/grub.cfg ; done`
-    shx.exec(cmd, {silent: true})
+    shx.exec(cmd, { silent: true })
 
-    shx.exec(`echo source /boot/grub/grub.cfg >> ${this.efi_work}/boot/grub/x86_64-efi/grub.cfg`, {silent: true})
+    shx.exec(`source /boot/grub/grub.cfg >> ${this.efi_work}/boot/grub/x86_64-efi/grub.cfg`, { silent: true })
 
     // pushd "$tempdir"
     // make a tarred "memdisk" to embed in the grub image
     // Ci potrebbero essere problemi di path 
-    shx.exec(`tar -cvf ${tempDir}/memdisk ${tempDir}/boot`, {silent: true})
+    shx.exec(`tar -cvf ${tempDir}/memdisk ${tempDir}/boot`, { silent: true })
 
     // make the grub image
-    shx.exec(`grub-mkimage -O x86_64-efi -m ${tempDir}/memdisk -o ${tempDir}/bootx64.efi -p '(memdisk)/boot/grub' search iso9660 configfile normal memdisk tar cat part_msdos part_gpt fat ext2 ntfs ntfscomp hfsplus chain boot linux`, {silent: true})
+    shx.exec(`grub-mkimage -O x86_64-efi -m ${tempDir}/memdisk -o ${tempDir}/bootx64.efi -p '(memdisk)/boot/grub' search iso9660 configfile normal memdisk tar cat part_msdos part_gpt fat ext2 ntfs ntfscomp hfsplus chain boot linux`, { silent: true })
 
     // copy the grub image to efi/boot (to go later in the device's root)
     shx.cp(`${tempDir}/bootx64.efi`, `${this.efi_work}/efi/boot`)
 
     // Do the boot image "boot/grub/efiboot.img"
-    shx.exec(`dd if=/dev/zero of=${this.efi_work}/boot/grub/efiboot.img bs=1K count=1440`, {silent: true})
-    shx.exec(`/sbin/mkdosfs -F 12 ${this.efi_work}/boot/grub/efiboot.img`, {silent: true})
+    shx.exec(`dd if=/dev/zero of=${this.efi_work}/boot/grub/efiboot.img bs=1K count=1440`, { silent: true })
+    shx.exec(`/sbin/mkdosfs -F 12 ${this.efi_work}/boot/grub/efiboot.img`, { silent: true })
     shx.mkdir(`-p`, `${this.efi_work}/img-mnt`)
-    shx.exec(`mount -o loop ${this.efi_work}/boot/grub/efiboot.img ${this.efi_work}/img-mnt`, {silent: true})
+    shx.exec(`mount -o loop ${this.efi_work}/boot/grub/efiboot.img ${this.efi_work}/img-mnt`, { silent: true })
     shx.mkdir('-p', `${this.efi_work}/img-mnt/efi/boot`)
     shx.cp(`${tempDir}/bootx64.efi`, `${this.efi_work}/img-mnt/efi/boot/`)
 
@@ -1401,13 +1380,13 @@ timeout 0
     console.log('Cleanup efi temps')
 
     // Cleanup efi temps
-    shx.exec(`umount ${this.efi_work}/img-mnt`, {silent: true})
-    shx.exec(`rmdir ${this.efi_work}/img-mnt`, {silent: true})
+    shx.exec(`umount ${this.efi_work}/img-mnt`, { silent: true })
+    shx.exec(`rmdir ${this.efi_work}/img-mnt`, { silent: true })
 
     // Copy efi files to iso
     console.log('Copy efi files to iso')
-    shx.exec(`rsync -avx ${this.efi_work}/boot ${this.distro.pathIso}/`, {silent: true})
-    shx.exec(`rsync -avx ${this.efi_work}/efi  ${this.distro.pathIso}/`, {silent: true})
+    shx.exec(`rsync -avx ${this.efi_work}/boot ${this.distro.pathIso}/`, { silent: true })
+    shx.exec(`rsync -avx ${this.efi_work}/efi  ${this.distro.pathIso}/`, { silent: true })
 
     // Do the main grub.cfg (which gets loaded last):
     shx.cp(path.resolve(__dirname, '../../conf/grub.cfg.template'), `${this.distro.pathIso}/boot/grub/grub.cfg`)
@@ -1419,10 +1398,46 @@ timeout 0
     console.log(`NETCONFIG_OPT: [${this.netconfig_opt}]`)
     console.log(`USERNAME_OPT: [${this.username_opt}]`)
     console.log(`IFNAMES_OPT: [${this.ifnames_opt}]`)
-    
+
     shx.sed('-i', '{{DISTRO_NAME}}', this.distro.name, `${this.distro.pathIso}/boot/grub/grub.cfg`)
     shx.sed('-i', '{{NETCONFIG_OPT}}', this.netconfig_opt, `${this.distro.pathIso}/boot/grub/grub.cfg`)
     shx.sed('-i', '{{USERNAME_OPT}}', this.username_opt, `${this.distro.pathIso}/boot/grub/grub.cfg`)
     shx.sed('-i', '{{IFNAMES_OPT}}', this.ifnames_opt, `${this.distro.pathIso}/boot/grub/grub.cfg`)
+  }
+
+  /**
+   * makeIsoImage
+   */
+  async makeIsoImage() {
+    const volid = this.getFilename(this.iso.distroName)
+    const isoName = `${this.snapshot_dir}${volid}`
+    console.log('==========================================')
+    console.log(`ovary: makeIsoImage ${isoName}`)
+    console.log('==========================================')
+
+    const uefi_opt = '-eltorito-alt-boot -e boot/grub/efiboot.img -isohybrid-gpt-basdat -no-emul-boot'
+
+    let isoHybridOption = `-isohybrid-mbr ${this.iso.isolinuxPath}isohdpfx.bin `
+
+    if (this.make_isohybrid) {
+      if (fs.existsSync('/usr/lib/syslinux/mbr/isohdpfx.bin')) {
+        isoHybridOption = '-isohybrid-mbr /usr/lib/syslinux/mbr/isohdpfx.bin'
+      } else if (fs.existsSync('/usr/lib/syslinux/isohdpfx.bin')) {
+        isoHybridOption = `-isohybrid-mbr /usr/lib/syslinux/isohdpfx.bin`
+      } else if (fs.existsSync('/usr/lib/ISOLINUX/isohdpfx.bin')) {
+        isoHybridOption = `-isohybrid-mbr /usr/lib/ISOLINUX/isohdpfx.bin`
+      } else {
+        console.log(`Can't create isohybrid.  File: isohdpfx.bin not found. The resulting image will be a standard iso file`)
+      }
+      const volid = this.getFilename(this.iso.distroName)
+      const isoName = `${this.snapshot_dir}${volid}`
+
+      let cmd = `xorriso -as mkisofs -r -J -joliet-long -l -iso-level 3 -cache-inodes ${isoHybridOption} -partition_offset 16 -volid ${volid} -b boot/isolinux/isolinux.bin -c boot/isolinux/boot.cat -no-emul-boot -boot-load-size 4 -boot-info-table ${uefi_opt} -o ${isoName} ${this.distro.pathIso}`
+      console.log(cmd)
+      Utils.shxExec(cmd, { silent: false })
+
+
+      // Utils.shxExec(`xorriso -as mkisofs -r -J -joliet-long -l -cache-inodes ${isoHybridOption} -partition_offset 16 -volid ${volid} -b boot/isolinux/isolinux.bin -c boot/isolinux/boot.cat -no-emul-boot -boot-load-size 4 -boot-info-table -o ${isoName} ${this.distro.pathIso}`, { silent: false })
+    }
   }
 }

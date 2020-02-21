@@ -16,7 +16,7 @@ set menu_color_highlight=dark-gray/white
 set timeout=15
 
 
-menuentry "{{DISTRONAME}} (defaults) US English" {
+menuentry "{{DISTRO_NAME}} (defaults) US English" {
     set gfxpayload=keep
     linux   /live/vmlinuz boot=live {{IFNAMES_OPT}} {{NETCONFIG_OPT}} {{USERNAME_OPT}}
     initrd  /live/initrd.img
@@ -30,13 +30,13 @@ menuentry "Other language (Press e to edit)" {
 
 submenu 'Advanced options ...' {
 
-    menuentry "${DISTRO} (load to RAM)" {
+    menuentry "{{DISTRO_NAME}} (load to RAM)" {
 	set gfxpayload=keep
 	linux   /live/vmlinuz boot=live toram {{IFNAMES_OPT}} {{NETCONFIG_OPT}} {{USERNAME_OPT}}
 	initrd  /live/initrd.img
     }
 
-    menuentry "${DISTRO} (failsafe)" {
+    menuentry "{{DISTRO_NAME}} (failsafe)" {
 	set gfxpayload=keep
 	linux   /live/vmlinuz boot=live nocomponents=xinit noapm noapic nolapic nodma nosmp forcepae nomodeset vga=normal {{IFNAMES_OPT}} {{NETCONFIG_OPT}} {{USERNAME_OPT}} 
 	initrd  /live/initrd.img

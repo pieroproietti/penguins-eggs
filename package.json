@@ -10,7 +10,9 @@
   "dependencies": {
     "@oclif/command": "^1.5.19",
     "@oclif/config": "^1.14.0",
+    "@oclif/plugin-autocomplete": "^0.1.5",
     "@oclif/plugin-help": "^2.2.3",
+    "@oclif/plugin-not-found": "github:oclif/plugin-not-found",
     "@types/inquirer": "^6.5.0",
     "drivelist": "^8.0.9",
     "fs": "0.0.1-security",
