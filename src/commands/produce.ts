@@ -42,11 +42,15 @@ the penguin produce an egg called uovo-i386-2020-01-18_2000.iso`]
       if (flags.bindFs){
         bindedFs = true
       }
-      var eggName
+      let eggName = ''
       const ovary = new Ovary(compression, bindedFs)
+  
       if (await ovary.fertilization()){
         eggName = ovary.produce(basename)
+      } else {
+        eggName = 'aborted'
       }
+
       
 
       this.log(`${Utils.getFriendName()} produce`)

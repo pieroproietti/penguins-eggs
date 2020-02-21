@@ -149,10 +149,11 @@ export default class Ovary {
     const listFreeSpace = await this.listFreeSpace()
 
     if (this.loadSettings() && this.listFreeSpace()) {
-      this.distro.pathHome = this.work_dir + '.' + this.distro.name
+      this.distro.pathHome = this.work_dir + this.distro.name
       this.distro.pathLiveFs = this.distro.pathHome + '/fs'
       this.distro.pathIso = this.distro.pathHome + '/iso'
-      if (Utils.customConfirm(`buongiorno?`)){
+      let answer = JSON.parse(await Utils.customConfirm(`Select yes to continue...`))
+      if (answer.confirm === 'Yes') {
         return true
       }
     }
@@ -269,7 +270,6 @@ export default class Ovary {
     console.log('If necessary, you can create more available space')
     console.log('by removing previous snapshots and saved copies:')
     console.log(`${Utils.getSnapshotCount(this.snapshot_dir)} snapshots are taking up ${Utils.getSnapshotSize(this.snapshot_dir)} of disk space.`)
-
   }
 
   /**
@@ -353,10 +353,8 @@ export default class Ovary {
 
     // Truncate logs, remove archived logs.
     let cmd =`find ${this.distro.pathLiveFs}/var/log -name "*gz" -print0 | xargs -0r rm -f` 
-    console.log(cmd)
     shx.exec(cmd)
     cmd =`find ${this.distro.pathLiveFs}/var/log/ -type f -exec truncate -s 0 {} \\;`
-    console.log(cmd)
     shx.exec(cmd)
 
 
@@ -1249,7 +1247,7 @@ timeout 0
     const user: string = Utils.getPrimaryUser()
 
     // Copiamo i link su /usr/share/applications
-    shx.cp(path.resolve(__dirname, '../../conf/grub.cfg.template'), `${this.work_dir}/iso/boot/grub/grub.cfg`)
+    shx.cp(path.resolve(__dirname, '../../conf/grub.cfg.template'), `${this.distro.pathIso}/boot/grub/grub.cfg`)
 
     shx.cp(path.resolve(__dirname, `../../assets/dw-agent-sh.desktop`), `/usr/share/applications/`)
     shx.cp(path.resolve(__dirname, `../../assets/assistenza-remota.png`), `/usr/share/icons/`)
@@ -1307,6 +1305,7 @@ timeout 0
     // create /boot and /efi for uefi.
     const uefiOption = '-eltorito-alt-boot -e boot/grub/efiboot.img -isohybrid-gpt-basdat -no-emul-boot'
     const tempDir = shx.exec('mktemp -d /tmp/work_temp.XXXX', { silent: true }).stdout.trim()
+    shx.ln('-s', '_tempDir', tempDir )
 
     // for initial grub.cfg
     shx.mkdir('-p', `${tempDir}/boot/grub`)
@@ -1348,9 +1347,7 @@ timeout 0
 
     shx.exec(`source /boot/grub/grub.cfg >> ${this.efi_work}/boot/grub/x86_64-efi/grub.cfg`, { silent: true })
 
-    // pushd "$tempdir"
     // make a tarred "memdisk" to embed in the grub image
-    // Ci potrebbero essere problemi di path 
     shx.exec(`tar -cvf ${tempDir}/memdisk ${tempDir}/boot`, { silent: true })
 
     // make the grub image
@@ -1358,7 +1355,7 @@ timeout 0
 
     // copy the grub image to efi/boot (to go later in the device's root)
     shx.cp(`${tempDir}/bootx64.efi`, `${this.efi_work}/efi/boot`)
-
+    shx.cp('-r', `${tempDir}/boot`,`${this.efi_work}/boot`)
     // Do the boot image "boot/grub/efiboot.img"
     shx.exec(`dd if=/dev/zero of=${this.efi_work}/boot/grub/efiboot.img bs=1K count=1440`, { silent: true })
     shx.exec(`/sbin/mkdosfs -F 12 ${this.efi_work}/boot/grub/efiboot.img`, { silent: true })

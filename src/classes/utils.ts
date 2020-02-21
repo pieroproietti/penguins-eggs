@@ -11,7 +11,7 @@ import fs = require('fs')
 import os = require('os')
 import ini = require('ini')
 import pjson = require('pjson')
-import inquires = require('inquirer')
+import inquirer = require('inquirer')
 
 /**
  * Utils: general porpourse utils
@@ -407,7 +407,7 @@ export default class Utils {
    *
    * @param msg
    */
-  static customConfirm(msg: string): Promise<any> {
+  static async customConfirm(msg = "Select yes to continue... "): Promise<any> {
     return new Promise(function (resolve) {
       const questions: Array<Record<string, any>> = [
         {
