@@ -300,6 +300,9 @@ export default class Ovary {
       await this.isolinuxCfg()
       await this.isoMenuCfg()
       await this.copyKernel()
+      if (this.make_efi) {
+        await this.makeEfi()
+      }
       if (this.bindedFs) {
         await this.bindFs() // bind FS
       } else {
@@ -309,9 +312,6 @@ export default class Ovary {
       await this.editBootMenu()
       await this.makeSquashFs()
       await this.cleanUp()
-      if (this.make_efi) {
-        await this.makeEfi()
-      }
       await this.makeIsoImage()
     }
   }
@@ -1249,24 +1249,19 @@ timeout 0
     // Copiamo i link su /usr/share/applications
     shx.cp(path.resolve(__dirname, '../../conf/grub.cfg.template'), `${this.distro.pathIso}/boot/grub/grub.cfg`)
 
-    shx.cp(path.resolve(__dirname, `../../assets/dw-agent-sh.desktop`), `/usr/share/applications/`)
-    shx.cp(path.resolve(__dirname, `../../assets/assistenza-remota.png`), `/usr/share/icons/`)
     shx.cp(path.resolve(__dirname, `../../assets/penguins-eggs.desktop`), `/usr/share/applications/`)
     shx.cp(path.resolve(__dirname, `../../assets/eggs.png`), `/usr/share/icons/`)
+    shx.cp(path.resolve(__dirname, `../../assets/dw-agent-sh.desktop`), `/usr/share/applications/`)
+    shx.cp(path.resolve(__dirname, `../../assets/assistenza-remota.png`), `/usr/share/icons/`)
 
     // creazione della home per user live
     shx.cp(`-r`, `/etc/skel/.`, `${this.distro.pathLiveFs}/home/${user}`)
     shx.exec(`chown -R live:live ${this.distro.pathLiveFs}/home/${user}`, { async: false })
     shx.mkdir(`-p`, `${this.distro.pathLiveFs}/home/${user}/Desktop`)
 
-    // Copiare i link sul desktop
-    shx.cp('/usr/share/applications/dw-agent.desktop', `${this.distro.pathLiveFs}/home/${user}/Desktop`)
+    // Copiare i link sul desktop per user live
     shx.cp('/usr/share/applications/penguins-eggs.desktop', `${this.distro.pathLiveFs}/home/${user}/Desktop`)
-
-    // creazione dei link per user live da /etc/penguins-eggs/
-    shx.exec(`cp /etc/penguins-eggs/${user}/Desktop/* ${this.distro.pathLiveFs}/home/${user}/Desktop`, { async: false })
-    shx.chmod(`+x`, `${this.distro.pathLiveFs}/home/${user}/Desktop/*.desktop`)
-    shx.exec(`chown ${user}:${user} ${this.distro.pathLiveFs}/home/${user}/Desktop/*`, { async: false })
+    shx.cp('/usr/share/applications/dw-agent.desktop', `${this.distro.pathLiveFs}/home/${user}/Desktop`)
   }
 
   /**
@@ -1305,7 +1300,8 @@ timeout 0
     // create /boot and /efi for uefi.
     const uefiOption = '-eltorito-alt-boot -e boot/grub/efiboot.img -isohybrid-gpt-basdat -no-emul-boot'
     const tempDir = shx.exec('mktemp -d /tmp/work_temp.XXXX', { silent: true }).stdout.trim()
-    shx.ln('-s', '_tempDir', tempDir )
+    shx.rm('tempDir')
+    shx.ln('-s', tempDir, 'tempDir' )
 
     // for initial grub.cfg
     shx.mkdir('-p', `${tempDir}/boot/grub`)
@@ -1317,11 +1313,17 @@ timeout 0
     text += 'source \$prefix/x86_64-efi/grub.cfg'
     Utils.write(grubCfg, text)
 
+    /**
+     * Andiamo a costruire efi_work
+     */
+
     if (!fs.existsSync(this.efi_work)) {
       shx.mkdir(`-p`, this.efi_work)
     }
 
-    // start with empty directories Clear dir boot and efi
+    /**
+     * start with empty directories Clear dir boot and efi
+     */
     const files = fs.readdirSync(this.efi_work);
     for (var i in files) {
       if (files[i] === 'boot') {
@@ -1333,6 +1335,8 @@ timeout 0
     }
     shx.mkdir(`-p`, `${this.efi_work}/boot/grub/x86_64-efi`)
     shx.mkdir(`-p`, `${this.efi_work}/efi/boot`)
+
+    shx.cp('-r', `${tempDir}/boot`,`${this.efi_work}/efi/boot`)
 
     // copy splash
     shx.cp(path.resolve(__dirname, '../../assets/penguins-eggs-syslinux.png'), `${this.efi_work}/boot/grub/spash.png`)
@@ -1355,7 +1359,7 @@ timeout 0
 
     // copy the grub image to efi/boot (to go later in the device's root)
     shx.cp(`${tempDir}/bootx64.efi`, `${this.efi_work}/efi/boot`)
-    shx.cp('-r', `${tempDir}/boot`,`${this.efi_work}/boot`)
+
     // Do the boot image "boot/grub/efiboot.img"
     shx.exec(`dd if=/dev/zero of=${this.efi_work}/boot/grub/efiboot.img bs=1K count=1440`, { silent: true })
     shx.exec(`/sbin/mkdosfs -F 12 ${this.efi_work}/boot/grub/efiboot.img`, { silent: true })
