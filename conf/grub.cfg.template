@@ -16,34 +16,33 @@ set menu_color_highlight=dark-gray/white
 set timeout=15
 
 
-menuentry "{{DISTRO_NAME}} (defaults) US English" {
+menuentry "DISTRO_NAME (defaults) US English" {
     set gfxpayload=keep
-    linux   /live/vmlinuz boot=live {{IFNAMES_OPT}} {{NETCONFIG_OPT}} {{USERNAME_OPT}}
+    linux   /live/vmlinuz boot=live IFNAMES_OPT NETCONFIG_OPT USERNAME_OPT
     initrd  /live/initrd.img
 }
 
 menuentry "Other language (Press e to edit)" {
     set gfxpayload=keep
-    linux   /live/vmlinuz boot=live {{IFNAMES_OPT}} {{NETCONFIG_OPT}} {{USERNAME_OPT}} locales=it_IT.UTF-8 keyboard-layouts=it 
+    linux   /live/vmlinuz boot=live IFNAMES_OPT NETCONFIG_OPT USERNAME_OPT
     initrd  /live/initrd.img
 }
 
 submenu 'Advanced options ...' {
 
-    menuentry "{{DISTRO_NAME}} (load to RAM)" {
+    menuentry "DISTRO_NAME (load to RAM)" {
 	set gfxpayload=keep
-	linux   /live/vmlinuz boot=live toram {{IFNAMES_OPT}} {{NETCONFIG_OPT}} {{USERNAME_OPT}}
+	linux   /live/vmlinuz boot=live toram IFNAMES_OPT NETCONFIG_OPT USERNAME_OPT
 	initrd  /live/initrd.img
     }
 
-    menuentry "{{DISTRO_NAME}} (failsafe)" {
+    menuentry "DISTRO_NAME (failsafe)" {
 	set gfxpayload=keep
-	linux   /live/vmlinuz boot=live nocomponents=xinit noapm noapic nolapic nodma nosmp forcepae nomodeset vga=normal {{IFNAMES_OPT}} {{NETCONFIG_OPT}} {{USERNAME_OPT}} 
+	linux   /live/vmlinuz boot=live nocomponents=xinit noapm noapic nolapic nodma nosmp forcepae nomodeset vga=normal IFNAMES_OPT NETCONFIG_OPT USERNAME_OPT
 	initrd  /live/initrd.img
     }
 
     menuentry "Memory test" {
 	kernel   /live/memtest
     }
-
 }
