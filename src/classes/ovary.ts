@@ -10,10 +10,6 @@
  * liveKernel, liveSquashFs
  * makeIso
  *  xorriso -as mkisofs -r -J -joliet-long -l -cache-inodes -isohybrid-mbr /usr/lib/ISOLINUX/isohdpfx.bin  -partition_offset 16 -volid "Penguin's eggs lm32-mate" -b isolinux/isolinux.bin -c isolinux/boot.cat -no-emul-boot -boot-load-size 4 -boot-info-table -o /home/eggs/lm32-mate_2019-04-17_1830-02.iso /home/eggs/lm32-mate/iso
- * Anna: annaciccone54@gmail.com tel. 339 7625020
- * Angelo: angelo.materazzo.1949 tel. 333 5256038
- * telefono: 339 5256038 / pin: 
- * account: materazzoa87  con password: angelo49
  */
 
 import fs = require('fs')
