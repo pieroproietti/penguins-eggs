@@ -1456,6 +1456,7 @@ timeout 200
       let cmd = `xorriso -as mkisofs -r -J -joliet-long -l -iso-level 3 -cache-inodes ${isoHybridOption} -partition_offset 16 -volid ${volid} -b isolinux/isolinux.bin -c isolinux/boot.cat -no-emul-boot -boot-load-size 4 -boot-info-table ${uefi_opt} -o ${isoName} ${this.distro.pathIso}`
       console.log(cmd)
       Utils.shxExec(cmd, { silent: false })
+
     }
   }
 }
