@@ -10,6 +10,10 @@
  * liveKernel, liveSquashFs
  * makeIso
  *  xorriso -as mkisofs -r -J -joliet-long -l -cache-inodes -isohybrid-mbr /usr/lib/ISOLINUX/isohdpfx.bin  -partition_offset 16 -volid "Penguin's eggs lm32-mate" -b isolinux/isolinux.bin -c isolinux/boot.cat -no-emul-boot -boot-load-size 4 -boot-info-table -o /home/eggs/lm32-mate_2019-04-17_1830-02.iso /home/eggs/lm32-mate/iso
+ * Anna: annaciccone54@gmail.com tel. 339 7625020
+ * Angelo: angelo.materazzo.1949 tel. 333 5256038
+ * telefono: 339 5256038 / pin: 
+ * account: materazzoa87  con password: angelo49
  */
 
 import fs = require('fs')
@@ -1406,13 +1410,16 @@ timeout 200
     // popD Torna alla directory corrente
     process.chdir(currentDir)
 
+    // Do the main grub.cfg (which gets loaded last):
+    shx.cp(path.resolve(__dirname, '../../conf/grub.cfg.template'), `${this.distro.pathIso}/boot/grub/grub.cfg`)
+
     // Copy efi files to iso
     shx.exec(`rsync -avx ${this.efi_work}/boot ${this.distro.pathIso}/`, { silent: true })
     shx.exec(`rsync -avx ${this.efi_work}/efi  ${this.distro.pathIso}/`, { silent: true })
 
-    // Do the main grub.cfg (which gets loaded last):
-    shx.cp(path.resolve(__dirname, '../../conf/grub.cfg.template'), `${this.distro.pathIso}/boot/grub/grub.cfg`)
 
+
+    // edita il template
     shx.sed('-i', 'DISTRO_NAME', this.distro.name, `${this.distro.pathIso}/boot/grub/grub.cfg`)
     shx.sed('-i', 'NETCONFIG_OPT', this.netconfig_opt, `${this.distro.pathIso}/boot/grub/grub.cfg`)
     shx.sed('-i', 'USERNAME_OPT', this.username_opt, `${this.distro.pathIso}/boot/grub/grub.cfg`)
