@@ -1400,8 +1400,8 @@ timeout 200
     shx.cp(`/usr/share/grub/unicode.pf2`, `boot/grub/font.pf2`)
 
     // doesn't need to be root-owned
-    shx.exec(`chown -R 1000:1000 $(pwd) 2>/dev/null`)
-    // shx.exec(`chown -R 1000:1000 $(pwd) `) // 2>/dev/null`)
+    // shx.exec(`chown -R 1000:1000 $(pwd) 2>/dev/null`)
+    shx.exec(`chown -R 1000:1000 $(pwd)`) // 2>/dev/null`)
 
     // Cleanup efi temps
     shx.exec(`umount img-mnt`, { silent: true })
@@ -1412,7 +1412,7 @@ timeout 200
 
     // Do the main grub.cfg (which gets loaded last):
     shx.cp(path.resolve(__dirname, '../../conf/grub.cfg.template'), `${this.distro.pathIso}/boot/grub/grub.cfg`)
-    // shx.cp(path.resolve(__dirname, '../../conf/loopback.cfg'), `${this.distro.pathIso}/boot/grub/`)
+    shx.cp(path.resolve(__dirname, '../../conf/loopback.cfg'), `${this.distro.pathIso}/boot/grub/`)
 
     // Copy efi files to iso
     shx.exec(`rsync -avx ${this.efi_work}/boot ${this.distro.pathIso}/`, { silent: true })
