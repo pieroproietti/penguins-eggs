@@ -311,6 +311,10 @@ export default class Ovary {
       await this.editBootMenu()
       await this.makeSquashFs()
       await this.cleanUp()
+      if (this.make_efi) {
+        await this.editEfi()
+      }
+
       await this.makeIsoImage()
     }
   }
@@ -1396,8 +1400,8 @@ timeout 200
     shx.cp(`/usr/share/grub/unicode.pf2`, `boot/grub/font.pf2`)
 
     // doesn't need to be root-owned
-    // 	chown -R 1000:1000 $(pwd) 2>/dev/null
-    shx.exec(`chown -R 1000:1000 $(pwd) `) // 2>/dev/null`)
+    shx.exec(`chown -R 1000:1000 $(pwd) 2>/dev/null`)
+    // shx.exec(`chown -R 1000:1000 $(pwd) `) // 2>/dev/null`)
 
     // Cleanup efi temps
     shx.exec(`umount img-mnt`, { silent: true })
@@ -1408,18 +1412,22 @@ timeout 200
 
     // Do the main grub.cfg (which gets loaded last):
     shx.cp(path.resolve(__dirname, '../../conf/grub.cfg.template'), `${this.distro.pathIso}/boot/grub/grub.cfg`)
+    // shx.cp(path.resolve(__dirname, '../../conf/loopback.cfg'), `${this.distro.pathIso}/boot/grub/`)
 
     // Copy efi files to iso
     shx.exec(`rsync -avx ${this.efi_work}/boot ${this.distro.pathIso}/`, { silent: true })
     shx.exec(`rsync -avx ${this.efi_work}/efi  ${this.distro.pathIso}/`, { silent: true })
+  }
 
-
-
-    // edita il template
-    shx.sed('-i', 'DISTRO_NAME', this.distro.name, `${this.distro.pathIso}/boot/grub/grub.cfg`)
-    shx.sed('-i', 'NETCONFIG_OPT', this.netconfig_opt, `${this.distro.pathIso}/boot/grub/grub.cfg`)
-    shx.sed('-i', 'USERNAME_OPT', this.username_opt, `${this.distro.pathIso}/boot/grub/grub.cfg`)
-    shx.sed('-i', 'IFNAMES_OPT', this.ifnames_opt, `${this.distro.pathIso}/boot/grub/grub.cfg`)
+  /**
+   * editEfi
+   * 
+   */
+  async editEfi(){
+    Utils.replaceStringInFile( '%custom-name%', this.distro.name, `${this.distro.pathIso}/boot/grub/grub.cfg`)
+    Utils.replaceStringInFile('%netconfig-opt%', this.netconfig_opt, `${this.distro.pathIso}/boot/grub/grub.cfg`)
+    Utils.replaceStringInFile('%username-opt%', this.username_opt, `${this.distro.pathIso}/boot/grub/grub.cfg`)
+    Utils.replaceStringInFile('%ifnames-opt%', this.ifnames_opt, `${this.distro.pathIso}/boot/grub/grub.cfg`)
   }
 
   /**

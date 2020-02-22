@@ -424,4 +424,28 @@ export default class Utils {
       })
     })
   }
+
+    /**
+   *
+   * @param old_text {string} sostituire
+   * @param new_text {string} sostituto
+   * @param file_path {string} path del file
+   * @returns {boolean} successfull
+   */
+  static replaceStringInFile(old_text: string, new_text: string, file_path: string): boolean {
+    // debLog('replaceStringInFile()')
+
+    old_text = old_text.trim()
+    new_text = new_text.trim()
+    file_path = file_path.trim()
+
+    let retVal = false
+
+    // Originale
+    // "sed -i 's/%1/%2/g' \"%3\"").arg(old_text).arg(new_text).arg(file_path)
+    if (Utils.shxExec(`sed -i 's/${old_text}/${new_text}/g' "${file_path}"`).code === 0) {
+      retVal = true
+    }
+    return retVal
+  }
 }
