@@ -293,7 +293,7 @@ export default class Ovary {
       console.log('------------------------------------------')
       console.log('Laying the system into the egg...')
       console.log('------------------------------------------')
-      await this.calamaresConfigure()
+      await this.calamaresConfigure() // Avviene tutto nel sistema genitore
       await this.isoCreateStructure()
       await this.isolinuxPrepare()
       await this.isoStdmenuCfg()
@@ -329,7 +329,7 @@ export default class Ovary {
               calamares-settings-debian`, { async: false })
     }
 
-    // Se calamares è installato lo configura
+    // Se calamares è installato allora lo configura
     if (Utils.packageIsInstalled('calamares')) {
       this.calamares = new Calamares(this.distro, this.iso)
       await this.calamares.configure()
