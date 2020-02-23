@@ -31,16 +31,16 @@ kill the eggs/free the nest
 
   async run() {
     Utils.titles()
-    
+
     if (Utils.isRoot() && Utils.prerequisitesInstalled()) {
       const ovary = new Ovary
       ovary.cleanUp()
       this.log(`${Utils.getFriendName()}: deleting old eggs ...`)
-      if (this.loadSettings()){
+      if (this.loadSettings()) {
         shx.exec(`rm ${this.work_dir} -rf`)
         shx.exec(`rm ${this.snapshot_dir} -rf`)
       }
-      
+
     }
   }
 
@@ -57,13 +57,13 @@ kill the eggs/free the nest
       foundSettings = false
     } else {
       foundSettings = true
-    }
-
-    this.snapshot_dir = settings.General.snapshot_dir.trim()
-    this.work_dir = settings.General.work_dir.trim()
-  
-    if (!this.snapshot_dir.endsWith('/')) {
-      this.snapshot_dir += '/'
+      if (settings.General.snapshot_dir !== undefined) {
+        this.snapshot_dir = settings.General.snapshot_dir.trim()
+        if (!this.snapshot_dir.endsWith('/')) {
+          this.snapshot_dir += '/'
+        }
+        this.work_dir = this.snapshot_dir + '.work/'
+      }
     }
     return foundSettings
   }
