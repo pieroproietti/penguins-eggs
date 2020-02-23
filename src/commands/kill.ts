@@ -11,7 +11,6 @@ import ini = require('ini')
 import shx = require('shelljs')
 import Utils from '../classes/utils'
 import Ovary from '../classes/ovary'
-import { utils } from 'mocha'
 
 
 export default class Kill extends Command {

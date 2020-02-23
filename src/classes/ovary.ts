@@ -141,7 +141,7 @@ export default class Ovary {
     this.iso = this.oses.info(this.distro)
 
     const loadSettings = await this.loadSettings()
-    
+
 
     if (this.loadSettings() && this.listFreeSpace()) {
       this.distro.pathHome = this.work_dir + this.distro.name
@@ -258,15 +258,15 @@ export default class Ovary {
    */
   async listFreeSpace(): Promise<void> {
     const path: string = this.snapshot_dir // convert to absolute path
-    if (!fs.existsSync(this.snapshot_dir)){
+    if (!fs.existsSync(this.snapshot_dir)) {
       fs.mkdirSync(this.snapshot_dir)
     }
     // Lo spazio usato da SquashFS non è stimabile da live errore buffer troppo piccolo
     if (!Utils.isLive()) {
       console.log(`Disk used space: ${Utils.getUsedSpace()}`)
     }
-    
-    const freeSpace = shx.exec(`df -h "${path}" | /usr/bin/awk 'NR==2 {print $4}'`, {silent: true}).stdout.trim()
+
+    const freeSpace = shx.exec(`df -h "${path}" | /usr/bin/awk 'NR==2 {print $4}'`, { silent: true }).stdout.trim()
     console.log(`Space available: ${freeSpace}`)
     console.log('')
     console.log('The free space should  be sufficient to hold the')
@@ -278,6 +278,7 @@ export default class Ovary {
     console.log('')
   }
 
+  
   /**
    *
    * @param basename
@@ -308,6 +309,7 @@ export default class Ovary {
       await this.copyKernel()
       if (this.make_efi) {
         await this.makeEfi()
+        await this.editEfi()
       }
       if (this.bindedFs) {
         await this.bindFs() // bind FS
@@ -318,10 +320,6 @@ export default class Ovary {
       await this.editBootMenu()
       await this.makeSquashFs()
       await this.cleanUp()
-      if (this.make_efi) {
-        await this.editEfi()
-      }
-
       await this.makeIsoImage()
     }
   }
@@ -346,6 +344,7 @@ export default class Ovary {
     }
   }
 
+
   /**
    * editLiveFs
    * - Truncate logs, remove archived log
@@ -362,11 +361,10 @@ export default class Ovary {
     console.log('==========================================')
 
     // Truncate logs, remove archived logs.
-    let cmd =`find ${this.distro.pathLiveFs}/var/log -name "*gz" -print0 | xargs -0r rm -f` 
+    let cmd = `find ${this.distro.pathLiveFs}/var/log -name "*gz" -print0 | xargs -0r rm -f`
     shx.exec(cmd)
-    cmd =`find ${this.distro.pathLiveFs}/var/log/ -type f -exec truncate -s 0 {} \\;`
+    cmd = `find ${this.distro.pathLiveFs}/var/log/ -type f -exec truncate -s 0 {} \\;`
     shx.exec(cmd)
-
 
     // Allow all fixed drives to be mounted with pmount
     if (this.pmount_fixed) {
@@ -1311,7 +1309,7 @@ timeout 200
     console.log('==========================================')
     console.log('ovary: makeEfi')
     console.log('==========================================')
-    
+
     // create /boot and /efi for uefi.
     const uefiOption = '-eltorito-alt-boot -e boot/grub/efiboot.img -isohybrid-gpt-basdat -no-emul-boot'
 
@@ -1319,7 +1317,7 @@ timeout 200
 
     const tempDir = shx.exec('mktemp -d /tmp/work_temp.XXXX', { silent: true }).stdout.trim()
     shx.rm('tempDir')
-    shx.ln('-s', tempDir, 'tempDir' )
+    shx.ln('-s', tempDir, 'tempDir')
 
     // for initial grub.cfg
     shx.mkdir('-p', `${tempDir}/boot/grub`)
@@ -1361,7 +1359,7 @@ timeout 200
     shx.mkdir(`-p`, `./boot/grub/x86_64-efi`)
     shx.mkdir(`-p`, `./efi/boot`)
 
-        // copy splash
+    // copy splash
     shx.cp(path.resolve(__dirname, '../../assets/penguins-eggs-syslinux.png'), `${this.efi_work}/boot/grub/spash.png`)
 
     // second grub.cfg file
@@ -1388,7 +1386,7 @@ timeout 200
     // copy the grub image to efi/boot (to go later in the device's root)
     shx.cp(`${tempDir}/bootx64.efi`, `efi/boot`)
 
-    
+
     // Do the boot image "boot/grub/efiboot.img"
     shx.exec(`dd if=/dev/zero of=boot/grub/efiboot.img bs=1K count=1440`, { silent: true })
     shx.exec(`/sbin/mkdosfs -F 12 boot/grub/efiboot.img`, { silent: true })
@@ -1429,9 +1427,9 @@ timeout 200
   /**
    * editEfi
    */
-  async editEfi(){
-    Utils.replaceStringInFile( '%custom-name%', this.distro.name, `${this.distro.pathIso}/boot/grub/grub.cfg`)
-    Utils.replaceStringInFile( '%kernel%', Utils.kernerlVersion(), `${this.distro.pathIso}/boot/grub/grub.cfg`)
+  async editEfi() {
+    Utils.replaceStringInFile('%custom-name%', this.distro.name, `${this.distro.pathIso}/boot/grub/grub.cfg`)
+    Utils.replaceStringInFile('%kernel%', Utils.kernerlVersion(), `${this.distro.pathIso}/boot/grub/grub.cfg`)
     Utils.replaceStringInFile('%netconfig-opt%', this.netconfig_opt, `${this.distro.pathIso}/boot/grub/grub.cfg`)
     Utils.replaceStringInFile('%username-opt%', this.username_opt, `${this.distro.pathIso}/boot/grub/grub.cfg`)
     Utils.replaceStringInFile('%ifnames-opt%', this.ifnames_opt, `${this.distro.pathIso}/boot/grub/grub.cfg`)
