@@ -1428,10 +1428,10 @@ timeout 200
 
   /**
    * editEfi
-   * 
    */
   async editEfi(){
     Utils.replaceStringInFile( '%custom-name%', this.distro.name, `${this.distro.pathIso}/boot/grub/grub.cfg`)
+    Utils.replaceStringInFile( '%kernel%', Utils.kernerlVersion(), `${this.distro.pathIso}/boot/grub/grub.cfg`)
     Utils.replaceStringInFile('%netconfig-opt%', this.netconfig_opt, `${this.distro.pathIso}/boot/grub/grub.cfg`)
     Utils.replaceStringInFile('%username-opt%', this.username_opt, `${this.distro.pathIso}/boot/grub/grub.cfg`)
     Utils.replaceStringInFile('%ifnames-opt%', this.ifnames_opt, `${this.distro.pathIso}/boot/grub/grub.cfg`)

@@ -35,7 +35,7 @@ kill the eggs/free the nest
     if (Utils.isRoot() && Utils.prerequisitesInstalled()) {
       const ovary = new Ovary
       ovary.cleanUp()
-      this.log(`${Utils.getFriendName()}: deleting old eggs...`)
+      this.log(`${Utils.getFriendName()}: deleting old eggs ...`)
       if (this.loadSettings()){
         shx.exec(`rm ${this.work_dir} -rf`)
         shx.exec(`rm ${this.snapshot_dir} -rf`)

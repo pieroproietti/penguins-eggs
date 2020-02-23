@@ -1,4 +1,4 @@
-if loadfont $prefix/font.pf2 ; then
+#if loadfont $prefix/font.pf2 ; then
   set gfxmode=800x600
   set gfxpayload=keep
   insmod efi_gop
@@ -8,7 +8,7 @@ if loadfont $prefix/font.pf2 ; then
   insmod gfxterm
   insmod png
   terminal_output gfxterm
-fi
+#fi
 
 
 if background_image /isolinux/splash.png; then
@@ -34,8 +34,8 @@ set loopback="findiso=${iso_path}"
 export loopback
 fi
 
-menuentry "%custom-name% (kernel 4.19.0-8-amd64)" {
-  linux  /live/vmlinuz boot=live components splash quiet "${loopback}" %custom-name% %netconfig-opt% %username-opt%
+menuentry "%custom-name% (kernel %kernel%) Italiano" {
+  linux  /live/vmlinuz boot=live components locales=it_IT.UTF-8 timezone=Europe/Rome splash quiet "${loopback}" %custom-name% %netconfig-opt% %username-opt%
   initrd  /live/initrd.img
 }
 submenu "%custom-name% with Localisation Support" {
