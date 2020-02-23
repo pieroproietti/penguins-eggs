@@ -31,6 +31,8 @@ penguin's eggs installation
   async run() {
     const {flags} = this.parse(Install)
 
+    Utils.titles()
+
     let cmd = 'cli-installer'
     if (Utils.isRoot()) {
 

@@ -20,6 +20,8 @@ install the prerequisites packages to run penguin's eggs
   ]
 
   async run() {
+    Utils.titles()
+    
     this.log('tryind to update the system')
     if (Utils.isRoot()) {
       /**

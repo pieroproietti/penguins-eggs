@@ -18,6 +18,7 @@ export default class Sterilize extends Command {
   async run() {
     const { flags } = this.parse(Sterilize)
 
+    Utils.titles()
     if (Utils.isRoot() && Utils.prerequisitesInstalled()) {
       this.log('sterilize the penguin...')
       shx.exec('apt-get --yes --purge remove  \
