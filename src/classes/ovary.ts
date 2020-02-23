@@ -278,7 +278,7 @@ export default class Ovary {
     console.log('')
   }
 
-  
+
   /**
    *
    * @param basename
@@ -1258,7 +1258,8 @@ timeout 200
 
     shx.cp(path.resolve(__dirname, `../../assets/penguins-eggs.desktop`), `/usr/share/applications/`)
     shx.cp(path.resolve(__dirname, `../../assets/eggs.png`), `/usr/share/icons/`)
-    shx.cp(path.resolve(__dirname, `../../assets/dw-agent-sh.desktop`), `/usr/share/applications/`)
+
+    shx.cp(path.resolve(__dirname, `../../assets/dwagent-sh.desktop`), `/usr/share/applications/`)
     shx.cp(path.resolve(__dirname, `../../assets/assistenza-remota.png`), `/usr/share/icons/`)
 
     // creazione della home per user live
@@ -1268,7 +1269,10 @@ timeout 200
 
     // Copiare i link sul desktop per user live
     shx.cp('/usr/share/applications/penguins-eggs.desktop', `${this.distro.pathLiveFs}/home/${user}/Desktop`)
-    shx.cp('/usr/share/applications/dw-agent.desktop', `${this.distro.pathLiveFs}/home/${user}/Desktop`)
+    shx.cp('/usr/share/applications/dwagent-sh.desktop', `${this.distro.pathLiveFs}/home/${user}/Desktop`)
+    if (Utils.packageIsInstalled('calamares')){
+      shx.cp('/usr/share/applications/install-debian.desktop', `${this.distro.pathLiveFs}/home/${user}/Desktop`)
+    }
   }
 
   /**
@@ -1360,7 +1364,7 @@ timeout 200
     shx.mkdir(`-p`, `./efi/boot`)
 
     // copy splash
-    shx.cp(path.resolve(__dirname, '../../assets/penguins-eggs-syslinux.png'), `${this.efi_work}/boot/grub/spash.png`)
+    shx.cp(path.resolve(__dirname, '../../assets/penguins-eggs-splash.png'), `${this.efi_work}/boot/grub/spash.png`)
 
     // second grub.cfg file
     let cmd = `for i in $(ls /usr/lib/grub/x86_64-efi|grep part_|grep \.mod|sed 's/.mod//'); do echo "insmod $i" >> boot/grub/x86_64-efi/grub.cfg; done`
@@ -1398,7 +1402,7 @@ timeout 200
     // ###############################
 
     // copy modules and font
-    shx.cp(`/usr/lib/grub/x86_64-efi/*`, `boot/grub/x86_64-efi/`)
+    shx.cp(`-r`,`/usr/lib/grub/x86_64-efi/*`, `boot/grub/x86_64-efi/`)
 
     // if this doesn't work try another font from the same place (grub's default, unicode.pf2, is much larger)
     // Either of these will work, and they look the same to me. Unicode seems to work with qemu. -fsr
@@ -1406,7 +1410,7 @@ timeout 200
 
     // doesn't need to be root-owned
     // shx.exec(`chown -R 1000:1000 $(pwd) 2>/dev/null`)
-    shx.exec(`chown -R 1000:1000 $(pwd)`) // 2>/dev/null`)
+    shx.exec(`chown -R 1000:1000 2>/dev/null`)
 
     // Cleanup efi temps
     shx.exec(`umount img-mnt`, { silent: true })
