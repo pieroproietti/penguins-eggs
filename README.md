@@ -101,6 +101,8 @@ USAGE
 # Commands
 <!-- commands -->
 * [`eggs calamares`](#eggs-calamares)
+* [`eggs dev:efi [FILE]`](#eggs-devefi-file)
+* [`eggs dev:iso [FILE]`](#eggs-deviso-file)
 * [`eggs efi`](#eggs-efi)
 * [`eggs help [COMMAND]`](#eggs-help-command)
 * [`eggs info`](#eggs-info)
@@ -125,9 +127,41 @@ OPTIONS
 
 _See code: [src/commands/calamares.ts](https://github.com/pieroproietti/penguins-eggs/blob/v7.2.0/src/commands/calamares.ts)_
 
+## `eggs dev:efi [FILE]`
+
+describe the command here
+
+```
+USAGE
+  $ eggs dev:efi [FILE]
+
+OPTIONS
+  -f, --force
+  -h, --help       show CLI help
+  -n, --name=name  name to print
+```
+
+_See code: [src/commands/dev/efi.ts](https://github.com/pieroproietti/penguins-eggs/blob/v7.2.0/src/commands/dev/efi.ts)_
+
+## `eggs dev:iso [FILE]`
+
+describe the command here
+
+```
+USAGE
+  $ eggs dev:iso [FILE]
+
+OPTIONS
+  -f, --force
+  -h, --help       show CLI help
+  -n, --name=name  name to print
+```
+
+_See code: [src/commands/dev/iso.ts](https://github.com/pieroproietti/penguins-eggs/blob/v7.2.0/src/commands/dev/iso.ts)_
+
 ## `eggs efi`
 
-test efis
+efi
 
 ```
 USAGE

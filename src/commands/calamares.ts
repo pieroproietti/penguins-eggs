@@ -19,6 +19,8 @@ export default class Calamares extends Command {
   async run() {
     const { args, flags } = this.parse(Calamares)
 
+    Utils.titles()
+
     if (Utils.isRoot() && Utils.prerequisitesInstalled()) {
       console.log(`>>> eggs: removing calamares...`)
       shx.exec('rm /etc/calamares -rf')

@@ -142,10 +142,6 @@ export default class Ovary {
 
     const loadSettings = await this.loadSettings()
     
-    // Lo spazio usato da SquashFS non è stimabile da live errore buffer troppo piccolo
-    if (!Utils.isLive()) {
-      console.log(`Space: ${Utils.getUsedSpace()}`)
-    }
 
     if (this.loadSettings() && this.listFreeSpace()) {
       this.distro.pathHome = this.work_dir + this.distro.name
@@ -262,13 +258,24 @@ export default class Ovary {
    */
   async listFreeSpace(): Promise<void> {
     const path: string = this.snapshot_dir // convert to absolute path
-
-    Utils.shxExec(`df -h "${path}" | /usr/bin/awk 'NR==2 {print $4}'`)
-    console.log('The free space should be sufficient to hold the compressed data from / and /home')
+    if (!fs.existsSync(this.snapshot_dir)){
+      fs.mkdirSync(this.snapshot_dir)
+    }
+    // Lo spazio usato da SquashFS non è stimabile da live errore buffer troppo piccolo
+    if (!Utils.isLive()) {
+      console.log(`Disk used space: ${Utils.getUsedSpace()}`)
+    }
+    
+    const freeSpace = shx.exec(`df -h "${path}" | /usr/bin/awk 'NR==2 {print $4}'`, {silent: true}).stdout.trim()
+    console.log(`Space available: ${freeSpace}`)
+    console.log('')
+    console.log('The free space should  be sufficient to hold the')
+    console.log('compressed data from / and /home')
     console.log('')
     console.log('If necessary, you can create more available space')
-    console.log('by removing previous snapshots and saved copies:')
-    console.log(`${Utils.getSnapshotCount(this.snapshot_dir)} snapshots are taking up ${Utils.getSnapshotSize(this.snapshot_dir)} of disk space.`)
+    console.log('by removing previous  snapshots and saved copies:')
+    console.log(`- ${Utils.getSnapshotCount(this.snapshot_dir)} snapshots are taking up ${Utils.getSnapshotSize(this.snapshot_dir)} of disk space.`)
+    console.log('')
   }
 
   /**

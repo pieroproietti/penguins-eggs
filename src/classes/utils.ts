@@ -12,6 +12,9 @@ import os = require('os')
 import ini = require('ini')
 import pjson = require('pjson')
 import inquirer = require('inquirer')
+import chalk = require('chalk')
+import clear = require('clear')
+import figlet = require('figlet')
 
 /**
  * Utils: general porpourse utils
@@ -95,7 +98,7 @@ export default class Utils {
   static getSnapshotSize(snapshot_dir = '/'): string {
     let size = ''
     if (fs.existsSync(snapshot_dir)) {
-      size = Utils.shxExec(`/usr/bin/find ${snapshot_dir} -maxdepth 1 -type f -name '*.iso' -exec du -shc {} + | tail -1 | awk '{print $1}'`).stdout.trim()
+      size = Utils.shxExec(`/usr/bin/find ${snapshot_dir} -maxdepth 1 -type f -name '*.iso' -exec du -shc {} + | tail -1 | awk '{print $1}'`, {silent: true}).stdout.trim()
     }
     if (size === '') {
       size = '0'
@@ -146,11 +149,11 @@ export default class Utils {
     if (this.isLive()) {
       out += `${this.getLiveRootSpace()} GB -- estimated`
     } else {
-      out += shx.exec('df -h / | /usr/bin/awk \'NR==2 {print $3}\'').stdout
+      out += shx.exec('df -h / | /usr/bin/awk \'NR==2 {print $3}\'', {silent: true}).stdout
     }
 
     if (shx.exec('mountpoint -q /home').code) {
-      out += 'Used space on /home: ' + shx.exec('df -h /home | /usr/bin/awk \'NR==2 {print $3}\'').stdout
+      out += '       on /home: ' + shx.exec('df -h /home | /usr/bin/awk \'NR==2 {print $3}\'', {silent: true}).stdout.trim()
     }
     return out
   }
@@ -232,12 +235,12 @@ export default class Utils {
      */
   static isLive(type = 'debian-live'): boolean {
     let retVal = false
-    let result = 1
+    let result: number
     let cmd = 'mountpoint -q /lib/live/mount/'
     if (type === 'mx') {
       cmd = 'mountpoint -q /live/aufs'
     }
-    result = shx.exec(cmd).code
+    result = shx.exec(cmd, {silent: true}).code
     retVal = result === 0
     return retVal
   }
@@ -296,7 +299,7 @@ export default class Utils {
      */
   static packageIsInstalled(debPackage: string): boolean {
     const cmd = `/usr/bin/dpkg -s ${debPackage} | grep Status`
-    const stdout = Utils.shxExec(cmd).stdout
+    const stdout = Utils.shxExec(cmd, {silent: true}).stdout
     let isInstalled = false
 
     if (stdout.trim() === 'Status: install ok installed') {
@@ -335,7 +338,6 @@ export default class Utils {
   * @param silent
   */
   static shxExec(cmd: string, silent: object = { silent: true }): any {
-    // this.showCmd(cmd)
     return shx.exec(cmd, silent)
   }
 
@@ -447,5 +449,11 @@ export default class Utils {
       retVal = true
     }
     return retVal
+  }
+
+  static titles(): void{
+    clear()
+    console.log(chalk.yellow(figlet.textSync('eggs')))
+    console.log('                        Penguin\'s eggs are gettings alive!')
   }
 }
