@@ -34,8 +34,9 @@ set loopback="findiso=${iso_path}"
 export loopback
 fi
 
+
 menuentry "%custom-name% (kernel %kernel%) Italiano" {
-  linux  /live/vmlinuz boot=live components locales=it_IT.UTF-8 timezone=Europe/Rome splash quiet "${loopback}" %custom-name% %netconfig-opt% %username-opt%
+  linux  /live/vmlinuz boot=live components locales=it_IT.UTF-8 splash quiet "${loopback}" %custom-name% %netconfig-opt% %username-opt% %timezone-opt%
   initrd  /live/initrd.img
 }
 submenu "%custom-name% with Localisation Support" {

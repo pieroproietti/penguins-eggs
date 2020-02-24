@@ -81,6 +81,8 @@ export default class Ovary {
 
   ifnames_opt = ''
 
+  timezone_opt = ''
+
   initrd_image = '' as string
 
   make_efi = false
@@ -216,6 +218,9 @@ export default class Ovary {
       }
     }
     this.username_opt = `username=${this.user_live}`
+
+    const timezone = shx.exec('cat /etc/timezone', {silent: true}).stdout
+    this.timezone_opt = `timezone=${timezone}`
     return foundSettings
   }
 
@@ -309,7 +314,6 @@ export default class Ovary {
       await this.copyKernel()
       if (this.make_efi) {
         await this.makeEfi()
-        await this.editEfi()
       }
       if (this.bindedFs) {
         await this.bindFs() // bind FS
@@ -1320,8 +1324,8 @@ timeout 200
 
 
     const tempDir = shx.exec('mktemp -d /tmp/work_temp.XXXX', { silent: true }).stdout.trim()
-    shx.rm('tempDir')
-    shx.ln('-s', tempDir, 'tempDir')
+    // shx.rm('tempDir')
+    // shx.ln('-s', tempDir, 'tempDir')
 
     // for initial grub.cfg
     shx.mkdir('-p', `${tempDir}/boot/grub`)
@@ -1332,7 +1336,6 @@ timeout 200
     text += 'set prefix=(\$root)/boot/grub\n'
     text += 'source \$prefix/x86_64-efi/grub.cfg\n'
     Utils.write(grubCfg, text)
-
 
     // #################################
 
@@ -1419,25 +1422,23 @@ timeout 200
     // popD Torna alla directory corrente
     process.chdir(currentDir)
 
+    // Copy efi files to iso
+    shx.exec(`rsync -avx ${this.efi_work}/boot ${this.distro.pathIso}/`, { silent: true })
+    shx.exec(`rsync -avx ${this.efi_work}/efi  ${this.distro.pathIso}/`, { silent: true })
+
     // Do the main grub.cfg (which gets loaded last):
     shx.cp(path.resolve(__dirname, '../../conf/grub.cfg.template'), `${this.distro.pathIso}/boot/grub/grub.cfg`)
     shx.cp(path.resolve(__dirname, '../../conf/loopback.cfg'), `${this.distro.pathIso}/boot/grub/`)
 
-    // Copy efi files to iso
-    shx.exec(`rsync -avx ${this.efi_work}/boot ${this.distro.pathIso}/`, { silent: true })
-    shx.exec(`rsync -avx ${this.efi_work}/efi  ${this.distro.pathIso}/`, { silent: true })
-  }
-
-  /**
-   * editEfi
-   */
-  async editEfi() {
+    console.log(this.timezone_opt)
     Utils.replaceStringInFile('%custom-name%', this.distro.name, `${this.distro.pathIso}/boot/grub/grub.cfg`)
     Utils.replaceStringInFile('%kernel%', Utils.kernerlVersion(), `${this.distro.pathIso}/boot/grub/grub.cfg`)
     Utils.replaceStringInFile('%netconfig-opt%', this.netconfig_opt, `${this.distro.pathIso}/boot/grub/grub.cfg`)
     Utils.replaceStringInFile('%username-opt%', this.username_opt, `${this.distro.pathIso}/boot/grub/grub.cfg`)
     Utils.replaceStringInFile('%ifnames-opt%', this.ifnames_opt, `${this.distro.pathIso}/boot/grub/grub.cfg`)
+    Utils.replaceStringInFile('%timezone-opt%', this.timezone_opt, `${this.distro.pathIso}/boot/grub/grub.cfg`)
   }
+
 
   /**
    * makeIsoImage
@@ -1469,7 +1470,6 @@ timeout 200
       let cmd = `xorriso -as mkisofs -r -J -joliet-long -l -iso-level 3 -cache-inodes ${isoHybridOption} -partition_offset 16 -volid ${volid} -b isolinux/isolinux.bin -c isolinux/boot.cat -no-emul-boot -boot-load-size 4 -boot-info-table ${uefi_opt} -o ${isoName} ${this.distro.pathIso}`
       console.log(cmd)
       Utils.shxExec(cmd, { silent: false })
-
     }
   }
 }
