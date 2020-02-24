@@ -880,6 +880,7 @@ timeout 200
     shx.cp('/usr/share/applications/dwagent-sh.desktop', `${this.distro.pathLiveFs}/home/${user}/Desktop`)
     if (Utils.packageIsInstalled('calamares')) {
       shx.cp('/usr/share/applications/install-debian.desktop', `${this.distro.pathLiveFs}/home/${user}/Desktop`)
+      shx.exec(`chown 1000:1000 ${this.distro.pathLiveFs}/home/${user}/Desktop/install-debian.desktop`)
     }
   }
 
