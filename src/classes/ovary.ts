@@ -219,7 +219,7 @@ export default class Ovary {
     }
     this.username_opt = `username=${this.user_live}`
 
-    const timezone = shx.exec('cat /etc/timezone', {silent: true}).stdout
+    const timezone = shx.exec('cat /etc/timezone', { silent: true }).stdout.trim()
     this.timezone_opt = `timezone=${timezone}`
     return foundSettings
   }
@@ -324,6 +324,9 @@ export default class Ovary {
       await this.editBootMenu()
       await this.makeSquashFs()
       await this.cleanUp()
+      if (this.make_efi) {
+        await this.editEfi()
+      }
       await this.makeIsoImage()
     }
   }
@@ -678,7 +681,7 @@ timeout 200
           SAY "Booting Tibetan (bo)..."
           linux /live/${kernel_name}
           ${this.iso.append}  locales=bo_IN ${this.iso.aqs}
-        
+    
         LABEL C (C)
           SAY "Booting C (C)..."
           linux /live/${kernel_name}
@@ -1227,7 +1230,7 @@ timeout 200
 
     let bindBoot = ''
     let bindBootToo = ''
-    if (shx.exec('mountpoint /boot').code) {
+    if (shx.exec('mountpoint /boot', { silent: true }).code) {
       bindBoot = 'bind=/boot'
       bindBootToo = ',/boot'
     }
@@ -1274,7 +1277,7 @@ timeout 200
     // Copiare i link sul desktop per user live
     shx.cp('/usr/share/applications/penguins-eggs.desktop', `${this.distro.pathLiveFs}/home/${user}/Desktop`)
     shx.cp('/usr/share/applications/dwagent-sh.desktop', `${this.distro.pathLiveFs}/home/${user}/Desktop`)
-    if (Utils.packageIsInstalled('calamares')){
+    if (Utils.packageIsInstalled('calamares')) {
       shx.cp('/usr/share/applications/install-debian.desktop', `${this.distro.pathLiveFs}/home/${user}/Desktop`)
     }
   }
@@ -1405,7 +1408,7 @@ timeout 200
     // ###############################
 
     // copy modules and font
-    shx.cp(`-r`,`/usr/lib/grub/x86_64-efi/*`, `boot/grub/x86_64-efi/`)
+    shx.cp(`-r`, `/usr/lib/grub/x86_64-efi/*`, `boot/grub/x86_64-efi/`)
 
     // if this doesn't work try another font from the same place (grub's default, unicode.pf2, is much larger)
     // Either of these will work, and they look the same to me. Unicode seems to work with qemu. -fsr
@@ -1431,12 +1434,18 @@ timeout 200
     shx.cp(path.resolve(__dirname, '../../conf/loopback.cfg'), `${this.distro.pathIso}/boot/grub/`)
 
     console.log(this.timezone_opt)
-    Utils.replaceStringInFile('%custom-name%', this.distro.name, `${this.distro.pathIso}/boot/grub/grub.cfg`)
-    Utils.replaceStringInFile('%kernel%', Utils.kernerlVersion(), `${this.distro.pathIso}/boot/grub/grub.cfg`)
-    Utils.replaceStringInFile('%netconfig-opt%', this.netconfig_opt, `${this.distro.pathIso}/boot/grub/grub.cfg`)
-    Utils.replaceStringInFile('%username-opt%', this.username_opt, `${this.distro.pathIso}/boot/grub/grub.cfg`)
-    Utils.replaceStringInFile('%ifnames-opt%', this.ifnames_opt, `${this.distro.pathIso}/boot/grub/grub.cfg`)
-    Utils.replaceStringInFile('%timezone-opt%', this.timezone_opt, `${this.distro.pathIso}/boot/grub/grub.cfg`)
+  }
+
+  /**
+   * editEfi()
+   */
+  async editEfi() {
+    shx.sed('-i', '%custom-name%', this.distro.name, `${this.distro.pathIso}/boot/grub/grub.cfg`)
+    shx.sed('-i', '%kernel%', Utils.kernerlVersion(), `${this.distro.pathIso}/boot/grub/grub.cfg`)
+    shx.sed('-i', '%netconfig-opt%', this.netconfig_opt, `${this.distro.pathIso}/boot/grub/grub.cfg`)
+    shx.sed('-i', '%username-opt%', this.username_opt, `${this.distro.pathIso}/boot/grub/grub.cfg`)
+    shx.sed('-i', '%ifnames-opt%', this.ifnames_opt, `${this.distro.pathIso}/boot/grub/grub.cfg`)
+    shx.sed('-i', '%timezone-opt%', this.timezone_opt, `${this.distro.pathIso}/boot/grub/grub.cfg`)
   }
 
 
