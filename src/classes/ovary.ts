@@ -872,7 +872,7 @@ timeout 200
 
     // creazione della home per user live
     shx.cp(`-r`, `/etc/skel/.`, `${this.distro.pathLiveFs}/home/${user}`)
-    shx.exec(`chown -R live:live ${this.distro.pathLiveFs}/home/${user}`, { async: false })
+    shx.exec(`chown -R 1000:1000 ${this.distro.pathLiveFs}/home/${user}`, { async: false })
     shx.mkdir(`-p`, `${this.distro.pathLiveFs}/home/${user}/Desktop`)
 
     // Copiare i link sul desktop per user live
@@ -1016,9 +1016,9 @@ timeout 200
     // Either of these will work, and they look the same to me. Unicode seems to work with qemu. -fsr
     fs.copyFileSync(`/usr/share/grub/unicode.pf2`, `boot/grub/font.pf2`)
 
-    // doesn't need to be root-owned
+    // doesn't need to be root-owned ${pwd} = current Directory
     // shx.exec(`chown -R 1000:1000 $(pwd) 2>/dev/null`)
-    shx.exec(`chown -R 1000:1000 2>/dev/null`)
+    shx.exec(`chown -R 1000:1000 $(pwd) 2>/dev/null`)
 
     // Cleanup efi temps
     shx.exec(`umount img-mnt`, { silent: true })
