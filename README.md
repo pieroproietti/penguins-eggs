@@ -1,5 +1,6 @@
 [![Debian packages and isos](https://img.shields.io/badge/site-sourceforge.net-orange)](https://sourceforge.net/projects/penguins-eggs/)
-[![Gitpod Ready-to-Code](https://img.shields.io/badge/Gitpod-Ready--to--Code-blue?logo=gitpod)](https://gitpod.io/#https://github.com/pieroproietti/penguins-eggs) 
+[![Documentation](https://img.shields.io/badge/typedoc-documentation-orange)](https://penguins-eggs.sourceforge.io/index.html)
+[![book](https://img.shields.io/badge/book-penguin's%20eggs-orange)](https://penguin-s-eggs.gitbook.io/project/)
 
 penguins-eggs
 =============
@@ -9,8 +10,7 @@ Penguin&#39;s eggs are generated and new birds are ready to fly...
 [![Repository](https://img.shields.io/badge/repository-github.com-brightgreen)](https://github.com/pieroproietti/penguins-eggs)
 [![Version](https://img.shields.io/npm/v/penguins-eggs.svg)](https://npmjs.org/package/penguins-eggs)
 [![Downloads/week](https://img.shields.io/npm/dw/penguins-eggs.svg)](https://npmjs.org/package/penguins-eggs)
-[![Documentation](https://img.shields.io/badge/typedoc-documentation-brightgreen)](https://penguins-eggs.sourceforge.io/index.html)
-[![book](https://img.shields.io/badge/book-penguin's%20eggs-blue)](https://penguin-s-eggs.gitbook.io/project/)
+[![Gitpod Ready-to-Code](https://img.shields.io/badge/Gitpod-Ready--to--Code-blue?logo=gitpod)](https://gitpod.io/#https://github.com/pieroproietti/penguins-eggs) 
 [![License](https://img.shields.io/npm/l/penguins-eggs.svg)](https://github.com/pieroproietti/penguins-eggs/blob/master/package.json)
 
 # Index
