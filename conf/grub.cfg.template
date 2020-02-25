@@ -22,7 +22,7 @@ else
   set menu_color_highlight=white/blue
 fi
 
-background_image /boot/grub/splash.png
+background_image /isolinux/splash.png
 set color_normal=light-gray/black
 set color_highlight=white/black
 

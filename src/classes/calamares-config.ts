@@ -8,6 +8,7 @@
 
 import yaml = require('js-yaml')
 import fs = require('fs')
+import path = require('path')
 import shx = require('shelljs')
 import {IDistro, IOses} from '../interfaces'
 import Utils from './utils'
@@ -79,14 +80,14 @@ class Calamares {
 
     if (versionLike === 'buster') {
       // rimosso packages (rimozione pacchetti, dopo bootloader)
-      shx.cp(`-r`,`cp ${__dirname}/../../templates/distros/buster/*`, `/etc/`)
+      shx.cp(`-r`,path.resolve(__dirname, `../../templates/distros/buster/*`), `/etc/`)
       settings = {
         'modules-search': ['local', '/usr/lib/calamares/modules'],
         sequence: [
           {show: ['welcome', 'locale', 'keyboard', 'partition', 'users', 'summary']},
           //  riferimento {exec: ['partition', 'mount', 'unpackfs', 'SOURCES-MEDIA', 'machineid', 'fstab', 'locale', 'keyboard', 'localecfg', 'users', 'networkcfg', 'hwclock', 'SERVICES-SYSTEMD', 'BOOTLOADER-CONFIG', 'grubcfg', 'bootloader', 'PACKAGES', 'luksbootkeyfile', 'plymouthcfg', 'initramfscfg', 'initramfs', 'SOURCE-MEDIA-UNMOUNT', 'SOURCE-FINAL', 'removeuser', 'umount']},
           //  predecente {exec: ['partition', 'mount', 'unpackfs', 'machineid', 'fstab', 'locale', 'keyboard', 'localecfg', 'users', 'displaymanager', 'networkcfg', 'hwclock', 'grubcfg', 'bootloader', 'luksbootkeyfile', 'plymouthcfg', 'initramfscfg', 'initramfs', 'removeuser', 'umount']},
-          {exec: ['partition', 'mount', 'unpackfs', 'machineid', 'fstab', 'locale', 'keyboard', 'localecfg', 'users', 'networkcfg', 'hwclock', 'grubcfg', 'bootloader', 'packages', 'luksbootkeyfile', 'plymouthcfg', 'initramfscfg', 'initramfs', 'removeuser', 'umount']},
+          {exec: ['partition', 'mount', 'unpackfs', 'sources-media', 'machineid', 'fstab', 'locale', 'keyboard', 'localecfg', 'users', 'networkcfg', 'hwclock', 'grubcfg', 'bootloader', 'packages', 'luksbootkeyfile', 'plymouthcfg', 'initramfscfg', 'initramfs', 'source-media-unmount', 'source-final', 'removeuser', 'removeuser', 'umount']},
           {show: ['finished']},
         ],
         branding: this.distro.branding,
