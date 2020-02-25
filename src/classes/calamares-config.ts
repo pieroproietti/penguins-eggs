@@ -49,7 +49,7 @@ class Calamares {
    * configure calamares-settings-eggs
    */
   public async configure() {
-    if (await Utils.packageIsInstalled('calamares') {
+    if (await Utils.packageIsInstalled('calamares')) {
       console.log('==========================================')
       console.log('calamares: configuration')
       console.log('==========================================')

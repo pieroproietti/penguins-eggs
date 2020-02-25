@@ -691,7 +691,7 @@ timeout 200
     }
     shx.exec('/usr/bin/[ -f /tmp/installed-to-live/cleanup.conf ] && /sbin/installed-to-live cleanup', {silent: true})
 
-    if (fs.existsSync(`${this.work_dir}/mx-snapshot`) {
+    if (fs.existsSync(`${this.work_dir}/mx-snapshot`)) {
       shx.exec(`rm -r ${this.work_dir}`, {silent: true})
     }
   }
