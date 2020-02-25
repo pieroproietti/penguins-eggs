@@ -296,7 +296,7 @@ No need other configurations, penguins-eggs are battery included or better, as i
 
 ## More informations
 For other informations, there is same documentation i the document folder of this repository,
-look at [Piero Proietti's blog](http://pieroproietti.github.com),
+look at facebook group:  [Penguin's Eggs](https://www.facebook.com/groups/128861437762355/),
 contact me, or open an [issue](https://github.com/pieroproietti/penguins-eggs/issues) on github.
 
 I mostly use Facebook.

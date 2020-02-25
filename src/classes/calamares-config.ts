@@ -86,7 +86,7 @@ class Calamares {
           {show: ['welcome', 'locale', 'keyboard', 'partition', 'users', 'summary']},
           //  riferimento {exec: ['partition', 'mount', 'unpackfs', 'SOURCES-MEDIA', 'machineid', 'fstab', 'locale', 'keyboard', 'localecfg', 'users', 'networkcfg', 'hwclock', 'SERVICES-SYSTEMD', 'BOOTLOADER-CONFIG', 'grubcfg', 'bootloader', 'PACKAGES', 'luksbootkeyfile', 'plymouthcfg', 'initramfscfg', 'initramfs', 'SOURCE-MEDIA-UNMOUNT', 'SOURCE-FINAL', 'removeuser', 'umount']},
           //  predecente {exec: ['partition', 'mount', 'unpackfs', 'machineid', 'fstab', 'locale', 'keyboard', 'localecfg', 'users', 'displaymanager', 'networkcfg', 'hwclock', 'grubcfg', 'bootloader', 'luksbootkeyfile', 'plymouthcfg', 'initramfscfg', 'initramfs', 'removeuser', 'umount']},
-          {exec: ['partition', 'mount', 'unpackfs', 'machineid', 'fstab', 'locale', 'keyboard', 'localecfg', 'users', 'networkcfg', 'hwclock', 'grubcfg', 'bootloader', 'luksbootkeyfile', 'plymouthcfg', 'initramfscfg', 'initramfs', 'removeuser', 'umount']},
+          {exec: ['partition', 'mount', 'unpackfs', 'machineid', 'fstab', 'locale', 'keyboard', 'localecfg', 'users', 'networkcfg', 'hwclock', 'grubcfg', 'bootloader', 'packages', 'luksbootkeyfile', 'plymouthcfg', 'initramfscfg', 'initramfs', 'removeuser', 'umount']},
           {show: ['finished']},
         ],
         branding: this.distro.branding,
