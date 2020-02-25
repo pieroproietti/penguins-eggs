@@ -495,20 +495,12 @@ export default class Ovary {
     const isolinuxbin = `${this.iso.isolinuxPath}isolinux.bin`
     const vesamenu = `${this.iso.syslinuxPath}vesamenu.c32`
 
-    Utils.shxExec(
-      `rsync -a ${this.iso.syslinuxPath}chain.c32 ${this.distro.pathIso}/isolinux/`
-    )
-    Utils.shxExec(
-      `rsync -a ${this.iso.syslinuxPath}ldlinux.c32 ${this.distro.pathIso}/isolinux/`
-    )
-    Utils.shxExec(
-      `rsync -a ${this.iso.syslinuxPath}libcom32.c32 ${this.distro.pathIso}/isolinux/`
-    )
-    Utils.shxExec(
-      `rsync -a ${this.iso.syslinuxPath}libutil.c32 ${this.distro.pathIso}/isolinux/`
-    )
-    Utils.shxExec(`rsync -a ${isolinuxbin} ${this.distro.pathIso}/isolinux/`)
-    Utils.shxExec(`rsync -a ${vesamenu} ${this.distro.pathIso}/isolinux/`)
+    shx.exec(`rsync -a ${this.iso.syslinuxPath}chain.c32 ${this.distro.pathIso}/isolinux/`, {silent: true})
+    shx.exec(`rsync -a ${this.iso.syslinuxPath}ldlinux.c32 ${this.distro.pathIso}/isolinux/`, {silent: true})
+    shx.exec(`rsync -a ${this.iso.syslinuxPath}libcom32.c32 ${this.distro.pathIso}/isolinux/`, {silent: true})
+    shx.exec(`rsync -a ${this.iso.syslinuxPath}libutil.c32 ${this.distro.pathIso}/isolinux/`, {silent: true})
+    shx.exec(`rsync -a ${isolinuxbin} ${this.distro.pathIso}/isolinux/`, {silent: true})
+    shx.exec(`rsync -a ${vesamenu} ${this.distro.pathIso}/isolinux/`, {silent: true})
   }
 
   async isoStdmenuCfg() {
@@ -651,14 +643,14 @@ timeout 200
 
     if (this.reset_accounts) {
       // exclude /etc/localtime if link and timezone not America/New_York
-      if (Utils.shxExec('/usr/bin/test -L /etc/localtime') && Utils.shxExec('cat /etc/timezone') !== 'America/New_York') {
+      if (shx.exec('/usr/bin/test -L /etc/localtime', {silent: true}) && shx.exec('cat /etc/timezone', {silent: true}) !== 'America/New_York') {
         this.addRemoveExclusion(true, '/etc/localtime')
       }
     }
     const compression = `-comp ${this.compression} `
     let cmd = `mksquashfs ${this.distro.pathLiveFs} ${this.distro.pathIso}/live/filesystem.squashfs ${compression} ${(this.mksq_opt === '' ? '' : ' ' + this.mksq_opt)} -wildcards -ef ${this.snapshot_excludes} ${this.session_excludes} `
     console.log(cmd)
-    Utils.shxExec(cmd, { silent: false })
+    shx.exec(cmd, { silent: false })
     // usr/bin/mksquashfs /.bind-root iso-template/antiX/linuxfs -comp ${this.compression} ${(this.mksq_opt === '' ? '' : ' ' + this.mksq_opt)} -wildcards -ef ${this.snapshot_excludes} ${this.session_excludes}`)
   }
 
@@ -692,15 +684,15 @@ timeout 200
     console.log('ovary: cleanUp')
     console.log('==========================================')
 
-    Utils.shxExec('sync')
+    shx.exec('sync', {silent: true})
     if (this.bindedFs) {
-      Utils.shxExec('/usr/bin/pkill mksquashfs; /usr/bin/pkill md5sum')
+      shx.exec('/usr/bin/pkill mksquashfs; /usr/bin/pkill md5sum', {silent: true})
       shx.cp('/tmp/penguins-eggs/fstab', '/etc/fstab') // Pezza a colori
     }
-    Utils.shxExec('/usr/bin/[ -f /tmp/installed-to-live/cleanup.conf ] && /sbin/installed-to-live cleanup')
+    shx.exec('/usr/bin/[ -f /tmp/installed-to-live/cleanup.conf ] && /sbin/installed-to-live cleanup', {silent: true})
 
-    if (fs.existsSync(`${this.work_dir}/mx-snapshot`)) {
-      Utils.shxExec(`rm -r ${this.work_dir}`)
+    if (fs.existsSync(`${this.work_dir}/mx-snapshot`) {
+      shx.exec(`rm -r ${this.work_dir}`, {silent: true})
     }
   }
 
@@ -821,7 +813,7 @@ timeout 200
     console.log('ovary: bindLiveFs')
     console.log('==========================================')
 
-    // Utils.shxExec(`mkdir -r ${this.work_dir}/mx-snapshot`)
+    // shx.exec(`mkdir -r ${this.work_dir}/mx-snapshot`)
 
     // checks if work_dir looks OK
     // if (!this.work_dir.includes('/mx-snapshot')) { // Se non contiene /mx-snapshot
@@ -843,11 +835,11 @@ timeout 200
     let cmd = ''
     if (this.reset_accounts) {
       cmd = `/sbin/installed-to-live -b ${this.distro.pathLiveFs} start ${bindBoot} empty=/home general version-file read-write`
-      await Utils.shxExec(cmd)
+      await shx.exec(cmd, {silent: true})
       await this.makeLiveHome()
     } else {
       cmd = `/sbin/installed-to-live -b ${this.distro.pathLiveFs} start bind=/home${bindBootToo} live-files version-file adjtime read-write`
-      await Utils.shxExec(cmd)
+      await shx.exec(cmd, {silent: true})
     }
   }
 
@@ -1038,16 +1030,16 @@ timeout 200
 
   }
 
-  editEfi(){
-        // editEfi()
-        const gpath = `${this.distro.pathIso}/boot/grub/grub.cfg`
-        shx.sed('-i', '%custom-name%', this.distro.name, gpath)
-        shx.sed('-i', '%kernel%', Utils.kernerlVersion(), gpath)
-        shx.sed('-i', '%vmlinuz%', `/live${this.kernel_image}`, gpath)
-        shx.sed('-i', '%initrd-img%', `/live${this.initrd_image}`, gpath)
-        shx.sed('-i', '%username-opt%', this.username_opt, gpath)
-        shx.sed('-i', '%netconfig-opt%', this.netconfig_opt, gpath)
-        shx.sed('-i', '%timezone-opt%', this.timezone_opt, gpath)
+  editEfi() {
+    // editEfi()
+    const gpath = `${this.distro.pathIso}/boot/grub/grub.cfg`
+    shx.sed('-i', '%custom-name%', this.distro.name, gpath)
+    shx.sed('-i', '%kernel%', Utils.kernerlVersion(), gpath)
+    shx.sed('-i', '%vmlinuz%', `/live${this.kernel_image}`, gpath)
+    shx.sed('-i', '%initrd-img%', `/live${this.initrd_image}`, gpath)
+    shx.sed('-i', '%username-opt%', this.username_opt, gpath)
+    shx.sed('-i', '%netconfig-opt%', this.netconfig_opt, gpath)
+    shx.sed('-i', '%timezone-opt%', this.timezone_opt, gpath)
   }
 
   /**
@@ -1079,7 +1071,7 @@ timeout 200
 
       let cmd = `xorriso -as mkisofs -r -J -joliet-long -l -iso-level 3 -cache-inodes ${isoHybridOption} -partition_offset 16 -volid ${volid} -b isolinux/isolinux.bin -c isolinux/boot.cat -no-emul-boot -boot-load-size 4 -boot-info-table ${uefi_opt} -o ${isoName} ${this.distro.pathIso}`
       console.log(cmd)
-      Utils.shxExec(cmd, { silent: false })
+      shx.exec(cmd, { silent: false })
     }
   }
 }

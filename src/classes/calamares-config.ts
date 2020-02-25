@@ -8,6 +8,7 @@
 
 import yaml = require('js-yaml')
 import fs = require('fs')
+import shx = require('shelljs')
 import {IDistro, IOses} from '../interfaces'
 import Utils from './utils'
 
@@ -34,7 +35,6 @@ import Utils from './utils'
  *                         /calamares/modules/ (copiare in /etc/calamares)
  *                  /eoan
  */
-
 class Calamares {
   distro: IDistro
 
@@ -49,7 +49,7 @@ class Calamares {
    * configure calamares-settings-eggs
    */
   public async configure() {
-    if (await this.isInstalled()) {
+    if (await Utils.packageIsInstalled('calamares') {
       console.log('==========================================')
       console.log('calamares: configuration')
       console.log('==========================================')
@@ -58,12 +58,7 @@ class Calamares {
       this.settingsConf(this.oses.versionLike)
       this.brandingDesc(this.oses.versionLike, this.oses.homeUrl, this.oses.supportUrl, this.oses.bugReportUrl)
       this.unpackfsConf(this.oses.mountpointSquashFs)
-      this.links()
     }
-  }
-
-  async isInstalled(): Promise<boolean> {
-    return Utils.packageIsInstalled('calamares')
   }
 
   /**
@@ -77,14 +72,14 @@ class Calamares {
     /**
     * branding è uguale per tutte
     */
-    Utils.shxExec(`cp ${__dirname}/../../templates/branding /etc/calamares -R`)
+    shx.cp(`-r`,`${__dirname}/../../templates/branding`, `/etc/calamares` )
 
     const settingsPath = '/etc/calamares/settings.conf'
     let settings = {}
 
     if (versionLike === 'buster') {
       // rimosso packages (rimozione pacchetti, dopo bootloader)
-      Utils.shxExec(`cp ${__dirname}/../../templates/distros/buster/* /etc/ -R`)
+      shx.cp(`-r`,`cp ${__dirname}/../../templates/distros/buster/*`, `/etc/`)
       settings = {
         'modules-search': ['local', '/usr/lib/calamares/modules'],
         sequence: [
@@ -104,7 +99,7 @@ class Calamares {
        */
     } else if (versionLike === 'bionic') {
       // rimosso packages (rimozione pacchetti, dopo bootloader) aggiunto removeuser prima di umount
-      Utils.shxExec(`cp ${__dirname}/../../templates/distros/bionic/* /etc/ -R`)
+      shx.cp(`-r`,`${__dirname}/../../templates/distros/bionic/*`, `/etc/`)
       settings = {
         'modules-search': ['local'],
         sequence: [
@@ -122,7 +117,7 @@ class Calamares {
        */
     } else if (versionLike === 'eoan') {
       // rimosso packages (rimozione pacchetti, dopo bootloader-config)
-      Utils.shxExec(`cp ${__dirname}/../../templates/distros/eoan/* /etc/ -R`)
+      shx.cp(`-r`, `${__dirname}/../../templates/distros/eoan/*`, `/etc/`)
       settings = {
         'modules-search': ['local', '/usr/lib/calamares/modules'],
         sequence: [
@@ -220,16 +215,6 @@ class Calamares {
     text += '    unpack:\n'
     text += '    destination: ""\n'
     fs.writeFileSync(file, text, 'utf8')
-  }
-
-  /**
-   * links
-   */
-  async links() {
-    // Utils.shxExec(`cp ${__dirname}/../../templates/* /etc/ -R`);
-    // Utils.shxExec('rm /usr/bin/add-calamares-desktop-icon')
-    // Utils.shxExec('rm /usr/share/applications/install-debian.desktop')
-    // Utils.shxExec(`cp ${__dirname}/../../applications/* /usr/share/applications`)
   }
 
   /**

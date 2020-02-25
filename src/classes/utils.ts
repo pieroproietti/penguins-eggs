@@ -98,7 +98,7 @@ export default class Utils {
   static getSnapshotSize(snapshot_dir = '/'): string {
     let size = ''
     if (fs.existsSync(snapshot_dir)) {
-      size = Utils.shxExec(`/usr/bin/find ${snapshot_dir} -maxdepth 1 -type f -name '*.iso' -exec du -shc {} + | tail -1 | awk '{print $1}'`, {silent: true}).stdout.trim()
+      size = shx.exec(`/usr/bin/find ${snapshot_dir} -maxdepth 1 -type f -name '*.iso' -exec du -shc {} + | tail -1 | awk '{print $1}'`, {silent: true}).stdout.trim()
     }
     if (size === '') {
       size = '0'
@@ -298,11 +298,11 @@ export default class Utils {
      * @returns {boolean} True if installed
      */
   static packageIsInstalled(debPackage: string): boolean {
-    const cmd = `/usr/bin/dpkg -s ${debPackage} | grep Status`
-    const stdout = Utils.shxExec(cmd, {silent: true}).stdout
     let isInstalled = false
-
-    if (stdout.trim() === 'Status: install ok installed') {
+    const cmd = `/usr/bin/dpkg -s ${debPackage} | grep Status`
+    const stdout = shx.exec(cmd, {silent: true}).stdout.trim()
+    
+    if (stdout === 'Status: install ok installed') {
       isInstalled = true
     }
     return isInstalled
@@ -316,29 +316,12 @@ export default class Utils {
   static packageInstall(debPackage: string): boolean {
     let retVal = false
 
-    if (Utils.shxExec('/usr/bin/apt-get update') === '0') {
-      if (Utils.shxExec(`/usr/bin/apt-get install -y ${debPackage}`) === '0') {
+    if (shx.exec('/usr/bin/apt-get update', {silent: true}) === '0') {
+      if (shx.exec(`/usr/bin/apt-get install -y ${debPackage}`, {silent: true}) === '0') {
         retVal = true
       }
     }
     return retVal
-  }
-
-  /**
-    * Display comand
-    * @param cmd
-    */
-  static showCmd(cmd: string) {
-    console.log(cmd)
-  }
-
-  /**
-  * Execute and show cmd
-  * @param cmd
-  * @param silent
-  */
-  static shxExec(cmd: string, silent: object = { silent: true }): any {
-    return shx.exec(cmd, silent)
   }
 
   /**
@@ -370,7 +353,7 @@ export default class Utils {
 
     const cmdSudo = `chroot ${target} addgroup ${username} sudo`
     console.log(`addUser cmdSudo: ${cmdSudo}`)
-    shx.exec(cmdSudo)
+    shx.exec(cmdSudo, {silent: true})
   }
 
   /**
@@ -379,7 +362,7 @@ export default class Utils {
    * @returns {string[]} array di utenti
    */
   static usersList(): string[] {
-    const out = Utils.shxExec('/usr/bin/lslogins --noheadings -u -o user | grep -vw root', { silent: true }).stdout
+    const out = shx.exec('/usr/bin/lslogins --noheadings -u -o user | grep -vw root', { silent: true }).stdout
     const users: string[] = out.split('\n')
     return users
   }
