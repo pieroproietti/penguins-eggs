@@ -52,14 +52,23 @@ class Calamares {
   public async configure() {
     if (await Utils.packageIsInstalled('calamares')) {
       console.log('==========================================')
-      console.log('calamares: configuration')
+      console.log(`calamares: [${this.oses.distroId}/${this.oses.versionId}]->[${this.oses.distroLike}/${this.oses.versionLike}]`)
       console.log('==========================================')
-
-      console.log(`distro: [${this.oses.distroId}/${this.oses.versionId}]->[${this.oses.distroLike}/${this.oses.versionLike}]`)
+      await this.createConfiguration()
       await this.settingsConf(this.oses.versionLike)
       await this.brandingDesc(this.oses.versionLike, this.oses.homeUrl, this.oses.supportUrl, this.oses.bugReportUrl)
       await this.unpackfsConf(this.oses.mountpointSquashFs)
     }
+  }
+
+  /**
+   * branding
+   */
+  async createConfiguration(){
+    console.log('==========================================')
+    console.log('calamares: createConfiguration')
+    console.log('==========================================')
+   shx.cp(`-r`, `${__dirname}/../../templates/branding`, `/etc/calamares`)
   }
 
   /**
@@ -69,11 +78,6 @@ class Calamares {
     console.log('==========================================')
     console.log('calamares: settingsConf')
     console.log('==========================================')
-
-    /**
-    * branding è uguale per tutte
-    */
-    shx.cp(`-r`, `${__dirname}/../../templates/branding`, `/etc/calamares`)
 
     const settingsPath = '/etc/calamares/settings.conf'
     let settings = {}
@@ -243,7 +247,6 @@ class Calamares {
       },
     }
 
-    console.log('Configurazione branding.desc')
     fs.writeFileSync(brandingFile, `#versionLike: ${versionLike}\n` + yaml.safeDump(branding), 'utf8')
   }
 
