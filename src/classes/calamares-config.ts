@@ -10,7 +10,7 @@ import yaml = require('js-yaml')
 import fs = require('fs')
 import path = require('path')
 import shx = require('shelljs')
-import {IDistro, IOses} from '../interfaces'
+import { IDistro, IOses } from '../interfaces'
 import Utils from './utils'
 
 /**
@@ -56,9 +56,9 @@ class Calamares {
       console.log('==========================================')
 
       console.log(`distro: [${this.oses.distroId}/${this.oses.versionId}]->[${this.oses.distroLike}/${this.oses.versionLike}]`)
-      this.settingsConf(this.oses.versionLike)
-      this.brandingDesc(this.oses.versionLike, this.oses.homeUrl, this.oses.supportUrl, this.oses.bugReportUrl)
-      this.unpackfsConf(this.oses.mountpointSquashFs)
+      await this.settingsConf(this.oses.versionLike)
+      await this.brandingDesc(this.oses.versionLike, this.oses.homeUrl, this.oses.supportUrl, this.oses.bugReportUrl)
+      await this.unpackfsConf(this.oses.mountpointSquashFs)
     }
   }
 
@@ -73,57 +73,74 @@ class Calamares {
     /**
     * branding è uguale per tutte
     */
-    shx.cp(`-r`,`${__dirname}/../../templates/branding`, `/etc/calamares` )
+    shx.cp(`-r`, `${__dirname}/../../templates/branding`, `/etc/calamares`)
 
     const settingsPath = '/etc/calamares/settings.conf'
     let settings = {}
 
     if (versionLike === 'buster') {
-      // rimosso packages (rimozione pacchetti, dopo bootloader)
-      shx.cp(`-r`,path.resolve(__dirname, `../../templates/distros/buster/*`), `/etc/`)
-      settings = {
-        'modules-search': ['local', '/usr/lib/calamares/modules'],
-        sequence: [
-          {show: ['welcome', 'locale', 'keyboard', 'partition', 'users', 'summary']},
-          //  riferimento {exec: ['partition', 'mount', 'unpackfs', 'SOURCES-MEDIA', 'machineid', 'fstab', 'locale', 'keyboard', 'localecfg', 'users', 'networkcfg', 'hwclock', 'SERVICES-SYSTEMD', 'BOOTLOADER-CONFIG', 'grubcfg', 'bootloader', 'PACKAGES', 'luksbootkeyfile', 'plymouthcfg', 'initramfscfg', 'initramfs', 'SOURCE-MEDIA-UNMOUNT', 'SOURCE-FINAL', 'removeuser', 'umount']},
-          //  predecente {exec: ['partition', 'mount', 'unpackfs', 'machineid', 'fstab', 'locale', 'keyboard', 'localecfg', 'users', 'displaymanager', 'networkcfg', 'hwclock', 'grubcfg', 'bootloader', 'luksbootkeyfile', 'plymouthcfg', 'initramfscfg', 'initramfs', 'removeuser', 'umount']},
-          {exec: ['partition','mount','unpackfs','machineid','fstab','locale','keyboard','localecfg','users','displaymanager','networkcfg','hwclock','grubcfg','bootloader','luksbootkeyfile','plymouthcfg','initramfscfg','initramfs','removeuser','umount']},
-          {show: ['finished']},
-        ],
-        branding: this.distro.branding,
-        'prompt-install': false,
-        'dont-chroot': false,
-      }
-
-      /**
-       * UBUNTU BIONIC / LINUX MINT 19.1/2/3
-       */
+      settings = this.busterSettings()
+      this.debianSourcesFinal(versionLike)      
     } else if (versionLike === 'bionic') {
-      // rimosso packages (rimozione pacchetti, dopo bootloader) aggiunto removeuser prima di umount
-      shx.cp(`-r`,`${__dirname}/../../templates/distros/bionic/*`, `/etc/`)
-      settings = {
-        'modules-search': ['local'],
-        sequence: [
-          {show: ['welcome', 'locale', 'keyboard', 'partition', 'users', 'summary']},
-          {exec: ['partition', 'mount', 'unpackfs', 'machineid', 'fstab', 'locale', 'keyboard', 'localecfg', 'users', 'displaymanager', 'networkcfg', 'hwclock', 'services', 'initramfs', 'grubcfg', 'bootloader', 'removeuser', 'umount']},
-          {show: ['finished']},
-        ],
-        branding: this.distro.branding,
-        'prompt-install': true,
-        'dont-chroot': false,
-      }
-
-      /**
-       * UBUNTU EOAN
-       */
+      settings = this.bionicSettings()
+      this.ubuntuSourcesFinal(versionLike)
     } else if (versionLike === 'eoan') {
-      // rimosso packages (rimozione pacchetti, dopo bootloader-config)
-      shx.cp(`-r`, `${__dirname}/../../templates/distros/eoan/*`, `/etc/`)
-      settings = {
-        'modules-search': ['local', '/usr/lib/calamares/modules'],
-        sequence: [
-          {show: ['welcome', 'locale', 'keyboard', 'partition', 'users', 'summary']},
-          {exec: [
+      settings = this.eoanSettings()
+      this.ubuntuSourcesFinal(versionLike)
+    }
+    fs.writeFileSync(settingsPath, `# distroType: ${versionLike}\n` + yaml.safeDump(settings), 'utf8')
+  }
+
+  /**
+   * busterSettings
+   */
+  busterSettings(): object {
+    shx.cp(`-r`, path.resolve(__dirname, `../../templates/distros/buster/*`), `/etc/`)
+    const settings = {
+      'modules-search': ['local', '/usr/lib/calamares/modules'],
+      sequence: [
+        { show: ['welcome', 'locale', 'keyboard', 'partition', 'users', 'summary'] },
+        { exec: ['partition', 'mount', 'unpackfs', 'machineid', 'fstab', 'locale', 'keyboard', 'localecfg', 'users', 'displaymanager', 'networkcfg', 'hwclock', 'grubcfg', 'bootloader', 'luksbootkeyfile', 'plymouthcfg', 'initramfscfg', 'initramfs', 'removeuser', 'umount'] },
+        { show: ['finished'] },
+      ],
+      branding: this.distro.branding,
+      'prompt-install': false,
+      'dont-chroot': false,
+    }
+    return settings
+  }
+
+
+  /**
+   * bionicSettings
+   */
+  bionicSettings(): object {
+    shx.cp(`-r`, `${__dirname}/../../templates/distros/bionic/*`, `/etc/`)
+    const settings = {
+      'modules-search': ['local'],
+      sequence: [
+        { show: ['welcome', 'locale', 'keyboard', 'partition', 'users', 'summary'] },
+        { exec: ['partition', 'mount', 'unpackfs', 'machineid', 'fstab', 'locale', 'keyboard', 'localecfg', 'users', 'displaymanager', 'networkcfg', 'hwclock', 'services', 'initramfs', 'grubcfg', 'bootloader', 'removeuser', 'umount'] },
+        { show: ['finished'] },
+      ],
+      branding: this.distro.branding,
+      'prompt-install': true,
+      'dont-chroot': false,
+    }
+    return settings
+  }
+
+  /**
+   * eoanSettings
+   */
+  eoanSettings(): object {
+    shx.cp(`-r`, `${__dirname}/../../templates/distros/eoan/*`, `/etc/`)
+    const settings = {
+      'modules-search': ['local', '/usr/lib/calamares/modules'],
+      sequence: [
+        { show: ['welcome', 'locale', 'keyboard', 'partition', 'users', 'summary'] },
+        {
+          exec: [
             'partition',
             'mount',
             'unpackfs',
@@ -144,19 +161,25 @@ class Calamares {
             'initramfs',
             'removeuser',
             'umount',
-          ]},
-          {show: ['finished']},
-        ],
-        branding: this.distro.branding,
-        'prompt-install': false,
-        'dont-chroot': false,
-      }
-      this.ubuntuSourcesFinal('eoan')
+          ]
+        },
+        { show: ['finished'] },
+      ],
+      branding: this.distro.branding,
+      'prompt-install': false,
+      'dont-chroot': false,
     }
-
-    fs.writeFileSync(settingsPath, `# distroType: ${versionLike}\n` + yaml.safeDump(settings), 'utf8')
+    return settings
   }
 
+
+  /**
+   * brandingDesc
+   * @param versionLike 
+   * @param homeUrl 
+   * @param supportUrl 
+   * @param bugReportUrl 
+   */
   async brandingDesc(versionLike: string, homeUrl: string, supportUrl: string, bugReportUrl: string) {
     console.log('==========================================')
     console.log('calamares: brandingDesc')
@@ -240,7 +263,8 @@ class Calamares {
   }
 
   /**
-   * impostazione di sources.list per Debian
+   * debianSourcesFinal
+   * crea script bash /sbin/sources-final per Debian
    */
   async debianSourcesFinal(debianRelease: string) {
     const file = '/usr/sbin/sources-final'
@@ -267,8 +291,14 @@ EOF
 
 exit 0`
     fs.writeFileSync(file, text, 'utf8')
+    shx.chmod('+x', file)
   }
 
+
+  /**
+   * ubuntuSourcesFinal
+   * @param ubuntuRelease 
+   */
   async ubuntuSourcesFinal(ubuntuRelease: string) {
     const file = '/usr/sbin/sources-final'
     const text = `
@@ -341,6 +371,7 @@ EOF
 
 exit 0`
     fs.writeFileSync(file, text, 'utf8')
+    shx.chmod('+x', file)
   }
 }
 

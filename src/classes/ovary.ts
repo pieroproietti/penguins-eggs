@@ -24,7 +24,6 @@ import Calamares from './calamares-config'
 import Oses from './oses'
 import Prerequisites from '../commands/prerequisites'
 import { IDistro, IOses, IPackage } from '../interfaces'
-import { SIGXCPU } from 'constants'
 
 /**
  * Ovary:
@@ -143,7 +142,6 @@ export default class Ovary {
     this.oses = new Oses()
     this.iso = this.oses.info(this.distro)
 
-    const loadSettings = await this.loadSettings()
 
 
     if (this.loadSettings() && this.listFreeSpace()) {
@@ -904,8 +902,6 @@ timeout 200\n`
     console.log('ovary: makeEfi')
     console.log('==========================================')
 
-    // create /boot and /efi for uefi.
-    const uefiOption = '-eltorito-alt-boot -e boot/grub/efiboot.img -isohybrid-gpt-basdat -no-emul-boot'
 
     const tempDir = shx.exec('mktemp -d /tmp/work_temp.XXXX', { silent: true }).stdout.trim()
     // shx.rm('tempDir')
@@ -1065,12 +1061,4 @@ timeout 200\n`
   }
 }
 
-/**
- * sleep
- * @param ms 
- */
-function sleep(ms: number) {
-  return new Promise((resolve) => {
-    setTimeout(resolve, ms);
-  });
-}   
+   
