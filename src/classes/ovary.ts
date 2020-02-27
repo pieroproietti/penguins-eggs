@@ -12,6 +12,17 @@
  *  xorriso -as mkisofs -r -J -joliet-long -l -cache-inodes -isohybrid-mbr /usr/lib/ISOLINUX/isohdpfx.bin  -partition_offset 16 -volid "Penguin's eggs lm32-mate" -b isolinux/isolinux.bin -c isolinux/boot.cat -no-emul-boot -boot-load-size 4 -boot-info-table -o /home/eggs/lm32-mate_2019-04-17_1830-02.iso /home/eggs/lm32-mate/iso
  */
 
+ /**
+  * pacchetti 
+  * - efibootmgr
+  * - grub-efi-amd64-signed
+  * - grub-efi-amd64.bin
+  * - grub-efi-amd64-signed
+  * libefiboot1
+  * libefivar1
+  * Ci sono tutti!
+  */
+
 import fs = require('fs')
 import path = require('path')
 import os = require('os')
