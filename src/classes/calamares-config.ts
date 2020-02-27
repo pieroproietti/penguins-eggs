@@ -97,14 +97,15 @@ class Calamares {
 
   /**
    * busterSettings
+   * { exec: ['partition', 'mount', 'unpackfs', 'machineid', 'fstab', 'locale', 'keyboard', 'localecfg', 'users', 'displaymanager', 'networkcfg', 'hwclock', 'grubcfg', 'bootloader', 'luksbootkeyfile', 'plymouthcfg', 'initramfscfg', 'initramfs', 'removeuser', 'umount'] },
    */
-  busterSettings(): object {
+busterSettings(): object {
     shx.cp(`-r`, path.resolve(__dirname, `../../templates/distros/buster/*`), `/etc/`)
     const settings = {
       'modules-search': ['local', '/usr/lib/calamares/modules'],
       sequence: [
         { show: ['welcome', 'locale', 'keyboard', 'partition', 'users', 'summary'] },
-        { exec: ['partition', 'mount', 'unpackfs', 'machineid', 'fstab', 'locale', 'keyboard', 'localecfg', 'users', 'displaymanager', 'networkcfg', 'hwclock', 'grubcfg', 'bootloader', 'luksbootkeyfile', 'plymouthcfg', 'initramfscfg', 'initramfs', 'removeuser', 'umount'] },
+        { exec: ['partition', 'mount', 'unpackfs', 'machineid', 'fstab', 'locale', 'keyboard', 'localecfg', 'users', 'networkcfg', 'hwclock', 'grubcfg', 'bootloader', 'luksbootkeyfile', 'plymouthcfg', 'initramfscfg', 'initramfs', 'removeuser', 'umount'] },
         { show: ['finished'] },
       ],
       branding: this.distro.branding,
