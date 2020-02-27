@@ -281,15 +281,22 @@ CHROOT=$(mount | grep proc | grep calamares | awk '{print $3}' | sed -e "s#/proc
 RELEASE=${debianRelease}
 
 cat << EOF > $CHROOT/etc/apt/sources.list
-# See https://wiki.debian.org/SourcesList for more information.
-deb http://deb.debian.org/debian $RELEASE main
-deb-src http://deb.debian.org/debian $RELEASE main
+#------------------------------------------------------------------------------#
+#                   OFFICIAL DEBIAN REPOS                    
+#------------------------------------------------------------------------------#
 
-deb http://deb.debian.org/debian $RELEASE-updates main
-deb-src http://deb.debian.org/debian $RELEASE-updates main
+###### Debian Main Repos
+deb http://deb.debian.org/debian/ $RELEASE main contrib non-free
+deb-src http://deb.debian.org/debian/ $RELEASE main contrib non-free
 
-deb http://security.debian.org/debian-security/ $RELEASE/updates main
-deb-src http://security.debian.org/debian-security/ $RELEASE/updates main
+deb http://deb.debian.org/debian/ $RELEASE-updates main contrib non-free
+deb-src http://deb.debian.org/debian/ $RELEASE-updates main contrib non-free
+
+deb http://deb.debian.org/debian-security $RELEASE/updates main
+deb-src http://deb.debian.org/debian-security $RELEASE/updates main
+
+deb http://ftp.debian.org/debian $RELEASE-backports main
+deb-src http://ftp.debian.org/debian $RELEASE-backports main
 EOF
 
 exit 0`
