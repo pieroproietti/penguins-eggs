@@ -92,7 +92,7 @@ $ npm install -g penguins-eggs
 $ eggs COMMAND
 running command...
 $ eggs (-v|--version|version)
-penguins-eggs/7.2.4 linux-x64 node-v12.16.1
+penguins-eggs/7.2.5 linux-x64 node-v12.16.1
 $ eggs --help [COMMAND]
 USAGE
   $ eggs COMMAND
@@ -122,10 +122,18 @@ USAGE
   $ eggs calamares
 
 OPTIONS
-  -h, --help  show CLI help
+  -c, --configuration_only  only configuration
+  -h, --help                show CLI help
+
+EXAMPLES
+  ~$ eggs calamares
+  remove (if present) and install calamares, calamares-settings-debian and configure it
+
+  ~$ eggs calamares  -c
+  create only calamares configuration
 ```
 
-_See code: [src/commands/calamares.ts](https://github.com/pieroproietti/penguins-eggs/blob/v7.2.4/src/commands/calamares.ts)_
+_See code: [src/commands/calamares.ts](https://github.com/pieroproietti/penguins-eggs/blob/v7.2.5/src/commands/calamares.ts)_
 
 ## `eggs dev:efi`
 
@@ -136,7 +144,7 @@ USAGE
   $ eggs dev:efi
 ```
 
-_See code: [src/commands/dev/efi.ts](https://github.com/pieroproietti/penguins-eggs/blob/v7.2.4/src/commands/dev/efi.ts)_
+_See code: [src/commands/dev/efi.ts](https://github.com/pieroproietti/penguins-eggs/blob/v7.2.5/src/commands/dev/efi.ts)_
 
 ## `eggs dev:iso`
 
@@ -147,7 +155,7 @@ USAGE
   $ eggs dev:iso
 ```
 
-_See code: [src/commands/dev/iso.ts](https://github.com/pieroproietti/penguins-eggs/blob/v7.2.4/src/commands/dev/iso.ts)_
+_See code: [src/commands/dev/iso.ts](https://github.com/pieroproietti/penguins-eggs/blob/v7.2.5/src/commands/dev/iso.ts)_
 
 ## `eggs help [COMMAND]`
 
@@ -179,7 +187,7 @@ EXAMPLE
   You will find here informations about penguin's eggs!
 ```
 
-_See code: [src/commands/info.ts](https://github.com/pieroproietti/penguins-eggs/blob/v7.2.4/src/commands/info.ts)_
+_See code: [src/commands/info.ts](https://github.com/pieroproietti/penguins-eggs/blob/v7.2.5/src/commands/info.ts)_
 
 ## `eggs install`
 
@@ -200,7 +208,7 @@ EXAMPLE
   penguin's eggs installation
 ```
 
-_See code: [src/commands/install.ts](https://github.com/pieroproietti/penguins-eggs/blob/v7.2.4/src/commands/install.ts)_
+_See code: [src/commands/install.ts](https://github.com/pieroproietti/penguins-eggs/blob/v7.2.5/src/commands/install.ts)_
 
 ## `eggs kill`
 
@@ -210,6 +218,9 @@ kill the eggs/free the nest
 USAGE
   $ eggs kill
 
+OPTIONS
+  -h, --help  show CLI help
+
 ALIASES
   $ eggs clean
 
@@ -218,7 +229,7 @@ EXAMPLE
   kill the eggs/free the nest
 ```
 
-_See code: [src/commands/kill.ts](https://github.com/pieroproietti/penguins-eggs/blob/v7.2.4/src/commands/kill.ts)_
+_See code: [src/commands/kill.ts](https://github.com/pieroproietti/penguins-eggs/blob/v7.2.5/src/commands/kill.ts)_
 
 ## `eggs prerequisites`
 
@@ -228,12 +239,22 @@ install the prerequisites packages to run penguin's eggs
 USAGE
   $ eggs prerequisites
 
-EXAMPLE
-  $ eggs prerequisites
+OPTIONS
+  -c, --configuration_only  not remove/reinstall calamares, only configuration
+  -h, --help                show CLI help
+
+DESCRIPTION
   install the prerequisites packages to run penguin's eggs
+
+EXAMPLES
+  ~$ eggs prerequisites
+  install the prerequisites packages to run penguin's eggs
+
+  ~$ eggs prerequisites -c
+  create only configuration
 ```
 
-_See code: [src/commands/prerequisites.ts](https://github.com/pieroproietti/penguins-eggs/blob/v7.2.4/src/commands/prerequisites.ts)_
+_See code: [src/commands/prerequisites.ts](https://github.com/pieroproietti/penguins-eggs/blob/v7.2.5/src/commands/prerequisites.ts)_
 
 ## `eggs produce`
 
@@ -259,11 +280,11 @@ EXAMPLE
   the penguin produce an egg called uovo-i386-2020-01-18_2000.iso
 ```
 
-_See code: [src/commands/produce.ts](https://github.com/pieroproietti/penguins-eggs/blob/v7.2.4/src/commands/produce.ts)_
+_See code: [src/commands/produce.ts](https://github.com/pieroproietti/penguins-eggs/blob/v7.2.5/src/commands/produce.ts)_
 
 ## `eggs sterilize`
 
-describe the command here
+remove alla packages installed as prerequisites
 
 ```
 USAGE
@@ -273,22 +294,26 @@ OPTIONS
   -h, --help  show CLI help
 ```
 
-_See code: [src/commands/sterilize.ts](https://github.com/pieroproietti/penguins-eggs/blob/v7.2.4/src/commands/sterilize.ts)_
+_See code: [src/commands/sterilize.ts](https://github.com/pieroproietti/penguins-eggs/blob/v7.2.5/src/commands/sterilize.ts)_
 
 ## `eggs update`
 
-update/upgrade the penguin's eggs tool
+update/upgrade the penguin's eggs tool.
 
 ```
 USAGE
   $ eggs update
+
+DESCRIPTION
+  This way of update work only with npm installation, if you used the debian package version, please download the new 
+  one and install it.
 
 EXAMPLE
   $ eggs update
   update/upgrade the penguin's eggs tool
 ```
 
-_See code: [src/commands/update.ts](https://github.com/pieroproietti/penguins-eggs/blob/v7.2.4/src/commands/update.ts)_
+_See code: [src/commands/update.ts](https://github.com/pieroproietti/penguins-eggs/blob/v7.2.5/src/commands/update.ts)_
 <!-- commandsstop -->
 
 # That's all Folks!
