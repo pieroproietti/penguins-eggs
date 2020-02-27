@@ -24,10 +24,9 @@ You will find here informations about penguin's eggs!
   ]
 
   async run() {
-    const ovary = new Ovary
-
     Utils.titles()
 
+    const ovary = new Ovary
     ovary.loadSettings()
     ovary.showSettings()
 
@@ -36,9 +35,7 @@ You will find here informations about penguin's eggs!
       message = "This is a LIVE system."
     }
     shx.echo (`System:            ${message}`)
-
-    Utils.prerequisitesInstalled()
-    
     shx.exec('lsb_release -a')
+    Utils.prerequisitesInstalled()    
   }
 }

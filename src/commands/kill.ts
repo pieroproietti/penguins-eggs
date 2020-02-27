@@ -4,7 +4,7 @@
  * email: piero.proietti@gmail.com
  * license: MIT
  */
-import { Command } from '@oclif/command'
+import { Command, flags } from '@oclif/command'
 
 import fs = require('fs')
 import ini = require('ini')
@@ -20,6 +20,10 @@ export default class Kill extends Command {
 
   static description = 'kill the eggs/free the nest'
 
+  static flags = {
+    help: flags.help({ char: 'h' }),
+  }
+
   static aliases = ['clean']
 
   static examples = [
@@ -30,6 +34,8 @@ kill the eggs/free the nest
 
   async run() {
     Utils.titles()
+    const { args, flags } = this.parse(Kill)
+
 
     if (Utils.isRoot() && Utils.prerequisitesInstalled()) {
       const ovary = new Ovary

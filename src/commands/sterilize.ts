@@ -9,16 +9,16 @@ import shx = require('shelljs')
 import Utils from '../classes/utils'
 
 export default class Sterilize extends Command {
-  static description = 'describe the command here'
+  static description = 'remove alla packages installed as prerequisites'
 
   static flags = {
     help: flags.help({ char: 'h' }),
   }
 
   async run() {
+    Utils.titles()
     const { flags } = this.parse(Sterilize)
 
-    Utils.titles()
     if (Utils.isRoot() && Utils.prerequisitesInstalled()) {
       this.log('sterilize the penguin...')
       shx.exec('apt-get --yes --purge remove  \

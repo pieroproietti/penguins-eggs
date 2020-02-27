@@ -19,19 +19,15 @@ export default class Install extends Command {
 
   static aliases = ['hatch']
 
-  static examples = [
-    `$ eggs install
-penguin's eggs installation
-`,
-  ]
+  static examples = [`$ eggs install\npenguin's eggs installation\n`,]
 
   /**
    * Execute
    */
   async run() {
+    Utils.titles()
     const {flags} = this.parse(Install)
 
-    Utils.titles()
 
     let cmd = 'cli-installer'
     if (Utils.isRoot()) {

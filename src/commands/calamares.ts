@@ -14,25 +14,32 @@ export default class Calamares extends Command {
 
   static flags = {
     help: flags.help({ char: 'h' }),
-  }
+    configuration_only: flags.boolean({char: 'c', description: 'only configuration'}),
+    }
+
+    static examples = [
+      `~$ eggs calamares\nremove (if present) and install calamares, calamares-settings-debian and configure it\n`,
+      `~$ eggs calamares  -c\ncreate only calamares configuration\n`,
+  ]
+  
 
   async run() {
+    Utils.titles()
     const { args, flags } = this.parse(Calamares)
 
-    Utils.titles()
-
-    if (Utils.isRoot() && Utils.prerequisitesInstalled()) {
-      console.log(`>>> eggs: removing calamares...`)
-      shx.exec('rm /etc/calamares -rf')
-      shx.exec('apt-get remove --yes --purge calamares calamares-settings-debian')
-      shx.exec(`apt-get update`, { async: false })
-      shx.exec(`apt-get install --yes \
-              calamares \
-              calamares-settings-debian`, { async: false })
-
+    if (Utils.isRoot()) {
+      if (!flags.configuration_only){
+        shx.exec('rm /etc/calamares -rf')
+        shx.exec('apt-get remove --yes --purge calamares calamares-settings-debian')
+        shx.exec(`apt-get update`, { async: false })
+        shx.exec(`apt-get install --yes \
+                calamares \
+                calamares-settings-debian`, { async: false })
+      }
       const ovary = new Ovary
-      await ovary.fertilization()
-      await ovary.calamaresConfigure()
+      if (await ovary.fertilization()) {
+        await ovary.calamaresConfigure()
+      }
     }
   }
 }

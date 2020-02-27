@@ -27,9 +27,11 @@ export default class Produce extends Command {
 the penguin produce an egg called uovo-i386-2020-01-18_2000.iso`]
 
   async run() {
+
     Utils.titles()
+    const {flags} = this.parse(Produce)
+
     if (Utils.isRoot() && Utils.prerequisitesInstalled()) {
-      const {flags} = this.parse(Produce)
 
       const basename = flags.basename ||  os.hostname()
       let compression = '' // se vuota, compression viene definita da loadsettings

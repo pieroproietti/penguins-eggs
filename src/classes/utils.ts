@@ -28,7 +28,7 @@ export default class Utils {
   static prerequisitesInstalled(): boolean {
     const retVal: boolean = fs.existsSync('/etc/penguins-eggs.conf') && (fs.existsSync('/usr/local/share/excludes/penguins-eggs-exclude.list'))
     if (!retVal) {
-      console.log('You need to install the prerequisites for eggs. \nTry: sudo eggs prerequisites')
+      console.log(chalk.red('\nYou need to install the prerequisites for eggs. \nTry: sudo eggs prerequisites'))
     }
     return retVal
   }
@@ -37,7 +37,7 @@ export default class Utils {
    * Return the primary user's name
    */
   static getPrimaryUser(): string {
-    return shx.exec(`echo $(awk -F":" '/1000:1000/ { print $1 }' /etc/passwd)`, {silent: true}).stdout.trim()
+    return shx.exec(`echo $(awk -F":" '/1000:1000/ { print $1 }' /etc/passwd)`, { silent: true }).stdout.trim()
   }
 
   /**
@@ -98,7 +98,7 @@ export default class Utils {
   static getSnapshotSize(snapshot_dir = '/'): string {
     let size = ''
     if (fs.existsSync(snapshot_dir)) {
-      size = shx.exec(`/usr/bin/find ${snapshot_dir} -maxdepth 1 -type f -name '*.iso' -exec du -shc {} + | tail -1 | awk '{print $1}'`, {silent: true}).stdout.trim()
+      size = shx.exec(`/usr/bin/find ${snapshot_dir} -maxdepth 1 -type f -name '*.iso' -exec du -shc {} + | tail -1 | awk '{print $1}'`, { silent: true }).stdout.trim()
     }
     if (size === '') {
       size = '0'
@@ -136,24 +136,24 @@ export default class Utils {
      */
   static getDebianVersion(): number {
     const cmd = 'cat /etc/debian_version | /usr/bin/cut -f1 -d\'.\''
-    const version = Number(shx.exec(cmd, {silent: true}).stdout)
+    const version = Number(shx.exec(cmd, { silent: true }).stdout)
     return version
   }
 
   /**
-       * Calculate the space used on the disk
-       * @return {void}
-       */
+  * Calculate the space used on the disk
+  * @return {void}
+  */
   static getUsedSpace(): string {
     let out = ''
     if (this.isLive()) {
       out += `${this.getLiveRootSpace()} GB -- estimated`
     } else {
-      out += shx.exec('df -h / | /usr/bin/awk \'NR==2 {print $3}\'', {silent: true}).stdout
+      out += shx.exec('df -h / | /usr/bin/awk \'NR==2 {print $3}\'', { silent: true }).stdout
     }
 
     if (shx.exec('mountpoint -q /home').code) {
-      out += '       on /home: ' + shx.exec('df -h /home | /usr/bin/awk \'NR==2 {print $3}\'', {silent: true}).stdout.trim()
+      out += '       on /home: ' + shx.exec('df -h /home | /usr/bin/awk \'NR==2 {print $3}\'', { silent: true }).stdout.trim()
     }
     return out
   }
@@ -222,7 +222,7 @@ export default class Utils {
        */
   static isi686(): boolean {
     let retVal = false
-    if (shx.exec('uname -m', {silent: true}).stdout.trim() === 'i686') {
+    if (shx.exec('uname -m', { silent: true }).stdout.trim() === 'i686') {
       retVal = true
     }
     return retVal
@@ -240,7 +240,7 @@ export default class Utils {
     if (type === 'mx') {
       cmd = 'mountpoint -q /live/aufs'
     }
-    result = shx.exec(cmd, {silent: true}).code
+    result = shx.exec(cmd, { silent: true }).code
     retVal = result === 0
     return retVal
   }
@@ -253,7 +253,7 @@ export default class Utils {
     if (process.getuid && process.getuid() === 0) {
       return true
     }
-    console.log(`${this.getFriendName()} need to run with root privileges. Please, prefix it with sudo.`)
+    console.log(chalk.red(`\n${this.getFriendName()} need to run with root privileges. Please, prefix it with sudo.`))
     return false
   }
 
@@ -300,8 +300,8 @@ export default class Utils {
   static packageIsInstalled(debPackage: string): boolean {
     let isInstalled = false
     const cmd = `/usr/bin/dpkg -s ${debPackage} | grep Status`
-    const stdout = shx.exec(cmd, {silent: true}).stdout.trim()
-    
+    const stdout = shx.exec(cmd, { silent: true }).stdout.trim()
+
     if (stdout === 'Status: install ok installed') {
       isInstalled = true
     }
@@ -316,8 +316,8 @@ export default class Utils {
   static packageInstall(debPackage: string): boolean {
     let retVal = false
 
-    if (shx.exec('/usr/bin/apt-get update', {silent: true}) === '0') {
-      if (shx.exec(`/usr/bin/apt-get install -y ${debPackage}`, {silent: true}) === '0') {
+    if (shx.exec('/usr/bin/apt-get update', { silent: true }) === '0') {
+      if (shx.exec(`/usr/bin/apt-get install -y ${debPackage}`, { silent: true }) === '0') {
         retVal = true
       }
     }
@@ -353,7 +353,7 @@ export default class Utils {
 
     const cmdSudo = `chroot ${target} addgroup ${username} sudo`
     console.log(`addUser cmdSudo: ${cmdSudo}`)
-    shx.exec(cmdSudo, {silent: true})
+    shx.exec(cmdSudo, { silent: true })
   }
 
   /**
@@ -388,10 +388,10 @@ export default class Utils {
     fs.writeFileSync(file, text)
   }
 
-   /**
-   *
-   * @param msg
-   */
+  /**
+  *
+  * @param msg
+  */
   static async customConfirm(msg = "Select yes to continue... "): Promise<any> {
     return new Promise(function (resolve) {
       const questions: Array<Record<string, any>> = [
@@ -414,9 +414,10 @@ export default class Utils {
    * titles
    * Penguin's are gettings alive!
    */
-  static titles(): void{
+  static titles(): void {
     clear()
     console.log(chalk.yellow(figlet.textSync('eggs')))
     console.log('                        Penguin\'s eggs are gettings alive!')
+    console.log()
   }
 }
