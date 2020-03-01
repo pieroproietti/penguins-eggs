@@ -138,22 +138,18 @@ export default class Ovary {
 
     this.live = Utils.isLive()
 
-    // this.users = Utils.usersList()
     this.i686 = Utils.isi686()
     this.debian_version = Utils.getDebianVersion()
-    // const name = shx.exec(`cat /etc/mx-version | /usr/bin/cut -f1 -d' '`).stdout.trim()
   }
 
   /**
   * inizializzazioni che non può essere messa nel constructor
-  * a causa di chiamate async.
+  * a causa della necessità di async.
   * @returns {boolean} success
   */
   async fertilization(): Promise<boolean> {
     this.oses = new Oses()
     this.iso = this.oses.info(this.distro)
-
-
 
     if (this.loadSettings() && this.listFreeSpace()) {
       this.distro.pathHome = this.work_dir + this.distro.name
@@ -315,7 +311,7 @@ export default class Ovary {
       console.log('------------------------------------------')
       console.log('Laying the system into the egg...')
       console.log('------------------------------------------')
-      await this.calamaresConfigure() // Avviene tutto nel sistema genitore
+      await this.calamaresConfigure()
       await this.isoCreateStructure()
       await this.isolinuxPrepare()
       await this.isoStdmenuCfg()
@@ -332,6 +328,7 @@ export default class Ovary {
       }
       await this.editLiveFs()
       await this.editBootMenu()
+      await this.addDebianRepo()
       await this.makeSquashFs()
       await this.cleanUp()
       if (this.make_efi) {
@@ -1070,6 +1067,15 @@ timeout 200\n`
       shx.exec(cmd, { silent: false })
     }
   }
-}
 
-   
+  /**
+   * addDebianRepo
+   */
+  async addDebianRepo(){
+    console.log('==========================================')
+    console.log(`ovary: addDebianRepo`)
+    console.log('==========================================')
+
+    shx.cp('-r', '/home/live/debian-live/*', this.distro.pathIso)
+  }
+}
