@@ -46,6 +46,7 @@ class Calamares {
       await this.sourcesFinal()
       await this.bootLoaderConfig()
       await this.unpackfsConf()
+      await this.packages()
     }
   }
 
@@ -202,6 +203,15 @@ class Calamares {
     const content = Generic.bootLoaderConfig()
     fs.writeFileSync(scriptPath, content, 'utf8')
     shx.chmod('+x', scriptPath)
+  }
+
+  /**
+   * 
+   */
+  packages() {
+    const confPath = '/etc/calamares/modules/packages.conf'
+    const content = Generic.packages()
+    fs.writeFileSync(confPath, content, 'utf8')
   }
 }
 

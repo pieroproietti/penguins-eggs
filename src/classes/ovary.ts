@@ -829,15 +829,19 @@ timeout 200\n`
      */
     let cmd = ''
     if (this.reset_accounts) {
-      cmd = `/sbin/installed-to-live -b ${this.distro.pathLiveFs} start ${bindBoot} empty=/home general version-file read-write`
+      cmd = `/sbin/installed-to-live -b ${this.distro.pathLiveFs} start ${bindBoot} empty=/home general version-file read-only`
+      cmd = `/sbin/installed-to-live -b ${this.distro.pathLiveFs} start ${bindBoot} empty=/home empty=/etc/modprobe.d/ empty=/etc/grub.d empty=/etc/network/interfaces.d/ all-files passwd repo timezone version-file read-only`
+      cmd = `/sbin/installed-to-live -b ${this.distro.pathLiveFs} start ${bindBoot} empty=/home empty=/etc/modprobe.d/ empty=/etc/network/interfaces.d/ all-files passwd repo timezone version-file read-only`
       await shx.exec(cmd, {silent: true})
       await this.makeLiveHome()
     } else {
-      cmd = `/sbin/installed-to-live -b ${this.distro.pathLiveFs} start bind=/home${bindBootToo} live-files version-file adjtime read-write`
+      cmd = `/sbin/installed-to-live -b ${this.distro.pathLiveFs} start bind=/home${bindBootToo} live-files version-file adjtime read-only`
       await shx.exec(cmd, {silent: true})
     }
+    // await this.makeEtcGrubD()
   }
 
+  
   /**
  * 
  */

@@ -8,6 +8,7 @@
 
 import shx = require('shelljs')
 import path = require('path')
+import Utils from './../utils'
 
 /**
  * 
@@ -44,6 +45,43 @@ else
 fi\n`   
     return text
     }
-}
 
+    /**
+    * 
+    */
+   static packages(): string {
+    let text = ``
+    text +=`backend: apt\n\n`
+    text +=`operations:\n`
+    text +=` - remove:\n`
+    if (Utils.packageIsInstalled('live-boot')){
+     text +=`   - 'live-boot'\n`
+    }
+    if (Utils.packageIsInstalled('live-boot-doc')){
+      text +=`   - 'live-boot-doc'\n`
+    }
+    if (Utils.packageIsInstalled('live-config')){
+      text +=`   - 'live-config'\n`
+    }
+    if (Utils.packageIsInstalled('live-config-doc')){
+      text +=`   - 'live-config-doc'\n`
+    }
+    if (Utils.packageIsInstalled('live-config-systemd')){
+     text +=`   - 'live-config-systemd'\n`
+    }
+    if (Utils.packageIsInstalled('live-toos')){
+       text +=`   - 'live-tools'\n`
+    }
+    if (Utils.packageIsInstalled('task-localisation')){
+      text +=`   - 'live-task-localisation'\n`
+    }
+    if (Utils.packageIsInstalled('live-task-recommended')){
+     text +=`   - 'live-task-recommended'\n`
+    }
+    if (Utils.packageIsInstalled('calamares-settings-debian')){
+       text +=`   - 'calamares-settings-debian'\n`
+    }
+    return text
+  }
+}
 export default Generic

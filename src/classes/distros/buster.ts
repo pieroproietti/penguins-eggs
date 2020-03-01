@@ -6,19 +6,17 @@
  * mail: piero.proietti@gmail.com
  */
 
- import shx = require('shelljs')
- import path = require('path')
- import fs = require('fs')
-import { text } from 'figlet'
+import shx = require('shelljs')
+import path = require('path')
+import fs = require('fs')
+
 
  class Buster {
 
   /**
    * buster settings
-   * { exec: ['partition', 'mount', 'unpackfs', 'machineid', 'fstab', 'locale', 'keyboard', 'localecfg', 'users', 'displaymanager', 'networkcfg', 'hwclock', 'grubcfg', 'bootloader', 'luksbootkeyfile', 'plymouthcfg', 'initramfscfg', 'initramfs', 'removeuser', 'umount'] },
    */
   static settings(branding='eggs'): object {
-    // shx.cp(`-r`, path.resolve(__dirname, `../../../templates/distros/buster/*`), `/etc/`)
     const settings = {
       'modules-search': ['local', '/usr/lib/calamares/modules'],
       sequence: [
@@ -97,7 +95,5 @@ EOF
 exit 0`
     return text
    }
-
-  
 }
 export default Buster
