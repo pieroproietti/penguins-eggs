@@ -23,7 +23,7 @@ class Generic {
 CHROOT=$(mount | grep proc | grep calamares | awk '{print $3}' | sed -e "s#/proc##g")
 
 # Creo tmp mancante
-mkdir ${CHROOT}/tmp
+mkdir $CHROOT/tmp
 
 # Set secure permissions for the initramfs if we're configuring
 # full-disk-encryption. The initramfs is re-generated later in the
@@ -41,7 +41,7 @@ if [ -d /sys/firmware/efi/efivars ]; then
 else
     echo " * install grub... (bios)"
     DEBIAN_FRONTEND=noninteractive chroot $CHROOT apt-get -y install grub-pc cryptsetup keyutils
-f\n`   
+fi\n`   
     return text
     }
 }
