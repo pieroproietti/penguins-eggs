@@ -12,16 +12,16 @@
  *  xorriso -as mkisofs -r -J -joliet-long -l -cache-inodes -isohybrid-mbr /usr/lib/ISOLINUX/isohdpfx.bin  -partition_offset 16 -volid "Penguin's eggs lm32-mate" -b isolinux/isolinux.bin -c isolinux/boot.cat -no-emul-boot -boot-load-size 4 -boot-info-table -o /home/eggs/lm32-mate_2019-04-17_1830-02.iso /home/eggs/lm32-mate/iso
  */
 
- /**
-  * pacchetti 
-  * - efibootmgr
-  * - grub-efi-amd64-signed
-  * - grub-efi-amd64.bin
-  * - grub-efi-amd64-signed
-  * libefiboot1
-  * libefivar1
-  * Ci sono tutti!
-  */
+/**
+ * pacchetti 
+ * - efibootmgr
+ * - grub-efi-amd64-signed
+ * - grub-efi-amd64.bin
+ * - grub-efi-amd64-signed
+ * libefiboot1
+ * libefivar1
+ * Ci sono tutti!
+ */
 
 import fs = require('fs')
 import path = require('path')
@@ -153,6 +153,9 @@ export default class Ovary {
 
     if (this.loadSettings() && this.listFreeSpace()) {
       this.distro.pathHome = this.work_dir + this.distro.name
+      this.distro.pathLowerdir = this.distro.pathHome + '/.lowerdir'
+      this.distro.pathUpperdir = this.distro.pathHome + '/.upperdir'
+      this.distro.pathWorkdir = this.distro.pathHome + '/.workdir'
       this.distro.pathLiveFs = this.distro.pathHome + '/fs'
       this.distro.pathIso = this.distro.pathHome + '/iso'
       let answer = JSON.parse(await Utils.customConfirm(`Select yes to continue...`))
@@ -311,6 +314,7 @@ export default class Ovary {
       console.log('------------------------------------------')
       console.log('Laying the system into the egg...')
       console.log('------------------------------------------')
+      await this.liveCreateStructure()
       await this.calamaresConfigure()
       await this.isoCreateStructure()
       await this.isolinuxPrepare()
@@ -335,6 +339,27 @@ export default class Ovary {
         await this.editEfi()
       }
       await this.makeIsoImage()
+    }
+  }
+
+  /**
+   * 
+   */
+  async liveCreateStructure() {
+    console.log('------------------------------------------')
+    console.log('Overy: liveCreateStructure')
+    console.log('------------------------------------------')
+    if (!fs.existsSync(this.distro.pathLowerdir)) {
+      shx.mkdir('-p', this.distro.pathLowerdir)
+    }
+    if (!fs.existsSync(this.distro.pathUpperdir)) {
+      shx.mkdir('-p', this.distro.pathUpperdir)
+    }
+    if (!fs.existsSync(this.distro.pathWorkdir)) {
+      shx.mkdir('-p', this.distro.pathWorkdir)
+    }
+    if (!fs.existsSync(this.distro.pathLiveFs)) {
+      shx.mkdir('-p', this.distro.pathLiveFs)
     }
   }
 
@@ -501,12 +526,12 @@ export default class Ovary {
     const isolinuxbin = `${this.iso.isolinuxPath}isolinux.bin`
     const vesamenu = `${this.iso.syslinuxPath}vesamenu.c32`
 
-    shx.exec(`rsync -a ${this.iso.syslinuxPath}chain.c32 ${this.distro.pathIso}/isolinux/`, {silent: true})
-    shx.exec(`rsync -a ${this.iso.syslinuxPath}ldlinux.c32 ${this.distro.pathIso}/isolinux/`, {silent: true})
-    shx.exec(`rsync -a ${this.iso.syslinuxPath}libcom32.c32 ${this.distro.pathIso}/isolinux/`, {silent: true})
-    shx.exec(`rsync -a ${this.iso.syslinuxPath}libutil.c32 ${this.distro.pathIso}/isolinux/`, {silent: true})
-    shx.exec(`rsync -a ${isolinuxbin} ${this.distro.pathIso}/isolinux/`, {silent: true})
-    shx.exec(`rsync -a ${vesamenu} ${this.distro.pathIso}/isolinux/`, {silent: true})
+    shx.exec(`rsync -a ${this.iso.syslinuxPath}chain.c32 ${this.distro.pathIso}/isolinux/`, { silent: true })
+    shx.exec(`rsync -a ${this.iso.syslinuxPath}ldlinux.c32 ${this.distro.pathIso}/isolinux/`, { silent: true })
+    shx.exec(`rsync -a ${this.iso.syslinuxPath}libcom32.c32 ${this.distro.pathIso}/isolinux/`, { silent: true })
+    shx.exec(`rsync -a ${this.iso.syslinuxPath}libutil.c32 ${this.distro.pathIso}/isolinux/`, { silent: true })
+    shx.exec(`rsync -a ${isolinuxbin} ${this.distro.pathIso}/isolinux/`, { silent: true })
+    shx.exec(`rsync -a ${vesamenu} ${this.distro.pathIso}/isolinux/`, { silent: true })
   }
 
   async isoStdmenuCfg() {
@@ -638,7 +663,7 @@ timeout 200\n`
 
     if (this.reset_accounts) {
       // exclude /etc/localtime if link and timezone not America/New_York
-      if (shx.exec('/usr/bin/test -L /etc/localtime', {silent: true}) && shx.exec('cat /etc/timezone', {silent: true}) !== 'America/New_York') {
+      if (shx.exec('/usr/bin/test -L /etc/localtime', { silent: true }) && shx.exec('cat /etc/timezone', { silent: true }) !== 'America/New_York') {
         this.addRemoveExclusion(true, '/etc/localtime')
       }
     }
@@ -679,15 +704,15 @@ timeout 200\n`
     console.log('ovary: cleanUp')
     console.log('==========================================')
 
-    shx.exec('sync', {silent: true})
+    shx.exec('sync', { silent: true })
     if (this.bindedFs) {
-      shx.exec('/usr/bin/pkill mksquashfs; /usr/bin/pkill md5sum', {silent: true})
+      shx.exec('/usr/bin/pkill mksquashfs; /usr/bin/pkill md5sum', { silent: true })
       shx.cp('/tmp/penguins-eggs/fstab', '/etc/fstab') // Pezza a colori
     }
-    shx.exec('/usr/bin/[ -f /tmp/installed-to-live/cleanup.conf ] && /sbin/installed-to-live cleanup', {silent: true})
+    shx.exec('/usr/bin/[ -f /tmp/installed-to-live/cleanup.conf ] && /sbin/installed-to-live cleanup', { silent: true })
 
     if (fs.existsSync(`${this.work_dir}/mx-snapshot`)) {
-      shx.exec(`rm -r ${this.work_dir}`, {silent: true})
+      shx.exec(`rm -r ${this.work_dir}`, { silent: true })
     }
   }
 
@@ -829,35 +854,69 @@ timeout 200\n`
      */
     let cmd = ''
     if (this.reset_accounts) {
-      cmd = `/sbin/installed-to-live -b ${this.distro.pathLiveFs} start ${bindBoot} empty=/home general version-file read-only`
+      cmd = `/sbin/installed-to-live -b ${this.distro.pathLiveBinded} start ${bindBoot} empty=/home general version-file read-only`
       /**
        * Per ovviare alla mancata copia di /etc/grub.d al posto dell'opzione general vado ad usare
        * l'equivalente: 
        * empty=/etc/modprobe.d/ empty=/etc/grub.d empty=/etc/network/interfaces.d/ all-files passwd repo timezone
        * togliendo, però empty=/etc/grub.d 
        */
-      cmd = `/sbin/installed-to-live -b ${this.distro.pathLiveFs} start ${bindBoot} empty=/home empty=/etc/modprobe.d/ empty=/etc/network/interfaces.d/ all-files passwd repo timezone version-file read-only`
+      cmd = `/sbin/installed-to-live -b ${this.distro.pathLowerdir} start ${bindBoot} empty=/home empty=/etc/modprobe.d/ empty=/etc/network/interfaces.d/ all-files passwd repo timezone version-file read-only`
+      // await shx.exec(cmd, { silent: true })
+      cmd =`mount --bind --make-slave / ${this.distro.pathLowerdir}`
+      console.log(cmd)
+      shx.exec(cmd)
 
-      await shx.exec(cmd, {silent: true})
+      console.log(cmd)
+      cmd = `mount -o remount,bind,ro ${this.distro.pathLowerdir}`
+      shx.exec(cmd) // OK sta in sola lettura
+
+      // Aggiungiamo upperdir
+      cmd = `mount -t overlay overlay -o lowerdir=${this.distro.pathLowerdir},work_dir=${this.distro.pathUpperdir},upperdir=${this.distro.pathUpperdir},workdir=${this.distro.pathWorkdir} ${this.distro.pathLiveFs}`
+      console.log(cmd)
+      shx.exec(cmd)
+
+      console.log('Esco per controllo...')
+      process.exit(1)
+      // home esclusa
+      await this.makeLiveHome()
+      // overlay on / type overlay (rw,noatime,lowerdir=/run/live/rootfs/filesystem.squashfs/,upperdir=/run/live/overlay/rw,workdir=/run/live/overlay/work)
+      // in fstab
+      // overlay / overlay rw 0 0
+
+
       /**
        * A questo punto, però credo che vi sia una migliore opzione, ovvero, montare read-only il file system bind
        * e sovrapporre ad esso un livello di overlay, in modo da ottenere i vantaggi del fs binded + quelli della
        * copia.
+       * 1) Bind mount the bind-root
+       * mount --bind --make-slave / ${this.distro.pathLiveBinded}
+       *
+       *     mount -o remount,bind,ro ${this.distro.pathLiveBinded} 
+       * General
+       * 2) do a bunch of bind mounts under bind-root
+       *    create directories and touch files as needed, on:
+       *    /home, /etc/modprobe.d, /etc/network/interfaces.d, /etc/grub.d
+       * 3) Munge files
        * 
        * Ma per questo c'è bisogno di un nuovo branch
+       * 1) 
+       * mount --bind --make-slave / ${this.distro.pathLiveBinded}
+       * mount -o remount,bind,ro ${this.distro.pathLiveBinded}
+
        * 
        *  // mount -t overlay -o rw,lowerdir=/var,upperdir=/var.tmpfs/upper,workdir=/var.tmpfs/work overlay /var.overlay
        *  shx.exec(`mount -t overlay -o rw,lowerdir=/var,upperdir=/var.tmpfs/upper,workdir=/var.tmpfs/work overlay /var.overlay`)
+       * mount -t overlay overlay -o lowerdir=/home/bork/test/lower,upperdir=/home/bork/test/upper,workdir=/home/bork/test/work /home/bork/test/merged
        */
-      await this.makeLiveHome()
     } else {
       cmd = `/sbin/installed-to-live -b ${this.distro.pathLiveFs} start bind=/home${bindBootToo} live-files version-file adjtime read-only`
-      await shx.exec(cmd, {silent: true})
+      await shx.exec(cmd, { silent: true })
     }
     // await this.makeEtcGrubD()
   }
 
-  
+
   /**
  * 
  */
@@ -1091,7 +1150,7 @@ timeout 200\n`
   /**
    * addDebianRepo
    */
-  async addDebianRepo(){
+  async addDebianRepo() {
     console.log('==========================================')
     console.log(`ovary: addDebianRepo`)
     console.log('==========================================')
