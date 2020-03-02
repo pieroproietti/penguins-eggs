@@ -854,25 +854,16 @@ timeout 200\n`
      */
     let cmd = ''
     if (this.reset_accounts) {
-      cmd = `/sbin/installed-to-live -b ${this.distro.pathLiveBinded} start ${bindBoot} empty=/home general version-file read-only`
-      /**
-       * Per ovviare alla mancata copia di /etc/grub.d al posto dell'opzione general vado ad usare
-       * l'equivalente: 
-       * empty=/etc/modprobe.d/ empty=/etc/grub.d empty=/etc/network/interfaces.d/ all-files passwd repo timezone
-       * togliendo, però empty=/etc/grub.d 
-       */
-      cmd = `/sbin/installed-to-live -b ${this.distro.pathLowerdir} start ${bindBoot} empty=/home empty=/etc/modprobe.d/ empty=/etc/network/interfaces.d/ all-files passwd repo timezone version-file read-only`
-      // await shx.exec(cmd, { silent: true })
       cmd =`mount --bind --make-slave / ${this.distro.pathLowerdir}`
       console.log(cmd)
       shx.exec(cmd)
 
-      console.log(cmd)
       cmd = `mount -o remount,bind,ro ${this.distro.pathLowerdir}`
+      console.log(cmd)
       shx.exec(cmd) // OK sta in sola lettura
 
-      // Aggiungiamo upperdir
-      cmd = `mount -t overlay overlay -o lowerdir=${this.distro.pathLowerdir},work_dir=${this.distro.pathUpperdir},upperdir=${this.distro.pathUpperdir},workdir=${this.distro.pathWorkdir} ${this.distro.pathLiveFs}`
+      // Aggiungiamo upperdir e wordir
+      cmd = `mount -t overlay overlay -o lowerdir=${this.distro.pathLowerdir},upperdir=${this.distro.pathUpperdir},workdir=${this.distro.pathWorkdir} ${this.distro.pathLiveFs}`
       console.log(cmd)
       shx.exec(cmd)
 
@@ -880,10 +871,6 @@ timeout 200\n`
       process.exit(1)
       // home esclusa
       await this.makeLiveHome()
-      // overlay on / type overlay (rw,noatime,lowerdir=/run/live/rootfs/filesystem.squashfs/,upperdir=/run/live/overlay/rw,workdir=/run/live/overlay/work)
-      // in fstab
-      // overlay / overlay rw 0 0
-
 
       /**
        * A questo punto, però credo che vi sia una migliore opzione, ovvero, montare read-only il file system bind
