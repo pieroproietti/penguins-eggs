@@ -830,9 +830,25 @@ timeout 200\n`
     let cmd = ''
     if (this.reset_accounts) {
       cmd = `/sbin/installed-to-live -b ${this.distro.pathLiveFs} start ${bindBoot} empty=/home general version-file read-only`
-      cmd = `/sbin/installed-to-live -b ${this.distro.pathLiveFs} start ${bindBoot} empty=/home empty=/etc/modprobe.d/ empty=/etc/grub.d empty=/etc/network/interfaces.d/ all-files passwd repo timezone version-file read-only`
+      /**
+       * Per ovviare alla mancata copia di /etc/grub.d al posto dell'opzione general vado ad usare
+       * l'equivalente: 
+       * empty=/etc/modprobe.d/ empty=/etc/grub.d empty=/etc/network/interfaces.d/ all-files passwd repo timezone
+       * togliendo, però empty=/etc/grub.d 
+       */
       cmd = `/sbin/installed-to-live -b ${this.distro.pathLiveFs} start ${bindBoot} empty=/home empty=/etc/modprobe.d/ empty=/etc/network/interfaces.d/ all-files passwd repo timezone version-file read-only`
+
       await shx.exec(cmd, {silent: true})
+      /**
+       * A questo punto, però credo che vi sia una migliore opzione, ovvero, montare read-only il file system bind
+       * e sovrapporre ad esso un livello di overlay, in modo da ottenere i vantaggi del fs binded + quelli della
+       * copia.
+       * 
+       * Ma per questo c'è bisogno di un nuovo branch
+       * 
+       *  // mount -t overlay -o rw,lowerdir=/var,upperdir=/var.tmpfs/upper,workdir=/var.tmpfs/work overlay /var.overlay
+       *  shx.exec(`mount -t overlay -o rw,lowerdir=/var,upperdir=/var.tmpfs/upper,workdir=/var.tmpfs/work overlay /var.overlay`)
+       */
       await this.makeLiveHome()
     } else {
       cmd = `/sbin/installed-to-live -b ${this.distro.pathLiveFs} start bind=/home${bindBootToo} live-files version-file adjtime read-only`

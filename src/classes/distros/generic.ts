@@ -51,37 +51,29 @@ fi\n`
     */
    static packages(): string {
     let text = ``
-    text +=`backend: apt\n\n`
-    text +=`operations:\n`
-    text +=` - remove:\n`
-    if (Utils.packageIsInstalled('live-boot')){
-     text +=`   - 'live-boot'\n`
-    }
-    if (Utils.packageIsInstalled('live-boot-doc')){
-      text +=`   - 'live-boot-doc'\n`
-    }
-    if (Utils.packageIsInstalled('live-config')){
-      text +=`   - 'live-config'\n`
-    }
-    if (Utils.packageIsInstalled('live-config-doc')){
-      text +=`   - 'live-config-doc'\n`
-    }
-    if (Utils.packageIsInstalled('live-config-systemd')){
-     text +=`   - 'live-config-systemd'\n`
-    }
-    if (Utils.packageIsInstalled('live-toos')){
-       text +=`   - 'live-tools'\n`
-    }
-    if (Utils.packageIsInstalled('task-localisation')){
-      text +=`   - 'live-task-localisation'\n`
-    }
-    if (Utils.packageIsInstalled('live-task-recommended')){
-     text +=`   - 'live-task-recommended'\n`
-    }
-    if (Utils.packageIsInstalled('calamares-settings-debian')){
-       text +=`   - 'calamares-settings-debian'\n`
-    }
+    text += `backend: apt\n\n`
+    text += `operations:\n`
+    text += ` - remove:\n`
+    text += addIfExist('live-boot')
+    text += addIfExist('live-boot-doc')
+    text += addIfExist('live-config')
+    text += addIfExist('live-config-doc')
+    text += addIfExist('live-config-systemd')
+    text += addIfExist('live-tools')
+    text += addIfExist('task-localisation')
+    text += addIfExist('live-task-recommended')
+    text += addIfExist('calamares-settings-debian')
+    // text += addIfExist('calamares')
     return text
   }
 }
 export default Generic
+
+function addIfExist(package2test: string): string {
+  let text = ''
+  if (Utils.packageIsInstalled(package2test)){
+    text +=`   - '${package2test}'\n`
+  }
+  return text
+  
+}
