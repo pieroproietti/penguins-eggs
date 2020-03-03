@@ -35,8 +35,8 @@ import Calamares from './calamares-config'
 import Oses from './oses'
 import Prerequisites from '../commands/prerequisites'
 import { IDistro, IOses, IPackage } from '../interfaces'
-import { SIGXCPU } from 'constants'
-import { exclude } from 'inquirer/lib/objects/separator'
+
+const exec = require('../lib/utils').exec
 
 /**
  * Ovary:
@@ -870,28 +870,28 @@ timeout 200\n`
         if (!(dir.name === 'lost+found')) {
           console.log(`# ${dir.name} = directory`)
           cmd = `mkdir ${this.distro.pathLowerdir}/${dir.name}`
-          shx.exec(cmd)
           console.log(cmd)
+          await exec(cmd)
           if (!this.isEscluded(dir.name)) {
             cmd = `mount --bind --make-slave /${dir.name} ${this.distro.pathLowerdir}/${dir.name}`
-            shx.exec(cmd)
             console.log(cmd)
+            await exec(cmd)
           }
         }
 
       } else if (dir.isFile()) {
         console.log(`# ${dir.name} = file`)
         cmd = `cp /${dir.name} ${this.distro.pathLowerdir}`
-        shx.exec(cmd)
         console.log(cmd)
+        await exec(cmd)
 
       } else if (dir.isSymbolicLink()) {
         console.log(`# ${dir.name} = symbolicLink`)
         ln = `/${dir.name}`
         dest = `/${fs.readlinkSync(ln)}`
         cmd = `ln -s ${dest} ${this.distro.pathLowerdir}/${dir.name}`
-        shx.exec(cmd)
         console.log(cmd)
+        await exec(cmd)
         ln = ''
         dest = ''
       }
@@ -907,6 +907,7 @@ timeout 200\n`
     console.log('==========================================')
     console.log('ovary: unBindFs')
     console.log('==========================================')
+
     if (fs.existsSync(this.distro.pathLowerdir)) {
       const bindDirs = fs.readdirSync(this.distro.pathLowerdir, { withFileTypes: true })
       let cmd = ''
@@ -915,18 +916,22 @@ timeout 200\n`
           console.log(`# ${dir.name} = directory`)
           if (!this.isEscluded(dir.name)) {
             cmd = `umount ${this.distro.pathLowerdir}/${dir.name}`
-            shx.exec(cmd)
+            await exec(cmd)
             console.log(cmd)
           }
           cmd = `rm ${this.distro.pathLowerdir}/${dir.name} -rf`
           console.log(cmd)
+          await exec(cmd)
         } else if (dir.isFile()) {
           console.log(`# ${dir.name} = file`)
           cmd = `rm ${this.distro.pathLowerdir}/${dir.name} -rf`
           console.log(cmd)
+          await exec(cmd)
         } else if (dir.isSymbolicLink()) {
           console.log(`# ${dir.name} = symbolicLink`)
-          console.log(`rm ${this.distro.pathLowerdir}/${dir.name}`)
+          cmd = `rm ${this.distro.pathLowerdir}/${dir.name}`
+          console.log(cmd)
+          await exec(cmd)
         }
       }
     }
