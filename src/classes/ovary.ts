@@ -915,9 +915,14 @@ timeout 200\n`
     console.log('ovary: unBindFs')
     console.log('==========================================')
 
+    let cmd = ''
+    // Rimuovo overlay
+    cmd =`umount ${this.distro.pathLiveFs}`
+    console.log(cmd)
+    await exec(cmd)
+
     if (fs.existsSync(this.distro.pathLowerdir)) {
       const bindDirs = fs.readdirSync(this.distro.pathLowerdir, { withFileTypes: true })
-      let cmd = ''
       for (let dir of bindDirs) {
         if (dir.isDirectory()) {
           console.log(`# ${dir.name} = directory`)
