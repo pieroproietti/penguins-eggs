@@ -842,8 +842,7 @@ timeout 200\n`
       'run',
       'sys',
       'swapfile',
-      'tmp',
-      'lost+found']
+      'tmp']
 
     for (let excludeDir of excludeDirs) {
       if (excludeDir === dir) {
@@ -868,14 +867,16 @@ timeout 200\n`
     let dest = ''
     for (let dir of rootDirs) {
       if (dir.isDirectory()) {
-        console.log(`# ${dir.name} = directory`)
-        cmd = `mkdir ${this.distro.pathLowerdir}/${dir.name}`
-        shx.exec(cmd)
-        console.log(cmd)
-        if (!this.isEscluded(dir.name)) {
-          cmd = `mount --bind --make-slave /${dir.name} ${this.distro.pathLowerdir}/${dir.name}`
+        if (!(dir.name === 'lost+found')) {
+          console.log(`# ${dir.name} = directory`)
+          cmd = `mkdir ${this.distro.pathLowerdir}/${dir.name}`
           shx.exec(cmd)
           console.log(cmd)
+          if (!this.isEscluded(dir.name)) {
+            cmd = `mount --bind --make-slave /${dir.name} ${this.distro.pathLowerdir}/${dir.name}`
+            shx.exec(cmd)
+            console.log(cmd)
+          }
         }
 
       } else if (dir.isFile()) {
