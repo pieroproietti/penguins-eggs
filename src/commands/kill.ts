@@ -12,6 +12,8 @@ import shx = require('shelljs')
 import Utils from '../classes/utils'
 import Ovary from '../classes/ovary'
 
+const exec = require('../lib/utils').exec
+
 
 export default class Kill extends Command {
   config_file = '/etc/penguins-eggs.conf' as string
@@ -44,8 +46,8 @@ kill the eggs/free the nest
       ovary.uBindFs()
       this.log(`${Utils.getFriendName()}: deleting old eggs ...`)
       if (this.loadSettings()) {
-        // shx.exec(`rm ${this.work_dir} -rf`)
-        // shx.exec(`rm ${this.snapshot_dir} -rf`)
+        await exec(`rm ${this.work_dir} -rf`)
+        await exec(`rm ${this.snapshot_dir} -rf`)
       }
 
     }
