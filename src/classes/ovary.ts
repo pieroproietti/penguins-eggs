@@ -826,91 +826,6 @@ timeout 200\n`
   }
 
   /**
-    * Check if exist mx-snapshot in work_dir;
-    * If respin mode remove all the users
-    */
-  async bindFs() {
-    console.log('==========================================')
-    console.log('ovary: bindFs')
-    console.log('==========================================')
-
-    const excludeDirs = [
-      'home',
-      'cdrom',
-      'dev',
-      'live',
-      'media',
-      'mnt',
-      'proc',
-      'sys',
-      'swapfile',
-      'tmp',
-      'lost+found']
-
-    const rootDirs = fs.readdirSync('/', { withFileTypes: true })
-    let dirToExclude = false
-    let cmd = ''
-    for (let dir of rootDirs) {
-      console.log(`Analizzo: ${dir.name}`)
-      if (dir.isDirectory()) {
-        console.log(`- ${dir.name} = directory`)
-        fs.mkdirSync(`${this.distro.pathLowerdir}/${dir.name}`)
-        if (this.isEscluded(dir.name)) {
-          cmd = `mount --bind --make-slave /${dir.name} ${this.distro.pathLowerdir}/${dir.name}`
-          console.log(cmd)
-          shx.exec(cmd)
-          dirToExclude = false
-        }
-      } else if (dir.isFile()) {
-        console.log(`- ${dir.name} = file`)
-        fs.copyFileSync(dir.name, this.distro.pathLowerdir)
-      } else if (dir.isSymbolicLink()) {
-        console.log(`- ${dir.name} = symbolicLink`)
-        fs.linkSync(`/${dir.name}`, `${this.distro.pathLowerdir}/${dir.name}`)
-      }
-    }
-
-
-    console.log('Esco per controllo...')
-    process.exit(1)
-
-  }
-
-  /**
-   * 
-   */
-  async unBindFs() {
-    console.log('==========================================')
-    console.log('ovary: bindFs')
-    console.log('==========================================')
-
-
-    if (fs.existsSync(this.distro.pathLowerdir)) {
-      const bindDirs = fs.readdirSync(this.distro.pathLowerdir, { withFileTypes: true })
-      let cmd = ''
-      for (let dir of bindDirs) {
-        console.log(`dirname: ${dir}`)
-        if (dir.isDirectory()) {
-          console.log(`- ${dir.name} = directory`)
-          if (!this.isEscluded(dir.name)) {
-            cmd = `umount ${this.distro.pathLowerdir}/${dir.name}`
-            console.log(cmd)
-            shx.exec(cmd)
-            console.log(`rm ${this.distro.pathLowerdir}/${dir.name} -rf`)
-            // fs.rmdirSync(`${this.distro.pathLowerdir}/${dir.name}`)
-          }
-        } else if (dir.isFile()) {
-          console.log(`- ${dir.name} = file`)
-          fs.rmdirSync(`${this.distro.pathLowerdir}/${dir.name}`)
-        } else if (dir.isSymbolicLink()) {
-          console.log(`- ${dir.name} = symbolicLink`)
-          fs.rmdirSync(`${this.distro.pathLowerdir}/${dir.name}`)
-        }
-      }
-    }
-  }
-
-  /**
    * 
    * @param dir 
    */
@@ -924,17 +839,95 @@ timeout 200\n`
       'media',
       'mnt',
       'proc',
+      'run',
       'sys',
       'swapfile',
       'tmp',
       'lost+found']
 
     for (let excludeDir of excludeDirs) {
-      if (excludeDir === dir.name) {
+      if (excludeDir === dir) {
         toExclude = true
       }
     }
     return toExclude
+  }
+
+  /**
+    * Check if exist mx-snapshot in work_dir;
+    * If respin mode remove all the users
+    */
+  async bindFs() {
+    Utils.titles()
+    console.log('==========================================')
+    console.log('ovary: bindFs')
+    console.log('==========================================')
+    const rootDirs = fs.readdirSync('/', { withFileTypes: true })
+    let cmd = ''
+    let ln = ''
+    let dest = ''
+    for (let dir of rootDirs) {
+      if (dir.isDirectory()) {
+        console.log(`# ${dir.name} = directory`)
+        cmd = `mkdir ${this.distro.pathLowerdir}/${dir.name}`
+        shx.exec(cmd)
+        console.log(cmd)
+        if (!this.isEscluded(dir.name)) {
+          cmd = `mount --bind --make-slave /${dir.name} ${this.distro.pathLowerdir}/${dir.name}`
+          shx.exec(cmd)
+          console.log(cmd)
+        }
+
+      } else if (dir.isFile()) {
+        console.log(`# ${dir.name} = file`)
+        cmd = `cp /${dir.name} ${this.distro.pathLowerdir}`
+        shx.exec(cmd)
+        console.log(cmd)
+
+      } else if (dir.isSymbolicLink()) {
+        console.log(`# ${dir.name} = symbolicLink`)
+        ln = `/${dir.name}`
+        dest = `/${fs.readlinkSync(ln)}`
+        cmd = `ln -s ${dest} ${this.distro.pathLowerdir}/${dir.name}`
+        shx.exec(cmd)
+        console.log(cmd)
+        ln = ''
+        dest = ''
+      }
+    }
+    process.exit(1)
+
+  }
+
+  /**
+   * 
+   */
+  async unBindFs() {
+    console.log('==========================================')
+    console.log('ovary: bindFs')
+    console.log('==========================================')
+    if (fs.existsSync(this.distro.pathLowerdir)) {
+      const bindDirs = fs.readdirSync(this.distro.pathLowerdir, { withFileTypes: true })
+      let cmd = ''
+      for (let dir of bindDirs) {
+        if (dir.isDirectory()) {
+          console.log(`# ${dir.name} = directory`)
+          if (!this.isEscluded(dir.name)) {
+            cmd = `umount ${this.distro.pathLowerdir}/${dir.name}`
+            console.log(cmd)
+          }
+          cmd = `rm ${this.distro.pathLowerdir}/${dir.name} -rf`
+          console.log(cmd)
+        } else if (dir.isFile()) {
+          console.log(`# ${dir.name} = file`)
+          cmd = `rm ${this.distro.pathLowerdir}/${dir.name} -rf`
+          console.log(cmd)
+        } else if (dir.isSymbolicLink()) {
+          console.log(`# ${dir.name} = symbolicLink`)
+          console.log(`rm ${this.distro.pathLowerdir}/${dir.name}`)
+        }
+      }
+    }
   }
 
   /**
