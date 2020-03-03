@@ -336,7 +336,8 @@ export default class Ovary {
       await this.editBootMenu()
       await this.addDebianRepo()
       await this.makeSquashFs()
-      await this.cleanUp()
+      await this.uBindFs()
+      // await this.cleanUp()
       if (this.make_efi) {
         await this.editEfi()
       }
@@ -902,10 +903,8 @@ timeout 200\n`
 
     // Monto overlay
     cmd =`mount -t overlay overlay -o lowerdir=${this.distro.pathLowerdir},upperdir=${this.distro.pathUpperdir},workdir=${this.distro.pathWorkdir} ${this.distro.pathLiveFs}`
+    console.log(cmd)
     await exec(cmd)
-
-    process.exit(1)
-
   }
 
   /**
