@@ -876,6 +876,9 @@ timeout 200\n`
             cmd = `mount --bind --make-slave /${dir.name} ${this.distro.pathLowerdir}/${dir.name}`
             console.log(cmd)
             await exec(cmd)
+            cmd = `mount -o remount,bind,ro ${this.distro.pathLowerdir}/${dir.name}`
+            console.log(cmd)
+            await exec(cmd)
           }
         }
 
