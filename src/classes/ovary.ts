@@ -927,10 +927,13 @@ timeout 200\n`
     console.log('==========================================')
 
     let cmd = ''
+    
     // Rimuovo overlay
     cmd = `umount ${this.distro.pathLiveFs}`
     console.log(cmd)
+    process.exit(0)
     await exec(cmd)
+
 
     if (fs.existsSync(this.distro.pathLowerdir)) {
       const bindDirs = fs.readdirSync(this.distro.pathLowerdir, { withFileTypes: true })
