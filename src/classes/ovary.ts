@@ -35,6 +35,8 @@ import Calamares from './calamares-config'
 import Oses from './oses'
 import Prerequisites from '../commands/prerequisites'
 import { IDistro, IOses, IPackage } from '../interfaces'
+import { SIGXCPU } from 'constants'
+import { exclude } from 'inquirer/lib/objects/separator'
 
 /**
  * Ovary:
@@ -833,74 +835,83 @@ timeout 200\n`
     console.log('ovary: bindLiveFs')
     console.log('==========================================')
 
-    // shx.exec(`mkdir -r ${this.work_dir}/mx-snapshot`)
+    const excludeDirs = [
+      'cdrom',
+      'dev',
+      'live',
+      'media',
+      'mnt',
+      'proc',
+      'sys',
+      'swapfile',
+      'tmp']
 
-    // checks if work_dir looks OK
-    // if (!this.work_dir.includes('/mx-snapshot')) { // Se non contiene /mx-snapshot
-    //  console.log(`${this.work_dir} NON contiene mx-snapshot!`)
-    //  return
-    // }
+    const lnFiles = [
+      'vmlinuz',
+      'vmlinuz.old',
+      'initrd.img',
+      'initrd.img.old',
+      'lost+found']
 
-    let bindBoot = ''
-    let bindBootToo = ''
-    if (shx.exec('mountpoint /boot', { silent: true }).code) {
-      bindBoot = 'bind=/boot'
-      bindBootToo = ',/boot'
+    const rootDirs = fs.readdirSync('/', { withFileTypes: true })
+    console.log(rootDirs)
+    let dirToExclude = false
+    for (let dir of rootDirs) {
+      if (dir.isDirectory()) {
+        fs.mkdirSync(`${this.distro.pathLowerdir}/${dir.name}`)
+        for (let excludeDir of excludeDirs) {
+          if (excludeDir === dir.name) {
+            dirToExclude = true
+          }
+        }
+        if (!dirToExclude) {
+          shx.exec(`mount --bind --make-slave /${dir.name} ${this.distro.pathLowerdir}/${dir.name}`)
+          dirToExclude = false
+        }
+      } else if (dir.isFile()) {
+        fs.copyFileSync(dir.name, this.distro.pathLowerdir)
+      }
     }
 
-    /**
-     * setup environment if creating a respin 
-     * (reset root/demo, remove personal accounts) 
-     */
+
+    console.log('Esco per controllo...')
+    process.exit(1)
+
+    /*
+
+    for (let dir of rootDirs) {
+      if (!(dir === 'home')) {
+        shx.exec(`umount ${this.distro.pathLowerdir}/${dir}`)
+        fs.rmdirSync(`${this.distro.pathLowerdir}/${dir}`)
+      }
+    }
+    */
+
+    /*
     let cmd = ''
-    if (this.reset_accounts) {
-      cmd =`mount --bind --make-slave / ${this.distro.pathLowerdir}`
-      console.log(cmd)
-      shx.exec(cmd)
+    cmd =`mount --bind --make-slave / ${this.distro.pathLowerdir}`
+    console.log(cmd)
+    shx.exec(cmd)
 
-      cmd = `mount -o remount,bind,ro ${this.distro.pathLowerdir}`
-      console.log(cmd)
-      shx.exec(cmd) // OK sta in sola lettura
+    cmd = `mount -o remount,bind,ro ${this.distro.pathLowerdir}`
+    console.log(cmd)
+    shx.exec(cmd) // OK sta in sola lettura
 
-      // Aggiungiamo upperdir e wordir
-      cmd = `mount -t overlay overlay -o lowerdir=${this.distro.pathLowerdir},upperdir=${this.distro.pathUpperdir},workdir=${this.distro.pathWorkdir} ${this.distro.pathLiveFs}`
-      console.log(cmd)
-      shx.exec(cmd)
+    cmd = `mount -t overlay overlay -o lowerdir=${this.distro.pathLowerdir},upperdir=${this.distro.pathUpperdir},workdir=${this.distro.pathWorkdir} ${this.distro.pathLiveFs}`
+    console.log(cmd)
+    shx.exec(cmd)
+    */
 
-      console.log('Esco per controllo...')
-      process.exit(1)
-      // home esclusa
-      await this.makeLiveHome()
 
-      /**
-       * A questo punto, però credo che vi sia una migliore opzione, ovvero, montare read-only il file system bind
-       * e sovrapporre ad esso un livello di overlay, in modo da ottenere i vantaggi del fs binded + quelli della
-       * copia.
-       * 1) Bind mount the bind-root
-       * mount --bind --make-slave / ${this.distro.pathLiveBinded}
-       *
-       *     mount -o remount,bind,ro ${this.distro.pathLiveBinded} 
-       * General
-       * 2) do a bunch of bind mounts under bind-root
-       *    create directories and touch files as needed, on:
-       *    /home, /etc/modprobe.d, /etc/network/interfaces.d, /etc/grub.d
-       * 3) Munge files
-       * 
-       * Ma per questo c'è bisogno di un nuovo branch
-       * 1) 
-       * mount --bind --make-slave / ${this.distro.pathLiveBinded}
-       * mount -o remount,bind,ro ${this.distro.pathLiveBinded}
-
-       * 
-       *  // mount -t overlay -o rw,lowerdir=/var,upperdir=/var.tmpfs/upper,workdir=/var.tmpfs/work overlay /var.overlay
-       *  shx.exec(`mount -t overlay -o rw,lowerdir=/var,upperdir=/var.tmpfs/upper,workdir=/var.tmpfs/work overlay /var.overlay`)
-       * mount -t overlay overlay -o lowerdir=/home/bork/test/lower,upperdir=/home/bork/test/upper,workdir=/home/bork/test/work /home/bork/test/merged
-       */
-    } else {
-      cmd = `/sbin/installed-to-live -b ${this.distro.pathLiveFs} start bind=/home${bindBootToo} live-files version-file adjtime read-only`
-      await shx.exec(cmd, { silent: true })
-    }
     // await this.makeEtcGrubD()
+  }
+
+  static async cleanMount(){
+    const rootDirs = fs.readdirSync('/')
+    for (let dir of rootDirs) {
+       shx.exec(`umount ${this.distro.pathLowerdir}/${dir}`)
+    }
+
   }
 
 
