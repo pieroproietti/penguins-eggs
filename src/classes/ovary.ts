@@ -854,7 +854,6 @@ timeout 200\n`
       'lost+found']
 
     const rootDirs = fs.readdirSync('/', { withFileTypes: true })
-    console.log(rootDirs)
     let dirToExclude = false
     for (let dir of rootDirs) {
       if (dir.isDirectory()) {
@@ -865,7 +864,9 @@ timeout 200\n`
           }
         }
         if (!dirToExclude) {
-          shx.exec(`mount --bind --make-slave /${dir.name} ${this.distro.pathLowerdir}/${dir.name}`)
+          let cmd = `mount --bind --make-slave /${dir.name} ${this.distro.pathLowerdir}/${dir.name}`
+          console.log(cmd)
+          shx.exec(cmd)
           dirToExclude = false
         }
       } else if (dir.isFile()) {
@@ -877,39 +878,17 @@ timeout 200\n`
     console.log('Esco per controllo...')
     process.exit(1)
 
-    /*
-
-    for (let dir of rootDirs) {
-      if (!(dir === 'home')) {
-        shx.exec(`umount ${this.distro.pathLowerdir}/${dir}`)
-        fs.rmdirSync(`${this.distro.pathLowerdir}/${dir}`)
-      }
-    }
-    */
-
-    /*
-    let cmd = ''
-    cmd =`mount --bind --make-slave / ${this.distro.pathLowerdir}`
-    console.log(cmd)
-    shx.exec(cmd)
-
-    cmd = `mount -o remount,bind,ro ${this.distro.pathLowerdir}`
-    console.log(cmd)
-    shx.exec(cmd) // OK sta in sola lettura
-
-    cmd = `mount -t overlay overlay -o lowerdir=${this.distro.pathLowerdir},upperdir=${this.distro.pathUpperdir},workdir=${this.distro.pathWorkdir} ${this.distro.pathLiveFs}`
-    console.log(cmd)
-    shx.exec(cmd)
-    */
-
-
-    // await this.makeEtcGrubD()
   }
 
-  static async cleanMount(){
+  /**
+   * 
+   */
+  async unBindFs() {
     const rootDirs = fs.readdirSync('/')
     for (let dir of rootDirs) {
-       shx.exec(`umount ${this.distro.pathLowerdir}/${dir}`)
+      let cmd = `umount ${this.distro.pathLowerdir}/${dir}`
+      console.log(cmd)
+      shx.exec(cmd)
     }
 
   }
