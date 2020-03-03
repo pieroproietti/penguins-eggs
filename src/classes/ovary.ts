@@ -875,7 +875,7 @@ timeout 200\n`
             console.log(cmd)
             await exec(cmd)
           } else {
-            console.log(`file esistente... skip`)
+            console.log(`# directory esistente... skip`)
           }
           if (!this.isEscluded(dir.name)) {
             cmd = `mount --bind --make-slave /${dir.name} ${this.distro.pathLowerdir}/${dir.name}`
@@ -889,19 +889,26 @@ timeout 200\n`
 
       } else if (dir.isFile()) {
         console.log(`# ${dir.name} = file`)
-        cmd = `cp /${dir.name} ${this.distro.pathLowerdir}`
-        console.log(cmd)
-        await exec(cmd)
-
+        if (!(fs.existsSync(`${this.distro.pathLowerdir}/${dir.name}`))) {
+          cmd = `cp /${dir.name} ${this.distro.pathLowerdir}`
+          console.log(cmd)
+          await exec(cmd)
+        } else {
+          console.log(`# file esistente... skip`)
+        }
       } else if (dir.isSymbolicLink()) {
         console.log(`# ${dir.name} = symbolicLink`)
-        ln = `/${dir.name}`
-        dest = `/${fs.readlinkSync(ln)}`
-        cmd = `ln -s ${dest} ${this.distro.pathLowerdir}/${dir.name}`
-        console.log(cmd)
-        await exec(cmd)
-        ln = ''
-        dest = ''
+        if (!(fs.existsSync(`${this.distro.pathLowerdir}/${dir.name}`))) {
+          ln = `/${dir.name}`
+          dest = `/${fs.readlinkSync(ln)}`
+          cmd = `ln -s ${dest} ${this.distro.pathLowerdir}/${dir.name}`
+          console.log(cmd)
+          await exec(cmd)
+          ln = ''
+          dest = ''
+        } else {
+          console.log(`# SymbolicLink esistente... skip`)
+        }
       }
     }
 
