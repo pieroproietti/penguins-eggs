@@ -41,7 +41,7 @@ kill the eggs/free the nest
       const ovary = new Ovary
       await ovary.fertilization()
       await ovary.cleanUp()
-      ovary.unBindFs()
+      ovary.uBindFs()
       this.log(`${Utils.getFriendName()}: deleting old eggs ...`)
       if (this.loadSettings()) {
         shx.exec(`rm ${this.work_dir} -rf`)

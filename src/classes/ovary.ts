@@ -902,9 +902,9 @@ timeout 200\n`
   /**
    * 
    */
-  async unBindFs() {
+  async uBindFs() {
     console.log('==========================================')
-    console.log('ovary: bindFs')
+    console.log('ovary: unBindFs')
     console.log('==========================================')
     if (fs.existsSync(this.distro.pathLowerdir)) {
       const bindDirs = fs.readdirSync(this.distro.pathLowerdir, { withFileTypes: true })
@@ -914,6 +914,7 @@ timeout 200\n`
           console.log(`# ${dir.name} = directory`)
           if (!this.isEscluded(dir.name)) {
             cmd = `umount ${this.distro.pathLowerdir}/${dir.name}`
+            shx.exec(cmd)
             console.log(cmd)
           }
           cmd = `rm ${this.distro.pathLowerdir}/${dir.name} -rf`
