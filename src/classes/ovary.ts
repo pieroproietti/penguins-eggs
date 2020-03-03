@@ -899,6 +899,11 @@ timeout 200\n`
         dest = ''
       }
     }
+
+    // Monto overlay
+    cmd =`mount -t overlay overlay -o lowerdir=${this.distro.pathLowerdir},upperdir=${this.distro.pathUpperdir},workdir=${this.distro.pathWorkdir} ${this.distro.pathLiveFs}`
+    await exec(cmd)
+
     process.exit(1)
 
   }
