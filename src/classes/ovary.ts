@@ -825,8 +825,7 @@ timeout 200\n`
     }
   }
 
-
-  /**
+ /**
    * Check if exist mx-snapshot in work_dir;
    * If respin mode remove all the users
    */
@@ -836,6 +835,7 @@ timeout 200\n`
     console.log('==========================================')
 
     const excludeDirs = [
+      'home',
       'cdrom',
       'dev',
       'live',
@@ -844,19 +844,18 @@ timeout 200\n`
       'proc',
       'sys',
       'swapfile',
-      'tmp']
-
-    const lnFiles = [
-      'vmlinuz',
-      'vmlinuz.old',
-      'initrd.img',
-      'initrd.img.old',
+      'tmp',
       'lost+found']
 
     const rootDirs = fs.readdirSync('/', { withFileTypes: true })
     let dirToExclude = false
+    let cmd = ''
     for (let dir of rootDirs) {
+      dirToExclude = false
+
+      console.log(`Analizzo: ${dir.name}`)
       if (dir.isDirectory()) {
+        console.log(`- ${dir.name} = directory`)
         fs.mkdirSync(`${this.distro.pathLowerdir}/${dir.name}`)
         for (let excludeDir of excludeDirs) {
           if (excludeDir === dir.name) {
@@ -864,13 +863,17 @@ timeout 200\n`
           }
         }
         if (!dirToExclude) {
-          let cmd = `mount --bind --make-slave /${dir.name} ${this.distro.pathLowerdir}/${dir.name}`
+          cmd = `mount --bind --make-slave /${dir.name} ${this.distro.pathLowerdir}/${dir.name}`
           console.log(cmd)
           shx.exec(cmd)
           dirToExclude = false
         }
       } else if (dir.isFile()) {
+        console.log(`- ${dir.name} = file`)
         fs.copyFileSync(dir.name, this.distro.pathLowerdir)
+      } else if (dir.isSymbolicLink()){
+        console.log(`- ${dir.name} = symbolicLink`)
+        fs.linkSync(`/${dir.name}`, `${this.distro.pathLowerdir}/${dir.name}`)
       }
     }
 
@@ -885,8 +888,9 @@ timeout 200\n`
    */
   async unBindFs() {
     const rootDirs = fs.readdirSync('/')
+    let cmd = ''
     for (let dir of rootDirs) {
-      let cmd = `umount ${this.distro.pathLowerdir}/${dir}`
+      cmd = `umount ${this.distro.pathLowerdir}/${dir}`
       console.log(cmd)
       shx.exec(cmd)
     }

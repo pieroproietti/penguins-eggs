@@ -39,7 +39,8 @@ kill the eggs/free the nest
 
     if (Utils.isRoot() && Utils.prerequisitesInstalled()) {
       const ovary = new Ovary
-      ovary.cleanUp()
+      await ovary.fertilization()
+      await ovary.cleanUp()
       ovary.unBindFs()
       this.log(`${Utils.getFriendName()}: deleting old eggs ...`)
       if (this.loadSettings()) {
