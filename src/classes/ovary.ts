@@ -870,9 +870,13 @@ timeout 200\n`
       if (dir.isDirectory()) {
         if (!(dir.name === 'lost+found')) {
           console.log(`# ${dir.name} = directory`)
-          cmd = `mkdir ${this.distro.pathLowerdir}/${dir.name}`
-          console.log(cmd)
-          await exec(cmd)
+          if (!(fs.existsSync(`${this.distro.pathLowerdir}/${dir.name}`))) {
+            cmd = `mkdir ${this.distro.pathLowerdir}/${dir.name}`
+            console.log(cmd)
+            await exec(cmd)
+          } else {
+            console.log(`file esistente... skip`)
+          }
           if (!this.isEscluded(dir.name)) {
             cmd = `mount --bind --make-slave /${dir.name} ${this.distro.pathLowerdir}/${dir.name}`
             console.log(cmd)
@@ -902,7 +906,7 @@ timeout 200\n`
     }
 
     // Monto overlay
-    cmd =`mount -t overlay overlay -o lowerdir=${this.distro.pathLowerdir},upperdir=${this.distro.pathUpperdir},workdir=${this.distro.pathWorkdir} ${this.distro.pathLiveFs}`
+    cmd = `mount -t overlay overlay -o lowerdir=${this.distro.pathLowerdir},upperdir=${this.distro.pathUpperdir},workdir=${this.distro.pathWorkdir} ${this.distro.pathLiveFs}`
     console.log(cmd)
     await exec(cmd)
   }
@@ -917,7 +921,7 @@ timeout 200\n`
 
     let cmd = ''
     // Rimuovo overlay
-    cmd =`umount ${this.distro.pathLiveFs}`
+    cmd = `umount ${this.distro.pathLiveFs}`
     console.log(cmd)
     await exec(cmd)
 
