@@ -851,18 +851,11 @@ timeout 200\n`
     let dirToExclude = false
     let cmd = ''
     for (let dir of rootDirs) {
-      dirToExclude = false
-
       console.log(`Analizzo: ${dir.name}`)
       if (dir.isDirectory()) {
         console.log(`- ${dir.name} = directory`)
         fs.mkdirSync(`${this.distro.pathLowerdir}/${dir.name}`)
-        for (let excludeDir of excludeDirs) {
-          if (excludeDir === dir.name) {
-            dirToExclude = true
-          }
-        }
-        if (!dirToExclude) {
+        if (this.isEscluded(dir.name)) {
           cmd = `mount --bind --make-slave /${dir.name} ${this.distro.pathLowerdir}/${dir.name}`
           console.log(cmd)
           shx.exec(cmd)
@@ -891,6 +884,38 @@ timeout 200\n`
     console.log('ovary: bindFs')
     console.log('==========================================')
 
+
+    if (fs.existsSync(this.distro.pathLowerdir)) {
+      const bindDirs = fs.readdirSync(this.distro.pathLowerdir, { withFileTypes: true })
+      let cmd = ''
+      for (let dir of bindDirs) {
+        console.log(`dirname: ${dir}`)
+        if (dir.isDirectory()) {
+          console.log(`- ${dir.name} = directory`)
+          if (!this.isEscluded(dir.name)) {
+            cmd = `umount ${this.distro.pathLowerdir}/${dir.name}`
+            console.log(cmd)
+            shx.exec(cmd)
+            console.log(`rm ${this.distro.pathLowerdir}/${dir.name} -rf`)
+            // fs.rmdirSync(`${this.distro.pathLowerdir}/${dir.name}`)
+          }
+        } else if (dir.isFile()) {
+          console.log(`- ${dir.name} = file`)
+          fs.rmdirSync(`${this.distro.pathLowerdir}/${dir.name}`)
+        } else if (dir.isSymbolicLink()) {
+          console.log(`- ${dir.name} = symbolicLink`)
+          fs.rmdirSync(`${this.distro.pathLowerdir}/${dir.name}`)
+        }
+      }
+    }
+  }
+
+  /**
+   * 
+   * @param dir 
+   */
+  isEscluded(dir: string): boolean {
+    let toExclude = false
     const excludeDirs = [
       'home',
       'cdrom',
@@ -904,44 +929,13 @@ timeout 200\n`
       'tmp',
       'lost+found']
 
-    if (fs.existsSync(this.distro.pathLowerdir)) {
-
-      const bindDirs = fs.readdirSync(this.distro.pathLowerdir, { withFileTypes: true })
-      let dirToExclude = false
-      let cmd = ''
-      for (let dir of bindDirs) {
-        dirToExclude = false
-
-
-        console.log(`Analizzo: ${dir.name}`)
-
-        if (dir.isDirectory()) {
-          console.log(`- ${dir.name} = directory`)
-          for (let excludeDir of excludeDirs) {
-            if (excludeDir === dir.name) {
-              dirToExclude = true
-            }
-          }
-          if (!dirToExclude) {
-            cmd = `umount ${this.distro.pathLowerdir}/${dir.name}`
-            console.log(cmd)
-            shx.exec(cmd)
-            console.log(`rm ${this.distro.pathLowerdir}/${dir.name} -rf`)
-            fs.rmdirSync(`${this.distro.pathLowerdir}/${dir.name}`)
-
-            dirToExclude = false
-          }
-        } else if (dir.isFile()) {
-          console.log(`- ${dir.name} = file`)
-          fs.rmdirSync(`${this.distro.pathLowerdir}/${dir.name}`)
-        } else if (dir.isSymbolicLink()) {
-          console.log(`- ${dir.name} = symbolicLink`)
-          fs.rmdirSync(`${this.distro.pathLowerdir}/${dir.name}`)
-        }
+    for (let excludeDir of excludeDirs) {
+      if (excludeDir === dir.name) {
+        toExclude = true
       }
     }
+    return toExclude
   }
-
 
   /**
  * 
