@@ -831,7 +831,7 @@ timeout 200\n`
    */
   async bindFs() {
     console.log('==========================================')
-    console.log('ovary: bindLiveFs')
+    console.log('ovary: bindFs')
     console.log('==========================================')
 
     const excludeDirs = [
@@ -887,14 +887,56 @@ timeout 200\n`
    * 
    */
   async unBindFs() {
-    const rootDirs = fs.readdirSync('/')
-    let cmd = ''
-    for (let dir of rootDirs) {
-      cmd = `umount ${this.distro.pathLowerdir}/${dir}`
-      console.log(cmd)
-      shx.exec(cmd)
-    }
+    console.log('==========================================')
+    console.log('ovary: bindFs')
+    console.log('==========================================')
 
+    const excludeDirs = [
+      'home',
+      'cdrom',
+      'dev',
+      'live',
+      'media',
+      'mnt',
+      'proc',
+      'sys',
+      'swapfile',
+      'tmp',
+      'lost+found']
+
+    const bindDirs = fs.readdirSync(this.distro.pathLowerdir, { withFileTypes: true })
+    let dirToExclude = false
+    let cmd = ''
+    for (let dir of bindDirs) {
+      dirToExclude = false
+      
+
+      console.log(`Analizzo: ${dir.name}`)
+
+      if (dir.isDirectory()) {
+        console.log(`- ${dir.name} = directory`)
+        for (let excludeDir of excludeDirs) {
+          if (excludeDir === dir.name) {
+            dirToExclude = true
+          }
+        }
+        if (!dirToExclude) {
+          cmd = `umount ${this.distro.pathLowerdir}/${dir.name}`
+          console.log(cmd)
+          shx.exec(cmd)
+          console.log(`rm ${this.distro.pathLowerdir}/${dir.name} -rf`)
+          fs.rmdirSync(`${this.distro.pathLowerdir}/${dir.name}`)
+
+          dirToExclude = false
+        }
+      } else if (dir.isFile()) {
+        console.log(`- ${dir.name} = file`)
+        fs.rmdirSync(`${this.distro.pathLowerdir}/${dir.name}`)
+      } else if (dir.isSymbolicLink()){
+        console.log(`- ${dir.name} = symbolicLink`)
+        fs.rmdirSync(`${this.distro.pathLowerdir}/${dir.name}`)
+      }
+    }
   }
 
 
