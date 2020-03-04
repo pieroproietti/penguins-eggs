@@ -189,7 +189,7 @@ export default class Ovary {
     if (!this.snapshot_dir.endsWith('/')) {
       this.snapshot_dir += '/'
     }
-    this.work_dir = this.snapshot_dir + '.work/'
+    this.work_dir = this.snapshot_dir + 'work/'
     this.efi_work = this.work_dir + 'efi-work/'
     this.snapshot_excludes = settings.General.snapshot_excludes
     this.snapshot_basename = settings.General.snapshot_basename
@@ -905,13 +905,15 @@ timeout 200\n`
       } else if (dir.isSymbolicLink()) {
         console.log(`# ${dir.name} = symbolicLink`)
         if (!(fs.existsSync(`${this.distro.merged}/${dir.name}`))) {
-          ln = `/${dir.name}`
-          dest = `/${fs.readlinkSync(ln)}`
-          cmd = `ln -s ${dest} ${this.distro.merged}/${dir.name}`
+          cmd = `cp -r /${dir.name} ${this.distro.merged}`
           console.log(cmd)
           await exec(cmd)
-          ln = ''
-          dest = ''
+          // dest = fs.readlinkSync(dir.name)
+          // cmd = `ln -s ${this.distro.merged}/${dir.name} ${dest}`
+          // console.log(cmd)
+          // await exec(cmd)
+          // ln = ''
+          // dest = ''
         } else {
           console.log(`# SymbolicLink esistente... skip`)
         }
@@ -929,12 +931,10 @@ timeout 200\n`
 
     let cmd = ''
 
-    // Rimuovo overlay
-    cmd = `umount ${this.distro.merged}`
-    console.log(cmd)
-    await exec(cmd)
-
-
+    /**
+     * umount /merged/dir
+     * umount /lower/dir
+     */
     if (fs.existsSync(this.distro.merged)) {
       const bindDirs = fs.readdirSync(this.distro.merged, { withFileTypes: true })
       for (let dir of bindDirs) {
