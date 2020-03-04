@@ -917,17 +917,6 @@ timeout 200\n`
         }
       }
     }
-
-    console.log('==========================================================================')
-    console.log(lowerdir)
-    console.log('==========================================================================')
-    // Monto overlay
-    cmd = `mount -t overlay overlay -o lowerdir=${this.distro.lowerdir},upperdir=${this.distro.upperdir},workdir=${this.distro.workdir} ${this.distro.merged}`
-
-    // Così è scrivibile, ma mancano i file sotto i mountpoint
-    cmd = `mount -t overlay overlay -o ${lowerdir},upperdir=${this.distro.upperdir},workdir=${this.distro.workdir} ${this.distro.merged}`
-    console.log(cmd)
-    // await exec(cmd)
   }
 
   /**
@@ -953,12 +942,15 @@ timeout 200\n`
           console.log(`# ${dir.name} = directory`)
           if (!this.isEscluded(dir.name)) {
             cmd = `umount ${this.distro.merged}/${dir.name}`
-            // await exec(cmd)
+            await exec(cmd)
+            console.log(cmd)
+            cmd = `umount ${this.distro.lowerdir}/${dir.name}`
+            await exec(cmd)
             console.log(cmd)
           }
           cmd = `rm ${this.distro.merged}/${dir.name} -rf`
           console.log(cmd)
-          await exec(cmd)
+          // await exec(cmd)
         } else if (dir.isFile()) {
           console.log(`# ${dir.name} = file`)
           cmd = `rm ${this.distro.merged}/${dir.name} -rf`
