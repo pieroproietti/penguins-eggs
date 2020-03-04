@@ -9,6 +9,5 @@ export interface IDistro {
     upperdir: string;
     workdir: string;
     merged: string;
-    pathLiveFs: string;
     pathIso: string;
 }

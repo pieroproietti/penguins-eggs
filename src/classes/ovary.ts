@@ -161,7 +161,6 @@ export default class Ovary {
       this.distro.workdir = this.distro.pathHome + '/overlay/workdir'
       this.distro.merged = this.distro.pathHome + '/merged'
 
-      this.distro.pathLiveFs = this.distro.pathHome + '/fs'
       this.distro.pathIso = this.distro.pathHome + '/iso'
       let answer = JSON.parse(await Utils.customConfirm(`Select yes to continue...`))
       if (answer.confirm === 'Yes') {
@@ -339,7 +338,7 @@ export default class Ovary {
       await this.editBootMenu()
       await this.addDebianRepo()
       await this.makeSquashFs()
-      await this.uBindFs()
+      // await this.uBindFs()
       // await this.cleanUp()
       if (this.make_efi) {
         await this.editEfi()
@@ -406,28 +405,28 @@ export default class Ovary {
     console.log('==========================================')
 
     // Truncate logs, remove archived logs.
-    let cmd = `find ${this.distro.pathLiveFs}/var/log -name "*gz" -print0 | xargs -0r rm -f`
+    let cmd = `find ${this.distro.merged}/var/log -name "*gz" -print0 | xargs -0r rm -f`
     shx.exec(cmd)
-    cmd = `find ${this.distro.pathLiveFs}/var/log/ -type f -exec truncate -s 0 {} \\;`
+    cmd = `find ${this.distro.merged}/var/log/ -type f -exec truncate -s 0 {} \\;`
     shx.exec(cmd)
 
     // Allow all fixed drives to be mounted with pmount
     if (this.pmount_fixed) {
-      if (fs.existsSync(`${this.distro.pathLiveFs}/etc/pmount.allow`))
-        shx.exec(`sed -i 's:#/dev/sd\[a-z\]:/dev/sd\[a-z\]:' ${this.distro.pathLiveFs}/pmount.allow`)
+      if (fs.existsSync(`${this.distro.merged}/etc/pmount.allow`))
+        shx.exec(`sed -i 's:#/dev/sd\[a-z\]:/dev/sd\[a-z\]:' ${this.distro.merged}/pmount.allow`)
     }
 
     // Enable or disable password login through ssh for users (not root)
     // Remove obsolete live-config file
-    if (fs.existsSync(`${this.distro.pathLiveFs}lib/live/config/1161-openssh-server`)) {
+    if (fs.existsSync(`${this.distro.merged}lib/live/config/1161-openssh-server`)) {
       shx.exec(`rm -f "$work_dir"/myfs/lib/live/config/1161-openssh-server`)
     }
 
-    shx.exec(`sed -i 's/PermitRootLogin yes/PermitRootLogin prohibit-password/' ${this.distro.pathLiveFs}/etc/ssh/sshd_config`)
+    shx.exec(`sed -i 's/PermitRootLogin yes/PermitRootLogin prohibit-password/' ${this.distro.merged}/etc/ssh/sshd_config`)
     if (this.ssh_pass) {
-      shx.exec(`sed -i 's|.*PasswordAuthentication.*no|PasswordAuthentication yes|' ${this.distro.pathLiveFs}/etc/ssh/sshd_config`)
+      shx.exec(`sed -i 's|.*PasswordAuthentication.*no|PasswordAuthentication yes|' ${this.distro.merged}/etc/ssh/sshd_config`)
     } else {
-      shx.exec(`sed -i 's|.*PasswordAuthentication.*yes|PasswordAuthentication no|' ${this.distro.pathLiveFs}/etc/ssh/sshd_config`)
+      shx.exec(`sed -i 's|.*PasswordAuthentication.*yes|PasswordAuthentication no|' ${this.distro.merged}/etc/ssh/sshd_config`)
     }
 
 
@@ -436,21 +435,21 @@ export default class Ovary {
      * to prevent error messages at boot
      */
     const text = ''
-    if (fs.existsSync(`${this.distro.pathLiveFs}/etc/fstab`)) {
+    if (fs.existsSync(`${this.distro.merged}/etc/fstab`)) {
       shx.mkdir('-p', '/tmp/penguins-eggs')
-      shx.cp(`${this.distro.pathLiveFs}/etc/fstab`, `/tmp/penguins-eggs`)
+      shx.cp(`${this.distro.merged}/etc/fstab`, `/tmp/penguins-eggs`)
     }
-    shx.exec(`touch ${this.distro.pathLiveFs}/etc/fstab`, { silent: true })
-    Utils.write(`${this.distro.pathLiveFs}/etc/fstab`, text)
+    shx.exec(`touch ${this.distro.merged}/etc/fstab`, { silent: true })
+    Utils.write(`${this.distro.merged}/etc/fstab`, text)
 
     /**
      * Blank out systemd machine id. If it does not exist, systemd-journald
      * will fail, but if it exists and is empty, systemd will automatically
      * set up a new unique ID.
      */
-    if (fs.existsSync(`${this.distro.pathLiveFs}/etc/machine-id`)) {
-      shx.exec(`touch ${this.distro.pathLiveFs}/etc/machine-id`, { silent: true })
-      Utils.write(`${this.distro.pathLiveFs}/etc/machine-id`, `:`)
+    if (fs.existsSync(`${this.distro.merged}/etc/machine-id`)) {
+      shx.exec(`touch ${this.distro.merged}/etc/machine-id`, { silent: true })
+      Utils.write(`${this.distro.merged}/etc/machine-id`, `:`)
     }
 
 
@@ -458,36 +457,36 @@ export default class Ovary {
      * add some basic files to /dev
      */
     /*
-    shx.exec(`mknod -m 622 ${this.distro.pathLiveFs}/dev/console c 5 1`)
-    shx.exec(`mknod -m 666 ${this.distro.pathLiveFs}/dev/null c 1 3`)
-    shx.exec(`mknod -m 666 ${this.distro.pathLiveFs}/dev/zero c 1 5`)
-    shx.exec(`mknod -m 666 ${this.distro.pathLiveFs}/dev/ptmx c 5 2`)
-    shx.exec(`mknod -m 666 ${this.distro.pathLiveFs}/dev/tty c 5 0`)
-    shx.exec(`mknod -m 444 ${this.distro.pathLiveFs}/dev/random c 1 8`)
-    shx.exec(`mknod -m 444 ${this.distro.pathLiveFs}/dev/urandom c 1 9`)
-    shx.exec(`chown -v root:tty ${this.distro.pathLiveFs}/dev/{console,ptmx,tty}`)
+    shx.exec(`mknod -m 622 ${this.distro.merged}/dev/console c 5 1`)
+    shx.exec(`mknod -m 666 ${this.distro.merged}/dev/null c 1 3`)
+    shx.exec(`mknod -m 666 ${this.distro.merged}/dev/zero c 1 5`)
+    shx.exec(`mknod -m 666 ${this.distro.merged}/dev/ptmx c 5 2`)
+    shx.exec(`mknod -m 666 ${this.distro.merged}/dev/tty c 5 0`)
+    shx.exec(`mknod -m 444 ${this.distro.merged}/dev/random c 1 8`)
+    shx.exec(`mknod -m 444 ${this.distro.merged}/dev/urandom c 1 9`)
+    shx.exec(`chown -v root:tty ${this.distro.merged}/dev/{console,ptmx,tty}`)
 
-    shx.exec(`ln -sv /proc/self/fd ${this.distro.pathLiveFs}/dev/fd`)
-    shx.exec(`ln -sv ${this.distro.pathLiveFs}/proc/self/fd/0 /dev/stdin`)
-    shx.exec(`ln -sv ${this.distro.pathLiveFs}/proc/self/fd/1 /dev/stdout`)
-    shx.exec(`ln -sv ${this.distro.pathLiveFs}/proc/self/fd/2 /dev/stderr`)
-    shx.exec(`ln -sv ${this.distro.pathLiveFs}/proc/kcore /dev/core`)
-    shx.exec(`mkdir -v ${this.distro.pathLiveFs}/dev/shm`)
-    shx.exec(`mkdir -v ${this.distro.pathLiveFs}/dev/pts`)
-    shx.exec(`chmod 1777 ${this.distro.pathLiveFs}/dev/shm`)
+    shx.exec(`ln -sv /proc/self/fd ${this.distro.merged}/dev/fd`)
+    shx.exec(`ln -sv ${this.distro.merged}/proc/self/fd/0 /dev/stdin`)
+    shx.exec(`ln -sv ${this.distro.merged}/proc/self/fd/1 /dev/stdout`)
+    shx.exec(`ln -sv ${this.distro.merged}/proc/self/fd/2 /dev/stderr`)
+    shx.exec(`ln -sv ${this.distro.merged}/proc/kcore /dev/core`)
+    shx.exec(`mkdir -v ${this.distro.merged}/dev/shm`)
+    shx.exec(`mkdir -v ${this.distro.merged}/dev/pts`)
+    shx.exec(`chmod 1777 ${this.distro.merged}/dev/shm`)
     */
 
     /**
      * Clear configs from /etc/network/interfaces, wicd and NetworkManager
      * and netman, so they aren't stealthily included in the snapshot.
     */
-    shx.exec(`touch ${this.distro.pathLiveFs}/etc/network/interfaces`, { silent: true })
-    Utils.write(`${this.distro.pathLiveFs}/etc/network/interfaces`, `auto lo\niface lo inet loopback`)
+    shx.exec(`touch ${this.distro.merged}/etc/network/interfaces`, { silent: true })
+    Utils.write(`${this.distro.merged}/etc/network/interfaces`, `auto lo\niface lo inet loopback`)
 
-    shx.exec(`rm -f ${this.distro.pathLiveFs}/var/lib/wicd/configurations/*`)
-    shx.exec(`rm -f ${this.distro.pathLiveFs}/etc/wicd/wireless-settings.conf`)
-    shx.exec(`rm -f ${this.distro.pathLiveFs}/etc/NetworkManager/system-connections/*`)
-    shx.exec(`rm -f ${this.distro.pathLiveFs}/etc/network/wifi/*`)
+    shx.exec(`rm -f ${this.distro.merged}/var/lib/wicd/configurations/*`)
+    shx.exec(`rm -f ${this.distro.merged}/etc/wicd/wireless-settings.conf`)
+    shx.exec(`rm -f ${this.distro.merged}/etc/NetworkManager/system-connections/*`)
+    shx.exec(`rm -f ${this.distro.merged}/etc/network/wifi/*`)
   }
 
   /**
@@ -674,7 +673,7 @@ timeout 200\n`
       }
     }
     const compression = `-comp ${this.compression} `
-    let cmd = `mksquashfs ${this.distro.pathLiveFs} ${this.distro.pathIso}/live/filesystem.squashfs ${compression} ${(this.mksq_opt === '' ? '' : ' ' + this.mksq_opt)} -wildcards -ef ${this.snapshot_excludes} ${this.session_excludes} `
+    let cmd = `mksquashfs ${this.distro.merged} ${this.distro.pathIso}/live/filesystem.squashfs ${compression} ${(this.mksq_opt === '' ? '' : ' ' + this.mksq_opt)} -wildcards -ef ${this.snapshot_excludes} ${this.session_excludes} `
     console.log(cmd)
     shx.exec(cmd, { silent: false })
     // usr/bin/mksquashfs /.bind-root iso-template/antiX/linuxfs -comp ${this.compression} ${(this.mksq_opt === '' ? '' : ' ' + this.mksq_opt)} -wildcards -ef ${this.snapshot_excludes} ${this.session_excludes}`)
@@ -728,7 +727,7 @@ timeout 200\n`
    */
   public async makeFs() {
     console.log('==========================================')
-    console.log(`ovary: makeFs ${this.distro.pathLiveFs}`)
+    console.log(`ovary: makeFs ${this.distro.merged}`)
     console.log('==========================================')
 
     let f = ''
@@ -822,7 +821,7 @@ timeout 200\n`
       --filter="+ /lib/live/init-config-sh" \
       --filter="+ /lib/live/setup-network.sh" \
       ${home} \
-      / ${this.distro.pathLiveFs}`
+      / ${this.distro.merged}`
     shx.exec(cmd.trim(), { async: false })
     if (this.reset_accounts) {
       this.makeLiveHome()
@@ -936,38 +935,38 @@ timeout 200\n`
    */
   async uBindFs() {
     console.log('==========================================')
-    console.log('ovary: unBindFs')
+    console.log('ovary: uBindFs')
     console.log('==========================================')
 
     let cmd = ''
 
     // Rimuovo overlay
-    cmd = `umount ${this.distro.pathLiveFs}`
+    cmd = `umount ${this.distro.merged}`
     console.log(cmd)
     await exec(cmd)
 
 
-    if (fs.existsSync(this.distro.lowerdir)) {
-      const bindDirs = fs.readdirSync(this.distro.lowerdir, { withFileTypes: true })
+    if (fs.existsSync(this.distro.merged)) {
+      const bindDirs = fs.readdirSync(this.distro.merged, { withFileTypes: true })
       for (let dir of bindDirs) {
         if (dir.isDirectory()) {
           console.log(`# ${dir.name} = directory`)
           if (!this.isEscluded(dir.name)) {
-            cmd = `umount ${this.distro.lowerdir}/${dir.name}`
-            await exec(cmd)
+            cmd = `umount ${this.distro.merged}/${dir.name}`
+            // await exec(cmd)
             console.log(cmd)
           }
-          cmd = `rm ${this.distro.lowerdir}/${dir.name} -rf`
+          cmd = `rm ${this.distro.merged}/${dir.name} -rf`
           console.log(cmd)
           await exec(cmd)
         } else if (dir.isFile()) {
           console.log(`# ${dir.name} = file`)
-          cmd = `rm ${this.distro.lowerdir}/${dir.name} -rf`
+          cmd = `rm ${this.distro.merged}/${dir.name} -rf`
           console.log(cmd)
           await exec(cmd)
         } else if (dir.isSymbolicLink()) {
           console.log(`# ${dir.name} = symbolicLink`)
-          cmd = `rm ${this.distro.lowerdir}/${dir.name}`
+          cmd = `rm ${this.distro.merged}/${dir.name}`
           console.log(cmd)
           await exec(cmd)
         }
@@ -995,16 +994,16 @@ timeout 200\n`
     shx.cp(path.resolve(__dirname, `../../assets/assistenza-remota.png`), `/usr/share/icons/`)
 
     // creazione della home per user live
-    shx.cp(`-r`, `/etc/skel/.`, `${this.distro.pathLiveFs}/home/${user}`)
-    shx.exec(`chown -R 1000:1000 ${this.distro.pathLiveFs}/home/${user}`, { async: false })
-    shx.mkdir(`-p`, `${this.distro.pathLiveFs}/home/${user}/Desktop`)
+    shx.cp(`-r`, `/etc/skel/.`, `${this.distro.merged}/home/${user}`)
+    shx.exec(`chown -R 1000:1000 ${this.distro.merged}/home/${user}`, { async: false })
+    shx.mkdir(`-p`, `${this.distro.merged}/home/${user}/Desktop`)
 
     // Copiare i link sul desktop per user live
-    shx.cp('/usr/share/applications/penguins-eggs.desktop', `${this.distro.pathLiveFs}/home/${user}/Desktop`)
-    shx.cp('/usr/share/applications/dwagent-sh.desktop', `${this.distro.pathLiveFs}/home/${user}/Desktop`)
+    shx.cp('/usr/share/applications/penguins-eggs.desktop', `${this.distro.merged}/home/${user}/Desktop`)
+    shx.cp('/usr/share/applications/dwagent-sh.desktop', `${this.distro.merged}/home/${user}/Desktop`)
     if (Utils.packageIsInstalled('calamares')) {
-      shx.cp('/usr/share/applications/install-debian.desktop', `${this.distro.pathLiveFs}/home/${user}/Desktop`)
-      shx.exec(`chown 1000:1000 ${this.distro.pathLiveFs}/home/${user}/Desktop/install-debian.desktop`)
+      shx.cp('/usr/share/applications/install-debian.desktop', `${this.distro.merged}/home/${user}/Desktop`)
+      shx.exec(`chown 1000:1000 ${this.distro.merged}/home/${user}/Desktop/install-debian.desktop`)
     }
   }
 
