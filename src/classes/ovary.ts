@@ -156,12 +156,16 @@ export default class Ovary {
 
     if (this.loadSettings() && this.listFreeSpace()) {
       this.distro.pathHome = this.work_dir + this.distro.name
-      this.distro.pathRODir = this.distro.pathHome + '/RO'
-      this.distro.pathRWDir = this.distro.pathHome + '/RW'
-      this.distro.pathWKDir = this.distro.pathHome + '/WK'
-      this.distro.pathLowerdir = this.distro.pathHome + '/.lowerdir'
-      this.distro.pathUpperdir = this.distro.pathHome + '/.upperdir'
-      this.distro.pathWorkdir = this.distro.pathHome + '/.workdir'
+      this.distro.level0.pathLowerdir = this.distro.pathHome + '/level0/lowerdir'
+      this.distro.level0.pathUpperdir = this.distro.pathHome + '/level0/lowerdir'
+      this.distro.level0.pathWorkdir = this.distro.pathHome + '/level0/lowerdir'
+      this.distro.level0.pathMerged = this.distro.pathHome + '/level0/merged'
+
+      this.distro.level1.pathLowerdir = this.distro.pathHome + '/level1/lowerdir'
+      this.distro.level1.pathUpperdir = this.distro.pathHome + '/level1/upperdir'
+      this.distro.level1.pathWorkdir = this.distro.pathHome + '/level1/workdir'
+      this.distro.level1.pathMerged = this.distro.pathHome + '/level1/merged'
+
       this.distro.pathLiveFs = this.distro.pathHome + '/fs'
       this.distro.pathIso = this.distro.pathHome + '/iso'
       let answer = JSON.parse(await Utils.customConfirm(`Select yes to continue...`))
@@ -356,14 +360,23 @@ export default class Ovary {
     console.log('------------------------------------------')
     console.log('Overy: liveCreateStructure')
     console.log('------------------------------------------')
-    if (!fs.existsSync(this.distro.pathLowerdir)) {
-      shx.mkdir('-p', this.distro.pathLowerdir)
+    if (!fs.existsSync(this.distro.level0.pathLowerdir)) {
+      shx.mkdir('-p', this.distro.level0.pathLowerdir)
     }
-    if (!fs.existsSync(this.distro.pathUpperdir)) {
-      shx.mkdir('-p', this.distro.pathUpperdir)
+    if (!fs.existsSync(this.distro.level0.pathUpperdir)) {
+      shx.mkdir('-p', this.distro.level0.pathUpperdir)
     }
-    if (!fs.existsSync(this.distro.pathWorkdir)) {
-      shx.mkdir('-p', this.distro.pathWorkdir)
+    if (!fs.existsSync(this.distro.level0.pathWorkdir)) {
+      shx.mkdir('-p', this.distro.level0.pathWorkdir)
+    }
+    if (!fs.existsSync(this.distro.level1.pathLowerdir)) {
+      shx.mkdir('-p', this.distro.level1.pathLowerdir)
+    }
+    if (!fs.existsSync(this.distro.level1.pathUpperdir)) {
+      shx.mkdir('-p', this.distro.level1.pathUpperdir)
+    }
+    if (!fs.existsSync(this.distro.level1.pathWorkdir)) {
+      shx.mkdir('-p', this.distro.level1.pathWorkdir)
     }
     if (!fs.existsSync(this.distro.pathLiveFs)) {
       shx.mkdir('-p', this.distro.pathLiveFs)
@@ -875,49 +888,45 @@ timeout 200\n`
       if (dir.isDirectory()) {
         if (!(dir.name === 'lost+found')) {
           console.log(`# ${dir.name} = directory`)
-          if (!(fs.existsSync(`${this.distro.pathLowerdir}/${dir.name}`))) {
-            cmd = `mkdir ${this.distro.pathRODir}/${dir.name}`
+          if (!(fs.existsSync(`${this.distro.level0.pathLowerdir}/${dir.name}`))) {
+            cmd = `mkdir ${this.distro.level0.pathLowerdir}/${dir.name}`
             console.log(cmd)
             await exec(cmd)
           } else {
             console.log(`# directory esistente... skip`)
           }
           if (!this.isEscluded(dir.name)) {
-            // Creiamo la Workdir
-            cmd = `mkdir ${this.distro.pathRODir}/${dir.name} -p`
+            cmd = `mkdir ${this.distro.level0.pathUpperdir}/${dir.name} -p`
             console.log(cmd)
             await exec(cmd)
 
-            // Creiamo la upper dir
-            cmd = `mkdir ${this.distro.pathRWDir}/${dir.name} -p`
+            cmd = `mkdir ${this.distro.level0.pathWorkdir}/${dir.name} -p`
             console.log(cmd)
             await exec(cmd)
 
-            cmd = `mount --bind --make-slave /${dir.name} ${this.distro.pathRODir}/${dir.name}`
-            console.log(cmd)
-            await exec(cmd)
-            cmd = `mount -o remount,bind,ro ${this.distro.pathRODir}/${dir.name}`
+            cmd = `mount --bind --make-slave /${dir.name} ${this.distro.level0.pathWorkdir}/${dir.name}`
             console.log(cmd)
             await exec(cmd)
 
-
-            cmd = `mount -t overlay overlay -o lowerdir=${this.distro.pathRODir}/${dir.name},upperdir=${this.distro.pathRWDir}/${dir.name},workdir=${this.distro.pathWKDir}/${dir.name} ${this.distro.pathRWDir}/${dir.name}`
+            cmd = `mount -o remount,bind,ro ${this.distro.level0.pathLowerdir}/${dir.name}`
             console.log(cmd)
             await exec(cmd)
 
-            if (lowerdir === '') {
-              lowerdir += `lowerdir=${this.distro.pathLowerdir}/${dir.name}`
-            }else {
-              lowerdir += `:${this.distro.pathLowerdir}/${dir.name}`
-            }
-            
+            // Ora la montiamo in level0.merget
+            cmd = `mkdir ${this.distro.level0.pathMerged}/${dir.name} -p`
+            console.log(cmd)
+            await exec(cmd)
+
+            cmd = `mount -t overlay overlay -o lowerdir=${this.distro.level0.pathLowerdir}/${dir.name},upperdir=${this.distro.level0.pathUpperdir}/${dir.name},workdir=${this.distro.level0.pathWorkdir}/${dir.name} ${this.distro.level0.pathMerged}/${dir.name}`
+            console.log(cmd)
+            await exec(cmd)
           }
         }
 
       } else if (dir.isFile()) {
         console.log(`# ${dir.name} = file`)
         if (!(fs.existsSync(`${this.distro.pathLowerdir}/${dir.name}`))) {
-          cmd = `cp /${dir.name} ${this.distro.pathLowerdir}`
+          cmd = `cp /${dir.name} ${this.distro.level0.pathLowerdir}`
           console.log(cmd)
           await exec(cmd)
         } else {
@@ -925,10 +934,10 @@ timeout 200\n`
         }
       } else if (dir.isSymbolicLink()) {
         console.log(`# ${dir.name} = symbolicLink`)
-        if (!(fs.existsSync(`${this.distro.pathLowerdir}/${dir.name}`))) {
+        if (!(fs.existsSync(`${this.distro.level0.pathLowerdir}/${dir.name}`))) {
           ln = `/${dir.name}`
           dest = `/${fs.readlinkSync(ln)}`
-          cmd = `ln -s ${dest} ${this.distro.pathLowerdir}/${dir.name}`
+          cmd = `ln -s ${dest} ${this.distro.level0.pathLowerdir}/${dir.name}`
           console.log(cmd)
           await exec(cmd)
           ln = ''
@@ -948,7 +957,7 @@ timeout 200\n`
     // Così è scrivibile, ma mancano i file sotto i mountpoint
     cmd = `mount -t overlay overlay -o ${lowerdir},upperdir=${this.distro.pathUpperdir},workdir=${this.distro.pathWorkdir} ${this.distro.pathLiveFs}`
     console.log(cmd)
-    await exec(cmd)
+    // await exec(cmd)
   }
 
   /**

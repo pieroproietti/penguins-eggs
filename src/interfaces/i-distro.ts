@@ -5,12 +5,20 @@ export interface IDistro {
     versionNumber: string;
     kernel: string;
     pathHome: string;
-    pathRODir: string;
-    pathRWDir: string;
-    pathWKDir: string
-    pathLowerdir: string;
-    pathUpperdir: string;
-    pathWorkdir: string;
+    level0 :
+    {
+        pathLowerdir: string;
+        pathUpperdir: string;
+        pathWorkdir: string;
+        pathMerged: string;
+    },
+    level1 :
+    {
+        pathLowerdir: string;
+        pathUpperdir: string;
+        pathWorkdir: string;
+        pathMerged: string;
+    },
     pathLiveFs: string;
     pathIso: string;
 }
