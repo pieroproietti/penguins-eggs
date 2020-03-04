@@ -14,7 +14,6 @@ export default class Produce extends Command {
     info: flags.help({char: 'h'}),
     fast: flags.boolean({char: 'f', description: 'compression fast'}),
     compress: flags.boolean({char: 'c', description: 'max compression'}),
-    bindFs: flags.boolean({char: 'B', description: 'bind file systen (fast but unsure)'}),
     basename: flags.string({char: 'b', description: 'basename egg'}),
   }
 
@@ -41,12 +40,7 @@ the penguin produce an egg called uovo-i386-2020-01-18_2000.iso`]
         compression = 'xz -Xbcj x86'
       }
 
-      let bindedFs = false // se vuota viene eseguita la copia
-      if (flags.bindFs){
-        bindedFs = true
-      }
-
-      const ovary = new Ovary(compression, bindedFs)
+      const ovary = new Ovary(compression)
   
       if (await ovary.fertilization()){
         ovary.produce(basename)

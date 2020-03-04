@@ -42,8 +42,7 @@ kill the eggs/free the nest
     if (Utils.isRoot() && Utils.prerequisitesInstalled()) {
       const ovary = new Ovary
       await ovary.fertilization()
-      await ovary.cleanUp()
-      ovary.uBindFs()
+      await ovary.uBindLiveFs()
       this.log(`${Utils.getFriendName()}: deleting old eggs ...`)
       if (this.loadSettings()) {
         await exec(`rm ${this.work_dir} -rf`)

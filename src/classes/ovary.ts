@@ -4,25 +4,9 @@
  * author: Piero Proietti
  * mail: piero.proietti@gmail.com
  *
- * Al momento popolo solo le directory live ed isolinux, mentre boot ed EFI no!
- * createStructure
- * isolinuxPrepare, isolinuxCfg
- * liveKernel, liveSquashFs
- * makeIso
- *  xorriso -as mkisofs -r -J -joliet-long -l -cache-inodes -isohybrid-mbr /usr/lib/ISOLINUX/isohdpfx.bin  -partition_offset 16 -volid "Penguin's eggs lm32-mate" -b isolinux/isolinux.bin -c isolinux/boot.cat -no-emul-boot -boot-load-size 4 -boot-info-table -o /home/eggs/lm32-mate_2019-04-17_1830-02.iso /home/eggs/lm32-mate/iso
  */
 
-/**
- * pacchetti 
- * - efibootmgr
- * - grub-efi-amd64-signed
- * - grub-efi-amd64.bin
- * - grub-efi-amd64-signed
- * libefiboot1
- * libefivar1
- * Ci sono tutti!
- */
-
+ // packages
 import fs = require('fs')
 import path = require('path')
 import os = require('os')
@@ -30,14 +14,19 @@ import ini = require('ini')
 import shx = require('shelljs')
 import pjson = require('pjson')
 
+// interfaces
+import { IDistro, IOses, IPackage } from '../interfaces'
+
+// libraries
+const exec = require('../lib/utils').exec
+
+// classes
 import Utils from './utils'
 import Calamares from './calamares-config'
 import Oses from './oses'
 import Prerequisites from '../commands/prerequisites'
-import { IDistro, IOses, IPackage } from '../interfaces'
-import { runInThisContext } from 'vm'
 
-const exec = require('../lib/utils').exec
+
 
 /**
  * Ovary:
@@ -117,15 +106,12 @@ export default class Ovary {
 
   version = '' as string
 
-  bindedFs = false
-
   /**
    * Egg
    * @param compression
    */
-  constructor(compression = '', bindedFs = false) {
+  constructor(compression = '') {
     this.compression = compression
-    this.bindedFs = bindedFs
 
     this.app.author = 'Piero Proietti'
     this.app.homepage = 'https://github.com/pieroproietti/penguins-eggs'
@@ -329,17 +315,12 @@ export default class Ovary {
       if (this.make_efi) {
         await this.makeEfi()
       }
-      if (this.bindedFs) {
-        await this.bindFs() // bind FS
-      } else {
-        await this.makeFs() // copy fs
-      }
+      await this.bindLiveFs()
       await this.editLiveFs()
       await this.editBootMenu()
       await this.addDebianRepo()
       await this.makeSquashFs()
-      // await this.uBindFs()
-      // await this.cleanUp()
+      await this.uBindLiveFs()
       if (this.make_efi) {
         await this.editEfi()
       }
@@ -699,136 +680,6 @@ timeout 200\n`
   }
 
   /**
-   * Kill mksquashfs and md5sum...
-   * Execute installed-to-live cleanup
-   * Remove mx-snapshot in work_dir
-   
-   */
-  async cleanUp() {
-    console.log('==========================================')
-    console.log('ovary: cleanUp')
-    console.log('==========================================')
-
-    shx.exec('sync', { silent: true })
-    if (this.bindedFs) {
-      shx.exec('/usr/bin/pkill mksquashfs; /usr/bin/pkill md5sum', { silent: true })
-      shx.cp('/tmp/penguins-eggs/fstab', '/etc/fstab') // Pezza a colori
-    }
-    shx.exec('/usr/bin/[ -f /tmp/installed-to-live/cleanup.conf ] && /sbin/installed-to-live cleanup', { silent: true })
-
-    if (fs.existsSync(`${this.work_dir}/mx-snapshot`)) {
-      shx.exec(`rm -r ${this.work_dir}`, { silent: true })
-    }
-  }
-
-  /**
-   * makeLiveFs
-   * Crea il LiveFs mediante copia (lento ma preciso)
-   */
-  public async makeFs() {
-    console.log('==========================================')
-    console.log(`ovary: makeFs ${this.distro.merged}`)
-    console.log('==========================================')
-
-    let f = ''
-    // root
-    f += ' --filter="- /cdrom/*"'
-    f += ' --filter="- /dev/*"'
-    f += ' --filter="- /live"'
-    f += ' --filter="- /media/*"'
-    f += ' --filter="- /mnt/*"'
-    f += ' --filter="- /proc/*"'
-    f += ' --filter="- /sys/*"'
-    f += ' --filter="- /swapfile"'
-    f += ' --filter="- /tmp/*"'
-    f += ' --filter="- /persistence.conf"'
-
-    // boot
-    f += ' --filter="- /boot/grub/grub.cfg"'
-    f += ' --filter="- /boot/grub/menu.lst"'
-    f += ' --filter="- /boot/grub/device.map"'
-    f += ' --filter="- /boot/*.bak"'
-    f += ' --filter="- /boot/*.old-dkms"'
-
-    // etc
-    f += ' --filter="- /etc/apt/sources.list~"'
-    f += ' --filter="- /etc/blkid.tab"'
-    f += ' --filter="- /etc/blkid.tab.old"'
-    f += ' --filter="- /etc/crypttab"'
-    f += ' --filter="- /etc/fstab"'
-    f += ' --filter="- /etc/fstab.d/*"'
-    f += ' --filter="- /etc/initramfs-tools/conf.d/resume"' // see remove-cryptroot and nocrypt.sh
-    f += ' --filter="- /etc/initramfs-tools/conf.d/cryptroot"' // see remove-cryptroot and nocrypt.sh
-    f += ' --filter="- /etc/mtab"'
-    f += ' --filter="- /etc/popularity-contest.conf"'
-    f += ' --filter="- /etc/ssh/ssh_host_*_key*"' // Exclude ssh_host_keys. New ones will be generated upon live boot.
-    f += ' --filter="- /etc/ssh/ssh_host_key*"' // Exclude ssh_host_keys. New ones will be generated upon live boot.
-    f += ' --filter="- /etc/sudoers.d/live"' // Exclude live da sudoers.d non serve se installato
-
-    // lib
-    f += ' --filter="- /lib/live/image"'
-    f += ' --filter="- /lib/live/mount"'
-    f += ' --filter="- /lib/live/overlay"'
-    f += ' --filter="- /lib/live/rootfs"'
-
-    f += ' --filter="- /home/*"'
-    f += ' --filter="- /root/*"'
-    f += ' --filter="- /run/*"'
-
-    // var
-    f += ' --filter="- /var/backups/*.gz"'
-    f += ' --filter="- /var/cache/apt/archives/*.deb"'
-    f += ' --filter="- /var/cache/apt/pkgcache.bin"'
-    f += ' --filter="- /var/cache/apt/srcpkgcache.bin"'
-    f += ' --filter="- /var/cache/apt/apt-file/*"'
-    f += ' --filter="- /var/cache/debconf/*~old"'
-    f += ' --filter="- /var/lib/apt/*~"'
-    f += ' --filter="- /var/lib/apt/cdroms.list"'
-    f += ' --filter="- /var/lib/apt/lists/*"'
-    f += ' --filter="- /var/lib/aptitude/*.old"'
-    f += ' --filter="- /var/lib/dbus/machine-id"'
-    f += ' --filter="- /var/lib/dhcp/*"'
-    f += ' --filter="- /var/lib/dpkg/*~old"'
-    f += ' --filter="- /var/lib/live/config/*"'
-    f += ' --filter="- /var/log/*"'
-    f += ' --filter="- /var/mail/*"'
-    f += ' --filter="- /var/spool/mail/*"'
-
-    // usr
-    f += ' --filter="- /usr/share/icons/*/icon-theme.cache"'
-    f += ' --filter="- /usr/lib/live/image"'
-    f += ' --filter="- /usr/lib/live/mount"'
-    f += ' --filter="- /usr/lib/live/overlay"'
-    f += ' --filter="- /usr/lib/live/rootfs"'
-
-    let home = ''
-    if (this.reset_accounts) {
-      home = '--filter="- /home/*"'
-    } else {
-      home = '--filter="+/home/*"'
-    }
-
-    const cmd = `\
-      rsync \
-      --archive \
-      --delete-before \
-      --delete-excluded \
-      --filter="- ${this.distro.pathHome}" \
-      ${f} \
-      --filter="- /lib/live/*" \
-      --filter="+ /lib/live/boot/*" \
-      --filter="+ /lib/live/config/*" \
-      --filter="+ /lib/live/init-config-sh" \
-      --filter="+ /lib/live/setup-network.sh" \
-      ${home} \
-      / ${this.distro.merged}`
-    shx.exec(cmd.trim(), { async: false })
-    if (this.reset_accounts) {
-      this.makeLiveHome()
-    }
-  }
-
-  /**
    * 
    * @param dir 
    */
@@ -859,10 +710,10 @@ timeout 200\n`
     * Check if exist mx-snapshot in work_dir;
     * If respin mode remove all the users
     */
-  async bindFs() {
+  async bindLiveFs() {
     Utils.titles()
     console.log('==========================================')
-    console.log('ovary: bindFs')
+    console.log('ovary: bindLiveFs')
     console.log('==========================================')
     let lowerdir = ''
 
@@ -924,9 +775,9 @@ timeout 200\n`
   /**
    * 
    */
-  async uBindFs() {
+  async uBindLiveFs() {
     console.log('==========================================')
-    console.log('ovary: uBindFs')
+    console.log('ovary: uBindLiveFs')
     console.log('==========================================')
 
     let cmd = ''
@@ -935,6 +786,8 @@ timeout 200\n`
      * umount /merged/dir
      * umount /lower/dir
      */
+    await exec('/usr/bin/pkill mksquashfs; /usr/bin/pkill md5sum')
+
     if (fs.existsSync(this.distro.merged)) {
       const bindDirs = fs.readdirSync(this.distro.merged, { withFileTypes: true })
       for (let dir of bindDirs) {
@@ -950,10 +803,13 @@ timeout 200\n`
           }
           cmd = `rm ${this.distro.merged}/${dir.name} -rf`
           console.log(cmd)
-          // await exec(cmd)
+          await exec(cmd)
+          cmd = `rm ${this.distro.lowerdir}/${dir.name} -rf`
+          console.log(cmd)
+          await exec(cmd)
         } else if (dir.isFile()) {
           console.log(`# ${dir.name} = file`)
-          cmd = `rm ${this.distro.merged}/${dir.name} -rf`
+          cmd = `rm ${this.distro.merged}/${dir.name}`
           console.log(cmd)
           await exec(cmd)
         } else if (dir.isSymbolicLink()) {
@@ -1147,11 +1003,12 @@ timeout 200\n`
     // Do the main grub.cfg (which gets loaded last):
     fs.copyFileSync(path.resolve(__dirname, '../../conf/grub.cfg.template'), `${this.distro.pathIso}/boot/grub/grub.cfg`)
     shx.cp(path.resolve(__dirname, '../../conf/loopback.cfg'), `${this.distro.pathIso}/boot/grub/`)
-
-
   }
 
-  editEfi() {
+  /**
+   * editEfi
+   */
+  async editEfi() {
     // editEfi()
     const gpath = `${this.distro.pathIso}/boot/grub/grub.cfg`
     shx.sed('-i', '%custom-name%', this.distro.name, gpath)
@@ -1197,6 +1054,11 @@ timeout 200\n`
   }
 
   /**
+   * funzioni private
+   * Vengono utilizzate solo da Ovary
+   */
+
+  /**
    * addDebianRepo
    */
   async addDebianRepo() {
@@ -1208,10 +1070,13 @@ timeout 200\n`
   }
 }
 
-async function makeIfNotExist(path: string): boolean {
+/**
+ * Crea il path se non esiste
+ * @param path 
+ */
+async function makeIfNotExist(path: string) {
   if (!(fs.existsSync(path))) {
     const cmd = `mkdir ${path} -p`
     await exec(cmd)
   }
-  return true
 }
