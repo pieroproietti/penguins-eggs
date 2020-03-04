@@ -1,3 +1,10 @@
+export interface Ilevel {
+    lowerdir: string;
+    upperdir: string;
+    workdir: string;
+    merged: string;
+}
+
 export interface IDistro {
     name: string;
     branding: string;
@@ -5,20 +12,12 @@ export interface IDistro {
     versionNumber: string;
     kernel: string;
     pathHome: string;
-    level0 :
-    {
-        pathLowerdir: string;
-        pathUpperdir: string;
-        pathWorkdir: string;
-        pathMerged: string;
-    },
-    level1 :
-    {
-        pathLowerdir: string;
-        pathUpperdir: string;
-        pathWorkdir: string;
-        pathMerged: string;
-    },
+    lowerdir: string;
+    upperdir: string;
+    workdir: string;
+    merged: string;
+    level0 : Ilevel;
+    level1 : Ilevel;
     pathLiveFs: string;
     pathIso: string;
 }
