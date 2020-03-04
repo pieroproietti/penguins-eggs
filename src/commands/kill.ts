@@ -48,7 +48,6 @@ kill the eggs/free the nest
         await exec(`rm ${this.work_dir} -rf`)
         await exec(`rm ${this.snapshot_dir} -rf`)
       }
-
     }
   }
 

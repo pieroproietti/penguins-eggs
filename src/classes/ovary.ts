@@ -26,8 +26,6 @@ import Calamares from './calamares-config'
 import Oses from './oses'
 import Prerequisites from '../commands/prerequisites'
 
-
-
 /**
  * Ovary:
  */
@@ -315,7 +313,8 @@ export default class Ovary {
       if (this.make_efi) {
         await this.makeEfi()
       }
-      await this.bindLiveFs()
+      await this.bindLiveFs({echo: true})
+      await this.makeLiveHome()
       await this.editLiveFs()
       await this.editBootMenu()
       await this.addDebianRepo()
@@ -324,7 +323,7 @@ export default class Ovary {
         await this.editEfi()
       }
       await this.makeIsoImage()
-      await this.uBindLiveFs()
+      // await this.uBindLiveFs()
     }
   }
 
@@ -686,9 +685,9 @@ timeout 200\n`
   isEscluded(dir: string): boolean {
     let toExclude = false
     const excludeDirs = [
-      'home',
       'cdrom',
       'dev',
+      'home',
       'live',
       'media',
       'mnt',
@@ -710,7 +709,7 @@ timeout 200\n`
     * Check if exist mx-snapshot in work_dir;
     * If respin mode remove all the users
     */
-  async bindLiveFs() {
+  async bindLiveFs(echo = {echo: false}) {
     Utils.titles()
     console.log('==========================================')
     console.log('ovary: bindLiveFs')
@@ -723,33 +722,32 @@ timeout 200\n`
       if (dir.isDirectory()) {
         if (!(dir.name === 'lost+found')) {
           console.log(`# ${dir.name} = directory`)
-          await makeIfNotExist(`${this.distro.lowerdir}/${dir.name}`)
           if (!this.isEscluded(dir.name)) {
-            await exec(`mount --bind --make-slave /${dir.name} ${this.distro.lowerdir}/${dir.name}`, {echo: true})
-            await exec(`mount -o remount,bind,ro ${this.distro.lowerdir}/${dir.name}`, {echo: true})
-            await makeIfNotExist(`${this.distro.upperdir}/${dir.name}`)
-            await makeIfNotExist(`${this.distro.workdir}/${dir.name}`)
-            await makeIfNotExist(`${this.distro.merged}/${dir.name}`)
-            await exec(`mount -t overlay overlay -o lowerdir=${this.distro.lowerdir}/${dir.name},upperdir=${this.distro.upperdir}/${dir.name},workdir=${this.distro.workdir}/${dir.name} ${this.distro.merged}/${dir.name}`, {echo: true})
+            // Creo il mountpoint lower e ci monto in ro dir.name
+            await makeIfNotExist(`${this.distro.lowerdir}/${dir.name}`, echo)
+            await exec(`mount --bind --make-slave /${dir.name} ${this.distro.lowerdir}/${dir.name}`, echo)
+            await exec(`mount -o remount,bind,ro ${this.distro.lowerdir}/${dir.name}`, echo)
+            // Creao i mountpoint upper, work e merged e monto in merged rw
+            await makeIfNotExist(`${this.distro.upperdir}/${dir.name}`, echo)
+            await makeIfNotExist(`${this.distro.workdir}/${dir.name}`, echo)
+            await makeIfNotExist(`${this.distro.merged}/${dir.name}`, echo)
+            await exec(`mount -t overlay overlay -o lowerdir=${this.distro.lowerdir}/${dir.name},upperdir=${this.distro.upperdir}/${dir.name},workdir=${this.distro.workdir}/${dir.name} ${this.distro.merged}/${dir.name}`, echo)
+          } else {
+            // Creo direttamente la dir.name in merged
+            await makeIfNotExist(`${this.distro.merged}/${dir.name}`, echo)
           }
         }
       } else if (dir.isFile()) {
         console.log(`# ${dir.name} = file`)
         if (!(fs.existsSync(`${this.distro.merged}/${dir.name}`))) {
-          await exec(`cp /${dir.name} ${this.distro.merged}`, {echo: true})
+          await exec(`cp /${dir.name} ${this.distro.merged}`, echo)
         } else {
           console.log(`# file esistente... skip`)
         }
       } else if (dir.isSymbolicLink()) {
         console.log(`# ${dir.name} = symbolicLink`)
         if (!(fs.existsSync(`${this.distro.merged}/${dir.name}`))) {
-          await exec(`cp -r /${dir.name} ${this.distro.merged}`, {echo: true})
-          // dest = fs.readlinkSync(dir.name)
-          // cmd = `ln -s ${this.distro.merged}/${dir.name} ${dest}`
-          // console.log(cmd)
-          // await exec(cmd)
-          // ln = ''
-          // dest = ''
+          await exec(`cp -r /${dir.name} ${this.distro.merged}`, echo)
         } else {
           console.log(`# SymbolicLink esistente... skip`)
         }
@@ -760,35 +758,31 @@ timeout 200\n`
   /**
    * 
    */
-  async uBindLiveFs() {
+  async uBindLiveFs(echo = {echo: false}) {
     console.log('==========================================')
     console.log('ovary: uBindLiveFs')
     console.log('==========================================')
     // await exec(`/usr/bin/pkill mksquashfs; /usr/bin/pkill md5sum`, {echo: true})
 
-    // this.distro.merged = `/home/eggs/work/debu7/merged`
+    // this.distro.merged = `/home/eggs/work/debu7/merged` esistono
     // this.distro.lowerdir = `/home/eggs/work/debu7/lowerdir`
-    console.log(this.distro.merged)
-    console.log(this.distro.lowerdir)
-    
-
     if (fs.existsSync(this.distro.merged)) {
       const bindDirs = fs.readdirSync(this.distro.merged, { withFileTypes: true })
       for (let dir of bindDirs) {
         if (dir.isDirectory()) {
           console.log(`# ${dir.name} = directory`)
           if (!this.isEscluded(dir.name)) {
-            await exec(`umount ${this.distro.merged}/${dir.name}`, {echo: true})
-            await exec(`umount ${this.distro.lowerdir}/${dir.name}`, {echo: true})
+            await exec(`umount ${this.distro.merged}/${dir.name}`, echo)
+            await exec(`umount ${this.distro.lowerdir}/${dir.name}`, echo)
           }
-          await exec(`rm ${this.distro.merged}/${dir.name} -rf`, {echo: true})
-          await exec(`rm ${this.distro.lowerdir}/${dir.name} -rf`, {echo: true})
+          await exec(`rm ${this.distro.merged}/${dir.name} -rf`, echo)
+          await exec(`rm ${this.distro.lowerdir}/${dir.name} -rf`, echo)
         } else if (dir.isFile()) {
           console.log(`# ${dir.name} = file`)
-          await exec(`rm ${this.distro.merged}/${dir.name}`, {echo: true})
+          await exec(`rm ${this.distro.merged}/${dir.name}`, echo)
         } else if (dir.isSymbolicLink()) {
           console.log(`# ${dir.name} = symbolicLink`)
-          await exec(`rm ${this.distro.merged}/${dir.name}`, {echo: true})
+          await exec(`rm ${this.distro.merged}/${dir.name}`, echo)
         }
       }
     }
@@ -1046,9 +1040,9 @@ timeout 200\n`
  * Crea il path se non esiste
  * @param path 
  */
-async function makeIfNotExist(path: string) {
+async function makeIfNotExist(path: string, echo = {echo: false}) {
   if (!(fs.existsSync(path))) {
     const cmd = `mkdir ${path} -p`
-    await exec(cmd)
+    await exec(cmd, echo)
   }
 }
