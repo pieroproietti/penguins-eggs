@@ -1,0 +1,64 @@
+#!/bin/bash
+# ==========================================
+# ovary: bindFs
+# ==========================================
+# bin = symbolicLink
+ln -s /bin /home/eggs/.work/debu7/.lowerdir/bin
+# boot = directory
+mkdir /home/eggs/.work/debu7/.lowerdir/boot
+mount --bind --make-slave /boot /home/eggs/.work/debu7/.lowerdir/boot
+# dev = directory
+mkdir /home/eggs/.work/debu7/.lowerdir/dev
+# etc = directory
+mkdir /home/eggs/.work/debu7/.lowerdir/etc
+mount --bind --make-slave /etc /home/eggs/.work/debu7/.lowerdir/etc
+# home = directory
+mkdir /home/eggs/.work/debu7/.lowerdir/home
+# initrd.img = symbolicLink
+ln -s /initrd.img /home/eggs/.work/debu7/.lowerdir/initrd.img
+# initrd.img.old = symbolicLink
+ln -s /initrd.img.old /home/eggs/.work/debu7/.lowerdir/initrd.img.old
+# lib = symbolicLink
+ln -s /lib /home/eggs/.work/debu7/.lowerdir/lib
+# lib32 = symbolicLink
+ln -s /lib32 /home/eggs/.work/debu7/.lowerdir/lib32
+# lib64 = symbolicLink
+ln -s /lib64 /home/eggs/.work/debu7/.lowerdir/lib64
+# libx32 = symbolicLink
+ln -s /libx32 /home/eggs/.work/debu7/.lowerdir/libx32
+# lost+found = directory
+mkdir /home/eggs/.work/debu7/.lowerdir/lost+found
+# media = directory
+mkdir /home/eggs/.work/debu7/.lowerdir/media
+# mnt = directory
+mkdir /home/eggs/.work/debu7/.lowerdir/mnt
+# opt = directory
+mkdir /home/eggs/.work/debu7/.lowerdir/opt
+mount --bind --make-slave /opt /home/eggs/.work/debu7/.lowerdir/opt
+# proc = directory
+mkdir /home/eggs/.work/debu7/.lowerdir/proc
+# root = directory
+mkdir /home/eggs/.work/debu7/.lowerdir/root
+mount --bind --make-slave /root /home/eggs/.work/debu7/.lowerdir/root
+# run = directory
+mkdir /home/eggs/.work/debu7/.lowerdir/run
+# sbin = symbolicLink
+ln -s /sbin /home/eggs/.work/debu7/.lowerdir/sbin
+# srv = directory
+mkdir /home/eggs/.work/debu7/.lowerdir/srv
+mount --bind --make-slave /srv /home/eggs/.work/debu7/.lowerdir/srv
+# sys = directory
+mkdir /home/eggs/.work/debu7/.lowerdir/sys
+# tmp = directory
+mkdir /home/eggs/.work/debu7/.lowerdir/tmp
+# usr = directory
+mkdir /home/eggs/.work/debu7/.lowerdir/usr
+mount --bind --make-slave /usr /home/eggs/.work/debu7/.lowerdir/usr
+# var = directory
+mkdir /home/eggs/.work/debu7/.lowerdir/var
+mount --bind --make-slave /var /home/eggs/.work/debu7/.lowerdir/var
+# vmlinuz = symbolicLink
+ln -s /vmlinuz /home/eggs/.work/debu7/.lowerdir/vmlinuz
+# vmlinuz.old = symbolicLink
+ln -s /vmlinuz.old /home/eggs/.work/debu7/.lowerdir/vmlinuz.old
+

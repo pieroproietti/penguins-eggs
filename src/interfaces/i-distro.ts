@@ -5,6 +5,9 @@ export interface IDistro {
     versionNumber: string;
     kernel: string;
     pathHome: string;
-    pathLiveFs: string;
+    lowerdir: string;
+    upperdir: string;
+    workdir: string;
+    merged: string;
     pathIso: string;
 }

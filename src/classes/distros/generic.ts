@@ -63,16 +63,16 @@ fi\n`
     text += addIfExist('task-localisation')
     text += addIfExist('live-task-recommended')
     text += addIfExist('calamares-settings-debian')
-    // text += addIfExist('calamares')
+    text += '\n'
     return text
   }
 }
 export default Generic
 
-function addIfExist(package2test: string): string {
+function addIfExist(package2check: string): string {
   let text = ''
-  if (Utils.packageIsInstalled(package2test)){
-    text +=`   - '${package2test}'\n`
+  if (Utils.packageIsInstalled(package2check)){
+    text +=`   - '${package2check}'\n`
   }
   return text
   
