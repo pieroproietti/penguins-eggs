@@ -884,7 +884,7 @@ timeout 200\n`
           }
           if (!this.isEscluded(dir.name)) {
             // Creiamo la Workdir
-            cmd = `mkdir ${this.distro.pathRWDir}/${dir.name} -p`
+            cmd = `mkdir ${this.distro.pathRODir}/${dir.name} -p`
             console.log(cmd)
             await exec(cmd)
 
