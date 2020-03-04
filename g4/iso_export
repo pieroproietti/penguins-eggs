@@ -1,1 +1,0 @@
-scp $1 root@192.168.61.2:/var/lib/vz/template/iso

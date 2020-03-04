@@ -45,7 +45,7 @@ class Eoan {
         },
         { show: ['finished'] },
       ],
-      branding: eggs,
+      branding: branding,
       'prompt-install': false,
       'dont-chroot': false,
     }
