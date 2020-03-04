@@ -35,6 +35,7 @@ import Calamares from './calamares-config'
 import Oses from './oses'
 import Prerequisites from '../commands/prerequisites'
 import { IDistro, IOses, IPackage } from '../interfaces'
+import { runInThisContext } from 'vm'
 
 const exec = require('../lib/utils').exec
 
@@ -155,6 +156,9 @@ export default class Ovary {
 
     if (this.loadSettings() && this.listFreeSpace()) {
       this.distro.pathHome = this.work_dir + this.distro.name
+      this.distro.pathRODir = this.distro.pathHome + '/RO'
+      this.distro.pathRWDir = this.distro.pathHome + '/RW'
+      this.distro.pathWKDir = this.distro.pathHome + '/WK'
       this.distro.pathLowerdir = this.distro.pathHome + '/.lowerdir'
       this.distro.pathUpperdir = this.distro.pathHome + '/.upperdir'
       this.distro.pathWorkdir = this.distro.pathHome + '/.workdir'
@@ -862,6 +866,7 @@ timeout 200\n`
     console.log('==========================================')
     console.log('ovary: bindFs')
     console.log('==========================================')
+    let lowerdir = ''
     const rootDirs = fs.readdirSync('/', { withFileTypes: true })
     let cmd = ''
     let ln = ''
@@ -871,19 +876,41 @@ timeout 200\n`
         if (!(dir.name === 'lost+found')) {
           console.log(`# ${dir.name} = directory`)
           if (!(fs.existsSync(`${this.distro.pathLowerdir}/${dir.name}`))) {
-            cmd = `mkdir ${this.distro.pathLowerdir}/${dir.name}`
+            cmd = `mkdir ${this.distro.pathRODir}/${dir.name}`
             console.log(cmd)
             await exec(cmd)
           } else {
             console.log(`# directory esistente... skip`)
           }
           if (!this.isEscluded(dir.name)) {
-            cmd = `mount --bind --make-slave /${dir.name} ${this.distro.pathLowerdir}/${dir.name}`
+            // Creiamo la Workdir
+            cmd = `mkdir ${this.distro.pathRWDir}/${dir.name} -p`
             console.log(cmd)
             await exec(cmd)
-            cmd = `mount -o remount,bind,ro ${this.distro.pathLowerdir}/${dir.name}`
+
+            // Creiamo la upper dir
+            cmd = `mkdir ${this.distro.pathRWDir}/${dir.name} -p`
             console.log(cmd)
             await exec(cmd)
+
+            cmd = `mount --bind --make-slave /${dir.name} ${this.distro.pathRODir}/${dir.name}`
+            console.log(cmd)
+            await exec(cmd)
+            cmd = `mount -o remount,bind,ro ${this.distro.pathRODir}/${dir.name}`
+            console.log(cmd)
+            await exec(cmd)
+
+
+            cmd = `mount -t overlay overlay -o lowerdir=${this.distro.pathRODir}/${dir.name},upperdir=${this.distro.pathRWDir}/${dir.name},workdir=${this.distro.pathWKDir}/${dir.name} ${this.distro.pathRWDir}/${dir.name}`
+            console.log(cmd)
+            await exec(cmd)
+
+            if (lowerdir === '') {
+              lowerdir += `lowerdir=${this.distro.pathLowerdir}/${dir.name}`
+            }else {
+              lowerdir += `:${this.distro.pathLowerdir}/${dir.name}`
+            }
+            
           }
         }
 
@@ -912,8 +939,14 @@ timeout 200\n`
       }
     }
 
+    console.log('==========================================================================')
+    console.log(lowerdir)
+    console.log('==========================================================================')
     // Monto overlay
     cmd = `mount -t overlay overlay -o lowerdir=${this.distro.pathLowerdir},upperdir=${this.distro.pathUpperdir},workdir=${this.distro.pathWorkdir} ${this.distro.pathLiveFs}`
+
+    // Così è scrivibile, ma mancano i file sotto i mountpoint
+    cmd = `mount -t overlay overlay -o ${lowerdir},upperdir=${this.distro.pathUpperdir},workdir=${this.distro.pathWorkdir} ${this.distro.pathLiveFs}`
     console.log(cmd)
     await exec(cmd)
   }

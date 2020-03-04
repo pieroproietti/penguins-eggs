@@ -5,6 +5,9 @@ export interface IDistro {
     versionNumber: string;
     kernel: string;
     pathHome: string;
+    pathRODir: string;
+    pathRWDir: string;
+    pathWKDir: string
     pathLowerdir: string;
     pathUpperdir: string;
     pathWorkdir: string;
