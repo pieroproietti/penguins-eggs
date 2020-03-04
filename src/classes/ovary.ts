@@ -320,11 +320,11 @@ export default class Ovary {
       await this.editBootMenu()
       await this.addDebianRepo()
       await this.makeSquashFs()
-      await this.uBindLiveFs()
       if (this.make_efi) {
         await this.editEfi()
       }
       await this.makeIsoImage()
+      await this.uBindLiveFs()
     }
   }
 
@@ -764,11 +764,14 @@ timeout 200\n`
     console.log('==========================================')
     console.log('ovary: uBindLiveFs')
     console.log('==========================================')
-    /**
-     * umount /merged/dir
-     * umount /lower/dir
-     */
-    await exec('/usr/bin/pkill mksquashfs; /usr/bin/pkill md5sum')
+    // await exec(`/usr/bin/pkill mksquashfs; /usr/bin/pkill md5sum`, {echo: true})
+
+    // this.distro.merged = `/home/eggs/work/debu7/merged`
+    // this.distro.lowerdir = `/home/eggs/work/debu7/lowerdir`
+    console.log(this.distro.merged)
+    console.log(this.distro.lowerdir)
+    
+
     if (fs.existsSync(this.distro.merged)) {
       const bindDirs = fs.readdirSync(this.distro.merged, { withFileTypes: true })
       for (let dir of bindDirs) {
