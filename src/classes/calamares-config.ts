@@ -47,6 +47,8 @@ class Calamares {
       await this.bootLoaderConfig()
       await this.unpackfsConf()
       await this.packages()
+      await this.removeuser()
+      await this.displaymanager()
     }
   }
 
@@ -70,11 +72,9 @@ class Calamares {
    */
   async settingsConf() {
     const versionLike = this.oses.versionLike
-    console.log('==========================================')
-    console.log('calamares: settingsConf')
-    console.log('==========================================')
+    const confPath = '/etc/calamares/settings.conf'
+    console.log(`calamares: create module ${confPath}`)
 
-    const settingsPath = '/etc/calamares/settings.conf'
     let settings = {}
     let sourcesFinal = ''
 
@@ -85,7 +85,7 @@ class Calamares {
     } else if (versionLike === 'eoan') {
       settings = Eoan.settings()
     }
-    fs.writeFileSync(settingsPath, `# distroType: ${versionLike}\n` + yaml.safeDump(settings), 'utf8')
+    fs.writeFileSync(confPath, `# distroType: ${versionLike}\n` + yaml.safeDump(settings), 'utf8')
   }
 
   /**
@@ -93,10 +93,8 @@ class Calamares {
    */
   async sourcesFinal() {
     const versionLike = this.oses.versionLike
-    console.log('==========================================')
-    console.log('calamares: sourceFinal')
-    console.log('==========================================')
     const scriptPath = '/usr/sbin/sources-final'
+    console.log(`calamares: create script ${scriptPath} type ${versionLike}`)
     let content = ''
 
     if (versionLike === 'buster') {
@@ -116,13 +114,10 @@ class Calamares {
    * brandingDesc
    */
   async brandingDesc() {
-    console.log('==========================================')
-    console.log('calamares: brandingDesc')
-    console.log('==========================================')
+    const brandingPath =`/etc/calamares/branding/${this.distro.branding}`
+    const descPath = `${brandingPath}/branding.desc`
+    console.log(`calamares: create desc ${descPath}`)
 
-    // Configurazione branding.desc
-    const brandingPath = `/etc/calamares/branding/${this.distro.branding}`
-    const brandingFile = `${brandingPath}/branding.desc`
     const versionLike: string = this.oses.versionLike
     const homeUrl: string = this.oses.homeUrl
     const supportUrl: string = this.oses.supportUrl
@@ -177,21 +172,23 @@ class Calamares {
         sidebarTextSelect: '#4d7079',
       },
     }
-    fs.writeFileSync(brandingFile, `#versionLike: ${versionLike}\n` + yaml.safeDump(branding), 'utf8')
+    fs.writeFileSync(descPath, `#versionLike: ${versionLike}\n` + yaml.safeDump(branding), 'utf8')
   }
 
   /**
    * unpackfsConf
    */
   unpackfsConf() {
-    const file = '/etc/calamares/modules/unpackfs.conf'
+    const confPath = '/etc/calamares/modules/unpackfs.conf'
+    console.log(`calamares: create module ${confPath}`)
+
     let text = '---\n'
     text += 'unpack:\n'
     text += `-   source: "${this.oses.mountpointSquashFs}"\n`
     text += '    sourcefs: "squashfs"\n'
     text += '    unpack:\n'
     text += '    destination: ""\n'
-    fs.writeFileSync(file, text, 'utf8')
+    fs.writeFileSync(confPath, text, 'utf8')
   }
 
   /**
@@ -200,6 +197,8 @@ class Calamares {
    */
   bootLoaderConfig(){
     const scriptPath = '/sbin/bootloader-config'
+    console.log(`calamares: create script ${scriptPath}`)
+    
     const content = Generic.bootLoaderConfig()
     fs.writeFileSync(scriptPath, content, 'utf8')
     shx.chmod('+x', scriptPath)
@@ -210,7 +209,28 @@ class Calamares {
    */
   packages() {
     const confPath = '/etc/calamares/modules/packages.conf'
+    console.log(`calamares: create module ${confPath}`)
     const content = Generic.packages()
+    fs.writeFileSync(confPath, content, 'utf8')
+  }
+
+  /**
+   * create module removeusers.conf
+   */
+  removeuser() {
+    const confPath = '/etc/calamares/modules/removeuser.conf'
+    console.log(`calamares: create module ${confPath}`)
+    const content = Generic.removeuser()
+    fs.writeFileSync(confPath, content, 'utf8')
+  }
+
+  /** 
+   * create module displaymanager.conf
+   */
+  displaymanager(){
+    const confPath = '/etc/calamares/modules/displaymanager.conf'
+    console.log(`calamares: create module ${confPath}`)
+    const content = Generic.displaymanager()
     fs.writeFileSync(confPath, content, 'utf8')
   }
 }

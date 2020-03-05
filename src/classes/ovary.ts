@@ -284,7 +284,7 @@ export default class Ovary {
    *
    * @param basename
    */
-  async produce(basename = '', echo = {echo: true}) {
+  async produce(basename = '', echo = {echo: false}) {
     if (!fs.existsSync(this.snapshot_dir)) {
       shx.mkdir('-p', this.snapshot_dir)
     }
@@ -382,7 +382,8 @@ export default class Ovary {
     console.log('==========================================')
     console.log('ovary: editLiveFs')
     console.log('==========================================')
-
+    // sudo systemctl disable wpa_supplicant 
+    
     // Truncate logs, remove archived logs.
     let cmd = `find ${this.work_dir.merged}/var/log -name "*gz" -print0 | xargs -0r rm -f`
     await exec(cmd, echo)
@@ -691,7 +692,7 @@ timeout 200\n`
   }
 
   /**
-   * Ritorna true se c'è bisogno della copia
+   * Ritorna true se c'è bisogno della copia 
    * @param dir 
    */
   onlyMerged(dir: string): boolean {

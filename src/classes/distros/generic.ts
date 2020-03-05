@@ -71,10 +71,30 @@ fi\n`
   /**
    * create content per removeuser.conf
    */
-  removeuser(): string{
+  static removeuser(): string{
     let text = ''
     text += '---\n'
-    text += `username: ${os.userInfo()}\n`
+    //text += `username: ${os.userInfo().username}\n`
+    text += `username: live\n`
+    return text
+  }
+
+  /** 
+   * create content per displaymanager.conf
+   */
+  static displaymanager(): string {
+    let text = ''
+
+    text += 'displaymanagers:\n'
+    text += addIfExist('slim')
+    text += addIfExist('sddm')
+    text += addIfExist('lightdm')
+    text += addIfExist('gdm')
+    text += addIfExist('mdm')
+    text += addIfExist('lxdm')
+    text += addIfExist('kdm')
+    text += 'basicSetup: false\n'
+    text += 'sysconfigSetup: false'
     return text
   }
 }
