@@ -378,34 +378,34 @@ export default class Ovary {
    * - Add some basic files to /dev
    * - Clear configs from /etc/network/interfaces, wicd and NetworkManager and netman
    */
-  async editLiveFs() {
+  async editLiveFs(echo = {echo: true}) {
     console.log('==========================================')
     console.log('ovary: editLiveFs')
     console.log('==========================================')
 
     // Truncate logs, remove archived logs.
     let cmd = `find ${this.work_dir.merged}/var/log -name "*gz" -print0 | xargs -0r rm -f`
-    shx.exec(cmd)
+    await exec(cmd, echo)
     cmd = `find ${this.work_dir.merged}/var/log/ -type f -exec truncate -s 0 {} \\;`
-    shx.exec(cmd)
+    await exec(cmd, echo)
 
     // Allow all fixed drives to be mounted with pmount
     if (this.pmount_fixed) {
       if (fs.existsSync(`${this.work_dir.merged}/etc/pmount.allow`))
-        shx.exec(`sed -i 's:#/dev/sd\[a-z\]:/dev/sd\[a-z\]:' ${this.work_dir.merged}/pmount.allow`)
+        await exec(`sed -i 's:#/dev/sd\[a-z\]:/dev/sd\[a-z\]:' ${this.work_dir.merged}/pmount.allow`, echo)
     }
 
     // Enable or disable password login through ssh for users (not root)
     // Remove obsolete live-config file
     if (fs.existsSync(`${this.work_dir.merged}lib/live/config/1161-openssh-server`)) {
-      shx.exec(`rm -f "$work_dir"/myfs/lib/live/config/1161-openssh-server`)
+      await exec(`rm -f "$work_dir"/myfs/lib/live/config/1161-openssh-server`, echo)
     }
 
     shx.exec(`sed -i 's/PermitRootLogin yes/PermitRootLogin prohibit-password/' ${this.work_dir.merged}/etc/ssh/sshd_config`)
     if (this.ssh_pass) {
-      shx.exec(`sed -i 's|.*PasswordAuthentication.*no|PasswordAuthentication yes|' ${this.work_dir.merged}/etc/ssh/sshd_config`)
+      await exec(`sed -i 's|.*PasswordAuthentication.*no|PasswordAuthentication yes|' ${this.work_dir.merged}/etc/ssh/sshd_config`, echo)
     } else {
-      shx.exec(`sed -i 's|.*PasswordAuthentication.*yes|PasswordAuthentication no|' ${this.work_dir.merged}/etc/ssh/sshd_config`)
+      await exec(`sed -i 's|.*PasswordAuthentication.*yes|PasswordAuthentication no|' ${this.work_dir.merged}/etc/ssh/sshd_config`, echo)
     }
 
 
@@ -418,7 +418,7 @@ export default class Ovary {
       shx.mkdir('-p', '/tmp/penguins-eggs')
       shx.cp(`${this.work_dir.merged}/etc/fstab`, `/tmp/penguins-eggs`)
     }
-    shx.exec(`touch ${this.work_dir.merged}/etc/fstab`, { silent: true })
+    await exec(`touch ${this.work_dir.merged}/etc/fstab`, echo)
     Utils.write(`${this.work_dir.merged}/etc/fstab`, text)
 
     /**
@@ -427,7 +427,7 @@ export default class Ovary {
      * set up a new unique ID.
      */
     if (fs.existsSync(`${this.work_dir.merged}/etc/machine-id`)) {
-      shx.exec(`touch ${this.work_dir.merged}/etc/machine-id`, { silent: true })
+      await exec(`touch ${this.work_dir.merged}/etc/machine-id`, echo)
       Utils.write(`${this.work_dir.merged}/etc/machine-id`, `:`)
     }
 
@@ -435,37 +435,35 @@ export default class Ovary {
     /**
      * add some basic files to /dev
      */
-    /*
-    shx.exec(`mknod -m 622 ${this.work_dir.merged}/dev/console c 5 1`)
-    shx.exec(`mknod -m 666 ${this.work_dir.merged}/dev/null c 1 3`)
-    shx.exec(`mknod -m 666 ${this.work_dir.merged}/dev/zero c 1 5`)
-    shx.exec(`mknod -m 666 ${this.work_dir.merged}/dev/ptmx c 5 2`)
-    shx.exec(`mknod -m 666 ${this.work_dir.merged}/dev/tty c 5 0`)
-    shx.exec(`mknod -m 444 ${this.work_dir.merged}/dev/random c 1 8`)
-    shx.exec(`mknod -m 444 ${this.work_dir.merged}/dev/urandom c 1 9`)
-    shx.exec(`chown -v root:tty ${this.work_dir.merged}/dev/{console,ptmx,tty}`)
+    await exec(`mknod -m 622 ${this.work_dir.merged}/dev/console c 5 1`, echo)
+    await exec(`mknod -m 666 ${this.work_dir.merged}/dev/null c 1 3`, echo)
+    await exec(`mknod -m 666 ${this.work_dir.merged}/dev/zero c 1 5`, echo)
+    await exec(`mknod -m 666 ${this.work_dir.merged}/dev/ptmx c 5 2`, echo)
+    await exec(`mknod -m 666 ${this.work_dir.merged}/dev/tty c 5 0`, echo)
+    await exec(`mknod -m 444 ${this.work_dir.merged}/dev/random c 1 8`, echo)
+    await exec(`mknod -m 444 ${this.work_dir.merged}/dev/urandom c 1 9`, echo)
+    await exec(`chown -v root:tty ${this.work_dir.merged}/dev/{console,ptmx,tty}`, echo)
 
-    shx.exec(`ln -sv /proc/self/fd ${this.work_dir.merged}/dev/fd`)
-    shx.exec(`ln -sv ${this.work_dir.merged}/proc/self/fd/0 /dev/stdin`)
-    shx.exec(`ln -sv ${this.work_dir.merged}/proc/self/fd/1 /dev/stdout`)
-    shx.exec(`ln -sv ${this.work_dir.merged}/proc/self/fd/2 /dev/stderr`)
-    shx.exec(`ln -sv ${this.work_dir.merged}/proc/kcore /dev/core`)
-    shx.exec(`mkdir -v ${this.work_dir.merged}/dev/shm`)
-    shx.exec(`mkdir -v ${this.work_dir.merged}/dev/pts`)
-    shx.exec(`chmod 1777 ${this.work_dir.merged}/dev/shm`)
-    */
+    await exec(`ln -sv /proc/self/fd ${this.work_dir.merged}/dev/fd`, echo)
+    await exec(`ln -sv ${this.work_dir.merged}/proc/self/fd/0 /dev/stdin`, echo)
+    await exec(`ln -sv ${this.work_dir.merged}/proc/self/fd/1 /dev/stdout`, echo)
+    await exec(`ln -sv ${this.work_dir.merged}/proc/self/fd/2 /dev/stderr`, echo)
+    await exec(`ln -sv ${this.work_dir.merged}/proc/kcore /dev/core`, echo)
+    await exec(`mkdir -v ${this.work_dir.merged}/dev/shm`, echo)
+    await exec(`mkdir -v ${this.work_dir.merged}/dev/pts`, echo)
+    await exec(`chmod 1777 ${this.work_dir.merged}/dev/shm`, echo)
 
     /**
      * Clear configs from /etc/network/interfaces, wicd and NetworkManager
      * and netman, so they aren't stealthily included in the snapshot.
     */
-    shx.exec(`touch ${this.work_dir.merged}/etc/network/interfaces`, { silent: true })
+    await exec(`touch ${this.work_dir.merged}/etc/network/interfaces`, echo)
     Utils.write(`${this.work_dir.merged}/etc/network/interfaces`, `auto lo\niface lo inet loopback`)
 
-    shx.exec(`rm -f ${this.work_dir.merged}/var/lib/wicd/configurations/*`)
-    shx.exec(`rm -f ${this.work_dir.merged}/etc/wicd/wireless-settings.conf`)
-    shx.exec(`rm -f ${this.work_dir.merged}/etc/NetworkManager/system-connections/*`)
-    shx.exec(`rm -f ${this.work_dir.merged}/etc/network/wifi/*`)
+    await exec(`rm -f ${this.work_dir.merged}/var/lib/wicd/configurations/*`, echo)
+    await exec(`rm -f ${this.work_dir.merged}/etc/wicd/wireless-settings.conf`, echo)
+    await exec(`rm -f ${this.work_dir.merged}/etc/NetworkManager/system-connections/*`, echo)
+    await exec(`rm -f ${this.work_dir.merged}/etc/network/wifi/*`, echo)
   }
 
   /**
