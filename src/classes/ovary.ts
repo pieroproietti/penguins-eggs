@@ -152,7 +152,7 @@ export default class Ovary {
    * Load configuration from /etc/penguins-eggs.conf
    * @returns {boolean} Success
    */
-  public async loadSettings(): Promise<boolean> {
+  public async loadSettings(echo = {echo: true}): Promise<boolean> {
     let foundSettings: boolean
 
     const settings = ini.parse(fs.readFileSync(this.config_file, 'utf-8'))
@@ -284,7 +284,7 @@ export default class Ovary {
    *
    * @param basename
    */
-  async produce(basename = '') {
+  async produce(basename = '', echo = {echo: true}) {
     if (!fs.existsSync(this.snapshot_dir)) {
       shx.mkdir('-p', this.snapshot_dir)
     }
@@ -304,30 +304,30 @@ export default class Ovary {
       await this.liveCreateStructure()
       await this.calamaresConfigure()
       await this.isoCreateStructure()
-      await this.isolinuxPrepare()
+      await this.isolinuxPrepare(echo)
       await this.isoStdmenuCfg()
       await this.isolinuxCfg()
       await this.isoMenuCfg()
       await this.copyKernel()
       if (this.make_efi) {
-        await this.makeEfi()
+        await this.makeEfi(echo)
       }
-      await this.bindLiveFs({ echo: true })
-      await this.makeLiveHome()
-      await this.editLiveFs()
-      await this.editBootMenu()
+      await this.bindLiveFs(echo)
+      await this.makeLiveHome(echo)
+      await this.editLiveFs(echo)
+      await this.editBootMenu(echo)
       await this.addDebianRepo()
-      await this.makeSquashFs()
+      await this.makeSquashFs(echo)
       if (this.make_efi) {
         await this.editEfi()
       }
       await this.makeIsoImage()
-      // await this.uBindLiveFs()
+      await this.uBindLiveFs()
     }
   }
 
   /**
-   * 
+   * Crea la struttura della workdir
    */
   async liveCreateStructure() {
     console.log('------------------------------------------')
@@ -378,7 +378,7 @@ export default class Ovary {
    * - Add some basic files to /dev
    * - Clear configs from /etc/network/interfaces, wicd and NetworkManager and netman
    */
-  async editLiveFs(echo = {echo: true}) {
+  async editLiveFs(echo = {echo: false}) {
     console.log('==========================================')
     console.log('ovary: editLiveFs')
     console.log('==========================================')
@@ -400,8 +400,7 @@ export default class Ovary {
     if (fs.existsSync(`${this.work_dir.merged}lib/live/config/1161-openssh-server`)) {
       await exec(`rm -f "$work_dir"/myfs/lib/live/config/1161-openssh-server`, echo)
     }
-
-    shx.exec(`sed -i 's/PermitRootLogin yes/PermitRootLogin prohibit-password/' ${this.work_dir.merged}/etc/ssh/sshd_config`)
+    await exec(`sed -i 's/PermitRootLogin yes/PermitRootLogin prohibit-password/' ${this.work_dir.merged}/etc/ssh/sshd_config`, echo)
     if (this.ssh_pass) {
       await exec(`sed -i 's|.*PasswordAuthentication.*no|PasswordAuthentication yes|' ${this.work_dir.merged}/etc/ssh/sshd_config`, echo)
     } else {
@@ -445,10 +444,10 @@ export default class Ovary {
     await exec(`chown -v root:tty ${this.work_dir.merged}/dev/{console,ptmx,tty}`, echo)
 
     await exec(`ln -sv /proc/self/fd ${this.work_dir.merged}/dev/fd`, echo)
-    await exec(`ln -sv ${this.work_dir.merged}/proc/self/fd/0 /dev/stdin`, echo)
-    await exec(`ln -sv ${this.work_dir.merged}/proc/self/fd/1 /dev/stdout`, echo)
-    await exec(`ln -sv ${this.work_dir.merged}/proc/self/fd/2 /dev/stderr`, echo)
-    await exec(`ln -sv ${this.work_dir.merged}/proc/kcore /dev/core`, echo)
+    await exec(`ln -sv /proc/self/fd/0 ${this.work_dir.merged}/dev/stdin`, echo)
+    await exec(`ln -sv /proc/self/fd/1 ${this.work_dir.merged}/dev/stdout`, echo)
+    await exec(`ln -sv /proc/self/fd/2 ${this.work_dir.merged}/dev/stderr`, echo)
+    await exec(`ln -sv /proc/kcore ${this.work_dir.merged}/dev/core`, echo)
     await exec(`mkdir -v ${this.work_dir.merged}/dev/shm`, echo)
     await exec(`mkdir -v ${this.work_dir.merged}/dev/pts`, echo)
     await exec(`chmod 1777 ${this.work_dir.merged}/dev/shm`, echo)
@@ -459,7 +458,6 @@ export default class Ovary {
     */
     await exec(`touch ${this.work_dir.merged}/etc/network/interfaces`, echo)
     Utils.write(`${this.work_dir.merged}/etc/network/interfaces`, `auto lo\niface lo inet loopback`)
-
     await exec(`rm -f ${this.work_dir.merged}/var/lib/wicd/configurations/*`, echo)
     await exec(`rm -f ${this.work_dir.merged}/etc/wicd/wireless-settings.conf`, echo)
     await exec(`rm -f ${this.work_dir.merged}/etc/NetworkManager/system-connections/*`, echo)
@@ -469,16 +467,16 @@ export default class Ovary {
   /**
    * editBootMenu
    */
-  async editBootMenu() {
+  async editBootMenu(echo = {echo: false}) {
     let cmd = ''
     if (this.edit_boot_menu) {
       cmd = `${this.gui_editor} ${this.work_dir.path}/iso/boot/isolinux/menu.cfg`
       console.log(cmd)
-      shx.exec(cmd)
+      await exec(cmd, echo)
       if (this.make_efi) {
         cmd = `${this.gui_editor} ${this.work_dir.path}/iso/boot/grub/grub.cfg`
         console.log(cmd)
-        shx.exec(cmd)
+        await exec(cmd, echo)
       }
     }
   }
@@ -500,7 +498,7 @@ export default class Ovary {
     }
   }
 
-  async isolinuxPrepare() {
+  async isolinuxPrepare(echo = {echo: false}) {
     console.log('==========================================')
     console.log('ovary: isolinuxPrepare')
     console.log('==========================================')
@@ -508,12 +506,12 @@ export default class Ovary {
     const isolinuxbin = `${this.iso.isolinuxPath}isolinux.bin`
     const vesamenu = `${this.iso.syslinuxPath}vesamenu.c32`
 
-    shx.exec(`rsync -a ${this.iso.syslinuxPath}chain.c32 ${this.work_dir.pathIso}/isolinux/`, { silent: true })
-    shx.exec(`rsync -a ${this.iso.syslinuxPath}ldlinux.c32 ${this.work_dir.pathIso}/isolinux/`, { silent: true })
-    shx.exec(`rsync -a ${this.iso.syslinuxPath}libcom32.c32 ${this.work_dir.pathIso}/isolinux/`, { silent: true })
-    shx.exec(`rsync -a ${this.iso.syslinuxPath}libutil.c32 ${this.work_dir.pathIso}/isolinux/`, { silent: true })
-    shx.exec(`rsync -a ${isolinuxbin} ${this.work_dir.pathIso}/isolinux/`, { silent: true })
-    shx.exec(`rsync -a ${vesamenu} ${this.work_dir.pathIso}/isolinux/`, { silent: true })
+    await exec(`rsync -a ${this.iso.syslinuxPath}chain.c32 ${this.work_dir.pathIso}/isolinux/`, echo)
+    await exec(`rsync -a ${this.iso.syslinuxPath}ldlinux.c32 ${this.work_dir.pathIso}/isolinux/`, echo)
+    await exec(`rsync -a ${this.iso.syslinuxPath}libcom32.c32 ${this.work_dir.pathIso}/isolinux/`, echo)
+    await exec(`rsync -a ${this.iso.syslinuxPath}libutil.c32 ${this.work_dir.pathIso}/isolinux/`, echo)
+    await exec(`rsync -a ${isolinuxbin} ${this.work_dir.pathIso}/isolinux/`, echo)
+    await exec(`rsync -a ${vesamenu} ${this.work_dir.pathIso}/isolinux/`, echo)
   }
 
   async isoStdmenuCfg() {
@@ -636,7 +634,7 @@ timeout 200\n`
   /**
    * squashFs: crea in live filesystem.squashfs
    */
-  async makeSquashFs() {
+  async makeSquashFs(echo = {echo: true}) {
     console.log('==========================================')
     console.log('ovary: makeSquashFs')
     console.log('==========================================')
@@ -652,7 +650,7 @@ timeout 200\n`
     const compression = `-comp ${this.compression} `
     let cmd = `mksquashfs ${this.work_dir.merged} ${this.work_dir.pathIso}/live/filesystem.squashfs ${compression} ${(this.mksq_opt === '' ? '' : ' ' + this.mksq_opt)} -wildcards -ef ${this.snapshot_excludes} ${this.session_excludes} `
     console.log(cmd)
-    shx.exec(cmd, { silent: false })
+    await exec(cmd, echo)
     // usr/bin/mksquashfs /.bind-root iso-template/antiX/linuxfs -comp ${this.compression} ${(this.mksq_opt === '' ? '' : ' ' + this.mksq_opt)} -wildcards -ef ${this.snapshot_excludes} ${this.session_excludes}`)
   }
 
@@ -804,7 +802,7 @@ timeout 200\n`
   /**
  * 
  */
-  async makeLiveHome() {
+  async makeLiveHome(echo = {echo: true}) {
     console.log('==========================================')
     console.log('ovary: makeLiveHome')
     console.log('==========================================')
@@ -822,7 +820,8 @@ timeout 200\n`
 
     // creazione della home per user live
     shx.cp(`-r`, `/etc/skel/.`, `${this.work_dir.merged}/home/${user}`)
-    shx.exec(`chown -R 1000:1000 ${this.work_dir.merged}/home/${user}`, { async: false })
+    await exec(`chown -R 1000:1000 ${this.work_dir.merged}/home/${user}`, echo)
+    // shx.exec(`chown -R 1000:1000 ${this.work_dir.merged}/home/${user}`, { async: false })
     shx.mkdir(`-p`, `${this.work_dir.merged}/home/${user}/Desktop`)
 
     // Copiare i link sul desktop per user live
@@ -830,7 +829,7 @@ timeout 200\n`
     shx.cp('/usr/share/applications/dwagent-sh.desktop', `${this.work_dir.merged}/home/${user}/Desktop`)
     if (Utils.packageIsInstalled('calamares')) {
       shx.cp('/usr/share/applications/install-debian.desktop', `${this.work_dir.merged}/home/${user}/Desktop`)
-      shx.exec(`chown 1000:1000 ${this.work_dir.merged}/home/${user}/Desktop/install-debian.desktop`)
+      await exec(`chown 1000:1000 ${this.work_dir.merged}/home/${user}/Desktop/install-debian.desktop`, echo)
     }
   }
 
@@ -862,7 +861,7 @@ timeout 200\n`
    * makeEfi
    * Create /boot and /efi for UEFI
    */
-  async makeEfi() {
+  async makeEfi(echo = {echo: true}) {
     /**
      * Carica il primo grub.cfg dal memdisk, quindi in sequenza
      * grub.cfg1 -> memdisk
@@ -908,10 +907,10 @@ timeout 200\n`
     const files = fs.readdirSync('.');
     for (var i in files) {
       if (files[i] === 'boot') {
-        shx.exec(`rm ./boot -rf`, { silent: true })
+        await exec(`rm ./boot -rf`, echo)
       }
       if (files[i] === 'efi') {
-        shx.exec(`rm ./efi -rf`, { silent: true })
+        await exec(`rm ./efi -rf`, echo)
       }
     }
     shx.mkdir(`-p`, `./boot/grub/x86_64-efi`)
@@ -922,36 +921,33 @@ timeout 200\n`
 
     // second grub.cfg file
     let cmd = `for i in $(ls /usr/lib/grub/x86_64-efi|grep part_|grep \.mod|sed 's/.mod//'); do echo "insmod $i" >> boot/grub/x86_64-efi/grub.cfg; done`
-    shx.exec(cmd, { silent: true })
+    await exec(cmd, echo)
     // Additional modules so we don't boot in blind mode. I don't know which ones are really needed.
     cmd = `for i in efi_gop efi_uga ieee1275_fb vbe vga video_bochs video_cirrus jpeg png gfxterm ; do echo "insmod $i" >> boot/grub/x86_64-efi/grub.cfg ; done`
-    shx.exec(cmd, { silent: true })
+    await exec(cmd, echo)
 
-    shx.exec(`echo source /boot/grub/grub.cfg >> boot/grub/x86_64-efi/grub.cfg`, { silent: true })
+    await exec(`echo source /boot/grub/grub.cfg >> boot/grub/x86_64-efi/grub.cfg`, echo)
 
     // pushd tempDir
     process.chdir(tempDir)
 
     // make a tarred "memdisk" to embed in the grub image
-    shx.exec(`tar -cvf memdisk boot`, { silent: true })
+    await exec(`tar -cvf memdisk boot`, echo)
 
     // make the grub image
-    shx.exec(`grub-mkimage -O x86_64-efi -m memdisk -o bootx64.efi -p '(memdisk)/boot/grub' search iso9660 configfile normal memdisk tar cat part_msdos part_gpt fat ext2 ntfs ntfscomp hfsplus chain boot linux`, { silent: true })
-
+    shx.exec(`grub-mkimage -O x86_64-efi -m memdisk -o bootx64.efi -p '(memdisk)/boot/grub' search iso9660 configfile normal memdisk tar cat part_msdos part_gpt fat ext2 ntfs ntfscomp hfsplus chain boot linux`, {silent: false})
 
     // pdpd (torna a efi_work)
     process.chdir(this.efi_work)
 
     // copy the grub image to efi/boot (to go later in the device's root)
     shx.cp(`${tempDir}/bootx64.efi`, `./efi/boot`)
-    //await sleep(3000);
-
 
     // Do the boot image "boot/grub/efiboot.img"
-    shx.exec(`dd if=/dev/zero of=boot/grub/efiboot.img bs=1K count=1440`, { silent: true })
-    shx.exec(`/sbin/mkdosfs -F 12 boot/grub/efiboot.img`, { silent: true })
+    await exec(`dd if=/dev/zero of=boot/grub/efiboot.img bs=1K count=1440`, echo)
+    await exec(`/sbin/mkdosfs -F 12 boot/grub/efiboot.img`, echo)
     shx.mkdir(`-p`, `img-mnt`)
-    shx.exec(`mount -o loop boot/grub/efiboot.img img-mnt`, { silent: true })
+    await exec(`mount -o loop boot/grub/efiboot.img img-mnt`, echo)
     shx.mkdir('-p', `img-mnt/efi/boot`)
     shx.cp(`-r`, `${tempDir}/bootx64.efi`, `img-mnt/efi/boot/`)
 
@@ -966,18 +962,19 @@ timeout 200\n`
 
     // doesn't need to be root-owned ${pwd} = current Directory
     // shx.exec(`chown -R 1000:1000 $(pwd) 2>/dev/null`)
-    shx.exec(`chown -R 1000:1000 $(pwd) 2>/dev/null`)
+    shx.exec (`chown -R 1000:1000 $(pwd) 2>/dev/null`, {silent: false})
+    // await exec(`chown -R 1000:1000 $(pwd) 2>/dev/null`, echo)
 
     // Cleanup efi temps
-    shx.exec(`umount img-mnt`, { silent: true })
-    shx.exec(`rmdir img-mnt`, { silent: true })
+    await exec(`umount img-mnt`, echo)
+    await exec(`rmdir img-mnt`, echo)
 
     // popD Torna alla directory corrente
     process.chdir(currentDir)
 
     // Copy efi files to iso
-    shx.exec(`rsync -avx ${this.efi_work}/boot ${this.work_dir.pathIso}/`, { silent: true })
-    shx.exec(`rsync -avx ${this.efi_work}/efi  ${this.work_dir.pathIso}/`, { silent: true })
+    await exec(`rsync -avx ${this.efi_work}/boot ${this.work_dir.pathIso}/`, echo)
+    await exec(`rsync -avx ${this.efi_work}/efi  ${this.work_dir.pathIso}/`, echo)
 
     // Do the main grub.cfg (which gets loaded last):
     fs.copyFileSync(path.resolve(__dirname, '../../conf/grub.cfg.template'), `${this.work_dir.pathIso}/boot/grub/grub.cfg`)
@@ -1002,7 +999,7 @@ timeout 200\n`
   /**
    * makeIsoImage
    */
-  async makeIsoImage() {
+  async makeIsoImage(echo = {echo: false}) {
     const volid = this.getFilename(this.iso.distroName)
     const isoName = `${this.snapshot_dir}${volid}`
     console.log('==========================================')
@@ -1027,8 +1024,7 @@ timeout 200\n`
       const isoName = `${this.snapshot_dir}${volid}`
 
       let cmd = `xorriso -as mkisofs -r -J -joliet-long -l -iso-level 3 -cache-inodes ${isoHybridOption} -partition_offset 16 -volid ${volid} -b isolinux/isolinux.bin -c isolinux/boot.cat -no-emul-boot -boot-load-size 4 -boot-info-table ${uefi_opt} -o ${isoName} ${this.work_dir.pathIso}`
-      console.log(cmd)
-      shx.exec(cmd, { silent: false })
+      await exec(cmd, echo)
     }
   }
 
