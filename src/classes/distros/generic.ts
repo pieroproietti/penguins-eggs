@@ -7,6 +7,7 @@
  */
 
 import shx = require('shelljs')
+import os = require('os')
 import path = require('path')
 import Utils from './../utils'
 
@@ -64,6 +65,16 @@ fi\n`
     text += addIfExist('live-task-recommended')
     text += addIfExist('calamares-settings-debian')
     text += '\n'
+    return text
+  }
+
+  /**
+   * create content per removeuser.conf
+   */
+  removeuser(): string{
+    let text = ''
+    text += '---\n'
+    text += `username: ${os.userInfo()}\n`
     return text
   }
 }

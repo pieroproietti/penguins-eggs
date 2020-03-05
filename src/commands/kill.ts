@@ -11,6 +11,7 @@ import ini = require('ini')
 import shx = require('shelljs')
 import Utils from '../classes/utils'
 import Ovary from '../classes/ovary'
+import { IWorkDir } from '../interfaces/i-workdir'
 
 const exec = require('../lib/utils').exec
 
@@ -18,7 +19,7 @@ const exec = require('../lib/utils').exec
 export default class Kill extends Command {
   config_file = '/etc/penguins-eggs.conf' as string
   snapshot_dir = '' as string
-  work_dir = ''
+  work_dir = {} as IWorkDir
 
   static description = 'kill the eggs/free the nest'
 
@@ -45,8 +46,10 @@ kill the eggs/free the nest
       await ovary.uBindLiveFs()
       this.log(`${Utils.getFriendName()}: deleting old eggs ...`)
       if (this.loadSettings()) {
-        await exec(`rm ${this.work_dir} -rf`)
+        await exec(`rm ${this.work_dir.path} -rf`)
         await exec(`rm ${this.snapshot_dir} -rf`)
+      } else {
+        await exec(`rm /home/eggs -rf`)
       }
     }
   }
@@ -69,7 +72,7 @@ kill the eggs/free the nest
         if (!this.snapshot_dir.endsWith('/')) {
           this.snapshot_dir += '/'
         }
-        this.work_dir = this.snapshot_dir + '.work/'
+        this.work_dir.path = this.snapshot_dir + 'work/'
       }
     }
     return foundSettings

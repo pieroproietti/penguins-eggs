@@ -43,6 +43,7 @@ import fs = require('fs')
             'plymouthcfg',
             'initramfscfg',
             'initramfs',
+            `removeuser`,
             'sources-media-unmount',
             'sources-final',
             'umount',]
