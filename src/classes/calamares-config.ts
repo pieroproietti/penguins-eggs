@@ -89,7 +89,7 @@ class Calamares {
   }
 
   /**
-   * 
+   * create script /usr/blin/sources-final
    */
   async sourcesFinal() {
     const versionLike = this.oses.versionLike
@@ -111,7 +111,7 @@ class Calamares {
 
 
   /**
-   * brandingDesc
+   * create branding.desc
    */
   async brandingDesc() {
     const brandingPath =`/etc/calamares/branding/${this.distro.branding}`
@@ -176,7 +176,7 @@ class Calamares {
   }
 
   /**
-   * unpackfsConf
+   * create module unpackfs.conf
    */
   unpackfsConf() {
     const confPath = '/etc/calamares/modules/unpackfs.conf'
@@ -192,8 +192,8 @@ class Calamares {
   }
 
   /**
-   * bootLoaderConfig
-   * Crea la /tmp mancante in /tmp/calamares
+   * create script /sbin/bootloades-config
+   * Add /tmp in chroot /tmp/calamares
    */
   bootLoaderConfig(){
     const scriptPath = '/sbin/bootloader-config'
@@ -205,7 +205,7 @@ class Calamares {
   }
 
   /**
-   * 
+   * create module packages.conf
    */
   packages() {
     const confPath = '/etc/calamares/modules/packages.conf'
