@@ -20,6 +20,7 @@ import Buster from './distros/buster'
 // Ubuntu
 import Bionic from './distros/bionic'
 import Eoan from './distros/eoan'
+import { files } from 'pjson'
 
 
 class Calamares {
@@ -43,6 +44,7 @@ class Calamares {
       await this.configuration()
       await this.settingsConf()
       await this.brandingDesc()
+      await this.sourcesMedia()
       await this.sourcesFinal()
       await this.bootLoaderConfig()
       await this.unpackfsConf()
@@ -88,6 +90,54 @@ class Calamares {
     fs.writeFileSync(confPath, `# distroType: ${versionLike}\n` + yaml.safeDump(settings), 'utf8')
   }
 
+  /**
+   * create script /usr/sbin/sources-media
+   */
+  async sourcesMedia() {
+    this.sourcesMediaDesc() 
+    this.sourcesMediaScript()
+  }
+
+  /**
+   * create module sources-media
+   */
+  private async sourcesMediaDesc(){
+    const confPath = '/usr/lib/calamares/modules/sources-media'
+    console.log(`calamares: create module ${confPath}`)
+    const descFile = 'module.desc'
+    let text = ''
+    text +='---\n'
+    text +='type:       "job"\n'
+    text +='name:       "sources-media"\n'
+    text +='interface:  "process"\n'
+    text +='command:    "/usr/sbin/sources-media"\n'
+    text +='timeout:    600\n'
+    if (!fs.existsSync(confPath)){
+      fs.mkdirSync(confPath)
+    }
+    fs.writeFileSync(`${confPath}/${descFile}`, text, 'utf8')
+  }
+
+  /**
+   * create script per sources-media
+   */
+  private sourcesMediaScript(){
+    const versionLike = this.oses.versionLike
+    const scriptPath = '/usr/sbin/sources-media'
+    console.log(`calamares: create script ${scriptPath} type ${versionLike}`)
+    let content = ''
+    if (versionLike === 'buster') {
+      content = Buster.sourcesMedia()
+    } else if (versionLike === 'bionic') {
+      // content = Bionic.sourcesMedia()
+    } else if (versionLike === 'eoan') {
+      //content = Eoan.sourcesMedia()
+    }
+    fs.writeFileSync(scriptPath, content, 'utf8')
+    shx.chmod('+x', scriptPath)
+  }
+
+  
   /**
    * create script /usr/blin/sources-final
    */
