@@ -38,9 +38,9 @@ class Calamares {
    */
   public async configure(verbose = false) {
     if (await Utils.packageIsInstalled('calamares')) {
-      console.log('==========================================')
-      console.log(`calamares: [${this.oses.distroId}/${this.oses.versionId}]->[${this.oses.distroLike}/${this.oses.versionLike}]`)
-      console.log('==========================================')
+      if (verbose){
+        console.log(`calamares: [${this.oses.distroId}/${this.oses.versionId}]->[${this.oses.distroLike}/${this.oses.versionLike}]`)
+      }
       await this.configuration(verbose)
       await this.settingsConf(verbose)
       await this.brandingDesc(verbose)
@@ -58,10 +58,10 @@ class Calamares {
    * branding
    */
   async configuration(verbose = false) {
+    if (verbose){
+      console.log('calamares: configuration')
+    }
     const versionLike = this.oses.versionLike
-    console.log('==========================================')
-    console.log('calamares: configuration')
-    console.log('==========================================')
 
     // Copia i template
     shx.cp(`-r`, path.resolve(__dirname,`../../templates/distros/${versionLike}/calamares`), `/etc/`)
@@ -75,8 +75,9 @@ class Calamares {
   async settingsConf(verbose = false) {
     const versionLike = this.oses.versionLike
     const confPath = '/etc/calamares/settings.conf'
-    console.log(`calamares: create module ${confPath}`)
-
+    if (verbose) {
+      console.log(`calamares: create module ${confPath}`)
+    }
     let settings = {}
     let sourcesFinal = ''
 
@@ -103,7 +104,9 @@ class Calamares {
    */
   private async sourcesMediaDesc(verbose = false){
     const confPath = '/usr/lib/calamares/modules/sources-media'
-    console.log(`calamares: create module ${confPath}`)
+    if (verbose) {
+      console.log(`calamares: create module ${confPath}`)
+    }
     const descFile = 'module.desc'
     let text = ''
     text +='---\n'
@@ -124,7 +127,9 @@ class Calamares {
   private sourcesMediaScript(verbose = false){
     const versionLike = this.oses.versionLike
     const scriptPath = '/usr/sbin/sources-media'
-    console.log(`calamares: create script ${scriptPath} type ${versionLike}`)
+    if (verbose) {
+      console.log(`calamares: create script ${scriptPath} type ${versionLike}`)
+    }
     let content = ''
     if (versionLike === 'buster') {
       content = Buster.sourcesMedia()
@@ -144,7 +149,9 @@ class Calamares {
   async sourcesFinal(verbose = false) {
     const versionLike = this.oses.versionLike
     const scriptPath = '/usr/sbin/sources-final'
-    console.log(`calamares: create script ${scriptPath} type ${versionLike}`)
+    if (verbose) {
+      console.log(`calamares: create script ${scriptPath} type ${versionLike}`)
+    }
     let content = ''
 
     if (versionLike === 'buster') {
@@ -166,8 +173,9 @@ class Calamares {
   async brandingDesc(verbose = false) {
     const brandingPath =`/etc/calamares/branding/${this.distro.branding}`
     const descPath = `${brandingPath}/branding.desc`
-    console.log(`calamares: create desc ${descPath}`)
-
+    if (verbose) {
+      console.log(`calamares: create desc ${descPath}`)
+    }
     const versionLike: string = this.oses.versionLike
     const homeUrl: string = this.oses.homeUrl
     const supportUrl: string = this.oses.supportUrl
@@ -230,8 +238,9 @@ class Calamares {
    */
   unpackfsConf(verbose = false) {
     const confPath = '/etc/calamares/modules/unpackfs.conf'
-    console.log(`calamares: create module ${confPath}`)
-
+    if (verbose) {
+      console.log(`calamares: create module ${confPath}`)
+    }
     let text = '---\n'
     text += 'unpack:\n'
     text += `-   source: "${this.oses.mountpointSquashFs}"\n`
@@ -247,8 +256,9 @@ class Calamares {
    */
   bootLoaderConfig(verbose = false){
     const scriptPath = '/sbin/bootloader-config'
-    console.log(`calamares: create script ${scriptPath}`)
-    
+    if (verbose) {
+      console.log(`calamares: create script ${scriptPath}`)
+    }
     const content = Generic.bootLoaderConfig()
     fs.writeFileSync(scriptPath, content, 'utf8')
     shx.chmod('+x', scriptPath)
@@ -259,7 +269,9 @@ class Calamares {
    */
   packages(verbose = false) {
     const confPath = '/etc/calamares/modules/packages.conf'
-    console.log(`calamares: create module ${confPath}`)
+    if (verbose) {
+      console.log(`calamares: create module ${confPath}`)
+    }
     const content = Generic.packages()
     fs.writeFileSync(confPath, content, 'utf8')
   }
@@ -269,7 +281,9 @@ class Calamares {
    */
   removeuser(verbose = false) {
     const confPath = '/etc/calamares/modules/removeuser.conf'
-    console.log(`calamares: create module ${confPath}`)
+    if (verbose) {
+      console.log(`calamares: create module ${confPath}`)
+    }
     const content = Generic.removeuser()
     fs.writeFileSync(confPath, content, 'utf8')
   }
@@ -279,7 +293,9 @@ class Calamares {
    */
   displaymanager(verbose = false) {
     const confPath = '/etc/calamares/modules/displaymanager.conf'
-    console.log(`calamares: create module ${confPath}`)
+    if (verbose) {
+      console.log(`calamares: create module ${confPath}`)
+    }
     const content = Generic.displaymanager()
     fs.writeFileSync(confPath, content, 'utf8')
   }

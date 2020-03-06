@@ -294,7 +294,6 @@ export default class Ovary {
     console.log('')
   }
 
-
   /**
    *
    * @param basename
@@ -314,19 +313,17 @@ export default class Ovary {
     }
 
     if (await Utils.isLive()) {
-      console.log(
-        '>>> eggs: This is a live system! An egg cannot be produced from an egg!'
-      )
+      console.log(chalk.red('>>> eggs: This is a live system! An egg cannot be produced from an egg!'))
     } else {
-      console.log('------------------------------------------')
-      console.log('Laying the system into the egg...')
-      console.log('------------------------------------------')
-      await this.liveCreateStructure()
-      await this.calamaresConfigure()
-      await this.isoCreateStructure()
+      if (verbose){
+        console.log(`Produce egg ${this.distro.name}`)
+      }
+      await this.liveCreateStructure(verbose)
+      await this.calamaresConfigure(verbose)
+      await this.isoCreateStructure(verbose)
       await this.isolinuxPrepare(verbose)
-      await this.isoStdmenuCfg()
-      await this.isolinuxCfg()
+      await this.isoStdmenuCfg(verbose)
+      await this.isolinuxCfg(verbose)
       await this.isoMenuCfg()
       await this.copyKernel()
       if (this.make_efi) {
@@ -349,10 +346,10 @@ export default class Ovary {
   /**
    * Crea la struttura della workdir
    */
-  async liveCreateStructure() {
-    console.log('------------------------------------------')
-    console.log('Overy: liveCreateStructure')
-    console.log('------------------------------------------')
+  async liveCreateStructure(verbose = false) {
+    if (verbose) {
+      console.log('Overy: liveCreateStructure')
+    }
     if (!fs.existsSync(this.work_dir.lowerdir)) {
       shx.mkdir('-p', this.work_dir.lowerdir)
     }
@@ -372,6 +369,9 @@ export default class Ovary {
    * Installa calamares se force_installer=yes e lo configura
    */
   async  calamaresConfigure(verbose = false) {
+    if (verbose){
+      console.log('ovary: calamaresConfigure')
+    }
     // Se force_installer e calamares non è installato
     if (this.force_installer && !Utils.packageIsInstalled('calamares')) {
       shx.exec(`apt-get update`, { async: false })
@@ -399,14 +399,12 @@ export default class Ovary {
    * - Clear configs from /etc/network/interfaces, wicd and NetworkManager and netman
    */
   async editLiveFs(verbose = false) {
-    let echo = { echo: false }
+    let echo = { echo: false, capture: false }
     if (verbose) {
-      echo = { echo: true }
+      console.log('ovary: editLiveFs')
+      echo = { echo: true, capture: true}
     }
 
-    console.log('==========================================')
-    console.log('ovary: editLiveFs')
-    console.log('==========================================')
     // sudo systemctl disable wpa_supplicant 
 
     // Truncate logs, remove archived logs.
@@ -505,6 +503,7 @@ export default class Ovary {
   async editBootMenu(verbose = false) {
     let echo = { echo: false }
     if (verbose) {
+      console.log('ovary: editBootMenu')
       echo = { echo: true }
     }
 
@@ -522,10 +521,10 @@ export default class Ovary {
   /**
    *  async isoCreateStructure() {
    */
-  async isoCreateStructure() {
-    console.log('==========================================')
-    console.log('ovary: createStructure')
-    console.log('==========================================')
+  async isoCreateStructure(verbose = false) {
+    if (verbose){
+      console.log('ovary: createStructure')
+    }
 
     if (!fs.existsSync(this.work_dir.pathIso)) {
       shx.mkdir(`-p`, `${this.work_dir.pathIso}/boot/grub/x86_64-efi`)
@@ -539,12 +538,9 @@ export default class Ovary {
   async isolinuxPrepare(verbose = false) {
     let echo = { echo: false }
     if (verbose) {
+      console.log('ovary: isolinuxPrepare')
       echo = { echo: true }
     }
-
-    console.log('==========================================')
-    console.log('ovary: isolinuxPrepare')
-    console.log('==========================================')
 
     const isolinuxbin = `${this.iso.isolinuxPath}isolinux.bin`
     const vesamenu = `${this.iso.syslinuxPath}vesamenu.c32`
@@ -557,10 +553,14 @@ export default class Ovary {
     await exec(`rsync -a ${vesamenu} ${this.work_dir.pathIso}/isolinux/`, echo)
   }
 
-  async isoStdmenuCfg() {
-    console.log('==========================================')
-    console.log('ovary: isoStdmenuCfg')
-    console.log('==========================================')
+  /**
+   * 
+   * @param verbose 
+   */
+  async isoStdmenuCfg(verbose = false) {
+    if (verbose){
+      console.log('ovary: isoStdmenuCfg')
+    }
 
     const file = `${this.work_dir.pathIso}/isolinux/stdmenu.cfg`
     const text = `menu background splash.png
@@ -586,11 +586,14 @@ export default class Ovary {
     Utils.write(file, text)
   }
 
-  isolinuxCfg() {
-    console.log('==========================================')
-    console.log('ovary: isolinuxCfg')
-    console.log('==========================================')
-
+  /**
+   * create isolinux.cfg
+   * @param verbose 
+   */
+  isolinuxCfg(verbose = false) {
+    if (verbose){
+      console.log('ovary: isolinuxCfg')
+    }
     const file = `${this.work_dir.pathIso}/isolinux/isolinux.cfg`
     const text = `# D-I config version 2.0
 # search path for the c32 support libraries (libcom32, libutil etc.)
@@ -602,7 +605,7 @@ timeout 200\n`
     Utils.write(file, text)
   }
 
-  async isoMenuCfg() {
+  async isoMenuCfg(verbose = false) {
     /**
      *
     * debconf                 allows one to apply arbitrary preseed files placed on the live media or an http/ftp server.
@@ -644,7 +647,6 @@ timeout 200\n`
     *
     */
 
-
     const mpath = `${this.work_dir.pathIso}/isolinux/menu.cfg`
     const spath = `${this.work_dir.pathIso}/isolinux/splash.png`
 
@@ -661,14 +663,12 @@ timeout 200\n`
   }
 
   /**
-   * alive: rende live
+   * copy kernel
    */
-  async copyKernel() {
-    console.log('==========================================')
-    console.log('ovary: liveKernel')
-    console.log('==========================================')
-    // fs.copyFileSync(this.kernel_image, `${this.work_dir.pathIso}/live/`)
-    // fs.copyFileSync(this.initrd_image, `${this.work_dir.pathIso}/live/`)
+  async copyKernel(verbose=false) {
+    if (verbose){
+      console.log('ovary: liveKernel')
+    }
     shx.cp(this.kernel_image, `${this.work_dir.pathIso}/live/`)
     shx.cp(this.initrd_image, `${this.work_dir.pathIso}/live/`)
   }
@@ -678,14 +678,11 @@ timeout 200\n`
    * squashFs: crea in live filesystem.squashfs
    */
   async makeSquashFs(verbose = false) {
-    let echo = { echo: false }
+    let echo = { echo: false, capture: false }
     if (verbose) {
-      echo = { echo: true }
+      console.log('ovary: makeSquashFs')
+      echo = { echo: true, capture: false }
     }
-
-    console.log('==========================================')
-    console.log('ovary: makeSquashFs')
-    console.log('==========================================')
 
     this.addRemoveExclusion(true, this.snapshot_dir /* .absolutePath() */)
 
@@ -760,13 +757,10 @@ timeout 200\n`
   async bindLiveFs(verbose = false) {
     let echo = { echo: false }
     if (verbose) {
+      console.log('ovary: bindLiveFs')
       echo = { echo: true }
     }
 
-    Utils.titles()
-    console.log('==========================================')
-    console.log('ovary: bindLiveFs')
-    console.log('==========================================')
     const rootDirs = fs.readdirSync('/', { withFileTypes: true })
     let cmd = ''
     let ln = ''
@@ -829,12 +823,10 @@ timeout 200\n`
   async uBindLiveFs(verbose = false) {
     let echo = { echo: false }
     if (verbose) {
+      console.log('ovary: uBindLiveFs')
       echo = { echo: true }
     }
 
-    console.log('==========================================')
-    console.log('ovary: uBindLiveFs')
-    console.log('==========================================')
     let cout = { code: 0, data: '' }
     // await exec(`/usr/bin/pkill mksquashfs; /usr/bin/pkill md5sum`, {echo: true})
 
@@ -880,17 +872,16 @@ timeout 200\n`
   }
 
   /**
- * 
- */
+   * create la home per live
+   * @param verbose 
+   */
   async makeLiveHome(verbose = false) {
     let echo = { echo: false }
     if (verbose) {
+      console.log('ovary: makeLiveHome')
       echo = { echo: true }
     }
 
-    console.log('==========================================')
-    console.log('ovary: makeLiveHome')
-    console.log('==========================================')
 
     const user: string = Utils.getPrimaryUser()
 
@@ -947,9 +938,10 @@ timeout 200\n`
    * Create /boot and /efi for UEFI
    */
   async makeEfi(verbose = false) {
-    let echo = { echo: false }
+    let echo = { echo: false, capture: false }
     if (verbose) {
-      echo = { echo: true }
+      console.log('ovary: makeEfi')
+      echo = { echo: true, capture: true }
     }
 
     /**
@@ -958,9 +950,6 @@ timeout 200\n`
      * grub.cfg2 -> /boot/grub/x86_64-efi
      * grub.cfg3 -> /boot/grub
      */
-    console.log('==========================================')
-    console.log('ovary: makeEfi')
-    console.log('==========================================')
 
 
     const tempDir = shx.exec('mktemp -d /tmp/work_temp.XXXX', { silent: true }).stdout.trim()
@@ -1074,7 +1063,10 @@ timeout 200\n`
   /**
    * editEfi
    */
-  async editEfi() {
+  async editEfi(verbose = false) {
+    if (verbose){
+      console.log('editing grub.cfg')
+    }
     // editEfi()
     const gpath = `${this.work_dir.pathIso}/boot/grub/grub.cfg`
     shx.sed('-i', '%custom-name%', this.distro.name, gpath)
@@ -1090,17 +1082,13 @@ timeout 200\n`
    * makeIsoImage
    */
   async makeIsoImage(verbose = false) {
-    let echo = { echo: false }
-    if (verbose) {
-      echo = { echo: true }
-    }
-
     const volid = this.getFilename(this.iso.distroName)
     const isoName = `${this.snapshot_dir}${volid}`
-    console.log('==========================================')
-    console.log(`ovary: makeIsoImage ${isoName}`)
-    console.log('==========================================')
-
+    let echo = { echo: false }
+    if (verbose) {
+      console.log(`ovary: makeIsoImage ${isoName}`)
+      echo = { echo: true }
+    }
     const uefi_opt = '-eltorito-alt-boot -e boot/grub/efiboot.img -isohybrid-gpt-basdat -no-emul-boot'
 
     let isoHybridOption = `-isohybrid-mbr ${this.iso.isolinuxPath}isohdpfx.bin `
@@ -1131,11 +1119,10 @@ timeout 200\n`
   /**
    * addDebianRepo
    */
-  async addDebianRepo() {
-    console.log('==========================================')
-    console.log(`ovary: addDebianRepo`)
-    console.log('==========================================')
-
+  async addDebianRepo(verbose = false) {
+    if (verbose){
+      console.log(`ovary: addDebianRepo`)
+    }
     shx.cp('-r', '/home/live/debian-live/*', this.work_dir.pathIso)
   }
 }
