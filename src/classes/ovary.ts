@@ -13,6 +13,7 @@ import os = require('os')
 import ini = require('ini')
 import shx = require('shelljs')
 import pjson = require('pjson')
+import chalk = require('chalk')
 
 // interfaces
 import { IDistro, IOses, IPackage } from '../interfaces'
@@ -251,6 +252,15 @@ export default class Ovary {
     console.log(`ifnames_opt:       ${this.ifnames_opt}`)
     console.log(`pmount_fixed:      ${this.pmount_fixed}`)
     console.log(`ssh_pass:          ${this.ssh_pass}`)
+    if (this.make_efi){
+      if (!Utils.packageIsInstalled('grub-efi-amd64')) {
+        console.log(chalk.yellow('You choose to create an UEFI image, but miss to install grub-ef-amd64 package.'))
+        console.log(chalk.yellow('Please install it before to create an UEFI image:'))
+        console.log(chalk.green('sudo apt install grub-efi-amd64'))
+        this.make_efi = false
+      }
+    }
+
   }
 
   /**
