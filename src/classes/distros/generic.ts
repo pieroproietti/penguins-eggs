@@ -44,7 +44,8 @@ DEBIAN_FRONTEND=noninteractive chroot $CHROOT apt-get update
 #########################################################################
 if [ -d /sys/firmware/efi/efivars ]; then
     echo " * Installing grub-efi (uefi)..."
-    DEBIAN_FRONTEND=noninteractive chroot $CHROOT apt-get -y install grub-efi-amd64 cryptsetup keyutils
+    # DEBIAN_FRONTEND=noninteractive chroot $CHROOT apt-get -y install grub-efi-amd64 cryptsetup keyutils
+    DEBIAN_FRONTEND=interactive chroot $CHROOT apt-get -y install grub-efi-amd64 cryptsetup keyutils
 else
     echo " * install grub... (bios)"
     DEBIAN_FRONTEND=noninteractive chroot $CHROOT apt-get -y install grub-pc cryptsetup keyutils
