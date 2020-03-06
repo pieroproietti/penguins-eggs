@@ -299,7 +299,12 @@ export default class Ovary {
    *
    * @param basename
    */
-  async produce(basename = '', echo = { echo: false }) {
+  async produce(basename = '', verbose = false) {
+    let echo = { echo: false }
+    if (verbose) {
+      echo = { echo: true }
+    }
+
     if (!fs.existsSync(this.snapshot_dir)) {
       shx.mkdir('-p', this.snapshot_dir)
     }
@@ -319,25 +324,25 @@ export default class Ovary {
       await this.liveCreateStructure()
       await this.calamaresConfigure()
       await this.isoCreateStructure()
-      await this.isolinuxPrepare(echo)
+      await this.isolinuxPrepare(verbose)
       await this.isoStdmenuCfg()
       await this.isolinuxCfg()
       await this.isoMenuCfg()
       await this.copyKernel()
       if (this.make_efi) {
-        await this.makeEfi(echo)
+        await this.makeEfi(verbose)
       }
-      await this.bindLiveFs(echo)
-      await this.makeLiveHome(echo)
-      await this.editLiveFs(echo)
-      await this.editBootMenu(echo)
+      await this.bindLiveFs(verbose)
+      await this.makeLiveHome(verbose)
+      await this.editLiveFs(verbose)
+      await this.editBootMenu(verbose)
       await this.addDebianRepo()
-      await this.makeSquashFs(echo)
+      await this.makeSquashFs(verbose)
       if (this.make_efi) {
         await this.editEfi()
       }
-      await this.makeIsoImage()
-      await this.uBindLiveFs()
+      await this.makeIsoImage(verbose)
+      await this.uBindLiveFs(verbose)
     }
   }
 
@@ -366,7 +371,7 @@ export default class Ovary {
    * calamaresConfigura
    * Installa calamares se force_installer=yes e lo configura
    */
-  async  calamaresConfigure() {
+  async  calamaresConfigure(verbose = false) {
     // Se force_installer e calamares non è installato
     if (this.force_installer && !Utils.packageIsInstalled('calamares')) {
       shx.exec(`apt-get update`, { async: false })
@@ -378,7 +383,7 @@ export default class Ovary {
     // Se calamares è installato allora lo configura
     if (Utils.packageIsInstalled('calamares')) {
       this.calamares = new Calamares(this.distro, this.iso)
-      await this.calamares.configure()
+      await this.calamares.configure(verbose)
     }
   }
 
@@ -393,7 +398,12 @@ export default class Ovary {
    * - Add some basic files to /dev
    * - Clear configs from /etc/network/interfaces, wicd and NetworkManager and netman
    */
-  async editLiveFs(echo = { echo: false }) {
+  async editLiveFs(verbose = false) {
+    let echo = { echo: false }
+    if (verbose) {
+      echo = { echo: true }
+    }
+
     console.log('==========================================')
     console.log('ovary: editLiveFs')
     console.log('==========================================')
@@ -478,20 +488,32 @@ export default class Ovary {
     await exec(`rm -f ${this.work_dir.merged}/etc/wicd/wireless-settings.conf`, echo)
     await exec(`rm -f ${this.work_dir.merged}/etc/NetworkManager/system-connections/*`, echo)
     await exec(`rm -f ${this.work_dir.merged}/etc/network/wifi/*`, echo)
+    /**
+     * Andiamo a fare pulizia in /etc/network/:
+     * if-down.d  if-post-down.d  if-pre-up.d  if-up.d  interfaces  interfaces.d
+    */
+    const cleanDirs = ['if-down.d', 'if-post-down.d', 'if-pre-up.d', 'if-up.d', 'interfaces.d']
+    let cleanDir = ''
+    for (cleanDir of cleanDirs) {
+      await exec(`rm -f ${this.work_dir.merged}/etc/network/${cleanDir}/wpasupplicant`, echo)
+    }
   }
 
   /**
    * editBootMenu
    */
-  async editBootMenu(echo = { echo: false }) {
+  async editBootMenu(verbose = false) {
+    let echo = { echo: false }
+    if (verbose) {
+      echo = { echo: true }
+    }
+
     let cmd = ''
     if (this.edit_boot_menu) {
       cmd = `${this.gui_editor} ${this.work_dir.path}/iso/boot/isolinux/menu.cfg`
-      console.log(cmd)
       await exec(cmd, echo)
       if (this.make_efi) {
         cmd = `${this.gui_editor} ${this.work_dir.path}/iso/boot/grub/grub.cfg`
-        console.log(cmd)
         await exec(cmd, echo)
       }
     }
@@ -514,7 +536,12 @@ export default class Ovary {
     }
   }
 
-  async isolinuxPrepare(echo = { echo: false }) {
+  async isolinuxPrepare(verbose = false) {
+    let echo = { echo: false }
+    if (verbose) {
+      echo = { echo: true }
+    }
+
     console.log('==========================================')
     console.log('ovary: isolinuxPrepare')
     console.log('==========================================')
@@ -650,7 +677,12 @@ timeout 200\n`
   /**
    * squashFs: crea in live filesystem.squashfs
    */
-  async makeSquashFs(echo = { echo: true }) {
+  async makeSquashFs(verbose = false) {
+    let echo = { echo: false }
+    if (verbose) {
+      echo = { echo: true }
+    }
+
     console.log('==========================================')
     console.log('ovary: makeSquashFs')
     console.log('==========================================')
@@ -725,7 +757,12 @@ timeout 200\n`
     * Check if exist mx-snapshot in work_dir;
     * If respin mode remove all the users
     */
-  async bindLiveFs(echo = { echo: false }) {
+  async bindLiveFs(verbose = false) {
+    let echo = { echo: false }
+    if (verbose) {
+      echo = { echo: true }
+    }
+
     Utils.titles()
     console.log('==========================================')
     console.log('ovary: bindLiveFs')
@@ -737,7 +774,9 @@ timeout 200\n`
     for (let dir of rootDirs) {
       if (dir.isDirectory()) {
         if (!(dir.name === 'lost+found')) {
-          console.log(`# ${dir.name} = directory`)
+          if (verbose) {
+            console.log(`# ${dir.name} = directory`)
+          }
           if (this.needOverlay(dir.name)) {
             // Creo il mountpoint lower e ci monto in ro dir.name
             await makeIfNotExist(`${this.work_dir.lowerdir}/${dir.name}`, echo)
@@ -759,18 +798,26 @@ timeout 200\n`
           }
         }
       } else if (dir.isFile()) {
-        console.log(`# ${dir.name} = file`)
+        if (verbose) {
+          console.log(`# ${dir.name} = file`)
+        }
         if (!(fs.existsSync(`${this.work_dir.merged}/${dir.name}`))) {
           await exec(`cp /${dir.name} ${this.work_dir.merged}`, echo)
         } else {
-          console.log(`# file esistente... skip`)
+          if (verbose) {
+            console.log(`# file esistente... skip`)
+          }
         }
       } else if (dir.isSymbolicLink()) {
-        console.log(`# ${dir.name} = symbolicLink`)
+        if (verbose) {
+          console.log(`# ${dir.name} = symbolicLink`)
+        }
         if (!(fs.existsSync(`${this.work_dir.merged}/${dir.name}`))) {
           await exec(`cp -r /${dir.name} ${this.work_dir.merged}`, echo)
         } else {
-          console.log(`# SymbolicLink esistente... skip`)
+          if (verbose){
+            console.log(`# SymbolicLink esistente... skip`)
+          }
         }
       }
     }
@@ -779,7 +826,12 @@ timeout 200\n`
   /**
    * 
    */
-  async uBindLiveFs(echo = { echo: false }) {
+  async uBindLiveFs(verbose = false) {
+    let echo = { echo: false }
+    if (verbose) {
+      echo = { echo: true }
+    }
+
     console.log('==========================================')
     console.log('ovary: uBindLiveFs')
     console.log('==========================================')
@@ -792,23 +844,35 @@ timeout 200\n`
       const bindDirs = fs.readdirSync(this.work_dir.merged, { withFileTypes: true })
       for (let dir of bindDirs) {
         if (dir.isDirectory()) {
-          console.log(`# ${dir.name} = directory`)
+          if (verbose) {
+            console.log(`# ${dir.name} = directory`)
+          }
           if (this.needOverlay(dir.name)) {
             cout = await exec(`umount ${this.work_dir.merged}/${dir.name}`, echo)
-            console.log(`code: [${cout.code}] ${cout.data}`)
+            if (verbose) {
+              console.log(`code: [${cout.code}] ${cout.data}`)
+            }
             cout = await exec(`umount ${this.work_dir.lowerdir}/${dir.name}`, echo)
-            console.log(`code: [${cout.code}] ${cout.data}`)
+            if (verbose) {
+              console.log(`code: [${cout.code}] ${cout.data}`)
+            }
           } else if (this.onlyMerged(dir.name)) {
             cout = await exec(`umount ${this.work_dir.merged}/${dir.name}`, echo)
-            console.log(`code: [${cout.code}] ${cout.data}`)
+            if (verbose) {
+              console.log(`code: [${cout.code}] ${cout.data}`)
+            }
           }
           await exec(`rm ${this.work_dir.merged}/${dir.name} -rf`, echo)
           await exec(`rm ${this.work_dir.lowerdir}/${dir.name} -rf`, echo)
         } else if (dir.isFile()) {
-          console.log(`# ${dir.name} = file`)
+          if (verbose) {
+            console.log(`# ${dir.name} = file`)
+          }
           await exec(`rm ${this.work_dir.merged}/${dir.name}`, echo)
         } else if (dir.isSymbolicLink()) {
-          console.log(`# ${dir.name} = symbolicLink`)
+          if (verbose) {
+            console.log(`# ${dir.name} = symbolicLink`)
+          }
           await exec(`rm ${this.work_dir.merged}/${dir.name}`, echo)
         }
       }
@@ -818,7 +882,12 @@ timeout 200\n`
   /**
  * 
  */
-  async makeLiveHome(echo = { echo: true }) {
+  async makeLiveHome(verbose = false) {
+    let echo = { echo: false }
+    if (verbose) {
+      echo = { echo: true }
+    }
+
     console.log('==========================================')
     console.log('ovary: makeLiveHome')
     console.log('==========================================')
@@ -877,7 +946,12 @@ timeout 200\n`
    * makeEfi
    * Create /boot and /efi for UEFI
    */
-  async makeEfi(echo = { echo: true }) {
+  async makeEfi(verbose = false) {
+    let echo = { echo: false }
+    if (verbose) {
+      echo = { echo: true }
+    }
+
     /**
      * Carica il primo grub.cfg dal memdisk, quindi in sequenza
      * grub.cfg1 -> memdisk
@@ -951,7 +1025,7 @@ timeout 200\n`
     await exec(`tar -cvf memdisk boot`, echo)
 
     // make the grub image
-    shx.exec(`grub-mkimage -O x86_64-efi -m memdisk -o bootx64.efi -p '(memdisk)/boot/grub' search iso9660 configfile normal memdisk tar cat part_msdos part_gpt fat ext2 ntfs ntfscomp hfsplus chain boot linux`, { silent: false })
+    await exec(`grub-mkimage -O x86_64-efi -m memdisk -o bootx64.efi -p '(memdisk)/boot/grub' search iso9660 configfile normal memdisk tar cat part_msdos part_gpt fat ext2 ntfs ntfscomp hfsplus chain boot linux`, echo)
 
     // pdpd (torna a efi_work)
     process.chdir(this.efi_work)
@@ -1015,7 +1089,12 @@ timeout 200\n`
   /**
    * makeIsoImage
    */
-  async makeIsoImage(echo = { echo: false }) {
+  async makeIsoImage(verbose = false) {
+    let echo = { echo: false }
+    if (verbose) {
+      echo = { echo: true }
+    }
+
     const volid = this.getFilename(this.iso.distroName)
     const isoName = `${this.snapshot_dir}${volid}`
     console.log('==========================================')

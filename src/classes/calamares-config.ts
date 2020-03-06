@@ -36,28 +36,28 @@ class Calamares {
   /**
    * configure calamares-settings-eggs
    */
-  public async configure() {
+  public async configure(verbose = false) {
     if (await Utils.packageIsInstalled('calamares')) {
       console.log('==========================================')
       console.log(`calamares: [${this.oses.distroId}/${this.oses.versionId}]->[${this.oses.distroLike}/${this.oses.versionLike}]`)
       console.log('==========================================')
-      await this.configuration()
-      await this.settingsConf()
-      await this.brandingDesc()
-      await this.sourcesMedia()
-      await this.sourcesFinal()
-      await this.bootLoaderConfig()
-      await this.unpackfsConf()
-      await this.packages()
-      await this.removeuser()
-      await this.displaymanager()
+      await this.configuration(verbose)
+      await this.settingsConf(verbose)
+      await this.brandingDesc(verbose)
+      await this.sourcesMedia(verbose)
+      await this.sourcesFinal(verbose)
+      await this.bootLoaderConfig(verbose)
+      await this.unpackfsConf(verbose)
+      await this.packages(verbose)
+      await this.removeuser(verbose)
+      await this.displaymanager(verbose)
     }
   }
 
   /**
    * branding
    */
-  async configuration() {
+  async configuration(verbose = false) {
     const versionLike = this.oses.versionLike
     console.log('==========================================')
     console.log('calamares: configuration')
@@ -72,7 +72,7 @@ class Calamares {
   /**
    * settingsConf
    */
-  async settingsConf() {
+  async settingsConf(verbose = false) {
     const versionLike = this.oses.versionLike
     const confPath = '/etc/calamares/settings.conf'
     console.log(`calamares: create module ${confPath}`)
@@ -93,15 +93,15 @@ class Calamares {
   /**
    * create script /usr/sbin/sources-media
    */
-  async sourcesMedia() {
-    this.sourcesMediaDesc() 
-    this.sourcesMediaScript()
+  async sourcesMedia(verbose = false) {
+    this.sourcesMediaDesc(verbose) 
+    this.sourcesMediaScript(verbose)
   }
 
   /**
    * create module sources-media
    */
-  private async sourcesMediaDesc(){
+  private async sourcesMediaDesc(verbose = false){
     const confPath = '/usr/lib/calamares/modules/sources-media'
     console.log(`calamares: create module ${confPath}`)
     const descFile = 'module.desc'
@@ -121,7 +121,7 @@ class Calamares {
   /**
    * create script per sources-media
    */
-  private sourcesMediaScript(){
+  private sourcesMediaScript(verbose = false){
     const versionLike = this.oses.versionLike
     const scriptPath = '/usr/sbin/sources-media'
     console.log(`calamares: create script ${scriptPath} type ${versionLike}`)
@@ -141,7 +141,7 @@ class Calamares {
   /**
    * create script /usr/blin/sources-final
    */
-  async sourcesFinal() {
+  async sourcesFinal(verbose = false) {
     const versionLike = this.oses.versionLike
     const scriptPath = '/usr/sbin/sources-final'
     console.log(`calamares: create script ${scriptPath} type ${versionLike}`)
@@ -163,7 +163,7 @@ class Calamares {
   /**
    * create branding.desc
    */
-  async brandingDesc() {
+  async brandingDesc(verbose = false) {
     const brandingPath =`/etc/calamares/branding/${this.distro.branding}`
     const descPath = `${brandingPath}/branding.desc`
     console.log(`calamares: create desc ${descPath}`)
@@ -228,7 +228,7 @@ class Calamares {
   /**
    * create module unpackfs.conf
    */
-  unpackfsConf() {
+  unpackfsConf(verbose = false) {
     const confPath = '/etc/calamares/modules/unpackfs.conf'
     console.log(`calamares: create module ${confPath}`)
 
@@ -245,7 +245,7 @@ class Calamares {
    * create script /sbin/bootloades-config
    * Add /tmp in chroot /tmp/calamares
    */
-  bootLoaderConfig(){
+  bootLoaderConfig(verbose = false){
     const scriptPath = '/sbin/bootloader-config'
     console.log(`calamares: create script ${scriptPath}`)
     
@@ -257,7 +257,7 @@ class Calamares {
   /**
    * create module packages.conf
    */
-  packages() {
+  packages(verbose = false) {
     const confPath = '/etc/calamares/modules/packages.conf'
     console.log(`calamares: create module ${confPath}`)
     const content = Generic.packages()
@@ -267,7 +267,7 @@ class Calamares {
   /**
    * create module removeusers.conf
    */
-  removeuser() {
+  removeuser(verbose = false) {
     const confPath = '/etc/calamares/modules/removeuser.conf'
     console.log(`calamares: create module ${confPath}`)
     const content = Generic.removeuser()
@@ -277,7 +277,7 @@ class Calamares {
   /** 
    * create module displaymanager.conf
    */
-  displaymanager(){
+  displaymanager(verbose = false) {
     const confPath = '/etc/calamares/modules/displaymanager.conf'
     console.log(`calamares: create module ${confPath}`)
     const content = Generic.displaymanager()

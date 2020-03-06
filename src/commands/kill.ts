@@ -25,6 +25,7 @@ export default class Kill extends Command {
 
   static flags = {
     help: flags.help({ char: 'h' }),
+    verbose: flags.boolean({char: 'v', description: 'verbose'}),
   }
 
   static aliases = ['clean']
@@ -39,17 +40,23 @@ kill the eggs/free the nest
     Utils.titles()
     const { args, flags } = this.parse(Kill)
 
+    let echo = {echo: false}
+    let verbose = false
+    if (flags.verbose) {
+      verbose = true
+      echo = {echo: true}
+    }
 
     if (Utils.isRoot() && Utils.prerequisitesInstalled()) {
       const ovary = new Ovary
       await ovary.fertilization()
-      await ovary.uBindLiveFs()
+      await ovary.uBindLiveFs(verbose)
       this.log(`${Utils.getFriendName()}: deleting old eggs ...`)
       if (this.loadSettings()) {
-        await exec(`rm ${this.work_dir.path} -rf`)
-        await exec(`rm ${this.snapshot_dir} -rf`)
+        await exec(`rm ${this.work_dir.path} -rf`, echo)
+        await exec(`rm ${this.snapshot_dir} -rf`, echo)
       } else {
-        await exec(`rm /home/eggs -rf`)
+        await exec(`rm /home/eggs -rf`, echo)
       }
     }
   }
