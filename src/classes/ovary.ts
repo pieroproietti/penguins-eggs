@@ -153,7 +153,7 @@ export default class Ovary {
    * Load configuration from /etc/penguins-eggs.conf
    * @returns {boolean} Success
    */
-  public async loadSettings(echo = {echo: true}): Promise<boolean> {
+  public async loadSettings(echo = { echo: true }): Promise<boolean> {
     let foundSettings: boolean
 
     const settings = ini.parse(fs.readFileSync(this.config_file, 'utf-8'))
@@ -252,15 +252,20 @@ export default class Ovary {
     console.log(`ifnames_opt:       ${this.ifnames_opt}`)
     console.log(`pmount_fixed:      ${this.pmount_fixed}`)
     console.log(`ssh_pass:          ${this.ssh_pass}`)
-    if (this.make_efi){
+    if (this.make_efi) {
       if (!Utils.packageIsInstalled('grub-efi-amd64')) {
         console.log(chalk.yellow('You choose to create an UEFI image, but miss to install grub-ef-amd64 package.'))
         console.log(chalk.yellow('Please install it before to create an UEFI image:'))
         console.log(chalk.green('sudo apt install grub-efi-amd64'))
         this.make_efi = false
       }
+      if (!Utils.packageIsInstalled('dosfstools')) {
+        console.log(chalk.yellow('You choose to create an UEFI image, but miss to install dosfstools package.'))
+        console.log(chalk.yellow('Please install it before to create an UEFI image:'))
+        console.log(chalk.green('sudo apt install dosfstools'))
+        this.make_efi = false
+      }
     }
-
   }
 
   /**
@@ -294,7 +299,7 @@ export default class Ovary {
    *
    * @param basename
    */
-  async produce(basename = '', echo = {echo: false}) {
+  async produce(basename = '', echo = { echo: false }) {
     if (!fs.existsSync(this.snapshot_dir)) {
       shx.mkdir('-p', this.snapshot_dir)
     }
@@ -388,12 +393,12 @@ export default class Ovary {
    * - Add some basic files to /dev
    * - Clear configs from /etc/network/interfaces, wicd and NetworkManager and netman
    */
-  async editLiveFs(echo = {echo: false}) {
+  async editLiveFs(echo = { echo: false }) {
     console.log('==========================================')
     console.log('ovary: editLiveFs')
     console.log('==========================================')
     // sudo systemctl disable wpa_supplicant 
-    
+
     // Truncate logs, remove archived logs.
     let cmd = `find ${this.work_dir.merged}/var/log -name "*gz" -print0 | xargs -0r rm -f`
     await exec(cmd, echo)
@@ -478,7 +483,7 @@ export default class Ovary {
   /**
    * editBootMenu
    */
-  async editBootMenu(echo = {echo: false}) {
+  async editBootMenu(echo = { echo: false }) {
     let cmd = ''
     if (this.edit_boot_menu) {
       cmd = `${this.gui_editor} ${this.work_dir.path}/iso/boot/isolinux/menu.cfg`
@@ -509,7 +514,7 @@ export default class Ovary {
     }
   }
 
-  async isolinuxPrepare(echo = {echo: false}) {
+  async isolinuxPrepare(echo = { echo: false }) {
     console.log('==========================================')
     console.log('ovary: isolinuxPrepare')
     console.log('==========================================')
@@ -645,7 +650,7 @@ timeout 200\n`
   /**
    * squashFs: crea in live filesystem.squashfs
    */
-  async makeSquashFs(echo = {echo: true}) {
+  async makeSquashFs(echo = { echo: true }) {
     console.log('==========================================')
     console.log('ovary: makeSquashFs')
     console.log('==========================================')
@@ -710,7 +715,7 @@ timeout 200\n`
     let noDir = ''
     let need = true
     for (noDir of noDirs) {
-      if (dir === noDir){
+      if (dir === noDir) {
         need = false
       }
     }
@@ -793,7 +798,7 @@ timeout 200\n`
             console.log(`code: [${cout.code}] ${cout.data}`)
             cout = await exec(`umount ${this.work_dir.lowerdir}/${dir.name}`, echo)
             console.log(`code: [${cout.code}] ${cout.data}`)
-          } else if (this.onlyMerged(dir.name)){
+          } else if (this.onlyMerged(dir.name)) {
             cout = await exec(`umount ${this.work_dir.merged}/${dir.name}`, echo)
             console.log(`code: [${cout.code}] ${cout.data}`)
           }
@@ -813,7 +818,7 @@ timeout 200\n`
   /**
  * 
  */
-  async makeLiveHome(echo = {echo: true}) {
+  async makeLiveHome(echo = { echo: true }) {
     console.log('==========================================')
     console.log('ovary: makeLiveHome')
     console.log('==========================================')
@@ -872,7 +877,7 @@ timeout 200\n`
    * makeEfi
    * Create /boot and /efi for UEFI
    */
-  async makeEfi(echo = {echo: true}) {
+  async makeEfi(echo = { echo: true }) {
     /**
      * Carica il primo grub.cfg dal memdisk, quindi in sequenza
      * grub.cfg1 -> memdisk
@@ -946,7 +951,7 @@ timeout 200\n`
     await exec(`tar -cvf memdisk boot`, echo)
 
     // make the grub image
-    shx.exec(`grub-mkimage -O x86_64-efi -m memdisk -o bootx64.efi -p '(memdisk)/boot/grub' search iso9660 configfile normal memdisk tar cat part_msdos part_gpt fat ext2 ntfs ntfscomp hfsplus chain boot linux`, {silent: false})
+    shx.exec(`grub-mkimage -O x86_64-efi -m memdisk -o bootx64.efi -p '(memdisk)/boot/grub' search iso9660 configfile normal memdisk tar cat part_msdos part_gpt fat ext2 ntfs ntfscomp hfsplus chain boot linux`, { silent: false })
 
     // pdpd (torna a efi_work)
     process.chdir(this.efi_work)
@@ -973,7 +978,7 @@ timeout 200\n`
 
     // doesn't need to be root-owned ${pwd} = current Directory
     // shx.exec(`chown -R 1000:1000 $(pwd) 2>/dev/null`)
-    shx.exec (`chown -R 1000:1000 $(pwd) 2>/dev/null`, {silent: false})
+    shx.exec(`chown -R 1000:1000 $(pwd) 2>/dev/null`, { silent: false })
     // await exec(`chown -R 1000:1000 $(pwd) 2>/dev/null`, echo)
 
     // Cleanup efi temps
@@ -1010,7 +1015,7 @@ timeout 200\n`
   /**
    * makeIsoImage
    */
-  async makeIsoImage(echo = {echo: false}) {
+  async makeIsoImage(echo = { echo: false }) {
     const volid = this.getFilename(this.iso.distroName)
     const isoName = `${this.snapshot_dir}${volid}`
     console.log('==========================================')
