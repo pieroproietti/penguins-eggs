@@ -333,10 +333,10 @@ export default class Ovary {
       await this.makeLiveHome(verbose)
       await this.editLiveFs(verbose)
       await this.editBootMenu(verbose)
-      await this.addDebianRepo()
+      // await this.addDebianRepo()
       await this.makeSquashFs(verbose)
       if (this.make_efi) {
-        await this.editEfi()
+        await this.editEfi(verbose)
       }
       await this.makeIsoImage(verbose)
       await this.uBindLiveFs(verbose)

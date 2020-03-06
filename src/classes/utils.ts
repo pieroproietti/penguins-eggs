@@ -417,7 +417,7 @@ export default class Utils {
   static titles(): void {
     clear()
     console.log(chalk.yellow(figlet.textSync('eggs')))
-    console.log('                        Penguin\'s eggs are gettings alive!')
+    console.log('                      Penguin\'s eggs - Perri\'s Brewery edition -')
     console.log()
   }
 }

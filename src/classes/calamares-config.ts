@@ -28,6 +28,11 @@ class Calamares {
 
   oses: IOses
 
+  /**
+   * 
+   * @param distro 
+   * @param oses 
+   */
   constructor(distro: IDistro, oses: IOses) {
     this.distro = distro
     this.oses = oses
@@ -141,7 +146,6 @@ class Calamares {
     fs.writeFileSync(scriptPath, content, 'utf8')
     shx.chmod('+x', scriptPath)
   }
-
   
   /**
    * create script /usr/blin/sources-final
@@ -165,8 +169,7 @@ class Calamares {
     shx.chmod('+x', scriptPath)
   }
 
-
-
+  
   /**
    * create branding.desc
    */
