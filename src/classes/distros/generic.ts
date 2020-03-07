@@ -106,11 +106,14 @@ fi\n`
 }
 export default Generic
 
+/**
+ * 
+ * @param package2check 
+ */
 function addIfExist(package2check: string): string {
   let text = ''
   if (Utils.packageIsInstalled(package2check)){
     text +=`   - '${package2check}'\n`
   }
   return text
-  
 }
