@@ -19,7 +19,7 @@ import figlet = require('figlet')
 /**
  * Utils: general porpourse utils
  * @remarks all the utilities
-  */
+ */
 export default class Utils {
 
   /**
@@ -95,16 +95,99 @@ export default class Utils {
    * Get the syze of the snapshot
    * @returns {string} grandezza dello snapshot in Byte
    */
-  static getSnapshotSize(snapshot_dir = '/'): string {
-    let size = ''
+  static getSnapshotSize(snapshot_dir = '/'): number {
+    let fileSizeInBytes = 0
     if (fs.existsSync(snapshot_dir)) {
-      size = shx.exec(`/usr/bin/find ${snapshot_dir} -maxdepth 1 -type f -name '*.iso' -exec du -shc {} + | tail -1 | awk '{print $1}'`, { silent: true }).stdout.trim()
+      const stats = fs.statSync(snapshot_dir)
+      fileSizeInBytes = stats.size
     }
-    if (size === '') {
-      size = '0'
-    }
-    return size
+    return fileSizeInBytes
   }
+
+  /**
+  * Calculate the space used on the disk
+  * @return {void}
+  */
+ static getUsedSpace(): number {
+  let fileSizeInBytes = 0
+  if (this.isLive()) {
+    fileSizeInBytes = this.getLiveRootSpace()
+  } else {
+    fileSizeInBytes = Number(shx.exec(`df /home | /usr/bin/awk 'NR==2 {print $3}'`, {silent: true}).stdout)
+  }
+  return fileSizeInBytes
+}
+
+ /**
+     * Extimate the linuxfs dimension
+     * probably is better to rename it as
+     * getLiveSpaceRootNeed
+     * @returns {number} Byte
+     */
+    static getLiveRootSpace(type = 'debian-live'): number {
+      let squashFs = '/run/live/medium/live/filesystem.squashfs'
+  
+      if (type === 'mx') {
+        squashFs = '/live/boot-dev/antiX/linuxfs'
+      }
+  
+      /**
+         * root-space-needed is the size of the linuxfs file * a compression factor +
+         * contents of the rootfs. Conservative but fast factors are same as used in
+         * live-remaster
+         */
+      const sqfile_full = ini.parse(fs.readFileSync(squashFs, 'utf-8'))
+  
+      // get compression factor by reading the linuxfs squasfs file, if available
+      const linuxfs_compression_type = shx.exec(`dd if=${sqfile_full} bs=1 skip=20 count=2 status=none 2>/dev/null| /usr/bin/od -An -tdI`)
+  
+      let compression_factor = 0
+  
+      if (linuxfs_compression_type === '1') {
+        compression_factor = 37 // gzip
+      } else if (linuxfs_compression_type === '2') {
+        compression_factor = 52 // lzo, not used by antiX
+      } else if (linuxfs_compression_type === '3') {
+        compression_factor = 52  // lzma, not used by antiX
+      } else if (linuxfs_compression_type === '4') {
+        compression_factor = 31 // xz
+      } else if (linuxfs_compression_type === '5') {
+        compression_factor = 52 // lz4
+      } else {
+        compression_factor = 30 // anything else or linuxfs not reachable (toram), should be pretty conservative
+      }
+      let rootfs_file_size = 0
+      const linuxfs_file_size = Number(shx.exec('df /live/linux --output=used --total | /usr/bin/tail -n1').stdout.trim()) * 1024 * 100 / compression_factor
+  
+      if (fs.existsSync('/live/persist-root')) {
+        rootfs_file_size = Number(shx.exec('df /live/persist-root --output=used --total | /usr/bin/tail -n1').stdout.trim()) * 1024
+      }
+  
+      let rootSpaceNeeded: number
+      if (type === 'mx') {
+        /**
+         * add rootfs file size to the calculated linuxfs file size. Probaby conservative, as rootfs will likely have some overlap with linuxfs
+         */
+        rootSpaceNeeded = linuxfs_file_size + rootfs_file_size
+      } else {
+        rootSpaceNeeded = linuxfs_file_size
+      }
+      return rootSpaceNeeded / 1073741824.0 // Converte in GB
+    }
+  
+    /**
+         * Return true if i686 architecture
+         * @remarks to move in Utils
+         * @returns {boolean} true se l'architettura è i686
+         */
+    static isi686(): boolean {
+      let retVal = false
+      if (shx.exec('uname -m', { silent: true }).stdout.trim() === 'i686') {
+        retVal = true
+      }
+      return retVal
+    }
+  
 
   /**
    * return the short name of the package: eggs
@@ -140,94 +223,8 @@ export default class Utils {
     return version
   }
 
-  /**
-  * Calculate the space used on the disk
-  * @return {void}
-  */
-  static getUsedSpace(): string {
-    let out = ''
-    if (this.isLive()) {
-      out += `${this.getLiveRootSpace()} GB -- estimated`
-    } else {
-      out += shx.exec('df -h / | /usr/bin/awk \'NR==2 {print $3}\'', { silent: true }).stdout
-    }
 
-    if (shx.exec('mountpoint -q /home').code) {
-      out += '       on /home: ' + shx.exec('df -h /home | /usr/bin/awk \'NR==2 {print $3}\'', { silent: true }).stdout.trim()
-    }
-    return out
-  }
-
-  /**
-     * Extimate the linuxfs dimension
-     * probably is better to rename it as
-     * getLiveSpaceRootNeed
-     * @returns {number} Byte
-     */
-  static getLiveRootSpace(type = 'debian-live'): number {
-    let squashFs = '/run/live/medium/live/filesystem.squashfs'
-
-    if (type === 'mx') {
-      squashFs = '/live/boot-dev/antiX/linuxfs'
-    }
-
-    /**
-       * root-space-needed is the size of the linuxfs file * a compression factor +
-       * contents of the rootfs. Conservative but fast factors are same as used in
-       * live-remaster
-       */
-    const sqfile_full = ini.parse(fs.readFileSync(squashFs, 'utf-8'))
-
-    // get compression factor by reading the linuxfs squasfs file, if available
-    const linuxfs_compression_type = shx.exec(`dd if=${sqfile_full} bs=1 skip=20 count=2 status=none 2>/dev/null| /usr/bin/od -An -tdI`)
-
-    let compression_factor = 0
-
-    if (linuxfs_compression_type === '1') {
-      compression_factor = 37 // gzip
-    } else if (linuxfs_compression_type === '2') {
-      compression_factor = 52 // lzo, not used by antiX
-    } else if (linuxfs_compression_type === '3') {
-      compression_factor = 52  // lzma, not used by antiX
-    } else if (linuxfs_compression_type === '4') {
-      compression_factor = 31 // xz
-    } else if (linuxfs_compression_type === '5') {
-      compression_factor = 52 // lz4
-    } else {
-      compression_factor = 30 // anything else or linuxfs not reachable (toram), should be pretty conservative
-    }
-    let rootfs_file_size = 0
-    const linuxfs_file_size = Number(shx.exec('df /live/linux --output=used --total | /usr/bin/tail -n1').stdout.trim()) * 1024 * 100 / compression_factor
-
-    if (fs.existsSync('/live/persist-root')) {
-      rootfs_file_size = Number(shx.exec('df /live/persist-root --output=used --total | /usr/bin/tail -n1').stdout.trim()) * 1024
-    }
-
-    let rootSpaceNeeded: number
-    if (type === 'mx') {
-      /**
-       * add rootfs file size to the calculated linuxfs file size. Probaby conservative, as rootfs will likely have some overlap with linuxfs
-       */
-      rootSpaceNeeded = linuxfs_file_size + rootfs_file_size
-    } else {
-      rootSpaceNeeded = linuxfs_file_size
-    }
-    return rootSpaceNeeded / 1073741824.0 // Converte in GB
-  }
-
-  /**
-       * Return true if i686 architecture
-       * @remarks to move in Utils
-       * @returns {boolean} true se l'architettura è i686
-       */
-  static isi686(): boolean {
-    let retVal = false
-    if (shx.exec('uname -m', { silent: true }).stdout.trim() === 'i686') {
-      retVal = true
-    }
-    return retVal
-  }
-
+ 
   /**
      * Return true if live system - Versione Debian Live
      * @remarks to move in Utils
@@ -421,16 +418,16 @@ export default class Utils {
     console.log()
   }
 
- /**
- * 
- * @param verbose 
- */
-static setEcho(verbose = false): object {
-  let echo = { echo: false, ignore: true}
-  if (verbose) {
-    echo = { echo: true, ignore: false }
+  /**
+  * 
+  * @param verbose 
+  */
+  static setEcho(verbose = false): object {
+    let echo = { echo: false, ignore: true }
+    if (verbose) {
+      echo = { echo: true, ignore: false }
+    }
+    return echo
   }
-  return echo
-}
 
 }

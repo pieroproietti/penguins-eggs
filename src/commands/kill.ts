@@ -39,13 +39,11 @@ kill the eggs/free the nest
   async run() {
     Utils.titles()
     const { args, flags } = this.parse(Kill)
-
-    let echo = {echo: false}
     let verbose = false
     if (flags.verbose) {
-      verbose = true
-      echo = {echo: true}
+        verbose = true
     }
+    let echo = Utils.setEcho(verbose)
 
     if (Utils.isRoot() && Utils.prerequisitesInstalled()) {
       const ovary = new Ovary
@@ -55,8 +53,6 @@ kill the eggs/free the nest
       if (this.loadSettings()) {
         await exec(`rm ${this.work_dir.path} -rf`, echo)
         await exec(`rm ${this.snapshot_dir} -rf`, echo)
-      } else {
-        await exec(`rm /home/eggs -rf`, echo)
       }
     }
   }

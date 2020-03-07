@@ -279,20 +279,30 @@ export default class Ovary {
     if (!fs.existsSync(this.snapshot_dir)) {
       fs.mkdirSync(this.snapshot_dir)
     }
-    // Lo spazio usato da SquashFS non è stimabile da live errore buffer troppo piccolo
+    /** Lo spazio usato da SquashFS non è stimabile da live
+     * errore buffer troppo piccolo
+     */
+    const gb = 1048576
+    let spaceUsed = 0
+    let spaceAvailable = 0
     if (!Utils.isLive()) {
-      console.log(`Disk used space: ${Utils.getUsedSpace()}`)
+      spaceUsed = Number(shx.exec(`df /home | /usr/bin/awk 'NR==2 {print $3}'`, {silent: true}).stdout)
+      console.log(`Disk used space: ${Math.round(Utils.getUsedSpace() / gb * 10) / 10} GB`)
     }
-
-    const freeSpace = shx.exec(`df -h "${path}" | /usr/bin/awk 'NR==2 {print $4}'`, { silent: true }).stdout.trim()
-    console.log(`Space available: ${freeSpace}`)
-    console.log('')
-    console.log('The free space should  be sufficient to hold the')
-    console.log('compressed data from / and /home')
-    // console.log('')
-    // console.log('If necessary, you can create more available space')
-    //console.log('by removing previous  snapshots and saved copies:')
-    console.log(`- ${Utils.getSnapshotCount(this.snapshot_dir)} snapshots are taking up ${Utils.getSnapshotSize(this.snapshot_dir)} of disk space.`)
+    
+    spaceAvailable = Number(shx.exec(`df "${path}" | /usr/bin/awk 'NR==2 {print $4}'`, { silent: true }).stdout.trim())
+    console.log(`Space available: ${Math.round(spaceAvailable / gb * 10) / 10} GB`)
+    console.log()
+    
+    if (spaceAvailable > gb * 3) {
+      console.log(chalk.cyanBright('The free space should  be sufficient to hold the'))
+      console.log(chalk.cyanBright('compressed data from / and /home'))
+    } else {
+      console.log(chalk.redBright('The free space should be insufficient')+'.')
+      console.log('If necessary, you can create more available space')
+      console.log('by removing previous  snapshots and saved copies:')
+      console.log(`- ${Utils.getSnapshotCount(this.snapshot_dir)} snapshots are taking up ${Math.round(Utils.getSnapshotSize()/ gb * 10)/10} of disk space.`)
+    }
     console.log('')
   }
 
@@ -422,11 +432,13 @@ export default class Ovary {
     if (fs.existsSync(`${this.work_dir.merged}lib/live/config/1161-openssh-server`)) {
       await exec(`rm -f "$work_dir"/myfs/lib/live/config/1161-openssh-server`, echo)
     }
-    await exec(`sed -i 's/PermitRootLogin yes/PermitRootLogin prohibit-password/' ${this.work_dir.merged}/etc/ssh/sshd_config`, echo)
-    if (this.ssh_pass) {
-      await exec(`sed -i 's|.*PasswordAuthentication.*no|PasswordAuthentication yes|' ${this.work_dir.merged}/etc/ssh/sshd_config`, echo)
-    } else {
-      await exec(`sed -i 's|.*PasswordAuthentication.*yes|PasswordAuthentication no|' ${this.work_dir.merged}/etc/ssh/sshd_config`, echo)
+    if (fs.existsSync(`${this.work_dir.merged}/etc/ssh/sshd_config`)){
+      await exec(`sed -i 's/PermitRootLogin yes/PermitRootLogin prohibit-password/' ${this.work_dir.merged}/etc/ssh/sshd_config`, echo)
+      if (this.ssh_pass) {
+        await exec(`sed -i 's|.*PasswordAuthentication.*no|PasswordAuthentication yes|' ${this.work_dir.merged}/etc/ssh/sshd_config`, echo)
+      } else {
+        await exec(`sed -i 's|.*PasswordAuthentication.*yes|PasswordAuthentication no|' ${this.work_dir.merged}/etc/ssh/sshd_config`, echo)
+      }
     }
 
 
@@ -434,13 +446,7 @@ export default class Ovary {
      * /etc/fstab should exist, even if it's empty,
      * to prevent error messages at boot
      */
-    const text = ''
-    if (fs.existsSync(`${this.work_dir.merged}/etc/fstab`)) {
-      shx.mkdir('-p', '/tmp/penguins-eggs')
-      shx.cp(`${this.work_dir.merged}/etc/fstab`, `/tmp/penguins-eggs`)
-    }
-    await exec(`touch ${this.work_dir.merged}/etc/fstab`, echo)
-    Utils.write(`${this.work_dir.merged}/etc/fstab`, text)
+     await exec(`touch ${this.work_dir.merged}/etc/fstab`, echo)
 
     /**
      * Blank out systemd machine id. If it does not exist, systemd-journald
@@ -691,7 +697,10 @@ timeout 200\n`
         this.addRemoveExclusion(true, '/etc/localtime')
       }
     }
-    const compression = `-comp ${this.compression} `
+    const compression = `-comp ${this.compression}`
+    if (fs.existsSync(`${this.work_dir.pathIso}/live/filesystem.squashfs`)) {
+      fs.unlinkSync(`${this.work_dir.pathIso}/live/filesystem.squashfs`)
+    }
     let cmd = `mksquashfs ${this.work_dir.merged} ${this.work_dir.pathIso}/live/filesystem.squashfs ${compression} ${(this.mksq_opt === '' ? '' : ' ' + this.mksq_opt)} -wildcards -ef ${this.snapshot_excludes} ${this.session_excludes} `
     await exec(cmd, echo)
     // usr/bin/mksquashfs /.bind-root iso-template/antiX/linuxfs -comp ${this.compression} ${(this.mksq_opt === '' ? '' : ' ' + this.mksq_opt)} -wildcards -ef ${this.snapshot_excludes} ${this.session_excludes}`)
