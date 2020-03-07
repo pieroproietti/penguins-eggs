@@ -11,7 +11,7 @@ import path = require('path')
 import Utils from '../classes/utils'
 
 export default class Prerequisites extends Command {
-  static description = '\ninstall the prerequisites packages to run penguin\'s eggs'
+  static description = 'install the prerequisites packages to run penguin\'s eggs'
 
   static flags = {
     help: flags.help({ char: 'h' }),
@@ -23,6 +23,7 @@ export default class Prerequisites extends Command {
     `~$ eggs prerequisites -c\ncreate only configuration\n`,
   ]
 
+  
   async run() {
     Utils.titles()
     console.log('command: prerequisites')
