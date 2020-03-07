@@ -14,31 +14,36 @@ export default class Calamares extends Command {
 
   static flags = {
     help: flags.help({ char: 'h' }),
-    configuration_only: flags.boolean({char: 'c', description: 'only configuration'}),
-    }
+    configuration_only: flags.boolean({ char: 'c', description: 'only configuration' }),
+  }
 
-    static examples = [
-      `~$ eggs calamares\nremove (if present) and install calamares, calamares-settings-debian and configure it\n`,
-      `~$ eggs calamares  -c\ncreate only calamares configuration\n`,
+  static examples = [
+    `~$ eggs calamares\nremove (if present) and install calamares, calamares-settings-debian and configure it\n`,
+    `~$ eggs calamares  -c\ncreate only calamares configuration\n`,
   ]
-  
+
 
   async run() {
     Utils.titles()
+    console.log('command: calamares')
+
     const { args, flags } = this.parse(Calamares)
 
     if (Utils.isRoot()) {
-      if (!flags.configuration_only){
-        shx.exec('rm /etc/calamares -rf')
-        shx.exec('apt-get remove --yes --purge calamares calamares-settings-debian')
-        shx.exec(`apt-get update`, { async: false })
-        shx.exec(`apt-get install --yes \
+      let answer = JSON.parse(await Utils.customConfirm(`Select yes to continue...`))
+      if (answer.confirm === 'Yes') {
+        if (!flags.configuration_only) {
+          shx.exec('rm /etc/calamares -rf')
+          shx.exec('apt-get remove --yes --purge calamares calamares-settings-debian')
+          shx.exec(`apt-get update`, { async: false })
+          shx.exec(`apt-get install --yes \
                 calamares \
                 calamares-settings-debian`, { async: false })
-      }
-      const ovary = new Ovary
-      if (await ovary.fertilization()) {
-        await ovary.calamaresConfigure()
+        }
+        const ovary = new Ovary
+        if (await ovary.fertilization()) {
+          await ovary.calamaresConfigure()
+        }
       }
     }
   }

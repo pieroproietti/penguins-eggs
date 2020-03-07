@@ -26,6 +26,8 @@ export default class Install extends Command {
    */
   async run() {
     Utils.titles()
+    console.log('command: install')
+
     const {flags} = this.parse(Install)
 
 
@@ -33,7 +35,7 @@ export default class Install extends Command {
     if (Utils.isRoot()) {
 
       if (flags.gui) {
-        cmd = 'calamares'
+        shx.exec('calamares')
       } else {
         const hatching = new Hatching()
         hatching.question()

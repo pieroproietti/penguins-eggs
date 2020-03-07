@@ -48,8 +48,6 @@ export default class Ovary {
 
   prerequisites = {} as Prerequisites
 
-  eggName = 'egg'
-
   i686 = false
 
   live = false
@@ -142,10 +140,12 @@ export default class Ovary {
     this.oses = new Oses()
     this.iso = this.oses.info(this.distro)
 
-    if (this.loadSettings() && this.listFreeSpace()) {
-      let answer = JSON.parse(await Utils.customConfirm(`Select yes to continue...`))
-      if (answer.confirm === 'Yes') {
-        return true
+    if (this.loadSettings()){
+      if (this.listFreeSpace()) {
+        let answer = JSON.parse(await Utils.customConfirm(`Select yes to continue...`))
+        if (answer.confirm === 'Yes') {
+          return true
+        }
       }
     }
     return false
@@ -211,7 +211,7 @@ export default class Ovary {
     this.user_live = settings.General.user_live
 
     if (this.user_live === undefined || this.user_live === '') {
-      this.user_live = shx.exec(`awk -F":" '/1000:1000/ { print $1 }' /etc/passwd`).stdout.trim()
+      this.user_live = shx.exec(`awk -F":" '/1000:1000/ { print $1 }' /etc/passwd`, {silent: true}).stdout.trim()
       if (this.user_live === '') {
         this.user_live = 'live'
       }
@@ -292,6 +292,7 @@ export default class Ovary {
     
     spaceAvailable = Number(shx.exec(`df "${path}" | /usr/bin/awk 'NR==2 {print $4}'`, { silent: true }).stdout.trim())
     console.log(`Space available: ${Math.round(spaceAvailable / gb * 10) / 10} GB`)
+    console.log(`There are ${Utils.getSnapshotCount(this.snapshot_dir)} snapshots taking ${Math.round(Utils.getSnapshotSize()/ gb * 10)/10} GB of disk space.`)
     console.log()
     
     if (spaceAvailable > gb * 3) {
@@ -299,9 +300,9 @@ export default class Ovary {
       console.log(chalk.cyanBright('compressed data from / and /home'))
     } else {
       console.log(chalk.redBright('The free space should be insufficient')+'.')
+      console.log()
       console.log('If necessary, you can create more available space')
       console.log('by removing previous  snapshots and saved copies:')
-      console.log(`- ${Utils.getSnapshotCount(this.snapshot_dir)} snapshots are taking up ${Math.round(Utils.getSnapshotSize()/ gb * 10)/10} of disk space.`)
     }
     console.log('')
   }
@@ -780,19 +781,19 @@ timeout 200\n`
           }
           if (this.needOverlay(dir.name)) {
             // Creo il mountpoint lower e ci monto in ro dir.name
-            await makeIfNotExist(`${this.work_dir.lowerdir}/${dir.name}`, echo)
+            await makeIfNotExist(`${this.work_dir.lowerdir}/${dir.name}`)
             await exec(`mount --bind --make-slave /${dir.name} ${this.work_dir.lowerdir}/${dir.name}`, echo)
             await exec(`mount -o remount,bind,ro ${this.work_dir.lowerdir}/${dir.name}`, echo)
             // Creo i mountpoint upper, work e merged e monto in merged rw
-            await makeIfNotExist(`${this.work_dir.upperdir}/${dir.name}`, echo)
-            await makeIfNotExist(`${this.work_dir.workdir}/${dir.name}`, echo)
-            await makeIfNotExist(`${this.work_dir.merged}/${dir.name}`, echo)
+            await makeIfNotExist(`${this.work_dir.upperdir}/${dir.name}`, verbose)
+            await makeIfNotExist(`${this.work_dir.workdir}/${dir.name}`, verbose)
+            await makeIfNotExist(`${this.work_dir.merged}/${dir.name}`, verbose)
             await exec(`mount -t overlay overlay -o lowerdir=${this.work_dir.lowerdir}/${dir.name},upperdir=${this.work_dir.upperdir}/${dir.name},workdir=${this.work_dir.workdir}/${dir.name} ${this.work_dir.merged}/${dir.name}`, echo)
           } else {
             // Creo direttamente la dir.name in merged
-            await makeIfNotExist(`${this.work_dir.merged}/${dir.name}`, echo)
+            await makeIfNotExist(`${this.work_dir.merged}/${dir.name}`, verbose)
             if (this.onlyMerged(dir.name)) {
-              await makeIfNotExist(`${this.work_dir.merged}/${dir.name}`, echo)
+              await makeIfNotExist(`${this.work_dir.merged}/${dir.name}`, verbose)
               await exec(`mount --bind --make-slave /${dir.name} ${this.work_dir.merged}/${dir.name}`, echo)
               await exec(`mount -o remount,bind,ro ${this.work_dir.merged}/${dir.name}`, echo)
             }
@@ -1007,6 +1008,7 @@ timeout 200\n`
     await exec(cmd, echo)
     // Additional modules so we don't boot in blind mode. I don't know which ones are really needed.
     cmd = `for i in efi_gop efi_uga ieee1275_fb vbe vga video_bochs video_cirrus jpeg png gfxterm ; do echo "insmod $i" >> boot/grub/x86_64-efi/grub.cfg ; done`
+
     await exec(cmd, echo)
 
     await exec(`echo source /boot/grub/grub.cfg >> boot/grub/x86_64-efi/grub.cfg`, echo)
@@ -1137,7 +1139,7 @@ timeout 200\n`
    * only show the result
    */
   finished() {
-    console.log('eggs is finished!\nYou can find the file iso: ' + chalk.blueBright (this.eggName) + '\nin the nest: ' + chalk.blueBright(this.snapshot_dir) + '.')
+    console.log('eggs is finished!\nYou can find the file iso: ' + chalk.cyanBright (this.eggName) + '\nin the nest: ' + chalk.cyanBright(this.snapshot_dir) + '.')
   }
 }
 
@@ -1145,7 +1147,9 @@ timeout 200\n`
  * Crea il path se non esiste
  * @param path 
  */
-async function makeIfNotExist(path: string, echo = { echo: false }) {
+async function makeIfNotExist(path: string, verbose = false) {
+  let echo = Utils.setEcho(verbose)
+
   if (!(fs.existsSync(path))) {
     const cmd = `mkdir ${path} -p`
     await exec(cmd, echo)

@@ -97,9 +97,12 @@ export default class Utils {
    */
   static getSnapshotSize(snapshot_dir = '/'): number {
     let fileSizeInBytes = 0
-    if (fs.existsSync(snapshot_dir)) {
-      const stats = fs.statSync(snapshot_dir)
-      fileSizeInBytes = stats.size
+    const size = shx.exec(`/usr/bin/find /home/eggs -maxdepth 1 -type f -name '*.iso' -exec du -sc {} + | tail -1 | awk '{print $1}'`, {silent: true}).stdout.trim()
+
+    if (size === '') {
+      fileSizeInBytes = 0
+    } else {
+      fileSizeInBytes = Number(size)
     }
     return fileSizeInBytes
   }

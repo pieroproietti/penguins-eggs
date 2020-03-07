@@ -17,17 +17,24 @@ export default class Sterilize extends Command {
 
   async run() {
     Utils.titles()
+    console.log(`command: sterilize`)
+
+
     const { flags } = this.parse(Sterilize)
 
     if (Utils.isRoot() && Utils.prerequisitesInstalled()) {
-      this.log('sterilize the penguin...')
-      shx.exec('apt-get --yes --purge remove  \
+      let answer = JSON.parse(await Utils.customConfirm(`Select yes to continue...`))
+
+      if (answer.confirm === 'Yes') {
+
+        this.log('sterilize the penguin...')
+        shx.exec('apt-get --yes --purge remove  \
                 calamares \
                 calamares-settings-debian \
                 qml-module-qtquick2 \
                 qml-module-qtquick-controls', { async: false })
 
-      shx.exec('apt-get --yes --purge remove  \
+        shx.exec('apt-get --yes --purge remove  \
                   squashfs-tools \
                   xorriso \
                   syslinux \
@@ -35,10 +42,11 @@ export default class Sterilize extends Command {
                   live-boot \
                   open-infrastructure-system-config', { async: false })
 
-      shx.exec('apt-get --yes autoremove', { async: false })
-      shx.exec('apt-get clean', { async: false })
-      shx.exec('apt-get autoclean', { async: false })
-      shx.exec('rm /etc/calamares -rf', { async: false })
+        shx.exec('apt-get --yes autoremove', { async: false })
+        shx.exec('apt-get clean', { async: false })
+        shx.exec('apt-get autoclean', { async: false })
+        shx.exec('rm /etc/calamares -rf', { async: false })
+      }
     }
   }
 }

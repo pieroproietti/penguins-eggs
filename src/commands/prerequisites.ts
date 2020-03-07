@@ -21,28 +21,32 @@ export default class Prerequisites extends Command {
   static examples = [
     `~$ eggs prerequisites\ninstall the prerequisites packages to run penguin's eggs\n`,
     `~$ eggs prerequisites -c\ncreate only configuration\n`,
-]
+  ]
 
   async run() {
     Utils.titles()
-    const {flags} = this.parse(Prerequisites)
+    console.log('command: prerequisites')
+
+    const { flags } = this.parse(Prerequisites)
 
 
     if (Utils.isRoot()) {
+      let answer = JSON.parse(await Utils.customConfirm(`Select yes to continue...`))
 
-      shx.cp(path.resolve(__dirname, '../../conf/penguins-eggs.conf'), '/etc')
-      shx.mkdir('-p', '/usr/local/share/excludes/')
-      shx.cp(path.resolve(__dirname, '../../conf/penguins-eggs-exclude.list'), '/usr/local/share/excludes')
+      if (answer.confirm === 'Yes') {
+        shx.cp(path.resolve(__dirname, '../../conf/penguins-eggs.conf'), '/etc')
+        shx.mkdir('-p', '/usr/local/share/excludes/')
+        shx.cp(path.resolve(__dirname, '../../conf/penguins-eggs-exclude.list'), '/usr/local/share/excludes')
 
-      if (!flags.configuration_only) {
-        shx.cp(path.resolve(__dirname, '../../scripts/installed-to-live'), '/usr/sbin') // installed-to-live
-        const codeUpdate: number = shx.exec('/usr/bin/apt-get update -y').code
-        if (codeUpdate === 0) {
-          this.log('udapte executed')
-          this.log('now we install the prerequisites packages...')
-          this.log('>>> eggs: Installing the prerequisites packages...')
-          shx.exec('apt update', { async: false })
-          shx.exec('\
+        if (!flags.configuration_only) {
+          shx.cp(path.resolve(__dirname, '../../scripts/installed-to-live'), '/usr/sbin') // installed-to-live
+          const codeUpdate: number = shx.exec('/usr/bin/apt-get update -y').code
+          if (codeUpdate === 0) {
+            this.log('udapte executed')
+            this.log('now we install the prerequisites packages...')
+            this.log('>>> eggs: Installing the prerequisites packages...')
+            shx.exec('apt update', { async: false })
+            shx.exec('\
                   apt-get --yes install \
                   lvm2 \
                   parted \
@@ -55,10 +59,11 @@ export default class Prerequisites extends Command {
                   xterm \
                   whois \
                   grub-efi-amd64', { async: false })
-          /**
-           * rimosso 
-           * live-config live-config-systemd conflict open-infrastructure-system-config 
-           */
+            /**
+             * rimosso 
+             * live-config live-config-systemd conflict open-infrastructure-system-config 
+             */
+          }
         }
       }
     }

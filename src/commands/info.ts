@@ -25,6 +25,7 @@ You will find here informations about penguin's eggs!
 
   async run() {
     Utils.titles()
+    console.log('command: info')
 
     const ovary = new Ovary
     ovary.loadSettings()

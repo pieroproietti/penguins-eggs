@@ -38,6 +38,8 @@ kill the eggs/free the nest
 
   async run() {
     Utils.titles()
+    console.log('command: kill')
+    
     const { args, flags } = this.parse(Kill)
     let verbose = false
     if (flags.verbose) {
