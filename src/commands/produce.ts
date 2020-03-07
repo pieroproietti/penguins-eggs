@@ -49,9 +49,10 @@ the penguin produce an egg called uovo-i386-2020-01-18_2000.iso`]
       
       const ovary = new Ovary(compression)
         if (await ovary.fertilization()){
-        ovary.produce(basename, verbose)
+          console.log(`${Utils.getFriendName()} producing`)
+          await ovary.produce(basename, verbose)
+          ovary.finished()
       }
-      this.log(`${Utils.getFriendName()} produce`)
     }
   }
 }

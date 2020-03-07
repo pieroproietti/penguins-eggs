@@ -420,4 +420,17 @@ export default class Utils {
     console.log('                      Penguin\'s eggs - Perri\'s Brewery edition -')
     console.log()
   }
+
+ /**
+ * 
+ * @param verbose 
+ */
+static setEcho(verbose = false): object {
+  let echo = { echo: false, ignore: true}
+  if (verbose) {
+    echo = { echo: true, ignore: false }
+  }
+  return echo
+}
+
 }
