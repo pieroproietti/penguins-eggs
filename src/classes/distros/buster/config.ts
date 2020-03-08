@@ -78,7 +78,6 @@ class Config {
      */
     createBranding() {
         const branding = require('./branding').branding
-
         const dir = `/etc/calamares/branding/${this.distro.branding}/`
         const file = dir + 'branding.desc'
         const content = branding(this.distro, this.oses, this.verbose)
@@ -186,7 +185,6 @@ class Config {
         }
     }
 
-
     /**
      * 
      */
@@ -229,17 +227,44 @@ class Config {
     /**
      * 
      */
-    moduleBootloaderConfig() { }
+    async moduleBootloaderConfig() {
+        const bootloaderConfig = require('./calamares-modules/bootloader-config').bootloaderConfig
+        const dir = `/usr/lib/calamares/modules/bootloader-config/`
+        const file = dir + 'module.desc'
+        const content = bootloaderConfig()
+        if (!fs.existsSync(dir)) {
+            fs.mkdirSync(dir)
+        }
+        write(file, content, this.verbose)
+
+        const scriptBootloaderConfig = require('./scripts/bootloader-config').bootloaderConfig
+        const scriptDir = `/sbin/`
+        const scriptFile = scriptDir + 'bootloader-config'
+        const scriptContent = scriptBootloaderConfig()
+        write(file, content, this.verbose)
+        await exec(`chmod +x ${scriptFile}`)
+    }
 
     /**
      * 
      */
-    moduleGrubcfg() { }
+    moduleGrubcfg() {
+        if (this.verbose) {
+            console.log(`calamares: module services-systemd, nothing to do`)
+        }
+    }
 
     /**
      * 
      */
-    moduleBootloader() { }
+    moduleBootloader() {
+        const bootloader = require('./modules/bootloader').bootloader
+        const dir = `/etc/calamares/modules/`
+        const file = dir + 'bootloader.conf'
+        const content = bootloader()
+        write(file, content, this.verbose)
+    }
+
 
     /**
      * 
