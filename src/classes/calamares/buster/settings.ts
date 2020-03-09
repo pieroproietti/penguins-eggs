@@ -40,6 +40,9 @@ export function settings(displaymanager= false, branding = 'eggs'): string {
   exec.push('keyboard')
   exec.push('localecfg')
   exec.push('users')
+  if (displaymanager){
+    exec.push('displaymanager')
+  }
   exec.push('networkcfg')
   exec.push('hwclock')
   exec.push('services-systemd')

@@ -1,9 +1,9 @@
 /**
  * 
  */
-export function sourceMedia(): string {
+export function sourcesMedia(): string {
 
-    let text = ''
+    let text = ``
     text += `#!/bin/sh\n`
     text += `\n`
     text += `CHROOT=$(mount | grep proc | grep calamares | awk '{print $3}' | sed -e "s#/proc##g")\n`
@@ -29,6 +29,5 @@ export function sourceMedia(): string {
     text += `rmdir $CHROOT/run/live\n`
     text += `\n`
     text += `exit 0\n`
-
     return text
 }

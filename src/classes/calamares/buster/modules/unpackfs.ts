@@ -2,7 +2,7 @@
  * 
  */
 export function unpackfs(mountpointSquashFs: string): string {
-    let text = ''
+    let text = ``
     text += `---\n`
     text += `unpack:\n`
     text += `    -   source: "${mountpointSquashFs}"\n`
@@ -10,3 +10,4 @@ export function unpackfs(mountpointSquashFs: string): string {
     text += `        destination: ""\n`
     return text
 }
+

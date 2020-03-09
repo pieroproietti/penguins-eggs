@@ -1,7 +1,7 @@
 /**
  * 
  */
-export function fstab(): string {
+export function bootloader(): string {
     let text = ``
     text += `# Bootloader configuration. The bootloader is installed to allow\n`
     text += `# the system to start (and pick one of the installed operating\n`

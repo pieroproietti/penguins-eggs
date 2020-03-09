@@ -19,9 +19,9 @@ export function mount(): string {
     text += `#   - options (optional) Extra options to pass to mount(8)\n`
     text += `#\n`
     text += `extraMounts:\n`
-    text += `- device: proc\n`
+    text += `    - device: proc\n`
     text += `      fs: proc\n`
-    text += `extraMounts:\n`
+    text += `      extraMounts:\n`
     text += `    - device: proc\n`
     text += `      fs: proc\n`
     text += `      mountPoint: /proc\n`
@@ -37,7 +37,7 @@ export function mount(): string {
     text += `    - device: /run/udev\n`
     text += `      mountPoint: /run/udev\n`
     text += `      options: bind\n`
-    text += `extraMountsEfi:\n`
+    text += `      extraMountsEfi:\n`
     text += `    - device: efivarfs\n`
     text += `      fs: efivarfs\n`
     text += `      mountPoint: /sys/firmware/efi/efivars\n`

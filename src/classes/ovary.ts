@@ -23,7 +23,7 @@ const exec = require('../lib/utils').exec
 
 // classes
 import Utils from './utils'
-import Calamares from './calamares-config'
+import Calamares from './calamares/calamares-settings'
 import Oses from './oses'
 import Prerequisites from '../commands/prerequisites'
 import { IWorkDir } from '../interfaces/i-workdir'
@@ -392,8 +392,8 @@ export default class Ovary {
 
     // Se calamares è installato allora lo configura
     if (Utils.packageIsInstalled('calamares')) {
-      this.calamares = new Calamares(this.distro, this.iso)
-      await this.calamares.configure(verbose)
+      this.calamares = new Calamares(this.distro, this.iso, verbose)
+      await this.calamares.config()
     }
   }
 

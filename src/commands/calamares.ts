@@ -14,6 +14,7 @@ export default class Calamares extends Command {
 
   static flags = {
     help: flags.help({ char: 'h' }),
+    verbose: flags.boolean({ char: 'v' }),
     configuration_only: flags.boolean({ char: 'c', description: 'only configuration' }),
   }
 
@@ -26,8 +27,11 @@ export default class Calamares extends Command {
   async run() {
     Utils.titles()
     console.log('command: calamares')
-
     const { args, flags } = this.parse(Calamares)
+    let verbose = false
+    if (flags.verbose) {
+      verbose = true
+    }
 
     if (Utils.isRoot()) {
       let answer = JSON.parse(await Utils.customConfirm(`Select yes to continue...`))
@@ -40,9 +44,10 @@ export default class Calamares extends Command {
                 calamares \
                 calamares-settings-debian`, { async: false })
         }
+
         const ovary = new Ovary
         if (await ovary.fertilization()) {
-          await ovary.calamaresConfigure()
+          await ovary.calamaresConfigure(verbose)
         }
       }
     }

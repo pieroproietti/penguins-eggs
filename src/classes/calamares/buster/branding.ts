@@ -35,7 +35,7 @@ export function branding(distro: IDistro, oses: IOses, verbose = false): string 
 
     const branding =
     {
-        componentName: this.distro.branding,
+        componentName: distro.branding,
         welcomeStyleCalamares: true,
         strings:
         {

@@ -1,36 +1,41 @@
-/* eslint-disable no-console */
 /**
- * penguins-eggs: buster/config.ts
+ * penguins-eggs: buster/calamares-config.ts
  *
  * author: Piero Proietti
  * mail: piero.proietti@gmail.com
  */
 
-import shx = require('shelljs')
-import path = require('path')
 import fs = require('fs')
 import Utils from '../../utils'
 import { IDistro, IOses } from '../../../interfaces'
 const exec = require('../../../lib/utils').exec
 
-class Config {
+/**
+ * 
+ */
+class calamaresConfig {
     verbose = false
 
     distro: IDistro
 
     oses: IOses
 
-    // boolean 
     displaymanager = false
 
+    /**
+     * 
+     * @param distro 
+     * @param oses 
+     * @param verbose 
+     */
     constructor(distro: IDistro, oses: IOses, verbose = false) {
         this.distro = distro
         this.oses = oses
         this.verbose = verbose
-        this.displaymanager = Utils.packageIsInstalled('lightdm') // Crea displaymanager solo per 
+        this.displaymanager = Utils.packageIsInstalled('lightdm') // Crea displaymanager solo per lightdm
     }
 
-    go() {
+    config() {
         // configurazioni generali
         this.createSettings()
         this.createBranding()
@@ -46,6 +51,9 @@ class Config {
         this.moduleKeyboard()
         this.moduleLocalecfg()
         this.moduleUsers()
+        if (this.displaymanager){
+            this.moduleDisplaymanager()
+        }
         this.moduleNetworkcfg()
         this.moduleHwclock()
         this.moduleServicesSystemd()
@@ -54,6 +62,7 @@ class Config {
         this.moduleBootloader()
         this.modulePackages()
         this.moduleLuksbootkeyfile()
+        // Luksopenswaphookcfg()
         this.modulePlymouthcfg()
         this.moduleInitramfscfg()
         this.moduleInitramfs()
@@ -69,7 +78,7 @@ class Config {
         const settings = require('./settings').settings
         const dir = '/etc/calamares/'
         const file = dir + 'settings.conf'
-        const content = settings()
+        const content = settings(this.displaymanager)
         write(file, content, this.verbose)
     }
 
@@ -90,7 +99,7 @@ class Config {
      */
     modulePartition() {
         if (this.verbose) {
-            console.log(`calamares: module partition, nothing to do`)
+            console.log(`calamares: module partition. Nothing to do!`)
         }
     }
 
@@ -98,7 +107,7 @@ class Config {
      * 
      */
     moduleMount() {
-        const mount = require('./modules/mount').branding
+        const mount = require('./modules/mount').mount
         const dir = `/etc/calamares/modules/`
         const file = dir + 'mount.conf'
         const content = mount()
@@ -129,12 +138,12 @@ class Config {
         }
         write(file, content, this.verbose)
 
-        const scriptSourceMedia = require('./scripts/source-media').sourcesMedia
+        const scriptSourcesMedia = require('./scripts/sources-media').sourcesMedia
         const scriptDir = `/sbin/`
         const scriptFile = scriptDir + 'sources-media'
-        const scriptContent = scriptSourceMedia()
-        write(file, content, this.verbose)
-        await exec(`chmod +x ${file}`)
+        const scriptContent = scriptSourcesMedia()
+        write(scriptFile, scriptContent, this.verbose)
+        await exec(`chmod +x ${scriptFile}`)
     }
 
     /**
@@ -164,7 +173,7 @@ class Config {
      */
     moduleLocale() {
         if (this.verbose) {
-            console.log(`calamares: module locale, nothing to do`)
+            console.log(`calamares: module locale. Nothing to do!`)
         }
     }
 
@@ -173,7 +182,7 @@ class Config {
      */
     moduleKeyboard() {
         if (this.verbose) {
-            console.log(`calamares: module keyboard, nothing to do`)
+            console.log(`calamares: module keyboard. Nothing to do!`)
         }
     }
     /**
@@ -181,7 +190,7 @@ class Config {
      */
     moduleLocalecfg() {
         if (this.verbose) {
-            console.log(`calamares: module localecfg, nothing to do`)
+            console.log(`calamares: module localecfg. Nothing to do!`)
         }
     }
 
@@ -199,18 +208,28 @@ class Config {
     /**
      * 
      */
-    moduleNetworkcfg() { 
+    moduleDisplaymanager(){ 
+        const displaymanager = require('./modules/displaymanager').displaymanager
+        const dir = `/etc/calamares/modules/`
+        const file = dir + 'displaymanager.conf'
+        const content = displaymanager()
+        write(file, content, this.verbose)
+    }
+    /**
+     * 
+     */
+    moduleNetworkcfg() {
         if (this.verbose) {
-            console.log(`calamares: module networkcfg, nothing to do`)
+            console.log(`calamares: module networkcfg. Nothing to do!`)
         }
     }
 
     /**
      * 
      */
-    moduleHwclock() { 
+    moduleHwclock() {
         if (this.verbose) {
-            console.log(`calamares: module hwclock, nothing to do`)
+            console.log(`calamares: module hwclock. Nothing to do!`)
         }
     }
 
@@ -218,9 +237,9 @@ class Config {
     /**
      * 
      */
-    moduleServicesSystemd() { 
+    moduleServicesSystemd() {
         if (this.verbose) {
-            console.log(`calamares: module servives-systemd, nothing to do`)
+        console.log(`calamares: module servives-systemd. Nothing to do!`)
         }
     }
 
@@ -241,7 +260,7 @@ class Config {
         const scriptDir = `/sbin/`
         const scriptFile = scriptDir + 'bootloader-config'
         const scriptContent = scriptBootloaderConfig()
-        write(file, content, this.verbose)
+        write(scriptFile, scriptContent, this.verbose)
         await exec(`chmod +x ${scriptFile}`)
     }
 
@@ -250,7 +269,7 @@ class Config {
      */
     moduleGrubcfg() {
         if (this.verbose) {
-            console.log(`calamares: module services-systemd, nothing to do`)
+            console.log(`calamares: module grubcfg. Nothing to do!`)
         }
     }
 
@@ -267,46 +286,116 @@ class Config {
 
 
     /**
-     * 
-     */
-    modulePackages() { }
+   * create module packages.conf
+   */
+    modulePackages() {
+        const packages = require('./modules/packages').packages
+        const dir = `/etc/calamares/modules/`
+        const file = dir + 'packages.conf'
+        const content = packages()
+        write(file, content, this.verbose)
+    }
 
     /**
      * 
      */
-    moduleLuksbootkeyfile() { }
+    moduleLuksbootkeyfile() {
+        if (this.verbose) {
+            console.log(`calamares: module luksbootkeyfile. Nothing to do!`)
+        }
+    }
 
     /**
      * 
      */
-    modulePlymouthcfg() { }
+    moduleLuksopenswaphookcfg() {
+        const lksopenswaphookcfg = require('./modules/lksopenswaphookcfg').lksopenswaphookcfg
+        const dir = `/etc/calamares/modules/`
+        const file = dir + 'lksopenswaphookcfg.conf'
+        const content = lksopenswaphookcfg()
+        write(file, content, this.verbose)
+    }
 
     /**
      * 
      */
-    moduleInitramfscfg() { }
+    modulePlymouthcfg() {
+        if (this.verbose) {
+            console.log(`calamares: module plymouthcfg. Nothing to do!`)
+        }
+    }
 
     /**
      * 
      */
-    moduleInitramfs() { }
+    moduleInitramfscfg() { 
+        if (this.verbose) {
+            console.log(`calamares: module initramfscfg. Nothing to do!`)
+        }
+    }
+
 
     /**
      * 
      */
-    moduleSourcesMediaUnmount() { }
+    moduleInitramfs() {
+        if (this.verbose) {
+            console.log(`calamares: module initramfs. Nothing to do!`)
+        }
+    }
+
 
     /**
      * 
      */
-    moduleSourcesFinal() { }
+    moduleSourcesMediaUnmount() {
+        const sourcesMediaUnmount = require('./calamares-modules/sources-media-unmount').sourcesMediaUnmount
+        const dir = `/usr/lib/calamares/modules/sources-media-unmount/`
+        const file = dir + 'module.desc'
+        const content = sourcesMediaUnmount()
+        if (!fs.existsSync(dir)) {
+            fs.mkdirSync(dir)
+        }
+        write(file, content, this.verbose)
+
+        if (this.verbose) {
+            console.log(`calamares: module source-media-unmount use the same script of source-media. Nothing to do!`)
+        }
+
+    }
 
     /**
      * 
      */
-    moduleUmount() { }
+    async moduleSourcesFinal() { 
+        const sourcesFinal = require('./calamares-modules/sources-final').sourcesFinal
+        const dir = `/usr/lib/calamares/modules/sources-final/`
+        const file = dir + 'module.desc'
+        const content = sourcesFinal()
+        if (!fs.existsSync(dir)) {
+            fs.mkdirSync(dir)
+        }
+        write(file, content, this.verbose)
+
+        const scriptSourcesFinal = require('./scripts/sources-final').sourcesFinal
+        const scriptDir = `/sbin/`
+        const scriptFile = scriptDir + 'sources-final'
+        const scriptContent = scriptSourcesFinal()
+        write(scriptFile, scriptContent, this.verbose)
+        await exec(`chmod +x ${scriptFile}`)
+    }
+
+    /**
+     * 
+     */
+    moduleUmount() { 
+        if (this.verbose) {
+            console.log(`calamares: module unmount. Nothing to do!`)
+        }
+    }
 }
 
+export default calamaresConfig
 
 /**
  * 
