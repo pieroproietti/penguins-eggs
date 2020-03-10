@@ -8,7 +8,7 @@ export function sourcesMedia(): string {
     text += `\n`
     text += `CHROOT=$(mount | grep proc | grep calamares | awk '{print $3}' | sed -e "s#/proc##g")\n`
     text += `MEDIUM_PATH="/run/live/medium"\n`
-    text += `RELEASE="bullseye"\n`
+    text += `RELEASE="buster"\n`
     text += `\n`
     text += `if [ "$1" = "-u" ]; then\n`
     text += `    umount $CHROOT/$MEDIUM_PATH\n`

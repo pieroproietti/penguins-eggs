@@ -1,3 +1,5 @@
+import { tmpdir } from 'os'
+
 /**
  * 
  */
@@ -6,6 +8,14 @@ export function bootloaderConfig(): string {
     text += `#!/bin/bash\n`
     text += `\n`
     text += `CHROOT=$(mount | grep proc | grep calamares | awk '{print $3}' | sed -e "s#/proc##g")\n`
+    text += `\n`
+    text += `# Creo la directory $CHROOT/tmp se mancante \n`
+    text += `TMPDIR=$CHROOT/tmp\n`
+    text += `if [ ! -d $TMPDIR ]; then\n`
+    text += `    echo mkdir $TMPDIR\n`
+    text += `fi\n`
+    text += `# eseguo apt update\n`
+    text += `chroot $CHROOT apt-get -y update`
     text += `\n`
     text += `# Set secure permissions for the initramfs if we're configuring\n`
     text += `# full-disk-encryption. The initramfs is re-generated later in the\n`

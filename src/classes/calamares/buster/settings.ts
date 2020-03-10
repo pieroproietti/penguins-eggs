@@ -13,7 +13,7 @@ import yaml = require('js-yaml')
  * @param displaymanager 
  * @param branding 
  */
-export function settings(displaymanager= false, branding = 'eggs'): string {
+export function settings(displaymanager = false, sourcesMedia = false, sourcesTrusted = true, branding = 'eggs'): string {
   // path di ricerca dei moduli
   const modulesSearch: string [] = []
   modulesSearch.push('local')
@@ -33,7 +33,9 @@ export function settings(displaymanager= false, branding = 'eggs'): string {
   exec.push('partition')
   exec.push('mount')
   exec.push('unpackfs')
-  exec.push('sources-media')
+  if (sourcesMedia){
+    exec.push('sources-media')
+  }
   exec.push('machineid')
   exec.push('fstab')
   exec.push('locale')
@@ -55,8 +57,10 @@ export function settings(displaymanager= false, branding = 'eggs'): string {
   exec.push('initramfscfg')
   exec.push('initramfs')
   exec.push('removeuser')
-  exec.push('sources-media-unmount')
-  exec.push('sources-final')
+  if (sourcesMedia) {
+    exec.push('sources-media-unmount')
+    exec.push('sources-final')
+  }
   exec.push('umount')
   
   const settings = {

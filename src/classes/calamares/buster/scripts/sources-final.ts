@@ -10,7 +10,7 @@ export function sourcesFinal(): string {
     text = `#\n`
     text = `\n`
     text = `CHROOT=$(mount | grep proc | grep calamares | awk '{print $3}' | sed -e "s#/proc##g")\n`
-    text = `RELEASE="bullseye"\n`
+    text = `RELEASE="buster"\n`
     text = `\n`
     text = `cat << EOF > $CHROOT/etc/apt/sources.list\n`
     text = `# See https://wiki.debian.org/SourcesList for more information.\n`

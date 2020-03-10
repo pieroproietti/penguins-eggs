@@ -22,6 +22,10 @@ class calamaresConfig {
 
     displaymanager = false
 
+    sourcesMedia = false
+
+    sourcesTrusted = true
+
     /**
      * 
      * @param distro 
@@ -33,6 +37,7 @@ class calamaresConfig {
         this.oses = oses
         this.verbose = verbose
         this.displaymanager = Utils.packageIsInstalled('lightdm') // Crea displaymanager solo per lightdm
+        this.sourcesMedia = false
     }
 
     config() {
@@ -44,7 +49,12 @@ class calamaresConfig {
         this.modulePartition()
         this.moduleMount()
         this.moduleUnpackfs()
-        this.moduleSourcesMedia()
+        if (this.sourcesMedia) {
+            this.moduleSourcesMedia()
+        }
+        if (this.sourcesTrusted) {
+            this.moduleSourcesTrusted()
+        }
         this.moduleMachineid()
         this.moduleFstab()
         this.moduleLocale()
@@ -66,7 +76,9 @@ class calamaresConfig {
         this.modulePlymouthcfg()
         this.moduleInitramfscfg()
         this.moduleInitramfs()
-        this.moduleSourcesMediaUnmount()
+        if (this.sourcesMedia) {
+            this.moduleSourcesMediaUnmount()
+        }
         this.moduleSourcesFinal()
         this.moduleUmount()
     }
@@ -78,7 +90,7 @@ class calamaresConfig {
         const settings = require('./settings').settings
         const dir = '/etc/calamares/'
         const file = dir + 'settings.conf'
-        const content = settings(this.displaymanager)
+        const content = settings(this.displaymanager, this.sourcesMedia, this.sourcesTrusted)
         write(file, content, this.verbose)
     }
 
@@ -142,6 +154,28 @@ class calamaresConfig {
         const scriptDir = `/sbin/`
         const scriptFile = scriptDir + 'sources-media'
         const scriptContent = scriptSourcesMedia()
+        write(scriptFile, scriptContent, this.verbose)
+        await exec(`chmod +x ${scriptFile}`)
+    }
+
+
+    /**
+     * 
+     */
+    async moduleSourcesTrusted() {
+        const sourcesTrusted = require('./calamares-modules/sources-trusted').sourcesTrusted
+        const dir = `/usr/lib/calamares/modules/sources-trusted/`
+        const file = dir + 'module.desc'
+        const content = sourcesTrusted()
+        if (!fs.existsSync(dir)) {
+            fs.mkdirSync(dir)
+        }
+        write(file, content, this.verbose)
+
+        const scriptSourcesTrusted = require('./scripts/sources-trusted').sourcesTrusted
+        const scriptDir = `/sbin/`
+        const scriptFile = scriptDir + 'sources-trusted'
+        const scriptContent = scriptSourcesTrusted()
         write(scriptFile, scriptContent, this.verbose)
         await exec(`chmod +x ${scriptFile}`)
     }
