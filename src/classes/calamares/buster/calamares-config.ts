@@ -44,29 +44,7 @@ class calamaresConfig {
 
     config() {
         // configurazioni generali
-
-        if (!fs.existsSync('/etc/calamares')){
-            fs.mkdirSync('/etc/calamares')
-        }
-        if (!fs.existsSync('/etc/calamares/branding')){
-            fs.mkdirSync('/etc/calamares/branding')
-        }
-        if (!fs.existsSync('/etc/calamares/branding/eggs')){
-            fs.mkdirSync('/etc/calamares/branding/eggs')
-        }
-        if (!fs.existsSync('/etc/calamares/modules')){
-            fs.mkdirSync('/etc/calamares/modules')
-        }
-        if (!fs.existsSync('/usr/lib/calamares')){
-            fs.mkdirSync('/usr/lib/calamares/')
-        }
-        if (!fs.existsSync('/usr/lib/calamares/modules')){
-            fs.mkdirSync('/usr/lib/calamares/modules')
-        }
-        shx.cp(path.resolve(__dirname, '../../../../assets/calamares/install-debian.desktop'), '/usr/share/applications/install-debian.desktop')
-        shx.cp('-r', path.resolve(__dirname, '../../../../assets/calamares/branding/*'), '/etc/calamares/branding/')
-        shx.cp(path.resolve(__dirname, '../../../../assets/calamares/install-debian'), '/sbin/install-debian')
-
+        this.createCalamaresDirs()
         this.createSettings()
         this.createBranding()
 
@@ -95,7 +73,10 @@ class calamaresConfig {
         this.moduleBootloaderConfig()
         this.moduleGrubcfg()
         this.moduleBootloader()
-        this.modulePackages()
+        /**
+         * tolta la rimozione dei pacchetti da sistemare
+         */
+        // this.modulePackages()
         this.moduleLuksbootkeyfile()
         // Luksopenswaphookcfg()
         this.modulePlymouthcfg()
@@ -108,6 +89,29 @@ class calamaresConfig {
         this.moduleUmount()
     }
 
+    createCalamaresDirs(){
+        if (!fs.existsSync('/etc/calamares')){
+            fs.mkdirSync('/etc/calamares')
+        }
+        if (!fs.existsSync('/etc/calamares/branding')){
+            fs.mkdirSync('/etc/calamares/branding')
+        }
+        if (!fs.existsSync('/etc/calamares/branding/eggs')){
+            fs.mkdirSync('/etc/calamares/branding/eggs')
+        }
+        if (!fs.existsSync('/etc/calamares/modules')){
+            fs.mkdirSync('/etc/calamares/modules')
+        }
+        if (!fs.existsSync('/usr/lib/calamares')){
+            fs.mkdirSync('/usr/lib/calamares/')
+        }
+        if (!fs.existsSync('/usr/lib/calamares/modules')){
+            fs.mkdirSync('/usr/lib/calamares/modules')
+        }
+        shx.cp(path.resolve(__dirname, '../../../../assets/calamares/install-debian.desktop'), '/usr/share/applications/install-debian.desktop')
+        shx.cp('-r', path.resolve(__dirname, '../../../../assets/calamares/branding/*'), '/etc/calamares/branding/')
+        shx.cp(path.resolve(__dirname, '../../../../assets/calamares/install-debian'), '/sbin/install-debian')
+    }
     /**
      * 
      */
