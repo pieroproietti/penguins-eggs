@@ -82,6 +82,7 @@ class calamaresConfig {
         this.modulePlymouthcfg()
         this.moduleInitramfscfg()
         this.moduleInitramfs()
+        this.moduleRemoveuser()
         if (this.sourcesMedia) {
             this.moduleSourcesMediaUnmount()
         }
@@ -89,6 +90,9 @@ class calamaresConfig {
         this.moduleUmount()
     }
 
+    /**
+     * 
+     */
     createCalamaresDirs(){
         if (!fs.existsSync('/etc/calamares')){
             fs.mkdirSync('/etc/calamares')
@@ -397,6 +401,16 @@ class calamaresConfig {
         }
     }
 
+    /**
+     * 
+     */
+    moduleRemoveuser(){
+        const removeuser = require('./modules/removeuser').removeuser
+        const dir = `/etc/calamares/modules/`
+        const file = dir + 'removeuser.conf'
+        const content = removeuser()
+        write(file, content, this.verbose)
+    }
 
     /**
      * 

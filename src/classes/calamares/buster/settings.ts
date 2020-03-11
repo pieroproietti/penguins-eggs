@@ -51,7 +51,10 @@ export function settings(displaymanager = false, sourcesMedia = false, sourcesTr
   exec.push('bootloader-config')
   exec.push('grubcfg')
   exec.push('bootloader')
-  exec.push('packages')
+  /**
+  * tolta la rimozione dei pacchetti da sistemare
+  */
+  //exec.push('packages')
   exec.push('luksbootkeyfile')
   exec.push('plymouthcfg')
   exec.push('initramfscfg')
