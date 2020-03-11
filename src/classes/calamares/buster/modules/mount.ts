@@ -19,28 +19,36 @@ export function mount(): string {
     text += `#   - options (optional) Extra options to pass to mount(8)\n`
     text += `#\n`
     text += `extraMounts:\n`
-    text += `    - device: proc\n`
-    text += `      fs: proc\n`
-    text += `      mountPoint: /proc\n`
-    text += `    - device: sys\n`
-    text += `      mountPoint: /sys\n`
-    text += `    - device: /dev\n`
-    text += `      mountPoint: /dev\n`
-    text += `      options: bind\n`
-    text += `    - device: tmpfs\n`
-    text += `      fs: tmpfs\n`
-    text += `      mountPoint: /run\n`
-    text += `    - device: tmpfs\n`
-    text += `      fs: tmpfs\n`
-    text += `      mountPoint: /tmp\n`
-    text += `    - device: /run/udev\n`
-    text += `      mountPoint: /run/udev\n`
-    text += `      options: bind\n`
+    text += `    - device: proc\n`              //     - device: proc
+    text += `      fs: proc\n`                  //       fs: proc
+    text += `      mountPoint: /proc\n`         //       mountPoint: /proc
+
+    text += `    - device: sys\n`               //  - device: sys
+    text += `      fs: sysfs\n`                 //    fs: sysfs
+    text += `      mountPoint: /sys\n`          //    mountPoint: /sys
+
+    text += `    - device: /dev\n`              //  - device: /dev
+    text += `      mountPoint: /dev\n`          //    mountPoint: /dev
+    text += `      options: bind\n`             //    options: bind
+
+    text += `    - device: /dev/pts\n`          //  - device: /dev
+    text += `      fs: devpts\n`                //    fs: devpts
+    text += `      mountPoint: /dev/pts\n`      //    mountPoint: /dev/pts
+    // mount -t devpts devpts /dev/pts
+
+    text += `    - device: tmpfs\n`             //  - device: tmpfs
+    text += `      fs: tmpfs\n`                 //    fs: tmpfs
+    text += `      mountPoint: /run\n`          //    mountPoint: /run
+
+    text += `    - device: /run/udev\n`         //  - device: /run/udev
+    text += `      mountPoint: /run/udev\n`     //    mountPoint: /run/udev
+    text += `      options: bind\n`             //    options: bind
+
     text += '\n'
-    text += `extraMountsEfi:\n`
-    text += `    - device: efivarfs\n`
-    text += `      fs: efivarfs\n`
-    text += `      mountPoint: /sys/firmware/efi/efivars\n`
+text += `extraMountsEfi:\n`                     //  extraMountsEfi:
+    text += `    - device: efivarfs\n`          //      - device: efivarfs
+    text += `      fs: efivarfs\n`              //        fs: efivarfs
+    text += `      mountPoint: /sys/firmware/efi/efivars\n` // mountPoint: /sys/firmware/efi/efivars
     
     return text
 }
