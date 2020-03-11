@@ -115,6 +115,7 @@ class calamaresConfig {
         shx.cp(path.resolve(__dirname, '../../../../assets/calamares/install-debian.desktop'), '/usr/share/applications/install-debian.desktop')
         shx.cp('-r', path.resolve(__dirname, '../../../../assets/calamares/branding/*'), '/etc/calamares/branding/')
         shx.cp(path.resolve(__dirname, '../../../../assets/calamares/install-debian'), '/sbin/install-debian')
+        shx.cp(path.resolve(__dirname, '../../../../assets/calamares/artwork/install-debian.png'), '/usr/share/icons/install-debian.png')
     }
     /**
      * 

@@ -58,7 +58,9 @@ export default class Prerequisites extends Command {
                   live-boot-initramfs-tools \
                   open-infrastructure-system-config \
                   xterm \
-                  whois', { async: false })
+                  whois \
+                  grub-efi-amd64', { async: false })
+
             /**
              * rimosso 
              * live-config live-config-systemd conflict open-infrastructure-system-config 
