@@ -1,65 +1,18 @@
-/* eslint-disable max-params */
-/* eslint-disable no-console */
 /**
  * penguins-eggs: hatch.js
  *
  * author: Piero Proietti
  * mail: piero.proietti@gmail.com
- * https://codeburst.io/how-to-build-a-command-line-app-in-node-js-using-typescript-google-cloud-functions-and-firebase-4c13b1699a27
  *
  */
 
-/**************************************************
- * Struttura del mio iso
- * boot     -> nn
- * EFI      -> nn
- * isolinux -> tutto per boot isolinux
- * live     -> filesystem.squashfs
- *          -> initrd.img
- *          -> vmlinuz
- ************************************************
- * Struttura iso antiX
- * antiX  ->initrd.gz
- *        ->linuzfs
- *        ->vmlinuz
- * boot   ->grub      -> tutto grub
- *        ->isolinux  -> tutto isolinux
- *        ->syslinux  ->
- *        ->uefi-mt   -> mtest32 mtest64
- *        ->memtest
- * EFI    ->BOOT      ->BOOTia32.efi
- *                    ->BOOTia64.efi
- *                    ->grubx64.efi
- * egg-x64-etc...     ->package.list
- *************************************************
- * Struttura di iso-template
- *************************************************
- * tar xf /usr/lib/iso-template/iso-template.tar.gz
- *************************************************
- * antiX  vuota
- * boot   ->grub      -> tutto grub
- *        ->isolinux  -> tutto isolinux
- *        ->syslinux  ->
- *        ->uefi-mt   -> mtest32 mtest64
- *        ->memtest
- * EFI    ->BOOT      ->BOOTia32.efi
- *                    ->BOOTia64.efi
- *                    ->grubx64.efi
- *************************************************
- * inoltre è presente
- *************************************************
- * template-initrd.gz che pari pari è initrd.gz
- * e dove sta tutto il sistema di menu iniziale
- *************************************************/
-
-import shell = require('shelljs')
 import fs = require('fs')
 import os = require('os')
 import shx = require('shelljs')
 import inquirer = require('inquirer')
 import drivelist = require('drivelist')
 import Utils from './utils'
-import {IDevices, IDevice} from '../interfaces'
+import { IDevices, IDevice } from '../interfaces'
 
 /**
  * hatch, installazione
@@ -96,7 +49,7 @@ export default class Hatching {
   * install
   */
   async install() {
-    const target = '/TARGET'
+    const target = '/tmp/TARGET'
     const devices = {} as IDevices
     devices.root = {} as IDevice
     devices.swap = {} as IDevice
@@ -105,7 +58,7 @@ export default class Hatching {
 
     const aDrives: string[] = []
 
-    drives.forEach((element: {device: string}) => {
+    drives.forEach((element: { device: string }) => {
       aDrives.push(element.device)
     })
     console.log(aDrives)
@@ -153,9 +106,9 @@ export default class Hatching {
    */
   async setTimezone(target: string) {
     let cmd = `chroot ${target} unlink /etc/localtime`
-    shx.exec(cmd, {silent: true})
+    shx.exec(cmd, { silent: true })
     cmd = `chroot ${target} ln -sf /usr/share/zoneinfo/Europe/Rome /etc/localtime`
-    shx.exec(cmd, {silent: true})
+    shx.exec(cmd, { silent: true })
   }
 
   /**
@@ -165,8 +118,7 @@ export default class Hatching {
    * @param newUser
    */
   async autologinConfig(target: string, oldUser = 'live', newUser = 'artisan') {
-    await shx.sed('-i', `autologin-user=${oldUser})`,`autologin-user=${newUser}`, `${target}/etc/lightdm/lightdm.conf`)
-    // await shx.exec(`sed -i "/autologin-user/s/=${oldUser}/=${newUser}/" ${target}/etc/lightdm/lightdm.conf`)
+    shx.sed('-i', `autologin-user=${oldUser})`, `autologin-user=${newUser}`, `${target}/etc/lightdm/lightdm.conf`)
   }
 
   /**
@@ -179,7 +131,7 @@ export default class Hatching {
    * @param workPhone 
    * @param homePhone 
    */
-  async addUser(target = '/TARGET', username = 'live', password = 'evolution', fullName = '', roomNumber = '', workPhone = '', homePhone = '') {
+  async addUser(target = '/tmp/TARGET', username = 'live', password = 'evolution', fullName = '', roomNumber = '', workPhone = '', homePhone = '') {
 
     const cmd = `sudo chroot ${target} adduser ${username}\
                                   --home /home/${username} \
@@ -191,15 +143,15 @@ export default class Hatching {
                                           ${homePhone}"`
 
     console.log(`addUser: ${cmd}`)
-    shell.exec(cmd)
+    shx.exec(cmd)
 
     const cmdPass = `echo ${username}:${password} | chroot ${target} chpasswd `
     console.log(`addUser cmdPass: ${cmdPass}`)
-    shell.exec(cmdPass)
+    shx.exec(cmdPass)
 
     const cmdSudo = `chroot ${target} addgroup ${username} sudo`
     console.log(`addUser cmdSudo: ${cmdSudo}`)
-    shell.exec(cmdSudo)
+    shx.exec(cmdSudo)
   }
 
   /**
@@ -208,12 +160,12 @@ export default class Hatching {
    * @param username 
    * @param newPassword 
    */
-  async changePassword(target = '/TARGET',
+  async changePassword(target = '/tmp/TARGET',
     username = 'live',
     newPassword = 'evolution') {
     const cmd = `echo ${username}:${newPassword} | chroot ${target} chpasswd `
     console.log(`changePassword: ${cmd}`)
-    shell.exec(cmd)
+    shx.exec(cmd)
   }
 
   /**
@@ -223,14 +175,14 @@ export default class Hatching {
   async delUser(username = 'live') {
     const cmd = `deluser ${username}`
     console.log(`delUser: ${cmd}`)
-    shell.exec(cmd)
+    shx.exec(cmd)
   }
 
   /**
    * delUserLive
    */
   async delUserLive(target: string) {
-    shx.exec(`chroot ${target} deluser live`, {silent: true})
+    shx.exec(`chroot ${target} deluser live`, { silent: true })
   }
 
   /**
@@ -241,11 +193,11 @@ export default class Hatching {
   async patchPve(target: string) {
     // patch per apache2
     await shx.exec(`chroot ${target} mkdir /var/log/apache2`)
-    await shx.exec(`chroot ${target} mkdir /var/log/pveproxy`, {silent: true})
-    await shx.exec(`chroot ${target} touch /var/log/pveproxy/access.log`, {silent: true})
-    await shx.exec(`chroot ${target} chown www-data:www-data /var/log/pveproxy -R`, {silent: true})
-    await shx.exec(`chroot ${target} chmod 0664 /var/log/pveproxy/access.log`, {silent: true})
-    await shx.exec(`chroot ${target} dpkg-reconfigure openssh-server`, {silent: true})
+    await shx.exec(`chroot ${target} mkdir /var/log/pveproxy`, { silent: true })
+    await shx.exec(`chroot ${target} touch /var/log/pveproxy/access.log`, { silent: true })
+    await shx.exec(`chroot ${target} chown www-data:www-data /var/log/pveproxy -R`, { silent: true })
+    await shx.exec(`chroot ${target} chmod 0664 /var/log/pveproxy/access.log`, { silent: true })
+    await shx.exec(`chroot ${target} dpkg-reconfigure openssh-server`, { silent: true })
   }
 
   /**
@@ -255,9 +207,9 @@ export default class Hatching {
    */
   async grubInstall(target: string, options: any) {
     console.log('grub-install')
-    await shx.exec(`chroot ${target} grub-install ${options.installationDevice}`, {silent: true})
+    await shx.exec(`chroot ${target} grub-install ${options.installationDevice}`, { silent: true })
     console.log('update-grub')
-    await shx.exec(`chroot ${target} update-grub`, {silent: true})
+    await shx.exec(`chroot ${target} update-grub`, { silent: true })
   }
 
   /**
@@ -266,7 +218,7 @@ export default class Hatching {
    */
   async updateInitramfs(target: string) {
     console.log('update-initramfs/n')
-    await shx.exec(`chroot ${target}  update-initramfs -u -k $(uname -r)`, {silent: true})
+    await shx.exec(`chroot ${target}  update-initramfs -u -k $(uname -r)`, { silent: true })
   }
 
   /**
@@ -275,11 +227,11 @@ export default class Hatching {
    */
   async mountVFS(target: string) {
     console.log('mount VFS')
-    await shx.exec(`mount -o bind /dev ${target}/dev`, {silent: true})
-    await shx.exec(`mount -o bind /devpts ${target}/dev/pts`, {silent: true})
-    await shx.exec(`mount -o bind /proc ${target}/proc`, {silent: true})
-    await shx.exec(`mount -o bind /sys ${target}/sys`, {silent: true})
-    await shx.exec(`mount -o bind /run ${target}/run`, {silent: true})
+    await shx.exec(`mount -o bind /dev ${target}/dev`, { silent: true })
+    await shx.exec(`mount -o bind /devpts ${target}/dev/pts`, { silent: true })
+    await shx.exec(`mount -o bind /proc ${target}/proc`, { silent: true })
+    await shx.exec(`mount -o bind /sys ${target}/sys`, { silent: true })
+    await shx.exec(`mount -o bind /run ${target}/run`, { silent: true })
   }
 
   /**
@@ -288,16 +240,16 @@ export default class Hatching {
    */
   async umountVFS(target: string) {
     console.log('umount VFS')
-    await shx.exec(`umount ${target}/dev/pts`, {silent: true})
-    await shx.exec('sleep 1', {silent: true})
-    await shx.exec(`umount ${target}/dev`, {silent: true})
-    await shx.exec('sleep 1', {silent: true})
-    await shx.exec(`umount ${target}/proc`, {silent: true})
-    await shx.exec('sleep 1', {silent: true})
-    await shx.exec(`umount ${target}/sys`, {silent: true})
-    await shx.exec('sleep 1', {silent: true})
-    await shx.exec(`umount ${target}/run`, {silent: true})
-    await shx.exec('sleep 1', {silent: true})
+    await shx.exec(`umount ${target}/dev/pts`, { silent: true })
+    await shx.exec('sleep 1', { silent: true })
+    await shx.exec(`umount ${target}/dev`, { silent: true })
+    await shx.exec('sleep 1', { silent: true })
+    await shx.exec(`umount ${target}/proc`, { silent: true })
+    await shx.exec('sleep 1', { silent: true })
+    await shx.exec(`umount ${target}/sys`, { silent: true })
+    await shx.exec('sleep 1', { silent: true })
+    await shx.exec(`umount ${target}/run`, { silent: true })
+    await shx.exec('sleep 1', { silent: true })
   }
 
   /**
@@ -321,7 +273,6 @@ export default class Hatching {
 ${devices.root.device} ${devices.root.mountPoint} ${devices.root.fsType} ${mountOptsRoot}
 ${devices.swap.device} ${devices.swap.mountPoint} ${devices.swap.fsType} ${mountOptsSwap}`
     fs.writeFileSync(file, text)
-    // Utils.write(file, text)
   }
 
   /**
@@ -333,7 +284,7 @@ ${devices.swap.device} ${devices.swap.mountPoint} ${devices.swap.fsType} ${mount
     const file = `${target}/etc/hostname`
     const text = options.hostname
 
-    shx.exec(`rm ${target}/etc/hostname`, {silent: true})
+    shx.exec(`rm ${target}/etc/hostname`, { silent: true })
     fs.writeFileSync(file, text)
   }
 
@@ -425,7 +376,6 @@ ff02::3 ip6-allhosts
     f += ' --filter="- /swapfile"'
     f += ' --filter="- /sys/*"'
     f += ' --filter="- /tmp/*"'
-    f += ' --filter="- /TARGET"'
 
     // boot
     f += ' --filter="- /boot/grub/device.map"'
@@ -468,7 +418,7 @@ ff02::3 ip6-allhosts
     console.log('==========================================')
     console.log('egg2system: copyng...')
     console.log('==========================================')
-    shell.exec(cmd.trim(), {
+    shx.exec(cmd.trim(), {
       async: false,
     })
   }
@@ -476,16 +426,16 @@ ff02::3 ip6-allhosts
   async mkfs(devices: IDevices): Promise<boolean> {
     const result = true
     // devices.root.fsType=`ext4`
-    await shx.exec(`mkfs -t ${devices.root.fsType} ${devices.root.device}`, {silent: true})
-    await shx.exec(`mkswap ${devices.swap.device}`, {silent: true})
+    await shx.exec(`mkfs -t ${devices.root.fsType} ${devices.root.device}`, { silent: true })
+    await shx.exec(`mkswap ${devices.swap.device}`, { silent: true })
     return result
   }
 
   async mount4target(target: string, devices: IDevices): Promise<boolean> {
-    await shx.exec(`mkdir ${target}`, {silent: true})
-    await shx.exec(`mount ${devices.root.device} ${target}`, {silent: true})
-    await shx.exec(`tune2fs -c 0 -i 0 ${devices.root.device}`, {silent: true})
-    await shx.exec(`rm -rf ${target}/lost+found`, {silent: true})
+    await shx.exec(`mkdir ${target}`, { silent: true })
+    await shx.exec(`mount ${devices.root.device} ${target}`, { silent: true })
+    await shx.exec(`tune2fs -c 0 -i 0 ${devices.root.device}`, { silent: true })
+    await shx.exec(`rm -rf ${target}/lost+found`, { silent: true })
 
     return true
   }
@@ -493,24 +443,51 @@ ff02::3 ip6-allhosts
   async umount4target(target: string, devices: IDevices): Promise<boolean> {
     console.log('umount4target')
 
-    await shx.exec(`umount ${devices.root.device} ${target}`, {silent: true})
-    await shx.exec('sleep 1', {silent: true})
+    await shx.exec(`umount ${devices.root.device} ${target}`, { silent: true })
+    await shx.exec('sleep 1', { silent: true })
     return true
   }
 
+  /**
+   * 
+   * @param device 
+   */
   async diskPartition(device: string) {
-    await shx.exec(`parted --script ${device} mklabel msdos`, {silent: true})
-    await shx.exec(`parted --script --align optimal ${device} mkpart primary 1MiB 95%`, {silent: true})
-    await shx.exec(`parted --script ${device} set 1 boot on`, {silent: true})
-    await shx.exec(`parted --script --align optimal ${device} mkpart primary 95% 100%`, {silent: true})
+    shx.exec(`parted --script ${device} mklabel msdos`, { silent: true })
+    shx.exec(`parted --script --align optimal ${device} mkpart primary 1MiB 95%`, { silent: true })
+    shx.exec(`parted --script ${device} set 1 boot on`, { silent: true })
+    shx.exec(`parted --script --align optimal ${device} mkpart primary 95% 100%`, { silent: true })
     return true
   }
 
+  /**
+ * 
+ * @param device 
+ */
+  /**
+   *   /dev/sda1      4096   618495   614400  300M EFI System (flag= boot esp)
+   *   /dev/sda2    618496 49333417 48714922 23,2G Linux filesystem
+   *   /dev/sda3  49333418 67103504 17770087  8,5G Linux swap
+   */
+  async diskPartitionGpt(device: string) {
+    shx.exec(`parted --script ${device} mklabel gpt mkpart primary 0% 1% mkpart primary 1% 95% mkpart primary 95% 100%`)
+    shx.exec(`parted --script --align optimal ${device} mkpart primary 0% 1%`, { silent: true })
+    shx.exec(`parted --script ${device} set 1 boot on`, { silent: true })
+    shx.exec(`parted --script ${device} set 1 esp on`, { silent: true })
+    shx.exec(`parted --script --align optimal ${device} mkpart primary 1% 95%`, { silent: true })
+    shx.exec(`parted --script --align optimal ${device} mkpart primary 95% 100%`, { silent: true })
+  }
+
+  
+  /**
+   * 
+   * @param device 
+   */
   async isRotational(device: string): Promise<boolean> {
     let response: any
     let retVal = false
 
-    response = await shx.exec(`cat /sys/block/${device}/queue/rotational`, {silent: true})
+    response = await shx.exec(`cat /sys/block/${device}/queue/rotational`, { silent: true })
     if (response == '1') {
       retVal = true
     }
@@ -525,7 +502,7 @@ ff02::3 ip6-allhosts
     let response: string
     let bytes: number
 
-    response = await shx.exec(`parted -s ${device} unit b print free | grep Free | awk '{print $3}' | cut -d "M" -f1`, {silent: true})
+    response = shx.exec(`parted -s ${device} unit b print free | grep Free | awk '{print $3}' | cut -d "M" -f1`, { silent: true })
     response = response.replace('B', '').trim()
     bytes = Number(response)
     return bytes
