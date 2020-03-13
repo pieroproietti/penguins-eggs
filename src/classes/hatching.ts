@@ -70,9 +70,11 @@ export default class Hatching {
     devices.root.device = `${options.installationDevice}1`
     devices.efi.fsType = 'fat32'
     devices.efi.mountPoint = '/boot/efi'
+
     devices.root.device = `${options.installationDevice}2`
     devices.root.fsType = 'ext4'
     devices.root.mountPoint = '/'
+
     devices.swap.device = `${options.installationDevice}3`
     devices.swap.fsType = 'swap'
     devices.swap.mountPoint = 'none'
@@ -491,11 +493,11 @@ ff02::3 ip6-allhosts
    */
   diskPartitionGpt(device: string): boolean {
     shx.exec(`parted --script ${device} mklabel gpt mkpart primary 0% 1% mkpart primary 1% 95% mkpart primary 95% 100%`)
-    shx.exec(`parted --script --align optimal ${device} mkpart primary 0% 1%`, { silent: true })
+    // shx.exec(`parted --script --align optimal ${device} mkpart primary 0% 1%`, { silent: true })
     shx.exec(`parted --script ${device} set 1 boot on`, { silent: true })
     shx.exec(`parted --script ${device} set 1 esp on`, { silent: true })
-    shx.exec(`parted --script --align optimal ${device} mkpart primary 1% 95%`, { silent: true })
-    shx.exec(`parted --script --align optimal ${device} mkpart primary 95% 100%`, { silent: true })
+    // shx.exec(`parted --script --align optimal ${device} mkpart primary 1% 95%`, { silent: true })
+    // shx.exec(`parted --script --align optimal ${device} mkpart primary 95% 100%`, { silent: true })
     return true
   }
 
