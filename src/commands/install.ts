@@ -30,15 +30,13 @@ export default class Install extends Command {
 
     const {flags} = this.parse(Install)
 
-
-    let cmd = 'cli-installer'
     if (Utils.isRoot()) {
-
       if (flags.gui) {
         shx.exec('calamares')
       } else {
         const hatching = new Hatching()
-        hatching.question()
+        // hatching.question()
+        hatching.install()
       }
     }
   }

@@ -19,7 +19,6 @@ import { IDevices, IDevice } from '../interfaces'
  */
 export default class Hatching {
   constructor() {
-    console.log('constructor di hatching')
   }
 
   /**
@@ -61,7 +60,7 @@ export default class Hatching {
     drives.forEach((element: { device: string }) => {
       aDrives.push(element.device)
     })
-    console.log(aDrives)
+    // console.log(aDrives)
 
     const varOptions: any = await this.getOptions(aDrives)
     const options: any = JSON.parse(varOptions)
@@ -76,7 +75,7 @@ export default class Hatching {
     const diskSize = this.getDiskSize(options.installationDevice)
     console.log(`diskSize: ${diskSize}`)
 
-    const isDiskPrepared: boolean = await this.diskPartition(options.installationDevice)
+    const isDiskPrepared: boolean = await this.diskPartitionGpt(options.installationDevice)
     if (isDiskPrepared) {
       await this.mkfs(devices)
       await this.mount4target(target, devices)
@@ -469,13 +468,14 @@ ff02::3 ip6-allhosts
    *   /dev/sda2    618496 49333417 48714922 23,2G Linux filesystem
    *   /dev/sda3  49333418 67103504 17770087  8,5G Linux swap
    */
-  async diskPartitionGpt(device: string) {
+  diskPartitionGpt(device: string): boolean {
     shx.exec(`parted --script ${device} mklabel gpt mkpart primary 0% 1% mkpart primary 1% 95% mkpart primary 95% 100%`)
     shx.exec(`parted --script --align optimal ${device} mkpart primary 0% 1%`, { silent: true })
     shx.exec(`parted --script ${device} set 1 boot on`, { silent: true })
     shx.exec(`parted --script ${device} set 1 esp on`, { silent: true })
     shx.exec(`parted --script --align optimal ${device} mkpart primary 1% 95%`, { silent: true })
     shx.exec(`parted --script --align optimal ${device} mkpart primary 95% 100%`, { silent: true })
+    return true
   }
 
   
