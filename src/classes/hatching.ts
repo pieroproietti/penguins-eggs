@@ -50,6 +50,8 @@ export default class Hatching {
   async install() {
     const target = '/tmp/TARGET'
     const devices = {} as IDevices
+
+    devices.uefi = {} as IDevice
     devices.root = {} as IDevice
     devices.swap = {} as IDevice
 
@@ -66,6 +68,9 @@ export default class Hatching {
     const options: any = JSON.parse(varOptions)
 
     devices.root.device = `${options.installationDevice}1`
+    devices.root.fsType = 'fat32'
+    devices.root.mountPoint = '/boot/efi'
+    devices.root.device = `${options.installationDevice}2`
     devices.root.fsType = 'ext4'
     devices.root.mountPoint = '/'
     devices.swap.device = `${options.installationDevice}2`
