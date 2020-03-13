@@ -70,7 +70,7 @@ export default class Hatching {
     devices.root.device = `${options.installationDevice}1`
     devices.efi.fsType = 'fat32'
     devices.efi.mountPoint = '/boot/efi'
-    devices.efi.device = `${options.installationDevice}2`
+    devices.root.device = `${options.installationDevice}2`
     devices.root.fsType = 'ext4'
     devices.root.mountPoint = '/'
     devices.swap.device = `${options.installationDevice}3`
