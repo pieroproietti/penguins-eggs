@@ -13,6 +13,7 @@ import inquirer = require('inquirer')
 import drivelist = require('drivelist')
 import Utils from './utils'
 import { IDevices, IDevice } from '../interfaces'
+const exec  = require('../lib/utils').exec
 
 /**
  * hatch, installazione
@@ -24,7 +25,12 @@ export default class Hatching {
   /**
    * question
    */
-  async question() {
+  async question(verbose) {
+    let echo = Utils.setEcho(verbose)
+    if (verbose) {
+      console.log('hatching: question')
+    }
+
     const msg1 = '\nThe process of installation will format your disk and destroy all datas on it.\n Did You are sure?\n'
     const msg2 = '\nWe need to be absolutely sure, did You saved your data before to proced?\n'
     const msg3 = '\nConfirm you want to continue?\n'
@@ -47,7 +53,12 @@ export default class Hatching {
   /**
   * install
   */
-  async install() {
+  async install(verbose = false) {
+    let echo = Utils.setEcho(verbose)
+    if (verbose) {
+      console.log('hatching: install')
+    }
+
     const target = '/tmp/TARGET'
     const devices = {} as IDevices
 
@@ -110,7 +121,12 @@ export default class Hatching {
    * setTimezone
    * @param target
    */
-  async setTimezone(target: string) {
+  async setTimezone(target: string, verbose = false) {
+    let echo = Utils.setEcho(verbose)
+    if (verbose) {
+      console.log('hatching: setTimezone')
+    }
+
     let cmd = `chroot ${target} unlink /etc/localtime`
     shx.exec(cmd, { silent: true })
     cmd = `chroot ${target} ln -sf /usr/share/zoneinfo/Europe/Rome /etc/localtime`
@@ -123,7 +139,12 @@ export default class Hatching {
    * @param oldUser
    * @param newUser
    */
-  async autologinConfig(target: string, oldUser = 'live', newUser = 'artisan') {
+  async autologinConfig(target: string, oldUser = 'live', newUser = 'artisan', verbose = false) {
+    let echo = Utils.setEcho(verbose)
+    if (verbose) {
+      console.log('hatching: autoLoginConfig')
+    }
+
     shx.sed('-i', `autologin-user=${oldUser})`, `autologin-user=${newUser}`, `${target}/etc/lightdm/lightdm.conf`)
   }
 
@@ -137,7 +158,12 @@ export default class Hatching {
    * @param workPhone 
    * @param homePhone 
    */
-  async addUser(target = '/tmp/TARGET', username = 'live', password = 'evolution', fullName = '', roomNumber = '', workPhone = '', homePhone = '') {
+  async addUser(target = '/tmp/TARGET', username = 'live', password = 'evolution', fullName = '', roomNumber = '', workPhone = '', homePhone = '', verbose = false) {
+    let echo = Utils.setEcho(verbose)
+    if (verbose) {
+      console.log('hatching: addUser')
+    }
+
 
     const cmd = `sudo chroot ${target} adduser ${username}\
                                   --home /home/${username} \
@@ -153,7 +179,7 @@ export default class Hatching {
 
     const cmdPass = `echo ${username}:${password} | chroot ${target} chpasswd `
     console.log(`addUser cmdPass: ${cmdPass}`)
-    shx.exec(cmdPass)
+    await exec(cmdPass, echo)
 
     const cmdSudo = `chroot ${target} addgroup ${username} sudo`
     console.log(`addUser cmdSudo: ${cmdSudo}`)
@@ -166,9 +192,12 @@ export default class Hatching {
    * @param username 
    * @param newPassword 
    */
-  async changePassword(target = '/tmp/TARGET',
-    username = 'live',
-    newPassword = 'evolution') {
+  async changePassword(target = '/tmp/TARGET', username = 'live', newPassword = 'evolution', verbose = false) {
+    let echo = Utils.setEcho(verbose)
+    if (verbose) {
+      console.log('hatching: changePassword')
+    }
+
     const cmd = `echo ${username}:${newPassword} | chroot ${target} chpasswd `
     console.log(`changePassword: ${cmd}`)
     shx.exec(cmd)
@@ -178,7 +207,12 @@ export default class Hatching {
    * delete username
    * @param username 
    */
-  async delUser(username = 'live') {
+  async delUser(username = 'live', verbose = false) {
+    let echo = Utils.setEcho(verbose)
+    if (verbose) {
+      console.log('hatching: delUser')
+    }
+
     const cmd = `deluser ${username}`
     console.log(`delUser: ${cmd}`)
     shx.exec(cmd)
@@ -187,7 +221,12 @@ export default class Hatching {
   /**
    * delUserLive
    */
-  async delUserLive(target: string) {
+  async delUserLive(target: string, verbose= false) {
+    let echo = Utils.setEcho(verbose)
+    if (verbose) {
+      console.log('hatching: delUserLive')
+    }
+
     shx.exec(`chroot ${target} deluser live`, { silent: true })
   }
 
@@ -196,7 +235,12 @@ export default class Hatching {
    *          e che ricrea i codici di ssh della macchina
    * @param target
    */
-  async patchPve(target: string) {
+  async patchPve(target: string, verbose = false) {
+    let echo = Utils.setEcho(verbose)
+    if (verbose) {
+      console.log('hatching: patchPve')
+    }
+
     // patch per apache2
     await shx.exec(`chroot ${target} mkdir /var/log/apache2`)
     await shx.exec(`chroot ${target} mkdir /var/log/pveproxy`, { silent: true })
@@ -211,7 +255,12 @@ export default class Hatching {
    * @param target
    * @param options
    */
-  async grubInstall(target: string, options: any) {
+  async grubInstall(target: string, options: any, verbose = false) {
+    let echo = Utils.setEcho(verbose)
+    if (verbose) {
+      console.log('hatching: grubInstall')
+    }
+
     console.log('grub-install')
     await shx.exec(`chroot ${target} grub-install ${options.installationDevice}`, { silent: true })
     console.log('update-grub')
@@ -222,7 +271,12 @@ export default class Hatching {
    * updateInitramfs()
    * @param target
    */
-  async updateInitramfs(target: string) {
+  async updateInitramfs(target: string, verbose = false) {
+    let echo = Utils.setEcho(verbose)
+    if (verbose) {
+      console.log('hatching: updateInitramfs')
+    }
+
     console.log('update-initramfs/n')
     shx.exec(`chroot ${target}  update-initramfs -u -k $(uname -r)`, { silent: true })
   }
@@ -231,7 +285,12 @@ export default class Hatching {
    * mountVFS()
    * @param target
    */
-  async mountVFS(target: string) {
+  async mountVFS(target: string, verbose = false) {
+    let echo = Utils.setEcho(verbose)
+    if (verbose) {
+      console.log('hatching: mountVFS')
+    }
+
     console.log('mount VFS')
     shx.exec(`mount -o bind /dev ${target}/dev`, { silent: true })
     shx.exec(`mount -o bind /devpts ${target}/dev/pts`, { silent: true })
@@ -244,7 +303,12 @@ export default class Hatching {
    * umountVFS()
    * @param target
    */
-  async umountVFS(target: string) {
+  async umountVFS(target: string, verbose = false) {
+    let echo = Utils.setEcho(verbose)
+    if (verbose) {
+      console.log('hatching: umountVFS')
+    }
+
     console.log('umount VFS')
     shx.exec(`umount ${target}/dev/pts`, { silent: true })
     shx.exec('sleep 1', { silent: true })
@@ -263,7 +327,12 @@ export default class Hatching {
    * @param target
    * @param devices
    */
-  async fstab(target: string, devices: IDevices, installDevice: string) {
+  async fstab(target: string, devices: IDevices, installDevice: string, verbose = false) {
+    let echo = Utils.setEcho(verbose)
+    if (verbose) {
+      console.log('hatching: fstab')
+    }
+
     const file = `${target}/etc/fstab`
     let mountOptsRoot = ''
     let mountOptsSwap = ''
@@ -286,7 +355,12 @@ ${devices.swap.device} ${devices.swap.mountPoint} ${devices.swap.fsType} ${mount
    * @param target
    * @param options
    */
-  async hostname(target: string, options: any) {
+  async hostname(target: string, options: any, verbose = false) {
+    let echo = Utils.setEcho(verbose)
+    if (verbose) {
+      console.log('hatching: hostname')
+    }
+
     const file = `${target}/etc/hostname`
     const text = options.hostname
 
@@ -299,7 +373,12 @@ ${devices.swap.device} ${devices.swap.mountPoint} ${devices.swap.fsType} ${mount
    * @param target
    * @param options
    */
-  async resolvConf(target: string, options: any) {
+  async resolvConf(target: string, options: any, verbose = false) {
+    let echo = Utils.setEcho(verbose)
+    if (verbose) {
+      console.log('hatching: resolvConf')
+    }
+
     console.log(`tipo di resolv.con: ${options.netAddressType}`)
     if (options.netAddressType === 'static') {
       const file = `${target}/etc/resolv.conf`
@@ -322,7 +401,12 @@ nameserver 8.8.4.4
    * @param target
    * @param options
    */
-  async interfaces(target: string, options: any) {
+  async interfaces(target: string, options: any, verbose = false) {
+    let echo = Utils.setEcho(verbose)
+    if (verbose) {
+      console.log('hatching: interfaces')
+    }
+
     if (options.netAddressType === 'static') {
       const file = `${target}/etc/network/interfaces`
       const text = `\
@@ -343,7 +427,12 @@ iface ${options.netInterface} inet ${options.netAddressType}
    * @param target
    * @param options
    */
-  async hosts(target: string, options: any) {
+  async hosts(target: string, options: any, verbose = false) {
+    let echo = Utils.setEcho(verbose)
+    if (verbose) {
+      console.log('hatching: hosts')
+    }
+
     const file = `${target}/etc/hosts`
     let text = '127.0.0.1 localhost localhost.localdomain'
     if (options.netAddressType === 'static') {
@@ -369,7 +458,12 @@ ff02::3 ip6-allhosts
    * rsync()
    * @param target
    */
-  async egg2system(target: string): Promise<void> {
+  async egg2system(target: string, verbose = false): Promise<void> {
+    let echo = Utils.setEcho(verbose)
+    if (verbose) {
+      console.log('hatching: egg2system')
+    }
+
     let cmd = ''
     let f = ''
     f += ' --filter="- /cdrom/*"'
@@ -433,7 +527,12 @@ ff02::3 ip6-allhosts
    * 
    * @param devices 
    */
-  mkfs(devices: IDevices): boolean {
+  mkfs(devices: IDevices, verbose = false): boolean {
+    let echo = Utils.setEcho(verbose)
+    if (verbose) {
+      console.log('hatching: mkfs')
+    }
+
     const result = true
 
     shx.exec(`mkfs -t ${devices.efi.fsType} ${devices.efi.device}`, { silent: false })
@@ -447,7 +546,12 @@ ff02::3 ip6-allhosts
    * @param target 
    * @param devices 
    */
-  mount4target(target: string, devices: IDevices): boolean {
+  mount4target(target: string, devices: IDevices, verbose = false): boolean {
+    let echo = Utils.setEcho(verbose)
+    if (verbose) {
+      console.log('hatching: mount4target')
+    }
+
     shx.exec(`mkdir ${target}`, { silent: false })
     shx.exec(`mount ${devices.root.device} ${target}${devices.root.mountPoint}`, { silent: false })
     shx.exec(`tune2fs -c 0 -i 0 ${devices.root.device}`, { silent: false })
@@ -462,7 +566,12 @@ ff02::3 ip6-allhosts
    * @param target 
    * @param devices 
    */
-  umount4target(target: string, devices: IDevices): boolean {
+  umount4target(target: string, devices: IDevices, verbose = false): boolean {
+    let echo = Utils.setEcho(verbose)
+    if (verbose) {
+      console.log('hatching: umount4target')
+    }
+    
     shx.exec(`umount ${devices.efi.device} ${target}${devices.efi.mountPoint}`, { silent: false })
     shx.exec(`umount ${devices.root.device} ${target}`, { silent: false })
     shx.exec('sleep 1', { silent: false })
@@ -473,7 +582,12 @@ ff02::3 ip6-allhosts
    * 
    * @param device 
    */
-  diskPartition(device: string) : boolean  {
+  diskPartition(device: string, verbose = false) : boolean  {
+    let echo = Utils.setEcho(verbose)
+    if (verbose) {
+      console.log('hatching: diskPartition')
+    }
+
     shx.exec(`parted --script ${device} mklabel msdos`, { silent: true })
     shx.exec(`parted --script --align optimal ${device} mkpart primary 1MiB 95%`, { silent: true })
     shx.exec(`parted --script ${device} set 1 boot on`, { silent: true })
@@ -490,7 +604,12 @@ ff02::3 ip6-allhosts
    *   /dev/sda2    618496 49333417 48714922 23,2G Linux filesystem
    *   /dev/sda3  49333418 67103504 17770087  8,5G Linux swap
    */
-  diskPartitionGpt(device: string): boolean {
+  diskPartitionGpt(device: string, verbose = false): boolean {
+    let echo = Utils.setEcho(verbose)
+    if (verbose) {
+      console.log('hatching: distPartitionGpt')
+    }
+
     shx.exec(`parted --script ${device} mklabel gpt mkpart primary 0% 1% mkpart primary 1% 95% mkpart primary 95% 100%`, {silent: false})
     // shx.exec(`parted --script --align optimal ${device} mkpart primary 0% 1%`, { silent: true })
     shx.exec(`parted --script ${device} set 1 boot on`, { silent: false })
@@ -505,7 +624,12 @@ ff02::3 ip6-allhosts
    * 
    * @param device 
    */
-  async isRotational(device: string): Promise<boolean> {
+  async isRotational(device: string, verbose = false): Promise<boolean> {
+    let echo = Utils.setEcho(verbose)
+    if (verbose) {
+      console.log('hatching: isRotational')
+    }
+
     let response: any
     let retVal = false
 
@@ -520,7 +644,12 @@ ff02::3 ip6-allhosts
    *
    * @param device
    */
-  async getDiskSize(device: string): Promise<number> {
+  async getDiskSize(device: string, verbose = false): Promise<number> {
+    let echo = Utils.setEcho(verbose)
+    if (verbose) {
+      console.log('hatching: getDiskSize')
+    }
+
     let response: string
     let bytes: number
 
@@ -534,7 +663,12 @@ ff02::3 ip6-allhosts
    *
    * @param msg
    */
-  customConfirm(msg: string): Promise<any> {
+  customConfirm(msg: string, verbose = false): Promise<any> {
+    let echo = Utils.setEcho(verbose)
+    if (verbose) {
+      console.log('hatching: customConfirm')
+    }
+
     return new Promise(function (resolve) {
       const questions: Array<Record<string, any>> = [
         {
@@ -556,7 +690,12 @@ ff02::3 ip6-allhosts
    *
    * @param driveList
    */
-  async getOptions(driveList: string[]): Promise<any> {
+  async getOptions(driveList: string[], verbose = false): Promise<any> {
+    let echo = Utils.setEcho(verbose)
+    if (verbose) {
+      console.log('hatching: getOptions')
+    }
+
     return new Promise(function (resolve) {
       const questions: Array<Record<string, any>> = [
         {
