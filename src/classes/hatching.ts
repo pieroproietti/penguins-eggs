@@ -80,10 +80,11 @@ export default class Hatching {
     const diskSize = this.getDiskSize(options.installationDevice)
     console.log(`diskSize: ${diskSize}`)
 
-    const isDiskPrepared: boolean = await this.diskPartitionGpt(options.installationDevice)
+    const isDiskPrepared: boolean = this.diskPartitionGpt(options.installationDevice)
     if (isDiskPrepared) {
       await this.mkfs(devices)
       await this.mount4target(target, devices)
+      process.exit(0)
       await this.egg2system(target)
       await this.setTimezone(target)
       await this.fstab(target, devices, options.installationDevice)
@@ -436,11 +437,11 @@ ff02::3 ip6-allhosts
   }
 
   async mount4target(target: string, devices: IDevices): Promise<boolean> {
-    await shx.exec(`mkdir ${target}`, { silent: true })
-    await shx.exec(`mount ${devices.root.device} ${target}`, { silent: true })
-    await shx.exec(`tune2fs -c 0 -i 0 ${devices.root.device}`, { silent: true })
-    await shx.exec(`rm -rf ${target}/lost+found`, { silent: true })
-
+    shx.exec(`mkdir ${target}`, { silent: true })
+    shx.exec(`mount ${devices.efi.device} ${target}`, { silent: true })
+    shx.exec(`mount ${devices.root.device} ${target}`, { silent: true })
+    shx.exec(`tune2fs -c 0 -i 0 ${devices.root.device}`, { silent: true })
+    shx.exec(`rm -rf ${target}/lost+found`, { silent: true })
     return true
   }
 

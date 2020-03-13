@@ -11,7 +11,7 @@ export interface IDevice {
 }
 
 export interface IDevices {
-    uefi: IDevice;
+    efi: IDevice;
     root: IDevice;
     swap: IDevice;
 }
