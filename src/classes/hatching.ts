@@ -430,27 +430,27 @@ ff02::3 ip6-allhosts
 
   async mkfs(devices: IDevices): Promise<boolean> {
     const result = true
-    // devices.root.fsType=`ext4`
-    await shx.exec(`mkfs -t ${devices.root.fsType} ${devices.root.device}`, { silent: true })
-    await shx.exec(`mkswap ${devices.swap.device}`, { silent: true })
+
+    shx.exec(`mkfs -t ${devices.efi.fsType} ${devices.efi.device}`, { silent: false })
+    shx.exec(`mkfs -t ${devices.root.fsType} ${devices.root.device}`, { silent: false })
+    shx.exec(`mkswap ${devices.swap.device}`, { silent: true })
     return result
   }
 
   async mount4target(target: string, devices: IDevices): Promise<boolean> {
     shx.exec(`mkdir ${target}`, { silent: true })
     shx.exec(`mount ${devices.root.device} ${target}${devices.root.mountPoint}`, { silent: true })
-    shx.exec(`mkdir ${target}${devices.efi.mountPoint} -p`)
     shx.exec(`tune2fs -c 0 -i 0 ${devices.root.device}`, { silent: true })
+    shx.exec(`mkdir ${target}${devices.efi.mountPoint} -p`)
     shx.exec(`mount ${devices.efi.device} ${target}${devices.efi.mountPoint}`, { silent: false })
     shx.exec(`rm -rf ${target}/lost+found`, { silent: true })
     return true
   }
 
   async umount4target(target: string, devices: IDevices): Promise<boolean> {
-    console.log('umount4target')
-
-    await shx.exec(`umount ${devices.root.device} ${target}`, { silent: true })
-    await shx.exec('sleep 1', { silent: true })
+    shx.exec(`umount ${devices.efi.device} ${target}${devices.efi.mountPoint}`, { silent: true })
+    shx.exec(`umount ${devices.root.device} ${target}`, { silent: true })
+    shx.exec('sleep 1', { silent: true })
     return true
   }
 
