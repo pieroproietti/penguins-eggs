@@ -428,7 +428,11 @@ ff02::3 ip6-allhosts
     })
   }
 
-  async mkfs(devices: IDevices): Promise<boolean> {
+  /**
+   * 
+   * @param devices 
+   */
+  mkfs(devices: IDevices): boolean {
     const result = true
 
     shx.exec(`mkfs -t ${devices.efi.fsType} ${devices.efi.device}`, { silent: false })
@@ -437,20 +441,30 @@ ff02::3 ip6-allhosts
     return result
   }
 
-  async mount4target(target: string, devices: IDevices): Promise<boolean> {
-    shx.exec(`mkdir ${target}`, { silent: true })
-    shx.exec(`mount ${devices.root.device} ${target}${devices.root.mountPoint}`, { silent: true })
-    shx.exec(`tune2fs -c 0 -i 0 ${devices.root.device}`, { silent: true })
+  /**
+   * 
+   * @param target 
+   * @param devices 
+   */
+  mount4target(target: string, devices: IDevices): boolean {
+    shx.exec(`mkdir ${target}`, { silent: false })
+    shx.exec(`mount ${devices.root.device} ${target}${devices.root.mountPoint}`, { silent: false })
+    shx.exec(`tune2fs -c 0 -i 0 ${devices.root.device}`, { silent: false })
     shx.exec(`mkdir ${target}${devices.efi.mountPoint} -p`)
     shx.exec(`mount ${devices.efi.device} ${target}${devices.efi.mountPoint}`, { silent: false })
     shx.exec(`rm -rf ${target}/lost+found`, { silent: true })
     return true
   }
 
-  async umount4target(target: string, devices: IDevices): Promise<boolean> {
-    shx.exec(`umount ${devices.efi.device} ${target}${devices.efi.mountPoint}`, { silent: true })
-    shx.exec(`umount ${devices.root.device} ${target}`, { silent: true })
-    shx.exec('sleep 1', { silent: true })
+  /**
+   * 
+   * @param target 
+   * @param devices 
+   */
+  umount4target(target: string, devices: IDevices): boolean {
+    shx.exec(`umount ${devices.efi.device} ${target}${devices.efi.mountPoint}`, { silent: false })
+    shx.exec(`umount ${devices.root.device} ${target}`, { silent: false })
+    shx.exec('sleep 1', { silent: false })
     return true
   }
 
@@ -458,7 +472,7 @@ ff02::3 ip6-allhosts
    * 
    * @param device 
    */
-  async diskPartition(device: string) {
+  diskPartition(device: string) : boolean  {
     shx.exec(`parted --script ${device} mklabel msdos`, { silent: true })
     shx.exec(`parted --script --align optimal ${device} mkpart primary 1MiB 95%`, { silent: true })
     shx.exec(`parted --script ${device} set 1 boot on`, { silent: true })
