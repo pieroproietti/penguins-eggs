@@ -13,8 +13,11 @@ import Hatching from '../classes/hatching'
  * Class Install
  */
 export default class Install extends Command {
-  static flags = {gui: flags.boolean({char: 'g', description: 'use the gui installer'})}
-
+  static flags = {
+    info: flags.help({ char: 'h' }),
+    gui: flags.boolean({ char: 'g', description: 'use gui installer' }),
+    verbose: flags.boolean({char: 'v', description: 'verbose'}),
+  }
   static description = 'penguin\'s eggs installation'
 
   static aliases = ['hatch']
@@ -27,8 +30,12 @@ export default class Install extends Command {
   async run() {
     Utils.titles()
     console.log('command: install')
-
     const {flags} = this.parse(Install)
+
+    let verbose = false
+    if (flags.verbose) {
+      verbose = true
+    }
 
     if (Utils.isRoot()) {
       if (flags.gui) {
@@ -36,7 +43,7 @@ export default class Install extends Command {
       } else {
         const hatching = new Hatching()
         // hatching.question()
-        hatching.install()
+        hatching.install(verbose)
       }
     }
   }
