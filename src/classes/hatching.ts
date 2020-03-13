@@ -649,7 +649,7 @@ ff02::3 ip6-allhosts
     let response: string
     let bytes: number
 
-    response = await exec(`parted -s ${device} unit b print free | grep Free | awk '{print $3}' | cut -d "M" -f1`, echo)
+    response = shx.exec(`parted -s ${device} unit b print free | grep Free | awk '{print $3}' | cut -d "M" -f1`, {silent: false})
     response = response.replace('B', '').trim()
     bytes = Number(response)
     return bytes
