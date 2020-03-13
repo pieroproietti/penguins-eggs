@@ -224,7 +224,7 @@ export default class Hatching {
    */
   async updateInitramfs(target: string) {
     console.log('update-initramfs/n')
-    await shx.exec(`chroot ${target}  update-initramfs -u -k $(uname -r)`, { silent: true })
+    shx.exec(`chroot ${target}  update-initramfs -u -k $(uname -r)`, { silent: true })
   }
 
   /**
