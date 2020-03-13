@@ -439,8 +439,8 @@ ff02::3 ip6-allhosts
   async mount4target(target: string, devices: IDevices): Promise<boolean> {
     shx.exec(`mkdir ${target}`, { silent: true })
     shx.exec(`mount ${devices.root.device} ${target}`, { silent: true })
-    shx.exec(`mount ${devices.efi.device} ${target}/boot/efi`, { silent: true })
     shx.exec(`tune2fs -c 0 -i 0 ${devices.root.device}`, { silent: true })
+    shx.exec(`mount ${devices.efi.device} ${target}${devices.efi.mountPoint}`, { silent: false })
     shx.exec(`rm -rf ${target}/lost+found`, { silent: true })
     return true
   }
