@@ -67,7 +67,7 @@ export default class Hatching {
     const varOptions: any = await this.getOptions(aDrives)
     const options: any = JSON.parse(varOptions)
 
-    devices.root.device = `${options.installationDevice}1`
+    devices.efi.device = `${options.installationDevice}1`
     devices.efi.fsType = 'fat'
     devices.efi.mountPoint = '/boot/efi'
 
