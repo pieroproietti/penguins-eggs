@@ -25,7 +25,7 @@ export default class Hatching {
   /**
    * question
    */
-  async question(verbose) {
+  async question(verbose = false) {
     let echo = Utils.setEcho(verbose)
     if (verbose) {
       console.log('hatching: question')
