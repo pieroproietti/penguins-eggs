@@ -86,7 +86,6 @@ export default class Hatching {
     if (isDiskPrepared) {
       await this.mkfs(devices)
       await this.mount4target(target, devices)
-      process.exit(0)
       await this.egg2system(target)
       await this.setTimezone(target)
       await this.fstab(target, devices, options.installationDevice)
@@ -234,11 +233,11 @@ export default class Hatching {
    */
   async mountVFS(target: string) {
     console.log('mount VFS')
-    await shx.exec(`mount -o bind /dev ${target}/dev`, { silent: true })
-    await shx.exec(`mount -o bind /devpts ${target}/dev/pts`, { silent: true })
-    await shx.exec(`mount -o bind /proc ${target}/proc`, { silent: true })
-    await shx.exec(`mount -o bind /sys ${target}/sys`, { silent: true })
-    await shx.exec(`mount -o bind /run ${target}/run`, { silent: true })
+    shx.exec(`mount -o bind /dev ${target}/dev`, { silent: true })
+    shx.exec(`mount -o bind /devpts ${target}/dev/pts`, { silent: true })
+    shx.exec(`mount -o bind /proc ${target}/proc`, { silent: true })
+    shx.exec(`mount -o bind /sys ${target}/sys`, { silent: true })
+    shx.exec(`mount -o bind /run ${target}/run`, { silent: true })
   }
 
   /**
@@ -247,16 +246,16 @@ export default class Hatching {
    */
   async umountVFS(target: string) {
     console.log('umount VFS')
-    await shx.exec(`umount ${target}/dev/pts`, { silent: true })
-    await shx.exec('sleep 1', { silent: true })
-    await shx.exec(`umount ${target}/dev`, { silent: true })
-    await shx.exec('sleep 1', { silent: true })
-    await shx.exec(`umount ${target}/proc`, { silent: true })
-    await shx.exec('sleep 1', { silent: true })
-    await shx.exec(`umount ${target}/sys`, { silent: true })
-    await shx.exec('sleep 1', { silent: true })
-    await shx.exec(`umount ${target}/run`, { silent: true })
-    await shx.exec('sleep 1', { silent: true })
+    shx.exec(`umount ${target}/dev/pts`, { silent: true })
+    shx.exec('sleep 1', { silent: true })
+    shx.exec(`umount ${target}/dev`, { silent: true })
+    shx.exec('sleep 1', { silent: true })
+    shx.exec(`umount ${target}/proc`, { silent: true })
+    shx.exec('sleep 1', { silent: true })
+    shx.exec(`umount ${target}/sys`, { silent: true })
+    shx.exec('sleep 1', { silent: true })
+    shx.exec(`umount ${target}/run`, { silent: true })
+    shx.exec('sleep 1', { silent: true })
   }
 
   /**
