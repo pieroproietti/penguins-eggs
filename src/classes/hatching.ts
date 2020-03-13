@@ -92,8 +92,8 @@ export default class Hatching {
     const diskSize = this.getDiskSize(options.installationDevice)
     console.log(`diskSize: ${diskSize}`)
 
-    this.umountVFS(target, verbose)
-    this.umount4target(target,  devices, verbose)
+    await this.umountVFS(target, verbose)
+    await this.umount4target(target,  devices, verbose)
     
 
     const isDiskPrepared: boolean = await this.diskPartitionGpt(options.installationDevice, verbose)
