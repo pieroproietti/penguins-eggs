@@ -16,6 +16,7 @@ export default class Install extends Command {
   static flags = {
     info: flags.help({ char: 'h' }),
     gui: flags.boolean({ char: 'g', description: 'use gui installer' }),
+    umount: flags.boolean({ char: 'u', description: 'umount devices' }),
     verbose: flags.boolean({char: 'v', description: 'verbose'}),
   }
   static description = 'penguin\'s eggs installation'
@@ -37,6 +38,11 @@ export default class Install extends Command {
       verbose = true
     }
 
+    let umount = false
+    if (flags.umount) {
+      umount = true
+    }
+    
     if (Utils.isRoot()) {
       if (flags.gui) {
         shx.exec('calamares')

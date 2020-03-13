@@ -53,7 +53,7 @@ export default class Hatching {
   /**
   * install
   */
-  async install(verbose = false) {
+  async install(verbose = false, umount = false) {
     let echo = Utils.setEcho(verbose)
     if (verbose) {
       console.log('hatching: install')
@@ -92,8 +92,10 @@ export default class Hatching {
     const diskSize = this.getDiskSize(options.installationDevice)
     console.log(`diskSize: ${diskSize}`)
 
-    await this.umountVFS(target, verbose)
-    await this.umount4target(target,  devices, verbose)
+    if (umount) {
+      await this.umountVFS(target, verbose)
+      await this.umount4target(target,  devices, verbose)
+    }
     
 
     const isDiskPrepared: boolean = await this.diskPartitionGpt(options.installationDevice, verbose)
@@ -576,6 +578,7 @@ ff02::3 ip6-allhosts
     }
     
     await exec(`umount ${devices.efi.device} ${target}${devices.efi.mountPoint}`, echo)
+    await exec('sleep 1', echo)
     await exec(`umount ${devices.root.device} ${target}`, echo)
     await exec('sleep 1', echo)
     return true
@@ -653,7 +656,7 @@ ff02::3 ip6-allhosts
     let response: string
     let bytes: number
 
-    response = shx.exec(`parted -s ${device} unit b print free | grep Free | awk '{print $3}' | cut -d "M" -f1`, {silent: false})
+    response = await exec(`parted -s ${device} unit b print free | grep Free | awk '{print $3}' | cut -d "M" -f1`,  { echo: true, ignore: false, capture: true })
     response = response.replace('B', '').trim()
     bytes = Number(response)
     return bytes
