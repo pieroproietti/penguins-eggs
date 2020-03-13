@@ -73,7 +73,6 @@ export default class Hatching {
     drives.forEach((element: { device: string }) => {
       aDrives.push(element.device)
     })
-    // console.log(aDrives)
 
     const varOptions: any = await this.getOptions(aDrives)
     const options: any = JSON.parse(varOptions)
@@ -527,7 +526,7 @@ ff02::3 ip6-allhosts
    * 
    * @param devices 
    */
-  mkfs(devices: IDevices, verbose = false): boolean {
+  async mkfs(devices: IDevices, verbose = false): boolean {
     let echo = Utils.setEcho(verbose)
     if (verbose) {
       console.log('hatching: mkfs')
@@ -535,9 +534,9 @@ ff02::3 ip6-allhosts
 
     const result = true
 
-    shx.exec(`mkfs -t ${devices.efi.fsType} ${devices.efi.device}`, { silent: false })
-    shx.exec(`mkfs -t ${devices.root.fsType} ${devices.root.device}`, { silent: false })
-    shx.exec(`mkswap ${devices.swap.device}`, { silent: true })
+    await exec(`mkfs -t ${devices.efi.fsType} ${devices.efi.device}`, echo)
+    await exec(`mkfs -t ${devices.root.fsType} ${devices.root.device}`, echo)
+    await exec(`mkswap ${devices.swap.device}`, echo)
     return result
   }
 
@@ -546,18 +545,18 @@ ff02::3 ip6-allhosts
    * @param target 
    * @param devices 
    */
-  mount4target(target: string, devices: IDevices, verbose = false): boolean {
+  async mount4target(target: string, devices: IDevices, verbose = false): Promise<boolean> {
     let echo = Utils.setEcho(verbose)
     if (verbose) {
       console.log('hatching: mount4target')
     }
 
-    shx.exec(`mkdir ${target}`, { silent: false })
-    shx.exec(`mount ${devices.root.device} ${target}${devices.root.mountPoint}`, { silent: false })
-    shx.exec(`tune2fs -c 0 -i 0 ${devices.root.device}`, { silent: false })
-    shx.exec(`mkdir ${target}${devices.efi.mountPoint} -p`)
-    shx.exec(`mount ${devices.efi.device} ${target}${devices.efi.mountPoint}`, { silent: false })
-    shx.exec(`rm -rf ${target}/lost+found`, { silent: true })
+    await exec(`mkdir ${target}`, echo)
+    await exec(`mount ${devices.root.device} ${target}${devices.root.mountPoint}`, echo)
+    await exec(`tune2fs -c 0 -i 0 ${devices.root.device}`, echo)
+    await exec(`mkdir ${target}${devices.efi.mountPoint} -p`, echo)
+    await exec(`mount ${devices.efi.device} ${target}${devices.efi.mountPoint}`, echo)
+    await exec(`rm -rf ${target}/lost+found`, echo)
     return true
   }
 
@@ -566,15 +565,15 @@ ff02::3 ip6-allhosts
    * @param target 
    * @param devices 
    */
-  umount4target(target: string, devices: IDevices, verbose = false): boolean {
+  async umount4target(target: string, devices: IDevices, verbose = false): Promise<boolean> {
     let echo = Utils.setEcho(verbose)
     if (verbose) {
       console.log('hatching: umount4target')
     }
     
-    shx.exec(`umount ${devices.efi.device} ${target}${devices.efi.mountPoint}`, { silent: false })
-    shx.exec(`umount ${devices.root.device} ${target}`, { silent: false })
-    shx.exec('sleep 1', { silent: false })
+    await exec(`umount ${devices.efi.device} ${target}${devices.efi.mountPoint}`, echo)
+    await exec(`umount ${devices.root.device} ${target}`, echo)
+    await exec('sleep 1', echo)
     return true
   }
 
@@ -582,16 +581,16 @@ ff02::3 ip6-allhosts
    * 
    * @param device 
    */
-  diskPartition(device: string, verbose = false) : boolean  {
+  async diskPartition(device: string, verbose = false) : Promise<boolean>  {
     let echo = Utils.setEcho(verbose)
     if (verbose) {
       console.log('hatching: diskPartition')
     }
 
-    shx.exec(`parted --script ${device} mklabel msdos`, { silent: true })
-    shx.exec(`parted --script --align optimal ${device} mkpart primary 1MiB 95%`, { silent: true })
-    shx.exec(`parted --script ${device} set 1 boot on`, { silent: true })
-    shx.exec(`parted --script --align optimal ${device} mkpart primary 95% 100%`, { silent: true })
+    await exec(`parted --script ${device} mklabel msdos`, echo)
+    await exec(`parted --script --align optimal ${device} mkpart primary 1MiB 95%`, echo)
+    await exec(`parted --script ${device} set 1 boot on`, echo)
+    await exec(`parted --script --align optimal ${device} mkpart primary 95% 100%`, echo)
     return true
   }
 
@@ -604,18 +603,15 @@ ff02::3 ip6-allhosts
    *   /dev/sda2    618496 49333417 48714922 23,2G Linux filesystem
    *   /dev/sda3  49333418 67103504 17770087  8,5G Linux swap
    */
-  diskPartitionGpt(device: string, verbose = false): boolean {
+  async diskPartitionGpt(device: string, verbose = false): Promise <boolean> {
     let echo = Utils.setEcho(verbose)
     if (verbose) {
       console.log('hatching: distPartitionGpt')
     }
 
-    shx.exec(`parted --script ${device} mklabel gpt mkpart primary 0% 1% mkpart primary 1% 95% mkpart primary 95% 100%`, {silent: false})
-    // shx.exec(`parted --script --align optimal ${device} mkpart primary 0% 1%`, { silent: true })
-    shx.exec(`parted --script ${device} set 1 boot on`, { silent: false })
-    shx.exec(`parted --script ${device} set 1 esp on`, { silent: false })
-    // shx.exec(`parted --script --align optimal ${device} mkpart primary 1% 95%`, { silent: true })
-    // shx.exec(`parted --script --align optimal ${device} mkpart primary 95% 100%`, { silent: true })
+    await exec(`parted --script ${device} mklabel gpt mkpart primary 0% 1% mkpart primary 1% 95% mkpart primary 95% 100%`, echo)
+    await exec(`parted --script ${device} set 1 boot on`, echo)
+    await exec(`parted --script ${device} set 1 esp on`, echo)
     return true
   }
 
@@ -633,7 +629,7 @@ ff02::3 ip6-allhosts
     let response: any
     let retVal = false
 
-    response = await shx.exec(`cat /sys/block/${device}/queue/rotational`, { silent: true })
+    response = await exec(`cat /sys/block/${device}/queue/rotational`, echo)
     if (response == '1') {
       retVal = true
     }
@@ -653,7 +649,7 @@ ff02::3 ip6-allhosts
     let response: string
     let bytes: number
 
-    response = shx.exec(`parted -s ${device} unit b print free | grep Free | awk '{print $3}' | cut -d "M" -f1`, { silent: true })
+    response = await exec(`parted -s ${device} unit b print free | grep Free | awk '{print $3}' | cut -d "M" -f1`, echo)
     response = response.replace('B', '').trim()
     bytes = Number(response)
     return bytes
