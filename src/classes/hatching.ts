@@ -73,7 +73,6 @@ export default class Hatching {
     drives.forEach((element: { device: string }) => {
       aDrives.push(element.device)
     })
-
     const varOptions: any = await this.getOptions(aDrives)
     const options: any = JSON.parse(varOptions)
 
@@ -89,16 +88,16 @@ export default class Hatching {
     devices.swap.fsType = 'swap'
     devices.swap.mountPoint = 'none'
 
-    const diskSize = this.getDiskSize(options.installationDevice)
-    console.log(`diskSize: ${diskSize}`)
+    // const diskSize = await this.getDiskSize(options.installationDevice, verbose)
+    // console.log(`diskSize: ${diskSize}`)
 
     if (umount) {
       await this.umountVFS(target, verbose)
       await this.umount4target(target,  devices, verbose)
     }
-    
 
     const isDiskPrepared: boolean = await this.diskPartitionGpt(options.installationDevice, verbose)
+    process.exit(1)
     if (isDiskPrepared) {
       await this.mkfs(devices, verbose)
       await this.mount4target(target, devices, verbose)
@@ -653,12 +652,23 @@ ff02::3 ip6-allhosts
       console.log('hatching: getDiskSize')
     }
 
-    let response: string
     let bytes: number
+    interface IResponse {
+      code : number;
+      data: string;
+    }
+    let response = {} as IResponse
+    response = await exec(`parted -s ${device} unit b print free | grep Free | awk '{print $3}' | cut -d "M" -f1`,  { echo: false, ignore: false, capture: true })
+    let data = ''
+    if (response.code === 0){
+      data = response.data
+      data = data.replace('B', '').trim()
+      console.log(data)
+    } else {
+      data = '0'
+    }
 
-    response = await exec(`parted -s ${device} unit b print free | grep Free | awk '{print $3}' | cut -d "M" -f1`,  { echo: true, ignore: false, capture: true })
-    response = response.replace('B', '').trim()
-    bytes = Number(response)
+    bytes = Number(data)
     return bytes
   }
 
@@ -798,7 +808,7 @@ ff02::3 ip6-allhosts
           name: 'installationDevice',
           message: 'Select the installation disk: ',
           choices: driveList,
-          default: driveList[0],
+          default: driveList[1],
         },
         {
           type: 'list',
