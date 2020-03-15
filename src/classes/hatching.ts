@@ -13,7 +13,7 @@ import inquirer = require('inquirer')
 import drivelist = require('drivelist')
 import Utils from './utils'
 import { IDevices, IDevice } from '../interfaces'
-const exec  = require('../lib/utils').exec
+const exec = require('../lib/utils').exec
 
 /**
  * hatch, installazione
@@ -93,7 +93,7 @@ export default class Hatching {
 
     if (umount) {
       await this.umountVFS(target, verbose)
-      await this.umount4target(target,  devices, verbose)
+      await this.umount4target(target, devices, verbose)
     }
 
     const isDiskPrepared: boolean = await this.diskPartitionGpt(options.installationDevice, verbose)
@@ -215,7 +215,7 @@ export default class Hatching {
   /**
    * delUserLive
    */
-  async delUserLive(target: string, verbose= false) {
+  async delUserLive(target: string, verbose = false) {
     let echo = Utils.setEcho(verbose)
     if (verbose) {
       console.log('hatching: delUserLive')
@@ -340,10 +340,11 @@ export default class Hatching {
     }
     const text = `\
 ${devices.root.device} ${devices.root.mountPoint} ${devices.root.fsType} ${mountOptsRoot}
+${devices.efi.device} ${devices.efi.mountPoint} fat32 ${mountOptsRoot}
 ${devices.swap.device} ${devices.swap.mountPoint} ${devices.swap.fsType} ${mountOptsSwap}`
 
     Utils.write(file, text)
-}
+  }
 
   /**
    * hostname()
@@ -571,7 +572,7 @@ ff02::3 ip6-allhosts
     if (verbose) {
       console.log('hatching: umount4target')
     }
-    
+
     // await exec(`umount ${devices.efi.device} ${target}${devices.efi.mountPoint}`, echo)
     // await exec('sleep 1', echo)
     await exec(`umount ${devices.root.device} ${target}`, echo)
@@ -583,7 +584,7 @@ ff02::3 ip6-allhosts
    * 
    * @param device 
    */
-  async diskPartition(device: string, verbose = false) : Promise<boolean>  {
+  async diskPartition(device: string, verbose = false): Promise<boolean> {
     let echo = Utils.setEcho(verbose)
     if (verbose) {
       console.log('hatching: diskPartition')
@@ -605,7 +606,7 @@ ff02::3 ip6-allhosts
    *   /dev/sda2    618496 49333417 48714922 23,2G Linux filesystem
    *   /dev/sda3  49333418 67103504 17770087  8,5G Linux swap
    */
-  async diskPartitionGpt(device: string, verbose = false): Promise <boolean> {
+  async diskPartitionGpt(device: string, verbose = false): Promise<boolean> {
     let echo = Utils.setEcho(verbose)
     if (verbose) {
       console.log('hatching: distPartitionGpt')
@@ -617,7 +618,7 @@ ff02::3 ip6-allhosts
     return true
   }
 
-  
+
   /**
    * 
    * @param device 
@@ -631,8 +632,8 @@ ff02::3 ip6-allhosts
     let response: any
     let retVal = false
 
-    response = await exec(`cat /sys/block/${device}/queue/rotational`, echo)
-    if (response == '1') {
+    response = await exec(`cat /sys/block/${device}/queue/rotational`, {capture: true, echo: true})
+    if (response === '1') {
       retVal = true
     }
     return retVal
@@ -650,13 +651,13 @@ ff02::3 ip6-allhosts
 
     let bytes: number
     interface IResponse {
-      code : number;
+      code: number;
       data: string;
     }
     let response = {} as IResponse
-    response = await exec(`parted -s ${device} unit b print free | grep Free | awk '{print $3}' | cut -d "M" -f1`,  { echo: false, ignore: false, capture: true })
+    response = await exec(`parted -s ${device} unit b print free | grep Free | awk '{print $3}' | cut -d "M" -f1`, { echo: false, ignore: false, capture: true })
     let data = ''
-    if (response.code === 0){
+    if (response.code === 0) {
       data = response.data
       data = data.replace('B', '').trim()
       console.log(data)
