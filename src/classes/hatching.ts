@@ -341,8 +341,9 @@ export default class Hatching {
     const text = `\
 ${devices.root.device} ${devices.root.mountPoint} ${devices.root.fsType} ${mountOptsRoot}
 ${devices.swap.device} ${devices.swap.mountPoint} ${devices.swap.fsType} ${mountOptsSwap}`
-    fs.writeFileSync(file, text)
-  }
+
+    Utils.write(file, text)
+}
 
   /**
    * hostname()
@@ -550,7 +551,9 @@ ff02::3 ip6-allhosts
     await exec(`mkdir ${target}`, echo)
     await exec(`mount ${devices.root.device} ${target}${devices.root.mountPoint}`, echo)
     await exec(`tune2fs -c 0 -i 0 ${devices.root.device}`, echo)
-    await exec(`mkdir ${target}${devices.efi.mountPoint} -p`, echo)
+    if (!fs.existsSync(target + devices.efi.mountPoint){
+      await exec(`mkdir ${target}${devices.efi.mountPoint} -p`, echo)
+    }
     await exec(`mount ${devices.efi.device} ${target}${devices.efi.mountPoint}`, echo)
     await exec(`rm -rf ${target}/lost+found`, echo)
     return true
@@ -567,8 +570,8 @@ ff02::3 ip6-allhosts
       console.log('hatching: umount4target')
     }
     
-    await exec(`umount ${devices.efi.device} ${target}${devices.efi.mountPoint}`, echo)
-    await exec('sleep 1', echo)
+    // await exec(`umount ${devices.efi.device} ${target}${devices.efi.mountPoint}`, echo)
+    // await exec('sleep 1', echo)
     await exec(`umount ${devices.root.device} ${target}`, echo)
     await exec('sleep 1', echo)
     return true
