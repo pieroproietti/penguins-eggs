@@ -548,10 +548,12 @@ ff02::3 ip6-allhosts
       console.log('hatching: mount4target')
     }
 
-    await exec(`mkdir ${target}`, echo)
+    if (!fs.existsSync(target)) {
+      await exec(`mkdir ${target}`, echo)
+    }
     await exec(`mount ${devices.root.device} ${target}${devices.root.mountPoint}`, echo)
     await exec(`tune2fs -c 0 -i 0 ${devices.root.device}`, echo)
-    if (!fs.existsSync(target + devices.efi.mountPoint){
+    if (!fs.existsSync(target + devices.efi.mountPoint)) {
       await exec(`mkdir ${target}${devices.efi.mountPoint} -p`, echo)
     }
     await exec(`mount ${devices.efi.device} ${target}${devices.efi.mountPoint}`, echo)
