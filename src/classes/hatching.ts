@@ -108,8 +108,8 @@ export default class Hatching {
       devices.swap.mountPoint = 'none'
     }
 
-    // const diskSize = await this.getDiskSize(options.installationDevice, verbose)
-    // console.log(`diskSize: ${diskSize}`)
+    const diskSize = await this.getDiskSize(options.installationDevice, verbose)
+    console.log(`diskSize: ${diskSize}`)
 
 
     if (umount) {
@@ -819,7 +819,6 @@ ff02::3 ip6-allhosts
           name: 'installationDevice',
           message: 'Select the installation disk: ',
           choices: driveList,
-          default: driveList[1],
         },
         {
           type: 'list',
