@@ -276,10 +276,8 @@ export default class Hatching {
       console.log('hatching: grubInstall')
     }
 
-    console.log('grub-install')
-    await shx.exec(`chroot ${target} grub-install ${options.installationDevice}`, { silent: true })
-    console.log('update-grub')
-    await shx.exec(`chroot ${target} update-grub`, { silent: true })
+    await exec(`chroot ${target} grub-install ${options.installationDevice}`, echo)
+    await exec(`chroot ${target} update-grub`, echo)
   }
 
   /**
@@ -293,7 +291,7 @@ export default class Hatching {
     }
 
     console.log('update-initramfs/n')
-    shx.exec(`chroot ${target}  update-initramfs -u -k $(uname -r)`, { silent: true })
+    await exec(`chroot ${target}  update-initramfs -u -k $(uname -r)`, echo)
   }
 
   /**
@@ -307,11 +305,11 @@ export default class Hatching {
     }
 
     console.log('mount VFS')
-    shx.exec(`mount -o bind /dev ${target}/dev`, { silent: true })
-    shx.exec(`mount -o bind /devpts ${target}/dev/pts`, { silent: true })
-    shx.exec(`mount -o bind /proc ${target}/proc`, { silent: true })
-    shx.exec(`mount -o bind /sys ${target}/sys`, { silent: true })
-    shx.exec(`mount -o bind /run ${target}/run`, { silent: true })
+    await exec(`mount -o bind /dev ${target}/dev`, echo)
+    await exec(`mount -o bind /devpts ${target}/dev/pts`, echo)
+    await exec(`mount -o bind /proc ${target}/proc`, echo)
+    await exec(`mount -o bind /sys ${target}/sys`, echo)
+    await exec(`mount -o bind /run ${target}/run`, echo)
   }
 
   /**
@@ -325,16 +323,16 @@ export default class Hatching {
     }
 
     console.log('umount VFS')
-    shx.exec(`umount ${target}/dev/pts`, { silent: true })
-    shx.exec('sleep 1', { silent: true })
-    shx.exec(`umount ${target}/dev`, { silent: true })
-    shx.exec('sleep 1', { silent: true })
-    shx.exec(`umount ${target}/proc`, { silent: true })
-    shx.exec('sleep 1', { silent: true })
-    shx.exec(`umount ${target}/sys`, { silent: true })
-    shx.exec('sleep 1', { silent: true })
-    shx.exec(`umount ${target}/run`, { silent: true })
-    shx.exec('sleep 1', { silent: true })
+    await exec(`umount ${target}/dev/pts`, { silent: true })
+    await exec('sleep 1', echo)
+    await exec(`umount ${target}/dev`, echo)
+    await exec('sleep 1', echo)
+    await exec(`umount ${target}/proc`, echo)
+    await exec('sleep 1', echo)
+    await exec(`umount ${target}/sys`, echo)
+    await exec('sleep 1', echo)
+    await exec(`umount ${target}/run`, echo)
+    await exec('sleep 1', echo)
   }
 
   /**
