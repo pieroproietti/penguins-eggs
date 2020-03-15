@@ -77,7 +77,7 @@ export default class Hatching {
     const options: any = JSON.parse(varOptions)
 
     devices.efi.device = `${options.installationDevice}1`
-    devices.efi.fsType = 'fat'
+    devices.efi.fsType = 'F 32 -I'
     devices.efi.mountPoint = '/boot/efi'
 
     devices.root.device = `${options.installationDevice}2`
@@ -97,11 +97,10 @@ export default class Hatching {
     }
 
     const isDiskPrepared: boolean = await this.diskPartitionGpt(options.installationDevice, verbose)
-    process.exit(1)
     if (isDiskPrepared) {
       await this.mkfs(devices, verbose)
       await this.mount4target(target, devices, verbose)
-      await this.egg2system(target, verbose)
+      await this.egg2system(target, devices, verbose)
       await this.setTimezone(target, verbose)
       await this.fstab(target, devices, options.installationDevice, verbose)
       await this.hostname(target, options, verbose)
@@ -132,9 +131,9 @@ export default class Hatching {
     }
 
     let cmd = `chroot ${target} unlink /etc/localtime`
-    shx.exec(cmd, { silent: true })
+    await exec(cmd, echo)
     cmd = `chroot ${target} ln -sf /usr/share/zoneinfo/Europe/Rome /etc/localtime`
-    shx.exec(cmd, { silent: true })
+    await exec(cmd, echo)
   }
 
   /**
@@ -178,16 +177,9 @@ export default class Hatching {
                                           ${workPhone},\
                                           ${homePhone}"`
 
-    console.log(`addUser: ${cmd}`)
-    shx.exec(cmd)
-
-    const cmdPass = `echo ${username}:${password} | chroot ${target} chpasswd `
-    console.log(`addUser cmdPass: ${cmdPass}`)
-    await exec(cmdPass, echo)
-
-    const cmdSudo = `chroot ${target} addgroup ${username} sudo`
-    console.log(`addUser cmdSudo: ${cmdSudo}`)
-    shx.exec(cmdSudo)
+    await exec(cmd, echo)
+    await exec(`echo ${username}:${password} | chroot ${target} chpasswd `, echo)
+    await exec(`chroot ${target} addgroup ${username} sudo`, echo)
   }
 
   /**
@@ -203,8 +195,7 @@ export default class Hatching {
     }
 
     const cmd = `echo ${username}:${newPassword} | chroot ${target} chpasswd `
-    console.log(`changePassword: ${cmd}`)
-    shx.exec(cmd)
+    await exec(cmd, echo)
   }
 
   /**
@@ -218,8 +209,7 @@ export default class Hatching {
     }
 
     const cmd = `deluser ${username}`
-    console.log(`delUser: ${cmd}`)
-    shx.exec(cmd)
+    await exec(cmd, echo)
   }
 
   /**
@@ -246,12 +236,12 @@ export default class Hatching {
     }
 
     // patch per apache2
-    await shx.exec(`chroot ${target} mkdir /var/log/apache2`)
-    await shx.exec(`chroot ${target} mkdir /var/log/pveproxy`, { silent: true })
-    await shx.exec(`chroot ${target} touch /var/log/pveproxy/access.log`, { silent: true })
-    await shx.exec(`chroot ${target} chown www-data:www-data /var/log/pveproxy -R`, { silent: true })
-    await shx.exec(`chroot ${target} chmod 0664 /var/log/pveproxy/access.log`, { silent: true })
-    await shx.exec(`chroot ${target} dpkg-reconfigure openssh-server`, { silent: true })
+    await exec(`chroot ${target} mkdir /var/log/apache2`)
+    await exec(`chroot ${target} mkdir /var/log/pveproxy`, echo)
+    await exec(`chroot ${target} touch /var/log/pveproxy/access.log`, echo)
+    await exec(`chroot ${target} chown www-data:www-data /var/log/pveproxy -R`, echo)
+    await exec(`chroot ${target} chmod 0664 /var/log/pveproxy/access.log`, echo)
+    await exec(`chroot ${target} dpkg-reconfigure openssh-server`, echo)
   }
 
   /**
@@ -462,7 +452,7 @@ ff02::3 ip6-allhosts
    * rsync()
    * @param target
    */
-  async egg2system(target: string, verbose = false): Promise<void> {
+  async egg2system(target: string, devices: IDevices, verbose = false): Promise<void> {
     let echo = Utils.setEcho(verbose)
     if (verbose) {
       console.log('hatching: egg2system')
@@ -510,6 +500,8 @@ ff02::3 ip6-allhosts
     f += ' --filter="- /usr/lib/live/rootfs"'
 
     f += ' --filter="- /run/*"'
+    f += ` --filter="- /boot/efi*"` //${devices.efi.mountPoint}
+
 
     cmd = `\
   rsync \
@@ -531,15 +523,14 @@ ff02::3 ip6-allhosts
    * 
    * @param devices 
    */
-  async mkfs(devices: IDevices, verbose = false): boolean {
+  async mkfs(devices: IDevices, verbose = false): Promise<boolean> {
     let echo = Utils.setEcho(verbose)
     if (verbose) {
       console.log('hatching: mkfs')
     }
 
     const result = true
-
-    await exec(`mkfs -t ${devices.efi.fsType} ${devices.efi.device}`, echo)
+    await exec(`mkdosfs -F 32 -I ${devices.efi.device}`, echo)
     await exec(`mkfs -t ${devices.root.fsType} ${devices.root.device}`, echo)
     await exec(`mkswap ${devices.swap.device}`, echo)
     return result

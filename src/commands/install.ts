@@ -49,7 +49,7 @@ export default class Install extends Command {
       } else {
         const hatching = new Hatching()
         // hatching.question()
-        hatching.install(verbose)
+        hatching.install(verbose, umount)
       }
     }
   }
