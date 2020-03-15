@@ -14,12 +14,16 @@ import drivelist = require('drivelist')
 import Utils from './utils'
 import { IDevices, IDevice } from '../interfaces'
 import { SSL_OP_EPHEMERAL_RSA } from 'constants'
+import { timingSafeEqual } from 'crypto'
 const exec = require('../lib/utils').exec
 
 /**
  * hatch, installazione
  */
 export default class Hatching {
+
+  efi = false
+
   constructor() {
   }
 
@@ -70,34 +74,49 @@ export default class Hatching {
     const drives: any = await drivelist.list()
 
     const aDrives: string[] = []
-
     drives.forEach((element: { device: string }) => {
       aDrives.push(element.device)
     })
     const varOptions: any = await this.getOptions(aDrives)
     const options: any = JSON.parse(varOptions)
 
-    devices.efi.device = `${options.installationDevice}1`
-    devices.efi.fsType = 'F 32 -I'
-    devices.efi.mountPoint = '/boot/efi'
+    if (fs.existsSync('/sys/firmware/efi/efivars')) {
+      this.efi = true
+    }
 
-    devices.root.device = `${options.installationDevice}2`
-    devices.root.fsType = 'ext4'
-    devices.root.mountPoint = '/'
+    if (this.efi) {
+      devices.efi.device = `${options.installationDevice}1`
+      devices.efi.fsType = 'F 32 -I'
+      devices.efi.mountPoint = '/boot/efi'
 
-    devices.swap.device = `${options.installationDevice}3`
-    devices.swap.fsType = 'swap'
-    devices.swap.mountPoint = 'none'
+      devices.root.device = `${options.installationDevice}2`
+      devices.root.fsType = 'ext4'
+      devices.root.mountPoint = '/'
+
+      devices.swap.device = `${options.installationDevice}3`
+      devices.swap.fsType = 'swap'
+      devices.swap.mountPoint = 'none'
+    } else {
+      devices.root.device = `${options.installationDevice}1`
+      devices.root.fsType = 'ext4'
+      devices.root.mountPoint = '/'
+
+      devices.swap.device = `${options.installationDevice}2`
+      devices.swap.fsType = 'swap'
+      devices.swap.mountPoint = 'none'
+
+    }
 
     // const diskSize = await this.getDiskSize(options.installationDevice, verbose)
     // console.log(`diskSize: ${diskSize}`)
+
 
     if (umount) {
       await this.umountVFS(target, verbose)
       await this.umount4target(target, devices, verbose)
     }
 
-    const isDiskPrepared: boolean = await this.diskPartitionGpt(options.installationDevice, verbose)
+    const isDiskPrepared: boolean = await this.diskPartition(options.installationDevice, verbose)
     if (isDiskPrepared) {
       await this.mkfs(devices, verbose)
       await this.mount4target(target, devices, verbose)
@@ -533,7 +552,9 @@ ff02::3 ip6-allhosts
     }
 
     const result = true
-    await exec(`mkdosfs -F 32 -I ${devices.efi.device}`, echo)
+    if (this.efi){
+      await exec(`mkdosfs -F 32 -I ${devices.efi.device}`, echo)
+    }
     await exec(`mkfs -t ${devices.root.fsType} ${devices.root.device}`, echo)
     await exec(`mkswap ${devices.swap.device}`, echo)
     return result
@@ -555,10 +576,12 @@ ff02::3 ip6-allhosts
     }
     await exec(`mount ${devices.root.device} ${target}${devices.root.mountPoint}`, echo)
     await exec(`tune2fs -c 0 -i 0 ${devices.root.device}`, echo)
-    if (!fs.existsSync(target + devices.efi.mountPoint)) {
-      await exec(`mkdir ${target}${devices.efi.mountPoint} -p`, echo)
+    if (this.efi) {
+      if (!fs.existsSync(target + devices.efi.mountPoint)) {
+        await exec(`mkdir ${target}${devices.efi.mountPoint} -p`, echo)
+      }
+      await exec(`mount ${devices.efi.device} ${target}${devices.efi.mountPoint}`, echo)
     }
-    await exec(`mount ${devices.efi.device} ${target}${devices.efi.mountPoint}`, echo)
     await exec(`rm -rf ${target}/lost+found`, echo)
     return true
   }
@@ -574,8 +597,10 @@ ff02::3 ip6-allhosts
       console.log('hatching: umount4target')
     }
 
-    await exec(`umount ${target}${devices.efi.mountPoint}`, echo)
-    await exec('sleep 1', echo)
+    if (this.efi) {
+      await exec(`umount ${target}/boot/efi`, echo)
+      await exec('sleep 1', echo)
+    }
     await exec(`umount ${devices.root.device} ${target}`, echo)
     await exec('sleep 1', echo)
     return true
@@ -591,31 +616,16 @@ ff02::3 ip6-allhosts
       console.log('hatching: diskPartition')
     }
 
-    await exec(`parted --script ${device} mklabel msdos`, echo)
-    await exec(`parted --script --align optimal ${device} mkpart primary 1MiB 95%`, echo)
-    await exec(`parted --script ${device} set 1 boot on`, echo)
-    await exec(`parted --script --align optimal ${device} mkpart primary 95% 100%`, echo)
-    return true
-  }
-
-  /**
- * 
- * @param device 
- */
-  /**
-   *   /dev/sda1      4096   618495   614400  300M EFI System (flag= boot esp)
-   *   /dev/sda2    618496 49333417 48714922 23,2G Linux filesystem
-   *   /dev/sda3  49333418 67103504 17770087  8,5G Linux swap
-   */
-  async diskPartitionGpt(device: string, verbose = false): Promise<boolean> {
-    let echo = Utils.setEcho(verbose)
-    if (verbose) {
-      console.log('hatching: distPartitionGpt')
+    if (this.efi){
+      await exec(`parted --script ${device} mklabel gpt mkpart primary 0% 1% mkpart primary 1% 95% mkpart primary 95% 100%`, echo)
+      await exec(`parted --script ${device} set 1 boot on`, echo)
+      await exec(`parted --script ${device} set 1 esp on`, echo)
+    } else {
+      await exec(`parted --script ${device} mklabel msdos`, echo)
+      await exec(`parted --script --align optimal ${device} mkpart primary 1MiB 95%`, echo)
+      await exec(`parted --script ${device} set 1 boot on`, echo)
+      await exec(`parted --script --align optimal ${device} mkpart primary 95% 100%`, echo)
     }
-
-    await exec(`parted --script ${device} mklabel gpt mkpart primary 0% 1% mkpart primary 1% 95% mkpart primary 95% 100%`, echo)
-    await exec(`parted --script ${device} set 1 boot on`, echo)
-    await exec(`parted --script ${device} set 1 esp on`, echo)
     return true
   }
 
@@ -631,11 +641,11 @@ ff02::3 ip6-allhosts
     }
 
     device = device.substring(4)
-    console.log (`device: ${device}`)
+    console.log(`device: ${device}`)
     let response: any
     let retVal = false
 
-    response = await exec(`cat /sys/block/${device}/queue/rotational`, {capture: true, echo: true})
+    response = await exec(`cat /sys/block/${device}/queue/rotational`, { capture: true, echo: true })
     if (response === '1') {
       retVal = true
     }
