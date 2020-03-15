@@ -13,6 +13,7 @@ import inquirer = require('inquirer')
 import drivelist = require('drivelist')
 import Utils from './utils'
 import { IDevices, IDevice } from '../interfaces'
+import { SSL_OP_EPHEMERAL_RSA } from 'constants'
 const exec = require('../lib/utils').exec
 
 /**
@@ -573,8 +574,8 @@ ff02::3 ip6-allhosts
       console.log('hatching: umount4target')
     }
 
-    // await exec(`umount ${devices.efi.device} ${target}${devices.efi.mountPoint}`, echo)
-    // await exec('sleep 1', echo)
+    await exec(`umount ${target}${devices.efi.mountPoint}`, echo)
+    await exec('sleep 1', echo)
     await exec(`umount ${devices.root.device} ${target}`, echo)
     await exec('sleep 1', echo)
     return true
@@ -629,6 +630,8 @@ ff02::3 ip6-allhosts
       console.log('hatching: isRotational')
     }
 
+    device = device.substring(4)
+    console.log (`device: ${device}`)
     let response: any
     let retVal = false
 
