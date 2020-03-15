@@ -84,6 +84,8 @@ export default class Hatching {
       this.efi = true
     }
 
+    console.log(`System EFI: ${this.efi}`)
+    
     if (this.efi) {
       devices.efi.device = `${options.installationDevice}1`
       devices.efi.fsType = 'F 32 -I'
@@ -104,7 +106,6 @@ export default class Hatching {
       devices.swap.device = `${options.installationDevice}2`
       devices.swap.fsType = 'swap'
       devices.swap.mountPoint = 'none'
-
     }
 
     // const diskSize = await this.getDiskSize(options.installationDevice, verbose)
