@@ -131,7 +131,7 @@ export default class Hatching {
       await this.mountVFS(target, verbose)
       await this.updateInitramfs(target, verbose)
       await this.grubInstall(target, options, verbose)
-      await this.addUser(target, options.username, options.userpassword, verbose)
+      await this.addUser(target, options.username, options.userpassword, '', '', '', '', verbose)
       await this.changePassword(target, 'root', options.rootpassword, verbose)
       await this.autologinConfig(target, 'live', options.username, verbose)
       await this.delUserLive(target, verbose)
