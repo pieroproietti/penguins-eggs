@@ -10,7 +10,7 @@ export function createTmp(): string {
     text += `# Creo la directory $CHROOT/tmp se mancante \n`
     text += `TMPDIR=$CHROOT/tmp\n`
     text += `if [ ! -d $TMPDIR ]; then\n`
-    text += `    echo mkdir $TMPDIR\n`
+    text += `    mkdir $TMPDIR\n`
     text += `fi\n`
     return text
 }
