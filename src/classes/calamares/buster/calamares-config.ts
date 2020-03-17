@@ -321,14 +321,12 @@ class calamaresConfig {
             fs.mkdirSync(dir)
         }
         write(file, content, this.verbose)
-
-        const scriptcreateTmp = require('./scripts/create-tmp').bootloaderConfig
+        const scriptcreateTmp = require('./scripts/create-tmp').createTmp
         const scriptDir = `/sbin/`
         const scriptFile = scriptDir + 'create-tmp'
         const scriptContent = scriptcreateTmp()
         write(scriptFile, scriptContent, this.verbose)
         await exec(`chmod +x ${scriptFile}`)
-        
     }
 
 

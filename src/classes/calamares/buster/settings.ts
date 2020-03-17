@@ -48,6 +48,7 @@ export function settings(displaymanager = false, sourcesMedia = false, sourcesTr
   exec.push('networkcfg')
   exec.push('hwclock')
   exec.push('services-systemd')
+  exec.push('create-tmp')
   exec.push('bootloader-config')
   exec.push('grubcfg')
   exec.push('bootloader')
