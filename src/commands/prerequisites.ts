@@ -49,7 +49,6 @@ export default class Prerequisites extends Command {
             shx.exec('apt update', { async: false })
             shx.exec('\
                   apt-get --yes install \
-                  lvm2 \
                   parted \
                   squashfs-tools \
                   xorriso \
