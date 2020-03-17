@@ -199,7 +199,10 @@ USAGE
   $ eggs install
 
 OPTIONS
-  -g, --gui  use the gui installer
+  -g, --gui      use gui installer
+  -h, --info     show CLI help
+  -u, --umount   umount devices
+  -v, --verbose  verbose
 
 ALIASES
   $ eggs hatch
