@@ -186,7 +186,7 @@ class calamaresConfig {
         write(file, content, this.verbose)
 
         const scriptSourcesMedia = require('./scripts/sources-media').sourcesMedia
-        const scriptDir = `/sbin/`
+        const scriptDir = `/usr/sbin/`
         const scriptFile = scriptDir + 'sources-media'
         const scriptContent = scriptSourcesMedia()
         write(scriptFile, scriptContent, this.verbose)
@@ -208,7 +208,7 @@ class calamaresConfig {
         write(file, content, this.verbose)
 
         const scriptSourcesTrusted = require('./scripts/sources-trusted').sourcesTrusted
-        const scriptDir = `/sbin/`
+        const scriptDir = `/usr/sbin/`
         const scriptFile = scriptDir + 'sources-trusted'
         const scriptContent = scriptSourcesTrusted()
         write(scriptFile, scriptContent, this.verbose)
@@ -322,7 +322,7 @@ class calamaresConfig {
         }
         write(file, content, this.verbose)
         const scriptcreateTmp = require('./scripts/create-tmp').createTmp
-        const scriptDir = `/sbin/`
+        const scriptDir = `/usr/sbin/`
         const scriptFile = scriptDir + 'create-tmp'
         const scriptContent = scriptcreateTmp()
         write(scriptFile, scriptContent, this.verbose)
@@ -345,7 +345,7 @@ class calamaresConfig {
         write(file, content, this.verbose)
 
         const scriptBootloaderConfig = require('./scripts/bootloader-config').bootloaderConfig
-        const scriptDir = `/sbin/`
+        const scriptDir = `/usr/sbin/`
         const scriptFile = scriptDir + 'bootloader-config'
         const scriptContent = scriptBootloaderConfig()
         write(scriptFile, scriptContent, this.verbose)
@@ -476,7 +476,7 @@ class calamaresConfig {
         write(file, content, this.verbose)
 
         const scriptSourcesFinal = require('./scripts/sources-final').sourcesFinal
-        const scriptDir = `/sbin/`
+        const scriptDir = `/usr/sbin/`
         const scriptFile = scriptDir + 'sources-final'
         const scriptContent = scriptSourcesFinal()
         write(scriptFile, scriptContent, this.verbose)
