@@ -70,6 +70,7 @@ class calamaresConfig {
         this.moduleNetworkcfg()
         this.moduleHwclock()
         this.moduleServicesSystemd()
+        this.moduleCreateTmp()
         this.moduleBootloaderConfig()
         this.moduleGrubcfg()
         this.moduleBootloader()
@@ -310,6 +311,27 @@ class calamaresConfig {
         console.log(`calamares: module servives-systemd. Nothing to do!`)
         }
     }
+
+    async moduleCreateTmp() {
+        const createTmp = require('./calamares-modules/create-tmp').createTmp
+        const dir = `/usr/lib/calamares/modules/create-tmp/`
+        const file = dir + 'module.desc'
+        const content = createTmp()
+        if (!fs.existsSync(dir)) {
+            fs.mkdirSync(dir)
+        }
+        write(file, content, this.verbose)
+
+        const scriptcreateTmp = require('./scripts/create-tmp').bootloaderConfig
+        const scriptDir = `/sbin/`
+        const scriptFile = scriptDir + 'create-tmp'
+        const scriptContent = scriptcreateTmp()
+        write(scriptFile, scriptContent, this.verbose)
+        await exec(`chmod +x ${scriptFile}`)
+        
+    }
+
+
 
     /**
      * 
