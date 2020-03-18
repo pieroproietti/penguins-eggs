@@ -25,17 +25,18 @@ export function sourcesTrusted(): string {
     text += `\n`
     text += `cat << EOF > $CHROOT/etc/apt/sources.list.d/debian-trusted.list\n`
     text += `# See https://wiki.debian.org/SourcesList for more information.\n`
-    text += `# debian-trusted.lis That list is only installation\n`
-    text += `deb [trusted = yes] http://deb.debian.org/debian $RELEASE main\n`
-    text += `deb-src [trusted = yes] http://deb.debian.org/debian $RELEASE main\n`
+    text += `# debian-trusted.list >>> That list is only for installation<<<\n`
+    text += `deb [trusted=yes] http://deb.debian.org/debian $RELEASE main\n`
+    text += `deb-src [trusted=yes] http://deb.debian.org/debian $RELEASE main\n`
     text += `\n`
-    text += `deb [trusted = yes] http://deb.debian.org/debian $RELEASE-updates main\n`
+    text += `deb [trusted=yes] http://deb.debian.org/debian $RELEASE-updates main\n`
     text += `deb-src [trusted = yes] http://deb.debian.org/debian $RELEASE-updates main\n`
     text += `\n`
-    text += `deb [trusted = yes] http://security.debian.org/debian-security/ $RELEASE/updates main\n`
-    text += `deb-src [trusted = yes] http://security.debian.org/debian-security/ $RELEASE/updates main\n`
+    text += `deb [trusted=yes] http://security.debian.org/debian-security/ $RELEASE/updates main\n`
+    text += `deb-src [trusted=yes] http://security.debian.org/debian-security/ $RELEASE/updates main\n`
     text += `EOF\n`
     text += `\n`
+    text += `chroot $CHROOT apt-get update\n`
     text += `exit 0\n`
 
     return text
