@@ -36,6 +36,9 @@ export function settings(displaymanager = false, sourcesMedia = false, sourcesTr
   if (sourcesMedia){
     exec.push('sources-media')
   }
+  if (sourcesTrusted){
+    exec.push('sources-trusted')
+  }
   exec.push('machineid')
   exec.push('fstab')
   exec.push('locale')
