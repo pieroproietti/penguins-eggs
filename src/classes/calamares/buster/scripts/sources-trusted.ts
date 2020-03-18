@@ -10,7 +10,7 @@ export function sourcesTrusted(): string {
     text += `\n`
     text += `if [ "$1" = "-u" ]; then\n`
     text += `    rm $CHROOT/etc/apt/sources.list.d/debian-trusted.list\n`
-    text += `    chroot $CHROOT apt-get update\n`
+    text += `    chroot $CHROOT apt-get --allow-unauthenticated update\n`
     text += `    exit 0\n`
     text += `fi\n`
     text += `\n`
@@ -30,13 +30,13 @@ export function sourcesTrusted(): string {
     text += `deb-src [trusted=yes] http://deb.debian.org/debian $RELEASE main\n`
     text += `\n`
     text += `deb [trusted=yes] http://deb.debian.org/debian $RELEASE-updates main\n`
-    text += `deb-src [trusted = yes] http://deb.debian.org/debian $RELEASE-updates main\n`
+    text += `deb-src [trusted=yes] http://deb.debian.org/debian $RELEASE-updates main\n`
     text += `\n`
     text += `deb [trusted=yes] http://security.debian.org/debian-security/ $RELEASE/updates main\n`
     text += `deb-src [trusted=yes] http://security.debian.org/debian-security/ $RELEASE/updates main\n`
     text += `EOF\n`
     text += `\n`
-    text += `chroot $CHROOT apt-get update\n`
+    text += `chroot $CHROOT apt-get -y --allow-unauthenticated update\n`
     text += `exit 0\n`
 
     return text

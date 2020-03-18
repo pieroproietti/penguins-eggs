@@ -15,7 +15,7 @@ export function bootloaderConfig(): string {
     text += `    echo mkdir $TMPDIR\n`
     text += `fi\n`
     text += `# eseguo apt update\n`
-    text += `chroot $CHROOT apt-get -y update`
+    text += `chroot $CHROOT apt-get -y --allow-unauthenticated update`
     text += `\n`
     text += `# Set secure permissions for the initramfs if we're configuring\n`
     text += `# full-disk-encryption. The initramfs is re-generated later in the\n`
@@ -29,10 +29,10 @@ export function bootloaderConfig(): string {
     text += `\n`
     text += `if [ -d /sys/firmware/efi/efivars ]; then\n`
     text += `    echo " * Installing grub-efi (uefi)..."\n`
-    text += `    DEBIAN_FRONTEND=noninteractive chroot $CHROOT apt-get -y install grub-efi-amd64 cryptsetup keyutils\n`
+    text += `    DEBIAN_FRONTEND=noninteractive chroot $CHROOT apt-get -y --allow-unauthenticated install grub-efi-amd64 cryptsetup keyutils\n`
     text += `else\n`
     text += `    echo " * install grub... (bios)"\n`
-    text += `    DEBIAN_FRONTEND=noninteractive chroot $CHROOT apt-get -y install grub-pc cryptsetup keyutils\n`
+    text += `    DEBIAN_FRONTEND=noninteractive chroot $CHROOT apt-get -y --allow-unauthenticated install grub-pc cryptsetup keyutils\n`
     text += `fi\n`
     return text
 }
