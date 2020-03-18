@@ -16,7 +16,7 @@ export function sourcesTrusted(): string {
     text += `\n`
     text += `# Remove previous sources, we will configure sources in a later phase\n`
     text += `rm -f $CHROOT/etc/apt/sources.list\n`
-    text += `rm -f $CHROOT/etc/apt/sources.list.d/*.list\n`
+    text += `rm -rf $CHROOT/etc/apt/sources.list.d/\n`
     text += `if [ ! -d $CHROOT/etc/apt/sources.list.d ]; then\n`
     text += `   mkdir -p $CHROOT/etc/apt/sources.list.d\n`
     text += `fi\n`
