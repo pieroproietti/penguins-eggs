@@ -19,9 +19,7 @@ export function sourcesTrusted(): string {
     text += `echo "rm -rf $CHROOT/etc/apt/sources.list.d"\n`
     text += `rm -f $CHROOT/etc/apt/sources.list\n`
     text += `rm -rf $CHROOT/etc/apt/sources.list.d\n`
-    text += `if [ ! -d $CHROOT/etc/apt/sources.list.d ]; then\n`
-    text += `   mkdir -p $CHROOT/etc/apt/sources.list.d\n`
-    text += `fi\n`
+    text += `mkdir -p $CHROOT/etc/apt/sources.list.d\n`
     text += `#\n`
     text += `# Writes the debian-trusted.list file\n`
     text += `\n`
@@ -38,7 +36,7 @@ export function sourcesTrusted(): string {
     text += `deb-src [trusted=yes] http://security.debian.org/debian-security/ $RELEASE/updates main\n`
     text += `EOF\n`
     text += `\n`
-    text += `chroot $CHROOT apt-get -y --allow-unauthenticated update\n`
+    text += `chroot $CHROOT apt-get --allow-unauthenticated update -y\n`
     text += `exit 0\n`
 
     return text
