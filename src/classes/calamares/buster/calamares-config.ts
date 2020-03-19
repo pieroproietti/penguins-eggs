@@ -87,6 +87,9 @@ class calamaresConfig {
         if (this.sourcesMedia) {
             this.moduleSourcesMediaUnmount()
         }
+        if (this.sourcesTrusted) {
+            this.moduleSourcesTrustedUnmount()
+        }
         this.moduleSourcesFinal()
         this.moduleUmount()
     }
@@ -458,6 +461,25 @@ class calamaresConfig {
 
         if (this.verbose) {
             console.log(`calamares: module source-media-unmount use the same script of source-media. Nothing to do!`)
+        }
+
+    }
+
+    /**
+     * 
+     */
+    moduleSourcesTrustedUnmount() {
+        const sourcesTrustedUnmount = require('./calamares-modules/sources-trusted-unmount').sourcesTrustedUnmount
+        const dir = `/usr/lib/calamares/modules/sources-trusted-unmount/`
+        const file = dir + 'module.desc'
+        const content = sourcesTrustedUnmount()
+        if (!fs.existsSync(dir)) {
+            fs.mkdirSync(dir)
+        }
+        write(file, content, this.verbose)
+
+        if (this.verbose) {
+            console.log(`calamares: module source-trusted-unmount use the same script of source-trusted. Nothing to do!`)
         }
 
     }

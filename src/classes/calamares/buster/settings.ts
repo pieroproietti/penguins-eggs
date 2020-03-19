@@ -68,6 +68,10 @@ export function settings(displaymanager = false, sourcesMedia = false, sourcesTr
     exec.push('sources-media-unmount')
     exec.push('sources-final')
   }
+  if (sourcesTrusted) {
+    exec.push('sources-trusted-unmount')
+    exec.push('sources-final')
+  }
   exec.push('umount')
   
   const settings = {
