@@ -37,7 +37,12 @@ export default class Utils {
    * Return the primary user's name
    */
   static getPrimaryUser(): string {
-    return shx.exec(`echo $(awk -F":" '/1000:1000/ { print $1 }' /etc/passwd)`, { silent: true }).stdout.trim()
+    let primaryUser =shx.exec(`echo $(awk -F":" '/1000:1000/ { print $1 }' /etc/passwd)`, { silent: true }).stdout.trim()
+    if ( primaryUser === ''){
+      primaryUser = 'live'
+    }
+
+    return primaryUser
   }
 
   /**
