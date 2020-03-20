@@ -41,7 +41,6 @@ export default class Utils {
     if ( primaryUser === ''){
       primaryUser = 'live'
     }
-
     return primaryUser
   }
 
