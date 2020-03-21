@@ -911,6 +911,7 @@ timeout 200\n`
     if (Utils.packageIsInstalled('calamares')) {
       shx.cp('/usr/share/applications/install-debian.desktop', `${this.work_dir.merged}/home/${user}/Desktop`)
       await exec(`chown ${user}:${user} ${this.work_dir.merged}/home/${user}/Desktop/install-debian.desktop`, echo)
+      await exec(`chmod +x ${this.work_dir.merged}/home/${user}/Desktop/install-debian.desktop`, echo)
     }
   }
 
