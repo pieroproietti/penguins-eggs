@@ -38,7 +38,12 @@ export default class Utils {
    */
   static getPrimaryUser(): string {
     // let primaryUser =shx.exec(`echo $(awk -F":" '/1000:1000/ { print $1 }' /etc/passwd)`, { silent: true }).stdout.trim()
-    const primaryUser = shx.exec('echo $SUDO_USER', {silent: true}).stdout.trim()
+    let primaryUser = shx.exec('echo $SUDO_USER', {silent: true}).stdout.trim()
+    if (primaryUser === ''){
+      console.log('Cannot find your user name. Log as normal user and run: $sudo eggs produce ')
+      process.exit(1)
+      primaryUser = 'live'
+    }
     return primaryUser
   }
 

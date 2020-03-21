@@ -902,8 +902,7 @@ timeout 200\n`
 
     // creazione della home per user live
     shx.cp(`-r`, `/etc/skel/.`, `${this.work_dir.merged}/home/${user}`)
-    await exec(`chown -R 1000:1000 ${this.work_dir.merged}/home/${user}`, echo)
-    // shx.exec(`chown -R 1000:1000 ${this.work_dir.merged}/home/${user}`, { async: false })
+    await exec(`chown -R ${user}:${user} ${this.work_dir.merged}/home/${user}`, echo)
     shx.mkdir(`-p`, `${this.work_dir.merged}/home/${user}/Desktop`)
 
     // Copiare i link sul desktop per user live
@@ -911,7 +910,7 @@ timeout 200\n`
     shx.cp('/usr/share/applications/dwagent-sh.desktop', `${this.work_dir.merged}/home/${user}/Desktop`)
     if (Utils.packageIsInstalled('calamares')) {
       shx.cp('/usr/share/applications/install-debian.desktop', `${this.work_dir.merged}/home/${user}/Desktop`)
-      await exec(`chown 1000:1000 ${this.work_dir.merged}/home/${user}/Desktop/install-debian.desktop`, echo)
+      await exec(`chown ${user}:${user} ${this.work_dir.merged}/home/${user}/Desktop/install-debian.desktop`, echo)
     }
   }
 
@@ -1046,9 +1045,8 @@ timeout 200\n`
     fs.copyFileSync(`/usr/share/grub/unicode.pf2`, `boot/grub/font.pf2`)
 
     // doesn't need to be root-owned ${pwd} = current Directory
-    // shx.exec(`chown -R 1000:1000 $(pwd) 2>/dev/null`)
-    shx.exec(`chown -R 1000:1000 $(pwd) 2>/dev/null`, { silent: false })
-    // await exec(`chown -R 1000:1000 $(pwd) 2>/dev/null`, echo)
+    const user = Utils.getPrimaryUser()
+    await exec(`chown -R ${user}:${user} $(pwd) 2>/dev/null`, echo)
 
     // Cleanup efi temps
     await exec(`umount img-mnt`, echo)
