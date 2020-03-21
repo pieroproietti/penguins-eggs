@@ -47,6 +47,7 @@ class calamaresConfig {
         this.createCalamaresDirs()
         this.createSettings()
         this.createBranding()
+        this.createInstallDebian()
 
         // work modules exec section
         this.modulePartition()
@@ -116,20 +117,24 @@ class calamaresConfig {
         if (!fs.existsSync('/usr/lib/calamares/modules')){
             fs.mkdirSync('/usr/lib/calamares/modules')
         }
+
         shx.cp(path.resolve(__dirname, '../../../../assets/calamares/install-debian.desktop'), '/usr/share/applications/install-debian.desktop')
         shx.cp('-r', path.resolve(__dirname, '../../../../assets/calamares/branding/*'), '/etc/calamares/branding/')
         shx.cp(path.resolve(__dirname, '../../../../assets/calamares/install-debian'), '/sbin/install-debian')
         shx.cp(path.resolve(__dirname, '../../../../assets/calamares/artwork/install-debian.png'), '/usr/share/icons/install-debian.png')
     }
+
+
     /**
      * 
      */
-    createSettings() {
-        const settings = require('./settings').settings
-        const dir = '/etc/calamares/'
-        const file = dir + 'settings.conf'
-        const content = settings(this.displaymanager, this.sourcesMedia, this.sourcesTrusted)
-        write(file, content, this.verbose)
+    async createInstallDebian() {
+       const scriptInstallDebian = require('./scripts/install-debian').installDebian
+       const scriptDir = `/usr/bin/`
+       const scriptFile = scriptDir + 'install-debian'
+       const scriptContent = scriptInstallDebian()
+       write(scriptFile, scriptContent, this.verbose)
+       await exec(`chmod +x ${scriptFile}`)
     }
 
     /**
@@ -143,6 +148,16 @@ class calamaresConfig {
         write(file, content, this.verbose)
     }
 
+    /**
+     * 
+     */
+    createSettings() {
+        const settings = require('./scripts/install-debian').settings
+        const dir = '/etc/calamares/'
+        const file = dir + 'settings.conf'
+        const content = settings(this.displaymanager, this.sourcesMedia, this.sourcesTrusted)
+        write(file, content, this.verbose)
+    }
 
     /**
      * 
@@ -152,6 +167,7 @@ class calamaresConfig {
             console.log(`calamares: module partition. Nothing to do!`)
         }
     }
+
 
     /**
      * 
