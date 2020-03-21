@@ -1046,10 +1046,13 @@ timeout 200\n`
 
     // doesn't need to be root-owned ${pwd} = current Directory
     const user = Utils.getPrimaryUser()
-    await exec(`chown -R ${user}:${user} $(pwd) 2>/dev/null`, echo)
+    // await exec(`chown -R ${user}:${user} $(pwd) 2>/dev/null`, echo)
+    // console.log(`pwd: ${pwd}`)
+    // await exec(`chown -R ${user}:${user} $(pwd)`, echo)
 
     // Cleanup efi temps
     await exec(`umount img-mnt`, echo)
+    
     await exec(`rmdir img-mnt`, echo)
 
     // popD Torna alla directory corrente
