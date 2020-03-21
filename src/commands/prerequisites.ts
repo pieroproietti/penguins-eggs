@@ -59,7 +59,6 @@ export default class Prerequisites extends Command {
                   xterm \
                   whois \
                   grub-efi-amd64', { async: false })
-
             /**
              * rimosso 
              * live-config live-config-systemd conflict open-infrastructure-system-config 
