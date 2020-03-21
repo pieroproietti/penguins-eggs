@@ -42,7 +42,9 @@ export default class Calamares extends Command {
           shx.exec(`apt-get update`, { async: false })
           shx.exec(`apt-get install --yes \
                 calamares \
-                calamares-settings-debian`, { async: false })
+                qml-module-qtquick-window2 \
+                qml-module-qtquick2`, { async: false })
+                // calamares-settings-debian
         }
 
         const ovary = new Ovary

@@ -47,6 +47,7 @@ class calamaresConfig {
         this.createCalamaresDirs()
         this.createSettings()
         this.createBranding()
+        this.createInstallDebian()
 
         // work modules exec section
         this.modulePartition()
@@ -116,11 +117,37 @@ class calamaresConfig {
         if (!fs.existsSync('/usr/lib/calamares/modules')){
             fs.mkdirSync('/usr/lib/calamares/modules')
         }
+
         shx.cp(path.resolve(__dirname, '../../../../assets/calamares/install-debian.desktop'), '/usr/share/applications/install-debian.desktop')
         shx.cp('-r', path.resolve(__dirname, '../../../../assets/calamares/branding/*'), '/etc/calamares/branding/')
         shx.cp(path.resolve(__dirname, '../../../../assets/calamares/install-debian'), '/sbin/install-debian')
         shx.cp(path.resolve(__dirname, '../../../../assets/calamares/artwork/install-debian.png'), '/usr/share/icons/install-debian.png')
     }
+
+
+    /**
+     * 
+     */
+    async createInstallDebian() {
+       const scriptInstallDebian = require('./scripts/install-debian').installDebian
+       const scriptDir = `/usr/bin/`
+       const scriptFile = scriptDir + 'install-debian'
+       const scriptContent = scriptInstallDebian()
+       write(scriptFile, scriptContent, this.verbose)
+       await exec(`chmod +x ${scriptFile}`)
+    }
+
+    /**
+     * 
+     */
+    createBranding() {
+        const branding = require('./branding').branding
+        const dir = `/etc/calamares/branding/${this.distro.branding}/`
+        const file = dir + 'branding.desc'
+        const content = branding(this.distro, this.oses, this.verbose)
+        write(file, content, this.verbose)
+    }
+
     /**
      * 
      */
@@ -135,23 +162,12 @@ class calamaresConfig {
     /**
      * 
      */
-    createBranding() {
-        const branding = require('./branding').branding
-        const dir = `/etc/calamares/branding/${this.distro.branding}/`
-        const file = dir + 'branding.desc'
-        const content = branding(this.distro, this.oses, this.verbose)
-        write(file, content, this.verbose)
-    }
-
-
-    /**
-     * 
-     */
     modulePartition() {
         if (this.verbose) {
             console.log(`calamares: module partition. Nothing to do!`)
         }
     }
+
 
     /**
      * 
