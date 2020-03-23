@@ -38,7 +38,8 @@ class calamaresConfig {
         this.distro = distro
         this.oses = oses
         this.verbose = verbose
-        this.displaymanager = Utils.packageIsInstalled('lightdm') // Crea displaymanager solo per lightdm
+        this.displaymanager = (Utils.packageIsInstalled('lightdm') || Utils.packageIsInstalled('sddm'))
+        // Crea displaymanager solo per lightdm
         this.sourcesMedia = false
     }
 
