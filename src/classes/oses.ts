@@ -122,6 +122,11 @@ class Oses {
           o.distroId = 'LMDE'
           o.distroLike = 'Debian'
           o.versionLike = 'stretch'
+        } else if (o.versionId === 'debbie') {
+          o.distroId = 'LMDE'
+          o.distroLike = 'Debian'
+          o.versionLike = 'buster'
+          o.mountpointSquashFs = '/run/live/medium/live/filesystem.squashfs'
           // elementaryOS
         } else if (o.versionId === 'juno') {
           o.distroId = 'elementaryOS'
