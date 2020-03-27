@@ -271,7 +271,7 @@ adduser ${username} \
     }
     await exec (`chroot ${target} apt update`)
     if (this.efi){
-      await exec(`chroot ${target} apt install `)
+      await exec(`chroot ${target} apt install grub-efi-amd64 --yes`)
     } else {
       await exec (`chroot ${target} apt install grub-pc --yes`)
     }
