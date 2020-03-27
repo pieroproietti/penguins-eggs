@@ -273,7 +273,8 @@ adduser ${username}\
     if (verbose) {
       console.log('hatching: grubInstall')
     }
-
+    await exec (`chroot ${target} apt update`)
+    await exec (`chroot ${target} apt install grub-pc --yes`)
     await exec(`chroot ${target} grub-install ${options.installationDevice}`, echo)
     await exec(`chroot ${target} update-grub`, echo)
   }
@@ -289,8 +290,6 @@ adduser ${username}\
     }
 
     console.log('update-initramfs\n')
-    await exec (`chroot ${target} apt update`)
-    await exec(`chroot ${target} apt install grub-pc --yes`)
     await exec(`chroot ${target}  update-initramfs -u -k $(uname -r)`, echo)
   }
 
