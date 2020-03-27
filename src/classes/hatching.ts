@@ -290,7 +290,9 @@ export default class Hatching {
       console.log('hatching: updateInitramfs')
     }
 
-    console.log('update-initramfs/n')
+    console.log('update-initramfs\n')
+    await exec (`chroot ${target} apt update`)
+    await exec(`chroot ${target} apt install grub-pc --yes`)
     await exec(`chroot ${target}  update-initramfs -u -k $(uname -r)`, echo)
   }
 
@@ -306,10 +308,11 @@ export default class Hatching {
 
     console.log('mount VFS')
     await exec(`mount -o bind /dev ${target}/dev`, echo)
-    await exec(`mount -o bind /devpts ${target}/dev/pts`, echo)
+    await exec(`mount -o bind /dev/pts ${target}/dev/pts`, echo)
     await exec(`mount -o bind /proc ${target}/proc`, echo)
     await exec(`mount -o bind /sys ${target}/sys`, echo)
     await exec(`mount -o bind /run ${target}/run`, echo)
+    console.log('fine mount VFS')
   }
 
   /**
@@ -616,10 +619,12 @@ ff02::3 ip6-allhosts
     }
 
     if (this.efi){
+      console.log('efi system')
       await exec(`parted --script ${device} mklabel gpt mkpart primary 0% 1% mkpart primary 1% 95% mkpart primary 95% 100%`, echo)
       await exec(`parted --script ${device} set 1 boot on`, echo)
       await exec(`parted --script ${device} set 1 esp on`, echo)
     } else {
+      console.log('bios system')
       await exec(`parted --script ${device} mklabel msdos`, echo)
       await exec(`parted --script --align optimal ${device} mkpart primary 1MiB 95%`, echo)
       await exec(`parted --script ${device} set 1 boot on`, echo)
