@@ -13,8 +13,6 @@ import inquirer = require('inquirer')
 import drivelist = require('drivelist')
 import Utils from './utils'
 import { IDevices, IDevice } from '../interfaces'
-import { SSL_OP_EPHEMERAL_RSA } from 'constants'
-import { timingSafeEqual } from 'crypto'
 const exec = require('../lib/utils').exec
 
 /**
@@ -84,8 +82,6 @@ export default class Hatching {
       this.efi = true
     }
 
-    console.log(`System EFI: ${this.efi}`)
-    
     if (this.efi) {
       devices.efi.device = `${options.installationDevice}1`
       devices.efi.fsType = 'F 32 -I'
@@ -239,8 +235,8 @@ adduser ${username} \
     if (verbose) {
       console.log('hatching: delUserLive')
     }
-
-    shx.exec(`chroot ${target} deluser live`, { silent: true })
+    await exec(`chroot ${target} deluser live`, echo)
+    //shx.exec(`chroot ${target} deluser live`, { silent: true })
   }
 
   /**
@@ -274,7 +270,11 @@ adduser ${username} \
       console.log('hatching: grubInstall')
     }
     await exec (`chroot ${target} apt update`)
-    await exec (`chroot ${target} apt install grub-pc --yes`)
+    if (this.efi){
+      await exec(`chroot ${target} apt install `)
+    } else {
+      await exec (`chroot ${target} apt install grub-pc --yes`)
+    }
     await exec(`chroot ${target} grub-install ${options.installationDevice}`, echo)
     await exec(`chroot ${target} update-grub`, echo)
   }
@@ -356,11 +356,12 @@ adduser ${username} \
       mountOptsRoot = 'defaults,noatime,discard 0 1'
       mountOptsSwap = 'defaults,noatime,discard 0 2'
     }
-    const text = `\
-${devices.root.device} ${devices.root.mountPoint} ${devices.root.fsType} ${mountOptsRoot}
-${devices.efi.device} ${devices.efi.mountPoint} fat32 ${mountOptsRoot}
-${devices.swap.device} ${devices.swap.mountPoint} ${devices.swap.fsType} ${mountOptsSwap}`
-
+    let text = ''
+    text += `${devices.root.device} ${devices.root.mountPoint} ${devices.root.fsType} ${mountOptsRoot}\n`
+    if (this.efi) {
+      text += `${devices.efi.device} ${devices.efi.mountPoint} fat32 ${mountOptsRoot}\n`
+    }
+    text += `${devices.swap.device} ${devices.swap.mountPoint} ${devices.swap.fsType} ${mountOptsSwap}\n`
     Utils.write(file, text)
   }
 
@@ -378,7 +379,7 @@ ${devices.swap.device} ${devices.swap.mountPoint} ${devices.swap.fsType} ${mount
     const file = `${target}/etc/hostname`
     const text = options.hostname
 
-    shx.exec(`rm ${target}/etc/hostname`, { silent: true })
+    await exec(`rm ${target}/etc/hostname`, echo)
     fs.writeFileSync(file, text)
   }
 
@@ -396,13 +397,13 @@ ${devices.swap.device} ${devices.swap.mountPoint} ${devices.swap.fsType} ${mount
     console.log(`tipo di resolv.con: ${options.netAddressType}`)
     if (options.netAddressType === 'static') {
       const file = `${target}/etc/resolv.conf`
-      const text = `
-search ${options.domain}
-domain ${options.domain}
-nameserver ${options.netDns}
-nameserver 8.8.8.8
-nameserver 8.8.4.4
-`
+      
+      let text = ``
+      text += `search ${options.domain}\n`
+      text += `domain ${options.domain}\n`
+      text += `nameserver ${options.netDns}\n`
+      text += `nameserver 8.8.8.8\n`
+      text += `nameserver 8.8.4.4\n`
       fs.writeFileSync(file, text)
     }
   }
@@ -423,14 +424,14 @@ nameserver 8.8.4.4
 
     if (options.netAddressType === 'static') {
       const file = `${target}/etc/network/interfaces`
-      const text = `\
-auto lo
-iface lo inet manual
-auto ${options.netInterface}
-iface ${options.netInterface} inet ${options.netAddressType}
-    address ${options.netAddress}
-    netmask ${options.netMask}
-    gateway ${options.netGateway}`
+      let text = ``
+      text += `auto lo\n`
+      text += `iface lo inet manual\n`
+      text += `auto ${options.netInterface}\n`
+      text += `iface ${options.netInterface} inet ${options.netAddressType}\n`
+      text += `address ${options.netAddress}\n`
+      text += `netmask ${options.netMask}\n`
+      text += `gateway ${options.netGateway}\n`
 
       fs.writeFileSync(file, text)
     }
@@ -448,23 +449,19 @@ iface ${options.netInterface} inet ${options.netAddressType}
     }
 
     const file = `${target}/etc/hosts`
-    let text = '127.0.0.1 localhost localhost.localdomain'
+    let text = '127.0.0.1 localhost localhost.localdomain\n'
     if (options.netAddressType === 'static') {
-      text += `
-${options.netAddress} ${options.hostname} ${options.hostname}.${options.domain} pvelocalhost`
+      text += `${options.netAddress} ${options.hostname} ${options.hostname}.${options.domain} pvelocalhost\n`
     } else {
-      text += `
-127.0.1.1 ${options.hostname} ${options.hostname}.${options.domain}`
+      text += `127.0.1.1 ${options.hostname} ${options.hostname}.${options.domain}\n`
     }
-    text += `
-# The following lines are desirable for IPv6 capable hosts
-::1     ip6-localhost ip6-loopback
-fe00::0 ip6-localnet
-ff00::0 ip6-mcastprefix
-ff02::1 ip6-allnodes
-ff02::2 ip6-allrouters
-ff02::3 ip6-allhosts
-`
+    text += `# The following lines are desirable for IPv6 capable hosts\n`
+    text += `::1     ip6-localhost ip6-loopback\n`
+    text += `fe00::0 ip6-localnet\n`
+    text += `ff00::0 ip6-mcastprefix\n`
+    text += `ff02::1 ip6-allnodes\n`
+    text += `ff02::2 ip6-allrouters\n`
+    text += `ff02::3 ip6-allhosts\n`
     fs.writeFileSync(file, text)
   }
 
@@ -629,7 +626,6 @@ ff02::3 ip6-allhosts
     return true
   }
 
-
   /**
    * 
    * @param device 
@@ -718,7 +714,7 @@ ff02::3 ip6-allhosts
     if (verbose) {
       console.log('hatching: getOptions')
     }
-
+s
     return new Promise(function (resolve) {
       const questions: Array<Record<string, any>> = [
         {
