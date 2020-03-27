@@ -714,7 +714,7 @@ adduser ${username} \
     if (verbose) {
       console.log('hatching: getOptions')
     }
-s
+    
     return new Promise(function (resolve) {
       const questions: Array<Record<string, any>> = [
         {
