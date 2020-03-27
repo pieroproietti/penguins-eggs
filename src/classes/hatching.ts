@@ -359,7 +359,7 @@ adduser ${username} \
     let text = ''
     text += `${devices.root.device} ${devices.root.mountPoint} ${devices.root.fsType} ${mountOptsRoot}\n`
     if (this.efi) {
-      text += `${devices.efi.device} ${devices.efi.mountPoint} fat32 ${mountOptsRoot}\n`
+      text += `${devices.efi.device} ${devices.efi.mountPoint} vfat ${mountOptsRoot}\n`
     }
     text += `${devices.swap.device} ${devices.swap.mountPoint} ${devices.swap.fsType} ${mountOptsSwap}\n`
     Utils.write(file, text)
