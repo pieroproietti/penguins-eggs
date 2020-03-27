@@ -189,14 +189,12 @@ export default class Hatching {
     }
 
 
-    const cmd = `sudo chroot ${target} adduser ${username}\
-                                  --home /home/${username} \
-                                  --shell /bin/bash \
-                                  --disabled-password \
-                                  --gecos "${fullName},\
-                                          ${roomNumber},\
-                                          ${workPhone},\
-                                          ${homePhone}"`
+    const cmd = `sudo chroot ${target} \
+adduser ${username}\
+--home /home/${username} \
+--shell /bin/bash \
+--disabled-password \
+--gecos "${fullName},${roomNumber},${workPhone},${homePhone}"`
 
     await exec(cmd, echo)
     await exec(`echo ${username}:${password} | chroot ${target} chpasswd `, echo)
