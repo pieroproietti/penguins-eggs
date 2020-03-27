@@ -111,10 +111,9 @@ export default class Hatching {
     const diskSize = await this.getDiskSize(options.installationDevice, verbose)
     console.log(`diskSize: ${diskSize}`)
 
-
     if (umount) {
-      await this.umountVFS(target, verbose)
-      await this.umount4target(target, devices, verbose)
+      console.log(await this.umountVFS(target, verbose))
+      console.log(await this.umount4target(target, devices, verbose))
     }
 
     const isDiskPrepared: boolean = await this.diskPartition(options.installationDevice, verbose)
@@ -169,7 +168,7 @@ export default class Hatching {
       console.log('hatching: autoLoginConfig')
     }
 
-    shx.sed('-i', `autologin-user=${oldUser})`, `autologin-user=${newUser}`, `${target}/etc/lightdm/lightdm.conf`)
+    shx.sed('-i', `autologin-user=${oldUser}`, `autologin-user=${newUser}`, `${target}/etc/lightdm/lightdm.conf`)
   }
 
   /**
@@ -189,16 +188,17 @@ export default class Hatching {
     }
 
 
-    const cmd = `sudo chroot ${target} \
-adduser ${username}\
+    const cmd = `chroot ${target} \
+adduser ${username} \
 --home /home/${username} \
 --shell /bin/bash \
 --disabled-password \
 --gecos "${fullName},${roomNumber},${workPhone},${homePhone}"`
 
-    await exec(cmd, echo)
-    await exec(`echo ${username}:${password} | chroot ${target} chpasswd `, echo)
-    await exec(`chroot ${target} addgroup ${username} sudo`, echo)
+    console.log(cmd)
+    console.log(await exec(cmd, echo))
+    console.log(await exec(`echo ${username}:${password} | chroot ${target} chpasswd `, echo))
+    console.log(await exec(`chroot ${target} addgroup ${username} sudo`, echo))
   }
 
   /**
@@ -322,8 +322,7 @@ adduser ${username}\
       console.log('hatching: umountVFS')
     }
 
-    console.log('umount VFS')
-    await exec(`umount ${target}/dev/pts`, { silent: true })
+    await exec(`umount ${target}/dev/pts`, echo)
     await exec('sleep 1', echo)
     await exec(`umount ${target}/dev`, echo)
     await exec('sleep 1', echo)
@@ -600,7 +599,7 @@ ff02::3 ip6-allhosts
       await exec(`umount ${target}/boot/efi`, echo)
       await exec('sleep 1', echo)
     }
-    await exec(`umount ${devices.root.device} ${target}`, echo)
+    await exec(`umount ${devices.root.device}`, echo)
     await exec('sleep 1', echo)
     return true
   }
