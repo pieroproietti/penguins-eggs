@@ -347,14 +347,17 @@ adduser ${username} \
 
     const file = `${target}/etc/fstab`
     let mountOptsRoot = ''
+    let mountOptsEfi = ''
     let mountOptsSwap = ''
 
     if (await this.isRotational(installDevice)) {
       mountOptsRoot = 'defaults,relatime 0 1'
-      mountOptsRoot = 'defaults,relatime 0 2'
+      mountOptsEfi = 'defaults,relatime 0 2'
+      mountOptsSwap = 'defaults,relatime 0 2'
     } else {
-      mountOptsRoot = 'defaults,noatime,discard 0 1'
-      mountOptsSwap = 'defaults,noatime,discard 0 2'
+      mountOptsRoot = 'defaults,noatime 0 1'
+      mountOptsEfi = 'defaults,noatime 0 2'
+      mountOptsSwap = 'defaults,noatime 0 2'
     }
     let text = ''
     text += `${devices.root.device} ${devices.root.mountPoint} ${devices.root.fsType} ${mountOptsRoot}\n`
@@ -641,7 +644,7 @@ adduser ${username} \
     let response: any
     let retVal = false
 
-    response = await exec(`cat /sys/block/${device}/queue/rotational`, { capture: true, echo: true })
+    response = shx.exec(`cat /sys/block/${device}/queue/rotational`, {silent: verbose}).stdout.trim()
     if (response === '1') {
       retVal = true
     }
