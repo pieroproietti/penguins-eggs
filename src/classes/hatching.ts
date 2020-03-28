@@ -108,8 +108,8 @@ export default class Hatching {
     console.log(`diskSize: ${diskSize}`)
 
     if (umount) {
-      console.log(await this.umountVFS(target, verbose))
-      console.log(await this.umount4target(target, devices, verbose))
+      await this.umountVFS(target, verbose)
+      await this.umount4target(target, devices, verbose)
     }
 
     const isDiskPrepared: boolean = await this.diskPartition(options.installationDevice, verbose)
@@ -192,9 +192,9 @@ adduser ${username} \
 --gecos "${fullName},${roomNumber},${workPhone},${homePhone}"`
 
     console.log(cmd)
-    console.log(await exec(cmd, echo))
-    console.log(await exec(`echo ${username}:${password} | chroot ${target} chpasswd `, echo))
-    console.log(await exec(`chroot ${target} addgroup ${username} sudo`, echo))
+    await exec(cmd, echo)
+    await exec(`echo ${username}:${password} | chroot ${target} chpasswd `, echo)
+    await exec(`chroot ${target} addgroup ${username} sudo`, echo)
   }
 
   /**
@@ -517,7 +517,7 @@ adduser ${username} \
     f += ' --filter="- /usr/lib/live/rootfs"'
 
     f += ' --filter="- /run/*"'
-    f += ` --filter="- /boot/efi*"` //${devices.efi.mountPoint}
+    f += ` --filter="- /boot/efi/*"` //${devices.efi.mountPoint}
 
 
     cmd = `\

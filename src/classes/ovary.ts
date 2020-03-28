@@ -491,6 +491,11 @@ export default class Ovary {
     await exec(`rm -f ${this.work_dir.merged}/etc/wicd/wireless-settings.conf`, echo)
     await exec(`rm -f ${this.work_dir.merged}/etc/NetworkManager/system-connections/*`, echo)
     await exec(`rm -f ${this.work_dir.merged}/etc/network/wifi/*`, echo)
+    // Ho disabilitato l'attesa per la rete
+    // systemctl mask systemd-networkd-wait-online.service
+    // systemctl unmask systemd-networkd-wait-online.service
+    // systemctl disable systemd-time-wait-sync
+    
     /**
      * Andiamo a fare pulizia in /etc/network/:
      * if-down.d  if-post-down.d  if-pre-up.d  if-up.d  interfaces  interfaces.d
