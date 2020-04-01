@@ -988,6 +988,10 @@ timeout 200\n`
 
     // pushd efi_work
     const currentDir = process.cwd()
+
+    /**
+     * efi_work
+     */
     process.chdir(this.efi_work)
 
     /**
@@ -1013,11 +1017,13 @@ timeout 200\n`
     await exec(cmd, echo)
     // Additional modules so we don't boot in blind mode. I don't know which ones are really needed.
     cmd = `for i in efi_gop efi_uga ieee1275_fb vbe vga video_bochs video_cirrus jpeg png gfxterm ; do echo "insmod $i" >> boot/grub/x86_64-efi/grub.cfg ; done`
-
     await exec(cmd, echo)
 
     await exec(`echo source /boot/grub/grub.cfg >> boot/grub/x86_64-efi/grub.cfg`, echo)
-
+    /**
+     * fine lavoro in efi_work
+     */
+    
     // pushd tempDir
     process.chdir(tempDir)
 
@@ -1058,7 +1064,6 @@ timeout 200\n`
 
     // Cleanup efi temps
     await exec(`umount img-mnt`, echo)
-    
     await exec(`rmdir img-mnt`, echo)
 
     // popD Torna alla directory corrente
@@ -1105,6 +1110,7 @@ timeout 200\n`
     if (verbose) {
       console.log(`ovary: makeIsoImage ${isoName}`)
     }
+    
     const uefi_opt = '-eltorito-alt-boot -e boot/grub/efiboot.img -isohybrid-gpt-basdat -no-emul-boot'
 
     let isoHybridOption = `-isohybrid-mbr ${this.iso.isolinuxPath}isohdpfx.bin `

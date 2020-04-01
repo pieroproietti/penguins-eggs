@@ -644,8 +644,8 @@ adduser ${username} \
     let response: any
     let retVal = false
 
-    response = await exec(`cat /sys/block/${device}/queue/rotational`, { capture: true, echo: true })
-    //response = shx.exec(`cat /sys/block/${device}/queue/rotational`, {silent: verbose}).stdout.trim()
+    // response = await exec(`cat /sys/block/${device}/queue/rotational`, { capture: true, echo: true })
+    response = shx.exec(`cat /sys/block/${device}/queue/rotational`, {silent: verbose}).stdout.trim()
     if (response === '1') {
       retVal = true
     }
