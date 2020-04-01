@@ -447,7 +447,8 @@ export default class Ovary {
      * /etc/fstab should exist, even if it's empty,
      * to prevent error messages at boot
      */
-     await exec(`touch ${this.work_dir.merged}/etc/fstab`, echo)
+    await exec(`rm ${this.work_dir.merged}/etc/fstab`, echo)
+    await exec(`touch ${this.work_dir.merged}/etc/fstab`, echo)
 
     /**
      * Blank out systemd machine id. If it does not exist, systemd-journald
@@ -455,6 +456,7 @@ export default class Ovary {
      * set up a new unique ID.
      */
     if (fs.existsSync(`${this.work_dir.merged}/etc/machine-id`)) {
+      await exec(`rm ${this.work_dir.merged}/etc/machine-id`, echo)
       await exec(`touch ${this.work_dir.merged}/etc/machine-id`, echo)
       Utils.write(`${this.work_dir.merged}/etc/machine-id`, `:`)
     }
@@ -485,6 +487,7 @@ export default class Ovary {
      * Clear configs from /etc/network/interfaces, wicd and NetworkManager
      * and netman, so they aren't stealthily included in the snapshot.
     */
+    await exec(`rm ${this.work_dir.merged}/etc/network/interfaces`, echo)
     await exec(`touch ${this.work_dir.merged}/etc/network/interfaces`, echo)
     Utils.write(`${this.work_dir.merged}/etc/network/interfaces`, `auto lo\niface lo inet loopback`)
     await exec(`rm -f ${this.work_dir.merged}/var/lib/wicd/configurations/*`, echo)
