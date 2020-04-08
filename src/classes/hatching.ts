@@ -180,7 +180,7 @@ export default class Hatching {
       console.log('hatching: addUser')
     }
 
-    const cmd = `chroot ${target} \
+    const cmd = `chroot ${this.target} \
 adduser ${username} \
 --home /home/${username} \
 --shell /bin/bash \
