@@ -1,7 +1,7 @@
 /**
  * 
  */
-export function luksopenswaphookcfg(): string {
+export function lksopenswaphookcfg(): string {
     let text = ``
     text += `# Writes an openswap configuration with LUKS settings to the given path\n`
     text += `---\n`

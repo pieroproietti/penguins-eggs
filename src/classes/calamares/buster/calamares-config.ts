@@ -78,6 +78,7 @@ class calamaresConfig {
         this.modulePackages()
         this.moduleLuksbootkeyfile()
         this.moduleLuksopenswaphookcfg()
+        
         this.modulePlymouthcfg()
         this.moduleInitramfscfg()
         this.moduleInitramfs()
