@@ -479,7 +479,6 @@ class calamaresConfig {
         if (this.verbose) {
             console.log(`calamares: module source-media-unmount use the same script of source-media. Nothing to do!`)
         }
-
     }
 
     /**

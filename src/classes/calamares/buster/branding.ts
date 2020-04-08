@@ -19,7 +19,7 @@ export function branding(distro: IDistro, oses: IOses, verbose = false): string 
     const supportUrl: string = oses.supportUrl
     const bugReportUrl: string = oses.bugReportUrl
 
-    const productName = distro.name
+    const productName = `Debian` // distro.name 
     const shortProductName = distro.name
     const version = distro.versionNumber + ' ( ' + distro.versionName + ')'
     const shortVersion = distro.versionNumber

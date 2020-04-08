@@ -21,6 +21,7 @@ const exec = require('../lib/utils').exec
 export default class Hatching {
 
   efi = false
+  target = '/tmp/TARGET'
 
   constructor() {
   }
@@ -62,7 +63,6 @@ export default class Hatching {
       console.log('hatching: install')
     }
 
-    const target = '/tmp/TARGET'
     const devices = {} as IDevices
 
     devices.efi = {} as IDevice
@@ -108,68 +108,65 @@ export default class Hatching {
     console.log(`diskSize: ${diskSize}`)
 
     if (umount) {
-      await this.umountVFS(target, verbose)
-      await this.umount4target(target, devices, verbose)
+      await this.umountVFS(verbose)
+      await this.umount4target(devices, verbose)
     }
 
     const isDiskPrepared: boolean = await this.diskPartition(options.installationDevice, verbose)
     if (isDiskPrepared) {
       await this.mkfs(devices, verbose)
-      await this.mount4target(target, devices, verbose)
-      await this.egg2system(target, devices, verbose)
-      await this.setTimezone(target, verbose)
-      await this.fstab(target, devices, options.installationDevice, verbose)
-      await this.hostname(target, options, verbose)
-      await this.resolvConf(target, options, verbose)
-      await this.interfaces(target, options, verbose)
-      await this.hosts(target, options, verbose)
-      await this.mountVFS(target, verbose)
-      await this.updateInitramfs(target, verbose)
-      await this.grubInstall(target, options, verbose)
-      await this.addUser(target, options.username, options.userpassword, '', '', '', '', verbose)
-      await this.changePassword(target, 'root', options.rootpassword, verbose)
-      await this.autologinConfig(target, 'live', options.username, verbose)
-      await this.delUserLive(target, verbose)
-      await this.patchPve(target, verbose)
-      await this.umountVFS(target, verbose)
-      await this.umount4target(target, devices, verbose)
+      await this.mount4target(devices, verbose)
+      await this.egg2system(devices, verbose)
+      await this.setTimezone(verbose)
+      await this.fstab(devices, options.installationDevice, verbose)
+      await this.hostname(options, verbose)
+      await this.resolvConf(options, verbose)
+      await this.interfaces(options, verbose)
+      await this.hosts(options, verbose)
+      await this.mountVFS(verbose)
+      await this.updateInitramfs(verbose)
+      await this.grubInstall(options, verbose)
+      await this.addUser(options.username, options.userpassword, '', '', '', '', verbose)
+      await this.changePassword('root', options.rootpassword, verbose)
+      await this.autologinConfig('live', options.username, verbose)
+      await this.delUserLive(verbose)
+      await this.patchPve(verbose)
+      await this.umountVFS(verbose)
+      await this.umount4target(devices, verbose)
     }
   }
 
   /**
    * setTimezone
-   * @param target
    */
-  async setTimezone(target: string, verbose = false) {
+  async setTimezone(verbose = false) {
     let echo = Utils.setEcho(verbose)
     if (verbose) {
       console.log('hatching: setTimezone')
     }
 
-    let cmd = `chroot ${target} unlink /etc/localtime`
+    let cmd = `chroot ${this.target} unlink /etc/localtime`
     await exec(cmd, echo)
-    cmd = `chroot ${target} ln -sf /usr/share/zoneinfo/Europe/Rome /etc/localtime`
+    cmd = `chroot ${this.target} ln -sf /usr/share/zoneinfo/Europe/Rome /etc/localtime`
     await exec(cmd, echo)
   }
 
   /**
    * autologinConfig
-   * @param target
    * @param oldUser
    * @param newUser
    */
-  async autologinConfig(target: string, oldUser = 'live', newUser = 'artisan', verbose = false) {
+  async autologinConfig(oldUser = 'live', newUser = 'artisan', verbose = false) {
     let echo = Utils.setEcho(verbose)
     if (verbose) {
       console.log('hatching: autoLoginConfig')
     }
 
-    shx.sed('-i', `autologin-user=${oldUser}`, `autologin-user=${newUser}`, `${target}/etc/lightdm/lightdm.conf`)
+    shx.sed('-i', `autologin-user=${oldUser}`, `autologin-user=${newUser}`, `${this.target}/etc/lightdm/lightdm.conf`)
   }
 
   /**
    * 
-   * @param target 
    * @param username 
    * @param password 
    * @param fullName 
@@ -177,12 +174,11 @@ export default class Hatching {
    * @param workPhone 
    * @param homePhone 
    */
-  async addUser(target = '/tmp/TARGET', username = 'live', password = 'evolution', fullName = '', roomNumber = '', workPhone = '', homePhone = '', verbose = false) {
+  async addUser(username = 'live', password = 'evolution', fullName = '', roomNumber = '', workPhone = '', homePhone = '', verbose = false) {
     let echo = Utils.setEcho(verbose)
     if (verbose) {
       console.log('hatching: addUser')
     }
-
 
     const cmd = `chroot ${target} \
 adduser ${username} \
@@ -193,23 +189,22 @@ adduser ${username} \
 
     console.log(cmd)
     await exec(cmd, echo)
-    await exec(`echo ${username}:${password} | chroot ${target} chpasswd `, echo)
-    await exec(`chroot ${target} addgroup ${username} sudo`, echo)
+    await exec(`echo ${username}:${password} | chroot ${this.target} chpasswd `, echo)
+    await exec(`chroot ${this.target} addgroup ${username} sudo`, echo)
   }
 
   /**
    * changePassword
-   * @param target 
    * @param username 
    * @param newPassword 
    */
-  async changePassword(target = '/tmp/TARGET', username = 'live', newPassword = 'evolution', verbose = false) {
+  async changePassword(username = 'live', newPassword = 'evolution', verbose = false) {
     let echo = Utils.setEcho(verbose)
     if (verbose) {
       console.log('hatching: changePassword')
     }
 
-    const cmd = `echo ${username}:${newPassword} | chroot ${target} chpasswd `
+    const cmd = `echo ${username}:${newPassword} | chroot ${this.target} chpasswd `
     await exec(cmd, echo)
   }
 
@@ -230,33 +225,32 @@ adduser ${username} \
   /**
    * delUserLive
    */
-  async delUserLive(target: string, verbose = false) {
+  async delUserLive(verbose = false) {
     let echo = Utils.setEcho(verbose)
     if (verbose) {
       console.log('hatching: delUserLive')
     }
-    await exec(`chroot ${target} deluser live`, echo)
+    await exec(`chroot ${this.target} deluser live`, echo)
     //shx.exec(`chroot ${target} deluser live`, { silent: true })
   }
 
   /**
    * patchPve patch per proxypve che non crea la directory
    *          e che ricrea i codici di ssh della macchina
-   * @param target
    */
-  async patchPve(target: string, verbose = false) {
+  async patchPve(verbose = false) {
     let echo = Utils.setEcho(verbose)
     if (verbose) {
       console.log('hatching: patchPve')
     }
 
     // patch per apache2
-    await exec(`chroot ${target} mkdir /var/log/apache2`)
-    await exec(`chroot ${target} mkdir /var/log/pveproxy`, echo)
-    await exec(`chroot ${target} touch /var/log/pveproxy/access.log`, echo)
-    await exec(`chroot ${target} chown www-data:www-data /var/log/pveproxy -R`, echo)
-    await exec(`chroot ${target} chmod 0664 /var/log/pveproxy/access.log`, echo)
-    await exec(`chroot ${target} dpkg-reconfigure openssh-server`, echo)
+    await exec(`chroot ${this.target} mkdir /var/log/apache2`)
+    await exec(`chroot ${this.target} mkdir /var/log/pveproxy`, echo)
+    await exec(`chroot ${this.target} touch /var/log/pveproxy/access.log`, echo)
+    await exec(`chroot ${this.target} chown www-data:www-data /var/log/pveproxy -R`, echo)
+    await exec(`chroot ${this.target} chmod 0664 /var/log/pveproxy/access.log`, echo)
+    await exec(`chroot ${this.target} dpkg-reconfigure openssh-server`, echo)
   }
 
   /**
@@ -264,51 +258,49 @@ adduser ${username} \
    * @param target
    * @param options
    */
-  async grubInstall(target: string, options: any, verbose = false) {
+  async grubInstall(options: any, verbose = false) {
     let echo = Utils.setEcho(verbose)
     if (verbose) {
       console.log('hatching: grubInstall')
     }
-    await exec (`chroot ${target} apt update`)
+    await exec (`chroot ${this.target} apt update`)
     if (this.efi){
-      await exec(`chroot ${target} apt install grub-efi-amd64 --yes`)
+      await exec(`chroot ${this.target} apt install grub-efi-amd64 --yes`)
     } else {
-      await exec (`chroot ${target} apt install grub-pc --yes`)
+      await exec (`chroot ${this.target} apt install grub-pc --yes`)
     }
-    await exec(`chroot ${target} grub-install ${options.installationDevice}`, echo)
-    await exec(`chroot ${target} update-grub`, echo)
+    await exec(`chroot ${this.target} grub-install ${options.installationDevice}`, echo)
+    await exec(`chroot ${this.target} update-grub`, echo)
   }
 
   /**
    * updateInitramfs()
-   * @param target
    */
-  async updateInitramfs(target: string, verbose = false) {
+  async updateInitramfs(verbose = false) {
     let echo = Utils.setEcho(verbose)
     if (verbose) {
       console.log('hatching: updateInitramfs')
     }
 
     console.log('update-initramfs\n')
-    await exec(`chroot ${target}  update-initramfs -u -k $(uname -r)`, echo)
+    await exec(`chroot ${this.target}  update-initramfs -u -k $(uname -r)`, echo)
   }
 
   /**
    * mountVFS()
-   * @param target
    */
-  async mountVFS(target: string, verbose = false) {
+  async mountVFS(verbose = false) {
     let echo = Utils.setEcho(verbose)
     if (verbose) {
       console.log('hatching: mountVFS')
     }
 
     console.log('mount VFS')
-    await exec(`mount -o bind /dev ${target}/dev`, echo)
-    await exec(`mount -o bind /dev/pts ${target}/dev/pts`, echo)
-    await exec(`mount -o bind /proc ${target}/proc`, echo)
-    await exec(`mount -o bind /sys ${target}/sys`, echo)
-    await exec(`mount -o bind /run ${target}/run`, echo)
+    await exec(`mount -o bind /dev ${this.target}/dev`, echo)
+    await exec(`mount -o bind /dev/pts ${this.target}/dev/pts`, echo)
+    await exec(`mount -o bind /proc ${this.target}/proc`, echo)
+    await exec(`mount -o bind /sys ${this.target}/sys`, echo)
+    await exec(`mount -o bind /run ${this.target}/run`, echo)
     console.log('fine mount VFS')
   }
 
@@ -316,36 +308,35 @@ adduser ${username} \
    * umountVFS()
    * @param target
    */
-  async umountVFS(target: string, verbose = false) {
+  async umountVFS(verbose = false) {
     let echo = Utils.setEcho(verbose)
     if (verbose) {
       console.log('hatching: umountVFS')
     }
 
-    await exec(`umount ${target}/dev/pts`, echo)
+    await exec(`umount ${this.target}/dev/pts`, echo)
     await exec('sleep 1', echo)
-    await exec(`umount ${target}/dev`, echo)
+    await exec(`umount ${this.target}/dev`, echo)
     await exec('sleep 1', echo)
-    await exec(`umount ${target}/proc`, echo)
+    await exec(`umount ${this.target}/proc`, echo)
     await exec('sleep 1', echo)
-    await exec(`umount ${target}/sys`, echo)
+    await exec(`umount ${this.target}/sys`, echo)
     await exec('sleep 1', echo)
-    await exec(`umount ${target}/run`, echo)
+    await exec(`umount ${this.target}/run`, echo)
     await exec('sleep 1', echo)
   }
 
   /**
    * fstab()
-   * @param target
    * @param devices
    */
-  async fstab(target: string, devices: IDevices, installDevice: string, verbose = false) {
+  async fstab(devices: IDevices, installDevice: string, verbose = false) {
     let echo = Utils.setEcho(verbose)
     if (verbose) {
       console.log('hatching: fstab')
     }
 
-    const file = `${target}/etc/fstab`
+    const file = `${this.target}/etc/fstab`
     let mountOptsRoot = ''
     let mountOptsEfi = ''
     let mountOptsSwap = ''
@@ -370,28 +361,26 @@ adduser ${username} \
 
   /**
    * hostname()
-   * @param target
    * @param options
    */
-  async hostname(target: string, options: any, verbose = false) {
+  async hostname(options: any, verbose = false) {
     let echo = Utils.setEcho(verbose)
     if (verbose) {
       console.log('hatching: hostname')
     }
 
-    const file = `${target}/etc/hostname`
+    const file = `${this.target}/etc/hostname`
     const text = options.hostname
 
-    await exec(`rm ${target}/etc/hostname`, echo)
+    await exec(`rm ${file}`, echo)
     fs.writeFileSync(file, text)
   }
 
   /**
    * resolvConf()
-   * @param target
    * @param options
    */
-  async resolvConf(target: string, options: any, verbose = false) {
+  async resolvConf(options: any, verbose = false) {
     let echo = Utils.setEcho(verbose)
     if (verbose) {
       console.log('hatching: resolvConf')
@@ -399,7 +388,7 @@ adduser ${username} \
 
     console.log(`tipo di resolv.con: ${options.netAddressType}`)
     if (options.netAddressType === 'static') {
-      const file = `${target}/etc/resolv.conf`
+      const file = `${this.target}/etc/resolv.conf`
       
       let text = ``
       text += `search ${options.domain}\n`
@@ -416,17 +405,16 @@ adduser ${username} \
    * auto lo
    *
    * interfaces()
-   * @param target
    * @param options
    */
-  async interfaces(target: string, options: any, verbose = false) {
+  async interfaces(options: any, verbose = false) {
     let echo = Utils.setEcho(verbose)
     if (verbose) {
       console.log('hatching: interfaces')
     }
 
     if (options.netAddressType === 'static') {
-      const file = `${target}/etc/network/interfaces`
+      const file = `${this.target}/etc/network/interfaces`
       let text = ``
       text += `auto lo\n`
       text += `iface lo inet manual\n`
@@ -442,16 +430,15 @@ adduser ${username} \
 
   /**
    * hosts()
-   * @param target
    * @param options
    */
-  async hosts(target: string, options: any, verbose = false) {
+  async hosts(options: any, verbose = false) {
     let echo = Utils.setEcho(verbose)
     if (verbose) {
       console.log('hatching: hosts')
     }
 
-    const file = `${target}/etc/hosts`
+    const file = `${this.target}/etc/hosts`
     let text = '127.0.0.1 localhost localhost.localdomain\n'
     if (options.netAddressType === 'static') {
       text += `${options.netAddress} ${options.hostname} ${options.hostname}.${options.domain} pvelocalhost\n`
@@ -470,9 +457,8 @@ adduser ${username} \
 
   /**
    * rsync()
-   * @param target
    */
-  async egg2system(target: string, devices: IDevices, verbose = false): Promise<void> {
+  async egg2system(devices: IDevices, verbose = false): Promise<void> {
     let echo = Utils.setEcho(verbose)
     if (verbose) {
       console.log('hatching: egg2system')
@@ -520,8 +506,6 @@ adduser ${username} \
     f += ' --filter="- /usr/lib/live/rootfs"'
 
     f += ' --filter="- /run/*"'
-    f += ` --filter="- /boot/efi/*"` //${devices.efi.mountPoint}
-
 
     cmd = `\
   rsync \
@@ -529,7 +513,7 @@ adduser ${username} \
   --delete-before \
   --delete-excluded \
   ${f} \
-  / ${target}`
+  / ${this.target}`
 
     console.log('==========================================')
     console.log('egg2system: copyng...')
@@ -560,27 +544,26 @@ adduser ${username} \
 
   /**
    * 
-   * @param target 
    * @param devices 
    */
-  async mount4target(target: string, devices: IDevices, verbose = false): Promise<boolean> {
+  async mount4target(devices: IDevices, verbose = false): Promise<boolean> {
     let echo = Utils.setEcho(verbose)
     if (verbose) {
       console.log('hatching: mount4target')
     }
 
-    if (!fs.existsSync(target)) {
-      await exec(`mkdir ${target}`, echo)
+    if (!fs.existsSync(this.target)) {
+      await exec(`mkdir ${this.target}`, echo)
     }
-    await exec(`mount ${devices.root.device} ${target}${devices.root.mountPoint}`, echo)
+    await exec(`mount ${devices.root.device} ${this.target}${devices.root.mountPoint}`, echo)
     await exec(`tune2fs -c 0 -i 0 ${devices.root.device}`, echo)
     if (this.efi) {
-      if (!fs.existsSync(target + devices.efi.mountPoint)) {
-        await exec(`mkdir ${target}${devices.efi.mountPoint} -p`, echo)
+      if (!fs.existsSync(this.target + devices.efi.mountPoint)) {
+        await exec(`mkdir ${this.target}${devices.efi.mountPoint} -p`, echo)
       }
-      await exec(`mount ${devices.efi.device} ${target}${devices.efi.mountPoint}`, echo)
+      await exec(`mount ${devices.efi.device} ${this.target}${devices.efi.mountPoint}`, echo)
     }
-    await exec(`rm -rf ${target}/lost+found`, echo)
+    await exec(`rm -rf ${this.target}/lost+found`, echo)
     return true
   }
 
@@ -589,14 +572,14 @@ adduser ${username} \
    * @param target 
    * @param devices 
    */
-  async umount4target(target: string, devices: IDevices, verbose = false): Promise<boolean> {
+  async umount4target(devices: IDevices, verbose = false): Promise<boolean> {
     let echo = Utils.setEcho(verbose)
     if (verbose) {
       console.log('hatching: umount4target')
     }
 
     if (this.efi) {
-      await exec(`umount ${target}/boot/efi`, echo)
+      await exec(`umount ${this.target}/boot/efi`, echo)
       await exec('sleep 1', echo)
     }
     await exec(`umount ${devices.root.device}`, echo)
