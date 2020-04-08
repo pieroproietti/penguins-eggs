@@ -39,7 +39,6 @@ class calamaresConfig {
         this.oses = oses
         this.verbose = verbose
         this.displaymanager = (Utils.packageIsInstalled('lightdm') || Utils.packageIsInstalled('sddm'))
-        // Crea displaymanager solo per lightdm
         this.sourcesMedia = false
     }
 
@@ -76,12 +75,9 @@ class calamaresConfig {
         this.moduleBootloaderConfig()
         this.moduleGrubcfg()
         this.moduleBootloader()
-        /**
-         * tolta la rimozione dei pacchetti da sistemare
-         */
-        // this.modulePackages()
+        this.modulePackages()
         this.moduleLuksbootkeyfile()
-        // Luksopenswaphookcfg()
+        this.moduleLuksopenswaphookcfg()
         this.modulePlymouthcfg()
         this.moduleInitramfscfg()
         this.moduleInitramfs()
