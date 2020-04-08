@@ -40,7 +40,6 @@ export default class Prerequisites extends Command {
         shx.cp(path.resolve(__dirname, '../../conf/penguins-eggs-exclude.list'), '/usr/local/share/excludes')
 
         if (!flags.configuration_only) {
-          shx.cp(path.resolve(__dirname, '../../scripts/installed-to-live'), '/usr/sbin') // installed-to-live
           const codeUpdate: number = shx.exec('/usr/bin/apt-get update -y').code
           if (codeUpdate === 0) {
             this.log('udapte executed')
