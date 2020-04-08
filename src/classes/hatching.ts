@@ -187,8 +187,8 @@ adduser ${username} \
 --disabled-password \
 --gecos "${fullName},${roomNumber},${workPhone},${homePhone}"`
 
-    console.log(cmd)
     await exec(cmd, echo)
+
     await exec(`echo ${username}:${password} | chroot ${this.target} chpasswd `, echo)
     await exec(`chroot ${this.target} addgroup ${username} sudo`, echo)
   }
