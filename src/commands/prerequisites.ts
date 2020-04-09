@@ -57,6 +57,7 @@ export default class Prerequisites extends Command {
                   open-infrastructure-system-config \
                   xterm \
                   whois \
+                  dosfstools \
                   grub-efi-amd64', { async: false })
             /**
              * rimosso 
