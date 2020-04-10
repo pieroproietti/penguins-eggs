@@ -492,7 +492,7 @@ export default class Ovary {
     Utils.write(`${this.work_dir.merged}/etc/network/interfaces`, `auto lo\niface lo inet loopback`)
     await exec(`rm -f ${this.work_dir.merged}/var/lib/wicd/configurations/*`, echo)
     await exec(`rm -f ${this.work_dir.merged}/etc/wicd/wireless-settings.conf`, echo)
-    await exec(`rm -f ${this.work_dir.merged}/etc/NetworkManager/system-connections/*`, echo)
+    //await exec(`rm -f ${this.work_dir.merged}/etc/NetworkManager/system-connections/*`, echo)
     await exec(`rm -f ${this.work_dir.merged}/etc/network/wifi/*`, echo)
     // Ho disabilitato l'attesa per la rete
     // systemctl mask systemd-networkd-wait-online.service

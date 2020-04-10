@@ -162,7 +162,9 @@ export default class Hatching {
       console.log('hatching: autoLoginConfig')
     }
 
-    shx.sed('-i', `autologin-user=${oldUser}`, `autologin-user=${newUser}`, `${this.target}/etc/lightdm/lightdm.conf`)
+    if (Utils.packageIsInstalled('lightdm')){
+      shx.sed('-i', `autologin-user=${oldUser}`, `autologin-user=${newUser}`, `${this.target}/etc/lightdm/lightdm.conf`)
+    }
   }
 
   /**
@@ -320,10 +322,9 @@ adduser ${username} \
     await exec('sleep 1', echo)
     await exec(`umount ${this.target}/proc`, echo)
     await exec('sleep 1', echo)
-    await exec(`umount ${this.target}/sys`, echo)
-    await exec('sleep 1', echo)
     await exec(`umount ${this.target}/run`, echo)
     await exec('sleep 1', echo)
+    await exec(`umount ${this.target}/sys`, echo)
   }
 
   /**
@@ -456,7 +457,9 @@ adduser ${username} \
   }
 
   /**
-   * rsync()
+   * egg2system
+   * @param devices 
+   * @param verbose 
    */
   async egg2system(devices: IDevices, verbose = false): Promise<void> {
     let echo = Utils.setEcho(verbose)
@@ -483,7 +486,7 @@ adduser ${username} \
     f += ' --filter="- /boot/grub/menu.lst"'
 
     // etc
-    f += ' --filter="- /etc/fstab"'
+    // f += ' --filter="- /etc/fstab"'
     f += ' --filter="- /etc/fstab.d/*"'
     f += ' --filter="- /etc/mtab"'
     f += ' --filter="- /etc/popularity-contest.conf"'
@@ -515,9 +518,6 @@ adduser ${username} \
   ${f} \
   / ${this.target}`
 
-    console.log('==========================================')
-    console.log('egg2system: copyng...')
-    console.log('==========================================')
     shx.exec(cmd.trim(), {
       async: false,
     })
@@ -560,8 +560,8 @@ adduser ${username} \
     if (this.efi) {
       if (!fs.existsSync(this.target + devices.efi.mountPoint)) {
         await exec(`mkdir ${this.target}${devices.efi.mountPoint} -p`, echo)
+        await exec(`mount ${devices.efi.device} ${this.target}${devices.efi.mountPoint}`, echo)
       }
-      await exec(`mount ${devices.efi.device} ${this.target}${devices.efi.mountPoint}`, echo)
     }
     await exec(`rm -rf ${this.target}/lost+found`, echo)
     return true
