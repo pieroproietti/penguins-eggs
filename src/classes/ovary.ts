@@ -465,6 +465,7 @@ export default class Ovary {
     /**
      * add some basic files to /dev
      */
+    /*
     await exec(`mknod -m 622 ${this.work_dir.merged}/dev/console c 5 1`, echo)
     await exec(`mknod -m 666 ${this.work_dir.merged}/dev/null c 1 3`, echo)
     await exec(`mknod -m 666 ${this.work_dir.merged}/dev/zero c 1 5`, echo)
@@ -482,7 +483,8 @@ export default class Ovary {
     await exec(`mkdir -v ${this.work_dir.merged}/dev/shm`, echo)
     await exec(`mkdir -v ${this.work_dir.merged}/dev/pts`, echo)
     await exec(`chmod 1777 ${this.work_dir.merged}/dev/shm`, echo)
-
+    */
+   
     /**
      * Clear configs from /etc/network/interfaces, wicd and NetworkManager
      * and netman, so they aren't stealthily included in the snapshot.
