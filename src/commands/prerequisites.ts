@@ -54,11 +54,11 @@ export default class Prerequisites extends Command {
                   isolinux \
                   live-boot \
                   live-boot-initramfs-tools \
-                  open-infrastructure-system-config \
                   xterm \
                   whois \
                   dosfstools \
                   grub-efi-amd64', { async: false })
+                  // open-infrastructure-system-config \
             /**
              * rimosso 
              * live-config live-config-systemd conflict open-infrastructure-system-config 
