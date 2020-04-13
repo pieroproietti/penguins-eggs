@@ -23,8 +23,8 @@ export default class Produce extends Command {
   static aliases = ['spawn', 'lay']
 
   static examples = [
-    `$ eggs produce --basename uovo
-the penguin produce an egg called uovo-i386-2020-01-18_2000.iso`]
+    `$ eggs produce --basename egg
+the penguin produce an egg called egg-i386-2020-04-13_1815.iso`]
 
   async run() {
 
