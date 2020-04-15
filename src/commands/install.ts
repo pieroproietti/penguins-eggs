@@ -48,9 +48,7 @@ export default class Install extends Command {
         shx.exec('calamares')
       } else {
         const hatching = new Hatching()
-        if (hatching.question()){
-          await hatching.install(verbose, umount)
-        }
+        hatching.question(verbose, umount)
       }
     }
   }

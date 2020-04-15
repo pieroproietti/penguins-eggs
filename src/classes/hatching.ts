@@ -29,7 +29,7 @@ export default class Hatching {
   /**
    * question
    */
-  question(verbose = false) : boolean {
+  async question(verbose = false, umount = false) {
     let retval = false
     let echo = Utils.setEcho(verbose)
     if (verbose) {
@@ -39,21 +39,23 @@ export default class Hatching {
     const msg1 = '\nThe process of installation will format your disk and destroy all datas on it.\n Did You are sure?\n'
     const msg2 = '\nWe need to be absolutely sure, did You saved your data before to proced?\n'
     const msg3 = '\nConfirm you want to continue?\n'
-    let varResult: any = this.customConfirm(msg1)
+
+    let varResult: any = await this.customConfirm(msg1)
 
     let result = JSON.parse(varResult)
     if (result.confirm === 'Yes') {
-      varResult = this.customConfirm(msg2)
+
+      varResult = await this.customConfirm(msg2)
       result = JSON.parse(varResult)
       if (result.confirm === 'Yes') {
-        varResult = this.customConfirm(msg3)
+
+        varResult = await this.customConfirm(msg3)
         result = JSON.parse(varResult)
         if (result.confirm === 'Yes') {
-          retval =  true
+          this.install(verbose, umount)
         }
       }
     }
-    return retval
   }
 
   /**
@@ -132,9 +134,11 @@ export default class Hatching {
       await this.changePassword('root', options.rootpassword, verbose)
       await this.autologinConfig('live', options.username, verbose)
       await this.delUserLive(verbose)
-      await this.patchPve(verbose)
+      // await this.patchPve(verbose)
       await this.umountVFS(verbose)
       await this.umount4target(devices, verbose)
+      Utils.titles()
+      console.log('hatching: reboot your system...')
     }
   }
 
