@@ -29,7 +29,8 @@ export default class Hatching {
   /**
    * question
    */
-  async question(verbose = false) {
+  question(verbose = false) : boolean {
+    let retval = false
     let echo = Utils.setEcho(verbose)
     if (verbose) {
       console.log('>>>hatching: question')
@@ -48,10 +49,11 @@ export default class Hatching {
         varResult = await this.customConfirm(msg3)
         result = JSON.parse(varResult)
         if (result.confirm === 'Yes') {
-          this.install()
+          retval =  true
         }
       }
     }
+    return retval
   }
 
   /**
@@ -145,9 +147,11 @@ export default class Hatching {
       console.log('>>> hatching: setTimezone')
     }
 
-    let cmd = `chroot ${this.target} unlink /etc/localtime`
-    await exec(cmd, echo)
-    cmd = `chroot ${this.target} ln -sf /usr/share/zoneinfo/Europe/Rome /etc/localtime`
+    if (fs.existsSync('/etc/localtime')){
+      let cmd = `chroot ${this.target} unlink /etc/localtime`
+      await exec(cmd, echo)
+    }
+    let cmd = `chroot ${this.target} ln -sf /usr/share/zoneinfo/Europe/Rome /etc/localtime`
     await exec(cmd, echo)
   }
 
