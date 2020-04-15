@@ -39,14 +39,14 @@ export default class Hatching {
     const msg1 = '\nThe process of installation will format your disk and destroy all datas on it.\n Did You are sure?\n'
     const msg2 = '\nWe need to be absolutely sure, did You saved your data before to proced?\n'
     const msg3 = '\nConfirm you want to continue?\n'
-    let varResult: any = await this.customConfirm(msg1)
+    let varResult: any = this.customConfirm(msg1)
 
     let result = JSON.parse(varResult)
     if (result.confirm === 'Yes') {
-      varResult = await this.customConfirm(msg2)
+      varResult = this.customConfirm(msg2)
       result = JSON.parse(varResult)
       if (result.confirm === 'Yes') {
-        varResult = await this.customConfirm(msg3)
+        varResult = this.customConfirm(msg3)
         result = JSON.parse(varResult)
         if (result.confirm === 'Yes') {
           retval =  true
