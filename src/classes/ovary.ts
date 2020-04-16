@@ -304,7 +304,6 @@ export default class Ovary {
       console.log('If necessary, you can create more available space')
       console.log('by removing previous  snapshots and saved copies:')
     }
-    console.log('')
   }
 
   /**

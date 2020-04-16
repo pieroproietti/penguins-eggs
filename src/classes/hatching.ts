@@ -29,7 +29,7 @@ export default class Hatching {
   /**
    * question
    */
-  async question(verbose = false, umount = false) {
+  async questions(verbose = false, umount = false) {
     let retval = false
     let echo = Utils.setEcho(verbose)
     if (verbose) {
