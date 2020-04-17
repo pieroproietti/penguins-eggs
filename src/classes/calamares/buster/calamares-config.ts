@@ -38,7 +38,7 @@ class calamaresConfig {
         this.distro = distro
         this.oses = oses
         this.verbose = verbose
-        this.displaymanager = (Utils.packageIsInstalled('lightdm') || Utils.packageIsInstalled('sddm'))
+        this.displaymanager = (Utils.packageIsInstalled('lightdm') || Utils.packageIsInstalled('sddm') || Utils.packageIsInstalled('sddm') )
         this.sourcesMedia = false
     }
 
