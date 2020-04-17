@@ -14,6 +14,7 @@ import drivelist = require('drivelist')
 import Utils from './utils'
 import { IDevices, IDevice } from '../interfaces'
 const exec = require('../lib/utils').exec
+const { check, checkSync } = require('diskusage')
 
 /**
  * hatch, installazione
@@ -33,7 +34,7 @@ export default class Hatching {
     let retval = false
     let echo = Utils.setEcho(verbose)
     if (verbose) {
-      console.log('>>>hatching: question')
+      console.log('>>>hatching: questions')
     }
 
     const msg1 = '\nThe process of installation will format your disk and destroy all datas on it.\n Did You are sure?\n'
@@ -654,25 +655,8 @@ adduser ${username} \
     if (verbose) {
       console.log('>>> hatching: getDiskSize')
     }
-
-    let bytes: number
-    interface IResponse {
-      code: number;
-      data: string;
-    }
-    let response = {} as IResponse
-    response = await exec(`parted -s ${device} unit b print free | grep Free | awk '{print $3}' | cut -d "M" -f1`, { echo: false, ignore: false, capture: true })
-    let data = ''
-    if (response.code === 0) {
-      data = response.data
-      data = data.replace('B', '').trim()
-      console.log(data)
-    } else {
-      data = '0'
-    }
-
-    bytes = Number(data)
-    return bytes
+    const info = checkSync(device)
+    return info.total
   }
 
   /**
