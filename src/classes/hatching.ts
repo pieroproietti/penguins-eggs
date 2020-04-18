@@ -140,7 +140,7 @@ export default class Hatching {
       // await this.patchPve(verbose)
       await this.umountVFS(verbose)
       await this.umount4target(devices, verbose)
-      this.finished(options.username)
+      this.finished(options.hostname, options.installationDevice, options.username)
     }
   }
 
@@ -805,10 +805,13 @@ adduser ${username} \
   /**
    * only show the result
    */
-  finished(username: string) {
+  finished(installationDevice: string, hostname: string, username: string) {
     Utils.titles()
-    console.log(`eggs is finished!\n` + chalk.cyanBright (`You can now restart your system and enjoy your penguin.`))
-    console.log('Remember, the user name is ' + chalk.cyanBright (username))
+    console.log(`eggs is finished.`)
+    console.log('Your system was installed on ' + chalk.cyanBright (installationDevice)+ '.')
+    console.log('Host name was set as ' + chalk.cyanBright (hostname)+ '.')
+    console.log('The user name is ' + chalk.cyanBright (username) + '.')
+    console.log('Enjoy Your new penguin!')
   }
 }
 
