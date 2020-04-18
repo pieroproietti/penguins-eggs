@@ -132,8 +132,8 @@ export default class Ovary {
   }
 
   /**
-  * inizializzazioni che non può essere messa nel constructor
-  * a causa della necessità di async.
+  * inizializzazioni che non possono essere messe nel constructor
+  * a causa delle chiamate async.
   * @returns {boolean} success
   */
   async fertilization(): Promise<boolean> {
@@ -319,6 +319,7 @@ export default class Ovary {
 
     if (basename !== '') {
       this.distro.name = basename
+      this.iso = this.oses.info(this.distro)
     }
 
     if (await Utils.isLive()) {
@@ -342,7 +343,6 @@ export default class Ovary {
       await this.makeLiveHome(verbose)
       await this.editLiveFs(verbose)
       await this.editBootMenu(verbose)
-      // await this.addDebianRepo()
       await this.makeSquashFs(verbose)
       if (this.make_efi) {
         await this.editEfi(verbose)
@@ -768,10 +768,11 @@ timeout 200\n`
     }
     return need
   }
+
   /**
-    * Check if exist mx-snapshot in work_dir;
-    * If respin mode remove all the users
-    */
+   * Esegue il bind del fs live
+   * @param verbose 
+   */
   async bindLiveFs(verbose = false) {
     let echo = Utils.setEcho(verbose)
     if (verbose) {
@@ -835,7 +836,8 @@ timeout 200\n`
   }
 
   /**
-   * 
+   * ubind del fs live
+   * @param verbose 
    */
   async uBindLiveFs(verbose = false) {
     let echo = Utils.setEcho(verbose)
@@ -846,8 +848,6 @@ timeout 200\n`
     let cout = { code: 0, data: '' }
     // await exec(`/usr/bin/pkill mksquashfs; /usr/bin/pkill md5sum`, {echo: true})
 
-    // this.work_dir.merged = `/home/eggs/work/debu7/merged` esistono
-    // this.work_dir.lowerdir = `/home/eggs/work/debu7/lowerdir`
     if (fs.existsSync(this.work_dir.merged)) {
       const bindDirs = fs.readdirSync(this.work_dir.merged, { withFileTypes: true })
       for (let dir of bindDirs) {
@@ -888,7 +888,7 @@ timeout 200\n`
   }
 
   /**
-   * create la home per live
+   * create la home per user live
    * @param verbose 
    */
   async makeLiveHome(verbose = false) {
@@ -896,7 +896,6 @@ timeout 200\n`
     if (verbose) {
       console.log('ovary: makeLiveHome')
     }
-
 
     const user: string = Utils.getPrimaryUser()
 
@@ -967,8 +966,6 @@ timeout 200\n`
 
 
     const tempDir = shx.exec('mktemp -d /tmp/work_temp.XXXX', { silent: true }).stdout.trim()
-    // shx.rm('tempDir')
-    // shx.ln('-s', tempDir, 'tempDir')
 
     // for initial grub.cfg
     shx.mkdir('-p', `${tempDir}/boot/grub`)
@@ -980,17 +977,14 @@ timeout 200\n`
     text += 'source \$prefix/x86_64-efi/grub.cfg\n'
     Utils.write(grubCfg, text)
 
-    // #################################
-
     /**
     * Andiamo a costruire efi_work
-     */
-
+    */
     if (!fs.existsSync(this.efi_work)) {
       shx.mkdir(`-p`, this.efi_work)
     }
 
-    // pushd efi_work
+    // salviamo currentDir
     const currentDir = process.cwd()
 
     /**
@@ -1026,9 +1020,9 @@ timeout 200\n`
     await exec(`echo source /boot/grub/grub.cfg >> boot/grub/x86_64-efi/grub.cfg`, echo)
     /**
      * fine lavoro in efi_work
-     */
+    */
     
-    // pushd tempDir
+    // Torniamo alla directory precedente
     process.chdir(tempDir)
 
     // make a tarred "memdisk" to embed in the grub image
@@ -1139,7 +1133,6 @@ timeout 200\n`
 
   /**
    * funzioni private
-   * Vengono utilizzate solo da Ovary
    */
 
   /**
@@ -1156,6 +1149,7 @@ timeout 200\n`
    * only show the result
    */
   finished() {
+    Utils.titles()
     console.log('eggs is finished!\nYou can find the file iso: ' + chalk.cyanBright (this.eggName) + '\nin the nest: ' + chalk.cyanBright(this.snapshot_dir) + '.')
   }
 }
@@ -1165,6 +1159,9 @@ timeout 200\n`
  * @param path 
  */
 async function makeIfNotExist(path: string, verbose = false) {
+  if (verbose) {
+    console.log(`ovary: makeIfNotExist`)
+  }
   let echo = Utils.setEcho(verbose)
 
   if (!(fs.existsSync(path))) {
@@ -1172,4 +1169,3 @@ async function makeIfNotExist(path: string, verbose = false) {
     await exec(cmd, echo)
   }
 }
-

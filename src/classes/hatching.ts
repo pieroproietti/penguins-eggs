@@ -488,7 +488,6 @@ adduser ${username} \
     f += ' --filter="- /boot/grub/menu.lst"'
 
     // etc
-    // f += ' --filter="- /etc/fstab"'
     f += ' --filter="- /etc/fstab.d/*"'
     f += ' --filter="- /etc/mtab"'
     f += ' --filter="- /etc/popularity-contest.conf"'
