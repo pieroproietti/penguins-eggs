@@ -482,6 +482,7 @@ adduser ${username} \
     f += ' --filter="- /tmp/*"'
 
     // boot
+    f += ' --filter="- /boot/efi*"'
     f += ' --filter="- /boot/grub/device.map"'
     f += ' --filter="- /boot/grub/grub.cfg"'
     f += ' --filter="- /boot/grub/menu.lst"'
