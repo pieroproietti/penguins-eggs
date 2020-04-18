@@ -8,11 +8,13 @@
 
 import fs = require('fs')
 import os = require('os')
+import chalk = require('chalk')
 import shx = require('shelljs')
 import inquirer = require('inquirer')
 import drivelist = require('drivelist')
 import Utils from './utils'
 import { IDevices, IDevice } from '../interfaces'
+import { option } from '@oclif/command/lib/flags'
 const exec = require('../lib/utils').exec
 const { check, checkSync } = require('diskusage')
 
@@ -138,8 +140,7 @@ export default class Hatching {
       // await this.patchPve(verbose)
       await this.umountVFS(verbose)
       await this.umount4target(devices, verbose)
-      Utils.titles()
-      console.log('hatching: reboot your system...')
+      this.finished(options.username)
     }
   }
 
@@ -799,6 +800,15 @@ adduser ${username} \
         resolve(JSON.stringify(options))
       })
     })
+  }
+
+  /**
+   * only show the result
+   */
+  finished(username: string) {
+    Utils.titles()
+    console.log(`eggs is finished!\n` + chalk.cyanBright (`You can now restart your system and enjoy your penguin.`))
+    console.log('Remember, the user name is ' + chalk.cyanBright (username))
   }
 }
 
