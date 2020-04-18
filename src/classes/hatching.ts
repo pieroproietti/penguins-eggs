@@ -134,7 +134,7 @@ export default class Hatching {
       await this.addUser(options.username, options.userpassword, '', '', '', '', verbose)
       await this.changePassword('root', options.rootpassword, verbose)
       await this.autologinConfig('live', options.username, verbose)
-      await this.delUserLive(verbose)
+      await this.delLiveUser(verbose)
       // await this.patchPve(verbose)
       await this.umountVFS(verbose)
       await this.umount4target(devices, verbose)
@@ -152,7 +152,7 @@ export default class Hatching {
       console.log('>>> hatching: setTimezone')
     }
 
-    if (fs.existsSync('/etc/localtime')){
+    if (fs.existsSync('/etc/localtime')) {
       let cmd = `chroot ${this.target} unlink /etc/localtime`
       await exec(cmd, echo)
     }
@@ -171,7 +171,7 @@ export default class Hatching {
       console.log('>>> hatching: autoLoginConfig')
     }
 
-    if (Utils.packageIsInstalled('lightdm')){
+    if (Utils.packageIsInstalled('lightdm')) {
       shx.sed('-i', `autologin-user=${oldUser}`, `autologin-user=${newUser}`, `${this.target}/etc/lightdm/lightdm.conf`)
     }
   }
@@ -222,26 +222,16 @@ adduser ${username} \
    * delete username
    * @param username 
    */
-  async delUser(username = 'live', verbose = false) {
+  async delLiveUser(verbose = false) {
     let echo = Utils.setEcho(verbose)
     if (verbose) {
-      console.log('>>> hatching: delUser')
+      console.log('>>> hatching: delLiveUser')
     }
-
-    const cmd = `deluser ${username}`
-    await exec(cmd, echo)
-  }
-
-  /**
-   * delUserLive
-   */
-  async delUserLive(verbose = false) {
-    let echo = Utils.setEcho(verbose)
-    if (verbose) {
-      console.log('>>> hatching: delUserLive')
+    if (Utils.isLive()) {
+      const user: string = Utils.getPrimaryUser()
+      const cmd = `chroot ${this.target} deluser ${user}`
+      await exec(cmd, echo)
     }
-    await exec(`chroot ${this.target} deluser live`, echo)
-    //shx.exec(`chroot ${target} deluser live`, { silent: true })
   }
 
   /**
@@ -273,11 +263,11 @@ adduser ${username} \
     if (verbose) {
       console.log('>>> hatching: grubInstall')
     }
-    await exec (`chroot ${this.target} apt update`)
-    if (this.efi){
+    await exec(`chroot ${this.target} apt update`)
+    if (this.efi) {
       await exec(`chroot ${this.target} apt install grub-efi-amd64 --yes`)
     } else {
-      await exec (`chroot ${this.target} apt install grub-pc --yes`)
+      await exec(`chroot ${this.target} apt install grub-pc --yes`)
     }
     await exec(`chroot ${this.target} grub-install ${options.installationDevice}`, echo)
     await exec(`chroot ${this.target} update-grub`, echo)
@@ -401,7 +391,7 @@ adduser ${username} \
     console.log(`tipo di resolv.con: ${options.netAddressType}`)
     if (options.netAddressType === 'static') {
       const file = `${this.target}/etc/resolv.conf`
-      
+
       let text = ``
       text += `search ${options.domain}\n`
       text += `domain ${options.domain}\n`
@@ -545,7 +535,7 @@ adduser ${username} \
     }
 
     const result = true
-    if (this.efi){
+    if (this.efi) {
       await exec(`mkdosfs -F 32 -I ${devices.efi.device}`, echo)
     }
     await exec(`mkfs -t ${devices.root.fsType} ${devices.root.device}`, echo)
@@ -608,7 +598,7 @@ adduser ${username} \
       console.log('>>> hatching: diskPartition')
     }
 
-    if (this.efi){
+    if (this.efi) {
       console.log('efi system')
       await exec(`parted --script ${device} mklabel gpt mkpart primary 0% 1% mkpart primary 1% 95% mkpart primary 95% 100%`, echo)
       await exec(`parted --script ${device} set 1 boot on`, echo)
@@ -639,7 +629,7 @@ adduser ${username} \
     let retVal = false
 
     // response = await exec(`cat /sys/block/${device}/queue/rotational`, { capture: true, echo: true })
-    response = shx.exec(`cat /sys/block/${device}/queue/rotational`, {silent: verbose}).stdout.trim()
+    response = shx.exec(`cat /sys/block/${device}/queue/rotational`, { silent: verbose }).stdout.trim()
     if (response === '1') {
       retVal = true
     }
@@ -695,7 +685,7 @@ adduser ${username} \
     if (verbose) {
       console.log('>>> hatching: getOptions')
     }
-    
+
     return new Promise(function (resolve) {
       const questions: Array<Record<string, any>> = [
         {
