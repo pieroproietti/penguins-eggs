@@ -140,7 +140,7 @@ export default class Hatching {
       // await this.patchPve(verbose)
       await this.umountVFS(verbose)
       await this.umount4target(devices, verbose)
-      this.finished(options.hostname, options.installationDevice, options.username)
+      this.finished(options.installationDevice, options.hostname, options.username)
     }
   }
 
