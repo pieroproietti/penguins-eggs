@@ -104,6 +104,7 @@ USAGE
 * [`eggs adjust [FILE]`](#eggs-adjust-file)
 * [`eggs calamares`](#eggs-calamares)
 * [`eggs dev:efi`](#eggs-devefi)
+* [`eggs dev:grub [FILE]`](#eggs-devgrub-file)
 * [`eggs dev:iso`](#eggs-deviso)
 * [`eggs help [COMMAND]`](#eggs-help-command)
 * [`eggs info`](#eggs-info)
@@ -123,9 +124,7 @@ USAGE
   $ eggs adjust [FILE]
 
 OPTIONS
-  -f, --force
-  -h, --help       show CLI help
-  -n, --name=name  name to print
+  -h, --help  show CLI help
 ```
 
 _See code: [src/commands/adjust.ts](https://github.com/pieroproietti/penguins-eggs/blob/v7.5.6/src/commands/adjust.ts)_
@@ -163,6 +162,22 @@ USAGE
 ```
 
 _See code: [src/commands/dev/efi.ts](https://github.com/pieroproietti/penguins-eggs/blob/v7.5.6/src/commands/dev/efi.ts)_
+
+## `eggs dev:grub [FILE]`
+
+describe the command here
+
+```
+USAGE
+  $ eggs dev:grub [FILE]
+
+OPTIONS
+  -f, --force
+  -h, --help       show CLI help
+  -n, --name=name  name to print
+```
+
+_See code: [src/commands/dev/grub.ts](https://github.com/pieroproietti/penguins-eggs/blob/v7.5.6/src/commands/dev/grub.ts)_
 
 ## `eggs dev:iso`
 
