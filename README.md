@@ -101,6 +101,7 @@ USAGE
 <!-- usagestop -->
 # Commands
 <!-- commands -->
+* [`eggs adjust [FILE]`](#eggs-adjust-file)
 * [`eggs calamares`](#eggs-calamares)
 * [`eggs dev:efi`](#eggs-devefi)
 * [`eggs dev:iso`](#eggs-deviso)
@@ -112,6 +113,22 @@ USAGE
 * [`eggs produce`](#eggs-produce)
 * [`eggs sterilize`](#eggs-sterilize)
 * [`eggs update`](#eggs-update)
+
+## `eggs adjust [FILE]`
+
+describe the command here
+
+```
+USAGE
+  $ eggs adjust [FILE]
+
+OPTIONS
+  -f, --force
+  -h, --help       show CLI help
+  -n, --name=name  name to print
+```
+
+_See code: [src/commands/adjust.ts](https://github.com/pieroproietti/penguins-eggs/blob/v7.5.6/src/commands/adjust.ts)_
 
 ## `eggs calamares`
 
