@@ -12,6 +12,7 @@ import shx = require('shelljs')
 import Utils from '../classes/utils'
 import Ovary from '../classes/ovary'
 import { IWorkDir } from '../interfaces/i-workdir'
+import chalk = require('chalk')
 
 const exec = require('../lib/utils').exec
 
@@ -51,10 +52,11 @@ kill the eggs/free the nest
       const ovary = new Ovary
       await ovary.fertilization()
       await ovary.uBindLiveFs(verbose)
-      this.log(`${Utils.getFriendName()}: deleting old eggs ...`)
       if (this.loadSettings()) {
         await exec(`rm ${this.work_dir.path} -rf`, echo)
         await exec(`rm ${this.snapshot_dir} -rf`, echo)
+        Utils.titles()
+        console.log('eggs removed all yours olds eggs in the nest ' + chalk.cyanBright (this.snapshot_dir) + '.')
       }
     }
   }

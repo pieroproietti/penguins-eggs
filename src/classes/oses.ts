@@ -204,6 +204,10 @@ class Oses {
           o.distroId = 'Deepin'
           o.distroLike = 'Debian'
           o.versionLike = 'sid'
+        } else if (o.versionId === 'n/a') {
+          o.distroId = 'Deepin'
+          o.distroLike = 'Debian'
+          o.versionLike = 'buster'
         } else if (o.versionId === 'onyedi') {
           o.distroId = 'Pardus'
           o.distroLike = 'Debian'
