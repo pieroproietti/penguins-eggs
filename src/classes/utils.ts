@@ -16,22 +16,14 @@ import chalk = require('chalk')
 import clear = require('clear')
 import figlet = require('figlet')
 
+import Pacman from './pacman'
+
 /**
  * Utils: general porpourse utils
  * @remarks all the utilities
  */
 export default class Utils {
 
-  /**
-   * prerequisistesInstalled
-   */
-  static prerequisitesInstalled(): boolean {
-    const retVal: boolean = fs.existsSync('/etc/penguins-eggs.conf') && (fs.existsSync('/usr/local/share/excludes/penguins-eggs-exclude.list'))
-    if (!retVal) {
-      console.log(chalk.red('\nYou need to install the prerequisites for eggs. \nTry: sudo eggs prerequisites'))
-    }
-    return retVal
-  }
 
   /**
    * Return the primary user's name
@@ -300,36 +292,13 @@ export default class Utils {
   }
 
   /**
-     * Check if the package debPackage is already unstalled
-     * @param debPackage {string} Pacchetto Debian  da cercare
-     * @returns {boolean} True if installed
-     */
+   * Sostituita da pacman
+   * @param debPackage 
+   */
   static packageIsInstalled(debPackage: string): boolean {
-    let isInstalled = false
-    const cmd = `/usr/bin/dpkg -s ${debPackage} | grep Status`
-    const stdout = shx.exec(cmd, { silent: true }).stdout.trim()
-
-    if (stdout === 'Status: install ok installed') {
-      isInstalled = true
-    }
-    return isInstalled
+    return Pacman.packageIsInstalled(debPackage)
   }
 
-  /**
-       * Install the package debPackage
-       * @param debPackage {string} Pacchetto Debian da installare
-       * @returns {boolean} True if success
-       */
-  static packageInstall(debPackage: string): boolean {
-    let retVal = false
-
-    if (shx.exec('/usr/bin/apt-get update', { silent: true }) === '0') {
-      if (shx.exec(`/usr/bin/apt-get install -y ${debPackage}`, { silent: true }) === '0') {
-        retVal = true
-      }
-    }
-    return retVal
-  }
 
   /**
    * userAdd
@@ -422,8 +391,8 @@ export default class Utils {
    */
   static titles(): void {
     clear()
-    console.log(chalk.yellow(figlet.textSync('eggs')))
-    console.log(chalk.cyan(pjson.name + ' ver. ' + pjson.version) + ' Perri\'s Brewery edition')
+    console.log(chalk.blue(figlet.textSync('eggs')))
+    console.log(chalk.redBright(pjson.name) + ' Perri\'s Brewery edition' + chalk.green(' ver. ' + pjson.version))
     console.log()
   }
 

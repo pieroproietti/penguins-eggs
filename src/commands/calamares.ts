@@ -8,6 +8,7 @@ import { Command, flags } from '@oclif/command'
 import shx = require('shelljs')
 import Utils from '../classes/utils'
 import Ovary from '../classes/ovary'
+import Pacman from '../classes/pacman'
 
 export default class Calamares extends Command {
   static description = 'Install calamares installer and configure it'
@@ -37,16 +38,9 @@ export default class Calamares extends Command {
       let answer = JSON.parse(await Utils.customConfirm(`Select yes to continue...`))
       if (answer.confirm === 'Yes') {
         if (!flags.configuration_only) {
-          shx.exec('rm /etc/calamares -rf')
-          shx.exec('apt-get remove --yes --purge calamares calamares-settings-debian')
-          shx.exec(`apt-get update`, { async: false })
-          shx.exec(`apt-get install --yes \
-                calamares \
-                qml-module-qtquick-window2 \
-                qml-module-qtquick2`, { async: false })
-                // calamares-settings-debian
+          await Pacman.prerequisitesCalamaresInstall()
         }
-
+      
         const ovary = new Ovary
         if (await ovary.fertilization()) {
           await ovary.calamaresConfigure(verbose)

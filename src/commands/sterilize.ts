@@ -7,6 +7,10 @@
 import { Command, flags } from '@oclif/command'
 import shx = require('shelljs')
 import Utils from '../classes/utils'
+import Pacman from '../classes/pacman'
+
+// libraries
+const exec = require('../lib/utils').exec
 
 export default class Sterilize extends Command {
   static description = 'remove alla packages installed as prerequisites'
@@ -19,33 +23,16 @@ export default class Sterilize extends Command {
     Utils.titles()
     console.log(`command: sterilize`)
 
-
     const { flags } = this.parse(Sterilize)
 
-    if (Utils.isRoot() && Utils.prerequisitesInstalled()) {
+    if (Utils.isRoot() && Pacman.prerequisitesEggsCheck()) {
       let answer = JSON.parse(await Utils.customConfirm(`Select yes to continue...`))
-
       if (answer.confirm === 'Yes') {
-
-        this.log('sterilize the penguin...')
-        shx.exec('apt-get --yes --purge remove  \
-                calamares \
-                calamares-settings-debian \
-                qml-module-qtquick2 \
-                qml-module-qtquick-controls', { async: false })
-
-        shx.exec('apt-get --yes --purge remove  \
-                  squashfs-tools \
-                  xorriso \
-                  syslinux \
-                  isolinux \
-                  live-boot \
-                  open-infrastructure-system-config', { async: false })
-
-        shx.exec('apt-get --yes autoremove', { async: false })
-        shx.exec('apt-get clean', { async: false })
-        shx.exec('apt-get autoclean', { async: false })
-        shx.exec('rm /etc/calamares -rf', { async: false })
+        await Pacman.prerequisitesEggsRemove()
+        if(Pacman.prerequisitesCalamaresCheck()){
+          await Pacman.prerequisitesCalamaresRemove()
+          await Pacman.clean()
+        }
       }
     }
   }
