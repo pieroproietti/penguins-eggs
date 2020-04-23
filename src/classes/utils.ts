@@ -424,7 +424,7 @@ export default class Utils {
   static titles(): void {
     clear()
     console.log(chalk.yellow(figlet.textSync('eggs')))
-    console.log('                             - Perri\'s Brewery edition -')
+    console.log(chalk.cyan(pjson.name + ' ver. ' + pjson.version) + ' Perri\'s Brewery edition')
     console.log()
   }
 
