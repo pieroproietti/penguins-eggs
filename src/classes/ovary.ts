@@ -905,6 +905,12 @@ timeout 200\n`
     shx.cp(path.resolve(__dirname, `../../assets/penguins-eggs.desktop`), `/usr/share/applications/`)
     shx.cp(path.resolve(__dirname, `../../assets/eggs.png`), `/usr/share/icons/`)
 
+    shx.cp(path.resolve(__dirname, `../../assets/penguins-adjust.desktop`), `/usr/share/applications/`)
+    //shx.cp(path.resolve(__dirname, `../../assets/penguins-adjust.png`), `/usr/share/icons/`)
+
+    shx.cp(path.resolve(__dirname, `../../assets/stream-yard.desktop`), `/usr/share/applications/`)
+    shx.cp(path.resolve(__dirname, `../../assets/stream-yard.png`), `/usr/share/icons/`)
+
     shx.cp(path.resolve(__dirname, `../../assets/dwagent-sh.desktop`), `/usr/share/applications/`)
     shx.cp(path.resolve(__dirname, `../../assets/assistenza-remota.png`), `/usr/share/icons/`)
 
@@ -915,6 +921,8 @@ timeout 200\n`
 
     // Copiare i link sul desktop per user live
     shx.cp('/usr/share/applications/penguins-eggs.desktop', `${this.work_dir.merged}/home/${user}/Desktop`)
+    shx.cp('/usr/share/applications/penguins-adjust.desktop', `${this.work_dir.merged}/home/${user}/Desktop`)
+    shx.cp('/usr/share/applications/stream-yard.desktop', `${this.work_dir.merged}/home/${user}/Desktop`)
     shx.cp('/usr/share/applications/dwagent-sh.desktop', `${this.work_dir.merged}/home/${user}/Desktop`)
     if (Utils.packageIsInstalled('calamares')) {
       shx.cp('/usr/share/applications/install-debian.desktop', `${this.work_dir.merged}/home/${user}/Desktop`)

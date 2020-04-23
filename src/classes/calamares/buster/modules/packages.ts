@@ -20,7 +20,6 @@ export function packages(): string {
     text += addIfExist('live-tools')
     text += addIfExist('task-localisation')
     text += addIfExist('live-task-recommended')
-    //text += addIfExist('calamares-settings-debian')
     text += addIfExist('calamares')
     text += '\n'
     return text
