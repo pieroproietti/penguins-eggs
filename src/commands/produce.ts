@@ -35,23 +35,6 @@ the penguin produce an egg called egg-i386-2020-04-13_1815.iso`]
 
     const { flags } = this.parse(Produce)
     if (Utils.isRoot()) {
-      if (! await Pacman.prerequisitesEggsCheck()) {
-        console.log('You need to install ' + chalk.red('prerequisites') + ' to continue.')
-        let answer = JSON.parse(await Utils.customConfirm(`Select yes to install prerequisites`))
-        if (answer.confirm === 'Yes') {
-          await Pacman.prerequisitesEggsInstall()
-          await Pacman.clean()
-          if (!Pacman.configurationCheck){
-            await Pacman.configurationInstall()
-          }
-          Utils.titles()
-          console.log('command: produce')
-        } else {
-          console.log('To create iso, you must install eggs prerequisites.\nsudo eggs prerequisites')
-          process.exit(0)
-        }
-      }
-
       const basename = flags.basename || os.hostname()
       let compression = '' // se vuota, compression viene definita da loadsettings
       if (flags.fast) {
@@ -65,13 +48,30 @@ the penguin produce an egg called egg-i386-2020-04-13_1815.iso`]
         verbose = true
       }
 
+      if (!await Pacman.prerequisitesEggsCheck()) {
+        console.log('You need to install ' + chalk.red('prerequisites') + ' to continue.')
+        let answer = JSON.parse(await Utils.customConfirm(`Select yes to install prerequisites`))
+        if (answer.confirm === 'Yes') {
+          await Pacman.prerequisitesEggsInstall(verbose)
+          await Pacman.clean(verbose)
+        } else {
+          console.log('To create iso, you must install eggs prerequisites.\nsudo eggs prerequisites')
+          process.exit(0)
+        }
+      }
+      if (!await Pacman.configurationCheck()){
+        await Pacman.configurationInstall(verbose)
+      }  
+  
+      Utils.titles()
+      console.log('command: produce')
+
       const ovary = new Ovary(compression)
       if (await ovary.fertilization()) {
         await ovary.produce(basename, verbose)
         ovary.finished()
       }
     }
-
   }
 }
 

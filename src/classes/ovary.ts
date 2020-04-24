@@ -141,6 +141,7 @@ export default class Ovary {
   * @returns {boolean} success
   */
   async fertilization(): Promise<boolean> {
+
     if (this.loadSettings()) {
       if (this.listFreeSpace()) {
         let answer = JSON.parse(await Utils.customConfirm(`Select yes to continue...`))
@@ -384,9 +385,10 @@ export default class Ovary {
     }
     if (Pacman.isXInstalled()) {
       // Se force_installer e calamares non è installato
-      if (this.force_installer && !Pacman.prerequisitesCalamaresCheck()) {
-        Pacman.prerequisitesCalamaresInstall()
-        Pacman.clean()
+      if (this.force_installer && ! await Pacman.prerequisitesCalamaresCheck()) {
+        console.log('Installing calamares due force_installer=yes')
+        await Pacman.prerequisitesCalamaresInstall(verbose)
+        await Pacman.clean(verbose)
       }
       // Configuro calamares
       this.calamares = new Calamares(this.distro, this.iso, verbose)

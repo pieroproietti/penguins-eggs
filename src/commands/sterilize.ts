@@ -13,10 +13,11 @@ import Pacman from '../classes/pacman'
 const exec = require('../lib/utils').exec
 
 export default class Sterilize extends Command {
-  static description = 'remove alla packages installed as prerequisites'
+  static description = 'remove all packages installed as prerequisites'
 
   static flags = {
     help: flags.help({ char: 'h' }),
+    verbose: flags.boolean({ char: 'v', description: 'verbose' }),
   }
 
   async run() {
@@ -24,17 +25,23 @@ export default class Sterilize extends Command {
     console.log(`command: sterilize`)
 
     const { flags } = this.parse(Sterilize)
+    let verbose = false
+    if (flags.verbose) {
+      verbose = true
+    }
 
     if (Utils.isRoot() && Pacman.prerequisitesEggsCheck()) {
       let answer = JSON.parse(await Utils.customConfirm(`Select yes to continue...`))
       if (answer.confirm === 'Yes') {
-        await Pacman.prerequisitesEggsRemove()
+        await Pacman.prerequisitesEggsRemove(verbose)
         if(Pacman.prerequisitesCalamaresCheck()){
-          await Pacman.prerequisitesCalamaresRemove()
-          await Pacman.configurationRemove()
-          await Pacman.clean()
+          await Pacman.prerequisitesCalamaresRemove(verbose)
+          await Pacman.configurationRemove(verbose)
+          await Pacman.clean(verbose)
         }
       }
+    } else {
+      console.log('eggs prerequisites not installed!')
     }
   }
 }

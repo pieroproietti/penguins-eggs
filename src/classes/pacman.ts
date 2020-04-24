@@ -33,7 +33,7 @@ export default class Pacman {
    * controlla se in pacchetto debPackage è installato
    * @param debPackage 
    */
-  static packageIsInstalled(debPackage: string): boolean {
+  static async packageIsInstalled(debPackage: string): Promise<boolean> {
     let isInstalled = false
     const cmd = `/usr/bin/dpkg -s ${debPackage} | grep Status`
     const stdout = shx.exec(cmd, { silent: true }).stdout.trim()
@@ -80,7 +80,7 @@ export default class Pacman {
     let retVal = true
 
     for (let i in this.debs4eggs) {
-      if (!Utils.packageIsInstalled(this.debs4eggs[i])) {
+      if (!await Pacman.packageIsInstalled(this.debs4eggs[i])) {
         retVal = false
         break
       }
@@ -118,7 +118,7 @@ export default class Pacman {
   static async prerequisitesCalamaresCheck(): Promise<boolean> {
     let retVal = true
     for (let i in this.debs4calamares) {
-      if (Utils.packageIsInstalled(this.debs4calamares[i])) {
+      if (!await Pacman.packageIsInstalled(this.debs4calamares[i])) {
         retVal = false
         break
       }
@@ -134,6 +134,7 @@ export default class Pacman {
     if (Pacman.isXInstalled()) {
       await exec('apt-get update --yes', echo)
       await exec(`apt-get install --yes ${Pacman.debs2line(Pacman.debs4calamares)}`, echo)
+      await Pacman.clean(verbose)
     } else {
       console.log('It\'s not possible to use calamares in a system without GUI' )
     }
@@ -155,14 +156,15 @@ export default class Pacman {
   /**
    * 
    */
-  static configurationCheck(): boolean {
+  static async configurationCheck(): Promise<boolean> {
     return fs.existsSync('/etc/penguins-eggs.conf') && (fs.existsSync('/usr/local/share/excludes/penguins-eggs-exclude.list'))
   }
 
   /**
    * 
    */
-  static async configurationInstall(): Promise<void> {
+  static async configurationInstall(verbose = true): Promise<void> {
+    console.log('Creating configuraton files')
     shx.cp(path.resolve(__dirname, '../../conf/penguins-eggs.conf'), '/etc')
     shx.mkdir('-p', '/usr/local/share/excludes/')
     shx.cp(path.resolve(__dirname, '../../conf/penguins-eggs-exclude.list'), '/usr/local/share/excludes')
@@ -171,11 +173,13 @@ export default class Pacman {
   /**
    * 
    */
-  static async configurationRemove() : Promise<void> {
-    shx.rm('/etc/penguins-eggs.conf')
-    shx.rm('/etc/penguins-eggs.conf?')
-    shx.rm('/usr/local/share/excludes/penguins-eggs-exclude.list')
-    shx.rm('/usr/local/share/excludes/penguins-eggs-exclude.list?')
+  static async configurationRemove(verbose = true) : Promise<void> {
+    console.log('Removing configuraton files')
+    let echo = Utils.setEcho(verbose)
+    await exec('rm /etc/penguins-eggs.conf', echo)
+    await exec('rm /etc/penguins-eggs.conf?', echo)
+    await exec('rm /usr/local/share/excludes/penguins-eggs-exclude.list', echo)
+    await exec('rm /usr/local/share/excludes/penguins-eggs-exclude.list?', echo)
   }
   /**
    * 
