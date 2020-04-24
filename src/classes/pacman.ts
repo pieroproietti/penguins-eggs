@@ -155,7 +155,7 @@ export default class Pacman {
   /**
    * 
    */
-  static async configurationCheck(): Promise<boolean> {
+  static configurationCheck(): boolean {
     return fs.existsSync('/etc/penguins-eggs.conf') && (fs.existsSync('/usr/local/share/excludes/penguins-eggs-exclude.list'))
   }
 

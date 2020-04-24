@@ -41,6 +41,9 @@ the penguin produce an egg called egg-i386-2020-04-13_1815.iso`]
         if (answer.confirm === 'Yes') {
           await Pacman.prerequisitesEggsInstall()
           await Pacman.clean()
+          if (!Pacman.configurationCheck){
+            await Pacman.configurationInstall()
+          }
           Utils.titles()
           console.log('command: produce')
         } else {
