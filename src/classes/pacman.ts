@@ -147,7 +147,7 @@ export default class Pacman {
 
     let retVal = false
     await exec('rm /etc/calamares -rf', echo)
-    await exec(`apt-get install --yes ${Pacman.debs2line(Pacman.debs4calamares)}`, echo)
+    await exec(`apt-get remove --purge --yes ${Pacman.debs2line(Pacman.debs4calamares)}`, echo)
     await exec('apt-get autoremove --yes', echo)
     return retVal
   }
@@ -168,6 +168,13 @@ export default class Pacman {
     shx.cp(path.resolve(__dirname, '../../conf/penguins-eggs-exclude.list'), '/usr/local/share/excludes')
   }
 
+  /**
+   * 
+   */
+  static async configurationRemove() : Promise<void> {
+    shx.rm('/etc/penguins-eggs.conf?')
+    shx.rm('/usr/local/share/excludes/penguins-eggs-exclude.list?')
+  }
   /**
    * 
    */

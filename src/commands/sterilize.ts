@@ -31,6 +31,7 @@ export default class Sterilize extends Command {
         await Pacman.prerequisitesEggsRemove()
         if(Pacman.prerequisitesCalamaresCheck()){
           await Pacman.prerequisitesCalamaresRemove()
+          await Pacman.configurationRemove()
           await Pacman.clean()
         }
       }
