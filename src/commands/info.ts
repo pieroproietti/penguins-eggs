@@ -9,6 +9,7 @@ import {Command,flags} from '@oclif/command'
 import shx = require('shelljs')
 import Utils from '../classes/utils'
 import Ovary from '../classes/ovary'
+import Pacman from '../classes/pacman'
 
 /**
  * Get informations about system
@@ -31,12 +32,22 @@ You will find here informations about penguin's eggs!
     ovary.loadSettings()
     ovary.showSettings()
 
+    shx.exec('lsb_release -a')
     let message='You are on an INSTALLED system.'
     if (Utils.isLive()){
       message = "This is a LIVE system."
     }
-    shx.echo (`System:            ${message}`)
-    shx.exec('lsb_release -a')
-    Utils.prerequisitesInstalled()    
+    shx.echo (`System:         ${message}`)
+    if (Pacman.prerequisitesEggsCheck()){
+      console.log('Prerequisites:  installed')
+    } else {
+      console.log('Prerequisites:  NOT installed')
+    }
+    if (Pacman.prerequisitesCalamaresCheck()){
+      console.log('Calamares:      installed')
+    } else {
+      console.log('Calamares:      NOT installed')
+    }
+
   }
 }
