@@ -172,7 +172,9 @@ export default class Pacman {
    * 
    */
   static async configurationRemove() : Promise<void> {
+    shx.rm('/etc/penguins-eggs.conf')
     shx.rm('/etc/penguins-eggs.conf?')
+    shx.rm('/usr/local/share/excludes/penguins-eggs-exclude.list')
     shx.rm('/usr/local/share/excludes/penguins-eggs-exclude.list?')
   }
   /**
