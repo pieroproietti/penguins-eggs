@@ -48,7 +48,7 @@ kill the eggs/free the nest
     }
     let echo = Utils.setEcho(verbose)
 
-    if (Utils.isRoot() && Utils.prerequisitesInstalled()) {
+    if (Utils.isRoot()) {
       const ovary = new Ovary
       await ovary.fertilization()
       await ovary.uBindLiveFs(verbose)

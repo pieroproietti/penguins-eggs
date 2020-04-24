@@ -20,10 +20,9 @@ export default class Prerequisites extends Command {
   }
 
   static examples = [
-    `~$ eggs prerequisites\ninstall the prerequisites packages to run penguin's eggs\n`,
-    `~$ eggs prerequisites -c\ncreate only configuration\n`,
+    `~$ eggs prerequisites\ninstall prerequisites and create configuration files\n`,
+    `~$ eggs prerequisites -c\nonly create configuration files\n`,
   ]
-
 
   async run() {
     Utils.titles()

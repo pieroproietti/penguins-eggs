@@ -11,17 +11,17 @@ import Ovary from '../classes/ovary'
 import Pacman from '../classes/pacman'
 
 export default class Calamares extends Command {
-  static description = 'Install calamares installer and configure it'
+  static description = 'Configure calamares or install and configure it'
 
   static flags = {
     help: flags.help({ char: 'h' }),
     verbose: flags.boolean({ char: 'v' }),
-    configuration_only: flags.boolean({ char: 'c', description: 'only configuration' }),
+    install: flags.boolean({ char: 'i', description: 'install' }),
   }
 
   static examples = [
-    `~$ eggs calamares\nremove (if present) and install calamares, calamares-settings-debian and configure it\n`,
-    `~$ eggs calamares  -c\ncreate only calamares configuration\n`,
+    `~$ sudo eggs calamares \ncreate calamares configuration\n`,
+    `~$ sudo eggs calamares -i \ninstall calamares  and configure it\n`,
   ]
 
 
@@ -35,15 +35,19 @@ export default class Calamares extends Command {
     }
 
     if (Utils.isRoot()) {
-      let answer = JSON.parse(await Utils.customConfirm(`Select yes to continue...`))
-      if (answer.confirm === 'Yes') {
-        if (!flags.configuration_only) {
-          await Pacman.prerequisitesCalamaresInstall()
-        }
-      
-        const ovary = new Ovary
-        if (await ovary.fertilization()) {
-          await ovary.calamaresConfigure(verbose)
+      if (Pacman.isXInstalled()) {
+        let answer = JSON.parse(await Utils.customConfirm(`Select yes to continue...`))
+        if (answer.confirm === 'Yes') {
+          if (flags.install) {
+            console.log('Installing calamares')
+            await Pacman.prerequisitesCalamaresInstall()
+          }
+
+          const ovary = new Ovary
+          if (await ovary.loadSettings()) {
+            console.log('Configuring calamares')
+            await ovary.calamaresConfigure(verbose)
+          }
         }
       }
     }

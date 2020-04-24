@@ -22,6 +22,17 @@ export default class Pacman {
   static debs4calamares = ['calamares', 'qml-module-qtquick2', 'qml-module-qtquick-controls']
 
 
+  /**
+   * controlla se Xserver è installato
+   */
+  static isXInstalled(): boolean {
+    return Pacman.packageIsInstalled('xserver-xorg-core')
+  }
+
+  /**
+   * controlla se in pacchetto debPackage è installato
+   * @param debPackage 
+   */
   static packageIsInstalled(debPackage: string): boolean {
     let isInstalled = false
     const cmd = `/usr/bin/dpkg -s ${debPackage} | grep Status`
@@ -118,12 +129,14 @@ export default class Pacman {
   /**
  * 
  */
-  static async prerequisitesCalamaresInstall(verbose = true): Promise<boolean> {
+  static async prerequisitesCalamaresInstall(verbose = true): Promise<void> {
     let echo = Utils.setEcho(verbose)
-    let retVal = false
-    await exec('apt-get update --yes', echo)
-    await exec(`apt-get install --yes ${Pacman.debs2line(Pacman.debs4calamares)}`, echo)
-    return retVal
+    if (Pacman.isXInstalled()) {
+      await exec('apt-get update --yes', echo)
+      await exec(`apt-get install --yes ${Pacman.debs2line(Pacman.debs4calamares)}`, echo)
+    } else {
+      console.log('It\'s not possible to use calamares in a system without GUI' )
+    }
   }
 
   /**

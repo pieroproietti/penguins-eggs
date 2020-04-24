@@ -9,6 +9,7 @@ import Utils from '../classes/utils'
 import Ovary from '../classes/ovary'
 import Pacman from '../classes/pacman'
 import os = require('os')
+import chalk = require('chalk')
 
 export default class Produce extends Command {
   static flags = {
@@ -35,29 +36,39 @@ the penguin produce an egg called egg-i386-2020-04-13_1815.iso`]
     const { flags } = this.parse(Produce)
     if (Utils.isRoot()) {
       if (! await Pacman.prerequisitesEggsCheck()) {
-        console.log('prerequisites mancanti')
-        Pacman.prerequisitesEggsInstall()
-      } else {
-        const basename = flags.basename || os.hostname()
-        let compression = '' // se vuota, compression viene definita da loadsettings
-        if (flags.fast) {
-          compression = 'lz4'
-        } else if (flags.compress) {
-          compression = 'xz -Xbcj x86'
+        console.log('You need to install ' + chalk.red('prerequisites') + ' to continue.')
+        let answer = JSON.parse(await Utils.customConfirm(`Select yes to install prerequisites`))
+        if (answer.confirm === 'Yes') {
+          await Pacman.prerequisitesEggsInstall()
+          await Pacman.clean()
+          Utils.titles()
+          console.log('command: produce')
+        } else {
+          console.log('To create iso, you must install eggs prerequisites.\nsudo eggs prerequisites')
+          process.exit(0)
         }
-  
-        let verbose = false
-        if (flags.verbose) {
-          verbose = true
-        }
-  
-        const ovary = new Ovary(compression)
-        if (await ovary.fertilization()) {
-          await ovary.produce(basename, verbose)
-          ovary.finished()
-        }
+      }
+
+      const basename = flags.basename || os.hostname()
+      let compression = '' // se vuota, compression viene definita da loadsettings
+      if (flags.fast) {
+        compression = 'lz4'
+      } else if (flags.compress) {
+        compression = 'xz -Xbcj x86'
+      }
+
+      let verbose = false
+      if (flags.verbose) {
+        verbose = true
+      }
+
+      const ovary = new Ovary(compression)
+      if (await ovary.fertilization()) {
+        await ovary.produce(basename, verbose)
+        ovary.finished()
+      }
     }
-    }
+
   }
 }
 
