@@ -907,8 +907,9 @@ timeout 200\n`
     shx.cp(path.resolve(__dirname, `../../assets/eggs.png`), `/usr/share/icons/`)
 
     shx.cp(path.resolve(__dirname, `../../assistant/assistant.desktop`), `/usr/share/applications/`)
-    shx.cp(path.resolve(__dirname, `../../assistant/assistant.sh`), `/usr/lib/node_modules/penguins-eggs/assistant/`)
-    shx.cp(path.resolve(__dirname, `../../assistant/assistant.html`), `/usr/lib/node_modules/penguins-eggs/assistant/`)
+    shx.mkdir('-p','/usr/local/share/penguins-eggs/')
+    shx.cp(path.resolve(__dirname, `../../assistant/assistant.sh`), `/usr/local/share/penguins-eggs/`)
+    shx.cp(path.resolve(__dirname, `../../assistant/assistant.html`), `/usr/local/share/penguins-eggs/`)
 
     shx.cp(path.resolve(__dirname, `../../assets/penguins-adjust.desktop`), `/usr/share/applications/`)
     //shx.cp(path.resolve(__dirname, `../../assets/penguins-adjust.png`), `/usr/share/icons/`)
