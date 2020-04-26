@@ -386,7 +386,7 @@ export default class Ovary {
     if (Pacman.isXInstalled()) {
       // Se force_installer e calamares non è installato
       if (this.force_installer && ! await Pacman.prerequisitesCalamaresCheck()) {
-        console.log('Installing calamares due force_installer=yes')
+        console.log('Installing ' + chalk.bgGray('calamares') + ' due force_installer=yes.')
         await Pacman.prerequisitesCalamaresInstall(verbose)
         await Pacman.clean(verbose)
       }
