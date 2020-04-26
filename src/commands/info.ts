@@ -16,7 +16,7 @@ import Pacman from '../classes/pacman'
  */
 export default class Info extends Command {
 
-  static description = 'informations about penguin\'s eggs'
+  static description = 'informations about system and eggs'
 
   static examples = [
     `$ eggs info
@@ -25,8 +25,7 @@ You will find here informations about penguin's eggs!
   ]
 
   async run() {
-    Utils.titles()
-    console.log('command: info')
+    Utils.titles('info')
 
     const ovary = new Ovary
     ovary.loadSettings()

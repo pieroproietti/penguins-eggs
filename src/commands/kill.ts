@@ -23,10 +23,11 @@ export default class Kill extends Command {
   work_dir = {} as IWorkDir
 
   static description = 'kill the eggs/free the nest'
+  static aliases = ['clean']
 
   static flags = {
     help: flags.help({ char: 'h' }),
-    verbose: flags.boolean({char: 'v', description: 'verbose'}),
+    verbose: flags.boolean({ char: 'v', description: 'verbose' }),
   }
 
   static aliases = ['clean']
@@ -38,25 +39,23 @@ kill the eggs/free the nest
   ]
 
   async run() {
-    Utils.titles()
-    console.log('command: kill')
-    
+    Utils.titles('kill')
+
     const { args, flags } = this.parse(Kill)
     let verbose = false
     if (flags.verbose) {
-        verbose = true
+      verbose = true
     }
     let echo = Utils.setEcho(verbose)
 
     if (Utils.isRoot()) {
-      const ovary = new Ovary
-      await ovary.fertilization()
-      await ovary.uBindLiveFs(verbose)
       if (this.loadSettings()) {
+        Utils.warning('Cleaning the nest...')
+        const ovary = new Ovary
+        await ovary.fertilization()
+        await ovary.uBindLiveFs(verbose)
         await exec(`rm ${this.work_dir.path} -rf`, echo)
         await exec(`rm ${this.snapshot_dir} -rf`, echo)
-        Utils.titles()
-        console.log('eggs removed all yours olds eggs in the nest ' + chalk.cyanBright (this.snapshot_dir) + '.')
       }
     }
   }
@@ -65,11 +64,10 @@ kill the eggs/free the nest
   * Load configuration from /etc/penguins-eggs.conf
   * @returns {boolean} Success
   */
-  async loadSettings(): Promise<boolean> {
+  loadSettings(): boolean {
     let foundSettings: boolean
 
     const settings = ini.parse(fs.readFileSync(this.config_file, 'utf-8'))
-
     if (settings.General.snapshot_dir === '') {
       foundSettings = false
     } else {
@@ -82,6 +80,8 @@ kill the eggs/free the nest
         this.work_dir.path = this.snapshot_dir + 'work/'
       }
     }
+    console.log(`work_dir: ${this.work_dir.path}`)
+    console.log(`foundSettings: ${foundSettings}`)
     return foundSettings
   }
 }

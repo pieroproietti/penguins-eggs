@@ -12,11 +12,12 @@ import Utils from '../classes/utils'
 import Pacman from '../classes/pacman'
 
 export default class Prerequisites extends Command {
-  static description = 'install the prerequisites packages to run penguin\'s eggs'
+  static description = 'install packages prerequisites to run eggs'
 
   static flags = {
     help: flags.help({ char: 'h' }),
     configuration_only: flags.boolean({ char: 'c', description: 'not remove/reinstall calamares, only configuration' }),
+    verbose: flags.boolean({ char: 'v', description: 'verbose' }),
   }
 
   static examples = [
@@ -25,20 +26,24 @@ export default class Prerequisites extends Command {
   ]
 
   async run() {
-    Utils.titles()
-    console.log('command: prerequisites')
+    Utils.titles('prerequisites')
 
     const { flags } = this.parse(Prerequisites)
+    let verbose = false
+    if (flags.verbose) {
+      verbose = true
+    }
 
     if (Utils.isRoot()) {
       let answer = JSON.parse(await Utils.customConfirm(`Select yes to continue...`))
       if (answer.confirm === 'Yes') {
-        await Pacman.configurationInstall()
+        Utils.warning('Creating configuration files...')
+        await Pacman.configurationInstall(verbose)
         if (!flags.configuration_only) {
-          await Pacman.prerequisitesEggsInstall()
+          Utils.warning('Install eggs prerequisites...')
+          await Pacman.prerequisitesEggsInstall(verbose)
         }
       }
     }
   }
 }
-

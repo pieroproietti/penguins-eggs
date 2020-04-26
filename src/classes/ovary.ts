@@ -299,7 +299,7 @@ export default class Ovary {
 
     if (spaceAvailable > gb * 3) {
       console.log(chalk.cyanBright('The free space should  be sufficient to hold the'))
-      console.log(chalk.cyanBright('compressed data from / and /home'))
+      console.log(chalk.cyanBright('compressed data from the system'))
     } else {
       console.log(chalk.redBright('The free space should be insufficient') + '.')
       console.log()
@@ -1159,7 +1159,7 @@ timeout 200\n`
    */
   finished() {
     Utils.titles()
-    console.log('eggs is finished!\nYou can find the file iso: ' + chalk.cyanBright(this.eggName) + '\nin the nest: ' + chalk.cyanBright(this.snapshot_dir) + '.')
+    console.log('eggs is finished!\n\nYou can find the file iso: ' + chalk.cyanBright(this.eggName) + '\nin the nest: ' + chalk.cyanBright(this.snapshot_dir) + '.')
   }
 }
 

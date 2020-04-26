@@ -30,10 +30,10 @@ export default class Pacman {
   }
 
   /**
-   * controlla se in pacchetto debPackage è installato
+   * restuisce VERO se il pacchetto è installato
    * @param debPackage 
    */
-  static async packageIsInstalled(debPackage: string): Promise<boolean> {
+  static packageIsInstalled(debPackage: string): boolean {
     let isInstalled = false
     const cmd = `/usr/bin/dpkg -s ${debPackage} | grep Status`
     const stdout = shx.exec(cmd, { silent: true }).stdout.trim()
@@ -74,13 +74,13 @@ export default class Pacman {
   }
 
   /**
-   * 
+   * Restituisce VERO se i prerequisiti sono installati
    */
-  static async prerequisitesEggsCheck(): Promise<boolean> {
+  static prerequisitesEggsCheck(): boolean {
     let retVal = true
 
     for (let i in this.debs4eggs) {
-      if (!await Pacman.packageIsInstalled(this.debs4eggs[i])) {
+      if (!Pacman.packageIsInstalled(this.debs4eggs[i])) {
         retVal = false
         break
       }
@@ -154,17 +154,22 @@ export default class Pacman {
   }
 
   /**
-   * 
+   * Restutuisce VERO se i file di configurazione sono presenti
    */
-  static async configurationCheck(): Promise<boolean> {
-    return fs.existsSync('/etc/penguins-eggs.conf') && (fs.existsSync('/usr/local/share/excludes/penguins-eggs-exclude.list'))
+  static configurationCheck(): boolean {
+    let conf = false
+    let list = false
+    let result = false
+    conf = fs.existsSync('/etc/penguins-eggs.conf')
+    list = fs.existsSync('/usr/local/share/excludes/penguins-eggs-exclude.list')
+    result = conf && list
+    return result
   }
 
   /**
    * 
    */
   static async configurationInstall(verbose = true): Promise<void> {
-    console.log('Creating configuraton files')
     shx.cp(path.resolve(__dirname, '../../conf/penguins-eggs.conf'), '/etc')
     shx.mkdir('-p', '/usr/local/share/excludes/')
     shx.cp(path.resolve(__dirname, '../../conf/penguins-eggs-exclude.list'), '/usr/local/share/excludes')
@@ -174,7 +179,6 @@ export default class Pacman {
    * 
    */
   static async configurationRemove(verbose = true) : Promise<void> {
-    console.log('Removing configuraton files')
     let echo = Utils.setEcho(verbose)
     await exec('rm /etc/penguins-eggs.conf', echo)
     await exec('rm /etc/penguins-eggs.conf?', echo)

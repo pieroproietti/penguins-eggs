@@ -4,7 +4,7 @@ import chalk = require('chalk')
 
 
 export default class DevGrub extends Command {
-  static description = 'describe the command here'
+  static description = 'boot from grub rescue'
 
   static flags = {
     help: flags.help({char: 'h'}),
@@ -13,8 +13,7 @@ export default class DevGrub extends Command {
 
   async run() {
     const {flags} = this.parse(DevGrub)
-    Utils.titles()
-    console.log('eggs: grub')
+    Utils.titles('howto:grub')
     console.log(chalk.cyanBright ('Commands to boot in the grub shell') )
     console.log()
     console.log(chalk.cyan ('BIOS EFI') )

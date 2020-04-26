@@ -21,8 +21,7 @@ export default class Sterilize extends Command {
   }
 
   async run() {
-    Utils.titles()
-    console.log(`command: sterilize`)
+    Utils.titles('sterilize')
 
     const { flags } = this.parse(Sterilize)
     let verbose = false
@@ -33,9 +32,12 @@ export default class Sterilize extends Command {
     if (Utils.isRoot() && Pacman.prerequisitesEggsCheck()) {
       let answer = JSON.parse(await Utils.customConfirm(`Select yes to continue...`))
       if (answer.confirm === 'Yes') {
+        Utils.warning('Removing eggs prerequisites...')
         await Pacman.prerequisitesEggsRemove(verbose)
         if(Pacman.prerequisitesCalamaresCheck()){
+          Utils.warning('Removing calamares prerequisites...')
           await Pacman.prerequisitesCalamaresRemove(verbose)
+          Utils.warning('Removing files configuration...')
           await Pacman.configurationRemove(verbose)
           await Pacman.clean(verbose)
         }

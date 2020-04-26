@@ -19,7 +19,7 @@ export default class Install extends Command {
     umount: flags.boolean({ char: 'u', description: 'umount devices' }),
     verbose: flags.boolean({char: 'v', description: 'verbose'}),
   }
-  static description = 'penguin\'s eggs installation'
+  static description = 'system installation (the eggs became penguin)'
 
   static aliases = ['hatch']
 
@@ -29,8 +29,8 @@ export default class Install extends Command {
    * Execute
    */
   async run() {
-    Utils.titles()
-    console.log('command: install')
+    Utils.titles('install')
+
     const {flags} = this.parse(Install)
 
     let verbose = false
@@ -47,6 +47,7 @@ export default class Install extends Command {
       if (flags.gui) {
         shx.exec('calamares')
       } else {
+        Utils.warning('Spawn the egg...')
         const hatching = new Hatching()
         hatching.questions(verbose, umount)
       }

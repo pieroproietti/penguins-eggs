@@ -24,6 +24,17 @@ import Pacman from './pacman'
  */
 export default class Utils {
 
+  /**
+   * 
+   * @param msg 
+   */
+  static warning(msg = ''){
+    console.log('eggs >>> ' + chalk.cyanBright(msg)+ '.')
+  }
+
+  static error(msg = ''){
+    console.log('eggs >>> ' + chalk.bgGrey(msg)+ '.')
+  }
 
   /**
    * Return the primary user's name
@@ -389,11 +400,11 @@ export default class Utils {
    * titles
    * Penguin's are gettings alive!
    */
-  static titles(): void {
+  static titles(command = ''): void {
     clear()
     console.log(chalk.blue(figlet.textSync('eggs')))
     console.log(chalk.redBright(pjson.name) + ' Perri\'s Brewery edition' + chalk.green(' ver. ' + pjson.version))
-    console.log()
+    console.log('command: ' + chalk.blue(command) + '\n')
   }
 
   /**

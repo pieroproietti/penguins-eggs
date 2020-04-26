@@ -4,7 +4,7 @@ import Utils from '../classes/utils'
 const exec = require('../lib/utils').exec
 
 export default class Adjust extends Command {
-  static description = 'describe the command here'
+  static description = 'auto adjust monitor resolution'
 
   static flags = {
     help: flags.help({char: 'h'}),
@@ -12,8 +12,8 @@ export default class Adjust extends Command {
 
   async run() {
     //const {args, flags} = this.parse(Adjust)
-    Utils.titles()
-    console.log('command: adjust')
+    Utils.titles('adjust')
+    Utils.warning('Adjust monitor configuration...')
     await exec(`xrandr --output Virtual-0 --auto`)
     await exec(`xrandr --output Virtual-1 --auto`)
     await exec(`xrandr --output Virtual-2 --auto`)

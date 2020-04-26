@@ -18,8 +18,7 @@ update/upgrade the penguin's eggs tool
   ]
 
   async run() {
-    Utils.titles()
-    console.log(`command: update`)
+    Utils.titles('update')
     
     const { flags } = this.parse(Update)
 
