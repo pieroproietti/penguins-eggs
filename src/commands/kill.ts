@@ -30,8 +30,6 @@ export default class Kill extends Command {
     verbose: flags.boolean({ char: 'v', description: 'verbose' }),
   }
 
-  static aliases = ['clean']
-
   static examples = [
     `$ eggs kill
 kill the eggs/free the nest
