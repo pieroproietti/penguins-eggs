@@ -26,6 +26,7 @@ update/upgrade the penguin's eggs tool
       let answer = JSON.parse(await Utils.customConfirm(`Select yes to continue...`))
 
       if (answer.confirm === 'Yes'){
+        Utils.warning('Updating eggs...')
         console.log(`updating ${Utils.getPackageName()} version ${Utils.getPackageVersion()}`)
         shx.exec(`npm update ${Utils.getPackageName()} -g`)
       }
