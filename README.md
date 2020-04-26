@@ -104,6 +104,7 @@ USAGE
 * [`eggs adjust`](#eggs-adjust)
 * [`eggs calamares`](#eggs-calamares)
 * [`eggs help [COMMAND]`](#eggs-help-command)
+* [`eggs howto:configuration [FILE]`](#eggs-howtoconfiguration-file)
 * [`eggs howto:grub`](#eggs-howtogrub)
 * [`eggs info`](#eggs-info)
 * [`eggs install`](#eggs-install)
@@ -166,6 +167,22 @@ OPTIONS
 ```
 
 _See code: [@oclif/plugin-help](https://github.com/oclif/plugin-help/blob/v2.2.3/src/commands/help.ts)_
+
+## `eggs howto:configuration [FILE]`
+
+describe the command here
+
+```
+USAGE
+  $ eggs howto:configuration [FILE]
+
+OPTIONS
+  -f, --force
+  -h, --help       show CLI help
+  -n, --name=name  name to print
+```
+
+_See code: [src/commands/howto/configuration.ts](https://github.com/pieroproietti/penguins-eggs/blob/v7.5.23/src/commands/howto/configuration.ts)_
 
 ## `eggs howto:grub`
 

@@ -42,11 +42,17 @@ You will find here informations about penguin's eggs!
     } else {
       console.log('Prerequisites:  NOT installed')
     }
+
+    if (Pacman.configurationCheck()){
+      console.log('Configuration:  configured')
+    } else {
+      console.log('Configuration:  NOT configured')
+    }
+    
     if (Pacman.prerequisitesCalamaresCheck()){
       console.log('Calamares:      installed')
     } else {
       console.log('Calamares:      NOT installed')
     }
-
   }
 }
