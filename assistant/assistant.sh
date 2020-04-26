@@ -30,7 +30,7 @@ esac
 zenity --title="Assistente Penguin's eggs" \
     --text-info \
     --html \
-    --filename=/usr/lib/node_modules/penguins-eggs/assistant/assistant.html \
+    --filename=/usr/local/share/penguins-eggs/assistant.html \
     --width=700 \
     --height=500
 
