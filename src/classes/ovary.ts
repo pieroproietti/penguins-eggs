@@ -927,6 +927,7 @@ timeout 200\n`
     // Copiare i link sul desktop per user live
     shx.cp('/usr/share/applications/penguins-eggs.desktop', `${this.work_dir.merged}/home/${user}/Desktop`)
     shx.cp('/usr/share/applications/penguins-adjust.desktop', `${this.work_dir.merged}/home/${user}/Desktop`)
+    shx.cp('/usr/share/applications/assistant.desktop', `${this.work_dir.merged}/home/${user}/Desktop`)
     shx.cp('/usr/share/applications/stream-yard.desktop', `${this.work_dir.merged}/home/${user}/Desktop`)
     shx.cp('/usr/share/applications/dwagent-sh.desktop', `${this.work_dir.merged}/home/${user}/Desktop`)
     if (Utils.packageIsInstalled('calamares')) {
