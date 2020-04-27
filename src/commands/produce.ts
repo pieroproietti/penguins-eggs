@@ -13,6 +13,7 @@ import chalk = require('chalk')
 
 export default class Produce extends Command {
   static flags = {
+    assistant: flags.boolean({ char: 'a', description: 'assistant' }),
     basename: flags.string({ char: 'b', description: 'basename egg' }),
     compress: flags.boolean({ char: 'c', description: 'max compression' }),
     fast: flags.boolean({ char: 'f', description: 'compression fast' }),
@@ -41,6 +42,11 @@ the penguin produce an egg called egg-i386-2020-04-13_1815.iso`]
         compression = 'lz4'
       } else if (flags.compress) {
         compression = 'xz -Xbcj x86'
+      }
+
+      let assistant = false
+      if (flags.assistant) {
+        assistant = true
       }
 
       let verbose = false
@@ -76,7 +82,7 @@ the penguin produce an egg called egg-i386-2020-04-13_1815.iso`]
       const ovary = new Ovary(compression)
       Utils.warning('Produce an egg...')
        if (await ovary.fertilization()) {
-       await ovary.produce(basename, verbose)
+       await ovary.produce(basename, assistant, verbose)
         ovary.finished()
       }
     }

@@ -648,7 +648,7 @@ adduser ${username} \
       console.log('>>> hatching: getDiskSize')
     }
     try {
-      const { info } = await checkSync(device)
+      const info = await checkSync(device)
       return info.total
     } catch (err) {
       Utils.warning(err)
