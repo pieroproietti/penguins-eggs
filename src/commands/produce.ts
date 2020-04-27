@@ -13,10 +13,10 @@ import chalk = require('chalk')
 
 export default class Produce extends Command {
   static flags = {
-    info: flags.help({ char: 'h' }),
-    fast: flags.boolean({ char: 'f', description: 'compression fast' }),
-    compress: flags.boolean({ char: 'c', description: 'max compression' }),
     basename: flags.string({ char: 'b', description: 'basename egg' }),
+    compress: flags.boolean({ char: 'c', description: 'max compression' }),
+    fast: flags.boolean({ char: 'f', description: 'compression fast' }),
+    info: flags.help({ char: 'h' }),
     verbose: flags.boolean({ char: 'v', description: 'verbose' }),
   }
 

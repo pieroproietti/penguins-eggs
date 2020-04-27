@@ -9,6 +9,7 @@ import fs = require('fs')
 import path = require('path')
 import shx = require('shelljs')
 import Utils from '../../utils'
+import Pacman from '../../pacman'
 import { IDistro, IOses } from '../../../interfaces'
 const exec = require('../../../lib/utils').exec
 
@@ -38,7 +39,7 @@ class calamaresConfig {
         this.distro = distro
         this.oses = oses
         this.verbose = verbose
-        this.displaymanager = (Utils.packageIsInstalled('lightdm') || Utils.packageIsInstalled('sddm') || Utils.packageIsInstalled('sddm') )
+        this.displaymanager = (Pacman.packageIsInstalled('lightdm') || Pacman.packageIsInstalled('sddm') || Pacman.packageIsInstalled('sddm') )
         this.sourcesMedia = false
     }
 

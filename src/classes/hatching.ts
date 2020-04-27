@@ -13,6 +13,7 @@ import shx = require('shelljs')
 import inquirer = require('inquirer')
 import drivelist = require('drivelist')
 import Utils from './utils'
+import Pacman from './pacman'
 import { IDevices, IDevice } from '../interfaces'
 import { option } from '@oclif/command/lib/flags'
 const exec = require('../lib/utils').exec
@@ -172,7 +173,7 @@ export default class Hatching {
       console.log('>>> hatching: autoLoginConfig')
     }
 
-    if (Utils.packageIsInstalled('lightdm')) {
+    if (Pacman.packageIsInstalled('lightdm')) {
       shx.sed('-i', `autologin-user=${oldUser}`, `autologin-user=${newUser}`, `${this.target}/etc/lightdm/lightdm.conf`)
     }
   }

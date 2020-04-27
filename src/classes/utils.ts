@@ -303,15 +303,6 @@ export default class Utils {
   }
 
   /**
-   * Sostituita da pacman
-   * @param debPackage 
-   */
-  static packageIsInstalled(debPackage: string): boolean {
-    return Pacman.packageIsInstalled(debPackage)
-  }
-
-
-  /**
    * userAdd
    * @param target
    * @param username

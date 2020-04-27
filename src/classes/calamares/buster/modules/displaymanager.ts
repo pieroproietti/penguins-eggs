@@ -3,6 +3,7 @@
  */
 
 import Utils from '../../../utils'
+import Pacman from '../../../pacman'
 
 export function displaymanager(mountpointSquashFs: string): string {
 
@@ -27,7 +28,7 @@ return text
 function addIfExist(package2check: string): string {
     let text = ''
     
-    if (Utils.packageIsInstalled(package2check)) {
+    if (Pacman.packageIsInstalled(package2check)) {
         text += `   - '${package2check}'\n`
     }
     return text

@@ -257,16 +257,16 @@ export default class Ovary {
     console.log(`pmount_fixed:      ${this.pmount_fixed}`)
     console.log(`ssh_pass:          ${this.ssh_pass}`)
     if (this.make_efi) {
-      if (!Utils.packageIsInstalled('grub-efi-amd64')) {
-        console.log(chalk.yellow('You choose to create an UEFI image, but miss to install grub-ef-amd64 package.'))
-        console.log(chalk.yellow('Please install it before to create an UEFI image:'))
-        console.log(chalk.green('sudo apt install grub-efi-amd64'))
+      if (!Pacman.packageIsInstalled('grub-efi-amd64')) {
+        Utils.error('You choose to create an UEFI image, but miss to install grub-efi-amd64 package.')
+        Utils.error('Please install it before to create an UEFI image:')
+        Utils.warning('sudo apt install grub-efi-amd64')
         this.make_efi = false
       }
-      if (!Utils.packageIsInstalled('dosfstools')) {
-        console.log(chalk.yellow('You choose to create an UEFI image, but miss to install dosfstools package.'))
-        console.log(chalk.yellow('Please install it before to create an UEFI image:'))
-        console.log(chalk.green('sudo apt install dosfstools'))
+      if (!Pacman.packageIsInstalled('dosfstools')) {
+        Utils.error('You choose to create an UEFI image, but miss to install dosfstools package.')
+        Utils.error('Please install it before to create an UEFI image:')
+        Utils.warning('sudo apt install dosfstools')
         this.make_efi = false
       }
     }
@@ -931,7 +931,7 @@ timeout 200\n`
     shx.cp('/usr/share/applications/assistant.desktop', `${this.work_dir.merged}/home/${user}/Desktop`)
     shx.cp('/usr/share/applications/stream-yard.desktop', `${this.work_dir.merged}/home/${user}/Desktop`)
     shx.cp('/usr/share/applications/dwagent-sh.desktop', `${this.work_dir.merged}/home/${user}/Desktop`)
-    if (Utils.packageIsInstalled('calamares')) {
+    if (Pacman.packageIsInstalled('calamares')) {
       shx.cp('/usr/share/applications/install-debian.desktop', `${this.work_dir.merged}/home/${user}/Desktop`)
       await exec(`chown ${user}:${user} ${this.work_dir.merged}/home/${user}/Desktop/install-debian.desktop`, echo)
       await exec(`chmod +x ${this.work_dir.merged}/home/${user}/Desktop/install-debian.desktop`, echo)
@@ -1124,7 +1124,11 @@ timeout 200\n`
       console.log(`ovary: makeIsoImage ${isoName}`)
     }
 
-    const uefi_opt = '-eltorito-alt-boot -e boot/grub/efiboot.img -isohybrid-gpt-basdat -no-emul-boot'
+    let uefi_opt =''
+    if (this.make_efi){
+      uefi_opt = '-eltorito-alt-boot -e boot/grub/efiboot.img -isohybrid-gpt-basdat -no-emul-boot'
+    }
+
 
     let isoHybridOption = `-isohybrid-mbr ${this.iso.isolinuxPath}isohdpfx.bin `
 

@@ -18,6 +18,7 @@ const exec = require('../lib/utils').exec
  * @remarks all the utilities
  */
 export default class Pacman {
+  static deb4uefi = ['grub-efi-amd64']
   static debs4eggs = ['isolinux', 'live-boot', 'live-boot-initramfs-tools', 'live-config-systemd', 'squashfs-tools', 'xorriso', 'xterm', 'whois']
   static debs4calamares = ['calamares', 'qml-module-qtquick2', 'qml-module-qtquick-controls']
 
