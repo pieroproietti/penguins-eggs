@@ -312,7 +312,7 @@ export default class Ovary {
    *
    * @param basename
    */
-  async produce(basename = '', verbose = false) {
+  async produce(basename = '', assistant = false, verbose = false) {
     let echo = Utils.setEcho(verbose)
 
     if (!fs.existsSync(this.snapshot_dir)) {
@@ -342,7 +342,7 @@ export default class Ovary {
         await this.makeEfi(verbose)
       }
       await this.bindLiveFs(verbose)
-      await this.makeLiveHome(verbose)
+      await this.makeLiveHome(assistant, verbose)
       await this.editLiveFs(verbose)
       await this.editBootMenu(verbose)
       await this.makeSquashFs(verbose)
@@ -892,7 +892,7 @@ timeout 200\n`
    * create la home per user live
    * @param verbose 
    */
-  async makeLiveHome(verbose = false) {
+  async makeLiveHome(assistant = false, verbose = false) {
     let echo = Utils.setEcho(verbose)
     if (verbose) {
       console.log('ovary: makeLiveHome')
@@ -900,25 +900,23 @@ timeout 200\n`
 
     const user: string = Utils.getPrimaryUser()
 
-    // Copiamo i link su /usr/share/applications
-    shx.cp(path.resolve(__dirname, '../../conf/grub.cfg.template'), `${this.work_dir.pathIso}/boot/grub/grub.cfg`)
-
+    /**
+     * creazione dei link
+     */
     shx.cp(path.resolve(__dirname, `../../assets/penguins-eggs.desktop`), `/usr/share/applications/`)
     shx.cp(path.resolve(__dirname, `../../assets/eggs.png`), `/usr/share/icons/`)
 
-    shx.cp(path.resolve(__dirname, `../../assistant/assistant.desktop`), `/usr/share/applications/`)
-    shx.mkdir('-p','/usr/local/share/penguins-eggs/')
-    shx.cp(path.resolve(__dirname, `../../assistant/assistant.sh`), `/usr/local/share/penguins-eggs/`)
-    shx.cp(path.resolve(__dirname, `../../assistant/assistant.html`), `/usr/local/share/penguins-eggs/`)
-
-    shx.cp(path.resolve(__dirname, `../../assets/penguins-adjust.desktop`), `/usr/share/applications/`)
-    //shx.cp(path.resolve(__dirname, `../../assets/penguins-adjust.png`), `/usr/share/icons/`)
-
-    shx.cp(path.resolve(__dirname, `../../assets/stream-yard.desktop`), `/usr/share/applications/`)
-    shx.cp(path.resolve(__dirname, `../../assets/stream-yard.png`), `/usr/share/icons/`)
-
     shx.cp(path.resolve(__dirname, `../../assets/dwagent-sh.desktop`), `/usr/share/applications/`)
     shx.cp(path.resolve(__dirname, `../../assets/assistenza-remota.png`), `/usr/share/icons/`)
+
+    if (assistant){
+      shx.cp(path.resolve(__dirname, `../../assistant/assistant.desktop`), `/usr/share/applications/`)
+      shx.mkdir('-p','/usr/local/share/penguins-eggs/')
+      shx.cp(path.resolve(__dirname, `../../assistant/assistant.sh`), `/usr/local/share/penguins-eggs/`)
+      shx.cp(path.resolve(__dirname, `../../assistant/assistant.html`), `/usr/local/share/penguins-eggs/`)
+    } else {
+      shx.cp(path.resolve(__dirname, `../../assets/penguins-adjust.desktop`), `/usr/share/applications/`)
+    }
 
     // creazione della home per user live
     shx.cp(`-r`, `/etc/skel/.`, `${this.work_dir.merged}/home/${user}`)
@@ -927,11 +925,16 @@ timeout 200\n`
 
     // Copiare i link sul desktop per user live
     shx.cp('/usr/share/applications/penguins-eggs.desktop', `${this.work_dir.merged}/home/${user}/Desktop`)
-    shx.cp('/usr/share/applications/penguins-adjust.desktop', `${this.work_dir.merged}/home/${user}/Desktop`)
-    shx.cp('/usr/share/applications/assistant.desktop', `${this.work_dir.merged}/home/${user}/Desktop`)
-    shx.cp('/usr/share/applications/stream-yard.desktop', `${this.work_dir.merged}/home/${user}/Desktop`)
-    shx.cp('/usr/share/applications/dwagent-sh.desktop', `${this.work_dir.merged}/home/${user}/Desktop`)
-    if (Pacman.packageIsInstalled('calamares')) {
+    if (assistant) {
+      shx.cp('/usr/share/applications/assistant.desktop', `${this.work_dir.merged}/home/${user}/Desktop`)
+      shx.cp('/usr/share/applications/dwagent-sh.desktop', `${this.work_dir.merged}/home/${user}/Desktop`)
+    } else {
+      shx.cp('/usr/share/applications/penguins-adjust.desktop', `${this.work_dir.merged}/home/${user}/Desktop`)
+      shx.cp('/usr/share/applications/stream-yard.desktop', `${this.work_dir.merged}/home/${user}/Desktop`)
+    }
+
+
+    if (Pacman.packageIsInstalled('calamares')&& !assistant) {
       shx.cp('/usr/share/applications/install-debian.desktop', `${this.work_dir.merged}/home/${user}/Desktop`)
       await exec(`chown ${user}:${user} ${this.work_dir.merged}/home/${user}/Desktop/install-debian.desktop`, echo)
       await exec(`chmod +x ${this.work_dir.merged}/home/${user}/Desktop/install-debian.desktop`, echo)
