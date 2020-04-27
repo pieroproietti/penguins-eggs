@@ -182,6 +182,17 @@ export default class Ovary {
     this.snapshot_excludes = settings.General.snapshot_excludes
     this.snapshot_basename = settings.General.snapshot_basename
     this.make_efi = settings.General.make_efi === "yes"
+    if (this.make_efi) {
+      if (!Pacman.packageIsInstalled('grub-efi-amd64')) {
+        Utils.error('You choose to create an UEFI image, but miss to install grub-efi-amd64 package.')
+        Utils.error('Please install it before to create an UEFI image:')
+        Utils.warning('sudo apt install grub-efi-amd64')
+        Utils.error('or edit /etc/penguins-eggs.conf and set the valuer of make_efi=no')
+        
+        this.make_efi = false
+      }
+    }
+
     this.make_isohybrid = settings.General.make_isohybrid === "yes"
     this.make_md5sum = settings.General.make_md5sum === "yes"
     if (this.compression === '') {
@@ -347,7 +358,7 @@ export default class Ovary {
       await this.editBootMenu(verbose)
       await this.makeSquashFs(verbose)
       if (this.make_efi) {
-        await this.editEfi(verbose)
+          await this.editEfi(verbose)
       }
       await this.makeIsoImage(verbose)
       await this.uBindLiveFs(verbose)
@@ -925,9 +936,9 @@ timeout 200\n`
 
     // Copiare i link sul desktop per user live
     shx.cp('/usr/share/applications/penguins-eggs.desktop', `${this.work_dir.merged}/home/${user}/Desktop`)
+    shx.cp('/usr/share/applications/dwagent-sh.desktop', `${this.work_dir.merged}/home/${user}/Desktop`)
     if (assistant) {
       shx.cp('/usr/share/applications/assistant.desktop', `${this.work_dir.merged}/home/${user}/Desktop`)
-      shx.cp('/usr/share/applications/dwagent-sh.desktop', `${this.work_dir.merged}/home/${user}/Desktop`)
     } else {
       shx.cp('/usr/share/applications/penguins-adjust.desktop', `${this.work_dir.merged}/home/${user}/Desktop`)
       shx.cp('/usr/share/applications/stream-yard.desktop', `${this.work_dir.merged}/home/${user}/Desktop`)
