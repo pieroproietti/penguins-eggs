@@ -317,17 +317,35 @@ adduser ${username} \
       console.log('>>> hatching: umountVFS')
     }
 
-    await exec(`umount ${this.target}/dev/pts`, echo)
-    await exec('sleep 1', echo)
-    await exec(`umount ${this.target}/dev`, echo)
-    await exec('sleep 1', echo)
-    await exec(`umount ${this.target}/proc`, echo)
-    await exec('sleep 1', echo)
-    await exec(`umount ${this.target}/run`, echo)
-    await exec('sleep 1', echo)
-    await exec(`umount ${this.target}/sys/fs/fuse/connections`, echo)
-    await exec('sleep 1', echo)
-    await exec(`umount ${this.target}/sys`, echo)
+    if (Utils.isMountpoint(`${this.target}/dev/pts`)){
+      await exec(`umount ${this.target}/dev/pts`, echo)
+      await exec('sleep 1', echo)
+    }
+
+    if (Utils.isMountpoint(`${this.target}/dev`)){
+      await exec(`umount ${this.target}/dev`, echo)
+      await exec('sleep 1', echo)
+    }
+
+    if (Utils.isMountpoint(`${this.target}/proc`)){
+      await exec(`umount ${this.target}/proc`, echo)
+      await exec('sleep 1', echo)
+    }
+
+    if (Utils.isMountpoint(`${this.target}/run`)){
+      await exec(`umount ${this.target}/run`, echo)
+      await exec('sleep 1', echo)
+    }
+
+    if (Utils.isMountpoint(`${this.target}/sys/fs/fuse/connections`)){
+      await exec(`umount ${this.target}/sys/fs/fuse/connections`, echo)
+      await exec('sleep 1', echo)
+    }
+
+    if (Utils.isMountpoint(`${this.target}/sys`)){
+      await exec(`umount ${this.target}/sys`, echo)
+      await exec('sleep 1', echo)
+    }
   }
 
   /**

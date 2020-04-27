@@ -245,6 +245,13 @@ export default class Utils {
      */
   static isLive(type = 'debian-live'): boolean {
     let retVal = false
+    let path = '/lib/live/mount/'
+    if (type='mx'){
+      path = '/live/aufs'
+    }
+    return Utils.isMountpoint(path)
+  }
+/**
     let result: number
     let cmd = 'mountpoint -q /lib/live/mount/'
     if (type === 'mx') {
@@ -254,7 +261,20 @@ export default class Utils {
     retVal = result === 0
     return retVal
   }
+*/
 
+  /**
+   * Ritorna vero se path è un mountpoint
+   * @param path 
+   */
+  static isMountpoint(path =''): boolean {
+    let retval = false
+    let result :number
+    let cmd =`mountpoint -q ${path}`
+    result = shx.exec(cmd, {silent: trye}).code
+    retval = result === 0
+    return retval
+  }
   /**
     * return true if eggs run as root
     * @returns isRoot
