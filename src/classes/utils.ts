@@ -271,7 +271,7 @@ export default class Utils {
     let retval = false
     let result :number
     let cmd =`mountpoint -q ${path}`
-    result = shx.exec(cmd, {silent: trye}).code
+    result = shx.exec(cmd, {silent: true}).code
     retval = result === 0
     return retval
   }

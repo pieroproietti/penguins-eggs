@@ -1,9 +1,9 @@
 [Desktop Entry]
-Name=Aiuto installazione
-Comment=Assistente scelta installazione
+Name=Installazione sistema
+Comment=Assistente installazione
 GenericName=Aiuto installazione
 Exec=/usr/local/share/penguins-eggs/assistant.sh 
 Terminal=false
 Type=Application
-Icon=calamares
+Icon=install-debian
 Categories=system

@@ -138,13 +138,14 @@ export default class Hatching {
       await this.changePassword('root', options.rootpassword, verbose)
       await this.autologinConfig('live', options.username, verbose)
       await this.delLiveUser(verbose)
+      await this.updateInitramfs(verbose)
       // await this.patchPve(verbose)
       await this.umountVFS(verbose)
       await this.umount4target(devices, verbose)
       this.finished(options.installationDevice, options.hostname, options.username)
     }
   }
-
+  
   /**
    * setTimezone
    */
@@ -285,7 +286,6 @@ adduser ${username} \
       console.log('>>> hatching: updateInitramfs')
     }
 
-    console.log('update-initramfs\n')
     await exec(`chroot ${this.target}  update-initramfs -u -k $(uname -r)`, echo)
   }
 
