@@ -647,8 +647,13 @@ adduser ${username} \
     if (verbose) {
       console.log('>>> hatching: getDiskSize')
     }
-    const info = checkSync(device)
-    return info.total
+    try {
+      const { info } = await checkSync(device)
+      return info.total
+    } catch (err) {
+      Utils.warning(err)
+      return 0
+    }
   }
 
   /**
