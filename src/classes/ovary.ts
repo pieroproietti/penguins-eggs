@@ -188,7 +188,7 @@ export default class Ovary {
         Utils.error('Please install it before to create an UEFI image:')
         Utils.warning('sudo apt install grub-efi-amd64')
         Utils.error('or edit /etc/penguins-eggs.conf and set the valuer of make_efi=no')
-        
+
         this.make_efi = false
       }
     }
@@ -358,7 +358,7 @@ export default class Ovary {
       await this.editBootMenu(verbose)
       await this.makeSquashFs(verbose)
       if (this.make_efi) {
-          await this.editEfi(verbose)
+        await this.editEfi(verbose)
       }
       await this.makeIsoImage(verbose)
       await this.uBindLiveFs(verbose)
@@ -909,47 +909,47 @@ timeout 200\n`
       console.log('ovary: makeLiveHome')
     }
 
-    const user: string = Utils.getPrimaryUser()
-
-    /**
-     * creazione dei link
-     */
-    shx.cp(path.resolve(__dirname, `../../assets/penguins-eggs.desktop`), `/usr/share/applications/`)
-    shx.cp(path.resolve(__dirname, `../../assets/eggs.png`), `/usr/share/icons/`)
-
-    shx.cp(path.resolve(__dirname, `../../assets/dwagent-sh.desktop`), `/usr/share/applications/`)
-    shx.cp(path.resolve(__dirname, `../../assets/assistenza-remota.png`), `/usr/share/icons/`)
-
-    if (assistant){
-      shx.cp(path.resolve(__dirname, `../../assistant/assistant.desktop`), `/usr/share/applications/`)
-      shx.mkdir('-p','/usr/local/share/penguins-eggs/')
-      shx.cp(path.resolve(__dirname, `../../assistant/assistant.sh`), `/usr/local/share/penguins-eggs/`)
-      shx.cp(path.resolve(__dirname, `../../assistant/assistant.html`), `/usr/local/share/penguins-eggs/`)
-    } else {
-      shx.cp(path.resolve(__dirname, `../../assets/penguins-adjust.desktop`), `/usr/share/applications/`)
-    }
-
     // creazione della home per user live
+    const user: string = Utils.getPrimaryUser()
     shx.cp(`-r`, `/etc/skel/.`, `${this.work_dir.merged}/home/${user}`)
     await exec(`chown -R ${user}:${user} ${this.work_dir.merged}/home/${user}`, echo)
     shx.mkdir(`-p`, `${this.work_dir.merged}/home/${user}/Desktop`)
 
-    // Copiare i link sul desktop per user live
-    shx.cp('/usr/share/applications/penguins-eggs.desktop', `${this.work_dir.merged}/home/${user}/Desktop`)
-    shx.cp('/usr/share/applications/dwagent-sh.desktop', `${this.work_dir.merged}/home/${user}/Desktop`)
-    if (assistant) {
-      shx.cp('/usr/share/applications/assistant.desktop', `${this.work_dir.merged}/home/${user}/Desktop`)
-    } else {
-      shx.cp('/usr/share/applications/penguins-adjust.desktop', `${this.work_dir.merged}/home/${user}/Desktop`)
-      shx.cp('/usr/share/applications/stream-yard.desktop', `${this.work_dir.merged}/home/${user}/Desktop`)
+    // Solo per sistemi grafici
+    if (Pacman.isXInstalled()) {
+      /**
+       * creazione dei link
+       */
+      shx.cp(path.resolve(__dirname, `../../assets/penguins-eggs.desktop`), `/usr/share/applications/`)
+      shx.cp(path.resolve(__dirname, `../../assets/eggs.png`), `/usr/share/icons/`)
+
+      shx.cp(path.resolve(__dirname, `../../assets/dwagent-sh.desktop`), `/usr/share/applications/`)
+      shx.cp(path.resolve(__dirname, `../../assets/assistenza-remota.png`), `/usr/share/icons/`)
+
+      if (assistant) {
+        shx.cp(path.resolve(__dirname, `../../assistant/assistant.desktop`), `/usr/share/applications/`)
+        shx.mkdir('-p', '/usr/local/share/penguins-eggs/')
+        shx.cp(path.resolve(__dirname, `../../assistant/assistant.sh`), `/usr/local/share/penguins-eggs/`)
+        shx.cp(path.resolve(__dirname, `../../assistant/assistant.html`), `/usr/local/share/penguins-eggs/`)
+      } else {
+        shx.cp(path.resolve(__dirname, `../../assets/penguins-adjust.desktop`), `/usr/share/applications/`)
+      }
+
+      // Copia dei link comuni: boot ed assistenza
+      shx.cp('/usr/share/applications/penguins-eggs.desktop', `${this.work_dir.merged}/home/${user}/Desktop`)
+      shx.cp('/usr/share/applications/dwagent-sh.desktop', `${this.work_dir.merged}/home/${user}/Desktop`)
+
+      if (assistant) {
+        shx.cp('/usr/share/applications/assistant.desktop', `${this.work_dir.merged}/home/${user}/Desktop`)
+      } else {
+        shx.cp('/usr/share/applications/penguins-adjust.desktop', `${this.work_dir.merged}/home/${user}/Desktop`)
+        shx.cp('/usr/share/applications/install-debian.desktop', `${this.work_dir.merged}/home/${user}/Desktop`)
+      }
+
+      await exec(`chown ${user}:${user} ${this.work_dir.merged}/home/${user}/Desktop/*.desktop`, echo)
+      await exec(`chmod +x ${this.work_dir.merged}/home/${user}/Desktop/*.desktop`, echo)
     }
 
-
-    if (Pacman.packageIsInstalled('calamares')&& !assistant) {
-      shx.cp('/usr/share/applications/install-debian.desktop', `${this.work_dir.merged}/home/${user}/Desktop`)
-      await exec(`chown ${user}:${user} ${this.work_dir.merged}/home/${user}/Desktop/install-debian.desktop`, echo)
-      await exec(`chmod +x ${this.work_dir.merged}/home/${user}/Desktop/install-debian.desktop`, echo)
-    }
   }
 
   /**
@@ -1138,8 +1138,8 @@ timeout 200\n`
       console.log(`ovary: makeIsoImage ${isoName}`)
     }
 
-    let uefi_opt =''
-    if (this.make_efi){
+    let uefi_opt = ''
+    if (this.make_efi) {
       uefi_opt = '-eltorito-alt-boot -e boot/grub/efiboot.img -isohybrid-gpt-basdat -no-emul-boot'
     }
 
