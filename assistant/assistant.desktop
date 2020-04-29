@@ -1,9 +1,8 @@
 [Desktop Entry]
-Name=Installazione sistema
-Comment=Assistente installazione
-GenericName=Aiuto installazione
+Name=Installazione Linux
+GenericName=Installazione Linux
 Exec=/usr/local/share/penguins-eggs/assistant.sh 
 Terminal=false
 Type=Application
-Icon=install-debian
+Icon=system-software-install
 Categories=system
