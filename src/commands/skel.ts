@@ -100,7 +100,7 @@ desktop configuration of user mauro will get used as default`]
     let echo = Utils.setEcho(verbose)
 
     if (verbose) {
-      console.log('preparing /etc/skel')
+      console.log('preparing /etc/skel\n')
     }
 
     for (let i in files) {
@@ -117,10 +117,9 @@ desktop configuration of user mauro will get used as default`]
   async copy2Skel(user: string, files: string[], verbose = false) {
     let echo = Utils.setEcho(verbose)
     if (verbose) {
-      console.log('copying to /etc/skel')
+      console.log('copying to /etc/skel\n')
     }
 
-    let cmd=''
     for (let i in files) {
       if (fs.existsSync(`/home/${user}/${files[i]}`)) {
         await exec(`rsync -a /home/${user}/${files[i]} /etc/skel/`, echo)
@@ -137,7 +136,7 @@ desktop configuration of user mauro will get used as default`]
   async cleaningSkel(verbose = false) {
     let echo = Utils.setEcho(verbose)
     if (verbose) {
-      console.log("Cleaning skel...")
+      console.log("Cleaning skel...\n")
     }
 
     await this.deleteIfExist(`/etc/skel/.config/chromium`, verbose)

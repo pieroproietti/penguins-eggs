@@ -140,7 +140,7 @@ export default class Hatching {
       await this.addUser(options.username, options.userpassword, options.fullName, '', '', '', verbose)
       await this.changePassword('root', options.rootpassword, verbose)
       await this.autologinConfig(options.username, verbose)
-      await this.updateInitramfs(verbose)
+      // await this.updateInitramfs(verbose) Piu il casino che l'aiuto
       // await this.patchPve(verbose)
       await this.umountVFS(verbose)
       await this.umount4target(devices, verbose)
@@ -233,9 +233,7 @@ adduser ${username} \
     }
     if (Utils.isLive()) {
       const user: string = Utils.getPrimaryUser()
-      let cmd = `chroot ${this.target} deluser ${user}`
-      await exec(cmd, echo)
-      cmd = `chroot ${this.target} rm /home/${user}`
+      let cmd = `chroot ${this.target} deluser  --remove-home  ${user}`
       await exec(cmd, echo)
     }
   }
