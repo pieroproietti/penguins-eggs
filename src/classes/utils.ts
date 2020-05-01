@@ -236,8 +236,6 @@ export default class Utils {
     return version
   }
 
-
-
   /**
      * Return true if live system - Versione Debian Live
      * @remarks to move in Utils
@@ -251,17 +249,6 @@ export default class Utils {
     }
     return Utils.isMountpoint(path)
   }
-/**
-    let result: number
-    let cmd = 'mountpoint -q /lib/live/mount/'
-    if (type === 'mx') {
-      cmd = 'mountpoint -q /live/aufs'
-    }
-    result = shx.exec(cmd, { silent: true }).code
-    retVal = result === 0
-    return retVal
-  }
-*/
 
   /**
    * Ritorna vero se path è un mountpoint
@@ -275,6 +262,7 @@ export default class Utils {
     retval = (result === 0)
     return retval
   }
+  
   /**
     * return true if eggs run as root
     * @returns isRoot
