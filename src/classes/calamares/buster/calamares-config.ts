@@ -40,7 +40,6 @@ class calamaresConfig {
         this.oses = oses
         this.verbose = verbose
         this.displaymanager = (Pacman.packageIsInstalled('lightdm') || Pacman.packageIsInstalled('sddm') || Pacman.packageIsInstalled('sddm') )
-        this.sourcesMedia = false
     }
 
     config() {

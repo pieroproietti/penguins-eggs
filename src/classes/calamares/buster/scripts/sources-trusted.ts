@@ -15,10 +15,12 @@ export function sourcesTrusted(): string {
     text += `fi\n`
     text += `\n`
     text += `# Remove previous sources, we will configure sources in a later phase\n`
-    text += `echo "rm -f $CHROOT/etc/apt/sources.list"\n`
-    text += `echo "rm -rf $CHROOT/etc/apt/sources.list.d"\n`
-    text += `rm -f $CHROOT/etc/apt/sources.list\n`
-    text += `rm -rf $CHROOT/etc/apt/sources.list.d\n`
+    text += `#####################################################################\n`
+    text += `rm $CHROOT/etc/apt/sources.list-backup\n`
+    text += `rm $CHROOT/etc/apt/sources.list.d-backup -rf\n`
+    text += `mv $CHROOT/etc/apt/sources.list $CHROOT/etc/apt/sources.list-backup\n`
+    text += `mv $CHROOT/etc/apt/sources.list.d $CHROOT/etc/apt/sources.list.d-backup\n`
+    text += `#^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^#\n`
     text += `mkdir -p $CHROOT/etc/apt/sources.list.d\n`
     text += `#\n`
     text += `# Writes the debian-trusted.list file\n`

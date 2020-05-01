@@ -24,7 +24,14 @@ export function sourcesFinal(): string {
     text += `deb-src http://security.debian.org/debian-security/ $RELEASE/updates main\n`
     text += `EOF\n`
     text += `\n`
+    text += `#####################################################################\n`
+    text += `rm $CHROOT/etc/apt/sources.list\n`
+    text += `rm $CHROOT/etc/apt/sources.list.d -rf\n`
+    text += `mv $CHROOT/etc/apt/sources.list-backup $CHROOT/etc/apt/sources.list\n`
+    text += `mv $CHROOT/etc/apt/sources.list.d-backup $CHROOT/etc/apt/sources.list.d\n`
+    text += `#^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^#\n`
     text += `exit 0\n`
+
 
     return text
 }
