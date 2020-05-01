@@ -92,7 +92,7 @@ $ npm install -g penguins-eggs
 $ eggs COMMAND
 running command...
 $ eggs (-v|--version|version)
-penguins-eggs/7.5.36 linux-x64 node-v14.0.0
+penguins-eggs/7.5.36 linux-x64 node-v14.1.0
 $ eggs --help [COMMAND]
 USAGE
   $ eggs COMMAND
@@ -111,6 +111,7 @@ USAGE
 * [`eggs kill`](#eggs-kill)
 * [`eggs prerequisites`](#eggs-prerequisites)
 * [`eggs produce`](#eggs-produce)
+* [`eggs skel [FILE]`](#eggs-skel-file)
 * [`eggs sterilize`](#eggs-sterilize)
 * [`eggs update`](#eggs-update)
 
@@ -306,6 +307,22 @@ EXAMPLE
 ```
 
 _See code: [src/commands/produce.ts](https://github.com/pieroproietti/penguins-eggs/blob/v7.5.36/src/commands/produce.ts)_
+
+## `eggs skel [FILE]`
+
+describe the command here
+
+```
+USAGE
+  $ eggs skel [FILE]
+
+OPTIONS
+  -f, --force
+  -h, --help       show CLI help
+  -n, --name=name  name to print
+```
+
+_See code: [src/commands/skel.ts](https://github.com/pieroproietti/penguins-eggs/blob/v7.5.36/src/commands/skel.ts)_
 
 ## `eggs sterilize`
 
