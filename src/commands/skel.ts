@@ -120,9 +120,12 @@ desktop configuration of user mauro will get used as default`]
       console.log('copying to /etc/skel')
     }
 
+    let cmd=''
     for (let i in files) {
-      if (fs.existsSync(`/home/${user}/files[i]`)) {
-        await exec(`rsync -a /home/${user}/files[i] /etc/skel/`)
+      if (fs.existsSync(`/home/${user}/${files[i]}`)) {
+        await exec(`rsync -a /home/${user}/${files[i]} /etc/skel/`, echo)
+      } else {
+
       }
     }
   }

@@ -190,7 +190,7 @@ export default class Hatching {
    * @param workPhone 
    * @param homePhone 
    */
-  async addUser(username = 'live', password = 'evolution', fullName = '', roomNumber = '', workPhone = '', homePhone = '', verbose = false) {
+  async addUser(username = 'live', password = 'evolution', fullName = 'live', roomNumber = '', workPhone = '', homePhone = '', verbose = false) {
     let echo = Utils.setEcho(verbose)
     if (verbose) {
       console.log('hatching: addUser')
@@ -204,7 +204,6 @@ adduser ${username} \
 --gecos "${fullName},${roomNumber},${workPhone},${homePhone}"`
 
     await exec(cmd, echo)
-
     await exec(`echo ${username}:${password} | chroot ${this.target} chpasswd `, echo)
     await exec(`chroot ${this.target} addgroup ${username} sudo`, echo)
   }
