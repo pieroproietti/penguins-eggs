@@ -204,8 +204,10 @@ adduser ${username} \
 --gecos "${fullName},${roomNumber},${workPhone},${homePhone}"`
 
     await exec(cmd, echo)
+    
     await exec(`echo ${username}:${password} | chroot ${this.target} chpasswd `, echo)
-    await exec(`chroot ${this.target} adduser ${username} sudo`, echo)
+    
+    await exec(`chroot ${this.target} usermod -aG sudo ${username}`, echo)
   }
 
   /**
