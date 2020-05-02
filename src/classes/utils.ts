@@ -28,12 +28,12 @@ export default class Utils {
    * 
    * @param msg 
    */
-  static warning(msg = ''){
-    console.log('eggs >>> ' + chalk.cyanBright(msg)+ '.')
+  static warning(msg = '') {
+    console.log('eggs >>> ' + chalk.cyanBright(msg) + '.')
   }
 
-  static error(msg = ''){
-    console.log('eggs >>> ' + chalk.bgGrey(msg)+ '.')
+  static error(msg = '') {
+    console.log('eggs >>> ' + chalk.bgGrey(msg) + '.')
   }
 
   /**
@@ -50,6 +50,14 @@ export default class Utils {
     return primaryUser
   }
 
+  /**
+   * restituisce uuid
+   * @param device 
+   */
+  static uuid(device: string): string {
+    const uuid = shx.exec(`blkid -s UUID -o value ${device}`).stdout.trim()
+    return uuid
+  }
   /**
     *
     * @param date
@@ -244,7 +252,7 @@ export default class Utils {
   static isLive(type = 'debian-live'): boolean {
     let retVal = false
     let path = '/lib/live/mount/'
-    if (type='mx'){
+    if (type = 'mx') {
       path = '/live/aufs'
     }
     return Utils.isMountpoint(path)
@@ -254,15 +262,15 @@ export default class Utils {
    * Ritorna vero se path è un mountpoint
    * @param path 
    */
-  static isMountpoint(path =''): boolean {
+  static isMountpoint(path = ''): boolean {
     let retval = false
-    let result :number
-    let cmd =`mountpoint -q ${path}`
-    result = shx.exec(cmd, {silent: true}).code
+    let result: number
+    let cmd = `mountpoint -q ${path}`
+    result = shx.exec(cmd, { silent: true }).code
     retval = (result === 0)
     return retval
   }
-  
+
   /**
     * return true if eggs run as root
     * @returns isRoot

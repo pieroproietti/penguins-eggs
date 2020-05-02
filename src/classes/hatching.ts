@@ -376,11 +376,15 @@ adduser ${username} \
       mountOptsSwap = 'defaults,noatime 0 2'
     }
     let text = ''
-    text += `${devices.root.device} ${devices.root.mountPoint} ${devices.root.fsType} ${mountOptsRoot}\n`
+    
+    text += `# ${devices.root.device} ${devices.root.mountPoint} ${devices.root.fsType} ${mountOptsRoot}\n`
+    text += `UUID=${Utils.uuid(devices.root.device)} ${devices.root.mountPoint} ${devices.root.fsType} ${mountOptsRoot}\n`
     if (this.efi) {
-      text += `${devices.efi.device} ${devices.efi.mountPoint} vfat ${mountOptsEfi}\n`
+      text += `# ${devices.efi.device} ${devices.efi.mountPoint} vfat ${mountOptsEfi}\n`
+      text += `UUID=${Utils.uuid(devices.efi.device)} ${devices.efi.mountPoint} vfat ${mountOptsEfi}\n`
     }
-    text += `${devices.swap.device} ${devices.swap.mountPoint} ${devices.swap.fsType} ${mountOptsSwap}\n`
+    text += `# ${devices.swap.device} ${devices.swap.mountPoint} ${devices.swap.fsType} ${mountOptsSwap}\n`
+    text += `UUID=${Utils.uuid(devices.swap.device)} ${devices.swap.mountPoint} ${devices.swap.fsType} ${mountOptsSwap}\n`
     Utils.write(file, text)
   }
 
