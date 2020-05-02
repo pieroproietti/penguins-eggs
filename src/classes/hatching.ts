@@ -205,7 +205,7 @@ adduser ${username} \
 
     await exec(cmd, echo)
     await exec(`echo ${username}:${password} | chroot ${this.target} chpasswd `, echo)
-    await exec(`chroot ${this.target} addgroup ${username} sudo`, echo)
+    await exec(`chroot ${this.target} adduser ${username} sudo`, echo)
   }
 
   /**
@@ -234,6 +234,8 @@ adduser ${username} \
     if (Utils.isLive()) {
       const user: string = Utils.getPrimaryUser()
       let cmd = `chroot ${this.target} deluser  --remove-home  ${user}`
+      await exec(cmd, echo)
+      cmd = `chroot ${this.target} delgroup  --remove-home  ${user}`
       await exec(cmd, echo)
     }
   }
