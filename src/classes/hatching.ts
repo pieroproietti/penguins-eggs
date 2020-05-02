@@ -147,7 +147,7 @@ export default class Hatching {
       this.finished(options.installationDevice, options.hostname, options.username)
     }
   }
-  
+
   /**
    * setTimezone
    */
@@ -190,7 +190,7 @@ export default class Hatching {
    * @param workPhone 
    * @param homePhone 
    */
-  async addUser(username = 'live', password = 'evolution', fullName = 'live', roomNumber = '', workPhone = '', homePhone = '', verbose = false) {
+  async addUser(username = 'live', password = 'evolution', fullName = '', roomNumber = '', workPhone = '', homePhone = '', verbose = false) {
     let echo = Utils.setEcho(verbose)
     if (verbose) {
       console.log('hatching: addUser')
@@ -233,9 +233,7 @@ adduser ${username} \
     }
     if (Utils.isLive()) {
       const user: string = Utils.getPrimaryUser()
-      let cmd = `chroot ${this.target} deluser  --remove-home  ${user}`
-      await exec(cmd, echo)
-      cmd = `chroot ${this.target} delgroup  --remove-home  ${user}`
+      let cmd = `chroot ${this.target} deluser --remove-home ${user}`
       await exec(cmd, echo)
     }
   }
@@ -320,32 +318,32 @@ adduser ${username} \
       console.log('hatching: umountVFS')
     }
 
-    if (Utils.isMountpoint(`${this.target}/dev/pts`)){
+    if (Utils.isMountpoint(`${this.target}/dev/pts`)) {
       await exec(`umount ${this.target}/dev/pts`, echo)
       await exec('sleep 1', echo)
     }
 
-    if (Utils.isMountpoint(`${this.target}/dev`)){
+    if (Utils.isMountpoint(`${this.target}/dev`)) {
       await exec(`umount ${this.target}/dev`, echo)
       await exec('sleep 1', echo)
     }
 
-    if (Utils.isMountpoint(`${this.target}/proc`)){
+    if (Utils.isMountpoint(`${this.target}/proc`)) {
       await exec(`umount ${this.target}/proc`, echo)
       await exec('sleep 1', echo)
     }
 
-    if (Utils.isMountpoint(`${this.target}/run`)){
+    if (Utils.isMountpoint(`${this.target}/run`)) {
       await exec(`umount ${this.target}/run`, echo)
       await exec('sleep 1', echo)
     }
 
-    if (Utils.isMountpoint(`${this.target}/sys/fs/fuse/connections`)){
+    if (Utils.isMountpoint(`${this.target}/sys/fs/fuse/connections`)) {
       await exec(`umount ${this.target}/sys/fs/fuse/connections`, echo)
       await exec('sleep 1', echo)
     }
 
-    if (Utils.isMountpoint(`${this.target}/sys`)){
+    if (Utils.isMountpoint(`${this.target}/sys`)) {
       await exec(`umount ${this.target}/sys`, echo)
       await exec('sleep 1', echo)
     }
@@ -726,7 +724,7 @@ adduser ${username} \
           type: 'input',
           name: 'userfullname',
           message: 'user full name: ',
-          default: '',
+          default: 'artisan',
         },
         {
           type: 'password',
@@ -835,9 +833,9 @@ adduser ${username} \
   finished(installationDevice: string, hostname: string, username: string) {
     Utils.titles()
     console.log(`eggs is finished.`)
-    console.log('Your system was installed on ' + chalk.cyanBright (installationDevice)+ '.')
-    console.log('Host name was set as ' + chalk.cyanBright (hostname)+ '.')
-    console.log('The user name is ' + chalk.cyanBright (username) + '.')
+    console.log('Your system was installed on ' + chalk.cyanBright(installationDevice) + '.')
+    console.log('Host name was set as ' + chalk.cyanBright(hostname) + '.')
+    console.log('The user name is ' + chalk.cyanBright(username) + '.')
     console.log('Enjoy Your new penguin!')
   }
 }
