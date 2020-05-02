@@ -388,6 +388,13 @@ adduser ${username} \
     Utils.write(file, text)
   }
 
+  async resume(device: string){
+    
+        // Sistemazione di resume
+        /etc/initramfs-tools/conf.d/resume
+
+  }
+
   /**
    * hostname()
    * @param options
