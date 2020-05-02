@@ -389,10 +389,9 @@ adduser ${username} \
   }
 
   async resume(device: string){
-    
-        // Sistemazione di resume
-        /etc/initramfs-tools/conf.d/resume
 
+        // Sistemazione di resume
+        // /etc/initramfs-tools/conf.d/resume
   }
 
   /**
