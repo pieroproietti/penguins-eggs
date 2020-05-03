@@ -99,13 +99,9 @@ export default class Hatching {
       process.exit(0)
     }
 
-
     Utils.titles(`install`)
     console.log()
     Utils.warning(`The process of installation is running..,`)
-    process.exit(0)
-
-
 
     if (fs.existsSync('/sys/firmware/efi/efivars')) {
       this.efi = true
