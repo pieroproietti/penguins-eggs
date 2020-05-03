@@ -33,6 +33,7 @@ You will find here informations about penguin's eggs!
     ovary.showSettings()
 
     shx.exec('lsb_release -a')
+    console.log()
     if (Pacman.prerequisitesEggsCheck()){
       console.log('Prerequisites:  ' + chalk.bgGreen('installed'))
     } else {
