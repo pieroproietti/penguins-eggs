@@ -387,7 +387,7 @@ export default class Utils {
   * @param msg
   */
   static async customConfirm(msg = "Select yes to continue... "): Promise<boolean> {
-    let varResult = await this.oldCustomConfirm(msg)
+    let varResult = await Utils.customConfirmCompanion(msg)
     let result = JSON.parse(varResult)
     if (result.confirm === 'Yes') {
       return true
@@ -400,7 +400,7 @@ export default class Utils {
   *
   * @param msg
   */
-  static async oldCustomConfirm(msg = "Select yes to continue... "): Promise<any> {
+  static async customConfirmCompanion(msg = "Select yes to continue... "): Promise<any> {
     return new Promise(function (resolve) {
       const questions: Array<Record<string, any>> = [
         {
