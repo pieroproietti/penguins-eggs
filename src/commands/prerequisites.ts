@@ -35,8 +35,7 @@ export default class Prerequisites extends Command {
     }
 
     if (Utils.isRoot()) {
-      let answer = JSON.parse(await Utils.customConfirm(`Select yes to continue...`))
-      if (answer.confirm === 'Yes') {
+      if (await Utils.customConfirm(`Select yes to continue...`)){
         Utils.warning('Creating configuration files...')
         await Pacman.configurationInstall(verbose)
         if (!flags.configuration_only) {

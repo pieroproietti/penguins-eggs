@@ -144,11 +144,9 @@ export default class Ovary {
 
     if (this.loadSettings()) {
       if (this.listFreeSpace()) {
-        let answer = JSON.parse(await Utils.customConfirm(`Select yes to continue...`))
-        if (answer.confirm === 'Yes') {
+        if(await Utils.customConfirm(`Select yes to continue...`))
           return true
         }
-      }
     }
     return false
   }

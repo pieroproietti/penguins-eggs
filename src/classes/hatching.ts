@@ -43,20 +43,11 @@ export default class Hatching {
 
     const msg1 = '\nThe process of installation will format your disk and destroy all datas on it.\n Did You are sure?\n'
     const msg2 = '\nWe need to be absolutely sure, did You saved your data before to proced?\n'
-    const msg3 = '\nConfirm you want to continue?\n'
+    const msg3 = '\nConfirm, again you want to continue?\n'
 
-    let varResult: any = await this.customConfirm(msg1)
-
-    let result = JSON.parse(varResult)
-    if (result.confirm === 'Yes') {
-
-      varResult = await this.customConfirm(msg2)
-      result = JSON.parse(varResult)
-      if (result.confirm === 'Yes') {
-
-        varResult = await this.customConfirm(msg3)
-        result = JSON.parse(varResult)
-        if (result.confirm === 'Yes') {
+    if (await Utils.customConfirm(msg1)) {
+      if (await Utils.customConfirm(msg2)) {
+        if (await Utils.customConfirm(msg3)) {
           this.install(verbose, umount)
         }
       }
@@ -86,7 +77,35 @@ export default class Hatching {
     })
     const varOptions: any = await this.getOptions(aDrives)
     const options: any = JSON.parse(varOptions)
-    console.log(options)
+
+    Utils.titles(`install`)
+    console.log()
+    console.log(`You choose to install the system with the following parameters:`)
+    console.log()
+    console.log(`- username: ` + chalk.cyanBright(options.username))
+    console.log(`- userfullname: ` + chalk.cyanBright(options.userfullname))
+    console.log(`- user password: ` + chalk.cyanBright(options.userpassword))
+    console.log(`- autologin: ` + chalk.cyanBright(options.autologin))
+    console.log(`- root password: ` + chalk.cyanBright(options.rootpassword))
+    console.log(`- hostname: ` + chalk.cyanBright(options.hostname))
+    console.log(`- domain: ` + chalk.cyanBright(options.domain))
+    console.log(`- net Interface: ` + chalk.cyanBright(options.netInterface))
+    console.log(`- net address type: ` + chalk.cyanBright(options.netAddressType))
+    console.log(`- installation device: ` + chalk.cyanBright(options.installationDevice))
+    console.log(`- fs type: ` + chalk.cyanBright(options.fsType))
+    console.log()
+    if (! await Utils.customConfirm(`Please, confirm.`)) {
+      Utils.warning(`You chose to abort the installation`)
+      process.exit(0)
+    }
+
+
+    Utils.titles(`install`)
+    console.log()
+    Utils.warning(`The process of installation is running..,`)
+    process.exit(0)
+
+
 
     if (fs.existsSync('/sys/firmware/efi/efivars')) {
       this.efi = true
@@ -204,9 +223,9 @@ adduser ${username} \
 --gecos "${fullName},${roomNumber},${workPhone},${homePhone}"`
 
     await exec(cmd, echo)
-    
+
     await exec(`echo ${username}:${password} | chroot ${this.target} chpasswd `, echo)
-    
+
     await exec(`chroot ${this.target} usermod -aG sudo ${username}`, echo)
   }
 
@@ -376,7 +395,7 @@ adduser ${username} \
       mountOptsSwap = 'defaults,noatime 0 2'
     }
     let text = ''
-    
+
     text += `# ${devices.root.device} ${devices.root.mountPoint} ${devices.root.fsType} ${mountOptsRoot}\n`
     text += `UUID=${Utils.uuid(devices.root.device)} ${devices.root.mountPoint} ${devices.root.fsType} ${mountOptsRoot}\n`
     if (this.efi) {
@@ -388,10 +407,10 @@ adduser ${username} \
     Utils.write(file, text)
   }
 
-  async resume(device: string){
+  async resume(device: string) {
 
-        // Sistemazione di resume
-        // /etc/initramfs-tools/conf.d/resume
+    // Sistemazione di resume
+    // /etc/initramfs-tools/conf.d/resume
   }
 
   /**
@@ -685,33 +704,6 @@ adduser ${username} \
       Utils.warning(err)
       return 0
     }
-  }
-
-  /**
-   *
-   * @param msg
-   */
-  customConfirm(msg: string, verbose = false): Promise<any> {
-    let echo = Utils.setEcho(verbose)
-    if (verbose) {
-      console.log('hatching: customConfirm')
-    }
-
-    return new Promise(function (resolve) {
-      const questions: Array<Record<string, any>> = [
-        {
-          type: 'list',
-          name: 'confirm',
-          message: msg,
-          choices: ['No', 'Yes'],
-          default: 'No',
-        },
-      ]
-
-      inquirer.prompt(questions).then(function (options) {
-        resolve(JSON.stringify(options))
-      })
-    })
   }
 
   /**

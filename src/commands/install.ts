@@ -6,6 +6,7 @@
  */
 import { Command, flags } from '@oclif/command'
 import shx = require('shelljs')
+import chalk = require('chalk')
 import Utils from '../classes/utils'
 import Hatching from '../classes/hatching'
 
@@ -17,7 +18,7 @@ export default class Install extends Command {
     info: flags.help({ char: 'h' }),
     gui: flags.boolean({ char: 'g', description: 'use gui installer' }),
     umount: flags.boolean({ char: 'u', description: 'umount devices' }),
-    verbose: flags.boolean({char: 'v', description: 'verbose'}),
+    verbose: flags.boolean({ char: 'v', description: 'verbose' }),
   }
   static description = 'system installation (the eggs became penguin)'
 
@@ -31,7 +32,7 @@ export default class Install extends Command {
   async run() {
     Utils.titles('install')
 
-    const {flags} = this.parse(Install)
+    const { flags } = this.parse(Install)
 
     let verbose = false
     if (flags.verbose) {
@@ -42,14 +43,19 @@ export default class Install extends Command {
     if (flags.umount) {
       umount = true
     }
-    
-    if (Utils.isRoot()) {
-      if (flags.gui) {
-        shx.exec('calamares')
+
+    if (Utils.isRoot())  {
+      //if (Utils.isLive()) {
+      if (true) {
+          if (flags.gui) {
+          shx.exec('calamares')
+        } else {
+          Utils.warning('Spawn the egg...')
+          const hatching = new Hatching()
+          hatching.questions(verbose, umount)
+        }
       } else {
-        Utils.warning('Spawn the egg...')
-        const hatching = new Hatching()
-        hatching.questions(verbose, umount)
+        Utils.warning(`You are in an installed system!`)
       }
     }
   }
