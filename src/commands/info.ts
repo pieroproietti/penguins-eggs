@@ -10,6 +10,7 @@ import shx = require('shelljs')
 import Utils from '../classes/utils'
 import Ovary from '../classes/ovary'
 import Pacman from '../classes/pacman'
+import chalk = require('chalk')
 
 /**
  * Get informations about system
@@ -32,27 +33,29 @@ You will find here informations about penguin's eggs!
     ovary.showSettings()
 
     shx.exec('lsb_release -a')
-    let message='You are on an INSTALLED system.'
-    if (Utils.isLive()){
-      message = "This is a LIVE system."
-    }
-    shx.echo (`System:         ${message}`)
     if (Pacman.prerequisitesEggsCheck()){
-      console.log('Prerequisites:  installed')
+      console.log('Prerequisites:  ' + chalk.bgGreen('installed'))
     } else {
-      console.log('Prerequisites:  NOT installed')
+      console.log('Prerequisites:  ' + chalk.bgRed('NOT installed'))
     }
 
     if (Pacman.configurationCheck()){
-      console.log('Configuration:  configured')
+      console.log('Configuration:  ' + chalk.bgGreen('configured'))
     } else {
-      console.log('Configuration:  NOT configured')
+      console.log('Configuration:  ' + chalk.bgRed('NOT configured'))
     }
     
     if (Pacman.prerequisitesCalamaresCheck()){
-      console.log('Calamares:      installed')
+      console.log('Calamares:      ' + chalk.bgGreen('installed'))
     } else {
-      console.log('Calamares:      NOT installed')
+      console.log('Calamares:      ' + chalk.bgRed('NOT installed'))
+    }
+
+    let message='You are on an INSTALLED system.'
+    if (Utils.isLive()){
+      console.log('System:         This is a ' + chalk.bgGreen('LIVE') + ' system.')
+    } else {
+      console.log('System:         This is an ' + chalk.bgRed('INSTALLED') + ' system.')
     }
   }
 }
