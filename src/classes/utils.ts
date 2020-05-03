@@ -251,8 +251,8 @@ export default class Utils {
      */
   static isLive(type = 'debian-live'): boolean {
     let retVal = false
-    let path = '/lib/live/mount/'
-    if (type = 'mx') {
+    let path = '/lib/live/mount'
+    if (type === 'mx') {
       path = '/live/aufs'
     }
     return Utils.isMountpoint(path)
@@ -263,12 +263,11 @@ export default class Utils {
    * @param path 
    */
   static isMountpoint(path = ''): boolean {
-    let retval = false
     let result: number
     let cmd = `mountpoint -q ${path}`
+    // return 0 if the directory is a mountpoint, non-zero if not.
     result = shx.exec(cmd, { silent: true }).code
-    retval = (result === 0)
-    return retval
+    return (result === 0 )
   }
 
   /**
