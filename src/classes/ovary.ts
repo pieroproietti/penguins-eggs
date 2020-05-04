@@ -144,9 +144,9 @@ export default class Ovary {
 
     if (this.loadSettings()) {
       if (this.listFreeSpace()) {
-        if(await Utils.customConfirm(`Select yes to continue...`))
+        if (await Utils.customConfirm(`Select yes to continue...`))
           return true
-        }
+      }
     }
     return false
   }
@@ -158,6 +158,9 @@ export default class Ovary {
   public async loadSettings(verbose = false): Promise<boolean> {
     let foundSettings: boolean
 
+    if (!fs.existsSync(this.config_file)) {
+      return false
+    }
     const settings = ini.parse(fs.readFileSync(this.config_file, 'utf-8'))
 
     if (settings.General.snapshot_dir === '') {

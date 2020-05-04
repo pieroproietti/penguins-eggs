@@ -35,14 +35,14 @@ export default class Pacman {
    * @param debPackage 
    */
   static packageIsInstalled(debPackage: string): boolean {
-    let isInstalled = false
+    let installed:boolean = false
     const cmd = `/usr/bin/dpkg -s ${debPackage} | grep Status`
     const stdout = shx.exec(cmd, { silent: true }).stdout.trim()
 
     if (stdout === 'Status: install ok installed') {
-      isInstalled = true
+      installed = true
     }
-    return isInstalled
+    return installed
   }
 
   /**
@@ -78,15 +78,15 @@ export default class Pacman {
    * Restituisce VERO se i prerequisiti sono installati
    */
   static prerequisitesEggsCheck(): boolean {
-    let retVal = true
+    let installed: boolean = true
 
     for (let i in this.debs4eggs) {
       if (!Pacman.packageIsInstalled(this.debs4eggs[i])) {
-        retVal = false
+        installed = false
         break
       }
     }
-    return retVal
+    return installed
   }
 
   /**
@@ -117,14 +117,14 @@ export default class Pacman {
    * 
    */
   static async prerequisitesCalamaresCheck(): Promise<boolean> {
-    let retVal = true
+    let installed: boolean = true
     for (let i in this.debs4calamares) {
-      if (!await Pacman.packageIsInstalled(this.debs4calamares[i])) {
-        retVal = false
+      if (!Pacman.packageIsInstalled(this.debs4calamares[i])) {
+        installed = false
         break
       }
     }
-    return retVal
+    return installed
   }
 
   /**
@@ -160,11 +160,11 @@ export default class Pacman {
   static configurationCheck(): boolean {
     let conf = false
     let list = false
-    let result = false
+    let configured = false
     conf = fs.existsSync('/etc/penguins-eggs.conf')
     list = fs.existsSync('/usr/local/share/excludes/penguins-eggs-exclude.list')
-    result = conf && list
-    return result
+    configured = conf && list
+    return configured
   }
 
   /**

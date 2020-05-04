@@ -5,7 +5,7 @@
  * license: MIT
  */
 
-import {Command,flags} from '@oclif/command'
+import { Command, flags } from '@oclif/command'
 import shx = require('shelljs')
 import Utils from '../classes/utils'
 import Ovary from '../classes/ovary'
@@ -30,33 +30,42 @@ You will find here informations about penguin's eggs!
 
     const ovary = new Ovary
     ovary.loadSettings()
+
+    const line = '-----------------------------------------------------------------'
+    console.log(line)
     ovary.showSettings()
 
+    console.log(line)
     shx.exec('lsb_release -a')
-    console.log()
-    if (Pacman.prerequisitesEggsCheck()){
-      console.log('Prerequisites:  ' + chalk.bgGreen('installed'))
+
+    console.log(line)
+    if (await Pacman.prerequisitesEggsCheck()) {
+      console.log('Eggs prerequisites:  ' + chalk.bgGreen('ok'))
     } else {
-      console.log('Prerequisites:  ' + chalk.bgRed('NOT installed'))
+      console.log('Eggs prerequisites:  ' + chalk.bgRed('ko'))
     }
 
-    if (Pacman.configurationCheck()){
-      console.log('Configuration:  ' + chalk.bgGreen('configured'))
+    if (await Pacman.configurationCheck()) {
+      console.log('Configuration file:  ' + chalk.bgGreen('ok'))
     } else {
-      console.log('Configuration:  ' + chalk.bgRed('NOT configured'))
+      console.log('Configuration file:  ' + chalk.bgRed('ko'))
     }
-    
-    if (Pacman.prerequisitesCalamaresCheck()){
-      console.log('Calamares:      ' + chalk.bgGreen('installed'))
+    if (await Pacman.isXInstalled()) {
+      if (await Pacman.prerequisitesCalamaresCheck()) {
+        console.log('GUI Installer:       ' + chalk.bgGreen('ok'))
+      } else {
+        console.log('GUI Installer:       ' + chalk.bgBlue('ko'))
+      }
     } else {
-      console.log('Calamares:      ' + chalk.bgRed('NOT installed'))
+      console.log('GUI Installer:       ' + chalk.bgGreen('cli installer'))
     }
 
-    let message='You are on an INSTALLED system.'
-    if (Utils.isLive()){
-      console.log('System:         This is a ' + chalk.bgGreen('LIVE') + ' system.')
+    console.log(line)
+    if (Utils.isLive()) {
+      console.log('System: ' + chalk.bgGreen('LIVE') + ' system')
     } else {
-      console.log('System:         This is an ' + chalk.bgRed('INSTALLED') + ' system.')
+      console.log('System: ' + chalk.bgCyan('INSTALLED') + ' systen')
     }
+    console.log(line)
   }
 }
