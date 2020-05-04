@@ -28,6 +28,7 @@ import Oses from './oses'
 import Pacman from './pacman'
 import Prerequisites from '../commands/prerequisites'
 import { IWorkDir } from '../interfaces/i-workdir'
+import { deepStrictEqual } from 'assert'
 
 /**
  * Ovary:
@@ -357,6 +358,7 @@ export default class Ovary {
       await this.makeLiveHome(assistant, verbose)
       await this.editLiveFs(verbose)
       await this.editBootMenu(verbose)
+
       await this.makeSquashFs(verbose)
       if (this.make_efi) {
         await this.editEfi(verbose)
@@ -473,6 +475,28 @@ export default class Ovary {
       Utils.write(`${this.work_dir.merged}/etc/machine-id`, `:`)
     }
 
+    /**
+     * aggiungo un link a /boot/grub/fonts/UbuntuMono16.pf2
+     */
+    if (!fs.existsSync(`${this.work_dir.merged}/boot/grub/fonts`)){
+      shx.mkdir('-p', `${this.work_dir.merged}/boot/grub/fonts`)
+    }
+    shx.ln('-s',`${this.work_dir.merged}/boot/grub/font.pf2`,`${this.work_dir.merged}/boot/grub/fonts/UbuntuMono16.pf2`)
+
+    // grub-mkfont -s16 -o /boot/grub/fonts/UbuntuMono16.pf2 /usr/share/fonts/truetype/dejavu/
+    // patch per lmde cerca i font UbuntuMono16.pf, se non ci sono crea cartella font e virtual link
+    // Attenzione ai path
+    /**
+     * LMDE4
+     * /etc/default/grub.d/60_mint-theme.cfg 
+     * #! /bin/sh
+     *set -e
+     *
+     * GRUB_FONT="/boot/grub/fonts/UbuntuMono16.pf2"
+     * GRUB_THEME="/boot/grub/themes/linuxmint/theme.txt"
+     */
+
+    
 
     /**
      * add some basic files to /dev
@@ -755,7 +779,7 @@ timeout 200\n`
    */
   needOverlay(dir: string): boolean {
     // const excludeDirs = ['cdrom', 'dev', 'home', 'live', 'media', 'mnt', 'proc', 'run', 'sys', 'swapfile', 'tmp']
-    const mountDirs = ['etc', 'var']
+    const mountDirs = ['etc', 'var', 'boot']
     let mountDir = ''
     let need = false
     for (mountDir of mountDirs) {
@@ -977,6 +1001,9 @@ timeout 200\n`
     }
   }
 
+
+
+
   /**
    * makeEfi
    * Create /boot and /efi for UEFI
@@ -1084,6 +1111,7 @@ timeout 200\n`
     // Either of these will work, and they look the same to me. Unicode seems to work with qemu. -fsr
     fs.copyFileSync(`/usr/share/grub/unicode.pf2`, `boot/grub/font.pf2`)
 
+   
     // doesn't need to be root-owned ${pwd} = current Directory
     const user = Utils.getPrimaryUser()
     // await exec(`chown -R ${user}:${user} $(pwd) 2>/dev/null`, echo)
