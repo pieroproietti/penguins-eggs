@@ -149,14 +149,12 @@ export default class Hatching {
       await this.interfaces(options, verbose)
       await this.hosts(options, verbose)
       await this.mountVFS(verbose)
-      await this.updateInitramfs(verbose)
       await this.grubInstall(options, verbose)
+      await this.updateInitramfs(verbose)
       await this.delLiveUser(verbose)
       await this.addUser(options.username, options.userpassword, options.fullName, '', '', '', verbose)
       await this.changePassword('root', options.rootpassword, verbose)
       await this.autologinConfig(options.username, verbose)
-      // await this.updateInitramfs(verbose) Piu il casino che l'aiuto
-      // await this.patchPve(verbose)
       await this.umountVFS(verbose)
       await this.umount4target(devices, verbose)
       this.finished(options.installationDevice, options.hostname, options.username)
@@ -253,25 +251,6 @@ adduser ${username} \
       let cmd = `chroot ${this.target} deluser --remove-home ${user}`
       await exec(cmd, echo)
     }
-  }
-
-  /**
-   * patchPve patch per proxypve che non crea la directory
-   *          e che ricrea i codici di ssh della macchina
-   */
-  async patchPve(verbose = false) {
-    let echo = Utils.setEcho(verbose)
-    if (verbose) {
-      console.log('hatching: patchPve')
-    }
-
-    // patch per apache2
-    await exec(`chroot ${this.target} mkdir /var/log/apache2`)
-    await exec(`chroot ${this.target} mkdir /var/log/pveproxy`, echo)
-    await exec(`chroot ${this.target} touch /var/log/pveproxy/access.log`, echo)
-    await exec(`chroot ${this.target} chown www-data:www-data /var/log/pveproxy -R`, echo)
-    await exec(`chroot ${this.target} chmod 0664 /var/log/pveproxy/access.log`, echo)
-    await exec(`chroot ${this.target} dpkg-reconfigure openssh-server`, echo)
   }
 
   /**

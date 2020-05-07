@@ -1,5 +1,5 @@
 # rsync excludes file for penguins-eggs
-# version 7.1.0
+# version 7.5.53
 
 # Do NOT edit this entry block unless you know what you are doing
 
@@ -69,7 +69,8 @@ var/lib/sudo/*
 var/lib/udisks/*
 var/lib/urandom/*
 
-# Toglie tutto ad eccezione di apache2, clamav, pveprozy, samba per i quali toglie i log
+# Toglie tutto ad eccezione di: 
+# apache2, clamav, pveprozy, samba
 var/log/!(apache2|clamav|pveproxy|samba|)
 var/log/apache2/*
 var/log/clamav/*

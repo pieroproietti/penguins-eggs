@@ -48,6 +48,10 @@ You can try now penguins-eggs, it is a console utility - no GUI - but don't be
 scared, penguins-eggs is a console command - really very simple usage - if you
 are able to open a terminal, you can use it.
 
+# That Distro you can use
+Eggs in born using Debian 9 and Debian 10, I test it on Debian Buster and Linux Mind Debian
+Edition (LMDE4).
+
 # Install penguins-eggs
 
 ## Debian package

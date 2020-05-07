@@ -190,7 +190,6 @@ export default class Ovary {
         Utils.error('Please install it before to create an UEFI image:')
         Utils.warning('sudo apt install grub-efi-amd64')
         Utils.error('or edit /etc/penguins-eggs.conf and set the valuer of make_efi=no')
-
         this.make_efi = false
       }
     }
@@ -479,8 +478,8 @@ export default class Ovary {
 
     /**
      * aggiungo un link a /boot/grub/fonts/UbuntuMono16.pf2
-     */
-    shx.ln('-s',`${this.work_dir.merged}/boot/grub/fonts/unicode.pf2`,`${this.work_dir.merged}/boot/grub/fonts/UbuntuMono16.pf2`)
+     */                                                                                                   
+    shx.cp(`${this.work_dir.merged}/boot/grub/fonts/unicode.pf2`,`${this.work_dir.merged}/boot/grub/fonts/UbuntuMono16.pf2`)
 
     // grub-mkfont -s16 -o /boot/grub/fonts/UbuntuMono16.pf2 /usr/share/fonts/truetype/dejavu/
     // patch per lmde cerca i font UbuntuMono16.pf, se non ci sono crea cartella font e virtual link
