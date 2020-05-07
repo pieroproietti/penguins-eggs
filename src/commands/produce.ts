@@ -17,6 +17,7 @@ export default class Produce extends Command {
     basename: flags.string({ char: 'b', description: 'basename egg' }),
     compress: flags.boolean({ char: 'c', description: 'max compression' }),
     fast: flags.boolean({ char: 'f', description: 'compression fast' }),
+    debug: flags.boolean({ char: 'd', description: 'debug' }),
     info: flags.help({ char: 'h' }),
     verbose: flags.boolean({ char: 'v', description: 'verbose' }),
   }
@@ -54,6 +55,10 @@ the penguin produce an egg called egg-i386-2020-04-13_1815.iso`]
         verbose = true
       }
 
+      let debug = false
+      if (flags.debug){
+        debug = true
+      }
       if (! Pacman.prerequisitesEggsCheck()) {
         console.log('You need to install ' + chalk.bgGray('prerequisites') + ' to continue.')
         if (await Utils.customConfirm(`Select yes to install prerequisites`)){
@@ -80,7 +85,7 @@ the penguin produce an egg called egg-i386-2020-04-13_1815.iso`]
       const ovary = new Ovary(compression)
       Utils.warning('Produce an egg...')
        if (await ovary.fertilization()) {
-       await ovary.produce(basename, assistant, verbose)
+       await ovary.produce(basename, assistant, verbose, debug)
         ovary.finished()
       }
     }

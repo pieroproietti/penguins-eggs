@@ -325,7 +325,7 @@ export default class Ovary {
    *
    * @param basename
    */
-  async produce(basename = '', assistant = false, verbose = false) {
+  async produce(basename = '', assistant = false, verbose = false, debug = false) {
     let echo = Utils.setEcho(verbose)
 
     if (!fs.existsSync(this.snapshot_dir)) {
@@ -364,7 +364,9 @@ export default class Ovary {
         await this.editEfi(verbose)
       }
       await this.makeIsoImage(verbose)
-      await this.uBindLiveFs(verbose)
+      if(!debug){
+        await this.uBindLiveFs(verbose)
+      }
     }
   }
 
@@ -478,10 +480,7 @@ export default class Ovary {
     /**
      * aggiungo un link a /boot/grub/fonts/UbuntuMono16.pf2
      */
-    if (!fs.existsSync(`${this.work_dir.merged}/boot/grub/fonts`)){
-      shx.mkdir('-p', `${this.work_dir.merged}/boot/grub/fonts`)
-    }
-    shx.ln('-s',`${this.work_dir.merged}/boot/grub/font.pf2`,`${this.work_dir.merged}/boot/grub/fonts/UbuntuMono16.pf2`)
+    shx.ln('-s',`${this.work_dir.merged}/boot/grub/fonts/unicode.pf2`,`${this.work_dir.merged}/boot/grub/fonts/UbuntuMono16.pf2`)
 
     // grub-mkfont -s16 -o /boot/grub/fonts/UbuntuMono16.pf2 /usr/share/fonts/truetype/dejavu/
     // patch per lmde cerca i font UbuntuMono16.pf, se non ci sono crea cartella font e virtual link
@@ -740,7 +739,7 @@ timeout 200\n`
 
     if (this.reset_accounts) {
       // exclude /etc/localtime if link and timezone not America/New_York
-      if (shx.exec('/usr/bin/test -L /etc/localtime', { silent: true }) && shx.exec('cat /etc/timezone', { silent: true }) !== 'America/New_York') {
+      if (shx.exec('/usr/bin/test -L /etc/localtime', { silent: true }) && shx.exec('cat /etc/timezone', { silent: true }) !== 'Europe/Rome') {
         this.addRemoveExclusion(true, '/etc/localtime')
       }
     }
@@ -1054,10 +1053,10 @@ timeout 200\n`
      */
     const files = fs.readdirSync('.');
     for (var i in files) {
-      if (files[i] === 'boot') {
+      if (files[i] === './boot') {
         await exec(`rm ./boot -rf`, echo)
       }
-      if (files[i] === 'efi') {
+      if (files[i] === './efi') {
         await exec(`rm ./efi -rf`, echo)
       }
     }
@@ -1113,7 +1112,7 @@ timeout 200\n`
 
    
     // doesn't need to be root-owned ${pwd} = current Directory
-    const user = Utils.getPrimaryUser()
+    // const user = Utils.getPrimaryUser()
     // await exec(`chown -R ${user}:${user} $(pwd) 2>/dev/null`, echo)
     // console.log(`pwd: ${pwd}`)
     // await exec(`chown -R ${user}:${user} $(pwd)`, echo)

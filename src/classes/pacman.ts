@@ -162,7 +162,7 @@ export default class Pacman {
     let list = false
     let configured = false
     conf = fs.existsSync('/etc/penguins-eggs.conf')
-    list = fs.existsSync('/usr/local/share/excludes/penguins-eggs-exclude.list')
+    list = fs.existsSync('/usr/local/share/penguins-eggs/exclude.list')
     configured = conf && list
     return configured
   }
@@ -172,8 +172,8 @@ export default class Pacman {
    */
   static async configurationInstall(verbose = true): Promise<void> {
     shx.cp(path.resolve(__dirname, '../../conf/penguins-eggs.conf'), '/etc')
-    shx.mkdir('-p', '/usr/local/share/excludes/')
-    shx.cp(path.resolve(__dirname, '../../conf/penguins-eggs-exclude.list'), '/usr/local/share/excludes')
+    shx.mkdir('-p', '/usr/local/share/penguins-eggs/')
+    shx.cp(path.resolve(__dirname, '../../conf/exclude.list'), '/usr/local/share/penguins-eggs')
   }
 
   /**
@@ -183,8 +183,8 @@ export default class Pacman {
     let echo = Utils.setEcho(verbose)
     await exec('rm /etc/penguins-eggs.conf', echo)
     await exec('rm /etc/penguins-eggs.conf?', echo)
-    await exec('rm /usr/local/share/excludes/penguins-eggs-exclude.list', echo)
-    await exec('rm /usr/local/share/excludes/penguins-eggs-exclude.list?', echo)
+    await exec('rm /usr/local/share/penguins-eggs/penguins-eggs-exclude.list', echo)
+    await exec('rm /usr/local/share/penguins-eggs/penguins-eggs-exclude.list?', echo)
   }
   /**
    * 
