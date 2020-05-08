@@ -17,6 +17,7 @@ tmp/*
 swapfile
 
 # boot
+boot/efi/
 # Toglie tutto ad eccezione di themes ed i fonts
 boot/grub/!(themes|fonts)
 
