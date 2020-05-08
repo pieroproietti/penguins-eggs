@@ -19,9 +19,8 @@ const exec = require('../lib/utils').exec
  */
 export default class Pacman {
   static deb4uefi = ['grub-efi-amd64']
-  static debs4eggs = ['isolinux', 'live-boot', 'live-boot-initramfs-tools', 'live-config-systemd', 'squashfs-tools', 'xorriso', 'xterm', 'whois']
+  static debs4eggs = ['isolinux', 'live-boot', 'live-boot-initramfs-tools', 'lvm2', 'squashfs-tools', 'xorriso', 'xterm', 'whois']
   static debs4calamares = ['calamares', 'qml-module-qtquick2', 'qml-module-qtquick-controls']
-
 
   /**
    * controlla se Xserver è installato
@@ -96,8 +95,18 @@ export default class Pacman {
     let echo = Utils.setEcho(verbose)
     let retVal = false
 
+    let init:string = shx.exec('ps --no-headers -o comm 1',{silent: !verbose}).trim()
+    let config = ''
+    if (init === 'systemd') {
+      config ='live-config-systemd'
+    } else {
+      config ='live-config-sysvinit'
+    }
+    Pacman.debs4eggs.push(config)
+
     await exec('apt-get update --yes')
     await exec(`apt-get install --yes ${Pacman.debs2line(Pacman.debs4eggs)}`, echo)
+
     return retVal
   }
 
@@ -107,6 +116,16 @@ export default class Pacman {
   static async prerequisitesEggsRemove(verbose = true): Promise<boolean> {
     let echo = Utils.setEcho(verbose)
     let retVal = false
+
+    let init:string = shx.exec('ps --no-headers -o comm 1',{silent: !verbose}).trim()
+    let config=''
+    if (init === 'systemd') {
+      config ='live-config-systemd'
+    } else {
+      config ='live-config-sysvinit'
+    }
+    Pacman.debs4eggs.push(config)
+
     await exec(`apt-get remove --purge --yes ${Pacman.debs2line(Pacman.debs4eggs)}`, echo)
     await exec('apt-get autoremove --yes')
     return retVal
@@ -183,8 +202,8 @@ export default class Pacman {
     let echo = Utils.setEcho(verbose)
     await exec('rm /etc/penguins-eggs.conf', echo)
     await exec('rm /etc/penguins-eggs.conf?', echo)
-    await exec('rm /usr/local/share/penguins-eggs/penguins-eggs-exclude.list', echo)
-    await exec('rm /usr/local/share/penguins-eggs/penguins-eggs-exclude.list?', echo)
+    await exec('rm /usr/local/share/penguins-eggs/exclude.list', echo)
+    await exec('rm /usr/local/share/penguins-eggs/exclude.list?', echo)
   }
   /**
    * 
