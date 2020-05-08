@@ -129,7 +129,8 @@ USAGE
   $ eggs adjust
 
 OPTIONS
-  -h, --help  show CLI help
+  -h, --help     show CLI help
+  -v, --verbose
 ```
 
 _See code: [src/commands/adjust.ts](https://github.com/pieroproietti/penguins-eggs/blob/v7.5.54/src/commands/adjust.ts)_
