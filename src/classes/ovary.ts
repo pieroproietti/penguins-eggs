@@ -363,7 +363,7 @@ export default class Ovary {
         await this.editEfi(verbose)
       }
       await this.makeIsoImage(verbose)
-      if(!debug){
+      if (!debug) {
         await this.uBindLiveFs(verbose)
       }
     }
@@ -478,8 +478,25 @@ export default class Ovary {
 
     /**
      * aggiungo un link a /boot/grub/fonts/UbuntuMono16.pf2
-     */                                                                                                   
-    shx.cp(`${this.work_dir.merged}/boot/grub/fonts/unicode.pf2`,`${this.work_dir.merged}/boot/grub/fonts/UbuntuMono16.pf2`)
+     */
+    shx.cp(`${this.work_dir.merged}/boot/grub/fonts/unicode.pf2`, `${this.work_dir.merged}/boot/grub/fonts/UbuntuMono16.pf2`)
+
+    /**
+     * Remove all the accurence of cryptdisks in rc0.d, etc
+     */
+    let rcd = ['rc0.d', 'rc1.d', 'rc2.d', 'rc3.d', 'rc4.d', 'rc5.d', 'rc6.d',]
+    let files: string[]
+    for (let i in rcd) {
+      files = fs.readdirSync(`${this.work_dir.merged}/etc/${rcd[i]}`)
+      for (let n in files) {
+        if (files[n].search('cryptdisks')) {
+          console.log(files[n])
+        }
+      }
+    }
+
+
+
 
     // grub-mkfont -s16 -o /boot/grub/fonts/UbuntuMono16.pf2 /usr/share/fonts/truetype/dejavu/
     // patch per lmde cerca i font UbuntuMono16.pf, se non ci sono crea cartella font e virtual link
@@ -494,7 +511,7 @@ export default class Ovary {
      * GRUB_THEME="/boot/grub/themes/linuxmint/theme.txt"
      */
 
-    
+
 
     /**
      * add some basic files to /dev
@@ -1109,7 +1126,7 @@ timeout 200\n`
     // Either of these will work, and they look the same to me. Unicode seems to work with qemu. -fsr
     fs.copyFileSync(`/usr/share/grub/unicode.pf2`, `boot/grub/font.pf2`)
 
-   
+
     // doesn't need to be root-owned ${pwd} = current Directory
     // const user = Utils.getPrimaryUser()
     // await exec(`chown -R ${user}:${user} $(pwd) 2>/dev/null`, echo)
