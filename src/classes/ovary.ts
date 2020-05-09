@@ -183,10 +183,12 @@ export default class Ovary {
     this.snapshot_basename = settings.General.snapshot_basename
     this.make_efi = settings.General.make_efi === "yes"
     if (this.make_efi) {
-      if (!Pacman.packageIsInstalled('grub-efi-amd64')) {
+      if (!Pacman.packageIsInstalled('grub-efi-amd64') && (!Pacman.packageIsInstalled('grub-efi-ia32'))) {
         Utils.error('You choose to create an UEFI image, but miss to install grub-efi-amd64 package.')
         Utils.error('Please install it before to create an UEFI image:')
         Utils.warning('sudo apt install grub-efi-amd64')
+        Utils.error('or')
+        Utils.warning('sudo apt install grub-efi-ia32')
         Utils.error('or edit /etc/penguins-eggs.conf and set the valuer of make_efi=no')
         this.make_efi = false
       }
@@ -734,10 +736,10 @@ timeout 200\n`
     /**
      * exclude all the accurence of cryptdisks in rc0.d, etc
      */
-    let fexcludes = ["/boot/efi/EFI", "/etc/fstab", "/etc/mtab", "/etc/udev/rules.d/70-persistent-cd.rules", "/etc/udev/rules.d/70-persistent-net.rules"]
-    for (let i in fexcludes) {
-      this.addRemoveExclusion(true, fexcludes[i])
-    }
+    // let fexcludes = ["/boot/efi/EFI", "/etc/fstab", "/etc/mtab", "/etc/udev/rules.d/70-persistent-cd.rules", "/etc/udev/rules.d/70-persistent-net.rules"]
+    // for (let i in fexcludes) {
+    //  this.addRemoveExclusion(true, fexcludes[i])
+    //}
     let rcd = ['rc0.d', 'rc1.d', 'rc2.d', 'rc3.d', 'rc4.d', 'rc5.d', 'rc6.d', 'rcS.d']
     let files: string[]
     for (let i in rcd) {

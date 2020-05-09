@@ -21,12 +21,16 @@ boot/efi/
 # Toglie tutto ad eccezione di themes ed i fonts
 boot/grub/!(themes|fonts)
 
+## Questi vengono esclusi anche da ovary
+## "/boot/efi/EFI", "/etc/fstab", "/etc/mtab", "/etc/udev/rules.d/70-persistent-cd.rules", "/etc/udev/rules.d/70-persistent-net.rules"]
+
 # etc
 etc/adjtime
 etc/bcm-ckd
 etc/blkid.tab.old
 etc/defaultdomain
 etc/crypttab
+etc/fstab
 etc/fstab.backup
 etc/ioctl.save
 etc/live/protect
