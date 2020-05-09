@@ -56,8 +56,6 @@ export default class Ovary {
 
   force_installer = false
 
-  reset_accounts = false
-
   debian_version = 10
 
   snapshot_dir = ''
@@ -203,7 +201,6 @@ export default class Ovary {
     this.edit_boot_menu = settings.General.edit_boot_menu === "yes"
     this.gui_editor = settings.General.gui_editor
     this.force_installer = settings.General.force_installer === "yes"
-    this.reset_accounts = settings.General.reset_accounts === "yes"
     this.kernel_image = settings.General.kernel_image
     this.initrd_image = settings.General.initrd_image
     this.netconfig_opt = settings.General.netconfig_opt
@@ -260,7 +257,6 @@ export default class Ovary {
     console.log(`edit_boot_menu:    ${this.edit_boot_menu}`)
     console.log(`gui_editor:        ${this.gui_editor}`)
     console.log(`force_installer:   ${this.force_installer}`)
-    console.log(`reset_accounts:    ${this.reset_accounts}`)
     console.log(`kernel_image:      ${this.kernel_image}`)
     console.log(`user_live:         ${this.user_live}`)
     console.log(`initrd_image:      ${this.initrd_image}`)
@@ -480,22 +476,6 @@ export default class Ovary {
      * aggiungo un link a /boot/grub/fonts/UbuntuMono16.pf2
      */
     shx.cp(`${this.work_dir.merged}/boot/grub/fonts/unicode.pf2`, `${this.work_dir.merged}/boot/grub/fonts/UbuntuMono16.pf2`)
-
-    /**
-     * Remove all the accurence of cryptdisks in rc0.d, etc
-     */
-    let rcd = ['rc0.d', 'rc1.d', 'rc2.d', 'rc3.d', 'rc4.d', 'rc5.d', 'rc6.d',]
-    let files: string[]
-    for (let i in rcd) {
-      files = fs.readdirSync(`${this.work_dir.merged}/etc/${rcd[i]}`)
-      for (let n in files) {
-        if (files[n].search('cryptdisks')) {
-          console.log(files[n])
-        }
-      }
-    }
-
-
 
 
     // grub-mkfont -s16 -o /boot/grub/fonts/UbuntuMono16.pf2 /usr/share/fonts/truetype/dejavu/
@@ -751,14 +731,30 @@ timeout 200\n`
       console.log('ovary: makeSquashFs')
     }
 
-    this.addRemoveExclusion(true, this.snapshot_dir /* .absolutePath() */)
-
-    if (this.reset_accounts) {
-      // exclude /etc/localtime if link and timezone not America/New_York
-      if (shx.exec('/usr/bin/test -L /etc/localtime', { silent: true }) && shx.exec('cat /etc/timezone', { silent: true }) !== 'Europe/Rome') {
-        this.addRemoveExclusion(true, '/etc/localtime')
+    /**
+     * exclude all the accurence of cryptdisks in rc0.d, etc
+     */
+    let fexcludes = ["/boot/efi/EFI", "/etc/fstab", "/etc/mtab", "/etc/udev/rules.d/70-persistent-cd.rules", "/etc/udev/rules.d/70-persistent-net.rules"]
+    for (let i in fexcludes) {
+      this.addRemoveExclusion(true, fexcludes[i])
+    }
+    let rcd = ['rc0.d', 'rc1.d', 'rc2.d', 'rc3.d', 'rc4.d', 'rc5.d', 'rc6.d', 'rcS.d']
+    let files: string[]
+    for (let i in rcd) {
+      files = fs.readdirSync(`${this.work_dir.merged}/etc/${rcd[i]}`)
+      for (let n in files) {
+        if (files[n].includes('cryptdisks')) {
+          this.addRemoveExclusion(true, `/etc/${rcd[i]}${files[n]}`)
+        }
       }
     }
+
+    if (shx.exec('/usr/bin/test -L /etc/localtime', { silent: true }) && shx.exec('cat /etc/timezone', { silent: true }) !== 'Europe/Rome') {
+      this.addRemoveExclusion(true, '/etc/localtime')
+    }
+
+    this.addRemoveExclusion(true, this.snapshot_dir /* .absolutePath() */)
+
     const compression = `-comp ${this.compression}`
     if (fs.existsSync(`${this.work_dir.pathIso}/live/filesystem.squashfs`)) {
       fs.unlinkSync(`${this.work_dir.pathIso}/live/filesystem.squashfs`)

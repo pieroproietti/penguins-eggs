@@ -9,7 +9,7 @@ void systemback::on_livenew_clicked()
 
 systemback -riga 7364
 
-Toglie da /etc/rc0.d, /etc/rc1.d, /etc/rc2.d, /etc/rc3.d, /etc/rc4.d, /etc/rc5.d, /etc/rc6.d
+Toglie da /etc/rc0.d, /etc/rc1.d, /etc/rc2.d, /etc/rc3.d, /etc/rc4.d, /etc/rc5.d, /etc/rc6.d, /etc/rcS.d
 tutti i file che contengono cryptdisks
 esempio K01cryptdisks, K01cryptdisks-early
 
