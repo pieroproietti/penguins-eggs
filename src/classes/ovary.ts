@@ -1083,6 +1083,7 @@ timeout 200\n`
     await exec(cmd, echo)
     // Additional modules so we don't boot in blind mode. I don't know which ones are really needed.
     cmd = `for i in efi_gop efi_uga ieee1275_fb vbe vga video_bochs video_cirrus jpeg png gfxterm ; do echo "insmod $i" >> boot/grub/x86_64-efi/grub.cfg ; done`
+    //              efi_gop efi_uga ieee1275_fb vbe vga video_bochs video_cirrus jpeg png gfxterm
     await exec(cmd, echo)
 
     await exec(`echo source /boot/grub/grub.cfg >> boot/grub/x86_64-efi/grub.cfg`, echo)

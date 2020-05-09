@@ -1,4 +1,10 @@
 
+errore iniziale
+/boot/grub/x86_64-efi/ieee1275_fd.mod
+/boot/grub/x86_64-efi/vbe.mod
+/boot/grub/x86_64-efi/vga.mod
+
+
 grub.cfg
 
 
