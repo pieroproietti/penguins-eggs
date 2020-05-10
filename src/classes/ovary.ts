@@ -1148,6 +1148,8 @@ timeout 200\n`
 
     // Do the main grub.cfg (which gets loaded last):
     fs.copyFileSync(path.resolve(__dirname, '../../conf/grub.cfg.template'), `${this.work_dir.pathIso}/boot/grub/grub.cfg`)
+    fs.copyFileSync(path.resolve(__dirname, '../../conf/theme.cfg'), `${this.work_dir.pathIso}/boot/grub/theme.cfg`)
+    
     shx.cp(path.resolve(__dirname, '../../conf/loopback.cfg'), `${this.work_dir.pathIso}/boot/grub/`)
   }
 

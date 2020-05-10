@@ -1,37 +1,22 @@
 if loadfont $prefix/font.pf2 ; then
-  set gfxmode=800x600
-  set gfxpayload=keep
+  # set gfxmode=800x600
+  # set gfxpayload=keep
+  # insmod video_bochs
+  # insmod video_cirrus
+  # insmod png
   insmod efi_gop
   insmod efi_uga
-  insmod video_bochs
-  insmod video_cirrus
   insmod gfxterm
-  insmod png
   terminal_output gfxterm
 fi
 
-
-if background_image /isolinux/splash.png; then
-  set color_normal=light-gray/black
-  set color_highlight=white/black
-elif background_image /splash.png; then
-  set color_normal=light-gray/black
-  set color_highlight=white/black
-else
-  set menu_color_normal=cyan/blue
-  set menu_color_highlight=white/blue
-fi
-
-background_image /isolinux/splash.png
-set color_normal=light-gray/black
-set color_highlight=white/black
-
+set theme=/boot/grub/theme.cfg
 
 insmod play
 play 960 440 1 0 4 440 1
 if [ ${iso_path} ] ; then
-set loopback="findiso=${iso_path}"
-export loopback
+  set loopback="findiso=${iso_path}"
+  export loopback
 fi
 
 
