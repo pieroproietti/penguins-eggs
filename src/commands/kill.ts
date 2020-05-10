@@ -78,8 +78,8 @@ kill the eggs/free the nest
         this.work_dir.path = this.snapshot_dir + 'work/'
       }
     }
-    console.log(`work_dir: ${this.work_dir.path}`)
-    console.log(`foundSettings: ${foundSettings}`)
+    // console.log(`work_dir: ${this.work_dir.path}`)
+    // console.log(`foundSettings: ${foundSettings}`)
     return foundSettings
   }
 }

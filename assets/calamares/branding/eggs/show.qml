@@ -49,7 +49,7 @@ Presentation
             anchors.horizontalCenter: slide1.horizontalCenter
             anchors.top: slide1.verticalCenter
             text: qsTr("<h1>Penguin's eggs</h1><br/>"+
-                  "<br/>Creato da Piero Proietti, pensato per la comunità.<br/>"+
+                  "<br/>Created by Piero Proietti, thinking to the community.<br/>"+
                   "<br/>sources: htts://github.com/pieroproietti/penguins-eggs"+
                   "<br/>email: piero.proietti@gmail.com")
             wrapMode: Text.WordWrap
@@ -73,7 +73,7 @@ Presentation
             anchors.horizontalCenter: slide2.horizontalCenter
             anchors.top: slide2.verticalCenter
             text: qsTr("<h1>Penguin's eggs</h1><br/>"+
-                  "<br/><p>Un sistema riproduttivo per pinguini!</p></br>")
+                  "<br/><p>The reproductive system for the penguins!</p></br>")
             wrapMode: Text.WordWrap
             width: 600
             horizontalAlignment: Text.Center
@@ -96,7 +96,7 @@ Presentation
             anchors.horizontalCenter: slide3.horizontalCenter
             anchors.top: slide3.verticalCenter
             text: qsTr("<h1>Penguin's eggs</h1><br/>"+
-                  "<br/><p>Con Penguin's eggs il tuo sistema si riproduce! Crea l'immagine ISO del tuo sistema e reinstallalo su un altro pc. Puoi farlo, è semplice e legale.</p>")
+                  "<br/><p>Start the reproduction of your system! Produce yours eggs and simply install them on another computer. You can do it!</p>")
             wrapMode: Text.WordWrap
             width: 600
             horizontalAlignment: Text.Center
@@ -119,7 +119,7 @@ Presentation
             anchors.horizontalCenter: slide4.horizontalCenter
             anchors.top: slide4.verticalCenter
             text: qsTr("<h1>Penguin's eggs</h1><br/>"+
-                  "<br/><p>Con Penguin's eggs puoi ottenere la copia del tuo sistema da portare in tasca su una usb o da installare ad un amico.</p>")
+                  "<br/><p>With penguin's eggs you can bring your system with you and use or install elsewhere.</p>")
             wrapMode: Text.WordWrap
             width: 600
             horizontalAlignment: Text.Center
@@ -142,7 +142,7 @@ Presentation
             anchors.horizontalCenter: slide5.horizontalCenter
             anchors.top: slide5.verticalCenter
             text: qsTr("<h1>Penguin's eggs</h1><br/>"+
-                  "<br/><p>Eggs si usa da terminale, ma è semplice ed ha pochi comandi. Usa eggs senza parametri per avere l'aiuto</p></br>")
+                  "<br/><p>Eggs is a terminal tool, but it's simple and nice. Write eggs without else and get the list</p></br>")
             wrapMode: Text.WordWrap
             width: 600
             horizontalAlignment: Text.Center
@@ -163,7 +163,7 @@ Presentation
             font.pixelSize : 22
             color: "#002439"
             text: qsTr("<h1>Penguin's eggs</h1><br/>"+
-                  "<br/><p>Attenzione, il processo di cova è in corso... <br/><br/>Non disturbare la chioccia! In poco tempo vedrete nascere un pulcino nuovo.</p>")
+                  "<br/><p>Please wait, we are hatching the eggs... <br/><br/>Don't disturb the process, in few time You will have a new penguin.</p>")
             anchors.horizontalCenter: slide6.horizontalCenter
             anchors.top: slide6.verticalCenter
             wrapMode: Text.WordWrap
@@ -190,10 +190,10 @@ Presentation
             text: qsTr("<h1>Penguin's eggs</h1><br/>"+
                   "<br/>"+
                   "<br/>"+
-                  "<br/><p>Segui lo sviluppo dei tuoi pulcini, è divertente ed istruttivo.</p>" +
-                  "<p>Penguin's eggs ed il suo sviluppatore cercano aiuto, " +
-                  "utilizza questo prodotto, divertiti e, se puoi, collabora.</p>"+
-                  "<br/>Grazie")
+                  "<br/><p>Follow the penguin's eggs development, it's funny and istructive.</p>" +
+                  "<p>Penguin's eggs and it's developer need help, " +
+                  "use this tool, enjoy and if you can collaborate.</p>"+
+                  "<br/>That's all peoples!")
             wrapMode: Text.WordWrap
             width: 600
             horizontalAlignment: Text.Center

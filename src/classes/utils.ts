@@ -90,8 +90,8 @@ export default class Utils {
   }
 
   /**
-  * return the name of the package: penguins-eggs-v8
-  * @returns penguins-eggs-v8
+  * return the name of the package: penguins-eggs
+  * @returns penguins-eggs
   */
   static getPackageName(): string {
     return pjson.name
@@ -104,7 +104,9 @@ export default class Utils {
   static getSnapshotCount(snapshot_dir = '/'): number {
     if (fs.existsSync(snapshot_dir)) {
       const list = fs.readdirSync(snapshot_dir)
-      return list.length
+      if (list.length > 0) {
+        return list.length - 1
+      }
     }
     return 0
   }
@@ -267,7 +269,7 @@ export default class Utils {
     let cmd = `mountpoint -q ${path}`
     // return 0 if the directory is a mountpoint, non-zero if not.
     result = shx.exec(cmd, { silent: true }).code
-    return (result === 0 )
+    return (result === 0)
   }
 
   /**
@@ -278,7 +280,7 @@ export default class Utils {
     if (process.getuid && process.getuid() === 0) {
       return true
     }
-    console.log(chalk.red(`\n${this.getFriendName()} need to run with root privileges. Please, prefix it with sudo.`))
+    Utils.warning(`${Utils.getFriendName()} need to run with root privileges. Please, prefix it with sudo`)
     return false
   }
 
@@ -384,7 +386,21 @@ export default class Utils {
   *
   * @param msg
   */
-  static async customConfirm(msg = "Select yes to continue... "): Promise<any> {
+  static async customConfirm(msg = "Select yes to continue... "): Promise<boolean> {
+    let varResult = await Utils.customConfirmCompanion(msg)
+    let result = JSON.parse(varResult)
+    if (result.confirm === 'Yes') {
+      return true
+    } else {
+      return false
+    }
+  }
+  
+  /**
+  *
+  * @param msg
+  */
+  static async customConfirmCompanion(msg = "Select yes to continue... "): Promise<any> {
     return new Promise(function (resolve) {
       const questions: Array<Record<string, any>> = [
         {

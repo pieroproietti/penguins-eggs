@@ -28,6 +28,7 @@ import Oses from './oses'
 import Pacman from './pacman'
 import Prerequisites from '../commands/prerequisites'
 import { IWorkDir } from '../interfaces/i-workdir'
+import { deepStrictEqual } from 'assert'
 
 /**
  * Ovary:
@@ -54,8 +55,6 @@ export default class Ovary {
   live = false
 
   force_installer = false
-
-  reset_accounts = false
 
   debian_version = 10
 
@@ -144,10 +143,8 @@ export default class Ovary {
 
     if (this.loadSettings()) {
       if (this.listFreeSpace()) {
-        let answer = JSON.parse(await Utils.customConfirm(`Select yes to continue...`))
-        if (answer.confirm === 'Yes') {
+        if (await Utils.customConfirm(`Select yes to continue...`))
           return true
-        }
       }
     }
     return false
@@ -160,6 +157,9 @@ export default class Ovary {
   public async loadSettings(verbose = false): Promise<boolean> {
     let foundSettings: boolean
 
+    if (!fs.existsSync(this.config_file)) {
+      return false
+    }
     const settings = ini.parse(fs.readFileSync(this.config_file, 'utf-8'))
 
     if (settings.General.snapshot_dir === '') {
@@ -183,12 +183,13 @@ export default class Ovary {
     this.snapshot_basename = settings.General.snapshot_basename
     this.make_efi = settings.General.make_efi === "yes"
     if (this.make_efi) {
-      if (!Pacman.packageIsInstalled('grub-efi-amd64')) {
+      if (!Pacman.packageIsInstalled('grub-efi-amd64') && (!Pacman.packageIsInstalled('grub-efi-ia32'))) {
         Utils.error('You choose to create an UEFI image, but miss to install grub-efi-amd64 package.')
         Utils.error('Please install it before to create an UEFI image:')
         Utils.warning('sudo apt install grub-efi-amd64')
+        Utils.error('or')
+        Utils.warning('sudo apt install grub-efi-ia32')
         Utils.error('or edit /etc/penguins-eggs.conf and set the valuer of make_efi=no')
-
         this.make_efi = false
       }
     }
@@ -202,7 +203,6 @@ export default class Ovary {
     this.edit_boot_menu = settings.General.edit_boot_menu === "yes"
     this.gui_editor = settings.General.gui_editor
     this.force_installer = settings.General.force_installer === "yes"
-    this.reset_accounts = settings.General.reset_accounts === "yes"
     this.kernel_image = settings.General.kernel_image
     this.initrd_image = settings.General.initrd_image
     this.netconfig_opt = settings.General.netconfig_opt
@@ -259,7 +259,6 @@ export default class Ovary {
     console.log(`edit_boot_menu:    ${this.edit_boot_menu}`)
     console.log(`gui_editor:        ${this.gui_editor}`)
     console.log(`force_installer:   ${this.force_installer}`)
-    console.log(`reset_accounts:    ${this.reset_accounts}`)
     console.log(`kernel_image:      ${this.kernel_image}`)
     console.log(`user_live:         ${this.user_live}`)
     console.log(`initrd_image:      ${this.initrd_image}`)
@@ -323,7 +322,7 @@ export default class Ovary {
    *
    * @param basename
    */
-  async produce(basename = '', assistant = false, verbose = false) {
+  async produce(basename = '', assistant = false, verbose = false, debug = false) {
     let echo = Utils.setEcho(verbose)
 
     if (!fs.existsSync(this.snapshot_dir)) {
@@ -356,12 +355,15 @@ export default class Ovary {
       await this.makeLiveHome(assistant, verbose)
       await this.editLiveFs(verbose)
       await this.editBootMenu(verbose)
+
       await this.makeSquashFs(verbose)
       if (this.make_efi) {
         await this.editEfi(verbose)
       }
       await this.makeIsoImage(verbose)
-      await this.uBindLiveFs(verbose)
+      if (!debug) {
+        await this.uBindLiveFs(verbose)
+      }
     }
   }
 
@@ -471,6 +473,26 @@ export default class Ovary {
       await exec(`touch ${this.work_dir.merged}/etc/machine-id`, echo)
       Utils.write(`${this.work_dir.merged}/etc/machine-id`, `:`)
     }
+
+    /**
+     * aggiungo un link a /boot/grub/fonts/UbuntuMono16.pf2
+     */
+    shx.cp(`${this.work_dir.merged}/boot/grub/fonts/unicode.pf2`, `${this.work_dir.merged}/boot/grub/fonts/UbuntuMono16.pf2`)
+
+
+    // grub-mkfont -s16 -o /boot/grub/fonts/UbuntuMono16.pf2 /usr/share/fonts/truetype/dejavu/
+    // patch per lmde cerca i font UbuntuMono16.pf, se non ci sono crea cartella font e virtual link
+    // Attenzione ai path
+    /**
+     * LMDE4
+     * /etc/default/grub.d/60_mint-theme.cfg 
+     * #! /bin/sh
+     *set -e
+     *
+     * GRUB_FONT="/boot/grub/fonts/UbuntuMono16.pf2"
+     * GRUB_THEME="/boot/grub/themes/linuxmint/theme.txt"
+     */
+
 
 
     /**
@@ -711,14 +733,30 @@ timeout 200\n`
       console.log('ovary: makeSquashFs')
     }
 
-    this.addRemoveExclusion(true, this.snapshot_dir /* .absolutePath() */)
-
-    if (this.reset_accounts) {
-      // exclude /etc/localtime if link and timezone not America/New_York
-      if (shx.exec('/usr/bin/test -L /etc/localtime', { silent: true }) && shx.exec('cat /etc/timezone', { silent: true }) !== 'America/New_York') {
-        this.addRemoveExclusion(true, '/etc/localtime')
+    /**
+     * exclude all the accurence of cryptdisks in rc0.d, etc
+     */
+    // let fexcludes = ["/boot/efi/EFI", "/etc/fstab", "/etc/mtab", "/etc/udev/rules.d/70-persistent-cd.rules", "/etc/udev/rules.d/70-persistent-net.rules"]
+    // for (let i in fexcludes) {
+    //  this.addRemoveExclusion(true, fexcludes[i])
+    //}
+    let rcd = ['rc0.d', 'rc1.d', 'rc2.d', 'rc3.d', 'rc4.d', 'rc5.d', 'rc6.d', 'rcS.d']
+    let files: string[]
+    for (let i in rcd) {
+      files = fs.readdirSync(`${this.work_dir.merged}/etc/${rcd[i]}`)
+      for (let n in files) {
+        if (files[n].includes('cryptdisks')) {
+          this.addRemoveExclusion(true, `/etc/${rcd[i]}${files[n]}`)
+        }
       }
     }
+
+    if (shx.exec('/usr/bin/test -L /etc/localtime', { silent: true }) && shx.exec('cat /etc/timezone', { silent: true }) !== 'Europe/Rome') {
+      this.addRemoveExclusion(true, '/etc/localtime')
+    }
+
+    this.addRemoveExclusion(true, this.snapshot_dir /* .absolutePath() */)
+
     const compression = `-comp ${this.compression}`
     if (fs.existsSync(`${this.work_dir.pathIso}/live/filesystem.squashfs`)) {
       fs.unlinkSync(`${this.work_dir.pathIso}/live/filesystem.squashfs`)
@@ -754,7 +792,7 @@ timeout 200\n`
    */
   needOverlay(dir: string): boolean {
     // const excludeDirs = ['cdrom', 'dev', 'home', 'live', 'media', 'mnt', 'proc', 'run', 'sys', 'swapfile', 'tmp']
-    const mountDirs = ['etc', 'var']
+    const mountDirs = ['etc', 'var', 'boot']
     let mountDir = ''
     let need = false
     for (mountDir of mountDirs) {
@@ -976,6 +1014,9 @@ timeout 200\n`
     }
   }
 
+
+
+
   /**
    * makeEfi
    * Create /boot and /efi for UEFI
@@ -1024,15 +1065,17 @@ timeout 200\n`
     /**
      * start with empty directories Clear dir boot and efi
      */
+    /*
     const files = fs.readdirSync('.');
     for (var i in files) {
-      if (files[i] === 'boot') {
+      if (files[i] === './boot') {
         await exec(`rm ./boot -rf`, echo)
       }
-      if (files[i] === 'efi') {
+      if (files[i] === './efi') {
         await exec(`rm ./efi -rf`, echo)
       }
     }
+    */
     shx.mkdir(`-p`, `./boot/grub/x86_64-efi`)
     shx.mkdir(`-p`, `./efi/boot`)
 
@@ -1043,7 +1086,9 @@ timeout 200\n`
     let cmd = `for i in $(ls /usr/lib/grub/x86_64-efi|grep part_|grep \.mod|sed 's/.mod//'); do echo "insmod $i" >> boot/grub/x86_64-efi/grub.cfg; done`
     await exec(cmd, echo)
     // Additional modules so we don't boot in blind mode. I don't know which ones are really needed.
-    cmd = `for i in efi_gop efi_uga ieee1275_fb vbe vga video_bochs video_cirrus jpeg png gfxterm ; do echo "insmod $i" >> boot/grub/x86_64-efi/grub.cfg ; done`
+    // cmd = `for i in efi_gop efi_uga ieee1275_fb vbe vga video_bochs video_cirrus jpeg png gfxterm ; do echo "insmod $i" >> boot/grub/x86_64-efi/grub.cfg ; done`
+    cmd = `for i in efi_gop efi_gop efi_uga gfxterm video_bochs video_cirrus jpeg png ; do echo "insmod $i" >> boot/grub/x86_64-efi/grub.cfg ; done`
+
     await exec(cmd, echo)
 
     await exec(`echo source /boot/grub/grub.cfg >> boot/grub/x86_64-efi/grub.cfg`, echo)
@@ -1083,8 +1128,9 @@ timeout 200\n`
     // Either of these will work, and they look the same to me. Unicode seems to work with qemu. -fsr
     fs.copyFileSync(`/usr/share/grub/unicode.pf2`, `boot/grub/font.pf2`)
 
+
     // doesn't need to be root-owned ${pwd} = current Directory
-    const user = Utils.getPrimaryUser()
+    // const user = Utils.getPrimaryUser()
     // await exec(`chown -R ${user}:${user} $(pwd) 2>/dev/null`, echo)
     // console.log(`pwd: ${pwd}`)
     // await exec(`chown -R ${user}:${user} $(pwd)`, echo)

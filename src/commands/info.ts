@@ -5,11 +5,12 @@
  * license: MIT
  */
 
-import {Command,flags} from '@oclif/command'
+import { Command, flags } from '@oclif/command'
 import shx = require('shelljs')
 import Utils from '../classes/utils'
 import Ovary from '../classes/ovary'
 import Pacman from '../classes/pacman'
+import chalk = require('chalk')
 
 /**
  * Get informations about system
@@ -29,30 +30,42 @@ You will find here informations about penguin's eggs!
 
     const ovary = new Ovary
     ovary.loadSettings()
+
+    const line = '-----------------------------------------------------------------'
+    console.log(line)
     ovary.showSettings()
 
+    console.log(line)
     shx.exec('lsb_release -a')
-    let message='You are on an INSTALLED system.'
-    if (Utils.isLive()){
-      message = "This is a LIVE system."
-    }
-    shx.echo (`System:         ${message}`)
-    if (Pacman.prerequisitesEggsCheck()){
-      console.log('Prerequisites:  installed')
+
+    console.log(line)
+    if (await Pacman.prerequisitesEggsCheck()) {
+      console.log('Eggs prerequisites:  ' + chalk.bgGreen('ok'))
     } else {
-      console.log('Prerequisites:  NOT installed')
+      console.log('Eggs prerequisites:  ' + chalk.bgRed('ko'))
     }
 
-    if (Pacman.configurationCheck()){
-      console.log('Configuration:  configured')
+    if (await Pacman.configurationCheck()) {
+      console.log('Configuration file:  ' + chalk.bgGreen('ok'))
     } else {
-      console.log('Configuration:  NOT configured')
+      console.log('Configuration file:  ' + chalk.bgRed('ko'))
     }
-    
-    if (Pacman.prerequisitesCalamaresCheck()){
-      console.log('Calamares:      installed')
+    if (await Pacman.isXInstalled()) {
+      if (await Pacman.prerequisitesCalamaresCheck()) {
+        console.log('GUI Installer:       ' + chalk.bgGreen('ok'))
+      } else {
+        console.log('GUI Installer:       ' + chalk.bgBlue('ko'))
+      }
     } else {
-      console.log('Calamares:      NOT installed')
+      console.log('GUI Installer:       ' + chalk.bgGreen('cli installer'))
     }
+
+    console.log(line)
+    if (Utils.isLive()) {
+      console.log('System: ' + chalk.bgGreen('LIVE') + ' system')
+    } else {
+      console.log('System: ' + chalk.bgCyan('INSTALLED') + ' systen')
+    }
+    console.log(line)
   }
 }

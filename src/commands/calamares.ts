@@ -36,8 +36,7 @@ export default class Calamares extends Command {
 
     if (Utils.isRoot()) {
       if (Pacman.isXInstalled()) {
-        let answer = JSON.parse(await Utils.customConfirm(`Select yes to continue...`))
-        if (answer.confirm === 'Yes') {
+        if(await Utils.customConfirm(`Select yes to continue...`)){
           if (flags.install) {
             Utils.warning('Installing calamares prerequisites...')
             console.log('Installing calamares')

@@ -17,6 +17,7 @@ export default class Produce extends Command {
     basename: flags.string({ char: 'b', description: 'basename egg' }),
     compress: flags.boolean({ char: 'c', description: 'max compression' }),
     fast: flags.boolean({ char: 'f', description: 'compression fast' }),
+    debug: flags.boolean({ char: 'd', description: 'debug' }),
     info: flags.help({ char: 'h' }),
     verbose: flags.boolean({ char: 'v', description: 'verbose' }),
   }
@@ -54,10 +55,13 @@ the penguin produce an egg called egg-i386-2020-04-13_1815.iso`]
         verbose = true
       }
 
+      let debug = false
+      if (flags.debug){
+        debug = true
+      }
       if (! Pacman.prerequisitesEggsCheck()) {
         console.log('You need to install ' + chalk.bgGray('prerequisites') + ' to continue.')
-        let answer = JSON.parse(await Utils.customConfirm(`Select yes to install prerequisites`))
-        if (answer.confirm === 'Yes') {
+        if (await Utils.customConfirm(`Select yes to install prerequisites`)){
           Utils.warning('Installing prerequisites...')
           await Pacman.prerequisitesEggsInstall(verbose)
           await Pacman.clean(verbose)
@@ -69,8 +73,7 @@ the penguin produce an egg called egg-i386-2020-04-13_1815.iso`]
 
       if (!Pacman.configurationCheck()){
         console.log('You need to create ' + chalk.bgGray('configuration files') + ' to continue.')
-        let answer = JSON.parse(await Utils.customConfirm(`Select yes to create configuration files`))
-        if (answer.confirm === 'Yes') {
+        if (await Utils.customConfirm(`Select yes to create configuration files`)) {
           Utils.warning('Creating configuration files...')
           await Pacman.configurationInstall(verbose)
         } else {
@@ -82,7 +85,7 @@ the penguin produce an egg called egg-i386-2020-04-13_1815.iso`]
       const ovary = new Ovary(compression)
       Utils.warning('Produce an egg...')
        if (await ovary.fertilization()) {
-       await ovary.produce(basename, assistant, verbose)
+       await ovary.produce(basename, assistant, verbose, debug)
         ovary.finished()
       }
     }

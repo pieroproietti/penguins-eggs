@@ -1,0 +1,88 @@
+# rsync excludes file for penguins-eggs
+# version 7.5.53
+
+# Do NOT edit this entry block unless you know what you are doing
+
+# root 
+cdrom/*
+dev/*
+live/*
+lost+found
+media/*
+mnt/*
+proc/*
+run/*
+sys/*
+tmp/*
+swapfile
+
+# boot
+boot/efi/
+# Toglie tutto ad eccezione di themes ed i fonts
+boot/grub/!(themes|fonts)
+
+## Questi vengono esclusi anche da ovary
+## "/boot/efi/EFI", "/etc/fstab", "/etc/mtab", "/etc/udev/rules.d/70-persistent-cd.rules", "/etc/udev/rules.d/70-persistent-net.rules"]
+
+# etc
+etc/adjtime
+etc/bcm-ckd
+etc/blkid.tab.old
+etc/defaultdomain
+etc/crypttab
+etc/fstab
+etc/fstab.backup
+etc/ioctl.save
+etc/live/protect
+etc/machine-id
+etc/mailname
+etc/mtab
+etc/NetworkManager/system-connections/*
+etc/udev/rules.d/70-persistent-cd.rules
+etc/udev/rules.d/70-persistent-net.rules
+etc/resolv.conf
+
+# /root
+root/.bash_history
+root/.dbus
+root/.gconf
+root/.gnome2
+root/keyfile
+
+# var
+# var/cache
+var/cache/apt/archives/*.deb
+var/cache/apt-xapian-index/index.*
+var/cache/apt-show-versions/*
+var/cache/apt/*.bin
+var/cache/apt/apt-file/*
+var/cache/debconf/*-old
+var/cache/lightdm
+var/cache/samba/browse.dat
+
+# var/lib
+var/lib/apt/lists/*
+var/lib/connman/*
+var/lib/dbus/machine-id
+var/lib/dhcp/*
+var/lib/dpkg/*-old
+var/lib/lightdm/.cache
+var/lib/lightdm/.Xauthority
+var/lib/NetworkManager/*
+var/lib/nfs/rpc_pipefs/*
+var/lib/sudo/*
+var/lib/udisks/*
+var/lib/urandom/*
+
+# Toglie tutto ad eccezione di: 
+# apache2, clamav, pveprozy, samba
+var/log/!(apache2|clamav|pveproxy|samba|)
+var/log/apache2/*
+var/log/clamav/*
+var/log/pveproxy/*
+var/log/samba/*
+
+var/mail/*
+var/spool/mail/*
+var/tmp/*
+var/cache/brightness-settings-cache/*

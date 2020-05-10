@@ -30,8 +30,7 @@ export default class Sterilize extends Command {
     }
 
     if (Utils.isRoot() && Pacman.prerequisitesEggsCheck()) {
-      let answer = JSON.parse(await Utils.customConfirm(`Select yes to continue...`))
-      if (answer.confirm === 'Yes') {
+      if (await await Utils.customConfirm(`Select yes to continue...`)) {
         Utils.warning('Removing eggs prerequisites...')
         await Pacman.prerequisitesEggsRemove(verbose)
         if(Pacman.prerequisitesCalamaresCheck()){

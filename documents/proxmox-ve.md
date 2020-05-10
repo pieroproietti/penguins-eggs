@@ -2,7 +2,7 @@
 
 Non è semplice per me descrivere Proxmox VE, vi lascio alla loro [presentazione](https://pve.proxmox.com/wiki/Main_Page) ed alla loro [guida](https://pve.proxmox.com/pve-docs/pve-admin-guide.html), non prima però di aver spiegato che è l'unica tecnologia di virtualizzazione che ho utilizzato in questi anni.
 
-Diciamo che fornisce un servizio di virtualizzazione, come vmware o virtualbox, gestibile sia in locale che attraverso il web. L'indirizzo del sito è https://node-della-macchina-o-ip:8006
+Diciamo che fornisce un servizio di virtualizzazione, come vmware o virtualbox, gestibile sia in locale che attraverso il web. L'indirizzo del sito è https://nome-della-macchina-o-ip:8006
 
 Da questo, interamente con interfaccia grafica, è possibile creare, cancellare, gestire le macchine virtuali.
 
