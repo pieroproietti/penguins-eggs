@@ -1065,6 +1065,7 @@ timeout 200\n`
     /**
      * start with empty directories Clear dir boot and efi
      */
+    /*
     const files = fs.readdirSync('.');
     for (var i in files) {
       if (files[i] === './boot') {
@@ -1074,6 +1075,7 @@ timeout 200\n`
         await exec(`rm ./efi -rf`, echo)
       }
     }
+    */
     shx.mkdir(`-p`, `./boot/grub/x86_64-efi`)
     shx.mkdir(`-p`, `./efi/boot`)
 
@@ -1084,8 +1086,9 @@ timeout 200\n`
     let cmd = `for i in $(ls /usr/lib/grub/x86_64-efi|grep part_|grep \.mod|sed 's/.mod//'); do echo "insmod $i" >> boot/grub/x86_64-efi/grub.cfg; done`
     await exec(cmd, echo)
     // Additional modules so we don't boot in blind mode. I don't know which ones are really needed.
-    cmd = `for i in efi_gop efi_uga ieee1275_fb vbe vga video_bochs video_cirrus jpeg png gfxterm ; do echo "insmod $i" >> boot/grub/x86_64-efi/grub.cfg ; done`
-    //              efi_gop efi_uga ieee1275_fb vbe vga video_bochs video_cirrus jpeg png gfxterm
+    // cmd = `for i in efi_gop efi_uga ieee1275_fb vbe vga video_bochs video_cirrus jpeg png gfxterm ; do echo "insmod $i" >> boot/grub/x86_64-efi/grub.cfg ; done`
+    cmd = `for i in efi_gop efi_gop efi_uga gfxterm video_bochs video_cirrus jpeg png ; do echo "insmod $i" >> boot/grub/x86_64-efi/grub.cfg ; done`
+
     await exec(cmd, echo)
 
     await exec(`echo source /boot/grub/grub.cfg >> boot/grub/x86_64-efi/grub.cfg`, echo)

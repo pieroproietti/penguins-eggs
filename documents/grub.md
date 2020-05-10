@@ -1,3 +1,9 @@
+7158 void systemback::on_livenew_clicked()
+Qua inizia la costruzione della live
+
+Analizza /etc/lsb-release
+DISTRIB_ID=
+
 
 errore iniziale
 /boot/grub/x86_64-efi/ieee1275_fd.mod
