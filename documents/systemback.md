@@ -1,23 +1,9 @@
+# systemback
+
+Sto cercando di analizzare systemback per cogliere qualche suggerimento.
+
+Il pundo del codice di systemback dove si crea la live è la riga
 7158 void systemback::on_livenew_clicked()
-Qua inizia la costruzione della live
-
-Analizza /etc/lsb-release
-DISTRIB_ID=
-
-
-errore iniziale
-/boot/grub/x86_64-efi/ieee1275_fd.mod
-/boot/grub/x86_64-efi/vbe.mod
-/boot/grub/x86_64-efi/vga.mod
-
-
-grub.cfg
-
-
-
-
-void systemback::on_livenew_clicked()
-
 
 systemback -riga 7364
 
@@ -25,9 +11,19 @@ Toglie da /etc/rc0.d, /etc/rc1.d, /etc/rc2.d, /etc/rc3.d, /etc/rc4.d, /etc/rc5.d
 tutti i file che contengono cryptdisks
 esempio K01cryptdisks, K01cryptdisks-early
 
+Al momento ho solo "preso" l'eliminazione dei file cryptdisks nell'avvio 
 
-Questo è il file di grub live sulla iso di systemback:
 
+Ho notato che se non trova /etc/lsb-release ricade su Ubuntu
+cosa che succede anche con la Debian live
+
+DISTRIB_ID=
+
+# grub
+Corretto errore iniziate: vga, vbe ieee
+caricando i soli moduli necessari
+
+## grub.cfg
 if loadfont /boot/grub/font.pf2
 then
   set gfxmode=auto
@@ -36,35 +32,13 @@ then
   insmod gfxterm
   terminal_output gfxterm
 fi
-
 set theme=/boot/grub/theme.cfg
 
-menuentry "Boot Live system" {
-  set gfxpayload=keep
-  linux /live/vmlinuz boot=live quiet splash
-  initrd /live/initrd.gz
-}
-
-menuentry "Boot system installer" {
-  set gfxpayload=keep
-  linux /live/vmlinuz boot=live finstall quiet splash
-  initrd /live/initrd.gz
-}
-
-menuentry "Boot Live in safe graphics mode" {
-  set gfxpayload=keep
-  linux /live/vmlinuz boot=live xforcevesa nomodeset quiet splash
-  initrd /live/initrd.gz
-}
-
-menuentry "Boot Live in debug mode" {
-  set gfxpayload=keep
-  linux /live/vmlinuz boot=live
-  initrd /live/initrd.gz
-}
+---
 
 
-Inoltre, theme.cfg
+
+## theme.cfg
 
 title-color: "white"
 title-text: "Systemback Live (sb-lm4)"
