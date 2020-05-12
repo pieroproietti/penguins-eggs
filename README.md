@@ -34,24 +34,22 @@ version of Linux, generate it as ISO image to burn on a CD/DVD or copy to a usb
 key to boot your system. You can also boot your egg - via remote boot - on your
 LAN.
 
-All it is written in pure nodejs, so ideally can be used with differents Linux
-distros. At the moment it is tested with Debian 10 Buster, Debian 9 Stretch, Debian 8 Jessie,
-Ubuntu 19.04 and derivates as Linux Mint and Bunsenlabs Helium. 
-For others distros we need to find collaborations.
+All it is written in pure typescript, so ideally can be used with differents Linux
+distros. At the moment it is tested with Debian 10 Buster, and LMDE4. 
 
-penguins-eggs, at the moment 2019 september 20 is in a beta state, and can have again
+penguins-eggs, at the moment 2020 may 12 is a working tool, yes can have again
 same troubles for people not in confidence with Linux system administration, but
 can be already extremely usefull, You can easily create your organization/school 
 version of Linux and deploy it on your LAN, give it to your friends as usb key 
 or publish eggs in the internet!
 
 You can try now penguins-eggs, it is a console utility - no GUI - but don't be
-scared, penguins-eggs is a console command - really very simple usage - if you
+scared, penguins-eggs is a console command - really very simple - if you
 are able to open a terminal, you can use it.
 
 # That Distro you can use
 Eggs in born using Debian 9 and Debian 10, I test it on Debian Buster and Linux Mind Debian
-Edition (LMDE4).
+Edition (LMDE4). You can try it on others distros and give the feedback.
 
 # Install penguins-eggs
 
