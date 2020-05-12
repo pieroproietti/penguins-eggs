@@ -44,14 +44,14 @@ list files in /etc/systemd/system/multi-user.target.wants live
 15 remote-fs.target
 16 rsync.service
 17 rsyslog.service
-# 18 speech-dispatcherd.service
+18 speech-dispatcherd.service
 19 ssh.service
-# 20 systemd-networkd.service
-# 21 systemd-resolved.service
-# 22 wpa_supplicant-nl80211@.service
+20 systemd-networkd.service
+21 systemd-resolved.service
+22 wpa_supplicant-nl80211@.service
 23 wpa_supplicant.service
-# 24 wpa_supplicant@.service
-# 25 wpa_supplicant-wired@.service
+24 wpa_supplicant@.service
+25 wpa_supplicant-wired@.service
 
 # differenze
 1 remote-cryptsetup.target
@@ -64,7 +64,6 @@ list files in /etc/systemd/system/multi-user.target.wants live
 
 remote-cryptsetup.target
 
-
 Pur disattivando TUTTI nella live ottengo nuovamente gli stessi,
 nonostante risultino in effetti cancellati
 
@@ -73,31 +72,36 @@ quindi segnale errore su speech-dispatcherd che dovrebbe essere disabilitato
 
 /etc/resolv.con fa parte dei file esclusi, provo a reinserirlo
 
+## differente di systemd-analyze
 
-# Differenze 
-sulla versione installata
 systemd-analyze
-
+```
 Startup finished in 2.928s (kernel) + 2.853s (userspace) = 5.781s 
 graphical.target reached after 2.844s in userspace
+```
 
 systemd-analyze
+```
 tartup finished in 2.392s (kernel) + 1min 30.881s (userspace) = 1min 33.273s 
 graphical.target reached after 1min 30.870s in userspace
+```
 
-
-# file log
-
+## file log
+```
 /var/log/boot.log
+```
 
-
-# pulizia journal
+## pulizia journal
+```
 sudo journalctl --vacuum-time=1h
+```
 
 ## esame journal
+```
 sudo journalctl -xe 
+```
 
-# Trovato il seguente errore
+## Trovato il seguente errore
 ```
 mag 12 14:18:15 debu7 systemd[326]: /usr/lib/systemd/system-generators/live-config-getty-generator failed with exit status 127.
 ```
