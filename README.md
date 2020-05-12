@@ -110,6 +110,7 @@ USAGE
 * [`eggs howto:configuration`](#eggs-howtoconfiguration)
 * [`eggs howto:grub`](#eggs-howtogrub)
 * [`eggs info`](#eggs-info)
+* [`eggs install`](#eggs-install)
 * [`eggs kill`](#eggs-kill)
 * [`eggs prerequisites`](#eggs-prerequisites)
 * [`eggs produce`](#eggs-produce)
@@ -214,6 +215,30 @@ EXAMPLE
 ```
 
 _See code: [src/commands/info.ts](https://github.com/pieroproietti/penguins-eggs/blob/v7.5.60/src/commands/info.ts)_
+
+## `eggs install`
+
+system installation (the eggs became penguin)
+
+```
+USAGE
+  $ eggs install
+
+OPTIONS
+  -g, --gui      use gui installer
+  -h, --info     show CLI help
+  -u, --umount   umount devices
+  -v, --verbose  verbose
+
+ALIASES
+  $ eggs hatch
+
+EXAMPLE
+  $ eggs install
+  penguin's eggs installation
+```
+
+_See code: [src/commands/install.ts](https://github.com/pieroproietti/penguins-eggs/blob/v7.5.60/src/commands/install.ts)_
 
 ## `eggs kill`
 
