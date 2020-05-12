@@ -98,10 +98,12 @@ sudo journalctl --vacuum-time=1h
 sudo journalctl -xe 
 
 # Trovato il seguente errore
+```
 mag 12 14:18:15 debu7 systemd[326]: /usr/lib/systemd/system-generators/live-config-getty-generator failed with exit status 127.
+```
 
 
-
+```log
 mag 12 15:26:21 debu7 kernel: random: crng init done
 mag 12 15:26:21 debu7 kernel: random: 7 urandom warning(s) missed due to ratelimiting
 mag 12 15:26:21 debu7 NetworkManager[491]: <info>  [1589297181.9983] manager: startup complete
@@ -168,3 +170,4 @@ mag 12 15:27:45 debu7 systemd[1]: Reached target Network.
 -- Support: https://www.debian.org/support
 -- 
 -- L'unità network.target ha terminato la fase di avvio.
+```
