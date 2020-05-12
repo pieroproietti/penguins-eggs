@@ -494,6 +494,19 @@ export default class Ovary {
      */
 
 
+    await exec(`chroot ${this.work_dir.merged} systemctl disable remote-cryptsetup.target`)
+    await exec(`chroot ${this.work_dir.merged} systemctl disable speech-dispatcherd.service`)
+    await exec(`chroot ${this.work_dir.merged} systemctl disable systemd-networkd.service`)
+    await exec(`chroot ${this.work_dir.merged} systemctl disable systemd-resolved.service`)
+    await exec(`chroot ${this.work_dir.merged} systemctl disable wpa_supplicant-nl80211@.service`)
+    await exec(`chroot ${this.work_dir.merged} systemctl disable wpa_supplicant@.service`)
+    await exec(`chroot ${this.work_dir.merged} systemctl disable wpa_supplicant-wired@.service`)
+    
+    // errore /etc/systemd/system/systemd-networkd-wait-online.service is masked
+    // systemctl status  systemd-networkd-wait-online.service
+    // systemctl unmask systemd-networkd-wait-online.service
+
+
 
     /**
      * add some basic files to /dev
