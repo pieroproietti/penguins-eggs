@@ -501,11 +501,13 @@ export default class Ovary {
     await exec(`chroot ${this.work_dir.merged} systemctl disable wpa_supplicant-nl80211@.service`)
     await exec(`chroot ${this.work_dir.merged} systemctl disable wpa_supplicant@.service`)
     await exec(`chroot ${this.work_dir.merged} systemctl disable wpa_supplicant-wired@.service`)
-    
-    // errore /etc/systemd/system/systemd-networkd-wait-online.service is masked
-    // systemctl status  systemd-networkd-wait-online.service
-    // systemctl unmask systemd-networkd-wait-online.service
 
+    // Azzerro il journal del padre
+    await exec(`journalctl --rotate`)
+    await exec(`journalctl --vacuum-time=1s`)
+
+    // Probabilmente non necessario
+    shx.touch(`${this.work_dir.merged}/etc/resolv.conf`)
 
 
     /**
