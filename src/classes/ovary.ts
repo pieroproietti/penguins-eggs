@@ -495,7 +495,6 @@ export default class Ovary {
     // Probabilmente non necessario
     shx.touch(`${this.work_dir.merged}/etc/resolv.conf`)
 
-
     /**
      * Clear configs from /etc/network/interfaces, wicd and NetworkManager
      * and netman, so they aren't stealthily included in the snapshot.
