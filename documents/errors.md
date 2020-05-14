@@ -177,3 +177,22 @@ mag 12 15:27:45 debu7 systemd[1]: Reached target Network.
 -- 
 -- L'unità network.target ha terminato la fase di avvio.
 ```
+
+Altro
+```
+mag 14 06:48:17 sviluppo systemd-networkd-wait-online[407]: Event loop failed: Connection timed out
+mag 14 06:48:17 sviluppo systemd[1]: systemd-networkd-wait-online.service: Main process exited, code=exited, status=1/FAILURE
+-- Subject: Unit process exited
+-- Defined-By: systemd
+-- Support: https://www.debian.org/support
+-- 
+-- An ExecStart= process belonging to unit systemd-networkd-wait-online.service has exited.
+-- 
+-- The process' exit code is 'exited' and its exit status is 1.
+mag 14 06:48:17 sviluppo systemd[1]: systemd-networkd-wait-online.service: Failed with result 'exit-code'.
+-- Subject: Unit failed
+```
+
+// https://askubuntu.com/questions/972215/a-start-job-is-running-for-wait-for-network-to-be-configured-ubuntu-server-17-1
+systemctl disable systemd-networkd-wait-online.service
+systemctl mask systemd-networkd-wait-online.service

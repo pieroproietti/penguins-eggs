@@ -475,24 +475,10 @@ export default class Ovary {
     }
 
     /**
+     * LMDE4: utilizza UbuntuMono16.pf2
      * aggiungo un link a /boot/grub/fonts/UbuntuMono16.pf2
      */
     shx.cp(`${this.work_dir.merged}/boot/grub/fonts/unicode.pf2`, `${this.work_dir.merged}/boot/grub/fonts/UbuntuMono16.pf2`)
-
-
-    // grub-mkfont -s16 -o /boot/grub/fonts/UbuntuMono16.pf2 /usr/share/fonts/truetype/dejavu/
-    // patch per lmde cerca i font UbuntuMono16.pf, se non ci sono crea cartella font e virtual link
-    // Attenzione ai path
-    /**
-     * LMDE4
-     * /etc/default/grub.d/60_mint-theme.cfg 
-     * #! /bin/sh
-     *set -e
-     *
-     * GRUB_FONT="/boot/grub/fonts/UbuntuMono16.pf2"
-     * GRUB_THEME="/boot/grub/themes/linuxmint/theme.txt"
-     */
-
 
     await exec(`chroot ${this.work_dir.merged} systemctl disable remote-cryptsetup.target`)
     await exec(`chroot ${this.work_dir.merged} systemctl disable speech-dispatcherd.service`)
@@ -509,6 +495,31 @@ export default class Ovary {
     // Probabilmente non necessario
     shx.touch(`${this.work_dir.merged}/etc/resolv.conf`)
 
+
+    /**
+     * Clear configs from /etc/network/interfaces, wicd and NetworkManager
+     * and netman, so they aren't stealthily included in the snapshot.
+    */
+    await exec(`rm ${this.work_dir.merged}/etc/network/interfaces`, echo)
+    await exec(`touch ${this.work_dir.merged}/etc/network/interfaces`, echo)
+    Utils.write(`${this.work_dir.merged}/etc/network/interfaces`, `auto lo\niface lo inet loopback`)
+    
+    await exec(`rm -f ${this.work_dir.merged}/var/lib/wicd/configurations/*`, echo)
+    await exec(`rm -f ${this.work_dir.merged}/etc/wicd/wireless-settings.conf`, echo)
+
+    await exec(`rm -f ${this.work_dir.merged}/etc/NetworkManager/system-connections/*`, echo)
+
+    await exec(`rm -f ${this.work_dir.merged}/etc/network/wifi/*`, echo)
+    
+    /**
+     * Andiamo a fare pulizia in /etc/network/:
+     * if-down.d  if-post-down.d  if-pre-up.d  if-up.d  interfaces  interfaces.d
+    */
+    const cleanDirs = ['if-down.d', 'if-post-down.d', 'if-pre-up.d', 'if-up.d', 'interfaces.d']
+    let cleanDir = ''
+    for (cleanDir of cleanDirs) {
+      await exec(`rm -f ${this.work_dir.merged}/etc/network/${cleanDir}/wpasupplicant`, echo)
+    }
 
     /**
      * add some basic files to /dev
@@ -533,31 +544,7 @@ export default class Ovary {
     await exec(`chmod 1777 ${this.work_dir.merged}/dev/shm`, echo)
     */
 
-    /**
-     * Clear configs from /etc/network/interfaces, wicd and NetworkManager
-     * and netman, so they aren't stealthily included in the snapshot.
-    */
-    await exec(`rm ${this.work_dir.merged}/etc/network/interfaces`, echo)
-    await exec(`touch ${this.work_dir.merged}/etc/network/interfaces`, echo)
-    Utils.write(`${this.work_dir.merged}/etc/network/interfaces`, `auto lo\niface lo inet loopback`)
-    await exec(`rm -f ${this.work_dir.merged}/var/lib/wicd/configurations/*`, echo)
-    await exec(`rm -f ${this.work_dir.merged}/etc/wicd/wireless-settings.conf`, echo)
-    //await exec(`rm -f ${this.work_dir.merged}/etc/NetworkManager/system-connections/*`, echo)
-    await exec(`rm -f ${this.work_dir.merged}/etc/network/wifi/*`, echo)
-    // Ho disabilitato l'attesa per la rete
-    // systemctl mask systemd-networkd-wait-online.service
-    // systemctl unmask systemd-networkd-wait-online.service
-    // systemctl disable systemd-time-wait-sync
 
-    /**
-     * Andiamo a fare pulizia in /etc/network/:
-     * if-down.d  if-post-down.d  if-pre-up.d  if-up.d  interfaces  interfaces.d
-    */
-    const cleanDirs = ['if-down.d', 'if-post-down.d', 'if-pre-up.d', 'if-up.d', 'interfaces.d']
-    let cleanDir = ''
-    for (cleanDir of cleanDirs) {
-      await exec(`rm -f ${this.work_dir.merged}/etc/network/${cleanDir}/wpasupplicant`, echo)
-    }
   }
 
   /**
