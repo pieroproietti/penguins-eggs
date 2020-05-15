@@ -74,6 +74,11 @@ export default class Ovary {
 
   user_live = '' as string
 
+  passwd_live = '' as string
+
+  passwd_root = '' as string
+
+
   username_opt = '' as string
 
   pmount_fixed = false
@@ -229,8 +234,18 @@ export default class Ovary {
         this.user_live = 'live'
       }
     }
-    this.username_opt = `username=${this.user_live}`
+    this.passwd_live = settings.General.passwd_live
+    if(this.passwd_live === ''){
+      this.passwd_live = 'evolution'
+    }
 
+    this.passwd_root = settings.General.passwd_root
+    if(this.passwd_root === ''){
+      this.passwd_root = 'evolution'
+    }
+
+    this.username_opt = `username=${this.user_live}`
+    
     const timezone = shx.exec('cat /etc/timezone', { silent: true }).stdout.trim()
     this.timezone_opt = `timezone=${timezone}`
     return foundSettings
@@ -960,8 +975,11 @@ timeout 200\n`
 
 
     await exec(`chroot ${this.work_dir.merged} adduser ${this.user_live} --home /home/${this.user_live} --shell /bin/bash --disabled-password --gecos ",,,"`, echo)
-    await exec(`chroot ${this.work_dir.merged} echo ${this.user_live}:evolution | chroot ${this.work_dir.merged} chpasswd `, echo)
+    await exec(`chroot ${this.work_dir.merged} echo ${this.user_live}:${this.passwd_live} | chroot ${this.work_dir.merged} chpasswd `, echo)
     await exec(`chroot ${this.work_dir.merged} usermod -aG sudo ${this.user_live}`, echo)
+
+    // Cambio passwd su root in chroot
+    await exec(`chroot ${this.work_dir.merged} echo root:${this.passwd_root} | chroot ${this.work_dir.merged} chpasswd `, echo)
 
 
     // Solo per sistemi grafici
