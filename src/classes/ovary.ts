@@ -966,7 +966,6 @@ timeout 200\n`
 
     // delete all user in chroot
     let cmd = `chroot ${this.work_dir.merged} getent passwd {1000..60000} |awk -F: '{print $1}'`
-    console.log(cmd)
     const result = await exec(cmd,  { echo: false,  ignore: false, capture: true })
     const users: string[] = result.data.split('\n')
     for (let i=0; i<users.length -1; i++) {
