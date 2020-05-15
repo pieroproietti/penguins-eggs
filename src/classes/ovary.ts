@@ -74,6 +74,11 @@ export default class Ovary {
 
   user_live = '' as string
 
+  passwd_live = '' as string
+
+  passwd_root = '' as string
+
+
   username_opt = '' as string
 
   pmount_fixed = false
@@ -229,8 +234,18 @@ export default class Ovary {
         this.user_live = 'live'
       }
     }
-    this.username_opt = `username=${this.user_live}`
+    this.passwd_live = settings.General.passwd_live
+    if(this.passwd_live === ''){
+      this.passwd_live = 'evolution'
+    }
 
+    this.passwd_root = settings.General.passwd_root
+    if(this.passwd_root === ''){
+      this.passwd_root = 'evolution'
+    }
+
+    this.username_opt = `username=${this.user_live}`
+    
     const timezone = shx.exec('cat /etc/timezone', { silent: true }).stdout.trim()
     this.timezone_opt = `timezone=${timezone}`
     return foundSettings
@@ -352,7 +367,7 @@ export default class Ovary {
         await this.makeEfi(verbose)
       }
       await this.bindLiveFs(verbose)
-      await this.makeLiveHome(assistant, verbose)
+      await this.createUserLive(assistant, verbose)
       await this.editLiveFs(verbose)
       await this.editBootMenu(verbose)
 
@@ -502,14 +517,14 @@ export default class Ovary {
     await exec(`rm ${this.work_dir.merged}/etc/network/interfaces`, echo)
     await exec(`touch ${this.work_dir.merged}/etc/network/interfaces`, echo)
     Utils.write(`${this.work_dir.merged}/etc/network/interfaces`, `auto lo\niface lo inet loopback`)
-    
+
     await exec(`rm -f ${this.work_dir.merged}/var/lib/wicd/configurations/*`, echo)
     await exec(`rm -f ${this.work_dir.merged}/etc/wicd/wireless-settings.conf`, echo)
 
     await exec(`rm -f ${this.work_dir.merged}/etc/NetworkManager/system-connections/*`, echo)
 
     await exec(`rm -f ${this.work_dir.merged}/etc/network/wifi/*`, echo)
-    
+
     /**
      * Andiamo a fare pulizia in /etc/network/:
      * if-down.d  if-post-down.d  if-pre-up.d  if-up.d  interfaces  interfaces.d
@@ -942,17 +957,29 @@ timeout 200\n`
    * create la home per user live
    * @param verbose 
    */
-  async makeLiveHome(assistant = false, verbose = false) {
+  async createUserLive(assistant = false, verbose = false) {
     let echo = Utils.setEcho(verbose)
     if (verbose) {
-      console.log('ovary: makeLiveHome')
+      console.log('ovary: createUserLive')
     }
 
-    // creazione della home per user live
-    const user: string = Utils.getPrimaryUser()
-    shx.cp(`-r`, `/etc/skel/.`, `${this.work_dir.merged}/home/${user}`)
-    await exec(`chown -R ${user}:${user} ${this.work_dir.merged}/home/${user}`, echo)
-    shx.mkdir(`-p`, `${this.work_dir.merged}/home/${user}/Desktop`)
+
+    // delete all user in chroot
+    let cmd = `chroot ${this.work_dir.merged} getent passwd {1000..60000} |awk -F: '{print $1}'`
+    const result = await exec(cmd,  { echo: false,  ignore: false, capture: true })
+    const users: string[] = result.data.split('\n')
+    for (let i=0; i<users.length -1; i++) {
+      await exec(`chroot ${this.work_dir.merged} deluser ${users[i]}`, echo)
+    }
+
+
+    await exec(`chroot ${this.work_dir.merged} adduser ${this.user_live} --home /home/${this.user_live} --shell /bin/bash --disabled-password --gecos ",,,"`, echo)
+    await exec(`chroot ${this.work_dir.merged} echo ${this.user_live}:${this.passwd_live} | chroot ${this.work_dir.merged} chpasswd `, echo)
+    await exec(`chroot ${this.work_dir.merged} usermod -aG sudo ${this.user_live}`, echo)
+
+    // Cambio passwd su root in chroot
+    await exec(`chroot ${this.work_dir.merged} echo root:${this.passwd_root} | chroot ${this.work_dir.merged} chpasswd `, echo)
+
 
     // Solo per sistemi grafici
     if (Pacman.isXInstalled()) {
@@ -975,18 +1002,18 @@ timeout 200\n`
       }
 
       // Copia dei link comuni: boot ed assistenza
-      shx.cp('/usr/share/applications/penguins-eggs.desktop', `${this.work_dir.merged}/home/${user}/Desktop`)
-      shx.cp('/usr/share/applications/dwagent-sh.desktop', `${this.work_dir.merged}/home/${user}/Desktop`)
+      shx.cp('/usr/share/applications/penguins-eggs.desktop', `${this.work_dir.merged}/home/${this.user_live}/Desktop`)
+      shx.cp('/usr/share/applications/dwagent-sh.desktop', `${this.work_dir.merged}/home/${this.user_live}/Desktop`)
 
       if (assistant) {
-        shx.cp('/usr/share/applications/assistant.desktop', `${this.work_dir.merged}/home/${user}/Desktop`)
+        shx.cp('/usr/share/applications/assistant.desktop', `${this.work_dir.merged}/home/${this.user_live}/Desktop`)
       } else {
-        shx.cp('/usr/share/applications/penguins-adjust.desktop', `${this.work_dir.merged}/home/${user}/Desktop`)
-        shx.cp('/usr/share/applications/install-debian.desktop', `${this.work_dir.merged}/home/${user}/Desktop`)
+        shx.cp('/usr/share/applications/penguins-adjust.desktop', `${this.work_dir.merged}/home/${this.user_live}/Desktop`)
+        shx.cp('/usr/share/applications/install-debian.desktop', `${this.work_dir.merged}/home/${this.user_live}/Desktop`)
       }
 
-      await exec(`chown ${user}:${user} ${this.work_dir.merged}/home/${user}/Desktop/*.desktop`, echo)
-      await exec(`chmod +x ${this.work_dir.merged}/home/${user}/Desktop/*.desktop`, echo)
+      await exec(`chmod +x ${this.work_dir.merged}/home/${this.user_live}/Desktop/*.desktop`, echo)
+      await exec(`chown 1000:1000 ${this.work_dir.merged}/home/${this.user_live}/Desktop/*.desktop`, echo)
     }
 
   }
