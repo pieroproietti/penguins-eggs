@@ -949,36 +949,19 @@ timeout 200\n`
     }
 
 
-    // Delete all users in chroot
-    const user: string = Utils.getPrimaryUser()
-    console.log(`user: [${user}]`)
-
+    // delete all user in chroot
     let cmd = `chroot ${this.work_dir.merged} getent passwd {1000..60000} |awk -F: '{print $1}'`
     console.log(cmd)
-    console.log('-------------------')
     const result = await exec(cmd,  { echo: false,  ignore: false, capture: true })
-    console.log(result.data)
-    console.log('-------------------')
     const users: string[] = result.data.split('\n')
-    console.log(`users: ${users}`)
     for (let i=0; i<users.length -1; i++) {
-      await exec(`chroot ${this.work_dir.merged} deluser ${users[i]}`)
+      await exec(`chroot ${this.work_dir.merged} deluser ${users[i]}`, echo)
     }
 
 
-
-
-    if (!(user === 'live')) {
-      // adduser live
-      await exec(`adduser live --home /home/live --shell /bin/bash --disabled-password --gecos ",,,"`, echo)
-      await exec(`echo live:evolution | chpasswd `, echo)
-      await exec(`usermod -aG sudo live`, echo)
-    } else {
-      // creazione della home per user live
-      shx.cp(`-r`, `/etc/skel/.`, `${this.work_dir.merged}/home/${user}`)
-      await exec(`chown -R ${user}:${user} ${this.work_dir.merged}/home/${user}`, echo)
-      shx.mkdir(`-p`, `${this.work_dir.merged}/home/${user}/Desktop`)
-    }
+    await exec(`chroot ${this.work_dir.merged} adduser ${this.user_live} --home /home/${this.user_live} --shell /bin/bash --disabled-password --gecos ",,,"`, echo)
+    await exec(`chroot ${this.work_dir.merged} echo ${this.user_live}:evolution | chroot ${this.work_dir.merged}chpasswd `, echo)
+    await exec(`chroot ${this.work_dir.merged} usermod -aG sudo ${this.user_live}`, echo)
 
 
     // Solo per sistemi grafici
@@ -1002,18 +985,19 @@ timeout 200\n`
       }
 
       // Copia dei link comuni: boot ed assistenza
-      shx.cp('/usr/share/applications/penguins-eggs.desktop', `${this.work_dir.merged}/home/${user}/Desktop`)
-      shx.cp('/usr/share/applications/dwagent-sh.desktop', `${this.work_dir.merged}/home/${user}/Desktop`)
+      shx.cp('/usr/share/applications/penguins-eggs.desktop', `${this.work_dir.merged}/home/${this.user_live}/Desktop`)
+      shx.cp('/usr/share/applications/dwagent-sh.desktop', `${this.work_dir.merged}/home/${this.user_live}/Desktop`)
 
       if (assistant) {
-        shx.cp('/usr/share/applications/assistant.desktop', `${this.work_dir.merged}/home/${user}/Desktop`)
+        shx.cp('/usr/share/applications/assistant.desktop', `${this.work_dir.merged}/home/${this.user_live}/Desktop`)
       } else {
-        shx.cp('/usr/share/applications/penguins-adjust.desktop', `${this.work_dir.merged}/home/${user}/Desktop`)
-        shx.cp('/usr/share/applications/install-debian.desktop', `${this.work_dir.merged}/home/${user}/Desktop`)
+        shx.cp('/usr/share/applications/penguins-adjust.desktop', `${this.work_dir.merged}/home/${this.user_live}/Desktop`)
+        shx.cp('/usr/share/applications/install-debian.desktop', `${this.work_dir.merged}/home/${this.user_live}/Desktop`)
       }
 
-      await exec(`chown ${user}:${user} ${this.work_dir.merged}/home/${user}/Desktop/*.desktop`, echo)
-      await exec(`chmod +x ${this.work_dir.merged}/home/${user}/Desktop/*.desktop`, echo)
+      await exec(`chroot ${this.work_dir.merged} chown ${this.user_live}:${this.user_live} /home/${this.user_live}/Desktop/*.desktop`, echo)
+      await exec(`chroot ${this.work_dir.merged} chmod +x /home/${this.user_live}/Desktop/penguins-adjust.desktop`, echo)
+      await exec(`chroot ${this.work_dir.merged} chmod +x /home/${this.user_live}/Desktop/install-debian.desktop`, echo)
     }
 
   }
