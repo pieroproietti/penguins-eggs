@@ -352,7 +352,7 @@ export default class Ovary {
         await this.makeEfi(verbose)
       }
       await this.bindLiveFs(verbose)
-      await this.makeLiveHome(assistant, verbose)
+      await this.createUserLive(assistant, verbose)
       await this.editLiveFs(verbose)
       await this.editBootMenu(verbose)
 
@@ -502,14 +502,14 @@ export default class Ovary {
     await exec(`rm ${this.work_dir.merged}/etc/network/interfaces`, echo)
     await exec(`touch ${this.work_dir.merged}/etc/network/interfaces`, echo)
     Utils.write(`${this.work_dir.merged}/etc/network/interfaces`, `auto lo\niface lo inet loopback`)
-    
+
     await exec(`rm -f ${this.work_dir.merged}/var/lib/wicd/configurations/*`, echo)
     await exec(`rm -f ${this.work_dir.merged}/etc/wicd/wireless-settings.conf`, echo)
 
     await exec(`rm -f ${this.work_dir.merged}/etc/NetworkManager/system-connections/*`, echo)
 
     await exec(`rm -f ${this.work_dir.merged}/etc/network/wifi/*`, echo)
-    
+
     /**
      * Andiamo a fare pulizia in /etc/network/:
      * if-down.d  if-post-down.d  if-pre-up.d  if-up.d  interfaces  interfaces.d
@@ -942,17 +942,44 @@ timeout 200\n`
    * create la home per user live
    * @param verbose 
    */
-  async makeLiveHome(assistant = false, verbose = false) {
+  async createUserLive(assistant = false, verbose = false) {
     let echo = Utils.setEcho(verbose)
     if (verbose) {
-      console.log('ovary: makeLiveHome')
+      console.log('ovary: createUserLive')
     }
 
-    // creazione della home per user live
+
+    // Delete all users in chroot
     const user: string = Utils.getPrimaryUser()
-    shx.cp(`-r`, `/etc/skel/.`, `${this.work_dir.merged}/home/${user}`)
-    await exec(`chown -R ${user}:${user} ${this.work_dir.merged}/home/${user}`, echo)
-    shx.mkdir(`-p`, `${this.work_dir.merged}/home/${user}/Desktop`)
+    console.log(`user: [${user}]`)
+
+    let cmd = `chroot ${this.work_dir.merged} getent passwd {1000..60000} |awk -F: '{print $1}'`
+    console.log(cmd)
+    console.log('-------------------')
+    const result = await exec(cmd,  { echo: false,  ignore: false, capture: true })
+    console.log(result.data)
+    console.log('-------------------')
+    const users: string[] = result.data.split('\n')
+    console.log(`users: ${users}`)
+    for (let i=0; i<users.length -1; i++) {
+      await exec(`chroot ${this.work_dir.merged} deluser ${users[i]}`)
+    }
+
+
+
+
+    if (!(user === 'live')) {
+      // adduser live
+      await exec(`adduser live --home /home/live --shell /bin/bash --disabled-password --gecos ",,,"`, echo)
+      await exec(`echo live:evolution | chpasswd `, echo)
+      await exec(`usermod -aG sudo live`, echo)
+    } else {
+      // creazione della home per user live
+      shx.cp(`-r`, `/etc/skel/.`, `${this.work_dir.merged}/home/${user}`)
+      await exec(`chown -R ${user}:${user} ${this.work_dir.merged}/home/${user}`, echo)
+      shx.mkdir(`-p`, `${this.work_dir.merged}/home/${user}/Desktop`)
+    }
+
 
     // Solo per sistemi grafici
     if (Pacman.isXInstalled()) {
