@@ -960,7 +960,7 @@ timeout 200\n`
 
 
     await exec(`chroot ${this.work_dir.merged} adduser ${this.user_live} --home /home/${this.user_live} --shell /bin/bash --disabled-password --gecos ",,,"`, echo)
-    await exec(`chroot ${this.work_dir.merged} echo ${this.user_live}:evolution | chroot ${this.work_dir.merged}chpasswd `, echo)
+    await exec(`chroot ${this.work_dir.merged} echo ${this.user_live}:evolution | chroot ${this.work_dir.merged} chpasswd `, echo)
     await exec(`chroot ${this.work_dir.merged} usermod -aG sudo ${this.user_live}`, echo)
 
 
@@ -995,9 +995,8 @@ timeout 200\n`
         shx.cp('/usr/share/applications/install-debian.desktop', `${this.work_dir.merged}/home/${this.user_live}/Desktop`)
       }
 
-      await exec(`chroot ${this.work_dir.merged} chown ${this.user_live}:${this.user_live} /home/${this.user_live}/Desktop/*.desktop`, echo)
-      await exec(`chroot ${this.work_dir.merged} chmod +x /home/${this.user_live}/Desktop/penguins-adjust.desktop`, echo)
-      await exec(`chroot ${this.work_dir.merged} chmod +x /home/${this.user_live}/Desktop/install-debian.desktop`, echo)
+      await exec(`chmod +x ${this.work_dir.merged}/home/${this.user_live}/Desktop/*.desktop`, echo)
+      await exec(`chown 1000:1000 ${this.work_dir.merged}/home/${this.user_live}/Desktop/*.desktop`, echo)
     }
 
   }
