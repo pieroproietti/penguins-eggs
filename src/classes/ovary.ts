@@ -983,6 +983,9 @@ timeout 200\n`
 
     // Solo per sistemi grafici
     if (Pacman.isXInstalled()) {
+      await exec(`chroot ${this.work_dir.merged} sudo -u ${this.user_live} xdg-user-dirs-update --force`, echo)
+      const desktop = await exec(cmd,  { echo: false,  ignore: false, capture: true })
+
       /**
        * creazione dei link
        */
@@ -1002,18 +1005,18 @@ timeout 200\n`
       }
 
       // Copia dei link comuni: boot ed assistenza
-      shx.cp('/usr/share/applications/penguins-eggs.desktop', `${this.work_dir.merged}/home/${this.user_live}/Desktop`)
-      shx.cp('/usr/share/applications/dwagent-sh.desktop', `${this.work_dir.merged}/home/${this.user_live}/Desktop`)
+      shx.cp('/usr/share/applications/penguins-eggs.desktop', `${this.work_dir.merged}/home/${this.user_live}/${desktop}`)
+      shx.cp('/usr/share/applications/dwagent-sh.desktop', `${this.work_dir.merged}/home/${this.user_live}/${desktop}`)
 
       if (assistant) {
-        shx.cp('/usr/share/applications/assistant.desktop', `${this.work_dir.merged}/home/${this.user_live}/Desktop`)
+        shx.cp('/usr/share/applications/assistant.desktop', `${this.work_dir.merged}/home/${this.user_live}/${desktop}`)
       } else {
-        shx.cp('/usr/share/applications/penguins-adjust.desktop', `${this.work_dir.merged}/home/${this.user_live}/Desktop`)
-        shx.cp('/usr/share/applications/install-debian.desktop', `${this.work_dir.merged}/home/${this.user_live}/Desktop`)
+        shx.cp('/usr/share/applications/penguins-adjust.desktop', `${this.work_dir.merged}/home/${this.user_live}/${desktop}`)
+        shx.cp('/usr/share/applications/install-debian.desktop', `${this.work_dir.merged}/home/${this.user_live}/${desktop}`)
       }
 
-      await exec(`chmod +x ${this.work_dir.merged}/home/${this.user_live}/Desktop/*.desktop`, echo)
-      await exec(`chown 1000:1000 ${this.work_dir.merged}/home/${this.user_live}/Desktop/*.desktop`, echo)
+      await exec(`chmod +x ${this.work_dir.merged}/home/${this.user_live}/${desktop}/*.desktop`, echo)
+      await exec(`chown 1000:1000 ${this.work_dir.merged}/home/${this.user_live}/${desktop}/*.desktop`, echo)
     }
 
   }
