@@ -966,7 +966,7 @@ timeout 200\n`
 
     // delete all user in chroot
     let cmd = `chroot ${this.work_dir.merged} getent passwd {1000..60000} |awk -F: '{print $1}'`
-    const result = await exec(cmd,  { echo: false,  ignore: false, capture: true })
+    const result = await exec(cmd,  { echo: verbose,  ignore: false, capture: true })
     const users: string[] = result.data.split('\n')
     for (let i=0; i<users.length -1; i++) {
       await exec(`chroot ${this.work_dir.merged} deluser ${users[i]}`, echo)
@@ -984,7 +984,8 @@ timeout 200\n`
     // Solo per sistemi grafici
     if (Pacman.isXInstalled()) {
       await exec(`chroot ${this.work_dir.merged} sudo -u ${this.user_live} xdg-user-dirs-update --force`, echo)
-      const desktop = await exec(cmd,  { echo: false,  ignore: false, capture: true })
+      const desktopPromise = await exec(`chroot ${this.work_dir.merged} sudo -u ${this.user_live} xdg-user-dir DESKTOP`, { echo: verbose,  ignore: false, capture: true })
+      const pathToDesktopLive = desktopPromise.data.trim() // /home/live/Scrivania
 
       /**
        * creazione dei link
@@ -1005,18 +1006,18 @@ timeout 200\n`
       }
 
       // Copia dei link comuni: boot ed assistenza
-      shx.cp('/usr/share/applications/penguins-eggs.desktop', `${this.work_dir.merged}/home/${this.user_live}/${desktop}`)
-      shx.cp('/usr/share/applications/dwagent-sh.desktop', `${this.work_dir.merged}/home/${this.user_live}/${desktop}`)
+      shx.cp('/usr/share/applications/penguins-eggs.desktop', `${this.work_dir.merged}${pathToDesktopLive}`)
+      shx.cp('/usr/share/applications/dwagent-sh.desktop', `${this.work_dir.merged}${pathToDesktopLive}`)
 
       if (assistant) {
-        shx.cp('/usr/share/applications/assistant.desktop', `${this.work_dir.merged}/home/${this.user_live}/${desktop}`)
+        shx.cp('/usr/share/applications/assistant.desktop', `${this.work_dir.merged}${pathToDesktopLive}`)
       } else {
-        shx.cp('/usr/share/applications/penguins-adjust.desktop', `${this.work_dir.merged}/home/${this.user_live}/${desktop}`)
-        shx.cp('/usr/share/applications/install-debian.desktop', `${this.work_dir.merged}/home/${this.user_live}/${desktop}`)
+        shx.cp('/usr/share/applications/penguins-adjust.desktop', `${this.work_dir.merged}${pathToDesktopLive}`)
+        shx.cp('/usr/share/applications/install-debian.desktop', `${this.work_dir.merged}${pathToDesktopLive}`)
       }
 
-      await exec(`chmod +x ${this.work_dir.merged}/home/${this.user_live}/${desktop}/*.desktop`, echo)
-      await exec(`chown 1000:1000 ${this.work_dir.merged}/home/${this.user_live}/${desktop}/*.desktop`, echo)
+      await exec(`chmod +x ${this.work_dir.merged}${pathToDesktopLive}/*.desktop`, echo)
+      await exec(`chown 1000:1000 ${this.work_dir.merged}${pathToDesktopLive}/*.desktop`, echo)
     }
 
   }
