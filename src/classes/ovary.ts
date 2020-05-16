@@ -983,9 +983,12 @@ timeout 200\n`
 
     // Solo per sistemi grafici
     if (Pacman.isXInstalled()) {
-      await exec(`chroot ${this.work_dir.merged} sudo -u ${this.user_live} xdg-user-dirs-update --force`, echo)
+      // await exec(`chroot ${this.work_dir.merged} sudo -u ${this.user_live} xdg-user-dirs-update --force`, echo)
+      // DESKTOP=Desktop
       const desktopPromise = await exec(`chroot ${this.work_dir.merged} sudo -u ${this.user_live} xdg-user-dir DESKTOP`, { echo: verbose,  ignore: false, capture: true })
       const pathToDesktopLive = desktopPromise.data.trim() // /home/live/Scrivania
+
+      await xdgCreate(this.user_live, this.work_dir.merged, verbose)
 
       /**
        * creazione dei link
@@ -1280,4 +1283,48 @@ async function makeIfNotExist(path: string, verbose = false) {
     const cmd = `mkdir ${path} -p`
     await exec(cmd, echo)
   }
+}
+
+async function xdgCreate(user : string, chroot : string, verbose=false){
+
+
+       // DESKTOP=Desktop
+       let pathPromise = await xdgPath(user, chroot, 'DESKTOP', verbose)
+       await exec (`chroot ${chroot} mkdir ${pathPromise}`)
+
+       // DOWNLOAD=Downloads
+       pathPromise = await xdgPath(user, chroot, 'DOWNLOAD', verbose)
+       await exec (`chroot ${chroot} mkdir ${pathPromise}`)
+       
+       // TEMPLATES=Templates
+       pathPromise = await xdgPath(user, chroot, 'TEMPLATES', verbose)
+       await exec (`chroot ${chroot} mkdir ${pathPromise}`)
+
+       // PUBLICSHARE=Public
+       pathPromise = await xdgPath(user, chroot, 'PUBLICSHARE', verbose)
+       await exec (`chroot ${chroot} mkdir ${pathPromise}`)
+
+       // DOCUMENTS=Documents
+       pathPromise = await xdgPath(user, chroot, 'DOCUMENTS', verbose)
+       await exec (`chroot ${chroot} mkdir ${pathPromise}`)
+
+       // MUSIC=Music
+       pathPromise = await xdgPath(user, chroot, 'MUSIC', verbose)
+       await exec (`chroot ${chroot} mkdir ${pathPromise}`)
+
+       // PICTURES=Pictures
+       pathPromise = await xdgPath(user, chroot, 'PICTURES', verbose)
+       await exec (`chroot ${chroot} mkdir ${pathPromise}`)
+
+       // VIDEOS=Videos
+       pathPromise = await xdgPath(user, chroot, 'VIDEOS', verbose)
+       await exec (`chroot ${chroot} mkdir ${pathPromise}`)
+ 
+}
+
+async function xdgPath(user : string, chroot= '/', type='DESKTOP', verbose=false) : Promise<string> {
+
+  const pathPromise = await exec(`chroot ${chroot} sudo -u ${user} xdg-user-dir ${type}`, { echo: verbose,  ignore: false, capture: true })
+  const pathTo = pathPromise.data.trim() // /home/live/Scrivania
+  return pathTo
 }
