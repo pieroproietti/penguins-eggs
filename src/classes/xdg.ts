@@ -1,5 +1,5 @@
 /**
- * penguins-eggs-v7
+ * xdg-utils
  * author: Piero Proietti
  * email: piero.proietti@gmail.com
  * license: MIT
