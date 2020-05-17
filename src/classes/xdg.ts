@@ -8,7 +8,7 @@
 import shx = require('shelljs')
 import fs = require('fs')
 import os = require('os')
-
+import Pacman from './pacman'
 
 // libraries
 const exec = require('../lib/utils').exec
@@ -73,5 +73,18 @@ export default class Xdg {
         const pathTo = pathPromise.data.trim() // /home/live/Scrivania
         return pathTo
     }
+
+    /**
+     * 
+     * @param olduser 
+     * @param newuser 
+     * @param chroot 
+     */
+    static async autologin(olduser: string, newuser: string, chroot='/'){
+          if (Pacman.packageIsInstalled('lightdm')) {
+            shx.sed('-i', `autologin-user=${olduser}`, `autologin-user=${newuser}`, `${chroot}/etc/lightdm/lightdm.conf`)
+          }
+    }
+    
 
 }

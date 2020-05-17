@@ -237,17 +237,17 @@ export default class Ovary {
       }
     }
     this.passwd_live = settings.General.passwd_live
-    if(this.passwd_live === ''){
+    if (this.passwd_live === '') {
       this.passwd_live = 'evolution'
     }
 
     this.passwd_root = settings.General.passwd_root
-    if(this.passwd_root === ''){
+    if (this.passwd_root === '') {
       this.passwd_root = 'evolution'
     }
 
     this.username_opt = `username=${this.user_live}`
-    
+
     const timezone = shx.exec('cat /etc/timezone', { silent: true }).stdout.trim()
     this.timezone_opt = `timezone=${timezone}`
     return foundSettings
@@ -968,9 +968,9 @@ timeout 200\n`
 
     // delete all user in chroot
     let cmd = `chroot ${this.work_dir.merged} getent passwd {1000..60000} |awk -F: '{print $1}'`
-    const result = await exec(cmd,  { echo: verbose,  ignore: false, capture: true })
+    const result = await exec(cmd, { echo: verbose, ignore: false, capture: true })
     const users: string[] = result.data.split('\n')
-    for (let i=0; i<users.length -1; i++) {
+    for (let i = 0; i < users.length - 1; i++) {
       await exec(`chroot ${this.work_dir.merged} deluser ${users[i]}`, echo)
     }
 
@@ -1019,8 +1019,10 @@ timeout 200\n`
 
       await exec(`chmod +x ${this.work_dir.merged}${pathToDesktopLive}/*.desktop`, echo)
       await exec(`chown 1000:1000 ${this.work_dir.merged}${pathToDesktopLive}/*.desktop`, echo)
-    }
 
+      // Autologin passare a xdg ed aggiungere altri
+      Xdg.autologin(Utils.getPrimaryUser(), this.user_live, this.work_dir.merged)
+    }
   }
 
   /**
