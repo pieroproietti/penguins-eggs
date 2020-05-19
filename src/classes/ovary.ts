@@ -986,6 +986,7 @@ timeout 200\n`
     // Solo per sistemi grafici
     if (Pacman.isXInstalled()) {
       const pathToDesktopLive = await Xdg.path(this.user_live, this.work_dir.merged, "DESKTOP")
+      console.log(`pathToDesktop: ${pathToDesktopLive}`)
       await Xdg.create(this.user_live, this.work_dir.merged, verbose)
 
       /**

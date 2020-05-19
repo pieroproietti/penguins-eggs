@@ -9,6 +9,7 @@ import shx = require('shelljs')
 import fs = require('fs')
 import os = require('os')
 import Pacman from './pacman'
+import Utils from './utils'
 
 // libraries
 const exec = require('../lib/utils').exec
@@ -25,39 +26,57 @@ export default class Xdg {
      * @param verbose 
      */
     static async create(user: string, chroot: string, verbose = false) {
+        let echo = Utils.setEcho(verbose)
+
+        if (verbose) {
+          console.log('Xdg: create')
+        }
 
         // DESKTOP=Desktop
         let pathPromise = await this.path(user, chroot, 'DESKTOP', verbose)
-        await exec(`chroot ${chroot} mkdir ${pathPromise}`)
+        await exec(`chroot ${chroot} mkdir ${pathPromise}`, echo)
 
         // DOWNLOAD=Downloads
         pathPromise = await this.path(user, chroot, 'DOWNLOAD', verbose)
-        await exec(`chroot ${chroot} mkdir ${pathPromise}`)
+        if (!fs.existsSync(chroot+pathPromise)){
+            await exec(`chroot ${chroot} mkdir ${pathPromise}`, echo)
+        }
 
         // TEMPLATES=Templates
         pathPromise = await this.path(user, chroot, 'TEMPLATES', verbose)
-        await exec(`chroot ${chroot} mkdir ${pathPromise}`)
+        if (!fs.existsSync(chroot+pathPromise)){
+            await exec(`chroot ${chroot} mkdir ${pathPromise}`, echo)
+        }
 
         // PUBLICSHARE=Public
         pathPromise = await this.path(user, chroot, 'PUBLICSHARE', verbose)
-        await exec(`chroot ${chroot} mkdir ${pathPromise}`)
+        if (!fs.existsSync(chroot+pathPromise)){
+            await exec(`chroot ${chroot} mkdir ${pathPromise}`, echo)
+        }
 
         // DOCUMENTS=Documents
         pathPromise = await this.path(user, chroot, 'DOCUMENTS', verbose)
-        await exec(`chroot ${chroot} mkdir ${pathPromise}`)
+        if (!fs.existsSync(chroot+pathPromise)){
+            await exec(`chroot ${chroot} mkdir ${pathPromise}`, echo)
+        }
 
         // MUSIC=Music
         pathPromise = await this.path(user, chroot, 'MUSIC', verbose)
-        await exec(`chroot ${chroot} mkdir ${pathPromise}`)
+        if (!fs.existsSync(chroot+pathPromise)){
+            await exec(`chroot ${chroot} mkdir ${pathPromise}`, echo)
+        }
 
         // PICTURES=Pictures
         pathPromise = await this.path(user, chroot, 'PICTURES', verbose)
-        await exec(`chroot ${chroot} mkdir ${pathPromise}`)
+        if (!fs.existsSync(chroot+pathPromise)){
+            await exec(`chroot ${chroot} mkdir ${pathPromise}`, echo)
+        }
 
         // VIDEOS=Videos
         pathPromise = await this.path(user, chroot, 'VIDEOS', verbose)
-        await exec(`chroot ${chroot} mkdir ${pathPromise}`)
-
+        if (!fs.existsSync(chroot+pathPromise)){
+            await exec(`chroot ${chroot} mkdir ${pathPromise}`, echo)
+        }
     }
 
     /**
