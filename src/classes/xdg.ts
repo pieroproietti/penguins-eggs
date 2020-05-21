@@ -28,57 +28,52 @@ export default class Xdg {
     static async create(user: string, chroot: string, verbose = false) {
         let echo = Utils.setEcho(verbose)
 
-        if (verbose) {
-          console.log('Xdg: create')
-        }
 
         // DESKTOP=Desktop
         let pathPromise = await this.path(user, chroot, 'DESKTOP', verbose)
-        await exec(`chroot ${chroot} mkdir ${pathPromise}`, echo)
+        Xdg.mk(chroot, pathPromise)
 
         // DOWNLOAD=Downloads
         pathPromise = await this.path(user, chroot, 'DOWNLOAD', verbose)
-        if (!fs.existsSync(chroot+pathPromise)){
-            await exec(`chroot ${chroot} mkdir ${pathPromise}`, echo)
-        }
+        Xdg.mk(chroot, pathPromise)
 
         // TEMPLATES=Templates
         pathPromise = await this.path(user, chroot, 'TEMPLATES', verbose)
-        if (!fs.existsSync(chroot+pathPromise)){
-            await exec(`chroot ${chroot} mkdir ${pathPromise}`, echo)
-        }
+        Xdg.mk(chroot, pathPromise)
 
         // PUBLICSHARE=Public
         pathPromise = await this.path(user, chroot, 'PUBLICSHARE', verbose)
-        if (!fs.existsSync(chroot+pathPromise)){
-            await exec(`chroot ${chroot} mkdir ${pathPromise}`, echo)
-        }
+        Xdg.mk(chroot, pathPromise)
 
         // DOCUMENTS=Documents
         pathPromise = await this.path(user, chroot, 'DOCUMENTS', verbose)
-        if (!fs.existsSync(chroot+pathPromise)){
-            await exec(`chroot ${chroot} mkdir ${pathPromise}`, echo)
-        }
+        Xdg.mk(chroot, pathPromise)
 
         // MUSIC=Music
         pathPromise = await this.path(user, chroot, 'MUSIC', verbose)
-        if (!fs.existsSync(chroot+pathPromise)){
-            await exec(`chroot ${chroot} mkdir ${pathPromise}`, echo)
-        }
+        Xdg.mk(chroot, pathPromise)
 
         // PICTURES=Pictures
         pathPromise = await this.path(user, chroot, 'PICTURES', verbose)
-        if (!fs.existsSync(chroot+pathPromise)){
-            await exec(`chroot ${chroot} mkdir ${pathPromise}`, echo)
-        }
+        Xdg.mk(chroot, pathPromise)
 
         // VIDEOS=Videos
         pathPromise = await this.path(user, chroot, 'VIDEOS', verbose)
-        if (!fs.existsSync(chroot+pathPromise)){
-            await exec(`chroot ${chroot} mkdir ${pathPromise}`, echo)
-        }
+        Xdg.mk(chroot, pathPromise)
     }
 
+    /**
+     * 
+     * @param chroot 
+     * @param pathPromise 
+     */
+    static async mk(chroot: string, pathPromise: string, verbose = false) {
+        let echo = Utils.setEcho(verbose)
+        console.log(chroot + pathPromise)        
+        if (!fs.existsSync(chroot + pathPromise)) {
+            await exec(`mkdir ${chroot}${pathPromise}`, echo)
+        }
+    }
     /**
      * 
      * @param user 
@@ -99,11 +94,11 @@ export default class Xdg {
      * @param newuser 
      * @param chroot 
      */
-    static async autologin(olduser: string, newuser: string, chroot='/'){
-          if (Pacman.packageIsInstalled('lightdm')) {
+    static async autologin(olduser: string, newuser: string, chroot = '/') {
+        if (Pacman.packageIsInstalled('lightdm')) {
             shx.sed('-i', `autologin-user=${olduser}`, `autologin-user=${newuser}`, `${chroot}/etc/lightdm/lightdm.conf`)
-          }
+        }
     }
-    
+
 
 }
