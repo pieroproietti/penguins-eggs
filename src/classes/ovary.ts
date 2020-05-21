@@ -966,7 +966,9 @@ timeout 200\n`
     }
 
 
-    // delete all user in chroot
+    /**
+     * delete all user in chroot
+     */
     let cmd = `chroot ${this.work_dir.merged} getent passwd {1000..60000} |awk -F: '{print $1}'`
     const result = await exec(cmd, { echo: verbose, ignore: false, capture: true })
     const users: string[] = result.data.split('\n')
@@ -974,19 +976,22 @@ timeout 200\n`
       await exec(`chroot ${this.work_dir.merged} deluser ${users[i]}`, echo)
     }
 
-
     await exec(`chroot ${this.work_dir.merged} adduser ${this.user_live} --home /home/${this.user_live} --shell /bin/bash --disabled-password --gecos ",,,"`, echo)
     await exec(`chroot ${this.work_dir.merged} echo ${this.user_live}:${this.passwd_live} | chroot ${this.work_dir.merged} chpasswd `, echo)
     await exec(`chroot ${this.work_dir.merged} usermod -aG sudo ${this.user_live}`, echo)
 
-    // Cambio passwd su root in chroot
+    /**
+     * Cambio passwd su root in chroot
+     */
     await exec(`chroot ${this.work_dir.merged} echo root:${this.passwd_root} | chroot ${this.work_dir.merged} chpasswd `, echo)
 
 
-    // Solo per sistemi grafici
+    /**
+     * Solo per sistemi grafici
+     */
     if (Pacman.isXInstalled()) {
-      const pathToDesktopLive = await Xdg.path(this.user_live, this.work_dir.merged, "DESKTOP")
       await Xdg.create(this.user_live, this.work_dir.merged, verbose)
+      const pathToDesktopLive = await Xdg.path(this.user_live, this.work_dir.merged, "DESKTOP")
 
       /**
        * creazione dei link
@@ -1020,10 +1025,13 @@ timeout 200\n`
       await exec(`chmod +x ${this.work_dir.merged}${pathToDesktopLive}/*.desktop`, echo)
       await exec(`chown 1000:1000 ${this.work_dir.merged}${pathToDesktopLive}/*.desktop`, echo)
 
-      // Autologin passare a xdg ed aggiungere altri
+      /**
+       * Autologin passare a xdg ed aggiungere altri
+       */
       Xdg.autologin(Utils.getPrimaryUser(), this.user_live, this.work_dir.merged)
     }
   }
+
 
   /**
    * Add or remove exclusion

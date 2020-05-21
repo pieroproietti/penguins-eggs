@@ -8,6 +8,7 @@ import { Command, flags } from '@oclif/command'
 import Utils from '../classes/utils'
 import chalk = require('chalk')
 import fs = require('fs')
+import Pacman from '../classes/pacman'
 
 const exec = require('../lib/utils').exec
 
@@ -63,7 +64,8 @@ desktop configuration of user mauro will get used as default`]
    * @param verbse 
    */
   async skel(user: string, verbose = false) {
-    let files = [
+
+    let filesOld = [
       '.bacon',
       '.bashrc',
       '.config',
@@ -85,60 +87,77 @@ desktop configuration of user mauro will get used as default`]
 
     let echo = Utils.setEcho(verbose)
 
-    this.prepareSkel(files, verbose)
-    this.copy2Skel(user, files, verbose)
-    this.cleaningSkel(verbose)
-    // await exec (`grep -Rl "$SKELUSER" /etc/skel | xargs rm -rf '{}'`, echo)
-    await exec(`chown -R root:root /etc/skel`, echo)
+    await this.prepare(user, verbose)
+    await exec(`chown root:root /etc/skel -R`, echo)
   }
 
 
   /**
    * 
    */
-  async prepareSkel(files: string[], verbose = false) {
+  async prepare(user: string, verbose = false) {
     let echo = Utils.setEcho(verbose)
 
     if (verbose) {
       console.log('preparing /etc/skel\n')
     }
 
-    for (let i in files) {
-      if (fs.existsSync(`/etc/skel/${files[i]}`)) {
-        await exec(`rm -rf /etc/skel/${files[i]}`, echo)
-      }
-    }
-  }
+    let files = [
+      '.profiles',
+      '.bashrc',
+      '.config',
+      '.local',
 
-  /**
-   * 
-   * @param verbose 
-   */
-  async copy2Skel(user: string, files: string[], verbose = false) {
-    let echo = Utils.setEcho(verbose)
-    if (verbose) {
-      console.log('copying to /etc/skel\n')
+      '.bacon',
+      '.bashrc',
+      '.config',
+      '.gconf',
+      '.gnome2',
+      '.local',
+      '.icewm*',
+      '.fvwm*',
+      '.profile',
+      '.afterstep*',
+      '.gtkrc*',
+      '.cinnamon',
+      '.mate*',
+      '.qt*',
+      '.kde*',
+      '.razor',
+      '.wbar',
+      '.mplayer']
+
+
+    await exec(`rm -rf /etc/skel`)
+    await exec(`mkdir -p /etc/skel`)
+
+    // echo $XDG_CURRENT_DESKTOP
+
+    if (Pacman.packageIsInstalled('cinnamon-core')) {
+      files.push('.cinnamon')
     }
+
+    if (Pacman.packageIsInstalled('lxde-core')) {
+      files.push('.lxde')
+    }
+
+    if (Pacman.packageIsInstalled('lxqt-core')) {
+      files.push('.lxqt')
+    }
+
+
 
     for (let i in files) {
       if (fs.existsSync(`/home/${user}/${files[i]}`)) {
-        await exec(`rsync -a /home/${user}/${files[i]} /etc/skel/`, echo)
-      } else {
-
+        await exec(`cp -r /home/${user}/${files[i]} /etc/skel/ `, echo)
       }
     }
-  }
 
-  /**
-   * 
-   * @param verbose 
-   */
-  async cleaningSkel(verbose = false) {
-    let echo = Utils.setEcho(verbose)
-    if (verbose) {
-      console.log("Cleaning skel...\n")
-    }
+    /**
+     * cleaning
+     */
 
+    // .config
     await this.deleteIfExist(`/etc/skel/.config/chromium`, verbose)
     await this.deleteIfExist(`/etc/skel/.config/midori/cookies.*`, verbose)
     await this.deleteIfExist(`/etc/skel/.config/midori/history.*`, verbose)
@@ -147,8 +166,10 @@ desktop configuration of user mauro will get used as default`]
     await this.deleteIfExist(`/etc/skel/.config/midori/bookmarks.*`, verbose)
     await this.deleteIfExist(`/etc/skel/.config/user-dirs.*`, verbose)
 
+    // .gconf
     await this.deleteIfExist(`/etc/skel/.gconf/system/networking`, verbose)
 
+    // .local
     await this.deleteIfExist(`/etc/skel/.local/gvfs-metadata`, verbose)
     await this.deleteIfExist(`/etc/skel/.local/share/gvfs-metadata`, verbose)
     await this.deleteIfExist(`/etc/skel/.local/share/applications/wine-*`, verbose)
@@ -156,9 +177,27 @@ desktop configuration of user mauro will get used as default`]
     await this.deleteIfExist(`/etc/skel/.local/share/akonadi`, verbose)
     await this.deleteIfExist(`/etc/skel/.local/share/webkit`, verbose)
 
+    // kde
     await this.deleteIfExist(`/etc/skel/.kde/share/apps/klipper`, verbose)
     await this.deleteIfExist(`/etc/skel/.kde/share/apps/nepomuk`, verbose)
     await this.deleteIfExist(`/etc/skel/.kde/share/apps/RecentDocuments/*`, verbose)
+
+    // others
+    let cmd = ''
+    cmd = `for i in /etc/skel/.gnome2/keyrings/*; do rm ${user}; done`
+    //await shx(cmd, verbose)
+
+    cmd = `find /etc/skel/ | grep "${user}" | xargs rm -rf '{}'`
+    await shx(cmd, verbose)
+
+    cmd = `find /etc/skel/ -name "*socket*" | xargs rm -rf '{}'`
+    await shx(cmd, verbose)
+
+    cmd = `find /etc/skel/ -name "*cache*" | xargs rm -rf '{}'`
+    await shx(cmd, verbose)
+
+    cmd =`grep -Rl "${user}" /etc/skel | xargs rm -rf '{}'`
+    await shx(cmd, verbose)
 
   }
 
@@ -166,14 +205,22 @@ desktop configuration of user mauro will get used as default`]
    * 
    * @param file 
    */
-  async deleteIfExist(file: string, verbose=false){
+  async deleteIfExist(file: string, verbose = false) {
     let echo = Utils.setEcho(verbose)
 
-    if (fs.existsSync(file)){
+    if (fs.existsSync(file)) {
       await exec(`rm -rf ${file}`, echo)
     }
   }
 }
+
+async function shx (cmd: string ,verbose=false){
+  let echo = Utils.setEcho(verbose)
+
+  if (verbose) console.log(cmd)
+  await exec (cmd, echo )
+}
+
 
 
 /**
