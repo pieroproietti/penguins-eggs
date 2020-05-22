@@ -70,7 +70,7 @@ export default class Xdg {
      */
     static async mk(chroot: string, pathPromise: string, verbose = false) {
         let echo = Utils.setEcho(verbose)
-        console.log(chroot + pathPromise)
+        if (verbose) console.log(chroot + pathPromise)
         if (!fs.existsSync(chroot + pathPromise)) {
             await exec(`mkdir ${chroot}${pathPromise}`, echo)
         }
@@ -113,35 +113,35 @@ export default class Xdg {
             console.log('preparing /etc/skel\n')
         }
 
-        let files = [
-            '.bashrc',
-            '.config',
-            //'.local',
-            '.profile',
-        ]
-
         const ovary = new Ovary
         await ovary.fertilization()
 
         /**
-         * Salva skel in skel_data_ora.backup
+         * Salva la vecchia skel in skel_data_ora.backup
          */
         await exec(`mv /etc/skel ${ovary.snapshot_dir}skel_${Utils.formatDate(new Date())}.backup`, echo)
+
+        // Crea nuova skel 
         await exec(`mkdir -p /etc/skel`, echo)
 
         // echo $XDG_CURRENT_DESKTOP
+        let files = [
+            '.bashrc',
+            '.config',
+            '.local',
+            '.profile',
+        ]
 
         // Aggiungo la configurazione del DM usato
         if (Pacman.packageIsInstalled('cinnamon-core')) {
-            //files.push('.cinnamon')
+            files.push('.cinnamon')
         }
         if (Pacman.packageIsInstalled('lxde-core')) {
-            files.push('.lxde')
+            // files.push('.lxde')
         }
         if (Pacman.packageIsInstalled('lxqt-core')) {
-            files.push('.lxqt')
+            // files.push('.lxqt')
         }
-
 
         // Copio da user tutti i files
         for (let i in files) {
@@ -150,57 +150,24 @@ export default class Xdg {
             }
         }
 
-        /*
         // Eseguo la pulizia dei dati personali in skel
 
         // .config
-        await this.deleteIfExist(`/etc/skel/.config/chromium`, verbose)
-        await this.deleteIfExist(`/etc/skel/.config/midori/cookies.*`, verbose)
-        await this.deleteIfExist(`/etc/skel/.config/midori/history.*`, verbose)
-        await this.deleteIfExist(`/etc/skel/.config/midori/tabtrash.*`, verbose)
-        await this.deleteIfExist(`/etc/skel/.config/midori/running*`, verbose)
-        await this.deleteIfExist(`/etc/skel/.config/midori/bookmarks.*`, verbose)
-
         await this.deleteIfExist(`/etc/skel/.config/user-dirs.*`, verbose)
 
-        // .gconf
-        await this.deleteIfExist(`/etc/skel/.gconf/system/networking`, verbose)
-
         // .local
-        await this.deleteIfExist(`/etc/skel/.local/gvfs-metadata`, verbose)
-        await this.deleteIfExist(`/etc/skel/.local/share/gvfs-metadata`, verbose)
-        await this.deleteIfExist(`/etc/skel/.local/share/applications/wine-*`, verbose)
         await this.deleteIfExist(`/etc/skel/.local/share/Trash`, verbose)
-        await this.deleteIfExist(`/etc/skel/.local/share/akonadi`, verbose)
-        await this.deleteIfExist(`/etc/skel/.local/share/webkit`, verbose)
-        await this.deleteIfExist(`/etc/skel/.local/share/webkit`, verbose)
+        await this.deleteIfExist(`/etc/skel/.local/share/gvfs-metadata`, verbose)
+        await this.deleteIfExist(`/etc/skel/.local/gvfs-metadata`, verbose)
         await this.deleteIfExist(`/etc/skel/.local/share/keyrings/login.keyring`, verbose)
         await this.deleteIfExist(`/etc/skel/.local/share/keyrings/user.keystore`, verbose)
 
-          // kde
-        await this.deleteIfExist(`/etc/skel/.kde/share/apps/klipper`, verbose)
-        await this.deleteIfExist(`/etc/skel/.kde/share/apps/nepomuk`, verbose)
-        await this.deleteIfExist(`/etc/skel/.kde/share/apps/RecentDocuments/*`, verbose)
-
-
-        // others
-        let cmd = `for i in /etc/skel/.gnome2/keyrings/*; do rm ${user}; done`
-        // await this.showAndExec(cmd, verbose)
-
-        cmd = `find /etc/skel/ | grep "${user}" | xargs rm -rf '{}'`
-        await this.showAndExec(cmd, verbose)
-
-        cmd = `find /etc/skel/ -name "*socket*" | xargs rm -rf '{}'`
-        await this.showAndExec(cmd, verbose)
-
-        cmd = `find /etc/skel/ -name "*cache*" | xargs rm -rf '{}'`
-        await this.showAndExec(cmd, verbose)
-
-        cmd = `grep -Rl "${user}" /etc/skel | xargs rm -rf '{}'`
-        await this.showAndExec(cmd, verbose)
-         */
-
         await exec(`chown root:root /etc/skel -R`, echo)
+
+        // Utile per prove
+        // await exec(`rm -r /home/pippo1`, echo)
+        // await exec(`cp -r /etc/skel /home/pippo1 `, echo)
+        // await exec(`chown pippo1:pippo1 /home/pippo1 -R`, echo)
     }
 
     /**
@@ -245,3 +212,43 @@ export default class Xdg {
 #
 */
 
+        // .gconf
+        // await this.deleteIfExist(`/etc/skel/.gconf/system/networking`, verbose)
+
+        /*
+        await this.deleteIfExist(`/etc/skel/.config/chromium`, verbose)
+        await this.deleteIfExist(`/etc/skel/.config/midori/cookies.*`, verbose)
+        await this.deleteIfExist(`/etc/skel/.config/midori/history.*`, verbose)
+        await this.deleteIfExist(`/etc/skel/.config/midori/tabtrash.*`, verbose)
+        await this.deleteIfExist(`/etc/skel/.config/midori/running*`, verbose)
+        await this.deleteIfExist(`/etc/skel/.config/midori/bookmarks.*`, verbose)
+        */
+
+        /*
+        await this.deleteIfExist(`/etc/skel/.local/share/applications/wine-*`, verbose)
+        await this.deleteIfExist(`/etc/skel/.local/share/akonadi`, verbose)
+        await this.deleteIfExist(`/etc/skel/.local/share/webkit`, verbose)
+        await this.deleteIfExist(`/etc/skel/.local/share/webkit`, verbose)
+
+        // kde
+        await this.deleteIfExist(`/etc/skel/.kde/share/apps/klipper`, verbose)
+        await this.deleteIfExist(`/etc/skel/.kde/share/apps/nepomuk`, verbose)
+        await this.deleteIfExist(`/etc/skel/.kde/share/apps/RecentDocuments/*`, verbose)
+
+        // others
+        let cmd = `for i in /etc/skel/.gnome2/keyrings/*; do rm ${user}; done`
+        cmd = `find /etc/skel/.gnome2/keyrings/ | grep "${user}" | xargs rm -rf '{}'`
+        await this.showAndExec(cmd, verbose)
+
+        cmd = `find /etc/skel/ | grep "${user}" | xargs rm -rf '{}'`
+        await this.showAndExec(cmd, verbose)
+
+        cmd = `find /etc/skel/ -name "*socket*" | xargs rm -rf '{}'`
+        await this.showAndExec(cmd, verbose)
+
+        cmd = `find /etc/skel/ -name "*cache*" | xargs rm -rf '{}'`
+        await this.showAndExec(cmd, verbose)
+
+        cmd = `grep -Rl "${user}" /etc/skel | xargs rm -rf '{}'`
+        await this.showAndExec(cmd, verbose)
+        */
