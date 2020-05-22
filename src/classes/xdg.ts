@@ -8,6 +8,7 @@
 import shx = require('shelljs')
 import fs = require('fs')
 import os = require('os')
+import Ovary from './ovary'
 import Pacman from './pacman'
 import Utils from './utils'
 
@@ -119,39 +120,38 @@ export default class Xdg {
             '.profiles',
         ]
 
+        const ovary = new Ovary
+        await ovary.fertilization()
 
         /**
-         * Salva skel in skel.backup
+         * Salva skel in skel_data_ora.backup
          */
-        await exec(`rm -rf /etc/skel.backup`, verbose)
-        await exec(`mv /etc/skel /etc/skel.backup`, verbose)
-        await exec(`mkdir -p /etc/skel`, verbose)
+        await exec(`mv /etc/skel ${ovary.snapshot_dir}skel_${Utils.formatDate(new Date())}.backup`, echo)
+        await exec(`mkdir -p /etc/skel`, echo)
 
         // echo $XDG_CURRENT_DESKTOP
 
+        // Aggiungo la configurazione del DM usato
         if (Pacman.packageIsInstalled('cinnamon-core')) {
             files.push('.cinnamon')
         }
-
         if (Pacman.packageIsInstalled('lxde-core')) {
             files.push('.lxde')
         }
-
         if (Pacman.packageIsInstalled('lxqt-core')) {
             files.push('.lxqt')
         }
 
 
-
+        // Copio da user tutti i files
         for (let i in files) {
             if (fs.existsSync(`/home/${user}/${files[i]}`)) {
                 await exec(`cp -r /home/${user}/${files[i]} /etc/skel/ `, echo)
             }
         }
 
-
         /**
-         * cleaning
+         * Eseguo la pulizia dei dati personali in skel
          */
 
         // .config
