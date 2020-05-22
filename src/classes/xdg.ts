@@ -69,7 +69,7 @@ export default class Xdg {
      */
     static async mk(chroot: string, pathPromise: string, verbose = false) {
         let echo = Utils.setEcho(verbose)
-        console.log(chroot + pathPromise)        
+        console.log(chroot + pathPromise)
         if (!fs.existsSync(chroot + pathPromise)) {
             await exec(`mkdir ${chroot}${pathPromise}`, echo)
         }
@@ -100,5 +100,144 @@ export default class Xdg {
         }
     }
 
+    /**
+     * Copia della cofiguirazione in /etc/skel
+     * @param user 
+     * @param verbose 
+     */
+    static async skel(user: string, verbose = false) {
+        let echo = Utils.setEcho(verbose)
 
+        if (verbose) {
+            console.log('preparing /etc/skel\n')
+        }
+
+        let files = [
+            '.bashrc',
+            '.config',
+            '.local',
+            '.profiles',
+        ]
+
+
+        /**
+         * Salva skel in skel.backup
+         */
+        await exec(`rm -rf /etc/skel.backup`, verbose)
+        await exec(`mv /etc/skel /etc/skel.backup`, verbose)
+        await exec(`mkdir -p /etc/skel`, verbose)
+
+        // echo $XDG_CURRENT_DESKTOP
+
+        if (Pacman.packageIsInstalled('cinnamon-core')) {
+            files.push('.cinnamon')
+        }
+
+        if (Pacman.packageIsInstalled('lxde-core')) {
+            files.push('.lxde')
+        }
+
+        if (Pacman.packageIsInstalled('lxqt-core')) {
+            files.push('.lxqt')
+        }
+
+
+
+        for (let i in files) {
+            if (fs.existsSync(`/home/${user}/${files[i]}`)) {
+                await exec(`cp -r /home/${user}/${files[i]} /etc/skel/ `, echo)
+            }
+        }
+
+
+        /**
+         * cleaning
+         */
+
+        // .config
+        await this.deleteIfExist(`/etc/skel/.config/chromium`, verbose)
+        await this.deleteIfExist(`/etc/skel/.config/midori/cookies.*`, verbose)
+        await this.deleteIfExist(`/etc/skel/.config/midori/history.*`, verbose)
+        await this.deleteIfExist(`/etc/skel/.config/midori/tabtrash.*`, verbose)
+        await this.deleteIfExist(`/etc/skel/.config/midori/running*`, verbose)
+        await this.deleteIfExist(`/etc/skel/.config/midori/bookmarks.*`, verbose)
+
+        await this.deleteIfExist(`/etc/skel/.config/user-dirs.*`, verbose)
+
+        // .gconf
+        await this.deleteIfExist(`/etc/skel/.gconf/system/networking`, verbose)
+
+        // .local
+        await this.deleteIfExist(`/etc/skel/.local/gvfs-metadata`, verbose)
+        await this.deleteIfExist(`/etc/skel/.local/share/gvfs-metadata`, verbose)
+        await this.deleteIfExist(`/etc/skel/.local/share/applications/wine-*`, verbose)
+        await this.deleteIfExist(`/etc/skel/.local/share/Trash`, verbose)
+        await this.deleteIfExist(`/etc/skel/.local/share/akonadi`, verbose)
+        await this.deleteIfExist(`/etc/skel/.local/share/webkit`, verbose)
+
+        // kde
+        await this.deleteIfExist(`/etc/skel/.kde/share/apps/klipper`, verbose)
+        await this.deleteIfExist(`/etc/skel/.kde/share/apps/nepomuk`, verbose)
+        await this.deleteIfExist(`/etc/skel/.kde/share/apps/RecentDocuments/*`, verbose)
+
+
+        // others
+        let cmd = `for i in /etc/skel/.gnome2/keyrings/*; do rm ${user}; done`
+        // await this.showAndExec(cmd, verbose)
+
+        cmd = `find /etc/skel/ | grep "${user}" | xargs rm -rf '{}'`
+        await this.showAndExec(cmd, verbose)
+
+        cmd = `find /etc/skel/ -name "*socket*" | xargs rm -rf '{}'`
+        await this.showAndExec(cmd, verbose)
+
+        cmd = `find /etc/skel/ -name "*cache*" | xargs rm -rf '{}'`
+        await this.showAndExec(cmd, verbose)
+
+        cmd = `grep -Rl "${user}" /etc/skel | xargs rm -rf '{}'`
+        await this.showAndExec(cmd, verbose)
+
+        await exec(`chown root:root /etc/skel -R`, echo)
+    }
+
+    /**
+     * 
+     * @param file 
+     */
+    static async deleteIfExist(file: string, verbose = false) {
+        let echo = Utils.setEcho(verbose)
+
+        if (fs.existsSync(file)) {
+            await exec(`rm -rf ${file}`, echo)
+        }
+    }
+
+    /**
+     * 
+     * @param cmd 
+     * @param verbose 
+     */
+    static async showAndExec(cmd: string, verbose = false) {
+        let echo = Utils.setEcho(verbose)
+    
+        if (verbose) console.log(cmd)
+        await exec(cmd, echo)
+    }
 }
+
+
+
+
+/**
+# remastersys-skelcopy script to copy user data to /etc/skel
+#  https://raw.githubusercontent.com/mutse/remastersys/master/remastersys/src/remastersys-skelcopy
+#
+#
+#  Created by Tony "Fragadelic" Brijeski
+#
+#  Copyright 2011,2012 Under the GNU GPL2 License
+#
+#  Created November 23, 2011
+#
+*/
+
