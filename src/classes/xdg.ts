@@ -116,8 +116,8 @@ export default class Xdg {
         let files = [
             '.bashrc',
             '.config',
-            '.local',
-            '.profiles',
+            //'.local',
+            '.profile',
         ]
 
         const ovary = new Ovary
@@ -133,7 +133,7 @@ export default class Xdg {
 
         // Aggiungo la configurazione del DM usato
         if (Pacman.packageIsInstalled('cinnamon-core')) {
-            files.push('.cinnamon')
+            //files.push('.cinnamon')
         }
         if (Pacman.packageIsInstalled('lxde-core')) {
             files.push('.lxde')
@@ -150,9 +150,8 @@ export default class Xdg {
             }
         }
 
-        /**
-         * Eseguo la pulizia dei dati personali in skel
-         */
+        /*
+        // Eseguo la pulizia dei dati personali in skel
 
         // .config
         await this.deleteIfExist(`/etc/skel/.config/chromium`, verbose)
@@ -174,8 +173,11 @@ export default class Xdg {
         await this.deleteIfExist(`/etc/skel/.local/share/Trash`, verbose)
         await this.deleteIfExist(`/etc/skel/.local/share/akonadi`, verbose)
         await this.deleteIfExist(`/etc/skel/.local/share/webkit`, verbose)
+        await this.deleteIfExist(`/etc/skel/.local/share/webkit`, verbose)
+        await this.deleteIfExist(`/etc/skel/.local/share/keyrings/login.keyring`, verbose)
+        await this.deleteIfExist(`/etc/skel/.local/share/keyrings/user.keystore`, verbose)
 
-        // kde
+          // kde
         await this.deleteIfExist(`/etc/skel/.kde/share/apps/klipper`, verbose)
         await this.deleteIfExist(`/etc/skel/.kde/share/apps/nepomuk`, verbose)
         await this.deleteIfExist(`/etc/skel/.kde/share/apps/RecentDocuments/*`, verbose)
@@ -196,6 +198,7 @@ export default class Xdg {
 
         cmd = `grep -Rl "${user}" /etc/skel | xargs rm -rf '{}'`
         await this.showAndExec(cmd, verbose)
+         */
 
         await exec(`chown root:root /etc/skel -R`, echo)
     }
@@ -207,6 +210,7 @@ export default class Xdg {
     static async deleteIfExist(file: string, verbose = false) {
         let echo = Utils.setEcho(verbose)
 
+        if (verbose) console.log(`testing: ${file}`)
         if (fs.existsSync(file)) {
             await exec(`rm -rf ${file}`, echo)
         }
