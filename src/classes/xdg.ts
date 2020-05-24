@@ -138,7 +138,7 @@ export default class Xdg {
             files.push('.cinnamon')
         }
         if (Pacman.packageIsInstalled('lxde-core')) {
-            // files.push('.lxde')
+            // files.push('.lxde') Non esiste 
         }
         if (Pacman.packageIsInstalled('lxqt-core')) {
             // files.push('.lxqt')
