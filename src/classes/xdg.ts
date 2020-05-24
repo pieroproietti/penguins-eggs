@@ -127,7 +127,7 @@ export default class Xdg {
         // echo $XDG_CURRENT_DESKTOP
         let files = [
             '.bashrc',
-            '.config',
+            '.config', // genera errore nella costruzione delle directory
             '.local',
             '.profile',
         ]
@@ -153,7 +153,9 @@ export default class Xdg {
         // Eseguo la pulizia dei dati personali in skel
 
         // .config
-        await this.deleteIfExist(`/etc/skel/.config/user-dirs.*`, verbose)
+        await this.deleteIfExist(`/etc/skel/.config/user-dirs.dirs`, verbose)
+        await this.deleteIfExist(`/etc/skel/.config/user-dirs.locale`, verbose)
+        await this.deleteIfExist(`/etc/skel/.config/gtk-3.0/bookmarks`, verbose)
 
         // .local
         await this.deleteIfExist(`/etc/skel/.local/share/Trash`, verbose)
@@ -162,12 +164,23 @@ export default class Xdg {
         await this.deleteIfExist(`/etc/skel/.local/share/keyrings/login.keyring`, verbose)
         await this.deleteIfExist(`/etc/skel/.local/share/keyrings/user.keystore`, verbose)
 
+        // Sistemo i diritti della skel
+        await exec(`chmod a+rwx,g-w,o-w /etc/skel/ -R`, echo)
+
+        // Sistemo diriti file eseguibili
+        await exec(`chmod a+rwx,g-w-x,o-wx /etc/skel/.bashrc`, echo)
+        await exec(`chmod a+rwx,g-w-x,o-wx /etc/skel/.profile`, echo)
+
         await exec(`chown root:root /etc/skel -R`, echo)
 
         // Utile per prove
         // await exec(`rm -r /home/pippo1`, echo)
         // await exec(`cp -r /etc/skel /home/pippo1 `, echo)
         // await exec(`chown pippo1:pippo1 /home/pippo1 -R`, echo)
+
+        // https://www.thegeekdiary.com/understanding-the-etc-skel-directory-in-linux/
+        // cat /etc/defualt/useradd
+        // ls -lart /etc/skel
     }
 
     /**
