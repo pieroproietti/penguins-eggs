@@ -127,6 +127,7 @@ export default class Xdg {
         // echo $XDG_CURRENT_DESKTOP
         let files = [
             '.bashrc',
+            '.bash_logout',
             '.config', // genera errore nella costruzione delle directory
             '.local',
             '.profile',
@@ -153,23 +154,24 @@ export default class Xdg {
         // Eseguo la pulizia dei dati personali in skel
 
         // .config
-        await this.deleteIfExist(`/etc/skel/.config/user-dirs.dirs`, verbose)
-        await this.deleteIfExist(`/etc/skel/.config/user-dirs.locale`, verbose)
-        await this.deleteIfExist(`/etc/skel/.config/gtk-3.0/bookmarks`, verbose)
+        await this.modFileIfExist(`rm -rf`, `/etc/skel/.config/user-dirs.dirs`, verbose)
+        await this.modFileIfExist(`rm -rf`, `/etc/skel/.config/user-dirs.locale`, verbose)
+        await this.modFileIfExist(`rm -rf`, `/etc/skel/.config/gtk-3.0/bookmarks`, verbose)
 
         // .local
-        await this.deleteIfExist(`/etc/skel/.local/share/Trash`, verbose)
-        await this.deleteIfExist(`/etc/skel/.local/share/gvfs-metadata`, verbose)
-        await this.deleteIfExist(`/etc/skel/.local/gvfs-metadata`, verbose)
-        await this.deleteIfExist(`/etc/skel/.local/share/keyrings/login.keyring`, verbose)
-        await this.deleteIfExist(`/etc/skel/.local/share/keyrings/user.keystore`, verbose)
+        await this.modFileIfExist(`rm -rf`, `/etc/skel/.local/share/Trash`, verbose)
+        await this.modFileIfExist(`rm -rf`, `/etc/skel/.local/share/gvfs-metadata`, verbose)
+        await this.modFileIfExist(`rm -rf`, `/etc/skel/.local/gvfs-metadata`, verbose)
+        await this.modFileIfExist(`rm -rf`, `/etc/skel/.local/share/keyrings/login.keyring`, verbose)
+        await this.modFileIfExist(`rm -rf`, `/etc/skel/.local/share/keyrings/user.keystore`, verbose)
 
         // Sistemo i diritti della skel
         await exec(`chmod a+rwx,g-w,o-w /etc/skel/ -R`, echo)
 
         // Sistemo diriti file eseguibili
-        await exec(`chmod a+rwx,g-w-x,o-wx /etc/skel/.bashrc`, echo)
-        await exec(`chmod a+rwx,g-w-x,o-wx /etc/skel/.profile`, echo)
+        this.modFileIfExist(`chmod a+rwx,g-w-x,o-wx`, `/etc/skel/.bashrc`, verbose)
+        this.modFileIfExist( `chmod a+rwx,g-w-x,o-wx`, `/etc/skel/.bash_logout`, verbose)
+        this.modFileIfExist(`chmod a+rwx,g-w-x,o-wx`, `/etc/skel/.profile`, verbose)
 
         await exec(`chown root:root /etc/skel -R`, echo)
 
@@ -182,6 +184,23 @@ export default class Xdg {
         // cat /etc/defualt/useradd
         // ls -lart /etc/skel
     }
+
+     /**
+     * 
+     * @param file 
+     */
+    static async modFileIfExist(cmd: string, file: string, verbose = false) {
+        let echo = Utils.setEcho(verbose)
+
+        if (verbose) console.log(`testing: ${file}`)
+        if (fs.existsSync(file)) {
+            await exec(`${cmd} ${file}`, echo)
+        } else {
+            console.log(`file: ${file} not found`)
+        }
+    }
+
+
 
     /**
      * 
