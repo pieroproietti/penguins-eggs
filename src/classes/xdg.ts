@@ -143,6 +143,11 @@ export default class Xdg {
         if (Pacman.packageIsInstalled('lxqt-core')) {
             // files.push('.lxqt')
         }
+        if (Pacman.packageIsInstalled('kde-plasma-desktop')) {
+            files.push('.kde')
+        }
+
+        
 
         // Copio da user tutti i files
         for (let i in files) {
