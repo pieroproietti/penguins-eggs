@@ -5,37 +5,37 @@
  * mail: piero.proietti@gmail.com
  */
 import yaml = require('js-yaml')
-import { IDistro, IOses } from '../../../interfaces'
+import { IRemix, IOses } from '../../../interfaces'
 
 /**
  * 
- * @param distro 
+ * @param remix 
  * @param oses 
  * @param verbose 
  */
-export function branding(distro: IDistro, oses: IOses, verbose = false): string {
+export function branding(remix: IRemix, oses: IOses, verbose = false): string {
     const versionLike: string = oses.versionLike
     const homeUrl: string = oses.homeUrl
     const supportUrl: string = oses.supportUrl
     const bugReportUrl: string = oses.bugReportUrl
 
-    const productName = `Debian` // distro.name 
-    const shortProductName = distro.name
-    const version = distro.versionNumber + ' ( ' + distro.versionName + ')'
-    const shortVersion = distro.versionNumber
-    const versionedName = distro.name
-    const shortVersionedName = distro.versionName
+    const productName = `Debian` 
+    const shortProductName = remix.name
+    const version = remix.versionNumber + ' ( ' + remix.versionName + ')'
+    const shortVersion = remix.versionNumber
+    const versionedName = remix.name
+    const shortVersionedName = remix.versionName
     const bootloaderEntryName = productName
     const productUrl = homeUrl
     const releaseNotesUrl = 'https://github.com/pieroproietti/penguins-eggs'
-    const productLogo = `${distro.branding}-logo.png`
-    const productIcon = `${distro.branding}-logo.png`
+    const productLogo = `${remix.branding}-logo.png`
+    const productIcon = `${remix.branding}-logo.png`
     const productWelcome = 'welcome.png'
     const slideshow = 'show.qml'
 
     const branding =
     {
-        componentName: distro.branding,
+        componentName: remix.branding,
         welcomeStyleCalamares: true,
         strings:
         {

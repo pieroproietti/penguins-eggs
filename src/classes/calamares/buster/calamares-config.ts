@@ -10,7 +10,7 @@ import path = require('path')
 import shx = require('shelljs')
 import Utils from '../../utils'
 import Pacman from '../../pacman'
-import { IDistro, IOses } from '../../../interfaces'
+import { IRemix, IOses } from '../../../interfaces'
 const exec = require('../../../lib/utils').exec
 
 /**
@@ -19,7 +19,7 @@ const exec = require('../../../lib/utils').exec
 class calamaresConfig {
     verbose = false
 
-    distro: IDistro
+    remix: IRemix
 
     oses: IOses
 
@@ -31,12 +31,12 @@ class calamaresConfig {
 
     /**
      * 
-     * @param distro 
+     * @param remix
      * @param oses 
      * @param verbose 
      */
-    constructor(distro: IDistro, oses: IOses, verbose = false) {
-        this.distro = distro
+    constructor(remix: IRemix, oses: IOses, verbose = false) {
+        this.remix = remix
         this.oses = oses
         this.verbose = verbose
         this.displaymanager = (Pacman.packageIsInstalled('lightdm') || Pacman.packageIsInstalled('sddm') || Pacman.packageIsInstalled('sddm') )
@@ -140,9 +140,9 @@ class calamaresConfig {
      */
     createBranding() {
         const branding = require('./branding').branding
-        const dir = `/etc/calamares/branding/${this.distro.branding}/`
+        const dir = `/etc/calamares/branding/${this.remix.branding}/`
         const file = dir + 'branding.desc'
-        const content = branding(this.distro, this.oses, this.verbose)
+        const content = branding(this.remix, this.oses, this.verbose)
         write(file, content, this.verbose)
     }
 

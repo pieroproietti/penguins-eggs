@@ -1,4 +1,4 @@
-export interface IDistro {
+export interface IRemix {
     name: string;
     branding: string;
     versionName: string;

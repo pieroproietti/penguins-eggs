@@ -16,7 +16,7 @@ import pjson = require('pjson')
 import chalk = require('chalk')
 
 // interfaces
-import { IDistro, IOses, IPackage } from '../interfaces'
+import { IRemix, IOses, IPackage, IWorkDir } from '../interfaces'
 
 // libraries
 const exec = require('../lib/utils').exec
@@ -28,9 +28,6 @@ import Oses from './oses'
 import Xdg from './xdg'
 import Pacman from './pacman'
 import Prerequisites from '../commands/prerequisites'
-import { IWorkDir } from '../interfaces/i-workdir'
-
-import { deepStrictEqual } from 'assert'
 
 /**
  * Ovary:
@@ -38,13 +35,15 @@ import { deepStrictEqual } from 'assert'
 export default class Ovary {
   app = {} as IPackage
 
-  distro = {} as IDistro
+  remix = {} as IRemix
 
   work_dir = {} as IWorkDir
 
-  oses = {} as Oses
+//  oses = {} as Oses
 
-  iso = {} as IOses
+  iso = {} as Oses
+
+  // iso = {} as IOses
 
   eggName = ''
 
@@ -126,19 +125,17 @@ export default class Ovary {
     this.app.name = pjson.name as string
     this.app.version = pjson.version
 
-    this.distro.name = os.hostname()
-    this.distro.versionName = 'Emperor'
-    this.distro.versionNumber = 'zero' // Utils.formatDate()
-    this.distro.branding = 'eggs'
-    this.distro.kernel = Utils.kernerlVersion()
+    this.remix.name = os.hostname()
+    this.remix.versionName = 'Emperor'
+    this.remix.versionNumber = 'zero' // Utils.formatDate()
+    this.remix.branding = 'eggs'
+    this.remix.kernel = Utils.kernerlVersion()
 
     this.live = Utils.isLive()
 
     this.i686 = Utils.isi686()
     this.debian_version = Utils.getDebianVersion()
-    this.oses = new Oses()
-    this.iso = this.oses.info(this.distro)
-
+    this.iso = new Oses(this.remix)
   }
 
   /**
@@ -347,15 +344,14 @@ export default class Ovary {
     }
 
     if (basename !== '') {
-      this.distro.name = basename
-      this.iso = this.oses.info(this.distro)
+      this.remix.name = basename
     }
 
     if (await Utils.isLive()) {
       console.log(chalk.red('>>> eggs: This is a live system! An egg cannot be produced from an egg!'))
     } else {
       if (verbose) {
-        console.log(`Produce egg ${this.distro.name}`)
+        console.log(`Produce egg ${this.remix.name}`)
       }
       await this.liveCreateStructure(verbose)
       await this.calamaresConfigure(verbose)
@@ -421,7 +417,7 @@ export default class Ovary {
         await Pacman.clean(verbose)
       }
       // Configuro calamares
-      this.calamares = new Calamares(this.distro, this.iso, verbose)
+      this.calamares = new Calamares(this.remix, this.iso, verbose)
       await this.calamares.config()
     }
   }
@@ -510,13 +506,15 @@ export default class Ovary {
     await exec(`journalctl --vacuum-time=1s`)
 
     // Probabilmente non necessario
-    shx.touch(`${this.work_dir.merged}/etc/resolv.conf`)
+    //shx.touch(`${this.work_dir.merged}/etc/resolv.conf`)
 
     /**
      * Clear configs from /etc/network/interfaces, wicd and NetworkManager
      * and netman, so they aren't stealthily included in the snapshot.
     */
-    await exec(`rm ${this.work_dir.merged}/etc/network/interfaces`, echo)
+    if (fs.existsSync(`${this.work_dir.merged}/etc/network/interfaces`)){
+      await exec(`rm ${this.work_dir.merged}/etc/network/interfaces`, echo)
+    }
     await exec(`touch ${this.work_dir.merged}/etc/network/interfaces`, echo)
     Utils.write(`${this.work_dir.merged}/etc/network/interfaces`, `auto lo\niface lo inet loopback`)
 
@@ -717,7 +715,7 @@ timeout 200\n`
     fs.copyFileSync(path.resolve(__dirname, '../../conf/isolinux.menu.cfg.template'), mpath)
     fs.copyFileSync(path.resolve(__dirname, '../../assets/penguins-eggs-splash.png'), spath)
 
-    shx.sed('-i', '%custom-name%', this.distro.name, mpath)
+    shx.sed('-i', '%custom-name%', this.remix.name, mpath)
     shx.sed('-i', '%kernel%', Utils.kernerlVersion(), mpath)
     shx.sed('-i', '%vmlinuz%', `/live${this.kernel_image}`, mpath)
     shx.sed('-i', '%initrd-img%', `/live${this.initrd_image}`, mpath)
@@ -1204,7 +1202,7 @@ timeout 200\n`
     }
     // editEfi()
     const gpath = `${this.work_dir.pathIso}/boot/grub/grub.cfg`
-    shx.sed('-i', '%custom-name%', this.distro.name, gpath)
+    shx.sed('-i', '%custom-name%', this.remix.name, gpath)
     shx.sed('-i', '%kernel%', Utils.kernerlVersion(), gpath)
     shx.sed('-i', '%vmlinuz%', `/live${this.kernel_image}`, gpath)
     shx.sed('-i', '%initrd-img%', `/live${this.initrd_image}`, gpath)
