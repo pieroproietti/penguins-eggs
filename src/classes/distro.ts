@@ -1,6 +1,6 @@
 /* eslint-disable no-console */
 /**
- * penguins-eggs: Oses.ts
+ * penguins-eggs: Distro.ts
  *
  * author: Piero Proietti
  * mail: piero.proietti@gmail.com
@@ -8,9 +8,9 @@
 
 'use strict'
 import fs = require('fs')
-import { IRemix, IOses } from '../interfaces'
+import { IRemix, IDistro } from '../interfaces'
 
-import Utils from '../classes/utils'
+import Utils from './utils'
 
 import shell = require('shelljs')
 
@@ -18,28 +18,29 @@ import shell = require('shelljs')
 /**
  * Classe 
  */
-class Oses implements IOses {
-  distroName : string
-  distroId : string
-  distroLike : string
-  versionId : string
-  versionLike : string
-  isolinuxPath : string
-  syslinuxPath : string
-  mountpointSquashFs : string
-  append : string
-  appendSafe : string
-  aqs : string
-  menuTitle : string
-  homeUrl : string
-  supportUrl : string
-  bugReportUrl : string
-  distroVersionNumber: string 
+class Distro implements IDistro {
+  distroName: string
+  distroId: string
+  distroLike: string
+  versionId: string
+  versionLike: string
+  isolinuxPath: string
+  syslinuxPath: string
+  mountpointSquashFs: string
+  append: string
+  appendSafe: string
+  aqs: string
+  menuTitle: string
+  homeUrl: string
+  supportUrl: string
+  bugReportUrl: string
+  distroVersionNumber: string
 
   constructor(remix: IRemix) {
     this.distroName = ''
     this.distroId = ''
     this.distroLike = ''
+    this.distroVersionNumber = ''
     this.versionId = ''
     this.versionLike = ''
     this.isolinuxPath = ''
@@ -52,13 +53,12 @@ class Oses implements IOses {
     this.homeUrl = ''
     this.supportUrl = ''
     this.bugReportUrl = ''
-    this.distroVersionNumber = ''
 
 
-    const file  ='/etc/os-release'
-    let data : string
-    if (fs.existsSync(file)){
-      data = fs.readFileSync( file,'utf8')
+    const file = '/etc/os-release'
+    let data: string
+    if (fs.existsSync(file)) {
+      data = fs.readFileSync(file, 'utf8')
     }
 
 
@@ -71,19 +71,18 @@ class Oses implements IOses {
     os[info.BUG_REPORT_URL] = 'BUG_REPORT_URL='
     for (const temp in data) {
       if (!data[temp].search(os[info.HOME_URL])) {
-        const homeUrl = data[temp].substring(os[info.HOME_URL].length).replace(/"/g, '')
+        this.homeUrl = data[temp].substring(os[info.HOME_URL].length).replace(/"/g, '')
       }
 
       if (!data[temp].search(os[info.SUPPORT_URL])) {
-        const supportUrl = data[temp].substring(os[info.SUPPORT_URL].length).replace(/"/g, '')
+        this.supportUrl = data[temp].substring(os[info.SUPPORT_URL].length).replace(/"/g, '')
       }
 
       if (!data[temp].search(os[info.BUG_REPORT_URL])) {
-        const bugReportUrl = data[temp].substring(os[info.BUG_REPORT_URL].length).replace(/"/g, '')
+        this.bugReportUrl = data[temp].substring(os[info.BUG_REPORT_URL].length).replace(/"/g, '')
       }
     }
 
-    this.homeUrl = this.homeUrl
     /**
      * lsb_release -c -s
      */
@@ -196,5 +195,5 @@ class Oses implements IOses {
   }
 }
 
-export default Oses
+export default Distro
 

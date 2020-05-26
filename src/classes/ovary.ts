@@ -16,7 +16,7 @@ import pjson = require('pjson')
 import chalk = require('chalk')
 
 // interfaces
-import { IRemix, IOses, IPackage, IWorkDir } from '../interfaces'
+import { IRemix, IDistro, IPackage, IWorkDir } from '../interfaces'
 
 // libraries
 const exec = require('../lib/utils').exec
@@ -24,7 +24,7 @@ const exec = require('../lib/utils').exec
 // classes
 import Utils from './utils'
 import Calamares from './calamares/calamares-settings'
-import Oses from './oses'
+import Distro from './distro'
 import Xdg from './xdg'
 import Pacman from './pacman'
 import Prerequisites from '../commands/prerequisites'
@@ -39,11 +39,7 @@ export default class Ovary {
 
   work_dir = {} as IWorkDir
 
-//  oses = {} as Oses
-
-  iso = {} as Oses
-
-  // iso = {} as IOses
+  iso = {} 
 
   eggName = ''
 
@@ -135,7 +131,7 @@ export default class Ovary {
 
     this.i686 = Utils.isi686()
     this.debian_version = Utils.getDebianVersion()
-    this.iso = new Oses(this.remix)
+    this.iso = new Distro(this.remix)
   }
 
   /**

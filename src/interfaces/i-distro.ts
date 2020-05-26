@@ -1,4 +1,4 @@
-export interface IOses {
+export interface IDistro {
     distroId: string;
     distroLike: string;
     versionId: string;

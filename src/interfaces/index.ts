@@ -6,6 +6,6 @@ export  {IQuestions} from './i-questions'
 export  {IUser} from './i-user'
 export {IPackage} from './i-packcage'
 export {IDriveList} from './i-drive-list'
-export {IOses} from './i-oses'
+export {IDistro} from './i-distro'
 export {IWorkDir} from './i-workdir'
 

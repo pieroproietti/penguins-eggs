@@ -4,13 +4,12 @@
  * author: Piero Proietti
  * mail: piero.proietti@gmail.com
  */
-
 import fs = require('fs')
 import path = require('path')
 import shx = require('shelljs')
 import Utils from '../../utils'
 import Pacman from '../../pacman'
-import { IRemix, IOses } from '../../../interfaces'
+import { IRemix, IDistro } from '../../../interfaces'
 const exec = require('../../../lib/utils').exec
 
 /**
@@ -21,7 +20,7 @@ class calamaresConfig {
 
     remix: IRemix
 
-    oses: IOses
+    distro: IDistro
 
     displaymanager = false
 
@@ -32,12 +31,12 @@ class calamaresConfig {
     /**
      * 
      * @param remix
-     * @param oses 
+     * @param distro 
      * @param verbose 
      */
-    constructor(remix: IRemix, oses: IOses, verbose = false) {
+    constructor(remix: IRemix, distro: IDistro, verbose = false) {
         this.remix = remix
-        this.oses = oses
+        this.distro = distro
         this.verbose = verbose
         this.displaymanager = (Pacman.packageIsInstalled('lightdm') || Pacman.packageIsInstalled('sddm') || Pacman.packageIsInstalled('sddm') )
     }
@@ -142,7 +141,7 @@ class calamaresConfig {
         const branding = require('./branding').branding
         const dir = `/etc/calamares/branding/${this.remix.branding}/`
         const file = dir + 'branding.desc'
-        const content = branding(this.remix, this.oses, this.verbose)
+        const content = branding(this.remix, this.distro, this.verbose)
         write(file, content, this.verbose)
     }
 
@@ -185,7 +184,7 @@ class calamaresConfig {
         const unpackfs = require('./modules/unpackfs').unpackfs
         const dir = `/etc/calamares/modules/`
         const file = dir + 'unpackfs.conf'
-        const content = unpackfs(this.oses.mountpointSquashFs)
+        const content = unpackfs(this.distro.mountpointSquashFs)
         write(file, content, this.verbose)
     }
 
