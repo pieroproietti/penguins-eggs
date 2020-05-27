@@ -34,7 +34,7 @@ export default class Pacman {
    * @param debPackage 
    */
   static packageIsInstalled(debPackage: string): boolean {
-    let installed:boolean = false
+    let installed: boolean = false
     const cmd = `/usr/bin/dpkg -s ${debPackage} | grep Status`
     const stdout = shx.exec(cmd, { silent: true }).stdout.trim()
 
@@ -95,12 +95,12 @@ export default class Pacman {
     let echo = Utils.setEcho(verbose)
     let retVal = false
 
-    let init:string = shx.exec('ps --no-headers -o comm 1',{silent: !verbose}).trim()
+    let init: string = shx.exec('ps --no-headers -o comm 1', { silent: !verbose }).trim()
     let config = ''
     if (init === 'systemd') {
-      config ='live-config-systemd'
+      config = 'live-config-systemd'
     } else {
-      config ='live-config-sysvinit'
+      config = 'live-config-sysvinit'
     }
     Pacman.debs4eggs.push(config)
 
@@ -117,12 +117,12 @@ export default class Pacman {
     let echo = Utils.setEcho(verbose)
     let retVal = false
 
-    let init:string = shx.exec('ps --no-headers -o comm 1',{silent: !verbose}).trim()
-    let config=''
+    let init: string = shx.exec('ps --no-headers -o comm 1', { silent: !verbose }).trim()
+    let config = ''
     if (init === 'systemd') {
-      config ='live-config-systemd'
+      config = 'live-config-systemd'
     } else {
-      config ='live-config-sysvinit'
+      config = 'live-config-sysvinit'
     }
     Pacman.debs4eggs.push(config)
 
@@ -156,7 +156,7 @@ export default class Pacman {
       await exec(`apt-get install --yes ${Pacman.debs2line(Pacman.debs4calamares)}`, echo)
       await Pacman.clean(verbose)
     } else {
-      console.log('It\'s not possible to use calamares in a system without GUI' )
+      console.log('It\'s not possible to use calamares in a system without GUI')
     }
   }
 
@@ -190,15 +190,60 @@ export default class Pacman {
    * 
    */
   static async configurationInstall(verbose = true): Promise<void> {
+    let vmlinuz = '/vmlinuz'
+    let initrd = '/initrd.img'
+
     shx.cp(path.resolve(__dirname, '../../conf/penguins-eggs.conf'), '/etc')
-    shx.mkdir('-p', '/usr/local/share/penguins-eggs/')
-    shx.cp(path.resolve(__dirname, '../../conf/exclude.list'), '/usr/local/share/penguins-eggs')
+    if (!fs.existsSync(vmlinuz)) {
+      vmlinuz = '/boot/vmlinuz'
+      if (!fs.existsSync(vmlinuz)) {
+        vmlinuz = '/vmlinuz'
+        console.log(`Can't find the standard ${vmlinuz}, please edit /etc/penguins-eggs.conf`)
+      }
+      if (!fs.existsSync(initrd)) {
+        initrd = '/boot/initrd.img'
+        if (!fs.existsSync(initrd)) {
+          initrd = '/initrd.img'
+          console.log(`Can't find the standard  ${initrd}, please edit /etc/penguins-eggs.conf`)
+        }
+        shx.sed('-i', '%vmlinuz%', vmlinuz, '/etc/penguins-eggs.conf')
+        shx.sed('-i', '%initrd%', initrd, '/etc/penguins-eggs.conf')
+
+        let gui_editor = '/usr/bin/nano'
+        if (this.packageIsInstalled('gedit')) {
+          gui_editor = '/usr/bin/gedit'
+        } else if (this.packageIsInstalled('leafpad')) {
+          gui_editor = '/usr/bin/leafpad'
+        } else if (this.packageIsInstalled('caja')) {
+          gui_editor = '/usr/bin/caja'
+        }
+        shx.sed('-i', '%gui_editor%', gui_editor, '/etc/penguins-eggs.conf')
+
+
+        let force_installer = 'Yes'
+        if (!this.packageIsInstalled('calamares')) {
+          force_installer = 'No'
+          console.log(`Due the lacks of calamares package set force_installer=No`)
+        }
+        shx.sed('-i', '%force_installer%', force_installer, '/etc/penguins-eggs.conf')
+
+        let make_efi = 'yes'
+        if (!this.packageIsInstalled('grub-efi-amd64')) {
+          make_efi = 'No'
+          console.log(`Due the lacks of grub-efi-amd64 or grub-efi-ia32 package set make_efi=No`)
+        }
+        shx.sed('-i', '%make_efi%', make_efi, '/etc/penguins-eggs.conf')
+
+        shx.mkdir('-p', '/usr/local/share/penguins-eggs/')
+        shx.cp(path.resolve(__dirname, '../../conf/exclude.list'), '/usr/local/share/penguins-eggs')
+      }
+    }
   }
 
   /**
    * 
    */
-  static async configurationRemove(verbose = true) : Promise<void> {
+  static async configurationRemove(verbose = true): Promise<void> {
     let echo = Utils.setEcho(verbose)
     await exec('rm /etc/penguins-eggs.conf', echo)
     await exec('rm /etc/penguins-eggs.conf?', echo)
