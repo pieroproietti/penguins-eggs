@@ -190,54 +190,79 @@ export default class Pacman {
    * 
    */
   static async configurationInstall(verbose = true): Promise<void> {
-    let vmlinuz = '/vmlinuz'
-    let initrd = '/initrd.img'
 
     shx.cp(path.resolve(__dirname, '../../conf/penguins-eggs.conf'), '/etc')
+
+
+    /**
+     * version
+     */
+    let version = Utils.getPackageVersion()
+    shx.sed('-i', '%version%', version, '/etc/penguins-eggs.conf')
+
+
+    /**
+     * vmlinuz
+     */
+    let vmlinuz = '/vmlinuz'
     if (!fs.existsSync(vmlinuz)) {
       vmlinuz = '/boot/vmlinuz'
       if (!fs.existsSync(vmlinuz)) {
         vmlinuz = '/vmlinuz'
         console.log(`Can't find the standard ${vmlinuz}, please edit /etc/penguins-eggs.conf`)
       }
+    }
+    shx.sed('-i', '%vmlinuz%', vmlinuz, '/etc/penguins-eggs.conf')
+
+    /**
+     * initrd
+     */
+    let initrd = '/initrd.img'
+    if (!fs.existsSync(initrd)) {
+      initrd = '/boot/initrd.img'
       if (!fs.existsSync(initrd)) {
-        initrd = '/boot/initrd.img'
-        if (!fs.existsSync(initrd)) {
-          initrd = '/initrd.img'
-          console.log(`Can't find the standard  ${initrd}, please edit /etc/penguins-eggs.conf`)
-        }
-        shx.sed('-i', '%vmlinuz%', vmlinuz, '/etc/penguins-eggs.conf')
-        shx.sed('-i', '%initrd%', initrd, '/etc/penguins-eggs.conf')
-
-        let gui_editor = '/usr/bin/nano'
-        if (this.packageIsInstalled('gedit')) {
-          gui_editor = '/usr/bin/gedit'
-        } else if (this.packageIsInstalled('leafpad')) {
-          gui_editor = '/usr/bin/leafpad'
-        } else if (this.packageIsInstalled('caja')) {
-          gui_editor = '/usr/bin/caja'
-        }
-        shx.sed('-i', '%gui_editor%', gui_editor, '/etc/penguins-eggs.conf')
-
-
-        let force_installer = 'Yes'
-        if (!this.packageIsInstalled('calamares')) {
-          force_installer = 'No'
-          console.log(`Due the lacks of calamares package set force_installer=No`)
-        }
-        shx.sed('-i', '%force_installer%', force_installer, '/etc/penguins-eggs.conf')
-
-        let make_efi = 'yes'
-        if (!this.packageIsInstalled('grub-efi-amd64')) {
-          make_efi = 'No'
-          console.log(`Due the lacks of grub-efi-amd64 or grub-efi-ia32 package set make_efi=No`)
-        }
-        shx.sed('-i', '%make_efi%', make_efi, '/etc/penguins-eggs.conf')
-
-        shx.mkdir('-p', '/usr/local/share/penguins-eggs/')
-        shx.cp(path.resolve(__dirname, '../../conf/exclude.list'), '/usr/local/share/penguins-eggs')
+        initrd = '/initrd.img'
+        console.log(`Can't find the standard  ${initrd}, please edit /etc/penguins-eggs.conf`)
       }
     }
+    shx.sed('-i', '%initrd%', initrd, '/etc/penguins-eggs.conf')
+
+    /**
+     * gui_editor
+     */
+    let gui_editor = '/usr/bin/nano'
+    if (this.packageIsInstalled('gedit')) {
+      gui_editor = '/usr/bin/gedit'
+    } else if (this.packageIsInstalled('leafpad')) {
+      gui_editor = '/usr/bin/leafpad'
+    } else if (this.packageIsInstalled('caja')) {
+      gui_editor = '/usr/bin/caja'
+    }
+    shx.sed('-i', '%gui_editor%', gui_editor, '/etc/penguins-eggs.conf')
+
+    /**
+     * force_installer
+     */
+    let force_installer = 'Yes'
+    if (!this.packageIsInstalled('calamares')) {
+      force_installer = 'No'
+      console.log(`Due the lacks of calamares package set force_installer=No`)
+    }
+    shx.sed('-i', '%force_installer%', force_installer, '/etc/penguins-eggs.conf')
+
+    /**
+     * make_efi
+     */
+    let make_efi = 'yes'
+    if (!this.packageIsInstalled('grub-efi-amd64')) {
+      make_efi = 'No'
+      console.log(`Due the lacks of grub-efi-amd64 or grub-efi-ia32 package set make_efi=No`)
+    }
+    shx.sed('-i', '%make_efi%', make_efi, '/etc/penguins-eggs.conf')
+
+    // creazione del file delle esclusioni
+    shx.mkdir('-p', '/usr/local/share/penguins-eggs/')
+    shx.cp(path.resolve(__dirname, '../../conf/exclude.list'), '/usr/local/share/penguins-eggs')
   }
 
   /**
