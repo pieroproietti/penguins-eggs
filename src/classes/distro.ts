@@ -56,7 +56,7 @@ class Distro implements IDistro {
 
 
     const file = '/etc/os-release'
-    let data: string
+    let data: any
     if (fs.existsSync(file)) {
       data = fs.readFileSync(file, 'utf8')
     }
@@ -157,28 +157,28 @@ class Distro implements IDistro {
       this.mountpointSquashFs = '/run/live/medium/live/filesystem.squashfs'
 
       // 19.10 eoan
-    } else if (o.versionId === 'eoan') {
+    } else if (this.versionId === 'eoan') {
       this.distroId = 'Ubuntu'
       this.distroLike = 'Ubuntu'
       this.versionLike = 'eoan'
       this.mountpointSquashFs = '/run/live/medium/live/filesystem.squashfs'
 
       // Ubuntu 19.04 disco
-    } else if (o.versionId === 'disco') {
+    } else if (this.versionId === 'disco') {
       this.distroId = 'Ubuntu'
       this.distroLike = 'Ubuntu'
       this.versionLike = 'disco'
       this.mountpointSquashFs = '/run/live/medium/live/filesystem.squashfs'
 
       // Ubuntu 18.10 cosmic
-    } else if (o.versionId === 'cosmic') {
+    } else if (this.versionId === 'cosmic') {
       this.distroId = 'Ubuntu'
       this.distroLike = 'Ubuntu'
       this.versionLike = 'cosmic'
       this.mountpointSquashFs = '/run/live/medium/live/filesystem.squashfs'
 
       // Ubuntu 18.04 bionic LTS
-    } else if (o.versionId === 'bionic') {
+    } else if (this.versionId === 'bionic') {
       this.distroId = 'Ubuntu'
       this.distroLike = 'Ubuntu'
       this.versionLike = 'bionic'

@@ -39,7 +39,7 @@ export default class Ovary {
 
   work_dir = {} as IWorkDir
 
-  iso = {} 
+  iso = {} as IDistro
 
   eggName = ''
 

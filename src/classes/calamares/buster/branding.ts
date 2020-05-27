@@ -5,7 +5,7 @@
  * mail: piero.proietti@gmail.com
  */
 import yaml = require('js-yaml')
-import { IRemix, IOses } from '../../../interfaces'
+import { IRemix, IDistro } from '../../../interfaces'
 
 /**
  * 
@@ -13,11 +13,11 @@ import { IRemix, IOses } from '../../../interfaces'
  * @param oses 
  * @param verbose 
  */
-export function branding(remix: IRemix, oses: IOses, verbose = false): string {
-    const versionLike: string = oses.versionLike
-    const homeUrl: string = oses.homeUrl
-    const supportUrl: string = oses.supportUrl
-    const bugReportUrl: string = oses.bugReportUrl
+export function branding(remix: IRemix, distro: IDistro, verbose = false): string {
+    const versionLike: string = distro.versionLike
+    const homeUrl: string = distro.homeUrl
+    const supportUrl: string = distro.supportUrl
+    const bugReportUrl: string = distro.bugReportUrl
 
     const productName = `Debian` 
     const shortProductName = remix.name
