@@ -121,13 +121,17 @@ export default class Ovary {
     this.app.name = pjson.name as string
     this.app.version = pjson.version
 
-    this.remix.name = os.hostname()
-    this.remix.versionName = 'uovo'
+    if (this.snapshot_basename === 'hostname') {
+      this.remix.versionName = os.hostname()
+    } else {
+      this.remix.versionName = this.snapshot_basename 
+    }
+
+    this.remix.versionNumber = Utils.getPackageVersion()
     this.remix.branding = 'eggs'
     this.remix.kernel = Utils.kernerlVersion()
 
     this.live = Utils.isLive()
-
     this.i686 = Utils.isi686()
     this.debian_version = Utils.getDebianVersion()
     this.distro = new Distro(this.remix)

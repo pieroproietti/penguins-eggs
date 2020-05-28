@@ -440,8 +440,8 @@ export default class Utils {
   static titles(command = ''): void {
     clear()
     console.log(chalk.blue(figlet.textSync('eggs')))
-    console.log(chalk.redBright(pjson.name) + ' Perri\'s Brewery edition' + chalk.green(' ver. ' + pjson.version))
-    console.log('command: ' + chalk.blue(command) + '\n')
+    console.log(chalk.bgGreen.white('   ' + pjson.name+ '   ') + chalk.bgWhite.blue(' Perri\'s Brewery edition ') + chalk.bgRed.whiteBright('    ver. ' + pjson.version + '   '))
+    console.log('command: ' + chalk.bgBlack.white(command) + '\n')
   }
 
   /**

@@ -64,5 +64,6 @@ export function branding(remix: IRemix, distro: IDistro, verbose = false): strin
             sidebarTextSelect: '#4d7079',
         },
     }
+    //console.log(branding)
     return yaml.safeDump(branding)
 }
