@@ -6,10 +6,14 @@
  */
 
 import fs = require('fs')
+import os = require('os')
 import path = require('path')
 import shx = require('shelljs')
 
+import { IRemix, IDistro } from '../interfaces'
+
 import Utils from './utils'
+import Distro from './distro'
 
 const exec = require('../lib/utils').exec
 
@@ -95,10 +99,18 @@ export default class Pacman {
     let echo = Utils.setEcho(verbose)
     let retVal = false
 
+    let remix = {} as IRemix
+    let distro = {} as IDistro
+    distro = new Distro(remix)
+
     let init: string = shx.exec('ps --no-headers -o comm 1', { silent: !verbose }).trim()
     let config = ''
     if (init === 'systemd') {
-      config = 'live-config-systemd'
+      if (distro.versionLike === 'bionic') {
+        config = 'open-infrastructure-system-config'
+      } else {
+        config = 'live-config-systemd'
+      }
     } else {
       config = 'live-config-sysvinit'
     }
@@ -117,10 +129,18 @@ export default class Pacman {
     let echo = Utils.setEcho(verbose)
     let retVal = false
 
+    let remix = {} as IRemix
+    let distro = {} as IDistro
+    distro = new Distro(remix)
+
     let init: string = shx.exec('ps --no-headers -o comm 1', { silent: !verbose }).trim()
     let config = ''
     if (init === 'systemd') {
-      config = 'live-config-systemd'
+      if (distro.versionLike === 'bionic') {
+        config = 'open-infrastructure-system-config'
+      } else {
+        config = 'live-config-systemd'
+      }
     } else {
       config = 'live-config-sysvinit'
     }

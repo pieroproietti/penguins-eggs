@@ -253,7 +253,8 @@ export default class Utils {
      */
   static isLive(type = 'debian-live'): boolean {
     let retVal = false
-    let path = '/lib/live/mount'
+    // let path = '/lib/live/mount'
+    let path = '/lib/live/mount/rootfs/filesystem.squashfs'
     if (type === 'mx') {
       path = '/live/aufs'
     }

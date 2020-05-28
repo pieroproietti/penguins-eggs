@@ -39,7 +39,7 @@ export default class Ovary {
 
   work_dir = {} as IWorkDir
 
-  iso = {} as IDistro
+  distro = {} as IDistro
 
   eggName = ''
 
@@ -122,8 +122,7 @@ export default class Ovary {
     this.app.version = pjson.version
 
     this.remix.name = os.hostname()
-    this.remix.versionName = 'Emperor'
-    this.remix.versionNumber = 'zero' // Utils.formatDate()
+    this.remix.versionName = 'uovo'
     this.remix.branding = 'eggs'
     this.remix.kernel = Utils.kernerlVersion()
 
@@ -131,7 +130,7 @@ export default class Ovary {
 
     this.i686 = Utils.isi686()
     this.debian_version = Utils.getDebianVersion()
-    this.iso = new Distro(this.remix)
+    this.distro = new Distro(this.remix)
   }
 
   /**
@@ -600,13 +599,13 @@ export default class Ovary {
       console.log('ovary: isolinuxPrepare')
     }
 
-    const isolinuxbin = `${this.iso.isolinuxPath}isolinux.bin`
-    const vesamenu = `${this.iso.syslinuxPath}vesamenu.c32`
+    const isolinuxbin = `${this.distro.isolinuxPath}isolinux.bin`
+    const vesamenu = `${this.distro.syslinuxPath}vesamenu.c32`
 
-    await exec(`rsync -a ${this.iso.syslinuxPath}chain.c32 ${this.work_dir.pathIso}/isolinux/`, echo)
-    await exec(`rsync -a ${this.iso.syslinuxPath}ldlinux.c32 ${this.work_dir.pathIso}/isolinux/`, echo)
-    await exec(`rsync -a ${this.iso.syslinuxPath}libcom32.c32 ${this.work_dir.pathIso}/isolinux/`, echo)
-    await exec(`rsync -a ${this.iso.syslinuxPath}libutil.c32 ${this.work_dir.pathIso}/isolinux/`, echo)
+    await exec(`rsync -a ${this.distro.syslinuxPath}chain.c32 ${this.work_dir.pathIso}/isolinux/`, echo)
+    await exec(`rsync -a ${this.distro.syslinuxPath}ldlinux.c32 ${this.work_dir.pathIso}/isolinux/`, echo)
+    await exec(`rsync -a ${this.distro.syslinuxPath}libcom32.c32 ${this.work_dir.pathIso}/isolinux/`, echo)
+    await exec(`rsync -a ${this.distro.syslinuxPath}libutil.c32 ${this.work_dir.pathIso}/isolinux/`, echo)
     await exec(`rsync -a ${isolinuxbin} ${this.work_dir.pathIso}/isolinux/`, echo)
     await exec(`rsync -a ${vesamenu} ${this.work_dir.pathIso}/isolinux/`, echo)
   }
@@ -1216,7 +1215,7 @@ timeout 200\n`
       echo = { echo: true, ignore: false }
     }
 
-    const volid = this.getFilename(this.iso.distroName)
+    const volid = this.getFilename(this.distro.distroName)
     const isoName = `${this.snapshot_dir}${volid}`
     if (verbose) {
       console.log(`ovary: makeIsoImage ${isoName}`)
@@ -1228,7 +1227,7 @@ timeout 200\n`
     }
 
 
-    let isoHybridOption = `-isohybrid-mbr ${this.iso.isolinuxPath}isohdpfx.bin `
+    let isoHybridOption = `-isohybrid-mbr ${this.distro.isolinuxPath}isohdpfx.bin `
 
     if (this.make_isohybrid) {
       if (fs.existsSync('/usr/lib/syslinux/mbr/isohdpfx.bin')) {
@@ -1240,7 +1239,7 @@ timeout 200\n`
       } else {
         console.log(`Can't create isohybrid.  File: isohdpfx.bin not found. The resulting image will be a standard iso file`)
       }
-      this.eggName = this.getFilename(this.iso.distroName)
+      this.eggName = this.getFilename(this.distro.distroName)
       const isoName = `${this.snapshot_dir}${this.eggName}`
 
       let cmd = `xorriso -as mkisofs -r -J -joliet-long -l -iso-level 3 -cache-inodes ${isoHybridOption} -partition_offset 16 -volid ${this.eggName} -b isolinux/isolinux.bin -c isolinux/boot.cat -no-emul-boot -boot-load-size 4 -boot-info-table ${uefi_opt} -o ${isoName} ${this.work_dir.pathIso}`

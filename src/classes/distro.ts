@@ -8,11 +8,11 @@
 
 'use strict'
 import fs = require('fs')
+import shell = require('shelljs')
+
 import { IRemix, IDistro } from '../interfaces'
 
 import Utils from './utils'
-
-import shell = require('shelljs')
 
 
 /**
