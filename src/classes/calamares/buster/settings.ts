@@ -7,13 +7,14 @@
  */
 
 import yaml = require('js-yaml')
+import { IRemix } from '../../../interfaces'
 
 /**
  * 
  * @param displaymanager 
  * @param branding 
  */
-export function settings(displaymanager = false, sourcesMedia = false, sourcesTrusted = true, branding = 'eggs'): string {
+export function settings(displaymanager = false, sourcesMedia = false, sourcesTrusted = true, remix : IRemix): string {
   // path di ricerca dei moduli
   const modulesSearch: string [] = []
   modulesSearch.push('local')
@@ -81,7 +82,7 @@ export function settings(displaymanager = false, sourcesMedia = false, sourcesTr
       {'exec': exec},
       {'show': ['finished'] },
     ],
-    'branding': branding,
+    'branding': remix.branding,
     'prompt-install': false,
     'dont-chroot': false,
     }

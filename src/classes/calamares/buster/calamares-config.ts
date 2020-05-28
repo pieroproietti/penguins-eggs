@@ -155,7 +155,7 @@ class calamaresConfig {
         const settings = require('./settings').settings
         const dir = '/etc/calamares/'
         const file = dir + 'settings.conf'
-        const content = settings(this.displaymanager, this.sourcesMedia, this.sourcesTrusted)
+        const content = settings(this.displaymanager, this.sourcesMedia, this.sourcesTrusted, this.remix)
         write(file, content, this.verbose)
     }
 
