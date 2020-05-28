@@ -140,6 +140,9 @@ class calamaresConfig {
     createBranding() {
         const branding = require('./branding').branding
         const dir = `/etc/calamares/branding/${this.remix.branding}/`
+        if (!fs.existsSync(dir)){
+            fs.mkdirSync(dir)
+        }
         const file = dir + 'branding.desc'
         const content = branding(this.remix, this.distro, this.verbose)
         write(file, content, this.verbose)

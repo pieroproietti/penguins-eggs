@@ -121,16 +121,6 @@ export default class Ovary {
     this.app.name = pjson.name as string
     this.app.version = pjson.version
 
-    if (this.snapshot_basename === 'hostname') {
-      this.remix.versionName = os.hostname()
-    } else {
-      this.remix.versionName = this.snapshot_basename 
-    }
-
-    this.remix.versionNumber = Utils.getPackageVersion()
-    this.remix.branding = 'eggs'
-    this.remix.kernel = Utils.kernerlVersion()
-
     this.live = Utils.isLive()
     this.i686 = Utils.isi686()
     this.debian_version = Utils.getDebianVersion()
@@ -184,6 +174,9 @@ export default class Ovary {
     this.efi_work = this.work_dir.path + 'efi-work/'
     this.snapshot_excludes = settings.General.snapshot_excludes
     this.snapshot_basename = settings.General.snapshot_basename
+    if (this.snapshot_basename === 'hostname') {
+      this.snapshot_basename = os.hostname()
+    }
     this.make_efi = settings.General.make_efi === "yes"
     if (this.make_efi) {
       if (!Pacman.packageIsInstalled('grub-efi-amd64') && (!Pacman.packageIsInstalled('grub-efi-ia32'))) {
@@ -257,11 +250,7 @@ export default class Ovary {
     console.log(`config_file:       ${this.config_file}`)
     console.log(`snapshot_dir:      ${this.snapshot_dir}`)
     console.log(`snapshot_exclude:  ${this.snapshot_excludes}`)
-    if (this.snapshot_basename === 'hostname') {
-      console.log(`snapshot_basename: ${os.hostname} (hostname)`)
-    } else {
-      console.log(`snapshot_basename: ${this.snapshot_basename}`)
-    }
+    console.log(`snapshot_basename: ${this.snapshot_basename}`)
     console.log(`work_dir:          ${this.work_dir.path}`)
     console.log(`efi_work:          ${this.efi_work}`)
     console.log(`make_efi:          ${this.make_efi}`)
@@ -335,15 +324,28 @@ export default class Ovary {
    *
    * @param basename
    */
-  async produce(basename = '', assistant = false, verbose = false, debug = false) {
+  async produce(basename = '', branding = '', assistant = false, verbose = false, debug = false) {
     let echo = Utils.setEcho(verbose)
 
     if (!fs.existsSync(this.snapshot_dir)) {
       shx.mkdir('-p', this.snapshot_dir)
     }
 
+    this.remix.versionNumber = Utils.getPackageVersion()
+    this.remix.kernel = Utils.kernerlVersion()
+
+    if (branding === '') {
+      this.remix.branding = 'eggs'
+    } else {
+      this.remix.branding = branding
+    }
+
     if (basename !== '') {
       this.remix.name = basename
+      this.remix.versionName = basename
+    } else {
+      this.remix.name = this.snapshot_basename
+      this.remix.versionName = this.snapshot_basename
     }
 
     if (await Utils.isLive()) {
@@ -352,6 +354,7 @@ export default class Ovary {
       if (verbose) {
         console.log(`Produce egg ${this.remix.name}`)
       }
+
       await this.liveCreateStructure(verbose)
       await this.calamaresConfigure(verbose)
       await this.isoCreateStructure(verbose)
@@ -511,7 +514,7 @@ export default class Ovary {
      * Clear configs from /etc/network/interfaces, wicd and NetworkManager
      * and netman, so they aren't stealthily included in the snapshot.
     */
-    if (fs.existsSync(`${this.work_dir.merged}/etc/network/interfaces`)){
+    if (fs.existsSync(`${this.work_dir.merged}/etc/network/interfaces`)) {
       await exec(`rm ${this.work_dir.merged}/etc/network/interfaces`, echo)
     }
     await exec(`touch ${this.work_dir.merged}/etc/network/interfaces`, echo)
@@ -1219,7 +1222,7 @@ timeout 200\n`
       echo = { echo: true, ignore: false }
     }
 
-    const volid = this.getFilename(this.distro.distroName)
+    const volid = this.getFilename(this.remix.name)
     const isoName = `${this.snapshot_dir}${volid}`
     if (verbose) {
       console.log(`ovary: makeIsoImage ${isoName}`)
@@ -1243,7 +1246,7 @@ timeout 200\n`
       } else {
         console.log(`Can't create isohybrid.  File: isohdpfx.bin not found. The resulting image will be a standard iso file`)
       }
-      this.eggName = this.getFilename(this.distro.distroName)
+      this.eggName = this.getFilename(this.remix.name)
       const isoName = `${this.snapshot_dir}${this.eggName}`
 
       let cmd = `xorriso -as mkisofs -r -J -joliet-long -l -iso-level 3 -cache-inodes ${isoHybridOption} -partition_offset 16 -volid ${this.eggName} -b isolinux/isolinux.bin -c isolinux/boot.cat -no-emul-boot -boot-load-size 4 -boot-info-table ${uefi_opt} -o ${isoName} ${this.work_dir.pathIso}`
@@ -1269,7 +1272,7 @@ timeout 200\n`
    * only show the result
    */
   finished() {
-    Utils.titles()
+    Utils.titles('produce')
     console.log('eggs is finished!\n\nYou can find the file iso: ' + chalk.cyanBright(this.eggName) + '\nin the nest: ' + chalk.cyanBright(this.snapshot_dir) + '.')
   }
 }
