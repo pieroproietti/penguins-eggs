@@ -253,12 +253,26 @@ export default class Utils {
      */
   static isLive(type = 'debian-live'): boolean {
     let retVal = false
-    // let path = '/lib/live/mount'
-    let path = '/lib/live/mount/rootfs/filesystem.squashfs'
-    if (type === 'mx') {
-      path = '/live/aufs'
+
+    // debian-live
+    let path = '/lib/live/mount'
+    if (Utils.isMountpoint(path)){
+      retVal = true
     }
-    return Utils.isMountpoint(path)
+
+    // Ubuntu bionic
+    path = '/lib/live/mount/rootfs/filesystem.squashfs'
+    if (Utils.isMountpoint(path)){
+      retVal = true
+    }
+
+    // MX Linux
+    path = '/live/aufs'
+    if (Utils.isMountpoint(path)){
+      retVal = true
+    }
+
+    return retVal
   }
 
   /**

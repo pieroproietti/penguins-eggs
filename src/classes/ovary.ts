@@ -412,7 +412,7 @@ export default class Ovary {
         await Pacman.clean(verbose)
       }
       // Configuro calamares
-      this.calamares = new Calamares(this.remix, this.iso, verbose)
+      this.calamares = new Calamares(this.remix, this.distro, verbose)
       await this.calamares.config()
     }
   }
