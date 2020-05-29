@@ -1,0 +1,8 @@
+#!/usr/bin/env xdg-open
+[Desktop Entry]
+Encoding=UTF-8
+Name=Penguin's adjust
+Type=Application
+Exec=/usr/bin/eggs adjust
+Icon=video-display
+Categories=GNOME;GTK;Utility;

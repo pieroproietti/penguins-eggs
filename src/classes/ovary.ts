@@ -1023,7 +1023,11 @@ timeout 200\n`
       }
 
       await exec(`chmod +x ${this.work_dir.merged}${pathToDesktopLive}/*.desktop`, echo)
-      await exec(`chown 1000:1000 ${this.work_dir.merged}${pathToDesktopLive}/*.desktop`, echo)
+      await exec(`chroot ${this.work_dir.merged}  chown live:live ${pathToDesktopLive} -R`, echo)
+      // Serve per contrassegnare fidati i link di gnome
+      // gio set /home/artisan/Scrivania/penguins-adjust.desktop  "metadata::trusted" yes
+      // https://askubuntu.com/questions/1056591/how-do-i-mark-a-desktop-file-as-trusted-in-ubuntu-18-04
+      await exec(`gio set ${this.work_dir.merged}${pathToDesktopLive}/penguins-eggs.desktop "metadata::trusted" yes`, echo)
 
       /**
        * Autologin passare a xdg ed aggiungere altri
