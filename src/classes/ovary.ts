@@ -167,10 +167,10 @@ export default class Ovary {
     }
     this.work_dir.path = this.snapshot_dir + 'work/'
     this.work_dir.pathIso = this.work_dir.path + 'iso'
-    this.work_dir.lowerdir = this.work_dir.path + 'overlay/lowerdir'
-    this.work_dir.upperdir = this.work_dir.path + 'overlay/upperdir'
-    this.work_dir.workdir = this.work_dir.path + 'overlay/workdir'
-    this.work_dir.merged = this.work_dir.path + 'merged'
+    this.work_dir.lowerdir = this.work_dir.path + '.overlay/lowerdir'
+    this.work_dir.upperdir = this.work_dir.path + '.overlay/upperdir'
+    this.work_dir.workdir = this.work_dir.path + '.overlay/workdir'
+    this.work_dir.merged = this.work_dir.path + 'filesystem.squashfs'
     this.efi_work = this.work_dir.path + 'efi-work/'
     this.snapshot_excludes = settings.General.snapshot_excludes
     this.snapshot_basename = settings.General.snapshot_basename
@@ -812,29 +812,29 @@ timeout 200\n`
     // const excludeDirs = ['cdrom', 'dev', 'home', 'live', 'media', 'mnt', 'proc', 'run', 'sys', 'swapfile', 'tmp']
     const mountDirs = ['etc', 'var', 'boot']
     let mountDir = ''
-    let need = false
+    let overlay = false
     for (mountDir of mountDirs) {
       if (mountDir === dir) {
-        need = true
+        overlay = true
       }
     }
-    return need
+    return overlay
   }
 
   /**
-   * Ritorna true se c'è bisogno della copia 
+   * Ritorna true se c'è bisogno del mount --bind
    * @param dir 
    */
   onlyMerged(dir: string): boolean {
     const noDirs = ['cdrom', 'dev', 'home', 'live', 'media', 'mnt', 'proc', 'run', 'sys', 'swapfile', 'tmp']
     let noDir = ''
-    let need = true
+    let bind = true
     for (noDir of noDirs) {
       if (dir === noDir) {
-        need = false
+        bind = false
       }
     }
-    return need
+    return bind
   }
 
   /**
@@ -857,18 +857,23 @@ timeout 200\n`
           if (verbose) {
             console.log(`# ${dir.name} = directory`)
           }
+
           if (this.needOverlay(dir.name)) {
+
             // Creo il mountpoint lower e ci monto in ro dir.name
             await makeIfNotExist(`${this.work_dir.lowerdir}/${dir.name}`)
             await exec(`mount --bind --make-slave /${dir.name} ${this.work_dir.lowerdir}/${dir.name}`, echo)
             await exec(`mount -o remount,bind,ro ${this.work_dir.lowerdir}/${dir.name}`, echo)
+
             // Creo i mountpoint upper, work e merged e monto in merged rw
             await makeIfNotExist(`${this.work_dir.upperdir}/${dir.name}`, verbose)
             await makeIfNotExist(`${this.work_dir.workdir}/${dir.name}`, verbose)
             await makeIfNotExist(`${this.work_dir.merged}/${dir.name}`, verbose)
             await exec(`mount -t overlay overlay -o lowerdir=${this.work_dir.lowerdir}/${dir.name},upperdir=${this.work_dir.upperdir}/${dir.name},workdir=${this.work_dir.workdir}/${dir.name} ${this.work_dir.merged}/${dir.name}`, echo)
           } else {
-            // Creo direttamente la dir.name in merged
+
+            // Monto con mount --bind direttamente dir.name in merged
+            // per 'home', 'cdrom', 'dev', 'live', 'media', 'mnt', 'proc', 'run', 'sys', 'swapfile', 'tmp' solo creazione della directory
             await makeIfNotExist(`${this.work_dir.merged}/${dir.name}`, verbose)
             if (this.onlyMerged(dir.name)) {
               await makeIfNotExist(`${this.work_dir.merged}/${dir.name}`, verbose)
@@ -991,11 +996,12 @@ timeout 200\n`
      */
     if (Pacman.isXInstalled()) {
       await Xdg.create(this.user_live, this.work_dir.merged, verbose)
-      const pathToDesktopLive = await Xdg.path(this.user_live, this.work_dir.merged, 'DESKTOP')
+      const pathHomeLive = `/home/${this.user_live}`
+      const pathToDesktopLive = pathHomeLive + '/' + Xdg.traduce('DESKTOP')
       //const pathToDesktopLive = '/home/live/Scrivania'
 
       /**
-       * creazione dei link
+       * creazione dei link sul Desktop
        */
       shx.cp(path.resolve(__dirname, `../../assets/penguins-eggs.desktop`), `/usr/share/applications/`)
       shx.cp(path.resolve(__dirname, `../../assets/eggs.png`), `/usr/share/icons/`)
@@ -1023,14 +1029,40 @@ timeout 200\n`
         shx.cp('/usr/share/applications/install-debian.desktop', `${this.work_dir.merged}${pathToDesktopLive}`)
       }
 
-      await exec(`chmod +x ${this.work_dir.merged}${pathToDesktopLive}/*.desktop`, echo)
-      await exec(`chroot ${this.work_dir.merged}  chown live:live ${pathToDesktopLive} -R`, echo)
+      await exec(`chroot ${this.work_dir.merged}  chown live:live ${pathHomeLive} -R`, echo)
 
-      // Provo a rendere affidabile i link sul desktop
-      // sudo -u live
-      await exec(`chroot ${this.work_dir.merged} sudo -u live gio set ${pathToDesktopLive}/dwagent-sh.desktop.desktop metadata::trusted true`, echo)
-      await exec(`chroot ${this.work_dir.merged} sudo -u live gio set ${pathToDesktopLive}/penguins-adjust.desktop metadata::trusted true`, echo)
-      await exec(`chroot ${this.work_dir.merged} sudo -u live gio set ${pathToDesktopLive}/penguins-eggs.desktop metadata::trusted true`, echo)
+      // Rendo avviabili
+      await exec(`chroot ${this.work_dir.merged} sudo -u live chmod a+x ${pathToDesktopLive}/dwagent-sh.desktop`, echo)
+      await exec(`chroot ${this.work_dir.merged} sudo -u live chmod a+x ${pathToDesktopLive}/penguins-adjust.desktop`, echo)
+      await exec(`chroot ${this.work_dir.merged} sudo -u live chmod a+x ${pathToDesktopLive}/penguins-eggs.desktop`, echo)
+
+
+      /**
+       * Solo per GNOME
+       * Rendo trusted i link
+       * funziona solo montando /dev 
+       */
+
+      if (Pacman.packageIsInstalled('gnome-shell')) {
+        // Monto /dev
+        await makeIfNotExist(`${this.work_dir.merged}/dev`, verbose)
+        await exec(`mount --bind --make-slave /dev ${this.work_dir.merged}/dev`, echo)
+        //await exec(`mount -o remount,bind,ro ${this.work_dir.merged}/dev`, echo)
+
+        await exec(`chroot ${this.work_dir.merged} sudo -u ${this.user_live} dbus-launch gio set file://${pathToDesktopLive}/dwagent-sh.desktop metadata::trusted true`, echo)
+        await exec(`chroot ${this.work_dir.merged} sudo -u ${this.user_live} dbus-launch gio set file://${pathToDesktopLive}/penguins-adjust.desktop metadata::trusted true`, echo)
+        await exec(`chroot ${this.work_dir.merged} sudo -u ${this.user_live} dbus-launch gio set file://${pathToDesktopLive}/penguins-eggs.desktop metadata::trusted true`, echo)
+
+        // smonto devpts
+        if (Utils.isMountpoint(`${this.work_dir.merged}/dev/devpts`)) {
+          await exec(`umount ${this.work_dir.merged}/dev/devpts`, echo)
+        }
+
+        if (Utils.isMountpoint(`${this.work_dir.merged}/dev`)) {
+          await exec(`umount ${this.work_dir.merged}/dev`, echo)
+        }
+
+      }
 
 
       /**

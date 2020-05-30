@@ -8,6 +8,7 @@
 import shx = require('shelljs')
 import fs = require('fs')
 import os = require('os')
+import path = require('path')
 import Ovary from './ovary'
 import Pacman from './pacman'
 import Utils from './utils'
@@ -15,11 +16,30 @@ import Utils from './utils'
 // libraries
 const exec = require('../lib/utils').exec
 
+const xdg_dirs = ['DESKTOP', 'DOWNLOAD', 'TEMPLATES', 'PUBLICSHARE', 'DOCUMENTS', 'MUSIC', 'PICTURES', 'VIDEOS']
+
+
+
 /**
  * Xdg: xdg-user-dirs, etc
  * @remarks all the utilities
  */
 export default class Xdg {
+
+    /**
+     * 
+     * @param xdg_dir 
+     */
+    static traduce(xdg_dir = ''): string {
+        let retval = ''
+        xdg_dirs.forEach(async dir => {
+            if (dir === xdg_dir) {
+                retval = path.basename(shx.exec(`sudo -u ${Utils.getPrimaryUser()} xdg-user-dir ${dir}`, { silent: true }).stdout.trim())
+            }
+        })
+        return retval
+    }
+
     /**
      * 
      * @param user 
@@ -29,38 +49,9 @@ export default class Xdg {
     static async create(user: string, chroot: string, verbose = false) {
         let echo = Utils.setEcho(verbose)
 
-
-        // DESKTOP=Desktop
-        let pathPromise = await this.path(user, chroot, 'DESKTOP', verbose)
-        Xdg.mk(chroot, pathPromise, verbose)
-
-        // DOWNLOAD=Downloads
-        pathPromise = await this.path(user, chroot, 'DOWNLOAD', verbose)
-        Xdg.mk(chroot, pathPromise, verbose)
-
-        // TEMPLATES=Templates
-        pathPromise = await this.path(user, chroot, 'TEMPLATES', verbose)
-        Xdg.mk(chroot, pathPromise, verbose)
-
-        // PUBLICSHARE=Public
-        pathPromise = await this.path(user, chroot, 'PUBLICSHARE', verbose)
-        Xdg.mk(chroot, pathPromise, verbose)
-
-        // DOCUMENTS=Documents
-        pathPromise = await this.path(user, chroot, 'DOCUMENTS', verbose)
-        Xdg.mk(chroot, pathPromise, verbose)
-
-        // MUSIC=Music
-        pathPromise = await this.path(user, chroot, 'MUSIC', verbose)
-        Xdg.mk(chroot, pathPromise, verbose)
-
-        // PICTURES=Pictures
-        pathPromise = await this.path(user, chroot, 'PICTURES', verbose)
-        Xdg.mk(chroot, pathPromise, verbose)
-
-        // VIDEOS=Videos
-        pathPromise = await this.path(user, chroot, 'VIDEOS', verbose)
-        Xdg.mk(chroot, pathPromise, verbose)
+        xdg_dirs.forEach(async dir => {
+            await Xdg.mk(chroot, '/home/live/' + this.traduce(dir), verbose)
+        })
     }
 
     /**
@@ -68,29 +59,14 @@ export default class Xdg {
      * @param chroot 
      * @param pathPromise 
      */
-    static async mk(chroot: string, pathPromise: string, verbose = false) {
+    static async mk(chroot: string, path: string, verbose = false) {
         let echo = Utils.setEcho(verbose)
 
-        if (verbose) console.log(`chroot: ${chroot} pathPromise: ${pathPromise}`)
-        if (!fs.existsSync(chroot + pathPromise)) {
-            await exec(`mkdir ${chroot}${pathPromise}`, echo)
+        if (!fs.existsSync(chroot + path)) {
+            await exec(`mkdir ${chroot}${path}`, echo)
         }
     }
-    /**
-     * 
-     * @param user 
-     * @param chroot 
-     * @param type 
-     * @param verbose 
-     */
-    static async  path(user: string, chroot = '/', type = 'DESKTOP', verbose = false): Promise<string> {
 
-        if (verbose) console.log()
-        const pathPromise = await exec(`chroot ${chroot} sudo -u ${user} xdg-user-dir ${type}`, { echo: verbose, ignore: false, capture: true })
-        const pathTo = pathPromise.data.trim() // /home/live/Scrivania
-        if (verbose) console.log(`tupe: ${type} pathTo: ${pathTo}`)
-        return pathTo
-    }
 
     /**
      * 
@@ -150,7 +126,7 @@ export default class Xdg {
             files.push('.kde')
         }
 
-        
+
 
         // Copio da user tutti i files
         for (let i in files) {
@@ -178,7 +154,7 @@ export default class Xdg {
 
         // Sistemo diriti file eseguibili
         this.modFileIfExist(`chmod a+rwx,g-w-x,o-wx`, `/etc/skel/.bashrc`, verbose)
-        this.modFileIfExist( `chmod a+rwx,g-w-x,o-wx`, `/etc/skel/.bash_logout`, verbose)
+        this.modFileIfExist(`chmod a+rwx,g-w-x,o-wx`, `/etc/skel/.bash_logout`, verbose)
         this.modFileIfExist(`chmod a+rwx,g-w-x,o-wx`, `/etc/skel/.profile`, verbose)
 
         await exec(`chown root:root /etc/skel -R`, echo)
@@ -193,10 +169,10 @@ export default class Xdg {
         // ls -lart /etc/skel
     }
 
-     /**
-     * 
-     * @param file 
-     */
+    /**
+    * 
+    * @param file 
+    */
     static async modFileIfExist(cmd: string, file: string, verbose = false) {
         let echo = Utils.setEcho(verbose)
 
@@ -230,7 +206,7 @@ export default class Xdg {
      */
     static async showAndExec(cmd: string, verbose = false) {
         let echo = Utils.setEcho(verbose)
-    
+
         if (verbose) console.log(cmd)
         await exec(cmd, echo)
     }
@@ -255,40 +231,40 @@ export default class Xdg {
         // .gconf
         // await this.deleteIfExist(`/etc/skel/.gconf/system/networking`, verbose)
 
-        /*
-        await this.deleteIfExist(`/etc/skel/.config/chromium`, verbose)
-        await this.deleteIfExist(`/etc/skel/.config/midori/cookies.*`, verbose)
-        await this.deleteIfExist(`/etc/skel/.config/midori/history.*`, verbose)
-        await this.deleteIfExist(`/etc/skel/.config/midori/tabtrash.*`, verbose)
-        await this.deleteIfExist(`/etc/skel/.config/midori/running*`, verbose)
-        await this.deleteIfExist(`/etc/skel/.config/midori/bookmarks.*`, verbose)
-        */
+/*
+await this.deleteIfExist(`/etc/skel/.config/chromium`, verbose)
+await this.deleteIfExist(`/etc/skel/.config/midori/cookies.*`, verbose)
+await this.deleteIfExist(`/etc/skel/.config/midori/history.*`, verbose)
+await this.deleteIfExist(`/etc/skel/.config/midori/tabtrash.*`, verbose)
+await this.deleteIfExist(`/etc/skel/.config/midori/running*`, verbose)
+await this.deleteIfExist(`/etc/skel/.config/midori/bookmarks.*`, verbose)
+*/
 
-        /*
-        await this.deleteIfExist(`/etc/skel/.local/share/applications/wine-*`, verbose)
-        await this.deleteIfExist(`/etc/skel/.local/share/akonadi`, verbose)
-        await this.deleteIfExist(`/etc/skel/.local/share/webkit`, verbose)
-        await this.deleteIfExist(`/etc/skel/.local/share/webkit`, verbose)
+/*
+await this.deleteIfExist(`/etc/skel/.local/share/applications/wine-*`, verbose)
+await this.deleteIfExist(`/etc/skel/.local/share/akonadi`, verbose)
+await this.deleteIfExist(`/etc/skel/.local/share/webkit`, verbose)
+await this.deleteIfExist(`/etc/skel/.local/share/webkit`, verbose)
 
-        // kde
-        await this.deleteIfExist(`/etc/skel/.kde/share/apps/klipper`, verbose)
-        await this.deleteIfExist(`/etc/skel/.kde/share/apps/nepomuk`, verbose)
-        await this.deleteIfExist(`/etc/skel/.kde/share/apps/RecentDocuments/*`, verbose)
+// kde
+await this.deleteIfExist(`/etc/skel/.kde/share/apps/klipper`, verbose)
+await this.deleteIfExist(`/etc/skel/.kde/share/apps/nepomuk`, verbose)
+await this.deleteIfExist(`/etc/skel/.kde/share/apps/RecentDocuments/*`, verbose)
 
-        // others
-        let cmd = `for i in /etc/skel/.gnome2/keyrings/*; do rm ${user}; done`
-        cmd = `find /etc/skel/.gnome2/keyrings/ | grep "${user}" | xargs rm -rf '{}'`
-        await this.showAndExec(cmd, verbose)
+// others
+let cmd = `for i in /etc/skel/.gnome2/keyrings/*; do rm ${user}; done`
+cmd = `find /etc/skel/.gnome2/keyrings/ | grep "${user}" | xargs rm -rf '{}'`
+await this.showAndExec(cmd, verbose)
 
-        cmd = `find /etc/skel/ | grep "${user}" | xargs rm -rf '{}'`
-        await this.showAndExec(cmd, verbose)
+cmd = `find /etc/skel/ | grep "${user}" | xargs rm -rf '{}'`
+await this.showAndExec(cmd, verbose)
 
-        cmd = `find /etc/skel/ -name "*socket*" | xargs rm -rf '{}'`
-        await this.showAndExec(cmd, verbose)
+cmd = `find /etc/skel/ -name "*socket*" | xargs rm -rf '{}'`
+await this.showAndExec(cmd, verbose)
 
-        cmd = `find /etc/skel/ -name "*cache*" | xargs rm -rf '{}'`
-        await this.showAndExec(cmd, verbose)
+cmd = `find /etc/skel/ -name "*cache*" | xargs rm -rf '{}'`
+await this.showAndExec(cmd, verbose)
 
-        cmd = `grep -Rl "${user}" /etc/skel | xargs rm -rf '{}'`
-        await this.showAndExec(cmd, verbose)
-        */
+cmd = `grep -Rl "${user}" /etc/skel | xargs rm -rf '{}'`
+await this.showAndExec(cmd, verbose)
+*/
