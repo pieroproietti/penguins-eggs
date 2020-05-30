@@ -32,35 +32,35 @@ export default class Xdg {
 
         // DESKTOP=Desktop
         let pathPromise = await this.path(user, chroot, 'DESKTOP', verbose)
-        Xdg.mk(chroot, pathPromise)
+        Xdg.mk(chroot, pathPromise, verbose)
 
         // DOWNLOAD=Downloads
         pathPromise = await this.path(user, chroot, 'DOWNLOAD', verbose)
-        Xdg.mk(chroot, pathPromise)
+        Xdg.mk(chroot, pathPromise, verbose)
 
         // TEMPLATES=Templates
         pathPromise = await this.path(user, chroot, 'TEMPLATES', verbose)
-        Xdg.mk(chroot, pathPromise)
+        Xdg.mk(chroot, pathPromise, verbose)
 
         // PUBLICSHARE=Public
         pathPromise = await this.path(user, chroot, 'PUBLICSHARE', verbose)
-        Xdg.mk(chroot, pathPromise)
+        Xdg.mk(chroot, pathPromise, verbose)
 
         // DOCUMENTS=Documents
         pathPromise = await this.path(user, chroot, 'DOCUMENTS', verbose)
-        Xdg.mk(chroot, pathPromise)
+        Xdg.mk(chroot, pathPromise, verbose)
 
         // MUSIC=Music
         pathPromise = await this.path(user, chroot, 'MUSIC', verbose)
-        Xdg.mk(chroot, pathPromise)
+        Xdg.mk(chroot, pathPromise, verbose)
 
         // PICTURES=Pictures
         pathPromise = await this.path(user, chroot, 'PICTURES', verbose)
-        Xdg.mk(chroot, pathPromise)
+        Xdg.mk(chroot, pathPromise, verbose)
 
         // VIDEOS=Videos
         pathPromise = await this.path(user, chroot, 'VIDEOS', verbose)
-        Xdg.mk(chroot, pathPromise)
+        Xdg.mk(chroot, pathPromise, verbose)
     }
 
     /**
@@ -70,7 +70,8 @@ export default class Xdg {
      */
     static async mk(chroot: string, pathPromise: string, verbose = false) {
         let echo = Utils.setEcho(verbose)
-        if (verbose) console.log(chroot + pathPromise)
+
+        if (verbose) console.log(`chroot: ${chroot} pathPromise: ${pathPromise}`)
         if (!fs.existsSync(chroot + pathPromise)) {
             await exec(`mkdir ${chroot}${pathPromise}`, echo)
         }
@@ -84,8 +85,10 @@ export default class Xdg {
      */
     static async  path(user: string, chroot = '/', type = 'DESKTOP', verbose = false): Promise<string> {
 
+        if (verbose) console.log()
         const pathPromise = await exec(`chroot ${chroot} sudo -u ${user} xdg-user-dir ${type}`, { echo: verbose, ignore: false, capture: true })
         const pathTo = pathPromise.data.trim() // /home/live/Scrivania
+        if (verbose) console.log(`tupe: ${type} pathTo: ${pathTo}`)
         return pathTo
     }
 
