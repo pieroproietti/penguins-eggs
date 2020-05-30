@@ -991,7 +991,8 @@ timeout 200\n`
      */
     if (Pacman.isXInstalled()) {
       await Xdg.create(this.user_live, this.work_dir.merged, verbose)
-      const pathToDesktopLive = await Xdg.path(this.user_live, this.work_dir.merged, "DESKTOP")
+      const pathToDesktopLive = await Xdg.path(this.user_live, this.work_dir.merged, 'DESKTOP')
+      //const pathToDesktopLive = '/home/live/Scrivania'
 
       /**
        * creazione dei link
@@ -1024,10 +1025,13 @@ timeout 200\n`
 
       await exec(`chmod +x ${this.work_dir.merged}${pathToDesktopLive}/*.desktop`, echo)
       await exec(`chroot ${this.work_dir.merged}  chown live:live ${pathToDesktopLive} -R`, echo)
-      // Serve per contrassegnare fidati i link di gnome
-      // gio set /home/artisan/Scrivania/penguins-adjust.desktop  "metadata::trusted" yes
-      // https://askubuntu.com/questions/1056591/how-do-i-mark-a-desktop-file-as-trusted-in-ubuntu-18-04
-      await exec(`gio set ${this.work_dir.merged}${pathToDesktopLive}/penguins-eggs.desktop "metadata::trusted" yes`, echo)
+
+      // Provo a rendere affidabile i link sul desktop
+      // sudo -u live
+      await exec(`chroot ${this.work_dir.merged} sudo -u live gio set ${pathToDesktopLive}/dwagent-sh.desktop.desktop metadata::trusted true`, echo)
+      await exec(`chroot ${this.work_dir.merged} sudo -u live gio set ${pathToDesktopLive}/penguins-adjust.desktop metadata::trusted true`, echo)
+      await exec(`chroot ${this.work_dir.merged} sudo -u live gio set ${pathToDesktopLive}/penguins-eggs.desktop metadata::trusted true`, echo)
+
 
       /**
        * Autologin passare a xdg ed aggiungere altri

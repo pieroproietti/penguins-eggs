@@ -28,6 +28,7 @@ export default class Kill extends Command {
   static flags = {
     help: flags.help({ char: 'h' }),
     verbose: flags.boolean({ char: 'v', description: 'verbose' }),
+    umount: flags.boolean({ char: 'u', description: 'umount' }),
   }
 
   static examples = [
@@ -44,6 +45,11 @@ kill the eggs/free the nest
     if (flags.verbose) {
       verbose = true
     }
+    let umount = false
+    if (flags.umount) {
+      umount = true
+    }
+    
     let echo = Utils.setEcho(verbose)
 
     if (Utils.isRoot()) {
