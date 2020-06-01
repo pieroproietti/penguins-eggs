@@ -1,0 +1,22 @@
+
+*** These modified files were found in JOE when it aborted on Mon Jun  1 10:08:17 2020
+*** JOE was aborted by UNIX signal 1
+
+*** File '(Unnamed)'
+/home/artisan/penguins-eggs/.git/COMMIT_EDITMSG
+/home/artisan/penguins-tools/.git/COMMIT_EDITMSG
+/home/artisan/penguins-tools/.git/COMMIT_EDITMSG
+/home/artisan/penguins-eggs/.git/COMMIT_EDITMSG
+/home/artisan/penguins-tools/.git/COMMIT_EDITMSG
+/home/artisan/penguins-tools/.git/COMMIT_EDITMSG
+/home/artisan/penguins-tools/.git/COMMIT_EDITMSG
+/home/artisan/penguins-eggs/.git/COMMIT_EDITMSG
+/home/artisan/penguins-eggs/.git/COMMIT_EDITMSG
+/home/artisan/penguins-eggs/.git/COMMIT_EDITMSG
+/etc/penguins-eggs.conf
+
+*** File '* Startup Log *'
+Processing '/etc/joe/joerc'...
+Processing '/etc/joe/ftyperc'...
+Finished processing /etc/joe/ftyperc
+Finished processing /etc/joe/joerc

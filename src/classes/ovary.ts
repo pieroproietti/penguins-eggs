@@ -41,8 +41,6 @@ export default class Ovary {
 
   distro = {} as IDistro
 
-  eggName = ''
-
   calamares = {} as Calamares
 
   prerequisites = {} as Prerequisites
@@ -53,15 +51,13 @@ export default class Ovary {
 
   force_installer = false
 
-  debian_version = 10
-
   snapshot_dir = ''
 
   efi_work = ''
 
   config_file = '/etc/penguins-eggs.conf' as string
 
-  gui_editor = '/usr/bin/joe' as string
+  gui_editor = '/usr/bin/nano' as string
 
   snapshot_excludes = '/usr/local/share/excludes/penguins-eggs-exclude.list' as string
 
@@ -69,14 +65,11 @@ export default class Ovary {
 
   kernel_image = '' as string
 
-  user_live = '' as string
+  user_opt = '' as string   // user_live
 
-  passwd_live = '' as string
+  user_opt_passwd = '' as string // passwd_live
 
-  passwd_root = '' as string
-
-
-  username_opt = '' as string
+  root_passwd = '' as string // passwd_root
 
   pmount_fixed = false
 
@@ -98,13 +91,11 @@ export default class Ovary {
 
   compression = '' as string
 
-  mksq_opt = '' as string
-
-  save_message = '' as string
-
   session_excludes = '' as string
 
   snapshot_basename = '' as string
+
+  eggName = '' // resulting name of the iso
 
   version = '' as string
 
@@ -123,7 +114,7 @@ export default class Ovary {
 
     this.live = Utils.isLive()
     this.i686 = Utils.isi686()
-    this.debian_version = Utils.getDebianVersion()
+    // this.debian_version = Utils.getDebianVersion()
     this.distro = new Distro(this.remix)
   }
 
@@ -165,13 +156,15 @@ export default class Ovary {
     if (!this.snapshot_dir.endsWith('/')) {
       this.snapshot_dir += '/'
     }
-    this.work_dir.path = this.snapshot_dir + 'work/'
-    this.work_dir.pathIso = this.work_dir.path + 'iso'
+    this.work_dir.path = this.snapshot_dir + 'ovarium/'
     this.work_dir.lowerdir = this.work_dir.path + '.overlay/lowerdir'
     this.work_dir.upperdir = this.work_dir.path + '.overlay/upperdir'
     this.work_dir.workdir = this.work_dir.path + '.overlay/workdir'
     this.work_dir.merged = this.work_dir.path + 'filesystem.squashfs'
-    this.efi_work = this.work_dir.path + 'efi-work/'
+
+    this.efi_work = this.work_dir.path + 'efi/'
+    this.work_dir.pathIso = this.work_dir.path + 'iso'
+
     this.snapshot_excludes = settings.General.snapshot_excludes
     this.snapshot_basename = settings.General.snapshot_basename
     if (this.snapshot_basename === 'hostname') {
@@ -195,7 +188,7 @@ export default class Ovary {
     if (this.compression === '') {
       this.compression = settings.General.compression
     }
-    this.mksq_opt = settings.General.mksq_opt
+    //this.mksq_opt = settings.General.mksq_opt 
     this.edit_boot_menu = settings.General.edit_boot_menu === "yes"
     this.gui_editor = settings.General.gui_editor
     this.force_installer = settings.General.force_installer === "yes"
@@ -209,7 +202,7 @@ export default class Ovary {
     if (this.ifnames_opt === undefined) {
       this.ifnames_opt = ''
     }
-    this.pmount_fixed = settings.General.pmount_system === "yes"
+    this.pmount_fixed = settings.General.pmount_fixed === "yes"
     this.ssh_pass = settings.General.ssh_pass === "yes"
 
     /**
@@ -217,25 +210,24 @@ export default class Ovary {
      * user's name. If the name is not "user" then add boot option. ALso use
      * the same username for cleaning geany history.
      */
-    this.user_live = settings.General.user_live
+    this.user_opt = settings.General.user_opt
 
-    if (this.user_live === undefined || this.user_live === '') {
-      this.user_live = shx.exec(`awk -F":" '/1000:1000/ { print $1 }' /etc/passwd`, { silent: true }).stdout.trim()
-      if (this.user_live === '') {
-        this.user_live = 'live'
+    if (this.user_opt === undefined || this.user_opt === '') {
+      this.user_opt = shx.exec(`awk -F":" '/1000:1000/ { print $1 }' /etc/passwd`, { silent: true }).stdout.trim()
+      if (this.user_opt === '') {
+        this.user_opt = 'live'
       }
     }
-    this.passwd_live = settings.General.passwd_live
-    if (this.passwd_live === '') {
-      this.passwd_live = 'evolution'
+    this.user_opt_passwd = settings.General.user_opt_passwd
+    if (this.user_opt_passwd === '') {
+      this.user_opt_passwd = 'evolution'
     }
 
-    this.passwd_root = settings.General.passwd_root
-    if (this.passwd_root === '') {
-      this.passwd_root = 'evolution'
+    this.root_passwd = settings.General.root_passwd
+    if (this.root_passwd === '') {
+      this.root_passwd = 'evolution'
     }
 
-    this.username_opt = `username=${this.user_live}`
 
     const timezone = shx.exec('cat /etc/timezone', { silent: true }).stdout.trim()
     this.timezone_opt = `timezone=${timezone}`
@@ -249,21 +241,20 @@ export default class Ovary {
     console.log(`application_nane:  ${this.app.name} ${this.app.version}`)
     console.log(`config_file:       ${this.config_file}`)
     console.log(`snapshot_dir:      ${this.snapshot_dir}`)
-    console.log(`snapshot_exclude:  ${this.snapshot_excludes}`)
     console.log(`snapshot_basename: ${this.snapshot_basename}`)
+    console.log(`snapshot_exclude:  ${this.snapshot_excludes}`)
+    console.log(`kernel_image:      ${this.kernel_image}`)
+    console.log(`initrd_image:      ${this.initrd_image}`)
     console.log(`work_dir:          ${this.work_dir.path}`)
     console.log(`efi_work:          ${this.efi_work}`)
     console.log(`make_efi:          ${this.make_efi}`)
     console.log(`make_md5sum:       ${this.make_md5sum}`)
     console.log(`make_isohybrid:    ${this.make_isohybrid}`)
     console.log(`compression:       ${this.compression}`)
-    console.log(`mksq_opt:          ${this.mksq_opt}`)
     console.log(`edit_boot_menu:    ${this.edit_boot_menu}`)
     console.log(`gui_editor:        ${this.gui_editor}`)
     console.log(`force_installer:   ${this.force_installer}`)
-    console.log(`kernel_image:      ${this.kernel_image}`)
-    console.log(`user_live:         ${this.user_live}`)
-    console.log(`initrd_image:      ${this.initrd_image}`)
+    console.log(`user_opt:          ${this.user_opt}`)
     console.log(`netconfig_opt:     ${this.netconfig_opt}`)
     console.log(`ifnames_opt:       ${this.ifnames_opt}`)
     console.log(`pmount_fixed:      ${this.pmount_fixed}`)
@@ -389,6 +380,16 @@ export default class Ovary {
     if (verbose) {
       console.log('Overy: liveCreateStructure')
     }
+
+    console.log (`(this.work_dir: ${this.work_dir.path}`)
+    if (!fs.existsSync(this.work_dir.path)){
+      shx.mkdir('-p', this.work_dir.path)
+    }
+
+    if (!fs.existsSync(this.work_dir.path +'/README.md')){
+      shx.cp(path.resolve(__dirname, '../../conf/ovary.md'), this.work_dir.path+'README.md')
+    }
+
     if (!fs.existsSync(this.work_dir.lowerdir)) {
       shx.mkdir('-p', this.work_dir.lowerdir)
     }
@@ -574,7 +575,7 @@ export default class Ovary {
 
     let cmd = ''
     if (this.edit_boot_menu) {
-      cmd = `${this.gui_editor} ${this.work_dir.path}/iso/boot/isolinux/menu.cfg`
+      cmd = `${this.gui_editor} ${this.work_dir.path}/iso/isolinux/menu.cfg`
       await exec(cmd, echo)
       if (this.make_efi) {
         cmd = `${this.gui_editor} ${this.work_dir.path}/iso/boot/grub/grub.cfg`
@@ -721,7 +722,7 @@ timeout 200\n`
     shx.sed('-i', '%kernel%', Utils.kernerlVersion(), mpath)
     shx.sed('-i', '%vmlinuz%', `/live${this.kernel_image}`, mpath)
     shx.sed('-i', '%initrd-img%', `/live${this.initrd_image}`, mpath)
-    shx.sed('-i', '%username-opt%', this.username_opt, mpath)
+    shx.sed('-i', '%username-opt%', this.user_opt, mpath)
     shx.sed('-i', '%netconfig-opt%', this.netconfig_opt, mpath)
     shx.sed('-i', '%timezone-opt%', this.timezone_opt, mpath)
   }
@@ -779,7 +780,8 @@ timeout 200\n`
     if (fs.existsSync(`${this.work_dir.pathIso}/live/filesystem.squashfs`)) {
       fs.unlinkSync(`${this.work_dir.pathIso}/live/filesystem.squashfs`)
     }
-    let cmd = `mksquashfs ${this.work_dir.merged} ${this.work_dir.pathIso}/live/filesystem.squashfs ${compression} ${(this.mksq_opt === '' ? '' : ' ' + this.mksq_opt)} -wildcards -ef ${this.snapshot_excludes} ${this.session_excludes} `
+    //let cmd = `mksquashfs ${this.work_dir.merged} ${this.work_dir.pathIso}/live/filesystem.squashfs ${compression} ${(this.mksq_opt === '' ? '' : ' ' + this.mksq_opt)} -wildcards -ef ${this.snapshot_excludes} ${this.session_excludes} `
+    let cmd = `mksquashfs ${this.work_dir.merged} ${this.work_dir.pathIso}/live/filesystem.squashfs ${compression} -wildcards -ef ${this.snapshot_excludes} ${this.session_excludes} `
     await exec(cmd, echo)
     // usr/bin/mksquashfs /.bind-root iso-template/antiX/linuxfs -comp ${this.compression} ${(this.mksq_opt === '' ? '' : ' ' + this.mksq_opt)} -wildcards -ef ${this.snapshot_excludes} ${this.session_excludes}`)
   }
@@ -981,22 +983,22 @@ timeout 200\n`
       await exec(`chroot ${this.work_dir.merged} deluser ${users[i]}`, echo)
     }
 
-    await exec(`chroot ${this.work_dir.merged} adduser ${this.user_live} --home /home/${this.user_live} --shell /bin/bash --disabled-password --gecos ",,,"`, echo)
-    await exec(`chroot ${this.work_dir.merged} echo ${this.user_live}:${this.passwd_live} | chroot ${this.work_dir.merged} chpasswd `, echo)
-    await exec(`chroot ${this.work_dir.merged} usermod -aG sudo ${this.user_live}`, echo)
+    await exec(`chroot ${this.work_dir.merged} adduser ${this.user_opt} --home /home/${this.user_opt} --shell /bin/bash --disabled-password --gecos ",,,"`, echo)
+    await exec(`chroot ${this.work_dir.merged} echo ${this.user_opt}:${this.user_opt_passwd} | chroot ${this.work_dir.merged} chpasswd `, echo)
+    await exec(`chroot ${this.work_dir.merged} usermod -aG sudo ${this.user_opt}`, echo)
 
     /**
      * Cambio passwd su root in chroot
      */
-    await exec(`chroot ${this.work_dir.merged} echo root:${this.passwd_root} | chroot ${this.work_dir.merged} chpasswd `, echo)
+    await exec(`chroot ${this.work_dir.merged} echo root:${this.root_passwd} | chroot ${this.work_dir.merged} chpasswd `, echo)
 
 
     /**
      * Solo per sistemi grafici
      */
     if (Pacman.isXInstalled()) {
-      await Xdg.create(this.user_live, this.work_dir.merged, verbose)
-      const pathHomeLive = `/home/${this.user_live}`
+      await Xdg.create(this.user_opt, this.work_dir.merged, verbose)
+      const pathHomeLive = `/home/${this.user_opt}`
       const pathToDesktopLive = pathHomeLive + '/' + Xdg.traduce('DESKTOP')
       //const pathToDesktopLive = '/home/live/Scrivania'
 
@@ -1049,9 +1051,9 @@ timeout 200\n`
         await exec(`mount --bind --make-slave /dev ${this.work_dir.merged}/dev`, echo)
         //await exec(`mount -o remount,bind,ro ${this.work_dir.merged}/dev`, echo)
 
-        await exec(`chroot ${this.work_dir.merged} sudo -u ${this.user_live} dbus-launch gio set file://${pathToDesktopLive}/dwagent-sh.desktop metadata::trusted true`, echo)
-        await exec(`chroot ${this.work_dir.merged} sudo -u ${this.user_live} dbus-launch gio set file://${pathToDesktopLive}/penguins-adjust.desktop metadata::trusted true`, echo)
-        await exec(`chroot ${this.work_dir.merged} sudo -u ${this.user_live} dbus-launch gio set file://${pathToDesktopLive}/penguins-eggs.desktop metadata::trusted true`, echo)
+        await exec(`chroot ${this.work_dir.merged} sudo -u ${this.user_opt} dbus-launch gio set file://${pathToDesktopLive}/dwagent-sh.desktop metadata::trusted true`, echo)
+        await exec(`chroot ${this.work_dir.merged} sudo -u ${this.user_opt} dbus-launch gio set file://${pathToDesktopLive}/penguins-adjust.desktop metadata::trusted true`, echo)
+        await exec(`chroot ${this.work_dir.merged} sudo -u ${this.user_opt} dbus-launch gio set file://${pathToDesktopLive}/penguins-eggs.desktop metadata::trusted true`, echo)
 
         // smonto devpts
         if (Utils.isMountpoint(`${this.work_dir.merged}/dev/devpts`)) {
@@ -1068,7 +1070,7 @@ timeout 200\n`
       /**
        * Autologin passare a xdg ed aggiungere altri
        */
-      Xdg.autologin(Utils.getPrimaryUser(), this.user_live, this.work_dir.merged)
+      Xdg.autologin(Utils.getPrimaryUser(), this.user_opt, this.work_dir.merged)
     }
   }
 
@@ -1248,7 +1250,7 @@ timeout 200\n`
     shx.sed('-i', '%kernel%', Utils.kernerlVersion(), gpath)
     shx.sed('-i', '%vmlinuz%', `/live${this.kernel_image}`, gpath)
     shx.sed('-i', '%initrd-img%', `/live${this.initrd_image}`, gpath)
-    shx.sed('-i', '%username-opt%', this.username_opt, gpath)
+    shx.sed('-i', '%username-opt%', this.user_opt, gpath)
     shx.sed('-i', '%netconfig-opt%', this.netconfig_opt, gpath)
     shx.sed('-i', '%timezone-opt%', this.timezone_opt, gpath)
   }
