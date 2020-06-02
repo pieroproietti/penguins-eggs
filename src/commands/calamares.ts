@@ -10,12 +10,18 @@ import Utils from '../classes/utils'
 import Ovary from '../classes/ovary'
 import Pacman from '../classes/pacman'
 
+import { IRemix } from '../interfaces'
+
+
 export default class Calamares extends Command {
   static description = 'configure calamares or install and configure it'
+
+  remix = {} as IRemix
 
   static flags = {
     help: flags.help({ char: 'h' }),
     verbose: flags.boolean({ char: 'v' }),
+    branding: flags.string({ description: 'branding for calamares' }),
     install: flags.boolean({ char: 'i', description: 'install' }),
   }
 
@@ -28,22 +34,34 @@ export default class Calamares extends Command {
   async run() {
     Utils.titles('calamares')
 
-    const { args, flags } = this.parse(Calamares)
+    const { flags } = this.parse(Calamares)
     let verbose = false
     if (flags.verbose) {
       verbose = true
     }
 
+    // Nome del brand di calamares
+    let branding = 'eggs'
+    if (flags.branding !== undefined) {
+      branding = flags.branding
+      console.log(`calamares branding: ${branding}`)
+    }
+
     if (Utils.isRoot()) {
       if (Pacman.isXInstalled()) {
-        if(await Utils.customConfirm(`Select yes to continue...`)){
+        if (await Utils.customConfirm(`Select yes to continue...`)) {
           if (flags.install) {
             Utils.warning('Installing calamares prerequisites...')
-            console.log('Installing calamares')
             await Pacman.prerequisitesCalamaresInstall()
           }
 
-          const ovary = new Ovary
+          if (branding === '') {
+            this.remix.branding = 'eggs'
+          } else {
+            this.remix.branding = branding
+          }
+
+          const ovary = new Ovary()
           if (await ovary.loadSettings()) {
             Utils.warning('Configuring calamares...')
             await ovary.calamaresConfigure(verbose)

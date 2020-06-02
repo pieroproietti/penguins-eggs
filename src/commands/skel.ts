@@ -6,13 +6,8 @@
  */
 import { Command, flags } from '@oclif/command'
 import Utils from '../classes/utils'
-import chalk = require('chalk')
 import fs = require('fs')
-import Pacman from '../classes/pacman'
 import Xdg from '../classes/xdg'
-
-const exec = require('../lib/utils').exec
-
 
 export default class Skel extends Command {
   static description = 'update skel from home configuration'
@@ -21,13 +16,11 @@ export default class Skel extends Command {
     `$ eggs skel --user mauro
 desktop configuration of user mauro will get used as default`]
 
-
   static flags = {
     help: flags.help({ char: 'h' }),
     user: flags.string({ char: 'u', description: 'user to be used' }),
     verbose: flags.boolean({ char: 'v' }),
   }
-
 
   async run() {
     const { flags } = this.parse(Skel)

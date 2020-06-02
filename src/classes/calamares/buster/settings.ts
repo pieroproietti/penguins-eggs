@@ -14,14 +14,14 @@ import { IRemix } from '../../../interfaces'
  * @param displaymanager 
  * @param branding 
  */
-export function settings(displaymanager = false, sourcesMedia = false, sourcesTrusted = true, remix : IRemix): string {
+export function settings(displaymanager = false, sourcesMedia = false, sourcesTrusted = true, remix: IRemix): string {
   // path di ricerca dei moduli
-  const modulesSearch: string [] = []
+  const modulesSearch: string[] = []
   modulesSearch.push('local')
   modulesSearch.push('/usr/lib/calamares/modules')
 
   // moduli da mostrare a video
-  let show: string[] = []
+  const show: string[] = []
   show.push('welcome')
   show.push('locale')
   show.push('keyboard')
@@ -30,14 +30,14 @@ export function settings(displaymanager = false, sourcesMedia = false, sourcesTr
   show.push('summary')
 
   // moduli da eseguire
-  let exec: string [] = []
+  let exec: string[] = []
   exec.push('partition')
   exec.push('mount')
   exec.push('unpackfs')
-  if (sourcesMedia){
+  if (sourcesMedia) {
     exec.push('sources-media')
   }
-  if (sourcesTrusted){
+  if (sourcesTrusted) {
     exec.push('sources-trusted')
   }
   exec.push('machineid')
@@ -46,7 +46,7 @@ export function settings(displaymanager = false, sourcesMedia = false, sourcesTr
   exec.push('keyboard')
   exec.push('localecfg')
   exec.push('users')
-  if (displaymanager){
+  if (displaymanager) {
     exec.push('displaymanager')
   }
   exec.push('networkcfg')
@@ -74,18 +74,18 @@ export function settings(displaymanager = false, sourcesMedia = false, sourcesTr
     exec.push('sources-final')
   }
   exec.push('umount')
-  
+
   const settings = {
     'modules-search': modulesSearch,
     'sequence': [
-      {'show': show},
-      {'exec': exec},
-      {'show': ['finished'] },
+      { 'show': show },
+      { 'exec': exec },
+      { 'show': ['finished'] },
     ],
     'branding': remix.branding,
     'prompt-install': false,
     'dont-chroot': false,
-    }
-        
+  }
+  console.log(settings)
   return yaml.safeDump(settings)
 }

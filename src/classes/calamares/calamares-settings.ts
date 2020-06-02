@@ -4,10 +4,10 @@ import calamaresConfig from './buster/calamares-config'
 /**
  * 
  */
-export class calamaresSetting{
+export class calamaresSetting {
     remix: IRemix
 
-    distro : IDistro
+    distro: IDistro
 
     verbose = false
 
@@ -17,7 +17,7 @@ export class calamaresSetting{
      * @param oses 
      * @param verbose 
      */
-    constructor(remix: IRemix, distro: IDistro, verbose = false){
+    constructor(remix: IRemix, distro: IDistro, verbose = false) {
         this.remix = remix
         this.distro = distro
         this.verbose = verbose
@@ -27,7 +27,7 @@ export class calamaresSetting{
      * 
      */
     async config() {
-        const c = new calamaresConfig(this.remix, this.distro, this.verbose) 
+        const c = new calamaresConfig(this.remix, this.distro, this.verbose)
         c.config()
     }
 }
