@@ -107,7 +107,7 @@ export default class Xdg {
     let files = [
       '.bashrc',
       '.bash_logout',
-      '.config', // genera errore nella costruzione delle directory
+      '.config', 
       '.local',
       '.profile',
     ]
@@ -137,39 +137,74 @@ export default class Xdg {
 
     // Eseguo la pulizia dei dati personali in skel
 
-    
-
 
     // .config
+    // await this.modFileIfExist(`rm -rf`, `/etc/skel/.config/autostart`, verbose)
+    await this.modFileIfExist(`rm -rf`, `/etc/skel/.config/balena-etcher-electron`, verbose)
+    await this.modFileIfExist(`rm -rf`, `/etc/skel/.config/bleachbit`, verbose)
+    await this.modFileIfExist(`rm -rf`, `/etc/skel/.config/cinnamon-session`, verbose)
+    await this.modFileIfExist(`rm -rf`, `/etc/skel/.config/Code`, verbose)
+    // await this.modFileIfExist(`rm -rf`, `/etc/skel/.config/configstore`, verbose)
+    // await this.modFileIfExist(`rm -rf`, `/etc/skel/.config/dconf`, verbose)
+    await this.modFileIfExist(`rm -rf`, `/etc/skel/.config/dleyna-server-service.conf`, verbose)
+    await this.modFileIfExist(`rm -rf`, `/etc/skel/.config/enchant`, verbose)
+    await this.modFileIfExist(`rm -rf`, `/etc/skel/.config/eog`, verbose)
+    await this.modFileIfExist(`rm -rf`, `/etc/skel/.config/filezilla`, verbose)
+    await this.modFileIfExist(`rm -rf`, `/etc/skel/.config/gedit`, verbose)
+    await this.modFileIfExist(`rm -rf`, `/etc/skel/.config/GIMP`, verbose)
+    await this.modFileIfExist(`rm -rf`, `/etc/skel/.config/Gitter`, verbose)
+    // await this.modFileIfExist(`rm -rf`, `/etc/skel/.config/gnote`, verbose)
+    // await this.modFileIfExist(`rm -rf`, `/etc/skel/.config/goa-1.0`, verbose)
+    await this.modFileIfExist(`rm -rf`, `/etc/skel/.config/google-chrome`, verbose)
+    // await this.modFileIfExist(`rm -rf`, `/etc/skel/.config/gtk-2.0`, verbose)
+    // await this.modFileIfExist(`rm -rf`, `/etc/skel/.config/gtk-3.0`, verbose)
+    await this.modFileIfExist(`rm -rf`, `/etc/skel/.config/ibus`, verbose)
+    await this.modFileIfExist(`rm -rf`, `/etc/skel/.config/inkscape`, verbose)
+    await this.modFileIfExist(`rm -rf`, `/etc/skel/.config/kazam`, verbose)
+    await this.modFileIfExist(`rm -rf`, `/etc/skel/.config/KeePass`, verbose)
+    await this.modFileIfExist(`rm -rf`, `/etc/skel/.config/libreoffice`, verbose)
+    // await this.modFileIfExist(`rm -rf`, `/etc/skel/.config/menus`, verbose)
+    await this.modFileIfExist(`rm -rf`, `/etc/skel/.config/mimeapps.list`, verbose)
+    await this.modFileIfExist(`rm -rf`, `/etc/skel/.config/mpv`, verbose)
+    // await this.modFileIfExist(`rm -rf`, `/etc/skel/.config/nemo`, verbose)
+    await this.modFileIfExist(`rm -rf`, `/etc/skel/.config/obs-studio`, verbose)
+    await this.modFileIfExist(`rm -rf`, `/etc/skel/.config/plank`, verbose)
+    await this.modFileIfExist(`rm -rf`, `/etc/skel/.config/Postman`, verbose)
+    await this.modFileIfExist(`rm -rf`, `/etc/skel/.config/procps`, verbose)
+    // await this.modFileIfExist(`rm -rf`, `/etc/skel/.config/pulse`, verbose)
+    await this.modFileIfExist(`rm -rf`, `/etc/skel/.config/QtProject.conf`, verbose)
+    await this.modFileIfExist(`rm -rf`, `/etc/skel/.config/Slack`, verbose)
+    await this.modFileIfExist(`rm -rf`, `/etc/skel/.config/totem`, verbose)
+    await this.modFileIfExist(`rm -rf`, `/etc/skel/.config/transmission`, verbose)
+    await this.modFileIfExist(`rm -rf`, `/etc/skel/.config/Unknown Organization`, verbose)
     await this.modFileIfExist(`rm -rf`, `/etc/skel/.config/user-dirs.dirs`, verbose)
     await this.modFileIfExist(`rm -rf`, `/etc/skel/.config/user-dirs.locale`, verbose)
-    await this.modFileIfExist(`rm -rf`, `/etc/skel/.config/gtk-3.0/bookmarks`, verbose)
-    await this.modFileIfExist(`rm -rf`, `/etc/skel/.config/google-chrome`, verbose)           // google-chrome
-    await this.modFileIfExist(`rm -rf`, `/etc/skel/.cinnamon/spices.cache`, verbose)          // cinnamon
-    await this.modFileIfExist(`rm -rf`, `/etc/skel/.config/Code`, verbose)                    // code
-    await this.modFileIfExist(`rm -rf`, `/etc/skel/.config/Slack`, verbose)                   // slack
-    await this.modFileIfExist(`rm -rf`, `/etc/skel/.config/Gitter`, verbose)                  // gitter
-    await this.modFileIfExist(`rm -rf`, `/etc/skel/.config/libreoffice`, verbose)             // libreoffice
-    await this.modFileIfExist(`rm -rf`, `/etc/skel/.config/Postman`, verbose)                 // postman
-    await this.modFileIfExist(`rm -rf`, `/etc/skel/.config/balena-etcher-electron`, verbose)  // balena-etcher-electron
-    await this.modFileIfExist(`rm -rf`, `/etc/skel/.config/GIMP`, verbose)                    // gimp
-    await this.modFileIfExist(`rm -rf`, `/etc/skel/.config/obs-studio`, verbose)              // obs-studio
-    await this.modFileIfExist(`rm -rf`, `/etc/skel/.config/obs-studio`, verbose)              // obs-studio
-    await this.modFileIfExist(`rm -rf`, `/etc/skel/.config/transmission`, verbose)            // transmission
-    await this.modFileIfExist(`rm -rf`, `/etc/skel/.config/inkscape`, verbose)                // inkscape
-    await this.modFileIfExist(`rm -rf`, `/etc/skel/.config/filezilla`, verbose)               // filezilla
-    await this.modFileIfExist(`rm -rf`, `/etc/skel/.config/KeePass`, verbose)                 // KeePass
-    
+    await this.modFileIfExist(`rm -rf`, `/etc/skel/.config/virt-viewer`, verbose)
+    await this.modFileIfExist(`rm -rf`, `/etc/skel/.config/yelp`, verbose)
+    await this.modFileIfExist(`rm -rf`, `/etc/skel/.config/zoomus.conf`, verbose)
 
     // .local
-    await this.modFileIfExist(`rm -rf`, `/etc/skel/.local/share/Trash`, verbose)
+    await this.modFileIfExist(`rm -rf`, `/etc/skel/.local/share/applications`, verbose)
+    // await this.modFileIfExist(`rm -rf`, `/etc/skel/.local/share/cinnamon`, verbose)
+    await this.modFileIfExist(`rm -rf`, `/etc/skel/.local/share/data`, verbose) // MEGAlink
+    await this.modFileIfExist(`rm -rf`, `/etc/skel/.local/share/desktop-directories`, verbose)
+    await this.modFileIfExist(`rm -rf`, `/etc/skel/.local/share/gegl-0.4`, verbose)
+    await this.modFileIfExist(`rm -rf`, `/etc/skel/.local/share/gnote`, verbose)
+    await this.modFileIfExist(`rm -rf`, `/etc/skel/.local/share/grilo-plugins`, verbose)
+    await this.modFileIfExist(`rm -rf`, `/etc/skel/.local/share/gsettings-data-convert`, verbose)
+    await this.modFileIfExist(`rm -rf`, `/etc/skel/.local/share/gstreamer-1.0`, verbose)
     await this.modFileIfExist(`rm -rf`, `/etc/skel/.local/share/gvfs-metadata`, verbose)
-    await this.modFileIfExist(`rm -rf`, `/etc/skel/.local/gvfs-metadata`, verbose)
-    await this.modFileIfExist(`rm -rf`, `/etc/skel/.local/share/keyrings/login.keyring`, verbose)
-    await this.modFileIfExist(`rm -rf`, `/etc/skel/.local/share/keyrings/user.keystore`, verbose)
-    await this.modFileIfExist(`rm -rf`, `/etc/skel/.local/share/data`, verbose) // Ci scrive Limited/MEGAsync almeno...
-    await this.modFileIfExist(`rm -rf`, `/etc/skel/.local/share/shotwell`, verbose) // shotwell
-    await this.modFileIfExist(`rm -rf`, `/etc/skel/.local/share/icons`, verbose) // icons 
+    await this.modFileIfExist(`rm -rf`, `/etc/skel/.local/share/icc`, verbose)
+    await this.modFileIfExist(`rm -rf`, `/etc/skel/.local/share/icons`, verbose)
+    await this.modFileIfExist(`rm -rf`, `/etc/skel/.local/share/keyrings`, verbose)
+    await this.modFileIfExist(`rm -rf`, `/etc/skel/.local/share/nemo`, verbose)
+    await this.modFileIfExist(`rm -rf`, `/etc/skel/.local/share/plank`, verbose)
+    await this.modFileIfExist(`rm -rf`, `/etc/skel/.local/share/recently-used.xbel`, verbose)
+    await this.modFileIfExist(`rm -rf`, `/etc/skel/.local/share/shotwell`, verbose)
+    await this.modFileIfExist(`rm -rf`, `/etc/skel/.local/share/totem`, verbose)
+    await this.modFileIfExist(`rm -rf`, `/etc/skel/.local/share/Trash`, verbose)
+    await this.modFileIfExist(`rm -rf`, `/etc/skel/.local/share/webkitgtk`, verbose)
+
 
 
     // Sistemo i diritti della skel
@@ -194,13 +229,8 @@ export default class Xdg {
   static async modFileIfExist(cmd: string, file: string, verbose = false) {
     let echo = Utils.setEcho(verbose)
 
-    if (verbose) {
-      console.log(`cmd: ${cmd}`)
-      console.log(`file: ${file}`)
-      }
-      
-    if (fs.existsSync(file)) { 
-      console.log(chalk.bgWhite.red(`${file} to delete`))
+    if (fs.existsSync(file)) {
+      console.log(chalk.bgWhite.red(`${file}`))
       await exec(`${cmd} ${file}`, echo)
     } else {
       console.log(chalk.green(`${file} not found`))
