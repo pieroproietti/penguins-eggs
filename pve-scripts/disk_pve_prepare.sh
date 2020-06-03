@@ -2,11 +2,19 @@
 #
 # parameter: $1 disk example: /dev/sda
 #
+if [ -z "$1" ]; then
+    echo "usage: $0 \$1 "
+    echo "where: \$1 is /dev/sda, /dev/sdb, etc"
+    exit
+fi
+
 LVM_PARTNAME=`fdisk $1 -l | grep 8e | awk '{print $1}' | cut -d "/" -f3`
+echo "LVM_PARTNAME=$LVM_PARTNAME"
 LVM_SIZE=`cat /proc/partitions | grep $LVM_PARTNAME| awk '{print $3}' | grep "[0-9]"`
 echo "LVM_SIZE=$LVM_SIZE"
 LVM_SIZE=$(($LVM_SIZE/1024))
 echo "LVM_SIZE=$LVM_SIZE"
+exit
 
 PENGUIN_SWAP="/dev/penguin/swap"
 PENGUIN_ROOT="/dev/penguin/root"
