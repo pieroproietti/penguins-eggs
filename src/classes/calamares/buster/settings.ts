@@ -86,6 +86,6 @@ export function settings(displaymanager = false, sourcesMedia = false, sourcesTr
     'prompt-install': false,
     'dont-chroot': false,
   }
-  console.log(settings)
+  // console.log(settings)
   return yaml.safeDump(settings)
 }
