@@ -39,7 +39,7 @@ export default class Hatching {
     let retval = false
     const echo = Utils.setEcho(verbose)
     if (verbose) {
-      console.log('>>>hatching: questions')
+      Utils.warning('hatching: questions')
     }
 
     const msg1 = '\nThe process of installation will format your disk and destroy all datas on it.\n Did You are sure?\n'
@@ -61,7 +61,7 @@ export default class Hatching {
   async install(verbose = false, umount = false) {
     // const echo = Utils.setEcho(verbose)
     if (verbose) {
-      console.log('>>>hatching: install')
+      Utils.warning('>>>hatching: install')
     }
 
     const devices = {} as IDevices
@@ -168,7 +168,7 @@ export default class Hatching {
   async setTimezone(verbose = false) {
     const echo = Utils.setEcho(verbose)
     if (verbose) {
-      console.log('hatching: setTimezone')
+      Utils.warning('hatching: setTimezone')
     }
 
     if (fs.existsSync('/etc/localtime')) {
@@ -187,7 +187,7 @@ export default class Hatching {
   async autologinConfig(newUser = 'artisan', verbose = false) {
     // const echo = Utils.setEcho(verbose)
     if (verbose) {
-      console.log('hatching: autoLoginConfig')
+      Utils.warning('hatching: autoLoginConfig')
     }
     const oldUser = Utils.getPrimaryUser()
     if (Pacman.packageIsInstalled('lightdm')) {
@@ -207,7 +207,7 @@ export default class Hatching {
   async addUser(username = 'live', password = 'evolution', fullName = '', roomNumber = '', workPhone = '', homePhone = '', verbose = false) {
     const echo = Utils.setEcho(verbose)
     if (verbose) {
-      console.log('hatching: addUser')
+      Utils.warning('hatching: addUser')
     }
 
     const cmd = `chroot ${this.target} \
@@ -232,7 +232,7 @@ adduser ${username} \
   async changePassword(username = 'live', newPassword = 'evolution', verbose = false) {
     const echo = Utils.setEcho(verbose)
     if (verbose) {
-      console.log('hatching: changePassword')
+      Utils.warning('hatching: changePassword')
     }
     const cmd = `echo ${username}:${newPassword} | chroot ${this.target} chpasswd `
     await exec(cmd, echo)
@@ -245,7 +245,7 @@ adduser ${username} \
   async delLiveUser(verbose = false) {
     const echo = Utils.setEcho(verbose)
     if (verbose) {
-      console.log('hatching: delLiveUser')
+      Utils.warning('hatching: delLiveUser')
     }
     if (Utils.isLive()) {
       const user: string = Utils.getPrimaryUser()
@@ -262,7 +262,7 @@ adduser ${username} \
   async grubInstall(options: any, verbose = false) {
     const echo = Utils.setEcho(verbose)
     if (verbose) {
-      console.log('hatching: grubInstall')
+      Utils.warning('hatching: grubInstall')
     }
     await exec(`chroot ${this.target} apt update`)
     if (this.efi) {
@@ -281,7 +281,7 @@ adduser ${username} \
   async updateInitramfs(verbose = false) {
     const echo = Utils.setEcho(verbose)
     if (verbose) {
-      console.log('hatching: updateInitramfs')
+      Utils.warning('hatching: updateInitramfs')
     }
 
     await exec(`chroot ${this.target}  update-initramfs -u -k $(uname -r)`, echo)
@@ -293,7 +293,7 @@ adduser ${username} \
   async mountVFS(verbose = false) {
     const echo = Utils.setEcho(verbose)
     if (verbose) {
-      console.log('hatching: mountVFS')
+      Utils.warning('hatching: mountVFS')
     }
 
     console.log('mount VFS')
@@ -312,7 +312,7 @@ adduser ${username} \
   async umountVFS(verbose = false) {
     const echo = Utils.setEcho(verbose)
     if (verbose) {
-      console.log('hatching: umountVFS')
+      Utils.warning('hatching: umountVFS')
     }
 
     if (Utils.isMountpoint(`${this.target}/dev/pts`)) {
@@ -353,7 +353,7 @@ adduser ${username} \
   async fstab(devices: IDevices, installDevice: string, verbose = false) {
     // const echo = Utils.setEcho(verbose)
     if (verbose) {
-      console.log('hatching: fstab')
+      Utils.warning('hatching: fstab')
     }
 
     const file = `${this.target}/etc/fstab`
@@ -396,7 +396,7 @@ adduser ${username} \
   async hostname(options: any, verbose = false) {
     const echo = Utils.setEcho(verbose)
     if (verbose) {
-      console.log('hatching: hostname')
+      Utils.warning('hatching: hostname')
     }
 
     const file = `${this.target}/etc/hostname`
@@ -413,7 +413,7 @@ adduser ${username} \
   async resolvConf(options: any, verbose = false) {
     const echo = Utils.setEcho(verbose)
     if (verbose) {
-      console.log('hatching: resolvConf')
+      Utils.warning('hatching: resolvConf')
     }
 
     console.log(`tipo di resolv.con: ${options.netAddressType}`)
@@ -440,7 +440,7 @@ adduser ${username} \
   async interfaces(options: any, verbose = false) {
     const echo = Utils.setEcho(verbose)
     if (verbose) {
-      console.log('hatching: interfaces')
+      Utils.warning('hatching: interfaces')
     }
 
     if (options.netAddressType === 'static') {
@@ -465,7 +465,7 @@ adduser ${username} \
   async hosts(options: any, verbose = false) {
     // const echo = Utils.setEcho(verbose)
     if (verbose) {
-      console.log('hatching: hosts')
+      Utils.warning('hatching: hosts')
     }
 
     const file = `${this.target}/etc/hosts`
@@ -493,7 +493,7 @@ adduser ${username} \
   async egg2system(devices: IDevices, verbose = false): Promise<void> {
     const echo = Utils.setEcho(verbose)
     if (verbose) {
-      console.log('hatching: egg2system')
+      Utils.warning('hatching: egg2system')
     }
 
     let cmd = ''
@@ -559,7 +559,7 @@ adduser ${username} \
   async mkfs(devices: IDevices, verbose = false): Promise<boolean> {
     const echo = Utils.setEcho(verbose)
     if (verbose) {
-      console.log('hatching: mkfs')
+      Utils.warning('hatching: mkfs')
     }
 
     const result = true
@@ -578,7 +578,7 @@ adduser ${username} \
   async mount4target(devices: IDevices, verbose = false): Promise<boolean> {
     const echo = Utils.setEcho(verbose)
     if (verbose) {
-      console.log('hatching: mount4target')
+      Utils.warning('hatching: mount4target')
     }
 
     if (!fs.existsSync(this.target)) {
@@ -604,7 +604,7 @@ adduser ${username} \
   async umount4target(devices: IDevices, verbose = false): Promise<boolean> {
     const echo = Utils.setEcho(verbose)
     if (verbose) {
-      console.log('hatching: umount4target')
+      Utils.warning('hatching: umount4target')
     }
 
     if (this.efi) {
@@ -623,16 +623,16 @@ adduser ${username} \
   async diskPartition(device: string, verbose = false): Promise<boolean> {
     const echo = Utils.setEcho(verbose)
     if (verbose) {
-      console.log('hatching: diskPartition')
+      Utils.warning('hatching: diskPartition')
     }
 
     if (this.efi) {
-      console.log('efi system')
+      Utils.warning('hatching: this is a efi system')
       await exec(`parted --script ${device} mklabel gpt mkpart primary 0% 1% mkpart primary 1% 95% mkpart primary 95% 100%`, echo)
       await exec(`parted --script ${device} set 1 boot on`, echo)
       await exec(`parted --script ${device} set 1 esp on`, echo)
     } else {
-      console.log('bios system')
+      Utils.warning('hatching: this is a bios system')
       await exec(`parted --script ${device} mklabel msdos`, echo)
       await exec(`parted --script --align optimal ${device} mkpart primary 1MiB 95%`, echo)
       await exec(`parted --script ${device} set 1 boot on`, echo)
@@ -648,7 +648,7 @@ adduser ${username} \
   async isRotational(device: string, verbose = false): Promise<boolean> {
     // const echo = Utils.setEcho(verbose)
     if (verbose) {
-      console.log('hatching: isRotational')
+      Utils.warning('hatching: isRotational')
     }
 
     device = device.substring(4)
@@ -671,7 +671,7 @@ adduser ${username} \
   async getDiskSize(device: string, verbose = false): Promise<number> {
     // const echo = Utils.setEcho(verbose)
     if (verbose) {
-      console.log('hatching: getDiskSize')
+      Utils.warning('hatching: getDiskSize')
     }
     try {
       const info = await checkSync(device)
@@ -689,7 +689,7 @@ adduser ${username} \
   async getOptions(driveList: string[], verbose = false): Promise<any> {
     const echo = Utils.setEcho(verbose)
     if (verbose) {
-      console.log('hatching: getOptions')
+      Utils.warning('hatching: getOptions')
     }
 
     return new Promise(function (resolve) {
