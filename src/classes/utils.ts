@@ -140,7 +140,7 @@ export default class Utils {
 
     let isoName = `${basename}-${arch}_${Utils.formatDate(new Date())}`
     if (isoName.length >= 28) {
-      isoName = isoName.substr(0, 27) // 28 +  4 .iso = 32 lunghezza max di volid
+      isoName = isoName.substr(0, 28) // 28 +  4 .iso = 32 lunghezza max di volid
     }
     return `${isoName}.iso`
   }
