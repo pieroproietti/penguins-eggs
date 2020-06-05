@@ -728,7 +728,6 @@ adduser ${username} \
       Utils.warning(`You chose to abort the installation`)
       process.exit()
     }
-    process.exit()
 
     if (partitionType === 'simple' && this.efi) {
       await exec(`parted --script ${device} mklabel gpt mkpart primary 0% 1% mkpart primary 1% 95% mkpart primary 95% 100%`, echo)
