@@ -739,6 +739,7 @@ adduser ${username} \
       await exec(`parted --script --align optimal ${device} mkpart primary 1MiB 95%`, echo)
       await exec(`parted --script ${device} set 1 boot on`, echo)
       await exec(`parted --script --align optimal ${device} mkpart primary 95% 100%`, echo)
+      await exec(`sleep 2`, echo)
       retVal = true
     } else if (partitionType === 'lvm2' && this.efi) {
       console.log('to be implemented!')
