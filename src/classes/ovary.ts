@@ -347,7 +347,9 @@ export default class Ovary {
       }
 
       await this.liveCreateStructure(verbose)
-      await this.calamaresConfigure(verbose)
+      if (Pacman.packageIsInstalled('calamares')){
+        await this.calamaresConfigure(verbose)
+      }
       await this.isoCreateStructure(verbose)
       await this.isolinuxPrepare(verbose)
       await this.isoStdmenuCfg(verbose)
@@ -1265,19 +1267,86 @@ timeout 200\n`
       } else if (fs.existsSync('/usr/lib/ISOLINUX/isohdpfx.bin')) {
         isoHybridOption = `-isohybrid-mbr /usr/lib/ISOLINUX/isohdpfx.bin`
       } else {
-        console.log(`Can't create isohybrid.  File: isohdpfx.bin not found. The resulting image will be a standard iso file`)
+        Utils.warning(`Can't create isohybrid. File: isohdpfx.bin not found. The resulting image will be a standard iso file`)
       }
 
+      // xorriso 1.5.0 : RockRidge filesystem manipulator, libburnia project.
+      // originale cmd = `xorriso -as mkisofs -r -J -joliet-long -l -iso-level 3 -cache-inodes ${isoHybridOption} -partition_offset 16 -volid ${this.eggName} -b isolinux/isolinux.bin -c isolinux/boot.cat -no-emul-boot -boot-load-size 4 -boot-info-table ${uefi_opt} -o ${this.snapshot_dir}${this.eggName} ${this.work_dir.pathIso}`
 
-      // tested cmd = `xorriso -as mkisofs -r -J -joliet-long -l -iso-level 3 -cache-inodes ${isoHybridOption} -partition_offset 16 -volid ${this.eggName} -b isolinux/isolinux.bin -c isolinux/boot.cat -no-emul-boot -boot-load-size 4 -boot-info-table ${uefi_opt} -o ${this.snapshot_dir}${isoName} ${this.work_dir.pathIso}`
-
-      // Franco: xorriso -as mkisofs -V sblive -J -l -b -isohybrid-mbr sblive/isolinux/ -c isolinux/boot.cat -b isolinux/isolinux.bin -iso-level 3 -no-emul-boot -boot-load-size 4 -boot-info-table -eltorito-alt-boot -e boot/grub/efi.img -no-emul-boot -isohybrid-gpt-basdat -o isohybrid -h 256 -s 63 --uefi output.iso
-      // let franc=`xorriso -as mkisofs -V                 -J -l -b -isohybrid-mbr sblive/isolinux/ -c isolinux/boot.cat -b isolinux/isolinux.bin -iso-level 3 -no-emul-boot -boot-load-size 4 -boot-info-table -eltorito-alt-boot -e boot/grub/efi.img -no-emul-boot -isohybrid-gpt-basdat -o isohybrid -h 256 -s 63 --uefi output.iso`
-      // let cmd = `xorriso -as mkisofs -V ${this.eggName} -J -l -b ${isoHybridOption}              -c isolinux/boot.cat -b isolinux/isolinux.bin -iso-level 3 -no-emul-boot -boot-load-size 4 -boot-info-table ${uefi_opt}                                                                 -o ${isoName} ${this.work_dir.pathIso}`
-
+      /**
+       *  Franco conidi
+       * 
+       *           xorriso -as mkisofs \ OK
+       *                    -V sblive \ OK
+       *                    -J \
+       *                    -l \
+       *                    -b \
+       *                    -isohybrid-mbr sblive/isolinux/ \ OK ${isoHybridOption}
+       *                    -c isolinux/boot.cat \ OK
+       *                    -b isolinux/isolinux.bin \ OK
+       *                    -iso-level 3 \
+       *                    -no-emul-boot \ OK
+       *                    -boot-load-size 4 \ OK
+       *                    -boot-info-table \ OK
+       *                    -eltorito-alt-boot OK ${uefi_opt}
+       *                    -e boot/grub/efi.img \ OK
+       *                    -no-emul-boot OK
+       *                    -isohybrid-gpt-basdat \
+       *                    -o sblive.iso  OK
+       *                    sblive OK
+       */
+      
       this.eggName = Utils.getFilename(this.remix.name)
-      const cmd = `xorriso -as mkisofs -r -J -joliet-long -l -iso-level 3 -cache-inodes ${isoHybridOption} -partition_offset 16 -volid ${this.eggName} -b isolinux/isolinux.bin -c isolinux/boot.cat -no-emul-boot -boot-load-size 4 -boot-info-table ${uefi_opt} -o ${this.snapshot_dir}${this.eggName} ${this.work_dir.pathIso}`
+
+      const cmd = `xorriso  -as mkisofs \
+                            -volid ${this.eggName} \
+                            -joliet-long \
+                            -l \
+                            -iso-level 3 \
+                            -b isolinux/isolinux.bin \
+                            ${isoHybridOption} \
+                            -partition_offset 16 \
+                            -c isolinux/boot.cat \
+                            -no-emul-boot \
+                            -boot-load-size 4 \
+                            -boot-info-table \
+                            ${uefi_opt} \
+                            -output ${this.snapshot_dir}${this.eggName} \
+                            ${this.work_dir.pathIso}`
       await exec(cmd, echo)
+
+      /**
+       * Ultima versione
+       * Tolto -cache-inodes (veniva ignorato)
+       * 
+       * Non solo supportati, almeno da xorriso 1.5.0, i flag:
+       *   -h 256
+       *   -s 63 
+       * 
+       * Sarebbero da sostituire i flag brevi con quelli estesi, rimangono:
+       *   -l
+       *   -b
+       *   -c 
+       * 
+       * Il seguente è un esempio corrente funzionante:
+       * 
+       * xorriso  -as mkisofs
+       *                              volid incubator-x64_2020-06-05_100.iso
+       *                              -joliet-long 
+       *                              -l
+       *                              -iso-level 3
+       *                              -b isolinux/isolinux.bin
+       *                              -isohybrid-mbr /usr/lib/ISOLINUX/isohdpfx.bin
+       *                              -partition_offset 16
+       *                              -c isolinux/boot.cat
+       *                              -no-emul-boot
+       *                              -boot-load-size 4
+       *                              -boot-info-table
+       *                              -output /home/eggs/incubator-x64_2020-06-05_100.iso
+       *                              /home/eggs/ovarium/iso
+       */
+
+
     }
   }
 
