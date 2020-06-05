@@ -243,6 +243,7 @@ export default class Hatching {
 
     const isDiskPrepared: boolean = await this.diskPartition(disk.installationDevice, disk.partionType, verbose)
     if (isDiskPrepared) {
+      console.log(`vado formattare ${devices}`)
       await this.mkfs(devices, verbose)
       await this.mount4target(devices, verbose)
       await this.egg2system(devices, verbose)
@@ -669,7 +670,13 @@ adduser ${username} \
     if (this.efi) {
       await exec(`mkdosfs -F 32 -I ${devices.efi.device}`, echo)
     }
+    console.log(`Formatto root ${devices.root.fsType} ${devices.root.device}`)
+    
     await exec(`mkfs -t ${devices.root.fsType} ${devices.root.device}`, echo)
+    if (devices.data.device !== ''){
+      await exec(`mkfs -t ${devices.data.fsType} ${devices.data.device}`, echo)
+    }
+    console.log(`Formatto root ${devices.root.fsType} ${devices.root.device}`)
     await exec(`mkswap ${devices.swap.device}`, echo)
     return result
   }
