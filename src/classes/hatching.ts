@@ -198,7 +198,7 @@ export default class Hatching {
       this.efi = true
     }
 
-    if (this.efi) {
+    if (disk.partitionType === 'simple' && this.efi) {
       devices.efi.device = `${disk.installationDevice}1`
       devices.efi.fsType = 'F 32 -I'
       devices.efi.mountPoint = '/boot/efi'
@@ -210,7 +210,7 @@ export default class Hatching {
       devices.swap.device = `${disk.installationDevice}3`
       devices.swap.fsType = 'swap'
       devices.swap.mountPoint = 'none'
-    } else {
+    } else if (disk.partitionType === 'simple' && !this.efi) {
       devices.root.device = `${disk.installationDevice}1`
       devices.root.fsType = 'ext4'
       devices.root.mountPoint = '/'
@@ -218,7 +218,20 @@ export default class Hatching {
       devices.swap.device = `${disk.installationDevice}2`
       devices.swap.fsType = 'swap'
       devices.swap.mountPoint = 'none'
-    }
+
+    } else if (disk.partitionType === 'simple' && this.efi) {
+      devices.swap.device = `/dev/penguins/swap`
+      devices.swap.fsType = 'swap'
+      devices.swap.mountPoint = 'none'
+
+      devices.root.device = `/dev/penguins/root`
+      devices.root.fsType = 'ext4'
+      devices.root.mountPoint = '/'
+
+      devices.data.device = `/dev/penguins/data`
+      devices.data.fsType = 'ext4'
+      devices.data.mountPoint = '/var/lib/vz'
+    }      
 
     const diskSize = await this.getDiskSize(disk.installationDevice, verbose)
     console.log(`diskSize: ${diskSize}`)
@@ -751,15 +764,14 @@ adduser ${username} \
       // Creo partizioni
       await exec(`parted --script ${device} mkpart primary ext2 1 512`)
       await exec(`parted --script --align optimal ${device} set 1 boot on`)
-
       await exec(`parted --script --align optimal ${device} mkpart primary ext2 512 100%`)
       await exec(`parted --script ${device} set 2 lvm on`)
-
 
       // Partizione LVM
       const lvmPartname = shx.exec(`fdisk $1 -l | grep 8e | awk '{print $1}' | cut -d "/" -f3`).stdout.trim()
       const lvmByteSize: number = Number(shx.exec(`cat /proc/partitions | grep ${lvmPartname}| awk '{print $3}' | grep "[0-9]"`).stdout.trim())
       const lvmSize = lvmByteSize / 1024
+
 
       const penguins_swap = '/dev/penguin/swap'
       const penguins_root ='/dev/penguin/root'
