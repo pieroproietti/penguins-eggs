@@ -16,7 +16,6 @@ import chalk = require('chalk')
 import clear = require('clear')
 import figlet = require('figlet')
 
-import Pacman from './pacman'
 
 /**
  * Utils: general porpourse utils
@@ -138,12 +137,10 @@ export default class Utils {
     if (Utils.isi686()) {
       arch = 'i386'
     }
-    if (basename === '') {
-      basename = this.snapshot_basename
-    }
+
     let isoName = `${basename}-${arch}_${Utils.formatDate(new Date())}`
     if (isoName.length >= 28) {
-      isoName = isoName.substr(0, 28) // 28 +  4 .iso = 32 lunghezza max di volid
+      isoName = isoName.substr(0, 27) // 28 +  4 .iso = 32 lunghezza max di volid
     }
     return `${isoName}.iso`
   }

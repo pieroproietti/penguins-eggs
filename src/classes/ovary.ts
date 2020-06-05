@@ -381,7 +381,8 @@ export default class Ovary {
       console.log('Overy: liveCreateStructure')
     }
 
-    console.log (`(this.work_dir: ${this.work_dir.path}`)
+    Utils.warning(`Creatings egg in ${this.work_dir.path}`)
+
     if (!fs.existsSync(this.work_dir.path)){
       shx.mkdir('-p', this.work_dir.path)
     }
@@ -1244,10 +1245,8 @@ timeout 200\n`
       echo = { echo: true, ignore: false }
     }
 
-    const volid = Utils.getFilename(this.remix.name)
-    const isoName = `${this.snapshot_dir}${volid}`
     if (verbose) {
-      console.log(`ovary: makeIsoImage ${isoName}`)
+      console.log(`ovary: makeIsoImage`)
     }
 
     let uefi_opt = ''
@@ -1268,15 +1267,16 @@ timeout 200\n`
       } else {
         console.log(`Can't create isohybrid.  File: isohdpfx.bin not found. The resulting image will be a standard iso file`)
       }
-      this.eggName = Utils.getFilename(this.remix.name)
-      const isoName = `${this.snapshot_dir}${this.eggName}`
 
-      // let cmd = `xorriso -as mkisofs -r -J -joliet-long -l -iso-level 3 -cache-inodes ${isoHybridOption} -partition_offset 16 -volid ${this.eggName} -b isolinux/isolinux.bin -c isolinux/boot.cat -no-emul-boot -boot-load-size 4 -boot-info-table ${uefi_opt} -o ${isoName} ${this.work_dir.pathIso}`
+
+      // tested cmd = `xorriso -as mkisofs -r -J -joliet-long -l -iso-level 3 -cache-inodes ${isoHybridOption} -partition_offset 16 -volid ${this.eggName} -b isolinux/isolinux.bin -c isolinux/boot.cat -no-emul-boot -boot-load-size 4 -boot-info-table ${uefi_opt} -o ${this.snapshot_dir}${isoName} ${this.work_dir.pathIso}`
+
       // Franco: xorriso -as mkisofs -V sblive -J -l -b -isohybrid-mbr sblive/isolinux/ -c isolinux/boot.cat -b isolinux/isolinux.bin -iso-level 3 -no-emul-boot -boot-load-size 4 -boot-info-table -eltorito-alt-boot -e boot/grub/efi.img -no-emul-boot -isohybrid-gpt-basdat -o isohybrid -h 256 -s 63 --uefi output.iso
       // let franc=`xorriso -as mkisofs -V                 -J -l -b -isohybrid-mbr sblive/isolinux/ -c isolinux/boot.cat -b isolinux/isolinux.bin -iso-level 3 -no-emul-boot -boot-load-size 4 -boot-info-table -eltorito-alt-boot -e boot/grub/efi.img -no-emul-boot -isohybrid-gpt-basdat -o isohybrid -h 256 -s 63 --uefi output.iso`
       // let cmd = `xorriso -as mkisofs -V ${this.eggName} -J -l -b ${isoHybridOption}              -c isolinux/boot.cat -b isolinux/isolinux.bin -iso-level 3 -no-emul-boot -boot-load-size 4 -boot-info-table ${uefi_opt}                                                                 -o ${isoName} ${this.work_dir.pathIso}`
 
-      const cmd = `xorriso -as mkisofs -r -J -joliet-long -l -iso-level 3 -cache-inodes ${isoHybridOption} -partition_offset 16 -volid ${this.eggName} -b isolinux/isolinux.bin -c isolinux/boot.cat -no-emul-boot -boot-load-size 4 -boot-info-table ${uefi_opt} -o ${isoName} ${this.work_dir.pathIso}`
+      this.eggName = Utils.getFilename(this.remix.name)
+      const cmd = `xorriso -as mkisofs -r -J -joliet-long -l -iso-level 3 -cache-inodes ${isoHybridOption} -partition_offset 16 -volid ${this.eggName} -b isolinux/isolinux.bin -c isolinux/boot.cat -no-emul-boot -boot-load-size 4 -boot-info-table ${uefi_opt} -o ${this.snapshot_dir}${this.eggName} ${this.work_dir.pathIso}`
       await exec(cmd, echo)
     }
   }
