@@ -744,7 +744,50 @@ adduser ${username} \
     } else if (partitionType === 'lvm2' && this.efi) {
       console.log('to be implemented!')
     } else if (partitionType === 'lvm2' && !this.efi) {
-      console.log('to be implemented!')
+
+      // Preparo tabella partizioni
+      await exec(`parted --script ${device} mklabel msdos`)
+
+      // Creo partizioni
+      await exec(`parted --script ${device} mkpart primary ext2 1 512`)
+      await exec(`parted --script --align optimal ${device} set 1 boot on`)
+
+      await exec(`parted --script --align optimal ${device} mkpart primary ext2 512 100%`)
+      await exec(`parted --script ${device} set 2 lvm on`)
+
+
+      // Partizione LVM
+      const lvmPartname = shx.exec(`fdisk $1 -l | grep 8e | awk '{print $1}' | cut -d "/" -f3`).stdout.trim()
+      const lvmByteSize: number = Number(shx.exec(`cat /proc/partitions | grep ${lvmPartname}| awk '{print $3}' | grep "[0-9]"`).stdout.trim())
+      const lvmSize = lvmByteSize / 1024
+
+      const penguins_swap = '/dev/penguin/swap'
+      const penguins_root ='/dev/penguin/root'
+      const penguins_data ='/dev/penguin/data'
+
+      // La partizione di root viene posta ad 1/4 della partizione LVM.
+      // Viene limitata fino ad un massimo di 100 GB
+      const lvmSwapSize = 4*1024
+      let lvmRootSize = lvmSize / 8
+      if (lvmRootSize < 20480) {
+        lvmRootSize = 20480
+      }
+      const lvmDataSize = lvmSize - lvmRootSize - lvmSwapSize
+
+      console.log(`LVM size: ${lvmSize/1024} GB`)
+      console.log(`swap:${lvmSwapSize/1024} GB`)
+      console.log(`root:${lvmRootSize/1024} GB`)
+      console.log(`data: ${lvmDataSize/1026} GB`)
+      
+      await exec (`pvcreate /dev/${lvmPartname}`)
+      await exec (`vgcreate penguin /dev/${lvmPartname}`)
+      await exec (`vgchange -an`)
+      await exec (`lvcreate -L ${lvmSwapSize} -nswap penguin`)
+      await exec (`lvcreate -L ${lvmRootSize} -nroot penguin`)
+      await exec (`lvcreate -l 100%FREE -ndata penguin`)
+      await exec (`vgchange -a y penguin`)
+      retVal = true
+
     }
     return retVal
   }
