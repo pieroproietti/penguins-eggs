@@ -58,6 +58,7 @@ export default class Utils {
     const uuid = shx.exec(`blkid -s UUID -o value ${device}`).stdout.trim()
     return uuid
   }
+
   /**
     *
     * @param date
@@ -125,6 +126,26 @@ export default class Utils {
       fileSizeInBytes = Number(size)
     }
     return fileSizeInBytes
+  }
+
+  /**
+   * Return the eggName with architecture and date
+   * @param basename
+   * @returns eggName
+   */
+  static getFilename(basename = ''): string {
+    let arch = 'x64'
+    if (Utils.isi686()) {
+      arch = 'i386'
+    }
+    if (basename === '') {
+      basename = this.snapshot_basename
+    }
+    let isoName = `${basename}-${arch}_${Utils.formatDate(new Date())}`
+    if (isoName.length >= 28) {
+      isoName = isoName.substr(0, 28) // 28 +  4 .iso = 32 lunghezza max di volid
+    }
+    return `${isoName}.iso`
   }
 
   /**

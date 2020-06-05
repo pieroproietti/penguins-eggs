@@ -1,7 +1,0 @@
-sudo umount /tmp/TARGET/dev/pts
-sudo umount /tmp/TARGET/dev
-sudo umount /tmp/TARGET/proc
-sudo umount /tmp/TARGET/sys
-sudo umount /tmp/TARGET/run
-sudo umount /tmp/TARGET
-

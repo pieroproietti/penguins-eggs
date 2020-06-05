@@ -786,27 +786,7 @@ timeout 200\n`
     // usr/bin/mksquashfs /.bind-root iso-template/antiX/linuxfs -comp ${this.compression} ${(this.mksq_opt === '' ? '' : ' ' + this.mksq_opt)} -wildcards -ef ${this.snapshot_excludes} ${this.session_excludes}`)
   }
 
-  /**
-   * Return the eggName with architecture and date
-   * @param basename
-   * @returns eggName
-   */
-  getFilename(basename = ''): string {
-    let arch = 'x64'
-    if (Utils.isi686()) {
-      arch = 'i386'
-    }
-    if (basename === '') {
-      basename = this.snapshot_basename
-    }
-    let isoName = `${basename}-${arch}_${Utils.formatDate(new Date())}`
-    if (isoName.length >= 28) {
-      isoName = isoName.substr(0, 28) // 28 +  4 .iso = 32 lunghezza max di volid
-    }
-    return `${isoName}.iso`
-  }
-
-  /**
+    /**
    * Restituisce true per le direcory da montare con overlay
    * @param dir 
    */
@@ -1264,7 +1244,7 @@ timeout 200\n`
       echo = { echo: true, ignore: false }
     }
 
-    const volid = this.getFilename(this.remix.name)
+    const volid = Utils.getFilename(this.remix.name)
     const isoName = `${this.snapshot_dir}${volid}`
     if (verbose) {
       console.log(`ovary: makeIsoImage ${isoName}`)
@@ -1288,7 +1268,7 @@ timeout 200\n`
       } else {
         console.log(`Can't create isohybrid.  File: isohdpfx.bin not found. The resulting image will be a standard iso file`)
       }
-      this.eggName = this.getFilename(this.remix.name)
+      this.eggName = Utils.getFilename(this.remix.name)
       const isoName = `${this.snapshot_dir}${this.eggName}`
 
       // let cmd = `xorriso -as mkisofs -r -J -joliet-long -l -iso-level 3 -cache-inodes ${isoHybridOption} -partition_offset 16 -volid ${this.eggName} -b isolinux/isolinux.bin -c isolinux/boot.cat -no-emul-boot -boot-load-size 4 -boot-info-table ${uefi_opt} -o ${isoName} ${this.work_dir.pathIso}`
