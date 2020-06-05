@@ -45,7 +45,8 @@ export default class Install extends Command {
     }
 
     if (Utils.isRoot())  {
-      if (Utils.isLive()) {
+      // if (Utils.isLive()) {
+      if (true) {
           if (flags.gui) {
           shx.exec('calamares')
         } else {

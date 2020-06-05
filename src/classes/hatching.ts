@@ -59,6 +59,7 @@ export default class Hatching {
   * install
   */
   async install(verbose = false, umount = false) {
+
     // const echo = Utils.setEcho(verbose)
     if (verbose) {
       Utils.warning('>>>hatching: install')
@@ -70,35 +71,124 @@ export default class Hatching {
     devices.root = {} as IDevice
     devices.swap = {} as IDevice
 
-    const drives: any = await drivelist.list()
-
-    const aDrives: string[] = []
-    drives.forEach((element: { device: string }) => {
-      aDrives.push(element.device)
-    })
-    const varOptions: any = await this.getOptions(aDrives)
-    const options: any = JSON.parse(varOptions)
+    /**
+     * users configuration
+     */
+    Utils.titles(`install`)
+    Utils.warning('get options users')
+    const optionsUsers: any = await this.getOptionsUsers(verbose)
+    const users: any = JSON.parse(optionsUsers)
 
     Utils.titles(`install`)
-    console.log()
-    console.log(`You choose to install the system with the following parameters:`)
-    console.log()
-    console.log(`- username: ` + chalk.cyanBright(options.username))
-    console.log(`- userfullname: ` + chalk.cyanBright(options.userfullname))
-    console.log(`- user password: ` + chalk.cyanBright(options.userpassword))
-    console.log(`- autologin: ` + chalk.cyanBright(options.autologin))
-    console.log(`- root password: ` + chalk.cyanBright(options.rootpassword))
-    console.log(`- hostname: ` + chalk.cyanBright(options.hostname))
-    console.log(`- domain: ` + chalk.cyanBright(options.domain))
-    console.log(`- net Interface: ` + chalk.cyanBright(options.netInterface))
-    console.log(`- net address type: ` + chalk.cyanBright(options.netAddressType))
-    console.log(`- installation device: ` + chalk.cyanBright(options.installationDevice))
-    console.log(`- fs type: ` + chalk.cyanBright(options.fsType))
+    Utils.warning('get options users')
+    console.log(`- ` + chalk.bgGreen.black(`username: `) + chalk.bgGreen.whiteBright(users.username))
+    console.log(`- ` + chalk.bgGreen.black(`userfullname: `) + chalk.bgGreen.whiteBright(users.userfullname))
+    console.log(`- ` + chalk.bgGreen.black(`user password: `) + chalk.bgGreen.whiteBright(users.userpassword))
+    console.log(`- ` + chalk.bgGreen.black(`autologin: `) + chalk.bgGreen.whiteBright(users.autologin))
+    console.log(`- ` + chalk.bgGreen.black(`root password: `) + chalk.bgGreen.whiteBright(users.rootpassword))
     console.log()
     if (!await Utils.customConfirm(`Please, confirm.`)) {
       Utils.warning(`You chose to abort the installation`)
       process.exit()
     }
+
+    /**
+     * host configuration
+     */
+    Utils.titles(`install`)
+    Utils.warning('get options host')
+    const optionsHost: any = await this.getOptionsHost(verbose)
+    const host: any = JSON.parse(optionsHost)
+
+    Utils.titles(`install`)
+    Utils.warning('get options host')
+    console.log(`- ` + chalk.bgGreen.black(`hostname: `) + chalk.bgGreen.whiteBright(host.hostname))
+    console.log(`- ` + chalk.bgGreen.black(`domain: `) + chalk.bgGreen.whiteBright(host.domain))
+    console.log()
+    if (!await Utils.customConfirm(`Please, confirm.`)) {
+      Utils.warning(`You chose to abort the installation`)
+      process.exit()
+    }
+
+    /**
+     * net configuration
+     */
+    Utils.titles(`install`)
+    Utils.warning('get options net')
+    const optionsNet: any = await this.getOptionsNet(verbose)
+    const net: any = JSON.parse(optionsNet)
+
+    Utils.titles(`install`)
+    Utils.warning('get options net')
+    console.log(`- ` + chalk.bgGreen.black(`net Interface: `) + chalk.bgGreen.whiteBright(net.netInterface))
+    console.log(`- ` + chalk.bgGreen.black(`net address type: `) + chalk.bgGreen.whiteBright(net.netAddressType))
+    console.log(`- ` + chalk.bgGreen.black(`net address: `) + chalk.bgGreen.whiteBright(net.netAddress))
+    console.log(`- ` + chalk.bgGreen.black(`net mask: `) + chalk.bgGreen.whiteBright(net.netMask))
+    console.log(`- ` + chalk.bgGreen.black(`net gateway: `) + chalk.bgGreen.whiteBright(net.netGateway))
+    console.log()
+    if (!await Utils.customConfirm(`Please, confirm.`)) {
+      Utils.warning(`You chose to abort the installation`)
+      process.exit()
+    }
+
+
+    /**
+     * disk and partition
+     */
+    const drives: any = await drivelist.list()
+    const aDrives: string[] = []
+    drives.forEach((element: { device: string }) => {
+      aDrives.push(element.device)
+    })
+    const partitionTypes = ['simple', 'lvm2']
+    Utils.titles(`install`)
+    Utils.warning('get options disk and partition type')
+
+    const optionsDisk: any = await this.getOptionsDisk(aDrives, partitionTypes, verbose)
+    const disk: any = JSON.parse(optionsDisk)
+
+    console.log(`- ` + chalk.bgGreen.black(`installation device: `) + chalk.bgGreen.whiteBright(disk.installationDevice))
+    console.log(`- ` + chalk.bgGreen.black(`partition type: `) + chalk.bgGreen.whiteBright(disk.partionType))
+    console.log(`- ` + chalk.bgGreen.black(`fs type: `) + chalk.bgGreen.whiteBright(disk.fsType))
+    console.log()
+    if (!await Utils.customConfirm(`Please, confirm.`)) {
+      Utils.warning(`You chose to abort the installation`)
+      process.exit()
+    }
+
+
+    /**
+     * Conferma finale
+     */
+    Utils.titles(`install`)
+    console.log()
+    console.log(`You choose to install the system with the following parameters:`)
+    console.log()
+    console.log(`- username: ` + chalk.cyanBright(users.username))
+    console.log(`- userfullname: ` + chalk.cyanBright(users.userfullname))
+    console.log(`- user password: ` + chalk.cyanBright(users.userpassword))
+    console.log(`- autologin: ` + chalk.cyanBright(users.autologin))
+    console.log(`- root password: ` + chalk.cyanBright(users.rootpassword))
+
+    console.log(`- hostname: ` + chalk.cyanBright(host.hostname))
+    console.log(`- domain: ` + chalk.cyanBright(host.domain))
+
+    console.log(`- net Interface: ` + chalk.cyanBright(net.netInterface))
+    console.log(`- net address type: ` + chalk.cyanBright(net.netAddressType))
+    console.log(`- net address: ` + chalk.cyanBright(net.netAddress))
+    console.log(`- net mask: ` + chalk.cyanBright(net.netMask))
+    console.log(`- net gateway: ` + chalk.cyanBright(net.netGateway))
+
+
+    console.log(`- installation device: ` + chalk.cyanBright(disk.installationDevice))
+    console.log(`- partition type: ` + chalk.cyanBright(disk.partionType))
+    console.log(`- fs type: ` + chalk.cyanBright(disk.fsType))
+    console.log()
+    if (!await Utils.customConfirm(`Please, confirm.`)) {
+      Utils.warning(`You chose to abort the installation`)
+      process.exit()
+    }
+
 
     Utils.titles(`install`)
     console.log()
@@ -109,28 +199,28 @@ export default class Hatching {
     }
 
     if (this.efi) {
-      devices.efi.device = `${options.installationDevice}1`
+      devices.efi.device = `${disk.installationDevice}1`
       devices.efi.fsType = 'F 32 -I'
       devices.efi.mountPoint = '/boot/efi'
 
-      devices.root.device = `${options.installationDevice}2`
+      devices.root.device = `${disk.installationDevice}2`
       devices.root.fsType = 'ext4'
       devices.root.mountPoint = '/'
 
-      devices.swap.device = `${options.installationDevice}3`
+      devices.swap.device = `${disk.installationDevice}3`
       devices.swap.fsType = 'swap'
       devices.swap.mountPoint = 'none'
     } else {
-      devices.root.device = `${options.installationDevice}1`
+      devices.root.device = `${disk.installationDevice}1`
       devices.root.fsType = 'ext4'
       devices.root.mountPoint = '/'
 
-      devices.swap.device = `${options.installationDevice}2`
+      devices.swap.device = `${disk.installationDevice}2`
       devices.swap.fsType = 'swap'
       devices.swap.mountPoint = 'none'
     }
 
-    const diskSize = await this.getDiskSize(options.installationDevice, verbose)
+    const diskSize = await this.getDiskSize(disk.installationDevice, verbose)
     console.log(`diskSize: ${diskSize}`)
 
     if (umount) {
@@ -138,27 +228,27 @@ export default class Hatching {
       await this.umount4target(devices, verbose)
     }
 
-    const isDiskPrepared: boolean = await this.diskPartition(options.installationDevice, verbose)
+    const isDiskPrepared: boolean = await this.diskPartition(disk.installationDevice, disk.partionType, verbose)
     if (isDiskPrepared) {
       await this.mkfs(devices, verbose)
       await this.mount4target(devices, verbose)
       await this.egg2system(devices, verbose)
       await this.setTimezone(verbose)
-      await this.fstab(devices, options.installationDevice, verbose)
-      await this.hostname(options, verbose)
-      await this.resolvConf(options, verbose)
-      await this.interfaces(options, verbose)
-      await this.hosts(options, verbose)
+      await this.fstab(devices, disk.installationDevice, verbose)
+      await this.hostname(host, verbose)
+      await this.resolvConf(net, verbose)
+      await this.interfaces(net, verbose)
+      await this.hosts(host, verbose)
       await this.mountVFS(verbose)
-      await this.grubInstall(options, verbose)
+      await this.grubInstall(disk, verbose)
       await this.updateInitramfs(verbose)
       await this.delLiveUser(verbose)
-      await this.addUser(options.username, options.userpassword, options.fullName, '', '', '', verbose)
-      await this.changePassword('root', options.rootpassword, verbose)
-      await this.autologinConfig(options.username, verbose)
+      await this.addUser(users.username, users.userpassword, users.fullName, '', '', '', verbose)
+      await this.changePassword('root', users.rootpassword, verbose)
+      await this.autologinConfig(users.username, verbose)
       await this.umountVFS(verbose)
       await this.umount4target(devices, verbose)
-      this.finished(options.installationDevice, options.hostname, options.username)
+      this.finished(disk.installationDevice, host.hostname, users.username)
     }
   }
 
@@ -617,28 +707,46 @@ adduser ${username} \
   }
 
   /**
-   *
-   * @param device
+   * 
+   * @param device 
+   * @param partitionType 
+   * @param verbose 
    */
-  async diskPartition(device: string, verbose = false): Promise<boolean> {
+  async diskPartition(device: string, partitionType: string, verbose = false): Promise<boolean> {
+    let retVal = false
     const echo = Utils.setEcho(verbose)
     if (verbose) {
       Utils.warning('hatching: diskPartition')
     }
 
-    if (this.efi) {
-      Utils.warning('hatching: this is a efi system')
+    Utils.warning(` we are going to partitioning your device ` + chalk.green(device) + ` in ` + chalk.green(partitionType) +`.`)
+    console.log(`This is a uefi system: ` + chalk.green(this.efi) + `.`)
+    console.log()
+    console.log(chalk.bgRed.white(`This is the last opportunity to abort, the follow operation will destroy the data on the disk`))
+    
+    if (!await Utils.customConfirm(`Please, confirm.`)) {
+      Utils.warning(`You chose to abort the installation`)
+      process.exit()
+    }
+    process.exit()
+
+    if (partitionType === 'simple' && this.efi) {
       await exec(`parted --script ${device} mklabel gpt mkpart primary 0% 1% mkpart primary 1% 95% mkpart primary 95% 100%`, echo)
       await exec(`parted --script ${device} set 1 boot on`, echo)
       await exec(`parted --script ${device} set 1 esp on`, echo)
-    } else {
-      Utils.warning('hatching: this is a bios system')
+      retVal = true
+    } else if (partitionType === 'simple' && !this.efi) {
       await exec(`parted --script ${device} mklabel msdos`, echo)
       await exec(`parted --script --align optimal ${device} mkpart primary 1MiB 95%`, echo)
       await exec(`parted --script ${device} set 1 boot on`, echo)
       await exec(`parted --script --align optimal ${device} mkpart primary 95% 100%`, echo)
+      retVal = true
+    } else if (partitionType === 'lvm2' && this.efi) {
+      console.log('to be implemented!')
+    } else if (partitionType === 'lvm2' && !this.efi) {
+      console.log('to be implemented!')
     }
-    return true
+    return retVal
   }
 
   /**
@@ -656,7 +764,6 @@ adduser ${username} \
     let response: any
     let retVal = false
 
-    // response = await exec(`cat /sys/block/${device}/queue/rotational`, { capture: true, echo: true })
     response = shx.exec(`cat /sys/block/${device}/queue/rotational`, { silent: verbose }).stdout.trim()
     if (response === '1') {
       retVal = true
@@ -683,10 +790,10 @@ adduser ${username} \
   }
 
   /**
-   *
-   * @param driveList
+   * 
+   * @param verbose 
    */
-  async getOptions(driveList: string[], verbose = false): Promise<any> {
+  async getOptionsUsers(verbose = false) {
     const echo = Utils.setEcho(verbose)
     if (verbose) {
       Utils.warning('hatching: getOptions')
@@ -725,6 +832,27 @@ adduser ${username} \
           message: 'Enter a password for root: ',
           default: 'evolution',
         },
+      ]
+
+      inquirer.prompt(questions).then(function (options) {
+        resolve(JSON.stringify(options))
+      })
+    })
+  }
+
+
+  /**
+   * 
+   * @param verbose 
+   */
+  async getOptionsHost(verbose = false) {
+    const echo = Utils.setEcho(verbose)
+    if (verbose) {
+      Utils.warning('hatching: getOptions')
+    }
+
+    return new Promise(function (resolve) {
+      const questions: Array<Record<string, any>> = [
         {
           type: 'input',
           name: 'hostname',
@@ -732,11 +860,31 @@ adduser ${username} \
           default: os.hostname,
         },
         {
-          type: 'input',
+          type: 'imput',
           name: 'domain',
-          message: 'domain name: ',
+          message: 'domain name',
           default: 'lan',
-        },
+        }
+
+      ]
+      inquirer.prompt(questions).then(function (options) {
+        resolve(JSON.stringify(options))
+      })
+    })
+  }
+
+  /**
+   * 
+   * @param verbose 
+   */
+  async getOptionsNet(verbose = false) {
+    const echo = Utils.setEcho(verbose)
+    if (verbose) {
+      Utils.warning('hatching: getOptions')
+    }
+
+    return new Promise(function (resolve) {
+      const questions: Array<Record<string, any>> = [
         {
           type: 'list',
           name: 'netInterface',
@@ -786,11 +934,38 @@ adduser ${username} \
             return answers.netAddressType === 'static'
           },
         },
+      ]
+      inquirer.prompt(questions).then(function (options) {
+        resolve(JSON.stringify(options))
+      })
+    })
+  }
+
+  /**
+   * 
+   * @param driveList 
+   * @param partitionTypes 
+   * @param verbose 
+   */
+  async getOptionsDisk(driveList: string[], partitionTypes: string[], verbose = false): Promise<any> {
+    const echo = Utils.setEcho(verbose)
+    if (verbose) {
+      Utils.warning('hatching: getOptions')
+    }
+
+    return new Promise(function (resolve) {
+      const questions: Array<Record<string, any>> = [
         {
           type: 'list',
           name: 'installationDevice',
           message: 'Select the installation disk: ',
           choices: driveList,
+        },
+        {
+          type: 'list',
+          name: 'partionType',
+          message: 'Select partition type: ',
+          choices: partitionTypes,
         },
         {
           type: 'list',
@@ -812,7 +987,7 @@ adduser ${username} \
    */
   finished(installationDevice: string, hostname: string, username: string) {
     Utils.titles()
-    console.log(`eggs is finished.`)
+    Utils.warning(`installation is finished.`)
     console.log('Your system was installed on ' + chalk.cyanBright(installationDevice) + '.')
     console.log('Host name was set as ' + chalk.cyanBright(hostname) + '.')
     console.log('The user name is ' + chalk.cyanBright(username) + '.')
