@@ -657,7 +657,7 @@ adduser ${username} \
       await exec(`mkdosfs -F 32 -I ${this.devices.efi.name}`, echo)
     }
 
-    if (this.devices.boot.name !== 'nome') {
+    if (this.devices.boot.name !== 'none') {
       Utils.warning(`Formatting ${this.devices.boot.name} as ${this.devices.boot.fsType}`)
       if (this.devices.boot.fsType === undefined) {
         this.devices.boot.fsType = `ext2`
@@ -665,17 +665,17 @@ adduser ${username} \
       await exec(`mkfs -t ${this.devices.boot.fsType} ${this.devices.boot.name}`, echo)
     }
 
-    if (this.devices.root.name !== 'nome') {
+    if (this.devices.root.name !== 'none') {
       Utils.warning(`Formatting ${this.devices.root.name}`)
       await exec(`mkfs -t ${this.devices.root.fsType} ${this.devices.root.name}`, echo)
     }
 
-    if (this.devices.data.name !== 'nome') {
+    if (this.devices.data.name !== 'none') {
       Utils.warning(`Formatting ${this.devices.data.name}`)
       await exec(`mkfs -t ${this.devices.data.fsType} ${this.devices.data.name}`, echo)
     }
 
-    if (this.devices.swap.name !== 'nome') {
+    if (this.devices.swap.name !== 'none') {
       Utils.warning(`Formatting ${this.devices.swap.name}`)
       await exec(`mkswap ${this.devices.swap.name}`, echo)
     }
@@ -804,9 +804,9 @@ adduser ${username} \
       await exec(`parted --script ${device} set 1 boot on`, echo)
       await exec(`parted --script --align optimal ${device} mkpart primary 95% 100%`, echo)
 
-      this.devices.efi.name = `nome`
+      this.devices.efi.name = `none`
 
-      this.devices.boot.name = `nome`
+      this.devices.boot.name = `none`
 
 
       this.devices.root.name = `${device}1`
