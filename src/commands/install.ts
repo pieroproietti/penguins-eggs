@@ -55,12 +55,14 @@ export default class Install extends Command {
         if (flags.gui) {
           shx.exec('calamares')
         } else {
-          Utils.warning('Installing the system / spawning the egg...')
           const hatching = new Hatching()
           if (lvmremove) {
-            hatching.lvmRemove(verbose)
+            Utils.warning('Removing lvm')
+            await hatching.lvmRemove(verbose)
+            Utils.titles('install')
           } 
-          hatching.questions(verbose, umount)
+          Utils.warning('Installing the system / spawning the egg...')
+          await hatching.questions(verbose, umount)
         }
       } else {
         Utils.warning(`You are in an installed system!`)
