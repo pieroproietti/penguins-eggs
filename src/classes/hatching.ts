@@ -858,6 +858,9 @@ adduser ${username} \
       this.devices.efi.name = `none`
 
       this.devices.boot.name = `${device}1`
+      this.devices.root.fsType = 'ext2'
+      this.devices.root.mountPoint = '/boot'
+
 
       this.devices.root.name = `/dev/pve/root`
       this.devices.root.fsType = 'ext4'
