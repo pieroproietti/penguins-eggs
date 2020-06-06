@@ -429,15 +429,21 @@ adduser ${username} \
 
     const file = `${this.target}/etc/fstab`
     let mountOptsRoot = ''
+    let mountOptsBoot = ''
+    let mountOptsData = ``
     let mountOptsEfi = ''
     let mountOptsSwap = ''
 
     if (await this.isRotational(installDevice)) {
       mountOptsRoot = 'defaults,relatime 0 1'
+      mountOptsBoot = 'defaults,relatime 0 1'
+      mountOptsData = 'defaults,relatime 0 1'
       mountOptsEfi = 'defaults,relatime 0 2'
       mountOptsSwap = 'defaults,relatime 0 2'
     } else {
       mountOptsRoot = 'defaults,noatime 0 1'
+      mountOptsBoot = 'defaults,noatime 0 1'
+      mountOptsData = 'defaults,noatime 0 1'
       mountOptsEfi = 'defaults,noatime 0 2'
       mountOptsSwap = 'defaults,noatime 0 2'
     }
@@ -445,6 +451,17 @@ adduser ${username} \
 
     text += `# ${this.devices.root.name} ${this.devices.root.mountPoint} ${this.devices.root.fsType} ${mountOptsRoot}\n`
     text += `UUID=${Utils.uuid(this.devices.root.name)} ${this.devices.root.mountPoint} ${this.devices.root.fsType} ${mountOptsRoot}\n`
+
+    if(this.devices.boot.name !== `none`){
+      text += `# ${this.devices.boot.name} ${this.devices.boot.mountPoint} ${this.devices.boot.fsType} ${mountOptsBoot}\n`
+      text += `UUID=${Utils.uuid(this.devices.boot.name)} ${this.devices.boot.mountPoint} ${this.devices.root.fsType} ${mountOptsBoot}\n`
+    }
+
+    if(this.devices.data.name !== `none`){
+      text += `# ${this.devices.data.name} ${this.devices.data.mountPoint} ${this.devices.data.fsType} ${mountOptsData}\n`
+      text += `UUID=${Utils.uuid(this.devices.data.name)} ${this.devices.data.mountPoint} ${this.devices.data.fsType} ${mountOptsData}\n`
+    }
+
     if (this.efi) {
       text += `# ${this.devices.efi.name} ${this.devices.efi.mountPoint} vfat ${mountOptsEfi}\n`
       text += `UUID=${Utils.uuid(this.devices.efi.name)} ${this.devices.efi.mountPoint} vfat ${mountOptsEfi}\n`
@@ -678,15 +695,33 @@ adduser ${username} \
     if (!fs.existsSync(this.target)) {
       await exec(`mkdir ${this.target}`, echo)
     }
+
+    // Monto la root
     await exec(`mount ${this.devices.root.name} ${this.target}${this.devices.root.mountPoint}`, echo)
     await exec(`tune2fs -c 0 -i 0 ${this.devices.root.name}`, echo)
+    await exec(`rm -rf ${this.target}/lost+found`, echo)
+
+    // boot
+    if(this.devices.boot.name !== `none`){
+      await exec (`mkdir ${this.target}/boot -p`)
+      await exec(`mount ${this.devices.boot.name} ${this.target}${this.devices.boot.mountPoint}`, echo)
+      await exec(`tune2fs -c 0 -i 0 ${this.devices.boot.name}`, echo)
+    }
+
+    // data
+    if(this.devices.data.name !== `none`){
+      await exec (`mkdir ${this.target}${this.devices.data.mountPoint} -p`)
+      await exec(`mount ${this.devices.data.name} ${this.target}${this.devices.data.mountPoint}`, echo)
+      await exec(`tune2fs -c 0 -i 0 ${this.devices.data.name}`, echo)
+    }
+    
+
     if (this.efi) {
       if (!fs.existsSync(this.target + this.devices.efi.mountPoint)) {
         await exec(`mkdir ${this.target}${this.devices.efi.mountPoint} -p`, echo)
         await exec(`mount ${this.devices.efi.name} ${this.target}${this.devices.efi.mountPoint}`, echo)
       }
     }
-    await exec(`rm -rf ${this.target}/lost+found`, echo)
     return true
   }
 
@@ -705,6 +740,15 @@ adduser ${username} \
       await exec(`umount ${this.target}/boot/efi`, echo)
       await exec('sleep 1', echo)
     }
+
+    if(this.devices.data.name !== `none`){
+      await exec(`umount ${this.devices.data.name}`, echo)
+    }
+
+    if(this.devices.boot.name !== `none`){
+      await exec(`umount ${this.devices.boot.name}`, echo)
+    }
+
     await exec(`umount ${this.devices.root.name}`, echo)
     await exec('sleep 1', echo)
     return true
