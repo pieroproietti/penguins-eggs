@@ -29,7 +29,7 @@ const { checkSync } = require('diskusage')
 export default class Hatching {
 
   efi = false
-  
+
   devices = {} as IDevices
 
   target = '/tmp/TARGET'
@@ -635,29 +635,30 @@ adduser ${username} \
 
     const result = true
 
-    if(this.efi){
+    if (this.efi) {
       Utils.warning(`Formatting ${this.devices.efi.device}`)
       await exec(`mkdosfs -F 32 -I ${this.devices.efi.device}`, echo)
     }
 
-    if (this.devices.boot.device !=='nome'){
+    if (this.devices.boot.device !== 'nome') {
       Utils.warning(`Formatting ${this.devices.boot.device} as ${this.devices.boot.fsType}`)
-      if (this.devices.boot.fsType===''){
-        this.devices.boot.fsType=`ext2`
+      if (this.devices.boot.fsType === '') {
+        this.devices.boot.fsType = `ext2`
+      }
       await exec(`mkfs -t ${this.devices.boot.fsType} ${this.devices.boot.device}`, echo)
     }
 
-    if (this.devices.root.device !=='nome'){
+    if (this.devices.root.device !== 'nome') {
       Utils.warning(`Formatting ${this.devices.root.device}`)
       await exec(`mkfs -t ${this.devices.root.fsType} ${this.devices.root.device}`, echo)
     }
 
-    if (this.devices.data.device !=='nome'){
+    if (this.devices.data.device !== 'nome') {
       Utils.warning(`Formatting ${this.devices.data.device}`)
       await exec(`mkfs -t ${this.devices.data.fsType} ${this.devices.data.device}`, echo)
     }
 
-    if (this.devices.swap.device !=='nome'){
+    if (this.devices.swap.device !== 'nome') {
       Utils.warning(`Formatting ${this.devices.swap.device}`)
       await exec(`mkswap ${this.devices.swap.device}`, echo)
     }
@@ -722,11 +723,11 @@ adduser ${username} \
       Utils.warning('hatching: diskPartition')
     }
 
-    Utils.warning(` we are going to partitioning your device ` + chalk.green(device) + ` in ` + chalk.green(partitionType) +`.`)
+    Utils.warning(` we are going to partitioning your device ` + chalk.green(device) + ` in ` + chalk.green(partitionType) + `.`)
     console.log(`This is a uefi system: ` + chalk.green(this.efi) + `.`)
     console.log()
     console.log(chalk.bgRed.white(`This is the last opportunity to abort, the follow operation will destroy the data on the disk`))
-    
+
     if (!await Utils.customConfirm(`Please, confirm.`)) {
       Utils.warning(`You chose to abort the installation`)
       process.exit()
@@ -795,34 +796,34 @@ adduser ${username} \
 
       // La partizione di root viene posta ad 1/4 della partizione LVM.
       // Viene limitata fino ad un massimo di 100 GB
-      const lvmSwapSize = 4*1024
+      const lvmSwapSize = 4 * 1024
       let lvmRootSize = lvmSize / 8
       if (lvmRootSize < 20480) {
         lvmRootSize = 20480
       }
       const lvmDataSize = lvmSize - lvmRootSize - lvmSwapSize
 
-      await exec (`pvcreate /dev/${lvmPartname}`)
-      await exec (`vgcreate pve /dev/${lvmPartname}`)
-      await exec (`vgchange -an`)
-      await exec (`lvcreate -L ${lvmSwapSize} -nswap pve`)
-      await exec (`lvcreate -L ${lvmRootSize} -nroot pve`)
-      await exec (`lvcreate -l 100%FREE -ndata pve`)
-      await exec (`vgchange -a y pve`)
+      await exec(`pvcreate /dev/${lvmPartname}`)
+      await exec(`vgcreate pve /dev/${lvmPartname}`)
+      await exec(`vgchange -an`)
+      await exec(`lvcreate -L ${lvmSwapSize} -nswap pve`)
+      await exec(`lvcreate -L ${lvmRootSize} -nroot pve`)
+      await exec(`lvcreate -l 100%FREE -ndata pve`)
+      await exec(`vgchange -a y pve`)
 
       this.devices.efi.device = `none`
 
       this.devices.boot.device = `/dev/${device}1`
-      
+
       this.devices.root.device = `/dev/pve/root`
       this.devices.root.fsType = 'ext4'
       this.devices.root.mountPoint = '/'
-      
+
       this.devices.data.device = `/dev/pve/data`
       this.devices.data.fsType = 'ext4'
       this.devices.data.mountPoint = '/var/lib/vz'
-      
-      this.devices.swap.device =`/dev/pve/swap`
+
+      this.devices.swap.device = `/dev/pve/swap`
       retVal = true
     }
     return retVal
