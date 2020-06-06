@@ -206,16 +206,16 @@ export default class Hatching {
 
     if (umount) {
       await this.umountVFS(verbose)
-      await this.umount4target(devices, verbose)
+      await this.umount4target(verbose)
     }
 
     const isDiskPrepared: boolean = await this.diskPartition(disk.installationDevice, disk.partionType, verbose)
     if (isDiskPrepared) {
-      await this.mkfs(devices, verbose)
-      await this.mount4target(devices, verbose)
-      await this.egg2system(devices, verbose)
+      await this.mkfs(verbose)
+      await this.mount4target(verbose)
+      await this.egg2system(verbose)
       await this.setTimezone(verbose)
-      await this.fstab(devices, disk.installationDevice, verbose)
+      await this.fstab(disk.installationDevice, verbose)
       await this.hostname(host, verbose)
       await this.resolvConf(net, verbose)
       await this.interfaces(net, verbose)
@@ -228,7 +228,7 @@ export default class Hatching {
       await this.changePassword('root', users.rootpassword, verbose)
       await this.autologinConfig(users.username, verbose)
       await this.umountVFS(verbose)
-      await this.umount4target(devices, verbose)
+      await this.umount4target(verbose)
       this.finished(disk.installationDevice, host.hostname, users.username)
     }
   }
@@ -421,7 +421,7 @@ adduser ${username} \
    * fstab()
    * @param devices
    */
-  async fstab(devices: IDevices, installDevice: string, verbose = false) {
+  async fstab(installDevice: string, verbose = false) {
     // const echo = Utils.setEcho(verbose)
     if (verbose) {
       Utils.warning('hatching: fstab')
@@ -443,14 +443,14 @@ adduser ${username} \
     }
     let text = ''
 
-    text += `# ${devices.root.device} ${devices.root.mountPoint} ${devices.root.fsType} ${mountOptsRoot}\n`
-    text += `UUID=${Utils.uuid(devices.root.device)} ${devices.root.mountPoint} ${devices.root.fsType} ${mountOptsRoot}\n`
+    text += `# ${this.devices.root.device} ${devices.root.mountPoint} ${devices.root.fsType} ${mountOptsRoot}\n`
+    text += `UUID=${Utils.uuid(this.devices.root.device)} ${this.devices.root.mountPoint} ${this.devices.root.fsType} ${mountOptsRoot}\n`
     if (this.efi) {
-      text += `# ${devices.efi.device} ${devices.efi.mountPoint} vfat ${mountOptsEfi}\n`
-      text += `UUID=${Utils.uuid(devices.efi.device)} ${devices.efi.mountPoint} vfat ${mountOptsEfi}\n`
+      text += `# ${this.devices.efi.device} ${this.devices.efi.mountPoint} vfat ${mountOptsEfi}\n`
+      text += `UUID=${Utils.uuid(this.devices.efi.device)} ${this.devices.efi.mountPoint} vfat ${mountOptsEfi}\n`
     }
-    text += `# ${devices.swap.device} ${devices.swap.mountPoint} ${devices.swap.fsType} ${mountOptsSwap}\n`
-    text += `UUID=${Utils.uuid(devices.swap.device)} ${devices.swap.mountPoint} ${devices.swap.fsType} ${mountOptsSwap}\n`
+    text += `# ${this.devices.swap.device} ${this.devices.swap.mountPoint} ${this.devices.swap.fsType} ${mountOptsSwap}\n`
+    text += `UUID=${Utils.uuid(this.devices.swap.device)} ${this.devices.swap.mountPoint} ${this.devices.swap.fsType} ${mountOptsSwap}\n`
     Utils.write(file, text)
   }
 
@@ -561,7 +561,7 @@ adduser ${username} \
    * @param devices
    * @param verbose
    */
-  async egg2system(devices: IDevices, verbose = false): Promise<void> {
+  async egg2system(verbose = false): Promise<void> {
     const echo = Utils.setEcho(verbose)
     if (verbose) {
       Utils.warning('hatching: egg2system')
@@ -666,7 +666,7 @@ adduser ${username} \
    *
    * @param devices
    */
-  async mount4target(devices: IDevices, verbose = false): Promise<boolean> {
+  async mount4target(verbose = false): Promise<boolean> {
     const echo = Utils.setEcho(verbose)
     if (verbose) {
       Utils.warning('hatching: mount4target')
@@ -675,12 +675,12 @@ adduser ${username} \
     if (!fs.existsSync(this.target)) {
       await exec(`mkdir ${this.target}`, echo)
     }
-    await exec(`mount ${devices.root.device} ${this.target}${devices.root.mountPoint}`, echo)
-    await exec(`tune2fs -c 0 -i 0 ${devices.root.device}`, echo)
+    await exec(`mount ${this.devices.root.device} ${this.target}${devices.root.mountPoint}`, echo)
+    await exec(`tune2fs -c 0 -i 0 ${this.devices.root.device}`, echo)
     if (this.efi) {
-      if (!fs.existsSync(this.target + devices.efi.mountPoint)) {
-        await exec(`mkdir ${this.target}${devices.efi.mountPoint} -p`, echo)
-        await exec(`mount ${devices.efi.device} ${this.target}${devices.efi.mountPoint}`, echo)
+      if (!fs.existsSync(this.target + this.devices.efi.mountPoint)) {
+        await exec(`mkdir ${this.target}${this.devices.efi.mountPoint} -p`, echo)
+        await exec(`mount ${this.devices.efi.device} ${this.target}${this.devices.efi.mountPoint}`, echo)
       }
     }
     await exec(`rm -rf ${this.target}/lost+found`, echo)
@@ -692,7 +692,7 @@ adduser ${username} \
    * @param target
    * @param devices
    */
-  async umount4target(devices: IDevices, verbose = false): Promise<boolean> {
+  async umount4target(verbose = false): Promise<boolean> {
     const echo = Utils.setEcho(verbose)
     if (verbose) {
       Utils.warning('hatching: umount4target')
@@ -702,7 +702,7 @@ adduser ${username} \
       await exec(`umount ${this.target}/boot/efi`, echo)
       await exec('sleep 1', echo)
     }
-    await exec(`umount ${devices.root.device}`, echo)
+    await exec(`umount ${this.devices.root.device}`, echo)
     await exec('sleep 1', echo)
     return true
   }
