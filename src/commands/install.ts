@@ -18,6 +18,7 @@ export default class Install extends Command {
     info: flags.help({ char: 'h' }),
     gui: flags.boolean({ char: 'g', description: 'use gui installer' }),
     umount: flags.boolean({ char: 'u', description: 'umount devices' }),
+    lvmremove: flags.boolean({ char: 'l', description: 'remove lvm /dev/pve' }),
     verbose: flags.boolean({ char: 'v', description: 'verbose' }),
   }
   static description = 'system installation (the eggs became penguin)'
@@ -44,14 +45,21 @@ export default class Install extends Command {
       umount = true
     }
 
-    if (Utils.isRoot())  {
-      // if (Utils.isLive()) {
-      if (true) {
-          if (flags.gui) {
+    let lvmremove = false
+    if (flags.lvmremove) {
+      lvmremove = true
+    }
+
+    if (Utils.isRoot()) {
+      if (Utils.isLive()) {
+        if (flags.gui) {
           shx.exec('calamares')
         } else {
-          Utils.warning('Spawn the egg...')
+          Utils.warning('Installing the system / spawning the egg...')
           const hatching = new Hatching()
+          if (lvmremove) {
+            hatching.lvmRemove(verbose)
+          } 
           hatching.questions(verbose, umount)
         }
       } else {

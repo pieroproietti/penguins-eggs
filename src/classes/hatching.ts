@@ -877,6 +877,23 @@ adduser ${username} \
   }
 
   /**
+   * Rimuove il lvm pve
+   * @param verbose 
+   */
+  async lvmRemove(verbose = false){
+    const echo = Utils.setEcho(verbose)
+    if (verbose) {
+      Utils.warning('hatching: diskPartition')
+    }
+    await exec('lvremove /dev/pve/swap', echo)
+    await exec('lvremove /dev/pve/data', echo)
+    await exec('lvremove /dev/pve/root', echo)
+    await exec('vgremove /dev/pve', echo)
+    await exec('pvremove /dev/sda2', echo)
+    await exec('rm /TARGET -rf', echo)
+  }
+
+  /**
    *
    * @param device
    */
