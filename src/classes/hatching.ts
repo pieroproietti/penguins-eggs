@@ -29,8 +29,11 @@ const { checkSync } = require('diskusage')
 export default class Hatching {
 
   efi = false
+  
+  devices = {} as IDevices
 
   target = '/tmp/TARGET'
+
 
   /**
    * question
@@ -65,11 +68,11 @@ export default class Hatching {
       Utils.warning('>>>hatching: install')
     }
 
-    const devices = {} as IDevices
-
-    devices.efi = {} as IDevice
-    devices.root = {} as IDevice
-    devices.swap = {} as IDevice
+    this.devices.efi = {} as IDevice
+    this.devices.boot = {} as IDevice
+    this.devices.root = {} as IDevice
+    this.devices.data = {} as IDevice
+    this.devices.swap = {} as IDevice
 
     /**
      * users configuration
@@ -198,41 +201,6 @@ export default class Hatching {
       this.efi = true
     }
 
-    if (disk.partitionType === 'simple' && this.efi) {
-      devices.efi.device = `${disk.installationDevice}1`
-      devices.efi.fsType = 'F 32 -I'
-      devices.efi.mountPoint = '/boot/efi'
-
-      devices.root.device = `${disk.installationDevice}2`
-      devices.root.fsType = 'ext4'
-      devices.root.mountPoint = '/'
-
-      devices.swap.device = `${disk.installationDevice}3`
-      devices.swap.fsType = 'swap'
-      devices.swap.mountPoint = 'none'
-    } else if (disk.partitionType === 'simple' && !this.efi) {
-      devices.root.device = `${disk.installationDevice}1`
-      devices.root.fsType = 'ext4'
-      devices.root.mountPoint = '/'
-
-      devices.swap.device = `${disk.installationDevice}2`
-      devices.swap.fsType = 'swap'
-      devices.swap.mountPoint = 'none'
-
-    } else if (disk.partitionType === 'simple' && this.efi) {
-      devices.swap.device = `/dev/penguins/swap`
-      devices.swap.fsType = 'swap'
-      devices.swap.mountPoint = 'none'
-
-      devices.root.device = `/dev/penguins/root`
-      devices.root.fsType = 'ext4'
-      devices.root.mountPoint = '/'
-
-      devices.data.device = `/dev/penguins/data`
-      devices.data.fsType = 'ext4'
-      devices.data.mountPoint = '/var/lib/vz'
-    }      
-
     const diskSize = await this.getDiskSize(disk.installationDevice, verbose)
     console.log(`diskSize: ${diskSize}`)
 
@@ -243,7 +211,6 @@ export default class Hatching {
 
     const isDiskPrepared: boolean = await this.diskPartition(disk.installationDevice, disk.partionType, verbose)
     if (isDiskPrepared) {
-      console.log(`vado formattare ${devices}`)
       await this.mkfs(devices, verbose)
       await this.mount4target(devices, verbose)
       await this.egg2system(devices, verbose)
@@ -660,24 +627,38 @@ adduser ${username} \
    *
    * @param devices
    */
-  async mkfs(devices: IDevices, verbose = false): Promise<boolean> {
+  async mkfs(verbose = false): Promise<boolean> {
     const echo = Utils.setEcho(verbose)
     if (verbose) {
       Utils.warning('hatching: mkfs')
     }
 
     const result = true
-    if (this.efi) {
-      await exec(`mkdosfs -F 32 -I ${devices.efi.device}`, echo)
+
+    if(this.efi){
+      Utils.warning(`Formatting ${this.devices.efi.device}`)
+      await exec(`mkdosfs -F 32 -I ${this.devices.efi.device}`, echo)
     }
-    console.log(`Formatto root ${devices.root.fsType} ${devices.root.device}`)
-    
-    await exec(`mkfs -t ${devices.root.fsType} ${devices.root.device}`, echo)
-    if (devices.data.device !== ''){
-      await exec(`mkfs -t ${devices.data.fsType} ${devices.data.device}`, echo)
+
+    if (this.devices.boot.device !=='nome'){
+      Utils.warning(`Formatting ${this.devices.boot.device}`)
+      await exec(`mkfs -t ${this.devices.boot.fsType} ${this.devices.boot.device}`, echo)
     }
-    console.log(`Formatto root ${devices.root.fsType} ${devices.root.device}`)
-    await exec(`mkswap ${devices.swap.device}`, echo)
+
+    if (this.devices.root.device !=='nome'){
+      Utils.warning(`Formatting ${this.devices.root.device}`)
+      await exec(`mkfs -t ${this.devices.root.fsType} ${this.devices.root.device}`, echo)
+    }
+
+    if (this.devices.data.device !=='nome'){
+      Utils.warning(`Formatting ${this.devices.data.device}`)
+      await exec(`mkfs -t ${this.devices.data.fsType} ${this.devices.data.device}`, echo)
+    }
+
+    if (this.devices.swap.device !=='nome'){
+      Utils.warning(`Formatting ${this.devices.swap.device}`)
+      await exec(`mkswap ${this.devices.swap.device}`, echo)
+    }
     return result
   }
 
@@ -753,13 +734,44 @@ adduser ${username} \
       await exec(`parted --script ${device} mklabel gpt mkpart primary 0% 1% mkpart primary 1% 95% mkpart primary 95% 100%`, echo)
       await exec(`parted --script ${device} set 1 boot on`, echo)
       await exec(`parted --script ${device} set 1 esp on`, echo)
+
+      this.devices.efi.device = `/dev/${device}1`
+      this.devices.efi.fsType = 'F 32 -I'
+      this.devices.efi.mountPoint = '/boot/efi'
+
+      this.devices.boot.device = `none`
+
+      this.devices.root.device = `/dev/${device}2`
+      this.devices.root.fsType = 'ext4'
+      this.devices.root.mountPoint = '/'
+
+      this.devices.data.device = `none`
+
+      this.devices.swap.device = `/dev/${device}3`
+      this.devices.swap.fsType = 'swap'
+
       retVal = true
     } else if (partitionType === 'simple' && !this.efi) {
       await exec(`parted --script ${device} mklabel msdos`, echo)
       await exec(`parted --script --align optimal ${device} mkpart primary 1MiB 95%`, echo)
       await exec(`parted --script ${device} set 1 boot on`, echo)
       await exec(`parted --script --align optimal ${device} mkpart primary 95% 100%`, echo)
-      await exec(`sleep 2`, echo)
+
+      this.devices.efi.device = ``
+
+      this.devices.boot.device = ``
+
+
+      this.devices.root.device = `${device}1`
+      this.devices.root.fsType = 'ext4'
+      this.devices.root.mountPoint = '/'
+
+      this.devices.data.device = `none`
+
+      this.devices.swap.device = `${device}2`
+      this.devices.swap.fsType = 'swap'
+      this.devices.swap.mountPoint = 'none'
+
       retVal = true
     } else if (partitionType === 'lvm2' && this.efi) {
       console.log('to be implemented!')
@@ -779,11 +791,6 @@ adduser ${username} \
       const lvmByteSize: number = Number(shx.exec(`cat /proc/partitions | grep ${lvmPartname}| awk '{print $3}' | grep "[0-9]"`).stdout.trim())
       const lvmSize = lvmByteSize / 1024
 
-
-      const penguins_swap = '/dev/penguin/swap'
-      const penguins_root ='/dev/penguin/root'
-      const penguins_data ='/dev/penguin/data'
-
       // La partizione di root viene posta ad 1/4 della partizione LVM.
       // Viene limitata fino ad un massimo di 100 GB
       const lvmSwapSize = 4*1024
@@ -793,20 +800,28 @@ adduser ${username} \
       }
       const lvmDataSize = lvmSize - lvmRootSize - lvmSwapSize
 
-      console.log(`LVM size: ${lvmSize/1024} GB`)
-      console.log(`swap:${lvmSwapSize/1024} GB`)
-      console.log(`root:${lvmRootSize/1024} GB`)
-      console.log(`data: ${lvmDataSize/1026} GB`)
-      
       await exec (`pvcreate /dev/${lvmPartname}`)
-      await exec (`vgcreate penguin /dev/${lvmPartname}`)
+      await exec (`vgcreate pve /dev/${lvmPartname}`)
       await exec (`vgchange -an`)
-      await exec (`lvcreate -L ${lvmSwapSize} -nswap penguin`)
-      await exec (`lvcreate -L ${lvmRootSize} -nroot penguin`)
-      await exec (`lvcreate -l 100%FREE -ndata penguin`)
-      await exec (`vgchange -a y penguin`)
-      retVal = true
+      await exec (`lvcreate -L ${lvmSwapSize} -nswap pve`)
+      await exec (`lvcreate -L ${lvmRootSize} -nroot pve`)
+      await exec (`lvcreate -l 100%FREE -ndata pve`)
+      await exec (`vgchange -a y pve`)
 
+      this.devices.efi.device = `none`
+
+      this.devices.boot.device = `/dev/${device}1`
+      
+      this.devices.root.device = `/dev/pve/root`
+      this.devices.root.fsType = 'ext4'
+      this.devices.root.mountPoint = '/'
+      
+      this.devices.data.device = `/dev/pve/data`
+      this.devices.data.fsType = 'ext4'
+      this.devices.data.mountPoint = '/var/lib/vz'
+      
+      this.devices.swap.device =`/dev/pve/swap`
+      retVal = true
     }
     return retVal
   }
