@@ -665,7 +665,7 @@ adduser ${username} \
       await exec(`mkfs -t ${this.devices.boot.fsType} ${this.devices.boot.name}`, echo)
     }
 
-    if (this.devices.root.device !== 'nome') {
+    if (this.devices.root.name !== 'nome') {
       Utils.warning(`Formatting ${this.devices.root.name}`)
       await exec(`mkfs -t ${this.devices.root.fsType} ${this.devices.root.name}`, echo)
     }
@@ -675,7 +675,7 @@ adduser ${username} \
       await exec(`mkfs -t ${this.devices.data.fsType} ${this.devices.data.name}`, echo)
     }
 
-    if (this.devices.swap.device !== 'nome') {
+    if (this.devices.swap.name !== 'nome') {
       Utils.warning(`Formatting ${this.devices.swap.name}`)
       await exec(`mkswap ${this.devices.swap.name}`, echo)
     }
