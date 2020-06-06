@@ -5,7 +5,7 @@
 */
 
 export interface IDevice {
-    device: string;
+    name: string;
     fsType: string;
     mountPoint: string;
 }

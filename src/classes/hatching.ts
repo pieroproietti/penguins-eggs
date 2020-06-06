@@ -443,14 +443,14 @@ adduser ${username} \
     }
     let text = ''
 
-    text += `# ${this.devices.root.device} ${devices.root.mountPoint} ${devices.root.fsType} ${mountOptsRoot}\n`
-    text += `UUID=${Utils.uuid(this.devices.root.device)} ${this.devices.root.mountPoint} ${this.devices.root.fsType} ${mountOptsRoot}\n`
+    text += `# ${this.devices.root.name} ${this.devices.root.mountPoint} ${this.devices.root.fsType} ${mountOptsRoot}\n`
+    text += `UUID=${Utils.uuid(this.devices.root.name)} ${this.devices.root.mountPoint} ${this.devices.root.fsType} ${mountOptsRoot}\n`
     if (this.efi) {
-      text += `# ${this.devices.efi.device} ${this.devices.efi.mountPoint} vfat ${mountOptsEfi}\n`
-      text += `UUID=${Utils.uuid(this.devices.efi.device)} ${this.devices.efi.mountPoint} vfat ${mountOptsEfi}\n`
+      text += `# ${this.devices.efi.name} ${this.devices.efi.mountPoint} vfat ${mountOptsEfi}\n`
+      text += `UUID=${Utils.uuid(this.devices.efi.name)} ${this.devices.efi.mountPoint} vfat ${mountOptsEfi}\n`
     }
-    text += `# ${this.devices.swap.device} ${this.devices.swap.mountPoint} ${this.devices.swap.fsType} ${mountOptsSwap}\n`
-    text += `UUID=${Utils.uuid(this.devices.swap.device)} ${this.devices.swap.mountPoint} ${this.devices.swap.fsType} ${mountOptsSwap}\n`
+    text += `# ${this.devices.swap.name} ${this.devices.swap.mountPoint} ${this.devices.swap.fsType} ${mountOptsSwap}\n`
+    text += `UUID=${Utils.uuid(this.devices.swap.name)} ${this.devices.swap.mountPoint} ${this.devices.swap.fsType} ${mountOptsSwap}\n`
     Utils.write(file, text)
   }
 
@@ -636,31 +636,31 @@ adduser ${username} \
     const result = true
 
     if (this.efi) {
-      Utils.warning(`Formatting ${this.devices.efi.device}`)
-      await exec(`mkdosfs -F 32 -I ${this.devices.efi.device}`, echo)
+      Utils.warning(`Formatting ${this.devices.efi.name}`)
+      await exec(`mkdosfs -F 32 -I ${this.devices.efi.name}`, echo)
     }
 
-    if (this.devices.boot.device !== 'nome') {
-      Utils.warning(`Formatting ${this.devices.boot.device} as ${this.devices.boot.fsType}`)
+    if (this.devices.boot.name !== 'nome') {
+      Utils.warning(`Formatting ${this.devices.boot.name} as ${this.devices.boot.fsType}`)
       if (this.devices.boot.fsType === undefined) {
         this.devices.boot.fsType = `ext2`
       }
-      await exec(`mkfs -t ${this.devices.boot.fsType} ${this.devices.boot.device}`, echo)
+      await exec(`mkfs -t ${this.devices.boot.fsType} ${this.devices.boot.name}`, echo)
     }
 
     if (this.devices.root.device !== 'nome') {
-      Utils.warning(`Formatting ${this.devices.root.device}`)
-      await exec(`mkfs -t ${this.devices.root.fsType} ${this.devices.root.device}`, echo)
+      Utils.warning(`Formatting ${this.devices.root.name}`)
+      await exec(`mkfs -t ${this.devices.root.fsType} ${this.devices.root.name}`, echo)
     }
 
-    if (this.devices.data.device !== 'nome') {
-      Utils.warning(`Formatting ${this.devices.data.device}`)
-      await exec(`mkfs -t ${this.devices.data.fsType} ${this.devices.data.device}`, echo)
+    if (this.devices.data.name !== 'nome') {
+      Utils.warning(`Formatting ${this.devices.data.name}`)
+      await exec(`mkfs -t ${this.devices.data.fsType} ${this.devices.data.name}`, echo)
     }
 
     if (this.devices.swap.device !== 'nome') {
-      Utils.warning(`Formatting ${this.devices.swap.device}`)
-      await exec(`mkswap ${this.devices.swap.device}`, echo)
+      Utils.warning(`Formatting ${this.devices.swap.name}`)
+      await exec(`mkswap ${this.devices.swap.name}`, echo)
     }
     return result
   }
@@ -678,12 +678,12 @@ adduser ${username} \
     if (!fs.existsSync(this.target)) {
       await exec(`mkdir ${this.target}`, echo)
     }
-    await exec(`mount ${this.devices.root.device} ${this.target}${devices.root.mountPoint}`, echo)
-    await exec(`tune2fs -c 0 -i 0 ${this.devices.root.device}`, echo)
+    await exec(`mount ${this.devices.root.name} ${this.target}${this.devices.root.mountPoint}`, echo)
+    await exec(`tune2fs -c 0 -i 0 ${this.devices.root.name}`, echo)
     if (this.efi) {
       if (!fs.existsSync(this.target + this.devices.efi.mountPoint)) {
         await exec(`mkdir ${this.target}${this.devices.efi.mountPoint} -p`, echo)
-        await exec(`mount ${this.devices.efi.device} ${this.target}${this.devices.efi.mountPoint}`, echo)
+        await exec(`mount ${this.devices.efi.name} ${this.target}${this.devices.efi.mountPoint}`, echo)
       }
     }
     await exec(`rm -rf ${this.target}/lost+found`, echo)
@@ -705,7 +705,7 @@ adduser ${username} \
       await exec(`umount ${this.target}/boot/efi`, echo)
       await exec('sleep 1', echo)
     }
-    await exec(`umount ${this.devices.root.device}`, echo)
+    await exec(`umount ${this.devices.root.name}`, echo)
     await exec('sleep 1', echo)
     return true
   }
@@ -738,19 +738,19 @@ adduser ${username} \
       await exec(`parted --script ${device} set 1 boot on`, echo)
       await exec(`parted --script ${device} set 1 esp on`, echo)
 
-      this.devices.efi.device = `/dev/${device}1`
+      this.devices.efi.name = `${device}1`
       this.devices.efi.fsType = 'F 32 -I'
       this.devices.efi.mountPoint = '/boot/efi'
 
-      this.devices.boot.device = `none`
+      this.devices.boot.name = `none`
 
-      this.devices.root.device = `/dev/${device}2`
+      this.devices.root.name = `${device}2`
       this.devices.root.fsType = 'ext4'
       this.devices.root.mountPoint = '/'
 
-      this.devices.data.device = `none`
+      this.devices.data.name = `none`
 
-      this.devices.swap.device = `/dev/${device}3`
+      this.devices.swap.name = `${device}3`
       this.devices.swap.fsType = 'swap'
 
       retVal = true
@@ -760,18 +760,18 @@ adduser ${username} \
       await exec(`parted --script ${device} set 1 boot on`, echo)
       await exec(`parted --script --align optimal ${device} mkpart primary 95% 100%`, echo)
 
-      this.devices.efi.device = ``
+      this.devices.efi.name = `nome`
 
-      this.devices.boot.device = ``
+      this.devices.boot.name = `nome`
 
 
-      this.devices.root.device = `${device}1`
+      this.devices.root.name = `${device}1`
       this.devices.root.fsType = 'ext4'
       this.devices.root.mountPoint = '/'
 
-      this.devices.data.device = `none`
+      this.devices.data.name = `none`
 
-      this.devices.swap.device = `${device}2`
+      this.devices.swap.name = `${device}2`
       this.devices.swap.fsType = 'swap'
       this.devices.swap.mountPoint = 'none'
 
@@ -811,19 +811,19 @@ adduser ${username} \
       await exec(`lvcreate -l 100%FREE -ndata pve`)
       await exec(`vgchange -a y pve`)
 
-      this.devices.efi.device = `none`
+      this.devices.efi.name = `none`
 
-      this.devices.boot.device = `/dev/${device}1`
+      this.devices.boot.name = `${device}1`
 
-      this.devices.root.device = `/dev/pve/root`
+      this.devices.root.name = `/dev/pve/root`
       this.devices.root.fsType = 'ext4'
       this.devices.root.mountPoint = '/'
 
-      this.devices.data.device = `/dev/pve/data`
+      this.devices.data.name = `/dev/pve/data`
       this.devices.data.fsType = 'ext4'
       this.devices.data.mountPoint = '/var/lib/vz'
 
-      this.devices.swap.device = `/dev/pve/swap`
+      this.devices.swap.name = `/dev/pve/swap`
       retVal = true
     }
     return retVal
