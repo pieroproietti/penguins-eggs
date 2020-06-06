@@ -658,10 +658,11 @@ adduser ${username} \
     }
 
     if (this.devices.boot.name !== 'none') {
-      Utils.warning(`Formatting ${this.devices.boot.name} as ${this.devices.boot.fsType}`)
       if (this.devices.boot.fsType === undefined) {
         this.devices.boot.fsType = `ext2`
+        this.devices.boot.mountPoint = '/boot'
       }
+      Utils.warning(`Formatting ${this.devices.boot.name} as ${this.devices.boot.fsType}`)
       await exec(`mkfs -t ${this.devices.boot.fsType} ${this.devices.boot.name}`, echo)
     }
 
