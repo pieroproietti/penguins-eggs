@@ -207,11 +207,11 @@ export default class Hatching {
 
       console.log(`- net Interface: ` + chalk.cyanBright(net.netInterface))
       console.log(`- net address type: ` + chalk.cyanBright(net.netAddressType))
-      // if (!net.netAddressType === 'dhcp') {
-      console.log(`- net address: ` + chalk.cyanBright(net.netAddress))
-      console.log(`- net mask: ` + chalk.cyanBright(net.netMask))
-      console.log(`- net gateway: ` + chalk.cyanBright(net.netGateway))
-      //}
+      if (net.netAddressType !== 'dhcp') {
+        console.log(`- net address: ` + chalk.cyanBright(net.netAddress))
+        console.log(`- net mask: ` + chalk.cyanBright(net.netMask))
+        console.log(`- net gateway: ` + chalk.cyanBright(net.netGateway))
+      }
       console.log(`- installation device: ` + chalk.cyanBright(disk.installationDevice))
       console.log(`- partition type: ` + chalk.cyanBright(disk.partionType))
       console.log(`- fs type: ` + chalk.cyanBright(disk.fsType))
