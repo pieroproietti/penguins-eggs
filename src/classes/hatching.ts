@@ -104,7 +104,7 @@ export default class Hatching {
         let result = JSON.parse(await Utils.customConfirmAbort())
         if (result.confirm === 'Yes') {
           break
-        } else if (result === 'Abort') {
+        } else if (result.confirm === 'Abort') {
           Utils.warning(`You chose to abort the installation`)
           process.exit()
         }
@@ -128,7 +128,7 @@ export default class Hatching {
         let result = JSON.parse(await Utils.customConfirmAbort())
         if (result.confirm === 'Yes') {
           break
-        } else if (result === 'Abort') {
+        } else if (result.confirm === 'Abort') {
           Utils.warning(`You chose to abort the installation`)
           process.exit()
         }
@@ -154,7 +154,7 @@ export default class Hatching {
         let result = JSON.parse(await Utils.customConfirmAbort())
         if (result.confirm === 'Yes') {
           break
-        } else if (result === 'Abort') {
+        } else if (result.confirm === 'Abort') {
           Utils.warning(`You chose to abort the installation`)
           process.exit()
         }
@@ -183,7 +183,7 @@ export default class Hatching {
         let result = JSON.parse(await Utils.customConfirmAbort())
         if (result.confirm === 'Yes') {
           break
-        } else if (result === 'Abort') {
+        } else if (result.confirm === 'Abort') {
           Utils.warning(`You chose to abort the installation`)
           process.exit()
         }
@@ -221,7 +221,7 @@ export default class Hatching {
       let result = JSON.parse(await Utils.customConfirmAbort())
       if (result.confirm === 'Yes') {
         break
-      } else if (result === 'Abort') {
+      } else if (result.confirm === 'Abort') {
         Utils.warning(`You chose to abort the installation`)
         process.exit()
       }
