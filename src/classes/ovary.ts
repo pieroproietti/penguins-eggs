@@ -1014,8 +1014,11 @@ timeout 200\n`
       if (assistant) {
         shx.cp('/usr/share/applications/assistant.desktop', `${this.work_dir.merged}${pathToDesktopLive}`)
       } else {
-        // Solo per lxde, lxqt, mate e xfce per ridimensionare il video 
-        if (Pacman.packageIsInstalled('lxde-core') || Pacman.packageIsInstalled('lxqt-core')) {
+        // Solo per lxde, lxqt, mate e xfce installa adjust per ridimensionare il video 
+        if (Pacman.packageIsInstalled('lxde-core') ||
+          Pacman.packageIsInstalled('lxqt-core') ||
+          Pacman.packageIsInstalled('mate-core') || Pacman.packageIsInstalled('ubuntu-mate-core') ||
+          Pacman.packageIsInstalled('xfce4')) {
           shx.cp('/usr/share/applications/penguins-eggs-adjust.desktop', `${this.work_dir.merged}${pathToDesktopLive}`)
         }
         // Seleziona tra eggs-installer e calamares
