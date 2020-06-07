@@ -1021,8 +1021,6 @@ timeout 200\n`
           shx.cp('/usr/share/applications/install-debian.desktop', `${this.work_dir.merged}${pathToDesktopLive}`)
         } else {
           shx.cp('/usr/share/applications/penguins-eggs-installer.desktop', `${this.work_dir.merged}${pathToDesktopLive}`)
-          // Rendo avviabili
-          await exec(`chroot ${this.work_dir.merged} sudo -u live chmod a+x ${pathToDesktopLive}/penguins-eggs-installer.desktop`, echo)
         }
 
       }
