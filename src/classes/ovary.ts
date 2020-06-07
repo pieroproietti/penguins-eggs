@@ -1385,9 +1385,6 @@ timeout 200\n`
   finished() {
     Utils.titles('produce')
     console.log('eggs is finished!\n\nYou can find the file iso: ' + chalk.cyanBright(this.eggName) + '\nin the nest: ' + chalk.cyanBright(this.snapshot_dir) + '.')
-    console.log()
-    console.log(`it is recommended to run the command ` + chalk.cyanBright(`sudo update-initramfs -u`) + ` after next reboot.`)
-    Utils.customConfirm()
   }
 }
 

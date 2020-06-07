@@ -1161,6 +1161,9 @@ adduser ${username} \
     console.log('Host name was set as ' + chalk.cyanBright(hostname) + '.')
     console.log('The user name is ' + chalk.cyanBright(username) + '.')
     console.log('Enjoy Your new penguin!')
+    console.log(`Note: it is recommended to run the command ` + chalk.cyanBright(`sudo update-initramfs -u`) + ` after next reboot.`)
+    console.log('Press any key to exit')
+    require('child_process').spawnSync("read _ ", {shell: true, stdio: [0, 1, 2]});
   }
 }
 
