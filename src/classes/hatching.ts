@@ -98,7 +98,7 @@ export default class Hatching {
       console.log()
 
       let result = JSON.parse(await Utils.customConfirmAbort())
-      if (result === 'Yes') {
+      if (result.confirm === 'Yes') {
         break
       } else if (result === 'Abort') {
         Utils.warning(`You chose to abort the installation`)
@@ -123,7 +123,7 @@ export default class Hatching {
       console.log()
 
       let result = JSON.parse(await Utils.customConfirmAbort())
-      if (result === 'Yes') {
+      if (result.confirm === 'Yes') {
         break
       } else if (result === 'Abort') {
         Utils.warning(`You chose to abort the installation`)
@@ -149,7 +149,7 @@ export default class Hatching {
       console.log(`- ` + chalk.bgGreen.black(`net gateway: `) + chalk.bgGreen.whiteBright(net.netGateway))
       console.log()
       let result = JSON.parse(await Utils.customConfirmAbort())
-      if (result === 'Yes') {
+      if (result.confirm === 'Yes') {
         break
       } else if (result === 'Abort') {
         Utils.warning(`You chose to abort the installation`)
@@ -179,7 +179,7 @@ export default class Hatching {
       console.log(`- ` + chalk.bgGreen.black(`fs type: `) + chalk.bgGreen.whiteBright(disk.fsType))
       console.log()
       let result = JSON.parse(await Utils.customConfirmAbort())
-      if (result === 'Yes') {
+      if (result.confirm === 'Yes') {
         break
       } else if (result === 'Abort') {
         Utils.warning(`You chose to abort the installation`)
