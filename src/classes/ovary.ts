@@ -1011,7 +1011,12 @@ timeout 200\n`
         shx.cp('/usr/share/applications/assistant.desktop', `${this.work_dir.merged}${pathToDesktopLive}`)
       } else {
         shx.cp('/usr/share/applications/penguins-adjust.desktop', `${this.work_dir.merged}${pathToDesktopLive}`)
-        shx.cp('/usr/share/applications/install-debian.desktop', `${this.work_dir.merged}${pathToDesktopLive}`)
+        if (Pacman.packageIsInstalled('calamares')){
+          shx.cp('/usr/share/applications/install-debian.desktop', `${this.work_dir.merged}${pathToDesktopLive}`)
+        } else {
+          shx.cp('/usr/share/applications/penguins-cli-installer.desktop', `${this.work_dir.merged}${pathToDesktopLive}`)
+        }
+
       }
 
       await exec(`chroot ${this.work_dir.merged}  chown live:live ${pathHomeLive} -R`, echo)
@@ -1028,7 +1033,7 @@ timeout 200\n`
        * funziona solo montando /dev 
        */
 
-      if (Pacman.packageIsInstalled('gnome-shell')) {
+      if (Pacman.packageIsInstalled('gnome-shell-NOT_USED_FOR_NOW')) {
         // Monto /dev
         await makeIfNotExist(`${this.work_dir.merged}/dev`, verbose)
         await exec(`mount --bind --make-slave /dev ${this.work_dir.merged}/dev`, echo)
