@@ -985,13 +985,16 @@ timeout 200\n`
       const pathToDesktopLive = pathHomeLive + '/' + Xdg.traduce('DESKTOP')
       //const pathToDesktopLive = '/home/live/Scrivania'
 
+
+      // Copia icona penguins-eggs
+      shx.cp(path.resolve(__dirname, `../../assets/eggs.png`), `/usr/share/icons/`)
+
       /**
        * creazione dei link in /usr/share/applications
        */
       shx.cp(path.resolve(__dirname, `../../assets/penguins-eggs.desktop`), `/usr/share/applications/`)
       shx.cp(path.resolve(__dirname, `../../assets/penguins-eggs-adjust.desktop`), `/usr/share/applications/`)
       shx.cp(path.resolve(__dirname, `../../assets/penguins-eggs-installer.desktop`), `/usr/share/applications/`)
-      shx.cp(path.resolve(__dirname, `../../assets/eggs.png`), `/usr/share/icons/`)
 
       shx.cp(path.resolve(__dirname, `../../assets/dwagent-sh.desktop`), `/usr/share/applications/`)
       shx.cp(path.resolve(__dirname, `../../assets/assistenza-remota.png`), `/usr/share/icons/`)
@@ -1004,8 +1007,7 @@ timeout 200\n`
       }
 
 
-
-      // Copia link sul desktop
+      // Copia link comuni sul desktop
       shx.cp('/usr/share/applications/penguins-eggs.desktop', `${this.work_dir.merged}${pathToDesktopLive}`)
       shx.cp('/usr/share/applications/dwagent-sh.desktop', `${this.work_dir.merged}${pathToDesktopLive}`)
 
@@ -1028,9 +1030,9 @@ timeout 200\n`
       await exec(`chroot ${this.work_dir.merged}  chown live:live ${pathHomeLive} -R`, echo)
 
       // Rendo avviabili
-      await exec(`chroot ${this.work_dir.merged} sudo -u live chmod a+x ${pathToDesktopLive}/dwagent-sh.desktop`, echo)
-      await exec(`chroot ${this.work_dir.merged} sudo -u live chmod a+x ${pathToDesktopLive}/penguins-adjust.desktop`, echo)
-      await exec(`chroot ${this.work_dir.merged} sudo -u live chmod a+x ${pathToDesktopLive}/penguins-eggs.desktop`, echo)
+      // await exec(`chroot ${this.work_dir.merged} sudo -u live chmod a+x ${pathToDesktopLive}/dwagent-sh.desktop`, echo)
+      // await exec(`chroot ${this.work_dir.merged} sudo -u live chmod a+x ${pathToDesktopLive}/penguins-eggs-adjust.desktop`, echo)
+      // await exec(`chroot ${this.work_dir.merged} sudo -u live chmod a+x ${pathToDesktopLive}/penguins-eggs.desktop`, echo)
 
 
       /**
@@ -1046,7 +1048,7 @@ timeout 200\n`
         //await exec(`mount -o remount,bind,ro ${this.work_dir.merged}/dev`, echo)
 
         await exec(`chroot ${this.work_dir.merged} sudo -u ${this.user_opt} dbus-launch gio set file://${pathToDesktopLive}/dwagent-sh.desktop metadata::trusted true`, echo)
-        await exec(`chroot ${this.work_dir.merged} sudo -u ${this.user_opt} dbus-launch gio set file://${pathToDesktopLive}/penguins-adjust.desktop metadata::trusted true`, echo)
+        await exec(`chroot ${this.work_dir.merged} sudo -u ${this.user_opt} dbus-launch gio set file://${pathToDesktopLive}/penguins-eggs-adjust.desktop metadata::trusted true`, echo)
         await exec(`chroot ${this.work_dir.merged} sudo -u ${this.user_opt} dbus-launch gio set file://${pathToDesktopLive}/penguins-eggs.desktop metadata::trusted true`, echo)
 
         // smonto devpts
