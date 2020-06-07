@@ -1028,10 +1028,12 @@ timeout 200\n`
       }
 
       // Rendo avviabili i link del Desktop
-      await exec(`chroot ${this.work_dir.merged} chmod a+x ${pathToDesktopLive}/*.desktop`, echo)
+      //await exec(`chroot ${this.work_dir.merged} chmod a+x ${pathToDesktopLive}/*.desktop`, echo)
+      await exec(`chmod a+x ${this.work_dir.merged}${pathToDesktopLive}/*.desktop`, echo)
 
-      // e ne cambio la proprietà a live:live
+      // ed imposto la home di /home/live a live:live
       await exec(`chroot ${this.work_dir.merged}  chown live:live ${pathHomeLive} -R`, echo)
+      //await exec(`chown 1000:1000 ${this.work_dir.merged}${pathHomeLive} -R`, echo)
 
 
 
@@ -1383,6 +1385,8 @@ timeout 200\n`
   finished() {
     Utils.titles('produce')
     console.log('eggs is finished!\n\nYou can find the file iso: ' + chalk.cyanBright(this.eggName) + '\nin the nest: ' + chalk.cyanBright(this.snapshot_dir) + '.')
+    console.log()
+    console.log(`it is recommended to run the command ` + chalk.cyanBright(`sudo update-initramfs -u`) + ` after next reboot.`)
     Utils.customConfirm()
   }
 }
