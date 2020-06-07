@@ -347,7 +347,7 @@ export default class Ovary {
       }
 
       await this.liveCreateStructure(verbose)
-      if (Pacman.packageIsInstalled('calamares')){
+      if (Pacman.packageIsInstalled('calamares')) {
         await this.calamaresConfigure(verbose)
       }
       await this.isoCreateStructure(verbose)
@@ -385,12 +385,12 @@ export default class Ovary {
 
     Utils.warning(`Creatings egg in ${this.work_dir.path}`)
 
-    if (!fs.existsSync(this.work_dir.path)){
+    if (!fs.existsSync(this.work_dir.path)) {
       shx.mkdir('-p', this.work_dir.path)
     }
 
-    if (!fs.existsSync(this.work_dir.path +'/README.md')){
-      shx.cp(path.resolve(__dirname, '../../conf/ovary.md'), this.work_dir.path+'README.md')
+    if (!fs.existsSync(this.work_dir.path + '/README.md')) {
+      shx.cp(path.resolve(__dirname, '../../conf/ovary.md'), this.work_dir.path + 'README.md')
     }
 
     if (!fs.existsSync(this.work_dir.lowerdir)) {
@@ -789,10 +789,10 @@ timeout 200\n`
     // usr/bin/mksquashfs /.bind-root iso-template/antiX/linuxfs -comp ${this.compression} ${(this.mksq_opt === '' ? '' : ' ' + this.mksq_opt)} -wildcards -ef ${this.snapshot_excludes} ${this.session_excludes}`)
   }
 
-    /**
-   * Restituisce true per le direcory da montare con overlay
-   * @param dir 
-   */
+  /**
+ * Restituisce true per le direcory da montare con overlay
+ * @param dir 
+ */
   needOverlay(dir: string): boolean {
     // const excludeDirs = ['cdrom', 'dev', 'home', 'live', 'media', 'mnt', 'proc', 'run', 'sys', 'swapfile', 'tmp']
     const mountDirs = ['etc', 'var', 'boot']
@@ -1013,11 +1013,11 @@ timeout 200\n`
         shx.cp('/usr/share/applications/assistant.desktop', `${this.work_dir.merged}${pathToDesktopLive}`)
       } else {
         // Solo per lxde, lxqt, mate e xfce per ridimensionare il video 
-        if ((Pacman.packageIsInstalled('lxde-core') || (Pacman.packageIsInstalled('lxqt-core')){
+        if (Pacman.packageIsInstalled('lxde-core') || Pacman.packageIsInstalled('lxqt-core')) {
           shx.cp('/usr/share/applications/penguins-eggs-adjust.desktop', `${this.work_dir.merged}${pathToDesktopLive}`)
         }
         // Seleziona tra eggs-installer e calamares
-        if (Pacman.packageIsInstalled('calamares')){
+        if (Pacman.packageIsInstalled('calamares')) {
           shx.cp('/usr/share/applications/install-debian.desktop', `${this.work_dir.merged}${pathToDesktopLive}`)
         } else {
           shx.cp('/usr/share/applications/penguins-eggs-installer.desktop', `${this.work_dir.merged}${pathToDesktopLive}`)
@@ -1308,7 +1308,7 @@ timeout 200\n`
        *                    -o sblive.iso  OK
        *                    sblive OK
        */
-      
+
       this.eggName = Utils.getFilename(this.remix.name)
 
       const cmd = `xorriso  -as mkisofs \
