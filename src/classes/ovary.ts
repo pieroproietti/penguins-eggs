@@ -986,9 +986,11 @@ timeout 200\n`
       //const pathToDesktopLive = '/home/live/Scrivania'
 
       /**
-       * creazione dei link sul Desktop
+       * creazione dei link in /usr/share/applications
        */
       shx.cp(path.resolve(__dirname, `../../assets/penguins-eggs.desktop`), `/usr/share/applications/`)
+      shx.cp(path.resolve(__dirname, `../../assets/penguins-eggs-adjust.desktop`), `/usr/share/applications/`)
+      shx.cp(path.resolve(__dirname, `../../assets/penguins-eggs-installer.desktop`), `/usr/share/applications/`)
       shx.cp(path.resolve(__dirname, `../../assets/eggs.png`), `/usr/share/icons/`)
 
       shx.cp(path.resolve(__dirname, `../../assets/dwagent-sh.desktop`), `/usr/share/applications/`)
@@ -999,22 +1001,28 @@ timeout 200\n`
         shx.mkdir('-p', '/usr/local/share/penguins-eggs/')
         shx.cp(path.resolve(__dirname, `../../assistant/assistant.sh`), `/usr/local/share/penguins-eggs/`)
         shx.cp(path.resolve(__dirname, `../../assistant/assistant.html`), `/usr/local/share/penguins-eggs/`)
-      } else {
-        shx.cp(path.resolve(__dirname, `../../assets/penguins-adjust.desktop`), `/usr/share/applications/`)
       }
 
-      // Copia dei link comuni: boot ed assistenza
+
+
+      // Copia link sul desktop
       shx.cp('/usr/share/applications/penguins-eggs.desktop', `${this.work_dir.merged}${pathToDesktopLive}`)
       shx.cp('/usr/share/applications/dwagent-sh.desktop', `${this.work_dir.merged}${pathToDesktopLive}`)
 
       if (assistant) {
         shx.cp('/usr/share/applications/assistant.desktop', `${this.work_dir.merged}${pathToDesktopLive}`)
       } else {
-        shx.cp('/usr/share/applications/penguins-adjust.desktop', `${this.work_dir.merged}${pathToDesktopLive}`)
+        // Solo per lxde, lxqt, mate e xfce per ridimensionare il video 
+        if ((Pacman.packageIsInstalled('lxde-core') || (Pacman.packageIsInstalled('lxqt-core')){
+          shx.cp('/usr/share/applications/penguins-eggs-adjust.desktop', `${this.work_dir.merged}${pathToDesktopLive}`)
+        }
+        // Seleziona tra eggs-installer e calamares
         if (Pacman.packageIsInstalled('calamares')){
           shx.cp('/usr/share/applications/install-debian.desktop', `${this.work_dir.merged}${pathToDesktopLive}`)
         } else {
-          shx.cp('/usr/share/applications/penguins-cli-installer.desktop', `${this.work_dir.merged}${pathToDesktopLive}`)
+          shx.cp('/usr/share/applications/penguins-eggs-installer.desktop', `${this.work_dir.merged}${pathToDesktopLive}`)
+          // Rendo avviabili
+          await exec(`chroot ${this.work_dir.merged} sudo -u live chmod a+x ${pathToDesktopLive}/penguins-eggs-installer.desktop`, echo)
         }
 
       }
