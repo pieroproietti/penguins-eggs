@@ -78,150 +78,154 @@ export default class Hatching {
       Utils.warning('>>>hatching: install')
     }
 
-    /**
-     * users configuration
-     */
     let users: any
-    while (true) {
-      Utils.titles(`install`)
-      Utils.warning('get options users')
-      const optionsUsers: any = await this.getOptionsUsers(verbose)
-      users = JSON.parse(optionsUsers)
-
-      Utils.titles(`install`)
-      Utils.warning('get options users')
-      console.log(`- ` + chalk.bgGreen.black(`username: `) + chalk.bgGreen.whiteBright(users.username))
-      console.log(`- ` + chalk.bgGreen.black(`userfullname: `) + chalk.bgGreen.whiteBright(users.userfullname))
-      console.log(`- ` + chalk.bgGreen.black(`user password: `) + chalk.bgGreen.whiteBright(users.userpassword))
-      console.log(`- ` + chalk.bgGreen.black(`autologin: `) + chalk.bgGreen.whiteBright(users.autologin))
-      console.log(`- ` + chalk.bgGreen.black(`root password: `) + chalk.bgGreen.whiteBright(users.rootpassword))
-      console.log()
-
-      let result = JSON.parse(await Utils.customConfirmAbort())
-      if (result.confirm === 'Yes') {
-        break
-      } else if (result === 'Abort') {
-        Utils.warning(`You chose to abort the installation`)
-        process.exit()
-      }
-    }
-
-    /**
-     * host configuration
-     */
     let host: any
-    while (true) {
-      Utils.titles(`install`)
-      Utils.warning('get options host')
-      const optionsHost: any = await this.getOptionsHost(verbose)
-      host = JSON.parse(optionsHost)
-
-      Utils.titles(`install`)
-      Utils.warning('get options host')
-      console.log(`- ` + chalk.bgGreen.black(`hostname: `) + chalk.bgGreen.whiteBright(host.hostname))
-      console.log(`- ` + chalk.bgGreen.black(`domain: `) + chalk.bgGreen.whiteBright(host.domain))
-      console.log()
-
-      let result = JSON.parse(await Utils.customConfirmAbort())
-      if (result.confirm === 'Yes') {
-        break
-      } else if (result === 'Abort') {
-        Utils.warning(`You chose to abort the installation`)
-        process.exit()
-      }
-    }
-    /**
-     * net configuration
-     */
     let net: any
-    while (true) {
-      Utils.titles(`install`)
-      Utils.warning('get options net')
-      const optionsNet: any = await this.getOptionsNet(verbose)
-      net = JSON.parse(optionsNet)
-
-      Utils.titles(`install`)
-      Utils.warning('get options net')
-      console.log(`- ` + chalk.bgGreen.black(`net Interface: `) + chalk.bgGreen.whiteBright(net.netInterface))
-      console.log(`- ` + chalk.bgGreen.black(`net address type: `) + chalk.bgGreen.whiteBright(net.netAddressType))
-      console.log(`- ` + chalk.bgGreen.black(`net address: `) + chalk.bgGreen.whiteBright(net.netAddress))
-      console.log(`- ` + chalk.bgGreen.black(`net mask: `) + chalk.bgGreen.whiteBright(net.netMask))
-      console.log(`- ` + chalk.bgGreen.black(`net gateway: `) + chalk.bgGreen.whiteBright(net.netGateway))
-      console.log()
-      let result = JSON.parse(await Utils.customConfirmAbort())
-      if (result.confirm === 'Yes') {
-        break
-      } else if (result === 'Abort') {
-        Utils.warning(`You chose to abort the installation`)
-        process.exit()
-      }
-    }
-
-    /**
-     * disk and partition
-     */
-    const drives: any = await drivelist.list()
-    const aDrives: string[] = []
-    drives.forEach((element: { device: string }) => {
-      aDrives.push(element.device)
-    })
-    const partitionTypes = ['simple', 'lvm2']
     let disk: any
     while (true) {
-      Utils.titles(`install`)
-      Utils.warning('get options disk and partition type')
+      /**
+       * users configuration
+       */
+      while (true) {
+        Utils.titles(`install`)
+        Utils.warning('get options users')
+        const optionsUsers: any = await this.getOptionsUsers(verbose)
+        users = JSON.parse(optionsUsers)
 
-      const optionsDisk: any = await this.getOptionsDisk(aDrives, partitionTypes, verbose)
-      disk = JSON.parse(optionsDisk)
+        Utils.titles(`install`)
+        Utils.warning('get options users')
+        console.log(`- ` + chalk.bgGreen.black(`username: `) + chalk.bgGreen.whiteBright(users.username))
+        console.log(`- ` + chalk.bgGreen.black(`userfullname: `) + chalk.bgGreen.whiteBright(users.userfullname))
+        console.log(`- ` + chalk.bgGreen.black(`user password: `) + chalk.bgGreen.whiteBright(users.userpassword))
+        console.log(`- ` + chalk.bgGreen.black(`autologin: `) + chalk.bgGreen.whiteBright(users.autologin))
+        console.log(`- ` + chalk.bgGreen.black(`root password: `) + chalk.bgGreen.whiteBright(users.rootpassword))
+        console.log()
 
-      console.log(`- ` + chalk.bgGreen.black(`installation device: `) + chalk.bgGreen.whiteBright(disk.installationDevice))
-      console.log(`- ` + chalk.bgGreen.black(`partition type: `) + chalk.bgGreen.whiteBright(disk.partionType))
-      console.log(`- ` + chalk.bgGreen.black(`fs type: `) + chalk.bgGreen.whiteBright(disk.fsType))
-      console.log()
-      let result = JSON.parse(await Utils.customConfirmAbort())
-      if (result.confirm === 'Yes') {
-        break
-      } else if (result === 'Abort') {
-        Utils.warning(`You chose to abort the installation`)
-        process.exit()
+        let result = JSON.parse(await Utils.customConfirmAbort())
+        if (result.confirm === 'Yes') {
+          break
+        } else if (result === 'Abort') {
+          Utils.warning(`You chose to abort the installation`)
+          process.exit()
+        }
       }
-    }
 
+      /**
+       * host configuration
+       */
+      while (true) {
+        Utils.titles(`install`)
+        Utils.warning('get options host')
+        const optionsHost: any = await this.getOptionsHost(verbose)
+        host = JSON.parse(optionsHost)
 
-    /**
-     * Conferma finale
-     */
-    Utils.titles(`install`)
-    console.log()
-    console.log(`You choose to install the system with the following parameters:`)
-    console.log()
-    console.log(`- username: ` + chalk.cyanBright(users.username))
-    console.log(`- userfullname: ` + chalk.cyanBright(users.userfullname))
-    console.log(`- user password: ` + chalk.cyanBright(users.userpassword))
-    console.log(`- autologin: ` + chalk.cyanBright(users.autologin))
-    console.log(`- root password: ` + chalk.cyanBright(users.rootpassword))
+        Utils.titles(`install`)
+        Utils.warning('get options host')
+        console.log(`- ` + chalk.bgGreen.black(`hostname: `) + chalk.bgGreen.whiteBright(host.hostname))
+        console.log(`- ` + chalk.bgGreen.black(`domain: `) + chalk.bgGreen.whiteBright(host.domain))
+        console.log()
 
-    console.log(`- hostname: ` + chalk.cyanBright(host.hostname))
-    console.log(`- domain: ` + chalk.cyanBright(host.domain))
+        let result = JSON.parse(await Utils.customConfirmAbort())
+        if (result.confirm === 'Yes') {
+          break
+        } else if (result === 'Abort') {
+          Utils.warning(`You chose to abort the installation`)
+          process.exit()
+        }
+      }
 
-    console.log(`- net Interface: ` + chalk.cyanBright(net.netInterface))
-    console.log(`- net address type: ` + chalk.cyanBright(net.netAddressType))
-    // if (!net.netAddressType === 'dhcp') {
+      /**
+       * net configuration
+       */
+      while (true) {
+        Utils.titles(`install`)
+        Utils.warning('get options net')
+        const optionsNet: any = await this.getOptionsNet(verbose)
+        net = JSON.parse(optionsNet)
+
+        Utils.titles(`install`)
+        Utils.warning('get options net')
+        console.log(`- ` + chalk.bgGreen.black(`net Interface: `) + chalk.bgGreen.whiteBright(net.netInterface))
+        console.log(`- ` + chalk.bgGreen.black(`net address type: `) + chalk.bgGreen.whiteBright(net.netAddressType))
+        console.log(`- ` + chalk.bgGreen.black(`net address: `) + chalk.bgGreen.whiteBright(net.netAddress))
+        console.log(`- ` + chalk.bgGreen.black(`net mask: `) + chalk.bgGreen.whiteBright(net.netMask))
+        console.log(`- ` + chalk.bgGreen.black(`net gateway: `) + chalk.bgGreen.whiteBright(net.netGateway))
+        console.log()
+        let result = JSON.parse(await Utils.customConfirmAbort())
+        if (result.confirm === 'Yes') {
+          break
+        } else if (result === 'Abort') {
+          Utils.warning(`You chose to abort the installation`)
+          process.exit()
+        }
+      }
+
+      /**
+       * disk and partition
+       */
+      const drives: any = await drivelist.list()
+      const aDrives: string[] = []
+      drives.forEach((element: { device: string }) => {
+        aDrives.push(element.device)
+      })
+      const partitionTypes = ['simple', 'lvm2']
+      while (true) {
+        Utils.titles(`install`)
+        Utils.warning('get options disk and partition type')
+
+        const optionsDisk: any = await this.getOptionsDisk(aDrives, partitionTypes, verbose)
+        disk = JSON.parse(optionsDisk)
+
+        console.log(`- ` + chalk.bgGreen.black(`installation device: `) + chalk.bgGreen.whiteBright(disk.installationDevice))
+        console.log(`- ` + chalk.bgGreen.black(`partition type: `) + chalk.bgGreen.whiteBright(disk.partionType))
+        console.log(`- ` + chalk.bgGreen.black(`fs type: `) + chalk.bgGreen.whiteBright(disk.fsType))
+        console.log()
+        let result = JSON.parse(await Utils.customConfirmAbort())
+        if (result.confirm === 'Yes') {
+          break
+        } else if (result === 'Abort') {
+          Utils.warning(`You chose to abort the installation`)
+          process.exit()
+        }
+      }
+
+      /**
+       * Conferma finale
+       */
+      Utils.titles(`install`)
+      console.log()
+      console.log(`You choose to install the system with the following parameters:`)
+      console.log()
+      console.log(`- username: ` + chalk.cyanBright(users.username))
+      console.log(`- userfullname: ` + chalk.cyanBright(users.userfullname))
+      console.log(`- user password: ` + chalk.cyanBright(users.userpassword))
+      console.log(`- autologin: ` + chalk.cyanBright(users.autologin))
+      console.log(`- root password: ` + chalk.cyanBright(users.rootpassword))
+
+      console.log(`- hostname: ` + chalk.cyanBright(host.hostname))
+      console.log(`- domain: ` + chalk.cyanBright(host.domain))
+
+      console.log(`- net Interface: ` + chalk.cyanBright(net.netInterface))
+      console.log(`- net address type: ` + chalk.cyanBright(net.netAddressType))
+      // if (!net.netAddressType === 'dhcp') {
       console.log(`- net address: ` + chalk.cyanBright(net.netAddress))
       console.log(`- net mask: ` + chalk.cyanBright(net.netMask))
       console.log(`- net gateway: ` + chalk.cyanBright(net.netGateway))
-    //}
-    console.log(`- installation device: ` + chalk.cyanBright(disk.installationDevice))
-    console.log(`- partition type: ` + chalk.cyanBright(disk.partionType))
-    console.log(`- fs type: ` + chalk.cyanBright(disk.fsType))
-    console.log()
-    console.log(chalk.bgRed.white(`This is the last opportunity to abort, the follow operation will destroy the data on the disk`))
-    console.log()
-    if (!await Utils.customConfirm(`Please, confirm.`)) {
-      Utils.warning(`You chose to abort the installation`)
-      process.exit()
+      //}
+      console.log(`- installation device: ` + chalk.cyanBright(disk.installationDevice))
+      console.log(`- partition type: ` + chalk.cyanBright(disk.partionType))
+      console.log(`- fs type: ` + chalk.cyanBright(disk.fsType))
+      console.log()
+      console.log(chalk.bgRed.white(`This is the last opportunity to abort, the follow operation will destroy the data on the disk`))
+      console.log()
+      let result = JSON.parse(await Utils.customConfirmAbort())
+      if (result.confirm === 'Yes') {
+        break
+      } else if (result === 'Abort') {
+        Utils.warning(`You chose to abort the installation`)
+        process.exit()
+      }
     }
-
 
     Utils.titles(`install`)
     console.log()
