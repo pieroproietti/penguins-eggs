@@ -274,19 +274,19 @@ export default class Utils {
 
     // debian-live
     let path = '/lib/live/mount'
-    if (Utils.isMountpoint(path)){
+    if (Utils.isMountpoint(path)) {
       retVal = true
     }
 
     // Ubuntu bionic
     path = '/lib/live/mount/rootfs/filesystem.squashfs'
-    if (Utils.isMountpoint(path)){
+    if (Utils.isMountpoint(path)) {
       retVal = true
     }
 
     // MX Linux
     path = '/live/aufs'
-    if (Utils.isMountpoint(path)){
+    if (Utils.isMountpoint(path)) {
       retVal = true
     }
 
@@ -433,23 +433,46 @@ export default class Utils {
   *
   * @param msg
   */
-  static async customConfirmCompanion(msg = "Select yes to continue... "): Promise<any> {
-    return new Promise(function (resolve) {
-      const questions: Array<Record<string, any>> = [
-        {
-          type: 'list',
-          name: 'confirm',
-          message: msg,
-          choices: ['No', 'Yes'],
-          default: 'No',
-        },
-      ]
+ static async customConfirmCompanion(msg = "Select yes to continue... "): Promise<any> {
+  return new Promise(function (resolve) {
+    const questions: Array<Record<string, any>> = [
+      {
+        type: 'list',
+        name: 'confirm',
+        message: msg,
+        choices: ['No', 'Yes'],
+        default: 'No',
+      },
+    ]
 
-      inquirer.prompt(questions).then(function (options) {
-        resolve(JSON.stringify(options))
-      })
+    inquirer.prompt(questions).then(function (options) {
+      resolve(JSON.stringify(options))
     })
-  }
+  })
+}
+
+  /**
+  *
+  * @param msg
+  */
+ static async customConfirmAbort(msg = "Select yes to continue, No to repeat, Abort to exit... "): Promise<any> {
+  return new Promise(function (resolve) {
+    const questions: Array<Record<string, any>> = [
+      {
+        type: 'list',
+        name: 'confirm',
+        message: msg,
+        choices: ['No', 'Yes', 'Abort'],
+        default: 'No',
+      },
+    ]
+
+    inquirer.prompt(questions).then(function (options) {
+      resolve(JSON.stringify(options))
+    })
+  })
+}
+
 
   /**
    * titles
@@ -458,7 +481,7 @@ export default class Utils {
   static titles(command = ''): void {
     clear()
     console.log(chalk.blue(figlet.textSync('eggs')))
-    console.log(chalk.bgGreen.white('   ' + pjson.name+ '   ') + chalk.bgWhite.blue(' Perri\'s Brewery edition ') + chalk.bgRed.whiteBright('    ver. ' + pjson.version + '   '))
+    console.log(chalk.bgGreen.white('   ' + pjson.name + '   ') + chalk.bgWhite.blue(' Perri\'s Brewery edition ') + chalk.bgRed.whiteBright('    ver. ' + pjson.version + '   '))
     console.log('command: ' + chalk.bgBlack.white(command) + '\n')
   }
 
