@@ -1027,12 +1027,12 @@ timeout 200\n`
 
       }
 
+      // Rendo avviabili i link del Desktop
+      await exec(`chroot ${this.work_dir.merged} chmod a+x ${pathToDesktopLive}/*.desktop`, echo)
+
+      // e ne cambio la proprietà a live:live
       await exec(`chroot ${this.work_dir.merged}  chown live:live ${pathHomeLive} -R`, echo)
 
-      // Rendo avviabili
-      // await exec(`chroot ${this.work_dir.merged} sudo -u live chmod a+x ${pathToDesktopLive}/dwagent-sh.desktop`, echo)
-      // await exec(`chroot ${this.work_dir.merged} sudo -u live chmod a+x ${pathToDesktopLive}/penguins-eggs-adjust.desktop`, echo)
-      // await exec(`chroot ${this.work_dir.merged} sudo -u live chmod a+x ${pathToDesktopLive}/penguins-eggs.desktop`, echo)
 
 
       /**
@@ -1383,6 +1383,7 @@ timeout 200\n`
   finished() {
     Utils.titles('produce')
     console.log('eggs is finished!\n\nYou can find the file iso: ' + chalk.cyanBright(this.eggName) + '\nin the nest: ' + chalk.cyanBright(this.snapshot_dir) + '.')
+    Utils.customConfirm()
   }
 }
 
