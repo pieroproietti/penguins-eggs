@@ -86,3 +86,10 @@ var/mail/*
 var/spool/mail/*
 var/tmp/*
 var/cache/brightness-settings-cache/*
+
+# deepin
+data/*
+recovery/*
+
+
+
