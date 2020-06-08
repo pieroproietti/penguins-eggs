@@ -146,6 +146,13 @@ class Distro implements IDistro {
       this.versionLike = 'stretch'
       this.mountpointSquashFs = '/lib/live/mount/medium/live/filesystem.squashfs'
 
+    } // Deepin 20 
+     else if (this.versionId === 'n/a') {
+      this.distroId = 'Deepin'
+      this.distroLike = 'Debian'
+      this.versionLike = 'buster'
+      this.mountpointSquashFs = '/run/live/medium/live/filesystem.squashfs'
+
       /**
        * UBUNTU
        */
