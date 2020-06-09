@@ -812,7 +812,12 @@ timeout 200\n`
    * @returns bind
    */
   onlyMerged(dir: string): boolean {
-    const noDirs = ['cdrom', 'dev', 'home', 'live', 'media', 'mnt', 'proc', 'run', 'sys', 'swapfile', 'tmp']
+    const noDirs = ['cdrom', 'dev', 'home', 'live', 'media', 'mnt', 'proc', 'run', 'sys', 'swapfile', 'tmp',]
+
+    // deepin
+    noDirs.push('data')
+    noDirs.push('recovery')
+    
     let noDir = ''
     let bind = true
     for (noDir of noDirs) {
@@ -833,6 +838,7 @@ timeout 200\n`
       console.log('ovary: bindLiveFs')
     }
 
+    const dirs = ['bin', 'boot', 'dev', 'etc', 'home', 'lib', 'lib32', 'lib64', 'libx32', 'media', 'mnt', 'opt', 'proc', 'root', 'run', 'sbin', 'srv', 'sys', 'tmp', 'usr', 'var']
     const rootDirs = fs.readdirSync('/', { withFileTypes: true })
     let cmd = ''
     let ln = ''
