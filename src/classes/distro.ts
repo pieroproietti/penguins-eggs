@@ -152,6 +152,7 @@ class Distro implements IDistro {
     } // Deepin 20 
     else if (this.versionId === 'n/a') {
       this.distroId = 'Deepin'
+      this.versionId = 'apricot'
       this.distroLike = 'Debian'
       this.versionLike = 'buster'
 
