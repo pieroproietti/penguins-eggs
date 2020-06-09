@@ -47,8 +47,10 @@ scared, penguins-eggs is a console command - really very simple - if you
 are able to open a terminal, you can use it.
 
 # That Distro you can use
-Eggs in born using Debian 9 and Debian 10, I test it on Debian Buster and Linux Mind Debian
-Edition (LMDE4). You can try it on others distros and give the feedback.
+Eggs is born using Debian 9 and Debian 10, I test it on Debian Buster and Linux Mind Debian
+Edition (LMDE4). You can try it on others distros and give a feedback.
+
+Same iso images complete with eggs are loaded in the sourceforge page of the project. 
 
 # Install penguins-eggs
 
@@ -370,6 +372,10 @@ EXAMPLE
 
 _See code: [src/commands/update.ts](https://github.com/pieroproietti/penguins-eggs/blob/v7.5.103/src/commands/update.ts)_
 <!-- commandsstop -->
+
+# ISO images
+I made same examples of iso images generated mostly based with Debian Buster but also with Ubuntu 20.04, Linux Mint 19.x and deepin 20.20.
+
 
 # That's all Folks!
 No need other configurations, penguins-eggs are battery included or better, as in the real, live is inside! :-D
