@@ -9,10 +9,4 @@ export interface IDistro {
     homeUrl: string;
     supportUrl: string;
     bugReportUrl: string;
-    append: string;
-    appendSafe: string;
-    aqs: string;
-    menuTitle: string;
-    distroName: string;
-    distroVersionNumber: string;
-}
+ }

@@ -6,6 +6,29 @@
  * mail: piero.proietti@gmail.com
  */
 
+/**
+ * Debian 10 (buster) — l'attuale versione stable
+ * Debian 9 (stretch) — l'attuale versione oldstable
+ * Debian 8 (jessie) — l'attuale versione oldoldstable
+ * 
+ * Ubuntu 16.04 (xenial) LTS  active 
+ * Ubuntu 18.04 (bionic) LTS  active
+ * Ubuntu 18.10 (cosmic) expired
+ * Ubuntu 19.04 (disco)  expired
+ * Ubuntu 19.10 (eoan)        active
+ * Ubuntu 20.04 (focal) LTS   active
+ * 
+ * active distros
+ * 
+ * jessie old
+ * stretch old
+ * buster
+ * xenial old
+ * bionic old
+ * eoan
+ * focal
+ */
+
 'use strict'
 import fs = require('fs')
 import shell = require('shelljs')
@@ -19,7 +42,6 @@ import Utils from './utils'
  * Classe 
  */
 class Distro implements IDistro {
-  distroName: string
   distroId: string
   distroLike: string
   versionId: string
@@ -27,29 +49,19 @@ class Distro implements IDistro {
   isolinuxPath: string
   syslinuxPath: string
   mountpointSquashFs: string
-  append: string
-  appendSafe: string
-  aqs: string
-  menuTitle: string
   homeUrl: string
   supportUrl: string
   bugReportUrl: string
-  distroVersionNumber: string
+
 
   constructor(remix: IRemix) {
-    this.distroName = ''
     this.distroId = ''
     this.distroLike = ''
-    this.distroVersionNumber = ''
     this.versionId = ''
     this.versionLike = ''
     this.isolinuxPath = ''
     this.syslinuxPath = ''
     this.mountpointSquashFs = ''
-    this.append = ''
-    this.appendSafe = ''
-    this.aqs = ''
-    this.menuTitle = ''
     this.homeUrl = ''
     this.supportUrl = ''
     this.bugReportUrl = ''
@@ -87,11 +99,7 @@ class Distro implements IDistro {
      * lsb_release -c -s
      */
     this.versionId = (shell.exec('lsb_release -c -s', { silent: true }).stdout).toString().trim()
-    this.isolinuxPath = '/usr/lib/ISOLINUX/'
-    this.syslinuxPath = '/usr/lib/syslinux/modules/bios/'
-    this.mountpointSquashFs = '/lib/live/mount/medium/live/filesystem.squashfs'
-    this.distroName = remix.name
-    this.distroVersionNumber = remix.versionNumber
+
 
     /** 
      * LINUX MINT
@@ -108,7 +116,6 @@ class Distro implements IDistro {
       this.distroId = 'Linux Mint'
       this.distroLike = 'Ubuntu'
       this.versionLike = 'bionic'
-      this.mountpointSquashFs = '/lib/live/mount/medium/live/filesystem.squashfs'
 
       /** 
        * LINUX MINT DEBIAN EDITION (LMDE)
@@ -119,7 +126,6 @@ class Distro implements IDistro {
       this.distroId = 'LMDE'
       this.distroLike = 'Debian'
       this.versionLike = 'buster'
-      this.mountpointSquashFs = '/run/live/medium/live/filesystem.squashfs'
 
       /** 
        * DEBIAN
@@ -130,28 +136,24 @@ class Distro implements IDistro {
       this.distroId = 'Debian'
       this.distroLike = 'Debian'
       this.versionLike = 'bullseye'
-      this.mountpointSquashFs = '/run/live/medium/live/filesystem.squashfs'
 
       // Debian 10 buster
     } else if (this.versionId === 'buster') {
       this.distroId = 'Debian'
       this.distroLike = 'Debian'
       this.versionLike = 'buster'
-      this.mountpointSquashFs = '/run/live/medium/live/filesystem.squashfs'
 
       // Debian 9 stretch
     } else if (this.versionId === 'stretch') {
       this.distroId = 'Debian'
       this.distroLike = 'Debian'
       this.versionLike = 'stretch'
-      this.mountpointSquashFs = '/lib/live/mount/medium/live/filesystem.squashfs'
 
     } // Deepin 20 
-     else if (this.versionId === 'n/a') {
+    else if (this.versionId === 'n/a') {
       this.distroId = 'Deepin'
       this.distroLike = 'Debian'
       this.versionLike = 'buster'
-      this.mountpointSquashFs = '/run/live/medium/live/filesystem.squashfs'
 
       /**
        * UBUNTU
@@ -161,46 +163,41 @@ class Distro implements IDistro {
       this.distroId = 'Ubuntu'
       this.distroLike = 'Ubuntu'
       this.versionLike = 'focal'
-      this.mountpointSquashFs = '/run/live/medium/live/filesystem.squashfs'
 
       // 19.10 eoan
     } else if (this.versionId === 'eoan') {
       this.distroId = 'Ubuntu'
       this.distroLike = 'Ubuntu'
       this.versionLike = 'eoan'
-      this.mountpointSquashFs = '/run/live/medium/live/filesystem.squashfs'
 
-      // Ubuntu 19.04 disco
-    } else if (this.versionId === 'disco') {
-      this.distroId = 'Ubuntu'
-      this.distroLike = 'Ubuntu'
-      this.versionLike = 'disco'
-      this.mountpointSquashFs = '/run/live/medium/live/filesystem.squashfs'
-
-      // Ubuntu 18.10 cosmic
-    } else if (this.versionId === 'cosmic') {
-      this.distroId = 'Ubuntu'
-      this.distroLike = 'Ubuntu'
-      this.versionLike = 'cosmic'
-      this.mountpointSquashFs = '/run/live/medium/live/filesystem.squashfs'
 
       // Ubuntu 18.04 bionic LTS
     } else if (this.versionId === 'bionic') {
       this.distroId = 'Ubuntu'
       this.distroLike = 'Ubuntu'
       this.versionLike = 'bionic'
-      this.mountpointSquashFs = '/lib/live/mount/medium/live/filesystem.squashfs'
 
     } else {
-      console.log('Sorry, distro non supported!')
+      console.log('Sorry, this distro is not supported, I\'ll try Debian Buster mode!')
+      this.distroId = 'custom'
+      this.distroLike = 'Debian'
+      this.versionLike = 'buster'
     }
 
-    // Sia per Ubuntu che per Debian
-    this.append = 'append initrd=/live/initrd.img boot=live live-config quiet splash'
-    this.appendSafe = 'append initrd=/live/initrd.img boot=live live-config xforcevesa nomodeset verbose'
-    this.menuTitle = `MENU TITLE ${this.distroName} a ${this.distroId}/${this.versionId} derivated. ${Utils.formatDate(new Date())}`
+    /** 
+     * Selezione il mountpoint per squashfs
+     */
+    if ((this.versionLike === 'jessie') || (this.versionLike === 'stretch') || (this.versionLike === 'bionic') || (this.versionLike === 'xenial')) {
+      this.mountpointSquashFs = '/lib/live/mount/medium/live/filesystem.squashfs'
+    } else {
+      this.mountpointSquashFs = '/run/live/medium/live/filesystem.squashfs'
+    }
+    /**
+     * e le posizioni per isolinux e syslinux
+     */
+    this.isolinuxPath = '/usr/lib/ISOLINUX/'
+    this.syslinuxPath = '/usr/lib/syslinux/modules/bios/'
   }
 }
 
 export default Distro
-
