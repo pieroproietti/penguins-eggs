@@ -127,7 +127,7 @@ export default class Ovary {
 
     if (this.loadSettings()) {
       if (this.listFreeSpace()) {
-        if (await Utils.customConfirm(`Select yes to continue...`))
+        if (await Utils.customConfirm('Select yes to continue...'))
           return true
       }
     }
@@ -170,7 +170,7 @@ export default class Ovary {
     if (this.snapshot_basename === 'hostname') {
       this.snapshot_basename = os.hostname()
     }
-    this.make_efi = settings.General.make_efi === "yes"
+    this.make_efi = settings.General.make_efi === 'yes'
     if (this.make_efi) {
       if (!Pacman.packageIsInstalled('grub-efi-amd64') && (!Pacman.packageIsInstalled('grub-efi-ia32'))) {
         Utils.error('You choose to create an UEFI image, but miss to install grub-efi-amd64 package.')
@@ -183,15 +183,15 @@ export default class Ovary {
       }
     }
 
-    this.make_isohybrid = settings.General.make_isohybrid === "yes"
-    this.make_md5sum = settings.General.make_md5sum === "yes"
+    this.make_isohybrid = settings.General.make_isohybrid === 'yes'
+    this.make_md5sum = settings.General.make_md5sum === 'yes'
     if (this.compression === '') {
       this.compression = settings.General.compression
     }
-    //this.mksq_opt = settings.General.mksq_opt 
-    this.edit_boot_menu = settings.General.edit_boot_menu === "yes"
+    // this.mksq_opt = settings.General.mksq_opt 
+    this.edit_boot_menu = settings.General.edit_boot_menu === 'yes'
     this.gui_editor = settings.General.gui_editor
-    this.force_installer = settings.General.force_installer === "yes"
+    this.force_installer = settings.General.force_installer === 'yes'
     this.kernel_image = settings.General.kernel_image
     this.initrd_image = settings.General.initrd_image
     this.netconfig_opt = settings.General.netconfig_opt
@@ -202,8 +202,8 @@ export default class Ovary {
     if (this.ifnames_opt === undefined) {
       this.ifnames_opt = ''
     }
-    this.pmount_fixed = settings.General.pmount_fixed === "yes"
-    this.ssh_pass = settings.General.ssh_pass === "yes"
+    this.pmount_fixed = settings.General.pmount_fixed === 'yes'
+    this.ssh_pass = settings.General.ssh_pass === 'yes'
 
     /**
      * Use the login name set in the config file. If not set, use the primary 
@@ -213,7 +213,7 @@ export default class Ovary {
     this.user_opt = settings.General.user_opt
 
     if (this.user_opt === undefined || this.user_opt === '') {
-      this.user_opt = shx.exec(`awk -F":" '/1000:1000/ { print $1 }' /etc/passwd`, { silent: true }).stdout.trim()
+      this.user_opt = shx.exec('awk -F":" \'/1000:1000/ { print $1 }\' /etc/passwd', { silent: true }).stdout.trim()
       if (this.user_opt === '') {
         this.user_opt = 'live'
       }
@@ -291,7 +291,7 @@ export default class Ovary {
     let spaceUsed = 0
     let spaceAvailable = 0
     if (!Utils.isLive()) {
-      spaceUsed = Number(shx.exec(`df /home | /usr/bin/awk 'NR==2 {print $3}'`, { silent: true }).stdout)
+      spaceUsed = Number(shx.exec('df /home | /usr/bin/awk \'NR==2 {print $3}\'', { silent: true }).stdout)
       console.log(`Disk used space: ${Math.round(Utils.getUsedSpace() / gb * 10) / 10} GB`)
     }
 
@@ -441,7 +441,7 @@ export default class Ovary {
    * - Clear configs from /etc/network/interfaces, wicd and NetworkManager and netman
    */
   async editLiveFs(verbose = false) {
-    let echo = Utils.setEcho(verbose)
+    const echo = Utils.setEcho(verbose)
     if (verbose) {
       console.log('ovary: editLiveFs')
     }
@@ -463,7 +463,7 @@ export default class Ovary {
     // Enable or disable password login through ssh for users (not root)
     // Remove obsolete live-config file
     if (fs.existsSync(`${this.work_dir.merged}lib/live/config/1161-openssh-server`)) {
-      await exec(`rm -f "$work_dir"/myfs/lib/live/config/1161-openssh-server`, echo)
+      await exec('rm -f "$work_dir"/myfs/lib/live/config/1161-openssh-server', echo)
     }
     if (fs.existsSync(`${this.work_dir.merged}/etc/ssh/sshd_config`)) {
       await exec(`sed -i 's/PermitRootLogin yes/PermitRootLogin prohibit-password/' ${this.work_dir.merged}/etc/ssh/sshd_config`, echo)
@@ -490,7 +490,7 @@ export default class Ovary {
     if (fs.existsSync(`${this.work_dir.merged}/etc/machine-id`)) {
       await exec(`rm ${this.work_dir.merged}/etc/machine-id`, echo)
       await exec(`touch ${this.work_dir.merged}/etc/machine-id`, echo)
-      Utils.write(`${this.work_dir.merged}/etc/machine-id`, `:`)
+      Utils.write(`${this.work_dir.merged}/etc/machine-id`, ':')
     }
 
     /**
@@ -508,11 +508,11 @@ export default class Ovary {
     await exec(`chroot ${this.work_dir.merged} systemctl disable wpa_supplicant-wired@.service`)
 
     // Azzerro il journal del padre
-    await exec(`journalctl --rotate`)
-    await exec(`journalctl --vacuum-time=1s`)
+    await exec('journalctl --rotate')
+    await exec('journalctl --vacuum-time=1s')
 
     // Probabilmente non necessario
-    //shx.touch(`${this.work_dir.merged}/etc/resolv.conf`)
+    // shx.touch(`${this.work_dir.merged}/etc/resolv.conf`)
 
     /**
      * Clear configs from /etc/network/interfaces, wicd and NetworkManager
@@ -522,7 +522,7 @@ export default class Ovary {
       await exec(`rm ${this.work_dir.merged}/etc/network/interfaces`, echo)
     }
     await exec(`touch ${this.work_dir.merged}/etc/network/interfaces`, echo)
-    Utils.write(`${this.work_dir.merged}/etc/network/interfaces`, `auto lo\niface lo inet loopback`)
+    Utils.write(`${this.work_dir.merged}/etc/network/interfaces`, 'auto lo\niface lo inet loopback')
 
     await exec(`rm -f ${this.work_dir.merged}/var/lib/wicd/configurations/*`, echo)
     await exec(`rm -f ${this.work_dir.merged}/etc/wicd/wireless-settings.conf`, echo)
@@ -571,7 +571,7 @@ export default class Ovary {
    * editBootMenu
    */
   async editBootMenu(verbose = false) {
-    let echo = Utils.setEcho(verbose)
+    const echo = Utils.setEcho(verbose)
     if (verbose) {
       console.log('ovary: editBootMenu')
     }
@@ -596,16 +596,16 @@ export default class Ovary {
     }
 
     if (!fs.existsSync(this.work_dir.pathIso)) {
-      shx.mkdir(`-p`, `${this.work_dir.pathIso}/boot/grub/x86_64-efi`)
-      shx.mkdir(`-p`, `${this.work_dir.pathIso}/efi/boot`)
-      shx.mkdir(`-p`, `${this.work_dir.pathIso}/isolinux`)
-      shx.mkdir(`-p`, `${this.work_dir.pathIso}/live`)
+      shx.mkdir('-p', `${this.work_dir.pathIso}/boot/grub/x86_64-efi`)
+      shx.mkdir('-p', `${this.work_dir.pathIso}/efi/boot`)
+      shx.mkdir('-p', `${this.work_dir.pathIso}/isolinux`)
+      shx.mkdir('-p', `${this.work_dir.pathIso}/live`)
       // shx.mkdir(`-p`, `${this.work_dir.pathIso}/boot/syslinux`)
     }
   }
 
   async isolinuxPrepare(verbose = false) {
-    let echo = Utils.setEcho(verbose)
+    const echo = Utils.setEcho(verbose)
     if (verbose) {
       console.log('ovary: isolinuxPrepare')
     }
@@ -761,12 +761,12 @@ timeout 200\n`
     // let fexcludes = ["/boot/efi/EFI", "/etc/fstab", "/etc/mtab", "/etc/udev/rules.d/70-persistent-cd.rules", "/etc/udev/rules.d/70-persistent-net.rules"]
     // for (let i in fexcludes) {
     //  this.addRemoveExclusion(true, fexcludes[i])
-    //}
-    let rcd = ['rc0.d', 'rc1.d', 'rc2.d', 'rc3.d', 'rc4.d', 'rc5.d', 'rc6.d', 'rcS.d']
+    // }
+    const rcd = ['rc0.d', 'rc1.d', 'rc2.d', 'rc3.d', 'rc4.d', 'rc5.d', 'rc6.d', 'rcS.d']
     let files: string[]
-    for (let i in rcd) {
+    for (const i in rcd) {
       files = fs.readdirSync(`${this.work_dir.merged}/etc/${rcd[i]}`)
-      for (let n in files) {
+      for (const n in files) {
         if (files[n].includes('cryptdisks')) {
           this.addRemoveExclusion(true, `/etc/${rcd[i]}${files[n]}`)
         }
@@ -783,8 +783,8 @@ timeout 200\n`
     if (fs.existsSync(`${this.work_dir.pathIso}/live/filesystem.squashfs`)) {
       fs.unlinkSync(`${this.work_dir.pathIso}/live/filesystem.squashfs`)
     }
-    //let cmd = `mksquashfs ${this.work_dir.merged} ${this.work_dir.pathIso}/live/filesystem.squashfs ${compression} ${(this.mksq_opt === '' ? '' : ' ' + this.mksq_opt)} -wildcards -ef ${this.snapshot_excludes} ${this.session_excludes} `
-    let cmd = `mksquashfs ${this.work_dir.merged} ${this.work_dir.pathIso}/live/filesystem.squashfs ${compression} -wildcards -ef ${this.snapshot_excludes} ${this.session_excludes} `
+    // let cmd = `mksquashfs ${this.work_dir.merged} ${this.work_dir.pathIso}/live/filesystem.squashfs ${compression} ${(this.mksq_opt === '' ? '' : ' ' + this.mksq_opt)} -wildcards -ef ${this.snapshot_excludes} ${this.session_excludes} `
+    const cmd = `mksquashfs ${this.work_dir.merged} ${this.work_dir.pathIso}/live/filesystem.squashfs ${compression} -wildcards -ef ${this.snapshot_excludes} ${this.session_excludes} `
     await exec(cmd, echo)
     // usr/bin/mksquashfs /.bind-root iso-template/antiX/linuxfs -comp ${this.compression} ${(this.mksq_opt === '' ? '' : ' ' + this.mksq_opt)} -wildcards -ef ${this.snapshot_excludes} ${this.session_excludes}`)
   }
@@ -808,7 +808,8 @@ timeout 200\n`
 
   /**
    * Ritorna true se c'è bisogno del mount --bind
-   * @param dir 
+   * @param dir
+   * @returns bind
    */
   onlyMerged(dir: string): boolean {
     const noDirs = ['cdrom', 'dev', 'home', 'live', 'media', 'mnt', 'proc', 'run', 'sys', 'swapfile', 'tmp']
@@ -827,7 +828,7 @@ timeout 200\n`
    * @param verbose 
    */
   async bindLiveFs(verbose = false) {
-    let echo = Utils.setEcho(verbose)
+    const echo = Utils.setEcho(verbose)
     if (verbose) {
       console.log('ovary: bindLiveFs')
     }
@@ -836,7 +837,7 @@ timeout 200\n`
     let cmd = ''
     let ln = ''
     let dest = ''
-    for (let dir of rootDirs) {
+    for (const dir of rootDirs) {
       if (dir.isDirectory()) {
         if (!(dir.name === 'lost+found')) {
           if (verbose) {
@@ -875,7 +876,7 @@ timeout 200\n`
           await exec(`cp /${dir.name} ${this.work_dir.merged}`, echo)
         } else {
           if (verbose) {
-            console.log(`# file esistente... skip`)
+            console.log('# file esistente... skip')
           }
         }
       } else if (dir.isSymbolicLink()) {
@@ -886,7 +887,7 @@ timeout 200\n`
           await exec(`cp -r /${dir.name} ${this.work_dir.merged}`, echo)
         } else {
           if (verbose) {
-            console.log(`# SymbolicLink esistente... skip`)
+            console.log('# SymbolicLink esistente... skip')
           }
         }
       }
@@ -898,7 +899,7 @@ timeout 200\n`
    * @param verbose 
    */
   async uBindLiveFs(verbose = false) {
-    let echo = Utils.setEcho(verbose)
+    const echo = Utils.setEcho(verbose)
     if (verbose) {
       console.log('ovary: uBindLiveFs')
     }
@@ -908,7 +909,7 @@ timeout 200\n`
 
     if (fs.existsSync(this.work_dir.merged)) {
       const bindDirs = fs.readdirSync(this.work_dir.merged, { withFileTypes: true })
-      for (let dir of bindDirs) {
+      for (const dir of bindDirs) {
         if (dir.isDirectory()) {
           if (verbose) {
             console.log(`# ${dir.name} = directory`)
@@ -950,7 +951,7 @@ timeout 200\n`
    * @param verbose 
    */
   async createUserLive(assistant = false, verbose = false) {
-    let echo = Utils.setEcho(verbose)
+    const echo = Utils.setEcho(verbose)
     if (verbose) {
       console.log('ovary: createUserLive')
     }
@@ -959,7 +960,7 @@ timeout 200\n`
     /**
      * delete all user in chroot
      */
-    let cmd = `chroot ${this.work_dir.merged} getent passwd {1000..60000} |awk -F: '{print $1}'`
+    const cmd = `chroot ${this.work_dir.merged} getent passwd {1000..60000} |awk -F: '{print $1}'`
     const result = await exec(cmd, { echo: verbose, ignore: false, capture: true })
     const users: string[] = result.data.split('\n')
     for (let i = 0; i < users.length - 1; i++) {
@@ -983,27 +984,27 @@ timeout 200\n`
       await Xdg.create(this.user_opt, this.work_dir.merged, verbose)
       const pathHomeLive = `/home/${this.user_opt}`
       const pathToDesktopLive = pathHomeLive + '/' + Xdg.traduce('DESKTOP')
-      //const pathToDesktopLive = '/home/live/Scrivania'
+      // const pathToDesktopLive = '/home/live/Scrivania'
 
 
       // Copia icona penguins-eggs
-      shx.cp(path.resolve(__dirname, `../../assets/eggs.png`), `/usr/share/icons/`)
+      shx.cp(path.resolve(__dirname, '../../assets/eggs.png'), '/usr/share/icons/')
 
       /**
        * creazione dei link in /usr/share/applications
        */
-      shx.cp(path.resolve(__dirname, `../../assets/penguins-eggs.desktop`), `/usr/share/applications/`)
-      shx.cp(path.resolve(__dirname, `../../assets/penguins-eggs-adjust.desktop`), `/usr/share/applications/`)
-      shx.cp(path.resolve(__dirname, `../../assets/penguins-eggs-installer.desktop`), `/usr/share/applications/`)
+      shx.cp(path.resolve(__dirname, '../../assets/penguins-eggs.desktop'), '/usr/share/applications/')
+      shx.cp(path.resolve(__dirname, '../../assets/penguins-eggs-adjust.desktop'), '/usr/share/applications/')
+      shx.cp(path.resolve(__dirname, '../../assets/penguins-eggs-installer.desktop'), '/usr/share/applications/')
 
-      shx.cp(path.resolve(__dirname, `../../assets/dwagent-sh.desktop`), `/usr/share/applications/`)
-      shx.cp(path.resolve(__dirname, `../../assets/assistenza-remota.png`), `/usr/share/icons/`)
+      shx.cp(path.resolve(__dirname, '../../assets/dwagent-sh.desktop'), '/usr/share/applications/')
+      shx.cp(path.resolve(__dirname, '../../assets/assistenza-remota.png'), '/usr/share/icons/')
 
       if (assistant) {
-        shx.cp(path.resolve(__dirname, `../../assistant/assistant.desktop`), `/usr/share/applications/`)
+        shx.cp(path.resolve(__dirname, '../../assistant/assistant.desktop'), '/usr/share/applications/')
         shx.mkdir('-p', '/usr/local/share/penguins-eggs/')
-        shx.cp(path.resolve(__dirname, `../../assistant/assistant.sh`), `/usr/local/share/penguins-eggs/`)
-        shx.cp(path.resolve(__dirname, `../../assistant/assistant.html`), `/usr/local/share/penguins-eggs/`)
+        shx.cp(path.resolve(__dirname, '../../assistant/assistant.sh'), '/usr/local/share/penguins-eggs/')
+        shx.cp(path.resolve(__dirname, '../../assistant/assistant.html'), '/usr/local/share/penguins-eggs/')
       }
 
 
@@ -1032,12 +1033,12 @@ timeout 200\n`
       }
 
       // Rendo avviabili i link del Desktop
-      //await exec(`chroot ${this.work_dir.merged} chmod a+x ${pathToDesktopLive}/*.desktop`, echo)
+      // await exec(`chroot ${this.work_dir.merged} chmod a+x ${pathToDesktopLive}/*.desktop`, echo)
       await exec(`chmod a+x ${this.work_dir.merged}${pathToDesktopLive}/*.desktop`, echo)
 
       // ed imposto la home di /home/live a live:live
       await exec(`chroot ${this.work_dir.merged}  chown live:live ${pathHomeLive} -R`, echo)
-      //await exec(`chown 1000:1000 ${this.work_dir.merged}${pathHomeLive} -R`, echo)
+      // await exec(`chown 1000:1000 ${this.work_dir.merged}${pathHomeLive} -R`, echo)
 
 
 
@@ -1051,7 +1052,7 @@ timeout 200\n`
         // Monto /dev
         await makeIfNotExist(`${this.work_dir.merged}/dev`, verbose)
         await exec(`mount --bind --make-slave /dev ${this.work_dir.merged}/dev`, echo)
-        //await exec(`mount -o remount,bind,ro ${this.work_dir.merged}/dev`, echo)
+        // await exec(`mount -o remount,bind,ro ${this.work_dir.merged}/dev`, echo)
 
         await exec(`chroot ${this.work_dir.merged} sudo -u ${this.user_opt} dbus-launch gio set file://${pathToDesktopLive}/dwagent-sh.desktop metadata::trusted true`, echo)
         await exec(`chroot ${this.work_dir.merged} sudo -u ${this.user_opt} dbus-launch gio set file://${pathToDesktopLive}/penguins-eggs-adjust.desktop metadata::trusted true`, echo)
@@ -1109,7 +1110,7 @@ timeout 200\n`
    * Create /boot and /efi for UEFI
    */
   async makeEfi(verbose = false) {
-    let echo = Utils.setEcho(verbose)
+    const echo = Utils.setEcho(verbose)
     if (verbose) {
       console.log('ovary: makeEfi')
     }
@@ -1138,7 +1139,7 @@ timeout 200\n`
     * Andiamo a costruire efi_work
     */
     if (!fs.existsSync(this.efi_work)) {
-      shx.mkdir(`-p`, this.efi_work)
+      shx.mkdir('-p', this.efi_work)
     }
 
     // salviamo currentDir
@@ -1163,22 +1164,22 @@ timeout 200\n`
       }
     }
     */
-    shx.mkdir(`-p`, `./boot/grub/x86_64-efi`)
-    shx.mkdir(`-p`, `./efi/boot`)
+    shx.mkdir('-p', './boot/grub/x86_64-efi')
+    shx.mkdir('-p', './efi/boot')
 
     // copy splash
     shx.cp(path.resolve(__dirname, '../../assets/penguins-eggs-splash.png'), `${this.efi_work}/boot/grub/spash.png`)
 
     // second grub.cfg file
-    let cmd = `for i in $(ls /usr/lib/grub/x86_64-efi|grep part_|grep \.mod|sed 's/.mod//'); do echo "insmod $i" >> boot/grub/x86_64-efi/grub.cfg; done`
+    let cmd = 'for i in $(ls /usr/lib/grub/x86_64-efi|grep part_|grep \.mod|sed \'s/.mod//\'); do echo "insmod $i" >> boot/grub/x86_64-efi/grub.cfg; done'
     await exec(cmd, echo)
     // Additional modules so we don't boot in blind mode. I don't know which ones are really needed.
     // cmd = `for i in efi_gop efi_uga ieee1275_fb vbe vga video_bochs video_cirrus jpeg png gfxterm ; do echo "insmod $i" >> boot/grub/x86_64-efi/grub.cfg ; done`
-    cmd = `for i in efi_gop efi_gop efi_uga gfxterm video_bochs video_cirrus jpeg png ; do echo "insmod $i" >> boot/grub/x86_64-efi/grub.cfg ; done`
+    cmd = 'for i in efi_gop efi_gop efi_uga gfxterm video_bochs video_cirrus jpeg png ; do echo "insmod $i" >> boot/grub/x86_64-efi/grub.cfg ; done'
 
     await exec(cmd, echo)
 
-    await exec(`echo source /boot/grub/grub.cfg >> boot/grub/x86_64-efi/grub.cfg`, echo)
+    await exec('echo source /boot/grub/grub.cfg >> boot/grub/x86_64-efi/grub.cfg', echo)
     /**
      * fine lavoro in efi_work
     */
@@ -1187,33 +1188,33 @@ timeout 200\n`
     process.chdir(tempDir)
 
     // make a tarred "memdisk" to embed in the grub image
-    await exec(`tar -cvf memdisk boot`, echo)
+    await exec('tar -cvf memdisk boot', echo)
 
     // make the grub image
-    await exec(`grub-mkimage -O x86_64-efi -m memdisk -o bootx64.efi -p '(memdisk)/boot/grub' search iso9660 configfile normal memdisk tar cat part_msdos part_gpt fat ext2 ntfs ntfscomp hfsplus chain boot linux`, echo)
+    await exec('grub-mkimage -O x86_64-efi -m memdisk -o bootx64.efi -p \'(memdisk)/boot/grub\' search iso9660 configfile normal memdisk tar cat part_msdos part_gpt fat ext2 ntfs ntfscomp hfsplus chain boot linux', echo)
 
     // pdpd (torna a efi_work)
     process.chdir(this.efi_work)
 
     // copy the grub image to efi/boot (to go later in the device's root)
-    shx.cp(`${tempDir}/bootx64.efi`, `./efi/boot`)
+    shx.cp(`${tempDir}/bootx64.efi`, './efi/boot')
 
     // Do the boot image "boot/grub/efiboot.img"
-    await exec(`dd if=/dev/zero of=boot/grub/efiboot.img bs=1K count=1440`, echo)
-    await exec(`/sbin/mkdosfs -F 12 boot/grub/efiboot.img`, echo)
-    shx.mkdir(`-p`, `img-mnt`)
-    await exec(`mount -o loop boot/grub/efiboot.img img-mnt`, echo)
-    shx.mkdir('-p', `img-mnt/efi/boot`)
-    shx.cp(`-r`, `${tempDir}/bootx64.efi`, `img-mnt/efi/boot/`)
+    await exec('dd if=/dev/zero of=boot/grub/efiboot.img bs=1K count=1440', echo)
+    await exec('/sbin/mkdosfs -F 12 boot/grub/efiboot.img', echo)
+    shx.mkdir('-p', 'img-mnt')
+    await exec('mount -o loop boot/grub/efiboot.img img-mnt', echo)
+    shx.mkdir('-p', 'img-mnt/efi/boot')
+    shx.cp('-r', `${tempDir}/bootx64.efi`, 'img-mnt/efi/boot/')
 
     // ###############################
 
     // copy modules and font
-    shx.cp(`-r`, `/usr/lib/grub/x86_64-efi/*`, `boot/grub/x86_64-efi/`)
+    shx.cp('-r', '/usr/lib/grub/x86_64-efi/*', 'boot/grub/x86_64-efi/')
 
     // if this doesn't work try another font from the same place (grub's default, unicode.pf2, is much larger)
     // Either of these will work, and they look the same to me. Unicode seems to work with qemu. -fsr
-    fs.copyFileSync(`/usr/share/grub/unicode.pf2`, `boot/grub/font.pf2`)
+    fs.copyFileSync('/usr/share/grub/unicode.pf2', 'boot/grub/font.pf2')
 
 
     // doesn't need to be root-owned ${pwd} = current Directory
@@ -1223,8 +1224,8 @@ timeout 200\n`
     // await exec(`chown -R ${user}:${user} $(pwd)`, echo)
 
     // Cleanup efi temps
-    await exec(`umount img-mnt`, echo)
-    await exec(`rmdir img-mnt`, echo)
+    await exec('umount img-mnt', echo)
+    await exec('rmdir img-mnt', echo)
 
     // popD Torna alla directory corrente
     process.chdir(currentDir)
@@ -1267,7 +1268,7 @@ timeout 200\n`
     }
 
     if (verbose) {
-      console.log(`ovary: makeIsoImage`)
+      console.log('ovary: makeIsoImage')
     }
 
     let uefi_opt = ''
@@ -1282,11 +1283,11 @@ timeout 200\n`
       if (fs.existsSync('/usr/lib/syslinux/mbr/isohdpfx.bin')) {
         isoHybridOption = '-isohybrid-mbr /usr/lib/syslinux/mbr/isohdpfx.bin'
       } else if (fs.existsSync('/usr/lib/syslinux/isohdpfx.bin')) {
-        isoHybridOption = `-isohybrid-mbr /usr/lib/syslinux/isohdpfx.bin`
+        isoHybridOption = '-isohybrid-mbr /usr/lib/syslinux/isohdpfx.bin'
       } else if (fs.existsSync('/usr/lib/ISOLINUX/isohdpfx.bin')) {
-        isoHybridOption = `-isohybrid-mbr /usr/lib/ISOLINUX/isohdpfx.bin`
+        isoHybridOption = '-isohybrid-mbr /usr/lib/ISOLINUX/isohdpfx.bin'
       } else {
-        Utils.warning(`Can't create isohybrid. File: isohdpfx.bin not found. The resulting image will be a standard iso file`)
+        Utils.warning('Can\'t create isohybrid. File: isohdpfx.bin not found. The resulting image will be a standard iso file')
       }
 
       // xorriso 1.5.0 : RockRidge filesystem manipulator, libburnia project.
@@ -1378,7 +1379,7 @@ timeout 200\n`
    */
   async addDebianRepo(verbose = false) {
     if (verbose) {
-      console.log(`ovary: addDebianRepo`)
+      console.log('ovary: addDebianRepo')
     }
     shx.cp('-r', '/home/live/debian-live/*', this.work_dir.pathIso)
   }
@@ -1398,9 +1399,9 @@ timeout 200\n`
  */
 async function makeIfNotExist(path: string, verbose = false) {
   if (verbose) {
-    console.log(`ovary: makeIfNotExist`)
+    console.log('ovary: makeIfNotExist')
   }
-  let echo = Utils.setEcho(verbose)
+  const echo = Utils.setEcho(verbose)
 
   if (!(fs.existsSync(path))) {
     const cmd = `mkdir ${path} -p`
