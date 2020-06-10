@@ -38,9 +38,12 @@ class calamaresConfig {
         this.remix = remix
         this.distro = distro
         this.verbose = verbose
-        this.displaymanager = (Pacman.packageIsInstalled('lightdm') || Pacman.packageIsInstalled('sddm') || Pacman.packageIsInstalled('sddm') )
+        this.displaymanager = (Pacman.packageIsInstalled('lightdm') || Pacman.packageIsInstalled('sddm') || Pacman.packageIsInstalled('sddm'))
     }
 
+    /**
+     * config
+     */
     config() {
         // configurazioni generali
         this.createCalamaresDirs()
@@ -64,7 +67,7 @@ class calamaresConfig {
         this.moduleKeyboard()
         this.moduleLocalecfg()
         this.moduleUsers()
-        if (this.displaymanager){
+        if (this.displaymanager) {
             this.moduleDisplaymanager()
         }
         this.moduleNetworkcfg()
@@ -77,7 +80,7 @@ class calamaresConfig {
         this.modulePackages()
         this.moduleLuksbootkeyfile()
         this.moduleLuksopenswaphookcfg()
-        
+
         this.modulePlymouthcfg()
         this.moduleInitramfscfg()
         this.moduleInitramfs()
@@ -95,23 +98,23 @@ class calamaresConfig {
     /**
      * 
      */
-    createCalamaresDirs(){
-        if (!fs.existsSync('/etc/calamares')){
+    createCalamaresDirs() {
+        if (!fs.existsSync('/etc/calamares')) {
             fs.mkdirSync('/etc/calamares')
         }
-        if (!fs.existsSync('/etc/calamares/branding')){
+        if (!fs.existsSync('/etc/calamares/branding')) {
             fs.mkdirSync('/etc/calamares/branding')
         }
-        if (!fs.existsSync('/etc/calamares/branding/eggs')){
+        if (!fs.existsSync('/etc/calamares/branding/eggs')) {
             fs.mkdirSync('/etc/calamares/branding/eggs')
         }
-        if (!fs.existsSync('/etc/calamares/modules')){
+        if (!fs.existsSync('/etc/calamares/modules')) {
             fs.mkdirSync('/etc/calamares/modules')
         }
-        if (!fs.existsSync('/usr/lib/calamares')){
+        if (!fs.existsSync('/usr/lib/calamares')) {
             fs.mkdirSync('/usr/lib/calamares/')
         }
-        if (!fs.existsSync('/usr/lib/calamares/modules')){
+        if (!fs.existsSync('/usr/lib/calamares/modules')) {
             fs.mkdirSync('/usr/lib/calamares/modules')
         }
 
@@ -126,12 +129,12 @@ class calamaresConfig {
      * 
      */
     async createInstallDebian() {
-       const scriptInstallDebian = require('./scripts/install-debian').installDebian
-       const scriptDir = `/usr/bin/`
-       const scriptFile = scriptDir + 'install-debian'
-       const scriptContent = scriptInstallDebian()
-       write(scriptFile, scriptContent, this.verbose)
-       await exec(`chmod +x ${scriptFile}`)
+        const scriptInstallDebian = require('./scripts/install-debian').installDebian
+        const scriptDir = `/usr/bin/`
+        const scriptFile = scriptDir + 'install-debian'
+        const scriptContent = scriptInstallDebian()
+        write(scriptFile, scriptContent, this.verbose)
+        await exec(`chmod +x ${scriptFile}`)
     }
 
     /**
@@ -140,7 +143,7 @@ class calamaresConfig {
     createBranding() {
         const branding = require('./branding').branding
         const dir = `/etc/calamares/branding/${this.remix.branding}/`
-        if (!fs.existsSync(dir)){
+        if (!fs.existsSync(dir)) {
             fs.mkdirSync(dir)
         }
         const file = dir + 'branding.desc'
@@ -296,7 +299,7 @@ class calamaresConfig {
     /**
      * 
      */
-    moduleDisplaymanager(){ 
+    moduleDisplaymanager() {
         const displaymanager = require('./modules/displaymanager').displaymanager
         const dir = `/etc/calamares/modules/`
         const file = dir + 'displaymanager.conf'
@@ -327,7 +330,7 @@ class calamaresConfig {
      */
     moduleServicesSystemd() {
         if (this.verbose) {
-        console.log(`calamares: module servives-systemd. Nothing to do!`)
+            console.log(`calamares: module servives-systemd. Nothing to do!`)
         }
     }
 
@@ -435,7 +438,7 @@ class calamaresConfig {
     /**
      * 
      */
-    moduleInitramfscfg() { 
+    moduleInitramfscfg() {
         if (this.verbose) {
             console.log(`calamares: module initramfscfg. Nothing to do!`)
         }
@@ -444,7 +447,7 @@ class calamaresConfig {
     /**
      * 
      */
-    moduleRemoveuser(){
+    moduleRemoveuser() {
         const removeuser = require('./modules/removeuser').removeuser
         const dir = `/etc/calamares/modules/`
         const file = dir + 'removeuser.conf'
@@ -502,7 +505,7 @@ class calamaresConfig {
     /**
      * 
      */
-    async moduleSourcesFinal() { 
+    async moduleSourcesFinal() {
         const sourcesFinal = require('./calamares-modules/sources-final').sourcesFinal
         const dir = `/usr/lib/calamares/modules/sources-final/`
         const file = dir + 'module.desc'
@@ -523,7 +526,7 @@ class calamaresConfig {
     /**
      * 
      */
-    moduleUmount() { 
+    moduleUmount() {
         if (this.verbose) {
             console.log(`calamares: module unmount. Nothing to do!`)
         }

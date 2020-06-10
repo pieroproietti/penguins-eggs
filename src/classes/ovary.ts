@@ -600,7 +600,6 @@ export default class Ovary {
       shx.mkdir('-p', `${this.work_dir.pathIso}/efi/boot`)
       shx.mkdir('-p', `${this.work_dir.pathIso}/isolinux`)
       shx.mkdir('-p', `${this.work_dir.pathIso}/live`)
-      // shx.mkdir(`-p`, `${this.work_dir.pathIso}/boot/syslinux`)
     }
   }
 
