@@ -841,6 +841,7 @@ timeout 200\n`
 
     const dirs = ['bin', 'boot', 'dev', 'etc', 'home', 'lib', 'lib32', 'lib64', 'libx32', 'media', 'mnt', 'opt', 'proc', 'root', 'run', 'sbin', 'srv', 'sys', 'tmp', 'usr', 'var']
     const rootDirs = fs.readdirSync('/', { withFileTypes: true })
+    let cmds: string[] = []
     let cmd = ''
     let ln = ''
     let dest = ''
@@ -854,24 +855,24 @@ timeout 200\n`
           if (this.needOverlay(dir.name)) {
 
             // Creo il mountpoint lower e ci monto in ro dir.name
-            await makeIfNotExist(`${this.work_dir.lowerdir}/${dir.name}`)
-            await exec(`mount --bind --make-slave /${dir.name} ${this.work_dir.lowerdir}/${dir.name}`, echo)
-            await exec(`mount -o remount,bind,ro ${this.work_dir.lowerdir}/${dir.name}`, echo)
+            cmds.push(await makeIfNotExist(`${this.work_dir.lowerdir}/${dir.name}`))
+            cmds.push(await rexec(`mount --bind --make-slave /${dir.name} ${this.work_dir.lowerdir}/${dir.name}`, echo))
+            cmds.push(await rexec(`mount -o remount,bind,ro ${this.work_dir.lowerdir}/${dir.name}`, echo))
 
             // Creo i mountpoint upper, work e merged e monto in merged rw
-            await makeIfNotExist(`${this.work_dir.upperdir}/${dir.name}`, verbose)
-            await makeIfNotExist(`${this.work_dir.workdir}/${dir.name}`, verbose)
-            await makeIfNotExist(`${this.work_dir.merged}/${dir.name}`, verbose)
-            await exec(`mount -t overlay overlay -o lowerdir=${this.work_dir.lowerdir}/${dir.name},upperdir=${this.work_dir.upperdir}/${dir.name},workdir=${this.work_dir.workdir}/${dir.name} ${this.work_dir.merged}/${dir.name}`, echo)
+            cmds.push(await makeIfNotExist(`${this.work_dir.upperdir}/${dir.name}`, verbose))
+            cmds.push(await makeIfNotExist(`${this.work_dir.workdir}/${dir.name}`, verbose))
+            cmds.push(await makeIfNotExist(`${this.work_dir.merged}/${dir.name}`, verbose))
+            cmds.push(await rexec(`mount -t overlay overlay -o lowerdir=${this.work_dir.lowerdir}/${dir.name},upperdir=${this.work_dir.upperdir}/${dir.name},workdir=${this.work_dir.workdir}/${dir.name} ${this.work_dir.merged}/${dir.name}`, echo))
           } else {
 
             // Monto con mount --bind direttamente dir.name in merged
             // per 'home', 'cdrom', 'dev', 'live', 'media', 'mnt', 'proc', 'run', 'sys', 'swapfile', 'tmp' solo creazione della directory
-            await makeIfNotExist(`${this.work_dir.merged}/${dir.name}`, verbose)
+            cmds.push(await makeIfNotExist(`${this.work_dir.merged}/${dir.name}`, verbose))
             if (this.onlyMerged(dir.name)) {
-              await makeIfNotExist(`${this.work_dir.merged}/${dir.name}`, verbose)
-              await exec(`mount --bind --make-slave /${dir.name} ${this.work_dir.merged}/${dir.name}`, echo)
-              await exec(`mount -o remount,bind,ro ${this.work_dir.merged}/${dir.name}`, echo)
+              cmds.push(await makeIfNotExist(`${this.work_dir.merged}/${dir.name}`, verbose))
+              cmds.push(await rexec(`mount --bind --make-slave /${dir.name} ${this.work_dir.merged}/${dir.name}`, echo))
+              cmds.push(await rexec(`mount -o remount,bind,ro ${this.work_dir.merged}/${dir.name}`, echo))
             }
           }
         }
@@ -880,7 +881,7 @@ timeout 200\n`
           console.log(`# ${dir.name} = file`)
         }
         if (!(fs.existsSync(`${this.work_dir.merged}/${dir.name}`))) {
-          await exec(`cp /${dir.name} ${this.work_dir.merged}`, echo)
+          cmds.push(await rexec(`cp /${dir.name} ${this.work_dir.merged}`, echo))
         } else {
           if (verbose) {
             console.log('# file esistente... skip')
@@ -891,7 +892,7 @@ timeout 200\n`
           console.log(`# ${dir.name} = symbolicLink`)
         }
         if (!(fs.existsSync(`${this.work_dir.merged}/${dir.name}`))) {
-          await exec(`cp -r /${dir.name} ${this.work_dir.merged}`, echo)
+          cmds.push(await rexec(`cp -r /${dir.name} ${this.work_dir.merged}`, echo))
         } else {
           if (verbose) {
             console.log('# SymbolicLink esistente... skip')
@@ -899,6 +900,7 @@ timeout 200\n`
         }
       }
     }
+    Utils.writeXs(`${this.work_dir.path}bind`, cmds)
   }
 
   /**
@@ -923,46 +925,23 @@ timeout 200\n`
             console.log(`# ${dir.name} = directory`)
           }
           if (this.needOverlay(dir.name)) {
-            cmd = `umount ${this.work_dir.merged}/${dir.name}`
-            cmds.push(cmd)
-            cout = await exec(cmd, echo)
-            if (verbose) {
-              console.log(`code: [${cout.code}] ${cout.data}`)
-            }
-            cmd = `umount ${this.work_dir.lowerdir}/${dir.name}`
-            cmds.push(cmd)
-            cout = await exec(cmd, echo)
-            if (verbose) {
-              console.log(`code: [${cout.code}] ${cout.data}`)
-            }
+            cmds.push(await rexec(`umount ${this.work_dir.merged}/${dir.name}`, echo))
+            cmds.push(await rexec(`umount ${this.work_dir.lowerdir}/${dir.name}`, echo))
           } else if (this.onlyMerged(dir.name)) {
-            cmd = `umount ${this.work_dir.merged}/${dir.name}`
-            cmds.push(cmd)
-            cout = await exec(cmd, echo)
-            if (verbose) {
-              console.log(`code: [${cout.code}] ${cout.data}`)
-            }
+            cmds.push(await rexec(`umount ${this.work_dir.merged}/${dir.name}`, echo))
           }
-          cmd = `rm ${this.work_dir.merged}/${dir.name} -rf`
-          cmds.push(cmd)
-          await exec(cmd, echo)
-          cmd = `rm ${this.work_dir.lowerdir}/${dir.name} -rf`
-          cmds.push(cmd)
-          await exec(cmd, echo)
+          cmds.push(await rexec(`rm ${this.work_dir.merged}/${dir.name} -rf`, echo))
+          cmds.push(await rexec(`rm ${this.work_dir.lowerdir}/${dir.name} -rf`, echo))
         } else if (dir.isFile()) {
           if (verbose) {
             console.log(`# ${dir.name} = file`)
           }
-          cmd = `rm ${this.work_dir.merged}/${dir.name}`
-          cmds.push(cmd)
-          await exec(cmd, echo)
+          cmds.push(await rexec(`rm ${this.work_dir.merged}/${dir.name}`, echo))
         } else if (dir.isSymbolicLink()) {
           if (verbose) {
             console.log(`# ${dir.name} = symbolicLink`)
           }
-          cmd = `rm ${this.work_dir.merged}/${dir.name}`
-          cmds.push(cmd)
-          await exec(cmd, echo)
+          cmds.push(await rexec(`rm ${this.work_dir.merged}/${dir.name}`, echo))
         }
       }
     }
@@ -1400,14 +1379,20 @@ timeout 200\n`
  * Crea il path se non esiste
  * @param path 
  */
-async function makeIfNotExist(path: string, verbose = false) {
+async function makeIfNotExist(path: string, verbose = false): Promise<string> {
   if (verbose) {
     console.log('ovary: makeIfNotExist')
   }
   const echo = Utils.setEcho(verbose)
-
+  let cmd = ''
   if (!(fs.existsSync(path))) {
-    const cmd = `mkdir ${path} -p`
+    cmd = `mkdir ${path} -p`
     await exec(cmd, echo)
   }
+  return cmd
+}
+
+async function rexec(cmd: string, echo: object): Promise<string> {
+  await exec(cmd, echo)
+  return cmd
 }
