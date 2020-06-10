@@ -57,7 +57,9 @@ kill the eggs/free the nest
         Utils.warning('Cleaning the nest...')
         const ovary = new Ovary
         await ovary.fertilization()
-        await ovary.uBindLiveFs(verbose)
+        if (umount){
+          await ovary.uBindLiveFs(verbose)
+        }
         await exec(`rm ${this.work_dir.path} -rf`, echo)
         await exec(`rm ${this.snapshot_dir} -rf`, echo)
       }

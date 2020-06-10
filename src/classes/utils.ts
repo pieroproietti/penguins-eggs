@@ -408,11 +408,42 @@ export default class Utils {
     }
   }
 
+  /**
+   * write a file 
+   * @param file 
+   * @param text 
+   */
+
   static write(file: string, text: string): void {
     text = text.trim() + '\n'
     text = text.trim() + '\n'
     file = file.trim()
     fs.writeFileSync(file, text)
+  }
+
+
+  /**
+   * 
+   * @param file 
+   * @param cmd
+   */
+  static writeX(file: string, cmd: string): void {
+    Utils.write(file, cmd)
+    shx.chmod('+x', file)
+  }
+
+/**
+   * 
+   * @param file 
+   * @param cmd
+   */
+  static writeXs(file: string, cmds: string[]): void {
+    let cmd = ''
+    for (const elem of cmds) {
+      cmd += elem + '\n'
+    }
+    Utils.write(file, cmd)
+    shx.chmod('+x', file)
   }
 
   /**

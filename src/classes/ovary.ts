@@ -364,11 +364,11 @@ export default class Ovary {
       await this.editLiveFs(verbose)
       await this.editBootMenu(verbose)
 
-      await this.makeSquashFs(verbose)
+      await this.makeSquashfs(verbose)
       if (this.make_efi) {
         await this.editEfi(verbose)
       }
-      await this.makeIsoImage(verbose)
+      await this.mkIso(verbose)
       if (!debug) {
         await this.uBindLiveFs(verbose)
       }
@@ -744,14 +744,14 @@ timeout 200\n`
   /**
    * squashFs: crea in live filesystem.squashfs
    */
-  async makeSquashFs(verbose = false) {
+  async makeSquashfs(verbose = false) {
     let echo = { echo: false, ignore: false }
     if (verbose) {
       echo = { echo: true, ignore: false }
     }
 
     if (verbose) {
-      console.log('ovary: makeSquashFs')
+      console.log('ovary: makeSquashfs')
     }
 
     /**
@@ -783,7 +783,9 @@ timeout 200\n`
       fs.unlinkSync(`${this.work_dir.pathIso}/live/filesystem.squashfs`)
     }
     // let cmd = `mksquashfs ${this.work_dir.merged} ${this.work_dir.pathIso}/live/filesystem.squashfs ${compression} ${(this.mksq_opt === '' ? '' : ' ' + this.mksq_opt)} -wildcards -ef ${this.snapshot_excludes} ${this.session_excludes} `
-    const cmd = `mksquashfs ${this.work_dir.merged} ${this.work_dir.pathIso}/live/filesystem.squashfs ${compression} -wildcards -ef ${this.snapshot_excludes} ${this.session_excludes} `
+    let cmd = `mksquashfs ${this.work_dir.merged} ${this.work_dir.pathIso}/live/filesystem.squashfs ${compression} -wildcards -ef ${this.snapshot_excludes} ${this.session_excludes} `
+    cmd = cmd.replace(/\s\s+/g, ' ')
+    Utils.writeX(`${this.work_dir.path}make_squashfs`, cmd)
     await exec(cmd, echo)
     // usr/bin/mksquashfs /.bind-root iso-template/antiX/linuxfs -comp ${this.compression} ${(this.mksq_opt === '' ? '' : ' ' + this.mksq_opt)} -wildcards -ef ${this.snapshot_excludes} ${this.session_excludes}`)
   }
@@ -816,7 +818,7 @@ timeout 200\n`
     // deepin
     noDirs.push('data')
     noDirs.push('recovery')
-    
+
     let noDir = ''
     let bind = true
     for (noDir of noDirs) {
@@ -909,9 +911,10 @@ timeout 200\n`
       console.log('ovary: uBindLiveFs')
     }
 
+    let cmds: string[] = []
+    let cmd = ''
     let cout = { code: 0, data: '' }
     // await exec(`/usr/bin/pkill mksquashfs; /usr/bin/pkill md5sum`, {echo: true})
-
     if (fs.existsSync(this.work_dir.merged)) {
       const bindDirs = fs.readdirSync(this.work_dir.merged, { withFileTypes: true })
       for (const dir of bindDirs) {
@@ -920,35 +923,50 @@ timeout 200\n`
             console.log(`# ${dir.name} = directory`)
           }
           if (this.needOverlay(dir.name)) {
-            cout = await exec(`umount ${this.work_dir.merged}/${dir.name}`, echo)
+            cmd = `umount ${this.work_dir.merged}/${dir.name}`
+            cmds.push(cmd)
+            cout = await exec(cmd, echo)
             if (verbose) {
               console.log(`code: [${cout.code}] ${cout.data}`)
             }
-            cout = await exec(`umount ${this.work_dir.lowerdir}/${dir.name}`, echo)
+            cmd = `umount ${this.work_dir.lowerdir}/${dir.name}`
+            cmds.push(cmd)
+            cout = await exec(cmd, echo)
             if (verbose) {
               console.log(`code: [${cout.code}] ${cout.data}`)
             }
           } else if (this.onlyMerged(dir.name)) {
-            cout = await exec(`umount ${this.work_dir.merged}/${dir.name}`, echo)
+            cmd = `umount ${this.work_dir.merged}/${dir.name}`
+            cmds.push(cmd)
+            cout = await exec(cmd, echo)
             if (verbose) {
               console.log(`code: [${cout.code}] ${cout.data}`)
             }
           }
-          await exec(`rm ${this.work_dir.merged}/${dir.name} -rf`, echo)
-          await exec(`rm ${this.work_dir.lowerdir}/${dir.name} -rf`, echo)
+          cmd = `rm ${this.work_dir.merged}/${dir.name} -rf`
+          cmds.push(cmd)
+          await exec(cmd, echo)
+          cmd = `rm ${this.work_dir.lowerdir}/${dir.name} -rf`
+          cmds.push(cmd)
+          await exec(cmd, echo)
         } else if (dir.isFile()) {
           if (verbose) {
             console.log(`# ${dir.name} = file`)
           }
-          await exec(`rm ${this.work_dir.merged}/${dir.name}`, echo)
+          cmd = `rm ${this.work_dir.merged}/${dir.name}`
+          cmds.push(cmd)
+          await exec(cmd, echo)
         } else if (dir.isSymbolicLink()) {
           if (verbose) {
             console.log(`# ${dir.name} = symbolicLink`)
           }
-          await exec(`rm ${this.work_dir.merged}/${dir.name}`, echo)
+          cmd = `rm ${this.work_dir.merged}/${dir.name}`
+          cmds.push(cmd)
+          await exec(cmd, echo)
         }
       }
     }
+    Utils.writeXs(`${this.work_dir.path}ubind`, cmds)
   }
 
   /**
@@ -1266,14 +1284,14 @@ timeout 200\n`
   /**
    * makeIsoImage
    */
-  async makeIsoImage(verbose = false) {
+  async mkIso(verbose = false, debug = false) {
     let echo = { echo: false, ignore: false }
     if (verbose) {
       echo = { echo: true, ignore: false }
     }
 
     if (verbose) {
-      console.log('ovary: makeIsoImage')
+      console.log('ovary: mkIso')
     }
 
     let uefi_opt = ''
@@ -1298,46 +1316,26 @@ timeout 200\n`
       // xorriso 1.5.0 : RockRidge filesystem manipulator, libburnia project.
       // originale cmd = `xorriso -as mkisofs -r -J -joliet-long -l -iso-level 3 -cache-inodes ${isoHybridOption} -partition_offset 16 -volid ${this.eggName} -b isolinux/isolinux.bin -c isolinux/boot.cat -no-emul-boot -boot-load-size 4 -boot-info-table ${uefi_opt} -o ${this.snapshot_dir}${this.eggName} ${this.work_dir.pathIso}`
 
-      /**
-       *  Franco conidi
-       * 
-       *           xorriso -as mkisofs \ OK
-       *                    -V sblive \ OK
-       *                    -J \
-       *                    -l \
-       *                    -b \
-       *                    -isohybrid-mbr sblive/isolinux/ \ OK ${isoHybridOption}
-       *                    -c isolinux/boot.cat \ OK
-       *                    -b isolinux/isolinux.bin \ OK
-       *                    -iso-level 3 \
-       *                    -no-emul-boot \ OK
-       *                    -boot-load-size 4 \ OK
-       *                    -boot-info-table \ OK
-       *                    -eltorito-alt-boot OK ${uefi_opt}
-       *                    -e boot/grub/efi.img \ OK
-       *                    -no-emul-boot OK
-       *                    -isohybrid-gpt-basdat \
-       *                    -o sblive.iso  OK
-       *                    sblive OK
-       */
-
       this.eggName = Utils.getFilename(this.remix.name)
 
-      const cmd = `xorriso  -as mkisofs \
-                            -volid ${this.eggName} \
-                            -joliet-long \
-                            -l \
-                            -iso-level 3 \
-                            -b isolinux/isolinux.bin \
-                            ${isoHybridOption} \
-                            -partition_offset 16 \
-                            -c isolinux/boot.cat \
-                            -no-emul-boot \
-                            -boot-load-size 4 \
-                            -boot-info-table \
-                            ${uefi_opt} \
-                            -output ${this.snapshot_dir}${this.eggName} \
-                            ${this.work_dir.pathIso}`
+      let cmd = `xorriso  -as mkisofs \
+                          -volid ${this.eggName} \
+                          -joliet-long \
+                          -l \
+                          -iso-level 3 \
+                          -b isolinux/isolinux.bin \
+                          ${isoHybridOption} \
+                          -partition_offset 16 \
+                          -c isolinux/boot.cat \
+                          -no-emul-boot \
+                          -boot-load-size 4 \
+                          -boot-info-table \
+                          ${uefi_opt} \
+                          -output ${this.snapshot_dir}${this.eggName} \
+                          ${this.work_dir.pathIso}`
+
+      cmd = cmd.replace(/\s\s+/g, ' ')
+      Utils.writeX(`${this.work_dir.path}mk_iso`, cmd)
       await exec(cmd, echo)
 
       /**
