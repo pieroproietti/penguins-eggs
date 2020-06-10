@@ -2,8 +2,8 @@
  * 
  */
 
-import Utils from '../../../utils'
-import Pacman from '../../../pacman'
+import Utils from '../../utils'
+import Pacman from '../../pacman'
 
 export function displaymanager(mountpointSquashFs: string): string {
 

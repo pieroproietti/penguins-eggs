@@ -23,7 +23,7 @@ const exec = require('../lib/utils').exec
 
 // classes
 import Utils from './utils'
-import Calamares from './incubation/buster/config'
+import Calamares from './incubation/config'
 import Distro from './distro'
 import Xdg from './xdg'
 import Pacman from './pacman'

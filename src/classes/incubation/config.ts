@@ -7,10 +7,10 @@
 import fs = require('fs')
 import path = require('path')
 import shx = require('shelljs')
-import Utils from '../../utils'
-import Pacman from '../../pacman'
-import { IRemix, IDistro } from '../../../interfaces'
-const exec = require('../../../lib/utils').exec
+import Utils from '../utils'
+import Pacman from '../pacman'
+import { IRemix, IDistro } from '../../interfaces'
+const exec = require('../../lib/utils').exec
 
 /**
  * 
