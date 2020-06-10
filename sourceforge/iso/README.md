@@ -30,7 +30,7 @@ Now you can use eggs directly from sources:
 
 ```~/penguins-eggs$ .\eggs info```
 
-```~/penguins-eggs$ .\eggs produce -fv```
+```~/penguins-eggs$ sudo .\eggs produce -fv```
 
 
 
