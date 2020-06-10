@@ -785,7 +785,7 @@ timeout 200\n`
     // let cmd = `mksquashfs ${this.work_dir.merged} ${this.work_dir.pathIso}/live/filesystem.squashfs ${compression} ${(this.mksq_opt === '' ? '' : ' ' + this.mksq_opt)} -wildcards -ef ${this.snapshot_excludes} ${this.session_excludes} `
     let cmd = `mksquashfs ${this.work_dir.merged} ${this.work_dir.pathIso}/live/filesystem.squashfs ${compression} -wildcards -ef ${this.snapshot_excludes} ${this.session_excludes} `
     cmd = cmd.replace(/\s\s+/g, ' ')
-    Utils.writeX(`${this.work_dir.path}make_squashfs`, cmd)
+    Utils.writeX(`${this.work_dir.path}mksquashfs`, cmd)
     await exec(cmd, echo)
     // usr/bin/mksquashfs /.bind-root iso-template/antiX/linuxfs -comp ${this.compression} ${(this.mksq_opt === '' ? '' : ' ' + this.mksq_opt)} -wildcards -ef ${this.snapshot_excludes} ${this.session_excludes}`)
   }
@@ -962,21 +962,22 @@ timeout 200\n`
     /**
      * delete all user in chroot
      */
+    let cmds: string[] =[]
     const cmd = `chroot ${this.work_dir.merged} getent passwd {1000..60000} |awk -F: '{print $1}'`
     const result = await exec(cmd, { echo: verbose, ignore: false, capture: true })
     const users: string[] = result.data.split('\n')
     for (let i = 0; i < users.length - 1; i++) {
-      await exec(`chroot ${this.work_dir.merged} deluser ${users[i]}`, echo)
+      cmds.push(await rexec(`chroot ${this.work_dir.merged} deluser ${users[i]}`, echo))
     }
 
-    await exec(`chroot ${this.work_dir.merged} adduser ${this.user_opt} --home /home/${this.user_opt} --shell /bin/bash --disabled-password --gecos ",,,"`, echo)
-    await exec(`chroot ${this.work_dir.merged} echo ${this.user_opt}:${this.user_opt_passwd} | chroot ${this.work_dir.merged} chpasswd `, echo)
-    await exec(`chroot ${this.work_dir.merged} usermod -aG sudo ${this.user_opt}`, echo)
+    cmds.push(await rexec(`chroot ${this.work_dir.merged} adduser ${this.user_opt} --home /home/${this.user_opt} --shell /bin/bash --disabled-password --gecos ",,,"`, echo))
+    cmds.push(await rexec(`chroot ${this.work_dir.merged} echo ${this.user_opt}:${this.user_opt_passwd} | chroot ${this.work_dir.merged} chpasswd `, echo))
+    cmds.push(await rexec(`chroot ${this.work_dir.merged} usermod -aG sudo ${this.user_opt}`, echo))
 
     /**
      * Cambio passwd su root in chroot
      */
-    await exec(`chroot ${this.work_dir.merged} echo root:${this.root_passwd} | chroot ${this.work_dir.merged} chpasswd `, echo)
+    cmds.push(await rexec(`chroot ${this.work_dir.merged} echo root:${this.root_passwd} | chroot ${this.work_dir.merged} chpasswd `, echo))
 
 
     /**
@@ -1077,6 +1078,7 @@ timeout 200\n`
        */
       Xdg.autologin(Utils.getPrimaryUser(), this.user_opt, this.work_dir.merged)
     }
+    Utils.writeXs(`${this.work_dir.path}createuserlive`, cmds)
   }
 
 
@@ -1314,7 +1316,7 @@ timeout 200\n`
                           ${this.work_dir.pathIso}`
 
       cmd = cmd.replace(/\s\s+/g, ' ')
-      Utils.writeX(`${this.work_dir.path}mk_iso`, cmd)
+      Utils.writeX(`${this.work_dir.path}mkiso`, cmd)
       await exec(cmd, echo)
 
       /**
