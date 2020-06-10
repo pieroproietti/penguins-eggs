@@ -38,7 +38,7 @@ Now you can use eggs directly from sources:
 * **debu**  - it is my personal version with cinnamon, mostly for development, but include common office tools;
 * **lampp** - same as debu, but with tools to develop web sites with php and wordpress;
 * **naked** - just the juice, without GUI, with nodejs and eggs. You can start here to build your revolution! 
-* **less** - it's just naked with a GUI (lxde-core) and tools to develop.
+* **less** - it's just naked, dressed with lxde-core and the tools to work.
 * **blockchain** - I'm not a blockchain expert, the idea is to give an example of that is possible to build with eggs. I mean an an ISO image to giveup to * students for learn blockchain, develop smart contracts, etc. Feel free to give suggestions on it or ask for help to build your own version.
 * **incubator** - Debian Buster + Proxmox VE 6.2 and the same tools of debu;
 
