@@ -30,7 +30,7 @@ and so on.
 * **debu**  - it is my personal version with cinnamon, mostly for development, but include common office tools;
 * **lampp** - same as debu, but with tools to develop web sites with php and wordpress;
 * **incubator** - Debian Buster + Proxmox VE 6.2 and the same tools of debu;
-* **blockchain** - I'm not a blockchain expert, the idea is to give an example of that is possible to build with eggs. I mean an an ISO image to giveup to students for learn blockchain, develop smart contracts, etc. Feel free to give suggestions on it or start to build your version.
+* **blockchain** - I'm not a blockchain expert, the idea is to give an example of that is possible to build with eggs. I mean an an ISO image to giveup to students for learn blockchain, develop smart contracts, etc. Feel free to give suggestions on it or ask for help to build your own version.
 
 ## Linux Mint Debian Edition 4
 * **lmde4** - LMDE4 Debbie, remastered with eggs, without any modifications except for develop tools.
