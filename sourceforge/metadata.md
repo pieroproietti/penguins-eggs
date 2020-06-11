@@ -21,4 +21,7 @@ sudo eggs produce -fv
 
 * Safe: only use original .deb packages, without any modification to the standard repo.
 
+* Tips: if you want more control on the production of your iso, try the new --dry flag, it's instantaneous: will generate filesystem directory, iso structure complete and the related scripts to bind/ubind filesystem, squash it and create iso.
+
+
 * Please: feel free to contact me for any suggestions and don't forgot to rate the project in sourceforge.

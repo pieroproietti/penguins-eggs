@@ -41,4 +41,12 @@ You already knw boot and efi, are necessary for UEFI and consist in the copy of 
 * live contain only 3 files, vmliz, initrd.img and filesystem.squashfs who is the compressef for of the omologue directory.
 
 ## Customize your image before to generate it
-There is an option in produce who you can use to stop the process just before the file image will be generated. This let You to make your modifications  and  after restore the process.
+if you want more control on the production of your iso, try the new --dry flag, it's instantaneous: will generate filesystem directory, iso structure complete and the related scripts to bind/ubind filesystem, squash it and create iso.
+
+* bind
+* mksquashfs
+* mkiso
+* ubind
+
+
+ 
