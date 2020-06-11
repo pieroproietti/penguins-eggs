@@ -14,26 +14,17 @@ Per l'uso, digitate eggs ed avrete la lista dei comandi.
 Le modifiche saranno riportate in ordine inverso dall'ultima alla prima
 
 ### eggs-7.5.110-1
-Eccoci qua, stavo cercando una soluzione per facilitarmi nel lavoro 
-di adattare a calamares anche Ubuntu e Deepin e, trafficando con 
-questo, come spesso succede è venuta fuori una nuova idea: il
-funzionamente --dry.
+Eccoci qua, stavo cercando una soluzione per facilitarmi nel lavoro di adattare a calamares anche Ubuntu e Deepin e, trafficando con questo, come spesso succede è venuta fuori una nuova idea:
 
-Eggs da questa versione, oltre a poter generare normalmente la iso,
-può essere utilizzato con l'opzione --dry che non crea ne' il
-filesystem.squasfs e nemmeno l'immagine iso - quindi è estremamente 
-veloce. 
+- il funzionamento --dry
 
-Genera però degli script che permettono all'utente di
-effettuare il bind ed ubind del filesystem live, la sua
-compressione e la generazione della iso.
+Eggs, da questa versione, oltre a poter generare direttamente la iso, può essere utilizzato con l'opzione --dry che invece genera la struttura e gli script necessari a completare il lavoro. E, non creando ne' il filesystem.squasfs e nemmeno l'immagine iso è ovviamente istantanea.
+Vengono generati però degli script, che permettono quindi all'utente di effettuare il bind ed ubind del filesystem live, la sua compressione e la generazione della iso.
 
-- instrodotto il funzionamento --dry senza la produzione della
-  iso ma solo gli script necessari ad essa;
+Naturalmente oltre a poter lavorare nel filesystem live e nella cartella iso, potete pure variare tutti i parametri di compressione, generazione, etc.
 
-- inserito in ovary, oltre agli script necessari un breve 
-  README.md esplicativo;
-
+- introdotto il funzionamento --dry senza la produzione della iso ma solo gli script necessari ad essa;
+- inserito in ovary, oltre agli script necessari, un breve README.md esplicativo.
 
 
 ### eggs-7.5.100-1
