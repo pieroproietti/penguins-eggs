@@ -13,6 +13,29 @@ Per l'uso, digitate eggs ed avrete la lista dei comandi.
 # Changelog
 Le modifiche saranno riportate in ordine inverso dall'ultima alla prima
 
+### eggs-7.5.110-1
+Eccoci qua, stavo cercando una soluzione per facilitarmi nel lavoro 
+di adattare a calamares anche Ubuntu e Deepin e, trafficando con 
+questo, come spesso succede è venuta fuori una nuova idea: il
+funzionamente --dry.
+
+Eggs da questa versione, oltre a poter generare normalmente la iso,
+può essere utilizzato con l'opzione --dry che non crea ne' il
+filesystem.squasfs e nemmeno l'immagine iso - quindi è estremamente 
+veloce. 
+
+Genera però degli script che permettono all'utente di
+effettuare il bind ed ubind del filesystem live, la sua
+compressione e la generazione della iso.
+
+- instrodotto il funzionamento --dry senza la produzione della
+  iso ma solo gli script necessari ad essa;
+
+- inserito in ovary, oltre agli script necessari un breve 
+  README.md esplicativo;
+
+
+
 ### eggs-7.5.100-1
 Cento è una cifra tonda, più qualcosa è stato fatto.
 Ho lavorato molto sull'installer cli incorporato in eggs, 
@@ -86,7 +109,6 @@ Resta da sistemare la configurazione dell'installer grafico per Ubuntu.
 
 ### eggs-7.5.72
 - opzione skel per la copiatura della configurazione utente, funziona egregiamente su cinnamon.
-
 Servirebbe testarla su altri Desktop managar, segnalatemi magari a quali siete interessati. 
 
 
