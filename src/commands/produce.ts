@@ -18,7 +18,7 @@ export default class Produce extends Command {
     branding: flags.string({description: 'branding for calamares' }),
     compress: flags.boolean({ char: 'c', description: 'max compression' }),
     fast: flags.boolean({ char: 'f', description: 'compression fast' }),
-    debug: flags.boolean({ char: 'd', description: 'debug' }),
+    dry: flags.boolean({ char: 'd', description: 'perform a trial run, no mksquashfs and no mksiso only scripts' }),
     info: flags.help({ char: 'h' }),
     verbose: flags.boolean({ char: 'v', description: 'verbose' }),
   }
@@ -70,9 +70,9 @@ the penguin produce an egg called egg-i386-2020-04-13_1815.iso`]
         verbose = true
       }
 
-      let debug = false
-      if (flags.debug) {
-        debug = true
+      let dry = false
+      if (flags.dry) {
+        dry = true
       }
 
       if (!Pacman.prerequisitesEggsCheck()) {
@@ -101,7 +101,7 @@ the penguin produce an egg called egg-i386-2020-04-13_1815.iso`]
       const ovary = new Ovary(compression)
       Utils.warning('Produce an egg...')
       if (await ovary.fertilization()) {
-        await ovary.produce(basename, branding, assistant, verbose, debug)
+        await ovary.produce(basename, branding, assistant, verbose, dry)
         ovary.finished()
       }
     }

@@ -315,7 +315,7 @@ export default class Ovary {
    *
    * @param basename
    */
-  async produce(basename = '', branding = '', assistant = false, verbose = false, debug = false) {
+  async produce(basename = '', branding = '', assistant = false, verbose = false, dry = false) {
     let echo = Utils.setEcho(verbose)
 
     if (!fs.existsSync(this.snapshot_dir)) {
@@ -364,14 +364,12 @@ export default class Ovary {
       await this.editLiveFs(verbose)
       await this.editBootMenu(verbose)
 
-      await this.makeSquashfs(verbose)
+      await this.makeSquashfs(verbose, dry)
       if (this.make_efi) {
         await this.editEfi(verbose)
       }
-      await this.mkIso(verbose)
-      if (!debug) {
-        await this.uBindLiveFs(verbose)
-      }
+      await this.mkIso(verbose, dry)
+      await this.uBindLiveFs(verbose)
     }
   }
 
@@ -744,7 +742,7 @@ timeout 200\n`
   /**
    * squashFs: crea in live filesystem.squashfs
    */
-  async makeSquashfs(verbose = false) {
+  async makeSquashfs(verbose = false, dry = false) {
     let echo = { echo: false, ignore: false }
     if (verbose) {
       echo = { echo: true, ignore: false }
@@ -786,8 +784,9 @@ timeout 200\n`
     let cmd = `mksquashfs ${this.work_dir.merged} ${this.work_dir.pathIso}/live/filesystem.squashfs ${compression} -wildcards -ef ${this.snapshot_excludes} ${this.session_excludes} `
     cmd = cmd.replace(/\s\s+/g, ' ')
     Utils.writeX(`${this.work_dir.path}mksquashfs`, cmd)
-    await exec(cmd, echo)
-    // usr/bin/mksquashfs /.bind-root iso-template/antiX/linuxfs -comp ${this.compression} ${(this.mksq_opt === '' ? '' : ' ' + this.mksq_opt)} -wildcards -ef ${this.snapshot_excludes} ${this.session_excludes}`)
+    if (!dry){
+      await exec(cmd, echo)
+    }
   }
 
   /**
@@ -1265,7 +1264,7 @@ timeout 200\n`
   /**
    * makeIsoImage
    */
-  async mkIso(verbose = false, debug = false) {
+  async mkIso(verbose = false, dry = false) {
     let echo = { echo: false, ignore: false }
     if (verbose) {
       echo = { echo: true, ignore: false }
@@ -1317,7 +1316,9 @@ timeout 200\n`
 
       cmd = cmd.replace(/\s\s+/g, ' ')
       Utils.writeX(`${this.work_dir.path}mkiso`, cmd)
-      await exec(cmd, echo)
+      if (!dry){
+        await exec(cmd, echo)
+      }
 
       /**
        * Ultima versione
