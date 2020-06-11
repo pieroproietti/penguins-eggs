@@ -843,27 +843,28 @@ timeout 200\n`
     const rootDirs = fs.readdirSync('/', { withFileTypes: true })
     let cmds: string[] = []
     for (const dir of rootDirs) {
+      cmds.push(`#############################################################`)
       if (dir.isDirectory()) {
         if (!(dir.name === 'lost+found')) {
-          cmds.push(`\n# directory: ${dir.name}`)
+          cmds.push(`# directory: ${dir.name}`)
           if (this.needOverlay(dir.name)) {
 
-            cmds.push(`\n# Need overlay ${dir.name} `)
-            cmds.push(`\n# First, create mountpoint lower and mount ro  ${dir.name}`)
+            cmds.push(`# Need overlay ${dir.name} `)
+            cmds.push(`# First, create mountpoint lower and mount ro  ${dir.name}`)
             cmds.push(await makeIfNotExist(`${this.work_dir.lowerdir}/${dir.name}`))
             cmds.push(await rexec(`mount --bind --make-slave /${dir.name} ${this.work_dir.lowerdir}/${dir.name}`, echo))
             cmds.push(await rexec(`mount -o remount,bind,ro ${this.work_dir.lowerdir}/${dir.name}`, echo))
 
-            cmds.push(`\n# Second: create mountpoint upper, work and ovarium and mount ${dir.name} in ${this.work_dir.path} rw`)
+            cmds.push(`# Second: create if not exist mountpoint upper, work and ${this.work_dir.merged} and mount ${dir.name} in ${this.work_dir.path} rw`)
             cmds.push(await makeIfNotExist(`${this.work_dir.upperdir}/${dir.name}`, verbose))
             cmds.push(await makeIfNotExist(`${this.work_dir.workdir}/${dir.name}`, verbose))
             cmds.push(await makeIfNotExist(`${this.work_dir.merged}/${dir.name}`, verbose))
             cmds.push(await rexec(`mount -t overlay overlay -o lowerdir=${this.work_dir.lowerdir}/${dir.name},upperdir=${this.work_dir.upperdir}/${dir.name},workdir=${this.work_dir.workdir}/${dir.name} ${this.work_dir.merged}/${dir.name}`, echo))
           } else {
 
-            cmds.push(`\n# Don't need overlay ${dir.name} `)
-            cmds.push(`\n# mount --bind ${dir.name} directly in ${this.work_dir.path}`)
-            cmds.push(`\n# home, cdrom, dev, live, media, mnt, proc, run, sys, swapfile, tmp only mkdir in ${this.work_dir.path}`)
+            cmds.push(`# Don't need overlay ${dir.name}`)
+            cmds.push(`# mount --bind ${dir.name} directly in ${this.work_dir.path}`)
+            cmds.push(`# home, cdrom, dev, live, media, mnt, proc, run, sys, swapfile, tmp only mkdir in ${this.work_dir.path}`)
             cmds.push(await makeIfNotExist(`${this.work_dir.merged}/${dir.name}`, verbose))
             if (this.onlyMerged(dir.name)) {
               cmds.push(await makeIfNotExist(`${this.work_dir.merged}/${dir.name}`, verbose))
@@ -873,20 +874,21 @@ timeout 200\n`
           }
         }
       } else if (dir.isFile()) {
-        cmds.push(`\n# file: ${dir.name}`)
+        cmds.push(`# file: ${dir.name}`)
         if (!(fs.existsSync(`${this.work_dir.merged}/${dir.name}`))) {
           cmds.push(await rexec(`cp /${dir.name} ${this.work_dir.merged}`, echo))
         } else {
-          cmds.push('\n# file exist... skip')
+          cmds.push('# file exist... skip')
         }
       } else if (dir.isSymbolicLink()) {
-        cmds.push(`\n# symbolicLink ${dir.name}`)
+        cmds.push(`# symbolicLink ${dir.name}`)
         if (!(fs.existsSync(`${this.work_dir.merged}/${dir.name}`))) {
           cmds.push(await rexec(`cp -r /${dir.name} ${this.work_dir.merged}`, echo))
         } else {
-          cmds.push('\n# SymbolicLink exist... skip')
+          cmds.push('# SymbolicLink exist... skip')
         }
       }
+      cmds.push(`# ==== end of ${dir.name} ===\n`)
     }
     Utils.writeXs(`${this.work_dir.path}bind`, cmds)
   }
@@ -902,20 +904,24 @@ timeout 200\n`
     }
 
     let cmds: string[] = []
-    let cmd = ''
-    let cout = { code: 0, data: '' }
     // await exec(`/usr/bin/pkill mksquashfs; /usr/bin/pkill md5sum`, {echo: true})
     if (fs.existsSync(this.work_dir.merged)) {
       const bindDirs = fs.readdirSync(this.work_dir.merged, { withFileTypes: true })
       for (const dir of bindDirs) {
+        cmds.push(`#############################################################`)
         if (dir.isDirectory()) {
-          cmds.push(`\n# ${dir.name} = directory`)
+          cmds.push(`\n# directory: ${dir.name}`)
           if (this.needOverlay(dir.name)) {
+            cmds.push(`\n# ${dir.name} has overlay`)
+            cmds.push(`\n# First, umount it from ${this.work_dir.path}`)
             cmds.push(await rexec(`umount ${this.work_dir.merged}/${dir.name}`, echo))
+
+            cmds.push(`\n# Second, umount it from ${this.work_dir.lowerdir}`)
             cmds.push(await rexec(`umount ${this.work_dir.lowerdir}/${dir.name}`, echo))
           } else if (this.onlyMerged(dir.name)) {
             cmds.push(await rexec(`umount ${this.work_dir.merged}/${dir.name}`, echo))
           }
+          cmds.push(`\n# remove in ${this.work_dir.merged} and ${this.work_dir.lowerdir}`)
           cmds.push(await rexec(`rm ${this.work_dir.merged}/${dir.name} -rf`, echo))
           cmds.push(await rexec(`rm ${this.work_dir.lowerdir}/${dir.name} -rf`, echo))
         } else if (dir.isFile()) {
