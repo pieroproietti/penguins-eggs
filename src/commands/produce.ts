@@ -18,7 +18,7 @@ export default class Produce extends Command {
     branding: flags.string({description: 'branding for calamares' }),
     compress: flags.boolean({ char: 'c', description: 'max compression' }),
     fast: flags.boolean({ char: 'f', description: 'compression fast' }),
-    dry: flags.boolean({ char: 'd', description: 'perform a trial run, no mksquashfs and no mksiso only scripts' }),
+    dry: flags.boolean({ char: 'd', description: 'perform a trial run, no mksquashfs, no mksiso' }),
     info: flags.help({ char: 'h' }),
     verbose: flags.boolean({ char: 'v', description: 'verbose' }),
   }
