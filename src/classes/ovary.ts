@@ -845,23 +845,25 @@ timeout 200\n`
     for (const dir of rootDirs) {
       if (dir.isDirectory()) {
         if (!(dir.name === 'lost+found')) {
-          cmds.push(`\n# ${dir.name} = directory`)
+          cmds.push(`\n# directory: ${dir.name}`)
           if (this.needOverlay(dir.name)) {
 
-            cmds.push(`\n# Create mountpoint lower and mount ro ${dir.name}`)
+            cmds.push(`\n# Need overlay ${dir.name} `)
+            cmds.push(`\n# First, create mountpoint lower and mount ro  ${dir.name}`)
             cmds.push(await makeIfNotExist(`${this.work_dir.lowerdir}/${dir.name}`))
             cmds.push(await rexec(`mount --bind --make-slave /${dir.name} ${this.work_dir.lowerdir}/${dir.name}`, echo))
             cmds.push(await rexec(`mount -o remount,bind,ro ${this.work_dir.lowerdir}/${dir.name}`, echo))
 
-            cmds.push(`\n# create mountpoint upper, work e merged and mount in merget rw`)
+            cmds.push(`\n# Second: create mountpoint upper, work and ovarium and mount ${dir.name} in ${this.work_dir.path} rw`)
             cmds.push(await makeIfNotExist(`${this.work_dir.upperdir}/${dir.name}`, verbose))
             cmds.push(await makeIfNotExist(`${this.work_dir.workdir}/${dir.name}`, verbose))
             cmds.push(await makeIfNotExist(`${this.work_dir.merged}/${dir.name}`, verbose))
             cmds.push(await rexec(`mount -t overlay overlay -o lowerdir=${this.work_dir.lowerdir}/${dir.name},upperdir=${this.work_dir.upperdir}/${dir.name},workdir=${this.work_dir.workdir}/${dir.name} ${this.work_dir.merged}/${dir.name}`, echo))
           } else {
 
-            cmds.push(`\n# mount --bind ${dir.name} directly in in merged`)
-            // per 'home', 'cdrom', 'dev', 'live', 'media', 'mnt', 'proc', 'run', 'sys', 'swapfile', 'tmp' solo creazione della directory
+            cmds.push(`\n# Don't need overlay ${dir.name} `)
+            cmds.push(`\n# mount --bind ${dir.name} directly in ${this.work_dir.path}`)
+            cmds.push(`\n# home, cdrom, dev, live, media, mnt, proc, run, sys, swapfile, tmp only mkdir in ${this.work_dir.path}`)
             cmds.push(await makeIfNotExist(`${this.work_dir.merged}/${dir.name}`, verbose))
             if (this.onlyMerged(dir.name)) {
               cmds.push(await makeIfNotExist(`${this.work_dir.merged}/${dir.name}`, verbose))
@@ -871,14 +873,14 @@ timeout 200\n`
           }
         }
       } else if (dir.isFile()) {
-        cmds.push(`\n# ${dir.name} = file`)
+        cmds.push(`\n# file: ${dir.name}`)
         if (!(fs.existsSync(`${this.work_dir.merged}/${dir.name}`))) {
           cmds.push(await rexec(`cp /${dir.name} ${this.work_dir.merged}`, echo))
         } else {
           cmds.push('\n# file exist... skip')
         }
       } else if (dir.isSymbolicLink()) {
-        cmds.push(`\n# ${dir.name} = symbolicLink`)
+        cmds.push(`\n# symbolicLink ${dir.name}`)
         if (!(fs.existsSync(`${this.work_dir.merged}/${dir.name}`))) {
           cmds.push(await rexec(`cp -r /${dir.name} ${this.work_dir.merged}`, echo))
         } else {
