@@ -102,7 +102,7 @@ the penguin produce an egg called egg-i386-2020-04-13_1815.iso`]
       Utils.warning('Produce an egg...')
       if (await ovary.fertilization()) {
         await ovary.produce(basename, branding, assistant, verbose, dry)
-        ovary.finished()
+        ovary.finished(dry)
       }
     }
   }

@@ -1372,9 +1372,23 @@ timeout 200\n`
   /**
    * only show the result
    */
-  finished() {
+  finished(dry = false) {
     Utils.titles('produce')
-    console.log('eggs is finished!\n\nYou can find the file iso: ' + chalk.cyanBright(this.eggName) + '\nin the nest: ' + chalk.cyanBright(this.snapshot_dir) + '.')
+    if (!dry){
+      console.log('eggs is finished!\n\nYou can find the file iso: ' + chalk.cyanBright(this.eggName) + '\nin the nest: ' + chalk.cyanBright(this.snapshot_dir) + '.')
+    } else {
+      console.log('eggs is finished!\n\nYou can find the scripts to build iso: ' + chalk.cyanBright(this.eggName) + '\nin the ovarium: ' + chalk.cyanBright(this.work_dir.path) + '.')
+      console.log(`usage`)
+      console.log(chalk.cyanBright(`cd ${this.work_dir.path}`))
+      console.log(chalk.cyanBright(`sudo ./bind`))
+      console.log(`Make all yours modifications in the directories filesystem.squashfs and iso.`)
+      console.log(`After when you are ready:`)
+      console.log(chalk.cyanBright(`sudo ./mksquashfs`))
+      console.log(chalk.cyanBright(`sudo ./mkiso`))
+      console.log(chalk.cyanBright(`sudo ./ubind`))
+      console.log(`happy hacking!`)
+    }
+    
   }
 }
 
