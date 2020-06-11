@@ -428,7 +428,12 @@ export default class Utils {
    * @param cmd
    */
   static writeX(file: string, cmd: string): void {
-    Utils.write(file, cmd)
+    let text = `#!/bin/sh\n\n`
+    text += `# Created at: ${Utils.formatDate(new Date())}\n`
+    text += `# By: penguins_eggs v. ${Utils.getPackageVersion()}\n`
+    text += `# === Perri\'s Brewery edition === \n\n`
+    text += cmd
+    Utils.write(file, text)
     shx.chmod('+x', file)
   }
 
@@ -442,8 +447,7 @@ export default class Utils {
     for (const elem of cmds) {
       cmd += elem + '\n'
     }
-    Utils.write(file, cmd)
-    shx.chmod('+x', file)
+    Utils.writeX(file, cmd)
   }
 
   /**
