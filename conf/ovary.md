@@ -48,5 +48,10 @@ if you want more control on the production of your iso, try the new --dry flag, 
 * mkiso
 * ubind
 
+**Attention:** this is a new feathures, things can change in the future versions. this morning was just an idea to help myself in the process to test calamares in Ubuntu and Deepin, but I'm sure someones can help me with the refinings.
+
+Feel free to contact me for any suggestions.
+
+https://github.com/pieroproietti/penguins-eggs
 
  
