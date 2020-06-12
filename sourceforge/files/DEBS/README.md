@@ -132,10 +132,9 @@ In particular, it reports:
 
 and, once past the rock, it still waits 1:30 for:
 
-```A start job is running for /sys/subsystem/net/devices/multi/user
-(attende che la rete divenga disponibile per sincronizzare il timer)```
+```A start job is running for /sys/subsystem/net/devices/multi/user```
 
-Se qualcuno meglio esperto può dare qualche suggerimento. Grazie
+If someone can help me, don't esitate, thanx.
 
 ### eggs-7-5-57-1
 - add warning for look new versions;
