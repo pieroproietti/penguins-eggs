@@ -22,8 +22,11 @@ I work mostly on Debian stable, so here you can find my personal versions and ot
 * **blockchain** - I'm not a blockchain expert, the idea is to give an example of that is possible to build with eggs. I mean an an ISO image to giveup to * students for learn blockchain, develop smart contracts, etc. Feel free to give suggestions on it or ask for help to build your own version.
 * **incubator** - Debian Buster + Proxmox VE 6.2 and the same tools of debu;
 
-## Linux Mint Debian Edition 4
+## Linux Mint Debian Edition 4 
 * **lmde4** - LMDE4 Debbie, remastered with eggs, without any modifications except for develop tools.
+
+### Linux Mint 19.3
+* **tricia** - Linux Mint 19.3 remastered with eggs, without any modifications except for develop tools.
 
 ### Deepin 20 beta
 * **dpin** - deepin 20 beta apricot remastered with eggs, without any modifications except for develop tools.
@@ -31,8 +34,6 @@ I work mostly on Debian stable, so here you can find my personal versions and ot
 ## Ubuntu 20.04 focal
 * **ufo-mini** - Ubuntu focal minimal installation, remastered with eggs, without any modifications except for develop tools.
 
-### Linux Mint 19.3 (Ubuntu eoan based)
-* **tricia** - Linux Mint 19.3 remastered with eggs, without any modifications except for develop tools.
 
 
 # Collaboration
