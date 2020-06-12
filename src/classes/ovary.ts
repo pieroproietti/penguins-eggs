@@ -938,8 +938,8 @@ timeout 200\n`
     let cmds: string[] = []
     cmds.push(`# NOTE: home, cdrom, dev, live, media, mnt, proc, run, sys and tmp`)
     cmds.push(`#       need just to be removed in ${this.work_dir.merged}`)
-    cmds.push(`# host: ${os.hostname()}`)
-    cmds.push(`# basename: ${this.basename}`)
+    cmds.push(`# host: ${os.hostname()} user: ${Utils.getPrimaryUser()}\n`)
+
     // await exec(`/usr/bin/pkill mksquashfs; /usr/bin/pkill md5sum`, {echo: true})
     if (fs.existsSync(this.work_dir.merged)) {
       const bindDirs = fs.readdirSync(this.work_dir.merged, { withFileTypes: true })
