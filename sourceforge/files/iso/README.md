@@ -1,6 +1,6 @@
 # Penguin's eggs remastered ISOs
 
-All ISOs are based on Debian Buster, Ubuntu Focal and Deepin 20 Beta. 
+All ISOs are based on Debian Buster, Ubuntu Focal, Linux Mint 19.x and Deepin 20 Beta. 
 
 # user/password
 * ```live/evolution```
