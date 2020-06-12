@@ -69,137 +69,115 @@ ATTENTION: the use of the eggs cli installer is still from ONLY for experts if y
 
 ### eggs  7.5.86
 
-- modificata la chiamata a xorriso, cercando di renderla analoga a systemback
-  (secondo i suggerimenti di Franco Conidi)
+- modified the call to xorriso, trying to make it analogous to systemback (according to the suggestions of Franco Conidi);
 
-- reimportate - e corrette - le utils da tools
+- reimported - and corrected - the utils from tools;
 
-- pulizia di makeIsoImage() in ovary, rimangono da applicare le modifiche 
+- cleaning of makeIsoImage () in ovary;
 
-- copia delle utils in penguins-tools, per uniformare gli strumenti
+- copy of the utils in penguins-tools, to standardize the tools;
 
-- varie pulizie
+- various cleaning of the code.
 
 
 ### 7.5.81
-- proseguono i lavori per la compatibilita con Ubuntu, attualmente si riesce a rimasterizzare ed
-installare con eggs install.
-- più di qualche impazzimento per far funzionare i link in gnome contrassegnandoli trusted con
-il comando gio che però, non essendo loggato l'utente, deve essere lanciato con 
-sudo -u user dbus-launch gio set ...
+- work continues for compatibility with Ubuntu, currently it is possible to remaster it and install with eggs cli install;
 
-Naturalmente eggs resta compatibile con Debian Buster.
+- more than a few freaks to make the gnome links work by marking them trusted with the gio command which, however, as the user is not logged in, must be launched with sudo -u user dbus-launch gio set ...;
+
+Of course eggs remains compatible with Debian Buster.
 
 
 
 ### eggs-7.5.76
-Eggs sta diventand abile a rimasterizzare Ubuntu 20.04 focal, riesce a rimasterizzare
-Ubuntu senza alcun problema. Per l'installazione, al momento, non è possibile effettuarla
-con l'installer grafico ma solo con quello cli incorporato.
+Eggs is becoming adept at remastering Ubuntu 20.04 focal, it manages to remaster Ubuntu without any problem. For the installation, at the moment, it is not possible to do it with the graphic installer but only with the built-in one.
 
-- ristrutturazione del codice per permettere la selezione tra le varie distro;
-- correzione dei punti di intoppo per la rimasterizzazione di Ubuntu focal (sia ubuntu-server che Ubuntu-desktop);
-- le versioni xbuntu, kubuntu, UbuntuMate e UbuntuBudgie si avviano correttamente;
-- non si avvia dalla iso la versione di Lubuntu basata su lxqt.
+- restructuring of the code to allow selection among the various distros;
 
-Resta da sistemare la configurazione dell'installer grafico per Ubuntu.
+- fixing hotspots for focal Ubuntu remastering (both ubuntu-server and Ubuntu-desktop);
+
+- xbuntu, kubuntu, UbuntuMate and UbuntuBudgie versions boot properly.
+
+It remains to fix the configuration of the graphical installer for Ubuntu.
 
 
 ### eggs-7.5.72
-- opzione skel per la copiatura della configurazione utente, funziona egregiamente su cinnamon.
-Servirebbe testarla su altri Desktop managar, segnalatemi magari a quali siete interessati. 
+- skel command for copying the user configuration in /etc/skel. It works very well on cinnamon. Need to test it on other desktop Managar, maybe tell me which ones you are interested in.
 
 
 ### eggs 7.5.64
-- possibilita di configurare il nome dell'utente live e le password direttamente nel file /etc/penguins-eggs (c'è chi preferisce live/evolution, chi demo/demo, etc. accontentiamo tutti);
-- creazione dell'utente live SEMPRE e solo come unico utente del liveCD parte del gruppo sudo.
+- possibility to configure the live user name and passwords directly in the / etc / penguins-eggs file (there are those who prefer live / evolution, those who demo / demo, etc;
 
-Ho scelto di fare questa modifica per una migliore pulizia e controllo degli utenti.
-Al momento ho caricato la sola versione npm
+- creation of the live user ALWAYS and only as the only user of the liveCD part of the sudo group.
+
+I chose to make this change for better cleaning and user control. At the moment I only uploaded the npm version
 
 ### eggs-7.5.60-1
-- pulizia della repo, rimossi documenti datati, descritto in documents
-il problema:
-
-A start job is running for /sys/subsystem/net/devices/multi/user
-(attende che la rete divenga disponibile per sincronizzare il timer)
+- cleaning of git repository: remuved old documentts,  in documents
 
 
 ### eggs-7.5.51-1
 - info: nuovo look;
-- produce: se non sono installati i prerequisiti ne propone correttamente l'installazione;
-- installer cli: introdotta una nuova visualizzazione di conferma dei valori immessi.
+- produce: if the prerequisites are not installed, it correctly proposes their installation;
+- installer cli: introduced a new display to confirm the entered values.
 
-Ho dei problemi con l'installer cli, va abbastanza bene ed è diventato anche umanamente 
-usabile, ma per qualche ragione che non  conosco, dopo l'installazione, durante la 
-fase di avvio si genera un ritardo al boot che, effettuando l'installazione con calamares
-non avviene.
+I have problems with the cli installer, it is quite good and has also become humanly usable, but for some reason that I don't know, after the installation, during the boot phase, a boot delay is generated which, by performing the installation with calamares
 
-In particolare, segnala:
-mdadm: no array found in config file or automatically
-(uso delle VM su proxmox-ve e non ci sono disk array su esse)
 
-ed, una volta superato lo scoglio, attende ancora 1:30 per:
-A start job is running for /sys/subsystem/net/devices/multi/user
-(attende che la rete divenga disponibile per sincronizzare il timer)
+In particular, it reports:
+
+```mdadm: no array found in config file or automatically```
+
+(I use only virtual machines on proxmox-ve, so I don't need and have disk arrays)
+
+and, once past the rock, it still waits 1:30 for:
+
+```A start job is running for /sys/subsystem/net/devices/multi/user
+(attende che la rete divenga disponibile per sincronizzare il timer)```
 
 Se qualcuno meglio esperto può dare qualche suggerimento. Grazie
 
-eggs-7-5-57-1
-- aggiunto warning per nuove versioni;
-- tradotta in inglese la presentazione di calamares;
-- aggiunta opzione verbose anche nel comando adjust;
-- variato nome e posizione della exclude.list;
-- ristrutturato e semplificato exclude list, inserire le opzioni per apache2 e pveproxy.
+### eggs-7-5-57-1
+- add warning for look new versions;
+- the presentation of calamares translated into English;
+- added verbose option also in ```adjust``` command;
+- changed name and position of the exclude.list;
+- restructured and simplified exclude list, insert options for apache2 and pveproxy.
 
 ### eggs-7.5.54-1
-- testato con successo su LMDE4, sia standard che UEFI
+- tested with LMDE4, both standard amd EFI machines.
 
 ### eggs-7.5.44-1
-- installer cli: fstab utilizzo UUID in luogo di /dev/sda1, etc
-- installer cli: rimozione dell'utente e del gruppo del liveCD durante l'installazione
-
-### eggs-7.5.39-1
-- aggiunto comando skel: copia della configurazione del Desktop in /etc/sket
-- corretto e testato funzionamento dell'installer cli
-#### in sospeso
-- modificare nell'installer cli il file fstab aggiungendo i blkid
+- installer cli: fstab will use UUID no more /dev/sda1, etc
+- installer cli: removal of the user and group of the liveCD during installation
 
 ### eggs-7.5.40-1
-* corretta la mancata rimozione del gruppo dell'utente del CD
-in sospeso
-modificare nell'installer cli il file fstab aggiungendo i blkid
+* fixed failure to remove CD user group pending, edit the fstab file in the cli installer by adding the blkids.
+
 
 ### eggs-7.5.39-1
-* aggiunto comando skel: copia della configurazione del Desktop in /etc/sket
-* corretto e testato funzionamento dell'installer cli
+* added skel command: copy of the Desktop configuration in / etc / sket;
+* correct and tested functioning of the installer cli.
 
 ### eggs-7.5.36-1
-- aggiunto flag -a per l'assistente di installazione che permette la scelta tra installazione grafica e installazione cli;
-- corretto problema della cancellazione delle liste apt sulla versione installata con installer grafico.
+* added flag -a for the installation assistant which allows the choice between graphical installation and cli installation;
+* corrected problem of deleting apt lists on the version installed with graphic installer.
 
-Buon 1° maggio a tutti
+Happy 1st of May to all
+
 
 ### eggs-7-5-34-1
-* Eliminato l'errore di costruzione della iso su macchina non UEFI. Precedentemente non essendo installato il pacchetto grub-efi-amd64 e le sue dipendenze, eggs falliva anche nel caso fosse stato corremente impostato il valore make_efi=no nel file di configurazione.
-* Introdotto un ulteriore flag in eggs produce, per l'aggiunta sul desktop dell'assistente di installazione che permette di scegliere tra calamares o installer cli.
+- Eliminated the ISO construction error on a non-UEFI machine. Previously, since the grub-efi-amd64 package and its dependencies were not installed, eggs failed even if the make_efi = no value had been set correctly in the configuration file;
+
+* Introduced a further flag in eggs produce, for the addition on the desktop of the installation assistant that allows you to choose between calamares or installer cli.
 
 ### eggs_7.5.18-1_amd.deb
-In queste versioni dalla 7.5.0-1 alla 7.5.18-1 ho rivisto completamente il funzionamento cercando il più
-possibile di semplificare l'uso. Questa versione, in caso di prerequisites non installati chiede all'utente
-di installarli al volo e così fa per calamares (se in /etc/penguins-eggs force-installer=yes) e per il file 
-di configurazione stesso che, se assente, viene automaticamente generato.
-Inoltre, per le stazioni di lavoro non grafiche, non viene più configurato calamares, ovviamente non necessario
-e l'installazione avviene direttamente con eggs.
+In these versions from 7.5.0-1 to 7.5.18-1 I have completely revised the commands trying - as much as possible - to simplify the use. This version, in case of prerequisites not installed, asks the user to install them on the fly and so does for calamares (if in / etc / penguins-eggs force-installer = yes) and for the configuration file itself which, if absent, is automatically generated. Furthermore, for non-graphical workstations, calamares are no longer configured, obviously not necessary and the installation takes place directly with eggs.
 
-In caso di problemi, provare ad utilizzare il flag -v per visualizzare l'output a video delle varie chiamate.
-
-Grazie per l'attenzione, fatemi sapere.
-
-
+If you have problems, try using the -v flag to view the video output of the various calls.
 
 ### eggs_7.5.0-1_amd,deb
-* Finalmente abbiamo la versione UEFI funzionante.
+* Finally we have the working UEFI version.
 
 # Help
 Don't esitate to ask me for suggestions and help.
