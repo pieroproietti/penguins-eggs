@@ -6,8 +6,7 @@ All ISOs are based on Debian Buster, Ubuntu Focal and Deepin 20 Beta.
 * ```live/evolution```
 * ```root/evolution```
 
-All the ISOs include nodejs and eggs installed (.npm package), so you can
-update your eggs tool with the command:
+All the ISOs include nodejs and eggs installed (.npm package), so you can update your eggs tool with the command:
 
 ```sudo eggs update```
 
@@ -38,25 +37,23 @@ I work mostly on Debian stable, so here you can find my personal versions and ot
 
 # Collaboration
 
-A suitable way to start to collaborate in penguin's eggs development can be install debu, and play
-with penguins-eggs source.
+A suitable way to start to collaborate in penguin's eggs development can be to install debu - or install nodejs, git, build-essential in in your system - and start to play with penguins-eggs source.
 
-It is quite simple, just download penguins-eggs sources
+It is quite simple! Just download penguins-eggs the sources with the command:
 
 ```git clone https://github.com/pieroproietti/penguins-eggs```
 
 
-Install the npm packcageg on it 
+Install in it the necessary npm packages:
 
 ```cd penguins-egg```
 
 ```npm i```
 
-Now, from the same directory, you can use eggs from sources:
+And now, from the same directory, you can use eggs from sources:
 
 ```~/penguins-eggs$ .\eggs info```
 
 ```~/penguins-eggs$ sudo .\eggs produce -fv```
 
-
-
+You can also use choose the option -d (--dry) and play later with the scripts in /home/eggs/ovarium. Can be exciting! ;-)
