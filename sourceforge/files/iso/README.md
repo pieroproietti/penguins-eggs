@@ -15,25 +15,6 @@ update your eggs tool with the command:
 
 I work mostly on Debian stable, so here you can find my personal versions and other examples.
 
-A suitable way to start to collaborate in penguin's eggs development can be install debu, and play
-with penguins-eggs source.
-
-It is quite simple, just download penguins-eggs
-
-```git clone https://github.com/pieroproietti/penguins-eggs```
-
-```cd penguins-egg```
-
-```npm i```
-
-Now you can use eggs directly from sources:
-
-```~/penguins-eggs$ .\eggs info```
-
-```~/penguins-eggs$ sudo .\eggs produce -fv```
-
-
-
 ## Debian Buster
 * **debu**  - it is my personal version with cinnamon, mostly for development, but include common office tools;
 * **lampp** - same as debu, but with tools to develop web sites with php and wordpress;
@@ -55,6 +36,27 @@ Now you can use eggs directly from sources:
 * **tricia** - Linux Mint 19.3 remastered with eggs, without any modifications except for develop tools.
 
 
+# Collaboration
+
+A suitable way to start to collaborate in penguin's eggs development can be install debu, and play
+with penguins-eggs source.
+
+It is quite simple, just download penguins-eggs sources
+
+```git clone https://github.com/pieroproietti/penguins-eggs```
+
+
+Install the npm packcageg on it 
+
+```cd penguins-egg```
+
+```npm i```
+
+Now, from the same directory, you can use eggs from sources:
+
+```~/penguins-eggs$ .\eggs info```
+
+```~/penguins-eggs$ sudo .\eggs produce -fv```
 
 
 
