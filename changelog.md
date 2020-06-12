@@ -1,64 +1,71 @@
+penguins-eggs
+=============
+
+## Penguin&#39;s eggs are generated and new birds are ready to fly...
+[![repo](https://img.shields.io/badge/repo-github.com-blue)](https://github.com/pieroproietti/penguins-eggs)
+[![npm version](https://img.shields.io/npm/v/penguins-eggs.svg)](https://npmjs.org/package/penguins-eggs)
+[![debs](https://img.shields.io/badge/deb-packages-blue)](https://sourceforge.net/projects/penguins-eggs/files/DEBS)
+[![isos](https://img.shields.io/badge/iso-images-blue)](https://sourceforge.net/projects/penguins-eggs/files/iso)
+[![typedoc](https://img.shields.io/badge/doc-typedoc-blue)](https://penguins-eggs.sourceforge.io/index.html)
+[![book](https://img.shields.io/badge/book-penguin's%20eggs-blue)](https://penguin-s-eggs.gitbook.io/project/)
+[![facebook](https://img.shields.io/badge/page-facebook-blue)](https://www.facebook.com/penguinseggs)
+[![gitter](https://img.shields.io/badge/chat-gitter-blue)](https://gitter.im/penguins-eggs-1/community?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
+[![License](https://img.shields.io/badge/license-MIT/GPL2-blue)](https://github.com/pieroproietti/penguins-eggs/blob/master/LICENSE)
+
+
 # Penguin's eggs Debian package
 
-Scegliere l'ultima versione è normalmente la scelta giusta.
+Usually the last version is the right one.
 
-Per l'installazione, una volta scaricato il pacchetto, da terminale 
+To install the package, download it and open a terminal window.
 
-```
-sudo dpkg -i eggs_7.5.100-1_amd64.deb
-```
+```sudo dpkg -i eggs_7.5.110-1_amd64.deb```
 
-Per l'uso, digitate eggs ed avrete la lista dei comandi.
+## Usage
+Use ```eggs``` without parameters to have the list of commands. ```eggs produce --help``` will show you the description of this command and the flag you can use. 
 
-# Changelog
-Le modifiche saranno riportate in ordine inverso dall'ultima alla prima
+Detailed instrunction for usage are published on the gitboot [penguin's eggs](https://penguin-s-eggs.gitbook.io/project/) (sorry, only italian language).
+
+
+## Changelog
+Versions are listed on reverse order, the first is the last one.
 
 ### eggs-7.5.110-1
-Eccoci qua, stavo cercando una soluzione per facilitarmi nel lavoro di adattare a calamares anche Ubuntu e Deepin e, trafficando con questo, come spesso succede è venuta fuori una nuova idea:
+Here we are, I was looking for a solution to facilitate myself in the work of adapting Ubuntu and Deepin to calamares and, trafficking with this, as often happens a new idea came up:
 
-- il funzionamento --dry
+- flag --dry (shord "d")
 
-Eggs, da questa versione, oltre a poter generare direttamente la iso, può essere utilizzato con l'opzione --dry che invece genera la struttura e gli script necessari a completare il lavoro. E, non creando ne' il filesystem.squasfs e nemmeno l'immagine iso è ovviamente istantanea.
-Vengono generati però degli script, che permettono quindi all'utente di effettuare il bind ed ubind del filesystem live, la sua compressione e la generazione della iso.
+Eggs, from this version, in addition to being able to directly generate the ISO, can be used with the --dry option which instead generates the structure and scripts necessary to complete the work. And, neither creating the filesystem.squasfs nor the iso image is obviously instantaneous. However, scripts are generated, which therefore allow the user to bind and ubind the live filesystem, its compression and the generation of the ISO.
+- introduct in ```eggs produce``` the flag --dry. Eggs run without produce not squashfs, nor iso image, but creating same scripts: bind, ubind, mksquashfs and  mkiso to let you to change your live filesystem and your iso filesystem before to package it.
 
-Naturalmente oltre a poter lavorare nel filesystem live e nella cartella iso, potete pure variare tutti i parametri di compressione, generazione, etc.
+Of course, besides being able to work in the live filesystem and in the iso folder, you can also change all the compression, generation, etc. parameters.
 
-- introdotto il funzionamento --dry senza la produzione della iso ma solo gli script necessari ad essa;
-- inserito in ovary, oltre agli script necessari, un breve README.md esplicativo.
+- introduced the --dry operation without the production of the iso but only the scripts necessary for it;
+- included in the ovary, in addition to the necessary scripts, a short explanatory README.md.
 
 
 ### eggs-7.5.100-1
-Cento è una cifra tonda, più qualcosa è stato fatto.
-Ho lavorato molto sull'installer cli incorporato in eggs, 
-il lavoro è iniziato con l'idea di aggiungere la formattazione 
-LVM2 per Proxmox VE, ma è proseguito anche con l'intenzione - 
-spero riuscita - di renderlo più facilmente usabile.
+One hundred is a round figure, plus something has been done.
 
-Al momento Ubuntu focal e le varie derivate (Linux Mint compresa)
-possono essere installate SOLO con il cli-installer, mentre per 
-Debian buster e LMDE4 è raccomandato l'uso dell'installatore 
-grafico Calamares.
+I worked a lot on the cli installer built into eggs, the work started with the idea of adding formatting LVM2 for Proxmox VE, but also continued with the intention - I hope successful - to make it more easily usable.
 
-ATTENZIONE: tuttora l'uso dell'installer cli di eggs è da 
-considerarsi SOLO per gli esperti, se vi cancellate il disco 
-non prendetevela con me! 😛
+At the moment Ubuntu focal and the various derivatives (Linux Mint included) they can be installed ONLY with the cli-installer, while for Debian buster and LMDE4 are recommended to use the installer Calamares.
 
-- link sul desktop per cli-installer o calamares a seconda della presenza di quest'ultimo;
+ATTENTION: the use of the eggs cli installer is still from ONLY for experts if you erase the disc.
 
-- link sul desktop per eggs adjust solo per Desktop manager che non ridimensionano 
-  il monitor se questo viene allargato sulle macchine virtuali (LXDE, LXQT, XFCE e Mate). 
-  Ovviamente l'effetto è visibile solo utilizzando macchine virtuali con gli strumenti 
-  di integrazione installati esempio: spice-vdagent per KVM.
+- link on the desktop for cli-installer or calamares depending on the presence of the latter;
 
-- rimossa l'abilitazione dei link di desktop su gnome (restano da risolvere 
-  alcuni problemi legati al'uso del comando gio che richiede il mount di /dev 
-  pure nella fase di costruzione della iso. 
-  (Dopo aver lanciato il comando, devo fare smontare /DEV ma rimane occupata. 
-   Se qualcuno ha suggerimenti...)
+- desktop link for eggs adjust only for Desktop managers that do not resize the monitor if it is enlarged on the virtual machines (LXDE, LXQT, XFCE and Mate). Obviously the effect is visible only when using virtual machines with the integration tools installed, for example: spice-vdagent for KVM.
 
-Benvenuto ai nuovi amici brasiliani, bisognerà prima o poi pensare ad una internazionalizzazione del pacchetto.
+- removed the enabling of the desktop links on gnome (some problems related to the use of the gio command that requires the mounting of / dev also in the construction phase of the iso remain to be solved. but it remains busy. (If anyone has same suggestions ...)
 
-Bem-vindo aos novos amigos brasileiros, teremos que pensar em uma internacionalização do pacote.
+- Bem-vindo aos novos amigos brasileiros, teremos que pensar em uma internacionalização do pacote.
+
+- Welcome to the new Brazilian friends, sooner or later we will have to think about an internationalization of the package.
+
+- Benvenuto ai nuovi amici brasiliani, bisognerà prima o poi pensare ad una internazionalizzazione del pacchetto.
+
+
 
 ### eggs  7.5.86
 
