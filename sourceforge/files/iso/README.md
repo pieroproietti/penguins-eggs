@@ -37,7 +37,7 @@ I work mostly on Debian stable, so here you can find my personal versions and ot
 
 # Collaboration
 
-A suitable way to start to collaborate in penguin's eggs development can be to install debu - or install nodejs, git, build-essential in in your system - and start to play with penguins-eggs source.
+A suitable way to start to collaborate in penguin's eggs development can be to install one of them (I suggest debu) or install nodejs, git, build-essential in in your personal system, and start to play with penguins-eggs source.
 
 It is quite simple! Just download penguins-eggs the sources with the command:
 
@@ -57,3 +57,24 @@ And now, from the same directory, you can use eggs from sources:
 ```~/penguins-eggs$ sudo .\eggs produce -fv```
 
 You can also use choose the option -d (--dry) and play later with the scripts in /home/eggs/ovarium. Can be exciting! ;-)
+
+Don't esitate to ask me for suggestions and help.
+
+# That's all Folks!
+No need other configurations, penguins-eggs are battery included or better, as in the real, live is inside! :-D
+
+## More informations
+For other informations, there is same documentation i the document folder of this repository,
+look at facebook group:  [Penguin's Eggs](https://www.facebook.com/groups/128861437762355/),
+contact me, or open an [issue](https://github.com/pieroproietti/penguins-eggs/issues) on github.
+
+I mostly use Facebook.
+
+* facebook personal: [Piero Proietti](https://www.facebook.com/thewind61)
+* facebook group:  [Penguin's Eggs](https://www.facebook.com/groups/128861437762355/)
+* facebook page:  [Penguin's Eggs](https://www.facebook.com/penguinseggs)
+* mail: piero.proietti@gmail.com
+
+
+## Copyright and licenses
+Copyright (c) 2017, 2020 [Piero Proietti](https://github.com/pieroproietti), dual licensed under the MIT or GPL Version 2 licenses.
