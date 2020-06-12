@@ -409,7 +409,7 @@ export default class Ovary {
    * calamaresConfigura
    * Installa calamares se force_installer=yes e lo configura
    */
-  async  calamaresConfigure(verbose = false) {
+  async calamaresConfigure(verbose = false) {
     if (verbose) {
       console.log('ovary: calamaresConfigure')
     }
@@ -784,7 +784,7 @@ timeout 200\n`
     let cmd = `mksquashfs ${this.work_dir.merged} ${this.work_dir.pathIso}/live/filesystem.squashfs ${compression} -wildcards -ef ${this.snapshot_excludes} ${this.session_excludes} `
     cmd = cmd.replace(/\s\s+/g, ' ')
     Utils.writeX(`${this.work_dir.path}mksquashfs`, cmd)
-    if (!dry){
+    if (!dry) {
       await exec(cmd, echo)
     }
   }
@@ -831,6 +831,13 @@ timeout 200\n`
 
   /**
    * Esegue il bind del fs live
+   * 
+   * Dato che adesso crea lo script bind,
+   * sarebbe forse meglio che NON eseguisse 
+   * i comandi e, quindi,
+   * if (!dry) {
+   *    await exec('${this.work_dir.path}bind)
+   * }
    * @param verbose 
    */
   async bindLiveFs(verbose = false) {
@@ -841,30 +848,45 @@ timeout 200\n`
 
     const dirs = ['bin', 'boot', 'dev', 'etc', 'home', 'lib', 'lib32', 'lib64', 'libx32', 'media', 'mnt', 'opt', 'proc', 'root', 'run', 'sbin', 'srv', 'sys', 'tmp', 'usr', 'var']
     const rootDirs = fs.readdirSync('/', { withFileTypes: true })
+    const startLine = `#############################################################`
+    const titleLine = `# -----------------------------------------------------------`
+    const endLine = `# ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n`
+
+    let lnkDest = ''
+    let cmd = ''
     let cmds: string[] = []
+    cmds.push(`# NOTE: home, cdrom, dev, live, media, mnt, proc, run, sys and tmp`)
+    cmds.push(`#       need just a mkdir in ${this.work_dir.merged}`)
+    cmds.push(`# host: ${os.hostname()} user: ${Utils.getPrimaryUser()}\n`)
+
+    console.log(rootDirs)
     for (const dir of rootDirs) {
-      cmds.push(`#############################################################`)
+      cmds.push(startLine)
       if (dir.isDirectory()) {
         if (!(dir.name === 'lost+found')) {
-          cmds.push(`# directory: ${dir.name}`)
+          cmd = `# /${dir.name} is a directory`
           if (this.needOverlay(dir.name)) {
 
-            cmds.push(`# Need overlay ${dir.name} `)
-            cmds.push(`# First, create mountpoint lower and mount ro  ${dir.name}`)
+            cmds.push(`${cmd} and need to be written`)
+            cmds.push(titleLine)
+            cmds.push(`# create mountpoint lower`)
             cmds.push(await makeIfNotExist(`${this.work_dir.lowerdir}/${dir.name}`))
+            cmds.push(`# first: mount /${dir.name} rw in ${this.work_dir.lowerdir}/${dir.name}`)
             cmds.push(await rexec(`mount --bind --make-slave /${dir.name} ${this.work_dir.lowerdir}/${dir.name}`, echo))
+            cmds.push(`# now remount it ro`)
             cmds.push(await rexec(`mount -o remount,bind,ro ${this.work_dir.lowerdir}/${dir.name}`, echo))
-
-            cmds.push(`# Second: create if not exist mountpoint upper, work and ${this.work_dir.merged} and mount ${dir.name} in ${this.work_dir.path} rw`)
+            cmds.push(`\n# second: create mountpoint upper, work and ${this.work_dir.merged} and mount ${dir.name}`)
             cmds.push(await makeIfNotExist(`${this.work_dir.upperdir}/${dir.name}`, verbose))
             cmds.push(await makeIfNotExist(`${this.work_dir.workdir}/${dir.name}`, verbose))
             cmds.push(await makeIfNotExist(`${this.work_dir.merged}/${dir.name}`, verbose))
+
+            cmds.push(`\n# thirth: mount /${dir.name} rw in ${this.work_dir.merged}`)
             cmds.push(await rexec(`mount -t overlay overlay -o lowerdir=${this.work_dir.lowerdir}/${dir.name},upperdir=${this.work_dir.upperdir}/${dir.name},workdir=${this.work_dir.workdir}/${dir.name} ${this.work_dir.merged}/${dir.name}`, echo))
           } else {
 
-            cmds.push(`# Don't need overlay ${dir.name}`)
-            cmds.push(`# mount --bind ${dir.name} directly in ${this.work_dir.path}`)
-            cmds.push(`# home, cdrom, dev, live, media, mnt, proc, run, sys, swapfile, tmp only mkdir in ${this.work_dir.path}`)
+            cmds.push(`${cmd} who don't need to be written`)
+            cmds.push(titleLine)
+            cmds.push(`# mount -o bind /${dir.name} ${this.work_dir.merged}/${dir.name}`)
             cmds.push(await makeIfNotExist(`${this.work_dir.merged}/${dir.name}`, verbose))
             if (this.onlyMerged(dir.name)) {
               cmds.push(await makeIfNotExist(`${this.work_dir.merged}/${dir.name}`, verbose))
@@ -874,21 +896,31 @@ timeout 200\n`
           }
         }
       } else if (dir.isFile()) {
-        cmds.push(`# file: ${dir.name}`)
+        cmds.push(`# /${dir.name} is just a file`)
+        cmds.push(titleLine)
         if (!(fs.existsSync(`${this.work_dir.merged}/${dir.name}`))) {
           cmds.push(await rexec(`cp /${dir.name} ${this.work_dir.merged}`, echo))
         } else {
           cmds.push('# file exist... skip')
         }
       } else if (dir.isSymbolicLink()) {
-        cmds.push(`# symbolicLink ${dir.name}`)
+        lnkDest = fs.readlinkSync(`/${dir.name}`)
+        cmds.push(`# /${dir.name} is a symbolic link to /${lnkDest} in the system`)
+        cmds.push(`# we need just to recreate it`)
+        cmds.push(`# ln -s ${this.work_dir.merged}/${lnkDest} ${this.work_dir.merged}/${lnkDest}`)
+        cmds.push(`# but we don't know if the destination exist, and I'm too lazy today. So, for now: `)
+        cmds.push(titleLine)
         if (!(fs.existsSync(`${this.work_dir.merged}/${dir.name}`))) {
-          cmds.push(await rexec(`cp -r /${dir.name} ${this.work_dir.merged}`, echo))
+          if (fs.existsSync(lnkDest)) {
+            cmds.push(`ln -s ${this.work_dir.merged}/${lnkDest} ${this.work_dir.merged}/${lnkDest}`)
+          } else {
+            cmds.push(await rexec(`cp -r /${dir.name} ${this.work_dir.merged}`, echo))
+          }
         } else {
           cmds.push('# SymbolicLink exist... skip')
         }
       }
-      cmds.push(`# ==== end of ${dir.name} ===\n`)
+      cmds.push(endLine)
     }
     Utils.writeXs(`${this.work_dir.path}bind`, cmds)
   }
@@ -904,6 +936,10 @@ timeout 200\n`
     }
 
     let cmds: string[] = []
+    cmds.push(`# NOTE: home, cdrom, dev, live, media, mnt, proc, run, sys and tmp`)
+    cmds.push(`#       need just to be removed in ${this.work_dir.merged}`)
+    cmds.push(`# host: ${os.hostname()}`)
+    cmds.push(`# basename: ${this.basename}`)
     // await exec(`/usr/bin/pkill mksquashfs; /usr/bin/pkill md5sum`, {echo: true})
     if (fs.existsSync(this.work_dir.merged)) {
       const bindDirs = fs.readdirSync(this.work_dir.merged, { withFileTypes: true })
@@ -950,7 +986,7 @@ timeout 200\n`
     /**
      * delete all user in chroot
      */
-    let cmds: string[] =[]
+    let cmds: string[] = []
     const cmd = `chroot ${this.work_dir.merged} getent passwd {1000..60000} |awk -F: '{print $1}'`
     const result = await exec(cmd, { echo: verbose, ignore: false, capture: true })
     const users: string[] = result.data.split('\n')
@@ -1305,7 +1341,7 @@ timeout 200\n`
 
       cmd = cmd.replace(/\s\s+/g, ' ')
       Utils.writeX(`${this.work_dir.path}mkiso`, cmd)
-      if (!dry){
+      if (!dry) {
         await exec(cmd, echo)
       }
 
@@ -1363,7 +1399,7 @@ timeout 200\n`
    */
   finished(dry = false) {
     Utils.titles('produce')
-    if (!dry){
+    if (!dry) {
       console.log('eggs is finished!\n\nYou can find the file iso: ' + chalk.cyanBright(this.eggName) + '\nin the nest: ' + chalk.cyanBright(this.snapshot_dir) + '.')
     } else {
       console.log('eggs is finished!\n\nYou can find the scripts to build iso: ' + chalk.cyanBright(this.eggName) + '\nin the ovarium: ' + chalk.cyanBright(this.work_dir.path) + '.')
@@ -1377,7 +1413,7 @@ timeout 200\n`
       console.log(chalk.cyanBright(`sudo ./ubind`))
       console.log(`happy hacking!`)
     }
-    
+
   }
 }
 
@@ -1390,7 +1426,7 @@ async function makeIfNotExist(path: string, verbose = false): Promise<string> {
     console.log('ovary: makeIfNotExist')
   }
   const echo = Utils.setEcho(verbose)
-  let cmd = ''
+  let cmd = `# ${path} alreasy exist`
   if (!(fs.existsSync(path))) {
     cmd = `mkdir ${path} -p`
     await exec(cmd, echo)

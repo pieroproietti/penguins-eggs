@@ -431,7 +431,7 @@ export default class Utils {
     let text = `#!/bin/sh\n\n`
     text += `# Created at: ${Utils.formatDate(new Date())}\n`
     text += `# By: penguins_eggs v. ${Utils.getPackageVersion()}\n`
-    text += `# === Perri\'s Brewery edition === \n\n`
+    text += `# ==> Perri\'s Brewery edition <== \n\n`
     text += cmd
     Utils.write(file, text)
     shx.chmod('+x', file)
