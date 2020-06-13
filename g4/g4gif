@@ -27,7 +27,6 @@ BGCYAN="\e[46m"
 BOLD="\033[1m"
 NORMAL="\033[0m"
 
-
 #
 #
 #
@@ -39,7 +38,7 @@ function main() {
     fi
 
     check_file_exist
-    want_to_record
+    if_want_to_record
     record
 }
 
@@ -55,7 +54,7 @@ function check_file_exist() {
     fi
 }
 
-function want_to_record() {
+function if_want_to_record() {
     title
 
     echo -e "${BGRED}You will enter in record mode.${BGDEFAULT}"
@@ -71,7 +70,6 @@ function want_to_record() {
             ;;
         *)
             echo "You choose to abort your session"
-            exit
             ;;
     esac
 }
