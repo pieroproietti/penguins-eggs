@@ -34,7 +34,6 @@ function main() {
     cmd=`xdotool getactivewindow`
     export WINDOWID=$(cmd)
 
-    DEFAULT=$PS1
 
     title
     if [ -z "$fname" ]; then
@@ -44,8 +43,6 @@ function main() {
 
     check_file_exist
     record
-    #export PS1=${DEFAULT}
-    #export PS1
 
 }
 
@@ -90,7 +87,6 @@ function record() {
 function recording() {
     title
     echo "You are recording..."
-    export PS1='\[\e[1;32m\][me@home:~ ]\$\[\e[0m\]'
     ttyrec ${fname}
 }    
 

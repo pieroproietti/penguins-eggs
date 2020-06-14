@@ -1,8 +1,8 @@
-12345678901234567890123456789012345678901234567890123456789012345678901234567890
+DEFAULT=$PS1
+export PS1=">"
 #
 # A simple terminal lesson: how to produce an iso image 
 #
-
 #
 # A command line tools, can be easy to use!
 # We will see how to produce an iso image of your system with eggs.
@@ -12,6 +12,7 @@
 #
 # -> You will see the process in real time <-
 #
+export PS1=$DEFAULT
 
 eggs produce --fast
 
