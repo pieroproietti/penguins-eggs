@@ -1,0 +1,43 @@
+#
+# A simple terminal lesson: how to install prerequisites
+#
+
+#
+# A command line tools, can be easy to use!
+# We will see how to install the prerequisites packages necessary to produce eggs.
+# 
+# eggs is build on the following packages:
+# - isolinux
+# - live-boot
+# - live-boot-initramfs-tools
+# - lvm2
+# - squashfs-tools
+# - xorriso
+# - xterm'
+# - whois
+#
+# If you want to use the calamares installed, other packages will be included:
+# - calamares
+# - qml-module-qtquick2
+# - qml-module-qtquick-controls
+#
+# And, if you choose creation of UEFI image:
+# - grub-efi-amd64 
+#
+# Well, let's start!
+#
+# First we can see the description of the command 
+#
+
+eggs prerequisites -h
+
+#
+# To install the prerequisites we need we just type:
+# eggs prerequisites
+#
+
+#
+# That's all Folks!
+#
+
+

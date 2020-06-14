@@ -1,15 +1,31 @@
-# A command line tools, can be easy to use!\n
-# We will see how get help from eggs\n
-# Just run eggs without commands to have the full commands list
 #
-# Type eggs command --help or -h to have the description of the specific command and the list of flags\n
+# A simple terminal lesson: how to ask help from eggs
+#
+
+#
+# A command line tools, can be easy to use!
+# We will see how get help from eggs.
+# Just run eggs without commands to have the full commands list.
+#
+
+eggs
+
+#
+# Type eggs command --help or -h to have the description of the specific command and the list of flags
 # Example: eggs produce -h
+#
 
 eggs produce -h
 
+
 eggs kill -h
 
-# That's all Folks!
+#
+# Remember: you can ask for help on all commands, to obtain the list type eggs
+#
 
+#
+# That's all Folks!
+#
 
 

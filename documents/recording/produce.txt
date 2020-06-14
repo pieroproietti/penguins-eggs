@@ -1,0 +1,23 @@
+#
+# A simple terminal lesson: how to produce an iso image 
+#
+
+#
+# A command line tools, can be easy to use!
+# We will see how to produce an iso image of your system with eggs.
+#
+# First, discovery the flags you can use
+#
+
+eggs produce -h
+
+#
+# Well, for this example we will use -fv (fast and verbose)
+#
+
+eggs produce -fv
+
+#
+# That's all Folks!
+#
+
