@@ -31,6 +31,15 @@ NORMAL="\033[0m"
 #
 #
 function main() {
+    cmd=`xdotool getactivewindow`
+    export WINDOWID=$(cmd)
+
+
+    # DEFAULT=$PS1
+    DEFAULT ="\[\e]0;\u@\h: \w\a\]${debian_chroot:+($debian_chroot)}\[\033[01;32m\]\u@\h\[\033[00m\]:\[\033[01;34m\]\w\[\033[00m\]\$"
+    CURRENT="artisan@home$ "
+    export PS1=${CURRENT}
+
     title
     if [ -z "$fname" ]; then
         echo "No argument supplied! You need to give a record name"
@@ -38,8 +47,10 @@ function main() {
     fi
 
     check_file_exist
-    if_want_to_record
     record
+    export PS1=${DEFAULT}
+    export PS1
+
 }
 
 
@@ -54,7 +65,7 @@ function check_file_exist() {
     fi
 }
 
-function if_want_to_record() {
+function record() {
     title
 
     echo -e "${BGRED}You will enter in record mode.${BGDEFAULT}"
@@ -66,7 +77,10 @@ function if_want_to_record() {
 
     case "$response" in
         [yYsS]) 
-            record
+            recording
+            giferizing
+            optimizing
+            cleaning
             ;;
         *)
             echo "You choose to abort your session"
@@ -75,22 +89,37 @@ function if_want_to_record() {
 }
 
 #
+# salva su un file ${fname}
 #
-#
-function record() {
-    export WINDOWID=$(xdotool getwindowfocus)
+function recording() {
     title
     echo "You are recording..."
     ttyrec ${fname}
-    echo "Giferize ${fname}"
+}    
+
+#
+# va a leggere ${fname} sul terminale WINDOWID
+# crea tty.gif
+#
+function giferizing(){
+    cmd=`xdotool getactivewindow`
+    WINDOWID=${cmd}
+    echo "Giferizing ${fname}"
     ttygif ${fname}
-    echo "Optimize ${fname}.gif"
+}
+
+function optimizing() {
+    echo "Optimizing ${fname}.gif"
     gifsicle -i tty.gif --optimize=3 --colors 16 -o ${gifname}
-    echo "Removing stuff..."
+}
+
+function cleaning() {
+    echo "cleaning stuff..."
     rm tty.gif
     rm ${fname}
     echo "Your session is recorded in ${gifname}"
 }
+
 
 #
 #

@@ -1,0 +1,15 @@
+# A command line tools, can be easy to use!\n
+# We will see how get help from eggs\n
+# Just run eggs without commands to have the full commands list
+#
+# Type eggs command --help or -h to have the description of the specific command and the list of flags\n
+# Example: eggs produce -h
+
+eggs produce -h
+
+eggs kill -h
+
+# That's all Folks!
+
+
+
