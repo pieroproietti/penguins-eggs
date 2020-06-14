@@ -859,7 +859,7 @@ timeout 200\n`
     cmds.push(`#       need just a mkdir in ${this.work_dir.merged}`)
     cmds.push(`# host: ${os.hostname()} user: ${Utils.getPrimaryUser()}\n`)
 
-    console.log(rootDirs)
+    // console.log(rootDirs)
     for (const dir of rootDirs) {
       cmds.push(startLine)
       if (dir.isDirectory()) {

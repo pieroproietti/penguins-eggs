@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# apt install ttyrec ttygif gifcicle
+# apt install ttyrec ttygif gifsicle -y
 #
 # https://misc.flogisoft.com/bash/tip_colors_and_formatting
 #
