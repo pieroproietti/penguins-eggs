@@ -51,12 +51,12 @@ are able to open a terminal, you can use it.
 Eggs is born using Debian 9 and Debian 10, I test it on Debian Buster and Linux Mind Debian
 Edition (LMDE4). You can try it on others distros and give a feedback.
 
-Same iso images complete with eggs are loaded in the sourceforge page of the project. 
+Same iso images complete with eggs are loaded in the [sourceforge](https://sourceforge.net/projects/penguins-eggs/files/packages-deb/) page of the project. 
 
 # Install penguins-eggs
 
 ## Debian package
-This simplest way to installe eggs is to download the [package eggs](https://sourceforge.net/projects/penguins-eggs/files/DEBS/) from [sourceforge](https://sourceforge.net/projects/penguins-eggs/files/DEBS/) and install it
+This simplest way to installe eggs is to download the [package eggs](https://sourceforge.net/projects/penguins-eggs/files/packages-deb/) from [sourceforge](https://sourceforge.net/projects/penguins-eggs/files/DEBS/) and install it
 
 ```sudo dpkg -i eggs_7.1.XX-1_amd64.deb```
 
@@ -390,10 +390,6 @@ EXAMPLE
 
 _See code: [src/commands/update.ts](https://github.com/pieroproietti/penguins-eggs/blob/v7.5.112/src/commands/update.ts)_
 <!-- commandsstop -->
-
-# ISO images
-I made same examples of iso images generated mostly based with Debian Buster but also with Ubuntu 20.04, Linux Mint 19.x and deepin 20.20.
-
 
 # That's all Folks!
 No need other configurations, penguins-eggs are battery included or better, as in the real, live is inside! :-D

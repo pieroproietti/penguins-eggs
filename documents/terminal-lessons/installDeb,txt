@@ -1,0 +1,29 @@
+DEFAULT=$PS1
+export PS1=">"
+#
+# A command line tools, can be easy to use!
+# 
+# A simple terminal lesson: how to install eggs (deb package)
+#
+#
+# We will see how to install eggs as Debian package.
+# 
+# First: you must download it from https://sourceforge.net/projects/penguins-eggs/
+#
+# - open your browser and go a page: https://sourceforge.net/projects/penguins-eggs/
+# - click on filese
+# - click on debian-packages
+# - choose the version and download it
+#
+# Open a windows terminal, and go to the directory where you saved package;
+# Write: sudo dpkg -i eggs*.deb
+export PS1=$DEFAULT
+
+
+dpkg i eggs*.deb
+
+#
+# That's all Folks!
+#
+
+
