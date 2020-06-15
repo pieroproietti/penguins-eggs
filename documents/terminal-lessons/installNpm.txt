@@ -1,0 +1,27 @@
+DEFAULT=$PS1
+export PS1=">"
+#
+# A command line tools, can be easy to use!
+# 
+# A simple terminal lesson: how to install eggs (npm package)
+#
+#
+# Eggs is a node package, so the right way to install it is by the 
+# npm: node package manager
+# 
+# You will find automatically the last version and will update 
+# eggs from himself
+#
+# sudo npm config set unsafe-perm true
+#
+# sudo npm i penguins-eggs -g
+#
+
+sudo npm config set unsafe-perm true
+
+sudo npm i penguins-eggs -g
+
+export PS1=$DEFAULT
+#
+# That's all Folks!
+#

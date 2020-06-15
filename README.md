@@ -20,7 +20,6 @@ penguins-eggs
 * [Install penguins-eggs](#install-penguins-eggs)
 * [Usage](#usage)
 * [Commands](#commands)
-* [ISO images](#iso-images)
 * [That's all Folks!](#thats-all-folks)
 <!-- tocstop -->
 
@@ -97,7 +96,7 @@ $ npm install -g penguins-eggs
 $ eggs COMMAND
 running command...
 $ eggs (-v|--version|version)
-penguins-eggs/7.5.112 linux-x64 node-v14.3.0
+penguins-eggs/7.5.112 linux-x64 node-v12.18.0
 $ eggs --help [COMMAND]
 USAGE
   $ eggs COMMAND
@@ -108,7 +107,7 @@ USAGE
 <!-- commands -->
 * [`eggs adjust`](#eggs-adjust)
 * [`eggs calamares`](#eggs-calamares)
-* [`eggs clean [FILE]`](#eggs-clean-file)
+* [`eggs clean`](#eggs-clean)
 * [`eggs help [COMMAND]`](#eggs-help-command)
 * [`eggs howto:configuration`](#eggs-howtoconfiguration)
 * [`eggs howto:grub`](#eggs-howtogrub)
@@ -160,18 +159,17 @@ EXAMPLES
 
 _See code: [src/commands/calamares.ts](https://github.com/pieroproietti/penguins-eggs/blob/v7.5.112/src/commands/calamares.ts)_
 
-## `eggs clean [FILE]`
+## `eggs clean`
 
-describe the command here
+Clean system log, apt, etc
 
 ```
 USAGE
-  $ eggs clean [FILE]
+  $ eggs clean
 
 OPTIONS
-  -f, --force
-  -h, --help       show CLI help
-  -n, --name=name  name to print
+  -h, --help     show CLI help
+  -v, --verbose  verbose
 ```
 
 _See code: [src/commands/clean.ts](https://github.com/pieroproietti/penguins-eggs/blob/v7.5.112/src/commands/clean.ts)_
@@ -274,9 +272,6 @@ OPTIONS
   -u, --umount   umount
   -v, --verbose  verbose
 
-ALIASES
-  $ eggs clean
-
 EXAMPLE
   $ eggs kill
   kill the eggs/free the nest
@@ -316,14 +311,14 @@ USAGE
   $ eggs produce
 
 OPTIONS
-  -a, --assistant          assistant
+  -a, --assistant          install assistant
   -b, --basename=basename  basename egg
   -c, --compress           max compression
-  -d, --dry                perform a trial run, no mksquashfs, no mksiso
-  -f, --fast               compression fast
-  -h, --info               show CLI help
+  -d, --dry                perform a dry run, no iso build but only scripts generated
+  -f, --fast               fast compression
+  -h, --help               show CLI help
   -v, --verbose            verbose
-  --branding=branding      branding for calamares
+  --branding=branding      brand for calamares default eggs
 
 ALIASES
   $ eggs spawn
