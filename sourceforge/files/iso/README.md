@@ -49,33 +49,6 @@ I work mostly on Debian stable, so here you can find my personal versions and ot
 ## Ubuntu 20.04 focal
 * **ufo-mini** - Ubuntu focal minimal installation, remastered with eggs, without any modifications except for develop tools.
 
-
-
-# Collaboration
-
-A suitable way to start to collaborate in penguin's eggs development can be to install one of them (I suggest debu) or install nodejs, git, build-essential in in your personal system, and start to play with penguins-eggs source.
-
-It is quite simple! Just download penguins-eggs the sources with the command:
-
-```git clone https://github.com/pieroproietti/penguins-eggs```
-
-
-Install in it the necessary npm packages:
-
-```cd penguins-egg```
-
-```npm i```
-
-And now, from the same directory, you can use eggs from sources:
-
-```~/penguins-eggs$ .\eggs info```
-
-```~/penguins-eggs$ sudo .\eggs produce -fv```
-
-You can also use choose the option -d (--dry) and play later with the scripts in /home/eggs/ovarium. Can be exciting! ;-)
-
-Don't esitate to ask me for suggestions and help.
-
 # That's all Folks!
 No need other configurations, penguins-eggs are battery included or better, as in the real, live is inside! :-D
 
