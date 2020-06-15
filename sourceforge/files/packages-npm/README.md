@@ -12,17 +12,20 @@ penguins-eggs
 [![gitter](https://img.shields.io/badge/chat-gitter-blue)](https://gitter.im/penguins-eggs-1/community?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
 [![License](https://img.shields.io/badge/license-MIT/GPL2-blue)](https://github.com/pieroproietti/penguins-eggs/blob/master/LICENSE)
 
-# Terminal lessons
-Here you will find same terminal lesson in gif format. Download it and see the lesson.
 
-## help
-How to get help from eggs.
+# Penguin's eggs npm package
 
-## prerequisites
-How install the prerequisites.
+Usually the last version is the right one.
 
-## produce
-How to produce an iso of your system.
+To install the package, with nodejs installed, just open a terminal window and:
+
+```sudo npm install penguins-egg@latest -g```
+
+# update eggs (npm package)
+
+Just open a terminal window and digit:
+```sudo npm eggs update```
+
 
 # That's all Folks!
 No need other configurations, penguins-eggs are battery included or better, as in the real, live is inside! :-D
@@ -42,6 +45,3 @@ I mostly use Facebook.
 
 ## Copyright and licenses
 Copyright (c) 2017, 2020 [Piero Proietti](https://github.com/pieroproietti), dual licensed under the MIT or GPL Version 2 licenses.
-
-
-

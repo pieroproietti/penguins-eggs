@@ -12,17 +12,9 @@ penguins-eggs
 [![gitter](https://img.shields.io/badge/chat-gitter-blue)](https://gitter.im/penguins-eggs-1/community?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
 [![License](https://img.shields.io/badge/license-MIT/GPL2-blue)](https://github.com/pieroproietti/penguins-eggs/blob/master/LICENSE)
 
-# Terminal lessons
-Here you will find same terminal lesson in gif format. Download it and see the lesson.
+# Releases
 
-## help
-How to get help from eggs.
-
-## prerequisites
-How install the prerequisites.
-
-## produce
-How to produce an iso of your system.
+Complete sources releases from github
 
 # That's all Folks!
 No need other configurations, penguins-eggs are battery included or better, as in the real, live is inside! :-D
@@ -42,6 +34,4 @@ I mostly use Facebook.
 
 ## Copyright and licenses
 Copyright (c) 2017, 2020 [Piero Proietti](https://github.com/pieroproietti), dual licensed under the MIT or GPL Version 2 licenses.
-
-
 
