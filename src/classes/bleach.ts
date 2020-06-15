@@ -13,17 +13,17 @@ const exec = require('../lib/utils').exec
  * Bleach:
  */
 export default class Ovary {
-   /**
-    * 
-    * @param verbose 
+  /**
+    *
+    * @param verbose
     */
   static async clean(verbose = false) {
-   await this.cleanJournal(verbose)
-   await this.cleanApt(verbose)
+    await this.cleanJournal(verbose)
+    await this.cleanApt(verbose)
   }
 
   /**
-   * 
+   *
    * @param verbose    */
   static async cleanJournal(verbose = false) {
     if (verbose) {
@@ -33,13 +33,11 @@ export default class Ovary {
     await exec('journalctl --vacuum-time=1s')
   }
 
-  static async cleanApt(verbose = false){
-   if (verbose) {
+  static async cleanApt(verbose = false) {
+    if (verbose) {
       console.log('cleang apt')
     }
     await exec('apt clean')
     await exec('apt autoclean')
-
-
   }
 }
