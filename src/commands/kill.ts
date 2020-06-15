@@ -23,7 +23,7 @@ export default class Kill extends Command {
   work_dir = {} as IWorkDir
 
   static description = 'kill the eggs/free the nest'
-  static aliases = ['clean']
+  // static aliases = ['clean']
 
   static flags = {
     help: flags.help({ char: 'h' }),

@@ -1,3 +1,4 @@
+/* eslint-disable valid-jsdoc */
 /* eslint-disable no-console */
 /**
  * penguins-eggs: ovary.ts VERSIONE DEBIAN-LIVE
@@ -505,9 +506,6 @@ export default class Ovary {
     await exec(`chroot ${this.work_dir.merged} systemctl disable wpa_supplicant@.service`)
     await exec(`chroot ${this.work_dir.merged} systemctl disable wpa_supplicant-wired@.service`)
 
-    // Azzerro il journal del padre
-    await exec('journalctl --rotate')
-    await exec('journalctl --vacuum-time=1s')
 
     // Probabilmente non necessario
     // shx.touch(`${this.work_dir.merged}/etc/resolv.conf`)
@@ -1356,10 +1354,10 @@ timeout 200\n`
        * Sarebbero da sostituire i flag brevi con quelli estesi, rimangono:
        *   -l
        *   -b
-       *   -c 
-       * 
+       *   -c
+       *
        * Il seguente è un esempio corrente funzionante:
-       * 
+       *
        * xorriso  -as mkisofs
        *                              volid incubator-x64_2020-06-05_100.iso
        *                              -joliet-long 

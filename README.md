@@ -108,6 +108,7 @@ USAGE
 <!-- commands -->
 * [`eggs adjust`](#eggs-adjust)
 * [`eggs calamares`](#eggs-calamares)
+* [`eggs clean [FILE]`](#eggs-clean-file)
 * [`eggs help [COMMAND]`](#eggs-help-command)
 * [`eggs howto:configuration`](#eggs-howtoconfiguration)
 * [`eggs howto:grub`](#eggs-howtogrub)
@@ -158,6 +159,22 @@ EXAMPLES
 ```
 
 _See code: [src/commands/calamares.ts](https://github.com/pieroproietti/penguins-eggs/blob/v7.5.112/src/commands/calamares.ts)_
+
+## `eggs clean [FILE]`
+
+describe the command here
+
+```
+USAGE
+  $ eggs clean [FILE]
+
+OPTIONS
+  -f, --force
+  -h, --help       show CLI help
+  -n, --name=name  name to print
+```
+
+_See code: [src/commands/clean.ts](https://github.com/pieroproietti/penguins-eggs/blob/v7.5.112/src/commands/clean.ts)_
 
 ## `eggs help [COMMAND]`
 

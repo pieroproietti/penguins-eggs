@@ -1,26 +1,28 @@
+/* eslint-disable unicorn/no-process-exit */
+/* eslint-disable no-process-exit */
+/* eslint-disable no-console */
 /**
  * penguins-eggs-v7 based on Debian live
  * author: Piero Proietti
  * email: piero.proietti@gmail.com
  * license: MIT
  */
-import { Command, flags } from '@oclif/command'
+import {Command, flags} from '@oclif/command'
 import Utils from '../classes/utils'
 import Ovary from '../classes/ovary'
 import Pacman from '../classes/pacman'
-import os = require('os')
 import chalk = require('chalk')
 
 export default class Produce extends Command {
   static flags = {
-    assistant: flags.boolean({ char: 'a', description: 'assistant' }),
-    basename: flags.string({ char: 'b', description: 'basename egg' }),
-    branding: flags.string({description: 'branding for calamares' }),
-    compress: flags.boolean({ char: 'c', description: 'max compression' }),
-    fast: flags.boolean({ char: 'f', description: 'compression fast' }),
-    dry: flags.boolean({ char: 'd', description: 'perform a trial run, no mksquashfs, no mksiso' }),
-    info: flags.help({ char: 'h' }),
-    verbose: flags.boolean({ char: 'v', description: 'verbose' }),
+    assistant: flags.boolean({char: 'a', description: 'install assistant'}),
+    basename: flags.string({char: 'b', description: 'basename egg'}),
+    branding: flags.string({description: 'brand for calamares default eggs'}),
+    compress: flags.boolean({char: 'c', description: 'max compression'}),
+    fast: flags.boolean({char: 'f', description: 'fast compression'}),
+    dry: flags.boolean({char: 'd', description: 'perform a dry run, no iso build but only scripts generated'}),
+    help: flags.help({char: 'h'}),
+    verbose: flags.boolean({char: 'v', description: 'verbose'}),
   }
 
   static description = 'livecd creation. (the penguin produce an egg)'
@@ -36,9 +38,8 @@ the penguin produce an egg called egg-i386-2020-04-13_1815.iso`]
     Utils.titles('produce')
 
 
-    const { flags } = this.parse(Produce)
+    const {flags} = this.parse(Produce)
     if (Utils.isRoot()) {
-
       // Nome della remix
       let basename = '' // se vuoto viene definito da loadsetting
       if (flags.basename !== undefined) {
