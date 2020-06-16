@@ -8,16 +8,15 @@
  * 
  * @returns {Promise<{code: number, data: string | undefined, error: Object}>}
  */
-export function exec(command: string, { echo = false,  ignore = false, capture = false } = {}) {
+export function exec(command: string, { echo = false, ignore = false, capture = false } = {}) {
   if (echo) {
     console.log(command)
   }
 
   const spawn = require('child_process').spawn;
-  //  const childProcess = spawn('bash', ['-c', command], { stdio: capture ? 'pipe' : 'inherit' });
-  //const childProcess = spawn('bash', ['-c', command], { stdio: capture ? 'pipe' : ignore ? 'ignore' : 'inherit' });
+  // const childProcess = spawn('bash', ['-c', command], { stdio: capture ? 'pipe' : 'inherit' });
+  // const childProcess = spawn('bash', ['-c', command], { stdio: capture ? 'pipe' : ignore ? 'ignore' : 'inherit' });
   const childProcess = spawn('bash', ['-c', command], { stdio: ignore ? 'ignore' : capture ? 'pipe' : 'inherit' });
-  
 
   return new Promise((resolve, reject) => {
     let stdout = ''

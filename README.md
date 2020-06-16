@@ -34,7 +34,8 @@ key to boot your system. You can also boot your egg - via remote boot - on your
 LAN.
 
 All it is written in pure typescript, so ideally can be used with differents Linux
-distros. At the moment it is tested with Debian 10 Buster, and LMDE4. 
+distros. Yes, there are big differences about package manager used, but not so 
+much in the way to work of bash and various programs used to build the iso.
 
 penguins-eggs, at the moment 2020 may 12 is a working tool, yes can have again
 same troubles for people not in confidence with Linux system administration, but

@@ -6,6 +6,8 @@
   "bin": {
     "eggs": "./bin/run"
   },
+  "homepage": "https://penguin-s-eggs.gitbook.io/project/",
+  "repository": "https://github.com/pieroproietti/penguins-eggs",
   "bugs": "https://github.com/pieroproietti/penguins-eggs/issues",
   "dependencies": {
     "@oclif/command": "^1.6.1",
@@ -69,7 +71,6 @@
     "/scripts",
     "/templates"
   ],
-  "homepage": "https://github.com/pieroproietti/penguins-eggs",
   "keywords": [
     "oclif"
   ],
@@ -82,7 +83,6 @@
       "@oclif/plugin-help"
     ]
   },
-  "repository": "pieroproietti/penguins-eggs",
   "scripts": {
     "docs": "rm docs -rf && npx typedoc src --out docs",
     "build": "tsc -p .",
