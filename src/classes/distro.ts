@@ -117,6 +117,12 @@ class Distro implements IDistro {
       this.distroLike = 'Ubuntu'
       this.versionLike = 'bionic'
 
+      // LinuxMint 20 ulyana
+    } else if (this.versionId === 'ulyana') {
+      this.distroId = 'Linux Mint'
+      this.distroLike = 'Ubuntu'
+      this.versionLike = 'focal'
+      
       /** 
        * LINUX MINT DEBIAN EDITION (LMDE)
        */
