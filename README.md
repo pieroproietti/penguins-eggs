@@ -1,7 +1,7 @@
 penguins-eggs
 =============
 
-## Penguin&#39;s eggs are generated and new birds are ready to fly...
+### Penguin&#39;s eggs are generated and new birds are ready to fly...
 [![site](https://img.shields.io/badge/site-penguin's%20eggs-blue)](http://penguins-eggs.net)
 [![book](https://img.shields.io/badge/book-penguin's%20eggs-blue)](https://book.penguins-eggs.net)
 [![sources](https://img.shields.io/badge/sources-github.com-blue)](https://github.com/pieroproietti/penguins-eggs)
