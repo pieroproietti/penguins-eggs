@@ -1,0 +1,20 @@
+# Nodejs on i386 
+
+The last official version for this architecture is Node.js v8.x, we can install it.
+
+##### Ubuntu
+```curl -sL https://deb.nodesource.com/setup_8.x | sudo -E bash -```
+```sudo apt-get install -y nodejs```
+
+##### Debian
+```curl -sL https://deb.nodesource.com/setup_8.x | bash -```
+```apt-get install -y nodejs```
+
+and finally, we check the nodejs version:
+
+```apt-cache policy nodejs ```
+
+```apt install nodejs=8.17.0-1nodesource1```
+
+to install the nodejs version 8.
+

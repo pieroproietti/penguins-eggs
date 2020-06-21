@@ -64,27 +64,9 @@ Simply copy and past the following lines:
 
 ### Note on i386 architecture
 
-*Same time ago, eggs was compatible with Nodejs v8.x, actually due the use of current LTS version of nodejs, we are not. If there is a real interest in this architecture, will be possible to change the line.*
+*Same time ago, eggs was compatible with Nodejs v8.x, actually due the use of current LTS version of nodejs, we are not. If there is a real interest in this architecture, you can read [i386-nodejs]() the will be possible to change the line.*
 
-At the moment eggs is **NOT** compatible with i386.
-
-The last official version for this architecture is Node.js v8.x, we can install it.
-
-##### Ubuntu
-```curl -sL https://deb.nodesource.com/setup_8.x | sudo -E bash -```
-```sudo apt-get install -y nodejs```
-
-##### Debian
-```curl -sL https://deb.nodesource.com/setup_8.x | bash -```
-```apt-get install -y nodejs```
-
-and finally, we check the nodejs version:
-
-```apt-cache policy nodejs ```
-
-```apt install nodejs=8.17.0-1nodesource1```
-
-to install the nodejs version 8.
+At the moment eggs is **NOT compatible** with i386.
 
 # Usage
 <!-- usage -->
