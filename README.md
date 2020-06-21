@@ -4,7 +4,7 @@ penguins-eggs
 ### Penguin&#39;s eggs are generated and new birds are ready to fly...
 [![site](https://img.shields.io/badge/site-penguin's%20eggs-blue)](https://penguins-eggs.net)
 [![sources](https://img.shields.io/badge/sources-github.com-blue)](https://github.com/pieroproietti/penguins-eggs)
-[![sources-typedoc](https://img.shields.io/badge/sources-typedoc-blue)](https://penguins-eggs.net/sources-typedoc/index.html)
+[![typedoc-documentation](https://img.shields.io/badge/typedoc-documentation-blue)](https://penguins-eggs.net/sources-typedoc/index.html)
 [![book](https://img.shields.io/badge/book-penguin's%20eggs-blue)](http://penguins-eggs.net/book/)
 [![npm version](https://img.shields.io/npm/v/penguins-eggs.svg)](https://npmjs.org/package/penguins-eggs)
 [![deb](https://img.shields.io/badge/deb-packages-blue)](https://sourceforge.net/projects/penguins-eggs/files/packages-deb)
