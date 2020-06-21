@@ -64,7 +64,7 @@ Simply copy and past the following lines:
 
 ### Note on i386 architecture
 
-*Same time ago, eggs was compatible with Nodejs v8.x, actually due the use of current LTS version of nodejs, we are not. If there is a real interest in this architecture, you can read [i386-nodejs]() the will be possible to change the line.*
+*Same time ago, eggs was compatible with Nodejs v8.x, actually due the use of current LTS version of nodejs, we are not. If there is a real interest in this architecture, you can read [i386-nodejs](https://github.com/pieroproietti/penguins-eggs/blob/master/documents/i386-nodejs).*
 
 At the moment eggs is **NOT compatible** with i386.
 
