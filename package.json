@@ -6,7 +6,7 @@
   "bin": {
     "eggs": "./bin/run"
   },
-  "homepage": "https://penguin-s-eggs.gitbook.io/project/",
+  "homepage": "https://penguins-eggs.net/",
   "repository": "https://github.com/pieroproietti/penguins-eggs",
   "bugs": "https://github.com/pieroproietti/penguins-eggs/issues",
   "dependencies": {

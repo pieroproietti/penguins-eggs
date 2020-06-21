@@ -2,15 +2,13 @@ penguins-eggs
 =============
 
 ### Penguin&#39;s eggs are generated and new birds are ready to fly...
-[![site](https://img.shields.io/badge/site-penguin's%20eggs-blue)](http://penguins-eggs.net)
-[![book](https://img.shields.io/badge/book-penguin's%20eggs-blue)](https://book.penguins-eggs.net)
+[![site](https://img.shields.io/badge/site-penguin's%20eggs-blue)](https://penguins-eggs.net)
 [![sources](https://img.shields.io/badge/sources-github.com-blue)](https://github.com/pieroproietti/penguins-eggs)
-[![typedoc](https://img.shields.io/badge/sources-typedoc-blue)](https://penguins-eggs.sourceforge.io/index.html)
+[![sources-typedoc](https://img.shields.io/badge/sources-typedoc-blue)](https://penguins-eggs.net/sources-typedoc/index.html)
+[![book](https://img.shields.io/badge/book-penguin's%20eggs-blue)](http://penguins-eggs.net/book/)
 [![npm version](https://img.shields.io/npm/v/penguins-eggs.svg)](https://npmjs.org/package/penguins-eggs)
 [![deb](https://img.shields.io/badge/deb-packages-blue)](https://sourceforge.net/projects/penguins-eggs/files/packages-deb)
 [![iso](https://img.shields.io/badge/iso-images-blue)](https://sourceforge.net/projects/penguins-eggs/files/iso)
-[![facebook](https://img.shields.io/badge/page-facebook-blue)](https://www.facebook.com/penguinseggs)
-[![gitter](https://img.shields.io/badge/chat-gitter-blue)](https://gitter.im/penguins-eggs-1/community?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
 [![License](https://img.shields.io/badge/license-MIT/GPL2-blue)](https://github.com/pieroproietti/penguins-eggs/blob/master/LICENSE)
 
 # Index
@@ -29,28 +27,20 @@ penguins-eggs is a console utility, in active development, who let you to
 remaster your system and redistribuite it as iso images or from the lan via PXE
 remote boot.
 
-The scope of this project is to implement the process of remastering your
-version of Linux, generate it as ISO image to burn on a CD/DVD or copy to a usb
-key to boot your system. You can also boot your egg - via remote boot - on your
-LAN.
+The scope of this project is to implement the process of remastering your version of Linux, generate it as ISO image to burn on a CD/DVD or copy to a usb
+key to boot your system. You can also boot your egg - via remote boot - on your LAN.
 
-All it is written in pure typescript, so ideally can be used with differents Linux
-distros. Yes, there are big differences about package manager used, but not so 
-much in the way to work of bash and various programs used to build the iso.
+All it is written in pure typescript, so ideally can be used with differents Linux distros. Yes, there are big differences about package manager used, but not so much in the way to work of bash and various programs used to build the iso.
 
-penguins-eggs, at the moment 2020 may 12 is a working tool, yes can have again
-same troubles for people not in confidence with Linux system administration, but
-can be already extremely usefull, You can easily create your organization/school 
-version of Linux and deploy it on your LAN, give it to your friends as usb key 
+penguins-eggs, at the moment 2020 june 21 is a working tool, yes can have again same troubles for people not in confidence with Linux system administration, but
+can be already extremely usefull, You can easily create your organization/school version of Linux and deploy it on your LAN, give it to your friends as usb key 
 or publish eggs in the internet!
 
-You can try now penguins-eggs, it is a console utility - no GUI - but don't be
-scared, penguins-eggs is a console command - really very simple - if you
+You can try now penguins-eggs, it is a console utility - no GUI - but don't be scared, penguins-eggs is a console command - really very simple - if you
 are able to open a terminal, you can use it.
 
 # That distros you can use
-Eggs is born using Debian 9 and Debian 10, I test it on Debian Buster and Linux Mind Debian
-Edition (LMDE4). You can try it on others distros and give a feedback.
+Eggs is born using Debian 9 and Debian 10, I test it on Debian Buster and Linux Mind Debian Edition (LMDE4). You can try it on others distros and give a feedback.
 
 Same iso images complete with eggs are loaded in the [sourceforge](https://sourceforge.net/projects/penguins-eggs/files/packages-deb/) page of the project. 
 
@@ -65,7 +55,8 @@ the most recent package, is usually the right choice.
 
 ## NPM package (require nodejs)
 
-If you have already nodejs installed, you can install penguins-eggs with the utility npm (node package manager). 
+If you have already nodejs installed, you can install penguins-eggs with the utility npm (node package manager).
+
 Simply copy and past the following lines:
 
 ```sudo npm config set unsafe-perm true```
@@ -73,6 +64,9 @@ Simply copy and past the following lines:
 ```sudo npm i penguins-eggs -g```
 
 ### Note on i386 architecture
+
+Note: same time ago, eggs was compatible with Nodejs v8.x, actually due the use of current LTS version of nodejs, we are not. If there is a real interest in this architecture, will be possible to change the line. At the moment eggs is NOT compatible with i386.
+
 The last official version for this architecture is Node.js v8.x, we can install it.
 
 ##### Ubuntu
@@ -392,17 +386,13 @@ _See code: [src/commands/update.ts](https://github.com/pieroproietti/penguins-eg
 No need other configurations, penguins-eggs are battery included or better, as in the real, live is inside! :-D
 
 ## More informations
-For other informations, there is same documentation i the document folder of this repository,
-look at facebook group:  [Penguin's Eggs](https://www.facebook.com/groups/128861437762355/),
-contact me, or open an [issue](https://github.com/pieroproietti/penguins-eggs/issues) on github.
 
-I mostly use Facebook.
+You can find more informations at [Penguin's eggs site](https://penguins-eggs.net).
 
-* facebook personal: [Piero Proietti](https://www.facebook.com/thewind61)
-* facebook group:  [Penguin's Eggs](https://www.facebook.com/groups/128861437762355/)
-* facebook page:  [Penguin's Eggs](https://www.facebook.com/penguinseggs)
+## Contacts
+Feel free to contact [me](https://gitter.im/penguins-eggs-1/community?source=orgpage) or open an issue on [github](https://github.com/pieroproietti/penguins-eggs/issues).
+
 * mail: piero.proietti@gmail.com
 
-
 ## Copyright and licenses
-Copyright (c) 2017, 2020 [Piero Proietti](https://github.com/pieroproietti), dual licensed under the MIT or GPL Version 2 licenses.
+Copyright (c) 2017, 2020 [Piero Proietti](https://penguins-eggs), dual licensed under the MIT or GPL Version 2 licenses.
