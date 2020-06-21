@@ -27,7 +27,9 @@ I used very few new caracteristics from the current version, mostly are about fs
 * isSymbolicLink() from version 10
 
 
-You can try to wrap when i something compatible with v. 8x. Sorry at the moment I don't have time, but if You are interested I can help You.
+You can try to wrap when in something compatible with v. 8x. 
+
+Sorry at the moment I don't have time, but if You are interested I can help You.
 
 ## Contacts
 Feel free to contact [me](https://gitter.im/penguins-eggs-1/community?source=orgpage) or open an issue on [github](https://github.com/pieroproietti/penguins-eggs/issues).
