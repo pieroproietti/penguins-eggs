@@ -37,4 +37,4 @@ Feel free to contact [me](https://gitter.im/penguins-eggs-1/community?source=org
 * mail: piero.proietti@gmail.com
 
 ## Copyright and licenses
-Copyright (c) 2017, 2020 [Piero Proietti](https://penguins-eggs.net/about-me), dual licensed under the MIT or GPL Version 2 licenses.
+Copyright (c) 2017, 2020 [Piero Proietti](https://penguins-eggs.net/about-me.html), dual licensed under the MIT or GPL Version 2 licenses.
