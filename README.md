@@ -22,8 +22,7 @@ penguins-eggs
 <!-- tocstop -->
 
 # Presentation
-penguins-eggs is a console utility, in active development, who let you to
-remaster your system and redistribuite it as iso images or from the lan via PXE
+penguins-eggs is a console utility, in active development, who let you to remaster your system and redistribuite it as iso images or from the lan via PXE
 remote boot.
 
 The scope of this project is to implement the process of remastering your version of Linux, generate it as ISO image to burn on a CD/DVD or copy to a usb
@@ -370,7 +369,7 @@ No need other configurations, penguins-eggs are battery included or better, as i
 
 ## More informations
 
-You can find more informations at [Penguin's eggs site](https://penguins-eggs.net).
+You can find more informations at [Penguin's eggs blog](https://penguins-eggs.net).
 
 ## Contacts
 Feel free to contact [me](https://gitter.im/penguins-eggs-1/community?source=orgpage) or open an issue on [github](https://github.com/pieroproietti/penguins-eggs/issues).
