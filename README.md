@@ -5,11 +5,10 @@ penguins-eggs
 [![site](https://img.shields.io/badge/site-penguin's%20eggs-blue)](https://penguins-eggs.net)
 [![sources](https://img.shields.io/badge/sources-github.com-blue)](https://github.com/pieroproietti/penguins-eggs)
 [![typedoc-documentation](https://img.shields.io/badge/typedoc-documentation-blue)](https://penguins-eggs.net/sources-typedoc/index.html)
-[![book](https://img.shields.io/badge/book-penguin's%20eggs-blue)](http://penguins-eggs.net/book/)
+[![guide](https://img.shields.io/badge/guide-penguin's%20eggs-blue)](http://penguins-eggs.net/book/)
 [![npm version](https://img.shields.io/npm/v/penguins-eggs.svg)](https://npmjs.org/package/penguins-eggs)
 [![deb](https://img.shields.io/badge/deb-packages-blue)](https://sourceforge.net/projects/penguins-eggs/files/packages-deb)
 [![iso](https://img.shields.io/badge/iso-images-blue)](https://sourceforge.net/projects/penguins-eggs/files/iso)
-[![License](https://img.shields.io/badge/license-MIT/GPL2-blue)](https://github.com/pieroproietti/penguins-eggs/blob/master/LICENSE)
 
 # Index
 <!-- toc -->
