@@ -6,7 +6,7 @@
 Penguin's eggs
 
 # Homepage
-https://penguin-s-eggs.gitbook.io/project/
+https://penguins-eggs.net
 
 # Video
 www.youtube.com/embed/teG6EKcuPuI?rel=0
@@ -32,13 +32,14 @@ sudo eggs produce -fv
 
 Fast: does not copy the original filesystem but the livefs is obtained instantly, through binding and overlay. In addition, the --fast option creates the ISO using lz4, reducing compression time during the development up to 10 times!
 
-Versatile: if you want more control on the production of your iso, try the flag --dry in produce. immediately will generate filesystem directory, iso structure complete and the related scripts to bind/ubind filesystem, squash it and create or re-create yours iso as much times as you need.
+Versatile: if you want more control on the production of your iso, try the flag --dry in produce. will generate filesystem directory, iso structure complete and the related scripts to bind/ubind filesystem, squash it and create or re-create yours iso as much times as you need.
 
 Safe: only use the original distro's packages, without any modification in your repository lists.
 
-Supported: I'm trying to give you as documentation and support is possible: sources, automatic documentation sources (always updated), gitbook (only italian), facebook page and group, gitter. 
+Book: use guide in four different languages: english,  español, italiano, português
 
-Community: here we are! At the moment the biggest problem of this software is the lacks of a community. I hope with the time to grow up it, you can help following the project, spreading it, making rewiews and so on. "No man is an island entire of itself" (John Donne)
+Supported: I'm trying to give you as documentation and support is possible: sources, automatic documentation sources (always updated), user guide, facebook page and group, gitter. 
+
 
 Community: currently the biggest problem with this software is the lack of a community. I hope that over time it will grow. You can help by following the project and helping to spread it. "No man is an island entire of itself..." John Donne 
 
