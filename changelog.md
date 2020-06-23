@@ -29,13 +29,17 @@ Detailed instrunction for usage are published on the gitboot [penguin's eggs](ht
 Versions are listed on reverse order, the first is the last one.
 
 ### eggs-7.5.122-1
-Sometime to go ahead is better to go back a little.
+Sometimes, to move forward, you need to step back first.
 
-Well, to not lost the opportunity to have debian packages for both i386 and amd64 version, I choose to go back to the old Node8, the last versione who was released from nodesourfe for both the architecture.
+Well, in order not to miss the opportunity to have debian packages for both the i386 and amd64 architecture, I chose to go back to the old Node8, the latest version released by nodesource for both architectures.
 
-The main advanced in this version is of course the presence of the i386 version, who can be a start for all the peoples with old hardware running and want to experiments with them. 
+The main change in this version is, of course, the presence of the i386 version, which can be a good opportunity for all people with old hardware combined with young will to experiment with them.
 
-But not only, now the varius READMEs, links etc point at the new site https://penguins-eggs.net there you can find more informations.
+But not only!
+
+Now the various READMEs, links, etc point to the new site https://penguins-eggs.net. 
+
+Come in here for more informations.
 
 
 ### eggs-7.5.110-1
