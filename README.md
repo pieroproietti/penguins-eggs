@@ -11,10 +11,6 @@ penguins-eggs
 [![iso](https://img.shields.io/badge/iso-images-orange)](https://sourceforge.net/projects/penguins-eggs/files/iso)
 
 
-# i386 package node8 
-* edit ./node_modules/@oclif/dev-cli/lib/tarballs/config.js
-* add 'linux-x86' in TARGET line 53 on config.js
-
 # Index
 <!-- toc -->
 * [i386 package node8](#i386-package-node8)
