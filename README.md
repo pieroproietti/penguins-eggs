@@ -10,11 +10,14 @@ penguins-eggs
 [![deb](https://img.shields.io/badge/deb-packages-orange)](https://sourceforge.net/projects/penguins-eggs/files/packages-deb)
 [![iso](https://img.shields.io/badge/iso-images-orange)](https://sourceforge.net/projects/penguins-eggs/files/iso)
 
-# node_modules/@oclif/dev-cli/lib/tarballs/config.js
-# aggiungere 'linux-x86' in TARGET line 53
+
+# i386 package node8 
+* edit ./node_modules/@oclif/dev-cli/lib/tarballs/config.js
+* add 'linux-x86' in TARGET line 53 on config.js
 
 # Index
 <!-- toc -->
+* [i386 package node8](#i386-package-node8)
 * [Index](#index)
 * [Presentation](#presentation)
 * [That distros you can use](#that-distros-you-can-use)
@@ -77,7 +80,7 @@ $ npm install -g penguins-eggs
 $ eggs COMMAND
 running command...
 $ eggs (-v|--version|version)
-penguins-eggs/7.5.115 linux-x64 node-v8.17.0
+penguins-eggs/7.5.115 linux-ia32 node-v8.17.0
 $ eggs --help [COMMAND]
 USAGE
   $ eggs COMMAND
