@@ -1,3 +1,4 @@
+/* eslint-disable complexity */
 /* eslint-disable valid-jsdoc */
 /* eslint-disable quotes */
 /* eslint-disable no-console */
@@ -18,16 +19,15 @@ import inquirer = require('inquirer')
 import drivelist = require('drivelist')
 import Utils from './utils'
 import Pacman from './pacman'
-import { IDevices, IDevice } from '../interfaces'
+import {IDevices, IDevice} from '../interfaces'
 
 const exec = require('../lib/utils').exec
-const { checkSync } = require('diskusage')
+const {checkSync} = require('diskusage')
 
 /**
  * hatch, installazione
  */
 export default class Hatching {
-
   efi = false
 
   devices = {} as IDevices
@@ -49,7 +49,7 @@ export default class Hatching {
    * question
    */
   async questions(verbose = false, umount = false) {
-    let retval = false
+    const retval = false
     const echo = Utils.setEcho(verbose)
     if (verbose) {
       Utils.warning('hatching: questions')
@@ -72,7 +72,6 @@ export default class Hatching {
   * install
   */
   async install(verbose = false, umount = false) {
-
     // const echo = Utils.setEcho(verbose)
     if (verbose) {
       Utils.warning('>>>hatching: install')
@@ -101,7 +100,7 @@ export default class Hatching {
         console.log(`- ` + chalk.bgGreen.black(`root password: `) + chalk.bgGreen.whiteBright(users.rootpassword))
         console.log()
 
-        let result = JSON.parse(await Utils.customConfirmAbort())
+        const result = JSON.parse(await Utils.customConfirmAbort())
         if (result.confirm === 'Yes') {
           break
         } else if (result.confirm === 'Abort') {
@@ -125,7 +124,7 @@ export default class Hatching {
         console.log(`- ` + chalk.bgGreen.black(`domain: `) + chalk.bgGreen.whiteBright(host.domain))
         console.log()
 
-        let result = JSON.parse(await Utils.customConfirmAbort())
+        const result = JSON.parse(await Utils.customConfirmAbort())
         if (result.confirm === 'Yes') {
           break
         } else if (result.confirm === 'Abort') {
@@ -151,7 +150,7 @@ export default class Hatching {
         console.log(`- ` + chalk.bgGreen.black(`net mask: `) + chalk.bgGreen.whiteBright(net.netMask))
         console.log(`- ` + chalk.bgGreen.black(`net gateway: `) + chalk.bgGreen.whiteBright(net.netGateway))
         console.log()
-        let result = JSON.parse(await Utils.customConfirmAbort())
+        const result = JSON.parse(await Utils.customConfirmAbort())
         if (result.confirm === 'Yes') {
           break
         } else if (result.confirm === 'Abort') {
@@ -180,7 +179,7 @@ export default class Hatching {
         console.log(`- ` + chalk.bgGreen.black(`partition type: `) + chalk.bgGreen.whiteBright(disk.partionType))
         console.log(`- ` + chalk.bgGreen.black(`fs type: `) + chalk.bgGreen.whiteBright(disk.fsType))
         console.log()
-        let result = JSON.parse(await Utils.customConfirmAbort())
+        const result = JSON.parse(await Utils.customConfirmAbort())
         if (result.confirm === 'Yes') {
           break
         } else if (result.confirm === 'Abort') {
@@ -218,7 +217,7 @@ export default class Hatching {
       console.log()
       console.log(chalk.bgRed.white(`This is the last opportunity to abort, the follow operation will destroy the data on the disk`))
       console.log()
-      let result = JSON.parse(await Utils.customConfirmAbort())
+      const result = JSON.parse(await Utils.customConfirmAbort())
       if (result.confirm === 'Yes') {
         break
       } else if (result.confirm === 'Abort') {
@@ -239,8 +238,12 @@ export default class Hatching {
     console.log(`diskSize: ${diskSize}`)
 
     if (umount) {
-      await this.umountVFS(verbose)
-      await this.umount4target(verbose)
+      try {
+        await this.umountVFS(verbose)
+        await this.umount4target(verbose)
+      } catch (error) {
+        console.log(error)
+      }
     }
 
     const isDiskPrepared: boolean = await this.diskPartition(disk.installationDevice, disk.partionType, verbose)
@@ -277,10 +280,10 @@ export default class Hatching {
     }
 
     if (fs.existsSync('/etc/localtime')) {
-      let cmd = `chroot ${this.target} unlink /etc/localtime`
+      const cmd = `chroot ${this.target} unlink /etc/localtime`
       await exec(cmd, echo)
     }
-    let cmd = `chroot ${this.target} ln -sf /usr/share/zoneinfo/Europe/Rome /etc/localtime`
+    const cmd = `chroot ${this.target} ln -sf /usr/share/zoneinfo/Europe/Rome /etc/localtime`
     await exec(cmd, echo)
   }
 
@@ -354,7 +357,7 @@ adduser ${username} \
     }
     if (Utils.isLive()) {
       const user: string = Utils.getPrimaryUser()
-      let cmd = `chroot ${this.target} deluser --remove-home ${user}`
+      const cmd = `chroot ${this.target} deluser --remove-home ${user}`
       await exec(cmd, echo)
     }
   }
@@ -750,7 +753,6 @@ adduser ${username} \
       await exec(`tune2fs -c 0 -i 0 ${this.devices.data.name}`, echo)
     }
 
-
     if (this.efi) {
       if (!fs.existsSync(this.target + this.devices.efi.mountPoint)) {
         await exec(`mkdir ${this.target}${this.devices.efi.mountPoint} -p`, echo)
@@ -790,10 +792,10 @@ adduser ${username} \
   }
 
   /**
-   * 
-   * @param device 
-   * @param partitionType 
-   * @param verbose 
+   *
+   * @param device
+   * @param partitionType
+   * @param verbose
    */
   async diskPartition(device: string, partitionType: string, verbose = false): Promise<boolean> {
     let retVal = false
@@ -833,7 +835,6 @@ adduser ${username} \
 
       this.devices.boot.name = `none`
 
-
       this.devices.root.name = `${device}1`
       this.devices.root.fsType = 'ext4'
       this.devices.root.mountPoint = '/'
@@ -848,7 +849,6 @@ adduser ${username} \
     } else if (partitionType === 'lvm2' && this.efi) {
       console.log('to be implemented!')
     } else if (partitionType === 'lvm2' && !this.efi) {
-
       // Preparo tabella partizioni
       await exec(`parted --script ${device} mklabel msdos`)
 
@@ -860,7 +860,7 @@ adduser ${username} \
 
       // Partizione LVM
       const lvmPartname = shx.exec(`fdisk $1 -l | grep 8e | awk '{print $1}' | cut -d "/" -f3`).stdout.trim()
-      const lvmByteSize: number = Number(shx.exec(`cat /proc/partitions | grep ${lvmPartname}| awk '{print $3}' | grep "[0-9]"`).stdout.trim())
+      const lvmByteSize = Number(shx.exec(`cat /proc/partitions | grep ${lvmPartname}| awk '{print $3}' | grep "[0-9]"`).stdout.trim())
       const lvmSize = lvmByteSize / 1024
 
       // La partizione di root viene posta ad 1/4 della partizione LVM.
@@ -886,7 +886,6 @@ adduser ${username} \
       this.devices.root.fsType = 'ext2'
       this.devices.root.mountPoint = '/boot'
 
-
       this.devices.root.name = `/dev/pve/root`
       this.devices.root.fsType = 'ext4'
       this.devices.root.mountPoint = '/'
@@ -903,7 +902,7 @@ adduser ${username} \
 
   /**
    * Rimuove il lvm pve
-   * @param verbose 
+   * @param verbose
    */
   async lvmRemove(verbose = false) {
     const echo = Utils.setEcho(verbose)
@@ -933,7 +932,7 @@ adduser ${username} \
     let response: any
     let retVal = false
 
-    response = shx.exec(`cat /sys/block/${device}/queue/rotational`, { silent: verbose }).stdout.trim()
+    response = shx.exec(`cat /sys/block/${device}/queue/rotational`, {silent: verbose}).stdout.trim()
     if (response === '1') {
       retVal = true
     }
@@ -949,18 +948,20 @@ adduser ${username} \
     if (verbose) {
       Utils.warning('hatching: getDiskSize')
     }
+    let size = 0
     try {
       const info = await checkSync(device)
-      return info.total
-    } catch (err) {
-      Utils.warning(err)
-      return 0
+      size = info.total
+    } catch (error) {
+      Utils.warning(`checkSync: ${error}`)
+      size = 0
     }
+    return size
   }
 
   /**
-   * 
-   * @param verbose 
+   *
+   * @param verbose
    */
   async getOptionsUsers(verbose = false) {
     const echo = Utils.setEcho(verbose)
@@ -1009,10 +1010,9 @@ adduser ${username} \
     })
   }
 
-
   /**
-   * 
-   * @param verbose 
+   *
+   * @param verbose
    */
   async getOptionsHost(verbose = false) {
     const echo = Utils.setEcho(verbose)
@@ -1033,7 +1033,7 @@ adduser ${username} \
           name: 'domain',
           message: 'domain name',
           default: 'lan',
-        }
+        },
 
       ]
       inquirer.prompt(questions).then(function (options) {
@@ -1043,8 +1043,8 @@ adduser ${username} \
   }
 
   /**
-   * 
-   * @param verbose 
+   *
+   * @param verbose
    */
   async getOptionsNet(verbose = false) {
     const echo = Utils.setEcho(verbose)
@@ -1111,10 +1111,10 @@ adduser ${username} \
   }
 
   /**
-   * 
-   * @param driveList 
-   * @param partitionTypes 
-   * @param verbose 
+   *
+   * @param driveList
+   * @param partitionTypes
+   * @param verbose
    */
   async getOptionsDisk(driveList: string[], partitionTypes: string[], verbose = false): Promise<any> {
     const echo = Utils.setEcho(verbose)
@@ -1163,7 +1163,7 @@ adduser ${username} \
     console.log('Enjoy Your new penguin!')
     console.log(`Note: it is recommended to run the command ` + chalk.cyanBright(`sudo update-initramfs -u`) + ` after next reboot.`)
     console.log('Press any key to exit')
-    require('child_process').spawnSync("read _ ", {shell: true, stdio: [0, 1, 2]});
+    require('child_process').spawnSync("read _ ", {shell: true, stdio: [0, 1, 2]})
   }
 }
 
