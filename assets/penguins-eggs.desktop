@@ -3,6 +3,6 @@
 Encoding=UTF-8
 Name=Penguin's eggs book
 Type=Application
-Exec=xdg-open https://penguin-s-eggs.gitbook.io/project
+Exec=xdg-open https://penguins-eggs.net
 Icon=eggs
 Categories=GNOME;GTK;Utility;
