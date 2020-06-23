@@ -17,14 +17,14 @@ export default class n8 {
     static isDirectory(name: string): boolean {
         let path = `/${name}`
         let isDirectory = fs.existsSync(path) && fs.lstatSync(path).isDirectory()
-        console.log(`path: ${path} isDirectory: ${isDirectory}`)
+        // console.log(`path: ${path} isDirectory: ${isDirectory}`)
         return isDirectory
     }
 
     static isFile(name: string): boolean {
         let path = `/${name}`
         let isFile = fs.existsSync(path) && fs.lstatSync(path).isFile()
-        console.log(`path: ${path} isFile: ${isFile}`)
+        // console.log(`path: ${path} isFile: ${isFile}`)
         return isFile
     }
 
@@ -32,7 +32,7 @@ export default class n8 {
     static isSymbolicLink(name: string): boolean {
         let path = `/${name}`
         let isSymbolicLink = fs.existsSync(path) && fs.lstatSync(path).isSymbolicLink()
-        console.log(`path: ${path} isSymbolicLink: ${isSymbolicLink}`)
+        // console.log(`path: ${path} isSymbolicLink: ${isSymbolicLink}`)
         return isSymbolicLink
     }
 
