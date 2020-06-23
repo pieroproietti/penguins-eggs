@@ -240,11 +240,17 @@ export default class Hatching {
     if (umount) {
       try {
         await this.umountVFS(verbose)
-        await this.umount4target(verbose)
       } catch (error) {
-        console.log(error)
+        console.log(`umountVFS: ${error}`)
       }
+      try {
+         await this.umount4target(verbose)
+      } catch (error) {
+        console.log(`umount4target: ${error}`)
+      }
+
     }
+
 
     const isDiskPrepared: boolean = await this.diskPartition(disk.installationDevice, disk.partionType, verbose)
     if (isDiskPrepared) {
