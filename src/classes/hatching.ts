@@ -254,24 +254,115 @@ export default class Hatching {
 
     const isDiskPrepared: boolean = await this.diskPartition(disk.installationDevice, disk.partionType, verbose)
     if (isDiskPrepared) {
-      await this.mkfs(verbose)
-      await this.mount4target(verbose)
-      await this.egg2system(verbose)
-      await this.setTimezone(verbose)
-      await this.fstab(disk.installationDevice, verbose)
-      await this.hostname(host, verbose)
-      await this.resolvConf(net, verbose)
-      await this.interfaces(net, verbose)
-      await this.hosts(host, verbose)
-      await this.mountVFS(verbose)
-      await this.grubInstall(disk, verbose)
-      await this.updateInitramfs(verbose)
-      await this.delLiveUser(verbose)
-      await this.addUser(users.username, users.userpassword, users.fullName, '', '', '', verbose)
-      await this.changePassword('root', users.rootpassword, verbose)
-      await this.autologinConfig(users.username, verbose)
-      await this.umountVFS(verbose)
-      await this.umount4target(verbose)
+      try {
+        await this.mkfs(verbose)
+      } catch (error) {
+        console.log(`mkfs: ${error}`)
+      }
+      
+      try {
+        await this.mount4target(verbose)
+      } catch (error) {
+        console.log(`mount4target: ${error}`)
+      }
+
+
+      try {
+        await this.egg2system(verbose)
+      } catch (error) {
+        console.log(`egg2system: ${error}`)
+      }
+
+      try {
+        await this.setTimezone(verbose)
+      } catch (error) {
+        console.log(`setTimezone: ${error}`)
+      }
+
+      try {
+        await this.fstab(disk.installationDevice, verbose)
+      } catch (error) {
+        console.log(`fstab: ${error}`)
+      }
+
+      try {
+        await this.hostname(host, verbose)
+      } catch (error) {
+        console.log(`hostname: ${error}`)
+      }
+
+      try {
+        await this.resolvConf(net, verbose)
+      } catch (error) {
+        console.log(`resolvConf: ${error}`)
+      }
+
+      try {
+        await this.interfaces(net, verbose)
+      } catch (error) {
+        console.log(`interfaces: ${error}`)
+      }
+
+      try {
+        await this.hosts(host, verbose)
+      } catch (error) {
+        console.log(`hosts: ${error}`)
+      }
+
+      try {
+        await this.mountVFS(verbose)
+      } catch (error) {
+        console.log(`mountVFS: ${error}`)
+      }
+
+      try {
+        await this.grubInstall(disk, verbose)
+      } catch (error) {
+        console.log(`grubInstall: ${error}`)
+      }
+
+      try {
+        await this.updateInitramfs(verbose)
+      } catch (error) {
+        console.log(`updateInitramfs: ${error}`)
+      }
+
+      try {
+        await this.delLiveUser(verbose)
+      } catch (error) {
+        console.log(`delLiveUser: ${error}`)
+      }
+
+      try {
+        await this.addUser(users.username, users.userpassword, users.fullName, '', '', '', verbose)
+      } catch (error) {
+        console.log(`addUser: ${error}`)
+      }
+
+      try {
+        await this.changePassword('root', users.rootpassword, verbose)
+      } catch (error) {
+        console.log(`changePassword: ${error}`)
+      }
+
+      try {
+        await this.autologinConfig(users.username, verbose)
+      } catch (error) {
+        console.log(`autologinConfig: ${error}`)
+      }
+
+      try {
+        await this.umountVFS(verbose)
+      } catch (error) {
+        console.log(`umountVFS: ${error}`)
+      }
+
+      try {
+        await this.umount4target(verbose)
+      } catch (error) {
+        console.log(`umount4target: ${error}`)
+      }
+
       this.finished(disk.installationDevice, host.hostname, users.username)
     }
   }
