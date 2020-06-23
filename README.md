@@ -13,7 +13,6 @@ penguins-eggs
 
 # Index
 <!-- toc -->
-* [i386 package node8](#i386-package-node8)
 * [Index](#index)
 * [Presentation](#presentation)
 * [That distros you can use](#that-distros-you-can-use)
