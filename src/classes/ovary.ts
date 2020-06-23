@@ -24,6 +24,7 @@ const exec = require('../lib/utils').exec
 
 // classes
 import Utils from './utils'
+import N8 from './n8'
 import Calamares from './incubation/config'
 import Distro from './distro'
 import Xdg from './xdg'
@@ -846,6 +847,7 @@ timeout 200\n`
 
     const dirs = ['bin', 'boot', 'dev', 'etc', 'home', 'lib', 'lib32', 'lib64', 'libx32', 'media', 'mnt', 'opt', 'proc', 'root', 'run', 'sbin', 'srv', 'sys', 'tmp', 'usr', 'var']
     const rootDirs = fs.readdirSync('/', { withFileTypes: true })
+    // console.log(rootDirs)
     const startLine = `#############################################################`
     const titleLine = `# -----------------------------------------------------------`
     const endLine = `# ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n`
@@ -857,69 +859,73 @@ timeout 200\n`
     cmds.push(`#       need just a mkdir in ${this.work_dir.merged}`)
     cmds.push(`# host: ${os.hostname()} user: ${Utils.getPrimaryUser()}\n`)
 
-    // console.log(rootDirs)
+    console.log(JSON.stringify(rootDirs))
     for (const dir of rootDirs) {
+      let dirname =  N8.dirent2string(dir)
       cmds.push(startLine)
-      if (dir.isDirectory()) {
-        if (!(dir.name === 'lost+found')) {
-          cmd = `# /${dir.name} is a directory`
-          if (this.needOverlay(dir.name)) {
+      if (N8.isDirectory(dirname)) {
+        console.log(`dirname: isDirectory`)
+        if (dirname !== 'lost+found') {
+          cmd = `# /${dirname} is a directory`
+          if (this.needOverlay(dirname)) {
 
             cmds.push(`${cmd} and need to be written`)
             cmds.push(titleLine)
             cmds.push(`# create mountpoint lower`)
-            cmds.push(await makeIfNotExist(`${this.work_dir.lowerdir}/${dir.name}`))
-            cmds.push(`# first: mount /${dir.name} rw in ${this.work_dir.lowerdir}/${dir.name}`)
-            cmds.push(await rexec(`mount --bind --make-slave /${dir.name} ${this.work_dir.lowerdir}/${dir.name}`, echo))
+            cmds.push(await makeIfNotExist(`${this.work_dir.lowerdir}/${dirname}`))
+            cmds.push(`# first: mount /${dir} rw in ${this.work_dir.lowerdir}/${dirname}`)
+            cmds.push(await rexec(`mount --bind --make-slave /${dir} ${this.work_dir.lowerdir}/${dirname}`, echo))
             cmds.push(`# now remount it ro`)
-            cmds.push(await rexec(`mount -o remount,bind,ro ${this.work_dir.lowerdir}/${dir.name}`, echo))
-            cmds.push(`\n# second: create mountpoint upper, work and ${this.work_dir.merged} and mount ${dir.name}`)
-            cmds.push(await makeIfNotExist(`${this.work_dir.upperdir}/${dir.name}`, verbose))
-            cmds.push(await makeIfNotExist(`${this.work_dir.workdir}/${dir.name}`, verbose))
-            cmds.push(await makeIfNotExist(`${this.work_dir.merged}/${dir.name}`, verbose))
+            cmds.push(await rexec(`mount -o remount,bind,ro ${this.work_dir.lowerdir}/${dirname}`, echo))
+            cmds.push(`\n# second: create mountpoint upper, work and ${this.work_dir.merged} and mount ${dirname}`)
+            cmds.push(await makeIfNotExist(`${this.work_dir.upperdir}/${dirname}`, verbose))
+            cmds.push(await makeIfNotExist(`${this.work_dir.workdir}/${dirname}`, verbose))
+            cmds.push(await makeIfNotExist(`${this.work_dir.merged}/${dirname}`, verbose))
 
-            cmds.push(`\n# thirth: mount /${dir.name} rw in ${this.work_dir.merged}`)
-            cmds.push(await rexec(`mount -t overlay overlay -o lowerdir=${this.work_dir.lowerdir}/${dir.name},upperdir=${this.work_dir.upperdir}/${dir.name},workdir=${this.work_dir.workdir}/${dir.name} ${this.work_dir.merged}/${dir.name}`, echo))
+            cmds.push(`\n# thirth: mount /${dirname} rw in ${this.work_dir.merged}`)
+            cmds.push(await rexec(`mount -t overlay overlay -o lowerdir=${this.work_dir.lowerdir}/${dirname},upperdir=${this.work_dir.upperdir}/${dir},workdir=${this.work_dir.workdir}/${dir} ${this.work_dir.merged}/${dirname}`, echo))
           } else {
 
             cmds.push(`${cmd} who don't need to be written`)
             cmds.push(titleLine)
-            cmds.push(`# mount -o bind /${dir.name} ${this.work_dir.merged}/${dir.name}`)
-            cmds.push(await makeIfNotExist(`${this.work_dir.merged}/${dir.name}`, verbose))
-            if (this.onlyMerged(dir.name)) {
-              cmds.push(await makeIfNotExist(`${this.work_dir.merged}/${dir.name}`, verbose))
-              cmds.push(await rexec(`mount --bind --make-slave /${dir.name} ${this.work_dir.merged}/${dir.name}`, echo))
-              cmds.push(await rexec(`mount -o remount,bind,ro ${this.work_dir.merged}/${dir.name}`, echo))
+            cmds.push(`# mount -o bind /${dirname} ${this.work_dir.merged}/${dirname}`)
+            cmds.push(await makeIfNotExist(`${this.work_dir.merged}/${dir}`, verbose))
+            if (this.onlyMerged(dirname)) {
+              cmds.push(await makeIfNotExist(`${this.work_dir.merged}/${dirname}`, verbose))
+              cmds.push(await rexec(`mount --bind --make-slave /${dirname} ${this.work_dir.merged}/${dirname}`, echo))
+              cmds.push(await rexec(`mount -o remount,bind,ro ${this.work_dir.merged}/${dirname}`, echo))
             }
           }
         }
-      } else if (dir.isFile()) {
-        cmds.push(`# /${dir.name} is just a file`)
+      } else if (N8.isFile(dirname)) {
+        cmds.push(`# /${dirname} is just a file`)
         cmds.push(titleLine)
-        if (!(fs.existsSync(`${this.work_dir.merged}/${dir.name}`))) {
-          cmds.push(await rexec(`cp /${dir.name} ${this.work_dir.merged}`, echo))
+        if (!(fs.existsSync(`${this.work_dir.merged}/${dirname}`))) {
+          cmds.push(await rexec(`cp /${dir} ${this.work_dir.merged}`, echo))
         } else {
           cmds.push('# file exist... skip')
         }
-      } else if (dir.isSymbolicLink()) {
-        lnkDest = fs.readlinkSync(`/${dir.name}`)
-        cmds.push(`# /${dir.name} is a symbolic link to /${lnkDest} in the system`)
+      } else if (N8.isSymbolicLink(dirname)) {
+        lnkDest = fs.readlinkSync(`/${dirname}`)
+        cmds.push(`# /${dirname} is a symbolic link to /${lnkDest} in the system`)
         cmds.push(`# we need just to recreate it`)
         cmds.push(`# ln -s ${this.work_dir.merged}/${lnkDest} ${this.work_dir.merged}/${lnkDest}`)
         cmds.push(`# but we don't know if the destination exist, and I'm too lazy today. So, for now: `)
         cmds.push(titleLine)
-        if (!(fs.existsSync(`${this.work_dir.merged}/${dir.name}`))) {
+        if (!(fs.existsSync(`${this.work_dir.merged}/${dirname}`))) {
           if (fs.existsSync(lnkDest)) {
             cmds.push(`ln -s ${this.work_dir.merged}/${lnkDest} ${this.work_dir.merged}/${lnkDest}`)
           } else {
-            cmds.push(await rexec(`cp -r /${dir.name} ${this.work_dir.merged}`, echo))
+            cmds.push(await rexec(`cp -r /${dir} ${this.work_dir.merged}`, echo))
           }
         } else {
           cmds.push('# SymbolicLink exist... skip')
         }
       }
+      console.log()
       cmds.push(endLine)
     }
+    console.log(cmds)
     Utils.writeXs(`${this.work_dir.path}bind`, cmds)
   }
 
@@ -942,28 +948,30 @@ timeout 200\n`
     if (fs.existsSync(this.work_dir.merged)) {
       const bindDirs = fs.readdirSync(this.work_dir.merged, { withFileTypes: true })
       for (const dir of bindDirs) {
+        let dirname =  N8.dirent2string(dir)
+
         cmds.push(`#############################################################`)
-        if (dir.isDirectory()) {
-          cmds.push(`\n# directory: ${dir.name}`)
-          if (this.needOverlay(dir.name)) {
-            cmds.push(`\n# ${dir.name} has overlay`)
+        if (N8.isDirectory(dirname)) {
+          cmds.push(`\n# directory: ${dirname}`)
+          if (this.needOverlay(dirname)) {
+            cmds.push(`\n# ${dirname} has overlay`)
             cmds.push(`\n# First, umount it from ${this.work_dir.path}`)
-            cmds.push(await rexec(`umount ${this.work_dir.merged}/${dir.name}`, echo))
+            cmds.push(await rexec(`umount ${this.work_dir.merged}/${dirname}`, echo))
 
             cmds.push(`\n# Second, umount it from ${this.work_dir.lowerdir}`)
-            cmds.push(await rexec(`umount ${this.work_dir.lowerdir}/${dir.name}`, echo))
-          } else if (this.onlyMerged(dir.name)) {
-            cmds.push(await rexec(`umount ${this.work_dir.merged}/${dir.name}`, echo))
+            cmds.push(await rexec(`umount ${this.work_dir.lowerdir}/${dirname}`, echo))
+          } else if (this.onlyMerged(dirname)) {
+            cmds.push(await rexec(`umount ${this.work_dir.merged}/${dirname}`, echo))
           }
           cmds.push(`\n# remove in ${this.work_dir.merged} and ${this.work_dir.lowerdir}`)
-          cmds.push(await rexec(`rm ${this.work_dir.merged}/${dir.name} -rf`, echo))
-          cmds.push(await rexec(`rm ${this.work_dir.lowerdir}/${dir.name} -rf`, echo))
-        } else if (dir.isFile()) {
-          cmds.push(`\n# ${dir.name} = file`)
-          cmds.push(await rexec(`rm ${this.work_dir.merged}/${dir.name}`, echo))
-        } else if (dir.isSymbolicLink()) {
-          cmds.push(`\n# ${dir.name} = symbolicLink`)
-          cmds.push(await rexec(`rm ${this.work_dir.merged}/${dir.name}`, echo))
+          cmds.push(await rexec(`rm ${this.work_dir.merged}/${dirname} -rf`, echo))
+          cmds.push(await rexec(`rm ${this.work_dir.lowerdir}/${dirname} -rf`, echo))
+        } else if (N8.isFile(dirname)) {
+          cmds.push(`\n# ${dirname} = file`)
+          cmds.push(await rexec(`rm ${this.work_dir.merged}/${dirname}`, echo))
+        } else if (N8.isSymbolicLink(dirname)) {
+          cmds.push(`\n# ${dirname} = symbolicLink`)
+          cmds.push(await rexec(`rm ${this.work_dir.merged}/${dirname}`, echo))
         }
       }
     }
@@ -1436,3 +1444,4 @@ async function rexec(cmd: string, echo: object): Promise<string> {
   await exec(cmd, echo)
   return cmd
 }
+

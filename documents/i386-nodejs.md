@@ -18,6 +18,22 @@ and finally, we check the nodejs version:
 
 to install the nodejs version 8.
 
+After that is better to look apt upgradin of nodejs
+
+just use:
+
+```
+sudo apt-mark hold nodejs
+```
+
+if You want to remove the hold
+
+```
+sudo apt-mark unhold nodejs
+```
+
+In this way when you upgrade the system, the version of nodejs10 from the original reporitory of Debian will not be installed.
+
 
 ## node v. 8 vs v. 14
 
@@ -26,10 +42,20 @@ I used very few new caracteristics from the current version, mostly are about fs
 * isDirectory() from version 10
 * isSymbolicLink() from version 10
 
+Well, today I push the node8 vs node14 used things in n8.ts, so now we are again compatible with node8 and can start agein to built eggs i386 packages.
 
-You can try to wrap when in something compatible with v. 8x. 
+# x86 package node8 
+You must to be in a x86 system.
 
-Sorry at the moment I don't have time, but if You are interested I can help You.
+* edit ./node_modules/@oclif/dev-cli/lib/tarballs/config.js
+* add 'linux-x86' in TARGET line 53 on config.js
+
+For comodity I put a link: oclif-tarball-config.js to ./node_modules/@oclif/dev-cli/lib/tarballs/config.js, so you can edit this one directly.
+
+At this point run
+```
+sudo npm run deb
+```
 
 ## Contacts
 Feel free to contact [me](https://gitter.im/penguins-eggs-1/community?source=orgpage) or open an issue on [github](https://github.com/pieroproietti/penguins-eggs/issues).

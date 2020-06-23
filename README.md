@@ -10,6 +10,7 @@ penguins-eggs
 [![deb](https://img.shields.io/badge/deb-packages-orange)](https://sourceforge.net/projects/penguins-eggs/files/packages-deb)
 [![iso](https://img.shields.io/badge/iso-images-orange)](https://sourceforge.net/projects/penguins-eggs/files/iso)
 
+
 # Index
 <!-- toc -->
 * [Index](#index)
@@ -74,7 +75,7 @@ $ npm install -g penguins-eggs
 $ eggs COMMAND
 running command...
 $ eggs (-v|--version|version)
-penguins-eggs/7.5.115 linux-x64 node-v14.4.0
+penguins-eggs/7.5.115 linux-ia32 node-v8.17.0
 $ eggs --help [COMMAND]
 USAGE
   $ eggs COMMAND
