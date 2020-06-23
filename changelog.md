@@ -28,6 +28,16 @@ Detailed instrunction for usage are published on the gitboot [penguin's eggs](ht
 ## Changelog
 Versions are listed on reverse order, the first is the last one.
 
+### eggs-7.5.122-1
+Sometime to go ahead is better to go back a little.
+
+Well, to not lost the opportunity to have debian packages for both i386 and amd64 version, I choose to go back to the old Node8, the last versione who was released from nodesourfe for both the architecture.
+
+The main advanced in this version is of course the presence of the i386 version, who can be a start for all the peoples with old hardware running and want to experiments with them. 
+
+But not only, now the varius READMEs, links etc point at the new site https://penguins-eggs.net there you can find more informations.
+
+
 ### eggs-7.5.110-1
 Here we are, I was looking for a solution to facilitate myself in the work of adapting Ubuntu and Deepin to calamares and, trafficking with this, as often happens a new idea came up:
 
