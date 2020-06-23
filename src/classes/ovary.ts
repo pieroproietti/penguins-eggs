@@ -859,12 +859,10 @@ timeout 200\n`
     cmds.push(`#       need just a mkdir in ${this.work_dir.merged}`)
     cmds.push(`# host: ${os.hostname()} user: ${Utils.getPrimaryUser()}\n`)
 
-    console.log(JSON.stringify(rootDirs))
     for (const dir of rootDirs) {
       let dirname =  N8.dirent2string(dir)
       cmds.push(startLine)
       if (N8.isDirectory(dirname)) {
-        console.log(`dirname: isDirectory`)
         if (dirname !== 'lost+found') {
           cmd = `# /${dirname} is a directory`
           if (this.needOverlay(dirname)) {
@@ -925,7 +923,6 @@ timeout 200\n`
       console.log()
       cmds.push(endLine)
     }
-    console.log(cmds)
     Utils.writeXs(`${this.work_dir.path}bind`, cmds)
   }
 
