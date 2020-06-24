@@ -8,11 +8,9 @@ import { Command, flags } from '@oclif/command'
 
 import fs = require('fs')
 import ini = require('ini')
-import shx = require('shelljs')
 import Utils from '../classes/utils'
 import Ovary from '../classes/ovary'
 import { IWorkDir } from '../interfaces/i-workdir'
-import chalk = require('chalk')
 
 const exec = require('../lib/utils').exec
 
@@ -39,7 +37,7 @@ kill the eggs/free the nest
    async run() {
       Utils.titles('kill')
 
-      const { args, flags } = this.parse(Kill)
+      const { flags } = this.parse(Kill)
       let verbose = false
       if (flags.verbose) {
          verbose = true

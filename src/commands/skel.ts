@@ -39,7 +39,6 @@ desktop configuration of user mauro will get used as default`
       }
       Utils.warning(`user: ${user}`)
 
-      let source = ''
       if (fs.existsSync(`/home/${user}`)) {
          source = `/home/${user}`
       } else {

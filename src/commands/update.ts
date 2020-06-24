@@ -4,7 +4,7 @@
  * email: piero.proietti@gmail.com
  * license: MIT
  */
-import { Command, flags } from '@oclif/command'
+import { Command } from '@oclif/command'
 import shx = require('shelljs')
 import Utils from '../classes/utils'
 
@@ -20,8 +20,6 @@ update/upgrade the penguin's eggs tool
 
    async run() {
       Utils.titles('update')
-
-      const { flags } = this.parse(Update)
 
       if (Utils.isRoot()) {
          if (await Utils.customConfirm(`Select yes to continue...`)) {

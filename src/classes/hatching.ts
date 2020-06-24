@@ -44,9 +44,7 @@ export default class Hatching {
    /**
     * question
     */
-   async questions(verbose = false, umount = false) {
-      const retval = false
-      const echo = Utils.setEcho(verbose)
+   async questions(verbose = false, umount = false): Promise<void> {
       if (verbose) {
          Utils.warning('hatching: questions')
       }

@@ -35,8 +35,6 @@ import shell = require('shelljs')
 
 import { IRemix, IDistro } from '../interfaces'
 
-import Utils from './utils'
-
 /**
  * Classe
  */

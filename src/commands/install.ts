@@ -6,7 +6,6 @@
  */
 import { Command, flags } from '@oclif/command'
 import shx = require('shelljs')
-import chalk = require('chalk')
 import Utils from '../classes/utils'
 import Hatching from '../classes/hatching'
 

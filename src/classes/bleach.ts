@@ -7,7 +7,6 @@
  */
 
 import fs = require('fs')
-import chalk = require('chalk')
 import Utils from './utils'
 
 // libraries

@@ -5,7 +5,7 @@
  * license: MIT
  */
 
-import { Command, flags } from '@oclif/command'
+import { Command } from '@oclif/command'
 import shx = require('shelljs')
 import Utils from '../classes/utils'
 import Ovary from '../classes/ovary'

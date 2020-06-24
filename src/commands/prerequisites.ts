@@ -1,4 +1,3 @@
-/* eslint-disable no-multi-str */
 /**
  * penguins-eggs-v7 based on Debian live
  * author: Piero Proietti
@@ -6,8 +5,6 @@
  * license: MIT
  */
 import { Command, flags } from '@oclif/command'
-import shx = require('shelljs')
-import path = require('path')
 import Utils from '../classes/utils'
 import Pacman from '../classes/pacman'
 

@@ -5,13 +5,12 @@
  * license: MIT
  */
 import { Command, flags } from '@oclif/command'
-import shx = require('shelljs')
 import Utils from '../classes/utils'
 import Pacman from '../classes/pacman'
 
-// libraries
-const exec = require('../lib/utils').exec
-
+/**
+ * 
+ */
 export default class Sterilize extends Command {
    static description = 'remove all packages installed as prerequisites'
 

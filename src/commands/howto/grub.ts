@@ -1,16 +1,11 @@
-import { Command, flags } from '@oclif/command'
+import { Command } from '@oclif/command'
 import Utils from '../../classes/utils'
 import chalk = require('chalk')
 
 export default class DevGrub extends Command {
    static description = 'boot from grub rescue'
 
-   static flags = {
-      help: flags.help({ char: 'h' })
-   }
-
    async run() {
-      const { flags } = this.parse(DevGrub)
       Utils.titles('howto:grub')
       console.log(chalk.cyanBright('Commands to boot in the grub shell'))
       console.log()
