@@ -46,7 +46,7 @@ Same iso images complete with eggs are loaded in the [sourceforge](https://sourc
 # Install penguins-eggs
 
 ## Debian package
-This simplest way to installe eggs is to download the [package eggs](https://sourceforge.net/projects/penguins-eggs/files/packages-deb/) from [sourceforge](https://sourceforge.net/projects/penguins-eggs/files/DEBS/) and install it
+This simplest way to installe eggs is to download the [package eggs](https://sourceforge.net/projects/penguins-eggs/files/packages-deb/) from [sourceforge](https://sourceforge.net/projects/penguins-eggs/files/iso/) and install it
 
 ```sudo dpkg -i eggs_7.1.XX-1_amd64.deb```
 
