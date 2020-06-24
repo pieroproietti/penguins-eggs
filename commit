@@ -1,0 +1,9 @@
+#!/bin/bash
+if [ -z "$1" ]; then
+   message='just a little edit'
+else
+   message='$1'
+fi
+git add -A 
+git commit -m ${message}
+git push
