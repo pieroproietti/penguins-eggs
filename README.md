@@ -54,7 +54,7 @@ This simplest way to installe eggs is to download the [package eggs](https://sou
 sudo dpkg -i eggs_7.5.122-1_amd64.deb
 ```
 
-or, for a i386 system:
+or, on a i386 system:
 ```
 sudo dpkg -i eggs_7.5.122-1_i386.deb
 ```
