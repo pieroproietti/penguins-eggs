@@ -46,11 +46,25 @@ Same iso images complete with eggs are loaded in the [sourceforge](https://sourc
 # Install penguins-eggs
 
 ## Debian package
+eggs is released both in deb package for i386 as amd64 architectures.
+
 This simplest way to installe eggs is to download the [package eggs](https://sourceforge.net/projects/penguins-eggs/files/packages-deb/) from [sourceforge page of the project](https://sourceforge.net/projects/penguins-eggs/) and install it
 
-```sudo dpkg -i eggs_7.1.XX-1_amd64.deb```
+```
+sudo dpkg -i eggs_7.5.122-1_amd64.deb
+```
+
+or, for a i386 system:
+```
+sudo dpkg -i eggs_7.5.122-1_i386.deb
+```
+
 
 the most recent package, is usually the right choice.
+
+_Notes on nodejs 8 and i386 architecture_ .
+
+You can read more about at [i386-nodejs](https://github.com/pieroproietti/penguins-eggs/blob/master/documents/i386-nodejs.md).
 
 ## NPM package (require nodejs)
 
@@ -61,11 +75,6 @@ Simply copy and past the following lines:
 ```sudo npm config set unsafe-perm true```
 
 ```sudo npm i penguins-eggs -g```
-
-### Notes on i386 architecture
-Today eggs is released both in deb package for i386 as amd64.
-
-You can read more about at [i386-nodejs](https://github.com/pieroproietti/penguins-eggs/blob/master/documents/i386-nodejs.md).
 
 # Usage
 <!-- usage -->
