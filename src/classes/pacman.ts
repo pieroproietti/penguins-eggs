@@ -22,285 +22,333 @@ const exec = require('../lib/utils').exec
  * @remarks all the utilities
  */
 export default class Pacman {
-  static deb4uefi = ['grub-efi-amd64', 'grun-efi-ia32']
-  static debs4eggs = ['isolinux', 'live-boot', 'live-boot-initramfs-tools', 'lvm2', 'squashfs-tools', 'xorriso', 'xterm', 'whois']
-  static debs4calamares = ['calamares', 'qml-module-qtquick2', 'qml-module-qtquick-controls']
+   static deb4uefi = ['grub-efi-amd64', 'grun-efi-ia32']
+   static debs4eggs = [
+      'isolinux',
+      'live-boot',
+      'live-boot-initramfs-tools',
+      'lvm2',
+      'squashfs-tools',
+      'xorriso',
+      'xterm',
+      'whois'
+   ]
+   static debs4calamares = [
+      'calamares',
+      'qml-module-qtquick2',
+      'qml-module-qtquick-controls'
+   ]
 
-  /**
-   * controlla se Xserver è installato
-   */
-  static isXInstalled(): boolean {
-    return Pacman.packageIsInstalled('xserver-xorg-core')
-  }
+   /**
+    * controlla se Xserver è installato
+    */
+   static isXInstalled(): boolean {
+      return Pacman.packageIsInstalled('xserver-xorg-core')
+   }
 
-  /**
-   * restuisce VERO se il pacchetto è installato
-   * @param debPackage 
-   */
-  static packageIsInstalled(debPackage: string): boolean {
-    let installed: boolean = false
-    const cmd = `/usr/bin/dpkg -s ${debPackage} | grep Status`
-    const stdout = shx.exec(cmd, { silent: true }).stdout.trim()
+   /**
+    * restuisce VERO se il pacchetto è installato
+    * @param debPackage
+    */
+   static packageIsInstalled(debPackage: string): boolean {
+      let installed = false
+      const cmd = `/usr/bin/dpkg -s ${debPackage} | grep Status`
+      const stdout = shx.exec(cmd, { silent: true }).stdout.trim()
 
-    if (stdout === 'Status: install ok installed') {
-      installed = true
-    }
-    return installed
-  }
-
-  /**
-     * Install the package debPackage
-     * @param debPackage {string} Pacchetto Debian da installare
-     * @returns {boolean} True if success
-     */
-  static packageInstall(debPackage: string): boolean {
-    let retVal = false
-
-    if (shx.exec('/usr/bin/apt-get update', { silent: true }) === '0') {
-      if (shx.exec(`/usr/bin/apt-get install -y ${debPackage}`, { silent: true }) === '0') {
-        retVal = true
+      if (stdout === 'Status: install ok installed') {
+         installed = true
       }
-    }
-    return retVal
-  }
+      return installed
+   }
 
+   /**
+    * Install the package debPackage
+    * @param debPackage {string} Pacchetto Debian da installare
+    * @returns {boolean} True if success
+    */
+   static packageInstall(debPackage: string): boolean {
+      let retVal = false
 
-  /**
-   * 
-   * @param packages array packages
-   */
-  static debs2line(packages: string[]): string {
-    let line = ''
-    for (let i in packages) {
-      line += packages[i] + ' '
-    }
-    return line
-  }
-
-  /**
-   * Restituisce VERO se i prerequisiti sono installati
-   */
-  static prerequisitesEggsCheck(): boolean {
-    let installed: boolean = true
-
-    for (let i in this.debs4eggs) {
-      if (!Pacman.packageIsInstalled(this.debs4eggs[i])) {
-        installed = false
-        break
+      if (shx.exec('/usr/bin/apt-get update', { silent: true }) === '0') {
+         if (
+            shx.exec(`/usr/bin/apt-get install -y ${debPackage}`, {
+               silent: true
+            }) === '0'
+         ) {
+            retVal = true
+         }
       }
-    }
-    return installed
-  }
+      return retVal
+   }
 
-  /**
-   * 
-   */
-  static async prerequisitesEggsInstall(verbose = true): Promise<boolean> {
-    let echo = Utils.setEcho(verbose)
-    let retVal = false
+   /**
+    *
+    * @param packages array packages
+    */
+   static debs2line(packages: string[]): string {
+      let line = ''
+      for (const i in packages) {
+         line += packages[i] + ' '
+      }
+      return line
+   }
 
-    let remix = {} as IRemix
-    let distro = {} as IDistro
-    distro = new Distro(remix)
+   /**
+    * Restituisce VERO se i prerequisiti sono installati
+    */
+   static prerequisitesEggsCheck(): boolean {
+      let installed = true
 
-    let init: string = shx.exec('ps --no-headers -o comm 1', { silent: !verbose }).trim()
-    let config = ''
-    if (init === 'systemd') {
-      if (distro.versionLike === 'bionic') {
-        config = 'open-infrastructure-system-config'
+      for (const i in this.debs4eggs) {
+         if (!Pacman.packageIsInstalled(this.debs4eggs[i])) {
+            installed = false
+            break
+         }
+      }
+      return installed
+   }
+
+   /**
+    *
+    */
+   static async prerequisitesEggsInstall(verbose = true): Promise<boolean> {
+      const echo = Utils.setEcho(verbose)
+      const retVal = false
+
+      const remix = {} as IRemix
+      let distro = {} as IDistro
+      distro = new Distro(remix)
+
+      const init: string = shx
+         .exec('ps --no-headers -o comm 1', { silent: !verbose })
+         .trim()
+      let config = ''
+      if (init === 'systemd') {
+         if (distro.versionLike === 'bionic') {
+            config = 'open-infrastructure-system-config'
+         } else {
+            config = 'live-config-systemd'
+         }
       } else {
-        config = 'live-config-systemd'
+         config = 'live-config-sysvinit'
       }
-    } else {
-      config = 'live-config-sysvinit'
-    }
-    Pacman.debs4eggs.push(config)
+      Pacman.debs4eggs.push(config)
 
-    await exec('apt-get update --yes')
-    await exec(`apt-get install --yes ${Pacman.debs2line(Pacman.debs4eggs)}`, echo)
+      await exec('apt-get update --yes')
+      await exec(
+         `apt-get install --yes ${Pacman.debs2line(Pacman.debs4eggs)}`,
+         echo
+      )
 
-    return retVal
-  }
+      return retVal
+   }
 
-  /**
-   * 
-   */
-  static async prerequisitesEggsRemove(verbose = true): Promise<boolean> {
-    let echo = Utils.setEcho(verbose)
-    let retVal = false
+   /**
+    *
+    */
+   static async prerequisitesEggsRemove(verbose = true): Promise<boolean> {
+      const echo = Utils.setEcho(verbose)
+      const retVal = false
 
-    let remix = {} as IRemix
-    let distro = {} as IDistro
-    distro = new Distro(remix)
+      const remix = {} as IRemix
+      let distro = {} as IDistro
+      distro = new Distro(remix)
 
-    let init: string = shx.exec('ps --no-headers -o comm 1', { silent: !verbose }).trim()
-    let config = ''
-    if (init === 'systemd') {
-      if (distro.versionLike === 'bionic') {
-        config = 'open-infrastructure-system-config'
+      const init: string = shx
+         .exec('ps --no-headers -o comm 1', { silent: !verbose })
+         .trim()
+      let config = ''
+      if (init === 'systemd') {
+         if (distro.versionLike === 'bionic') {
+            config = 'open-infrastructure-system-config'
+         } else {
+            config = 'live-config-systemd'
+         }
       } else {
-        config = 'live-config-systemd'
+         config = 'live-config-sysvinit'
       }
-    } else {
-      config = 'live-config-sysvinit'
-    }
-    Pacman.debs4eggs.push(config)
+      Pacman.debs4eggs.push(config)
 
-    await exec(`apt-get remove --purge --yes ${Pacman.debs2line(Pacman.debs4eggs)}`, echo)
-    await exec('apt-get autoremove --yes')
-    return retVal
-  }
+      await exec(
+         `apt-get remove --purge --yes ${Pacman.debs2line(Pacman.debs4eggs)}`,
+         echo
+      )
+      await exec('apt-get autoremove --yes')
+      return retVal
+   }
 
-
-  /**
-   * 
-   */
-  static async prerequisitesCalamaresCheck(): Promise<boolean> {
-    let installed: boolean = true
-    for (let i in this.debs4calamares) {
-      if (!Pacman.packageIsInstalled(this.debs4calamares[i])) {
-        installed = false
-        break
+   /**
+    *
+    */
+   static async prerequisitesCalamaresCheck(): Promise<boolean> {
+      let installed = true
+      for (const i in this.debs4calamares) {
+         if (!Pacman.packageIsInstalled(this.debs4calamares[i])) {
+            installed = false
+            break
+         }
       }
-    }
-    return installed
-  }
+      return installed
+   }
 
-  /**
- * 
- */
-  static async prerequisitesCalamaresInstall(verbose = true): Promise<void> {
-    let echo = Utils.setEcho(verbose)
-    if (Pacman.isXInstalled()) {
-      await exec('apt-get update --yes', echo)
-      await exec(`apt-get install --yes ${Pacman.debs2line(Pacman.debs4calamares)}`, echo)
-      await Pacman.clean(verbose)
-    } else {
-      console.log('It\'s not possible to use calamares in a system without GUI')
-    }
-  }
+   /**
+    *
+    */
+   static async prerequisitesCalamaresInstall(verbose = true): Promise<void> {
+      const echo = Utils.setEcho(verbose)
+      if (Pacman.isXInstalled()) {
+         await exec('apt-get update --yes', echo)
+         await exec(
+            `apt-get install --yes ${Pacman.debs2line(Pacman.debs4calamares)}`,
+            echo
+         )
+         await Pacman.clean(verbose)
+      } else {
+         console.log(
+            "It's not possible to use calamares in a system without GUI"
+         )
+      }
+   }
 
-  /**
-  * 
-  */
-  static async prerequisitesCalamaresRemove(verbose = true): Promise<boolean> {
-    let echo = Utils.setEcho(verbose)
+   /**
+    *
+    */
+   static async prerequisitesCalamaresRemove(verbose = true): Promise<boolean> {
+      const echo = Utils.setEcho(verbose)
 
-    let retVal = false
-    await exec('rm /etc/calamares -rf', echo)
-    await exec(`apt-get remove --purge --yes ${Pacman.debs2line(Pacman.debs4calamares)}`, echo)
-    await exec('apt-get autoremove --yes', echo)
-    return retVal
-  }
+      const retVal = false
+      await exec('rm /etc/calamares -rf', echo)
+      await exec(
+         `apt-get remove --purge --yes ${Pacman.debs2line(
+            Pacman.debs4calamares
+         )}`,
+         echo
+      )
+      await exec('apt-get autoremove --yes', echo)
+      return retVal
+   }
 
-  /**
-   * Restutuisce VERO se i file di configurazione sono presenti
-   */
-  static configurationCheck(): boolean {
-    let conf = false
-    let list = false
-    let configured = false
-    conf = fs.existsSync('/etc/penguins-eggs.conf')
-    list = fs.existsSync('/usr/local/share/penguins-eggs/exclude.list')
-    configured = conf && list
-    return configured
-  }
+   /**
+    * Restutuisce VERO se i file di configurazione sono presenti
+    */
+   static configurationCheck(): boolean {
+      let conf = false
+      let list = false
+      let configured = false
+      conf = fs.existsSync('/etc/penguins-eggs.conf')
+      list = fs.existsSync('/usr/local/share/penguins-eggs/exclude.list')
+      configured = conf && list
+      return configured
+   }
 
-  /**
-   * 
-   */
-  static async configurationInstall(verbose = true): Promise<void> {
+   /**
+    *
+    */
+   static async configurationInstall(verbose = true): Promise<void> {
+      shx.cp(path.resolve(__dirname, '../../conf/penguins-eggs.conf'), '/etc')
 
-    shx.cp(path.resolve(__dirname, '../../conf/penguins-eggs.conf'), '/etc')
+      /**
+       * version
+       */
+      const version = Utils.getPackageVersion()
+      shx.sed('-i', '%version%', version, '/etc/penguins-eggs.conf')
 
-
-    /**
-     * version
-     */
-    let version = Utils.getPackageVersion()
-    shx.sed('-i', '%version%', version, '/etc/penguins-eggs.conf')
-
-
-    /**
-     * vmlinuz
-     */
-    let vmlinuz = '/vmlinuz'
-    if (!fs.existsSync(vmlinuz)) {
-      vmlinuz = '/boot/vmlinuz'
+      /**
+       * vmlinuz
+       */
+      let vmlinuz = '/vmlinuz'
       if (!fs.existsSync(vmlinuz)) {
-        vmlinuz = '/vmlinuz'
-        console.log(`Can't find the standard ${vmlinuz}, please edit /etc/penguins-eggs.conf`)
+         vmlinuz = '/boot/vmlinuz'
+         if (!fs.existsSync(vmlinuz)) {
+            vmlinuz = '/vmlinuz'
+            console.log(
+               `Can't find the standard ${vmlinuz}, please edit /etc/penguins-eggs.conf`
+            )
+         }
       }
-    }
-    shx.sed('-i', '%vmlinuz%', vmlinuz, '/etc/penguins-eggs.conf')
+      shx.sed('-i', '%vmlinuz%', vmlinuz, '/etc/penguins-eggs.conf')
 
-    /**
-     * initrd
-     */
-    let initrd = '/initrd.img'
-    if (!fs.existsSync(initrd)) {
-      initrd = '/boot/initrd.img'
+      /**
+       * initrd
+       */
+      let initrd = '/initrd.img'
       if (!fs.existsSync(initrd)) {
-        initrd = '/initrd.img'
-        console.log(`Can't find the standard  ${initrd}, please edit /etc/penguins-eggs.conf`)
+         initrd = '/boot/initrd.img'
+         if (!fs.existsSync(initrd)) {
+            initrd = '/initrd.img'
+            console.log(
+               `Can't find the standard  ${initrd}, please edit /etc/penguins-eggs.conf`
+            )
+         }
       }
-    }
-    shx.sed('-i', '%initrd%', initrd, '/etc/penguins-eggs.conf')
+      shx.sed('-i', '%initrd%', initrd, '/etc/penguins-eggs.conf')
 
-    /**
-     * gui_editor
-     */
-    let gui_editor = '/usr/bin/nano'
-    if (this.packageIsInstalled('gedit')) {
-      gui_editor = '/usr/bin/gedit'
-    } else if (this.packageIsInstalled('leafpad')) {
-      gui_editor = '/usr/bin/leafpad'
-    } else if (this.packageIsInstalled('caja')) {
-      gui_editor = '/usr/bin/caja'
-    }
-    shx.sed('-i', '%gui_editor%', gui_editor, '/etc/penguins-eggs.conf')
+      /**
+       * gui_editor
+       */
+      let gui_editor = '/usr/bin/nano'
+      if (this.packageIsInstalled('gedit')) {
+         gui_editor = '/usr/bin/gedit'
+      } else if (this.packageIsInstalled('leafpad')) {
+         gui_editor = '/usr/bin/leafpad'
+      } else if (this.packageIsInstalled('caja')) {
+         gui_editor = '/usr/bin/caja'
+      }
+      shx.sed('-i', '%gui_editor%', gui_editor, '/etc/penguins-eggs.conf')
 
-    /**
-     * force_installer
-     */
-    let force_installer = 'Yes'
-    if (!this.packageIsInstalled('calamares')) {
-      force_installer = 'No'
-      console.log(`Due the lacks of calamares package set force_installer=No`)
-    }
-    shx.sed('-i', '%force_installer%', force_installer, '/etc/penguins-eggs.conf')
+      /**
+       * force_installer
+       */
+      let force_installer = 'Yes'
+      if (!this.packageIsInstalled('calamares')) {
+         force_installer = 'No'
+         console.log(
+            `Due the lacks of calamares package set force_installer=No`
+         )
+      }
+      shx.sed(
+         '-i',
+         '%force_installer%',
+         force_installer,
+         '/etc/penguins-eggs.conf'
+      )
 
-    /**
-     * make_efi
-     */
-    let make_efi = 'yes'
-    if (!this.packageIsInstalled('grub-efi-amd64')) {
-      make_efi = 'No'
-      console.log(`Due the lacks of grub-efi-amd64 or grub-efi-ia32 package set make_efi=No`)
-    }
-    shx.sed('-i', '%make_efi%', make_efi, '/etc/penguins-eggs.conf')
+      /**
+       * make_efi
+       */
+      let make_efi = 'yes'
+      if (!this.packageIsInstalled('grub-efi-amd64')) {
+         make_efi = 'No'
+         console.log(
+            `Due the lacks of grub-efi-amd64 or grub-efi-ia32 package set make_efi=No`
+         )
+      }
+      shx.sed('-i', '%make_efi%', make_efi, '/etc/penguins-eggs.conf')
 
-    // creazione del file delle esclusioni
-    shx.mkdir('-p', '/usr/local/share/penguins-eggs/')
-    shx.cp(path.resolve(__dirname, '../../conf/exclude.list'), '/usr/local/share/penguins-eggs')
-  }
+      // creazione del file delle esclusioni
+      shx.mkdir('-p', '/usr/local/share/penguins-eggs/')
+      shx.cp(
+         path.resolve(__dirname, '../../conf/exclude.list'),
+         '/usr/local/share/penguins-eggs'
+      )
+   }
 
-  /**
-   * 
-   */
-  static async configurationRemove(verbose = true): Promise<void> {
-    let echo = Utils.setEcho(verbose)
-    await exec('rm /etc/penguins-eggs.conf', echo)
-    await exec('rm /etc/penguins-eggs.conf?', echo)
-    await exec('rm /usr/local/share/penguins-eggs/exclude.list', echo)
-    await exec('rm /usr/local/share/penguins-eggs/exclude.list?', echo)
-  }
-  /**
-   * 
-   */
-  static async clean(verbose = true): Promise<void> {
-    let echo = Utils.setEcho(verbose)
-    await exec('apt-get clean', echo)
-    await exec('apt-get autoclean', echo)
-  }
+   /**
+    *
+    */
+   static async configurationRemove(verbose = true): Promise<void> {
+      const echo = Utils.setEcho(verbose)
+      await exec('rm /etc/penguins-eggs.conf', echo)
+      await exec('rm /etc/penguins-eggs.conf?', echo)
+      await exec('rm /usr/local/share/penguins-eggs/exclude.list', echo)
+      await exec('rm /usr/local/share/penguins-eggs/exclude.list?', echo)
+   }
+   /**
+    *
+    */
+   static async clean(verbose = true): Promise<void> {
+      const echo = Utils.setEcho(verbose)
+      await exec('apt-get clean', echo)
+      await exec('apt-get autoclean', echo)
+   }
 }

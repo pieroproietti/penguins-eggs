@@ -12,25 +12,25 @@ import Utils from '../classes/utils'
 import Bleach from '../classes/bleach'
 
 export default class Clean extends Command {
-  static description = 'Clean system log, apt, etc'
+   static description = 'Clean system log, apt, etc'
 
-  static flags = {
-    help: flags.help({ char: 'h' }),
-    verbose: flags.boolean({ char: 'v', description: 'verbose' }),
-  }
+   static flags = {
+      help: flags.help({ char: 'h' }),
+      verbose: flags.boolean({ char: 'v', description: 'verbose' })
+   }
 
-  async run() {
-    const { flags } = this.parse(Clean)
-    Utils.titles('clean')
+   async run() {
+      const { flags } = this.parse(Clean)
+      Utils.titles('clean')
 
-    let verbose = false
-    if (flags.verbose) {
-      verbose = true
-    }
+      let verbose = false
+      if (flags.verbose) {
+         verbose = true
+      }
 
-    if (Utils.isRoot()) {
-      const bleach = Bleach
-      bleach.clean(verbose)
-    }
-  }
+      if (Utils.isRoot()) {
+         const bleach = Bleach
+         bleach.clean(verbose)
+      }
+   }
 }

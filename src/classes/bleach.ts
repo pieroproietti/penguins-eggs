@@ -18,96 +18,95 @@ const exec = require('../lib/utils').exec
  * @param dest
  */
 async function rm(dest = '', verbose = false) {
-  let echo = {echo: false, ignore: true, capture: false}
-  if (verbose) {
-    echo = {echo: true, ignore: true, capture: false}
-  }
+   let echo = { echo: false, ignore: true, capture: false }
+   if (verbose) {
+      echo = { echo: true, ignore: true, capture: false }
+   }
 
-  if (fs.existsSync(dest)) {
-    await exec(`rm ${dest} -rf`, echo)
-  } else {
-    console.log(`non esiste ${dest}`)
-  }
+   if (fs.existsSync(dest)) {
+      await exec(`rm ${dest} -rf`, echo)
+   } else {
+      console.log(`non esiste ${dest}`)
+   }
 }
 
 async function rmdir(dest = '', verbose = false) {
-  let echo = {echo: false, ignore: true, capture: false}
-  if (verbose) {
-    echo = {echo: true, ignore: true, capture: false}
-  }
-  const result: string[] = fs.readdirSync(dest)
-  if ( result.length > 0 ) {
-    await exec(`rm ${dest} -rf`, echo)
-  }
+   let echo = { echo: false, ignore: true, capture: false }
+   if (verbose) {
+      echo = { echo: true, ignore: true, capture: false }
+   }
+   const result: string[] = fs.readdirSync(dest)
+   if (result.length > 0) {
+      await exec(`rm ${dest} -rf`, echo)
+   }
 }
-
 
 /**
  * Bleach:
  */
 export default class Ovary {
-  /**
+   /**
     *
     * @param verbose
     */
-  static async clean(verbose = false) {
-    await this.cleanApt(verbose)
-    await this.cleanHistory(verbose)
-    await this.cleanJournal(verbose)
-    await this.cleanSystemCache(verbose)
-  }
+   static async clean(verbose = false) {
+      await this.cleanApt(verbose)
+      await this.cleanHistory(verbose)
+      await this.cleanJournal(verbose)
+      await this.cleanSystemCache(verbose)
+   }
 
-  /**
-   * PULITORI
-   */
+   /**
+    * PULITORI
+    */
 
-  static async cleanApt(verbose = false) {
-    let echo = {echo: false, ignore: true, capture: false}
-    if (verbose) {
-      echo = {echo: true, ignore: true, capture: false}
-      Utils.warning('cleaning apt')
-    }
-    await exec('apt clean', echo)
-    await exec('apt autoclean', echo)
-    const dest = '/var/lib/apt/lists/'
-    rmdir(dest, verbose)
-  }
+   static async cleanApt(verbose = false) {
+      let echo = { echo: false, ignore: true, capture: false }
+      if (verbose) {
+         echo = { echo: true, ignore: true, capture: false }
+         Utils.warning('cleaning apt')
+      }
+      await exec('apt clean', echo)
+      await exec('apt autoclean', echo)
+      const dest = '/var/lib/apt/lists/'
+      rmdir(dest, verbose)
+   }
 
-  static async cleanHistory(verbose = false) {
-    if (verbose) {
-      Utils.warning('cleaning bash history')
-    }
-    const dest = '/root/.bash_history'
-    if (fs.existsSync(dest)) {
-      await rm(dest, verbose)
-    }
-  }
+   static async cleanHistory(verbose = false) {
+      if (verbose) {
+         Utils.warning('cleaning bash history')
+      }
+      const dest = '/root/.bash_history'
+      if (fs.existsSync(dest)) {
+         await rm(dest, verbose)
+      }
+   }
 
-  static async cleanJournal(verbose = false) {
-    let echo = {echo: false, ignore: true, capture: false}
-    if (verbose) {
-      echo = {echo: true, ignore: true, capture: false}
-      Utils.warning('cleaning journald')
-    }
-    await exec('journalctl --rotate', echo)
-    await exec('journalctl --vacuum-time=1s', echo)
-  }
+   static async cleanJournal(verbose = false) {
+      let echo = { echo: false, ignore: true, capture: false }
+      if (verbose) {
+         echo = { echo: true, ignore: true, capture: false }
+         Utils.warning('cleaning journald')
+      }
+      await exec('journalctl --rotate', echo)
+      await exec('journalctl --vacuum-time=1s', echo)
+   }
 
-  static async cleanSystemCache(verbose = false) {
-    let echo = {echo: false, ignore: true, capture: false}
-    if (verbose) {
-      echo = {echo: true, ignore: true, capture: false}
-      Utils.warning('cleaning system cache')
-    }
-    // Clear PageCache only.
-    await exec('sync; echo 1 > /proc/sys/vm/drop_caches', echo)
+   static async cleanSystemCache(verbose = false) {
+      let echo = { echo: false, ignore: true, capture: false }
+      if (verbose) {
+         echo = { echo: true, ignore: true, capture: false }
+         Utils.warning('cleaning system cache')
+      }
+      // Clear PageCache only.
+      await exec('sync; echo 1 > /proc/sys/vm/drop_caches', echo)
 
-    // Clear dentries and inodes.
-    await exec('sync; echo 2 > /proc/sys/vm/drop_caches', echo)
+      // Clear dentries and inodes.
+      await exec('sync; echo 2 > /proc/sys/vm/drop_caches', echo)
 
-    // Clear PageCache, dentries and inodes.
-    await exec('sync; echo 3 > /proc/sys/vm/drop_caches', echo)
-  }
+      // Clear PageCache, dentries and inodes.
+      await exec('sync; echo 3 > /proc/sys/vm/drop_caches', echo)
+   }
 }
 
 /**

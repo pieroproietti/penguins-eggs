@@ -12,62 +12,60 @@ import Pacman from '../classes/pacman'
 
 import { IRemix } from '../interfaces'
 
-
 export default class Calamares extends Command {
-  static description = 'configure calamares or install and configure it'
+   static description = 'configure calamares or install and configure it'
 
-  remix = {} as IRemix
+   remix = {} as IRemix
 
-  static flags = {
-    help: flags.help({ char: 'h' }),
-    verbose: flags.boolean({ char: 'v' }),
-    branding: flags.string({ description: 'branding for calamares' }),
-    install: flags.boolean({ char: 'i', description: 'install' }),
-  }
+   static flags = {
+      help: flags.help({ char: 'h' }),
+      verbose: flags.boolean({ char: 'v' }),
+      branding: flags.string({ description: 'branding for calamares' }),
+      install: flags.boolean({ char: 'i', description: 'install' })
+   }
 
-  static examples = [
-    `~$ sudo eggs calamares \ncreate calamares configuration\n`,
-    `~$ sudo eggs calamares -i \ninstall calamares  and configure it\n`,
-  ]
+   static examples = [
+      `~$ sudo eggs calamares \ncreate calamares configuration\n`,
+      `~$ sudo eggs calamares -i \ninstall calamares  and configure it\n`
+   ]
 
+   async run() {
+      Utils.titles('calamares')
 
-  async run() {
-    Utils.titles('calamares')
-
-    const { flags } = this.parse(Calamares)
-    let verbose = false
-    if (flags.verbose) {
-      verbose = true
-    }
-
-    // Nome del brand di calamares
-    let branding = 'eggs'
-    if (flags.branding !== undefined) {
-      branding = flags.branding
-      console.log(`calamares branding: ${branding}`)
-    }
-
-    if (Utils.isRoot()) {
-      if (Pacman.isXInstalled()) {
-        if (await Utils.customConfirm(`Select yes to continue...`)) {
-          if (flags.install) {
-            Utils.warning('Installing calamares prerequisites...')
-            await Pacman.prerequisitesCalamaresInstall()
-          }
-
-          if (branding === '') {
-            this.remix.branding = 'eggs'
-          } else {
-            this.remix.branding = branding
-          }
-
-          const ovary = new Ovary()
-          if (await ovary.loadSettings()) {
-            Utils.warning('Configuring calamares...')
-            await ovary.calamaresConfigure(verbose)
-          }
-        }
+      const { flags } = this.parse(Calamares)
+      let verbose = false
+      if (flags.verbose) {
+         verbose = true
       }
-    }
-  }
+
+      // Nome del brand di calamares
+      let branding = 'eggs'
+      if (flags.branding !== undefined) {
+         branding = flags.branding
+         console.log(`calamares branding: ${branding}`)
+      }
+
+      if (Utils.isRoot()) {
+         if (Pacman.isXInstalled()) {
+            if (await Utils.customConfirm(`Select yes to continue...`)) {
+               if (flags.install) {
+                  Utils.warning('Installing calamares prerequisites...')
+                  await Pacman.prerequisitesCalamaresInstall()
+               }
+
+               if (branding === '') {
+                  this.remix.branding = 'eggs'
+               } else {
+                  this.remix.branding = branding
+               }
+
+               const ovary = new Ovary()
+               if (await ovary.loadSettings()) {
+                  Utils.warning('Configuring calamares...')
+                  await ovary.calamaresConfigure(verbose)
+               }
+            }
+         }
+      }
+   }
 }

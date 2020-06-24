@@ -5,15 +5,15 @@
 */
 
 export interface IDevice {
-    name: string;
-    fsType: string;
-    mountPoint: string;
+   name: string
+   fsType: string
+   mountPoint: string
 }
 
 export interface IDevices {
-  efi: IDevice;
-  boot: IDevice;
-  root: IDevice;
-  data: IDevice;
-  swap: IDevice;
+   efi: IDevice
+   boot: IDevice
+   root: IDevice
+   data: IDevice
+   swap: IDevice
 }

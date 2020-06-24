@@ -10,6 +10,10 @@
     "plugin:@typescript-eslint/recommended"
   ],
   "rules": { 
-    "no-console": 0 // Exclude error
+    "no-console": 0, // Exclude error
+    "no-constant-condition" : 0,
+    "valid-jsdoc": 0,
+    "@typescript-eslint/camelcase": 0,
+    "@typescript-eslint/interface-name-prefix": 0
   }
 }

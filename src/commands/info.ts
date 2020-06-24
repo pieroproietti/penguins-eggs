@@ -16,56 +16,56 @@ import chalk = require('chalk')
  * Get informations about system
  */
 export default class Info extends Command {
+   static description = 'informations about system and eggs'
 
-  static description = 'informations about system and eggs'
-
-  static examples = [
-    `$ eggs info
+   static examples = [
+      `$ eggs info
 You will find here informations about penguin's eggs!
-`,
-  ]
+`
+   ]
 
-  async run() {
-    Utils.titles('info')
+   async run() {
+      Utils.titles('info')
 
-    const ovary = new Ovary
-    ovary.loadSettings()
+      const ovary = new Ovary()
+      ovary.loadSettings()
 
-    const line = '-----------------------------------------------------------------'
-    console.log(line)
-    ovary.showSettings()
+      const line =
+         '-----------------------------------------------------------------'
+      console.log(line)
+      ovary.showSettings()
 
-    console.log(line)
-    shx.exec('lsb_release -a')
+      console.log(line)
+      shx.exec('lsb_release -a')
 
-    console.log(line)
-    if (await Pacman.prerequisitesEggsCheck()) {
-      console.log('Eggs prerequisites:  ' + chalk.bgGreen('ok'))
-    } else {
-      console.log('Eggs prerequisites:  ' + chalk.bgRed('ko'))
-    }
-
-    if (await Pacman.configurationCheck()) {
-      console.log('Configuration file:  ' + chalk.bgGreen('ok'))
-    } else {
-      console.log('Configuration file:  ' + chalk.bgRed('ko'))
-    }
-    if (await Pacman.isXInstalled()) {
-      if (await Pacman.prerequisitesCalamaresCheck()) {
-        console.log('GUI Installer:       ' + chalk.bgGreen('ok'))
+      console.log(line)
+      if (await Pacman.prerequisitesEggsCheck()) {
+         console.log('Eggs prerequisites:  ' + chalk.bgGreen('ok'))
       } else {
-        console.log('GUI Installer:       ' + chalk.bgBlue('ko'))
+         console.log('Eggs prerequisites:  ' + chalk.bgRed('ko'))
       }
-    } else {
-      console.log('GUI Installer:       ' + chalk.bgGreen('cli installer'))
-    }
 
-    console.log(line)
-    if (Utils.isLive()) {
-      console.log('System: ' + chalk.bgGreen('LIVE') + ' system')
-    } else {
-      console.log('System: ' + chalk.bgCyan('INSTALLED') + ' systen')
-    }
-    console.log(line)
-  }
+      if (await Pacman.configurationCheck()) {
+         console.log('Configuration file:  ' + chalk.bgGreen('ok'))
+      } else {
+         console.log('Configuration file:  ' + chalk.bgRed('ko'))
+      }
+      if (await Pacman.isXInstalled()) {
+         if (await Pacman.prerequisitesCalamaresCheck()) {
+            console.log('GUI Installer:       ' + chalk.bgGreen('ok'))
+         } else {
+            console.log('GUI Installer:       ' + chalk.bgBlue('ko'))
+         }
+      } else {
+         console.log('GUI Installer:       ' + chalk.bgGreen('cli installer'))
+      }
+
+      console.log(line)
+      if (Utils.isLive()) {
+         console.log('System: ' + chalk.bgGreen('LIVE') + ' system')
+      } else {
+         console.log('System: ' + chalk.bgCyan('INSTALLED') + ' systen')
+      }
+      console.log(line)
+   }
 }
