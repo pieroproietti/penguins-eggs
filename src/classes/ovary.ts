@@ -25,7 +25,7 @@ const exec = require('../lib/utils').exec
 // classes
 import Utils from './utils'
 import N8 from './n8'
-import Calamares from './incubation/config'
+import Calamares from './incubation/incubation'
 import Distro from './distro'
 import Xdg from './xdg'
 import Pacman from './pacman'
@@ -43,7 +43,7 @@ export default class Ovary {
 
    distro = {} as IDistro
 
-   calamares = {} as Calamares
+   calamares = {}
 
    prerequisites = {} as Prerequisites
 

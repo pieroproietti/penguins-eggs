@@ -15,7 +15,8 @@ const exec = require('../../lib/utils').exec
 /**
  *
  */
-class calamaresConfig {
+// eslint-disable-next-line @typescript-eslint/class-name-casing
+class Incubation {
    verbose = false
 
    remix: IRemix
@@ -554,6 +555,30 @@ class calamaresConfig {
       write(scriptFile, scriptContent, this.verbose)
       await exec(`chmod +x ${scriptFile}`)
    }
+
+   /**
+    * Automirrot
+    */
+   async moduleAutomirror() {
+      const automirrorConfig = require('./calamares-modules/automirror')
+         .automirrorConfig
+      const dir = `/usr/lib/calamares/modules/automirror-config/`
+      const file = dir + 'module.desc'
+      const content = automirrorConfig()
+      if (!fs.existsSync(dir)) {
+         fs.mkdirSync(dir)
+      }
+      write(file, content, this.verbose)
+
+      const scriptAutomirrorConfig = require('./scripts/automirror-config')
+         .automirrorConfig
+      const scriptDir = `/usr/lib/calamares/modules/automirror-config/`
+      const scriptFile = scriptDir + 'main.py'
+      const scriptContent = scriptAutomirrorConfig()
+      write(scriptFile, scriptContent, this.verbose)
+      await exec(`chmod +x ${scriptFile}`)
+   }
+
 
    /**
     *
