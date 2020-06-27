@@ -1038,8 +1038,12 @@ timeout 200\n`
          'usr',
          'var'
       ]
-      const rootDirs = fs.readdirSync('/', { withFileTypes: true })
-      // console.log(rootDirs)
+      /**
+       * Attenzione: 
+       * fs.readdirSync('/', { withFileTypes: true })
+       * viene ignorato da Node8, ma da problemi da Node10 in poi
+       */
+      const rootDirs = fs.readdirSync('/')
       const startLine = `#############################################################`
       const titleLine = `# -----------------------------------------------------------`
       const endLine = `# ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n`
