@@ -51,9 +51,14 @@ class calamaresConfig {
    config() {
       // configurazioni generali
       this.createCalamaresDirs()
-      this.createSettings()
       this.createBranding()
       this.createInstallDebian()
+
+      console.log(`remix: ${JSON.stringify(this.remix)}`)
+      console.log()
+      console.log(`distro: ${JSON.stringify(this.distro)}`)
+      
+      this.createSettings()
 
       // work modules exec section
       this.modulePartition()
@@ -178,7 +183,7 @@ class calamaresConfig {
     *
     */
    createSettings() {
-      const settings = require('./settings').settings
+      const settings = require('./debian/settings').settings
       const dir = '/etc/calamares/'
       const file = dir + 'settings.conf'
       const content = settings(
