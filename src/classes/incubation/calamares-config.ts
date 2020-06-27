@@ -16,7 +16,7 @@ const exec = require('../../lib/utils').exec
  *
  */
 // eslint-disable-next-line @typescript-eslint/class-name-casing
-class calamaresConfig {
+export default class CalamaresConfig {
    verbose = false
 
    remix: IRemix
@@ -595,7 +595,6 @@ class calamaresConfig {
    }
 }
 
-export default calamaresConfig
 
 /**
  *

@@ -35,7 +35,7 @@ export default class n8 {
       return isSymbolicLink
    }
 
-   static dirent2string(dir: fs.Dirent): string {
+   static dirent2string(dir: any): string {
       const ret = JSON.stringify(dir).replace(`"`, ``).replace(`"`, ``)
       return ret
    }

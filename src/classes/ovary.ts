@@ -25,11 +25,12 @@ const exec = require('../lib/utils').exec
 // classes
 import Utils from './utils'
 import N8 from './n8'
-import Calamares from './incubation/incubation'
+import Incubator from './incubation/calamares-config'
 import Distro from './distro'
 import Xdg from './xdg'
 import Pacman from './pacman'
 import Prerequisites from '../commands/prerequisites'
+import CalamaresConfig from './incubation/calamares-config'
 
 /**
  * Ovary:
@@ -43,7 +44,7 @@ export default class Ovary {
 
    distro = {} as IDistro
 
-   calamares = {}
+   calamares = {} as CalamaresConfig
 
    prerequisites = {} as Prerequisites
 
@@ -495,7 +496,7 @@ export default class Ovary {
             await Pacman.clean(verbose)
          }
          // Configuro calamares
-         this.calamares = new Calamares(this.remix, this.distro, verbose)
+         this.calamares = new CalamaresConfig(this.remix, this.distro, verbose)
          await this.calamares.config()
       }
    }

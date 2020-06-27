@@ -7,7 +7,7 @@
  */
 
 import yaml = require('js-yaml')
-import { IRemix } from '../../interfaces'
+import { IRemix } from '../../../interfaces'
 
 /**
  *

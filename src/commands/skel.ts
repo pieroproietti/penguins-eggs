@@ -39,10 +39,9 @@ desktop configuration of user mauro will get used as default`
       }
       Utils.warning(`user: ${user}`)
 
-      if (fs.existsSync(`/home/${user}`)) {
-         source = `/home/${user}`
-      } else {
-         Utils.error(`User ${user} not exist or not a proper home`)
+      let homeSource = `/home/${user}`
+      if (!fs.existsSync(homeSource)) {
+         Utils.error(`User ${user} not exist or not exist a proper home`)
          Utils.warning(`terminate`)
          process.exit(0)
       }

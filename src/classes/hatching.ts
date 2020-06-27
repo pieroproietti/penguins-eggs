@@ -17,9 +17,8 @@ import Pacman from './pacman'
 import { IDevices, IDevice } from '../interfaces'
 
 const exec = require('../lib/utils').exec
-//const {checkSync} = require('diskusage')
-import checkSync = require('diskusage')
-
+//import {checkSync} from 'diskusage'
+import * as diskusage from 'diskusage'
 /**
  * hatch, installazione
  */
@@ -299,8 +298,7 @@ export default class Hatching {
 
       Utils.titles(`install`)
       console.log()
-      Utils.warning(`The process of installation is running..,`)
-      ty
+      Utils.warning(`The process of installation is running...`)
       if (fs.existsSync('/sys/firmware/efi/efivars')) {
          this.efi = true
       }
@@ -1213,7 +1211,7 @@ adduser ${username} \
       }
       let size = 0
       try {
-         const info = await checkSync(device)
+         const info = diskusage.checkSync(device)
          size = info.total
       } catch (error) {
          Utils.warning(`checkSync: ${error}`)
