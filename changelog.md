@@ -13,17 +13,7 @@ penguins-eggs
 
 # Penguin's eggs Debian package
 
-Usually the last version is the right one.
-
-To install the package, download it and open a terminal window.
-
-```sudo dpkg -i eggs_7.5.110-1_amd64.deb```
-
-## Usage
-Use ```eggs``` without parameters to have the list of commands. ```eggs produce --help``` will show you the description of this command and the flag you can use. 
-
-Detailed instrunction for usage are published on the gitboot [penguin's eggs](https://penguin-s-eggs.gitbook.io/project/) (sorry, only italian language).
-
+Usually the last version is the right one. Detailed instrunctions for usage are published on the [penguin's eggs book](https://penguins-eggs.net/book).
 
 ## Changelog
 Versions are listed on reverse order, the first is the last one.
