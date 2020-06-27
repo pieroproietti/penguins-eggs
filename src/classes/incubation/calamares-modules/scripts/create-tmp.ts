@@ -11,6 +11,7 @@ export function createTmp(): string {
    text += `TMPDIR=$CHROOT/tmp\n`
    text += `if [ ! -d $TMPDIR ]; then\n`
    text += `    mkdir $TMPDIR\n`
+   text += `    chmod 1777 $TMPDIR -R\n`
    text += `fi\n`
    return text
 }

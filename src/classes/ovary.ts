@@ -25,7 +25,7 @@ const exec = require('../lib/utils').exec
 // classes
 import Utils from './utils'
 import N8 from './n8'
-import Calamares from './incubation/config'
+import Calamares from './incubation/incubation'
 import Distro from './distro'
 import Xdg from './xdg'
 import Pacman from './pacman'
@@ -43,7 +43,7 @@ export default class Ovary {
 
    distro = {} as IDistro
 
-   calamares = {} as Calamares
+   calamares = {}
 
    prerequisites = {} as Prerequisites
 
@@ -355,22 +355,11 @@ export default class Ovary {
    }
 
    /**
-    *
-    * @param basename
+    * 
+    * @param basename 
+    * @param branding 
     */
-   async produce(
-      basename = '',
-      branding = '',
-      assistant = false,
-      verbose = false,
-      dry = false
-   ) {
-      const echo = Utils.setEcho(verbose)
-
-      if (!fs.existsSync(this.snapshot_dir)) {
-         shx.mkdir('-p', this.snapshot_dir)
-      }
-
+   public async loadRemix (basename= '', branding = ''){
       this.remix.versionNumber = Utils.getPackageVersion()
       this.remix.kernel = Utils.kernerlVersion()
 
@@ -387,6 +376,28 @@ export default class Ovary {
          this.remix.name = this.snapshot_basename
          this.remix.versionName = this.snapshot_basename
       }
+   }
+
+   /**
+    *
+    * @param basename
+    */
+   async produce(
+      basename = '',
+      branding = '',
+      assistant = false,
+      verbose = false,
+      dry = false
+   ) {
+      const echo = Utils.setEcho(verbose)
+
+      if (!fs.existsSync(this.snapshot_dir)) {
+         shx.mkdir('-p', this.snapshot_dir)
+      }
+
+
+      this.loadRemix(basename, branding)
+
 
       if (await Utils.isLive()) {
          console.log(
