@@ -16,7 +16,7 @@ const exec = require('../../lib/utils').exec
  *
  */
 // eslint-disable-next-line @typescript-eslint/class-name-casing
-class Incubation {
+class calamaresConfig {
    verbose = false
 
    remix: IRemix
@@ -151,7 +151,7 @@ class Incubation {
     *
     */
    async createInstallDebian() {
-      const scriptInstallDebian = require('./scripts/install-debian')
+      const scriptInstallDebian = require('./calamares-modules/scripts/install-debian')
          .installDebian
       const scriptDir = `/usr/bin/`
       const scriptFile = scriptDir + 'install-debian'
@@ -235,7 +235,7 @@ class Incubation {
       }
       write(file, content, this.verbose)
 
-      const scriptSourcesMedia = require('./scripts/sources-media').sourcesMedia
+      const scriptSourcesMedia = require('./calamares-modules/scripts/sources-media').sourcesMedia
       const scriptDir = `/usr/sbin/`
       const scriptFile = scriptDir + 'sources-media'
       const scriptContent = scriptSourcesMedia()
@@ -247,7 +247,7 @@ class Incubation {
     *
     */
    async moduleSourcesTrusted() {
-      const sourcesTrusted = require('./calamares-modules/sources-trusted')
+      const sourcesTrusted = require('./calamares-modules/desc/sources-trusted')
          .sourcesTrusted
       const dir = `/usr/lib/calamares/modules/sources-trusted/`
       const file = dir + 'module.desc'
@@ -257,7 +257,7 @@ class Incubation {
       }
       write(file, content, this.verbose)
 
-      const scriptSourcesTrusted = require('./scripts/sources-trusted')
+      const scriptSourcesTrusted = require('./calamares-modules/scripts/sources-trusted')
          .sourcesTrusted
       const scriptDir = `/usr/sbin/`
       const scriptFile = scriptDir + 'sources-trusted'
@@ -363,7 +363,7 @@ class Incubation {
    }
 
    async moduleCreateTmp() {
-      const createTmp = require('./calamares-modules/create-tmp').createTmp
+      const createTmp = require('./calamares-modules/desc/create-tmp').createTmp
       const dir = `/usr/lib/calamares/modules/create-tmp/`
       const file = dir + 'module.desc'
       const content = createTmp()
@@ -371,7 +371,7 @@ class Incubation {
          fs.mkdirSync(dir)
       }
       write(file, content, this.verbose)
-      const scriptcreateTmp = require('./scripts/create-tmp').createTmp
+      const scriptcreateTmp = require('./calamares-modules/scripts/create-tmp').createTmp
       const scriptDir = `/usr/sbin/`
       const scriptFile = scriptDir + 'create-tmp'
       const scriptContent = scriptcreateTmp()
@@ -383,7 +383,7 @@ class Incubation {
     *
     */
    async moduleBootloaderConfig() {
-      const bootloaderConfig = require('./calamares-modules/bootloader-config')
+      const bootloaderConfig = require('./calamares-modules/desc/bootloader-config')
          .bootloaderConfig
       const dir = `/usr/lib/calamares/modules/bootloader-config/`
       const file = dir + 'module.desc'
@@ -393,7 +393,7 @@ class Incubation {
       }
       write(file, content, this.verbose)
 
-      const scriptBootloaderConfig = require('./scripts/bootloader-config')
+      const scriptBootloaderConfig = require('./calamares-modules/scripts/bootloader-config')
          .bootloaderConfig
       const scriptDir = `/usr/sbin/`
       const scriptFile = scriptDir + 'bootloader-config'
@@ -517,7 +517,7 @@ class Incubation {
     *
     */
    moduleSourcesTrustedUnmount() {
-      const sourcesTrustedUnmount = require('./calamares-modules/sources-trusted-unmount')
+      const sourcesTrustedUnmount = require('./calamares-modules/desc/sources-trusted-unmount')
          .sourcesTrustedUnmount
       const dir = `/usr/lib/calamares/modules/sources-trusted-unmount/`
       const file = dir + 'module.desc'
@@ -538,7 +538,7 @@ class Incubation {
     *
     */
    async moduleSourcesFinal() {
-      const sourcesFinal = require('./calamares-modules/sources-final')
+      const sourcesFinal = require('./calamares-modules/desc/sources-final')
          .sourcesFinal
       const dir = `/usr/lib/calamares/modules/sources-final/`
       const file = dir + 'module.desc'
@@ -548,7 +548,7 @@ class Incubation {
       }
       write(file, content, this.verbose)
 
-      const scriptSourcesFinal = require('./scripts/sources-final').sourcesFinal
+      const scriptSourcesFinal = require('./calamares-modules/scripts/sources-final').sourcesFinal
       const scriptDir = `/usr/sbin/`
       const scriptFile = scriptDir + 'sources-final'
       const scriptContent = scriptSourcesFinal()
@@ -570,7 +570,7 @@ class Incubation {
       }
       write(file, content, this.verbose)
 
-      const scriptAutomirrorConfig = require('./scripts/automirror-config')
+      const scriptAutomirrorConfig = require('./calamares-modules/scripts/automirror-config')
          .automirrorConfig
       const scriptDir = `/usr/lib/calamares/modules/automirror-config/`
       const scriptFile = scriptDir + 'main.py'

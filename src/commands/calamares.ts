@@ -59,9 +59,10 @@ export default class Calamares extends Command {
                   this.remix.branding = branding
                }
 
+               Utils.warning('Configuring calamares...')
                const ovary = new Ovary()
                if (await ovary.loadSettings()) {
-                  Utils.warning('Configuring calamares...')
+                  ovary.loadRemix('custom', 'eggs')
                   await ovary.calamaresConfigure(verbose)
                }
             }
