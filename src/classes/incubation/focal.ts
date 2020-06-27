@@ -5,7 +5,7 @@
  */
 
 /**
- * penguins-eggs: buster.ts
+ * penguins-eggs: focal.ts
  *
  * author: Piero Proietti
  * mail: piero.proietti@gmail.com
@@ -17,12 +17,13 @@ import Utils from '../utils'
 import Pacman from '../pacman'
 import yaml = require('js-yaml')
 import { IRemix, IDistro } from '../../interfaces'
+import { machineid } from './modules/machineid'
 const exec = require('../../lib/utils').exec
 
 /**
  * 
  */
-export class Buster {
+export class Focal {
     verbose = false
 
     remix: IRemix
@@ -39,9 +40,9 @@ export class Buster {
         this.remix = remix
         this.distro = distro
         this.verbose = verbose
-        this.displaymanager =displaymanager
+        this.displaymanager = displaymanager
     }
-  
+
 
     /**
      * 
@@ -50,16 +51,52 @@ export class Buster {
      * @param sourcesTrusted 
      * @param remix 
      */
-    settings(
+    public settings(
         displaymanager = false,
         sourcesMedia = false,
         sourcesTrusted = true,
         remix: IRemix
     ): string {
+
+
+
         // path di ricerca dei moduli
         const modulesSearch: string[] = []
         modulesSearch.push('local')
         modulesSearch.push('/usr/lib/calamares/modules')
+
+        const instances = [
+            {
+                "id": "before_bootloader_mkdirs",
+                "module": "contextualprocess",
+                "config": "before_bootloader_mkdirs_context.conf"
+            },
+            {
+                "id": "before_bootloader",
+                "module": "contextualprocess",
+                "config": "before_bootloader_context.conf"
+            },
+            {
+                "id": "after_bootloader",
+                "module": "contextualprocess",
+                "config": "after_bootloader_context.conf"
+            },
+            {
+                "id": "after_bootloader",
+                "module": "contextualprocess",
+                "config": "after_bootloader_context.conf"
+            },
+            {
+                "id": "bug-LP#1829805",
+                "module": "shellprocess",
+                "config": "shellprocess_bug-LP#1829805.conf"
+            },
+            {
+                "id": "add386arch",
+                "module": "shellprocess",
+                "config": "shellprocess_add386arch.conf"
+            }
+        ]
 
         // moduli da mostrare a video
         const show: string[] = []
@@ -75,46 +112,29 @@ export class Buster {
         exec.push('partition')
         exec.push('mount')
         exec.push('unpackfs')
-        if (sourcesMedia) {
-            exec.push('sources-media')
-        }
-        if (sourcesTrusted) {
-            exec.push('sources-trusted')
-        }
-        exec.push('machineid')
+        exec.push("machineid")
         exec.push('fstab')
         exec.push('locale')
         exec.push('keyboard')
         exec.push('localecfg')
+        exec.push('luksbootkeyfile')
         exec.push('users')
-        if (displaymanager) {
-            exec.push('displaymanager')
-        }
+        exec.push('displaymanager')
         exec.push('networkcfg')
         exec.push('hwclock')
-        exec.push('services-systemd')
-        exec.push('create-tmp')
-        exec.push('bootloader-config')
-        exec.push('grubcfg')
-        exec.push('bootloader')
-        /**
-         * tolta la rimozione dei pacchetti da sistemare
-         */
-        //exec.push('packages')
-        exec.push('luksbootkeyfile')
-        exec.push('plymouthcfg')
-        exec.push('initramfscfg')
-        exec.push('initramfs')
-        exec.push('removeuser')
-        if (sourcesMedia) {
-            exec.push('sources-media-unmount')
-            exec.push('sources-final')
-        }
-        if (sourcesTrusted) {
-            exec.push('sources-trusted-unmount')
-            exec.push('sources-final')
-        }
-        exec.push('umount')
+        exec.push("contextualprocess@before_bootloader_mkdirs")
+        exec.push("shellprocess@bug-LP#1829805")
+        exec.push("initramfscfg")
+        exec.push("initramfs")
+        exec.push("grubcfg")
+        exec.push("contextualprocess@before_bootloader")
+        exec.push("bootloader")
+        exec.push("contextualprocess@after_bootloader")
+        exec.push("automirror")
+        exec.push("shellprocess@add386arch")
+        exec.push("packages")
+        exec.push("shellprocess@logs")
+        exec.push("umount")
 
         const settings = {
             'modules-search': modulesSearch,
@@ -123,7 +143,6 @@ export class Buster {
             'prompt-install': false,
             'dont-chroot': false
         }
-        // console.log(settings)
         return yaml.safeDump(settings)
     }
 
