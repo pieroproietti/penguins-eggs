@@ -28,6 +28,14 @@ Detailed instrunction for usage are published on the gitboot [penguin's eggs](ht
 ## Changelog
 Versions are listed on reverse order, the first is the last one.
 
+### eggs-7.5.124-1
+eggs compatible again with node14 and node8.
+
+* eggs compatible again with node14 and node8;
+* the versions for i386 and for amd64 start from the same code, but are spelled with node8 or node14 respectively;
+* it is therefore possible. use the version of node present on the system;
+* the structure of calamares has been modified to adapt it to the need to insert different setting versions, one for each distribution.
+
 ### eggs-7.5.122-1
 Sometimes, to move forward, you need to step back first.
 
