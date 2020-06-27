@@ -1,6 +1,6 @@
 # Nodejs v. 8
 
-From the version eggs-7-5-122 I changed the version of the reference node, returning to the old version nodejs 8. This guarantees the possibility of creating debian packages for both the i386 architecture as well as for amd64. Not everything comes for free, and in order not to have two source lines, I had to switch to node8 also for the amd64 version, you can experience problems using the versions after 7-5.122 if installing node> 8. (For the user is not a big problem, can install the .deb version, for those who collaborate or intend to collaborate on the project, I recommend installing nodejs 8).
+From the version eggs-7-5-122 I changed the version of the reference node, returning to the old version nodejs 8. This guarantees the possibility of creating debian packages for both the i386 architecture as well as for amd64. Not everything comes for free, and in order to not have two source lines, I had to switch to node8 also for the amd64 version. In all the way, actually we can compile vs node8, node10, node12 and node14, but - of course - we need to be compatible with node8 to can create packages in the i386 architecture.
 
 # Nodejs on i386 
 The last official version for this architecture is Node.js v8.x, we can install it.
