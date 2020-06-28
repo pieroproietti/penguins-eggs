@@ -138,11 +138,7 @@ export default class CalamaresConfig {
       write(scriptFile, scriptContent, this.verbose)
       await exec(`chmod +x ${scriptFile}`)
    }
-
-
-
 }
-
 
 /**
  *
