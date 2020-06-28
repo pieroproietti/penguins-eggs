@@ -39,9 +39,9 @@ export class Buster {
         this.remix = remix
         this.distro = distro
         this.verbose = verbose
-        this.displaymanager =displaymanager
+        this.displaymanager = displaymanager
     }
-  
+
     /**
      *
      */
@@ -141,6 +141,17 @@ export class Buster {
         return yaml.safeDump(settings)
     }
 
+    /**
+     * module = name + '.conf0
+     * shellprocess = 'shellprocess_' + name + '.conf'
+     * contextualprocess = name + '_context.conf'
+     * 
+     * module_calamares
+     *                      dir = '/usr/lib/calamares/modules/' + name
+     *                      name = module.desc
+     *                      script = 
+     * @param name
+     */
     public modules() {
         this.modulePartition()
         this.moduleMount()
@@ -185,6 +196,44 @@ export class Buster {
         this.moduleUmount()
     }
 
+    /**
+     * module = name + '.conf0
+     * shellprocess = 'shellprocess_' + name + '.conf'
+     * contextualprocess = name + '_context.conf'
+     * 
+     * module_calamares
+     *                      dir = '/usr/lib/calamares/modules/' + name
+     *                      name = module.desc
+     *                      script = 
+     * @param name
+     */
+    module(name: string, content: string) {
+        const dir = `/etc/calamares/modules/`
+        const file = dir + name + '.conf'
+        write(file, content, this.verbose)
+    }
+
+    /**
+     * 
+     * @param process 
+     */
+    shellprocess(name: string) {
+        let content = ''
+        const dir = `/etc/calamares/modules/`
+        let file = dir + 'shellprocess_' + name + '.conf'
+        write(file, content, this.verbose)
+    }
+
+    /**
+     * 
+     * @param process 
+     */
+    contextualprocess(name: string) {
+        let content = ''
+        const dir = `/etc/calamares/modules/`
+        let file = dir + name + '_context' + '.conf'
+        write(file, content, this.verbose)
+    }
 
 
     /**
@@ -201,10 +250,7 @@ export class Buster {
      */
     moduleMount() {
         const mount = require('./modules/mount').mount
-        const dir = `/etc/calamares/modules/`
-        const file = dir + 'mount.conf'
-        const content = mount()
-        write(file, content, this.verbose)
+        this.module('mount', mount()()
     }
 
     /**
@@ -212,26 +258,25 @@ export class Buster {
      */
     moduleUnpackfs() {
         const unpackfs = require('./modules/unpackfs').unpackfs
-        const dir = `/etc/calamares/modules/`
-        const file = dir + 'unpackfs.conf'
-        const content = unpackfs(this.distro.mountpointSquashFs)
-        write(file, content, this.verbose)
+        this.module('unpackfs', unpackfs(this.distro.mountpointSquashFs))
     }
 
     /**
      *
      */
     async moduleSourcesMedia() {
-        const sourcesMedia = require('./calamares-modules/sources-media')
-            .sourcesMedia
         const dir = `/usr/lib/calamares/modules/sources-media/`
-        const file = dir + 'module.desc'
-        const content = sourcesMedia()
         if (!fs.existsSync(dir)) {
             fs.mkdirSync(dir)
         }
+
+        // desc
+        const sourcesMedia = require('./calamares-modules/sources-media').sourcesMedia
+        const file = dir + 'module.desc'
+        const content = sourcesMedia()
         write(file, content, this.verbose)
 
+        // bash
         const scriptSourcesMedia = require('./calamares-modules/scripts/sources-media').sourcesMedia
         const scriptDir = `/usr/sbin/`
         const scriptFile = scriptDir + 'sources-media'
@@ -244,18 +289,17 @@ export class Buster {
      *
      */
     async moduleSourcesTrusted() {
-        const sourcesTrusted = require('./calamares-modules/desc/sources-trusted')
-            .sourcesTrusted
         const dir = `/usr/lib/calamares/modules/sources-trusted/`
-        const file = dir + 'module.desc'
-        const content = sourcesTrusted()
         if (!fs.existsSync(dir)) {
             fs.mkdirSync(dir)
         }
+        // desc
+        const sourcesTrusted = require('./calamares-modules/desc/sources-trusted').sourcesTrusted
+        const file = dir + 'module.desc'
+        const content = sourcesTrusted()
         write(file, content, this.verbose)
 
-        const scriptSourcesTrusted = require('./calamares-modules/scripts/sources-trusted')
-            .sourcesTrusted
+        const scriptSourcesTrusted = require('./calamares-modules/scripts/sources-trusted').sourcesTrusted
         const scriptDir = `/usr/sbin/`
         const scriptFile = scriptDir + 'sources-trusted'
         const scriptContent = scriptSourcesTrusted()
@@ -268,10 +312,7 @@ export class Buster {
      */
     moduleMachineid() {
         const machineid = require('./modules/machineid').machineid
-        const dir = `/etc/calamares/modules/`
-        const file = dir + 'machineid.conf'
-        const content = machineid()
-        write(file, content, this.verbose)
+        this.module('machineid', machineid())
     }
 
     /**
@@ -279,10 +320,7 @@ export class Buster {
      */
     moduleFstab() {
         const fstab = require('./modules/fstab').fstab
-        const dir = `/etc/calamares/modules/`
-        const file = dir + 'fstab.conf'
-        const content = fstab()
-        write(file, content, this.verbose)
+        this.module('fstab', fstab())
     }
 
     /**
@@ -316,10 +354,7 @@ export class Buster {
      */
     moduleUsers() {
         const users = require('./modules/users').users
-        const dir = `/etc/calamares/modules/`
-        const file = dir + 'users.conf'
-        const content = users()
-        write(file, content, this.verbose)
+        this.module('users', users())
     }
 
     /**
@@ -327,10 +362,7 @@ export class Buster {
      */
     moduleDisplaymanager() {
         const displaymanager = require('./modules/displaymanager').displaymanager
-        const dir = `/etc/calamares/modules/`
-        const file = dir + 'displaymanager.conf'
-        const content = displaymanager()
-        write(file, content, this.verbose)
+        this.module('displaymanager', displaymanager()
     }
     /**
      *
@@ -360,14 +392,18 @@ export class Buster {
     }
 
     async moduleCreateTmp() {
-        const createTmp = require('./calamares-modules/desc/create-tmp').createTmp
         const dir = `/usr/lib/calamares/modules/create-tmp/`
-        const file = dir + 'module.desc'
-        const content = createTmp()
         if (!fs.existsSync(dir)) {
             fs.mkdirSync(dir)
         }
+
+        // desc
+        const createTmp = require('./calamares-modules/desc/create-tmp').createTmp
+        const file = dir + 'module.desc'
+        const content = createTmp()
         write(file, content, this.verbose)
+
+        // bash
         const scriptcreateTmp = require('./calamares-modules/scripts/create-tmp').createTmp
         const scriptDir = `/usr/sbin/`
         const scriptFile = scriptDir + 'create-tmp'
@@ -380,14 +416,15 @@ export class Buster {
      *
      */
     async moduleBootloaderConfig() {
-        const bootloaderConfig = require('./calamares-modules/desc/bootloader-config')
-            .bootloaderConfig
         const dir = `/usr/lib/calamares/modules/bootloader-config/`
-        const file = dir + 'module.desc'
-        const content = bootloaderConfig()
         if (!fs.existsSync(dir)) {
             fs.mkdirSync(dir)
         }
+
+        const bootloaderConfig = require('./calamares-modules/desc/bootloader-config')
+            .bootloaderConfig
+        const file = dir + 'module.desc'
+        const content = bootloaderConfig()
         write(file, content, this.verbose)
 
         const scriptBootloaderConfig = require('./calamares-modules/scripts/bootloader-config')
@@ -413,10 +450,7 @@ export class Buster {
      */
     moduleBootloader() {
         const bootloader = require('./modules/bootloader').bootloader
-        const dir = `/etc/calamares/modules/`
-        const file = dir + 'bootloader.conf'
-        const content = bootloader()
-        write(file, content, this.verbose)
+        this.module('bootloader', bootloader())
     }
 
     /**
@@ -424,10 +458,7 @@ export class Buster {
      */
     modulePackages() {
         const packages = require('./modules/packages').packages
-        const dir = `/etc/calamares/modules/`
-        const file = dir + 'packages.conf'
-        const content = packages()
-        write(file, content, this.verbose)
+        this.module('packages', packages())
     }
 
     /**
@@ -445,10 +476,7 @@ export class Buster {
     moduleLuksopenswaphookcfg() {
         const lksopenswaphookcfg = require('./modules/lksopenswaphookcfg')
             .lksopenswaphookcfg
-        const dir = `/etc/calamares/modules/`
-        const file = dir + 'lksopenswaphookcfg.conf'
-        const content = lksopenswaphookcfg()
-        write(file, content, this.verbose)
+        this.module('lksopenswaphookcfg', lksopenswaphookcfg())
     }
 
     /**
@@ -474,10 +502,7 @@ export class Buster {
      */
     moduleRemoveuser() {
         const removeuser = require('./modules/removeuser').removeuser
-        const dir = `/etc/calamares/modules/`
-        const file = dir + 'removeuser.conf'
-        const content = removeuser()
-        write(file, content, this.verbose)
+        this.module('removeuser', removeuser())
     }
 
     /**
@@ -493,14 +518,16 @@ export class Buster {
      *
      */
     moduleSourcesMediaUnmount() {
-        const sourcesMediaUnmount = require('./calamares-modules/sources-media-unmount')
-            .sourcesMediaUnmount
         const dir = `/usr/lib/calamares/modules/sources-media-unmount/`
-        const file = dir + 'module.desc'
-        const content = sourcesMediaUnmount()
         if (!fs.existsSync(dir)) {
             fs.mkdirSync(dir)
         }
+
+        // desc
+        const sourcesMediaUnmount = require('./calamares-modules/sources-media-unmount')
+            .sourcesMediaUnmount
+        const file = dir + 'module.desc'
+        const content = sourcesMediaUnmount()
         write(file, content, this.verbose)
 
         if (this.verbose) {
@@ -514,14 +541,15 @@ export class Buster {
      *
      */
     moduleSourcesTrustedUnmount() {
-        const sourcesTrustedUnmount = require('./calamares-modules/desc/sources-trusted-unmount')
-            .sourcesTrustedUnmount
         const dir = `/usr/lib/calamares/modules/sources-trusted-unmount/`
-        const file = dir + 'module.desc'
-        const content = sourcesTrustedUnmount()
         if (!fs.existsSync(dir)) {
             fs.mkdirSync(dir)
         }
+
+        const sourcesTrustedUnmount = require('./calamares-modules/desc/sources-trusted-unmount')
+            .sourcesTrustedUnmount
+        const file = dir + 'module.desc'
+        const content = sourcesTrustedUnmount()
         write(file, content, this.verbose)
 
         if (this.verbose) {
@@ -535,16 +563,19 @@ export class Buster {
      *
      */
     async moduleSourcesFinal() {
-        const sourcesFinal = require('./calamares-modules/desc/sources-final')
-            .sourcesFinal
         const dir = `/usr/lib/calamares/modules/sources-final/`
-        const file = dir + 'module.desc'
-        const content = sourcesFinal()
         if (!fs.existsSync(dir)) {
             fs.mkdirSync(dir)
         }
+
+        // desc
+        const sourcesFinal = require('./calamares-modules/desc/sources-final')
+            .sourcesFinal
+        const file = dir + 'module.desc'
+        const content = sourcesFinal()
         write(file, content, this.verbose)
 
+        // bash
         const scriptSourcesFinal = require('./calamares-modules/scripts/sources-final').sourcesFinal
         const scriptDir = `/usr/sbin/`
         const scriptFile = scriptDir + 'sources-final'
@@ -552,30 +583,6 @@ export class Buster {
         write(scriptFile, scriptContent, this.verbose)
         await exec(`chmod +x ${scriptFile}`)
     }
-
-    /**
-     * Automirrot
-     */
-    async moduleAutomirror() {
-        const automirrorConfig = require('./calamares-modules/automirror')
-            .automirrorConfig
-        const dir = `/usr/lib/calamares/modules/automirror-config/`
-        const file = dir + 'module.desc'
-        const content = automirrorConfig()
-        if (!fs.existsSync(dir)) {
-            fs.mkdirSync(dir)
-        }
-        write(file, content, this.verbose)
-
-        const scriptAutomirrorConfig = require('./calamares-modules/scripts/automirror-config')
-            .automirrorConfig
-        const scriptDir = `/usr/lib/calamares/modules/automirror-config/`
-        const scriptFile = scriptDir + 'main.py'
-        const scriptContent = scriptAutomirrorConfig()
-        write(scriptFile, scriptContent, this.verbose)
-        await exec(`chmod +x ${scriptFile}`)
-    }
-
 
     /**
      *
