@@ -237,6 +237,10 @@ export class Buster {
 
 
     /**
+     * ====================================================================================
+     */
+
+    /**
      *
      */
     modulePartition() {
@@ -249,8 +253,39 @@ export class Buster {
      *
      */
     moduleMount() {
-        const mount = require('./modules/mount').mount
-        this.module('mount', mount()()
+        const mount = {
+            extraMounts: [{
+                device: "proc",
+                fs: "proc",
+                mountPoint: "/proc"
+            }, {
+                device: "sys",
+                fs: "sysfs",
+                mountPoint: "/sys"
+            }, {
+                device: "/dev",
+                mountPoint: "/dev",
+                options: "bind"
+            }, {
+                device: "/dev/pts",
+                fs: "devpts",
+                mountPoint: "/dev/pts"
+            }, {
+                device: "tmpfs",
+                fs: "tmpfs",
+                mountPoint: "/run"
+            }, {
+                device: "/run/udev",
+                mountPoint: "/run/udev",
+                options: "bind"
+            }],
+            extraMountsEfi: [{
+                device: "efivarfs",
+                fs: "tmpefivarfsfs",
+                mountPoint: "/sys/firmware/efi/efivars"
+            }]
+        }
+        this.module('mount', yaml.safeDump(mount))
     }
 
     /**
@@ -362,7 +397,7 @@ export class Buster {
      */
     moduleDisplaymanager() {
         const displaymanager = require('./modules/displaymanager').displaymanager
-        this.module('displaymanager', displaymanager()
+        this.module('displaymanager', displaymanager())
     }
     /**
      *
