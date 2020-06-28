@@ -55,14 +55,12 @@ export default class CalamaresConfig {
       this.createInstallDebian()
       if (this.distro.versionLike === 'buster' || this.distro.versionLike === 'strect' || this.distro.versionLike === 'bulleye') {
          const buster = new Buster(this.remix, this.distro, this.displaymanager, this.verbose)
-         buster.settings(this.displaymanager, this.sourcesMedia, this.sourcesTrusted, this.remix)
-         buster.createSettings()
+         buster.settings()
          buster.modules()
       } else if(this.distro.versionLike === 'focal'){
          const focal = new Focal(this.remix, this.distro, this.displaymanager, this.verbose)
-         focal.settings(this.displaymanager, this.sourcesMedia, this.sourcesTrusted, this.remix)
-         focal.createSettings()
-         //focal.modules()
+         focal.settings()
+         focal.modules()
       }
    }
 

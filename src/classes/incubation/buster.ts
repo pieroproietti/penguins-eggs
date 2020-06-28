@@ -42,6 +42,20 @@ export class Buster {
         this.displaymanager =displaymanager
     }
   
+    /**
+     *
+     */
+    public settings() {
+        const dir = '/etc/calamares/'
+        const file = dir + 'settings.conf'
+        const content = this.getSettings(
+            this.displaymanager,
+            this.sourcesMedia,
+            this.sourcesTrusted,
+            this.remix
+        )
+        write(file, content, this.verbose)
+    }
 
     /**
      * 
@@ -50,7 +64,7 @@ export class Buster {
      * @param sourcesTrusted 
      * @param remix 
      */
-    settings(
+    getSettings(
         displaymanager = false,
         sourcesMedia = false,
         sourcesTrusted = true,
@@ -172,22 +186,6 @@ export class Buster {
     }
 
 
-
-    /**
-     *
-     */
-    public createSettings() {
-        const settings = this.settings
-        const dir = '/etc/calamares/'
-        const file = dir + 'settings.conf'
-        const content = settings(
-            this.displaymanager,
-            this.sourcesMedia,
-            this.sourcesTrusted,
-            this.remix
-        )
-        write(file, content, this.verbose)
-    }
 
     /**
      *

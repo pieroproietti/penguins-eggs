@@ -45,13 +45,28 @@ export class Focal {
 
 
     /**
+     *
+     */
+    public settings() {
+        const dir = '/etc/calamares/'
+        const file = dir + 'settings.conf'
+        const content = this.getSettings(
+            this.displaymanager,
+            this.sourcesMedia,
+            this.sourcesTrusted,
+            this.remix
+        )
+        write(file, content, this.verbose)
+    }
+
+    /**
      * 
      * @param displaymanager 
      * @param sourcesMedia 
      * @param sourcesTrusted 
      * @param remix 
      */
-    public settings(
+    getSettings(
         displaymanager = false,
         sourcesMedia = false,
         sourcesTrusted = true,
@@ -65,6 +80,7 @@ export class Focal {
         modulesSearch.push('local')
         modulesSearch.push('/usr/lib/calamares/modules')
 
+        // Istanze
         const instances = [
             {
                 "id": "before_bootloader_mkdirs",
@@ -146,103 +162,128 @@ export class Focal {
         return yaml.safeDump(settings)
     }
 
+    /**
+     * 
+     */
     public modules() {
-        this.modulePartition()
-        this.moduleMount()
-        this.moduleUnpackfs()
-        if (this.sourcesMedia) {
-            this.moduleSourcesMedia()
-        }
-        if (this.sourcesTrusted) {
-            this.moduleSourcesTrusted()
-        }
-        this.moduleMachineid()
-        this.moduleFstab()
-        this.moduleLocale()
-        this.moduleKeyboard()
-        this.moduleLocalecfg()
-        this.moduleUsers()
-        if (this.displaymanager) {
-            this.moduleDisplaymanager()
-        }
-        this.moduleNetworkcfg()
-        this.moduleHwclock()
-        this.moduleServicesSystemd()
-        this.moduleCreateTmp()
-        this.moduleBootloaderConfig()
-        this.moduleGrubcfg()
-        this.moduleBootloader()
-        this.modulePackages()
-        this.moduleLuksbootkeyfile()
-        this.moduleLuksopenswaphookcfg()
-
-        this.modulePlymouthcfg()
-        this.moduleInitramfscfg()
-        this.moduleInitramfs()
-        this.moduleRemoveuser()
-        if (this.sourcesMedia) {
-            this.moduleSourcesMediaUnmount()
-        }
-        if (this.sourcesTrusted) {
-            this.moduleSourcesTrustedUnmount()
-        }
-        this.moduleSourcesFinal()
-        this.moduleUmount()
+        this.module_partition()
+        this.module_mount()
+        this.module_unpackfs()
+        this.module_machineid()
+        this.module_fstab()
+        this.module_locale()
+        this.module_keyboard()
+        this.module_localecfg()
+        this.module_luksbootkeyfile()
+        this.module_users()
+        this.module_displaymanager()
+        this.module_networkcfg()
+        this.module_hwclock()
+        this.contextualprocess_before_bootloader_mkdirs()
+        this.shellprocess('bug-LP#1829805')
+        this.module_initramfscfg()
+        this.module_initramfs()
+        this.module_grubcfg()
+        // exec.push("contextualprocess@before_bootloader")
+        this.module_bootloader()
+        // exec.push("contextualprocess@after_bootloader")
+        // exec.push("automirror")
+        // exec.push("shellprocess@add386arch")
+        // exec.push("packages")
+        // exec.push("shellprocess@logs")
+        this.module_umount()
     }
 
-
+    /**
+     * module = name + '.conf0
+     * shellprocess = 'shellprocess_' + name + '.conf'
+     * contextualprocess = name + '_context.conf'
+     * 
+     * module_calamares
+     *                      dir = '/usr/lib/calamares/modules/' + name
+     *                      name = module.desc
+     *                      script = 
+     * @param name
+     */
+    module(name: string, content: string) {
+        const dir = `/etc/calamares/modules/`
+        const file = dir + name + '.conf'
+        write(file, content, this.verbose)
+    }
 
     /**
-     *
+     * 
+     * @param process 
      */
-    public createSettings() {
-        const settings = this.settings
-        const dir = '/etc/calamares/'
-        const file = dir + 'settings.conf'
-        const content = settings(
-            this.displaymanager,
-            this.sourcesMedia,
-            this.sourcesTrusted,
-            this.remix
-        )
+    shellprocess(name: string, content: string) {
+        const dir = `/etc/calamares/modules/`
+        let file = dir + 'shellprocess_' + name + '.conf'
+        write(file, content, this.verbose)
+    }
+
+    /**
+     * 
+     * @param process 
+     */
+    contextualprocess(name: string, content: string, verbose = false) {
+        const dir = `/etc/calamares/modules/`
+        let file = dir + name + '_context' + name + '.conf'
         write(file, content, this.verbose)
     }
 
     /**
      *
      */
-    modulePartition() {
-        if (this.verbose) {
-            console.log(`calamares: module partition. Nothing to do!`)
-        }
+    module_partition() {
+        let text = ''
+        text += 'efiSystemPartition: "/boot/efi"\n'
+        text += 'enableLuksAutomatedPartitioning: true\n'
+        text += 'userSwapChoices: none\n'
+        text += 'drawNestedPartitions: true\n'
+        text += 'defaultFileSystemType: "ext4"\n'
+        this.module('partition', text)
+    }
+
+    /**
+     * 
+     */
+    contextualprocess_before_bootloader_mkdirs() {
+        let text = ''
+        text += '---\n'
+        text += 'dontChroot: true\n'
+        text += 'timeout: 10\n'
+        text += 'firmwareType:\n'
+        text += '    efi:\n'
+        text += '    - -cp /cdrom/casper/vmlinuz @@ROOT@@/boot/vmlinuz-$(uname -r)\n'
+        text += '    - -mkdir -pv @@ROOT@@/media/cdrom\n'
+        text += '    - -mount --bind /cdrom @@ROOT@@/media/cdrom\n'
+        text += '    bios:\n'
+        text += '    - -cp /cdrom/casper/vmlinuz @@ROOT@@/boot/vmlinuz-$(uname -r)\n'
+        this.contextualprocess('before_bootloader_mkdirs', text)
     }
 
     /**
      *
      */
-    moduleMount() {
+    module_mount() {
         const mount = require('./modules/mount').mount
-        const dir = `/etc/calamares/modules/`
-        const file = dir + 'mount.conf'
         const content = mount()
-        write(file, content, this.verbose)
+        this.module('mount', content)
     }
 
     /**
      *
      */
-    moduleUnpackfs() {
+    module_unpackfs() {
         const unpackfs = require('./modules/unpackfs').unpackfs
-        const dir = `/etc/calamares/modules/`
-        const file = dir + 'unpackfs.conf'
         const content = unpackfs(this.distro.mountpointSquashFs)
-        write(file, content, this.verbose)
+        this.module('unpackfs', content)
     }
 
     /**
      *
      */
-    async moduleSourcesMedia() {
+    async module_sourcesmedia() {
         const sourcesMedia = require('./calamares-modules/sources-media')
             .sourcesMedia
         const dir = `/usr/lib/calamares/modules/sources-media/`
@@ -264,7 +305,7 @@ export class Focal {
     /**
      *
      */
-    async moduleSourcesTrusted() {
+    async module_sourcestrusted() {
         const sourcesTrusted = require('./calamares-modules/desc/sources-trusted')
             .sourcesTrusted
         const dir = `/usr/lib/calamares/modules/sources-trusted/`
@@ -287,29 +328,25 @@ export class Focal {
     /**
      *
      */
-    moduleMachineid() {
+    module_machineid() {
         const machineid = require('./modules/machineid').machineid
-        const dir = `/etc/calamares/modules/`
-        const file = dir + 'machineid.conf'
         const content = machineid()
-        write(file, content, this.verbose)
+        this.module('machineid', content)
     }
 
     /**
      *
      */
-    moduleFstab() {
+    module_fstab() {
         const fstab = require('./modules/fstab').fstab
-        const dir = `/etc/calamares/modules/`
-        const file = dir + 'fstab.conf'
         const content = fstab()
-        write(file, content, this.verbose)
+        this.module('fstab', content)
     }
 
     /**
      *
      */
-    moduleLocale() {
+    module_locale() {
         if (this.verbose) {
             console.log(`calamares: module locale. Nothing to do!`)
         }
@@ -318,7 +355,7 @@ export class Focal {
     /**
      *
      */
-    moduleKeyboard() {
+    module_keyboard() {
         if (this.verbose) {
             console.log(`calamares: module keyboard. Nothing to do!`)
         }
@@ -326,7 +363,7 @@ export class Focal {
     /**
      *
      */
-    moduleLocalecfg() {
+    module_localecfg() {
         if (this.verbose) {
             console.log(`calamares: module localecfg. Nothing to do!`)
         }
@@ -335,28 +372,24 @@ export class Focal {
     /**
      *
      */
-    moduleUsers() {
+    module_users() {
         const users = require('./modules/users').users
-        const dir = `/etc/calamares/modules/`
-        const file = dir + 'users.conf'
         const content = users()
-        write(file, content, this.verbose)
+        this.module('users', content)
     }
 
     /**
      *
      */
-    moduleDisplaymanager() {
+    module_displaymanager() {
         const displaymanager = require('./modules/displaymanager').displaymanager
-        const dir = `/etc/calamares/modules/`
-        const file = dir + 'displaymanager.conf'
         const content = displaymanager()
-        write(file, content, this.verbose)
+        this.module('displaymanager', content)
     }
     /**
      *
      */
-    moduleNetworkcfg() {
+    module_networkcfg() {
         if (this.verbose) {
             console.log(`calamares: module networkcfg. Nothing to do!`)
         }
@@ -365,7 +398,7 @@ export class Focal {
     /**
      *
      */
-    moduleHwclock() {
+    module_hwclock() {
         if (this.verbose) {
             console.log(`calamares: module hwclock. Nothing to do!`)
         }
@@ -374,13 +407,13 @@ export class Focal {
     /**
      *
      */
-    moduleServicesSystemd() {
+    module_servicessystemd() {
         if (this.verbose) {
             console.log(`calamares: module servives-systemd. Nothing to do!`)
         }
     }
 
-    async moduleCreateTmp() {
+    async module_createtmp() {
         const createTmp = require('./calamares-modules/desc/create-tmp').createTmp
         const dir = `/usr/lib/calamares/modules/create-tmp/`
         const file = dir + 'module.desc'
@@ -400,7 +433,7 @@ export class Focal {
     /**
      *
      */
-    async moduleBootloaderConfig() {
+    async module_bootloaderconfig() {
         const bootloaderConfig = require('./calamares-modules/desc/bootloader-config')
             .bootloaderConfig
         const dir = `/usr/lib/calamares/modules/bootloader-config/`
@@ -423,7 +456,7 @@ export class Focal {
     /**
      *
      */
-    moduleGrubcfg() {
+    module_grubcfg() {
         if (this.verbose) {
             console.log(`calamares: module grubcfg. Nothing to do!`)
         }
@@ -432,29 +465,25 @@ export class Focal {
     /**
      *
      */
-    moduleBootloader() {
+    module_bootloader() {
         const bootloader = require('./modules/bootloader').bootloader
-        const dir = `/etc/calamares/modules/`
-        const file = dir + 'bootloader.conf'
         const content = bootloader()
-        write(file, content, this.verbose)
+        this.module('bootloader', content)
     }
 
     /**
      * create module packages.conf
      */
-    modulePackages() {
+    module_packages() {
         const packages = require('./modules/packages').packages
-        const dir = `/etc/calamares/modules/`
-        const file = dir + 'packages.conf'
         const content = packages()
-        write(file, content, this.verbose)
+        this.module('packages', content, this.verbose)
     }
 
     /**
      *
      */
-    moduleLuksbootkeyfile() {
+    module_luksbootkeyfile() {
         if (this.verbose) {
             console.log(`calamares: module luksbootkeyfile. Nothing to do!`)
         }
@@ -463,19 +492,17 @@ export class Focal {
     /**
      *
      */
-    moduleLuksopenswaphookcfg() {
+    module_luksopenswaphookcfg() {
         const lksopenswaphookcfg = require('./modules/lksopenswaphookcfg')
             .lksopenswaphookcfg
-        const dir = `/etc/calamares/modules/`
-        const file = dir + 'lksopenswaphookcfg.conf'
         const content = lksopenswaphookcfg()
-        write(file, content, this.verbose)
+        this.module('lksopenswaphookcfg', content)
     }
 
     /**
      *
      */
-    modulePlymouthcfg() {
+    module_plymouthcfg() {
         if (this.verbose) {
             console.log(`calamares: module plymouthcfg. Nothing to do!`)
         }
@@ -484,7 +511,7 @@ export class Focal {
     /**
      *
      */
-    moduleInitramfscfg() {
+    module_initramfscfg() {
         if (this.verbose) {
             console.log(`calamares: module initramfscfg. Nothing to do!`)
         }
@@ -493,18 +520,16 @@ export class Focal {
     /**
      *
      */
-    moduleRemoveuser() {
+    module_removeuser() {
         const removeuser = require('./modules/removeuser').removeuser
-        const dir = `/etc/calamares/modules/`
-        const file = dir + 'removeuser.conf'
         const content = removeuser()
-        write(file, content, this.verbose)
+        this.module('removeuser', content)
     }
 
     /**
      *
      */
-    moduleInitramfs() {
+    module_initramfs() {
         if (this.verbose) {
             console.log(`calamares: module initramfs. Nothing to do!`)
         }
@@ -513,7 +538,7 @@ export class Focal {
     /**
      *
      */
-    moduleSourcesMediaUnmount() {
+    module_sourcesmediaunmount() {
         const sourcesMediaUnmount = require('./calamares-modules/sources-media-unmount')
             .sourcesMediaUnmount
         const dir = `/usr/lib/calamares/modules/sources-media-unmount/`
@@ -534,7 +559,7 @@ export class Focal {
     /**
      *
      */
-    moduleSourcesTrustedUnmount() {
+    module_surcestrustedunmount() {
         const sourcesTrustedUnmount = require('./calamares-modules/desc/sources-trusted-unmount')
             .sourcesTrustedUnmount
         const dir = `/usr/lib/calamares/modules/sources-trusted-unmount/`
@@ -555,7 +580,7 @@ export class Focal {
     /**
      *
      */
-    async moduleSourcesFinal() {
+    async module_surcesfinal() {
         const sourcesFinal = require('./calamares-modules/desc/sources-final')
             .sourcesFinal
         const dir = `/usr/lib/calamares/modules/sources-final/`
@@ -577,7 +602,7 @@ export class Focal {
     /**
      * Automirrot
      */
-    async moduleAutomirror() {
+    async module_automirror() {
         const automirrorConfig = require('./calamares-modules/automirror')
             .automirrorConfig
         const dir = `/usr/lib/calamares/modules/automirror-config/`
@@ -601,7 +626,7 @@ export class Focal {
     /**
      *
      */
-    moduleUmount() {
+    module_umount() {
         if (this.verbose) {
             console.log(`calamares: module unmount. Nothing to do!`)
         }
