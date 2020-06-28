@@ -1,23 +1,17 @@
-/* penguins-eggs: buster.ts
- *
- * author: Piero Proietti
- * mail: piero.proietti@gmail.com
- */
-
 /**
  * penguins-eggs: focal.ts
  *
  * author: Piero Proietti
  * mail: piero.proietti@gmail.com
  */
-import fs = require('fs')
+
+ import fs = require('fs')
 import path = require('path')
 import shx = require('shelljs')
 import Utils from '../utils'
 import Pacman from '../pacman'
 import yaml = require('js-yaml')
 import { IRemix, IDistro } from '../../interfaces'
-import { machineid } from './modules/machineid'
 const exec = require('../../lib/utils').exec
 
 /**
@@ -31,8 +25,6 @@ export class Focal {
     distro: IDistro
 
     displaymanager = false
-
-    sourcesMedia = false
 
     sourcesTrusted = true
 
@@ -50,30 +42,14 @@ export class Focal {
     public settings() {
         const dir = '/etc/calamares/'
         const file = dir + 'settings.conf'
-        const content = this.getSettings(
-            this.displaymanager,
-            this.sourcesMedia,
-            this.sourcesTrusted,
-            this.remix
-        )
+        const content = this.getSettings()
         write(file, content, this.verbose)
     }
 
     /**
      * 
-     * @param displaymanager 
-     * @param sourcesMedia 
-     * @param sourcesTrusted 
-     * @param remix 
      */
-    getSettings(
-        displaymanager = false,
-        sourcesMedia = false,
-        sourcesTrusted = true,
-        remix: IRemix
-    ): string {
-
-
+    getSettings(): string {
 
         // path di ricerca dei moduli
         const modulesSearch: string[] = []
@@ -155,7 +131,7 @@ export class Focal {
         const settings = {
             'modules-search': modulesSearch,
             sequence: [{ show: show }, { exec: exec }, { show: ['finished'] }],
-            branding: remix.branding,
+            branding: this.remix.branding,
             'prompt-install': false,
             'dont-chroot': false
         }
@@ -166,32 +142,32 @@ export class Focal {
      * 
      */
     public modules() {
-        this.module_partition()
-        this.module_mount()
-        this.module_unpackfs()
-        this.module_machineid()
-        this.module_fstab()
-        this.module_locale()
-        this.module_keyboard()
-        this.module_localecfg()
-        this.module_luksbootkeyfile()
-        this.module_users()
-        this.module_displaymanager()
-        this.module_networkcfg()
-        this.module_hwclock()
+        this.modulePartition()
+        this.moduleMount()
+        this.moduleUnpackfs()
+        this.moduleMachineid()
+        this.moduleFstab()
+        this.moduleLocale()
+        this.moduleKeyboard()
+        this.moduleLocalecfg()
+        this.moduleLuksbootkeyfile()
+        this.moduleUsers()
+        this.moduleDisplaymanager()
+        this.moduleNetworkcfg()
+        this.moduleHwclock()
         this.contextualprocess('before_bootloader_mkdirs')
         this.shellprocess('bug-LP#1829805')
-        this.module_initramfscfg()
-        this.module_initramfs()
-        this.module_grubcfg()
+        this.moduleInitramfscfg()
+        this.moduleInitramfs()
+        this.moduleGrubcfg()
         this.contextualprocess('before_bootloader')
-        this.module_bootloader()
+        this.moduleBootloader()
         this.contextualprocess('after_bootloader')
-        this.module_automirror()
+        this.moduleAutomirror()
         // exec.push("shellprocess@add386arch")
         // exec.push("packages")
         // exec.push("shellprocess@logs")
-        this.module_umount()
+        this.moduleUmount()
     }
 
     /**
@@ -286,274 +262,209 @@ export class Focal {
     /**
      *
      */
-    module_partition() {
-        let text = ''
-        text += 'efiSystemPartition: "/boot/efi"\n'
-        text += 'enableLuksAutomatedPartitioning: true\n'
-        text += 'userSwapChoices: none\n'
-        text += 'drawNestedPartitions: true\n'
-        text += 'defaultFileSystemType: "ext4"\n'
-        this.module('partition', text)
+    modulePartition() {
+        const partition = yaml.safeDump({
+            efiSystemPartition: "/boot/efi",
+            enableLuksAutomatedPartitioning: true,
+            userSwapChoices: "none",
+            drawNestedPartitions: true,
+            defaultFileSystemType: "ext4"
+        })
+        this.module('partition', partition)
     }
 
     /**
      *
      */
-    module_mount() {
-        const mount = require('./modules/mount').mount
-        const content = mount()
-        this.module('mount', content)
+    moduleMount() {
+        const mount = yaml.safeDump({
+            extraMounts: [{
+                device: "proc",
+                fs: "proc",
+                mountPoint: "/proc"
+            }, {
+                device: "sys",
+                fs: "sysfs",
+                mountPoint: "/sys"
+            }, {
+                device: "/dev",
+                mountPoint: "/dev",
+                options: "bind"
+            }, {
+                device: "/dev/pts",
+                fs: "devpts",
+                mountPoint: "/dev/pts"
+            }, {
+                device: "tmpfs",
+                fs: "tmpfs",
+                mountPoint: "/run"
+            }, {
+                device: "/run/udev",
+                mountPoint: "/run/udev",
+                options: "bind"
+            }],
+            extraMountsEfi: [{
+                device: "efivarfs",
+                fs: "tmpefivarfsfs",
+                mountPoint: "/sys/firmware/efi/efivars"
+            }]
+        })
+
+        this.module('mount', mount)
     }
 
     /**
      *
      */
-    module_unpackfs() {
-        const unpackfs = require('./modules/unpackfs').unpackfs
-        const content = unpackfs(this.distro.mountpointSquashFs)
-        this.module('unpackfs', content)
+    moduleUnpackfs() {
+        const unpack = yaml.safeDump({
+            unpack: [{
+                source: this.distro.mountpointSquashFs,
+                sourcefs: "squashfs",
+                destination: ""
+            }]
+        })
+        this.module('unpackfs', unpack)
     }
 
     /**
      *
      */
-    async module_sourcesmedia() {
-        const dir = `/usr/lib/calamares/modules/sources-media/`
-        if (!fs.existsSync(dir)) {
-            fs.mkdirSync(dir)
-        }
-
-        // desc
-        const sourcesMedia = require('./calamares-modules/sources-media').sourcesMedia
-        const file = dir + 'module.desc'
-        const content = sourcesMedia()
-        write(file, content, this.verbose)
-
-        // script bash 
-        const scriptSourcesMedia = require('./calamares-modules/scripts/sources-media').sourcesMedia
-        const scriptDir = `/usr/sbin/`
-        const scriptFile = scriptDir + 'sources-media'
-        const scriptContent = scriptSourcesMedia()
-        write(scriptFile, scriptContent, this.verbose)
-        await exec(`chmod +x ${scriptFile}`)
+    moduleMachineid() {
+        const machineid = yaml.safeDump({
+            systemd: true,
+            dbus: true,
+            symlink: true
+        })
+        this.module('machineid', machineid)
     }
 
     /**
      *
      */
-    module_machineid() {
-        const machineid = require('./modules/machineid').machineid
-        const content = machineid()
-        this.module('machineid', content)
+    moduleFstab() {
+        const fstab = yaml.safeDump({
+            mountOptions: {
+                default: "defaults,noatime",
+                btrfs: "defaults,noatime,space_cache,autodefrag"
+            },
+            ssdExtraMountOptions: {
+                ext4: "discard",
+                jfs: "discard",
+                xfs: "discard",
+                swap: "discard",
+                btrfs: "discard,compress=lzo"
+            },
+            crypttabOptions: "luks,keyscript=/bin/cat"
+        })
+
+        this.module('fstab', fstab)
+    }
+    moduleLocale() { if (this.verbose) console.log(`calamares: module locale. Nothing to do!`) }
+
+    moduleKeyboard() { if (this.verbose) console.log(`calamares: module keyboard. Nothing to do!`) }
+
+    moduleLocalecfg() { if (this.verbose) console.log(`calamares: module localecfg. Nothing to do!`) }
+
+    /**
+     *
+     */
+    moduleUsers() {
+        const users = yaml.safeDump({
+            userGroup: "users",
+            defaultGroup: [
+                "cdrom", "floppy", "sudo", "audio", "dip", "video", "plugdev", "netdev", "lpadmin", "scanner", "bluetooth"
+            ],
+            autologinGroup: "autologin",
+            sudoersGroup: "sudo",
+            setRootPassword: false
+        })
+        this.module('users', users)
     }
 
     /**
      *
      */
-    module_fstab() {
-        const fstab = require('./modules/fstab').fstab
-        const content = fstab()
-        this.module('fstab', content)
-    }
-
-    /**
-     *
-     */
-    module_locale() {
-        if (this.verbose) {
-            console.log(`calamares: module locale. Nothing to do!`)
-        }
-    }
-
-    /**
-     *
-     */
-    module_keyboard() {
-        if (this.verbose) {
-            console.log(`calamares: module keyboard. Nothing to do!`)
-        }
-    }
-    /**
-     *
-     */
-    module_localecfg() {
-        if (this.verbose) {
-            console.log(`calamares: module localecfg. Nothing to do!`)
-        }
-    }
-
-    /**
-     *
-     */
-    module_users() {
-        const users = require('./modules/users').users
-        const content = users()
-        this.module('users', content)
-    }
-
-    /**
-     *
-     */
-    module_displaymanager() {
+    moduleDisplaymanager() {
         const displaymanager = require('./modules/displaymanager').displaymanager
-        const content = displaymanager()
-        this.module('displaymanager', content)
+        this.module('displaymanager', displaymanager())
     }
-    /**
-     *
-     */
-    module_networkcfg() {
-        if (this.verbose) {
-            console.log(`calamares: module networkcfg. Nothing to do!`)
-        }
-    }
+
+    moduleNetworkcfg() { if (this.verbose) console.log(`calamares: module networkcfg. Nothing to do!`) }
+
+    moduleHwclock() { if (this.verbose) console.log(`calamares: module hwclock. Nothing to do!`) }
+
+    moduleServicesSystemd() { if (this.verbose) console.log(`calamares: module servives-systemd. Nothing to do!`) }
+
+    moduleGrubcfg() { if (this.verbose) console.log(`calamares: module grubcfg. Nothing to do!`) }
 
     /**
      *
      */
-    module_hwclock() {
-        if (this.verbose) {
-            console.log(`calamares: module hwclock. Nothing to do!`)
-        }
-    }
-
-    /**
-     *
-     */
-    module_servicessystemd() {
-        if (this.verbose) {
-            console.log(`calamares: module servives-systemd. Nothing to do!`)
-        }
-    }
-
-    async module_createtmp() {
-        const createTmp = require('./calamares-modules/desc/create-tmp').createTmp
-        const dir = `/usr/lib/calamares/modules/create-tmp/`
-        const file = dir + 'module.desc'
-        const content = createTmp()
-        if (!fs.existsSync(dir)) {
-            fs.mkdirSync(dir)
-        }
-        write(file, content, this.verbose)
-        const scriptcreateTmp = require('./calamares-modules/scripts/create-tmp').createTmp
-        const scriptDir = `/usr/sbin/`
-        const scriptFile = scriptDir + 'create-tmp'
-        const scriptContent = scriptcreateTmp()
-        write(scriptFile, scriptContent, this.verbose)
-        await exec(`chmod +x ${scriptFile}`)
-    }
-
-    /**
-     *
-     */
-    async module_bootloaderconfig() {
-        const bootloaderConfig = require('./calamares-modules/desc/bootloader-config')
-            .bootloaderConfig
-        const dir = `/usr/lib/calamares/modules/bootloader-config/`
-        const file = dir + 'module.desc'
-        const content = bootloaderConfig()
-        if (!fs.existsSync(dir)) {
-            fs.mkdirSync(dir)
-        }
-        write(file, content, this.verbose)
-
-        const scriptBootloaderConfig = require('./calamares-modules/scripts/bootloader-config')
-            .bootloaderConfig
-        const scriptDir = `/usr/sbin/`
-        const scriptFile = scriptDir + 'bootloader-config'
-        const scriptContent = scriptBootloaderConfig()
-        write(scriptFile, scriptContent, this.verbose)
-        await exec(`chmod +x ${scriptFile}`)
-    }
-
-    /**
-     *
-     */
-    module_grubcfg() {
-        if (this.verbose) {
-            console.log(`calamares: module grubcfg. Nothing to do!`)
-        }
-    }
-
-    /**
-     *
-     */
-    module_bootloader() {
-        const bootloader = require('./modules/bootloader').bootloader
-        const content = bootloader()
-        this.module('bootloader', content)
+    moduleBootloader() {
+        const bootloader = yaml.safeDump({
+            efiBootLoader: "grub",
+            kernel: "/vmlinuz-linux",
+            img: "/initramfs-linux.img",
+            fallback: "/initramfs-linux-fallback.img",
+            timeout: 10,
+            grubInstall: "grub-install",
+            grubMkconfig: "grub-mkconfig",
+            grubCfg: "/boot/grub/grub.cfg",
+            grubProbe: "grub-probe",
+            efiBootMgr: "efibootmgr",
+            installEFIFallback: false
+        })
+        this.module('bootloader', bootloader)
     }
 
     /**
      * create module packages.conf
      */
-    module_packages() {
+    modulePackages() {
         const packages = require('./modules/packages').packages
-        const content = packages()
-        this.module('packages', content)
+        this.module('packages', packages())
     }
 
-    /**
-     *
-     */
-    module_luksbootkeyfile() {
-        if (this.verbose) {
-            console.log(`calamares: module luksbootkeyfile. Nothing to do!`)
-        }
-    }
-
+    moduleLuksbootkeyfile() { if (this.verbose) console.log(`calamares: module luksbootkeyfile. Nothing to do!`) }
+    
     /**
      *
      */
     module_luksopenswaphookcfg() {
-        const lksopenswaphookcfg = require('./modules/lksopenswaphookcfg')
-            .lksopenswaphookcfg
-        const content = lksopenswaphookcfg()
-        this.module('lksopenswaphookcfg', content)
+        const lksopenswaphookcfg = yaml.safeDump({
+            configFilePath: "/etc/openswap.conf"
+        })
+        this.module('lksopenswaphookcfg', lksopenswaphookcfg)
     }
+
+    modulePlymouthcfg() { if (this.verbose) console.log(`calamares: module plymouthcfg. Nothing to do!`) }
+
+    moduleInitramfscfg() { if (this.verbose) console.log(`calamares: module initramfscfg. Nothing to do!`) }
 
     /**
      *
      */
-    module_plymouthcfg() {
-        if (this.verbose) {
-            console.log(`calamares: module plymouthcfg. Nothing to do!`)
-        }
+    moduleRemoveuser() {
+        const removeuser = yaml.safeDump({ username: "live" })
+        this.module('removeuser', removeuser)
     }
+
+    moduleInitramfs() { if (this.verbose) console.log(`calamares: module initramfs. Nothing to do!`) }
+
+    moduleUmount() { if (this.verbose) console.log(`calamares: module unmount. Nothing to do!`) }
 
     /**
-     *
+     * ====================================================================================
+     * M O D U L E S   C A L A M A R E S
+     * ====================================================================================
      */
-    module_initramfscfg() {
-        if (this.verbose) {
-            console.log(`calamares: module initramfscfg. Nothing to do!`)
-        }
-    }
-
-    /**
-     *
-     */
-    module_removeuser() {
-        const removeuser = require('./modules/removeuser').removeuser
-        const content = removeuser()
-        this.module('removeuser', content)
-    }
-
-    /**
-     *
-     */
-    module_initramfs() {
-        if (this.verbose) {
-            console.log(`calamares: module initramfs. Nothing to do!`)
-        }
-    }
-
 
     /**
      * Automirror
      * Pythonm
      */
-    async module_automirror() {
+    async moduleAutomirror() {
         const dir = `/usr/lib/calamares/modules/automirror/`
         if (!fs.existsSync(dir)) {
             fs.mkdirSync(dir)
@@ -576,14 +487,47 @@ export class Focal {
     }
 
 
-    /**
+    async moduleCreatetmp() {
+        const createTmp = require('./calamares-modules/desc/create-tmp').createTmp
+        const dir = `/usr/lib/calamares/modules/create-tmp/`
+        const file = dir + 'module.desc'
+        const content = createTmp()
+        if (!fs.existsSync(dir)) {
+            fs.mkdirSync(dir)
+        }
+        write(file, content, this.verbose)
+        const scriptcreateTmp = require('./calamares-modules/scripts/create-tmp').createTmp
+        const scriptDir = `/usr/sbin/`
+        const scriptFile = scriptDir + 'create-tmp'
+        const scriptContent = scriptcreateTmp()
+        write(scriptFile, scriptContent, this.verbose)
+        await exec(`chmod +x ${scriptFile}`)
+    }
+
+        /**
      *
      */
-    module_umount() {
-        if (this.verbose) {
-            console.log(`calamares: module unmount. Nothing to do!`)
+    async moduleBootloaderconfig() {
+        const bootloaderConfig = require('./calamares-modules/desc/bootloader-config')
+            .bootloaderConfig
+        const dir = `/usr/lib/calamares/modules/bootloader-config/`
+        const file = dir + 'module.desc'
+        const content = bootloaderConfig()
+        if (!fs.existsSync(dir)) {
+            fs.mkdirSync(dir)
         }
+        write(file, content, this.verbose)
+
+        const scriptBootloaderConfig = require('./calamares-modules/scripts/bootloader-config')
+            .bootloaderConfig
+        const scriptDir = `/usr/sbin/`
+        const scriptFile = scriptDir + 'bootloader-config'
+        const scriptContent = scriptBootloaderConfig()
+        write(scriptFile, scriptContent, this.verbose)
+        await exec(`chmod +x ${scriptFile}`)
     }
+
+
 }
 
 

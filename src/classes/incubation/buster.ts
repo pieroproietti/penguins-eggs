@@ -1,4 +1,5 @@
-/* penguins-eggs: buster.ts
+/**
+ * penguins-eggs: buster.ts
  *
  * author: Piero Proietti
  * mail: piero.proietti@gmail.com
