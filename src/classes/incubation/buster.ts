@@ -253,7 +253,7 @@ export class Buster {
      *
      */
     moduleMount() {
-        const mount = {
+        const mount = yaml.safeDump({
             extraMounts: [{
                 device: "proc",
                 fs: "proc",
@@ -284,16 +284,22 @@ export class Buster {
                 fs: "tmpefivarfsfs",
                 mountPoint: "/sys/firmware/efi/efivars"
             }]
-        }
-        this.module('mount', yaml.safeDump(mount))
+        })
+
+        this.module('mount', mount)
     }
 
     /**
      *
      */
     moduleUnpackfs() {
-        const unpackfs = require('./modules/unpackfs').unpackfs
-        this.module('unpackfs', unpackfs(this.distro.mountpointSquashFs))
+        const unpackfs = yaml.safeDump({
+            unpackfs: [{
+            source: this.distro.mountpointSquashFs,
+            sourcefs: "squashfs",
+            destination: ""
+        }]})
+        this.module('unpackfs', unpackfs)
     }
 
     /**
@@ -346,16 +352,34 @@ export class Buster {
      *
      */
     moduleMachineid() {
-        const machineid = require('./modules/machineid').machineid
-        this.module('machineid', machineid())
+        const machineid = yaml.safeDump({
+            systemd: true,
+            dbus: true,
+            symlink: true
+        })
+        this.module('machineid', machineid)
     }
 
     /**
      *
      */
     moduleFstab() {
-        const fstab = require('./modules/fstab').fstab
-        this.module('fstab', fstab())
+        const fstab = yaml.safeDump({
+            mountOptions: {
+                default: "defaults,noatime",
+                btrfs: "defaults,noatime,space_cache,autodefrag"
+            },
+            ssdExtraMountOptions: {
+                ext4: "discard",
+                jfs: "discard",
+                xfs: "discard",
+                swap: "discard",
+                btrfs: "discard,compress=lzo"
+            },
+            crypttabOptions: "luks,keyscript=/bin/cat"
+        })
+    
+        this.module('fstab', fstab)
     }
 
     /**
