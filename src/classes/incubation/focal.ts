@@ -164,9 +164,9 @@ export class Focal {
         this.moduleBootloader()
         this.contextualprocess('after_bootloader')
         this.moduleAutomirror()
-        // exec.push("shellprocess@add386arch")
-        // exec.push("packages")
-        // exec.push("shellprocess@logs")
+        this.shellprocess("add386arch")
+        this.modulePackages()
+        this.shellprocess("logs")
         this.moduleUmount()
     }
 
@@ -199,6 +199,18 @@ export class Focal {
             text += 'timeout: 30\n'
             text += 'script:\n'
             text += '- "touch @@ROOT@@/boot/initrd.img-$(uname -r)"\n'
+        } else if (name === 'add386arch') {
+            text += '---\n'
+            text += 'dontChroot: false\n'
+            text += 'timeout: 30\n'
+            text += 'script:\n'
+            text += '- command: "/usr/bin/dpkg --add-architecture i386"\n'
+        } else if (name === 'logs') {
+            text += '---\n'
+            text += 'dontChroot: true\n'
+            text += 'timeout: 30\n'
+            text += 'script:\n'
+            text += '    - calamares-logs-helper @@ROOT@@\n'
         }
         const dir = `/etc/calamares/modules/`
         let file = dir + 'shellprocess_' + name + '.conf'
@@ -476,10 +488,15 @@ export class Focal {
         const content = automirror()
         write(file, content, this.verbose)
 
+        // conf 
+        const confAutomirror = require('./calamares-modules/conf/automirror').automirror
+        const confFile = dir + 'module.desc'
+        const confContent = confAutomirror()
+        write(confFile, confContent)
+
         // py
-        const scriptAutomirror = require('./calamares-modules/conf/automirror').automirror
-        const scriptDir = `/usr/lib/calamares/modules/automirror/`
-        const scriptFile = scriptDir + 'main.py'
+        const scriptAutomirror = require('./calamares-modules/scripts/automirror').automirror
+        const scriptFile = dir + 'main.py'
         const scriptContent = scriptAutomirror()
         write(scriptFile, scriptContent, this.verbose)
         await exec(`chmod +x ${scriptFile}`)

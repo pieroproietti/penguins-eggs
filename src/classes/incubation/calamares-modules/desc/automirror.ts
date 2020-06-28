@@ -1,7 +1,7 @@
 /**
  *
  */
-export function automirrorConfig(): string {
+export function automirror(): string {
    let text = ``
 
    text += `---\n`
