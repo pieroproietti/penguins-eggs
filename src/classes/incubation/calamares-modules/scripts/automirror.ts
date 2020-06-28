@@ -3,7 +3,7 @@ import { tmpdir } from 'os'
 /**
  *
  */
-export function automirrorConfig(): string {
+export function automirror(): string {
    let text = ``
    text += `#!/usr/bin/env python3\n`
    return text

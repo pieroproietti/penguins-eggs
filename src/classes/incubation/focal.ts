@@ -318,43 +318,22 @@ export class Focal {
      *
      */
     async module_sourcesmedia() {
-        const sourcesMedia = require('./calamares-modules/sources-media')
-            .sourcesMedia
         const dir = `/usr/lib/calamares/modules/sources-media/`
-        const file = dir + 'module.desc'
-        const content = sourcesMedia()
         if (!fs.existsSync(dir)) {
             fs.mkdirSync(dir)
         }
+
+        // desc
+        const sourcesMedia = require('./calamares-modules/sources-media').sourcesMedia
+        const file = dir + 'module.desc'
+        const content = sourcesMedia()
         write(file, content, this.verbose)
 
+        // script bash 
         const scriptSourcesMedia = require('./calamares-modules/scripts/sources-media').sourcesMedia
         const scriptDir = `/usr/sbin/`
         const scriptFile = scriptDir + 'sources-media'
         const scriptContent = scriptSourcesMedia()
-        write(scriptFile, scriptContent, this.verbose)
-        await exec(`chmod +x ${scriptFile}`)
-    }
-
-    /**
-     *
-     */
-    async module_sourcestrusted() {
-        const sourcesTrusted = require('./calamares-modules/desc/sources-trusted')
-            .sourcesTrusted
-        const dir = `/usr/lib/calamares/modules/sources-trusted/`
-        const file = dir + 'module.desc'
-        const content = sourcesTrusted()
-        if (!fs.existsSync(dir)) {
-            fs.mkdirSync(dir)
-        }
-        write(file, content, this.verbose)
-
-        const scriptSourcesTrusted = require('./calamares-modules/scripts/sources-trusted')
-            .sourcesTrusted
-        const scriptDir = `/usr/sbin/`
-        const scriptFile = scriptDir + 'sources-trusted'
-        const scriptContent = scriptSourcesTrusted()
         write(scriptFile, scriptContent, this.verbose)
         await exec(`chmod +x ${scriptFile}`)
     }
@@ -511,7 +490,7 @@ export class Focal {
     module_packages() {
         const packages = require('./modules/packages').packages
         const content = packages()
-        this.module('packages', content, this.verbose)
+        this.module('packages', content)
     }
 
     /**
@@ -569,91 +548,31 @@ export class Focal {
         }
     }
 
-    /**
-     *
-     */
-    module_sourcesmediaunmount() {
-        const sourcesMediaUnmount = require('./calamares-modules/sources-media-unmount')
-            .sourcesMediaUnmount
-        const dir = `/usr/lib/calamares/modules/sources-media-unmount/`
-        const file = dir + 'module.desc'
-        const content = sourcesMediaUnmount()
-        if (!fs.existsSync(dir)) {
-            fs.mkdirSync(dir)
-        }
-        write(file, content, this.verbose)
-
-        if (this.verbose) {
-            console.log(
-                `calamares: module source-media-unmount use the same script of source-media. Nothing to do!`
-            )
-        }
-    }
 
     /**
-     *
-     */
-    module_surcestrustedunmount() {
-        const sourcesTrustedUnmount = require('./calamares-modules/desc/sources-trusted-unmount')
-            .sourcesTrustedUnmount
-        const dir = `/usr/lib/calamares/modules/sources-trusted-unmount/`
-        const file = dir + 'module.desc'
-        const content = sourcesTrustedUnmount()
-        if (!fs.existsSync(dir)) {
-            fs.mkdirSync(dir)
-        }
-        write(file, content, this.verbose)
-
-        if (this.verbose) {
-            console.log(
-                `calamares: module source-trusted-unmount use the same script of source-trusted. Nothing to do!`
-            )
-        }
-    }
-
-    /**
-     *
-     */
-    async module_surcesfinal() {
-        const sourcesFinal = require('./calamares-modules/desc/sources-final')
-            .sourcesFinal
-        const dir = `/usr/lib/calamares/modules/sources-final/`
-        const file = dir + 'module.desc'
-        const content = sourcesFinal()
-        if (!fs.existsSync(dir)) {
-            fs.mkdirSync(dir)
-        }
-        write(file, content, this.verbose)
-
-        const scriptSourcesFinal = require('./calamares-modules/scripts/sources-final').sourcesFinal
-        const scriptDir = `/usr/sbin/`
-        const scriptFile = scriptDir + 'sources-final'
-        const scriptContent = scriptSourcesFinal()
-        write(scriptFile, scriptContent, this.verbose)
-        await exec(`chmod +x ${scriptFile}`)
-    }
-
-    /**
-     * Automirrot
+     * Automirror
+     * Pythonm
      */
     async module_automirror() {
-        const automirrorConfig = require('./calamares-modules/desc/automirror')
-            .automirrorConfig
-        const dir = `/usr/lib/calamares/modules/automirror-config/`
-        const file = dir + 'module.desc'
-        const content = automirrorConfig()
+        const dir = `/usr/lib/calamares/modules/automirror/`
         if (!fs.existsSync(dir)) {
             fs.mkdirSync(dir)
         }
+
+        // desc
+        const automirror = require('./calamares-modules/desc/automirror').automirror
+        const file = dir + 'module.desc'
+        const content = automirror()
         write(file, content, this.verbose)
 
-        const scriptAutomirrorConfig = require('./calamares-modules/scripts/automirror-config')
-            .automirrorConfig
-        const scriptDir = `/usr/lib/calamares/modules/automirror-config/`
+        // py
+        const scriptAutomirror = require('./calamares-modules/conf/automirror').automirror
+        const scriptDir = `/usr/lib/calamares/modules/automirror/`
         const scriptFile = scriptDir + 'main.py'
-        const scriptContent = scriptAutomirrorConfig()
+        const scriptContent = scriptAutomirror()
         write(scriptFile, scriptContent, this.verbose)
         await exec(`chmod +x ${scriptFile}`)
+
     }
 
 
