@@ -179,15 +179,15 @@ export class Focal {
         this.module_displaymanager()
         this.module_networkcfg()
         this.module_hwclock()
-        this.contextualprocess_before_bootloader_mkdirs()
+        this.contextualprocess('before_bootloader_mkdirs')
         this.shellprocess('bug-LP#1829805')
         this.module_initramfscfg()
         this.module_initramfs()
         this.module_grubcfg()
-        // exec.push("contextualprocess@before_bootloader")
+        this.contextualprocess('before_bootloader')
         this.module_bootloader()
-        // exec.push("contextualprocess@after_bootloader")
-        // exec.push("automirror")
+        this.contextualprocess('after_bootloader')
+        this.module_automirror()
         // exec.push("shellprocess@add386arch")
         // exec.push("packages")
         // exec.push("shellprocess@logs")
@@ -215,9 +215,18 @@ export class Focal {
      * 
      * @param process 
      */
-    shellprocess(name: string, content: string) {
+    shellprocess(name: string) {
+        let text = ''
+        if (name === 'bug-LP#1829805') {
+            text += '---\n'
+            text += 'dontChroot: false\n'
+            text += 'timeout: 30\n'
+            text += 'script:\n'
+            text += '- "touch @@ROOT@@/boot/initrd.img-$(uname -r)"\n'
+        }
         const dir = `/etc/calamares/modules/`
         let file = dir + 'shellprocess_' + name + '.conf'
+        let content = text
         write(file, content, this.verbose)
     }
 
@@ -225,9 +234,52 @@ export class Focal {
      * 
      * @param process 
      */
-    contextualprocess(name: string, content: string, verbose = false) {
+    contextualprocess(name: string) {
+        let text = ''
+        if (name === 'before_bootloader_mkdirs') {
+            text += '---\n'
+            text += 'dontChroot: true\n'
+            text += 'timeout: 10\n'
+            text += 'firmwareType:\n'
+            text += '    efi:\n'
+            text += '    - -cp /cdrom/casper/vmlinuz @@ROOT@@/boot/vmlinuz-$(uname -r)\n'
+            text += '    - -mkdir -pv @@ROOT@@/media/cdrom\n'
+            text += '    - -mount --bind /cdrom @@ROOT@@/media/cdrom\n'
+            text += '    bios:\n'
+            text += '    - -cp /cdrom/casper/vmlinuz @@ROOT@@/boot/vmlinuz-$(uname -r)\n'
+        } else if (name === 'before_bootloader') {
+            text += '# Make sure the correct bootloader package is installed for EFI.\n'
+            text += '# Also pull in shim so secureboot has a chance at working.\n'
+            text += '# Because of edge cases, we ignore BIOS, and do the same\n'
+            text += '# procedure for all EFI types.\n'
+            text += '---\n'
+            text += 'firmwareType:\n'
+            text += '    bios:    "-/bin/true"\n'
+            text += '    "*":\n'
+            text += '        -    command: apt-cdrom add -m -d=/media/cdrom/\n'
+            text += '             timeout: 10\n'
+            text += '        -    command: sed -i \' / deb http / d\' /etc/apt/sources.list\n'
+            text += '             timeout: 10\n'
+            text += '        -    command: apt-get update\n'
+            text += '             timeout: 120\n'
+            text += '        -    command: apt install -y --no-upgrade -o Acquire::gpgv::Options::=--ignore-time-conflict grub-efi-$(if grep -q 64 /sys/firmware/efi/fw_platform_size; then echo amd64-signed; else echo ia32; fi)\n'
+            text += '             timeout: 300\n'
+            text += '        -    command: apt install -y --no-upgrade -o Acquire::gpgv::Options::=--ignore-time-conflict shim-signed\n'
+            text += '             timeout: 300\n'
+        } else if (name === 'after_bootloader') {
+            text += '# Workaround from ubiquity. Ubuntu\'s grub will want to look in EFI / ubuntu, so\n'
+            text += '# let\'s make sure it can find something there.\n'
+            text += '# This only copies the cfg and doesn\'t overwrite, this is specifically so\n'
+            text += '# this doesn\'t interfere with an Ubuntu installed on the system already.\n'
+            text += '---\n'
+            text += 'dontChroot: false\n'
+            text += 'timeout: 120\n'
+            text += 'firmwareType:\n'
+            text += '"*": "-for i in `ls @@ROOT@@/home/`; do rm @@ROOT@@/home/$i/Desktop/lubuntu-calamares.desktop || exit 0; done"\n'
+        }
+        let content = text
         const dir = `/etc/calamares/modules/`
-        let file = dir + name + '_context' + name + '.conf'
+        let file = dir + name + '_context' + '.conf'
         write(file, content, this.verbose)
     }
 
@@ -242,24 +294,6 @@ export class Focal {
         text += 'drawNestedPartitions: true\n'
         text += 'defaultFileSystemType: "ext4"\n'
         this.module('partition', text)
-    }
-
-    /**
-     * 
-     */
-    contextualprocess_before_bootloader_mkdirs() {
-        let text = ''
-        text += '---\n'
-        text += 'dontChroot: true\n'
-        text += 'timeout: 10\n'
-        text += 'firmwareType:\n'
-        text += '    efi:\n'
-        text += '    - -cp /cdrom/casper/vmlinuz @@ROOT@@/boot/vmlinuz-$(uname -r)\n'
-        text += '    - -mkdir -pv @@ROOT@@/media/cdrom\n'
-        text += '    - -mount --bind /cdrom @@ROOT@@/media/cdrom\n'
-        text += '    bios:\n'
-        text += '    - -cp /cdrom/casper/vmlinuz @@ROOT@@/boot/vmlinuz-$(uname -r)\n'
-        this.contextualprocess('before_bootloader_mkdirs', text)
     }
 
     /**
@@ -603,7 +637,7 @@ export class Focal {
      * Automirrot
      */
     async module_automirror() {
-        const automirrorConfig = require('./calamares-modules/automirror')
+        const automirrorConfig = require('./calamares-modules/desc/automirror')
             .automirrorConfig
         const dir = `/usr/lib/calamares/modules/automirror-config/`
         const file = dir + 'module.desc'
