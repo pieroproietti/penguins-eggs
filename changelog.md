@@ -17,6 +17,14 @@ Usually the last version is the right one. Detailed instrunctions for usage are 
 ## Changelog
 Versions are listed on reverse order, the first is the last one.
 
+### eggs-7.5.126-1
+work in progress to adapt our script to work with calamares installer in Ubuntu focal and Linux mint.
+Calamares again don't work in ubuntu and Mint, but thanx to big refactoring is more simple to adapt it:
+* abbreviated writing of calamares-modules in buster
+* created focal from buster, added instances, shellprocess, contextualprocess and scripts from lubuntu
+* rewritten most of the buster modules, only packages and displaymanager remain
+* created buster from previuos script
+
 ### eggs-7.5.124-1
 eggs compatible again with node14 and node8.
 
