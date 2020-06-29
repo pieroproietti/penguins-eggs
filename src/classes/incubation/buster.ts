@@ -41,8 +41,7 @@ export class Buster {
     public settings() {
         const dir = '/etc/calamares/'
         const file = dir + 'settings.conf'
-        const content = this.getSettings()
-        write(file, content, this.verbose)
+        write(file, this.getSettings(), this.verbose)
     }
 
     /**
