@@ -419,7 +419,7 @@ export class Buster {
         }
 
         const descCreateTmp = require(`./calamares-modules/desc/${name}`).createTmp
-        write(dir + 'module.desc', descCreateTmp, this.verbose)
+        write(dir + 'module.desc', descCreateTmp(), this.verbose)
 
         const bashCreateTmp = require(`./calamares-modules/scripts/${name}`).createTmp
         const scriptFile = `/usr/sbin/${name}`
@@ -442,7 +442,7 @@ export class Buster {
 
         const bashBootloaderConfig = require(`./calamares-modules/scripts/${name}`).bootloaderConfig
         const scriptFile = `/usr/sbin/${name}`
-        write(scriptFile, bashBootloaderConfig, this.verbose)
+        write(scriptFile, bashBootloaderConfig(), this.verbose)
         await exec(`chmod +x ${scriptFile}`)
     }
 
@@ -477,7 +477,7 @@ export class Buster {
 
         const bashSourcesFinal = require(`./calamares-modules/scripts/${name}`).sourcesFinal
         const bashFile = `/usr/sbin/${name}`
-        write(bashFile, bashSourcesFinal, this.verbose)
+        write(bashFile, bashSourcesFinal(), this.verbose)
         await exec(`chmod +x ${bashFile}`)
     }
 
