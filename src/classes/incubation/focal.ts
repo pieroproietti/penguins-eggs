@@ -5,11 +5,7 @@
  * mail: piero.proietti@gmail.com
  */
 
- import fs = require('fs')
-import path = require('path')
-import shx = require('shelljs')
-import Utils from '../utils'
-import Pacman from '../pacman'
+import fs = require('fs')
 import yaml = require('js-yaml')
 import { IRemix, IDistro } from '../../interfaces'
 const exec = require('../../lib/utils').exec
@@ -440,7 +436,7 @@ export class Focal {
     }
 
     moduleLuksbootkeyfile() { if (this.verbose) console.log(`calamares: module luksbootkeyfile. Nothing to do!`) }
-    
+
     /**
      *
      */
@@ -522,9 +518,9 @@ export class Focal {
         await exec(`chmod +x ${scriptFile}`)
     }
 
-        /**
-     *
-     */
+    /**
+ *
+ */
     async moduleBootloaderconfig() {
         const bootloaderConfig = require('./calamares-modules/desc/bootloader-config')
             .bootloaderConfig
