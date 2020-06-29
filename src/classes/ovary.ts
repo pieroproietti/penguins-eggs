@@ -497,7 +497,7 @@ export default class Ovary {
          }
          // Configuro calamares
          this.calamares = new CalamaresConfig(this.remix, this.distro, verbose)
-         await this.calamares.config()
+         this.calamares.config()
       }
    }
 
