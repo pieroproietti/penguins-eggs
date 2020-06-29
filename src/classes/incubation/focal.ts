@@ -468,53 +468,45 @@ export class Focal {
      * M O D U L E S   C A L A M A R E S
      * ====================================================================================
      */
-
+    
     /**
      * Automirror
      * Pythonm
      */
     async moduleAutomirror() {
-        const dir = `/usr/lib/calamares/modules/automirror/`
+        const name = 'automirror'
+        const dir = `/usr/lib/x86_64-linux-gnu/calamares/modules/${name}/`
         if (!fs.existsSync(dir)) {
             fs.mkdirSync(dir)
         }
 
-        // desc
         const automirror = require('./calamares-modules/desc/automirror').automirror
-        const file = dir + 'module.desc'
-        const content = automirror()
-        write(file, content, this.verbose)
+        write(dir + 'module.desc', automirror(), this.verbose)
 
-        // conf 
         const confAutomirror = require('./calamares-modules/conf/automirror').automirror
-        const confFile = dir + 'module.desc'
-        const confContent = confAutomirror()
-        write(confFile, confContent)
+        write(dir + 'module.desc', confAutomirror())
 
         // py
         const scriptAutomirror = require('./calamares-modules/scripts/automirror').automirror
-        const scriptFile = dir + 'main.py'
-        const scriptContent = scriptAutomirror()
-        write(scriptFile, scriptContent, this.verbose)
+        write(dir + 'main.py', scriptAutomirror(), this.verbose)
         await exec(`chmod +x ${scriptFile}`)
 
     }
 
 
     async moduleCreatetmp() {
-        const createTmp = require('./calamares-modules/desc/create-tmp').createTmp
-        const dir = `/usr/lib/calamares/modules/create-tmp/`
-        const file = dir + 'module.desc'
-        const content = createTmp()
+        const name = 'create-tmp'
+        const dir = `/usr/lib/x86_64-linux-gnu/calamares/modules/${name}/`
         if (!fs.existsSync(dir)) {
             fs.mkdirSync(dir)
         }
-        write(file, content, this.verbose)
+
+        const createTmp = require('./calamares-modules/desc/create-tmp').createTmp
+        write(dir + 'module.desc', createTmp(), this.verbose)
+
         const scriptcreateTmp = require('./calamares-modules/scripts/create-tmp').createTmp
-        const scriptDir = `/usr/sbin/`
-        const scriptFile = scriptDir + 'create-tmp'
-        const scriptContent = scriptcreateTmp()
-        write(scriptFile, scriptContent, this.verbose)
+        const scriptFile = `/usr/sbin/${name}`
+        write(scriptFile, scriptcreateTmp(), this.verbose)
         await exec(`chmod +x ${scriptFile}`)
     }
 
@@ -522,22 +514,18 @@ export class Focal {
  *
  */
     async moduleBootloaderconfig() {
-        const bootloaderConfig = require('./calamares-modules/desc/bootloader-config')
-            .bootloaderConfig
-        const dir = `/usr/lib/calamares/modules/bootloader-config/`
-        const file = dir + 'module.desc'
-        const content = bootloaderConfig()
+        const name = 'bootloader-config'
+        const dir = `/usr/lib/x86_64-linux-gnu/calamares/modules/${name}/`
         if (!fs.existsSync(dir)) {
             fs.mkdirSync(dir)
         }
-        write(file, content, this.verbose)
 
-        const scriptBootloaderConfig = require('./calamares-modules/scripts/bootloader-config')
-            .bootloaderConfig
-        const scriptDir = `/usr/sbin/`
-        const scriptFile = scriptDir + 'bootloader-config'
-        const scriptContent = scriptBootloaderConfig()
-        write(scriptFile, scriptContent, this.verbose)
+        const bootloaderConfig = require('./calamares-modules/desc/bootloader-config').bootloaderConfig
+        write(dir + 'module.desc', bootloaderConfig(), this.verbose)
+
+        const scriptBootloaderConfig = require('./calamares-modules/scripts/bootloader-config').bootloaderConfig
+        const scriptFile = `/usr/sbin/` + 'bootloader-config'
+        write(scriptFile, scriptBootloaderConfig(), this.verbose)
         await exec(`chmod +x ${scriptFile}`)
     }
 
