@@ -48,9 +48,7 @@ export class Focal {
     getSettings(): string {
 
         // path di ricerca dei moduli
-        const modulesSearch: string[] = []
-        modulesSearch.push('local')
-        // modulesSearch.push('/usr/lib/calamares/modules')
+        const modulesSearch: string[] = ['local','/usr/lib/x86_64-linux-gnu/calamares/modules/' ]
 
         // Istanze
         const instances = [
@@ -126,7 +124,7 @@ export class Focal {
 
         const settings = {
             'modules-search': modulesSearch,
-            'istances': instances,
+            'instances': instances,
             'sequence': [{ show: show }, { exec: exec }, { show: ['finished'] }],
             'branding': this.remix.branding,
             'prompt-install': false,
