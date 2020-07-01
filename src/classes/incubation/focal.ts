@@ -126,11 +126,14 @@ export class Focal {
 
         const settings = {
             'modules-search': modulesSearch,
-            istances: instances,
-            sequence: [{ show: show }, { exec: exec }, { show: ['finished'] }],
-            branding: this.remix.branding,
+            'istances': instances,
+            'sequence': [{ show: show }, { exec: exec }, { show: ['finished'] }],
+            'branding': this.remix.branding,
             'prompt-install': false,
-            'dont-chroot': false
+            'dont-chroot': false,
+            'oem-setup': false,
+            'disable-cancel': false,
+            'disable-cancel-during-exec': false
         }
         return yaml.safeDump(settings)
     }
@@ -341,9 +344,9 @@ export class Focal {
      */
     moduleMachineid() {
         const machineid = yaml.safeDump({
-            systemd: true,
-            dbus: true,
-            symlink: true
+            'systemd': true,
+            'dbus': true,
+            'dbus-symlink': true
         })
         this.module('machineid', machineid)
     }
@@ -482,15 +485,16 @@ export class Focal {
 
         const automirror = require('./calamares-modules/desc/automirror').automirror
         write(dir + 'module.desc', automirror(), this.verbose)
+        
 
         const confAutomirror = require('./calamares-modules/conf/automirror').automirror
-        write(dir + 'module.desc', confAutomirror())
+        write(dir + 'automirror.conf', confAutomirror())
 
         // py
         const scriptAutomirror = require('./calamares-modules/scripts/automirror').automirror
-        write(dir + 'main.py', scriptAutomirror(), this.verbose)
+        const scriptFile = dir + 'main.py'
+        write(scriptFile, scriptAutomirror(), this.verbose)
         await exec(`chmod +x ${scriptFile}`)
-
     }
 
 
@@ -543,5 +547,6 @@ function write(file: string, content: string, verbose = false) {
     if (verbose) {
         console.log(`calamares: create ${file}`)
     }
+    // console.log(content)
     fs.writeFileSync(file, content, 'utf8')
 }

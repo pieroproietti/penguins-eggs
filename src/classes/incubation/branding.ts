@@ -58,6 +58,7 @@ export function branding(
          productIcon: productIcon,
          productWelcome: productWelcome
       },
+      slideshowAPI: 1,
       slideshow: slideshow,
       style: {
          sidebarBackground: '#2c3133',
@@ -68,3 +69,6 @@ export function branding(
    //console.log(branding)
    return yaml.safeDump(branding)
 }
+
+
+
