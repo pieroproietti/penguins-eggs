@@ -17,24 +17,6 @@ export function automirror(): string {
    text += `# Distribution that this is based off of.\n`
    text += `# This is so we can make safe assumptions for the contents of\n`
    text += `# sources.list-like files.\n`
-   text += `distribution: Ubuntu\n`
+   text += `distribution: Lubuntu\n`
    return text
 }
-
-/*
- --
-# Which base URL to use for the archive.
-#
-# This assumes that your mirror URLs are under XX.baseURL
-baseUrl: archive.ubuntu.com
-
-# URL used for IP address lookup
-geoip:
-    style: "json"
-    url:   "https://ipapi.co/json"
-
-# Distribution that this is based off of.
-# This is so we can make safe assumptions for the contents of
-# sources.list-like files.
-distribution: Ubuntu
-*/

@@ -48,7 +48,8 @@ export class Focal {
     getSettings(): string {
 
         // path di ricerca dei moduli
-        const modulesSearch: string[] = ['local','/usr/lib/x86_64-linux-gnu/calamares/modules/' ]
+        const modulesSearch: string[] = ['local']
+        // ,'/usr/lib/x86_64-linux-gnu/calamares/modules/'
 
         // Istanze
         const instances = [
@@ -68,9 +69,9 @@ export class Focal {
                 "config": "after_bootloader_context.conf"
             },
             {
-                "id": "after_bootloader",
-                "module": "contextualprocess",
-                "config": "after_bootloader_context.conf"
+                "id": "logs",
+                "module": "shellprocess",
+                "config": "shellprocess_logs.conf"
             },
             {
                 "id": "bug-LP#1829805",
@@ -85,13 +86,7 @@ export class Focal {
         ]
 
         // moduli da mostrare a video
-        const show: string[] = []
-        show.push('welcome')
-        show.push('locale')
-        show.push('keyboard')
-        show.push('partition')
-        show.push('users')
-        show.push('summary')
+        const show: string[] = ['welcome', 'locale', 'keyboard', 'partition', 'users', 'summary']
 
         // moduli da eseguire
         const exec: string[] = []
@@ -127,7 +122,7 @@ export class Focal {
             'instances': instances,
             'sequence': [{ show: show }, { exec: exec }, { show: ['finished'] }],
             'branding': this.remix.branding,
-            'prompt-install': false,
+            'prompt-install': true,
             'dont-chroot': false,
             'oem-setup': false,
             'disable-cancel': false,
@@ -469,7 +464,7 @@ export class Focal {
      * M O D U L E S   C A L A M A R E S
      * ====================================================================================
      */
-    
+
     /**
      * Automirror
      * Pythonm
@@ -481,12 +476,36 @@ export class Focal {
             fs.mkdirSync(dir)
         }
 
-        const automirror = require('./calamares-modules/desc/automirror').automirror
-        write(dir + 'module.desc', automirror(), this.verbose)
-        
+        const automirror = yaml.safeDump({
+            baseUrl: "archive.ubuntu.com",
+            distribution: "Ubuntu",
+            geoip: {
+                style: "json",
+                url: "http  s://ipapi.co/json",
+            }
+        })
+        write(dir + 'automirror.conf', automirror, this.verbose)
 
-        const confAutomirror = require('./calamares-modules/conf/automirror').automirror
-        write(dir + 'automirror.conf', confAutomirror())
+        // Creo anche un config in local con Lubuntu come distro
+        const automirrorModules = yaml.safeDump({
+            baseUrl: "archive.ubuntu.com",
+            distribution: "Lubuntu",
+            geoip: {
+                style: "json",
+                url: "https://ipapi.co/json",
+            }
+        })
+        write('/etc/calamares/modules/' + 'automirror.conf', automirrorModules)
+
+        // desc
+        const desc =  yaml.safeDump({
+            type: "job",
+            name: "automirror",
+            interface: "python",
+            script: "main.py"
+        })
+        write(dir + 'module.desc', desc, this.verbose)
+
 
         // py
         const scriptAutomirror = require('./calamares-modules/scripts/automirror').automirror
