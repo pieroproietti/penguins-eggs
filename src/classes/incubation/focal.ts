@@ -24,6 +24,12 @@ export class Focal {
 
     sourcesTrusted = true
 
+    dir = '/etc/calamares/'
+
+    dirLocalModules = '/etc/calamares/modules/'
+    
+    dirGlobalModules = '/usr/lib/x86_64-linux-gnu/calamares/modules/'
+
     constructor(remix: IRemix, distro: IDistro, displaymanager: boolean, verbose = false) {
         this.remix = remix
         this.distro = distro
@@ -36,8 +42,7 @@ export class Focal {
      *
      */
     public settings() {
-        const dir = '/etc/calamares/'
-        const file = dir + 'settings.conf'
+        const file = this.dir + 'settings.conf'
         const content = this.getSettings()
         write(file, content, this.verbose)
     }
@@ -175,8 +180,7 @@ export class Focal {
      * @param name
      */
     module(name: string, content: string) {
-        const dir = `/etc/calamares/modules/`
-        const file = dir + name + '.conf'
+        const file = this.dirLocalModules + name + '.conf'
         write(file, content, this.verbose)
     }
 
@@ -205,8 +209,7 @@ export class Focal {
             text += 'script:\n'
             text += '    - calamares-logs-helper @@ROOT@@\n'
         }
-        const dir = `/etc/calamares/modules/`
-        let file = dir + 'shellprocess_' + name + '.conf'
+        let file = this.dirLocalModules + 'shellprocess_' + name + '.conf'
         let content = text
         write(file, content, this.verbose)
     }
@@ -259,8 +262,7 @@ export class Focal {
             text += '"*": "-for i in `ls @@ROOT@@/home/`; do rm @@ROOT@@/home/$i/Desktop/lubuntu-calamares.desktop || exit 0; done"\n'
         }
         let content = text
-        const dir = `/etc/calamares/modules/`
-        let file = dir + name + '_context' + '.conf'
+        let file = this.dirLocalModules + name + '_context' + '.conf'
         write(file, content, this.verbose)
     }
 
@@ -391,8 +393,13 @@ export class Focal {
      *
      */
     moduleDisplaymanager() {
-        const displaymanager = require('./modules/displaymanager').displaymanager
-        this.module('displaymanager', displaymanager())
+        const displaymanager =  yaml.safeDump({
+            displaymanager: "gdm3",
+            basicSetup: false,
+            sysconfigSetup: false
+        })
+
+        this.module('displaymanager', displaymanager)
     }
 
     moduleNetworkcfg() { if (this.verbose) console.log(`calamares: module networkcfg. Nothing to do!`) }
@@ -471,9 +478,9 @@ export class Focal {
      */
     async moduleAutomirror() {
         const name = 'automirror'
-        const dir = `/usr/lib/x86_64-linux-gnu/calamares/modules/${name}/`
-        if (!fs.existsSync(dir)) {
-            fs.mkdirSync(dir)
+        const dirModule = this.dirGlobalModules + name
+        if (!fs.existsSync(dirModule)) {
+            fs.mkdirSync(dirModule)
         }
 
         const automirror = yaml.safeDump({
@@ -484,12 +491,12 @@ export class Focal {
                 url: "http  s://ipapi.co/json",
             }
         })
-        write(dir + 'automirror.conf', automirror, this.verbose)
+        write(dirModule + 'automirror.conf', automirror, this.verbose)
 
-        // Creo anche un config in local con Lubuntu come distro
+        // Creo anche un config in local con la distro particolare, esempio: lubuntu, ulyana
         const automirrorModules = yaml.safeDump({
             baseUrl: "archive.ubuntu.com",
-            distribution: "Lubuntu",
+            distribution: "Ubuntu",
             geoip: {
                 style: "json",
                 url: "https://ipapi.co/json",
@@ -504,12 +511,12 @@ export class Focal {
             interface: "python",
             script: "main.py"
         })
-        write(dir + 'module.desc', desc, this.verbose)
+        write(dirModule + 'module.desc', desc, this.verbose)
 
 
         // py
         const scriptAutomirror = require('./calamares-modules/scripts/automirror').automirror
-        const scriptFile = dir + 'main.py'
+        const scriptFile = dirModule + 'main.py'
         write(scriptFile, scriptAutomirror(), this.verbose)
         await exec(`chmod +x ${scriptFile}`)
     }
@@ -517,13 +524,13 @@ export class Focal {
 
     async moduleCreatetmp() {
         const name = 'create-tmp'
-        const dir = `/usr/lib/x86_64-linux-gnu/calamares/modules/${name}/`
-        if (!fs.existsSync(dir)) {
-            fs.mkdirSync(dir)
+        const dirModule = this.dirGlobalModules + name
+        if (!fs.existsSync(dirModule)) {
+            fs.mkdirSync(dirModule)
         }
 
         const createTmp = require('./calamares-modules/desc/create-tmp').createTmp
-        write(dir + 'module.desc', createTmp(), this.verbose)
+        write(dirModule + 'module.desc', createTmp(), this.verbose)
 
         const scriptcreateTmp = require('./calamares-modules/scripts/create-tmp').createTmp
         const scriptFile = `/usr/sbin/${name}`
@@ -536,21 +543,19 @@ export class Focal {
  */
     async moduleBootloaderconfig() {
         const name = 'bootloader-config'
-        const dir = `/usr/lib/x86_64-linux-gnu/calamares/modules/${name}/`
-        if (!fs.existsSync(dir)) {
-            fs.mkdirSync(dir)
+        const dirModule = this.dirGlobalModules + name
+        if (!fs.existsSync(dirModule)) {
+            fs.mkdirSync(dirModule)
         }
 
         const bootloaderConfig = require('./calamares-modules/desc/bootloader-config').bootloaderConfig
-        write(dir + 'module.desc', bootloaderConfig(), this.verbose)
+        write(dirModule + 'module.desc', bootloaderConfig(), this.verbose)
 
         const scriptBootloaderConfig = require('./calamares-modules/scripts/bootloader-config').bootloaderConfig
         const scriptFile = `/usr/sbin/` + 'bootloader-config'
         write(scriptFile, scriptBootloaderConfig(), this.verbose)
         await exec(`chmod +x ${scriptFile}`)
     }
-
-
 }
 
 
