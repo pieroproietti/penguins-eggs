@@ -1,5 +1,3 @@
-import { tmpdir } from 'os'
-
 /**
  *
  */
@@ -37,6 +35,8 @@ export function automirror(): string {
     text += `# Lines starting with "deb" are mandatory, while lines starting with "deb-src"\n`
     text += `# are for more detailed package information.\n`
     text += `\n`
+    text += `## repo per linuxmint ulyana\n`
+    text += `deb http://packages.linuxmint.com ulyana main upstream import backport #id:linuxmint_main\n`
     text += `## See http://help.ubuntu.com/community/UpgradeNotes for how to upgrade to\n`
     text += `## newer versions of DISTRIBUTION.\n`
     text += `deb URL/ubuntu/ CODENAME main restricted\n`
@@ -156,7 +156,8 @@ export function automirror(): string {
     text += `    sources = sources.replace("DATE", strftime("%Y-%m-%d"))\n`
     text += `\n`
     text += `    filepath = libcalamares.globalstorage.value("rootMountPoint")\n`
-    text += `    filepath += "/etc/apt/sources.list"\n`
+    // text += `    filepath += "/etc/apt/sources.list"\n`
+    text += `    filepath += "official-package-repositories.list\n`
     text += `    with open(filepath, "r+") as sourcesfile:\n`
     text += `        sourcesfile.seek(0)\n`
     text += `        sourcesfile.write(sources)\n`

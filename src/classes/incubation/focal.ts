@@ -121,7 +121,7 @@ export class Focal {
         exec.push("automirror")
         exec.push("shellprocess@add386arch")
         exec.push("packages")
-        exec.push("shellprocess@logs")
+        // exec.push("shellprocess@logs")
         exec.push("umount")
 
         const settings = {
@@ -166,7 +166,7 @@ export class Focal {
         this.moduleAutomirror()
         this.shellprocess("add386arch")
         this.modulePackages()
-        this.shellprocess("logs")
+        //this.shellprocess("logs")
         this.moduleUmount()
     }
 
