@@ -105,7 +105,9 @@ export class Focal {
         exec.push('localecfg')
         exec.push('luksbootkeyfile')
         exec.push('users')
-        exec.push('displaymanager')
+        if (this.displaymanager){
+            exec.push('displaymanager')
+        }
         exec.push('networkcfg')
         exec.push('hwclock')
         exec.push("contextualprocess@before_bootloader_mkdirs")
@@ -393,13 +395,14 @@ export class Focal {
      *
      */
     moduleDisplaymanager() {
-        const displaymanager =  yaml.safeDump({
-            displaymanager: "gdm3",
+        const displaymanager_not_used =  yaml.safeDump({
+            displaymanager: "lightdm",
             basicSetup: false,
             sysconfigSetup: false
         })
 
-        this.module('displaymanager', displaymanager)
+        const displaymanager = require('./modules/displaymanager').displaymanager
+        this.module('displaymanager', displaymanager())
     }
 
     moduleNetworkcfg() { if (this.verbose) console.log(`calamares: module networkcfg. Nothing to do!`) }
@@ -478,7 +481,7 @@ export class Focal {
      */
     async moduleAutomirror() {
         const name = 'automirror'
-        const dirModule = this.dirGlobalModules + name
+        const dirModule = this.dirGlobalModules + name + '/'
         if (!fs.existsSync(dirModule)) {
             fs.mkdirSync(dirModule)
         }
@@ -496,7 +499,7 @@ export class Focal {
         // Creo anche un config in local con la distro particolare, esempio: lubuntu, ulyana
         const automirrorModules = yaml.safeDump({
             baseUrl: "archive.ubuntu.com",
-            distribution: "Ubuntu",
+            distribution: "Lubuntu",
             geoip: {
                 style: "json",
                 url: "https://ipapi.co/json",
@@ -524,7 +527,7 @@ export class Focal {
 
     async moduleCreatetmp() {
         const name = 'create-tmp'
-        const dirModule = this.dirGlobalModules + name
+        const dirModule = this.dirGlobalModules + name+ '/'
         if (!fs.existsSync(dirModule)) {
             fs.mkdirSync(dirModule)
         }
