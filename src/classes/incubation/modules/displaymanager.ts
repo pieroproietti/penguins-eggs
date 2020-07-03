@@ -13,6 +13,7 @@ export function displaymanager(mountpointSquashFs: string): string {
    text += addIfExist('sddm')
    text += addIfExist('lightdm')
    text += addIfExist('gdm')
+   text += addIfExist('gdm3')
    text += addIfExist('mdm')
    text += addIfExist('lxdm')
    text += addIfExist('kdm')

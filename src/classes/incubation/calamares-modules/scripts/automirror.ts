@@ -101,9 +101,9 @@ export function automirror(versionId = ''): string {
     text += `\n`
     text += `def getcodename():\n`
     text += `    """Return the codename of the distribution, similar to lsb_release -cs"""\n`
-    if (versionId = 'ulyana') {
+    if (versionId === 'ulyana') {
         text += `    return "focal"\n`
-    } else if (versionId = 'tricia') {
+    } else if (versionId === 'tricia') {
         text += `    return "bionic"\n`
     } else {
         text += `    return get_distro_information()["CODENAME"]\n`
@@ -122,7 +122,8 @@ export function automirror(versionId = ''): string {
     text += `    sources = sources.replace("DATE", strftime("%Y-%m-%d"))\n`
     text += `\n`
     text += `    filepath = libcalamares.globalstorage.value("rootMountPoint")\n`
-    if (versionId === 'ulyana' || versionId === 'tricia') {
+    if ((versionId === 'ulyana') || (versionId === 'tricia')) {
+        text += `    # Linux mint ${versionId}\n`
         text += `    filepath += "/etc/apt/sources.list.d/official-package-repositories.list"\n`
     } else {
         text += `    filepath += "/etc/apt/sources.list"\n`

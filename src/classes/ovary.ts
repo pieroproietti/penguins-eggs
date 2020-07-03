@@ -30,7 +30,7 @@ import Distro from './distro'
 import Xdg from './xdg'
 import Pacman from './pacman'
 import Prerequisites from '../commands/prerequisites'
-import CalamaresConfig from './incubation/calamares-config'
+
 
 /**
  * Ovary:
@@ -44,7 +44,7 @@ export default class Ovary {
 
    distro = {} as IDistro
 
-   calamares = {} as CalamaresConfig
+   incubator = {} as Incubator
 
    prerequisites = {} as Prerequisites
 
@@ -496,8 +496,8 @@ export default class Ovary {
             await Pacman.clean(verbose)
          }
          // Configuro calamares
-         this.calamares = new CalamaresConfig(this.remix, this.distro, verbose)
-         this.calamares.config()
+         this.incubator = new Incubator(this.remix, this.distro, verbose)
+         this.incubator.config()
       }
    }
 

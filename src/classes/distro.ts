@@ -108,22 +108,11 @@ class Distro implements IDistro {
          .trim()
 
       /**
-       * LINUX MINT
+       * LINUX MINT dall 19 in poi
        */
 
-      // LinuxMint 18. Sarah, 18.1 Serena, 18.2 Sonia, 18.3 Sylvia
-      if (
-         this.versionId === 'sarah' ||
-         this.versionId === 'serena' ||
-         this.versionId === 'sonya' ||
-         this.versionId === 'sylvia'
-      ) {
-         this.distroId = 'Linux Mint'
-         this.distroLike = 'Ubuntu'
-         this.versionLike = 'xenial'
-
          // LinuxMint 19 tara, 19.1 tessa, 19.2 Tina, 19.3 Tricia
-      } else if (
+       if (
          this.versionId === 'tara' ||
          this.versionId === 'tessa' ||
          this.versionId === 'tina' ||
