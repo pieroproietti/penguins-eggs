@@ -1,7 +1,7 @@
 /**
  *
  */
-export function automirror(versionId=''): string {
+export function automirror(versionId = ''): string {
     let text = ''
     text += `#!/usr/bin/env python3\n`
     text += `# Copyright (C) 2018 Simon Quigley <tsimonq2@ubuntu.com>\n`
@@ -34,10 +34,13 @@ export function automirror(versionId=''): string {
     text += `\n`
 
     /**
-     * LINUXMINT 20
+     * LINUXMINT 20, 19.3
      */
-    if (versionId === 'ulyana'){
+    if (versionId === 'ulyana') {
         text += `deb http://packages.linuxmint.com ulyana main upstream import backport #id:linuxmint_main\n`
+        text += `\n`
+    } else if (versionId === 'tricia') {
+        text += `deb http://packages.linuxmint.com tricia main upstream import backport #id:linuxmint_main\n`
         text += `\n`
     }
     text += `deb URL/ubuntu/ CODENAME main restricted universe multiverse\n`
@@ -46,7 +49,7 @@ export function automirror(versionId=''): string {
     text += `\n`
     text += `deb http://security.ubuntu.com/ubuntu/ CODENAME-security main restricted universe multiverse\n`
     text += `deb http://archive.canonical.com/ubuntu CODENAME partner"""\n`
-    
+
     text += `\n`
     text += `SUBDOMAINS_BY_COUNTRY_CODE = {"US": "us.",\n`
     text += `                              "AU": "au.",\n`
@@ -98,8 +101,10 @@ export function automirror(versionId=''): string {
     text += `\n`
     text += `def getcodename():\n`
     text += `    """Return the codename of the distribution, similar to lsb_release -cs"""\n`
-    if (versionId='ulyana'){
+    if (versionId = 'ulyana') {
         text += `    return "focal"\n`
+    } else if (versionId = 'tricia') {
+        text += `    return "bionic"\n`
     } else {
         text += `    return get_distro_information()["CODENAME"]\n`
     }
@@ -117,7 +122,7 @@ export function automirror(versionId=''): string {
     text += `    sources = sources.replace("DATE", strftime("%Y-%m-%d"))\n`
     text += `\n`
     text += `    filepath = libcalamares.globalstorage.value("rootMountPoint")\n`
-    if (versionId === 'ulyana'){
+    if (versionId === 'ulyana' || versionId === 'tricia') {
         text += `    filepath += "/etc/apt/sources.list.d/official-package-repositories.list"\n`
     } else {
         text += `    filepath += "/etc/apt/sources.list"\n`

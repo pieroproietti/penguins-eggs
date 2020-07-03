@@ -43,7 +43,8 @@ export default class Pacman {
     * controlla se Xserver è installato
     */
    static isXInstalled(): boolean {
-      return Pacman.packageIsInstalled('xserver-xorg-core')
+
+      return (Pacman.packageIsInstalled('xserver-xorg-core') || Pacman.packageIsInstalled('xserver-xorg-core-hwe-18.04'))
    }
 
    /**

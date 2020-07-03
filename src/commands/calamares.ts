@@ -38,6 +38,11 @@ export default class Calamares extends Command {
          verbose = true
       }
 
+      let install = false
+      if (flags.install) {
+         install = true
+      }
+
       // Nome del brand di calamares
       let branding = 'eggs'
       if (flags.branding !== undefined) {
@@ -45,10 +50,13 @@ export default class Calamares extends Command {
          console.log(`calamares branding: ${branding}`)
       }
 
+      console.log(`install: ${install}`)
       if (Utils.isRoot()) {
          if (Pacman.isXInstalled()) {
+            console.log(`isXInstalled: true`)
+
             if (await Utils.customConfirm(`Select yes to continue...`)) {
-               if (flags.install) {
+               if (install) {
                   Utils.warning('Installing calamares prerequisites...')
                   await Pacman.prerequisitesCalamaresInstall()
                }
