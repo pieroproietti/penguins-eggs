@@ -27,7 +27,7 @@ All the ISOs include nodejs and eggs installed (.npm package), so you can update
 
 I work mostly on Debian stable, so here you can find my personal versions and other examples.
 
-## Debian Buster
+# Debian Buster
 * **debu**  - it is my personal version with cinnamon, mostly for development, but include common office tools;
 * **lampp** - same as debu, but with tools to develop web sites with php and wordpress;
 * **naked** - just the juice, without GUI, with nodejs and eggs. You can start here to build your revolution! 
@@ -38,14 +38,18 @@ I work mostly on Debian stable, so here you can find my personal versions and ot
 ## Linux Mint Debian Edition 4 
 * **lmde4** - LMDE4 Debbie, remastered with eggs, without any modifications except for develop tools.
 
-## Linux Mint 19.3
-* **tricia** - Linux Mint 19.3 remastered with eggs, without any modifications except for develop tools.
-
 ## Deepin 20 beta
 * **dpin** - deepin 20 beta apricot remastered with eggs, without any modifications except for develop tools.
 
-## Ubuntu 20.04 focal
+
+# Ubuntu 20.04 focal
+* **ufo** - Ubuntu focal standard installation, remastered with eggs, without any modifications.
 * **ufo-mini** - Ubuntu focal minimal installation, remastered with eggs, without any modifications except for develop tools.
+
+## Linux Mint 20
+* **ulyana** - Linux Mint 20 remastered with eggs, without any modifications except for develop tools.
+
+
 
 # That's all Folks!
 No need other configurations, penguins-eggs are battery included or better, as in the real, live is inside! :-D
