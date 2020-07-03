@@ -57,7 +57,7 @@ export default class CalamaresConfig {
          const buster = new Buster(this.remix, this.distro, this.displaymanager, this.verbose)
          buster.settings()
          buster.modules()
-      } else if(this.distro.versionLike === 'focal'){
+      } else if ((this.distro.versionLike === 'focal') || (this.distro.versionLike === 'bionic') || (this.distro.versionLike === 'cosmic')) {
          const focal = new Focal(this.remix, this.distro, this.displaymanager, this.verbose)
          focal.settings()
          focal.modules()
