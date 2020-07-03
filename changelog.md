@@ -17,6 +17,18 @@ Usually the last version is the right one. Detailed instrunctions for usage are 
 ## Changelog
 Versions are listed on reverse order, the first is the last one.
 
+### eggs-7.5.129-1
+Well, the big moment has arrived: 
+
+eggs now allows you to remaster the system and use calamari for reinstallation on:
+* Linuxmint 20 ulyana
+* Ubuntu 20.04 Focal
+* Debian 10 Buster and derivatives.
+Other versions can of course be remastered, but without the possibility of using calamares with installer.
+I would like to push compatibility up to Linuixmint 19.3 tricia for the possibility of a robust i386 distro included.
+Unfortunately, neither Ubuntu nor Linuxmint are releasing the new versions on i386 architecture.
+
+
 ### eggs-7.5.126-1
 work in progress to adapt our script to work with calamares installer in Ubuntu focal and Linux mint.
 Calamares again don't work in ubuntu and Mint, but thanx to big refactoring is more simple to adapt it:
