@@ -520,7 +520,7 @@ export class Focal {
         // py
         const scriptAutomirror = require('./calamares-modules/scripts/automirror').automirror
         const scriptFile = dirModule + 'main.py'
-        write(scriptFile, scriptAutomirror(), this.verbose)
+        write(scriptFile, scriptAutomirror(this.distro.versionId), this.verbose)
         await exec(`chmod +x ${scriptFile}`)
     }
 
