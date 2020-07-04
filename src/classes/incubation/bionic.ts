@@ -78,14 +78,14 @@ export class Bionic {
         }
         exec.push('networkcfg')
         exec.push('hwclock')
-        exec.push("beforebootloadermkdirs") //
+        exec.push("before-bootloader-mkdirs") //
         exec.push("bug") //
         exec.push("initramfscfg")
         exec.push("initramfs")
         exec.push("grubcfg")
-        exec.push("beforebootloader") //
+        exec.push("before-bootloader") //
         exec.push("bootloader")
-        exec.push("afterbootloader") // 
+        exec.push("after-bootloader") // 
         exec.push("automirror")
         exec.push("add386arch") //
         exec.push("packages")
@@ -207,6 +207,10 @@ export class Bionic {
     async moduleBeforebootloader() {
         const name = 'before-bootloader'
         const dir = this.dirGlobalModules + name +`/`
+        if (!fs.existsSync(dir)) {
+            fs.mkdirSync(dir)
+        }
+
         const desBeforeBootloader = yaml.safeDump({
             dontChroot: true,
             type: "job",
@@ -216,7 +220,7 @@ export class Bionic {
         })
         write(dir + 'module.desc', desBeforeBootloader)
 
-        const bashContent = 'cp /cdrom/casper/vmlinuz @@ROOT@@/boot/vmlinuz-$(uname -r)\n'
+        const bashContent = 'cp /lib/live/mount/medium/live/vmlinuz @@ROOT@@/boot/vmlinuz-$(uname -r)\n'
         const bashFile = `/usr/sbin/${name}`
         write(bashFile, bashContent, this.verbose)
         await exec(`chmod +x ${bashFile}`)
@@ -228,6 +232,10 @@ export class Bionic {
     async moduleAfterbootloader() {
         const name = 'after-bootloader'
         const dir = this.dirGlobalModules + name +`/`
+        if (!fs.existsSync(dir)) {
+            fs.mkdirSync(dir)
+        }
+
         const desAfterBootloader = yaml.safeDump({
             dontChroot: true,
             type: "job",
@@ -249,6 +257,10 @@ export class Bionic {
     async moduleAdd386arch() {
         const name = 'add386arch'
         const dir = this.dirGlobalModules + name +`/`
+        if (!fs.existsSync(dir)) {
+            fs.mkdirSync(dir)
+        }
+
         const desAfterBootloader = yaml.safeDump({
             dontChroot: false,
             type: "job",
@@ -342,7 +354,7 @@ export class Bionic {
         const machineid = yaml.safeDump({
             'systemd': true,
             'dbus': true,
-            'dbus-symlink': true
+            'symlink': true
         })
         this.module('machineid', machineid)
     }
