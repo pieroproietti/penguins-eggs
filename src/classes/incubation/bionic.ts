@@ -27,7 +27,7 @@ export class Bionic {
     dir = '/etc/calamares/'
 
     dirLocalModules = '/etc/calamares/modules/'
-    
+
     dirGlobalModules = '/usr/lib/x86_64-linux-gnu/calamares/modules/'
 
     constructor(remix: IRemix, distro: IDistro, displaymanager: boolean, verbose = false) {
@@ -36,7 +36,7 @@ export class Bionic {
         this.verbose = verbose
         this.displaymanager = displaymanager
         if (process.arch === 'ia32') {
-            this.dirGlobalModules = '/usr/lib/calamares/modules/'            
+            this.dirGlobalModules = '/usr/lib/calamares/modules/'
         }
     }
 
@@ -56,7 +56,7 @@ export class Bionic {
     getSettings(): string {
 
         // path di ricerca dei moduli
-        const modulesSearch: string[] = ['local', this.dirGlobalModules ]
+        const modulesSearch: string[] = ['local', this.dirGlobalModules]
 
         // moduli da mostrare a video
         const show: string[] = ['welcome', 'locale', 'keyboard', 'partition', 'users', 'summary']
@@ -73,7 +73,7 @@ export class Bionic {
         exec.push('localecfg')
         exec.push('luksbootkeyfile')
         exec.push('users')
-        if (this.displaymanager){
+        if (this.displaymanager) {
             exec.push('displaymanager')
         }
         exec.push('networkcfg')
@@ -157,23 +157,23 @@ export class Bionic {
      */
     async moduleBeforebootloadermkdirs() {
         const name = 'before-bootloader-mkdirs'
-        const dir = `/usr/lib/calamares/modules/${name}/`
+        const dir = this.dirGlobalModules + name +`/`
         if (!fs.existsSync(dir)) {
             fs.mkdirSync(dir)
         }
 
         const desBeforeBootloaderMkdirs = yaml.safeDump({
             type: "job",
-            name: "before-bootloader-mkdirs",
+            name: `${name}`,
             interface: "process",
-            command: "/usr/sbin/before-bootloader-mkdirs",
+            command: `/usr/sbin/${name}`,
             timeout: "600"
-        })    
+        })
         write(dir + 'module.desc', desBeforeBootloaderMkdirs)
 
-        const bashContent ='cp /cdrom/live/vmlinuz  '
+        const bashContent = 'cp /cdrom/live/vmlinuz  '
         const bashFile = `/usr/sbin/${name}`
-        write(bashFile,bashContent, this.verbose)
+        write(bashFile, bashContent, this.verbose)
         await exec(`chmod +x ${bashFile}`)
     }
 
@@ -182,35 +182,37 @@ export class Bionic {
     */
     async moduleBug() {
         const name = 'bug'
-        const dir = `/usr/lib/calamares/modules/${name}/`
+        const dir = this.dirGlobalModules + name +`/`
         if (!fs.existsSync(dir)) {
             fs.mkdirSync(dir)
         }
         const desBug = yaml.safeDump({
             dontChroot: false,
-            timeout: 30,
+            type: "job",
+            name: `${name}`,
             interface: "process",
-            command: "/usr/sbin/bug"
+            command: `/usr/sbin/${name}`,
         })
         write(dir + 'module.desc', desBug)
 
-        const bashContent ='touch @@ROOT@@/boot/initrd.img-$(uname -r)\n'
+        const bashContent = 'touch @@ROOT@@/boot/initrd.img-$(uname -r)\n'
         const bashFile = `/usr/sbin/${name}`
-        write(bashFile,bashContent, this.verbose)
+        write(bashFile, bashContent, this.verbose)
         await exec(`chmod +x ${bashFile}`)
     }
 
     /**
      *
      */
-    async moduleBeforebootloader () {
+    async moduleBeforebootloader() {
         const name = 'before-bootloader'
-        const dir = `/usr/lib/calamares/modules/${name}/`
+        const dir = this.dirGlobalModules + name +`/`
         const desBeforeBootloader = yaml.safeDump({
             dontChroot: true,
-            timeout: 10,
+            type: "job",
+            name: `${name}`,
             interface: "process",
-            command: '/usr/sbin/before-bootloader'
+            command: `/usr/sbin/${name}`,
         })
         write(dir + 'module.desc', desBeforeBootloader)
 
@@ -225,12 +227,13 @@ export class Bionic {
      */
     async moduleAfterbootloader() {
         const name = 'after-bootloader'
-        const dir = `/usr/lib/calamares/modules/${name}/`
+        const dir = this.dirGlobalModules + name +`/`
         const desAfterBootloader = yaml.safeDump({
             dontChroot: true,
-            timeout: 10,
+            type: "job",
+            name: `${name}`,
             interface: "process",
-            command: '/usr/sbin/after-bootloader'
+            command: `/usr/sbin/${name}`,
         })
         write(dir + 'module.desc', desAfterBootloader)
 
@@ -245,14 +248,22 @@ export class Bionic {
      */
     async moduleAdd386arch() {
         const name = 'add386arch'
-        const dir = `/usr/lib/calamares/modules/${name}/`
+        const dir = this.dirGlobalModules + name +`/`
         const desAfterBootloader = yaml.safeDump({
             dontChroot: false,
-            timeout: 30,
+            type: "job",
+            name: `${name}`,
             interface: "process",
+            command: `/usr/sbin/${name}`,
+
             command: '/usr/bin/dpkg --add-architecture i386'
         })
         write(dir + 'module.desc', desAfterBootloader)
+
+        const bashContent = '/usr/bin/dpkg --add-architecture i386\n'
+        const bashFile = `/usr/sbin/${name}`
+        write(bashFile, bashContent, this.verbose)
+        await exec(`chmod +x ${bashFile}`)
     }
 
 
@@ -383,7 +394,7 @@ export class Bionic {
      *
      */
     moduleDisplaymanager() {
-        const displaymanager_not_used =  yaml.safeDump({
+        const displaymanager_not_used = yaml.safeDump({
             displaymanager: "lightdm",
             basicSetup: false,
             sysconfigSetup: false
@@ -496,7 +507,7 @@ export class Bionic {
         write('/etc/calamares/modules/' + 'automirror.conf', automirrorModules)
 
         // desc
-        const desc =  yaml.safeDump({
+        const desc = yaml.safeDump({
             type: "job",
             name: "automirror",
             interface: "python",
@@ -515,7 +526,7 @@ export class Bionic {
 
     async moduleCreatetmp() {
         const name = 'create-tmp'
-        const dirModule = this.dirGlobalModules + name+ '/'
+        const dirModule = this.dirGlobalModules + name + '/'
         if (!fs.existsSync(dirModule)) {
             fs.mkdirSync(dirModule)
         }
