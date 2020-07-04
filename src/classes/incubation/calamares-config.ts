@@ -12,6 +12,7 @@ import Pacman from '../pacman'
 import { IRemix, IDistro } from '../../interfaces'
 import { Buster } from './buster'
 import { Focal } from './focal'
+import { Bionic } from './bionic'
 const exec = require('../../lib/utils').exec
 
 /**
@@ -57,10 +58,14 @@ export default class CalamaresConfig {
          const buster = new Buster(this.remix, this.distro, this.displaymanager, this.verbose)
          buster.settings()
          buster.modules()
-      } else if ((this.distro.versionLike === 'focal') || (this.distro.versionLike === 'bionic') || (this.distro.versionLike === 'cosmic')) {
+      } else if (this.distro.versionLike === 'focal') {
          const focal = new Focal(this.remix, this.distro, this.displaymanager, this.verbose)
          focal.settings()
          focal.modules()
+      } else if (this.distro.versionLike === 'bionic') {
+         const bionic = new Bionic(this.remix, this.distro, this.displaymanager, this.verbose)
+         bionic.settings()
+         bionic.modules()
       }
    }
 

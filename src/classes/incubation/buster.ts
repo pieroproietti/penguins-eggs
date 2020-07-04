@@ -34,6 +34,10 @@ export class Buster {
         this.distro = distro
         this.verbose = verbose
         this.displaymanager = displaymanager
+                if (process.arch === 'ia32') {
+            this.dirGlobalModules = '/usr/lib/calamares/modules/'            
+        }
+
     }
 
     /**

@@ -1,5 +1,5 @@
 /**
- * penguins-eggs: focal.ts
+ * penguins-eggs: bionic.ts
  *
  * author: Piero Proietti
  * mail: piero.proietti@gmail.com
@@ -13,7 +13,7 @@ const exec = require('../../lib/utils').exec
 /**
  * 
  */
-export class Focal {
+export class Bionic {
     verbose = false
 
     remix: IRemix
@@ -35,7 +35,7 @@ export class Focal {
         this.distro = distro
         this.verbose = verbose
         this.displaymanager = displaymanager
-                if (process.arch === 'ia32') {
+        if (process.arch === 'ia32') {
             this.dirGlobalModules = '/usr/lib/calamares/modules/'            
         }
     }
@@ -56,42 +56,7 @@ export class Focal {
     getSettings(): string {
 
         // path di ricerca dei moduli
-        const modulesSearch: string[] = ['local']
-        // ,'/usr/lib/x86_64-linux-gnu/calamares/modules/'
-
-        // Istanze
-        const instances = [
-            {
-                "id": "before_bootloader_mkdirs",
-                "module": "contextualprocess",
-                "config": "before_bootloader_mkdirs_context.conf"
-            },
-            {
-                "id": "before_bootloader",
-                "module": "contextualprocess",
-                "config": "before_bootloader_context.conf"
-            },
-            {
-                "id": "after_bootloader",
-                "module": "contextualprocess",
-                "config": "after_bootloader_context.conf"
-            },
-            {
-                "id": "logs",
-                "module": "shellprocess",
-                "config": "shellprocess_logs.conf"
-            },
-            {
-                "id": "bug-LP#1829805",
-                "module": "shellprocess",
-                "config": "shellprocess_bug-LP#1829805.conf"
-            },
-            {
-                "id": "add386arch",
-                "module": "shellprocess",
-                "config": "shellprocess_add386arch.conf"
-            }
-        ]
+        const modulesSearch: string[] = ['local', this.dirGlobalModules ]
 
         // moduli da mostrare a video
         const show: string[] = ['welcome', 'locale', 'keyboard', 'partition', 'users', 'summary']
@@ -113,23 +78,21 @@ export class Focal {
         }
         exec.push('networkcfg')
         exec.push('hwclock')
-        exec.push("contextualprocess@before_bootloader_mkdirs")
-        exec.push("shellprocess@bug-LP#1829805")
+        exec.push("beforebootloadermkdirs") //
+        exec.push("bug") //
         exec.push("initramfscfg")
         exec.push("initramfs")
         exec.push("grubcfg")
-        exec.push("contextualprocess@before_bootloader")
+        exec.push("beforebootloader") //
         exec.push("bootloader")
-        exec.push("contextualprocess@after_bootloader")
+        exec.push("afterbootloader") // 
         exec.push("automirror")
-        exec.push("shellprocess@add386arch")
+        exec.push("add386arch") //
         exec.push("packages")
-        // exec.push("shellprocess@logs")
         exec.push("umount")
 
         const settings = {
             'modules-search': modulesSearch,
-            'instances': instances,
             'sequence': [{ show: show }, { exec: exec }, { show: ['finished'] }],
             'branding': this.remix.branding,
             'prompt-install': true,
@@ -158,18 +121,17 @@ export class Focal {
         this.moduleDisplaymanager()
         this.moduleNetworkcfg()
         this.moduleHwclock()
-        this.contextualprocess('before_bootloader_mkdirs')
-        this.shellprocess('bug-LP#1829805')
+        this.moduleBeforebootloadermkdirs()
+        this.moduleBug()
         this.moduleInitramfscfg()
         this.moduleInitramfs()
         this.moduleGrubcfg()
-        this.contextualprocess('before_bootloader')
+        this.moduleBeforebootloader()
         this.moduleBootloader()
-        this.contextualprocess('after_bootloader')
+        this.moduleAfterbootloader()
         this.moduleAutomirror()
-        this.shellprocess("add386arch")
+        this.moduleAdd386arch()
         this.modulePackages()
-        //this.shellprocess("logs")
         this.moduleUmount()
     }
 
@@ -189,87 +151,110 @@ export class Focal {
         write(file, content, this.verbose)
     }
 
+
     /**
-     * 
-     * @param process 
+     *
      */
-    shellprocess(name: string) {
-        let text = ''
-        if (name === 'bug-LP#1829805') {
-            text += '---\n'
-            text += 'dontChroot: false\n'
-            text += 'timeout: 30\n'
-            text += 'script:\n'
-            text += '- "touch @@ROOT@@/boot/initrd.img-$(uname -r)"\n'
-        } else if (name === 'add386arch') {
-            text += '---\n'
-            text += 'dontChroot: false\n'
-            text += 'timeout: 30\n'
-            text += 'script:\n'
-            text += '- command: "/usr/bin/dpkg --add-architecture i386"\n'
-        } else if (name === 'logs') {
-            text += '---\n'
-            text += 'dontChroot: true\n'
-            text += 'timeout: 30\n'
-            text += 'script:\n'
-            text += '    - calamares-logs-helper @@ROOT@@\n'
+    async moduleBeforebootloadermkdirs() {
+        const name = 'before-bootloader-mkdirs'
+        const dir = `/usr/lib/calamares/modules/${name}/`
+        if (!fs.existsSync(dir)) {
+            fs.mkdirSync(dir)
         }
-        let file = this.dirLocalModules + 'shellprocess_' + name + '.conf'
-        let content = text
-        write(file, content, this.verbose)
+
+        const desBeforeBootloaderMkdirs = yaml.safeDump({
+            type: "job",
+            name: "before-bootloader-mkdirs",
+            interface: "process",
+            command: "/usr/sbin/before-bootloader-mkdirs",
+            timeout: "600"
+        })    
+        write(dir + 'module.desc', desBeforeBootloaderMkdirs)
+
+        const bashContent ='cp /cdrom/live/vmlinuz  '
+        const bashFile = `/usr/sbin/${name}`
+        write(bashFile,bashContent, this.verbose)
+        await exec(`chmod +x ${bashFile}`)
     }
 
     /**
-     * 
-     * @param process 
-     */
-    contextualprocess(name: string) {
-        let text = ''
-        if (name === 'before_bootloader_mkdirs') {
-            text += '---\n'
-            text += 'dontChroot: true\n'
-            text += 'timeout: 10\n'
-            text += 'firmwareType:\n'
-            text += '    efi:\n'
-            text += '    - -cp /cdrom/casper/vmlinuz @@ROOT@@/boot/vmlinuz-$(uname -r)\n'
-            text += '    - -mkdir -pv @@ROOT@@/media/cdrom\n'
-            text += '    - -mount --bind /cdrom @@ROOT@@/media/cdrom\n'
-            text += '    bios:\n'
-            text += '    - -cp /cdrom/casper/vmlinuz @@ROOT@@/boot/vmlinuz-$(uname -r)\n'
-        } else if (name === 'before_bootloader') {
-            text += '# Make sure the correct bootloader package is installed for EFI.\n'
-            text += '# Also pull in shim so secureboot has a chance at working.\n'
-            text += '# Because of edge cases, we ignore BIOS, and do the same\n'
-            text += '# procedure for all EFI types.\n'
-            text += '---\n'
-            text += 'firmwareType:\n'
-            text += '    bios:    "-/bin/true"\n'
-            text += '    "*":\n'
-            text += '        -    command: apt-cdrom add -m -d=/media/cdrom/\n'
-            text += '             timeout: 10\n'
-            text += '        -    command: sed -i \' / deb http / d\' /etc/apt/sources.list\n'
-            text += '             timeout: 10\n'
-            text += '        -    command: apt-get update\n'
-            text += '             timeout: 120\n'
-            text += '        -    command: apt install -y --no-upgrade -o Acquire::gpgv::Options::=--ignore-time-conflict grub-efi-$(if grep -q 64 /sys/firmware/efi/fw_platform_size; then echo amd64-signed; else echo ia32; fi)\n'
-            text += '             timeout: 300\n'
-            text += '        -    command: apt install -y --no-upgrade -o Acquire::gpgv::Options::=--ignore-time-conflict shim-signed\n'
-            text += '             timeout: 300\n'
-        } else if (name === 'after_bootloader') {
-            text += '# Workaround from ubiquity. Ubuntu\'s grub will want to look in EFI / ubuntu, so\n'
-            text += '# let\'s make sure it can find something there.\n'
-            text += '# This only copies the cfg and doesn\'t overwrite, this is specifically so\n'
-            text += '# this doesn\'t interfere with an Ubuntu installed on the system already.\n'
-            text += '---\n'
-            text += 'dontChroot: false\n'
-            text += 'timeout: 120\n'
-            text += 'firmwareType:\n'
-            text += '"*": "-for i in `ls @@ROOT@@/home/`; do rm @@ROOT@@/home/$i/Desktop/lubuntu-calamares.desktop || exit 0; done"\n'
+    *
+    */
+    async moduleBug() {
+        const name = 'bug'
+        const dir = `/usr/lib/calamares/modules/${name}/`
+        if (!fs.existsSync(dir)) {
+            fs.mkdirSync(dir)
         }
-        let content = text
-        let file = this.dirLocalModules + name + '_context' + '.conf'
-        write(file, content, this.verbose)
+        const desBug = yaml.safeDump({
+            dontChroot: false,
+            timeout: 30,
+            interface: "process",
+            command: "/usr/sbin/bug"
+        })
+        write(dir + 'module.desc', desBug)
+
+        const bashContent ='touch @@ROOT@@/boot/initrd.img-$(uname -r)\n'
+        const bashFile = `/usr/sbin/${name}`
+        write(bashFile,bashContent, this.verbose)
+        await exec(`chmod +x ${bashFile}`)
     }
+
+    /**
+     *
+     */
+    async moduleBeforebootloader () {
+        const name = 'before-bootloader'
+        const dir = `/usr/lib/calamares/modules/${name}/`
+        const desBeforeBootloader = yaml.safeDump({
+            dontChroot: true,
+            timeout: 10,
+            interface: "process",
+            command: '/usr/sbin/before-bootloader'
+        })
+        write(dir + 'module.desc', desBeforeBootloader)
+
+        const bashContent = 'cp /cdrom/casper/vmlinuz @@ROOT@@/boot/vmlinuz-$(uname -r)\n'
+        const bashFile = `/usr/sbin/${name}`
+        write(bashFile, bashContent, this.verbose)
+        await exec(`chmod +x ${bashFile}`)
+    }
+
+    /**
+     *
+     */
+    async moduleAfterbootloader() {
+        const name = 'after-bootloader'
+        const dir = `/usr/lib/calamares/modules/${name}/`
+        const desAfterBootloader = yaml.safeDump({
+            dontChroot: true,
+            timeout: 10,
+            interface: "process",
+            command: '/usr/sbin/after-bootloader'
+        })
+        write(dir + 'module.desc', desAfterBootloader)
+
+        const bashContent = 'for i in `ls @@ROOT@@/home/`; do rm @@ROOT@@/home/$i/Desktop/lubuntu-calamares.desktop || exit 0; done"\n'
+        const bashFile = `/usr/sbin/${name}`
+        write(bashFile, bashContent, this.verbose)
+        await exec(`chmod +x ${bashFile}`)
+    }
+
+    /**
+     *
+     */
+    async moduleAdd386arch() {
+        const name = 'add386arch'
+        const dir = `/usr/lib/calamares/modules/${name}/`
+        const desAfterBootloader = yaml.safeDump({
+            dontChroot: false,
+            timeout: 30,
+            interface: "process",
+            command: '/usr/bin/dpkg --add-architecture i386'
+        })
+        write(dir + 'module.desc', desAfterBootloader)
+    }
+
 
     /**
      *
