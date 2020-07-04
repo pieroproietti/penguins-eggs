@@ -170,8 +170,7 @@ export class Bionic {
             timeout: "600"
         })
         write(dir + 'module.desc', desBeforeBootloaderMkdirs)
-
-        const bashContent = 'cp /cdrom/live/vmlinuz  '
+        const bashContent = 'cp /lib/live/mount/medium/live/vmlinuz /boot/vmlinuz-$(uname -r)\n'
         const bashFile = `/usr/sbin/${name}`
         write(bashFile, bashContent, this.verbose)
         await exec(`chmod +x ${bashFile}`)
@@ -195,7 +194,7 @@ export class Bionic {
         })
         write(dir + 'module.desc', desBug)
 
-        const bashContent = 'touch @@ROOT@@/boot/initrd.img-$(uname -r)\n'
+        const bashContent = 'touch /boot/initrd.img-$(uname -r)\n'
         const bashFile = `/usr/sbin/${name}`
         write(bashFile, bashContent, this.verbose)
         await exec(`chmod +x ${bashFile}`)
@@ -219,9 +218,12 @@ export class Bionic {
             command: `/usr/sbin/${name}`,
         })
         write(dir + 'module.desc', desBeforeBootloader)
-
-        //const bashContent = 'cp /lib/live/mount/medium/live/vmlinuz @@ROOT@@/boot/vmlinuz-$(uname -r)\n'
-        const bashContent = 'cp /lib/live/mount/medium/live/vmlinuz /vmlinuz-$(uname -r)\n'
+        let bashContent =''
+            bashContent += 'apt-cdrom add -m -d=/media/cdrom/\n'
+            bashContent += 'ed -i \' / deb http / d\' /etc/apt/sources.list\n'
+            bashContent += 'apt-get update\n'
+            bashContent += 'apt install -y --no-upgrade -o Acquire::gpgv::Options::=--ignore-time-conflict grub-efi-$(if grep -q 64 /sys/firmware/efi/fw_platform_size; then echo amd64-signed; else echo ia32; fi)\n'
+            bashContent += 'apt install -y --no-upgrade -o Acquire::gpgv::Options::=--ignore-time-conflict shim-signed\n'
         const bashFile = `/usr/sbin/${name}`
         write(bashFile, bashContent, this.verbose)
         await exec(`chmod +x ${bashFile}`)
