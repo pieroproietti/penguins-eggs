@@ -220,7 +220,8 @@ export class Bionic {
         })
         write(dir + 'module.desc', desBeforeBootloader)
 
-        const bashContent = 'cp /lib/live/mount/medium/live/vmlinuz @@ROOT@@/boot/vmlinuz-$(uname -r)\n'
+        //const bashContent = 'cp /lib/live/mount/medium/live/vmlinuz @@ROOT@@/boot/vmlinuz-$(uname -r)\n'
+        const bashContent = 'cp /lib/live/mount/medium/live/vmlinuz /vmlinuz-$(uname -r)\n'
         const bashFile = `/usr/sbin/${name}`
         write(bashFile, bashContent, this.verbose)
         await exec(`chmod +x ${bashFile}`)
@@ -245,7 +246,8 @@ export class Bionic {
         })
         write(dir + 'module.desc', desAfterBootloader)
 
-        const bashContent = 'for i in `ls @@ROOT@@/home/`; do rm @@ROOT@@/home/$i/Desktop/lubuntu-calamares.desktop || exit 0; done"\n'
+        // const bashContent = 'for i in `ls @@ROOT@@/home/`; do rm @@ROOT@@/home/$i/Desktop/lubuntu-calamares.desktop || exit 0; done"\n'
+        const bashContent = 'for i in `ls /home/`; do rm /home/$i/Desktop/lubuntu-calamares.desktop || exit 0; done"\n'
         const bashFile = `/usr/sbin/${name}`
         write(bashFile, bashContent, this.verbose)
         await exec(`chmod +x ${bashFile}`)
@@ -266,8 +268,6 @@ export class Bionic {
             type: "job",
             name: `${name}`,
             interface: "process",
-            command: `/usr/sbin/${name}`,
-
             command: '/usr/bin/dpkg --add-architecture i386'
         })
         write(dir + 'module.desc', desAfterBootloader)
