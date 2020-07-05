@@ -220,10 +220,10 @@ export class Bionic {
         write(dir + 'module.desc', desBeforeBootloader)
         let bashContent =''
             bashContent += '# apt-cdrom add -m -d=/media/cdrom/\n'
-            bashContent += 'sed -i \' / deb http / d\' /etc/apt/sources.list\n'
+            bashContent += 'sed -i \' / deb http / d\' /etc/apt/sources.list.d/official-package-repositories.list\n'
             bashContent += 'apt-get update\n'
             bashContent += 'apt install -y --no-upgrade -o Acquire::gpgv::Options::=--ignore-time-conflict grub-efi-$(if grep -q 64 /sys/firmware/efi/fw_platform_size; then echo amd64-signed; else echo ia32; fi)\n'
-            bashContent += 'apt install -y --no-upgrade -o Acquire::gpgv::Options::=--ignore-time-conflict shim-signed\n'
+            bashContent += '#apt install -y --no-upgrade -o Acquire::gpgv::Options::=--ignore-time-conflict shim-signed\n'
         const bashFile = `/usr/sbin/${name}`
         write(bashFile, bashContent, this.verbose)
         await exec(`chmod +x ${bashFile}`)
@@ -248,8 +248,7 @@ export class Bionic {
         })
         write(dir + 'module.desc', desAfterBootloader)
 
-        // const bashContent = 'for i in `ls @@ROOT@@/home/`; do rm @@ROOT@@/home/$i/Desktop/lubuntu-calamares.desktop || exit 0; done"\n'
-        const bashContent = 'for i in `ls /home/`; do rm /home/$i/Desktop/lubuntu-calamares.desktop || exit 0; done"\n'
+        const bashContent = '"for i in `ls /home/`; do rm /home/$i/Desktop/install-debian.desktop || exit 0; done"\n'
         const bashFile = `/usr/sbin/${name}`
         write(bashFile, bashContent, this.verbose)
         await exec(`chmod +x ${bashFile}`)
