@@ -27,28 +27,29 @@ All the ISOs include nodejs and eggs installed (.npm package), so you can update
 
 I work mostly on Debian stable, so here you can find my personal versions and other examples.
 
-# Debian Buster
-* **debu**  - it is my personal version with cinnamon, mostly for development, but include common office tools;
-* **lampp** - same as debu, but with tools to develop web sites with php and wordpress;
-* **naked** - just the juice, without GUI, with nodejs and eggs. You can start here to build your revolution! 
-* **less** - it's just naked, dressed with lxde-core and the tools to work.
-* **blockchain** - I'm not a blockchain expert, the idea is to give an example of that is possible to build with eggs. I mean an an ISO image to giveup to * students for learn blockchain, develop smart contracts, etc. Feel free to give suggestions on it or ask for help to build your own version.
-* **incubator** - Debian Buster + Proxmox VE 6.2 and the same tools of debu;
+# Debian Buster 
+* **naked** - just the juice, without GUI, with nodejs and eggs. You can start here to build your revolution! (i386 and amd64)
+* **less** - it's naked, just dressed with lxde-core and the tools to develop. (i386 and amd64)
+* **debu**  - it is my personal version with cinnamon, mostly for development, but include common office tools; (amd64)
+* **lampp** - same as debu, but with tools to develop web sites with php and wordpress; (amd64)
+* **blockchain** - I'm not a blockchain expert, the idea is to give an example of that is possible to build with eggs. I mean an an ISO image to giveup to students for learn blockchain, develop smart contracts, etc. Feel free to give suggestions on it or ask for help to build your own version. (amd64)
+* **incubator** - Debian Buster + Proxmox VE 6.2 and the same tools of debu; (amd64 plus virtualization enabled)
 
-## Linux Mint Debian Edition 4 
+## Linux Mint Debian Edition 4 Debbie
 * **lmde4** - LMDE4 Debbie, remastered with eggs, without any modifications except for develop tools.
 
-## Deepin 20 beta
-* **dpin** - deepin 20 beta apricot remastered with eggs, without any modifications except for develop tools.
-
-
 # Ubuntu 20.04 focal
-* **ufo** - Ubuntu focal standard installation, remastered with eggs, without any modifications.
-* **ufo-mini** - Ubuntu focal minimal installation, remastered with eggs, without any modifications except for develop tools.
+* **ufo** - Ubuntu focal standard installation, remastered with eggs, without any modifications. 
 
-## Linux Mint 20
+## Linux Mint 20 Ulyana
 * **ulyana** - Linux Mint 20 remastered with eggs, without any modifications except for develop tools.
 
+## Linux Mint 19.3 tricia
+* **tricia** - Linux Mint 19.3 remastered with eggs, without any modifications except for develop tools. (i386)
+* **tricia-xfce** - Linux Mint 20 remastered with eggs, without any modifications except for develop tools. (i386)
+
+## Lubuntu 18.04 bionic
+* **lubuntu** - Lubuntu 18.04 remastered with eggs, without any modifications except for develop tools. (i386)
 
 
 # That's all Folks!
