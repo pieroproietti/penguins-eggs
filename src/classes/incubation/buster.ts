@@ -22,6 +22,9 @@ export class Buster {
 
     displaymanager = false
 
+    dirGlobalModules = '/usr/lib/x86_64-linux-gnu/calamares/modules/'
+
+
     /**
      * 
      * @param remix 
@@ -398,7 +401,7 @@ export class Buster {
      */
     async moduleSourcesTrusted() {
         const name = 'sources-trusted'
-        const dir = `/usr/lib/calamares/modules/${name}/`
+        const dir = this.dirGlobalModules + name +`/`
         if (!fs.existsSync(dir)) {
             fs.mkdirSync(dir)
         }
@@ -417,7 +420,7 @@ export class Buster {
      */
     async moduleCreateTmp() {
         const name = 'create-tmp'
-        const dir = `/usr/lib/calamares/modules/${name}/`
+        const dir = this.dirGlobalModules + name +`/`
         if (!fs.existsSync(dir)) {
             fs.mkdirSync(dir)
         }
@@ -436,7 +439,7 @@ export class Buster {
      */
     async moduleBootloaderConfig() {
         const name = 'bootloader-config'
-        const dir = `/usr/lib/calamares/modules/${name}/`
+        const dir = this.dirGlobalModules + name +`/`
         if (!fs.existsSync(dir)) {
             fs.mkdirSync(dir)
         }
@@ -455,7 +458,7 @@ export class Buster {
      */
     moduleSourcesTrustedUnmount() {
         const name = 'sources-trusted-unmount'
-        const dir = `/usr/lib/calamares/modules/${name}/`
+        const dir = this.dirGlobalModules + name +`/`
         if (!fs.existsSync(dir)) {
             fs.mkdirSync(dir)
         }
@@ -471,7 +474,7 @@ export class Buster {
      */
     async moduleSourcesFinal() {
         const name = 'sources-final'
-        const dir = `/usr/lib/calamares/modules/${name}/`
+        const dir = this.dirGlobalModules + name +`/`
         if (!fs.existsSync(dir)) {
             fs.mkdirSync(dir)
         }

@@ -16,11 +16,22 @@ Usually the last version is the right one. Detailed instrunctions for usage are 
 
 ## Changelog
 Versions are listed on reverse order, the first is the last one.
+### eggs-7.5.130-1
+eggs now completely support - remaster the system and use GUI installer calamares - for:
+* Debian 10 Buster (i386/amd64)
+* Ubuntu 20.04 Focal (amd64)
+* Linuxmint 20 ulyana (amd64)
+* Linuxmint 19.3 tria (i386/amd64)
+* Lubuntu 18.04 (i386/amd64)
+* Ubuntu 18.04 bionic (i386/amd64)
+
+You will find new examples of the ISOs on [Penguin's eggs sourceforge](https://sourceforge.net/projects/penguins-eggs/files/iso/)
+
 
 ### eggs-7.5.129-1
 Well, the big moment has arrived: 
 
-eggs now allows you to remaster the system and use calamari for reinstallation on:
+eggs now allows you to remaster the system and use calamares for installation on:
 * Linuxmint 20 ulyana
 * Ubuntu 20.04 Focal
 * Debian 10 Buster and derivatives.

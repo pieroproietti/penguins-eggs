@@ -162,6 +162,9 @@ export class Bionic {
             fs.mkdirSync(dir)
         }
 
+        /**
+        * copia vmlinuz del cd in /boot/vmlinuz-$(uname -r)
+        */
         const desBeforeBootloaderMkdirs = yaml.safeDump({
             type: "job",
             name: `${name}`,
@@ -194,6 +197,9 @@ export class Bionic {
         })
         write(dir + 'module.desc', desBug)
 
+        /**
+        * crea un falso initrd in /boot
+        */ 
         const bashContent = 'touch /boot/initrd.img-$(uname -r)\n'
         const bashFile = `/usr/sbin/${name}`
         write(bashFile, bashContent, this.verbose)
@@ -218,6 +224,9 @@ export class Bionic {
             command: `/usr/sbin/${name}`,
         })
         write(dir + 'module.desc', desBeforeBootloader)
+        /**
+        * Ho tolto la parte per shim-signed Secure Boot chain-loading bootloader (Microsoft-signed binary)
+        */
         let bashContent =''
             bashContent += '# apt-cdrom add -m -d=/media/cdrom/\n'
             bashContent += 'sed -i \' / deb http / d\' /etc/apt/sources.list.d/official-package-repositories.list\n'
@@ -248,7 +257,10 @@ export class Bionic {
         })
         write(dir + 'module.desc', desAfterBootloader)
 
-        const bashContent = '"for i in `ls /home/`; do rm /home/$i/Desktop/install-debian.desktop || exit 0; done"\n'
+        /**
+        * stabilire se dontChroot rimuove gli install-debian.desktop degli utenti 
+        */
+        const bashContent = '#"for i in `ls /home/`; do rm /home/$i/Desktop/install-debian.desktop || exit 0; done"\n'
         const bashFile = `/usr/sbin/${name}`
         write(bashFile, bashContent, this.verbose)
         await exec(`chmod +x ${bashFile}`)
