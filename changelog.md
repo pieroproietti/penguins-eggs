@@ -16,6 +16,9 @@ Usually the last version is the right one. Detailed instrunctions for usage are 
 
 ## Changelog
 Versions are listed on reverse order, the first is the last one.
+### eggs-7.5.132-1
+This morning I noticed with surprise that all the versions made with eggs-7.5.130-1 loaded on sourceforge, were affected by a serious problem: the user created was not part of the sudo group. After some investigation I discovered that it was due to a typing error in the focal.ts, bionic.ts and buster.ts modules that create the configuration for calamari. Instead of writing defaultGroups I had written defaultGroups and of course it is not the same! This version fixes the problem, I am reloading the images and packages.
+
 ### eggs-7.5.130-1
 eggs now completely support - remaster the system and use GUI installer calamares - for:
 * Debian 10 Buster (i386/amd64)
