@@ -28,7 +28,7 @@ sudo eggs produce -fv
 ## Features 
 * Created on Debian stable (buster) support oldstable (stretch) and testing (bullseye) too.
 
-* Compatible Ubuntu 20.20 LTS, 19.10, 18.04 LTS, 16.04 LTS / Linux Mint 19.x / LMDE4 / Deepin 20.
+* Compatible Ubuntu 20.20 LTS, 18.04 LTS / Linux Mint 20.x, Linux Mint 19.x / LMDE4 / Deepin 20.
 
 Fast: does not copy the original filesystem but the livefs is obtained instantly, through binding and overlay. In addition, the --fast option creates the ISO using lz4, reducing compression time during the development up to 10 times!
 
