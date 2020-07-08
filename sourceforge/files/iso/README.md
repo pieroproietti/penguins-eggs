@@ -31,18 +31,8 @@ I work mostly on Debian stable, so here you can find my personal versions and ot
 * **naked** - just the juice, without GUI, with nodejs and eggs. You can start here to build your revolution! (i386 and amd64)
 * **less** - it's naked, just dressed with lxde-core and the tools to develop. (i386 and amd64)
 * **debu**  - it is my personal version with cinnamon, mostly for development, but include common office tools; (amd64)
-* **lampp** - same as debu, but with tools to develop web sites with php and wordpress; (amd64)
-* **blockchain** - I'm not a blockchain expert, the idea is to give an example of that is possible to build with eggs. I mean an an ISO image to giveup to students for learn blockchain, develop smart contracts, etc. Feel free to give suggestions on it or ask for help to build your own version. (amd64)
+students for learn blockchain, develop smart contracts, etc. Feel free to give suggestions on it or ask for help to build your own version. (amd64)
 * **incubator** - Debian Buster + Proxmox VE 6.2 and the same tools of debu; (amd64 plus virtualization enabled)
-
-## Linux Mint Debian Edition 4 Debbie
-* **lmde4** - LMDE4 Debbie, remastered with eggs, without any modifications except for develop tools.
-
-# Ubuntu 20.04 focal
-* **ufo** - Ubuntu focal standard installation, remastered with eggs, without any modifications. 
-
-## Linux Mint 20 Ulyana
-* **ulyana** - Linux Mint 20 remastered with eggs, without any modifications except for develop tools.
 
 ## Linux Mint 19.3 tricia
 * **tricia** - Linux Mint 19.3 remastered with eggs, without any modifications except for develop tools. (i386)
@@ -51,6 +41,18 @@ I work mostly on Debian stable, so here you can find my personal versions and ot
 ## Lubuntu 18.04 bionic
 * **lubuntu** - Lubuntu 18.04 remastered with eggs, without any modifications except for develop tools. (i386)
 
+# Because of the large amount of time needed to create and check the sample ISO versions, I will not put the following versions back online: 
+
+### Linux Mint Debian Edition 4 Debbie
+* **lmde4** - LMDE4 Debbie, remastered with eggs, without any modifications except for develop tools.
+
+### Ubuntu 20.04 focal
+* **ufo** - Ubuntu focal standard installation, remastered with eggs, without any modifications. 
+
+### Linux Mint 20 Ulyana
+* **ulyana** - Linux Mint 20 remastered with eggs, without any modifications except for develop tools.
+
+you can create them yourself by downloading the originals, installing the system and then installing eggs and creating the ISO.
 
 # That's all Folks!
 No need other configurations, penguins-eggs are battery included or better, as in the real, live is inside! :-D
