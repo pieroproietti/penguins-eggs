@@ -306,7 +306,7 @@ export class Buster {
     moduleUsers() {
         const users = yaml.safeDump({
             userGroup: "users",
-            defaultGroup: [
+            defaultGroups: [
                 "cdrom", "floppy", "sudo", "audio", "dip", "video", "plugdev", "netdev", "lpadmin", "scanner", "bluetooth"
             ],
             autologinGroup: "autologin",

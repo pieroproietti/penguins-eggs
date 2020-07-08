@@ -1,5 +1,0 @@
-#!/bin/bash
-sudo cp /var/log/$1 ~
-sudo chown live:live ~/$1
-code ~/$1
-
