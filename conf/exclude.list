@@ -75,13 +75,13 @@ var/lib/udisks/*
 var/lib/urandom/*
 
 # Toglie tutto ad eccezione di: 
-# apache2, clamav, pveprozy, samba
-var/log/!(apache2|clamav|pveproxy|samba|)
+# apache2, clamav, pveprozy, samba, mysql
+var/log/!(apache2|clamav|pveproxy|samba|mysql!)
 var/log/apache2/*
 var/log/clamav/*
 var/log/pveproxy/*
-var/log/mysql/*
 var/log/samba/*
+var/log/mysql/*
 
 var/mail/*
 var/spool/mail/*
