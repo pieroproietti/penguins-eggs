@@ -80,6 +80,7 @@ var/log/!(apache2|clamav|pveproxy|samba|)
 var/log/apache2/*
 var/log/clamav/*
 var/log/pveproxy/*
+var/log/mysql/*
 var/log/samba/*
 
 var/mail/*
