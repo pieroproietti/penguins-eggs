@@ -128,6 +128,7 @@ export class Focal {
         exec.push("automirror")
         exec.push("shellprocess@add386arch")
         exec.push("packages")
+        exec.push("removeuser")
         // exec.push("shellprocess@logs")
         exec.push("umount")
 
