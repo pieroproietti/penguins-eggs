@@ -93,6 +93,7 @@ export class Bionic {
         exec.push("automirror")
         exec.push("add386arch") //
         exec.push("packages")
+        exec.push("removeuser")
         exec.push("umount")
 
         const settings = {
@@ -136,6 +137,7 @@ export class Bionic {
         this.moduleAutomirror()
         this.moduleAdd386arch()
         this.modulePackages()
+        this.moduleRemoveuser()
         this.moduleUmount()
     }
 
@@ -485,13 +487,16 @@ export class Bionic {
 
     moduleInitramfscfg() { if (this.verbose) console.log(`calamares: module initramfscfg. Nothing to do!`) }
 
+
     /**
      *
      */
     moduleRemoveuser() {
-        const removeuser = yaml.safeDump({ username: "live" })
+        const removeuser = yaml.safeDump({ username: this.user_opt })
         this.module('removeuser', removeuser)
     }
+
+
 
     moduleInitramfs() { if (this.verbose) console.log(`calamares: module initramfs. Nothing to do!`) }
 
