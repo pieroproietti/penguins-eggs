@@ -173,6 +173,7 @@ export class Focal {
         this.moduleAutomirror()
         this.shellprocess("add386arch")
         this.modulePackages()
+        this.moduleRemoveuser()
         //this.shellprocess("logs")
         this.moduleUmount()
     }
@@ -464,11 +465,11 @@ export class Focal {
 
     moduleInitramfscfg() { if (this.verbose) console.log(`calamares: module initramfscfg. Nothing to do!`) }
 
-    /**
+        /**
      *
      */
     moduleRemoveuser() {
-        const removeuser = yaml.safeDump({ username: "live" })
+        const removeuser = yaml.safeDump({ username: this.user_opt })
         this.module('removeuser', removeuser)
     }
 
