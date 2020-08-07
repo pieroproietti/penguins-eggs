@@ -496,7 +496,7 @@ export default class Ovary {
             await Pacman.clean(verbose)
          }
          // Configuro calamares
-         this.incubator = new Incubator(this.remix, this.distro, verbose)
+         this.incubator = new Incubator(this.remix, this.distro, this.user_opt, verbose)
          this.incubator.config()
       }
    }
@@ -1283,7 +1283,7 @@ timeout 200\n`
    }
 
    /**
-    * create la home per user live
+    * create la home per user_opt
     * @param verbose
     */
    async createUserLive(assistant = false, verbose = false) {
@@ -1456,7 +1456,7 @@ timeout 200\n`
 
          // ed imposto la home di /home/live a live:live
          await exec(
-            `chroot ${this.work_dir.merged}  chown live:live ${pathHomeLive} -R`,
+            `chroot ${this.work_dir.merged}  chown ${this.user_opt}:${this.user_opt} ${pathHomeLive} -R`,
             echo
          )
          // await exec(`chown 1000:1000 ${this.work_dir.merged}${pathHomeLive} -R`, echo)

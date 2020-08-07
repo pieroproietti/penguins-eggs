@@ -64,7 +64,7 @@ export default class Xdg {
       const echo = Utils.setEcho(verbose)
 
       xdg_dirs.forEach(async (dir) => {
-         await Xdg.mk(chroot, '/home/live/' + this.traduce(dir), verbose)
+         await Xdg.mk(chroot, `/home/${user}/` + this.traduce(dir), verbose)
       })
    }
 

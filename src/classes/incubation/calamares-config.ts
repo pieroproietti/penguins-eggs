@@ -25,6 +25,8 @@ export default class CalamaresConfig {
 
    distro: IDistro
 
+   user_opt: string
+
    displaymanager = false
 
    sourcesMedia = false
@@ -37,9 +39,10 @@ export default class CalamaresConfig {
     * @param distro
     * @param verbose
     */
-   constructor(remix: IRemix, distro: IDistro, verbose = false) {
+   constructor(remix: IRemix, distro: IDistro, user_opt: string = 'live', verbose = false) {
       this.remix = remix
       this.distro = distro
+      this.user_opt = user_opt
       this.verbose = verbose
       this.displaymanager =
          Pacman.packageIsInstalled('lightdm') ||
@@ -55,15 +58,15 @@ export default class CalamaresConfig {
       this.createBranding()
       this.createInstallDebian()
       if (this.distro.versionLike === 'buster' || this.distro.versionLike === 'strect' || this.distro.versionLike === 'bulleye') {
-         const buster = new Buster(this.remix, this.distro, this.displaymanager, this.verbose)
+         const buster = new Buster(this.remix, this.distro, this.displaymanager, this.user_opt, this.verbose)
          buster.settings()
          buster.modules()
       } else if (this.distro.versionLike === 'focal') {
-         const focal = new Focal(this.remix, this.distro, this.displaymanager, this.verbose)
+         const focal = new Focal(this.remix, this.distro, this.displaymanager, this.user_opt, this.verbose)
          focal.settings()
          focal.modules()
       } else if (this.distro.versionLike === 'bionic') {
-         const bionic = new Bionic(this.remix, this.distro, this.displaymanager, this.verbose)
+         const bionic = new Bionic(this.remix, this.distro, this.displaymanager, this.user_opt, this.verbose)
          bionic.settings()
          bionic.modules()
       }

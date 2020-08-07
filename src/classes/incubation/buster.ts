@@ -22,6 +22,8 @@ export class Buster {
 
     displaymanager = false
 
+    user_opt: string
+
     dirGlobalModules = '/usr/lib/x86_64-linux-gnu/calamares/modules/'
 
 
@@ -32,9 +34,10 @@ export class Buster {
      * @param displaymanager 
      * @param verbose 
      */
-    constructor(remix: IRemix, distro: IDistro, displaymanager: boolean, verbose = false) {
+    constructor(remix: IRemix, distro: IDistro, displaymanager: boolean, user_opt: string, verbose = false) {
         this.remix = remix
         this.distro = distro
+        this.user_opt = user_opt
         this.verbose = verbose
         this.displaymanager = displaymanager
                 if (process.arch === 'ia32') {
@@ -382,7 +385,7 @@ export class Buster {
      *
      */
     moduleRemoveuser() {
-        const removeuser = yaml.safeDump({ username: "live" })
+        const removeuser = yaml.safeDump({ username: this.user_opt })
         this.module('removeuser', removeuser)
     }
 

@@ -8,6 +8,7 @@
 import fs = require('fs')
 import yaml = require('js-yaml')
 import { IRemix, IDistro } from '../../interfaces'
+import { use } from 'chai'
 const exec = require('../../lib/utils').exec
 
 /**
@@ -20,6 +21,8 @@ export class Bionic {
 
     distro: IDistro
 
+    user_opt: string
+
     displaymanager = false
 
     sourcesTrusted = true
@@ -30,9 +33,10 @@ export class Bionic {
 
     dirGlobalModules = '/usr/lib/x86_64-linux-gnu/calamares/modules/'
 
-    constructor(remix: IRemix, distro: IDistro, displaymanager: boolean, verbose = false) {
+    constructor(remix: IRemix, distro: IDistro, displaymanager: boolean, user_opt: string, verbose = false) {
         this.remix = remix
         this.distro = distro
+        this.user_opt = user_opt
         this.verbose = verbose
         this.displaymanager = displaymanager
         if (process.arch === 'ia32') {
