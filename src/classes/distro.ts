@@ -173,8 +173,8 @@ class Distro implements IDistro {
          // Devuan Beowulf 3.0.0
       } else if (this.versionId === 'beowulf') {
          this.distroId = 'Devuan'
-         this.distroLike = 'Devuan'
-         this.versionLike = 'beowulf'
+         this.distroLike = 'Debian'
+         this.versionLike = 'buster'
         
 
          /**

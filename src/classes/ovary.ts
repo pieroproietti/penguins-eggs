@@ -316,7 +316,7 @@ export default class Ovary {
          )
          console.log(
             `Disk used space: ${
-               Math.round((Utils.getUsedSpace() / gb) * 10) / 10
+            Math.round((Utils.getUsedSpace() / gb) * 10) / 10
             } GB`
          )
       }
@@ -335,7 +335,7 @@ export default class Ovary {
          `There are ${Utils.getSnapshotCount(
             this.snapshot_dir
          )} snapshots taking ${
-            Math.round((Utils.getSnapshotSize() / gb) * 10) / 10
+         Math.round((Utils.getSnapshotSize() / gb) * 10) / 10
          } GB of disk space.`
       )
       console.log()
@@ -360,7 +360,7 @@ export default class Ovary {
     * @param basename 
     * @param branding 
     */
-   public async loadRemix (basename= '', branding = ''){
+   public async loadRemix(basename = '', branding = '') {
       this.remix.versionNumber = Utils.getPackageVersion()
       this.remix.kernel = Utils.kernerlVersion()
 
@@ -489,8 +489,8 @@ export default class Ovary {
          ) {
             console.log(
                'Installing ' +
-                  chalk.bgGray('calamares') +
-                  ' due force_installer=yes.'
+               chalk.bgGray('calamares') +
+               ' due force_installer=yes.'
             )
             await Pacman.prerequisitesCalamaresInstall(verbose)
             await Pacman.clean(verbose)
@@ -591,27 +591,29 @@ export default class Ovary {
          `${this.work_dir.merged}/boot/grub/fonts/UbuntuMono16.pf2`
       )
 
-      await exec(
-         `chroot ${this.work_dir.merged} systemctl disable remote-cryptsetup.target`
-      )
-      await exec(
-         `chroot ${this.work_dir.merged} systemctl disable speech-dispatcherd.service`
-      )
-      await exec(
-         `chroot ${this.work_dir.merged} systemctl disable systemd-networkd.service`
-      )
-      await exec(
-         `chroot ${this.work_dir.merged} systemctl disable systemd-resolved.service`
-      )
-      await exec(
-         `chroot ${this.work_dir.merged} systemctl disable wpa_supplicant-nl80211@.service`
-      )
-      await exec(
-         `chroot ${this.work_dir.merged} systemctl disable wpa_supplicant@.service`
-      )
-      await exec(
-         `chroot ${this.work_dir.merged} systemctl disable wpa_supplicant-wired@.service`
-      )
+      if (this.distro.distroId !== 'Devuan') {
+         await exec(
+            `chroot ${this.work_dir.merged} systemctl disable remote-cryptsetup.target`
+         )
+         await exec(
+            `chroot ${this.work_dir.merged} systemctl disable speech-dispatcherd.service`
+         )
+         await exec(
+            `chroot ${this.work_dir.merged} systemctl disable systemd-networkd.service`
+         )
+         await exec(
+            `chroot ${this.work_dir.merged} systemctl disable systemd-resolved.service`
+         )
+         await exec(
+            `chroot ${this.work_dir.merged} systemctl disable wpa_supplicant-nl80211@.service`
+         )
+         await exec(
+            `chroot ${this.work_dir.merged} systemctl disable wpa_supplicant@.service`
+         )
+         await exec(
+            `chroot ${this.work_dir.merged} systemctl disable wpa_supplicant-wired@.service`
+         )
+      }
 
       // Probabilmente non necessario
       // shx.touch(`${this.work_dir.merged}/etc/resolv.conf`)
@@ -1834,18 +1836,18 @@ timeout 200\n`
       if (!dry) {
          console.log(
             'eggs is finished!\n\nYou can find the file iso: ' +
-               chalk.cyanBright(this.eggName) +
-               '\nin the nest: ' +
-               chalk.cyanBright(this.snapshot_dir) +
-               '.'
+            chalk.cyanBright(this.eggName) +
+            '\nin the nest: ' +
+            chalk.cyanBright(this.snapshot_dir) +
+            '.'
          )
       } else {
          console.log(
             'eggs is finished!\n\nYou can find the scripts to build iso: ' +
-               chalk.cyanBright(this.eggName) +
-               '\nin the ovarium: ' +
-               chalk.cyanBright(this.work_dir.path) +
-               '.'
+            chalk.cyanBright(this.eggName) +
+            '\nin the ovarium: ' +
+            chalk.cyanBright(this.work_dir.path) +
+            '.'
          )
          console.log(`usage`)
          console.log(chalk.cyanBright(`cd ${this.work_dir.path}`))
