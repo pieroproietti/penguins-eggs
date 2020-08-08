@@ -16,11 +16,11 @@ Usually the last version is the right one. Detailed instrunctions for usage are 
 
 ## Changelog
 Versions are listed on reverse order, the first is the last one.
-### eggs-7-5.132-1
-During some attempts to collaborate with OfficeZero, in order to get a remastering of Linux Mint, we discovered and fixed the following bugs:
+### eggs-7-5.139-1
+During some attempts to collaborate in order to get a remastering of Linux Mint, we discovered and fixed the following bugs:
 * Bug fix for custom live user configuration. Now you can actually use any live CD user name and password by configuring it in /etc/penguins-eggs.conf
 * bug fix for ubuntu focal and ubuntu bionic, calamares was not configured to delete the live CD user.
-Thanx to Adriano Morselli for the segnalation.
+Thanx to Adriano Morselli developer at ufficiozero.org for the segnalation.
 
 
 ### eggs-7.5.132-1
