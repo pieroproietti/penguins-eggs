@@ -16,6 +16,13 @@ Usually the last version is the right one. Detailed instrunctions for usage are 
 
 ## Changelog
 Versions are listed on reverse order, the first is the last one.
+### eggs-7-5.132-1
+During some attempts to collaborate with OfficeZero, in order to get a remastering of Linux Mint, we discovered and fixed the following bugs:
+* Bug fix for custom live user configuration. Now you can actually use any live CD user name and password by configuring it in /etc/penguins-eggs.conf
+* bug fix for ubuntu focal and ubuntu bionic, calamares was not configured to delete the live CD user.
+Thanx to Adriano Morselli for the segnalation.
+
+
 ### eggs-7.5.132-1
 This morning I noticed with surprise that all the versions made with eggs-7.5.130-1 loaded on sourceforge, were affected by a serious problem: the user created was not part of the sudo group. After some investigation I discovered that it was due to a typing error in the focal.ts, bionic.ts and buster.ts modules that create the configuration for calamari. Instead of writing defaultGroups I had written defaultGroups and of course it is not the same! This version fixes the problem, I am reloading the images and packages.
 
