@@ -167,6 +167,17 @@ class Distro implements IDistro {
          this.versionLike = 'buster'
 
          /**
+          * DEVAUN
+          * Beowulf 3.0.0
+          */
+         // Devuan Beowulf 3.0.0
+      } else if (this.versionId === 'beowulf') {
+         this.distroId = 'Devuan'
+         this.distroLike = 'Devuan'
+         this.versionLike = 'beowulf'
+        
+
+         /**
           * UBUNTU
           */
          // 20.04 focal LTS
