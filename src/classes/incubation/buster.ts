@@ -28,7 +28,6 @@ export class Buster {
 
 
     /**
-     * 
      * @param remix 
      * @param distro 
      * @param displaymanager 
@@ -40,8 +39,8 @@ export class Buster {
         this.user_opt = user_opt
         this.verbose = verbose
         this.displaymanager = displaymanager
-                if (process.arch === 'ia32') {
-            this.dirGlobalModules = '/usr/lib/calamares/modules/'            
+        if (process.arch === 'ia32') {
+            this.dirGlobalModules = '/usr/lib/calamares/modules/'
         }
 
     }
@@ -56,48 +55,8 @@ export class Buster {
     }
 
     /**
- * write modules
- */
-    public modules() {
-        this.modulePartition()
-        this.moduleMount()
-        this.moduleUnpackfs()
-        this.moduleSourcesTrusted()
-        this.moduleMachineid()
-        this.moduleFstab()
-        this.moduleLocale()
-        this.moduleKeyboard()
-        this.moduleLocalecfg()
-        this.moduleUsers()
-        if (this.displaymanager) {
-            this.moduleDisplaymanager()
-        }
-        this.moduleNetworkcfg()
-        this.moduleHwclock()
-        this.moduleServicesSystemd()
-        this.moduleCreateTmp()
-        this.moduleBootloaderConfig()
-        this.moduleGrubcfg()
-        this.moduleBootloader()
-        this.modulePackages()
-        this.moduleLuksbootkeyfile()
-        this.moduleLuksopenswaphookcfg()
-        this.modulePlymouthcfg()
-        this.moduleInitramfscfg()
-        this.moduleInitramfs()
-        this.moduleRemoveuser()
-        this.moduleSourcesTrustedUnmount()
-        this.moduleSourcesFinal()
-        this.moduleUmount()
-    }
-
-    /**
-     * ========================================================================
-     */
-
-    /**
-     * 
-     */
+    * 
+    */
     getSettings(): string {
         // path di ricerca dei moduli
         const modulesSearch = ['local', '/usr/lib/calamares/modules']
@@ -145,6 +104,43 @@ export class Buster {
         }
         return yaml.safeDump(settings)
     }
+
+    /**
+    * 
+    */
+    public modules() {
+        this.modulePartition()
+        this.moduleMount()
+        this.moduleUnpackfs()
+        this.moduleSourcesTrusted()
+        this.moduleMachineid()
+        this.moduleFstab()
+        this.moduleLocale()
+        this.moduleKeyboard()
+        this.moduleLocalecfg()
+        this.moduleUsers()
+        if (this.displaymanager) {
+            this.moduleDisplaymanager()
+        }
+        this.moduleNetworkcfg()
+        this.moduleHwclock()
+        this.moduleServicesSystemd()
+        this.moduleCreateTmp()
+        this.moduleBootloaderConfig()
+        this.moduleGrubcfg()
+        this.moduleBootloader()
+        this.modulePackages()
+        this.moduleLuksbootkeyfile()
+        this.moduleLuksopenswaphookcfg()
+        this.modulePlymouthcfg()
+        this.moduleInitramfscfg()
+        this.moduleInitramfs()
+        this.moduleRemoveuser()
+        this.moduleSourcesTrustedUnmount()
+        this.moduleSourcesFinal()
+        this.moduleUmount()
+    }
+
 
     /**
      * ========================================================================
@@ -404,7 +400,7 @@ export class Buster {
      */
     async moduleSourcesTrusted() {
         const name = 'sources-trusted'
-        const dir = this.dirGlobalModules + name +`/`
+        const dir = this.dirGlobalModules + name + `/`
         if (!fs.existsSync(dir)) {
             fs.mkdirSync(dir)
         }
@@ -423,7 +419,7 @@ export class Buster {
      */
     async moduleCreateTmp() {
         const name = 'create-tmp'
-        const dir = this.dirGlobalModules + name +`/`
+        const dir = this.dirGlobalModules + name + `/`
         if (!fs.existsSync(dir)) {
             fs.mkdirSync(dir)
         }
@@ -442,7 +438,7 @@ export class Buster {
      */
     async moduleBootloaderConfig() {
         const name = 'bootloader-config'
-        const dir = this.dirGlobalModules + name +`/`
+        const dir = this.dirGlobalModules + name + `/`
         if (!fs.existsSync(dir)) {
             fs.mkdirSync(dir)
         }
@@ -461,7 +457,7 @@ export class Buster {
      */
     moduleSourcesTrustedUnmount() {
         const name = 'sources-trusted-unmount'
-        const dir = this.dirGlobalModules + name +`/`
+        const dir = this.dirGlobalModules + name + `/`
         if (!fs.existsSync(dir)) {
             fs.mkdirSync(dir)
         }
@@ -477,7 +473,7 @@ export class Buster {
      */
     async moduleSourcesFinal() {
         const name = 'sources-final'
-        const dir = this.dirGlobalModules + name +`/`
+        const dir = this.dirGlobalModules + name + `/`
         if (!fs.existsSync(dir)) {
             fs.mkdirSync(dir)
         }
