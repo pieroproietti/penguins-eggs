@@ -18,7 +18,7 @@ Usually the last version is the right one. Detailed instrunctions for usage are 
 Versions are listed on reverse order, the first is the last one.
 
 ### eggs-7.6.0-1
-Continuing the collaboration with ufficiozero, we closed an important bug in Ubuntu and derived: after installation, the resolution of dns addresses was missing. Currently the network works correctly with Linux mint 20.20.
+Continuing the collaboration with ufficiozero.org, we closed an important bug in Ubuntu and derived: after installation, the resolution of dns addresses was missing. Currently the network works correctly with Linux mint 20.20.
 
 ### eggs-7.5.139-1
 During some attempts to collaborate in order to get a remastering of Linux Mint, we discovered and fixed the following bugs:
