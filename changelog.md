@@ -16,7 +16,11 @@ Usually the last version is the right one. Detailed instrunctions for usage are 
 
 ## Changelog
 Versions are listed on reverse order, the first is the last one.
-### eggs-7-5.139-1
+
+### eggs-7.6.0-1
+Continuing the collaboration with ufficiozero, we closed an important bug in Ubuntu and derived: after installation, the resolution of dns addresses was missing. Currently the network works correctly with Linux mint 20.20.
+
+### eggs-7.5.139-1
 During some attempts to collaborate in order to get a remastering of Linux Mint, we discovered and fixed the following bugs:
 * Bug fix for custom live user configuration. Now you can actually use any live CD user name and password by configuring it in /etc/penguins-eggs.conf
 * bug fix for ubuntu focal and ubuntu bionic, calamares was not configured to delete the live CD user.
