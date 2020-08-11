@@ -602,8 +602,10 @@ export default class Ovary {
             `chroot ${this.work_dir.merged} systemctl disable systemd-networkd.service`
          )
 
-         // SU UBUNTU  E DERIVATE NON DISABILITARE systemd-resolved.service
-         if (this.distro.distroId !== 'Ubuntu') {
+         /**
+          * SU UBUNTU E DERIVATE NON DISABILITARE systemd-resolved.service
+          */
+         if (this.distro.distroLike !== 'Ubuntu') {
             await exec(
                `chroot ${this.work_dir.merged} systemctl disable systemd-resolved.service`
             )
@@ -644,18 +646,15 @@ export default class Ovary {
          echo
       )
 
-      // if (this.distro.distroId !== 'Ubuntu') {
-         await exec(
-            `rm -f ${this.work_dir.merged}/etc/NetworkManager/system-connections/*`,
-            echo
-         )
-      // }
+      await exec(
+        `rm -f ${this.work_dir.merged}/etc/NetworkManager/system-connections/*`,
+         echo
+      )
 
       await exec(`rm -f ${this.work_dir.merged}/etc/network/wifi/*`, echo)
 
 
-      // if (this.distro.distroId !== 'Ubuntu') {
-         /**
+      /**
        * Andiamo a fare pulizia in /etc/network/:
        * if-down.d  if-post-down.d  if-pre-up.d  if-up.d  interfaces  interfaces.d
        */
@@ -673,7 +672,6 @@ export default class Ovary {
                echo
             )
          }
-      // }
 
       /**
        * add some basic files to /dev
