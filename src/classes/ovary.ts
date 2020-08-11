@@ -591,25 +591,26 @@ export default class Ovary {
          `${this.work_dir.merged}/boot/grub/fonts/UbuntuMono16.pf2`
       )
 
+      /**
+       * Su DEVUAN NON Esiste systemd
+       */
       if (this.distro.distroId !== 'Devuan') {
+         /**
+         * SU UBUNTU E DERIVATE NON DISABILITARE systemd-resolved.service
+         */
+         if (this.distro.distroLike !== 'Ubuntu') {
+            await exec(
+               `chroot ${this.work_dir.merged} systemctl disable systemd-resolved.service`
+            )
+         }
+         await exec(`chroot ${this.work_dir.merged} systemctl disable systemd-networkd.service`)
+
          await exec(
             `chroot ${this.work_dir.merged} systemctl disable remote-cryptsetup.target`
          )
          await exec(
             `chroot ${this.work_dir.merged} systemctl disable speech-dispatcherd.service`
          )
-         await exec(
-            `chroot ${this.work_dir.merged} systemctl disable systemd-networkd.service`
-         )
-
-         /**
-          * SU UBUNTU E DERIVATE NON DISABILITARE systemd-resolved.service
-          */
-         if (this.distro.distroLike !== 'Ubuntu') {
-            await exec(
-               `chroot ${this.work_dir.merged} systemctl disable systemd-resolved.service`
-            )
-         }
          await exec(
             `chroot ${this.work_dir.merged} systemctl disable wpa_supplicant-nl80211@.service`
          )
@@ -647,7 +648,7 @@ export default class Ovary {
       )
 
       await exec(
-        `rm -f ${this.work_dir.merged}/etc/NetworkManager/system-connections/*`,
+         `rm -f ${this.work_dir.merged}/etc/NetworkManager/system-connections/*`,
          echo
       )
 
@@ -658,20 +659,20 @@ export default class Ovary {
        * Andiamo a fare pulizia in /etc/network/:
        * if-down.d  if-post-down.d  if-pre-up.d  if-up.d  interfaces  interfaces.d
        */
-         const cleanDirs = [
-            'if-down.d',
-            'if-post-down.d',
-            'if-pre-up.d',
-            'if-up.d',
-            'interfaces.d'
-         ]
-         let cleanDir = ''
-         for (cleanDir of cleanDirs) {
-            await exec(
-               `rm -f ${this.work_dir.merged}/etc/network/${cleanDir}/wpasupplicant`,
-               echo
-            )
-         }
+      const cleanDirs = [
+         'if-down.d',
+         'if-post-down.d',
+         'if-pre-up.d',
+         'if-up.d',
+         'interfaces.d'
+      ]
+      let cleanDir = ''
+      for (cleanDir of cleanDirs) {
+         await exec(
+            `rm -f ${this.work_dir.merged}/etc/network/${cleanDir}/wpasupplicant`,
+            echo
+         )
+      }
 
       /**
        * add some basic files to /dev
