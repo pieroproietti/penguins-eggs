@@ -35,8 +35,8 @@ Presentation
     }
     Slide {
         Image {
-            id: 01-ufficiozero
-            source: "slide-01-ufficiozero.png"
+            id: slide01ufficiozero
+            source: "slide01ufficiozero.png"
             anchors.centerIn: parent
             width: 810
             height: 485
@@ -46,18 +46,19 @@ Presentation
             font.family: "Helvetica"
             font.pixelSize : 22
             color: "#002439"
-            anchors.horizontalCenter: slide-01-ufficiozero.horizontalCenter
-            anchors.top: slide-01-ufficiozero.verticalCenter
+            anchors.horizontalCenter: slide01ufficiozero.horizontalCenter
+            anchors.top: slide01ufficiozero.verticalCenter
             text: qsTr("<h1>UfficioZero</h1><p>da professionisti a professionisti</p>")
             wrapMode: Text.WordWrap
             width: 600
             horizontalAlignment: Text.Center
         }
     }
+
     Slide {
         Image {
-            id: slice-02-versioni
-            source: "slice-02-versioni.png"
+            id: slide02versioni
+            source: "slide02versioni.png"
             anchors.centerIn: parent
             width: 810
             height: 485
@@ -67,8 +68,8 @@ Presentation
             font.family: "Helvetica"
             font.pixelSize : 22
             color: "#002439"
-            anchors.horizontalCenter: slice-02-versioni.horizontalCenter
-            anchors.top: slice-02-versioni.verticalCenter
+            anchors.horizontalCenter: slide02versioni.horizontalCenter
+            anchors.top: slide02versioni.verticalCenter
             text: qsTr("<h1>UfficioZero</h1><p>Scegliete la versione più adatta delle nostre remix</p>")
             wrapMode: Text.WordWrap
             width: 600
@@ -78,8 +79,8 @@ Presentation
 
     Slide {
         Image {
-            id: slide-03-roma
-            source: "slide-03-roma.png"
+            id: slide03roma
+            source: "slide03roma.png"
             anchors.centerIn: parent
             width: 810
             height: 485
@@ -89,8 +90,8 @@ Presentation
             font.family: "Helvetica"
             font.pixelSize : 22
             color: "#002439"
-            anchors.horizontalCenter: slide-03-roma.horizontalCenter
-            anchors.top: slide-03-roma.verticalCenter
+            anchors.horizontalCenter: slide03roma.horizontalCenter
+            anchors.top: slide03roma.verticalCenter
             text: qsTr("<h1>UfficioZero</h1><p>Roma 2.0.1 per pc con processori a 32bit, basato su Devuan 3 Beowulf e con desktop manager Xfce</p>")
             wrapMode: Text.WordWrap
             width: 600
@@ -100,8 +101,8 @@ Presentation
 
     Slide {
         Image {
-            id: slide-04-mantova
-            source: "slide-04-mantova.png"
+            id: slide04mantova
+            source: "slide04mantova.png"
             anchors.centerIn: parent
             width: 810
             height: 485
@@ -111,8 +112,8 @@ Presentation
             font.family: "Helvetica"
             font.pixelSize : 22
             color: "#002439"
-            anchors.horizontalCenter: slide-04-mantova.horizontalCenter
-            anchors.top: slide-04-mantova.verticalCenter
+            anchors.horizontalCenter: slide04mantova.horizontalCenter
+            anchors.top: slide04mantova.verticalCenter
             text: qsTr("<h1>UfficioZero</h1><p>Mantova 2.0.1 per pc con processori a 64bit, basato su PCLinuxOS e con desktop manager Mate</p>")
             wrapMode: Text.WordWrap
             width: 600
@@ -122,8 +123,8 @@ Presentation
 
     Slide {
         Image {
-            id: slide-05-vieste
-            source: "slide-05-vieste.png"
+            id: slide05vieste
+            source: "slide05vieste.png"
             anchors.centerIn: parent
             width: 810
             height: 485
@@ -133,8 +134,8 @@ Presentation
             font.family: "Helvetica"
             font.pixelSize : 22
             color: "#002439"
-            anchors.horizontalCenter: slide-05-vieste.horizontalCenter
-            anchors.top: slide-05-vieste.verticalCenter
+            anchors.horizontalCenter: slide05vieste.horizontalCenter
+            anchors.top: slide05vieste.verticalCenter
             text: qsTr("<h1>UfficioZero</h1><p>Vieste 2.0.1 per pc con processori a 64bit, basato su Linux Mint 19.3 e con desktop manager Mate</p>")
             wrapMode: Text.WordWrap
             width: 600
@@ -144,8 +145,8 @@ Presentation
 
     Slide {
         Image {
-            id: slide6
-            source: "slide-06-gabii.png"
+            id: slide06gabii
+            source: "slide06gabii.png"
             anchors.centerIn: parent
             width: 810
             height: 485
@@ -156,8 +157,8 @@ Presentation
             font.pixelSize : 22
             color: "#002439"
             text: qsTr("<h1>UfficioZero</h1><p>Gabii 2.0.1 per pc con processori a 64bit, basato su Linux Mint 20 e con desktop manager cinnamon</p>")
-            anchors.horizontalCenter: slide-06-gabii.horizontalCenter
-            anchors.top: slide-06-gabii.verticalCenter
+            anchors.horizontalCenter: slide06gabii.horizontalCenter
+            anchors.top: slide06gabii.verticalCenter
             wrapMode: Text.WordWrap
             width: 600
             horizontalAlignment: Text.Center
@@ -166,8 +167,8 @@ Presentation
 
     Slide {
         Image {
-            id: slide-07-ovi
-            source: "slide-07-ovi.png"
+            id: slide07ovi
+            source: "slide07ovi.png"
             anchors.centerIn: parent
             width: 810
             height: 485
@@ -177,13 +178,12 @@ Presentation
             font.family: "Helvetica"
             font.pixelSize : 22
             color: "#002439"
-            anchors.horizontalCenter: slide7.horizontalCenter
-            anchors.top: slide-07-ovi.verticalCenter
+            anchors.horizontalCenter: slide07ovi.horizontalCenter
+            anchors.top: slide07ovi.verticalCenter
             text: qsTr("<h1>Penguin'eggs</h1><p>Sistema riproduttivo per pinguini</p><p>Perri's brevery editition</p>")
             wrapMode: Text.WordWrap
             width: 600
             horizontalAlignment: Text.Center
         }
     }
-
 }
