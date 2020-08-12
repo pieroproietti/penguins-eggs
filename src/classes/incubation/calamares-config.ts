@@ -54,6 +54,10 @@ export default class CalamaresConfig {
     * config
     */
    config() {
+      console.log('=========================================')
+      console.log(this.remix)
+      console.log('=========================================')
+
       this.createCalamaresDirs()
       this.createBranding()
       this.createInstallDebian()
@@ -62,7 +66,10 @@ export default class CalamaresConfig {
          buster.settings()
          buster.modules()
       } else if (this.distro.versionLike === 'focal') {
-         const focal = new Focal(this.remix, this.distro, this.displaymanager, this.user_opt, this.verbose)
+         console.log('=========================================')
+         console.log(this.remix)
+         console.log('=========================================')
+            const focal = new Focal(this.remix, this.distro, this.displaymanager, this.user_opt, this.verbose)
          focal.settings()
          focal.modules()
       } else if (this.distro.versionLike === 'bionic') {

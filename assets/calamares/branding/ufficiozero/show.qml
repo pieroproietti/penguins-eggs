@@ -48,10 +48,7 @@ Presentation
             color: "#002439"
             anchors.horizontalCenter: slide1.horizontalCenter
             anchors.top: slide1.verticalCenter
-            text: qsTr("<h1>Penguin's eggs</h1><br/>"+
-                  "<br/>Created by Piero Proietti, thinking to the community.<br/>"+
-                  "<br/>sources: htts://github.com/pieroproietti/penguins-eggs"+
-                  "<br/>email: piero.proietti@gmail.com")
+            text: qsTr("Da professionisti per professionisti")
             wrapMode: Text.WordWrap
             width: 600
             horizontalAlignment: Text.Center
@@ -72,8 +69,7 @@ Presentation
             color: "#002439"
             anchors.horizontalCenter: slide2.horizontalCenter
             anchors.top: slide2.verticalCenter
-            text: qsTr("<h1>Penguin's eggs</h1><br/>"+
-                  "<br/><p>The reproductive system for the penguins!</p></br>")
+            text: qsTr("Scegliete la versione più adatta ai vostri bisogni")
             wrapMode: Text.WordWrap
             width: 600
             horizontalAlignment: Text.Center
@@ -95,8 +91,7 @@ Presentation
             color: "#002439"
             anchors.horizontalCenter: slide3.horizontalCenter
             anchors.top: slide3.verticalCenter
-            text: qsTr("<h1>Penguin's eggs</h1><br/>"+
-                  "<br/><p>Start the reproduction of your system! Produce yours eggs and simply install them on another computer. You can do it!</p>")
+            text: qsTr("Roma 2.0.1 per pc con processori a 32bit, basato su Devuan 3 Beowulf e con desktop manager Xfce")
             wrapMode: Text.WordWrap
             width: 600
             horizontalAlignment: Text.Center
@@ -118,8 +113,7 @@ Presentation
             color: "#002439"
             anchors.horizontalCenter: slide4.horizontalCenter
             anchors.top: slide4.verticalCenter
-            text: qsTr("<h1>Penguin's eggs</h1><br/>"+
-                  "<br/><p>With penguin's eggs you can bring your system with you and use or install elsewhere.</p>")
+            text: qsTr(" Mantova 2.0.1 per pc con processori a 64bit, basato su PCLinuxOS e con desktop manager Mate")
             wrapMode: Text.WordWrap
             width: 600
             horizontalAlignment: Text.Center
@@ -141,8 +135,7 @@ Presentation
             color: "#002439"
             anchors.horizontalCenter: slide5.horizontalCenter
             anchors.top: slide5.verticalCenter
-            text: qsTr("<h1>Penguin's eggs</h1><br/>"+
-                  "<br/><p>Eggs is a terminal tool, but it's simple and nice. Write eggs without else and get the list</p></br>")
+            text: qsTr("Vieste 2.0.1 per pc con processori a 64bit, basato su Linux Mint 19.3 e con desktop manager Mate")
             wrapMode: Text.WordWrap
             width: 600
             horizontalAlignment: Text.Center
@@ -162,8 +155,7 @@ Presentation
             font.family: "Helvetica"
             font.pixelSize : 22
             color: "#002439"
-            text: qsTr("<h1>Penguin's eggs</h1><br/>"+
-                  "<br/><p>Please wait, we are hatching the eggs... <br/><br/>Don't disturb the process, in few time You will have a new penguin.</p>")
+            text: qsTr("Gabii 2.0.1 per pc con processori a 64bit, basato su Linux Mint 20 e con desktop manager cinnamon")
             anchors.horizontalCenter: slide6.horizontalCenter
             anchors.top: slide6.verticalCenter
             wrapMode: Text.WordWrap
@@ -187,7 +179,7 @@ Presentation
             color: "#002439"
             anchors.horizontalCenter: slide7.horizontalCenter
             anchors.top: slide7.verticalCenter
-            text: qsTr("<h1>Penguin's eggs</h1><br/>"+
+            text: qsTr("Penguin's eggs")
                   "<br/>"+
                   "<br/>"+
                   "<br/><p>Follow the penguin's eggs development, it's funny and istructive.</p>" +

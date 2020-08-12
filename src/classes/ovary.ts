@@ -397,7 +397,8 @@ export default class Ovary {
       }
 
 
-      this.loadRemix(basename, branding)
+
+      await this.loadRemix(basename, branding)
 
 
       if (await Utils.isLive()) {
@@ -415,6 +416,9 @@ export default class Ovary {
          if (Pacman.packageIsInstalled('calamares')) {
             await this.calamaresConfigure(verbose)
          }
+         console.log(Pacman.packageIsInstalled('calamares'))
+         console.log(this.remix)
+         //process.exit()
          await this.isoCreateStructure(verbose)
          await this.isolinuxPrepare(verbose)
          await this.isoStdmenuCfg(verbose)

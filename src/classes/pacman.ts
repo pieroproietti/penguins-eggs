@@ -55,7 +55,6 @@ export default class Pacman {
       let installed = false
       const cmd = `/usr/bin/dpkg -s ${debPackage} | grep Status`
       const stdout = shx.exec(cmd, { silent: true }).stdout.trim()
-
       if (stdout === 'Status: install ok installed') {
          installed = true
       }
