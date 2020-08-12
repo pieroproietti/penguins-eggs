@@ -1392,14 +1392,6 @@ timeout 200\n`
             '/usr/share/applications/'
          )
 
-         shx.cp(
-            path.resolve(__dirname, '../../assets/dwagent-sh.desktop'),
-            '/usr/share/applications/'
-         )
-         shx.cp(
-            path.resolve(__dirname, '../../assets/assistenza-remota.png'),
-            '/usr/share/icons/'
-         )
 
          if (assistant) {
             shx.cp(

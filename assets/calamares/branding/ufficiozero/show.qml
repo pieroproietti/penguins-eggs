@@ -35,8 +35,8 @@ Presentation
     }
     Slide {
         Image {
-            id: slide1
-            source: "slide1.png"
+            id: 01-ufficiozero
+            source: "slide-01-ufficiozero.png"
             anchors.centerIn: parent
             width: 810
             height: 485
@@ -46,9 +46,9 @@ Presentation
             font.family: "Helvetica"
             font.pixelSize : 22
             color: "#002439"
-            anchors.horizontalCenter: slide1.horizontalCenter
-            anchors.top: slide1.verticalCenter
-            text: qsTr("Da professionisti per professionisti")
+            anchors.horizontalCenter: slide-01-ufficiozero.horizontalCenter
+            anchors.top: slide-01-ufficiozero.verticalCenter
+            text: qsTr("<h1>UfficioZero</h1><p>da professionisti a professionisti</p>")
             wrapMode: Text.WordWrap
             width: 600
             horizontalAlignment: Text.Center
@@ -56,8 +56,8 @@ Presentation
     }
     Slide {
         Image {
-            id: slide2
-            source: "slide2.png"
+            id: slice-02-versioni
+            source: "slice-02-versioni.png"
             anchors.centerIn: parent
             width: 810
             height: 485
@@ -67,31 +67,9 @@ Presentation
             font.family: "Helvetica"
             font.pixelSize : 22
             color: "#002439"
-            anchors.horizontalCenter: slide2.horizontalCenter
-            anchors.top: slide2.verticalCenter
-            text: qsTr("Scegliete la versione più adatta ai vostri bisogni")
-            wrapMode: Text.WordWrap
-            width: 600
-            horizontalAlignment: Text.Center
-        }
-    }
-
-    Slide {
-        Image {
-            id: slide3
-            source: "slide3.png"
-            anchors.centerIn: parent
-            width: 810
-            height: 485
-            fillMode: Image.PreserveAspectFit
-        }
-         Text {
-            font.family: "Helvetica"
-            font.pixelSize : 22
-            color: "#002439"
-            anchors.horizontalCenter: slide3.horizontalCenter
-            anchors.top: slide3.verticalCenter
-            text: qsTr("Roma 2.0.1 per pc con processori a 32bit, basato su Devuan 3 Beowulf e con desktop manager Xfce")
+            anchors.horizontalCenter: slice-02-versioni.horizontalCenter
+            anchors.top: slice-02-versioni.verticalCenter
+            text: qsTr("<h1>UfficioZero</h1><p>Scegliete la versione più adatta delle nostre remix</p>")
             wrapMode: Text.WordWrap
             width: 600
             horizontalAlignment: Text.Center
@@ -100,8 +78,8 @@ Presentation
 
     Slide {
         Image {
-            id: slide4
-            source: "slide4.png"
+            id: slide-03-roma
+            source: "slide-03-roma.png"
             anchors.centerIn: parent
             width: 810
             height: 485
@@ -111,9 +89,9 @@ Presentation
             font.family: "Helvetica"
             font.pixelSize : 22
             color: "#002439"
-            anchors.horizontalCenter: slide4.horizontalCenter
-            anchors.top: slide4.verticalCenter
-            text: qsTr(" Mantova 2.0.1 per pc con processori a 64bit, basato su PCLinuxOS e con desktop manager Mate")
+            anchors.horizontalCenter: slide-03-roma.horizontalCenter
+            anchors.top: slide-03-roma.verticalCenter
+            text: qsTr("<h1>UfficioZero</h1><p>Roma 2.0.1 per pc con processori a 32bit, basato su Devuan 3 Beowulf e con desktop manager Xfce</p>")
             wrapMode: Text.WordWrap
             width: 600
             horizontalAlignment: Text.Center
@@ -122,8 +100,8 @@ Presentation
 
     Slide {
         Image {
-            id: slide5
-            source: "slide5.png"
+            id: slide-04-mantova
+            source: "slide-04-mantova.png"
             anchors.centerIn: parent
             width: 810
             height: 485
@@ -133,9 +111,31 @@ Presentation
             font.family: "Helvetica"
             font.pixelSize : 22
             color: "#002439"
-            anchors.horizontalCenter: slide5.horizontalCenter
-            anchors.top: slide5.verticalCenter
-            text: qsTr("Vieste 2.0.1 per pc con processori a 64bit, basato su Linux Mint 19.3 e con desktop manager Mate")
+            anchors.horizontalCenter: slide-04-mantova.horizontalCenter
+            anchors.top: slide-04-mantova.verticalCenter
+            text: qsTr("<h1>UfficioZero</h1><p>Mantova 2.0.1 per pc con processori a 64bit, basato su PCLinuxOS e con desktop manager Mate</p>")
+            wrapMode: Text.WordWrap
+            width: 600
+            horizontalAlignment: Text.Center
+        }
+    }
+
+    Slide {
+        Image {
+            id: slide-05-vieste
+            source: "slide-05-vieste.png"
+            anchors.centerIn: parent
+            width: 810
+            height: 485
+            fillMode: Image.PreserveAspectFit
+        }
+         Text {
+            font.family: "Helvetica"
+            font.pixelSize : 22
+            color: "#002439"
+            anchors.horizontalCenter: slide-05-vieste.horizontalCenter
+            anchors.top: slide-05-vieste.verticalCenter
+            text: qsTr("<h1>UfficioZero</h1><p>Vieste 2.0.1 per pc con processori a 64bit, basato su Linux Mint 19.3 e con desktop manager Mate</p>")
             wrapMode: Text.WordWrap
             width: 600
             horizontalAlignment: Text.Center
@@ -145,7 +145,7 @@ Presentation
     Slide {
         Image {
             id: slide6
-            source: "slide6.png"
+            source: "slide-06-gabii.png"
             anchors.centerIn: parent
             width: 810
             height: 485
@@ -155,9 +155,9 @@ Presentation
             font.family: "Helvetica"
             font.pixelSize : 22
             color: "#002439"
-            text: qsTr("Gabii 2.0.1 per pc con processori a 64bit, basato su Linux Mint 20 e con desktop manager cinnamon")
-            anchors.horizontalCenter: slide6.horizontalCenter
-            anchors.top: slide6.verticalCenter
+            text: qsTr("<h1>UfficioZero</h1><p>Gabii 2.0.1 per pc con processori a 64bit, basato su Linux Mint 20 e con desktop manager cinnamon</p>")
+            anchors.horizontalCenter: slide-06-gabii.horizontalCenter
+            anchors.top: slide-06-gabii.verticalCenter
             wrapMode: Text.WordWrap
             width: 600
             horizontalAlignment: Text.Center
@@ -166,8 +166,8 @@ Presentation
 
     Slide {
         Image {
-            id: slide7
-            source: "slide7.png"
+            id: slide-07-ovi
+            source: "slide-07-ovi.png"
             anchors.centerIn: parent
             width: 810
             height: 485
@@ -178,14 +178,8 @@ Presentation
             font.pixelSize : 22
             color: "#002439"
             anchors.horizontalCenter: slide7.horizontalCenter
-            anchors.top: slide7.verticalCenter
-            text: qsTr("Penguin's eggs")
-                  "<br/>"+
-                  "<br/>"+
-                  "<br/><p>Follow the penguin's eggs development, it's funny and istructive.</p>" +
-                  "<p>Penguin's eggs and it's developer need help, " +
-                  "use this tool, enjoy and if you can collaborate.</p>"+
-                  "<br/>That's all peoples!")
+            anchors.top: slide-07-ovi.verticalCenter
+            text: qsTr("<h1>Penguin'eggs</h1><p>Sistema riproduttivo per pinguini</p><p>Perri's brevery editition</p>")
             wrapMode: Text.WordWrap
             width: 600
             horizontalAlignment: Text.Center
