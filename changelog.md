@@ -18,6 +18,10 @@ Usually the last version is the right one. Detailed instrunctions for usage are 
 Versions are listed on reverse order, the first is the last one.
 
 ### eggs-7.6.0-1
+Continuing the collaboration with ufficiozero.org, we creaded a custom branding ufficiozero, removed some spure links. To use the new pranding, when
+you run: sudo eggs produce -vf --branding ufficiozero. We need same help in graphics, someone interested?
+
+### eggs-7.6.0-1
 Continuing the collaboration with ufficiozero.org, we closed an important bug in Ubuntu and derived: after installation, the resolution of dns addresses was missing. Currently the network works correctly with Debian Buster, Ubuntu focal, Ubuntu cosmic and Ubuntu bionic, Linux mint 20.20, Linux mint 19.3
 
 ### eggs-7.5.139-1
