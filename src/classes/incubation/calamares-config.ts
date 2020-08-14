@@ -95,29 +95,37 @@ export default class CalamaresConfig {
          fs.mkdirSync('/usr/lib/calamares/modules')
       }
 
-      shx.cp(
-         path.resolve(
-            __dirname,
-            '../../../assets/calamares/install-debian.desktop'
-         ),
-         '/usr/share/applications/install-debian.desktop'
-      )
-      shx.cp(
-         '-r',
-         path.resolve(__dirname, '../../../assets/calamares/branding/*'),
-         '/etc/calamares/branding/'
-      )
-      shx.cp(
-         path.resolve(__dirname, '../../../assets/calamares/install-debian'),
-         '/sbin/install-debian'
-      )
-      shx.cp(
-         path.resolve(
-            __dirname,
-            '../../../assets/calamares/artwork/install-debian.png'
-         ),
-         '/usr/share/icons/install-debian.png'
-      )
+      /**
+      * PLUGINS con branding ufficiozero
+      */
+      let calamaresBranding = path.resolve(__dirname, `../../../plugins/${this.remix.branding}/calamares/branding`)
+      if (fs.existsSync(calamaresBranding)) {
+         shx.cp('-r', calamaresBranding, '/etc/calamares/branding/')
+      } else {
+         console.log(`${calamaresBranding} not found!`)
+         process.exit()
+      }
+
+
+      let calamaresIcon = path.resolve(__dirname, `../../../plugins/${this.remix.branding}/calamares/artwork/install-debian.png`)
+      if (fs.existsSync(calamaresIcon)) {
+         shx.cp(calamaresIcon, '/usr/share/icons/')
+      } else {
+         console.log(`${calamaresIcon} not found!`)
+         process.exit()
+      }
+
+      let calamaresLauncher = path.resolve(__dirname, `../../../plugins/${this.remix.branding}/calamares/applications/install-debian.desktop`)
+      if (fs.existsSync(calamaresLauncher)) {
+         shx.cp(calamaresLauncher, '/usr/share/applications/')
+      } else {
+         console.log(`${calamaresLauncher} not found!`)
+         process.exit()
+      }
+
+      // script di avvio
+      shx.cp(path.resolve(__dirname, '../../../assets/calamares/install-debian'), '/sbin/install-debian')
+
    }
 
    /**

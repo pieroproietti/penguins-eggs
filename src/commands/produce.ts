@@ -84,8 +84,8 @@ the penguin produce an egg called egg-i386-2020-04-13_1815.iso`
          if (!Pacman.prerequisitesEggsCheck()) {
             console.log(
                'You need to install ' +
-                  chalk.bgGray('prerequisites') +
-                  ' to continue.'
+               chalk.bgGray('prerequisites') +
+               ' to continue.'
             )
             if (
                await Utils.customConfirm(`Select yes to install prerequisites`)
@@ -104,8 +104,8 @@ the penguin produce an egg called egg-i386-2020-04-13_1815.iso`
          if (!Pacman.configurationCheck()) {
             console.log(
                'You need to create ' +
-                  chalk.bgGray('configuration files') +
-                  ' to continue.'
+               chalk.bgGray('configuration files') +
+               ' to continue.'
             )
             if (
                await Utils.customConfirm(

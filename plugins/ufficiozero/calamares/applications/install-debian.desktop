@@ -1,12 +1,12 @@
 [Desktop Entry]
 Type=Application
 Version=1.0
-Name=Install Debian
+Name=Install Ufficiozero
 GenericName=Calamares Installer
 Exec=install-debian
-Comment=Calamares — Installer for Debian Live
+Comment=Calamares — Installer Ufficiozero
 Keywords=calamares;system;install;debian;installer
-Icon=install-gui
+Icon=install-debian
 Terminal=false
 Categories=Qt;System;
 StartupWMClass=calamares
