@@ -8,10 +8,13 @@
  * license: MIT
  */
 import { Command, flags } from '@oclif/command'
+import fs = require('fs')
 import Utils from '../classes/utils'
 import Ovary from '../classes/ovary'
 import Pacman from '../classes/pacman'
 import chalk = require('chalk')
+import { string } from '@oclif/command/lib/flags'
+import { fstat } from 'fs'
 
 export default class Produce extends Command {
    static flags = {
@@ -49,9 +52,20 @@ the penguin produce an egg called egg-i386-2020-04-13_1815.iso`
          // plugins
          let plugins = []
          if (flags.plugins){
-            plugins.push(flags.plugins)
-            console.log(`plugins: ${plugins}`)
+            console.log(`plugins: ${flags.plugins}`)
+            plugins = flags.plugins //array
+            plugins.forEach(plugin => {
+               console.log(`plugin: ${plugin}`)
+               if (fs.existsSync(plugin)){
+                  console.log(`plugin: ${plugin} existe`)
+               } else {
+                  console.log(`plugin: ${plugin} not exist`)
+               }
+            })
+            //console.log(flags.plugins)
+            process.exit()
          }
+
 
          // Nome della remix
          let basename = '' // se vuoto viene definito da loadsetting
