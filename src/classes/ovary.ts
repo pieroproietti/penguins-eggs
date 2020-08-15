@@ -1394,6 +1394,9 @@ timeout 200\n`
 
 
          if (assistant) {
+            /**
+             * PLUGIN
+             */
             shx.cp(
                path.resolve(__dirname, '../../assistant/assistant.desktop'),
                '/usr/share/applications/'
