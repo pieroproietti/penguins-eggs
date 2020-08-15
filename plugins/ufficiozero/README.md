@@ -2,7 +2,7 @@
 
 ``ATTENZIONE: Non tutte le caratteristiche sono state implementate, al momento funziona SOLO
 --branding vendor``
-
+``Bisognerà pure valutare se inserire queste caratteristicon con oclif/plugin-plugins``
 
 Plugin è probabilmente un nome esagerato, però sto provando a far funzionare eggs con la possibilità per gli
 utilizzatori di configurarne l'aspetto grafico o altre caratteristiche.

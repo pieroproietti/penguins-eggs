@@ -15,11 +15,7 @@ import chalk = require('chalk')
 
 export default class Produce extends Command {
    static flags = {
-      assistant: flags.boolean({ char: 'a', description: 'install assistant' }),
       basename: flags.string({ char: 'b', description: 'basename egg' }),
-      branding: flags.string({
-         description: 'brand for calamares default eggs'
-      }),
       compress: flags.boolean({ char: 'c', description: 'max compression' }),
       fast: flags.boolean({ char: 'f', description: 'fast compression' }),
       dry: flags.boolean({
@@ -27,6 +23,11 @@ export default class Produce extends Command {
          description:
             'perform a dry run, no iso build but only scripts generated'
       }),
+      assistant: flags.boolean({ char: 'a', description: 'install assistant' }),
+      branding: flags.string({
+         description: 'brand for calamares default eggs'
+      }),
+      plugins: flags.string({ multiple: true, description: 'plugins to be used'}),
       help: flags.help({ char: 'h' }),
       verbose: flags.boolean({ char: 'v', description: 'verbose' })
    }
@@ -45,6 +46,13 @@ the penguin produce an egg called egg-i386-2020-04-13_1815.iso`
 
       const { flags } = this.parse(Produce)
       if (Utils.isRoot()) {
+         // plugins
+         let plugins = []
+         if (flags.plugins){
+            plugins.push(flags.plugins)
+            console.log(`plugins: ${plugins}`)
+         }
+
          // Nome della remix
          let basename = '' // se vuoto viene definito da loadsetting
          if (flags.basename !== undefined) {

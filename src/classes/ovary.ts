@@ -1,5 +1,6 @@
 /* eslint-disable valid-jsdoc */
 /* eslint-disable no-console */
+
 /**
  * penguins-eggs: ovary.ts VERSIONE DEBIAN-LIVE
  * author: Piero Proietti
@@ -30,7 +31,6 @@ import Distro from './distro'
 import Xdg from './xdg'
 import Pacman from './pacman'
 import Prerequisites from '../commands/prerequisites'
-
 
 /**
  * Ovary:
