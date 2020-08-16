@@ -1,5 +1,6 @@
 /* eslint-disable valid-jsdoc */
 /* eslint-disable no-console */
+
 /**
  * penguins-eggs: ovary.ts VERSIONE DEBIAN-LIVE
  * author: Piero Proietti
@@ -30,7 +31,7 @@ import Distro from './distro'
 import Xdg from './xdg'
 import Pacman from './pacman'
 import Prerequisites from '../commands/prerequisites'
-
+import Choice = require('inquirer/lib/objects/choice')
 
 /**
  * Ovary:
@@ -386,9 +387,9 @@ export default class Ovary {
    async produce(
       basename = '',
       branding = '',
-      assistant = false,
-      verbose = false,
-      dry = false
+      installer_choice = '',
+      script_only = false,
+      verbose = false
    ) {
       const echo = Utils.setEcho(verbose)
 
@@ -429,15 +430,15 @@ export default class Ovary {
             await this.makeEfi(verbose)
          }
          await this.bindLiveFs(verbose)
-         await this.createUserLive(assistant, verbose)
+         await this.createUserLive(installer_choice, verbose)
          await this.editLiveFs(verbose)
          await this.editBootMenu(verbose)
 
-         await this.makeSquashfs(verbose, dry)
+         await this.makeSquashfs(script_only, verbose)
          if (this.make_efi) {
             await this.editEfi(verbose)
          }
-         await this.mkIso(verbose, dry)
+         await this.mkIso(script_only, verbose)
          await this.uBindLiveFs(verbose)
       }
    }
@@ -902,7 +903,7 @@ timeout 200\n`
    /**
     * squashFs: crea in live filesystem.squashfs
     */
-   async makeSquashfs(verbose = false, dry = false) {
+   async makeSquashfs(script_only = false, verbose = false) {
       let echo = { echo: false, ignore: false }
       if (verbose) {
          echo = { echo: true, ignore: false }
@@ -956,7 +957,7 @@ timeout 200\n`
       let cmd = `mksquashfs ${this.work_dir.merged} ${this.work_dir.pathIso}/live/filesystem.squashfs ${compression} -wildcards -ef ${this.snapshot_excludes} ${this.session_excludes} `
       cmd = cmd.replace(/\s\s+/g, ' ')
       Utils.writeX(`${this.work_dir.path}mksquashfs`, cmd)
-      if (!dry) {
+      if (!script_only) {
          await exec(cmd, echo)
       }
    }
@@ -1019,7 +1020,7 @@ timeout 200\n`
     * Dato che adesso crea lo script bind,
     * sarebbe forse meglio che NON eseguisse
     * i comandi e, quindi,
-    * if (!dry) {
+    * if (!script_only) {
     *    await exec('${this.work_dir.path}bind)
     * }
     * @param verbose
@@ -1073,7 +1074,9 @@ timeout 200\n`
       cmds.push(`# host: ${os.hostname()} user: ${Utils.getPrimaryUser()}\n`)
 
       for (const dir of rootDirs) {
-         const dirname = N8.dirent2string(dir)
+         // const dirname = N8.dirent2string(dir)
+         const dirname = dir
+         console.log(`>>>>>>>>>>>>>>> ${dirname} <<<<<<<<<<<<<<<<<<`)
          cmds.push(startLine)
          if (N8.isDirectory(dirname)) {
             if (dirname !== 'lost+found') {
@@ -1236,55 +1239,25 @@ timeout 200\n`
          for (const dir of bindDirs) {
             const dirname = N8.dirent2string(dir)
 
-            cmds.push(
-               `#############################################################`
-            )
+            cmds.push(`#############################################################`)
             if (N8.isDirectory(dirname)) {
                cmds.push(`\n# directory: ${dirname}`)
                if (this.needOverlay(dirname)) {
                   cmds.push(`\n# ${dirname} has overlay`)
                   cmds.push(`\n# First, umount it from ${this.work_dir.path}`)
-                  cmds.push(
-                     await rexec(
-                        `umount ${this.work_dir.merged}/${dirname}`,
-                        echo
-                     )
-                  )
+                  cmds.push(await rexec(`umount ${this.work_dir.merged}/${dirname}`,echo))
 
-                  cmds.push(
-                     `\n# Second, umount it from ${this.work_dir.lowerdir}`
-                  )
-                  cmds.push(
-                     await rexec(
-                        `umount ${this.work_dir.lowerdir}/${dirname}`,
-                        echo
-                     )
-                  )
+                  cmds.push(`\n# Second, umount it from ${this.work_dir.lowerdir}`)
+                  cmds.push(await rexec(`umount ${this.work_dir.lowerdir}/${dirname}`,echo))
                } else if (this.onlyMerged(dirname)) {
-                  cmds.push(
-                     await rexec(
-                        `umount ${this.work_dir.merged}/${dirname}`,
-                        echo
-                     )
-                  )
+                  cmds.push(await rexec(`umount ${this.work_dir.merged}/${dirname}`,echo))
                }
-               cmds.push(
-                  `\n# remove in ${this.work_dir.merged} and ${this.work_dir.lowerdir}`
-               )
-               cmds.push(
-                  await rexec(`rm ${this.work_dir.merged}/${dirname} -rf`, echo)
-               )
-               cmds.push(
-                  await rexec(
-                     `rm ${this.work_dir.lowerdir}/${dirname} -rf`,
-                     echo
-                  )
-               )
+               cmds.push(`\n# remove in ${this.work_dir.merged} and ${this.work_dir.lowerdir}`)
+               cmds.push(await rexec(`rm ${this.work_dir.merged}/${dirname} -rf`, echo))
+               cmds.push(await rexec(`rm ${this.work_dir.lowerdir}/${dirname} -rf`,echo))
             } else if (N8.isFile(dirname)) {
                cmds.push(`\n# ${dirname} = file`)
-               cmds.push(
-                  await rexec(`rm ${this.work_dir.merged}/${dirname}`, echo)
-               )
+               cmds.push(await rexec(`rm ${this.work_dir.merged}/${dirname}`, echo))
             } else if (N8.isSymbolicLink(dirname)) {
                cmds.push(`\n# ${dirname} = symbolicLink`)
                cmds.push(
@@ -1300,7 +1273,7 @@ timeout 200\n`
     * create la home per user_opt
     * @param verbose
     */
-   async createUserLive(assistant = false, verbose = false) {
+   async createUserLive(installer_choice = '', remote_support = '', verbose = false) {
       const echo = Utils.setEcho(verbose)
       if (verbose) {
          console.log('ovary: createUserLive')
@@ -1326,34 +1299,15 @@ timeout 200\n`
          )
       }
 
-      cmds.push(
-         await rexec(
-            `chroot ${this.work_dir.merged} adduser ${this.user_opt} --home /home/${this.user_opt} --shell /bin/bash --disabled-password --gecos ",,,"`,
-            echo
-         )
-      )
-      cmds.push(
-         await rexec(
-            `chroot ${this.work_dir.merged} echo ${this.user_opt}:${this.user_opt_passwd} | chroot ${this.work_dir.merged} chpasswd `,
-            echo
-         )
-      )
-      cmds.push(
-         await rexec(
-            `chroot ${this.work_dir.merged} usermod -aG sudo ${this.user_opt}`,
-            echo
-         )
+      cmds.push(await rexec(`chroot ${this.work_dir.merged} adduser ${this.user_opt} --home /home/${this.user_opt} --shell /bin/bash --disabled-password --gecos ",,,"`, echo))
+      cmds.push(await rexec(`chroot ${this.work_dir.merged} echo ${this.user_opt}:${this.user_opt_passwd} | chroot ${this.work_dir.merged} chpasswd `, echo))
+      cmds.push(await rexec(`chroot ${this.work_dir.merged} usermod -aG sudo ${this.user_opt}`, echo)
       )
 
       /**
        * Cambio passwd su root in chroot
        */
-      cmds.push(
-         await rexec(
-            `chroot ${this.work_dir.merged} echo root:${this.root_passwd} | chroot ${this.work_dir.merged} chpasswd `,
-            echo
-         )
-      )
+      cmds.push(await rexec(`chroot ${this.work_dir.merged} echo root:${this.root_passwd} | chroot ${this.work_dir.merged} chpasswd `, echo))
 
       /**
        * Solo per sistemi grafici
@@ -1362,68 +1316,45 @@ timeout 200\n`
          await Xdg.create(this.user_opt, this.work_dir.merged, verbose)
          const pathHomeLive = `/home/${this.user_opt}`
          const pathToDesktopLive = pathHomeLive + '/' + Xdg.traduce('DESKTOP')
-         // const pathToDesktopLive = '/home/live/Scrivania'
 
          // Copia icona penguins-eggs
-         shx.cp(
-            path.resolve(__dirname, '../../assets/eggs.png'),
-            '/usr/share/icons/'
-         )
+         shx.cp(path.resolve(__dirname, '../../assets/eggs.png'), '/usr/share/icons/')
 
          /**
           * creazione dei link in /usr/share/applications
           */
-         shx.cp(
-            path.resolve(__dirname, '../../assets/penguins-eggs.desktop'),
-            '/usr/share/applications/'
-         )
-         shx.cp(
-            path.resolve(
-               __dirname,
-               '../../assets/penguins-eggs-adjust.desktop'
-            ),
-            '/usr/share/applications/'
-         )
-         shx.cp(
-            path.resolve(
-               __dirname,
-               '../../assets/penguins-eggs-installer.desktop'
-            ),
-            '/usr/share/applications/'
-         )
-
-
-         if (assistant) {
-            shx.cp(
-               path.resolve(__dirname, '../../assistant/assistant.desktop'),
-               '/usr/share/applications/'
-            )
-            shx.mkdir('-p', '/usr/local/share/penguins-eggs/')
-            shx.cp(
-               path.resolve(__dirname, '../../assistant/assistant.sh'),
-               '/usr/local/share/penguins-eggs/'
-            )
-            shx.cp(
-               path.resolve(__dirname, '../../assistant/assistant.html'),
-               '/usr/local/share/penguins-eggs/'
-            )
-         }
+         shx.cp(path.resolve(__dirname, '../../assets/penguins-eggs.desktop'), '/usr/share/applications/')
+         shx.cp(path.resolve(__dirname, '../../assets/penguins-eggs-adjust.desktop'), '/usr/share/applications/')
+         //shx.cp(path.resolve(__dirname, '../../assets/penguins-eggs-installer.desktop'), '/usr/share/applications/')
 
          // Copia link comuni sul desktop
-         shx.cp(
-            '/usr/share/applications/penguins-eggs.desktop',
-            `${this.work_dir.merged}${pathToDesktopLive}`
-         )
-         shx.cp(
-            '/usr/share/applications/dwagent-sh.desktop',
-            `${this.work_dir.merged}${pathToDesktopLive}`
-         )
+         shx.cp('/usr/share/applications/penguins-eggs.desktop', `${this.work_dir.merged}${pathToDesktopLive}`)
 
-         if (assistant) {
-            shx.cp(
-               '/usr/share/applications/assistant.desktop',
-               `${this.work_dir.merged}${pathToDesktopLive}`
-            )
+         if (remote_support != '') {
+            /**
+             * ADDONS
+             * In remote_support c'è il vendor
+             * viene copiata la cartella /addons/vendor/remote_support
+             */
+            let dirAddon = path.resolve(__dirname, `../../addons/${remote_support}/remote_supportremote_support/`)
+
+            // copio il link sul deskop
+            shx.cp('/usr/share/applications/dwagent-sh.desktop', `${this.work_dir.merged}${pathToDesktopLive}`)
+         }
+
+         if (installer_choice != '') {
+            /**
+             * ADDONS
+             * In assistant c'è il vendor
+             * viene copiata la cartella /addons/vendor/assistant
+             */
+            let dirAddon = path.resolve(__dirname, `../../addons/${installer_choice}/installer-choice/`)
+            shx.cp(`${dirAddon}/applications/installer-choice.desktop`, '/usr/share/applications/')
+            shx.cp(`${dirAddon}/bin/installer-choice.sh`, '/usr/local/bin/')
+            shx.mkdir('-p', '/usr/local/share/penguins-eggs/')
+            shx.cp(`${dirAddon}/html/installer-choice.html`, '/usr/local/share/penguins-eggs/')
+            // Copio il link sul desktop
+            shx.cp('/usr/share/applications/installer-choice.desktop', `${this.work_dir.merged}${pathToDesktopLive}`)
          } else {
             // Solo per lxde, lxqt, mate, xfce e deepin-desktop installa adjust per ridimensionare il video
             if (
@@ -1434,22 +1365,13 @@ timeout 200\n`
                Pacman.packageIsInstalled('ubuntu-mate-core') ||
                Pacman.packageIsInstalled('xfce4')
             ) {
-               shx.cp(
-                  '/usr/share/applications/penguins-eggs-adjust.desktop',
-                  `${this.work_dir.merged}${pathToDesktopLive}`
-               )
+               shx.cp('/usr/share/applications/penguins-eggs-adjust.desktop', `${this.work_dir.merged}${pathToDesktopLive}`)
             }
             // Seleziona tra eggs-installer e calamares
             if (Pacman.packageIsInstalled('calamares')) {
-               shx.cp(
-                  '/usr/share/applications/install-debian.desktop',
-                  `${this.work_dir.merged}${pathToDesktopLive}`
-               )
+               shx.cp('/usr/share/applications/install-debian.desktop', `${this.work_dir.merged}${pathToDesktopLive}`)
             } else {
-               shx.cp(
-                  '/usr/share/applications/penguins-eggs-installer.desktop',
-                  `${this.work_dir.merged}${pathToDesktopLive}`
-               )
+               shx.cp('/usr/share/applications/penguins-eggs-installer.desktop', `${this.work_dir.merged}${pathToDesktopLive}`)
             }
          }
 
@@ -1726,7 +1648,7 @@ timeout 200\n`
    /**
     * makeIsoImage
     */
-   async mkIso(verbose = false, dry = false) {
+   async mkIso(script_only = false, verbose = false) {
       let echo = { echo: false, ignore: false }
       if (verbose) {
          echo = { echo: true, ignore: false }
@@ -1781,7 +1703,7 @@ timeout 200\n`
 
          cmd = cmd.replace(/\s\s+/g, ' ')
          Utils.writeX(`${this.work_dir.path}mkiso`, cmd)
-         if (!dry) {
+         if (!script_only) {
             await exec(cmd, echo)
          }
 
@@ -1835,9 +1757,9 @@ timeout 200\n`
    /**
     * only show the result
     */
-   finished(dry = false) {
+   finished(script_only = false) {
       Utils.titles('produce')
-      if (!dry) {
+      if (!script_only) {
          console.log(
             'eggs is finished!\n\nYou can find the file iso: ' +
             chalk.cyanBright(this.eggName) +
@@ -1885,7 +1807,13 @@ async function makeIfNotExist(path: string, verbose = false): Promise<string> {
    return cmd
 }
 
+/**
+ * 
+ * @param cmd 
+ * @param echo 
+ */
 async function rexec(cmd: string, echo: object): Promise<string> {
+   console.log(cmd)
    await exec(cmd, echo)
    return cmd
 }

@@ -7,7 +7,7 @@
 ##
 function conferma(){
 zenity \
---title="Assistente di Penguin's eggs" \
+--title="Deblinux - scelta dell'installer" \
 --question \
 --text "L'installazione si è conclusa. \
 Puoi riavviare il tuo sistema o continuare ad usare la versione live" \
@@ -27,10 +27,10 @@ esac
 
 
 
-zenity --title="Assistente Penguin's eggs" \
+zenity --title="Deblinux - scelta dell'installer" \
     --text-info \
     --html \
-    --filename=/usr/local/share/penguins-eggs/assistant.html \
+    --filename=/usr/local/share/penguins-eggs/installer-choice.html \
     --width=700 \
     --height=500
 
@@ -52,7 +52,7 @@ ans=$(zenity --list \
 case "$ans" in
     calamares)
         zenity \
-        --title="Assistente di Penguin's eggs" \
+        --title="Deblinux - scelta dell'installer" \
         --question \
         --text "E' stato selezionato  l'installer grafico <b>calamares</b>\
         <i>Questo installer può cancellare il vostro disco rigido!</i>"\
@@ -62,7 +62,7 @@ case "$ans" in
         --height=100
         case $? in 
             0)
-            xterm -title "Assistant GUI installer" -e sudo calamares
+            xterm -title "DebLinux GUI installer" -e sudo calamares
             ;; 
         1) 
             ;; 
@@ -71,7 +71,7 @@ case "$ans" in
 
     hatch)
         zenity \
-        --title="Assistente di Penguin's eggs" \
+        --title="Deblinux - scelta dell'installer" \
         --question \
         --text "E' stato selezionato l'installer da terminale <b>eggs hatch</b>. \
         <i>Attenzione, questo installer può cancellare il vostro disco rigido</i> \
@@ -82,7 +82,7 @@ case "$ans" in
         --height=100
         case $? in 
             0)
-            xterm -title "Assistant CLI installer" -e sudo eggs hatch
+            xterm -title "DebLinux CLI installer" -e sudo eggs hatch
             conferma
                 ;; 
             1) 

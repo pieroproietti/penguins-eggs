@@ -95,29 +95,39 @@ export default class CalamaresConfig {
          fs.mkdirSync('/usr/lib/calamares/modules')
       }
 
-      shx.cp(
-         path.resolve(
-            __dirname,
-            '../../../assets/calamares/install-debian.desktop'
-         ),
-         '/usr/share/applications/install-debian.desktop'
-      )
-      shx.cp(
-         '-r',
-         path.resolve(__dirname, '../../../assets/calamares/branding/*'),
-         '/etc/calamares/branding/'
-      )
-      shx.cp(
-         path.resolve(__dirname, '../../../assets/calamares/install-debian'),
-         '/sbin/install-debian'
-      )
-      shx.cp(
-         path.resolve(
-            __dirname,
-            '../../../assets/calamares/artwork/install-debian.png'
-         ),
-         '/usr/share/icons/install-debian.png'
-      )
+      /**
+      * ADDONS
+      */
+      let calamaresBranding = path.resolve(__dirname, `../../../addons/${this.remix.branding}/theme/branding`)
+      if (fs.existsSync(calamaresBranding)) {
+         if (!fs.existsSync(`/etc/calamares/branding/${this.remix.branding}`)) {
+            fs.mkdirSync(`/etc/calamares/branding/${this.remix.branding}`)
+         }
+         shx.cp(`${calamaresBranding}/*`, `/etc/calamares/branding/${this.remix.branding}/`)
+      } else {
+         console.log(`${calamaresBranding} not found!`)
+         process.exit()
+      }
+
+      let calamaresIcon = path.resolve(__dirname, `../../../addons/${this.remix.branding}/theme/artwork/install-debian.png`)
+      if (fs.existsSync(calamaresIcon)) {
+         shx.cp(calamaresIcon, '/usr/share/icons/')
+      } else {
+         console.log(`${calamaresIcon} not found!`)
+         process.exit()
+      }
+
+      let calamaresLauncher = path.resolve(__dirname, `../../../addons/${this.remix.branding}/theme/applications/install-debian.desktop`)
+      if (fs.existsSync(calamaresLauncher)) {
+         shx.cp(calamaresLauncher, '/usr/share/applications/')
+      } else {
+         console.log(`${calamaresLauncher} not found!`)
+         process.exit()
+      }
+
+      // script di avvio
+      shx.cp(path.resolve(__dirname, '../../../assets/calamares/install-debian'), '/sbin/install-debian')
+
    }
 
    /**

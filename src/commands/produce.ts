@@ -8,25 +8,25 @@
  * license: MIT
  */
 import { Command, flags } from '@oclif/command'
+import fs = require('fs')
+import path = require('path')
 import Utils from '../classes/utils'
 import Ovary from '../classes/ovary'
 import Pacman from '../classes/pacman'
 import chalk = require('chalk')
+import { string } from '@oclif/command/lib/flags'
+import { fstat } from 'fs'
 
 export default class Produce extends Command {
    static flags = {
-      assistant: flags.boolean({ char: 'a', description: 'install assistant' }),
       basename: flags.string({ char: 'b', description: 'basename egg' }),
-      branding: flags.string({
-         description: 'brand for calamares default eggs'
-      }),
       compress: flags.boolean({ char: 'c', description: 'max compression' }),
       fast: flags.boolean({ char: 'f', description: 'fast compression' }),
-      dry: flags.boolean({
-         char: 'd',
-         description:
-            'perform a dry run, no iso build but only scripts generated'
-      }),
+      installer_choice: flags.string({ description: 'install assistant' }),
+      branding: flags.string({ description: 'brand for calamares default eggs' }),
+      remote_support: flags.string({ description: `remote support` }),
+      script_only: flags.boolean({description: 'only scripts generation' }),
+      addons: flags.string({ multiple: true, description: 'plugins to be used' }),
       help: flags.help({ char: 'h' }),
       verbose: flags.boolean({ char: 'v', description: 'verbose' })
    }
@@ -45,6 +45,46 @@ the penguin produce an egg called egg-i386-2020-04-13_1815.iso`
 
       const { flags } = this.parse(Produce)
       if (Utils.isRoot()) {
+
+         /**
+          * ADDONS
+          */
+         let addons = []
+         if (flags.addons) {
+            console.log(`addons: ${flags.addons}`)
+            addons = flags.addons //array
+            addons.forEach(addon => {
+               console.log('----------------------------------')
+
+               let dirAddon = path.resolve(__dirname, `../../addons/${addon}`)
+               // console.log(`dirAddon: ${dirAddon}`)
+               if (!fs.existsSync(dirAddon)) {
+                  console.log(`addon: ${addon} not found`)
+                  return
+               }
+
+               let vendorAddon = addon.substring(0, addon.search('/'))
+               // console.log(`vendorAddon: ${vendorAddon}`)
+               let nameAddon = addon.substring(addon.search('/') + 1, addon.length)
+               // console.log(`nameAddon: ${nameAddon}`)
+
+               /**
+                * Impostazione dei singoli flag
+                */
+               if (nameAddon === 'thema') {
+                  flags.branding = vendorAddon
+               }
+               if (nameAddon === 'installer_choice') {
+                  flags.installer_choice = vendorAddon
+               }
+               if (nameAddon === 'remote_support') {
+                  flags.remote_support = vendorAddon
+               }
+            })
+         }
+
+
+
          // Nome della remix
          let basename = '' // se vuoto viene definito da loadsetting
          if (flags.basename !== undefined) {
@@ -66,9 +106,12 @@ the penguin produce an egg called egg-i386-2020-04-13_1815.iso`
             compression = 'xz -Xbcj x86'
          }
 
-         let assistant = false
-         if (flags.assistant) {
-            assistant = true
+         /**
+          * Attenzione: assistant passa da boolean a string
+          */
+         let installer_choice = ''
+         if (flags.installer_choice != undefined) {
+            installer_choice = flags.installer_choice
          }
 
          let verbose = false
@@ -76,27 +119,20 @@ the penguin produce an egg called egg-i386-2020-04-13_1815.iso`
             verbose = true
          }
 
-         let dry = false
-         if (flags.dry) {
-            dry = true
+         let script_only = false
+         if (flags.script_only) {
+            script_only = true
          }
 
          if (!Pacman.prerequisitesEggsCheck()) {
-            console.log(
-               'You need to install ' +
-                  chalk.bgGray('prerequisites') +
-                  ' to continue.'
+            console.log('You need to install ' + chalk.bgGray('prerequisites') + ' to continue.'
             )
-            if (
-               await Utils.customConfirm(`Select yes to install prerequisites`)
-            ) {
+            if (await Utils.customConfirm(`Select yes to install prerequisites`)) {
                Utils.warning('Installing prerequisites...')
                await Pacman.prerequisitesEggsInstall(verbose)
                await Pacman.clean(verbose)
             } else {
-               Utils.error(
-                  'To create iso, you must install eggs prerequisites.\nsudo eggs prerequisites'
-               )
+               Utils.error('To create iso, you must install eggs prerequisites.\nsudo eggs prerequisites')
                process.exit(0)
             }
          }
@@ -104,8 +140,8 @@ the penguin produce an egg called egg-i386-2020-04-13_1815.iso`
          if (!Pacman.configurationCheck()) {
             console.log(
                'You need to create ' +
-                  chalk.bgGray('configuration files') +
-                  ' to continue.'
+               chalk.bgGray('configuration files') +
+               ' to continue.'
             )
             if (
                await Utils.customConfirm(
@@ -125,8 +161,8 @@ the penguin produce an egg called egg-i386-2020-04-13_1815.iso`
          const ovary = new Ovary(compression)
          Utils.warning('Produce an egg...')
          if (await ovary.fertilization()) {
-            await ovary.produce(basename, branding, assistant, verbose, dry)
-            ovary.finished(dry)
+            await ovary.produce(basename, branding, installer_choice, script_only, verbose)
+            ovary.finished(script_only)
          }
       }
    }
