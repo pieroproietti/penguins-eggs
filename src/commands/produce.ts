@@ -9,6 +9,7 @@
  */
 import { Command, flags } from '@oclif/command'
 import fs = require('fs')
+import path = require('path')
 import Utils from '../classes/utils'
 import Ovary from '../classes/ovary'
 import Pacman from '../classes/pacman'
@@ -30,7 +31,7 @@ export default class Produce extends Command {
       branding: flags.string({
          description: 'brand for calamares default eggs'
       }),
-      plugins: flags.string({ multiple: true, description: 'plugins to be used'}),
+      addons: flags.string({ multiple: true, description: 'plugins to be used'}),
       help: flags.help({ char: 'h' }),
       verbose: flags.boolean({ char: 'v', description: 'verbose' })
    }
@@ -49,22 +50,40 @@ the penguin produce an egg called egg-i386-2020-04-13_1815.iso`
 
       const { flags } = this.parse(Produce)
       if (Utils.isRoot()) {
-         // plugins
-         let plugins = []
-         if (flags.plugins){
-            console.log(`plugins: ${flags.plugins}`)
-            plugins = flags.plugins //array
-            plugins.forEach(plugin => {
-               console.log(`plugin: ${plugin}`)
-               if (fs.existsSync(plugin)){
-                  console.log(`plugin: ${plugin} existe`)
-               } else {
-                  console.log(`plugin: ${plugin} not exist`)
+         let addons = []
+         if (flags.addons){
+            console.log(`addons: ${flags.addons}`)
+            addons = flags.addons //array
+            addons.forEach(addon => {
+               console.log('----------------------------------')
+
+               let dirAddon =path.resolve(__dirname, `../../addons/${addon}`)
+               console.log(`dirAddon: ${dirAddon}`)
+               if (!fs.existsSync(dirAddon)){
+                  console.log(`addon: ${addon} not found`)
+                  return
+               }
+
+               let vendorAddon = addon.substring(0, addon.search('/') )
+               console.log(`vendorAddon: ${vendorAddon}`)
+               let nameAddon = addon.substring(addon.search('/')+1, addon.length )
+               console.log(`nameAddon: ${nameAddon}`)
+
+               /**
+                * Impostazione dei flags singoli
+                */
+               if (nameAddon === 'thema'){
+                  flags.branding = vendorAddon
+               }
+               if (nameAddon === 'assistant'){
+                  flags.assistant = true
+               }
+               if (nameAddon === 'remote-assistant'){
+                  flags.assistant = true
                }
             })
-            //console.log(flags.plugins)
-            process.exit()
          }
+
 
 
          // Nome della remix
