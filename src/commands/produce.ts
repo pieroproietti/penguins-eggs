@@ -57,16 +57,16 @@ the penguin produce an egg called egg-i386-2020-04-13_1815.iso`
                console.log('----------------------------------')
 
                let dirAddon = path.resolve(__dirname, `../../addons/${addon}`)
-               console.log(`dirAddon: ${dirAddon}`)
+               // console.log(`dirAddon: ${dirAddon}`)
                if (!fs.existsSync(dirAddon)) {
                   console.log(`addon: ${addon} not found`)
                   return
                }
 
                let vendorAddon = addon.substring(0, addon.search('/'))
-               console.log(`vendorAddon: ${vendorAddon}`)
+               // console.log(`vendorAddon: ${vendorAddon}`)
                let nameAddon = addon.substring(addon.search('/') + 1, addon.length)
-               console.log(`nameAddon: ${nameAddon}`)
+               // console.log(`nameAddon: ${nameAddon}`)
 
                /**
                 * Impostazione dei singoli flag

@@ -38,11 +38,10 @@ export default class n8 {
    }
 
    static dirent2string(dir: any): string {
-      const util = require('util')
-      console.log(util.inspect(dir, false, null, true /* enable colors */))
+      // const util = require('util')
+      // console.log(util.inspect(dir, false, null, true /* enable colors */))
 
       let dirname = ""
-      console.log(`oggetto dir: ${dir}`)
       if (process.versions.node.split('.')[0] === '8') {
          dirname = JSON.stringify(dir).replace(`"`, ``).replace(`"`, ``)
       } else {
