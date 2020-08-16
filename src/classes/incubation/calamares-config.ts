@@ -100,12 +100,14 @@ export default class CalamaresConfig {
       */
       let calamaresBranding = path.resolve(__dirname, `../../../addons/${this.remix.branding}/theme/branding`)
       if (fs.existsSync(calamaresBranding)) {
-         shx.cp('-r', calamaresBranding, '/etc/calamares/branding/')
+         if (!fs.existsSync(`/etc/calamares/branding/${this.remix.branding}`)) {
+            fs.mkdirSync(`/etc/calamares/branding/${this.remix.branding}`)
+         }
+         shx.cp(`${calamaresBranding}/*`, `/etc/calamares/branding/${this.remix.branding}/`)
       } else {
          console.log(`${calamaresBranding} not found!`)
          process.exit()
       }
-
 
       let calamaresIcon = path.resolve(__dirname, `../../../addons/${this.remix.branding}/theme/artwork/install-debian.png`)
       if (fs.existsSync(calamaresIcon)) {
