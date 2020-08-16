@@ -17,9 +17,14 @@ Usually the last version is the right one. Detailed instrunctions for usage are 
 ## Changelog
 Versions are listed on reverse order, the first is the last one.
 
+### eggs-7.6.0-2
+Well, I'm tryng to build something like plugins to customize eggs aspect, at the moment we have branding, in 3 versions and it will be easy
+to add your version. We are just starting at the moment is rudimentary and few commented, but let you to have your dress to your remix installation.
+We need same help in graphics, someone interested?
+
 ### eggs-7.6.0-1
 Continuing the collaboration with ufficiozero.org, we creaded a custom branding ufficiozero, removed some spure links. To use the new pranding, when
-you run: sudo eggs produce -vf --branding ufficiozero. We need same help in graphics, someone interested?
+you run: sudo eggs produce -vf --branding ufficiozero.
 
 ### eggs-7.6.0-1
 Continuing the collaboration with ufficiozero.org, we closed an important bug in Ubuntu and derived: after installation, the resolution of dns addresses was missing. Currently the network works correctly with Debian Buster, Ubuntu focal, Ubuntu cosmic and Ubuntu bionic, Linux mint 20.20, Linux mint 19.3
