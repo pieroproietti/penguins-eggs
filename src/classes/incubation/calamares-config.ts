@@ -96,9 +96,9 @@ export default class CalamaresConfig {
       }
 
       /**
-      * PLUGINS con branding ufficiozero
+      * ADDONS
       */
-      let calamaresBranding = path.resolve(__dirname, `../../../plugins/${this.remix.branding}/calamares/branding`)
+      let calamaresBranding = path.resolve(__dirname, `../../../addons/${this.remix.branding}/theme/branding`)
       if (fs.existsSync(calamaresBranding)) {
          shx.cp('-r', calamaresBranding, '/etc/calamares/branding/')
       } else {
@@ -107,7 +107,7 @@ export default class CalamaresConfig {
       }
 
 
-      let calamaresIcon = path.resolve(__dirname, `../../../plugins/${this.remix.branding}/calamares/artwork/install-debian.png`)
+      let calamaresIcon = path.resolve(__dirname, `../../../addons/${this.remix.branding}/theme/artwork/install-debian.png`)
       if (fs.existsSync(calamaresIcon)) {
          shx.cp(calamaresIcon, '/usr/share/icons/')
       } else {
@@ -115,7 +115,7 @@ export default class CalamaresConfig {
          process.exit()
       }
 
-      let calamaresLauncher = path.resolve(__dirname, `../../../plugins/${this.remix.branding}/calamares/applications/install-debian.desktop`)
+      let calamaresLauncher = path.resolve(__dirname, `../../../addons/${this.remix.branding}/theme/applications/install-debian.desktop`)
       if (fs.existsSync(calamaresLauncher)) {
          shx.cp(calamaresLauncher, '/usr/share/applications/')
       } else {
