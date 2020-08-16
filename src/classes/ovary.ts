@@ -31,6 +31,7 @@ import Distro from './distro'
 import Xdg from './xdg'
 import Pacman from './pacman'
 import Prerequisites from '../commands/prerequisites'
+import Choice = require('inquirer/lib/objects/choice')
 
 /**
  * Ovary:
@@ -386,7 +387,7 @@ export default class Ovary {
    async produce(
       basename = '',
       branding = '',
-      assistant = '',
+      installer_choice = '',
       verbose = false,
       dry = false
    ) {
@@ -429,7 +430,7 @@ export default class Ovary {
             await this.makeEfi(verbose)
          }
          await this.bindLiveFs(verbose)
-         await this.createUserLive(assistant, verbose)
+         await this.createUserLive(installer_choice, verbose)
          await this.editLiveFs(verbose)
          await this.editBootMenu(verbose)
 
@@ -1300,7 +1301,7 @@ timeout 200\n`
     * create la home per user_opt
     * @param verbose
     */
-   async createUserLive(assistant = '', verbose = false) {
+   async createUserLive(installer_choice = '', remote_support = '', verbose = false) {
       const echo = Utils.setEcho(verbose)
       if (verbose) {
          console.log('ovary: createUserLive')
@@ -1348,12 +1349,7 @@ timeout 200\n`
       /**
        * Cambio passwd su root in chroot
        */
-      cmds.push(
-         await rexec(
-            `chroot ${this.work_dir.merged} echo root:${this.root_passwd} | chroot ${this.work_dir.merged} chpasswd `,
-            echo
-         )
-      )
+      cmds.push(await rexec(`chroot ${this.work_dir.merged} echo root:${this.root_passwd} | chroot ${this.work_dir.merged} chpasswd `, echo))
 
       /**
        * Solo per sistemi grafici
@@ -1362,61 +1358,46 @@ timeout 200\n`
          await Xdg.create(this.user_opt, this.work_dir.merged, verbose)
          const pathHomeLive = `/home/${this.user_opt}`
          const pathToDesktopLive = pathHomeLive + '/' + Xdg.traduce('DESKTOP')
-         // const pathToDesktopLive = '/home/live/Scrivania'
 
          // Copia icona penguins-eggs
-         shx.cp(
-            path.resolve(__dirname, '../../assets/eggs.png'),
-            '/usr/share/icons/'
-         )
+         shx.cp(path.resolve(__dirname, '../../assets/eggs.png'), '/usr/share/icons/')
 
          /**
           * creazione dei link in /usr/share/applications
           */
-         shx.cp(
-            path.resolve(__dirname, '../../assets/penguins-eggs.desktop'),
-            '/usr/share/applications/'
-         )
-         shx.cp(
-            path.resolve(
-               __dirname,
-               '../../assets/penguins-eggs-adjust.desktop'
-            ),
-            '/usr/share/applications/'
-         )
-         shx.cp(
-            path.resolve(
-               __dirname,
-               '../../assets/penguins-eggs-installer.desktop'
-            ),
-            '/usr/share/applications/'
-         )
+         shx.cp(path.resolve(__dirname, '../../assets/penguins-eggs.desktop'), '/usr/share/applications/')
+         shx.cp(path.resolve(__dirname, '../../assets/penguins-eggs-adjust.desktop'), '/usr/share/applications/')
+         //shx.cp(path.resolve(__dirname, '../../assets/penguins-eggs-installer.desktop'), '/usr/share/applications/')
 
+         // Copia link comuni sul desktop
+         shx.cp('/usr/share/applications/penguins-eggs.desktop', `${this.work_dir.merged}${pathToDesktopLive}`)
 
-         if (assistant != '') {
+         if (remote_support != '') {
+            /**
+             * ADDONS
+             * In remote_support c'è il vendor
+             * viene copiata la cartella /addons/vendor/remote_support
+             */
+            let dirAddon = path.resolve(__dirname, `../../addons/${remote_support}/remote_supportremote_support/`)
+
+            // copio il link sul deskop
+            shx.cp('/usr/share/applications/dwagent-sh.desktop', `${this.work_dir.merged}${pathToDesktopLive}`)
+         }
+
+         if (installer_choice != '') {
             /**
              * ADDONS
              * In assistant c'è il vendor
              * viene copiata la cartella /addons/vendor/assistant
              */
-            shx.cp(path.resolve(__dirname, `../../addons/${assistant}/assistant/assistant.desktop`), '/usr/share/applications/')
+            let dirAddon = path.resolve(__dirname, `../../addons/${installer_choice}/installer-choice/`)
+            shx.cp(`${dirAddon}/applications/installer-choice.desktop`, '/usr/share/applications/')
+            shx.cp(`${dirAddon}/bin/installer-choice.sh`, '/usr/local/bin/')
             shx.mkdir('-p', '/usr/local/share/penguins-eggs/')
-            shx.cp(path.resolve(__dirname, `../../addons/${assistant}/assistant/assistant.sh`), '/usr/local/share/penguins-eggs/')
-            shx.cp(path.resolve(__dirname, `../../addons/${assistant}/assistant/assistant.html`),'/usr/local/share/penguins-eggs/')
-            shx.cp('/usr/share/applications/assistant.desktop',`${this.work_dir.merged}${pathToDesktopLive}`)
-         }
-
-         // Copia link comuni sul desktop
-         shx.cp(
-            '/usr/share/applications/penguins-eggs.desktop',
-            `${this.work_dir.merged}${pathToDesktopLive}`
-         )
-         shx.cp(
-            '/usr/share/applications/dwagent-sh.desktop',
-            `${this.work_dir.merged}${pathToDesktopLive}`
-         )
-
-         if (assistant = '') {
+            shx.cp(`${dirAddon}/html/installer-choice.html`, '/usr/local/share/penguins-eggs/')
+            // Copio il link sul desktop
+            shx.cp('/usr/share/applications/installer-choice.desktop', `${this.work_dir.merged}${pathToDesktopLive}`)
+         } else {
             // Solo per lxde, lxqt, mate, xfce e deepin-desktop installa adjust per ridimensionare il video
             if (
                Pacman.packageIsInstalled('lxde-core') ||
@@ -1426,22 +1407,13 @@ timeout 200\n`
                Pacman.packageIsInstalled('ubuntu-mate-core') ||
                Pacman.packageIsInstalled('xfce4')
             ) {
-               shx.cp(
-                  '/usr/share/applications/penguins-eggs-adjust.desktop',
-                  `${this.work_dir.merged}${pathToDesktopLive}`
-               )
+               shx.cp('/usr/share/applications/penguins-eggs-adjust.desktop', `${this.work_dir.merged}${pathToDesktopLive}`)
             }
             // Seleziona tra eggs-installer e calamares
             if (Pacman.packageIsInstalled('calamares')) {
-               shx.cp(
-                  '/usr/share/applications/install-debian.desktop',
-                  `${this.work_dir.merged}${pathToDesktopLive}`
-               )
+               shx.cp('/usr/share/applications/install-debian.desktop', `${this.work_dir.merged}${pathToDesktopLive}`)
             } else {
-               shx.cp(
-                  '/usr/share/applications/penguins-eggs-installer.desktop',
-                  `${this.work_dir.merged}${pathToDesktopLive}`
-               )
+               shx.cp('/usr/share/applications/penguins-eggs-installer.desktop', `${this.work_dir.merged}${pathToDesktopLive}`)
             }
          }
 

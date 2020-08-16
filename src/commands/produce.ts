@@ -27,7 +27,7 @@ export default class Produce extends Command {
          description:
             'perform a dry run, no iso build but only scripts generated'
       }),
-      assistant: flags.string({description: 'install assistant' }),
+      installer_choice: flags.string({description: 'install assistant' }),
       branding: flags.string({description: 'brand for calamares default eggs'}),
       remote_support: flags.string({description: `remote support`}),
       addons: flags.string({ multiple: true, description: 'plugins to be used'}),
@@ -78,8 +78,8 @@ the penguin produce an egg called egg-i386-2020-04-13_1815.iso`
                if (nameAddon === 'thema'){
                   flags.branding = vendorAddon
                }
-               if (nameAddon === 'assistant'){
-                  flags.assistant = vendorAddon
+               if (nameAddon === 'installer_choice'){
+                  flags.installer_choice = vendorAddon
                }
                if (nameAddon === 'remote_support'){
                   flags.remote_support = vendorAddon
@@ -113,9 +113,9 @@ the penguin produce an egg called egg-i386-2020-04-13_1815.iso`
          /**
           * Attenzione: assistant passa da boolean a string
           */
-         let assistant = ''
-         if (flags.assistant!=undefined) {
-            assistant = flags.assistant
+         let installer_choice = ''
+         if (flags.installer_choice!=undefined) {
+            installer_choice = flags.installer_choice
          }
 
          let verbose = false
@@ -172,7 +172,7 @@ the penguin produce an egg called egg-i386-2020-04-13_1815.iso`
          const ovary = new Ovary(compression)
          Utils.warning('Produce an egg...')
          if (await ovary.fertilization()) {
-            await ovary.produce(basename, branding, assistant, verbose, dry)
+            await ovary.produce(basename, branding, installer_choice, verbose, dry)
             ovary.finished(dry)
          }
       }

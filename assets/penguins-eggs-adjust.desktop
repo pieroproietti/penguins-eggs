@@ -3,6 +3,6 @@
 Encoding=UTF-8
 Name=Penguin's adjust
 Type=Application
-Exec=/usr/local/bin/eggs adjust
+Exec=eggs adjust
 Icon=video-display
 Categories=GNOME;GTK;Utility;
