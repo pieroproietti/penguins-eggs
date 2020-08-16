@@ -388,8 +388,8 @@ export default class Ovary {
       basename = '',
       branding = '',
       installer_choice = '',
-      verbose = false,
-      dry = false
+      script_only = false,
+      verbose = false
    ) {
       const echo = Utils.setEcho(verbose)
 
@@ -434,11 +434,11 @@ export default class Ovary {
          await this.editLiveFs(verbose)
          await this.editBootMenu(verbose)
 
-         await this.makeSquashfs(verbose, dry)
+         await this.makeSquashfs(script_only, verbose)
          if (this.make_efi) {
             await this.editEfi(verbose)
          }
-         await this.mkIso(verbose, dry)
+         await this.mkIso(script_only, verbose)
          await this.uBindLiveFs(verbose)
       }
    }
@@ -903,7 +903,7 @@ timeout 200\n`
    /**
     * squashFs: crea in live filesystem.squashfs
     */
-   async makeSquashfs(verbose = false, dry = false) {
+   async makeSquashfs(script_only = false, verbose = false) {
       let echo = { echo: false, ignore: false }
       if (verbose) {
          echo = { echo: true, ignore: false }
@@ -957,7 +957,7 @@ timeout 200\n`
       let cmd = `mksquashfs ${this.work_dir.merged} ${this.work_dir.pathIso}/live/filesystem.squashfs ${compression} -wildcards -ef ${this.snapshot_excludes} ${this.session_excludes} `
       cmd = cmd.replace(/\s\s+/g, ' ')
       Utils.writeX(`${this.work_dir.path}mksquashfs`, cmd)
-      if (!dry) {
+      if (!script_only) {
          await exec(cmd, echo)
       }
    }
@@ -1020,7 +1020,7 @@ timeout 200\n`
     * Dato che adesso crea lo script bind,
     * sarebbe forse meglio che NON eseguisse
     * i comandi e, quindi,
-    * if (!dry) {
+    * if (!script_only) {
     *    await exec('${this.work_dir.path}bind)
     * }
     * @param verbose
@@ -1074,7 +1074,9 @@ timeout 200\n`
       cmds.push(`# host: ${os.hostname()} user: ${Utils.getPrimaryUser()}\n`)
 
       for (const dir of rootDirs) {
-         const dirname = N8.dirent2string(dir)
+         // const dirname = N8.dirent2string(dir)
+         const dirname = dir
+         console.log(`>>>>>>>>>>>>>>> ${dirname} <<<<<<<<<<<<<<<<<<`)
          cmds.push(startLine)
          if (N8.isDirectory(dirname)) {
             if (dirname !== 'lost+found') {
@@ -1237,55 +1239,25 @@ timeout 200\n`
          for (const dir of bindDirs) {
             const dirname = N8.dirent2string(dir)
 
-            cmds.push(
-               `#############################################################`
-            )
+            cmds.push(`#############################################################`)
             if (N8.isDirectory(dirname)) {
                cmds.push(`\n# directory: ${dirname}`)
                if (this.needOverlay(dirname)) {
                   cmds.push(`\n# ${dirname} has overlay`)
                   cmds.push(`\n# First, umount it from ${this.work_dir.path}`)
-                  cmds.push(
-                     await rexec(
-                        `umount ${this.work_dir.merged}/${dirname}`,
-                        echo
-                     )
-                  )
+                  cmds.push(await rexec(`umount ${this.work_dir.merged}/${dirname}`,echo))
 
-                  cmds.push(
-                     `\n# Second, umount it from ${this.work_dir.lowerdir}`
-                  )
-                  cmds.push(
-                     await rexec(
-                        `umount ${this.work_dir.lowerdir}/${dirname}`,
-                        echo
-                     )
-                  )
+                  cmds.push(`\n# Second, umount it from ${this.work_dir.lowerdir}`)
+                  cmds.push(await rexec(`umount ${this.work_dir.lowerdir}/${dirname}`,echo))
                } else if (this.onlyMerged(dirname)) {
-                  cmds.push(
-                     await rexec(
-                        `umount ${this.work_dir.merged}/${dirname}`,
-                        echo
-                     )
-                  )
+                  cmds.push(await rexec(`umount ${this.work_dir.merged}/${dirname}`,echo))
                }
-               cmds.push(
-                  `\n# remove in ${this.work_dir.merged} and ${this.work_dir.lowerdir}`
-               )
-               cmds.push(
-                  await rexec(`rm ${this.work_dir.merged}/${dirname} -rf`, echo)
-               )
-               cmds.push(
-                  await rexec(
-                     `rm ${this.work_dir.lowerdir}/${dirname} -rf`,
-                     echo
-                  )
-               )
+               cmds.push(`\n# remove in ${this.work_dir.merged} and ${this.work_dir.lowerdir}`)
+               cmds.push(await rexec(`rm ${this.work_dir.merged}/${dirname} -rf`, echo))
+               cmds.push(await rexec(`rm ${this.work_dir.lowerdir}/${dirname} -rf`,echo))
             } else if (N8.isFile(dirname)) {
                cmds.push(`\n# ${dirname} = file`)
-               cmds.push(
-                  await rexec(`rm ${this.work_dir.merged}/${dirname}`, echo)
-               )
+               cmds.push(await rexec(`rm ${this.work_dir.merged}/${dirname}`, echo))
             } else if (N8.isSymbolicLink(dirname)) {
                cmds.push(`\n# ${dirname} = symbolicLink`)
                cmds.push(
@@ -1327,23 +1299,9 @@ timeout 200\n`
          )
       }
 
-      cmds.push(
-         await rexec(
-            `chroot ${this.work_dir.merged} adduser ${this.user_opt} --home /home/${this.user_opt} --shell /bin/bash --disabled-password --gecos ",,,"`,
-            echo
-         )
-      )
-      cmds.push(
-         await rexec(
-            `chroot ${this.work_dir.merged} echo ${this.user_opt}:${this.user_opt_passwd} | chroot ${this.work_dir.merged} chpasswd `,
-            echo
-         )
-      )
-      cmds.push(
-         await rexec(
-            `chroot ${this.work_dir.merged} usermod -aG sudo ${this.user_opt}`,
-            echo
-         )
+      cmds.push(await rexec(`chroot ${this.work_dir.merged} adduser ${this.user_opt} --home /home/${this.user_opt} --shell /bin/bash --disabled-password --gecos ",,,"`, echo))
+      cmds.push(await rexec(`chroot ${this.work_dir.merged} echo ${this.user_opt}:${this.user_opt_passwd} | chroot ${this.work_dir.merged} chpasswd `, echo))
+      cmds.push(await rexec(`chroot ${this.work_dir.merged} usermod -aG sudo ${this.user_opt}`, echo)
       )
 
       /**
@@ -1690,7 +1648,7 @@ timeout 200\n`
    /**
     * makeIsoImage
     */
-   async mkIso(verbose = false, dry = false) {
+   async mkIso(script_only = false, verbose = false) {
       let echo = { echo: false, ignore: false }
       if (verbose) {
          echo = { echo: true, ignore: false }
@@ -1745,7 +1703,7 @@ timeout 200\n`
 
          cmd = cmd.replace(/\s\s+/g, ' ')
          Utils.writeX(`${this.work_dir.path}mkiso`, cmd)
-         if (!dry) {
+         if (!script_only) {
             await exec(cmd, echo)
          }
 
@@ -1799,9 +1757,9 @@ timeout 200\n`
    /**
     * only show the result
     */
-   finished(dry = false) {
+   finished(script_only = false) {
       Utils.titles('produce')
-      if (!dry) {
+      if (!script_only) {
          console.log(
             'eggs is finished!\n\nYou can find the file iso: ' +
             chalk.cyanBright(this.eggName) +
@@ -1849,7 +1807,13 @@ async function makeIfNotExist(path: string, verbose = false): Promise<string> {
    return cmd
 }
 
+/**
+ * 
+ * @param cmd 
+ * @param echo 
+ */
 async function rexec(cmd: string, echo: object): Promise<string> {
+   console.log(cmd)
    await exec(cmd, echo)
    return cmd
 }
