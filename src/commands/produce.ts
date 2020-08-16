@@ -27,10 +27,9 @@ export default class Produce extends Command {
          description:
             'perform a dry run, no iso build but only scripts generated'
       }),
-      assistant: flags.boolean({ char: 'a', description: 'install assistant' }),
-      branding: flags.string({
-         description: 'brand for calamares default eggs'
-      }),
+      assistant: flags.string({description: 'install assistant' }),
+      branding: flags.string({description: 'brand for calamares default eggs'}),
+      remote_support: flags.string({description: `remote support`}),
       addons: flags.string({ multiple: true, description: 'plugins to be used'}),
       help: flags.help({ char: 'h' }),
       verbose: flags.boolean({ char: 'v', description: 'verbose' })
@@ -50,6 +49,10 @@ the penguin produce an egg called egg-i386-2020-04-13_1815.iso`
 
       const { flags } = this.parse(Produce)
       if (Utils.isRoot()) {
+
+         /**
+          * ADDONS
+          */
          let addons = []
          if (flags.addons){
             console.log(`addons: ${flags.addons}`)
@@ -70,16 +73,16 @@ the penguin produce an egg called egg-i386-2020-04-13_1815.iso`
                console.log(`nameAddon: ${nameAddon}`)
 
                /**
-                * Impostazione dei flags singoli
+                * Impostazione dei singoli flag
                 */
                if (nameAddon === 'thema'){
                   flags.branding = vendorAddon
                }
                if (nameAddon === 'assistant'){
-                  flags.assistant = true
+                  flags.assistant = vendorAddon
                }
-               if (nameAddon === 'remote-assistant'){
-                  flags.assistant = true
+               if (nameAddon === 'remote_support'){
+                  flags.remote_support = vendorAddon
                }
             })
          }
@@ -107,9 +110,12 @@ the penguin produce an egg called egg-i386-2020-04-13_1815.iso`
             compression = 'xz -Xbcj x86'
          }
 
-         let assistant = false
-         if (flags.assistant) {
-            assistant = true
+         /**
+          * Attenzione: assistant passa da boolean a string
+          */
+         let assistant = ''
+         if (flags.assistant!=undefined) {
+            assistant = flags.assistant
          }
 
          let verbose = false

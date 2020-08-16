@@ -386,7 +386,7 @@ export default class Ovary {
    async produce(
       basename = '',
       branding = '',
-      assistant = false,
+      assistant = '',
       verbose = false,
       dry = false
    ) {
@@ -1300,7 +1300,7 @@ timeout 200\n`
     * create la home per user_opt
     * @param verbose
     */
-   async createUserLive(assistant = false, verbose = false) {
+   async createUserLive(assistant = '', verbose = false) {
       const echo = Utils.setEcho(verbose)
       if (verbose) {
          console.log('ovary: createUserLive')
@@ -1393,23 +1393,17 @@ timeout 200\n`
          )
 
 
-         if (assistant) {
+         if (assistant != '') {
             /**
-             * PLUGIN
+             * ADDONS
+             * In assistant c'è il vendor
+             * viene copiata la cartella /addons/vendor/assistant
              */
-            shx.cp(
-               path.resolve(__dirname, '../../assistant/assistant.desktop'),
-               '/usr/share/applications/'
-            )
+            shx.cp(path.resolve(__dirname, `../../addons/${assistant}/assistant/assistant.desktop`), '/usr/share/applications/')
             shx.mkdir('-p', '/usr/local/share/penguins-eggs/')
-            shx.cp(
-               path.resolve(__dirname, '../../assistant/assistant.sh'),
-               '/usr/local/share/penguins-eggs/'
-            )
-            shx.cp(
-               path.resolve(__dirname, '../../assistant/assistant.html'),
-               '/usr/local/share/penguins-eggs/'
-            )
+            shx.cp(path.resolve(__dirname, `../../addons/${assistant}/assistant/assistant.sh`), '/usr/local/share/penguins-eggs/')
+            shx.cp(path.resolve(__dirname, `../../addons/${assistant}/assistant/assistant.html`),'/usr/local/share/penguins-eggs/')
+            shx.cp('/usr/share/applications/assistant.desktop',`${this.work_dir.merged}${pathToDesktopLive}`)
          }
 
          // Copia link comuni sul desktop
@@ -1422,12 +1416,7 @@ timeout 200\n`
             `${this.work_dir.merged}${pathToDesktopLive}`
          )
 
-         if (assistant) {
-            shx.cp(
-               '/usr/share/applications/assistant.desktop',
-               `${this.work_dir.merged}${pathToDesktopLive}`
-            )
-         } else {
+         if (assistant = '') {
             // Solo per lxde, lxqt, mate, xfce e deepin-desktop installa adjust per ridimensionare il video
             if (
                Pacman.packageIsInstalled('lxde-core') ||
