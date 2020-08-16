@@ -1273,7 +1273,7 @@ timeout 200\n`
     * create la home per user_opt
     * @param verbose
     */
-   async createUserLive(installer_choice = '', remote_support = '', verbose = false) {
+   async createUserLive(installer_choice = '', verbose = false) {
       const echo = Utils.setEcho(verbose)
       if (verbose) {
          console.log('ovary: createUserLive')
@@ -1330,17 +1330,17 @@ timeout 200\n`
          // Copia link comuni sul desktop
          shx.cp('/usr/share/applications/penguins-eggs.desktop', `${this.work_dir.merged}${pathToDesktopLive}`)
 
-         if (remote_support != '') {
+         // if (remote_support != '') {
             /**
              * ADDONS
              * In remote_support c'è il vendor
              * viene copiata la cartella /addons/vendor/remote_support
              */
-            let dirAddon = path.resolve(__dirname, `../../addons/${remote_support}/remote_supportremote_support/`)
+            // let dirAddon = path.resolve(__dirname, `../../addons/${remote_support}/remote_supportremote_support/`)
 
             // copio il link sul deskop
-            shx.cp('/usr/share/applications/dwagent-sh.desktop', `${this.work_dir.merged}${pathToDesktopLive}`)
-         }
+            // shx.cp('/usr/share/applications/dwagent-sh.desktop', `${this.work_dir.merged}${pathToDesktopLive}`)
+         //}
 
          if (installer_choice != '') {
             /**

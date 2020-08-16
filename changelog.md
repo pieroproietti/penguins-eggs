@@ -17,8 +17,12 @@ Usually the last version is the right one. Detailed instrunctions for usage are 
 ## Changelog
 Versions are listed on reverse order, the first is the last one.
 
+### eggs-7.6.0-3
+We are ready with addons! Just few addons at the moment: branding, install-choice and remote-assistance in few time. Look in the /addons/ for more informations or
+ask to the author.
+
 ### eggs-7.6.0-2
-Well, I'm tryng to build something like plugins to customize eggs aspect, at the moment we have branding, in 3 versions and it will be easy
+Well, I'm tryng to build something like addons to customize eggs aspect, at the moment we have branding, in 3 versions and it will be easy
 to add your version. We are just starting at the moment is rudimentary and few commented, but let you to have your dress to your remix installation.
 We need same help in graphics, someone interested?
 
