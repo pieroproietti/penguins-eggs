@@ -17,21 +17,21 @@ prodotto, al momento abbiamo 4 vendor:
 
 # Sintassi per l'uso
 Il caso generico è:
-```--addons vendor/plugin```
+```--addons vendor/addon```
 
 Ad esempio per utilizzare il branding debian
 
 ```sudo eggs -fv --addons debian/theme``` 
 
-per il theme, assistant e remote-assistant, esistono delle scorciatoie, quindi:
+per il theme, assistant e dwagent, esistono delle scorciatoie, quindi:
 
-```sudo eggs -fv --theme debian``` equivalente a ```sudo eggs -fv --addons debian/theme
+```sudo eggs -fv --theme debian``` è equivalente a ```sudo eggs -fv --addons debian/theme
 
 è possibile, inoltre inserire più addons con un solo flag:
 
-```sudo eggs -fv --addons debian/theme eggs/pre-install-assistant ufficiozero/remote-assistant```
+```sudo eggs -fv --addons ufficiozero/theme eggs/dwagent```
 
-Installa il tema debian, l'assistant di eggs ed il remote-assistant di ufficiozero.
+Installa il tema debian, dwagent da eggs.
 
 # Addon presenti
 
@@ -42,6 +42,10 @@ vengono utilizzati i componenti di eggs.
 ### theme
 Contiene il tema di default. Non è necessario specificarlo, se non viene fornito un tema
 specifico eggs si mostrerà con "i soliti pinguini...".
+
+### dwagent
+Configura a video anche sulla live, un link per scaricare ed avviare l'assistenza remota,
+e carica in /usr/local/bin lo script di installazione.
 
 ## debian
 Ho qui inserito la versione di debian delle impostazioni per calamares e l'icona di avvio per lo stesso.
@@ -63,10 +67,6 @@ Ufficio Zero Linux è un sistema operativo open source ideato da SIITE SRLS, che
 lo storico dominio e mette a disposizione del team di sviluppo vari server virtuali per ospitare 
 i servizi web, servizi mail, repository e server di condivisione ad uso del team di sviluppo.
 
-### remote-support
-Configura a video anche sulla live, un link per scaricare ed avviare l'assistenza remota.
-Al momento è solo una directory, vorrei utilizzare lo script di Adriano per scaricare ed avviare 
-dw-agent per permettere all'utente di richiedere l'assistenza remota per l'installazione.
 
 ### theme
 Tema di ufficiozero.

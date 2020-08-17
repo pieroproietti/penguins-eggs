@@ -22,13 +22,18 @@ export default class Produce extends Command {
       basename: flags.string({ char: 'b', description: 'basename egg' }),
       compress: flags.boolean({ char: 'c', description: 'max compression' }),
       fast: flags.boolean({ char: 'f', description: 'fast compression' }),
-      installer_choice: flags.string({ description: 'install assistant' }),
-      branding: flags.string({ description: 'brand for calamares default eggs' }),
-      remote_support: flags.string({ description: `remote support` }),
-      script_only: flags.boolean({description: 'only scripts generation' }),
-      addons: flags.string({ multiple: true, description: 'plugins to be used' }),
+      verbose: flags.boolean({ char: 'v', description: 'verbose' }),
+      script_only: flags.boolean({char: 's', description: 'only scripts generation' }),
       help: flags.help({ char: 'h' }),
-      verbose: flags.boolean({ char: 'v', description: 'verbose' })
+
+      // addon vendor/addon configurazioni dei vendors
+      addons: flags.string({ multiple: true, description: 'addons to be used' }),
+      installer_choice: flags.string({ description: 'install assistant' }),
+      theme: flags.string({ description: 'theme for eggs' }),
+
+      // addon per prodotti di terze parti, presenti SOLO in eggs
+      dwagent: flags.boolean({ description: `dwagent remote support` }),
+      proxmox_ve: flags.boolean({ description: `Proxmox-VE support` })
    }
 
    static description = 'livecd creation. (the penguin produce an egg)'
@@ -42,20 +47,20 @@ the penguin produce an egg called egg-i386-2020-04-13_1815.iso`
 
    async run() {
       Utils.titles('produce')
+      let vendorsAddons = {}
 
+      let addons  = {'dwagent': false, 'proxmox_ve': false}
       const { flags } = this.parse(Produce)
       if (Utils.isRoot()) {
 
          /**
-          * ADDONS
+          * ADDONS dei vendors
           */
          let addons = []
          if (flags.addons) {
             console.log(`addons: ${flags.addons}`)
             addons = flags.addons //array
             addons.forEach(addon => {
-               console.log('----------------------------------')
-
                let dirAddon = path.resolve(__dirname, `../../addons/${addon}`)
                // console.log(`dirAddon: ${dirAddon}`)
                if (!fs.existsSync(dirAddon)) {
@@ -69,49 +74,32 @@ the penguin produce an egg called egg-i386-2020-04-13_1815.iso`
                // console.log(`nameAddon: ${nameAddon}`)
 
                /**
-                * Impostazione dei singoli flag
+                * Impostazione dei flag theme ed installed_choice se usati come addons
                 */
-               if (nameAddon === 'thema') {
-                  flags.branding = vendorAddon
+               if (nameAddon === 'theme') {
+                  flags.theme = vendorAddon
                }
                if (nameAddon === 'installer_choice') {
                   flags.installer_choice = vendorAddon
-               }
-               if (nameAddon === 'remote_support') {
-                  flags.remote_support = vendorAddon
                }
             })
          }
 
 
-
-         // Nome della remix
-         let basename = '' // se vuoto viene definito da loadsetting
+         /**
+          * composizione dei flag
+          */
+         let basename = '' // se vuoto viene definito da loadsetting (default nome dell'host)
          if (flags.basename !== undefined) {
             basename = flags.basename
             console.log(`basename: ${basename}`)
          }
 
-         // Nome del brand di calamares
-         let branding = 'eggs'
-         if (flags.branding !== undefined) {
-            branding = flags.branding
-            console.log(`calamares branding: ${branding}`)
-         }
-
-         let compression = '' // se vuota, compression viene definita da loadsettings
+         let compression = '' // se vuota, compression viene definita da loadsettings, default xz
          if (flags.fast) {
             compression = 'lz4'
          } else if (flags.compress) {
             compression = 'xz -Xbcj x86'
-         }
-
-         /**
-          * Attenzione: assistant passa da boolean a string
-          */
-         let installer_choice = ''
-         if (flags.installer_choice != undefined) {
-            installer_choice = flags.installer_choice
          }
 
          let verbose = false
@@ -122,6 +110,28 @@ the penguin produce an egg called egg-i386-2020-04-13_1815.iso`
          let script_only = false
          if (flags.script_only) {
             script_only = true
+         }
+
+         let theme = 'eggs'
+         if (flags.theme !== undefined) {
+            theme = flags.theme
+            console.log(`theme: ${theme}`)
+         }
+
+
+         let dwagent = false
+         if (flags.dwagent) {
+            builtinAddons.dwagent = true
+         }
+
+         let proxmox_ve = false
+         if (flags.proxmox_ve) {
+            builtinAddons.proxmox_ve = true
+         }
+
+         let installer_choice = ''
+         if (flags.installer_choice != undefined) {
+            installer_choice = flags.installer_choice
          }
 
          if (!Pacman.prerequisitesEggsCheck()) {
@@ -138,22 +148,12 @@ the penguin produce an egg called egg-i386-2020-04-13_1815.iso`
          }
 
          if (!Pacman.configurationCheck()) {
-            console.log(
-               'You need to create ' +
-               chalk.bgGray('configuration files') +
-               ' to continue.'
-            )
-            if (
-               await Utils.customConfirm(
-                  `Select yes to create configuration files`
-               )
-            ) {
+            console.log('You need to create ' + chalk.bgGray('configuration files') +' to continue.')
+            if (await Utils.customConfirm(`Select yes to create configuration files`)) {
                Utils.warning('Creating configuration files...')
                await Pacman.configurationInstall(verbose)
             } else {
-               Utils.error(
-                  'Cannot find configuration files, You must to create it. \nsudo eggs prerequisites -c'
-               )
+               Utils.error('Cannot find configuration files, You must to create it. \nsudo eggs prerequisites -c')
                process.exit(0)
             }
          }
@@ -161,7 +161,7 @@ the penguin produce an egg called egg-i386-2020-04-13_1815.iso`
          const ovary = new Ovary(compression)
          Utils.warning('Produce an egg...')
          if (await ovary.fertilization()) {
-            await ovary.produce(basename, branding, installer_choice, script_only, verbose)
+            await ovary.produce(basename, theme, installer_choice, script_only, addons, verbose)
             ovary.finished(script_only)
          }
       }

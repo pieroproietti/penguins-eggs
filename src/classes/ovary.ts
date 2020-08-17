@@ -359,16 +359,16 @@ export default class Ovary {
    /**
     * 
     * @param basename 
-    * @param branding 
+    * @param theme
     */
-   public async loadRemix(basename = '', branding = '') {
+   public async loadRemix(basename = '', theme = '') {
       this.remix.versionNumber = Utils.getPackageVersion()
       this.remix.kernel = Utils.kernerlVersion()
 
-      if (branding === '') {
+      if (theme === '') {
          this.remix.branding = 'eggs'
       } else {
-         this.remix.branding = branding
+         this.remix.branding = theme
       }
 
       if (basename !== '') {
@@ -386,9 +386,10 @@ export default class Ovary {
     */
    async produce(
       basename = '',
-      branding = '',
+      theme = '',
       installer_choice = '',
       script_only = false,
+      dwagent = false,
       verbose = false
    ) {
       const echo = Utils.setEcho(verbose)
@@ -399,7 +400,7 @@ export default class Ovary {
 
 
 
-      await this.loadRemix(basename, branding)
+      await this.loadRemix(basename, theme)
 
 
       if (await Utils.isLive()) {
