@@ -1307,9 +1307,14 @@ timeout 200\n`
        * Solo per sistemi grafici
        */
       if (Pacman.isXInstalled()) {
-         await Xdg.create(this.user_opt, this.work_dir.merged, verbose)
+         let traduce = true
+         if (fs.existsSync('/etc/skel/Desktop')){
+            traduce = false
+         }
+         await Xdg.create(this.user_opt, this.work_dir.merged, traduce, verbose)
          const pathHomeLive = `/home/${this.user_opt}`
-         const pathToDesktopLive = pathHomeLive + '/' + Xdg.traduce('DESKTOP')
+         let pathToDesktopLive: string
+         pathToDesktopLive = pathHomeLive + '/' + Xdg.traduce('DESKTOP',traduce)
 
          // Copia icona penguins-eggs
          shx.cp(path.resolve(__dirname, '../../assets/eggs.png'), '/usr/share/icons/')

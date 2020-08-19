@@ -37,20 +37,24 @@ export default class Xdg {
     *
     * @param xdg_dir
     */
-   static traduce(xdg_dir = ''): string {
+   static traduce(xdg_dir = '', traduce = true): string {
       let retval = ''
-      xdg_dirs.forEach(async (dir) => {
-         if (dir === xdg_dir) {
-            retval = path.basename(
-               shx
-                  .exec(
-                     `sudo -u ${Utils.getPrimaryUser()} xdg-user-dir ${dir}`,
-                     { silent: true }
-                  )
-                  .stdout.trim()
-            )
-         }
-      })
+      if (traduce === false) {
+         retval = xdg_dir
+      } else {
+         xdg_dirs.forEach(async (dir) => {
+            if (dir === xdg_dir) {
+               retval = path.basename(
+                  shx
+                     .exec(
+                        `sudo -u ${Utils.getPrimaryUser()} xdg-user-dir ${dir}`,
+                        { silent: true }
+                     )
+                     .stdout.trim()
+               )
+            }
+         })
+      }
       return retval
    }
 
@@ -60,11 +64,15 @@ export default class Xdg {
     * @param chroot
     * @param verbose
     */
-   static async create(user: string, chroot: string, verbose = false) {
+   static async create(user: string, chroot: string, traduce = true, verbose = false) {
       const echo = Utils.setEcho(verbose)
 
       xdg_dirs.forEach(async (dir) => {
-         await Xdg.mk(chroot, `/home/${user}/` + this.traduce(dir), verbose)
+         if (traduce) {
+            await Xdg.mk(chroot, `/home/${user}/` + this.traduce(dir), verbose)
+         } else {
+            await Xdg.mk(chroot, `/home/${user}/` + dir, verbose)
+         }
       })
    }
 
