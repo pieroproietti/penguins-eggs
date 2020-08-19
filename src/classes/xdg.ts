@@ -40,7 +40,8 @@ export default class Xdg {
    static traduce(xdg_dir = '', traduce = true): string {
       let retval = ''
       if (traduce === false) {
-         retval = xdg_dir
+         // Capitalize
+         retval = xdg_dir.charAt(0).toUpperCase() + xdg_dir.slice(1).toLowerCase()
       } else {
          xdg_dirs.forEach(async (dir) => {
             if (dir === xdg_dir) {
