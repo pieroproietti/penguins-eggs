@@ -295,12 +295,10 @@ OPTIONS
   -c, --compress                       max compression
   -f, --fast                           fast compression
   -h, --help                           show CLI help
+  -s, --script_only                    only scripts generation
   -v, --verbose                        verbose
-  --addons=addons                      plugins to be used
-  --branding=branding                  brand for calamares default eggs
   --installer_choice=installer_choice  install assistant
-  --remote_support=remote_support      remote support
-  --script_only                        only scripts generation
+  --theme=theme                        theme for eggs
 
 ALIASES
   $ eggs spawn
