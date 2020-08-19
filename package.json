@@ -62,6 +62,7 @@
   },
   "files": [
     "/assets",
+    "/addons",
     "/assistant",
     "/bin",
     "/conf",
