@@ -384,14 +384,7 @@ export default class Ovary {
     *
     * @param basename
     */
-   async produce(
-      basename = '',
-      theme = '',
-      installer_choice = '',
-      script_only = false,
-      dwagent = false,
-      verbose = false
-   ) {
+   async produce(basename = '', theme = '', script_only = false, installer_choice = '', verbose = false) {
       const echo = Utils.setEcho(verbose)
 
       if (!fs.existsSync(this.snapshot_dir)) {

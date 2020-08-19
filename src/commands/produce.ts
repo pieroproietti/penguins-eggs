@@ -27,13 +27,13 @@ export default class Produce extends Command {
       help: flags.help({ char: 'h' }),
 
       // addon vendor/addon configurazioni dei vendors
-      addons: flags.string({ multiple: true, description: 'addons to be used' }),
-      installer_choice: flags.string({ description: 'install assistant' }),
       theme: flags.string({ description: 'theme for eggs' }),
+      installer_choice: flags.string({ description: 'install assistant' }),
+      // addons: flags.string({ multiple: true, description: 'addons to be used' }),
 
       // addon per prodotti di terze parti, presenti SOLO in eggs
-      dwagent: flags.boolean({ description: `dwagent remote support` }),
-      proxmox_ve: flags.boolean({ description: `Proxmox-VE support` })
+      // dwagent: flags.boolean({ description: `dwagent remote support` }),
+      // proxmox_ve: flags.boolean({ description: `Proxmox-VE support` })
    }
 
    static description = 'livecd creation. (the penguin produce an egg)'
@@ -47,15 +47,16 @@ the penguin produce an egg called egg-i386-2020-04-13_1815.iso`
 
    async run() {
       Utils.titles('produce')
-      let vendorsAddons = {}
-
-      let addons  = {'dwagent': false, 'proxmox_ve': false}
       const { flags } = this.parse(Produce)
       if (Utils.isRoot()) {
+
+
+
 
          /**
           * ADDONS dei vendors
           */
+         /*
          let addons = []
          if (flags.addons) {
             console.log(`addons: ${flags.addons}`)
@@ -71,20 +72,13 @@ the penguin produce an egg called egg-i386-2020-04-13_1815.iso`
                let vendorAddon = addon.substring(0, addon.search('/'))
                // console.log(`vendorAddon: ${vendorAddon}`)
                let nameAddon = addon.substring(addon.search('/') + 1, addon.length)
-               // console.log(`nameAddon: ${nameAddon}`)
-
-               /**
-                * Impostazione dei flag theme ed installed_choice se usati come addons
-                */
+               // Impostazione dei flag theme ed installed_choice se usati come addons
                if (nameAddon === 'theme') {
                   flags.theme = vendorAddon
                }
-               if (nameAddon === 'installer_choice') {
-                  flags.installer_choice = vendorAddon
-               }
             })
          }
-
+         */
 
          /**
           * composizione dei flag
@@ -119,18 +113,13 @@ the penguin produce an egg called egg-i386-2020-04-13_1815.iso`
          }
 
 
-         let dwagent = false
-         if (flags.dwagent) {
-            builtinAddons.dwagent = true
-         }
+         // let dwagent = false
+         // if (flags.dwagent) {
+         //     dwagent = true
+         // }
 
-         let proxmox_ve = false
-         if (flags.proxmox_ve) {
-            builtinAddons.proxmox_ve = true
-         }
-
-         let installer_choice = ''
-         if (flags.installer_choice != undefined) {
+         let installer_choice = ""
+         if (flags.installer_choice !== undefined) {
             installer_choice = flags.installer_choice
          }
 
@@ -161,7 +150,7 @@ the penguin produce an egg called egg-i386-2020-04-13_1815.iso`
          const ovary = new Ovary(compression)
          Utils.warning('Produce an egg...')
          if (await ovary.fertilization()) {
-            await ovary.produce(basename, theme, installer_choice, script_only, addons, verbose)
+            await ovary.produce(basename, theme, script_only, installer_choice, verbose)
             ovary.finished(script_only)
          }
       }
