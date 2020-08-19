@@ -424,7 +424,7 @@ export default class Ovary {
             await this.makeEfi(verbose)
          }
          await this.bindLiveFs(verbose)
-         await this.createUserLive(installer_choice, verbose)
+         await this.createUserLive(theme, installer_choice, verbose)
          await this.editLiveFs(verbose)
          await this.editBootMenu(verbose)
 
@@ -1267,7 +1267,7 @@ timeout 200\n`
     * create la home per user_opt
     * @param verbose
     */
-   async createUserLive(installer_choice = '', verbose = false) {
+   async createUserLive(theme = 'eggs', installer_choice = '', verbose = false) {
       const echo = Utils.setEcho(verbose)
       if (verbose) {
          console.log('ovary: createUserLive')
@@ -1319,7 +1319,7 @@ timeout 200\n`
           */
          shx.cp(path.resolve(__dirname, '../../assets/penguins-eggs.desktop'), '/usr/share/applications/')
          shx.cp(path.resolve(__dirname, '../../assets/penguins-eggs-adjust.desktop'), '/usr/share/applications/')
-         //shx.cp(path.resolve(__dirname, '../../assets/penguins-eggs-installer.desktop'), '/usr/share/applications/')
+         shx.cp(path.resolve(__dirname, `../../addons/${theme}/theme/applications/debian-install.desktop`), `/usr/share/applications/`)
 
          // Copia link comuni sul desktop
          shx.cp('/usr/share/applications/penguins-eggs.desktop', `${this.work_dir.merged}${pathToDesktopLive}`)
