@@ -1330,28 +1330,30 @@ timeout 200\n`
          // Copia link comuni sul desktop
          shx.cp('/usr/share/applications/penguins-eggs.desktop', `${this.work_dir.merged}${pathToDesktopLive}`)
 
+         // Dato che .../usr non è scrivibile, scrivo direttamente in /usr/
+         // Mentre il link su /home/live si registra solo nel fs merged
          if (myAddons.dwagent) {
             let dirAddon = path.resolve(__dirname, `../../addons/eggs/dwagent`)
-            shx.cp(`${dirAddon}/applications/dwagent.desktop`, `${this.work_dir.merged}/usr/share/applications/`)
-            shx.cp(`${dirAddon}/bin/dwagent.sh`, `${this.work_dir.merged}/usr/local/bin/`)
-            shx.cp(`${dirAddon}/artwork/remote-assistance.png`, `${this.work_dir.merged}/usr/share/icons/`)
+            shx.cp(`${dirAddon}/applications/dwagent.desktop`, `/usr/share/applications/`)
+            shx.cp(`${dirAddon}/bin/dwagent.sh`, `/usr/local/bin/`)
+            shx.chmod('+x', `/usr/local/bin/dwagent.sh`)
+            shx.cp(`${dirAddon}/artwork/remote-assistance.png`, `/usr/share/icons/`)
             shx.cp(`${this.work_dir.merged}/usr/share/applications/dwagent.desktop`, `${this.work_dir.merged}${pathToDesktopLive}`)
          }
 
          if (myAddons.installer_choice) {
             let dirAddon = path.resolve(__dirname, `../../addons/eggs/installer-choice/`)
-            shx.cp(`${dirAddon}/applications/installer-choice.desktop`, `${this.work_dir.merged}/usr/share/applications/`)
-            shx.cp(`${dirAddon}/bin/installer-choice.sh`, `${this.work_dir.merged}/usr/local/bin/`)
-            shx.mkdir('-p', `${this.work_dir.merged}/usr/local/share/penguins-eggs/`)
-            shx.cp(`${dirAddon}/html/installer-choice.html`, `${this.work_dir.merged}/usr/local/share/penguins-eggs/`)
+            shx.cp(`${dirAddon}/applications/installer-choice.desktop`, `/usr/share/applications/`)
+            shx.cp(`${dirAddon}/bin/installer-choice.sh`, `/usr/local/bin/`)
+            shx.mkdir('-p', `/usr/local/share/penguins-eggs/`)
+            shx.cp(`${dirAddon}/html/installer-choice.html`, `/usr/local/share/penguins-eggs/`)
             shx.cp(`${this.work_dir.merged}/usr/share/applications/installer-choice.desktop`, `${this.work_dir.merged}${pathToDesktopLive}`)
          }
 
          if (myAddons.proxmox_ve) {
             let dirAddon = path.resolve(__dirname, `../../addons/eggs/proxmox-ve`)
-            shx.cp(`${dirAddon}/applications/proxmox-ve.desktop`, `${this.work_dir.merged}/usr/share/applications/`)
-            // shx.cp(`${dirAddon}/bin/dwagent.sh`, `${this.work_dir.merged}/usr/local/bin/`)
-            shx.cp(`${dirAddon}/artwork/proxmox-ve.png`, `${this.work_dir.merged}/usr/share/icons/`)
+            shx.cp(`${dirAddon}/applications/proxmox-ve.desktop`, `/usr/share/applications/`)
+            shx.cp(`${dirAddon}/artwork/proxmox-ve.png`, `/usr/share/icons/`)
             shx.cp(`${this.work_dir.merged}/usr/share/applications/proxmox-ve.desktop`, `${this.work_dir.merged}${pathToDesktopLive}`)
          }
 

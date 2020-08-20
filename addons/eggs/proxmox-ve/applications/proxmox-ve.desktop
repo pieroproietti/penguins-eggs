@@ -5,5 +5,5 @@ Name=Proxmox VE
 GenericName=Proxmox VE
 Type=Application
 Exec=xdg-open https://127.0.0.1:8006
-Icon=kvm
+Icon=proxmox-ve
 Categories=system
