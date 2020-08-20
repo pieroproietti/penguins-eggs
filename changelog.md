@@ -17,6 +17,12 @@ Usually the last version is the right one. Detailed instrunctions for usage are 
 ## Changelog
 Versions are listed on reverse order, the first is the last one.
 
+### eggs-7.6.0-7
+A little cleaning and reorder: 
+* eggs adjust became eggs adapt (to adapt video resolution in VM);
+* check for /etc/skel/Desktop, if exist eggs don't translate Desktop folder;
+* removed, at moment, flag for addons. (probably we will back again, but at the moment it is unusefull).
+
 ### eggs-7.6.0-3
 We are ready with addons! Just few addons at the moment: branding, install-choice and remote-assistance in few time. Look in the /addons/ for more informations or
 ask to the author.
