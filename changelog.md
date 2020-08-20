@@ -18,23 +18,14 @@ Usually the last version is the right one. Detailed instrunctions for usage are 
 Versions are listed on reverse order, the first is the last one.
 
 ### eggs-7.6.0-7
-A little cleaning and reorder: 
+I write here changement in the last few, short time version, after the last cleaning and reorder. Now You can customize eggs with your theme, or add some particular aspect. Look in /addons or ask to the author for informations.
+
 * eggs adjust became eggs adapt (to adapt video resolution in VM);
 * check for /etc/skel/Desktop, if exist eggs don't translate Desktop folder;
-* removed, at moment, flag for addons. (probably we will back again, but at the moment it is unusefull).
-
-### eggs-7.6.0-3
-We are ready with addons! Just few addons at the moment: branding, install-choice and remote-assistance in few time. Look in the /addons/ for more informations or
-ask to the author.
-
-### eggs-7.6.0-2
-Well, I'm tryng to build something like addons to customize eggs aspect, at the moment we have branding, in 3 versions and it will be easy
-to add your version. We are just starting at the moment is rudimentary and few commented, but let you to have your dress to your remix installation.
-We need same help in graphics, someone interested?
-
-### eggs-7.6.0-1
-Continuing the collaboration with ufficiozero.org, we creaded a custom branding ufficiozero, removed some spure links. To use the new pranding, when
-you run: sudo eggs produce -vf --branding ufficiozero.
+* removed, at moment, flag for addons but not it's implementation. (probably we will back again, but at the moment the flag is unusefull);
+* removed flag assistant and rewrote it as install-choice to let to chosen beetwen cli or calamares installation;
+* created flag --theme for theming eggs installtion with calamares;
+* created addons to let vendors to build specific addon to customize eggs.
 
 ### eggs-7.6.0-1
 Continuing the collaboration with ufficiozero.org, we closed an important bug in Ubuntu and derived: after installation, the resolution of dns addresses was missing. Currently the network works correctly with Debian Buster, Ubuntu focal, Ubuntu cosmic and Ubuntu bionic, Linux mint 20.20, Linux mint 19.3
