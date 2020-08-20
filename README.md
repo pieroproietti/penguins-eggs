@@ -79,7 +79,7 @@ $ npm install -g penguins-eggs
 $ eggs COMMAND
 running command...
 $ eggs (-v|--version|version)
-penguins-eggs/7.6.6 linux-x64 node-v14.5.0
+penguins-eggs/7.6.6 linux-x64 node-v14.8.0
 $ eggs --help [COMMAND]
 USAGE
   $ eggs COMMAND
@@ -88,7 +88,7 @@ USAGE
 <!-- usagestop -->
 # Commands
 <!-- commands -->
-* [`eggs adjust`](#eggs-adjust)
+* [`eggs adapt`](#eggs-adapt)
 * [`eggs calamares`](#eggs-calamares)
 * [`eggs clean`](#eggs-clean)
 * [`eggs help [COMMAND]`](#eggs-help-command)
@@ -103,20 +103,23 @@ USAGE
 * [`eggs sterilize`](#eggs-sterilize)
 * [`eggs update`](#eggs-update)
 
-## `eggs adjust`
+## `eggs adapt`
 
-auto adjust monitor resolution
+auto adapt monitor resolution
 
 ```
 USAGE
-  $ eggs adjust
+  $ eggs adapt
 
 OPTIONS
   -h, --help     show CLI help
   -v, --verbose
+
+ALIASES
+  $ eggs adjust
 ```
 
-_See code: [src/commands/adjust.ts](https://github.com/pieroproietti/penguins-eggs/blob/v7.6.6/src/commands/adjust.ts)_
+_See code: [src/commands/adapt.ts](https://github.com/pieroproietti/penguins-eggs/blob/v7.6.6/src/commands/adapt.ts)_
 
 ## `eggs calamares`
 
@@ -144,7 +147,7 @@ _See code: [src/commands/calamares.ts](https://github.com/pieroproietti/penguins
 
 ## `eggs clean`
 
-Clean system log, apt, etc
+clean system log, apt, etc
 
 ```
 USAGE
@@ -284,7 +287,7 @@ _See code: [src/commands/prerequisites.ts](https://github.com/pieroproietti/peng
 
 ## `eggs produce`
 
-livecd creation. (the penguin produce an egg)
+livecd creation. The system produce an egg
 
 ```
 USAGE
@@ -333,7 +336,7 @@ _See code: [src/commands/skel.ts](https://github.com/pieroproietti/penguins-eggs
 
 ## `eggs sterilize`
 
-remove all packages installed as prerequisites
+remove all packages installed as prerequisites and calamares
 
 ```
 USAGE
