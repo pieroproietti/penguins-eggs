@@ -18,7 +18,7 @@ Usually the last version is the right one. Detailed instrunctions for usage are 
 Versions are listed on reverse order, the first is the last one.
 
 ### eggs-7.6.0-7
-I write here changement in the last few, short time version, after the last cleaning and reorder. Now You can customize eggs with your theme, or add some particular aspect. Look in /addons or ask to the author for informations.
+I write here changement in the last few and short time versions, after the last cleaning and reorder. Now You can customize eggs with your theme, or add some particular aspect. Look in /addons or ask to the author for more informations.
 
 * eggs adjust became eggs adapt (to adapt video resolution in VM);
 * check for /etc/skel/Desktop, if exist eggs don't translate Desktop folder;
