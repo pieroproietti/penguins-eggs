@@ -1348,7 +1348,15 @@ timeout 200\n`
             shx.mkdir('-p', `/usr/local/share/penguins-eggs/`)
             shx.cp(`${dirAddon}/html/installer-choice.html`, `/usr/local/share/penguins-eggs/`)
             shx.cp(`${this.work_dir.merged}/usr/share/applications/installer-choice.desktop`, `${this.work_dir.merged}${pathToDesktopLive}`)
+         } else {
+            // Selezione tra calamare e eggs-cli-installer
+            if (Pacman.packageIsInstalled('calamares')) {
+               shx.cp('/usr/share/applications/install-debian.desktop', `${this.work_dir.merged}${pathToDesktopLive}`)
+            } else {
+               shx.cp('/usr/share/applications/penguins-eggs-installer.desktop', `${this.work_dir.merged}${pathToDesktopLive}`)
+            }
          }
+
 
          if (myAddons.proxmox_ve) {
             let dirAddon = path.resolve(__dirname, `../../addons/eggs/proxmox-ve`)
@@ -1356,7 +1364,6 @@ timeout 200\n`
             shx.cp(`${dirAddon}/artwork/proxmox-ve.png`, `/usr/share/icons/`)
             shx.cp(`${this.work_dir.merged}/usr/share/applications/proxmox-ve.desktop`, `${this.work_dir.merged}${pathToDesktopLive}`)
          }
-
          // Solo per lxde, lxqt, mate, xfce e deepin-desktop installa adjust per ridimensionare il video
          if (
             Pacman.packageIsInstalled('lxde-core') ||
@@ -1369,12 +1376,6 @@ timeout 200\n`
             shx.cp('/usr/share/applications/penguins-eggs-adjust.desktop', `${this.work_dir.merged}${pathToDesktopLive}`)
          }
 
-         // Seleziona tra eggs-installer e calamares
-         if (Pacman.packageIsInstalled('calamares')) {
-            shx.cp('/usr/share/applications/install-debian.desktop', `${this.work_dir.merged}${pathToDesktopLive}`)
-         } else {
-            shx.cp('/usr/share/applications/penguins-eggs-installer.desktop', `${this.work_dir.merged}${pathToDesktopLive}`)
-         }
 
          // Rendo avviabili i link del Desktop
          await exec(`chmod a+x ${this.work_dir.merged}${pathToDesktopLive}/*.desktop`,echo)
