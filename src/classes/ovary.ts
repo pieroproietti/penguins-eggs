@@ -1355,7 +1355,6 @@ timeout 200\n`
             shx.cp(`${this.work_dir.merged}/usr/share/applications/proxmox-ve.desktop`, `${this.work_dir.merged}${pathToDesktopLive}`)
          }
 
-
          // Solo per lxde, lxqt, mate, xfce e deepin-desktop installa adjust per ridimensionare il video
          if (
             Pacman.packageIsInstalled('lxde-core') ||
