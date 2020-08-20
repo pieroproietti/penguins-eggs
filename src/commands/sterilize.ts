@@ -12,7 +12,7 @@ import Pacman from '../classes/pacman'
  * 
  */
 export default class Sterilize extends Command {
-   static description = 'remove all packages installed as prerequisites'
+   static description = 'remove all packages installed as prerequisites and calamares'
 
    static flags = {
       help: flags.help({ char: 'h' }),

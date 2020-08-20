@@ -12,7 +12,7 @@ import Utils from '../classes/utils'
 import Bleach from '../classes/bleach'
 
 export default class Clean extends Command {
-   static description = 'Clean system log, apt, etc'
+   static description = 'clean system log, apt, etc'
 
    static flags = {
       help: flags.help({ char: 'h' }),

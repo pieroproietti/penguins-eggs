@@ -36,7 +36,7 @@ export default class Produce extends Command {
       // proxmox_ve: flags.boolean({ description: `Proxmox-VE support` })
    }
 
-   static description = 'livecd creation. (the penguin produce an egg)'
+   static description = 'livecd creation. The system produce an egg'
 
    static aliases = ['spawn', 'lay']
 

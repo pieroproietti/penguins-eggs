@@ -3,8 +3,9 @@ import Utils from '../classes/utils'
 
 const exec = require('../lib/utils').exec
 
-export default class Adjust extends Command {
-   static description = 'auto adjust monitor resolution'
+export default class Adaptp extends Command {
+   static description = 'auto adapt monitor resolution'
+   static aliases = ['adjust']
 
    static flags = {
       verbose: flags.boolean({ char: 'v' }),
@@ -12,7 +13,7 @@ export default class Adjust extends Command {
    }
 
    async run() {
-      const { args, flags } = this.parse(Adjust)
+      const { args, flags } = this.parse(Adaptp)
 
       let verbose = false
       if (flags.verbose) {
@@ -22,8 +23,8 @@ export default class Adjust extends Command {
       const echo = Utils.setEcho(verbose)
 
       //const {args, flags} = this.parse(Adjust)
-      Utils.titles('adjust')
-      Utils.warning('Adjust monitor configuration...')
+      Utils.titles('adaptp')
+      Utils.warning('Adaptp monitor configuration...')
       await exec(`xrandr --output Virtual-0 --auto`, echo)
       await exec(`xrandr --output Virtual-1 --auto`, echo)
       await exec(`xrandr --output Virtual-2 --auto`, echo)
