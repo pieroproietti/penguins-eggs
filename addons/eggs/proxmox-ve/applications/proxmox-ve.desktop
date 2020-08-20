@@ -1,0 +1,9 @@
+#!/usr/bin/env xdg-open
+[Desktop Entry]
+Encoding=UTF-8
+Name=Proxmox VE
+GenericName=Proxmox VE
+Type=Application
+Exec=xdg-open https://127.0.0.1:8006
+Icon=kvm
+Categories=system

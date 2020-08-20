@@ -1,3 +1,4 @@
+export { IAddons, IMyAddons } from './i-addons'
 export { IDevice, IDevices } from './i-devices'
 export { IRemix } from './i-remix'
 export { INet } from './i-net'

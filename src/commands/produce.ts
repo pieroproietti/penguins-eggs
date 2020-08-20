@@ -16,6 +16,7 @@ import Pacman from '../classes/pacman'
 import chalk = require('chalk')
 import { string } from '@oclif/command/lib/flags'
 import { fstat } from 'fs'
+import { IMyAddons } from '../interfaces'
 
 export default class Produce extends Command {
    static flags = {
@@ -28,12 +29,12 @@ export default class Produce extends Command {
 
       // addon vendor/addon configurazioni dei vendors
       theme: flags.string({ description: 'theme for eggs' }),
-      installer_choice: flags.string({ description: 'install assistant' }),
       // addons: flags.string({ multiple: true, description: 'addons to be used' }),
 
       // addon per prodotti di terze parti, presenti SOLO in eggs
-      dwagent: flags.boolean({ description: `dwagent remote support` }),
-      // proxmox_ve: flags.boolean({ description: `Proxmox-VE support` })
+      installer_choice: flags.boolean({ description: 'install assistant' }),
+      dwagent: flags.boolean({ description: `dwagent remote assistance` }),
+      proxmox_ve: flags.boolean({ description: `Proxmox-VE link and hosts` })
    }
 
    static description = 'livecd creation. The system produce an egg'
@@ -112,15 +113,17 @@ the penguin produce an egg called egg-i386-2020-04-13_1815.iso`
             console.log(`theme: ${theme}`)
          }
 
-
-         let dwagent = false
+         let myAddons = {} as IMyAddons
          if (flags.dwagent) {
-              dwagent = true
+            myAddons.dwagent = true
          }
 
-         let installer_choice = ""
-         if (flags.installer_choice !== undefined) {
-            installer_choice = flags.installer_choice
+         if (flags.installer_choice) {
+            myAddons.installer_choice = flags.installer_choice
+         }
+
+         if (flags.proxmox_ve) {
+            myAddons.proxmox_ve = flags.proxmox_ve
          }
 
          if (!Pacman.prerequisitesEggsCheck()) {
@@ -150,7 +153,7 @@ the penguin produce an egg called egg-i386-2020-04-13_1815.iso`
          const ovary = new Ovary(compression)
          Utils.warning('Produce an egg...')
          if (await ovary.fertilization()) {
-            await ovary.produce(basename, script_only, theme, installer_choice, dwagent, verbose)
+            await ovary.produce(basename, script_only, theme, myAddons, verbose)
             ovary.finished(script_only)
          }
       }

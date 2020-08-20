@@ -18,7 +18,8 @@ import pjson = require('pjson')
 import chalk = require('chalk')
 
 // interfaces
-import { IRemix, IDistro, IPackage, IWorkDir } from '../interfaces'
+import { IRemix, IDistro, IPackage, IWorkDir, IMyAddons } from '../interfaces'
+
 
 // libraries
 const exec = require('../lib/utils').exec
@@ -385,17 +386,14 @@ export default class Ovary {
     * @param basename
     */
 
-   async produce(basename = '', script_only = false, installer_choice = '', theme = '', dwagent=false, verbose = false) {
+   async produce(basename = '', script_only = false, theme = '', myAddons: IMyAddons, verbose = false) {
       const echo = Utils.setEcho(verbose)
 
       if (!fs.existsSync(this.snapshot_dir)) {
          shx.mkdir('-p', this.snapshot_dir)
       }
 
-
-
       await this.loadRemix(basename, theme)
-
 
       if (await Utils.isLive()) {
          console.log(
@@ -405,7 +403,8 @@ export default class Ovary {
          )
       } else {
          if (verbose) {
-            console.log(`Produce egg ${this.remix.name}`)
+            console.log(`
+             egg ${this.remix.name}`)
          }
 
          await this.liveCreateStructure(verbose)
@@ -425,7 +424,7 @@ export default class Ovary {
             await this.makeEfi(verbose)
          }
          await this.bindLiveFs(verbose)
-         await this.createUserLive(theme, installer_choice, dwagent, verbose)
+         await this.createUserLive(theme, myAddons, verbose)
          await this.editLiveFs(verbose)
          await this.editBootMenu(verbose)
 
@@ -1268,7 +1267,7 @@ timeout 200\n`
     * create la home per user_opt
     * @param verbose
     */
-   async createUserLive(theme = 'eggs', installer_choice = '', dwagent=false, verbose = false) {
+   async createUserLive(theme = 'eggs', myAddons: IMyAddons, verbose = false) {
       const echo = Utils.setEcho(verbose)
       if (verbose) {
          console.log('ovary: createUserLive')
@@ -1324,73 +1323,71 @@ timeout 200\n`
           * creazione dei link in /usr/share/applications
           */
          shx.cp(path.resolve(__dirname, '../../assets/penguins-eggs.desktop'), '/usr/share/applications/')
-         shx.cp(path.resolve(__dirname, '../../assets/penguins-eggs-adjust.desktop'), '/usr/share/applications/')
+         shx.cp(path.resolve(__dirname, '../../assets/penguins-eggs-adapt.desktop'), '/usr/share/applications/')
+         shx.cp(path.resolve(__dirname, '../../assets/penguins-eggs-installer.desktop'), '/usr/share/applications/')
          shx.cp(path.resolve(__dirname, `../../addons/${theme}/theme/applications/debian-install.desktop`), `/usr/share/applications/`)
 
          // Copia link comuni sul desktop
          shx.cp('/usr/share/applications/penguins-eggs.desktop', `${this.work_dir.merged}${pathToDesktopLive}`)
 
-         if (dwagent) {
+         if (myAddons.dwagent) {
             let dirAddon = path.resolve(__dirname, `../../addons/eggs/dwagent`)
-            shx.cp(`${dirAddon}/applications/dwagent.desktop`, '/usr/share/applications/')
+            shx.cp(`${dirAddon}/applications/dwagent.desktop`, `${this.work_dir.merged}/usr/share/applications/`)
             shx.cp(`${dirAddon}/bin/dwagent.sh`, `${this.work_dir.merged}/usr/local/bin/`)
             shx.cp(`${dirAddon}/artwork/remote-assistance.png`, `${this.work_dir.merged}/usr/share/icons/`)
-            shx.cp('/usr/share/applications/dwagent.desktop', `${this.work_dir.merged}${pathToDesktopLive}`)
+            shx.cp(`${this.work_dir.merged}/usr/share/applications/dwagent.desktop`, `${this.work_dir.merged}${pathToDesktopLive}`)
          }
 
-         if (installer_choice != '') {
-            /**
-             * ADDONS
-             * In assistant c'è il vendor
-             * viene copiata la cartella /addons/vendor/assistant
-             */
-            let dirAddon = path.resolve(__dirname, `../../addons/${installer_choice}/installer-choice/`)
-            shx.cp(`${dirAddon}/applications/installer-choice.desktop`, '/usr/share/applications/')
-            shx.cp(`${dirAddon}/bin/installer-choice.sh`, '/usr/local/bin/')
-            shx.mkdir('-p', '/usr/local/share/penguins-eggs/')
-            shx.cp(`${dirAddon}/html/installer-choice.html`, '/usr/local/share/penguins-eggs/')
-            // Copio il link sul desktop
-            shx.cp('/usr/share/applications/installer-choice.desktop', `${this.work_dir.merged}${pathToDesktopLive}`)
+         if (myAddons.installer_choice) {
+            let dirAddon = path.resolve(__dirname, `../../addons/eggs/installer-choice/`)
+            shx.cp(`${dirAddon}/applications/installer-choice.desktop`, `${this.work_dir.merged}/usr/share/applications/`)
+            shx.cp(`${dirAddon}/bin/installer-choice.sh`, `${this.work_dir.merged}/usr/local/bin/`)
+            shx.mkdir('-p', `${this.work_dir.merged}/usr/local/share/penguins-eggs/`)
+            shx.cp(`${dirAddon}/html/installer-choice.html`, `${this.work_dir.merged}/usr/local/share/penguins-eggs/`)
+            shx.cp(`${this.work_dir.merged}/usr/share/applications/installer-choice.desktop`, `${this.work_dir.merged}${pathToDesktopLive}`)
+         }
+
+         if (myAddons.proxmox_ve) {
+            let dirAddon = path.resolve(__dirname, `../../addons/eggs/proxmox-ve`)
+            shx.cp(`${dirAddon}/applications/proxmox-ve.desktop`, `${this.work_dir.merged}/usr/share/applications/`)
+            // shx.cp(`${dirAddon}/bin/dwagent.sh`, `${this.work_dir.merged}/usr/local/bin/`)
+            shx.cp(`${dirAddon}/artwork/proxmox-ve.png`, `${this.work_dir.merged}/usr/share/icons/`)
+            shx.cp(`${this.work_dir.merged}/usr/share/applications/proxmox-ve.desktop`, `${this.work_dir.merged}${pathToDesktopLive}`)
+         }
+
+
+         // Solo per lxde, lxqt, mate, xfce e deepin-desktop installa adjust per ridimensionare il video
+         if (
+            Pacman.packageIsInstalled('lxde-core') ||
+            Pacman.packageIsInstalled('lxqt-core') ||
+            Pacman.packageIsInstalled('deepin-desktop-base') ||
+            Pacman.packageIsInstalled('mate-desktop') ||
+            Pacman.packageIsInstalled('ubuntu-mate-core') ||
+            Pacman.packageIsInstalled('xfce4')
+         ) {
+            shx.cp('/usr/share/applications/penguins-eggs-adjust.desktop', `${this.work_dir.merged}${pathToDesktopLive}`)
+         }
+
+         // Seleziona tra eggs-installer e calamares
+         if (Pacman.packageIsInstalled('calamares')) {
+            shx.cp('/usr/share/applications/install-debian.desktop', `${this.work_dir.merged}${pathToDesktopLive}`)
          } else {
-            // Solo per lxde, lxqt, mate, xfce e deepin-desktop installa adjust per ridimensionare il video
-            if (
-               Pacman.packageIsInstalled('lxde-core') ||
-               Pacman.packageIsInstalled('lxqt-core') ||
-               Pacman.packageIsInstalled('deepin-desktop-base') ||
-               Pacman.packageIsInstalled('mate-desktop') ||
-               Pacman.packageIsInstalled('ubuntu-mate-core') ||
-               Pacman.packageIsInstalled('xfce4')
-            ) {
-               shx.cp('/usr/share/applications/penguins-eggs-adjust.desktop', `${this.work_dir.merged}${pathToDesktopLive}`)
-            }
-            // Seleziona tra eggs-installer e calamares
-            if (Pacman.packageIsInstalled('calamares')) {
-               shx.cp('/usr/share/applications/install-debian.desktop', `${this.work_dir.merged}${pathToDesktopLive}`)
-            } else {
-               shx.cp('/usr/share/applications/penguins-eggs-installer.desktop', `${this.work_dir.merged}${pathToDesktopLive}`)
-            }
+            shx.cp('/usr/share/applications/penguins-eggs-installer.desktop', `${this.work_dir.merged}${pathToDesktopLive}`)
          }
 
          // Rendo avviabili i link del Desktop
-         // await exec(`chroot ${this.work_dir.merged} chmod a+x ${pathToDesktopLive}/*.desktop`, echo)
-         await exec(
-            `chmod a+x ${this.work_dir.merged}${pathToDesktopLive}/*.desktop`,
-            echo
-         )
+         await exec(`chmod a+x ${this.work_dir.merged}${pathToDesktopLive}/*.desktop`,echo)
 
          // ed imposto la home di /home/live a live:live
-         await exec(
-            `chroot ${this.work_dir.merged}  chown ${this.user_opt}:${this.user_opt} ${pathHomeLive} -R`,
-            echo
-         )
+         await exec(`chroot ${this.work_dir.merged}  chown ${this.user_opt}:${this.user_opt} ${pathHomeLive} -R`,echo)
          // await exec(`chown 1000:1000 ${this.work_dir.merged}${pathHomeLive} -R`, echo)
 
          /**
           * Solo per GNOME
           * Rendo trusted i link
           * funziona solo montando /dev
+          * NON FUNZIONANTE!!!
           */
-
          if (Pacman.packageIsInstalled('gnome-shell-NOT_USED_FOR_NOW')) {
             // Monto /dev
             await makeIfNotExist(`${this.work_dir.merged}/dev`, verbose)
