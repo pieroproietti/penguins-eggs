@@ -384,7 +384,8 @@ export default class Ovary {
     *
     * @param basename
     */
-   async produce(basename = '', theme = '', script_only = false, installer_choice = '', verbose = false) {
+
+   async produce(basename = '', script_only = false, installer_choice = '', theme = '', dwagent=false, verbose = false) {
       const echo = Utils.setEcho(verbose)
 
       if (!fs.existsSync(this.snapshot_dir)) {
@@ -424,7 +425,7 @@ export default class Ovary {
             await this.makeEfi(verbose)
          }
          await this.bindLiveFs(verbose)
-         await this.createUserLive(theme, installer_choice, verbose)
+         await this.createUserLive(theme, installer_choice, dwagent, verbose)
          await this.editLiveFs(verbose)
          await this.editBootMenu(verbose)
 
@@ -1267,7 +1268,7 @@ timeout 200\n`
     * create la home per user_opt
     * @param verbose
     */
-   async createUserLive(theme = 'eggs', installer_choice = '', verbose = false) {
+   async createUserLive(theme = 'eggs', installer_choice = '', dwagent=false, verbose = false) {
       const echo = Utils.setEcho(verbose)
       if (verbose) {
          console.log('ovary: createUserLive')
@@ -1329,17 +1330,13 @@ timeout 200\n`
          // Copia link comuni sul desktop
          shx.cp('/usr/share/applications/penguins-eggs.desktop', `${this.work_dir.merged}${pathToDesktopLive}`)
 
-         // if (remote_support != '') {
-            /**
-             * ADDONS
-             * In remote_support c'è il vendor
-             * viene copiata la cartella /addons/vendor/remote_support
-             */
-            // let dirAddon = path.resolve(__dirname, `../../addons/${remote_support}/remote_supportremote_support/`)
-
-            // copio il link sul deskop
-            // shx.cp('/usr/share/applications/dwagent-sh.desktop', `${this.work_dir.merged}${pathToDesktopLive}`)
-         //}
+         if (dwagent) {
+            let dirAddon = path.resolve(__dirname, `../../addons/eggs/dwagent`)
+            shx.cp(`${dirAddon}/applications/dwagent.desktop`, '/usr/share/applications/')
+            shx.cp(`${dirAddon}/bin/dwagent.sh`, `${this.work_dir.merged}/usr/local/bin/`)
+            shx.cp(`${dirAddon}/artwork/remote-assistance.png`, `${this.work_dir.merged}/usr/share/icons/`)
+            shx.cp('/usr/share/applications/dwagent.desktop', `${this.work_dir.merged}${pathToDesktopLive}`)
+         }
 
          if (installer_choice != '') {
             /**

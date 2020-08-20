@@ -32,7 +32,7 @@ export default class Produce extends Command {
       // addons: flags.string({ multiple: true, description: 'addons to be used' }),
 
       // addon per prodotti di terze parti, presenti SOLO in eggs
-      // dwagent: flags.boolean({ description: `dwagent remote support` }),
+      dwagent: flags.boolean({ description: `dwagent remote support` }),
       // proxmox_ve: flags.boolean({ description: `Proxmox-VE support` })
    }
 
@@ -113,10 +113,10 @@ the penguin produce an egg called egg-i386-2020-04-13_1815.iso`
          }
 
 
-         // let dwagent = false
-         // if (flags.dwagent) {
-         //     dwagent = true
-         // }
+         let dwagent = false
+         if (flags.dwagent) {
+              dwagent = true
+         }
 
          let installer_choice = ""
          if (flags.installer_choice !== undefined) {
@@ -150,7 +150,7 @@ the penguin produce an egg called egg-i386-2020-04-13_1815.iso`
          const ovary = new Ovary(compression)
          Utils.warning('Produce an egg...')
          if (await ovary.fertilization()) {
-            await ovary.produce(basename, theme, script_only, installer_choice, verbose)
+            await ovary.produce(basename, script_only, theme, installer_choice, dwagent, verbose)
             ovary.finished(script_only)
          }
       }
