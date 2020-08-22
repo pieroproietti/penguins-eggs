@@ -69,8 +69,14 @@ export default class Xdg {
    static async create(user: string, chroot: string, traduce = true, verbose = false) {
       const echo = Utils.setEcho(verbose)
 
+      /**
+       * Creo solo la cartella DESKTOP perchè serve per i link, eventualmente posso creare le altre
+       * ma c'è il problema di traduce/non traduce
+       */
       xdg_dirs.forEach(async (dir) => {
-         await Xdg.mk(chroot, `/home/${user}/` + this.traduce(dir, traduce), verbose)
+         if (dir === 'DESKTOP') {
+            await Xdg.mk(chroot, `/home/${user}/` + this.traduce(dir, traduce), verbose)
+         }
       })
    }
 
