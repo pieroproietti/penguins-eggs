@@ -42,6 +42,7 @@ export default class Xdg {
       if (traduce === false) {
          // Capitalize
          retval = xdg_dir.charAt(0).toUpperCase() + xdg_dir.slice(1).toLowerCase()
+         console.log(retval)
       } else {
          xdg_dirs.forEach(async (dir) => {
             if (dir === xdg_dir) {
@@ -69,11 +70,7 @@ export default class Xdg {
       const echo = Utils.setEcho(verbose)
 
       xdg_dirs.forEach(async (dir) => {
-         if (traduce) {
-            await Xdg.mk(chroot, `/home/${user}/` + this.traduce(dir), verbose)
-         } else {
-            await Xdg.mk(chroot, `/home/${user}/` + dir, verbose)
-         }
+         await Xdg.mk(chroot, `/home/${user}/` + this.traduce(dir, traduce), verbose)
       })
    }
 
