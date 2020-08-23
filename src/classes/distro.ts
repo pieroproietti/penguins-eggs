@@ -159,6 +159,7 @@ class Distro implements IDistro {
          this.distroId = 'Debian'
          this.distroLike = 'Debian'
          this.versionLike = 'stretch'
+
       } // Deepin 20
       else if (this.versionId === 'n/a') {
          this.distroId = 'Deepin'
@@ -167,14 +168,13 @@ class Distro implements IDistro {
          this.versionLike = 'buster'
 
          /**
-          * DEVAUN
-          * Beowulf 3.0.0
+          * DEVUAN
           */
-         // Devuan Beowulf 3.0.0
+
       } else if (this.versionId === 'beowulf') {
          this.distroId = 'Devuan'
-         this.distroLike = 'Debian'
-         this.versionLike = 'buster'
+         this.distroLike = 'Devuan'
+         this.versionLike = 'beowulf'
         
 
          /**

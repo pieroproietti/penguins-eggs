@@ -1329,6 +1329,7 @@ timeout 200\n`
 
          // Copia link comuni sul desktop
          shx.cp('/usr/share/applications/penguins-eggs.desktop', `${this.work_dir.merged}${pathToDesktopLive}`)
+         shx.cp('/usr/share/applications/penguins-eggs-adapt.desktop', `${this.work_dir.merged}${pathToDesktopLive}`)
 
          // Dato che .../usr non è scrivibile, scrivo direttamente in /usr/
          // Mentre il link su /home/live si registra solo nel fs merged

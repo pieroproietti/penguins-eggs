@@ -62,7 +62,7 @@ export default class CalamaresConfig {
          const buster = new Buster(this.remix, this.distro, this.displaymanager, this.user_opt, this.verbose)
          buster.settings()
          buster.modules()
-      } else if (this.distro.versionLike === 'devuan') {
+      } else if (this.distro.versionLike === 'beowulf') {
          const devuan = new Devuan(this.remix, this.distro, this.displaymanager, this.user_opt, this.verbose)
          devuan.settings()
          devuan.modules()
