@@ -87,6 +87,7 @@ export default class Ovary {
          echo = { echo: true, ignore: true, capture: false }
          Utils.warning('cleaning journald')
       }
+      // Non puo funzionare su devuan utilizzare logrotate?
       await exec('journalctl --rotate', echo)
       await exec('journalctl --vacuum-time=1s', echo)
    }

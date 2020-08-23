@@ -598,27 +598,15 @@ export default class Ovary {
          * SU UBUNTU E DERIVATE NON DISABILITARE systemd-resolved.service
          */
          if (this.distro.distroLike !== 'Ubuntu') {
-            await exec(
-               `chroot ${this.work_dir.merged} systemctl disable systemd-resolved.service`
-            )
+            await exec(`chroot ${this.work_dir.merged} systemctl disable systemd-resolved.service`)
          }
          await exec(`chroot ${this.work_dir.merged} systemctl disable systemd-networkd.service`)
 
-         await exec(
-            `chroot ${this.work_dir.merged} systemctl disable remote-cryptsetup.target`
-         )
-         await exec(
-            `chroot ${this.work_dir.merged} systemctl disable speech-dispatcherd.service`
-         )
-         await exec(
-            `chroot ${this.work_dir.merged} systemctl disable wpa_supplicant-nl80211@.service`
-         )
-         await exec(
-            `chroot ${this.work_dir.merged} systemctl disable wpa_supplicant@.service`
-         )
-         await exec(
-            `chroot ${this.work_dir.merged} systemctl disable wpa_supplicant-wired@.service`
-         )
+         await exec(`chroot ${this.work_dir.merged} systemctl disable remote-cryptsetup.target`)
+         await exec(`chroot ${this.work_dir.merged} systemctl disable speech-dispatcherd.service`)
+         await exec(`chroot ${this.work_dir.merged} systemctl disable wpa_supplicant-nl80211@.service`)
+         await exec(`chroot ${this.work_dir.merged} systemctl disable wpa_supplicant@.service`)
+         await exec(`chroot ${this.work_dir.merged} systemctl disable wpa_supplicant-wired@.service`)
       }
 
       // Probabilmente non necessario
@@ -632,69 +620,56 @@ export default class Ovary {
          await exec(`rm ${this.work_dir.merged}/etc/network/interfaces`, echo)
       }
       await exec(`touch ${this.work_dir.merged}/etc/network/interfaces`, echo)
-      Utils.write(
-         `${this.work_dir.merged}/etc/network/interfaces`,
-         'auto lo\niface lo inet loopback'
-      )
+      Utils.write(`${this.work_dir.merged}/etc/network/interfaces`, 'auto lo\niface lo inet loopback')
 
-      await exec(
-         `rm -f ${this.work_dir.merged}/var/lib/wicd/configurations/*`,
-         echo
-      )
-      await exec(
-         `rm -f ${this.work_dir.merged}/etc/wicd/wireless-settings.conf`,
-         echo
-      )
+      if (this.distro.distroId !== 'Devuan') {
+         await exec(`rm -f ${this.work_dir.merged}/var/lib/wicd/configurations/*`, echo)
+         await exec(`rm -f ${this.work_dir.merged}/etc/wicd/wireless-settings.conf`, echo)
+         await exec(`rm -f ${this.work_dir.merged}/etc/NetworkManager/system-connections/*`, echo)
+         await exec(`rm -f ${this.work_dir.merged}/etc/network/wifi/*`, echo)
 
-      await exec(
-         `rm -f ${this.work_dir.merged}/etc/NetworkManager/system-connections/*`,
-         echo
-      )
-
-      await exec(`rm -f ${this.work_dir.merged}/etc/network/wifi/*`, echo)
-
-
-      /**
-       * Andiamo a fare pulizia in /etc/network/:
-       * if-down.d  if-post-down.d  if-pre-up.d  if-up.d  interfaces  interfaces.d
-       */
-      const cleanDirs = [
-         'if-down.d',
-         'if-post-down.d',
-         'if-pre-up.d',
-         'if-up.d',
-         'interfaces.d'
-      ]
-      let cleanDir = ''
-      for (cleanDir of cleanDirs) {
-         await exec(
-            `rm -f ${this.work_dir.merged}/etc/network/${cleanDir}/wpasupplicant`,
-            echo
-         )
+         /**
+          * Andiamo a fare pulizia in /etc/network/:
+          * if-down.d  if-post-down.d  if-pre-up.d  if-up.d  interfaces  interfaces.d
+          */
+         const cleanDirs = [
+            'if-down.d',
+            'if-post-down.d',
+            'if-pre-up.d',
+            'if-up.d',
+            'interfaces.d'
+         ]
+         let cleanDir = ''
+         for (cleanDir of cleanDirs) {
+            await exec(
+               `rm -f ${this.work_dir.merged}/etc/network/${cleanDir}/wpasupplicant`,
+               echo
+            )
+         }
       }
 
       /**
        * add some basic files to /dev
        */
       /*
-    await exec(`mknod -m 622 ${this.work_dir.merged}/dev/console c 5 1`, echo)
-    await exec(`mknod -m 666 ${this.work_dir.merged}/dev/null c 1 3`, echo)
-    await exec(`mknod -m 666 ${this.work_dir.merged}/dev/zero c 1 5`, echo)
-    await exec(`mknod -m 666 ${this.work_dir.merged}/dev/ptmx c 5 2`, echo)
-    await exec(`mknod -m 666 ${this.work_dir.merged}/dev/tty c 5 0`, echo)
-    await exec(`mknod -m 444 ${this.work_dir.merged}/dev/random c 1 8`, echo)
-    await exec(`mknod -m 444 ${this.work_dir.merged}/dev/urandom c 1 9`, echo)
-    await exec(`chown -v root:tty ${this.work_dir.merged}/dev/{console,ptmx,tty}`, echo)
-  
-    await exec(`ln -sv /proc/self/fd ${this.work_dir.merged}/dev/fd`, echo)
-    await exec(`ln -sv /proc/self/fd/0 ${this.work_dir.merged}/dev/stdin`, echo)
-    await exec(`ln -sv /proc/self/fd/1 ${this.work_dir.merged}/dev/stdout`, echo)
-    await exec(`ln -sv /proc/self/fd/2 ${this.work_dir.merged}/dev/stderr`, echo)
-    await exec(`ln -sv /proc/kcore ${this.work_dir.merged}/dev/core`, echo)
-    await exec(`mkdir -v ${this.work_dir.merged}/dev/shm`, echo)
-    await exec(`mkdir -v ${this.work_dir.merged}/dev/pts`, echo)
-    await exec(`chmod 1777 ${this.work_dir.merged}/dev/shm`, echo)
-    */
+      await exec(`mknod -m 622 ${this.work_dir.merged}/dev/console c 5 1`, echo)
+      await exec(`mknod -m 666 ${this.work_dir.merged}/dev/null c 1 3`, echo)
+      await exec(`mknod -m 666 ${this.work_dir.merged}/dev/zero c 1 5`, echo)
+      await exec(`mknod -m 666 ${this.work_dir.merged}/dev/ptmx c 5 2`, echo)
+      await exec(`mknod -m 666 ${this.work_dir.merged}/dev/tty c 5 0`, echo)
+      await exec(`mknod -m 444 ${this.work_dir.merged}/dev/random c 1 8`, echo)
+      await exec(`mknod -m 444 ${this.work_dir.merged}/dev/urandom c 1 9`, echo)
+      await exec(`chown -v root:tty ${this.work_dir.merged}/dev/{console,ptmx,tty}`, echo)
+   
+      await exec(`ln -sv /proc/self/fd ${this.work_dir.merged}/dev/fd`, echo)
+      await exec(`ln -sv /proc/self/fd/0 ${this.work_dir.merged}/dev/stdin`, echo)
+      await exec(`ln -sv /proc/self/fd/1 ${this.work_dir.merged}/dev/stdout`, echo)
+      await exec(`ln -sv /proc/self/fd/2 ${this.work_dir.merged}/dev/stderr`, echo)
+      await exec(`ln -sv /proc/kcore ${this.work_dir.merged}/dev/core`, echo)
+      await exec(`mkdir -v ${this.work_dir.merged}/dev/shm`, echo)
+      await exec(`mkdir -v ${this.work_dir.merged}/dev/pts`, echo)
+      await exec(`chmod 1777 ${this.work_dir.merged}/dev/shm`, echo)
+      */
    }
 
    /**
@@ -742,30 +717,12 @@ export default class Ovary {
       const isolinuxbin = `${this.distro.isolinuxPath}isolinux.bin`
       const vesamenu = `${this.distro.syslinuxPath}vesamenu.c32`
 
-      await exec(
-         `rsync -a ${this.distro.syslinuxPath}chain.c32 ${this.work_dir.pathIso}/isolinux/`,
-         echo
-      )
-      await exec(
-         `rsync -a ${this.distro.syslinuxPath}ldlinux.c32 ${this.work_dir.pathIso}/isolinux/`,
-         echo
-      )
-      await exec(
-         `rsync -a ${this.distro.syslinuxPath}libcom32.c32 ${this.work_dir.pathIso}/isolinux/`,
-         echo
-      )
-      await exec(
-         `rsync -a ${this.distro.syslinuxPath}libutil.c32 ${this.work_dir.pathIso}/isolinux/`,
-         echo
-      )
-      await exec(
-         `rsync -a ${isolinuxbin} ${this.work_dir.pathIso}/isolinux/`,
-         echo
-      )
-      await exec(
-         `rsync -a ${vesamenu} ${this.work_dir.pathIso}/isolinux/`,
-         echo
-      )
+      await exec(`rsync -a ${this.distro.syslinuxPath}chain.c32 ${this.work_dir.pathIso}/isolinux/`, echo)
+      await exec(`rsync -a ${this.distro.syslinuxPath}ldlinux.c32 ${this.work_dir.pathIso}/isolinux/`, echo)
+      await exec(`rsync -a ${this.distro.syslinuxPath}libcom32.c32 ${this.work_dir.pathIso}/isolinux/`, echo)
+      await exec(`rsync -a ${this.distro.syslinuxPath}libutil.c32 ${this.work_dir.pathIso}/isolinux/`, echo)
+      await exec(`rsync -a ${isolinuxbin} ${this.work_dir.pathIso}/isolinux/`, echo)
+      await exec(`rsync -a ${vesamenu} ${this.work_dir.pathIso}/isolinux/`, echo)
    }
 
    /**
@@ -980,6 +937,7 @@ timeout 200\n`
     */
    onlyMerged(dir: string): boolean {
       // 'home' viene adesso con merge
+      // e /tmp dovrebbe essere creata
       const noDirs = [
          'cdrom',
          'dev',
@@ -991,7 +949,7 @@ timeout 200\n`
          'run',
          'sys',
          'swapfile',
-         'tmp'
+         //'tmp'
       ]
 
       // deepin
@@ -1061,9 +1019,7 @@ timeout 200\n`
       let lnkDest = ''
       let cmd = ''
       const cmds: string[] = []
-      cmds.push(
-         `# NOTE: home, cdrom, dev, live, media, mnt, proc, run, sys and tmp`
-      )
+      cmds.push(`# NOTE: home, cdrom, dev, live, media, mnt, proc, run, sys and tmp`)
       cmds.push(`#       need just a mkdir in ${this.work_dir.merged}`)
       cmds.push(`# host: ${os.hostname()} user: ${Utils.getPrimaryUser()}\n`)
 
@@ -1079,89 +1035,27 @@ timeout 200\n`
                   cmds.push(`${cmd} and need to be written`)
                   cmds.push(titleLine)
                   cmds.push(`# create mountpoint lower`)
-                  cmds.push(
-                     await makeIfNotExist(
-                        `${this.work_dir.lowerdir}/${dirname}`
-                     )
-                  )
-                  cmds.push(
-                     `# first: mount /${dir} rw in ${this.work_dir.lowerdir}/${dirname}`
-                  )
-                  cmds.push(
-                     await rexec(
-                        `mount --bind --make-slave /${dir} ${this.work_dir.lowerdir}/${dirname}`,
-                        echo
-                     )
-                  )
+                  cmds.push(await makeIfNotExist(`${this.work_dir.lowerdir}/${dirname}`))
+                  cmds.push(`# first: mount /${dir} rw in ${this.work_dir.lowerdir}/${dirname}`)
+                  cmds.push(await rexec(`mount --bind --make-slave /${dir} ${this.work_dir.lowerdir}/${dirname}`, echo))
                   cmds.push(`# now remount it ro`)
-                  cmds.push(
-                     await rexec(
-                        `mount -o remount,bind,ro ${this.work_dir.lowerdir}/${dirname}`,
-                        echo
-                     )
-                  )
-                  cmds.push(
-                     `\n# second: create mountpoint upper, work and ${this.work_dir.merged} and mount ${dirname}`
-                  )
-                  cmds.push(
-                     await makeIfNotExist(
-                        `${this.work_dir.upperdir}/${dirname}`,
-                        verbose
-                     )
-                  )
-                  cmds.push(
-                     await makeIfNotExist(
-                        `${this.work_dir.workdir}/${dirname}`,
-                        verbose
-                     )
-                  )
-                  cmds.push(
-                     await makeIfNotExist(
-                        `${this.work_dir.merged}/${dirname}`,
-                        verbose
-                     )
-                  )
+                  cmds.push(await rexec(`mount -o remount,bind,ro ${this.work_dir.lowerdir}/${dirname}`, echo))
+                  cmds.push(`\n# second: create mountpoint upper, work and ${this.work_dir.merged} and mount ${dirname}`)
+                  cmds.push(await makeIfNotExist(`${this.work_dir.upperdir}/${dirname}`, verbose))
+                  cmds.push(await makeIfNotExist(`${this.work_dir.workdir}/${dirname}`, verbose))
+                  cmds.push(await makeIfNotExist(`${this.work_dir.merged}/${dirname}`, verbose))
 
-                  cmds.push(
-                     `\n# thirth: mount /${dirname} rw in ${this.work_dir.merged}`
-                  )
-                  cmds.push(
-                     await rexec(
-                        `mount -t overlay overlay -o lowerdir=${this.work_dir.lowerdir}/${dirname},upperdir=${this.work_dir.upperdir}/${dir},workdir=${this.work_dir.workdir}/${dir} ${this.work_dir.merged}/${dirname}`,
-                        echo
-                     )
-                  )
+                  cmds.push(`\n# thirth: mount /${dirname} rw in ${this.work_dir.merged}`)
+                  cmds.push(await rexec(`mount -t overlay overlay -o lowerdir=${this.work_dir.lowerdir}/${dirname},upperdir=${this.work_dir.upperdir}/${dir},workdir=${this.work_dir.workdir}/${dir} ${this.work_dir.merged}/${dirname}`, echo))
                } else {
                   cmds.push(`${cmd} who don't need to be written`)
                   cmds.push(titleLine)
-                  cmds.push(
-                     `# mount -o bind /${dirname} ${this.work_dir.merged}/${dirname}`
-                  )
-                  cmds.push(
-                     await makeIfNotExist(
-                        `${this.work_dir.merged}/${dir}`,
-                        verbose
-                     )
-                  )
+                  cmds.push(`# mount -o bind /${dirname} ${this.work_dir.merged}/${dirname}`)
+                  cmds.push(await makeIfNotExist(`${this.work_dir.merged}/${dir}`, verbose))
                   if (this.onlyMerged(dirname)) {
-                     cmds.push(
-                        await makeIfNotExist(
-                           `${this.work_dir.merged}/${dirname}`,
-                           verbose
-                        )
-                     )
-                     cmds.push(
-                        await rexec(
-                           `mount --bind --make-slave /${dirname} ${this.work_dir.merged}/${dirname}`,
-                           echo
-                        )
-                     )
-                     cmds.push(
-                        await rexec(
-                           `mount -o remount,bind,ro ${this.work_dir.merged}/${dirname}`,
-                           echo
-                        )
-                     )
+                     cmds.push(await makeIfNotExist(`${this.work_dir.merged}/${dirname}`, verbose))
+                     cmds.push(await rexec(`mount --bind --make-slave /${dirname} ${this.work_dir.merged}/${dirname}`, echo))
+                     cmds.push(await rexec(`mount -o remount,bind,ro ${this.work_dir.merged}/${dirname}`, echo))
                   }
                }
             }
@@ -1169,34 +1063,22 @@ timeout 200\n`
             cmds.push(`# /${dirname} is just a file`)
             cmds.push(titleLine)
             if (!fs.existsSync(`${this.work_dir.merged}/${dirname}`)) {
-               cmds.push(
-                  await rexec(`cp /${dir} ${this.work_dir.merged}`, echo)
-               )
+               cmds.push(await rexec(`cp /${dir} ${this.work_dir.merged}`, echo))
             } else {
                cmds.push('# file exist... skip')
             }
          } else if (N8.isSymbolicLink(dirname)) {
             lnkDest = fs.readlinkSync(`/${dirname}`)
-            cmds.push(
-               `# /${dirname} is a symbolic link to /${lnkDest} in the system`
-            )
+            cmds.push(`# /${dirname} is a symbolic link to /${lnkDest} in the system`)
             cmds.push(`# we need just to recreate it`)
-            cmds.push(
-               `# ln -s ${this.work_dir.merged}/${lnkDest} ${this.work_dir.merged}/${lnkDest}`
-            )
-            cmds.push(
-               `# but we don't know if the destination exist, and I'm too lazy today. So, for now: `
-            )
+            cmds.push(`# ln -s ${this.work_dir.merged}/${lnkDest} ${this.work_dir.merged}/${lnkDest}`)
+            cmds.push(`# but we don't know if the destination exist, and I'm too lazy today. So, for now: `)
             cmds.push(titleLine)
             if (!fs.existsSync(`${this.work_dir.merged}/${dirname}`)) {
                if (fs.existsSync(lnkDest)) {
-                  cmds.push(
-                     `ln -s ${this.work_dir.merged}/${lnkDest} ${this.work_dir.merged}/${lnkDest}`
-                  )
+                  cmds.push(`ln -s ${this.work_dir.merged}/${lnkDest} ${this.work_dir.merged}/${lnkDest}`)
                } else {
-                  cmds.push(
-                     await rexec(`cp -r /${dir} ${this.work_dir.merged}`, echo)
-                  )
+                  cmds.push(await rexec(`cp -r /${dir} ${this.work_dir.merged}`, echo))
                }
             } else {
                cmds.push('# SymbolicLink exist... skip')
@@ -1219,9 +1101,7 @@ timeout 200\n`
       }
 
       const cmds: string[] = []
-      cmds.push(
-         `# NOTE: home, cdrom, dev, live, media, mnt, proc, run, sys and tmp`
-      )
+      cmds.push(`# NOTE: home, cdrom, dev, live, media, mnt, proc, run, sys and tmp`)
       cmds.push(`#       need just to be removed in ${this.work_dir.merged}`)
       cmds.push(`# host: ${os.hostname()} user: ${Utils.getPrimaryUser()}\n`)
 
@@ -1239,16 +1119,16 @@ timeout 200\n`
                if (this.needOverlay(dirname)) {
                   cmds.push(`\n# ${dirname} has overlay`)
                   cmds.push(`\n# First, umount it from ${this.work_dir.path}`)
-                  cmds.push(await rexec(`umount ${this.work_dir.merged}/${dirname}`,echo))
+                  cmds.push(await rexec(`umount ${this.work_dir.merged}/${dirname}`, echo))
 
                   cmds.push(`\n# Second, umount it from ${this.work_dir.lowerdir}`)
-                  cmds.push(await rexec(`umount ${this.work_dir.lowerdir}/${dirname}`,echo))
+                  cmds.push(await rexec(`umount ${this.work_dir.lowerdir}/${dirname}`, echo))
                } else if (this.onlyMerged(dirname)) {
-                  cmds.push(await rexec(`umount ${this.work_dir.merged}/${dirname}`,echo))
+                  cmds.push(await rexec(`umount ${this.work_dir.merged}/${dirname}`, echo))
                }
                cmds.push(`\n# remove in ${this.work_dir.merged} and ${this.work_dir.lowerdir}`)
                cmds.push(await rexec(`rm ${this.work_dir.merged}/${dirname} -rf`, echo))
-               cmds.push(await rexec(`rm ${this.work_dir.lowerdir}/${dirname} -rf`,echo))
+               cmds.push(await rexec(`rm ${this.work_dir.lowerdir}/${dirname} -rf`, echo))
             } else if (N8.isFile(dirname)) {
                cmds.push(`\n# ${dirname} = file`)
                cmds.push(await rexec(`rm ${this.work_dir.merged}/${dirname}`, echo))
@@ -1308,13 +1188,13 @@ timeout 200\n`
        */
       if (Pacman.isXInstalled()) {
          let traduce = true
-         if (fs.existsSync('/etc/skel/Desktop')){
+         if (fs.existsSync('/etc/skel/Desktop')) {
             traduce = false
          }
          await Xdg.create(this.user_opt, this.work_dir.merged, traduce, verbose)
          const pathHomeLive = `/home/${this.user_opt}`
          let pathToDesktopLive: string
-         pathToDesktopLive = pathHomeLive + '/' + Xdg.traduce('DESKTOP',traduce)
+         pathToDesktopLive = pathHomeLive + '/' + Xdg.traduce('DESKTOP', traduce)
 
          // Copia icona penguins-eggs
          shx.cp(path.resolve(__dirname, '../../assets/eggs.png'), '/usr/share/icons/')
@@ -1379,10 +1259,10 @@ timeout 200\n`
 
 
          // Rendo avviabili i link del Desktop
-         await exec(`chmod a+x ${this.work_dir.merged}${pathToDesktopLive}/*.desktop`,echo)
+         await exec(`chmod a+x ${this.work_dir.merged}${pathToDesktopLive}/*.desktop`, echo)
 
          // ed imposto la home di /home/live a live:live
-         await exec(`chroot ${this.work_dir.merged}  chown ${this.user_opt}:${this.user_opt} ${pathHomeLive} -R`,echo)
+         await exec(`chroot ${this.work_dir.merged}  chown ${this.user_opt}:${this.user_opt} ${pathHomeLive} -R`, echo)
          // await exec(`chown 1000:1000 ${this.work_dir.merged}${pathHomeLive} -R`, echo)
 
          /**
