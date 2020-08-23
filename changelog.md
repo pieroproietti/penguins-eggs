@@ -17,8 +17,11 @@ Usually the last version is the right one. Detailed instrunctions for usage are 
 ## Changelog
 Versions are listed on reverse order, the first is the last one.
 
+### eggs-7.6.11_1.deb
+Bux fix for Devuan beowolf support, minor errors remain to fix wicd, but I'm sure some users will segnale it. Currently eggs supports and has been tested on Debian, Ubuntu and Devuan
+
 ### eggs-7.6.0-10
-Bug fix for Devuan, now in beowuld We can build iso and start it. To login go to console and sudo startx.
+Bug fix for Devuan, now in beowulf We can build iso and start it. To login go to console and sudo startx.
 
 ### eggs-7.6.0-9
 Bug fix for produce flag --installer_choice and --dwagent now working. First implementaion addon for proxmox_ve.
