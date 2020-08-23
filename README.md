@@ -38,8 +38,11 @@ or publish eggs in the internet!
 You can try now penguins-eggs, it is a console utility - no GUI - but don't be scared, penguins-eggs is a console command - really very simple - if you
 are able to open a terminal, you can use it.
 
+# Addons
+Starting with version 7.6.x, an addons architecture has been added  to eggs, that allows third parties to develop extensions. Note that we currently have an extension for the theme that includes both calamares branding and installer link and icon. In addition, also as addon has been developed a tool for choosing between GUI or CLI installation. 
+
 # That distros you can use
-Eggs is born using Debian 9 and Debian 10, I test it on Debian Buster or on Linux Mind Debian Edition (LMDE4). Starting from 7.5.129, LinuxMint Ulyana and Ubuntu Focal are addetted too. You can try it on others distros and give a feedback, you can include derivated too.
+Eggs is born using Debian 9 and Debian 10, I test it on Debian Buster or on Linux Mind Debian Edition (LMDE4). Starting from 7.5.129, LinuxMint Ulyana and Ubuntu Focal are addetted, starting form 7.6.11 eggs support Devuan beowulf. You can try it on others distros and give a feedback, you can include derivated too.
 
 Same iso images complete with eggs are loaded in the [sourceforge](https://sourceforge.net/projects/penguins-eggs/files/iso/) page of the project. 
 
