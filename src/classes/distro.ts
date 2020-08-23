@@ -173,6 +173,7 @@ class Distro implements IDistro {
 
       } else if (this.versionId === 'beowulf') {
          this.distroId = 'Devuan'
+         this.versionId = 'beowulf'
          this.distroLike = 'Devuan'
          this.versionLike = 'beowulf'
         

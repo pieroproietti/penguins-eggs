@@ -14,7 +14,7 @@ const exec = require('../../lib/utils').exec
 /**
  * 
  */
-export class Devuan {
+export class Beowulf {
     verbose = false
 
     remix: IRemix
@@ -103,7 +103,8 @@ export class Devuan {
             'prompt-install': false,
             'dont-chroot': false
         }
-        return yaml.safeDump(settings)
+        let title = `# calamares settings, id: ${this.distro.distroId}/${this.distro.versionId} like: ${this.distro.distroLike}/${this.distro.versionLike}\n`
+        return title + yaml.safeDump(settings)
     }
 
     /**
@@ -145,7 +146,7 @@ export class Devuan {
 
     /**
      * ========================================================================
-     * module = name + '.conf0
+     * module = name + '.conf'
      * shellprocess = 'shellprocess_' + name + '.conf'
      * contextualprocess = name + '_context.conf'
      * 
