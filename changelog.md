@@ -17,7 +17,10 @@ Usually the last version is the right one. Detailed instrunctions for usage are 
 ## Changelog
 Versions are listed on reverse order, the first is the last one.
 
-### eggs-7.6.0-8
+### eggs-7.6.0-10
+Bug fix for Devuan, now in beowuld We can build iso and start it. To login go to console and sudo startx.
+
+### eggs-7.6.0-9
 Bug fix for produce flag --installer_choice and --dwagent now working. First implementaion addon for proxmox_ve.
 
 ### eggs-7.6.0-7
