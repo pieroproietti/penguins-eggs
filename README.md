@@ -15,6 +15,7 @@ penguins-eggs
 <!-- toc -->
 * [Index](#index)
 * [Presentation](#presentation)
+* [Addons](#addons)
 * [That distros you can use](#that-distros-you-can-use)
 * [Install penguins-eggs](#install-penguins-eggs)
 * [Usage](#usage)
@@ -82,7 +83,7 @@ $ npm install -g penguins-eggs
 $ eggs COMMAND
 running command...
 $ eggs (-v|--version|version)
-penguins-eggs/7.6.11 linux-x64 node-v14.8.0
+penguins-eggs/7.6.12 linux-x64 node-v14.7.0
 $ eggs --help [COMMAND]
 USAGE
   $ eggs COMMAND
@@ -122,7 +123,7 @@ ALIASES
   $ eggs adjust
 ```
 
-_See code: [src/commands/adapt.ts](https://github.com/pieroproietti/penguins-eggs/blob/v7.6.11/src/commands/adapt.ts)_
+_See code: [src/commands/adapt.ts](https://github.com/pieroproietti/penguins-eggs/blob/v7.6.12/src/commands/adapt.ts)_
 
 ## `eggs calamares`
 
@@ -133,20 +134,20 @@ USAGE
   $ eggs calamares
 
 OPTIONS
+  -c, --configuration  creation of configuration files only
   -h, --help           show CLI help
-  -i, --install        install
   -v, --verbose
-  --branding=branding  branding for calamares
+  --theme=theme        theme/branding for eggs and calamares
 
 EXAMPLES
   ~$ sudo eggs calamares 
-  create calamares configuration
+  install calamares and create configuration
 
-  ~$ sudo eggs calamares -i 
-  install calamares  and configure it
+  ~$ sudo eggs calamares -c 
+  create/renew calamares configuration files
 ```
 
-_See code: [src/commands/calamares.ts](https://github.com/pieroproietti/penguins-eggs/blob/v7.6.11/src/commands/calamares.ts)_
+_See code: [src/commands/calamares.ts](https://github.com/pieroproietti/penguins-eggs/blob/v7.6.12/src/commands/calamares.ts)_
 
 ## `eggs clean`
 
@@ -161,7 +162,7 @@ OPTIONS
   -v, --verbose  verbose
 ```
 
-_See code: [src/commands/clean.ts](https://github.com/pieroproietti/penguins-eggs/blob/v7.6.11/src/commands/clean.ts)_
+_See code: [src/commands/clean.ts](https://github.com/pieroproietti/penguins-eggs/blob/v7.6.12/src/commands/clean.ts)_
 
 ## `eggs help [COMMAND]`
 
@@ -192,7 +193,7 @@ OPTIONS
   -h, --help  show CLI help
 ```
 
-_See code: [src/commands/howto/configuration.ts](https://github.com/pieroproietti/penguins-eggs/blob/v7.6.11/src/commands/howto/configuration.ts)_
+_See code: [src/commands/howto/configuration.ts](https://github.com/pieroproietti/penguins-eggs/blob/v7.6.12/src/commands/howto/configuration.ts)_
 
 ## `eggs howto:grub`
 
@@ -203,7 +204,7 @@ USAGE
   $ eggs howto:grub
 ```
 
-_See code: [src/commands/howto/grub.ts](https://github.com/pieroproietti/penguins-eggs/blob/v7.6.11/src/commands/howto/grub.ts)_
+_See code: [src/commands/howto/grub.ts](https://github.com/pieroproietti/penguins-eggs/blob/v7.6.12/src/commands/howto/grub.ts)_
 
 ## `eggs info`
 
@@ -218,7 +219,7 @@ EXAMPLE
   You will find here informations about penguin's eggs!
 ```
 
-_See code: [src/commands/info.ts](https://github.com/pieroproietti/penguins-eggs/blob/v7.6.11/src/commands/info.ts)_
+_See code: [src/commands/info.ts](https://github.com/pieroproietti/penguins-eggs/blob/v7.6.12/src/commands/info.ts)_
 
 ## `eggs install`
 
@@ -243,7 +244,7 @@ EXAMPLE
   penguin's eggs installation
 ```
 
-_See code: [src/commands/install.ts](https://github.com/pieroproietti/penguins-eggs/blob/v7.6.11/src/commands/install.ts)_
+_See code: [src/commands/install.ts](https://github.com/pieroproietti/penguins-eggs/blob/v7.6.12/src/commands/install.ts)_
 
 ## `eggs kill`
 
@@ -263,7 +264,7 @@ EXAMPLE
   kill the eggs/free the nest
 ```
 
-_See code: [src/commands/kill.ts](https://github.com/pieroproietti/penguins-eggs/blob/v7.6.11/src/commands/kill.ts)_
+_See code: [src/commands/kill.ts](https://github.com/pieroproietti/penguins-eggs/blob/v7.6.12/src/commands/kill.ts)_
 
 ## `eggs prerequisites`
 
@@ -274,7 +275,7 @@ USAGE
   $ eggs prerequisites
 
 OPTIONS
-  -c, --configuration_only  not remove/reinstall calamares, only configuration
+  -c, --configuration_only  creation of configuration files only
   -h, --help                show CLI help
   -v, --verbose             verbose
 
@@ -286,7 +287,7 @@ EXAMPLES
   only create configuration files
 ```
 
-_See code: [src/commands/prerequisites.ts](https://github.com/pieroproietti/penguins-eggs/blob/v7.6.11/src/commands/prerequisites.ts)_
+_See code: [src/commands/prerequisites.ts](https://github.com/pieroproietti/penguins-eggs/blob/v7.6.12/src/commands/prerequisites.ts)_
 
 ## `eggs produce`
 
@@ -301,23 +302,47 @@ OPTIONS
   -c, --compress           max compression
   -f, --fast               fast compression
   -h, --help               show CLI help
-  -s, --script_only        only scripts generation
+  -s, --script             script mode. Generate scripts to manage iso build
   -v, --verbose            verbose
-  --dwagent                dwagent remote assistance
-  --installer_choice       install assistant
-  --proxmox_ve             Proxmox-VE link and hosts
-  --theme=theme            theme for eggs
+  --adapt                  adapt video resolution in VM
+  --ichoice                allows the user to choose the installation type cli/gui
+  --pve                    administration of virtual machines (Proxmox-VE)
+  --rsupport               remote support via dwagent
+  --theme=theme            theme/branding for eggs and calamares
 
 ALIASES
   $ eggs spawn
   $ eggs lay
 
-EXAMPLE
-  $ eggs produce --basename egg
-  the penguin produce an egg called egg-i386-2020-04-13_1815.iso
+EXAMPLES
+  $ sudo eggs produce 
+  produce an ISO called [hostname]-[arch]-YYYY-MM-DD_HHMM.iso, compressed xz (standard compression).
+  If hostname=myremix and arch=i386 you have myremix-x86--2020-08-25_1215.iso
+
+  $ sudo eggs produce -v
+  the same as the previuos, but with more explicative output
+
+  $ sudo eggs produce -vf
+  the same as the previuos, compression lz4 (fast compression, but about 30% less compared xz standard)
+
+  $ sudo eggs produce -vc
+  the same as the previuos, compression xz -Xbcj x86 (max compression, about 10% more compared xz standard)
+
+  $ sudo eggs produce -vf --basename leo --theme debian --adapt 
+  produce an ISO called leo-i386-2020-08-25_1215.iso compression lz4, using Debian theme and link to adapt
+
+  $ sudo eggs produce -v --basename leo --theme debian --adapt 
+  produce an ISO called leo-i386-2020-08-25_1215.iso compression xz, using Debian theme and link to adapt
+
+  $ sudo eggs produce -v --basename leo --rsupport 
+  produce an ISO called leo-i386-2020-08-25_1215.iso compression xz, using eggs theme and link to dwagent
+
+  $ sudo eggs produce -vs --basename leo --rsupport 
+  produce scripts to build an ISO as the previus example. Scripts can be found in /home/eggs/ovarium and you can 
+  customize all you need
 ```
 
-_See code: [src/commands/produce.ts](https://github.com/pieroproietti/penguins-eggs/blob/v7.6.11/src/commands/produce.ts)_
+_See code: [src/commands/produce.ts](https://github.com/pieroproietti/penguins-eggs/blob/v7.6.12/src/commands/produce.ts)_
 
 ## `eggs skel`
 
@@ -337,7 +362,7 @@ EXAMPLE
   desktop configuration of user mauro will get used as default
 ```
 
-_See code: [src/commands/skel.ts](https://github.com/pieroproietti/penguins-eggs/blob/v7.6.11/src/commands/skel.ts)_
+_See code: [src/commands/skel.ts](https://github.com/pieroproietti/penguins-eggs/blob/v7.6.12/src/commands/skel.ts)_
 
 ## `eggs sterilize`
 
@@ -352,7 +377,7 @@ OPTIONS
   -v, --verbose  verbose
 ```
 
-_See code: [src/commands/sterilize.ts](https://github.com/pieroproietti/penguins-eggs/blob/v7.6.11/src/commands/sterilize.ts)_
+_See code: [src/commands/sterilize.ts](https://github.com/pieroproietti/penguins-eggs/blob/v7.6.12/src/commands/sterilize.ts)_
 
 ## `eggs update`
 
@@ -371,7 +396,7 @@ EXAMPLE
   update/upgrade the penguin's eggs tool
 ```
 
-_See code: [src/commands/update.ts](https://github.com/pieroproietti/penguins-eggs/blob/v7.6.11/src/commands/update.ts)_
+_See code: [src/commands/update.ts](https://github.com/pieroproietti/penguins-eggs/blob/v7.6.12/src/commands/update.ts)_
 <!-- commandsstop -->
 
 # That's all Folks!
