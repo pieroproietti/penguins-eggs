@@ -20,13 +20,13 @@ export default class Calamares extends Command {
    static flags = {
       help: flags.help({ char: 'h' }),
       verbose: flags.boolean({ char: 'v' }),
-      branding: flags.string({ description: 'branding for calamares' }),
-      install: flags.boolean({ char: 'i', description: 'install' })
+      configuration: flags.boolean({char: 'c',description: 'creation of configuration files only'}),
+      theme: flags.string({ description: 'theme/branding for eggs and calamares' }),
    }
 
    static examples = [
-      `~$ sudo eggs calamares \ncreate calamares configuration\n`,
-      `~$ sudo eggs calamares -i \ninstall calamares  and configure it\n`
+      `~$ sudo eggs calamares \ninstall calamares and create configuration\n`,
+      `~$ sudo eggs calamares -c \ncreate/renew calamares configuration files\n`
    ]
 
    async run() {
@@ -39,14 +39,14 @@ export default class Calamares extends Command {
       }
 
       let install = false
-      if (flags.install) {
+      if (!flags.configuration) {
          install = true
       }
 
       // Nome del brand di calamares
       let branding = 'eggs'
-      if (flags.branding !== undefined) {
-         branding = flags.branding
+      if (flags.theme !== undefined) {
+         branding = flags.theme
          console.log(`calamares branding: ${branding}`)
       }
 

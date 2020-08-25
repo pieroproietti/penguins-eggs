@@ -1209,11 +1209,13 @@ timeout 200\n`
 
          // Copia link comuni sul desktop
          shx.cp('/usr/share/applications/penguins-eggs.desktop', `${this.work_dir.merged}${pathToDesktopLive}`)
-         shx.cp('/usr/share/applications/penguins-eggs-adapt.desktop', `${this.work_dir.merged}${pathToDesktopLive}`)
+         if (myAddons.adapt){
+            shx.cp('/usr/share/applications/penguins-eggs-adapt.desktop', `${this.work_dir.merged}${pathToDesktopLive}`)
+         }
 
          // Dato che .../usr non è scrivibile, scrivo direttamente in /usr/
          // Mentre il link su /home/live si registra solo nel fs merged
-         if (myAddons.dwagent) {
+         if (myAddons.rsupport) {
             let dirAddon = path.resolve(__dirname, `../../addons/eggs/dwagent`)
             shx.cp(`${dirAddon}/applications/dwagent.desktop`, `/usr/share/applications/`)
             shx.cp(`${dirAddon}/bin/dwagent.sh`, `/usr/local/bin/`)
@@ -1222,7 +1224,7 @@ timeout 200\n`
             shx.cp(`${this.work_dir.merged}/usr/share/applications/dwagent.desktop`, `${this.work_dir.merged}${pathToDesktopLive}`)
          }
 
-         if (myAddons.installer_choice) {
+         if (myAddons.ichoice) {
             let dirAddon = path.resolve(__dirname, `../../addons/eggs/installer-choice/`)
             shx.cp(`${dirAddon}/applications/installer-choice.desktop`, `/usr/share/applications/`)
             shx.cp(`${dirAddon}/bin/installer-choice.sh`, `/usr/local/bin/`)
@@ -1239,7 +1241,7 @@ timeout 200\n`
          }
 
 
-         if (myAddons.proxmox_ve) {
+         if (myAddons.pve) {
             let dirAddon = path.resolve(__dirname, `../../addons/eggs/proxmox-ve`)
             shx.cp(`${dirAddon}/applications/proxmox-ve.desktop`, `/usr/share/applications/`)
             shx.cp(`${dirAddon}/artwork/proxmox-ve.png`, `/usr/share/icons/`)

@@ -129,7 +129,6 @@ export default class CalamaresConfig {
          console.log(`${calamaresLauncher} not found!`)
          process.exit()
       }
-
       // script di avvio
       shx.cp(path.resolve(__dirname, '../../../assets/calamares/install-debian'), '/sbin/install-debian')
 

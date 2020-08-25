@@ -24,17 +24,18 @@ export default class Produce extends Command {
       compress: flags.boolean({ char: 'c', description: 'max compression' }),
       fast: flags.boolean({ char: 'f', description: 'fast compression' }),
       verbose: flags.boolean({ char: 'v', description: 'verbose' }),
-      script_only: flags.boolean({char: 's', description: 'only scripts generation' }),
+      script: flags.boolean({char: 's', description: 'script mode. Generate scripts to manage iso build' }),
       help: flags.help({ char: 'h' }),
 
       // addon vendor/addon configurazioni dei vendors
-      theme: flags.string({ description: 'theme for eggs' }),
+      theme: flags.string({ description: 'theme/branding for eggs and calamares' }),
       // addons: flags.string({ multiple: true, description: 'addons to be used' }),
 
       // addon per prodotti di terze parti, presenti SOLO in eggs
-      installer_choice: flags.boolean({ description: 'install assistant' }),
-      dwagent: flags.boolean({ description: `dwagent remote assistance` }),
-      proxmox_ve: flags.boolean({ description: `Proxmox-VE link and hosts` })
+      adapt: flags.boolean({ description: 'adapt video resolution in VM' }),
+      ichoice: flags.boolean({ description: 'allows the user to choose the installation type cli/gui' }),
+      rsupport: flags.boolean({ description: `remote support via dwagent` }),
+      pve: flags.boolean({ description: `administration of virtual machines (Proxmox-VE)` })
    }
 
    static description = 'livecd creation. The system produce an egg'
@@ -42,8 +43,14 @@ export default class Produce extends Command {
    static aliases = ['spawn', 'lay']
 
    static examples = [
-      `$ eggs produce --basename egg
-the penguin produce an egg called egg-i386-2020-04-13_1815.iso`
+      `$ sudo eggs produce \nproduce an ISO called [hostname]-[arch]-YYYY-MM-DD_HHMM.iso, compressed xz (standard compression).\nIf hostname=myremix and arch=i386 you have myremix-x86--2020-08-25_1215.iso\n`,
+      `$ sudo eggs produce -v\nthe same as the previuos, but with more explicative output\n`,
+      `$ sudo eggs produce -vf\nthe same as the previuos, compression lz4 (fast compression, but about 30% less compared xz standard)\n`,
+      `$ sudo eggs produce -vc\nthe same as the previuos, compression xz -Xbcj x86 (max compression, about 10% more compared xz standard)\n`,
+      `$ sudo eggs produce -vf --basename leo --theme debian --adapt \nproduce an ISO called leo-i386-2020-08-25_1215.iso compression lz4, using Debian theme and link to adapt\n`,
+      `$ sudo eggs produce -v --basename leo --theme debian --adapt \nproduce an ISO called leo-i386-2020-08-25_1215.iso compression xz, using Debian theme and link to adapt\n`,
+      `$ sudo eggs produce -v --basename leo --rsupport \nproduce an ISO called leo-i386-2020-08-25_1215.iso compression xz, using eggs theme and link to dwagent\n`,
+      `$ sudo eggs produce -vs --basename leo --rsupport \nproduce scripts to build an ISO as the previus example. Scripts can be found in /home/eggs/ovarium and you can customize all you need\n`,
    ]
 
    async run() {
@@ -102,9 +109,9 @@ the penguin produce an egg called egg-i386-2020-04-13_1815.iso`
             verbose = true
          }
 
-         let script_only = false
-         if (flags.script_only) {
-            script_only = true
+         let script = false
+         if (flags.script) {
+            script = true
          }
 
          let theme = 'eggs'
@@ -114,17 +121,10 @@ the penguin produce an egg called egg-i386-2020-04-13_1815.iso`
          }
 
          let myAddons = {} as IMyAddons
-         if (flags.dwagent) {
-            myAddons.dwagent = true
-         }
-
-         if (flags.installer_choice) {
-            myAddons.installer_choice = flags.installer_choice
-         }
-
-         if (flags.proxmox_ve) {
-            myAddons.proxmox_ve = flags.proxmox_ve
-         }
+         myAddons.rsupport = flags.adapt
+         myAddons.rsupport = flags.rsupport
+         myAddons.ichoice = flags.ichoice
+         myAddons.pve = flags.pve
 
          if (!Pacman.prerequisitesEggsCheck()) {
             console.log('You need to install ' + chalk.bgGray('prerequisites') + ' to continue.'
@@ -153,8 +153,8 @@ the penguin produce an egg called egg-i386-2020-04-13_1815.iso`
          const ovary = new Ovary(compression)
          Utils.warning('Produce an egg...')
          if (await ovary.fertilization()) {
-            await ovary.produce(basename, script_only, theme, myAddons, verbose)
-            ovary.finished(script_only)
+            await ovary.produce(basename, script, theme, myAddons, verbose)
+            ovary.finished(script)
          }
       }
    }

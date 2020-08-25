@@ -5,11 +5,11 @@
 */
 
 export interface IMyAddons {
-    dwagent: boolean
-    installer_choice: boolean
-    proxmox_ve: boolean
+  adapt: boolean
+  ichoice: boolean
+  rsupport: boolean
+  pve: boolean
 }
- 
+
 export interface IAddons {
- }
- 
+}
