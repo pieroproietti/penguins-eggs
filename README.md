@@ -43,9 +43,15 @@ are able to open a terminal, you can use it.
 Starting with version 7.6.x, an addons architecture has been added  to eggs, that allows third parties to develop extensions. Note that we currently have an extension for the theme that includes both calamares branding and installer link and icon. In addition, also as addon has been developed a tool for choosing between GUI or CLI installation. 
 
 # That distros you can use
-Eggs is born using Debian 9 and Debian 10, I test it on Debian Buster or on Linux Mind Debian Edition (LMDE4). Starting from 7.5.129, LinuxMint Ulyana and Ubuntu Focal are addetted, starting form 7.6.11 eggs support Devuan beowulf. You can try it on others distros and give a feedback, you can include derivated too.
+Eggs was born on Debian, but you can use it on Devuan, Ubuntu and derivatives. I usually try it on Debian buster, Devuan beowulf and Ubuntu 20.04 focal before releases. It is known that it can also work with Debian stretch, Ubuntu bionic, Ubuntu xenial and derivatives like LinuxMint. If you try a further distribution successfully, you can warn me to add it to the list. 
+
 
 Same iso images complete with eggs are loaded in the [sourceforge](https://sourceforge.net/projects/penguins-eggs/files/iso/) page of the project. 
+
+## Note about deb packages
+
+You can use the same package for all distributions using deb, naturally choosing the appropriate architecture (i386/amd64).
+
 
 # Install penguins-eggs
 
@@ -63,6 +69,7 @@ or, on a i386 system:
 sudo dpkg -i eggs_7.5.122-1_i386.deb
 ```
 
+_Note about deb packages_ You can use the same package for all distributions using deb, naturally choosing the appropriate architecture (i386/amd64).
 
 _Notes on nodejs versions and i386 architecture_ . You can read more about at [i386-nodejs](https://github.com/pieroproietti/penguins-eggs/blob/master/documents/i386-nodejs.md).
 
