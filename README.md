@@ -42,7 +42,7 @@ are able to open a terminal, you can use it.
 # Addons
 Starting with version 7.6.x, an addons architecture has been added  to eggs, that allows third parties to develop extensions. Note that we currently have an extension for the theme that includes both calamares branding and installer link and icon. In addition, also as addon has been developed a tool for choosing between GUI or CLI installation. 
 
-# That distros you can use
+# What distributions can I use?
 Eggs was born on Debian, but you can use it on Devuan, Ubuntu and derivatives. I usually try it on Debian buster, Devuan beowulf and Ubuntu 20.04 focal before releases. It is known that it can also work with Debian stretch, Ubuntu bionic, Ubuntu xenial and derivatives like LinuxMint and Deepin. If you try a further distribution successfully, you can warn me to add it to the list. 
 
 
