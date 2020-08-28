@@ -16,7 +16,7 @@ penguins-eggs
 * [Index](#index)
 * [Presentation](#presentation)
 * [Addons](#addons)
-* [That distros you can use](#that-distros-you-can-use)
+* [What distributions can I use?](#what-distributions-can-i-use)
 * [Install penguins-eggs](#install-penguins-eggs)
 * [Usage](#usage)
 * [Commands](#commands)
@@ -90,7 +90,7 @@ $ npm install -g penguins-eggs
 $ eggs COMMAND
 running command...
 $ eggs (-v|--version|version)
-penguins-eggs/7.6.12 linux-x64 node-v14.7.0
+penguins-eggs/7.6.12 linux-x64 node-v12.18.3
 $ eggs --help [COMMAND]
 USAGE
   $ eggs COMMAND
@@ -324,29 +324,34 @@ ALIASES
 EXAMPLES
   $ sudo eggs produce 
   produce an ISO called [hostname]-[arch]-YYYY-MM-DD_HHMM.iso, compressed xz (standard compression).
-  If hostname=myremix and arch=i386 you have myremix-x86--2020-08-25_1215.iso
+  If hostname=ugo and arch=i386 ugo-x86--2020-08-25_1215.iso
 
   $ sudo eggs produce -v
   the same as the previuos, but with more explicative output
 
   $ sudo eggs produce -vf
-  the same as the previuos, compression lz4 (fast compression, but about 30% less compared xz standard)
+  the same as the previuos, compression lz4 (fast compression, but about 30%
+  less compressed compared xz standard)
 
   $ sudo eggs produce -vc
-  the same as the previuos, compression xz -Xbcj x86 (max compression, about 10% more compared xz standard)
+  the same as the previuos, compression xz -Xbcj x86 (max compression, about 10%
+  more compressed compared xz standard)
 
   $ sudo eggs produce -vf --basename leo --theme debian --adapt 
-  produce an ISO called leo-i386-2020-08-25_1215.iso compression lz4, using Debian theme and link to adapt
+  produce an ISO called leo-i386-2020-08-25_1215.iso compression lz4,
+  using Debian theme and link to adapt
 
   $ sudo eggs produce -v --basename leo --theme debian --adapt 
-  produce an ISO called leo-i386-2020-08-25_1215.iso compression xz, using Debian theme and link to adapt
+  produce an ISO called leo-i386-2020-08-25_1215.iso compression xz,
+  using Debian theme and link to adapt
 
   $ sudo eggs produce -v --basename leo --rsupport 
-  produce an ISO called leo-i386-2020-08-25_1215.iso compression xz, using eggs theme and link to dwagent
+  produce an ISO called leo-i386-2020-08-25_1215.iso compression xz, using eggs
+  theme and link to dwagent
 
   $ sudo eggs produce -vs --basename leo --rsupport 
-  produce scripts to build an ISO as the previus example. Scripts can be found in /home/eggs/ovarium and you can 
-  customize all you need
+  produce scripts to build an ISO as the previus example. Scripts can be found
+  in /home/eggs/ovarium and you can customize all you need
 ```
 
 _See code: [src/commands/produce.ts](https://github.com/pieroproietti/penguins-eggs/blob/v7.6.12/src/commands/produce.ts)_
