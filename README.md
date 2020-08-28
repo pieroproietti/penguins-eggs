@@ -324,7 +324,7 @@ ALIASES
 EXAMPLES
   $ sudo eggs produce 
   produce an ISO called [hostname]-[arch]-YYYY-MM-DD_HHMM.iso, compressed xz (standard compression).
-  If hostname=ugo and arch=i386 ugo-x86--2020-08-25_1215.iso
+  If hostname=ugo and arch=i386 ugo-x86-2020-08-25_1215.iso
 
   $ sudo eggs produce -v
   the same as the previuos, but with more explicative output

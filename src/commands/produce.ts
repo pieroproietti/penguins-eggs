@@ -43,7 +43,7 @@ export default class Produce extends Command {
    static aliases = ['spawn', 'lay']
 
    static examples = [
-      `$ sudo eggs produce \nproduce an ISO called [hostname]-[arch]-YYYY-MM-DD_HHMM.iso, compressed xz (standard compression).\nIf hostname=ugo and arch=i386 ugo-x86--2020-08-25_1215.iso\n`,
+      `$ sudo eggs produce \nproduce an ISO called [hostname]-[arch]-YYYY-MM-DD_HHMM.iso, compressed xz (standard compression).\nIf hostname=ugo and arch=i386 ugo-x86-2020-08-25_1215.iso\n`,
       `$ sudo eggs produce -v\nthe same as the previuos, but with more explicative output\n`,
       `$ sudo eggs produce -vf\nthe same as the previuos, compression lz4 (fast compression, but about 30%\nless compressed compared xz standard)\n`,
       `$ sudo eggs produce -vc\nthe same as the previuos, compression xz -Xbcj x86 (max compression, about 10%\nmore compressed compared xz standard)\n`,
