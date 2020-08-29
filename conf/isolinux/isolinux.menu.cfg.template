@@ -1,13 +1,13 @@
 INCLUDE stdmenu.cfg
-MENU title - Perri's Brewery edition -
-DEFAULT %custom-name% (kernel %kernel%) Italiano
-LABEL %custom-name% (kernel %kernel%) Italiano
+
+MENU TITLE Penguin's eggs - Perri's Brewery edition -
+DEFAULT %custom-name% (kernel %kernel%) Italiano (it)
+LABEL %custom-name% (kernel %kernel%) Italiano (it)
   SAY "Booting %custom-name% GNU/Linux Live (kernel %kernel%)..."
   linux /live/vmlinuz
   APPEND initrd=/live/initrd.img boot=live locales=it_IT.UTF-8 %netconfig-opt% %username-opt% %timezone-opt% quiet splash
 
-MENU begin advanced
-MENU title %custom-name% Live with Localisation Support
+MENU begin %custom-name% (kernel %kernel%) languages 
 LABEL Albanian (sq)
   SAY "Booting Albanian (sq)..."
   linux %vmlinuz%
@@ -316,9 +316,9 @@ LABEL mainmenu
   MENU label Back
   MENU exit
   MENU end
- 
-MENU begin safe
-MENU title %custom-name% Live safe
+
+
+MENU BEGIN %custom-name% (kernel %kernel%) safe VGA
 DEFAULT %custom-name% (kernel %kernel%) Italiano/VGA mode
 LABEL %custom-name% (kernel %kernel%) Italiano/VGA mode
   SAY "Booting %custom-name% GNU/Linux Live (kernel %kernel%) vga mode Italiano..."

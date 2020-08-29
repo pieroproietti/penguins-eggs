@@ -733,7 +733,10 @@ export default class Ovary {
       if (verbose) {
          console.log('ovary: isoStdmenuCfg')
       }
+      
 
+      shx.cp(path.resolve(__dirname, '../../conf/isolinux/stdmenu.cfg'),`${this.work_dir.pathIso}/isolinux/stdmenu.cfg`)
+/*
       const file = `${this.work_dir.pathIso}/isolinux/stdmenu.cfg`
       const text = `menu background splash.png
     menu color title	* #FFFFFFFF *
@@ -756,6 +759,7 @@ export default class Ovary {
     menu tabmsg Press ENTER to boot or TAB to edit a menu entry`
 
       Utils.write(file, text)
+*/
    }
 
    /**
@@ -819,25 +823,23 @@ timeout 200\n`
        *
        */
 
-      const mpath = `${this.work_dir.pathIso}/isolinux/menu.cfg`
-      const spath = `${this.work_dir.pathIso}/isolinux/splash.png`
+      const menuSourcePath = path.resolve(__dirname, '../../conf/isolinux/isolinux.menu.cfg.template')
+      const splashSourcePath = path.resolve(__dirname, '../../assets/penguins-eggs-splash.png')
 
-      fs.copyFileSync(
-         path.resolve(__dirname, '../../conf/isolinux.menu.cfg.template'),
-         mpath
-      )
-      fs.copyFileSync(
-         path.resolve(__dirname, '../../assets/penguins-eggs-splash.png'),
-         spath
-      )
+      const menuDestPath = `${this.work_dir.pathIso}/isolinux/menu.cfg`
+      const splashDestPath = `${this.work_dir.pathIso}/isolinux/splash.png`
+      
 
-      shx.sed('-i', '%custom-name%', this.remix.name, mpath)
-      shx.sed('-i', '%kernel%', Utils.kernerlVersion(), mpath)
-      shx.sed('-i', '%vmlinuz%', `/live${this.kernel_image}`, mpath)
-      shx.sed('-i', '%initrd-img%', `/live${this.initrd_image}`, mpath)
-      shx.sed('-i', '%username-opt%', this.user_opt, mpath)
-      shx.sed('-i', '%netconfig-opt%', this.netconfig_opt, mpath)
-      shx.sed('-i', '%timezone-opt%', this.timezone_opt, mpath)
+      fs.copyFileSync(menuSourcePath, menuDestPath)
+      fs.copyFileSync(splashSourcePath, splashDestPath)
+
+      shx.sed('-i', '%custom-name%', this.remix.name, menuDestPath)
+      shx.sed('-i', '%kernel%', Utils.kernerlVersion(), menuDestPath)
+      shx.sed('-i', '%vmlinuz%', `/live${this.kernel_image}`, menuDestPath)
+      shx.sed('-i', '%initrd-img%', `/live${this.initrd_image}`, menuDestPath)
+      shx.sed('-i', '%username-opt%', this.user_opt, menuDestPath)
+      shx.sed('-i', '%netconfig-opt%', this.netconfig_opt, menuDestPath)
+      shx.sed('-i', '%timezone-opt%', this.timezone_opt, menuDestPath)
    }
 
    /**
