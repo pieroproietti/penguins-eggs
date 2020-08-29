@@ -733,7 +733,7 @@ export default class Ovary {
       if (verbose) {
          console.log('ovary: isoStdmenuCfg')
       }
-      shx.cp(path.resolve(__dirname, '../../conf/isolinux/stdmenu.cfg'),`${this.work_dir.pathIso}/isolinux/stdmenu.cfg`)
+      shx.cp(path.resolve(__dirname, '../../conf/isolinux/stdmenu.template.cfg'),`${this.work_dir.pathIso}/isolinux/stdmenu.cfg`)
    }
 
    /**
@@ -744,65 +744,16 @@ export default class Ovary {
       if (verbose) {
          console.log('ovary: isolinuxCfg')
       }
-      const file = `${this.work_dir.pathIso}/isolinux/isolinux.cfg`
-      const text = `# D-I config version 2.0
-# search path for the c32 support libraries (libcom32, libutil etc.)
-path 
-include menu.cfg
-default vesamenu.c32
-prompt 0
-timeout 200\n`
-      Utils.write(file, text)
+      shx.cp(path.resolve(__dirname, '../../conf/isolinux/isolinux.template.cfg'),`${this.work_dir.pathIso}/isolinux/isolinux.cfg`)
    }
 
    async isoMenuCfg(verbose = false) {
-      /**
-       *
-       * debconf                 allows one to apply arbitrary preseed files placed on the live media or an http/ftp server.
-       * hostname                configura i file /etc/hostname e /etc/hosts.
-       * user-setup              aggiunge un account per l'utente live.
-       * sudo                    concede i privilegi per sudo all'utente live.
-       * locales                 configura la localizzazione.
-       * locales-all             configura locales-all.
-       * tzdata                  configura il file /etc/timezone.
-       * gdm3                    configura il login automatico per gdm3.
-       * kdm                     configura il login automatico per kdm.
-       * lightdm                 configura il login automatico per lightdm.
-       * lxdm                    configura il login automatico per lxdm.
-       * nodm                    configura il login automatico per nodm.
-       * slim                    configura il login automatico per slim.
-       * xinit                   configura il login automatico con xinit.
-       * keyboard-configuration  configura la tastiera.
-       * systemd                 configura il login automatico con systemd.
-       * sysvinit                configura sysvinit.
-       * sysv-rc                 configura sysv-rc disabilitando i servizi elencati.
-       * login                   disabilita lastlog.
-       * apport                  disabilita apport.
-       * gnome-panel-data        disabilita il pulsante di blocco dello schermo.
-       * gnome-power-manager     disabilita l'ibernazione.
-       * gnome-screensaver       disabilita lo screensaver che blocca lo schermo.
-       * kaboom                  disabilita la procedura guidata di migrazione di KDE (squeeze e successive).
-       * kde-services            disabilita i servizi di KDE non voluti (squeeze e successive).
-       * policykit               concede i privilegi per l'utente tramite policykit.
-       * ssl-cert                rigenera certificati ssl snake-oil.
-       * anacron                 disabilita anacron.
-       * util-linux              disabilita hwclock (parte di util-linux).
-       * login                   disabilita lastlog.
-       * xserver-xorg            configura xserver-xorg.
-       * broadcom-sta            configura il driver per broadcom-sta WLAN.
-       * openssh-server          ricrea le chiavi di openssh-server.
-       * xfce4-panel             configura xfce4-panel con le impostazioni predefinite.
-       * xscreensaver            disabilita lo screensaver che blocca lo schermo.
-       * hooks                   allows one to run arbitrary commands from a file placed on the live media or an http/ftp server.
-       *
-       */
 
-      const menuSourcePath = path.resolve(__dirname, '../../conf/isolinux/isolinux.menu.cfg.template')
+      const menuSourcePath = path.resolve(__dirname, '../../conf/isolinux/menu.template.cfg')
       const splashSourcePath = path.resolve(__dirname, '../../assets/penguins-eggs-splash.png')
 
       const menuDestPath = `${this.work_dir.pathIso}/isolinux/menu.cfg`
       const splashDestPath = `${this.work_dir.pathIso}/isolinux/splash.png`
-      
 
       fs.copyFileSync(menuSourcePath, menuDestPath)
       fs.copyFileSync(splashSourcePath, splashDestPath)
