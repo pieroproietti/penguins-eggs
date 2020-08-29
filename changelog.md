@@ -16,8 +16,10 @@ Usually the last version is the right one. Detailed instrunctions for usage are 
 
 ## Changelog
 Versions are listed on reverse order, the first is the last one.
+### eggs-7.6.13_1.deb
+Revisited the creation of the liveCD boot for standard and UEFI machines. Fixed the safe option in the isolinux menu and in the grub menu.
 
-### eggs-7.6.12_1.dev
+### eggs-7.6.12_1.deb
 This is a version mosty rethink and bug fixes. eggs calamares now work as prerequisites, alone install and configure calamares, calamares -c only configuration.
 I changed also few flags in produce, with the idea to not have _ in them. So proxmox_ve became ve, remote_assistance becamo rassistance, etc. I changed something
 in calamares modules too, to get the flag theme. The next versione will be a bugfixes too, I need to check why disappered in the boot from iso the option safe.
