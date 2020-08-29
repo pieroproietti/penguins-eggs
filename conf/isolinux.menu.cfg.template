@@ -1,5 +1,5 @@
 INCLUDE stdmenu.cfg
-MENU title Main Menu
+MENU title Eggs - Perri's Brewery edition - isolinux
 DEFAULT %custom-name% (kernel %kernel%) Italiano
 LABEL %custom-name% (kernel %kernel%) Italiano
   SAY "Booting %custom-name% GNU/Linux Live (kernel %kernel%)..."
