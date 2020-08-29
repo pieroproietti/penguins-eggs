@@ -733,33 +733,7 @@ export default class Ovary {
       if (verbose) {
          console.log('ovary: isoStdmenuCfg')
       }
-      
-
       shx.cp(path.resolve(__dirname, '../../conf/isolinux/stdmenu.cfg'),`${this.work_dir.pathIso}/isolinux/stdmenu.cfg`)
-/*
-      const file = `${this.work_dir.pathIso}/isolinux/stdmenu.cfg`
-      const text = `menu background splash.png
-    menu color title	* #FFFFFFFF *
-    menu color border	* #00000000 #00000000 none
-    menu color sel		* #ffffffff #76a1d0ff *
-    menu color hotsel	1;7;37;40 #ffffffff #76a1d0ff *
-    menu color tabmsg	* #ffffffff #00000000 *
-    menu color help		37;40 #ffdddd00 #00000000 none
-    # XXX When adjusting vshift, take care that rows is set to a small
-    # enough value so any possible menu will fit on the screen,
-    # rather than falling off the bottom.
-    menu vshift 8
-    menu rows 8
-    # The help line must be at least one line from the bottom.
-    menu helpmsgrow 14
-    # The command line must be at least one line from the help line.
-    menu cmdlinerow 16
-    menu timeoutrow 16
-    menu tabmsgrow 18
-    menu tabmsg Press ENTER to boot or TAB to edit a menu entry`
-
-      Utils.write(file, text)
-*/
    }
 
    /**
