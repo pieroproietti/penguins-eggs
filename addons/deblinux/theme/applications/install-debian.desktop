@@ -1,7 +1,7 @@
 [Desktop Entry]
 Type=Application
 Version=1.0
-Name=Install Debian
+Name=Install DebLinux
 GenericName=Calamares Installer
 Exec=install-debian
 Comment=Calamares — Installer for Debian Live
