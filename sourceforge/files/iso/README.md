@@ -28,7 +28,7 @@ All the ISOs include nodejs and eggs installed (.npm package), so you can update
 I work mostly on Debian stable, so here you can find my personal versions and other examples.
 
 # Debian
-## Debian buster
+## buster
 * **naked** - just the juice, without GUI, with nodejs and eggs. You can start here to build your revolution! (i386 and amd64)
 * **less** - it's naked, just dressed with lxde-core and the tools to develop. (i386 and amd64)
 * **debu**  - it is my personal version with cinnamon, mostly for development, but include common office tools; (amd64)
@@ -36,29 +36,32 @@ students for learn blockchain, develop smart contracts, etc. Feel free to give s
 * **incubator** - Debian Buster + Proxmox VE 6.2 and the same tools of debu; (amd64 plus virtualization enabled)
 
 # Devuan 
-## Devuan beowulf
+## beowulf
 * **beowulf** - like debu, but devual based
-* **roma** - devuan beowulf, x86 created from UffucioZero Roma 2.0
 
 # Ubuntu
-## Lubuntu 18.04 bionic
+## 18.04 bionic
 * **lubuntu** - Lubuntu 18.04 remastered with eggs, without any modifications except for develop tools. (i386)
 
-## Ubuntu 20.04 focal
+## 20.04 focal
 * **ufo** - Ubuntu focal standard installation, remastered with eggs, without any modifications. 
 
 # Linux Mint
 ## Linux Mint Debian Edition 4 Debbie
 * **lmde4** - LMDE4 Debbie, remastered with eggs, without any modifications except for develop tools.
 
-## Linux Mint 19.3 tricia
+## 19.3 tricia
 * **tricia** - Linux Mint 19.3 remastered with eggs, without any modifications except for develop tools. (i386)
 * **tricia-xfce** - Linux Mint 19.3 remastered with eggs, without any modifications except for develop tools. (i386)
 * **vieste** - UfficioZero Vieste remasterd with eggs
 
-## Linux Mint 20 Ulyana
+## 20 Ulyana
 * **ulyana** - Linux Mint 20 remastered with eggs, without any modifications except for develop tools.
-* **tropea** - UfficioZero Tropea (beta) remastered whit eggs
+
+# UfficioZero
+* **roma** - UffucioZero Roma 2.0 (x86), based on devuan beowulf, remastered with eggs
+* **tropea** - UfficioZero Tropea (beta), based on Linuxmint ulyana, remastered with eggs
+
 
 You can create remix from yourself by downloading the originals, installing the system, installing eggs and start to creatie the ISOs.
 
