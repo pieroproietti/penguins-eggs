@@ -299,11 +299,11 @@ export default class Pacman {
       /**
        * force_installer
        */
-      let force_installer = 'Yes'
+      let force_installer = 'yes'
       if (!this.packageIsInstalled('calamares')) {
-         force_installer = 'No'
+         force_installer = 'no'
          console.log(
-            `Due the lacks of calamares package set force_installer=No`
+            `Due the lacks of calamares package set force_installer=no`
          )
       }
       shx.sed(
@@ -318,7 +318,7 @@ export default class Pacman {
        */
       let make_efi = 'yes'
       if (!this.packageIsInstalled('grub-efi-amd64')) {
-         make_efi = 'No'
+         make_efi = 'no'
          console.log(
             `Due the lacks of grub-efi-amd64 or grub-efi-ia32 package set make_efi=No`
          )
