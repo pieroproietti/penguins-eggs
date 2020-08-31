@@ -251,10 +251,21 @@ export class Focal {
             text += 'firmwareType:\n'
             text += '    bios:    "-/bin/true"\n'
             text += '    "*":\n'
-            text += '        -    command: apt-cdrom add -m -d=/media/cdrom/\n'
-            text += '             timeout: 10\n'
-            text += '        -    command: sed -i \' / deb http / d\' /etc/apt/sources.list\n'
-            text += '             timeout: 10\n'
+            /**
+             * modifica per installazione UEFI
+             */
+            //text += '        -    command: apt-cdrom add -m -d=/media/cdrom/\n'
+            //text += '             timeout: 10\n'
+            //text += '        -    command: sed -i \' / deb http / d\' /etc/apt/sources.list\n'
+            //text += '             timeout: 10\n'  
+            /**
+             * grub-efi-amd64-signed esiste ed è OK
+             * quello che serve è di montare i vari fsvirtuali e la partizione efi in boot/efi
+             * quindi:
+             * grub-install
+             * grub-update
+             * e parte
+             */
             text += '        -    command: apt-get update\n'
             text += '             timeout: 120\n'
             text += '        -    command: apt install -y --no-upgrade -o Acquire::gpgv::Options::=--ignore-time-conflict grub-efi-$(if grep -q 64 /sys/firmware/efi/fw_platform_size; then echo amd64-signed; else echo ia32; fi)\n'
