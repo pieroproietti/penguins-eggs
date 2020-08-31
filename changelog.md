@@ -16,6 +16,10 @@ Usually the last version is the right one. Detailed instrunctions for usage are 
 
 ## Changelog
 Versions are listed on reverse order, the first is the last one.
+
+### eggs-7.6.14_1.deb
+Fixed bug that prevented grub from loading the kernel and initrd.img from the iso image. The error was only detectable on UEFI machines.
+
 ### eggs-7.6.13_1.deb
 Revisited the creation of the liveCD boot for standard and UEFI machines. Fixed the safe option in the isolinux menu and in the grub menu.
 

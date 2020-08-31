@@ -29,39 +29,35 @@ I work mostly on Debian stable, so here you can find my personal versions and ot
 
 # Debian
 ## buster
+I divided it in three parts: cinnamon, lxde and naked. The two in cinnamon are the most complete and are the tools with i work:
+debu to develop and office automatition and incubator, a version of proxmox-ve sistem with filled with all you can expect from 
+a complete.
 * **naked** - just the juice, without GUI, with nodejs and eggs. You can start here to build your revolution! (i386 and amd64)
 * **less** - it's naked, just dressed with lxde-core and the tools to develop. (i386 and amd64)
 * **debu**  - it is my personal version with cinnamon, mostly for development, but include common office tools; (amd64)
 students for learn blockchain, develop smart contracts, etc. Feel free to give suggestions on it or ask for help to build your own version. (amd64)
 * **incubator** - Debian Buster + Proxmox VE 6.2 and the same tools of debu; (amd64 plus virtualization enabled)
 
+
+All the other distro are non divided, but just a directory, the name is usually the distro version name. Example: focal, bionic, etc.
+
 # Devuan 
-## beowulf
 * **beowulf** - like debu, but devual based
 
 # Ubuntu
-## 18.04 bionic
-* **lubuntu** - Lubuntu 18.04 remastered with eggs, without any modifications except for develop tools. (i386)
-
-## 20.04 focal
-* **ufo** - Ubuntu focal standard installation, remastered with eggs, without any modifications. 
+* **bionic-i386** - Lubuntu 18.04 lxde remastered with eggs, without any modifications except for develop tools. (i386)
+* **focal** - Ubuntu 20.04 focal gnome3, remastered with eggs, without any modifications. 
 
 # Linux Mint
 ## Linux Mint Debian Edition 4 Debbie
-* **lmde4** - LMDE4 Debbie, remastered with eggs, without any modifications except for develop tools.
-
-## 19.3 tricia
-* **tricia** - Linux Mint 19.3 remastered with eggs, without any modifications except for develop tools. (i386)
-* **tricia-xfce** - Linux Mint 19.3 remastered with eggs, without any modifications except for develop tools. (i386)
-* **vieste** - UfficioZero Vieste remasterd with eggs
-
-## 20 Ulyana
+* **debbie** - LMDE4 Debbie, remastered with eggs, without any modifications except for develop tools.
+* **tricia-i386** - Linux Mint 19.3 cinnanmon, remastered with eggs, without any modifications except for develop tools.
+* **tricia-xfce-i386** - Linux Mint 19.3 xfce, remastered with eggs, without any modifications except for develop tools.
 * **ulyana** - Linux Mint 20 remastered with eggs, without any modifications except for develop tools.
 
 # UfficioZero
-* **roma** - UffucioZero Roma 2.0 (x86), based on devuan beowulf, remastered with eggs
-* **tropea** - UfficioZero Tropea (beta), based on Linuxmint ulyana, remastered with eggs
-
+* **roma** - UffucioZero Roma (x86), based on devuan beowulf, remastered with eggs
+* **tropea** - UfficioZero Tropea based on Linuxmint ulyana
 
 You can create remix from yourself by downloading the originals, installing the system, installing eggs and start to creatie the ISOs.
 

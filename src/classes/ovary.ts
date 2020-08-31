@@ -760,8 +760,8 @@ export default class Ovary {
 
       shx.sed('-i', '%custom-name%', this.remix.name, menuDestPath)
       shx.sed('-i', '%kernel%', Utils.kernerlVersion(), menuDestPath)
-      shx.sed('-i', '%vmlinuz%', `/live${this.kernel_image}`, menuDestPath)
-      shx.sed('-i', '%initrd-img%', `/live${this.initrd_image}`, menuDestPath)
+      shx.sed('-i', '%vmlinuz%', '/live/vmlinuz', menuDestPath) // ${this.kernel_image}`, menuDestPath)
+      shx.sed('-i', '%initrd-img%', '/live/initrd.img', menuDestPath) // live${this.initrd_image}`, menuDestPath)
       shx.sed('-i', '%username-opt%', this.user_opt, menuDestPath)
       shx.sed('-i', '%netconfig-opt%', this.netconfig_opt, menuDestPath)
       shx.sed('-i', '%timezone-opt%', this.timezone_opt, menuDestPath)
@@ -1443,8 +1443,10 @@ export default class Ovary {
       const gpath = `${this.work_dir.pathIso}/boot/grub/grub.cfg`
       shx.sed('-i', '%custom-name%', this.remix.name, gpath)
       shx.sed('-i', '%kernel%', Utils.kernerlVersion(), gpath)
-      shx.sed('-i', '%vmlinuz%', `/live${this.kernel_image}`, gpath)
-      shx.sed('-i', '%initrd-img%', `/live${this.initrd_image}`, gpath)
+      // shx.sed('-i', '%vmlinuz%', `/live${this.kernel_image}`, gpath)
+      // shx.sed('-i', '%initrd-img%', `/live${this.initrd_image}`, gpath)
+      shx.sed('-i', '%vmlinuz%', `/live/vmlinuz`, gpath)
+      shx.sed('-i', '%initrd-img%', `/live/initrd.img`, gpath)
       shx.sed('-i', '%username-opt%', this.user_opt, gpath)
       shx.sed('-i', '%netconfig-opt%', this.netconfig_opt, gpath)
       shx.sed('-i', '%timezone-opt%', this.timezone_opt, gpath)
