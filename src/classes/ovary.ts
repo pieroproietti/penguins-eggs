@@ -72,7 +72,7 @@ export default class Ovary {
 
    initrd_image = '' as string
 
-   vmlinuz = = ''
+   vmlinuz = ''
 
    initrdImg = ''
    

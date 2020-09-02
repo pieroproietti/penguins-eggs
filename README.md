@@ -100,12 +100,17 @@ USAGE
 # Commands
 <!-- commands -->
 * [`eggs adapt`](#eggs-adapt)
+* [`eggs calamares`](#eggs-calamares)
 * [`eggs clean`](#eggs-clean)
 * [`eggs help [COMMAND]`](#eggs-help-command)
 * [`eggs howto:configuration`](#eggs-howtoconfiguration)
 * [`eggs howto:grub`](#eggs-howtogrub)
+* [`eggs info`](#eggs-info)
 * [`eggs install`](#eggs-install)
+* [`eggs kill`](#eggs-kill)
 * [`eggs prerequisites`](#eggs-prerequisites)
+* [`eggs produce`](#eggs-produce)
+* [`eggs skel`](#eggs-skel)
 * [`eggs sterilize`](#eggs-sterilize)
 * [`eggs update`](#eggs-update)
 
@@ -126,6 +131,30 @@ ALIASES
 ```
 
 _See code: [src/commands/adapt.ts](https://github.com/pieroproietti/penguins-eggs/blob/v7.15.16/src/commands/adapt.ts)_
+
+## `eggs calamares`
+
+configure calamares or install and configure it
+
+```
+USAGE
+  $ eggs calamares
+
+OPTIONS
+  -c, --configuration  creation of configuration files only
+  -h, --help           show CLI help
+  -v, --verbose
+  --theme=theme        theme/branding for eggs and calamares
+
+EXAMPLES
+  ~$ sudo eggs calamares 
+  install calamares and create configuration
+
+  ~$ sudo eggs calamares -c 
+  create/renew calamares configuration files
+```
+
+_See code: [src/commands/calamares.ts](https://github.com/pieroproietti/penguins-eggs/blob/v7.15.16/src/commands/calamares.ts)_
 
 ## `eggs clean`
 
@@ -184,6 +213,21 @@ USAGE
 
 _See code: [src/commands/howto/grub.ts](https://github.com/pieroproietti/penguins-eggs/blob/v7.15.16/src/commands/howto/grub.ts)_
 
+## `eggs info`
+
+informations about system and eggs
+
+```
+USAGE
+  $ eggs info
+
+EXAMPLE
+  $ eggs info
+  You will find here informations about penguin's eggs!
+```
+
+_See code: [src/commands/info.ts](https://github.com/pieroproietti/penguins-eggs/blob/v7.15.16/src/commands/info.ts)_
+
 ## `eggs install`
 
 system installation (the eggs became penguin)
@@ -209,6 +253,26 @@ EXAMPLE
 
 _See code: [src/commands/install.ts](https://github.com/pieroproietti/penguins-eggs/blob/v7.15.16/src/commands/install.ts)_
 
+## `eggs kill`
+
+kill the eggs/free the nest
+
+```
+USAGE
+  $ eggs kill
+
+OPTIONS
+  -h, --help     show CLI help
+  -u, --umount   umount
+  -v, --verbose  verbose
+
+EXAMPLE
+  $ eggs kill
+  kill the eggs/free the nest
+```
+
+_See code: [src/commands/kill.ts](https://github.com/pieroproietti/penguins-eggs/blob/v7.15.16/src/commands/kill.ts)_
+
 ## `eggs prerequisites`
 
 install packages prerequisites to run eggs
@@ -231,6 +295,86 @@ EXAMPLES
 ```
 
 _See code: [src/commands/prerequisites.ts](https://github.com/pieroproietti/penguins-eggs/blob/v7.15.16/src/commands/prerequisites.ts)_
+
+## `eggs produce`
+
+livecd creation. The system produce an egg
+
+```
+USAGE
+  $ eggs produce
+
+OPTIONS
+  -b, --basename=basename  basename egg
+  -c, --compress           max compression
+  -f, --fast               fast compression
+  -h, --help               show CLI help
+  -s, --script             script mode. Generate scripts to manage iso build
+  -v, --verbose            verbose
+  --adapt                  adapt video resolution in VM
+  --ichoice                allows the user to choose the installation type cli/gui
+  --pve                    administration of virtual machines (Proxmox-VE)
+  --rsupport               remote support via dwagent
+  --theme=theme            theme/branding for eggs and calamares
+
+ALIASES
+  $ eggs spawn
+  $ eggs lay
+
+EXAMPLES
+  $ sudo eggs produce 
+  produce an ISO called [hostname]-[arch]-YYYY-MM-DD_HHMM.iso, compressed xz (standard compression).
+  If hostname=ugo and arch=i386 ugo-x86-2020-08-25_1215.iso
+
+  $ sudo eggs produce -v
+  the same as the previuos, but with more explicative output
+
+  $ sudo eggs produce -vf
+  the same as the previuos, compression lz4 (fast compression, but about 30%
+  less compressed compared xz standard)
+
+  $ sudo eggs produce -vc
+  the same as the previuos, compression xz -Xbcj x86 (max compression, about 10%
+  more compressed compared xz standard)
+
+  $ sudo eggs produce -vf --basename leo --theme debian --adapt 
+  produce an ISO called leo-i386-2020-08-25_1215.iso compression lz4,
+  using Debian theme and link to adapt
+
+  $ sudo eggs produce -v --basename leo --theme debian --adapt 
+  produce an ISO called leo-i386-2020-08-25_1215.iso compression xz,
+  using Debian theme and link to adapt
+
+  $ sudo eggs produce -v --basename leo --rsupport 
+  produce an ISO called leo-i386-2020-08-25_1215.iso compression xz, using eggs
+  theme and link to dwagent
+
+  $ sudo eggs produce -vs --basename leo --rsupport 
+  produce scripts to build an ISO as the previus example. Scripts can be found
+  in /home/eggs/ovarium and you can customize all you need
+```
+
+_See code: [src/commands/produce.ts](https://github.com/pieroproietti/penguins-eggs/blob/v7.15.16/src/commands/produce.ts)_
+
+## `eggs skel`
+
+update skel from home configuration
+
+```
+USAGE
+  $ eggs skel
+
+OPTIONS
+  -h, --help       show CLI help
+  -u, --user=user  user to be used
+  -v, --verbose
+
+EXAMPLE
+  $ eggs skel --user mauro
+  desktop configuration of user mauro will get used as default
+```
+
+_See code: [src/commands/skel.ts](https://github.com/pieroproietti/penguins-eggs/blob/v7.15.16/src/commands/skel.ts)_
 
 ## `eggs sterilize`
 
