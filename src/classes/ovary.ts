@@ -1558,16 +1558,6 @@ export default class Ovary {
     */
 
    /**
-    * addDebianRepo
-    */
-   async addDebianRepo(verbose = false) {
-      if (verbose) {
-         console.log('ovary: addDebianRepo')
-      }
-      shx.cp('-r', '/home/live/debian-live/*', this.work_dir.pathIso)
-   }
-
-   /**
     * only show the result
     */
    finished(script_only = false) {
