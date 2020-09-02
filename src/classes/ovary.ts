@@ -70,6 +70,12 @@ export default class Ovary {
 
    kernel_image = '' as string
 
+   initrd_image = '' as string
+
+   vmlinuz = = ''
+
+   initrdImg = ''
+   
    user_opt = '' as string // user_live
 
    user_opt_passwd = '' as string // passwd_live
@@ -85,8 +91,6 @@ export default class Ovary {
    ifnames_opt = ''
 
    timezone_opt = ''
-
-   initrd_image = '' as string
 
    make_efi = false
 
@@ -203,8 +207,12 @@ export default class Ovary {
       this.edit_boot_menu = settings.General.edit_boot_menu === 'yes'
       this.gui_editor = settings.General.gui_editor
       this.force_installer = settings.General.force_installer === 'yes'
+      
       this.kernel_image = settings.General.kernel_image
       this.initrd_image = settings.General.initrd_image
+      this.vmlinuz = this.kernel_image.substr(this.kernel_image.lastIndexOf('/'))
+      this.initrdImg = this.initrd_image.substr(this.initrd_image.lastIndexOf('/'))
+
       this.netconfig_opt = settings.General.netconfig_opt
       if (this.netconfig_opt === undefined) {
          this.netconfig_opt = ''
@@ -760,8 +768,8 @@ export default class Ovary {
 
       shx.sed('-i', '%custom-name%', this.remix.name, menuDestPath)
       shx.sed('-i', '%kernel%', Utils.kernerlVersion(), menuDestPath)
-      shx.sed('-i', '%vmlinuz%', '/live/vmlinuz', menuDestPath) // ${this.kernel_image}`, menuDestPath)
-      shx.sed('-i', '%initrd-img%', '/live/initrd.img', menuDestPath) // live${this.initrd_image}`, menuDestPath)
+      shx.sed('-i', '%vmlinuz%', `/live/${this.vmlinuz}`, menuDestPath) // ${this.kernel_image}`, menuDestPath)
+      shx.sed('-i', '%initrd-img%', `/live/${this.initrdImg}`, menuDestPath) // live${this.initrd_image}`, menuDestPath)
       shx.sed('-i', '%username-opt%', this.user_opt, menuDestPath)
       shx.sed('-i', '%netconfig-opt%', this.netconfig_opt, menuDestPath)
       shx.sed('-i', '%timezone-opt%', this.timezone_opt, menuDestPath)
@@ -1443,10 +1451,8 @@ export default class Ovary {
       const gpath = `${this.work_dir.pathIso}/boot/grub/grub.cfg`
       shx.sed('-i', '%custom-name%', this.remix.name, gpath)
       shx.sed('-i', '%kernel%', Utils.kernerlVersion(), gpath)
-      // shx.sed('-i', '%vmlinuz%', `/live${this.kernel_image}`, gpath)
-      // shx.sed('-i', '%initrd-img%', `/live${this.initrd_image}`, gpath)
-      shx.sed('-i', '%vmlinuz%', `/live/vmlinuz`, gpath)
-      shx.sed('-i', '%initrd-img%', `/live/initrd.img`, gpath)
+      shx.sed('-i', '%vmlinuz%', `/live/${this.vmlinuz}`, gpath)
+      shx.sed('-i', '%initrd-img%', `/live/${this.initrdImg}`, gpath)
       shx.sed('-i', '%username-opt%', this.user_opt, gpath)
       shx.sed('-i', '%netconfig-opt%', this.netconfig_opt, gpath)
       shx.sed('-i', '%timezone-opt%', this.timezone_opt, gpath)
