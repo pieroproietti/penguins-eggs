@@ -12,11 +12,8 @@ penguins-eggs
 
 # Penguin's eggs Debian package
 
-Usually the last version is the right one. Detailed instrunctions for usage are published on the [penguin's eggs book](https://penguins-eggs.net/book).
-
-## Commit history
-You can follow the project also consulting the [commit history](https://github.com/pieroproietti/penguins-eggs/commits/master
-).
+Usually the last version is the right one. Detailed instrunctions for usage are published on the [penguin's eggs book](https://penguins-eggs.net/book). 
+You can follow the project also consulting the [commit history](https://github.com/pieroproietti/penguins-eggs/commits/master). 
 
 ## Changelog
 Versions are listed on reverse order, the first is the last one.
