@@ -75,7 +75,7 @@ export default class Ovary {
    vmlinuz = ''
 
    initrdImg = ''
-   
+
    user_opt = '' as string // user_live
 
    user_opt_passwd = '' as string // passwd_live
@@ -207,7 +207,7 @@ export default class Ovary {
       this.edit_boot_menu = settings.General.edit_boot_menu === 'yes'
       this.gui_editor = settings.General.gui_editor
       this.force_installer = settings.General.force_installer === 'yes'
-      
+
       this.kernel_image = settings.General.kernel_image
       this.initrd_image = settings.General.initrd_image
       this.vmlinuz = this.kernel_image.substr(this.kernel_image.lastIndexOf('/'))
@@ -232,10 +232,7 @@ export default class Ovary {
       this.user_opt = settings.General.user_opt
 
       if (this.user_opt === undefined || this.user_opt === '') {
-         this.user_opt = shx
-            .exec('awk -F":" \'/1000:1000/ { print $1 }\' /etc/passwd', {
-               silent: true
-            })
+         this.user_opt = shx.exec('awk -F":" \'/1000:1000/ { print $1 }\' /etc/passwd', { silent: true })
             .stdout.trim()
          if (this.user_opt === '') {
             this.user_opt = 'live'
@@ -275,12 +272,12 @@ export default class Ovary {
       console.log(`make_md5sum:       ${this.make_md5sum}`)
       console.log(`make_isohybrid:    ${this.make_isohybrid}`)
       console.log(`compression:       ${this.compression}`)
-      console.log(`edit_boot_menu:    ${this.edit_boot_menu}`)
-      console.log(`gui_editor:        ${this.gui_editor}`)
       console.log(`force_installer:   ${this.force_installer}`)
       console.log(`user_opt:          ${this.user_opt}`)
       console.log(`netconfig_opt:     ${this.netconfig_opt}`)
       console.log(`ifnames_opt:       ${this.ifnames_opt}`)
+      console.log(`edit_boot_menu:    ${this.edit_boot_menu}`)
+      console.log(`gui_editor:        ${this.gui_editor}`)
       console.log(`pmount_fixed:      ${this.pmount_fixed}`)
       console.log(`ssh_pass:          ${this.ssh_pass}`)
       if (this.make_efi) {
@@ -741,7 +738,7 @@ export default class Ovary {
       if (verbose) {
          console.log('ovary: isoStdmenuCfg')
       }
-      shx.cp(path.resolve(__dirname, '../../conf/isolinux/stdmenu.template.cfg'),`${this.work_dir.pathIso}/isolinux/stdmenu.cfg`)
+      shx.cp(path.resolve(__dirname, '../../conf/isolinux/stdmenu.template.cfg'), `${this.work_dir.pathIso}/isolinux/stdmenu.cfg`)
    }
 
    /**
@@ -752,7 +749,7 @@ export default class Ovary {
       if (verbose) {
          console.log('ovary: isolinuxCfg')
       }
-      shx.cp(path.resolve(__dirname, '../../conf/isolinux/isolinux.template.cfg'),`${this.work_dir.pathIso}/isolinux/isolinux.cfg`)
+      shx.cp(path.resolve(__dirname, '../../conf/isolinux/isolinux.template.cfg'), `${this.work_dir.pathIso}/isolinux/isolinux.cfg`)
    }
 
    async isoMenuCfg(verbose = false) {
@@ -1144,7 +1141,7 @@ export default class Ovary {
 
          // Copia link comuni sul desktop
          shx.cp('/usr/share/applications/penguins-eggs.desktop', `${this.work_dir.merged}${pathToDesktopLive}`)
-         if (myAddons.adapt){
+         if (myAddons.adapt) {
             shx.cp('/usr/share/applications/penguins-eggs-adapt.desktop', `${this.work_dir.merged}${pathToDesktopLive}`)
          }
 
