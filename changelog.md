@@ -14,8 +14,15 @@ penguins-eggs
 
 Usually the last version is the right one. Detailed instrunctions for usage are published on the [penguin's eggs book](https://penguins-eggs.net/book).
 
+## Commit history
+You can follow the project also consulting the [commit history](https://github.com/pieroproietti/penguins-eggs/commits/master
+).
+
 ## Changelog
 Versions are listed on reverse order, the first is the last one.
+
+### eggs-7.0.18_1.deb
+Cleanig configuration, writings [issues](https://github.com/pieroproietti/penguins-eggs/issues) and trying to solve. 
 
 ### eggs-7.6.14_1.deb
 Fixed bug that prevented grub from loading the kernel and initrd.img from the iso image. The error was only detectable on UEFI machines.
