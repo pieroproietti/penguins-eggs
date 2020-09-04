@@ -18,7 +18,7 @@ import pjson = require('pjson')
 import chalk = require('chalk')
 
 // interfaces
-import { IRemix, IDistro, IPackage, IWorkDir, IMyAddons } from '../interfaces'
+import { IMyAddons } from '../interfaces'
 
 
 // libraries
@@ -28,22 +28,16 @@ const exec = require('../lib/utils').exec
 import Utils from './utils'
 import N8 from './n8'
 import Incubator from './incubation/calamares-config'
-import Distro from './distro'
 import Xdg from './xdg'
 import Pacman from './pacman'
-import Prerequisites from '../commands/prerequisites'
 import Settings from './settings'
-import { settings } from 'cluster'
 
 /**
  * Ovary:
  */
 export default class Ovary {
-   app = {} as IPackage
 
    incubator = {} as Incubator
-
-   prerequisites = {} as Prerequisites
 
    settings = {} as Settings
 
@@ -63,7 +57,7 @@ export default class Ovary {
     * @returns {boolean} success
     */
    async fertilization(): Promise<boolean> {
-      if (this.settings.loadSettings()) {
+      if (this.settings.load()) {
          if (this.settings.listFreeSpace()) {
             if (await Utils.customConfirm('Select yes to continue...'))
                return true
@@ -182,8 +176,6 @@ export default class Ovary {
             await Pacman.prerequisitesCalamaresInstall(verbose)
             await Pacman.clean(verbose)
          }
-         // Configuro calamares
-         //console.log(this.settings.remix)
          this.incubator = new Incubator(this.settings.remix, this.settings.distro, this.settings.user_opt, verbose)
          this.incubator.config()
       }
@@ -1142,12 +1134,12 @@ export default class Ovary {
          }
 
          // xorriso 1.5.0 : RockRidge filesystem manipulator, libburnia project.
-         // originale cmd = `xorriso -as mkisofs -r -J -joliet-long -l -iso-level 3 -cache-inodes ${isoHybridOption} -partition_offset 16 -volid ${this.eggName} -b isolinux/isolinux.bin -c isolinux/boot.cat -no-emul-boot -boot-load-size 4 -boot-info-table ${uefi_opt} -o ${this.snapshot_dir}${this.eggName} ${this.work_dir.pathIso}`
+         // originale cmd = `xorriso -as mkisofs -r -J -joliet-long -l -iso-level 3 -cache-inodes ${isoHybridOption} -partition_offset 16 -volid ${this.isoFilename} -b isolinux/isolinux.bin -c isolinux/boot.cat -no-emul-boot -boot-load-size 4 -boot-info-table ${uefi_opt} -o ${this.snapshot_dir}${this.isoFilename} ${this.work_dir.pathIso}`
 
-         this.settings.eggName = Utils.getFilename(this.settings.remix.name)
+         this.settings.isoFilename = Utils.getFilename(this.settings.remix.name)
 
          let cmd = `xorriso  -as mkisofs \
-                          -volid ${this.settings.eggName} \
+                          -volid ${this.settings.isoFilename} \
                           -joliet-long \
                           -l \
                           -iso-level 3 \
@@ -1159,7 +1151,7 @@ export default class Ovary {
                           -boot-load-size 4 \
                           -boot-info-table \
                           ${uefi_opt} \
-                          -output ${this.settings.snapshot_dir}${this.settings.eggName} \
+                          -output ${this.settings.snapshot_dir}${this.settings.isoFilename} \
                           ${this.settings.work_dir.pathIso}`
 
          cmd = cmd.replace(/\s\s+/g, ' ')
@@ -1213,7 +1205,7 @@ export default class Ovary {
       if (!script_only) {
          console.log(
             'eggs is finished!\n\nYou can find the file iso: ' +
-            chalk.cyanBright(this.settings.eggName) +
+            chalk.cyanBright(this.settings.isoFilename) +
             '\nin the nest: ' +
             chalk.cyanBright(this.settings.snapshot_dir) +
             '.'
@@ -1221,7 +1213,7 @@ export default class Ovary {
       } else {
          console.log(
             'eggs is finished!\n\nYou can find the scripts to build iso: ' +
-            chalk.cyanBright(this.settings.eggName) +
+            chalk.cyanBright(this.settings.isoFilename) +
             '\nin the ovarium: ' +
             chalk.cyanBright(this.settings.work_dir.path) +
             '.'

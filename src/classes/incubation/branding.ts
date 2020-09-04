@@ -68,7 +68,6 @@ export function branding(
       }
    }
    //console.log(branding)
-   console.log(branding)
    return yaml.safeDump(branding)
 }
 

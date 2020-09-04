@@ -26,13 +26,9 @@ const exec = require('../lib/utils').exec
 
 // classes
 import Utils from './utils'
-import N8 from './n8'
 import Incubator from './incubation/calamares-config'
 import Distro from './distro'
-import Xdg from './xdg'
 import Pacman from './pacman'
-import Prerequisites from '../commands/prerequisites'
-import Choice = require('inquirer/lib/objects/choice')
 
 /**
  * Ovary:
@@ -48,11 +44,9 @@ export default class Settings {
 
    incubator = {} as Incubator
 
-   prerequisites = {} as Prerequisites
-
    i686 = false
 
-   live = false
+   isLive = false
 
    force_installer = false
 
@@ -98,15 +92,15 @@ export default class Settings {
 
    make_md5sum = false
 
-   compression = '' as string
+   compression = '' 
 
-   session_excludes = '' as string
+   session_excludes = ''
 
-   snapshot_basename = '' as string
+   snapshot_basename = ''
 
-   eggName = '' // resulting name of the iso
+   isoFilename = '' // resulting name of the iso
 
-   version = '' as string
+   version = '' 
 
    /**
     * Egg
@@ -120,7 +114,7 @@ export default class Settings {
       this.app.mail = 'piero.proietti@gmail.com'
       this.app.name = pjson.name as string
       this.app.version = pjson.version
-      this.live = Utils.isLive()
+      this.isLive = Utils.isLive()
       this.i686 = Utils.isi686()
       this.distro = new Distro(this.remix)
    }
@@ -131,7 +125,7 @@ export default class Settings {
     * @returns {boolean} success
     */
    async fertilization(): Promise<boolean> {
-      if (this.loadSettings()) {
+      if (this.load()) {
          if (this.listFreeSpace()) {
             if (await Utils.customConfirm('Select yes to continue...'))
                return true
@@ -144,7 +138,7 @@ export default class Settings {
     * Load configuration from /etc/penguins-eggs.conf
     * @returns {boolean} Success
     */
-   public async loadSettings(verbose = false): Promise<boolean> {
+   public async load(verbose = false): Promise<boolean> {
       let foundSettings: boolean
 
       if (!fs.existsSync(this.config_file)) {

@@ -10,7 +10,9 @@ import Utils from '../classes/utils'
 import Ovary from '../classes/ovary'
 import Pacman from '../classes/pacman'
 
+
 import { IRemix } from '../interfaces'
+import { settings } from 'cluster'
 
 export default class Calamares extends Command {
    static description = 'configure calamares or install and configure it'

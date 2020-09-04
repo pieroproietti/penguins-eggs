@@ -42,17 +42,12 @@ export class Buster {
         if (process.arch === 'ia32') {
             this.dirGlobalModules = '/usr/lib/calamares/modules/'
         }
-        console.log(`calamares buster constructor:`)
-        console.log(this.remix)
     }
 
     /**
      * write setting
      */
-    public async settings() {
-        console.log(`calamares buster settings:`)
-        console.log(this.remix)
-
+    public settings() {
         const dir = '/etc/calamares/'
         const file = dir + 'settings.conf'
         write(file, this.getSettings(), this.verbose)

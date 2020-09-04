@@ -10,6 +10,10 @@
  * Debian 10 (buster) — l'attuale versione stable
  * Debian 9 (stretch) — l'attuale versione oldstable
  * Debian 8 (jessie) — l'attuale versione oldoldstable
+ * 
+ * Devuan ASCII
+ * Devuan beowlf 
+ * Devuan Chimaera 
  *
  * Ubuntu 16.04 (xenial) LTS  active
  * Ubuntu 18.04 (bionic) LTS  active
@@ -20,7 +24,6 @@
  *
  * active distros
  *
- * jessie old
  * stretch old
  * buster
  * xenial old
