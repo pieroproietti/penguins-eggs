@@ -42,13 +42,17 @@ export class Buster {
         if (process.arch === 'ia32') {
             this.dirGlobalModules = '/usr/lib/calamares/modules/'
         }
-
+        console.log(`calamares buster constructor:`)
+        console.log(this.remix)
     }
 
     /**
      * write setting
      */
-    public settings() {
+    public async settings() {
+        console.log(`calamares buster settings:`)
+        console.log(this.remix)
+
         const dir = '/etc/calamares/'
         const file = dir + 'settings.conf'
         write(file, this.getSettings(), this.verbose)
@@ -108,7 +112,7 @@ export class Buster {
     /**
     * 
     */
-    public modules() {
+    public async modules() {
         this.modulePartition()
         this.moduleMount()
         this.moduleUnpackfs()
@@ -198,7 +202,7 @@ export class Buster {
     /**
      *
      */
-    modulePartition() {
+    async modulePartition() {
         if (this.verbose) {
             console.log(`calamares: module partition. Nothing to do!`)
         }

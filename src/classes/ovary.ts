@@ -33,18 +33,13 @@ import Xdg from './xdg'
 import Pacman from './pacman'
 import Prerequisites from '../commands/prerequisites'
 import Settings from './settings'
+import { settings } from 'cluster'
 
 /**
  * Ovary:
  */
 export default class Ovary {
    app = {} as IPackage
-
-   remix = {} as IRemix
-
-   //   work_dir = {} as IWorkDir
-
-   distro = {} as IDistro
 
    incubator = {} as Incubator
 
@@ -58,9 +53,8 @@ export default class Ovary {
     * @param compression
     */
    constructor(compression = '') {
-      this.compression = compression
-
       this.settings = new Settings()
+      this.settings.compression = compression
    }
 
    /**
@@ -83,17 +77,17 @@ export default class Ovary {
     *
     * @param basename
     */
-
    async produce(basename = '', script_only = false, theme = '', myAddons: IMyAddons, verbose = false) {
       const echo = Utils.setEcho(verbose)
 
+     
       if (!fs.existsSync(this.settings.snapshot_dir)) {
          shx.mkdir('-p', this.settings.snapshot_dir)
       }
 
       await this.settings.loadRemix(basename, theme)
 
-      if (await Utils.isLive()) {
+      if (Utils.isLive()) {
          console.log(
             chalk.red(
                '>>> eggs: This is a live system! An egg cannot be produced from an egg!'
@@ -101,16 +95,13 @@ export default class Ovary {
          )
       } else {
          if (verbose) {
-            console.log(`
-             egg ${this.settings.remix.name}`)
+            console.log(`egg ${this.settings.remix.name}`)
          }
 
          await this.liveCreateStructure(verbose)
          if (Pacman.packageIsInstalled('calamares')) {
             await this.calamaresConfigure(verbose)
          }
-         console.log(Pacman.packageIsInstalled('calamares'))
-         console.log(this.remix)
          await this.isoCreateStructure(verbose)
          await this.isolinuxPrepare(verbose)
          await this.isoStdmenuCfg(verbose)
@@ -167,7 +158,6 @@ export default class Ovary {
       if (!fs.existsSync(this.settings.work_dir.merged)) {
          shx.mkdir('-p', this.settings.work_dir.merged)
       }
-      process.exit()
    }
 
    /**
@@ -193,7 +183,8 @@ export default class Ovary {
             await Pacman.clean(verbose)
          }
          // Configuro calamares
-         this.incubator = new Incubator(this.remix, this.distro, this.settings.user_opt, verbose)
+         //console.log(this.settings.remix)
+         this.incubator = new Incubator(this.settings.remix, this.settings.distro, this.settings.user_opt, verbose)
          this.incubator.config()
       }
    }
@@ -236,14 +227,14 @@ export default class Ovary {
       }
       if (fs.existsSync(`${this.settings.work_dir.merged}/etc/ssh/sshd_config`)) {
          await exec(
-            `sed -i 's/PermitRootLogin yes/PermitRootLogin prohibit-password/' ${this.work_dir.merged}/etc/ssh/sshd_config`,
+            `sed -i 's/PermitRootLogin yes/PermitRootLogin prohibit-password/' ${this.settings.work_dir.merged}/etc/ssh/sshd_config`,
             echo
          )
          if (this.settings.ssh_pass) {
-            await exec(`sed -i 's|.*PasswordAuthentication.*no|PasswordAuthentication yes|' ${this.work_dir.merged}/etc/ssh/sshd_config`,echo)
+            await exec(`sed -i 's|.*PasswordAuthentication.*no|PasswordAuthentication yes|' ${this.settings.work_dir.merged}/etc/ssh/sshd_config`,echo)
          } else {
             await exec(
-               `sed -i 's|.*PasswordAuthentication.*yes|PasswordAuthentication no|' ${this.work_dir.merged}/etc/ssh/sshd_config`,
+               `sed -i 's|.*PasswordAuthentication.*yes|PasswordAuthentication no|' ${this.settings.work_dir.merged}/etc/ssh/sshd_config`,
                echo
             )
          }
@@ -279,11 +270,11 @@ export default class Ovary {
       /**
        * Su DEVUAN NON Esiste systemd
        */
-      if (this.distro.distroId !== 'Devuan') {
+      if (this.settings.distro.distroId !== 'Devuan') {
          /**
          * SU UBUNTU E DERIVATE NON DISABILITARE systemd-resolved.service
          */
-         if (this.distro.distroLike !== 'Ubuntu') {
+         if (this.settings.distro.distroLike !== 'Ubuntu') {
             await exec(`chroot ${this.settings.work_dir.merged} systemctl disable systemd-resolved.service`)
          }
          await exec(`chroot ${this.settings.work_dir.merged} systemctl disable systemd-networkd.service`)
@@ -308,7 +299,7 @@ export default class Ovary {
       await exec(`touch ${this.settings.work_dir.merged}/etc/network/interfaces`, echo)
       Utils.write(`${this.settings.work_dir.merged}/etc/network/interfaces`, 'auto lo\niface lo inet loopback')
 
-      if (this.distro.distroId !== 'Devuan') {
+      if (this.settings.distro.distroId !== 'Devuan') {
          await exec(`rm -f ${this.settings.work_dir.merged}/var/lib/wicd/configurations/*`, echo)
          await exec(`rm -f ${this.settings.work_dir.merged}/etc/wicd/wireless-settings.conf`, echo)
          await exec(`rm -f ${this.settings.work_dir.merged}/etc/NetworkManager/system-connections/*`, echo)
@@ -400,13 +391,13 @@ export default class Ovary {
          console.log('ovary: isolinuxPrepare')
       }
 
-      const isolinuxbin = `${this.distro.isolinuxPath}isolinux.bin`
-      const vesamenu = `${this.distro.syslinuxPath}vesamenu.c32`
+      const isolinuxbin = `${this.settings.distro.isolinuxPath}isolinux.bin`
+      const vesamenu = `${this.settings.distro.syslinuxPath}vesamenu.c32`
 
-      await exec(`rsync -a ${this.distro.syslinuxPath}chain.c32 ${this.work_dir.pathIso}/isolinux/`, echo)
-      await exec(`rsync -a ${this.distro.syslinuxPath}ldlinux.c32 ${this.work_dir.pathIso}/isolinux/`, echo)
-      await exec(`rsync -a ${this.distro.syslinuxPath}libcom32.c32 ${this.work_dir.pathIso}/isolinux/`, echo)
-      await exec(`rsync -a ${this.distro.syslinuxPath}libutil.c32 ${this.work_dir.pathIso}/isolinux/`, echo)
+      await exec(`rsync -a ${this.settings.distro.syslinuxPath}chain.c32 ${this.settings.work_dir.pathIso}/isolinux/`, echo)
+      await exec(`rsync -a ${this.settings.distro.syslinuxPath}ldlinux.c32 ${this.settings.work_dir.pathIso}/isolinux/`, echo)
+      await exec(`rsync -a ${this.settings.distro.syslinuxPath}libcom32.c32 ${this.settings.work_dir.pathIso}/isolinux/`, echo)
+      await exec(`rsync -a ${this.settings.distro.syslinuxPath}libutil.c32 ${this.settings.work_dir.pathIso}/isolinux/`, echo)
       await exec(`rsync -a ${isolinuxbin} ${this.settings.work_dir.pathIso}/isolinux/`, echo)
       await exec(`rsync -a ${vesamenu} ${this.settings.work_dir.pathIso}/isolinux/`, echo)
    }
@@ -444,7 +435,7 @@ export default class Ovary {
       fs.copyFileSync(menuSourcePath, menuDestPath)
       fs.copyFileSync(splashSourcePath, splashDestPath)
 
-      shx.sed('-i', '%custom-name%', this.remix.name, menuDestPath)
+      shx.sed('-i', '%custom-name%', this.settings.remix.name, menuDestPath)
       shx.sed('-i', '%kernel%', Utils.kernerlVersion(), menuDestPath)
       shx.sed('-i', '%vmlinuz%', `/live${this.settings.vmlinuz}`, menuDestPath) // ${this.kernel_image}`, menuDestPath)
       shx.sed('-i', '%initrd-img%', `/live${this.settings.initrdImg}`, menuDestPath) // live${this.initrd_image}`, menuDestPath)
@@ -633,7 +624,7 @@ export default class Ovary {
       let cmd = ''
       const cmds: string[] = []
       cmds.push(`# NOTE: home, cdrom, dev, live, media, mnt, proc, run, sys and tmp`)
-      cmds.push(`#       need just a mkdir in ${this.work_dir.merged}`)
+      cmds.push(`#       need just a mkdir in ${this.settings.work_dir.merged}`)
       cmds.push(`# host: ${os.hostname()} user: ${Utils.getPrimaryUser()}\n`)
 
       for (const dir of rootDirs) {
@@ -818,7 +809,7 @@ export default class Ovary {
          shx.cp(path.resolve(__dirname, '../../assets/penguins-eggs.desktop'), '/usr/share/applications/')
          shx.cp(path.resolve(__dirname, '../../assets/penguins-eggs-adapt.desktop'), '/usr/share/applications/')
          shx.cp(path.resolve(__dirname, '../../assets/penguins-eggs-installer.desktop'), '/usr/share/applications/')
-         shx.cp(path.resolve(__dirname, `../../addons/${theme}/theme/applications/debian-install.desktop`), `/usr/share/applications/`)
+         shx.cp(path.resolve(__dirname, `../../addons/${theme}/theme/applications/install-debian.desktop`), `/usr/share/applications/`)
 
          // Copia link comuni sul desktop
          shx.cp('/usr/share/applications/penguins-eggs.desktop', `${this.settings.work_dir.merged}${pathToDesktopLive}`)
@@ -914,7 +905,7 @@ export default class Ovary {
           */
          Xdg.autologin(Utils.getPrimaryUser(), this.settings.user_opt, this.settings.work_dir.merged)
       }
-      Utils.writeXs(`${this.work_dir.path}createuserlive`, cmds)
+      Utils.writeXs(`${this.settings.work_dir.path}createuserlive`, cmds)
    }
 
    /**
@@ -1106,7 +1097,7 @@ export default class Ovary {
       }
       // editEfi()
       const gpath = `${this.settings.work_dir.pathIso}/boot/grub/grub.cfg`
-      shx.sed('-i', '%custom-name%', this.remix.name, gpath)
+      shx.sed('-i', '%custom-name%', this.settings.remix.name, gpath)
       shx.sed('-i', '%kernel%', Utils.kernerlVersion(), gpath)
       shx.sed('-i', '%vmlinuz%', `/live${this.settings.vmlinuz}`, gpath)
       shx.sed('-i', '%initrd-img%', `/live${this.settings.initrdImg}`, gpath)
@@ -1134,7 +1125,7 @@ export default class Ovary {
             '-eltorito-alt-boot -e boot/grub/efiboot.img -isohybrid-gpt-basdat -no-emul-boot'
       }
 
-      let isoHybridOption = `-isohybrid-mbr ${this.distro.isolinuxPath}isohdpfx.bin `
+      let isoHybridOption = `-isohybrid-mbr ${this.settings.distro.isolinuxPath}isohdpfx.bin `
 
       if (this.settings.make_isohybrid) {
          if (fs.existsSync('/usr/lib/syslinux/mbr/isohdpfx.bin')) {
@@ -1153,7 +1144,7 @@ export default class Ovary {
          // xorriso 1.5.0 : RockRidge filesystem manipulator, libburnia project.
          // originale cmd = `xorriso -as mkisofs -r -J -joliet-long -l -iso-level 3 -cache-inodes ${isoHybridOption} -partition_offset 16 -volid ${this.eggName} -b isolinux/isolinux.bin -c isolinux/boot.cat -no-emul-boot -boot-load-size 4 -boot-info-table ${uefi_opt} -o ${this.snapshot_dir}${this.eggName} ${this.work_dir.pathIso}`
 
-         this.settings.eggName = Utils.getFilename(this.remix.name)
+         this.settings.eggName = Utils.getFilename(this.settings.remix.name)
 
          let cmd = `xorriso  -as mkisofs \
                           -volid ${this.settings.eggName} \

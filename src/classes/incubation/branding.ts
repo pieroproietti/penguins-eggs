@@ -6,6 +6,7 @@
  */
 import yaml = require('js-yaml')
 import { IRemix, IDistro } from '../../interfaces'
+import Ovary from '../ovary'
 
 /**
  *
@@ -67,6 +68,7 @@ export function branding(
       }
    }
    //console.log(branding)
+   console.log(branding)
    return yaml.safeDump(branding)
 }
 
