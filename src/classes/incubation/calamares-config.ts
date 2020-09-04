@@ -54,11 +54,11 @@ export default class CalamaresConfig {
    /**
     * config
     */
-   config() {
+   async config() {
       this.createCalamaresDirs()
       this.createBranding()
       this.createInstallDebian()
-      if (this.distro.versionLike === 'buster' || this.distro.versionLike === 'strect' || this.distro.versionLike === 'bulleye') {
+      if (this.distro.versionLike === 'buster' || this.distro.versionLike === 'stretch' || this.distro.versionLike === 'bulleye') {
          const buster = new Buster(this.remix, this.distro, this.displaymanager, this.user_opt, this.verbose)
          buster.settings()
          buster.modules()
