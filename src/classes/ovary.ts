@@ -12,9 +12,7 @@
 import fs = require('fs')
 import path = require('path')
 import os = require('os')
-import ini = require('ini')
 import shx = require('shelljs')
-import pjson = require('pjson')
 import chalk = require('chalk')
 
 // interfaces
@@ -74,7 +72,7 @@ export default class Ovary {
    async produce(basename = '', script_only = false, theme = '', myAddons: IMyAddons, verbose = false) {
       const echo = Utils.setEcho(verbose)
 
-     
+
       if (!fs.existsSync(this.settings.snapshot_dir)) {
          shx.mkdir('-p', this.settings.snapshot_dir)
       }
@@ -208,7 +206,7 @@ export default class Ovary {
       // Allow all fixed drives to be mounted with pmount
       if (this.settings.pmount_fixed) {
          if (fs.existsSync(`${this.settings.work_dir.merged}/etc/pmount.allow`))
-            await exec(`sed -i 's:#/dev/sd\[a-z\]:/dev/sd\[a-z\]:' ${this.settings.work_dir.merged}/pmount.allow`,echo)
+            await exec(`sed -i 's:#/dev/sd\[a-z\]:/dev/sd\[a-z\]:' ${this.settings.work_dir.merged}/pmount.allow`, echo)
       }
 
       // Enable or disable password login through ssh for users (not root)
@@ -223,7 +221,7 @@ export default class Ovary {
             echo
          )
          if (this.settings.ssh_pass) {
-            await exec(`sed -i 's|.*PasswordAuthentication.*no|PasswordAuthentication yes|' ${this.settings.work_dir.merged}/etc/ssh/sshd_config`,echo)
+            await exec(`sed -i 's|.*PasswordAuthentication.*no|PasswordAuthentication yes|' ${this.settings.work_dir.merged}/etc/ssh/sshd_config`, echo)
          } else {
             await exec(
                `sed -i 's|.*PasswordAuthentication.*yes|PasswordAuthentication no|' ${this.settings.work_dir.merged}/etc/ssh/sshd_config`,
@@ -270,7 +268,6 @@ export default class Ovary {
             await exec(`chroot ${this.settings.work_dir.merged} systemctl disable systemd-resolved.service`)
          }
          await exec(`chroot ${this.settings.work_dir.merged} systemctl disable systemd-networkd.service`)
-
          await exec(`chroot ${this.settings.work_dir.merged} systemctl disable remote-cryptsetup.target`)
          await exec(`chroot ${this.settings.work_dir.merged} systemctl disable speech-dispatcherd.service`)
          await exec(`chroot ${this.settings.work_dir.merged} systemctl disable wpa_supplicant-nl80211@.service`)
@@ -320,6 +317,7 @@ export default class Ovary {
       /**
        * add some basic files to /dev
        */
+
       /*
       await exec(`mknod -m 622 ${this.work_dir.merged}/dev/console c 5 1`, echo)
       await exec(`mknod -m 666 ${this.work_dir.merged}/dev/null c 1 3`, echo)
