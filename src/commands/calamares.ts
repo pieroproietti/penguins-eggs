@@ -8,6 +8,7 @@ import { Command, flags } from '@oclif/command'
 import shx = require('shelljs')
 import Utils from '../classes/utils'
 import Ovary from '../classes/ovary'
+import Settings from '../classes/settings'
 import Pacman from '../classes/pacman'
 
 
@@ -71,8 +72,7 @@ export default class Calamares extends Command {
 
                Utils.warning('Configuring calamares...')
                const ovary = new Ovary()
-               if (await ovary.loadSettings()) {
-                  ovary.loadRemix('custom', 'eggs')
+               if (await ovary.fertilization()) {
                   await ovary.calamaresConfigure(verbose)
                }
             }

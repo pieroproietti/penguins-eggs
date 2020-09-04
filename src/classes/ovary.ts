@@ -876,7 +876,7 @@ export default class Ovary {
             )
             // await exec(`mount -o remount,bind,ro ${this.work_dir.merged}/dev`, echo)
 
-            await exec(`chroot ${this.work_dir.merged} sudo -u ${this.settings.user_opt} dbus-launch gio set file://${pathToDesktopLive}/dwagent-sh.desktop metadata::trusted true`, echo)
+            await exec(`chroot ${this.settings.work_dir.merged} sudo -u ${this.settings.user_opt} dbus-launch gio set file://${pathToDesktopLive}/dwagent-sh.desktop metadata::trusted true`, echo)
             await exec(`chroot ${this.settings.work_dir.merged} sudo -u ${this.settings.user_opt} dbus-launch gio set file://${pathToDesktopLive}/penguins-eggs-adjust.desktop metadata::trusted true`, echo)
             await exec(`chroot ${this.settings.work_dir.merged} sudo -u ${this.settings.user_opt} dbus-launch gio set file://${pathToDesktopLive}/penguins-eggs.desktop metadata::trusted true`, echo)
 

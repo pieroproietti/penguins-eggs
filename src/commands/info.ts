@@ -8,7 +8,7 @@
 import { Command } from '@oclif/command'
 import shx = require('shelljs')
 import Utils from '../classes/utils'
-import Ovary from '../classes/ovary'
+import Settings from '../classes/settings'
 import Pacman from '../classes/pacman'
 import chalk = require('chalk')
 
@@ -27,13 +27,13 @@ You will find here informations about penguin's eggs!
    async run() {
       Utils.titles('info')
 
-      const ovary = new Ovary()
-      ovary.loadSettings()
+      const settings = new Settings()
+      settings.load()
 
       const line =
          '-----------------------------------------------------------------'
       console.log(line)
-      ovary.showSettings()
+      settings.showSettings()
 
       console.log(line)
       shx.exec('lsb_release -a')
