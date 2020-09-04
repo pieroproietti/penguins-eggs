@@ -111,14 +111,13 @@ export default class Ovary {
          }
          console.log(Pacman.packageIsInstalled('calamares'))
          console.log(this.remix)
-         //process.exit()
          await this.isoCreateStructure(verbose)
          await this.isolinuxPrepare(verbose)
          await this.isoStdmenuCfg(verbose)
          await this.isolinuxCfg(verbose)
          await this.isoMenuCfg()
          await this.copyKernel()
-         if (this.make_efi) {
+         if (this.settings.make_efi) {
             await this.makeEfi(verbose)
          }
          await this.bindLiveFs(verbose)
@@ -127,7 +126,7 @@ export default class Ovary {
          await this.editBootMenu(verbose)
 
          await this.makeSquashfs(script_only, verbose)
-         if (this.make_efi) {
+         if (this.settings.make_efi) {
             await this.editEfi(verbose)
          }
          await this.mkIso(script_only, verbose)
@@ -512,14 +511,14 @@ export default class Ovary {
          this.addRemoveExclusion(true, '/etc/localtime')
       }
 
-      this.addRemoveExclusion(true, this.snapshot_dir /* .absolutePath() */)
+      this.addRemoveExclusion(true, this.settings.snapshot_dir /* .absolutePath() */)
 
-      const compression = `-comp ${this.compression}`
+      const compression = `-comp ${this.settings.compression}`
       if (fs.existsSync(`${this.settings.work_dir.pathIso}/live/filesystem.squashfs`)) {
          fs.unlinkSync(`${this.settings.work_dir.pathIso}/live/filesystem.squashfs`)
       }
       // let cmd = `mksquashfs ${this.work_dir.merged} ${this.work_dir.pathIso}/live/filesystem.squashfs ${compression} ${(this.mksq_opt === '' ? '' : ' ' + this.mksq_opt)} -wildcards -ef ${this.snapshot_excludes} ${this.session_excludes} `
-      let cmd = `mksquashfs ${this.settings.work_dir.merged} ${this.settings.work_dir.pathIso}/live/filesystem.squashfs ${compression} -wildcards -ef ${this.settings.snapshot_excludes} ${this.ssettings.ession_excludes} `
+      let cmd = `mksquashfs ${this.settings.work_dir.merged} ${this.settings.work_dir.pathIso}/live/filesystem.squashfs ${compression} -wildcards -ef ${this.settings.snapshot_excludes} ${this.settings.session_excludes} `
       cmd = cmd.replace(/\s\s+/g, ' ')
       Utils.writeX(`${this.settings.work_dir.path}mksquashfs`, cmd)
       if (!script_only) {
@@ -1035,7 +1034,7 @@ export default class Ovary {
       )
 
       // pdpd (torna a efi_work)
-      process.chdir(this.efi_work)
+      process.chdir(this.settings.efi_work)
 
       // copy the grub image to efi/boot (to go later in the device's root)
       shx.cp(`${tempDir}/bootx64.efi`, './efi/boot')
@@ -1075,26 +1074,26 @@ export default class Ovary {
 
       // Copy efi files to iso
       await exec(
-         `rsync -avx ${this.efi_work}/boot ${this.work_dir.pathIso}/`,
+         `rsync -avx ${this.settings.efi_work}/boot ${this.settings.work_dir.pathIso}/`,
          echo
       )
       await exec(
-         `rsync -avx ${this.efi_work}/efi  ${this.work_dir.pathIso}/`,
+         `rsync -avx ${this.settings.efi_work}/efi  ${this.settings.work_dir.pathIso}/`,
          echo
       )
 
       // Do the main grub.cfg (which gets loaded last):
       fs.copyFileSync(
          path.resolve(__dirname, '../../conf/grub/grub.template.cfg'),
-         `${this.work_dir.pathIso}/boot/grub/grub.cfg`
+         `${this.settings.work_dir.pathIso}/boot/grub/grub.cfg`
       )
       fs.copyFileSync(
          path.resolve(__dirname, '../../conf/grub/theme.cfg'),
-         `${this.work_dir.pathIso}/boot/grub/theme.cfg`
+         `${this.settings.work_dir.pathIso}/boot/grub/theme.cfg`
       )
       fs.copyFileSync(
          path.resolve(__dirname, '../../conf/grub/loopback.cfg'),
-         `${this.work_dir.pathIso}/boot/grub/loopback.cfg`
+         `${this.settings.work_dir.pathIso}/boot/grub/loopback.cfg`
       )
    }
 
@@ -1106,14 +1105,14 @@ export default class Ovary {
          console.log('editing grub.cfg')
       }
       // editEfi()
-      const gpath = `${this.work_dir.pathIso}/boot/grub/grub.cfg`
+      const gpath = `${this.settings.work_dir.pathIso}/boot/grub/grub.cfg`
       shx.sed('-i', '%custom-name%', this.remix.name, gpath)
       shx.sed('-i', '%kernel%', Utils.kernerlVersion(), gpath)
-      shx.sed('-i', '%vmlinuz%', `/live${this.vmlinuz}`, gpath)
-      shx.sed('-i', '%initrd-img%', `/live${this.initrdImg}`, gpath)
-      shx.sed('-i', '%username-opt%', this.user_opt, gpath)
-      shx.sed('-i', '%netconfig-opt%', this.netconfig_opt, gpath)
-      shx.sed('-i', '%timezone-opt%', this.timezone_opt, gpath)
+      shx.sed('-i', '%vmlinuz%', `/live${this.settings.vmlinuz}`, gpath)
+      shx.sed('-i', '%initrd-img%', `/live${this.settings.initrdImg}`, gpath)
+      shx.sed('-i', '%username-opt%', this.settings.user_opt, gpath)
+      shx.sed('-i', '%netconfig-opt%', this.settings.netconfig_opt, gpath)
+      shx.sed('-i', '%timezone-opt%', this.settings.timezone_opt, gpath)
    }
 
    /**
@@ -1130,14 +1129,14 @@ export default class Ovary {
       }
 
       let uefi_opt = ''
-      if (this.make_efi) {
+      if (this.settings.make_efi) {
          uefi_opt =
             '-eltorito-alt-boot -e boot/grub/efiboot.img -isohybrid-gpt-basdat -no-emul-boot'
       }
 
       let isoHybridOption = `-isohybrid-mbr ${this.distro.isolinuxPath}isohdpfx.bin `
 
-      if (this.make_isohybrid) {
+      if (this.settings.make_isohybrid) {
          if (fs.existsSync('/usr/lib/syslinux/mbr/isohdpfx.bin')) {
             isoHybridOption =
                '-isohybrid-mbr /usr/lib/syslinux/mbr/isohdpfx.bin'
@@ -1154,10 +1153,10 @@ export default class Ovary {
          // xorriso 1.5.0 : RockRidge filesystem manipulator, libburnia project.
          // originale cmd = `xorriso -as mkisofs -r -J -joliet-long -l -iso-level 3 -cache-inodes ${isoHybridOption} -partition_offset 16 -volid ${this.eggName} -b isolinux/isolinux.bin -c isolinux/boot.cat -no-emul-boot -boot-load-size 4 -boot-info-table ${uefi_opt} -o ${this.snapshot_dir}${this.eggName} ${this.work_dir.pathIso}`
 
-         this.eggName = Utils.getFilename(this.remix.name)
+         this.settings.eggName = Utils.getFilename(this.remix.name)
 
          let cmd = `xorriso  -as mkisofs \
-                          -volid ${this.eggName} \
+                          -volid ${this.settings.eggName} \
                           -joliet-long \
                           -l \
                           -iso-level 3 \
@@ -1169,11 +1168,11 @@ export default class Ovary {
                           -boot-load-size 4 \
                           -boot-info-table \
                           ${uefi_opt} \
-                          -output ${this.snapshot_dir}${this.eggName} \
-                          ${this.work_dir.pathIso}`
+                          -output ${this.settings.snapshot_dir}${this.settings.eggName} \
+                          ${this.settings.work_dir.pathIso}`
 
          cmd = cmd.replace(/\s\s+/g, ' ')
-         Utils.writeX(`${this.work_dir.path}mkiso`, cmd)
+         Utils.writeX(`${this.settings.work_dir.path}mkiso`, cmd)
          if (!script_only) {
             await exec(cmd, echo)
          }
@@ -1223,17 +1222,17 @@ export default class Ovary {
       if (!script_only) {
          console.log(
             'eggs is finished!\n\nYou can find the file iso: ' +
-            chalk.cyanBright(this.eggName) +
+            chalk.cyanBright(this.settings.eggName) +
             '\nin the nest: ' +
-            chalk.cyanBright(this.snapshot_dir) +
+            chalk.cyanBright(this.settings.snapshot_dir) +
             '.'
          )
       } else {
          console.log(
             'eggs is finished!\n\nYou can find the scripts to build iso: ' +
-            chalk.cyanBright(this.eggName) +
+            chalk.cyanBright(this.settings.eggName) +
             '\nin the ovarium: ' +
-            chalk.cyanBright(this.work_dir.path) +
+            chalk.cyanBright(this.settings.work_dir.path) +
             '.'
          )
          console.log(`usage`)
