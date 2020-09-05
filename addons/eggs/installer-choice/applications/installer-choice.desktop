@@ -1,8 +1,0 @@
-[Desktop Entry]
-Name=Installazione Linux
-GenericName=Installazione Linux
-Exec=installer-choice.sh
-Terminal=false
-Type=Application
-Icon=system-software-install
-Categories=system

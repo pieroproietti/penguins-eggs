@@ -717,40 +717,40 @@ export default class Ovary {
           * creazione dei link in /usr/share/applications
           */
          shx.cp(path.resolve(__dirname, '../../assets/penguins-eggs.desktop'), '/usr/share/applications/')
-         shx.cp(path.resolve(__dirname, '../../assets/penguins-eggs-adapt.desktop'), '/usr/share/applications/')
-         shx.cp(path.resolve(__dirname, '../../assets/penguins-eggs-installer.desktop'), '/usr/share/applications/')
+         shx.cp(path.resolve(__dirname, '../../assets/penguins-adapt.desktop'), '/usr/share/applications/')
+         shx.cp(path.resolve(__dirname, '../../assets/penguins-clinstaller.desktop'), '/usr/share/applications/')
          shx.cp(path.resolve(__dirname, `../../addons/${theme}/theme/applications/install-debian.desktop`), `/usr/share/applications/`)
 
          // Copia link comuni sul desktop
          shx.cp('/usr/share/applications/penguins-eggs.desktop', `${this.settings.work_dir.merged}${pathToDesktopLive}`)
          if (myAddons.adapt) {
-            shx.cp('/usr/share/applications/penguins-eggs-adapt.desktop', `${this.settings.work_dir.merged}${pathToDesktopLive}`)
+            shx.cp('/usr/share/applications/penguins-adapt.desktop', `${this.settings.work_dir.merged}${pathToDesktopLive}`)
          }
 
          // Dato che .../usr non è scrivibile, scrivo direttamente in /usr/
          // Mentre il link su /home/live si registra solo nel fs merged
          if (myAddons.rsupport) {
             let dirAddon = path.resolve(__dirname, `../../addons/eggs/dwagent`)
-            shx.cp(`${dirAddon}/applications/dwagent.desktop`, `/usr/share/applications/`)
+            shx.cp(`${dirAddon}/applications/penguins-dwagent.desktop`, `/usr/share/applications/`)
             shx.cp(`${dirAddon}/bin/dwagent.sh`, `/usr/local/bin/`)
             shx.chmod('+x', `/usr/local/bin/dwagent.sh`)
             shx.cp(`${dirAddon}/artwork/remote-assistance.png`, `/usr/share/icons/`)
-            shx.cp(`${this.settings.work_dir.merged}/usr/share/applications/dwagent.desktop`, `${this.settings.work_dir.merged}${pathToDesktopLive}`)
+            shx.cp(`${this.settings.work_dir.merged}/usr/share/applications/penguins-dwagent.desktop`, `${this.settings.work_dir.merged}${pathToDesktopLive}`)
          }
 
          if (myAddons.ichoice) {
             let dirAddon = path.resolve(__dirname, `../../addons/eggs/installer-choice/`)
-            shx.cp(`${dirAddon}/applications/installer-choice.desktop`, `/usr/share/applications/`)
+            shx.cp(`${dirAddon}/applications/penguins-ichoice.desktop`, `/usr/share/applications/`)
             shx.cp(`${dirAddon}/bin/installer-choice.sh`, `/usr/local/bin/`)
             shx.mkdir('-p', `/usr/local/share/penguins-eggs/`)
             shx.cp(`${dirAddon}/html/installer-choice.html`, `/usr/local/share/penguins-eggs/`)
-            shx.cp(`${this.settings.work_dir.merged}/usr/share/applications/installer-choice.desktop`, `${this.settings.work_dir.merged}${pathToDesktopLive}`)
+            shx.cp(`${this.settings.work_dir.merged}/usr/share/applications/penguins-ichoice.desktop`, `${this.settings.work_dir.merged}${pathToDesktopLive}`)
          } else {
             // Selezione tra calamare e eggs-cli-installer
             if (Pacman.packageIsInstalled('calamares')) {
                shx.cp('/usr/share/applications/install-debian.desktop', `${this.settings.work_dir.merged}${pathToDesktopLive}`)
             } else {
-               shx.cp('/usr/share/applications/penguins-eggs-installer.desktop', `${this.settings.work_dir.merged}${pathToDesktopLive}`)
+               shx.cp('/usr/share/applications/penguins-clinstaller.desktop', `${this.settings.work_dir.merged}${pathToDesktopLive}`)
             }
          }
 
