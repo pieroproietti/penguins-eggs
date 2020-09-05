@@ -46,7 +46,7 @@ Starting with version 7.6.x, an addons architecture has been added  to eggs, tha
 Eggs was born on Debian, but you can use it on Devuan, Ubuntu and derivatives. I usually try it on Debian buster, Devuan beowulf and Ubuntu 20.04 focal before releases. It is known that it can also work with Debian stretch, Ubuntu bionic, Ubuntu xenial and derivatives like LinuxMint and Deepin. If you try a further distribution successfully, you can warn me to add it to the list. 
 
 
-Same iso images remastered with eggs are in the [sourceforge page of the project](https://sourceforge.net/projects/penguins-eggs/files/iso/). 
+Some iso images remastered with eggs are in the [sourceforge page of the project](https://sourceforge.net/projects/penguins-eggs/files/iso/). 
 
 ## Note about deb packages
 
