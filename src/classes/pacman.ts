@@ -22,10 +22,9 @@ const exec = require('../lib/utils').exec
  * @remarks all the utilities
  */
 export default class Pacman {
-   // live-task-base
    // live-task-lxde
-   // live-task-localisation
    static deb4uefi = ['grub-efi-amd64', 'grun-efi-ia32']
+   static deb4localisation = ['live-task-localisation', 'live-task-base']
    static debs4eggs = ['isolinux', 'syslinux', 'syslinux-common', 'live-boot', 'live-boot-initramfs-tools', 'rsync ', 'squashfs-tools', 'xorriso', 'xterm', 'whois']
    static debs4calamares = ['calamares', 'qml-module-qtquick2', 'qml-module-qtquick-controls']
 
@@ -122,6 +121,7 @@ export default class Pacman {
       Pacman.debs4eggs.push(config)
 
       await exec('apt-get update --yes')
+      await exec(`apt-get install --yes ${Pacman.debs2line(Pacman.deb4localisation)}`, echo)
       await exec(`apt-get install --yes ${Pacman.debs2line(Pacman.debs4eggs)}`, echo)
 
       return retVal
