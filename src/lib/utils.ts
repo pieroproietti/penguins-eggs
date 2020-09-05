@@ -8,10 +8,7 @@
  *
  * @returns {Promise<{code: number, data: string | undefined, error: Object}>}
  */
-export function exec(
-   command: string,
-   { echo = false, ignore = false, capture = false } = {}
-) {
+export function exec(command: string, { echo = false, ignore = false, capture = false } = {}) {
    if (echo) {
       console.log(command)
    }

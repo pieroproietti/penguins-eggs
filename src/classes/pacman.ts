@@ -23,28 +23,14 @@ const exec = require('../lib/utils').exec
  */
 export default class Pacman {
    static deb4uefi = ['grub-efi-amd64', 'grun-efi-ia32']
-   static debs4eggs = [
-      'isolinux',
-      'live-boot',
-      'live-boot-initramfs-tools',
-      'lvm2',
-      'squashfs-tools',
-      'xorriso',
-      'xterm',
-      'whois'
-   ]
-   static debs4calamares = [
-      'calamares',
-      'qml-module-qtquick2',
-      'qml-module-qtquick-controls'
-   ]
+   static debs4eggs = ['isolinux', 'live-boot', 'live-boot-initramfs-tools', 'lvm2', 'squashfs-tools', 'xorriso', 'xterm', 'whois']
+   static debs4calamares = ['calamares', 'qml-module-qtquick2', 'qml-module-qtquick-controls']
 
    /**
     * controlla se Xserver è installato
     */
    static isXInstalled(): boolean {
-
-      return (Pacman.packageIsInstalled('xserver-xorg-core') || Pacman.packageIsInstalled('xserver-xorg-core-hwe-18.04'))
+      return Pacman.packageIsInstalled('xserver-xorg-core') || Pacman.packageIsInstalled('xserver-xorg-core-hwe-18.04')
    }
 
    /**
@@ -119,9 +105,7 @@ export default class Pacman {
       let distro = {} as IDistro
       distro = new Distro(remix)
 
-      const init: string = shx
-         .exec('ps --no-headers -o comm 1', { silent: !verbose })
-         .trim()
+      const init: string = shx.exec('ps --no-headers -o comm 1', { silent: !verbose }).trim()
       let config = ''
       if (init === 'systemd') {
          if (distro.versionLike === 'bionic') {
@@ -135,10 +119,7 @@ export default class Pacman {
       Pacman.debs4eggs.push(config)
 
       await exec('apt-get update --yes')
-      await exec(
-         `apt-get install --yes ${Pacman.debs2line(Pacman.debs4eggs)}`,
-         echo
-      )
+      await exec(`apt-get install --yes ${Pacman.debs2line(Pacman.debs4eggs)}`, echo)
 
       return retVal
    }
@@ -154,9 +135,7 @@ export default class Pacman {
       let distro = {} as IDistro
       distro = new Distro(remix)
 
-      const init: string = shx
-         .exec('ps --no-headers -o comm 1', { silent: !verbose })
-         .trim()
+      const init: string = shx.exec('ps --no-headers -o comm 1', { silent: !verbose }).trim()
       let config = ''
       if (init === 'systemd') {
          if (distro.versionLike === 'bionic') {
@@ -169,10 +148,7 @@ export default class Pacman {
       }
       Pacman.debs4eggs.push(config)
 
-      await exec(
-         `apt-get remove --purge --yes ${Pacman.debs2line(Pacman.debs4eggs)}`,
-         echo
-      )
+      await exec(`apt-get remove --purge --yes ${Pacman.debs2line(Pacman.debs4eggs)}`, echo)
       await exec('apt-get autoremove --yes')
       return retVal
    }
@@ -198,15 +174,10 @@ export default class Pacman {
       const echo = Utils.setEcho(verbose)
       if (Pacman.isXInstalled()) {
          await exec('apt-get update --yes', echo)
-         await exec(
-            `apt-get install --yes ${Pacman.debs2line(Pacman.debs4calamares)}`,
-            echo
-         )
+         await exec(`apt-get install --yes ${Pacman.debs2line(Pacman.debs4calamares)}`, echo)
          await Pacman.clean(verbose)
       } else {
-         console.log(
-            "It's not possible to use calamares in a system without GUI"
-         )
+         console.log("It's not possible to use calamares in a system without GUI")
       }
    }
 
@@ -218,12 +189,7 @@ export default class Pacman {
 
       const retVal = false
       await exec('rm /etc/calamares -rf', echo)
-      await exec(
-         `apt-get remove --purge --yes ${Pacman.debs2line(
-            Pacman.debs4calamares
-         )}`,
-         echo
-      )
+      await exec(`apt-get remove --purge --yes ${Pacman.debs2line(Pacman.debs4calamares)}`, echo)
       await exec('apt-get autoremove --yes', echo)
       return retVal
    }
@@ -261,9 +227,7 @@ export default class Pacman {
          vmlinuz = '/boot/vmlinuz'
          if (!fs.existsSync(vmlinuz)) {
             vmlinuz = '/vmlinuz'
-            console.log(
-               `Can't find the standard ${vmlinuz}, please edit /etc/penguins-eggs.conf`
-            )
+            console.log(`Can't find the standard ${vmlinuz}, please edit /etc/penguins-eggs.conf`)
          }
       }
       shx.sed('-i', '%vmlinuz%', vmlinuz, '/etc/penguins-eggs.conf')
@@ -276,9 +240,7 @@ export default class Pacman {
          initrd = '/boot/initrd.img'
          if (!fs.existsSync(initrd)) {
             initrd = '/initrd.img'
-            console.log(
-               `Can't find the standard  ${initrd}, please edit /etc/penguins-eggs.conf`
-            )
+            console.log(`Can't find the standard  ${initrd}, please edit /etc/penguins-eggs.conf`)
          }
       }
       shx.sed('-i', '%initrd%', initrd, '/etc/penguins-eggs.conf')
@@ -302,16 +264,9 @@ export default class Pacman {
       let force_installer = 'yes'
       if (!this.packageIsInstalled('calamares')) {
          force_installer = 'no'
-         console.log(
-            `Due the lacks of calamares package set force_installer=no`
-         )
+         console.log(`Due the lacks of calamares package set force_installer=no`)
       }
-      shx.sed(
-         '-i',
-         '%force_installer%',
-         force_installer,
-         '/etc/penguins-eggs.conf'
-      )
+      shx.sed('-i', '%force_installer%', force_installer, '/etc/penguins-eggs.conf')
 
       /**
        * make_efi
@@ -319,18 +274,13 @@ export default class Pacman {
       let make_efi = 'yes'
       if (!this.packageIsInstalled('grub-efi-amd64')) {
          make_efi = 'no'
-         console.log(
-            `Due the lacks of grub-efi-amd64 or grub-efi-ia32 package set make_efi=No`
-         )
+         console.log(`Due the lacks of grub-efi-amd64 or grub-efi-ia32 package set make_efi=No`)
       }
       shx.sed('-i', '%make_efi%', make_efi, '/etc/penguins-eggs.conf')
 
       // creazione del file delle esclusioni
       shx.mkdir('-p', '/usr/local/share/penguins-eggs/')
-      shx.cp(
-         path.resolve(__dirname, '../../conf/exclude.list'),
-         '/usr/local/share/penguins-eggs'
-      )
+      shx.cp(path.resolve(__dirname, '../../conf/exclude.list'), '/usr/local/share/penguins-eggs')
    }
 
    /**

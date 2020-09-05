@@ -30,10 +30,9 @@ You will find here informations about penguin's eggs!
       const settings = new Settings()
       settings.load()
 
-      const line =
-         '-----------------------------------------------------------------'
+      const line = '-----------------------------------------------------------------'
       console.log(line)
-      settings.showSettings()
+      settings.show()
 
       console.log(line)
       shx.exec('lsb_release -a')

@@ -13,6 +13,7 @@ import ini = require('ini')
 import pjson = require('pjson')
 import inquirer = require('inquirer')
 import chalk = require('chalk')
+
 import clear = require('clear')
 import figlet = require('figlet')
 
@@ -38,13 +39,9 @@ export default class Utils {
     */
    static getPrimaryUser(): string {
       // let primaryUser =shx.exec(`echo $(awk -F":" '/1000:1000/ { print $1 }' /etc/passwd)`, { silent: true }).stdout.trim()
-      let primaryUser = shx
-         .exec('echo $SUDO_USER', { silent: true })
-         .stdout.trim()
+      let primaryUser = shx.exec('echo $SUDO_USER', { silent: true }).stdout.trim()
       if (primaryUser === '') {
-         console.log(
-            'Cannot find your user name. Log as normal user and run: $sudo eggs produce '
-         )
+         console.log('Cannot find your user name. Log as normal user and run: $sudo eggs produce ')
          process.exit(1)
          primaryUser = 'live'
       }
@@ -119,12 +116,7 @@ export default class Utils {
     */
    static getSnapshotSize(snapshot_dir = '/'): number {
       let fileSizeInBytes = 0
-      const size = shx
-         .exec(
-            `/usr/bin/find /home/eggs -maxdepth 1 -type f -name '*.iso' -exec du -sc {} + | tail -1 | awk '{print $1}'`,
-            { silent: true }
-         )
-         .stdout.trim()
+      const size = shx.exec(`/usr/bin/find /home/eggs -maxdepth 1 -type f -name '*.iso' -exec du -sc {} + | tail -1 | awk '{print $1}'`, { silent: true }).stdout.trim()
 
       if (size === '') {
          fileSizeInBytes = 0
@@ -191,9 +183,7 @@ export default class Utils {
       const sqfile_full = ini.parse(fs.readFileSync(squashFs, 'utf-8'))
 
       // get compression factor by reading the linuxfs squasfs file, if available
-      const linuxfs_compression_type = shx.exec(
-         `dd if=${sqfile_full} bs=1 skip=20 count=2 status=none 2>/dev/null| /usr/bin/od -An -tdI`
-      )
+      const linuxfs_compression_type = shx.exec(`dd if=${sqfile_full} bs=1 skip=20 count=2 status=none 2>/dev/null| /usr/bin/od -An -tdI`)
 
       let compression_factor = 0
 
@@ -211,25 +201,10 @@ export default class Utils {
          compression_factor = 30 // anything else or linuxfs not reachable (toram), should be pretty conservative
       }
       let rootfs_file_size = 0
-      const linuxfs_file_size =
-         (Number(
-            shx
-               .exec('df /live/linux --output=used --total | /usr/bin/tail -n1')
-               .stdout.trim()
-         ) *
-            1024 *
-            100) /
-         compression_factor
+      const linuxfs_file_size = (Number(shx.exec('df /live/linux --output=used --total | /usr/bin/tail -n1').stdout.trim()) * 1024 * 100) / compression_factor
 
       if (fs.existsSync('/live/persist-root')) {
-         rootfs_file_size =
-            Number(
-               shx
-                  .exec(
-                     'df /live/persist-root --output=used --total | /usr/bin/tail -n1'
-                  )
-                  .stdout.trim()
-            ) * 1024
+         rootfs_file_size = Number(shx.exec('df /live/persist-root --output=used --total | /usr/bin/tail -n1').stdout.trim()) * 1024
       }
 
       let rootSpaceNeeded: number
@@ -340,9 +315,7 @@ export default class Utils {
       if (process.getuid && process.getuid() === 0) {
          return true
       }
-      Utils.warning(
-         `${Utils.getFriendName()} need to run with root privileges. Please, prefix it with sudo`
-      )
+      Utils.warning(`${Utils.getFriendName()} need to run with root privileges. Please, prefix it with sudo`)
       return false
    }
 
@@ -388,12 +361,7 @@ export default class Utils {
     * @param password
     * @param fullName
     */
-   static userAdd(
-      target = '/TARGET',
-      username = 'live',
-      password = 'evolution',
-      fullName = ''
-   ) {
+   static userAdd(target = '/TARGET', username = 'live', password = 'evolution', fullName = '') {
       const cmd = `sudo chroot ${target} adduser ${username}\
                     --home /home/${username} \
                     --shell /bin/bash \
@@ -421,10 +389,7 @@ export default class Utils {
     * @returns {string[]} array di utenti
     */
    static usersList(): string[] {
-      const out = shx.exec(
-         '/usr/bin/lslogins --noheadings -u -o user | grep -vw root',
-         { silent: true }
-      ).stdout
+      const out = shx.exec('/usr/bin/lslogins --noheadings -u -o user | grep -vw root', { silent: true }).stdout
       const users: string[] = out.split('\n')
       return users
    }
@@ -487,9 +452,7 @@ export default class Utils {
     *
     * @param msg
     */
-   static async customConfirm(
-      msg = 'Select yes to continue... '
-   ): Promise<boolean> {
+   static async customConfirm(msg = 'Select yes to continue... '): Promise<boolean> {
       const varResult = await Utils.customConfirmCompanion(msg)
       const result = JSON.parse(varResult)
       if (result.confirm === 'Yes') {
@@ -503,9 +466,7 @@ export default class Utils {
     *
     * @param msg
     */
-   static async customConfirmCompanion(
-      msg = 'Select yes to continue... '
-   ): Promise<any> {
+   static async customConfirmCompanion(msg = 'Select yes to continue... '): Promise<any> {
       return new Promise(function (resolve) {
          const questions: Array<Record<string, any>> = [
             {
@@ -527,9 +488,7 @@ export default class Utils {
     *
     * @param msg
     */
-   static async customConfirmAbort(
-      msg = 'Select yes to continue, No to repeat, Abort to exit... '
-   ): Promise<any> {
+   static async customConfirmAbort(msg = 'Select yes to continue, No to repeat, Abort to exit... '): Promise<any> {
       return new Promise(function (resolve) {
          const questions: Array<Record<string, any>> = [
             {
@@ -554,11 +513,7 @@ export default class Utils {
    static titles(command = ''): void {
       clear()
       console.log(chalk.blue(figlet.textSync('eggs')))
-      console.log(
-         chalk.bgGreen.white('   ' + pjson.name + '   ') +
-            chalk.bgWhite.blue(" Perri's Brewery edition ") +
-            chalk.bgRed.whiteBright('    ver. ' + pjson.version + '   ')
-      )
+      console.log(chalk.bgGreen.white('   ' + pjson.name + '   ') + chalk.bgWhite.blue(" Perri's Brewery edition ") + chalk.bgRed.whiteBright('    ver. ' + pjson.version + '   '))
       console.log('command: ' + chalk.bgBlack.white(command) + '\n')
    }
 

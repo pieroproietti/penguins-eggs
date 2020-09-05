@@ -29,7 +29,7 @@ export default class Clean extends Command {
       }
 
       if (Utils.isRoot()) {
-         const bleach = Bleach
+         const bleach = new Bleach()
          bleach.clean(verbose)
       }
    }

@@ -48,10 +48,8 @@ export default class Hatching {
          Utils.warning('hatching: questions')
       }
 
-      const msg1 =
-         '\nThe process of installation will format your disk and destroy all datas on it.\n Did You are sure?\n'
-      const msg2 =
-         '\nWe need to be absolutely sure, did You saved your data before to proced?\n'
+      const msg1 = '\nThe process of installation will format your disk and destroy all datas on it.\n Did You are sure?\n'
+      const msg2 = '\nWe need to be absolutely sure, did You saved your data before to proced?\n'
       const msg3 = '\nConfirm, again you want to continue?\n'
 
       if (await Utils.customConfirm(msg1)) {
@@ -88,31 +86,11 @@ export default class Hatching {
 
             Utils.titles(`install`)
             Utils.warning('get options users')
-            console.log(
-               `- ` +
-                  chalk.bgGreen.black(`username: `) +
-                  chalk.bgGreen.whiteBright(users.username)
-            )
-            console.log(
-               `- ` +
-                  chalk.bgGreen.black(`userfullname: `) +
-                  chalk.bgGreen.whiteBright(users.userfullname)
-            )
-            console.log(
-               `- ` +
-                  chalk.bgGreen.black(`user password: `) +
-                  chalk.bgGreen.whiteBright(users.userpassword)
-            )
-            console.log(
-               `- ` +
-                  chalk.bgGreen.black(`autologin: `) +
-                  chalk.bgGreen.whiteBright(users.autologin)
-            )
-            console.log(
-               `- ` +
-                  chalk.bgGreen.black(`root password: `) +
-                  chalk.bgGreen.whiteBright(users.rootpassword)
-            )
+            console.log(`- ` + chalk.bgGreen.black(`username: `) + chalk.bgGreen.whiteBright(users.username))
+            console.log(`- ` + chalk.bgGreen.black(`userfullname: `) + chalk.bgGreen.whiteBright(users.userfullname))
+            console.log(`- ` + chalk.bgGreen.black(`user password: `) + chalk.bgGreen.whiteBright(users.userpassword))
+            console.log(`- ` + chalk.bgGreen.black(`autologin: `) + chalk.bgGreen.whiteBright(users.autologin))
+            console.log(`- ` + chalk.bgGreen.black(`root password: `) + chalk.bgGreen.whiteBright(users.rootpassword))
             console.log()
 
             const result = JSON.parse(await Utils.customConfirmAbort())
@@ -135,16 +113,8 @@ export default class Hatching {
 
             Utils.titles(`install`)
             Utils.warning('get options host')
-            console.log(
-               `- ` +
-                  chalk.bgGreen.black(`hostname: `) +
-                  chalk.bgGreen.whiteBright(host.hostname)
-            )
-            console.log(
-               `- ` +
-                  chalk.bgGreen.black(`domain: `) +
-                  chalk.bgGreen.whiteBright(host.domain)
-            )
+            console.log(`- ` + chalk.bgGreen.black(`hostname: `) + chalk.bgGreen.whiteBright(host.hostname))
+            console.log(`- ` + chalk.bgGreen.black(`domain: `) + chalk.bgGreen.whiteBright(host.domain))
             console.log()
 
             const result = JSON.parse(await Utils.customConfirmAbort())
@@ -167,31 +137,11 @@ export default class Hatching {
 
             Utils.titles(`install`)
             Utils.warning('get options net')
-            console.log(
-               `- ` +
-                  chalk.bgGreen.black(`net Interface: `) +
-                  chalk.bgGreen.whiteBright(net.netInterface)
-            )
-            console.log(
-               `- ` +
-                  chalk.bgGreen.black(`net address type: `) +
-                  chalk.bgGreen.whiteBright(net.netAddressType)
-            )
-            console.log(
-               `- ` +
-                  chalk.bgGreen.black(`net address: `) +
-                  chalk.bgGreen.whiteBright(net.netAddress)
-            )
-            console.log(
-               `- ` +
-                  chalk.bgGreen.black(`net mask: `) +
-                  chalk.bgGreen.whiteBright(net.netMask)
-            )
-            console.log(
-               `- ` +
-                  chalk.bgGreen.black(`net gateway: `) +
-                  chalk.bgGreen.whiteBright(net.netGateway)
-            )
+            console.log(`- ` + chalk.bgGreen.black(`net Interface: `) + chalk.bgGreen.whiteBright(net.netInterface))
+            console.log(`- ` + chalk.bgGreen.black(`net address type: `) + chalk.bgGreen.whiteBright(net.netAddressType))
+            console.log(`- ` + chalk.bgGreen.black(`net address: `) + chalk.bgGreen.whiteBright(net.netAddress))
+            console.log(`- ` + chalk.bgGreen.black(`net mask: `) + chalk.bgGreen.whiteBright(net.netMask))
+            console.log(`- ` + chalk.bgGreen.black(`net gateway: `) + chalk.bgGreen.whiteBright(net.netGateway))
             console.log()
             const result = JSON.parse(await Utils.customConfirmAbort())
             if (result.confirm === 'Yes') {
@@ -215,28 +165,12 @@ export default class Hatching {
             Utils.titles(`install`)
             Utils.warning('get options disk and partition type')
 
-            const optionsDisk: any = await this.getOptionsDisk(
-               aDrives,
-               partitionTypes,
-               verbose
-            )
+            const optionsDisk: any = await this.getOptionsDisk(aDrives, partitionTypes, verbose)
             disk = JSON.parse(optionsDisk)
 
-            console.log(
-               `- ` +
-                  chalk.bgGreen.black(`installation device: `) +
-                  chalk.bgGreen.whiteBright(disk.installationDevice)
-            )
-            console.log(
-               `- ` +
-                  chalk.bgGreen.black(`partition type: `) +
-                  chalk.bgGreen.whiteBright(disk.partionType)
-            )
-            console.log(
-               `- ` +
-                  chalk.bgGreen.black(`fs type: `) +
-                  chalk.bgGreen.whiteBright(disk.fsType)
-            )
+            console.log(`- ` + chalk.bgGreen.black(`installation device: `) + chalk.bgGreen.whiteBright(disk.installationDevice))
+            console.log(`- ` + chalk.bgGreen.black(`partition type: `) + chalk.bgGreen.whiteBright(disk.partionType))
+            console.log(`- ` + chalk.bgGreen.black(`fs type: `) + chalk.bgGreen.whiteBright(disk.fsType))
             console.log()
             const result = JSON.parse(await Utils.customConfirmAbort())
             if (result.confirm === 'Yes') {
@@ -252,9 +186,7 @@ export default class Hatching {
           */
          Utils.titles(`install`)
          console.log()
-         console.log(
-            `You choose to install the system with the following parameters:`
-         )
+         console.log(`You choose to install the system with the following parameters:`)
          console.log()
          console.log(`- username: ` + chalk.cyanBright(users.username))
          console.log(`- userfullname: ` + chalk.cyanBright(users.userfullname))
@@ -266,26 +198,17 @@ export default class Hatching {
          console.log(`- domain: ` + chalk.cyanBright(host.domain))
 
          console.log(`- net Interface: ` + chalk.cyanBright(net.netInterface))
-         console.log(
-            `- net address type: ` + chalk.cyanBright(net.netAddressType)
-         )
+         console.log(`- net address type: ` + chalk.cyanBright(net.netAddressType))
          if (net.netAddressType !== 'dhcp') {
             console.log(`- net address: ` + chalk.cyanBright(net.netAddress))
             console.log(`- net mask: ` + chalk.cyanBright(net.netMask))
             console.log(`- net gateway: ` + chalk.cyanBright(net.netGateway))
          }
-         console.log(
-            `- installation device: ` +
-               chalk.cyanBright(disk.installationDevice)
-         )
+         console.log(`- installation device: ` + chalk.cyanBright(disk.installationDevice))
          console.log(`- partition type: ` + chalk.cyanBright(disk.partionType))
          console.log(`- fs type: ` + chalk.cyanBright(disk.fsType))
          console.log()
-         console.log(
-            chalk.bgRed.white(
-               `This is the last opportunity to abort, the follow operation will destroy the data on the disk`
-            )
-         )
+         console.log(chalk.bgRed.white(`This is the last opportunity to abort, the follow operation will destroy the data on the disk`))
          console.log()
          const result = JSON.parse(await Utils.customConfirmAbort())
          if (result.confirm === 'Yes') {
@@ -319,11 +242,7 @@ export default class Hatching {
          }
       }
 
-      const isDiskPrepared: boolean = await this.diskPartition(
-         disk.installationDevice,
-         disk.partionType,
-         verbose
-      )
+      const isDiskPrepared: boolean = await this.diskPartition(disk.installationDevice, disk.partionType, verbose)
       if (isDiskPrepared) {
          try {
             await this.mkfs(verbose)
@@ -404,15 +323,7 @@ export default class Hatching {
          }
 
          try {
-            await this.addUser(
-               users.username,
-               users.userpassword,
-               users.fullName,
-               '',
-               '',
-               '',
-               verbose
-            )
+            await this.addUser(users.username, users.userpassword, users.fullName, '', '', '', verbose)
          } catch (error) {
             console.log(`addUser: ${error}`)
          }
@@ -474,12 +385,7 @@ export default class Hatching {
       }
       const oldUser = Utils.getPrimaryUser()
       if (Pacman.packageIsInstalled('lightdm')) {
-         shx.sed(
-            '-i',
-            `autologin-user=${oldUser}`,
-            `autologin-user=${newUser}`,
-            `${this.target}/etc/lightdm/lightdm.conf`
-         )
+         shx.sed('-i', `autologin-user=${oldUser}`, `autologin-user=${newUser}`, `${this.target}/etc/lightdm/lightdm.conf`)
       }
    }
 
@@ -492,15 +398,7 @@ export default class Hatching {
     * @param workPhone
     * @param homePhone
     */
-   async addUser(
-      username = 'live',
-      password = 'evolution',
-      fullName = '',
-      roomNumber = '',
-      workPhone = '',
-      homePhone = '',
-      verbose = false
-   ): Promise <void> {
+   async addUser(username = 'live', password = 'evolution', fullName = '', roomNumber = '', workPhone = '', homePhone = '', verbose = false): Promise<void> {
       const echo = Utils.setEcho(verbose)
       if (verbose) {
          Utils.warning('hatching: addUser')
@@ -515,10 +413,7 @@ adduser ${username} \
 
       await exec(cmd, echo)
 
-      await exec(
-         `echo ${username}:${password} | chroot ${this.target} chpasswd `,
-         echo
-      )
+      await exec(`echo ${username}:${password} | chroot ${this.target} chpasswd `, echo)
 
       await exec(`chroot ${this.target} usermod -aG sudo ${username}`, echo)
    }
@@ -528,11 +423,7 @@ adduser ${username} \
     * @param username
     * @param newPassword
     */
-   async changePassword(
-      username = 'live',
-      newPassword = 'evolution',
-      verbose = false
-   ) {
+   async changePassword(username = 'live', newPassword = 'evolution', verbose = false) {
       const echo = Utils.setEcho(verbose)
       if (verbose) {
          Utils.warning('hatching: changePassword')
@@ -573,10 +464,7 @@ adduser ${username} \
       } else {
          await exec(`chroot ${this.target} apt install grub-pc --yes`)
       }
-      await exec(
-         `chroot ${this.target} grub-install ${options.installationDevice}`,
-         echo
-      )
+      await exec(`chroot ${this.target} grub-install ${options.installationDevice}`, echo)
       await exec(`chroot ${this.target} update-grub`, echo)
       await exec('sleep 1', echo)
    }
@@ -590,10 +478,7 @@ adduser ${username} \
          Utils.warning('hatching: updateInitramfs')
       }
 
-      await exec(
-         `chroot ${this.target}  update-initramfs -u -k $(uname -r)`,
-         echo
-      )
+      await exec(`chroot ${this.target}  update-initramfs -u -k $(uname -r)`, echo)
    }
 
    /**
@@ -688,34 +573,24 @@ adduser ${username} \
       let text = ''
 
       text += `# ${this.devices.root.name} ${this.devices.root.mountPoint} ${this.devices.root.fsType} ${mountOptsRoot}\n`
-      text += `UUID=${Utils.uuid(this.devices.root.name)} ${
-         this.devices.root.mountPoint
-      } ${this.devices.root.fsType} ${mountOptsRoot}\n`
+      text += `UUID=${Utils.uuid(this.devices.root.name)} ${this.devices.root.mountPoint} ${this.devices.root.fsType} ${mountOptsRoot}\n`
 
       if (this.devices.boot.name !== `none`) {
          text += `# ${this.devices.boot.name} ${this.devices.boot.mountPoint} ${this.devices.boot.fsType} ${mountOptsBoot}\n`
-         text += `UUID=${Utils.uuid(this.devices.boot.name)} ${
-            this.devices.boot.mountPoint
-         } ${this.devices.root.fsType} ${mountOptsBoot}\n`
+         text += `UUID=${Utils.uuid(this.devices.boot.name)} ${this.devices.boot.mountPoint} ${this.devices.root.fsType} ${mountOptsBoot}\n`
       }
 
       if (this.devices.data.name !== `none`) {
          text += `# ${this.devices.data.name} ${this.devices.data.mountPoint} ${this.devices.data.fsType} ${mountOptsData}\n`
-         text += `UUID=${Utils.uuid(this.devices.data.name)} ${
-            this.devices.data.mountPoint
-         } ${this.devices.data.fsType} ${mountOptsData}\n`
+         text += `UUID=${Utils.uuid(this.devices.data.name)} ${this.devices.data.mountPoint} ${this.devices.data.fsType} ${mountOptsData}\n`
       }
 
       if (this.efi) {
          text += `# ${this.devices.efi.name} ${this.devices.efi.mountPoint} vfat ${mountOptsEfi}\n`
-         text += `UUID=${Utils.uuid(this.devices.efi.name)} ${
-            this.devices.efi.mountPoint
-         } vfat ${mountOptsEfi}\n`
+         text += `UUID=${Utils.uuid(this.devices.efi.name)} ${this.devices.efi.mountPoint} vfat ${mountOptsEfi}\n`
       }
       text += `# ${this.devices.swap.name} ${this.devices.swap.mountPoint} ${this.devices.swap.fsType} ${mountOptsSwap}\n`
-      text += `UUID=${Utils.uuid(this.devices.swap.name)} ${
-         this.devices.swap.mountPoint
-      } ${this.devices.swap.fsType} ${mountOptsSwap}\n`
+      text += `UUID=${Utils.uuid(this.devices.swap.name)} ${this.devices.swap.mountPoint} ${this.devices.swap.fsType} ${mountOptsSwap}\n`
       Utils.write(file, text)
    }
 
@@ -909,29 +784,18 @@ adduser ${username} \
             this.devices.boot.fsType = `ext2`
             this.devices.boot.mountPoint = '/boot'
          }
-         Utils.warning(
-            `Formatting ${this.devices.boot.name} as ${this.devices.boot.fsType}`
-         )
-         await exec(
-            `mkfs -t ${this.devices.boot.fsType} ${this.devices.boot.name}`,
-            echo
-         )
+         Utils.warning(`Formatting ${this.devices.boot.name} as ${this.devices.boot.fsType}`)
+         await exec(`mkfs -t ${this.devices.boot.fsType} ${this.devices.boot.name}`, echo)
       }
 
       if (this.devices.root.name !== 'none') {
          Utils.warning(`Formatting ${this.devices.root.name}`)
-         await exec(
-            `mkfs -t ${this.devices.root.fsType} ${this.devices.root.name}`,
-            echo
-         )
+         await exec(`mkfs -t ${this.devices.root.fsType} ${this.devices.root.name}`, echo)
       }
 
       if (this.devices.data.name !== 'none') {
          Utils.warning(`Formatting ${this.devices.data.name}`)
-         await exec(
-            `mkfs -t ${this.devices.data.fsType} ${this.devices.data.name}`,
-            echo
-         )
+         await exec(`mkfs -t ${this.devices.data.fsType} ${this.devices.data.name}`, echo)
       }
 
       if (this.devices.swap.name !== 'none') {
@@ -956,43 +820,28 @@ adduser ${username} \
       }
 
       // Monto la root
-      await exec(
-         `mount ${this.devices.root.name} ${this.target}${this.devices.root.mountPoint}`,
-         echo
-      )
+      await exec(`mount ${this.devices.root.name} ${this.target}${this.devices.root.mountPoint}`, echo)
       await exec(`tune2fs -c 0 -i 0 ${this.devices.root.name}`, echo)
       await exec(`rm -rf ${this.target}/lost+found`, echo)
 
       // boot
       if (this.devices.boot.name !== `none`) {
          await exec(`mkdir ${this.target}/boot -p`)
-         await exec(
-            `mount ${this.devices.boot.name} ${this.target}${this.devices.boot.mountPoint}`,
-            echo
-         )
+         await exec(`mount ${this.devices.boot.name} ${this.target}${this.devices.boot.mountPoint}`, echo)
          await exec(`tune2fs -c 0 -i 0 ${this.devices.boot.name}`, echo)
       }
 
       // data
       if (this.devices.data.name !== `none`) {
          await exec(`mkdir ${this.target}${this.devices.data.mountPoint} -p`)
-         await exec(
-            `mount ${this.devices.data.name} ${this.target}${this.devices.data.mountPoint}`,
-            echo
-         )
+         await exec(`mount ${this.devices.data.name} ${this.target}${this.devices.data.mountPoint}`, echo)
          await exec(`tune2fs -c 0 -i 0 ${this.devices.data.name}`, echo)
       }
 
       if (this.efi) {
          if (!fs.existsSync(this.target + this.devices.efi.mountPoint)) {
-            await exec(
-               `mkdir ${this.target}${this.devices.efi.mountPoint} -p`,
-               echo
-            )
-            await exec(
-               `mount ${this.devices.efi.name} ${this.target}${this.devices.efi.mountPoint}`,
-               echo
-            )
+            await exec(`mkdir ${this.target}${this.devices.efi.mountPoint} -p`, echo)
+            await exec(`mount ${this.devices.efi.name} ${this.target}${this.devices.efi.mountPoint}`, echo)
          }
       }
       return true
@@ -1033,11 +882,7 @@ adduser ${username} \
     * @param partitionType
     * @param verbose
     */
-   async diskPartition(
-      device: string,
-      partitionType: string,
-      verbose = false
-   ): Promise<boolean> {
+   async diskPartition(device: string, partitionType: string, verbose = false): Promise<boolean> {
       let retVal = false
       const echo = Utils.setEcho(verbose)
       if (verbose) {
@@ -1045,10 +890,7 @@ adduser ${username} \
       }
 
       if (partitionType === 'simple' && this.efi) {
-         await exec(
-            `parted --script ${device} mklabel gpt mkpart primary 0% 1% mkpart primary 1% 95% mkpart primary 95% 100%`,
-            echo
-         )
+         await exec(`parted --script ${device} mklabel gpt mkpart primary 0% 1% mkpart primary 1% 95% mkpart primary 95% 100%`, echo)
          await exec(`parted --script ${device} set 1 boot on`, echo)
          await exec(`parted --script ${device} set 1 esp on`, echo)
 
@@ -1070,15 +912,9 @@ adduser ${username} \
          retVal = true
       } else if (partitionType === 'simple' && !this.efi) {
          await exec(`parted --script ${device} mklabel msdos`, echo)
-         await exec(
-            `parted --script --align optimal ${device} mkpart primary 1MiB 95%`,
-            echo
-         )
+         await exec(`parted --script --align optimal ${device} mkpart primary 1MiB 95%`, echo)
          await exec(`parted --script ${device} set 1 boot on`, echo)
-         await exec(
-            `parted --script --align optimal ${device} mkpart primary 95% 100%`,
-            echo
-         )
+         await exec(`parted --script --align optimal ${device} mkpart primary 95% 100%`, echo)
 
          this.devices.efi.name = `none`
 
@@ -1104,22 +940,12 @@ adduser ${username} \
          // Creo partizioni
          await exec(`parted --script ${device} mkpart primary ext2 1 512`)
          await exec(`parted --script --align optimal ${device} set 1 boot on`)
-         await exec(
-            `parted --script --align optimal ${device} mkpart primary ext2 512 100%`
-         )
+         await exec(`parted --script --align optimal ${device} mkpart primary ext2 512 100%`)
          await exec(`parted --script ${device} set 2 lvm on`)
 
          // Partizione LVM
-         const lvmPartname = shx
-            .exec(`fdisk $1 -l | grep 8e | awk '{print $1}' | cut -d "/" -f3`)
-            .stdout.trim()
-         const lvmByteSize = Number(
-            shx
-               .exec(
-                  `cat /proc/partitions | grep ${lvmPartname}| awk '{print $3}' | grep "[0-9]"`
-               )
-               .stdout.trim()
-         )
+         const lvmPartname = shx.exec(`fdisk $1 -l | grep 8e | awk '{print $1}' | cut -d "/" -f3`).stdout.trim()
+         const lvmByteSize = Number(shx.exec(`cat /proc/partitions | grep ${lvmPartname}| awk '{print $3}' | grep "[0-9]"`).stdout.trim())
          const lvmSize = lvmByteSize / 1024
 
          // La partizione di root viene posta ad 1/4 della partizione LVM.
@@ -1191,9 +1017,7 @@ adduser ${username} \
       let response: any
       let retVal = false
 
-      response = shx
-         .exec(`cat /sys/block/${device}/queue/rotational`, { silent: verbose })
-         .stdout.trim()
+      response = shx.exec(`cat /sys/block/${device}/queue/rotational`, { silent: verbose }).stdout.trim()
       if (response === '1') {
          retVal = true
       }
@@ -1376,11 +1200,7 @@ adduser ${username} \
     * @param partitionTypes
     * @param verbose
     */
-   async getOptionsDisk(
-      driveList: string[],
-      partitionTypes: string[],
-      verbose = false
-   ): Promise<any> {
+   async getOptionsDisk(driveList: string[], partitionTypes: string[], verbose = false): Promise<any> {
       const echo = Utils.setEcho(verbose)
       if (verbose) {
          Utils.warning('hatching: getOptions')
@@ -1421,19 +1241,11 @@ adduser ${username} \
    finished(installationDevice: string, hostname: string, username: string) {
       Utils.titles()
       Utils.warning(`installation is finished.`)
-      console.log(
-         'Your system was installed on ' +
-            chalk.cyanBright(installationDevice) +
-            '.'
-      )
+      console.log('Your system was installed on ' + chalk.cyanBright(installationDevice) + '.')
       console.log('Host name was set as ' + chalk.cyanBright(hostname) + '.')
       console.log('The user name is ' + chalk.cyanBright(username) + '.')
       console.log('Enjoy Your new penguin!')
-      console.log(
-         `Note: it is recommended to run the command ` +
-            chalk.cyanBright(`sudo update-initramfs -u`) +
-            ` after next reboot.`
-      )
+      console.log(`Note: it is recommended to run the command ` + chalk.cyanBright(`sudo update-initramfs -u`) + ` after next reboot.`)
       console.log('Press any key to exit')
       require('child_process').spawnSync('read _ ', {
          shell: true,

@@ -7,7 +7,6 @@
 
 import fs = require('fs')
 
-
 export default class n8 {
    /**
     *
@@ -16,7 +15,7 @@ export default class n8 {
    static isDirectory(name: string): boolean {
       // console.log (`isDirectory: ${name}`)
       const path = '/' + name
-      const isDirectory =fs.existsSync(path) && fs.lstatSync(path).isDirectory()
+      const isDirectory = fs.existsSync(path) && fs.lstatSync(path).isDirectory()
       // console.log(`path: ${path} isDirectory: ${isDirectory}`)
       return isDirectory
    }
@@ -41,7 +40,7 @@ export default class n8 {
       // const util = require('util')
       // console.log(util.inspect(dir, false, null, true /* enable colors */))
 
-      let dirname = ""
+      let dirname = ''
       if (process.versions.node.split('.')[0] === '8') {
          dirname = JSON.stringify(dir).replace(`"`, ``).replace(`"`, ``)
       } else {

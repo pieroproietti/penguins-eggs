@@ -1,4 +1,4 @@
-export interface IPackage {
+export interface IApp {
    version: string
    name: string
    author: string

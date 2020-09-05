@@ -13,14 +13,11 @@ export default class Prerequisites extends Command {
 
    static flags = {
       help: flags.help({ char: 'h' }),
-      configuration_only: flags.boolean({char: 'c',description: 'creation of configuration files only'}),
+      configuration_only: flags.boolean({ char: 'c', description: 'creation of configuration files only' }),
       verbose: flags.boolean({ char: 'v', description: 'verbose' })
    }
 
-   static examples = [
-      `~$ eggs prerequisites\ninstall prerequisites and create configuration files\n`,
-      `~$ eggs prerequisites -c\nonly create configuration files\n`
-   ]
+   static examples = [`~$ eggs prerequisites\ninstall prerequisites and create configuration files\n`, `~$ eggs prerequisites -c\nonly create configuration files\n`]
 
    async run() {
       Utils.titles('prerequisites')

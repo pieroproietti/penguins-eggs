@@ -5,11 +5,10 @@
 */
 
 export interface IMyAddons {
-  adapt: boolean
-  ichoice: boolean
-  rsupport: boolean
-  pve: boolean
+   adapt: boolean
+   ichoice: boolean
+   rsupport: boolean
+   pve: boolean
 }
 
-export interface IAddons {
-}
+export interface IAddons {}

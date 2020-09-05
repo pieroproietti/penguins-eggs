@@ -10,10 +10,10 @@
  * Debian 10 (buster) — l'attuale versione stable
  * Debian 9 (stretch) — l'attuale versione oldstable
  * Debian 8 (jessie) — l'attuale versione oldoldstable
- * 
+ *
  * Devuan ASCII
- * Devuan beowlf 
- * Devuan Chimaera 
+ * Devuan beowlf
+ * Devuan Chimaera
  *
  * Ubuntu 16.04 (xenial) LTS  active
  * Ubuntu 18.04 (bionic) LTS  active
@@ -84,43 +84,29 @@ class Distro implements IDistro {
       os[info.BUG_REPORT_URL] = 'BUG_REPORT_URL='
       for (const temp in data) {
          if (!data[temp].search(os[info.HOME_URL])) {
-            this.homeUrl = data[temp]
-               .substring(os[info.HOME_URL].length)
-               .replace(/"/g, '')
+            this.homeUrl = data[temp].substring(os[info.HOME_URL].length).replace(/"/g, '')
          }
 
          if (!data[temp].search(os[info.SUPPORT_URL])) {
-            this.supportUrl = data[temp]
-               .substring(os[info.SUPPORT_URL].length)
-               .replace(/"/g, '')
+            this.supportUrl = data[temp].substring(os[info.SUPPORT_URL].length).replace(/"/g, '')
          }
 
          if (!data[temp].search(os[info.BUG_REPORT_URL])) {
-            this.bugReportUrl = data[temp]
-               .substring(os[info.BUG_REPORT_URL].length)
-               .replace(/"/g, '')
+            this.bugReportUrl = data[temp].substring(os[info.BUG_REPORT_URL].length).replace(/"/g, '')
          }
       }
 
       /**
        * lsb_release -c -s
        */
-      this.versionId = shell
-         .exec('lsb_release -c -s', { silent: true })
-         .stdout.toString()
-         .trim()
+      this.versionId = shell.exec('lsb_release -c -s', { silent: true }).stdout.toString().trim()
 
       /**
        * LINUX MINT dall 19 in poi
        */
 
-         // LinuxMint 19 tara, 19.1 tessa, 19.2 Tina, 19.3 Tricia
-       if (
-         this.versionId === 'tara' ||
-         this.versionId === 'tessa' ||
-         this.versionId === 'tina' ||
-         this.versionId === 'tricia'
-      ) {
+      // LinuxMint 19 tara, 19.1 tessa, 19.2 Tina, 19.3 Tricia
+      if (this.versionId === 'tara' || this.versionId === 'tessa' || this.versionId === 'tina' || this.versionId === 'tricia') {
          this.distroId = 'Linux Mint'
          this.distroLike = 'Ubuntu'
          this.versionLike = 'bionic'
@@ -162,7 +148,6 @@ class Distro implements IDistro {
          this.distroId = 'Debian'
          this.distroLike = 'Debian'
          this.versionLike = 'stretch'
-
       } // Deepin 20
       else if (this.versionId === 'n/a') {
          this.distroId = 'Deepin'
@@ -173,13 +158,11 @@ class Distro implements IDistro {
          /**
           * DEVUAN
           */
-
       } else if (this.versionId === 'beowulf') {
          this.distroId = 'Devuan'
          this.versionId = 'beowulf'
          this.distroLike = 'Devuan'
          this.versionLike = 'beowulf'
-        
 
          /**
           * UBUNTU
@@ -202,9 +185,7 @@ class Distro implements IDistro {
          this.distroLike = 'Ubuntu'
          this.versionLike = 'bionic'
       } else {
-         console.log(
-            "Sorry, this distro is not supported, I'll try Debian Buster mode!"
-         )
+         console.log("Sorry, this distro is not supported, I'll try Debian Buster mode!")
          this.distroId = 'custom'
          this.distroLike = 'Debian'
          this.versionLike = 'buster'
@@ -213,14 +194,8 @@ class Distro implements IDistro {
       /**
        * Selezione il mountpoint per squashfs
        */
-      if (
-         this.versionLike === 'jessie' ||
-         this.versionLike === 'stretch' ||
-         this.versionLike === 'bionic' ||
-         this.versionLike === 'xenial'
-      ) {
-         this.mountpointSquashFs =
-            '/lib/live/mount/medium/live/filesystem.squashfs'
+      if (this.versionLike === 'jessie' || this.versionLike === 'stretch' || this.versionLike === 'bionic' || this.versionLike === 'xenial') {
+         this.mountpointSquashFs = '/lib/live/mount/medium/live/filesystem.squashfs'
       } else {
          this.mountpointSquashFs = '/run/live/medium/live/filesystem.squashfs'
       }

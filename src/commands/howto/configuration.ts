@@ -14,11 +14,7 @@ export default class HowtoConfiguration extends Command {
 
       Utils.titles('howto:configure')
       console.log()
-      console.log(
-         'To re-create ' +
-            chalk.cyan('/etc/penguins.conf') +
-            ', sudo eggs prerequisits -c'
-      )
+      console.log('To re-create ' + chalk.cyan('/etc/penguins.conf') + ', sudo eggs prerequisits -c')
       console.log()
       console.log('To configure eggs, edit ' + chalk.cyan('/etc/penguins.conf'))
       console.log('Example: change the place of the nest')

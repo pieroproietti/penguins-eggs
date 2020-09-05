@@ -12,483 +12,512 @@ import { IRemix, IDistro } from '../../interfaces'
 const exec = require('../../lib/utils').exec
 
 /**
- * 
+ *
  */
 export class Beowulf {
-    verbose = false
+   verbose = false
 
-    remix: IRemix
+   remix: IRemix
 
-    distro: IDistro
+   distro: IDistro
 
-    displaymanager = false
+   displaymanager = false
 
-    user_opt: string
+   user_opt: string
 
-    dirGlobalModules = '/usr/lib/x86_64-linux-gnu/calamares/modules/'
+   dirGlobalModules = '/usr/lib/x86_64-linux-gnu/calamares/modules/'
 
-
-    /**
-     * @param remix 
-     * @param distro 
-     * @param displaymanager 
-     * @param verbose 
-     */
-    constructor(remix: IRemix, distro: IDistro, displaymanager: boolean, user_opt: string, verbose = false) {
-        this.remix = remix
-        this.distro = distro
-        this.user_opt = user_opt
-        this.verbose = verbose
-        this.displaymanager = displaymanager
-        if (process.arch === 'ia32') {
-            this.dirGlobalModules = '/usr/lib/calamares/modules/'
-        }
-
-    }
-
-    /**
-     * write setting
-     */
-    public settings() {
-        const dir = '/etc/calamares/'
-        const file = dir + 'settings.conf'
-        write(file, this.getSettings(), this.verbose)
-    }
-
-    /**
-    * 
+   /**
+    * @param remix
+    * @param distro
+    * @param displaymanager
+    * @param verbose
     */
-    getSettings(): string {
-        // path di ricerca dei moduli
-        const modulesSearch = ['local', '/usr/lib/calamares/modules']
+   constructor(remix: IRemix, distro: IDistro, displaymanager: boolean, user_opt: string, verbose = false) {
+      this.remix = remix
+      this.distro = distro
+      this.user_opt = user_opt
+      this.verbose = verbose
+      this.displaymanager = displaymanager
+      if (process.arch === 'ia32') {
+         this.dirGlobalModules = '/usr/lib/calamares/modules/'
+      }
+   }
 
-        // moduli da mostrare a video
-        const show = ['welcome', 'locale', 'keyboard', 'partition', 'users', 'summary']
-
-        // moduli da eseguire
-        let exec: string[] = []
-        exec.push('partition')
-        exec.push('mount')
-        exec.push('unpackfs')
-        exec.push('sources-trusted')
-        //exec.push('machineid')
-        exec.push('fstab')
-        exec.push('locale')
-        exec.push('keyboard')
-        exec.push('localecfg')
-        exec.push('users')
-        if (this.displaymanager) {
-            exec.push('displaymanager')
-        }
-        exec.push('networkcfg')
-        exec.push('hwclock')
-        exec.push('services-systemd')
-        exec.push('create-tmp')
-        exec.push('bootloader-config')
-        exec.push('grubcfg')
-        exec.push('bootloader')
-        exec.push('luksbootkeyfile')
-        exec.push('plymouthcfg')
-        exec.push('initramfscfg')
-        exec.push('initramfs')
-        exec.push('removeuser')
-        exec.push('sources-trusted-unmount')
-        exec.push('sources-final')
-        exec.push('umount')
-
-        const settings = {
-            'modules-search': modulesSearch,
-            sequence: [{ show: show }, { exec: exec }, { show: ['finished'] }],
-            branding: this.remix.branding,
-            'prompt-install': false,
-            'dont-chroot': false
-        }
-        let title = `# calamares settings, id: ${this.distro.distroId}/${this.distro.versionId} like: ${this.distro.distroLike}/${this.distro.versionLike}\n`
-        return title + yaml.safeDump(settings)
-    }
-
-    /**
-    * 
+   /**
+    * write setting
     */
-    public modules() {
-        this.modulePartition()
-        this.moduleMount()
-        this.moduleUnpackfs()
-        this.moduleSourcesTrusted()
-        //this.moduleMachineid()
-        this.moduleFstab()
-        this.moduleLocale()
-        this.moduleKeyboard()
-        this.moduleLocalecfg()
-        this.moduleUsers()
-        if (this.displaymanager) {
-            this.moduleDisplaymanager()
-        }
-        this.moduleNetworkcfg()
-        this.moduleHwclock()
-        this.moduleServicesSystemd()
-        this.moduleCreateTmp()
-        this.moduleBootloaderConfig()
-        this.moduleGrubcfg()
-        this.moduleBootloader()
-        this.modulePackages()
-        this.moduleLuksbootkeyfile()
-        this.moduleLuksopenswaphookcfg()
-        this.modulePlymouthcfg()
-        this.moduleInitramfscfg()
-        this.moduleInitramfs()
-        this.moduleRemoveuser()
-        this.moduleSourcesTrustedUnmount()
-        this.moduleSourcesFinal()
-        this.moduleUmount()
-    }
+   settings() {
+      const dir = '/etc/calamares/'
+      const file = dir + 'settings.conf'
+      write(file, this.getSettings(), this.verbose)
+   }
 
+   /**
+    *
+    */
+   private getSettings(): string {
+      // path di ricerca dei moduli
+      const modulesSearch = ['local', '/usr/lib/calamares/modules']
 
-    /**
-     * ========================================================================
-     * module = name + '.conf'
-     * shellprocess = 'shellprocess_' + name + '.conf'
-     * contextualprocess = name + '_context.conf'
-     * 
-     * module_calamares
-     *                      dir = '/usr/lib/calamares/modules/' + name
-     *                      name = module.desc
-     *                      script = 
-     * ========================================================================
-     */
+      // moduli da mostrare a video
+      const show = ['welcome', 'locale', 'keyboard', 'partition', 'users', 'summary']
 
-    /**
-     * write module
-     * @param name 
-     * @param content 
-     */
-    module(name: string, content: string) {
-        const dir = `/etc/calamares/modules/`
-        const file = dir + name + '.conf'
-        write(file, content, this.verbose)
-    }
+      // moduli da eseguire
+      let exec: string[] = []
+      exec.push('partition')
+      exec.push('mount')
+      exec.push('unpackfs')
+      exec.push('sources-trusted')
+      //exec.push('machineid')
+      exec.push('fstab')
+      exec.push('locale')
+      exec.push('keyboard')
+      exec.push('localecfg')
+      exec.push('users')
+      if (this.displaymanager) {
+         exec.push('displaymanager')
+      }
+      exec.push('networkcfg')
+      exec.push('hwclock')
+      exec.push('services-systemd')
+      exec.push('create-tmp')
+      exec.push('bootloader-config')
+      exec.push('grubcfg')
+      exec.push('bootloader')
+      exec.push('luksbootkeyfile')
+      exec.push('plymouthcfg')
+      exec.push('initramfscfg')
+      exec.push('initramfs')
+      exec.push('removeuser')
+      exec.push('sources-trusted-unmount')
+      exec.push('sources-final')
+      exec.push('umount')
 
-    /**
-     * write shellprocess
-     * @param name 
-     */
-    shellprocess(name: string) {
-        let content = ''
-        const dir = `/etc/calamares/modules/`
-        let file = dir + 'shellprocess_' + name + '.conf'
-        write(file, content, this.verbose)
-    }
+      const settings = {
+         'modules-search': modulesSearch,
+         sequence: [{ show: show }, { exec: exec }, { show: ['finished'] }],
+         branding: this.remix.branding,
+         'prompt-install': false,
+         'dont-chroot': false
+      }
+      let title = `# calamares settings, id: ${this.distro.distroId}/${this.distro.versionId} like: ${this.distro.distroLike}/${this.distro.versionLike}\n`
+      return title + yaml.safeDump(settings)
+   }
 
-    /**
-     * write contextualprocess
-     * @param process 
-     */
-    contextualprocess(name: string) {
-        let content = ''
-        const dir = `/etc/calamares/modules/`
-        let file = dir + name + '_context' + '.conf'
-        write(file, content, this.verbose)
-    }
+   /**
+    *
+    */
+   modules() {
+      this.modulePartition()
+      this.moduleMount()
+      this.moduleUnpackfs()
+      this.moduleSourcesTrusted()
+      //this.moduleMachineid()
+      this.moduleFstab()
+      this.moduleLocale()
+      this.moduleKeyboard()
+      this.moduleLocalecfg()
+      this.moduleUsers()
+      if (this.displaymanager) {
+         this.moduleDisplaymanager()
+      }
+      this.moduleNetworkcfg()
+      this.moduleHwclock()
+      this.moduleServicesSystemd()
+      this.moduleCreateTmp()
+      this.moduleBootloaderConfig()
+      this.moduleGrubcfg()
+      this.moduleBootloader()
+      this.modulePackages()
+      this.moduleLuksbootkeyfile()
+      this.moduleLuksopenswaphookcfg()
+      this.modulePlymouthcfg()
+      this.moduleInitramfscfg()
+      this.moduleInitramfs()
+      this.moduleRemoveuser()
+      this.moduleSourcesTrustedUnmount()
+      this.moduleSourcesFinal()
+      this.moduleUmount()
+   }
 
+   /**
+    * ========================================================================
+    * module = name + '.conf'
+    * shellprocess = 'shellprocess_' + name + '.conf'
+    * contextualprocess = name + '_context.conf'
+    *
+    * module_calamares
+    *                      dir = '/usr/lib/calamares/modules/' + name
+    *                      name = module.desc
+    *                      script =
+    * ========================================================================
+    */
 
-    /**
-     * ====================================================================================
-     * M O D U L E S
-     * ====================================================================================
-     */
+   /**
+    * write module
+    * @param name
+    * @param content
+    */
+   private module(name: string, content: string) {
+      const dir = `/etc/calamares/modules/`
+      const file = dir + name + '.conf'
+      write(file, content, this.verbose)
+   }
 
-    /**
-     *
-     */
-    modulePartition() {
-        if (this.verbose) {
-            console.log(`calamares: module partition. Nothing to do!`)
-        }
-    }
+   /**
+    * write shellprocess
+    * @param name
+    */
+   private shellprocess(name: string) {
+      let content = ''
+      const dir = `/etc/calamares/modules/`
+      let file = dir + 'shellprocess_' + name + '.conf'
+      write(file, content, this.verbose)
+   }
 
-    /**
-     *
-     */
-    moduleMount() {
-        const mount = yaml.safeDump({
-            extraMounts: [{
-                device: "proc",
-                fs: "proc",
-                mountPoint: "/proc"
-            }, {
-                device: "sys",
-                fs: "sysfs",
-                mountPoint: "/sys"
-            }, {
-                device: "/dev",
-                mountPoint: "/dev",
-                options: "bind"
-            }, {
-                device: "/dev/pts",
-                fs: "devpts",
-                mountPoint: "/dev/pts"
-            }, {
-                device: "tmpfs",
-                fs: "tmpfs",
-                mountPoint: "/run"
-            }, {
-                device: "/run/udev",
-                mountPoint: "/run/udev",
-                options: "bind"
-            }],
-            extraMountsEfi: [{
-                device: "efivarfs",
-                fs: "tmpefivarfsfs",
-                mountPoint: "/sys/firmware/efi/efivars"
-            }]
-        })
+   /**
+    * write contextualprocess
+    * @param process
+    */
+   private contextualprocess(name: string) {
+      let content = ''
+      const dir = `/etc/calamares/modules/`
+      let file = dir + name + '_context' + '.conf'
+      write(file, content, this.verbose)
+   }
 
-        this.module('mount', mount)
-    }
+   /**
+    * ====================================================================================
+    * M O D U L E S
+    * ====================================================================================
+    */
 
-    /**
-     *
-     */
-    moduleUnpackfs() {
-        const unpack = yaml.safeDump({
-            unpack: [{
-                source: this.distro.mountpointSquashFs,
-                sourcefs: "squashfs",
-                destination: ""
-            }]
-        })
-        this.module('unpackfs', unpack)
-    }
+   /**
+    *
+    */
+   private modulePartition() {
+      if (this.verbose) {
+         console.log(`calamares: module partition. Nothing to do!`)
+      }
+   }
 
-    /**
-     *
-     */
-    moduleMachineid() {
-        const machineid = yaml.safeDump({
-            systemd: true,
-            dbus: true,
-            symlink: true
-        })
-        this.module('machineid', machineid)
-    }
-
-    /**
-     *
-     */
-    moduleFstab() {
-        const fstab = yaml.safeDump({
-            mountOptions: {
-                default: "defaults,noatime",
-                btrfs: "defaults,noatime,space_cache,autodefrag"
+   /**
+    *
+    */
+   private moduleMount() {
+      const mount = yaml.safeDump({
+         extraMounts: [
+            {
+               device: 'proc',
+               fs: 'proc',
+               mountPoint: '/proc'
             },
-            ssdExtraMountOptions: {
-                ext4: "discard",
-                jfs: "discard",
-                xfs: "discard",
-                swap: "discard",
-                btrfs: "discard,compress=lzo"
+            {
+               device: 'sys',
+               fs: 'sysfs',
+               mountPoint: '/sys'
             },
-            crypttabOptions: "luks,keyscript=/bin/cat"
-        })
+            {
+               device: '/dev',
+               mountPoint: '/dev',
+               options: 'bind'
+            },
+            {
+               device: '/dev/pts',
+               fs: 'devpts',
+               mountPoint: '/dev/pts'
+            },
+            {
+               device: 'tmpfs',
+               fs: 'tmpfs',
+               mountPoint: '/run'
+            },
+            {
+               device: '/run/udev',
+               mountPoint: '/run/udev',
+               options: 'bind'
+            }
+         ],
+         extraMountsEfi: [
+            {
+               device: 'efivarfs',
+               fs: 'tmpefivarfsfs',
+               mountPoint: '/sys/firmware/efi/efivars'
+            }
+         ]
+      })
 
-        this.module('fstab', fstab)
-    }
+      this.module('mount', mount)
+   }
 
-    moduleLocale() { if (this.verbose) console.log(`calamares: module locale. Nothing to do!`) }
+   /**
+    *
+    */
+   private moduleUnpackfs() {
+      const unpack = yaml.safeDump({
+         unpack: [
+            {
+               source: this.distro.mountpointSquashFs,
+               sourcefs: 'squashfs',
+               destination: ''
+            }
+         ]
+      })
+      this.module('unpackfs', unpack)
+   }
 
-    moduleKeyboard() { if (this.verbose) console.log(`calamares: module keyboard. Nothing to do!`) }
+   /**
+    *
+    */
+   private moduleMachineid() {
+      const machineid = yaml.safeDump({
+         systemd: true,
+         dbus: true,
+         symlink: true
+      })
+      this.module('machineid', machineid)
+   }
 
-    moduleLocalecfg() { if (this.verbose) console.log(`calamares: module localecfg. Nothing to do!`) }
+   /**
+    *
+    */
+   private moduleFstab() {
+      const fstab = yaml.safeDump({
+         mountOptions: {
+            default: 'defaults,noatime',
+            btrfs: 'defaults,noatime,space_cache,autodefrag'
+         },
+         ssdExtraMountOptions: {
+            ext4: 'discard',
+            jfs: 'discard',
+            xfs: 'discard',
+            swap: 'discard',
+            btrfs: 'discard,compress=lzo'
+         },
+         crypttabOptions: 'luks,keyscript=/bin/cat'
+      })
 
+      this.module('fstab', fstab)
+   }
 
-    /**
-     *
-     */
-    moduleUsers() {
-        const users = yaml.safeDump({
-            userGroup: "users",
-            defaultGroups: [
-                "cdrom", "floppy", "sudo", "audio", "dip", "video", "plugdev", "netdev", "lpadmin", "scanner", "bluetooth"
-            ],
-            autologinGroup: "autologin",
-            sudoersGroup: "sudo",
-            setRootPassword: false
-        })
-        this.module('users', users)
-    }
+   private moduleLocale() {
+      if (this.verbose) console.log(`calamares: module locale. Nothing to do!`)
+   }
 
-    /**
-     *
-     */
-    moduleDisplaymanager() {
-        const displaymanager = require('./modules/displaymanager').displaymanager
-        this.module('displaymanager', displaymanager())
-    }
+   private moduleKeyboard() {
+      if (this.verbose) console.log(`calamares: module keyboard. Nothing to do!`)
+   }
 
-    moduleNetworkcfg() { if (this.verbose) console.log(`calamares: module networkcfg. Nothing to do!`) }
+   private moduleLocalecfg() {
+      if (this.verbose) console.log(`calamares: module localecfg. Nothing to do!`)
+   }
 
-    moduleHwclock() { if (this.verbose) console.log(`calamares: module hwclock. Nothing to do!`) }
+   /**
+    *
+    */
+   private moduleUsers() {
+      const users = yaml.safeDump({
+         userGroup: 'users',
+         defaultGroups: ['cdrom', 'floppy', 'sudo', 'audio', 'dip', 'video', 'plugdev', 'netdev', 'lpadmin', 'scanner', 'bluetooth'],
+         autologinGroup: 'autologin',
+         sudoersGroup: 'sudo',
+         setRootPassword: false
+      })
+      this.module('users', users)
+   }
 
-    moduleServicesSystemd() { if (this.verbose) console.log(`calamares: module servives-systemd. Nothing to do!`) }
+   /**
+    *
+    */
+   private moduleDisplaymanager() {
+      const displaymanager = require('./modules/displaymanager').displaymanager
+      this.module('displaymanager', displaymanager())
+   }
 
-    moduleGrubcfg() { if (this.verbose) console.log(`calamares: module grubcfg. Nothing to do!`) }
+   private moduleNetworkcfg() {
+      if (this.verbose) console.log(`calamares: module networkcfg. Nothing to do!`)
+   }
 
-    /**
-     * 
-     */
-    moduleBootloader() {
-        const bootloader = yaml.safeDump({
-            efiBootLoader: "grub",
-            kernel: "/vmlinuz-linux",
-            img: "/initramfs-linux.img",
-            fallback: "/initramfs-linux-fallback.img",
-            timeout: 10,
-            grubInstall: "grub-install",
-            grubMkconfig: "grub-mkconfig",
-            grubCfg: "/boot/grub/grub.cfg",
-            grubProbe: "grub-probe",
-            efiBootMgr: "efibootmgr",
-            installEFIFallback: false
-        })
-        this.module('bootloader', bootloader)
-    }
+   private moduleHwclock() {
+      if (this.verbose) console.log(`calamares: module hwclock. Nothing to do!`)
+   }
 
-    /**
-     * create module packages.conf
-     */
-    modulePackages() {
-        const packages = require('./modules/packages').packages
-        this.module('packages', packages())
-    }
+   private moduleServicesSystemd() {
+      if (this.verbose) console.log(`calamares: module servives-systemd. Nothing to do!`)
+   }
 
-    /**
-     *
-     */
-    moduleLuksbootkeyfile() { if (this.verbose) console.log(`calamares: module luksbootkeyfile. Nothing to do!`) }
-    /**
-     *
-     */
-    moduleLuksopenswaphookcfg() {
-        const lksopenswaphookcfg = yaml.safeDump({
-            configFilePath: "/etc/openswap.conf"
-        })
-        this.module('lksopenswaphookcfg', lksopenswaphookcfg)
-    }
+   private moduleGrubcfg() {
+      if (this.verbose) console.log(`calamares: module grubcfg. Nothing to do!`)
+   }
 
-    modulePlymouthcfg() { if (this.verbose) console.log(`calamares: module plymouthcfg. Nothing to do!`) }
+   /**
+    *
+    */
+   private moduleBootloader() {
+      const bootloader = yaml.safeDump({
+         efiBootLoader: 'grub',
+         kernel: '/vmlinuz-linux',
+         img: '/initramfs-linux.img',
+         fallback: '/initramfs-linux-fallback.img',
+         timeout: 10,
+         grubInstall: 'grub-install',
+         grubMkconfig: 'grub-mkconfig',
+         grubCfg: '/boot/grub/grub.cfg',
+         grubProbe: 'grub-probe',
+         efiBootMgr: 'efibootmgr',
+         installEFIFallback: false
+      })
+      this.module('bootloader', bootloader)
+   }
 
-    moduleInitramfscfg() { if (this.verbose) console.log(`calamares: module initramfscfg. Nothing to do!`) }
+   /**
+    * create module packages.conf
+    */
+   private modulePackages() {
+      const packages = require('./modules/packages').packages
+      this.module('packages', packages())
+   }
 
-    /**
-     *
-     */
-    moduleRemoveuser() {
-        const removeuser = yaml.safeDump({ username: this.user_opt })
-        this.module('removeuser', removeuser)
-    }
+   /**
+    *
+    */
+   private moduleLuksbootkeyfile() {
+      if (this.verbose) console.log(`calamares: module luksbootkeyfile. Nothing to do!`)
+   }
+   /**
+    *
+    */
+   private moduleLuksopenswaphookcfg() {
+      const lksopenswaphookcfg = yaml.safeDump({
+         configFilePath: '/etc/openswap.conf'
+      })
+      this.module('lksopenswaphookcfg', lksopenswaphookcfg)
+   }
 
-    moduleInitramfs() { if (this.verbose) console.log(`calamares: module initramfs. Nothing to do!`) }
+   private modulePlymouthcfg() {
+      if (this.verbose) console.log(`calamares: module plymouthcfg. Nothing to do!`)
+   }
 
-    moduleUmount() { if (this.verbose) console.log(`calamares: module unmount. Nothing to do!`) }
+   private moduleInitramfscfg() {
+      if (this.verbose) console.log(`calamares: module initramfscfg. Nothing to do!`)
+   }
 
-    /**
-     * ====================================================================================
-     * M O D U L E S   C A L A M A R E S
-     * ====================================================================================
-     */
+   /**
+    *
+    */
+   private moduleRemoveuser() {
+      const removeuser = yaml.safeDump({ username: this.user_opt })
+      this.module('removeuser', removeuser)
+   }
 
-    /**
-     *
-     */
-    async moduleSourcesTrusted() {
-        const name = 'sources-trusted'
-        const dir = this.dirGlobalModules + name + `/`
-        if (!fs.existsSync(dir)) {
-            fs.mkdirSync(dir)
-        }
+   private moduleInitramfs() {
+      if (this.verbose) console.log(`calamares: module initramfs. Nothing to do!`)
+   }
 
-        const descSourcesTrusted = require(`./calamares-modules/desc/${name}`).sourcesTrusted
-        write(dir + 'module.desc', descSourcesTrusted(), this.verbose)
+   private moduleUmount() {
+      if (this.verbose) console.log(`calamares: module unmount. Nothing to do!`)
+   }
 
-        const bashSourcesTrusted = require(`./calamares-modules/scripts/${name}`).sourcesTrusted
-        const bashFile = `/usr/sbin/${name}`
-        write(bashFile, bashSourcesTrusted(), this.verbose)
-        await exec(`chmod +x ${bashFile}`)
-    }
+   /**
+    * ====================================================================================
+    * M O D U L E S   C A L A M A R E S
+    * ====================================================================================
+    */
 
-    /**
-     * 
-     */
-    async moduleCreateTmp() {
-        const name = 'create-tmp'
-        const dir = this.dirGlobalModules + name + `/`
-        if (!fs.existsSync(dir)) {
-            fs.mkdirSync(dir)
-        }
+   /**
+    *
+    */
+   private async moduleSourcesTrusted() {
+      const name = 'sources-trusted'
+      const dir = this.dirGlobalModules + name + `/`
+      if (!fs.existsSync(dir)) {
+         fs.mkdirSync(dir)
+      }
 
-        const descCreateTmp = require(`./calamares-modules/desc/${name}`).createTmp
-        write(dir + 'module.desc', descCreateTmp(), this.verbose)
+      const descSourcesTrusted = require(`./calamares-modules/desc/${name}`).sourcesTrusted
+      write(dir + 'module.desc', descSourcesTrusted(), this.verbose)
 
-        const bashCreateTmp = require(`./calamares-modules/scripts/${name}`).createTmp
-        const scriptFile = `/usr/sbin/${name}`
-        write(scriptFile, bashCreateTmp(), this.verbose)
-        await exec(`chmod +x ${scriptFile}`)
-    }
+      const bashSourcesTrusted = require(`./calamares-modules/scripts/${name}`).sourcesTrusted
+      const bashFile = `/usr/sbin/${name}`
+      write(bashFile, bashSourcesTrusted(), this.verbose)
+      await exec(`chmod +x ${bashFile}`)
+   }
 
-    /**
-     *
-     */
-    async moduleBootloaderConfig() {
-        const name = 'bootloader-config'
-        const dir = this.dirGlobalModules + name + `/`
-        if (!fs.existsSync(dir)) {
-            fs.mkdirSync(dir)
-        }
+   /**
+    *
+    */
+   private async moduleCreateTmp() {
+      const name = 'create-tmp'
+      const dir = this.dirGlobalModules + name + `/`
+      if (!fs.existsSync(dir)) {
+         fs.mkdirSync(dir)
+      }
 
-        const descBootloaderConfig = require('./calamares-modules/desc/bootloader-config').bootloaderConfig
-        write(dir + 'module.desc', descBootloaderConfig(), this.verbose)
+      const descCreateTmp = require(`./calamares-modules/desc/${name}`).createTmp
+      write(dir + 'module.desc', descCreateTmp(), this.verbose)
 
-        const bashBootloaderConfig = require(`./calamares-modules/scripts/${name}`).bootloaderConfig
-        const scriptFile = `/usr/sbin/${name}`
-        write(scriptFile, bashBootloaderConfig(), this.verbose)
-        await exec(`chmod +x ${scriptFile}`)
-    }
+      const bashCreateTmp = require(`./calamares-modules/scripts/${name}`).createTmp
+      const scriptFile = `/usr/sbin/${name}`
+      write(scriptFile, bashCreateTmp(), this.verbose)
+      await exec(`chmod +x ${scriptFile}`)
+   }
 
-    /**
-     *
-     */
-    moduleSourcesTrustedUnmount() {
-        const name = 'sources-trusted-unmount'
-        const dir = this.dirGlobalModules + name + `/`
-        if (!fs.existsSync(dir)) {
-            fs.mkdirSync(dir)
-        }
+   /**
+    *
+    */
+   private async moduleBootloaderConfig() {
+      const name = 'bootloader-config'
+      const dir = this.dirGlobalModules + name + `/`
+      if (!fs.existsSync(dir)) {
+         fs.mkdirSync(dir)
+      }
 
-        const descSourcesTrustedUnmount = require(`./calamares-modules/desc/${name}`).sourcesTrustedUnmount
-        write(dir + 'module.desc', descSourcesTrustedUnmount(), this.verbose)
+      const descBootloaderConfig = require('./calamares-modules/desc/bootloader-config').bootloaderConfig
+      write(dir + 'module.desc', descBootloaderConfig(), this.verbose)
 
-        if (this.verbose) { console.log(`calamares: module ${name} use the same script of source-trusted`) }
-    }
+      const bashBootloaderConfig = require(`./calamares-modules/scripts/${name}`).bootloaderConfig
+      const scriptFile = `/usr/sbin/${name}`
+      write(scriptFile, bashBootloaderConfig(), this.verbose)
+      await exec(`chmod +x ${scriptFile}`)
+   }
 
-    /**
-     *
-     */
-    async moduleSourcesFinal() {
-        const name = 'sources-final'
-        const dir = this.dirGlobalModules + name + `/`
-        if (!fs.existsSync(dir)) {
-            fs.mkdirSync(dir)
-        }
+   /**
+    *
+    */
+   private moduleSourcesTrustedUnmount() {
+      const name = 'sources-trusted-unmount'
+      const dir = this.dirGlobalModules + name + `/`
+      if (!fs.existsSync(dir)) {
+         fs.mkdirSync(dir)
+      }
 
-        const descSourcesFinal = require(`./calamares-modules/desc/${name}`).sourcesFinal
-        write(dir + 'module.desc', descSourcesFinal(), this.verbose)
+      const descSourcesTrustedUnmount = require(`./calamares-modules/desc/${name}`).sourcesTrustedUnmount
+      write(dir + 'module.desc', descSourcesTrustedUnmount(), this.verbose)
 
-        const bashSourcesFinal = require(`./calamares-modules/scripts/${name}`).sourcesFinal
-        const bashFile = `/usr/sbin/${name}`
-        write(bashFile, bashSourcesFinal(), this.verbose)
-        await exec(`chmod +x ${bashFile}`)
-    }
+      if (this.verbose) {
+         console.log(`calamares: module ${name} use the same script of source-trusted`)
+      }
+   }
 
+   /**
+    *
+    */
+   private async moduleSourcesFinal() {
+      const name = 'sources-final'
+      const dir = this.dirGlobalModules + name + `/`
+      if (!fs.existsSync(dir)) {
+         fs.mkdirSync(dir)
+      }
+
+      const descSourcesFinal = require(`./calamares-modules/desc/${name}`).sourcesFinal
+      write(dir + 'module.desc', descSourcesFinal(), this.verbose)
+
+      const bashSourcesFinal = require(`./calamares-modules/scripts/${name}`).sourcesFinal
+      const bashFile = `/usr/sbin/${name}`
+      write(bashFile, bashSourcesFinal(), this.verbose)
+      await exec(`chmod +x ${bashFile}`)
+   }
 }
 
 /**
@@ -498,8 +527,8 @@ export class Beowulf {
  * @param verbose
  */
 function write(file: string, content: string, verbose = false) {
-    if (verbose) {
-        console.log(`calamares: create ${file}`)
-    }
-    fs.writeFileSync(file, content, 'utf8')
+   if (verbose) {
+      console.log(`calamares: create ${file}`)
+   }
+   fs.writeFileSync(file, content, 'utf8')
 }

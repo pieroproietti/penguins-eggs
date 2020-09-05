@@ -11,7 +11,6 @@ import Ovary from '../classes/ovary'
 import Settings from '../classes/settings'
 import Pacman from '../classes/pacman'
 
-
 import { IRemix } from '../interfaces'
 import { settings } from 'cluster'
 
@@ -23,14 +22,11 @@ export default class Calamares extends Command {
    static flags = {
       help: flags.help({ char: 'h' }),
       verbose: flags.boolean({ char: 'v' }),
-      configuration: flags.boolean({char: 'c',description: 'creation of configuration files only'}),
-      theme: flags.string({ description: 'theme/branding for eggs and calamares' }),
+      configuration: flags.boolean({ char: 'c', description: 'creation of configuration files only' }),
+      theme: flags.string({ description: 'theme/branding for eggs and calamares' })
    }
 
-   static examples = [
-      `~$ sudo eggs calamares \ninstall calamares and create configuration\n`,
-      `~$ sudo eggs calamares -c \ncreate/renew calamares configuration files\n`
-   ]
+   static examples = [`~$ sudo eggs calamares \ninstall calamares and create configuration\n`, `~$ sudo eggs calamares -c \ncreate/renew calamares configuration files\n`]
 
    async run() {
       Utils.titles('calamares')

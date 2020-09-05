@@ -18,8 +18,7 @@ import pjson = require('pjson')
 import chalk = require('chalk')
 
 // interfaces
-import { IRemix, IDistro, IPackage, IWorkDir, IMyAddons } from '../interfaces'
-
+import { IRemix, IDistro, IApp, IWorkDir, IMyAddons } from '../interfaces'
 
 // libraries
 const exec = require('../lib/utils').exec
@@ -34,7 +33,7 @@ import Pacman from './pacman'
  * Ovary:
  */
 export default class Settings {
-   app = {} as IPackage
+   app = {} as IApp
 
    remix = {} as IRemix
 
@@ -92,7 +91,7 @@ export default class Settings {
 
    make_md5sum = false
 
-   compression = '' 
+   compression = ''
 
    session_excludes = ''
 
@@ -100,7 +99,7 @@ export default class Settings {
 
    isoFilename = '' // resulting name of the iso
 
-   version = '' 
+   version = ''
 
    /**
     * Egg
@@ -127,8 +126,7 @@ export default class Settings {
    async fertilization(): Promise<boolean> {
       if (this.load()) {
          if (this.listFreeSpace()) {
-            if (await Utils.customConfirm('Select yes to continue...'))
-               return true
+            if (await Utils.customConfirm('Select yes to continue...')) return true
          }
       }
       return false
@@ -138,7 +136,7 @@ export default class Settings {
     * Load configuration from /etc/penguins-eggs.conf
     * @returns {boolean} Success
     */
-   public async load(verbose = false): Promise<boolean> {
+   async load(verbose = false): Promise<boolean> {
       let foundSettings: boolean
 
       if (!fs.existsSync(this.config_file)) {
@@ -172,20 +170,13 @@ export default class Settings {
       }
       this.make_efi = settings.General.make_efi === 'yes'
       if (this.make_efi) {
-         if (
-            !Pacman.packageIsInstalled('grub-efi-amd64') &&
-            !Pacman.packageIsInstalled('grub-efi-ia32')
-         ) {
-            Utils.error(
-               'You choose to create an UEFI image, but miss to install grub-efi-amd64 package.'
-            )
+         if (!Pacman.packageIsInstalled('grub-efi-amd64') && !Pacman.packageIsInstalled('grub-efi-ia32')) {
+            Utils.error('You choose to create an UEFI image, but miss to install grub-efi-amd64 package.')
             Utils.error('Please install it before to create an UEFI image:')
             Utils.warning('sudo apt install grub-efi-amd64')
             Utils.error('or')
             Utils.warning('sudo apt install grub-efi-ia32')
-            Utils.error(
-               'or edit /etc/penguins-eggs.conf and set the valuer of make_efi=no'
-            )
+            Utils.error('or edit /etc/penguins-eggs.conf and set the valuer of make_efi=no')
             this.make_efi = false
          }
       }
@@ -224,8 +215,7 @@ export default class Settings {
       this.user_opt = settings.General.user_opt
 
       if (this.user_opt === undefined || this.user_opt === '') {
-         this.user_opt = shx.exec('awk -F":" \'/1000:1000/ { print $1 }\' /etc/passwd', { silent: true })
-            .stdout.trim()
+         this.user_opt = shx.exec('awk -F":" \'/1000:1000/ { print $1 }\' /etc/passwd', { silent: true }).stdout.trim()
          if (this.user_opt === '') {
             this.user_opt = 'live'
          }
@@ -240,9 +230,7 @@ export default class Settings {
          this.root_passwd = 'evolution'
       }
 
-      const timezone = shx
-         .exec('cat /etc/timezone', { silent: true })
-         .stdout.trim()
+      const timezone = shx.exec('cat /etc/timezone', { silent: true }).stdout.trim()
       this.timezone_opt = `timezone=${timezone}`
       return foundSettings
    }
@@ -250,7 +238,7 @@ export default class Settings {
    /**
     * showSettings
     */
-   public async showSettings() {
+   async show() {
       console.log(`application_nane:  ${this.app.name} ${this.app.version}`)
       console.log(`config_file:       ${this.config_file}`)
       console.log(`snapshot_dir:      ${this.snapshot_dir}`)
@@ -274,17 +262,13 @@ export default class Settings {
       console.log(`ssh_pass:          ${this.ssh_pass}`)
       if (this.make_efi) {
          if (!Pacman.packageIsInstalled('grub-efi-amd64')) {
-            Utils.error(
-               'You choose to create an UEFI image, but miss to install grub-efi-amd64 package.'
-            )
+            Utils.error('You choose to create an UEFI image, but miss to install grub-efi-amd64 package.')
             Utils.error('Please install it before to create an UEFI image:')
             Utils.warning('sudo apt install grub-efi-amd64')
             this.make_efi = false
          }
          if (!Pacman.packageIsInstalled('dosfstools')) {
-            Utils.error(
-               'You choose to create an UEFI image, but miss to install dosfstools package.'
-            )
+            Utils.error('You choose to create an UEFI image, but miss to install dosfstools package.')
             Utils.error('Please install it before to create an UEFI image:')
             Utils.warning('sudo apt install dosfstools')
             this.make_efi = false
@@ -313,11 +297,7 @@ export default class Settings {
                silent: true
             }).stdout
          )
-         console.log(
-            `Disk used space: ${
-            Math.round((Utils.getUsedSpace() / gb) * 10) / 10
-            } GB`
-         )
+         console.log(`Disk used space: ${Math.round((Utils.getUsedSpace() / gb) * 10) / 10} GB`)
       }
 
       spaceAvailable = Number(
@@ -327,27 +307,15 @@ export default class Settings {
             })
             .stdout.trim()
       )
-      console.log(
-         `Space available: ${Math.round((spaceAvailable / gb) * 10) / 10} GB`
-      )
-      console.log(
-         `There are ${Utils.getSnapshotCount(
-            this.snapshot_dir
-         )} snapshots taking ${
-         Math.round((Utils.getSnapshotSize() / gb) * 10) / 10
-         } GB of disk space.`
-      )
+      console.log(`Space available: ${Math.round((spaceAvailable / gb) * 10) / 10} GB`)
+      console.log(`There are ${Utils.getSnapshotCount(this.snapshot_dir)} snapshots taking ${Math.round((Utils.getSnapshotSize() / gb) * 10) / 10} GB of disk space.`)
       console.log()
 
       if (spaceAvailable > gb * 3) {
-         console.log(
-            chalk.cyanBright('The free space should  be sufficient to hold the')
-         )
+         console.log(chalk.cyanBright('The free space should  be sufficient to hold the'))
          console.log(chalk.cyanBright('compressed data from the system'))
       } else {
-         console.log(
-            chalk.redBright('The free space should be insufficient') + '.'
-         )
+         console.log(chalk.redBright('The free space should be insufficient') + '.')
          console.log()
          console.log('If necessary, you can create more available space')
          console.log('by removing previous  snapshots and saved copies:')
@@ -355,11 +323,11 @@ export default class Settings {
    }
 
    /**
-    * 
-    * @param basename 
+    *
+    * @param basename
     * @param theme
     */
-   public async loadRemix(basename = '', theme = '') {
+   async loadRemix(basename = '', theme = '') {
       this.remix.versionNumber = Utils.getPackageVersion()
       this.remix.kernel = Utils.kernerlVersion()
 

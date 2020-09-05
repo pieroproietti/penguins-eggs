@@ -24,7 +24,7 @@ export default class Produce extends Command {
       compress: flags.boolean({ char: 'c', description: 'max compression' }),
       fast: flags.boolean({ char: 'f', description: 'fast compression' }),
       verbose: flags.boolean({ char: 'v', description: 'verbose' }),
-      script: flags.boolean({char: 's', description: 'script mode. Generate scripts to manage iso build' }),
+      script: flags.boolean({ char: 's', description: 'script mode. Generate scripts to manage iso build' }),
       help: flags.help({ char: 'h' }),
 
       // addon vendor/addon configurazioni dei vendors
@@ -50,17 +50,13 @@ export default class Produce extends Command {
       `$ sudo eggs produce -vf --basename leo --theme debian --adapt \nproduce an ISO called leo-i386-2020-08-25_1215.iso compression lz4,\nusing Debian theme and link to adapt\n`,
       `$ sudo eggs produce -v --basename leo --theme debian --adapt \nproduce an ISO called leo-i386-2020-08-25_1215.iso compression xz,\nusing Debian theme and link to adapt\n`,
       `$ sudo eggs produce -v --basename leo --rsupport \nproduce an ISO called leo-i386-2020-08-25_1215.iso compression xz, using eggs\ntheme and link to dwagent\n`,
-      `$ sudo eggs produce -vs --basename leo --rsupport \nproduce scripts to build an ISO as the previus example. Scripts can be found\nin /home/eggs/ovarium and you can customize all you need\n`,
+      `$ sudo eggs produce -vs --basename leo --rsupport \nproduce scripts to build an ISO as the previus example. Scripts can be found\nin /home/eggs/ovarium and you can customize all you need\n`
    ]
 
    async run() {
       Utils.titles('produce')
       const { flags } = this.parse(Produce)
       if (Utils.isRoot()) {
-
-
-
-
          /**
           * ADDONS dei vendors
           */
@@ -127,8 +123,7 @@ export default class Produce extends Command {
          myAddons.pve = flags.pve
 
          if (!Pacman.prerequisitesEggsCheck()) {
-            console.log('You need to install ' + chalk.bgGray('prerequisites') + ' to continue.'
-            )
+            console.log('You need to install ' + chalk.bgGray('prerequisites') + ' to continue.')
             if (await Utils.customConfirm(`Select yes to install prerequisites`)) {
                Utils.warning('Installing prerequisites...')
                await Pacman.prerequisitesEggsInstall(verbose)
@@ -140,7 +135,7 @@ export default class Produce extends Command {
          }
 
          if (!Pacman.configurationCheck()) {
-            console.log('You need to create ' + chalk.bgGray('configuration files') +' to continue.')
+            console.log('You need to create ' + chalk.bgGray('configuration files') + ' to continue.')
             if (await Utils.customConfirm(`Select yes to create configuration files`)) {
                Utils.warning('Creating configuration files...')
                await Pacman.configurationInstall(verbose)

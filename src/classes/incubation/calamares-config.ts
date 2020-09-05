@@ -45,10 +45,7 @@ export default class CalamaresConfig {
       this.distro = distro
       this.user_opt = user_opt
       this.verbose = verbose
-      this.displaymanager =
-         Pacman.packageIsInstalled('lightdm') ||
-         Pacman.packageIsInstalled('sddm') ||
-         Pacman.packageIsInstalled('sddm')
+      this.displaymanager = Pacman.packageIsInstalled('lightdm') || Pacman.packageIsInstalled('sddm') || Pacman.packageIsInstalled('sddm')
    }
 
    /**
@@ -78,9 +75,9 @@ export default class CalamaresConfig {
    }
 
    /**
- *
- */
-   createCalamaresDirs() {
+    *
+    */
+   private createCalamaresDirs() {
       if (!fs.existsSync('/etc/calamares')) {
          fs.mkdirSync('/etc/calamares')
       }
@@ -101,8 +98,8 @@ export default class CalamaresConfig {
       }
 
       /**
-      * ADDONS
-      */
+       * ADDONS
+       */
       let calamaresBranding = path.resolve(__dirname, `../../../addons/${this.remix.branding}/theme/branding`)
       if (fs.existsSync(calamaresBranding)) {
          if (!fs.existsSync(`/etc/calamares/branding/${this.remix.branding}`)) {
@@ -131,13 +128,12 @@ export default class CalamaresConfig {
       }
       // script di avvio
       shx.cp(path.resolve(__dirname, '../../../assets/calamares/install-debian'), '/sbin/install-debian')
-
    }
 
    /**
-  *
-  */
-   createBranding() {
+    *
+    */
+   private createBranding() {
       const branding = require('./branding').branding
       const dir = `/etc/calamares/branding/${this.remix.branding}/`
       if (!fs.existsSync(dir)) {
@@ -151,9 +147,8 @@ export default class CalamaresConfig {
    /**
     *
     */
-   async createInstallDebian() {
-      const scriptInstallDebian = require('./calamares-modules/scripts/install-debian')
-         .installDebian
+   private async createInstallDebian() {
+      const scriptInstallDebian = require('./calamares-modules/scripts/install-debian').installDebian
       const scriptDir = `/usr/bin/`
       const scriptFile = scriptDir + 'install-debian'
       const scriptContent = scriptInstallDebian()
