@@ -108,6 +108,7 @@ USAGE
 * [`eggs info`](#eggs-info)
 * [`eggs install`](#eggs-install)
 * [`eggs kill`](#eggs-kill)
+* [`eggs locales [FILE]`](#eggs-locales-file)
 * [`eggs prerequisites`](#eggs-prerequisites)
 * [`eggs produce`](#eggs-produce)
 * [`eggs skel`](#eggs-skel)
@@ -272,6 +273,22 @@ EXAMPLE
 ```
 
 _See code: [src/commands/kill.ts](https://github.com/pieroproietti/penguins-eggs/blob/v7.6.20/src/commands/kill.ts)_
+
+## `eggs locales [FILE]`
+
+describe the command here
+
+```
+USAGE
+  $ eggs locales [FILE]
+
+OPTIONS
+  -f, --force
+  -h, --help       show CLI help
+  -n, --name=name  name to print
+```
+
+_See code: [src/commands/locales.ts](https://github.com/pieroproietti/penguins-eggs/blob/v7.6.20/src/commands/locales.ts)_
 
 ## `eggs prerequisites`
 

@@ -1,0 +1,7 @@
+# /etc/locale.gen
+it_IT.UTF-8 UTF-8
+en_US.UTF-8 UTF-8
+es_PE.UTF-8 UTF-8
+pt_BR.UTF-8 UTF-8
+fr_FR.UTF-8 UTF-8
+de_CA.UTF-8 UTF-8

@@ -24,7 +24,7 @@ const exec = require('../lib/utils').exec
 export default class Pacman {
    // live-task-lxde
    static deb4uefi = ['grub-efi-amd64', 'grun-efi-ia32']
-   static deb4localisation = ['live-task-localisation', 'live-task-base']
+   static deb4localisation = ['live-task-localisation', 'live-config', 'localepurge']
    static debs4eggs = ['isolinux', 'syslinux', 'syslinux-common', 'live-boot', 'live-boot-initramfs-tools', 'rsync ', 'squashfs-tools', 'xorriso', 'xterm', 'whois']
    static debs4calamares = ['calamares', 'qml-module-qtquick2', 'qml-module-qtquick-controls']
 
