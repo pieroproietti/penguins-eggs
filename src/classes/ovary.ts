@@ -710,6 +710,7 @@ export default class Ovary {
          let pathToDesktopLive: string
          pathToDesktopLive = pathHomeLive + '/' + Xdg.traduce('DESKTOP', traduce)
 
+
          // Copia icona penguins-eggs
          shx.cp(path.resolve(__dirname, '../../assets/eggs.png'), '/usr/share/icons/')
 
@@ -721,21 +722,14 @@ export default class Ovary {
          shx.cp(path.resolve(__dirname, '../../assets/penguins-clinstaller.desktop'), '/usr/share/applications/')
          shx.cp(path.resolve(__dirname, `../../addons/${theme}/theme/applications/install-debian.desktop`), `/usr/share/applications/`)
 
-         // Copia link comuni sul desktop
-         shx.cp('/usr/share/applications/penguins-eggs.desktop', `${this.settings.work_dir.merged}${pathToDesktopLive}`)
-         if (myAddons.adapt) {
-            shx.cp('/usr/share/applications/penguins-adapt.desktop', `${this.settings.work_dir.merged}${pathToDesktopLive}`)
-         }
 
-         // Dato che .../usr non è scrivibile, scrivo direttamente in /usr/
-         // Mentre il link su /home/live si registra solo nel fs merged
+         // /usr/share/ non è scrivibile, scrivo direttamente in /usr/
          if (myAddons.rsupport) {
             let dirAddon = path.resolve(__dirname, `../../addons/eggs/dwagent`)
             shx.cp(`${dirAddon}/applications/penguins-dwagent.desktop`, `/usr/share/applications/`)
             shx.cp(`${dirAddon}/bin/dwagent.sh`, `/usr/local/bin/`)
             shx.chmod('+x', `/usr/local/bin/dwagent.sh`)
             shx.cp(`${dirAddon}/artwork/remote-assistance.png`, `/usr/share/icons/`)
-            shx.cp(`${this.settings.work_dir.merged}/usr/share/applications/penguins-dwagent.desktop`, `${this.settings.work_dir.merged}${pathToDesktopLive}`)
          }
 
          if (myAddons.ichoice) {
@@ -744,33 +738,54 @@ export default class Ovary {
             shx.cp(`${dirAddon}/bin/installer-choice.sh`, `/usr/local/bin/`)
             shx.mkdir('-p', `/usr/local/share/penguins-eggs/`)
             shx.cp(`${dirAddon}/html/installer-choice.html`, `/usr/local/share/penguins-eggs/`)
-            shx.cp(`${this.settings.work_dir.merged}/usr/share/applications/penguins-ichoice.desktop`, `${this.settings.work_dir.merged}${pathToDesktopLive}`)
-         } else {
-            // Selezione tra calamare e eggs-cli-installer
-            if (Pacman.packageIsInstalled('calamares')) {
-               shx.cp('/usr/share/applications/install-debian.desktop', `${this.settings.work_dir.merged}${pathToDesktopLive}`)
-            } else {
-               shx.cp('/usr/share/applications/penguins-clinstaller.desktop', `${this.settings.work_dir.merged}${pathToDesktopLive}`)
-            }
          }
 
          if (myAddons.pve) {
             let dirAddon = path.resolve(__dirname, `../../addons/eggs/proxmox-ve`)
             shx.cp(`${dirAddon}/applications/proxmox-ve.desktop`, `/usr/share/applications/`)
             shx.cp(`${dirAddon}/artwork/proxmox-ve.png`, `/usr/share/icons/`)
-            shx.cp(`${this.settings.work_dir.merged}/usr/share/applications/proxmox-ve.desktop`, `${this.settings.work_dir.merged}${pathToDesktopLive}`)
-         }
-         // Solo per lxde, lxqt, mate, xfce e deepin-desktop installa adjust per ridimensionare il video
-         if (Pacman.packageIsInstalled('lxde-core') || Pacman.packageIsInstalled('lxqt-core') || Pacman.packageIsInstalled('deepin-desktop-base') || Pacman.packageIsInstalled('mate-desktop') || Pacman.packageIsInstalled('ubuntu-mate-core') || Pacman.packageIsInstalled('xfce4')) {
-            shx.cp('/usr/share/applications/penguins-eggs-adjust.desktop', `${this.settings.work_dir.merged}${pathToDesktopLive}`)
          }
 
-         // Rendo avviabili i link del Desktop
-         await exec(`chmod a+x ${this.settings.work_dir.merged}${pathToDesktopLive}/*.desktop`, echo)
 
          // ed imposto la home di /home/live a live:live
          await exec(`chroot ${this.settings.work_dir.merged}  chown ${this.settings.user_opt}:${this.settings.user_opt} ${pathHomeLive} -R`, echo)
          // await exec(`chown 1000:1000 ${this.work_dir.merged}${pathHomeLive} -R`, echo)
+
+
+         /**
+          * creazione di penguins-links-install in /etc/xdg/autostart
+          */
+         if (fs.existsSync(`/etc/xdg/autostart`)) {
+            // Creo il file penguins-links-install
+            let autostart = `${this.settings.work_dir.merged}etc/xdg/autostart/penguins-links-install`
+            let text =''
+            text += '#!/bin/sh'
+            text += 'DESKTOP=$(xdg-user-dir DESKTOP)'
+            text += 'cp /usr/share/applications/penguins-eggs.desktop $DESKTOP'
+            if (myAddons.rsupport) {
+               text += 'cp /usr/share/applications/penguins-dwagent.desktop $DESKTOP'
+            }
+            if (myAddons.ichoice) {
+               text += 'cp /usr/share/applications/penguins-ichoice.desktop $DESKTOP'
+            } else {
+               if (Pacman.packageIsInstalled('calamares')) {
+                  text += 'cp /usr/share/applications/install-debian.desktop $DESKTOP'
+               } else {
+                  text += 'cp /usr/share/applications/penguins-clinstaller.desktop $DESKTOP'
+               }
+            }
+            if (myAddons.pve) {
+               text += 'cp /usr/share/applications/penguins-clinstaller.desktop $DESKTOP'
+            }
+
+            if (myAddons.adapt) {
+               if (Pacman.packageIsInstalled('lxde-core') || Pacman.packageIsInstalled('lxqt-core') || Pacman.packageIsInstalled('deepin-desktop-base') || Pacman.packageIsInstalled('mate-desktop') || Pacman.packageIsInstalled('ubuntu-mate-core') || Pacman.packageIsInstalled('xfce4')) {
+                  text += 'cp /usr/share/applications/penguins-adapt.desktop $DESKTOP'
+               }
+            }
+            fs.writeFileSync(autostart, text, 'utf8')
+            await exec(`chmod a+x ${autostart}`, echo)
+         }
 
          /**
           * Solo per GNOME
