@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+Name=Add Penguin's Desktop Icons
+Exec=add-penguins-desktop-icons
+StartupNotify=false
+NoDisplay=true
+
+X-GNOME-Autostart-Phase=Initialization
+X-KDE-autostart-phase=1

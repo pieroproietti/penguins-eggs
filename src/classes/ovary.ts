@@ -753,38 +753,45 @@ export default class Ovary {
 
 
          /**
-          * creazione di penguins-links-install in /etc/xdg/autostart
+          * in autostart va un file desktop che avvia 
           */
-         if (fs.existsSync(`/etc/xdg/autostart`)) {
-            // Creo il file penguins-links-install
-            let autostart = `${this.settings.work_dir.merged}etc/xdg/autostart/penguins-links-install`
+         let dirAutostart = '/etc/xdg/autostart'
+         if (fs.existsSync(dirAutostart)) {
+            // Creo l'avviatore xdg DEVE essere .desktop ma è uno script
+            shx.cp(path.resolve(__dirname, `../../assets/add-penguins-desktop-icons.desktop`), `/etc/xdg/autostart/`)
+         
+            // Creo lo script di copia
+            let addPenguinsDesktopIcons = `/usr/bin/add-penguins-desktop-icons`
             let text =''
-            text += '#!/bin/sh'
-            text += 'DESKTOP=$(xdg-user-dir DESKTOP)'
-            text += 'cp /usr/share/applications/penguins-eggs.desktop $DESKTOP'
+            text += '#!/bin/sh\n'
+            text += 'DESKTOP=$(xdg-user-dir DESKTOP)\n'
+            text += 'cp /usr/share/applications/penguins-eggs.desktop $DESKTOP\n'
+            
             if (myAddons.rsupport) {
-               text += 'cp /usr/share/applications/penguins-dwagent.desktop $DESKTOP'
+               text += 'cp /usr/share/applications/penguins-dwagent.desktop $DESKTOP\n'
             }
+
             if (myAddons.ichoice) {
-               text += 'cp /usr/share/applications/penguins-ichoice.desktop $DESKTOP'
+               text += 'cp /usr/share/applications/penguins-ichoice.desktop $DESKTOP\n'
             } else {
                if (Pacman.packageIsInstalled('calamares')) {
-                  text += 'cp /usr/share/applications/install-debian.desktop $DESKTOP'
+                  text += 'cp /usr/share/applications/install-debian.desktop $DESKTOP\n'
                } else {
-                  text += 'cp /usr/share/applications/penguins-clinstaller.desktop $DESKTOP'
+                  text += 'cp /usr/share/applications/penguins-clinstaller.desktop $DESKTOP\n'
                }
             }
+
             if (myAddons.pve) {
-               text += 'cp /usr/share/applications/penguins-clinstaller.desktop $DESKTOP'
+               text += 'cp /usr/share/applications/penguins-pve.desktop $DESKTOP\n'
             }
 
             if (myAddons.adapt) {
                if (Pacman.packageIsInstalled('lxde-core') || Pacman.packageIsInstalled('lxqt-core') || Pacman.packageIsInstalled('deepin-desktop-base') || Pacman.packageIsInstalled('mate-desktop') || Pacman.packageIsInstalled('ubuntu-mate-core') || Pacman.packageIsInstalled('xfce4')) {
-                  text += 'cp /usr/share/applications/penguins-adapt.desktop $DESKTOP'
+                  text += 'cp /usr/share/applications/penguins-adapt.desktop $DESKTOP\n'
                }
             }
-            fs.writeFileSync(autostart, text, 'utf8')
-            await exec(`chmod a+x ${autostart}`, echo)
+            fs.writeFileSync(addPenguinsDesktopIcons, text, 'utf8')
+            await exec(`chmod a+x ${addPenguinsDesktopIcons}`, echo)
          }
 
          /**
