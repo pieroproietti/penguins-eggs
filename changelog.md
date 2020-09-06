@@ -17,6 +17,9 @@ You can follow the project also consulting the [commit history](https://github.c
 
 ## Changelog
 Versions are listed on reverse order, the first is the last one.
+
+### eggs-7.0.22_1.deb
+Introduced command locales, install and clean all the locale not necessary, leaving only the defined ones.
 ### eggs-7.0.20_1.deb
 Finally localisation start to work, your system can boot live in different languages [issue #34](https://github.com/pieroproietti/penguins-eggs/issues/34)
 
