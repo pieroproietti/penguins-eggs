@@ -1,6 +1,10 @@
 import { Command, flags } from '@oclif/command'
+
 import shx = require('shelljs')
+import path = require('path')
+
 import Utils from '../classes/utils'
+
 
 export default class Locales extends Command {
   static description = 'install/clean localess'
@@ -26,9 +30,10 @@ export default class Locales extends Command {
         console.log('creating a new /ect/locale.gen')
       }
       console.log(process.execPath)
-      shx.cp('./conf/locale.gen.template', '/etc/locale.gen')
+      shx.cp(path.resolve(__dirname, '../../conf/locale.gen.template'), '/etc/locale.gen')
       shx.exec('/usr/sbin/localepurge', echo)
       shx.exec('/usr/sbin/locale-gen', echo)
+      
     }
   }
 }
