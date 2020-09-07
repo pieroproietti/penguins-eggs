@@ -754,7 +754,7 @@ export default class Ovary {
       if (myAddons.pve) {
          let dirAddon = path.resolve(__dirname, `../../addons/eggs/proxmox-ve`)
          shx.cp(`${dirAddon}/artwork/proxmox-ve.png`, `/usr/share/icons/`)
-         shx.cp(`${dirAddon}/applications/proxmox-ve.desktop`, `/usr/share/applications/`)
+         shx.cp(`${dirAddon}/applications/penguins-pve.desktop`, `/usr/share/applications/`)
       }
 
       if (myAddons.rsupport) {
