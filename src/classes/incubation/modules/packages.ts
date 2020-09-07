@@ -18,10 +18,11 @@ export function packages(): string {
    text += addIfExist('live-config')
    text += addIfExist('live-config-doc')
    text += addIfExist('live-config-systemd')
+   text += addIfExist('live-config-systemd')
    text += addIfExist('live-tools')
-   text += addIfExist('task-localisation')
+   text += addIfExist('live-task-localisation')
    text += addIfExist('live-task-recommended')
-   text += addIfExist('calamares')
+   text += addIfExist('calamares-settings-debian')
    text += '\n'
    return text
 }

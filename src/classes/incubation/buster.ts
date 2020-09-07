@@ -425,6 +425,7 @@ export class Buster {
       const finished = yaml.safeDump({
          restartNowEnabled: true,
          restartNowChecked: true,
+         cmd: "rm /usr/share/applications/install-debian-desktop",
          restartNowCommand: "systemctl -i reboot",
       })
       this.module('finished', finished)

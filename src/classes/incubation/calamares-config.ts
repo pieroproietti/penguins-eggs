@@ -54,7 +54,7 @@ export default class CalamaresConfig {
    async config() {
       this.createCalamaresDirs()
       this.createBranding()
-      this.createInstallDebian()
+      // this.createInstallDebian()
       if (this.distro.versionLike === 'buster' || this.distro.versionLike === 'stretch' || this.distro.versionLike === 'bulleye') {
          const buster = new Buster(this.remix, this.distro, this.displaymanager, this.user_opt, this.verbose)
          buster.settings()
@@ -145,7 +145,7 @@ export default class CalamaresConfig {
    }
 
    /**
-    *
+    * non dovrebbe servire
     */
    private async createInstallDebian() {
       const scriptInstallDebian = require('./calamares-modules/scripts/install-debian').installDebian
