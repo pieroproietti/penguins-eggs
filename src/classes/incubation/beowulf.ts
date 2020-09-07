@@ -139,6 +139,7 @@ export class Beowulf {
       this.moduleSourcesTrustedUnmount()
       this.moduleSourcesFinal()
       this.moduleUmount()
+      this.moduleFinished()
    }
 
    /**
@@ -417,6 +418,18 @@ export class Beowulf {
 
    private moduleUmount() {
       if (this.verbose) console.log(`calamares: module unmount. Nothing to do!`)
+   }
+
+      /**
+    * moduleFinished
+    */
+   private moduleFinished() {
+      const finished = yaml.safeDump({
+         restartNowEnabled: true,
+         restartNowChecked: true,
+         restartNowCommand: "reboot",
+      })
+      this.module('finished', finished)
    }
 
    /**

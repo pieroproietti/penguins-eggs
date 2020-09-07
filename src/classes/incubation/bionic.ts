@@ -137,6 +137,7 @@ export class Bionic {
       this.modulePackages()
       this.moduleRemoveuser()
       this.moduleUmount()
+      this.moduleFinished()
    }
 
    /**
@@ -527,6 +528,19 @@ export class Bionic {
    private moduleUmount() {
       if (this.verbose) console.log(`calamares: module unmount. Nothing to do!`)
    }
+
+      /**
+    * moduleFinished
+    */
+   private moduleFinished() {
+      const finished = yaml.safeDump({
+         restartNowEnabled: true,
+         restartNowChecked: true,
+         restartNowCommand: "systemctl -i reboot",
+      })
+      this.module('finished', finished)
+   }
+
 
    /**
     * ====================================================================================

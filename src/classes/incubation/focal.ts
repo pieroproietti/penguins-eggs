@@ -175,6 +175,7 @@ export class Focal {
       this.moduleRemoveuser()
       //this.shellprocess("logs")
       this.moduleUmount()
+      this.moduleFinished()
    }
 
    /**
@@ -519,6 +520,19 @@ export class Focal {
    private moduleUmount() {
       if (this.verbose) console.log(`calamares: module unmount. Nothing to do!`)
    }
+
+      /**
+    * moduleFinished
+    */
+   private moduleFinished() {
+      const finished = yaml.safeDump({
+         restartNowEnabled: true,
+         restartNowChecked: true,
+         restartNowCommand: "systemctl -i reboot",
+      })
+      this.module('finished', finished)
+   }
+
 
    /**
     * ====================================================================================
