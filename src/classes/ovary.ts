@@ -736,17 +736,11 @@ export default class Ovary {
          shx.cp(path.resolve(__dirname, '../../assets/penguins-ichoice.desktop'), '/usr/share/applications/')
       }
 
-      // Per lxde, kxqt, deepin, mate, xfce4 creo il link adapt
-      if (Pacman.packageIsInstalled('lxde-core') || Pacman.packageIsInstalled('lxqt-core') || Pacman.packageIsInstalled('deepin-desktop-base') || Pacman.packageIsInstalled('mate-desktop') || Pacman.packageIsInstalled('ubuntu-mate-core') || Pacman.packageIsInstalled('xfce4')) {
-         shx.cp(path.resolve(__dirname, '../../assets/penguins-adapt.desktop'), '/usr/share/applications/')
-      }
-
-      if (myAddons.rsupport) {
-         let dirAddon = path.resolve(__dirname, `../../addons/eggs/dwagent`)
-         shx.cp(`${dirAddon}/applications/penguins-dwagent.desktop`, `/usr/share/applications/`)
-         shx.cp(`${dirAddon}/bin/dwagent.sh`, `/usr/local/bin/`)
-         shx.chmod('+x', `/usr/local/bin/dwagent.sh`)
-         shx.cp(`${dirAddon}/artwork/remote-assistance.png`, `/usr/share/icons/`)
+      if (myAddons.adapt) {
+         // Per lxde, kxqt, deepin, mate, xfce4 creo il link adapt
+         if (Pacman.packageIsInstalled('lxde-core') || Pacman.packageIsInstalled('lxqt-core') || Pacman.packageIsInstalled('deepin-desktop-base') || Pacman.packageIsInstalled('mate-desktop') || Pacman.packageIsInstalled('ubuntu-mate-core') || Pacman.packageIsInstalled('xfce4')) {
+            shx.cp(path.resolve(__dirname, '../../assets/penguins-adapt.desktop'), '/usr/share/applications/')
+         }
       }
 
       if (myAddons.ichoice) {
@@ -763,6 +757,13 @@ export default class Ovary {
          shx.cp(`${dirAddon}/applications/proxmox-ve.desktop`, `/usr/share/applications/`)
       }
 
+      if (myAddons.rsupport) {
+         let dirAddon = path.resolve(__dirname, `../../addons/eggs/dwagent`)
+         shx.cp(`${dirAddon}/applications/penguins-dwagent.desktop`, `/usr/share/applications/`)
+         shx.cp(`${dirAddon}/bin/dwagent.sh`, `/usr/local/bin/`)
+         shx.chmod('+x', `/usr/local/bin/dwagent.sh`)
+         shx.cp(`${dirAddon}/artwork/remote-assistance.png`, `/usr/share/icons/`)
+      }
 
       /**
        * configuro add-penguins-desktop-icons in /etc/xdg/autostart
@@ -781,10 +782,10 @@ export default class Ovary {
          text += 'DESKTOP=$(xdg-user-dir DESKTOP)\n'
          text += 'cp /usr/share/applications/penguins-eggs.desktop $DESKTOP\n'
          text += `cp /usr/share/applications/${installerLink} $DESKTOP\n`
-         if (myAddons.rsupport) text += 'cp /usr/share/applications/penguins-dwagent.desktop $DESKTOP\n'
-         if (myAddons.pve) text += 'cp /usr/share/applications/penguins-pve.desktop $DESKTOP\n'
          if (myAddons.adapt) text += 'vaffanculu'
-         if (myAddons.adapt) text += 'cp /usr/share/applications/penguins-adapt.desktop $DESKTOP\n'
+         if (myAddons.ichoice) text += 'cp /usr/share/applications/penguins-clinstaller.desktop $DESKTOP\n'
+         if (myAddons.pve) text += 'cp /usr/share/applications/penguins-pve.desktop $DESKTOP\n'
+         if (myAddons.rsupport) text += 'cp /usr/share/applications/penguins-dwagent.desktop $DESKTOP\n'
          fs.writeFileSync(addPenguinsDesktopIcons, text, 'utf8')
          await exec(`chmod a+x ${addPenguinsDesktopIcons}`, echo)
       }
