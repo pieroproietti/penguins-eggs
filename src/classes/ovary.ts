@@ -29,6 +29,7 @@ import Xdg from './xdg'
 import Pacman from './pacman'
 import Settings from './settings'
 
+
 /**
  * Ovary:
  */
@@ -100,12 +101,14 @@ export default class Ovary {
          }
          await this.editLiveFs(verbose)
          await this.editBootMenu(verbose)
-
          await this.makeSquashfs(script_only, verbose)
          if (this.settings.make_efi) {
             await this.editEfi(verbose)
          }
          await this.mkIso(script_only, verbose)
+         if (Pacman.isXInstalled()) {
+            shx.exec('rm /etc/xdg/autostart/penguins-links-add.desktop')
+         }
          await this.uBindLiveFs(verbose)
       }
    }
@@ -768,15 +771,15 @@ export default class Ovary {
       /**
        * configuro add-penguins-desktop-icons in /etc/xdg/autostart
        */
-      let scriptName = 'add-penguins-links'
       let dirAutostart = '/etc/xdg/autostart'
       let dirRun = '/usr/bin'
       if (fs.existsSync(dirAutostart)) {
          // Creo l'avviatore xdg DEVE essere add-penguins-links.desktop
-         shx.cp(path.resolve(__dirname, `../../assets/${scriptName}.desktop`), dirAutostart)
+         shx.cp(path.resolve(__dirname, `../../assets/penguins-links-add.desktop`), dirAutostart)
 
-         // Creo lo script add-penguins-desktop-icons.sh
-         let addPenguinsDesktopIcons = `${dirRun}/${scriptName}.sh`
+         // Creo lo script add-penguins-links.sh
+
+         let script = `${dirRun}/penguins-links-add.sh`
          let text = ''
          text += '#!/bin/sh\n'
          text += 'DESKTOP=$(xdg-user-dir DESKTOP)\n'
@@ -786,8 +789,8 @@ export default class Ovary {
          if (myAddons.ichoice) text += 'cp /usr/share/applications/penguins-clinstaller.desktop $DESKTOP\n'
          if (myAddons.pve) text += 'cp /usr/share/applications/penguins-pve.desktop $DESKTOP\n'
          if (myAddons.rsupport) text += 'cp /usr/share/applications/penguins-dwagent.desktop $DESKTOP\n'
-         fs.writeFileSync(addPenguinsDesktopIcons, text, 'utf8')
-         await exec(`chmod a+x ${addPenguinsDesktopIcons}`, echo)
+         fs.writeFileSync(script, text, 'utf8')
+         await exec(`chmod a+x ${script}`, echo)
       }
 
       /**
