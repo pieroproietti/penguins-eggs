@@ -782,7 +782,7 @@ export default class Ovary {
          text += 'DESKTOP=$(xdg-user-dir DESKTOP)\n'
          text += 'cp /usr/share/applications/penguins-eggs.desktop $DESKTOP\n'
          text += `cp /usr/share/applications/${installerLink} $DESKTOP\n`
-         if (myAddons.adapt) text += 'vaffanculu'
+         if (myAddons.adapt) text += 'cp /usr/share/applications/penguins-adapt.desktop $DESKTOP\n'
          if (myAddons.ichoice) text += 'cp /usr/share/applications/penguins-clinstaller.desktop $DESKTOP\n'
          if (myAddons.pve) text += 'cp /usr/share/applications/penguins-pve.desktop $DESKTOP\n'
          if (myAddons.rsupport) text += 'cp /usr/share/applications/penguins-dwagent.desktop $DESKTOP\n'
