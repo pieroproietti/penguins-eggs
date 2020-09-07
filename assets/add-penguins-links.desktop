@@ -1,7 +1,7 @@
 [Desktop Entry]
 Type=Application
 Name=Add Penguin's Desktop Icons
-Exec=add-penguins-desktop-icons
+Exec=add-penguins-links.sh
 StartupNotify=false
 NoDisplay=true
 

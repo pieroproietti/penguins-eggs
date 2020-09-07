@@ -117,10 +117,11 @@ export default class Produce extends Command {
          }
 
          let myAddons = {} as IMyAddons
-         myAddons.rsupport = flags.adapt
+         myAddons.adapt = flags.adapt
          myAddons.rsupport = flags.rsupport
          myAddons.ichoice = flags.ichoice
          myAddons.pve = flags.pve
+      
 
          if (!Pacman.prerequisitesEggsCheck()) {
             console.log('You need to install ' + chalk.bgGray('prerequisites') + ' to continue.')

@@ -94,7 +94,10 @@ export default class Ovary {
             await this.makeEfi(verbose)
          }
          await this.bindLiveFs(verbose)
-         await this.createUserLive(theme, myAddons, verbose)
+         await this.createUserLive(verbose)
+         if (Pacman.isXInstalled()) {
+            await this.createAutostart(theme, myAddons)
+         }
          await this.editLiveFs(verbose)
          await this.editBootMenu(verbose)
 
@@ -667,7 +670,7 @@ export default class Ovary {
     * create la home per user_opt
     * @param verbose
     */
-   async createUserLive(theme = 'eggs', myAddons: IMyAddons, verbose = false) {
+   async createUserLive(verbose = false) {
       const echo = Utils.setEcho(verbose)
       if (verbose) {
          console.log('ovary: createUserLive')
@@ -696,136 +699,100 @@ export default class Ovary {
        * Cambio passwd su root in chroot
        */
       cmds.push(await rexec(`chroot ${this.settings.work_dir.merged} echo root:${this.settings.root_passwd} | chroot ${this.settings.work_dir.merged} chpasswd `, echo))
+      Utils.writeXs(`${this.settings.work_dir.path}create_User_live`, cmds)
+   }
+
+   /**
+    * 
+    */
+   async createAutostart(theme = 'eggs', myAddons: IMyAddons, verbose = false) {
+      const echo = Utils.setEcho(verbose)
+      if (verbose) {
+         console.log('ovary: createUserLive')
+      }
+
+      const pathHomeLive = `/home/${this.settings.user_opt}`
+
+      // Copia icona penguins-eggs
+      shx.cp(path.resolve(__dirname, '../../assets/eggs.png'), '/usr/share/icons/')
 
       /**
-       * Solo per sistemi grafici
+       * creazione dei link in /usr/share/applications
+       * 
+       * dato che in ovarium /usr NON è scrivibile scrivo in /usr/share/applications 
        */
-      if (Pacman.isXInstalled()) {
-         let traduce = true
-         if (fs.existsSync('/etc/skel/Desktop')) {
-            traduce = false
-         }
-         await Xdg.create(this.settings.user_opt, this.settings.work_dir.merged, traduce, verbose)
-         const pathHomeLive = `/home/${this.settings.user_opt}`
-         let pathToDesktopLive: string
-         pathToDesktopLive = pathHomeLive + '/' + Xdg.traduce('DESKTOP', traduce)
+      shx.cp(path.resolve(__dirname, '../../assets/penguins-eggs.desktop'), '/usr/share/applications/')
 
-
-         // Copia icona penguins-eggs
-         shx.cp(path.resolve(__dirname, '../../assets/eggs.png'), '/usr/share/icons/')
-
-         /**
-          * creazione dei link in /usr/share/applications
-          */
-         shx.cp(path.resolve(__dirname, '../../assets/penguins-eggs.desktop'), '/usr/share/applications/')
-         shx.cp(path.resolve(__dirname, '../../assets/penguins-adapt.desktop'), '/usr/share/applications/')
-         shx.cp(path.resolve(__dirname, '../../assets/penguins-clinstaller.desktop'), '/usr/share/applications/')
+      let installerLink = 'install-debian.desktop'
+      if (Pacman.packageIsInstalled('calamares')) {
          shx.cp(path.resolve(__dirname, `../../addons/${theme}/theme/applications/install-debian.desktop`), `/usr/share/applications/`)
-
-
-         // /usr/share/ non è scrivibile, scrivo direttamente in /usr/
-         if (myAddons.rsupport) {
-            let dirAddon = path.resolve(__dirname, `../../addons/eggs/dwagent`)
-            shx.cp(`${dirAddon}/applications/penguins-dwagent.desktop`, `/usr/share/applications/`)
-            shx.cp(`${dirAddon}/bin/dwagent.sh`, `/usr/local/bin/`)
-            shx.chmod('+x', `/usr/local/bin/dwagent.sh`)
-            shx.cp(`${dirAddon}/artwork/remote-assistance.png`, `/usr/share/icons/`)
-         }
-
-         if (myAddons.ichoice) {
-            let dirAddon = path.resolve(__dirname, `../../addons/eggs/installer-choice/`)
-            shx.cp(`${dirAddon}/applications/penguins-ichoice.desktop`, `/usr/share/applications/`)
-            shx.cp(`${dirAddon}/bin/installer-choice.sh`, `/usr/local/bin/`)
-            shx.mkdir('-p', `/usr/local/share/penguins-eggs/`)
-            shx.cp(`${dirAddon}/html/installer-choice.html`, `/usr/local/share/penguins-eggs/`)
-         }
-
-         if (myAddons.pve) {
-            let dirAddon = path.resolve(__dirname, `../../addons/eggs/proxmox-ve`)
-            shx.cp(`${dirAddon}/applications/proxmox-ve.desktop`, `/usr/share/applications/`)
-            shx.cp(`${dirAddon}/artwork/proxmox-ve.png`, `/usr/share/icons/`)
-         }
-
-
-         // ed imposto la home di /home/live a live:live
-         await exec(`chroot ${this.settings.work_dir.merged}  chown ${this.settings.user_opt}:${this.settings.user_opt} ${pathHomeLive} -R`, echo)
-         // await exec(`chown 1000:1000 ${this.work_dir.merged}${pathHomeLive} -R`, echo)
-
-
-         /**
-          * in autostart va un file desktop che avvia 
-          */
-         let dirAutostart = '/etc/xdg/autostart'
-         if (fs.existsSync(dirAutostart)) {
-            // Creo l'avviatore xdg DEVE essere .desktop ma è uno script
-            shx.cp(path.resolve(__dirname, `../../assets/add-penguins-desktop-icons.desktop`), `/etc/xdg/autostart/`)
-         
-            // Creo lo script di copia
-            let addPenguinsDesktopIcons = `/usr/bin/add-penguins-desktop-icons`
-            let text =''
-            text += '#!/bin/sh\n'
-            text += 'DESKTOP=$(xdg-user-dir DESKTOP)\n'
-            text += 'cp /usr/share/applications/penguins-eggs.desktop $DESKTOP\n'
-            
-            if (myAddons.rsupport) {
-               text += 'cp /usr/share/applications/penguins-dwagent.desktop $DESKTOP\n'
-            }
-
-            if (myAddons.ichoice) {
-               text += 'cp /usr/share/applications/penguins-ichoice.desktop $DESKTOP\n'
-            } else {
-               if (Pacman.packageIsInstalled('calamares')) {
-                  text += 'cp /usr/share/applications/install-debian.desktop $DESKTOP\n'
-               } else {
-                  text += 'cp /usr/share/applications/penguins-clinstaller.desktop $DESKTOP\n'
-               }
-            }
-
-            if (myAddons.pve) {
-               text += 'cp /usr/share/applications/penguins-pve.desktop $DESKTOP\n'
-            }
-
-            if (myAddons.adapt) {
-               if (Pacman.packageIsInstalled('lxde-core') || Pacman.packageIsInstalled('lxqt-core') || Pacman.packageIsInstalled('deepin-desktop-base') || Pacman.packageIsInstalled('mate-desktop') || Pacman.packageIsInstalled('ubuntu-mate-core') || Pacman.packageIsInstalled('xfce4')) {
-                  text += 'cp /usr/share/applications/penguins-adapt.desktop $DESKTOP\n'
-               }
-            }
-            fs.writeFileSync(addPenguinsDesktopIcons, text, 'utf8')
-            await exec(`chmod a+x ${addPenguinsDesktopIcons}`, echo)
-         }
-
-         /**
-          * Solo per GNOME
-          * Rendo trusted i link
-          * funziona solo montando /dev
-          * NON FUNZIONANTE!!!
-          */
-         if (Pacman.packageIsInstalled('gnome-shell-NOT_USED_FOR_NOW')) {
-            // Monto /dev
-            await makeIfNotExist(`${this.settings.work_dir.merged}/dev`, verbose)
-            await exec(`mount --bind --make-slave /dev ${this.settings.work_dir.merged}/dev`, echo)
-            // await exec(`mount -o remount,bind,ro ${this.work_dir.merged}/dev`, echo)
-
-            await exec(`chroot ${this.settings.work_dir.merged} sudo -u ${this.settings.user_opt} dbus-launch gio set file://${pathToDesktopLive}/dwagent-sh.desktop metadata::trusted true`, echo)
-            await exec(`chroot ${this.settings.work_dir.merged} sudo -u ${this.settings.user_opt} dbus-launch gio set file://${pathToDesktopLive}/penguins-eggs-adjust.desktop metadata::trusted true`, echo)
-            await exec(`chroot ${this.settings.work_dir.merged} sudo -u ${this.settings.user_opt} dbus-launch gio set file://${pathToDesktopLive}/penguins-eggs.desktop metadata::trusted true`, echo)
-
-            // smonto devpts
-            if (Utils.isMountpoint(`${this.settings.work_dir.merged}/dev/devpts`)) {
-               await exec(`umount ${this.settings.work_dir.merged}/dev/devpts`, echo)
-            }
-
-            if (Utils.isMountpoint(`${this.settings.work_dir.merged}/dev`)) {
-               await exec(`umount ${this.settings.work_dir.merged}/dev`, echo)
-            }
-         }
-
-         /**
-          * Autologin passare a xdg ed aggiungere altri
-          */
-         Xdg.autologin(Utils.getPrimaryUser(), this.settings.user_opt, this.settings.work_dir.merged)
+      } else {
+         installerLink = 'penguins-clinstaller.desktop'
+         shx.cp(path.resolve(__dirname, '../../assets/penguins-clinstaller.desktop'), '/usr/share/applications/')
       }
-      Utils.writeXs(`${this.settings.work_dir.path}createuserlive`, cmds)
+
+      if (myAddons.ichoice) {
+         installerLink = 'penguins-ichoice.desktop'
+         shx.cp(path.resolve(__dirname, '../../assets/penguins-ichoice.desktop'), '/usr/share/applications/')
+      }
+
+      // Per lxde, kxqt, deepin, mate, xfce4 creo il link adapt
+      if (Pacman.packageIsInstalled('lxde-core') || Pacman.packageIsInstalled('lxqt-core') || Pacman.packageIsInstalled('deepin-desktop-base') || Pacman.packageIsInstalled('mate-desktop') || Pacman.packageIsInstalled('ubuntu-mate-core') || Pacman.packageIsInstalled('xfce4')) {
+         shx.cp(path.resolve(__dirname, '../../assets/penguins-adapt.desktop'), '/usr/share/applications/')
+      }
+
+      if (myAddons.rsupport) {
+         let dirAddon = path.resolve(__dirname, `../../addons/eggs/dwagent`)
+         shx.cp(`${dirAddon}/applications/penguins-dwagent.desktop`, `/usr/share/applications/`)
+         shx.cp(`${dirAddon}/bin/dwagent.sh`, `/usr/local/bin/`)
+         shx.chmod('+x', `/usr/local/bin/dwagent.sh`)
+         shx.cp(`${dirAddon}/artwork/remote-assistance.png`, `/usr/share/icons/`)
+      }
+
+      if (myAddons.ichoice) {
+         let dirAddon = path.resolve(__dirname, `../../addons/eggs/installer-choice/`)
+         shx.cp(`${dirAddon}/applications/penguins-ichoice.desktop`, `/usr/share/applications/`)
+         shx.cp(`${dirAddon}/bin/installer-choice.sh`, `/usr/local/bin/`)
+         shx.mkdir('-p', `/usr/local/share/penguins-eggs/`)
+         shx.cp(`${dirAddon}/html/installer-choice.html`, `/usr/local/share/penguins-eggs/`)
+      }
+
+      if (myAddons.pve) {
+         let dirAddon = path.resolve(__dirname, `../../addons/eggs/proxmox-ve`)
+         shx.cp(`${dirAddon}/artwork/proxmox-ve.png`, `/usr/share/icons/`)
+         shx.cp(`${dirAddon}/applications/proxmox-ve.desktop`, `/usr/share/applications/`)
+      }
+
+
+      /**
+       * configuro add-penguins-desktop-icons in /etc/xdg/autostart
+       */
+      let scriptName = 'add-penguins-links'
+      let dirAutostart = '/etc/xdg/autostart'
+      let dirRun = '/usr/bin'
+      if (fs.existsSync(dirAutostart)) {
+         // Creo l'avviatore xdg DEVE essere add-penguins-links.desktop
+         shx.cp(path.resolve(__dirname, `../../assets/${scriptName}.desktop`), dirAutostart)
+
+         // Creo lo script add-penguins-desktop-icons.sh
+         let addPenguinsDesktopIcons = `${dirRun}/${scriptName}.sh`
+         let text = ''
+         text += '#!/bin/sh\n'
+         text += 'DESKTOP=$(xdg-user-dir DESKTOP)\n'
+         text += 'cp /usr/share/applications/penguins-eggs.desktop $DESKTOP\n'
+         text += `cp /usr/share/applications/${installerLink} $DESKTOP\n`
+         if (myAddons.rsupport) text += 'cp /usr/share/applications/penguins-dwagent.desktop $DESKTOP\n'
+         if (myAddons.pve) text += 'cp /usr/share/applications/penguins-pve.desktop $DESKTOP\n'
+         if (myAddons.adapt) text += 'vaffanculu'
+         if (myAddons.adapt) text += 'cp /usr/share/applications/penguins-adapt.desktop $DESKTOP\n'
+         fs.writeFileSync(addPenguinsDesktopIcons, text, 'utf8')
+         await exec(`chmod a+x ${addPenguinsDesktopIcons}`, echo)
+      }
+
+      /**
+       * Autologin passare a xdg ed aggiungere altri ???
+       */
+      Xdg.autologin(Utils.getPrimaryUser(), this.settings.user_opt, this.settings.work_dir.merged)
    }
 
    /**
