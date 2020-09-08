@@ -94,6 +94,7 @@ export class Beowulf {
       exec.push('removeuser')
       exec.push('sources-trusted-unmount')
       exec.push('sources-final')
+      exec.push('remove-link')
       exec.push('umount')
 
       const settings = {
@@ -103,14 +104,13 @@ export class Beowulf {
          'prompt-install': false,
          'dont-chroot': false
       }
-      let title = `# calamares settings, id: ${this.distro.distroId}/${this.distro.versionId} like: ${this.distro.distroLike}/${this.distro.versionLike}\n`
-      return title + yaml.safeDump(settings)
+      return yaml.safeDump(settings)
    }
 
    /**
     *
     */
-   modules() {
+   async modules() {
       this.modulePartition()
       this.moduleMount()
       this.moduleUnpackfs()
@@ -200,7 +200,7 @@ export class Beowulf {
    /**
     *
     */
-   private modulePartition() {
+   private async modulePartition() {
       if (this.verbose) {
          console.log(`calamares: module partition. Nothing to do!`)
       }

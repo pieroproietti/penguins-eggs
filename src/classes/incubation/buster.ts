@@ -6,10 +6,9 @@
  */
 
 import fs = require('fs')
-import shx = require('shelljs')
+import yaml = require('js-yaml')
 import path = require('path')
 
-import yaml = require('js-yaml')
 import { IRemix, IDistro } from '../../interfaces'
 const exec = require('../../lib/utils').exec
 
@@ -147,7 +146,7 @@ export class Buster {
 
    /**
     * ========================================================================
-    * module = name + '.conf0
+    * module = name + '.conf'
     * shellprocess = 'shellprocess_' + name + '.conf'
     * contextualprocess = name + '_context.conf'
     *
