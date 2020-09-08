@@ -808,7 +808,7 @@ export default class Ovary {
          await exec(`chmod a+x ${script}`, echo)
       }
 
-      process.exit()
+      //process.exit()
 
 
       /**
