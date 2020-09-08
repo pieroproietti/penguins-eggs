@@ -18,10 +18,11 @@ You can follow the project also consulting the [commit history](https://github.c
 ## Changelog
 Versions are listed on reverse order, the first is the last one.
 
-### eggs-7.0.26_1.deb
+### eggs-7.0.27_1.deb
 * created /etc/xdg/autostart/penguins-links.desktop to build links on the desktop on live and new users, due the localization;
 * create a module in calamares to remove installation link;
-* on lxde, now we create links in different schema to be compatible with it, except for installer.
+* on lxde, now we create links in different schema to be compatible with it, except for installer;
+* tested on cinnamon, lxde.
 
 
 ### eggs-7.0.22_1.deb
