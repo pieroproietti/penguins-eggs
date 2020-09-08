@@ -804,10 +804,6 @@ export default class Ovary {
          }
          fs.writeFileSync(script, text, 'utf8')
          await exec(`chmod a+x ${script}`, echo)
-         console.log(script)
-         console.log(text)
-         process.exit(1)
-
       }
 
 
