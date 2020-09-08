@@ -45,6 +45,9 @@ export default class CalamaresConfig {
       this.distro = distro
       this.user_opt = user_opt
       this.verbose = verbose
+      if (remix.branding === undefined) {
+         remix.branding = 'eggs'
+      }
       this.displaymanager = Pacman.packageIsInstalled('lightdm') || Pacman.packageIsInstalled('sddm') || Pacman.packageIsInstalled('sddm')
    }
 

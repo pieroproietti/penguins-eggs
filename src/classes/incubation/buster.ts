@@ -6,6 +6,9 @@
  */
 
 import fs = require('fs')
+import shx = require('shelljs')
+import path = require('path')
+
 import yaml = require('js-yaml')
 import { IRemix, IDistro } from '../../interfaces'
 const exec = require('../../lib/utils').exec
@@ -92,6 +95,7 @@ export class Buster {
       exec.push('sources-trusted-unmount')
       exec.push('sources-final')
       exec.push('umount')
+      exec.push('remove-link')
 
       const settings = {
          'modules-search': modulesSearch,
@@ -137,6 +141,8 @@ export class Buster {
       this.moduleSourcesTrustedUnmount()
       this.moduleSourcesFinal()
       this.moduleUmount()
+
+      this.moduleRemoveLink()
       this.moduleFinished()
    }
 
@@ -425,7 +431,6 @@ export class Buster {
       const finished = yaml.safeDump({
          restartNowEnabled: true,
          restartNowChecked: true,
-         cmd: "rm /usr/share/applications/install-debian-desktop",
          restartNowCommand: "systemctl -i reboot",
       })
       this.module('finished', finished)
@@ -436,6 +441,20 @@ export class Buster {
     * M O D U L E S   C A L A M A R E S
     * ====================================================================================
     */
+
+   /**
+    * 
+    */
+   private async moduleRemoveLink() {
+      const name = 'remove-link'
+      const dir = this.dirGlobalModules + name + `/`
+      if (!fs.existsSync(dir)) {
+         fs.mkdirSync(dir)
+      }
+      const dirYaml = path.resolve(__dirname, `./calamares-modules`)
+      fs.copyFileSync(`${dirYaml}/desc/${name}.yaml`, `${dir}/module.desc`)
+      fs.copyFileSync(`${dirYaml}/scripts/${name}`, `${dir}/${name}`)
+   }
 
    /**
     *

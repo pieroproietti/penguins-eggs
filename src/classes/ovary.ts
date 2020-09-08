@@ -785,10 +785,17 @@ export default class Ovary {
          text += 'DESKTOP=$(xdg-user-dir DESKTOP)\n'
          text += 'cp /usr/share/applications/penguins-eggs.desktop $DESKTOP\n'
          text += `cp /usr/share/applications/${installerLink} $DESKTOP\n`
-         if (myAddons.adapt) text += 'cp /usr/share/applications/penguins-adapt.desktop $DESKTOP\n'
-         if (myAddons.ichoice) text += 'cp /usr/share/applications/penguins-clinstaller.desktop $DESKTOP\n'
-         if (myAddons.pve) text += 'cp /usr/share/applications/penguins-pve.desktop $DESKTOP\n'
-         if (myAddons.rsupport) text += 'cp /usr/share/applications/penguins-dwagent.desktop $DESKTOP\n'
+         if (Pacman.packageIsInstalled('lxde-core')) {
+            if (myAddons.adapt) text += 'ln -s /usr/share/applications/penguins-adapt.desktop $DESKTOP/penguins-adapt-lnk.desktop\n'
+            if (myAddons.ichoice) text += 'ln -s /usr/share/applications/penguins-clinstaller.desktop $DESKTOP/penguins-clinstaller-lnk.desktop\n'
+            if (myAddons.pve) text += 'ln -s /usr/share/applications/penguins-pve.desktop $DESKTOP/penguins-pve-lnk.desktop\n'
+            if (myAddons.rsupport) text += 'ln -s /usr/share/applications/penguins-dwagent.desktop $DESKTOP/penguins-dwagent-lnk.desktop\n'
+         } else {
+            if (myAddons.adapt) text += 'cp /usr/share/applications/penguins-adapt.desktop $DESKTOP\n'
+            if (myAddons.ichoice) text += 'cp /usr/share/applications/penguins-clinstaller.desktop $DESKTOP\n'
+            if (myAddons.pve) text += 'cp /usr/share/applications/penguins-pve.desktop $DESKTOP\n'
+            if (myAddons.rsupport) text += 'cp /usr/share/applications/penguins-dwagent.desktop $DESKTOP\n'
+         }
          fs.writeFileSync(script, text, 'utf8')
          await exec(`chmod a+x ${script}`, echo)
       }

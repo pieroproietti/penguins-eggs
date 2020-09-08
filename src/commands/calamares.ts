@@ -5,14 +5,10 @@
  * license: MIT
  */
 import { Command, flags } from '@oclif/command'
-import shx = require('shelljs')
 import Utils from '../classes/utils'
 import Ovary from '../classes/ovary'
-import Settings from '../classes/settings'
 import Pacman from '../classes/pacman'
-
 import { IRemix } from '../interfaces'
-import { settings } from 'cluster'
 
 export default class Calamares extends Command {
    static description = 'configure calamares or install and configure it'
@@ -44,12 +40,13 @@ export default class Calamares extends Command {
 
       // Nome del brand di calamares
       let branding = 'eggs'
+      console.log(`theme: ${flags.theme}`)
       if (flags.theme !== undefined) {
          branding = flags.theme
          console.log(`calamares branding: ${branding}`)
       }
 
-      console.log(`install: ${install}`)
+      console.log(`calamares: ${install}`)
       if (Utils.isRoot()) {
          if (Pacman.isXInstalled()) {
             console.log(`isXInstalled: true`)
@@ -60,11 +57,12 @@ export default class Calamares extends Command {
                   await Pacman.prerequisitesCalamaresInstall()
                }
 
-               if (branding === '') {
-                  this.remix.branding = 'eggs'
-               } else {
-                  this.remix.branding = branding
-               }
+               // if (branding === '') {
+               //   this.remix.branding = 'eggs'
+               // } else {
+               //   this.remix.branding = branding
+               // }
+               this.remix.branding = 'eggs'
 
                Utils.warning('Configuring calamares...')
                const ovary = new Ovary()
