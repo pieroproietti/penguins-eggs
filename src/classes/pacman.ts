@@ -24,7 +24,15 @@ const exec = require('../lib/utils').exec
 export default class Pacman {
    // live-task-lxde
    static deb4uefi = ['grub-efi-amd64', 'grun-efi-ia32']
-   static deb4localisation = ['live-task-localisation', 'live-config', 'localepurge']
+   /**
+    * live-task-localisation e ASSENTE in ubuntu
+    * 
+    * BISOGNA scrivare qualcosa per non fargliela prende su 
+    * UBUNTU e derivate
+    *
+    */
+   static deb4localisation = ['live-config', 'localepurge']
+   //'live-task-localisation', 
    static debs4eggs = ['isolinux', 'syslinux', 'syslinux-common', 'live-boot', 'live-boot-initramfs-tools', 'rsync ', 'squashfs-tools', 'xorriso', 'xterm', 'whois']
    static debs4calamares = ['calamares', 'qml-module-qtquick2', 'qml-module-qtquick-controls']
 
@@ -123,6 +131,15 @@ export default class Pacman {
       await exec('apt-get update --yes')
       await exec(`apt-get install --yes ${Pacman.debs2line(Pacman.deb4localisation)}`, echo)
       await exec(`apt-get install --yes ${Pacman.debs2line(Pacman.debs4eggs)}`, echo)
+      /**
+       * if ( NOT-UBUNTU-FOCAL ) apt-get install --yes live-task-localisation
+       * 
+       * altrimenti 
+       * trovare corrispettivo
+       * update-locale LANG=new_locale LANGUAGE=pt LC_ALL=new_locale
+       */
+      await exec(`apt-get install --yes live-task-localisation`, echo)
+      
 
       return retVal
    }
