@@ -789,15 +789,16 @@ export default class Ovary {
          let text = ''
          text += '#!/bin/sh\n'
          text += 'DESKTOP=$(xdg-user-dir DESKTOP)\n'
+         // Anche se in lxde rimane il problema della conferma dell'avvio
+         // per l'installer, lo tolgo altrimenti su LXDE riappare comunque
+         text += `cp /usr/share/applications/${installerUrl} $DESKTOP\n`
          if (Pacman.packageIsInstalled('lxde-core')) {
             text += this.lxdeLink('penguins-eggs.desktop', 'penguin\'s eggs', 'eggs')
-            text += this.lxdeLink(installerUrl, installerName, installerIcon)
             if (myAddons.adapt) text += this.lxdeLink('penguins-adapt.desktop', 'Adapt', 'video-display')
             if (myAddons.pve) text += this.lxdeLink('penguins-pve.desktop', 'Proxmox VE', 'proxmox-ve') 
             if (myAddons.rsupport) text += this.lxdeLink('penguins-dwagent.desktop', 'Remote assistance', 'remote-assistance') 
          } else {
             text += 'cp /usr/share/applications/penguins-eggs.desktop $DESKTOP\n'
-            text += `cp /usr/share/applications/${installerUrl} $DESKTOP\n`
             if (myAddons.adapt) text += 'cp /usr/share/applications/penguins-adapt.desktop $DESKTOP\n'
             if (myAddons.pve) text += 'cp /usr/share/applications/penguins-pve.desktop $DESKTOP\n'
             if (myAddons.rsupport) text += 'cp /usr/share/applications/penguins-dwagent.desktop $DESKTOP\n'
