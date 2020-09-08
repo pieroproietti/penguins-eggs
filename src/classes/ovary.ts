@@ -784,11 +784,12 @@ export default class Ovary {
          shx.cp(path.resolve(__dirname, `../../assets/penguins-links-add.desktop`), dirAutostart)
 
          // Creo lo script add-penguins-links.sh
-
          let script = `${dirRun}/penguins-links-add.sh`
          let text = ''
          text += '#!/bin/sh\n'
          text += 'DESKTOP=$(xdg-user-dir DESKTOP)\n'
+         text += '# Create ~/Desktop just in case this runs before the xdg folder creation script\n'
+         text += 'mkdir -p $DESKTOP\n'
          // Anche se in lxde rimane il problema della conferma dell'avvio
          // per l'installer, lo tolgo altrimenti su LXDE riappare comunque
          text += `cp /usr/share/applications/${installerUrl} $DESKTOP\n`
@@ -806,6 +807,8 @@ export default class Ovary {
          fs.writeFileSync(script, text, 'utf8')
          await exec(`chmod a+x ${script}`, echo)
       }
+
+      process.exit()
 
 
       /**
