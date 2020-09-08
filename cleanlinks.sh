@@ -1,3 +1,7 @@
+
+sudo rm /usr/bin/add-penguins-links.sh
+sudo rm /usr/bin/penguins-links-add.sh
+
 sudo rm /usr/share/applications/penguins-*
 sudo rm /usr/share/applications/dw*
 sudo rm /usr/share/applications/pve*

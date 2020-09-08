@@ -726,16 +726,20 @@ export default class Ovary {
        */
       shx.cp(path.resolve(__dirname, '../../assets/penguins-eggs.desktop'), '/usr/share/applications/')
 
-      let installerLink = 'install-debian.desktop'
+      let installerName = 'install-debian'
+      let installerIcon = `install-debian`
       if (Pacman.packageIsInstalled('calamares')) {
+
          shx.cp(path.resolve(__dirname, `../../addons/${theme}/theme/applications/install-debian.desktop`), `/usr/share/applications/`)
       } else {
-         installerLink = 'penguins-clinstaller.desktop'
+         installerName = 'penguins-clinstaller'
+         installerIcon = 'utilities-terminal'
          shx.cp(path.resolve(__dirname, '../../assets/penguins-clinstaller.desktop'), '/usr/share/applications/')
       }
 
       if (myAddons.ichoice) {
-         installerLink = 'penguins-ichoice.desktop'
+         installerName = 'penguins-ichoice'
+         installerIcon = 'system-software-install'
          shx.cp(path.resolve(__dirname, '../../assets/penguins-ichoice.desktop'), '/usr/share/applications/')
       }
 
@@ -783,14 +787,16 @@ export default class Ovary {
          let text = ''
          text += '#!/bin/sh\n'
          text += 'DESKTOP=$(xdg-user-dir DESKTOP)\n'
-         text += 'cp /usr/share/applications/penguins-eggs.desktop $DESKTOP\n'
-         text += `cp /usr/share/applications/${installerLink} $DESKTOP\n`
          if (Pacman.packageIsInstalled('lxde-core')) {
-            if (myAddons.adapt) text += 'ln -s /usr/share/applications/penguins-adapt.desktop $DESKTOP/penguins-adapt-lnk.desktop\n'
-            if (myAddons.ichoice) text += 'ln -s /usr/share/applications/penguins-clinstaller.desktop $DESKTOP/penguins-clinstaller-lnk.desktop\n'
-            if (myAddons.pve) text += 'ln -s /usr/share/applications/penguins-pve.desktop $DESKTOP/penguins-pve-lnk.desktop\n'
-            if (myAddons.rsupport) text += 'ln -s /usr/share/applications/penguins-dwagent.desktop $DESKTOP/penguins-dwagent-lnk.desktop\n'
+            text += this.lxdeLink('penguins-eggs', 'eggs')
+            text += this.lxdeLink(installerName, installerIcon)
+            if (myAddons.adapt) text += this.lxdeLink('penguins-adapt', 'video-display')
+            if (myAddons.ichoice) text += this.lxdeLink('penguins-clinstaller', 'utilities-terminal') 
+            if (myAddons.pve) text += this.lxdeLink('penguins-pve', 'proxmox-ve') 
+            if (myAddons.rsupport) text += this.lxdeLink('penguins-dwagent', 'remote-assistance') 
          } else {
+            text += 'cp /usr/share/applications/penguins-eggs.desktop $DESKTOP\n'
+            text += `cp /usr/share/applications/${installerLink} $DESKTOP\n`
             if (myAddons.adapt) text += 'cp /usr/share/applications/penguins-adapt.desktop $DESKTOP\n'
             if (myAddons.ichoice) text += 'cp /usr/share/applications/penguins-clinstaller.desktop $DESKTOP\n'
             if (myAddons.pve) text += 'cp /usr/share/applications/penguins-pve.desktop $DESKTOP\n'
@@ -798,13 +804,36 @@ export default class Ovary {
          }
          fs.writeFileSync(script, text, 'utf8')
          await exec(`chmod a+x ${script}`, echo)
+         console.log(script)
+         console.log(text)
+         process.exit(1)
+
       }
+
 
       /**
        * Autologin passare a xdg ed aggiungere altri ???
        */
       Xdg.autologin(Utils.getPrimaryUser(), this.settings.user_opt, this.settings.work_dir.merged)
    }
+
+   /**
+    * Creazione link desktop per lxde
+    * @param name 
+    * @param icon 
+    */
+   private lxdeLink(name: string, icon: string) :string {
+      let lnk = `lnk-${name}.desktop`
+      let text = ''
+      text += `echo "[Desktop Entry]" >$DESKTOP/${lnk}\n`
+      text += `echo "Type=Link" >> $DESKTOP/${lnk}\n`
+      text += `echo "Name=${name}" >> $DESKTOP/${lnk}\n`
+      text += `echo "Icon=${icon}" >> $DESKTOP/${lnk}\n`
+      text += `echo "URL=/usr/share/applications/${name}.desktop" >> $DESKTOP/${lnk}\n\n`
+      
+      return text
+}
+
 
    /**
     * Add or remove exclusion
