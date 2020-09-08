@@ -453,7 +453,8 @@ export class Buster {
       }
       const dirYaml = path.resolve(__dirname, `./calamares-modules`)
       fs.copyFileSync(`${dirYaml}/desc/${name}.yaml`, `${dir}/module.desc`)
-      fs.copyFileSync(`${dirYaml}/scripts/${name}`, `${dir}/${name}`)
+      fs.copyFileSync(`${dirYaml}/scripts/${name}`, `/usr/sbin/${name}`)
+      await exec(`chmod +x ${dir}/${name}`)
    }
 
    /**
