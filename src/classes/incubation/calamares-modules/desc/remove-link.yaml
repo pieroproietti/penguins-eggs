@@ -7,4 +7,3 @@ interface:  "process"
 chroot:     false
 command:    "/usr/sbin/remove-link.sh"
 timeout:    8
-

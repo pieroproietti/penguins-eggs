@@ -8,6 +8,8 @@
 
 import fs = require('fs')
 import yaml = require('js-yaml')
+import path = require('path')
+
 import { IRemix, IDistro } from '../../interfaces'
 const exec = require('../../lib/utils').exec
 
@@ -139,6 +141,7 @@ export class Beowulf {
       this.moduleSourcesTrustedUnmount()
       this.moduleSourcesFinal()
       this.moduleUmount()
+      this.moduleRemoveLink()
       this.moduleFinished()
    }
 
@@ -437,6 +440,21 @@ export class Beowulf {
     * M O D U L E S   C A L A M A R E S
     * ====================================================================================
     */
+   
+   /**
+    * 
+    */
+   private async moduleRemoveLink() {
+      const name = 'remove-link'
+      const dir = this.dirGlobalModules + name + `/`
+      if (!fs.existsSync(dir)) {
+         fs.mkdirSync(dir)
+      }
+      const dirYaml = path.resolve(__dirname, `./calamares-modules`)
+      fs.copyFileSync(`${dirYaml}/desc/${name}.yaml`, `${dir}/module.desc`)
+      fs.copyFileSync(`${dirYaml}/scripts/${name}.sh`, `/usr/sbin/${name}.sh`)
+      await exec(`chmod +x ${dir}/${name}`)
+   }
 
    /**
     *
