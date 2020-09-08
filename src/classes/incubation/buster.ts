@@ -94,8 +94,8 @@ export class Buster {
       exec.push('removeuser')
       exec.push('sources-trusted-unmount')
       exec.push('sources-final')
-      exec.push('umount')
       exec.push('remove-link')
+      exec.push('umount')
 
       const settings = {
          'modules-search': modulesSearch,
@@ -141,7 +141,6 @@ export class Buster {
       this.moduleSourcesTrustedUnmount()
       this.moduleSourcesFinal()
       this.moduleUmount()
-
       this.moduleRemoveLink()
       this.moduleFinished()
    }
@@ -453,7 +452,7 @@ export class Buster {
       }
       const dirYaml = path.resolve(__dirname, `./calamares-modules`)
       fs.copyFileSync(`${dirYaml}/desc/${name}.yaml`, `${dir}/module.desc`)
-      fs.copyFileSync(`${dirYaml}/scripts/${name}`, `/usr/sbin/${name}`)
+      fs.copyFileSync(`${dirYaml}/scripts/${name}.sh`, `/usr/sbin/${name}.sh`)
       await exec(`chmod +x ${dir}/${name}`)
    }
 
