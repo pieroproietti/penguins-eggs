@@ -65,7 +65,7 @@ export class Buster {
       const show = ['welcome', 'locale', 'keyboard', 'partition', 'users', 'summary']
 
       // moduli da eseguire
-      let exec: string[] = []
+      const exec: string[] = []
       exec.push('partition')
       exec.push('mount')
       exec.push('unpackfs')
@@ -303,7 +303,7 @@ export class Buster {
 
       this.module('fstab', fstab)
    }
-
+   
    private moduleLocale() {
       if (this.verbose) console.log(`calamares: module locale. Nothing to do!`)
    }

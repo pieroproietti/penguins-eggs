@@ -7,8 +7,9 @@
 
 import fs = require('fs')
 import yaml = require('js-yaml')
+import path = require('path')
+
 import { IRemix, IDistro } from '../../interfaces'
-import { up } from 'inquirer/lib/utils/readline'
 const exec = require('../../lib/utils').exec
 
 /**
@@ -19,21 +20,23 @@ export class Focal {
 
    remix: IRemix
 
-   user_opt: string
-
    distro: IDistro
 
    displaymanager = false
 
-   sourcesTrusted = true
-
-   dir = '/etc/calamares/'
+   user_opt: string
 
    dirLocalModules = '/etc/calamares/modules/'
 
    dirGlobalModules = '/usr/lib/x86_64-linux-gnu/calamares/modules/'
 
-   constructor(remix: IRemix, distro: IDistro, displaymanager: boolean, user_opt: string, verbose = false) {
+   /**
+    * @param remix
+    * @param distro
+    * @param displaymanager
+    * @param verbose
+    */
+      constructor(remix: IRemix, distro: IDistro, displaymanager: boolean, user_opt: string, verbose = false) {
       this.remix = remix
       this.distro = distro
       this.user_opt = user_opt
@@ -45,12 +48,12 @@ export class Focal {
    }
 
    /**
-    *
+    * write setting
     */
    settings() {
-      const file = this.dir + 'settings.conf'
-      const content = this.getSettings()
-      write(file, content, this.verbose)
+      const dir = '/etc/calamares/'
+      const file = dir + 'settings.conf'
+      write(file, this.getSettings(), this.verbose)
    }
 
    /**
@@ -58,7 +61,9 @@ export class Focal {
     */
    private getSettings(): string {
       // path di ricerca dei moduli
-      const modulesSearch: string[] = ['local']
+      const modulesSearch = ['local', '/usr/lib/calamares/modules']
+      
+
       // ,'/usr/lib/x86_64-linux-gnu/calamares/modules/'
 
       // Istanze
@@ -128,6 +133,7 @@ export class Focal {
       exec.push('packages')
       exec.push('removeuser')
       // exec.push("shellprocess@logs")
+      exec.push('remove-link')
       exec.push('umount')
 
       const settings = {
@@ -135,11 +141,8 @@ export class Focal {
          instances: instances,
          sequence: [{ show: show }, { exec: exec }, { show: ['finished'] }],
          branding: this.remix.branding,
-         'prompt-install': true,
-         'dont-chroot': false,
-         'oem-setup': false,
-         'disable-cancel': false,
-         'disable-cancel-during-exec': false
+         'prompt-install': false,
+         'dont-chroot': false
       }
       return yaml.safeDump(settings)
    }
@@ -147,7 +150,7 @@ export class Focal {
    /**
     *
     */
-   modules() {
+   async modules() {
       this.modulePartition()
       this.moduleMount()
       this.moduleUnpackfs()
@@ -175,11 +178,13 @@ export class Focal {
       this.moduleRemoveuser()
       //this.shellprocess("logs")
       this.moduleUmount()
+      this.moduleRemoveLink()
       this.moduleFinished()
    }
 
    /**
-    * module = name + '.conf0
+    * ========================================================================
+    * module = name + '.conf'
     * shellprocess = 'shellprocess_' + name + '.conf'
     * contextualprocess = name + '_context.conf'
     *
@@ -187,10 +192,17 @@ export class Focal {
     *                      dir = '/usr/lib/calamares/modules/' + name
     *                      name = module.desc
     *                      script =
+    * ========================================================================
+    */
+
+       /**
+    * write module
     * @param name
+    * @param content
     */
    private module(name: string, content: string) {
-      const file = this.dirLocalModules + name + '.conf'
+      const dir = `/etc/calamares/modules/`
+      const file = dir + name + '.conf'
       write(file, content, this.verbose)
    }
 
@@ -399,6 +411,7 @@ export class Focal {
 
       this.module('fstab', fstab)
    }
+
    private moduleLocale() {
       if (this.verbose) console.log(`calamares: module locale. Nothing to do!`)
    }
@@ -483,6 +496,9 @@ export class Focal {
       this.module('packages', packages())
    }
 
+/**
+ * 
+ */
    private moduleLuksbootkeyfile() {
       if (this.verbose) console.log(`calamares: module luksbootkeyfile. Nothing to do!`)
    }
@@ -490,7 +506,7 @@ export class Focal {
    /**
     *
     */
-   private module_luksopenswaphookcfg() {
+   private moduleLuksopenswaphookcfg() {
       const lksopenswaphookcfg = yaml.safeDump({
          configFilePath: '/etc/openswap.conf'
       })
@@ -540,6 +556,21 @@ export class Focal {
     * ====================================================================================
     */
 
+    /**
+     * 
+     */
+   private async moduleRemoveLink() {
+      const name = 'remove-link'
+      const dir = this.dirGlobalModules + name + `/`
+      if (!fs.existsSync(dir)) {
+         fs.mkdirSync(dir)
+      }
+      const dirYaml = path.resolve(__dirname, `./calamares-modules`)
+      fs.copyFileSync(`${dirYaml}/desc/${name}.yaml`, `${dir}/module.desc`)
+      fs.copyFileSync(`${dirYaml}/scripts/${name}.sh`, `/usr/sbin/${name}.sh`)
+      await exec(`chmod +x ${dir}/${name}`)
+   }
+   
    /**
     * Automirror
     * Pythonm

@@ -33,7 +33,6 @@ export default class Locales extends Command {
       shx.cp(path.resolve(__dirname, '../../conf/locale.gen.template'), '/etc/locale.gen')
       shx.exec('/usr/sbin/localepurge', echo)
       shx.exec('/usr/sbin/locale-gen', echo)
-      
     }
   }
 }
