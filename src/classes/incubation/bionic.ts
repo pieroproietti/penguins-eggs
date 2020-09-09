@@ -6,9 +6,12 @@
  */
 
 import fs = require('fs')
+import shx = require('shelljs')
 import yaml = require('js-yaml')
+import path = require('path')
+
 import { IRemix, IDistro } from '../../interfaces'
-import { use } from 'chai'
+
 const exec = require('../../lib/utils').exec
 
 /**
@@ -21,17 +24,20 @@ export class Bionic {
 
    distro: IDistro
 
-   user_opt: string
-
    displaymanager = false
 
-   sourcesTrusted = true
+   user_opt: string
+   
+   rootTemplate = './../../../conf/calamares/'
 
-   dir = '/etc/calamares/'
+   dirCalamaresModules = '/usr/lib/x86_64-linux-gnu/calamares/modules/'
 
-   dirLocalModules = '/etc/calamares/modules/'
+   dirModules = '/etc/calamares/modules/'
 
-   dirGlobalModules = '/usr/lib/x86_64-linux-gnu/calamares/modules/'
+   // sourcesTrusted = true
+   // dir = '/etc/calamares/'
+   // dirLocalModules = '/etc/calamares/modules/'
+   // dirCalamaresModules = '/usr/lib/x86_64-linux-gnu/calamares/modules/'
 
    constructor(remix: IRemix, distro: IDistro, displaymanager: boolean, user_opt: string, verbose = false) {
       this.remix = remix
@@ -40,17 +46,16 @@ export class Bionic {
       this.verbose = verbose
       this.displaymanager = displaymanager
       if (process.arch === 'ia32') {
-         this.dirGlobalModules = '/usr/lib/calamares/modules/'
+         this.dirCalamaresModules = '/usr/lib/calamares/modules/'
       }
    }
 
    /**
-    *
+    * write setting
     */
    settings() {
-      const file = this.dir + 'settings.conf'
-      const content = this.getSettings()
-      write(file, content, this.verbose)
+      const file = '/etc/calamares/settings.conf'
+      write(file, this.getSettings(), this.verbose)
    }
 
    /**
@@ -58,10 +63,10 @@ export class Bionic {
     */
    private getSettings(): string {
       // path di ricerca dei moduli
-      const modulesSearch: string[] = ['local', this.dirGlobalModules]
+      const modulesSearch = ['local', '/usr/lib/calamares/modules']
 
       // moduli da mostrare a video
-      const show: string[] = ['welcome', 'locale', 'keyboard', 'partition', 'users', 'summary']
+      const show = ['welcome', 'locale', 'keyboard', 'partition', 'users', 'summary']
 
       // moduli da eseguire
       const exec: string[] = []
@@ -140,8 +145,9 @@ export class Bionic {
       this.moduleFinished()
    }
 
-   /**
-    * module = name + '.conf0
+/**
+    * ========================================================================
+    * module = name + '.conf'
     * shellprocess = 'shellprocess_' + name + '.conf'
     * contextualprocess = name + '_context.conf'
     *
@@ -149,19 +155,28 @@ export class Bionic {
     *                      dir = '/usr/lib/calamares/modules/' + name
     *                      name = module.desc
     *                      script =
-    * @param name
+    * ========================================================================
     */
+      /**
+    * write module
+    * @param name
+    * @param content
+    */
+
    private module(name: string, content: string) {
       const file = this.dirLocalModules + name + '.conf'
       write(file, content, this.verbose)
    }
 
    /**
-    *
+    * ====================================================================================
+    * M O D U L E S
+    * ====================================================================================
     */
+
    private async moduleBeforebootloadermkdirs() {
       const name = 'before-bootloader-mkdirs'
-      const dir = this.dirGlobalModules + name + `/`
+      const dir = this.dirCalamaresModules + name + `/`
       if (!fs.existsSync(dir)) {
          fs.mkdirSync(dir)
       }
@@ -188,7 +203,7 @@ export class Bionic {
     */
    private async moduleBug() {
       const name = 'bug'
-      const dir = this.dirGlobalModules + name + `/`
+      const dir = this.dirCalamaresModules + name + `/`
       if (!fs.existsSync(dir)) {
          fs.mkdirSync(dir)
       }
@@ -215,7 +230,7 @@ export class Bionic {
     */
    private async moduleBeforebootloader() {
       const name = 'before-bootloader'
-      const dir = this.dirGlobalModules + name + `/`
+      const dir = this.dirCalamaresModules + name + `/`
       if (!fs.existsSync(dir)) {
          fs.mkdirSync(dir)
       }
@@ -247,7 +262,7 @@ export class Bionic {
     */
    private async moduleAfterbootloader() {
       const name = 'after-bootloader'
-      const dir = this.dirGlobalModules + name + `/`
+      const dir = this.dirCalamaresModules + name + `/`
       if (!fs.existsSync(dir)) {
          fs.mkdirSync(dir)
       }
@@ -275,7 +290,7 @@ export class Bionic {
     */
    private async moduleAdd386arch() {
       const name = 'add386arch'
-      const dir = this.dirGlobalModules + name + `/`
+      const dir = this.dirCalamaresModules + name + `/`
       if (!fs.existsSync(dir)) {
          fs.mkdirSync(dir)
       }
@@ -554,7 +569,7 @@ export class Bionic {
     */
    private async moduleAutomirror() {
       const name = 'automirror'
-      const dirModule = this.dirGlobalModules + name + '/'
+      const dirModule = this.dirCalamaresModules + name + '/'
       if (!fs.existsSync(dirModule)) {
          fs.mkdirSync(dirModule)
       }
@@ -598,7 +613,7 @@ export class Bionic {
 
    private async moduleCreatetmp() {
       const name = 'create-tmp'
-      const dirModule = this.dirGlobalModules + name + '/'
+      const dirModule = this.dirCalamaresModules + name + '/'
       if (!fs.existsSync(dirModule)) {
          fs.mkdirSync(dirModule)
       }
@@ -617,7 +632,7 @@ export class Bionic {
     */
    private async moduleBootloaderconfig() {
       const name = 'bootloader-config'
-      const dirModule = this.dirGlobalModules + name
+      const dirModule = this.dirCalamaresModules + name
       if (!fs.existsSync(dirModule)) {
          fs.mkdirSync(dirModule)
       }
