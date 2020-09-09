@@ -6,10 +6,12 @@
  */
 
 import fs = require('fs')
+import shx = require('shelljs')
 import yaml = require('js-yaml')
 import path = require('path')
 
 import { IRemix, IDistro } from '../../interfaces'
+
 const exec = require('../../lib/utils').exec
 
 /**
@@ -26,7 +28,11 @@ export class Buster {
 
    user_opt: string
 
-   dirGlobalModules = '/usr/lib/x86_64-linux-gnu/calamares/modules/'
+   rootTemplate ='./../../../conf/calamares/'
+
+   dirCalamaresModules = '/usr/lib/x86_64-linux-gnu/calamares/modules/'
+
+   dirModules = '/etc/calamares/modules/'
 
    /**
     * @param remix
@@ -41,7 +47,7 @@ export class Buster {
       this.verbose = verbose
       this.displaymanager = displaymanager
       if (process.arch === 'ia32') {
-         this.dirGlobalModules = '/usr/lib/calamares/modules/'
+         this.dirCalamaresModules = '/usr/lib/calamares/modules/'
       }
    }
 
@@ -49,8 +55,7 @@ export class Buster {
     * write setting
     */
    settings() {
-      const dir = '/etc/calamares/'
-      const file = dir + 'settings.conf'
+      const file = '/etc/calamares/settings.conf'
       write(file, this.getSettings(), this.verbose)
    }
 
@@ -163,30 +168,7 @@ export class Buster {
     * @param content
     */
    private module(name: string, content: string) {
-      const dir = `/etc/calamares/modules/`
-      const file = dir + name + '.conf'
-      write(file, content, this.verbose)
-   }
-
-   /**
-    * write shellprocess
-    * @param name
-    */
-   private shellprocess(name: string) {
-      let content = ''
-      const dir = `/etc/calamares/modules/`
-      let file = dir + 'shellprocess_' + name + '.conf'
-      write(file, content, this.verbose)
-   }
-
-   /**
-    * write contextualprocess
-    * @param process
-    */
-   private contextualprocess(name: string) {
-      let content = ''
-      const dir = `/etc/calamares/modules/`
-      let file = dir + name + '_context' + '.conf'
+      const file = this.dirModules + name + '.conf'
       write(file, content, this.verbose)
    }
 
@@ -200,108 +182,40 @@ export class Buster {
     *
     */
    private async modulePartition() {
-      if (this.verbose) {
-         console.log(`calamares: module partition. Nothing to do!`)
-      }
+      if (this.verbose) console.log(`calamares: module partition. Nothing to do!`)
    }
 
    /**
     *
     */
    private moduleMount() {
-      const mount = yaml.safeDump({
-         extraMounts: [
-            {
-               device: 'proc',
-               fs: 'proc',
-               mountPoint: '/proc'
-            },
-            {
-               device: 'sys',
-               fs: 'sysfs',
-               mountPoint: '/sys'
-            },
-            {
-               device: '/dev',
-               mountPoint: '/dev',
-               options: 'bind'
-            },
-            {
-               device: '/dev/pts',
-               fs: 'devpts',
-               mountPoint: '/dev/pts'
-            },
-            {
-               device: 'tmpfs',
-               fs: 'tmpfs',
-               mountPoint: '/run'
-            },
-            {
-               device: '/run/udev',
-               mountPoint: '/run/udev',
-               options: 'bind'
-            }
-         ],
-         extraMountsEfi: [
-            {
-               device: 'efivarfs',
-               fs: 'tmpefivarfsfs',
-               mountPoint: '/sys/firmware/efi/efivars'
-            }
-         ]
-      })
-
-      this.module('mount', mount)
+      const name = 'mount'
+      this.buildModule(name)
    }
 
    /**
     *
     */
    private moduleUnpackfs() {
-      const unpack = yaml.safeDump({
-         unpack: [
-            {
-               source: this.distro.mountpointSquashFs,
-               sourcefs: 'squashfs',
-               destination: ''
-            }
-         ]
-      })
-      this.module('unpackfs', unpack)
+      const name = 'unpackfs'
+      this.buildModule(name)
+      shx.sed('-i', '%source%', this.distro.mountpointSquashFs, `${this.dirModules}/${name}.conf`)
    }
 
    /**
     *
     */
    private moduleMachineid() {
-      const machineid = yaml.safeDump({
-         systemd: true,
-         dbus: true,
-         symlink: true
-      })
-      this.module('machineid', machineid)
+      const name='machineid'
+      this.buildModule(name)
    }
 
    /**
     *
     */
    private moduleFstab() {
-      const fstab = yaml.safeDump({
-         mountOptions: {
-            default: 'defaults,noatime',
-            btrfs: 'defaults,noatime,space_cache,autodefrag'
-         },
-         ssdExtraMountOptions: {
-            ext4: 'discard',
-            jfs: 'discard',
-            xfs: 'discard',
-            swap: 'discard',
-            btrfs: 'discard,compress=lzo'
-         },
-         crypttabOptions: 'luks,keyscript=/bin/cat'
-      })
-
-      this.module('fstab', fstab)
+      const name = 'fstab'
+      this.buildModule(name)
    }
    
    private moduleLocale() {
@@ -320,20 +234,15 @@ export class Buster {
     *
     */
    private moduleUsers() {
-      const users = yaml.safeDump({
-         userGroup: 'users',
-         defaultGroups: ['cdrom', 'floppy', 'sudo', 'audio', 'dip', 'video', 'plugdev', 'netdev', 'lpadmin', 'scanner', 'bluetooth'],
-         autologinGroup: 'autologin',
-         sudoersGroup: 'sudo',
-         setRootPassword: false
-      })
-      this.module('users', users)
+      const name = 'users'
+      this.buildModule(name)
    }
 
    /**
-    *
+    * Al momento rimane con la vecchia configurazione
     */
    private moduleDisplaymanager() {
+      const name= "dispay"
       const displaymanager = require('./modules/displaymanager').displaymanager
       this.module('displaymanager', displaymanager())
    }
@@ -358,24 +267,13 @@ export class Buster {
     *
     */
    private moduleBootloader() {
-      const bootloader = yaml.safeDump({
-         efiBootLoader: 'grub',
-         kernel: '/vmlinuz-linux',
-         img: '/initramfs-linux.img',
-         fallback: '/initramfs-linux-fallback.img',
-         timeout: 10,
-         grubInstall: 'grub-install',
-         grubMkconfig: 'grub-mkconfig',
-         grubCfg: '/boot/grub/grub.cfg',
-         grubProbe: 'grub-probe',
-         efiBootMgr: 'efibootmgr',
-         installEFIFallback: false
-      })
-      this.module('bootloader', bootloader)
+      const name = "bootloader"
+      this.buildModule(name)
    }
 
    /**
     * create module packages.conf
+    * Rimane con la vecchia configurazione
     */
    private modulePackages() {
       const packages = require('./modules/packages').packages
@@ -392,10 +290,8 @@ export class Buster {
     *
     */
    private moduleLuksopenswaphookcfg() {
-      const lksopenswaphookcfg = yaml.safeDump({
-         configFilePath: '/etc/openswap.conf'
-      })
-      this.module('lksopenswaphookcfg', lksopenswaphookcfg)
+      const name = 'luksopenswaphookcfg'
+      this.buildModule(name)
    }
 
    private modulePlymouthcfg() {
@@ -426,12 +322,10 @@ export class Buster {
     * moduleFinished
     */
    private moduleFinished() {
-      const finished = yaml.safeDump({
-         restartNowEnabled: true,
-         restartNowChecked: true,
-         restartNowCommand: "systemctl -i reboot",
-      })
-      this.module('finished', finished)
+      const name = "finished"
+      const restartNowCommand = "systemctl -i reboot"
+      this.buildModule(name)
+      shx.sed('-i', '%restartNowCommand%', restartNowCommand, `${this.dirModules}/${name}.conf`)
    }
 
    /**
@@ -445,14 +339,7 @@ export class Buster {
     */
    private async moduleRemoveLink() {
       const name = 'remove-link'
-      const dir = this.dirGlobalModules + name + `/`
-      if (!fs.existsSync(dir)) {
-         fs.mkdirSync(dir)
-      }
-      const dirYaml = path.resolve(__dirname, `./calamares-modules`)
-      fs.copyFileSync(`${dirYaml}/desc/${name}.yaml`, `${dir}/module.desc`)
-      fs.copyFileSync(`${dirYaml}/scripts/${name}.sh`, `/usr/sbin/${name}.sh`)
-      await exec(`chmod +x ${dir}/${name}`)
+      await this.buildCalamaresModule(name)
    }
 
    /**
@@ -460,18 +347,7 @@ export class Buster {
     */
    private async moduleSourcesTrusted() {
       const name = 'sources-trusted'
-      const dir = this.dirGlobalModules + name + `/`
-      if (!fs.existsSync(dir)) {
-         fs.mkdirSync(dir)
-      }
-
-      const descSourcesTrusted = require(`./calamares-modules/desc/${name}`).sourcesTrusted
-      write(dir + 'module.desc', descSourcesTrusted(), this.verbose)
-
-      const bashSourcesTrusted = require(`./calamares-modules/scripts/${name}`).sourcesTrusted
-      const bashFile = `/usr/sbin/${name}`
-      write(bashFile, bashSourcesTrusted(), this.verbose)
-      await exec(`chmod +x ${bashFile}`)
+      await this.buildCalamaresModule(name)
    }
 
    /**
@@ -479,18 +355,7 @@ export class Buster {
     */
    private async moduleCreateTmp() {
       const name = 'create-tmp'
-      const dir = this.dirGlobalModules + name + `/`
-      if (!fs.existsSync(dir)) {
-         fs.mkdirSync(dir)
-      }
-
-      const descCreateTmp = require(`./calamares-modules/desc/${name}`).createTmp
-      write(dir + 'module.desc', descCreateTmp(), this.verbose)
-
-      const bashCreateTmp = require(`./calamares-modules/scripts/${name}`).createTmp
-      const scriptFile = `/usr/sbin/${name}`
-      write(scriptFile, bashCreateTmp(), this.verbose)
-      await exec(`chmod +x ${scriptFile}`)
+      await this.buildCalamaresModule(name)
    }
 
    /**
@@ -498,36 +363,15 @@ export class Buster {
     */
    private async moduleBootloaderConfig() {
       const name = 'bootloader-config'
-      const dir = this.dirGlobalModules + name + `/`
-      if (!fs.existsSync(dir)) {
-         fs.mkdirSync(dir)
-      }
-
-      const descBootloaderConfig = require('./calamares-modules/desc/bootloader-config').bootloaderConfig
-      write(dir + 'module.desc', descBootloaderConfig(), this.verbose)
-
-      const bashBootloaderConfig = require(`./calamares-modules/scripts/${name}`).bootloaderConfig
-      const scriptFile = `/usr/sbin/${name}`
-      write(scriptFile, bashBootloaderConfig(), this.verbose)
-      await exec(`chmod +x ${scriptFile}`)
+      await this.buildCalamaresModule(name)
    }
 
    /**
     *
     */
-   private moduleSourcesTrustedUnmount() {
+   private async moduleSourcesTrustedUnmount() {
       const name = 'sources-trusted-unmount'
-      const dir = this.dirGlobalModules + name + `/`
-      if (!fs.existsSync(dir)) {
-         fs.mkdirSync(dir)
-      }
-
-      const descSourcesTrustedUnmount = require(`./calamares-modules/desc/${name}`).sourcesTrustedUnmount
-      write(dir + 'module.desc', descSourcesTrustedUnmount(), this.verbose)
-
-      if (this.verbose) {
-         console.log(`calamares: module ${name} use the same script of source-trusted`)
-      }
+      await this.buildCalamaresModule(name, false)
    }
 
    /**
@@ -535,19 +379,41 @@ export class Buster {
     */
    private async moduleSourcesFinal() {
       const name = 'sources-final'
-      const dir = this.dirGlobalModules + name + `/`
-      if (!fs.existsSync(dir)) {
-         fs.mkdirSync(dir)
-      }
-
-      const descSourcesFinal = require(`./calamares-modules/desc/${name}`).sourcesFinal
-      write(dir + 'module.desc', descSourcesFinal(), this.verbose)
-
-      const bashSourcesFinal = require(`./calamares-modules/scripts/${name}`).sourcesFinal
-      const bashFile = `/usr/sbin/${name}`
-      write(bashFile, bashSourcesFinal(), this.verbose)
-      await exec(`chmod +x ${bashFile}`)
+      await this.buildCalamaresModule(name)
    }
+
+   /**
+    * 
+    * @param name 
+    */
+   private async buildModule(name: string, isScript : boolean = true) {
+      const moduleSource = path.resolve(__dirname, `${this.rootTemplate}/modules/${name}.conf`)
+      const moduleDest = `${this.dirModules}/${name}`
+      
+      shx.cp(moduleSource, moduleDest)
+   }
+
+
+
+   /**
+    * 
+    * @param name 
+    */
+   private async buildCalamaresModule(name: string, isScript : boolean = true) {
+      const moduleSource = path.resolve(__dirname, `${this.rootTemplate}/calamares-modules/${name}/`)
+      const moduleDest = this.dirCalamaresModules + name 
+      const moduleScript = `/usr/sbin/${name}.sh`
+      
+      if (!fs.existsSync(moduleDest)) {
+         fs.mkdirSync(moduleDest)
+      }
+      shx.cp(`${moduleSource}/module.desc`, moduleDest)
+      if (isScript) {
+         shx.cp(`${moduleSource}/module.sh`, moduleScript)
+         await exec(`chmod +x ${moduleScript}`)
+      }
+   }
+
 }
 
 /**
@@ -562,3 +428,4 @@ function write(file: string, content: string, verbose = false) {
    }
    fs.writeFileSync(file, content, 'utf8')
 }
+

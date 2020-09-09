@@ -57,11 +57,11 @@ export default class Calamares extends Command {
                   await Pacman.prerequisitesCalamaresInstall()
                }
 
-               // if (branding === '') {
-               //   this.remix.branding = 'eggs'
-               // } else {
-               //   this.remix.branding = branding
-               // }
+               if (branding === '') {
+                 this.remix.branding = 'eggs'
+               } else {
+                  this.remix.branding = branding
+               }
                this.remix.branding = 'eggs'
 
                Utils.warning('Configuring calamares...')

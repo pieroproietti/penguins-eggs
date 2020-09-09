@@ -983,8 +983,8 @@ export default class Ovary {
       process.chdir(currentDir)
 
       // Copy efi files to iso
-      await exec(`rsync -avx ${this.settings.efi_work}/boot ${this.settings.work_dir.pathIso}/`, echo)
-      await exec(`rsync -avx ${this.settings.efi_work}/efi  ${this.settings.work_dir.pathIso}/`, echo)
+      await exec(`rsync -ax  ${this.settings.efi_work}/boot ${this.settings.work_dir.pathIso}/`, echo)
+      await exec(`rsync -ax ${this.settings.efi_work}/efi  ${this.settings.work_dir.pathIso}/`, echo)
 
       // Do the main grub.cfg (which gets loaded last):
       fs.copyFileSync(path.resolve(__dirname, '../../conf/grub/grub.template.cfg'), `${this.settings.work_dir.pathIso}/boot/grub/grub.cfg`)
