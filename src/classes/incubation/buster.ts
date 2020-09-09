@@ -413,7 +413,6 @@ export class Buster {
          await exec(`chmod +x ${moduleScript}`)
       }
    }
-
 }
 
 /**
@@ -428,4 +427,3 @@ function write(file: string, content: string, verbose = false) {
    }
    fs.writeFileSync(file, content, 'utf8')
 }
-
