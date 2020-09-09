@@ -28,7 +28,7 @@ export class Buster {
 
    user_opt: string
 
-   rootTemplate ='./../../../conf/calamares/'
+   rootTemplate = './../../../conf/calamares/'
 
    dirCalamaresModules = '/usr/lib/x86_64-linux-gnu/calamares/modules/'
 
@@ -206,7 +206,7 @@ export class Buster {
     *
     */
    private moduleMachineid() {
-      const name='machineid'
+      const name = 'machineid'
       this.buildModule(name)
    }
 
@@ -217,7 +217,7 @@ export class Buster {
       const name = 'fstab'
       this.buildModule(name)
    }
-   
+
    private moduleLocale() {
       if (this.verbose) console.log(`calamares: module locale. Nothing to do!`)
    }
@@ -341,13 +341,6 @@ export class Buster {
       await this.buildCalamaresModule(name)
    }
 
-   /**
-    *
-    */
-   private async moduleSourcesTrusted() {
-      const name = 'sources-trusted'
-      await this.buildCalamaresModule(name)
-   }
 
    /**
     *
@@ -362,6 +355,14 @@ export class Buster {
     */
    private async moduleBootloaderConfig() {
       const name = 'bootloader-config'
+      await this.buildCalamaresModule(name)
+   }
+
+   /**
+    *
+    */
+   private async moduleSourcesTrusted() {
+      const name = 'sources-trusted'
       await this.buildCalamaresModule(name)
    }
 
@@ -385,10 +386,10 @@ export class Buster {
     * 
     * @param name 
     */
-   private async buildModule(name: string, isScript : boolean = true) {
+   private async buildModule(name: string, isScript: boolean = true) {
       const moduleSource = path.resolve(__dirname, `${this.rootTemplate}/modules/${name}.conf`)
       const moduleDest = `${this.dirModules}/${name}`
-      
+
       shx.cp(moduleSource, moduleDest)
    }
 
@@ -398,11 +399,11 @@ export class Buster {
     * 
     * @param name 
     */
-   private async buildCalamaresModule(name: string, isScript : boolean = true) {
+   private async buildCalamaresModule(name: string, isScript: boolean = true) {
       const moduleSource = path.resolve(__dirname, `${this.rootTemplate}/calamares-modules/${name}/`)
-      const moduleDest = this.dirCalamaresModules + name 
+      const moduleDest = this.dirCalamaresModules + name
       const moduleScript = `/usr/sbin/${name}.sh`
-      
+
       if (!fs.existsSync(moduleDest)) {
          fs.mkdirSync(moduleDest)
       }

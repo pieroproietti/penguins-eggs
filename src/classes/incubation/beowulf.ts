@@ -86,7 +86,7 @@ export class Beowulf {
       }
       exec.push('networkcfg')
       exec.push('hwclock')
-      exec.push('services-systemd')
+      exec.push('services-sysvinit')
       exec.push('create-tmp')
       exec.push('bootloader-config')
       exec.push('grubcfg')
@@ -130,7 +130,7 @@ export class Beowulf {
       }
       this.moduleNetworkcfg()
       this.moduleHwclock()
-      this.moduleServicesSystemd()
+      this.moduleServicesSysVInit()
       this.moduleCreateTmp()
       this.moduleBootloaderConfig()
       this.moduleGrubcfg()
@@ -254,7 +254,7 @@ export class Beowulf {
       if (this.verbose) console.log(`calamares: module hwclock. Nothing to do!`)
    }
 
-   private moduleServicesSystemd() {
+   private moduleServicesSysVInit() {
       if (this.verbose) console.log(`calamares: module servives-systemd. Nothing to do!`)
    }
 

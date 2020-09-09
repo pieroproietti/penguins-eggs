@@ -6,10 +6,12 @@
  */
 
 import fs = require('fs')
+import shx = require('shelljs')
 import yaml = require('js-yaml')
 import path = require('path')
 
 import { IRemix, IDistro } from '../../interfaces'
+
 const exec = require('../../lib/utils').exec
 
 /**
@@ -26,9 +28,11 @@ export class Focal {
 
    user_opt: string
 
-   dirLocalModules = '/etc/calamares/modules/'
+   rootTemplate = './../../../conf/calamares/'
 
-   dirGlobalModules = '/usr/lib/x86_64-linux-gnu/calamares/modules/'
+   dirCalamaresModules = '/usr/lib/x86_64-linux-gnu/calamares/modules/'
+
+   dirModules = '/etc/calamares/modules/'
 
    /**
     * @param remix
@@ -36,14 +40,14 @@ export class Focal {
     * @param displaymanager
     * @param verbose
     */
-      constructor(remix: IRemix, distro: IDistro, displaymanager: boolean, user_opt: string, verbose = false) {
+   constructor(remix: IRemix, distro: IDistro, displaymanager: boolean, user_opt: string, verbose = false) {
       this.remix = remix
       this.distro = distro
       this.user_opt = user_opt
       this.verbose = verbose
       this.displaymanager = displaymanager
       if (process.arch === 'ia32') {
-         this.dirGlobalModules = '/usr/lib/calamares/modules/'
+         this.dirCalamaresModules = '/usr/lib/calamares/modules/'
       }
    }
 
@@ -51,8 +55,7 @@ export class Focal {
     * write setting
     */
    settings() {
-      const dir = '/etc/calamares/'
-      const file = dir + 'settings.conf'
+      const file = '/etc/calamares/settings.conf'
       write(file, this.getSettings(), this.verbose)
    }
 
@@ -62,9 +65,6 @@ export class Focal {
    private getSettings(): string {
       // path di ricerca dei moduli
       const modulesSearch = ['local', '/usr/lib/calamares/modules']
-      
-
-      // ,'/usr/lib/x86_64-linux-gnu/calamares/modules/'
 
       // Istanze
       const instances = [
@@ -195,14 +195,13 @@ export class Focal {
     * ========================================================================
     */
 
-       /**
-    * write module
-    * @param name
-    * @param content
-    */
+   /**
+* write module
+* @param name
+* @param content
+*/
    private module(name: string, content: string) {
-      const dir = `/etc/calamares/modules/`
-      const file = dir + name + '.conf'
+      const file = this.dirModules + name + '.conf'
       write(file, content, this.verbose)
    }
 
@@ -231,7 +230,7 @@ export class Focal {
          text += 'script:\n'
          text += '    - calamares-logs-helper @@ROOT@@\n'
       }
-      let file = this.dirLocalModules + 'shellprocess_' + name + '.conf'
+      let file = this.dirModules + 'shellprocess_' + name + '.conf'
       let content = text
       write(file, content, this.verbose)
    }
@@ -295,7 +294,7 @@ export class Focal {
          text += '"*": "-for i in `ls @@ROOT@@/home/`; do rm @@ROOT@@/home/$i/Desktop/lubuntu-calamares.desktop || exit 0; done"\n'
       }
       let content = text
-      let file = this.dirLocalModules + name + '_context' + '.conf'
+      let file = this.dirModules + name + '_context' + '.conf'
       write(file, content, this.verbose)
    }
 
@@ -317,99 +316,33 @@ export class Focal {
     *
     */
    private moduleMount() {
-      const mount = yaml.safeDump({
-         extraMounts: [
-            {
-               device: 'proc',
-               fs: 'proc',
-               mountPoint: '/proc'
-            },
-            {
-               device: 'sys',
-               fs: 'sysfs',
-               mountPoint: '/sys'
-            },
-            {
-               device: '/dev',
-               mountPoint: '/dev',
-               options: 'bind'
-            },
-            {
-               device: '/dev/pts',
-               fs: 'devpts',
-               mountPoint: '/dev/pts'
-            },
-            {
-               device: 'tmpfs',
-               fs: 'tmpfs',
-               mountPoint: '/run'
-            },
-            {
-               device: '/run/udev',
-               mountPoint: '/run/udev',
-               options: 'bind'
-            }
-         ],
-         extraMountsEfi: [
-            {
-               device: 'efivarfs',
-               fs: 'tmpefivarfsfs',
-               mountPoint: '/sys/firmware/efi/efivars'
-            }
-         ]
-      })
-
-      this.module('mount', mount)
+      const name = 'mount'
+      this.buildModule(name)
    }
 
    /**
     *
     */
    private moduleUnpackfs() {
-      const unpack = yaml.safeDump({
-         unpack: [
-            {
-               source: this.distro.mountpointSquashFs,
-               sourcefs: 'squashfs',
-               destination: ''
-            }
-         ]
-      })
-      this.module('unpackfs', unpack)
+      const name = 'unpackfs'
+      this.buildModule(name)
+      shx.sed('-i', '%source%', this.distro.mountpointSquashFs, `${this.dirModules}/${name}.conf`)
    }
 
    /**
     *
     */
    private moduleMachineid() {
-      const machineid = yaml.safeDump({
-         systemd: true,
-         dbus: true,
-         'dbus-symlink': true
-      })
-      this.module('machineid', machineid)
+      const name = 'machineid'
+      this.buildModule(name)
    }
 
    /**
     *
     */
    private moduleFstab() {
-      const fstab = yaml.safeDump({
-         mountOptions: {
-            default: 'defaults,noatime',
-            btrfs: 'defaults,noatime,space_cache,autodefrag'
-         },
-         ssdExtraMountOptions: {
-            ext4: 'discard',
-            jfs: 'discard',
-            xfs: 'discard',
-            swap: 'discard',
-            btrfs: 'discard,compress=lzo'
-         },
-         crypttabOptions: 'luks,keyscript=/bin/cat'
-      })
-
-      this.module('fstab', fstab)
+      const name = 'fstab'
+      this.buildModule(name)
    }
 
    private moduleLocale() {
@@ -428,26 +361,14 @@ export class Focal {
     *
     */
    private moduleUsers() {
-      const users = yaml.safeDump({
-         userGroup: 'users',
-         defaultGroups: ['cdrom', 'floppy', 'sudo', 'audio', 'dip', 'video', 'plugdev', 'netdev', 'lpadmin', 'scanner', 'bluetooth'],
-         autologinGroup: 'autologin',
-         sudoersGroup: 'sudo',
-         setRootPassword: false
-      })
-      this.module('users', users)
+      const name = 'users'
+      this.buildModule(name)
    }
 
    /**
-    *
+    * Al momento rimane con la vecchia configurazione
     */
    private moduleDisplaymanager() {
-      const displaymanager_not_used = yaml.safeDump({
-         displaymanager: 'lightdm',
-         basicSetup: false,
-         sysconfigSetup: false
-      })
-
       const displaymanager = require('./modules/displaymanager').displaymanager
       this.module('displaymanager', displaymanager())
    }
@@ -472,45 +393,31 @@ export class Focal {
     *
     */
    private moduleBootloader() {
-      const bootloader = yaml.safeDump({
-         efiBootLoader: 'grub',
-         kernel: '/vmlinuz-linux',
-         img: '/initramfs-linux.img',
-         fallback: '/initramfs-linux-fallback.img',
-         timeout: 10,
-         grubInstall: 'grub-install',
-         grubMkconfig: 'grub-mkconfig',
-         grubCfg: '/boot/grub/grub.cfg',
-         grubProbe: 'grub-probe',
-         efiBootMgr: 'efibootmgr',
-         installEFIFallback: false
-      })
-      this.module('bootloader', bootloader)
+      const name = "bootloader"
+      this.buildModule(name)
    }
 
    /**
     * create module packages.conf
+    * Rimane con la vecchia configurazione
     */
    private modulePackages() {
       const packages = require('./modules/packages').packages
       this.module('packages', packages())
    }
 
-/**
- * 
- */
+   /**
+    * 
+    */
    private moduleLuksbootkeyfile() {
       if (this.verbose) console.log(`calamares: module luksbootkeyfile. Nothing to do!`)
    }
-
    /**
     *
     */
    private moduleLuksopenswaphookcfg() {
-      const lksopenswaphookcfg = yaml.safeDump({
-         configFilePath: '/etc/openswap.conf'
-      })
-      this.module('lksopenswaphookcfg', lksopenswaphookcfg)
+      const name = 'luksopenswaphookcfg'
+      this.buildModule(name)
    }
 
    private modulePlymouthcfg() {
@@ -537,18 +444,15 @@ export class Focal {
       if (this.verbose) console.log(`calamares: module unmount. Nothing to do!`)
    }
 
-      /**
-    * moduleFinished
-    */
+   /**
+ * moduleFinished
+ */
    private moduleFinished() {
-      const finished = yaml.safeDump({
-         restartNowEnabled: true,
-         restartNowChecked: true,
-         restartNowCommand: "systemctl -i reboot",
-      })
-      this.module('finished', finished)
+      const name = "finished"
+      const restartNowCommand = "systemctl -i reboot"
+      this.buildModule(name)
+      shx.sed('-i', '%restartNowCommand%', restartNowCommand, `${this.dirModules}/${name}.conf`)
    }
-
 
    /**
     * ====================================================================================
@@ -556,24 +460,51 @@ export class Focal {
     * ====================================================================================
     */
 
-    /**
-     * 
-     */
+   /**
+    * 
+    */
    private async moduleRemoveLink() {
       const name = 'remove-link'
-      const dir = this.dirGlobalModules + name + `/`
-      if (!fs.existsSync(dir)) {
-         fs.mkdirSync(dir)
-      }
-      const dirYaml = path.resolve(__dirname, `./calamares-modules`)
-      fs.copyFileSync(`${dirYaml}/desc/${name}.yaml`, `${dir}/module.desc`)
-      fs.copyFileSync(`${dirYaml}/scripts/${name}.sh`, `/usr/sbin/${name}.sh`)
-      await exec(`chmod +x ${dir}/${name}`)
+      await this.buildCalamaresModule(name)
    }
-   
+
+
+
+   /**
+    * 
+    * @param name 
+    */
+   private async buildModule(name: string, isScript: boolean = true) {
+      const moduleSource = path.resolve(__dirname, `${this.rootTemplate}/modules/${name}.conf`)
+      const moduleDest = `${this.dirModules}/${name}`
+
+      shx.cp(moduleSource, moduleDest)
+   }
+
+
+
+   /**
+    * 
+    * @param name 
+    */
+   private async buildCalamaresModule(name: string, isScript: boolean = true) {
+      const moduleSource = path.resolve(__dirname, `${this.rootTemplate}/calamares-modules/${name}/`)
+      const moduleDest = this.dirCalamaresModules + name
+      const moduleScript = `/usr/sbin/${name}.sh`
+
+      if (!fs.existsSync(moduleDest)) {
+         fs.mkdirSync(moduleDest)
+      }
+      shx.cp(`${moduleSource}/module.desc`, moduleDest)
+      if (isScript) {
+         shx.cp(`${moduleSource}/module.sh`, moduleScript)
+         await exec(`chmod +x ${moduleScript}`)
+      }
+   }
+
    /**
     * Automirror
-    * Pythonm
+    * Python
     */
    private async moduleAutomirror() {
       const name = 'automirror'
@@ -619,40 +550,6 @@ export class Focal {
       await exec(`chmod +x ${scriptFile}`)
    }
 
-   private async moduleCreatetmp() {
-      const name = 'create-tmp'
-      const dirModule = this.dirGlobalModules + name + '/'
-      if (!fs.existsSync(dirModule)) {
-         fs.mkdirSync(dirModule)
-      }
-
-      const createTmp = require('./calamares-modules/desc/create-tmp').createTmp
-      write(dirModule + 'module.desc', createTmp(), this.verbose)
-
-      const scriptcreateTmp = require('./calamares-modules/scripts/create-tmp').createTmp
-      const scriptFile = `/usr/sbin/${name}`
-      write(scriptFile, scriptcreateTmp(), this.verbose)
-      await exec(`chmod +x ${scriptFile}`)
-   }
-
-   /**
-    *
-    */
-   private async moduleBootloaderconfig() {
-      const name = 'bootloader-config'
-      const dirModule = this.dirGlobalModules + name
-      if (!fs.existsSync(dirModule)) {
-         fs.mkdirSync(dirModule)
-      }
-
-      const bootloaderConfig = require('./calamares-modules/desc/bootloader-config').bootloaderConfig
-      write(dirModule + 'module.desc', bootloaderConfig(), this.verbose)
-
-      const scriptBootloaderConfig = require('./calamares-modules/scripts/bootloader-config').bootloaderConfig
-      const scriptFile = `/usr/sbin/` + 'bootloader-config'
-      write(scriptFile, scriptBootloaderConfig(), this.verbose)
-      await exec(`chmod +x ${scriptFile}`)
-   }
 }
 
 /**
@@ -665,6 +562,5 @@ function write(file: string, content: string, verbose = false) {
    if (verbose) {
       console.log(`calamares: create ${file}`)
    }
-   // console.log(content)
    fs.writeFileSync(file, content, 'utf8')
 }
