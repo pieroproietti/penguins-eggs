@@ -28,7 +28,8 @@ export class Focal {
 
    user_opt: string
 
-   rootTemplate = './../../../conf/calamares/'
+   // rootTemplate = './../../../conf/calamares/buster/'
+   rootTemplate = path.resolve(__dirname, './../../../conf/calamares/focal/')
 
    dirCalamaresModules = '/usr/lib/x86_64-linux-gnu/calamares/modules/'
 
@@ -56,96 +57,10 @@ export class Focal {
     */
    settings() {
       const file = '/etc/calamares/settings.conf'
-      write(file, this.getSettings(), this.verbose)
+      shx.cp(`${this.rootTemplate}/settings.conf`, '/etc/calamares')
+      shx.sed('-i', '%branding%', this.remix.branding, '/etc/calamares/settings.conf')
    }
 
-   /**
-    *
-    */
-   private getSettings(): string {
-      // path di ricerca dei moduli
-      const modulesSearch = ['local', '/usr/lib/calamares/modules']
-
-      // Istanze
-      const instances = [
-         {
-            id: 'before_bootloader_mkdirs',
-            module: 'contextualprocess',
-            config: 'before_bootloader_mkdirs_context.conf'
-         },
-         {
-            id: 'before_bootloader',
-            module: 'contextualprocess',
-            config: 'before_bootloader_context.conf'
-         },
-         {
-            id: 'after_bootloader',
-            module: 'contextualprocess',
-            config: 'after_bootloader_context.conf'
-         },
-         {
-            id: 'logs',
-            module: 'shellprocess',
-            config: 'shellprocess_logs.conf'
-         },
-         {
-            id: 'bug-LP#1829805',
-            module: 'shellprocess',
-            config: 'shellprocess_bug-LP#1829805.conf'
-         },
-         {
-            id: 'add386arch',
-            module: 'shellprocess',
-            config: 'shellprocess_add386arch.conf'
-         }
-      ]
-
-      // moduli da mostrare a video
-      const show: string[] = ['welcome', 'locale', 'keyboard', 'partition', 'users', 'summary']
-
-      // moduli da eseguire
-      const exec: string[] = []
-      exec.push('partition')
-      exec.push('mount')
-      exec.push('unpackfs')
-      exec.push('machineid')
-      exec.push('fstab')
-      exec.push('locale')
-      exec.push('keyboard')
-      exec.push('localecfg')
-      exec.push('luksbootkeyfile')
-      exec.push('users')
-      if (this.displaymanager) {
-         exec.push('displaymanager')
-      }
-      exec.push('networkcfg')
-      exec.push('hwclock')
-      exec.push('contextualprocess@before_bootloader_mkdirs')
-      exec.push('shellprocess@bug-LP#1829805')
-      exec.push('initramfscfg')
-      exec.push('initramfs')
-      exec.push('grubcfg')
-      exec.push('contextualprocess@before_bootloader')
-      exec.push('bootloader')
-      exec.push('contextualprocess@after_bootloader')
-      exec.push('automirror')
-      exec.push('shellprocess@add386arch')
-      exec.push('packages')
-      exec.push('removeuser')
-      // exec.push("shellprocess@logs")
-      exec.push('remove-link')
-      exec.push('umount')
-
-      const settings = {
-         'modules-search': modulesSearch,
-         instances: instances,
-         sequence: [{ show: show }, { exec: exec }, { show: ['finished'] }],
-         branding: this.remix.branding,
-         'prompt-install': false,
-         'dont-chroot': false
-      }
-      return yaml.safeDump(settings)
-   }
 
    /**
     *
@@ -176,7 +91,7 @@ export class Focal {
       this.shellprocess('add386arch')
       this.modulePackages()
       this.moduleRemoveuser()
-      //this.shellprocess("logs")
+      this.shellprocess("logs")
       this.moduleUmount()
       this.moduleRemoveLink()
       this.moduleFinished()
@@ -195,121 +110,36 @@ export class Focal {
     * ========================================================================
     */
 
+
    /**
-* write module
-* @param name
-* @param content
-*/
-   private module(name: string, content: string) {
-      const file = this.dirModules + name + '.conf'
-      write(file, content, this.verbose)
+    * 
+    * @param name 
+    */
+   private async shellprocess(name: string, isScript: boolean = true) {
+      const moduleSource = path.resolve(__dirname, `${this.rootTemplate}/modules/shellprocess_${name}.conf`)
+      const moduleDest = `${this.dirModules}/shellprocess_${name}`
+
+      shx.cp(moduleSource, moduleDest)
    }
 
    /**
-    *
-    * @param process
-    */
-   private shellprocess(name: string) {
-      let text = ''
-      if (name === 'bug-LP#1829805') {
-         text += '---\n'
-         text += 'dontChroot: false\n'
-         text += 'timeout: 30\n'
-         text += 'script:\n'
-         text += '- "touch @@ROOT@@/boot/initrd.img-$(uname -r)"\n'
-      } else if (name === 'add386arch') {
-         text += '---\n'
-         text += 'dontChroot: false\n'
-         text += 'timeout: 30\n'
-         text += 'script:\n'
-         text += '- command: "/usr/bin/dpkg --add-architecture i386"\n'
-      } else if (name === 'logs') {
-         text += '---\n'
-         text += 'dontChroot: true\n'
-         text += 'timeout: 30\n'
-         text += 'script:\n'
-         text += '    - calamares-logs-helper @@ROOT@@\n'
-      }
-      let file = this.dirModules + 'shellprocess_' + name + '.conf'
-      let content = text
-      write(file, content, this.verbose)
+   * 
+   * @param name 
+   */
+   private async contextualprocess(name: string, isScript: boolean = true) {
+      const moduleSource = path.resolve(__dirname, `${this.rootTemplate}/modules/${name}_context.conf`)
+      const moduleDest = `${this.dirModules}/${name}_context.conf`
+
+      shx.cp(moduleSource, moduleDest)
    }
 
-   /**
-    *
-    * @param process
-    */
-   private contextualprocess(name: string) {
-      let text = ''
-      if (name === 'before_bootloader_mkdirs') {
-         text += '---\n'
-         text += 'dontChroot: true\n'
-         text += 'timeout: 10\n'
-         text += 'firmwareType:\n'
-         text += '    efi:\n'
-         text += '    - -cp /cdrom/casper/vmlinuz @@ROOT@@/boot/vmlinuz-$(uname -r)\n'
-         text += '    - -mkdir -pv @@ROOT@@/media/cdrom\n'
-         text += '    - -mount --bind /cdrom @@ROOT@@/media/cdrom\n'
-         text += '    bios:\n'
-         text += '    - -cp /cdrom/casper/vmlinuz @@ROOT@@/boot/vmlinuz-$(uname -r)\n'
-      } else if (name === 'before_bootloader') {
-         text += '# Make sure the correct bootloader package is installed for EFI.\n'
-         text += '# Also pull in shim so secureboot has a chance at working.\n'
-         text += '# Because of edge cases, we ignore BIOS, and do the same\n'
-         text += '# procedure for all EFI types.\n'
-         text += '---\n'
-         text += 'firmwareType:\n'
-         text += '    bios:    "-/bin/true"\n'
-         text += '    "*":\n'
-         /**
-          * modifica per installazione UEFI
-          */
-         //text += '        -    command: apt-cdrom add -m -d=/media/cdrom/\n'
-         //text += '             timeout: 10\n'
-         //text += '        -    command: sed -i \' / deb http / d\' /etc/apt/sources.list\n'
-         //text += '             timeout: 10\n'
-         /**
-          * grub-efi-amd64-signed esiste ed è OK
-          * quello che serve è di montare i vari fsvirtuali e la partizione efi in boot/efi
-          * quindi:
-          * grub-install
-          * grub-update
-          * e parte
-          */
-         text += '        -    command: apt-get update\n'
-         text += '             timeout: 120\n'
-         text += '        -    command: apt install -y --no-upgrade -o Acquire::gpgv::Options::=--ignore-time-conflict grub-efi-$(if grep -q 64 /sys/firmware/efi/fw_platform_size; then echo amd64-signed; else echo ia32; fi)\n'
-         text += '             timeout: 300\n'
-         text += '        -    command: apt install -y --no-upgrade -o Acquire::gpgv::Options::=--ignore-time-conflict shim-signed\n'
-         text += '             timeout: 300\n'
-      } else if (name === 'after_bootloader') {
-         text += "# Workaround from ubiquity. Ubuntu's grub will want to look in EFI / ubuntu, so\n"
-         text += "# let's make sure it can find something there.\n"
-         text += "# This only copies the cfg and doesn't overwrite, this is specifically so\n"
-         text += "# this doesn't interfere with an Ubuntu installed on the system already.\n"
-         text += '---\n'
-         text += 'dontChroot: false\n'
-         text += 'timeout: 120\n'
-         text += 'firmwareType:\n'
-         text += '"*": "-for i in `ls @@ROOT@@/home/`; do rm @@ROOT@@/home/$i/Desktop/lubuntu-calamares.desktop || exit 0; done"\n'
-      }
-      let content = text
-      let file = this.dirModules + name + '_context' + '.conf'
-      write(file, content, this.verbose)
-   }
 
    /**
     *
     */
    private modulePartition() {
-      const partition = yaml.safeDump({
-         efiSystemPartition: '/boot/efi',
-         enableLuksAutomatedPartitioning: true,
-         userSwapChoices: 'none',
-         drawNestedPartitions: true,
-         defaultFileSystemType: 'ext4'
-      })
-      this.module('partition', partition)
+      const name = "partition"
+      this.buildModule(name)
    }
 
    /**
@@ -370,7 +200,9 @@ export class Focal {
     */
    private moduleDisplaymanager() {
       const displaymanager = require('./modules/displaymanager').displaymanager
-      this.module('displaymanager', displaymanager())
+      const file = this.dirModules + name + '.conf'
+      const content = displaymanager()
+      fs.writeFileSync(file, content, 'utf8')
    }
 
    private moduleNetworkcfg() {
@@ -403,7 +235,11 @@ export class Focal {
     */
    private modulePackages() {
       const packages = require('./modules/packages').packages
-      this.module('packages', packages())
+      const content  = packages()
+      const name = 'packages'
+      const file = this.dirModules + name + '.conf'
+      fs.writeFileSync(file, content, 'utf8')
+
    }
 
    /**
@@ -416,8 +252,8 @@ export class Focal {
     *
     */
    private moduleLuksopenswaphookcfg() {
-      const name = 'luksopenswaphookcfg'
-      this.buildModule(name)
+      // const name = 'luksopenswaphookcfg'
+      // this.buildModule(name)
    }
 
    private modulePlymouthcfg() {
@@ -432,8 +268,10 @@ export class Focal {
     *
     */
    private moduleRemoveuser() {
-      const removeuser = yaml.safeDump({ username: this.user_opt })
-      this.module('removeuser', removeuser)
+      const name = 'removeuser'
+      const content  = yaml.safeDump({ username: this.user_opt })
+      const file = this.dirModules + name + '.conf'
+      fs.writeFileSync(file, content, 'utf8')
    }
 
    private moduleInitramfs() {
@@ -477,11 +315,9 @@ export class Focal {
    private async buildModule(name: string, isScript: boolean = true) {
       const moduleSource = path.resolve(__dirname, `${this.rootTemplate}/modules/${name}.conf`)
       const moduleDest = `${this.dirModules}/${name}`
-
+      if (this.verbose) console.log(`calamares: creating module ${name}`)
       shx.cp(moduleSource, moduleDest)
    }
-
-
 
    /**
     * 
@@ -491,6 +327,9 @@ export class Focal {
       const moduleSource = path.resolve(__dirname, `${this.rootTemplate}/calamares-modules/${name}/`)
       const moduleDest = this.dirCalamaresModules + name
       const moduleScript = `/usr/sbin/${name}.sh`
+
+      if (this.verbose) console.log(`calamares: creating moduleCalamares ${name}`)
+
 
       if (!fs.existsSync(moduleDest)) {
          fs.mkdirSync(moduleDest)
@@ -502,65 +341,28 @@ export class Focal {
       }
    }
 
+   private async buildCalamaresPython(name: string){
+      const moduleSource = path.resolve(__dirname, `${this.rootTemplate}/calamares-modules/${name}/`)
+      const moduleDest = this.dirCalamaresModules + name
+
+      if (this.verbose) console.log(`calamares: creating module Python ${name}`)
+      if (!fs.existsSync(moduleDest)) {
+         fs.mkdirSync(moduleDest)
+      }
+      shx.cp(`${moduleSource}/module.desc`, moduleDest)
+      shx.cp(`${moduleSource}/${name}.conf`, moduleDest)
+      shx.cp(`${moduleSource}/main.py`, moduleDest)
+      await exec(`chmod +x ${moduleSource}/main.py`)
+   }
+
    /**
     * Automirror
     * Python
     */
    private async moduleAutomirror() {
       const name = 'automirror'
-      const dirModule = this.dirGlobalModules + name + '/'
-      if (!fs.existsSync(dirModule)) {
-         fs.mkdirSync(dirModule)
-      }
-
-      const automirror = yaml.safeDump({
-         baseUrl: 'archive.ubuntu.com',
-         distribution: 'Ubuntu',
-         geoip: {
-            style: 'json',
-            url: 'http  s://ipapi.co/json'
-         }
-      })
-      write(dirModule + 'automirror.conf', automirror, this.verbose)
-
-      // Creo anche un config in local con la distro particolare, esempio: lubuntu, ulyana
-      const automirrorModules = yaml.safeDump({
-         baseUrl: 'archive.ubuntu.com',
-         distribution: 'Lubuntu',
-         geoip: {
-            style: 'json',
-            url: 'https://ipapi.co/json'
-         }
-      })
-      write('/etc/calamares/modules/' + 'automirror.conf', automirrorModules)
-
-      // desc
-      const desc = yaml.safeDump({
-         type: 'job',
-         name: 'automirror',
-         interface: 'python',
-         script: 'main.py'
-      })
-      write(dirModule + 'module.desc', desc, this.verbose)
-
-      // py
-      const scriptAutomirror = require('./calamares-modules/scripts/automirror').automirror
-      const scriptFile = dirModule + 'main.py'
-      write(scriptFile, scriptAutomirror(this.distro.versionId), this.verbose)
-      await exec(`chmod +x ${scriptFile}`)
+      this.buildCalamaresPython(name)
    }
 
 }
 
-/**
- *
- * @param file
- * @param content
- * @param verbose
- */
-function write(file: string, content: string, verbose = false) {
-   if (verbose) {
-      console.log(`calamares: create ${file}`)
-   }
-   fs.writeFileSync(file, content, 'utf8')
-}

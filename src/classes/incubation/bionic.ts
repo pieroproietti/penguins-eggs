@@ -164,7 +164,7 @@ export class Bionic {
     */
 
    private module(name: string, content: string) {
-      const file = this.dirLocalModules + name + '.conf'
+      const file = this.dirModules + name + '.conf'
       write(file, content, this.verbose)
    }
 
@@ -173,7 +173,6 @@ export class Bionic {
     * M O D U L E S
     * ====================================================================================
     */
-
    private async moduleBeforebootloadermkdirs() {
       const name = 'before-bootloader-mkdirs'
       const dir = this.dirCalamaresModules + name + `/`
