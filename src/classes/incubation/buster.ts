@@ -242,7 +242,6 @@ export class Buster {
     * Al momento rimane con la vecchia configurazione
     */
    private moduleDisplaymanager() {
-      const name= "dispay"
       const displaymanager = require('./modules/displaymanager').displaymanager
       this.module('displaymanager', displaymanager())
    }

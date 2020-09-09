@@ -1,13 +1,6 @@
-/**
- *
- */
-export function sourcesTrusted(): string {
-   let text = ``
-   text += `---\n`
-   text += `type:       "job"\n`
-   text += `name:       "sources-trusted"\n`
-   text += `interface:  "process"\n`
-   text += `command:    "/usr/sbin/sources-trusted.sh -u"\n`
-   text += `timeout:    600\n`
-   return text
-}
+---
+type:       "job"
+name:       "sources-trusted-unmount"
+interface:  "process"
+command:    "/usr/sbin/sources-trusted -u"
+timeout:    600
