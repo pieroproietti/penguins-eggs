@@ -131,6 +131,7 @@ export class Focal {
     * Al momento rimane con la vecchia configurazione
     */
    private async moduleDisplaymanager() {
+      const name = 'displaymanager'
       const displaymanager = require('./modules/displaymanager').displaymanager
       const file = this.dirModules + name + '.conf'
       const content = displaymanager()
