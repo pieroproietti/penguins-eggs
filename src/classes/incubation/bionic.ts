@@ -48,6 +48,7 @@ export class Bionic {
       if (process.arch === 'ia32') {
          this.dirCalamaresModules = '/usr/lib/calamares/modules/'
       }
+      this.rootTemplate=path.resolve(__dirname, this.rootTemplate)
    }
 
    /**
