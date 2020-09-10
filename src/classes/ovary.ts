@@ -128,7 +128,7 @@ export default class Ovary {
       }
 
       if (!fs.existsSync(this.settings.work_dir.path + '/README.md')) {
-         shx.cp(path.resolve(__dirname, '../../conf/ovary.md'), this.settings.work_dir.path + 'README.md')
+         shx.cp(path.resolve(__dirname, '../../conf/ovarium.md'), this.settings.work_dir.path + 'README.md')
       }
 
       if (!fs.existsSync(this.settings.work_dir.lowerdir)) {

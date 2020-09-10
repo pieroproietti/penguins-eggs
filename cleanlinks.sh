@@ -13,6 +13,8 @@ sudo rm /etc/xdg/autostart/add-penguins-links.desktop
 # moduli calamares
 sudo rm /etc/calamares -rf
 
+/usr/sbin/remove-link.sh
+
 sudo rm /usr/lib/x86_64-linux-gnu/calamares/modules/automirror/ -rf
 sudo rm /usr/lib/x86_64-linux-gnu/calamares/modules/bootloader-config/ -rf
 sudo rm /usr/lib/x86_64-linux-gnu/calamares/modules/create-tmp/ -rf

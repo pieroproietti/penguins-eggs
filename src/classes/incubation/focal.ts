@@ -12,7 +12,15 @@ import path = require('path')
 
 import { IRemix, IDistro } from '../../interfaces'
 
+import Fisherman from './fisherman'
+
+
 const exec = require('../../lib/utils').exec
+
+interface IReplaces {
+   search: string
+   replace: string
+}
 
 /**
  *
@@ -34,6 +42,9 @@ export class Focal {
 
    dirModules = '/etc/calamares/modules'
 
+   fisherman = {}
+
+
    /**
     * @param remix
     * @param distro
@@ -49,6 +60,8 @@ export class Focal {
       if (process.arch === 'ia32') {
          this.dirCalamaresModules = '/usr/lib/calamares/modules/'
       }
+      // this.fisherman = new Fisherman(this.dirModules, this.dirCalamaresModules, this.rootTemplate, this.verbose)
+
    }
 
    /**
@@ -65,34 +78,36 @@ export class Focal {
     *
     */
    async modules() {
-      this.buildModule('partition')
-      this.buildModule('mount')
-      this.moduleUnpackfs()
-      this.buildModule('machineid')
-      this.buildModule('fstab')
-      this.buildModule('locale')
-      this.buildModule('keyboard')
-      this.buildModule('localecfg')
-      this.buildModule('luksbootkeyfile')
-      this.buildModule('users')
-      this.buildModule('displaymanager')
-      this.buildModule('networkcfg')
-      this.buildModule('hwclock')
-      this.contextualprocess('before_bootloader_mkdirs')
-      this.shellprocess('bug-LP#1829805')
-      this.buildModule('initramfs')
-      this.buildModule('rubcfg')
-      this.contextualprocess('before_bootloader')
-      this.buildModule('bootloader')
-      this.contextualprocess('after_bootloader')
-      // this.buildCalamaresPy('automirror')
-      this.shellprocess('add386arch')
-      this.buildModule('packages')
-      this.buildCalamaresModule('remove-link', true)
-      this.shellprocess('logs')
-      this.buildModule('umount')
-      // - show:
-      this.buildModule('finished')
+      const fisherman = new Fisherman(this.dirModules, this.dirCalamaresModules, this.rootTemplate, this.verbose)
+
+      await fisherman.buildModule('partition')
+      await fisherman.buildModule('mount')
+      await this.moduleUnpackfs()
+      await fisherman.buildModule('machineid')
+      await fisherman.buildModule('fstab')
+      await fisherman.buildModule('locale')
+      await fisherman.buildModule('keyboard')
+      await fisherman.buildModule('localecfg')
+      await fisherman.buildModule('luksbootkeyfile')
+      await fisherman.buildModule('users')
+      await this.moduleDisplaymanager()
+      await fisherman.buildModule('networkcfg')
+      await fisherman.buildModule('hwclock')
+      await fisherman.contextualprocess('before_bootloader_mkdirs')
+      await fisherman.shellprocess('bug-LP#1829805')
+      await fisherman.buildModule('initramfs')
+      await fisherman.buildModule('rubcfg')
+      await fisherman.contextualprocess('before_bootloader')
+      await fisherman.buildModule('bootloader')
+      await fisherman.contextualprocess('after_bootloader')
+      // await fisherman.buildCalamaresPy('automirror') errore in main distrobution
+      await fisherman.shellprocess('add386arch')
+      await this.modulePackages()
+      await this.moduleRemoveuser()
+      await fisherman.buildCalamaresModule('remove-link', true)
+      // await fisherman.shellprocess('logs') non trova calamares-helper
+      await fisherman.buildModule('umount')
+      await fisherman.buildModule('finished')
    }
 
 
@@ -106,15 +121,16 @@ export class Focal {
     * Al momento rimane con la vecchia configurazione
     */
    private moduleUnpackfs() {
+      const fisherman = new Fisherman(this.dirModules, this.dirCalamaresModules, this.rootTemplate, this.verbose)
       const name = 'unpackfs'
-      this.buildModule(name)
+      fisherman.buildModule(name)
       shx.sed('-i', '%source%', this.distro.mountpointSquashFs, `${this.dirModules}/${name}.conf`)
    }
 
    /**
     * Al momento rimane con la vecchia configurazione
     */
-   private moduleDisplaymanager() {
+   private async moduleDisplaymanager() {
       const displaymanager = require('./modules/displaymanager').displaymanager
       const file = this.dirModules + name + '.conf'
       const content = displaymanager()
@@ -124,7 +140,7 @@ export class Focal {
    /**
     * Al momento rimane con la vecchia configurazione
     */
-   private modulePackages() {
+   private async modulePackages() {
       const packages = require('./modules/packages').packages
       const content = packages()
       const name = 'packages'
@@ -133,114 +149,14 @@ export class Focal {
    }
 
    /**
-    *
+    * Al momento rimane con la vecchia configurazione
     */
-   private moduleRemoveuser() {
+   private async moduleRemoveuser() {
       const name = 'removeuser'
       const content = yaml.safeDump({ username: this.user_opt })
       const file = this.dirModules + name + '.conf'
       fs.writeFileSync(file, content, 'utf8')
    }
 
-   /**
-    * moduleFinished
-    */
-   private moduleFinished() {
-      const name = "finished"
-      const restartNowCommand = "systemctl -i reboot"
-      this.buildModule(name)
-      shx.sed('-i', '%restartNowCommand%', restartNowCommand, `${this.dirModules}/${name}.conf`)
-   }
-
-
-/**
-    * ====================================================================================
-    * M O D U L E S   C A L A M A R E S - E N D
-    * ====================================================================================
-    */
-
-
-
-
-
-   /**
-    *  F I S H E R M A N
-    */
-
-
-   /**
-    * 
-    * @param name 
-    */
-   private async shellprocess(name: string, isScript: boolean = true) {
-      const moduleSource = path.resolve(__dirname, `${this.rootTemplate}/modules/shellprocess_${name}.conf`)
-      const moduleDest = `${this.dirModules}/shellprocess_${name}.conf`
-
-      shx.cp(moduleSource, moduleDest)
-   }
-
-   /**
-   * 
-   * @param name 
-   */
-   private async contextualprocess(name: string, isScript: boolean = true) {
-      const moduleSource = path.resolve(__dirname, `${this.rootTemplate}/modules/${name}_context.conf`)
-      const moduleDest = `${this.dirModules}/${name}_context.conf`
-
-      shx.cp(moduleSource, moduleDest)
-   }
-
-   /**
-    * 
-    * @param name 
-    */
-   private async buildModule(name: string, isScript: boolean = true) {
-      const moduleSource = path.resolve(__dirname, `${this.rootTemplate}/modules/${name}.conf`)
-      const moduleDest = `${this.dirModules}/${name}.conf`
-      if (fs.existsSync(moduleSource)) {
-         shx.cp(moduleSource, moduleDest)
-         if (this.verbose) console.log(`calamares: creating module ${name}`)
-         shx.cp(moduleSource, moduleDest)
-      } else {
-         if (this.verbose) console.log(`calamares: module ${name}, nothing to do`)
-      }
-   }
-
-   /**
-    * 
-    * @param name 
-    */
-   private async buildCalamaresModule(name: string, isScript: boolean = true) {
-      const moduleSource = path.resolve(__dirname, `${this.rootTemplate}/calamares-modules/${name}/`)
-      const moduleDest = this.dirCalamaresModules + name
-      const moduleScript = `/usr/sbin/${name}.sh`
-
-      if (this.verbose) console.log(`calamares: creating moduleCalamares ${name}`)
-
-
-      if (!fs.existsSync(moduleDest)) {
-         fs.mkdirSync(moduleDest)
-      }
-      shx.cp(`${moduleSource}/module.desc`, moduleDest)
-      if (isScript) {
-         shx.cp(`${moduleSource}/module.sh`, moduleScript)
-         await exec(`chmod +x ${moduleScript}`)
-      }
-   }
-
-
-   private async buildCalamaresPy(name: string) {
-      const moduleSource = path.resolve(__dirname, `${this.rootTemplate}/calamares-modules/${name}/`)
-      const moduleDest = this.dirCalamaresModules + name
-
-      if (this.verbose) console.log(`calamares: creating module Python ${name}`)
-      if (!fs.existsSync(moduleDest)) {
-         fs.mkdirSync(moduleDest)
-      }
-      shx.cp(`${moduleSource}/module.desc`, moduleDest)
-      shx.cp(`${moduleSource}/${name}.conf`, moduleDest)
-      shx.cp(`${moduleSource}/main.py`, moduleDest)
-      await exec(`chmod +x ${moduleSource}/main.py`)
-   }
 }
 
