@@ -88,7 +88,7 @@ export class Focal {
       // this.buildCalamaresPy('automirror')
       this.shellprocess('add386arch')
       this.buildModule('packages')
-      this.buildCalamaresModule('remove-link')
+      this.buildCalamaresModule('remove-link', true)
       this.shellprocess('logs')
       this.buildModule('umount')
       // - show:
@@ -227,6 +227,7 @@ export class Focal {
          await exec(`chmod +x ${moduleScript}`)
       }
    }
+
 
    private async buildCalamaresPy(name: string) {
       const moduleSource = path.resolve(__dirname, `${this.rootTemplate}/calamares-modules/${name}/`)
