@@ -101,7 +101,7 @@ export class Buster {
       await fisherman.buildCalamaresModule('sources-final')
       await fisherman.buildModule('umount')
       await fisherman.buildCalamaresModule('remove-link')
-      await fisherman.buildModule('finished')
+      await this.moduleFinished()
    }
 
    /**
@@ -110,8 +110,10 @@ export class Buster {
     * ====================================================================================
     */
 
-
-   private async moduleFinischd() {
+   /**
+    * Al momento rimane con la vecchia configurazione
+    */
+   private async moduleFinished() {
       const fisherman = new Fisherman(this.dirModules, this.dirCalamaresModules, this.rootTemplate, this.verbose)
       await fisherman.buildModule('finished')
       const restartNowCommand = "systemctl -i reboot"
