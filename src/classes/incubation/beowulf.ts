@@ -86,9 +86,9 @@ export class Beowulf {
       }
       await fisherman.buildModule('networkcfg')
       await fisherman.buildModule('hwclock')
-      await fisherman.buildModule('services-sysvinit')
+      await fisherman.buildModule('services-systemd')
       await fisherman.buildCalamaresModule('create-tmp', true)
-      await fisherman.buildModule('bootloader-config')
+      await fisherman.buildCalamaresModule('bootloader-config',true)
       await fisherman.buildModule('grubcf')
       await fisherman.buildModule('bootloader')
       await this.modulePackages()
@@ -114,9 +114,11 @@ export class Beowulf {
     * Al momento rimane con la vecchia configurazione
     */
    private async moduleFinished() {
+      const name = 'finished'
+
       const fisherman = new Fisherman(this.dirModules, this.dirCalamaresModules, this.rootTemplate, this.verbose)
-      await fisherman.buildModule('finished')
-      const restartNowCommand = "reboot"
+      await fisherman.buildModule(name)
+      const restartNowCommand ='reboot'
       shx.sed('-i', '%restartNowCommand%', restartNowCommand, `${this.dirModules}/${name}.conf`)
    }
 

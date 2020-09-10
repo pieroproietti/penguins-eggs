@@ -114,8 +114,10 @@ export class Buster {
     * Al momento rimane con la vecchia configurazione
     */
    private async moduleFinished() {
+      const name = 'finished'
+
       const fisherman = new Fisherman(this.dirModules, this.dirCalamaresModules, this.rootTemplate, this.verbose)
-      await fisherman.buildModule('finished')
+      await fisherman.buildModule(name)
       const restartNowCommand = "systemctl -i reboot"
       shx.sed('-i', '%restartNowCommand%', restartNowCommand, `${this.dirModules}/${name}.conf`)
    }
