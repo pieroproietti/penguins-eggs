@@ -84,10 +84,11 @@ export default class Fisherman {
      * @param name 
      * @param isScript 
      */
-    async buildCalamaresModule(name: string, isScript: boolean = false) {
+    async buildCalamaresModule(name: string, isScript: boolean = true) {
         const moduleSource = path.resolve(__dirname, `${this.rootTemplate}/calamares-modules/${name}/`)
         const moduleDest = this.dirCalamaresModules + '/' + name
         const moduleScript = `/usr/sbin/${name}.sh`
+
 
 
         if (this.verbose) console.log(`calamares: creating moduleCalamares ${name}`)

@@ -2,6 +2,11 @@
 sudo rm /usr/bin/add-penguins-links.sh
 sudo rm /usr/bin/penguins-links-add.sh
 
+sudo rm /usr/sbin/before-bootloader.*
+sudo rm /usr/sbin/before-bootloader-mkdirs*
+sudo rm /usr/sbin/bug*
+suro rm /usr/sbin/after-bootloader*
+
 sudo rm /usr/share/applications/penguins-*
 sudo rm /usr/share/applications/dw*
 sudo rm /usr/share/applications/pve*
