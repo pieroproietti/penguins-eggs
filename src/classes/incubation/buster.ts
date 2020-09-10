@@ -124,6 +124,7 @@ export class Buster {
       const fisherman = new Fisherman(this.dirModules, this.dirCalamaresModules, this.rootTemplate, this.verbose)
       const name = 'unpackfs'
       fisherman.buildModule(name)
+      shx.sed('-i', '%source%', this.distro.mountpointSquashFs, `${this.dirModules}/${name}.conf`)
    }
 
    /**
@@ -157,5 +158,4 @@ export class Buster {
       const file = this.dirModules + name + '.conf'
       fs.writeFileSync(file, content, 'utf8')
    }
-
 }
