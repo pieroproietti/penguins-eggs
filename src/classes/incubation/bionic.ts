@@ -27,17 +27,12 @@ export class Bionic {
    displaymanager = false
 
    user_opt: string
-   
+
    rootTemplate = './../../../conf/calamares/'
 
    dirCalamaresModules = '/usr/lib/x86_64-linux-gnu/calamares/modules/'
 
    dirModules = '/etc/calamares/modules/'
-
-   // sourcesTrusted = true
-   // dir = '/etc/calamares/'
-   // dirLocalModules = '/etc/calamares/modules/'
-   // dirCalamaresModules = '/usr/lib/x86_64-linux-gnu/calamares/modules/'
 
    constructor(remix: IRemix, distro: IDistro, displaymanager: boolean, user_opt: string, verbose = false) {
       this.remix = remix
@@ -48,69 +43,14 @@ export class Bionic {
       if (process.arch === 'ia32') {
          this.dirCalamaresModules = '/usr/lib/calamares/modules/'
       }
-      this.rootTemplate=path.resolve(__dirname, this.rootTemplate)
+      this.rootTemplate = path.resolve(__dirname, this.rootTemplate)
    }
 
    /**
     * write setting
     */
    settings() {
-      const file = '/etc/calamares/settings.conf'
-      write(file, this.getSettings(), this.verbose)
-   }
-
-   /**
-    *
-    */
-   private getSettings(): string {
-      // path di ricerca dei moduli
-      const modulesSearch = ['local', '/usr/lib/calamares/modules']
-
-      // moduli da mostrare a video
-      const show = ['welcome', 'locale', 'keyboard', 'partition', 'users', 'summary']
-
-      // moduli da eseguire
-      const exec: string[] = []
-      exec.push('partition')
-      exec.push('mount')
-      exec.push('unpackfs')
-      exec.push('machineid')
-      exec.push('fstab')
-      exec.push('locale')
-      exec.push('keyboard')
-      exec.push('localecfg')
-      exec.push('luksbootkeyfile')
-      exec.push('users')
-      if (this.displaymanager) {
-         exec.push('displaymanager')
-      }
-      exec.push('networkcfg')
-      exec.push('hwclock')
-      exec.push('before-bootloader-mkdirs') //
-      exec.push('bug') //
-      exec.push('initramfscfg')
-      exec.push('initramfs')
-      exec.push('grubcfg')
-      exec.push('before-bootloader') //
-      exec.push('bootloader')
-      exec.push('after-bootloader') //
-      exec.push('automirror')
-      exec.push('add386arch') //
-      exec.push('packages')
-      exec.push('removeuser')
-      exec.push('umount')
-
-      const settings = {
-         'modules-search': modulesSearch,
-         sequence: [{ show: show }, { exec: exec }, { show: ['finished'] }],
-         branding: this.remix.branding,
-         'prompt-install': true,
-         'dont-chroot': false,
-         'oem-setup': false,
-         'disable-cancel': false,
-         'disable-cancel-during-exec': false
-      }
-      return yaml.safeDump(settings)
+      
    }
 
    /**
@@ -146,24 +86,11 @@ export class Bionic {
       this.moduleFinished()
    }
 
-/**
-    * ========================================================================
-    * module = name + '.conf'
-    * shellprocess = 'shellprocess_' + name + '.conf'
-    * contextualprocess = name + '_context.conf'
-    *
-    * module_calamares
-    *                      dir = '/usr/lib/calamares/modules/' + name
-    *                      name = module.desc
-    *                      script =
-    * ========================================================================
-    */
-      /**
+   /**
     * write module
     * @param name
     * @param content
     */
-
    private module(name: string, content: string) {
       const file = this.dirModules + name + '.conf'
       write(file, content, this.verbose)
@@ -192,6 +119,7 @@ export class Bionic {
          timeout: '600'
       })
       write(dir + 'module.desc', desBeforeBootloaderMkdirs)
+
       const bashContent = 'cp /lib/live/mount/medium/live/vmlinuz /boot/vmlinuz-$(uname -r)\n'
       const bashFile = `/usr/sbin/${name}`
       write(bashFile, bashContent, this.verbose)
@@ -544,9 +472,9 @@ export class Bionic {
       if (this.verbose) console.log(`calamares: module unmount. Nothing to do!`)
    }
 
-      /**
-    * moduleFinished
-    */
+   /**
+ * moduleFinished
+ */
    private moduleFinished() {
       const finished = yaml.safeDump({
          restartNowEnabled: true,

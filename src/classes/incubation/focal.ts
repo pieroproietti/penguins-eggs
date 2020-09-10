@@ -60,7 +60,7 @@ export class Focal {
       if (process.arch === 'ia32') {
          this.dirCalamaresModules = '/usr/lib/calamares/modules/'
       }
-      // this.fisherman = new Fisherman(this.dirModules, this.dirCalamaresModules, this.rootTemplate, this.verbose)
+      this.rootTemplate=path.resolve(__dirname, this.rootTemplate)
 
    }
 
@@ -96,7 +96,7 @@ export class Focal {
       await fisherman.contextualprocess('before_bootloader_mkdirs')
       await fisherman.shellprocess('bug-LP#1829805')
       await fisherman.buildModule('initramfs')
-      await fisherman.buildModule('rubcfg')
+      await fisherman.buildModule('grubcfg')
       await fisherman.contextualprocess('before_bootloader')
       await fisherman.buildModule('bootloader')
       await fisherman.contextualprocess('after_bootloader')

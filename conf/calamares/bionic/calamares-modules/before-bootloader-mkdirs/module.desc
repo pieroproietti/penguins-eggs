@@ -1,0 +1,7 @@
+# UBUNTU bionic
+---
+type: job
+name: before-bootloader-mkdirs
+interface: process
+command: /usr/sbin/before-bootloader-mkdirs
+timeout: '600'
