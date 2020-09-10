@@ -22,3 +22,11 @@ sudo rm /usr/lib/x86_64-linux-gnu/calamares/modules/remove-link/ -rf
 sudo rm /usr/lib/x86_64-linux-gnu/calamares/modules/sources-final/ -rf
 sudo rm /usr/lib/x86_64-linux-gnu/calamares/modules/sources-trusted/ -rf
 sudo rm /usr/lib/x86_64-linux-gnu/calamares/modules/sources-trusted-unmount/ -rf
+
+sudo rm /usr/lib/calamares/modules/automirror/ -rf
+sudo rm /usr/lib/calamares/modules/bootloader-config/ -rf
+sudo rm /usr/lib/calamares/modules/create-tmp/ -rf
+sudo rm /usr/lib/calamares/modules/remove-link/ -rf
+sudo rm /usr/lib/calamares/modules/sources-final/ -rf
+sudo rm /usr/lib/calamares/modules/sources-trusted/ -rf
+sudo rm /usr/lib/calamares/modules/sources-trusted-unmount/ -rf

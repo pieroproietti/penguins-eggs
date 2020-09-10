@@ -29,7 +29,7 @@ export default class Pacman {
     * 
     * BISOGNA scrivare qualcosa per non fargliela prende su 
     * UBUNTU e derivate
-    *
+    * 'live-config',  non esiste su bionic
     */
    static deb4localisation = ['live-config', 'localepurge']
    //'live-task-localisation', 
