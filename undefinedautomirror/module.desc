@@ -1,0 +1,4 @@
+type: job
+name: automirror
+interface: python
+script: main.py

@@ -128,7 +128,7 @@ export default class Ovary {
       }
 
       if (!fs.existsSync(this.settings.work_dir.path + '/README.md')) {
-         shx.cp(path.resolve(__dirname, '../../conf/ovary.md'), this.settings.work_dir.path + 'README.md')
+         shx.cp(path.resolve(__dirname, '../../conf/ovarium.md'), this.settings.work_dir.path + 'README.md')
       }
 
       if (!fs.existsSync(this.settings.work_dir.lowerdir)) {
@@ -747,9 +747,9 @@ export default class Ovary {
 
       if (myAddons.adapt) {
          // Per lxde, kxqt, deepin, mate, xfce4 creo il link adapt
-         if (Pacman.packageIsInstalled('lxde-core') || Pacman.packageIsInstalled('lxqt-core') || Pacman.packageIsInstalled('deepin-desktop-base') || Pacman.packageIsInstalled('mate-desktop') || Pacman.packageIsInstalled('ubuntu-mate-core') || Pacman.packageIsInstalled('xfce4')) {
+         // if (Pacman.packageIsInstalled('lxde-core') || Pacman.packageIsInstalled('lxqt-core') || Pacman.packageIsInstalled('deepin-desktop-base') || Pacman.packageIsInstalled('mate-desktop') || Pacman.packageIsInstalled('ubuntu-mate-core') || Pacman.packageIsInstalled('xfce4')) {
             shx.cp(path.resolve(__dirname, '../../assets/penguins-adapt.desktop'), '/usr/share/applications/')
-         }
+         //}
       }
 
       if (myAddons.ichoice) {
@@ -983,8 +983,8 @@ export default class Ovary {
       process.chdir(currentDir)
 
       // Copy efi files to iso
-      await exec(`rsync -avx ${this.settings.efi_work}/boot ${this.settings.work_dir.pathIso}/`, echo)
-      await exec(`rsync -avx ${this.settings.efi_work}/efi  ${this.settings.work_dir.pathIso}/`, echo)
+      await exec(`rsync -ax  ${this.settings.efi_work}/boot ${this.settings.work_dir.pathIso}/`, echo)
+      await exec(`rsync -ax ${this.settings.efi_work}/efi  ${this.settings.work_dir.pathIso}/`, echo)
 
       // Do the main grub.cfg (which gets loaded last):
       fs.copyFileSync(path.resolve(__dirname, '../../conf/grub/grub.template.cfg'), `${this.settings.work_dir.pathIso}/boot/grub/grub.cfg`)

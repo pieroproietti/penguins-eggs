@@ -1,0 +1,7 @@
+# UBUNTU bionic
+---
+dontChroot: true
+type: job
+name: before-bootloader
+interface: process
+command: /usr/sbin/before-bootloader.sh

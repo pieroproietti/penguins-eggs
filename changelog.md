@@ -18,6 +18,12 @@ You can follow the project also consulting the [commit history](https://github.c
 ## Changelog
 Versions are listed on reverse order, the first is the last one.
 
+### eggs-7.0.31_1.deb
+I made a rethinking and rewriting of the part of eggs who work with calamares. Before I build the configuration completely with code
+now I choose to use directly yaml files ed use them as template. Well, was hard - test alla on buster, focal, devuan and bionic 
+it's a big question but, finally we have a a great result:
+* eggs now work in UEFI with ubuntu focal
+
 ### eggs-7.0.28_1.deb
 * created /etc/xdg/autostart/penguins-links.desktop to build links on the desktop on live and new users, due the localization;
 * create a module in calamares to remove installation link;

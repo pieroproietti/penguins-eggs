@@ -1,0 +1,6 @@
+---
+type:       "job"
+name:       "sources-trusted"
+interface:  "process"
+command:    "/usr/sbin/sources-trusted"
+timeout:    600

@@ -7,7 +7,7 @@ export function sourcesTrusted(): string {
    text += `type:       "job"\n`
    text += `name:       "sources-trusted"\n`
    text += `interface:  "process"\n`
-   text += `command:    "/usr/sbin/sources-trusted"\n`
+   text += `command:    "/usr/sbin/sources-trusted.sh"\n`
    text += `timeout:    600\n`
    return text
 }
