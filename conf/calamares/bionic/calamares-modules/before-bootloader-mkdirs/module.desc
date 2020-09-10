@@ -3,5 +3,5 @@
 type: job
 name: before-bootloader-mkdirs
 interface: process
-command: /usr/sbin/before-bootloader-mkdirs
+command: /usr/sbin/before-bootloader-mkdirs.sh
 timeout: '600'

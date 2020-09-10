@@ -4,4 +4,4 @@ dontChroot: true
 type: job
 name: after-bootloader
 interface: process
-command: /usr/sbin/after-bootloader
+command: /usr/sbin/after-bootloader.sh
