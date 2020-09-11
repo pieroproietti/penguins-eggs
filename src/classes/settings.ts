@@ -25,7 +25,7 @@ const exec = require('../lib/utils').exec
 
 // classes
 import Utils from './utils'
-import Incubator from './incubation/calamares-config'
+import Incubator from './incubation/incubator'
 import Distro from './distro'
 import Pacman from './pacman'
 
@@ -239,7 +239,7 @@ export default class Settings {
     * showSettings
     */
    async show() {
-      console.log(`application_nane:  ${this.app.name} ${this.app.version}`)
+      console.log(`application_name:  ${this.app.name} ${this.app.version}`)
       console.log(`config_file:       ${this.config_file}`)
       console.log(`snapshot_dir:      ${this.snapshot_dir}`)
       console.log(`snapshot_basename: ${this.snapshot_basename}`)

@@ -62,6 +62,5 @@ export function branding(remix: IRemix, distro: IDistro, brand = '', verbose = f
          sidebarTextSelect: '#4d7079'
       }
    }
-   //console.log(branding)
    return yaml.safeDump(branding)
 }

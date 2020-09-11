@@ -6,7 +6,8 @@
  */
 import { Command, flags } from '@oclif/command'
 import Utils from '../classes/utils'
-import Ovary from '../classes/ovary'
+import Settings from '../classes/settings'
+import Incubator from '../classes/incubation/incubator'
 import Pacman from '../classes/pacman'
 import { IRemix } from '../interfaces'
 
@@ -14,6 +15,10 @@ export default class Calamares extends Command {
    static description = 'configure calamares or install and configure it'
 
    remix = {} as IRemix
+
+   incubator = {} as Incubator
+
+   settings = {} as Settings
 
    static flags = {
       help: flags.help({ char: 'h' }),
@@ -38,38 +43,30 @@ export default class Calamares extends Command {
          install = true
       }
 
-      // Nome del brand di calamares
-      let branding = 'eggs'
-      console.log(`theme: ${flags.theme}`)
+      let theme = 'eggs'
       if (flags.theme !== undefined) {
-         branding = flags.theme
-         console.log(`calamares branding: ${branding}`)
+         theme = flags.theme
       }
+      console.log(`theme: ${theme}`)
 
-      console.log(`calamares: ${install}`)
       if (Utils.isRoot()) {
          if (Pacman.isXInstalled()) {
-            console.log(`isXInstalled: true`)
-
             if (await Utils.customConfirm(`Select yes to continue...`)) {
                if (install) {
                   Utils.warning('Installing calamares prerequisites...')
                   await Pacman.prerequisitesCalamaresInstall()
                }
 
-               if (branding === '') {
-                 this.remix.branding = 'eggs'
-               } else {
-                  this.remix.branding = branding
-               }
-               this.remix.branding = 'eggs'
-
                Utils.warning('Configuring calamares...')
-               const ovary = new Ovary()
-               if (await ovary.fertilization()) {
-                  await ovary.calamaresConfigure(verbose)
+               this.settings = new Settings()
+               if (await this.settings.load()) {
+                  await this.settings.loadRemix(this.settings.snapshot_basename, theme)
+                  this.incubator = new Incubator(this.settings.remix, this.settings.distro, this.settings.user_opt, verbose)
+                  await this.incubator.config()
                }
             }
+         } else {
+            console.log(`You cannot use calamares installer without X system!`)
          }
       }
    }

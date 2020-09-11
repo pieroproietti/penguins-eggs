@@ -1,5 +1,5 @@
 /**
- * penguins-eggs: buster/calamares-config.ts
+ * penguins-eggs: incubator.ts
  *
  * author: Piero Proietti
  * mail: piero.proietti@gmail.com
@@ -10,16 +10,16 @@ import shx = require('shelljs')
 import Utils from '../utils'
 import Pacman from '../pacman'
 import { IRemix, IDistro } from '../../interfaces'
-import { Buster } from './buster'
-import { Beowulf } from './beowulf'
-import { Focal } from './focal'
-import { Bionic } from './bionic'
+import { Buster } from './distros/buster'
+import { Beowulf } from './distros/beowulf'
+import { Focal } from './distros/focal'
+import { Bionic } from './distros/bionic'
 const exec = require('../../lib/utils').exec
 
 /**
  *
  */
-export default class CalamaresConfig {
+export default class Incubator {
    verbose = false
 
    remix: IRemix

@@ -1,5 +1,5 @@
 /**
- * penguins-eggs: buster.ts
+ * penguins-eggs: focal.ts
  *
  * author: Piero Proietti
  * mail: piero.proietti@gmail.com
@@ -10,16 +10,22 @@ import shx = require('shelljs')
 import yaml = require('js-yaml')
 import path = require('path')
 
-import { IRemix, IDistro } from '../../interfaces'
+import { IRemix, IDistro } from '../../../interfaces'
 
-import Fisherman from './fisherman'
+import Fisherman from '../fisherman'
+
 
 const exec = require('../../lib/utils').exec
+
+interface IReplaces {
+   search: string
+   replace: string
+}
 
 /**
  *
  */
-export class Buster {
+export class Focal {
    verbose = false
 
    remix: IRemix
@@ -30,11 +36,14 @@ export class Buster {
 
    user_opt: string
 
-   rootTemplate = './../../../conf/calamares/buster/'
+   rootTemplate = path.resolve(__dirname, './../../../conf/calamares/focal')
 
-   dirCalamaresModules = '/usr/lib/x86_64-linux-gnu/calamares/modules/'
+   dirCalamaresModules = '/usr/lib/x86_64-linux-gnu/calamares/modules'
 
-   dirModules = '/etc/calamares/modules/'
+   dirModules = '/etc/calamares/modules'
+
+   fisherman = {}
+
 
    /**
     * @param remix
@@ -52,6 +61,7 @@ export class Buster {
          this.dirCalamaresModules = '/usr/lib/calamares/modules/'
       }
       this.rootTemplate=path.resolve(__dirname, this.rootTemplate)
+
    }
 
    /**
@@ -63,7 +73,6 @@ export class Buster {
       shx.sed('-i', '%branding%', this.remix.branding, '/etc/calamares/settings.conf')
    }
 
-   /**
 
    /**
     *
@@ -74,53 +83,39 @@ export class Buster {
       await fisherman.buildModule('partition')
       await fisherman.buildModule('mount')
       await this.moduleUnpackfs()
-      await fisherman.buildCalamaresModule('sources-trusted')
       await fisherman.buildModule('machineid')
       await fisherman.buildModule('fstab')
       await fisherman.buildModule('locale')
       await fisherman.buildModule('keyboard')
       await fisherman.buildModule('localecfg')
+      await fisherman.buildModule('luksbootkeyfile')
       await fisherman.buildModule('users')
-      if (this.displaymanager) {
-         await this.moduleDisplaymanager()
-      }
+      await this.moduleDisplaymanager()
       await fisherman.buildModule('networkcfg')
       await fisherman.buildModule('hwclock')
-      await fisherman.buildModule('services-systemd')
-      await fisherman.buildCalamaresModule('create-tmp', true)
-      await fisherman.buildModule('bootloader-config')
-      await fisherman.buildModule('grubcf')
-      await fisherman.buildModule('bootloader')
-      await this.modulePackages()
-      await fisherman.buildModule('luksbootkeyfile')
-      await fisherman.buildModule('plymouthcfg')
-      await fisherman.buildModule('initramfscfg')
+      await fisherman.contextualprocess('before_bootloader_mkdirs')
+      await fisherman.shellprocess('bug-LP#1829805')
       await fisherman.buildModule('initramfs')
+      await fisherman.buildModule('grubcfg')
+      await fisherman.contextualprocess('before_bootloader')
+      await fisherman.buildModule('bootloader')
+      await fisherman.contextualprocess('after_bootloader')
+      // await fisherman.buildCalamaresPy('automirror') errore in main distrobution
+      await fisherman.shellprocess('add386arch')
+      await this.modulePackages()
       await this.moduleRemoveuser()
-      await fisherman.buildCalamaresModule('sources-trusted-unmount', false)
-      await fisherman.buildCalamaresModule('sources-final')
+      await fisherman.buildCalamaresModule('remove-link', true)
+      // await fisherman.shellprocess('logs') non trova calamares-helper
       await fisherman.buildModule('umount')
-      await fisherman.buildCalamaresModule('remove-link')
-      await this.moduleFinished()
+      await fisherman.buildModule('finished')
    }
+
 
    /**
     * ====================================================================================
-    * M O D U L E S
+    * M O D U L E S   C A L A M A R E S
     * ====================================================================================
     */
-
-   /**
-    * Al momento rimane con la vecchia configurazione
-    */
-   private async moduleFinished() {
-      const name = 'finished'
-
-      const fisherman = new Fisherman(this.dirModules, this.dirCalamaresModules, this.rootTemplate, this.verbose)
-      await fisherman.buildModule(name)
-      const restartNowCommand = "systemctl -i reboot"
-      shx.sed('-i', '%restartNowCommand%', restartNowCommand, `${this.dirModules}/${name}.conf`)
-   }
 
    /**
     * Al momento rimane con la vecchia configurazione
@@ -133,21 +128,21 @@ export class Buster {
    }
 
    /**
-    * Al momento rimane con la vecchia configurazione
+    * usa i moduli-ts
     */
    private async moduleDisplaymanager() {
       const name = 'displaymanager'
-      const displaymanager = require('./modules/displaymanager').displaymanager
+      const displaymanager = require('./modules-ts/displaymanager').displaymanager
       const file = this.dirModules + name + '.conf'
       const content = displaymanager()
       fs.writeFileSync(file, content, 'utf8')
    }
 
    /**
-    * Al momento rimane con la vecchia configurazione
+    * usa i moduli-ts
     */
    private async modulePackages() {
-      const packages = require('./modules/packages').packages
+      const packages = require('./modules-ts/packages').packages
       const content = packages()
       const name = 'packages'
       const file = this.dirModules + name + '.conf'
@@ -164,3 +159,4 @@ export class Buster {
       fs.writeFileSync(file, content, 'utf8')
    }
 }
+

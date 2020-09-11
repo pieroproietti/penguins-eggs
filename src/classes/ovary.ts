@@ -24,7 +24,7 @@ const exec = require('../lib/utils').exec
 // classes
 import Utils from './utils'
 import N8 from './n8'
-import Incubator from './incubation/calamares-config'
+import Incubator from './incubation/incubator'
 import Xdg from './xdg'
 import Pacman from './pacman'
 import Settings from './settings'
@@ -83,7 +83,13 @@ export default class Ovary {
 
          await this.liveCreateStructure(verbose)
          if (Pacman.packageIsInstalled('calamares')) {
-            await this.calamaresConfigure(verbose)
+            if (this.settings.force_installer && !(await Pacman.prerequisitesCalamaresCheck())) {
+               console.log('Installing ' + chalk.bgGray('calamares') + ' due force_installer=yes.')
+               await Pacman.prerequisitesCalamaresInstall(verbose)
+               await Pacman.clean(verbose)
+            }
+            this.incubator = new Incubator(this.settings.remix, this.settings.distro, this.settings.user_opt, verbose)
+            this.incubator.config()
          }
          await this.isoCreateStructure(verbose)
          await this.isolinuxPrepare(verbose)
@@ -142,26 +148,6 @@ export default class Ovary {
       }
       if (!fs.existsSync(this.settings.work_dir.merged)) {
          shx.mkdir('-p', this.settings.work_dir.merged)
-      }
-   }
-
-   /**
-    * calamaresConfigura
-    * Installa calamares se force_installer=yes e lo configura
-    */
-   async calamaresConfigure(verbose = false) {
-      if (verbose) {
-         console.log('ovary: calamaresConfigure')
-      }
-      if (Pacman.isXInstalled()) {
-         // Se force_installer e calamares non è installato
-         if (this.settings.force_installer && !(await Pacman.prerequisitesCalamaresCheck())) {
-            console.log('Installing ' + chalk.bgGray('calamares') + ' due force_installer=yes.')
-            await Pacman.prerequisitesCalamaresInstall(verbose)
-            await Pacman.clean(verbose)
-         }
-         this.incubator = new Incubator(this.settings.remix, this.settings.distro, this.settings.user_opt, verbose)
-         this.incubator.config()
       }
    }
 

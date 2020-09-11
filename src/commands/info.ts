@@ -63,7 +63,7 @@ You will find here informations about penguin's eggs!
       if (Utils.isLive()) {
          console.log('System: ' + chalk.bgGreen('LIVE') + ' system')
       } else {
-         console.log('System: ' + chalk.bgCyan('INSTALLED') + ' systen')
+         console.log('System: ' + chalk.bgCyan('INSTALLED'))
       }
       console.log(line)
    }

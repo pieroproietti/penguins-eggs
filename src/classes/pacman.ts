@@ -22,18 +22,19 @@ const exec = require('../lib/utils').exec
  * @remarks all the utilities
  */
 export default class Pacman {
-   // live-task-lxde
-   static deb4uefi = ['grub-efi-amd64', 'grun-efi-ia32']
+
    /**
-    * live-task-localisation e ASSENTE in ubuntu
+    * buster   OK
+    * beowulf  OK
+    * focal    live-task-localization
+    * bionic   live-config live-task-localization
     * 
-    * BISOGNA scrivare qualcosa per non fargliela prende su 
-    * UBUNTU e derivate
-    * 'live-config',  non esiste su bionic
+    * Lascio all'utente il compito di installare o rimuover grub-efi-amd64 o grun-efi-ia32
+    * 
     */
-   static deb4localisation = ['live-config', 'localepurge']
-   //'live-task-localisation', 
-   static debs4eggs = ['isolinux', 'syslinux', 'syslinux-common', 'live-boot', 'live-boot-initramfs-tools', 'rsync ', 'squashfs-tools', 'xorriso', 'xterm', 'whois']
+   static debs4eggs = [
+      'isolinux', 'syslinux', 'rsync ', 'squashfs-tools', 'xorriso', 'xterm', 'whois',// strumenti
+      'live-boot', 'live-boot-initramfs-tools']
    static debs4calamares = ['calamares', 'qml-module-qtquick2', 'qml-module-qtquick-controls']
 
    /**
@@ -43,78 +44,24 @@ export default class Pacman {
       return Pacman.packageIsInstalled('xserver-xorg-core') || Pacman.packageIsInstalled('xserver-xorg-core-hwe-18.04')
    }
 
-   /**
-    * restuisce VERO se il pacchetto è installato
-    * @param debPackage
-    */
-   static packageIsInstalled(debPackage: string): boolean {
-      let installed = false
-      const cmd = `/usr/bin/dpkg -s ${debPackage} | grep Status`
-      const stdout = shx.exec(cmd, { silent: true }).stdout.trim()
-      if (stdout === 'Status: install ok installed') {
-         installed = true
-      }
-      return installed
-   }
 
    /**
-    * Install the package debPackage
-    * @param debPackage {string} Pacchetto Debian da installare
-    * @returns {boolean} True if success
+    * Crea array packages dei pacchetti da installare/rimuovere
     */
-   static packageInstall(debPackage: string): boolean {
-      let retVal = false
-
-      if (shx.exec('/usr/bin/apt-get update', { silent: true }) === '0') {
-         if (
-            shx.exec(`/usr/bin/apt-get install -y ${debPackage}`, {
-               silent: true
-            }) === '0'
-         ) {
-            retVal = true
-         }
-      }
-      return retVal
-   }
-
-   /**
-    *
-    * @param packages array packages
-    */
-   static debs2line(packages: string[]): string {
-      let line = ''
-      for (const i in packages) {
-         line += packages[i] + ' '
-      }
-      return line
-   }
-
-   /**
-    * Restituisce VERO se i prerequisiti sono installati
-    */
-   static prerequisitesEggsCheck(): boolean {
-      let installed = true
-
-      for (const i in this.debs4eggs) {
-         if (!Pacman.packageIsInstalled(this.debs4eggs[i])) {
-            installed = false
-            break
-         }
-      }
-      return installed
-   }
-
-   /**
-    *
-    */
-   static async prerequisitesEggsInstall(verbose = true): Promise<boolean> {
-      const echo = Utils.setEcho(verbose)
-      const retVal = false
-
+   static packages(verbose = false): string[] {
       const remix = {} as IRemix
-      let distro = {} as IDistro
-      distro = new Distro(remix)
+      const distro = new Distro(remix)
+      let packages = Pacman.debs4eggs
 
+      if ((distro.versionLike === 'buster') || (distro.versionLike === 'beowulf')) {
+         packages.push('live-config')
+         packages.push('live-task-localisation')
+         packages.push('localepurge')
+      } else if ((distro.versionLike === 'focal')) {
+         packages.push('live-config')
+      }
+
+      // systemd / sysvinit
       const init: string = shx.exec('ps --no-headers -o comm 1', { silent: !verbose }).trim()
       let config = ''
       if (init === 'systemd') {
@@ -126,21 +73,20 @@ export default class Pacman {
       } else {
          config = 'live-config-sysvinit'
       }
-      Pacman.debs4eggs.push(config)
+      packages.push(config)
+      return packages
+   }
+
+   /**
+    *
+    */
+   static async prerequisitesEggsInstall(verbose = true): Promise<boolean> {
+      verbose = true
+      const echo = Utils.setEcho(verbose)
+      const retVal = false
 
       await exec('apt-get update --yes')
-      await exec(`apt-get install --yes ${Pacman.debs2line(Pacman.deb4localisation)}`, echo)
-      await exec(`apt-get install --yes ${Pacman.debs2line(Pacman.debs4eggs)}`, echo)
-      /**
-       * if ( NOT-UBUNTU-FOCAL ) apt-get install --yes live-task-localisation
-       * 
-       * altrimenti 
-       * trovare corrispettivo
-       * update-locale LANG=new_locale LANGUAGE=pt LC_ALL=new_locale
-       */
-      await exec(`apt-get install --yes live-task-localisation`, echo)
-      
-
+      await exec(`apt-get install --yes ${Pacman.debs2line(Pacman.packages(verbose))}`, echo)
       return retVal
    }
 
@@ -148,27 +94,11 @@ export default class Pacman {
     *
     */
    static async prerequisitesEggsRemove(verbose = true): Promise<boolean> {
+      verbose = true
       const echo = Utils.setEcho(verbose)
       const retVal = false
 
-      const remix = {} as IRemix
-      let distro = {} as IDistro
-      distro = new Distro(remix)
-
-      const init: string = shx.exec('ps --no-headers -o comm 1', { silent: !verbose }).trim()
-      let config = ''
-      if (init === 'systemd') {
-         if (distro.versionLike === 'bionic') {
-            config = 'open-infrastructure-system-config'
-         } else {
-            config = 'live-config-systemd'
-         }
-      } else {
-         config = 'live-config-sysvinit'
-      }
-      Pacman.debs4eggs.push(config)
-
-      await exec(`apt-get remove --purge --yes ${Pacman.debs2line(Pacman.debs4eggs)}`, echo)
+      await exec(`apt-get remove --purge --yes ${Pacman.debs2line(Pacman.packages(verbose))}`, echo)
       await exec('apt-get autoremove --yes')
       return retVal
    }
@@ -191,6 +121,7 @@ export default class Pacman {
     *
     */
    static async prerequisitesCalamaresInstall(verbose = true): Promise<void> {
+      verbose = true
       const echo = Utils.setEcho(verbose)
       if (Pacman.isXInstalled()) {
          await exec('apt-get update --yes', echo)
@@ -205,6 +136,7 @@ export default class Pacman {
     *
     */
    static async prerequisitesCalamaresRemove(verbose = true): Promise<boolean> {
+      verbose = true
       const echo = Utils.setEcho(verbose)
 
       const retVal = false
@@ -228,7 +160,7 @@ export default class Pacman {
    }
 
    /**
-    *
+    * Creazione del file di configurazione /etc/penguins-eggs
     */
    static async configurationInstall(verbose = true): Promise<void> {
       shx.cp(path.resolve(__dirname, '../../conf/penguins-eggs.conf'), '/etc')
@@ -304,7 +236,7 @@ export default class Pacman {
    }
 
    /**
-    *
+    * Rimozione dei file di configurazione
     */
    static async configurationRemove(verbose = true): Promise<void> {
       const echo = Utils.setEcho(verbose)
@@ -320,5 +252,66 @@ export default class Pacman {
       const echo = Utils.setEcho(verbose)
       await exec('apt-get clean', echo)
       await exec('apt-get autoclean', echo)
+   }
+
+   /**
+ * restuisce VERO se il pacchetto è installato
+ * @param debPackage
+ */
+   static packageIsInstalled(debPackage: string): boolean {
+      let installed = false
+      const cmd = `/usr/bin/dpkg -s ${debPackage} | grep Status`
+      const stdout = shx.exec(cmd, { silent: true }).stdout.trim()
+      if (stdout === 'Status: install ok installed') {
+         installed = true
+      }
+      return installed
+   }
+
+   /**
+    * Install the package debPackage
+    * @param debPackage {string} Pacchetto Debian da installare
+    * @returns {boolean} True if success
+    */
+   static packageInstall(debPackage: string): boolean {
+      let retVal = false
+
+      if (shx.exec('/usr/bin/apt-get update', { silent: true }) === '0') {
+         if (
+            shx.exec(`/usr/bin/apt-get install -y ${debPackage}`, {
+               silent: true
+            }) === '0'
+         ) {
+            retVal = true
+         }
+      }
+      return retVal
+   }
+
+   /**
+    *
+    * @param packages array packages
+    */
+   static debs2line(packages: string[]): string {
+      let line = ''
+      for (const i in packages) {
+         line += packages[i] + ' '
+      }
+      return line
+   }
+
+   /**
+    * Restituisce VERO se i prerequisiti sono installati
+    */
+   static prerequisitesEggsCheck(): boolean {
+      let installed = true
+
+      for (const i in this.debs4eggs) {
+         if (!Pacman.packageIsInstalled(this.debs4eggs[i])) {
+            installed = false
+            break
+         }
+      }
+      return installed
    }
 }
