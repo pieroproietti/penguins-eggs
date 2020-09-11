@@ -18,7 +18,7 @@ You can follow the project also consulting the [commit history](https://github.c
 ## Changelog
 Versions are listed on reverse order, the first is the last one.
 
-### eggs-7.0.31_1.deb
+### eggs-7.0.33_1.deb
 I made a rethinking and rewriting of the part of eggs who work with calamares. Before I build the configuration completely with code
 now I choose to use directly yaml files ed use them as template. Well, was hard - test alla on buster, focal, devuan and bionic 
 it's a big question but, finally we have a a great result:
