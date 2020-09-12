@@ -10,10 +10,12 @@ import shx = require('shelljs')
 import Utils from '../utils'
 import Pacman from '../pacman'
 import { IRemix, IDistro } from '../../interfaces'
+
 import { Buster } from './distros/buster'
 import { Beowulf } from './distros/beowulf'
 import { Focal } from './distros/focal'
 import { Bionic } from './distros/bionic'
+
 const exec = require('../../lib/utils').exec
 
 /**
@@ -55,9 +57,11 @@ export default class Incubator {
     * config
     */
    async config() {
+      const verbose = true
+      const echo = Utils.setEcho(verbose)
+
       this.createCalamaresDirs()
       this.createBranding()
-      // this.createInstallDebian()
       if (this.distro.versionLike === 'buster' || this.distro.versionLike === 'stretch' || this.distro.versionLike === 'bulleye') {
          const buster = new Buster(this.remix, this.distro, this.displaymanager, this.user_opt, this.verbose)
          buster.settings()

@@ -31,7 +31,7 @@ export class Beowulf {
 
    user_opt: string
 
-   rootTemplate = './../../../../conf/distros/buster/calamares/'
+   rootTemplate = './../../../../conf/distros/beowulf/calamares/'
 
    dirCalamaresModules = '/usr/lib/x86_64-linux-gnu/calamares/modules/'
 
@@ -53,14 +53,15 @@ export class Beowulf {
          this.dirCalamaresModules = '/usr/lib/calamares/modules/'
       }
       this.rootTemplate=path.resolve(__dirname, this.rootTemplate)
+      // console.log(`beowulf: ${this.rootTemplate}`)
    }
 
    /**
     * write setting
     */
    settings() {
-      const file = '/etc/calamares/settings.conf'
-      shx.cp(`${this.rootTemplate}/settings.conf`, '/etc/calamares')
+      const settings =`${this.rootTemplate}/settings.conf`
+      shx.cp(settings, '/etc/calamares')
       shx.sed('-i', '%branding%', this.remix.branding, '/etc/calamares/settings.conf')
    }
 
