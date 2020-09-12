@@ -354,7 +354,7 @@ export default class Ovary {
       if (verbose) {
          console.log('ovary: isoStdmenuCfg')
       }
-      shx.cp(path.resolve(__dirname, '../../conf/isolinux/stdmenu.template.cfg'), `${this.settings.work_dir.pathIso}/isolinux/stdmenu.cfg`)
+      shx.cp(path.resolve(__dirname, `../../conf/${this.settings.distro.versionLike}/isolinux/stdmenu.template.cfg`), `${this.settings.work_dir.pathIso}/isolinux/stdmenu.cfg`)
    }
 
    /**
@@ -365,11 +365,11 @@ export default class Ovary {
       if (verbose) {
          console.log('ovary: isolinuxCfg')
       }
-      shx.cp(path.resolve(__dirname, '../../conf/isolinux/isolinux.template.cfg'), `${this.settings.work_dir.pathIso}/isolinux/isolinux.cfg`)
+      shx.cp(path.resolve(__dirname, `../../conf/${this.settings.distro.versionLike}/isolinux/isolinux.template.cfg`), `${this.settings.work_dir.pathIso}/isolinux/isolinux.cfg`)
    }
 
    async isoMenuCfg(verbose = false) {
-      const menuSourcePath = path.resolve(__dirname, '../../conf/isolinux/menu.template.cfg')
+      const menuSourcePath = path.resolve(__dirname, `../../conf/${this.settings.distro.versionLike}/isolinux/menu.template.cfg`)
       const splashSourcePath = path.resolve(__dirname, '../../assets/penguins-eggs-splash.png')
 
       const menuDestPath = `${this.settings.work_dir.pathIso}/isolinux/menu.cfg`
@@ -973,9 +973,9 @@ export default class Ovary {
       await exec(`rsync -ax ${this.settings.efi_work}/efi  ${this.settings.work_dir.pathIso}/`, echo)
 
       // Do the main grub.cfg (which gets loaded last):
-      fs.copyFileSync(path.resolve(__dirname, '../../conf/grub/grub.template.cfg'), `${this.settings.work_dir.pathIso}/boot/grub/grub.cfg`)
-      fs.copyFileSync(path.resolve(__dirname, '../../conf/grub/theme.cfg'), `${this.settings.work_dir.pathIso}/boot/grub/theme.cfg`)
-      fs.copyFileSync(path.resolve(__dirname, '../../conf/grub/loopback.cfg'), `${this.settings.work_dir.pathIso}/boot/grub/loopback.cfg`)
+      fs.copyFileSync(path.resolve(__dirname, `../../conf/${this.settings.distro.versionLike}/grub/grub.template.cfg`), `${this.settings.work_dir.pathIso}/boot/grub/grub.cfg`)
+      fs.copyFileSync(path.resolve(__dirname, `../../conf/${this.settings.distro.versionLike}/grub/theme.cfg`), `${this.settings.work_dir.pathIso}/boot/grub/theme.cfg`)
+      fs.copyFileSync(path.resolve(__dirname, `../../conf/${this.settings.distro.versionLike}/grub/loopback.cfg`), `${this.settings.work_dir.pathIso}/boot/grub/loopback.cfg`)
    }
 
    /**

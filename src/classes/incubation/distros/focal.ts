@@ -36,7 +36,7 @@ export class Focal {
 
    user_opt: string
 
-   rootTemplate = path.resolve(__dirname, './../../../conf/calamares/focal')
+   rootTemplate = path.resolve(__dirname, './../../../conf/distros/focal/calamares/')
 
    dirCalamaresModules = '/usr/lib/x86_64-linux-gnu/calamares/modules'
 

@@ -35,7 +35,7 @@ export class Bionic {
 
    user_opt: string
 
-   rootTemplate = path.resolve(__dirname, './../../../conf/calamares/bionic')
+   rootTemplate = path.resolve(__dirname, './../../../conf/distros/bionic/calamares/')
 
    dirCalamaresModules = '/usr/lib/calamares/modules/' // E DIFFERENTE in BIONIC
 

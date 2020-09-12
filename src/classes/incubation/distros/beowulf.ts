@@ -31,7 +31,7 @@ export class Beowulf {
 
    user_opt: string
 
-   rootTemplate ='./../../../conf/calamares/beowulf/'
+   rootTemplate ='./../../../conf/distros/beowulf/calamares/'
 
    dirCalamaresModules = '/usr/lib/x86_64-linux-gnu/calamares/modules/'
 

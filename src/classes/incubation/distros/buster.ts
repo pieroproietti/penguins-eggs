@@ -30,7 +30,7 @@ export class Buster {
 
    user_opt: string
 
-   rootTemplate = './../../../conf/calamares/buster/'
+   rootTemplate = './../../../conf/distros/buster/calamares/'
 
    dirCalamaresModules = '/usr/lib/x86_64-linux-gnu/calamares/modules/'
 
