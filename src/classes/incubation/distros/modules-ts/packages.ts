@@ -22,10 +22,8 @@ function removeEggs(): string {
    const packages = Pacman.packages()
    let text = ''
    for (const i in packages) {
-      // Evito di rimuovere rsync, da errori in rimozione... 
-      if (packages[i] !== 'rsync') {
-         text += addIfExist(packages[i])
-      }
+      const deb2check = packages[i].trimLeft().trimRight()
+      text += addIfExist(deb2check)
    }
    return text
 }
@@ -39,6 +37,5 @@ function addIfExist(package2check: string): string {
    if (Pacman.packageIsInstalled(package2check)) {
       text += `   - '${package2check}'\n`
    }
-}
-return text
+   return text
 }
