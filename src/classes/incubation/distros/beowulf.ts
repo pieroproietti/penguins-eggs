@@ -136,9 +136,13 @@ export class Beowulf {
     * usa i moduli-ts
     */
    private async moduleDisplaymanager() {
+      const fisherman = new Fisherman(this.dirModules, this.dirCalamaresModules, this.rootTemplate, this.verbose)
       const name = 'displaymanager'
       const displaymanager = require('./modules-ts/displaymanager').displaymanager
       const file = this.dirModules + name + '.conf'
+
+      if (this.verbose) fisherman.show(name, 'module', this.dirModules)
+
       const content = displaymanager()
       fs.writeFileSync(file, content, 'utf8')
    }
@@ -147,10 +151,14 @@ export class Beowulf {
     * usa i moduli-ts
     */
    private async modulePackages() {
-      const packages = require('./modules-ts/packages').packages
-      const content = packages()
       const name = 'packages'
+      const fisherman = new Fisherman(this.dirModules, this.dirCalamaresModules, this.rootTemplate, this.verbose)
+      const packages = require('./modules-ts/packages').packages
       const file = this.dirModules + name + '.conf'
+
+      if (this.verbose) fisherman.show(name, 'module', this.dirModules)
+
+      const content = packages()
       fs.writeFileSync(file, content, 'utf8')
    }
 
@@ -159,6 +167,11 @@ export class Beowulf {
     */
    private async moduleRemoveuser() {
       const name = 'removeuser'
+      const packages = require('./modules-ts/packages').packages
+      const fisherman = new Fisherman(this.dirModules, this.dirCalamaresModules, this.rootTemplate, this.verbose)
+
+      if (this.verbose) fisherman.show(name, 'module', this.dirModules)
+ 
       const content = yaml.safeDump({ username: this.user_opt })
       const file = this.dirModules + name + '.conf'
       fs.writeFileSync(file, content, 'utf8')
