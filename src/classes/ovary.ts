@@ -365,7 +365,7 @@ export default class Ovary {
       if (verbose) {
          console.log('ovary: isolinuxCfg')
       }
-      shx.cp(path.resolve(__dirname, `../../conf/distro/s${this.settings.distro.versionLike}/isolinux/isolinux.template.cfg`), `${this.settings.work_dir.pathIso}/isolinux/isolinux.cfg`)
+      shx.cp(path.resolve(__dirname, `../../conf/distros/${this.settings.distro.versionLike}/isolinux/isolinux.template.cfg`), `${this.settings.work_dir.pathIso}/isolinux/isolinux.cfg`)
    }
 
    async isoMenuCfg(verbose = false) {
