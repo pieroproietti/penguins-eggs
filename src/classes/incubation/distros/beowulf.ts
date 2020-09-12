@@ -101,7 +101,7 @@ export class Beowulf {
       await fisherman.buildCalamaresModule('sources-trusted-unmount', false)
       await fisherman.buildCalamaresModule('sources-final')
       await fisherman.buildModule('umount')
-      await fisherman.buildCalamaresModule('remove-link')
+      await fisherman.buildCalamaresModule('remove-link',true)
       await this.moduleFinished()
    }
 
