@@ -18,6 +18,17 @@ You can follow the project also consulting the [commit history](https://github.c
 ## Changelog
 Versions are listed on reverse order, the first is the last one.
 
+### eggs-7.0.34_1.deb
+This is an important version, in which a lot of work is completed, the reasons are the following:
+
+* Just finished the rewriting work. Well now we have officially Debian buster, Devual beowulf, Ubuntu focal and 
+Ubuntu bionic fully supported, both for standard BIOS installation and UEFI installation, both on i386 and 
+amd64 architecture.
+
+* Of course it follows that other derived distros can also be easily remastered: Linux Mint 20.20, Linux Mint 19.3, etc. 
+
+* I also tried Deepin 20, which works perfectly, but only on standard BIOS machines.
+
 ### eggs-7.0.33_1.deb
 I made a rethinking and rewriting of the part of eggs who work with calamares. Before I build the configuration completely with code
 now I choose to use directly yaml files ed use them as template. Well, was hard - test alla on buster, focal, devuan and bionic 
