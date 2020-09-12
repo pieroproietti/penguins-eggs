@@ -35,7 +35,7 @@ export class Bionic {
 
    user_opt: string
 
-   rootTemplate =  './../../../../conf/distros/buster/calamares/'
+   rootTemplate =  './../../../../conf/distros/bionic/calamares/'
 
    dirCalamaresModules = '/usr/lib/calamares/modules/' // E DIFFERENTE in BIONIC
 
@@ -125,13 +125,14 @@ export class Bionic {
       fs.writeFileSync(file, content, 'utf8')
    }
 
-   /**
-    * usa i moduli-ts
-    */
    private async moduleDisplaymanager() {
       const name = 'displaymanager'
+      const fisherman = new Fisherman(this.dirModules, this.dirCalamaresModules, this.rootTemplate, this.verbose)
       const displaymanager = require('./modules-ts/displaymanager').displaymanager
       const file = this.dirModules + name + '.conf'
+
+      if (this.verbose) fisherman.show(name, 'module', this.dirModules)
+
       const content = displaymanager()
       fs.writeFileSync(file, content, 'utf8')
    }
@@ -140,10 +141,14 @@ export class Bionic {
     * usa i moduli-ts
     */
    private async modulePackages() {
-      const packages = require('./modules-ts/packages').packages
-      const content = packages()
       const name = 'packages'
+      const fisherman = new Fisherman(this.dirModules, this.dirCalamaresModules, this.rootTemplate, this.verbose)
+      const packages = require('./modules-ts/packages').packages
       const file = this.dirModules + name + '.conf'
+
+      if (this.verbose) fisherman.show(name, 'module', this.dirModules)
+
+      const content = packages()
       fs.writeFileSync(file, content, 'utf8')
    }
 }
