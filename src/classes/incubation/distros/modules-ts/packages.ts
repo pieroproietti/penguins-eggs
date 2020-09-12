@@ -34,7 +34,10 @@ function addIfExist(package2check: string): string {
    let text = ''
    
    if (Pacman.packageIsInstalled(package2check)) {
-      text += `   - '${package2check}'\n`
+      // Stranamente rsync da errori in rimozione... 
+      if (package2check!=='rsync'){
+         text += `   - '${package2check}'\n`
+      }
    }
    return text
 }
