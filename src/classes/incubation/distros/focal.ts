@@ -15,7 +15,7 @@ import { IRemix, IDistro } from '../../../interfaces'
 import Fisherman from '../fisherman'
 
 
-const exec = require('../../lib/utils').exec
+const exec = require('../../../lib/utils').exec
 
 interface IReplaces {
    search: string
@@ -36,9 +36,10 @@ export class Focal {
 
    user_opt: string
 
-   rootTemplate = path.resolve(__dirname, './../../../conf/distros/focal/calamares/')
 
-   dirCalamaresModules = '/usr/lib/x86_64-linux-gnu/calamares/modules'
+   rootTemplate =  './../../../../conf/distros/buster/calamares/'
+
+   dirCalamaresModules = '/usr/lib/calamares/modules/' // E DIFFERENTE in BIONIC
 
    dirModules = '/etc/calamares/modules'
 

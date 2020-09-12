@@ -14,7 +14,7 @@ import { IRemix, IDistro } from '../../../interfaces'
 
 import Fisherman from '../fisherman'
 
-const exec = require('../../lib/utils').exec
+const exec = require('../../../lib/utils').exec
 
 interface IReplaces {
    search: string
@@ -35,7 +35,7 @@ export class Bionic {
 
    user_opt: string
 
-   rootTemplate = path.resolve(__dirname, './../../../conf/distros/bionic/calamares/')
+   rootTemplate =  './../../../../conf/distros/buster/calamares/'
 
    dirCalamaresModules = '/usr/lib/calamares/modules/' // E DIFFERENTE in BIONIC
 

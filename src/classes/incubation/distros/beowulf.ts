@@ -15,7 +15,7 @@ import { IRemix, IDistro } from '../../../interfaces'
 
 import Fisherman from '../fisherman'
 
-const exec = require('../../lib/utils').exec
+const exec = require('../../../lib/utils').exec
 
 /**
  *
@@ -31,7 +31,7 @@ export class Beowulf {
 
    user_opt: string
 
-   rootTemplate ='./../../../conf/distros/beowulf/calamares/'
+   rootTemplate = './../../../../conf/distros/buster/calamares/'
 
    dirCalamaresModules = '/usr/lib/x86_64-linux-gnu/calamares/modules/'
 
