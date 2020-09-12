@@ -11,6 +11,7 @@ import yaml = require('js-yaml')
 import path = require('path')
 
 import { IRemix, IDistro } from '../../interfaces'
+import chalk = require('chalk')
 
 const exec = require('../../lib/utils').exec
 
@@ -40,7 +41,7 @@ export default class Fisherman {
         const moduleSource = path.resolve(__dirname, `${this.rootTemplate}/modules/shellprocess_${name}.conf`)
         const moduleDest = `${this.dirModules}/shellprocess_${name}.conf`
         if (fs.existsSync(moduleSource)) {
-            if (this.verbose) console.log(`calamares: ${name} creating shellprocess`)
+            if (this.verbose) this.show(name, 'shellprocess', moduleDest)
             shx.cp(moduleSource, moduleDest)
         } else if (this.verbose) {
             console.log(`calamares: ${name} shellprocess, nothing to do`)
@@ -51,14 +52,14 @@ export default class Fisherman {
     * 
     * @param name 
     */
-   async contextualprocess(name: string) {
+    async contextualprocess(name: string) {
         const moduleSource = path.resolve(__dirname, `${this.rootTemplate}/modules/${name}_context.conf`)
         const moduleDest = `${this.dirModules}/${name}_context.conf`
         if (fs.existsSync(moduleSource)) {
-            if (this.verbose) console.log(`calamares: ${name} creating contextualprocess`)
+            if (this.verbose) this.show(name, 'contextualprocess', moduleDest)
             shx.cp(moduleSource, moduleDest)
         } else if (this.verbose) {
-                console.log(`calamares: ${name} contextualprocess, nothing to do!`)
+            console.log(`calamares: ${name} contextualprocess, nothing to do!`)
         }
     }
 
@@ -71,10 +72,10 @@ export default class Fisherman {
         const moduleSource = path.resolve(__dirname, `${this.rootTemplate}/modules/${name}.conf`)
         const moduleDest = `${this.dirModules}/${name}.conf`
         if (fs.existsSync(moduleSource)) {
-            if (this.verbose) console.log(`$calamares: ${name} creating module in ${this.dirModules}`)
+            if (this.verbose) this.show(name, 'module', moduleDest)
             shx.cp(moduleSource, moduleDest)
         } else if (this.verbose) {
-                console.log(`calamares: ${name}, nothing to do`)
+            console.log('calamares: ' + chalk.greenBright(name))
         }
     }
 
@@ -89,7 +90,7 @@ export default class Fisherman {
         const moduleDest = this.dirCalamaresModules + name
         const moduleScript = `/usr/sbin/${name}.sh`
 
-        if (this.verbose) console.log(`calamares: ${name} creating in ${moduleDest}`)
+        if (this.verbose) this.show(name, 'calamares_module', moduleDest)
 
         if (!fs.existsSync(moduleDest)) {
             fs.mkdirSync(moduleDest)
@@ -110,7 +111,7 @@ export default class Fisherman {
         const moduleSource = path.resolve(__dirname, `${this.rootTemplate}/calamares-modules/${name}/`)
         const moduleDest = this.dirCalamaresModules + '/' + name
 
-        if (this.verbose) console.log(`calamares: ${name} creating module python in ${moduleDest} `)
+        if (this.verbose) this.show(name, 'python', moduleDest)
         if (!fs.existsSync(moduleDest)) {
             fs.mkdirSync(moduleDest)
         }
@@ -118,5 +119,23 @@ export default class Fisherman {
         shx.cp(`${moduleSource}/${name}.conf`, moduleDest)
         shx.cp(`${moduleSource}/main.py`, moduleDest)
         await exec(`chmod +x ${moduleSource}/main.py`)
+    }
+
+    /**
+     * 
+     * @param module 
+     * @param type 
+     * @param path 
+     */
+    show(name: string, type: string, path: string) {
+        if (type === 'module') {
+            console.log('calamares: ' + chalk.yellow(name) + ' module in ' + chalk.yellow(path))
+        } else if (type === 'calamares_module') {
+            console.log('calamares: ' + chalk.cyanBright(name) + ' calamares_module in ' + chalk.cyanBright(path))
+        } else if (type === 'shellprocess') {
+            console.log('calamares: ' + chalk.green(name) + ' shellprocess in ' + chalk.green(path))
+        } else if (type === 'contextualprocess') {
+            console.log('calamares: ' + chalk.cyanBright(name) + ' shellprocess in ' + chalk.cyanBright(path))
+        }
     }
 }

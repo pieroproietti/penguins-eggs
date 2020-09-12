@@ -133,10 +133,11 @@ export class Focal {
     */
    private async moduleDisplaymanager() {
       const name = 'displaymanager'
+      const fisherman = new Fisherman(this.dirModules, this.dirCalamaresModules, this.rootTemplate, this.verbose)
       const displaymanager = require('./modules-ts/displaymanager').displaymanager
       const file = this.dirModules + name + '.conf'
 
-      if (this.verbose) console.log(`$calamares: ${name} creating module in ${this.dirModules}`)
+      if (this.verbose) fisherman.show(name, 'module', this.dirModules)
 
       const content = displaymanager()
       fs.writeFileSync(file, content, 'utf8')
@@ -147,11 +148,12 @@ export class Focal {
     */
    private async modulePackages() {
       const name = 'packages'
+      const fisherman = new Fisherman(this.dirModules, this.dirCalamaresModules, this.rootTemplate, this.verbose)
       const packages = require('./modules-ts/packages').packages
       const file = this.dirModules + name + '.conf'
       const content = packages()
 
-      if (this.verbose) console.log(`$calamares: ${name} creating module in ${this.dirModules}`)
+      if (this.verbose) fisherman.show(name, 'module', this.dirModules)
 
       fs.writeFileSync(file, content, 'utf8')
    }
@@ -161,9 +163,10 @@ export class Focal {
     */
    private async moduleRemoveuser() {
       const name = 'removeuser'
+      const fisherman = new Fisherman(this.dirModules, this.dirCalamaresModules, this.rootTemplate, this.verbose)
       const content = yaml.safeDump({ username: this.user_opt })
 
-      if (this.verbose) console.log(`$calamares: ${name} creating module in ${this.dirModules}`)
+      if (this.verbose) fisherman.show(name, 'module', this.dirModules)
 
       const file = this.dirModules + name + '.conf'
       fs.writeFileSync(file, content, 'utf8')
