@@ -52,8 +52,7 @@ export class Beowulf {
       if (process.arch === 'ia32') {
          this.dirCalamaresModules = '/usr/lib/calamares/modules/'
       }
-      this.rootTemplate=path.resolve(__dirname, this.rootTemplate)
-      // console.log(`beowulf: ${this.rootTemplate}`)
+      this.rootTemplate=path.resolve(__dirname, this.rootTemplate) + '/'
    }
 
    /**

@@ -37,11 +37,11 @@ export class Focal {
    user_opt: string
 
 
-   rootTemplate =  './../../../../conf/distros/buster/calamares/'
+   rootTemplate = './../../../../conf/distros/focal/calamares/'
 
-   dirCalamaresModules = '/usr/lib/calamares/modules/' // E DIFFERENTE in BIONIC
+   dirCalamaresModules = '/usr/lib/x86_64-linux-gnu/calamares/modules/'
 
-   dirModules = '/etc/calamares/modules'
+   dirModules = '/etc/calamares/modules/'
 
    fisherman = {}
 
@@ -61,7 +61,7 @@ export class Focal {
       if (process.arch === 'ia32') {
          this.dirCalamaresModules = '/usr/lib/calamares/modules/'
       }
-      this.rootTemplate=path.resolve(__dirname, this.rootTemplate)
+      this.rootTemplate = path.resolve(__dirname, this.rootTemplate) + '/'
 
    }
 
@@ -135,6 +135,9 @@ export class Focal {
       const name = 'displaymanager'
       const displaymanager = require('./modules-ts/displaymanager').displaymanager
       const file = this.dirModules + name + '.conf'
+
+      if (this.verbose) console.log(`$calamares: ${name} creating module in ${this.dirModules}`)
+
       const content = displaymanager()
       fs.writeFileSync(file, content, 'utf8')
    }
@@ -143,10 +146,13 @@ export class Focal {
     * usa i moduli-ts
     */
    private async modulePackages() {
-      const packages = require('./modules-ts/packages').packages
-      const content = packages()
       const name = 'packages'
+      const packages = require('./modules-ts/packages').packages
       const file = this.dirModules + name + '.conf'
+      const content = packages()
+
+      if (this.verbose) console.log(`$calamares: ${name} creating module in ${this.dirModules}`)
+
       fs.writeFileSync(file, content, 'utf8')
    }
 
@@ -156,6 +162,9 @@ export class Focal {
    private async moduleRemoveuser() {
       const name = 'removeuser'
       const content = yaml.safeDump({ username: this.user_opt })
+
+      if (this.verbose) console.log(`$calamares: ${name} creating module in ${this.dirModules}`)
+
       const file = this.dirModules + name + '.conf'
       fs.writeFileSync(file, content, 'utf8')
    }

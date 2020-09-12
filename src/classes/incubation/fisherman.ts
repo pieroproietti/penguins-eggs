@@ -40,10 +40,10 @@ export default class Fisherman {
         const moduleSource = path.resolve(__dirname, `${this.rootTemplate}/modules/shellprocess_${name}.conf`)
         const moduleDest = `${this.dirModules}/shellprocess_${name}.conf`
         if (fs.existsSync(moduleSource)) {
-            if (this.verbose) console.log(`calamares: creating shellprocess ${name}`)
+            if (this.verbose) console.log(`calamares: ${name} creating shellprocess`)
             shx.cp(moduleSource, moduleDest)
         } else if (this.verbose) {
-            console.log(`calamares: shellprocess ${name}, nothing to do`)
+            console.log(`calamares: ${name} shellprocess, nothing to do`)
         }
     }
 
@@ -55,10 +55,10 @@ export default class Fisherman {
         const moduleSource = path.resolve(__dirname, `${this.rootTemplate}/modules/${name}_context.conf`)
         const moduleDest = `${this.dirModules}/${name}_context.conf`
         if (fs.existsSync(moduleSource)) {
-            if (this.verbose) console.log(`calamares: creating contextualprocess ${name}`)
+            if (this.verbose) console.log(`calamares: ${name} creating contextualprocess`)
             shx.cp(moduleSource, moduleDest)
         } else if (this.verbose) {
-                console.log(`calamares: contextualprocess ${name}, nothing to do!`)
+                console.log(`calamares: ${name} contextualprocess, nothing to do!`)
         }
     }
 
@@ -71,10 +71,10 @@ export default class Fisherman {
         const moduleSource = path.resolve(__dirname, `${this.rootTemplate}/modules/${name}.conf`)
         const moduleDest = `${this.dirModules}/${name}.conf`
         if (fs.existsSync(moduleSource)) {
-            if (this.verbose) console.log(`calamares: creating module ${name}`)
+            if (this.verbose) console.log(`$calamares: ${name} creating module in ${this.dirModules}`)
             shx.cp(moduleSource, moduleDest)
         } else if (this.verbose) {
-                console.log(`calamares: module ${name}, nothing to do`)
+                console.log(`calamares: ${name}, nothing to do`)
         }
     }
 
@@ -85,13 +85,11 @@ export default class Fisherman {
      * @param isScript 
      */
     async buildCalamaresModule(name: string, isScript: boolean = true) {
-        const moduleSource = path.resolve(__dirname, `${this.rootTemplate}/calamares-modules/${name}/`)
-        const moduleDest = this.dirCalamaresModules + '/' + name
+        const moduleSource = path.resolve(__dirname, `${this.rootTemplate}/calamares-modules/${name}`)
+        const moduleDest = this.dirCalamaresModules + name
         const moduleScript = `/usr/sbin/${name}.sh`
 
-
-
-        if (this.verbose) console.log(`calamares: creating moduleCalamares ${name}`)
+        if (this.verbose) console.log(`calamares: ${name} creating in ${moduleDest}`)
 
         if (!fs.existsSync(moduleDest)) {
             fs.mkdirSync(moduleDest)
@@ -112,7 +110,7 @@ export default class Fisherman {
         const moduleSource = path.resolve(__dirname, `${this.rootTemplate}/calamares-modules/${name}/`)
         const moduleDest = this.dirCalamaresModules + '/' + name
 
-        if (this.verbose) console.log(`calamares: creating module Python ${name}`)
+        if (this.verbose) console.log(`calamares: ${name} creating module python in ${moduleDest} `)
         if (!fs.existsSync(moduleDest)) {
             fs.mkdirSync(moduleDest)
         }
