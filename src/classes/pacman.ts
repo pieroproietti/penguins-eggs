@@ -56,7 +56,6 @@ export default class Pacman {
       if ((distro.versionLike === 'buster') || (distro.versionLike === 'beowulf')) {
          packages.push('live-config')
          packages.push('live-task-localisation')
-         packages.push('localepurge')
       } else if ((distro.versionLike === 'focal')) {
          packages.push('live-config')
       }
