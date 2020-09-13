@@ -52,6 +52,14 @@ export default class I18n {
         shx.cp(path.resolve(__dirname, `../../conf/distros/${this.settings.distro.versionId}/locales/locale.template`), '/etc/default/locale')
         shx.sed('-i', '%locale%', 'it_IT@UTF-8', '/etc/default/locale')
         shx.exec('/usr/sbin/locale-gen')
-        
+
+        /**
+         * che fa bleachbit?
+         * Elimina 4,1kB /usr/share/i18n/locales/./ta_LK   
+         * Elimina 4,1kB /usr/share/man/pl/man8/validlocale.8.gz
+         * Elimina 4,1kB /usr/share/man/pl/man8
+         * Elimina 4,1kB /usr/share/man/pl
+         */
+
     }
 }
