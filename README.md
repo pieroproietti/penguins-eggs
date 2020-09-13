@@ -32,9 +32,9 @@ key to boot your system. You can also boot your egg - via remote boot - on your 
 
 All it is written in pure typescript, so ideally can be used with differents Linux distros. Yes, there are big differences about package manager used, but not so much in the way to work of bash and various programs used to build the iso.
 
-penguins-eggs, at the moment 2020 june 21 is a working tool, yes can have again same troubles for people not in confidence with Linux system administration, but
-can be already extremely usefull, You can easily create your organization/school version of Linux and deploy it on your LAN, give it to your friends as usb key 
-or publish eggs in the internet!
+penguins-eggs, at the moment 2020 september 13 is a mature tool, yes can have again same troubles for people not in confidence with Linux system 
+administration, but can be already extremely usefull, You can easily create your organization/school version of Linux and deploy it on your LAN, give it to 
+your friends as usb key or publish eggs in the internet!
 
 You can try now penguins-eggs, it is a console utility - no GUI - but don't be scared, penguins-eggs is a console command - really very simple - if you
 are able to open a terminal, you can use it.
