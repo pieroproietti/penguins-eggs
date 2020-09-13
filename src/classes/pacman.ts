@@ -17,11 +17,14 @@ import Distro from './distro'
 
 const exec = require('../lib/utils').exec
 
+const config_file = '/etc/penguins-eggs.d/penguins-eggs.conf'
+
 /**
  * Utils: general porpourse utils
  * @remarks all the utilities
  */
 export default class Pacman {
+   
 
    /**
     * buster   OK
@@ -152,7 +155,7 @@ export default class Pacman {
       let conf = false
       let list = false
       let configured = false
-      conf = fs.existsSync('/etc/penguins-eggs.conf')
+      conf = fs.existsSync(config_file)
       list = fs.existsSync('/usr/local/share/penguins-eggs/exclude.list')
       configured = conf && list
       return configured
@@ -162,13 +165,20 @@ export default class Pacman {
     * Creazione del file di configurazione /etc/penguins-eggs
     */
    static async configurationInstall(verbose = true): Promise<void> {
-      shx.cp(path.resolve(__dirname, '../../conf/penguins-eggs.conf'), '/etc')
+      shx.rm('/etc/penguins-eggs.d/addons')
+      shx.rm('/etc/penguins-eggs.d/distros')
+      if (!fs.existsSync('/etc/penguins-eggs.d')){
+         shx.mkdir('/etc/penguins-eggs.d')
+      }
+      shx.ln('-s',path.resolve(__dirname, '../../addons'), '/etc/penguins-eggs.d/addons')
+      shx.ln('-s',path.resolve(__dirname, '../../conf/distros'), '/etc/penguins-eggs.d/distros')
+      shx.cp(path.resolve(__dirname, '../../conf/penguins-eggs.conf'), '/etc/penguins-eggs.d')
 
       /**
        * version
        */
       const version = Utils.getPackageVersion()
-      shx.sed('-i', '%version%', version, '/etc/penguins-eggs.conf')
+      shx.sed('-i', '%version%', version, config_file)
 
       /**
        * vmlinuz
@@ -178,10 +188,10 @@ export default class Pacman {
          vmlinuz = '/boot/vmlinuz'
          if (!fs.existsSync(vmlinuz)) {
             vmlinuz = '/vmlinuz'
-            console.log(`Can't find the standard ${vmlinuz}, please edit /etc/penguins-eggs.conf`)
+            console.log(`Can't find the standard ${vmlinuz}, please edit /etc/penguins-eggs.d/penguins-eggs.conf`)
          }
       }
-      shx.sed('-i', '%vmlinuz%', vmlinuz, '/etc/penguins-eggs.conf')
+      shx.sed('-i', '%vmlinuz%', vmlinuz, config_file)
 
       /**
        * initrd
@@ -191,10 +201,10 @@ export default class Pacman {
          initrd = '/boot/initrd.img'
          if (!fs.existsSync(initrd)) {
             initrd = '/initrd.img'
-            console.log(`Can't find the standard  ${initrd}, please edit /etc/penguins-eggs.conf`)
+            console.log(`Can't find the standard  ${initrd}, please edit /etc/penguins-eggs.d/penguins-eggs.conf`)
          }
       }
-      shx.sed('-i', '%initrd%', initrd, '/etc/penguins-eggs.conf')
+      shx.sed('-i', '%initrd%', initrd, config_file)
 
       /**
        * gui_editor
@@ -207,7 +217,7 @@ export default class Pacman {
       } else if (this.packageIsInstalled('caja')) {
          gui_editor = '/usr/bin/caja'
       }
-      shx.sed('-i', '%gui_editor%', gui_editor, '/etc/penguins-eggs.conf')
+      shx.sed('-i', '%gui_editor%', gui_editor, config_file)
 
       /**
        * force_installer
@@ -217,7 +227,7 @@ export default class Pacman {
          force_installer = 'no'
          console.log(`Due the lacks of calamares package set force_installer=no`)
       }
-      shx.sed('-i', '%force_installer%', force_installer, '/etc/penguins-eggs.conf')
+      shx.sed('-i', '%force_installer%', force_installer, config_file)
 
       /**
        * make_efi
@@ -227,7 +237,7 @@ export default class Pacman {
          make_efi = 'no'
          console.log(`Due the lacks of grub-efi-amd64 or grub-efi-ia32 package set make_efi=No`)
       }
-      shx.sed('-i', '%make_efi%', make_efi, '/etc/penguins-eggs.conf')
+      shx.sed('-i', '%make_efi%', make_efi, config_file)
 
       // creazione del file delle esclusioni
       shx.mkdir('-p', '/usr/local/share/penguins-eggs/')
@@ -239,8 +249,8 @@ export default class Pacman {
     */
    static async configurationRemove(verbose = true): Promise<void> {
       const echo = Utils.setEcho(verbose)
-      await exec('rm /etc/penguins-eggs.conf', echo)
-      await exec('rm /etc/penguins-eggs.conf?', echo)
+      await exec('rm /etc/penguins-eggs.d/penguins-eggs.conf', echo)
+      await exec('rm /etc/penguins-eggs.d/penguins-eggs.conf?', echo)
       await exec('rm /usr/local/share/penguins-eggs/exclude.list', echo)
       await exec('rm /usr/local/share/penguins-eggs/exclude.list?', echo)
    }

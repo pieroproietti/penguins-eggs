@@ -53,7 +53,7 @@ export default class Settings {
 
    efi_work = ''
 
-   config_file = '/etc/penguins-eggs.conf' as string
+   config_file = '/etc/penguins-eggs.d/penguins-eggs.conf' as string
 
    gui_editor = '/usr/bin/nano' as string
 
