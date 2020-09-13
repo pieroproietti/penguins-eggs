@@ -4,7 +4,7 @@ import shx = require('shelljs')
 import path = require('path')
 
 import Utils from '../classes/utils'
-import Distro from '../classes/distro'
+import I18n from '../classes/i18n'
 
 
 export default class Locales extends Command {
@@ -27,13 +27,8 @@ export default class Locales extends Command {
         const echo = Utils.setEcho(verbose)
 
         if (Utils.isRoot()) {
-            if (verbose) {
-                console.log('creating /etc/locale.gen')
-                console.log('recreating /etc/locale.gen')
-            }
-            console.log(process.execPath)
-            shx.cp(path.resolve(__dirname, '../../conf/locale.gen.template'), '/etc/locale.gen')
-            shx.exec('/usr/sbin/locale-gen', echo)
+            const i18n = new I18n(verbose)
+            i18n.generate()
         }
     }
 }
