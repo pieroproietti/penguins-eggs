@@ -14,10 +14,11 @@ import { IRemix, IDistro } from '../interfaces'
 
 import Utils from './utils'
 import Distro from './distro'
+import { config } from 'process'
 
 const exec = require('../lib/utils').exec
 
-const config_file = '/etc/penguins-eggs.d/penguins-eggs.conf'
+const config_file = '/etc/penguins-eggs.d/eggs.conf' as string
 
 /**
  * Utils: general porpourse utils
@@ -172,7 +173,7 @@ export default class Pacman {
       }
       shx.ln('-s',path.resolve(__dirname, '../../addons'), '/etc/penguins-eggs.d/addons')
       shx.ln('-s',path.resolve(__dirname, '../../conf/distros'), '/etc/penguins-eggs.d/distros')
-      shx.cp(path.resolve(__dirname, '../../conf/penguins-eggs.conf'), '/etc/penguins-eggs.d')
+      shx.cp(path.resolve(__dirname, '../../conf/penguins-eggs.conf'), config_file)
 
       /**
        * version
@@ -188,7 +189,7 @@ export default class Pacman {
          vmlinuz = '/boot/vmlinuz'
          if (!fs.existsSync(vmlinuz)) {
             vmlinuz = '/vmlinuz'
-            console.log(`Can't find the standard ${vmlinuz}, please edit /etc/penguins-eggs.d/penguins-eggs.conf`)
+            console.log(`Can't find the standard ${vmlinuz}, please edit ${config_file}`)
          }
       }
       shx.sed('-i', '%vmlinuz%', vmlinuz, config_file)
@@ -201,7 +202,7 @@ export default class Pacman {
          initrd = '/boot/initrd.img'
          if (!fs.existsSync(initrd)) {
             initrd = '/initrd.img'
-            console.log(`Can't find the standard  ${initrd}, please edit /etc/penguins-eggs.d/penguins-eggs.conf`)
+            console.log(`Can't find the standard  ${initrd}, please edit ${config_file}`)
          }
       }
       shx.sed('-i', '%initrd%', initrd, config_file)

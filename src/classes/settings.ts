@@ -29,6 +29,8 @@ import Incubator from './incubation/incubator'
 import Distro from './distro'
 import Pacman from './pacman'
 
+const config_file = '/etc/penguins-eggs.d/eggs.conf' as string
+
 /**
  * Ovary:
  */
@@ -52,8 +54,6 @@ export default class Settings {
    snapshot_dir = ''
 
    efi_work = ''
-
-   config_file = '/etc/penguins-eggs.d/penguins-eggs.conf' as string
 
    gui_editor = '/usr/bin/nano' as string
 
@@ -133,16 +133,19 @@ export default class Settings {
    }
 
    /**
-    * Load configuration from /etc/penguins-eggs.conf
+    * Load configuration from config_file
     * @returns {boolean} Success
     */
    async load(verbose = false): Promise<boolean> {
       let foundSettings: boolean
 
-      if (!fs.existsSync(this.config_file)) {
+      if (!fs.existsSync(config_file)) {
+         console.log(`cannot find configuration file ${config_file},`)
+         console.log(`please generate it with: sudo eggs prerequisites -c`)
+         process.exit(1)
          return false
       }
-      const settings = ini.parse(fs.readFileSync(this.config_file, 'utf-8'))
+      const settings = ini.parse(fs.readFileSync(config_file, 'utf-8'))
 
       if (settings.General.snapshot_dir === '') {
          foundSettings = false
@@ -240,7 +243,7 @@ export default class Settings {
     */
    async show() {
       console.log(`application_name:  ${this.app.name} ${this.app.version}`)
-      console.log(`config_file:       ${this.config_file}`)
+      console.log(`config_file:       ${config_file}`)
       console.log(`snapshot_dir:      ${this.snapshot_dir}`)
       console.log(`snapshot_basename: ${this.snapshot_basename}`)
       console.log(`snapshot_exclude:  ${this.snapshot_excludes}`)
