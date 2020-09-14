@@ -49,6 +49,9 @@ export default class I18n {
 
         this.verbose = true
 
+        console.log('rimuovo locales')
+        shx.exec('apt-get purge locales --yes')
+
         /**
          * /etc/default/locale
          */
@@ -58,11 +61,15 @@ export default class I18n {
         shx.cp(path.resolve(__dirname, `../../conf/distros/${this.settings.distro.versionId}/locales/locale.template`), '/etc/default/locale')
         shx.sed('-i', '%locale%', this.settings.locale, '/etc/default/locale')
 
+        console.log('reinstallo i locales')
+        shx.exec('apt-get install locales --yes')
+
         /**
          * /etc/locale.gen
          */
         if (this.verbose) {
             console.log('creating /etc/locale.gen')
+
         }
         shx.cp(path.resolve(__dirname, `../../conf/distros/${this.settings.distro.versionId}/locales/locale.gen.template`), '/etc/locale.gen')
         let locales = ''
@@ -71,7 +78,6 @@ export default class I18n {
         }
         shx.sed('-i', '%locales%', locales, '/etc/locale.gen')
 
-
         if (this.verbose) {
             console.log('executing locale-gen')
         }
@@ -79,10 +85,26 @@ export default class I18n {
 
         /**
          * che fa bleachbit?
+         * 
+         * elimina in /usr/share/i18n/locales/./sigla
+         * 
+         * sotto /usr/share/i18n/locales abbiamo
+         * SUPPORTED
+         * charmaps
+         * locales
+         * 
+         * Quindi semplicemente, bleachbit rimuove
+         * tutte le definizioni in 
+         * /usr/share/i18n/locales/ che non corrispondono ai
+         * linguaggi selezionati
+         * 
          * Elimina 4,1kB /usr/share/i18n/locales/./ta_LK   
-         * Elimina 4,1kB /usr/share/man/pl/man8/validlocale.8.gz
-         * Elimina 4,1kB /usr/share/man/pl/man8
-         * Elimina 4,1kB /usr/share/man/pl
+         * 
+         * In più elimina
+         * 
+         * limina 4,1kB /usr/share/man/es/man8/validlocale.8.gz
+         * Elimina 4,1kB /usr/share/man/es/man8
+         * Elimina 4,1kB /usr/share/man/es
          */
 
     }
