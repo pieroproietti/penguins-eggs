@@ -42,15 +42,22 @@ export default class I18n {
         this.settings = new Settings()
     }
 
-    generate() {
+    /**
+     * 
+     * @param reinstall 
+     */
+    generate(reinstall = false) {
 
 
         this.settings.load()
 
         this.verbose = true
 
-        console.log('rimuovo locales')
-        shx.exec('apt-get purge locales --yes')
+        /**
+         * apt-get purge locales --yes
+         */
+        console.log('remove package locales')
+        // shx.exec('apt-get purge locales --yes')
 
         /**
          * /etc/default/locale
@@ -60,9 +67,6 @@ export default class I18n {
         }
         shx.cp(path.resolve(__dirname, `../../conf/distros/${this.settings.distro.versionId}/locales/locale.template`), '/etc/default/locale')
         shx.sed('-i', '%locale%', this.settings.locale, '/etc/default/locale')
-
-        console.log('reinstallo i locales')
-        shx.exec('apt-get install locales --yes')
 
         /**
          * /etc/locale.gen
@@ -78,10 +82,19 @@ export default class I18n {
         }
         shx.sed('-i', '%locales%', locales, '/etc/locale.gen')
 
-        if (this.verbose) {
-            console.log('executing locale-gen')
+        if (reinstall){
+            /**
+             * apt-get install locales --yes
+             */
+            console.log('reinstall package locales')
+            shx.exec('apt-get reinstall locales --yes')
+        } else {
+            if (this.verbose) {
+                console.log('executing locale-gen')
+            }
+            shx.exec('/usr/sbin/locale-gen')
         }
-        shx.exec('/usr/sbin/locale-gen')
+
 
         /**
          * che fa bleachbit?

@@ -12,6 +12,7 @@ export default class Locales extends Command {
 
     static flags = {
         help: flags.help({ char: 'h' }),
+        reinstall: flags.boolean({ char: 'r', description: 'reinstall locales' }),
         verbose: flags.boolean({ char: 'v', description: 'verbose' }),
     }
 
@@ -26,11 +27,16 @@ export default class Locales extends Command {
             verbose = true
         }
 
+        let reinstall=false
+        if (flags.reinstall) {
+            reinstall = true
+        }
+
         const echo = Utils.setEcho(verbose)
 
         if (Utils.isRoot()) {
             const i18n = new I18n(verbose)
-            i18n.generate()
+            i18n.generate(reinstall)
         }
     }
 }
