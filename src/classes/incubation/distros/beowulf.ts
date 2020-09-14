@@ -136,8 +136,8 @@ export class Beowulf {
     * usa i moduli-ts
     */
    private async moduleDisplaymanager() {
-      const fisherman = new Fisherman(this.dirModules, this.dirCalamaresModules, this.rootTemplate, this.verbose)
       const name = 'displaymanager'
+      const fisherman = new Fisherman(this.dirModules, this.dirCalamaresModules, this.rootTemplate, this.verbose)
       const displaymanager = require('./modules-ts/displaymanager').displaymanager
       const file = this.dirModules + name + '.conf'
 

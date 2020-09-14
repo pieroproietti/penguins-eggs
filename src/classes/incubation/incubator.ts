@@ -50,7 +50,8 @@ export default class Incubator {
       if (remix.branding === undefined) {
          remix.branding = 'eggs'
       }
-      this.displaymanager = Pacman.packageIsInstalled('lightdm') || Pacman.packageIsInstalled('sddm') || Pacman.packageIsInstalled('sddm')
+      // this.displaymanager = Pacman.packageIsInstalled('lightdm') || Pacman.packageIsInstalled('sddm') || Pacman.packageIsInstalled('sddm')
+      this.displaymanager = true
    }
 
    /**
