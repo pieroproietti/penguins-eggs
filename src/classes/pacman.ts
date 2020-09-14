@@ -181,6 +181,8 @@ export default class Pacman {
       if (pep !== '/usr/bin/node') {
          const rootPen = '/usr/lib/penguins-eggs'
 
+         // Buster - Nessun link presente
+
          // Beofulf
          shx.ln('-s', `${rootPen}/conf/distros/buster/grub/`, `${rootPen}/conf/distros/beowulf/grub`)
          shx.ln('-s', `${rootPen}/conf/distros/buster/isolinux/`, `${rootPen}/conf/distros/beowulf/isolinux`)
@@ -199,7 +201,6 @@ export default class Pacman {
          shx.ln('-s', `${rootPen}/conf/distros/focal/calamares/calamares-modules/`, `${rootPen}/conf/distros/bionic/calamares/calamares-modules`)
          shx.ln('-s', `${rootPen}/conf/distros/focal/calamares/modules/`, `${rootPen}/conf/distros/bionic/calamares/modules`)
       }
-
 
       shx.cp(path.resolve(__dirname, '../../conf/README.md'), '/etc/penguins-eggs.d/')
       shx.cp(path.resolve(__dirname, '../../conf/tools.conf'), config_tools)
