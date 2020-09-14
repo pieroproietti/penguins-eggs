@@ -27,6 +27,7 @@ import N8 from './n8'
 import Xdg from './xdg'
 import Pacman from './pacman'
 import Settings from './settings'
+import { utils } from 'mocha'
 
 
 /**
@@ -42,15 +43,38 @@ export default class I18n {
     }
 
     generate() {
+
+
+        this.settings.load()
+
+        this.verbose = true
+
+        /**
+         * /etc/default/locale
+         */
+        if (this.verbose) {
+            console.log('creating /etc/default.locale')
+        }
+        shx.cp(path.resolve(__dirname, `../../conf/distros/${this.settings.distro.versionId}/locales/locale.template`), '/etc/default/locale')
+        shx.sed('-i', '%locale%', this.settings.locale, '/etc/default/locale')
+
+        /**
+         * /etc/locale.gen
+         */
         if (this.verbose) {
             console.log('creating /etc/locale.gen')
-            console.log('recreating /etc/locale.gen')
         }
-
-        console.log(process.execPath)
         shx.cp(path.resolve(__dirname, `../../conf/distros/${this.settings.distro.versionId}/locales/locale.gen.template`), '/etc/locale.gen')
-        shx.cp(path.resolve(__dirname, `../../conf/distros/${this.settings.distro.versionId}/locales/locale.template`), '/etc/default/locale')
-        shx.sed('-i', '%locale%', 'it_IT@UTF-8', '/etc/default/locale')
+        let locales = ''
+        for (let i=0; i < this.settings.locales.length; i++){
+           locales += this.settings.locales[i] + ' UTF-8\n'
+        }
+        shx.sed('-i', '%locales%', locales, '/etc/locale.gen')
+
+
+        if (this.verbose) {
+            console.log('executing locale-gen')
+        }
         shx.exec('/usr/sbin/locale-gen')
 
         /**

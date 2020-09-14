@@ -8,7 +8,7 @@ import I18n from '../classes/i18n'
 
 
 export default class Locales extends Command {
-    static description = 'install/clean localess'
+    static description = 'install/clean locales'
 
     static flags = {
         help: flags.help({ char: 'h' }),
@@ -17,6 +17,8 @@ export default class Locales extends Command {
 
     static args = [{ name: 'file' }]
     async run() {
+        Utils.titles('locales')
+
         const { args, flags } = this.parse(Locales)
 
         let verbose = false

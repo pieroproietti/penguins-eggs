@@ -28,6 +28,7 @@ import Utils from './utils'
 import Incubator from './incubation/incubator'
 import Distro from './distro'
 import Pacman from './pacman'
+import { throws } from 'assert'
 
 const config_file = '/etc/penguins-eggs.d/eggs.conf' as string
 
@@ -100,6 +101,10 @@ export default class Settings {
    isoFilename = '' // resulting name of the iso
 
    version = ''
+
+   locale = ''
+
+   locales: string[] = []
 
    /**
     * Egg
@@ -235,6 +240,9 @@ export default class Settings {
 
       const timezone = shx.exec('cat /etc/timezone', { silent: true }).stdout.trim()
       this.timezone_opt = `timezone=${timezone}`
+
+      this.locale = settings.Locales.default
+      this.locales = settings.Locales.item
       return foundSettings
    }
 
@@ -261,7 +269,20 @@ export default class Settings {
       console.log(`ifnames_opt:       ${this.ifnames_opt}`)
       console.log(`edit_boot_menu:    ${this.edit_boot_menu}`)
       console.log(`gui_editor:        ${this.gui_editor}`)
-      console.log(`pmount_fixed:      ${this.pmount_fixed}`)
+      console.log(`locale:            ${this.locale}`)
+
+      let locales = ''
+      for (let i=0; i < this.locales.length; i++){
+         locales += this.locales[i]
+         if (i< this.locales.length -1){
+            locales += ', '
+         }
+      }
+      console.log(`locales:           ${locales}`)
+
+      
+
+      
       console.log(`ssh_pass:          ${this.ssh_pass}`)
       if (this.make_efi) {
          if (!Pacman.packageIsInstalled('grub-efi-amd64')) {
@@ -323,6 +344,7 @@ export default class Settings {
          console.log('If necessary, you can create more available space')
          console.log('by removing previous  snapshots and saved copies:')
       }
+
    }
 
    /**
