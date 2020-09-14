@@ -190,10 +190,10 @@ export default class Pacman {
          shx.ln('-s', `${rootPen}/conf/distros/buster/calamares/modules/`, `${rootPen}/conf/distros/beowulf/calamares/modules`)
 
          // Focal
-         shx.ln('-s', `${rootPen}/conf/distros/focal/grub/loopback.cfg`, `${rootPen}/conf/distros/buster/grub/loopback.cfg`)
-         shx.ln('-s', `${rootPen}/conf/distros/focal/grub/theme.cfg`, `${rootPen}/conf/distros/buster/grub/theme.cfg`)
-         shx.ln('-s', `${rootPen}/conf/distros/focal/isolinux/isolinux.template.cfg`, `${rootPen}/conf/distros/buster/isolinux/isolinux.template.cfg`)
-         shx.ln('-s', `${rootPen}/conf/distros/focal/isolinux/stdmenu.template.cfg`, `${rootPen}/conf/distros/buster/isolinux/stdmenu.template.cfg`)
+         shx.ln('-s', `${rootPen}/conf/distros/buster/grub/loopback.cfg`, `${rootPen}/conf/distros/focal/grub/loopback.cfg`)
+         shx.ln('-s', `${rootPen}/conf/distros/buster/grub/theme.cfg`, `${rootPen}/conf/distros/focal/grub/theme.cfg`)
+         shx.ln('-s', `${rootPen}/conf/distros/buster/isolinux/isolinux.template.cfg`, `${rootPen}/conf/distros/focal/isolinux/isolinux.template.cfg`)
+         shx.ln('-s', `${rootPen}/conf/distros/buster/isolinux/stdmenu.template.cfg`, `${rootPen}/conf/distros/focal/isolinux/stdmenu.template.cfg`)
 
          // Bionic
          shx.ln('-s', `${rootPen}/conf/distros/focal/grub/`, `${rootPen}/conf/distros/bionic/grub`)
