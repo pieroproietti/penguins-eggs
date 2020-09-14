@@ -27,23 +27,24 @@ Ovviamente con l'installazione da sorgente risiederà nella directory dove lo av
 Dato che era mia intenzione fornire la possibilità di una customizzazione, mi è stato facile da codice creare dei link che ne permettano apputo la customizazione.
 
 
-## file di configurazione di eggs
+## File di configurazione di eggs
 
 Il principale file di configurazione di eggs è ```/etc/penguins-eggs.d/eggs.conf``` la sua struttura è di un file ini, facilmente modifiabile dall'utente.
 
-## file di configurazione di tools
+## File di configurazione di tools
 penguins-toos, per brevità pt - così come il comando, è uno strumento compagno di eggs dove sono state inserite quelle utilità, non strettamente necessare
 ma utili a maneggiare le "uova" e sviluppare eggs stesso. 
 Abbiamo la possibilità di copiare con scp le iso create, senza battere ogni volta lunghi path di ricerca, ma semmplicemente digitanto ```pt export:iso```.
 
-Essendo uno strumento sviluppato principalmente per me stesso, naturalment abbiamo la possibilità di esportare ed inmportare anche i pacchetti di eggs 
-genereti: pt export:deb, pt import:deb. Lo stesso per la generazione e l'esportazione della documentazione; pt export:docs
+Essendo uno strumento orientato principalmente allo sviluppo di eggs, troviamo anche la possibilità di esportare ed inmportare i pacchetti di eggs stesso, sia i pacchetti debian: pt export:deb, pt import:deb, sia la documentazione pt export:docs.
 
-## addons
+Per utilizzare pt, dovrete ovviamente adattare i parametri in tools.conf.
 
+## Link addons
+Questa directory contiene le aggiunte di eggs e può essere modificata. In particolare, potrete creare un nuovo tema modificando quelli presenti. Ricordate solo che vi trovate all'interno di un link e, in casi di reinstallazione di eggs le vostre modifiche potrebbero andare perse, per cui ricordate di salvarle prima di aggiornare eggs.
 
-## distros
-
+## Link distros
+In questa cartella troverete i template dei file di configurazione per calamares, suddivisi a seconda della versione. Questi file vengono utilizzati per la generazione dei file di configurazione dell'installer grafico. Anche qua vale lo stesso discorso degli addons, in caso di modifiche fate attenzione a non perderle.
 
 ## Ovarium
 
