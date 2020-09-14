@@ -18,6 +18,21 @@ You can follow the project also consulting the [commit history](https://github.c
 ## Changelog
 Versions are listed on reverse order, the first is the last one.
 
+### eggs-7.0.35_1.deb
+OK, now we are pointing to internationalization and customization. 
+
+Is changed the configuration file and its position
+
+/etc/penguins-eggs.conf  -> /etc/penguins-eggs.d/eggs.conf
+
+In /etc/penguins-eggs.d you will find a README.md, a tools.conf, and two links:
+
+/etc/penguins-eggs.d/addons
+/etc/penguins-eggs.d/distros
+
+Read /etc/penguins-eggs.d/README.md for more specific usage and mean.
+
+
 ### eggs-7.0.34_1.deb
 This is an important version, in which a lot of work is completed, the reasons are the following:
 
