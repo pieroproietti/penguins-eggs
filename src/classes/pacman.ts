@@ -176,15 +176,17 @@ export default class Pacman {
       shx.ln('-s', path.resolve(__dirname, '../../conf/distros'), '/etc/penguins-eggs.d/distros')
 
       // Link da fare solo per pacchetto deb
-      const pen = process.cwd()
-      console.log(`path: ${pen}`)
-      const rootPen = '/usr/lib/penguins-eggs'
-      if (pen === rootPen) {
+      const pep =process.execPath
+      console.log(`Process exec path: ${pep}`)
+      if (pep === '/usr/bin/node') {
+         const rootPen = '/usr/lib/penguins-eggs'
+         // Beofulf
          shx.ln('-s', `${rootPen}/conf/distros/buster/grub/`, `${rootPen}/conf/distros/beowulf/grub`)
          shx.ln('-s', `${rootPen}/conf/distros/buster/isolinux/`, `${rootPen}/conf/distros/beowulf/isolinux`)
          shx.ln('-s', `${rootPen}/conf/distros/buster/calamares/calamares-modules/`, `${rootPen}/conf/distros/beowulf/calamares/calamares-modules`)
          shx.ln('-s', `${rootPen}/conf/distros/buster/calamares/modules/`, `${rootPen}/conf/distros/beowulf/calamares/modules`)
 
+         // Bionic
          shx.ln('-s', `${rootPen}/conf/distros/focal/grub/`, `${rootPen}/conf/distros/bionic/grub`)
          shx.ln('-s', `${rootPen}/conf/distros/focal/isolinux/`, `${rootPen}/conf/distros/bionic/isolinux`)
          shx.ln('-s', `${rootPen}/conf/distros/focal/calamares/calamares-modules/`, `${rootPen}/conf/distros/bionic/calamares/calamares-modules`)
