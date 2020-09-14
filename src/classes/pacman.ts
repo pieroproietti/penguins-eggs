@@ -174,6 +174,7 @@ export default class Pacman {
       }
       shx.ln('-s',path.resolve(__dirname, '../../addons'), '/etc/penguins-eggs.d/addons')
       shx.ln('-s',path.resolve(__dirname, '../../conf/distros'), '/etc/penguins-eggs.d/distros')
+      shx.cp(path.resolve(__dirname, '../../conf/README.md'), '/etc/penguins-eggs.d/')
       shx.cp(path.resolve(__dirname, '../../conf/tools.conf'), config_tools)
       shx.cp(path.resolve(__dirname, '../../conf/eggs.conf'), config_file)
       

@@ -24,7 +24,7 @@ mentre con l'installazione da pacchetto Debian, viene a trovarsi in
 
 Ovviamente con l'installazione da sorgente risiederà nella directory dove lo avrete scaricato.
 
-Dato che era mia intenzione fornire la possibilità di una customizzazione, mi è stato facile da codice creare dei link che ne permettano apputo la customizazione.
+Dato che era mia intenzione fornire la possibilità di una customizzazione, mi è stato facile da codice creare dei link che ne permettano la facile reperibilità.
 
 
 ## File di configurazione di eggs
@@ -32,13 +32,12 @@ Dato che era mia intenzione fornire la possibilità di una customizzazione, mi �
 Il principale file di configurazione di eggs è ```/etc/penguins-eggs.d/eggs.conf``` la sua struttura è di un file ini, facilmente modifiabile dall'utente.
 
 ## File di configurazione di tools
-penguins-toos, per brevità pt - così come il comando, è uno strumento compagno di eggs dove sono state inserite quelle utilità, non strettamente necessare
-ma utili a maneggiare le "uova" e sviluppare eggs stesso. 
+penguins-tools, per brevità pt - così come il comando, è uno strumento compagno di eggs dove sono state inserite quelle utilità, non strettamente necessarie alla creazione di iso, ma utili a maneggiare le "uova" ed a sviluppare eggs stesso.
 Abbiamo la possibilità di copiare con scp le iso create, senza battere ogni volta lunghi path di ricerca, ma semmplicemente digitanto ```pt export:iso```.
 
 Essendo uno strumento orientato principalmente allo sviluppo di eggs, troviamo anche la possibilità di esportare ed inmportare i pacchetti di eggs stesso, sia i pacchetti debian: pt export:deb, pt import:deb, sia la documentazione pt export:docs.
 
-Per utilizzare pt, dovrete ovviamente adattare i parametri in tools.conf.
+Per utilizzare pt, dovrete naturalmente adattare i parametri in tools.conf, secondo le vostre necessità.
 
 ## Link addons
 Questa directory contiene le aggiunte di eggs e può essere modificata. In particolare, potrete creare un nuovo tema modificando quelli presenti. Ricordate solo che vi trovate all'interno di un link e, in casi di reinstallazione di eggs le vostre modifiche potrebbero andare perse, per cui ricordate di salvarle prima di aggiornare eggs.
