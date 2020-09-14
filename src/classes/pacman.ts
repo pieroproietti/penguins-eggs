@@ -26,7 +26,7 @@ const config_tools = '/etc/penguins-eggs.d/tools.conf' as string
  * @remarks all the utilities
  */
 export default class Pacman {
-   
+
 
    /**
     * buster   OK
@@ -169,15 +169,34 @@ export default class Pacman {
    static async configurationInstall(verbose = true): Promise<void> {
       shx.rm('/etc/penguins-eggs.d/addons')
       shx.rm('/etc/penguins-eggs.d/distros')
-      if (!fs.existsSync('/etc/penguins-eggs.d')){
+      if (!fs.existsSync('/etc/penguins-eggs.d')) {
          shx.mkdir('/etc/penguins-eggs.d')
       }
-      shx.ln('-s',path.resolve(__dirname, '../../addons'), '/etc/penguins-eggs.d/addons')
-      shx.ln('-s',path.resolve(__dirname, '../../conf/distros'), '/etc/penguins-eggs.d/distros')
+      shx.ln('-s', path.resolve(__dirname, '../../addons'), '/etc/penguins-eggs.d/addons')
+      shx.ln('-s', path.resolve(__dirname, '../../conf/distros'), '/etc/penguins-eggs.d/distros')
+
+      // Link da fare solo per pacchetto deb
+      const pen = process.cwd()
+      console.log(`path: ${pen}`)
+      const rootPen = '/usr/lib/penguins-eggs'
+      if (pen === rootPen) {
+         shx.ln('-s', `${rootPen}/conf/distros/buster/grub/`, `${rootPen}/conf/distros/beowulf/grub`)
+         shx.ln('-s', `${rootPen}/conf/distros/buster/isolinux/`, `${rootPen}/conf/distros/beowulf/isolinux`)
+         shx.ln('-s', `${rootPen}/conf/distros/buster/calamares/calamares-modules/`, `${rootPen}/conf/distros/beowulf/calamares/calamares-modules`)
+         shx.ln('-s', `${rootPen}/conf/distros/buster/calamares/modules/`, `${rootPen}/conf/distros/beowulf/calamares/modules`)
+
+         shx.ln('-s', `${rootPen}/conf/distros/focal/grub/`, `${rootPen}/conf/distros/bionic/grub`)
+         shx.ln('-s', `${rootPen}/conf/distros/focal/isolinux/`, `${rootPen}/conf/distros/bionic/isolinux`)
+         shx.ln('-s', `${rootPen}/conf/distros/focal/calamares/calamares-modules/`, `${rootPen}/conf/distros/bionic/calamares/calamares-modules`)
+         shx.ln('-s', `${rootPen}/conf/distros/focal/calamares/modules/`, `${rootPen}/conf/distros/bionic/calamares/modules`)
+      }
+
+
       shx.cp(path.resolve(__dirname, '../../conf/README.md'), '/etc/penguins-eggs.d/')
       shx.cp(path.resolve(__dirname, '../../conf/tools.conf'), config_tools)
       shx.cp(path.resolve(__dirname, '../../conf/eggs.conf'), config_file)
-      
+
+
 
       /**
        * version
