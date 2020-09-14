@@ -22,7 +22,7 @@ During the creation tests made by UfficioZero, a serious error was found in the 
 
 This error is due to the fact that debian packaging made with oclif-dev does not keep the symbolic links, so a later version was made, in which these links are created when installing the prerequisites.
 
-The current deb version, was tested at the moment only on Devuan beowulf i386, I am proceeding with the other tests.
+The current deb version, was tested on UfficioZero Roma (Devuan beowulf() i386 and UfficioZero Tropea (Linux Mint ulyana/Ubuntu focal).
 
 ### eggs-7.0.35_1.deb
 OK, now we are pointing to internationalization and customization. 
