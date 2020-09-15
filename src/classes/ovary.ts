@@ -40,6 +40,7 @@ export default class Ovary {
 
    arch_efi = 'x86_64-efi'
 
+
    /**
     * Egg
     * @param compression
@@ -47,6 +48,9 @@ export default class Ovary {
    constructor(compression = '') {
       this.settings = new Settings()
       this.settings.compression = compression
+      if (process.arch === 'ia32') {
+         this.arch_efi = 'i386-efi'
+      }
    }
 
    /**
@@ -325,9 +329,6 @@ export default class Ovary {
 
 
       if (!fs.existsSync(this.settings.work_dir.pathIso)) {
-         if (process.arch === 'ia32') {
-            this.arch_efi = 'i386-efi'
-         }
          shx.mkdir('-p', `${this.settings.work_dir.pathIso}/boot/grub/${this.arch_efi}`)
          shx.mkdir('-p', `${this.settings.work_dir.pathIso}/efi/boot`)
          shx.mkdir('-p', `${this.settings.work_dir.pathIso}/isolinux`)
