@@ -13,6 +13,7 @@ import ini = require('ini')
 import pjson = require('pjson')
 import inquirer = require('inquirer')
 import chalk = require('chalk')
+import Pacman from './pacman'
 
 import clear = require('clear')
 import figlet = require('figlet')
@@ -231,6 +232,23 @@ export default class Utils {
          retVal = true
       }
       return retVal
+   }
+
+   /**
+    * Check se la macchina ha grub adatto ad efi
+    */
+   static efiTest() : boolean {
+      let efiTest = false
+      if (process.arch === 'ia32') {
+         if ( Pacman.packageIsInstalled('grub-efi-ia32')) {
+            efiTest = true
+         }
+      } else if (process.arch === 'x64') {
+         if (Pacman.packageIsInstalled('grub-efi-amd64')) {
+            efiTest = true
+         }
+      }
+      return efiTest
    }
 
    /**
