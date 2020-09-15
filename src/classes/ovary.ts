@@ -936,13 +936,13 @@ export default class Ovary {
       await exec('tar -cvf memdisk boot', echo)
 
       // make the grub image
-      await exec(`grub-mkimage -O ${this.arch_efi} -m memdisk -o bootx64.efi -p '(memdisk)/boot/grub' search iso9660 configfile normal memdisk tar cat part_msdos part_gpt fat ext2 ntfs ntfscomp hfsplus chain boot linux", echo)
+      await exec(`grub-mkimage -O ${this.arch_efi} -m memdisk -o bootx64.efi -p '(memdisk)/boot/grub' search iso9660 configfile normal memdisk tar cat part_msdos part_gpt fat ext2 ntfs ntfscomp hfsplus chain boot linux`, echo)
 
       // pdpd (torna a efi_work)
       process.chdir(this.settings.efi_work)
 
       // copy the grub image to efi/boot (to go later in the device's root)
-      shx.cp(`${tempDir}/bootx64.efi`, './efi/boot')
+      shx.cp(`${tempDir}/bootx64.efi`, `./efi/boot`)
 
       // Do the boot image "boot/grub/efiboot.img"
       await exec('dd if=/dev/zero of=boot/grub/efiboot.img bs=1K count=1440', echo)
