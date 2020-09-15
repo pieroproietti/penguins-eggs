@@ -35,7 +35,7 @@ export class Bionic {
 
    user_opt: string
 
-   rootTemplate =  './../../../../conf/distros/bionic/calamares/'
+   rootTemplate = './../../../../conf/distros/bionic/calamares/'
 
    dirCalamaresModules = '/usr/lib/calamares/modules/' // E DIFFERENTE in BIONIC
 
@@ -56,7 +56,7 @@ export class Bionic {
       if (process.arch === 'ia32') {
          this.dirCalamaresModules = '/usr/lib/calamares/modules/'
       }
-      this.rootTemplate = path.resolve(__dirname, this.rootTemplate)  + '/'
+      this.rootTemplate = path.resolve(__dirname, this.rootTemplate) + '/'
    }
 
    /**
@@ -72,11 +72,11 @@ export class Bionic {
     *
     */
    async modules() {
-      const fisherman = new Fisherman(this.dirModules, this.dirCalamaresModules, this.rootTemplate, this.verbose)
+      const fisherman = new Fisherman(this.distro, this.dirModules, this.dirCalamaresModules, this.rootTemplate, this.verbose)
 
       await fisherman.buildModule('partition')
       await fisherman.buildModule('mount')
-      await this.moduleUnpackfs()
+      await fisherman.moduleUnpackfs() //
       await fisherman.buildModule('machineid')
       await fisherman.buildModule('fstab')
       await fisherman.buildModule('locale')
@@ -84,7 +84,7 @@ export class Bionic {
       await fisherman.buildModule('localecfg')
       await fisherman.buildModule('luksbootkeyfile')
       await fisherman.buildModule('users')
-      await this.moduleDisplaymanager()
+      await fisherman.moduleDisplaymanager() //
       await fisherman.buildModule('networkcfg')
       await fisherman.buildModule('hwclock')
       await fisherman.buildCalamaresModule('before-bootloader-mkdirs')
@@ -96,59 +96,11 @@ export class Bionic {
       await fisherman.buildModule('bootloader')
       await fisherman.buildCalamaresModule('after-bootloader')
       await fisherman.buildCalamaresModule('add386arch', false)
-      this.modulePackages()
-      this.moduleRemoveuser()
+      await fisherman.modulePackages() //
+      await fisherman.moduleRemoveuser(this.user_opt) //
       await fisherman.buildCalamaresModule('remove-link', true)
       // await fisherman.shellprocess('logs') non trova calamares-helper
       await fisherman.buildModule('umount')
       await fisherman.buildModule('finished')
-   }
-
-
-   /**
-    * ====================================================================================
-    * M O D U L E S
-    * ====================================================================================
-    */
-
-   private moduleUnpackfs() {
-      const fisherman = new Fisherman(this.dirModules, this.dirCalamaresModules, this.rootTemplate, this.verbose)
-      const name = 'unpackfs'
-      fisherman.buildModule(name)
-      shx.sed('-i', '%source%', this.distro.mountpointSquashFs, `${this.dirModules}/${name}.conf`)
-   }
-
-   private async moduleRemoveuser() {
-      const name = 'removeuser'
-      const content = yaml.safeDump({ username: this.user_opt })
-      const file = this.dirModules + name + '.conf'
-      fs.writeFileSync(file, content, 'utf8')
-   }
-
-   private async moduleDisplaymanager() {
-      const name = 'displaymanager'
-      const fisherman = new Fisherman(this.dirModules, this.dirCalamaresModules, this.rootTemplate, this.verbose)
-      const displaymanager = require('./modules-ts/displaymanager').displaymanager
-      const file = this.dirModules + name + '.conf'
-
-      if (this.verbose) fisherman.show(name, 'module', this.dirModules)
-
-      const content = displaymanager()
-      fs.writeFileSync(file, content, 'utf8')
-   }
-
-   /**
-    * usa i moduli-ts
-    */
-   private async modulePackages() {
-      const name = 'packages'
-      const fisherman = new Fisherman(this.dirModules, this.dirCalamaresModules, this.rootTemplate, this.verbose)
-      const packages = require('./modules-ts/packages').packages
-      const file = this.dirModules + name + '.conf'
-
-      if (this.verbose) fisherman.show(name, 'module', this.dirModules)
-
-      const content = packages()
-      fs.writeFileSync(file, content, 'utf8')
    }
 }
