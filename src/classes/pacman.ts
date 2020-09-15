@@ -309,10 +309,11 @@ export default class Pacman {
       shx.sed('-i', '%force_installer%', force_installer, config_file)
 
       /**
+       * Questa cosa andrebbe spostata in settings 
        * make_efi
        */
       let make_efi = 'yes'
-      if (!this.packageIsInstalled('grub-efi-amd64')) {
+      if (!Utils.efiTest()) {
          make_efi = 'no'
          console.log(`Due the lacks of grub-efi-amd64 or grub-efi-ia32 package set make_efi=No`)
       }
