@@ -166,7 +166,7 @@ export default class Pacman {
    /**
     * Controlla se è un pacchetto deb
     */
-   static isDebPackage() :boolean{
+   static isDebPackage(): boolean {
       let ret = false
       if (process.execPath !== '/usr/bin/node') {
          ret = true
@@ -174,15 +174,32 @@ export default class Pacman {
       return ret
    }
 
-   static isSources() :boolean{
+   static isSources(): boolean {
       let ret = false
-      console.log(__dirname.substring(0,6))
-      if (__dirname.substring(0,6) === '/home/') {
+      if (__dirname.substring(0, 6) === '/home/') {
          ret = true
       }
       return ret
    }
 
+   static async ln(mode: string, src: string, dest: string) {
+      console.log(`src : ${src}`)
+      console.log(`dest: ${dest}`)
+      
+      const rel = path.relative(dest, src).substring(3)
+      if (fs.existsSync(dest)) {
+         console.log(`remove ${dest}`)
+         shx.rm(dest)
+      }
+      const dirname = path.dirname(dest)
+      const basename=path.basename(dest)
+      console.log(`mi sposto in ${dirname}`)
+      process.chdir(dirname)
+      const dir = process.cwd()
+      console.log(`Dalla directory ${dir}`)
+      console.log(`ln ${mode} ${rel} ${basename}\n`)
+      shx.ln(mode, rel, basename )
+   }
    /**
     * Creazione del file di configurazione /etc/penguins-eggs
     */
@@ -198,28 +215,35 @@ export default class Pacman {
       // Link da fare solo per pacchetto deb
       const pep = process.execPath
       // console.log(`Process exec path: ${pep}`)
-      if (pep !== '/usr/bin/node') {
-         const rootPen = '/usr/lib/penguins-eggs'
+      if (pep === '/usr/bin/node') {
+         // const rootPen = '/usr/lib/penguins-eggs'
+         const rootPen = '/home/artisan/penguins-eggs'
 
          // Buster - Nessun link presente
+         const buster = `${rootPen}/conf/distros/buster`
 
          // Beofulf
-         shx.ln('-s', `${rootPen}/conf/distros/buster/grub/`, `${rootPen}/conf/distros/beowulf/grub`)
-         shx.ln('-s', `${rootPen}/conf/distros/buster/isolinux/`, `${rootPen}/conf/distros/beowulf/isolinux`)
-         shx.ln('-s', `${rootPen}/conf/distros/buster/calamares/calamares-modules/`, `${rootPen}/conf/distros/beowulf/calamares/calamares-modules`)
-         shx.ln('-s', `${rootPen}/conf/distros/buster/calamares/modules/`, `${rootPen}/conf/distros/beowulf/calamares/modules`)
+         const beowulf = `${rootPen}/conf/distros/beowulf`
+         this.ln('-s', `${buster}/grub`, `${beowulf}/grub`)
+         this.ln('-s', `${buster}/isolinux`, `${beowulf}/isolinux`)
+         this.ln('-s', `${buster}/calamares/calamares-modules`, `${beowulf}/calamares/calamares-modules`)
+         this.ln('-s', `${buster}/calamares/modules`, `${beowulf}/calamares/modules`)
 
          // Focal
-         shx.ln('-s', `${rootPen}/conf/distros/buster/grub/loopback.cfg`, `${rootPen}/conf/distros/focal/grub/loopback.cfg`)
-         shx.ln('-s', `${rootPen}/conf/distros/buster/grub/theme.cfg`, `${rootPen}/conf/distros/focal/grub/theme.cfg`)
-         shx.ln('-s', `${rootPen}/conf/distros/buster/isolinux/isolinux.template.cfg`, `${rootPen}/conf/distros/focal/isolinux/isolinux.template.cfg`)
-         shx.ln('-s', `${rootPen}/conf/distros/buster/isolinux/stdmenu.template.cfg`, `${rootPen}/conf/distros/focal/isolinux/stdmenu.template.cfg`)
+         const focal = `${rootPen}/conf/distros/focal`
+         this.ln('-s', `${buster}/grub/loopback.cfg`, `${focal}/grub/loopback.cfg`)
+         this.ln('-s', `${buster}/grub/theme.cfg`, `${focal}/grub/theme.cfg`)
+         this.ln('-s', `${buster}/isolinux/isolinux.template.cfg`, `${focal}/isolinux/isolinux.template.cfg`)
+         this.ln('-s', `${buster}/isolinux/stdmenu.template.cfg`, `${focal}/isolinux/stdmenu.template.cfg`)
+         this.ln('-s', `${buster}/calamares/calamares/modules/removeuser.conf`, `${focal}/calamares/calamares/modules/removeuser.conf`)
+         this.ln('-s', `${buster}/calamares/calamares/modules/removeuser.conf`, `${focal}/calamares/calamares/modules/removeuser.conf`)
 
          // Bionic
-         shx.ln('-s', `${rootPen}/conf/distros/focal/grub/`, `${rootPen}/conf/distros/bionic/grub`)
-         shx.ln('-s', `${rootPen}/conf/distros/focal/isolinux/`, `${rootPen}/conf/distros/bionic/isolinux`)
-         shx.ln('-s', `${rootPen}/conf/distros/focal/calamares/calamares-modules/`, `${rootPen}/conf/distros/bionic/calamares/calamares-modules`)
-         shx.ln('-s', `${rootPen}/conf/distros/focal/calamares/modules/`, `${rootPen}/conf/distros/bionic/calamares/modules`)
+         const bionic = `${rootPen}/conf/distros/bionic`
+         shx.ln('-s', `${focal}/grub/`, `${bionic}/conf/distros/bionic/grub`)
+         shx.ln('-s', `${focal}/isolinux/`, `${bionic}/isolinux`)
+         shx.ln('-s', `${focal}/calamares-modules/`, `${bionic}/calamares/calamares-modules`)
+         shx.ln('-s', `${focal}/calamares/modules/`, `${bionic}/calamares/modules`)
       }
 
       shx.cp(path.resolve(__dirname, '../../conf/README.md'), '/etc/penguins-eggs.d/')
