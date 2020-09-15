@@ -38,6 +38,8 @@ export default class Ovary {
 
    settings = {} as Settings
 
+   arch_efi = 'x86_64-efi'
+
    /**
     * Egg
     * @param compression
@@ -321,8 +323,12 @@ export default class Ovary {
          console.log('ovary: createStructure')
       }
 
+
       if (!fs.existsSync(this.settings.work_dir.pathIso)) {
-         shx.mkdir('-p', `${this.settings.work_dir.pathIso}/boot/grub/x86_64-efi`)
+         if (process.arch === 'ia32') {
+            this.arch_efi = 'i386-efi'
+         }
+         shx.mkdir('-p', `${this.settings.work_dir.pathIso}/boot/grub/${this.arch_efi}`)
          shx.mkdir('-p', `${this.settings.work_dir.pathIso}/efi/boot`)
          shx.mkdir('-p', `${this.settings.work_dir.pathIso}/isolinux`)
          shx.mkdir('-p', `${this.settings.work_dir.pathIso}/live`)
@@ -871,7 +877,7 @@ export default class Ovary {
       let text = ''
       text += 'search --file --set=root /isolinux/isolinux.cfg\n'
       text += 'set prefix=($root)/boot/grub\n'
-      text += 'source $prefix/x86_64-efi/grub.cfg\n'
+      text += `source $prefix/${this.arch_efi}/grub.cfg\n`
       Utils.write(grubCfg, text)
 
       /**
@@ -903,22 +909,22 @@ export default class Ovary {
       }
     }
     */
-      shx.mkdir('-p', './boot/grub/x86_64-efi')
+      shx.mkdir('-p', `./boot/grub/${this.arch_efi}`)
       shx.mkdir('-p', './efi/boot')
 
       // copy splash
       shx.cp(path.resolve(__dirname, '../../assets/penguins-eggs-splash.png'), `${this.settings.efi_work}/boot/grub/spash.png`)
 
       // second grub.cfg file
-      let cmd = 'for i in $(ls /usr/lib/grub/x86_64-efi|grep part_|grep .mod|sed \'s/.mod//\'); do echo "insmod $i" >> boot/grub/x86_64-efi/grub.cfg; done'
+      let cmd = `for i in $(ls /usr/lib/grub/${this.arch_efi}|grep part_|grep .mod|sed \'s/.mod//\'); do echo "insmod $i" >> boot/grub/${this.arch_efi}/grub.cfg; done`
       await exec(cmd, echo)
 
       // Additional modules so we don't boot in blind mode. I don't know which ones are really needed.
       // cmd = `for i in efi_gop efi_uga ieee1275_fb vbe vga video_bochs video_cirrus jpeg png gfxterm ; do echo "insmod $i" >> boot/grub/x86_64-efi/grub.cfg ; done`
-      cmd = 'for i in efi_gop efi_gop efi_uga gfxterm video_bochs video_cirrus jpeg png ; do echo "insmod $i" >> boot/grub/x86_64-efi/grub.cfg ; done'
+      cmd = `for i in efi_gop efi_gop efi_uga gfxterm video_bochs video_cirrus jpeg png ; do echo "insmod $i" >> boot/grub/${this.arch_efi}/grub.cfg ; done`
       await exec(cmd, echo)
 
-      await exec('echo source /boot/grub/grub.cfg >> boot/grub/x86_64-efi/grub.cfg', echo)
+      await exec(`echo source /boot/grub/grub.cfg >> boot/grub/${this.arch_efi}/grub.cfg`, echo)
       /**
        * fine lavoro in efi_work
        */
@@ -930,7 +936,7 @@ export default class Ovary {
       await exec('tar -cvf memdisk boot', echo)
 
       // make the grub image
-      await exec("grub-mkimage -O x86_64-efi -m memdisk -o bootx64.efi -p '(memdisk)/boot/grub' search iso9660 configfile normal memdisk tar cat part_msdos part_gpt fat ext2 ntfs ntfscomp hfsplus chain boot linux", echo)
+      await exec(`grub-mkimage -O ${this.arch_efi} -m memdisk -o bootx64.efi -p '(memdisk)/boot/grub' search iso9660 configfile normal memdisk tar cat part_msdos part_gpt fat ext2 ntfs ntfscomp hfsplus chain boot linux", echo)
 
       // pdpd (torna a efi_work)
       process.chdir(this.settings.efi_work)
@@ -949,7 +955,7 @@ export default class Ovary {
       // ###############################
 
       // copy modules and font
-      shx.cp('-r', '/usr/lib/grub/x86_64-efi/*', 'boot/grub/x86_64-efi/')
+      shx.cp('-r', `/usr/lib/grub/${this.arch_efi}/*`, `boot/grub/${this.arch_efi}/`)
 
       // if this doesn't work try another font from the same place (grub's default, unicode.pf2, is much larger)
       // Either of these will work, and they look the same to me. Unicode seems to work with qemu. -fsr
