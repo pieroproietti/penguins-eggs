@@ -182,23 +182,22 @@ export default class Pacman {
       return ret
    }
 
-   static async ln(mode: string, src: string, dest: string) {
-      console.log(`src : ${src}`)
-      console.log(`dest: ${dest}`)
-      
+   static async ln(mode: string, src: string, dest: string, verbose = true) {
+      // console.log(`src : ${src}`)
+      // console.log(`dest: ${dest}`)
+
       const rel = path.relative(dest, src).substring(3)
       if (fs.existsSync(dest)) {
-         console.log(`remove ${dest}`)
+         if (verbose) console.log(`remove ${dest}`)
          shx.rm(dest)
       }
       const dirname = path.dirname(dest)
-      const basename=path.basename(dest)
-      console.log(`mi sposto in ${dirname}`)
+      const basename = path.basename(dest)
+
       process.chdir(dirname)
-      const dir = process.cwd()
-      console.log(`Dalla directory ${dir}`)
-      console.log(`ln ${mode} ${rel} ${basename}\n`)
-      shx.ln(mode, rel, basename )
+      if (verbose) console.log(`cd ${dirname}`)
+      if (verbose) console.log(`ln ${mode} ${rel} ${basename}\n`)
+      fs.symlinkSync(rel, basename)
    }
    /**
     * Creazione del file di configurazione /etc/penguins-eggs
@@ -224,26 +223,28 @@ export default class Pacman {
 
          // Beofulf
          const beowulf = `${rootPen}/conf/distros/beowulf`
-         this.ln('-s', `${buster}/grub`, `${beowulf}/grub`)
-         this.ln('-s', `${buster}/isolinux`, `${beowulf}/isolinux`)
-         this.ln('-s', `${buster}/calamares/calamares-modules`, `${beowulf}/calamares/calamares-modules`)
-         this.ln('-s', `${buster}/calamares/modules`, `${beowulf}/calamares/modules`)
+         this.ln('-s', `${buster}/grub`, `${beowulf}/grub`, verbose)
+         this.ln('-s', `${buster}/isolinux`, `${beowulf}/isolinux`, verbose)
+         this.ln('-s', `${buster}/calamares/calamares-modules`, `${beowulf}/calamares/calamares-modules`, verbose)
+         this.ln('-s', `${buster}/calamares/modules`, `${beowulf}/calamares/modules`, verbose)
 
          // Focal
          const focal = `${rootPen}/conf/distros/focal`
-         this.ln('-s', `${buster}/grub/loopback.cfg`, `${focal}/grub/loopback.cfg`)
-         this.ln('-s', `${buster}/grub/theme.cfg`, `${focal}/grub/theme.cfg`)
-         this.ln('-s', `${buster}/isolinux/isolinux.template.cfg`, `${focal}/isolinux/isolinux.template.cfg`)
-         this.ln('-s', `${buster}/isolinux/stdmenu.template.cfg`, `${focal}/isolinux/stdmenu.template.cfg`)
-         this.ln('-s', `${buster}/calamares/calamares/modules/removeuser.conf`, `${focal}/calamares/calamares/modules/removeuser.conf`)
-         this.ln('-s', `${buster}/calamares/calamares/modules/removeuser.conf`, `${focal}/calamares/calamares/modules/removeuser.conf`)
+         this.ln('-s', `${buster}/grub/loopback.cfg`, `${focal}/grub/loopback.cfg`, verbose)
+         this.ln('-s', `${buster}/grub/theme.cfg`, `${focal}/grub/theme.cfg`, verbose)
+         this.ln('-s', `${buster}/isolinux/isolinux.template.cfg`, `${focal}/isolinux/isolinux.template.cfg`, verbose)
+         this.ln('-s', `${buster}/isolinux/stdmenu.template.cfg`, `${focal}/isolinux/stdmenu.template.cfg`, verbose)
+         this.ln('-s', `${buster}/calamares/modules/displaymanager.conf`, `${focal}/calamares/modules/displaymanager.conf`, verbose)
+         this.ln('-s', `${buster}/calamares/modules/removeuser.conf`, `${focal}/calamares/modules/removeuser.conf`, verbose)
 
          // Bionic
          const bionic = `${rootPen}/conf/distros/bionic`
-         shx.ln('-s', `${focal}/grub/`, `${bionic}/conf/distros/bionic/grub`)
-         shx.ln('-s', `${focal}/isolinux/`, `${bionic}/isolinux`)
-         shx.ln('-s', `${focal}/calamares-modules/`, `${bionic}/calamares/calamares-modules`)
-         shx.ln('-s', `${focal}/calamares/modules/`, `${bionic}/calamares/modules`)
+         this.ln('-s', `${focal}/grub/`, `${bionic}/grub`, verbose)
+         this.ln('-s', `${focal}/isolinux/`, `${bionic}/isolinux`, verbose)
+         this.ln('-s', `${focal}/calamares/modules/displaymanager.conf`, `${bionic}/calamares/modules/displaymanager.conf`, verbose)
+         this.ln('-s', `${focal}/calamares/modules/removeuser.conf`, `${bionic}/calamares/modules/removeuser.conf`, verbose)
+         // this.ln('-s', `${focal}/calamares-modules/`, `${bionic}/calamares/calamares-modules`, verbose)
+         // this.ln('-s', `${focal}/calamares/modules/`, `${bionic}/calamares/modules`, verbose)
       }
 
       shx.cp(path.resolve(__dirname, '../../conf/README.md'), '/etc/penguins-eggs.d/')
