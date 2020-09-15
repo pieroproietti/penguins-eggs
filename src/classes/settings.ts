@@ -294,27 +294,28 @@ export default class Settings {
 
       console.log(`ssh_pass:          ${this.ssh_pass}`)
       if (this.make_efi) {
+         let efiTest = false
          if (Utils.isi686()) {
             if (Pacman.packageIsInstalled('grub-efi-ia32')) {
-               this.make_efi = true
+               efiTest = true
             }
          } else if (Pacman.packageIsInstalled('grub-efi-amd64')) {
-            this.make_efi = true
+            efiTest = true
+         }
+         if (!efiTest) {
+            Utils.error('You choose to create an UEFI image, but miss to install grub-efi-amd64 package.')
+            Utils.error('Please install it before to create an UEFI image:')
+            Utils.warning('sudo apt install grub-efi-amd64')
+            this.make_efi = false
+         } else if (!Pacman.packageIsInstalled('dosfstools')) {
+            Utils.error('You choose to create an UEFI image, but miss to install dosfstools package.')
+            Utils.error('Please install it before to create an UEFI image:')
+            Utils.warning('sudo apt install dosfstools')
+            this.make_efi = false
          }
       }
 
-      if (!this.make_efi) {
-         Utils.error('You choose to create an UEFI image, but miss to install grub-efi-amd64 package.')
-         Utils.error('Please install it before to create an UEFI image:')
-         Utils.warning('sudo apt install grub-efi-amd64')
-      }
 
-      if (!Pacman.packageIsInstalled('dosfstools')) {
-         Utils.error('You choose to create an UEFI image, but miss to install dosfstools package.')
-         Utils.error('Please install it before to create an UEFI image:')
-         Utils.warning('sudo apt install dosfstools')
-         this.make_efi = false
-      }
 
    }
 
