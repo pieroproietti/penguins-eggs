@@ -76,7 +76,7 @@ export default class Fisherman {
      */
     async buildModule(name: string) {
         const moduleSource = path.resolve(__dirname, `${this.rootTemplate}/modules/${name}.conf`)
-        const moduleDest = `${this.dirModules}/${name}.conf`
+        const moduleDest = `${this.dirModules}${name}.conf`
         if (fs.existsSync(moduleSource)) {
             if (this.verbose) this.show(name, 'module', moduleDest)
             shx.cp(moduleSource, moduleDest)

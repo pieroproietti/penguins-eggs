@@ -164,6 +164,26 @@ export default class Pacman {
    }
 
    /**
+    * Controlla se è un pacchetto deb
+    */
+   static isDebPackage() :boolean{
+      let ret = false
+      if (process.execPath !== '/usr/bin/node') {
+         ret = true
+      }
+      return ret
+   }
+
+   static isSources() :boolean{
+      let ret = false
+      console.log(__dirname.substring(0,6))
+      if (__dirname.substring(0,6) === '/home/') {
+         ret = true
+      }
+      return ret
+   }
+
+   /**
     * Creazione del file di configurazione /etc/penguins-eggs
     */
    static async configurationInstall(verbose = true): Promise<void> {
@@ -176,8 +196,8 @@ export default class Pacman {
       shx.ln('-s', path.resolve(__dirname, '../../conf/distros'), '/etc/penguins-eggs.d/distros')
 
       // Link da fare solo per pacchetto deb
-      const pep =process.execPath
-      console.log(`Process exec path: ${pep}`)
+      const pep = process.execPath
+      // console.log(`Process exec path: ${pep}`)
       if (pep !== '/usr/bin/node') {
          const rootPen = '/usr/lib/penguins-eggs'
 

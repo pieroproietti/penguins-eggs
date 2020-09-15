@@ -69,11 +69,11 @@ export class Buster {
     *
     */
    async modules() {
-      const fisherman = new Fisherman(this.dirModules, this.dirCalamaresModules, this.rootTemplate, this.verbose)
+      const fisherman = new Fisherman(this.distro, this.dirModules, this.dirCalamaresModules, this.rootTemplate, this.verbose)
 
       await fisherman.buildModule('partition')
       await fisherman.buildModule('mount')
-      await this.moduleUnpackfs()
+      await fisherman.moduleUnpackfs()
       await fisherman.buildCalamaresModule('sources-trusted')
       await fisherman.buildModule('machineid')
       await fisherman.buildModule('fstab')
@@ -82,7 +82,7 @@ export class Buster {
       await fisherman.buildModule('localecfg')
       await fisherman.buildModule('users')
       if (this.displaymanager) {
-         await this.moduleDisplaymanager()
+         await fisherman.moduleDisplaymanager()
       }
       await fisherman.buildModule('networkcfg')
       await fisherman.buildModule('hwclock')
@@ -91,17 +91,17 @@ export class Buster {
       await fisherman.buildCalamaresModule('bootloader-config',true)
       await fisherman.buildModule('grubcf')
       await fisherman.buildModule('bootloader')
-      await this.modulePackages()
+      await fisherman.modulePackages()
       await fisherman.buildModule('luksbootkeyfile')
       await fisherman.buildModule('plymouthcfg')
       await fisherman.buildModule('initramfscfg')
       await fisherman.buildModule('initramfs')
-      await this.moduleRemoveuser()
+      await fisherman.moduleRemoveuser(this.user_opt)
       await fisherman.buildCalamaresModule('sources-trusted-unmount', false)
       await fisherman.buildCalamaresModule('sources-final')
       await fisherman.buildModule('umount')
       await fisherman.buildCalamaresModule('remove-link')
-      await this.moduleFinished()
+      await fisherman.moduleFinished()
    }
 
    /**
@@ -116,7 +116,7 @@ export class Buster {
    private async moduleFinished() {
       const name = 'finished'
 
-      const fisherman = new Fisherman(this.dirModules, this.dirCalamaresModules, this.rootTemplate, this.verbose)
+      const fisherman = new Fisherman(this.distro, this.dirModules, this.dirCalamaresModules, this.rootTemplate, this.verbose)
       await fisherman.buildModule(name)
       const restartNowCommand = "systemctl -i reboot"
       shx.sed('-i', '%restartNowCommand%', restartNowCommand, `${this.dirModules}/${name}.conf`)
@@ -126,7 +126,7 @@ export class Buster {
     * Al momento rimane con la vecchia configurazione
     */
    private moduleUnpackfs() {
-      const fisherman = new Fisherman(this.dirModules, this.dirCalamaresModules, this.rootTemplate, this.verbose)
+      const fisherman = new Fisherman(this.distro, this.dirModules, this.dirCalamaresModules, this.rootTemplate, this.verbose)
       const name = 'unpackfs'
       fisherman.buildModule(name)
       shx.sed('-i', '%source%', this.distro.mountpointSquashFs, `${this.dirModules}/${name}.conf`)
@@ -137,8 +137,8 @@ export class Buster {
     */
    private async moduleDisplaymanager() {
       const name = 'displaymanager'
-      const fisherman = new Fisherman(this.dirModules, this.dirCalamaresModules, this.rootTemplate, this.verbose)
-      const displaymanager = require('./modules-ts/displaymanager').displaymanager
+      const fisherman = new Fisherman(this.distro, this.dirModules, this.dirCalamaresModules, this.rootTemplate, this.verbose)
+      const displaymanager = require('../fisherman-helper/displaymanager').displaymanager
       const file = this.dirModules + name + '.conf'
 
       if (this.verbose) fisherman.show(name, 'module', this.dirModules)
@@ -152,8 +152,8 @@ export class Buster {
     */
    private async modulePackages() {
       const name = 'packages'
-      const fisherman = new Fisherman(this.dirModules, this.dirCalamaresModules, this.rootTemplate, this.verbose)
-      const packages = require('./modules-ts/packages').packages
+      const fisherman = new Fisherman(this.distro, this.dirModules, this.dirCalamaresModules, this.rootTemplate, this.verbose)
+      const packages = require('./../fisherman-helper/packages').packages
       const file = this.dirModules + name + '.conf'
 
       if (this.verbose) fisherman.show(name, 'module', this.dirModules)
