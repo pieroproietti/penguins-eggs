@@ -214,7 +214,7 @@ export default class Pacman {
       // Link da fare solo per pacchetto deb
       const pep = process.execPath
       console.log(`Process exec path: ${pep}`)
-      if (pep === '/usr/bin/node') {
+      if (pep !== '/usr/bin/node') {
          // const rootPen = '/usr/lib/penguins-eggs'
          const rootPen = '/home/artisan/penguins-eggs'
 

@@ -17,6 +17,11 @@ You can follow the project also consulting the [commit history](https://github.c
 
 ## Changelog
 Versions are listed on reverse order, the first is the last one.
+### eggs-7.0.37_1.deb
+* simplified calamares configuration, all the work now is on fisherman class;
+* revisited complete the way to build links for the various user case (sources, npm or package deb)
+
+
 ### eggs-7.0.36_1.deb
 During the creation tests made by UfficioZero, a serious error was found in the generated debian packages: eggs-7.6.35-amd64 and eggs-7.6.35-i386.deb.
 
