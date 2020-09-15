@@ -178,7 +178,16 @@ export default class Settings {
       }
       this.make_efi = settings.General.make_efi === 'yes'
       if (this.make_efi) {
-         if (!Pacman.packageIsInstalled('grub-efi-amd64') && !Pacman.packageIsInstalled('grub-efi-ia32')) {
+         let efiTest = false
+         if (Utils.isi686()) {
+            if (Pacman.packageIsInstalled('grub-efi-ia32')) {
+               efiTest = true
+            }
+         } else if (Pacman.packageIsInstalled('grub-efi-amd64')) {
+            efiTest = true
+         }
+
+         if (!efiTest) {
             Utils.error('You choose to create an UEFI image, but miss to install grub-efi-amd64 package.')
             Utils.error('Please install it before to create an UEFI image:')
             Utils.warning('sudo apt install grub-efi-amd64')
@@ -272,111 +281,111 @@ export default class Settings {
       console.log(`locale:            ${this.locale}`)
 
       let locales = ''
-      for (let i=0; i < this.locales.length; i++){
+      for (let i = 0; i < this.locales.length; i++) {
          locales += this.locales[i]
-         if (i< this.locales.length -1){
+         if (i < this.locales.length - 1) {
             locales += ', '
          }
       }
       console.log(`locales:           ${locales}`)
 
-      
 
-      
+
+
       console.log(`ssh_pass:          ${this.ssh_pass}`)
       if (this.make_efi) {
          if (Utils.isi686()) {
-            if (Pacman.packageIsInstalled('grub-efi-ia32')){
+            if (Pacman.packageIsInstalled('grub-efi-ia32')) {
                this.make_efi = true
-           } 
+            }
          } else if (Pacman.packageIsInstalled('grub-efi-amd64')) {
-               this.make_efi = true
-          }
-         }
-
-         if (! this.make_efi) {
-           Utils.error('You choose to create an UEFI image, but miss to install grub-efi-amd64 package.')
-            Utils.error('Please install it before to create an UEFI image:')
-            Utils.warning('sudo apt install grub-efi-amd64')
-         }
-
-         if (!Pacman.packageIsInstalled('dosfstools')) {
-            Utils.error('You choose to create an UEFI image, but miss to install dosfstools package.')
-            Utils.error('Please install it before to create an UEFI image:')
-            Utils.warning('sudo apt install dosfstools')
-            this.make_efi = false
+            this.make_efi = true
          }
       }
-   }
 
-   /**
-    * Calculate and show free space on the disk
-    * @returns {void}
-    */
-   async listFreeSpace(): Promise<void> {
-      const path: string = this.snapshot_dir // convert to absolute path
-      if (!fs.existsSync(this.snapshot_dir)) {
-         fs.mkdirSync(this.snapshot_dir)
-      }
-      /** Lo spazio usato da SquashFS non è stimabile da live
-       * errore buffer troppo piccolo
-       */
-      const gb = 1048576
-      let spaceUsed = 0
-      let spaceAvailable = 0
-      if (!Utils.isLive()) {
-         spaceUsed = Number(
-            shx.exec("df /home | /usr/bin/awk 'NR==2 {print $3}'", {
-               silent: true
-            }).stdout
-         )
-         console.log(`Disk used space: ${Math.round((Utils.getUsedSpace() / gb) * 10) / 10} GB`)
+      if (!this.make_efi) {
+         Utils.error('You choose to create an UEFI image, but miss to install grub-efi-amd64 package.')
+         Utils.error('Please install it before to create an UEFI image:')
+         Utils.warning('sudo apt install grub-efi-amd64')
       }
 
-      spaceAvailable = Number(
-         shx
-            .exec(`df "${path}" | /usr/bin/awk 'NR==2 {print $4}'`, {
-               silent: true
-            })
-            .stdout.trim()
-      )
-      console.log(`Space available: ${Math.round((spaceAvailable / gb) * 10) / 10} GB`)
-      console.log(`There are ${Utils.getSnapshotCount(this.snapshot_dir)} snapshots taking ${Math.round((Utils.getSnapshotSize() / gb) * 10) / 10} GB of disk space.`)
-      console.log()
-
-      if (spaceAvailable > gb * 3) {
-         console.log(chalk.cyanBright('The free space should  be sufficient to hold the'))
-         console.log(chalk.cyanBright('compressed data from the system'))
-      } else {
-         console.log(chalk.redBright('The free space should be insufficient') + '.')
-         console.log()
-         console.log('If necessary, you can create more available space')
-         console.log('by removing previous  snapshots and saved copies:')
-      }
-
-   }
-
-   /**
-    *
-    * @param basename
-    * @param theme
-    */
-   async loadRemix(basename = '', theme = '') {
-      this.remix.versionNumber = Utils.getPackageVersion()
-      this.remix.kernel = Utils.kernerlVersion()
-
-      if (theme === '') {
-         this.remix.branding = 'eggs'
-      } else {
-         this.remix.branding = theme
-      }
-
-      if (basename !== '') {
-         this.remix.name = basename
-         this.remix.versionName = basename
-      } else {
-         this.remix.name = this.snapshot_basename
-         this.remix.versionName = this.snapshot_basename
+      if (!Pacman.packageIsInstalled('dosfstools')) {
+         Utils.error('You choose to create an UEFI image, but miss to install dosfstools package.')
+         Utils.error('Please install it before to create an UEFI image:')
+         Utils.warning('sudo apt install dosfstools')
+         this.make_efi = false
       }
    }
+}
+
+/**
+ * Calculate and show free space on the disk
+ * @returns {void}
+ */
+async listFreeSpace(): Promise < void> {
+   const path: string = this.snapshot_dir // convert to absolute path
+      if(!fs.existsSync(this.snapshot_dir)) {
+   fs.mkdirSync(this.snapshot_dir)
+}
+/** Lo spazio usato da SquashFS non è stimabile da live
+ * errore buffer troppo piccolo
+ */
+const gb = 1048576
+let spaceUsed = 0
+let spaceAvailable = 0
+if (!Utils.isLive()) {
+   spaceUsed = Number(
+      shx.exec("df /home | /usr/bin/awk 'NR==2 {print $3}'", {
+         silent: true
+      }).stdout
+   )
+   console.log(`Disk used space: ${Math.round((Utils.getUsedSpace() / gb) * 10) / 10} GB`)
+}
+
+spaceAvailable = Number(
+   shx
+      .exec(`df "${path}" | /usr/bin/awk 'NR==2 {print $4}'`, {
+         silent: true
+      })
+      .stdout.trim()
+)
+console.log(`Space available: ${Math.round((spaceAvailable / gb) * 10) / 10} GB`)
+console.log(`There are ${Utils.getSnapshotCount(this.snapshot_dir)} snapshots taking ${Math.round((Utils.getSnapshotSize() / gb) * 10) / 10} GB of disk space.`)
+console.log()
+
+if (spaceAvailable > gb * 3) {
+   console.log(chalk.cyanBright('The free space should  be sufficient to hold the'))
+   console.log(chalk.cyanBright('compressed data from the system'))
+} else {
+   console.log(chalk.redBright('The free space should be insufficient') + '.')
+   console.log()
+   console.log('If necessary, you can create more available space')
+   console.log('by removing previous  snapshots and saved copies:')
+}
+
+   }
+
+/**
+ *
+ * @param basename
+ * @param theme
+ */
+async loadRemix(basename = '', theme = '') {
+   this.remix.versionNumber = Utils.getPackageVersion()
+   this.remix.kernel = Utils.kernerlVersion()
+
+   if (theme === '') {
+      this.remix.branding = 'eggs'
+   } else {
+      this.remix.branding = theme
+   }
+
+   if (basename !== '') {
+      this.remix.name = basename
+      this.remix.versionName = basename
+   } else {
+      this.remix.name = this.snapshot_basename
+      this.remix.versionName = this.snapshot_basename
+   }
+}
 }
