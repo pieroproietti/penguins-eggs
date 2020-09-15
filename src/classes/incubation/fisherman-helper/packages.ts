@@ -1,18 +1,13 @@
 /**
  *
  */
-
-import Utils from '../../../utils'
-import Pacman from '../../../pacman'
+import Pacman from '../../pacman'
 
 /**
  *
  */
 export function packages(): string {
    let text = ``
-   text += `backend: apt\n\n`
-   text += `operations:\n`
-   text += ` - remove:\n`
    text += removeEggs()
    text += '\n'
    return text

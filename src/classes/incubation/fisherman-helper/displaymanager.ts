@@ -2,13 +2,14 @@
  *
  */
 
-import Utils from '../../../utils'
-import Pacman from '../../../pacman'
+import Pacman from '../../pacman'
 
-export function displaymanager(mountpointSquashFs: string): string {
+/**
+ * restituisce displaymanagers in uso
+ */
+export function displaymanager(): string {
    let text = ''
 
-   text += 'displaymanagers:\n'
    text += addIfExist('slim')
    text += addIfExist('sddm')
    text += addIfExist('lightdm')
@@ -17,8 +18,6 @@ export function displaymanager(mountpointSquashFs: string): string {
    text += addIfExist('mdm')
    text += addIfExist('lxdm')
    text += addIfExist('kdm')
-   text += 'basicSetup: false\n'
-   text += 'sysconfigSetup: false'
    return text
 }
 
