@@ -60,6 +60,16 @@ export default class Pacman {
 
       if ((distro.versionLike === 'buster') || (distro.versionLike === 'beowulf')) {
          packages.push('live-config')
+         // item[] = it_IT.UTF-8 task-italian
+         // item[] = en_US.UTF-8 task-english
+         // item[] = es_PE.UTF-8 task-spanish
+         // item[] = pt_BR.UTF-8 task-brazilian-portuguese
+         // item[] = fr_FR.UTF-8 task-french
+         // item[] = de_DE.UTF-8 task-german
+         // task-greek
+         // task-polish
+
+         
          packages.push('live-task-localisation')
       } else if ((distro.versionLike === 'focal')) {
          packages.push('live-config')

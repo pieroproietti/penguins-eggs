@@ -187,7 +187,7 @@ export default class Fisherman {
         const name = 'packages'
         const packages = require('./fisherman-helper/packages').packages
         this.buildModule(name)
-        shx.sed('-i', '%displaymanager%', packages(), `${this.dirModules}/${name}.conf`)
+        shx.sed('-i', '%packages%', packages(), `${this.dirModules}/${name}.conf`)
     }
 
     /**
