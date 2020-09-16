@@ -30,7 +30,7 @@ function addIfExist(package2check: string): string {
    let text = ''
 
    if (Pacman.packageIsInstalled(package2check)) {
-      text += `   - '${package2check}'\n`
+      text += `    - '${package2check}'\n`
    }
    return text
 }

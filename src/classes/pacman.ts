@@ -14,6 +14,8 @@ import { IRemix, IDistro } from '../interfaces'
 
 import Utils from './utils'
 import Distro from './distro'
+import Settings from './settings'
+import { settings } from 'cluster'
 
 
 const exec = require('../lib/utils').exec
@@ -50,6 +52,34 @@ export default class Pacman {
    }
 
 
+   static packagesLocalisation(verbose = false) {
+      const remix = {} as IRemix
+      const distro = new Distro(remix)
+      const packages = []
+
+      const settings = new Settings()
+      settings.load()
+      const locales: string[] = settings.locales
+      if ((distro.versionLike === 'buster') || (distro.versionLike === 'beowulf')) {
+         for (let i = 0; i < locales.length; i++) {
+            if (locales[i] === `it_IT.UTF-8`) {
+               packages.push('task-italian')
+            } else if (locales[i] === `en_US.UTF-8`) {
+               packages.push('task-english')
+            } else if (locales[i] === `es_PE.UTF-8`) {
+               packages.push('task-spanish')
+            } else if (locales[i] === `pt_BR.UTF-8`) {
+               packages.push('task-brazilian-portuguese')
+            } else if (locales[i] === `fr_FR.UTF-8`) {
+               packages.push('task-french')
+            } else if (locales[i] === `de_DE.UTF-8`) {
+               packages.push('task-german')
+            }
+            packages.push('live-task-localisation')
+         }
+      }
+      return packages
+   }
    /**
     * Crea array packages dei pacchetti da installare/rimuovere
     */
@@ -60,17 +90,6 @@ export default class Pacman {
 
       if ((distro.versionLike === 'buster') || (distro.versionLike === 'beowulf')) {
          packages.push('live-config')
-         // item[] = it_IT.UTF-8 task-italian
-         // item[] = en_US.UTF-8 task-english
-         // item[] = es_PE.UTF-8 task-spanish
-         // item[] = pt_BR.UTF-8 task-brazilian-portuguese
-         // item[] = fr_FR.UTF-8 task-french
-         // item[] = de_DE.UTF-8 task-german
-         // task-greek
-         // task-polish
-
-         
-         packages.push('live-task-localisation')
       } else if ((distro.versionLike === 'focal')) {
          packages.push('live-config')
       }
@@ -98,9 +117,14 @@ export default class Pacman {
       verbose = true
       const echo = Utils.setEcho(verbose)
       const retVal = false
+      const remix = {} as IRemix
+      const distro = new Distro(remix)
 
       await exec('apt-get update --yes')
       await exec(`apt-get install --yes ${Pacman.debs2line(Pacman.packages(verbose))}`, echo)
+      if ((distro.versionLike === 'buster') || (distro.versionLike === 'beowulf')) {
+         await exec(`apt-get install --no-install-recommends --yes ${Pacman.debs2line(Pacman.packagesLocalisation(verbose))}`, echo)
+      }
       return retVal
    }
 
@@ -111,8 +135,14 @@ export default class Pacman {
       verbose = true
       const echo = Utils.setEcho(verbose)
       const retVal = false
+      const remix = {} as IRemix
+      const distro = new Distro(remix)
 
       await exec(`apt-get remove --purge --yes ${Pacman.debs2line(Pacman.packages(verbose))}`, echo)
+      if ((distro.versionLike === 'buster') || (distro.versionLike === 'beowulf')) {
+         await exec(`apt-get remove --purge --yes ${Pacman.debs2line(Pacman.packagesLocalisation(verbose))}`, echo)
+      }
+
       await exec('apt-get autoremove --yes')
       return retVal
    }
@@ -191,7 +221,7 @@ export default class Pacman {
       if (verbose) console.log(`ln ${mode} ${rel} ${basename}\n`)
       fs.symlinkSync(rel, basename)
    }
-   
+
    /**
     * Creazione del file di configurazione /etc/penguins-eggs
     */
@@ -321,8 +351,10 @@ export default class Pacman {
     */
    static async configurationRemove(verbose = true): Promise<void> {
       const echo = Utils.setEcho(verbose)
-      await exec('rm /etc/penguins-eggs.d/penguins-eggs.conf', echo)
-      await exec('rm /etc/penguins-eggs.d/penguins-eggs.conf?', echo)
+      await exec('rm /etc/penguins-eggs.d/eggs.conf', echo)
+      await exec('rm /etc/penguins-eggs.d/eggs.conf?', echo)
+      await exec('rm /etc/penguins-eggs.d/tools.conf', echo)
+      await exec('rm /etc/penguins-eggs.d/tools.conf?', echo)
       await exec('rm /usr/local/share/penguins-eggs/exclude.list', echo)
       await exec('rm /usr/local/share/penguins-eggs/exclude.list?', echo)
    }
