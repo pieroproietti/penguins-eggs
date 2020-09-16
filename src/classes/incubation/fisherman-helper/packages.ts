@@ -9,7 +9,7 @@ import Pacman from '../../pacman'
  */
 export function packages(distro: IDistro): string {
    let text = ``
-   text += removeEggs()
+   text += removeEggs(distro)
    text += '\n'
    return text
 }
