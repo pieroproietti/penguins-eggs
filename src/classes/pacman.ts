@@ -75,8 +75,8 @@ export default class Pacman {
             } else if (locales[i] === `de_DE.UTF-8`) {
                packages.push('task-german')
             }
-            packages.push('live-task-localisation')
          }
+         packages.push('live-task-localisation')
       }
       return packages
    }
