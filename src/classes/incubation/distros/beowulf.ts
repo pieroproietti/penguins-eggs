@@ -89,7 +89,7 @@ export class Beowulf {
       await fisherman.buildCalamaresModule('bootloader-config', true)
       await fisherman.buildModule('grubcf')
       await fisherman.buildModule('bootloader')
-      await fisherman.modulePackages() //
+      await fisherman.modulePackages(this.distro) //
       await fisherman.buildModule('luksbootkeyfile')
       await fisherman.buildModule('plymouthcfg')
       await fisherman.buildModule('initramfscfg')

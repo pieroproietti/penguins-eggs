@@ -103,7 +103,7 @@ export class Focal {
       await fisherman.contextualprocess('after_bootloader')
       // await fisherman.buildCalamaresPy('automirror') errore in main distrobution
       await fisherman.shellprocess('add386arch')
-      await fisherman.modulePackages()
+      await fisherman.modulePackages(this.distro) //
       await fisherman.moduleRemoveuser(this.user_opt)
       await fisherman.buildCalamaresModule('remove-link', true)
       // await fisherman.shellprocess('logs') non trova calamares-helper

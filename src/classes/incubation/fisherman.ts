@@ -183,11 +183,11 @@ export default class Fisherman {
     /**
      * usa i moduli-ts
      */
-    async modulePackages() {
+    async modulePackages(distro: IDistro) {
         const name = 'packages'
         const packages = require('./fisherman-helper/packages').packages
         this.buildModule(name)
-        shx.sed('-i', '%packages%', packages(), `${this.dirModules}/${name}.conf`)
+        shx.sed('-i', '%packages%', packages(distro), `${this.dirModules}/${name}.conf`)
     }
 
     /**
