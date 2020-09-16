@@ -21,7 +21,7 @@ Versions are listed on reverse order, the first is the last one.
 * simplified calamares configuration, all the work now is on fisherman class;
 * revisited completely the way to build links for the various user case (sources, npm or package deb);
 * added slim to desktop managers for autologin in live;
-* tested on UfficioZero Linux Roma (beowulf i386), Linux Mint 19.3 i386, Debian buster x86_84.
+* tested on UfficioZero Linux Roma (beowulf i386), Linux Mint tricia 19.3 i386, UfficioZero Tropea (focal x86_64), Debian buster x86_64.
 
 ### eggs-7.0.36_1.deb
 During the creation tests made by UfficioZero, a serious error was found in the generated debian packages: eggs-7.6.35-amd64 and eggs-7.6.35-i386.deb.
