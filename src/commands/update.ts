@@ -24,7 +24,7 @@ update/upgrade the penguin's eggs tool
       if (Utils.isRoot()) {
          if (await Utils.customConfirm(`Select yes to continue...`)) {
             Utils.warning('Updating eggs...')
-            if (Pacman.isSources()) {
+            if (Utils.isSources()) {
                Utils.warning('You are using eggs from sources')
                console.log('You can upgrade getting a new version from git:')
                console.log('cd ~/penguins-eggs')
@@ -37,7 +37,7 @@ update/upgrade the penguin's eggs tool
                console.log('Before to use eggs, remember to install npm packages:')
                console.log('cd ~/penguins-eggs')
                console.log('npm install')
-            } else if (Pacman.isDebPackage()) {
+            } else if (Utils.isDebPackage()) {
                Utils.warning('You have eggs installed a package .deb')
                console.log('If you have eggs in yours repositories apt:')
                console.log('sudo apt update')

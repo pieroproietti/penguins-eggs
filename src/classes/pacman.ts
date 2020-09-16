@@ -181,6 +181,7 @@ export default class Pacman {
       if (verbose) console.log(`ln ${mode} ${rel} ${basename}\n`)
       fs.symlinkSync(rel, basename)
    }
+   
    /**
     * Creazione del file di configurazione /etc/penguins-eggs
     */
