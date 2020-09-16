@@ -14,6 +14,7 @@ export default class Prerequisites extends Command {
    static flags = {
       help: flags.help({ char: 'h' }),
       configuration_only: flags.boolean({ char: 'c', description: 'creation of configuration files only' }),
+      links: flags.boolean({ char: 'l', description: 'creation of links' }),
       verbose: flags.boolean({ char: 'v', description: 'verbose' })
    }
 
@@ -28,10 +29,16 @@ export default class Prerequisites extends Command {
          verbose = true
       }
 
+      let links = false
+      if (flags.links) {
+         links = true
+      }
+
+
       if (Utils.isRoot()) {
          if (await Utils.customConfirm(`Select yes to continue...`)) {
             Utils.warning('Creating configuration files...')
-            await Pacman.configurationInstall(verbose)
+            await Pacman.configurationInstall(links, verbose)
             if (!flags.configuration_only) {
                Utils.warning('Install eggs prerequisites...')
                await Pacman.prerequisitesEggsInstall(verbose)

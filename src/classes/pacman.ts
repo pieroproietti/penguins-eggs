@@ -163,24 +163,6 @@ export default class Pacman {
       return configured
    }
 
-   /**
-    * Controlla se è un pacchetto deb
-    */
-   static isDebPackage(): boolean {
-      let ret = false
-      if (process.execPath !== '/usr/bin/node') {
-         ret = true
-      }
-      return ret
-   }
-
-   static isSources(): boolean {
-      let ret = false
-      if (__dirname.substring(0, 6) === '/home/') {
-         ret = true
-      }
-      return ret
-   }
 
    static async ln(mode: string, src: string, dest: string, verbose = true) {
       // console.log(`src : ${src}`)
@@ -202,7 +184,7 @@ export default class Pacman {
    /**
     * Creazione del file di configurazione /etc/penguins-eggs
     */
-   static async configurationInstall(verbose = true): Promise<void> {
+   static async configurationInstall(links = true, verbose = true): Promise<void> {
       shx.rm('/etc/penguins-eggs.d/addons')
       shx.rm('/etc/penguins-eggs.d/distros')
       if (!fs.existsSync('/etc/penguins-eggs.d')) {
@@ -211,12 +193,11 @@ export default class Pacman {
       shx.ln('-s', path.resolve(__dirname, '../../addons'), '/etc/penguins-eggs.d/addons')
       shx.ln('-s', path.resolve(__dirname, '../../conf/distros'), '/etc/penguins-eggs.d/distros')
 
-      // Link da fare solo per pacchetto deb
-      const pep = process.execPath
-      console.log(`Process exec path: ${pep}`)
-      if (pep !== '/usr/bin/node') {
+      // Link da fare solo per pacchetto deb o per test
+      if (Utils.isDebPackage() || links) {
+
          // const rootPen = '/usr/lib/penguins-eggs'
-         const rootPen = '/home/artisan/penguins-eggs'
+         const rootPen = Utils.rootPenguin()
 
          // Buster - Nessun link presente
          const buster = `${rootPen}/conf/distros/buster`

@@ -8,6 +8,7 @@
 
 import shx = require('shelljs')
 import fs = require('fs')
+import path = require('path')
 import os = require('os')
 import ini = require('ini')
 import pjson = require('pjson')
@@ -249,6 +250,32 @@ export default class Utils {
          }
       }
       return efiTest
+   }
+
+   /**
+    * Controlla se è un pacchetto deb
+    */
+   static isDebPackage(): boolean {
+      let ret = false
+      if (process.execPath !== '/usr/bin/node') {
+         ret = true
+      }
+      return ret
+   }
+
+   static isSources(): boolean {
+      let ret = false
+      if (__dirname.substring(0, 6) === '/home/') {
+         ret = true
+      }
+      return ret
+   }
+
+   /**
+    * 
+    */
+   static rootPenguin() : string {
+      return path.resolve(__dirname, '../../')
    }
 
    /**
