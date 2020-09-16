@@ -87,7 +87,8 @@ export default class Xdg {
       if (Pacman.packageIsInstalled('lightdm')) {
          shx.sed('-i', `autologin-user=${olduser}`, `autologin-user=${newuser}`, `${chroot}/etc/lightdm/lightdm.conf`)
       } else if (Pacman.packageIsInstalled('slim')) {
-         shx.sed('-i', `default_user=${olduser}`, `default_user=${newuser}`, `${chroot}/etc/slim.conf`)
+         shx.sed('-i', `autologin no`, `autologin yes`, `${chroot}/etc/slim.conf`)
+         shx.sed('-i', `default_user ${olduser}`, `default_user ${newuser}`, `${chroot}/etc/slim.conf`)
       }
    }
 
