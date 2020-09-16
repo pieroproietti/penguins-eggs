@@ -86,6 +86,8 @@ export default class Xdg {
    static async autologin(olduser: string, newuser: string, chroot = '/') {
       if (Pacman.packageIsInstalled('lightdm')) {
          shx.sed('-i', `autologin-user=${olduser}`, `autologin-user=${newuser}`, `${chroot}/etc/lightdm/lightdm.conf`)
+      } (Pacman.packageIsInstalled('slim')) {
+         shx.sed('-i', `default_user=${olduser}`, `default_user=${newuser}`, `${chroot}/etc/slim.conf`)
       }
    }
 
