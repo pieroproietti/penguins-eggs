@@ -19,7 +19,7 @@ You can follow the project also consulting the [commit history](https://github.c
 Versions are listed on reverse order, the first is the last one.
 ### eggs-7.0.38_1.deb
 * focal bugfix in packages.conf, don't let to remove packages;
-* all calamares packages.conf, try_install libreoffice-help-l10n-$LOCALE, firefox-esr-$LOCALE, etc (give feedback for addictions);
+* all calamares packages.conf, try_install libreoffice-help-l10n-$LOCALE, firefox-esr-$LOCALE, thunderbird-locale-$LOCALE etc (give feedback for addictions);
 
 
 ### eggs-7.0.37_1.deb

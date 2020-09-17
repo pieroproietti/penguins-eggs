@@ -46,6 +46,10 @@ export function tryInstall(distro: IDistro): string {
       text += '    - firefox-esr-$LOCALE\n'
    }
 
+   if (Pacman.packageIsInstalled('thunderbird')) {
+      text += '    - thunderbird-locale-$LOCALE\n'
+   }
+
    return text
 }
 
