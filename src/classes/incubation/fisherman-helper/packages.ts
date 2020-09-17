@@ -25,7 +25,7 @@ export function remove(distro: IDistro): string {
 
  */
 export function tryInstall(distro: IDistro): string {
-   let text = `   - try_install:\n`
+   let text = `  - try_install:\n`
 
 
    // Pacchetti da installare sempre
