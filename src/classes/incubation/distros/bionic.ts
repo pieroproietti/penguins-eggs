@@ -59,6 +59,7 @@ export class Bionic {
       this.rootTemplate = path.resolve(__dirname, this.rootTemplate) + '/'
    }
 
+   
    /**
     * write setting
     */
