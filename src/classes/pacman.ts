@@ -257,6 +257,7 @@ export default class Pacman {
          this.ln('-s', `${buster}/isolinux/isolinux.template.cfg`, `${focal}/isolinux/isolinux.template.cfg`, verbose)
          this.ln('-s', `${buster}/isolinux/stdmenu.template.cfg`, `${focal}/isolinux/stdmenu.template.cfg`, verbose)
          this.ln('-s', `${buster}/calamares/modules/displaymanager.conf`, `${focal}/calamares/modules/displaymanager.conf`, verbose)
+         this.ln('-s', `${buster}/calamares/modules/packages.conf`, `${focal}/calamares/modules/packages.conf`, verbose)
          this.ln('-s', `${buster}/calamares/modules/removeuser.conf`, `${focal}/calamares/modules/removeuser.conf`, verbose)
 
          // Bionic
@@ -264,7 +265,8 @@ export default class Pacman {
          this.ln('-s', `${focal}/grub/`, `${bionic}/grub`, verbose)
          this.ln('-s', `${focal}/isolinux/`, `${bionic}/isolinux`, verbose)
          this.ln('-s', `${focal}/calamares/modules/displaymanager.conf`, `${bionic}/calamares/modules/displaymanager.conf`, verbose)
-         this.ln('-s', `${focal}/calamares/modules/removeuser.conf`, `${bionic}/calamares/modules/removeuser.conf`, verbose)
+         this.ln('-s', `${buster}/calamares/modules/packages.conf`, `${bionic}/calamares/modules/packages.conf`, verbose)
+         this.ln('-s', `${buster}/calamares/modules/removeuser.conf`, `${bionic}/calamares/modules/removeuser.conf`, verbose)
          // this.ln('-s', `${focal}/calamares-modules/`, `${bionic}/calamares/calamares-modules`, verbose)
          // this.ln('-s', `${focal}/calamares/modules/`, `${bionic}/calamares/modules`, verbose)
       }

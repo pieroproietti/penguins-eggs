@@ -185,9 +185,12 @@ export default class Fisherman {
      */
     async modulePackages(distro: IDistro) {
         const name = 'packages'
-        const packages = require('./fisherman-helper/packages').packages
+        const remove = require('./fisherman-helper/packages').remove
+        const tryInstall = require('./fisherman-helper/packages').tryInstall
         this.buildModule(name)
-        shx.sed('-i', '%packages%', packages(distro), `${this.dirModules}/${name}.conf`)
+        shx.sed('-i', '%remove%', remove(distro), `${this.dirModules}/${name}.conf`)
+        shx.sed('-i', '%try_install%', tryInstall(distro), `${this.dirModules}/${name}.conf`)
+        
     }
 
     /**

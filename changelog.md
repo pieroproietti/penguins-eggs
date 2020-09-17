@@ -17,6 +17,11 @@ You can follow the project also consulting the [commit history](https://github.c
 
 ## Changelog
 Versions are listed on reverse order, the first is the last one.
+### eggs-7.0.38_1.deb
+* focal bugfix in packages.conf, don't let to remove packages;
+* all calamares packages.conf, try_install libreoffice-help-l10n-$LOCALE, firefox-esr-$LOCALE, etc (give feedback for addictions);
+
+
 ### eggs-7.0.37_1.deb
 * simplified calamares configuration, all the work now is on fisherman class;
 * revisited completely the way to build links for the various user case (sources, npm or package deb);
