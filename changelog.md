@@ -17,8 +17,8 @@ You can follow the project also consulting the [commit history](https://github.c
 
 ## Changelog
 Versions are listed on reverse order, the first is the last one.
-### eggs-7.0.38_1.deb
-* bugfix su bionic
+### eggs-7.0.39_1.deb
+* bugfix su bionic - thanx to Adriano Morselli
 
 ### eggs-7.0.38_1.deb
 * focal bugfix in packages.conf, don't let to remove packages;
