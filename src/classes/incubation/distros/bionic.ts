@@ -39,7 +39,7 @@ export class Bionic {
 
    dirCalamaresModules = '/usr/lib/calamares/modules/' // E DIFFERENTE in BIONIC
 
-   dirModules = '/etc/calamares/modules'
+   dirModules = '/etc/calamares/modules/'
 
    /**
     * @param remix
