@@ -45,18 +45,19 @@ All the other distro are non divided, but just a directory, the name is usually 
 * **beowulf** - like debu, but devual based
 
 # Ubuntu
-* **bionic-i386** - Lubuntu 18.04 lxde remastered with eggs, without any modifications except for develop tools. (i386)
+* **lubuntu-i386** - Lubuntu 18.04 remastered with eggs, w, updated and remastered with eggs, without any modifications except for wallpapers.
 * **focal** - Ubuntu 20.04 focal gnome3, remastered with eggs, without any modifications. 
 
 # Linux Mint
+* **patricia-i386** - Linux Mint 19.3 xfce, updated and remastered with eggs, without any modifications except for wallpapers.
+* **ulyana** - Linux Mint 20 remastered with eggs, without any modifications except for wallpapers and develop tools.
+
 ## Linux Mint Debian Edition 4 Debbie
-* **debbie** - LMDE4 Debbie, remastered with eggs, without any modifications except for develop tools.
-* **tricia-i386** - Linux Mint 19.3 cinnanmon, remastered with eggs, without any modifications except for develop tools.
-* **tricia-xfce-i386** - Linux Mint 19.3 xfce, remastered with eggs, without any modifications except for develop tools.
-* **ulyana** - Linux Mint 20 remastered with eggs, without any modifications except for develop tools.
+* **debbie** - LMDE4 Debbie, remastered with eggs, without any modifications except for wallpapers and develop tools.
+
 
 # UfficioZero
-* **roma** - UffucioZero Roma (x86), based on devuan beowulf, remastered with eggs
+* **roma-i386** - UffucioZero Roma (x86), based on devuan beowulf, remastered with eggs
 * **tropea** - UfficioZero Tropea based on Linuxmint ulyana
 
 You can create remix from yourself by downloading the originals, installing the system, installing eggs and start to creatie the ISOs.
