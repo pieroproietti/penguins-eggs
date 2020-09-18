@@ -1,6 +1,7 @@
 import { Command } from '@oclif/command'
 import Utils from '../../classes/utils'
 import chalk = require('chalk')
+import Initrd from '../../classes/initrd'
 
 export default class DevGrub extends Command {
    static description = 'boot from grub rescue'
@@ -9,6 +10,7 @@ export default class DevGrub extends Command {
       Utils.titles('howto:grub')
       console.log(chalk.cyanBright('Commands to boot in the grub shell'))
       console.log()
+
       console.log(chalk.cyan('BIOS EFI'))
       console.log('set prefix=(hd0,1)/efi/Debian')
       console.log('set root=(hd0)')

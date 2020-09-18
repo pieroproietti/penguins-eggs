@@ -28,6 +28,7 @@ import Incubator from './incubation/incubator'
 import Xdg from './xdg'
 import Pacman from './pacman'
 import Settings from './settings'
+import Initrd from './initrd'
 
 
 /**
@@ -74,6 +75,7 @@ export default class Ovary {
    async produce(basename = '', script_only = false, theme = '', myAddons: IMyAddons, verbose = false) {
       const echo = Utils.setEcho(verbose)
 
+
       if (!fs.existsSync(this.settings.snapshot_dir)) {
          shx.mkdir('-p', this.settings.snapshot_dir)
       }
@@ -113,10 +115,12 @@ export default class Ovary {
          }
          await this.editLiveFs(verbose)
          await this.editBootMenu(verbose)
+
          await this.makeSquashfs(script_only, verbose)
          if (this.settings.make_efi) {
             await this.editEfi(verbose)
          }
+
          await this.mkIso(script_only, verbose)
          if (Pacman.isXInstalled()) {
             shx.exec('rm /etc/xdg/autostart/penguins-links-add.desktop')
@@ -800,13 +804,6 @@ export default class Ovary {
          fs.writeFileSync(script, text, 'utf8')
          await exec(`chmod a+x ${script}`, echo)
       }
-
-      //process.exit()
-
-
-      /**
-       * Autologin passare a xdg ed aggiungere altri ???
-       */
       Xdg.autologin(Utils.getPrimaryUser(), this.settings.user_opt, this.settings.work_dir.merged)
    }
 
@@ -992,7 +989,6 @@ export default class Ovary {
       if (verbose) {
          console.log('editing grub.cfg')
       }
-      // editEfi()
       const gpath = `${this.settings.work_dir.pathIso}/boot/grub/grub.cfg`
       shx.sed('-i', '%custom-name%', this.settings.remix.name, gpath)
       shx.sed('-i', '%kernel%', Utils.kernerlVersion(), gpath)
@@ -1095,13 +1091,10 @@ export default class Ovary {
    }
 
    /**
-    * funzioni private
+    * finished = show the results
+    * @param script_only 
     */
-
-   /**
-    * only show the result
-    */
-   finished(script_only = false) {
+   private finished(script_only = false) {
       Utils.titles('produce')
       if (!script_only) {
          console.log('eggs is finished!\n\nYou can find the file iso: ' + chalk.cyanBright(this.settings.isoFilename) + '\nin the nest: ' + chalk.cyanBright(this.settings.snapshot_dir) + '.')
