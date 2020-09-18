@@ -8,6 +8,8 @@
 
 import fs = require('fs')
 import Utils from './utils'
+import Setting from './settings'
+import Settings from './settings'
 
 // libraries
 const exec = require('../lib/utils').exec
@@ -17,12 +19,18 @@ const exec = require('../lib/utils').exec
  * Bleach:
  */
 export default class Bleach {
-
+   settings = {} as Settings
+   
+   constructor(){
+      this.settings = new Settings()
+      this.settings.load()
+   }
    /**
     * clean
     * @param verbose 
     */
    async clean(verbose = false) {
+
       await this.cleanApt(verbose)
       await this.cleanHistory(verbose)
       await this.cleanJournal(verbose)
@@ -69,9 +77,15 @@ export default class Bleach {
          echo = { echo: true, ignore: true, capture: false }
          Utils.warning('cleaning journald')
       }
-      // Non puo funzionare su devuan utilizzare logrotate?
-      await exec('journalctl --rotate', echo)
-      await exec('journalctl --vacuum-time=1s', echo)
+
+      if (this.settings.distro.distroId !== 'Devuan') {
+         await exec('journalctl --rotate', echo)
+         await exec('journalctl --vacuum-time=1s', echo)
+      } else {
+         // Truncate logs, remove archived logs.
+         await exec(`find /var/log -name "*gz" -print0 | xargs -0r rm -f`)
+         await exec(`find /var/log/ -type f -exec truncate -s 0 {} \;`)
+      }
    }
 
    /**

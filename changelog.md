@@ -16,6 +16,9 @@ Usually the last version is the right one. Detailed instrunctions for usage are 
 You can follow the project also consulting the [commit history](https://github.com/pieroproietti/penguins-eggs/commits/master). 
 
 ## Changelog
+### eggs-7.40._1.deb
+* beowulf - buxfix command clean
+
 Versions are listed on reverse order, the first is the last one.
 ### eggs-7.0.39_1.deb
 * bugfix su bionic - thanx to Adriano Morselli
@@ -23,7 +26,6 @@ Versions are listed on reverse order, the first is the last one.
 ### eggs-7.0.38_1.deb
 * focal bugfix in packages.conf, don't let to remove packages;
 * all calamares packages.conf, try_install libreoffice-help-l10n-$LOCALE, firefox-esr-$LOCALE, thunderbird-locale-$LOCALE etc (give feedback for addictions);
-
 
 ### eggs-7.0.37_1.deb
 * simplified calamares configuration, all the work now is on fisherman class;
