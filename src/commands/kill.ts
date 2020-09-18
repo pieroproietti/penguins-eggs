@@ -9,7 +9,7 @@ import { Command, flags } from '@oclif/command'
 import fs = require('fs')
 import ini = require('ini')
 import Utils from '../classes/utils'
-import Ovary from '../classes/ovary'
+import Settings from '../classes/settings'
 import { IWorkDir } from '../interfaces/i-workdir'
 
 const exec = require('../lib/utils').exec
@@ -25,7 +25,6 @@ export default class Kill extends Command {
    static flags = {
       help: flags.help({ char: 'h' }),
       verbose: flags.boolean({ char: 'v', description: 'verbose' }),
-      umount: flags.boolean({ char: 'u', description: 'umount' })
    }
 
    static examples = [
@@ -42,49 +41,15 @@ kill the eggs/free the nest
       if (flags.verbose) {
          verbose = true
       }
-      let umount = false
-      if (flags.umount) {
-         umount = true
-      }
 
       const echo = Utils.setEcho(verbose)
 
       if (Utils.isRoot()) {
-         if (this.loadSettings()) {
-            Utils.warning('Cleaning the nest...')
-            const ovary = new Ovary()
-            await ovary.fertilization()
-            if (umount) {
-               await ovary.uBindLiveFs(verbose)
-            }
-            await exec(`rm ${this.work_dir.path} -rf`, echo)
-            await exec(`rm ${this.snapshot_dir} -rf`, echo)
-         }
+         Utils.warning('Cleaning the nest...')
+         const settings = new Settings()
+         await settings.load()
+         await exec(`rm ${settings.work_dir.path} -rf`, echo)
+         await exec(`rm ${settings.snapshot_dir} -rf`, echo)
       }
-   }
-
-   /*
-    * Load configuration from /etc/penguins-eggs.conf
-    * @returns {boolean} Success
-    */
-   loadSettings(): boolean {
-      let foundSettings: boolean
-
-      const settings = ini.parse(fs.readFileSync(this.config_file, 'utf-8'))
-      if (settings.General.snapshot_dir === '') {
-         foundSettings = false
-      } else {
-         foundSettings = true
-         if (settings.General.snapshot_dir !== undefined) {
-            this.snapshot_dir = settings.General.snapshot_dir.trim()
-            if (!this.snapshot_dir.endsWith('/')) {
-               this.snapshot_dir += '/'
-            }
-            this.work_dir.path = this.snapshot_dir + 'work/'
-         }
-      }
-      // console.log(`work_dir: ${this.work_dir.path}`)
-      // console.log(`foundSettings: ${foundSettings}`)
-      return foundSettings
    }
 }

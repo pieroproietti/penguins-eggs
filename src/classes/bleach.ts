@@ -83,8 +83,8 @@ export default class Bleach {
          await exec('journalctl --vacuum-time=1s', echo)
       } else {
          // Truncate logs, remove archived logs.
-         await exec(`find /var/log -name "*gz" -print0 | xargs -0r rm -f`)
-         await exec(`find /var/log/ -type f -exec truncate -s 0 {} \;`)
+         await exec(`find /var/log -name "*gz" -print0 | xargs -0r rm -f`, echo)
+         await exec(`find /var/log/ -type f -exec truncate -s 0 {} \\;`, echo)
       }
    }
 

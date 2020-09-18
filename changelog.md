@@ -18,6 +18,7 @@ You can follow the project also consulting the [commit history](https://github.c
 ## Changelog
 ### eggs-7.40._1.deb
 * beowulf - buxfix command clean
+* all - rewrite command kill with class settings, and removed flag --umount
 
 Versions are listed on reverse order, the first is the last one.
 ### eggs-7.0.39_1.deb

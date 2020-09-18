@@ -16,7 +16,6 @@ export default class Locales extends Command {
         verbose: flags.boolean({ char: 'v', description: 'verbose' }),
     }
 
-    static args = [{ name: 'file' }]
     async run() {
         Utils.titles('locales')
 
@@ -27,7 +26,7 @@ export default class Locales extends Command {
             verbose = true
         }
 
-        let reinstall=false
+        let reinstall = false
         if (flags.reinstall) {
             reinstall = true
         }
