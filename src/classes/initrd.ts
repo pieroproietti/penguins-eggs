@@ -1,7 +1,3 @@
-
-/* eslint-disable valid-jsdoc */
-/* eslint-disable no-console */
-
 /**
  * penguins-eggs: ovary.ts VERSIONE DEBIAN-LIVE
  * author: Piero Proietti
@@ -14,6 +10,7 @@
 // packages
 import fs = require('fs')
 import shx = require('shelljs')
+import { IInitrd } from '../interfaces'
 
 /**
  * initrd
@@ -49,21 +46,31 @@ export default class Initrd {
     /**
      * Check initrd for cryptroot, resume, cryptsetup.
      */
-    check() {
-        let cryptroot = shx.exec(`lsinitramfs ${this.initrdSrc} | grep -q conf.d/cryptroot`)
-        console.log('cryptoroot: [' + cryptroot + ']')
+    check() : IInitrd {                               
+        let initrd = {} as IInitrd
 
-        let crypttab = shx.exec(`lsinitramfs ${this.initrdSrc} | grep -q cryptroot/crypttab`)
-        console.log('cryptotab: [' + crypttab + ']')
+        const cmdCheck = `lsinitramfs ${this.initrdSrc} | egrep 'conf/conf.d/cryptroot|cryptroot/crypttab|conf/conf.d/resume|conf/conf.d/zz-resume-auto'`
+        let check = shx.exec(cmdCheck, {silent: true})
 
-        let resume = shx.exec(`lsinitramfs ${this.initrdSrc} | egrep -q 'conf.d/resume|conf.d/zz-resume-auto'`)
-        console.log('resume: [' + resume + ']')
+        if (check.includes('conf/conf.d/cryptroot')) {
+            initrd.cryptoroot = true
+        } 
+        if (check.includes('cryptroot/crypttab')) {
+            initrd.crypttab = true
+        } 
+        if (check.includes('conf/conf.d/resume')) {
+            initrd.resume = true
+        }
+        if (check.includes('conf/conf.d/zz-resume-auto')) {
+            initrd.zz_resume_auto = true
+        }
+        return initrd
     }
 
     /**
      * extract
      */
-    private async extract(initrd = '/initrd.img', verbose = false) {
+    async extract(initrd = '/initrd.img', verbose = false) {
         let echo = { echo: false, ignore: false }
         if (verbose) {
             echo = { echo: true, ignore: false }

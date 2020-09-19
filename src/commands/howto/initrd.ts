@@ -3,6 +3,7 @@ import { Command, flags } from '@oclif/command'
 import Utils from '../../classes/utils'
 import chalk = require('chalk')
 import Initrd from '../../classes/initrd'
+import { IInitrd } from '../../interfaces'
 
 export default class DevInitrd extends Command {
    static description = 'Test initrd'
@@ -35,6 +36,13 @@ export default class DevInitrd extends Command {
          file2check = flags.check
       }
       
-      
+
+       let result = initrd.check()
+       if (result.cryptoroot) console.log('cryptoroot')
+       if (result.crypttab) console.log('crypttab')
+       if (result.resume) console.log('resume')
+       if (result.zz_resume_auto) console.log('zz-resume-auto')
+       
+
    }
 }
