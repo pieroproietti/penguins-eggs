@@ -43,6 +43,9 @@ export default class DevInitrd extends Command {
        if (result.resume) console.log('resume')
        if (result.zz_resume_auto) console.log('zz-resume-auto')
        
+       // Questo file dovrebbe esserci
+       // /usr/share/initramfs-tools/ini
+       // patch_file="/usr/lib/refractasnapshot/init_for_util-lin.patch"
 
    }
 }
