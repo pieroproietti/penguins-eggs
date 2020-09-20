@@ -6,7 +6,7 @@ Diciamo che fornisce un servizio di virtualizzazione, come vmware o virtualbox, 
 
 Da questo, interamente con interfaccia grafica, è possibile creare, cancellare, gestire le macchine virtuali.
 
-Solo una nota, installate - se potete - proxmox ve su una macchina con almeno 4 GB di RAM, preferibilmente 8 GB o 16 per un utilizzo "reale" e per poter assegnare alle macchine virtuali un conguo spazio di memoria 2/4 GB di RAM.
+Solo una nota, installate - se potete - proxmox ve su una macchina con almeno 4 GB di RAM, preferibilmente 8 GB o 16 per un utilizzo "reale" e per poter assegnare alle macchine virtuali un congruo spazio di memoria 2/4 GB di RAM.
 
 
 ## Installazione
