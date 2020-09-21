@@ -255,7 +255,7 @@ export default class Pacman {
 
          this.ln('-s', `${buster}/calamares/calamares-modules/sources-final/module.desc`, `${bullseye}/calamares/calamares-modules/sources-final/module.desc`, verbose)
          this.ln('-s', `${buster}/calamares/calamares-modules/sources-trusted/module.desc`, `${bullseye}/calamares/calamares-modules/sources-trusted/module.desc`, verbose)
-         this.ln('-s', `${buster}/calamares/calamares-modules/sources-unmount`, `${bullseye}/calamares/calamares-modules/sources-unmount`, verbose)
+         this.ln('-s', `${buster}/calamares/calamares-modules/sources-trusted-unmount`, `${bullseye}/calamares/calamares-modules/sources-trusied-unmount`, verbose)
 
          const stretch = `${rootPen}/conf/distros/stretch`
          this.ln('-s', buster, stretch, verbose)
