@@ -11,6 +11,7 @@ import Utils from '../utils'
 import { IRemix, IDistro } from '../../interfaces'
 
 import { Buster } from './distros/buster'
+import { Bullseye } from './distros/bullseye'
 import { Beowulf } from './distros/beowulf'
 import { Focal } from './distros/focal'
 import { Bionic } from './distros/bionic'
@@ -62,10 +63,14 @@ export default class Incubator {
 
       this.createCalamaresDirs()
       this.createBranding()
-      if (this.distro.versionLike === 'buster' || this.distro.versionLike === 'stretch' || this.distro.versionLike === 'bulleye') {
+      if (this.distro.versionLike === 'buster' || this.distro.versionLike === 'stretch') {
          const buster = new Buster(this.remix, this.distro, this.displaymanager, this.user_opt, this.verbose)
          buster.settings()
          buster.modules()
+      } else if (this.distro.versionLike === 'bullseye') {
+         const bullseye = new Bullseye(this.remix, this.distro, this.displaymanager, this.user_opt, this.verbose)
+         bullseye.settings()
+         bullseye.modules()
       } else if (this.distro.versionLike === 'beowulf') {
          const beowulf = new Beowulf(this.remix, this.distro, this.displaymanager, this.user_opt, this.verbose)
          beowulf.settings()
