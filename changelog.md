@@ -18,7 +18,9 @@ You can follow the project also consulting the [commit history](https://github.c
 ## Changelog
 ### eggs-7.40._1.deb
 * beowulf - buxfix command clean
-* all - rewrite command kill with class settings, and removed flag --umount
+* all - rewrite command kill with new class settings, and removed flag --umount;
+* added bullseye and stretch as supported distros;
+* added but not yet activated, remove resume and crypto configuration for live initrd.img
 
 Versions are listed on reverse order, the first is the last one.
 ### eggs-7.0.39_1.deb

@@ -1094,7 +1094,7 @@ export default class Ovary {
     * finished = show the results
     * @param script_only 
     */
-   private finished(script_only = false) {
+   finished(script_only = false) {
       Utils.titles('produce')
       if (!script_only) {
          console.log('eggs is finished!\n\nYou can find the file iso: ' + chalk.cyanBright(this.settings.isoFilename) + '\nin the nest: ' + chalk.cyanBright(this.settings.snapshot_dir) + '.')
