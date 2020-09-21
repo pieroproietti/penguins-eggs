@@ -74,7 +74,7 @@ export class Buster {
       await fisherman.buildModule('partition')
       await fisherman.buildModule('mount')
       await fisherman.moduleUnpackfs()
-      await fisherman.buildCalamaresModule('sources-trusted')
+      await fisherman.buildCalamaresModule('sources-trusted', true)
       await fisherman.buildModule('machineid')
       await fisherman.buildModule('fstab')
       await fisherman.buildModule('locale')
@@ -103,6 +103,4 @@ export class Buster {
       await fisherman.buildCalamaresModule('remove-link')
       await fisherman.moduleFinished()
    }
-
-
 }

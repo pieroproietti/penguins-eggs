@@ -201,4 +201,5 @@ export default class Fisherman {
         this.buildModule(name)
         shx.sed('-i', '%username%', username, `${this.dirModules}/${name}.conf`)
     }
+
 }

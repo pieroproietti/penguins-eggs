@@ -2,5 +2,5 @@
 type:       "job"
 name:       "sources-trusted"
 interface:  "process"
-command:    "/usr/sbin/sources-trusted"
+command:    "/usr/sbin/sources-trusted.sh"
 timeout:    600

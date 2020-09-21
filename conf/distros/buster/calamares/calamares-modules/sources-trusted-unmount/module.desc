@@ -2,5 +2,5 @@
 type:       "job"
 name:       "sources-trusted-unmount"
 interface:  "process"
-command:    "/usr/sbin/sources-trusted -u"
+command:    "/usr/sbin/sources-trusted.sh -u"
 timeout:    600
