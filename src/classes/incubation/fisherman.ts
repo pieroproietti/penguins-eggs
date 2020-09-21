@@ -106,7 +106,7 @@ export default class Fisherman {
             shx.cp(`${moduleSource}/module.sh`, moduleScript)
             await exec(`chmod +x ${moduleScript}`)
         }
-        return moduleDest
+        return moduleScript
     }
 
 

@@ -1,5 +1,7 @@
 /**
  * penguins-eggs: buster.ts
+ * 
+ * it work both: buster, bullseye
  *
  * author: Piero Proietti
  * mail: piero.proietti@gmail.com
@@ -51,6 +53,7 @@ export class Buster {
       if (process.arch === 'ia32') {
          this.dirCalamaresModules = '/usr/lib/calamares/modules/'
       }
+      this.rootTemplate = `./../../../../conf/distros/${this.distro.versionId}/calamares/`
       this.rootTemplate=path.resolve(__dirname, this.rootTemplate) + '/'
    }
 
@@ -74,7 +77,9 @@ export class Buster {
       await fisherman.buildModule('partition')
       await fisherman.buildModule('mount')
       await fisherman.moduleUnpackfs()
-      await fisherman.buildCalamaresModule('sources-trusted', true)
+      // await fisherman.buildCalamaresModule('sources-trusted', true)
+      const sourceTrusted = await fisherman.buildCalamaresModule('sources-trusted', true)
+      shx.sed('-i', '%versionId%', this.distro.versionId, sourceTrusted)
       await fisherman.buildModule('machineid')
       await fisherman.buildModule('fstab')
       await fisherman.buildModule('locale')
@@ -98,7 +103,10 @@ export class Buster {
       await fisherman.buildModule('initramfs')
       await fisherman.moduleRemoveuser(this.user_opt)
       await fisherman.buildCalamaresModule('sources-trusted-unmount', false)
-      await fisherman.buildCalamaresModule('sources-final')
+      // await fisherman.buildCalamaresModule('sources-final')
+      const sourceFinal = await fisherman.buildCalamaresModule('sources-final')
+      shx.sed('-i', '%versionId%', this.distro.versionId, sourceFinal)
+
       await fisherman.buildModule('umount')
       await fisherman.buildCalamaresModule('remove-link')
       await fisherman.moduleFinished()
