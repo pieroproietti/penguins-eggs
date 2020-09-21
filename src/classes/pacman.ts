@@ -245,9 +245,18 @@ export default class Pacman {
 
          // bullseye prende tutto da buster
          const bullseye = `${rootPen}/conf/distros/bullseye`
-         this.ln('-s', buster, bullseye, verbose)
+         this.ln('-s', `${buster}/grub`, `${bullseye}/grub`, verbose)
+         this.ln('-s', `${buster}/isolinux`, `${bullseye}/isolinux`, verbose)
+         this.ln('-s', `${buster}/locales`, `${bullseye}/locales`, verbose)
+         this.ln('-s', `${buster}/calamares/modules`, `${bullseye}/calamares/modules`, verbose)
+         this.ln('-s', `${buster}/calamares/calamares-modules/bootloader-config`, `${bullseye}/calamares/calamares-modules/bootloader-config`, verbose)
+         this.ln('-s', `${buster}/calamares/calamares-modules/create-tmp`, `${bullseye}/calamares/calamares-modules/create-tmp`, verbose)
+         this.ln('-s', `${buster}/calamares/calamares-modules/remove-link`, `${bullseye}/calamares/calamares-modules/remove-link`, verbose)
 
-         // stretch prende tutto da buster
+         this.ln('-s', `${buster}/calamares/calamares-modules/sources-final/module.desc`, `${bullseye}/calamares/calamares-modules/sources-final/module.desc`, verbose)
+         this.ln('-s', `${buster}/calamares/calamares-modules/sources-trusted/module.desc`, `${bullseye}/calamares/calamares-modules/sources-trusted/module.desc`, verbose)
+         this.ln('-s', `${buster}/calamares/calamares-modules/sources-unmount/module.desc`, `${bullseye}/calamares/calamares-modules/sources-unmount/module.desc`, verbose)
+
          const stretch = `${rootPen}/conf/distros/stretch`
          this.ln('-s', buster, stretch, verbose)
 
