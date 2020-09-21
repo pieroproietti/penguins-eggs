@@ -86,7 +86,7 @@ export default class Pacman {
    static packages(verbose = false): string[] {
       const remix = {} as IRemix
       const distro = new Distro(remix)
-      let packages = Pacman.debs4eggs
+      const packages = Pacman.debs4eggs
 
       if ((distro.versionLike === 'buster') || (distro.versionLike === 'beowulf')) {
          packages.push('live-config')
@@ -243,6 +243,14 @@ export default class Pacman {
          // Buster - Nessun link presente
          const buster = `${rootPen}/conf/distros/buster`
 
+         // bullseye prende tutto da buster
+         const bullseye = `${rootPen}/conf/distros/bullseye`
+         this.ln('-s', buster, bullseye, verbose)
+
+         // stretch prende tutto da buster
+         const stretch = `${rootPen}/conf/distros/stretch`
+         this.ln('-s', buster, stretch, verbose)
+
          // Beofulf
          const beowulf = `${rootPen}/conf/distros/beowulf`
          this.ln('-s', `${buster}/grub`, `${beowulf}/grub`, verbose)
@@ -267,8 +275,6 @@ export default class Pacman {
          this.ln('-s', `${focal}/calamares/modules/displaymanager.conf`, `${bionic}/calamares/modules/displaymanager.conf`, verbose)
          this.ln('-s', `${buster}/calamares/modules/packages.conf`, `${bionic}/calamares/modules/packages.conf`, verbose)
          this.ln('-s', `${buster}/calamares/modules/removeuser.conf`, `${bionic}/calamares/modules/removeuser.conf`, verbose)
-         // this.ln('-s', `${focal}/calamares-modules/`, `${bionic}/calamares/calamares-modules`, verbose)
-         // this.ln('-s', `${focal}/calamares/modules/`, `${bionic}/calamares/modules`, verbose)
       }
 
       shx.cp(path.resolve(__dirname, '../../conf/README.md'), '/etc/penguins-eggs.d/')
