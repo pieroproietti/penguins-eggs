@@ -1,6 +1,6 @@
 #!/bin/sh
 CHROOT=$(mount | grep proc | grep calamares | awk '{print $3}' | sed -e "s#/proc##g")
-RELEASE="buster"
+RELEASE="%versionId%"
 
 if [ "$1" = "-u" ]; then
     rm $CHROOT/etc/apt/sources.list.d/debian-trusted.list

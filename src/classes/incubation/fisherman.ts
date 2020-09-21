@@ -91,7 +91,7 @@ export default class Fisherman {
      * @param name 
      * @param isScript 
      */
-    async buildCalamaresModule(name: string, isScript: boolean = true) {
+    async buildCalamaresModule(name: string, isScript: boolean = true) : Promise <string> {
         const moduleSource = path.resolve(__dirname, `${this.rootTemplate}/calamares-modules/${name}`)
         const moduleDest = this.dirCalamaresModules + name
         const moduleScript = `/usr/sbin/${name}.sh`
@@ -106,6 +106,7 @@ export default class Fisherman {
             shx.cp(`${moduleSource}/module.sh`, moduleScript)
             await exec(`chmod +x ${moduleScript}`)
         }
+        return moduleDest
     }
 
 
