@@ -24,6 +24,7 @@ export default class Calamares extends Command {
       help: flags.help({ char: 'h' }),
       verbose: flags.boolean({ char: 'v' }),
       configuration: flags.boolean({ char: 'c', description: 'creation of configuration files only' }),
+      sterilize: flags.boolean({description: 'sterilize: remove eggs prerequisites, calamares and all it\'s dependencies' }),
       theme: flags.string({ description: 'theme/branding for eggs and calamares' })
    }
 
@@ -41,6 +42,11 @@ export default class Calamares extends Command {
       let install = false
       if (!flags.configuration) {
          install = true
+      }
+
+      let sterilize = false
+      if (flags.sterilize) {
+         sterilize = true
       }
 
       let theme = 'eggs'

@@ -8,7 +8,6 @@ import fs = require('fs')
 import path = require('path')
 import shx = require('shelljs')
 import Utils from '../utils'
-import Pacman from '../pacman'
 import { IRemix, IDistro } from '../../interfaces'
 
 import { Buster } from './distros/buster'
@@ -42,7 +41,7 @@ export default class Incubator {
     * @param distro
     * @param verbose
     */
-   constructor(remix: IRemix, distro: IDistro, user_opt: string = 'live', verbose = false) {
+   constructor(remix: IRemix, distro: IDistro, user_opt = 'live', verbose = false) {
       this.remix = remix
       this.distro = distro
       this.user_opt = user_opt

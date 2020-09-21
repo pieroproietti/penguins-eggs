@@ -8,14 +8,10 @@
  * license: MIT
  */
 import { Command, flags } from '@oclif/command'
-import fs = require('fs')
-import path = require('path')
 import Utils from '../classes/utils'
 import Ovary from '../classes/ovary'
 import Pacman from '../classes/pacman'
 import chalk = require('chalk')
-import { string } from '@oclif/command/lib/flags'
-import { fstat } from 'fs'
 import { IMyAddons } from '../interfaces'
 
 export default class Produce extends Command {
@@ -28,6 +24,7 @@ export default class Produce extends Command {
       help: flags.help({ char: 'h' }),
 
       // addon vendor/addon configurazioni dei vendors
+      sterilize: flags.boolean({description: 'sterilize: remove eggs prerequisites, calamares and all it\'s dependencies' }),
       theme: flags.string({ description: 'theme/branding for eggs and calamares' }),
       // addons: flags.string({ multiple: true, description: 'addons to be used' }),
 
@@ -110,13 +107,19 @@ export default class Produce extends Command {
             script = true
          }
 
+         let sterilize = false
+         if (flags.sterilize) {
+            sterilize = true
+         }
+
+
          let theme = 'eggs'
          if (flags.theme !== undefined) {
             theme = flags.theme
             console.log(`theme: ${theme}`)
          }
 
-         let myAddons = {} as IMyAddons
+         const myAddons = {} as IMyAddons
          myAddons.adapt = flags.adapt
          myAddons.rsupport = flags.rsupport
          myAddons.ichoice = flags.ichoice
