@@ -33,7 +33,7 @@ import { throws } from 'assert'
 const config_file = '/etc/penguins-eggs.d/eggs.conf' as string
 
 /**
- * Ovary:
+ * Setting
  */
 export default class Settings {
    app = {} as IApp

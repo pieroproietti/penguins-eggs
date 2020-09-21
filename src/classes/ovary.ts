@@ -29,6 +29,7 @@ import Xdg from './xdg'
 import Pacman from './pacman'
 import Settings from './settings'
 import Initrd from './initrd'
+import Systemctl from './systemctl'
 
 
 /**
@@ -240,12 +241,31 @@ export default class Ovary {
          if (this.settings.distro.distroLike !== 'Ubuntu') {
             await exec(`chroot ${this.settings.work_dir.merged} systemctl disable systemd-resolved.service`)
          }
-         await exec(`chroot ${this.settings.work_dir.merged} systemctl disable systemd-networkd.service`)
-         await exec(`chroot ${this.settings.work_dir.merged} systemctl disable remote-cryptsetup.target`)
-         await exec(`chroot ${this.settings.work_dir.merged} systemctl disable speech-dispatcherd.service`)
-         await exec(`chroot ${this.settings.work_dir.merged} systemctl disable wpa_supplicant-nl80211@.service`)
-         await exec(`chroot ${this.settings.work_dir.merged} systemctl disable wpa_supplicant@.service`)
-         await exec(`chroot ${this.settings.work_dir.merged} systemctl disable wpa_supplicant-wired@.service`)
+
+         // systemctl is-enabled
+         const systemdctl = new Systemctl()
+         if (await systemdctl.isEnabled('systemd-networkd.service')) {
+            await exec(`chroot ${this.settings.work_dir.merged} systemctl disable systemd-networkd.service`)
+         }
+         
+         if (await systemdctl.isEnabled('remote-cryptsetup.target')) {
+            await exec(`chroot ${this.settings.work_dir.merged} systemctl disable remote-cryptsetup.target`)
+         }
+
+         if (await systemdctl.isEnabled('speech-dispatcherd.service')) {
+            await exec(`chroot ${this.settings.work_dir.merged} systemctl disable speech-dispatcherd.service`)
+         }
+
+         if (await systemdctl.isEnabled('wpa_supplicant-nl80211@.service')) {
+            await exec(`chroot ${this.settings.work_dir.merged} systemctl disable wpa_supplicant-nl80211@.service`)
+         }
+         if (await systemdctl.isEnabled('wpa_supplicant@.service')) {
+            await exec(`chroot ${this.settings.work_dir.merged} systemctl disable wpa_supplicant@.service`)
+         }
+
+         if (await systemdctl.isEnabled('wpa_supplicant-wired@.service')) {
+            await exec(`chroot ${this.settings.work_dir.merged} systemctl disable wpa_supplicant-wired@.service`)
+         }
       }
 
       // Probabilmente non necessario
