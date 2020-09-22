@@ -66,7 +66,7 @@ export default class Incubator {
          beowulf.create()
       } else if (this.distro.versionLike === 'focal') {
          const focal = new Focal(this.remix, this.distro, sterilize, this.user_opt, this.verbose)
-         focal.modules()
+         focal.create()
       } else if (this.distro.versionLike === 'bionic') {
          const bionic = new Bionic(this.remix, this.distro, sterilize, this.user_opt, this.verbose)
          bionic.create()
