@@ -56,28 +56,20 @@ export default class Incubator {
       const verbose = true
       const echo = Utils.setEcho(verbose)
 
-      console.log('=========================================================')
-      console.log(`sterilize: ${sterilize}`)
-      console.log('=========================================================')
-
       this.createCalamaresDirs()
       this.createBranding()
       if (this.distro.versionLike === 'buster' || this.distro.versionLike === 'bullseye') {
          const buster = new Buster(this.remix, this.distro, sterilize, this.user_opt, this.verbose)
-         buster.settings()
-         buster.modules()
+         buster.create()
       } else if (this.distro.versionLike === 'beowulf') {
          const beowulf = new Beowulf(this.remix, this.distro, sterilize, this.user_opt, this.verbose)
-         beowulf.settings()
-         beowulf.modules()
+         beowulf.create()
       } else if (this.distro.versionLike === 'focal') {
          const focal = new Focal(this.remix, this.distro, sterilize, this.user_opt, this.verbose)
-         focal.settings()
          focal.modules()
       } else if (this.distro.versionLike === 'bionic') {
          const bionic = new Bionic(this.remix, this.distro, sterilize, this.user_opt, this.verbose)
-         bionic.settings()
-         bionic.modules()
+         bionic.create()
       }
    }
 

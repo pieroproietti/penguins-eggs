@@ -65,25 +65,12 @@ export class Focal {
    }
 
    /**
-    * write setting
-    */
-   settings() {
-      const file = '/etc/calamares/settings.conf'
-      shx.cp(`${this.rootTemplate}/settings.conf`, '/etc/calamares')
-      shx.sed('-i', '%branding%', this.remix.branding, '/etc/calamares/settings.conf')
-      if (this.sterilize) {
-         shx.sed('-i', '# packages', '- packages', '/etc/calamares/settings.conf')
-      } else {
-         shx.sed('-i', '- packages', '# packages', '/etc/calamares/settings.conf')
-      }
-   }
-
-
-   /**
     *
     */
-   async modules() {
+   async create() {
       const fisherman = new Fisherman(this.distro, this.dirModules, this.dirCalamaresModules, this.rootTemplate, this.verbose)
+
+      await fisherman.settings(this.remix.branding, this.sterilize)
 
       await fisherman.buildModule('partition')
       await fisherman.buildModule('mount')
