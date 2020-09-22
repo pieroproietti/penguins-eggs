@@ -90,7 +90,7 @@ $ npm install -g penguins-eggs
 $ eggs COMMAND
 running command...
 $ eggs (-v|--version|version)
-penguins-eggs/7.6.40 linux-x64 node-v14.11.0
+penguins-eggs/7.6.40 linux-x64 node-v14.10.1
 $ eggs --help [COMMAND]
 USAGE
   $ eggs COMMAND
@@ -107,6 +107,7 @@ USAGE
 * [`eggs howto:grub`](#eggs-howtogrub)
 * [`eggs howto:initrd`](#eggs-howtoinitrd)
 * [`eggs info`](#eggs-info)
+* [`eggs install`](#eggs-install)
 * [`eggs kill`](#eggs-kill)
 * [`eggs locales`](#eggs-locales)
 * [`eggs prerequisites`](#eggs-prerequisites)
@@ -145,6 +146,7 @@ OPTIONS
   -c, --configuration  creation of configuration files only
   -h, --help           show CLI help
   -v, --verbose
+  --sterilize          sterilize: remove eggs prerequisites, calamares and all it's dependencies
   --theme=theme        theme/branding for eggs and calamares
 
 EXAMPLES
@@ -246,6 +248,31 @@ EXAMPLE
 
 _See code: [src/commands/info.ts](https://github.com/pieroproietti/penguins-eggs/blob/v7.6.40/src/commands/info.ts)_
 
+## `eggs install`
+
+system installation (the eggs became penguin)
+
+```
+USAGE
+  $ eggs install
+
+OPTIONS
+  -g, --gui        use gui installer
+  -h, --info       show CLI help
+  -l, --lvmremove  remove lvm /dev/pve
+  -u, --umount     umount devices
+  -v, --verbose    verbose
+
+ALIASES
+  $ eggs hatch
+
+EXAMPLE
+  $ eggs install
+  penguin's eggs installation
+```
+
+_See code: [src/commands/install.ts](https://github.com/pieroproietti/penguins-eggs/blob/v7.6.40/src/commands/install.ts)_
+
 ## `eggs kill`
 
 kill the eggs/free the nest
@@ -324,6 +351,7 @@ OPTIONS
   --ichoice                allows the user to choose the installation type cli/gui
   --pve                    administration of virtual machines (Proxmox-VE)
   --rsupport               remote support via dwagent
+  --sterilize              sterilize: remove eggs prerequisites, calamares and all it's dependencies
   --theme=theme            theme/branding for eggs and calamares
 
 ALIASES

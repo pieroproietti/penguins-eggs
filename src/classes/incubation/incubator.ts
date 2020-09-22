@@ -11,7 +11,6 @@ import Utils from '../utils'
 import { IRemix, IDistro } from '../../interfaces'
 
 import { Buster } from './distros/buster'
-import { Bullseye } from './distros/bullseye'
 import { Beowulf } from './distros/beowulf'
 import { Focal } from './distros/focal'
 import { Bionic } from './distros/bionic'
