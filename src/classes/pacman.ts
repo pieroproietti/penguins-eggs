@@ -40,7 +40,7 @@ export default class Pacman {
     * 
     */
    static debs4eggs = [
-      'isolinux', 'syslinux', 'rsync ', 'squashfs-tools', 'xorriso', 'xterm', 'whois',// strumenti
+      'isolinux', 'syslinux', 'rsync ', 'squashfs-tools', 'xorriso', 'xterm', 'whois', // strumenti
       'live-boot', 'live-boot-initramfs-tools']
    static debs4calamares = ['calamares', 'qml-module-qtquick2', 'qml-module-qtquick-controls']
 
@@ -247,18 +247,6 @@ export default class Pacman {
          const bullseye = `${rootPen}/conf/distros/bullseye`
          this.ln('-s', buster, bullseye, verbose)
 
-         // this.ln('-s', `${buster}/grub`, `${bullseye}/grub`, verbose)
-         // this.ln('-s', `${buster}/isolinux`, `${bullseye}/isolinux`, verbose)
-         // this.ln('-s', `${buster}/locales`, `${bullseye}/locales`, verbose)
-         // this.ln('-s', `${buster}/calamares/modules`, `${bullseye}/calamares/modules`, verbose)
-         // this.ln('-s', `${buster}/calamares/calamares-modules/bootloader-config`, `${bullseye}/calamares/calamares-modules/bootloader-config`, verbose)
-         // this.ln('-s', `${buster}/calamares/calamares-modules/create-tmp`, `${bullseye}/calamares/calamares-modules/create-tmp`, verbose)
-         // this.ln('-s', `${buster}/calamares/calamares-modules/remove-link`, `${bullseye}/calamares/calamares-modules/remove-link`, verbose)
-
-         // this.ln('-s', `${buster}/calamares/calamares-modules/sources-final/module.desc`, `${bullseye}/calamares/calamares-modules/sources-final/module.desc`, verbose)
-         // this.ln('-s', `${buster}/calamares/calamares-modules/sources-trusted/module.desc`, `${bullseye}/calamares/calamares-modules/sources-trusted/module.desc`, verbose)
-         // this.ln('-s', `${buster}/calamares/calamares-modules/sources-trusted-unmount`, `${bullseye}/calamares/calamares-modules/sources-trusied-unmount`, verbose)
-
          const stretch = `${rootPen}/conf/distros/stretch`
          this.ln('-s', buster, stretch, verbose)
 
@@ -266,6 +254,7 @@ export default class Pacman {
          const beowulf = `${rootPen}/conf/distros/beowulf`
          this.ln('-s', `${buster}/grub`, `${beowulf}/grub`, verbose)
          this.ln('-s', `${buster}/isolinux`, `${beowulf}/isolinux`, verbose)
+         this.ln('-s', `${buster}/locales`, `${beowulf}/locales`, verbose)
          this.ln('-s', `${buster}/calamares/calamares-modules`, `${beowulf}/calamares/calamares-modules`, verbose)
          this.ln('-s', `${buster}/calamares/modules`, `${beowulf}/calamares/modules`, verbose)
 
@@ -275,19 +264,19 @@ export default class Pacman {
          this.ln('-s', `${buster}/grub/theme.cfg`, `${focal}/grub/theme.cfg`, verbose)
          this.ln('-s', `${buster}/isolinux/isolinux.template.cfg`, `${focal}/isolinux/isolinux.template.cfg`, verbose)
          this.ln('-s', `${buster}/isolinux/stdmenu.template.cfg`, `${focal}/isolinux/stdmenu.template.cfg`, verbose)
+         this.ln('-s', `${buster}/calamares/calamares-modules/remove-link`, `${focal}/calamares/calamares-modules/remove-link`, verbose)
          this.ln('-s', `${buster}/calamares/modules/displaymanager.conf`, `${focal}/calamares/modules/displaymanager.conf`, verbose)
          this.ln('-s', `${buster}/calamares/modules/packages.conf`, `${focal}/calamares/modules/packages.conf`, verbose)
          this.ln('-s', `${buster}/calamares/modules/removeuser.conf`, `${focal}/calamares/modules/removeuser.conf`, verbose)
-         this.ln('-s', `${buster}/calamares/calamares-modules/remove-link.conf`, `${focal}/calamares/calamares-modules/remove-link.conf`, verbose)
 
          // Bionic
          const bionic = `${rootPen}/conf/distros/bionic`
-         this.ln('-s', `${focal}/grub/`, `${bionic}/grub`, verbose)
-         this.ln('-s', `${focal}/isolinux/`, `${bionic}/isolinux`, verbose)
+         this.ln('-s', `${focal}/grub`, `${bionic}/grub`, verbose)
+         this.ln('-s', `${focal}/isolinux`, `${bionic}/isolinux`, verbose)
+         this.ln('-s', `${buster}/calamares/calamares-modules/remove-link`, `${bionic}/calamares/calamares-modules/remove-link`, verbose)
          this.ln('-s', `${focal}/calamares/modules/displaymanager.conf`, `${bionic}/calamares/modules/displaymanager.conf`, verbose)
          this.ln('-s', `${buster}/calamares/modules/packages.conf`, `${bionic}/calamares/modules/packages.conf`, verbose)
          this.ln('-s', `${buster}/calamares/modules/removeuser.conf`, `${bionic}/calamares/modules/removeuser.conf`, verbose)
-         this.ln('-s', `${buster}/calamares/calamares-modules/remove-link.conf`, `${bionic}/calamares/calamares-modules/remove-link.conf`, verbose)
       }
 
       shx.cp(path.resolve(__dirname, '../../conf/README.md'), '/etc/penguins-eggs.d/')

@@ -11,6 +11,7 @@ import ini = require('ini')
 import Utils from '../classes/utils'
 import Settings from '../classes/settings'
 import { IWorkDir } from '../interfaces/i-workdir'
+import { util } from 'chai'
 
 const exec = require('../lib/utils').exec
 
@@ -28,9 +29,7 @@ export default class Kill extends Command {
    }
 
    static examples = [
-      `$ eggs kill
-kill the eggs/free the nest
-`
+      `$ eggs kill\nkill the eggs/free the nest`
    ]
 
    async run() {
@@ -48,8 +47,13 @@ kill the eggs/free the nest
          Utils.warning('Cleaning the nest...')
          const settings = new Settings()
          await settings.load()
-         await exec(`rm ${settings.work_dir.path} -rf`, echo)
-         await exec(`rm ${settings.snapshot_dir} -rf`, echo)
+         await settings.listFreeSpace()
+         if (Utils.customConfirm()) {
+            await settings.load()
+            await exec(`rm ${settings.work_dir.path} -rf`, echo)
+            await exec(`rm ${settings.snapshot_dir} -rf`, echo)
+
+         }
       }
    }
 }

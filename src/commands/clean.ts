@@ -29,7 +29,7 @@ export default class Clean extends Command {
       }
 
       if (Utils.isRoot()) {
-         if (await await Utils.customConfirm(`Select yes to continue...`)) {
+         if (await Utils.customConfirm(`Select yes to continue...`)) {
             const bleach = new Bleach()
             bleach.clean(verbose)
          }

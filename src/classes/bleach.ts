@@ -8,8 +8,8 @@
 
 import fs = require('fs')
 import Utils from './utils'
-import Setting from './settings'
 import Settings from './settings'
+import shx  = require('shelljs')
 
 // libraries
 const exec = require('../lib/utils').exec
@@ -47,6 +47,7 @@ export default class Bleach {
          echo = { echo: true, ignore: true, capture: false }
          Utils.warning('cleaning apt')
       }
+
       await exec('apt clean', echo)
       await exec('apt autoclean', echo)
       const dest = '/var/lib/apt/lists/'

@@ -28,7 +28,7 @@ import Utils from './utils'
 import Incubator from './incubation/incubator'
 import Distro from './distro'
 import Pacman from './pacman'
-import { throws } from 'assert'
+
 
 const config_file = '/etc/penguins-eggs.d/eggs.conf' as string
 
@@ -123,20 +123,7 @@ export default class Settings {
       this.distro = new Distro(this.remix)
    }
 
-   /**
-    * inizializzazioni che non possono essere messe nel constructor
-    * a causa delle chiamate async.
-    * @returns {boolean} success
-    */
-   async fertilization(): Promise<boolean> {
-      if (this.load()) {
-         if (this.listFreeSpace()) {
-            if (await Utils.customConfirm('Select yes to continue...')) return true
-         }
-      }
-      return false
-   }
-
+   
    /**
     * Load configuration from config_file
     * @returns {boolean} Success
@@ -319,11 +306,7 @@ export default class Settings {
       let spaceUsed = 0
       let spaceAvailable = 0
       if (!Utils.isLive()) {
-         spaceUsed = Number(
-            shx.exec("df /home | /usr/bin/awk 'NR==2 {print $3}'", {
-               silent: true
-            }).stdout
-         )
+         spaceUsed = Number(shx.exec(`df /home | /usr/bin/awk 'NR==2 {print $3}'`, {silent: true}).stdout)
          console.log(`Disk used space: ${Math.round((Utils.getUsedSpace() / gb) * 10) / 10} GB`)
       }
 
