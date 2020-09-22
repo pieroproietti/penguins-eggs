@@ -25,7 +25,7 @@ export class Beowulf {
 
    distro: IDistro
 
-   displaymanager = false
+   sterilize = false
 
    user_opt: string
 
@@ -41,12 +41,12 @@ export class Beowulf {
     * @param displaymanager
     * @param verbose
     */
-   constructor(remix: IRemix, distro: IDistro, displaymanager: boolean, user_opt: string, verbose = false) {
+   constructor(remix: IRemix, distro: IDistro, sterilize: boolean, user_opt: string, verbose = false) {
       this.remix = remix
       this.distro = distro
       this.user_opt = user_opt
       this.verbose = verbose
-      this.displaymanager = displaymanager
+      this.sterilize = sterilize
       if (process.arch === 'ia32') {
          this.dirCalamaresModules = '/usr/lib/calamares/modules/'
       }
@@ -60,6 +60,9 @@ export class Beowulf {
       const settings = `${this.rootTemplate}/settings.conf`
       shx.cp(settings, '/etc/calamares')
       shx.sed('-i', '%branding%', this.remix.branding, '/etc/calamares/settings.conf')
+      if (this.sterilize) {
+         shx.sed('-i', '%packages%\n', '  - packages\n', '/etc/calamares/settings.conf')
+      }
    }
 
 
@@ -79,9 +82,7 @@ export class Beowulf {
       await fisherman.buildModule('keyboard')
       await fisherman.buildModule('localecfg')
       await fisherman.buildModule('users')
-      if (this.displaymanager) {
-         await fisherman.moduleDisplaymanager() //
-      }
+      await fisherman.moduleDisplaymanager() //
       await fisherman.buildModule('networkcfg')
       await fisherman.buildModule('hwclock')
       await fisherman.buildModule('services-systemd')
