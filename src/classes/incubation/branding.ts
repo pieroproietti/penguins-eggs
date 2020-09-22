@@ -20,7 +20,7 @@ export function branding(remix: IRemix, distro: IDistro, brand = '', verbose = f
    const supportUrl: string = distro.supportUrl
    const bugReportUrl: string = distro.bugReportUrl
 
-   const productName = `Debian`
+   const productName = distro.versionId
    const shortProductName = remix.name
    const version = remix.versionNumber + ' ( ' + remix.versionName + ')'
    const shortVersion = remix.versionNumber

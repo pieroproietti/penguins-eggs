@@ -62,11 +62,7 @@ export default class Incubator {
 
       this.createCalamaresDirs()
       this.createBranding()
-      if (this.distro.versionLike === 'buster' || this.distro.versionLike === 'stretch') {
-         const buster = new Buster(this.remix, this.distro, this.displaymanager, this.user_opt, this.verbose)
-         buster.settings()
-         buster.modules()
-      } else if (this.distro.versionLike === 'bullseye') {
+      if (this.distro.versionLike === 'buster' || this.distro.versionLike === 'bullseye') {
          const buster = new Buster(this.remix, this.distro, this.displaymanager, this.user_opt, this.verbose)
          buster.settings()
          buster.modules()
