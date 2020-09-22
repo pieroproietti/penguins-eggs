@@ -278,6 +278,7 @@ export default class Pacman {
          this.ln('-s', `${buster}/calamares/modules/displaymanager.conf`, `${focal}/calamares/modules/displaymanager.conf`, verbose)
          this.ln('-s', `${buster}/calamares/modules/packages.conf`, `${focal}/calamares/modules/packages.conf`, verbose)
          this.ln('-s', `${buster}/calamares/modules/removeuser.conf`, `${focal}/calamares/modules/removeuser.conf`, verbose)
+         this.ln('-s', `${buster}/calamares/calamares-modules/remove-link.conf`, `${focal}/calamares/calamares-modules/remove-link.conf`, verbose)
 
          // Bionic
          const bionic = `${rootPen}/conf/distros/bionic`
@@ -286,6 +287,7 @@ export default class Pacman {
          this.ln('-s', `${focal}/calamares/modules/displaymanager.conf`, `${bionic}/calamares/modules/displaymanager.conf`, verbose)
          this.ln('-s', `${buster}/calamares/modules/packages.conf`, `${bionic}/calamares/modules/packages.conf`, verbose)
          this.ln('-s', `${buster}/calamares/modules/removeuser.conf`, `${bionic}/calamares/modules/removeuser.conf`, verbose)
+         this.ln('-s', `${buster}/calamares/calamares-modules/remove-link.conf`, `${bionic}/calamares/calamares-modules/remove-link.conf`, verbose)
       }
 
       shx.cp(path.resolve(__dirname, '../../conf/README.md'), '/etc/penguins-eggs.d/')

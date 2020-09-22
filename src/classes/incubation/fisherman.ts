@@ -103,7 +103,7 @@ export default class Fisherman {
         }
         shx.cp(`${moduleSource}/module.desc`, moduleDest)
         if (isScript) {
-            shx.cp(`${moduleSource}/module.sh`, moduleScript)
+            shx.cp(`${moduleSource}/${name}.sh`, moduleScript)
             await exec(`chmod +x ${moduleScript}`)
         }
         return moduleScript
@@ -191,7 +191,6 @@ export default class Fisherman {
         this.buildModule(name)
         shx.sed('-i', '%remove%', remove(distro), `${this.dirModules}/${name}.conf`)
         shx.sed('-i', '%try_install%', tryInstall(distro), `${this.dirModules}/${name}.conf`)
-        
     }
 
     /**
