@@ -1,0 +1,8 @@
+Ubuntu Focal
+partition
+---
+efiSystemPartition: "/boot/efi"
+enableLuksAutomatedPartitioning: true
+userSwapChoices: none
+drawNestedPartitions: true
+defaultFileSystemType: "ext4"

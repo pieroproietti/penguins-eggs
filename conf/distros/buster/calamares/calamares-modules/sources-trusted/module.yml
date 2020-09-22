@@ -1,0 +1,8 @@
+Debian Buster
+sources-trusted
+---
+type: "job"
+name: "sources-trusted"
+interface: "process"
+command: "/usr/sbin/sources-trusted.sh"
+timeout: 600

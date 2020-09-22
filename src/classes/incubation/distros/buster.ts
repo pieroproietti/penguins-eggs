@@ -64,8 +64,13 @@ export class Buster {
       const file = '/etc/calamares/settings.conf'
       shx.cp(`${this.rootTemplate}/settings.conf`, '/etc/calamares')
       shx.sed('-i', '%branding%', this.remix.branding, '/etc/calamares/settings.conf')
+      console.log('=========================================================')
+      console.log(`sterilize: ${this.sterilize}`)
+      console.log('=========================================================')
       if (this.sterilize) {
-         shx.sed('-i', '%packages%\n', '  - packages\n', '/etc/calamares/settings.conf')
+         shx.sed('-i', '# packages', '- packages', '/etc/calamares/settings.conf')
+      } else {
+         shx.sed('-i', '- packages', '# packages', '/etc/calamares/settings.conf')
       }
    }
 

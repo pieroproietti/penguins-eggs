@@ -1,0 +1,8 @@
+Debian Buster
+sources-final
+---
+type: "job"
+name: "sources-final"
+interface: "process"
+command: "/usr/sbin/sources-final.sh"
+timeout: 600

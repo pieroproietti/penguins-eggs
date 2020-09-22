@@ -1,0 +1,9 @@
+Debian Buster
+create-tmp
+---
+type: "job"
+name: "create-tmp"
+interface: "process"
+chroot: false
+command: "/usr/sbin/create-tmp.sh"
+timeout: 8

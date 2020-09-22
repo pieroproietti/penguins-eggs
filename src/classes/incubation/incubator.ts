@@ -29,8 +29,6 @@ export default class Incubator {
 
    user_opt: string
 
-   sterilize = false
-
    sourcesMedia = false
 
    sourcesTrusted = true
@@ -49,7 +47,6 @@ export default class Incubator {
       if (remix.branding === undefined) {
          remix.branding = 'eggs'
       }
-      this.sterilize = false
    }
 
    /**
@@ -58,6 +55,10 @@ export default class Incubator {
    async config(sterilize = false) {
       const verbose = true
       const echo = Utils.setEcho(verbose)
+
+      console.log('=========================================================')
+      console.log(`sterilize: ${sterilize}`)
+      console.log('=========================================================')
 
       this.createCalamaresDirs()
       this.createBranding()

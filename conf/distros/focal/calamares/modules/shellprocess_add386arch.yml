@@ -1,0 +1,7 @@
+Ubuntu Focal
+shellprocess_add386arch
+---
+dontChroot: false
+timeout: 30
+script:
+  - command: "/usr/bin/dpkg --add-architecture i386"

@@ -44,7 +44,7 @@ export default class Fisherman {
      * @param name 
      */
     async shellprocess(name: string) {
-        const moduleSource = path.resolve(__dirname, `${this.rootTemplate}/modules/shellprocess_${name}.conf`)
+        const moduleSource = path.resolve(__dirname, `${this.rootTemplate}/modules/shellprocess_${name}.yml`)
         const moduleDest = `${this.dirModules}/shellprocess_${name}.conf`
         if (fs.existsSync(moduleSource)) {
             if (this.verbose) this.show(name, 'shellprocess', moduleDest)
@@ -59,7 +59,7 @@ export default class Fisherman {
     * @param name 
     */
     async contextualprocess(name: string) {
-        const moduleSource = path.resolve(__dirname, `${this.rootTemplate}/modules/${name}_context.conf`)
+        const moduleSource = path.resolve(__dirname, `${this.rootTemplate}/modules/${name}_context.yml`)
         const moduleDest = `${this.dirModules}/${name}_context.conf`
         if (fs.existsSync(moduleSource)) {
             if (this.verbose) this.show(name, 'contextualprocess', moduleDest)
@@ -75,7 +75,7 @@ export default class Fisherman {
      * @param replaces [['search','replace']]
      */
     async buildModule(name: string) {
-        const moduleSource = path.resolve(__dirname, `${this.rootTemplate}/modules/${name}.conf`)
+        const moduleSource = path.resolve(__dirname, `${this.rootTemplate}/modules/${name}.yml`)
         const moduleDest = `${this.dirModules}${name}.conf`
         if (fs.existsSync(moduleSource)) {
             if (this.verbose) this.show(name, 'module', moduleDest)
@@ -101,7 +101,7 @@ export default class Fisherman {
         if (!fs.existsSync(moduleDest)) {
             fs.mkdirSync(moduleDest)
         }
-        shx.cp(`${moduleSource}/module.desc`, moduleDest)
+        shx.cp(`${moduleSource}/module.yml`, `${moduleDest}/module.desc`)
         if (isScript) {
             shx.cp(`${moduleSource}/${name}.sh`, moduleScript)
             await exec(`chmod +x ${moduleScript}`)
@@ -122,8 +122,8 @@ export default class Fisherman {
         if (!fs.existsSync(moduleDest)) {
             fs.mkdirSync(moduleDest)
         }
-        shx.cp(`${moduleSource}/module.desc`, moduleDest)
-        shx.cp(`${moduleSource}/${name}.conf`, moduleDest)
+        shx.cp(`${moduleSource}/module.yml`, `${moduleDest}/module.desc`)
+        shx.cp(`${moduleSource}/${name}.yml`, `${moduleDest}/${name}.conf`)
         shx.cp(`${moduleSource}/main.py`, moduleDest)
         await exec(`chmod +x ${moduleSource}/main.py`)
     }
