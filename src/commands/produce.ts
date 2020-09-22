@@ -152,7 +152,7 @@ export default class Produce extends Command {
          const ovary = new Ovary(compression)
          Utils.warning('Produce an egg...')
          if (await ovary.fertilization()) {
-            await ovary.produce(basename, script, theme, myAddons, verbose)
+            await ovary.produce(basename, script, sterilize, theme, myAddons, verbose)
             ovary.finished(script)
          }
       }

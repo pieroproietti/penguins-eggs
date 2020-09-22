@@ -55,26 +55,26 @@ export default class Incubator {
    /**
     * config
     */
-   async config() {
+   async config(sterilize = false) {
       const verbose = true
       const echo = Utils.setEcho(verbose)
 
       this.createCalamaresDirs()
       this.createBranding()
       if (this.distro.versionLike === 'buster' || this.distro.versionLike === 'bullseye') {
-         const buster = new Buster(this.remix, this.distro, this.sterilize, this.user_opt, this.verbose)
+         const buster = new Buster(this.remix, this.distro, sterilize, this.user_opt, this.verbose)
          buster.settings()
          buster.modules()
       } else if (this.distro.versionLike === 'beowulf') {
-         const beowulf = new Beowulf(this.remix, this.distro, this.sterilize, this.user_opt, this.verbose)
+         const beowulf = new Beowulf(this.remix, this.distro, sterilize, this.user_opt, this.verbose)
          beowulf.settings()
          beowulf.modules()
       } else if (this.distro.versionLike === 'focal') {
-         const focal = new Focal(this.remix, this.distro, this.sterilize, this.user_opt, this.verbose)
+         const focal = new Focal(this.remix, this.distro, sterilize, this.user_opt, this.verbose)
          focal.settings()
          focal.modules()
       } else if (this.distro.versionLike === 'bionic') {
-         const bionic = new Bionic(this.remix, this.distro, this.sterilize, this.user_opt, this.verbose)
+         const bionic = new Bionic(this.remix, this.distro, sterilize, this.user_opt, this.verbose)
          bionic.settings()
          bionic.modules()
       }
