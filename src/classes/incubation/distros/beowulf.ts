@@ -64,8 +64,9 @@ export class Beowulf {
       await fisherman.buildModule('partition')
       await fisherman.buildModule('mount')
       await fisherman.moduleUnpackfs() //
-      await fisherman.buildCalamaresModule('sources-trusted')
-      // await fisherman.buildModule('machineid')
+      const sourceTrusted = await fisherman.buildCalamaresModule('sources-trusted')
+      shx.sed('-i', '{{versionId}}', 'buster', sourceTrusted) // Qua è una porcheria!
+
       await fisherman.buildModule('fstab')
       await fisherman.buildModule('locale')
       await fisherman.buildModule('keyboard')
@@ -86,7 +87,9 @@ export class Beowulf {
       await fisherman.buildModule('initramfs')
       await fisherman.moduleRemoveuser(this.user_opt) //
       await fisherman.buildCalamaresModule('sources-trusted-unmount', false)
-      await fisherman.buildCalamaresModule('sources-final')
+      const sourceFinal = await fisherman.buildCalamaresModule('sources-final')
+      shx.sed('-i', '{{versionId}}', this.distro.versionId, sourceFinal) 
+
       await fisherman.buildModule('umount')
       await fisherman.buildCalamaresModule('remove-link', true)
       await fisherman.moduleFinished()

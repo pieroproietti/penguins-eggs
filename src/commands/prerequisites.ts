@@ -37,11 +37,15 @@ export default class Prerequisites extends Command {
 
       if (Utils.isRoot()) {
          if (await Utils.customConfirm(`Select yes to continue...`)) {
-            Utils.warning('Creating configuration files...')
+            Utils.warning('Creating configuration files..')
             await Pacman.configurationInstall(links, verbose)
             if (!flags.configuration_only) {
-               Utils.warning('Install eggs prerequisites...')
-               await Pacman.prerequisitesEggsInstall(verbose)
+               Utils.warning('Install eggs prerequisites..')
+               if (!Pacman.prerequisitesEggsCheck()){
+                  await Pacman.prerequisitesEggsInstall(verbose)
+               } else {
+                  Utils.warning('prerequisites already installed..')
+               }
             }
          }
       }

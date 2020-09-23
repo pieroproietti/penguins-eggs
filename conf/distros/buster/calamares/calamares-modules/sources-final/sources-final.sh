@@ -4,7 +4,7 @@
 #
 
 CHROOT=$(mount | grep proc | grep calamares | awk '{print $3}' | sed -e "s#/proc##g")
-RELEASE="%versionId%"
+RELEASE="{{versionId}}"
 
 cat << EOF > $CHROOT/etc/apt/sources.list
 # See https://wiki.debian.org/SourcesList for more information.

@@ -71,7 +71,7 @@ export class Buster {
       await fisherman.moduleUnpackfs()
       // await fisherman.buildCalamaresModule('sources-trusted', true)
       const sourceTrusted = await fisherman.buildCalamaresModule('sources-trusted', true)
-      shx.sed('-i', '%versionId%', this.distro.versionId, sourceTrusted)
+      shx.sed('-i', '{{versionId}}', this.distro.versionId, sourceTrusted)
       await fisherman.buildModule('machineid')
       await fisherman.buildModule('fstab')
       await fisherman.buildModule('locale')
@@ -95,7 +95,7 @@ export class Buster {
       await fisherman.buildCalamaresModule('sources-trusted-unmount', false)
       // await fisherman.buildCalamaresModule('sources-final')
       const sourceFinal = await fisherman.buildCalamaresModule('sources-final')
-      shx.sed('-i', '%versionId%', this.distro.versionId, sourceFinal)
+      shx.sed('-i', '{{versionId}}', this.distro.versionId, sourceFinal)
 
       await fisherman.buildModule('umount')
       await fisherman.buildCalamaresModule('remove-link')
