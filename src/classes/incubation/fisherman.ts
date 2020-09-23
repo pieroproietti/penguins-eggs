@@ -192,7 +192,7 @@ export default class Fisherman {
         const name = 'displaymanager'
         const displaymanager = require('./fisherman-helper/displaymanager').displaymanager
         this.buildModule(name)
-        shx.sed('-i', '%displaymanager%', displaymanager(), `${this.dirModules}/${name}.conf`)
+        shx.sed('-i', '%displaymanagers%', displaymanager(), `${this.dirModules}/${name}.conf`)
     }
 
     /**
