@@ -35,7 +35,6 @@ sequence:
       - displaymanager
       - networkcfg
       - hwclock
-      - services-systemd
       - create-tmp
       - bootloader-config
       - grubcfg
