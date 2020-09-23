@@ -1,5 +1,5 @@
-Devuan  Beowulf
-settings
+# Devuan  Beowulf
+# settings
 ---
 # "local" is LIBDIR/calamares/modules with settings in SHARE/calamares/modules
 modules-search: [local, /usr/lib/calamares/modules]
