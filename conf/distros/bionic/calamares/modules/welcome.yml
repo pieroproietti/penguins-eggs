@@ -1,15 +1,14 @@
-Ubuntu Focal
+Ubuntu bionic
 welcome
 ---
 showSupportUrl: true
 showKnownIssuesUrl: true
 showReleaseNotesUrl: true
-showDonateUrl: https://lubuntu.me/donate/
 
 requirements:
-  requiredStorage: 8
-  requiredRam: 0.5
-  internetCheckUrl: https://lubuntu.me
+  requiredStorage: 0.7
+  requiredRam: 0.75
+  internetCheckUrl: http://lubuntu.me
 
   check:
     - storage
@@ -21,7 +20,3 @@ requirements:
     - root
     - storage
     - ram
-geoip:
-  style: "json"
-  url: "https://ipapi.co/json"
-  selector: "country"

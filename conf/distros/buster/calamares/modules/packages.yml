@@ -4,5 +4,5 @@ packages
 backend: apt
 
 operations:
-%remove%
-%try_install%
+{{remove}}
+{{ry_install}}

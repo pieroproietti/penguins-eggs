@@ -173,7 +173,7 @@ export default class Fisherman {
         const name = 'finished'
         await this.buildModule(name)
         const restartNowCommand = 'reboot'
-        shx.sed('-i', '%restartNowCommand%', restartNowCommand, `${this.dirModules}/${name}.conf`)
+        shx.sed('-i', '{{restartNowCommand}}', restartNowCommand, `${this.dirModules}/${name}.conf`)
     }
 
     /**
@@ -182,7 +182,7 @@ export default class Fisherman {
     async moduleUnpackfs() {
         const name = 'unpackfs'
         this.buildModule(name)
-        shx.sed('-i', '%source%', this.distro.mountpointSquashFs, `${this.dirModules}/${name}.conf`)
+        shx.sed('-i', '{{source}}', this.distro.mountpointSquashFs, `${this.dirModules}/${name}.conf`)
     }
 
     /**
@@ -192,7 +192,7 @@ export default class Fisherman {
         const name = 'displaymanager'
         const displaymanager = require('./fisherman-helper/displaymanager').displaymanager
         this.buildModule(name)
-        shx.sed('-i', '%displaymanagers%', displaymanager(), `${this.dirModules}/${name}.conf`)
+        shx.sed('-i', '{{displaymanagers}}', displaymanager(), `${this.dirModules}/${name}.conf`)
     }
 
     /**
@@ -203,8 +203,8 @@ export default class Fisherman {
         const remove = require('./fisherman-helper/packages').remove
         const tryInstall = require('./fisherman-helper/packages').tryInstall
         this.buildModule(name)
-        shx.sed('-i', '%remove%', remove(distro), `${this.dirModules}/${name}.conf`)
-        shx.sed('-i', '%try_install%', tryInstall(distro), `${this.dirModules}/${name}.conf`)
+        shx.sed('-i', '{{remove}}', remove(distro), `${this.dirModules}/${name}.conf`)
+        shx.sed('-i', '{{try_install}}', tryInstall(distro), `${this.dirModules}/${name}.conf`)
     }
 
     /**
@@ -213,7 +213,7 @@ export default class Fisherman {
     async moduleRemoveuser(username: string) {
         const name = 'removeuser'
         this.buildModule(name)
-        shx.sed('-i', '%username%', username, `${this.dirModules}/${name}.conf`)
+        shx.sed('-i', '{{username}}', username, `${this.dirModules}/${name}.conf`)
     }
 
 }

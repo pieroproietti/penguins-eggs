@@ -3,4 +3,4 @@ finished
 ---
 restartNowEnabled: true
 restartNowChecked: true
-restartNowCommand: "%restartNowCommand%"
+restartNowCommand: {{restartNowCommand%}}

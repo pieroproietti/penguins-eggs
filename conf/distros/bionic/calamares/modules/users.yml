@@ -1,3 +1,6 @@
+Ubuntu bionic
+users
+---
 userGroup: users
 defaultGroups:
   - cdrom

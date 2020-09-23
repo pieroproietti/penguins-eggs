@@ -2,6 +2,6 @@ Debian Buster
 unpackfs
 ---
 unpack:
-    -   source: "%source%"
+    -   source: {{source}}
         sourcefs: "squashfs"
         destination: ""

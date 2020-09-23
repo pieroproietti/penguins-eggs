@@ -1,4 +1,6 @@
-# UBUNTU bionic
+Ubuntu bionic
+partition
+---
 efiSystemPartition: /boot/efi
 enableLuksAutomatedPartitioning: true
 userSwapChoices: none
