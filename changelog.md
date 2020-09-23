@@ -17,10 +17,12 @@ You can follow the project also consulting the [commit history](https://github.c
 
 ## Changelog
 ### eggs-7.40._1.deb
-* beowulf - buxfix command clean
-* all - rewrite command kill with new class settings, and removed flag --umount;
-* added bullseye and stretch as supported distros;
-* added but not yet activated, remove resume and crypto configuration for live initrd.img
+* beowulf, bionic, buster, focal buxfixes in yml configurazion of calamares:
+* added bullseye as supported distros;
+* rewrite command kill with new class settings, and removed flag --umount;
+* added - but not yet activated - new class initrd to configurare resume and crypto in the live initrd.img
+* changed the way eggs work, not remove prerequisites. Added --sterilize flag in produce and calamares, if yuo want to remove them.
+* hard tested on beowulf, bionic, buster, focal the reproductive system: produce, install, modify, produce, and so on.
 
 Versions are listed on reverse order, the first is the last one.
 ### eggs-7.0.39_1.deb
