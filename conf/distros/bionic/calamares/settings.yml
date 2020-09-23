@@ -42,7 +42,7 @@ sequence:
       - umount
   - show:
       - finished
-branding: "%branding%"
+branding: {{branding}}
 prompt-install: true
 dont-chroot: false
 oem-setup: false

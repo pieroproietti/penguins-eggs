@@ -1,5 +1,5 @@
-Ubuntu Focal
-fstab
+# Ubuntu Focal
+# fstab
 ---
 mountOptions:
   default: defaults

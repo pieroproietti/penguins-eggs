@@ -1,5 +1,5 @@
-Ubuntu Focal
-machineid
+# Ubuntu Focal
+# machineid
 ---
 # Whether to create /etc/machine-id for systemd.
 systemd: true

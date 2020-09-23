@@ -1,5 +1,5 @@
 # UBUNTU bionic
-fstab
+# fstab
 ---
 mountOptions:
   default: 'defaults,noatime'

@@ -1,5 +1,5 @@
-Debian Buster
-bootloader
+# Debian Buster
+# bootloader
 ---
 # Define which bootloader you want to use for EFI installations
 # Possible options are 'grub', 'sb-shim' and 'systemd-boot'.

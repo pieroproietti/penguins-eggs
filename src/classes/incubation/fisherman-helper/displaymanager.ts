@@ -28,7 +28,11 @@ function addIfExist(package2check: string): string {
    let text = ''
 
    if (Pacman.packageIsInstalled(package2check)) {
-      text += `   - '${package2check}'\n`
+      if (text === '') {
+         text += `- ${package2check}\n`
+      } else {  //displaymanagers: '
+         text += `                 - ${package2check}\n`
+      }
    }
    return text
 }

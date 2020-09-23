@@ -1,5 +1,5 @@
-Ubuntu bionic
-before-bootloader-mkdirs
+# Ubuntu bionic
+# before-bootloader-mkdirs
 ---
 type: job
 name: before-bootloader-mkdirs

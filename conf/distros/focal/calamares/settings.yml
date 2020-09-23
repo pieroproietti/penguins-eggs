@@ -1,5 +1,5 @@
-Ubuntu Focal
-settings
+# Ubuntu Focal
+# settings
 ---
 modules-search: [local]
 
@@ -63,7 +63,7 @@ sequence:
   - show:
       - finished
 
-branding: "%branding%"
+branding: {{branding}}
 prompt-install: true
 dont-chroot: false
 oem-setup: false

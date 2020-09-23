@@ -1,5 +1,5 @@
-Ubuntu Focal
-after_bootloader_context
+# Ubuntu Focal
+# after_bootloader_context
 # Workaround from ubiquity. Ubuntu's grub will want to look in EFI/ubuntu, so
 # let's make sure it can find something there.
 # This only copies the cfg and doesn't overwrite, this is specifically so

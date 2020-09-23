@@ -1,5 +1,5 @@
-Ubuntu bionic
-automirror
+# Ubuntu bionic
+# automirror
 ---
 type: job
 name: automirror

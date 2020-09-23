@@ -1,5 +1,5 @@
-Debian Buster
-bootloader-config
+# Debian Buster
+# bootloader-config
 ---
 type: "job"
 name: "bootloader-config"

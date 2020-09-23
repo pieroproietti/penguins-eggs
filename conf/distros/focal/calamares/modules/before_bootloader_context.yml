@@ -1,5 +1,5 @@
-Ubuntu Focal
-before_bootloader_context
+# Ubuntu Focal
+# before_bootloader_context
 # Make sure the correct bootloader package is installed for EFI.
 # Also pull in shim so secureboot has a chance at working.
 # Because of edge cases, we ignore BIOS, and do the same

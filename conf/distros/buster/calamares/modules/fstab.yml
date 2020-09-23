@@ -1,5 +1,5 @@
-Debian Buster
-fstab
+# Debian Buster
+# fstab
 ---
 mountOptions:
   default: defaults,noatime

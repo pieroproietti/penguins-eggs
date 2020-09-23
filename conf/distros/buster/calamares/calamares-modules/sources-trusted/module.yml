@@ -1,5 +1,5 @@
-Debian Buster
-sources-trusted
+# Debian Buster
+# sources-trusted
 ---
 type: "job"
 name: "sources-trusted"

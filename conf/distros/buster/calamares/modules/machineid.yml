@@ -1,5 +1,5 @@
-Debian Buster
-machineid
+# Debian Buster
+# machineid
 ---
 # Whether to create /etc/machine-id for systemd.
 systemd: true

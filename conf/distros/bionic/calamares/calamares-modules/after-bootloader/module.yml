@@ -1,5 +1,5 @@
-Ubuntu bionic
-after-bootloader
+# Ubuntu bionic
+# after-bootloader
 ---
 dontChroot: true
 type: job

@@ -1,5 +1,5 @@
-Ubuntu Focal
-users
+# Ubuntu Focal
+# users
 ---
 doAutologin: false
 setRootPassword: false

@@ -1,4 +1,5 @@
 # UBUNTU bionic
+# bootloader
 ---
 efiBootLoader: grub
 

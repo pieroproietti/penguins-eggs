@@ -1,5 +1,5 @@
-Ubuntu bionic
-automirror
+# Ubuntu bionic
+# automirror
 ---
 baseUrl: archive.ubuntu.com
 distribution: Ubuntu

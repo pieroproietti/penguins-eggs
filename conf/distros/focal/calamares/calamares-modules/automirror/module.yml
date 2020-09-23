@@ -1,5 +1,5 @@
-Ubuntu Focal
-automirror
+# Ubuntu Focal
+# automirror
 ---
 type: "job"
 name: "automirror"

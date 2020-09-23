@@ -1,5 +1,5 @@
-Ubuntu Focal
-shellprocess_add386arch
+# Ubuntu Focal
+# shellprocess_add386arch
 ---
 dontChroot: false
 timeout: 30

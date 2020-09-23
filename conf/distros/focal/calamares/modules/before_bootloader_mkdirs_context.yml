@@ -1,5 +1,5 @@
-Ubuntu Focal
-before_bootloader_mkdirs_context
+# Ubuntu Focal
+# before_bootloader_mkdirs_context
 ---
 dontChroot: true
 timeout: 10

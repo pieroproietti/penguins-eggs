@@ -45,7 +45,7 @@ export default class Fisherman {
     async settings(branding = 'debian', sterilize = false) {
         const settings = '/etc/calamares/settings.conf'
         shx.cp(`${this.rootTemplate}/settings.yml`, settings)
-        shx.sed('-i', '%branding%', branding, settings)
+        shx.sed('-i', '{{branding}}', branding, settings)
         if (sterilize) {
             shx.sed('-i', '# packages', '- packages', settings)
         } else {

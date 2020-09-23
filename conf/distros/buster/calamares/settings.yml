@@ -1,5 +1,5 @@
-Debian Buster
-settings
+# Debian Buster
+# settings
 ---
 # "local" is LIBDIR/calamares/modules with settings in SHARE/calamares/modules
 modules-search: [local, /usr/lib/calamares/modules]
@@ -68,7 +68,7 @@ sequence:
 # Only the name of the branding component (directory) should be
 # specified here, Calamares then takes care of finding it and
 # loading the contents.
-branding: "%branding%"
+branding: {{branding}}
 
 # If this is set to true, Calamares will show an "Are you sure?" prompt right
 # before each execution phase, i.e. at points of no return. If this is set to
@@ -90,3 +90,4 @@ prompt-install: false
 #
 # YAML: boolean.
 dont-chroot: false
+

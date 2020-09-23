@@ -1,5 +1,5 @@
-Ubuntu Focal
-finished
+# Ubuntu Focal
+# finished
 ---
 restartNowMode: user-checked
 restartNowCommand: "systemctl -i reboot"
