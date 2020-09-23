@@ -27,7 +27,6 @@ sequence:
       - partition
       - mount
       - unpackfs
-      - sources-trusted
       - fstab
       - locale
       - keyboard
@@ -48,8 +47,6 @@ sequence:
       - initramfs
       - removeuser
       - remove-link
-      - sources-trusted-unmount
-      - sources-final
       - umount
 
   # Phase 3 - postinstall.
