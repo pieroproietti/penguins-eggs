@@ -16,6 +16,15 @@ Usually the last version is the right one. Detailed instrunctions for usage are 
 You can follow the project also consulting the [commit history](https://github.com/pieroproietti/penguins-eggs/commits/master). 
 
 ## Changelog
+Versions are listed on reverse order, the first is the last one.
+
+### eggs-7.41._1.deb
+* using mustache for templates (grub, isolinux, locale.gen, locale);
+* check exist links to distros in new installation or update;
+* removed clean from packman and using clean from bleach, removing all apt space used;
+* made new isolinux and grub.cfg for bionic and focal, with languages
+* actualy eggs produce a boot menu, with the first item language host, submenu languages and menu safe.
+
 ### eggs-7.40._1.deb
 * beowulf, bionic, buster, focal buxfixes in yml configurazion of calamares:
 * added bullseye as supported distros;
@@ -24,7 +33,6 @@ You can follow the project also consulting the [commit history](https://github.c
 * changed the way eggs work, not remove prerequisites. Added --sterilize flag in produce and calamares, if yuo want to remove them.
 * hard tested on beowulf, bionic, buster, focal the reproductive system: produce, install, modify, produce, and so on.
 
-Versions are listed on reverse order, the first is the last one.
 ### eggs-7.0.39_1.deb
 * bugfix su bionic - thanx to Adriano Morselli
 
