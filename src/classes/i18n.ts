@@ -28,6 +28,7 @@ import Xdg from './xdg'
 import Pacman from './pacman'
 import Settings from './settings'
 import { utils } from 'mocha'
+import mustache = require('mustache')
 
 
 /**
@@ -48,7 +49,6 @@ export default class I18n {
      */
     generate(reinstall = false) {
 
-
         this.settings.load()
 
         this.verbose = true
@@ -65,8 +65,14 @@ export default class I18n {
         if (this.verbose) {
             console.log('creating /etc/default.locale')
         }
-        shx.cp(path.resolve(__dirname, `../../conf/distros/${this.settings.distro.versionId}/locales/locale.template`), '/etc/default/locale')
-        shx.sed('-i', '%locale%', this.settings.locale, '/etc/default/locale')
+        const src = path.resolve(__dirname, `../../conf/distros/${this.settings.distro.versionId}/locales/locale.template`)
+        const dest = '/etc/default/locale'
+        const template = fs.readFileSync(src, 'utf8')
+        const view = {
+            locale: this.settings.locale,
+        }
+        fs.writeFileSync(dest, mustache.render(template, view))
+
 
         /**
          * /etc/locale.gen
@@ -75,14 +81,22 @@ export default class I18n {
             console.log('creating /etc/locale.gen')
 
         }
-        shx.cp(path.resolve(__dirname, `../../conf/distros/${this.settings.distro.versionId}/locales/locale.gen.template`), '/etc/locale.gen')
-        let locales = ''
-        for (let i=0; i < this.settings.locales.length; i++){
-           locales += this.settings.locales[i] + ' UTF-8\n'
+        // shx.cp(path.resolve(__dirname, `../../conf/distros/${this.settings.distro.versionId}/locales/locale.gen.template`), '/etc/locale.gen')
+        // let locales = ''
+        // for (let i=0; i < this.settings.locales.length; i++){
+        //  locales += this.settings.locales[i] + ' UTF-8\n'
+        // }
+        // shx.sed('-i', '%locales%', locales, '/etc/locale.gen')
+        const srcLocales = path.resolve(__dirname, `../../conf/distros/${this.settings.distro.versionId}/locales/locale.gen.template`)
+        const destLocales = '/etc/locale.gen'
+        const templateLocales = fs.readFileSync(srcLocales, 'utf8')
+        const viewLocales = { 'locales': [{}] }
+        for (let i = 0; i < this.settings.locales.length; i++) {
+            viewLocales.locales.push({ 'locale': this.settings.locales[i] + ' UTF-8'})
         }
-        shx.sed('-i', '%locales%', locales, '/etc/locale.gen')
+        fs.writeFileSync(destLocales, mustache.render(templateLocales, viewLocales))
 
-        if (reinstall){
+        if (reinstall) {
             /**
              * apt-get install locales --yes
              */
