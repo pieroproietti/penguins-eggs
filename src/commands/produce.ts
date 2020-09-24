@@ -14,6 +14,7 @@ import Pacman from '../classes/pacman'
 import chalk = require('chalk')
 import { IMyAddons } from '../interfaces'
 import { license } from 'pjson'
+import Bleach from '../classes/bleach'
 
 export default class Produce extends Command {
    static flags = {
@@ -135,7 +136,8 @@ export default class Produce extends Command {
             if (await Utils.customConfirm(`Select yes to install prerequisites`)) {
                Utils.warning('Installing prerequisites...')
                await Pacman.prerequisitesEggsInstall(verbose)
-               await Pacman.clean(verbose)
+               const bleach = new Bleach()
+               await bleach.clean(verbose)
             } else {
                Utils.error('To create iso, you must install eggs prerequisites.\nsudo eggs prerequisites')
                process.exit(0)

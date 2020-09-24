@@ -15,7 +15,7 @@ import { IRemix, IDistro } from '../interfaces'
 import Utils from './utils'
 import Distro from './distro'
 import Settings from './settings'
-import { settings } from 'cluster'
+import Bleach from './bleach'
 
 
 const exec = require('../lib/utils').exec
@@ -88,7 +88,7 @@ export default class Pacman {
       const distro = new Distro(remix)
       const packages = Pacman.debs4eggs
 
-      if ((distro.versionLike === 'buster') || (distro.versionLike === 'beowulf')) {
+      if ((distro.versionLike === 'buster') || (distro.versionLike === 'beowulf') || (distro.versionLike === 'bullseye') || (distro.versionLike === 'stretch')) {
          packages.push('live-config')
       } else if ((distro.versionLike === 'focal')) {
          packages.push('live-config')
@@ -122,7 +122,7 @@ export default class Pacman {
 
       await exec('apt-get update --yes')
       await exec(`apt-get install --yes ${Pacman.debs2line(Pacman.packages(verbose))}`, echo)
-      if ((distro.versionLike === 'buster') || (distro.versionLike === 'beowulf')) {
+      if ((distro.versionLike === 'buster') || (distro.versionLike === 'beowulf') || (distro.versionLike === 'bullseye') || (distro.versionLike === 'stretch')) {
          await exec(`apt-get install --no-install-recommends --yes ${Pacman.debs2line(Pacman.packagesLocalisation(verbose))}`, echo)
       }
       return retVal
@@ -170,7 +170,9 @@ export default class Pacman {
       if (Pacman.isXInstalled()) {
          await exec('apt-get update --yes', echo)
          await exec(`apt-get install --yes ${Pacman.debs2line(Pacman.debs4calamares)}`, echo)
-         await Pacman.clean(verbose)
+
+         const bleach = new Bleach()
+         bleach.clean(verbose)
       } else {
          console.log("It's not possible to use calamares in a system without GUI")
       }
@@ -216,7 +218,7 @@ export default class Pacman {
     */
    static async linksCreate(links = false, verbose = false) {
       // Link da fare solo per pacchetto deb o per test
-      
+
       if (Utils.isDebPackage() || links) {
 
          // const rootPen = '/usr/lib/penguins-eggs'
@@ -384,14 +386,6 @@ export default class Pacman {
       await exec('rm /etc/penguins-eggs.d/tools.conf?', echo)
       await exec('rm /usr/local/share/penguins-eggs/exclude.list', echo)
       await exec('rm /usr/local/share/penguins-eggs/exclude.list?', echo)
-   }
-   /**
-    *
-    */
-   static async clean(verbose = true): Promise<void> {
-      const echo = Utils.setEcho(verbose)
-      await exec('apt-get clean', echo)
-      await exec('apt-get autoclean', echo)
    }
 
    /**

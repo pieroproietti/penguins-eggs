@@ -7,6 +7,7 @@
 import { Command, flags } from '@oclif/command'
 import Utils from '../classes/utils'
 import Pacman from '../classes/pacman'
+import Bleach from '../classes/bleach'
 
 /**
  *
@@ -37,7 +38,8 @@ export default class Sterilize extends Command {
                await Pacman.prerequisitesCalamaresRemove(verbose)
                Utils.warning('Removing files configuration...')
                await Pacman.configurationRemove(verbose)
-               await Pacman.clean(verbose)
+               const bleach = new Bleach()
+               await bleach.clean(verbose)
             }
          }
       } else {

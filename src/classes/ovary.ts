@@ -31,6 +31,7 @@ import Pacman from './pacman'
 import Settings from './settings'
 import Initrd from './initrd'
 import Systemctl from './systemctl'
+import Bleach from './bleach'
 
 
 /**
@@ -92,12 +93,13 @@ export default class Ovary {
          }
 
          await this.liveCreateStructure(verbose)
-         
+
          if (Pacman.packageIsInstalled('calamares')) {
             if (this.settings.force_installer && !(await Pacman.prerequisitesCalamaresCheck())) {
                console.log('Installing ' + chalk.bgGray('calamares') + ' due force_installer=yes.')
                await Pacman.prerequisitesCalamaresInstall(verbose)
-               await Pacman.clean(verbose)
+               const bleach = new Bleach
+               await bleach.clean(verbose)
             }
             this.incubator = new Incubator(this.settings.remix, this.settings.distro, this.settings.user_opt, verbose)
             this.incubator.config(sterilize)
@@ -363,7 +365,9 @@ export default class Ovary {
          initrdImg: `/live${this.settings.initrdImg}`,
          usernameOpt: this.settings.user_opt,
          netconfigOpt: this.settings.netconfig_opt,
-         timezoneOpt: this.settings.timezone_opt
+         timezoneOpt: this.settings.timezone_opt,
+         lang: process.env.LANG,
+         locales: process.env.LANG,
       }
       fs.writeFileSync(dest, mustache.render(template, view))
    }
@@ -964,7 +968,9 @@ export default class Ovary {
          initrdImg: `/live${this.settings.initrdImg}`,
          usernameOpt: this.settings.user_opt,
          netconfigOpt: this.settings.netconfig_opt,
-         timezoneOpt: this.settings.timezone_opt
+         timezoneOpt: this.settings.timezone_opt,
+         lang: process.env.LANG,
+         locales: process.env.LANG,
       }
       fs.writeFileSync(dest, mustache.render(template, view))
    }
