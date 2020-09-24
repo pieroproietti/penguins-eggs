@@ -31,13 +31,19 @@ I work mostly on Debian stable, so here you can find my personal versions and ot
 ## buster
 I divided it in three parts: cinnamon, lxde and naked. The two in cinnamon are the most complete and are the tools with i work:
 debu to develop and office automatition and incubator, a version of proxmox-ve sistem with filled with all you can expect from 
-a complete.
+a complete:
+
 * **naked** - just the juice, without GUI, with nodejs and eggs. You can start here to build your revolution! (i386 and amd64)
-* **less** - it's naked, just dressed with lxde-core and the tools to develop. (i386 and amd64)
+
+* **less** - it's not naked, but just dressed with lxde-core and the tools to develop. (i386 and amd64)
+
 * **debu**  - it is my personal version with cinnamon, mostly for development, but include common office tools; (amd64)
-students for learn blockchain, develop smart contracts, etc. Feel free to give suggestions on it or ask for help to build your own version. (amd64)
+
 * **incubator** - Debian Buster + Proxmox VE 6.2 and the same tools of debu; (amd64 plus virtualization enabled)
 
+## bullseye
+
+* **less** - a less refacement with bullseye.
 
 All the other distro are non divided, but just a directory, the name is usually the distro version name. Example: focal, bionic, etc.
 
@@ -55,10 +61,11 @@ All the other distro are non divided, but just a directory, the name is usually 
 ## Linux Mint Debian Edition 4 Debbie
 * **debbie** - LMDE4 Debbie, remastered with eggs, without any modifications except for wallpapers and develop tools.
 
-
 # UfficioZero
-* **roma-i386** - UffucioZero Roma (x86), based on devuan beowulf, remastered with eggs
-* **tropea** - UfficioZero Tropea based on Linuxmint ulyana
+* **roma-i386** - UffucioZero Roma (x86), based on devuan beowulf
+* **tropea** - UfficioZero Tropea (amd64)based on Linuxmint 20.0 ulyana
+* **vieste** - UfficioZero Vieste (amd64) based on Linuxmint 19.3 tricia
+
 
 You can create remix from yourself by downloading the originals, installing the system, installing eggs and start to creatie the ISOs.
 
