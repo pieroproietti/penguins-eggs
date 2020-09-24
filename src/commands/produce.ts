@@ -13,6 +13,7 @@ import Ovary from '../classes/ovary'
 import Pacman from '../classes/pacman'
 import chalk = require('chalk')
 import { IMyAddons } from '../interfaces'
+import { license } from 'pjson'
 
 export default class Produce extends Command {
    static flags = {
@@ -125,6 +126,9 @@ export default class Produce extends Command {
          myAddons.ichoice = flags.ichoice
          myAddons.pve = flags.pve
       
+         if (!Pacman.linkCheck()){
+            await Pacman.linksCreate()
+         }
 
          if (!Pacman.prerequisitesEggsCheck()) {
             console.log('You need to install ' + chalk.bgGray('prerequisites') + ' to continue.')

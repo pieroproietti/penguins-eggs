@@ -203,38 +203,20 @@ export default class Pacman {
       return configured
    }
 
-
-   static async ln(mode: string, src: string, dest: string, verbose = true) {
-      // console.log(`src : ${src}`)
-      // console.log(`dest: ${dest}`)
-
-      const rel = path.relative(dest, src).substring(3)
-      if (fs.existsSync(dest)) {
-         if (verbose) console.log(`remove ${dest}`)
-         shx.rm(dest)
+   static linkCheck(): boolean {
+      let link = false
+      if (fs.existsSync('/etc/penguins-eggs.d/distros/bullseye')) {
+         link = true
       }
-      const dirname = path.dirname(dest)
-      const basename = path.basename(dest)
-
-      process.chdir(dirname)
-      if (verbose) console.log(`cd ${dirname}`)
-      if (verbose) console.log(`ln ${mode} ${rel} ${basename}\n`)
-      fs.symlinkSync(rel, basename)
+      return link
    }
 
    /**
-    * Creazione del file di configurazione /etc/penguins-eggs
+    * 
     */
-   static async configurationInstall(links = true, verbose = true): Promise<void> {
-      shx.rm('/etc/penguins-eggs.d/addons')
-      shx.rm('/etc/penguins-eggs.d/distros')
-      if (!fs.existsSync('/etc/penguins-eggs.d')) {
-         shx.mkdir('/etc/penguins-eggs.d')
-      }
-      shx.ln('-s', path.resolve(__dirname, '../../addons'), '/etc/penguins-eggs.d/addons')
-      shx.ln('-s', path.resolve(__dirname, '../../conf/distros'), '/etc/penguins-eggs.d/distros')
-
+   static async linksCreate(links = false, verbose = false) {
       // Link da fare solo per pacchetto deb o per test
+      
       if (Utils.isDebPackage() || links) {
 
          // const rootPen = '/usr/lib/penguins-eggs'
@@ -279,6 +261,40 @@ export default class Pacman {
          this.ln('-s', `${buster}/calamares/modules/removeuser.yml`, `${bionic}/calamares/modules/removeuser.yml`, verbose)
          this.ln('-s', `${buster}/calamares/modules/unpackfs.yml`, `${bionic}/calamares/modules/unpackfs.yml`, verbose)
       }
+   }
+
+
+   static async ln(mode: string, src: string, dest: string, verbose = true) {
+      // console.log(`src : ${src}`)
+      // console.log(`dest: ${dest}`)
+
+      const rel = path.relative(dest, src).substring(3)
+      if (fs.existsSync(dest)) {
+         if (verbose) console.log(`remove ${dest}`)
+         shx.rm(dest)
+      }
+      const dirname = path.dirname(dest)
+      const basename = path.basename(dest)
+
+      process.chdir(dirname)
+      if (verbose) console.log(`cd ${dirname}`)
+      if (verbose) console.log(`ln ${mode} ${rel} ${basename}\n`)
+      fs.symlinkSync(rel, basename)
+   }
+
+   /**
+    * Creazione del file di configurazione /etc/penguins-eggs
+    */
+   static async configurationInstall(links = true, verbose = true): Promise<void> {
+      shx.rm('/etc/penguins-eggs.d/addons')
+      shx.rm('/etc/penguins-eggs.d/distros')
+      if (!fs.existsSync('/etc/penguins-eggs.d')) {
+         shx.mkdir('/etc/penguins-eggs.d')
+      }
+      shx.ln('-s', path.resolve(__dirname, '../../addons'), '/etc/penguins-eggs.d/addons')
+      shx.ln('-s', path.resolve(__dirname, '../../conf/distros'), '/etc/penguins-eggs.d/distros')
+
+      // this.linksCreate(links)
 
       shx.cp(path.resolve(__dirname, '../../conf/README.md'), '/etc/penguins-eggs.d/')
       shx.cp(path.resolve(__dirname, '../../conf/tools.conf'), config_tools)
