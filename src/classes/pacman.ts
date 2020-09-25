@@ -99,7 +99,7 @@ export default class Pacman {
       let config = ''
       if (init === 'systemd') {
          if (distro.versionLike === 'bionic') {
-            config = 'open-infrastructure-system-config'
+            // config = 'open-infrastructure-system-config'
          } else {
             config = 'live-config-systemd'
          }
