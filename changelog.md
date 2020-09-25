@@ -18,6 +18,9 @@ You can follow the project also consulting the [commit history](https://github.c
 ## Changelog
 Versions are listed on reverse order, the first is the last one.
 
+### eggs-7.42.1_.deb
+* removed open-infrastructure-system-config dependencies from ubuntu bionic. 
+
 ### eggs-7.41._1.deb
 * using mustache for templates (grub, isolinux, locale.gen, locale);
 * check exist links to distros in new installation or update;
