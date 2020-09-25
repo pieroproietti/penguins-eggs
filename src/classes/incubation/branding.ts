@@ -26,7 +26,7 @@ export function branding(remix: IRemix, distro: IDistro, brand = '', verbose = f
    const shortVersion = remix.versionNumber
    const versionedName = remix.name
    const shortVersionedName = remix.versionName
-   const bootloaderEntryName = productName
+   const bootloaderEntryName = distro.distroId
    const productUrl = homeUrl
    const releaseNotesUrl = 'https://github.com/pieroproietti/penguins-eggs'
    const productLogo = `${remix.branding}-logo.png`
