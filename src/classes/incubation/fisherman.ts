@@ -203,8 +203,6 @@ export default class Fisherman {
         } else {
             shx.sed('-i', '{{remove}}', '', `${this.dirModules}/${name}.conf`)
         }
-        console.log(removePackages(distro))
-        console.log(tryInstall(distro))
         shx.sed('-i', '{{try_install}}', tryInstall(distro), `${this.dirModules}/${name}.conf`)
     }
 
