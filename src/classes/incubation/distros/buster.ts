@@ -28,7 +28,7 @@ export class Buster {
 
    distro: IDistro
 
-   sterilize = false
+   final = false
 
    user_opt: string
 
@@ -44,12 +44,12 @@ export class Buster {
     * @param displaymanager
     * @param verbose
     */
-   constructor(remix: IRemix, distro: IDistro, sterilize: boolean, user_opt: string, verbose = false) {
+   constructor(remix: IRemix, distro: IDistro, final: boolean, user_opt: string, verbose = false) {
       this.remix = remix
       this.distro = distro
       this.user_opt = user_opt
       this.verbose = verbose
-      this.sterilize = sterilize
+      this.final = final 
       if (process.arch === 'ia32') {
          this.dirCalamaresModules = '/usr/lib/calamares/modules/'
       }
@@ -64,7 +64,7 @@ export class Buster {
    async create() {
       const fisherman = new Fisherman(this.distro, this.dirModules, this.dirCalamaresModules, this.rootTemplate, this.verbose)
 
-      await fisherman.settings(this.remix.branding, this.sterilize)
+      await fisherman.settings(this.remix.branding)
 
       await fisherman.buildModule('partition')
       await fisherman.buildModule('mount')
@@ -86,7 +86,7 @@ export class Buster {
       await fisherman.buildCalamaresModule('bootloader-config', true)
       await fisherman.buildModule('grubcf')
       await fisherman.buildModule('bootloader')
-      await fisherman.modulePackages(this.distro) //
+      await fisherman.modulePackages(this.distro, this.final) //
       await fisherman.buildModule('luksbootkeyfile')
       await fisherman.buildModule('plymouthcfg')
       await fisherman.buildModule('initramfscfg')

@@ -42,15 +42,10 @@ export default class Fisherman {
     /**
     * write setting
     */
-    async settings(branding = 'debian', sterilize = false) {
+    async settings(branding = 'debian') {
         const settings = '/etc/calamares/settings.conf'
         shx.cp(`${this.rootTemplate}/settings.yml`, settings)
         shx.sed('-i', '{{branding}}', branding, settings)
-        if (sterilize) {
-            shx.sed('-i', '# packages', '- packages', settings)
-        } else {
-            shx.sed('-i', '- packages', '# packages', settings)
-        }
     }
 
     /**
@@ -198,12 +193,18 @@ export default class Fisherman {
     /**
      * usa i moduli-ts
      */
-    async modulePackages(distro: IDistro) {
+    async modulePackages(distro: IDistro, remove = false) {
         const name = 'packages'
-        const remove = require('./fisherman-helper/packages').remove
+        const removePackages = require('./fisherman-helper/packages').remove
         const tryInstall = require('./fisherman-helper/packages').tryInstall
         this.buildModule(name)
-        shx.sed('-i', '{{remove}}', remove(distro), `${this.dirModules}/${name}.conf`)
+        if (remove) {
+            shx.sed('-i', '{{remove}}', removePackages(distro), `${this.dirModules}/${name}.conf`)
+        } else {
+            shx.sed('-i', '{{remove}}', '', `${this.dirModules}/${name}.conf`)
+        }
+        console.log(removePackages(distro))
+        console.log(tryInstall(distro))
         shx.sed('-i', '{{try_install}}', tryInstall(distro), `${this.dirModules}/${name}.conf`)
     }
 

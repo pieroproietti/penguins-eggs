@@ -23,8 +23,8 @@ export default class Calamares extends Command {
    static flags = {
       help: flags.help({ char: 'h' }),
       verbose: flags.boolean({ char: 'v' }),
-      configuration: flags.boolean({ char: 'c', description: 'creation of configuration files only' }),
-      sterilize: flags.boolean({description: 'sterilize: remove eggs prerequisites, calamares and all it\'s dependencies' }),
+      install: flags.boolean({ char: 'i', description: 'install calamares and it\'s dependencies' }),
+      final: flags.boolean({description: 'final: remove eggs prerequisites, calamares and all it\'s dependencies' }),
       theme: flags.string({ description: 'theme/branding for eggs and calamares' })
    }
 
@@ -40,13 +40,13 @@ export default class Calamares extends Command {
       }
 
       let install = false
-      if (!flags.configuration) {
+      if (flags.install) {
          install = true
       }
 
-      let sterilize = false
-      if (flags.sterilize) {
-         sterilize = true
+      let final = false
+      if (flags.final) {
+         final = true
       }
 
       let theme = 'eggs'
@@ -68,7 +68,7 @@ export default class Calamares extends Command {
                if (await this.settings.load()) {
                   await this.settings.loadRemix(this.settings.snapshot_basename, theme)
                   this.incubator = new Incubator(this.settings.remix, this.settings.distro, this.settings.user_opt, verbose)
-                  await this.incubator.config(sterilize)
+                  await this.incubator.config(final)
                }
             }
          } else {

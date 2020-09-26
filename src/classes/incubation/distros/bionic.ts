@@ -31,7 +31,7 @@ export class Bionic {
 
    distro: IDistro
 
-   sterilize = false
+   final = false
 
    user_opt: string
 
@@ -44,15 +44,15 @@ export class Bionic {
    /**
     * @param remix
     * @param distro
-    * @param sterilize
+    * @param final
     * @param verbose
     */
-   constructor(remix: IRemix, distro: IDistro, sterilize: boolean, user_opt: string, verbose = false) {
+   constructor(remix: IRemix, distro: IDistro, final: boolean, user_opt: string, verbose = false) {
       this.remix = remix
       this.distro = distro
       this.user_opt = user_opt
       this.verbose = verbose
-      this.sterilize = sterilize
+      this.final = final
       if (process.arch === 'ia32') {
          this.dirCalamaresModules = '/usr/lib/calamares/modules/'
       }
@@ -66,7 +66,7 @@ export class Bionic {
    async create() {
       const fisherman = new Fisherman(this.distro, this.dirModules, this.dirCalamaresModules, this.rootTemplate, this.verbose)
 
-      await fisherman.settings(this.remix.branding, this.sterilize)
+      await fisherman.settings(this.remix.branding)
 
       await fisherman.buildModule('partition')
       await fisherman.buildModule('mount')
@@ -90,7 +90,7 @@ export class Bionic {
       await fisherman.buildModule('bootloader')
       await fisherman.buildCalamaresModule('after-bootloader')
       await fisherman.buildCalamaresModule('add386arch', false)
-      await fisherman.modulePackages(this.distro) //
+      await fisherman.modulePackages(this.distro, this.final) //
       await fisherman.moduleRemoveuser(this.user_opt) //
       await fisherman.buildCalamaresModule('remove-link', true)
       // await fisherman.shellprocess('logs') non trova calamares-helper

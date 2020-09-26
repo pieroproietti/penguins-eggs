@@ -5,4 +5,4 @@ backend: apt
 
 operations:
 {{remove}}
-{{ry_install}}
+{{try_install}}
