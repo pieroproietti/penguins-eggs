@@ -60,7 +60,7 @@ export default class Calamares extends Command {
             if (await Utils.customConfirm(`Select yes to continue...`)) {
                if (install) {
                   Utils.warning('Installing calamares prerequisites...')
-                  await Pacman.prerequisitesCalamaresInstall()
+                  await Pacman.calamaresInstall()
                }
 
                Utils.warning('Configuring calamares...')

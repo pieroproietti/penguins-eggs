@@ -95,9 +95,9 @@ export default class Ovary {
          await this.liveCreateStructure(verbose)
 
          if (Pacman.packageIsInstalled('calamares')) {
-            if (this.settings.force_installer && !(await Pacman.prerequisitesCalamaresCheck())) {
+            if (this.settings.force_installer && !(await Pacman.calamaresCheck())) {
                console.log('Installing ' + chalk.bgGray('calamares') + ' due force_installer=yes.')
-               await Pacman.prerequisitesCalamaresInstall(verbose)
+               await Pacman.calamaresInstall(verbose)
                const bleach = new Bleach
                await bleach.clean(verbose)
             }

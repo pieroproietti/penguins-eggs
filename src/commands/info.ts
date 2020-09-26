@@ -38,7 +38,7 @@ You will find here informations about penguin's eggs!
       shx.exec('lsb_release -a')
 
       console.log(line)
-      if (await Pacman.prerequisitesEggsCheck()) {
+      if (await Pacman.prerequisitesCheck()) {
          console.log('Eggs prerequisites:  ' + chalk.bgGreen('ok'))
       } else {
          console.log('Eggs prerequisites:  ' + chalk.bgRed('ko'))
@@ -50,7 +50,7 @@ You will find here informations about penguin's eggs!
          console.log('Configuration file:  ' + chalk.bgRed('ko'))
       }
       if (await Pacman.isXInstalled()) {
-         if (await Pacman.prerequisitesCalamaresCheck()) {
+         if (await Pacman.calamaresCheck()) {
             console.log('GUI Installer:       ' + chalk.bgGreen('ok'))
          } else {
             console.log('GUI Installer:       ' + chalk.bgBlue('ko'))

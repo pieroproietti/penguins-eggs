@@ -47,8 +47,8 @@ export default class Pacman {
    /**
     * controlla se Xserver è installato
     */
-   static isXInstalled(): boolean {
-      return Pacman.packageIsInstalled('xserver-xorg-core') || Pacman.packageIsInstalled('xserver-xorg-core-hwe-18.04')
+   static async isXInstalled(): Promise<boolean> {
+      return await Pacman.packageIsInstalled('xserver-xorg-core') || await Pacman.packageIsInstalled('xserver-xorg-core-hwe-18.04')
    }
 
 
@@ -110,17 +110,35 @@ export default class Pacman {
       return packages
    }
 
+
+   /**
+    * Restituisce VERO se i prerequisiti sono installati
+    */
+   static prerequisitesCheck(): boolean {
+      let installed = true
+
+      for (const i in this.debs4eggs) {
+         if (!Pacman.packageIsInstalled(this.debs4eggs[i])) {
+            installed = false
+            break
+         }
+      }
+      return installed
+   }
+
    /**
     *
     */
-   static async prerequisitesEggsInstall(verbose = true): Promise<boolean> {
+   static async prerequisitesInstall(verbose = true): Promise<boolean> {
       verbose = true
       const echo = Utils.setEcho(verbose)
       const retVal = false
       const remix = {} as IRemix
       const distro = new Distro(remix)
 
-      await exec('apt-get update --yes')
+      console.log('apt update')
+      await exec('apt-get update --yes', echo)
+      console.log('apt install')
       await exec(`apt-get install --yes ${Pacman.debs2line(Pacman.packages(verbose))}`, echo)
       if ((distro.versionLike === 'buster') || (distro.versionLike === 'beowulf') || (distro.versionLike === 'bullseye') || (distro.versionLike === 'stretch')) {
          await exec(`apt-get install --no-install-recommends --yes ${Pacman.debs2line(Pacman.packagesLocalisation(verbose))}`, echo)
@@ -131,7 +149,7 @@ export default class Pacman {
    /**
     *
     */
-   static async prerequisitesEggsRemove(verbose = true): Promise<boolean> {
+   static async prerequisitesRemove(verbose = true): Promise<boolean> {
       verbose = true
       const echo = Utils.setEcho(verbose)
       const retVal = false
@@ -147,10 +165,12 @@ export default class Pacman {
       return retVal
    }
 
+
+
    /**
     *
     */
-   static async prerequisitesCalamaresCheck(): Promise<boolean> {
+   static async calamaresCheck(): Promise<boolean> {
       let installed = true
       for (const i in this.debs4calamares) {
          if (!Pacman.packageIsInstalled(this.debs4calamares[i])) {
@@ -164,7 +184,7 @@ export default class Pacman {
    /**
     *
     */
-   static async prerequisitesCalamaresInstall(verbose = true): Promise<void> {
+   static async calamaresInstall(verbose = true): Promise<void> {
       verbose = true
       const echo = Utils.setEcho(verbose)
       if (Pacman.isXInstalled()) {
@@ -181,7 +201,7 @@ export default class Pacman {
    /**
     *
     */
-   static async prerequisitesCalamaresRemove(verbose = true): Promise<boolean> {
+   static async calamaresRemove(verbose = true): Promise<boolean> {
       verbose = true
       const echo = Utils.setEcho(verbose)
 
@@ -191,6 +211,8 @@ export default class Pacman {
       await exec('apt-get autoremove --yes', echo)
       return retVal
    }
+
+
 
    /**
     * Restutuisce VERO se i file di configurazione sono presenti
@@ -205,85 +227,6 @@ export default class Pacman {
       return configured
    }
 
-   static linkCheck(): boolean {
-      let link = false
-      if (fs.existsSync('/etc/penguins-eggs.d/distros/bullseye')) {
-         link = true
-      }
-      return link
-   }
-
-   /**
-    * 
-    */
-   static async linksCreate(links = false, verbose = false) {
-      // Link da fare solo per pacchetto deb o per test
-
-      if (Utils.isDebPackage() || links) {
-
-         // const rootPen = '/usr/lib/penguins-eggs'
-         const rootPen = Utils.rootPenguin()
-
-         // Buster - Nessun link presente
-         const buster = `${rootPen}/conf/distros/buster`
-
-         // bullseye prende tutto da buster
-         const bullseye = `${rootPen}/conf/distros/bullseye`
-         this.ln('-s', buster, bullseye, verbose)
-
-         const stretch = `${rootPen}/conf/distros/stretch`
-         this.ln('-s', buster, stretch, verbose)
-
-         // Beofulf
-         const beowulf = `${rootPen}/conf/distros/beowulf`
-         this.ln('-s', `${buster}/grub`, `${beowulf}/grub`, verbose)
-         this.ln('-s', `${buster}/isolinux`, `${beowulf}/isolinux`, verbose)
-         this.ln('-s', `${buster}/locales`, `${beowulf}/locales`, verbose)
-         this.ln('-s', `${buster}/calamares/calamares-modules`, `${beowulf}/calamares/calamares-modules`, verbose)
-         this.ln('-s', `${buster}/calamares/modules`, `${beowulf}/calamares/modules`, verbose)
-
-         // Focal
-         const focal = `${rootPen}/conf/distros/focal`
-         this.ln('-s', `${buster}/grub/loopback.cfg`, `${focal}/grub/loopback.cfg`, verbose)
-         this.ln('-s', `${buster}/grub/theme.cfg`, `${focal}/grub/theme.cfg`, verbose)
-         this.ln('-s', `${buster}/isolinux/isolinux.template.cfg`, `${focal}/isolinux/isolinux.template.cfg`, verbose)
-         this.ln('-s', `${buster}/isolinux/stdmenu.template.cfg`, `${focal}/isolinux/stdmenu.template.cfg`, verbose)
-         this.ln('-s', `${buster}/calamares/calamares-modules/remove-link`, `${focal}/calamares/calamares-modules/remove-link`, verbose)
-         this.ln('-s', `${buster}/calamares/modules/displaymanager.yml`, `${focal}/calamares/modules/displaymanager.yml`, verbose)
-         this.ln('-s', `${buster}/calamares/modules/packages.yml`, `${focal}/calamares/modules/packages.yml`, verbose)
-         this.ln('-s', `${buster}/calamares/modules/removeuser.yml`, `${focal}/calamares/modules/removeuser.yml`, verbose)
-
-         // Bionic
-         const bionic = `${rootPen}/conf/distros/bionic`
-         this.ln('-s', `${focal}/grub`, `${bionic}/grub`, verbose)
-         this.ln('-s', `${focal}/isolinux`, `${bionic}/isolinux`, verbose)
-         this.ln('-s', `${buster}/calamares/calamares-modules/remove-link`, `${bionic}/calamares/calamares-modules/remove-link`, verbose)
-         this.ln('-s', `${focal}/calamares/modules/displaymanager.yml`, `${bionic}/calamares/modules/displaymanager.yml`, verbose)
-         this.ln('-s', `${buster}/calamares/modules/packages.yml`, `${bionic}/calamares/modules/packages.yml`, verbose)
-         this.ln('-s', `${buster}/calamares/modules/removeuser.yml`, `${bionic}/calamares/modules/removeuser.yml`, verbose)
-         this.ln('-s', `${buster}/calamares/modules/unpackfs.yml`, `${bionic}/calamares/modules/unpackfs.yml`, verbose)
-      }
-   }
-
-
-   static async ln(mode: string, src: string, dest: string, verbose = true) {
-      // console.log(`src : ${src}`)
-      // console.log(`dest: ${dest}`)
-
-      const rel = path.relative(dest, src).substring(3)
-      if (fs.existsSync(dest)) {
-         if (verbose) console.log(`remove ${dest}`)
-         shx.rm(dest)
-      }
-      const dirname = path.dirname(dest)
-      const basename = path.basename(dest)
-
-      process.chdir(dirname)
-      if (verbose) console.log(`cd ${dirname}`)
-      if (verbose) console.log(`ln ${mode} ${rel} ${basename}\n`)
-      fs.symlinkSync(rel, basename)
-   }
-
    /**
     * Creazione del file di configurazione /etc/penguins-eggs
     */
@@ -296,13 +239,11 @@ export default class Pacman {
       shx.ln('-s', path.resolve(__dirname, '../../addons'), '/etc/penguins-eggs.d/addons')
       shx.ln('-s', path.resolve(__dirname, '../../conf/distros'), '/etc/penguins-eggs.d/distros')
 
-      // this.linksCreate(links)
+      // this.linksInstall(links)
 
       shx.cp(path.resolve(__dirname, '../../conf/README.md'), '/etc/penguins-eggs.d/')
       shx.cp(path.resolve(__dirname, '../../conf/tools.conf'), config_tools)
       shx.cp(path.resolve(__dirname, '../../conf/eggs.conf'), config_file)
-
-
 
       /**
        * version
@@ -389,6 +330,89 @@ export default class Pacman {
    }
 
    /**
+    * 
+    */
+   static linkCheck(): boolean {
+      let link = false
+      if (fs.existsSync('/etc/penguins-eggs.d/distros/bullseye')) {
+         link = true
+      }
+      return link
+   }
+
+   /**
+    * 
+    */
+   static async linksInstall(links = false, verbose = false) {
+      // Link da fare solo per pacchetto deb o per test
+
+      if (Utils.isDebPackage() || links) {
+
+         // const rootPen = '/usr/lib/penguins-eggs'
+         const rootPen = Utils.rootPenguin()
+
+         // Buster - Nessun link presente
+         const buster = `${rootPen}/conf/distros/buster`
+
+         // bullseye prende tutto da buster
+         const bullseye = `${rootPen}/conf/distros/bullseye`
+         this.ln('-s', buster, bullseye, verbose)
+
+         const stretch = `${rootPen}/conf/distros/stretch`
+         this.ln('-s', buster, stretch, verbose)
+
+         // Beofulf
+         const beowulf = `${rootPen}/conf/distros/beowulf`
+         this.ln('-s', `${buster}/grub`, `${beowulf}/grub`, verbose)
+         this.ln('-s', `${buster}/isolinux`, `${beowulf}/isolinux`, verbose)
+         this.ln('-s', `${buster}/locales`, `${beowulf}/locales`, verbose)
+         this.ln('-s', `${buster}/calamares/calamares-modules`, `${beowulf}/calamares/calamares-modules`, verbose)
+         this.ln('-s', `${buster}/calamares/modules`, `${beowulf}/calamares/modules`, verbose)
+
+         // Focal
+         const focal = `${rootPen}/conf/distros/focal`
+         this.ln('-s', `${buster}/grub/loopback.cfg`, `${focal}/grub/loopback.cfg`, verbose)
+         this.ln('-s', `${buster}/grub/theme.cfg`, `${focal}/grub/theme.cfg`, verbose)
+         this.ln('-s', `${buster}/isolinux/isolinux.template.cfg`, `${focal}/isolinux/isolinux.template.cfg`, verbose)
+         this.ln('-s', `${buster}/isolinux/stdmenu.template.cfg`, `${focal}/isolinux/stdmenu.template.cfg`, verbose)
+         this.ln('-s', `${buster}/calamares/calamares-modules/remove-link`, `${focal}/calamares/calamares-modules/remove-link`, verbose)
+         this.ln('-s', `${buster}/calamares/modules/displaymanager.yml`, `${focal}/calamares/modules/displaymanager.yml`, verbose)
+         this.ln('-s', `${buster}/calamares/modules/packages.yml`, `${focal}/calamares/modules/packages.yml`, verbose)
+         this.ln('-s', `${buster}/calamares/modules/removeuser.yml`, `${focal}/calamares/modules/removeuser.yml`, verbose)
+
+         // Bionic
+         const bionic = `${rootPen}/conf/distros/bionic`
+         this.ln('-s', `${focal}/grub`, `${bionic}/grub`, verbose)
+         this.ln('-s', `${focal}/isolinux`, `${bionic}/isolinux`, verbose)
+         this.ln('-s', `${buster}/calamares/calamares-modules/remove-link`, `${bionic}/calamares/calamares-modules/remove-link`, verbose)
+         this.ln('-s', `${focal}/calamares/modules/displaymanager.yml`, `${bionic}/calamares/modules/displaymanager.yml`, verbose)
+         this.ln('-s', `${buster}/calamares/modules/packages.yml`, `${bionic}/calamares/modules/packages.yml`, verbose)
+         this.ln('-s', `${buster}/calamares/modules/removeuser.yml`, `${bionic}/calamares/modules/removeuser.yml`, verbose)
+         this.ln('-s', `${buster}/calamares/modules/unpackfs.yml`, `${bionic}/calamares/modules/unpackfs.yml`, verbose)
+      }
+   }
+
+
+   static async ln(mode: string, src: string, dest: string, verbose = true) {
+      // console.log(`src : ${src}`)
+      // console.log(`dest: ${dest}`)
+
+      const rel = path.relative(dest, src).substring(3)
+      if (fs.existsSync(dest)) {
+         if (verbose) console.log(`remove ${dest}`)
+         shx.rm(dest)
+      }
+      const dirname = path.dirname(dest)
+      const basename = path.basename(dest)
+
+      process.chdir(dirname)
+      if (verbose) console.log(`cd ${dirname}`)
+      if (verbose) console.log(`ln ${mode} ${rel} ${basename}\n`)
+      fs.symlinkSync(rel, basename)
+   }
+
+
+ /**
  * restuisce VERO se il pacchetto è installato
  * @param debPackage
  */
@@ -407,7 +431,7 @@ export default class Pacman {
     * @param debPackage {string} Pacchetto Debian da installare
     * @returns {boolean} True if success
     */
-   static packageInstall(debPackage: string): boolean {
+   static async packageInstall(debPackage: string): Promise <boolean> {
       let retVal = false
 
       if (shx.exec('/usr/bin/apt-get update', { silent: true }) === '0') {
@@ -434,18 +458,4 @@ export default class Pacman {
       return line
    }
 
-   /**
-    * Restituisce VERO se i prerequisiti sono installati
-    */
-   static prerequisitesEggsCheck(): boolean {
-      let installed = true
-
-      for (const i in this.debs4eggs) {
-         if (!Pacman.packageIsInstalled(this.debs4eggs[i])) {
-            installed = false
-            break
-         }
-      }
-      return installed
-   }
 }

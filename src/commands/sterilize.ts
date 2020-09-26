@@ -29,13 +29,13 @@ export default class Sterilize extends Command {
          verbose = true
       }
 
-      if (Utils.isRoot() && Pacman.prerequisitesEggsCheck()) {
+      if (Utils.isRoot() && Pacman.prerequisitesCheck()) {
          if (await await Utils.customConfirm(`Select yes to continue...`)) {
             Utils.warning('Removing eggs prerequisites...')
-            await Pacman.prerequisitesEggsRemove(verbose)
-            if (Pacman.prerequisitesCalamaresCheck()) {
+            await Pacman.prerequisitesRemove(verbose)
+            if (Pacman.calamaresCheck()) {
                Utils.warning('Removing calamares prerequisites...')
-               await Pacman.prerequisitesCalamaresRemove(verbose)
+               await Pacman.calamaresRemove(verbose)
                Utils.warning('Removing files configuration...')
                await Pacman.configurationRemove(verbose)
                const bleach = new Bleach()

@@ -13,8 +13,7 @@ import Ovary from '../classes/ovary'
 import Pacman from '../classes/pacman'
 import chalk = require('chalk')
 import { IMyAddons } from '../interfaces'
-import { license } from 'pjson'
-import Bleach from '../classes/bleach'
+import Prerequisites from '../commands/prerequisites'
 
 export default class Produce extends Command {
    static flags = {
@@ -26,7 +25,7 @@ export default class Produce extends Command {
       help: flags.help({ char: 'h' }),
 
       // addon vendor/addon configurazioni dei vendors
-      sterilize: flags.boolean({description: 'sterilize: remove eggs prerequisites, calamares and all it\'s dependencies' }),
+      sterilize: flags.boolean({ description: 'sterilize: remove eggs prerequisites, calamares and all it\'s dependencies' }),
       theme: flags.string({ description: 'theme/branding for eggs and calamares' }),
       // addons: flags.string({ multiple: true, description: 'addons to be used' }),
 
@@ -126,38 +125,18 @@ export default class Produce extends Command {
          myAddons.rsupport = flags.rsupport
          myAddons.ichoice = flags.ichoice
          myAddons.pve = flags.pve
-      
-         if (!Pacman.linkCheck()){
-            await Pacman.linksCreate()
-         }
 
-         if (!Pacman.prerequisitesEggsCheck()) {
-            console.log('You need to install ' + chalk.bgGray('prerequisites') + ' to continue.')
-            if (await Utils.customConfirm(`Select yes to install prerequisites`)) {
-               Utils.warning('Installing prerequisites...')
-               await Pacman.prerequisitesEggsInstall(verbose)
-               const bleach = new Bleach()
-               await bleach.clean(verbose)
-            } else {
-               Utils.error('To create iso, you must install eggs prerequisites.\nsudo eggs prerequisites')
-               process.exit(0)
-            }
+         let links = false
+         if (!Pacman.linkCheck()) {
+            links = true
          }
-
-         if (!Pacman.configurationCheck()) {
-            console.log('You need to create ' + chalk.bgGray('configuration files') + ' to continue.')
-            if (await Utils.customConfirm(`Select yes to create configuration files`)) {
-               Utils.warning('Creating configuration files...')
-               await Pacman.configurationInstall(verbose)
-            } else {
-               Utils.error('Cannot find configuration files, You must to create it. \nsudo eggs prerequisites -c')
-               process.exit(0)
-            }
-         }
+         await Prerequisites.installAll(links, verbose)
+         console.log('All dependencies are ok...')
 
          const ovary = new Ovary(compression)
          Utils.warning('Produce an egg...')
          if (await ovary.fertilization()) {
+
             await ovary.produce(basename, script, sterilize, theme, myAddons, verbose)
             ovary.finished(script)
          }
