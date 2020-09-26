@@ -85,7 +85,7 @@ export class Bionic {
       await fisherman.buildCalamaresModule('bug')
       await fisherman.buildModule('initramfscfg')
       await fisherman.buildModule('initramfs')
-      await fisherman.buildModule('rubcfg')
+      await fisherman.buildCalamaresPy('grubcfg')
       await fisherman.buildCalamaresModule('before-bootloader')
       await fisherman.buildModule('bootloader')
       await fisherman.buildCalamaresModule('after-bootloader')
