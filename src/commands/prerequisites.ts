@@ -69,7 +69,6 @@ export default class Prerequisites extends Command {
       }
 
       i.configuration = !Pacman.configurationCheck()
-      console.log(`configuration: ${i.configuration}` )
 
       i.prerequisites = !Pacman.prerequisitesCheck()
 
