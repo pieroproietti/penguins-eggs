@@ -25,10 +25,13 @@ export function remove(distro: IDistro): string {
 
  */
 export function tryInstall(distro: IDistro): string {
+   // Per i linguaggi trovare BCP47 libreria...
+
    const LANG = process.env.LANG
 
    let lang = 'en_gb'
 
+   /*
    if (LANG === 'it_IT.UTF-8') {
       lang = 'it'
    } else if (LANG === 'en_US.UTF-8') {
@@ -42,6 +45,7 @@ export function tryInstall(distro: IDistro): string {
    } else if (LANG === 'de_DE.UTF-8') {
       lang = 'de'
    }
+   */
 
    let text = `  - try_install:\n`
 
