@@ -132,7 +132,7 @@ export default class Produce extends Command {
          }
 
          const i = await Prerequisites.thatWeNeed(links, verbose)
-         if (i.clean || i.configuration) {
+         if (i.clean || i.configuration|| i.links) {
             if (await Utils.customConfirm(`Select yes to continue...`)) {
                await Prerequisites.install(i, verbose)
             }

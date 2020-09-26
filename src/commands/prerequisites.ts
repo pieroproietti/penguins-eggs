@@ -63,7 +63,7 @@ export default class Prerequisites extends Command {
 
       let i = {} as IInstall
 
-      i.links = Pacman.linksCheck() || links
+      i.links = !Pacman.linksCheck() || links
 
       if (process.arch === 'x64') {
          i.efi = (!Pacman.packageIsInstalled('grub-efi-amd64'))
@@ -83,8 +83,9 @@ export default class Prerequisites extends Command {
          i.clean = true
       }
 
-      if (i.clean || i.configuration) {
+      if (i.clean || i.configuration || i.links) {
          Utils.warning(`Installing prerequisites.\nEggs will execute the following tasks:`)
+         if (i.links) console.log('- create links to different distros')
          if (i.efi) console.log('- install efi packages')
          if (i.calamares) console.log('- install calamares')
          if (i.configuration) console.log('- configuration')
@@ -106,6 +107,10 @@ export default class Prerequisites extends Command {
       const echo = Utils.setEcho(verbose)
 
       await Pacman.configurationInstall(false)
+
+      if (i.links) {
+         await Pacman.linksInstall(i.links, verbose)
+      }
 
       if (i.clean) {
          await exec('apt-get update --yes', echo)
