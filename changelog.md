@@ -18,6 +18,10 @@ You can follow the project also consulting the [commit history](https://github.c
 ## Changelog
 Versions are listed on reverse order, the first is the last one.
 
+### eggs-7.46.1_.deb
+* changed flags in produce and calamares. just added flag --final to make the final version of your project: all the packages relative to the "reproduction"  will be removed during the installation with the gui installer;
+* module packages in calamares now work in accord with the flag --final, if present will build the remove section in packages.conf (you can check this file in /etc/calamares/modules) if not, only section try-install will be build. This section is ideal for international packages, languages, etc.
+
 ### eggs-7.44.1_.deb
 * buxfix: there was a little problem with links in the previus version.
 
