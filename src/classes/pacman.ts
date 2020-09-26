@@ -332,10 +332,10 @@ export default class Pacman {
    /**
     * 
     */
-   static async linksInstall(links = false, verbose = false) {
+   static async linksInstall(verbose = false) {
       // Link da fare solo per pacchetto deb o per test
 
-      if (Utils.isDebPackage() || links) {
+      if (Utils.isDebPackage()) {
 
          // const rootPen = '/usr/lib/penguins-eggs'
          const rootPen = Utils.rootPenguin()

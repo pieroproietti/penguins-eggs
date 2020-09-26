@@ -126,12 +126,7 @@ export default class Produce extends Command {
          myAddons.ichoice = flags.ichoice
          myAddons.pve = flags.pve
 
-         let links = false
-         if (!Pacman.linksCheck()) {
-            links = true
-         }
-
-         const i = await Prerequisites.thatWeNeed(links, verbose)
+         const i = await Prerequisites.thatWeNeed(verbose)
          if (i.clean || i.configuration|| i.links) {
             if (await Utils.customConfirm(`Select yes to continue...`)) {
                await Prerequisites.install(i, verbose)

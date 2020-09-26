@@ -20,8 +20,8 @@ export default class Prerequisites extends Command {
 
    static flags = {
       help: flags.help({ char: 'h' }),
-      configuration_only: flags.boolean({ char: 'c', description: 'creation of configuration files only' }),
-      links: flags.boolean({ char: 'l', description: 'creation of links' }),
+      // configuration_only: flags.boolean({ char: 'c', description: 'creation of configuration files only' }),
+      // links: flags.boolean({ char: 'l', description: 'creation of links' }),
       verbose: flags.boolean({ char: 'v', description: 'verbose' })
    }
 
@@ -36,12 +36,6 @@ export default class Prerequisites extends Command {
          verbose = true
       }
 
-      let links = false
-      if (flags.links) {
-         links = true
-      }
-
-
       if (Utils.isRoot()) {
          const i = await Prerequisites.thatWeNeed(links, verbose)
          if (await Utils.customConfirm(`Select yes to continue...`)) {
@@ -53,17 +47,17 @@ export default class Prerequisites extends Command {
 
    /**
     * 
-    * @param links 
+    * @param links
     * @param verbose 
     */
-   static async thatWeNeed(links = false, verbose = false): Promise<IInstall> {
+   static async thatWeNeed(verbose = false): Promise<IInstall> {
       Utils.titles('prerequisites')
 
       console.log('eggs need same prerequisites to work. You can install them here')
 
       let i = {} as IInstall
 
-      i.links = !Pacman.linksCheck() || links
+      i.links = !Pacman.linksCheck()
 
       if (process.arch === 'x64') {
          i.efi = (!Pacman.packageIsInstalled('grub-efi-amd64'))
@@ -109,7 +103,7 @@ export default class Prerequisites extends Command {
       await Pacman.configurationInstall(false)
 
       if (i.links) {
-         await Pacman.linksInstall(i.links, verbose)
+         await Pacman.linksInstall(verbose)
       }
 
       if (i.clean) {
