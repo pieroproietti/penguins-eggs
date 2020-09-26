@@ -343,10 +343,10 @@ OPTIONS
   -s, --script             script mode. Generate scripts to manage iso build
   -v, --verbose            verbose
   --adapt                  adapt video resolution in VM
+  --final                  final: remove eggs prerequisites, calamares and all it's dependencies
   --ichoice                allows the user to choose the installation type cli/gui
   --pve                    administration of virtual machines (Proxmox-VE)
   --rsupport               remote support via dwagent
-  --sterilize              sterilize: remove eggs prerequisites, calamares and all it's dependencies
   --theme=theme            theme/branding for eggs and calamares
 
 ALIASES

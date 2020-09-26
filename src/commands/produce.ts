@@ -25,7 +25,7 @@ export default class Produce extends Command {
       help: flags.help({ char: 'h' }),
 
       // addon vendor/addon configurazioni dei vendors
-      sterilize: flags.boolean({ description: 'sterilize: remove eggs prerequisites, calamares and all it\'s dependencies' }),
+      final: flags.boolean({ description: 'final: remove eggs prerequisites, calamares and all it\'s dependencies' }),
       theme: flags.string({ description: 'theme/branding for eggs and calamares' }),
       // addons: flags.string({ multiple: true, description: 'addons to be used' }),
 
@@ -108,9 +108,9 @@ export default class Produce extends Command {
             script = true
          }
 
-         let sterilize = false
-         if (flags.sterilize) {
-            sterilize = true
+         let final = false
+         if (flags.final) {
+            final = true
          }
 
 
@@ -138,7 +138,7 @@ export default class Produce extends Command {
          Utils.warning('Produce an egg...')
          if (await ovary.fertilization()) {
 
-            await ovary.produce(basename, script, sterilize, theme, myAddons, verbose)
+            await ovary.produce(basename, script, final, theme, myAddons, verbose)
             ovary.finished(script)
          }
       }

@@ -75,7 +75,7 @@ export default class Ovary {
     *
     * @param basename
     */
-   async produce(basename = '', script_only = false, sterilize = false, theme = '', myAddons: IMyAddons, verbose = false) {
+   async produce(basename = '', script_only = false, final = false, theme = '', myAddons: IMyAddons, verbose = false) {
       const echo = Utils.setEcho(verbose)
 
 
@@ -102,7 +102,7 @@ export default class Ovary {
                await bleach.clean(verbose)
             }
             this.incubator = new Incubator(this.settings.remix, this.settings.distro, this.settings.user_opt, verbose)
-            this.incubator.config(sterilize)
+            this.incubator.config(final)
          }
          await this.isolinux(verbose)
          await this.copyKernel()
