@@ -56,7 +56,7 @@ export default class Prerequisites extends Command {
 
 
       if (process.arch === 'x64') {
-         if (!await Pacman.packageIsInstalled('grub-efi-amd64')) {
+         if (!Pacman.packageIsInstalled('grub-efi-amd64')) {
             await Pacman.packageInstall('grub-efi-amd64')
             Utils.warning('Installing uefi support...')
          } else {
@@ -69,7 +69,7 @@ export default class Prerequisites extends Command {
          clean = true
          Pacman.calamaresInstall()
       } else {
-         Utils.warning('You choose to have only cli installer')
+         Utils.warning('calamares installed!')
       }
 
       if (!Pacman.prerequisitesCheck()) {
@@ -80,7 +80,7 @@ export default class Prerequisites extends Command {
          Utils.warning('prerequisites installed!')
       }
 
-      if (!await Pacman.configurationCheck()) {
+      if (!Pacman.configurationCheck()) {
          Utils.warning('creating configuration...')
          await Pacman.configurationInstall(verbose)
       } else {

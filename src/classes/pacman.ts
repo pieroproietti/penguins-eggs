@@ -434,15 +434,13 @@ export default class Pacman {
    static async packageInstall(debPackage: string): Promise <boolean> {
       let retVal = false
 
-      if (shx.exec('/usr/bin/apt-get update', { silent: true }) === '0') {
+//      if (shx.exec('/usr/bin/apt-get update', { silent: true }) === '0') {
          if (
-            shx.exec(`/usr/bin/apt-get install -y ${debPackage}`, {
-               silent: true
-            }) === '0'
+            shx.exec(`/usr/bin/apt-get install -y ${debPackage}`, {silent: true}) === '0'
          ) {
             retVal = true
          }
-      }
+//      }
       return retVal
    }
 
