@@ -127,11 +127,17 @@ export default class Produce extends Command {
          myAddons.pve = flags.pve
 
          let links = false
-         if (!Pacman.linkCheck()) {
+         if (!Pacman.linksCheck()) {
             links = true
          }
-         await Prerequisites.installAll(links, verbose)
-         console.log('All dependencies are ok...')
+
+         const i = await Prerequisites.thatWeNeed(links, verbose)
+         if (i.clean || i.configuration) {
+            if (await Utils.customConfirm(`Select yes to continue...`)) {
+               await Prerequisites.install(i, verbose)
+            }
+         }
+         Utils.titles('produce')
 
          const ovary = new Ovary(compression)
          Utils.warning('Produce an egg...')

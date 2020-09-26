@@ -47,8 +47,8 @@ export default class Pacman {
    /**
     * controlla se Xserver è installato
     */
-   static async isXInstalled(): Promise<boolean> {
-      return await Pacman.packageIsInstalled('xserver-xorg-core') || await Pacman.packageIsInstalled('xserver-xorg-core-hwe-18.04')
+   static isXInstalled(): boolean {
+      return Pacman.packageIsInstalled('xserver-xorg-core') || Pacman.packageIsInstalled('xserver-xorg-core-hwe-18.04')
    }
 
 
@@ -136,9 +136,6 @@ export default class Pacman {
       const remix = {} as IRemix
       const distro = new Distro(remix)
 
-      console.log('apt update')
-      await exec('apt-get update --yes', echo)
-      console.log('apt install')
       await exec(`apt-get install --yes ${Pacman.debs2line(Pacman.packages(verbose))}`, echo)
       if ((distro.versionLike === 'buster') || (distro.versionLike === 'beowulf') || (distro.versionLike === 'bullseye') || (distro.versionLike === 'stretch')) {
          await exec(`apt-get install --no-install-recommends --yes ${Pacman.debs2line(Pacman.packagesLocalisation(verbose))}`, echo)
@@ -188,11 +185,7 @@ export default class Pacman {
       verbose = true
       const echo = Utils.setEcho(verbose)
       if (Pacman.isXInstalled()) {
-         await exec('apt-get update --yes', echo)
          await exec(`apt-get install --yes ${Pacman.debs2line(Pacman.debs4calamares)}`, echo)
-
-         const bleach = new Bleach()
-         bleach.clean(verbose)
       } else {
          console.log("It's not possible to use calamares in a system without GUI")
       }
@@ -218,13 +211,9 @@ export default class Pacman {
     * Restutuisce VERO se i file di configurazione sono presenti
     */
    static configurationCheck(): boolean {
-      let conf = false
-      let list = false
-      let configured = false
-      conf = fs.existsSync(config_file)
-      list = fs.existsSync('/usr/local/share/penguins-eggs/exclude.list')
-      configured = conf && list
-      return configured
+      let conf: boolean = fs.existsSync(config_file)
+      let list: boolean = fs.existsSync('/usr/local/share/penguins-eggs/exclude.list')
+      return (conf && list)
    }
 
    /**
@@ -332,7 +321,7 @@ export default class Pacman {
    /**
     * 
     */
-   static linkCheck(): boolean {
+   static linksCheck(): boolean {
       let link = false
       if (fs.existsSync('/etc/penguins-eggs.d/distros/bullseye')) {
          link = true
@@ -412,10 +401,10 @@ export default class Pacman {
    }
 
 
- /**
- * restuisce VERO se il pacchetto è installato
- * @param debPackage
- */
+   /**
+   * restuisce VERO se il pacchetto è installato
+   * @param debPackage
+   */
    static packageIsInstalled(debPackage: string): boolean {
       let installed = false
       const cmd = `/usr/bin/dpkg -s ${debPackage} | grep Status`
@@ -431,16 +420,12 @@ export default class Pacman {
     * @param debPackage {string} Pacchetto Debian da installare
     * @returns {boolean} True if success
     */
-   static async packageInstall(debPackage: string): Promise <boolean> {
+   static async packageInstall(debPackage: string): Promise<boolean> {
       let retVal = false
 
-//      if (shx.exec('/usr/bin/apt-get update', { silent: true }) === '0') {
-         if (
-            shx.exec(`/usr/bin/apt-get install -y ${debPackage}`, {silent: true}) === '0'
-         ) {
-            retVal = true
-         }
-//      }
+      if (shx.exec(`/usr/bin/apt-get install -y ${debPackage}`, { silent: true }) === '0') {
+         retVal = true
+      }
       return retVal
    }
 

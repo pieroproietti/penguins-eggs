@@ -18,7 +18,7 @@ export function branding(remix: IRemix, distro: IDistro, brand = '', verbose = f
    const versionLike: string = distro.versionLike
    const homeUrl: string = distro.homeUrl
    const supportUrl: string = distro.supportUrl
-   const bugReportUrl: string = distro.bugReportUrl
+   const bugReportUrl: string = 'https://github.com/pieroproietti/penguins-eggs/issues'
 
    const productName = distro.versionId
    const shortProductName = remix.name
@@ -28,7 +28,7 @@ export function branding(remix: IRemix, distro: IDistro, brand = '', verbose = f
    const shortVersionedName = remix.versionName
    const bootloaderEntryName = distro.distroId
    const productUrl = homeUrl
-   const releaseNotesUrl = 'https://github.com/pieroproietti/penguins-eggs'
+   const releaseNotesUrl = 'https://github.com/pieroproietti/penguins-eggs/changelog.md'
    const productLogo = `${remix.branding}-logo.png`
    const productIcon = `${remix.branding}-logo.png`
    const productWelcome = 'welcome.png'
@@ -47,6 +47,7 @@ export function branding(remix: IRemix, distro: IDistro, brand = '', verbose = f
          bootloaderEntryName: bootloaderEntryName,
          productUrl: productUrl,
          supportUrl: supportUrl,
+         bugReportUrl: bugReportUrl,
          releaseNotesUrl: releaseNotesUrl
       },
       images: {

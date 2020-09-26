@@ -8,7 +8,13 @@ import { Command, flags } from '@oclif/command'
 import Utils from '../classes/utils'
 import Pacman from '../classes/pacman'
 import Bleach from '../classes/bleach'
+import { IInstall } from '../interfaces'
 
+const exec = require('../lib/utils').exec
+
+/**
+ * 
+ */
 export default class Prerequisites extends Command {
    static description = 'install packages prerequisites to run eggs'
 
@@ -37,8 +43,10 @@ export default class Prerequisites extends Command {
 
 
       if (Utils.isRoot()) {
+         const i = await Prerequisites.thatWeNeed(links, verbose)
          if (await Utils.customConfirm(`Select yes to continue...`)) {
-            await Prerequisites.installAll(links, verbose)
+            console.log('installing')
+            await Prerequisites.install(i, verbose)
          }
       }
    }
@@ -48,50 +56,85 @@ export default class Prerequisites extends Command {
     * @param links 
     * @param verbose 
     */
-   static async installAll(links = false, verbose = false) {
-      // Creo la configurazione, sarà ricreata successivamente
-      // await Pacman.configurationInstall(false)
+   static async thatWeNeed(links = false, verbose = false): Promise<IInstall> {
+      Utils.titles('prerequisites')
 
-      // await Pacman.linksInstall(verbose)
+      console.log('eggs need same prerequisites to work. You can install them here')
 
+      let i = {} as IInstall
+
+      i.links = Pacman.linksCheck() || links
 
       if (process.arch === 'x64') {
-         if (!Pacman.packageIsInstalled('grub-efi-amd64')) {
-            await Pacman.packageInstall('grub-efi-amd64')
-            Utils.warning('Installing uefi support...')
-         } else {
-            Utils.warning('uefi support installed!')
-         }
+         i.efi = (!Pacman.packageIsInstalled('grub-efi-amd64'))
       }
 
-      let clean = false
       if (! await Pacman.calamaresCheck() && (Pacman.isXInstalled())) {
-         clean = true
-         Pacman.calamaresInstall()
-      } else {
-         Utils.warning('calamares installed!')
+         Utils.warning('You are on a graphics system, I suggest to use the GUI installer calamares')
+         i.calamares = (await Utils.customConfirm('Want to install calamares?'))
       }
 
-      if (!Pacman.prerequisitesCheck()) {
-         clean = true
-         Utils.warning('Installing prerequisites...')
-         await Pacman.prerequisitesInstall(verbose)
-      } else {
-         Utils.warning('prerequisites installed!')
+      i.configuration = !Pacman.configurationCheck()
+      console.log(`configuration: ${i.configuration}` )
+
+      i.prerequisites = !Pacman.prerequisitesCheck()
+
+      if (i.efi || i.calamares || i.prerequisites) {
+         i.clean = true
       }
 
-      if (!Pacman.configurationCheck()) {
+      if (i.clean || i.configuration) {
+         Utils.warning(`Installing prerequisites.\nEggs will execute the following tasks:`)
+         if (i.efi) console.log('- install efi packages')
+         if (i.calamares) console.log('- install calamares')
+         if (i.configuration) console.log('- configuration')
+         if (i.prerequisites) console.log('- install prerequisites')
+         if (i.clean) console.log('- cleaning apt')
+         Utils.warning('Don\'t be scared! Just a series of apt commands from you repositories!')
+      }
+      return i
+   }
+
+
+   /**
+    * 
+    * @param links 
+    * @param verbose 
+    */
+   static async install(i: IInstall, verbose = false) {
+      verbose = true
+      const echo = Utils.setEcho(verbose)
+
+      await Pacman.configurationInstall(false)
+
+      if (i.clean) {
+         await exec('apt-get update --yes', echo)
+      }
+
+      if (i.efi) {
+         Utils.warning('Installing uefi support...')
+         await Pacman.packageInstall('grub-efi-amd64')
+      }
+
+      if (i.calamares) {
+         Utils.warning('Installing calamares...')
+         await Pacman.calamaresInstall()
+      }
+
+      if (i.configuration) {
          Utils.warning('creating configuration...')
          await Pacman.configurationInstall(verbose)
-      } else {
-         Utils.warning('configuration created!')
       }
 
-      if (clean) {
+      if (i.prerequisites) {
+         Utils.warning('Installing prerequisites...')
+         await Pacman.prerequisitesInstall(verbose)
+      }
+
+      if (i.clean) {
          const bleach = new Bleach()
          await bleach.clean(verbose)
       }
-
    }
 }
 
