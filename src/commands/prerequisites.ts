@@ -37,7 +37,7 @@ export default class Prerequisites extends Command {
       }
 
       if (Utils.isRoot()) {
-         const i = await Prerequisites.thatWeNeed(links, verbose)
+         const i = await Prerequisites.thatWeNeed(verbose)
          if (await Utils.customConfirm(`Select yes to continue...`)) {
             console.log('installing')
             await Prerequisites.install(i, verbose)

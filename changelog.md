@@ -17,6 +17,10 @@ You can follow the project also consulting the [commit history](https://github.c
 
 ## Changelog
 Versions are listed on reverse order, the first is the last one.
+
+### eggs-7.44.1_.deb
+* buxfix: there was a little problem with links in the previus version.
+
 ### eggs-7.43.1_.deb
 * improvement: patch per bionic in calamares module grubcf, added check plymouth from successive version of calamares (in bionic calamares is quite old and not mantained);
 * improvment: actually is possible to use directly produce after the installation, eggs will propose the necessary operations to install prerequisites, calamares and so on;
