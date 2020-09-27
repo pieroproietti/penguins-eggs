@@ -35,155 +35,56 @@ Presentation
     }
     Slide {
         Image {
-            id: slide01ufficiozero
-            source: "slide01ufficiozero.png"
+            id: slide1
+            source: "slide1.png"
             anchors.centerIn: parent
             width: 810
             height: 485
             fillMode: Image.PreserveAspectFit
-        }
-         Text {
-            font.family: "Helvetica"
-            font.pixelSize : 22
-            color: "#002439"
-            anchors.horizontalCenter: slide01ufficiozero.horizontalCenter
-            anchors.top: slide01ufficiozero.verticalCenter
-            text: qsTr("<h1>UfficioZero</h1><p>da professionisti a professionisti</p>")
-            wrapMode: Text.WordWrap
-            width: 600
-            horizontalAlignment: Text.Center
         }
     }
 
     Slide {
         Image {
-            id: slide02versioni
-            source: "slide02versioni.png"
+            id: slide2
+            source: "slide2"
             anchors.centerIn: parent
             width: 810
             height: 485
             fillMode: Image.PreserveAspectFit
-        }
-         Text {
-            font.family: "Helvetica"
-            font.pixelSize : 22
-            color: "#002439"
-            anchors.horizontalCenter: slide02versioni.horizontalCenter
-            anchors.top: slide02versioni.verticalCenter
-            text: qsTr("<h1>UfficioZero</h1><p>Scegliete la versione più adatta delle nostre remix</p>")
-            wrapMode: Text.WordWrap
-            width: 600
-            horizontalAlignment: Text.Center
         }
     }
 
     Slide {
         Image {
-            id: slide03roma
-            source: "slide03roma.png"
+            id: slide03
+            source: "slide3.png"
             anchors.centerIn: parent
             width: 810
             height: 485
             fillMode: Image.PreserveAspectFit
-        }
-         Text {
-            font.family: "Helvetica"
-            font.pixelSize : 22
-            color: "#002439"
-            anchors.horizontalCenter: slide03roma.horizontalCenter
-            anchors.top: slide03roma.verticalCenter
-            text: qsTr("<h1>UfficioZero</h1><p>Roma 2.0.1 per pc con processori a 32bit, basato su Devuan 3 Beowulf e con desktop manager Xfce</p>")
-            wrapMode: Text.WordWrap
-            width: 600
-            horizontalAlignment: Text.Center
         }
     }
 
     Slide {
         Image {
-            id: slide04mantova
-            source: "slide04mantova.png"
+            id: slide4
+            source: "slide4.png"
             anchors.centerIn: parent
             width: 810
             height: 485
             fillMode: Image.PreserveAspectFit
-        }
-         Text {
-            font.family: "Helvetica"
-            font.pixelSize : 22
-            color: "#002439"
-            anchors.horizontalCenter: slide04mantova.horizontalCenter
-            anchors.top: slide04mantova.verticalCenter
-            text: qsTr("<h1>UfficioZero</h1><p>Mantova 2.0.1 per pc con processori a 64bit, basato su PCLinuxOS e con desktop manager Mate</p>")
-            wrapMode: Text.WordWrap
-            width: 600
-            horizontalAlignment: Text.Center
         }
     }
 
     Slide {
         Image {
-            id: slide05vieste
-            source: "slide05vieste.png"
+            id: slide5
+            source: "slide5.png"
             anchors.centerIn: parent
             width: 810
             height: 485
             fillMode: Image.PreserveAspectFit
-        }
-         Text {
-            font.family: "Helvetica"
-            font.pixelSize : 22
-            color: "#002439"
-            anchors.horizontalCenter: slide05vieste.horizontalCenter
-            anchors.top: slide05vieste.verticalCenter
-            text: qsTr("<h1>UfficioZero</h1><p>Vieste 2.0.1 per pc con processori a 64bit, basato su Linux Mint 19.3 e con desktop manager Mate</p>")
-            wrapMode: Text.WordWrap
-            width: 600
-            horizontalAlignment: Text.Center
-        }
-    }
-
-    Slide {
-        Image {
-            id: slide06gabii
-            source: "slide06gabii.png"
-            anchors.centerIn: parent
-            width: 810
-            height: 485
-            fillMode: Image.PreserveAspectFit
-        }
-         Text {
-            font.family: "Helvetica"
-            font.pixelSize : 22
-            color: "#002439"
-            text: qsTr("<h1>UfficioZero</h1><p>Gabii 2.0.1 per pc con processori a 64bit, basato su Linux Mint 20 e con desktop manager cinnamon</p>")
-            anchors.horizontalCenter: slide06gabii.horizontalCenter
-            anchors.top: slide06gabii.verticalCenter
-            wrapMode: Text.WordWrap
-            width: 600
-            horizontalAlignment: Text.Center
-        }
-    }
-
-    Slide {
-        Image {
-            id: slide07ovi
-            source: "slide07ovi.png"
-            anchors.centerIn: parent
-            width: 810
-            height: 485
-            fillMode: Image.PreserveAspectFit
-        }
-         Text {
-            font.family: "Helvetica"
-            font.pixelSize : 22
-            color: "#002439"
-            anchors.horizontalCenter: slide07ovi.horizontalCenter
-            anchors.top: slide07ovi.verticalCenter
-            text: qsTr("<h1>Penguin'eggs</h1><p>Sistema riproduttivo per pinguini</p><p>Perri's brevery editition</p>")
-            wrapMode: Text.WordWrap
-            width: 600
-            horizontalAlignment: Text.Center
         }
     }
 }
