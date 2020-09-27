@@ -38,8 +38,8 @@ Presentation
             id: slide1
             source: "slide1.png"
             anchors.centerIn: parent
-            width: 810
-            height: 485
+            width: 800
+            height: 480
             fillMode: Image.PreserveAspectFit
         }
     }
@@ -49,8 +49,8 @@ Presentation
             id: slide2
             source: "slide2.png"
             anchors.centerIn: parent
-            width: 810
-            height: 485
+            width: 800
+            height: 480
             fillMode: Image.PreserveAspectFit
         }
     }
@@ -60,8 +60,8 @@ Presentation
             id: slide03
             source: "slide3.png"
             anchors.centerIn: parent
-            width: 810
-            height: 485
+            width: 800
+            height: 480
             fillMode: Image.PreserveAspectFit
         }
     }
@@ -71,8 +71,8 @@ Presentation
             id: slide4
             source: "slide4.png"
             anchors.centerIn: parent
-            width: 810
-            height: 485
+            width: 800
+            height: 480
             fillMode: Image.PreserveAspectFit
         }
     }
@@ -82,8 +82,8 @@ Presentation
             id: slide5
             source: "slide5.png"
             anchors.centerIn: parent
-            width: 810
-            height: 485
+            width: 800
+            height: 480
             fillMode: Image.PreserveAspectFit
         }
     }

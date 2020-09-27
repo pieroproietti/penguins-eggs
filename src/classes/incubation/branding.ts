@@ -15,10 +15,9 @@ import Ovary from '../ovary'
  * @param verbose
  */
 export function branding(remix: IRemix, distro: IDistro, brand = '', verbose = false): string {
-   const versionLike: string = distro.versionLike
    const homeUrl: string = distro.homeUrl
    const supportUrl: string = distro.supportUrl
-   const bugReportUrl: string = 'https://github.com/pieroproietti/penguins-eggs/issues'
+   const bugReportUrl = 'https://github.com/pieroproietti/penguins-eggs/issues'
 
    const productName = distro.versionId
    const shortProductName = remix.name
