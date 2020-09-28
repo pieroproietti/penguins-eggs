@@ -39,9 +39,8 @@ export default class Pacman {
     * Lascio all'utente il compito di installare o rimuover grub-efi-amd64 o grun-efi-ia32
     * 
     */
-   static debs4eggs = [
-      'isolinux', 'syslinux', 'rsync ', 'squashfs-tools', 'xorriso', 'xterm', 'whois', // strumenti
-      'live-boot', 'live-boot-initramfs-tools']
+   static debs4eggs = ['isolinux', 'syslinux', 'squashfs-tools', 'xorriso', 'live-boot', 'live-boot-initramfs-tools']
+   static debs4notRemove = ['rsync', 'xterm', 'whois', 'dosfstools']
    static debs4calamares = ['calamares', 'qml-module-qtquick2', 'qml-module-qtquick-controls']
 
    /**
@@ -83,15 +82,19 @@ export default class Pacman {
    /**
     * Crea array packages dei pacchetti da installare/rimuovere
     */
-   static packages(verbose = false): string[] {
+   static packages(remove = false, verbose = false): string[] {
       const remix = {} as IRemix
       const distro = new Distro(remix)
-      const packages = Pacman.debs4eggs
+      let packages = Pacman.debs4eggs
 
       if ((distro.versionLike === 'buster') || (distro.versionLike === 'beowulf') || (distro.versionLike === 'bullseye') || (distro.versionLike === 'stretch')) {
          packages.push('live-config')
       } else if ((distro.versionLike === 'focal')) {
          packages.push('live-config')
+      }
+
+      if (!remove){
+         packages = packages.concat(Pacman.debs4notRemove)
       }
 
       // systemd / sysvinit
@@ -114,7 +117,7 @@ export default class Pacman {
    /**
     * Restituisce VERO se i prerequisiti sono installati
     */
-   static prerequisitesCheck(): boolean {
+   static async prerequisitesCheck(): Promise <boolean> {
       let installed = true
 
       for (const i in this.debs4eggs) {
@@ -152,8 +155,9 @@ export default class Pacman {
       const retVal = false
       const remix = {} as IRemix
       const distro = new Distro(remix)
+      const remove = true
 
-      await exec(`apt-get remove --purge --yes ${Pacman.debs2line(Pacman.packages(verbose))}`, echo)
+      await exec(`apt-get remove --purge --yes ${Pacman.debs2line(Pacman.packages(remove, verbose))}`, echo)
       if ((distro.versionLike === 'buster') || (distro.versionLike === 'beowulf')) {
          await exec(`apt-get remove --purge --yes ${Pacman.debs2line(Pacman.packagesLocalisation(verbose))}`, echo)
       }
@@ -285,7 +289,6 @@ export default class Pacman {
       let force_installer = 'yes'
       if (!this.packageIsInstalled('calamares')) {
          force_installer = 'no'
-         console.log(`Due the lacks of calamares package set force_installer=no`)
       }
       shx.sed('-i', '%force_installer%', force_installer, config_file)
 

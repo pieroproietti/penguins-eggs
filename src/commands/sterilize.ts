@@ -7,8 +7,9 @@
 import { Command, flags } from '@oclif/command'
 import Utils from '../classes/utils'
 import Pacman from '../classes/pacman'
-import Bleach from '../classes/bleach'
+import { IInstall } from '../interfaces'
 
+import chalk = require('chalk')
 /**
  *
  */
@@ -29,21 +30,67 @@ export default class Sterilize extends Command {
          verbose = true
       }
 
-      if (Utils.isRoot() && Pacman.prerequisitesCheck()) {
-         if (await await Utils.customConfirm(`Select yes to continue...`)) {
-            Utils.warning('Removing eggs prerequisites...')
-            await Pacman.prerequisitesRemove(verbose)
-            if (Pacman.calamaresCheck()) {
-               Utils.warning('Removing calamares prerequisites...')
-               await Pacman.calamaresRemove(verbose)
-               Utils.warning('Removing files configuration...')
-               await Pacman.configurationRemove(verbose)
-               const bleach = new Bleach()
-               await bleach.clean(verbose)
+      if (Utils.isRoot() && await Pacman.prerequisitesCheck()) {
+         const i = await Sterilize.thatWeRemove(verbose)
+         if (await Utils.customConfirm(`Select yes to continue...`)) {
+            if (i.calamares) {
+               await Pacman.calamaresRemove()
+            }
+
+            if (i.configuration) {
+               await Pacman.configurationRemove()
+            }
+
+            if (i.prerequisites) {
+               await Pacman.prerequisitesRemove()
             }
          }
       } else {
-         console.log('eggs prerequisites not installed!')
+         console.log('eggs prerequisites are not installed!')
       }
    }
+
+      /**
+    * 
+    * @param links
+    * @param verbose 
+    */
+   static async thatWeRemove(verbose = false): Promise<IInstall> {
+      Utils.titles('That will be removed')
+
+      let i = {} as IInstall
+
+      i.calamares = await Pacman.calamaresCheck()
+      i.prerequisites = await Pacman.prerequisitesCheck()
+      i.configuration =  await Pacman.configurationCheck()
+
+
+      if (i.calamares || i.prerequisites || i.configuration) {
+         Utils.warning(`Removing prerequisites.\nEggs will execute the following tasks:`)
+
+         if (i.calamares) {
+            console.log('- remove calamares')
+            const packages = Pacman.debs4calamares
+            console.log(chalk.yellow('  apt purge --yes ' + Pacman.debs2line(packages) + '\n'))
+         }
+
+         if (i.prerequisites) {
+            console.log('- remove prerequisites')
+            const packages = Pacman.packages()
+            console.log(chalk.yellow('  apt purge --yes ' + Pacman.debs2line(packages)))
+            const packagesLocalisation = Pacman.packagesLocalisation()
+            if (packagesLocalisation.length > 0) {
+               console.log(chalk.yellow('  apt purge  --yes live-task-localisation ' + Pacman.debs2line(packagesLocalisation)) + '\n')
+            } else {
+               console.log()
+            }
+         }
+
+         if (i.configuration) {
+            console.log('- remove configuration\n')
+         }
+   }
+      return i
+   }
+
 }
