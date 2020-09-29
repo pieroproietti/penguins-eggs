@@ -172,7 +172,7 @@ export default class Settings {
             Utils.warning('sudo apt install grub-efi-amd64')
             Utils.error('or')
             Utils.warning('sudo apt install grub-efi-ia32')
-            Utils.error('or edit /etc/penguins-eggs.conf and set the valuer of make_efi=no')
+            Utils.error('or edit /etc/penguins-eggs.d/eggs.conf and set the valuer of make_efi=no')
             this.make_efi = false
          }
       }

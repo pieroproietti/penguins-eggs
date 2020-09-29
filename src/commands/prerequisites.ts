@@ -10,6 +10,7 @@ import Pacman from '../classes/pacman'
 import Bleach from '../classes/bleach'
 import { IInstall } from '../interfaces'
 import chalk = require('chalk')
+import { utils } from 'mocha'
 
 const exec = require('../lib/utils').exec
 
@@ -71,7 +72,7 @@ export default class Prerequisites extends Command {
          i.calamares = (await Utils.customConfirm('Want to install calamares?'))
       }
 
-      i.configuration = !Pacman.configurationCheck()
+      i.configuration = Pacman.configurationCheck()
 
       i.prerequisites = !await Pacman.prerequisitesCheck()
 
@@ -91,33 +92,35 @@ export default class Prerequisites extends Command {
             console.log(chalk.yellow('  apt install -y grub-efi-amd64\n'))
          }
 
+         if (i.prerequisites) {
+            console.log('- install prerequisites')
+            const packages = Pacman.packages()
+            console.log(chalk.yellow('  apt install --yes ' + Pacman.debs2line(packages)))
+            if (i.configuration) {
+               await Pacman.configurationInstall() // carico la configurazione solo per leggere le lingue
+            }
+            const packagesLocalisation = Pacman.packagesLocalisation()
+            if (packagesLocalisation.length > 0) {
+               console.log(chalk.yellow('  apt install --yes --no-install-recommends live-task-localisation ' + Pacman.debs2line(packagesLocalisation)) + '\n')
+            } else {
+               console.log()
+            }
+         }
+
          if (i.calamares) {
             console.log('- install calamares')
             const packages = Pacman.debs4calamares
             console.log(chalk.yellow('  apt install -y ' + Pacman.debs2line(packages) + '\n'))
          }
 
+         console.log(`configuration: ${i.configuration}`)
          if (i.configuration) {
             console.log('- configuration\n')
          }
 
-         if (i.prerequisites) {
-            console.log('- install prerequisites')
-            const packages = Pacman.packages()
-            console.log(chalk.yellow('  apt install -y ' + Pacman.debs2line(packages)))
-            if (i.configuration) {
-               await Pacman.configurationInstall(false) // carico la configurazione solo per leggere le lingue
-            }
-            const packagesLocalisation = Pacman.packagesLocalisation()
-            if (packagesLocalisation.length > 0) {
-               console.log(chalk.yellow('  apt install --no-install-recommends  --yes live-task-localisation ' + Pacman.debs2line(packagesLocalisation)) + '\n')
-            } else {
-               console.log()
-            }
-         }
          if (i.clean) {
             console.log('- cleaning apt\n')
-            Utils.warning('Don\'t be scared! I\'ll produce a lot of text, but it\'s just a series of apt install from you repositories!')
+            Utils.warning('Don\'t be worried! It\'s just a series of apt install from you repositories, you can follows the operations with flag --verbose')
          }
       }
       return i
@@ -130,7 +133,6 @@ export default class Prerequisites extends Command {
     * @param verbose 
     */
    static async install(i: IInstall, verbose = false) {
-      verbose = true
       const echo = Utils.setEcho(verbose)
 
       await Pacman.configurationInstall(false)
@@ -140,6 +142,7 @@ export default class Prerequisites extends Command {
       }
 
       if (i.clean) {
+         Utils.warning('apt-get update --yes')
          await exec('apt-get update --yes', echo)
       }
 
@@ -148,9 +151,14 @@ export default class Prerequisites extends Command {
          await Pacman.packageInstall('grub-efi-amd64')
       }
 
+      if (i.prerequisites) {
+         Utils.warning('Installing prerequisites...')
+         await Pacman.prerequisitesInstall(verbose)
+      }
+
       if (i.calamares) {
          Utils.warning('Installing calamares...')
-         await Pacman.calamaresInstall()
+         await Pacman.calamaresInstall(verbose)
       }
 
       if (i.configuration) {
@@ -158,12 +166,8 @@ export default class Prerequisites extends Command {
          await Pacman.configurationInstall(verbose)
       }
 
-      if (i.prerequisites) {
-         Utils.warning('Installing prerequisites...')
-         await Pacman.prerequisitesInstall(verbose)
-      }
-
       if (i.clean) {
+         Utils.warning('cleaning the system...')
          const bleach = new Bleach()
          await bleach.clean(verbose)
       }

@@ -93,7 +93,7 @@ export default class Pacman {
          packages.push('live-config')
       }
 
-      if (!remove){
+      if (!remove) {
          packages = packages.concat(Pacman.debs4notRemove)
       }
 
@@ -117,7 +117,7 @@ export default class Pacman {
    /**
     * Restituisce VERO se i prerequisiti sono installati
     */
-   static async prerequisitesCheck(): Promise <boolean> {
+   static async prerequisitesCheck(): Promise<boolean> {
       let installed = true
 
       for (const i in this.debs4eggs) {
@@ -133,7 +133,7 @@ export default class Pacman {
     *
     */
    static async prerequisitesInstall(verbose = true): Promise<boolean> {
-      verbose = true
+      // verbose = true
       const echo = Utils.setEcho(verbose)
       const retVal = false
       const remix = {} as IRemix
@@ -141,7 +141,7 @@ export default class Pacman {
 
       await exec(`apt-get install --yes ${Pacman.debs2line(Pacman.packages(verbose))}`, echo)
       if ((distro.versionLike === 'buster') || (distro.versionLike === 'beowulf') || (distro.versionLike === 'bullseye') || (distro.versionLike === 'stretch')) {
-         await exec(`apt-get install --no-install-recommends --yes ${Pacman.debs2line(Pacman.packagesLocalisation(verbose))}`, echo)
+         await exec(`apt-get install --yes --no-install-recommends ${Pacman.debs2line(Pacman.packagesLocalisation(verbose))}`, echo)
       }
       return retVal
    }
@@ -150,19 +150,19 @@ export default class Pacman {
     *
     */
    static async prerequisitesRemove(verbose = true): Promise<boolean> {
-      verbose = true
+      // verbose = true
       const echo = Utils.setEcho(verbose)
       const retVal = false
       const remix = {} as IRemix
       const distro = new Distro(remix)
       const remove = true
 
-      await exec(`apt-get remove --purge --yes ${Pacman.debs2line(Pacman.packages(remove, verbose))}`, echo)
+      await exec(`apt-get purge --yes ${Pacman.debs2line(Pacman.packages(remove, verbose))}`, echo)
       if ((distro.versionLike === 'buster') || (distro.versionLike === 'beowulf')) {
-         await exec(`apt-get remove --purge --yes ${Pacman.debs2line(Pacman.packagesLocalisation(verbose))}`, echo)
+         await exec(`apt-get purge --yes  ${Pacman.debs2line(Pacman.packagesLocalisation(verbose))}`, echo)
       }
 
-      await exec('apt-get autoremove --yes')
+      await exec('apt-get autoremove --yes', echo)
       return retVal
    }
 
@@ -186,7 +186,7 @@ export default class Pacman {
     *
     */
    static async calamaresInstall(verbose = true): Promise<void> {
-      verbose = true
+      // verbose = true
       const echo = Utils.setEcho(verbose)
       if (Pacman.isXInstalled()) {
          await exec(`apt-get install --yes ${Pacman.debs2line(Pacman.debs4calamares)}`, echo)
@@ -199,11 +199,12 @@ export default class Pacman {
     *
     */
    static async calamaresRemove(verbose = true): Promise<boolean> {
-      verbose = true
       const echo = Utils.setEcho(verbose)
 
       const retVal = false
-      await exec('rm /etc/calamares -rf', echo)
+      if (fs.existsSync('/etc/calamares')) {
+         await exec('rm /etc/calamares -rf', echo)
+      }
       await exec(`apt-get remove --purge --yes ${Pacman.debs2line(Pacman.debs4calamares)}`, echo)
       await exec('apt-get autoremove --yes', echo)
       return retVal
@@ -212,12 +213,12 @@ export default class Pacman {
 
 
    /**
-    * Restutuisce VERO se i file di configurazione sono presenti
+    * Restutuisce VERO se i file di configurazione NON sono presenti
     */
    static configurationCheck(): boolean {
       let conf: boolean = fs.existsSync(config_file)
       let list: boolean = fs.existsSync('/usr/local/share/penguins-eggs/exclude.list')
-      return (conf && list)
+      return !(conf && list)
    }
 
    /**
@@ -313,12 +314,15 @@ export default class Pacman {
     */
    static async configurationRemove(verbose = true): Promise<void> {
       const echo = Utils.setEcho(verbose)
-      await exec('rm /etc/penguins-eggs.d/eggs.conf', echo)
-      await exec('rm /etc/penguins-eggs.d/eggs.conf?', echo)
-      await exec('rm /etc/penguins-eggs.d/tools.conf', echo)
-      await exec('rm /etc/penguins-eggs.d/tools.conf?', echo)
-      await exec('rm /usr/local/share/penguins-eggs/exclude.list', echo)
-      await exec('rm /usr/local/share/penguins-eggs/exclude.list?', echo)
+      if (fs.existsSync('/etc/penguins-eggs.d/eggs.conf')) {
+         await exec('rm /etc/penguins-eggs.d/eggs.conf', echo)
+      }
+      if (fs.existsSync('/etc/penguins-eggs.d/tools.conf')) {
+         await exec('rm /etc/penguins-eggs.d/tools.conf', echo)
+      }
+      if (fs.existsSync('/usr/local/share/penguins-eggs/exclude.list')) {
+         await exec('rm /usr/local/share/penguins-eggs/exclude.list', echo)
+      }
    }
 
    /**

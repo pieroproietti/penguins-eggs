@@ -32,17 +32,21 @@ export default class Sterilize extends Command {
 
       if (Utils.isRoot() && await Pacman.prerequisitesCheck()) {
          const i = await Sterilize.thatWeRemove(verbose)
+         Utils.warning('Don\'t be worried! It\'s just a series of apt remove, you can follow the operations with flag --verbose')
          if (await Utils.customConfirm(`Select yes to continue...`)) {
             if (i.calamares) {
-               await Pacman.calamaresRemove()
-            }
-
-            if (i.configuration) {
-               await Pacman.configurationRemove()
+               Utils.warning('Removing calamares...')
+               await Pacman.calamaresRemove(verbose)
             }
 
             if (i.prerequisites) {
-               await Pacman.prerequisitesRemove()
+               Utils.warning('Removing prerequisites...')
+               await Pacman.prerequisitesRemove(verbose)
+            }
+
+            if (i.configuration) {
+               Utils.warning('Removing configuration files...')
+               await Pacman.configurationRemove(verbose)
             }
          }
       } else {
@@ -76,11 +80,12 @@ export default class Sterilize extends Command {
 
          if (i.prerequisites) {
             console.log('- remove prerequisites')
-            const packages = Pacman.packages()
+            const remove = true
+            const packages = Pacman.packages(remove, verbose)
             console.log(chalk.yellow('  apt purge --yes ' + Pacman.debs2line(packages)))
             const packagesLocalisation = Pacman.packagesLocalisation()
             if (packagesLocalisation.length > 0) {
-               console.log(chalk.yellow('  apt purge  --yes live-task-localisation ' + Pacman.debs2line(packagesLocalisation)) + '\n')
+               console.log(chalk.yellow('  apt purge --yes live-task-localisation ' + Pacman.debs2line(packagesLocalisation)) + '\n')
             } else {
                console.log()
             }
