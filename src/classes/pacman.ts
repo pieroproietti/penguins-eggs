@@ -213,12 +213,12 @@ export default class Pacman {
 
 
    /**
-    * Restutuisce VERO se i file di configurazione NON sono presenti
+    * Restutuisce VERO se i file di configurazione SONO presenti
     */
    static configurationCheck(): boolean {
-      let conf: boolean = fs.existsSync(config_file)
-      let list: boolean = fs.existsSync('/usr/local/share/penguins-eggs/exclude.list')
-      return !(conf && list)
+      let confExists: boolean = fs.existsSync(config_file)
+      let listExists: boolean = fs.existsSync('/usr/local/share/penguins-eggs/exclude.list')
+      return (confExists && listExists)
    }
 
    /**

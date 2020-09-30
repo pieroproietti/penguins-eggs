@@ -22,29 +22,34 @@ export default class Prerequisites extends Command {
 
    static flags = {
       help: flags.help({ char: 'h' }),
-      verbose: flags.boolean({ char: 'v', description: 'verbose' })
+      configuration: flags.boolean({ char: 'c', description: 'create configuration\'s files' }),
+      verbose: flags.boolean({ char: 'v', description: 'verbose' }),
    }
 
-   static examples = [`~$ eggs prerequisites\ninstall prerequisites and create configuration files\n`]
+   static examples = [`~$ eggs prerequisites\ninstall prerequisites and create configuration files\n`,
+      'sudo eggs prerequisites -c\n create configuration\'s file']
 
    async run() {
       Utils.titles('prerequisites')
 
       const { flags } = this.parse(Prerequisites)
-      let verbose = false
-      if (flags.verbose) {
-         verbose = true
-      }
+
+      let verbose = flags.verbose
+      let configuration = flags.configuration
 
       if (Utils.isRoot()) {
-         const i = await Prerequisites.thatWeNeed(verbose)
-         if (i.clean || i.configuration || i.links){
-            if (await Utils.customConfirm(`Select yes to continue...`)) {
-               console.log('installing')
-               await Prerequisites.install(i, verbose)
-            }
+         if (configuration) {
+            await Pacman.configurationInstall(verbose)
          } else {
-            console.log('All is OK, nothing to do!')
+            const i = await Prerequisites.thatWeNeed(verbose)
+            if (i.clean || i.configuration || i.links) {
+               if (await Utils.customConfirm(`Select yes to continue...`)) {
+                  console.log('installing')
+                  await Prerequisites.install(i, verbose)
+               }
+            } else {
+               console.log('All is OK, nothing to do!')
+            }
          }
       }
    }
@@ -70,9 +75,11 @@ export default class Prerequisites extends Command {
       if (! await Pacman.calamaresCheck() && (Pacman.isXInstalled())) {
          Utils.warning('You are on a graphics system, I suggest to use the GUI installer calamares')
          i.calamares = (await Utils.customConfirm('Want to install calamares?'))
+         console.log()
       }
 
-      i.configuration = Pacman.configurationCheck()
+      i.configuration = !Pacman.configurationCheck()
+      
 
       i.prerequisites = !await Pacman.prerequisitesCheck()
 
@@ -81,10 +88,15 @@ export default class Prerequisites extends Command {
       }
 
       if (i.clean || i.configuration || i.links) {
-         Utils.warning(`Installing prerequisites.\nEggs will execute the following tasks:`)
+         Utils.warning(`Eggs will execute the following tasks:`)
 
          if (i.links) {
             console.log('- create links to different distros\n')
+         }
+
+         if (i.clean) {
+            console.log('- udpate the system')
+            console.log(chalk.yellow('  apt update --yes\n'))
          }
 
          if (i.efi) {
@@ -97,7 +109,7 @@ export default class Prerequisites extends Command {
             const packages = Pacman.packages()
             console.log(chalk.yellow('  apt install --yes ' + Pacman.debs2line(packages)))
             if (i.configuration) {
-               await Pacman.configurationInstall() // carico la configurazione solo per leggere le lingue
+               Pacman.configurationInstall(verbose)
             }
             const packagesLocalisation = Pacman.packagesLocalisation()
             if (packagesLocalisation.length > 0) {
@@ -109,18 +121,21 @@ export default class Prerequisites extends Command {
 
          if (i.calamares) {
             console.log('- install calamares')
-            const packages = Pacman.debs4calamares
+            const packages = await Pacman.debs4calamares
             console.log(chalk.yellow('  apt install -y ' + Pacman.debs2line(packages) + '\n'))
-         }
-
-         console.log(`configuration: ${i.configuration}`)
-         if (i.configuration) {
-            console.log('- configuration\n')
          }
 
          if (i.clean) {
             console.log('- cleaning apt\n')
-            Utils.warning('Don\'t be worried! It\'s just a series of apt install from you repositories, you can follows the operations with flag --verbose')
+         }
+
+         if (i.configuration || i.clean) {
+            console.log('- creating/updating configuration')
+            console.log('  files: ' + chalk.yellow('/etc/penguins-eggs.d/eggs.conf') + ' and ' + chalk.yellow('/usr/local/share/penguins-eggs/exclude.list\n'))
+         }
+
+         if (i.clean) {
+            Utils.warning('Be sure! It\'s just a series of apt install from your repositories. You can follows them using flag --verbose')
          }
       }
       return i
@@ -135,16 +150,17 @@ export default class Prerequisites extends Command {
    static async install(i: IInstall, verbose = false) {
       const echo = Utils.setEcho(verbose)
 
-      await Pacman.configurationInstall(false)
-
       if (i.links) {
          await Pacman.linksInstall(verbose)
       }
 
       if (i.clean) {
          Utils.warning('apt-get update --yes')
-         await exec('apt-get update --yes', echo)
+         const result = await exec('apt-get update --yes', echo)
+         console.log(result)
       }
+
+      console.log(i)
 
       if (i.efi) {
          Utils.warning('Installing uefi support...')
@@ -161,15 +177,15 @@ export default class Prerequisites extends Command {
          await Pacman.calamaresInstall(verbose)
       }
 
-      if (i.configuration) {
-         Utils.warning('creating configuration...')
-         await Pacman.configurationInstall(verbose)
-      }
-
       if (i.clean) {
          Utils.warning('cleaning the system...')
          const bleach = new Bleach()
          await bleach.clean(verbose)
+      }
+
+      if (i.configuration) {
+         Utils.warning('creating configuration\'s files...')
+         await Pacman.configurationInstall(verbose)
       }
    }
 }
