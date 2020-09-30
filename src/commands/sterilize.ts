@@ -32,7 +32,7 @@ export default class Sterilize extends Command {
 
       if (Utils.isRoot() && await Pacman.prerequisitesCheck()) {
          const i = await Sterilize.thatWeRemove(verbose)
-         Utils.warning('Don\'t be worried! It\'s just a series of apt remove, you can follow the operations with flag --verbose')
+         Utils.warning('Be sure! It\'s just a series of apt purge. You can follows them using flag --verbose')
          if (await Utils.customConfirm(`Select yes to continue...`)) {
             if (i.calamares) {
                Utils.warning('Removing calamares...')

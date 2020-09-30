@@ -51,7 +51,7 @@ export default class Pacman {
    }
 
 
-   static packagesLocalisation(verbose = false) {
+   static packagesLocalisation(remove=false, verbose = false) {
       const remix = {} as IRemix
       const distro = new Distro(remix)
       const packages = []
@@ -59,8 +59,12 @@ export default class Pacman {
       const settings = new Settings()
       settings.load()
       const locales: string[] = settings.locales
+      
       if ((distro.versionLike === 'buster') || (distro.versionLike === 'beowulf')) {
          for (let i = 0; i < locales.length; i++) {
+            if (locales[i] === process.env.LANG ) {
+               continue
+            }
             if (locales[i] === `it_IT.UTF-8`) {
                packages.push('task-italian')
             } else if (locales[i] === `en_US.UTF-8`) {

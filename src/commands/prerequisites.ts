@@ -160,8 +160,6 @@ export default class Prerequisites extends Command {
          console.log(result)
       }
 
-      console.log(i)
-
       if (i.efi) {
          Utils.warning('Installing uefi support...')
          await Pacman.packageInstall('grub-efi-amd64')
