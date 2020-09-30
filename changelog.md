@@ -18,7 +18,10 @@ You can follow the project also consulting the [commit history](https://github.c
 ## Changelog
 Versions are listed on reverse order, the first is the last one.
 
-### eggs-7.46.1_.deb
+### eggs-7.48.1_.deb
+* rewrote of the commands prerequisites and sterilize, they now try to explain better that  will happen behind the scenes, during their use. It remain the possibility to see all via --verbose flag.
+
+### eggs-7.47.1_.deb
 * added a beutifull new theme for ufficiozero thanx to Julian Del Vecchio.
 
 ### eggs-7.46.1_.deb
