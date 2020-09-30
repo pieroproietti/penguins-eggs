@@ -8,7 +8,11 @@
  *
  * @returns {Promise<{code: number, data: string | undefined, error: Object}>}
  */
-export function exec(command: string, { echo = false, ignore = false, capture = false } = {}) {
+
+import { IExec } from '../interfaces'
+
+
+export function exec(command: string, { echo = false, ignore = false, capture = false } = {}) : Promise <IExec> {
    if (echo) {
       console.log(command)
    }

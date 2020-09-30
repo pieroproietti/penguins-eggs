@@ -13,6 +13,7 @@ import chalk = require('chalk')
 import { utils } from 'mocha'
 
 const exec = require('../lib/utils').exec
+import { IExec } from '../interfaces'
 
 /**
  * 
@@ -79,7 +80,7 @@ export default class Prerequisites extends Command {
       }
 
       i.configuration = !Pacman.configurationCheck()
-      
+
 
       i.prerequisites = !await Pacman.prerequisitesCheck()
 
@@ -156,8 +157,7 @@ export default class Prerequisites extends Command {
 
       if (i.clean) {
          Utils.warning('apt-get update --yes')
-         const result = await exec('apt-get update --yes', echo)
-         console.log(result)
+         await exec('apt-get update --yes', echo)
       }
 
       if (i.efi) {
