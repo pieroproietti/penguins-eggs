@@ -27,7 +27,7 @@ sequence:
       - partition
       - mount
       - unpackfs
-      - sources-trusted
+      - sources-yolk
       - machineid
       - fstab
       - locale
@@ -49,7 +49,7 @@ sequence:
       - initramfs
       - removeuser
       - remove-link
-      - sources-trusted-unmount
+      - sources-yolk-unmount
       - sources-final
       - umount
 

@@ -2,7 +2,7 @@
 # sources-yolk-unmount
 ---
 type: "job"
-name: "sources-trusted-unmount"
+name: "sources-yolk-unmount"
 interface: "process"
-command: "/usr/sbin/sources-trusted.sh -u"
+command: "/usr/sbin/sources-yolk.sh -u"
 timeout: 600

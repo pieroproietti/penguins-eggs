@@ -5,10 +5,15 @@
  * license: MIT
  */
 import { Command, flags } from '@oclif/command'
+import shx = require('shelljs')
+
 import Utils from '../classes/utils'
 import Settings from '../classes/settings'
+const exec = require('../lib/utils').exec
 
 import fs = require('fs')
+import { execSync } from 'child_process'
+
 
 export default class Yolk extends Command {
    static description = 'configure eggs to install without internet'
@@ -21,6 +26,9 @@ export default class Yolk extends Command {
       verbose: flags.boolean({ char: 'v' })
    }
 
+   static dir = '/'
+
+
    async run() {
       const { flags } = this.parse(Yolk)
 
@@ -32,25 +40,38 @@ export default class Yolk extends Command {
       if (Utils.isRoot()) {
          const settings = new Settings()
          settings.load()
-         const yolk = settings.work_dir.pathIso + '/yolk'
-         if (!fs.existsSync(yolk)) {
-            console.log('yolk già esiste!')
-            process.exit(0)
-         } else {
-            this.createYolk()
+         Yolk.dir = settings.work_dir.pathIso + '/yolk'
+         if (fs.existsSync(Yolk.dir)) {
+            shx.exec(`rm ${Yolk.dir} -rf `)
          }
+         await this.createYolk(verbose)
       }
    }
 
    /**
     * 
     */
-   createYolk () {
-      const packages = ['grub-efi-amd64.deb', 'grub-pc.deb', 'cryptsetup.deb', 'keyutils.deb']
-      const source = 'http://deb.debian.org/debian/'
-      
-      // pacchetti: 
+   async createYolk(verbose = false) {
+      const echo = Utils.setEcho(verbose)
+      const packages = ['grub-efi-amd64', 'grub-pc', 'cryptsetup', 'keyutils']
 
-      // Creare Packages.gz in yoik
+      if (!fs.existsSync(`${Yolk.dir}`)) {
+         shx.exec(`mkdir ${Yolk.dir} -p`)
+      }
+
+      // pacchetti: 
+      process.chdir(Yolk.dir)
+      for (let i = 0; i < packages.length; i++) {
+         const cmd = `apt-get download ${packages[i]}`
+         console.log(cmd)
+         await exec(cmd, echo)
+      }
+      
+      process.chdir(Yolk.dir)
+      const cmd = `dpkg-scanpackages . | gzip > Packages.gz`
+      console.log(cmd)
+      await exec(cmd, echo)
+      const release = `Archive: unstable\nComponent: main\nOrigin: eggs\nArchitecture: amd64\n`
+      fs.writeFileSync('Release', release)
    }
 }

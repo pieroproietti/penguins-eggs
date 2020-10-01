@@ -19,6 +19,8 @@ deb-src http://security.debian.org/debian-security/ $RELEASE/updates main
 EOF
 
 #####################################################################
+# Restore previous sources... the previous part is unusefull
+#####################################################################
 rm $CHROOT/etc/apt/sources.list
 rm $CHROOT/etc/apt/sources.list.d -rf
 mv $CHROOT/etc/apt/sources.list-backup $CHROOT/etc/apt/sources.list

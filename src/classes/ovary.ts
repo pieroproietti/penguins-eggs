@@ -334,6 +334,8 @@ export default class Ovary {
          shx.mkdir('-p', `${this.settings.work_dir.pathIso}/isolinux`)
          shx.mkdir('-p', `${this.settings.work_dir.pathIso}/live`)
       }
+      shx.mkdir('-p', `${this.settings.work_dir.pathIso}/live`)
+
 
       // copio i file di isolinux
       const isolinuxbin = `${this.settings.distro.isolinuxPath}isolinux.bin`
