@@ -3,10 +3,12 @@ CHROOT=$(mount | grep proc | grep calamares | awk '{print $3}' | sed -e "s#/proc
 RELEASE="{{versionId}}"
 
 #####################################################################
-# Unmount delle sources-yolk
+# Unmount remove yolk and restore original sources
 #####################################################################
 if [ "$1" = "-u" ]; then
-    rm $CHROOT/etc/apt/sources.list.d/debian-yolk.list
+    rm $CHROOT/etc/apt/sources.list
+    mv $CHROOT/etc/apt/sources.list-backup $CHROOT/etc/apt/sources.list
+    mv $CHROOT/etc/apt/sources.list.d-backup $CHROOT/etc/apt/sources.list.d
     chroot $CHROOT apt-get --allow-unauthenticated update
     exit 0
 fi
@@ -26,7 +28,7 @@ mkdir -p $CHROOT/etc/apt/sources.list.d
 # Writes the debian-trusted.list file
 #
 cat << EOF > $CHROOT/etc/apt/sources.list.d/debian-yolk.list
-deb [trusted=yes] file:/run/live/medium/yolk ./
+deb [trusted=yes] file:/usr/local/yolk ./
 EOF
 
 chroot $CHROOT apt-get --allow-unauthenticated update -y

@@ -6,15 +6,16 @@
  */
 import { Command, flags } from '@oclif/command'
 import shx = require('shelljs')
+import fs = require('fs')
 
 import Utils from '../classes/utils'
 import Settings from '../classes/settings'
+
 const exec = require('../lib/utils').exec
 
-import fs = require('fs')
-import { execSync } from 'child_process'
-
-
+/**
+ * 
+ */
 export default class Yolk extends Command {
    static description = 'configure eggs to install without internet'
 
@@ -28,7 +29,9 @@ export default class Yolk extends Command {
 
    static dir = '/'
 
-
+   /**
+    * 
+    */
    async run() {
       const { flags } = this.parse(Yolk)
 
@@ -40,7 +43,7 @@ export default class Yolk extends Command {
       if (Utils.isRoot()) {
          const settings = new Settings()
          settings.load()
-         Yolk.dir = settings.work_dir.pathIso + '/yolk'
+         Yolk.dir = '/usr/local/yolk'
          if (fs.existsSync(Yolk.dir)) {
             shx.exec(`rm ${Yolk.dir} -rf `)
          }
@@ -53,22 +56,29 @@ export default class Yolk extends Command {
     */
    async createYolk(verbose = false) {
       const echo = Utils.setEcho(verbose)
-      const packages = ['grub-efi-amd64', 'grub-pc', 'cryptsetup', 'keyutils']
+      const packages = ['grub-efi-amd64', 'grub-pc', 'grub-pc-bin', 'cryptsetup', 'keyutils']
+
+      /**
+       * riga apt
+       * 
+       * deb [trusted=yes] file:/usr/local/yolk ./
+       * 
+       */
 
       if (!fs.existsSync(`${Yolk.dir}`)) {
          shx.exec(`mkdir ${Yolk.dir} -p`)
       }
 
-      // pacchetti: 
       process.chdir(Yolk.dir)
       for (let i = 0; i < packages.length; i++) {
          const cmd = `apt-get download ${packages[i]}`
          console.log(cmd)
          await exec(cmd, echo)
       }
-      
+
       process.chdir(Yolk.dir)
-      const cmd = `dpkg-scanpackages . | gzip > Packages.gz`
+      
+      const cmd = 'dpkg-scanpackages -m . | gzip -c > Packages.gz'
       console.log(cmd)
       await exec(cmd, echo)
       const release = `Archive: unstable\nComponent: main\nOrigin: eggs\nArchitecture: amd64\n`
