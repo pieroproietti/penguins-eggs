@@ -81,19 +81,18 @@ export class Bionic {
       await fisherman.moduleDisplaymanager() //
       await fisherman.buildModule('networkcfg')
       await fisherman.buildModule('hwclock')
-      await fisherman.buildCalamaresModule('before-bootloader-mkdirs')
+      await fisherman.buildCalamaresModule('sources-yolk', true)
       await fisherman.buildCalamaresModule('bug')
       await fisherman.buildModule('initramfscfg')
       await fisherman.buildModule('initramfs')
       await fisherman.buildCalamaresPy('grubcfg')
-      await fisherman.buildCalamaresModule('before-bootloader')
       await fisherman.buildModule('bootloader')
       await fisherman.buildCalamaresModule('after-bootloader')
       await fisherman.buildCalamaresModule('add386arch', false)
       await fisherman.modulePackages(this.distro, this.final) //
       await fisherman.moduleRemoveuser(this.user_opt) //
       await fisherman.buildCalamaresModule('remove-link', true)
-      // await fisherman.shellprocess('logs') non trova calamares-helper
+      await fisherman.buildCalamaresModule('sources-yolk-unmount', false)
       await fisherman.buildModule('umount')
       await fisherman.buildModule('finished')
    }
