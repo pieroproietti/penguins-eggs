@@ -17,6 +17,7 @@ sequence:
       - partition
       - mount
       - unpackfs
+      - sources-yolk
       - machineid
       - fstab
       - locale
@@ -27,18 +28,19 @@ sequence:
       - displaymanager
       - networkcfg
       - hwclock
-      - before-bootloader-mkdirs
+      #- before-bootloader-mkdirs
       - bug
       - initramfscfg
       - initramfs
       - grubcfg
-      - before-bootloader
+      #- before-bootloader
       - bootloader
       - after-bootloader
       - add386arch
       - packages
       - removeuser
       - remove-link
+      - sources-yolk-unmount
       - umount
   - show:
       - finished
