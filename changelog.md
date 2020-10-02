@@ -18,6 +18,17 @@ You can follow the project also consulting the [commit history](https://github.c
 ## Changelog
 Versions are listed on reverse order, the first is the last one.
 
+### eggs-7.49.1_.deb
+One user pointed out to me an annoying problem with eggs, the impossibility of installation in the absence of internet.
+
+After studying it, I am proud to present yolk, a very small local repository, responsible for making it possible to install the system in the absence of internet. 
+
+There are no changes in the way to use the eggs but, during the production process, a small repo is created in /usr/local/yolk, and the related calamares modules are built to add this local repo to the apt sources. 
+
+Yolk is very little, about 2.1 MB and contains only the following packages: grub-pc, grub-pc-bin, cryptsetup, keyutils, grub-efi-amd64 and rub-efi-amd64-bin. 
+
+After installation yolk is removed from apt sources.
+
 ### eggs-7.48.1_.deb
 * rewrote of the commands prerequisites and sterilize, they now try to explain better that  will happen behind the scenes, during their use. It remain the possibility to see all via --verbose flag.
 

@@ -90,7 +90,7 @@ $ npm install -g penguins-eggs
 $ eggs COMMAND
 running command...
 $ eggs (-v|--version|version)
-penguins-eggs/7.6.48 linux-x64 node-v14.12.0
+penguins-eggs/7.6.48 linux-x64 node-v14.13.0
 $ eggs --help [COMMAND]
 USAGE
   $ eggs COMMAND
@@ -106,6 +106,7 @@ USAGE
 * [`eggs howto:configuration`](#eggs-howtoconfiguration)
 * [`eggs howto:grub`](#eggs-howtogrub)
 * [`eggs howto:initrd`](#eggs-howtoinitrd)
+* [`eggs howto:yolk`](#eggs-howtoyolk)
 * [`eggs info`](#eggs-info)
 * [`eggs install`](#eggs-install)
 * [`eggs kill`](#eggs-kill)
@@ -233,6 +234,25 @@ OPTIONS
 
 _See code: [src/commands/howto/initrd.ts](https://github.com/pieroproietti/penguins-eggs/blob/v7.6.48/src/commands/howto/initrd.ts)_
 
+## `eggs howto:yolk`
+
+configure eggs to install without internet
+
+```
+USAGE
+  $ eggs howto:yolk
+
+OPTIONS
+  -h, --help       show CLI help
+  -u, --user=user  user to be used
+  -v, --verbose
+
+EXAMPLE
+  $ eggs yolk -v
+```
+
+_See code: [src/commands/howto/yolk.ts](https://github.com/pieroproietti/penguins-eggs/blob/v7.6.48/src/commands/howto/yolk.ts)_
+
 ## `eggs info`
 
 informations about system and eggs
@@ -319,6 +339,7 @@ USAGE
 OPTIONS
   -c, --configuration  create configuration's files
   -h, --help           show CLI help
+  -l, --links          create links
   -v, --verbose        verbose
 
 EXAMPLES
