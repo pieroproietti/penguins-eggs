@@ -27,6 +27,7 @@ sequence:
       - partition
       - mount
       - unpackfs
+      - sources-yolk
       - fstab
       - locale
       - keyboard
@@ -46,6 +47,7 @@ sequence:
       - initramfs
       - removeuser
       - remove-link
+      - sources-yolk-unmount
       - umount
 
   # Phase 3 - postinstall.

@@ -50,7 +50,6 @@ sequence:
       - removeuser
       - remove-link
       - sources-yolk-unmount
-      - sources-final
       - umount
 
   # Phase 3 - postinstall.
