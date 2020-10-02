@@ -56,7 +56,16 @@ export default class Yolk extends Command {
     */
    async createYolk(verbose = false) {
       const echo = Utils.setEcho(verbose)
-      const packages = ['grub-efi-amd64', 'grub-pc', 'grub-pc-bin', 'cryptsetup', 'keyutils']
+      const packages = ['grub-pc', 'grub-pc-bin', 'cryptsetup', 'keyutils']
+      let arch = 'amd64'
+      if (process.arch === 'ia32') {
+         arch = 'i386'
+         // packages.push('grub-efi-ia32')
+         // packages.push('grub-efi-ia32-bin')
+      } else {
+         packages.push('grub-efi-amd64')
+         packages.push('grub-efi-amd64-bin')
+      }
 
       /**
        * riga apt
@@ -77,11 +86,12 @@ export default class Yolk extends Command {
       }
 
       process.chdir(Yolk.dir)
-      
+
       const cmd = 'dpkg-scanpackages -m . | gzip -c > Packages.gz'
       console.log(cmd)
       await exec(cmd, echo)
-      const release = `Archive: unstable\nComponent: main\nOrigin: eggs\nArchitecture: amd64\n`
+
+      const release = `Archive: stable\nComponent: yolk\nOrigin: penguins-eggs\nArchitecture: ${arch}\n`
       fs.writeFileSync('Release', release)
    }
 }

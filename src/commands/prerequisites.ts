@@ -24,6 +24,7 @@ export default class Prerequisites extends Command {
    static flags = {
       help: flags.help({ char: 'h' }),
       configuration: flags.boolean({ char: 'c', description: 'create configuration\'s files' }),
+      links: flags.boolean({ char: 'l', description: 'create links' }),
       verbose: flags.boolean({ char: 'v', description: 'verbose' }),
    }
 
@@ -37,10 +38,13 @@ export default class Prerequisites extends Command {
 
       let verbose = flags.verbose
       let configuration = flags.configuration
+      let links = flags.links
 
       if (Utils.isRoot()) {
          if (configuration) {
             await Pacman.configurationInstall(verbose)
+         } else if (links) {
+            await Pacman.linksInstall(true, verbose)
          } else {
             const i = await Prerequisites.thatWeNeed(verbose)
             if (i.clean || i.configuration || i.links) {
