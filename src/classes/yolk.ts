@@ -16,7 +16,7 @@ const exec = require('../lib/utils').exec
 /**
  * 
  */
-export default class Repo {
+export default class Yolk {
 
     
 

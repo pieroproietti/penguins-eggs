@@ -8,16 +8,13 @@ import { Command, flags } from '@oclif/command'
 import shx = require('shelljs')
 import fs = require('fs')
 
-import Utils from '../classes/utils'
-import Settings from '../classes/settings'
-import Repo from '../classes/repo'
-
-const exec = require('../lib/utils').exec
+import Utils from '../../classes/utils'
+import Yolk from '../../classes/yolk'
 
 /**
  * 
  */
-export default class Yolk extends Command {
+export default class DevYolk extends Command {
    static description = 'configure eggs to install without internet'
 
    static examples = [`$ eggs yolk -v`]
@@ -34,7 +31,7 @@ export default class Yolk extends Command {
     * 
     */
    async run() {
-      const { flags } = this.parse(Yolk)
+      const { flags } = this.parse(DevYolk)
 
       let verbose = false
       if (flags.verbose) {
@@ -42,15 +39,13 @@ export default class Yolk extends Command {
       }
 
       if (Utils.isRoot()) {
-         const settings = new Settings()
-         settings.load()
-         Yolk.dir = '/usr/local/yolk'
-         if (fs.existsSync(Yolk.dir)) {
-            shx.exec(`rm ${Yolk.dir} -rf `)
+         DevYolk.dir = '/usr/local/yolk'
+         if (fs.existsSync(DevYolk.dir)) {
+            shx.exec(`rm ${DevYolk.dir} -rf `)
          }
 
-         const repo = new Repo()
-         await repo.create(Yolk.dir, verbose)
+         const yolk = new Yolk()
+         await yolk.create(DevYolk.dir, verbose)
       }
    }
 }

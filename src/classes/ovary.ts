@@ -29,10 +29,9 @@ import Incubator from './incubation/incubator'
 import Xdg from './xdg'
 import Pacman from './pacman'
 import Settings from './settings'
-import Initrd from './initrd'
 import Systemctl from './systemctl'
 import Bleach from './bleach'
-import Repo from './repo'
+import Repo from './yolk'
 
 /**
  * Ovary:
