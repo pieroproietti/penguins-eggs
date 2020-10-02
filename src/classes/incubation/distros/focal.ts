@@ -75,6 +75,7 @@ export class Focal {
       await fisherman.buildModule('partition')
       await fisherman.buildModule('mount')
       await fisherman.moduleUnpackfs()
+      await fisherman.buildCalamaresModule('sources-yolk', true)      
       await fisherman.buildModule('machineid')
       await fisherman.buildModule('fstab')
       await fisherman.buildModule('locale')
@@ -92,12 +93,11 @@ export class Focal {
       await fisherman.contextualprocess('before_bootloader')
       await fisherman.buildModule('bootloader')
       await fisherman.contextualprocess('after_bootloader')
-      // await fisherman.buildCalamaresPy('automirror') errore in main distrobution
       await fisherman.shellprocess('add386arch')
       await fisherman.modulePackages(this.distro, this.final) //
       await fisherman.moduleRemoveuser(this.user_opt)
       await fisherman.buildCalamaresModule('remove-link', true)
-      // await fisherman.shellprocess('logs') non trova calamares-helper
+      await fisherman.buildCalamaresModule('sources-yolk-unmount', false)      
       await fisherman.buildModule('umount')
       await fisherman.buildModule('finished')
    }

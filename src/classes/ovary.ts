@@ -32,7 +32,7 @@ import Settings from './settings'
 import Initrd from './initrd'
 import Systemctl from './systemctl'
 import Bleach from './bleach'
-
+import Repo from './repo'
 
 /**
  * Ovary:
@@ -78,6 +78,8 @@ export default class Ovary {
    async produce(basename = '', script_only = false, final = false, theme = '', myAddons: IMyAddons, verbose = false) {
       const echo = Utils.setEcho(verbose)
 
+      const repo = new Repo()
+      repo.create('/usr/local/yolk', verbose)
 
       if (!fs.existsSync(this.settings.snapshot_dir)) {
          shx.mkdir('-p', this.settings.snapshot_dir)
@@ -1089,6 +1091,8 @@ export default class Ovary {
          console.log(`happy hacking!`)
       }
    }
+
+
 }
 
 /**
