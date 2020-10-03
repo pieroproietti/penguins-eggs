@@ -74,8 +74,11 @@ export default class Update extends Command {
 async function importDeb() {
 
    const Tu = new Tools
+   await Tu.loadSettings()
+   
    Utils.titles()
    const exec = require('../lib/utils').exec
+
 
    await exec(`scp ${Tu.export_user_deb}@${Tu.export_host}:${Tu.export_path_deb}${Tu.file_name_deb} .`)
    if (Utils.isRoot()) {
