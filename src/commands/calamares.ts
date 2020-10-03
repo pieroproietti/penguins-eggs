@@ -12,7 +12,7 @@ import Pacman from '../classes/pacman'
 import { IRemix } from '../interfaces'
 
 export default class Calamares extends Command {
-   static description = 'configure calamares or install and configure it'
+   static description = 'calamares or install or configure it'
 
    remix = {} as IRemix
 
@@ -28,7 +28,7 @@ export default class Calamares extends Command {
       theme: flags.string({ description: 'theme/branding for eggs and calamares' })
    }
 
-   static examples = [`~$ sudo eggs calamares \ninstall calamares and create configuration\n`, `~$ sudo eggs calamares -c \ncreate/renew calamares configuration files\n`]
+   static examples = [`~$ sudo eggs calamares \ncreate/renew calamares configuration\'s files\n`, `~$ sudo eggs calamares -i \ninstall calamares and create it\'s configuration\'s files\n`]
 
    async run() {
       Utils.titles('calamares')

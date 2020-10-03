@@ -4,7 +4,7 @@ import Utils from '../classes/utils'
 const exec = require('../lib/utils').exec
 
 export default class Adaptp extends Command {
-   static description = 'auto adapt monitor resolution'
+   static description = 'adapt monitor resolution for VM only'
    static aliases = ['adjust']
 
    static flags = {

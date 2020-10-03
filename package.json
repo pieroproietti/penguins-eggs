@@ -10,6 +10,7 @@
   "repository": "https://github.com/pieroproietti/penguins-eggs",
   "bugs": "https://github.com/pieroproietti/penguins-eggs/issues",
   "dependencies": {
+    "@getvim/execute": "^1.0.0",
     "@oclif/command": "^1.8.0",
     "@oclif/plugin-autocomplete": "^0.1.5",
     "@oclif/plugin-help": "^2.2.3",

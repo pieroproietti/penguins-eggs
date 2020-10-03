@@ -1,6 +1,3 @@
-/* eslint-disable unicorn/no-process-exit */
-/* eslint-disable no-process-exit */
-/* eslint-disable no-console */
 /**
  * penguins-eggs-v7 based on Debian live
  * author: Piero Proietti
@@ -8,8 +5,8 @@
  * license: MIT
  */
 import { Command, flags } from '@oclif/command'
-import Utils from '../classes/utils'
-import Bleach from '../classes/bleach'
+import Utils from '../../classes/utils'
+import Bleach from '../../classes/bleach'
 
 export default class Clean extends Command {
    static description = 'clean system log, apt, etc'

@@ -5,9 +5,9 @@
  * license: MIT
  */
 import { Command, flags } from '@oclif/command'
-import Utils from '../classes/utils'
+import Utils from '../../classes/utils'
 import fs = require('fs')
-import Xdg from '../classes/xdg'
+import Xdg from '../../classes/xdg'
 
 export default class Skel extends Command {
    static description = 'update skel from home configuration'

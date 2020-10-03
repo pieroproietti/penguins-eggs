@@ -3,10 +3,12 @@ import { Command, flags } from '@oclif/command'
 import shx = require('shelljs')
 import path = require('path')
 
-import Utils from '../classes/utils'
-import I18n from '../classes/i18n'
+import Utils from '../../classes/utils'
+import I18n from '../../classes/i18n'
 
-
+/**
+ * 
+ */
 export default class Locales extends Command {
     static description = 'install/clean locales'
 

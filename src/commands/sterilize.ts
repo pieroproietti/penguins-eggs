@@ -14,7 +14,7 @@ import chalk = require('chalk')
  *
  */
 export default class Sterilize extends Command {
-   static description = 'remove all packages installed as prerequisites and calamares'
+   static description = 'remove all packages installed as prerequisites, calamares and configurations'
 
    static flags = {
       help: flags.help({ char: 'h' }),

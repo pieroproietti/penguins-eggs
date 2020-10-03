@@ -36,7 +36,7 @@ export default class Produce extends Command {
       pve: flags.boolean({ description: `administration of virtual machines (Proxmox-VE)` })
    }
 
-   static description = 'livecd creation. The system produce an egg'
+   static description = 'the system produce an egg: livecd creation.'
 
    static aliases = ['spawn', 'lay']
 

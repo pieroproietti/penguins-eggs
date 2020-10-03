@@ -23,7 +23,7 @@ export default class Install extends Command {
       }),
       verbose: flags.boolean({ char: 'v', description: 'verbose' })
    }
-   static description = 'system installation (the eggs became penguin)'
+   static description = 'system installater cli (the eggs became penguin)'
 
    static aliases = ['hatch']
 
