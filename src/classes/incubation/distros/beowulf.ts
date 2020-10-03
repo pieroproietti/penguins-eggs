@@ -64,7 +64,7 @@ export class Beowulf {
       await fisherman.buildModule('partition')
       await fisherman.buildModule('mount')
       await fisherman.moduleUnpackfs() //
-      await fisherman.buildCalamaresModule('source-yolk', true)
+      await fisherman.buildCalamaresModule('sources-yolk', true)
       await fisherman.buildModule('fstab')
       await fisherman.buildModule('locale')
       await fisherman.buildModule('keyboard')
@@ -83,7 +83,7 @@ export class Beowulf {
       await fisherman.buildModule('initramfscfg')
       await fisherman.buildModule('initramfs')
       await fisherman.moduleRemoveuser(this.user_opt) //
-      await fisherman.buildCalamaresModule('source-yolk-unmount')
+      await fisherman.buildCalamaresModule('sources-yolk-unmount')
       await fisherman.buildModule('umount')
       await fisherman.buildCalamaresModule('remove-link', true)
       await fisherman.moduleFinished()
