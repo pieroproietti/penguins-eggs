@@ -78,7 +78,7 @@ export default class Ovary {
       const echo = Utils.setEcho(verbose)
 
       const yolk = new Repo()
-      yolk.create('/usr/local/yolk', verbose)
+      await yolk.create('/usr/local/yolk', verbose)
 
       if (!fs.existsSync(this.settings.snapshot_dir)) {
          shx.mkdir('-p', this.settings.snapshot_dir)
