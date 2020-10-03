@@ -18,6 +18,9 @@ You can follow the project also consulting the [commit history](https://github.c
 ## Changelog
 Versions are listed on reverse order, the first is the last one.
 
+### eggs-7.50.1_.deb
+bugfix: just an await before the call yolk.create()... It worked the same, but with a better output.
+
 ### eggs-7.49.1_.deb
 One user pointed out to me an annoying problem with eggs, the impossibility of installation in the absence of internet.
 
