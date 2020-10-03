@@ -10,8 +10,7 @@ import fs = require('fs')
 
 import Utils from './utils'
 import Settings from './settings'
-
-const exec = require('../lib/utils').exec
+import { execute, pipe } from '@getvim/execute'
 
 /**
  * 
@@ -54,13 +53,13 @@ export default class Yolk {
         for (let i = 0; i < packages.length; i++) {
             const cmd = `apt-get download ${packages[i]}`
             console.log(cmd)
-            await exec(cmd, echo)
+            await execute(cmd, echo)
         }
 
         process.chdir(dir)
         const cmd = 'dpkg-scanpackages -m . | gzip -c > Packages.gz'
         console.log(cmd)
-        await exec(cmd, echo)
+        await execute(cmd)
 
         const release = `Archive: stable\nComponent: yolk\nOrigin: penguins-eggs\nArchitecture: ${arch}\n`
         fs.writeFileSync('Release', release)
