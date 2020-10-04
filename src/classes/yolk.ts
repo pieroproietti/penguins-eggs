@@ -13,6 +13,7 @@ import Settings from './settings'
 import { execute, pipe } from '@getvim/execute'
 import Pacman from './pacman'
 import { execSync } from 'child_process'
+import Bleach from './bleach'
 
 /**
  * 
@@ -33,8 +34,7 @@ export default class Yolk {
          * 
          */
 
-
-        // Creo o svuoto yolk
+        execSync('apt-get update --yes')
         if (!this.exists()) {
             shx.exec(`mkdir ${this.dir} -p`)
         } else {
@@ -75,6 +75,10 @@ export default class Yolk {
         const content = `Archive: stable\nComponent: yolk\nOrigin: penguins-eggs\nArchitecture: ${arch}\nDate: ${date}\n`
         console.log('Creating Release')
         fs.writeFileSync('Release', content)
+
+        console.log('Cleaning apt...')
+        const bleach = new Bleach()
+        await bleach.clean(verbose)
     }
 
     /**
