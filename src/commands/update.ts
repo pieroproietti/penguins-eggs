@@ -72,18 +72,16 @@ export default class Update extends Command {
  * importazione di eggs .deb
  */
 async function importDeb() {
-
    const Tu = new Tools
    await Tu.loadSettings()
    
-   Utils.titles()
+   Utils.titles(`Download from ${Tu.export_host}`)
    const exec = require('../lib/utils').exec
-
 
    await exec(`scp ${Tu.export_user_deb}@${Tu.export_host}:${Tu.export_path_deb}${Tu.file_name_deb} .`)
    if (Utils.isRoot()) {
       console.log('remove and purge eggs')
-      await exec('apt-get -y purge eggs ')
+      await exec('apt-get -y purge eggs')
       await exec('rm /usr/lib/penguins-eggs -rf')
    }
    Utils.warning(`eggs was removed completely.`)
