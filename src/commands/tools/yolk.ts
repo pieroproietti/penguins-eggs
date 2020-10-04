@@ -39,13 +39,12 @@ export default class DevYolk extends Command {
       }
 
       if (Utils.isRoot()) {
-         DevYolk.dir = '/usr/local/yolk'
          if (fs.existsSync(DevYolk.dir)) {
             shx.exec(`rm ${DevYolk.dir} -rf `)
          }
 
          const yolk = new Yolk()
-         await yolk.create(DevYolk.dir, verbose)
+         await yolk.create(verbose)
       }
    }
 }

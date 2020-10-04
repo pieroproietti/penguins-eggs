@@ -78,7 +78,11 @@ export default class Ovary {
       const echo = Utils.setEcho(verbose)
 
       const yolk = new Repo()
-      await yolk.create('/usr/local/yolk', verbose)
+      if (!yolk.exists()) {
+         await yolk.create(verbose)
+      } else {
+         Utils.warning('Using preesixent yolk...')
+      }
 
       if (!fs.existsSync(this.settings.snapshot_dir)) {
          shx.mkdir('-p', this.settings.snapshot_dir)

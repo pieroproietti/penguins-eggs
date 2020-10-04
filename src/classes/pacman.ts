@@ -333,19 +333,25 @@ export default class Pacman {
     * 
     */
    static linksCheck(): boolean {
-      let link = false
-      if (fs.existsSync('/etc/penguins-eggs.d/distros/bullseye')) {
-         link = true
-      }
-      return link
+      return fs.existsSync('/etc/penguins-eggs.d/distros/bullseye')
    }
 
    /**
     * 
     */
    static async linksInstall(force = false, verbose = false) {
-      // Link da fare solo per pacchetto deb o per test
+      if (!fs.existsSync('/etc/penguins-eggs.d')) {
+         shx.mkdir('/etc/penguins-eggs.d')
+      }
+      const addons = '/etc/penguins-eggs.d/addons'
+      const distros ='/etc/penguins-eggs.d/distros'
+      shx.rm(addons)
+      shx.rm(distros)
+      shx.ln('-s', path.resolve(__dirname, '../../addons'), addons)
+      shx.ln('-s', path.resolve(__dirname, '../../conf/distros'), distros)
 
+
+      // Link da fare solo per pacchetto deb o per test
       if (Utils.isDebPackage()|| force) {
 
          // const rootPen = '/usr/lib/penguins-eggs'
