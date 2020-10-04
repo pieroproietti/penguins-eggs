@@ -26,9 +26,11 @@ export function branding(remix: IRemix, distro: IDistro, brand = '', verbose = f
    const versionedName = remix.name
    const shortVersionedName = remix.versionName
    let bootloaderEntryName = distro.distroId
-   
-   // Necessarie non partono se non Debian
-   if (bootloaderEntryName === 'Devuan' || bootloaderEntryName === 'LMDE') {
+
+   // Necessario: Devuan e LMDE devono avere EFI=Debian
+   if (bootloaderEntryName === 'Devuan') {
+      bootloaderEntryName = 'Debian'
+   } else if (bootloaderEntryName === 'LMDE') {
       bootloaderEntryName = 'Debian'
    }
    const productUrl = homeUrl
