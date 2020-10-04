@@ -36,10 +36,15 @@ Here we are:
 
 improvment. Introducing a tools command to reach the following commands, part of them was present before, other addedd:
 * tools:clean like previous eggs clean
+
 * tools:initrd sperimental. Edit initrd to remove resume and crypto from inird on the ISO
+
 * tools:locales like previous eggs clean
+
 * tools:sanitize clear all the stuffs created from eggs (calamares configurations. script, etc)
+
 * tools:skel like previous eggs skel
+
 * tools:yolk like previous eggs
 
 improvment. Now yolk check better the dependences for the local repository and is possible, for example
