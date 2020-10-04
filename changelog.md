@@ -18,6 +18,34 @@ You can follow the project also consulting the [commit history](https://github.c
 ## Changelog
 Versions are listed on reverse order, the first is the last one.
 
+### eggs-7.52.1_deb
+improvment: added in eggs fuctions who was before in penguins-tools. Don't get worried, are mostly for developers!
+Here we are:
+* export:deb export debian packages (only for developers)
+* export:docs export documentation (only developers)
+* export:iso exporting iso image created via scp in accord with configuration in /etc/penguins-eggs.d/tools.conf
+
+improvment. Introducing a tools command to reach the following commands, part of them was present before, other addedd:
+* tools:clean like previous eggs clean
+* tools:initrd sperimental. Edit initrd to remove resume and crypto from inird on the ISO
+* tools:locales like previous eggs clean
+* tools:sanitize clear all the stuffs created from eggs (calamares configurations. script, etc)
+* tools:skel like previous eggs skel
+* tools:yolk like previous eggs
+
+improvment. Now yolk check better the dependences for the local repository and is possible, for example
+to create an ISO form a Bios installation and install it on a UEFI machine, without need to be on line
+during the installation.
+
+Yolk is created automatically during the produce, but if the repository exists then produce will
+use the previous version. 
+
+You can, of course, recreate yolk repository in /usr/local/yolk giving command: sudo eggs tools:yolk.
+
+bugfix: Devuan don't start using it's name in EFI, so eggs change bootloaderEntryName=Debian for
+this distro.
+
+
 ### eggs-7.50.1_.deb
 bugfix: just an await before the call yolk.create()... It worked the same, but with a better output.
 
