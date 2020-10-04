@@ -229,13 +229,15 @@ export default class Pacman {
     * Creazione del file di configurazione /etc/penguins-eggs
     */
    static async configurationInstall(links = true, verbose = true): Promise<void> {
-      shx.rm('/etc/penguins-eggs.d/addons')
-      shx.rm('/etc/penguins-eggs.d/distros')
       if (!fs.existsSync('/etc/penguins-eggs.d')) {
          shx.mkdir('/etc/penguins-eggs.d')
       }
-      shx.ln('-s', path.resolve(__dirname, '../../addons'), '/etc/penguins-eggs.d/addons')
-      shx.ln('-s', path.resolve(__dirname, '../../conf/distros'), '/etc/penguins-eggs.d/distros')
+      const addons = '/etc/penguins-eggs.d/addons'
+      const distros ='/etc/penguins-eggs.d/distros'
+      shx.rm(addons)
+      shx.rm(distros)
+      shx.ln('-s', path.resolve(__dirname, '../../addons'), addons)
+      shx.ln('-s', path.resolve(__dirname, '../../conf/distros'), distros)
 
       // this.linksInstall(links)
 
