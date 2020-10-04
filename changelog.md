@@ -18,6 +18,11 @@ You can follow the project also consulting the [commit history](https://github.c
 ## Changelog
 Versions are listed on reverse order, the first is the last one.
 
+### eggs-7.53.1_deb
+bugfix: settings calamares in focal;
+tested on: buster/beowulf/bionic/focal
+distro: Debian buster amd64, Devuan beowulf i386/amd64, Linux Mint 19.3 amd64, Linux Mint ulyana amd64, LMDE debbie amd64.
+
 ### eggs-7.52.1_deb
 improvment: added in eggs fuctions who was before in penguins-tools. Don't get worried, are mostly for developers!
 Here we are:
