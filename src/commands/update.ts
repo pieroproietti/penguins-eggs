@@ -54,12 +54,11 @@ export default class Update extends Command {
                console.log('and install it with:')
                console.log('sudo dpkg -i eggs_7.6.x-x_xxxxx.deb')
                if (flags.import) {
-                  importDeb()
+                  downloadFromLan()
                }
             } else {
                console.log(`updating ${Utils.getPackageName()} version ${Utils.getPackageVersion()}`)
                shx.exec(`npm update ${Utils.getPackageName()} -g`)
-
             }
          }
       }
@@ -71,11 +70,11 @@ export default class Update extends Command {
 /**
  * importazione di eggs .deb
  */
-async function importDeb() {
+async function downloadFromLan() {
    const Tu = new Tools
    await Tu.loadSettings()
    
-   Utils.titles(`Download from ${Tu.export_host}`)
+   Utils.titles(`Downoad from LAN`)
    const exec = require('../lib/utils').exec
 
    await exec(`scp ${Tu.export_user_deb}@${Tu.export_host}:${Tu.export_path_deb}${Tu.file_name_deb} .`)
