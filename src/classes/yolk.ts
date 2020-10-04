@@ -34,6 +34,8 @@ export default class Yolk {
          * 
          */
 
+        console.log('updating system...')
+        
         execSync('apt-get update --yes')
         if (!this.exists()) {
             shx.exec(`mkdir ${this.dir} -p`)
