@@ -35,7 +35,7 @@ sequence:
       - partition
       - mount
       - unpackfs
-      - sources-yost
+      - sources-yolk
       - machineid
       - fstab
       - locale
@@ -60,7 +60,7 @@ sequence:
       - removeuser
       - remove-link
       #  - shellprocess@logs
-      - sources-yost-unmount
+      - sources-yolk-unmount
       - umount
   - show:
       - finished
