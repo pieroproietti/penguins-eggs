@@ -53,7 +53,7 @@ export default class Prerequisites extends Command {
                   await Prerequisites.install(i, verbose)
                }
             } else {
-               console.log('All is OK, nothing to do!')
+               console.log('prerequisites: all is OK, nothing to do!')
             }
          }
       }
@@ -67,7 +67,7 @@ export default class Prerequisites extends Command {
    static async thatWeNeed(verbose = false): Promise<IInstall> {
       Utils.titles('prerequisites')
 
-      console.log('eggs need same prerequisites to work. You can install them here')
+      // console.log('eggs need same prerequisites to work. You can install them here')
 
       let i = {} as IInstall
 

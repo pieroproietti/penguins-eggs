@@ -81,6 +81,9 @@ export default class Yolk {
         fs.writeFileSync('Release', content)
     }
 
+    clean(){
+        shx.rm(`${this.dir}/*`)
+    }
 
     /**
      * Controllo l'esistenza

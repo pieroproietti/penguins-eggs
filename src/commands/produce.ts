@@ -21,6 +21,7 @@ export default class Produce extends Command {
       compress: flags.boolean({ char: 'c', description: 'max compression' }),
       fast: flags.boolean({ char: 'f', description: 'fast compression' }),
       verbose: flags.boolean({ char: 'v', description: 'verbose' }),
+      yolk: flags.boolean({ char: 'y', description: '-y force the renew of the local repository yolk' }),
       script: flags.boolean({ char: 's', description: 'script mode. Generate scripts to manage iso build' }),
       help: flags.help({ char: 'h' }),
 
@@ -98,20 +99,13 @@ export default class Produce extends Command {
             compression = 'xz -Xbcj x86'
          }
 
-         let verbose = false
-         if (flags.verbose) {
-            verbose = true
-         }
+         const verbose = flags.verbose
 
-         let script = false
-         if (flags.script) {
-            script = true
-         }
+         const script = flags.script
 
-         let final = false
-         if (flags.final) {
-            final = true
-         }
+         const yolk = flags.yolk
+         
+         const final = flags.final
 
 
          let theme = 'eggs'
@@ -138,7 +132,7 @@ export default class Produce extends Command {
          Utils.warning('Produce an egg...')
          if (await ovary.fertilization()) {
 
-            await ovary.produce(basename, script, final, theme, myAddons, verbose)
+            await ovary.produce(basename, script, yolk, final, theme, myAddons, verbose)
             ovary.finished(script)
          }
       }

@@ -40,11 +40,12 @@ during the installation.
 Yolk is created automatically during the produce, but if the repository exists then produce will
 use the previous version. 
 
-You can, of course, recreate yolk repository in /usr/local/yolk giving command: sudo eggs tools:yolk.
+You can, of course, recreate yolk repository in /usr/local/yolk giving command: sudo eggs tools:yolk, or - short way - add flag -y in produce.
 
 bugfix: Devuan don't start using it's name in EFI, so eggs change bootloaderEntryName=Debian for
 this distro.
 
+book: soon we will align the italian book with this new edition.
 
 ### eggs-7.50.1_.deb
 bugfix: just an await before the call yolk.create()... It worked the same, but with a better output.

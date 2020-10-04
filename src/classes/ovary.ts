@@ -32,6 +32,7 @@ import Settings from './settings'
 import Systemctl from './systemctl'
 import Bleach from './bleach'
 import Repo from './yolk'
+import Yolk from './yolk'
 
 /**
  * Ovary:
@@ -74,16 +75,23 @@ export default class Ovary {
     *
     * @param basename
     */
-   async produce(basename = '', script_only = false, final = false, theme = '', myAddons: IMyAddons, verbose = false) {
+   async produce(basename = '', script_only = false, yolkRenew = false, final = false, theme = '', myAddons: IMyAddons, verbose = false) {
       const echo = Utils.setEcho(verbose)
 
       const yolk = new Repo()
       if (!yolk.exists()) {
+         Utils.warning('local repo yolk creation...')
          await yolk.create(verbose)
       } else {
-         Utils.warning('Using preesixent yolk...')
+         if (yolkRenew) {
+            Utils.warning('force local repo yolk renew...')
+            yolk.clean()
+            await yolk.create(verbose)
+         } else {
+            Utils.warning('Using preesixent yolk...')
+         }
       }
-
+      
       if (!fs.existsSync(this.settings.snapshot_dir)) {
          shx.mkdir('-p', this.settings.snapshot_dir)
       }
