@@ -65,10 +65,6 @@ export default class Prerequisites extends Command {
     * @param verbose 
     */
    static async thatWeNeed(verbose = false): Promise<IInstall> {
-      Utils.titles('prerequisites')
-
-      // console.log('eggs need same prerequisites to work. You can install them here')
-
       let i = {} as IInstall
 
       i.links = !Pacman.linksCheck()

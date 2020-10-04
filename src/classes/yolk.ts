@@ -14,6 +14,7 @@ import { execute, pipe } from '@getvim/execute'
 import Pacman from './pacman'
 import { execSync } from 'child_process'
 import Bleach from './bleach'
+import Distro from './distro'
 
 /**
  * 
@@ -52,6 +53,7 @@ export default class Yolk {
             arch = 'i386'
         } else {
             packages.push('grub-efi-amd64')
+            packages.push('shim-signed')
         }
 
         // I Downloads avverranno nell directory corrente
