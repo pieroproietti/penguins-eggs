@@ -12,6 +12,7 @@ import Utils from './utils'
 import Settings from './settings'
 import { execute, pipe } from '@getvim/execute'
 import Pacman from './pacman'
+import { execSync } from 'child_process'
 
 /**
  * 
@@ -25,7 +26,6 @@ export default class Yolk {
      * @param dir      * @param verbose 
      */
     async create(verbose = false) {
-
         /**
          * riga apt
          * 
@@ -33,16 +33,12 @@ export default class Yolk {
          * 
          */
 
-        // Controllo se esiste il file Release
-        if (await this.exists()){
-            console.log('yolk esiste!')
-        }
 
         // Creo o svuoto yolk
-        if (!fs.existsSync(`${this.dir}`)) {
+        if (!this.exists()) {
             shx.exec(`mkdir ${this.dir} -p`)
         } else {
-            shx.exec(`rm ${this.dir}/*`)
+            this.clean()
         }
 
         /**
@@ -81,16 +77,19 @@ export default class Yolk {
         fs.writeFileSync('Release', content)
     }
 
+    /**
+     * Svuota la repo yolk
+     */
     clean(){
-        shx.rm(`${this.dir}/*`)
+        execSync(`rm ${this.dir}/*`)
     }
 
     /**
      * Controllo l'esistenza
      */
     exists() : boolean {
-        const release = `${this.dir}/Packages.gz`
-        return fs.existsSync(release)
+        const check = `${this.dir}/Packages.gz`
+        return fs.existsSync(check)
     }
 
 }
@@ -100,16 +99,15 @@ export default class Yolk {
  * @param depends 
  */
 function iDeps(depends: string []) {
-    const install: string[] = []
+    const downloads: string[] = []
     for (let i = 0; i < depends.length; i++) {
         if (!Pacman.packageIsInstalled(depends[i])){
-            install.push(depends[i])
-            // depends.pop()
+            downloads.push(depends[i])
         }
     }
 
-    for (let i = 0; i < install.length; i++) {
-        const cmd =`apt-get download ${install[i]}`
+    for (let i = 0; i < downloads.length; i++) {
+        const cmd =`apt-get download ${downloads[i]}`
         Utils.warning(`- ${cmd}`)
         execute(cmd)
     }

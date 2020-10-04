@@ -76,7 +76,6 @@ export default class Ovary {
     * @param basename
     */
    async produce(basename = '', script_only = false, yolkRenew = false, final = false, theme = '', myAddons: IMyAddons, verbose = false) {
-      const echo = Utils.setEcho(verbose)
 
       const yolk = new Repo()
       if (!yolk.exists()) {
