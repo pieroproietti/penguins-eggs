@@ -90,7 +90,7 @@ $ npm install -g penguins-eggs
 $ eggs COMMAND
 running command...
 $ eggs (-v|--version|version)
-penguins-eggs/7.6.52 linux-x64 node-v14.13.0
+penguins-eggs/7.6.52 linux-x64 node-v14.12.0
 $ eggs --help [COMMAND]
 USAGE
   $ eggs COMMAND
@@ -322,6 +322,7 @@ OPTIONS
   -h, --help               show CLI help
   -s, --script             script mode. Generate scripts to manage iso build
   -v, --verbose            verbose
+  -y, --yolk               -y force the renew of the local repository yolk
   --adapt                  adapt video resolution in VM
   --final                  final: remove eggs prerequisites, calamares and all it's dependencies
   --ichoice                allows the user to choose the installation type cli/gui
