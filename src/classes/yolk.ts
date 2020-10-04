@@ -53,7 +53,7 @@ export default class Yolk {
             arch = 'i386'
         } else {
             packages.push('grub-efi-amd64')
-            packages.push('shim-signed')
+            // packages.push('shim-signed')
         }
 
         // I Downloads avverranno nell directory corrente

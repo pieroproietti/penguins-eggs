@@ -18,13 +18,18 @@ You can follow the project also consulting the [commit history](https://github.c
 ## Changelog
 Versions are listed on reverse order, the first is the last one.
 
+### eggs-7.55.1_deb
+* bugfix: from test I saw who it is not possible to install shim-signed from yolk, perhaps becouse yolk is not signed? I  removed it to not impact with others distros;
+
+* focal will not install without internet connection on UEFI.
+
+I removed 
+
 ### eggs-7.54.1_deb
 * bugfix: LMDE debbie don't start using it's name in EFI, so eggs change bootloaderEntryName=Debian for
 this distro;
 
 * bugfix: added shim-signed to the packages of local repository yolk. 
-
-Note: From test I saw who it is not possible to install shim-signed from yolk, perhaps becouse yolk is not signed? I must remove it. In all the way focal will not install without connection.
 
 
 ### eggs-7.53.1_deb
