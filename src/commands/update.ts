@@ -19,7 +19,8 @@ export default class Update extends Command {
 
    static flags = {
       help: flags.help({ char: 'h' }),
-      import: flags.boolean({ char: 'i', description: 'import deb package' }),
+      lan: flags.boolean({ char: 'l', description: 'import deb package from LAN' }),
+      sourceforce: flags.boolean({ char: 's', description: 'import deb package from sourceforge' }),
       verbose: flags.boolean({ char: 'v', description: 'verbose' })
    }
 
@@ -53,8 +54,10 @@ export default class Update extends Command {
                console.log('Else, download package from https://sourceforge.net/projects/penguins-eggs/files/packages-deb/')
                console.log('and install it with:')
                console.log('sudo dpkg -i eggs_7.6.x-x_xxxxx.deb')
-               if (flags.import) {
-                  downloadFromLan()
+               if (flags.lan) {
+                  this.downloadLan()
+               } else if (flags.sourceforce) {
+                  this.downloadSourceforge()
                }
             } else {
                console.log(`updating ${Utils.getPackageName()} version ${Utils.getPackageVersion()}`)
@@ -63,27 +66,46 @@ export default class Update extends Command {
          }
       }
    }
-}
 
+   /**
+    * download da locale
+    */
+   async downloadLan() {
+      const Tu = new Tools
+      await Tu.loadSettings()
 
+      Utils.titles(`Download from LAN, host: ${Tu.export_host} path: ${Tu.export_path_deb}`)
+      const exec = require('../lib/utils').exec
 
-/**
- * importazione di eggs .deb
- */
-async function downloadFromLan() {
-   const Tu = new Tools
-   await Tu.loadSettings()
-   
-   Utils.titles(`Downoad from LAN`)
-   const exec = require('../lib/utils').exec
-
-   await exec(`scp ${Tu.export_user_deb}@${Tu.export_host}:${Tu.export_path_deb}${Tu.file_name_deb} .`)
-   if (Utils.isRoot()) {
-      console.log('remove and purge eggs')
-      await exec('apt-get -y purge eggs')
-      await exec('rm /usr/lib/penguins-eggs -rf')
+      await exec(`scp ${Tu.export_user_deb}@${Tu.export_host}:${Tu.export_path_deb}${Tu.file_name_deb} .`)
+      if (Utils.isRoot()) {
+         console.log('remove and purge eggs')
+         await exec('apt-get -y purge eggs')
+         await exec('rm /usr/lib/penguins-eggs -rf')
+      }
+      Utils.warning(`eggs was removed completely.`)
+      Utils.warning(`Don't forget to run sudo pt sanitize to clean all the remains of the previus eggs production!`)
+      console.log('sudo dpkg -i eggs... to install')
    }
-   Utils.warning(`eggs was removed completely.`)
-   Utils.warning(`Don't forget to run sudo pt sanitize to clean all the remains of the previus eggs production!`)
-   console.log('sudo dpkg -i eggs... to install')
+
+   /**
+    * download da sourceforge.net
+    */
+   async downloadSourceforge() {
+      Utils.titles(`Download from sourceforge.net`)
+
+      const path = `wget https://sourceforge.net/projects/penguins-eggs/files/packages-deb/`
+      let arch = 'amd64'
+      if (process.arch === 'ia32') {
+         arch = 'i386'
+      }
+      const file = `eggs_7.6.54-1_${arch}.deb`
+      const cmd = `wget` + path + file
+      console.log(cmd)
+   }
+
+
 }
+
+
+

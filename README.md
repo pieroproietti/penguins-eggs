@@ -494,9 +494,10 @@ USAGE
   $ eggs update
 
 OPTIONS
-  -h, --help     show CLI help
-  -i, --import   import deb package
-  -v, --verbose  verbose
+  -h, --help         show CLI help
+  -l, --lan          import deb package from LAN
+  -s, --sourceforce  import deb package from sourceforge
+  -v, --verbose      verbose
 
 DESCRIPTION
   This way of update work only with npm installation, if you used the debian package version, please download the new 
