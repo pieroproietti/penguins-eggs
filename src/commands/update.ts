@@ -8,6 +8,8 @@ import { Command, flags } from '@oclif/command'
 import shx = require('shelljs')
 import Utils from '../classes/utils'
 import Tools from '../classes/tools'
+import { parse } from 'node-html-parser';
+
 const exec = require('../lib/utils').exec
 
 
@@ -129,15 +131,30 @@ export default class Update extends Command {
 
       // Ottengo index.html 
       const axios = require('axios').default
-      const jsdom = require("jsdom");
-      const { JSDOM } = jsdom;
-
+      const options = {
+         lowerCaseTagName: false,  // convert tag name to lower case (hurt performance heavily)
+         script: false,            // retrieve content in <script> (hurt performance slightly)
+         style: false,             // retrieve content in <style> (hurt performance slightly)
+         pre: false,               // retrieve content in <pre> (hurt performance slightly)
+         comment: false            // retrieve comments (hurt performance slightly)
+       }
 
       const url = `https://sourceforge.net/projects/penguins-eggs/files/packages-deb/`
       try {
          const response = await axios.get(url)
-         const dom = new JSDOM(response);
-         console.log(dom.window.document.getElementById('parent_folder').textContent); // "Hello world"
+         // console.log (response)
+         const root = parse(response, options)
+         console.log('\nroot:\n')
+         console.log(root)
+         
+         console.log('\nchildNodes:\n')
+         console.log(root.childNodes)
+
+         console.log('\nstructure:\n')
+         console.log(root.structure)
+
+
+         //console.log(root)
       } catch (exception) {
          process.stderr.write(`ERROR received from ${url}: ${exception}\n`);
       }
