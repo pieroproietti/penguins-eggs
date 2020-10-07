@@ -114,16 +114,18 @@ export default class Update extends Command {
       try {
          console.log(`downloading ${link}`)
          await exec(`wget ${link} >null`)
-         console.log(`sudo dpkg -i ${file} to install`)
       } catch (exception) {
          process.stderr.write(`ERROR received from ${url}: ${exception}\n`);
          success = false
       }
       if (success) {
+         console.log(`sudo dpkg -i ${file} to install`)
          if (Pacman.packageIsInstalled('eggs')) {
             console.log('removing eggs')
             await this.remove()
          }
+      } else  {
+         console.log('error during download')
       }
    }
 }
