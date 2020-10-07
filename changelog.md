@@ -18,25 +18,25 @@ You can follow the project also consulting the [commit history](https://github.c
 ## Changelog
 Versions are listed on reverse order, the first is the last one.
 
-### eggs-7.55.1_deb
+### eggs-7.6.55.1_deb
 * bugfix: from test I saw who it is not possible to install shim-signed from yolk, perhaps becouse yolk is not signed? I  removed it to not impact with others distros;
 
 * focal will not install without internet connection on UEFI.
 
 I removed 
 
-### eggs-7.54.1_deb
+### eggs-7.6.54.1_deb
 * bugfix: LMDE debbie don't start using it's name in EFI, so eggs change bootloaderEntryName=Debian for
 this distro;
 
 * bugfix: added shim-signed to the packages of local repository yolk. 
 
 
-### eggs-7.53.1_deb
+### eggs-7.6.53.1_deb
 * tested on: buster/beowulf/bionic/focal
 * distro tested: Debian buster amd64, Devuan beowulf i386/amd64, Linux Mint 19.3 amd64, Linux Mint ulyana amd64, LMDE debbie amd64.
 
-### eggs-7.52.1_deb
+### eggs-7.6.52.1_deb
 improvment: added in eggs fuctions who was before in penguins-tools. Don't get worried, are mostly for developers!
 Here we are:
 * export:deb export debian packages (only for developers)
@@ -70,10 +70,10 @@ this distro.
 
 book: soon we will align the italian book with this new edition.
 
-### eggs-7.50.1_.deb
+### eggs-7.6.50.1_.deb
 bugfix: just an await before the call yolk.create()... It worked the same, but with a better output.
 
-### eggs-7.49.1_.deb
+### eggs-7.6.49.1_.deb
 One user pointed out to me an annoying problem with eggs, the impossibility of installation in the absence of internet.
 
 After studying it, I am proud to present yolk, a very small local repository, responsible for making it possible to install the system in the absence of internet. 
@@ -84,35 +84,35 @@ Yolk is very little, about 2.1 MB and contains only the following packages: grub
 
 After installation yolk is removed from apt sources.
 
-### eggs-7.48.1_.deb
+### eggs-7.6.48.1_.deb
 * rewrote of the commands prerequisites and sterilize, they now try to explain better that  will happen behind the scenes, during their use. It remain the possibility to see all via --verbose flag.
 
-### eggs-7.47.1_.deb
+### eggs-7.6.47.1_.deb
 * added a beutifull new theme for ufficiozero thanx to Julian Del Vecchio.
 
-### eggs-7.46.1_.deb
+### eggs-7.6.46.1_.deb
 * changed flags in produce and calamares. just added flag --final to make the final version of your project: all the packages relative to the "reproduction"  will be removed during the installation with the gui installer;
 * module packages in calamares now work in accord with the flag --final, if present will build the remove section in packages.conf (you can check this file in /etc/calamares/modules) if not, only section try-install will be build. This section is ideal for international packages, languages, etc.
 
 ### eggs-7.44.1_.deb
 * buxfix: there was a little problem with links in the previus version.
 
-### eggs-7.43.1_.deb
+### eggs-7.6.43.1_.deb
 * improvement: patch per bionic in calamares module grubcf, added check plymouth from successive version of calamares (in bionic calamares is quite old and not mantained);
 * improvment: actually is possible to use directly produce after the installation, eggs will propose the necessary operations to install prerequisites, calamares and so on;
 * bugfix: the previous version I put distro.versionId as productName in calamares, but due the fact who was used ad EFI name too, Debian refuse to boot. So I changed in branding.ts the line bootloaderEntryName=productName to bootloaderEntryName = distro.distroId.
 
-### eggs-7.42.1_.deb
+### eggs-7.6.42.1_.deb
 * removed open-infrastructure-system-config dependencies from ubuntu bionic. 
 
-### eggs-7.41._1.deb
+### eggs-7.6.41._1.deb
 * using mustache for templates (grub, isolinux, locale.gen, locale);
 * check exist links to distros in new installation or update;
 * removed clean from packman and using clean from bleach, removing all apt space used;
 * made new isolinux and grub.cfg for bionic and focal, with languages
 * actualy eggs produce a boot menu, with the first item language host, submenu languages and menu safe.
 
-### eggs-7.40._1.deb
+### eggs-7.6.40._1.deb
 * beowulf, bionic, buster, focal buxfixes in yml configurazion of calamares:
 * added bullseye as supported distros;
 * rewrite command kill with new class settings, and removed flag --umount;
@@ -120,27 +120,27 @@ After installation yolk is removed from apt sources.
 * changed the way eggs work, not remove prerequisites. Added --sterilize flag in produce and calamares, if yuo want to remove them.
 * hard tested on beowulf, bionic, buster, focal the reproductive system: produce, install, modify, produce, and so on.
 
-### eggs-7.0.39_1.deb
+### eggs-7.6.39_1.deb
 * bugfix su bionic - thanx to Adriano Morselli
 
-### eggs-7.0.38_1.deb
+### eggs-7.6.38_1.deb
 * focal bugfix in packages.conf, don't let to remove packages;
 * all calamares packages.conf, try_install libreoffice-help-l10n-$LOCALE, firefox-esr-$LOCALE, thunderbird-locale-$LOCALE etc (give feedback for addictions);
 
-### eggs-7.0.37_1.deb
+### eggs-7.6.37_1.deb
 * simplified calamares configuration, all the work now is on fisherman class;
 * revisited completely the way to build links for the various user case (sources, npm or package deb);
 * added slim to desktop managers for autologin in live;
 * tested on UfficioZero Linux Roma (beowulf i386), Linux Mint tricia 19.3 i386, UfficioZero Tropea (focal x86_64), Debian buster x86_64.
 
-### eggs-7.0.36_1.deb
+### eggs-7.6.36_1.deb
 During the creation tests made by UfficioZero, a serious error was found in the generated debian packages: eggs-7.6.35-amd64 and eggs-7.6.35-i386.deb.
 
 This error is due to the fact that debian packaging made with oclif-dev does not keep the symbolic links, so a later version was made, in which these links are created when installing the prerequisites.
 
 The current deb version, was tested on UfficioZero Roma (Devuan beowulf() i386 and UfficioZero Tropea (Linux Mint ulyana/Ubuntu focal).
 
-### eggs-7.0.35_1.deb
+### eggs-7.6.35_1.deb
 OK, now we are pointing to internationalization and customization. 
 
 Is changed the configuration file and its position
@@ -155,7 +155,7 @@ In /etc/penguins-eggs.d you will find a README.md, a tools.conf, and two links:
 Read /etc/penguins-eggs.d/README.md for more specific usage and mean.
 
 
-### eggs-7.0.34_1.deb
+### eggs-7.6.34_1.deb
 This is an important version, in which a lot of work is completed, the reasons are the following:
 
 * Just finished the rewriting work. Well now we have officially Debian buster, Devual beowulf, Ubuntu focal and 
@@ -166,25 +166,25 @@ amd64 architecture.
 
 * I also tried Deepin 20, which works perfectly, but only on standard BIOS machines.
 
-### eggs-7.0.33_1.deb
+### eggs-7.6.33_1.deb
 I made a rethinking and rewriting of the part of eggs who work with calamares. Before I build the configuration completely with code
 now I choose to use directly yaml files ed use them as template. Well, was hard - test alla on buster, focal, devuan and bionic 
 it's a big question but, finally we have a a great result:
 * eggs now work in UEFI with ubuntu focal
 
-### eggs-7.0.28_1.deb
+### eggs-7.6.28_1.deb
 * created /etc/xdg/autostart/penguins-links.desktop to build links on the desktop on live and new users, due the localization;
 * create a module in calamares to remove installation link;
 * on lxde, now we create links in different schema to be compatible with it, except for installer;
 * tested on cinnamon, lxde in Debian, Devuan
 
 
-### eggs-7.0.22_1.deb
+### eggs-7.6.22_1.deb
 Introduced command locales, install and clean all the locale not necessary, leaving only the defined ones.
-### eggs-7.0.20_1.deb
+### eggs-7.6.20_1.deb
 Finally localisation start to work, your system can boot live in different languages [issue #34](https://github.com/pieroproietti/penguins-eggs/issues/34)
 
-### eggs-7.0.18_1.deb
+### eggs-7.6.18_1.deb
 Cleanig configuration, writings [issues](https://github.com/pieroproietti/penguins-eggs/issues) and trying to solve. 
 
 ### eggs-7.6.14_1.deb
