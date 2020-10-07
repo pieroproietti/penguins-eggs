@@ -31,7 +31,6 @@
     "jsdom": "^16.4.0",
     "mustache": "^4.0.1",
     "network": "^0.4.1",
-    "node-html-parser": "^1.2.21",
     "pjson": "^1.0.9",
     "save": "^2.4.0",
     "shelljs": "^0.8.4",

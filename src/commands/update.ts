@@ -8,10 +8,9 @@ import { Command, flags } from '@oclif/command'
 import shx = require('shelljs')
 import Utils from '../classes/utils'
 import Tools from '../classes/tools'
-import { parse } from 'node-html-parser';
-
+import fs = require('fs')
+import Pacman from '../classes/pacman'
 const exec = require('../lib/utils').exec
-
 
 /**
  * 
@@ -24,7 +23,7 @@ export default class Update extends Command {
    static flags = {
       help: flags.help({ char: 'h' }),
       lan: flags.boolean({ char: 'l', description: 'import deb package from LAN' }),
-      sourceforce: flags.boolean({ char: 's', description: 'import deb package from sourceforge' }),
+      internet: flags.boolean({ char: 's', description: 'import deb package from internet: sourceforge' }),
       verbose: flags.boolean({ char: 'v', description: 'verbose' })
    }
 
@@ -34,10 +33,9 @@ export default class Update extends Command {
       const { flags } = this.parse(Update)
 
       if (Utils.isRoot()) {
-         /*
          if (await Utils.customConfirm(`Select yes to continue...`)) {
             Utils.warning('Updating eggs...')
-            if (Utils.isSources()) {
+            if (Utils.isSources() && !(flags.internet || flags.lan)) {
                Utils.warning('You are using eggs from sources')
                console.log('You can upgrade getting a new version from git:')
                console.log('cd ~/penguins-eggs')
@@ -50,27 +48,25 @@ export default class Update extends Command {
                console.log('Before to use eggs, remember to install npm packages:')
                console.log('cd ~/penguins-eggs')
                console.log('npm install')
-            } else if (Utils.isDebPackage()) {
-            */
-         Utils.warning('You have eggs installed a package .deb')
-         console.log('If you have eggs in yours repositories apt:')
-         console.log('sudo apt update')
-         console.log('sudo apt upgrade eggs')
-         console.log('')
-         console.log('Else, download package from https://sourceforge.net/projects/penguins-eggs/files/packages-deb/')
-         console.log('and install it with:')
-         console.log('sudo dpkg -i eggs_7.6.x-x_xxxxx.deb')
-         if (flags.lan) {
-            this.getFromLan()
-         } else if (flags.sourceforce) {
-            this.getListSourceforge()
+            } else if (Utils.isDebPackage() || flags.internet || flags.lan) {
+               Utils.warning('You have eggs installed a package .deb')
+               console.log('If you have eggs in yours repositories apt:')
+               console.log('sudo apt update')
+               console.log('sudo apt upgrade eggs')
+               console.log('')
+               console.log('Else, download package from https://sourceforge.net/projects/penguins-eggs/files/packages-deb/')
+               console.log('and install it with:')
+               console.log('sudo dpkg -i eggs_7.6.x-x_xxxxx.deb')
+               if (flags.lan) {
+                  this.getFromLan()
+               } else if (flags.internet) {
+                  this.getFromInternet()
+               } else {
+                  console.log(`updating ${Utils.getPackageName()} version ${Utils.getPackageVersion()}`)
+                  shx.exec(`npm update ${Utils.getPackageName()} -g`)
+               }
+            }
          }
-         /*
-         } else {
-            console.log(`updating ${Utils.getPackageName()} version ${Utils.getPackageVersion()}`)
-            shx.exec(`npm update ${Utils.getPackageName()} -g`)
-         }
-         */
       }
    }
 
@@ -103,62 +99,31 @@ export default class Update extends Command {
    /**
     * download da sourceforge.net
     */
-   async getFromSourceforge() {
-      Utils.titles(`Download from sourceforge.net`)
-
-      const path = `https://sourceforge.net/projects/penguins-eggs/files/packages-deb/`
-      let arch = 'amd64'
-      if (process.arch === 'ia32') {
-         arch = 'i386'
-      }
-      const file = `eggs_7.6.54-1_${arch}.deb`
-      const cmd = `wget` + path + file
-      console.log(cmd)
-      await this.remove()
-      console.log('sudo dpkg -i eggs... to install')
-   }
-
-
-   /**
-    * 
-    */
-   async getListSourceforge() {
-      Utils.titles(`Get list from sourceforge.net`)
-      let arch = 'amd64'
-      if (process.arch === 'ia32') {
-         arch = 'i386'
-      }
-
-      // Ottengo index.html 
-      const axios = require('axios').default
-      const options = {
-         lowerCaseTagName: false,  // convert tag name to lower case (hurt performance heavily)
-         script: false,            // retrieve content in <script> (hurt performance slightly)
-         style: false,             // retrieve content in <style> (hurt performance slightly)
-         pre: false,               // retrieve content in <pre> (hurt performance slightly)
-         comment: false            // retrieve comments (hurt performance slightly)
-       }
+   async getFromInternet(version = 'eggs_7.6.55-1') {
+      Utils.titles(`download ${version}...`)
 
       const url = `https://sourceforge.net/projects/penguins-eggs/files/packages-deb/`
+
+      let arch = 'amd64'
+      if (process.arch === 'ia32') {
+         arch = 'i386'
+      }
+      const file = `${version}_${arch}.deb`
+      const link = url + file
+      let success = true
       try {
-         const response = await axios.get(url)
-         // console.log (response)
-         const root = parse(response, options)
-         console.log('\nroot:\n')
-         console.log(root)
-         
-         console.log('\nchildNodes:\n')
-         console.log(root.childNodes)
-
-         console.log('\nstructure:\n')
-         console.log(root.structure)
-
-
-         //console.log(root)
+         console.log(`downloading ${link}`)
+         await exec(`wget ${link} >null`)
+         console.log(`sudo dpkg -i ${file} to install`)
       } catch (exception) {
          process.stderr.write(`ERROR received from ${url}: ${exception}\n`);
+         success = false
       }
-
-      // Analizzo html
+      if (success) {
+         if (Pacman.packageIsInstalled('eggs')) {
+            console.log('removing eggs')
+            await this.remove()
+         }
+      }
    }
 }
