@@ -19,6 +19,9 @@ You can follow the project also consulting the [commit history](https://github.c
 Versions are listed on reverse order, the first is the last one.
 
 ### eggs-7.6.55.1_deb
+* bugfix: added apt install -y --allow-unauthenticated shim-signed in focal and reintroduced download shim-signed e dependecies in yolk;
+
+### eggs-7.6.55.1_deb
 * bugfix: from test I saw who it is not possible to install shim-signed from yolk, perhaps becouse yolk is not signed? I  removed it to not impact with others distros;
 
 * focal will not install without internet connection on UEFI.
