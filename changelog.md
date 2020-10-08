@@ -18,7 +18,7 @@ You can follow the project also consulting the [commit history](https://github.c
 ## Changelog
 Versions are listed on reverse order, the first is the last one.
 
-### eggs-7.6.55.1_deb
+### eggs-7.6.56.1_deb
 * bugfix: added apt install -y --allow-unauthenticated shim-signed in focal and reintroduced download shim-signed e dependecies in yolk;
 
 ### eggs-7.6.55.1_deb
