@@ -18,6 +18,9 @@ You can follow the project also consulting the [commit history](https://github.c
 ## Changelog
 Versions are listed on reverse order, the first is the last one.
 
+### eggs-7.6.57.1_deb
+* improvment: added Ubuntu groovy to the supported versions. Remain same trouble with displaymanager - actually disabled - and the link in the desktop are non able to be executed before to click right key on the mouse and click on let to execute.
+
 ### eggs-7.6.56.1_deb
 * bugfix: added apt install -y --allow-unauthenticated shim-signed in focal and reintroduced download shim-signed e dependecies in yolk;
 
