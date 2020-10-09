@@ -390,6 +390,11 @@ export default class Pacman {
          this.ln('-s', `${buster}/calamares/modules/packages.yml`, `${focal}/calamares/modules/packages.yml`, verbose)
          this.ln('-s', `${buster}/calamares/modules/removeuser.yml`, `${focal}/calamares/modules/removeuser.yml`, verbose)
 
+         // Groovy
+         // const groovy = `${rootPen}/conf/distros/groovy`
+         // this.ln('-s', `${focal}`, `${groovy}`, verbose)
+
+
          // Bionic
          const bionic = `${rootPen}/conf/distros/bionic`
          this.ln('-s', `${focal}/grub`, `${bionic}/grub`, verbose)

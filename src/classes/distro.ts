@@ -19,9 +19,10 @@
  * Ubuntu 18.04 (bionic) LTS  active
  * Ubuntu 18.10 (cosmic) expired
  * Ubuntu 19.04 (disco)  expired
- * Ubuntu 19.10 (eoan)        active
+ * Ubuntu 19.10 (eoan)   expired
  * Ubuntu 20.04 (focal) LTS   active
- *
+ * Ubuntu 20.10 (groovy) active
+ * 
  * active distros
  *
  * stretch old
@@ -167,6 +168,12 @@ class Distro implements IDistro {
          /**
           * UBUNTU
           */
+         // 20.10 groovy
+      } else if (this.versionId === 'groovy') {
+         this.distroId = 'Ubuntu'
+         this.distroLike = 'Ubuntu'
+         this.versionLike = 'groovy'
+
          // 20.04 focal LTS
       } else if (this.versionId === 'focal') {
          this.distroId = 'Ubuntu'

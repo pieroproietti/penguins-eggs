@@ -1,0 +1,10 @@
+# Ubuntu Focal
+# locale
+---
+region: "Europe"
+zone: "Rome"
+localeGenPath: "/etc/locale.gen"
+geoip:
+  style: "json"
+  url: "https://ipapi.co/json"
+  selector: "timezone"
