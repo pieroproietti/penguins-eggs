@@ -21,7 +21,6 @@ export default class DevYolk extends Command {
 
    static flags = {
       help: flags.help({ char: 'h' }),
-      user: flags.string({ char: 'u', description: 'user to be used' }),
       verbose: flags.boolean({ char: 'v' })
    }
 
