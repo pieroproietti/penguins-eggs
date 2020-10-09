@@ -13,6 +13,7 @@ import { IRemix, IDistro } from '../../interfaces'
 import { Buster } from './distros/buster'
 import { Beowulf } from './distros/beowulf'
 import { Focal } from './distros/focal'
+import { Groovy } from './distros/groovy'
 import { Bionic } from './distros/bionic'
 
 const exec = require('../../lib/utils').exec
@@ -67,6 +68,9 @@ export default class Incubator {
       } else if (this.distro.versionLike === 'focal') {
          const focal = new Focal(this.remix, this.distro, final, this.user_opt, this.verbose)
          focal.create()
+      } else if (this.distro.versionLike === 'groovy') {
+         const groovy = new Groovy(this.remix, this.distro, final, this.user_opt, this.verbose)
+         groovy.create()
       } else if (this.distro.versionLike === 'bionic') {
          const bionic = new Bionic(this.remix, this.distro, final, this.user_opt, this.verbose)
          bionic.create()
