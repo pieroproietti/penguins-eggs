@@ -10,6 +10,8 @@ import Utils from '../classes/utils'
 import Tools from '../classes/tools'
 import fs = require('fs')
 import Pacman from '../classes/pacman'
+import https = require('https')
+
 const exec = require('../lib/utils').exec
 
 /**
@@ -23,7 +25,7 @@ export default class Update extends Command {
    static flags = {
       help: flags.help({ char: 'h' }),
       lan: flags.boolean({ char: 'l', description: 'import deb package from LAN' }),
-      internet: flags.boolean({ char: 's', description: 'import deb package from internet: sourceforge' }),
+      internet: flags.boolean({ char: 'i', description: 'import deb package from internet' }),
       verbose: flags.boolean({ char: 'v', description: 'verbose' })
    }
 
@@ -102,30 +104,24 @@ export default class Update extends Command {
    async getFromInternet(version = 'eggs_7.6.55-1') {
       Utils.titles(`download ${version}...`)
 
-      const url = `https://sourceforge.net/projects/penguins-eggs/files/packages-deb/`
 
       let arch = 'amd64'
       if (process.arch === 'ia32') {
          arch = 'i386'
       }
-      const file = `${version}_${arch}.deb`
-      const link = url + file
-      let success = true
-      try {
-         console.log(`downloading ${link}`)
-         await exec(`wget ${link} >null`)
-      } catch (exception) {
-         process.stderr.write(`ERROR received from ${url}: ${exception}\n`);
-         success = false
-      }
-      if (success) {
-         console.log(`sudo dpkg -i ${file} to install`)
-         if (Pacman.packageIsInstalled('eggs')) {
-            console.log('removing eggs')
-            await this.remove()
-         }
-      } else  {
-         console.log('error during download')
+      const url = `https://penguins-eggs.net/versions/all/${arch}/`
+
+      const axios = require('axios').default
+
+      let res = await axios.get(url)
+      let data = res.data
+
+      for (let i = 0; i < data.length; i++) {
+         console.log(data[i].version)
+         let url = 'https://sourceforge.net/projects/penguins-eggs/files/packages-deb/eggs_' + data[i].version + '-1_' + data[i].arch + '.download'
+         console.log(url)
+         console.log(data[i].changelog)
+                 
       }
    }
 }
