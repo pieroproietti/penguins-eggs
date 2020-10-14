@@ -11,6 +11,7 @@ import Tools from '../classes/tools'
 import fs = require('fs')
 import Pacman from '../classes/pacman'
 import https = require('https')
+import { RSA_NO_PADDING } from 'constants'
 
 const exec = require('../lib/utils').exec
 
@@ -110,18 +111,38 @@ export default class Update extends Command {
          arch = 'i386'
       }
       const url = `https://penguins-eggs.net/versions/all/${arch}/`
-
       const axios = require('axios').default
 
       let res = await axios.get(url)
       let data = res.data
 
+      const inquirer = require('inquirer')
+      const choices = ['']
       for (let i = 0; i < data.length; i++) {
-         console.log(data[i].version)
-         let url = 'https://sourceforge.net/projects/penguins-eggs/files/packages-deb/eggs_' + data[i].version + '-1_' + data[i].arch + '.download'
-         console.log(url)
-         console.log(data[i].changelog)
-                 
+         choices.push(data[i].version)
+         choices.push(new inquirer.Separator(' = ' + data[i].changelog + ' = '))
       }
+      const questions: Array<Record<string, any>> = [
+         {
+            type: 'list',
+            message: 'select version ',
+            name: 'selected',
+            choices: choices
+         }
+      ]
+
+      const answer = await inquirer.prompt(questions)
+      console.log('Downloading ' + answer.selected)
+      const deb ='eggs_' +answer.selected + '-1_amd64.deb'
+      let download = 'https://sourceforge.net/projects/penguins-eggs/files/packages-deb/' + deb
+      
+      process.chdir(`/home/artisan`)
+      if (fs.existsSync(deb)){
+         fs.unlinkSync(deb)
+      }
+      await exec(`wget ${download}`)
+      await exec(`dpkg -i ${deb}`)
    }
 }
+
+
