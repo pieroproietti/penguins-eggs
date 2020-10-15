@@ -12,6 +12,7 @@ import fs = require('fs')
 import Pacman from '../classes/pacman'
 import https = require('https')
 import { RSA_NO_PADDING } from 'constants'
+import { title } from 'process'
 
 const exec = require('../lib/utils').exec
 
@@ -57,7 +58,12 @@ export default class Update extends Command {
                console.log('sudo apt update')
                console.log('sudo apt upgrade eggs')
                console.log('')
-               console.log('Else, download package from https://sourceforge.net/projects/penguins-eggs/files/packages-deb/')
+               console.log('else')
+               console.log('sudo eggs update -i')
+               console.log('Download and install automatically new versions of eggs from dev channel.')
+               console.log('')
+               console.log('else')
+               console.log('Sownload manually package from https://sourceforge.net/projects/penguins-eggs/files/packages-deb/')
                console.log('and install it with:')
                console.log('sudo dpkg -i eggs_7.6.x-x_xxxxx.deb')
                if (flags.lan) {
@@ -103,8 +109,7 @@ export default class Update extends Command {
     * download da sourceforge.net
     */
    async getFromInternet(version = 'eggs_7.6.55-1') {
-      Utils.titles(`download ${version}...`)
-
+      Utils.titles(`choose the version`)
 
       let arch = 'amd64'
       if (process.arch === 'ia32') {
@@ -116,6 +121,9 @@ export default class Update extends Command {
       let res = await axios.get(url)
       let data = res.data
 
+      /**
+       * choose the version
+       */
       const inquirer = require('inquirer')
       const choices = ['']
       for (let i = 0; i < data.length; i++) {
@@ -133,15 +141,28 @@ export default class Update extends Command {
 
       const answer = await inquirer.prompt(questions)
       console.log('Downloading ' + answer.selected)
-      const deb ='eggs_' +answer.selected + '-1_amd64.deb'
+      const deb = 'eggs_' + answer.selected + '-1_amd64.deb'
       let download = 'https://sourceforge.net/projects/penguins-eggs/files/packages-deb/' + deb
-      
-      process.chdir(`/home/artisan`)
-      if (fs.existsSync(deb)){
-         fs.unlinkSync(deb)
+
+      /**
+       * downloading
+       */
+      Utils.titles(`downloading ${deb}`)
+      if (await Utils.customConfirm(`Want to download ${deb}`)) {
+         process.chdir(`/tmp`)
+         if (fs.existsSync(deb)) {
+            fs.unlinkSync(deb)
+         }
+
+         /**
+          * Installing
+          */
+         await exec(`wget ${download}`)
+         Utils.titles(`install ${deb}`)
+         if (await Utils.customConfirm(`Want to install ${deb}`)) {
+            await exec(`dpkg -i ${deb}`)
+         }
       }
-      await exec(`wget ${download}`)
-      await exec(`dpkg -i ${deb}`)
    }
 }
 
