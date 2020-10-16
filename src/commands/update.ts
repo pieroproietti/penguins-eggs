@@ -125,11 +125,12 @@ export default class Update extends Command {
        * choose the version
        */
       const inquirer = require('inquirer')
-      const choices = ['']
+      const choices :string [] = ['abort']
       for (let i = 0; i < data.length; i++) {
-         choices.push(data[i].version)
-         choices.push(new inquirer.Separator(' = ' + data[i].changelog + ' = '))
+         choices.push('eggs version: ' + data[i].version)
+         choices.push(new inquirer.Separator(data[i].changelog))
       }
+      console.log(choices)
       const questions: Array<Record<string, any>> = [
          {
             type: 'list',
@@ -140,6 +141,10 @@ export default class Update extends Command {
       ]
 
       const answer = await inquirer.prompt(questions)
+      if (answer.selected === 'abort') {
+         process.exit(0)
+      }
+
       console.log('Downloading ' + answer.selected)
       const deb = 'eggs_' + answer.selected + '-1_amd64.deb'
       let download = 'https://sourceforge.net/projects/penguins-eggs/files/packages-deb/' + deb
