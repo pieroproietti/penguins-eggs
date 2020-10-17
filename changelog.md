@@ -18,6 +18,9 @@ You can follow the project also consulting the [commit history](https://github.c
 ## Changelog
 Versions are listed on reverse order, the first is the last one.
 
+### eggs-7.6.58.1_deb
+* improvement: if you installed eggs as debian package, you can now update it with sudo eggs update -i. This function is quite new, we need same days and same nuew versions. to check it alive.
+
 ### eggs-7.6.57.1_deb
 * improvment: added Ubuntu groovy to the supported versions. Remain same trouble with displaymanager - actually disabled - and the link in the desktop are non able to be executed before to click right key on the mouse and click on let to execute.
 
