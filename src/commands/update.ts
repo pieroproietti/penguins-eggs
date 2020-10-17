@@ -126,11 +126,12 @@ export default class Update extends Command {
        */
       const inquirer = require('inquirer')
       const choices :string [] = ['abort']
+      choices.push(new inquirer.Separator('exit without update.'))
+
       for (let i = 0; i < data.length; i++) {
          choices.push('eggs version: ' + data[i].version)
          choices.push(new inquirer.Separator(data[i].changelog))
       }
-      console.log(choices)
       const questions: Array<Record<string, any>> = [
          {
             type: 'list',
