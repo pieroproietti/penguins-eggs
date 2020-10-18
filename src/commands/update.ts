@@ -128,7 +128,7 @@ export default class Update extends Command {
       const choices :string [] = ['abort']
       choices.push(new inquirer.Separator('exit without update.'))
       for (let i = 0; i < data.length; i++) {
-         choices.push('eggs version: ' + data[i].version)
+         choices.push(data[i].version)
          choices.push(new inquirer.Separator(data[i].changelog))
       }
       const questions: Array<Record<string, any>> = [
@@ -139,16 +139,13 @@ export default class Update extends Command {
             choices: choices
          }
       ]
-
       const answer = await inquirer.prompt(questions)
       if (answer.selected === 'abort') {
          process.exit(0)
-      }
-
-      console.log('Downloading ' + answer.selected)
+      } 
       const deb = 'eggs_' + answer.selected + '-1_amd64.deb'
       let download = 'https://sourceforge.net/projects/penguins-eggs/files/packages-deb/' + deb
-
+      
       /**
        * downloading
        */
