@@ -455,7 +455,7 @@ export default class Ovary {
     * @param dir
     */
    needOverlay(dir: string): boolean {
-      const mountDirs = ['etc', 'var', 'boot']
+      const mountDirs = ['etc', 'var', 'boot', 'home']
       let mountDir = ''
       let overlay = false
       for (mountDir of mountDirs) {
@@ -541,20 +541,39 @@ export default class Ovary {
                cmd = `# /${dir} is a directory`
                if (this.needOverlay(dir)) {
                   cmds.push(`${cmd} and need to be written`)
-                  cmds.push(titleLine)
-                  cmds.push(`# create mountpoint lower`)
-                  cmds.push(await makeIfNotExist(`${this.settings.work_dir.lowerdir}/${dir}`))
-                  cmds.push(`# first: mount /${dir} rw in ${this.settings.work_dir.lowerdir}/${dir}`)
-                  cmds.push(await rexec(`mount --bind --make-slave /${dir} ${this.settings.work_dir.lowerdir}/${dir}`, verbose))
-                  cmds.push(`# now remount it ro`)
-                  cmds.push(await rexec(`mount -o remount,bind,ro ${this.settings.work_dir.lowerdir}/${dir}`, verbose))
-                  cmds.push(`\n# second: create mountpoint upper, work and ${this.settings.work_dir.merged} and mount ${dir}`)
-                  cmds.push(await makeIfNotExist(`${this.settings.work_dir.upperdir}/${dir}`, verbose))
-                  cmds.push(await makeIfNotExist(`${this.settings.work_dir.workdir}/${dir}`, verbose))
-                  cmds.push(await makeIfNotExist(`${this.settings.work_dir.merged}/${dir}`, verbose))
+                  if (dir === 'home') {
+                     cmds.push(titleLine)
+                     cmds.push(`# create /tmp/eggs/home`)
+                     cmds.push(await makeIfNotExist(`/tmp/eggs/home`, verbose))
 
-                  cmds.push(`\n# thirth: mount /${dir} rw in ${this.settings.work_dir.merged}`)
-                  cmds.push(await rexec(`mount -t overlay overlay -o lowerdir=${this.settings.work_dir.lowerdir}/${dir},upperdir=${this.settings.work_dir.upperdir}/${dir},workdir=${this.settings.work_dir.workdir}/${dir} ${this.settings.work_dir.merged}/${dir}`, verbose))
+                     cmds.push(await makeIfNotExist(`${this.settings.work_dir.lowerdir}/${dir}`))
+                     cmds.push(`# first: mount /${dir} rw in ${this.settings.work_dir.lowerdir}/${dir}`)
+                     cmds.push(await rexec(`mount --bind --make-slave /tmp/eggs/home ${this.settings.work_dir.lowerdir}/${dir}`, verbose))
+                     cmds.push(`# now remount it ro`)
+                     cmds.push(await rexec(`mount -o remount,bind,ro ${this.settings.work_dir.lowerdir}/${dir}`, verbose))
+                     cmds.push(`\n# second: create mountpoint upper, work and ${this.settings.work_dir.merged} and mount ${dir}`)
+                     cmds.push(await makeIfNotExist(`${this.settings.work_dir.upperdir}/${dir}`, verbose))
+                     cmds.push(await makeIfNotExist(`${this.settings.work_dir.workdir}/${dir}`, verbose))
+                     cmds.push(await makeIfNotExist(`${this.settings.work_dir.merged}/${dir}`, verbose))
+
+                     cmds.push(`\n# thirth: mount /${dir} rw in ${this.settings.work_dir.merged}`)
+                     cmds.push(await rexec(`mount -t overlay overlay -o lowerdir=${this.settings.work_dir.lowerdir}/${dir},upperdir=${this.settings.work_dir.upperdir}/${dir},workdir=${this.settings.work_dir.workdir}/${dir} ${this.settings.work_dir.merged}/${dir}`, verbose))
+                  } else {
+                     cmds.push(titleLine)
+                     cmds.push(`# create mountpoint lower`)
+                     cmds.push(await makeIfNotExist(`${this.settings.work_dir.lowerdir}/${dir}`))
+                     cmds.push(`# first: mount /${dir} rw in ${this.settings.work_dir.lowerdir}/${dir}`)
+                     cmds.push(await rexec(`mount --bind --make-slave /${dir} ${this.settings.work_dir.lowerdir}/${dir}`, verbose))
+                     cmds.push(`# now remount it ro`)
+                     cmds.push(await rexec(`mount -o remount,bind,ro ${this.settings.work_dir.lowerdir}/${dir}`, verbose))
+                     cmds.push(`\n# second: create mountpoint upper, work and ${this.settings.work_dir.merged} and mount ${dir}`)
+                     cmds.push(await makeIfNotExist(`${this.settings.work_dir.upperdir}/${dir}`, verbose))
+                     cmds.push(await makeIfNotExist(`${this.settings.work_dir.workdir}/${dir}`, verbose))
+                     cmds.push(await makeIfNotExist(`${this.settings.work_dir.merged}/${dir}`, verbose))
+
+                     cmds.push(`\n# thirth: mount /${dir} rw in ${this.settings.work_dir.merged}`)
+                     cmds.push(await rexec(`mount -t overlay overlay -o lowerdir=${this.settings.work_dir.lowerdir}/${dir},upperdir=${this.settings.work_dir.upperdir}/${dir},workdir=${this.settings.work_dir.workdir}/${dir} ${this.settings.work_dir.merged}/${dir}`, verbose))
+                  }
                } else if (this.onlyMerged(dir)) {
                   cmds.push(await makeIfNotExist(`${this.settings.work_dir.merged}/${dir}`, verbose))
                   cmds.push(await rexec(`mount --bind --make-slave /${dir} ${this.settings.work_dir.merged}/${dir}`, verbose))
