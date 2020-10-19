@@ -36,7 +36,6 @@ export class Groovy {
 
    user_opt: string
 
-
    rootTemplate = './../../../../conf/distros/groovy/calamares/'
 
    dirCalamaresModules = '/usr/lib/x86_64-linux-gnu/calamares/modules/'

@@ -33,6 +33,7 @@ import Systemctl from './systemctl'
 import Bleach from './bleach'
 import Repo from './yolk'
 import Yolk from './yolk'
+import { version } from 'punycode'
 
 /**
  * Ovary:
@@ -90,7 +91,7 @@ export default class Ovary {
             Utils.warning('Using preesixent yolk...')
          }
       }
-      
+
       if (!fs.existsSync(this.settings.snapshot_dir)) {
          shx.mkdir('-p', this.settings.snapshot_dir)
       }
@@ -121,7 +122,8 @@ export default class Ovary {
          if (this.settings.make_efi) {
             await this.makeEfi(verbose)
          }
-         await this.bindLiveFs()
+
+         await this.bindLiveFs(verbose)
          await this.createUserLive(verbose)
          if (Pacman.isXInstalled()) {
             await this.createAutostart(theme, myAddons)
@@ -453,7 +455,6 @@ export default class Ovary {
     * @param dir
     */
    needOverlay(dir: string): boolean {
-      // const excludeDirs = ['cdrom', 'dev', 'home', 'live', 'media', 'mnt', 'proc', 'run', 'sys', 'swapfile', 'tmp']
       const mountDirs = ['etc', 'var', 'boot']
       let mountDir = ''
       let overlay = false
@@ -471,13 +472,11 @@ export default class Ovary {
     * @returns bind
     */
    onlyMerged(dir: string): boolean {
-      // 'home' viene adesso con merge
       // e /tmp dovrebbe essere creata
       const noDirs = [
          'cdrom',
          'dev',
          'live',
-         'home',
          'media',
          'mnt',
          'proc',
@@ -518,13 +517,12 @@ export default class Ovary {
          console.log('ovary: bindLiveFs')
       }
 
-      const dirs = ['bin', 'boot', 'dev', 'etc', 'home', 'lib', 'lib32', 'lib64', 'libx32', 'media', 'mnt', 'opt', 'proc', 'root', 'run', 'sbin', 'srv', 'sys', 'tmp', 'usr', 'var']
       /**
        * Attenzione:
        * fs.readdirSync('/', { withFileTypes: true })
        * viene ignorato da Node8, ma da problemi da Node10 in poi
        */
-      const rootDirs = fs.readdirSync('/')
+      const dirs = fs.readdirSync('/')
       const startLine = `#############################################################`
       const titleLine = `# -----------------------------------------------------------`
       const endLine = `# ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n`
@@ -532,62 +530,58 @@ export default class Ovary {
       let lnkDest = ''
       let cmd = ''
       const cmds: string[] = []
-      cmds.push(`# NOTE: home, cdrom, dev, live, media, mnt, proc, run, sys and tmp`)
+      cmds.push(`# NOTE: cdrom, dev, live, media, mnt, proc, run, sys and tmp`)
       cmds.push(`#       need just a mkdir in ${this.settings.work_dir.merged}`)
       cmds.push(`# host: ${os.hostname()} user: ${Utils.getPrimaryUser()}\n`)
 
-      for (const dir of rootDirs) {
-         // const dirname = N8.dirent2string(dir)
-         const dirname = dir
-         // console.log(`>>>>>>>>>>>>>>> ${dirname} <<<<<<<<<<<<<<<<<<`)
+      for (const dir of dirs) {
          cmds.push(startLine)
-         if (N8.isDirectory(dirname)) {
-            if (dirname !== 'lost+found') {
-               cmd = `# /${dirname} is a directory`
-               if (this.needOverlay(dirname)) {
+         if (N8.isDirectory(dir)) {
+            if (dir !== 'lost+found') {
+               cmd = `# /${dir} is a directory`
+               if (this.needOverlay(dir)) {
                   cmds.push(`${cmd} and need to be written`)
                   cmds.push(titleLine)
                   cmds.push(`# create mountpoint lower`)
-                  cmds.push(await makeIfNotExist(`${this.settings.work_dir.lowerdir}/${dirname}`))
-                  cmds.push(`# first: mount /${dir} rw in ${this.settings.work_dir.lowerdir}/${dirname}`)
-                  cmds.push(await rexec(`mount --bind --make-slave /${dir} ${this.settings.work_dir.lowerdir}/${dirname}`, verbose))
+                  cmds.push(await makeIfNotExist(`${this.settings.work_dir.lowerdir}/${dir}`))
+                  cmds.push(`# first: mount /${dir} rw in ${this.settings.work_dir.lowerdir}/${dir}`)
+                  cmds.push(await rexec(`mount --bind --make-slave /${dir} ${this.settings.work_dir.lowerdir}/${dir}`, verbose))
                   cmds.push(`# now remount it ro`)
-                  cmds.push(await rexec(`mount -o remount,bind,ro ${this.settings.work_dir.lowerdir}/${dirname}`, verbose))
-                  cmds.push(`\n# second: create mountpoint upper, work and ${this.settings.work_dir.merged} and mount ${dirname}`)
-                  cmds.push(await makeIfNotExist(`${this.settings.work_dir.upperdir}/${dirname}`, verbose))
-                  cmds.push(await makeIfNotExist(`${this.settings.work_dir.workdir}/${dirname}`, verbose))
-                  cmds.push(await makeIfNotExist(`${this.settings.work_dir.merged}/${dirname}`, verbose))
-
-                  cmds.push(`\n# thirth: mount /${dirname} rw in ${this.settings.work_dir.merged}`)
-                  cmds.push(await rexec(`mount -t overlay overlay -o lowerdir=${this.settings.work_dir.lowerdir}/${dirname},upperdir=${this.settings.work_dir.upperdir}/${dir},workdir=${this.settings.work_dir.workdir}/${dir} ${this.settings.work_dir.merged}/${dirname}`, verbose))
-               } else {
-                  cmds.push(`${cmd} who don't need to be written`)
-                  cmds.push(titleLine)
-                  cmds.push(`# mount -o bind /${dirname} ${this.settings.work_dir.merged}/${dirname}`)
+                  cmds.push(await rexec(`mount -o remount,bind,ro ${this.settings.work_dir.lowerdir}/${dir}`, verbose))
+                  cmds.push(`\n# second: create mountpoint upper, work and ${this.settings.work_dir.merged} and mount ${dir}`)
+                  cmds.push(await makeIfNotExist(`${this.settings.work_dir.upperdir}/${dir}`, verbose))
+                  cmds.push(await makeIfNotExist(`${this.settings.work_dir.workdir}/${dir}`, verbose))
                   cmds.push(await makeIfNotExist(`${this.settings.work_dir.merged}/${dir}`, verbose))
-                  if (this.onlyMerged(dirname)) {
-                     cmds.push(await makeIfNotExist(`${this.settings.work_dir.merged}/${dirname}`, verbose))
-                     cmds.push(await rexec(`mount --bind --make-slave /${dirname} ${this.settings.work_dir.merged}/${dirname}`, verbose))
-                     cmds.push(await rexec(`mount -o remount,bind,ro ${this.settings.work_dir.merged}/${dirname}`, verbose))
-                  }
+
+                  cmds.push(`\n# thirth: mount /${dir} rw in ${this.settings.work_dir.merged}`)
+                  cmds.push(await rexec(`mount -t overlay overlay -o lowerdir=${this.settings.work_dir.lowerdir}/${dir},upperdir=${this.settings.work_dir.upperdir}/${dir},workdir=${this.settings.work_dir.workdir}/${dir} ${this.settings.work_dir.merged}/${dir}`, verbose))
+               } else if (this.onlyMerged(dir)) {
+                  cmds.push(await makeIfNotExist(`${this.settings.work_dir.merged}/${dir}`, verbose))
+                  cmds.push(await rexec(`mount --bind --make-slave /${dir} ${this.settings.work_dir.merged}/${dir}`, verbose))
+                  cmds.push(await rexec(`mount -o remount,bind,ro ${this.settings.work_dir.merged}/${dir}`, verbose))
+               } else {
+                  cmds.push(`${cmd} just need to be present`)
+                  cmds.push(titleLine)
+                  cmds.push(await makeIfNotExist(`${this.settings.work_dir.merged}/${dir}`, verbose))
+                  cmds.push(`# mount -o bind /${dir} ${this.settings.work_dir.merged}/${dir}`)
                }
             }
-         } else if (N8.isFile(dirname)) {
-            cmds.push(`# /${dirname} is just a file`)
+         } else if (N8.isFile(dir)) {
+            cmds.push(`# /${dir} is just a file`)
             cmds.push(titleLine)
-            if (!fs.existsSync(`${this.settings.work_dir.merged}/${dirname}`)) {
+            if (!fs.existsSync(`${this.settings.work_dir.merged}/${dir}`)) {
                cmds.push(await rexec(`cp /${dir} ${this.settings.work_dir.merged}`, verbose))
             } else {
                cmds.push('# file exist... skip')
             }
-         } else if (N8.isSymbolicLink(dirname)) {
-            lnkDest = fs.readlinkSync(`/${dirname}`)
-            cmds.push(`# /${dirname} is a symbolic link to /${lnkDest} in the system`)
+         } else if (N8.isSymbolicLink(dir)) {
+            lnkDest = fs.readlinkSync(`/${dir}`)
+            cmds.push(`# /${dir} is a symbolic link to /${lnkDest} in the system`)
             cmds.push(`# we need just to recreate it`)
             cmds.push(`# ln -s ${this.settings.work_dir.merged}/${lnkDest} ${this.settings.work_dir.merged}/${lnkDest}`)
             cmds.push(`# but we don't know if the destination exist, and I'm too lazy today. So, for now: `)
             cmds.push(titleLine)
-            if (!fs.existsSync(`${this.settings.work_dir.merged}/${dirname}`)) {
+            if (!fs.existsSync(`${this.settings.work_dir.merged}/${dir}`)) {
                if (fs.existsSync(lnkDest)) {
                   cmds.push(`ln -s ${this.settings.work_dir.merged}/${lnkDest} ${this.settings.work_dir.merged}/${lnkDest}`)
                } else {
@@ -597,7 +591,6 @@ export default class Ovary {
                cmds.push('# SymbolicLink exist... skip')
             }
          }
-         // console.log()
          cmds.push(endLine)
       }
       Utils.writeXs(`${this.settings.work_dir.path}bind`, cmds)
@@ -687,10 +680,7 @@ export default class Ovary {
        * Cambio passwd su root in chroot
        */
       cmds.push(await rexec(`chroot ${this.settings.work_dir.merged} echo root:${this.settings.root_passwd} | chroot ${this.settings.work_dir.merged} chpasswd `, verbose))
-      /**
-       * lo script per l'utente non viene più generato
-       */
-      // Utils.writeXs(`${this.settings.work_dir.path}create_User_live`, cmds)
+      Utils.writeXs(`${this.settings.work_dir.path}create_user_live`, cmds)
    }
 
    /**
@@ -1111,7 +1101,7 @@ export default class Ovary {
  */
 async function makeIfNotExist(path: string, verbose = false): Promise<string> {
    if (verbose) {
-      console.log('ovary: makeIfNotExist')
+      console.log(`ovary: makeIfNotExist(${path})`)
    }
    const echo = Utils.setEcho(verbose)
    let cmd = `# ${path} alreasy exist`
