@@ -7,10 +7,7 @@
 
 import os = require('os')
 import fs = require('fs')
-import path = require('path')
 import ini = require('ini')
-import chalk = require('chalk')
-import Utils from './utils'
 import Settings from './settings'
 
 /**
@@ -46,8 +43,6 @@ export default class Tools {
 
     local_path_doc = ''
 
-    arch = 'amd64'
-
     /*
     * Load configuration from /etc/penguins-eggs.conf
     * @returns {boolean} Success
@@ -55,7 +50,6 @@ export default class Tools {
     async loadSettings(): Promise<boolean> {
         let foundSettings = false
 
-        console.log('config: ' + this.tools_conf)
         if (fs.existsSync(this.tools_conf)) {
             foundSettings = true
             const tools = ini.parse(fs.readFileSync(this.tools_conf, 'utf-8'))
@@ -63,6 +57,7 @@ export default class Tools {
             this.export_user_deb = tools.General.export_user_deb
             this.export_user_doc = tools.General.export_user_doc
             this.export_user_iso = tools.General.export_user_iso
+
             this.export_path = tools.General.export_path
 
             this.export_path_deb = this.export_path + tools.General.export_path_deb
@@ -71,10 +66,11 @@ export default class Tools {
 
             this.local_path_deb = tools.General.local_path_deb
             this.local_path_doc = tools.General.local_path_doc
+            let arch = 'amd64'
             if (process.arch === 'ia32') {
-                this.arch = 'i386'
+                arch = 'i386'
             }
-            this.file_name_deb = tools.General.file_name_deb + this.arch + '.deb'
+            this.file_name_deb = tools.General.file_name_deb + arch + '.deb'
 
             /**
              * da eggs
@@ -82,11 +78,11 @@ export default class Tools {
             const settings = new Settings()
             settings.load()
             this.snapshot_dir = settings.snapshot_dir
-            this.arch = 'x64'
+            arch = 'x64'
             if (process.arch === 'ia32') {
-                this.arch = 'i386'
+                arch = 'i386'
             }
-            this.snapshot_name = settings.snapshot_basename + '-' + this.arch + '_'
+            this.snapshot_name = settings.snapshot_basename + '-' + arch + '_'
         } else {
             console.log(`Can't find: ${this.tools_conf}`)
             process.exit(1)

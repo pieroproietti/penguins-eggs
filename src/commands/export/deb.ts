@@ -8,13 +8,10 @@ export default class ExportDeb extends Command {
 
   static flags = {
     help: flags.help({ char: 'h' }),
-    clean: flags.boolean({ char: 'c' }),
+    clean: flags.boolean({ char: 'c', description: 'remove old .deb before to copy'}),
   }
 
-  static args = [{ name: 'file' }]
-
   async run() {
-
     const { args, flags } = this.parse(ExportDeb)
     const Tu = new Tools
     Utils.titles('export:deb')

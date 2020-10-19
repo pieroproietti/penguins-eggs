@@ -12,7 +12,7 @@ export default class ExportIso extends Command {
 
   static flags = {
     help: flags.help({ char: 'h' }),
-    clean: flags.boolean({ char: 'c' }),
+    clean: flags.boolean({ char: 'c', description: 'delete old ISOs before to copy' }),
   }
 
   static args = [{ name: 'file' }]
