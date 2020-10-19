@@ -31,10 +31,9 @@ export default class ExportIso extends Command {
       await exec(cmd, { echo: true, capture: true })
     }
     Utils.warning('copy to destination...')
-    cmd = `scp ${Tu.snapshot_dir}${Tu.snapshot_basename}* ${Tu.export_user_iso}@${Tu.export_host}:${Tu.export_path_iso}`
+    cmd = `scp ${Tu.snapshot_dir}${Tu.snapshot_name}* ${Tu.export_user_iso}@${Tu.export_host}:${Tu.export_path_iso}`
     await exec(cmd, { echo: true, capture: true })
   }
-
 }
 
 

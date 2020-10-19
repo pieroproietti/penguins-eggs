@@ -18,6 +18,10 @@ You can follow the project also consulting the [commit history](https://github.c
 ## Changelog
 Versions are listed on reverse order, the first is the last one.
 
+### eggs-7.6.61.1_deb
+* exlude yolk from copy, cleaning tools.conf
+
+
 ### eggs-7.6.60.1_deb
 * improvement:  if you installed eggs as debian package, you can now update it with sudo eggs update -i.
 

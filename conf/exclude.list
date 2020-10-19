@@ -92,5 +92,9 @@ var/cache/brightness-settings-cache/*
 data/*
 recovery/*
 
+# yolk
+usr/local/yolk/*
+
+
 
 
