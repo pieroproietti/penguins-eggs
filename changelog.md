@@ -18,6 +18,9 @@ You can follow the project also consulting the [commit history](https://github.c
 ## Changelog
 Versions are listed on reverse order, the first is the last one.
 
+### eggs-7.6.62.1_deb
+* changed the way to work of ovary, put /boot, /etc, /usr, /var in overlayfs, create /home just like a normal directory who is not deleted, until kill
+
 ### eggs-7.6.61.1_deb
 * exclude yolk from copy, cleaning tools.conf using settings from eggs.
 

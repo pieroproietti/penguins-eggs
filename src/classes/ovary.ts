@@ -134,6 +134,8 @@ export default class Ovary {
          if (Pacman.isXInstalled()) {
             shx.exec('rm /etc/xdg/autostart/penguins-links-add.desktop')
          }
+         await this.bindVfs(verbose)
+         await this.ubindVfs(verbose)
          await this.uBindLiveFs(verbose)
       }
    }
@@ -452,10 +454,17 @@ export default class Ovary {
 
    /**
     * Restituisce true per le direcory da montare con overlay
+    * 
+    * Ci sono tre tipologie:
+    * 
+    * - normal solo la creazione della directory, nessun mount
+    * - merged creazione della directory e mount ro
+    * - mergedAndOverlay creazione directory, overlay e mount rw
+    * 
     * @param dir
     */
-   needOverlay(dir: string): boolean {
-      const mountDirs = ['etc', 'var', 'boot', 'home']
+   mergedAndOvelay(dir: string): boolean {
+      const mountDirs = ['etc', 'boot', 'usr', 'var']
       let mountDir = ''
       let overlay = false
       for (mountDir of mountDirs) {
@@ -468,47 +477,48 @@ export default class Ovary {
 
    /**
     * Ritorna true se c'è bisogno del mount --bind
+    * 
+    * Ci sono tre tipologie:
+    * 
+    * - normal solo la creazione della directory, nessun mount
+    * - merged creazione della directory e mount ro
+    * - mergedAndOverlay creazione directory, overlay e mount rw
+    * 
     * @param dir
-    * @returns bind
+    * 
+    * @returns merged
     */
-   onlyMerged(dir: string): boolean {
-      // e /tmp dovrebbe essere creata
-      const noDirs = [
+   merged(dir: string): boolean {
+      const normalDirs = [
          'cdrom',
          'dev',
+         'home',
          'live',
          'media',
          'mnt',
          'proc',
          'run',
          'sys',
-         'swapfile'
-         //'tmp'
+         'swapfile',
+         'tmp'
       ]
+      // deepin ha due directory /data e recovery
+      normalDirs.push('data')
+      normalDirs.push('recovery')
 
-      // deepin
-      noDirs.push('data')
-      noDirs.push('recovery')
-
-      let noDir = ''
-      let bind = true
-      for (noDir of noDirs) {
-         if (dir === noDir) {
-            bind = false
+      let merged = true
+      for (let normalDir of normalDirs) {
+         if (dir === normalDir) {
+            merged = false
          }
       }
-      return bind
+      return merged
    }
 
    /**
-    * Esegue il bind del fs live
-    *
-    * Dato che adesso crea lo script bind,
-    * sarebbe forse meglio che NON eseguisse
-    * i comandi e, quindi,
-    * if (!script_only) {
-    *    await exec('${this.work_dir.path}bind)
-    * }
+    * Esegue il bind del fs live e
+    * crea lo script bind
+    * 
     * @param verbose
     */
    async bindLiveFs(verbose = false) {
@@ -539,12 +549,11 @@ export default class Ovary {
          if (N8.isDirectory(dir)) {
             if (dir !== 'lost+found') {
                cmd = `# /${dir} is a directory`
-               if (dir === 'home') {
-                  cmds.push(titleLine)
-                  cmds.push(`# create home`)
-                  cmds.push(await makeIfNotExist(`${this.settings.work_dir.merged}/home`))
-               } else if (this.needOverlay(dir)) {
-                  cmds.push(`${cmd} and need to be written`)
+               if (this.mergedAndOvelay(dir)) {
+                  /**
+                   * mergedAndOverlay creazione directory, overlay e mount rw
+                   */
+                  cmds.push(`${cmd} need to be presente, and rw`)
                   cmds.push(titleLine)
                   cmds.push(`# create mountpoint lower`)
                   cmds.push(await makeIfNotExist(`${this.settings.work_dir.lowerdir}/${dir}`))
@@ -556,15 +565,22 @@ export default class Ovary {
                   cmds.push(await makeIfNotExist(`${this.settings.work_dir.upperdir}/${dir}`, verbose))
                   cmds.push(await makeIfNotExist(`${this.settings.work_dir.workdir}/${dir}`, verbose))
                   cmds.push(await makeIfNotExist(`${this.settings.work_dir.merged}/${dir}`, verbose))
-
                   cmds.push(`\n# thirth: mount /${dir} rw in ${this.settings.work_dir.merged}`)
                   cmds.push(await rexec(`mount -t overlay overlay -o lowerdir=${this.settings.work_dir.lowerdir}/${dir},upperdir=${this.settings.work_dir.upperdir}/${dir},workdir=${this.settings.work_dir.workdir}/${dir} ${this.settings.work_dir.merged}/${dir}`, verbose))
-               } else if (this.onlyMerged(dir)) {
-                  cmds.push(await makeIfNotExist(`${this.settings.work_dir.merged}/${dir}`, verbose))
+               } else if (this.merged(dir)) {
+                  /*
+                  * merged creazione della directory e mount ro
+                  */
+                 cmds.push(`${cmd} need to be present, mount ro`)
+                 cmds.push(titleLine)
+                 cmds.push(await makeIfNotExist(`${this.settings.work_dir.merged}/${dir}`, verbose))
                   cmds.push(await rexec(`mount --bind --make-slave /${dir} ${this.settings.work_dir.merged}/${dir}`, verbose))
                   cmds.push(await rexec(`mount -o remount,bind,ro ${this.settings.work_dir.merged}/${dir}`, verbose))
                } else {
-                  cmds.push(`${cmd} just need to be present`)
+                  /**
+                   * normal solo la creazione della directory, nessun mount
+                   */
+                  cmds.push(`${cmd} need to be present, no mount`)
                   cmds.push(titleLine)
                   cmds.push(await makeIfNotExist(`${this.settings.work_dir.merged}/${dir}`, verbose))
                   cmds.push(`# mount -o bind /${dir} ${this.settings.work_dir.merged}/${dir}`)
@@ -627,21 +643,18 @@ export default class Ovary {
             cmds.push(`#############################################################`)
             if (N8.isDirectory(dirname)) {
                cmds.push(`\n# directory: ${dirname}`)
-               if (dirname === 'home') {
-
-               } else if (this.needOverlay(dirname)) {
+               if (this.mergedAndOvelay(dirname)) {
                   cmds.push(`\n# ${dirname} has overlay`)
                   cmds.push(`\n# First, umount it from ${this.settings.work_dir.path}`)
                   cmds.push(await rexec(`umount ${this.settings.work_dir.merged}/${dirname}`, verbose))
 
                   cmds.push(`\n# Second, umount it from ${this.settings.work_dir.lowerdir}`)
                   cmds.push(await rexec(`umount ${this.settings.work_dir.lowerdir}/${dirname}`, verbose))
-               } else if (this.onlyMerged(dirname)) {
+               } else if (this.merged(dirname)) {
                   cmds.push(await rexec(`umount ${this.settings.work_dir.merged}/${dirname}`, verbose))
                }
-
                cmds.push(`\n# remove in ${this.settings.work_dir.merged} and ${this.settings.work_dir.lowerdir}`)
-               if (dirname !=='home') {
+               if (dirname !== 'home') {
                   cmds.push(await rexec(`rm ${this.settings.work_dir.merged}/${dirname} -rf`, verbose))
                }
                cmds.push(await rexec(`rm ${this.settings.work_dir.lowerdir}/${dirname} -rf`, verbose))
@@ -655,7 +668,35 @@ export default class Ovary {
          }
       }
       Utils.writeXs(`${this.settings.work_dir.path}ubind`, cmds)
-   }         
+   }
+
+   /**
+    * bind dei virtual file system
+    */
+   async bindVfs(verbose = false) {
+      const cmds: string[] = []
+      cmds.push(`mount -o bind /dev ${this.settings.work_dir.merged}/dev`)
+      cmds.push(`mount -o bind /dev/pts ${this.settings.work_dir.merged}/dev/pts`)
+      cmds.push(`mount -o bind /proc ${this.settings.work_dir.merged}/proc`)
+      cmds.push(`mount -o bind /sys ${this.settings.work_dir.merged}/sys`)
+      cmds.push(`mount -o bind /run ${this.settings.work_dir.merged}/run`)
+      Utils.writeXs(`${this.settings.work_dir.path}bindVfs`, cmds)
+   }
+
+   /**
+    * 
+    * @param verbose 
+    */
+   async ubindVfs(verbose = false) {
+      const cmds: string[] = []
+      cmds.push(`umount ${this.settings.work_dir.merged}/dev/pts`)
+      cmds.push(`umount ${this.settings.work_dir.merged}/dev`)
+      cmds.push(`umount ${this.settings.work_dir.merged}/proc`)
+      cmds.push(`umount ${this.settings.work_dir.merged}/run`)
+      cmds.push(`umount ${this.settings.work_dir.merged}/sys/fs/fuse/connections`)
+      cmds.push(`umount ${this.settings.work_dir.merged}/sys`)
+      Utils.writeXs(`${this.settings.work_dir.path}ubindVfs`, cmds)
+   }
 
    /**
     * create la home per user_opt
