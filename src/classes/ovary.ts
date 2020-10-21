@@ -680,7 +680,7 @@ export default class Ovary {
       cmds.push(`mount -o bind /proc ${this.settings.work_dir.merged}/proc`)
       cmds.push(`mount -o bind /sys ${this.settings.work_dir.merged}/sys`)
       cmds.push(`mount -o bind /run ${this.settings.work_dir.merged}/run`)
-      Utils.writeXs(`${this.settings.work_dir.path}bindVfs`, cmds)
+      Utils.writeXs(`${this.settings.work_dir.path}bindvfs`, cmds)
    }
 
    /**
@@ -693,9 +693,9 @@ export default class Ovary {
       cmds.push(`umount ${this.settings.work_dir.merged}/dev`)
       cmds.push(`umount ${this.settings.work_dir.merged}/proc`)
       cmds.push(`umount ${this.settings.work_dir.merged}/run`)
-      cmds.push(`umount ${this.settings.work_dir.merged}/sys/fs/fuse/connections`)
+      // cmds.push(`umount ${this.settings.work_dir.merged}/sys/fs/fuse/connections`)
       cmds.push(`umount ${this.settings.work_dir.merged}/sys`)
-      Utils.writeXs(`${this.settings.work_dir.path}ubindVfs`, cmds)
+      Utils.writeXs(`${this.settings.work_dir.path}ubindvfs`, cmds)
    }
 
    /**
