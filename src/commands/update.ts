@@ -69,7 +69,13 @@ export default class Update extends Command {
                if (flags.lan) {
                   this.getFromLan()
                } else if (flags.internet) {
-                  this.getFromInternet()
+                  if (!Pacman.packageIsInstalled('wget')) {
+                     Utils.titles(`Update from internet`)
+                     console.log('To download eggs from internet, You need to install wget!`nUse: sudo apt install wget')
+                     process.exit(1)
+                  } else {
+                     this.getFromInternet()
+                  }
                } else {
                   console.log(`updating ${Utils.getPackageName()} version ${Utils.getPackageVersion()}`)
                   shx.exec(`npm update ${Utils.getPackageName()} -g`)
@@ -125,7 +131,7 @@ export default class Update extends Command {
        * choose the version
        */
       const inquirer = require('inquirer')
-      const choices :string [] = ['abort']
+      const choices: string[] = ['abort']
       choices.push(new inquirer.Separator('exit without update.'))
       for (let i = 0; i < data.length; i++) {
          choices.push(data[i].version)
@@ -142,10 +148,10 @@ export default class Update extends Command {
       const answer = await inquirer.prompt(questions)
       if (answer.selected === 'abort') {
          process.exit(0)
-      } 
+      }
       const deb = 'eggs_' + answer.selected + '-1_amd64.deb'
       let download = 'https://sourceforge.net/projects/penguins-eggs/files/packages-deb/' + deb
-      
+
       /**
        * downloading
        */
