@@ -335,7 +335,7 @@ export default class Pacman {
     * 
     */
    static linksCheck(): boolean {
-      return fs.existsSync('/etc/penguins-eggs.d/distros/bullseye')
+      return fs.existsSync('/etc/penguins-eggs.d/distros/stretch')
    }
 
    /**
@@ -362,9 +362,17 @@ export default class Pacman {
          // Buster - Nessun link presente
          const buster = `${rootPen}/conf/distros/buster`
 
-         // bullseye prende tutto da buster
+         /**
+          * In bullseye niente tmp 
+          */
          const bullseye = `${rootPen}/conf/distros/bullseye`
-         this.ln('-s', buster, bullseye, verbose)
+         this.ln('-s', `${buster}/grub`, `${bullseye}/grub`, verbose)
+         this.ln('-s', `${buster}/isolinux`, `${bullseye}/isolinux`, verbose)
+         this.ln('-s', `${buster}/locales`, `${bullseye}/locales`, verbose)
+         this.ln('-s', `${buster}/calamares/calamares-modules/remove-link`, `${bullseye}/calamares/calamares-modules/remove-link`, verbose)
+         this.ln('-s', `${buster}/calamares/calamares-modules/sources-yolk`, `${bullseye}/calamares/calamares-modules/sources-yolk`, verbose)
+         this.ln('-s', `${buster}/calamares/calamares-modules/sources-yolk-unmount`, `${bullseye}/calamares/calamares-modules/sources-yolk-unmount`, verbose)
+         this.ln('-s', `${buster}/calamares/modules`, `${bullseye}/calamares/modules`, verbose)
 
          const stretch = `${rootPen}/conf/distros/stretch`
          this.ln('-s', buster, stretch, verbose)
