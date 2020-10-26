@@ -38,7 +38,7 @@ sequence:
       - networkcfg
       - hwclock
       - services-systemd
-      - create-tmp
+      #- create-tmp
       - bootloader-config
       - grubcfg
       - bootloader
