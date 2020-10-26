@@ -17,6 +17,8 @@ You can follow the project also consulting the [commit history](https://github.c
 
 ## Changelog
 Versions are listed on reverse order, the first is the last one.
+### eggs-7.6.63.1_deb
+* remake configuration of calamares for bullseye, be careful with lsb_release in bullseye otherwise UEFI boot will not work
 
 ### eggs-7.6.62.1_deb
 * changed the way to work of ovary, put /boot, /etc, /usr, /var in overlayfs, create /home just like a normal directory who is not deleted, until kill
