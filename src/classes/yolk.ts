@@ -23,7 +23,7 @@ export default class Yolk {
 
     /**
      * 
-     * @param dir      * @param verbose 
+     * @param verbose 
      */
     async create(verbose = false) {
         /**

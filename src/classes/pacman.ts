@@ -456,7 +456,6 @@ export default class Pacman {
     * 
     * @param cmd 
     */
-
    static async commandIsInstalled(cmd: string): Promise<boolean> {
       let installed = false
       const stdout = shx.exec(`command -v ${cmd}`, { silent: true }).stdout.trim()
@@ -464,7 +463,6 @@ export default class Pacman {
          installed = true
       } else {
          Utils.warning(`${cmd} is not in your search path or is not installed!`)
-         process.exit(0)
       }
 
       return installed
