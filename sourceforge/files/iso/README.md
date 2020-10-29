@@ -43,7 +43,7 @@ a complete:
 
 ## bullseye
 
-* **less** - a less refacement with bullseye.
+* **lite** - just dressed with xfce, firefox, visual studio code, nodejs and stacer (amd64)
 
 All the other distro are non divided, but just a directory, the name is usually the distro version name. Example: focal, bionic, etc.
 
