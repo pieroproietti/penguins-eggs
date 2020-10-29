@@ -131,7 +131,7 @@ export default class Update extends Command {
       data.sort((a: any, b: any) => (a.version < b.version) ? 1 : ((b.version < a.version) ? -1 : 0))
 
       let versions = []
-      for (let i = 0; i < data.length && i < 3; i++) {
+      for (let i = 0; i < data.length && i <= 3; i++) {
             versions.push(data[i])
       }
 
