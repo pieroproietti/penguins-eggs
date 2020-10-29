@@ -118,7 +118,7 @@ export default class Update extends Command {
       Utils.titles(`choose the version`)
 
       let arch = 'amd64'
-      if (process.arch === 'ia32') {
+      if (process.arch === 'x32') {
          arch = 'i386'
       }
       const url = `https://penguins-eggs.net/versions/all/${arch}/`
