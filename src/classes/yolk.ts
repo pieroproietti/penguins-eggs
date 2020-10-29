@@ -9,12 +9,10 @@ import shx = require('shelljs')
 import fs = require('fs')
 
 import Utils from './utils'
-import Settings from './settings'
 import { execute, pipe } from '@getvim/execute'
 import Pacman from './pacman'
 import { execSync } from 'child_process'
 import Bleach from './bleach'
-import Distro from './distro'
 
 /**
  * 
@@ -36,7 +34,10 @@ export default class Yolk {
          */
 
         console.log('updating system...')
-        
+        if (!Pacman.commandIsInstalled('dpkg-scanpackages')) {
+            process.exit(0)
+        }
+
         execSync('apt-get update --yes')
         if (!this.exists()) {
             shx.exec(`mkdir ${this.dir} -p`)
@@ -65,7 +66,7 @@ export default class Yolk {
             console.log(`downloading package ${packages[i]} and it's dependencies...`)
             cmd = `apt-cache depends --recurse --no-recommends --no-suggests --no-conflicts --no-breaks --no-replaces --no-enhances ${packages[i]} | grep "^\\w" | sort -u`
             let depends = await execute(cmd)
-            const aDepends =depends.split('\n')
+            const aDepends = depends.split('\n')
             iDeps(aDepends)
         }
 
@@ -88,14 +89,14 @@ export default class Yolk {
     /**
      * Svuota la repo yolk
      */
-    clean(){
+    clean() {
         execSync(`rm ${this.dir}/*`)
     }
 
     /**
      * Controllo l'esistenza
      */
-    exists() : boolean {
+    exists(): boolean {
         const check = `${this.dir}/Packages.gz`
         return fs.existsSync(check)
     }
@@ -106,16 +107,16 @@ export default class Yolk {
  * 
  * @param depends 
  */
-function iDeps(depends: string []) {
+function iDeps(depends: string[]) {
     const downloads: string[] = []
     for (let i = 0; i < depends.length; i++) {
-        if (!Pacman.packageIsInstalled(depends[i])){
+        if (!Pacman.packageIsInstalled(depends[i])) {
             downloads.push(depends[i])
         }
     }
 
     for (let i = 0; i < downloads.length; i++) {
-        const cmd =`apt-get download ${downloads[i]}`
+        const cmd = `apt-get download ${downloads[i]}`
         Utils.warning(`- ${cmd}`)
         execute(cmd)
     }

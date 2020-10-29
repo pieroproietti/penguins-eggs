@@ -9,6 +9,7 @@ import fs = require('fs')
 import os = require('os')
 import path = require('path')
 import shx = require('shelljs')
+import { execSync } from 'child_process'
 
 import { IRemix, IDistro } from '../interfaces'
 
@@ -51,7 +52,7 @@ export default class Pacman {
    }
 
 
-   static packagesLocalisation(remove=false, verbose = false) {
+   static packagesLocalisation(remove = false, verbose = false) {
       const remix = {} as IRemix
       const distro = new Distro(remix)
       const packages = []
@@ -59,10 +60,10 @@ export default class Pacman {
       const settings = new Settings()
       settings.load()
       const locales: string[] = settings.locales
-      
+
       if ((distro.versionLike === 'buster') || (distro.versionLike === 'beowulf')) {
          for (let i = 0; i < locales.length; i++) {
-            if (locales[i] === process.env.LANG ) {
+            if (locales[i] === process.env.LANG) {
                continue
             }
             if (locales[i] === `it_IT.UTF-8`) {
@@ -233,7 +234,7 @@ export default class Pacman {
          shx.mkdir('/etc/penguins-eggs.d')
       }
       const addons = '/etc/penguins-eggs.d/addons'
-      const distros ='/etc/penguins-eggs.d/distros'
+      const distros = '/etc/penguins-eggs.d/distros'
       shx.rm(addons)
       shx.rm(distros)
       shx.ln('-s', path.resolve(__dirname, '../../addons'), addons)
@@ -346,7 +347,7 @@ export default class Pacman {
          shx.mkdir('/etc/penguins-eggs.d')
       }
       const addons = '/etc/penguins-eggs.d/addons'
-      const distros ='/etc/penguins-eggs.d/distros'
+      const distros = '/etc/penguins-eggs.d/distros'
       shx.rm(addons)
       shx.rm(distros)
       shx.ln('-s', path.resolve(__dirname, '../../addons'), addons)
@@ -354,7 +355,7 @@ export default class Pacman {
 
 
       // Link da fare solo per pacchetto deb o per test
-      if (Utils.isDebPackage()|| force) {
+      if (Utils.isDebPackage() || force) {
 
          // const rootPen = '/usr/lib/penguins-eggs'
          const rootPen = Utils.rootPenguin()
@@ -448,6 +449,24 @@ export default class Pacman {
       if (stdout === 'Status: install ok installed') {
          installed = true
       }
+      return installed
+   }
+
+   /**
+    * 
+    * @param cmd 
+    */
+
+   static async commandIsInstalled(cmd: string): Promise<boolean> {
+      let installed = false
+      const stdout = shx.exec(`command -v ${cmd}`, { silent: true }).stdout.trim()
+      if (stdout !== '') {
+         installed = true
+      } else {
+         Utils.warning(`${cmd} is not in your search path or is not installed!`)
+         process.exit(0)
+      }
+
       return installed
    }
 
