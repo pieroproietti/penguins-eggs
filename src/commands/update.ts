@@ -118,7 +118,8 @@ export default class Update extends Command {
       Utils.titles(`choose the version`)
 
       let arch = 'amd64'
-      if (process.arch === 'x32') {
+      console.log(process.arch)
+      if (process.arch === 'ia32' || process.arch === 'x32') {
          arch = 'i386'
       }
       const url = `https://penguins-eggs.net/versions/all/${arch}/`
@@ -157,7 +158,7 @@ export default class Update extends Command {
       if (answer.selected === 'abort') {
          process.exit(0)
       }
-      const deb = 'eggs_' + answer.selected + '-1_amd64.deb'
+      const deb = 'eggs_' + answer.selected + '-1_' + arch + '.deb'
       let download = 'https://sourceforge.net/projects/penguins-eggs/files/packages-deb/' + deb
 
       /**
