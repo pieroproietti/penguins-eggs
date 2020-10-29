@@ -12,7 +12,7 @@ import fs = require('fs')
 import Pacman from '../classes/pacman'
 import https = require('https')
 import { RSA_NO_PADDING } from 'constants'
-import { title } from 'process'
+import { title, versions } from 'process'
 
 const exec = require('../lib/utils').exec
 
@@ -127,15 +127,35 @@ export default class Update extends Command {
       let res = await axios.get(url)
       let data = res.data
 
+      // Ordino le versioni
+      data.sort((a, b) => (a.version < b.version) ? 1 : ((b.version < a.version) ? -1 : 0))
+
+      // Rimuovo le versioni inferiori alla attuale
+      let currVersion = Utils.getPackageVersion()
+      let aVersion = currVersion.split('.')
+      let v0 = aVersion[0]
+      let v1 = aVersion[1]
+      let v2 = parseInt(aVersion[2]) - 2
+
+      let minVersion = v0 + '.' +v1 + '.' + v2
+
+
+      let versions: string[] = []
+      for (let i = 0; i < data.length; i++) {
+         if (data[i].version >= '7.6.60') {
+            versions.push(data[i])
+         }
+      }
+
       /**
        * choose the version
        */
       const inquirer = require('inquirer')
       const choices: string[] = ['abort']
       choices.push(new inquirer.Separator('exit without update.'))
-      for (let i = 0; i < data.length; i++) {
-         choices.push(data[i].version)
-         choices.push(new inquirer.Separator(data[i].changelog))
+      for (let i = 0; i < versions.length; i++) {
+         choices.push(versions[i].version)
+         choices.push(new inquirer.Separator(versions[i].changelog))
       }
       const questions: Array<Record<string, any>> = [
          {
