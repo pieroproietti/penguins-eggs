@@ -1,7 +1,0 @@
-# Ubuntu Focal
-# unpackfs
----
-unpack:
-    -   source: {{source}}
-        sourcefs: "squashfs"
-        destination: ""
