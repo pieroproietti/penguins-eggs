@@ -26,8 +26,6 @@ const config_tools = '/etc/penguins-eggs.d/tools.conf' as string
  * @remarks all the utilities
  */
 export default class Pacman {
-
-
    /**
     * buster   OK
     * beowulf  OK
@@ -38,14 +36,14 @@ export default class Pacman {
     * 
     */
    static debs4eggs = ['isolinux', 'syslinux', 'squashfs-tools', 'xorriso', 'live-boot', 'live-boot-initramfs-tools', 'dpkg-dev']
-   static debs4notRemove = ['rsync', 'xterm', 'whois', 'dosfstools', 'parted'] 
+   static debs4notRemove = ['rsync', 'xterm', 'whois', 'dosfstools', 'parted']
    static debs4calamares = ['calamares', 'qml-module-qtquick2', 'qml-module-qtquick-controls']
 
    /**
     * controlla se Xserver è installato
     */
    static isXInstalled(): boolean {
-      return Pacman.packageIsInstalled('xserver-xorg-core') || Pacman.packageIsInstalled('xserver-xorg-core-hwe-18.04')
+      return this.packageIsInstalled('xserver-xorg-core') || this.packageIsInstalled('xserver-xorg-core-hwe-18.04')
    }
 
 
@@ -93,7 +91,7 @@ export default class Pacman {
    static packages(verbose = false): string[] {
       const remix = {} as IRemix
       const distro = new Distro(remix)
-      const packages = Pacman.debs4eggs
+      const packages = this.debs4eggs
 
       if ((distro.versionLike === 'buster') || (distro.versionLike === 'beowulf') || (distro.versionLike === 'bullseye') || (distro.versionLike === 'stretch')) {
          packages.push('live-config')
@@ -125,20 +123,18 @@ export default class Pacman {
       let installed = true
 
       for (const i in this.debs4notRemove) {
-         if (!Pacman.packageIsInstalled(this.debs4notRemove[i])) {
+         if (!this.packageIsInstalled(this.debs4notRemove[i])) {
             installed = false
             break
          }
       }
 
       for (const i in this.debs4eggs) {
-         if (!Pacman.packageIsInstalled(this.debs4eggs[i])) {
+         if (!this.packageIsInstalled(this.debs4eggs[i])) {
             installed = false
             break
          }
       }
-
-      
       return installed
    }
 
@@ -152,18 +148,18 @@ export default class Pacman {
       const remix = {} as IRemix
       const distro = new Distro(remix)
 
-      await exec(`apt-get install --yes ${Pacman.debs2line(Pacman.packages(verbose))}`, echo)
-      await exec(`apt-get install --yes ${Pacman.debs2line(Pacman.debs4notRemove)}`, echo)
+      await exec(`apt-get install --yes ${this.debs2line(this.packages(verbose))}`, echo)
+      await exec(`apt-get install --yes ${this.debs2line(this.debs4notRemove)}`, echo)
       if ((distro.versionLike === 'buster') || (distro.versionLike === 'beowulf') || (distro.versionLike === 'bullseye') || (distro.versionLike === 'stretch')) {
-         await exec(`apt-get install --yes --no-install-recommends ${Pacman.debs2line(Pacman.packagesLocalisation(verbose))}`, echo)
+         await exec(`apt-get install --yes --no-install-recommends ${this.debs2line(this.packagesLocalisation(verbose))}`, echo)
       }
-      if (!Pacman.isXInstalled()) {
+      if (!this.isXInstalled()) {
          /**
           * live-config-getty-generator
           * 
           * Viene rimosso in naked, altrimenti non funziona il login
           * generando un errore getty. Sarebbe utile individuare le ragioni.
-          */ 
+          */
          await exec(`rm /usr/lib/systemd/system-generators/live-config-getty-generator`)
       }
       return retVal
@@ -178,18 +174,15 @@ export default class Pacman {
       const retVal = false
       const remix = {} as IRemix
       const distro = new Distro(remix)
-      const remove = true
 
-      await exec(`apt-get purge --yes ${Pacman.debs2line(Pacman.packages(remove, verbose))}`, echo)
+      await exec(`apt-get purge --yes ${this.debs2line(this.packages(verbose))}`, echo)
       if ((distro.versionLike === 'buster') || (distro.versionLike === 'beowulf')) {
-         await exec(`apt-get purge --yes  ${Pacman.debs2line(Pacman.packagesLocalisation(verbose))}`, echo)
+         await exec(`apt-get purge --yes  ${this.debs2line(this.packagesLocalisation(verbose))}`, echo)
       }
 
       await exec('apt-get autoremove --yes', echo)
       return retVal
    }
-
-
 
    /**
     *
@@ -197,7 +190,7 @@ export default class Pacman {
    static async calamaresCheck(): Promise<boolean> {
       let installed = true
       for (const i in this.debs4calamares) {
-         if (!Pacman.packageIsInstalled(this.debs4calamares[i])) {
+         if (!this.packageIsInstalled(this.debs4calamares[i])) {
             installed = false
             break
          }
@@ -211,8 +204,8 @@ export default class Pacman {
    static async calamaresInstall(verbose = true): Promise<void> {
       // verbose = true
       const echo = Utils.setEcho(verbose)
-      if (Pacman.isXInstalled()) {
-         await exec(`apt-get install --yes ${Pacman.debs2line(Pacman.debs4calamares)}`, echo)
+      if (this.isXInstalled()) {
+         await exec(`apt-get install --yes ${this.debs2line(this.debs4calamares)}`, echo)
       } else {
          console.log("It's not possible to use calamares in a system without GUI")
       }
@@ -228,19 +221,17 @@ export default class Pacman {
       if (fs.existsSync('/etc/calamares')) {
          await exec('rm /etc/calamares -rf', echo)
       }
-      await exec(`apt-get remove --purge --yes ${Pacman.debs2line(Pacman.debs4calamares)}`, echo)
+      await exec(`apt-get remove --purge --yes ${this.debs2line(this.debs4calamares)}`, echo)
       await exec('apt-get autoremove --yes', echo)
       return retVal
    }
-
-
 
    /**
     * Restutuisce VERO se i file di configurazione SONO presenti
     */
    static configurationCheck(): boolean {
-      let confExists: boolean = fs.existsSync(config_file)
-      let listExists: boolean = fs.existsSync('/usr/local/share/penguins-eggs/exclude.list')
+      const confExists: boolean = fs.existsSync(config_file)
+      const listExists: boolean = fs.existsSync('/usr/local/share/penguins-eggs/exclude.list')
       return (confExists && listExists)
    }
 
