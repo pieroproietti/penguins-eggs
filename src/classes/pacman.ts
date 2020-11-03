@@ -37,8 +37,8 @@ export default class Pacman {
     * Lascio all'utente il compito di installare o rimuover grub-efi-amd64 o grun-efi-ia32
     * 
     */
-   static debs4eggs = ['isolinux', 'syslinux', 'squashfs-tools', 'xorriso', 'live-boot', 'live-boot-initramfs-tools', 'dpkg-dev', 'parted']
-   static debs4notRemove = ['rsync', 'xterm', 'whois', 'dosfstools']
+   static debs4eggs = ['isolinux', 'syslinux', 'squashfs-tools', 'xorriso', 'live-boot', 'live-boot-initramfs-tools', 'dpkg-dev']
+   static debs4notRemove = ['rsync', 'xterm', 'whois', 'dosfstools', 'parted'] 
    static debs4calamares = ['calamares', 'qml-module-qtquick2', 'qml-module-qtquick-controls']
 
    /**
@@ -49,6 +49,11 @@ export default class Pacman {
    }
 
 
+   /**
+    * 
+    * @param remove 
+    * @param verbose 
+    */
    static packagesLocalisation(remove = false, verbose = false) {
       const remix = {} as IRemix
       const distro = new Distro(remix)
@@ -79,6 +84,7 @@ export default class Pacman {
          }
          packages.push('live-task-localisation')
       }
+
       return packages
    }
    /**
@@ -144,6 +150,15 @@ export default class Pacman {
       await exec(`apt-get install --yes ${Pacman.debs2line(Pacman.packages(verbose))}`, echo)
       if ((distro.versionLike === 'buster') || (distro.versionLike === 'beowulf') || (distro.versionLike === 'bullseye') || (distro.versionLike === 'stretch')) {
          await exec(`apt-get install --yes --no-install-recommends ${Pacman.debs2line(Pacman.packagesLocalisation(verbose))}`, echo)
+      }
+      if (!Pacman.isXInstalled()) {
+         /**
+          * live-config-getty-generator
+          * 
+          * Viene rimosso in naked, altrimenti non funziona il login
+          * generando un errore getty. Sarebbe utile individuare le ragioni.
+          */ 
+         await exec(`rm /usr/lib/systemd/system-generators/live-config-getty-generator`)
       }
       return retVal
    }
