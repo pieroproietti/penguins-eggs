@@ -33,7 +33,7 @@ I divided it in three parts: cinnamon, lxde and naked. The two in cinnamon are t
 debu to develop and office automatition and incubator, a version of proxmox-ve sistem with filled with all you can expect from 
 a complete:
 
-* **naked** - just the juice, without GUI, with nodejs and eggs. You can start here to build your revolution! (i386 and amd64)
+* **naked** - just the juice, without GUI. You can start here to build your revolution! (i386 and amd64)
 
 * **less** - it's not naked, but just dressed with lxde-core and the tools to develop. (i386 and amd64)
 
@@ -43,7 +43,9 @@ a complete:
 
 ## bullseye
 
-* **lite** - just dressed with xfce, firefox, visual studio code, nodejs and stacer (amd64)
+* **naked** - just the juice, without GUI. You can start here to build your revolution! (i386 and amd64)
+
+* **lite** - just dressed with xfce, firefox, visual studio code, nodejs and stacer (amd64 and i386)
 
 All the other distro are non divided, but just a directory, the name is usually the distro version name. Example: focal, bionic, etc.
 
