@@ -64,7 +64,7 @@ export default class Prerequisites extends Command {
     * @param verbose 
     */
    static async thatWeNeed(verbose = false): Promise<IInstall> {
-      let i = {} as IInstall
+      const i = {} as IInstall
 
       i.links = !Pacman.linksCheck()
 
@@ -106,7 +106,8 @@ export default class Prerequisites extends Command {
 
          if (i.prerequisites) {
             console.log('- install prerequisites')
-            const packages = Pacman.packages()
+            const remove = false
+            const packages = Pacman.packages(remove, verbose)
             console.log(chalk.yellow('  apt install --yes ' + Pacman.debs2line(packages)))
             if (i.configuration) {
                Pacman.configurationInstall(verbose)
