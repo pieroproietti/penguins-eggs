@@ -62,7 +62,7 @@ export default class Sterilize extends Command {
    static async thatWeRemove(verbose = false): Promise<IInstall> {
       Utils.titles('That will be removed')
 
-      let i = {} as IInstall
+      const i = {} as IInstall
 
       i.calamares = await Pacman.calamaresCheck()
       i.prerequisites = await Pacman.prerequisitesCheck()
