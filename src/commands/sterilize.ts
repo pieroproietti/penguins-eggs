@@ -80,8 +80,7 @@ export default class Sterilize extends Command {
 
          if (i.prerequisites) {
             console.log('- remove prerequisites')
-            const remove = true
-            const packages = Pacman.packages(remove, verbose)
+            const packages = Pacman.packages(verbose)
             console.log(chalk.yellow('  apt purge --yes ' + Pacman.debs2line(packages)))
             const packagesLocalisation = Pacman.packagesLocalisation()
             if (packagesLocalisation.length > 0) {

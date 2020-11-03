@@ -90,7 +90,7 @@ export default class Pacman {
    /**
     * Crea array packages dei pacchetti da installare/rimuovere
     */
-   static packages(remove = false, verbose = false): string[] {
+   static packages(verbose = false): string[] {
       const remix = {} as IRemix
       const distro = new Distro(remix)
       const packages = Pacman.debs4eggs

@@ -105,8 +105,7 @@ export default class Prerequisites extends Command {
 
          if (i.prerequisites) {
             console.log('- install prerequisites')
-            const remove = false
-            const packages = Pacman.packages(remove, verbose)
+            const packages = Pacman.packages(verbose)
             console.log(chalk.yellow('  apt install --yes ' + Pacman.debs2line(packages)))
             if (i.configuration) {
                Pacman.configurationInstall(verbose)
