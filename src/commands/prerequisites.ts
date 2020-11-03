@@ -13,7 +13,6 @@ import chalk = require('chalk')
 import { utils } from 'mocha'
 
 const exec = require('../lib/utils').exec
-import { IExec } from '../interfaces'
 
 /**
  * 
@@ -185,6 +184,9 @@ export default class Prerequisites extends Command {
          Utils.warning('creating configuration\'s files...')
          await Pacman.configurationInstall(verbose)
       }
+
+      if (!Pacman.isXInstalled()) {
+         await exec(`rm /usr/lib/systemd/live-config-getty-generator/live-config-getty-generator')
+      }
    }
 }
-

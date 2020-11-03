@@ -9,14 +9,11 @@ import fs = require('fs')
 import os = require('os')
 import path = require('path')
 import shx = require('shelljs')
-import { execSync } from 'child_process'
-
-import { IRemix, IDistro } from '../interfaces'
+import { IRemix } from '../interfaces'
 
 import Utils from './utils'
 import Distro from './distro'
 import Settings from './settings'
-import Bleach from './bleach'
 
 
 const exec = require('../lib/utils').exec

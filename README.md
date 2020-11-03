@@ -16,6 +16,7 @@ penguins-eggs
 * [Index](#index)
 * [Presentation](#presentation)
 * [Addons](#addons)
+* [Yolk](#yolk)
 * [What distributions can I use?](#what-distributions-can-i-use)
 * [Install penguins-eggs](#install-penguins-eggs)
 * [Usage](#usage)
