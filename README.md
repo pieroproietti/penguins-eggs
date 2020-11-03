@@ -105,6 +105,8 @@ USAGE
 * [`eggs info`](#eggs-info)
 * [`eggs install`](#eggs-install)
 * [`eggs kill`](#eggs-kill)
+* [`eggs prerequisites`](#eggs-prerequisites)
+* [`eggs produce`](#eggs-produce)
 * [`eggs sterilize`](#eggs-sterilize)
 * [`eggs tools:clean`](#eggs-toolsclean)
 * [`eggs tools:initrd`](#eggs-toolsinitrd)
@@ -276,6 +278,92 @@ EXAMPLE
 ```
 
 _See code: [src/commands/kill.ts](https://github.com/pieroproietti/penguins-eggs/blob/v7.6.66/src/commands/kill.ts)_
+
+## `eggs prerequisites`
+
+install packages prerequisites to run eggs
+
+```
+USAGE
+  $ eggs prerequisites
+
+OPTIONS
+  -c, --configuration  create configuration's files
+  -h, --help           show CLI help
+  -l, --links          create links
+  -v, --verbose        verbose
+
+EXAMPLES
+  ~$ eggs prerequisites
+  install prerequisites and create configuration files
+
+  sudo eggs prerequisites -c
+    create configuration's file
+```
+
+_See code: [src/commands/prerequisites.ts](https://github.com/pieroproietti/penguins-eggs/blob/v7.6.66/src/commands/prerequisites.ts)_
+
+## `eggs produce`
+
+the system produce an egg: livecd creation.
+
+```
+USAGE
+  $ eggs produce
+
+OPTIONS
+  -b, --basename=basename  basename egg
+  -c, --compress           max compression
+  -f, --fast               fast compression
+  -h, --help               show CLI help
+  -s, --script             script mode. Generate scripts to manage iso build
+  -v, --verbose            verbose
+  -y, --yolk               -y force the renew of the local repository yolk
+  --adapt                  adapt video resolution in VM
+  --final                  final: remove eggs prerequisites, calamares and all it's dependencies
+  --ichoice                allows the user to choose the installation type cli/gui
+  --pve                    administration of virtual machines (Proxmox-VE)
+  --rsupport               remote support via dwagent
+  --theme=theme            theme/branding for eggs and calamares
+
+ALIASES
+  $ eggs spawn
+  $ eggs lay
+
+EXAMPLES
+  $ sudo eggs produce 
+  produce an ISO called [hostname]-[arch]-YYYY-MM-DD_HHMM.iso, compressed xz (standard compression).
+  If hostname=ugo and arch=i386 ugo-x86-2020-08-25_1215.iso
+
+  $ sudo eggs produce -v
+  the same as the previuos, but with more explicative output
+
+  $ sudo eggs produce -vf
+  the same as the previuos, compression lz4 (fast compression, but about 30%
+  less compressed compared xz standard)
+
+  $ sudo eggs produce -vc
+  the same as the previuos, compression xz -Xbcj x86 (max compression, about 10%
+  more compressed compared xz standard)
+
+  $ sudo eggs produce -vf --basename leo --theme debian --adapt 
+  produce an ISO called leo-i386-2020-08-25_1215.iso compression lz4,
+  using Debian theme and link to adapt
+
+  $ sudo eggs produce -v --basename leo --theme debian --adapt 
+  produce an ISO called leo-i386-2020-08-25_1215.iso compression xz,
+  using Debian theme and link to adapt
+
+  $ sudo eggs produce -v --basename leo --rsupport 
+  produce an ISO called leo-i386-2020-08-25_1215.iso compression xz, using eggs
+  theme and link to dwagent
+
+  $ sudo eggs produce -vs --basename leo --rsupport 
+  produce scripts to build an ISO as the previus example. Scripts can be found
+  in /home/eggs/ovarium and you can customize all you need
+```
+
+_See code: [src/commands/produce.ts](https://github.com/pieroproietti/penguins-eggs/blob/v7.6.66/src/commands/produce.ts)_
 
 ## `eggs sterilize`
 

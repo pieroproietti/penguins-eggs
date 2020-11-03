@@ -37,7 +37,7 @@ export default class Pacman {
     * Lascio all'utente il compito di installare o rimuover grub-efi-amd64 o grun-efi-ia32
     * 
     */
-   static debs4eggs = ['isolinux', 'syslinux', 'squashfs-tools', 'xorriso', 'live-boot', 'live-boot-initramfs-tools']
+   static debs4eggs = ['isolinux', 'syslinux', 'squashfs-tools', 'xorriso', 'live-boot', 'live-boot-initramfs-tools', 'dpkg-dev']
    static debs4notRemove = ['rsync', 'xterm', 'whois', 'dosfstools']
    static debs4calamares = ['calamares', 'qml-module-qtquick2', 'qml-module-qtquick-controls']
 
