@@ -24,5 +24,5 @@ if [ -d /sys/firmware/efi/efivars ]; then
     DEBIAN_FRONTEND=noninteractive chroot $CHROOT apt-get -y --allow-unauthenticated install grub-efi-amd64 cryptsetup keyutils
 else
     echo " * install grub... (bios)"
-    DEBIAN_FRONTEND=noninteractive chroot $CHROOT apt-get -y --allow-unauthenticated install grub-pc cryptsetup keyutils
+    DEBIAN_FRONTEND=noninteractive chroot $CHROOT apt-get -y --allow-unauthenticated install grub-pc cryptsetup
 fi
