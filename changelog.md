@@ -17,6 +17,10 @@ You can follow the project also consulting the [commit history](https://github.c
 
 ## Changelog
 Versions are listed on reverse order, the first is the last one.
+
+### eggs-7.6.66.1_deb
+* eggs is again able to remaster and install the naked version (without graphical interface) of Debian/Ubuntu/etc.
+
 ### eggs-7.6.65.1_deb
 * update -i show the last 4 versions ordered and select the correct architecture; check presence of dpkg-packages before to run yolk
 
