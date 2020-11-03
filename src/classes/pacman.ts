@@ -158,9 +158,9 @@ export default class Pacman {
           * live-config-getty-generator
           * 
           * Viene rimosso in naked, altrimenti non funziona il login
-          * generando un errore getty. Sarebbe utile individuare le ragioni.
+          * generando un errore getty. Sarebbe utile individuarne le ragioni.
           */
-         await exec(`rm /usr/lib/systemd/system-generators/live-config-getty-generator`)
+         await exec(`rm /lib/systemd/system-generators/live-config-getty-generator`)
       }
       return retVal
    }
