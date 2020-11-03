@@ -187,7 +187,7 @@ export default class Prerequisites extends Command {
 
       if (!Pacman.isXInstalled()) {
          // Viene rimosso in naked perchè altrimenti non si effettua il login
-         await exec(`rm /usr/lib/systemd/system-generators/live-config-getty-generator/live-config-getty-generator`)
+         await exec(`rm /usr/lib/systemd/system-generators/live-config-getty-generator`)
       }
    }
 }
