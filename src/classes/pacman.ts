@@ -93,16 +93,12 @@ export default class Pacman {
    static packages(remove = false, verbose = false): string[] {
       const remix = {} as IRemix
       const distro = new Distro(remix)
-      let packages = Pacman.debs4eggs
+      const packages = Pacman.debs4eggs
 
       if ((distro.versionLike === 'buster') || (distro.versionLike === 'beowulf') || (distro.versionLike === 'bullseye') || (distro.versionLike === 'stretch')) {
          packages.push('live-config')
       } else if ((distro.versionLike === 'focal')) {
          packages.push('live-config')
-      }
-
-      if (!remove) {
-         packages = packages.concat(Pacman.debs4notRemove)
       }
 
       // systemd / sysvinit
@@ -128,12 +124,21 @@ export default class Pacman {
    static async prerequisitesCheck(): Promise<boolean> {
       let installed = true
 
+      for (const i in this.debs4notRemove) {
+         if (!Pacman.packageIsInstalled(this.debs4notRemove[i])) {
+            installed = false
+            break
+         }
+      }
+
       for (const i in this.debs4eggs) {
          if (!Pacman.packageIsInstalled(this.debs4eggs[i])) {
             installed = false
             break
          }
       }
+
+      
       return installed
    }
 
@@ -148,6 +153,7 @@ export default class Pacman {
       const distro = new Distro(remix)
 
       await exec(`apt-get install --yes ${Pacman.debs2line(Pacman.packages(verbose))}`, echo)
+      await exec(`apt-get install --yes ${Pacman.debs2line(Pacman.debs4notRemove)}`, echo)
       if ((distro.versionLike === 'buster') || (distro.versionLike === 'beowulf') || (distro.versionLike === 'bullseye') || (distro.versionLike === 'stretch')) {
          await exec(`apt-get install --yes --no-install-recommends ${Pacman.debs2line(Pacman.packagesLocalisation(verbose))}`, echo)
       }

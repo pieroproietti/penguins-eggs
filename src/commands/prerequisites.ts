@@ -10,7 +10,6 @@ import Pacman from '../classes/pacman'
 import Bleach from '../classes/bleach'
 import { IInstall } from '../interfaces'
 import chalk = require('chalk')
-import { utils } from 'mocha'
 
 const exec = require('../lib/utils').exec
 
