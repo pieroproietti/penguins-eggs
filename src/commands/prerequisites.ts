@@ -113,6 +113,7 @@ export default class Prerequisites extends Command {
             if (i.configuration) {
                Pacman.configurationInstall(verbose)
             }
+            
             const packagesLocalisation = Pacman.packagesLocalisation()
             if (packagesLocalisation.length > 0) {
                console.log(chalk.yellow('  apt install --yes --no-install-recommends live-task-localisation ' + Pacman.debs2line(packagesLocalisation)) + '\n')

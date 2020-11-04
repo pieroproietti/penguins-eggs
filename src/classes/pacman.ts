@@ -268,8 +268,11 @@ export default class Pacman {
       if (!fs.existsSync(vmlinuz)) {
          vmlinuz = '/boot/vmlinuz'
          if (!fs.existsSync(vmlinuz)) {
-            vmlinuz = '/vmlinuz'
-            console.log(`Can't find the standard ${vmlinuz}, please edit ${config_file}`)
+            vmlinuz = '/boot/pve/vmlinuz'
+            if (!fs.existsSync(vmlinuz)) {
+               vmlinuz = '/vmlinuz'
+               console.log(`Can't find the standard ${vmlinuz}, please edit ${config_file}`)
+            }
          }
       }
       shx.sed('-i', '%vmlinuz%', vmlinuz, config_file)
@@ -281,8 +284,11 @@ export default class Pacman {
       if (!fs.existsSync(initrd)) {
          initrd = '/boot/initrd.img'
          if (!fs.existsSync(initrd)) {
-            initrd = '/initrd.img'
-            console.log(`Can't find the standard  ${initrd}, please edit ${config_file}`)
+            initrd = '/boot/pve/initrd.img'
+            if (!fs.existsSync(initrd)) {
+               initrd = '/initrd.img'
+               console.log(`Can't find the standard  ${initrd}, please edit ${config_file}`)
+            }
          }
       }
       shx.sed('-i', '%initrd%', initrd, config_file)
