@@ -10,27 +10,13 @@ penguins-eggs
 [![deb](https://img.shields.io/badge/deb-packages-orange)](https://sourceforge.net/projects/penguins-eggs/files/packages-deb)
 [![iso](https://img.shields.io/badge/iso-images-orange)](https://sourceforge.net/projects/penguins-eggs/files/iso)
 
-# Debian remastered ISOs
+# Proxmox-VE remastered ISOs
 
-All ISOs are based on Debian buster, Debian bullseye
+All ISOs are based on Proxmox VE 6.2
 
 # user/password
 * ```live/evolution```
 * ```root/evolution```
-
-# Debian buster 
-
-* **naked** - just the juice, without GUI. You can start here to build your revolution! (i386 and amd64)
-
-* **less** - it's not naked, but just dressed with lxde-core and the tools to develop. (i386 and amd64)
-
-* **debu**  - it is my personal version with cinnamon, mostly for development, but include common office tools; (amd64)
-
-# Debian bullseye
-
-* **naked** - just the juice, without GUI. You can start here to build your revolution! (i386 and amd64)
-
-* **lite** - it's not naked, but just dressed with xfce4 and the tools to develop. (i386 and amd64)
 
 # Proxmox VE 6.2
 

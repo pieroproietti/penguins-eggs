@@ -10,40 +10,23 @@ penguins-eggs
 [![deb](https://img.shields.io/badge/deb-packages-orange)](https://sourceforge.net/projects/penguins-eggs/files/packages-deb)
 [![iso](https://img.shields.io/badge/iso-images-orange)](https://sourceforge.net/projects/penguins-eggs/files/iso)
 
-# Releases
 
-Complete sources releases from github.
+# Penguin's eggs remastered ISOs
 
-# Collaboration
+All ISOs are based on Devuan beowulf
 
-I'm finding collaborators, if you are interested, you can help!
+# user/password
+* ```live/evolution```
+* ```root/evolution```
 
-Not only developers, yes devs are important, but also graphics, translators (i made traslation with google translator, yes are good but need to be revised) and so on.
+All the ISOs include nodejs and eggs installed (.npm package), so you can update your eggs tool with the command:
 
-If you are interested, please write me!
+```sudo eggs update```
 
-For developers and testers, a suitable way to start to collaborate in penguin's eggs development can be to install one of them (I suggest debu) or install nodejs, git, build-essential in in your personal system, and start to play with penguins-eggs source.
+# Devuan 
+* **beowulf** - like debu, but devual based
 
-It is quite simple! Just download penguins-eggs the sources with the command:
-
-```git clone https://github.com/pieroproietti/penguins-eggs```
-
-
-Install in it the necessary npm packages:
-
-```cd penguins-egg```
-
-```npm i```
-
-And now, from the same directory, you can use eggs from sources:
-
-```~/penguins-eggs$ .\eggs info```
-
-```~/penguins-eggs$ sudo .\eggs produce -fv```
-
-You can also use choose the option -d (--dry) and play later with the scripts in /home/eggs/ovarium. Can be exciting! ;-)
-
-Don't esitate to ask me for suggestions and help.
+You can create remix from yourself by downloading the originals, installing the system, installing eggs and start to creatie the ISOs.
 
 # That's all Folks!
 No need other configurations, penguins-eggs are battery included or better, as in the real, live is inside! :-D
