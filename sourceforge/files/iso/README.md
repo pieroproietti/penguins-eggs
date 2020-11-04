@@ -54,6 +54,7 @@ All the other distro are non divided, but just a directory, the name is usually 
 
 # Ubuntu
 * **lubuntu-i386** - Lubuntu 18.04 remastered with eggs, w, updated and remastered with eggs, without any modifications except for wallpapers.
+
 * **focal** - Ubuntu 20.04 focal gnome3, remastered with eggs, without any modifications. 
 
 # Linux Mint
