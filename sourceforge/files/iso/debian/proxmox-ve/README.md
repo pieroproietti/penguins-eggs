@@ -20,6 +20,8 @@ All ISOs are based on Proxmox VE 6.2
 
 # Proxmox VE 6.2
 
-* **naked** - just the juice, without GUI. You can start here to build your revolution! (amd64)
+* **naked-ve** - just the juice, without GUI. You can start here to build your revolution! (amd64)
 
-* **incubator** - it's your workstation for virtualization, dressed with cinnamon, libreoffice, gimp and tools. (amd64)
+* **lite-ve** - it's not naked, but dressed with xfce4, developer's tools and virt-viewer (amd64)
+
+* **incubator** - it's full workstation for virtualization, with cinnamon, libreoffice, gimp and tools. (amd64)
