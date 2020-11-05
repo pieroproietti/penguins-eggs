@@ -29,9 +29,6 @@ I work mostly on Debian stable, so here you can find my personal versions and ot
 
 # Debian
 ## buster
-I divided it in three parts: cinnamon, lxde and naked. The two in cinnamon are the most complete and are the tools with i work:
-debu to develop and office automatition and incubator, a version of proxmox-ve sistem with filled with all you can expect from 
-a complete:
 
 * **naked** - just the juice, without GUI. You can start here to build your revolution! (i386 and amd64)
 
@@ -39,34 +36,50 @@ a complete:
 
 * **debu**  - it is my personal version with cinnamon, mostly for development, but include common office tools; (amd64)
 
-* **incubator** - Debian Buster + Proxmox VE 6.2 and the same tools of debu; (amd64 plus virtualization enabled)
-
 ## bullseye
 
 * **naked** - just the juice, without GUI. You can start here to build your revolution! (i386 and amd64)
 
 * **lite** - just dressed with xfce, firefox, visual studio code, nodejs and stacer (amd64 and i386)
 
+## proxmox-ve
+
+* **naked-ve** - Proxmox VE 6.2 cli (need amd64 plus virtualization enabled)
+
+* **live-ve** - Proxmox VE 6.2 with xfce, developer tools, virt-viewer (need amd64 plus virtualization enabled)
+
+* **incubator** - Proxmox VE 6.2 with cinnamon, depeloper tools, office, gimp, etc; (need amd64 plus virtualization enabled)
+
 All the other distro are non divided, but just a directory, the name is usually the distro version name. Example: focal, bionic, etc.
 
 # Devuan 
 * **beowulf** - like debu, but devual based
+
+# Deepin
+* **deepin** deepin 20 remastered
+
+# Linux Mint
+* **patricia** - Linux Mint 19.3 xfce, updated and remastered with eggs, without any modifications except for wallpapers. (amd64/i386)
+
+* **ulyana** - Linux Mint 20 remastered with eggs, without any modifications except for wallpapers and develop tools. (amd64)
+
+## Linux Mint Debian Edition 4 Debbie
+* **debbie** - LMDE4 Debbie, remastered with eggs, without any modifications except for wallpapers and develop tools. (amd64/i386)
 
 # Ubuntu
 * **lubuntu-i386** - Lubuntu 18.04 remastered with eggs, w, updated and remastered with eggs, without any modifications except for wallpapers.
 
 * **focal** - Ubuntu 20.04 focal gnome3, remastered with eggs, without any modifications. 
 
-# Linux Mint
-* **patricia-i386** - Linux Mint 19.3 xfce, updated and remastered with eggs, without any modifications except for wallpapers.
-* **ulyana** - Linux Mint 20 remastered with eggs, without any modifications except for wallpapers and develop tools.
+* **groovy** - Ubuntu 20.10 groovy. 
 
-## Linux Mint Debian Edition 4 Debbie
-* **debbie** - LMDE4 Debbie, remastered with eggs, without any modifications except for wallpapers and develop tools.
 
 # UfficioZero
+
 * **roma-i386** - UffucioZero Roma (x86), based on devuan beowulf
+
 * **tropea** - UfficioZero Tropea (amd64)based on Linuxmint 20.0 ulyana
+
 * **vieste** - UfficioZero Vieste (amd64) based on Linuxmint 19.3 tricia
 
 
