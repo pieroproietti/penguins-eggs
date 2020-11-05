@@ -28,7 +28,7 @@ All the ISOs include nodejs and eggs installed (.npm package), so you can update
 UfficioZero Linux is an open source operating system designed by [SIITE SRLS](https://it.siite.it/), which has acquired the historical domain and provides the development team with various virtual servers to host web services, mail services, repositories and sharing servers for use by the development team.
 
 * Ufficio Zero version 2.x **Roma** 32bit
-If you want to read some help how-to for this version, you can use this [link])(https://wiki.ufficiozero.org/doku.php?id=roma)
+If you want to read some help how-to for this version, you can use this [link](https://wiki.ufficiozero.org/doku.php?id=roma)
 
 * Ufficio Zero version 2.x **Vieste** 64bit
 If you want to read some help how-to for this version, you can use this [link](https://wiki.ufficiozero.org/doku.php?id=vieste).
