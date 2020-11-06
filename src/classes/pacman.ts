@@ -32,8 +32,6 @@ export default class Pacman {
     * focal    live-task-localization
     * bionic   live-config live-task-localization
     * 
-    * Lascio all'utente il compito di installare o rimuover grub-efi-amd64 o grun-efi-ia32
-    * 
     */
    static debs4eggs = ['isolinux', 'syslinux', 'squashfs-tools', 'xorriso', 'live-boot', 'live-boot-initramfs-tools', 'dpkg-dev']
    static debs4notRemove = ['rsync', 'xterm', 'whois', 'dosfstools', 'parted']

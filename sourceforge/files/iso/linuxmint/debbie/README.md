@@ -11,30 +11,23 @@ penguins-eggs
 [![iso](https://img.shields.io/badge/iso-images-orange)](https://sourceforge.net/projects/penguins-eggs/files/iso)
 
 
-# Penguin's eggs npm package
+# Penguin's eggs remastered ISOs
 
-Usually the last version is the right one.
+# user/password
+* ```live/evolution```
+* ```root/evolution```
 
-To install the package, with nodejs installed, just open a terminal window and:
+All the ISOs include nodejs and eggs installed (.npm package), so you can update your eggs tool with the command:
 
-```sudo npm install penguins-egg@latest -g```
+```sudo eggs update```
 
-# update eggs (npm package)
+# Linux Mint - debbie
 
-Just open a terminal window and digit:
-```sudo npm eggs update```
-
-# That's all Folks!
-No need other configurations, penguins-eggs are battery included or better, as in the real, live is inside! :-D
+* **patricia** - LMDE 4.0 (based on Debian buster), cinnamon (amd64 and i386)
 
 ## More informations
 
-You can find more informations at [Penguin's eggs blog](https://penguins-eggs.net).
+You can find more informations at [Linux Mint](https://linuxmint.com/).
 
-## Contacts
-Feel free to contact [me](https://gitter.im/penguins-eggs-1/community?source=orgpage) or open an issue on [github](https://github.com/pieroproietti/penguins-eggs/issues).
-
-* mail: piero.proietti@gmail.com
-
-## Copyright and licenses
-Copyright (c) 2017, 2020 [Piero Proietti](https://penguins-eggs.net/about-me.html), dual licensed under the MIT or GPL Version 2 licenses.
+# That's all Folks!
+No need other configurations, penguins-eggs are battery included or better, as in the real, live is inside! :-D

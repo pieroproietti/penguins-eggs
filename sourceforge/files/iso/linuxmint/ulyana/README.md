@@ -21,25 +21,9 @@ All the ISOs include nodejs and eggs installed (.npm package), so you can update
 
 ```sudo eggs update```
 
-# Linux Mint
-The purpose of Linux Mint is to produce a modern, elegant and comfortable operating system which is both powerful and easy to use.
+# Linux Mint - ulyana
 
-Linux Mint is one of the most popular desktop Linux distributions and used by millions of people.
-
-Some of the reasons for the success of Linux Mint are:
-
-It works out of the box, with full multimedia support and is extremely easy to use.
-It's both free of cost and open source.
-It's community-driven. Users are encouraged to send feedback to the project so that their ideas can be used to improve Linux Mint.
-Based on Debian and Ubuntu, it provides about 30,000 packages and one of the best software managers.
-It's safe and reliable. Thanks to a conservative approach to software updates, a unique Update Manager and the robustness of its Linux architecture, Linux Mint requires very little maintenance (no regressions, no antivirus, no anti-spyware...etc).
-
-* **debbie** - Linux Mint Debian Edition 4 (based on Debian buster)
-* **tricia** - Linux Mint 19.3 (based on Ubuntu bionic)
-* **ulyana** - Linux Mint 20 (based on Ubuntu focal)
-
-## Linux Mint Debian Edition 4 Debbie
-* **debbie** - LMDE4 Debbie, remastered with eggs, without any modifications except for wallpapers and develop tools.
+* **ulyana** - Linux Mint 20.0 (based on Ubuntu focal), cinnamon (amd64)
 
 ## More informations
 
