@@ -506,6 +506,10 @@ EXAMPLE
 _See code: [src/commands/update.ts](https://github.com/pieroproietti/penguins-eggs/blob/v7.6.71/src/commands/update.ts)_
 <!-- commandsstop -->
 
+# terminal samples
+
+![eggs helo](./eggs_help.gif)
+
 # That's all Folks!
 No need other configurations, penguins-eggs are battery included or better, as in the real, live is inside! :-D
 
