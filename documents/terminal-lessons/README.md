@@ -12,38 +12,52 @@ penguins-eggs
 [![gitter](https://img.shields.io/badge/chat-gitter-blue)](https://gitter.im/penguins-eggs-1/community?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
 [![License](https://img.shields.io/badge/license-MIT/GPL2-blue)](https://github.com/pieroproietti/penguins-eggs/blob/master/LICENSE)
 
-# Terminal lessons
+# Examples of terminal sessions
 Here you will find same terminal lesson in gif format. Download it and see the lesson.
 
 ## install eggs package (.deb)
+Install eggs by dpkg or gdebi.
+
 ```sudo dpkg -i eggs_v7-6-70-amd64.deb```
 
 ![install eggs](./eggs_install-deb.gif)
 
 ## install prerequisites 
+Installing deb packages used by eggs to produce ISOs. 
+
 ```sudo eggs prerequisites```
 
 ![eggs prerequisites](./eggs_prerequisites.gif)
 
-## produce an eggs (iso liveCd)
+## produce an eggs (create a livecd)
+Creating a new iso image of your system.
+
 ```sudo eggs produce -vf```
 
 ![eggs produce-vf](./eggs_produce-vf.gif)
 
 ## export iso liveCd
+Exporting ISOs, and others via ssh. 
 ```sudo eggs export:iso -c```
 
 ![eggs export:iso](./eggs_export-iso.gif)
 
 ## getting help
+eggs have all the kinds of help you can aspect from a modern cli software!
 ```eggs```
 ```eggs produce -h```
 
 ![eggs helo](./eggs_help.gif)
 
+## cli installer
+On naked system you can't use calamares to install, but again is possible to use the cli installer included in eggs.
+
+```sudo eggs install```
+
+![eggs install](./eggs_install.gif)
+
 
 # That's all Folks!
-No need other configurations, penguins-eggs are battery included or better, as in the real, live is inside! :-D
 
 ## More informations
 For other informations, there is same documentation i the document folder of this repository,
