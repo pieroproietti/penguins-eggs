@@ -18,6 +18,9 @@ You can follow the project also consulting the [commit history](https://github.c
 ## Changelog
 Versions are listed on reverse order, the first is the last one.
 
+### eggs-7.6.72.1_deb
+* changes for site, readme, terminal session and so on.
+
 ### eggs-7.6.71.1_deb
 * just a little hack for the vmlinuz link in proxmox-ve.
 
