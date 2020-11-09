@@ -50,7 +50,7 @@ eggs have all the kinds of help you can aspect from a modern cli software!
 ![eggs helo](./eggs_help.gif)
 
 ## cli installer
-On naked system you can't use calamares to install, but again is possible to use the cli installer included in eggs.
+On naked system you can't use calamares installer to install the system, but again is possible to install it using the cli installer included in eggs.
 
 ```sudo eggs install```
 
