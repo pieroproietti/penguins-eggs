@@ -15,17 +15,32 @@ penguins-eggs
 # Terminal lessons
 Here you will find same terminal lesson in gif format. Download it and see the lesson.
 
-![install eggs](./eggs_install-deb)
+## install eggs package (.deb)
+```sudo dpkg -i eggs_v7-6-70-amd64.deb```
 
+![install eggs](./eggs_install-deb.gif)
 
+## install prerequisites 
+```sudo eggs prerequisites```
 
-How to get help from eggs.
+![eggs prerequisites](./eggs_prerequisites.gif)
 
-## prerequisites
-How install the prerequisites.
+## produce an eggs (iso liveCd)
+```sudo eggs produce -vf```
 
-## produce
-How to produce an iso of your system.
+![eggs produce-vf](./eggs_produce-vf.gif)
+
+## export iso liveCd
+```sudo eggs export:iso -c```
+
+![eggs export:iso](./eggs_export-iso.gif)
+
+## getting help
+```eggs```
+```eggs produce -h```
+
+![eggs helo](./eggs_help.gif)
+
 
 # That's all Folks!
 No need other configurations, penguins-eggs are battery included or better, as in the real, live is inside! :-D
