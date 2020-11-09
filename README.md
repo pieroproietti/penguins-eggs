@@ -21,6 +21,7 @@ penguins-eggs
 * [Install penguins-eggs](#install-penguins-eggs)
 * [Usage](#usage)
 * [Commands](#commands)
+* [terminal samples](#terminal-samples)
 * [That's all Folks!](#thats-all-folks)
 <!-- tocstop -->
 
@@ -87,7 +88,7 @@ $ npm install -g penguins-eggs
 $ eggs COMMAND
 running command...
 $ eggs (-v|--version|version)
-penguins-eggs/7.6.71 linux-x64 node-v14.15.0
+penguins-eggs/7.6.71 linux-x64 node-v12.19.0
 $ eggs --help [COMMAND]
 USAGE
   $ eggs COMMAND
@@ -508,7 +509,7 @@ _See code: [src/commands/update.ts](https://github.com/pieroproietti/penguins-eg
 
 # terminal samples
 
-![eggs help](./documents/terminal-lessons/eggs_help.gif)
+![](https://github.com/pieroproietti/penguins-eggs/documents/terminal-lessons/eggs_help.gif)
 
 # That's all Folks!
 No need other configurations, penguins-eggs are battery included or better, as in the real, live is inside! :-D
