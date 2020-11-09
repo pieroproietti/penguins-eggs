@@ -514,13 +514,17 @@ _See code: [src/commands/update.ts](https://github.com/pieroproietti/penguins-eg
 No need other configurations, penguins-eggs are battery included or better, as in the real, live is inside! :-D
 
 ## More informations
+For other informations, there is same documentation i the document folder of this repository,
+look at facebook group:  [Penguin's Eggs](https://www.facebook.com/groups/128861437762355/),
+contact me, or open an [issue](https://github.com/pieroproietti/penguins-eggs/issues) on github.
 
-You can find more informations at [Penguin's eggs blog](https://penguins-eggs.net).
+I mostly use Facebook.
 
-## Contacts
-Feel free to contact [me](https://gitter.im/penguins-eggs-1/community?source=orgpage) or open an issue on [github](https://github.com/pieroproietti/penguins-eggs/issues).
-
+* facebook personal: [Piero Proietti](https://www.facebook.com/thewind61)
+* facebook group:  [Penguin's Eggs](https://www.facebook.com/groups/128861437762355/)
+* facebook page:  [Penguin's Eggs](https://www.facebook.com/penguinseggs)
 * mail: piero.proietti@gmail.com
+
 
 ## Copyright and licenses
 Copyright (c) 2017, 2020 [Piero Proietti](https://penguins-eggs.net/about-me.html), dual licensed under the MIT or GPL Version 2 licenses.
