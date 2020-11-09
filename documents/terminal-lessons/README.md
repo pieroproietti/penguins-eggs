@@ -56,6 +56,15 @@ On naked system you can't use calamares installer to install the system, but aga
 
 ![eggs install](./eggs_install.gif)
 
+## update eggs (deb)
+You can update eggs (deb version) from sourceforge directly from eggs. Give the command:
+```sudo eggs update -i```
+and select the version you want install
+
+![eggs update -i](./eggs_update-i.gif)
+
+
+
 
 # That's all Folks!
 
