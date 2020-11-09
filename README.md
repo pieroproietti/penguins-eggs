@@ -21,7 +21,7 @@ penguins-eggs
 * [Install penguins-eggs](#install-penguins-eggs)
 * [Usage](#usage)
 * [Commands](#commands)
-* [terminal samples](#terminal-samples)
+* [Terminal samples](#terminal-samples)
 * [That's all Folks!](#thats-all-folks)
 <!-- tocstop -->
 
@@ -507,7 +507,7 @@ EXAMPLE
 _See code: [src/commands/update.ts](https://github.com/pieroproietti/penguins-eggs/blob/v7.6.71/src/commands/update.ts)_
 <!-- commandsstop -->
 
-# terminal samples
+# Terminal samples
 
 ![terminal samples](https://github.com/pieroproietti/penguins-eggs/blob/master/documents/terminal-lessons/eggs_help.gif?raw=true)
 
