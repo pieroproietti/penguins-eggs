@@ -509,7 +509,7 @@ _See code: [src/commands/update.ts](https://github.com/pieroproietti/penguins-eg
 
 # terminal samples
 
-![terminal samples](https://github.com/pieroproietti/penguins-eggs/documents/terminal-lessons/eggs_help.gif)
+![terminal samples](https://github.com/pieroproietti/penguins-eggs/blob/master/documents/terminal-lessons/eggs_help.gif?raw=true)
 
 # That's all Folks!
 No need other configurations, penguins-eggs are battery included or better, as in the real, live is inside! :-D
