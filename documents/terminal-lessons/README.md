@@ -15,7 +15,10 @@ penguins-eggs
 # Terminal lessons
 Here you will find same terminal lesson in gif format. Download it and see the lesson.
 
-## help
+![install eggs](./eggs_install-deb)
+
+
+
 How to get help from eggs.
 
 ## prerequisites
