@@ -7,9 +7,9 @@
  */
 
 /**
+ * Debian 11 bullseye
  * Debian 10 (buster) — l'attuale versione stable
  * Debian 9 (stretch) — l'attuale versione oldstable
- * Debian 8 (jessie) — l'attuale versione oldoldstable
  *
  * Devuan ASCII
  * Devuan beowlf
@@ -204,7 +204,9 @@ class Distro implements IDistro {
       if (this.versionLike === 'jessie' || this.versionLike === 'stretch' || this.versionLike === 'bionic' || this.versionLike === 'xenial') {
          this.mountpointSquashFs = '/lib/live/mount/medium/live/filesystem.squashfs'
       } else {
+         // puntamento al filesystem.squashfs file
          this.mountpointSquashFs = '/run/live/medium/live/filesystem.squashfs'
+         // MX LINUX fare link a /live/boot-dev/antiX/linuxfs
       }
       /**
        * e le posizioni per isolinux e syslinux
