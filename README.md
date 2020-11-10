@@ -51,12 +51,14 @@ Some iso images remastered with eggs are in the [sourceforge page of the project
 
 You can use the same package for all distributions using deb, naturally choosing the appropriate architecture (i386/amd64).
 
-# Install penguins-eggs
+# Packages
+eggs is released as deb package and npm package. If you use nodejs npm version can be indicated, most of users need just deb version.
 
-## Debian package
-Actually eggs is released both in deb package for i386 as amd64 architectures.
+## deb packages
+eggs is released deb packages for i386 and amd64 architectures.
 
-This simplest way to installe eggs is to download the [package eggs](https://sourceforge.net/projects/penguins-eggs/files/packages-deb/) from [sourceforge page of the project](https://sourceforge.net/projects/penguins-eggs/) and install it
+### Install
+This simplest way to installe eggs is download the [package eggs](https://sourceforge.net/projects/penguins-eggs/files/packages-deb/) from [sourceforge page of the project](https://sourceforge.net/projects/penguins-eggs/) and install it
 
 ```
 sudo dpkg -i eggs_7.6.65-1_amd64.deb
@@ -66,20 +68,29 @@ or, on a i386 system:
 ```
 sudo dpkg -i eggs_7.6.65-1_i386.deb
 ```
+### update
+The fastest way to update is to use the flag -i in update. Eggs let you to select the version to install and install it.
+
+```sudo eggs update -i```
+
+Of course, if your distro include eggs in the repositury, you can use apt too.
+
 
 _Note about deb packages_ You can use the same package for all distributions using deb, naturally choosing the appropriate architecture (i386/amd64).
 
-_Notes on nodejs versions and i386 architecture_ . You can read more about at [i386-nodejs](https://github.com/pieroproietti/penguins-eggs/blob/master/documents/i386-nodejs.md).
+## npm packages
 
-## NPM package (require nodejs)
-
-If you have already nodejs installed, you can install penguins-eggs with the utility npm (node package manager).
+If you have nodejs installed, you can install penguins-eggs with the utility npm (node package manager).
 
 Simply copy and past the following lines:
 
 ```sudo npm config set unsafe-perm true```
 
-```sudo npm i penguins-eggs -g```
+```sudo npm i penguins-eggs@latest -g```
+
+### update
+
+```sudo eggs update```
 
 # Usage
 <!-- usage -->

@@ -10,9 +10,6 @@ import Utils from '../classes/utils'
 import Tools from '../classes/tools'
 import fs = require('fs')
 import Pacman from '../classes/pacman'
-import https = require('https')
-import { RSA_NO_PADDING } from 'constants'
-import { title, versions } from 'process'
 
 const exec = require('../lib/utils').exec
 
@@ -52,7 +49,7 @@ export default class Update extends Command {
                console.log('Before to use eggs, remember to install npm packages:')
                console.log('cd ~/penguins-eggs')
                console.log('npm install')
-            } else if (Utils.isDebPackage() || flags.internet || flags.lan) {
+            } else if (Utils.isDebPackage() && !(flags.internet || flags.lan)) {
                Utils.warning('You have eggs installed a package .deb')
                console.log('If you have eggs in yours repositories apt:')
                console.log('sudo apt update')
@@ -60,30 +57,30 @@ export default class Update extends Command {
                console.log('')
                console.log('else')
                console.log('sudo eggs update -i')
-               console.log('Download and install automatically new versions of eggs from dev channel.')
+               console.log('Select, download and install automatically required versions from sourceforge.')
                console.log('')
                console.log('else')
-               console.log('Sownload manually package from https://sourceforge.net/projects/penguins-eggs/files/packages-deb/')
+               console.log('Download manually package from https://sourceforge.net/projects/penguins-eggs/files/packages-deb/')
                console.log('and install it with:')
                console.log('sudo dpkg -i eggs_7.6.x-x_xxxxx.deb')
-               if (flags.lan) {
-                  this.getFromLan()
-               } else if (flags.internet) {
-                  if (!Pacman.packageIsInstalled('wget')) {
-                     Utils.titles(`Update from internet`)
-                     console.log('To download eggs from internet, You need to install wget!`nUse: sudo apt install wget')
-                     process.exit(1)
-                  } else {
-                     this.getFromInternet()
-                  }
+            } else if (Utils.isDebPackage() && flags.lan) {
+               this.getFromLan()
+            } else if (Utils.isDebPackage() && flags.internet) {
+               if (!Pacman.packageIsInstalled('wget')) {
+                  Utils.titles(`Update from internet`)
+                  console.log('To download eggs from internet, You need to install wget!`nUse: sudo apt install wget')
+                  process.exit(1)
                } else {
-                  console.log(`updating ${Utils.getPackageName()} version ${Utils.getPackageVersion()}`)
-                  shx.exec(`npm update ${Utils.getPackageName()} -g`)
+                  this.getFromInternet()
                }
+            } else {
+               console.log(`updating ${Utils.getPackageName()} version ${Utils.getPackageVersion()}`)
+               shx.exec(`npm update ${Utils.getPackageName()} -g`)
             }
          }
       }
    }
+
 
    /**
     * completely remove eggs
@@ -98,9 +95,29 @@ export default class Update extends Command {
       }
    }
 
+   /**
+    * 
+    */
+   async internetOrLan(): Promise<string>{
+      const inquirer = require('inquirer')
+      const choices: string[] = ['abort', 'sourceforge.net', 'lan']
+      const questions: Array<Record<string, any>> = [
+         {
+            type: 'list',
+            message: 'select download source ',
+            name: 'selected',
+            choices: choices
+         }
+      ]
+      const answer = await inquirer.prompt(questions)
+      if (answer.selected === 'abort') {
+         process.exit(0)
+      }
+      return answer.selected
+   }
 
    /**
-    * download da locale
+    * download da LAN
     */
    async getFromLan() {
       const Tu = new Tools
@@ -114,7 +131,7 @@ export default class Update extends Command {
    /**
     * download da sourceforge.net
     */
-   async getFromInternet(version = 'eggs_7.6.55-1') {
+   async getFromInternet() {
       Utils.titles(`choose the version`)
 
       let arch = 'amd64'
@@ -125,22 +142,22 @@ export default class Update extends Command {
       const url = `https://penguins-eggs.net/versions/all/${arch}/`
       const axios = require('axios').default
 
-      let res = await axios.get(url)
-      let data = res.data
+      const res = await axios.get(url)
+      const data = res.data
 
       // Ordino le versioni
       data.sort((a: any, b: any) => (a.version < b.version) ? 1 : ((b.version < a.version) ? -1 : 0))
 
-      let versions = []
+      const versions = []
       for (let i = 0; i < data.length && i <= 3; i++) {
-            versions.push(data[i])
+         versions.push(data[i])
       }
 
       /**
        * choose the version
        */
       const inquirer = require('inquirer')
-      const choices: string [] = ['abort']
+      const choices: string[] = ['abort']
       choices.push(new inquirer.Separator('exit without update.'))
       for (let i = 0; i < versions.length; i++) {
          choices.push(versions[i].version)
@@ -159,7 +176,7 @@ export default class Update extends Command {
          process.exit(0)
       }
       const deb = 'eggs_' + answer.selected + '-1_' + arch + '.deb'
-      let download = 'https://sourceforge.net/projects/penguins-eggs/files/packages-deb/' + deb
+      const download = 'https://sourceforge.net/projects/penguins-eggs/files/packages-deb/' + deb
 
       /**
        * downloading

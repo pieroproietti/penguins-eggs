@@ -15,8 +15,6 @@ export default class ExportIso extends Command {
     clean: flags.boolean({ char: 'c', description: 'delete old ISOs before to copy' }),
   }
 
-  static args = [{ name: 'file' }]
-
   async run() {
     const { flags } = this.parse(ExportIso)
 
