@@ -1,1 +1,0 @@
-../../penguins-blog/source/book/italiano.md
