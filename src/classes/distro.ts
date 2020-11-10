@@ -206,7 +206,11 @@ class Distro implements IDistro {
       } else {
          // puntamento al filesystem.squashfs file
          this.mountpointSquashFs = '/run/live/medium/live/filesystem.squashfs'
-         // MX LINUX fare link a /live/boot-dev/antiX/linuxfs
+         /**
+          * MX LINUX
+          * ln -s /run/live/medium/live/filesystem.squashfs /live/boot-dev/antiX/linuxfs
+          * remove-link
+          */
       }
       /**
        * e le posizioni per isolinux e syslinux
