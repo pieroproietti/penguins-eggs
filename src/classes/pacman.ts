@@ -469,15 +469,33 @@ export default class Pacman {
    * restuisce VERO se il pacchetto è installato
    * @param debPackage
    */
-   static packageDisponible(debPackage: string): boolean {
+   static async packageAptAvailable(debPackage: string): Promise<boolean> {
       let disponible = false
-      const cmd = `apt-cache show ${debPackage}`
+      let cmd = `apt-cache show ${debPackage} | grep Package:`
+      const test = `Package: ${debPackage}`
       const stdout = shx.exec(cmd, { silent: true }).stdout.trim()
-      if (stdout === `Package: ${debPackage}`) {
+      // console.log('===================================')
+      // console.log('[' + stdout + ']')
+      // console.log('[' + test + ']')
+      // console.log('===================================')
+      if (stdout === test) {
          disponible = true
       }
       return disponible
    }
+
+
+   static async packageAptVersion(debPackage: string): Promise<string> {
+      let version = ''
+      const cmd = `apt-cache show ${debPackage} | grep Version:`
+      const stdout = shx.exec(cmd, { silent: true }).stdout.trim()
+      version = stdout.substring(9)
+      // console.log('===================================')
+      // console.log('[' + version + ']')
+      // console.log('===================================')
+      return version
+   }
+
 
    /**
     * 

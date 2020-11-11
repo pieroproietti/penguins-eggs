@@ -10,6 +10,7 @@ import Utils from '../classes/utils'
 import Tools from '../classes/tools'
 import fs = require('fs')
 import Pacman from '../classes/pacman'
+import chalk = require('chalk')
 
 const exec = require('../lib/utils').exec
 
@@ -25,64 +26,55 @@ export default class Update extends Command {
       help: flags.help({ char: 'h' }),
       lan: flags.boolean({ char: 'l', description: 'import deb package from LAN' }),
       internet: flags.boolean({ char: 'i', description: 'import deb package from internet' }),
-      force: flags.boolean({ char: 'f', description: 'force' }),
       verbose: flags.boolean({ char: 'v', description: 'verbose' })
    }
 
    async run() {
       Utils.titles('update')
-
       const { flags } = this.parse(Update)
-
       if (Utils.isRoot()) {
          if (await Utils.customConfirm(`Select yes to continue...`)) {
-            Utils.warning('Updating eggs...')
-            if (Utils.isSources() && !flags.force) {
+            Utils.titles('update')
+            Utils.warning(`updating ${Utils.getPackageName()} version ${Utils.getPackageVersion()}`)
+
+            let apt = false
+            let aptVersion = ''
+            if (await Pacman.packageAptAvailable('eggs')) {
+               apt = true
+               aptVersion = await Pacman.packageAptVersion('eggs')
+               Utils.warning('Attention: version eggs-' + aptVersion + ' is available on your repositories')
+            }
+
+            if (Utils.isSources()) {
                Utils.warning('You are using eggs from sources')
-               console.log('You can upgrade getting a new version from git:')
-               console.log('cd ~/penguins-eggs')
-               console.log('git pull')
-               console.log('')
-               console.log('You can also create a fresh installation on your hone:')
-               console.log('cd ~')
-               console.log('git clone https://github.com/pieroproietti/penguins-eggs')
-               console.log('')
-               console.log('Before to use eggs, remember to install npm packages:')
-               console.log('cd ~/penguins-eggs')
-               console.log('npm install')
-            } else if (Utils.isDebPackage() || flags.force ) {
+            } else if (Utils.isDebPackage()) {
                Utils.warning('You have eggs installed as package .deb')
-               console.log('You can choose betwheen apt, lan, internet or manual')
-               const choose = await this.chosenDeb()
-               console.log (choose)
-               //process.exit(1)
-               if (choose === 'apt') {
-                  await this.getDebFromApt()
-               } else if (choose === 'lan') {
-                  await this.getDebFromLan()
-               } else if (choose === 'internet') {
-                  await this.getDebFromInternet()
-               } else if (choose === 'manual') {
-                  this.getDebFromManual()
-               }
-            } else if (Utils.isDebPackage() && flags.lan) {
-               this.getDebFromLan()
-            } else if (Utils.isDebPackage() && flags.internet) {
+            } else {
+               Utils.warning('You have eggs installed as package npm')
+            }
+
+            console.log()
+            const choose = await this.chosenDeb(apt)
+            if (choose === 'apt') {
+               await this.getDebFromApt()
+            } else if (choose === 'lan') {
+               await this.getDebFromLan(aptVersion)
+            } else if (choose === 'internet') {
                if (!Pacman.packageIsInstalled('wget')) {
                   Utils.titles(`Update from internet`)
                   console.log('To download eggs from internet, You need to install wget!`nUse: sudo apt install wget')
                   process.exit(1)
-               } else {
-                  this.getDebFromInternet()
                }
+            } else if (choose === 'manual') {
+               this.getDebFromManual(aptVersion)
+            } else if (choose === 'sources') {
+               this.getFromSources(aptVersion)
             } else {
-               console.log(`updating ${Utils.getPackageName()} version ${Utils.getPackageVersion()}`)
-               shx.exec(`npm update ${Utils.getPackageName()} -g`)
+               await this.getDebFromInternet('')
             }
          }
       }
    }
-
 
    /**
     * completely remove eggs
@@ -100,23 +92,27 @@ export default class Update extends Command {
    /**
     * 
     */
-   async chosenDeb(): Promise<string> {
+   async chosenDeb(apt: boolean): Promise<string> {
       const inquirer = require('inquirer')
       const choices: string[] = ['abort']
-
-      choices.push('apt')
-      choices.push(new inquirer.Separator('download from your repositories'))
+      choices.push(new inquirer.Separator('update abort'))
+      if (apt) {
+         choices.push('apt')
+         choices.push(new inquirer.Separator('automatic update from your repositories'))
+      }
       choices.push('internet')
-      choices.push(new inquirer.Separator('automatic select and download from surceforge'))
+      choices.push(new inquirer.Separator('automatic select, download and update from surceforge'))
       choices.push('lan')
-      choices.push(new inquirer.Separator('copy from lan'))
+      choices.push(new inquirer.Separator('automatic import and update from lan'))
       choices.push('manual')
-      choices.push(new inquirer.Separator('manual'))
+      choices.push(new inquirer.Separator('manual download and update with dpkg'))
+      choices.push('sources')
+      choices.push(new inquirer.Separator('download sources from repo'))
 
       const questions: Array<Record<string, any>> = [
          {
             type: 'list',
-            message: 'select download source ',
+            message: 'select update method',
             name: 'selected',
             choices: choices
          }
@@ -128,8 +124,49 @@ export default class Update extends Command {
       return answer.selected
    }
 
-   getDebFromManual() {
+
+   getFromNpm(aptVersion: string) {
       Utils.titles(`update manual`)
+      if (aptVersion !== '') {
+         console.log('Attention: version eggs-' + aptVersion + ' is available on your repositories')
+      }
+      console.log()
+
+      shx.exec(`npm update ${Utils.getPackageName()} -g`)
+   }
+
+   /**
+    * 
+    * @param aptVersion 
+    */
+   getFromSources(aptVersion: string) {
+      Utils.titles(`update from sources`)
+      if (aptVersion !== '') {
+         console.log('Attention: version eggs-' + aptVersion + ' is available on your repositories')
+      }
+      console.log()
+
+      console.log('You can upgrade getting a new version from git:')
+      console.log('cd ~/penguins-eggs')
+      console.log('git pull')
+      console.log('')
+      console.log('Or You can also create a fresh installation on your hone:')
+      console.log('cd ~')
+      console.log('git clone https://github.com/pieroproietti/penguins-eggs')
+      console.log('')
+      console.log('Before to use eggs, remember to install npm packages:')
+      console.log('cd ~/penguins-eggs')
+      console.log('npm install')
+   }
+
+
+   getDebFromManual(aptVersion: string) {
+      Utils.titles(`update manual`)
+      if (aptVersion !== '') {
+         console.log('Attention: version eggs-' + aptVersion + ' is available on your repositories')
+      }
+      console.log()
+
       console.log('Download manually package from: \n https://sourceforge.net/projects/penguins-eggs/files/packages-deb/')
       console.log('and install it with:')
       console.log('sudo dpkg -i eggs_7.6.x-x_xxxxx.deb')
@@ -137,8 +174,13 @@ export default class Update extends Command {
    /**
     * download da LAN
     */
-   async getDebFromLan() {
+   async getDebFromLan(aptVersion: string) {
       Utils.titles(`update from lan`)
+      if (aptVersion !== '') {
+         console.log('Attention: version eggs-' + aptVersion + ' is available on your repositories')
+      }
+      console.log()
+
       const Tu = new Tools
       await Tu.loadSettings()
       Utils.titles(`Download from LAN, host: ${Tu.export_host} path: ${Tu.export_path_deb}`)
@@ -152,20 +194,24 @@ export default class Update extends Command {
     */
    async getDebFromApt() {
       Utils.titles(`update from apt`)
-      if (Pacman.packageDisponible('tidy-proxy')) {
+      if (await Pacman.packageAptAvailable('eggs')) {
          await exec(`apt reinstall eggs`)
       } else {
-         console.log(`eggs NON è disponibile sulle repository impostate`)
+         console.log(`eggs is not present in your repositories`)
+         console.log(`but you can upgrade from internet`)
       }
    }
    /**
     * download da sourceforge.net
     */
-   async getDebFromInternet() {
+   async getDebFromInternet(aptVersion: string) {
       Utils.titles(`update from internet`)
+      if (aptVersion !== '') {
+         console.log('Attention: version eggs-' + aptVersion + ' is available on your repositories')
+      }
+      console.log()
 
       let arch = 'amd64'
-      console.log(process.arch)
       if (process.arch === 'ia32' || process.arch === 'x32') {
          arch = 'i386'
       }
