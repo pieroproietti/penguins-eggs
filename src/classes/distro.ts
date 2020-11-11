@@ -211,7 +211,7 @@ class Distro implements IDistro {
        * MX LINUX
        * ln -s /run/live/medium/live/filesystem.squashfs /live/boot-dev/antiX/linuxfs
        */
-      if (fs.existsSync('/etc/antix-version'))
+      if (fs.existsSync('/etc/antix-version')) {
          this.distroId = 'mx'
          this.distroLike = 'Debian'
          this.versionLike = 'buster'
