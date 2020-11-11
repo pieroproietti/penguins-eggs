@@ -6,7 +6,7 @@
 # root 
 cdrom/*
 dev/*
-live/*
+#live/*
 lost+found
 media/*
 mnt/*
