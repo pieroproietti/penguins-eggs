@@ -152,7 +152,11 @@ export default class Update extends Command {
     */
    async getDebFromApt() {
       Utils.titles(`update from apt`)
-      await exec(`apt reinstall eggs`)
+      if (Pacman.packageDisponible('tidy-proxy')) {
+         await exec(`apt reinstall eggs`)
+      } else {
+         console.log(`eggs NON è disponibile sulle repository impostate`)
+      }
    }
    /**
     * download da sourceforge.net

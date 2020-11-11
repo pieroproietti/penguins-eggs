@@ -464,6 +464,21 @@ export default class Pacman {
       return installed
    }
 
+
+   /**
+   * restuisce VERO se il pacchetto è installato
+   * @param debPackage
+   */
+   static packageDisponible(debPackage: string): boolean {
+      let disponible = false
+      const cmd = `apt-cache show ${debPackage}`
+      const stdout = shx.exec(cmd, { silent: true }).stdout.trim()
+      if (stdout === `Package: ${debPackage}`) {
+         disponible = true
+      }
+      return disponible
+   }
+
    /**
     * 
     * @param cmd 
