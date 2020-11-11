@@ -204,7 +204,6 @@ class Distro implements IDistro {
       if (this.versionLike === 'jessie' || this.versionLike === 'stretch' || this.versionLike === 'bionic' || this.versionLike === 'xenial') {
          this.mountpointSquashFs = '/lib/live/mount/medium/live/filesystem.squashfs'
       } else {
-         // puntamento al filesystem.squashfs file
          this.mountpointSquashFs = '/run/live/medium/live/filesystem.squashfs'
       }
       /**

@@ -494,7 +494,7 @@ export default class Ovary {
          'cdrom',
          'dev',
          'home',
-         'live',
+         // 'live',
          'media',
          'mnt',
          'proc',
