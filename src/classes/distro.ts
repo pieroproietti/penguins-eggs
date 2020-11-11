@@ -206,11 +206,19 @@ class Distro implements IDistro {
       } else {
          // puntamento al filesystem.squashfs file
          this.mountpointSquashFs = '/run/live/medium/live/filesystem.squashfs'
-         /**
-          * MX LINUX
-          * ln -s /run/live/medium/live/filesystem.squashfs /live/boot-dev/antiX/linuxfs
-          * remove-link
-          */
+      }
+      /**
+       * MX LINUX
+       * ln -s /run/live/medium/live/filesystem.squashfs /live/boot-dev/antiX/linuxfs
+       */
+      if (fs.existsSync('/etc/antix-version'))
+         this.distroId = 'mx'
+         this.distroLike = 'Debian'
+         this.versionLike = 'buster'
+         if (!fs.existsSync('/live/boot-dev/antiX/')) {
+               shell.exec('mkdir /live/boot-dev/antiX/ -p')
+            }
+         this.mountpointSquashFs = '/live/boot-dev/antiX/linuxfs'
       }
       /**
        * e le posizioni per isolinux e syslinux

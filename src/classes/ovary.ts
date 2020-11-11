@@ -199,7 +199,8 @@ export default class Ovary {
       // Allow all fixed drives to be mounted with pmount
       if (this.settings.pmount_fixed) {
          if (fs.existsSync(`${this.settings.work_dir.merged}/etc/pmount.allow`)) {
-            await exec(`sed -i 's:#/dev/sd\[a-z\]:/dev/sd\[a-z\]:' ${this.settings.work_dir.merged}/pmount.allow`, echo)
+            // MX aggiunto /etc
+            await exec(`sed -i 's:#/dev/sd\[a-z\]:/dev/sd\[a-z\]:' ${this.settings.work_dir.merged}/etc/pmount.allow`, echo)
          }
       }
 
