@@ -25,6 +25,7 @@ export default class Update extends Command {
       help: flags.help({ char: 'h' }),
       lan: flags.boolean({ char: 'l', description: 'import deb package from LAN' }),
       internet: flags.boolean({ char: 'i', description: 'import deb package from internet' }),
+      force: flags.boolean({ char: 'f', description: 'force' }),
       verbose: flags.boolean({ char: 'v', description: 'verbose' })
    }
 
@@ -36,7 +37,7 @@ export default class Update extends Command {
       if (Utils.isRoot()) {
          if (await Utils.customConfirm(`Select yes to continue...`)) {
             Utils.warning('Updating eggs...')
-            if (Utils.isSources() && !(flags.internet || flags.lan)) {
+            if (Utils.isSources() && !flags.force) {
                Utils.warning('You are using eggs from sources')
                console.log('You can upgrade getting a new version from git:')
                console.log('cd ~/penguins-eggs')
@@ -49,29 +50,30 @@ export default class Update extends Command {
                console.log('Before to use eggs, remember to install npm packages:')
                console.log('cd ~/penguins-eggs')
                console.log('npm install')
-            } else if (Utils.isDebPackage() && !(flags.internet || flags.lan)) {
-               Utils.warning('You have eggs installed a package .deb')
-               console.log('If you have eggs in yours repositories apt:')
-               console.log('sudo apt update')
-               console.log('sudo apt upgrade eggs')
-               console.log('')
-               console.log('else')
-               console.log('sudo eggs update -i')
-               console.log('Select, download and install automatically required versions from sourceforge.')
-               console.log('')
-               console.log('else')
-               console.log('Download manually package from https://sourceforge.net/projects/penguins-eggs/files/packages-deb/')
-               console.log('and install it with:')
-               console.log('sudo dpkg -i eggs_7.6.x-x_xxxxx.deb')
+            } else if (Utils.isDebPackage() || flags.force ) {
+               Utils.warning('You have eggs installed as package .deb')
+               console.log('You can choose betwheen apt, lan, internet or manual')
+               const choose = await this.chosenDeb()
+               console.log (choose)
+               //process.exit(1)
+               if (choose === 'apt') {
+                  await this.getDebFromApt()
+               } else if (choose === 'lan') {
+                  await this.getDebFromLan()
+               } else if (choose === 'internet') {
+                  await this.getDebFromInternet()
+               } else if (choose === 'manual') {
+                  this.getDebFromManual()
+               }
             } else if (Utils.isDebPackage() && flags.lan) {
-               this.getFromLan()
+               this.getDebFromLan()
             } else if (Utils.isDebPackage() && flags.internet) {
                if (!Pacman.packageIsInstalled('wget')) {
                   Utils.titles(`Update from internet`)
                   console.log('To download eggs from internet, You need to install wget!`nUse: sudo apt install wget')
                   process.exit(1)
                } else {
-                  this.getFromInternet()
+                  this.getDebFromInternet()
                }
             } else {
                console.log(`updating ${Utils.getPackageName()} version ${Utils.getPackageVersion()}`)
@@ -98,9 +100,19 @@ export default class Update extends Command {
    /**
     * 
     */
-   async internetOrLan(): Promise<string>{
+   async chosenDeb(): Promise<string> {
       const inquirer = require('inquirer')
-      const choices: string[] = ['abort', 'sourceforge.net', 'lan']
+      const choices: string[] = ['abort']
+
+      choices.push('apt')
+      choices.push(new inquirer.Separator('download from your repositories'))
+      choices.push('internet')
+      choices.push(new inquirer.Separator('automatic select and download from surceforge'))
+      choices.push('lan')
+      choices.push(new inquirer.Separator('copy from lan'))
+      choices.push('manual')
+      choices.push(new inquirer.Separator('manual'))
+
       const questions: Array<Record<string, any>> = [
          {
             type: 'list',
@@ -116,10 +128,17 @@ export default class Update extends Command {
       return answer.selected
    }
 
+   getDebFromManual() {
+      Utils.titles(`update manual`)
+      console.log('Download manually package from: \n https://sourceforge.net/projects/penguins-eggs/files/packages-deb/')
+      console.log('and install it with:')
+      console.log('sudo dpkg -i eggs_7.6.x-x_xxxxx.deb')
+   }
    /**
     * download da LAN
     */
-   async getFromLan() {
+   async getDebFromLan() {
+      Utils.titles(`update from lan`)
       const Tu = new Tools
       await Tu.loadSettings()
       Utils.titles(`Download from LAN, host: ${Tu.export_host} path: ${Tu.export_path_deb}`)
@@ -129,10 +148,17 @@ export default class Update extends Command {
    }
 
    /**
+    * 
+    */
+   async getDebFromApt() {
+      Utils.titles(`update from apt`)
+      await exec(`apt reinstall eggs`)
+   }
+   /**
     * download da sourceforge.net
     */
-   async getFromInternet() {
-      Utils.titles(`choose the version`)
+   async getDebFromInternet() {
+      Utils.titles(`update from internet`)
 
       let arch = 'amd64'
       console.log(process.arch)
