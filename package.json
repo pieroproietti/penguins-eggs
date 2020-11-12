@@ -71,7 +71,6 @@
     "/assistant",
     "/bin",
     "/conf",
-    "/documents",
     "/lib",
     "/npm-shrinkwrap.json",
     "/oclif.manifest.json",
