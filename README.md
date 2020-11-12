@@ -99,7 +99,7 @@ $ npm install -g penguins-eggs
 $ eggs COMMAND
 running command...
 $ eggs (-v|--version|version)
-penguins-eggs/7.6.73 linux-x64 node-v14.10.1
+penguins-eggs/7.6.73 linux-x64 node-v12.19.0
 $ eggs --help [COMMAND]
 USAGE
   $ eggs COMMAND
@@ -501,10 +501,8 @@ USAGE
   $ eggs update
 
 OPTIONS
-  -h, --help      show CLI help
-  -i, --internet  import deb package from internet
-  -l, --lan       import deb package from LAN
-  -v, --verbose   verbose
+  -h, --help     show CLI help
+  -v, --verbose  verbose
 
 DESCRIPTION
   This way of update work only with npm installation, if you used the debian package version, please download the new 
