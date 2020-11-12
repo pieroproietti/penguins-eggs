@@ -33,45 +33,56 @@ export default class Update extends Command {
       Utils.titles('update')
       const { flags } = this.parse(Update)
       if (Utils.isRoot()) {
-         if (await Utils.customConfirm(`Select yes to continue...`)) {
-            Utils.titles('update')
-            Utils.warning(`updating ${Utils.getPackageName()} version ${Utils.getPackageVersion()}`)
+         Utils.titles('update')
 
-            let apt = false
-            let aptVersion = ''
-            if (await Pacman.packageAptAvailable('eggs')) {
-               apt = true
-               aptVersion = await Pacman.packageAptVersion('eggs')
-               Utils.warning('Attention: version eggs-' + aptVersion + ' is available on your repositories')
-            }
+         let apt = false
+         let aptVersion = ''
+         if (await Pacman.packageAptAvailable('eggs')) {
+            apt = true
+            aptVersion = await Pacman.packageAptVersion('eggs')
+            Utils.warning('eggs-' + aptVersion + ' is available via apt')
+         } else {
+            Utils.warning('not available via apt')
+         }
 
-            if (Utils.isSources()) {
-               Utils.warning('You are using eggs from sources')
-            } else if (Utils.isDebPackage()) {
-               Utils.warning('You have eggs installed as package .deb')
+         let npmVersion = shx.exec('npm show penguins-eggs version', { silent: true }).stdout.trim()
+         if (npmVersion !=='') {
+            Utils.warning('penguins-eggs@' + npmVersion + ' available via npm')
+         }
+
+         let internetVersion = await this.getDebVersionFromInternet()
+         if (internetVersion !== '' ){
+            Utils.warning('eggs-' + internetVersion + '-1.deb available via internet channel')
+         }
+
+         if (Utils.isSources()) {
+            Utils.warning(`You are using penguins-eggs v. ${Utils.getPackageVersion()} from sources`)
+         } else if (Utils.isDebPackage()) {
+            Utils.warning(`You are using eggs-${Utils.getPackageVersion()} installed as package .deb`)
+         } else {
+            Utils.warning(`You are using penguins-eggs@${Utils.getPackageVersion()} installed as package npm`)
+         }
+
+         console.log()
+         const choose = await this.chosenDeb(apt)
+         if (choose === 'apt') {
+            await this.getDebFromApt()
+         } else if (choose === 'lan') {
+            await this.getDebFromLan(aptVersion)
+         } else if (choose === 'internet') {
+            if (!Pacman.packageIsInstalled('wget')) {
+               Utils.titles(`Update from internet`)
+               console.log('To download eggs from internet, You need to install wget!`nUse: sudo apt install wget')
+               process.exit(1)
             } else {
-               Utils.warning('You have eggs installed as package npm')
+               this.getDebFromInternet(aptVersion)
             }
-
-            console.log()
-            const choose = await this.chosenDeb(apt)
-            if (choose === 'apt') {
-               await this.getDebFromApt()
-            } else if (choose === 'lan') {
-               await this.getDebFromLan(aptVersion)
-            } else if (choose === 'internet') {
-               if (!Pacman.packageIsInstalled('wget')) {
-                  Utils.titles(`Update from internet`)
-                  console.log('To download eggs from internet, You need to install wget!`nUse: sudo apt install wget')
-                  process.exit(1)
-               }
-            } else if (choose === 'manual') {
-               this.getDebFromManual(aptVersion)
-            } else if (choose === 'sources') {
-               this.getFromSources(aptVersion)
-            } else {
-               await this.getDebFromInternet('')
-            }
+         } else if (choose === 'manual') {
+            this.getDebFromManual(aptVersion)
+         } else if (choose === 'sources') {
+            this.getFromSources(aptVersion)
+         } else {
+            await this.getDebFromInternet('')
          }
       }
    }
@@ -95,19 +106,19 @@ export default class Update extends Command {
    async chosenDeb(apt: boolean): Promise<string> {
       const inquirer = require('inquirer')
       const choices: string[] = ['abort']
-      choices.push(new inquirer.Separator('update abort'))
+      choices.push(new inquirer.Separator('exit from update'))
       if (apt) {
          choices.push('apt')
-         choices.push(new inquirer.Separator('automatic update from your repositories'))
+         choices.push(new inquirer.Separator('automatic apt update from your repositories'))
       }
       choices.push('internet')
-      choices.push(new inquirer.Separator('automatic select, download and update from surceforge'))
+      choices.push(new inquirer.Separator('automatic select, download and update from insternet channel'))
       choices.push('lan')
       choices.push(new inquirer.Separator('automatic import and update from lan'))
       choices.push('manual')
-      choices.push(new inquirer.Separator('manual download and update with dpkg'))
+      choices.push(new inquirer.Separator('manual download from everywhere and update with dpkg'))
       choices.push('sources')
-      choices.push(new inquirer.Separator('download sources from repo'))
+      choices.push(new inquirer.Separator('download sources from github.com'))
 
       const questions: Array<Record<string, any>> = [
          {
@@ -201,6 +212,25 @@ export default class Update extends Command {
          console.log(`but you can upgrade from internet`)
       }
    }
+
+
+
+   async getDebVersionFromInternet(): Promise <string> {
+      let arch = 'amd64'
+      if (process.arch === 'ia32' || process.arch === 'x32') {
+         arch = 'i386'
+      }
+      const url = `https://penguins-eggs.net/versions/all/${arch}/`
+      const axios = require('axios').default
+
+      const res = await axios.get(url)
+      const data = res.data
+
+      // Ordino le versioni
+      data.sort((a: any, b: any) => (a.version < b.version) ? 1 : ((b.version < a.version) ? -1 : 0))
+      return data[0].version
+   }
+
    /**
     * download da sourceforge.net
     */
