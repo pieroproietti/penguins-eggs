@@ -82,19 +82,6 @@ export default class Update extends Command {
    }
 
    /**
-    * completely remove eggs
-    */
-   async remove() {
-      if (Utils.isRoot()) {
-         console.log('remove and purge eggs')
-         await exec('apt-get -y purge eggs > /dev/null')
-         await exec('rm /usr/lib/penguins-eggs -rf')
-         Utils.warning(`eggs was removed completely.`)
-         Utils.warning(`Don't forget to run sudo pt sanitize to clean all the remains of the previus eggs production!`)
-      }
-   }
-
-   /**
     * 
     */
    async chosenDeb(apt: boolean): Promise<string> {
@@ -175,8 +162,7 @@ export default class Update extends Command {
       Utils.warning(`Copy from: ${Tu.export_host}:${Tu.export_path_deb}`)
       console.log()
       await exec(`scp ${Tu.export_user_deb}@${Tu.export_host}:${Tu.export_path_deb}${Tu.file_name_deb} .`)
-      await this.remove()
-      console.log('sudo dpkg -i eggs... to install')
+      console.log('sudo dpkg -i eggs_*.deb')
    }
 
    /**

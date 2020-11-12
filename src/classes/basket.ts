@@ -126,6 +126,8 @@ export default class Basket {
             await exec(`wget ${download}`)
             Utils.titles(`install ${deb}`)
             if (await Utils.customConfirm(`Want to install ${deb}`)) {
+                await exec('apt-get -y purge eggs > /dev/null')
+                await exec('rm /usr/lib/penguins-eggs -rf')
                 await exec(`dpkg -i ${deb}`)
             }
         }
