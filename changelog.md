@@ -18,6 +18,9 @@ You can follow the project also consulting the [commit history](https://github.c
 ## Changelog
 Versions are listed on reverse order, the first is the last one.
 
+### eggs-7.6.73.1_deb
+* finishing touches in update: show sources and versions.
+
 ### eggs-7.6.72.1_deb
 * changes for site, readme, terminal session and so on.
 
