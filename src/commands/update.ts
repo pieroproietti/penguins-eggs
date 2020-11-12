@@ -31,6 +31,14 @@ export default class Update extends Command {
       if (Utils.isRoot()) {
          Utils.titles('update')
 
+         if (Utils.isSources()) {
+            Utils.warning(`You are on penguins-eggs v. ${Utils.getPackageVersion()} from sources`)
+         } else if (Utils.isDebPackage()) {
+            Utils.warning(`You are on eggs-${Utils.getPackageVersion()} installed as package .deb`)
+         } else {
+            Utils.warning(`You are on penguins-eggs@${Utils.getPackageVersion()} installed as package npm`)
+         }
+
          let apt = false
          let aptVersion = ''
          if (await Pacman.packageAptAvailable('eggs')) {
@@ -38,7 +46,7 @@ export default class Update extends Command {
             aptVersion = await Pacman.packageAptLast('eggs')
             Utils.warning('eggs-' + aptVersion + ' is available via apt')
          } else {
-            Utils.warning('not available via apt')
+            Utils.warning('eggs is not available your repositories')
          }
 
          let npmVersion = await Pacman.packageNpmLast('penguins-eggs')
@@ -49,16 +57,9 @@ export default class Update extends Command {
          let basket = new Basket()
          let basketVersion = await basket.last()
          if (basketVersion !== '') {
-            Utils.warning('eggs-' + basketVersion + '-1.deb available via basket channel')
+            Utils.warning('eggs-' + basketVersion + '-1.deb available in basket')
          }
 
-         if (Utils.isSources()) {
-            Utils.warning(`You are using penguins-eggs v. ${Utils.getPackageVersion()} from sources`)
-         } else if (Utils.isDebPackage()) {
-            Utils.warning(`You are using eggs-${Utils.getPackageVersion()} installed as package .deb`)
-         } else {
-            Utils.warning(`You are using penguins-eggs@${Utils.getPackageVersion()} installed as package npm`)
-         }
 
          console.log()
          const choose = await this.chosenDeb(apt)
@@ -66,10 +67,12 @@ export default class Update extends Command {
          Utils.titles(`updating via ${choose}`)
          if (choose === 'apt') {
             await this.getDebFromApt()
-         } else if (choose === 'lan') {
-            await this.getDebFromLan()
          } else if (choose === 'basket') {
             await basket.get()
+         } else if (choose === 'npm') {
+            await this.getFromNpm()
+         } else if (choose === 'lan') {
+            await this.getDebFromLan()
          } else if (choose === 'manual') {
             this.getDebFromManual()
          } else if (choose === 'sources') {
@@ -104,6 +107,8 @@ export default class Update extends Command {
       }
       choices.push('basket')
       choices.push(new inquirer.Separator('select, download and update from basket'))
+      choices.push('npm')
+      choices.push(new inquirer.Separator('automatic import and update from npmjs.com'))
       choices.push('lan')
       choices.push(new inquirer.Separator('automatic import and update from lan'))
       choices.push('manual')
@@ -131,7 +136,7 @@ export default class Update extends Command {
     * getFromNpm
     */
    getFromNpm() {
-      shx.exec(`npm update ${Utils.getPackageName()} -g`)
+      shx.exec(`npm update ${Utils.getPackageName()}@latest -g`)
    }
 
    /**
