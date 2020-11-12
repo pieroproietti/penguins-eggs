@@ -8,10 +8,8 @@ import { Command, flags } from '@oclif/command'
 import shx = require('shelljs')
 import Utils from '../classes/utils'
 import Tools from '../classes/tools'
-import fs = require('fs')
 import Pacman from '../classes/pacman'
-import chalk = require('chalk')
-
+import Basket from '../classes/basket'
 const exec = require('../lib/utils').exec
 
 /**
@@ -24,8 +22,6 @@ export default class Update extends Command {
 
    static flags = {
       help: flags.help({ char: 'h' }),
-      lan: flags.boolean({ char: 'l', description: 'import deb package from LAN' }),
-      internet: flags.boolean({ char: 'i', description: 'import deb package from internet' }),
       verbose: flags.boolean({ char: 'v', description: 'verbose' })
    }
 
@@ -39,20 +35,21 @@ export default class Update extends Command {
          let aptVersion = ''
          if (await Pacman.packageAptAvailable('eggs')) {
             apt = true
-            aptVersion = await Pacman.packageAptVersion('eggs')
+            aptVersion = await Pacman.packageAptLast('eggs')
             Utils.warning('eggs-' + aptVersion + ' is available via apt')
          } else {
             Utils.warning('not available via apt')
          }
 
-         let npmVersion = shx.exec('npm show penguins-eggs version', { silent: true }).stdout.trim()
-         if (npmVersion !=='') {
+         let npmVersion = await Pacman.packageNpmLast('penguins-eggs')
+         if (npmVersion !== '') {
             Utils.warning('penguins-eggs@' + npmVersion + ' available via npm')
          }
 
-         let internetVersion = await this.getDebVersionFromInternet()
-         if (internetVersion !== '' ){
-            Utils.warning('eggs-' + internetVersion + '-1.deb available via internet channel')
+         let basket = new Basket()
+         let basketVersion = await basket.last()
+         if (basketVersion !== '') {
+            Utils.warning('eggs-' + basketVersion + '-1.deb available via basket channel')
          }
 
          if (Utils.isSources()) {
@@ -65,24 +62,18 @@ export default class Update extends Command {
 
          console.log()
          const choose = await this.chosenDeb(apt)
+
+         Utils.titles(`updating via ${choose}`)
          if (choose === 'apt') {
             await this.getDebFromApt()
          } else if (choose === 'lan') {
-            await this.getDebFromLan(aptVersion)
-         } else if (choose === 'internet') {
-            if (!Pacman.packageIsInstalled('wget')) {
-               Utils.titles(`Update from internet`)
-               console.log('To download eggs from internet, You need to install wget!`nUse: sudo apt install wget')
-               process.exit(1)
-            } else {
-               this.getDebFromInternet(aptVersion)
-            }
+            await this.getDebFromLan()
+         } else if (choose === 'basket') {
+            await basket.get()
          } else if (choose === 'manual') {
-            this.getDebFromManual(aptVersion)
+            this.getDebFromManual()
          } else if (choose === 'sources') {
-            this.getFromSources(aptVersion)
-         } else {
-            await this.getDebFromInternet('')
+            this.getFromSources()
          }
       }
    }
@@ -111,12 +102,12 @@ export default class Update extends Command {
          choices.push('apt')
          choices.push(new inquirer.Separator('automatic apt update from your repositories'))
       }
-      choices.push('internet')
-      choices.push(new inquirer.Separator('automatic select, download and update from insternet channel'))
+      choices.push('basket')
+      choices.push(new inquirer.Separator('select, download and update from basket'))
       choices.push('lan')
       choices.push(new inquirer.Separator('automatic import and update from lan'))
       choices.push('manual')
-      choices.push(new inquirer.Separator('manual download from everywhere and update with dpkg'))
+      choices.push(new inquirer.Separator('manual download from sourceforge.net and update with dpkg'))
       choices.push('sources')
       choices.push(new inquirer.Separator('download sources from github.com'))
 
@@ -136,13 +127,10 @@ export default class Update extends Command {
    }
 
 
-   getFromNpm(aptVersion: string) {
-      Utils.titles(`update manual`)
-      if (aptVersion !== '') {
-         console.log('Attention: version eggs-' + aptVersion + ' is available on your repositories')
-      }
-      console.log()
-
+   /**
+    * getFromNpm
+    */
+   getFromNpm() {
       shx.exec(`npm update ${Utils.getPackageName()} -g`)
    }
 
@@ -150,13 +138,7 @@ export default class Update extends Command {
     * 
     * @param aptVersion 
     */
-   getFromSources(aptVersion: string) {
-      Utils.titles(`update from sources`)
-      if (aptVersion !== '') {
-         console.log('Attention: version eggs-' + aptVersion + ' is available on your repositories')
-      }
-      console.log()
-
+   getFromSources() {
       console.log('You can upgrade getting a new version from git:')
       console.log('cd ~/penguins-eggs')
       console.log('git pull')
@@ -170,31 +152,23 @@ export default class Update extends Command {
       console.log('npm install')
    }
 
-
-   getDebFromManual(aptVersion: string) {
-      Utils.titles(`update manual`)
-      if (aptVersion !== '') {
-         console.log('Attention: version eggs-' + aptVersion + ' is available on your repositories')
-      }
-      console.log()
-
-      console.log('Download manually package from: \n https://sourceforge.net/projects/penguins-eggs/files/packages-deb/')
-      console.log('and install it with:')
-      console.log('sudo dpkg -i eggs_7.6.x-x_xxxxx.deb')
+   /**
+    * 
+    */
+   async getDebFromManual() {
+      console.log('Download package from: \n\nhttps://sourceforge.net/projects/penguins-eggs/files/packages-deb/')
+      console.log('\nand install it with:')
+      const basket = new Basket()
+      console.log('\nsudo dpkg -i eggs_' + await basket.last() + '-1.deb')
    }
    /**
     * download da LAN
     */
-   async getDebFromLan(aptVersion: string) {
-      Utils.titles(`update from lan`)
-      if (aptVersion !== '') {
-         console.log('Attention: version eggs-' + aptVersion + ' is available on your repositories')
-      }
-      console.log()
-
+   async getDebFromLan() {
       const Tu = new Tools
       await Tu.loadSettings()
-      Utils.titles(`Download from LAN, host: ${Tu.export_host} path: ${Tu.export_path_deb}`)
+      Utils.warning(`Copy from: ${Tu.export_host}:${Tu.export_path_deb}`)
+      console.log()
       await exec(`scp ${Tu.export_user_deb}@${Tu.export_host}:${Tu.export_path_deb}${Tu.file_name_deb} .`)
       await this.remove()
       console.log('sudo dpkg -i eggs... to install')
@@ -204,104 +178,11 @@ export default class Update extends Command {
     * 
     */
    async getDebFromApt() {
-      Utils.titles(`update from apt`)
       if (await Pacman.packageAptAvailable('eggs')) {
          await exec(`apt reinstall eggs`)
       } else {
          console.log(`eggs is not present in your repositories`)
          console.log(`but you can upgrade from internet`)
-      }
-   }
-
-
-
-   async getDebVersionFromInternet(): Promise <string> {
-      let arch = 'amd64'
-      if (process.arch === 'ia32' || process.arch === 'x32') {
-         arch = 'i386'
-      }
-      const url = `https://penguins-eggs.net/versions/all/${arch}/`
-      const axios = require('axios').default
-
-      const res = await axios.get(url)
-      const data = res.data
-
-      // Ordino le versioni
-      data.sort((a: any, b: any) => (a.version < b.version) ? 1 : ((b.version < a.version) ? -1 : 0))
-      return data[0].version
-   }
-
-   /**
-    * download da sourceforge.net
-    */
-   async getDebFromInternet(aptVersion: string) {
-      Utils.titles(`update from internet`)
-      if (aptVersion !== '') {
-         console.log('Attention: version eggs-' + aptVersion + ' is available on your repositories')
-      }
-      console.log()
-
-      let arch = 'amd64'
-      if (process.arch === 'ia32' || process.arch === 'x32') {
-         arch = 'i386'
-      }
-      const url = `https://penguins-eggs.net/versions/all/${arch}/`
-      const axios = require('axios').default
-
-      const res = await axios.get(url)
-      const data = res.data
-
-      // Ordino le versioni
-      data.sort((a: any, b: any) => (a.version < b.version) ? 1 : ((b.version < a.version) ? -1 : 0))
-
-      const versions = []
-      for (let i = 0; i < data.length && i <= 3; i++) {
-         versions.push(data[i])
-      }
-
-      /**
-       * choose the version
-       */
-      const inquirer = require('inquirer')
-      const choices: string[] = ['abort']
-      choices.push(new inquirer.Separator('exit without update.'))
-      for (let i = 0; i < versions.length; i++) {
-         choices.push(versions[i].version)
-         choices.push(new inquirer.Separator(versions[i].changelog))
-      }
-      const questions: Array<Record<string, any>> = [
-         {
-            type: 'list',
-            message: 'select version ',
-            name: 'selected',
-            choices: choices
-         }
-      ]
-      const answer = await inquirer.prompt(questions)
-      if (answer.selected === 'abort') {
-         process.exit(0)
-      }
-      const deb = 'eggs_' + answer.selected + '-1_' + arch + '.deb'
-      const download = 'https://sourceforge.net/projects/penguins-eggs/files/packages-deb/' + deb
-
-      /**
-       * downloading
-       */
-      Utils.titles(`downloading ${deb}`)
-      if (await Utils.customConfirm(`Want to download ${deb}`)) {
-         process.chdir(`/tmp`)
-         if (fs.existsSync(deb)) {
-            fs.unlinkSync(deb)
-         }
-
-         /**
-          * Installing
-          */
-         await exec(`wget ${download}`)
-         Utils.titles(`install ${deb}`)
-         if (await Utils.customConfirm(`Want to install ${deb}`)) {
-            await exec(`dpkg -i ${deb}`)
-         }
       }
    }
 }

@@ -485,7 +485,7 @@ export default class Pacman {
    }
 
 
-   static async packageAptVersion(debPackage: string): Promise<string> {
+   static async packageAptLast(debPackage: string): Promise<string> {
       let version = ''
       const cmd = `apt-cache show ${debPackage} | grep Version:`
       const stdout = shx.exec(cmd, { silent: true }).stdout.trim()
@@ -496,6 +496,9 @@ export default class Pacman {
       return version
    }
 
+   static async packageNpmLast(packageNpm = 'penguins-eggs'): Promise<string> {
+      return shx.exec('npm show ' + packageNpm + ' version', { silent: true }).stdout.trim()
+   }
 
    /**
     * 
