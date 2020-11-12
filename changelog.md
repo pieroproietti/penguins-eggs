@@ -18,8 +18,8 @@ You can follow the project also consulting the [commit history](https://github.c
 ## Changelog
 Versions are listed on reverse order, the first is the last one.
 
-### eggs-7.6.74.1_deb
-* introducing basket update.
+### eggs-7.6.76.1_deb
+* introducing basket update, removed documents from packages.
 
 ### eggs-7.6.73.1_deb
 * finishing touches in update: show sources and versions.
