@@ -18,6 +18,9 @@ You can follow the project also consulting the [commit history](https://github.c
 ## Changelog
 Versions are listed on reverse order, the first is the last one.
 
+### eggs-7.6.77.1_deb
+* select vmlinuz and initrd.img version from cmdline del kernel
+
 ### eggs-7.6.76.1_deb
 * introducing basket update, removed documents from packages.
 
