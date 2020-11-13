@@ -243,9 +243,9 @@ export default class Ovary {
       shx.cp(`${this.settings.work_dir.merged}/boot/grub/fonts/unicode.pf2`, `${this.settings.work_dir.merged}/boot/grub/fonts/UbuntuMono16.pf2`)
 
       /**
-       * Su DEVUAN NON Esiste systemd
+       * Per tutte le distro systemd
        */
-      if (this.settings.distro.distroId !== 'Devuan') {
+      if (Utils.isSystemd()) {
          /**
           * SU UBUNTU E DERIVATE NON DISABILITARE systemd-resolved.service
           */
@@ -292,7 +292,10 @@ export default class Ovary {
       await exec(`touch ${this.settings.work_dir.merged}/etc/network/interfaces`, echo)
       Utils.write(`${this.settings.work_dir.merged}/etc/network/interfaces`, 'auto lo\niface lo inet loopback')
 
-      if (this.settings.distro.distroId !== 'Devuan') {
+      /**
+       * Per tutte le distro systemd
+       */
+      if (Utils.isSystemd()) {
          await exec(`rm -f ${this.settings.work_dir.merged}/var/lib/wicd/configurations/*`, echo)
          await exec(`rm -f ${this.settings.work_dir.merged}/etc/wicd/wireless-settings.conf`, echo)
          await exec(`rm -f ${this.settings.work_dir.merged}/etc/NetworkManager/system-connections/*`, echo)

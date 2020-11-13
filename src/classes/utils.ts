@@ -25,6 +25,14 @@ import figlet = require('figlet')
  */
 export default class Utils {
 
+  /**
+  * Controlla se il sistema è avviato con systemd
+  */
+   static isSystemd(): boolean {
+      return (shx.exec(`pidof systemd`).stdout.trim() === '1')
+   }
+
+
    static vmlinuz(): string {
       const cmd = `cat /proc/cmdline|/usr/bin/cut -f1 -d ' ' |/usr/bin/cut -f2 -d '='`
       let vmlinuz = shx.exec(cmd, { silent: true }).stdout.trim()
@@ -252,10 +260,10 @@ export default class Utils {
    /**
     * Check se la macchina ha grub adatto ad efi
     */
-   static efiTest() : boolean {
+   static efiTest(): boolean {
       let efiTest = false
       if (process.arch === 'ia32') {
-         if ( Pacman.packageIsInstalled('grub-efi-ia32')) {
+         if (Pacman.packageIsInstalled('grub-efi-ia32')) {
             efiTest = true
          }
       } else if (process.arch === 'x64') {
@@ -288,7 +296,7 @@ export default class Utils {
    /**
     * 
     */
-   static rootPenguin() : string {
+   static rootPenguin(): string {
       return path.resolve(__dirname, '../../')
    }
 

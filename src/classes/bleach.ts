@@ -78,8 +78,7 @@ export default class Bleach {
          echo = { echo: true, ignore: true, capture: false }
          Utils.warning('cleaning journald')
       }
-
-      if (this.settings.distro.distroId !== 'Devuan') {
+      if (Utils.isSystemd()) {
          await exec('journalctl --rotate', echo)
          await exec('journalctl --vacuum-time=1s', echo)
       } else {
