@@ -28,7 +28,7 @@ sequence:
       - mount
       - unpackfs
       - sources-yolk
-      - machineid
+      {{s}}machineid
       - fstab
       - locale
       - keyboard
@@ -37,7 +37,7 @@ sequence:
       - displaymanager
       - networkcfg
       - hwclock
-      - services-systemd
+      {{s}}services-systemd
       - bootloader-config
       - grubcfg
       - bootloader

@@ -12,6 +12,7 @@ import path = require('path')
 
 import { IRemix, IDistro } from '../../interfaces'
 import chalk = require('chalk')
+import Utils from '../utils'
 
 const exec = require('../../lib/utils').exec
 
@@ -45,6 +46,11 @@ export default class Fisherman {
     async settings(branding = 'eggs') {
         const settings = '/etc/calamares/settings.conf'
         shx.cp(`${this.rootTemplate}/settings.yml`, settings)
+        let s = '# ' 
+        if (Utils.isSystemd()) {
+            s = '- '
+        }
+        shx.sed('-i', '{{s}}', s, settings)
         shx.sed('-i', '{{branding}}', branding, settings)
     }
 
