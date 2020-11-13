@@ -242,12 +242,14 @@ export default class Pacman {
       }
       const addons = '/etc/penguins-eggs.d/addons'
       const distros = '/etc/penguins-eggs.d/distros'
-      shx.rm(addons)
-      shx.rm(distros)
+      if (fs.existsSync(addons)) {
+         shx.rm(addons)
+      }
+      if (fs.existsSync(distros)) {
+         shx.rm(distros)
+      }
       shx.ln('-s', path.resolve(__dirname, '../../addons'), addons)
       shx.ln('-s', path.resolve(__dirname, '../../conf/distros'), distros)
-
-      // this.linksInstall(links)
 
       shx.cp(path.resolve(__dirname, '../../conf/README.md'), '/etc/penguins-eggs.d/')
       shx.cp(path.resolve(__dirname, '../../conf/tools.conf'), config_tools)
@@ -262,7 +264,7 @@ export default class Pacman {
       /**
        * vmlinuz
        */
-      let vmlinuz = '/vmlinuz'
+      let vmlinuz = Utils.vmlinuz() 
       if (!fs.existsSync(vmlinuz)) {
          vmlinuz = '/boot/vmlinuz'
          if (!fs.existsSync(vmlinuz)) {
@@ -278,7 +280,7 @@ export default class Pacman {
       /**
        * initrd
        */
-      let initrd = '/initrd.img'
+      let initrd = Utils.initrdImg() // '/initrd.img'
       if (!fs.existsSync(initrd)) {
          initrd = '/boot/initrd.img'
          if (!fs.existsSync(initrd)) {
@@ -373,12 +375,10 @@ export default class Pacman {
          // const rootPen = '/usr/lib/penguins-eggs'
          const rootPen = Utils.rootPenguin()
 
-         // Buster - Nessun link presente
+         // Debian 10 - Buster 
          const buster = `${rootPen}/conf/distros/buster`
 
-         /**
-          * In bullseye niente tmp 
-          */
+         // Debian 11 - bullseye
          const bullseye = `${rootPen}/conf/distros/bullseye`
          this.ln('-s', `${buster}/grub`, `${bullseye}/grub`, verbose)
          this.ln('-s', `${buster}/isolinux`, `${bullseye}/isolinux`, verbose)
@@ -388,10 +388,11 @@ export default class Pacman {
          this.ln('-s', `${buster}/calamares/calamares-modules/sources-yolk-unmount`, `${bullseye}/calamares/calamares-modules/sources-yolk-unmount`, verbose)
          this.ln('-s', `${buster}/calamares/modules`, `${bullseye}/calamares/modules`, verbose)
 
+         // Debian 9 - stretch
          const stretch = `${rootPen}/conf/distros/stretch`
          this.ln('-s', buster, stretch, verbose)
 
-         // Beofulf
+         // Devuan beofulf
          const beowulf = `${rootPen}/conf/distros/beowulf`
          this.ln('-s', `${buster}/grub`, `${beowulf}/grub`, verbose)
          this.ln('-s', `${buster}/isolinux`, `${beowulf}/isolinux`, verbose)
@@ -399,7 +400,7 @@ export default class Pacman {
          this.ln('-s', `${buster}/calamares/calamares-modules`, `${beowulf}/calamares/calamares-modules`, verbose)
          this.ln('-s', `${buster}/calamares/modules`, `${beowulf}/calamares/modules`, verbose)
 
-         // Focal
+         // Ubuntu 20.04 - focal
          const focal = `${rootPen}/conf/distros/focal`
          this.ln('-s', `${buster}/grub/loopback.cfg`, `${focal}/grub/loopback.cfg`, verbose)
          this.ln('-s', `${buster}/grub/theme.cfg`, `${focal}/grub/theme.cfg`, verbose)
@@ -412,7 +413,7 @@ export default class Pacman {
          this.ln('-s', `${buster}/calamares/modules/packages.yml`, `${focal}/calamares/modules/packages.yml`, verbose)
          this.ln('-s', `${buster}/calamares/modules/removeuser.yml`, `${focal}/calamares/modules/removeuser.yml`, verbose)
 
-         // Bionic
+         // Ubuntu 18.04  - bionic
          const bionic = `${rootPen}/conf/distros/bionic`
          this.ln('-s', `${focal}/grub`, `${bionic}/grub`, verbose)
          this.ln('-s', `${focal}/isolinux`, `${bionic}/isolinux`, verbose)

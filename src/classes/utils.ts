@@ -24,6 +24,20 @@ import figlet = require('figlet')
  * @remarks all the utilities
  */
 export default class Utils {
+
+   static vmlinuz(): string {
+      const cmd = `cat /proc/cmdline|/usr/bin/cut -f1 -d ' ' |/usr/bin/cut -f2 -d '='`
+      let vmlinuz = shx.exec(cmd, { silent: true }).stdout.trim()
+      return vmlinuz
+   }
+
+   static initrdImg(): string {
+      const vmlinuz = Utils.vmlinuz()
+      const path = vmlinuz.substring(0, vmlinuz.lastIndexOf('/')) + '/'
+      const version = vmlinuz.substring(vmlinuz.indexOf('-'))
+      return path + 'initrd.img' + version
+   }
+
    /**
     *
     * @param msg

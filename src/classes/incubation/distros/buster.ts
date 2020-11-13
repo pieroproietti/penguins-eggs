@@ -84,7 +84,6 @@ export class Buster {
       await fisherman.buildModule('networkcfg')
       await fisherman.buildModule('hwclock')
       await fisherman.buildModule('services-systemd')
-      // await fisherman.buildCalamaresModule('create-tmp', true)
       await fisherman.buildCalamaresModule('bootloader-config', true)
       await fisherman.buildModule('grubcf')
       await fisherman.buildModule('bootloader')
