@@ -300,7 +300,6 @@ export default class Ovary {
          await exec(`rm -f ${this.settings.work_dir.merged}/etc/wicd/wireless-settings.conf`, echo)
          await exec(`rm -f ${this.settings.work_dir.merged}/etc/NetworkManager/system-connections/*`, echo)
          await exec(`rm -f ${this.settings.work_dir.merged}/etc/network/wifi/*`, echo)
-
          /**
           * Andiamo a fare pulizia in /etc/network/:
           * if-down.d  if-post-down.d  if-pre-up.d  if-up.d  interfaces  interfaces.d
@@ -315,26 +314,60 @@ export default class Ovary {
       /**
        * add some basic files to /dev
        */
+      if (!fs.existsSync(`${this.settings.work_dir.merged}/dev/console`)) {
+         await exec(`mknod -m 622 ${this.settings.work_dir.merged}/dev/console c 5 1`, echo)
+      }
+      if (!fs.existsSync(`${this.settings.work_dir.merged}/dev/null`)) {
+         await exec(`mknod -m 666 ${this.settings.work_dir.merged}/dev/null c 1 3`, echo)
+      }
+      if (!fs.existsSync(`${this.settings.work_dir.merged}/dev/zero`)) {
+         await exec(`mknod -m 666 ${this.settings.work_dir.merged}/dev/zero c 1 5`, echo)
+      }
+      if (!fs.existsSync(`${this.settings.work_dir.merged}/dev/ptmx`)) {
+         await exec(`mknod -m 666 ${this.settings.work_dir.merged}/dev/ptmx c 5 2`, echo)
+      }
+      if (!fs.existsSync(`${this.settings.work_dir.merged}/dev/tty`)) {
+         await exec(`mknod -m 666 ${this.settings.work_dir.merged}/dev/tty c 5 0`, echo)
+      }
+      if (!fs.existsSync(`${this.settings.work_dir.merged}/dev/random`)) {
+         await exec(`mknod -m 444 ${this.settings.work_dir.merged}/dev/random c 1 8`, echo)
+      }
+      if (!fs.existsSync(`${this.settings.work_dir.merged}/dev/urandom`)) {
+         await exec(`mknod -m 444 ${this.settings.work_dir.merged}/dev/urandom c 1 9`, echo)
+      }
+      if (!fs.existsSync(`${this.settings.work_dir.merged}/dev/{console,ptmx,tty}`)) {
+         await exec(`chown -v root:tty ${this.settings.work_dir.merged}/dev/{console,ptmx,tty}`, echo)
+      }
+      if (!fs.existsSync(`${this.settings.work_dir.merged}/dev/fd`)) {
+         await exec(`ln -sv /proc/self/fd ${this.settings.work_dir.merged}/dev/fd`, echo)
+      }
+      if (!fs.existsSync(`${this.settings.work_dir.merged}/dev/stdin`)) {
+         await exec(`ln -sv /proc/self/fd/0 ${this.settings.work_dir.merged}/dev/stdin`, echo)
+      }
+      if (!fs.existsSync(`${this.settings.work_dir.merged}/dev/stdout`)) {
+         await exec(`ln -sv /proc/self/fd/1 ${this.settings.work_dir.merged}/dev/stdout`, echo)
+      }
+      if (!fs.existsSync(`${this.settings.work_dir.merged}/dev/stderr`)) {
+         await exec(`ln -sv /proc/self/fd/2 ${this.settings.work_dir.merged}/dev/stderr`, echo)
+      }
+      if (!fs.existsSync(`${this.settings.work_dir.merged}/dev/core`)) {
+         await exec(`ln -sv /proc/kcore ${this.settings.work_dir.merged}/dev/core`, echo)
+      }
+      if (!fs.existsSync(`${this.settings.work_dir.merged}/dev/shm`)) {
+         await exec(`mkdir -v ${this.settings.work_dir.merged}/dev/shm`, echo)
+      }
+      if (!fs.existsSync(`${this.settings.work_dir.merged}/dev/pts`)) {
+         await exec(`mkdir -v ${this.settings.work_dir.merged}/dev/pts`, echo)
+      }
+      if (!fs.existsSync(`${this.settings.work_dir.merged}/dev/shm`)) {
+         await exec(`chmod 1777 ${this.settings.work_dir.merged}/dev/shm`, echo)
+      }
 
-      /*
-      await exec(`mknod -m 622 ${this.work_dir.merged}/dev/console c 5 1`, echo)
-      await exec(`mknod -m 666 ${this.work_dir.merged}/dev/null c 1 3`, echo)
-      await exec(`mknod -m 666 ${this.work_dir.merged}/dev/zero c 1 5`, echo)
-      await exec(`mknod -m 666 ${this.work_dir.merged}/dev/ptmx c 5 2`, echo)
-      await exec(`mknod -m 666 ${this.work_dir.merged}/dev/tty c 5 0`, echo)
-      await exec(`mknod -m 444 ${this.work_dir.merged}/dev/random c 1 8`, echo)
-      await exec(`mknod -m 444 ${this.work_dir.merged}/dev/urandom c 1 9`, echo)
-      await exec(`chown -v root:tty ${this.work_dir.merged}/dev/{console,ptmx,tty}`, echo)
-   
-      await exec(`ln -sv /proc/self/fd ${this.work_dir.merged}/dev/fd`, echo)
-      await exec(`ln -sv /proc/self/fd/0 ${this.work_dir.merged}/dev/stdin`, echo)
-      await exec(`ln -sv /proc/self/fd/1 ${this.work_dir.merged}/dev/stdout`, echo)
-      await exec(`ln -sv /proc/self/fd/2 ${this.work_dir.merged}/dev/stderr`, echo)
-      await exec(`ln -sv /proc/kcore ${this.work_dir.merged}/dev/core`, echo)
-      await exec(`mkdir -v ${this.work_dir.merged}/dev/shm`, echo)
-      await exec(`mkdir -v ${this.work_dir.merged}/dev/pts`, echo)
-      await exec(`chmod 1777 ${this.work_dir.merged}/dev/shm`, echo)
-      */
+      /**
+       * Assegno 1777 a /tmp 
+       * creava problemi con MXLINUX
+       */
+      await exec(`chmod 1777 ${this.settings.work_dir.merged}/tmp`, echo)
    }
 
 
