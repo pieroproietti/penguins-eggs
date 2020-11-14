@@ -16,6 +16,7 @@ export default class Install extends Command {
    static flags = {
       info: flags.help({ char: 'h' }),
       gui: flags.boolean({ char: 'g', description: 'use gui installer' }),
+      minstall: flags.boolean({ char: 'm', description: 'use minstall installer' }),
       umount: flags.boolean({ char: 'u', description: 'umount devices' }),
       lvmremove: flags.boolean({
          char: 'l',
@@ -56,6 +57,8 @@ export default class Install extends Command {
          if (Utils.isLive()) {
             if (flags.gui) {
                shx.exec('calamares')
+            } else if (flags.minstall{
+               shx.exec('minstall')
             } else {
                const hatching = new Hatching()
                if (lvmremove) {
@@ -71,4 +74,13 @@ export default class Install extends Command {
          }
       }
    }
+}
+
+
+async function minstall() {
+   shx.exec('sudo mkdir /live/linux/home/demo -p')
+   shx.exec('sudo mkdir /live/aufs/boot - p')
+   shx.exec('sudo mkdir /live/boot-dev/antiX/ -p')
+   shx.exec('sudo ln -s /run/live/medium/live/filesystem.squashfs /live/boot-dev/antiX/linuxfs')
+   shx.exec('minstall')
 }
