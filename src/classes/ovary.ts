@@ -367,6 +367,9 @@ export default class Ovary {
        * Assegno 1777 a /tmp 
        * creava problemi con MXLINUX
        */
+      if (!fs.existsSync(`${this.settings.work_dir.merged}/tmp`)) {
+         await exec(`mkdir ${this.settings.work_dir.merged}/tmp`, echo)
+      }
       await exec(`chmod 1777 ${this.settings.work_dir.merged}/tmp`, echo)
    }
 
