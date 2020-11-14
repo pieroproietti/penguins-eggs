@@ -10,6 +10,7 @@ import Utils from '../classes/utils'
 import Tools from '../classes/tools'
 import Pacman from '../classes/pacman'
 import Basket from '../classes/basket'
+import { setFlagsFromString } from 'v8'
 const exec = require('../lib/utils').exec
 
 /**
@@ -22,6 +23,9 @@ export default class Update extends Command {
 
    static flags = {
       help: flags.help({ char: 'h' }),
+      apt: flags.boolean({ char: 'a', description: 'if eggs package is .deb, update from distro repositories' }),
+      basket: flags.boolean({ char: 'b', description: 'if eggs package is .deb, update from eggs basket' }),
+      npm: flags.boolean({ char: 'n', description: 'if eggs package is .npm, update from npmjs.com' }),
       verbose: flags.boolean({ char: 'v', description: 'verbose' })
    }
 
@@ -60,38 +64,61 @@ export default class Update extends Command {
             Utils.warning('eggs-' + basketVersion + '-1.deb available in basket')
          }
 
-
-         console.log()
-         const choose = await this.chosenDeb(apt)
-
-         Utils.titles(`updating via ${choose}`)
-         if (choose === 'apt') {
-            await this.getDebFromApt()
-         } else if (choose === 'basket') {
-            await basket.get()
-         } else if (choose === 'npm') {
-            await this.getFromNpm()
-         } else if (choose === 'lan') {
-            await this.getDebFromLan()
-         } else if (choose === 'manual') {
-            this.getDebFromManual()
-         } else if (choose === 'sources') {
-            this.getFromSources()
+         /**
+          * Se è specificato il metodo di aggiornamento
+          * e, questo corrisponde al tipo di pacchetto 
+          * installato
+          */
+         if (flags.npm || flags.apt || flags.basket) {
+            if (Utils.isDebPackage() && flags.apt) {
+               await this.getDebFromApt()
+            } else if (Utils.isDebPackage() && flags.basket) {
+               await basket.get()
+            } else if (flags.npm) {
+               await this.getFromNpm()
+            } else {
+               await this.chooseUpdate()
+            }
+         } else {
+            await this.chooseUpdate()
          }
+
       }
    }
 
+
+   /**
+    * Altrimenti, seleziona il tipo di
+    * aggiornamento desiderato
+    * indipendentemente dal flag
+    */
+   async chooseUpdate() {
+      let basket = new Basket()
+
+      console.log()
+      const choose = await this.chosenDeb()
+      Utils.titles(`updating via ${choose}`)
+      if (choose === 'apt') {
+         await this.getDebFromApt()
+      } else if (choose === 'basket') {
+         await basket.get()
+      } else if (choose === 'npm') {
+         await this.getFromNpm()
+      } else if (choose === 'lan') {
+         await this.getDebFromLan()
+      } else if (choose === 'manual') {
+         this.getDebFromManual()
+      } else if (choose === 'sources') {
+         this.getFromSources()
+      }
+   }
    /**
     * 
     */
-   async chosenDeb(apt: boolean): Promise<string> {
+   async chosenDeb(): Promise<string> {
       const inquirer = require('inquirer')
       const choices: string[] = ['abort']
       choices.push(new inquirer.Separator('exit from update'))
-      if (apt) {
-         choices.push('apt')
-         choices.push(new inquirer.Separator('automatic apt update from your repositories'))
-      }
       choices.push('basket')
       choices.push(new inquirer.Separator('select, download and update from basket'))
       choices.push('npm')
@@ -122,7 +149,7 @@ export default class Update extends Command {
    /**
     * getFromNpm
     */
-   getFromNpm() {
+   async getFromNpm() {
       shx.exec(`npm update ${Utils.getPackageName()}@latest -g`)
    }
 
