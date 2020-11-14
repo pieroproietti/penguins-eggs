@@ -17,7 +17,7 @@ const exec = require('../lib/utils').exec
  * 
  */
 export default class Update extends Command {
-   static description = "update/upgrade the penguin's eggs tool.\nThis way of update work only with npm installation, if you used the debian package version, please download the new one and install it."
+   static description = "update the penguin's eggs tool.\nThis method always works, both with npm and deb packages."
 
    static examples = [`$ eggs update\nupdate/upgrade the penguin's eggs tool`]
 

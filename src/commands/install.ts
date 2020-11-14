@@ -15,20 +15,18 @@ import Hatching from '../classes/hatching'
 export default class Install extends Command {
    static flags = {
       info: flags.help({ char: 'h' }),
-      gui: flags.boolean({ char: 'g', description: 'use gui installer' }),
-      minstall: flags.boolean({ char: 'm', description: 'use minstall installer' }),
+      gui: flags.boolean({ char: 'g', description: 'use Calamares installer (gui)' }),
+      mx: flags.boolean({ char: 'm', description: 'try to use MX installer (gui)' }),
+      cli: flags.boolean({ char: 'c', description: 'try to use antiX installer (cli)' }),
       umount: flags.boolean({ char: 'u', description: 'umount devices' }),
-      lvmremove: flags.boolean({
-         char: 'l',
-         description: 'remove lvm /dev/pve'
-      }),
+      lvmremove: flags.boolean({char: 'l',description: 'remove lvm /dev/pve'}),
       verbose: flags.boolean({ char: 'v', description: 'verbose' })
    }
-   static description = 'system installater cli (the eggs became penguin)'
+   static description = 'eggs installer - (the egg became penguin)'
 
    static aliases = ['hatch']
 
-   static examples = [`$ eggs install\npenguin's eggs installation\n`]
+   static examples = [`$ eggs install\nInstall the system with eggs cli installer(default)\n`]
 
    /**
     * Execute
@@ -57,8 +55,8 @@ export default class Install extends Command {
          if (Utils.isLive()) {
             if (flags.gui) {
                shx.exec('calamares')
-            } else if (flags.minstall) {
-               minstall()
+            } else if (flags.mx || flags.cli) {
+               antiX()
             } else {
                const hatching = new Hatching()
                if (lvmremove) {
@@ -77,7 +75,7 @@ export default class Install extends Command {
 }
 
 
-async function minstall() {
+async function antiX() {
    shx.exec('rm /live -rf')
    shx.exec('mkdir /live/linux/home/demo -p')
    shx.exec('mkdir /live/aufs/boot -p')
@@ -97,6 +95,12 @@ async function minstall() {
 
    shx.exec('mkdir /mnt/antiX/dev -p')
    shx.exec('mount --bind /dev /mnt/antiX/dev ')
+
+   console.log('exportimental!!!')
+   console.log('Try to use:')
+   console.log('sudo cli-installer')
+   console.log('or')
+   console.log('sudo minstall')
 
    // shx.exec('/mnt/antiX/dev/shm -p')
    // shx.exec('/mnt/antiX/home -p')

@@ -249,17 +249,18 @@ _See code: [src/commands/info.ts](https://github.com/pieroproietti/penguins-eggs
 
 ## `eggs install`
 
-system installater cli (the eggs became penguin)
+eggs installer - (the egg became penguin)
 
 ```
 USAGE
   $ eggs install
 
 OPTIONS
-  -g, --gui        use gui installer
+  -c, --cli        try to use antiX installer (cli)
+  -g, --gui        use Calamares installer (gui)
   -h, --info       show CLI help
   -l, --lvmremove  remove lvm /dev/pve
-  -m, --minstall   use minstall installer
+  -m, --mx         try to use MX installer (gui)
   -u, --umount     umount devices
   -v, --verbose    verbose
 
@@ -268,7 +269,7 @@ ALIASES
 
 EXAMPLE
   $ eggs install
-  penguin's eggs installation
+  Install the system with eggs cli installer
 ```
 
 _See code: [src/commands/install.ts](https://github.com/pieroproietti/penguins-eggs/blob/v7.6.78/src/commands/install.ts)_
@@ -495,7 +496,7 @@ _See code: [src/commands/tools/yolk.ts](https://github.com/pieroproietti/penguin
 
 ## `eggs update`
 
-update/upgrade the penguin's eggs tool.
+update the penguin's eggs tool.
 
 ```
 USAGE
@@ -509,8 +510,7 @@ OPTIONS
   -v, --verbose  verbose
 
 DESCRIPTION
-  This way of update work only with npm installation, if you used the debian package version, please download the new 
-  one and install it.
+  This method always works, both with npm and deb packages.
 
 EXAMPLE
   $ eggs update
