@@ -269,7 +269,7 @@ ALIASES
 
 EXAMPLE
   $ eggs install
-  Install the system with eggs cli installer
+  Install the system with eggs cli installer(default)
 ```
 
 _See code: [src/commands/install.ts](https://github.com/pieroproietti/penguins-eggs/blob/v7.6.78/src/commands/install.ts)_
