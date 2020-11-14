@@ -78,28 +78,28 @@ export default class Install extends Command {
 
 
 async function minstall() {
-   shx.exec('sudo rm /live -rf')
-   shx.exec('sudo mkdir /live/linux/home/demo -p')
-   shx.exec('sudo mkdir /live/aufs/boot -p')
-   shx.exec('sudo mkdir /live/boot-dev/antiX/ -p')
-   shx.exec('sudo ln -s /run/live/medium/live/filesystem.squashfs /live/boot-dev/antiX/linuxfs')
+   shx.exec('rm /live -rf')
+   shx.exec('mkdir /live/linux/home/demo -p')
+   shx.exec('mkdir /live/aufs/boot -p')
+   shx.exec('mkdir /live/boot-dev/antiX/ -p')
+   shx.exec('ln -s /run/live/medium/live/filesystem.squashfs /live/boot-dev/antiX/linuxfs')
 
    // Creazione delle partizioni di mount
-   shx.exec('/mnt/antiX/ -p')
-   shx.exec('/mnt/antiX/boot/efi -p')
+   shx.exec('mkdir /mnt/antiX/ -p')
+   shx.exec('mkdir /mnt/antiX/boot/efi -p')
    shx.exec('mount --bind /boot/efi /mnt/antiX/boot/efi ')
 
-   shx.exec('/mnt/antiX/proc -p')
+   shx.exec('mkdir /mnt/antiX/proc -p')
    shx.exec('mount --bind /proc /mnt/antiX/proc ')
 
-   shx.exec('/mnt/antiX/sys -p')
+   shx.exec('mkdir /mnt/antiX/sys -p')
    shx.exec('mount --bind /sys /mnt/antiX/sys ')
 
-   shx.exec('/mnt/antiX/dev -p')
+   shx.exec('mkdir /mnt/antiX/dev -p')
    shx.exec('mount --bind /dev /mnt/antiX/dev ')
 
    // shx.exec('/mnt/antiX/dev/shm -p')
    // shx.exec('/mnt/antiX/home -p')
 
-   shx.exec('minstall')
+   //shx.exec('minstall')
 }
