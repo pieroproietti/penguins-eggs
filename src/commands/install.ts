@@ -94,29 +94,23 @@ async function antiX() {
    shx.exec(`mount -t overlay overlay -o lowerdir=/live/boot-dev/antiX/linuxfs,upperdir=/run/live/overlay/rw,workdir=/run/live/overlay/work /live/linux`)
    shx.exec('ln -s /live/linux/home/live /live/linux/home/demo') 
    
+   shx.exec('ln -s /run/live/medium /live/boot-dev')
+   
    // Fino qua OK minstall parte
 
-
-
-   shx.exec('ln -s / /live/aufs')
-   // Metto un falso user demo
-   shx.exec('ln -s /live/linux/home/live /live/linux/demo')
-
-   shx.exec('ln -s /run/live/medium /live/boot-dev')
-
    // Creazione delle partizioni di mount
-   // shx.exec('mkdir /mnt/antiX/ -p')
+   shx.exec('mkdir /mnt/antiX/ -p')
    // shx.exec('mkdir /mnt/antiX/boot/efi -p')
    // shx.exec('mount --bind /boot/efi /mnt/antiX/boot/efi ')
 
-   // shx.exec('mkdir /mnt/antiX/proc -p')
-   // shx.exec('mount --bind /proc /mnt/antiX/proc ')
+   shx.exec('mkdir /mnt/antiX/proc -p')
+   shx.exec('mount --bind /proc /mnt/antiX/proc ')
 
-   // shx.exec('mkdir /mnt/antiX/sys -p')
-   // shx.exec('mount --bind /sys /mnt/antiX/sys ')
+   shx.exec('mkdir /mnt/antiX/sys -p')
+   shx.exec('mount --bind /sys /mnt/antiX/sys ')
 
-   // shx.exec('mkdir /mnt/antiX/dev -p')
-   // shx.exec('mount --bind /dev /mnt/antiX/dev ')
+   shx.exec('mkdir /mnt/antiX/dev -p')
+   shx.exec('mount --bind /dev /mnt/antiX/dev ')
 
    console.log('exportimental!!!')
    console.log('Try to use:')
