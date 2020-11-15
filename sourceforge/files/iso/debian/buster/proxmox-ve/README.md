@@ -21,6 +21,9 @@ All ISOs are based on Proxmox VE 6.2
 
 # Proxmox VE 6.2
 
+__Please note what this project is in no way connected to Proxmox VE in any official way, it’s just my personal experiment__.
+
+
 * **naked-ve** - just the juice, without GUI. You can start here to build your revolution! (amd64)
 
 * **lite-ve** - it's not naked, but dressed with xfce4, developer's tools and virt-viewer (amd64)

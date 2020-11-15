@@ -25,3 +25,8 @@ All ISOs are based on Debian buster, Debian bullseye
 * **less** - it's not naked, but just dressed with lxde-core and the tools to develop. (i386 and amd64)
 
 * **debu**  - it is my personal version with cinnamon, mostly for development, but include common office tools; (amd64)
+
+ # Proxmox VE 6.2
+
+ # MX-Linux 19.3
+ 
