@@ -78,6 +78,7 @@ export default class Install extends Command {
 async function antiX() {
    // la root è /live/linux
 
+   // Queste servono a far partire minstall
    // shx.exec('rm /live -rf')
    // shx.exec('mkdir /live/linux/home/demo -p')
    // shx.exec('mkdir /live/aufs/boot -p')
@@ -86,7 +87,8 @@ async function antiX() {
 
    shx.exec('rm /live -rf')
    shx.exec('mkdir /live')
-   // Forse non serve
+
+   // monto su linuxfs il filesystem squash
    shx.exec('mkdir /live/boot-dev/antiX/linuxfs -p')
    shx.exec('ln -s /run/live/medium/live/filesystem.squashfs /live/boot-dev/antiX/linuxfs')
 
