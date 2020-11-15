@@ -86,13 +86,15 @@ async function antiX() {
 
    shx.exec('rm /live -rf')
    shx.exec('mkdir /live')
-   shx.exec('/live/boot-dev/antiX/linuxfs')
+   // Forse non serve
+   shx.exec('mkdir /live/boot-dev/antiX/linuxfs -p')
    shx.exec('ln -s /run/live/medium/live/filesystem.squashfs /live/boot-dev/antiX/linuxfs')
 
    shx.exec('mkdir /live/linux')
-   shx.exec(`mount -t overlay overlay -o lowerdir=/run/live/rootfs/filesystem.squashfs,upperdir=/run/live/overlay/rw,workdir=/run/live/overlay/work /live/linux`)
+   shx.exec(`mount -t overlay overlay -o lowerdir=/live/boot-dev/antiX/linuxfs,upperdir=/run/live/overlay/rw,workdir=/run/live/overlay/work /live/linux`)
    shx.exec('ln -s /live/linux/home/live /live/linux/home/demo') 
    
+   // Fino qua OK minstall parte
 
 
 
