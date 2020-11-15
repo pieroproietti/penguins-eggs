@@ -26,13 +26,16 @@ All ISOs are based on Debian buster, Debian bullseye
 
 * **debu**  - it is my personal version with cinnamon, mostly for development, but include common office tools; (amd64)
 
+## Proxmox VE 6.2
+
+## MX Linux 19.3
+
 # Debian bullseye
 
 * **naked** - just the juice, without GUI. You can start here to build your revolution! (i386 and amd64)
 
 * **lite** - it's not naked, but just dressed with xfce4 and the tools to develop. (i386 and amd64)
 
-# Proxmox VE 6.2
 
 * **naked** - just the juice, without GUI. You can start here to build your revolution! (amd64)
 
