@@ -18,6 +18,8 @@ You can follow the project also consulting the [commit history](https://github.c
 ## Changelog
 Versions are listed on reverse order, the first is the last one.
 
+* write links only on the live, not changing host's configuration
+
 ### eggs-7.6.78.1_deb
 * solved permissions problems in /tmp, mxlinux now install with calamares, trying to become mx-installer compatible.
 

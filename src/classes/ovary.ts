@@ -791,7 +791,6 @@ export default class Ovary {
       /**
        * creazione dei link in /usr/share/applications
        * 
-       * dato che in ovarium /usr NON è scrivibile scrivo in /usr/share/applications 
        */
       shx.cp(path.resolve(__dirname, '../../assets/penguins-eggs.desktop'), '/usr/share/applications/')
 
@@ -799,48 +798,48 @@ export default class Ovary {
       let installerName = 'Install system'
       let installerIcon = `install-debian`
       if (Pacman.packageIsInstalled('calamares')) {
-         shx.cp(path.resolve(__dirname, `../../addons/${theme}/theme/applications/install-debian.desktop`), `/usr/share/applications/`)
+         shx.cp(path.resolve(__dirname, `../../addons/${theme}/theme/applications/install-debian.desktop`), `${this.settings.work_dir.merged}/usr/share/applications/`)
       } else {
          installerUrl = 'penguins-clinstaller.desktop'
          installerName = 'Install system CLI'
          installerIcon = 'utilities-terminal'
-         shx.cp(path.resolve(__dirname, '../../assets/penguins-clinstaller.desktop'), '/usr/share/applications/')
+         shx.cp(path.resolve(__dirname, '../../assets/penguins-clinstaller.desktop'), `${this.settings.work_dir.merged}/usr/share/applications/`)
       }
 
       if (myAddons.ichoice) {
          installerUrl = 'penguins-ichoice.desktop'
          installerName = 'Install system choice'
          installerIcon = 'system-software-install'
-         shx.cp(path.resolve(__dirname, '../../assets/penguins-ichoice.desktop'), '/usr/share/applications/')
+         shx.cp(path.resolve(__dirname, '../../assets/penguins-ichoice.desktop'), `${this.settings.work_dir.merged}/usr/share/applications/`)
       }
 
       if (myAddons.adapt) {
          // Per lxde, kxqt, deepin, mate, xfce4 creo il link adapt
          // if (Pacman.packageIsInstalled('lxde-core') || Pacman.packageIsInstalled('lxqt-core') || Pacman.packageIsInstalled('deepin-desktop-base') || Pacman.packageIsInstalled('mate-desktop') || Pacman.packageIsInstalled('ubuntu-mate-core') || Pacman.packageIsInstalled('xfce4')) {
-         shx.cp(path.resolve(__dirname, '../../assets/penguins-adapt.desktop'), '/usr/share/applications/')
+         shx.cp(path.resolve(__dirname, '../../assets/penguins-adapt.desktop'), `${this.settings.work_dir.merged}/usr/share/applications/`)
          //}
       }
 
       if (myAddons.ichoice) {
          let dirAddon = path.resolve(__dirname, `../../addons/eggs/installer-choice/`)
-         shx.cp(`${dirAddon}/applications/penguins-ichoice.desktop`, `/usr/share/applications/`)
-         shx.cp(`${dirAddon}/bin/installer-choice.sh`, `/usr/local/bin/`)
+         shx.cp(`${dirAddon}/applications/penguins-ichoice.desktop`, `${this.settings.work_dir.merged}/usr/share/applications/`)
+         shx.cp(`${dirAddon}/bin/installer-choice.sh`, `${this.settings.work_dir.merged}/usr/local/bin/`)
          shx.mkdir('-p', `/usr/local/share/penguins-eggs/`)
-         shx.cp(`${dirAddon}/html/installer-choice.html`, `/usr/local/share/penguins-eggs/`)
+         shx.cp(`${dirAddon}/html/installer-choice.html`, `${this.settings.work_dir.merged}/usr/local/share/penguins-eggs/`)
       }
 
       if (myAddons.pve) {
          let dirAddon = path.resolve(__dirname, `../../addons/eggs/proxmox-ve`)
-         shx.cp(`${dirAddon}/artwork/proxmox-ve.png`, `/usr/share/icons/`)
-         shx.cp(`${dirAddon}/applications/penguins-pve.desktop`, `/usr/share/applications/`)
+         shx.cp(`${dirAddon}/artwork/proxmox-ve.png`, `${this.settings.work_dir.merged}/usr/share/icons/`)
+         shx.cp(`${dirAddon}/applications/penguins-pve.desktop`, `${this.settings.work_dir.merged}/usr/share/applications/`)
       }
 
       if (myAddons.rsupport) {
          let dirAddon = path.resolve(__dirname, `../../addons/eggs/dwagent`)
-         shx.cp(`${dirAddon}/applications/penguins-dwagent.desktop`, `/usr/share/applications/`)
-         shx.cp(`${dirAddon}/bin/dwagent.sh`, `/usr/local/bin/`)
-         shx.chmod('+x', `/usr/local/bin/dwagent.sh`)
-         shx.cp(`${dirAddon}/artwork/remote-assistance.png`, `/usr/share/icons/`)
+         shx.cp(`${dirAddon}/applications/penguins-dwagent.desktop`, `${this.settings.work_dir.merged}/usr/share/applications/`)
+         shx.cp(`${dirAddon}/bin/dwagent.sh`, `${this.settings.work_dir.merged}/usr/local/bin/`)
+         shx.chmod('+x', `${this.settings.work_dir.merged}/usr/local/bin/dwagent.sh`)
+         shx.cp(`${dirAddon}/artwork/remote-assistance.png`, `${this.settings.work_dir.merged}/usr/share/icons/`)
       }
 
       /**
