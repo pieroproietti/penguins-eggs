@@ -133,6 +133,7 @@ showexec('mount -t overlay -o lowerdir=/usr/lib/live/mount/rootfs/filesystem.squ
 showexec('ln -s /live/aufs/home/live /live/aufs/home/demo')
 
 // binding dei vfs
+showexec('mount --bind /dev /live/aufs/dev')
 showexec('mount --bind /proc /live/aufs/proc')
 showexec('mount --bind /run /live/aufs/run')
 showexec('mount --bind /sys /live/aufs/sys')
