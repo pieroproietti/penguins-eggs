@@ -118,7 +118,6 @@ showexec('mount -t tmpfs -o rw,noatime,size=10240k,mode=755 tmpfs /live')
 showexec('mkdir /live/aufs-ram')
 showexec('mount -t tmpfs -o rw,noatime,size=1589248k tmpfs /live/aufs-ram')
 
-showexec('mkdir /live/boot-dev')
 // /dev/sr0 /live/boot-dev iso9660 ro,relatime,nojoliet,check=s,map=n,blocksize=2048 0 0
 showexec('ln -s /run/live/medium /live/boot-dev')
 
