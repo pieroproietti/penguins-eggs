@@ -117,7 +117,7 @@ showexec('mkdir /live/aufs-ram -p')
 // /dev/sr0 /live/boot-dev iso9660 ro,relatime,nojoliet,check=s,map=n,blocksize=2048 0 0
 // /dev/loop0 /live/linux squashfs ro,relatime 0 0
 showexec('mkdir /live/linux -p')
-showexec('ln -s /run/live/medium/live/filesystem.squashfs /live/linux')
+showexec('ln -s /usr/lib/live/mount/rootfs/filesystem.squashfs /live/linux')
 showexec('mount -t tmpfs -o rw,noatime,size=1589248k tmpfs /live/aufs-ram')
 // overlay / overlay rw,relatime,lowerdir=/live/linux,upperdir=/live/aufs-ram/upper,workdir=/live/aufs-ram/work 0 0
 showexec('mount -t tmpfs -o rw,noatime,size=10240k tmpfs /media')
@@ -129,7 +129,12 @@ showexec('mkdir /live/aufs')
 // showexec('mount -t sys /sys sysfs rw,nosuid,nodev,noexec,relatime', {silent: false}) // 0 0
 // showexec('mount -t devtmpfs /dev devtmpfs rw,relatime,size=1015072k,nr_inodes=253768,mode=755', {silent: false}) // 0 0
 // showexec('mount -t devpts /dev/pts devpts rw,nosuid,noexec,relatime,gid=5,mode=620,ptmxmode=000, {silent: false}) // 0 0
-showexec('mount -t overlay overlay -o lowerdir=/live/linux,upperdir=/live/aufs-ram/upper,workdir=/live/aufs-ram/work /live/aufs', {silent: false}) // 0 0
+
+showexec('mkdir /live/aufs-ram')
+showexec('mkdir /live/aufs-ram/upper')
+showexec('mkdir /live/aufs-ram/work')
+
+showexec('mount -t overlay -o lowerdir=/usr/lib/live/mount/rootfs/filesystem.squashfs,upperdir=/live/aufs-ram/upper,workdir=/live/aufs-ram/work  overlay /live/aufs') // 0 0
 showexec('mount -t tmpfs -o rw,noatime,size=10240k,mode=755 tmpfs /etc/live/config')
 showexec('mount -t tmpfs -o rw,noatime,size=10240k,mode=755 tmpfs /etc/live/bin')
 showexec('mount -t tmpfs -o rw,nosuid,nodev,noexec,relatime,size=5120k tmpfs /run/lock')
