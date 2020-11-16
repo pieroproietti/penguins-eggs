@@ -123,58 +123,46 @@ showexec('mount -t tmpfs -o rw,noatime,size=1589248k tmpfs /live/aufs-ram')
 showexec('mount -t tmpfs -o rw,noatime,size=10240k tmpfs /media')
 // showexec('mount -t tmpfs /run tmpfs rw,nosuid,nodev,noexec,noatime,size=204268k,mode=755') // 0 0
 showexec('mount -t tmpfs -o rw,noatime,size=10240k,mode=755 tmpfs /live')
-showexec('mkdir /live/aufs')
-// showexec('mount -t tmpfs /tmp tmpfs rw,noatime', {silent: false}) // 0 0
-// showexec('mount -t proc /proc proc rw,nosuid,nodev,noexec,relatime', {silent: false}) // 0 0
-// showexec('mount -t sys /sys sysfs rw,nosuid,nodev,noexec,relatime', {silent: false}) // 0 0
-// showexec('mount -t devtmpfs /dev devtmpfs rw,relatime,size=1015072k,nr_inodes=253768,mode=755', {silent: false}) // 0 0
-// showexec('mount -t devpts /dev/pts devpts rw,nosuid,noexec,relatime,gid=5,mode=620,ptmxmode=000, {silent: false}) // 0 0
 
+showexec('mkdir /live/aufs')
 showexec('mkdir /live/aufs-ram')
 showexec('mkdir /live/aufs-ram/upper')
 showexec('mkdir /live/aufs-ram/work')
-
 showexec('mount -t overlay -o lowerdir=/usr/lib/live/mount/rootfs/filesystem.squashfs,upperdir=/live/aufs-ram/upper,workdir=/live/aufs-ram/work  overlay /live/aufs') // 0 0
+// conversione dell'utente
+showexec('ln -s /live/aufs/home/live /live/aufs/home/demo')
+
+// binding dei vfs
+showexec('mount --bind /proc /live/aufs/proc')
+showexec('mount --bind /run /live/aufs/run')
+showexec('mount --bind /sys /live/aufs/sys')
+showexec('mount --bind /tmp /live/aufs/tmp')
+
+// in etc
 showexec('mount -t tmpfs -o rw,noatime,size=10240k,mode=755 tmpfs /etc/live/config')
 showexec('mount -t tmpfs -o rw,noatime,size=10240k,mode=755 tmpfs /etc/live/bin')
-showexec('mount -t tmpfs -o rw,nosuid,nodev,noexec,relatime,size=5120k tmpfs /run/lock')
-// showexec('mount -t pstore /sys/fs/pstore pstore rw,relatime') // persistent store
-showexec('mount -t tmpfs -o rw,nosuid,nodev,noexec,relatime,size=408520k tmpfs /dev/shm')
-// showexec('mount -t rpc_pipefs /run/rpc_pipefs rpc_pipefs rw,relatime') // nfs
-// showexec('mount -t cgroup /sys/fs/cgroup tmpfs rw,relatime,size=12k,mode=755') // 0 0
-// showexec('mount -t systemd /sys/fs/cgroup/systemd cgroup rw,nosuid,nodev,noexec,relatime,release_agent=/run/cgmanager/agents/cgm-release-agent.systemd,name=systemd') // 0 0
-showexec('mount -t tmpfs -o rw,nosuid,nodev,relatime,size=204264k,mode=700,uid=1000,gid=1000 tmpfs /run/user/1000')
-// showexec('mount -t gvfsd-fuse /run/user/1000/gvfs fuse.gvfsd-fuse rw,nosuid,nodev,relatime,user_id=1000,group_id=1000') // 0 0
 
+/**
+ * Sorgenti 
+ * /live/aufs/boot 
+ * /live/aufs/bin 
+ * /live/aufs/dev 
+ * /live/aufs/etc 
+ * /live/aufs/lib 
+ * /live/aufs/lib64 
+ * /live/aufs/media 
+ * /live/aufs/mnt 
+ * /live/aufs/opt 
+ * /live/aufs/root 
+ * /live/aufs/sbin 
+ * /live/aufs/selinux 
+ * /live/aufs/usr 
+ * /live/aufs/var 
+ * /live/aufs/home 
+ * dest= /mnt/antiX
+*/ 
 
-   // monto su linuxfs il filesystem squash
-   // showexec('mkdir /live/boot-dev/antiX/linuxfs -p')
-   // showexec('ln -s /run/live/medium/live/filesystem.squashfs /live/boot-dev/antiX/linuxfs')
-
-   // showexec('mkdir /live/linux')
-   // showexec('mount -t squashfs /live/boot-dev/antiX/linuxfs /live/linux'))
-
-   // showexec(`mount -t overlay overlay -o lowerdir=/live/linux,upperdir=/run/live/overlay/rw,workdir=/run/live/overlay/work /live/linux`)
-   // showexec('ln -s /live/linux/home/live /live/linux/home/demo') 
    
-   // showexec('ln -s /run/live/medium /live/boot-dev')
-   
-   // Fino qua OK minstall parte
-
-   // Creazione delle partizioni di mount
-   // showexec('mkdir /mnt/antiX/ -p')
-   // showexec('mkdir /mnt/antiX/boot/efi -p')
-   // showexec('mount --bind /boot/efi /mnt/antiX/boot/efi ')
-
-   // showexec('mkdir /mnt/antiX/proc -p')
-   // showexec('mount --bind /proc /mnt/antiX/proc ')
-
-   // showexec('mkdir /mnt/antiX/sys -p')
-   // showexec('mount --bind /sys /mnt/antiX/sys ')
-
-   // showexec('mkdir /mnt/antiX/dev -p')
-   // showexec('mount --bind /dev /mnt/antiX/dev ')
-
    console.log('exportimental!!!')
    console.log('Try to use:')
    console.log('sudo cli-installer')
