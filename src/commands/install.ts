@@ -100,29 +100,37 @@ async function umountAntix() {
  * 
  */
 async function mountAntix() {
-
+   // creo mountpoint /live
    showexec('mkdir /live')
 
-   // Metto per primo la creazione dei tmpfs
+   // mount tmpfs in /live
    showexec('mount -t tmpfs -o rw,noatime,size=10240k,mode=755 tmpfs /live')
+
+   // creo mountpoint /live/aufs
+   showexec('mkdir /live/aufs')
+
+   // creo mountpoint /live/aufs-ram
    showexec('mkdir /live/aufs-ram')
+
+   // mount tmpfs in /live/aufs-ram
    showexec('mount -t tmpfs -o rw,noatime,size=1589248k tmpfs /live/aufs-ram')
 
-   // monto il cd in /live-boot-dev
+   // collego il cd a /live/boot-dev
    showexec('ln -s /run/live/medium /live/boot-dev')
 
-   // monto filesystem.squashfs in /live/linux
+   // collego filesystem.squashfs in /live/linux
    showexec('ln -s /usr/lib/live/mount/rootfs/filesystem.squashfs/ /live/linux')
-   showexec('mount -t tmpfs -o rw,noatime,size=10240k tmpfs /media')
 
-   // creo /live/aufs, /live/aufs-ram, /live/aufs-ram/upper e /live/aufs-ram/work
-   showexec('mkdir /live/aufs')
-   showexec('mkdir /live/aufs-ram')
+   // showexec('mount -t tmpfs -o rw,noatime,size=10240k tmpfs /media')
+
+   // creo /live/aufs-ram/upper e /live/aufs-ram/work
    showexec('mkdir /live/aufs-ram/upper')
    showexec('mkdir /live/aufs-ram/work')
+
+   // monto /live/aufs
    showexec('mount -t overlay -o lowerdir=/usr/lib/live/mount/rootfs/filesystem.squashfs,upperdir=/live/aufs-ram/upper,workdir=/live/aufs-ram/work  overlay /live/aufs') // 0 0
    // conversione dell'utente?
-   // showexec('ln -s /live/aufs/home/live /live/aufs/home/demo')
+   showexec('ln -s /home/live /home/demo')
 
    // monto --bind /dev, /prov, /run, /sys e /tmp
    showexec('mount --bind /dev /live/aufs/dev')
@@ -134,34 +142,9 @@ async function mountAntix() {
    // in etc
    showexec('mount -t tmpfs -o rw,noatime,size=10240k,mode=755 tmpfs /etc/live/config')
    showexec('mount -t tmpfs -o rw,noatime,size=10240k,mode=755 tmpfs /etc/live/bin')
-
-   /**
-    * Sorgenti 
-    * /live/aufs/boot 
-    * /live/aufs/bin 
-    * /live/aufs/dev 
-    * /live/aufs/etc 
-    * /live/aufs/lib 
-    * /live/aufs/lib64 
-    * /live/aufs/media 
-    * /live/aufs/mnt 
-    * /live/aufs/opt 
-    * /live/aufs/root 
-    * /live/aufs/sbin 
-    * /live/aufs/selinux 
-    * /live/aufs/usr 
-    * /live/aufs/var 
-    * /live/aufs/home 
-    * dest= /mnt/antiX
-   */
-
-   console.log('This is just exportimental!!!')
-   console.log('Try to use:')
-   console.log('sudo minstall')
-
 }
 
-function showexec(cmd = '') {
+async function showexec(cmd = '') {
    console.log(cmd)
    shx.exec(cmd)
 }
