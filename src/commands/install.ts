@@ -76,58 +76,25 @@ export default class Install extends Command {
 
 
 async function antiX() {
-   // la root è /live/linux
-
-   // Queste servono a far partire minstall
    // shx.exec('rm /live -rf')
    // shx.exec('mkdir /live/linux/home/demo -p')
-   // shx.exec('mkdir /live/aufs/boot -p')
-   // shx.exec('mkdir /live/boot-dev/antiX/ -p')
-   // shx.exec('ln -s /run/live/medium/live/filesystem.squashfs /live/boot-dev/antiX/linuxfs')
-
-/*
-   /dev/sr0 /live/boot-dev iso9660 ro,relatime,nojoliet,check=s,map=n,blocksize=2048 0 0
-   /dev/loop0 /live/linux squashfs ro,relatime 0 0
-   tmpfs /live/aufs-ram tmpfs rw,noatime,size=1589248k 0 0
-   overlay / overlay rw,relatime,lowerdir=/live/linux,upperdir=/live/aufs-ram/upper,workdir=/live/aufs-ram/work 0 0
-   tmpfs /media tmpfs rw,noatime,size=10240k 0 0
-   tmpfs /run tmpfs rw,nosuid,nodev,noexec,noatime,size=204268k,mode=755 0 0
-   tmpfs /live tmpfs rw,noatime,size=10240k,mode=755 0 0
-   tmpfs /tmp tmpfs rw,noatime 0 0
-   proc /proc proc rw,nosuid,nodev,noexec,relatime 0 0
-   sys /sys sysfs rw,nosuid,nodev,noexec,relatime 0 0
-   devtmpfs /dev devtmpfs rw,relatime,size=1015072k,nr_inodes=253768,mode=755 0 0
-   devpts /dev/pts devpts rw,nosuid,noexec,relatime,gid=5,mode=620,ptmxmode=000 0 0
-   overlay /live/aufs overlay rw,relatime,lowerdir=/live/linux,upperdir=/live/aufs-ram/upper,workdir=/live/aufs-ram/work 0 0
-   tmpfs /etc/live/config tmpfs rw,noatime,size=10240k,mode=755 0 0
-   tmpfs /etc/live/bin tmpfs rw,noatime,size=10240k,mode=755 0 0
-   tmpfs /run/lock tmpfs rw,nosuid,nodev,noexec,relatime,size=5120k 0 0
-   pstore /sys/fs/pstore pstore rw,relatime 0 0
-   tmpfs /dev/shm tmpfs rw,nosuid,nodev,noexec,relatime,size=408520k 0 0
-   rpc_pipefs /run/rpc_pipefs rpc_pipefs rw,relatime 0 0
-   cgroup /sys/fs/cgroup tmpfs rw,relatime,size=12k,mode=755 0 0
-   systemd /sys/fs/cgroup/systemd cgroup rw,nosuid,nodev,noexec,relatime,release_agent=/run/cgmanager/agents/cgm-release-agent.systemd,name=systemd 0 0
-   tmpfs /run/user/1000 tmpfs rw,nosuid,nodev,relatime,size=204264k,mode=700,uid=1000,gid=1000 0 0
-   gvfsd-fuse /run/user/1000/gvfs fuse.gvfsd-fuse rw,nosuid,nodev,relatime,user_id=1000,group_id=1000 0 0
-*/   
-
+   
 showexec('rm /live -rf')
 showexec('mkdir /live')
+
 // Metto per primo la creazione dei tmpfs
 showexec('mount -t tmpfs -o rw,noatime,size=10240k,mode=755 tmpfs /live')
 showexec('mkdir /live/aufs-ram')
 showexec('mount -t tmpfs -o rw,noatime,size=1589248k tmpfs /live/aufs-ram')
 
-// /dev/sr0 /live/boot-dev iso9660 ro,relatime,nojoliet,check=s,map=n,blocksize=2048 0 0
+// monto il cd in /live-boot-dev
 showexec('ln -s /run/live/medium /live/boot-dev')
 
-// /dev/loop0 /live/linux squashfs ro,relatime 0 0
+// monto filesystem.squashfs in /live/linux
 showexec('ln -s /usr/lib/live/mount/rootfs/filesystem.squashfs/ /live/linux')
-
-// /LIVE/AUFS-RAM showexec('mount -t tmpfs -o rw,noatime,size=1589248k tmpfs /live/aufs-ram')
 showexec('mount -t tmpfs -o rw,noatime,size=10240k tmpfs /media')
-// LIVE showexec('mount -t tmpfs -o rw,noatime,size=10240k,mode=755 tmpfs /live')
 
+// creo /live/aufs, /live/aufs-ram, /live/aufs-ram/upper e /live/aufs-ram/work
 showexec('mkdir /live/aufs')
 showexec('mkdir /live/aufs-ram')
 showexec('mkdir /live/aufs-ram/upper')
@@ -136,7 +103,7 @@ showexec('mount -t overlay -o lowerdir=/usr/lib/live/mount/rootfs/filesystem.squ
 // conversione dell'utente?
 // showexec('ln -s /live/aufs/home/live /live/aufs/home/demo')
 
-// binding dei vfs
+// monto --bind /dev, /prov, /run, /sys e /tmp
 showexec('mount --bind /dev /live/aufs/dev')
 showexec('mount --bind /proc /live/aufs/proc')
 showexec('mount --bind /run /live/aufs/run')
@@ -167,11 +134,8 @@ showexec('mount -t tmpfs -o rw,noatime,size=10240k,mode=755 tmpfs /etc/live/bin'
  * dest= /mnt/antiX
 */ 
 
-   
-   console.log('exportimental!!!')
+   console.log('This is just exportimental!!!')
    console.log('Try to use:')
-   console.log('sudo cli-installer')
-   console.log('or')
    console.log('sudo minstall')
 
    // shx.exec('/mnt/antiX/dev/shm -p')
