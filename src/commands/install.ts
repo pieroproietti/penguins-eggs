@@ -113,27 +113,29 @@ async function antiX() {
 
 showexec('rm /live -rf')
 showexec('mkdir /live')
+// Metto per primo la creazione dei tmpfs
+showexec('mount -t tmpfs -o rw,noatime,size=10240k,mode=755 tmpfs /live')
 showexec('mkdir /live/aufs-ram')
+showexec('mount -t tmpfs -o rw,noatime,size=1589248k tmpfs /live/aufs-ram')
 
 showexec('mkdir /live/boot-dev')
+// /dev/sr0 /live/boot-dev iso9660 ro,relatime,nojoliet,check=s,map=n,blocksize=2048 0 0
 showexec('ln -s /run/live/medium /live/boot-dev')
 
-// /dev/sr0 /live/boot-dev iso9660 ro,relatime,nojoliet,check=s,map=n,blocksize=2048 0 0
 // /dev/loop0 /live/linux squashfs ro,relatime 0 0
 showexec('mkdir /live/linux -p')
 showexec('ln -s /usr/lib/live/mount/rootfs/filesystem.squashfs /live/linux')
-showexec('mount -t tmpfs -o rw,noatime,size=1589248k tmpfs /live/aufs-ram')
-// overlay / overlay rw,relatime,lowerdir=/live/linux,upperdir=/live/aufs-ram/upper,workdir=/live/aufs-ram/work 0 0
+
+// /LIVE/AUFS-RAM showexec('mount -t tmpfs -o rw,noatime,size=1589248k tmpfs /live/aufs-ram')
 showexec('mount -t tmpfs -o rw,noatime,size=10240k tmpfs /media')
-// showexec('mount -t tmpfs /run tmpfs rw,nosuid,nodev,noexec,noatime,size=204268k,mode=755') // 0 0
-showexec('mount -t tmpfs -o rw,noatime,size=10240k,mode=755 tmpfs /live')
+// LIVE showexec('mount -t tmpfs -o rw,noatime,size=10240k,mode=755 tmpfs /live')
 
 showexec('mkdir /live/aufs')
 showexec('mkdir /live/aufs-ram')
 showexec('mkdir /live/aufs-ram/upper')
 showexec('mkdir /live/aufs-ram/work')
 showexec('mount -t overlay -o lowerdir=/usr/lib/live/mount/rootfs/filesystem.squashfs,upperdir=/live/aufs-ram/upper,workdir=/live/aufs-ram/work  overlay /live/aufs') // 0 0
-// conversione dell'utente
+// conversione dell'utente?
 showexec('ln -s /live/aufs/home/live /live/aufs/home/demo')
 
 // binding dei vfs
