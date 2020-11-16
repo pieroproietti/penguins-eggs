@@ -134,7 +134,7 @@ showexec('mkdir /live/aufs-ram/upper')
 showexec('mkdir /live/aufs-ram/work')
 showexec('mount -t overlay -o lowerdir=/usr/lib/live/mount/rootfs/filesystem.squashfs,upperdir=/live/aufs-ram/upper,workdir=/live/aufs-ram/work  overlay /live/aufs') // 0 0
 // conversione dell'utente?
-showexec('ln -s /live/aufs/home/live /live/aufs/home/demo')
+// showexec('ln -s /live/aufs/home/live /live/aufs/home/demo')
 
 // binding dei vfs
 showexec('mount --bind /dev /live/aufs/dev')
