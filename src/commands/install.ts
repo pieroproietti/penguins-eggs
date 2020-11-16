@@ -121,6 +121,7 @@ showexec('mount -t tmpfs -o rw,noatime,size=1589248k tmpfs /live/aufs-ram')
 showexec('mount -t tmpfs -o rw,noatime,size=10240k tmpfs /media')
 // showexec('mount -t tmpfs /run tmpfs rw,nosuid,nodev,noexec,noatime,size=204268k,mode=755') // 0 0
 showexec('mount -t tmpfs -o rw,noatime,size=10240k,mode=755 tmpfs /live')
+showexec('mkdir /live/aufs')
 // showexec('mount -t tmpfs /tmp tmpfs rw,noatime', {silent: false}) // 0 0
 // showexec('mount -t proc /proc proc rw,nosuid,nodev,noexec,relatime', {silent: false}) // 0 0
 // showexec('mount -t sys /sys sysfs rw,nosuid,nodev,noexec,relatime', {silent: false}) // 0 0
@@ -130,13 +131,13 @@ showexec('mount -t overlay overlay -o lowerdir=/live/linux,upperdir=/live/aufs-r
 showexec('mount -t tmpfs -o rw,noatime,size=10240k,mode=755 tmpfs /etc/live/config')
 showexec('mount -t tmpfs -o rw,noatime,size=10240k,mode=755 tmpfs /etc/live/bin')
 showexec('mount -t tmpfs -o rw,nosuid,nodev,noexec,relatime,size=5120k tmpfs /run/lock')
-showexec('mount -t pstore /sys/fs/pstore pstore rw,relatime') // 0 0
+// showexec('mount -t pstore /sys/fs/pstore pstore rw,relatime') // persistent store
 showexec('mount -t tmpfs -o rw,nosuid,nodev,noexec,relatime,size=408520k tmpfs /dev/shm')
-showexec('mount -t rpc_pipefs /run/rpc_pipefs rpc_pipefs rw,relatime') // 0 0
-showexec('mount -t cgroup /sys/fs/cgroup tmpfs rw,relatime,size=12k,mode=755') // 0 0
-showexec('mount -t systemd /sys/fs/cgroup/systemd cgroup rw,nosuid,nodev,noexec,relatime,release_agent=/run/cgmanager/agents/cgm-release-agent.systemd,name=systemd') // 0 0
-showexec('mount -F tmpfs /run/user/1000 tmpfs rw,nosuid,nodev,relatime,size=204264k,mode=700,uid=1000,gid=1000') // 0 0
-showexec('mount -t gvfsd-fuse /run/user/1000/gvfs fuse.gvfsd-fuse rw,nosuid,nodev,relatime,user_id=1000,group_id=1000') // 0 0
+// showexec('mount -t rpc_pipefs /run/rpc_pipefs rpc_pipefs rw,relatime') // nfs
+// showexec('mount -t cgroup /sys/fs/cgroup tmpfs rw,relatime,size=12k,mode=755') // 0 0
+// showexec('mount -t systemd /sys/fs/cgroup/systemd cgroup rw,nosuid,nodev,noexec,relatime,release_agent=/run/cgmanager/agents/cgm-release-agent.systemd,name=systemd') // 0 0
+showexec('mount -t tmpfs -o rw,nosuid,nodev,relatime,size=204264k,mode=700,uid=1000,gid=1000 tmpfs /run/user/1000')
+// showexec('mount -t gvfsd-fuse /run/user/1000/gvfs fuse.gvfsd-fuse rw,nosuid,nodev,relatime,user_id=1000,group_id=1000') // 0 0
 
 
    // monto su linuxfs il filesystem squash
@@ -158,14 +159,14 @@ showexec('mount -t gvfsd-fuse /run/user/1000/gvfs fuse.gvfsd-fuse rw,nosuid,node
    // showexec('mkdir /mnt/antiX/boot/efi -p')
    // showexec('mount --bind /boot/efi /mnt/antiX/boot/efi ')
 
-   showexec('mkdir /mnt/antiX/proc -p')
-   showexec('mount --bind /proc /mnt/antiX/proc ')
+   // showexec('mkdir /mnt/antiX/proc -p')
+   // showexec('mount --bind /proc /mnt/antiX/proc ')
 
-   showexec('mkdir /mnt/antiX/sys -p')
-   showexec('mount --bind /sys /mnt/antiX/sys ')
+   // showexec('mkdir /mnt/antiX/sys -p')
+   // showexec('mount --bind /sys /mnt/antiX/sys ')
 
-   showexec('mkdir /mnt/antiX/dev -p')
-   showexec('mount --bind /dev /mnt/antiX/dev ')
+   // showexec('mkdir /mnt/antiX/dev -p')
+   // showexec('mount --bind /dev /mnt/antiX/dev ')
 
    console.log('exportimental!!!')
    console.log('Try to use:')
