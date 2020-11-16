@@ -123,8 +123,7 @@ showexec('mkdir /live/boot-dev')
 showexec('ln -s /run/live/medium /live/boot-dev')
 
 // /dev/loop0 /live/linux squashfs ro,relatime 0 0
-showexec('mkdir /live/linux -p')
-showexec('ln -s /usr/lib/live/mount/rootfs/filesystem.squashfs /live/linux')
+showexec('ln -s /usr/lib/live/mount/rootfs/filesystem.squashfs/ /live/linux')
 
 // /LIVE/AUFS-RAM showexec('mount -t tmpfs -o rw,noatime,size=1589248k tmpfs /live/aufs-ram')
 showexec('mount -t tmpfs -o rw,noatime,size=10240k tmpfs /media')
