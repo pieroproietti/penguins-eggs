@@ -42,9 +42,9 @@ Supported: I'm trying to give you as documentation and support is possible: sour
 
 Community: currently the biggest problem with this software is the lack of a community. I hope that over time it will grow. You can help by following the project and helping to spread it. "No man is an island entire of itself..." John Donne 
 
-Important: please rate this project on sourgeforce and help to spread it's diffusion. 
+If you like eggs, please rate this project on sourgeforce and help to spread it's diffusion. 
 
-Please: feel free to contact me for any suggestions.
+Feel free to contact me for any suggestions.
 
 
 <a href='https://gitter.im/penguins-eggs-1/community'>gitter</a>
