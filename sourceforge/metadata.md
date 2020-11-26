@@ -28,7 +28,7 @@ sudo eggs produce -fv
 ## Features 
 Created on Debian stable (buster), support oldstable (stretch) and testing (bullseye).
 
-Support: i386/amd64 BIOS/UEFI with follow distros and derivates. Devuan beowulf, Ubuntu focal LTS/bionic LTS/groovy, Linux Mint ulyana/tricia/LMDE. Deepin 20 only bios.
+Support: i386/amd64 BIOS/UEFI with follow distros and derivates: Debian buster/bullseye, Devuan beowulf, Ubuntu focal LTS/bionic LTS/groovy, Linux Mint ulyana/tricia/LMDE, Deepin 20, etc.
 
 Fast: does not copy the original filesystem but the livefs is obtained instantly, through binding and overlay. In addition, the --fast option creates the ISO using lz4, reducing compression time during the development up to 10 times!
 
@@ -42,6 +42,11 @@ Supported: I'm trying to give you as documentation and support is possible: sour
 
 Community: currently the biggest problem with this software is the lack of a community. I hope that over time it will grow. You can help by following the project and helping to spread it. "No man is an island entire of itself..." John Donne 
 
-Please: feel free to contact me for any suggestions and don't forgot to rate the project.
+Important: please rate this project on sourgeforce and help to spread it's diffusion. 
+
+Please: feel free to contact me for any suggestions.
+
 
 <a href='https://gitter.im/penguins-eggs-1/community'>gitter</a>
+
+www.youtube.com/embed/teG6EKcuPuI?rel=0
