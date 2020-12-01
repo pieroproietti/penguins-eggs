@@ -280,7 +280,7 @@ export default class Pacman {
       /**
        * initrd
        */
-      let initrd = Utils.initrdImg() // '/initrd.img'
+      let initrd = Utils.initrdImg() 
       if (!fs.existsSync(initrd)) {
          initrd = '/boot/initrd.img'
          if (!fs.existsSync(initrd)) {

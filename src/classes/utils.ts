@@ -32,13 +32,18 @@ export default class Utils {
       return (shx.exec(`pidof systemd`).stdout.trim() === '1')
    }
 
-
+   /**
+    * ricava vmlinuz
+    */
    static vmlinuz(): string {
       const cmd = `cat /proc/cmdline|/usr/bin/cut -f1 -d ' ' |/usr/bin/cut -f2 -d '='`
       let vmlinuz = shx.exec(cmd, { silent: true }).stdout.trim()
       return vmlinuz
    }
 
+   /**
+    * ricava initrdImg
+    */
    static initrdImg(): string {
       const vmlinuz = Utils.vmlinuz()
       const path = vmlinuz.substring(0, vmlinuz.lastIndexOf('/')) + '/'
