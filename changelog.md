@@ -20,6 +20,9 @@ Versions are listed on reverse order, the first is the last one.
 
 * write links only on the live, not changing host's configuration
 
+### eggs-7.6.80.1_deb
+* displays the command flags
+
 ### eggs-7.6.79.1_deb
 * mx-installer starting to work (experimental)
 
