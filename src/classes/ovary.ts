@@ -795,20 +795,17 @@ export default class Ovary {
       shx.cp(path.resolve(__dirname, '../../assets/penguins-eggs.desktop'), '/usr/share/applications/')
 
       let installerUrl = 'install-debian.desktop'
-      let installerName = 'Install system'
       let installerIcon = `install-debian`
       if (Pacman.packageIsInstalled('calamares')) {
          shx.cp(path.resolve(__dirname, `../../addons/${theme}/theme/applications/install-debian.desktop`), `${this.settings.work_dir.merged}/usr/share/applications/`)
       } else {
          installerUrl = 'penguins-clinstaller.desktop'
-         installerName = 'Install system CLI'
          installerIcon = 'utilities-terminal'
          shx.cp(path.resolve(__dirname, '../../assets/penguins-clinstaller.desktop'), `${this.settings.work_dir.merged}/usr/share/applications/`)
       }
 
       if (myAddons.ichoice) {
          installerUrl = 'penguins-ichoice.desktop'
-         installerName = 'Install system choice'
          installerIcon = 'system-software-install'
          shx.cp(path.resolve(__dirname, '../../assets/penguins-ichoice.desktop'), `${this.settings.work_dir.merged}/usr/share/applications/`)
       }
