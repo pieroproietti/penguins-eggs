@@ -24,6 +24,8 @@ desktop configuration of user mauro will get used as default`
    }
 
    async run() {
+      Utils.titles(this.id + ' ' + this.argv)
+
       const { flags } = this.parse(Skel)
 
       let verbose = false

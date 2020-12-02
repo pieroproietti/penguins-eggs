@@ -53,7 +53,7 @@ export default class Produce extends Command {
    ]
 
    async run() {
-      Utils.titles('produce')
+      Utils.titles(this.id + ' ' + this.argv)
       const { flags } = this.parse(Produce)
       if (Utils.isRoot()) {
          /**
@@ -126,7 +126,7 @@ export default class Produce extends Command {
                await Prerequisites.install(i, verbose)
             }
          }
-         Utils.titles('produce')
+         Utils.titles(this.id + ' ' + this.argv)
 
          const ovary = new Ovary(compression)
          Utils.warning('Produce an egg...')

@@ -23,7 +23,8 @@ export default class Adaptp extends Command {
       const echo = Utils.setEcho(verbose)
 
       //const {args, flags} = this.parse(Adjust)
-      Utils.titles('adapt')
+      Utils.titles(this.id + ' ' + this.argv)
+
       Utils.warning('Adapt monitor resolutions to the size of window in virtual machines')
       await exec(`xrandr --output Virtual-0 --auto`, echo)
       await exec(`xrandr --output Virtual-1 --auto`, echo)

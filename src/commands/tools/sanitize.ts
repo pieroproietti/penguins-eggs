@@ -18,10 +18,11 @@ export default class Sanitize extends Command {
     }
 
     async run() {
+        Utils.titles(this.id + ' ' + this.argv)
+
         const { args, flags } = this.parse(Sanitize)
 
         const Tu = new Tools
-        Utils.titles('sanitize')
         Utils.warning(`>>> ${Sanitize.description}`)
         if (Utils.isRoot()) {
             console.log('sanitize workdir...')

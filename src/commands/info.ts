@@ -25,7 +25,7 @@ You will find here informations about penguin's eggs!
    ]
 
    async run() {
-      Utils.titles('info')
+      Utils.titles(this.id + ' ' + this.argv)
 
       const settings = new Settings()
       settings.load()

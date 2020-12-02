@@ -30,7 +30,7 @@ export default class Update extends Command {
    }
 
    async run() {
-      Utils.titles('update')
+      Utils.titles(this.id + ' ' + this.argv)
       const { flags } = this.parse(Update)
       if (Utils.isRoot()) {
          Utils.titles('update')

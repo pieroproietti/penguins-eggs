@@ -30,6 +30,8 @@ export default class DevYolk extends Command {
     * 
     */
    async run() {
+      Utils.titles(this.id + ' ' + this.argv)
+
       const { flags } = this.parse(DevYolk)
 
       let verbose = false

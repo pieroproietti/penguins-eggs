@@ -32,7 +32,7 @@ export default class Install extends Command {
     * Execute
     */
    async run() {
-      Utils.titles('install')
+      Utils.titles(this.id + ' ' + this.argv)
 
       const { flags } = this.parse(Install)
 

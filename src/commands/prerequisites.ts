@@ -30,7 +30,7 @@ export default class Prerequisites extends Command {
       'sudo eggs prerequisites -c\n create configuration\'s file']
 
    async run() {
-      Utils.titles('prerequisites')
+      Utils.titles(this.id + ' ' + this.argv)
 
       const { flags } = this.parse(Prerequisites)
 

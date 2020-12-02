@@ -33,7 +33,7 @@ export default class Kill extends Command {
    ]
 
    async run() {
-      Utils.titles('kill')
+      Utils.titles(this.id + ' ' + this.argv)
 
       const { flags } = this.parse(Kill)
       let verbose = false

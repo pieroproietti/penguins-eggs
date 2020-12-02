@@ -14,7 +14,8 @@ export default class ExportDeb extends Command {
   async run() {
     const { args, flags } = this.parse(ExportDeb)
     const Tu = new Tools
-    Utils.titles('export:deb')
+    Utils.titles(this.id + ' ' + this.argv)
+
     Utils.warning(ExportDeb.description)
     
     await Tu.loadSettings()

@@ -24,14 +24,14 @@ export default class Calamares extends Command {
       help: flags.help({ char: 'h' }),
       verbose: flags.boolean({ char: 'v' }),
       install: flags.boolean({ char: 'i', description: 'install calamares and it\'s dependencies' }),
-      final: flags.boolean({description: 'final: remove eggs prerequisites, calamares and all it\'s dependencies' }),
+      final: flags.boolean({ char: 'f', description: 'final: remove eggs prerequisites, calamares and all it\'s dependencies' }),
       theme: flags.string({ description: 'theme/branding for eggs and calamares' })
    }
 
    static examples = [`~$ sudo eggs calamares \ncreate/renew calamares configuration\'s files\n`, `~$ sudo eggs calamares -i \ninstall calamares and create it\'s configuration\'s files\n`]
 
    async run() {
-      Utils.titles('calamares')
+      Utils.titles(this.id + ' ' + this.argv)
 
       const { flags } = this.parse(Calamares)
       let verbose = false

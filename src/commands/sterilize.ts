@@ -22,7 +22,7 @@ export default class Sterilize extends Command {
    }
 
    async run() {
-      Utils.titles('sterilize')
+      Utils.titles(this.id + ' ' + this.argv)
 
       const { flags } = this.parse(Sterilize)
       let verbose = false

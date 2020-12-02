@@ -15,7 +15,7 @@ export default class ExportDocs extends Command {
     const { args, flags } = this.parse(ExportDocs)
 
     const Tu = new Tools()
-    Utils.titles('export:docs')
+    Utils.titles(this.id + ' ' + this.argv)
     Utils.warning(ExportDocs.description)
 
     await Tu.loadSettings()

@@ -18,7 +18,7 @@ export default class DevInitrd extends Command {
 
 
    async run() {
-      Utils.titles('howto:initrd')
+      Utils.titles(this.id + ' ' + this.argv)
       console.log(chalk.cyanBright('Commands to boot in the grub shell'))
       console.log()
 

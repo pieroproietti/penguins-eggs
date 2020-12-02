@@ -19,7 +19,7 @@ export default class Locales extends Command {
     }
 
     async run() {
-        Utils.titles('locales')
+        Utils.titles(this.id + ' ' + this.argv)
 
         const { args, flags } = this.parse(Locales)
 

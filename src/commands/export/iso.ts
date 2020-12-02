@@ -19,7 +19,7 @@ export default class ExportIso extends Command {
     const { flags } = this.parse(ExportIso)
 
     const Tu = new Tools()
-    Utils.titles('export:iso')
+    Utils.titles(this.id + ' ' + this.argv)
     Utils.warning(ExportIso.description)
     await Tu.loadSettings()
     let cmd = ''
