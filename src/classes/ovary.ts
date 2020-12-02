@@ -814,10 +814,10 @@ export default class Ovary {
       }
 
       if (myAddons.adapt) {
-         // Per lxde, kxqt, deepin, mate, xfce4 creo il link adapt
-         // if (Pacman.packageIsInstalled('lxde-core') || Pacman.packageIsInstalled('lxqt-core') || Pacman.packageIsInstalled('deepin-desktop-base') || Pacman.packageIsInstalled('mate-desktop') || Pacman.packageIsInstalled('ubuntu-mate-core') || Pacman.packageIsInstalled('xfce4')) {
-         shx.cp(path.resolve(__dirname, '../../assets/penguins-adapt.desktop'), `${this.settings.work_dir.merged}/usr/share/applications/`)
-         //}
+         // Per lxde, lxqt, deepin, mate, xfce4
+         if (Pacman.packageIsInstalled('lxde-core') || Pacman.packageIsInstalled('lxqt-core') || Pacman.packageIsInstalled('deepin-desktop-base') || Pacman.packageIsInstalled('mate-desktop') || Pacman.packageIsInstalled('ubuntu-mate-core') || Pacman.packageIsInstalled('xfce4')) {
+            shx.cp(path.resolve(__dirname, '../../assets/penguins-adapt.desktop'), `${this.settings.work_dir.merged}/usr/share/applications/`)
+         }
       }
 
       if (myAddons.ichoice) {
