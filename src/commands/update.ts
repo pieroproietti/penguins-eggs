@@ -10,7 +10,6 @@ import Utils from '../classes/utils'
 import Tools from '../classes/tools'
 import Pacman from '../classes/pacman'
 import Basket from '../classes/basket'
-import { setFlagsFromString } from 'v8'
 const exec = require('../lib/utils').exec
 
 /**
