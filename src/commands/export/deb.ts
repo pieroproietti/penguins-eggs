@@ -13,16 +13,14 @@ export default class ExportDeb extends Command {
 
   async run() {
     const { args, flags } = this.parse(ExportDeb)
-    const Tu = new Tools
     Utils.titles(this.id + ' ' + this.argv)
 
+    const Tu = new Tools
     Utils.warning(ExportDeb.description)
-    
     await Tu.loadSettings()
-    let cmd = ``
+    let cmd = `ssh ${Tu.export_user_deb}@${Tu.export_host} rm -rf ${Tu.export_path_deb}${Tu.file_name_deb}`
     if (flags.clean){
       console.log('cleaning destination...')
-      cmd =  cmd =`ssh ${Tu.export_user_deb}@${Tu.export_host} rm -rf ${Tu.export_path_deb}${Tu.file_name_deb}`
       await exec(cmd,{echo: true, capture: true})
     }
 

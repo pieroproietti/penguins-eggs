@@ -17,15 +17,14 @@ export default class ExportIso extends Command {
 
   async run() {
     const { flags } = this.parse(ExportIso)
+    Utils.titles(this.id + ' ' + this.argv)
 
     const Tu = new Tools()
-    Utils.titles(this.id + ' ' + this.argv)
     Utils.warning(ExportIso.description)
     await Tu.loadSettings()
-    let cmd = ''
+    let cmd = `ssh ${Tu.export_user_iso}@${Tu.export_host} rm -rf ${Tu.export_path_iso}/${Tu.snapshot_name}*`
     if (flags.clean) {
       Utils.warning('cleaning destination...')
-      cmd = `ssh ${Tu.export_user_iso}@${Tu.export_host} rm -rf ${Tu.export_path_iso}/${Tu.snapshot_name}*`
       await exec(cmd, { echo: true, capture: true })
     }
     Utils.warning('copy to destination...')

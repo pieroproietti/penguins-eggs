@@ -33,7 +33,7 @@ export default class Update extends Command {
       Utils.titles(this.id + ' ' + this.argv)
       const { flags } = this.parse(Update)
       if (Utils.isRoot()) {
-         Utils.titles('update')
+         Utils.titles(this.id + ' ' + this.argv)
 
          if (Utils.isSources()) {
             Utils.warning(`You are on penguins-eggs v. ${Utils.getPackageVersion()} from sources`)
