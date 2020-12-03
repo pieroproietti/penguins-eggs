@@ -20,6 +20,9 @@ Versions are listed on reverse order, the first is the last one.
 
 * write links only on the live, not changing host's configuration
 
+### eggs-7.6.81.1_deb
+* restored debian theme for calamares, check install-debian, clean flags usage in export
+
 ### eggs-7.6.80.1_deb
 * displays the command flags
 
