@@ -804,12 +804,7 @@ export default class Ovary {
          shx.cp(path.resolve(__dirname, '../../assets/penguins-clinstaller.desktop'), `${this.settings.work_dir.merged}/usr/share/applications/`)
       }
 
-      if (myAddons.ichoice) {
-         installerUrl = 'penguins-ichoice.desktop'
-         installerIcon = 'system-software-install'
-         shx.cp(path.resolve(__dirname, '../../assets/penguins-ichoice.desktop'), `${this.settings.work_dir.merged}/usr/share/applications/`)
-      }
-
+      // flags
       if (myAddons.adapt) {
          // Per lxde, lxqt, deepin, mate, xfce4
          if (Pacman.packageIsInstalled('lxde-core') || Pacman.packageIsInstalled('lxqt-core') || Pacman.packageIsInstalled('deepin-desktop-base') || Pacman.packageIsInstalled('mate-desktop') || Pacman.packageIsInstalled('ubuntu-mate-core') || Pacman.packageIsInstalled('xfce4')) {
@@ -818,6 +813,8 @@ export default class Ovary {
       }
 
       if (myAddons.ichoice) {
+         installerUrl = 'penguins-ichoice.desktop'
+         installerIcon = 'system-software-install'
          let dirAddon = path.resolve(__dirname, `../../addons/eggs/installer-choice/`)
          shx.cp(`${dirAddon}/applications/penguins-ichoice.desktop`, `${this.settings.work_dir.merged}/usr/share/applications/`)
          shx.cp(`${dirAddon}/bin/installer-choice.sh`, `${this.settings.work_dir.merged}/usr/local/bin/`)
