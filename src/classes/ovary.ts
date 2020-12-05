@@ -32,8 +32,6 @@ import Settings from './settings'
 import Systemctl from './systemctl'
 import Bleach from './bleach'
 import Repo from './yolk'
-import Yolk from './yolk'
-import { version } from 'punycode'
 
 /**
  * Ovary:
