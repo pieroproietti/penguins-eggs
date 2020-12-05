@@ -28,10 +28,14 @@ function addIfExist(package2check: string): string {
    let text = ''
 
    if (Pacman.packageIsInstalled(package2check)) {
+      let displayManager = package2check
+      if (package2check==='gdm3') {
+         displayManager = 'gdm'
+      }
       if (text === '') {
-         text += `- ${package2check}\n`
-      } else {  //displaymanagers: '
-         text += `                 - ${package2check}\n`
+         text += `- ${displayManager}\n`
+      } else {
+         text += `                 - ${displayManager}\n`
       }
    }
    return text
