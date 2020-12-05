@@ -91,7 +91,7 @@ export default class Xdg {
          shx.sed('-i', `default_user ${olduser}`, `default_user ${newuser}`, `${chroot}/etc/slim.conf`)
       } else if (Pacman.packageIsInstalled('gdm3')) {
          shx.sed('-i', `AutomaticLoginEnable=False`, `AutomaticLoginEnable=True`, `${chroot}/etc/gdm3/custom.conf`)
-         shx.sed('-i', `AutomaticLogin=artisan=${olduser}`, `AutomaticLogin=artisan=${newuser}`, `${chroot}/etc/gdm3/custom.conf`)
+         shx.sed('-i', `AutomaticLogin=${olduser}`, `AutomaticLogin=artisan=${newuser}`, `${chroot}/etc/gdm3/custom.conf`)
       }
    }
 

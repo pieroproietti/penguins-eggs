@@ -186,6 +186,7 @@ USAGE
   $ eggs export:deb
 
 OPTIONS
+  -a, --armel  remove old .deb before to copy
   -c, --clean  remove old .deb before to copy
   -h, --help   show CLI help
 ```
