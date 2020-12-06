@@ -18,7 +18,7 @@ export default class Clean extends Command {
 
    async run() {
       const { flags } = this.parse(Clean)
-      Utils.titles('clean')
+      Utils.titles(this.id + ' ' + this.argv)
 
       let verbose = false
       if (flags.verbose) {

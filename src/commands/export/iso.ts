@@ -22,7 +22,7 @@ export default class ExportIso extends Command {
     const Tu = new Tools()
     Utils.warning(ExportIso.description)
     await Tu.loadSettings()
-    let cmd = `ssh ${Tu.export_user_iso}@${Tu.export_host} rm -rf ${Tu.export_path_iso}/${Tu.snapshot_name}*`
+    let cmd = `ssh ${Tu.export_user_iso}@${Tu.export_host} rm -rf ${Tu.export_path_iso}${Tu.snapshot_name}*`
     if (flags.clean) {
       Utils.warning('cleaning destination...')
       await exec(cmd, { echo: true, capture: true })
