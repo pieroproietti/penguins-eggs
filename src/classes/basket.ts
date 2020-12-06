@@ -70,6 +70,8 @@ export default class Basket {
         let arch = 'amd64'
         if (process.arch === 'ia32' || process.arch === 'x32') {
             arch = 'i386'
+        } else if (process.arch === 'arm') {
+            arch = 'armel'
         }
         const url = `https://penguins-eggs.net/versions/all/${arch}/`
         const axios = require('axios').default
