@@ -20,6 +20,9 @@ Versions are listed on reverse order, the first is the last one.
 
 * write links only on the live, not changing host's configuration
 
+### eggs-7.6.83.1_deb
+* reintroduced armel arch; info now show running mode
+
 ### eggs-7.6.82.1_deb
 * fix gdm3 displaymanager in calamares configuration, export deb armel
 
