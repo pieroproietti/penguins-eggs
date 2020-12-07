@@ -21,7 +21,7 @@ All ISOs are based on Proxmox VE 6.3
 
 # Proxmox VE 6.3
 
-In the lite-ve and incubator versions, there is a pre-configured VM with a TinyCore iso boot image, a Linux version with a 16 MB graphical user interface. 
+In the pve and incubator versions, there is a pre-configured VM with a TinyCore iso boot image, a Linux version with a 16 MB graphical user interface. 
 
 You can see the virtual machine running simply by logging in as root on proxmox and booting it even without installing the system.
 
@@ -30,7 +30,7 @@ __Please note what this project is in no way connected to Proxmox VE in any offi
 
 * **naked-ve** - just the juice, without GUI. You can start here to build your revolution! (amd64)
 
-* **lite-ve** - it's not naked, but dressed with xfce4, developer's tools and virt-viewer (amd64)
+* **pve** - it's not naked, but dressed with xfce4, developer's tools and virt-viewer (amd64)
 
 * **incubator** - it's full workstation for virtualization, with cinnamon, libreoffice, gimp and tools. (amd64)
 

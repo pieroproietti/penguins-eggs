@@ -26,7 +26,7 @@ All ISOs are based on Debian buster, Debian bullseye
 
 * **debu**  - it is my personal version with cinnamon, mostly for development, but include common office tools; (amd64)
 
- # Proxmox VE 6.2
+ # Proxmox VE 6.3
 
  # MX-Linux 19.3
  
