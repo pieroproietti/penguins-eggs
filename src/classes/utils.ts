@@ -8,6 +8,7 @@
 
 import shx = require('shelljs')
 import fs = require('fs')
+const dns = require('dns');
 import path = require('path')
 import os = require('os')
 import ini = require('ini')
@@ -417,14 +418,17 @@ export default class Utils {
     * @returns dns
     */
    static netDns(): string {
-      return '192.168.61.1'
+      // return '192.168.61.1'
+      return dns.getServers()
    }
 
    /**
     * @returns gateway
     */
    static netGateway(): string {
-      return '192.168.61.1'
+      let cmd =`traceroute -m1 -n 8.8.8.8| grep ms| awk '{print $2}'`
+      let gw = shx.exec(cmd, { silent: true }).stdout.trim()
+      return gw
    }
 
    /**

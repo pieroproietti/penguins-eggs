@@ -19,15 +19,57 @@ import { IDevices, IDevice } from '../interfaces'
 const exec = require('../lib/utils').exec
 //import {checkSync} from 'diskusage'
 import * as diskusage from 'diskusage'
+
+/**
+ * Queste definizioni sono SOLO per hatching e VANNO riviste
+ */
+interface INet {
+   netInterface: string
+   netAddressType: string
+   netAddress: string
+   netMask: string
+   netGateway: string
+}
+
+interface IUsers {
+   username: string
+   userfullname: string
+   userpassword: string
+   autologin: string
+   rootpassword: string
+}
+
+interface IHost {
+   hostname: string
+   domain: string
+}
+
+interface IDisk {
+   installationDevice: string
+   partionType: string
+   fsType: string
+}
+
 /**
  * hatch, installazione
  */
 export default class Hatching {
+
+   
+
    efi = false
 
    devices = {} as IDevices
 
    target = '/tmp/TARGET'
+
+   users = {} as IUsers
+
+   host = {} as IHost
+
+   net = {} as INet
+
+   disk = {} as IDisk
 
    /**
     * constructor
@@ -69,11 +111,6 @@ export default class Hatching {
       if (verbose) {
          Utils.warning('>>>hatching: install')
       }
-
-      let users: any
-      let host: any
-      let net: any
-      let disk: any
       while (true) {
          /**
           * users configuration
@@ -82,15 +119,15 @@ export default class Hatching {
             Utils.titles(`install`)
             Utils.warning('get options users')
             const optionsUsers: any = await this.getOptionsUsers(verbose)
-            users = JSON.parse(optionsUsers)
+            this.users = JSON.parse(optionsUsers)
 
             Utils.titles(`install`)
             Utils.warning('get options users')
-            console.log(`- ` + chalk.bgGreen.black(`username: `) + chalk.bgGreen.whiteBright(users.username))
-            console.log(`- ` + chalk.bgGreen.black(`userfullname: `) + chalk.bgGreen.whiteBright(users.userfullname))
-            console.log(`- ` + chalk.bgGreen.black(`user password: `) + chalk.bgGreen.whiteBright(users.userpassword))
-            console.log(`- ` + chalk.bgGreen.black(`autologin: `) + chalk.bgGreen.whiteBright(users.autologin))
-            console.log(`- ` + chalk.bgGreen.black(`root password: `) + chalk.bgGreen.whiteBright(users.rootpassword))
+            console.log(`- ` + chalk.bgGreen.black(`username: `) + chalk.bgGreen.whiteBright(this.users.username))
+            console.log(`- ` + chalk.bgGreen.black(`userfullname: `) + chalk.bgGreen.whiteBright(this.users.userfullname))
+            console.log(`- ` + chalk.bgGreen.black(`user password: `) + chalk.bgGreen.whiteBright(this.users.userpassword))
+            console.log(`- ` + chalk.bgGreen.black(`autologin: `) + chalk.bgGreen.whiteBright(this.users.autologin))
+            console.log(`- ` + chalk.bgGreen.black(`root password: `) + chalk.bgGreen.whiteBright(this.users.rootpassword))
             console.log()
 
             const result = JSON.parse(await Utils.customConfirmAbort())
@@ -109,12 +146,12 @@ export default class Hatching {
             Utils.titles(`install`)
             Utils.warning('get options host')
             const optionsHost: any = await this.getOptionsHost(verbose)
-            host = JSON.parse(optionsHost)
+            this.host = JSON.parse(optionsHost)
 
             Utils.titles(`install`)
             Utils.warning('get options host')
-            console.log(`- ` + chalk.bgGreen.black(`hostname: `) + chalk.bgGreen.whiteBright(host.hostname))
-            console.log(`- ` + chalk.bgGreen.black(`domain: `) + chalk.bgGreen.whiteBright(host.domain))
+            console.log(`- ` + chalk.bgGreen.black(`hostname: `) + chalk.bgGreen.whiteBright(this.host.hostname))
+            console.log(`- ` + chalk.bgGreen.black(`domain: `) + chalk.bgGreen.whiteBright(this.host.domain))
             console.log()
 
             const result = JSON.parse(await Utils.customConfirmAbort())
@@ -133,19 +170,21 @@ export default class Hatching {
             Utils.titles(`install`)
             Utils.warning('get options net')
             const optionsNet: any = await this.getOptionsNet(verbose)
-            net = JSON.parse(optionsNet)
+            this.net = JSON.parse(optionsNet)
 
             Utils.titles(`install`)
             Utils.warning('get options net')
-            console.log(`- ` + chalk.bgGreen.black(`net Interface: `) + chalk.bgGreen.whiteBright(net.netInterface))
-            console.log(`- ` + chalk.bgGreen.black(`net address type: `) + chalk.bgGreen.whiteBright(net.netAddressType))
-            console.log(`- ` + chalk.bgGreen.black(`net address: `) + chalk.bgGreen.whiteBright(net.netAddress))
-            console.log(`- ` + chalk.bgGreen.black(`net mask: `) + chalk.bgGreen.whiteBright(net.netMask))
-            console.log(`- ` + chalk.bgGreen.black(`net gateway: `) + chalk.bgGreen.whiteBright(net.netGateway))
+            console.log(`- ` + chalk.bgGreen.black(`net Interface: `) + chalk.bgGreen.whiteBright(this.net.netInterface))
+            console.log(`- ` + chalk.bgGreen.black(`net address type: `) + chalk.bgGreen.whiteBright(this.net.netAddressType))
+            console.log(`- ` + chalk.bgGreen.black(`net address: `) + chalk.bgGreen.whiteBright(this.net.netAddress))
+            console.log(`- ` + chalk.bgGreen.black(`net mask: `) + chalk.bgGreen.whiteBright(this.net.netMask))
+            console.log(`- ` + chalk.bgGreen.black(`net gateway: `) + chalk.bgGreen.whiteBright(this.net.netGateway))
             console.log()
             const result = JSON.parse(await Utils.customConfirmAbort())
             if (result.confirm === 'Yes') {
-               break
+               this.resolvConf(verbose)
+               process.exit(1)
+               // break
             } else if (result.confirm === 'Abort') {
                Utils.warning(`You chose to abort the installation`)
                process.exit()
@@ -166,11 +205,11 @@ export default class Hatching {
             Utils.warning('get options disk and partition type')
 
             const optionsDisk: any = await this.getOptionsDisk(aDrives, partitionTypes, verbose)
-            disk = JSON.parse(optionsDisk)
+            this.disk = JSON.parse(optionsDisk)
 
-            console.log(`- ` + chalk.bgGreen.black(`installation device: `) + chalk.bgGreen.whiteBright(disk.installationDevice))
-            console.log(`- ` + chalk.bgGreen.black(`partition type: `) + chalk.bgGreen.whiteBright(disk.partionType))
-            console.log(`- ` + chalk.bgGreen.black(`fs type: `) + chalk.bgGreen.whiteBright(disk.fsType))
+            console.log(`- ` + chalk.bgGreen.black(`installation device: `) + chalk.bgGreen.whiteBright(this.disk.installationDevice))
+            console.log(`- ` + chalk.bgGreen.black(`partition type: `) + chalk.bgGreen.whiteBright(this.disk.partionType))
+            console.log(`- ` + chalk.bgGreen.black(`fs type: `) + chalk.bgGreen.whiteBright(this.disk.fsType))
             console.log()
             const result = JSON.parse(await Utils.customConfirmAbort())
             if (result.confirm === 'Yes') {
@@ -188,25 +227,25 @@ export default class Hatching {
          console.log()
          console.log(`You choose to install the system with the following parameters:`)
          console.log()
-         console.log(`- username: ` + chalk.cyanBright(users.username))
-         console.log(`- userfullname: ` + chalk.cyanBright(users.userfullname))
-         console.log(`- user password: ` + chalk.cyanBright(users.userpassword))
-         console.log(`- autologin: ` + chalk.cyanBright(users.autologin))
-         console.log(`- root password: ` + chalk.cyanBright(users.rootpassword))
+         console.log(`- username: ` + chalk.cyanBright(this.users.username))
+         console.log(`- userfullname: ` + chalk.cyanBright(this.users.userfullname))
+         console.log(`- user password: ` + chalk.cyanBright(this.users.userpassword))
+         console.log(`- autologin: ` + chalk.cyanBright(this.users.autologin))
+         console.log(`- root password: ` + chalk.cyanBright(this.users.rootpassword))
 
-         console.log(`- hostname: ` + chalk.cyanBright(host.hostname))
-         console.log(`- domain: ` + chalk.cyanBright(host.domain))
+         console.log(`- hostname: ` + chalk.cyanBright(this.host.hostname))
+         console.log(`- domain: ` + chalk.cyanBright(this.host.domain))
 
-         console.log(`- net Interface: ` + chalk.cyanBright(net.netInterface))
-         console.log(`- net address type: ` + chalk.cyanBright(net.netAddressType))
+         console.log(`- net Interface: ` + chalk.cyanBright(this.net.netInterface))
+         console.log(`- net address type: ` + chalk.cyanBright(this.net.netAddressType))
          if (net.netAddressType !== 'dhcp') {
-            console.log(`- net address: ` + chalk.cyanBright(net.netAddress))
-            console.log(`- net mask: ` + chalk.cyanBright(net.netMask))
-            console.log(`- net gateway: ` + chalk.cyanBright(net.netGateway))
+            console.log(`- net address: ` + chalk.cyanBright(this.net.netAddress))
+            console.log(`- net mask: ` + chalk.cyanBright(this.net.netMask))
+            console.log(`- net gateway: ` + chalk.cyanBright(this.net.netGateway))
          }
-         console.log(`- installation device: ` + chalk.cyanBright(disk.installationDevice))
-         console.log(`- partition type: ` + chalk.cyanBright(disk.partionType))
-         console.log(`- fs type: ` + chalk.cyanBright(disk.fsType))
+         console.log(`- installation device: ` + chalk.cyanBright(this.disk.installationDevice))
+         console.log(`- partition type: ` + chalk.cyanBright(this.disk.partionType))
+         console.log(`- fs type: ` + chalk.cyanBright(this.disk.fsType))
          console.log()
          console.log(chalk.bgRed.white(`This is the last opportunity to abort, the follow operation will destroy the data on the disk`))
          console.log()
@@ -226,7 +265,7 @@ export default class Hatching {
          this.efi = true
       }
 
-      const diskSize = await this.getDiskSize(disk.installationDevice, verbose)
+      const diskSize = await this.getDiskSize(this.disk.installationDevice, verbose)
       console.log(`diskSize: ${diskSize}`)
 
       if (umount) {
@@ -242,7 +281,7 @@ export default class Hatching {
          }
       }
 
-      const isDiskPrepared: boolean = await this.diskPartition(disk.installationDevice, disk.partionType, verbose)
+      const isDiskPrepared: boolean = await this.diskPartition(this.disk.installationDevice, this.disk.partionType, verbose)
       if (isDiskPrepared) {
          try {
             await this.mkfs(verbose)
@@ -269,31 +308,31 @@ export default class Hatching {
          }
 
          try {
-            await this.fstab(disk.installationDevice, verbose)
+            await this.fstab(this.disk.installationDevice, verbose)
          } catch (error) {
             console.log(`fstab: ${error}`)
          }
 
          try {
-            await this.hostname(host, verbose)
+            await this.hostname(verbose)
          } catch (error) {
             console.log(`hostname: ${error}`)
          }
 
          try {
-            await this.resolvConf(net, verbose)
+            await this.resolvConf(verbose)
          } catch (error) {
             console.log(`resolvConf: ${error}`)
          }
 
          try {
-            await this.interfaces(net, verbose)
+            await this.interfaces(verbose)
          } catch (error) {
             console.log(`interfaces: ${error}`)
          }
 
          try {
-            await this.hosts(host, verbose)
+            await this.hosts(verbose)
          } catch (error) {
             console.log(`hosts: ${error}`)
          }
@@ -305,7 +344,7 @@ export default class Hatching {
          }
 
          try {
-            await this.grubInstall(disk, verbose)
+            await this.grubInstall(verbose)
          } catch (error) {
             console.log(`grubInstall: ${error}`)
          }
@@ -323,19 +362,19 @@ export default class Hatching {
          }
 
          try {
-            await this.addUser(users.username, users.userpassword, users.fullName, '', '', '', verbose)
+            await this.addUser(this.users.username, this.users.userpassword, this.users.fullName, '', '', '', verbose)
          } catch (error) {
             console.log(`addUser: ${error}`)
          }
 
          try {
-            await this.changePassword('root', users.rootpassword, verbose)
+            await this.changePassword('root', this.users.rootpassword, verbose)
          } catch (error) {
             console.log(`changePassword: ${error}`)
          }
 
          try {
-            await this.autologinConfig(users.username, verbose)
+            await this.autologinConfig(this.users.username, verbose)
          } catch (error) {
             console.log(`autologinConfig: ${error}`)
          }
@@ -352,7 +391,7 @@ export default class Hatching {
             console.log(`umount4target: ${error}`)
          }
 
-         this.finished(disk.installationDevice, host.hostname, users.username)
+         this.finished(this.disk.installationDevice, this.host.hostname, this.users.username)
       }
    }
 
@@ -453,7 +492,7 @@ adduser ${username} \
     * @param target
     * @param options
     */
-   async grubInstall(options: any, verbose = false) {
+   async grubInstall(verbose = false) {
       const echo = Utils.setEcho(verbose)
       if (verbose) {
          Utils.warning('hatching: grubInstall')
@@ -464,7 +503,7 @@ adduser ${username} \
       } else {
          await exec(`chroot ${this.target} apt install grub-pc --yes`)
       }
-      await exec(`chroot ${this.target} grub-install ${options.installationDevice}`, echo)
+      await exec(`chroot ${this.target} grub-install ${this.disk.installationDevice}`, echo)
       await exec(`chroot ${this.target} update-grub`, echo)
       await exec('sleep 1', echo)
    }
@@ -603,14 +642,14 @@ adduser ${username} \
     * hostname()
     * @param options
     */
-   async hostname(options: any, verbose = false) {
+   async hostname(verbose = false) {
       const echo = Utils.setEcho(verbose)
       if (verbose) {
          Utils.warning('hatching: hostname')
       }
 
       const file = `${this.target}/etc/hostname`
-      const text = options.hostname
+      const text = this.host.hostname
 
       await exec(`rm ${file}`, echo)
       fs.writeFileSync(file, text)
@@ -620,22 +659,22 @@ adduser ${username} \
     * resolvConf()
     * @param options
     */
-   async resolvConf(options: any, verbose = false) {
+   async resolvConf(verbose = false) {
       const echo = Utils.setEcho(verbose)
       if (verbose) {
          Utils.warning('hatching: resolvConf')
       }
 
-      console.log(`tipo di resolv.con: ${options.netAddressType}`)
-      if (options.netAddressType === 'static') {
+      console.log(`tipo di resolv.con: ${this.net.netAddressType}`)
+      if (this.net.netAddressType === 'static') {
          const file = `${this.target}/etc/resolv.conf`
 
          let text = ``
-         text += `search ${options.domain}\n`
-         text += `domain ${options.domain}\n`
-         text += `nameserver ${options.netDns}\n`
-         text += `nameserver 8.8.8.8\n`
-         text += `nameserver 8.8.4.4\n`
+         text += `search ${this.host.domain}\n`
+         text += `domain ${this.host.domain}\n`
+         for (let index = 0; index < this.net.netDns.length; ++index) {
+            text += `nameserver ${this.net.netDns[index]}\n`
+         }
          fs.writeFileSync(file, text)
       }
    }
@@ -647,7 +686,7 @@ adduser ${username} \
     * interfaces()
     * @param options
     */
-   async interfaces(options: any, verbose = false) {
+   async interfaces(verbose = false) {
       const echo = Utils.setEcho(verbose)
       if (verbose) {
          Utils.warning('hatching: interfaces')
@@ -658,11 +697,11 @@ adduser ${username} \
          let text = ``
          text += `auto lo\n`
          text += `iface lo inet manual\n`
-         text += `auto ${options.netInterface}\n`
-         text += `iface ${options.netInterface} inet ${options.netAddressType}\n`
-         text += `address ${options.netAddress}\n`
-         text += `netmask ${options.netMask}\n`
-         text += `gateway ${options.netGateway}\n`
+         text += `auto ${this.net.netInterface}\n`
+         text += `iface ${this.net.netInterface} inet ${options.netAddressType}\n`
+         text += `address ${this.net.netAddress}\n`
+         text += `netmask ${this.net.netMask}\n`
+         text += `gateway ${this.net.netGateway}\n`
 
          fs.writeFileSync(file, text)
       }
@@ -672,7 +711,7 @@ adduser ${username} \
     * hosts()
     * @param options
     */
-   async hosts(options: any, verbose = false) {
+   async hosts(verbose = false) {
       // const echo = Utils.setEcho(verbose)
       if (verbose) {
          Utils.warning('hatching: hosts')
@@ -683,7 +722,7 @@ adduser ${username} \
       if (options.netAddressType === 'static') {
          text += `${options.netAddress} ${options.hostname} ${options.hostname}.${options.domain} pvelocalhost\n`
       } else {
-         text += `127.0.1.1 ${options.hostname} ${options.hostname}.${options.domain}\n`
+         text += `127.0.1.1 ${this.host.hostname} ${this.host.hostname}.${this.host.domain}\n`
       }
       text += `# The following lines are desirable for IPv6 capable hosts\n`
       text += `::1     ip6-localhost ip6-loopback\n`
