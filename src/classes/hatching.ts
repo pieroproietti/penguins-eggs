@@ -388,7 +388,7 @@ export default class Hatching {
             console.log(`umount4target: ${error}`)
          }
 
-         this.finished(this.disk.installationDevice, this.host.name, this.users.name)
+         this.finished()
       }
    }
 
@@ -1274,12 +1274,12 @@ adduser ${name} \
    /**
     * only show the result
     */
-   finished(installationDevice: string, name: string, name: string) {
+   finished() {
       Utils.titles()
       Utils.warning(`installation is finished.`)
-      console.log('Your system was installed on ' + chalk.cyanBright(installationDevice) + '.')
-      console.log('Host name was set as ' + chalk.cyanBright(name) + '.')
-      console.log('The user name is ' + chalk.cyanBright(name) + '.')
+      console.log('Your system was installed on ' + chalk.cyanBright(this.disk.installationDevice) + '.')
+      console.log('Host name was set as ' + chalk.cyanBright(this.host.name) + '.')
+      console.log('The user name is ' + chalk.cyanBright(this.users.name) + '.')
       console.log('Enjoy Your new penguin!')
       console.log(`Note: it is recommended to run the command ` + chalk.cyanBright(`sudo update-initramfs -u`) + ` after next reboot.`)
       console.log('Press any key to exit')
