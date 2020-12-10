@@ -29,6 +29,7 @@ interface INet {
    netAddress: string
    netMask: string
    netGateway: string
+   netDns: string
 }
 
 interface IUsers {
@@ -182,9 +183,7 @@ export default class Hatching {
             console.log()
             const result = JSON.parse(await Utils.customConfirmAbort())
             if (result.confirm === 'Yes') {
-               this.resolvConf(verbose)
-               process.exit(1)
-               // break
+               break
             } else if (result.confirm === 'Abort') {
                Utils.warning(`You chose to abort the installation`)
                process.exit()
@@ -238,7 +237,7 @@ export default class Hatching {
 
          console.log(`- net Interface: ` + chalk.cyanBright(this.net.netInterface))
          console.log(`- net address type: ` + chalk.cyanBright(this.net.netAddressType))
-         if (net.netAddressType !== 'dhcp') {
+         if (this.net.netAddressType !== 'dhcp') {
             console.log(`- net address: ` + chalk.cyanBright(this.net.netAddress))
             console.log(`- net mask: ` + chalk.cyanBright(this.net.netMask))
             console.log(`- net gateway: ` + chalk.cyanBright(this.net.netGateway))
@@ -362,7 +361,7 @@ export default class Hatching {
          }
 
          try {
-            await this.addUser(this.users.username, this.users.userpassword, this.users.fullName, '', '', '', verbose)
+            await this.addUser(this.users.username, this.users.userpassword, this.users.userfullname, '', '', '', verbose)
          } catch (error) {
             console.log(`addUser: ${error}`)
          }
@@ -692,13 +691,13 @@ adduser ${username} \
          Utils.warning('hatching: interfaces')
       }
 
-      if (options.netAddressType === 'static') {
+      if (this.net.netAddressType === 'static') {
          const file = `${this.target}/etc/network/interfaces`
          let text = ``
          text += `auto lo\n`
          text += `iface lo inet manual\n`
          text += `auto ${this.net.netInterface}\n`
-         text += `iface ${this.net.netInterface} inet ${options.netAddressType}\n`
+         text += `iface ${this.net.netInterface} inet ${this.net.netAddressType}\n`
          text += `address ${this.net.netAddress}\n`
          text += `netmask ${this.net.netMask}\n`
          text += `gateway ${this.net.netGateway}\n`
@@ -719,8 +718,8 @@ adduser ${username} \
 
       const file = `${this.target}/etc/hosts`
       let text = '127.0.0.1 localhost localhost.localdomain\n'
-      if (options.netAddressType === 'static') {
-         text += `${options.netAddress} ${options.hostname} ${options.hostname}.${options.domain} pvelocalhost\n`
+      if (this.net.netAddressType === 'static') {
+         text += `${this.net.netAddress} ${this.host.hostname} ${this.host.hostname}.${this.host.domain} pvelocalhost\n`
       } else {
          text += `127.0.1.1 ${this.host.hostname} ${this.host.hostname}.${this.host.domain}\n`
       }
