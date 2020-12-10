@@ -1191,7 +1191,7 @@ adduser ${name} \
                type: 'input',
                name: 'address',
                message: 'Insert IP address: ',
-               default: '192.168.61.100',
+               default: Utils.netAddress(),
                when: function (answers: any) {
                   return answers.addressType === 'static'
                }
@@ -1200,7 +1200,7 @@ adduser ${name} \
                type: 'input',
                name: 'netMask',
                message: 'Insert netmask: ',
-               default: '255.255.255.0',
+               default: Utils.netMasK(),
                when: function (answers: any) {
                   return answers.addressType === 'static'
                }

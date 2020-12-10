@@ -415,10 +415,23 @@ export default class Utils {
    }
 
    /**
+    * todo
+    */
+   static netAddress(): string {
+      return '192.168.61.100'
+   }
+
+   /**
+    * todo
+    */
+   static netMasK(): string {
+      return '255.255.255.0'
+   }
+
+   /**
     * @returns dns
     */
    static netDns(): string {
-      // return '192.168.61.1'
       return dns.getServers()
    }
 
