@@ -24,24 +24,24 @@ import * as diskusage from 'diskusage'
  * Queste definizioni sono SOLO per hatching e VANNO riviste
  */
 interface INet {
-   netInterface: string
-   netAddressType: string
-   netAddress: string
+   interface: string
+   addressType: string
+   address: string
    netMask: string
-   netGateway: string
-   netDns: string
+   gateway: string
+   dns: string
 }
 
 interface IUsers {
-   username: string
-   userfullname: string
-   userpassword: string
+   name: string
+   fullname: string
+   password: string
    autologin: string
    rootpassword: string
 }
 
 interface IHost {
-   hostname: string
+   name: string
    domain: string
 }
 
@@ -56,13 +56,11 @@ interface IDisk {
  */
 export default class Hatching {
 
-   
+   target = '/tmp/TARGET'
 
    efi = false
 
    devices = {} as IDevices
-
-   target = '/tmp/TARGET'
 
    users = {} as IUsers
 
@@ -124,9 +122,9 @@ export default class Hatching {
 
             Utils.titles(`install`)
             Utils.warning('get options users')
-            console.log(`- ` + chalk.bgGreen.black(`username: `) + chalk.bgGreen.whiteBright(this.users.username))
-            console.log(`- ` + chalk.bgGreen.black(`userfullname: `) + chalk.bgGreen.whiteBright(this.users.userfullname))
-            console.log(`- ` + chalk.bgGreen.black(`user password: `) + chalk.bgGreen.whiteBright(this.users.userpassword))
+            console.log(`- ` + chalk.bgGreen.black(`name: `) + chalk.bgGreen.whiteBright(this.users.name))
+            console.log(`- ` + chalk.bgGreen.black(`fullname: `) + chalk.bgGreen.whiteBright(this.users.fullname))
+            console.log(`- ` + chalk.bgGreen.black(`user password: `) + chalk.bgGreen.whiteBright(this.users.password))
             console.log(`- ` + chalk.bgGreen.black(`autologin: `) + chalk.bgGreen.whiteBright(this.users.autologin))
             console.log(`- ` + chalk.bgGreen.black(`root password: `) + chalk.bgGreen.whiteBright(this.users.rootpassword))
             console.log()
@@ -151,7 +149,7 @@ export default class Hatching {
 
             Utils.titles(`install`)
             Utils.warning('get options host')
-            console.log(`- ` + chalk.bgGreen.black(`hostname: `) + chalk.bgGreen.whiteBright(this.host.hostname))
+            console.log(`- ` + chalk.bgGreen.black(`name: `) + chalk.bgGreen.whiteBright(this.host.name))
             console.log(`- ` + chalk.bgGreen.black(`domain: `) + chalk.bgGreen.whiteBright(this.host.domain))
             console.log()
 
@@ -175,11 +173,11 @@ export default class Hatching {
 
             Utils.titles(`install`)
             Utils.warning('get options net')
-            console.log(`- ` + chalk.bgGreen.black(`net Interface: `) + chalk.bgGreen.whiteBright(this.net.netInterface))
-            console.log(`- ` + chalk.bgGreen.black(`net address type: `) + chalk.bgGreen.whiteBright(this.net.netAddressType))
-            console.log(`- ` + chalk.bgGreen.black(`net address: `) + chalk.bgGreen.whiteBright(this.net.netAddress))
+            console.log(`- ` + chalk.bgGreen.black(`net Interface: `) + chalk.bgGreen.whiteBright(this.net.interface))
+            console.log(`- ` + chalk.bgGreen.black(`net address type: `) + chalk.bgGreen.whiteBright(this.net.addressType))
+            console.log(`- ` + chalk.bgGreen.black(`net address: `) + chalk.bgGreen.whiteBright(this.net.address))
             console.log(`- ` + chalk.bgGreen.black(`net mask: `) + chalk.bgGreen.whiteBright(this.net.netMask))
-            console.log(`- ` + chalk.bgGreen.black(`net gateway: `) + chalk.bgGreen.whiteBright(this.net.netGateway))
+            console.log(`- ` + chalk.bgGreen.black(`net gateway: `) + chalk.bgGreen.whiteBright(this.net.gateway))
             console.log()
             const result = JSON.parse(await Utils.customConfirmAbort())
             if (result.confirm === 'Yes') {
@@ -226,21 +224,21 @@ export default class Hatching {
          console.log()
          console.log(`You choose to install the system with the following parameters:`)
          console.log()
-         console.log(`- username: ` + chalk.cyanBright(this.users.username))
-         console.log(`- userfullname: ` + chalk.cyanBright(this.users.userfullname))
-         console.log(`- user password: ` + chalk.cyanBright(this.users.userpassword))
+         console.log(`- name: ` + chalk.cyanBright(this.users.name))
+         console.log(`- fullname: ` + chalk.cyanBright(this.users.fullname))
+         console.log(`- user password: ` + chalk.cyanBright(this.users.password))
          console.log(`- autologin: ` + chalk.cyanBright(this.users.autologin))
          console.log(`- root password: ` + chalk.cyanBright(this.users.rootpassword))
 
-         console.log(`- hostname: ` + chalk.cyanBright(this.host.hostname))
+         console.log(`- name: ` + chalk.cyanBright(this.host.name))
          console.log(`- domain: ` + chalk.cyanBright(this.host.domain))
 
-         console.log(`- net Interface: ` + chalk.cyanBright(this.net.netInterface))
-         console.log(`- net address type: ` + chalk.cyanBright(this.net.netAddressType))
-         if (this.net.netAddressType !== 'dhcp') {
-            console.log(`- net address: ` + chalk.cyanBright(this.net.netAddress))
+         console.log(`- net Interface: ` + chalk.cyanBright(this.net.interface))
+         console.log(`- net address type: ` + chalk.cyanBright(this.net.addressType))
+         if (this.net.addressType !== 'dhcp') {
+            console.log(`- net address: ` + chalk.cyanBright(this.net.address))
             console.log(`- net mask: ` + chalk.cyanBright(this.net.netMask))
-            console.log(`- net gateway: ` + chalk.cyanBright(this.net.netGateway))
+            console.log(`- net gateway: ` + chalk.cyanBright(this.net.gateway))
          }
          console.log(`- installation device: ` + chalk.cyanBright(this.disk.installationDevice))
          console.log(`- partition type: ` + chalk.cyanBright(this.disk.partionType))
@@ -313,9 +311,9 @@ export default class Hatching {
          }
 
          try {
-            await this.hostname(verbose)
+            await this.name(verbose)
          } catch (error) {
-            console.log(`hostname: ${error}`)
+            console.log(`name: ${error}`)
          }
 
          try {
@@ -361,7 +359,7 @@ export default class Hatching {
          }
 
          try {
-            await this.addUser(this.users.username, this.users.userpassword, this.users.userfullname, '', '', '', verbose)
+            await this.addUser(this.users.name, this.users.password, this.users.fullname, '', '', '', verbose)
          } catch (error) {
             console.log(`addUser: ${error}`)
          }
@@ -373,7 +371,7 @@ export default class Hatching {
          }
 
          try {
-            await this.autologinConfig(this.users.username, verbose)
+            await this.autologinConfig(this.users.name, verbose)
          } catch (error) {
             console.log(`autologinConfig: ${error}`)
          }
@@ -390,7 +388,7 @@ export default class Hatching {
             console.log(`umount4target: ${error}`)
          }
 
-         this.finished(this.disk.installationDevice, this.host.hostname, this.users.username)
+         this.finished(this.disk.installationDevice, this.host.name, this.users.name)
       }
    }
 
@@ -429,50 +427,50 @@ export default class Hatching {
 
    /**
     *
-    * @param username
+    * @param name
     * @param password
     * @param fullName
     * @param roomNumber
     * @param workPhone
     * @param homePhone
     */
-   async addUser(username = 'live', password = 'evolution', fullName = '', roomNumber = '', workPhone = '', homePhone = '', verbose = false): Promise<void> {
+   async addUser(name = 'live', password = 'evolution', fullName = '', roomNumber = '', workPhone = '', homePhone = '', verbose = false): Promise<void> {
       const echo = Utils.setEcho(verbose)
       if (verbose) {
          Utils.warning('hatching: addUser')
       }
 
       const cmd = `chroot ${this.target} \
-adduser ${username} \
---home /home/${username} \
+adduser ${name} \
+--home /home/${name} \
 --shell /bin/bash \
 --disabled-password \
 --gecos "${fullName},${roomNumber},${workPhone},${homePhone}"`
 
       await exec(cmd, echo)
 
-      await exec(`echo ${username}:${password} | chroot ${this.target} chpasswd `, echo)
+      await exec(`echo ${name}:${password} | chroot ${this.target} chpasswd `, echo)
 
-      await exec(`chroot ${this.target} usermod -aG sudo ${username}`, echo)
+      await exec(`chroot ${this.target} usermod -aG sudo ${name}`, echo)
    }
 
    /**
     * changePassword
-    * @param username
+    * @param name
     * @param newPassword
     */
-   async changePassword(username = 'live', newPassword = 'evolution', verbose = false) {
+   async changePassword(name = 'live', newPassword = 'evolution', verbose = false) {
       const echo = Utils.setEcho(verbose)
       if (verbose) {
          Utils.warning('hatching: changePassword')
       }
-      const cmd = `echo ${username}:${newPassword} | chroot ${this.target} chpasswd `
+      const cmd = `echo ${name}:${newPassword} | chroot ${this.target} chpasswd `
       await exec(cmd, echo)
    }
 
    /**
-    * delete username
-    * @param username
+    * delete name
+    * @param name
     */
    async delLiveUser(verbose = false) {
       const echo = Utils.setEcho(verbose)
@@ -638,17 +636,17 @@ adduser ${username} \
    }
 
    /**
-    * hostname()
+    * name()
     * @param options
     */
-   async hostname(verbose = false) {
+   async name(verbose = false) {
       const echo = Utils.setEcho(verbose)
       if (verbose) {
-         Utils.warning('hatching: hostname')
+         Utils.warning('hatching: name')
       }
 
-      const file = `${this.target}/etc/hostname`
-      const text = this.host.hostname
+      const file = `${this.target}/etc/name`
+      const text = this.host.name
 
       await exec(`rm ${file}`, echo)
       fs.writeFileSync(file, text)
@@ -664,15 +662,15 @@ adduser ${username} \
          Utils.warning('hatching: resolvConf')
       }
 
-      console.log(`tipo di resolv.con: ${this.net.netAddressType}`)
-      if (this.net.netAddressType === 'static') {
+      console.log(`tipo di resolv.con: ${this.net.addressType}`)
+      if (this.net.addressType === 'static') {
          const file = `${this.target}/etc/resolv.conf`
 
          let text = ``
          text += `search ${this.host.domain}\n`
          text += `domain ${this.host.domain}\n`
-         for (let index = 0; index < this.net.netDns.length; ++index) {
-            text += `nameserver ${this.net.netDns[index]}\n`
+         for (let index = 0; index < this.net.dns.length; ++index) {
+            text += `nameserver ${this.net.dns[index]}\n`
          }
          fs.writeFileSync(file, text)
       }
@@ -691,16 +689,16 @@ adduser ${username} \
          Utils.warning('hatching: interfaces')
       }
 
-      if (this.net.netAddressType === 'static') {
+      if (this.net.addressType === 'static') {
          const file = `${this.target}/etc/network/interfaces`
          let text = ``
          text += `auto lo\n`
          text += `iface lo inet manual\n`
-         text += `auto ${this.net.netInterface}\n`
-         text += `iface ${this.net.netInterface} inet ${this.net.netAddressType}\n`
-         text += `address ${this.net.netAddress}\n`
+         text += `auto ${this.net.interface}\n`
+         text += `iface ${this.net.interface} inet ${this.net.addressType}\n`
+         text += `address ${this.net.address}\n`
          text += `netmask ${this.net.netMask}\n`
-         text += `gateway ${this.net.netGateway}\n`
+         text += `gateway ${this.net.gateway}\n`
 
          fs.writeFileSync(file, text)
       }
@@ -718,10 +716,10 @@ adduser ${username} \
 
       const file = `${this.target}/etc/hosts`
       let text = '127.0.0.1 localhost localhost.localdomain\n'
-      if (this.net.netAddressType === 'static') {
-         text += `${this.net.netAddress} ${this.host.hostname} ${this.host.hostname}.${this.host.domain} pvelocalhost\n`
+      if (this.net.addressType === 'static') {
+         text += `${this.net.address} ${this.host.name} ${this.host.name}.${this.host.domain} pvelocalhost\n`
       } else {
-         text += `127.0.1.1 ${this.host.hostname} ${this.host.hostname}.${this.host.domain}\n`
+         text += `127.0.1.1 ${this.host.name} ${this.host.name}.${this.host.domain}\n`
       }
       text += `# The following lines are desirable for IPv6 capable hosts\n`
       text += `::1     ip6-localhost ip6-loopback\n`
@@ -1096,19 +1094,19 @@ adduser ${username} \
          const questions: Array<Record<string, any>> = [
             {
                type: 'input',
-               name: 'username',
+               name: 'name',
                message: 'user name: ',
                default: 'artisan'
             },
             {
                type: 'input',
-               name: 'userfullname',
-               message: 'user full name: ',
+               name: 'fullname',
+               message: 'user fullname: ',
                default: 'artisan'
             },
             {
                type: 'password',
-               name: 'userpassword',
+               name: 'password',
                message: 'Enter a password for the user: ',
                default: 'evolution'
             },
@@ -1147,8 +1145,8 @@ adduser ${username} \
          const questions: Array<Record<string, any>> = [
             {
                type: 'input',
-               name: 'hostname',
-               message: 'hostname: ',
+               name: 'name',
+               message: 'name: ',
                default: os.hostname
             },
             {
@@ -1178,24 +1176,24 @@ adduser ${username} \
          const questions: Array<Record<string, any>> = [
             {
                type: 'list',
-               name: 'netInterface',
+               name: 'interface',
                message: 'Select the network interface: ',
                choices: ifaces
             },
             {
                type: 'list',
-               name: 'netAddressType',
+               name: 'addressType',
                message: 'Select the network type: ',
                choices: ['dhcp', 'static'],
                default: 'dhcp'
             },
             {
                type: 'input',
-               name: 'netAddress',
+               name: 'address',
                message: 'Insert IP address: ',
                default: '192.168.61.100',
                when: function (answers: any) {
-                  return answers.netAddressType === 'static'
+                  return answers.addressType === 'static'
                }
             },
             {
@@ -1204,25 +1202,25 @@ adduser ${username} \
                message: 'Insert netmask: ',
                default: '255.255.255.0',
                when: function (answers: any) {
-                  return answers.netAddressType === 'static'
+                  return answers.addressType === 'static'
                }
             },
             {
                type: 'input',
-               name: 'netGateway',
+               name: 'gateway',
                message: 'Insert gateway: ',
                default: Utils.netGateway(),
                when: function (answers: any) {
-                  return answers.netAddressType === 'static'
+                  return answers.addressType === 'static'
                }
             },
             {
                type: 'input',
-               name: 'netDns',
+               name: 'dns',
                message: 'Insert DNS: ',
                default: Utils.netDns(),
                when: function (answers: any) {
-                  return answers.netAddressType === 'static'
+                  return answers.addressType === 'static'
                }
             }
          ]
@@ -1276,12 +1274,12 @@ adduser ${username} \
    /**
     * only show the result
     */
-   finished(installationDevice: string, hostname: string, username: string) {
+   finished(installationDevice: string, name: string, name: string) {
       Utils.titles()
       Utils.warning(`installation is finished.`)
       console.log('Your system was installed on ' + chalk.cyanBright(installationDevice) + '.')
-      console.log('Host name was set as ' + chalk.cyanBright(hostname) + '.')
-      console.log('The user name is ' + chalk.cyanBright(username) + '.')
+      console.log('Host name was set as ' + chalk.cyanBright(name) + '.')
+      console.log('The user name is ' + chalk.cyanBright(name) + '.')
       console.log('Enjoy Your new penguin!')
       console.log(`Note: it is recommended to run the command ` + chalk.cyanBright(`sudo update-initramfs -u`) + ` after next reboot.`)
       console.log('Press any key to exit')
