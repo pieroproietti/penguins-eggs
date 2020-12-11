@@ -744,9 +744,9 @@ adduser ${name} \
     */
    async removeInstaller() {
             // Rimuove i link agli installer
-            shx.sed('-i','cp /usr/share/applications/install-debian.desktop $DESKTOP', '',`${this.target}/usr/bin/penguins-links-add.sh`)
-            shx.sed('-i','cp /usr/share/applications/penguins-ichoice.desktop $DESKTOP', '',`${this.target}/usr/bin/penguins-links-add.sh`)
-            shx.sed('-i','cp /usr/share/applications/penguins-clinstaller.desktop $DESKTOP', '',`${this.target}/usr/bin/penguins-links-add.sh`)
+            shx.sed('-i',`cp /usr/share/applications/install-debian.desktop $DESKTOP`, ``,`${this.target}/usr/bin/penguins-links-add.sh`)
+            shx.sed('-i',`cp /usr/share/applications/penguins-ichoice.desktop $DESKTOP`, ``,`${this.target}/usr/bin/penguins-links-add.sh`)
+            shx.sed('-i',`cp /usr/share/applications/penguins-clinstaller.desktop $DESKTOP`, ``,`${this.target}/usr/bin/penguins-links-add.sh`)
    }
    
    /**
