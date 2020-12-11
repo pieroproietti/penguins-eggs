@@ -378,7 +378,7 @@ export default class Hatching {
          }
 
          try {
-            await this.removeInstaller()
+            await this.removeInstaller(verbose)
          } catch (error) {
             console.log(`removeInstaller: ${error}`)
          }
@@ -742,23 +742,29 @@ adduser ${name} \
    /**
     * 
     */
-   async removeInstaller() {
+   async removeInstaller(verbose = false) {
+      if (verbose) {
+         Utils.warning('hatching: removeInstaller()')
+      }
       const file = '/usr/bin/penguins-links-add.sh'
-      let lines =[]
+      let lines = []
       let content = ''
-      if (fs.existsSync(file)){
-         lines = fs.readFileSync(file, {encoding:'utf8', flag:'r'}).split('\n')
-         for(let i=0; lines.length; i++){
+      if (fs.existsSync(file)) {
+         lines = fs.readFileSync(file, { encoding: 'utf8', flag: 'r' }).split('\n')
+         for (let i = 0; lines.length; i++) {
             if (lines[i]) {
-               if (lines[i].search('install')!== -1) {
+               if (lines[i].search('install') !== -1) {
                   content += lines[i]
-              }
+               } else {
+                  console.log('deleted: ' + lines[i])
+               }
             }
-            fs.writeFileSync(file,content)
+            console.log(content)
+            fs.writeFileSync(file, content)
          }
       }
    }
-   
+
    /**
     * egg2system
     * @param devices
