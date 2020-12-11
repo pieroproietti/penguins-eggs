@@ -746,7 +746,7 @@ adduser ${name} \
       if (verbose) {
          Utils.warning('hatching: removeInstaller()')
       }
-      const file = '/usr/bin/penguins-links-add.sh'
+      const file = `${this.target}/usr/bin/penguins-links-add.sh`
       let lines = []
       let content = ''
       if (fs.existsSync(file)) {
