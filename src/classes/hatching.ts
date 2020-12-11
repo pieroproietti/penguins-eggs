@@ -751,7 +751,7 @@ adduser ${name} \
       let content = ''
       if (fs.existsSync(file)) {
          lines = fs.readFileSync(file, { encoding: 'utf8', flag: 'r' }).split('\n')
-         for (let i = 0; lines.length; i++) {
+         for (let i = 0; i < lines.length; i++) {
             if (lines[i]) {
                if (lines[i].search('install') !== -1) {
                   content += lines[i]
