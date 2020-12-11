@@ -778,7 +778,7 @@ export default class Ovary {
    async createAutostart(theme = 'eggs', myAddons: IMyAddons, verbose = false) {
       const echo = Utils.setEcho(verbose)
       if (verbose) {
-         console.log('ovary: createUserLive')
+         console.log('ovary: createAutostart()')
       }
 
       const pathHomeLive = `/home/${this.settings.user_opt}`

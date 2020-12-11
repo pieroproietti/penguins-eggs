@@ -378,6 +378,12 @@ export default class Hatching {
          }
 
          try {
+            await this.removeInstaller()
+         } catch (error) {
+            console.log(`removeInstaller: ${error}`)
+         }
+
+         try {
             await this.umountVFS(verbose)
          } catch (error) {
             console.log(`umountVFS: ${error}`)
@@ -388,6 +394,7 @@ export default class Hatching {
          } catch (error) {
             console.log(`umount4target: ${error}`)
          }
+
 
          this.finished()
       }
@@ -732,6 +739,16 @@ adduser ${name} \
       fs.writeFileSync(file, text)
    }
 
+   /**
+    * 
+    */
+   async removeInstaller() {
+            // Rimuove i link agli installer
+            shx.sed('-i','cp /usr/share/applications/install-debian.desktop $DESKTOP', '',`${this.target}/usr/bin/penguins-links-add.sh`)
+            shx.sed('-i','cp /usr/share/applications/penguins-ichoice.desktop $DESKTOP', '',`${this.target}/usr/bin/penguins-links-add.sh`)
+            shx.sed('-i','cp /usr/share/applications/penguins-clinstaller.desktop $DESKTOP', '',`${this.target}/usr/bin/penguins-links-add.sh`)
+   }
+   
    /**
     * egg2system
     * @param devices
