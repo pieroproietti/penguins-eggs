@@ -743,10 +743,20 @@ adduser ${name} \
     * 
     */
    async removeInstaller() {
-            // Rimuove i link agli installer
-            shx.sed('-i',`cp /usr/share/applications/install-debian.desktop $DESKTOP`, ``,`${this.target}/usr/bin/penguins-links-add.sh`)
-            shx.sed('-i',`cp /usr/share/applications/penguins-ichoice.desktop $DESKTOP`, ``,`${this.target}/usr/bin/penguins-links-add.sh`)
-            shx.sed('-i',`cp /usr/share/applications/penguins-clinstaller.desktop $DESKTOP`, ``,`${this.target}/usr/bin/penguins-links-add.sh`)
+      const file = '/usr/bin/penguins-links-add.sh'
+      let lines =[]
+      let content = ''
+      if (fs.existsSync(file)){
+         lines = fs.readFileSync(file, {encoding:'utf8', flag:'r'}).split('\n')
+         for(let i=0; lines.length; i++){
+            if (lines[i]) {
+               if (lines[i].search('install')!== -1) {
+                  content += lines[i]
+              }
+            }
+            fs.writeFileSync(file,content)
+         }
+      }
    }
    
    /**
