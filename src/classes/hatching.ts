@@ -754,7 +754,7 @@ adduser ${name} \
          for (let i = 0; i < lines.length; i++) {
             if (lines[i]) {
                if (lines[i].search('install') === -1) {
-                  content += lines[i]
+                  content += lines[i] + '\n'
                }
             }
             fs.writeFileSync(file, content)
