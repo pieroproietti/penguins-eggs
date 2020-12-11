@@ -166,7 +166,7 @@ export default class Settings {
       this.make_efi = settings.General.make_efi === 'yes'
       if (this.make_efi) {
           
-         if (! Utils.efiTest()) {
+         if (! Utils.isUefi()) {
             Utils.error('You choose to create an UEFI image, but miss to install grub-efi-amd64 package.')
             Utils.error('Please install it before to create an UEFI image:')
             Utils.warning('sudo apt install grub-efi-amd64')
@@ -273,7 +273,7 @@ export default class Settings {
 
       console.log(`ssh_pass:          ${this.ssh_pass}`)
       if (this.make_efi) {
-         if (!Utils.efiTest) {
+         if (!Utils.isUefi()) {
             Utils.error('You choose to create an UEFI image, but miss to install grub-efi-amd64 package.')
             Utils.error('Please install it before to create an UEFI image:')
             Utils.warning('sudo apt install grub-efi-amd64')

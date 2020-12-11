@@ -15,13 +15,12 @@ import drivelist = require('drivelist')
 import Utils from './utils'
 import Pacman from './pacman'
 import { IDevices, IDevice } from '../interfaces'
-
-const exec = require('../lib/utils').exec
-//import {checkSync} from 'diskusage'
 import * as diskusage from 'diskusage'
 
+const exec = require('../lib/utils').exec
+
 /**
- * Queste definizioni sono SOLO per hatching e VANNO riviste
+ * Queste definizioni sono SOLO per hatching
  */
 interface INet {
    interface: string
@@ -106,7 +105,6 @@ export default class Hatching {
     * install
     */
    async install(verbose = false, umount = false) {
-      // const echo = Utils.setEcho(verbose)
       if (verbose) {
          Utils.warning('>>>hatching: install')
       }
@@ -116,12 +114,12 @@ export default class Hatching {
           */
          while (true) {
             Utils.titles(`install`)
-            Utils.warning('get options users')
+            Utils.warning('get users')
             const optionsUsers: any = await this.getOptionsUsers(verbose)
             this.users = JSON.parse(optionsUsers)
 
             Utils.titles(`install`)
-            Utils.warning('get options users')
+            Utils.warning('get users')
             console.log(`- ` + chalk.bgGreen.black(`name: `) + chalk.bgGreen.whiteBright(this.users.name))
             console.log(`- ` + chalk.bgGreen.black(`fullname: `) + chalk.bgGreen.whiteBright(this.users.fullname))
             console.log(`- ` + chalk.bgGreen.black(`user password: `) + chalk.bgGreen.whiteBright(this.users.password))
@@ -148,7 +146,7 @@ export default class Hatching {
             this.host = JSON.parse(optionsHost)
 
             Utils.titles(`install`)
-            Utils.warning('get options host')
+            Utils.warning('get host')
             console.log(`- ` + chalk.bgGreen.black(`name: `) + chalk.bgGreen.whiteBright(this.host.name))
             console.log(`- ` + chalk.bgGreen.black(`domain: `) + chalk.bgGreen.whiteBright(this.host.domain))
             console.log()
@@ -167,7 +165,7 @@ export default class Hatching {
           */
          while (true) {
             Utils.titles(`install`)
-            Utils.warning('get options net')
+            Utils.warning('get net configuration')
             const optionsNet: any = await this.getOptionsNet(verbose)
             this.net = JSON.parse(optionsNet)
 
@@ -199,7 +197,7 @@ export default class Hatching {
          const partitionTypes = ['simple', 'lvm2']
          while (true) {
             Utils.titles(`install`)
-            Utils.warning('get options disk and partition type')
+            Utils.warning('get disk configuration')
 
             const optionsDisk: any = await this.getOptionsDisk(aDrives, partitionTypes, verbose)
             this.disk = JSON.parse(optionsDisk)
@@ -239,6 +237,9 @@ export default class Hatching {
             console.log(`- net address: ` + chalk.cyanBright(this.net.address))
             console.log(`- net mask: ` + chalk.cyanBright(this.net.netMask))
             console.log(`- net gateway: ` + chalk.cyanBright(this.net.gateway))
+            console.log('- dns: ' + chalk.cyanBright(this.net.dns))
+         } else {
+            console.log(`- net address: ` + chalk.cyanBright('dhcp (automatic)'))
          }
          console.log(`- installation device: ` + chalk.cyanBright(this.disk.installationDevice))
          console.log(`- partition type: ` + chalk.cyanBright(this.disk.partionType))
@@ -922,7 +923,7 @@ adduser ${name} \
       let retVal = false
       const echo = Utils.setEcho(verbose)
       if (verbose) {
-         Utils.warning('hatching: diskPartition')
+         Utils.warning('hatching: diskPartition()')
       }
 
       if (partitionType === 'simple' && this.efi) {
@@ -968,7 +969,8 @@ adduser ${name} \
 
          retVal = true
       } else if (partitionType === 'lvm2' && this.efi) {
-         console.log('to be implemented!')
+         console.log('LVM2 on UEFI: to be implemented!')
+         process.exit(0)
       } else if (partitionType === 'lvm2' && !this.efi) {
          // Preparo tabella partizioni
          await exec(`parted --script ${device} mklabel msdos`)
@@ -1087,7 +1089,7 @@ adduser ${name} \
    async getOptionsUsers(verbose = false) {
       const echo = Utils.setEcho(verbose)
       if (verbose) {
-         Utils.warning('hatching: getOptions')
+         Utils.warning('hatching: getOptionsUsers()')
       }
 
       return new Promise(function (resolve) {
@@ -1138,7 +1140,7 @@ adduser ${name} \
    async getOptionsHost(verbose = false) {
       const echo = Utils.setEcho(verbose)
       if (verbose) {
-         Utils.warning('hatching: getOptions')
+         Utils.warning('hatching: getOptionsHost()')
       }
 
       return new Promise(function (resolve) {
@@ -1169,7 +1171,7 @@ adduser ${name} \
    async getOptionsNet(verbose = false) {
       const echo = Utils.setEcho(verbose)
       if (verbose) {
-         Utils.warning('hatching: getOptions')
+         Utils.warning('hatching: getOptionsNet()')
       }
 
       return new Promise(function (resolve) {
@@ -1239,7 +1241,7 @@ adduser ${name} \
    async getOptionsDisk(driveList: string[], partitionTypes: string[], verbose = false): Promise<any> {
       const echo = Utils.setEcho(verbose)
       if (verbose) {
-         Utils.warning('hatching: getOptions')
+         Utils.warning('hatching: getOptionsDisk()')
       }
 
       return new Promise(function (resolve) {

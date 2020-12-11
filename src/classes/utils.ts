@@ -8,7 +8,7 @@
 
 import shx = require('shelljs')
 import fs = require('fs')
-const dns = require('dns');
+import dns = require('dns')
 import path = require('path')
 import os = require('os')
 import ini = require('ini')
@@ -26,15 +26,15 @@ import figlet = require('figlet')
  */
 export default class Utils {
 
-  /**
-  * Controlla se il sistema è avviato con systemd
-  */
+   /**
+   * Controlla se il sistema è avviato con systemd
+   */
    static isSystemd(): boolean {
       return (shx.exec(`pidof systemd`).stdout.trim() === '1')
    }
 
    /**
-    * ricava vmlinuz
+    * ricava path per vmlinuz
     */
    static vmlinuz(): string {
       const cmd = `cat /proc/cmdline|/usr/bin/cut -f1 -d ' ' |/usr/bin/cut -f2 -d '='`
@@ -43,7 +43,7 @@ export default class Utils {
    }
 
    /**
-    * ricava initrdImg
+    * ricava path per initrdImg
     */
    static initrdImg(): string {
       const vmlinuz = Utils.vmlinuz()
@@ -68,12 +68,11 @@ export default class Utils {
     * Return the primary user's name
     */
    static getPrimaryUser(): string {
-      // let primaryUser =shx.exec(`echo $(awk -F":" '/1000:1000/ { print $1 }' /etc/passwd)`, { silent: true }).stdout.trim()
+      // let primaryUser = shx.exec(`echo $(awk -F":" '/1000:1000/ { print $1 }' /etc/passwd)`, { silent: true }).stdout.trim()
       let primaryUser = shx.exec('echo $SUDO_USER', { silent: true }).stdout.trim()
       if (primaryUser === '') {
-         console.log('Cannot find your user name. Log as normal user and run: $sudo eggs produce ')
+         console.log('Cannot find your user name. Log as normal user and run: $sudo eggs [COMMAND]')
          process.exit(1)
-         primaryUser = 'live'
       }
       return primaryUser
    }
@@ -256,28 +255,20 @@ export default class Utils {
     * Cambiare con process.arch === 'ia32'
     */
    static isi686(): boolean {
-      let retVal = false
-      if (shx.exec('uname -m', { silent: true }).stdout.trim() === 'i686') {
-         retVal = true
-      }
-      return retVal
+      return process.arch === 'ia32'
    }
 
    /**
     * Check se la macchina ha grub adatto ad efi
     */
-   static efiTest(): boolean {
-      let efiTest = false
-      if (process.arch === 'ia32') {
-         if (Pacman.packageIsInstalled('grub-efi-ia32')) {
-            efiTest = true
-         }
-      } else if (process.arch === 'x64') {
+   static isUefi(): boolean {
+      let isUefi = false
+      if (process.arch === 'x64') {
          if (Pacman.packageIsInstalled('grub-efi-amd64')) {
-            efiTest = true
+            isUefi = true
          }
       }
-      return efiTest
+      return isUefi
    }
 
    /**
@@ -341,31 +332,22 @@ export default class Utils {
    }
 
    /**
-    * Return true if live system - Versione Debian Live
-    * @remarks to move in Utils
+    * Return true if live system
     * @returns {boolean} isLive
     */
-   static isLive(type = 'debian-live'): boolean {
+   static isLive(): boolean {
       let retVal = false
+      let paths = [
+         '/lib/live/mount', // debian-live
+         '/lib/live/mount/rootfs/filesystem.squashfs', // ubuntu bionic
+         '/live/aufs' // mx-linux
+      ]
 
-      // debian-live
-      let path = '/lib/live/mount'
-      if (Utils.isMountpoint(path)) {
-         retVal = true
+      for (let i = 0; i < paths.length; i++) {
+         if (Utils.isMountpoint(paths[i])) {
+            retVal = true
+         }
       }
-
-      // Ubuntu bionic
-      path = '/lib/live/mount/rootfs/filesystem.squashfs'
-      if (Utils.isMountpoint(path)) {
-         retVal = true
-      }
-
-      // MX Linux
-      path = '/live/aufs'
-      if (Utils.isMountpoint(path)) {
-         retVal = true
-      }
-
       return retVal
    }
 
@@ -431,7 +413,7 @@ export default class Utils {
    /**
     * @returns dns
     */
-   static netDns(): string {
+   static netDns(): string[] {
       return dns.getServers()
    }
 
@@ -439,7 +421,7 @@ export default class Utils {
     * @returns gateway
     */
    static netGateway(): string {
-      let cmd =`traceroute -m1 -n 8.8.8.8| grep ms| awk '{print $2}'`
+      let cmd = `traceroute -m1 -n 8.8.8.8| grep ms| awk '{print $2}'`
       let gw = shx.exec(cmd, { silent: true }).stdout.trim()
       return gw
    }
@@ -502,7 +484,6 @@ export default class Utils {
     * @param file
     * @param text
     */
-
    static write(file: string, text: string): void {
       text = text.trim() + '\n'
       text = text.trim() + '\n'
