@@ -753,13 +753,10 @@ adduser ${name} \
          lines = fs.readFileSync(file, { encoding: 'utf8', flag: 'r' }).split('\n')
          for (let i = 0; i < lines.length; i++) {
             if (lines[i]) {
-               if (lines[i].search('install') !== -1) {
+               if (lines[i].search('install') === -1) {
                   content += lines[i]
-               } else {
-                  console.log('deleted: ' + lines[i])
                }
             }
-            console.log(content)
             fs.writeFileSync(file, content)
          }
       }
