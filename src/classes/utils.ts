@@ -400,14 +400,50 @@ export default class Utils {
     * todo
     */
    static netAddress(): string {
-      return '192.168.61.100'
+      const { networkInterfaces } = require('os')
+
+      const nets = networkInterfaces();
+      const results = Object.create(null); // or just '{}', an empty object
+      
+      let address = ''
+      for (const name of Object.keys(nets)) {
+          for (const net of nets[name]) {
+              // skip over non-ipv4 and internal (i.e. 127.0.0.1) addresses
+              if (net.family === 'IPv4' && !net.internal) {
+                  if (!results[name]) {
+                      results[name] = [];
+                  }
+                  results[name].push(net.address)
+                  address = net.address
+              }
+          }
+      }      
+      return address
    }
 
    /**
     * todo
     */
    static netMasK(): string {
-      return '255.255.255.0'
+      const { networkInterfaces } = require('os')
+
+      const nets = networkInterfaces();
+      const results = Object.create(null); // or just '{}', an empty object
+      
+      let netmask = ''
+      for (const name of Object.keys(nets)) {
+          for (const net of nets[name]) {
+              // skip over non-ipv4 and internal (i.e. 127.0.0.1) addresses
+              if (net.family === 'IPv4' && !net.internal) {
+                  if (!results[name]) {
+                      results[name] = [];
+                  }
+                  results[name].push(net.address)
+                  netmask = net.netmask
+              }
+          }
+      }      
+      return netmask
    }
 
    /**

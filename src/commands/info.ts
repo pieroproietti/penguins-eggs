@@ -27,6 +27,9 @@ You will find here informations about penguin's eggs!
    async run() {
       Utils.titles(this.id + ' ' + this.argv)
 
+      console.log(Utils.netAddress())
+      process.exit(1)
+
       const settings = new Settings()
       settings.load()
 
