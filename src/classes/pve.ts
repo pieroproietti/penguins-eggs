@@ -10,9 +10,6 @@
 const exec = require('../lib/utils').exec
 
 import Systemctl from './systemctl'
-import Utils from './utils'
-import os = require('os')
-import fs = require('fs')
 import shx = require('shelljs')
 
 export default class Pve {
@@ -37,22 +34,22 @@ export default class Pve {
         this.systemctl.disable('pve-live')
     }
 
-    create() {
-        this.createScript()
-        this.createService()
+    create(root="/") {
+        this.createScript(root)
+        this.createService(root)
     }
 
     /**
      * 
      */
-    createScript() {
-        shx.cp(__dirname +`../../scripts/pve-lvte.sh`, '/usr/bin')
+    createScript(root = '/') {
+        shx.cp(__dirname +`../../scripts/pve-lvte.sh`, `${root}/usr/bin`)
     }
 
     /**
      * 
      */
-    createService() {
-        shx.cp(__dirname +`../../scripts/pve-live.service`, '/etc/systemd/system/')
+    createService(root = '/') {
+        shx.cp(__dirname +`../../scripts/pve-live.service`, `${root}/etc/systemd/system/`)
     }
 }

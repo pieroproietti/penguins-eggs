@@ -825,7 +825,7 @@ export default class Ovary {
       if (myAddons.pve) {
          // Imposto service pve-lite
          const pve = new Pve()
-         pve.create()
+         pve.create(this.settings.work_dir.merged)
          pve.enable()
          
          let dirAddon = path.resolve(__dirname, `../../addons/eggs/proxmox-ve`)
