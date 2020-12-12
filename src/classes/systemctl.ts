@@ -1,13 +1,13 @@
 /**
+ * penguins-eggs-v7
+ * author: Piero Proietti
+ * email: piero.proietti@gmail.com
+ * license: MIT
  * gestione systemd
- * 
  * Presa da https://github.com/VolantisDev/node-systemctl
- * 
  */
 
-// libraries
-const exec = require('../lib/utils').exec
-
+ const exec = require('../lib/utils').exec
 
 export default class SistemdCtl {
 
