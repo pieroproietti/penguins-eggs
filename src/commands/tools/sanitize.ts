@@ -34,6 +34,7 @@ export default class Sanitize extends Command {
             console.log('sanitize links scripts')
             await rm('/usr/bin/add-penguins-links.sh')
             await rm('/usr/bin/penguins-links-add.sh')
+            await rm('/usr/bin/pve-live.sh')
 
             console.log('sanitize links')
             await rm('/usr/share/applications/penguins-*')

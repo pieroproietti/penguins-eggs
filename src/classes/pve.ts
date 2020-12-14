@@ -43,7 +43,7 @@ export default class Pve {
      * 
      */
     createScript(root = '/') {
-        shx.cp(__dirname +`../../scripts/pve-lvte.sh`, `${root}/usr/bin`)
+        shx.cp(__dirname +`../../scripts/pve-live.sh`, `${root}/usr/bin`)
     }
 
     /**
