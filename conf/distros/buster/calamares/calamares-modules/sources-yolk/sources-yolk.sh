@@ -5,7 +5,7 @@ CHROOT=$(mount | grep proc | grep calamares | awk '{print $3}' | sed -e "s#/proc
 #####################################################################
 if [ "$1" = "-u" ]; then
     rm $CHROOT/etc/apt/sources.list.d/yolk.list
-    chroot $CHROOT apt-get --allow-unauthenticated update
+    chroot $CHROOT apt-get update -y
     exit 0
 fi
 
