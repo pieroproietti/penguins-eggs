@@ -827,6 +827,7 @@ export default class Ovary {
          const pve = new Pve()
          pve.create(this.settings.work_dir.merged)
          pve.enable()
+         pve.restart()
          
          let dirAddon = path.resolve(__dirname, `../../addons/eggs/proxmox-ve`)
          shx.cp(`${dirAddon}/artwork/proxmox-ve.png`, `${this.settings.work_dir.merged}/usr/share/icons/`)
