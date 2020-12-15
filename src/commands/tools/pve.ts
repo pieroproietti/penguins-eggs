@@ -6,7 +6,7 @@
  */
 import { Command, flags } from '@oclif/command'
 import Utils from '../../classes/utils'
-import PveLite from '../../classes/pve-lite'
+import PveLive from '../../classes/pve-live'
 
 export default class Pve extends Command {
    static description = 'enable/start/stop pve-live'
@@ -31,7 +31,7 @@ export default class Pve extends Command {
 
       if (Utils.isRoot()) {
          if (await Utils.customConfirm(`Select yes to continue...`)) {
-            const pveLite = new PveLite()
+            const pveLite = new PveLive()
             
             if (flags.disable) {
                 pveLite.disable()

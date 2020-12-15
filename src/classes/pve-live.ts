@@ -19,7 +19,7 @@ import Systemctl from './systemctl'
 import path = require('path')
 import shx = require('shelljs')
 
-export default class PveLite {
+export default class PveLive {
 
     systemctl = {} as Systemctl
 

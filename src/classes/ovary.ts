@@ -16,7 +16,7 @@ import shx = require('shelljs')
 import chalk = require('chalk')
 import mustache = require('mustache')
 
-import PveLite from './pve-lite'
+import PveLive from './pve-live'
 
 // interfaces
 import { IMyAddons } from '../interfaces'
@@ -824,7 +824,7 @@ export default class Ovary {
 
       if (myAddons.pve) {
          // Imposto service pve-lite
-         const pve = new PveLite()
+         const pve = new PveLive()
          pve.create(this.settings.work_dir.merged)
          
          let dirAddon = path.resolve(__dirname, `../../addons/eggs/proxmox-ve`)
