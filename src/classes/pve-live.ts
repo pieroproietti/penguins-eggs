@@ -72,7 +72,7 @@ export default class PveLive {
         this.systemctl.start('pve-ha-lrm')
     }
 
-    stop()){
+    stop(){
         this.systemctl.stop('lxcfs')
         this.systemctl.stop('pve-cluster')
         this.systemctl.stop('pve-firewall')
