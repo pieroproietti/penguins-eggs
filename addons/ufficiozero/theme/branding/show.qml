@@ -87,4 +87,15 @@ Presentation
             fillMode: Image.PreserveAspectFit
         }
     }
+
+    Slide {
+        Image {
+            id: slide6
+            source: "slide6.png"
+            anchors.centerIn: parent
+            width: 800
+            height: 480
+            fillMode: Image.PreserveAspectFit
+        }
+    }
 }

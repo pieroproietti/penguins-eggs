@@ -9,11 +9,12 @@ import fs = require('fs')
 import os = require('os')
 import path = require('path')
 import shx = require('shelljs')
-import { IRemix } from '../interfaces'
+import { IRemix, IDistro } from '../interfaces'
 
 import Utils from './utils'
 import Distro from './distro'
 import Settings from './settings'
+
 
 
 const exec = require('../lib/utils').exec
@@ -26,6 +27,24 @@ const config_tools = '/etc/penguins-eggs.d/tools.conf' as string
  * @remarks all the utilities
  */
 export default class Pacman {
+
+   // Aggiunte remix e distro per permettere la copia delle configurazione SOLO dell version corrente
+   remix = {} as IRemix
+
+   distro = {} as IDistro
+
+   constructor() {
+      this.distro = new Distro(this.remix)
+      const versionLike = this.distro.versionLike
+   }
+
+   static versionLike(): string {
+      const remix = {} as IRemix
+      const distro = new Distro(remix)
+      return distro.versionLike
+   }
+
+
    /**
     * buster   OK
     * beowulf  OK
@@ -51,15 +70,14 @@ export default class Pacman {
     * @param verbose 
     */
    static packagesLocalisation(remove = false, verbose = false) {
-      const remix = {} as IRemix
-      const distro = new Distro(remix)
+      const versionLike = Pacman.versionLike()
       const packages = []
 
       const settings = new Settings()
       settings.load()
       const locales: string[] = settings.locales
 
-      if ((distro.versionLike === 'buster') || (distro.versionLike === 'beowulf')) {
+      if ((versionLike === 'buster') || (versionLike === 'beowulf')) {
          for (let i = 0; i < locales.length; i++) {
             if (locales[i] === process.env.LANG) {
                continue
@@ -87,13 +105,12 @@ export default class Pacman {
     * Crea array packages dei pacchetti da installare/rimuovere
     */
    static packages(verbose = false): string[] {
-      const remix = {} as IRemix
-      const distro = new Distro(remix)
+      const versionLike = Pacman.versionLike()
       const packages = this.debs4eggs
 
-      if ((distro.versionLike === 'buster') || (distro.versionLike === 'beowulf') || (distro.versionLike === 'bullseye') || (distro.versionLike === 'stretch')) {
+      if ((versionLike === 'buster') || (versionLike === 'beowulf') || (versionLike === 'bullseye') || (versionLike === 'stretch')) {
          packages.push('live-config')
-      } else if ((distro.versionLike === 'focal')) {
+      } else if ((versionLike === 'focal')) {
          packages.push('live-config')
       }
 
@@ -101,7 +118,7 @@ export default class Pacman {
       const init: string = shx.exec('ps --no-headers -o comm 1', { silent: !verbose }).trim()
       let config = ''
       if (init === 'systemd') {
-         if (distro.versionLike === 'bionic') {
+         if (versionLike === 'bionic') {
             // config = 'open-infrastructure-system-config'
          } else {
             config = 'live-config-systemd'
@@ -143,12 +160,11 @@ export default class Pacman {
       // verbose = true
       const echo = Utils.setEcho(verbose)
       const retVal = false
-      const remix = {} as IRemix
-      const distro = new Distro(remix)
+      const versionLike = Pacman.versionLike()
 
       await exec(`apt-get install --yes ${this.debs2line(this.packages(verbose))}`, echo)
       await exec(`apt-get install --yes ${this.debs2line(this.debs4notRemove)}`, echo)
-      if ((distro.versionLike === 'buster') || (distro.versionLike === 'beowulf') || (distro.versionLike === 'bullseye') || (distro.versionLike === 'stretch')) {
+      if ((versionLike === 'buster') || (versionLike === 'beowulf') || (versionLike === 'bullseye') || (versionLike === 'stretch')) {
          await exec(`apt-get install --yes --no-install-recommends ${this.debs2line(this.packagesLocalisation(verbose))}`, echo)
       }
       if (!this.isXInstalled()) {
@@ -170,11 +186,10 @@ export default class Pacman {
       // verbose = true
       const echo = Utils.setEcho(verbose)
       const retVal = false
-      const remix = {} as IRemix
-      const distro = new Distro(remix)
+      const versionLike = Pacman.versionLike()
 
       await exec(`apt-get purge --yes ${this.debs2line(this.packages(verbose))}`, echo)
-      if ((distro.versionLike === 'buster') || (distro.versionLike === 'beowulf')) {
+      if ((versionLike === 'buster') || (versionLike === 'beowulf')) {
          await exec(`apt-get purge --yes  ${this.debs2line(this.packagesLocalisation(verbose))}`, echo)
       }
 
@@ -243,13 +258,17 @@ export default class Pacman {
       const addons = '/etc/penguins-eggs.d/addons'
       const distros = '/etc/penguins-eggs.d/distros'
       if (fs.existsSync(addons)) {
-         shx.rm(addons)
+         shx.rm('-rf', addons)
       }
       if (fs.existsSync(distros)) {
-         shx.rm(distros)
+         shx.rm('-rf', distros)
       }
+
       shx.ln('-s', path.resolve(__dirname, '../../addons'), addons)
-      shx.ln('-s', path.resolve(__dirname, '../../conf/distros'), distros)
+      /**
+       * Andremo a modificare distros, copiando SOLO la distro effettica
+       */
+      // shx.ln('-s', path.resolve(__dirname, '../../conf/distros'), distros)
 
       shx.cp(path.resolve(__dirname, '../../conf/README.md'), '/etc/penguins-eggs.d/')
       shx.cp(path.resolve(__dirname, '../../conf/tools.conf'), config_tools)
@@ -264,7 +283,7 @@ export default class Pacman {
       /**
        * vmlinuz
        */
-      let vmlinuz = Utils.vmlinuz() 
+      let vmlinuz = Utils.vmlinuz()
       if (!fs.existsSync(vmlinuz)) {
          vmlinuz = '/boot/vmlinuz'
          if (!fs.existsSync(vmlinuz)) {
@@ -280,7 +299,7 @@ export default class Pacman {
       /**
        * initrd
        */
-      let initrd = Utils.initrdImg() 
+      let initrd = Utils.initrdImg()
       if (!fs.existsSync(initrd)) {
          initrd = '/boot/initrd.img'
          if (!fs.existsSync(initrd)) {
@@ -351,7 +370,8 @@ export default class Pacman {
     * 
     */
    static linksCheck(): boolean {
-      return fs.existsSync('/etc/penguins-eggs.d/distros/stretch')
+      const versionLike = Pacman.versionLike()
+      return fs.existsSync(`/etc/penguins-eggs.d/distros/${versionLike}`)
    }
 
    /**
@@ -363,72 +383,15 @@ export default class Pacman {
       }
       const addons = '/etc/penguins-eggs.d/addons'
       const distros = '/etc/penguins-eggs.d/distros'
-      shx.rm(addons)
-      shx.rm(distros)
+      shx.rm('-rf', addons)
+      shx.rm('-rf', distros)
       shx.ln('-s', path.resolve(__dirname, '../../addons'), addons)
-      shx.ln('-s', path.resolve(__dirname, '../../conf/distros'), distros)
+      shx.mkdir(distros)
 
+      const rootPen = Utils.rootPenguin()
+      const versionLike = Pacman.versionLike()
 
-      // Link da fare solo per pacchetto deb o per test
-      if (Utils.isDebPackage() || force) {
-
-         // const rootPen = '/usr/lib/penguins-eggs'
-         const rootPen = Utils.rootPenguin()
-
-         // Debian 10 - Buster 
-         const buster = `${rootPen}/conf/distros/buster`
-
-         // Debian 11 - bullseye
-         const bullseye = `${rootPen}/conf/distros/bullseye`
-         this.ln('-s', `${buster}/grub`, `${bullseye}/grub`, verbose)
-         this.ln('-s', `${buster}/isolinux`, `${bullseye}/isolinux`, verbose)
-         this.ln('-s', `${buster}/locales`, `${bullseye}/locales`, verbose)
-         this.ln('-s', `${buster}/calamares/calamares-modules/remove-link`, `${bullseye}/calamares/calamares-modules/remove-link`, verbose)
-         this.ln('-s', `${buster}/calamares/calamares-modules/sources-yolk`, `${bullseye}/calamares/calamares-modules/sources-yolk`, verbose)
-         this.ln('-s', `${buster}/calamares/calamares-modules/sources-yolk-unmount`, `${bullseye}/calamares/calamares-modules/sources-yolk-unmount`, verbose)
-         this.ln('-s', `${buster}/calamares/modules`, `${bullseye}/calamares/modules`, verbose)
-
-         // Debian 9 - stretch
-         const stretch = `${rootPen}/conf/distros/stretch`
-         this.ln('-s', buster, stretch, verbose)
-
-         // Devuan beofulf
-         const beowulf = `${rootPen}/conf/distros/beowulf`
-         this.ln('-s', `${buster}/grub`, `${beowulf}/grub`, verbose)
-         this.ln('-s', `${buster}/isolinux`, `${beowulf}/isolinux`, verbose)
-         this.ln('-s', `${buster}/locales`, `${beowulf}/locales`, verbose)
-         this.ln('-s', `${buster}/calamares/calamares-modules`, `${beowulf}/calamares/calamares-modules`, verbose)
-         this.ln('-s', `${buster}/calamares/modules`, `${beowulf}/calamares/modules`, verbose)
-
-         // Ubuntu 20.04 - focal
-         const focal = `${rootPen}/conf/distros/focal`
-         this.ln('-s', `${buster}/grub/loopback.cfg`, `${focal}/grub/loopback.cfg`, verbose)
-         this.ln('-s', `${buster}/grub/theme.cfg`, `${focal}/grub/theme.cfg`, verbose)
-         this.ln('-s', `${buster}/isolinux/isolinux.template.cfg`, `${focal}/isolinux/isolinux.template.cfg`, verbose)
-         this.ln('-s', `${buster}/isolinux/stdmenu.template.cfg`, `${focal}/isolinux/stdmenu.template.cfg`, verbose)
-         this.ln('-s', `${buster}/calamares/calamares-modules/remove-link`, `${focal}/calamares/calamares-modules/remove-link`, verbose)
-         this.ln('-s', `${buster}/calamares/calamares-modules/sources-yolk`, `${focal}/calamares/calamares-modules/sources-yolk`, verbose)
-         this.ln('-s', `${buster}/calamares/calamares-modules/sources-yolk-unmount`, `${focal}/calamares/calamares-modules/sources-yolk-unmount`, verbose)
-         this.ln('-s', `${buster}/calamares/modules/displaymanager.yml`, `${focal}/calamares/modules/displaymanager.yml`, verbose)
-         this.ln('-s', `${buster}/calamares/modules/packages.yml`, `${focal}/calamares/modules/packages.yml`, verbose)
-         this.ln('-s', `${buster}/calamares/modules/removeuser.yml`, `${focal}/calamares/modules/removeuser.yml`, verbose)
-
-         // Ubuntu 18.04  - bionic
-         const bionic = `${rootPen}/conf/distros/bionic`
-         this.ln('-s', `${focal}/grub`, `${bionic}/grub`, verbose)
-         this.ln('-s', `${focal}/isolinux`, `${bionic}/isolinux`, verbose)
-         this.ln('-s', `${buster}/calamares/calamares-modules/remove-link`, `${bionic}/calamares/calamares-modules/remove-link`, verbose)
-         this.ln('-s', `${buster}/calamares/calamares-modules/sources-yolk`, `${bionic}/calamares/calamares-modules/sources-yolk`, verbose)
-         this.ln('-s', `${buster}/calamares/calamares-modules/sources-yolk-unmount`, `${bionic}/calamares/calamares-modules/sources-yolk-unmount`, verbose)
-         this.ln('-s', `${focal}/calamares/modules/displaymanager.yml`, `${bionic}/calamares/modules/displaymanager.yml`, verbose)
-         this.ln('-s', `${buster}/calamares/modules/packages.yml`, `${bionic}/calamares/modules/packages.yml`, verbose)
-         this.ln('-s', `${buster}/calamares/modules/removeuser.yml`, `${bionic}/calamares/modules/removeuser.yml`, verbose)
-         this.ln('-s', `${buster}/calamares/modules/unpackfs.yml`, `${bionic}/calamares/modules/unpackfs.yml`, verbose)
-
-         // Groovy
-         const groovy = `${rootPen}/conf/distros/groovy`
-         this.ln('-s', focal, groovy, verbose)
-      }
+      shx.cp('-r',`${rootPen}/conf/distros/${versionLike}`, `/etc/penguins-eggs.d/distros/${versionLike}`)
    }
 
 
