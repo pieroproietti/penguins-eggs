@@ -31,21 +31,22 @@ export default class Pve extends Command {
 
       if (Utils.isRoot()) {
          if (await Utils.customConfirm(`Select yes to continue...`)) {
-            const pveLite = new PveLive()
+            const pveLive = new PveLive()
             
             if (flags.disable) {
-                pveLite.disable()
+                pveLive.disable()
             }
 
             if (flags.enable) {
-                pveLite.enable()
+                pveLive.enable()
             }
 
             if (flags.start) {
-                pveLite.start()
+                pveLive.start()
             }
+
             if (flags.stop) {
-                pveLite.stop()
+                pveLive.stop()
             }
 
          }
