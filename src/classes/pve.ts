@@ -7,14 +7,13 @@
  */
 
  /**
-  * This will create a symbolic link from the system’s copy of the service file (usually in /lib/systemd/system or /etc/systemd/system) into the location on disk where systemd looks for autostart files (usually /etc/systemd/system/some_target.target.wants. We will go over what a target is later in this guide).
+  * This will create a symbolic link from the system’s copy of the service file (usually in /lib/systemd/system or /etc/systemd/system) 
+  * into the location on disk where systemd looks for autostart files (usually /etc/systemd/system/some_target.target.wants. 
+  * We will go over what a target is later in this guide).
   * To disable the service from starting automatically, you can type:
   * sudo systemctl disable application.service
   * This will remove the symbolic link that indicated that the service should be started automatically.
   */
-
-// libraries
-const exec = require('../lib/utils').exec
 
 import Systemctl from './systemctl'
 import path = require('path')
