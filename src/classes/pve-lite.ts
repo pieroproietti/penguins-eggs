@@ -19,7 +19,7 @@ import Systemctl from './systemctl'
 import path = require('path')
 import shx = require('shelljs')
 
-export default class Pve {
+export default class PveLite {
 
     systemctl = {} as Systemctl
 
@@ -63,12 +63,21 @@ export default class Pve {
     /**
      * 
      */
-    restart(){
-        this.systemctl.restart('lxcfs')
-        this.systemctl.restart('pve-cluster')
-        this.systemctl.restart('pve-firewall')
-        this.systemctl.restart('pve-guests')
-        this.systemctl.restart('pve-ha-crm')
-        this.systemctl.restart('pve-ha-lrm')
+    start(){
+        this.systemctl.start('lxcfs')
+        this.systemctl.start('pve-cluster')
+        this.systemctl.start('pve-firewall')
+        this.systemctl.start('pve-guests')
+        this.systemctl.start('pve-ha-crm')
+        this.systemctl.start('pve-ha-lrm')
+    }
+
+    stop()){
+        this.systemctl.stop('lxcfs')
+        this.systemctl.stop('pve-cluster')
+        this.systemctl.stop('pve-firewall')
+        this.systemctl.stop('pve-guests')
+        this.systemctl.stop('pve-ha-crm')
+        this.systemctl.stop('pve-ha-lrm')
     }
 }

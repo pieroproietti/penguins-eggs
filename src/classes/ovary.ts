@@ -16,7 +16,7 @@ import shx = require('shelljs')
 import chalk = require('chalk')
 import mustache = require('mustache')
 
-import Pve from './pve'
+import PveLite from './pve-lite'
 
 // interfaces
 import { IMyAddons } from '../interfaces'
@@ -824,10 +824,8 @@ export default class Ovary {
 
       if (myAddons.pve) {
          // Imposto service pve-lite
-         const pve = new Pve()
+         const pve = new PveLite()
          pve.create(this.settings.work_dir.merged)
-         pve.enable()
-         pve.restart()
          
          let dirAddon = path.resolve(__dirname, `../../addons/eggs/proxmox-ve`)
          shx.cp(`${dirAddon}/artwork/proxmox-ve.png`, `${this.settings.work_dir.merged}/usr/share/icons/`)

@@ -1001,6 +1001,7 @@ adduser ${name} \
       } else if (partitionType === 'lvm2' && this.efi) {
          console.log('LVM2 on UEFI: to be implemented!')
          process.exit(0)
+         
       } else if (partitionType === 'lvm2' && !this.efi) {
          // Preparo tabella partizioni
          await exec(`parted --script ${device} mklabel msdos`)
