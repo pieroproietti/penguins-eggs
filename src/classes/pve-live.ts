@@ -67,7 +67,7 @@ export default class PveLive {
         this.systemctl.start('lxcfs')
         this.systemctl.start('pve-cluster')
         this.systemctl.start('pve-firewall')
-        this.systemctl.start('pve-guests')
+        // this.systemctl.start('pve-guests')
         this.systemctl.start('pve-ha-crm')
         this.systemctl.start('pve-ha-lrm')
     }
@@ -76,7 +76,7 @@ export default class PveLive {
         this.systemctl.stop('lxcfs')
         this.systemctl.stop('pve-cluster')
         this.systemctl.stop('pve-firewall')
-        this.systemctl.stop('pve-guests')
+        // this.systemctl.stop('pve-guests')
         this.systemctl.stop('pve-ha-crm')
         this.systemctl.stop('pve-ha-lrm')
     }

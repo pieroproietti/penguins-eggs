@@ -123,6 +123,7 @@ USAGE
 * [`eggs tools:clean`](#eggs-toolsclean)
 * [`eggs tools:initrd`](#eggs-toolsinitrd)
 * [`eggs tools:locales`](#eggs-toolslocales)
+* [`eggs tools:pve`](#eggs-toolspve)
 * [`eggs tools:sanitize`](#eggs-toolssanitize)
 * [`eggs tools:skel`](#eggs-toolsskel)
 * [`eggs tools:yolk`](#eggs-toolsyolk)
@@ -472,6 +473,27 @@ OPTIONS
 ```
 
 _See code: [src/commands/tools/locales.ts](https://github.com/pieroproietti/penguins-eggs/blob/v7.6.84/src/commands/tools/locales.ts)_
+
+## `eggs tools:pve`
+
+enable/start/stop pve-live
+
+```
+enable/start/stop pve-live
+
+USAGE
+  $ eggs tools:pve
+
+OPTIONS
+  -d, --disable  disable
+  -e, --enable   enable
+  -h, --help     show CLI help
+  -v, --verbose  stop service
+  --start        start
+  --stop         stop service
+```
+
+_See code: [src/commands/tools/pve.ts](https://github.com/pieroproietti/penguins-eggs/blob/v7.6.84/src/commands/tools/pve.ts)_
 
 ## `eggs tools:sanitize`
 
