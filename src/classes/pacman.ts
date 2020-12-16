@@ -240,7 +240,7 @@ export default class Pacman {
    }
 
    /**
-    * Restutuisce VERO se i file di configurazione SONO presenti
+    * Restituisce VERO se i file di configurazione SONO presenti
     */
    static configurationCheck(): boolean {
       const confExists: boolean = fs.existsSync(config_file)
@@ -263,6 +263,7 @@ export default class Pacman {
       if (fs.existsSync(distros)) {
          shx.rm('-rf', distros)
       }
+      shx.mkdir('-p', distros)
 
       shx.ln('-s', path.resolve(__dirname, '../../addons'), addons)
       /**
@@ -377,21 +378,77 @@ export default class Pacman {
    /**
     * 
     */
-   static async linksInstall(force = false, verbose = false) {
+   static async linksInstall(force = false, verbose = true) {
+      if (verbose){
+         console.log('linksinstall')
+      }
       if (!fs.existsSync('/etc/penguins-eggs.d')) {
          shx.mkdir('/etc/penguins-eggs.d')
       }
-      const addons = '/etc/penguins-eggs.d/addons'
-      const distros = '/etc/penguins-eggs.d/distros'
-      shx.rm('-rf', addons)
-      shx.rm('-rf', distros)
-      shx.ln('-s', path.resolve(__dirname, '../../addons'), addons)
-      shx.mkdir(distros)
-
       const rootPen = Utils.rootPenguin()
       const versionLike = Pacman.versionLike()
 
-      shx.cp('-r',`${rootPen}/conf/distros/${versionLike}`, `/etc/penguins-eggs.d/distros/${versionLike}`)
+      // L = follow links è OK da source, ora il problema è copiare i link da npm o rifarli
+      if (Utils.isDebPackage() || force) {
+         // Debian 10 - Buster 
+         const buster = `${rootPen}/conf/distros/buster`
+
+         // Debian 11 - bullseye
+         const bullseye = `${rootPen}/conf/distros/bullseye`
+         await this.ln('-s', `${buster}/grub`, `${bullseye}/grub`, verbose)
+         await this.ln('-s', `${buster}/isolinux`, `${bullseye}/isolinux`, verbose)
+         await this.ln('-s', `${buster}/locales`, `${bullseye}/locales`, verbose)
+         await this.ln('-s', `${buster}/calamares/calamares-modules/remove-link`, `${bullseye}/calamares/calamares-modules/remove-link`, verbose)
+         await this.ln('-s', `${buster}/calamares/calamares-modules/sources-yolk`, `${bullseye}/calamares/calamares-modules/sources-yolk`, verbose)
+         await this.ln('-s', `${buster}/calamares/calamares-modules/sources-yolk-unmount`, `${bullseye}/calamares/calamares-modules/sources-yolk-unmount`, verbose)
+         await this.ln('-s', `${buster}/calamares/modules`, `${bullseye}/calamares/modules`, verbose)
+
+         // Debian 9 - stretch
+         const stretch = `${rootPen}/conf/distros/stretch`
+         await this.ln('-s', buster, stretch, verbose)
+
+         // Devuan beofulf
+         const beowulf = `${rootPen}/conf/distros/beowulf`
+         await this.ln('-s', `${buster}/grub`, `${beowulf}/grub`, verbose)
+         await this.ln('-s', `${buster}/isolinux`, `${beowulf}/isolinux`, verbose)
+         await this.ln('-s', `${buster}/locales`, `${beowulf}/locales`, verbose)
+         await this.ln('-s', `${buster}/calamares/calamares-modules`, `${beowulf}/calamares/calamares-modules`, verbose)
+         await this.ln('-s', `${buster}/calamares/modules`, `${beowulf}/calamares/modules`, verbose)
+
+         // Ubuntu 20.04 - focal
+         const focal = `${rootPen}/conf/distros/focal`
+         await this.ln('-s', `${buster}/grub/loopback.cfg`, `${focal}/grub/loopback.cfg`, verbose)
+         await this.ln('-s', `${buster}/grub/theme.cfg`, `${focal}/grub/theme.cfg`, verbose)
+         await this.ln('-s', `${buster}/isolinux/isolinux.template.cfg`, `${focal}/isolinux/isolinux.template.cfg`, verbose)
+         await this.ln('-s', `${buster}/isolinux/stdmenu.template.cfg`, `${focal}/isolinux/stdmenu.template.cfg`, verbose)
+         await this.ln('-s', `${buster}/calamares/calamares-modules/remove-link`, `${focal}/calamares/calamares-modules/remove-link`, verbose)
+         await this.ln('-s', `${buster}/calamares/calamares-modules/sources-yolk`, `${focal}/calamares/calamares-modules/sources-yolk`, verbose)
+         await this.ln('-s', `${buster}/calamares/calamares-modules/sources-yolk-unmount`, `${focal}/calamares/calamares-modules/sources-yolk-unmount`, verbose)
+         await this.ln('-s', `${buster}/calamares/modules/displaymanager.yml`, `${focal}/calamares/modules/displaymanager.yml`, verbose)
+         await this.ln('-s', `${buster}/calamares/modules/packages.yml`, `${focal}/calamares/modules/packages.yml`, verbose)
+         await this.ln('-s', `${buster}/calamares/modules/removeuser.yml`, `${focal}/calamares/modules/removeuser.yml`, verbose)
+
+         // Ubuntu 18.04  - bionic
+         const bionic = `${rootPen}/conf/distros/bionic`
+         await this.ln('-s', `${focal}/grub`, `${bionic}/grub`, verbose)
+         await this.ln('-s', `${focal}/isolinux`, `${bionic}/isolinux`, verbose)
+         await this.ln('-s', `${buster}/calamares/calamares-modules/remove-link`, `${bionic}/calamares/calamares-modules/remove-link`, verbose)
+         await this.ln('-s', `${buster}/calamares/calamares-modules/sources-yolk`, `${bionic}/calamares/calamares-modules/sources-yolk`, verbose)
+         await this.ln('-s', `${buster}/calamares/calamares-modules/sources-yolk-unmount`, `${bionic}/calamares/calamares-modules/sources-yolk-unmount`, verbose)
+         await this.ln('-s', `${focal}/calamares/modules/displaymanager.yml`, `${bionic}/calamares/modules/displaymanager.yml`, verbose)
+         await this.ln('-s', `${buster}/calamares/modules/packages.yml`, `${bionic}/calamares/modules/packages.yml`, verbose)
+         await this.ln('-s', `${buster}/calamares/modules/removeuser.yml`, `${bionic}/calamares/modules/removeuser.yml`, verbose)
+         await this.ln('-s', `${buster}/calamares/modules/unpackfs.yml`, `${bionic}/calamares/modules/unpackfs.yml`, verbose)
+
+         // Groovy
+         const groovy = `${rootPen}/conf/distros/groovy`
+         await this.ln('-s', focal, groovy, verbose)
+      }
+      shx.mkdir('-p', `/etc/penguins-eggs.d/distros/${versionLike}`)
+      shx.exec(`cp ${rootPen}/conf/distros/${versionLike} /etc/penguins-eggs.d/distros`, {silent: false})
+
+      // console.log(`cp -rL ${rootPen}/conf/distros/${versionLike} /etc/penguins-eggs.d/distros`)
+      // shx.cp('-rL',`${rootPen}/conf/distros/${versionLike}`, `/etc/penguins-eggs.d/distros`)
    }
 
 

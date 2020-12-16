@@ -89,10 +89,6 @@ export default class Prerequisites extends Command {
       if (i.clean || i.configuration || i.links) {
          Utils.warning(`Eggs will execute the following tasks:`)
 
-         if (i.links) {
-            console.log('- create links to different distros\n')
-         }
-
          if (i.clean) {
             console.log('- udpate the system')
             console.log(chalk.yellow('  apt update --yes\n'))
@@ -111,9 +107,14 @@ export default class Prerequisites extends Command {
             console.log(chalk.yellow('  apt install --yes ' + Pacman.debs2line(packages)))
 
             if (i.configuration) {
+               Utils.warning('creating configuration\'s files...')
                Pacman.configurationInstall(verbose)
             }
-            
+
+            if (i.links) {
+               console.log('- create links to different distros\n')
+            }
+   
             const packagesLocalisation = Pacman.packagesLocalisation()
             if (packagesLocalisation.length > 0) {
                console.log(chalk.yellow('  apt install --yes --no-install-recommends live-task-localisation ' + Pacman.debs2line(packagesLocalisation)) + '\n')
@@ -184,7 +185,6 @@ export default class Prerequisites extends Command {
       }
 
       if (i.configuration) {
-         Utils.warning('creating configuration\'s files...')
          await Pacman.configurationInstall(verbose)
       }
    }
