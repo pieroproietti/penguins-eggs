@@ -392,7 +392,7 @@ export default class Pacman {
     * @param rootPen 
     */
    static async linksManage(remove = false, verbose = false) {
-      if (Utils.isDebPackage()) {
+      if (Utils.isDebPackage() || !Utils.isSources()) {
          const rootPen = Utils.rootPenguin()
 
          // Debian 10 - Buster 
