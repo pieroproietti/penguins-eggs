@@ -39,9 +39,15 @@ export default class Prerequisites extends Command {
       let links = flags.links
 
       if (Utils.isRoot()) {
-         if (configuration) {
+         if (!Pacman.linksCheck()){
+            if (!Pacman.configurationCheck()){
+               await Pacman.configurationInstall()
+            }
+            await Pacman.createLinks(Utils.rootPenguin())
+         }
+         if (configuration) { // only
             await Pacman.configurationInstall(verbose)
-         } else if (links) {
+         } else if (links) { // only
             await Pacman.linksInstall(true, verbose)
          } else {
             const i = await Prerequisites.thatWeNeed(verbose)
@@ -78,7 +84,6 @@ export default class Prerequisites extends Command {
       }
 
       i.configuration = !Pacman.configurationCheck()
-
 
       i.prerequisites = !await Pacman.prerequisitesCheck()
 
@@ -153,6 +158,10 @@ export default class Prerequisites extends Command {
     */
    static async install(i: IInstall, verbose = false) {
       const echo = Utils.setEcho(verbose)
+
+      if (i.configuration) {
+         await Pacman.configurationInstall(verbose)
+      }
 
       if (i.links) {
          await Pacman.linksInstall(verbose)
