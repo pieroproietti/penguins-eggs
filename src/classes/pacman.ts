@@ -244,8 +244,6 @@ export default class Pacman {
    static configurationCheck(): boolean {
       const confExists = fs.existsSync(config_file)
       const listExists = fs.existsSync('/usr/local/share/penguins-eggs/exclude.list')
-      console.log(config_file + confExists)
-      console.log('/usr/local/share/penguins-eggs/exclude.list' + confExists)
       return (confExists && listExists)
    }
 
@@ -375,27 +373,25 @@ export default class Pacman {
    /**
     * 
     */
-   static async linksInstall(force = false, verbose = true) {
+   static async linksInstall(force = false, verbose = false) {
       if (verbose) {
          console.log('linksinstall')
       }
       const rootPen = Utils.rootPenguin()
       const versionLike = Pacman.versionLike()
       if (Utils.isDebPackage() || force) {
-         await Pacman.createLinks(rootPen)
-         console.log('link creati...')
+         await Pacman.linksCreate(rootPen)
       }
       // L = follow links è OK da source, ora il problema è copiare i link da npm o rifarli
       let cmd = `cp -rL ${rootPen}/conf/distros/${versionLike} /etc/penguins-eggs.d/distros`
       execSync(cmd)
-      console.log(cmd)
    }
 
    /**
     * 
     * @param rootPen 
     */
-   static async createLinks(rootPen: string, verbose = false) {
+   static async linksCreate(rootPen: string, verbose = false) {
       // Debian 10 - Buster 
       const buster = `${rootPen}/conf/distros/buster`
 

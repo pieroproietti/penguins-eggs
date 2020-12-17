@@ -43,7 +43,7 @@ export default class Prerequisites extends Command {
             if (!Pacman.configurationCheck()){
                await Pacman.configurationInstall()
             }
-            await Pacman.createLinks(Utils.rootPenguin())
+            await Pacman.linksCreate(Utils.rootPenguin())
          }
          if (configuration) { // only
             await Pacman.configurationInstall(verbose)
