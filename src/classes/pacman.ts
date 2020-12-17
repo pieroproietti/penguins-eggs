@@ -251,7 +251,7 @@ export default class Pacman {
     * Creazione del file di configurazione /etc/penguins-eggs
     */
    static async configurationInstall(links = true, verbose = true): Promise<void> {
-      const confRoot ='/etc/penguins-eggs.d'
+      const confRoot = '/etc/penguins-eggs.d'
       if (!fs.existsSync(confRoot)) {
          execSync(`mkdir ${confRoot}`)
       }
@@ -379,8 +379,8 @@ export default class Pacman {
       }
       const rootPen = Utils.rootPenguin()
       const versionLike = Pacman.versionLike()
-      if (Utils.isDebPackage() || force) {
-         await Pacman.linksCreate(rootPen)
+      if (Utils.isDebPackage()) {
+         await Pacman.linksManage()
       }
       // L = follow links è OK da source, ora il problema è copiare i link da npm o rifarli
       let cmd = `cp -rL ${rootPen}/conf/distros/${versionLike} /etc/penguins-eggs.d/distros`
@@ -391,78 +391,88 @@ export default class Pacman {
     * 
     * @param rootPen 
     */
-   static async linksCreate(rootPen: string, verbose = false) {
-      // Debian 10 - Buster 
-      const buster = `${rootPen}/conf/distros/buster`
+   static async linksManage(remove = false, verbose = false) {
+      if (Utils.isDebPackage()) {
+         const rootPen = Utils.rootPenguin()
 
-      // Debian 11 - bullseye
-      const bullseye = `${rootPen}/conf/distros/bullseye`
-      await this.ln('-s', `${buster}/grub`, `${bullseye}/grub`, verbose)
-      await this.ln('-s', `${buster}/isolinux`, `${bullseye}/isolinux`, verbose)
-      await this.ln('-s', `${buster}/locales`, `${bullseye}/locales`, verbose)
-      await this.ln('-s', `${buster}/calamares/calamares-modules/remove-link`, `${bullseye}/calamares/calamares-modules/remove-link`, verbose)
-      await this.ln('-s', `${buster}/calamares/calamares-modules/sources-yolk`, `${bullseye}/calamares/calamares-modules/sources-yolk`, verbose)
-      await this.ln('-s', `${buster}/calamares/calamares-modules/sources-yolk-unmount`, `${bullseye}/calamares/calamares-modules/sources-yolk-unmount`, verbose)
-      await this.ln('-s', `${buster}/calamares/modules`, `${bullseye}/calamares/modules`, verbose)
+         // Debian 10 - Buster 
+         const buster = `${rootPen}/conf/distros/buster`
 
-      // Debian 9 - stretch
-      const stretch = `${rootPen}/conf/distros/stretch`
-      await this.ln('-s', buster, stretch, verbose)
+         // Debian 11 - bullseye
+         const bullseye = `${rootPen}/conf/distros/bullseye`
+         await this.ln(`${buster}/grub`, `${bullseye}/grub`, remove, verbose)
+         await this.ln(`${buster}/isolinux`, `${bullseye}/isolinux`, remove, verbose)
+         await this.ln(`${buster}/locales`, `${bullseye}/locales`, remove, verbose)
+         await this.ln(`${buster}/calamares/calamares-modules/remove-link`, `${bullseye}/calamares/calamares-modules/remove-link`, remove, verbose)
+         await this.ln(`${buster}/calamares/calamares-modules/sources-yolk`, `${bullseye}/calamares/calamares-modules/sources-yolk`, remove, verbose)
+         await this.ln(`${buster}/calamares/calamares-modules/sources-yolk-unmount`, `${bullseye}/calamares/calamares-modules/sources-yolk-unmount`, remove, verbose)
+         await this.ln(`${buster}/calamares/modules`, `${bullseye}/calamares/modules`, verbose)
 
-      // Devuan beofulf
-      const beowulf = `${rootPen}/conf/distros/beowulf`
-      await this.ln('-s', `${buster}/grub`, `${beowulf}/grub`, verbose)
-      await this.ln('-s', `${buster}/isolinux`, `${beowulf}/isolinux`, verbose)
-      await this.ln('-s', `${buster}/locales`, `${beowulf}/locales`, verbose)
-      await this.ln('-s', `${buster}/calamares/calamares-modules`, `${beowulf}/calamares/calamares-modules`, verbose)
-      await this.ln('-s', `${buster}/calamares/modules`, `${beowulf}/calamares/modules`, verbose)
+         // Debian 9 - stretch
+         const stretch = `${rootPen}/conf/distros/stretch`
+         await this.ln(buster, stretch, remove, verbose)
 
-      // Ubuntu 20.04 - focal
-      const focal = `${rootPen}/conf/distros/focal`
-      await this.ln('-s', `${buster}/grub/loopback.cfg`, `${focal}/grub/loopback.cfg`, verbose)
-      await this.ln('-s', `${buster}/grub/theme.cfg`, `${focal}/grub/theme.cfg`, verbose)
-      await this.ln('-s', `${buster}/isolinux/isolinux.template.cfg`, `${focal}/isolinux/isolinux.template.cfg`, verbose)
-      await this.ln('-s', `${buster}/isolinux/stdmenu.template.cfg`, `${focal}/isolinux/stdmenu.template.cfg`, verbose)
-      await this.ln('-s', `${buster}/calamares/calamares-modules/remove-link`, `${focal}/calamares/calamares-modules/remove-link`, verbose)
-      await this.ln('-s', `${buster}/calamares/calamares-modules/sources-yolk`, `${focal}/calamares/calamares-modules/sources-yolk`, verbose)
-      await this.ln('-s', `${buster}/calamares/calamares-modules/sources-yolk-unmount`, `${focal}/calamares/calamares-modules/sources-yolk-unmount`, verbose)
-      await this.ln('-s', `${buster}/calamares/modules/displaymanager.yml`, `${focal}/calamares/modules/displaymanager.yml`, verbose)
-      await this.ln('-s', `${buster}/calamares/modules/packages.yml`, `${focal}/calamares/modules/packages.yml`, verbose)
-      await this.ln('-s', `${buster}/calamares/modules/removeuser.yml`, `${focal}/calamares/modules/removeuser.yml`, verbose)
+         // Devuan beofulf
+         const beowulf = `${rootPen}/conf/distros/beowulf`
+         await this.ln(`${buster}/grub`, `${beowulf}/grub`, remove, verbose)
+         await this.ln(`${buster}/isolinux`, `${beowulf}/isolinux`, remove, verbose)
+         await this.ln(`${buster}/locales`, `${beowulf}/locales`, remove, verbose)
+         await this.ln(`${buster}/calamares/calamares-modules`, `${beowulf}/calamares/calamares-modules`, remove, verbose)
+         await this.ln(`${buster}/calamares/modules`, `${beowulf}/calamares/modules`, remove, verbose)
 
-      // Ubuntu 18.04  - bionic
-      const bionic = `${rootPen}/conf/distros/bionic`
-      await this.ln('-s', `${focal}/grub`, `${bionic}/grub`, verbose)
-      await this.ln('-s', `${focal}/isolinux`, `${bionic}/isolinux`, verbose)
-      await this.ln('-s', `${buster}/calamares/calamares-modules/remove-link`, `${bionic}/calamares/calamares-modules/remove-link`, verbose)
-      await this.ln('-s', `${buster}/calamares/calamares-modules/sources-yolk`, `${bionic}/calamares/calamares-modules/sources-yolk`, verbose)
-      await this.ln('-s', `${buster}/calamares/calamares-modules/sources-yolk-unmount`, `${bionic}/calamares/calamares-modules/sources-yolk-unmount`, verbose)
-      await this.ln('-s', `${focal}/calamares/modules/displaymanager.yml`, `${bionic}/calamares/modules/displaymanager.yml`, verbose)
-      await this.ln('-s', `${buster}/calamares/modules/packages.yml`, `${bionic}/calamares/modules/packages.yml`, verbose)
-      await this.ln('-s', `${buster}/calamares/modules/removeuser.yml`, `${bionic}/calamares/modules/removeuser.yml`, verbose)
-      await this.ln('-s', `${buster}/calamares/modules/unpackfs.yml`, `${bionic}/calamares/modules/unpackfs.yml`, verbose)
+         // Ubuntu 20.04 - focal
+         const focal = `${rootPen}/conf/distros/focal`
+         await this.ln(`${buster}/grub/loopback.cfg`, `${focal}/grub/loopback.cfg`, remove, verbose)
+         await this.ln(`${buster}/grub/theme.cfg`, `${focal}/grub/theme.cfg`, remove, verbose)
+         await this.ln(`${buster}/isolinux/isolinux.template.cfg`, `${focal}/isolinux/isolinux.template.cfg`, remove, verbose)
+         await this.ln(`${buster}/isolinux/stdmenu.template.cfg`, `${focal}/isolinux/stdmenu.template.cfg`, remove, verbose)
+         await this.ln(`${buster}/calamares/calamares-modules/remove-link`, `${focal}/calamares/calamares-modules/remove-link`, remove, verbose)
+         await this.ln(`${buster}/calamares/calamares-modules/sources-yolk`, `${focal}/calamares/calamares-modules/sources-yolk`, remove, verbose)
+         await this.ln(`${buster}/calamares/calamares-modules/sources-yolk-unmount`, `${focal}/calamares/calamares-modules/sources-yolk-unmount`, remove, verbose)
+         await this.ln(`${buster}/calamares/modules/displaymanager.yml`, `${focal}/calamares/modules/displaymanager.yml`, remove, verbose)
+         await this.ln(`${buster}/calamares/modules/packages.yml`, `${focal}/calamares/modules/packages.yml`, remove, verbose)
+         await this.ln(`${buster}/calamares/modules/removeuser.yml`, `${focal}/calamares/modules/removeuser.yml`, remove, verbose)
 
-      // Groovy
-      const groovy = `${rootPen}/conf/distros/groovy`
-      await this.ln('-s', focal, groovy, verbose)
+         // Ubuntu 18.04  - bionic
+         const bionic = `${rootPen}/conf/distros/bionic`
+         await this.ln(`${focal}/grub`, `${bionic}/grub`, remove, verbose)
+         await this.ln(`${focal}/isolinux`, `${bionic}/isolinux`, remove, verbose)
+         await this.ln(`${buster}/calamares/calamares-modules/remove-link`, `${bionic}/calamares/calamares-modules/remove-link`, remove, verbose)
+         await this.ln(`${buster}/calamares/calamares-modules/sources-yolk`, `${bionic}/calamares/calamares-modules/sources-yolk`, remove, verbose)
+         await this.ln(`${buster}/calamares/calamares-modules/sources-yolk-unmount`, `${bionic}/calamares/calamares-modules/sources-yolk-unmount`, remove, verbose)
+         await this.ln(`${focal}/calamares/modules/displaymanager.yml`, `${bionic}/calamares/modules/displaymanager.yml`, remove, verbose)
+         await this.ln(`${buster}/calamares/modules/packages.yml`, `${bionic}/calamares/modules/packages.yml`, remove, verbose)
+         await this.ln(`${buster}/calamares/modules/removeuser.yml`, `${bionic}/calamares/modules/removeuser.yml`, remove, verbose)
+         await this.ln(`${buster}/calamares/modules/unpackfs.yml`, `${bionic}/calamares/modules/unpackfs.yml`, remove, verbose)
+
+         // Groovy
+         const groovy = `${rootPen}/conf/distros/groovy`
+         await this.ln(focal, groovy, verbose)
+      }
    }
 
-   static async ln(mode: string, src: string, dest: string, verbose = true) {
-      // console.log(`src : ${src}`)
-      // console.log(`dest: ${dest}`)
-
+   /**
+    * 
+    * @param mode 
+    * @param src 
+    * @param dest 
+    * @param verbose 
+    */
+   static async ln(src: string, dest: string, remove = false, verbose = false) {
       const rel = path.relative(dest, src).substring(3)
       if (fs.existsSync(dest)) {
          if (verbose) console.log(`remove ${dest}`)
          shx.rm(dest)
       }
-      const dirname = path.dirname(dest)
-      const basename = path.basename(dest)
+      if (!remove) {
+         const dirname = path.dirname(dest)
+         const basename = path.basename(dest)
 
-      process.chdir(dirname)
-      if (verbose) console.log(`cd ${dirname}`)
-      if (verbose) console.log(`ln ${mode} ${rel} ${basename}\n`)
-      fs.symlinkSync(rel, basename)
+         process.chdir(dirname)
+         if (verbose) console.log(`cd ${dirname}`)
+         if (verbose) console.log(`ln -s ${rel} ${basename}\n`)
+         fs.symlinkSync(rel, basename)
+      }
    }
 
 
