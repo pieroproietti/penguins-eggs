@@ -21,7 +21,9 @@ Versions are listed on reverse order, the first is the last one.
 * write links only on the live, not changing host's configuration
 
 ### eggs-7.6.85.1_deb
-* changing the configuration, I suggest to remove the old configuration before use: sudo rm /etc/penguins.d -rf
+* changing the configuration. I suggest to remove the old configuration dir before to use: 
+  * sudo rm /etc/penguins-eggs.d -rf
+  * sudo eggs prerequisites
 * updated cli installer, new defailt address, gateway, dns, etc. 
 * introduced experimental pve-live.service.
 
