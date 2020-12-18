@@ -20,6 +20,11 @@ Versions are listed on reverse order, the first is the last one.
 
 * write links only on the live, not changing host's configuration
 
+### eggs-7.6.85.1_deb
+* changing the configuration, I suggest to remove the old configuration before use: sudo rm /etc/penguins.d -rf
+* updated cli installer, new defailt address, gateway, dns, etc. 
+* introduced experimental pve-live.service.
+
 ### eggs-7.6.83.1_deb
 * reintroduced armel arch; info now show running mode
 
