@@ -13,40 +13,49 @@ import chalk = require('chalk')
 /**
  *
  */
-export default class Sterilize extends Command {
-   static description = 'remove all packages installed as prerequisites, calamares and configurations'
+export default class Remove extends Command {
+   static description = 'remove eggs. eggs configurations, prerequisites, calamares, calamares configurations'
+
+   static examples = [
+      `$ sudo eggs remove \nremove eggs, eggs configurations\n`,
+      `$ sudo eggs remove --purge\nremove: eggs, eggs configurations, prerequisites, calamares, calamares configurations`]
+
+   static aliases = ['sterilize']
 
    static flags = {
       help: flags.help({ char: 'h' }),
+      purge: flags.boolean({ char: 'p', description: 'purge' }),
       verbose: flags.boolean({ char: 'v', description: 'verbose' })
    }
 
    async run() {
       Utils.titles(this.id + ' ' + this.argv)
 
-      const { flags } = this.parse(Sterilize)
+      const { flags } = this.parse(Remove)
       let verbose = false
       if (flags.verbose) {
          verbose = true
       }
 
-      if (Utils.isRoot() && await Pacman.prerequisitesCheck()) {
-         const i = await Sterilize.thatWeRemove(verbose)
-         Utils.warning('Be sure! It\'s just a series of apt purge. You can follows them using flag --verbose')
-         if (await Utils.customConfirm(`Select yes to continue...`)) {
-            if (i.calamares) {
-               Utils.warning('Removing calamares...')
-               await Pacman.calamaresRemove(verbose)
-            }
+      if (Utils.isRoot()) {
+         if (await Pacman.prerequisitesCheck()) {
+            const i = await Remove.thatWeRemove(verbose)
+            Utils.warning('Be sure! It\'s just a series of apt purge. You can follows them using flag --verbose')
+            if (await Utils.customConfirm(`Select yes to continue...`)) {
+               if (i.calamares) {
+                  Utils.warning('Removing calamares...')
+                  await Pacman.calamaresRemove(verbose)
+               }
 
-            if (i.prerequisites) {
-               Utils.warning('Removing prerequisites...')
-               await Pacman.prerequisitesRemove(verbose)
-            }
+               if (i.prerequisites) {
+                  Utils.warning('Removing prerequisites...')
+                  await Pacman.prerequisitesRemove(verbose)
+               }
 
-            if (i.configuration) {
-               Utils.warning('Removing configuration files...')
-               await Pacman.configurationRemove(verbose)
+               if (i.configuration) {
+                  Utils.warning('Removing configuration files...')
+                  await Pacman.configurationRemove(verbose)
+               }
             }
          }
       } else {
@@ -54,11 +63,11 @@ export default class Sterilize extends Command {
       }
    }
 
-      /**
-    * 
-    * @param links
-    * @param verbose 
-    */
+   /**
+ * 
+ * @param links
+ * @param verbose 
+ */
    static async thatWeRemove(verbose = false): Promise<IInstall> {
       Utils.titles('That will be removed')
 
@@ -66,8 +75,7 @@ export default class Sterilize extends Command {
 
       i.calamares = await Pacman.calamaresCheck()
       i.prerequisites = await Pacman.prerequisitesCheck()
-      i.configuration =  await Pacman.configurationCheck()
-
+      i.configuration = await Pacman.configurationCheck()
 
       if (i.calamares || i.prerequisites || i.configuration) {
          Utils.warning(`Removing prerequisites.\nEggs will execute the following tasks:`)
@@ -93,7 +101,7 @@ export default class Sterilize extends Command {
          if (i.configuration) {
             console.log('- remove configuration\n')
          }
-   }
+      }
       return i
    }
 
