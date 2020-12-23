@@ -99,7 +99,7 @@ $ npm install -g penguins-eggs
 $ eggs COMMAND
 running command...
 $ eggs (-v|--version|version)
-penguins-eggs/7.6.85 linux-x64 node-v14.15.2
+penguins-eggs/7.6.85 linux-x64 node-v14.15.3
 $ eggs --help [COMMAND]
 USAGE
   $ eggs COMMAND
@@ -119,7 +119,7 @@ USAGE
 * [`eggs kill`](#eggs-kill)
 * [`eggs prerequisites`](#eggs-prerequisites)
 * [`eggs produce`](#eggs-produce)
-* [`eggs sterilize`](#eggs-sterilize)
+* [`eggs remove`](#eggs-remove)
 * [`eggs tools:clean`](#eggs-toolsclean)
 * [`eggs tools:initrd`](#eggs-toolsinitrd)
 * [`eggs tools:locales`](#eggs-toolslocales)
@@ -403,22 +403,37 @@ EXAMPLES
 
 _See code: [src/commands/produce.ts](https://github.com/pieroproietti/penguins-eggs/blob/v7.6.85/src/commands/produce.ts)_
 
-## `eggs sterilize`
+## `eggs remove`
 
-remove all packages installed as prerequisites, calamares and configurations
+remove eggs, eggs configurations, prerequisites, calamares, calamares configurations
 
 ```
-remove all packages installed as prerequisites, calamares and configurations
+remove eggs, eggs configurations, prerequisites, calamares, calamares configurations
 
 USAGE
-  $ eggs sterilize
+  $ eggs remove
 
 OPTIONS
-  -h, --help     show CLI help
-  -v, --verbose  verbose
+  -a, --all            remove all
+  -h, --help           show CLI help
+  -p, --prerequisites  remove prerequisites
+  -v, --verbose        verbose
+
+ALIASES
+  $ eggs sterilize
+
+EXAMPLES
+  $ sudo eggs remove 
+  remove eggs, eggs configurations
+
+  $ sudo eggs remove --prerequisites 
+  remove packages prerequisites, calamares, calamares configurations
+
+  $ sudo eggs remove --all
+  remove eggs, eggs configurations, prerequisites, calamares, calamares configurations
 ```
 
-_See code: [src/commands/sterilize.ts](https://github.com/pieroproietti/penguins-eggs/blob/v7.6.85/src/commands/sterilize.ts)_
+_See code: [src/commands/remove.ts](https://github.com/pieroproietti/penguins-eggs/blob/v7.6.85/src/commands/remove.ts)_
 
 ## `eggs tools:clean`
 

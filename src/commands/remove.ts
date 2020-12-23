@@ -10,21 +10,24 @@ import Pacman from '../classes/pacman'
 import { IInstall } from '../interfaces'
 
 import chalk = require('chalk')
+import { execSync } from 'child_process'
 /**
  *
  */
 export default class Remove extends Command {
-   static description = 'remove eggs. eggs configurations, prerequisites, calamares, calamares configurations'
+   static description = 'remove eggs, eggs configurations, prerequisites, calamares, calamares configurations'
 
    static examples = [
       `$ sudo eggs remove \nremove eggs, eggs configurations\n`,
-      `$ sudo eggs remove --purge\nremove: eggs, eggs configurations, prerequisites, calamares, calamares configurations`]
+      `$ sudo eggs remove --prerequisites \nremove packages prerequisites, calamares, calamares configurations\n`,
+      `$ sudo eggs remove --all\nremove eggs, eggs configurations, prerequisites, calamares, calamares configurations`]
 
    static aliases = ['sterilize']
 
    static flags = {
       help: flags.help({ char: 'h' }),
-      purge: flags.boolean({ char: 'p', description: 'purge' }),
+      prerequisites: flags.boolean({ char: 'p', description: 'remove prerequisites' }),
+      all: flags.boolean({ char: 'a', description: 'remove all' }),
       verbose: flags.boolean({ char: 'v', description: 'verbose' })
    }
 
@@ -38,31 +41,69 @@ export default class Remove extends Command {
       }
 
       if (Utils.isRoot()) {
-         if (await Pacman.prerequisitesCheck()) {
-            const i = await Remove.thatWeRemove(verbose)
-            Utils.warning('Be sure! It\'s just a series of apt purge. You can follows them using flag --verbose')
-            if (await Utils.customConfirm(`Select yes to continue...`)) {
-               if (i.calamares) {
-                  Utils.warning('Removing calamares...')
-                  await Pacman.calamaresRemove(verbose)
-               }
-
-               if (i.prerequisites) {
-                  Utils.warning('Removing prerequisites...')
-                  await Pacman.prerequisitesRemove(verbose)
-               }
-
-               if (i.configuration) {
-                  Utils.warning('Removing configuration files...')
-                  await Pacman.configurationRemove(verbose)
-               }
-            }
+         if (flags.all) {
+            await Remove.all(verbose)
+            // Rimuove tutto
+         } else if (flags.prerequisites) {
+            await Remove.prerequisites(verbose)
+         } else {
+            await Remove.eggs(verbose)
          }
-      } else {
-         console.log('eggs prerequisites are not installed!')
       }
    }
 
+
+   /**
+    * rimuove eggs e configuration
+    */
+   static async eggs(verbose=false){
+      Utils.titles('remove eggs, eggs configuration')
+      if (await Utils.customConfirm(`Select yes to continue...`)) {
+         const remove=true
+         await Pacman.linksManage(remove, verbose)
+
+         if (Utils.isDebPackage() || !Utils.isSources()) {
+            if (Utils.isDebPackage()) {
+               execSync('apt purge eggs')
+            } else {
+               execSync('npm remove penguins-eggs -g')
+            }
+         }
+         await Pacman.configurationRemove()
+      }
+   }
+
+   static async all(verbose=false){
+      await Remove.prerequisites(verbose)
+      await Remove.eggs(verbose)
+   }
+
+   /**
+    * 
+    */
+   static async prerequisites(verbose=false) {
+      // Remove prerequisites
+      if (await Pacman.prerequisitesCheck()) {
+         const i = await Remove.thatWeRemove(verbose)
+         Utils.warning('Be sure! It\'s just a series of apt purge. You can follows them using flag --verbose')
+         if (await Utils.customConfirm(`Select yes to continue...`)) {
+            if (i.calamares) {
+               Utils.warning('Removing calamares...')
+               await Pacman.calamaresRemove(verbose)
+            }
+
+            if (i.prerequisites) {
+               Utils.warning('Removing prerequisites...')
+               await Pacman.prerequisitesRemove(verbose)
+            }
+
+            if (i.configuration) {
+               Utils.warning('Removing configuration files...')
+               await Pacman.configurationRemove(verbose)
+            }
+         }
+      }
+   }
    /**
  * 
  * @param links
