@@ -20,7 +20,7 @@ Versions are listed on reverse order, the first is the last one.
 
 * write links only on the live, not changing host's configuration
 
-### eggs-7.6.85.1_deb (xmas)
+### eggs-7.6.86.1_deb
 * changed commands prerequisites and renamed sterilize as remove, added different flags.
 
 ### eggs-7.6.85.1_deb
