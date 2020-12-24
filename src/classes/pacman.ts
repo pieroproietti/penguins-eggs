@@ -373,14 +373,14 @@ export default class Pacman {
    /**
     * 
     */
-   static async linksInstall(force = false, verbose = false) {
+   static async linksInEtc(force = false, verbose = false) {
       if (verbose) {
          console.log('linksinstall')
       }
       const rootPen = Utils.rootPenguin()
       const versionLike = Pacman.versionLike()
       if (Utils.isDebPackage()) {
-         await Pacman.linksManage()
+         await Pacman.linksInUsr()
       }
       // L = follow links è OK da source, ora il problema è copiare i link da npm o rifarli
       let cmd = `cp -rL ${rootPen}/conf/distros/${versionLike} /etc/penguins-eggs.d/distros`
@@ -391,7 +391,7 @@ export default class Pacman {
     * 
     * @param rootPen 
     */
-   static async linksManage(remove = false, verbose = false) {
+   static async linksInUsr(remove = false, verbose = false) {
       if (Utils.isDebPackage() || !Utils.isSources()) {
          const rootPen = Utils.rootPenguin()
 
@@ -406,7 +406,7 @@ export default class Pacman {
          await this.ln(`${buster}/calamares/calamares-modules/remove-link`, `${bullseye}/calamares/calamares-modules/remove-link`, remove, verbose)
          await this.ln(`${buster}/calamares/calamares-modules/sources-yolk`, `${bullseye}/calamares/calamares-modules/sources-yolk`, remove, verbose)
          await this.ln(`${buster}/calamares/calamares-modules/sources-yolk-unmount`, `${bullseye}/calamares/calamares-modules/sources-yolk-unmount`, remove, verbose)
-         await this.ln(`${buster}/calamares/modules`, `${bullseye}/calamares/modules`, verbose)
+         await this.ln(`${buster}/calamares/modules`, `${bullseye}/calamares/modules`, remove, verbose)
 
          // Debian 9 - stretch
          const stretch = `${rootPen}/conf/distros/stretch`
@@ -429,7 +429,6 @@ export default class Pacman {
          await this.ln(`${buster}/calamares/calamares-modules/remove-link`, `${focal}/calamares/calamares-modules/remove-link`, remove, verbose)
          await this.ln(`${buster}/calamares/calamares-modules/sources-yolk`, `${focal}/calamares/calamares-modules/sources-yolk`, remove, verbose)
          await this.ln(`${buster}/calamares/calamares-modules/sources-yolk-unmount`, `${focal}/calamares/calamares-modules/sources-yolk-unmount`, remove, verbose)
-         await this.ln(`${buster}/calamares/modules/displaymanager.yml`, `${focal}/calamares/modules/displaymanager.yml`, remove, verbose)
          await this.ln(`${buster}/calamares/modules/packages.yml`, `${focal}/calamares/modules/packages.yml`, remove, verbose)
          await this.ln(`${buster}/calamares/modules/removeuser.yml`, `${focal}/calamares/modules/removeuser.yml`, remove, verbose)
 
@@ -440,14 +439,13 @@ export default class Pacman {
          await this.ln(`${buster}/calamares/calamares-modules/remove-link`, `${bionic}/calamares/calamares-modules/remove-link`, remove, verbose)
          await this.ln(`${buster}/calamares/calamares-modules/sources-yolk`, `${bionic}/calamares/calamares-modules/sources-yolk`, remove, verbose)
          await this.ln(`${buster}/calamares/calamares-modules/sources-yolk-unmount`, `${bionic}/calamares/calamares-modules/sources-yolk-unmount`, remove, verbose)
-         await this.ln(`${focal}/calamares/modules/displaymanager.yml`, `${bionic}/calamares/modules/displaymanager.yml`, remove, verbose)
          await this.ln(`${buster}/calamares/modules/packages.yml`, `${bionic}/calamares/modules/packages.yml`, remove, verbose)
          await this.ln(`${buster}/calamares/modules/removeuser.yml`, `${bionic}/calamares/modules/removeuser.yml`, remove, verbose)
          await this.ln(`${buster}/calamares/modules/unpackfs.yml`, `${bionic}/calamares/modules/unpackfs.yml`, remove, verbose)
 
          // Groovy
          const groovy = `${rootPen}/conf/distros/groovy`
-         await this.ln(focal, groovy, verbose)
+         await this.ln(focal, groovy, remove, verbose)
       }
    }
 
@@ -460,9 +458,12 @@ export default class Pacman {
     */
    static async ln(src: string, dest: string, remove = false, verbose = false) {
       const rel = path.relative(dest, src).substring(3)
+
       if (fs.existsSync(dest)) {
-         if (verbose) console.log(`remove ${dest}`)
-         shx.rm(dest)
+         if (verbose) {
+            console.log(`remove ${dest}`)
+         }
+         fs.unlinkSync(dest)
       }
       if (!remove) {
          const dirname = path.dirname(dest)

@@ -22,7 +22,6 @@ export default class Prerequisites extends Command {
    static flags = {
       help: flags.help({ char: 'h' }),
       configuration: flags.boolean({ char: 'c', description: 'create configuration\'s files' }),
-      links: flags.boolean({ char: 'l', description: 'create links' }),
       verbose: flags.boolean({ char: 'v', description: 'verbose' }),
    }
 
@@ -36,29 +35,23 @@ export default class Prerequisites extends Command {
 
       let verbose = flags.verbose
       let configuration = flags.configuration
-      let links = flags.links
 
       if (Utils.isRoot()) {
-         if (!Pacman.linksCheck()){
-            if (!Pacman.configurationCheck()){
-               await Pacman.configurationInstall()
-            }
-            await Pacman.linksManage()
+         if (!Pacman.configurationCheck()) {
+            await Pacman.configurationInstall()
          }
-         if (configuration) { // only
-            await Pacman.configurationInstall(verbose)
-         } else if (links) { // only
-            await Pacman.linksInstall(true, verbose)
-         } else {
-            const i = await Prerequisites.thatWeNeed(verbose)
-            if (i.clean || i.configuration || i.links) {
-               if (await Utils.customConfirm(`Select yes to continue...`)) {
-                  console.log('installing')
-                  await Prerequisites.install(i, verbose)
-               }
-            } else {
-               console.log('prerequisites: all is OK, nothing to do!')
+         await Pacman.linksInEtc(true, verbose)
+         await Pacman.linksInUsr()
+
+         const i = await Prerequisites.thatWeNeed(verbose)
+         if (i.clean || i.configuration || i.links) {
+            if (await Utils.customConfirm(`Select yes to continue...`)) {
+               console.log('installing prerequisites...')
+               await Prerequisites.install(i, verbose)
+               await Pacman.configurationInstall(verbose)
             }
+         } else {
+            console.log('prerequisites: all is OK, nothing to do!')
          }
       }
    }
@@ -119,7 +112,7 @@ export default class Prerequisites extends Command {
             if (i.links) {
                console.log('- create links to different distros\n')
             }
-   
+
             const packagesLocalisation = Pacman.packagesLocalisation()
             if (packagesLocalisation.length > 0) {
                console.log(chalk.yellow('  apt install --yes --no-install-recommends live-task-localisation ' + Pacman.debs2line(packagesLocalisation)) + '\n')
@@ -164,7 +157,7 @@ export default class Prerequisites extends Command {
       }
 
       if (i.links) {
-         await Pacman.linksInstall(verbose)
+         await Pacman.linksInEtc(verbose)
       }
 
       if (i.clean) {

@@ -326,7 +326,6 @@ USAGE
 OPTIONS
   -c, --configuration  create configuration's files
   -h, --help           show CLI help
-  -l, --links          create links
   -v, --verbose        verbose
 
 EXAMPLES
@@ -416,14 +415,18 @@ USAGE
 OPTIONS
   -a, --all            remove all
   -h, --help           show CLI help
-  -p, --prerequisites  remove prerequisites
+  -p, --prerequisites  remove eggs packages prerequisites
   -v, --verbose        verbose
+  --purge              remove eggs, eggs configuration
 
 ALIASES
   $ eggs sterilize
 
 EXAMPLES
   $ sudo eggs remove 
+  remove eggs
+
+  $ sudo eggs remove --purge 
   remove eggs, eggs configurations
 
   $ sudo eggs remove --prerequisites 

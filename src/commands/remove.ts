@@ -11,6 +11,9 @@ import { IInstall } from '../interfaces'
 
 import chalk = require('chalk')
 import { execSync } from 'child_process'
+
+const exec = require('../lib/utils').exec
+
 /**
  *
  */
@@ -18,16 +21,18 @@ export default class Remove extends Command {
    static description = 'remove eggs, eggs configurations, prerequisites, calamares, calamares configurations'
 
    static examples = [
-      `$ sudo eggs remove \nremove eggs, eggs configurations\n`,
+      `$ sudo eggs remove \nremove eggs\n`,
+      `$ sudo eggs remove --purge \nremove eggs, eggs configurations\n`,
       `$ sudo eggs remove --prerequisites \nremove packages prerequisites, calamares, calamares configurations\n`,
       `$ sudo eggs remove --all\nremove eggs, eggs configurations, prerequisites, calamares, calamares configurations`]
 
    static aliases = ['sterilize']
 
    static flags = {
-      help: flags.help({ char: 'h' }),
-      prerequisites: flags.boolean({ char: 'p', description: 'remove prerequisites' }),
       all: flags.boolean({ char: 'a', description: 'remove all' }),
+      help: flags.help({ char: 'h' }),
+      purge: flags.boolean({ description: 'remove eggs, eggs configuration' }),
+      prerequisites: flags.boolean({ char: 'p', description: 'remove eggs packages prerequisites' }),
       verbose: flags.boolean({ char: 'v', description: 'verbose' })
    }
 
@@ -43,11 +48,10 @@ export default class Remove extends Command {
       if (Utils.isRoot()) {
          if (flags.all) {
             await Remove.all(verbose)
-            // Rimuove tutto
          } else if (flags.prerequisites) {
             await Remove.prerequisites(verbose)
          } else {
-            await Remove.eggs(verbose)
+            await Remove.eggs(flags.purge, verbose)
          }
       }
    }
@@ -56,32 +60,39 @@ export default class Remove extends Command {
    /**
     * rimuove eggs e configuration
     */
-   static async eggs(verbose=false){
+   static async eggs(removeConfiguration = false, verbose = false) {
       Utils.titles('remove eggs, eggs configuration')
       if (await Utils.customConfirm(`Select yes to continue...`)) {
-         const remove=true
-         await Pacman.linksManage(remove, verbose)
-
+         const remove = true
+         await Pacman.linksInUsr(remove, verbose)
          if (Utils.isDebPackage() || !Utils.isSources()) {
             if (Utils.isDebPackage()) {
-               execSync('apt purge eggs')
+               await exec('rm /usr/lib/penguins-eggs/distros -rf')
+               await exec('apt-get purge eggs')
             } else {
                execSync('npm remove penguins-eggs -g')
             }
          }
-         await Pacman.configurationRemove()
+         if (removeConfiguration) {
+            await Pacman.configurationRemove()
+         }
       }
    }
 
-   static async all(verbose=false){
+   /**
+    * 
+    * @param verbose 
+    */
+   static async all(verbose = false) {
+      const removeConfiguration = true
       await Remove.prerequisites(verbose)
-      await Remove.eggs(verbose)
+      await Remove.eggs(removeConfiguration, verbose)
    }
 
    /**
     * 
     */
-   static async prerequisites(verbose=false) {
+   static async prerequisites(verbose = false) {
       // Remove prerequisites
       if (await Pacman.prerequisitesCheck()) {
          const i = await Remove.thatWeRemove(verbose)
@@ -102,6 +113,8 @@ export default class Remove extends Command {
                await Pacman.configurationRemove(verbose)
             }
          }
+      } else {
+         console.log('prerequisites not installed')
       }
    }
    /**
