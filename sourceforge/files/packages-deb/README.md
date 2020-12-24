@@ -1,1 +1,1 @@
-/home/artisan/penguins-eggs/changelog.md
+changelog.md
