@@ -20,6 +20,9 @@ Versions are listed on reverse order, the first is the last one.
 
 * write links only on the live, not changing host's configuration
 
+### eggs-7.6.85.1_deb (xmas)
+* changed commands prerequisites and renamed sterilize as remove, added different flags.
+
 ### eggs-7.6.85.1_deb
 * changing the configuration. I suggest to remove the old configuration dir before to use: 
   * sudo rm /etc/penguins-eggs.d -rf
