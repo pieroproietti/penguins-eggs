@@ -1,4 +1,4 @@
-# Debian Buster
+# Debian buster, Debian bullseye, Devuan beowulf
 # settings
 ---
 # "local" is LIBDIR/calamares/modules with settings in SHARE/calamares/modules
