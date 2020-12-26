@@ -18,7 +18,8 @@ You can follow the project also consulting the [commit history](https://github.c
 ## Changelog
 Versions are listed on reverse order, the first is the last one.
 
-* write links only on the live, not changing host's configuration
+### eggs-7.6.87.1_deb
+* bug fix in devuan beowulf
 
 ### eggs-7.6.86.1_deb
 * changed commands prerequisites and renamed sterilize as remove, added different flags.
