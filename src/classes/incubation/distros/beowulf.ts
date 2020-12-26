@@ -73,7 +73,7 @@ export class Beowulf {
       await fisherman.moduleDisplaymanager() //
       await fisherman.buildModule('networkcfg')
       await fisherman.buildModule('hwclock')
-      await fisherman.buildCalamaresModule('create-tmp')
+      // await fisherman.buildCalamaresModule('create-tmp')
       await fisherman.buildCalamaresModule('bootloader-config')
       await fisherman.buildModule('grubcf')
       await fisherman.buildModule('bootloader')

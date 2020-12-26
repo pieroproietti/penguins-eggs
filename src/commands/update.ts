@@ -187,8 +187,8 @@ export default class Update extends Command {
       await Tu.loadSettings()
       Utils.warning(`Copy from: ${Tu.export_host}:${Tu.export_path_deb}`)
       console.log()
-      await exec(`scp ${Tu.export_user_deb}@${Tu.export_host}:${Tu.export_path_deb}${Tu.file_name_deb} .`)
-      console.log('sudo dpkg -i eggs_*.deb')
+      await exec(`scp ${Tu.export_user_deb}@${Tu.export_host}:${Tu.export_path_deb}${Tu.file_name_deb} /tmp`)
+      console.log('sudo dpkg -i /tmp/eggs_*.deb')
    }
 
    /**
