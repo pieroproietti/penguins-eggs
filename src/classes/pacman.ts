@@ -412,7 +412,7 @@ export default class Pacman {
          const stretch = `${rootPen}/conf/distros/stretch`
          await this.ln(buster, stretch, remove, verbose)
 
-         // Devuan beofulf
+         // Devuan beowulf
          const beowulf = `${rootPen}/conf/distros/beowulf`
          await this.ln(`${buster}/grub`, `${beowulf}/grub`, remove, verbose)
          await this.ln(`${buster}/isolinux`, `${beowulf}/isolinux`, remove, verbose)
