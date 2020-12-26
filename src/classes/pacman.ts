@@ -375,12 +375,12 @@ export default class Pacman {
     */
    static async linksInEtc(force = false, verbose = false) {
       if (verbose) {
-         console.log('linksinstall')
+         console.log('linksinEtc')
       }
       const rootPen = Utils.rootPenguin()
       const versionLike = Pacman.versionLike()
       if (Utils.isDebPackage()) {
-         await Pacman.linksInUsr()
+         await Pacman.linksInUsr(true, verbose)
       }
       // L = follow links è OK da source, ora il problema è copiare i link da npm o rifarli
       let cmd = `cp -rL ${rootPen}/conf/distros/${versionLike} /etc/penguins-eggs.d/distros`
@@ -407,19 +407,22 @@ export default class Pacman {
          await this.ln(`${buster}/calamares/calamares-modules/sources-yolk`, `${bullseye}/calamares/calamares-modules/sources-yolk`, remove, verbose)
          await this.ln(`${buster}/calamares/calamares-modules/sources-yolk-unmount`, `${bullseye}/calamares/calamares-modules/sources-yolk-unmount`, remove, verbose)
          await this.ln(`${buster}/calamares/modules`, `${bullseye}/calamares/modules`, remove, verbose)
-
+         
          // Debian 9 - stretch
          const stretch = `${rootPen}/conf/distros/stretch`
          await this.ln(buster, stretch, remove, verbose)
 
          // Devuan beowulf
          const beowulf = `${rootPen}/conf/distros/beowulf`
+         await this.ln(buster, beowulf, remove, verbose)
+         /*
          await this.ln(`${buster}/grub`, `${beowulf}/grub`, remove, verbose)
          await this.ln(`${buster}/isolinux`, `${beowulf}/isolinux`, remove, verbose)
          await this.ln(`${buster}/locales`, `${beowulf}/locales`, remove, verbose)
          await this.ln(`${buster}/calamares/settings.yml`, `${beowulf}/calamares/settings.yml`, remove, verbose)
          await this.ln(`${buster}/calamares/calamares-modules`, `${beowulf}/calamares/calamares-modules`, remove, verbose)
          await this.ln(`${buster}/calamares/modules`, `${beowulf}/calamares/modules`, remove, verbose)
+         */
 
          // Ubuntu 20.04 - focal
          const focal = `${rootPen}/conf/distros/focal`
