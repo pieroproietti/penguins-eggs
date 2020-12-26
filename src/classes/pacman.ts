@@ -414,13 +414,14 @@ export default class Pacman {
 
          // Devuan beowulf
          const beowulf = `${rootPen}/conf/distros/beowulf`
+         await this.ln(buster, beowulf, remove, verbose)
          // await this.ln(buster, beowulf, remove, verbose)
-         await this.ln(`${buster}/grub`, `${beowulf}/grub`, remove, verbose)
-         await this.ln(`${buster}/isolinux`, `${beowulf}/isolinux`, remove, verbose)
-         await this.ln(`${buster}/locales`, `${beowulf}/locales`, remove, verbose)
+         // await this.ln(`${buster}/grub`, `${beowulf}/grub`, remove, verbose)
+         // await this.ln(`${buster}/isolinux`, `${beowulf}/isolinux`, remove, verbose)
+         // await this.ln(`${buster}/locales`, `${beowulf}/locales`, remove, verbose)
          // await this.ln(`${buster}/calamares/settings.yml`, `${beowulf}/calamares/settings.yml`, remove, verbose)
-         await this.ln(`${buster}/calamares/calamares-modules`, `${beowulf}/calamares/calamares-modules`, remove, verbose)
-         await this.ln(`${buster}/calamares/modules`, `${beowulf}/calamares/modules`, remove, verbose)
+         // await this.ln(`${buster}/calamares/calamares-modules`, `${beowulf}/calamares/calamares-modules`, remove, verbose)
+         // await this.ln(`${buster}/calamares/modules`, `${beowulf}/calamares/modules`, remove, verbose)
 
          // Ubuntu 20.04 - focal
          const focal = `${rootPen}/conf/distros/focal`
