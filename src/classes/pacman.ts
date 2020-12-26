@@ -410,18 +410,17 @@ export default class Pacman {
          
          // Debian 9 - stretch
          const stretch = `${rootPen}/conf/distros/stretch`
-         await this.ln(buster, stretch, remove, verbose)
+         await this.ln(`${buster}/grub`, `${stretch}/grub`, remove, verbose)
+         await this.ln(`${buster}/isolinux`, `${stretch}/isolinux`, remove, verbose)
+         await this.ln(`${buster}/locales`, `${stretch}/locales`, remove, verbose)
+         await this.ln(`${buster}/calamares`, `${stretch}/calamares`, remove, verbose)
 
          // Devuan beowulf
          const beowulf = `${rootPen}/conf/distros/beowulf`
-         await this.ln(buster, beowulf, remove, verbose)
-         // await this.ln(buster, beowulf, remove, verbose)
-         // await this.ln(`${buster}/grub`, `${beowulf}/grub`, remove, verbose)
-         // await this.ln(`${buster}/isolinux`, `${beowulf}/isolinux`, remove, verbose)
-         // await this.ln(`${buster}/locales`, `${beowulf}/locales`, remove, verbose)
-         // await this.ln(`${buster}/calamares/settings.yml`, `${beowulf}/calamares/settings.yml`, remove, verbose)
-         // await this.ln(`${buster}/calamares/calamares-modules`, `${beowulf}/calamares/calamares-modules`, remove, verbose)
-         // await this.ln(`${buster}/calamares/modules`, `${beowulf}/calamares/modules`, remove, verbose)
+         await this.ln(`${buster}/grub`, `${beowulf}/grub`, remove, verbose)
+         await this.ln(`${buster}/isolinux`, `${beowulf}/isolinux`, remove, verbose)
+         await this.ln(`${buster}/locales`, `${beowulf}/locales`, remove, verbose)
+         await this.ln(`${buster}/calamares`, `${beowulf}/calamares`, remove, verbose)
 
          // Ubuntu 20.04 - focal
          const focal = `${rootPen}/conf/distros/focal`
@@ -446,9 +445,12 @@ export default class Pacman {
          await this.ln(`${buster}/calamares/modules/removeuser.yml`, `${bionic}/calamares/modules/removeuser.yml`, remove, verbose)
          await this.ln(`${buster}/calamares/modules/unpackfs.yml`, `${bionic}/calamares/modules/unpackfs.yml`, remove, verbose)
 
-         // Groovy
+         // Ubuntu 20.10 groovy
          const groovy = `${rootPen}/conf/distros/groovy`
-         await this.ln(focal, groovy, remove, verbose)
+         await this.ln(`${focal}/calamares`, `${groovy}/calamares`, remove, verbose)
+         await this.ln(`${focal}/grub`, `${groovy}/grub`, remove, verbose)
+         await this.ln(`${focal}/isolinux`, `${groovy}/isolinux`, remove, verbose)
+         await this.ln(`${focal}/locales.gen.template`, `${groovy}/locales.gen.template`, remove, verbose)
       }
    }
 
@@ -473,8 +475,11 @@ export default class Pacman {
          const basename = path.basename(dest)
 
          process.chdir(dirname)
-         if (verbose) console.log(`cd ${dirname}`)
-         if (verbose) console.log(`ln -s ${rel} ${basename}\n`)
+         if (verbose) {
+            console.log(`cd ${dirname}`)
+            console.log(`ln -s ${rel} ${basename}\n`)
+         }
+
          fs.symlinkSync(rel, basename)
       }
    }

@@ -40,8 +40,8 @@ export default class Prerequisites extends Command {
          if (!Pacman.configurationCheck()) {
             await Pacman.configurationInstall()
          }
-         await Pacman.linksInEtc(true, verbose)
          await Pacman.linksInUsr()
+         await Pacman.linksInEtc(true, verbose)
 
          const i = await Prerequisites.thatWeNeed(verbose)
          if (i.clean || i.configuration || i.links) {
