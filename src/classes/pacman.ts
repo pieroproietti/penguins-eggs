@@ -454,7 +454,7 @@ export default class Pacman {
          await this.ln(`${focal}/calamares`, `${groovy}/calamares`, remove, verbose)
          await this.ln(`${focal}/grub`, `${groovy}/grub`, remove, verbose)
          await this.ln(`${focal}/isolinux`, `${groovy}/isolinux`, remove, verbose)
-         // await this.ln(`${focal}/locales.gen.template`, `${groovy}/locales.gen.template`, remove, verbose)
+         await this.ln(`${focal}/locale.gen.template`, `${groovy}/locale.gen.template`, remove, verbose)
       }
    }
 
