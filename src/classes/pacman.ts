@@ -351,14 +351,18 @@ export default class Pacman {
     */
    static async configurationRemove(verbose = true): Promise<void> {
       const echo = Utils.setEcho(verbose)
-      if (fs.existsSync('/etc/penguins-eggs.d/eggs.conf')) {
-         await exec('rm /etc/penguins-eggs.d/eggs.conf', echo)
-      }
-      if (fs.existsSync('/etc/penguins-eggs.d/tools.conf')) {
-         await exec('rm /etc/penguins-eggs.d/tools.conf', echo)
+
+      // Se è un pacchetto debian rimuove anche /usr/lib/penguins-eggs
+      // viene fatto in remove.ts
+
+      if (fs.existsSync('/etc/penguins-eggs.d')) {
+         await exec('rm /etc/penguins-eggs.d -rf', echo)
       }
       if (fs.existsSync('/usr/local/share/penguins-eggs/exclude.list')) {
          await exec('rm /usr/local/share/penguins-eggs/exclude.list', echo)
+      }
+      if (fs.existsSync('/etc/calamares')) {
+         await exec('rm /etc/calamares -rf', echo)
       }
    }
 
@@ -373,14 +377,14 @@ export default class Pacman {
    /**
     * 
     */
-   static async linksInEtc(force = false, verbose = false) {
+   static async copyDistroTemplate(verbose = false) {
       if (verbose) {
-         console.log('linksinEtc')
+         console.log('copyDistroTemplate')
       }
       const rootPen = Utils.rootPenguin()
       const versionLike = Pacman.versionLike()
       if (Utils.isDebPackage()) {
-         await Pacman.linksInUsr(true, verbose)
+         await Pacman.linksInUsr(false, verbose)
       }
       // L = follow links è OK da source, ora il problema è copiare i link da npm o rifarli
       let cmd = `cp -rL ${rootPen}/conf/distros/${versionLike} /etc/penguins-eggs.d/distros`
@@ -407,7 +411,7 @@ export default class Pacman {
          await this.ln(`${buster}/calamares/calamares-modules/sources-yolk`, `${bullseye}/calamares/calamares-modules/sources-yolk`, remove, verbose)
          await this.ln(`${buster}/calamares/calamares-modules/sources-yolk-unmount`, `${bullseye}/calamares/calamares-modules/sources-yolk-unmount`, remove, verbose)
          await this.ln(`${buster}/calamares/modules`, `${bullseye}/calamares/modules`, remove, verbose)
-         
+
          // Debian 9 - stretch
          const stretch = `${rootPen}/conf/distros/stretch`
          await this.ln(`${buster}/grub`, `${stretch}/grub`, remove, verbose)
@@ -450,7 +454,7 @@ export default class Pacman {
          await this.ln(`${focal}/calamares`, `${groovy}/calamares`, remove, verbose)
          await this.ln(`${focal}/grub`, `${groovy}/grub`, remove, verbose)
          await this.ln(`${focal}/isolinux`, `${groovy}/isolinux`, remove, verbose)
-         await this.ln(`${focal}/locales.gen.template`, `${groovy}/locales.gen.template`, remove, verbose)
+         // await this.ln(`${focal}/locales.gen.template`, `${groovy}/locales.gen.template`, remove, verbose)
       }
    }
 
@@ -470,6 +474,7 @@ export default class Pacman {
          }
          fs.unlinkSync(dest)
       }
+
       if (!remove) {
          const dirname = path.dirname(dest)
          const basename = path.basename(dest)

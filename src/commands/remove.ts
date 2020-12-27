@@ -67,8 +67,8 @@ export default class Remove extends Command {
          await Pacman.linksInUsr(remove, verbose)
          if (Utils.isDebPackage() || !Utils.isSources()) {
             if (Utils.isDebPackage()) {
-               await exec('rm /usr/lib/penguins-eggs/distros -rf')
-               await exec('apt-get purge eggs')
+               await exec('apt-get remove eggs')
+               await exec(`rm ${Utils.rootPenguin()} -rf`)
             } else {
                execSync('npm remove penguins-eggs -g')
             }

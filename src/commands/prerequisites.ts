@@ -40,8 +40,8 @@ export default class Prerequisites extends Command {
          if (!Pacman.configurationCheck()) {
             await Pacman.configurationInstall()
          }
-         await Pacman.linksInUsr()
-         await Pacman.linksInEtc(true, verbose)
+         // crea i link in /usr/lib/penguins-eggs/conf/distros
+         await Pacman.copyDistroTemplate(verbose)
 
          const i = await Prerequisites.thatWeNeed(verbose)
          if (i.clean || i.configuration || i.links) {
@@ -157,7 +157,7 @@ export default class Prerequisites extends Command {
       }
 
       if (i.links) {
-         await Pacman.linksInEtc(verbose)
+         await Pacman.copyDistroTemplate(verbose)
       }
 
       if (i.clean) {
