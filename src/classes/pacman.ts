@@ -437,6 +437,7 @@ export default class Pacman {
          await this.ln(`${buster}/calamares/calamares-modules/sources-yolk-unmount`, `${focal}/calamares/calamares-modules/sources-yolk-unmount`, remove, verbose)
          await this.ln(`${buster}/calamares/modules/packages.yml`, `${focal}/calamares/modules/packages.yml`, remove, verbose)
          await this.ln(`${buster}/calamares/modules/removeuser.yml`, `${focal}/calamares/modules/removeuser.yml`, remove, verbose)
+         await this.ln(`${buster}/calamares/modules/displaymanager.yml`, `${focal}/calamares/modules/displaymanager.yml`, remove, verbose)
 
          // Ubuntu 18.04  - bionic
          const bionic = `${rootPen}/conf/distros/bionic`
@@ -448,6 +449,7 @@ export default class Pacman {
          await this.ln(`${buster}/calamares/modules/packages.yml`, `${bionic}/calamares/modules/packages.yml`, remove, verbose)
          await this.ln(`${buster}/calamares/modules/removeuser.yml`, `${bionic}/calamares/modules/removeuser.yml`, remove, verbose)
          await this.ln(`${buster}/calamares/modules/unpackfs.yml`, `${bionic}/calamares/modules/unpackfs.yml`, remove, verbose)
+         await this.ln(`${buster}/calamares/modules/displaymanager.yml`, `${bionic}/calamares/modules/displaymanager.yml`, remove, verbose)
 
          // Ubuntu 20.10 groovy
          const groovy = `${rootPen}/conf/distros/groovy`
@@ -455,6 +457,7 @@ export default class Pacman {
          await this.ln(`${focal}/grub`, `${groovy}/grub`, remove, verbose)
          await this.ln(`${focal}/isolinux`, `${groovy}/isolinux`, remove, verbose)
          await this.ln(`${focal}/locale.gen.template`, `${groovy}/locale.gen.template`, remove, verbose)
+         await this.ln(`${buster}/calamares/modules/displaymanager.yml`, `${groovy}/calamares/modules/displaymanager.yml`, remove, verbose)
       }
    }
 
@@ -468,6 +471,7 @@ export default class Pacman {
    static async ln(src: string, dest: string, remove = false, verbose = false) {
       const rel = path.relative(dest, src).substring(3)
 
+      // Cancella il symlink se esiste
       if (fs.existsSync(dest)) {
          if (verbose) {
             console.log(`remove ${dest}`)
@@ -484,7 +488,6 @@ export default class Pacman {
             console.log(`cd ${dirname}`)
             console.log(`ln -s ${rel} ${basename}\n`)
          }
-
          fs.symlinkSync(rel, basename)
       }
    }
