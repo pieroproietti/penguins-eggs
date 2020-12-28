@@ -18,6 +18,9 @@ You can follow the project also consulting the [commit history](https://github.c
 ## Changelog
 Versions are listed on reverse order, the first is the last one.
 
+### eggs-7.7.0.1_deb
+* added bash autocomplete
+
 ### eggs-7.6.88.1_deb
 * changing and fixes in devuan beowulf, ubuntu focal, Ubuntu groovy
 
