@@ -1,4 +1,5 @@
 import { Command, flags } from '@oclif/command'
+import { contributors } from 'pjson';
 import Tools from '../../classes/tools'
 import Utils from '../../classes/utils'
 const exec = require('../../lib/utils').exec;
@@ -8,7 +9,7 @@ export default class ExportDeb extends Command {
 
   static flags = {
     help: flags.help({ char: 'h' }),
-    armel: flags.boolean({ char: 'a', description: 'remove old .deb before to copy'}),
+    armel: flags.boolean({ char: 'a', description: 'copy armel arch'}),
     clean: flags.boolean({ char: 'c', description: 'remove old .deb before to copy'}),
   }
 
@@ -24,7 +25,7 @@ export default class ExportDeb extends Command {
       console.log('cleaning destination...')
       await exec(cmd,{echo: true, capture: true})
         if (flags.armel){
-          let file_name_armel = Tu.file_name_deb.substring(0,Tu.file_name_deb.length - 9 ) + 'armel.deb'
+          const file_name_armel = Tu.file_name_deb.substring(0,Tu.file_name_deb.length - 9 ) + 'armel.deb'
           cmd = `ssh ${Tu.export_user_deb}@${Tu.export_host} rm -rf ${Tu.export_path_deb}${file_name_armel}`
           await exec(cmd,{echo: true, capture: true})
         }
@@ -34,10 +35,9 @@ export default class ExportDeb extends Command {
     console.log('copy to destination...')
     await exec(cmd,{echo: true, capture: true})
     if (flags.armel){
-      let file_name_armel = Tu.file_name_deb.substring(0,Tu.file_name_deb.length - 9 ) + 'armel.deb'
+      const file_name_armel = Tu.file_name_deb.substring(0,Tu.file_name_deb.length - 9 ) + 'armel.deb'
       cmd = `scp ${Tu.local_path_deb}${file_name_armel} ${Tu.export_user_deb}@${Tu.export_host}:${Tu.export_path_deb}`
       await exec(cmd,{echo: true, capture: true})
     }
   }
 }
-
