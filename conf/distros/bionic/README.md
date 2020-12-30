@@ -26,3 +26,6 @@ It take all configuration of Debian buster
 * /calamares/modules/users.yml original
 * /calamares/modules/welcome.yml original
 
+Used by:
+* Linux Mint tricia 
+* Zorin OS 
