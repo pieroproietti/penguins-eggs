@@ -21,7 +21,7 @@ export default class Produce extends Command {
       compress: flags.boolean({ char: 'c', description: 'max compression' }),
       fast: flags.boolean({ char: 'f', description: 'fast compression' }),
       verbose: flags.boolean({ char: 'v', description: 'verbose' }),
-      yolk: flags.boolean({ char: 'y', description: '-y force the renew of the local repository yolk' }),
+      yolk: flags.boolean({ char: 'y', description: '-y force yolk renew' }),
       script: flags.boolean({ char: 's', description: 'script mode. Generate scripts to manage iso build' }),
       help: flags.help({ char: 'h' }),
 
