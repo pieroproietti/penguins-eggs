@@ -41,9 +41,6 @@ It's safe and reliable. Thanks to a conservative approach to software updates, a
 ## Linux Mint Debian Edition 4 Debbie
 * **debbie** - LMDE4 Debbie, remastered with eggs, without any modifications except for wallpapers and develop tools.
 
-## More informations
+# Disclaim
+__Please note what this project is in no way connected to Linux Mint in any official way, it’s just my personal experiment__.
 
-You can find more informations at [Linux Mint](https://linuxmint.com/).
-
-# That's all Folks!
-No need other configurations, penguins-eggs are battery included or better, as in the real, live is inside! :-D

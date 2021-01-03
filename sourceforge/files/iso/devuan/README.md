@@ -26,19 +26,6 @@ All the ISOs include nodejs and eggs installed (.npm package), so you can update
 # Devuan 
 * **beowulf** - like debu, but devual based
 
-You can create remix from yourself by downloading the originals, installing the system, installing eggs and start to creatie the ISOs.
+# Disclaim
+__Please note what this project is in no way connected to Devuan in any official way, it’s just my personal experiment__.
 
-# That's all Folks!
-No need other configurations, penguins-eggs are battery included or better, as in the real, live is inside! :-D
-
-## More informations
-
-You can find more informations at [Penguin's eggs blog](https://penguins-eggs.net).
-
-## Contacts
-Feel free to contact [me](https://gitter.im/penguins-eggs-1/community?source=orgpage) or open an issue on [github](https://github.com/pieroproietti/penguins-eggs/issues).
-
-* mail: piero.proietti@gmail.com
-
-## Copyright and licenses
-Copyright (c) 2017, 2020 [Piero Proietti](https://penguins-eggs.net/about-me.html), dual licensed under the MIT or GPL Version 2 licenses.

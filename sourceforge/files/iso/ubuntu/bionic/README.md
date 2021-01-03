@@ -26,12 +26,11 @@ All the ISOs include nodejs and eggs installed (.npm package), so you can update
 # Ubuntu
 Ubuntu is a Linux distribution based on Debian mostly composed of free and open-source software. Ubuntu is officially released in three editions: Desktop, Server, and Core for Internet of things devices and robots. All the editions can run on the computer alone, or in a virtual machine. Ubuntu is a popular operating system for cloud computing, with support for OpenStack. Ubuntu's default desktop has been GNOME, since version 17.10.
 
-# bionic-1_i386
-It's just a lubuntu 18.04 remastered with eggs, if you need more sophisticated version look at Linux Mint tricia.
-
-# That's all Folks!
-No need other configurations, penguins-eggs are battery included or better, as in the real, live is inside! :-D
+* **bionic** It's just a lubuntu 18.04 remastered with eggs, if you need more sophisticated version look at Linux Mint tricia.
 
 ## More informations
 
 You can find more informations at [Ubuntu](https://www.ubuntu.com/).
+
+# Disclaim
+__Please note what this project is in no way connected to Ubuntu in any official way, it’s just my personal experiment__.

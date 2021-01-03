@@ -11,7 +11,7 @@ penguins-eggs
 [![iso](https://img.shields.io/badge/iso-images-orange)](https://sourceforge.net/projects/penguins-eggs/files/iso)
 
 
-# Penguin's eggs remastered ISOs
+# Penguin's eggs remixes ISOs
 
 All ISOs are based on Debian Buster, Ubuntu Focal, Linux Mint 19.x and Deepin 20 Beta. 
 
@@ -19,20 +19,20 @@ All ISOs are based on Debian Buster, Ubuntu Focal, Linux Mint 19.x and Deepin 20
 * ```live/evolution```
 * ```root/evolution```
 
-All the ISOs include nodejs and eggs installed (.npm package), so you can update your eggs tool with the command:
+All the ISOs include eggs installed (deb package). You can update your eggs tool with the command:
 
 ```sudo eggs update```
 
 # ISOs
 
-I work mostly on Debian stable, so here you can find my personal versions and other examples.
+I work mostly on Debian stable, so here you can find same personal versions and other examples.
 
 # Debian
 ## buster
 
 * **naked** - just the juice, without GUI. You can start here to build your revolution! (i386 and amd64)
 
-* **less** - it's not naked, but just dressed with lxde-core and the tools to develop. (i386 and amd64)
+* **lite** - it's not naked, but just dressed with xfce4 and the tools to develop. (i386 and amd64)
 
 * **debu**  - it is my personal version with cinnamon, mostly for development, but include common office tools; (amd64)
 
@@ -42,48 +42,49 @@ I work mostly on Debian stable, so here you can find my personal versions and ot
 
 * **lite** - just dressed with xfce, firefox, visual studio code, nodejs and stacer (amd64 and i386)
 
-## proxmox-ve
+# Ubuntu
 
-* **naked-ve** - Proxmox VE 6.2 cli (need amd64 plus virtualization enabled)
+## bionic LTS
+* **lubuntu** - Lubuntu 18.04 remastered with eggs, w, updated and remastered with eggs, without any modifications except for wallpapers.
 
-* **live-ve** - Proxmox VE 6.2 with xfce, developer tools, virt-viewer (need amd64 plus virtualization enabled)
+## focal LTS
+* **focal** - Ubuntu 20.04 focal gnome3, remastered with eggs, without any modifications. 
+* **ubuntuweb** - Ubuntu web remix gnome3, remastered with eggs, without any modifications. 
 
-* **incubator** - Proxmox VE 6.2 with cinnamon, depeloper tools, office, gimp, etc; (need amd64 plus virtualization enabled)
-
-All the other distro are non divided, but just a directory, the name is usually the distro version name. Example: focal, bionic, etc.
+## groovy
+* **groovy** - Ubuntu 20.10 groovy. 
 
 # Devuan 
 * **beowulf** - like debu, but devual based
 
-# Deepin
-* **deepin** deepin 20 remastered
+# From derivated distros
 
-# Linux Mint
+## Deepin
+* **deepin** deepin 20 remastered based on Debian buster
+
+## Linux Mint 
+* **ulyana** - Linux Mint 20 remastered with eggs, without any modifications except for wallpapers and develop tools. (amd64) 
 * **patricia** - Linux Mint 19.3 xfce, updated and remastered with eggs, without any modifications except for wallpapers. (amd64/i386)
+* **debbie** - LMDE4 Debbie, remastered with eggs, without any modifications except for wallpapers and develop tools. (amd64/i386) based on Debian buster
 
-* **ulyana** - Linux Mint 20 remastered with eggs, without any modifications except for wallpapers and develop tools. (amd64)
+## MX Linux 
+* **mx** - Linux MX 19.3 installable with gui installer calamares 
 
-## Linux Mint Debian Edition 4 Debbie
-* **debbie** - LMDE4 Debbie, remastered with eggs, without any modifications except for wallpapers and develop tools. (amd64/i386)
+## Proxmox-VE
+* **naked-ve** - Proxmox VE 6.3 cli (amd64 plus virtualization enabled);
+* **live-ve** - Proxmox VE 6.3 with xfce (amd64 plus virtualization enabled) with developer tools, virt-viewer (need amd64 plus virtualization enabled);
+* **incubator** - Proxmox VE 6.3 cinnamon (amd64 plus virtualization enabled) with depeloper tools, office, gimp, etc;
 
-# Ubuntu
-* **lubuntu-i386** - Lubuntu 18.04 remastered with eggs, w, updated and remastered with eggs, without any modifications except for wallpapers.
+## UfficioZero
+* **roma** - UffucioZero Roma (x86), based on Devuan beowulf;
+* **siena** - UfficioZero Siena (x86) based on LMDE4;
+* **tropea** - UfficioZero Tropea (amd64)based on Linuxmint 20.0 ulyana;
+* **vieste** - UfficioZero Vieste (amd64) based on Linuxmint 19.3 tricia;
 
-* **focal** - Ubuntu 20.04 focal gnome3, remastered with eggs, without any modifications. 
+You can re-create remix from yourself by downloading the originals ISOs, and using eggs to remaster it.
 
-* **groovy** - Ubuntu 20.10 groovy. 
-
-
-# UfficioZero
-
-* **roma-i386** - UffucioZero Roma (x86), based on devuan beowulf
-
-* **tropea** - UfficioZero Tropea (amd64)based on Linuxmint 20.0 ulyana
-
-* **vieste** - UfficioZero Vieste (amd64) based on Linuxmint 19.3 tricia
-
-
-You can create remix from yourself by downloading the originals, installing the system, installing eggs and start to creatie the ISOs.
+# Disclaim
+Please note what this project is in no way connected to the original distros in any official way, the are just my personal experiments.
 
 # That's all Folks!
 No need other configurations, penguins-eggs are battery included or better, as in the real, live is inside! :-D
@@ -99,3 +100,7 @@ Feel free to contact [me](https://gitter.im/penguins-eggs-1/community?source=org
 
 ## Copyright and licenses
 Copyright (c) 2017, 2020 [Piero Proietti](https://penguins-eggs.net/about-me.html), dual licensed under the MIT or GPL Version 2 licenses.
+
+# Disclaim 
+__Please note what this project is in no way connected to the originals distros in any official way, they are just my personal experiments__.
+

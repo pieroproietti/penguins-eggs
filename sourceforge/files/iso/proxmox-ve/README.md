@@ -36,3 +36,6 @@ __Please note what this project is in no way connected to Proxmox VE in any offi
 
 ## More informations
 You can find more informations at [Proxmox VE wiki](https://pve.proxmox.com/wiki/Main_Page). 
+
+# Disclaim
+__Please note what this project is in no way connected to Proxmox in any official way, it’s just my personal experiment__.

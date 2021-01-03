@@ -29,5 +29,6 @@ All the ISOs include nodejs and eggs installed (.npm package), so you can update
 
 You can find more informations at [Linux Mint](https://linuxmint.com/).
 
-# That's all Folks!
-No need other configurations, penguins-eggs are battery included or better, as in the real, live is inside! :-D
+# Disclaim
+__Please note what this project is in no way connected to Linux Mint in any official way, it’s just my personal experiment__.
+

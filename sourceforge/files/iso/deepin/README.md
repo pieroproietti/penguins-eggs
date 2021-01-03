@@ -30,5 +30,6 @@ deepin is an elegant, easy to use and reliable domestic desktop operating system
 
 You can find more informations at [deepin](https://www.deepin.org/en/).
 
-# That's all Folks!
-No need other configurations, penguins-eggs are battery included or better, as in the real, live is inside! :-D
+# Disclaim
+__Please note what this project is in no way connected to Deepin in any official way, it’s just my personal experiment__.
+

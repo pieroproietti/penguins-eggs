@@ -31,5 +31,6 @@ __Please note what this project is in no way connected to system76 in any offici
 
 You can find more informations at [system76](https://pop.system76.com/).
 
-# That's all Folks!
-No need other configurations, penguins-eggs are battery included or better, as in the real, live is inside! :-D
+# Disclaim
+__Please note what this project is in no way connected to Pop!-OS in any official way, it’s just my personal experiment__.
+

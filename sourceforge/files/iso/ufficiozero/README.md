@@ -29,18 +29,24 @@ UfficioZero Linux is an open source operating system designed by [SIITE SRLS](ht
 
 You can dowload more updated versions on [ufficiozero](https://www.ufficiozero.org/index.php?alias=download).
 
-* Ufficio Zero version 2.x **Roma** 32bit
-If you want to read some help how-to for this version, you can use this [link](https://wiki.ufficiozero.org/doku.php?id=roma)
+* Ufficio Zero version 3.0 **Siena** 32bit LMDE 4 derivated
+If you want to read some help how-to for this version, you can use this [link](https://wiki.ufficiozero.org/doku.php?id=siena)
 
-* Ufficio Zero version 2.x **Vieste** 64bit
-If you want to read some help how-to for this version, you can use this [link](https://wiki.ufficiozero.org/doku.php?id=vieste).
-
-* Ufficio Zero version 3.0 **Tropea** 64bit
+* Ufficio Zero version 3.0 **Tropea** 64bit Linux Mint 20 derivated
 if you want to read some help how-to for this version, you can use this [link](https://wiki.ufficiozero.org/doku.php?id=tropea).
 
-# That's all Folks!
-No need other configurations, penguins-eggs are battery included or better, as in the real, live is inside! :-D
+* Ufficio Zero version 2.x **Vieste** 64bit Linux Mint Mate 19.3 derivated
+If you want to read some help how-to for this version, you can use this [link](https://wiki.ufficiozero.org/doku.php?id=vieste).
+
+* Ufficio Zero version 2.x **Roma** 32bit Devuan derivated
+If you want to read some help how-to for this version, you can use this [link](https://wiki.ufficiozero.org/doku.php?id=vieste).
+
 
 ## More informations
 
 You can find more informations at [ufficiozero](https://www.ufficiozero.org/).
+
+# Disclaim
+__I'm part of UfficioZero, but please note what this project is in no way connected to UfficioZero in any official way, they are mostly betas__.
+
+

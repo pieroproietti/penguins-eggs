@@ -22,13 +22,9 @@ All ISOs are based on Debian buster, Debian bullseye
 
 * **naked** - just the juice, without GUI. You can start here to build your revolution! (i386 and amd64)
 
-* **less** - it's not naked, but just dressed with lxde-core and the tools to develop. (i386 and amd64)
+* **lite** - it's not naked, but just dressed with xfce4 and the tools to develop. (i386 and amd64)
 
 * **debu**  - it is my personal version with cinnamon, mostly for development, but include common office tools; (amd64)
-
-## Proxmox VE 6.2
-
-## MX Linux 19.3
 
 # Debian bullseye
 
@@ -36,7 +32,6 @@ All ISOs are based on Debian buster, Debian bullseye
 
 * **lite** - it's not naked, but just dressed with xfce4 and the tools to develop. (i386 and amd64)
 
+# Disclaim
+__Please note what this project is in no way connected to Debian in any official way, it’s just my personal experiment__.
 
-* **naked** - just the juice, without GUI. You can start here to build your revolution! (amd64)
-
-* **incubator** - it's your workstation for virtualization, dressed with cinnamon, libreoffice, gimp and tools. (amd64)
