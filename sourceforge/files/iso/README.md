@@ -83,9 +83,6 @@ I work mostly on Debian stable, so here you can find same personal versions and 
 
 You can re-create remix from yourself by downloading the originals ISOs, and using eggs to remaster it.
 
-# Disclaim
-Please note what this project is in no way connected to the original distros in any official way, the are just my personal experiments.
-
 # That's all Folks!
 No need other configurations, penguins-eggs are battery included or better, as in the real, live is inside! :-D
 

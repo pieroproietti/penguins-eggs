@@ -26,7 +26,9 @@ All the ISOs include nodejs and eggs installed (.npm package), so you can update
 # Ubuntu
 Ubuntu is a Linux distribution based on Debian mostly composed of free and open-source software. Ubuntu is officially released in three editions: Desktop, Server, and Core for Internet of things devices and robots. All the editions can run on the computer alone, or in a virtual machine. Ubuntu is a popular operating system for cloud computing, with support for OpenStack. Ubuntu's default desktop has been GNOME, since version 17.10.
 
-* **focal** It's just a ubuntu 20.04 remastered with eggs.
+* **naked** It's just a ubuntu 20.04 focal only cli remastered with eggs;
+* **focal** It's just a ubuntu 20.04 remastered with eggs;
+* **ubuntuweb** It's just a ubuntu web remix remastered with eggs.
 
 ## More informations
 
