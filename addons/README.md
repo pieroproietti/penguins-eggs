@@ -9,11 +9,12 @@ perchè vi è la possibilità utilizzando oclif-dev di scrivere dei veri e propr
 fornire al tool comandi aggiuntivi, hooks ed altre caratteristiche utilizzando oclif/plugin-plugins.
 
 Gli addons risiedono nella cartella addons, al primo livello c'è il vendor, colui che ha realizzato il 
-prodotto, al momento abbiamo 4 vendor:
+prodotto, al momento abbiamo 5 vendor:
 * debian
 * deblinux
 * eggs
 * ufficiozero
+* guadalinex
 
 # Sintassi per l'uso
 Il caso generico è:
