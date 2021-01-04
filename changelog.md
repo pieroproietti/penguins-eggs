@@ -18,6 +18,9 @@ You can follow the project also consulting the [commit history](https://github.c
 ## Changelog
 Versions are listed on reverse order, the first is the last one.
 
+### eggs-7.7.4.1_deb
+* added guadalinex theme
+
 ### eggs-7.7.3.1_deb
 * fixed annoying bug in option safe booting from livecd
 
