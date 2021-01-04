@@ -116,13 +116,14 @@ export default class Ovary {
                const bleach = new Bleach
                await bleach.clean(verbose)
             }
+            // Calamares prende il tema da settings.remix.branding
             this.incubator = new Incubator(this.settings.remix, this.settings.distro, this.settings.user_opt, verbose)
             this.incubator.config(final)
          }
-         await this.isolinux(verbose)
+         await this.isolinux(theme, verbose)
          await this.copyKernel()
          if (this.settings.make_efi) {
-            await this.makeEfi(verbose)
+            await this.makeEfi(theme, verbose)
          }
 
          await this.bindLiveFs(verbose)
@@ -379,7 +380,7 @@ export default class Ovary {
    /**
     *  async isoCreateStructure() {
     */
-   async isolinux(verbose = false) {
+   async isolinux(theme = 'eggs', verbose = false) {
       const echo = Utils.setEcho(verbose)
       if (verbose) {
          console.log('ovary: isolinux')
@@ -406,18 +407,30 @@ export default class Ovary {
       await exec(`rsync -a ${isolinuxbin} ${this.settings.work_dir.pathIso}/isolinux/`, echo)
       await exec(`rsync -a ${vesamenu} ${this.settings.work_dir.pathIso}/isolinux/`, echo)
 
-      // creazione del menu e splash
-      const splashSourcePath = path.resolve(__dirname, '../../assets/penguins-eggs-splash.png')
-      const splashDestPath = `${this.settings.work_dir.pathIso}/isolinux/splash.png`
-      fs.copyFileSync(splashSourcePath, splashDestPath)
-
       fs.copyFileSync(path.resolve(__dirname, `../../conf/distros/${this.settings.distro.versionLike}/isolinux/isolinux.template.cfg`), `${this.settings.work_dir.pathIso}/isolinux/isolinux.cfg`)
       fs.copyFileSync(path.resolve(__dirname, `../../conf/distros/${this.settings.distro.versionLike}/isolinux/stdmenu.template.cfg`), `${this.settings.work_dir.pathIso}/isolinux/stdmenu.cfg`)
 
+      // creazione del menu e splash
+      const menuDest = `${this.settings.work_dir.pathIso}/isolinux/menu.cfg`
+      const splashDest = `${this.settings.work_dir.pathIso}/isolinux/splash.png`
 
-      const src = path.resolve(__dirname, `../../conf/distros/${this.settings.distro.versionLike}/isolinux/menu.template.cfg`)
-      const dest = `${this.settings.work_dir.pathIso}/isolinux/menu.cfg`
-      const template = fs.readFileSync(src, 'utf8')
+      // splashSrc e menuSrc possono essere configurate dal tema
+      let splashSrc = path.resolve(__dirname, '../../assets/penguins-eggs-splash.png')
+      let menuSrc = path.resolve(__dirname, `../../conf/distros/${this.settings.distro.versionLike}/isolinux/menu.template.cfg`)
+      if (theme !== 'eggs') {
+         const splashCandidate = path.resolve(__dirname, `../../addons/${theme}/theme/livecd/splash.png`)
+         if (fs.existsSync(splashCandidate)) {
+            splashSrc = splashCandidate
+         }
+         const menuCandidate = path.resolve(__dirname, `../../addons/${theme}/theme/livecd/menu.template.cfg`)
+         if (fs.existsSync(menuCandidate)) {
+            menuSrc = menuCandidate
+         }
+      }
+      fs.copyFileSync(splashSrc, splashDest)
+
+      // const menuSrc = path.resolve(__dirname, `../../conf/distros/${this.settings.distro.versionLike}/isolinux/menu.template.cfg`)
+      const template = fs.readFileSync(menuSrc, 'utf8')
       const view = {
          customName: this.settings.remix.name,
          kernel: Utils.kernerlVersion(),
@@ -429,7 +442,7 @@ export default class Ovary {
          lang: process.env.LANG,
          locales: process.env.LANG,
       }
-      fs.writeFileSync(dest, mustache.render(template, view))
+      fs.writeFileSync(menuDest, mustache.render(template, view))
    }
 
    /**
@@ -613,9 +626,9 @@ export default class Ovary {
                   /*
                   * merged creazione della directory e mount ro
                   */
-                 cmds.push(`${cmd} need to be present, mount ro`)
-                 cmds.push(titleLine)
-                 cmds.push(await makeIfNotExist(`${this.settings.work_dir.merged}/${dir}`, verbose))
+                  cmds.push(`${cmd} need to be present, mount ro`)
+                  cmds.push(titleLine)
+                  cmds.push(await makeIfNotExist(`${this.settings.work_dir.merged}/${dir}`, verbose))
                   cmds.push(await rexec(`mount --bind --make-slave /${dir} ${this.settings.work_dir.merged}/${dir}`, verbose))
                   cmds.push(await rexec(`mount -o remount,bind,ro ${this.settings.work_dir.merged}/${dir}`, verbose))
                } else {
@@ -828,7 +841,7 @@ export default class Ovary {
          // Imposto service pve-lite
          const pve = new PveLive()
          pve.create(this.settings.work_dir.merged)
-         
+
          let dirAddon = path.resolve(__dirname, `../../addons/eggs/proxmox-ve`)
          shx.cp(`${dirAddon}/artwork/proxmox-ve.png`, `${this.settings.work_dir.merged}/usr/share/icons/`)
          shx.cp(`${dirAddon}/applications/penguins-pve.desktop`, `${this.settings.work_dir.merged}/usr/share/applications/`)
@@ -925,7 +938,7 @@ export default class Ovary {
     * makeEfi
     * Create /boot and /efi for UEFI
     */
-   async makeEfi(verbose = false) {
+   async makeEfi(theme = 'eggs', verbose = false) {
       const echo = Utils.setEcho(verbose)
       if (verbose) {
          console.log('ovary: makeEfi')
@@ -982,7 +995,7 @@ export default class Ovary {
       shx.mkdir('-p', './efi/boot')
 
       // copy splash
-      shx.cp(path.resolve(__dirname, '../../assets/penguins-eggs-splash.png'), `${this.settings.efi_work}/boot/grub/spash.png`)
+      //shx.cp(path.resolve(__dirname, '../../assets/penguins-eggs-splash.png'), `${this.settings.efi_work}/boot/grub/spash.png`)
 
       // second grub.cfg file
       let cmd = `for i in $(ls /usr/lib/grub/${this.arch_efi}|grep part_|grep .mod|sed \'s/.mod//\'); do echo "insmod $i" >> boot/grub/${this.arch_efi}/grub.cfg; done`
@@ -1047,14 +1060,38 @@ export default class Ovary {
       await exec(`rsync -ax  ${this.settings.efi_work}/boot ${this.settings.work_dir.pathIso}/`, echo)
       await exec(`rsync -ax ${this.settings.efi_work}/efi  ${this.settings.work_dir.pathIso}/`, echo)
 
-      // Do the main grub.cfg (which gets loaded last):
-      fs.copyFileSync(path.resolve(__dirname, `../../conf/distros/${this.settings.distro.versionLike}/grub/theme.cfg`), `${this.settings.work_dir.pathIso}/boot/grub/theme.cfg`)
+      /**
+       * Do the main grub.cfg (which gets loaded last):
+       */ 
       fs.copyFileSync(path.resolve(__dirname, `../../conf/distros/${this.settings.distro.versionLike}/grub/loopback.cfg`), `${this.settings.work_dir.pathIso}/boot/grub/loopback.cfg`)
 
+      /**
+       * in theme va al momento theme.cfg e splash.png
+       */
+      const grubSrc = path.resolve(__dirname, `../../conf/distros/${this.settings.distro.versionLike}/grub/grub.template.cfg`)
+      let themeSrc =path.resolve(__dirname, `../../conf/distros/${this.settings.distro.versionLike}/grub/theme.cfg`)
+      let splashSrc = path.resolve(__dirname, '../../assets/penguins-eggs-splash.png')
+
+      const grubDest = `${this.settings.work_dir.pathIso}/boot/grub/grub.cfg`
+      const themeDest = `${this.settings.work_dir.pathIso}/boot/grub/theme.cfg`
+      const splashDest = `${this.settings.work_dir.pathIso}/isolinux/splash.png`
+
+      if (theme !== 'eggs') {
+         const splashCandidate = path.resolve(__dirname, `../../addons/${theme}/theme/livecd/splash.png`)
+         if (fs.existsSync(splashCandidate)) {
+            splashSrc = splashCandidate
+         }
+         const themeCandidate = path.resolve(__dirname, `../../addons/${theme}/theme/livecd/theme.cfg`)
+         if (fs.existsSync(themeCandidate)) {
+            themeSrc = themeCandidate
+         }
+      }
+      fs.copyFileSync(themeSrc, themeDest)
+      fs.copyFileSync(splashSrc, splashDest)
+
+
       // Utilizzo mustache
-      const src = path.resolve(__dirname, `../../conf/distros/${this.settings.distro.versionLike}/grub/grub.template.cfg`)
-      const dest = `${this.settings.work_dir.pathIso}/boot/grub/grub.cfg`
-      const template = fs.readFileSync(src, 'utf8')
+      const template = fs.readFileSync(grubSrc, 'utf8')
       const view = {
          customName: this.settings.remix.name,
          kernel: Utils.kernerlVersion(),
@@ -1066,7 +1103,7 @@ export default class Ovary {
          lang: process.env.LANG,
          locales: process.env.LANG,
       }
-      fs.writeFileSync(dest, mustache.render(template, view))
+      fs.writeFileSync(grubDest, mustache.render(template, view))
    }
 
    /**

@@ -204,10 +204,10 @@ _See code: [src/commands/calamares.ts](https://github.com/pieroproietti/penguins
 
 ## `eggs export:deb`
 
-export package eggs-v7-6-x-1.deb in the destination host
+export package eggs-v7-x-x-1.deb in the destination host
 
 ```
-export package eggs-v7-6-x-1.deb in the destination host
+export package eggs-v7-x-x-1.deb in the destination host
 
 USAGE
   $ eggs export:deb
