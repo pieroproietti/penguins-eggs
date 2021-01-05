@@ -1020,7 +1020,7 @@ export default class Ovary {
       // make the grub image
       await exec(`grub-mkimage -O ${this.arch_efi} -m memdisk -o bootx64.efi -p '(memdisk)/boot/grub' search iso9660 configfile normal memdisk tar cat part_msdos part_gpt fat ext2 ntfs ntfscomp hfsplus chain boot linux`, echo)
 
-      // pdpd (torna a efi_work)
+      // pospd (torna a efi_work)
       process.chdir(this.settings.efi_work)
 
       // copy the grub image to efi/boot (to go later in the device's root)

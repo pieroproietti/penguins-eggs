@@ -151,7 +151,11 @@ class Distro implements IDistro {
          this.versionLike = 'stretch'
       } // Deepin 20
       else if (this.versionId === 'n/a') {
-         this.distroId = 'Deepin'
+         if (shell.exec('lsb_release -i -s', { silent: true }).stdout.toString().trim()!=='Deepin') {
+            this.distroId = 'Debian'
+         } else {
+            this.distroId = 'Deepin'
+         }
          this.versionId = 'bullseye'
          this.distroLike = 'Debian'
          this.versionLike = 'bullseye'
