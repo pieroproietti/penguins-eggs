@@ -16,7 +16,13 @@ penguins-eggs
 
 # MX-Linux 19.3
 
-* **mx** Just a remaster of MX 19.3 Patito feo installabe with calamares
+* **mx** Just a remaster of MX 19.3 Patito feo installable with calamares
+* **mxkde** Just a remaster of MX KDE 19.3 Patito feo installable with calamares
+* **mxflush** Just a remaster of MX flux 19.3 Patito feo installable with calamares
+
+# Problems
+MX Linux is based on Debian busteuut with many modifications. Eggs work with it, but at the moment not very well and I need to discover why.
+mx iso boot and install correctly, but have same problems in shutdown. The same in mxkde, start well but not load xorg, so the only way to start is Alt-F1 login ad live and start manually X: startx. The same problems of  mx in shutdown. 
 
 ## More informations
 You can find more informations at [MX Linux](https://mxlinux.org/). 
