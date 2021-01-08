@@ -1,25 +1,29 @@
 #!/bin/bash
 
+##
+# eggs dialog 
+##
+
 function main {
 
    while true; do
       answer=$(zenity --list --height 500 --width 650\
       --title="Eggs" \
       --column="Command" --column=" " --column="Description" \
-      adapt " " "adapt video resolution" \
-      autocomplete " " "generate or refresh autocomplete" \
-      calamares " " "install and configure calamares" \
-      EXPORT ">" "export /deb/docs/iso" \
-      help " " "help" \
-      info " " "get informations" \
-      install " " "install your system on hard disk" \
-      kill " " "delete ISOs" \
-      prerequisites " " "install eggs prerequisites" \
-      produce " " "produce and ISO of your system" \
-      remove " " "remove " \
-      TOOLS ">" "clean/initrd/locales/pve/sanitize/skel/yolk" \
-      update " " "update" \
-      EXIT " " "exit")
+      "adapt" " " "adapt video resolution" \
+      "autocomplete" " " "generate or refresh autocomplete" \
+      "calamares" ">" "install and configure calamares" \
+      "export" ">" "export /deb/docs/iso" \
+      "help" " " "help" \
+      "info" " " "get informations" \
+      "install" ">" "install your system on hard disk" \
+      "kill" " " "delete ISOs" \
+      "prerequisites" " " "install eggs prerequisites" \
+      "produce" ">" "produce and ISO of your system" \
+      "remove" ">" "remove " \
+      "tools" ">" "clean/initrd/locales/pve/sanitize/skel/yolk" \
+      "update" " " "update" \
+      "EXIT" " " "exit")
       ${answer}
 
    done
@@ -43,7 +47,7 @@ function autocomplete {
 
    # remove previus eggs.bash
    if [ -f "/etc/bash_completion.d/eggs.bash" ]; then
-      rm /etc/bash_completion.d/eggs.bash
+      sudo rm /etc/bash_completion.d/eggs.bash
    fi
    sudo cp ~/.cache/penguins-eggs/autocomplete/functions/bash/eggs.bash /etc/bash_completion.d/
 
@@ -57,21 +61,17 @@ function autocomplete {
 ################################
 function calamares {
 
-   answer= $(zenity --list --height 500 --width 530\
+   answer= $(zenity --list --height 500 --width 650\
    --title="eggs calamares" \
    --column="command" --column="Description" \
    "eggs calamares --help" "help" \
-   "sudo eggs calamares --install"  "install and configures calamares" \
    "sudo eggs calamares --install --verbose"  "install and configures calamares verbose" \
-   "sudo eggs calamares" "configure calamares" \
    "sudo eggs calamares --verbose" "configure calamares verbose")
-
-   echo ${answer}
 }
 
 
 ################################
-function EXPORT {
+function export {
    answer= $(zenity --list --height 500 --width 530 \
    --column="eggs export:" --column="Description" \
    deb "export package eggs-v7-x-x-1.deb in the destination host" \
@@ -88,7 +88,7 @@ function deb {
 
 ################################
 function  docs {
-   eggs export:docs -c
+   eggs export:docs
 }
 
 ################################
@@ -108,7 +108,11 @@ function info {
 
 ################################
 function install {
-   sudo eggs install
+   answer= $(zenity --list --height 500 --width 650 \
+   --title "eggs install" \
+   --column="Command" --column="Description" \
+   "sudo calamares" "installer GUI calamares" \
+   "sudo eggs install" "installer CLI eggs" )
 }
 
 ################################
@@ -123,16 +127,26 @@ function prerequisites {
 
 ################################
 function produce {
-   sudo eggs produce
+   answer= $(zenity --list --height 500 --width 650 \
+   --title="eggs produce" \
+   --column="command" --column="Description" \
+   "eggs produce --help" "help" \
+   "sudo eggs produce --fast --verbose --basename UfficioZero --theme=ufficiozero"  "create fast an ISO large" \
+   "sudo eggs produce --verbose --basename UfficioZero --theme=ufficiozero"  "create an ISO" )
 }
 
 ################################
 function remove {
-   sudo eggs remove
+   answer= $(zenity --list --height 500 --width 650 \
+   --title "eggs remove" \
+   --column="Command" --column="Description" \
+   "sudo eggs remove --prerequisites" "remove prerequisites only" \
+   "sudo eggs remove --all" "remove prerequisites and eggs" \
+   "sudo eggs remove --all --purge" "remove prerequisites, eggs and purge")
 }
 
 
-function TOOLS {
+function tools {
    answer= $(zenity --list --height 500 --width 530 \
    --column="eggs tools:" --column="Description" \
    clean "clean system log, apt, etc" \
