@@ -21,7 +21,7 @@ export default class Prerequisites extends Command {
 
    static flags = {
       help: flags.help({ char: 'h' }),
-      configuration: flags.boolean({ char: 'c', description: 'create configuration\'s files' }),
+      check: flags.boolean({ char: 'c', description: 'check prerequisites' }),
       verbose: flags.boolean({ char: 'v', description: 'verbose' }),
    }
 
@@ -33,8 +33,13 @@ export default class Prerequisites extends Command {
 
       const { flags } = this.parse(Prerequisites)
 
-      let verbose = flags.verbose
-      let configuration = flags.configuration
+      const verbose = flags.verbose
+      if (flags.check) {
+         if (Pacman.configurationCheck()) {
+            process.exit(1)
+         }
+      }
+
 
       if (Utils.isRoot()) {
          if (!Pacman.configurationCheck()) {
