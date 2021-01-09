@@ -8,7 +8,8 @@ function main {
 
    while true; do
       answer=$(zenity --list --height 500 --width 650\
-      --title="Mom" \
+      --title="Mumy" \
+      --text="Mama's gonna keep baby cosy and warm..." \
       --column="Command" --column=" " --column="Description" \
       "adapt" " " "adapt video resolution" \
       "autocomplete" " " "generate or refresh autocomplete" \
@@ -53,9 +54,9 @@ function autocomplete {
    sudo cp ~/.cache/penguins-eggs/autocomplete/functions/bash/eggs.bash /etc/bash_completion.d/
 
    if [ -f "/etc/bash_completion.d/eggs.bash" ]; then
-      zenity --warning --text "autocomplete generated"
+      zenity --info --text "autocomplete generated" --height 300 --width 300
    else
-      zenity --error --text "problem with autocomplete generation"
+      zenity --error --text "problem with autocomplete generation" --height 300 --width 300 
    fi
 }
 
