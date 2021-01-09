@@ -111,6 +111,7 @@ USAGE
 * [`eggs adapt`](#eggs-adapt)
 * [`eggs autocomplete [SHELL]`](#eggs-autocomplete-shell)
 * [`eggs calamares`](#eggs-calamares)
+* [`eggs dad [FILE]`](#eggs-dad-file)
 * [`eggs export:deb`](#eggs-exportdeb)
 * [`eggs export:docs`](#eggs-exportdocs)
 * [`eggs export:iso`](#eggs-exportiso)
@@ -202,6 +203,24 @@ EXAMPLES
 ```
 
 _See code: [src/commands/calamares.ts](https://github.com/pieroproietti/penguins-eggs/blob/v7.7.6/src/commands/calamares.ts)_
+
+## `eggs dad [FILE]`
+
+describe the command here
+
+```
+describe the command here
+
+USAGE
+  $ eggs dad [FILE]
+
+OPTIONS
+  -f, --force
+  -h, --help       show CLI help
+  -n, --name=name  name to print
+```
+
+_See code: [src/commands/dad.ts](https://github.com/pieroproietti/penguins-eggs/blob/v7.7.6/src/commands/dad.ts)_
 
 ## `eggs export:deb`
 
@@ -342,17 +361,18 @@ _See code: [src/commands/kill.ts](https://github.com/pieroproietti/penguins-eggs
 
 ## `eggs mom`
 
-ask for mummy!
+ask for mommy (gui interface)!
 
 ```
-ask for mummy!
+ask for mommy (gui interface)!
 
 USAGE
   $ eggs mom
 
 OPTIONS
-  -c, --cli   force cli version of mom
-  -h, --help  show CLI help
+  -c, --cli    force cli version of mommy
+  -d, --daddy  ask for daddy (essential gui interface)
+  -h, --help   show CLI help
 ```
 
 _See code: [src/commands/mom.ts](https://github.com/pieroproietti/penguins-eggs/blob/v7.7.6/src/commands/mom.ts)_
@@ -368,9 +388,9 @@ USAGE
   $ eggs prerequisites
 
 OPTIONS
-  -c, --configuration  create configuration's files
-  -h, --help           show CLI help
-  -v, --verbose        verbose
+  -c, --check    check prerequisites
+  -h, --help     show CLI help
+  -v, --verbose  verbose
 
 EXAMPLES
   ~$ eggs prerequisites
