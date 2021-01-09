@@ -18,6 +18,9 @@ You can follow the project also consulting the [commit history](https://github.c
 ## Changelog
 Versions are listed on reverse order, the first is the last one.
 
+### eggs-7.7.6.1_deb
+* added command mom, a gui/cli helper for reproductive eggs!
+
 ### eggs-7.7.5.1_deb
 * bugfix in bullseye and deepin to not confuse versions
 
