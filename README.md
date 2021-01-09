@@ -118,6 +118,7 @@ USAGE
 * [`eggs info`](#eggs-info)
 * [`eggs install`](#eggs-install)
 * [`eggs kill`](#eggs-kill)
+* [`eggs mom`](#eggs-mom)
 * [`eggs prerequisites`](#eggs-prerequisites)
 * [`eggs produce`](#eggs-produce)
 * [`eggs remove`](#eggs-remove)
@@ -338,6 +339,23 @@ EXAMPLE
 ```
 
 _See code: [src/commands/kill.ts](https://github.com/pieroproietti/penguins-eggs/blob/v7.7.5/src/commands/kill.ts)_
+
+## `eggs mom`
+
+ask for mummy!
+
+```
+ask for mummy!
+
+USAGE
+  $ eggs mom
+
+OPTIONS
+  -h, --help             show CLI help
+  -v, --verbose=verbose  verbose
+```
+
+_See code: [src/commands/mom.ts](https://github.com/pieroproietti/penguins-eggs/blob/v7.7.5/src/commands/mom.ts)_
 
 ## `eggs prerequisites`
 

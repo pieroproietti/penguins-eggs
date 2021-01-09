@@ -8,7 +8,7 @@ function main {
 
    while true; do
       answer=$(zenity --list --height 500 --width 650\
-      --title="Eggs" \
+      --title="Mom" \
       --column="Command" --column=" " --column="Description" \
       "adapt" " " "adapt video resolution" \
       "autocomplete" " " "generate or refresh autocomplete" \
@@ -24,8 +24,8 @@ function main {
       "tools" ">" "clean/initrd/locales/pve/sanitize/skel/yolk" \
       "update" " " "update" \
       "EXIT" " " "exit")
-      ${answer}
 
+      ${answer}
    done
 }
 
@@ -34,6 +34,7 @@ function main {
 ################################
 function adapt {
    eggs adapt
+   press_a_key_to_continue
 }
 
 ################################
@@ -67,6 +68,8 @@ function calamares {
    "eggs calamares --help" "help" \
    "sudo eggs calamares --install --verbose"  "install and configures calamares verbose" \
    "sudo eggs calamares --verbose" "configure calamares verbose")
+
+   ${answer}
 }
 
 
@@ -77,33 +80,36 @@ function export {
    deb "export package eggs-v7-x-x-1.deb in the destination host" \
    iso "export iso in the destination host" \
    docs "remove and export docType documentation of the sources in the destination host")
-
-   echo ${answer}
 }
 
 ################################
 function deb {
    eggs export:deb -c
+   press_a_key_to_continue
 }
 
 ################################
 function  docs {
    eggs export:docs
+   press_a_key_to_continue
 }
 
 ################################
 function iso {
    eggs export:iso -c
+   press_a_key_to_continue
 } 
 
 ################################
 function help {
    eggs help
+   press_a_key_to_continue
 }
 
 ################################
 function info {
    eggs info
+   press_a_key_to_continue
 }
 
 ################################
@@ -113,16 +119,20 @@ function install {
    --column="Command" --column="Description" \
    "sudo calamares" "installer GUI calamares" \
    "sudo eggs install" "installer CLI eggs" )
+
+   ${answer}
 }
 
 ################################
 function kill {
    sudo eggs kill
+   press_a_key_to_continue
 }
 
 ################################
 function prerequisites {
    sudo eggs prerequisites
+   press_a_key_to_continue
 }
 
 ################################
@@ -133,6 +143,8 @@ function produce {
    "eggs produce --help" "help" \
    "sudo eggs produce --fast --verbose --basename UfficioZero --theme=ufficiozero"  "create fast an ISO large" \
    "sudo eggs produce --verbose --basename UfficioZero --theme=ufficiozero"  "create an ISO" )
+
+    ${answer}
 }
 
 ################################
@@ -143,6 +155,8 @@ function remove {
    "sudo eggs remove --prerequisites" "remove prerequisites only" \
    "sudo eggs remove --all" "remove prerequisites and eggs" \
    "sudo eggs remove --all --purge" "remove prerequisites, eggs and purge")
+
+   ${answer}
 }
 
 
@@ -156,51 +170,68 @@ function tools {
    sanitize "sanitize" \
    skel "update skel from home configuration" \
    yolk "configure eggs to install without internet")
+
+   ${answer}
 }
 
 ################################
 function clean {
    sudo eggs tools:clean
+   press_a_key_to_continue
 }
 
 ################################
 function initrd {
    sudo eggs tools:initrd
+   press_a_key_to_continue
 }
 
 ################################
 function locales {
    sudo eggs tools:locales
+   press_a_key_to_continue
 }
 
 ################################
 function pve {
    sudo eggs tools:pve
+   press_a_key_to_continue
 }
 
 ################################
 function sanitize {
    sudo eggs tools:sanitize
+   press_a_key_to_continue
 }
 
 ################################
 function skel {
    sudo eggs tools:skel
+   press_a_key_to_continue
 }
 
 ################################
 function yolk {
    sudo eggs tools:yolk
+   press_a_key_to_continue
 }
 
 ################################
 function update {
    sudo eggs update
+   press_a_key_to_continue
+}
+
+
+function press_a_key_to_continue {
+   #zenity --question --text="Press enter to continue"
+   read -p "Press enter to continue"
 }
 
 ################################
 function EXIT {
    exit 0
 }
+
 
 main
