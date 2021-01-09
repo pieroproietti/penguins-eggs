@@ -187,8 +187,8 @@ export default class Settings {
       this.gui_editor = settings.General.gui_editor
       this.force_installer = settings.General.force_installer === 'yes'
 
-      this.kernel_image = settings.General.kernel_image
-      this.initrd_image = settings.General.initrd_image
+      this.kernel_image = Utils.initrdImg()
+      this.initrd_image = Utils.vmlinuz()
       this.vmlinuz = this.kernel_image.substr(this.kernel_image.lastIndexOf('/'))
       this.initrdImg = this.initrd_image.substr(this.initrd_image.lastIndexOf('/'))
 

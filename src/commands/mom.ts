@@ -9,6 +9,7 @@ const exec = require('../lib/utils').exec
 
 import path = require('path')
 import Pacman from '../classes/pacman'
+import Utils from  '../classes/utils'
 
 export default class Mom extends Command {
   static description = 'ask for mommy (gui interface)!'
@@ -19,6 +20,8 @@ export default class Mom extends Command {
   }
 
   async run() {
+    Utils.titles(this.id + ' ' + this.argv)
+
     const { flags } = this.parse(Mom)
     let mum = path.resolve(__dirname, `../../scripts/mom-cli.sh`)
     if (Pacman.isXInstalled()) {

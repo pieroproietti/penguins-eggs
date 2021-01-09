@@ -5,13 +5,31 @@
  * license: MIT
  */
 import { Command, flags } from '@oclif/command'
-import path = require('path')
+import Utils from '../classes/utils'
 import Pacman from '../classes/pacman'
 import Settings from '../classes/settings'
+import inquirer = require('inquirer')
 
 const exec = require('../lib/utils').exec
 
+interface IConfig {
+  snapshot_dir: string
+  snapshot_basename: string
+  opt_user: string
+  opt_user_passwd: string
+  root_passwd: string
+  theme: string
+  make_efi: boolean
+  make_md5sum: boolean
+  make_isohybrid: boolean
+  compression: string
+  ssh_pass: boolean
+  timezone: string
+
+}
+
 export default class Dad extends Command {
+
   static description = 'ask for daddy (gui interface)!'
 
   settings = {} as Settings
@@ -24,6 +42,7 @@ export default class Dad extends Command {
   static args = [{ name: 'file' }]
 
   async run() {
+    Utils.titles(this.id + ' ' + this.argv)
     const { args, flags } = this.parse(Dad)
 
     this.daddy(flags.verbose)
@@ -32,7 +51,7 @@ export default class Dad extends Command {
   /**
    * 
    */
-  daddy(verbose=false) {
+  async daddy(verbose = false) {
     // Controllo prerequisites
     if (!Pacman.prerequisitesCheck()) {
       console.log('installing prerequisites...')
@@ -51,16 +70,59 @@ export default class Dad extends Command {
 
     // show and edit configuration
     this.settings = new Settings()
+    let config = {} as IConfig
     if (this.settings.load(verbose)) {
-      console.log('live user name: ' + this.settings.user_opt)
-      console.log('live user password: ' + this.settings.user_opt_passwd)
-      console.log('root password: ' + this.settings.root_passwd)
+      config.snapshot_dir = this.settings.snapshot_dir
+      config.snapshot_basename = this.settings.snapshot_basename
+      config.opt_user = this.settings.user_opt
+      config.opt_user_passwd = this.settings.user_opt_passwd
+      config.root_passwd = this.settings.root_passwd
+      config.theme = this.settings.theme
+      config.make_efi = this.settings.make_efi
+      config.make_md5sum = this.settings.make_md5sum
+      config.make_isohybrid = this.settings.make_isohybrid
+      config.compression = this.settings.compression
+      config.ssh_pass = this.settings.ssh_pass
+      config.timezone = this.settings.timezone_opt
+
+      await editConfig(config)
+
+      // produce
+
     }
-
-    // produce
-
   }
-
 }
 
 
+/**
+ * 
+ * @param c 
+ */
+async function editConfig(c) {
+  return new Promise(function (resolve) {
+    const questions: Array<Record<string, any>> = [
+      {
+        type: 'input',
+        name: 'opt_user',
+        message: 'live user: ',
+        default: c.opt_user
+      },
+      {
+        type: 'input',
+        name: 'opt_user_passwd',
+        message: 'live user passwd:',
+        default: c.opt_user_passwd
+      },
+      {
+        type: 'input',
+        name: 'root_passwd',
+        message: 'root passwd:',
+        default: c.root_passwd
+      }
+
+    ]
+    inquirer.prompt(questions).then(function (options) {
+      resolve(JSON.stringify(options))
+    })
+  })
+}
