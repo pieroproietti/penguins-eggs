@@ -11,20 +11,21 @@ function main {
       --title="Mumy" \
       --text="Mama's gonna keep baby cosy and warm..." \
       --column="Command" --column=" " --column="Description" \
-      "adapt" " " "adapt video resolution" \
-      "autocomplete" " " "generate or refresh autocomplete" \
-      "calamares" ">" "install and configure calamares" \
-      "export" ">" "export /deb/docs/iso" \
-      "help" " " "help" \
-      "info" " " "get informations" \
-      "install" ">" "install your system on hard disk" \
-      "kill" " " "delete ISOs" \
-      "prerequisites" " " "install eggs prerequisites" \
-      "produce" ">" "produce and ISO of your system" \
-      "remove" ">" "remove " \
-      "tools" ">" "clean/initrd/locales/pve/sanitize/skel/yolk" \
-      "update" " " "update" \
-      "EXIT" " " "exit")
+      "adapt"           " " "adapt video resolution" \
+      "autocomplete"    " " "generate or refresh autocomplete" \
+      "calamares"       ">" "install and configure calamares" \
+      "export"          ">" "export /deb/docs/iso" \
+      "help"            " " "help" \
+      "info"            " " "get informations" \
+      "install"         ">" "install your system on hard disk" \
+      "kill"            " " "delete ISOs" \
+      "prerequisites"   " " "install eggs prerequisites" \
+      "produce"         ">" "produce and ISO of your system" \
+      "remove"          ">" "remove " \
+      "tools"           ">" "clean/initrd/locales/pve/sanitize/skel/yolk" \
+      "update"          " " "update" \
+      "EXIT"            " " "exit"
+      )
 
       ${answer}
    done
@@ -165,6 +166,8 @@ function tools {
    answer= $(zenity --list --height 500 --width 530 \
    --column="eggs tools:" --column="Description" \
    clean "clean system log, apt, etc" \
+   configure_eggs "configure eggs.yaml" \
+   configure_tools "configure tools.yaml" \
    initrd "Test initrd" \
    locales "install/clean locales" \
    pve "enable/start/stop pve-live" \
@@ -180,6 +183,19 @@ function clean {
    sudo eggs tools:clean
    press_a_key_to_continue
 }
+
+################################
+function configure_eggs {
+   sudo nano /etc/penguins-eggs.d/eggs.yaml
+   press_a_key_to_continue
+}
+
+################################
+function configure_tools {
+   sudo nano /etc/penguins-eggs.d/tools.yaml
+   press_a_key_to_continue
+}
+
 
 ################################
 function initrd {
