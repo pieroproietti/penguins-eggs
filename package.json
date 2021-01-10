@@ -42,7 +42,7 @@
     "@types/drivelist": "^6.4.1",
     "@types/figlet": "^1.2.0",
     "@types/ini": "^1.3.30",
-    "@types/js-yaml": "^3.12.5",
+    "@types/js-yaml": "^3.12.6",
     "@types/mocha": "^5.2.7",
     "@types/mustache": "^4.1.0",
     "@types/node": "^10.17.50",

@@ -7,7 +7,6 @@
 
 import fs = require('fs')
 import shx = require('shelljs')
-import yaml = require('js-yaml')
 import path = require('path')
 
 import { IRemix, IDistro } from '../../interfaces'

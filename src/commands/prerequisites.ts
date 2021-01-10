@@ -138,7 +138,7 @@ export default class Prerequisites extends Command {
 
          if (i.configuration || i.clean) {
             console.log('- creating/updating configuration')
-            console.log('  files: ' + chalk.yellow('/etc/penguins-eggs.d/eggs.conf') + ' and ' + chalk.yellow('/usr/local/share/penguins-eggs/exclude.list\n'))
+            console.log('  files: ' + chalk.yellow('/etc/penguins-eggs.d/eggs.yaml') + ' and ' + chalk.yellow('/usr/local/share/penguins-eggs/exclude.list\n'))
          }
 
          if (i.clean) {

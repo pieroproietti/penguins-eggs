@@ -12,7 +12,7 @@ This script:
 * install clean repo y eggs
 * modify calamares (script, theme and icons)
 * install prerequisites
-* change eggs.conf and exclude.list 
+* change eggs.yaml and exclude.list 
 * install packages for UEFI ()
 * test produce with option --scripts
 * produce iso
@@ -49,7 +49,7 @@ sudo cp slide.png /usr/lib/penguins-eggs/addons/eggs/theme/branding/slide7.png
 sudo eggs prerequisites
 
 #copiar configuración para la ISO
-sudo cp eggs.conf /etc/penguins-eggs.d/eggs.conf
+sudo cp eggs.yaml /etc/penguins-eggs.d/eggs.yaml
 sudo cp exclude.list /usr/local/share/penguins-eggs/exclude.list
 
 #instalar calamares

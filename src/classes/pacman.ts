@@ -15,11 +15,13 @@ import Utils from './utils'
 import Distro from './distro'
 import Settings from './settings'
 import { execSync } from 'child_process'
+import { IConfig } from '../interfaces'
+
 
 const exec = require('../lib/utils').exec
 
-const config_file = '/etc/penguins-eggs.d/eggs.conf' as string
-const config_tools = '/etc/penguins-eggs.d/tools.conf' as string
+const config_file = '/etc/penguins-eggs.d/eggs.yaml' as string
+const config_tools = '/etc/penguins-eggs.d/tools.yaml' as string
 
 /**
  * Utils: general porpourse utils
@@ -267,59 +269,25 @@ export default class Pacman {
 
       shx.ln('-s', path.resolve(__dirname, '../../addons'), addons)
       shx.cp(path.resolve(__dirname, '../../conf/README.md'), '/etc/penguins-eggs.d/')
-      shx.cp(path.resolve(__dirname, '../../conf/tools.conf'), config_tools)
-      shx.cp(path.resolve(__dirname, '../../conf/eggs.conf'), config_file)
+      shx.cp(path.resolve(__dirname, '../../conf/tools.yaml'), config_tools)
+      shx.cp(path.resolve(__dirname, '../../conf/eggs.yaml'), config_file)
 
-      /**
-       * version
-       */
-      const version = Utils.getPackageVersion()
-      shx.sed('-i', '%version%', version, config_file)
 
-      /**
-       * vmlinuz
-       */
-      let vmlinuz = Utils.vmlinuz()
-      if (!fs.existsSync(vmlinuz)) {
-         vmlinuz = '/boot/vmlinuz'
-         if (!fs.existsSync(vmlinuz)) {
-            vmlinuz = '/boot/pve/vmlinuz'
-            if (!fs.existsSync(vmlinuz)) {
-               vmlinuz = '/vmlinuz'
-               console.log(`Can't find the standard ${vmlinuz}, please edit ${config_file}`)
-            }
-         }
-      }
-      shx.sed('-i', '%vmlinuz%', vmlinuz, config_file)
 
-      /**
-       * initrd
-       */
-      let initrd = Utils.initrdImg()
-      if (!fs.existsSync(initrd)) {
-         initrd = '/boot/initrd.img'
-         if (!fs.existsSync(initrd)) {
-            initrd = '/boot/pve/initrd.img'
-            if (!fs.existsSync(initrd)) {
-               initrd = '/initrd.img'
-               console.log(`Can't find the standard  ${initrd}, please edit ${config_file}`)
-            }
-         }
-      }
-      shx.sed('-i', '%initrd%', initrd, config_file)
-
-      /**
-       * gui_editor
-       */
-      let gui_editor = '/usr/bin/nano'
-      if (this.packageIsInstalled('gedit')) {
-         gui_editor = '/usr/bin/gedit'
-      } else if (this.packageIsInstalled('leafpad')) {
-         gui_editor = '/usr/bin/leafpad'
-      } else if (this.packageIsInstalled('caja')) {
-         gui_editor = '/usr/bin/caja'
-      }
-      shx.sed('-i', '%gui_editor%', gui_editor, config_file)
+      const config = {} as IConfig
+      config.version = Utils.getPackageVersion() 
+      config.snapshot_dir = '/home/eggs'
+      config.snapshot_basename = 'hostname'
+      config.opt_user = 'live'
+      config.opt_user_passwd = 'evolution'
+      config.root_passwd = 'evolution'
+      config.theme = 'eggs'
+      config.make_efi = false
+      config.make_md5sum = false
+      config.make_isohybrid = false
+      config.compression = 'xz'
+      config.ssh_pass = true
+      config.timezone = 'Europe/Rome'
 
       /**
        * force_installer

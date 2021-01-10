@@ -92,7 +92,7 @@ Versions are listed on reverse order, the first is the last one.
 * changed the way to work of ovary, put /boot, /etc, /usr, /var in overlayfs, create /home just like a normal directory who is not deleted, until kill
 
 ### eggs-7.6.61.1_deb
-* exclude yolk from copy, cleaning tools.conf using settings from eggs.
+* exclude yolk from copy, cleaning tools.yaml using settings from eggs.
 
 ### eggs-7.6.60.1_deb
 * improvement:  if you installed eggs as debian package, you can now update it with sudo eggs update -i.
@@ -126,7 +126,7 @@ improvment: added in eggs fuctions who was before in penguins-tools. Don't get w
 Here we are:
 * export:deb export debian packages (only for developers)
 * export:docs export documentation (only developers)
-* export:iso exporting iso image created via scp in accord with configuration in /etc/penguins-eggs.d/tools.conf
+* export:iso exporting iso image created via scp in accord with configuration in /etc/penguins-eggs.d/tools.yaml
 
 improvment. Introducing a tools command to reach the following commands, part of them was present before, other addedd:
 * tools:clean like previous eggs clean
@@ -230,9 +230,9 @@ OK, now we are pointing to internationalization and customization.
 
 Is changed the configuration file and its position
 
-/etc/penguins-eggs.conf  -> /etc/penguins-eggs.d/eggs.conf
+/etc/penguins-eggs.yaml  -> /etc/penguins-eggs.d/eggs.yaml
 
-In /etc/penguins-eggs.d you will find a README.md, a tools.conf, and two links:
+In /etc/penguins-eggs.d you will find a README.md, a tools.yaml, and two links:
 
 /etc/penguins-eggs.d/addons
 /etc/penguins-eggs.d/distros
@@ -307,7 +307,7 @@ Continuing the collaboration with ufficiozero.org, we closed an important bug in
 
 ### eggs-7.5.139-1
 During some attempts to collaborate in order to get a remastering of Linux Mint, we discovered and fixed the following bugs:
-* Bug fix for custom live user configuration. Now you can actually use any live CD user name and password by configuring it in /etc/penguins-eggs.conf
+* Bug fix for custom live user configuration. Now you can actually use any live CD user name and password by configuring it in /etc/penguins-eggs.yaml
 * bug fix for ubuntu focal and ubuntu bionic, calamares was not configured to delete the live CD user.
 Thanx to Adriano Morselli developer at ufficiozero.org for the segnalation.
 

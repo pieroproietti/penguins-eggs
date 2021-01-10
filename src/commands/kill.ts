@@ -16,7 +16,7 @@ import { execute, pipe } from '@getvim/execute'
 
 
 export default class Kill extends Command {
-   config_file = '/etc/penguins-eggs.d/eggs.conf' as string
+   config_file = '/etc/penguins-eggs.d/eggs.yaml' as string
    snapshot_dir = '' as string
    work_dir = {} as IWorkDir
 

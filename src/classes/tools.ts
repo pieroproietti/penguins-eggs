@@ -7,7 +7,8 @@
 
 import os = require('os')
 import fs = require('fs')
-import ini = require('ini')
+import yaml = require('js-yaml')
+
 import Settings from './settings'
 
 /**
@@ -15,7 +16,7 @@ import Settings from './settings'
  * @remarks all the utilities
   */
 export default class Tools {
-    tools_conf = '/etc/penguins-eggs.d/tools.conf'
+    tools_conf = '/etc/penguins-eggs.d/tools.yaml'
 
     snapshot_dir = ''
 
@@ -44,7 +45,7 @@ export default class Tools {
     local_path_doc = ''
 
     /*
-    * Load configuration from /etc/penguins-eggs.conf
+    * Load configuration from /etc/penguins-eggs.yaml
     * @returns {boolean} Success
     */
     async loadSettings(): Promise<boolean> {
@@ -52,25 +53,25 @@ export default class Tools {
 
         if (fs.existsSync(this.tools_conf)) {
             foundSettings = true
-            const tools = ini.parse(fs.readFileSync(this.tools_conf, 'utf-8'))
-            this.export_host = tools.General.export_host
-            this.export_user_deb = tools.General.export_user_deb
-            this.export_user_doc = tools.General.export_user_doc
-            this.export_user_iso = tools.General.export_user_iso
+            const tools = yaml.load(fs.readFileSync(this.tools_conf, 'utf-8'))
+            this.export_host = tools.export_host
+            this.export_user_deb = tools.export_user_deb
+            this.export_user_doc = tools.export_user_doc
+            this.export_user_iso = tools.export_user_iso
 
-            this.export_path = tools.General.export_path
+            this.export_path = tools.export_path
 
-            this.export_path_deb = this.export_path + tools.General.export_path_deb
-            this.export_path_doc = this.export_path + tools.General.export_path_doc
-            this.export_path_iso = this.export_path + tools.General.export_path_iso
+            this.export_path_deb = this.export_path + tools.export_path_deb
+            this.export_path_doc = this.export_path + tools.export_path_doc
+            this.export_path_iso = this.export_path + tools.export_path_iso
 
-            this.local_path_deb = tools.General.local_path_deb
-            this.local_path_doc = tools.General.local_path_doc
+            this.local_path_deb = tools.local_path_deb
+            this.local_path_doc = tools.local_path_doc
             let arch = 'amd64'
             if (process.arch === 'ia32') {
                 arch = 'i386'
             }
-            this.file_name_deb = tools.General.file_name_deb + arch + '.deb'
+            this.file_name_deb = tools.file_name_deb + arch + '.deb'
 
             /**
              * da eggs

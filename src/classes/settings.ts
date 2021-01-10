@@ -10,18 +10,16 @@
 
 // packages
 import fs = require('fs')
-import path = require('path')
 import os = require('os')
-import ini = require('ini')
+import yaml = require('js-yaml')
 import shx = require('shelljs')
 import pjson = require('pjson')
 import chalk = require('chalk')
 
 // interfaces
-import { IRemix, IDistro, IApp, IWorkDir, IMyAddons } from '../interfaces'
+import { IRemix, IDistro, IApp, IWorkDir } from '../interfaces'
 
 // libraries
-const exec = require('../lib/utils').exec
 
 // classes
 import Utils from './utils'
@@ -30,7 +28,7 @@ import Distro from './distro'
 import Pacman from './pacman'
 
 
-const config_file = '/etc/penguins-eggs.d/eggs.conf' as string
+const config_file = '/etc/penguins-eggs.d/eggs.yaml' as string
 
 /**
  * Setting
@@ -56,11 +54,7 @@ export default class Settings {
 
    efi_work = ''
 
-   gui_editor = '/usr/bin/nano' as string
-
    snapshot_excludes = '/usr/local/share/excludes/penguins-eggs-exclude.list' as string
-
-   edit_boot_menu = false
 
    kernel_image = '' as string
 
@@ -98,18 +92,16 @@ export default class Settings {
 
    snapshot_basename = ''
 
+   snapshot_prefix = 'eggs_'
+
    isoFilename = '' // resulting name of the iso
 
    version = ''
 
-   locale = ''
+   locales: string [] = [] 
 
-   locales: string[] = []
-
-   /**
-    * Egg
-    * @param compression
-    */
+   locales_default = ''
+   
    constructor(compression = '') {
       this.compression = compression
 
@@ -125,27 +117,37 @@ export default class Settings {
 
    
    /**
+    * 
+    * @param config 
+    */
+   async save(config: IConfig){
+      fs.writeFileSync(config_file, yaml.safeDump(config), 'utf-8')
+   }
+
+   /**
     * Load configuration from config_file
     * @returns {boolean} Success
     */
-   async load(verbose = false): Promise<boolean> {
+   async load(): Promise<boolean> {
       let foundSettings: boolean
 
       if (!fs.existsSync(config_file)) {
          console.log(`cannot find configuration file ${config_file},`)
-         console.log(`please generate it with: sudo eggs prerequisites -c`)
+         console.log(`please generate it with: sudo eggs prerequisites`)
          process.exit(1)
-         return false
       }
-      const settings = ini.parse(fs.readFileSync(config_file, 'utf-8'))
+      const settings = yaml.load(fs.readFileSync(config_file, 'utf-8'))
+      
+      this.version = settings.version
 
-      if (settings.General.snapshot_dir === '') {
+      if (settings.snapshot_dir === '') {
          foundSettings = false
       } else {
          foundSettings = true
       }
+
       this.session_excludes = ''
-      this.snapshot_dir = settings.General.snapshot_dir.trim()
+      this.snapshot_dir = settings.snapshot_dir.trim()
       if (!this.snapshot_dir.endsWith('/')) {
          this.snapshot_dir += '/'
       }
@@ -158,57 +160,56 @@ export default class Settings {
       this.efi_work = this.work_dir.path + 'efi/'
       this.work_dir.pathIso = this.work_dir.path + 'iso'
 
-      this.snapshot_excludes = settings.General.snapshot_excludes
-      this.snapshot_basename = settings.General.snapshot_basename
+      this.snapshot_excludes = settings.snapshot_excludes
+      this.snapshot_basename = settings.snapshot_basename
       if (this.snapshot_basename === 'hostname') {
          this.snapshot_basename = os.hostname()
       }
-      this.make_efi = settings.General.make_efi === 'yes'
+      this.snapshot_prefix = settings.snapshot_prefix
+      this.make_efi = settings.make_efi
       if (this.make_efi) {
-          
          if (! Utils.isUefi()) {
             Utils.error('You choose to create an UEFI image, but miss to install grub-efi-amd64 package.')
             Utils.error('Please install it before to create an UEFI image:')
             Utils.warning('sudo apt install grub-efi-amd64')
             Utils.error('or')
             Utils.warning('sudo apt install grub-efi-ia32')
-            Utils.error('or edit /etc/penguins-eggs.d/eggs.conf and set the valuer of make_efi=no')
+            Utils.error('or edit /etc/penguins-eggs.d/eggs.yaml and set the valuer of make_efi=no')
             this.make_efi = false
          }
+         this.locales = settings.locales
+         this.locales_default = settings.locales_default
       }
 
-      this.make_isohybrid = settings.General.make_isohybrid === 'yes'
-      this.make_md5sum = settings.General.make_md5sum === 'yes'
+      this.make_isohybrid = settings.make_isohybrid 
+      this.make_md5sum = settings.make_md5sum === 'yes'
       if (this.compression === '') {
-         this.compression = settings.General.compression
+         this.compression = settings.compression
       }
-      // this.mksq_opt = settings.General.mksq_opt
-      this.edit_boot_menu = settings.General.edit_boot_menu === 'yes'
-      this.gui_editor = settings.General.gui_editor
-      this.force_installer = settings.General.force_installer === 'yes'
+      this.force_installer = settings.force_installer
 
       this.kernel_image = Utils.initrdImg()
       this.initrd_image = Utils.vmlinuz()
       this.vmlinuz = this.kernel_image.substr(this.kernel_image.lastIndexOf('/'))
       this.initrdImg = this.initrd_image.substr(this.initrd_image.lastIndexOf('/'))
 
-      this.netconfig_opt = settings.General.netconfig_opt
+      this.netconfig_opt = settings.netconfig_opt
       if (this.netconfig_opt === undefined) {
          this.netconfig_opt = ''
       }
-      this.ifnames_opt = settings.General.ifnames_opt
+      this.ifnames_opt = settings.ifnames_opt
       if (this.ifnames_opt === undefined) {
          this.ifnames_opt = ''
       }
-      this.pmount_fixed = settings.General.pmount_fixed === 'yes'
-      this.ssh_pass = settings.General.ssh_pass === 'yes'
+      this.pmount_fixed = settings.pmount_fixed
+      this.ssh_pass = settings.ssh_pass
 
       /**
        * Use the login name set in the config file. If not set, use the primary
        * user's name. If the name is not "user" then add boot option. ALso use
        * the same username for cleaning geany history.
        */
-      this.user_opt = settings.General.user_opt
+      this.user_opt = settings.user_opt
 
       if (this.user_opt === undefined || this.user_opt === '') {
          this.user_opt = shx.exec('awk -F":" \'/1000:1000/ { print $1 }\' /etc/passwd', { silent: true }).stdout.trim()
@@ -216,12 +217,12 @@ export default class Settings {
             this.user_opt = 'live'
          }
       }
-      this.user_opt_passwd = settings.General.user_opt_passwd
+      this.user_opt_passwd = settings.user_opt_passwd
       if (this.user_opt_passwd === '') {
          this.user_opt_passwd = 'evolution'
       }
 
-      this.root_passwd = settings.General.root_passwd
+      this.root_passwd = settings.root_passwd
       if (this.root_passwd === '') {
          this.root_passwd = 'evolution'
       }
@@ -229,8 +230,8 @@ export default class Settings {
       const timezone = shx.exec('cat /etc/timezone', { silent: true }).stdout.trim()
       this.timezone_opt = `timezone=${timezone}`
 
-      this.locale = settings.Locales.default
-      this.locales = settings.Locales.item
+      this.locale = settings.locales_default
+      this.locales = settings.locales
       return foundSettings
    }
 
@@ -242,7 +243,7 @@ export default class Settings {
       console.log(`config_file:       ${config_file}`)
       console.log(`snapshot_dir:      ${this.snapshot_dir}`)
       console.log(`snapshot_basename: ${this.snapshot_basename}`)
-      console.log(`snapshot_exclude:  ${this.snapshot_excludes}`)
+      console.log(`snapshot_excludes: ${this.snapshot_excludes}`)
       console.log(`kernel_image:      ${this.kernel_image}`)
       console.log(`initrd_image:      ${this.initrd_image}`)
       console.log(`work_dir:          ${this.work_dir.path}`)
@@ -255,22 +256,8 @@ export default class Settings {
       console.log(`user_opt:          ${this.user_opt}`)
       console.log(`netconfig_opt:     ${this.netconfig_opt}`)
       console.log(`ifnames_opt:       ${this.ifnames_opt}`)
-      console.log(`edit_boot_menu:    ${this.edit_boot_menu}`)
-      console.log(`gui_editor:        ${this.gui_editor}`)
-      console.log(`locale:            ${this.locale}`)
-
-      let locales = ''
-      for (let i = 0; i < this.locales.length; i++) {
-         locales += this.locales[i]
-         if (i < this.locales.length - 1) {
-            locales += ', '
-         }
-      }
-      console.log(`locales:           ${locales}`)
-
-
-
-
+      console.log(`locales:           ${this.locales}`)
+      console.log(`locale default:    ${this.locale}`)
       console.log(`ssh_pass:          ${this.ssh_pass}`)
       if (this.make_efi) {
          if (!Utils.isUefi()) {
@@ -303,10 +290,8 @@ export default class Settings {
        * errore buffer troppo piccolo
        */
       const gb = 1048576
-      let spaceUsed = 0
       let spaceAvailable = 0
       if (!Utils.isLive()) {
-         spaceUsed = Number(shx.exec(`df /home | /usr/bin/awk 'NR==2 {print $3}'`, {silent: true}).stdout)
          console.log(`Disk used space: ${Math.round((Utils.getUsedSpace() / gb) * 10) / 10} GB`)
       }
 
