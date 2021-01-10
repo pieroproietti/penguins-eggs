@@ -228,9 +228,9 @@ export default class Settings {
       }
 
       const timezone = shx.exec('cat /etc/timezone', { silent: true }).stdout.trim()
-      this.timezone_opt = `timezone=${timezone}`
+      this.timezone_opt = timezone
 
-      this.locale = settings.locales_default
+      this.locales_default = settings.locales_default
       this.locales = settings.locales
       return foundSettings
    }

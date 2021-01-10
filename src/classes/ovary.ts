@@ -1155,13 +1155,14 @@ export default class Ovary {
                           -boot-load-size 4 \
                           -boot-info-table \
                           ${uefi_opt} \
-                          -output ${this.settings.snapshot_dir}${this.settings.isoFilename} \
+                          -output ${this.settings.snapshot_dir}${this.settings.snapshot_prefix}${this.settings.isoFilename} \
                           ${this.settings.work_dir.pathIso}`
 
          cmd = cmd.replace(/\s\s+/g, ' ')
          Utils.writeX(`${this.settings.work_dir.path}mkiso`, cmd)
          if (!script_only) {
             await exec(cmd, echo)
+            await exec
          }
 
          /**
@@ -1204,9 +1205,9 @@ export default class Ovary {
    finished(script_only = false) {
       Utils.titles('produce')
       if (!script_only) {
-         console.log('eggs is finished!\n\nYou can find the file iso: ' + chalk.cyanBright(this.settings.isoFilename) + '\nin the nest: ' + chalk.cyanBright(this.settings.snapshot_dir) + '.')
+         console.log('eggs is finished!\n\nYou can find the file iso: ' + chalk.cyanBright(this.settings.snapshot_prefix + this.settings.isoFilename) + '\nin the nest: ' + chalk.cyanBright(this.settings.snapshot_dir) + '.')
       } else {
-         console.log('eggs is finished!\n\nYou can find the scripts to build iso: ' + chalk.cyanBright(this.settings.isoFilename) + '\nin the ovarium: ' + chalk.cyanBright(this.settings.work_dir.path) + '.')
+         console.log('eggs is finished!\n\nYou can find the scripts to build iso: ' + chalk.cyanBright(this.settings.snapshot_prefix + this.settings.isoFilename) + '\nin the ovarium: ' + chalk.cyanBright(this.settings.work_dir.path) + '.')
          console.log(`usage`)
          console.log(chalk.cyanBright(`cd ${this.settings.work_dir.path}`))
          console.log(chalk.cyanBright(`sudo ./bind`))

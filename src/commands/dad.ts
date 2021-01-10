@@ -68,7 +68,6 @@ export default class Dad extends Command {
       console.log('configuration present')
     }
 
-    // Controllo se serve il kill
 
     // show and edit configuration
     this.settings = new Settings()
@@ -94,12 +93,10 @@ export default class Dad extends Command {
       config.ifnames_opt = this.settings.ifnames_opt
       config.locales = this.settings.locales
       config.locales_default = this.settings.locales_default
-      console.log(config)
       // Edito i campi
       let nc: string = await editConfig(config)
       let newConf = JSON.parse(nc)
       // salvo le mdifiche      
-      console.log(newConf)
       config.snapshot_basename = newConf.snapshot_basename
       config.snapshot_prefix = newConf.snapshot_prefix
       config.opt_user = newConf.opt_user
@@ -109,17 +106,21 @@ export default class Dad extends Command {
       config.compression = newConf.compression
       await this.settings.save(config)
 
-      await this.settings.listFreeSpace()
+    // Controllo se serve il kill
+    Utils.titles('eggs kill')
+    await this.settings.listFreeSpace()
       if (await Utils.customConfirm()) {
          await exec(`rm ${this.settings.work_dir.path} -rf`)
          await exec(`rm ${this.settings.snapshot_dir} -rf`)
       }
 
       // produce
+      Utils.titles('eggs produce')
       const myAddons = {} as IMyAddons
-      const ovary = new Ovary('xz')
+      const ovary = new Ovary(config.compression)
       if (await ovary.fertilization()) {
-        await ovary.produce(config.snapshot_basename, false, false, false, config.theme, myAddons, true)
+        await ovary.produce(config.snapshot_basename, false, false, false, config.theme, myAddons, verbose)
+        ovary.finished(false)
       }
     }
   }

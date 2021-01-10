@@ -16,7 +16,7 @@ import Settings from './settings'
  * @remarks all the utilities
   */
 export default class Tools {
-    tools_conf = '/etc/penguins-eggs.d/tools.yaml'
+    tools_yaml = '/etc/penguins-eggs.d/tools.yaml'
 
     snapshot_dir = ''
 
@@ -51,9 +51,9 @@ export default class Tools {
     async loadSettings(): Promise<boolean> {
         let foundSettings = false
 
-        if (fs.existsSync(this.tools_conf)) {
+        if (fs.existsSync(this.tools_yaml)) {
             foundSettings = true
-            const tools = yaml.load(fs.readFileSync(this.tools_conf, 'utf-8'))
+            const tools = yaml.load(fs.readFileSync(this.tools_yaml, 'utf-8'))
             this.export_host = tools.export_host
             this.export_user_deb = tools.export_user_deb
             this.export_user_doc = tools.export_user_doc
@@ -83,9 +83,9 @@ export default class Tools {
             if (process.arch === 'ia32') {
                 arch = 'i386'
             }
-            this.snapshot_name = settings.snapshot_basename + '-' + arch + '_'
+            this.snapshot_name = settings.snapshot_prefix + settings.snapshot_basename + '-' + arch + '_'
         } else {
-            console.log(`Can't find: ${this.tools_conf}`)
+            console.log(`Can't find: ${this.tools_yaml}`)
             process.exit(1)
         }
         return foundSettings
