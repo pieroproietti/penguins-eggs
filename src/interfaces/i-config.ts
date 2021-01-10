@@ -1,4 +1,4 @@
-interface IConfig {
+export interface IConfig {
     version: string
     snapshot_dir: string
     snapshot_basename: string

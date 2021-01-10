@@ -257,7 +257,7 @@ export default class Settings {
       console.log(`netconfig_opt:     ${this.netconfig_opt}`)
       console.log(`ifnames_opt:       ${this.ifnames_opt}`)
       console.log(`locales:           ${this.locales}`)
-      console.log(`locale default:    ${this.locale}`)
+      console.log(`locale default:    ${this.locales_default}`)
       console.log(`ssh_pass:          ${this.ssh_pass}`)
       if (this.make_efi) {
          if (!Utils.isUefi()) {
