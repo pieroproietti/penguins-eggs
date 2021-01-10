@@ -8,7 +8,10 @@ import { Command, flags } from '@oclif/command'
 import Utils from '../classes/utils'
 import Pacman from '../classes/pacman'
 import Settings from '../classes/settings'
+import Ovary from '../classes/ovary'
 import inquirer = require('inquirer')
+
+import { IMyAddons } from '../interfaces'
 
 const exec = require('../lib/utils').exec
 
@@ -72,27 +75,28 @@ export default class Dad extends Command {
     this.settings = new Settings()
     let config = {} as IConfig
     if (this.settings.load(verbose)) {
-      config.snapshot_dir = this.settings.snapshot_dir
+      // config.snapshot_dir = this.settings.snapshot_dir
       config.snapshot_basename = this.settings.snapshot_basename
       config.opt_user = this.settings.user_opt
       config.opt_user_passwd = this.settings.user_opt_passwd
       config.root_passwd = this.settings.root_passwd
-      config.theme = this.settings.theme
-      config.make_efi = this.settings.make_efi
-      config.make_md5sum = this.settings.make_md5sum
-      config.make_isohybrid = this.settings.make_isohybrid
-      config.compression = this.settings.compression
-      config.ssh_pass = this.settings.ssh_pass
-      config.timezone = this.settings.timezone_opt
+      config.theme = 'ufficiozero' //this.settings.theme
+      // config.make_efi = this.settings.make_efi
+      // config.make_md5sum = this.settings.make_md5sum
+      // config.make_isohybrid = this.settings.make_isohybrid
+      // config.compression = this.settings.compression
+      // config.ssh_pass = this.settings.ssh_pass
+      // config.timezone = this.settings.timezone_opt
 
       await editConfig(config)
 
       // produce
-
+      const myAddons = {} as IMyAddons
+      const ovary = new Ovary('xz')
+      await ovary.produce(config.snapshot_basename, false, false, false, config.theme, myAddons)
     }
   }
 }
-
 
 /**
  * 
@@ -103,21 +107,33 @@ async function editConfig(c) {
     const questions: Array<Record<string, any>> = [
       {
         type: 'input',
+        name: 'snapshot_basename:',
+        message: 'ISO name',
+        default: c.snapshot_basename
+      },
+      {
+        type: 'input',
         name: 'opt_user',
-        message: 'live user: ',
+        message: 'live user:',
         default: c.opt_user
       },
       {
         type: 'input',
         name: 'opt_user_passwd',
-        message: 'live user passwd:',
+        message: 'live user password:',
         default: c.opt_user_passwd
       },
       {
         type: 'input',
         name: 'root_passwd',
-        message: 'root passwd:',
+        message: 'root password:',
         default: c.root_passwd
+      },
+      {
+        type: 'input',
+        name: 'theme',
+        message: 'theme',
+        default: c.theme
       }
 
     ]
