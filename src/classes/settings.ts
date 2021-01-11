@@ -27,6 +27,8 @@ import Incubator from './incubation/incubator'
 import Distro from './distro'
 import Pacman from './pacman'
 
+import { IConfig } from '../interfaces/'
+
 
 const config_file = '/etc/penguins-eggs.d/eggs.yaml' as string
 
@@ -188,8 +190,8 @@ export default class Settings {
       }
       this.force_installer = settings.force_installer
 
-      this.kernel_image = Utils.initrdImg()
-      this.initrd_image = Utils.vmlinuz()
+      this.kernel_image = Utils.vmlinuz()
+      this.initrd_image = Utils.initrdImg()
       this.vmlinuz = this.kernel_image.substr(this.kernel_image.lastIndexOf('/'))
       this.initrdImg = this.initrd_image.substr(this.initrd_image.lastIndexOf('/'))
 
@@ -212,7 +214,7 @@ export default class Settings {
       this.user_opt = settings.user_opt
 
       if (this.user_opt === undefined || this.user_opt === '') {
-         this.user_opt = shx.exec('awk -F":" \'/1000:1000/ { print $1 }\' /etc/passwd', { silent: true }).stdout.trim()
+         // this.user_opt = shx.exec('awk -F":" \'/1000:1000/ { print $1 }\' /etc/passwd', { silent: true }).stdout.trim()
          if (this.user_opt === '') {
             this.user_opt = 'live'
          }

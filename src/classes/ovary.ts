@@ -428,8 +428,6 @@ export default class Ovary {
          }
       }
       fs.copyFileSync(splashSrc, splashDest)
-
-      // const menuSrc = path.resolve(__dirname, `../../conf/distros/${this.settings.distro.versionLike}/isolinux/menu.template.cfg`)
       const template = fs.readFileSync(menuSrc, 'utf8')
       const view = {
          customName: this.settings.remix.name,

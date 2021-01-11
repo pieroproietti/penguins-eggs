@@ -15,14 +15,15 @@ import yaml = require('js-yaml')
 import fs = require('fs')
 
 import { IMyAddons } from '../interfaces'
+import chalk = require('chalk')
 
 const exec = require('../lib/utils').exec
 
 interface editConf {
   snapshot_basename: string
   snapshot_prefix: string
-  opt_user: string
-  opt_user_passwd: string
+  user_opt: string
+  user_opt_passwd: string
   root_passwd: string
   theme: string
   compression: string
@@ -42,7 +43,8 @@ export default class Dad extends Command {
   static args = [{ name: 'file' }]
 
   async run() {
-    Utils.titles('dad: Daddy, what else did you leave for me?')
+    Utils.titles(this.id + ' ' + this.argv)
+    console.log(chalk.cyan('Daddy, what else did you leave for me?'))
     const { args, flags } = this.parse(Dad)
 
     this.daddy(flags.verbose)
@@ -80,8 +82,8 @@ export default class Dad extends Command {
         config.snapshot_dir = this.settings.snapshot_dir
         config.snapshot_basename = this.settings.snapshot_basename
         config.snapshot_prefix = this.settings.snapshot_prefix
-        config.opt_user = this.settings.user_opt
-        config.opt_user_passwd = this.settings.user_opt_passwd
+        config.user_opt = this.settings.user_opt
+        config.user_opt_passwd = this.settings.user_opt_passwd
         config.root_passwd = this.settings.root_passwd
         config.theme = 'ufficiozero' //this.settings.theme
         config.make_efi = this.settings.make_efi
@@ -101,15 +103,16 @@ export default class Dad extends Command {
         // salvo le mdifiche      
         config.snapshot_basename = newConf.snapshot_basename
         config.snapshot_prefix = newConf.snapshot_prefix
-        config.opt_user = newConf.opt_user
-        config.opt_user_passwd = newConf.opt_user_passwd
+        config.user_opt = newConf.user_opt
+        config.user_opt_passwd = newConf.user_opt_passwd
         config.root_passwd = newConf.root_passwd
         config.theme = newConf.theme
         config.compression = newConf.compression
         await this.settings.save(config)
 
         // Controllo se serve il kill
-        Utils.titles('eggs kill Daddy, what else did you leave for me?')
+        Utils.titles('kill'+ ' ' + this.argv)
+        console.log(chalk.cyan('Daddy, what else did you leave for me?'))
         await this.settings.listFreeSpace()
         if (await Utils.customConfirm()) {
           await exec(`rm ${this.settings.work_dir.path} -rf`)
@@ -117,7 +120,8 @@ export default class Dad extends Command {
         }
 
         // produce
-        Utils.titles('eggs produce Daddy, what else did you leave for me?')
+        Utils.titles('produce'+ ' ' + this.argv + ' theme=' + config.theme)
+        console.log(chalk.cyan('Daddy, what else did you leave for me?'))
         const myAddons = {} as IMyAddons
         const ovary = new Ovary(config.compression)
         if (await ovary.fertilization()) {
@@ -138,46 +142,47 @@ function editConfig(c: IConfig): Promise<string> {
     const questions: Array<Record<string, any>> = [
       {
         type: 'input',
-        name: 'snapshot_basename',
-        message: 'basename',
-        default: c.snapshot_basename
-      },
-      {
-        type: 'input',
         name: 'snapshot_prefix',
-        message: 'prefix',
+        message: 'LiveCD iso prefix',
         default: c.snapshot_prefix
       },
       {
         type: 'input',
-        name: 'opt_user',
-        message: 'opt user:',
-        default: c.opt_user
+        name: 'snapshot_basename',
+        message: 'Live CD iso basename',
+        default: c.snapshot_basename
       },
       {
         type: 'input',
-        name: 'opt_user_passwd',
-        message: 'opt user password',
-        default: c.opt_user_passwd
+        name: 'user_opt',
+        message: 'LiveCD user:',
+        default: c.user_opt
+      },
+      {
+        type: 'input',
+        name: 'user_opt_passwd',
+        message: 'LiveCD user password',
+        default: c.user_opt_passwd
       },
       {
         type: 'input',
         name: 'root_passwd',
-        message: 'root password',
+        message: 'LiveCd root password',
         default: c.root_passwd
       },
       {
         type: 'input',
         name: 'theme',
-        message: 'theme',
+        message: 'LiveCD theme',
         default: c.theme
       },
       {
-        type: 'input',
+        type: 'list',
         name: 'compression',
-        message: 'compression',
-        default: c.compression
-      }
+        message: 'Compression lz4/xz: ',
+        choices: ['lz4', 'xz', 'xz -Xbcj x86'],
+        default: 'c.compression'
+     }
 
     ]
     inquirer.prompt(questions).then(function (options) {

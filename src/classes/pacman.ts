@@ -278,8 +278,8 @@ export default class Pacman {
       config.version = Utils.getPackageVersion() 
       config.snapshot_dir = '/home/eggs'
       config.snapshot_basename = 'hostname'
-      config.opt_user = 'live'
-      config.opt_user_passwd = 'evolution'
+      config.user_opt = 'live'
+      config.user_opt_passwd = 'evolution'
       config.root_passwd = 'evolution'
       config.theme = 'eggs'
       config.make_efi = false

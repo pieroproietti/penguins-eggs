@@ -13,14 +13,15 @@ snapshot_dir: /home/eggs
 # If you'd like to replace "hostname" with something different,
 # change it here. (example: snapshot_basename="my-buster-live")
 #
+# prefix iso file
+# You can choose a prefix like 'UfficioZero_'
+# default ''
+snapshot_prefix: ''
+
 # Note: hostname use the name of the host
 #
 # default hostname
 snapshot_basename: hostname
-
-# prefix iso file
-# default ''
-snapshot_prefix: 'egg_'
 
 # You can change the rsync excludes file here - if you know what you're doing -
 # be sure to use the full path to the file.

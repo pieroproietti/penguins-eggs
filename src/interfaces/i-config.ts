@@ -4,8 +4,8 @@ export interface IConfig {
     snapshot_basename: string
     snapshot_prefix: string
     snapshot_excludes: string
-    opt_user: string
-    opt_user_passwd: string
+    user_opt: string
+    user_opt_passwd: string
     root_passwd: string
     theme: string
     make_efi: boolean
