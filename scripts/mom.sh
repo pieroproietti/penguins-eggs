@@ -14,6 +14,7 @@ function main {
       "adapt"           " " "adapt video resolution" \
       "autocomplete"    " " "generate or refresh autocomplete" \
       "calamares"       ">" "install and configure calamares" \
+      "documentation"   ">" "documentation" \
       "export"          ">" "export /deb/docs/iso" \
       "help"            " " "help" \
       "info"            " " "get informations" \
@@ -74,6 +75,15 @@ function calamares {
    ${answer}
 }
 
+################################
+function documentation {
+   browser=$(zenity --list  --text "Which browser?" --radiolist  --column "Pick" --column "Browser" TRUE firefox FALSE chrome FALSE Chromium)
+   sites=$(zenity --height=280 --width=300 --list  --text "How linux.byexamples can be improved?" --radiolist  --column "Pick" --column "Sites" TRUE https://penguins-eggs.net/ FALSE https://sourceforge.com/project/penguins-eggs FALSE https://github.com/pieroproietti/penguins-eggs  --separator=" ")
+   
+   for site in $sites; do
+      $browser $site
+   done
+}
 
 ################################
 function export {
