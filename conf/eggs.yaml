@@ -2,12 +2,12 @@
 # eggs.yaml
 ---
 # version
-version: 7.7.7
+version: '7.7.7'
 
 # You can change the location of 'snapshot_dir' (location of final iso file) 
 # in case you don't have enough space on the system. 
 # default: /home/eggs
-snapshot_dir: /home/eggs
+snapshot_dir: '/home/eggs/'
 
 # The name of the snapshot file will be hostname-{arch}_{yyyy-mm-dd_hhmm}.iso.
 # If you'd like to replace "hostname" with something different,
@@ -21,29 +21,29 @@ snapshot_prefix: ''
 # Note: hostname use the name of the host
 #
 # default hostname
-snapshot_basename: hostname
+snapshot_basename: 'hostname'
 
 # You can change the rsync excludes file here - if you know what you're doing -
 # be sure to use the full path to the file.
 #
 # default /usr/local/share/excludes/penguins-eggs-snapshot-exclude.list
-snapshot_excludes: /usr/local/share/penguins-eggs/exclude.list
+snapshot_excludes: '/usr/local/share/penguins-eggs/exclude.list'
 
 # user to be used in the liveCd
 # default live
-user_opt: live
+user_opt: 'live'
 
 # password of user to be used in the liveCd
 # default evolution
-user_opt_passwd: evolution
+user_opt_passwd: 'evolution'
 
 # root password to be used in liveCd
 # default evolution
-root_passwd: evolution
+root_passwd: 'evolution'
 
 # theme to be used as default
 # default: eggs
-theme: eggs
+theme: ''
 
 # Force installation package calamares if is not already installed.
 # default no if calamares is not installed 
@@ -64,7 +64,7 @@ make_isohybrid: true
 # Compression algorithm
 # Allowed values are, in order of speed-size tradeoff: lz4, lzo, gzip, xz  
 # default xz
-compression: xz
+compression: 'xz'
 
 # Allow password login to ssh for users (not root).
 # If ssh_pass=true, then PasswordAuthentication will be set to true
@@ -92,6 +92,6 @@ locales_default: it_IT.UTF-8
 
 ##
 # The following fields are actually not used in eggs
-pmount_fixed: 
-netconfig_opt: 
-ifnames_opt:   
+pmount_fixed: false
+netconfig_opt: ''
+ifnames_opt: ''

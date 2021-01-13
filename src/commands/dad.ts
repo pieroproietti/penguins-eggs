@@ -58,18 +58,18 @@ export default class Dad extends Command {
 
       // Controllo prerequisites
       if (!Pacman.prerequisitesCheck()) {
-        console.log('installing prerequisites...')
+        console.log('- installing prerequisites...')
         Pacman.prerequisitesInstall(verbose)
       } else {
-        console.log('prerequisites already present')
+        console.log('- prerequisites already present')
       }
 
       // Controllo configurazione
       if (!Pacman.configurationCheck()) {
-        console.log('creating configuration...')
+        console.log('- creating configuration...')
         Pacman.configurationInstall(verbose)
       } else {
-        console.log('configuration present')
+        console.log('- configuration already present')
       }
 
 
@@ -85,7 +85,7 @@ export default class Dad extends Command {
         config.user_opt = this.settings.user_opt
         config.user_opt_passwd = this.settings.user_opt_passwd
         config.root_passwd = this.settings.root_passwd
-        config.theme = 'ufficiozero' //this.settings.theme
+        config.theme = this.settings.theme
         config.make_efi = this.settings.make_efi
         config.make_md5sum = this.settings.make_md5sum
         config.make_isohybrid = this.settings.make_isohybrid
@@ -107,11 +107,20 @@ export default class Dad extends Command {
         config.user_opt_passwd = newConf.user_opt_passwd
         config.root_passwd = newConf.root_passwd
         config.theme = newConf.theme
-        config.compression = newConf.compression
+        if (newConf.compression === 'fast') {
+          config.compression = 'lz4'
+        } else if (newConf.compression === 'normal') {
+          config.compression = 'xz'
+        } else if (newConf.compression === 'max') {
+          config.compression = 'xz -Xbcj x86'
+        }
         await this.settings.save(config)
-
         // Controllo se serve il kill
-        Utils.titles('kill'+ ' ' + this.argv)
+        let flags = ''
+        if (verbose) {
+          flags = '--verbose '
+        }
+        Utils.titles('kill' + flags)
         console.log(chalk.cyan('Daddy, what else did you leave for me?'))
         await this.settings.listFreeSpace()
         if (await Utils.customConfirm()) {
@@ -120,7 +129,17 @@ export default class Dad extends Command {
         }
 
         // produce
-        Utils.titles('produce'+ ' ' + this.argv + ' theme=' + config.theme)
+        if (config.compression === 'lz4') {
+          flags += '--fast '
+        } else if (config.compression === 'xz') {
+          flags += '--normal '
+        } else if (config.compression === 'xz -Xbcj x86') {
+          flags += '--max '
+        }
+        if (config.theme !== '') {
+          flags += `--theme=${config.theme} `
+        }
+        Utils.titles('produce' + ' ' + flags)
         console.log(chalk.cyan('Daddy, what else did you leave for me?'))
         const myAddons = {} as IMyAddons
         const ovary = new Ovary(config.compression)
@@ -138,18 +157,26 @@ export default class Dad extends Command {
  * @param c 
  */
 function editConfig(c: IConfig): Promise<string> {
+  console.log(chalk.cyan('Edit and save LiveCD parameters'))
+  let compressionOpt = 0
+  if (c.compression === 'xz') {
+    compressionOpt = 1
+  } else if (c.compression === 'xz -Xbcj x86') {
+    compressionOpt = 2
+  }
+
   return new Promise(function (resolve) {
     const questions: Array<Record<string, any>> = [
       {
         type: 'input',
         name: 'snapshot_prefix',
-        message: 'LiveCD iso prefix',
+        message: 'LiveCD iso prefix: ',
         default: c.snapshot_prefix
       },
       {
         type: 'input',
         name: 'snapshot_basename',
-        message: 'Live CD iso basename',
+        message: 'LiveCD iso basename: ',
         default: c.snapshot_basename
       },
       {
@@ -161,28 +188,28 @@ function editConfig(c: IConfig): Promise<string> {
       {
         type: 'input',
         name: 'user_opt_passwd',
-        message: 'LiveCD user password',
+        message: 'LiveCD user password: ',
         default: c.user_opt_passwd
       },
       {
         type: 'input',
         name: 'root_passwd',
-        message: 'LiveCd root password',
+        message: 'LiveCD root password: ',
         default: c.root_passwd
       },
       {
         type: 'input',
         name: 'theme',
-        message: 'LiveCD theme',
+        message: 'LiveCD theme: ',
         default: c.theme
       },
       {
         type: 'list',
         name: 'compression',
-        message: 'Compression lz4/xz: ',
-        choices: ['lz4', 'xz', 'xz -Xbcj x86'],
-        default: 'c.compression'
-     }
+        message: 'LiveCD compression: ',
+        choices: ['fast', 'normal', 'max'],
+        default: compressionOpt
+      }
 
     ]
     inquirer.prompt(questions).then(function (options) {
