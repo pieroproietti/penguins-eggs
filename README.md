@@ -412,9 +412,10 @@ USAGE
 
 OPTIONS
   -b, --basename=basename  basename egg
-  -c, --compress           max compression
   -f, --fast               fast compression
   -h, --help               show CLI help
+  -m, --max                max compression
+  -n, --normal             max compression
   -s, --script             script mode. Generate scripts to manage iso build
   -v, --verbose            verbose
   -y, --yolk               -y force yolk renew
