@@ -18,7 +18,8 @@ import Prerequisites from '../commands/prerequisites'
 export default class Produce extends Command {
    static flags = {
       basename: flags.string({ char: 'b', description: 'basename egg' }),
-      compress: flags.boolean({ char: 'c', description: 'max compression' }),
+      normal: flags.boolean({ char: 'n', description: 'max compression' }),
+      max: flags.boolean({ char: 'm', description: 'max compression' }),
       fast: flags.boolean({ char: 'f', description: 'fast compression' }),
       verbose: flags.boolean({ char: 'v', description: 'verbose' }),
       yolk: flags.boolean({ char: 'y', description: '-y force yolk renew' }),

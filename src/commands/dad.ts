@@ -85,7 +85,7 @@ export default class Dad extends Command {
         config.user_opt = this.settings.user_opt
         config.user_opt_passwd = this.settings.user_opt_passwd
         config.root_passwd = this.settings.root_passwd
-        config.theme = this.settings.theme
+        config.theme = ''
         config.make_efi = this.settings.make_efi
         config.make_md5sum = this.settings.make_md5sum
         config.make_isohybrid = this.settings.make_isohybrid
@@ -130,14 +130,15 @@ export default class Dad extends Command {
 
         // produce
         if (config.compression === 'lz4') {
-          flags += '--fast '
+          flags += '--fast'
         } else if (config.compression === 'xz') {
-          flags += '--normal '
+          flags += '--normal'
         } else if (config.compression === 'xz -Xbcj x86') {
-          flags += '--max '
+          flags += '--max'
         }
+
         if (config.theme !== '') {
-          flags += `--theme=${config.theme} `
+          flags += ` --theme=${config.theme} `
         }
         Utils.titles('produce' + ' ' + flags)
         console.log(chalk.cyan('Daddy, what else did you leave for me?'))
