@@ -7,7 +7,7 @@
 function main {
 
    while true; do
-      answer=$(zenity --list --height 500 --width 650\
+      answer=$(zenity --list --height 560 --width 650\
       --title="Mumy" \
       --text="Mama's gonna keep baby cosy and warm..." \
       --column="Command" --column=" " --column="Description" \
@@ -25,7 +25,7 @@ function main {
       "remove"          ">" "remove " \
       "tools"           ">" "clean/initrd/locales/pve/sanitize/skel/yolk" \
       "update"          " " "update" \
-      "EXIT"            " " "exit"
+      "quit"            " " "exit"
       )
 
       ${answer}
@@ -252,7 +252,7 @@ function press_a_key_to_continue {
 }
 
 ################################
-function EXIT {
+function quit {
    exit 0
 }
 

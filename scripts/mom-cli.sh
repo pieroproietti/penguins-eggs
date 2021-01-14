@@ -11,6 +11,7 @@ function main {
       answer=$(
       whiptail --title "mommy" --menu "Mama's gonna keep baby cosy and warm..." 22 75 14 \
       "autocomplete"    "generate or refresh autocomplete" \
+      "documentation"   "https://penguins-eggs.net/book/" \
       "export"          "export /deb/docs/iso" \
       "help"            "help" \
       "info"            "get informations" \
@@ -21,11 +22,11 @@ function main {
       "remove"          "remove " \
       "tools"           "clean/initrd/locales/pve/sanitize/skel/yolk" \
       "update"          "update" \
-      "EXIT"            "exit" 3>&2 2>&1 1>&3
+      "quit"            "exit" 3>&2 2>&1 1>&3
       )
 
       case "$answer" in 
-         "EXIT")
+         "quit")
             exit ;;
 
          "autocomplete")
