@@ -34,6 +34,8 @@ Fast: does not copy the original filesystem but the livefs is obtained instantly
 
 Safe: only use the original distro's packages, without any modification in your repository lists.
 
+CLI and GUI: eggs is a utility cli, but we added two ligher GUI interfaces: mom and dad. Use mom to interact and learn eggs commands, and dad to quicly create an iso.
+
 Script: if you want more control on the production of your iso, try the flag --script in produce. eggs will generate filesystem directory, iso structure complete and the related scripts to bind/ubind live filesystem, squash it and create or re-create yours iso as much times as you need, and customize the user live home.
 
 Book: use guide in four different languages: english,  español, italiano, português

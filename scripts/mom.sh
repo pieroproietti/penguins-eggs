@@ -14,7 +14,7 @@ function main {
       "adapt"           " " "adapt video resolution" \
       "autocomplete"    " " "generate or refresh autocomplete" \
       "calamares"       ">" "install and configure calamares" \
-      "documentation"   ">" "documentation" \
+      "documentation"   " " "documentations, site, forum, etc" \
       "export"          ">" "export /deb/docs/iso" \
       "help"            " " "help" \
       "info"            " " "get informations" \
@@ -56,7 +56,7 @@ function autocomplete {
    sudo cp ~/.cache/penguins-eggs/autocomplete/functions/bash/eggs.bash /etc/bash_completion.d/
 
    if [ -f "/etc/bash_completion.d/eggs.bash" ]; then
-      zenity --info --text "autocomplete generated" --height 300 --width 300
+      zenity --info --text "autocomplete generated! To see it in action exit from terminal and re-open it." --height 300 --width 300
    else
       zenity --error --text "problem with autocomplete generation" --height 300 --width 300 
    fi
@@ -77,14 +77,8 @@ function calamares {
 
 ################################
 function documentation {
-   site=$(zenity --height=280 --width=300 --list  --text "That documentation need?" --radiolist  --column "Pick" --column "Sites" \
-   TRUE https://penguins-eggs.net/ \
-   FALSE https://sourceforge.com/project/penguins-eggs \
-   FALSE https://github.com/pieroproietti/penguins-eggs  \
-   FALSE https://www.facebook.com/penguinseggs \
-   --separator=" ")
-
-   sensible-browser $site
+   sensible-browser "https://penguins-eggs.net/book/"
+   press_a_key_to_continue
 }
 
 ################################
