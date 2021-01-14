@@ -40,7 +40,7 @@ Try penguins-eggs yes, it is a console utility - no GUI - but don't be scared, p
 Starting with version 7.6.x, an addons architecture has been added  to eggs, that allows third parties to develop extensions. Note that we currently have an extension for the theme that includes both calamares branding and installer link and icon. In addition, also as addon has been developed others addons, to chosen hoosing between GUI or CLI installation, adapd video resolution, etc.
 
 # The two GUIs
-I recently added two lightweight GUIs integrated with eggs: mom and dad. While mom is a bash script made in two versions - one with zenity and the other with whiptail - and guides the user to the various commands and documentation. Dad is a short way to creating the iso, all you have to do is type in **sudo eggs dad** and follow the - simple instructions
+I recently added two lightweight GUIs integrated with eggs: mom and dad. While mom is a bash script made in two versions - one with zenity and the other with whiptail - and guides the user to the various commands and documentation. Dad is a short way to creating the iso, all you have to do is type in **sudo eggs dad** and follow simple instructions.
 
 # Yolk 
 yolk so called - staying on the subject of eggs - is a local repository included in the livecd that contains a minimum of indispensable packages during installation. Thanks to yolk, you can safely install your system without the need for an internet connection.
