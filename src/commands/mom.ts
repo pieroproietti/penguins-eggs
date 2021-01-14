@@ -22,6 +22,10 @@ export default class Mom extends Command {
   async run() {
     Utils.titles(this.id + ' ' + this.argv)
 
+    if (process.getuid && process.getuid() === 0) {
+      Utils.warning('You must to be kind with your mom! Call her without sudo')
+      process.exit(0)
+    }
     const { flags } = this.parse(Mom)
     let mum = path.resolve(__dirname, `../../scripts/mom-cli.sh`)
     if (Pacman.isXInstalled()) {
