@@ -1,30 +1,22 @@
-#!/bin/sh
+#!/bin/bash
 
-# rimuove list ed aggiungeyolk
+#
+# Questa versione utilizza SOLO yolk 
+# durante l'installazione.
+# sources-yolk.sh
+#    aggiunge yolk, rimuove list ed esegue apt non autenticato
+# sources-yolk.sh
 # -u rimuove yolk e ri-aggiunge le list
 
 function main {
-    CHROOT=$(mount | grep proc | grep calamares | awk '{print $3}' | sed -e "s#/proc##g")
-    LIST = "$CHROOT/etc/apt/sources.list"
-    LIST_BACKUP = "$LIST.backup"
-
-    LIST_D = "$CHROOT/etc/apt/sources.list.d"
-    LIST_D_BACKUP = "$LIST_D.backup"
-
     #####################################################################
     # unmount: remove yolk.list
     #####################################################################
     if [ "$1" = "-u" ]; then
-        add_list
-        remove_yolk()
-        exit 0
+        remove_yolk
     else
-        remove_list()
-        add_yolk()
+        add_yolk
     fi
-
-    chroot $CHROOT apt-get --allow-unauthenticated update -y
-    exit 0
 }
 
 
@@ -55,15 +47,29 @@ function add_list {
 
 
 function add_yolk {
+    remove_list
     cat << EOF > $CHROOT/etc/apt/sources.list.d/yolk.list
     deb [trusted=yes] file:/usr/local/yolk ./
 EOF
+    chroot $CHROOT apt-get --allow-unauthenticated update -y
 }
 
 function remove_yolk {
+    add_list
     rm $CHROOT/etc/apt/sources.list.d/yolk.list
     chroot $CHROOT apt-get update -y
-    exit 0
 }
 
-main()
+
+
+# Lo script inizia qui
+CHROOT=$(mount | grep proc | grep calamares | awk '{print $3}' | sed -e "s#/proc##g")
+
+LIST = "$CHROOT/etc/apt/sources.list"
+LIST_BACKUP = "$LIST.backup"
+
+LIST_D = "$CHROOT/etc/apt/sources.list.d"
+LIST_D_BACKUP = "$LIST_D.backup"
+
+main
+exit 0

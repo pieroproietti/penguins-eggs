@@ -226,7 +226,7 @@ export default class Ovary {
        * to prevent error messages at boot
        */
       await exec(`rm ${this.settings.work_dir.merged}/etc/fstab`, echo)
-      await exec(`touch ${this.settings.work_dir.merged}/etc/fstab`, echo)
+      await exec(`touch ${this.settings.work_dir.merged}/etc/fstab`, echo) 
 
       /**
        * Blank out systemd machine id. If it does not exist, systemd-journald
@@ -283,7 +283,7 @@ export default class Ovary {
       }
 
       // Probabilmente non necessario
-      // shx.touch(`${this.work_dir.merged}/etc/resolv.conf`)
+      // shx.touch(`${this.settings.work_dir.merged}/etc/resolv.conf`)
 
       /**
        * Clear configs from /etc/network/interfaces, wicd and NetworkManager
