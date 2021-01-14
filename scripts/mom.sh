@@ -77,7 +77,7 @@ function calamares {
 
 ################################
 function documentation {
-   sensible-browser "https://penguins-eggs.net/book/"
+   sensible-browser "https://penguins-eggs.net"
    press_a_key_to_continue
 }
 

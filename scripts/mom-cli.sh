@@ -11,7 +11,7 @@ function main {
       answer=$(
       whiptail --title "mommy" --menu "Mama's gonna keep baby cosy and warm..." 22 75 14 \
       "autocomplete"    "generate or refresh autocomplete" \
-      "documentation"   "https://penguins-eggs.net/book/" \
+      "documentation"   "https://penguins-eggs.net/" \
       "export"          "export /deb/docs/iso" \
       "help"            "help" \
       "info"            "get informations" \

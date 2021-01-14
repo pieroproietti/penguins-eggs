@@ -18,6 +18,9 @@ You can follow the project also consulting the [commit history](https://github.c
 ## Changelog
 Versions are listed on reverse order, the first is the last one.
 
+### eggs-7.7.9.1_deb
+* install system without internet update, just yolk
+
 ### eggs-7.7.8.1_deb
 * cleaning and bug fixes
 
