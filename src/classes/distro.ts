@@ -186,13 +186,7 @@ class Distro implements IDistro {
          this.distroLike = 'Ubuntu'
          this.versionLike = 'focal'
 
-         // 19.10 eoan
-      } else if (this.versionId === 'eoan') {
-         this.distroId = 'Ubuntu'
-         this.distroLike = 'Ubuntu'
-         this.versionLike = 'eoan'
-
-         // Ubuntu 18.04 bionic LTS
+         // Ubuntu 18.04 bionic LTS eol aprile 2023
       } else if (this.versionId === 'bionic') {
          this.distroId = 'Ubuntu'
          this.distroLike = 'Ubuntu'

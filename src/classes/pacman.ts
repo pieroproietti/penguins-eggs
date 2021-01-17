@@ -305,7 +305,7 @@ export default class Pacman {
       let make_efi = 'yes'
       if (!Utils.isUefi()) {
          make_efi = 'no'
-         console.log(`Due the lacks of grub-efi-amd64 or grub-efi-ia32 package set make_efi=No`)
+         console.log(`Due the lacks of grub-efi-amd64 package set make_efi=No`)
       }
       shx.sed('-i', '%make_efi%', make_efi, config_file)
 

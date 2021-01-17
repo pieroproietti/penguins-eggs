@@ -96,7 +96,7 @@ export default class Xdg {
    }
 
    /**
-    * Copia della cofiguirazione in /etc/skel
+    * Copia della configuirazione in /etc/skel
     * @param user
     * @param verbose
     */
@@ -141,6 +141,10 @@ export default class Xdg {
             await exec(`cp -r /home/${user}/${files[i]} /etc/skel/ `, echo)
          }
       }
+
+      // Copio autocomplete per eggs
+      // await exec(`mkdir /etc/skel/.cache/penguins-eggs -p`)
+      // await exec(`cp -r /home/${user}/.cache/penguins-eggs/*  /etc/skel/.cache/penguins-eggs`)
 
       // Eseguo la pulizia dei dati personali in skel
 
@@ -251,9 +255,9 @@ async function execIfExist(cmd: string, file: string, verbose = false) {
    const echo = Utils.setEcho(verbose)
 
    if (fs.existsSync(file)) {
-      console.log(chalk.bgWhite.red(`${file}`))
+      if (verbose) {
+         console.log(chalk.cyan(`${cmd} ${file}`))
+      }
       await exec(`${cmd} ${file}`, echo)
-   } else {
-      console.log(chalk.green(`${file} not found`))
    }
 }

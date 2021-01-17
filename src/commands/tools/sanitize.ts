@@ -25,38 +25,20 @@ export default class Sanitize extends Command {
         const Tu = new Tools
         Utils.warning(`>>> ${Sanitize.description}`)
         if (Utils.isRoot()) {
-            console.log('sanitize workdir...')
-            await rm('~/penguins-eggs-/tmp')
-            await rm('~/penguins-eggs-/dist')
-            await rm('~/penguins-tools-/tmp')
-            await rm('~/penguins-tools-/dist')
+            await this.all()
 
-            console.log('sanitize links scripts')
-            await rm('/usr/bin/add-penguins-links.sh')
-            await rm('/usr/bin/penguins-links-add.sh')
-            await rm('/usr/bin/pve-live.sh')
-            await rm('/etc/systemd/system/pve-live.service')
-
-            console.log('sanitize links')
-            await rm('/usr/share/applications/penguins-*')
-            await rm('/usr/share/applications/dw*')
-            await rm('/usr/share/applications/pve*')
-            await rm('/usr/share/applications/proxmox*')
-            await rm('/usr/share/applications/calamares*')
-            await rm('/etc/xdg/autostart/add-penguins-desktop-icons.desktop')
-            await rm('/etc/xdg/autostart/add-penguins-links.desktop')
-
-            console.log('sanitize calamares modules')
-            await rm('/etc/calamares')
-            const calamaresGlobalModules = '/usr/lib/x86_64-linux-gnu/calamares/modules/'
-            console.log('sanitize calamares global modules buster/beowulf')
+            let calamaresGlobalModules = '/usr/lib/x86_64-linux-gnu/calamares/modules/'
+            if (process.arch === 'ia32') {
+                calamaresGlobalModules = '/usr/lib/calamares/modules/'
+            }
+            console.log('sanitize calamares modules: buster/beowulf')
             await rm(calamaresGlobalModules + 'bootloader-config')
-            await rm(calamaresGlobalModules +'create-tmp')
-            await rm(calamaresGlobalModules +'remove-link')
-            await rm(calamaresGlobalModules +'sources-yolk')
-            await rm(calamaresGlobalModules +'sources-yolk-unmount')
-            
-            console.log('sanitize: script calamares buster')
+            await rm(calamaresGlobalModules + 'create-tmp')
+            await rm(calamaresGlobalModules + 'remove-link')
+            await rm(calamaresGlobalModules + 'sources-yolk')
+            await rm(calamaresGlobalModules + 'sources-yolk-unmount')
+
+            console.log('sanitize calamares scripts: buster/beowulf')
             await rm('/usr/sbin/bootloader-config*')
             await rm('/usr/sbin/create-tmp*')
             await rm('/usr/sbin/remove-link*')
@@ -64,26 +46,44 @@ export default class Sanitize extends Command {
             await rm('/usr/sbin/sources-yolk-unmount*')
 
 
-            console.log('sanitize: script di ubuntu bionic')
+            console.log('sanitize calamares modules: bionic')
+            await rm(calamaresGlobalModules + 'automirror')
+            await rm(calamaresGlobalModules + 'add386arch')
+            await rm(calamaresGlobalModules + 'after-bootloader')
+            await rm(calamaresGlobalModules + 'before-bootloader')
+            await rm(calamaresGlobalModules + 'bug')
+
+            console.log('sanitize calamares scripts: bionic')
             await rm('/usr/sbin/add386arch*')
             await rm('/usr/sbin/after-bootloader*')
             await rm('/usr/sbin/before-bootloader*')
             await rm('/usr/sbin/bug.*')
 
-            console.log('sanitize modules calamares buster')
-            await rm('/usr/lib/x86_64-linux-gnu/calamares/modules/bootloader-config')
-            await rm('/usr/lib/x86_64-linux-gnu/calamares/modules/create-tmp')
-            await rm('/usr/lib/x86_64-linux-gnu/calamares/modules/remove-link')
-            await rm('/usr/lib/x86_64-linux-gnu/calamares/modules/sources-final')
-            await rm('/usr/lib/x86_64-linux-gnu/calamares/modules/sources-trusted*')
-
-            console.log('sanitize modules calamares bionic')
-            await rm('/usr/lib/x86_64-linux-gnu/calamares/modules/automirror')
-            await rm('/usr/lib/x86_64-linux-gnu/calamares/modules/add386arch')
-            await rm('/usr/lib/x86_64-linux-gnu/calamares/modules/after-bootloader')
-            await rm('/usr/lib/x86_64-linux-gnu/calamares/modules/before-bootloader')
-            rm('/usr/lib/x86_64-linux-gnu/calamares/modules/bug')
         }
+    }
+
+    async all() {
+        console.log('sanitize: script called from links')
+        await rm('/usr/bin/add-penguins-links.sh')
+        await rm('/usr/bin/penguins-links-add.sh')
+        await rm('/usr/bin/pve-live.sh')
+        await rm('/etc/systemd/system/pve-live.service')
+
+        console.log('sanitize application links')
+        await rm('/usr/share/applications/penguins-*')
+        await rm('/usr/share/applications/dw*')
+        await rm('/usr/share/applications/pve*')
+
+        console.log('sanitize xdg links')
+        await rm('/etc/xdg/autostart/add-penguins-desktop-icons.desktop')
+        await rm('/etc/xdg/autostart/add-penguins-links.desktop')
+
+        console.log('sanitize calamares modules: all')
+        await rm('/etc/calamares')
+    }
+
+    async buster() {
+
     }
 }
 

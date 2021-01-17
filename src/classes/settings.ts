@@ -174,8 +174,6 @@ export default class Settings {
             Utils.error('You choose to create an UEFI image, but miss to install grub-efi-amd64 package.')
             Utils.error('Please install it before to create an UEFI image:')
             Utils.warning('sudo apt install grub-efi-amd64')
-            Utils.error('or')
-            Utils.warning('sudo apt install grub-efi-ia32')
             Utils.error('or edit /etc/penguins-eggs.d/eggs.yaml and set the valuer of make_efi=no')
             this.make_efi = false
          }
