@@ -40,20 +40,16 @@ Try penguins-eggs yes, it is a console utility - no GUI - but don't be scared, p
 # Addons
 Starting with version 7.6.x, an addons architecture has been added  to eggs, that allows third parties to develop extensions. Note that we currently have an extension for the theme that includes both calamares branding and installer link and icon. In addition, also as addon has been developed others addons, to chosen hoosing between GUI or CLI installation, adapd video resolution, etc.
 
-# The two GUIs
+# mon and dad
 I recently added two lightweight GUIs integrated with eggs: mom and dad. While mom is a bash script made in two versions - one with zenity and the other with whiptail - and guides the user to the various commands and documentation. Dad is a short way to creating the iso, all you have to do is type in **sudo eggs dad** and follow simple instructions.
 
-# Yolk 
+# yolk 
 yolk so called - staying on the subject of eggs - is a local repository included in the livecd that contains a minimum of indispensable packages during installation. Thanks to yolk, you can safely install your system without the need for an internet connection.
 
 # What distributions can I use?
 Eggs is born on Debian strecth/buster, full support Debian bullseys, Devuan beowulf, Ubuntu focal, bionic and derivatives. I usually try it against Debian buster, Devuan beowulf, Linux Mint 19.3 tricia (bionic derivated) and Linux Mint 20 ulyana (focal derivated) before releases. I tried it successfully in LMDE 4 debbie, and deepin. Eggs, generally must work with all the derivates from that distros.
 
 Some iso images remastered with eggs are in the [sourceforge page of the project](https://sourceforge.net/projects/penguins-eggs/files/iso/). 
-
-## Note about deb packages
-
-You can use the same package for all distributions using deb, naturally choosing the appropriate architecture (i386/amd64).
 
 # Packages
 eggs is released as deb package and npm package. If you use nodejs npm version can be indicated, most of users need just deb version.
@@ -73,11 +69,11 @@ or, on a i386 system:
 sudo dpkg -i eggs_7.6.65-1_i386.deb
 ```
 ### update
-The fastest way to update is to use the flag -i in update. Eggs let you to select the version to install and install it.
+The fastest way to use sudo eggs update and choose basket. Eggs let you to select the last 4 versions in the basket and install it.
 
-```sudo eggs update -i```
+```sudo eggs update```
 
-Of course, if your distro include eggs in the repositury, you can use apt too.
+Of course, if your distro include eggs in the repository, you can use apt too.
 
 
 _Note about deb packages_ You can use the same package for all distributions using deb, naturally choosing the appropriate architecture (i386/amd64).
