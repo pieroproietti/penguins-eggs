@@ -106,6 +106,7 @@ USAGE
 ...
 ```
 <!-- usagestop -->
+
 # Commands
 <!-- commands -->
 * [`eggs adapt`](#eggs-adapt)
