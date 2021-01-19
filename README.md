@@ -16,8 +16,8 @@ penguins-eggs
 * [Index](#index)
 * [Presentation](#presentation)
 * [Addons](#addons)
-* [The two GUIs](#the-two-guis)
-* [Yolk](#yolk)
+* [mon and dad](#mon-and-dad)
+* [yolk](#yolk)
 * [What distributions can I use?](#what-distributions-can-i-use)
 * [Packages](#packages)
 * [Usage](#usage)
@@ -443,7 +443,10 @@ EXAMPLES
   the same as the previuos, compression lz4 (fast compression, but about 30%
   less compressed compared xz standard)
 
-  $ sudo eggs produce -vc
+  $ sudo eggs produce -vm
+  the same as the previuos, compression xz (normal compression)
+
+  $ sudo eggs produce -vm
   the same as the previuos, compression xz -Xbcj x86 (max compression, about 10%
   more compressed compared xz standard)
 

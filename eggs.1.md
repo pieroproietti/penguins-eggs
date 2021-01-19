@@ -1,21 +1,28 @@
-# EGGS(1) Version 7.6.9 | eggs  "eggs" Documentation
-
-
-## NAME
-
-**eggs** — create and iso image of your systesm!
-
+eggs(1) -- A reproductive system for penguins
+=============================================
 
 ## SYNOPSIS
 
 eggs command [--flags]
 
+examples:
+
+  sudo eggs prerequisites --verbose
+
+  sudo eggs produce --verbose --fast
+
+  sudo eggs kill
+
+
 ## DESCRIPTION
 
-penguins-eggs is a console utility, in active development, who let you to remaster your system and redistribuite it as iso image.
+eggs is a console utility, in active development, who let you to remaster your system and redistribuite it as iso image.
 
+eggs as CLI tool have his man page and not only. With his two GUIs: eggs mom and eggs dad, you can help yourself and easily learn eggs commands or get documentations.
 
 ## COMMANDS
+
+All eggs commands:
 
 ## eggs adapt
 
@@ -524,9 +531,38 @@ EXAMPLE
   update/upgrade the penguin's eggs tool
 ```
 
+## FILE
+      /etc/penguins-eggs.d
+        all eggs configurations are here
+
+      /usr/local/share/penguins-eggs/exclude.list
+        exclude.list rsync
+
+      /usr/lib/penguins-eggs (deb package)
+        here eggs is installed
+      OR
+      /usr/lib/node_modules/penguins-eggs/ (npm package)
+        here eggs is installed
+
+
 ## BUGS
 
 See GitHub Issues: <https://github.com/pieroproietti/penguins-eggs/issues>
+
+## TROUBLES
+Different versions of eggs can have differents configurations files. This can lead to get errors. A fast workaround for this trouble can be download eggs, remove eggs, remove it's configurations, reinstall new version and run sudo eggs prerequisites:
+
+  sudo eggs update # select basket, choose the version and download it but not install
+
+  sudo apt --purge eggs
+
+  sudo rm /usr/penguins-eggs/ rf
+
+  sudo rm /etc/penguins-eggs.d -rf
+
+  sudo dpkg -i /tmp/eggs_7.7.9-1_amd64.deb 
+
+  sudo eggs prerequisites
 
 ## AUTHOR
 
@@ -534,4 +570,4 @@ Piero Proietti <piero.proietti@gmail.com>
 
 ## SEE ALSO
 
-**https://penguins-eggs.net**, **https://github.com/pieroproietti/penguins-eggs**
+**https://penguins-eggs.net**
