@@ -1,22 +1,23 @@
 # EGGS(1) Version 7.6.9 | eggs  "eggs" Documentation
 
-# NAME
+
+## NAME
 
 **eggs** — create and iso image of your systesm!
 
 
-# SYNOPSIS
+## SYNOPSIS
 
-Sinossi.
+eggs command [--flags]
 
-# DESCRIPTION
+## DESCRIPTION
 
-Descrizione.
+penguins-eggs is a console utility, in active development, who let you to remaster your system and redistribuite it as iso image.
 
-# COMMANDS
-Comandi
 
-## `eggs adapt`
+## COMMANDS
+
+## eggs adapt
 
 adapt monitor resolution for VM only
 
@@ -34,7 +35,7 @@ ALIASES
   $ eggs adjust
 ```
 
-## `eggs autocomplete [SHELL]`
+## eggs autocomplete [shell]
 
 display autocomplete installation instructions
 
@@ -42,10 +43,10 @@ display autocomplete installation instructions
 display autocomplete installation instructions
 
 USAGE
-  $ eggs autocomplete [SHELL]
+  $ eggs autocomplete [shell]
 
 ARGUMENTS
-  SHELL  shell type
+  shell shell type
 
 OPTIONS
   -r, --refresh-cache  Refresh cache (ignores displaying instructions)
@@ -59,7 +60,7 @@ EXAMPLES
 
 
 
-## `eggs calamares`
+## eggs calamares
 
 calamares or install or configure it
 
@@ -85,7 +86,7 @@ EXAMPLES
 ```
 
 
-## `eggs dad [FILE]`
+## eggs dad
 
 ask for daddy (gui interface)!
 
@@ -93,7 +94,7 @@ ask for daddy (gui interface)!
 ask for daddy (gui interface)!
 
 USAGE
-  $ eggs dad [FILE]
+  $ eggs dad
 
 OPTIONS
   -h, --help     show CLI help
@@ -101,7 +102,7 @@ OPTIONS
 ```
 
 
-## `eggs export:deb`
+## eggs export:deb
 
 export package eggs-v7-x-x-1.deb in the destination host
 
@@ -118,7 +119,7 @@ OPTIONS
 ```
 
 
-## `eggs export:docs`
+## eggs export:docs
 
 remove and export docType documentation of the sources in the destination host
 
@@ -133,7 +134,7 @@ OPTIONS
 ```
 
 
-## `eggs export:iso`
+## eggs export:iso
 
 export iso in the destination host
 
@@ -149,7 +150,7 @@ OPTIONS
 ```
 
 
-## `eggs help [COMMAND]`
+## eggs help [COMMAND]
 
 display help for eggs
 
@@ -167,7 +168,7 @@ OPTIONS
 ```
 
 
-## `eggs info`
+## eggs info
 
 informations about system and eggs
 
@@ -183,7 +184,7 @@ EXAMPLE
 ```
 
 
-## `eggs install`
+## eggs install
 
 eggs installer - (the egg became penguin)
 
@@ -211,7 +212,7 @@ EXAMPLE
 ```
 
 
-## `eggs kill`
+## eggs kill
 
 kill the eggs/free the nest
 
@@ -231,7 +232,7 @@ EXAMPLE
 ```
 
 
-## `eggs mom`
+## eggs mom
 
 ask for mommy (gui interface)!
 
@@ -248,7 +249,7 @@ OPTIONS
 
 _See code: [src/commands/mom.ts](https://github.com/pieroproietti/penguins-eggs/blob/v7.7.9/src/commands/mom.ts)_
 
-## `eggs prerequisites`
+## eggs prerequisites
 
 install packages prerequisites to run eggs
 
@@ -272,7 +273,7 @@ EXAMPLES
 ```
 
 
-## `eggs produce`
+## eggs produce
 
 the system produce an egg: livecd creation.
 
@@ -336,7 +337,7 @@ EXAMPLES
 ```
 
 
-## `eggs remove`
+## eggs remove
 
 remove eggs, eggs configurations, prerequisites, calamares, calamares configurations
 
@@ -371,7 +372,7 @@ EXAMPLES
 ```
 
 
-## `eggs tools:clean`
+## eggs tools:clean
 
 clean system log, apt, etc
 
@@ -387,7 +388,7 @@ OPTIONS
 ```
 
 
-## `eggs tools:initrd`
+## eggs tools:initrd
 
 Test initrd
 
@@ -405,7 +406,7 @@ OPTIONS
 ```
 
 
-## `eggs tools:locales`
+## eggs tools:locales
 
 install/clean locales
 
@@ -422,7 +423,7 @@ OPTIONS
 ```
 
 
-## `eggs tools:pve`
+## eggs tools:pve
 
 enable/start/stop pve-live
 
@@ -442,7 +443,7 @@ OPTIONS
 ```
 
 
-## `eggs tools:sanitize`
+## eggs tools:sanitize
 
 sanitize
 
@@ -457,7 +458,7 @@ OPTIONS
 ```
 
 
-## `eggs tools:skel`
+## eggs tools:skel
 
 update skel from home configuration
 
@@ -478,7 +479,7 @@ EXAMPLE
 ```
 
 
-## `eggs tools:yolk`
+## eggs tools:yolk
 
 configure eggs to install without internet
 
@@ -497,7 +498,7 @@ EXAMPLE
 ```
 
 
-## `eggs update`
+## eggs update
 
 update the penguin's eggs tool.
 
@@ -523,17 +524,14 @@ EXAMPLE
   update/upgrade the penguin's eggs tool
 ```
 
-BUGS
-====
+## BUGS
 
 See GitHub Issues: <https://github.com/pieroproietti/penguins-eggs/issues>
 
-AUTHOR
-======
+## AUTHOR
 
 Piero Proietti <piero.proietti@gmail.com>
 
-SEE ALSO
-========
+## SEE ALSO
 
-**hi(1)**, **hello(3)**, **hello.conf(5)**
+**https://penguins-eggs.net**, **https://github.com/pieroproietti/penguins-eggs**
