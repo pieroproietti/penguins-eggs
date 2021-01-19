@@ -44,16 +44,17 @@ export default class Prerequisites extends Command {
 
 
       if (Utils.isRoot()) {
+
          // Installa manual eggs
          const man1Dir = '/usr/local/man/man1'
          if (fs.existsSync(man1Dir)){
             exec (`rm ${man1Dir} -rf`)
          }
          exec (`mkdir ${man1Dir} -p`)
-
          const manPage = path.resolve(__dirname, '../../man/man1/eggs.1') 
          exec (`cp ${manPage} ${man1Dir}`)
          exec (`mandb > /dev/null`)
+
 
          if (!Pacman.configurationCheck()) {
             await Pacman.configurationInstall()
