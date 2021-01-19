@@ -48,7 +48,7 @@
     "@types/js-yaml": "^3.12.6",
     "@types/mocha": "^5.2.7",
     "@types/mustache": "^4.1.0",
-    "@types/node": "^10.17.50",
+    "@types/node": "^10.17.51",
     "@types/shelljs": "^0.8.8",
     "chai": "^4.2.0",
     "eslint": "^5.16.0",
