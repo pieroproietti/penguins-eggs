@@ -429,6 +429,22 @@ OPTIONS
   -v, --verbose    verbose
 ```
 
+## eggs tools:man
+
+install man manual eggs
+
+```
+install man manual eggs
+
+USAGE
+  $ eggs tools:man
+
+OPTIONS
+  -h, --help     show CLI help
+  -r, --remove   remove manual
+  -v, --verbose  verbose
+```
+
 
 ## eggs tools:pve
 
