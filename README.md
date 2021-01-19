@@ -127,6 +127,7 @@ USAGE
 * [`eggs tools:clean`](#eggs-toolsclean)
 * [`eggs tools:initrd`](#eggs-toolsinitrd)
 * [`eggs tools:locales`](#eggs-toolslocales)
+* [`eggs tools:man`](#eggs-toolsman)
 * [`eggs tools:pve`](#eggs-toolspve)
 * [`eggs tools:sanitize`](#eggs-toolssanitize)
 * [`eggs tools:skel`](#eggs-toolsskel)
@@ -558,6 +559,24 @@ OPTIONS
 ```
 
 _See code: [src/commands/tools/locales.ts](https://github.com/pieroproietti/penguins-eggs/blob/v7.7.12/src/commands/tools/locales.ts)_
+
+## `eggs tools:man`
+
+install man manual eggs
+
+```
+install man manual eggs
+
+USAGE
+  $ eggs tools:man
+
+OPTIONS
+  -h, --help     show CLI help
+  -r, --remove   remove manual
+  -v, --verbose  verbose
+```
+
+_See code: [src/commands/tools/man.ts](https://github.com/pieroproietti/penguins-eggs/blob/v7.7.12/src/commands/tools/man.ts)_
 
 ## `eggs tools:pve`
 
