@@ -1,0 +1,654 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv='content-type' content='text/html;charset=utf8'>
+  <meta name='generator' content='Ronn-NG/v0.8.0 (http://github.com/apjanke/ronn-ng/tree/0.8.0)'>
+  <title>eggs(1) - A reproductive system for penguins</title>
+  <style type='text/css' media='all'>
+  /* style: man */
+  body#manpage {margin:0}
+  .mp {max-width:100ex;padding:0 9ex 1ex 4ex}
+  .mp p,.mp pre,.mp ul,.mp ol,.mp dl {margin:0 0 20px 0}
+  .mp h2 {margin:10px 0 0 0}
+  .mp > p,.mp > pre,.mp > ul,.mp > ol,.mp > dl {margin-left:8ex}
+  .mp h3 {margin:0 0 0 4ex}
+  .mp dt {margin:0;clear:left}
+  .mp dt.flush {float:left;width:8ex}
+  .mp dd {margin:0 0 0 9ex}
+  .mp h1,.mp h2,.mp h3,.mp h4 {clear:left}
+  .mp pre {margin-bottom:20px}
+  .mp pre+h2,.mp pre+h3 {margin-top:22px}
+  .mp h2+pre,.mp h3+pre {margin-top:5px}
+  .mp img {display:block;margin:auto}
+  .mp h1.man-title {display:none}
+  .mp,.mp code,.mp pre,.mp tt,.mp kbd,.mp samp,.mp h3,.mp h4 {font-family:monospace;font-size:14px;line-height:1.42857142857143}
+  .mp h2 {font-size:16px;line-height:1.25}
+  .mp h1 {font-size:20px;line-height:2}
+  .mp {text-align:justify;background:#fff}
+  .mp,.mp code,.mp pre,.mp pre code,.mp tt,.mp kbd,.mp samp {color:#131211}
+  .mp h1,.mp h2,.mp h3,.mp h4 {color:#030201}
+  .mp u {text-decoration:underline}
+  .mp code,.mp strong,.mp b {font-weight:bold;color:#131211}
+  .mp em,.mp var {font-style:italic;color:#232221;text-decoration:none}
+  .mp a,.mp a:link,.mp a:hover,.mp a code,.mp a pre,.mp a tt,.mp a kbd,.mp a samp {color:#0000ff}
+  .mp b.man-ref {font-weight:normal;color:#434241}
+  .mp pre {padding:0 4ex}
+  .mp pre code {font-weight:normal;color:#434241}
+  .mp h2+pre,h3+pre {padding-left:0}
+  ol.man-decor,ol.man-decor li {margin:3px 0 10px 0;padding:0;float:left;width:33%;list-style-type:none;text-transform:uppercase;color:#999;letter-spacing:1px}
+  ol.man-decor {width:100%}
+  ol.man-decor li.tl {text-align:left}
+  ol.man-decor li.tc {text-align:center;letter-spacing:4px}
+  ol.man-decor li.tr {text-align:right;float:right}
+  </style>
+  <style type='text/css' media='all'>
+  /* style: toc */
+  .man-navigation {display:block !important;position:fixed;top:0;left:113ex;height:100%;width:100%;padding:48px 0 0 0;border-left:1px solid #dbdbdb;background:#eee}
+  .man-navigation a,.man-navigation a:hover,.man-navigation a:link,.man-navigation a:visited {display:block;margin:0;padding:5px 2px 5px 30px;color:#999;text-decoration:none}
+  .man-navigation a:hover {color:#111;text-decoration:underline}
+  </style>
+  <style type='text/css' media='all'>
+  /* style: 80c */
+  .mp {max-width:86ex}
+   
+  .man-navigation {left:101ex}
+  </style>
+</head>
+<!--
+  The following styles are deprecated and will be removed at some point:
+  div#man, div#man ol.man, div#man ol.head, div#man ol.man.
+
+  The .man-page, .man-decor, .man-head, .man-foot, .man-title, and
+  .man-navigation should be used instead.
+-->
+<body id='manpage'>
+  <div class='mp' id='man'>
+
+  <div class='man-navigation' style='display:none'>
+    <a href="#NAME">NAME</a>
+    <a href="#SYNOPSIS">SYNOPSIS</a>
+    <a href="#DESCRIPTION">DESCRIPTION</a>
+    <a href="#COMMANDS">COMMANDS</a>
+    <a href="#eggs-adapt">eggs adapt</a>
+    <a href="#eggs-autocomplete-shell-">eggs autocomplete [shell]</a>
+    <a href="#eggs-calamares">eggs calamares</a>
+    <a href="#eggs-dad">eggs dad</a>
+    <a href="#eggs-export-deb">eggs export:deb</a>
+    <a href="#eggs-export-docs">eggs export:docs</a>
+    <a href="#eggs-export-iso">eggs export:iso</a>
+    <a href="#eggs-help-command-">eggs help [command]</a>
+    <a href="#eggs-info">eggs info</a>
+    <a href="#eggs-install">eggs install</a>
+    <a href="#eggs-kill">eggs kill</a>
+    <a href="#eggs-mom">eggs mom</a>
+    <a href="#eggs-prerequisites">eggs prerequisites</a>
+    <a href="#eggs-produce">eggs produce</a>
+    <a href="#eggs-remove">eggs remove</a>
+    <a href="#eggs-tools-clean">eggs tools:clean</a>
+    <a href="#eggs-tools-initrd">eggs tools:initrd</a>
+    <a href="#eggs-tools-locales">eggs tools:locales</a>
+    <a href="#eggs-tools-pve">eggs tools:pve</a>
+    <a href="#eggs-tools-sanitize">eggs tools:sanitize</a>
+    <a href="#eggs-tools-skel">eggs tools:skel</a>
+    <a href="#eggs-tools-yolk">eggs tools:yolk</a>
+    <a href="#eggs-update">eggs update</a>
+    <a href="#FILE">FILE</a>
+    <a href="#TROUBLES">TROUBLES</a>
+    <a href="#BUGS">BUGS</a>
+    <a href="#RESOURCES-AND-DOCUMENTATION">RESOURCES AND DOCUMENTATION</a>
+    <a href="#AUTHOR">AUTHOR</a>
+  </div>
+
+  <ol class='man-decor man-head man head'>
+    <li class='tl'>eggs(1)</li>
+    <li class='tc'>eggs manual</li>
+    <li class='tr'>eggs(1)</li>
+  </ol>
+
+  
+
+<h2 id="NAME">NAME</h2>
+<p class="man-name">
+  <code>eggs</code> - <span class="man-whatis">A reproductive system for penguins</span>
+</p>
+<h2 id="SYNOPSIS">SYNOPSIS</h2>
+
+<p>eggs command [--flags]</p>
+
+<p>examples:</p>
+
+<p>  sudo eggs prerequisites --verbose</p>
+
+<p>  sudo eggs produce --verbose --fast</p>
+
+<p>  sudo eggs kill</p>
+
+<h2 id="DESCRIPTION">DESCRIPTION</h2>
+
+<p>eggs is a console utility, in active development, who let you to remaster your system and redistribuite it as iso image.</p>
+
+<p>eggs as CLI tool have his man page but not only - yith his two GUIs: eggs mom and eggs dad - you can help yourself and easily learn eggs commands or get documentations.</p>
+
+<h2 id="COMMANDS">COMMANDS</h2>
+
+<p>Full list eggs commands and flags.</p>
+
+<h2 id="eggs-adapt">eggs adapt</h2>
+
+<p>adapt monitor resolution for VM only</p>
+
+<pre><code>adapt monitor resolution for VM only
+
+USAGE
+  $ eggs adapt
+
+OPTIONS
+  -h, --help     show CLI help
+  -v, --verbose
+
+ALIASES
+  $ eggs adjust
+</code></pre>
+
+<h2 id="eggs-autocomplete-shell-">eggs autocomplete [shell]</h2>
+
+<p>display autocomplete installation instructions</p>
+
+<pre><code>display autocomplete installation instructions
+
+USAGE
+  $ eggs autocomplete [shell]
+
+ARGUMENTS
+  shell shell type
+
+OPTIONS
+  -r, --refresh-cache  Refresh cache (ignores displaying instructions)
+
+EXAMPLES
+  $ eggs autocomplete
+  $ eggs autocomplete bash
+  $ eggs autocomplete zsh
+  $ eggs autocomplete --refresh-cache
+</code></pre>
+
+<h2 id="eggs-calamares">eggs calamares</h2>
+
+<p>calamares or install or configure it</p>
+
+<pre><code>calamares or install or configure it
+
+USAGE
+  $ eggs calamares
+
+OPTIONS
+  -f, --final    final: remove eggs prerequisites, calamares and all it's dependencies
+  -h, --help     show CLI help
+  -i, --install  install calamares and it's dependencies
+  -v, --verbose
+  --theme=theme  theme/branding for eggs and calamares
+
+EXAMPLES
+  ~$ sudo eggs calamares 
+  create/renew calamares configuration's files
+
+  ~$ sudo eggs calamares -i 
+  install calamares and create it's configuration's files
+</code></pre>
+
+<h2 id="eggs-dad">eggs dad</h2>
+
+<p>ask for daddy (gui interface)!</p>
+
+<pre><code>ask for daddy (gui interface)!
+
+USAGE
+  $ eggs dad
+
+OPTIONS
+  -h, --help     show CLI help
+  -v, --verbose
+</code></pre>
+
+<h2 id="eggs-export-deb">eggs export:deb</h2>
+
+<p>export package eggs-v7-x-x-1.deb in the destination host</p>
+
+<pre><code>export package eggs-v7-x-x-1.deb in the destination host
+
+USAGE
+  $ eggs export:deb
+
+OPTIONS
+  -a, --armel  copy armel arch
+  -c, --clean  remove old .deb before to copy
+  -h, --help   show CLI help
+</code></pre>
+
+<h2 id="eggs-export-docs">eggs export:docs</h2>
+
+<p>remove and export docType documentation of the sources in the destination host</p>
+
+<pre><code>remove and export docType documentation of the sources in the destination host
+
+USAGE
+  $ eggs export:docs
+
+OPTIONS
+  -h, --help  show CLI help
+</code></pre>
+
+<h2 id="eggs-export-iso">eggs export:iso</h2>
+
+<p>export iso in the destination host</p>
+
+<pre><code>export iso in the destination host
+
+USAGE
+  $ eggs export:iso
+
+OPTIONS
+  -c, --clean  delete old ISOs before to copy
+  -h, --help   show CLI help
+</code></pre>
+
+<h2 id="eggs-help-COMMAND-">eggs help [COMMAND]</h2>
+
+<p>display help for eggs</p>
+
+<pre><code>display help for &lt;%= config.bin %&gt;
+
+USAGE
+  $ eggs help [COMMAND]
+
+ARGUMENTS
+  COMMAND  command to show help for
+
+OPTIONS
+  --all  see all commands in CLI
+</code></pre>
+
+<h2 id="eggs-info">eggs info</h2>
+
+<p>informations about system and eggs</p>
+
+<pre><code>informations about system and eggs
+
+USAGE
+  $ eggs info
+
+EXAMPLE
+  $ eggs info
+  You will find here informations about penguin's eggs!
+</code></pre>
+
+<h2 id="eggs-install">eggs install</h2>
+
+<p>eggs installer - (the egg became penguin)</p>
+
+<pre><code>eggs installer - (the egg became penguin)
+
+USAGE
+  $ eggs install
+
+OPTIONS
+  -c, --cli        try to use antiX installer (cli)
+  -g, --gui        use Calamares installer (gui)
+  -h, --info       show CLI help
+  -l, --lvmremove  remove lvm /dev/pve
+  -m, --mx         try to use MX installer (gui)
+  -u, --umount     umount devices
+  -v, --verbose    verbose
+
+ALIASES
+  $ eggs hatch
+
+EXAMPLE
+  $ eggs install
+  Install the system with eggs cli installer(default)
+</code></pre>
+
+<h2 id="eggs-kill">eggs kill</h2>
+
+<p>kill the eggs/free the nest</p>
+
+<pre><code>kill the eggs/free the nest
+
+USAGE
+  $ eggs kill
+
+OPTIONS
+  -h, --help     show CLI help
+  -v, --verbose  verbose
+
+EXAMPLE
+  $ eggs kill
+  kill the eggs/free the nest
+</code></pre>
+
+<h2 id="eggs-mom">eggs mom</h2>
+
+<p>ask for mommy (gui interface)!</p>
+
+<pre><code>ask for mommy (gui interface)!
+
+USAGE
+  $ eggs mom
+
+OPTIONS
+  -c, --cli   force cli version of mommy
+  -h, --help  show CLI help
+</code></pre>
+
+<p><em>See code: <a href="https://github.com/pieroproietti/penguins-eggs/blob/v7.7.9/src/commands/mom.ts">src/commands/mom.ts</a></em></p>
+
+<h2 id="eggs-prerequisites">eggs prerequisites</h2>
+
+<p>install packages prerequisites to run eggs</p>
+
+<pre><code>install packages prerequisites to run eggs
+
+USAGE
+  $ eggs prerequisites
+
+OPTIONS
+  -c, --check    check prerequisites
+  -h, --help     show CLI help
+  -v, --verbose  verbose
+
+EXAMPLES
+  ~$ eggs prerequisites
+  install prerequisites and create configuration files
+
+  sudo eggs prerequisites -c
+    create configuration's file
+</code></pre>
+
+<h2 id="eggs-produce">eggs produce</h2>
+
+<p>the system produce an egg: livecd creation.</p>
+
+<pre><code>the system produce an egg: livecd creation.
+
+USAGE
+  $ eggs produce
+
+OPTIONS
+  -b, --basename=basename  basename egg
+  -f, --fast               fast compression
+  -h, --help               show CLI help
+  -m, --max                max compression
+  -n, --normal             max compression
+  -s, --script             script mode. Generate scripts to manage iso build
+  -v, --verbose            verbose
+  -y, --yolk               -y force yolk renew
+  --adapt                  adapt video resolution in VM
+  --final                  final: remove eggs prerequisites, calamares and all it's dependencies
+  --ichoice                allows the user to choose the installation type cli/gui
+  --pve                    administration of virtual machines (Proxmox-VE)
+  --rsupport               remote support via dwagent
+  --theme=theme            theme/branding for eggs and calamares
+
+ALIASES
+  $ eggs spawn
+  $ eggs lay
+
+EXAMPLES
+  $ sudo eggs produce 
+  produce an ISO called [hostname]-[arch]-YYYY-MM-DD_HHMM.iso, compressed xz (standard compression).
+  If hostname=ugo and arch=i386 ugo-x86-2020-08-25_1215.iso
+
+  $ sudo eggs produce -v
+  the same as the previuos, but with more explicative output
+
+  $ sudo eggs produce -vf
+  the same as the previuos, compression lz4 (fast compression, but about 30%
+  less compressed compared xz standard)
+
+  $ sudo eggs produce -vc
+  the same as the previuos, compression xz -Xbcj x86 (max compression, about 10%
+  more compressed compared xz standard)
+
+  $ sudo eggs produce -vf --basename leo --theme debian --adapt 
+  produce an ISO called leo-i386-2020-08-25_1215.iso compression lz4,
+  using Debian theme and link to adapt
+
+  $ sudo eggs produce -v --basename leo --theme debian --adapt 
+  produce an ISO called leo-i386-2020-08-25_1215.iso compression xz,
+  using Debian theme and link to adapt
+
+  $ sudo eggs produce -v --basename leo --rsupport 
+  produce an ISO called leo-i386-2020-08-25_1215.iso compression xz, using eggs
+  theme and link to dwagent
+
+  $ sudo eggs produce -vs --basename leo --rsupport 
+  produce scripts to build an ISO as the previus example. Scripts can be found
+  in /home/eggs/ovarium and you can customize all you need
+</code></pre>
+
+<h2 id="eggs-remove">eggs remove</h2>
+
+<p>remove eggs, eggs configurations, prerequisites, calamares, calamares configurations</p>
+
+<pre><code>remove eggs, eggs configurations, prerequisites, calamares, calamares configurations
+
+USAGE
+  $ eggs remove
+
+OPTIONS
+  -a, --all            remove all
+  -h, --help           show CLI help
+  -p, --prerequisites  remove eggs packages prerequisites
+  -v, --verbose        verbose
+  --purge              remove eggs, eggs configuration
+
+ALIASES
+  $ eggs sterilize
+
+EXAMPLES
+  $ sudo eggs remove 
+  remove eggs
+
+  $ sudo eggs remove --purge 
+  remove eggs, eggs configurations
+
+  $ sudo eggs remove --prerequisites 
+  remove packages prerequisites, calamares, calamares configurations
+
+  $ sudo eggs remove --all
+  remove eggs, eggs configurations, prerequisites, calamares, calamares configurations
+</code></pre>
+
+<h2 id="eggs-tools-clean">eggs tools:clean</h2>
+
+<p>clean system log, apt, etc</p>
+
+<pre><code>clean system log, apt, etc
+
+USAGE
+  $ eggs tools:clean
+
+OPTIONS
+  -h, --help     show CLI help
+  -v, --verbose  verbose
+</code></pre>
+
+<h2 id="eggs-tools-initrd">eggs tools:initrd</h2>
+
+<p>Test initrd</p>
+
+<pre><code>Test initrd
+
+USAGE
+  $ eggs tools:initrd
+
+OPTIONS
+  -h, --help     show CLI help
+  -v, --verbose
+  --check=check  check if necessary to clean initrd.img
+  --clean=clean  clean the initrd.img
+</code></pre>
+
+<h2 id="eggs-tools-locales">eggs tools:locales</h2>
+
+<p>install/clean locales</p>
+
+<pre><code>install/clean locales
+
+USAGE
+  $ eggs tools:locales
+
+OPTIONS
+  -h, --help       show CLI help
+  -r, --reinstall  reinstall locales
+  -v, --verbose    verbose
+</code></pre>
+
+<h2 id="eggs-tools-pve">eggs tools:pve</h2>
+
+<p>enable/start/stop pve-live</p>
+
+<pre><code>enable/start/stop pve-live
+
+USAGE
+  $ eggs tools:pve
+
+OPTIONS
+  -d, --disable  disable
+  -e, --enable   enable
+  -h, --help     show CLI help
+  -v, --verbose  stop service
+  --start        start
+  --stop         stop service
+</code></pre>
+
+<h2 id="eggs-tools-sanitize">eggs tools:sanitize</h2>
+
+<p>sanitize</p>
+
+<pre><code>sanitize
+
+USAGE
+  $ eggs tools:sanitize
+
+OPTIONS
+  -h, --help  show CLI help
+</code></pre>
+
+<h2 id="eggs-tools-skel">eggs tools:skel</h2>
+
+<p>update skel from home configuration</p>
+
+<pre><code>update skel from home configuration
+
+USAGE
+  $ eggs tools:skel
+
+OPTIONS
+  -h, --help       show CLI help
+  -u, --user=user  user to be used
+  -v, --verbose
+
+EXAMPLE
+  $ eggs skel --user mauro
+  desktop configuration of user mauro will get used as default
+</code></pre>
+
+<h2 id="eggs-tools-yolk">eggs tools:yolk</h2>
+
+<p>configure eggs to install without internet</p>
+
+<pre><code>configure eggs to install without internet
+
+USAGE
+  $ eggs tools:yolk
+
+OPTIONS
+  -h, --help     show CLI help
+  -v, --verbose
+
+EXAMPLE
+  $ eggs yolk -v
+</code></pre>
+
+<h2 id="eggs-update">eggs update</h2>
+
+<p>update the penguin's eggs tool.</p>
+
+<pre><code>update the penguin's eggs tool.
+This method always works, both with npm and deb packages.
+
+USAGE
+  $ eggs update
+
+OPTIONS
+  -a, --apt      if eggs package is .deb, update from distro repositories
+  -b, --basket   if eggs package is .deb, update from eggs basket
+  -h, --help     show CLI help
+  -n, --npm      if eggs package is .npm, update from npmjs.com
+  -v, --verbose  verbose
+
+DESCRIPTION
+  This method always works, both with npm and deb packages.
+
+EXAMPLE
+  $ eggs update
+  update/upgrade the penguin's eggs tool
+</code></pre>
+
+<h2 id="FILE">FILE</h2>
+
+<pre><code>  /etc/penguins-eggs.d
+    all eggs configurations are here
+
+  /usr/local/share/penguins-eggs/exclude.list
+    exclude.list rsync
+
+  /usr/lib/penguins-eggs (deb package)
+    here eggs is installed
+  OR
+  /usr/lib/node_modules/penguins-eggs/ (npm package)
+    here eggs is installed
+</code></pre>
+
+<h2 id="TROUBLES">TROUBLES</h2>
+
+<p>Different versions of eggs can have differents configurations files. This can lead to get errors. A fast workaround for this trouble can be download eggs, remove eggs, remove it's configurations, reinstall new version and run sudo eggs prerequisites:</p>
+
+<p>  <strong>sudo eggs update</strong> # select basket, choose the version and download it but not install!</p>
+
+<p>  <strong>sudo apt --purge eggs</strong> # remove eggs</p>
+
+<p>  <strong>sudo rm /usr/penguins-eggs/ rf</strong> # remove eggs</p>
+
+<p>  <strong>sudo rm /etc/penguins-eggs.d -rf</strong> # remove eggs configurations files</p>
+
+<p>  <strong>sudo dpkg -i /tmp/eggs_7.7.9-1_amd64.deb</strong> # install eggs from downloaded package</p>
+
+<p>  <strong>sudo eggs prerequisites</strong> # check prerequisites and generate configuration's files</p>
+
+<h2 id="BUGS">BUGS</h2>
+
+<p>See GitHub Issues: <a href="https://github.com/pieroproietti/penguins-eggs/issues" data-bare-link="true">https://github.com/pieroproietti/penguins-eggs/issues</a></p>
+
+<h2 id="RESOURCES-AND-DOCUMENTATION">RESOURCES AND DOCUMENTATION</h2>
+
+<p>Website: <strong>https://penguins-eggs.net</strong></p>
+
+<p>Documentation: <strong>https://penguins-eggs.net/book</strong></p>
+
+<p>GitHub repository &amp; Issue Tracker: <strong>github.com/pieroproietti/penguins-eggs</strong></p>
+
+<h2 id="AUTHOR">AUTHOR</h2>
+
+<p>Piero Proietti <a href="mailto:piero.proietti@gmail.com" data-bare-link="true">piero.proietti@gmail.com</a></p>
+
+  <ol class='man-decor man-foot man foot'>
+    <li class='tl'></li>
+    <li class='tc'>January 2021</li>
+    <li class='tr'>eggs(1)</li>
+  </ol>
+
+  </div>
+</body>
+</html>

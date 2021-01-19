@@ -33,8 +33,9 @@ export default class Mom extends Command {
     }
 
     if (flags.cli) {
-      mum = path.resolve(__dirname, `../../scripts/mom-cli.sh`)
+      mum = path.resolve(__dirname, `../../scripts/mom-cli.sh`) + ' ' + __dirname
     }
+    console.log(mum)
     exec(mum)
   }
 }

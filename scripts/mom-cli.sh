@@ -17,6 +17,7 @@ function main {
       "info"            "get informations" \
       "install"         "install your system on hard disk" \
       "kill"            "delete ISOs" \
+      "manual"            "man eggs" \
       "prerequisites"   "install eggs prerequisites" \
       "produce"         "produce and ISO of your system" \
       "remove"          "remove " \
@@ -46,6 +47,9 @@ function main {
 
          "kill")
             kill ;;
+
+         "manual")
+            manual ;;
 
          "prerequisites")
             prerequisites ;;
@@ -160,6 +164,13 @@ function prerequisites {
    sudo eggs prerequisites
    press_a_key_to_continue
 }
+
+################################
+function manual {
+   man eggs
+}
+
+
 
 ################################
 function produce {
