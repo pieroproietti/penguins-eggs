@@ -17,11 +17,11 @@ function main {
       "info"            "get informations" \
       "install"         "install your system on hard disk" \
       "kill"            "delete ISOs" \
-      "manual"            "man eggs" \
+      "manual"          "man eggs" \
       "prerequisites"   "install eggs prerequisites" \
       "produce"         "produce and ISO of your system" \
       "remove"          "remove " \
-      "tools"           "clean/initrd/locales/pve/sanitize/skel/yolk" \
+      "tools"           "clean/initrd/locales/man/pve/sanitize/skel/yolk" \
       "update"          "update" \
       "quit"            "exit" 3>&2 2>&1 1>&3
       )
@@ -160,17 +160,16 @@ function kill {
 }
 
 ################################
+function manual {
+   man_eggs='/usr/bin/man eggs'
+   ${man_eggs}
+}
+
+################################
 function prerequisites {
    sudo eggs prerequisites
    press_a_key_to_continue
 }
-
-################################
-function manual {
-   man eggs
-}
-
-
 
 ################################
 function produce {
@@ -251,6 +250,7 @@ function tools {
    "clean"     "clean system log, apt, etc" \
    "initrd"     "initrd experimental" \
    "locales"   "install/clean locales" \
+   "man"       "install man eggs page" \
    "pve"       "enable/start/stop pve-live" \
    "sanitize"  "remove eggs remains and sanitize" \
    "skel"      "update skel from home configuration" \
@@ -267,6 +267,9 @@ function tools {
 
       "locales")
          locales ;;
+
+      "man")
+         tools_man ;;
 
       "pve")
          pve ;;
@@ -298,6 +301,12 @@ function initrd {
 ################################
 function locales {
    sudo eggs tools:locales
+   press_a_key_to_continue
+}
+
+################################
+function man {
+   sudo eggs tools:man
    press_a_key_to_continue
 }
 

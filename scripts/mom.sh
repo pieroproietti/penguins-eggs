@@ -24,7 +24,7 @@ function main {
       "prerequisites"   " " "install eggs prerequisites" \
       "produce"         ">" "produce and ISO of your system" \
       "remove"          ">" "remove " \
-      "tools"           ">" "clean/initrd/locales/pve/sanitize/skel/yolk" \
+      "tools"           ">" "clean/initrd/locales/man/pve/sanitize/skel/yolk" \
       "update"          " " "update" \
       "quit"            " " "exit"
       )
@@ -140,8 +140,8 @@ function kill {
 
 ################################
 function manual {
-   man eggs
-   press_a_key_to_continue
+   man_eggs='/usr/bin/man eggs'
+   ${man_eggs}
 }
 
 ################################
@@ -178,15 +178,16 @@ function remove {
 function tools {
    answer= $(zenity --list --height 500 --width 530 \
    --column="eggs tools:" --column="Description" \
-   clean "clean system log, apt, etc" \
-   configure_eggs "configure eggs.yaml" \
-   configure_tools "configure tools.yaml" \
-   initrd "Test initrd" \
-   locales "install/clean locales" \
-   pve "enable/start/stop pve-live" \
-   sanitize "sanitize" \
-   skel "update skel from home configuration" \
-   yolk "configure eggs to install without internet")
+   clean             "clean system log, apt, etc" \
+   configure_eggs    "configure eggs.yaml" \
+   configure_tools   "configure tools.yaml" \
+   initrd            "Test initrd" \
+   locales           "install/clean locales" \
+   man               "install man eggs page" \
+   pve               "enable/start/stop pve-live" \
+   sanitize          "sanitize" \
+   skel              "update skel from home configuration" \
+   yolk              "configure eggs to install without internet")
 
    ${answer}
 }
@@ -219,6 +220,12 @@ function initrd {
 ################################
 function locales {
    sudo eggs tools:locales
+   press_a_key_to_continue
+}
+
+################################
+function man {
+   sudo eggs tools:man
    press_a_key_to_continue
 }
 
