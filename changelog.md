@@ -33,110 +33,110 @@ Versions are listed on reverse order, the first is the last one.
 ### eggs-7.7.7.1_deb
 * added command dad, expanded mom both gui/cli helpers for reproductive eggs!
 
-### eggs-7.7.6.1_deb
+### eggs-7.7.6.1_deb deprecated
 * added command mom, a gui/cli helper for reproductive eggs!
 
-### eggs-7.7.5.1_deb
+### eggs-7.7.5.1_deb deprecated
 * bugfix in bullseye and deepin to not confuse versions
 
-### eggs-7.7.4.1_deb
+### eggs-7.7.4.1_deb deprecated
 * added guadalinex theme
 
-### eggs-7.7.3.1_deb
+### eggs-7.7.3.1_deb deprecated
 * fixed annoying bug in option safe booting from livecd
 
-### eggs-7.7.0.1_deb
+### eggs-7.7.0.1_deb deprecated
 * added autocomplete bash
 
-### eggs-7.6.88.1_deb
+### eggs-7.6.88.1_deb deprecated
 * changing and fixes in devuan beowulf, ubuntu focal, Ubuntu groovy
 
-### eggs-7.6.86.1_deb
+### eggs-7.6.86.1_deb deprecated
 * changed commands prerequisites and renamed sterilize as remove, added different flags.
 
-### eggs-7.6.85.1_deb
+### eggs-7.6.85.1_deb deprecated
 * changing the configuration. I suggest to remove the old configuration dir before to use: 
   * sudo rm /etc/penguins-eggs.d -rf
   * sudo eggs prerequisites
 * updated cli installer, new defailt address, gateway, dns, etc. 
 * introduced experimental pve-live.service.
 
-### eggs-7.6.83.1_deb
+### eggs-7.6.83.1_deb deprecated
 * reintroduced armel arch; info now show running mode
 
-### eggs-7.6.82.1_deb
+### eggs-7.6.82.1_deb deprecated
 * fix gdm3 displaymanager in calamares configuration, export deb armel
 
-### eggs-7.6.81.1_deb
+### eggs-7.6.81.1_deb deprecated
 * restored debian theme for calamares, check install-debian, clean flags usage in export
 
-### eggs-7.6.80.1_deb
+### eggs-7.6.80.1_deb deprecated
 * displays the command flags
 
-### eggs-7.6.79.1_deb
+### eggs-7.6.79.1_deb deprecated
 * mx-installer starting to work (experimental)
 
-### eggs-7.6.78.1_deb
+### eggs-7.6.78.1_deb deprecated
 * solved permissions problems in /tmp, mxlinux now install with calamares, trying to become mx-installer compatible.
 
-### eggs-7.6.77.1_deb
+### eggs-7.6.77.1_deb deprecated
 * select vmlinuz and initrd.img version from cmdline del kernel
 
-### eggs-7.6.76.1_deb
+### eggs-7.6.76.1_deb deprecated
 * introducing basket update, removed documents from packages.
 
-### eggs-7.6.73.1_deb
+### eggs-7.6.73.1_deb deprecated
 * finishing touches in update: show sources and versions.
 
-### eggs-7.6.72.1_deb
+### eggs-7.6.72.1_deb deprecated
 * changes for site, readme, terminal session and so on.
 
-### eggs-7.6.71.1_deb
+### eggs-7.6.71.1_deb deprecated
 * just a little hack for the vmlinuz link in proxmox-ve.
 
-### eggs-7.6.70.1_deb
+### eggs-7.6.70.1_deb deprecated
 * finally eggs is again able to remaster and install the naked version (without graphical interface) of your system.
 
-### eggs-7.6.65.1_deb
+### eggs-7.6.65.1_deb deprecated
 * update -i show the last 4 versions ordered and select the correct architecture; check presence of dpkg-packages before to run yolk
 
-### eggs-7.6.63.1_deb
+### eggs-7.6.63.1_deb deprecated
 * remake configuration of calamares for bullseye, be careful with lsb_release in bullseye otherwise UEFI boot will not work
 
-### eggs-7.6.62.1_deb
+### eggs-7.6.62.1_deb deprecated
 * changed the way to work of ovary, put /boot, /etc, /usr, /var in overlayfs, create /home just like a normal directory who is not deleted, until kill
 
-### eggs-7.6.61.1_deb
+### eggs-7.6.61.1_deb deprecated
 * exclude yolk from copy, cleaning tools.yaml using settings from eggs.
 
-### eggs-7.6.60.1_deb
+### eggs-7.6.60.1_deb deprecated
 * improvement:  if you installed eggs as debian package, you can now update it with sudo eggs update -i.
 
-### eggs-7.6.57.1_deb
+### eggs-7.6.57.1_deb deprecated
 * improvment: added Ubuntu groovy to the supported versions. Remain same trouble with displaymanager - actually disabled - and the link in the desktop are non able to be executed before to click right key on the mouse and click on let to execute.
 
-### eggs-7.6.56.1_deb
+### eggs-7.6.56.1_deb deprecated
 * bugfix: added apt install -y --allow-unauthenticated shim-signed in focal and reintroduced download shim-signed e dependecies in yolk;
 
-### eggs-7.6.55.1_deb
+### eggs-7.6.55.1_deb deprecated
 * bugfix: from test I saw who it is not possible to install shim-signed from yolk, perhaps becouse yolk is not signed? I  removed it to not impact with others distros;
 
 * focal will not install without internet connection on UEFI.
 
 I removed 
 
-### eggs-7.6.54.1_deb
+### eggs-7.6.54.1_deb deprecated
 * bugfix: LMDE debbie don't start using it's name in EFI, so eggs change bootloaderEntryName=Debian for
 this distro;
 
 * bugfix: added shim-signed to the packages of local repository yolk. 
 
 
-### eggs-7.6.53.1_deb
+### eggs-7.6.53.1_deb deprecated
 * tested on: buster/beowulf/bionic/focal
 * distro tested: Debian buster amd64, Devuan beowulf i386/amd64, Linux Mint 19.3 amd64, Linux Mint ulyana amd64, LMDE debbie amd64.
 
-### eggs-7.6.52.1_deb
+### eggs-7.6.52.1_deb deprecated
 improvment: added in eggs fuctions who was before in penguins-tools. Don't get worried, are mostly for developers!
 Here we are:
 * export:deb export debian packages (only for developers)
@@ -170,7 +170,7 @@ this distro.
 
 book: soon we will align the italian book with this new edition.
 
-### eggs-7.6.50.1_.deb
+### eggs-7.6.50.1_.deb deprecated
 bugfix: just an await before the call yolk.create()... It worked the same, but with a better output.
 
 ### eggs-7.6.49.1_.deb
@@ -184,25 +184,25 @@ Yolk is very little, about 2.1 MB and contains only the following packages: grub
 
 After installation yolk is removed from apt sources.
 
-### eggs-7.6.48.1_.deb
+### eggs-7.6.48.1_.deb deprecated
 * rewrote of the commands prerequisites and sterilize, they now try to explain better that  will happen behind the scenes, during their use. It remain the possibility to see all via --verbose flag.
 
-### eggs-7.6.47.1_.deb
+### eggs-7.6.47.1_.deb deprecated
 * added a beutifull new theme for ufficiozero thanx to Julian Del Vecchio.
 
-### eggs-7.6.46.1_.deb
+### eggs-7.6.46.1_.deb deprecated
 * changed flags in produce and calamares. just added flag --final to make the final version of your project: all the packages relative to the "reproduction"  will be removed during the installation with the gui installer;
 * module packages in calamares now work in accord with the flag --final, if present will build the remove section in packages.conf (you can check this file in /etc/calamares/modules) if not, only section try-install will be build. This section is ideal for international packages, languages, etc.
 
-### eggs-7.44.1_.deb
+### eggs-7.44.1_.deb deprecated
 * buxfix: there was a little problem with links in the previus version.
 
-### eggs-7.6.43.1_.deb
+### eggs-7.6.43.1_.deb deprecated
 * improvement: patch per bionic in calamares module grubcf, added check plymouth from successive version of calamares (in bionic calamares is quite old and not mantained);
 * improvment: actually is possible to use directly produce after the installation, eggs will propose the necessary operations to install prerequisites, calamares and so on;
 * bugfix: the previous version I put distro.versionId as productName in calamares, but due the fact who was used ad EFI name too, Debian refuse to boot. So I changed in branding.ts the line bootloaderEntryName=productName to bootloaderEntryName = distro.distroId.
 
-### eggs-7.6.42.1_.deb
+### eggs-7.6.42.1_.deb deprecated
 * removed open-infrastructure-system-config dependencies from ubuntu bionic. 
 
 ### eggs-7.6.41._1.deb
@@ -212,7 +212,7 @@ After installation yolk is removed from apt sources.
 * made new isolinux and grub.cfg for bionic and focal, with languages
 * actualy eggs produce a boot menu, with the first item language host, submenu languages and menu safe.
 
-### eggs-7.6.40._1.deb
+### eggs-7.6.40._1.deb deprecated
 * beowulf, bionic, buster, focal buxfixes in yml configurazion of calamares:
 * added bullseye as supported distros;
 * rewrite command kill with new class settings, and removed flag --umount;
@@ -220,27 +220,27 @@ After installation yolk is removed from apt sources.
 * changed the way eggs work, not remove prerequisites. Added --sterilize flag in produce and calamares, if yuo want to remove them.
 * hard tested on beowulf, bionic, buster, focal the reproductive system: produce, install, modify, produce, and so on.
 
-### eggs-7.6.39_1.deb
+### eggs-7.6.39_1.deb deprecated
 * bugfix su bionic - thanx to Adriano Morselli
 
-### eggs-7.6.38_1.deb
+### eggs-7.6.38_1.deb deprecated
 * focal bugfix in packages.conf, don't let to remove packages;
 * all calamares packages.conf, try_install libreoffice-help-l10n-$LOCALE, firefox-esr-$LOCALE, thunderbird-locale-$LOCALE etc (give feedback for addictions);
 
-### eggs-7.6.37_1.deb
+### eggs-7.6.37_1.deb deprecated
 * simplified calamares configuration, all the work now is on fisherman class;
 * revisited completely the way to build links for the various user case (sources, npm or package deb);
 * added slim to desktop managers for autologin in live;
 * tested on UfficioZero Linux Roma (beowulf i386), Linux Mint tricia 19.3 i386, UfficioZero Tropea (focal x86_64), Debian buster x86_64.
 
-### eggs-7.6.36_1.deb
+### eggs-7.6.36_1.deb deprecated
 During the creation tests made by UfficioZero, a serious error was found in the generated debian packages: eggs-7.6.35-amd64 and eggs-7.6.35-i386.deb.
 
 This error is due to the fact that debian packaging made with oclif-dev does not keep the symbolic links, so a later version was made, in which these links are created when installing the prerequisites.
 
 The current deb version, was tested on UfficioZero Roma (Devuan beowulf() i386 and UfficioZero Tropea (Linux Mint ulyana/Ubuntu focal).
 
-### eggs-7.6.35_1.deb
+### eggs-7.6.35_1.deb deprecated
 OK, now we are pointing to internationalization and customization. 
 
 Is changed the configuration file and its position
@@ -255,7 +255,7 @@ In /etc/penguins-eggs.d you will find a README.md, a tools.yaml, and two links:
 Read /etc/penguins-eggs.d/README.md for more specific usage and mean.
 
 
-### eggs-7.6.34_1.deb
+### eggs-7.6.34_1.deb deprecated
 This is an important version, in which a lot of work is completed, the reasons are the following:
 
 * Just finished the rewriting work. Well now we have officially Debian buster, Devual beowulf, Ubuntu focal and 
@@ -266,7 +266,7 @@ amd64 architecture.
 
 * I also tried Deepin 20, which works perfectly, but only on standard BIOS machines.
 
-### eggs-7.6.33_1.deb
+### eggs-7.6.33_1.deb deprecated
 I made a rethinking and rewriting of the part of eggs who work with calamares. Before I build the configuration completely with code
 now I choose to use directly yaml files ed use them as template. Well, was hard - test alla on buster, focal, devuan and bionic 
 it's a big question but, finally we have a a great result:
@@ -278,36 +278,36 @@ it's a big question but, finally we have a a great result:
 * on lxde, now we create links in different schema to be compatible with it, except for installer;
 * tested on cinnamon, lxde in Debian, Devuan
 
-
-### eggs-7.6.22_1.deb
+### eggs-7.6.22_1.deb deprecated
 Introduced command locales, install and clean all the locale not necessary, leaving only the defined ones.
-### eggs-7.6.20_1.deb
+
+### eggs-7.6.20_1.deb deprecated
 Finally localisation start to work, your system can boot live in different languages [issue #34](https://github.com/pieroproietti/penguins-eggs/issues/34)
 
-### eggs-7.6.18_1.deb
+### eggs-7.6.18_1.deb deprecated
 Cleanig configuration, writings [issues](https://github.com/pieroproietti/penguins-eggs/issues) and trying to solve. 
 
-### eggs-7.6.14_1.deb
+### eggs-7.6.14_1.deb deprecated
 Fixed bug that prevented grub from loading the kernel and initrd.img from the iso image. The error was only detectable on UEFI machines.
 
-### eggs-7.6.13_1.deb
+### eggs-7.6.13_1.deb deprecated
 Revisited the creation of the liveCD boot for standard and UEFI machines. Fixed the safe option in the isolinux menu and in the grub menu.
 
-### eggs-7.6.12_1.deb
+### eggs-7.6.12_1.deb deprecated
 This is a version mosty rethink and bug fixes. eggs calamares now work as prerequisites, alone install and configure calamares, calamares -c only configuration.
 I changed also few flags in produce, with the idea to not have _ in them. So proxmox_ve became ve, remote_assistance becamo rassistance, etc. I changed something
 in calamares modules too, to get the flag theme. The next versione will be a bugfixes too, I need to check why disappered in the boot from iso the option safe.
 
-### eggs-7.6.11_1.deb
+### eggs-7.6.11_1.deb deprecated
 Bux fix for Devuan beowolf support, minor errors remain to fix wicd, but I'm sure some users will segnale it. Currently eggs supports and has been tested on Debian, Ubuntu and Devuan
 
-### eggs-7.6.0-10
+### eggs-7.6.0-10 deprecated
 Bug fix for Devuan, now in beowulf We can build iso and start it. To login go to console and sudo startx.
 
-### eggs-7.6.0-9
+### eggs-7.6.0-9 deprecated
 Bug fix for produce flag --installer_choice and --dwagent now working. First implementaion addon for proxmox_ve.
 
-### eggs-7.6.0-7
+### eggs-7.6.0-7 deprecated
 I write here changement in the last few and short time versions, after the last cleaning and reorder. Now You can customize eggs with your theme, or add some particular aspect. Look in /addons or ask to the author for more informations.
 
 * eggs adjust became eggs adapt (to adapt video resolution in VM);
@@ -317,20 +317,20 @@ I write here changement in the last few and short time versions, after the last 
 * created flag --theme for theming eggs installtion with calamares;
 * created addons to let vendors to build specific addon to customize eggs.
 
-### eggs-7.6.0-1
+### eggs-7.6.0-1 deprecated
 Continuing the collaboration with ufficiozero.org, we closed an important bug in Ubuntu and derived: after installation, the resolution of dns addresses was missing. Currently the network works correctly with Debian Buster, Ubuntu focal, Ubuntu cosmic and Ubuntu bionic, Linux mint 20.20, Linux mint 19.3
 
-### eggs-7.5.139-1
+### eggs-7.5.139-1 deprecated
 During some attempts to collaborate in order to get a remastering of Linux Mint, we discovered and fixed the following bugs:
 * Bug fix for custom live user configuration. Now you can actually use any live CD user name and password by configuring it in /etc/penguins-eggs.yaml
 * bug fix for ubuntu focal and ubuntu bionic, calamares was not configured to delete the live CD user.
 Thanx to Adriano Morselli developer at ufficiozero.org for the segnalation.
 
 
-### eggs-7.5.132-1
+### eggs-7.5.132-1 deprecated
 This morning I noticed with surprise that all the versions made with eggs-7.5.130-1 loaded on sourceforge, were affected by a serious problem: the user created was not part of the sudo group. After some investigation I discovered that it was due to a typing error in the focal.ts, bionic.ts and buster.ts modules that create the configuration for calamari. Instead of writing defaultGroups I had written defaultGroups and of course it is not the same! This version fixes the problem, I am reloading the images and packages.
 
-### eggs-7.5.130-1
+### eggs-7.5.130-1 deprecated
 eggs now completely support - remaster the system and use GUI installer calamares - for:
 * Debian 10 Buster (i386/amd64)
 * Ubuntu 20.04 Focal (amd64)
@@ -342,7 +342,7 @@ eggs now completely support - remaster the system and use GUI installer calamare
 You will find new examples of the ISOs on [Penguin's eggs sourceforge](https://sourceforge.net/projects/penguins-eggs/files/iso/)
 
 
-### eggs-7.5.129-1
+### eggs-7.5.129-1 deprecated
 Well, the big moment has arrived: 
 
 eggs now allows you to remaster the system and use calamares for installation on:
@@ -354,7 +354,7 @@ I would like to push compatibility up to Linuixmint 19.3 tricia for the possibil
 Unfortunately, neither Ubuntu nor Linuxmint are releasing the new versions on i386 architecture.
 
 
-### eggs-7.5.126-1
+### eggs-7.5.126-1 deprecated
 work in progress to adapt our script to work with calamares installer in Ubuntu focal and Linux mint.
 Calamares again don't work in ubuntu and Mint, but thanx to big refactoring is more simple to adapt it:
 * abbreviated writing of calamares-modules in buster
@@ -362,7 +362,7 @@ Calamares again don't work in ubuntu and Mint, but thanx to big refactoring is m
 * rewritten most of the buster modules, only packages and displaymanager remain
 * created buster from previuos script
 
-### eggs-7.5.124-1
+### eggs-7.5.124-1 deprecated
 eggs compatible again with node14 and node8.
 
 * eggs compatible again with node14 and node8;
@@ -370,7 +370,7 @@ eggs compatible again with node14 and node8.
 * it is therefore possible. use the version of node present on the system;
 * the structure of calamares has been modified to adapt it to the need to insert different setting versions, one for each distribution.
 
-### eggs-7.5.122-1
+### eggs-7.5.122-1 deprecated
 Sometimes, to move forward, you need to step back first.
 
 Well, in order not to miss the opportunity to have debian packages for both the i386 and amd64 architecture, I chose to go back to the old Node8, the latest version released by nodesource for both architectures.
