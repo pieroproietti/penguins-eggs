@@ -18,6 +18,9 @@ You can follow the project also consulting the [commit history](https://github.c
 ## Changelog
 Versions are listed on reverse order, the first is the last one.
 
+### eggs-7.7.17.1_deb
+* resolved bug #38 mancata rimozione yolk.list e mancata creazione di machine-id
+
 ### eggs-7.7.16.1_deb
 * little bug fix in mom and mom-cli to let install and use of man
 
