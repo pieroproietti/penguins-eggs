@@ -71,5 +71,5 @@ LIST_BACKUP = "$LIST.backup"
 LIST_D = "$CHROOT/etc/apt/sources.list.d"
 LIST_D_BACKUP = "$LIST_D.backup"
 
-main
+main $1
 exit 0

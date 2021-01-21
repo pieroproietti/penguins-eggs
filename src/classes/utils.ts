@@ -30,7 +30,8 @@ export default class Utils {
    * Controlla se il sistema è avviato con systemd
    */
    static isSystemd(): boolean {
-      return (shx.exec(`pidof systemd`).stdout.trim() === '1')
+      // return (shx.exec(`pidof systemd`).stdout.trim() === '1')
+      return (shx.exec(`ps -p 1 -o comm=`).stdout.trim() === 'systemd')
    }
 
    /**
