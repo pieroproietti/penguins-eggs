@@ -18,6 +18,9 @@ You can follow the project also consulting the [commit history](https://github.c
 ## Changelog
 Versions are listed on reverse order, the first is the last one.
 
+### eggs-7.7.18.1_deb
+* added Linux Mint 20.1 ulyssa 
+
 ### eggs-7.7.17.1_deb
 * resolved bug #38 mancata rimozione yolk.list e mancata creazione di machine-id
 
