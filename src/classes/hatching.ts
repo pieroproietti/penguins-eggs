@@ -430,6 +430,8 @@ export default class Hatching {
       const oldUser = Utils.getPrimaryUser()
       if (Pacman.packageIsInstalled('lightdm')) {
          shx.sed('-i', `autologin-user=${oldUser}`, `autologin-user=${newUser}`, `${this.target}/etc/lightdm/lightdm.conf`)
+      } else if (Pacman.packageIsInstalled('sddm')) {
+         shx.sed('-i', `User=${oldUser}`, `User=${newUser}`, `${this.target}/etc/sddm.conf`)
       }
    }
 
