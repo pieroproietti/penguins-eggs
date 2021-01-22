@@ -54,7 +54,7 @@ export default class Ovary {
     */
    constructor(compression = '') {
       this.settings = new Settings()
-      this.settings.compression = compression
+      this.settings.saved.compression = compression
       if (process.arch === 'ia32') {
          this.arch_efi = 'i386-efi'
       }
@@ -94,8 +94,8 @@ export default class Ovary {
          }
       }
 
-      if (!fs.existsSync(this.settings.snapshot_dir)) {
-         shx.mkdir('-p', this.settings.snapshot_dir)
+      if (!fs.existsSync(this.settings.saved.snapshot_dir)) {
+         shx.mkdir('-p', this.settings.saved.snapshot_dir)
       }
 
       await this.settings.loadRemix(basename, theme)
@@ -110,7 +110,7 @@ export default class Ovary {
          await this.liveCreateStructure(verbose)
 
          if (Pacman.packageIsInstalled('calamares')) {
-            if (this.settings.force_installer && !(await Pacman.calamaresCheck())) {
+            if (this.settings.saved.force_installer && !(await Pacman.calamaresCheck())) {
                console.log('Installing ' + chalk.bgGray('calamares') + ' due force_installer=yes.')
                await Pacman.calamaresInstall(verbose)
                const bleach = new Bleach
@@ -200,7 +200,7 @@ export default class Ovary {
       await exec(cmd, echo)
 
       // Allow all fixed drives to be mounted with pmount
-      if (this.settings.pmount_fixed) {
+      if (this.settings.saved.pmount_fixed) {
          if (fs.existsSync(`${this.settings.work_dir.merged}/etc/pmount.allow`)) {
             // MX aggiunto /etc
             await exec(`sed -i 's:#/dev/sd\[a-z\]:/dev/sd\[a-z\]:' ${this.settings.work_dir.merged}/etc/pmount.allow`, echo)
@@ -214,7 +214,7 @@ export default class Ovary {
       }
       if (fs.existsSync(`${this.settings.work_dir.merged}/etc/ssh/sshd_config`)) {
          await exec(`sed -i 's/PermitRootLogin yes/PermitRootLogin prohibit-password/' ${this.settings.work_dir.merged}/etc/ssh/sshd_config`, echo)
-         if (this.settings.ssh_pass) {
+         if (this.settings.saved.ssh_pass) {
             await exec(`sed -i 's|.*PasswordAuthentication.*no|PasswordAuthentication yes|' ${this.settings.work_dir.merged}/etc/ssh/sshd_config`, echo)
          } else {
             await exec(`sed -i 's|.*PasswordAuthentication.*yes|PasswordAuthentication no|' ${this.settings.work_dir.merged}/etc/ssh/sshd_config`, echo)
@@ -434,9 +434,9 @@ export default class Ovary {
          kernel: Utils.kernerlVersion(),
          vmlinuz: `/live${this.settings.vmlinuz}`,
          initrdImg: `/live${this.settings.initrdImg}`,
-         usernameOpt: this.settings.user_opt,
-         netconfigOpt: this.settings.netconfig_opt,
-         timezoneOpt: this.settings.timezone_opt,
+         usernameOpt: this.settings.saved.user_opt,
+         netconfigOpt: this.settings.saved.netconfig_opt,
+         timezoneOpt: this.settings.saved.timezone,
          lang: process.env.LANG,
          locales: process.env.LANG,
       }
@@ -490,14 +490,15 @@ export default class Ovary {
          this.addRemoveExclusion(true, '/etc/localtime')
       }
 
-      this.addRemoveExclusion(true, this.settings.snapshot_dir /* .absolutePath() */)
+      this.addRemoveExclusion(true, this.settings.saved.snapshot_dir /* .absolutePath() */)
 
-      const compression = `-comp ${this.settings.compression}`
+      const compression = `-comp ${this.settings.saved.compression}`
       if (fs.existsSync(`${this.settings.work_dir.pathIso}/live/filesystem.squashfs`)) {
          fs.unlinkSync(`${this.settings.work_dir.pathIso}/live/filesystem.squashfs`)
       }
       // let cmd = `mksquashfs ${this.work_dir.merged} ${this.work_dir.pathIso}/live/filesystem.squashfs ${compression} ${(this.mksq_opt === '' ? '' : ' ' + this.mksq_opt)} -wildcards -ef ${this.snapshot_excludes} ${this.session_excludes} `
-      let cmd = `mksquashfs ${this.settings.work_dir.merged} ${this.settings.work_dir.pathIso}/live/filesystem.squashfs ${compression} -wildcards -ef ${this.settings.snapshot_excludes} ${this.settings.session_excludes} `
+      let cmd = `mksquashfs ${this.settings.work_dir.merged} ${this.settings.work_dir.pathIso}/live/filesystem.squashfs ${compression} -wildcards -ef ${this.settings.saved.snapshot_excludes} ${this.settings.session_excludes} `
+      console.log ('cmd:' + cmd)
       cmd = cmd.replace(/\s\s+/g, ' ')
       Utils.writeX(`${this.settings.work_dir.path}mksquashfs`, cmd)
       if (!script_only) {
@@ -776,14 +777,14 @@ export default class Ovary {
          cmds.push(await rexec(`chroot ${this.settings.work_dir.merged} deluser ${users[i]}`, verbose))
       }
 
-      cmds.push(await rexec(`chroot ${this.settings.work_dir.merged} adduser ${this.settings.user_opt} --home /home/${this.settings.user_opt} --shell /bin/bash --disabled-password --gecos ",,,"`, verbose))
-      cmds.push(await rexec(`chroot ${this.settings.work_dir.merged} echo ${this.settings.user_opt}:${this.settings.user_opt_passwd} | chroot ${this.settings.work_dir.merged} chpasswd `, verbose))
-      cmds.push(await rexec(`chroot ${this.settings.work_dir.merged} usermod -aG sudo ${this.settings.user_opt}`, verbose))
+      cmds.push(await rexec(`chroot ${this.settings.work_dir.merged} adduser ${this.settings.saved.user_opt} --home /home/${this.settings.saved.user_opt} --shell /bin/bash --disabled-password --gecos ",,,"`, verbose))
+      cmds.push(await rexec(`chroot ${this.settings.work_dir.merged} echo ${this.settings.saved.user_opt}:${this.settings.saved.user_opt_passwd} | chroot ${this.settings.work_dir.merged} chpasswd `, verbose))
+      cmds.push(await rexec(`chroot ${this.settings.work_dir.merged} usermod -aG sudo ${this.settings.saved.user_opt}`, verbose))
 
       /**
        * Cambio passwd su root in chroot
        */
-      cmds.push(await rexec(`chroot ${this.settings.work_dir.merged} echo root:${this.settings.root_passwd} | chroot ${this.settings.work_dir.merged} chpasswd `, verbose))
+      cmds.push(await rexec(`chroot ${this.settings.work_dir.merged} echo root:${this.settings.saved.root_passwd} | chroot ${this.settings.work_dir.merged} chpasswd `, verbose))
       // Utils.writeXs(`${this.settings.work_dir.path}create_user_live`, cmds)
    }
 
@@ -1118,13 +1119,13 @@ export default class Ovary {
       }
 
       let uefi_opt = ''
-      if (this.settings.make_efi) {
+      if (this.settings.saved.make_efi) {
          uefi_opt = '-eltorito-alt-boot -e boot/grub/efiboot.img -isohybrid-gpt-basdat -no-emul-boot'
       }
 
       let isoHybridOption = `-isohybrid-mbr ${this.settings.distro.isolinuxPath}isohdpfx.bin `
 
-      if (this.settings.make_isohybrid) {
+      if (this.settings.saved.make_isohybrid) {
          if (fs.existsSync('/usr/lib/syslinux/mbr/isohdpfx.bin')) {
             isoHybridOption = '-isohybrid-mbr /usr/lib/syslinux/mbr/isohdpfx.bin'
          } else if (fs.existsSync('/usr/lib/syslinux/isohdpfx.bin')) {
@@ -1153,7 +1154,7 @@ export default class Ovary {
                           -boot-load-size 4 \
                           -boot-info-table \
                           ${uefi_opt} \
-                          -output ${this.settings.snapshot_dir}${this.settings.snapshot_prefix}${this.settings.isoFilename} \
+                          -output ${this.settings.saved.snapshot_dir}${this.settings.saved.snapshot_prefix}${this.settings.isoFilename} \
                           ${this.settings.work_dir.pathIso}`
 
          cmd = cmd.replace(/\s\s+/g, ' ')
@@ -1203,9 +1204,9 @@ export default class Ovary {
    finished(script_only = false) {
       Utils.titles('produce')
       if (!script_only) {
-         console.log('eggs is finished!\n\nYou can find the file iso: ' + chalk.cyanBright(this.settings.snapshot_prefix + this.settings.isoFilename) + '\nin the nest: ' + chalk.cyanBright(this.settings.snapshot_dir) + '.')
+         console.log('eggs is finished!\n\nYou can find the file iso: ' + chalk.cyanBright(this.settings.saved.snapshot_prefix + this.settings.isoFilename) + '\nin the nest: ' + chalk.cyanBright(this.settings.saved.snapshot_dir) + '.')
       } else {
-         console.log('eggs is finished!\n\nYou can find the scripts to build iso: ' + chalk.cyanBright(this.settings.snapshot_prefix + this.settings.isoFilename) + '\nin the ovarium: ' + chalk.cyanBright(this.settings.work_dir.path) + '.')
+         console.log('eggs is finished!\n\nYou can find the scripts to build iso: ' + chalk.cyanBright(this.settings.saved.snapshot_prefix + this.settings.isoFilename) + '\nin the ovarium: ' + chalk.cyanBright(this.settings.work_dir.path) + '.')
          console.log(`usage`)
          console.log(chalk.cyanBright(`cd ${this.settings.work_dir.path}`))
          console.log(chalk.cyanBright(`sudo ./bind`))

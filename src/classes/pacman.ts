@@ -16,6 +16,7 @@ import Distro from './distro'
 import Settings from './settings'
 import { execSync } from 'child_process'
 import { IConfig } from '../interfaces'
+import { ServerResponse } from 'http'
 
 
 const exec = require('../lib/utils').exec
@@ -270,44 +271,43 @@ export default class Pacman {
       shx.ln('-s', path.resolve(__dirname, '../../addons'), addons)
       shx.cp(path.resolve(__dirname, '../../conf/README.md'), '/etc/penguins-eggs.d/')
       shx.cp(path.resolve(__dirname, '../../conf/tools.yaml'), config_tools)
-      shx.cp(path.resolve(__dirname, '../../conf/eggs.yaml'), config_file)
-
+      // shx.cp(path.resolve(__dirname, '../../conf/eggs.yaml'), config_file)
 
 
       const config = {} as IConfig
       config.version = Utils.getPackageVersion() 
       config.snapshot_dir = '/home/eggs'
+      config.snapshot_prefix = ''
+      config.snapshot_excludes = '/usr/local/share/penguins-eggs/exclude.list'
       config.snapshot_basename = 'hostname'
       config.user_opt = 'live'
       config.user_opt_passwd = 'evolution'
       config.root_passwd = 'evolution'
       config.theme = 'eggs'
-      config.make_efi = false
+      config.force_installer = true
+      config.make_efi = true
       config.make_md5sum = false
       config.make_isohybrid = false
       config.compression = 'xz'
       config.ssh_pass = true
       config.timezone = 'Europe/Rome'
+      config.pmount_fixed = false
+      config.locales_default = 'it_IT.UTF-8'
+      config.locales = ['it_IT.UTF-8', 'en_US.UTF-8', 'es_ES.UTF-8', 'pt_BR.UTF-8', 'fr_FR.UTF-8', 'de_DE.UTF-8']
 
-      /**
-       * force_installer
-       */
-      let force_installer = 'yes'
+
+
       if (!this.packageIsInstalled('calamares')) {
-         force_installer = 'no'
+         config.force_installer = false
+         console.log(`Due the lacks of calamares package set force_installer = false`)
       }
-      shx.sed('-i', '%force_installer%', force_installer, config_file)
 
-      /**
-       * Questa cosa andrebbe spostata in settings 
-       * make_efi
-       */
-      let make_efi = 'yes'
       if (!Utils.isUefi()) {
-         make_efi = 'no'
-         console.log(`Due the lacks of grub-efi-amd64 package set make_efi=No`)
+         config.make_efi = false
+         console.log(`Due the lacks of grub-efi-amd64 package set make_efi = false`)
       }
-      shx.sed('-i', '%make_efi%', make_efi, config_file)
+      const settings = new Settings()
+      settings.save(config)
 
       // creazione del file delle esclusioni
       shx.mkdir('-p', '/usr/local/share/penguins-eggs/')

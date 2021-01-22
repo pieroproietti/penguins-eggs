@@ -8,6 +8,7 @@ export interface IConfig {
     user_opt_passwd: string
     root_passwd: string
     theme: string
+    force_installer: boolean
     make_efi: boolean
     make_md5sum: boolean
     make_isohybrid: boolean
@@ -19,4 +20,5 @@ export interface IConfig {
     pmount_fixed: boolean
     netconfig_opt: string
     ifnames_opt: string
+    
   }
