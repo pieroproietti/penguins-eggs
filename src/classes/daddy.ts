@@ -121,11 +121,16 @@ export default class Daddy {
     }
 }
 
+
+
+
+
 /**
  * 
  * @param c 
  */
 function editConfig(c: IConfig): Promise<string> {
+
     console.log(chalk.cyan('Edit and save LiveCD parameters'))
     let compressionOpt = 0
     if (c.compression === 'xz') {
