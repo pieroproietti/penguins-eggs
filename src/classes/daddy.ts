@@ -59,7 +59,7 @@ export default class Daddy {
             let config = {} as IConfig
             if (await this.settings.load()) {
 
-                config = this.settings.saved
+                config = this.settings.config
 
                 // Edito i campi
                 let nc: string = await editConfig(config)
@@ -93,7 +93,7 @@ export default class Daddy {
                 await this.settings.listFreeSpace()
                 if (await Utils.customConfirm()) {
                     await exec(`rm ${this.settings.work_dir.path} -rf`)
-                    await exec(`rm ${this.settings.saved.snapshot_dir} -rf`)
+                    await exec(`rm ${this.settings.config.snapshot_dir} -rf`)
                 }
 
                 // produce

@@ -27,42 +27,18 @@ import Incubator from './incubation/incubator'
 import Distro from './distro'
 import Pacman from './pacman'
 
-// import { IConfig } from '../interfaces/'
+import { IConfig } from '../interfaces/'
 
 
 const config_file = '/etc/penguins-eggs.d/eggs.yaml' as string
 
-export interface IConfig {
-   version: string
-   snapshot_dir: string
-   snapshot_basename: string
-   snapshot_prefix: string
-   snapshot_excludes: string
-   user_opt: string
-   user_opt_passwd: string
-   root_passwd: string
-   theme: string
-   force_installer: boolean
-   make_efi: boolean
-   make_md5sum: boolean
-   make_isohybrid: boolean
-   compression: string
-   ssh_pass: boolean
-   timezone: string
-   locales: string []
-   locales_default: string
-   pmount_fixed: boolean
-   netconfig_opt: string
-   ifnames_opt: string
-   
- }
 
 /**
  * Setting
  */
 export default class Settings {
 
-   saved = {} as IConfig
+   config = {} as IConfig
 
    app = {} as IApp
 
@@ -96,7 +72,7 @@ export default class Settings {
    
    constructor(compression = '') {
 
-      this.saved.compression = compression
+      this.config.compression = compression
 
       this.app.author = 'Piero Proietti'
       this.app.homepage = 'https://github.com/pieroproietti/penguins-eggs'
@@ -131,13 +107,13 @@ export default class Settings {
          process.exit(1)
       }
 
-      this.saved = yaml.load(fs.readFileSync(config_file, 'utf-8'))
+      this.config = yaml.load(fs.readFileSync(config_file, 'utf-8'))
 
       this.session_excludes = ''
-      if (!this.saved.snapshot_dir.endsWith('/')) {
-         this.saved.snapshot_dir += '/'
+      if (!this.config.snapshot_dir.endsWith('/')) {
+         this.config.snapshot_dir += '/'
       }
-      this.work_dir.path = this.saved.snapshot_dir + 'ovarium/'
+      this.work_dir.path = this.config.snapshot_dir + 'ovarium/'
       this.work_dir.lowerdir = this.work_dir.path + '.overlay/lowerdir'
       this.work_dir.upperdir = this.work_dir.path + '.overlay/upperdir'
       this.work_dir.workdir = this.work_dir.path + '.overlay/workdir'
@@ -146,16 +122,16 @@ export default class Settings {
       this.efi_work = this.work_dir.path + 'efi/'
       this.work_dir.pathIso = this.work_dir.path + 'iso'
 
-      if (this.saved.snapshot_basename === 'hostname') {
-         this.saved.snapshot_basename = os.hostname()
+      if (this.config.snapshot_basename === 'hostname') {
+         this.config.snapshot_basename = os.hostname()
       }
-      if (this.saved.make_efi) {
+      if (this.config.make_efi) {
          if (! Utils.isUefi()) {
             Utils.error('You choose to create an UEFI image, but miss to install grub-efi-amd64 package.')
             Utils.error('Please install it before to create an UEFI image:')
             Utils.warning('sudo apt install grub-efi-amd64')
             Utils.error('or edit /etc/penguins-eggs.d/eggs.yaml and set the valuer of make_efi = false')
-            this.saved.make_efi = false
+            this.config.make_efi = false
          }
       }
 
@@ -171,22 +147,22 @@ export default class Settings {
        * the same username for cleaning geany history.
        */
 
-      if (this.saved.user_opt === undefined || this.saved.user_opt === '') {
+      if (this.config.user_opt === undefined || this.config.user_opt === '') {
          // this.user_opt = shx.exec('awk -F":" \'/1000:1000/ { print $1 }\' /etc/passwd', { silent: true }).stdout.trim()
-         if (this.saved.user_opt === '') {
-            this.saved.user_opt = 'live'
+         if (this.config.user_opt === '') {
+            this.config.user_opt = 'live'
          }
       }
-      if (this.saved.user_opt_passwd === '') {
-         this.saved.user_opt_passwd = 'evolution'
+      if (this.config.user_opt_passwd === '') {
+         this.config.user_opt_passwd = 'evolution'
       }
 
-      if (this.saved.root_passwd === '') {
-         this.saved.root_passwd = 'evolution'
+      if (this.config.root_passwd === '') {
+         this.config.root_passwd = 'evolution'
       }
 
-      if (this.saved.timezone === undefined || this.saved.timezone ==='' ){
-         this.saved.timezone = shx.exec('cat /etc/timezone', { silent: true }).stdout.trim()
+      if (this.config.timezone === undefined || this.config.timezone ==='' ){
+         this.config.timezone = shx.exec('cat /etc/timezone', { silent: true }).stdout.trim()
       }
       
 
@@ -199,35 +175,35 @@ export default class Settings {
    async show() {
       console.log(`application_name:  ${this.app.name} ${this.app.version}`)
       console.log(`config_file:       ${config_file}`)
-      console.log(`snapshot_dir:      ${this.saved.snapshot_dir}`)
-      console.log(`snapshot_basename: ${this.saved.snapshot_basename}`)
-      console.log(`snapshot_excludes: ${this.saved.snapshot_excludes}`)
+      console.log(`snapshot_dir:      ${this.config.snapshot_dir}`)
+      console.log(`snapshot_basename: ${this.config.snapshot_basename}`)
+      console.log(`snapshot_excludes: ${this.config.snapshot_excludes}`)
       console.log(`kernel_image:      ${this.kernel_image}`)
       console.log(`initrd_image:      ${this.initrd_image}`)
       console.log(`work_dir:          ${this.work_dir.path}`)
       console.log(`efi_work:          ${this.efi_work}`)
-      console.log(`make_efi:          ${this.saved.make_efi}`)
-      console.log(`make_md5sum:       ${this.saved.make_md5sum}`)
-      console.log(`make_isohybrid:    ${this.saved.make_isohybrid}`)
-      console.log(`compression:       ${this.saved.compression}`)
-      console.log(`force_installer:   ${this.saved.force_installer}`)
-      console.log(`user_opt:          ${this.saved.user_opt}`)
-      console.log(`netconfig_opt:     ${this.saved.netconfig_opt}`)
-      console.log(`ifnames_opt:       ${this.saved.ifnames_opt}`)
-      console.log(`locales:           ${this.saved.locales}`)
-      console.log(`locale default:    ${this.saved.locales_default}`)
-      console.log(`ssh_pass:          ${this.saved.ssh_pass}`)
-      if (this.saved.make_efi) {
+      console.log(`make_efi:          ${this.config.make_efi}`)
+      console.log(`make_md5sum:       ${this.config.make_md5sum}`)
+      console.log(`make_isohybrid:    ${this.config.make_isohybrid}`)
+      console.log(`compression:       ${this.config.compression}`)
+      console.log(`force_installer:   ${this.config.force_installer}`)
+      console.log(`user_opt:          ${this.config.user_opt}`)
+      console.log(`netconfig_opt:     ${this.config.netconfig_opt}`)
+      console.log(`ifnames_opt:       ${this.config.ifnames_opt}`)
+      console.log(`locales:           ${this.config.locales}`)
+      console.log(`locale default:    ${this.config.locales_default}`)
+      console.log(`ssh_pass:          ${this.config.ssh_pass}`)
+      if (this.config.make_efi) {
          if (!Utils.isUefi()) {
             Utils.error('You choose to create an UEFI image, but miss to install grub-efi-amd64 package.')
             Utils.error('Please install it before to create an UEFI image:')
             Utils.warning('sudo apt install grub-efi-amd64')
-            this.saved.make_efi = false
+            this.config.make_efi = false
          } else if (!Pacman.packageIsInstalled('dosfstools')) {
             Utils.error('You choose to create an UEFI image, but miss to install dosfstools package.')
             Utils.error('Please install it before to create an UEFI image:')
             Utils.warning('sudo apt install dosfstools')
-            this.saved.make_efi = false
+            this.config.make_efi = false
          }
       }
 
@@ -240,9 +216,9 @@ export default class Settings {
     * @returns {void}
     */
    async listFreeSpace(): Promise<void> {
-      const path: string = this.saved.snapshot_dir // convert to absolute path
-      if (!fs.existsSync(this.saved.snapshot_dir)) {
-         fs.mkdirSync(this.saved.snapshot_dir)
+      const path: string = this.config.snapshot_dir // convert to absolute path
+      if (!fs.existsSync(this.config.snapshot_dir)) {
+         fs.mkdirSync(this.config.snapshot_dir)
       }
       /** Lo spazio usato da SquashFS non è stimabile da live
        * errore buffer troppo piccolo
@@ -261,7 +237,7 @@ export default class Settings {
             .stdout.trim()
       )
       console.log(`Space available: ${Math.round((spaceAvailable / gb) * 10) / 10} GB`)
-      console.log(`There are ${Utils.getSnapshotCount(this.saved.snapshot_dir)} snapshots taking ${Math.round((Utils.getSnapshotSize() / gb) * 10) / 10} GB of disk space.`)
+      console.log(`There are ${Utils.getSnapshotCount(this.config.snapshot_dir)} snapshots taking ${Math.round((Utils.getSnapshotSize() / gb) * 10) / 10} GB of disk space.`)
       console.log()
 
       if (spaceAvailable > gb * 3) {
@@ -295,8 +271,8 @@ export default class Settings {
          this.remix.name = basename
          this.remix.versionName = basename
       } else {
-         this.remix.name = this.saved.snapshot_basename
-         this.remix.versionName = this.saved.snapshot_basename
+         this.remix.name = this.config.snapshot_basename
+         this.remix.versionName = this.config.snapshot_basename
       }
    }
 }
