@@ -105,13 +105,12 @@ class Distro implements IDistro {
       if (this.versionId === 'n/a') {
          if (fs.existsSync('/etc/debian_version')) {
             const debianVersion = fs.readFileSync('/etc/debian_version', 'utf8')
-            if (debianVersion === 'bullseye/sid') {
+            if (debianVersion.trim() === 'bullseye/sid') {
                this.versionId = 'bullseye'
             }
          }
-
       }
-
+      
       /**
        * LINUX MINT dall 19 in poi
        */
