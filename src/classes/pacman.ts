@@ -287,7 +287,7 @@ export default class Pacman {
       config.force_installer = true
       config.make_efi = true
       config.make_md5sum = false
-      config.make_isohybrid = false
+      config.make_isohybrid = true
       config.compression = 'xz'
       config.ssh_pass = true
       config.timezone = 'Europe/Rome'

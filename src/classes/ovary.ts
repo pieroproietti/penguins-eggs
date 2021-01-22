@@ -122,7 +122,7 @@ export default class Ovary {
          }
          await this.isolinux(theme, verbose)
          await this.copyKernel()
-         if (this.settings.make_efi) {
+         if (this.settings.saved.make_efi) {
             await this.makeEfi(theme, verbose)
          }
 
@@ -133,7 +133,7 @@ export default class Ovary {
          }
          await this.editLiveFs(verbose)
          await this.makeSquashfs(script_only, verbose)
-         await this.mkIso(script_only, verbose)
+         await this.makeIso(script_only, verbose)
          if (Pacman.isXInstalled()) {
             shx.exec('rm /etc/xdg/autostart/penguins-links-add.desktop')
          }
@@ -226,7 +226,7 @@ export default class Ovary {
        * to prevent error messages at boot
        */
       await exec(`rm ${this.settings.work_dir.merged}/etc/fstab`, echo)
-      await exec(`touch ${this.settings.work_dir.merged}/etc/fstab`, echo) 
+      await exec(`touch ${this.settings.work_dir.merged}/etc/fstab`, echo)
 
       /**
        * Blank out systemd machine id. If it does not exist, systemd-journald
@@ -498,7 +498,6 @@ export default class Ovary {
       }
       // let cmd = `mksquashfs ${this.work_dir.merged} ${this.work_dir.pathIso}/live/filesystem.squashfs ${compression} ${(this.mksq_opt === '' ? '' : ' ' + this.mksq_opt)} -wildcards -ef ${this.snapshot_excludes} ${this.session_excludes} `
       let cmd = `mksquashfs ${this.settings.work_dir.merged} ${this.settings.work_dir.pathIso}/live/filesystem.squashfs ${compression} -wildcards -ef ${this.settings.saved.snapshot_excludes} ${this.settings.session_excludes} `
-      console.log ('cmd:' + cmd)
       cmd = cmd.replace(/\s\s+/g, ' ')
       Utils.writeX(`${this.settings.work_dir.path}mksquashfs`, cmd)
       if (!script_only) {
@@ -1061,14 +1060,14 @@ export default class Ovary {
 
       /**
        * Do the main grub.cfg (which gets loaded last):
-       */ 
+       */
       fs.copyFileSync(path.resolve(__dirname, `../../conf/distros/${this.settings.distro.versionLike}/grub/loopback.cfg`), `${this.settings.work_dir.pathIso}/boot/grub/loopback.cfg`)
 
       /**
        * in theme va al momento theme.cfg e splash.png
        */
       const grubSrc = path.resolve(__dirname, `../../conf/distros/${this.settings.distro.versionLike}/grub/grub.template.cfg`)
-      let themeSrc =path.resolve(__dirname, `../../conf/distros/${this.settings.distro.versionLike}/grub/theme.cfg`)
+      let themeSrc = path.resolve(__dirname, `../../conf/distros/${this.settings.distro.versionLike}/grub/theme.cfg`)
       let splashSrc = path.resolve(__dirname, '../../assets/penguins-eggs-splash.png')
 
       const grubDest = `${this.settings.work_dir.pathIso}/boot/grub/grub.cfg`
@@ -1108,14 +1107,14 @@ export default class Ovary {
    /**
     * makeIsoImage
     */
-   async mkIso(script_only = false, verbose = false) {
+   async makeIso(script_only = false, verbose = false) {
       let echo = { echo: false, ignore: false }
       if (verbose) {
          echo = { echo: true, ignore: false }
       }
 
       if (verbose) {
-         console.log('ovary: mkIso')
+         console.log('ovary: makeIso')
       }
 
       let uefi_opt = ''
@@ -1124,7 +1123,6 @@ export default class Ovary {
       }
 
       let isoHybridOption = `-isohybrid-mbr ${this.settings.distro.isolinuxPath}isohdpfx.bin `
-
       if (this.settings.saved.make_isohybrid) {
          if (fs.existsSync('/usr/lib/syslinux/mbr/isohdpfx.bin')) {
             isoHybridOption = '-isohybrid-mbr /usr/lib/syslinux/mbr/isohdpfx.bin'
@@ -1135,13 +1133,11 @@ export default class Ovary {
          } else {
             Utils.warning("Can't create isohybrid. File: isohdpfx.bin not found. The resulting image will be a standard iso file")
          }
+      }
 
-         // xorriso 1.5.0 : RockRidge filesystem manipulator, libburnia project.
-         // originale cmd = `xorriso -as mkisofs -r -J -joliet-long -l -iso-level 3 -cache-inodes ${isoHybridOption} -partition_offset 16 -volid ${this.isoFilename} -b isolinux/isolinux.bin -c isolinux/boot.cat -no-emul-boot -boot-load-size 4 -boot-info-table ${uefi_opt} -o ${this.snapshot_dir}${this.isoFilename} ${this.work_dir.pathIso}`
+      this.settings.isoFilename = Utils.getFilename(this.settings.remix.name)
 
-         this.settings.isoFilename = Utils.getFilename(this.settings.remix.name)
-
-         let cmd = `xorriso  -as mkisofs \
+      let cmd = `xorriso  -as mkisofs \
                           -volid ${this.settings.isoFilename} \
                           -joliet-long \
                           -l \
@@ -1157,44 +1153,44 @@ export default class Ovary {
                           -output ${this.settings.saved.snapshot_dir}${this.settings.saved.snapshot_prefix}${this.settings.isoFilename} \
                           ${this.settings.work_dir.pathIso}`
 
-         cmd = cmd.replace(/\s\s+/g, ' ')
-         Utils.writeX(`${this.settings.work_dir.path}mkiso`, cmd)
-         if (!script_only) {
-            await exec(cmd, echo)
-            await exec
-         }
-
-         /**
-          * Ultima versione
-          * Tolto -cache-inodes (veniva ignorato)
-          *
-          * Non solo supportati, almeno da xorriso 1.5.0, i flag:
-          *   -h 256
-          *   -s 63
-          *
-          * Sarebbero da sostituire i flag brevi con quelli estesi, rimangono:
-          *   -l
-          *   -b
-          *   -c
-          *
-          * Il seguente è un esempio corrente funzionante:
-          *
-          * xorriso  -as mkisofs
-          *                              volid incubator-x64_2020-06-05_100.iso
-          *                              -joliet-long
-          *                              -l
-          *                              -iso-level 3
-          *                              -b isolinux/isolinux.bin
-          *                              -isohybrid-mbr /usr/lib/ISOLINUX/isohdpfx.bin
-          *                              -partition_offset 16
-          *                              -c isolinux/boot.cat
-          *                              -no-emul-boot
-          *                              -boot-load-size 4
-          *                              -boot-info-table
-          *                              -output /home/eggs/incubator-x64_2020-06-05_100.iso
-          *                              /home/eggs/ovarium/iso
-          */
+                          cmd = cmd.replace(/\s\s+/g, ' ')
+      Utils.writeX(`${this.settings.work_dir.path}makeIso`, cmd)
+      if (!script_only) {
+         await exec(cmd, echo)
+         await exec
       }
+
+      /**
+       * Ultima versione
+       * Tolto -cache-inodes (veniva ignorato)
+       *
+       * Non solo supportati, almeno da xorriso 1.5.0, i flag:
+       *   -h 256
+       *   -s 63
+       *
+       * Sarebbero da sostituire i flag brevi con quelli estesi, rimangono:
+       *   -l
+       *   -b
+       *   -c
+       *
+       * Il seguente è un esempio corrente funzionante:
+       *
+       * xorriso  -as makeIsofs
+       *                              volid incubator-x64_2020-06-05_100.iso
+       *                              -joliet-long
+       *                              -l
+       *                              -iso-level 3
+       *                              -b isolinux/isolinux.bin
+       *                              -isohybrid-mbr /usr/lib/ISOLINUX/isohdpfx.bin
+       *                              -partition_offset 16
+       *                              -c isolinux/boot.cat
+       *                              -no-emul-boot
+       *                              -boot-load-size 4
+       *                              -boot-info-table
+       *                              -output /home/eggs/incubator-x64_2020-06-05_100.iso
+       *                              /home/eggs/ovarium/iso
+       */
+
    }
 
    /**
@@ -1213,7 +1209,7 @@ export default class Ovary {
          console.log(`Make all yours modifications in the directories filesystem.squashfs and iso.`)
          console.log(`After when you are ready:`)
          console.log(chalk.cyanBright(`sudo ./mksquashfs`))
-         console.log(chalk.cyanBright(`sudo ./mkiso`))
+         console.log(chalk.cyanBright(`sudo ./makeIso`))
          console.log(chalk.cyanBright(`sudo ./ubind`))
          console.log(`happy hacking!`)
       }
