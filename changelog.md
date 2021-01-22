@@ -18,8 +18,8 @@ You can follow the project also consulting the [commit history](https://github.c
 ## Changelog
 Versions are listed on reverse order, the first is the last one.
 
-### eggs-7.7.19.1_deb
-* bugfix eggs.yaml, refactoring settings, now we can save theme in dad
+### eggs-7.7.20.1_deb
+* bugfix eggs.yaml, refactoring settings. Now we have theme saved in dad, and others is possible
 
 ### eggs-7.7.18.1_deb
 * added Linux Mint 20.1 ulyssa 
