@@ -69,7 +69,7 @@ export default class I18n {
         const dest = '/etc/default/locale'
         const template = fs.readFileSync(src, 'utf8')
         const view = {
-            locale: this.settings.locales_default,
+            locale: this.settings.config.locales_default,
         }
         fs.writeFileSync(dest, mustache.render(template, view))
 
@@ -91,8 +91,8 @@ export default class I18n {
         const destLocales = '/etc/locale.gen'
         const templateLocales = fs.readFileSync(srcLocales, 'utf8')
         const viewLocales = { 'locales': [{}] }
-        for (let i = 0; i < this.settings.locales.length; i++) {
-            viewLocales.locales.push({ 'locale': this.settings.locales[i] + ' UTF-8'})
+        for (let i = 0; i < this.settings.config.locales.length; i++) {
+            viewLocales.locales.push({ 'locale': this.settings.config.locales[i] + ' UTF-8'})
         }
         fs.writeFileSync(destLocales, mustache.render(templateLocales, viewLocales))
 

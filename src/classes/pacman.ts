@@ -77,7 +77,7 @@ export default class Pacman {
 
       const settings = new Settings()
       settings.load()
-      const locales: string[] = settings.locales
+      const locales: string[] = settings.config.locales
 
       if ((versionLike === 'buster') || (versionLike === 'beowulf')) {
          for (let i = 0; i < locales.length; i++) {

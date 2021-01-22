@@ -117,7 +117,7 @@ export default class Ovary {
                await bleach.clean(verbose)
             }
             // Calamares prende il tema da settings.remix.branding
-            this.incubator = new Incubator(this.settings.remix, this.settings.distro, this.settings.user_opt, verbose)
+            this.incubator = new Incubator(this.settings.remix, this.settings.distro, this.settings.config.user_opt, verbose)
             this.incubator.config(final)
          }
          await this.isolinux(theme, verbose)
@@ -796,7 +796,8 @@ export default class Ovary {
          console.log('ovary: createAutostart()')
       }
 
-      const pathHomeLive = `/home/${this.settings.user_opt}`
+
+     const pathHomeLive = `/home/${this.settings.config.user_opt}`
 
       // Copia icona penguins-eggs
       shx.cp(path.resolve(__dirname, '../../assets/eggs.png'), '/usr/share/icons/')
@@ -886,7 +887,7 @@ export default class Ovary {
          fs.writeFileSync(script, text, 'utf8')
          await exec(`chmod a+x ${script}`, echo)
       }
-      Xdg.autologin(Utils.getPrimaryUser(), this.settings.user_opt, this.settings.work_dir.merged)
+      Xdg.autologin(Utils.getPrimaryUser(), this.settings.config.user_opt, this.settings.work_dir.merged)
    }
 
    /**
@@ -1095,9 +1096,9 @@ export default class Ovary {
          kernel: Utils.kernerlVersion(),
          vmlinuz: `/live${this.settings.vmlinuz}`,
          initrdImg: `/live${this.settings.initrdImg}`,
-         usernameOpt: this.settings.user_opt,
-         netconfigOpt: this.settings.netconfig_opt,
-         timezoneOpt: this.settings.timezone_opt,
+         usernameOpt: this.settings.config.user_opt,
+         netconfigOpt: this.settings.config.netconfig_opt,
+         timezoneOpt: this.settings.config.timezone,
          lang: process.env.LANG,
          locales: process.env.LANG,
       }

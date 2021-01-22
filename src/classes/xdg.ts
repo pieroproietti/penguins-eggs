@@ -113,7 +113,7 @@ export default class Xdg {
       /**
        * Salva la vecchia skel in skel_data_ora.backup
        */
-      await exec(`mv /etc/skel ${ovary.settings.snapshot_dir}skel_${Utils.formatDate(new Date())}.backup`, echo)
+      await exec(`mv /etc/skel ${ovary.settings.config.snapshot_dir}skel_${Utils.formatDate(new Date())}.backup`, echo)
 
       // Crea nuova skel
       await exec(`mkdir -p /etc/skel`, echo)

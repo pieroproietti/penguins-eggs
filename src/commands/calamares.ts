@@ -66,8 +66,8 @@ export default class Calamares extends Command {
                Utils.warning('Configuring calamares...')
                this.settings = new Settings()
                if (await this.settings.load()) {
-                  await this.settings.loadRemix(this.settings.snapshot_basename, theme)
-                  this.incubator = new Incubator(this.settings.remix, this.settings.distro, this.settings.user_opt, verbose)
+                  await this.settings.loadRemix(this.settings.config.snapshot_basename, theme)
+                  this.incubator = new Incubator(this.settings.remix, this.settings.distro, this.settings.config.user_opt, verbose)
                   await this.incubator.config(final)
                }
             }

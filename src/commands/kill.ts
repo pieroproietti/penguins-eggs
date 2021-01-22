@@ -49,7 +49,7 @@ export default class Kill extends Command {
          await settings.listFreeSpace()
          if (await Utils.customConfirm()) {
             await execute(`rm ${settings.work_dir.path} -rf`, echo)
-            await execute(`rm ${settings.snapshot_dir} -rf`, echo)
+            await execute(`rm ${settings.config.snapshot_dir} -rf`, echo)
          }
       }
    }

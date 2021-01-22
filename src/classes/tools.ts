@@ -78,12 +78,12 @@ export default class Tools {
              */
             const settings = new Settings()
             settings.load()
-            this.snapshot_dir = settings.snapshot_dir
+            this.snapshot_dir = settings.config.snapshot_dir
             arch = 'x64'
             if (process.arch === 'ia32') {
                 arch = 'i386'
             }
-            this.snapshot_name = settings.snapshot_prefix + settings.snapshot_basename + '-' + arch + '_'
+            this.snapshot_name = settings.config.snapshot_prefix + settings.config.snapshot_basename + '-' + arch + '_'
         } else {
             console.log(`Can't find: ${this.tools_yaml}`)
             process.exit(1)
