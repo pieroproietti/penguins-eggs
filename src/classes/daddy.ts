@@ -80,7 +80,6 @@ export default class Daddy {
                     config.compression = 'xz -Xbcj x86'
                 }
 
-                console.log(config)
                 await this.settings.save(config)
 
                 // Controllo se serve il kill

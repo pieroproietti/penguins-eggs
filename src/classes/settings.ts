@@ -90,7 +90,6 @@ export default class Settings {
     * @param config 
     */
    async save(config: IConfig){
-      console.log (config)
       fs.writeFileSync(config_file, yaml.safeDump(config), 'utf-8')
    }
 
