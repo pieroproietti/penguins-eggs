@@ -16,6 +16,8 @@ import Utils from './utils'
 import Pacman from './pacman'
 import { IDevices, IDevice } from '../interfaces'
 import * as diskusage from 'diskusage'
+import { RSA_X931_PADDING } from 'constants'
+import Xdg from './xdg'
 
 const exec = require('../lib/utils').exec
 
@@ -379,9 +381,9 @@ export default class Hatching {
          }
 
          try {
-            await this.autologinConfig(this.users.name, verbose)
+            await Xdg.autologin(Utils.getPrimaryUser(), this.users.name, this.target)
          } catch (error) {
-            console.log(`autologinConfig: ${error}`)
+            console.log(`autologin: ${error}`)
          }
 
          try {
@@ -422,24 +424,6 @@ export default class Hatching {
       }
       const cmd = `chroot ${this.target} ln -sf /usr/share/zoneinfo/Europe/Rome /etc/localtime`
       await exec(cmd, echo)
-   }
-
-   /**
-    * autologinConfig
-    * @param oldUser
-    * @param newUser
-    */
-   async autologinConfig(newUser = 'artisan', verbose = false) {
-      // const echo = Utils.setEcho(verbose)
-      if (verbose) {
-         Utils.warning('hatching: autoLoginConfig')
-      }
-      const oldUser = Utils.getPrimaryUser()
-      if (Pacman.packageIsInstalled('lightdm')) {
-         shx.sed('-i', `autologin-user=${oldUser}`, `autologin-user=${newUser}`, `${this.target}/etc/lightdm/lightdm.conf`)
-      } else if (Pacman.packageIsInstalled('sddm')) {
-         shx.sed('-i', `User=${oldUser}`, `User=${newUser}`, `${this.target}/etc/sddm.conf`)
-      }
    }
 
    /**
