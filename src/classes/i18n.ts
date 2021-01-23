@@ -16,18 +16,11 @@ import shx = require('shelljs')
 import chalk = require('chalk')
 
 // interfaces
-import { IMyAddons } from '../interfaces'
 
 // libraries
-const exec = require('../lib/utils').exec
 
 // classes
-import Utils from './utils'
-import N8 from './n8'
-import Xdg from './xdg'
-import Pacman from './pacman'
 import Settings from './settings'
-import { utils } from 'mocha'
 import mustache = require('mustache')
 
 
@@ -38,7 +31,7 @@ export default class I18n {
     verbose = false
     settings = {} as Settings
 
-    constructor(verbose: boolean = false) {
+    constructor(verbose = false) {
         this.verbose = verbose
         this.settings = new Settings()
     }

@@ -28,7 +28,7 @@ export default class Mom extends Command {
     }
     const { flags } = this.parse(Mom)
     let mum = path.resolve(__dirname, `../../scripts/mom-cli.sh`)
-    if (Pacman.isXInstalled()) {
+    if (Pacman.packageIsInstalled('zenity')) {
       mum = path.resolve(__dirname, `../../scripts/mom.sh`)
     }
 

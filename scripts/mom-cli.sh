@@ -28,6 +28,7 @@ function main {
 
       case "$answer" in 
          "quit")
+            clear
             exit ;;
 
          "autocomplete")
@@ -101,8 +102,8 @@ function export {
       answer=$(
       whiptail --title "mommy" --menu "Mama's gonna keep baby cosy and warm..." 22 75 14 \
       "deb"    "export package eggs-v7-x-x-1.deb in the destination host" \
-      "docs"          "remove and export docType documentation of the sources in the destination host" \
-      "iso"            "export iso in the destination host" 3>&2 2>&1 1>&3
+      "docs"   "remove and export docType documentation of the sources in the destination host" \
+      "iso"    "export iso in the destination host" 3>&2 2>&1 1>&3
       )
 
       case "$answer" in 

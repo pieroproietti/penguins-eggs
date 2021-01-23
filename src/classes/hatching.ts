@@ -330,6 +330,13 @@ export default class Hatching {
          }
 
          try {
+            await this.hostname(verbose)
+         } catch (error) {
+            console.log(`hostname: ${error}`)
+         }
+
+
+         try {
             await this.hosts(verbose)
          } catch (error) {
             console.log(`hosts: ${error}`)
@@ -714,6 +721,15 @@ adduser ${name} \
       }
    }
 
+   /**
+    * hostname
+    * @param verbose 
+    */
+   async hostname(verbose = false) {
+      const file = `${this.target}/etc/hostname`
+      let text = this.host.name + '\n'
+      fs.writeFileSync(file, text)
+   }
    /**
     * hosts()
     * @param options

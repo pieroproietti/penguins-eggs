@@ -62,9 +62,13 @@ Install the firmware you need. Example:
 
 ## Install eggs
 
-Download from https://penguins-eggs.net package eggs last version
+Download from [sourceforge/project/penguins-eggs](https://sourceforge.net/projects/penguins-eggs/files/packages-deb/) package eggs last version and install it:
 
 ```dpkg -i eggs-7.7.21-amd64.deb``` 
+
+## Add prerequisites
+
+We call prerequisites all the packages used by eggs to build the iso. 
 
 ```sudo eggs prerequisites```
 
@@ -72,11 +76,13 @@ eggs ask you if you want calamares, and install prerequisites packages for eggs.
 
 Configuration files are preparated too. 
 
-Once this is end, you are ready to reproduce your penguin.
+## Produce iso
+
+Once this is end, you are ready to re-produce your penguin.
 
 ```eggs dad```
 
-Ask the questions of dad: 
+Ask help from dad: 
 
 ```
   ___  __ _  __ _ ___ 
