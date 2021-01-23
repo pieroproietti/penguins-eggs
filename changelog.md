@@ -18,6 +18,9 @@ You can follow the project also consulting the [commit history](https://github.c
 ## Changelog
 Versions are listed on reverse order, the first is the last one.
 
+### eggs-7.7.22.1_deb
+* mom execute mom-cli if zenity is not present. hostname fixed in hatching
+
 ### eggs-7.7.21.1_deb
 * bugfix eggs.yaml, refactoring settings. Now we have theme saved in dad, and others vars are possible
 
