@@ -18,6 +18,7 @@
     "@oclif/plugin-autocomplete": "^0.3.0",
     "@oclif/plugin-help": "^3.2.1",
     "@oclif/plugin-not-found": "^1.2.4",
+    "@oclif/plugin-warn-if-update-available": "^1.7.0",
     "@types/inquirer": "^7.3.1",
     "axios": "^0.21.1",
     "chalk": "^4.1.0",
@@ -57,8 +58,13 @@
     "nyc": "^15.1.0",
     "prettier": "^2.2.1",
     "ts-node": "^9.1.1",
-    "typedoc": "^0.20.17",
+    "typedoc": "^0.20.18",
     "typescript": "^4.1.3"
+  },
+  "warn-if-update-available": {
+    "timeoutInDays": 7,
+    "message": "<%= config.name %> update available from <%= chalk.greenBright(config.version) %> to <%= chalk.greenBright(latest) %>.",
+    "registry": "https://registry.npmjs.org"
   },
   "engines": {
     "node": ">=8.0.0"
@@ -87,7 +93,8 @@
     "plugins": [
       "@oclif/plugin-autocomplete",
       "@oclif/plugin-help",
-      "@oclif/plugin-not-found"
+      "@oclif/plugin-not-found",
+      "@oclif/plugin-warn-if-update-available"
     ]
   },
   "scripts": {
