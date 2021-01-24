@@ -72,14 +72,7 @@ export default class I18n {
          */
         if (this.verbose) {
             console.log('creating /etc/locale.gen')
-
         }
-        // shx.cp(path.resolve(__dirname, `../../conf/distros/${this.settings.distro.versionId}/locales/locale.gen.template`), '/etc/locale.gen')
-        // let locales = ''
-        // for (let i=0; i < this.settings.locales.length; i++){
-        //  locales += this.settings.locales[i] + ' UTF-8\n'
-        // }
-        // shx.sed('-i', '%locales%', locales, '/etc/locale.gen')
         const srcLocales = path.resolve(__dirname, `../../conf/distros/${this.settings.distro.versionId}/locales/locale.gen.template`)
         const destLocales = '/etc/locale.gen'
         const templateLocales = fs.readFileSync(srcLocales, 'utf8')
@@ -95,6 +88,11 @@ export default class I18n {
              */
             console.log('reinstall package locales')
             shx.exec('apt-get reinstall locales --yes')
+
+            // Eseguire localepurge file /etc/locale.nopurge
+
+            // rimangono però i task task-italian, polish, etc che dipendono da task-sel
+
         } else {
             if (this.verbose) {
                 console.log('executing locale-gen')
