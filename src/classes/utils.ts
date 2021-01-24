@@ -212,6 +212,7 @@ export default class Utils {
        */
       const sqfile_full = ini.parse(fs.readFileSync(squashFs, 'utf-8'))
 
+      console.log('vediamo che è: ' + sqfile_full)
       // get compression factor by reading the linuxfs squasfs file, if available
       const linuxfs_compression_type = shx.exec(`dd if=${sqfile_full} bs=1 skip=20 count=2 status=none 2>/dev/null| /usr/bin/od -An -tdI`)
 

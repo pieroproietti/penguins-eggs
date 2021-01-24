@@ -79,7 +79,8 @@ export default class Pacman {
       settings.load()
       const locales: string[] = settings.config.locales
 
-      if ((versionLike === 'buster') || (versionLike === 'beowulf')) {
+      // Aggiungere anche bullseye
+      if ((versionLike === 'buster') || versionLike === 'bullseye' || (versionLike === 'beowulf')) {
          for (let i = 0; i < locales.length; i++) {
             if (locales[i] === process.env.LANG) {
                continue
@@ -96,6 +97,10 @@ export default class Pacman {
                packages.push('task-french')
             } else if (locales[i] === `de_DE.UTF-8`) {
                packages.push('task-german')
+            } else if (locales[i] === `pl_PL.UTF-8`) {
+               packages.push('task-polish')
+            }else if (locales[i] === `de_DE.UTF-8`) {
+               packages.push('task-russian')
             }
          }
          packages.push('live-task-localisation')
@@ -293,7 +298,7 @@ export default class Pacman {
       config.timezone = 'Europe/Rome'
       config.pmount_fixed = false
       config.locales_default = 'it_IT.UTF-8'
-      config.locales = ['it_IT.UTF-8', 'en_US.UTF-8', 'es_ES.UTF-8', 'pt_BR.UTF-8', 'fr_FR.UTF-8', 'de_DE.UTF-8']
+      config.locales = ['it_IT.UTF-8', 'en_US.UTF-8', 'es_ES.UTF-8', 'pt_BR.UTF-8', 'fr_FR.UTF-8', 'de_DE.UTF-8', 'pl_PL', 'ru_RU']
 
 
 
