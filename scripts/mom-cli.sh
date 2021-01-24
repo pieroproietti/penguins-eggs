@@ -9,8 +9,9 @@ function main {
    while true; do
       # 20 righe. 75 caratteri, 16 altezza menu list
       answer=$(
-      whiptail --title "mommy" --menu "Mama's gonna keep baby cosy and warm..." 22 75 14 \
+      whiptail --title "mommy" --menu "Mama's gonna keep baby cosy and warm..." 22 75 15 \
       "autocomplete"    "generate or refresh autocomplete" \
+      "dad"             "lead you to configurare and iso production" \
       "documentation"   "https://penguins-eggs.net/" \
       "export"          "export /deb/docs/iso" \
       "help"            "help" \
@@ -33,6 +34,9 @@ function main {
 
          "autocomplete")
             autocomplete ;;
+
+         "dad")
+            dad ;;
 
          "export")
             export ;;
@@ -94,6 +98,12 @@ function autocomplete {
       whiptail --msgbox "problem with autocomplete generation" --title "mummy" 8 40
    fi
    press_a_key_to_continue
+}
+
+
+################################
+function dad {
+   sudo eggs dad
 }
 
 ################################

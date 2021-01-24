@@ -16,7 +16,7 @@ export default class Mom extends Command {
 
   static flags = {
     help: flags.help({ char: 'h' }),
-    cli: flags.boolean({ char: 'c', description: 'force cli version of mommy' }),
+    // cli: flags.boolean({ char: 'c', description: 'force cli version of mommy' }),
   }
 
   async run() {
@@ -28,14 +28,6 @@ export default class Mom extends Command {
     }
     const { flags } = this.parse(Mom)
     let mum = path.resolve(__dirname, `../../scripts/mom-cli.sh`)
-    if (Pacman.packageIsInstalled('zenity')) {
-      mum = path.resolve(__dirname, `../../scripts/mom.sh`)
-    }
-
-    if (flags.cli) {
-      mum = path.resolve(__dirname, `../../scripts/mom-cli.sh`) + ' ' + __dirname
-    }
-    console.log(mum)
     exec(mum)
   }
 }
