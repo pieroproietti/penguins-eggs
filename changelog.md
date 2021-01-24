@@ -48,7 +48,8 @@ Versions are listed on reverse order, the first is the last one.
 ### eggs-7.7.6.1_deb deprecated
 * added command mom, a gui/cli helper for reproductive eggs!
 
-[older versions](/documents/changelog-old.md)
+# Older [deprecated] versions 
+Here, You can find [older versions](/documents/changelog-old.md).
 
 # Help
 Don't esitate to ask me for suggestions and help.
