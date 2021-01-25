@@ -38,6 +38,9 @@ function main {
          "dad")
             dad ;;
 
+         "documentation")
+            documentation ;;
+
          "export")
             export ;;
 
@@ -104,6 +107,10 @@ function autocomplete {
 ################################
 function dad {
    sudo eggs dad
+}
+
+function documentation {
+      sensible-browser "https://penguins-eggs.net"
 }
 
 ################################
