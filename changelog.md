@@ -19,7 +19,7 @@ You can follow the project also consulting the [commit history](https://github.c
 Versions are listed on reverse order, the first is the last one.
 
 ### eggs-7.7.24.1_deb
-* mom now only cli version. update all dependecies except js-yaml 3.14.1 - 4.0.0
+* mom now only cli version. update all dependecies except js-yaml 3.14.1 - 4.0.0, but node8 don't work.
 
 ### eggs-7.7.23.1_deb
 * mom execute mom-cli if zenity is not present. hostname fixed in hatching
