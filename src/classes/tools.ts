@@ -67,11 +67,7 @@ export default class Tools {
 
             this.local_path_deb = tools.local_path_deb
             this.local_path_doc = tools.local_path_doc
-            let arch = 'amd64'
-            if (process.arch === 'ia32') {
-                arch = 'i386'
-            }
-            this.file_name_deb = tools.file_name_deb + arch + '.deb'
+            this.file_name_deb = tools.file_name_deb //  + arch + '.deb'
 
             /**
              * da eggs
@@ -79,11 +75,7 @@ export default class Tools {
             const settings = new Settings()
             settings.load()
             this.snapshot_dir = settings.config.snapshot_dir
-            arch = 'x64'
-            if (process.arch === 'ia32') {
-                arch = 'i386'
-            }
-            this.snapshot_name = settings.config.snapshot_prefix + settings.config.snapshot_basename + '-' + arch + '_'
+            this.snapshot_name = settings.config.snapshot_prefix + settings.config.snapshot_basename + '-' // + arch + '_'
         } else {
             console.log(`Can't find: ${this.tools_yaml}`)
             process.exit(1)

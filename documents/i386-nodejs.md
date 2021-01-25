@@ -62,6 +62,18 @@ At this point run
 sudo npm run deb
 ```
 
+# Version of packages 
+We must be compatible with node8, so this is the result of:
+
+```
+npm outdated
+Package         Current  Wanted  Latest  Location
+@types/js-yaml   3.12.6  3.12.6   4.0.0  penguins-eggs
+eslint           5.16.0  5.16.0  7.18.0  penguins-eggs
+globby           10.0.2  10.0.2  11.0.2  penguins-eggs
+js-yaml          3.14.1  3.14.1   4.0.0  penguins-eggs
+```
+
 ## Contacts
 Feel free to contact [me](https://gitter.im/penguins-eggs-1/community?source=orgpage) or open an issue on [github](https://github.com/pieroproietti/penguins-eggs/issues).
 

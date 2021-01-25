@@ -38,9 +38,9 @@ const config_file = '/etc/penguins-eggs.d/eggs.yaml' as string
  */
 export default class Settings {
 
-   config = {} as IConfig
-
    app = {} as IApp
+
+   config = {} as IConfig
 
    remix = {} as IRemix
 
@@ -63,7 +63,6 @@ export default class Settings {
    vmlinuz = ''
 
    initrdImg = ''
-
 
    session_excludes = ''
 

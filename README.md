@@ -173,7 +173,7 @@ EXAMPLES
   $ eggs autocomplete --refresh-cache
 ```
 
-_See code: [@oclif/plugin-autocomplete](https://github.com/oclif/plugin-autocomplete/blob/v0.3.0/src/commands/autocomplete/index.ts)_
+_See code: [@oclif/plugin-autocomplete](https://github.com/oclif/plugin-autocomplete/blob/v0.1.5/src/commands/autocomplete/index.ts)_
 
 ## `eggs calamares`
 
@@ -224,9 +224,12 @@ USAGE
   $ eggs export:deb
 
 OPTIONS
-  -a, --armel  copy armel arch
   -c, --clean  remove old .deb before to copy
   -h, --help   show CLI help
+  --all        export all arch
+  --amd64      export amd64 arch
+  --armel      export armel arch
+  --i386       export i386 arch
 ```
 
 _See code: [src/commands/export/deb.ts](https://github.com/pieroproietti/penguins-eggs/blob/v7.7.24/src/commands/export/deb.ts)_

@@ -15,7 +15,7 @@
   "dependencies": {
     "@getvim/execute": "^1.0.0",
     "@oclif/command": "^1.8.0",
-    "@oclif/plugin-autocomplete": "^0.3.0",
+    "@oclif/plugin-autocomplete": "^0.1.5",
     "@oclif/plugin-help": "^3.2.1",
     "@oclif/plugin-not-found": "^1.2.4",
     "@oclif/plugin-warn-if-update-available": "^1.7.0",
@@ -37,20 +37,20 @@
     "tslib": "^ 2.1.0"
   },
   "devDependencies": {
-    "@oclif/dev-cli": "^1.26.0",
+    "@oclif/dev-cli": "^1.21.3",
     "@oclif/test": "^1.2.8",
     "@types/chai": "^4.2.14",
     "@types/clear": "^0.1.1",
     "@types/drivelist": "^6.4.1",
     "@types/figlet": "^1.2.0",
     "@types/ini": "^1.3.30",
-    "@types/js-yaml": "^3.12.6",
+    "@types/js-yaml": "^3.10.0",
     "@types/mocha": "^8.2.0",
     "@types/mustache": "^4.1.1",
     "@types/node": "^14.14.22",
     "@types/shelljs": "^0.8.8",
     "chai": "^4.2.0",
-    "eslint": "^5.3.0",
+    "eslint": "^7.18.0",
     "eslint-config-oclif": "^3.1.0",
     "eslint-config-oclif-typescript": "^0.2.0",
     "globby": "^11.0.2 ",
@@ -58,7 +58,7 @@
     "nyc": "^15.1.0",
     "prettier": "^2.2.1",
     "ts-node": "^9.1.1",
-    "typedoc": "^0.20.18",
+    "typedoc": "^0.20.19",
     "typescript": "^4.1.3"
   },
   "warn-if-update-available": {
@@ -67,7 +67,7 @@
     "registry": "https://registry.npmjs.org"
   },
   "engines": {
-    "node": ">=8.0.0"
+    "node": "=8.17.0"
   },
   "files": [
     "/assets",
