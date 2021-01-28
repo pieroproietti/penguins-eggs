@@ -26,7 +26,7 @@ export default class Remove extends Command {
       `$ sudo eggs remove --prerequisites \nremove packages prerequisites, calamares, calamares configurations\n`,
       `$ sudo eggs remove --all\nremove eggs, eggs configurations, prerequisites, calamares, calamares configurations`]
 
-   static aliases = ['sterilize']
+   // static aliases = ['sterilize']
 
    static flags = {
       all: flags.boolean({ char: 'a', description: 'remove all' }),

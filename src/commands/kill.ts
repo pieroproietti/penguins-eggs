@@ -7,7 +7,6 @@
 import { Command, flags } from '@oclif/command'
 
 import fs = require('fs')
-import ini = require('ini')
 import Utils from '../classes/utils'
 import Settings from '../classes/settings'
 import { IWorkDir } from '../interfaces/i-workdir'
