@@ -10,6 +10,8 @@ import Pacman from '../classes/pacman'
 import Bleach from '../classes/bleach'
 import { IInstall } from '../interfaces'
 import chalk = require('chalk')
+import fs = require('fs')
+import path = require('path')
 
 const exec = require('../lib/utils').exec
 
@@ -19,9 +21,9 @@ const exec = require('../lib/utils').exec
 export default class Prerequisites extends Command {
    static description = 'install packages prerequisites to run eggs'
 
+   static aliases = ['start', 'configure']
    static flags = {
       help: flags.help({ char: 'h' }),
-      check: flags.boolean({ char: 'c', description: 'check prerequisites' }),
       verbose: flags.boolean({ char: 'v', description: 'verbose' }),
    }
 
@@ -34,14 +36,13 @@ export default class Prerequisites extends Command {
       const { flags } = this.parse(Prerequisites)
 
       const verbose = flags.verbose
-      if (flags.check) {
-         if (Pacman.configurationCheck()) {
-            process.exit(1)
-         }
-      }
-
 
       if (Utils.isRoot()) {
+         // Aggiungere autocomplete
+
+         // Man
+         this.man(verbose)
+
          if (!Pacman.configurationCheck()) {
             await Pacman.configurationInstall()
          }
@@ -59,6 +60,28 @@ export default class Prerequisites extends Command {
             console.log('prerequisites: all is OK, nothing to do!')
          }
       }
+   }
+
+   /**
+    * Installa manuale
+    */
+   man(verbose = false) {
+      const man1Dir = '/usr/local/man/man1'
+      const man1eggs = '/usr/local/man/man1/eggs.1'
+      if (fs.existsSync(man1eggs)) {
+         exec(`rm ${man1eggs}`)
+      }
+      if (!fs.existsSync(man1Dir)) {
+         exec(`mkdir ${man1Dir} -p`)
+      }
+      const manPage = path.resolve(__dirname, '../../man/man1/eggs.1')
+      exec(`cp ${manPage} ${man1Dir}`)
+      if (verbose) {
+         exec(`mandb`)
+      } else {
+         exec(`mandb > /dev/null`)
+      }
+      console.log('man eggs installed')
    }
 
    /**
