@@ -25,7 +25,7 @@ export default class ExportDeb extends Command {
     await Tu.loadSettings()
 
     // rimozione
-    let cmd = `ssh ${Tu.export_user_deb}@${Tu.export_host} rm -rf ${Tu.export_path_deb}${Tu.file_name_deb}`
+    let cmd = `ssh ${Tu.config.remoteUser}@${Tu.config.remoteHost} rm -rf ${Tu.config.remotePathDeb}${Tu.config.filterDeb}`
     if (flags.clean) {
       console.log('cleaning destination...')
       if (flags.armel) {
@@ -48,7 +48,7 @@ export default class ExportDeb extends Command {
     }
 
     // esportazione
-    cmd = `scp ${Tu.local_path_deb}${Tu.file_name_deb}`
+    cmd = `scp ${Tu.config.localPathDeb}${Tu.config.filterDeb}`
     console.log('copy to destination...')
     if (flags.armel) {
       cmd += 'armel.deb'
@@ -65,7 +65,7 @@ export default class ExportDeb extends Command {
       }
       cmd += arch + '.deb'
     }
-    cmd += ` ${Tu.export_user_deb}@${Tu.export_host}:${Tu.export_path_deb}`
+    cmd += ` ${Tu.config.remoteUser}@${Tu.config.remoteHost}:${Tu.config.remotePathDeb}`
     await exec(cmd, { echo: true, capture: true })
   }
 }

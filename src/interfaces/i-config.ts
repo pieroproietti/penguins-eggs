@@ -1,3 +1,5 @@
+import { stringify } from "ini"
+
 export interface IConfig {
     version: string
     snapshot_dir: string

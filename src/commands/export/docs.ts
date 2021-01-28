@@ -19,7 +19,7 @@ export default class ExportDocs extends Command {
     Utils.warning(ExportDocs.description)
 
     await Tu.loadSettings()
-    await exec(`ssh ${Tu.export_user_doc}@${Tu.export_host} rm -rf ${Tu.export_path_doc}*`, { echo: true, capture: true })
-    await exec(`scp -r ${Tu.local_path_doc}/* ${Tu.export_user_doc}@${Tu.export_host}:${Tu.export_path_doc}`, { echo: true, capture: true })
+    await exec(`ssh ${Tu.config.remoteUser}@${Tu.config.remoteHost} rm -rf ${Tu.config.remotePathDoc}*`, { echo: true, capture: true })
+    await exec(`scp -r ${Tu.config.localPathDoc}/* ${Tu.config.remoteUser}@${Tu.config.remoteHost}:${Tu.config.remotePathDoc}`, { echo: true, capture: true })
   }
 }

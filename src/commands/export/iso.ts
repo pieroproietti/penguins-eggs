@@ -22,13 +22,13 @@ export default class ExportIso extends Command {
     const Tu = new Tools()
     Utils.warning(ExportIso.description)
     await Tu.loadSettings()
-    let cmd = `ssh ${Tu.export_user_iso}@${Tu.export_host} rm -rf ${Tu.export_path_iso}${Tu.snapshot_name}*`
+    let cmd = `ssh root@${Tu.config.remoteHost} rm -rf ${Tu.config.remotePathIso}${Tu.snapshot_name}*`
     if (flags.clean) {
       Utils.warning('cleaning destination...')
       await exec(cmd, { echo: true, capture: true })
     }
     Utils.warning('copy to destination...')
-    cmd = `scp ${Tu.snapshot_dir}${Tu.snapshot_name}* ${Tu.export_user_iso}@${Tu.export_host}:${Tu.export_path_iso}`
+    cmd = `scp ${Tu.snapshot_dir}${Tu.snapshot_name}* root@${Tu.config.remoteHost}:${Tu.config.remotePathIso}`
     await exec(cmd, { echo: true, capture: true })
   }
 }

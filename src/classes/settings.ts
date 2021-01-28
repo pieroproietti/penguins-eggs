@@ -105,7 +105,7 @@ export default class Settings {
          process.exit(1)
       }
 
-      this.config = yaml.load(fs.readFileSync(config_file, 'utf-8'))
+      this.config = yaml.load(fs.readFileSync(config_file, 'utf-8')) as IConfig
 
       this.session_excludes = ''
       if (!this.config.snapshot_dir.endsWith('/')) {

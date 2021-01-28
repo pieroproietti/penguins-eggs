@@ -10,6 +10,20 @@ import fs = require('fs')
 import yaml = require('js-yaml')
 
 import Settings from './settings'
+//import { IConfigTools } from '../interfaces'
+// import { IConfigTools } from '../interfaces/i-config-tools'
+
+interface IConfigTools {
+    remoteHost: string
+    remoteUser: string
+    remotePathDeb: string
+    remotePathDoc: string
+    remotePathIso: string
+    localPathDeb: string
+    localPathDoc: string
+    localPathIso: string
+    filterDeb: string
+}
 
 /**
  * Utils: general porpourse utils
@@ -22,27 +36,7 @@ export default class Tools {
 
     snapshot_name = ''
 
-    export_host = ''
-
-    export_user_deb = ''
-
-    export_user_doc = ''
-
-    export_user_iso = ''
-
-    export_path = ''
-
-    export_path_iso = ''
-
-    export_path_deb = ''
-
-    export_path_doc = ''
-
-    local_path_deb = ''
-
-    file_name_deb = ''
-
-    local_path_doc = ''
+    config = {} as IConfigTools
 
     /*
     * Load configuration from /etc/penguins-eggs.yaml
@@ -53,21 +47,18 @@ export default class Tools {
 
         if (fs.existsSync(this.tools_yaml)) {
             foundSettings = true
-            const tools = yaml.load(fs.readFileSync(this.tools_yaml, 'utf-8'))
-            this.export_host = tools.export_host
-            this.export_user_deb = tools.export_user_deb
-            this.export_user_doc = tools.export_user_doc
-            this.export_user_iso = tools.export_user_iso
+            const loaded = yaml.load(fs.readFileSync(this.tools_yaml, 'utf-8')) as IConfigTools
+            this.config.remoteHost = loaded.remoteHost
+            this.config.remoteUser = loaded.remoteUser
+            this.config.remotePathDeb = loaded.remotePathDeb
+            this.config.remotePathDoc = loaded.remotePathDoc
+            this.config.remotePathIso = loaded.remotePathIso
 
-            this.export_path = tools.export_path
+            this.config.localPathDeb = loaded.localPathDeb
+            this.config.localPathDoc = loaded.localPathDoc
+            this.config.localPathIso = loaded.localPathIso
 
-            this.export_path_deb = this.export_path + tools.export_path_deb
-            this.export_path_doc = this.export_path + tools.export_path_doc
-            this.export_path_iso = this.export_path + tools.export_path_iso
-
-            this.local_path_deb = tools.local_path_deb
-            this.local_path_doc = tools.local_path_doc
-            this.file_name_deb = tools.file_name_deb //  + arch + '.deb'
+            this.config.filterDeb  = loaded.filterDeb
 
             /**
              * da eggs
@@ -83,4 +74,5 @@ export default class Tools {
         return foundSettings
     }
 }
+
 

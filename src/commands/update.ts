@@ -185,9 +185,9 @@ export default class Update extends Command {
    async getDebFromLan() {
       const Tu = new Tools
       await Tu.loadSettings()
-      Utils.warning(`Copy from: ${Tu.export_host}:${Tu.export_path_deb}`)
+      Utils.warning(`Copy from: ${Tu.config.remoteHost}:${Tu.config.remotePathDeb}`)
       console.log()
-      await exec(`scp ${Tu.export_user_deb}@${Tu.export_host}:${Tu.export_path_deb}${Tu.file_name_deb} /tmp`)
+      await exec(`scp ${Tu.config.remoteUser}@${Tu.config.remoteHost}:${Tu.config.remotePathDeb}${Tu.config.filterDeb}/tmp`)
       console.log('sudo dpkg -i /tmp/eggs_*.deb')
    }
 
