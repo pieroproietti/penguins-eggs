@@ -21,7 +21,8 @@ $ eggs (-v|--version|version)
 penguins-eggs/7.7.25 linux-x64 node-v14.15.4
 $ eggs --help [COMMAND]
 USAGE
-  $ eggs COMMAND ...
+  $ eggs COMMAND
+...
 ```
 <!-- usagestop -->
 <!-- usagestop -->

@@ -21,7 +21,8 @@ $ eggs (-v|--version|version)
 penguins-eggs/7.7.25 linux-x64 node-v14.15.4
 $ eggs --help [COMMAND]
 USAGE
-  $ eggs COMMAND ...
+  $ eggs COMMAND
+...
 ```
 <!-- usagestop -->
 <!-- usagestop -->
@@ -45,16 +46,15 @@ eggs as CLI tool have his man page but not only - yith his two GUIs: eggs mom an
 * [`eggs export:iso`](#eggs-exportiso)
 * [`eggs help [COMMAND]`](#eggs-help-command)
 * [`eggs info`](#eggs-info)
+* [`eggs init`](#eggs-init)
 * [`eggs install`](#eggs-install)
 * [`eggs kill`](#eggs-kill)
 * [`eggs mom`](#eggs-mom)
-* [`eggs prerequisites`](#eggs-prerequisites)
 * [`eggs produce`](#eggs-produce)
 * [`eggs remove`](#eggs-remove)
 * [`eggs tools:clean`](#eggs-toolsclean)
 * [`eggs tools:initrd`](#eggs-toolsinitrd)
 * [`eggs tools:locales`](#eggs-toolslocales)
-* [`eggs tools:man`](#eggs-toolsman)
 * [`eggs tools:pve`](#eggs-toolspve)
 * [`eggs tools:sanitize`](#eggs-toolssanitize)
 * [`eggs tools:skel`](#eggs-toolsskel)
@@ -222,6 +222,29 @@ EXAMPLE
 
 _See code: [src/commands/info.ts](https://github.com/pieroproietti/penguins-eggs/blob/v7.7.25/src/commands/info.ts)_
 
+## `eggs init`
+
+Initialize eggs and install packages prerequisites to run eggs
+
+```
+USAGE
+  $ eggs init
+
+OPTIONS
+  -h, --help     show CLI help
+  -v, --verbose  verbose
+
+ALIASES
+  $ eggs prerequisites
+  $ eggs config
+
+EXAMPLE
+  ~$ eggs init
+  install prerequisites and create configuration files
+```
+
+_See code: [src/commands/init.ts](https://github.com/pieroproietti/penguins-eggs/blob/v7.7.25/src/commands/init.ts)_
+
 ## `eggs install`
 
 eggs installer - (the egg became penguin)
@@ -281,29 +304,6 @@ OPTIONS
 ```
 
 _See code: [src/commands/mom.ts](https://github.com/pieroproietti/penguins-eggs/blob/v7.7.25/src/commands/mom.ts)_
-
-## `eggs prerequisites`
-
-install packages prerequisites to run eggs
-
-```
-USAGE
-  $ eggs prerequisites
-
-OPTIONS
-  -c, --check    check prerequisites
-  -h, --help     show CLI help
-  -v, --verbose  verbose
-
-EXAMPLES
-  ~$ eggs prerequisites
-  install prerequisites and create configuration files
-
-  sudo eggs prerequisites -c
-    create configuration's file
-```
-
-_See code: [src/commands/prerequisites.ts](https://github.com/pieroproietti/penguins-eggs/blob/v7.7.25/src/commands/prerequisites.ts)_
 
 ## `eggs produce`
 
@@ -386,9 +386,6 @@ OPTIONS
   -v, --verbose        verbose
   --purge              remove eggs, eggs configuration
 
-ALIASES
-  $ eggs sterilize
-
 EXAMPLES
   $ sudo eggs remove 
   remove eggs
@@ -452,22 +449,6 @@ OPTIONS
 ```
 
 _See code: [src/commands/tools/locales.ts](https://github.com/pieroproietti/penguins-eggs/blob/v7.7.25/src/commands/tools/locales.ts)_
-
-## `eggs tools:man`
-
-install man manual eggs
-
-```
-USAGE
-  $ eggs tools:man
-
-OPTIONS
-  -h, --help     show CLI help
-  -r, --remove   remove manual
-  -v, --verbose  verbose
-```
-
-_See code: [src/commands/tools/man.ts](https://github.com/pieroproietti/penguins-eggs/blob/v7.7.25/src/commands/tools/man.ts)_
 
 ## `eggs tools:pve`
 

@@ -78,16 +78,15 @@
     <a href="#EGGS-EXPORT-ISO">eggs export:iso</a>
     <a href="#EGGS-HELP-COMMAND-">eggs help [COMMAND]</a>
     <a href="#EGGS-INFO">eggs info</a>
+    <a href="#EGGS-INIT">eggs init</a>
     <a href="#EGGS-INSTALL">eggs install</a>
     <a href="#EGGS-KILL">eggs kill</a>
     <a href="#EGGS-MOM">eggs mom</a>
-    <a href="#EGGS-PREREQUISITES">eggs prerequisites</a>
     <a href="#EGGS-PRODUCE">eggs produce</a>
     <a href="#EGGS-REMOVE">eggs remove</a>
     <a href="#EGGS-TOOLS-CLEAN">eggs tools:clean</a>
     <a href="#EGGS-TOOLS-INITRD">eggs tools:initrd</a>
     <a href="#EGGS-TOOLS-LOCALES">eggs tools:locales</a>
-    <a href="#EGGS-TOOLS-MAN">eggs tools:man</a>
     <a href="#EGGS-TOOLS-PVE">eggs tools:pve</a>
     <a href="#EGGS-TOOLS-SANITIZE">eggs tools:sanitize</a>
     <a href="#EGGS-TOOLS-SKEL">eggs tools:skel</a>
@@ -134,7 +133,8 @@ $ eggs (-v|--version|version)
 penguins-eggs/7.7.25 linux-x64 node-v14.15.4
 $ eggs --help [COMMAND]
 USAGE
-  $ eggs COMMAND ...
+  $ eggs COMMAND
+...
 </code></pre>
 
 <!-- usagestop -->
@@ -167,16 +167,15 @@ USAGE
 <li><a href="#eggs-exportiso" data-bare-link="true"><code>eggs export:iso</code></a></li>
 <li><a href="#eggs-help-command" data-bare-link="true"><code>eggs help [COMMAND]</code></a></li>
 <li><a href="#eggs-info" data-bare-link="true"><code>eggs info</code></a></li>
+<li><a href="#eggs-init" data-bare-link="true"><code>eggs init</code></a></li>
 <li><a href="#eggs-install" data-bare-link="true"><code>eggs install</code></a></li>
 <li><a href="#eggs-kill" data-bare-link="true"><code>eggs kill</code></a></li>
 <li><a href="#eggs-mom" data-bare-link="true"><code>eggs mom</code></a></li>
-<li><a href="#eggs-prerequisites" data-bare-link="true"><code>eggs prerequisites</code></a></li>
 <li><a href="#eggs-produce" data-bare-link="true"><code>eggs produce</code></a></li>
 <li><a href="#eggs-remove" data-bare-link="true"><code>eggs remove</code></a></li>
 <li><a href="#eggs-toolsclean" data-bare-link="true"><code>eggs tools:clean</code></a></li>
 <li><a href="#eggs-toolsinitrd" data-bare-link="true"><code>eggs tools:initrd</code></a></li>
 <li><a href="#eggs-toolslocales" data-bare-link="true"><code>eggs tools:locales</code></a></li>
-<li><a href="#eggs-toolsman" data-bare-link="true"><code>eggs tools:man</code></a></li>
 <li><a href="#eggs-toolspve" data-bare-link="true"><code>eggs tools:pve</code></a></li>
 <li><a href="#eggs-toolssanitize" data-bare-link="true"><code>eggs tools:sanitize</code></a></li>
 <li><a href="#eggs-toolsskel" data-bare-link="true"><code>eggs tools:skel</code></a></li>
@@ -337,6 +336,28 @@ EXAMPLE
 
 <p><em>See code: <a href="https://github.com/pieroproietti/penguins-eggs/blob/v7.7.25/src/commands/info.ts">src/commands/info.ts</a></em></p>
 
+<h2 id="eggs-init"><code>eggs init</code></h2>
+
+<p>Initialize eggs and install packages prerequisites to run eggs</p>
+
+<pre><code>USAGE
+  $ eggs init
+
+OPTIONS
+  -h, --help     show CLI help
+  -v, --verbose  verbose
+
+ALIASES
+  $ eggs prerequisites
+  $ eggs config
+
+EXAMPLE
+  ~$ eggs init
+  install prerequisites and create configuration files
+</code></pre>
+
+<p><em>See code: <a href="https://github.com/pieroproietti/penguins-eggs/blob/v7.7.25/src/commands/init.ts">src/commands/init.ts</a></em></p>
+
 <h2 id="eggs-install"><code>eggs install</code></h2>
 
 <p>eggs installer - (the egg became penguin)</p>
@@ -393,28 +414,6 @@ OPTIONS
 </code></pre>
 
 <p><em>See code: <a href="https://github.com/pieroproietti/penguins-eggs/blob/v7.7.25/src/commands/mom.ts">src/commands/mom.ts</a></em></p>
-
-<h2 id="eggs-prerequisites"><code>eggs prerequisites</code></h2>
-
-<p>install packages prerequisites to run eggs</p>
-
-<pre><code>USAGE
-  $ eggs prerequisites
-
-OPTIONS
-  -c, --check    check prerequisites
-  -h, --help     show CLI help
-  -v, --verbose  verbose
-
-EXAMPLES
-  ~$ eggs prerequisites
-  install prerequisites and create configuration files
-
-  sudo eggs prerequisites -c
-    create configuration's file
-</code></pre>
-
-<p><em>See code: <a href="https://github.com/pieroproietti/penguins-eggs/blob/v7.7.25/src/commands/prerequisites.ts">src/commands/prerequisites.ts</a></em></p>
 
 <h2 id="eggs-produce"><code>eggs produce</code></h2>
 
@@ -495,9 +494,6 @@ OPTIONS
   -v, --verbose        verbose
   --purge              remove eggs, eggs configuration
 
-ALIASES
-  $ eggs sterilize
-
 EXAMPLES
   $ sudo eggs remove 
   remove eggs
@@ -558,21 +554,6 @@ OPTIONS
 </code></pre>
 
 <p><em>See code: <a href="https://github.com/pieroproietti/penguins-eggs/blob/v7.7.25/src/commands/tools/locales.ts">src/commands/tools/locales.ts</a></em></p>
-
-<h2 id="eggs-tools-man"><code>eggs tools:man</code></h2>
-
-<p>install man manual eggs</p>
-
-<pre><code>USAGE
-  $ eggs tools:man
-
-OPTIONS
-  -h, --help     show CLI help
-  -r, --remove   remove manual
-  -v, --verbose  verbose
-</code></pre>
-
-<p><em>See code: <a href="https://github.com/pieroproietti/penguins-eggs/blob/v7.7.25/src/commands/tools/man.ts">src/commands/tools/man.ts</a></em></p>
 
 <h2 id="eggs-tools-pve"><code>eggs tools:pve</code></h2>
 
