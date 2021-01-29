@@ -18,8 +18,8 @@ You can follow the project also consulting the [commit history](https://github.c
 ## Changelog
 Versions are listed on reverse order, the first is the last one.
 
-### eggs-7.7.25.1_deb
-* man generated automatically, everithing updated. Dropped - for now - version i386.
+### eggs-7.7.26.1_deb
+* eggs init in place of prerequisites. The new version will install man and aucomplete. Sorry, due nodejs version, I forced to remove i386 version.
 
 ### eggs-7.7.24.1_deb
 * mom now only cli version. update all dependecies except js-yaml 3.14.1 - 4.0.0, but node8 don't work.

@@ -2,8 +2,8 @@
 
 # eseguo prepack per aggiornare README.md
 me=`whoami`
-#sudo chown ${me}:${me} * -R
-#npm run prepack
+sudo chown ${me}:${me} * -R
+npm run prepack
 
 # Rimuovo la directory man e la ricreo
 rm man -rf
