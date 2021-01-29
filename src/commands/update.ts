@@ -120,10 +120,10 @@ export default class Update extends Command {
       choices.push(new inquirer.Separator('exit from update'))
       choices.push('basket')
       choices.push(new inquirer.Separator('select, download and update from basket'))
-      choices.push('npm')
-      choices.push(new inquirer.Separator('automatic import and update from npmjs.com'))
       choices.push('lan')
       choices.push(new inquirer.Separator('automatic import and update from lan'))
+      choices.push('npm')
+      choices.push(new inquirer.Separator('automatic import and update from npmjs.com'))
       choices.push('manual')
       choices.push(new inquirer.Separator('manual download from sourceforge.net and update with dpkg'))
       choices.push('sources')
@@ -185,9 +185,15 @@ export default class Update extends Command {
    async getDebFromLan() {
       const Tu = new Tools
       await Tu.loadSettings()
-      Utils.warning(`Copy from: ${Tu.config.remoteHost}:${Tu.config.remotePathDeb}`)
+
+      let arch = 'amd64'
+      if (process.arch === 'ia32') {
+         arch ='i386'
+      }
+      Utils.warning(`import from lan`)
       console.log()
-      await exec(`scp ${Tu.config.remoteUser}@${Tu.config.remoteHost}:${Tu.config.remotePathDeb}${Tu.config.filterDeb}/tmp`)
+      let cmd = `scp ${Tu.config.remoteUser}@${Tu.config.remoteHost}:${Tu.config.remotePathDeb}${Tu.config.filterDeb}${arch}.deb /tmp`
+      await exec(cmd, { echo: true, capture: true })
       console.log('sudo dpkg -i /tmp/eggs_*.deb')
    }
 

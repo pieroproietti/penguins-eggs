@@ -368,7 +368,6 @@ export default class Utils {
       if (process.getuid && process.getuid() === 0) {
          return true
       }
-      Utils.warning(`${Utils.getFriendName()} need to run with root privileges. Please, prefix it with sudo`)
       return false
    }
 

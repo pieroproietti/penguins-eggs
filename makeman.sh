@@ -25,7 +25,7 @@ sed -e "/$lead/,/$tail/{ /$lead/{p; r man/sources/commands.md
         }; /$tail/p; d }"  MANUAL-usage.md > man/sources/eggs.md
 
 # Creo il file roff
-ronn --roff --html man/sources/eggs.md  --manual='eggs manual' --style=toc,80c --section 1 -o man/man1/
+ronn --roff --html man/sources/eggs.md  --manual='eggs manual' --organization=penguins-eggs.net  --style=toc,80c --section 1 -o man/man1/
 mv man/man1/eggs.md.1 man/man1/eggs.1
 gzip man/man1/eggs.1
 sudo mv  man/man1/eggs.1.gz man/man1/eggs.1

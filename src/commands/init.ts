@@ -38,6 +38,8 @@ export default class Init extends Command {
 
       if (Utils.isRoot()) {
          // Aggiungere autocomplete
+         await exec('eggs autocomplete > /dev/null')
+         await exec('cp ~/.cache/penguins-eggs/autocomplete/functions/bash/eggs.bash /etc/bash_completion.d/')
 
          // Man
          this.man(verbose)
