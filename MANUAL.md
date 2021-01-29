@@ -88,7 +88,7 @@ Report problems o new ideas in: <https://github.com/pieroproietti/penguins-eggs/
 Consult website to find  documentation, forum. There is a facebook gruop and page too.
 
 * website: **https://penguins-eggs.net**
-* gitHub repository: **github.com/pieroproietti/penguins-eggs**
+* gitHub repository: **https://github.com/pieroproietti/penguins-eggs**
 
 ## AUTHOR
 
