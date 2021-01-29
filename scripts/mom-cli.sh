@@ -19,9 +19,9 @@ function main {
       "produce"         "produce and ISO of your system" \
       "remove"          "remove eggs" \
       "update"          "update eggs package" \
-      "DOCUMENTATION"   "documentation about eggs" \
-      "EXPORT"          "export /deb/docs/iso" \
-      "TOOLS"           "clean/initrd/locales/pve/sanitize/skel/yolk" \
+      "Documentation"   "documentation about eggs" \
+      "Export"          "export /deb/docs/iso" \
+      "Tools"           "clean/initrd/locales/pve/sanitize/skel/yolk" \
       "quit"            "exit" 3>&2 2>&1 1>&3
       )
 
@@ -35,12 +35,6 @@ function main {
 
          "dad")
             dad ;;
-
-         "DOCUMENTATION")
-            documentation ;;
-
-         "EXPORT")
-            export ;;
 
          "help")
             help ;;
@@ -60,7 +54,13 @@ function main {
          "remove")
             remove ;;
 
-         "TOOLS")
+         "Documentation")
+            documentation ;;
+
+         "Export")
+            export ;;
+
+         "Tools")
             tools ;;
 
          "update")
@@ -267,13 +267,13 @@ function remove_purge {
 function tools {
    answer= $(
    whiptail --title "TOOLS" --menu "eggs's companions tools" 22 75 14 \
-   "clean"     "clean system log, apt, etc" \
+   "clean"     "clean system logs, apt cache, etc" \
    "initrd"    "initrd (experimental)" \
    "locales"   "install/clean locales" \
    "pve"       "enable/start/stop pve-live (experimental)" \
-   "sanitize"  "remove eggs remains and sanitize" \
-   "skel"      "update skel from home configuration" \
-   "yolk"      "configure internal repo /usr/local/yolk" \
+   "sanitize"  "remove various scripts eggs related and sanitize" \
+   "skel"      "update /etc/skel from current user or user configuration" \
+   "yolk"      "configure an internal apt repository in /usr/local/yolk" \
    "quit"      "up" 3>&2 2>&1 1>&3
    )
 

@@ -31,7 +31,7 @@ export default class Update extends Command {
    async run() {
       Utils.titles(this.id + ' ' + this.argv)
       const { flags } = this.parse(Update)
-      if (Utils.isRoot()) {
+      if (Utils.isRoot(this.id)) {
          Utils.titles(this.id + ' ' + this.argv)
 
          if (Utils.isSources()) {
@@ -57,8 +57,8 @@ export default class Update extends Command {
             Utils.warning('penguins-eggs@' + npmVersion + ' available via npm')
          }
 
-         let basket = new Basket()
-         let basketVersion = await basket.last()
+         const basket = new Basket()
+         const basketVersion = await basket.last()
          if (basketVersion !== '') {
             Utils.warning('eggs-' + basketVersion + '-1.deb available in basket')
          }

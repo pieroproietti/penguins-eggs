@@ -55,7 +55,7 @@ export default class Calamares extends Command {
       }
       console.log(`theme: ${theme}`)
 
-      if (Utils.isRoot()) {
+      if (Utils.isRoot(this.id)) {
          if (Pacman.isXInstalled()) {
             if (await Utils.customConfirm(`Select yes to continue...`)) {
                if (install) {

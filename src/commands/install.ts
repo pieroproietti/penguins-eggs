@@ -51,7 +51,7 @@ export default class Install extends Command {
          lvmremove = true
       }
 
-      if (Utils.isRoot()) {
+      if (Utils.isRoot(this.id)) {
          if (Utils.isLive()) {
             if (flags.gui) {
                shx.exec('calamares')

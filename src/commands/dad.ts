@@ -24,9 +24,10 @@ export default class Dad extends Command {
   async run() {
     Utils.titles(this.id + ' ' + this.argv)
     console.log(chalk.cyan('Daddy, what else did you leave for me?'))
-    const { args, flags } = this.parse(Dad)
-
-    const daddy = new Daddy()
-    daddy.helpMe(flags.verbose)
+    const { flags } = this.parse(Dad)
+    if (Utils.isRoot(this.id)) {
+      const daddy = new Daddy()
+      daddy.helpMe(flags.verbose)
+    }
   }
 }

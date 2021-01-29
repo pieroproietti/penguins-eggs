@@ -45,7 +45,7 @@ export default class Remove extends Command {
          verbose = true
       }
 
-      if (Utils.isRoot()) {
+      if (Utils.isRoot(this.id)) {
          if (flags.all) {
             await Remove.all(verbose)
          } else if (flags.prerequisites) {

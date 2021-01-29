@@ -41,7 +41,7 @@ export default class Kill extends Command {
 
       const echo = Utils.setEcho(verbose)
 
-      if (Utils.isRoot()) {
+      if (Utils.isRoot(this.id)) {
          Utils.warning('Cleaning the nest...')
          const settings = new Settings()
          await settings.load()

@@ -16,7 +16,6 @@ export default class Mom extends Command {
 
   static flags = {
     help: flags.help({ char: 'h' }),
-    // cli: flags.boolean({ char: 'c', description: 'force cli version of mommy' }),
   }
 
   async run() {
@@ -26,8 +25,7 @@ export default class Mom extends Command {
       Utils.warning('You must to be kind with your mom! Call her without sudo')
       process.exit(0)
     }
-    const { flags } = this.parse(Mom)
-    let mum = path.resolve(__dirname, `../../scripts/mom-cli.sh`)
+    const mum = path.resolve(__dirname, `../../scripts/mom-cli.sh`)
     exec(mum)
   }
 }

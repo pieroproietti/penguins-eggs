@@ -31,93 +31,92 @@ interface editConf {
 
 
 export default class Daddy {
-    settings = {} as Settings 
+    settings = {} as Settings
 
 
     async helpMe(verbose = false) {
-        if (Utils.isRoot()) {
 
-            // Controllo prerequisites
-            if (!Pacman.prerequisitesCheck()) {
-                console.log('- installing prerequisites...')
-                Pacman.prerequisitesInstall(verbose)
-            } else {
-                console.log('- prerequisites already present')
+        // Controllo prerequisites
+        if (!Pacman.prerequisitesCheck()) {
+            console.log('- installing prerequisites...')
+            Pacman.prerequisitesInstall(verbose)
+        } else {
+            console.log('- prerequisites already present')
+        }
+
+        // Controllo configurazione
+        if (!Pacman.configurationCheck()) {
+            console.log('- creating configuration...')
+            Pacman.configurationInstall(verbose)
+        } else {
+            console.log('- configuration already present')
+        }
+
+
+        // show and edit configuration
+        this.settings = new Settings()
+        let config = {} as IConfig
+        if (await this.settings.load()) {
+
+            config = this.settings.config
+
+            // Edito i campi
+            let nc: string = await editConfig(config)
+            let newConf = JSON.parse(nc)
+
+            // salvo le mdifiche      
+            config.snapshot_basename = newConf.snapshot_basename
+            config.snapshot_prefix = newConf.snapshot_prefix
+            config.user_opt = newConf.user_opt
+            config.user_opt_passwd = newConf.user_opt_passwd
+            config.root_passwd = newConf.root_passwd
+            config.theme = newConf.theme
+            if (newConf.compression === 'fast') {
+                config.compression = 'lz4'
+            } else if (newConf.compression === 'normal') {
+                config.compression = 'xz'
+            } else if (newConf.compression === 'max') {
+                config.compression = 'xz -Xbcj x86'
             }
 
-            // Controllo configurazione
-            if (!Pacman.configurationCheck()) {
-                console.log('- creating configuration...')
-                Pacman.configurationInstall(verbose)
-            } else {
-                console.log('- configuration already present')
+            await this.settings.save(config)
+
+            // Controllo se serve il kill
+            let flags = ''
+            if (verbose) {
+                flags = '--verbose '
+            }
+            Utils.titles('kill' + flags)
+            console.log(chalk.cyan('Daddy, what else did you leave for me?'))
+            await this.settings.listFreeSpace()
+            if (await Utils.customConfirm()) {
+                await exec(`rm ${this.settings.work_dir.path} -rf`)
+                await exec(`rm ${this.settings.config.snapshot_dir} -rf`)
             }
 
+            // produce
+            if (config.compression === 'lz4') {
+                flags += '--fast'
+            } else if (config.compression === 'xz') {
+                flags += '--normal'
+            } else if (config.compression === 'xz -Xbcj x86') {
+                flags += '--max'
+            }
 
-            // show and edit configuration
-            this.settings = new Settings()
-            let config = {} as IConfig
-            if (await this.settings.load()) {
-
-                config = this.settings.config
-
-                // Edito i campi
-                let nc: string = await editConfig(config)
-                let newConf = JSON.parse(nc)
-
-                // salvo le mdifiche      
-                config.snapshot_basename = newConf.snapshot_basename
-                config.snapshot_prefix = newConf.snapshot_prefix
-                config.user_opt = newConf.user_opt
-                config.user_opt_passwd = newConf.user_opt_passwd
-                config.root_passwd = newConf.root_passwd
-                config.theme = newConf.theme
-                if (newConf.compression === 'fast') {
-                    config.compression = 'lz4'
-                } else if (newConf.compression === 'normal') {
-                    config.compression = 'xz'
-                } else if (newConf.compression === 'max') {
-                    config.compression = 'xz -Xbcj x86'
-                }
-
-                await this.settings.save(config)
-
-                // Controllo se serve il kill
-                let flags = ''
-                if (verbose) {
-                    flags = '--verbose '
-                }
-                Utils.titles('kill' + flags)
-                console.log(chalk.cyan('Daddy, what else did you leave for me?'))
-                await this.settings.listFreeSpace()
-                if (await Utils.customConfirm()) {
-                    await exec(`rm ${this.settings.work_dir.path} -rf`)
-                    await exec(`rm ${this.settings.config.snapshot_dir} -rf`)
-                }
-
-                // produce
-                if (config.compression === 'lz4') {
-                    flags += '--fast'
-                } else if (config.compression === 'xz') {
-                    flags += '--normal'
-                } else if (config.compression === 'xz -Xbcj x86') {
-                    flags += '--max'
-                }
-
-                if (config.theme !== '') {
-                    flags += ` --theme=${config.theme} `
-                }
-                Utils.titles('produce' + ' ' + flags)
-                console.log(chalk.cyan('Daddy, what else did you leave for me?'))
-                const myAddons = {} as IMyAddons
-                const ovary = new Ovary(config.compression)
-                if (await ovary.fertilization()) {
-                    await ovary.produce(config.snapshot_basename, false, false, false, config.theme, myAddons, verbose)
-                    ovary.finished(false)
-                }
+            if (config.theme !== '') {
+                flags += ` --theme=${config.theme} `
+            }
+            Utils.titles('produce' + ' ' + flags)
+            console.log(chalk.cyan('Daddy, what else did you leave for me?'))
+            const myAddons = {} as IMyAddons
+            const ovary = new Ovary(config.compression)
+            if (await ovary.fertilization()) {
+                await ovary.produce(config.snapshot_basename, false, false, false, config.theme, myAddons, verbose)
+                ovary.finished(false)
             }
         }
     }
+
 }
 
 

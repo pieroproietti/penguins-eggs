@@ -57,7 +57,7 @@ export default class Produce extends Command {
    async run() {
       Utils.titles(this.id + ' ' + this.argv)
       const { flags } = this.parse(Produce)
-      if (Utils.isRoot()) {
+      if (Utils.isRoot(this.id)) {
          /**
           * ADDONS dei vendors
           */

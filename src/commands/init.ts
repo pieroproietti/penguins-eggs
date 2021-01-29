@@ -27,7 +27,7 @@ export default class Init extends Command {
       verbose: flags.boolean({ char: 'v', description: 'verbose' }),
    }
 
-   static examples = [`~$ eggs init\ninstall prerequisites and create configuration files`]
+   static examples = [`~$ eggs init\ninit eggs, install prerequisites and create configuration files`]
 
    async run() {
       Utils.titles(this.id + ' ' + this.argv)
@@ -36,7 +36,7 @@ export default class Init extends Command {
 
       const verbose = flags.verbose
 
-      if (Utils.isRoot()) {
+      if (Utils.isRoot(this.id)) {
          // Aggiungere autocomplete
          await exec('eggs autocomplete > /dev/null')
          await exec('cp ~/.cache/penguins-eggs/autocomplete/functions/bash/eggs.bash /etc/bash_completion.d/')

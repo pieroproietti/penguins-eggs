@@ -353,10 +353,10 @@ export default class Utils {
     * @param path
     */
    static isMountpoint(path = ''): boolean {
-      let result: number
+      
       const cmd = `mountpoint -q ${path}`
       // return 0 if the directory is a mountpoint, non-zero if not.
-      result = shx.exec(cmd, { silent: true }).code
+      const result: number = shx.exec(cmd, { silent: true }).code
       return result === 0
    }
 
@@ -364,10 +364,11 @@ export default class Utils {
     * return true if eggs run as root
     * @returns isRoot
     */
-   static isRoot(): boolean {
+   static isRoot(command=''): boolean {
       if (process.getuid && process.getuid() === 0) {
          return true
       }
+      Utils.warning(chalk.white(`${Utils.getFriendName()} ${command}`) + ` need to run with root privileges. Please, prefix it with sudo`)
       return false
    }
 
