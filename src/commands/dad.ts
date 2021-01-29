@@ -21,8 +21,6 @@ export default class Dad extends Command {
     verbose: flags.boolean({ char: 'v' }),
   }
 
-  static args = [{ name: 'file' }]
-
   async run() {
     Utils.titles(this.id + ' ' + this.argv)
     console.log(chalk.cyan('Daddy, what else did you leave for me?'))

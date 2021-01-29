@@ -6,20 +6,26 @@ eggs(1) -- A reproductive system for penguins
 <!-- tocstop -->
 
 ## SYNOPSIS
+  eggs command [--flags]
 
-eggs command [--flags]
+  Most of the command of eggs need sudo, but there are exceptions, for export, info and mom.
 
-examples:
+  examples:
 
-<!-- usage -->
+  * **sudo eggs init**  # initialize eggs, create man pages and autocomplete for eggs
+  * **sudo eggs produce** # create an ISO of the system
+  * **sudo eggs kill** # delete the created ISO and clean the nest
 
-<!-- usagestop -->
+  There are too, two interactive helpers:
+  * **eggs mom** # interactive GUI (be kind with mom, she don't need sudo)
+  * **sudo eggs dad** # get help from dad to finalize ISO
+
 
 ## DESCRIPTION
 
 eggs is a console utility, in active development, who let you to remaster your system and redistribuite it as iso image.
 
-eggs as CLI tool have his man page but not only - yith his two GUIs: eggs mom and eggs dad - you can help yourself and easily learn eggs commands or get documentations.
+The scope of this project is to implement the process of remastering your version of Linux, generate it as ISO image to burn on a CD/DVD or copy to a usb key to boot your system. You can easily install your live system with gui installer (calamares)  or eggs cli installer.
 
 ## COMMANDS
 
@@ -42,19 +48,29 @@ eggs as CLI tool have his man page but not only - yith his two GUIs: eggs mom an
 
 
 ## TROUBLES
-Different versions of eggs can have differents configurations files. This can lead to get errors. A fast workaround for this trouble can be download eggs, remove eggs, remove it's configurations, reinstall new version and run sudo eggs prerequisites:
+Different versions of eggs can have differents configurations files. This can lead to get errors. 
 
-  **sudo eggs update** # select basket, choose the version and download it but not install!
+A fast workaround for this trouble can be:
 
-  **sudo apt --purge eggs** # remove eggs
+* download eggs
+* remove eggs
++ remove it's configurations
+* reinstall new version
++ run sudo eggs init
 
-  **sudo rm /usr/penguins-eggs/ rf** # remove eggs 
+Here are the commands to do:
 
-  **sudo rm /etc/penguins-eggs.d -rf** # remove eggs configurations files
+* **sudo eggs update** # select basket, choose the version and download it but not install!
 
-  **sudo dpkg -i /tmp/eggs_7.7.9-1_amd64.deb** # install eggs from downloaded package
+* **sudo apt --purge eggs** # remove eggs
 
-  **sudo eggs prerequisites** # check prerequisites and generate configuration's files
+* **sudo rm /usr/penguins-eggs/ rf** # remove eggs 
+
+* **sudo rm /etc/penguins-eggs.d -rf** # remove eggs configurations files
+
+* **sudo dpkg -i /tmp/eggs_7.7.9-1_amd64.deb** # install eggs from downloaded package
+
+* **sudo eggs init** # check prerequisites and generate configuration's files
 
 ## BUGS
 

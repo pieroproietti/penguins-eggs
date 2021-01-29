@@ -112,7 +112,7 @@ USAGE
 * [`eggs adapt`](#eggs-adapt)
 * [`eggs autocomplete [SHELL]`](#eggs-autocomplete-shell)
 * [`eggs calamares`](#eggs-calamares)
-* [`eggs dad [FILE]`](#eggs-dad-file)
+* [`eggs dad`](#eggs-dad)
 * [`eggs export:deb`](#eggs-exportdeb)
 * [`eggs export:docs`](#eggs-exportdocs)
 * [`eggs export:iso`](#eggs-exportiso)
@@ -199,13 +199,13 @@ EXAMPLES
 
 _See code: [src/commands/calamares.ts](https://github.com/pieroproietti/penguins-eggs/blob/v7.7.25/src/commands/calamares.ts)_
 
-## `eggs dad [FILE]`
+## `eggs dad`
 
 ask help from daddy (gui interface)!
 
 ```
 USAGE
-  $ eggs dad [FILE]
+  $ eggs dad
 
 OPTIONS
   -h, --help     show CLI help

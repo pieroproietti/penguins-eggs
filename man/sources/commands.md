@@ -1,33 +1,33 @@
 <!-- commands -->
-* [`eggs adapt`](#eggs-adapt)
-* [`eggs autocomplete [SHELL]`](#eggs-autocomplete-shell)
-* [`eggs calamares`](#eggs-calamares)
-* [`eggs dad [FILE]`](#eggs-dad-file)
-* [`eggs export:deb`](#eggs-exportdeb)
-* [`eggs export:docs`](#eggs-exportdocs)
-* [`eggs export:iso`](#eggs-exportiso)
-* [`eggs help [COMMAND]`](#eggs-help-command)
-* [`eggs info`](#eggs-info)
-* [`eggs init`](#eggs-init)
-* [`eggs install`](#eggs-install)
-* [`eggs kill`](#eggs-kill)
-* [`eggs mom`](#eggs-mom)
-* [`eggs produce`](#eggs-produce)
-* [`eggs remove`](#eggs-remove)
-* [`eggs tools:clean`](#eggs-toolsclean)
-* [`eggs tools:initrd`](#eggs-toolsinitrd)
-* [`eggs tools:locales`](#eggs-toolslocales)
-* [`eggs tools:pve`](#eggs-toolspve)
-* [`eggs tools:sanitize`](#eggs-toolssanitize)
-* [`eggs tools:skel`](#eggs-toolsskel)
-* [`eggs tools:yolk`](#eggs-toolsyolk)
-* [`eggs update`](#eggs-update)
+* [eggs adapt](#eggs-adapt)
+* [eggs autocomplete [SHELL]](#eggs-autocomplete-shell)
+* [eggs calamares](#eggs-calamares)
+* [eggs dad](#eggs-dad)
+* [eggs export:deb](#eggs-exportdeb)
+* [eggs export:docs](#eggs-exportdocs)
+* [eggs export:iso](#eggs-exportiso)
+* [eggs help [COMMAND]](#eggs-help-command)
+* [eggs info](#eggs-info)
+* [eggs init](#eggs-init)
+* [eggs install](#eggs-install)
+* [eggs kill](#eggs-kill)
+* [eggs mom](#eggs-mom)
+* [eggs produce](#eggs-produce)
+* [eggs remove](#eggs-remove)
+* [eggs tools:clean](#eggs-toolsclean)
+* [eggs tools:initrd](#eggs-toolsinitrd)
+* [eggs tools:locales](#eggs-toolslocales)
+* [eggs tools:pve](#eggs-toolspve)
+* [eggs tools:sanitize](#eggs-toolssanitize)
+* [eggs tools:skel](#eggs-toolsskel)
+* [eggs tools:yolk](#eggs-toolsyolk)
+* [eggs update](#eggs-update)
 
-## `eggs adapt`
+## eggs adapt
 
 adapt monitor resolution for VM only
 
-```
+
 USAGE
   $ eggs adapt
 
@@ -37,15 +37,15 @@ OPTIONS
 
 ALIASES
   $ eggs adjust
-```
 
-_See code: [src/commands/adapt.ts](https://github.com/pieroproietti/penguins-eggs/blob/v7.7.25/src/commands/adapt.ts)_
 
-## `eggs autocomplete [SHELL]`
+
+
+## eggs autocomplete [SHELL]
 
 display autocomplete installation instructions
 
-```
+
 USAGE
   $ eggs autocomplete [SHELL]
 
@@ -60,15 +60,15 @@ EXAMPLES
   $ eggs autocomplete bash
   $ eggs autocomplete zsh
   $ eggs autocomplete --refresh-cache
-```
 
-_See code: [@oclif/plugin-autocomplete](https://github.com/oclif/plugin-autocomplete/blob/v0.3.0/src/commands/autocomplete/index.ts)_
 
-## `eggs calamares`
+
+
+## eggs calamares
 
 calamares or install or configure it
 
-```
+
 USAGE
   $ eggs calamares
 
@@ -85,30 +85,30 @@ EXAMPLES
 
   ~$ sudo eggs calamares -i 
   install calamares and create it's configuration's files
-```
 
-_See code: [src/commands/calamares.ts](https://github.com/pieroproietti/penguins-eggs/blob/v7.7.25/src/commands/calamares.ts)_
 
-## `eggs dad [FILE]`
+
+
+## eggs dad
 
 ask help from daddy (gui interface)!
 
-```
+
 USAGE
-  $ eggs dad [FILE]
+  $ eggs dad
 
 OPTIONS
   -h, --help     show CLI help
   -v, --verbose
-```
 
-_See code: [src/commands/dad.ts](https://github.com/pieroproietti/penguins-eggs/blob/v7.7.25/src/commands/dad.ts)_
 
-## `eggs export:deb`
+
+
+## eggs export:deb
 
 export package eggs-v7-x-x-1.deb in the destination host
 
-```
+
 USAGE
   $ eggs export:deb
 
@@ -119,44 +119,44 @@ OPTIONS
   --amd64      export amd64 arch
   --armel      export armel arch
   --i386       export i386 arch
-```
 
-_See code: [src/commands/export/deb.ts](https://github.com/pieroproietti/penguins-eggs/blob/v7.7.25/src/commands/export/deb.ts)_
 
-## `eggs export:docs`
+
+
+## eggs export:docs
 
 remove and export docType documentation of the sources in the destination host
 
-```
+
 USAGE
   $ eggs export:docs
 
 OPTIONS
   -h, --help  show CLI help
-```
 
-_See code: [src/commands/export/docs.ts](https://github.com/pieroproietti/penguins-eggs/blob/v7.7.25/src/commands/export/docs.ts)_
 
-## `eggs export:iso`
+
+
+## eggs export:iso
 
 export iso in the destination host
 
-```
+
 USAGE
   $ eggs export:iso
 
 OPTIONS
   -c, --clean  delete old ISOs before to copy
   -h, --help   show CLI help
-```
 
-_See code: [src/commands/export/iso.ts](https://github.com/pieroproietti/penguins-eggs/blob/v7.7.25/src/commands/export/iso.ts)_
 
-## `eggs help [COMMAND]`
+
+
+## eggs help [COMMAND]
 
 display help for eggs
 
-```
+
 USAGE
   $ eggs help [COMMAND]
 
@@ -165,30 +165,30 @@ ARGUMENTS
 
 OPTIONS
   --all  see all commands in CLI
-```
 
-_See code: [@oclif/plugin-help](https://github.com/oclif/plugin-help/blob/v3.2.1/src/commands/help.ts)_
 
-## `eggs info`
+
+
+## eggs info
 
 informations about system and eggs
 
-```
+
 USAGE
   $ eggs info
 
 EXAMPLE
   $ eggs info
   You will find here informations about penguin's eggs!
-```
 
-_See code: [src/commands/info.ts](https://github.com/pieroproietti/penguins-eggs/blob/v7.7.25/src/commands/info.ts)_
 
-## `eggs init`
+
+
+## eggs init
 
 Initialize eggs and install packages prerequisites to run eggs
 
-```
+
 USAGE
   $ eggs init
 
@@ -203,15 +203,15 @@ ALIASES
 EXAMPLE
   ~$ eggs init
   install prerequisites and create configuration files
-```
 
-_See code: [src/commands/init.ts](https://github.com/pieroproietti/penguins-eggs/blob/v7.7.25/src/commands/init.ts)_
 
-## `eggs install`
+
+
+## eggs install
 
 eggs installer - (the egg became penguin)
 
-```
+
 USAGE
   $ eggs install
 
@@ -230,15 +230,15 @@ ALIASES
 EXAMPLE
   $ eggs install
   Install the system with eggs cli installer(default)
-```
 
-_See code: [src/commands/install.ts](https://github.com/pieroproietti/penguins-eggs/blob/v7.7.25/src/commands/install.ts)_
 
-## `eggs kill`
+
+
+## eggs kill
 
 kill the eggs/free the nest
 
-```
+
 USAGE
   $ eggs kill
 
@@ -249,29 +249,29 @@ OPTIONS
 EXAMPLE
   $ eggs kill
   kill the eggs/free the nest
-```
 
-_See code: [src/commands/kill.ts](https://github.com/pieroproietti/penguins-eggs/blob/v7.7.25/src/commands/kill.ts)_
 
-## `eggs mom`
+
+
+## eggs mom
 
 ask for mommy (gui interface)!
 
-```
+
 USAGE
   $ eggs mom
 
 OPTIONS
   -h, --help  show CLI help
-```
 
-_See code: [src/commands/mom.ts](https://github.com/pieroproietti/penguins-eggs/blob/v7.7.25/src/commands/mom.ts)_
 
-## `eggs produce`
+
+
+## eggs produce
 
 the system produce an egg: livecd creation.
 
-```
+
 USAGE
   $ eggs produce
 
@@ -329,15 +329,15 @@ EXAMPLES
   $ sudo eggs produce -vs --basename leo --rsupport 
   produce scripts to build an ISO as the previus example. Scripts can be found
   in /home/eggs/ovarium and you can customize all you need
-```
 
-_See code: [src/commands/produce.ts](https://github.com/pieroproietti/penguins-eggs/blob/v7.7.25/src/commands/produce.ts)_
 
-## `eggs remove`
+
+
+## eggs remove
 
 remove eggs, eggs configurations, prerequisites, calamares, calamares configurations
 
-```
+
 USAGE
   $ eggs remove
 
@@ -360,30 +360,30 @@ EXAMPLES
 
   $ sudo eggs remove --all
   remove eggs, eggs configurations, prerequisites, calamares, calamares configurations
-```
 
-_See code: [src/commands/remove.ts](https://github.com/pieroproietti/penguins-eggs/blob/v7.7.25/src/commands/remove.ts)_
 
-## `eggs tools:clean`
+
+
+## eggs tools:clean
 
 clean system log, apt, etc
 
-```
+
 USAGE
   $ eggs tools:clean
 
 OPTIONS
   -h, --help     show CLI help
   -v, --verbose  verbose
-```
 
-_See code: [src/commands/tools/clean.ts](https://github.com/pieroproietti/penguins-eggs/blob/v7.7.25/src/commands/tools/clean.ts)_
 
-## `eggs tools:initrd`
+
+
+## eggs tools:initrd
 
 Test initrd
 
-```
+
 USAGE
   $ eggs tools:initrd
 
@@ -392,15 +392,15 @@ OPTIONS
   -v, --verbose
   --check=check  check if necessary to clean initrd.img
   --clean=clean  clean the initrd.img
-```
 
-_See code: [src/commands/tools/initrd.ts](https://github.com/pieroproietti/penguins-eggs/blob/v7.7.25/src/commands/tools/initrd.ts)_
 
-## `eggs tools:locales`
+
+
+## eggs tools:locales
 
 install/clean locales
 
-```
+
 USAGE
   $ eggs tools:locales
 
@@ -408,15 +408,15 @@ OPTIONS
   -h, --help       show CLI help
   -r, --reinstall  reinstall locales
   -v, --verbose    verbose
-```
 
-_See code: [src/commands/tools/locales.ts](https://github.com/pieroproietti/penguins-eggs/blob/v7.7.25/src/commands/tools/locales.ts)_
 
-## `eggs tools:pve`
+
+
+## eggs tools:pve
 
 enable/start/stop pve-live
 
-```
+
 USAGE
   $ eggs tools:pve
 
@@ -427,29 +427,29 @@ OPTIONS
   -v, --verbose  stop service
   --start        start
   --stop         stop service
-```
 
-_See code: [src/commands/tools/pve.ts](https://github.com/pieroproietti/penguins-eggs/blob/v7.7.25/src/commands/tools/pve.ts)_
 
-## `eggs tools:sanitize`
+
+
+## eggs tools:sanitize
 
 sanitize
 
-```
+
 USAGE
   $ eggs tools:sanitize
 
 OPTIONS
   -h, --help  show CLI help
-```
 
-_See code: [src/commands/tools/sanitize.ts](https://github.com/pieroproietti/penguins-eggs/blob/v7.7.25/src/commands/tools/sanitize.ts)_
 
-## `eggs tools:skel`
+
+
+## eggs tools:skel
 
 update skel from home configuration
 
-```
+
 USAGE
   $ eggs tools:skel
 
@@ -461,15 +461,15 @@ OPTIONS
 EXAMPLE
   $ eggs skel --user mauro
   desktop configuration of user mauro will get used as default
-```
 
-_See code: [src/commands/tools/skel.ts](https://github.com/pieroproietti/penguins-eggs/blob/v7.7.25/src/commands/tools/skel.ts)_
 
-## `eggs tools:yolk`
+
+
+## eggs tools:yolk
 
 configure eggs to install without internet
 
-```
+
 USAGE
   $ eggs tools:yolk
 
@@ -479,15 +479,15 @@ OPTIONS
 
 EXAMPLE
   $ eggs yolk -v
-```
 
-_See code: [src/commands/tools/yolk.ts](https://github.com/pieroproietti/penguins-eggs/blob/v7.7.25/src/commands/tools/yolk.ts)_
 
-## `eggs update`
+
+
+## eggs update
 
 update the penguin's eggs tool.
 
-```
+
 USAGE
   $ eggs update
 
@@ -504,7 +504,7 @@ DESCRIPTION
 EXAMPLE
   $ eggs update
   update/upgrade the penguin's eggs tool
-```
 
-_See code: [src/commands/update.ts](https://github.com/pieroproietti/penguins-eggs/blob/v7.7.25/src/commands/update.ts)_
+
+
 <!-- commandsstop -->
