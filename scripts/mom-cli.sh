@@ -18,7 +18,7 @@ function main {
       "kill"            "delete ISOs" \
       "produce"         "produce and ISO of your system" \
       "remove"          "remove eggs" \
-      "update"          "update eggs packege" \
+      "update"          "update eggs package" \
       "DOCUMENTATION"   "documentation about eggs" \
       "EXPORT"          "export /deb/docs/iso" \
       "TOOLS"           "clean/initrd/locales/pve/sanitize/skel/yolk" \
