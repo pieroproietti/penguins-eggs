@@ -14,7 +14,7 @@ $ npm install -g penguins-eggs
 $ eggs COMMAND
 running command...
 $ eggs (-v|--version|version)
-penguins-eggs/7.7.26 linux-x64 node-v14.15.4
+penguins-eggs/7.7.27 linux-x64 node-v14.15.4
 $ eggs --help [COMMAND]
 USAGE
   $ eggs COMMAND
@@ -80,6 +80,8 @@ The scope of this project is to implement the process of remastering your versio
 adapt monitor resolution for VM only
 
 
+adapt monitor resolution for VM only
+
 USAGE
   $ eggs adapt
 
@@ -97,6 +99,8 @@ ALIASES
 
 display autocomplete installation instructions
 
+
+display autocomplete installation instructions
 
 USAGE
   $ eggs autocomplete [SHELL]
@@ -120,6 +124,8 @@ EXAMPLES
 
 calamares or install or configure it
 
+
+calamares or install or configure it
 
 USAGE
   $ eggs calamares
@@ -146,6 +152,8 @@ EXAMPLES
 ask help from daddy (gui interface)!
 
 
+ask help from daddy (gui interface)!
+
 USAGE
   $ eggs dad
 
@@ -160,6 +168,8 @@ OPTIONS
 
 export package eggs-v7-x-x-1.deb in the destination host
 
+
+export package eggs-v7-x-x-1.deb in the destination host
 
 USAGE
   $ eggs export:deb
@@ -180,6 +190,8 @@ OPTIONS
 remove and export docType documentation of the sources in the destination host
 
 
+remove and export docType documentation of the sources in the destination host
+
 USAGE
   $ eggs export:docs
 
@@ -193,6 +205,8 @@ OPTIONS
 
 export iso in the destination host
 
+
+export iso in the destination host
 
 USAGE
   $ eggs export:iso
@@ -208,6 +222,8 @@ OPTIONS
 
 display help for eggs
 
+
+display help for <%= config.bin %>
 
 USAGE
   $ eggs help [COMMAND]
@@ -226,6 +242,8 @@ OPTIONS
 informations about system and eggs
 
 
+informations about system and eggs
+
 USAGE
   $ eggs info
 
@@ -241,6 +259,8 @@ EXAMPLE
 Initialize eggs and install packages prerequisites to run eggs
 
 
+Initialize eggs and install packages prerequisites to run eggs
+
 USAGE
   $ eggs init
 
@@ -254,7 +274,7 @@ ALIASES
 
 EXAMPLE
   ~$ eggs init
-  install prerequisites and create configuration files
+  init eggs, install prerequisites and create configuration files
 
 
 
@@ -263,6 +283,8 @@ EXAMPLE
 
 eggs installer - (the egg became penguin)
 
+
+eggs installer - (the egg became penguin)
 
 USAGE
   $ eggs install
@@ -291,6 +313,8 @@ EXAMPLE
 kill the eggs/free the nest
 
 
+kill the eggs/free the nest
+
 USAGE
   $ eggs kill
 
@@ -310,6 +334,8 @@ EXAMPLE
 ask for mommy (gui interface)!
 
 
+ask for mommy (gui interface)!
+
 USAGE
   $ eggs mom
 
@@ -323,6 +349,8 @@ OPTIONS
 
 the system produce an egg: livecd creation.
 
+
+the system produce an egg: livecd creation.
 
 USAGE
   $ eggs produce
@@ -390,6 +418,8 @@ EXAMPLES
 remove eggs, eggs configurations, prerequisites, calamares, calamares configurations
 
 
+remove eggs, eggs configurations, prerequisites, calamares, calamares configurations
+
 USAGE
   $ eggs remove
 
@@ -421,6 +451,8 @@ EXAMPLES
 clean system log, apt, etc
 
 
+clean system log, apt, etc
+
 USAGE
   $ eggs tools:clean
 
@@ -435,6 +467,8 @@ OPTIONS
 
 Test initrd
 
+
+Test initrd
 
 USAGE
   $ eggs tools:initrd
@@ -453,6 +487,8 @@ OPTIONS
 install/clean locales
 
 
+install/clean locales
+
 USAGE
   $ eggs tools:locales
 
@@ -468,6 +504,8 @@ OPTIONS
 
 enable/start/stop pve-live
 
+
+enable/start/stop pve-live
 
 USAGE
   $ eggs tools:pve
@@ -488,6 +526,8 @@ OPTIONS
 sanitize
 
 
+sanitize
+
 USAGE
   $ eggs tools:sanitize
 
@@ -501,6 +541,8 @@ OPTIONS
 
 update skel from home configuration
 
+
+update skel from home configuration
 
 USAGE
   $ eggs tools:skel
@@ -522,6 +564,8 @@ EXAMPLE
 configure eggs to install without internet
 
 
+configure eggs to install without internet
+
 USAGE
   $ eggs tools:yolk
 
@@ -539,6 +583,9 @@ EXAMPLE
 
 update the penguin's eggs tool.
 
+
+update the penguin's eggs tool.
+This method always works, both with npm and deb packages.
 
 USAGE
   $ eggs update

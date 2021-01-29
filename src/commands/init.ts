@@ -21,7 +21,7 @@ const exec = require('../lib/utils').exec
 export default class Init extends Command {
    static description = 'Initialize eggs and install packages prerequisites to run eggs'
 
-   static aliases = ['prerequisites', 'config']
+   static aliases = ['fertilize', 'prerequisites']
    static flags = {
       help: flags.help({ char: 'h' }),
       verbose: flags.boolean({ char: 'v', description: 'verbose' }),
@@ -99,7 +99,7 @@ export default class Init extends Command {
          i.efi = (!Pacman.packageIsInstalled('grub-efi-amd64'))
       }
 
-      if (! await Pacman.calamaresCheck() && (Pacman.isXInstalled())) {
+      if (! await Pacman.calamaresCheck() && (await Pacman.isXInstalled())) {
          Utils.warning('You are on a graphics system, I suggest to use the GUI installer calamares')
          i.calamares = (await Utils.customConfirm('Want to install calamares?'))
          console.log()

@@ -18,7 +18,7 @@ You can follow the project also consulting the [commit history](https://github.c
 ## Changelog
 Versions are listed on reverse order, the first is the last one.
 
-### eggs-7.7.26.1_deb
+### eggs-7.7.27.1_deb
 * eggs init in place of prerequisites. The new version will install man and aucomplete. Sorry, due nodejs version, I forced to remove i386 version.
 
 ### eggs-7.7.24.1_deb
