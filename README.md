@@ -138,6 +138,8 @@ USAGE
 adapt monitor resolution for VM only
 
 ```
+adapt monitor resolution for VM only
+
 USAGE
   $ eggs adapt
 
@@ -156,6 +158,8 @@ _See code: [src/commands/adapt.ts](https://github.com/pieroproietti/penguins-egg
 display autocomplete installation instructions
 
 ```
+display autocomplete installation instructions
+
 USAGE
   $ eggs autocomplete [SHELL]
 
@@ -172,13 +176,15 @@ EXAMPLES
   $ eggs autocomplete --refresh-cache
 ```
 
-_See code: [@oclif/plugin-autocomplete](https://github.com/oclif/plugin-autocomplete/blob/v0.3.0/src/commands/autocomplete/index.ts)_
+_See code: [@oclif/plugin-autocomplete](https://github.com/oclif/plugin-autocomplete/blob/v0.1.5/src/commands/autocomplete/index.ts)_
 
 ## `eggs calamares`
 
 calamares or install or configure it
 
 ```
+calamares or install or configure it
+
 USAGE
   $ eggs calamares
 
@@ -204,6 +210,8 @@ _See code: [src/commands/calamares.ts](https://github.com/pieroproietti/penguins
 ask help from daddy (gui interface)!
 
 ```
+ask help from daddy (gui interface)!
+
 USAGE
   $ eggs dad
 
@@ -219,6 +227,8 @@ _See code: [src/commands/dad.ts](https://github.com/pieroproietti/penguins-eggs/
 export package eggs-v7-x-x-1.deb in the destination host
 
 ```
+export package eggs-v7-x-x-1.deb in the destination host
+
 USAGE
   $ eggs export:deb
 
@@ -238,6 +248,8 @@ _See code: [src/commands/export/deb.ts](https://github.com/pieroproietti/penguin
 remove and export docType documentation of the sources in the destination host
 
 ```
+remove and export docType documentation of the sources in the destination host
+
 USAGE
   $ eggs export:docs
 
@@ -252,6 +264,8 @@ _See code: [src/commands/export/docs.ts](https://github.com/pieroproietti/pengui
 export iso in the destination host
 
 ```
+export iso in the destination host
+
 USAGE
   $ eggs export:iso
 
@@ -267,6 +281,8 @@ _See code: [src/commands/export/iso.ts](https://github.com/pieroproietti/penguin
 display help for eggs
 
 ```
+display help for <%= config.bin %>
+
 USAGE
   $ eggs help [COMMAND]
 
@@ -277,13 +293,15 @@ OPTIONS
   --all  see all commands in CLI
 ```
 
-_See code: [@oclif/plugin-help](https://github.com/oclif/plugin-help/blob/v3.2.1/src/commands/help.ts)_
+_See code: [@oclif/plugin-help](https://github.com/oclif/plugin-help/blob/v2.2.3/src/commands/help.ts)_
 
 ## `eggs info`
 
 informations about system and eggs
 
 ```
+informations about system and eggs
+
 USAGE
   $ eggs info
 
@@ -299,6 +317,8 @@ _See code: [src/commands/info.ts](https://github.com/pieroproietti/penguins-eggs
 Initialize eggs and install packages prerequisites to run eggs
 
 ```
+Initialize eggs and install packages prerequisites to run eggs
+
 USAGE
   $ eggs init
 
@@ -312,7 +332,7 @@ ALIASES
 
 EXAMPLE
   ~$ eggs init
-  install prerequisites and create configuration files
+  init eggs, install prerequisites and create configuration files
 ```
 
 _See code: [src/commands/init.ts](https://github.com/pieroproietti/penguins-eggs/blob/v7.7.26/src/commands/init.ts)_
@@ -322,6 +342,8 @@ _See code: [src/commands/init.ts](https://github.com/pieroproietti/penguins-eggs
 eggs installer - (the egg became penguin)
 
 ```
+eggs installer - (the egg became penguin)
+
 USAGE
   $ eggs install
 
@@ -349,6 +371,8 @@ _See code: [src/commands/install.ts](https://github.com/pieroproietti/penguins-e
 kill the eggs/free the nest
 
 ```
+kill the eggs/free the nest
+
 USAGE
   $ eggs kill
 
@@ -368,6 +392,8 @@ _See code: [src/commands/kill.ts](https://github.com/pieroproietti/penguins-eggs
 ask for mommy (gui interface)!
 
 ```
+ask for mommy (gui interface)!
+
 USAGE
   $ eggs mom
 
@@ -382,6 +408,8 @@ _See code: [src/commands/mom.ts](https://github.com/pieroproietti/penguins-eggs/
 the system produce an egg: livecd creation.
 
 ```
+the system produce an egg: livecd creation.
+
 USAGE
   $ eggs produce
 
@@ -448,6 +476,8 @@ _See code: [src/commands/produce.ts](https://github.com/pieroproietti/penguins-e
 remove eggs, eggs configurations, prerequisites, calamares, calamares configurations
 
 ```
+remove eggs, eggs configurations, prerequisites, calamares, calamares configurations
+
 USAGE
   $ eggs remove
 
@@ -479,6 +509,8 @@ _See code: [src/commands/remove.ts](https://github.com/pieroproietti/penguins-eg
 clean system log, apt, etc
 
 ```
+clean system log, apt, etc
+
 USAGE
   $ eggs tools:clean
 
@@ -494,6 +526,8 @@ _See code: [src/commands/tools/clean.ts](https://github.com/pieroproietti/pengui
 Test initrd
 
 ```
+Test initrd
+
 USAGE
   $ eggs tools:initrd
 
@@ -511,6 +545,8 @@ _See code: [src/commands/tools/initrd.ts](https://github.com/pieroproietti/pengu
 install/clean locales
 
 ```
+install/clean locales
+
 USAGE
   $ eggs tools:locales
 
@@ -527,6 +563,8 @@ _See code: [src/commands/tools/locales.ts](https://github.com/pieroproietti/peng
 enable/start/stop pve-live
 
 ```
+enable/start/stop pve-live
+
 USAGE
   $ eggs tools:pve
 
@@ -546,6 +584,8 @@ _See code: [src/commands/tools/pve.ts](https://github.com/pieroproietti/penguins
 sanitize
 
 ```
+sanitize
+
 USAGE
   $ eggs tools:sanitize
 
@@ -560,6 +600,8 @@ _See code: [src/commands/tools/sanitize.ts](https://github.com/pieroproietti/pen
 update skel from home configuration
 
 ```
+update skel from home configuration
+
 USAGE
   $ eggs tools:skel
 
@@ -580,6 +622,8 @@ _See code: [src/commands/tools/skel.ts](https://github.com/pieroproietti/penguin
 configure eggs to install without internet
 
 ```
+configure eggs to install without internet
+
 USAGE
   $ eggs tools:yolk
 
@@ -598,6 +642,9 @@ _See code: [src/commands/tools/yolk.ts](https://github.com/pieroproietti/penguin
 update the penguin's eggs tool.
 
 ```
+update the penguin's eggs tool.
+This method always works, both with npm and deb packages.
+
 USAGE
   $ eggs update
 

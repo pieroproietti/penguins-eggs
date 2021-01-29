@@ -10,25 +10,24 @@ function main {
       # 20 righe. 75 caratteri, 16 altezza menu list
       answer=$(
       whiptail --title "mommy" --menu "Mama's gonna keep baby cosy and warm..." 22 75 14 \
-      "init"            "init eggs, install prerequisites" \
-      "dad"             "lead you to configurare and iso production" \
-      "help"            "help" \
-      "info"            "get informations" \
-      "install"         "install your system on hard disk" \
-      "kill"            "delete ISOs" \
-      "produce"         "produce and ISO of your system" \
-      "remove"          "remove eggs" \
-      "update"          "update eggs package" \
-      "Documentation"   "documentation about eggs" \
-      "Export"          "export /deb/docs/iso" \
-      "Tools"           "clean/initrd/locales/pve/sanitize/skel/yolk" \
-      "quit"            "exit" 3>&2 2>&1 1>&3
+         "init"            "init eggs, install prerequisites" \
+         "dad"             "lead you to configurare and iso production" \
+         "help"            "help" \
+         "info"            "get informations" \
+         "install"         "install your system on hard disk" \
+         "kill"            "delete ISOs" \
+         "produce"         "produce and ISO of your system" \
+         "remove"          "remove eggs" \
+         "update"          "update eggs package" \
+         "Documentation"   "documentation about eggs" \
+         "Export"          "export /deb/docs/iso" \
+         "Tools"           "clean/initrd/locales/pve/sanitize/skel/yolk" \
+         "quit"            "exit" 3>&2 2>&1 1>&3
       )
 
       case "$answer" in 
          "quit")
-            clear
-            exit ;;
+            theEnd ;;
 
          "init")
             init ;;
@@ -58,7 +57,7 @@ function main {
             documentation ;;
 
          "Export")
-            export ;;
+            Export ;;
 
          "Tools")
             tools ;;
@@ -80,11 +79,11 @@ function dad {
 ################################
 function documentation {
       answer=$(
-         whiptail --title "DOCUMENTATION" --menu "You can choose local or internet documentation, html or man" 22 75 4 \
+         whiptail --title "DOCUMENTATION" --menu "You can choose local or internet documentation, html or man" 22 75 14 \
          "site"   "https://penguins-eggs.net" \
          "manual" "manual eggs html" \
          "man"    "man eggs" \
-         "quit"            "up" 3>&2 2>&1 1>&3
+         "quit"   "previus" 3>&2 2>&1 1>&3
       )
 
       case "$answer" in 
@@ -118,14 +117,14 @@ function documentation_html {
 
 
 ################################
-function export {
+function Export {
 
       answer=$(
       whiptail --title "EXPORT" --menu "Export your eggs or packages in remote host..." 22 75 14 \
-      "deb"    "export package eggs-v7-x-x-1.deb in the destination host" \
-      "docs"   "remove and export docType documentation of the sources in the destination host" \
-      "iso"    "export iso in the destination host" \
-      "quit"            "up" 3>&2 2>&1 1>&3
+         "deb"    "export package eggs-v7-x-x-1.deb in the destination host" \
+         "docs"   "export docType source's documentation in the destination host" \
+         "iso"    "export iso image in the destination host" \
+         "quit"   "previus" 3>&2 2>&1 1>&3
       )
 
       case "$answer" in 
@@ -191,12 +190,12 @@ function init {
 
 ################################
 function produce {
-   answer= $(
-   whiptail --title "produce" --menu "Choose the prefered method..." 22 75 14 \
-   "fast"    "create fast an ISO large" \
-   "standard"  "create an ISO standard compressio" \
-   "compress"  "create an ISO max compression" \
-   "quit"      "up" 3>&2 2>&1 1>&3
+   answer=$(
+   whiptail --title "produce" --menu "Choose the prefered method of production..." 22 75 14 \
+      "fast"    "create fast an ISO (lz4 compression)" \
+      "standard"  "create an ISO standard compression (xz compression)" \
+      "compress"  "create an ISO max compression (xz -Xbcj x86)" \
+      "quit"   "previus" 3>&2 2>&1 1>&3
    )
 
    case "$answer" in 
@@ -228,12 +227,12 @@ function compress {
 
 ################################
 function remove {
-   answer= $(
+   answer=$(
    whiptail --title "remove" --menu "Remove prerequisites, eggs or purge..." 22 75 14 \
-   "prerequisites"   "remove prerequisites only" \
-   "all"             "remove prerequisites and eggs" \
-   "purge"           "remove prerequisites, eggs and purge" 
-   "quit"      "up" 3>&2 2>&1 1>&3
+      "prerequisites"   "remove prerequisites only" \
+      "all"             "remove prerequisites and eggs" \
+      "purge"           "remove prerequisites, eggs and purge" 
+      "quit"   "previus" 3>&2 2>&1 1>&3
    )
 
    case "$answer" in 
@@ -251,33 +250,35 @@ function remove {
 ################################
 function remove_prerequisites {
    sudo eggs remove --prerequisites
+   press_a_key_to_continue
 }
 
 ################################
 function remove_all {
    sudo eggs remove --all
+   press_a_key_to_continue
 }
 
 ################################
 function remove_purge {
    sudo eggs remove --purge
+   press_a_key_to_continue
 }
 
 ################################
 function tools {
-   answer= $(
-   whiptail --title "TOOLS" --menu "eggs's companions tools" 22 75 14 \
-   "clean"     "clean system logs, apt cache, etc" \
-   "initrd"    "initrd (experimental)" \
-   "locales"   "install/clean locales" \
-   "pve"       "enable/start/stop pve-live (experimental)" \
-   "sanitize"  "remove various scripts eggs related and sanitize" \
-   "skel"      "update /etc/skel from current user or user configuration" \
-   "yolk"      "configure an internal apt repository in /usr/local/yolk" \
-   "quit"      "up" 3>&2 2>&1 1>&3
+   answer=$(
+   whiptail --title "TOOLS" --menu "eggs companions tools" 22 75 14 \
+      "clean"     "clean system logs, apt cache, etc" \
+      "initrd"    "initrd (experimental)" \
+      "locales"   "install/clean locales" \
+      "pve"       "enable/start/stop pve-live (experimental)" \
+      "sanitize"  "remove various scripts eggs related and sanitize" \
+      "skel"      "update /etc/skel from current user or user configuration" \
+      "yolk"      "configure an internal apt repository in /usr/local/yolk" \
+      "quit"   "previus" 3>&2 2>&1 1>&3
    )
 
-   ${answer}
    case "$answer" in 
       "clean")
          tools_clean ;;
@@ -357,7 +358,8 @@ function press_a_key_to_continue {
 }
 
 ################################
-function EXIT {
+function theEnd {
+   clear
    exit 0
 }
 
