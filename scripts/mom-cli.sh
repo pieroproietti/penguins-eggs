@@ -18,10 +18,10 @@ function main {
       "info"            "get informations" \
       "install"         "install your system on hard disk" \
       "kill"            "delete ISOs" \
-      "manual"          "man eggs" \
+      "man"             "manual eggs" \
       "produce"         "produce and ISO of your system" \
       "remove"          "remove " \
-      "tools"           "clean/initrd/locales/man/pve/sanitize/skel/yolk" \
+      "tools"           "clean/initrd/locales/pve/sanitize/skel/yolk" \
       "update"          "update" \
       "quit"            "exit" 3>&2 2>&1 1>&3
       )
@@ -55,7 +55,7 @@ function main {
          "kill")
             kill ;;
 
-         "manual")
+         "man")
             manual ;;
 
             
@@ -74,30 +74,6 @@ function main {
       esac
 
    done
-}
-
-
-################################
-# autocomplete
-################################
-function autocomplete {
-   sudo eggs autocomplete
-   if [ ! -d "/etc/bash_completion.d/" ]; then 
-      sudo mkdir /etc/bash_completion.d/
-   fi
-
-   # remove previus eggs.bash
-   if [ -f "/etc/bash_completion.d/eggs.bash" ]; then
-      sudo rm /etc/bash_completion.d/eggs.bash
-   fi
-   sudo cp ~/.cache/penguins-eggs/autocomplete/functions/bash/eggs.bash /etc/bash_completion.d/
-
-   if [ -f "/etc/bash_completion.d/eggs.bash" ]; then
-      whiptail --msgbox "script autocomplete generated." --title "mummy" 8 40
-   else
-      whiptail --msgbox "problem with autocomplete generation" --title "mummy" 8 40
-   fi
-   press_a_key_to_continue
 }
 
 
@@ -265,7 +241,6 @@ function tools {
    "clean"     "clean system log, apt, etc" \
    "initrd"     "initrd experimental" \
    "locales"   "install/clean locales" \
-   "man"       "install man eggs page" \
    "pve"       "enable/start/stop pve-live" \
    "sanitize"  "remove eggs remains and sanitize" \
    "skel"      "update skel from home configuration" \
@@ -282,9 +257,6 @@ function tools {
 
       "locales")
          locales ;;
-
-      "man")
-         tools_man ;;
 
       "pve")
          pve ;;
@@ -316,12 +288,6 @@ function initrd {
 ################################
 function locales {
    sudo eggs tools:locales
-   press_a_key_to_continue
-}
-
-################################
-function man {
-   sudo eggs tools:man
    press_a_key_to_continue
 }
 
