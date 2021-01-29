@@ -10,7 +10,7 @@ function main {
       # 20 righe. 75 caratteri, 16 altezza menu list
       answer=$(
       whiptail --title "mommy" --menu "Mama's gonna keep baby cosy and warm..." 22 75 15 \
-      "autocomplete"    "generate or refresh autocomplete" \
+      "init"            "init eggs, install prerequisites" \
       "dad"             "lead you to configurare and iso production" \
       "documentation"   "https://penguins-eggs.net/" \
       "export"          "export /deb/docs/iso" \
@@ -19,7 +19,6 @@ function main {
       "install"         "install your system on hard disk" \
       "kill"            "delete ISOs" \
       "manual"          "man eggs" \
-      "prerequisites"   "install eggs prerequisites" \
       "produce"         "produce and ISO of your system" \
       "remove"          "remove " \
       "tools"           "clean/initrd/locales/man/pve/sanitize/skel/yolk" \
@@ -32,8 +31,8 @@ function main {
             clear
             exit ;;
 
-         "autocomplete")
-            autocomplete ;;
+         "init")
+            init ;;
 
          "dad")
             dad ;;
@@ -59,8 +58,6 @@ function main {
          "manual")
             manual ;;
 
-         "prerequisites")
-            prerequisites ;;
             
          "produce")
             produce ;;
@@ -184,8 +181,8 @@ function manual {
 }
 
 ################################
-function prerequisites {
-   sudo eggs prerequisites
+function init {
+   sudo eggs init
    press_a_key_to_continue
 }
 

@@ -6,20 +6,28 @@ eggs(1) -- A reproductive system for penguins
 <!-- tocstop -->
 
 ## SYNOPSIS
-  eggs command [--flags]
 
-  Most of the command of eggs need sudo, but there are exceptions, for export, info and mom.
+<!-- usage -->
 
-  examples:
+<!-- usagestop -->
 
-  * **sudo eggs init**  # initialize eggs, create man pages and autocomplete for eggs
-  * **sudo eggs produce** # create an ISO of the system
-  * **sudo eggs kill** # delete the created ISO and clean the nest
+Most of the commands of eggs need sudo, but there are exceptions for export, info and mom.
 
-  There are too, two interactive helpers:
-  * **eggs mom** # interactive GUI (be kind with mom, she don't need sudo)
-  * **sudo eggs dad** # get help from dad to finalize ISO
+examples:
 
+```
+sudo eggs init  # initialize eggs, create man pages and autocomplete for eggs
+sudo eggs produce # create an ISO of the system
+sudo eggs kill # delete the created ISO and clean the nest
+```
+There are too, two interactive helpers:
+
+```
+eggs mom # interactive GUI (be kind with mom, she don't need sudo)
+sudo eggs dad # get help from dad to finalize ISO
+```
+
+Help yorself signing in the forum or in facebook group page or asking me.
 
 ## DESCRIPTION
 
@@ -74,14 +82,13 @@ Here are the commands to do:
 
 ## BUGS
 
-See GitHub Issues: <https://github.com/pieroproietti/penguins-eggs/issues>
+Report problems o new ideas in: <https://github.com/pieroproietti/penguins-eggs/issues>
 
 ## RESOURCES AND DOCUMENTATION
-Website: **https://penguins-eggs.net**
+Consult website to find  documentation, forum. There is a facebook gruop and page too.
 
-Documentation: **https://penguins-eggs.net/book**
-
-GitHub repository & Issue Tracker: **github.com/pieroproietti/penguins-eggs**
+* website: **https://penguins-eggs.net**
+* gitHub repository: **github.com/pieroproietti/penguins-eggs**
 
 ## AUTHOR
 
