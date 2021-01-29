@@ -9,7 +9,7 @@ function main {
    while true; do
       # 20 righe. 75 caratteri, 16 altezza menu list
       answer=$(
-      whiptail --title "mommy" --menu "Mama's gonna keep baby cosy and warm..." 22 75 15 \
+      whiptail --title "mommy" --menu "Mama's gonna keep baby cosy and warm..." 22 75 14 \
       "init"            "init eggs, install prerequisites" \
       "dad"             "lead you to configurare and iso production" \
       "help"            "help" \
