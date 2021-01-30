@@ -80,22 +80,28 @@ function dad {
 function documentation {
       answer=$(
          whiptail --title "DOCUMENTATION" --menu "You can choose local or internet documentation, html or man" 22 75 14 \
-         "site"   "https://penguins-eggs.net" \
-         "manual" "manual eggs html" \
+         "book"   "penguin's eggs book - italiano -" \
          "man"    "man eggs" \
+         "manual" "manual eggs html" \
+         "site"   "https://penguins-eggs.net" \
          "quit"   "previus" 3>&2 2>&1 1>&3
       )
 
       case "$answer" in 
-         "site")
-            documentation_site ;;
-
+         "book")
+            documentation_book ;;
          "man")
             documentation_man ;;
-
          "manual")
             documentation_html ;;
+         "site")
+            documentation_site ;;
       esac
+}
+
+################################
+function documentation_book {
+   sensible-browser "https://penguins-eggs.net/book/italiano"
 }
 
 ################################
