@@ -80,16 +80,19 @@ function dad {
 function documentation {
       answer=$(
          whiptail --title "DOCUMENTATION" --menu "You can choose local or internet documentation, html or man" 22 75 14 \
-         "book"   "penguin's eggs book - italiano -" \
-         "man"    "man eggs" \
-         "manual" "manual eggs html" \
-         "site"   "https://penguins-eggs.net" \
-         "quit"   "previus" 3>&2 2>&1 1>&3
+         "book"            "gui/internet penguin's eggs book - italian -" \
+         "book_translated" "gui/internet penguin's eggs book - translated -" \
+         "site"            "gui/internet https://penguins-eggs.net" \
+         "manual"          "gui/local man page eggs html" \
+         "man"             "cli/local man page eggs" \
+         "quit"            "previus" 3>&2 2>&1 1>&3
       )
 
       case "$answer" in 
          "book")
             documentation_book ;;
+         "book_translated")
+            documentation_book_translated ;;
          "man")
             documentation_man ;;
          "manual")
@@ -102,6 +105,11 @@ function documentation {
 ################################
 function documentation_book {
    sensible-browser "https://penguins-eggs.net/book/italiano"
+}
+
+################################
+function documentation_book_translated {
+   sensible-browser "https://translate.google.com/translate?hl=en&sl=auto&tl=en&u=https%3A%2F%2Fpenguins-eggs.net%2Fbook%2Fitaliano"
 }
 
 ################################
