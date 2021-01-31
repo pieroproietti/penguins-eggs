@@ -96,7 +96,7 @@ export default class Settings {
     * Load configuration from config_file
     * @returns {boolean} Success
     */
-   async load(): Promise<boolean> {
+   async load(snapshot_prefix='', snapshot_basename='', theme='', compression='' ): Promise<boolean> {
       let foundSettings = true
 
       if (!fs.existsSync(config_file)) {
@@ -106,6 +106,21 @@ export default class Settings {
       }
 
       this.config = yaml.load(fs.readFileSync(config_file, 'utf-8')) as IConfig
+
+      // Reimposto config se sono passati flags da produce
+      if (snapshot_prefix!== ''){
+         this.config.snapshot_prefix = snapshot_basename
+      }
+      if (snapshot_basename!== ''){
+         this.config.snapshot_basename = snapshot_basename
+      }
+      if (theme !=''){
+         this.config.theme = theme
+      }
+      if (compression !==''){
+         this.config.compression = compression
+      }
+
 
       this.session_excludes = ''
       if (!this.config.snapshot_dir.endsWith('/')) {

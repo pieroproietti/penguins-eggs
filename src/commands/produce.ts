@@ -17,7 +17,8 @@ import Init from './init'
 
 export default class Produce extends Command {
    static flags = {
-      basename: flags.string({ char: 'b', description: 'basename egg' }),
+      prefix: flags.string({ char: 'b', description: 'prefix' }),
+      basename: flags.string({ char: 'b', description: 'basename' }),
       normal: flags.boolean({ char: 'n', description: 'max compression' }),
       max: flags.boolean({ char: 'm', description: 'max compression' }),
       fast: flags.boolean({ char: 'f', description: 'fast compression' }),
@@ -88,10 +89,15 @@ export default class Produce extends Command {
          /**
           * composizione dei flag
           */
+
+         let prefix = ''
+         if (flags.prefix !== undefined) {
+            prefix = flags.prefix
+         }
+
          let basename = '' // se vuoto viene definito da loadsetting (default nome dell'host)
          if (flags.basename !== undefined) {
             basename = flags.basename
-            console.log(`basename: ${basename}`)
          }
 
          let compression = '' // se vuota, compression viene definita da loadsettings, default xz
@@ -106,14 +112,13 @@ export default class Produce extends Command {
          const script = flags.script
 
          const yolk = flags.yolk
-         
+
          const final = flags.final
 
 
          let theme = 'eggs'
          if (flags.theme !== undefined) {
             theme = flags.theme
-            console.log(`theme: ${theme}`)
          }
 
          const myAddons = {} as IMyAddons
@@ -123,14 +128,14 @@ export default class Produce extends Command {
          myAddons.pve = flags.pve
 
          const i = await Init.thatWeNeed(verbose)
-         if (i.clean || i.configuration|| i.links) {
+         if (i.clean || i.configuration || i.links) {
             if (await Utils.customConfirm(`Select yes to continue...`)) {
                await Init.install(i, verbose)
             }
          }
          Utils.titles(this.id + ' ' + this.argv)
 
-         const ovary = new Ovary(compression)
+         const ovary = new Ovary(prefix, basename, theme, compression)
          Utils.warning('Produce an egg...')
          if (await ovary.fertilization()) {
 

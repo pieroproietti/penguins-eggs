@@ -47,14 +47,25 @@ export default class Ovary {
 
    arch_efi = 'x86_64-efi'
 
+   // Sono utilizzate per passare i flag di produce
+   snapshot_prefix=''
+   snapshot_basename=''
+   theme=''
+   compression=''
 
    /**
     * Egg
     * @param compression
     */
-   constructor(compression = '') {
+   constructor(snapshot_prefix='', snapshot_basename='', theme='', compression='') {
       this.settings = new Settings()
-      this.settings.config.compression = compression
+
+      // I flags di produce hanno la preferenza
+      this.snapshot_prefix = snapshot_prefix
+      this.snapshot_basename = snapshot_basename
+      this.theme = theme
+      this.compression = compression
+
       if (process.arch === 'ia32') {
          this.arch_efi = 'i386-efi'
       }
@@ -66,7 +77,7 @@ export default class Ovary {
     * @returns {boolean} success
     */
    async fertilization(): Promise<boolean> {
-      if (this.settings.load()) {
+      if (await this.settings.load(this.snapshot_prefix, this.snapshot_basename, this.theme, this.compression)) {
          if (this.settings.listFreeSpace()) {
             if (await Utils.customConfirm('Select yes to continue...')) return true
          }
