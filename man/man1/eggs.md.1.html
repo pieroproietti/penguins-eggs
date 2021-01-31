@@ -131,7 +131,7 @@
 $ eggs COMMAND
 running command...
 $ eggs (-v|--version|version)
-penguins-eggs/7.7.27 linux-x64 node-v14.15.4
+penguins-eggs/7.7.28 linux-x64 node-v14.15.4
 $ eggs --help [COMMAND]
 USAGE
   $ eggs COMMAND
@@ -359,8 +359,8 @@ sudo eggs dad # get help from dad to finalize ISO
   -v, --verbose  verbose</p>
 
 <p>ALIASES
-  $ eggs prerequisites
-  $ eggs config</p>
+  $ eggs fertilize
+  $ eggs prerequisites</p>
 
 <p>EXAMPLE
   ~$ eggs init
@@ -430,7 +430,8 @@ sudo eggs dad # get help from dad to finalize ISO
   $ eggs produce</p>
 
 <p>OPTIONS
-  -b, --basename=basename  basename egg
+  -b, --basename=basename  basename
+  -b, --prefix=prefix      prefix
   -f, --fast               fast compression
   -h, --help               show CLI help
   -m, --max                max compression

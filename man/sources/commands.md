@@ -217,8 +217,8 @@ OPTIONS
   -v, --verbose  verbose
 
 ALIASES
+  $ eggs fertilize
   $ eggs prerequisites
-  $ eggs config
 
 EXAMPLE
   ~$ eggs init
@@ -304,7 +304,8 @@ USAGE
   $ eggs produce
 
 OPTIONS
-  -b, --basename=basename  basename egg
+  -b, --basename=basename  basename
+  -b, --prefix=prefix      prefix
   -f, --fast               fast compression
   -h, --help               show CLI help
   -m, --max                max compression

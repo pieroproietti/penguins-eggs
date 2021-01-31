@@ -14,7 +14,7 @@ $ npm install -g penguins-eggs
 $ eggs COMMAND
 running command...
 $ eggs (-v|--version|version)
-penguins-eggs/7.7.27 linux-x64 node-v14.15.4
+penguins-eggs/7.7.28 linux-x64 node-v14.15.4
 $ eggs --help [COMMAND]
 USAGE
   $ eggs COMMAND
@@ -269,8 +269,8 @@ OPTIONS
   -v, --verbose  verbose
 
 ALIASES
+  $ eggs fertilize
   $ eggs prerequisites
-  $ eggs config
 
 EXAMPLE
   ~$ eggs init
@@ -356,7 +356,8 @@ USAGE
   $ eggs produce
 
 OPTIONS
-  -b, --basename=basename  basename egg
+  -b, --basename=basename  basename
+  -b, --prefix=prefix      prefix
   -f, --fast               fast compression
   -h, --help               show CLI help
   -m, --max                max compression

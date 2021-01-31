@@ -19,6 +19,9 @@ You can follow the project also consulting the [commit history](https://github.c
 Versions are listed on reverse order, the first is the last one.
 
 ### eggs-7.7.27.1_deb
+* added --prefix in produce, mom get you original manual and translations at your fingertips
+
+### eggs-7.7.27.1_deb
 * eggs init in place of prerequisites. The new version will install man and aucomplete. Sorry, due nodejs version, I forced to remove i386 version.
 
 ### eggs-7.7.24.1_deb
