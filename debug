@@ -1,4 +1,4 @@
-  ./bin/run $1 $2 $3 $4 $5 $6 $7 $8 
+  export DEBUG=*|./bin/run $1 $2 $3 $4 $5 $6 $7 $8 
 #
 #  -                                         script read from stdin (default if no file name is provided, interactive mode if a tty)
 #  --                                        indicate the end of node options
