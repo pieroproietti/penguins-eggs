@@ -99,7 +99,7 @@ $ npm install -g penguins-eggs
 $ eggs COMMAND
 running command...
 $ eggs (-v|--version|version)
-penguins-eggs/7.7.27 linux-x64 node-v14.15.4
+penguins-eggs/7.7.28 linux-x64 node-v14.15.4
 $ eggs --help [COMMAND]
 USAGE
   $ eggs COMMAND
@@ -138,6 +138,8 @@ USAGE
 adapt monitor resolution for VM only
 
 ```
+adapt monitor resolution for VM only
+
 USAGE
   $ eggs adapt
 
@@ -149,13 +151,15 @@ ALIASES
   $ eggs adjust
 ```
 
-_See code: [src/commands/adapt.ts](https://github.com/pieroproietti/penguins-eggs/blob/v7.7.27/src/commands/adapt.ts)_
+_See code: [src/commands/adapt.ts](https://github.com/pieroproietti/penguins-eggs/blob/v7.7.28/src/commands/adapt.ts)_
 
 ## `eggs autocomplete [SHELL]`
 
 display autocomplete installation instructions
 
 ```
+display autocomplete installation instructions
+
 USAGE
   $ eggs autocomplete [SHELL]
 
@@ -172,13 +176,15 @@ EXAMPLES
   $ eggs autocomplete --refresh-cache
 ```
 
-_See code: [@oclif/plugin-autocomplete](https://github.com/oclif/plugin-autocomplete/blob/v0.3.0/src/commands/autocomplete/index.ts)_
+_See code: [@oclif/plugin-autocomplete](https://github.com/oclif/plugin-autocomplete/blob/v0.1.5/src/commands/autocomplete/index.ts)_
 
 ## `eggs calamares`
 
 calamares or install or configure it
 
 ```
+calamares or install or configure it
+
 USAGE
   $ eggs calamares
 
@@ -197,13 +203,15 @@ EXAMPLES
   install calamares and create it's configuration's files
 ```
 
-_See code: [src/commands/calamares.ts](https://github.com/pieroproietti/penguins-eggs/blob/v7.7.27/src/commands/calamares.ts)_
+_See code: [src/commands/calamares.ts](https://github.com/pieroproietti/penguins-eggs/blob/v7.7.28/src/commands/calamares.ts)_
 
 ## `eggs dad`
 
 ask help from daddy (gui interface)!
 
 ```
+ask help from daddy (gui interface)!
+
 USAGE
   $ eggs dad
 
@@ -212,13 +220,15 @@ OPTIONS
   -v, --verbose
 ```
 
-_See code: [src/commands/dad.ts](https://github.com/pieroproietti/penguins-eggs/blob/v7.7.27/src/commands/dad.ts)_
+_See code: [src/commands/dad.ts](https://github.com/pieroproietti/penguins-eggs/blob/v7.7.28/src/commands/dad.ts)_
 
 ## `eggs export:deb`
 
 export package eggs-v7-x-x-1.deb in the destination host
 
 ```
+export package eggs-v7-x-x-1.deb in the destination host
+
 USAGE
   $ eggs export:deb
 
@@ -231,13 +241,15 @@ OPTIONS
   --i386       export i386 arch
 ```
 
-_See code: [src/commands/export/deb.ts](https://github.com/pieroproietti/penguins-eggs/blob/v7.7.27/src/commands/export/deb.ts)_
+_See code: [src/commands/export/deb.ts](https://github.com/pieroproietti/penguins-eggs/blob/v7.7.28/src/commands/export/deb.ts)_
 
 ## `eggs export:docs`
 
 remove and export docType documentation of the sources in the destination host
 
 ```
+remove and export docType documentation of the sources in the destination host
+
 USAGE
   $ eggs export:docs
 
@@ -245,13 +257,15 @@ OPTIONS
   -h, --help  show CLI help
 ```
 
-_See code: [src/commands/export/docs.ts](https://github.com/pieroproietti/penguins-eggs/blob/v7.7.27/src/commands/export/docs.ts)_
+_See code: [src/commands/export/docs.ts](https://github.com/pieroproietti/penguins-eggs/blob/v7.7.28/src/commands/export/docs.ts)_
 
 ## `eggs export:iso`
 
 export iso in the destination host
 
 ```
+export iso in the destination host
+
 USAGE
   $ eggs export:iso
 
@@ -260,13 +274,15 @@ OPTIONS
   -h, --help   show CLI help
 ```
 
-_See code: [src/commands/export/iso.ts](https://github.com/pieroproietti/penguins-eggs/blob/v7.7.27/src/commands/export/iso.ts)_
+_See code: [src/commands/export/iso.ts](https://github.com/pieroproietti/penguins-eggs/blob/v7.7.28/src/commands/export/iso.ts)_
 
 ## `eggs help [COMMAND]`
 
 display help for eggs
 
 ```
+display help for <%= config.bin %>
+
 USAGE
   $ eggs help [COMMAND]
 
@@ -277,13 +293,15 @@ OPTIONS
   --all  see all commands in CLI
 ```
 
-_See code: [@oclif/plugin-help](https://github.com/oclif/plugin-help/blob/v3.2.1/src/commands/help.ts)_
+_See code: [@oclif/plugin-help](https://github.com/oclif/plugin-help/blob/v2.2.3/src/commands/help.ts)_
 
 ## `eggs info`
 
 informations about system and eggs
 
 ```
+informations about system and eggs
+
 USAGE
   $ eggs info
 
@@ -292,13 +310,15 @@ EXAMPLE
   You will find here informations about penguin's eggs!
 ```
 
-_See code: [src/commands/info.ts](https://github.com/pieroproietti/penguins-eggs/blob/v7.7.27/src/commands/info.ts)_
+_See code: [src/commands/info.ts](https://github.com/pieroproietti/penguins-eggs/blob/v7.7.28/src/commands/info.ts)_
 
 ## `eggs init`
 
 Initialize eggs and install packages prerequisites to run eggs
 
 ```
+Initialize eggs and install packages prerequisites to run eggs
+
 USAGE
   $ eggs init
 
@@ -315,13 +335,15 @@ EXAMPLE
   init eggs, install prerequisites and create configuration files
 ```
 
-_See code: [src/commands/init.ts](https://github.com/pieroproietti/penguins-eggs/blob/v7.7.27/src/commands/init.ts)_
+_See code: [src/commands/init.ts](https://github.com/pieroproietti/penguins-eggs/blob/v7.7.28/src/commands/init.ts)_
 
 ## `eggs install`
 
 eggs installer - (the egg became penguin)
 
 ```
+eggs installer - (the egg became penguin)
+
 USAGE
   $ eggs install
 
@@ -342,13 +364,15 @@ EXAMPLE
   Install the system with eggs cli installer(default)
 ```
 
-_See code: [src/commands/install.ts](https://github.com/pieroproietti/penguins-eggs/blob/v7.7.27/src/commands/install.ts)_
+_See code: [src/commands/install.ts](https://github.com/pieroproietti/penguins-eggs/blob/v7.7.28/src/commands/install.ts)_
 
 ## `eggs kill`
 
 kill the eggs/free the nest
 
 ```
+kill the eggs/free the nest
+
 USAGE
   $ eggs kill
 
@@ -361,13 +385,15 @@ EXAMPLE
   kill the eggs/free the nest
 ```
 
-_See code: [src/commands/kill.ts](https://github.com/pieroproietti/penguins-eggs/blob/v7.7.27/src/commands/kill.ts)_
+_See code: [src/commands/kill.ts](https://github.com/pieroproietti/penguins-eggs/blob/v7.7.28/src/commands/kill.ts)_
 
 ## `eggs mom`
 
 ask for mommy (gui interface)!
 
 ```
+ask for mommy (gui interface)!
+
 USAGE
   $ eggs mom
 
@@ -375,18 +401,21 @@ OPTIONS
   -h, --help  show CLI help
 ```
 
-_See code: [src/commands/mom.ts](https://github.com/pieroproietti/penguins-eggs/blob/v7.7.27/src/commands/mom.ts)_
+_See code: [src/commands/mom.ts](https://github.com/pieroproietti/penguins-eggs/blob/v7.7.28/src/commands/mom.ts)_
 
 ## `eggs produce`
 
 the system produce an egg: livecd creation.
 
 ```
+the system produce an egg: livecd creation.
+
 USAGE
   $ eggs produce
 
 OPTIONS
-  -b, --basename=basename  basename egg
+  -b, --basename=basename  basename
+  -b, --prefix=prefix      prefix
   -f, --fast               fast compression
   -h, --help               show CLI help
   -m, --max                max compression
@@ -441,13 +470,15 @@ EXAMPLES
   in /home/eggs/ovarium and you can customize all you need
 ```
 
-_See code: [src/commands/produce.ts](https://github.com/pieroproietti/penguins-eggs/blob/v7.7.27/src/commands/produce.ts)_
+_See code: [src/commands/produce.ts](https://github.com/pieroproietti/penguins-eggs/blob/v7.7.28/src/commands/produce.ts)_
 
 ## `eggs remove`
 
 remove eggs, eggs configurations, prerequisites, calamares, calamares configurations
 
 ```
+remove eggs, eggs configurations, prerequisites, calamares, calamares configurations
+
 USAGE
   $ eggs remove
 
@@ -472,13 +503,15 @@ EXAMPLES
   remove eggs, eggs configurations, prerequisites, calamares, calamares configurations
 ```
 
-_See code: [src/commands/remove.ts](https://github.com/pieroproietti/penguins-eggs/blob/v7.7.27/src/commands/remove.ts)_
+_See code: [src/commands/remove.ts](https://github.com/pieroproietti/penguins-eggs/blob/v7.7.28/src/commands/remove.ts)_
 
 ## `eggs tools:clean`
 
 clean system log, apt, etc
 
 ```
+clean system log, apt, etc
+
 USAGE
   $ eggs tools:clean
 
@@ -487,13 +520,15 @@ OPTIONS
   -v, --verbose  verbose
 ```
 
-_See code: [src/commands/tools/clean.ts](https://github.com/pieroproietti/penguins-eggs/blob/v7.7.27/src/commands/tools/clean.ts)_
+_See code: [src/commands/tools/clean.ts](https://github.com/pieroproietti/penguins-eggs/blob/v7.7.28/src/commands/tools/clean.ts)_
 
 ## `eggs tools:initrd`
 
 Test initrd
 
 ```
+Test initrd
+
 USAGE
   $ eggs tools:initrd
 
@@ -504,13 +539,15 @@ OPTIONS
   --clean=clean  clean the initrd.img
 ```
 
-_See code: [src/commands/tools/initrd.ts](https://github.com/pieroproietti/penguins-eggs/blob/v7.7.27/src/commands/tools/initrd.ts)_
+_See code: [src/commands/tools/initrd.ts](https://github.com/pieroproietti/penguins-eggs/blob/v7.7.28/src/commands/tools/initrd.ts)_
 
 ## `eggs tools:locales`
 
 install/clean locales
 
 ```
+install/clean locales
+
 USAGE
   $ eggs tools:locales
 
@@ -520,13 +557,15 @@ OPTIONS
   -v, --verbose    verbose
 ```
 
-_See code: [src/commands/tools/locales.ts](https://github.com/pieroproietti/penguins-eggs/blob/v7.7.27/src/commands/tools/locales.ts)_
+_See code: [src/commands/tools/locales.ts](https://github.com/pieroproietti/penguins-eggs/blob/v7.7.28/src/commands/tools/locales.ts)_
 
 ## `eggs tools:pve`
 
 enable/start/stop pve-live
 
 ```
+enable/start/stop pve-live
+
 USAGE
   $ eggs tools:pve
 
@@ -539,13 +578,15 @@ OPTIONS
   --stop         stop service
 ```
 
-_See code: [src/commands/tools/pve.ts](https://github.com/pieroproietti/penguins-eggs/blob/v7.7.27/src/commands/tools/pve.ts)_
+_See code: [src/commands/tools/pve.ts](https://github.com/pieroproietti/penguins-eggs/blob/v7.7.28/src/commands/tools/pve.ts)_
 
 ## `eggs tools:sanitize`
 
 sanitize
 
 ```
+sanitize
+
 USAGE
   $ eggs tools:sanitize
 
@@ -553,13 +594,15 @@ OPTIONS
   -h, --help  show CLI help
 ```
 
-_See code: [src/commands/tools/sanitize.ts](https://github.com/pieroproietti/penguins-eggs/blob/v7.7.27/src/commands/tools/sanitize.ts)_
+_See code: [src/commands/tools/sanitize.ts](https://github.com/pieroproietti/penguins-eggs/blob/v7.7.28/src/commands/tools/sanitize.ts)_
 
 ## `eggs tools:skel`
 
 update skel from home configuration
 
 ```
+update skel from home configuration
+
 USAGE
   $ eggs tools:skel
 
@@ -573,13 +616,15 @@ EXAMPLE
   desktop configuration of user mauro will get used as default
 ```
 
-_See code: [src/commands/tools/skel.ts](https://github.com/pieroproietti/penguins-eggs/blob/v7.7.27/src/commands/tools/skel.ts)_
+_See code: [src/commands/tools/skel.ts](https://github.com/pieroproietti/penguins-eggs/blob/v7.7.28/src/commands/tools/skel.ts)_
 
 ## `eggs tools:yolk`
 
 configure eggs to install without internet
 
 ```
+configure eggs to install without internet
+
 USAGE
   $ eggs tools:yolk
 
@@ -591,13 +636,16 @@ EXAMPLE
   $ eggs yolk -v
 ```
 
-_See code: [src/commands/tools/yolk.ts](https://github.com/pieroproietti/penguins-eggs/blob/v7.7.27/src/commands/tools/yolk.ts)_
+_See code: [src/commands/tools/yolk.ts](https://github.com/pieroproietti/penguins-eggs/blob/v7.7.28/src/commands/tools/yolk.ts)_
 
 ## `eggs update`
 
 update the penguin's eggs tool.
 
 ```
+update the penguin's eggs tool.
+This method always works, both with npm and deb packages.
+
 USAGE
   $ eggs update
 
@@ -616,7 +664,7 @@ EXAMPLE
   update/upgrade the penguin's eggs tool
 ```
 
-_See code: [src/commands/update.ts](https://github.com/pieroproietti/penguins-eggs/blob/v7.7.27/src/commands/update.ts)_
+_See code: [src/commands/update.ts](https://github.com/pieroproietti/penguins-eggs/blob/v7.7.28/src/commands/update.ts)_
 <!-- commandsstop -->
 
 # Terminal samples
