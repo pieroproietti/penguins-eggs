@@ -99,7 +99,7 @@ $ npm install -g penguins-eggs
 $ eggs COMMAND
 running command...
 $ eggs (-v|--version|version)
-penguins-eggs/7.7.28 linux-x64 node-v8.17.0
+penguins-eggs/7.7.28 linux-ia32 node-v8.17.0
 $ eggs --help [COMMAND]
 USAGE
   $ eggs COMMAND
@@ -118,10 +118,10 @@ USAGE
 * [`eggs export:iso`](#eggs-exportiso)
 * [`eggs help [COMMAND]`](#eggs-help-command)
 * [`eggs info`](#eggs-info)
-* [`eggs init`](#eggs-init)
 * [`eggs install`](#eggs-install)
 * [`eggs kill`](#eggs-kill)
 * [`eggs mom`](#eggs-mom)
+* [`eggs prerequisites`](#eggs-prerequisites)
 * [`eggs produce`](#eggs-produce)
 * [`eggs remove`](#eggs-remove)
 * [`eggs tools:clean`](#eggs-toolsclean)
@@ -220,7 +220,7 @@ export package eggs-v7-x-x-1.deb in the destination host
 
 ```
 USAGE
-  $ eggs export:deb
+  $ eggs export deb
 
 OPTIONS
   -c, --clean  remove old .deb before to copy
@@ -239,7 +239,7 @@ remove and export docType documentation of the sources in the destination host
 
 ```
 USAGE
-  $ eggs export:docs
+  $ eggs export docs
 
 OPTIONS
   -h, --help  show CLI help
@@ -253,7 +253,7 @@ export iso in the destination host
 
 ```
 USAGE
-  $ eggs export:iso
+  $ eggs export iso
 
 OPTIONS
   -c, --clean  delete old ISOs before to copy
@@ -293,29 +293,6 @@ EXAMPLE
 ```
 
 _See code: [src/commands/info.ts](https://github.com/pieroproietti/penguins-eggs/blob/v7.7.28/src/commands/info.ts)_
-
-## `eggs init`
-
-Initialize eggs and install packages prerequisites to run eggs
-
-```
-USAGE
-  $ eggs init
-
-OPTIONS
-  -h, --help     show CLI help
-  -v, --verbose  verbose
-
-ALIASES
-  $ eggs fertilize
-  $ eggs prerequisites
-
-EXAMPLE
-  ~$ eggs init
-  init eggs, install prerequisites and create configuration files
-```
-
-_See code: [src/commands/init.ts](https://github.com/pieroproietti/penguins-eggs/blob/v7.7.28/src/commands/init.ts)_
 
 ## `eggs install`
 
@@ -376,6 +353,29 @@ OPTIONS
 ```
 
 _See code: [src/commands/mom.ts](https://github.com/pieroproietti/penguins-eggs/blob/v7.7.28/src/commands/mom.ts)_
+
+## `eggs prerequisites`
+
+Initialize eggs and install packages prerequisites to run eggs
+
+```
+USAGE
+  $ eggs prerequisites
+
+OPTIONS
+  -h, --help     show CLI help
+  -v, --verbose  verbose
+
+ALIASES
+  $ eggs fertilize
+  $ eggs init
+
+EXAMPLE
+  ~$ eggs init
+  Initialize eggs, install prerequisites and create configuration files
+```
+
+_See code: [src/commands/prerequisites.ts](https://github.com/pieroproietti/penguins-eggs/blob/v7.7.28/src/commands/prerequisites.ts)_
 
 ## `eggs produce`
 
@@ -481,7 +481,7 @@ clean system log, apt, etc
 
 ```
 USAGE
-  $ eggs tools:clean
+  $ eggs tools clean
 
 OPTIONS
   -h, --help     show CLI help
@@ -496,7 +496,7 @@ Test initrd
 
 ```
 USAGE
-  $ eggs tools:initrd
+  $ eggs tools initrd
 
 OPTIONS
   -h, --help     show CLI help
@@ -513,7 +513,7 @@ install/clean locales
 
 ```
 USAGE
-  $ eggs tools:locales
+  $ eggs tools locales
 
 OPTIONS
   -h, --help       show CLI help
@@ -529,7 +529,7 @@ enable/start/stop pve-live
 
 ```
 USAGE
-  $ eggs tools:pve
+  $ eggs tools pve
 
 OPTIONS
   -d, --disable  disable
@@ -548,7 +548,7 @@ sanitize
 
 ```
 USAGE
-  $ eggs tools:sanitize
+  $ eggs tools sanitize
 
 OPTIONS
   -h, --help  show CLI help
@@ -562,7 +562,7 @@ update skel from home configuration
 
 ```
 USAGE
-  $ eggs tools:skel
+  $ eggs tools skel
 
 OPTIONS
   -h, --help       show CLI help
@@ -582,7 +582,7 @@ configure eggs to install without internet
 
 ```
 USAGE
-  $ eggs tools:yolk
+  $ eggs tools yolk
 
 OPTIONS
   -h, --help     show CLI help
