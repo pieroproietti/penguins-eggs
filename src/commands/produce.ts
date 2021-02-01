@@ -13,7 +13,8 @@ import Ovary from '../classes/ovary'
 import Pacman from '../classes/pacman'
 import chalk = require('chalk')
 import { IMyAddons } from '../interfaces'
-import Init from './init'
+import Prequisites from '../commands/prerequisites'
+import Prerequisites from '../commands/prerequisites'
 
 export default class Produce extends Command {
    static flags = {
@@ -127,10 +128,10 @@ export default class Produce extends Command {
          myAddons.ichoice = flags.ichoice
          myAddons.pve = flags.pve
 
-         const i = await Init.thatWeNeed(verbose)
+         const i = await Prerequisites.thatWeNeed(verbose)
          if (i.clean || i.configuration || i.links) {
             if (await Utils.customConfirm(`Select yes to continue...`)) {
-               await Init.install(i, verbose)
+               await Prerequisites.install(i, verbose)
             }
          }
          Utils.titles(this.id + ' ' + this.argv)

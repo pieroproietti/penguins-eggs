@@ -1,0 +1,8 @@
+# Architettura i386 node 8.17.0
+
+Aprire il link globby index e modificare la riga 28
+
+	} catch {
+
+
+    **} catch (_) {**
