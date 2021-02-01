@@ -12,7 +12,7 @@ import { IInstall } from '../interfaces'
 import chalk = require('chalk')
 import fs = require('fs')
 import path = require('path')
-import autocomplete = require('@oclif/plugin-autocomplete')
+import { utils } from 'mocha'
 
 
 
@@ -40,11 +40,17 @@ export default class Prerequisites extends Command {
       const verbose = flags.verbose
 
       if (Utils.isRoot(this.id)) {
-         // Aggiungere autocomplete
-         autocomplete
 
-         //await exec('eggs autocomplete > /dev/null')
-         //await exec('cp ~/.cache/penguins-eggs/autocomplete/functions/bash/eggs.bash /etc/bash_completion.d/')
+         // Aggiungere autocomplete
+         if (process.arch!=='ia32'){
+            await exec('eggs autocomplete > /dev/null')
+            await exec('cp ~/.cache/penguins-eggs/autocomplete/functions/bash/eggs.bash /etc/bash_completion.d/')
+         } else {
+            Utils.warning('eggs can\'t install autocomplete on i386.' )
+            console.log(`if you want autcomplete for eggs, run:`)
+            console.log('sudo eggs automplete')
+            console.log('and follow the instuctions')
+         }
 
          // Man
          this.man(verbose)
