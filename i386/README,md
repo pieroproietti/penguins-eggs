@@ -1,16 +1,51 @@
 # Architettura i386 node 8.17.0
 
+
+# Compilazione con node8 per architettura i386
+
 Aprire il link globby index e modificare la riga 28
 
+code ./node_modules/globby/index.js:28
+
+modificare linea 28 da:
 	} catch {
+a:
+    } catch (_) {
+
+ed a questo punto i comandi vengono caricati ed eseguiti.
 
 
-    **} catch (_) {**
-    
-/home/artisan/penguins-eggs/node_modules/globby/index.js:28
-/home/artisan/penguins-eggs/node_modules/@oclif/errors/node_modules/fs-extra/lib/mkdirs/make-dir.js:85
-/home/artisan/penguins-eggs/node_modules/@oclif/errors/node_modules/fs-extra/lib/mkdirs/make-dir.js:134
-/home/artisan/penguins-eggs/node_modules/@oclif/errors/node_modules/fs-extra/lib/empty/index.js:33
-/home/artisan/penguins-eggs/node_modules/@oclif/errors/node_modules/fs-extra/lib/remove/rimraf.js:293
-/home/artisan/penguins-eggs/node_modules/@oclif/errors/node_modules/fs-extra/lib/ensure/file.js:47
-/home/artisan/penguins-eggs/node_modules/@oclif/errors/node_modules/fs-extra/lib/ensure/symlink-type.js:22
+Rimane pero il problema dei plugin di oclif, in particolare:
+* oclif-plugin-autocomplete
+* oclif-plugin-not-found
+* plugin-warn-if-update-available. Da controllare
+
+Pur provando a risolvere, editando e correggendo i seguenti file, il problema sussiste.
+
+* ./node_modules/@oclif/errors/node_modules/fs-extra/lib/mkdirs/make-dir.js:85
+* ./node_modules/@oclif/errors/node_modules/fs-extra/lib/mkdirs/make-dir.js:134
+* ./node_modules/@oclif/errors/node_modules/fs-extra/lib/empty/index.js:33
+* ./node_modules/@oclif/errors/node_modules/fs-extra/lib/remove/rimraf.js:293
+* ./node_modules/@oclif/errors/node_modules/fs-extra/lib/ensure/file.js:47
+* ./node_modules/@oclif/errors/node_modules/fs-extra/lib/ensure/symlink-type.js:22
+
+A questo punto, al momento ho semplicemente rimosso la chiamata ad plugin-autocomplete se
+i386 e dovrebbe funzionare praticamente tutto.
+
+Si crea errore, pero se si sbaglia comando invece del suggerimento del comando corretto.
+
+La soluzione e al momento accetabile.
+
+# Creazione del pacchetto deb per i386
+
+Aprire il link oclif-tarball-config.js e modificare i TARGET, alla riga 8, aggiungendo
+
+    'linux-x86',
+
+ dopo di questo si puo creare il pacchetto per i386
+
+ Artisan
+ <piero.proietti@gmail.com>
+ 
+
+

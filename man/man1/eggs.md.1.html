@@ -78,10 +78,10 @@
     <a href="#EGGS-EXPORT-ISO">eggs export:iso</a>
     <a href="#EGGS-HELP-COMMAND-">eggs help [COMMAND]</a>
     <a href="#EGGS-INFO">eggs info</a>
-    <a href="#EGGS-INIT">eggs init</a>
     <a href="#EGGS-INSTALL">eggs install</a>
     <a href="#EGGS-KILL">eggs kill</a>
     <a href="#EGGS-MOM">eggs mom</a>
+    <a href="#EGGS-PREREQUISITES">eggs prerequisites</a>
     <a href="#EGGS-PRODUCE">eggs produce</a>
     <a href="#EGGS-REMOVE">eggs remove</a>
     <a href="#EGGS-TOOLS-CLEAN">eggs tools:clean</a>
@@ -131,7 +131,7 @@
 $ eggs COMMAND
 running command...
 $ eggs (-v|--version|version)
-penguins-eggs/7.7.28 linux-x64 node-v14.15.4
+penguins-eggs/7.7.29 linux-ia32 node-v8.17.0
 $ eggs --help [COMMAND]
 USAGE
   $ eggs COMMAND
@@ -185,10 +185,10 @@ sudo eggs dad # get help from dad to finalize ISO
 <li><a href="#eggs-exportiso" data-bare-link="true">eggs export:iso</a></li>
 <li><a href="#eggs-help-command" data-bare-link="true">eggs help [COMMAND]</a></li>
 <li><a href="#eggs-info" data-bare-link="true">eggs info</a></li>
-<li><a href="#eggs-init" data-bare-link="true">eggs init</a></li>
 <li><a href="#eggs-install" data-bare-link="true">eggs install</a></li>
 <li><a href="#eggs-kill" data-bare-link="true">eggs kill</a></li>
 <li><a href="#eggs-mom" data-bare-link="true">eggs mom</a></li>
+<li><a href="#eggs-prerequisites" data-bare-link="true">eggs prerequisites</a></li>
 <li><a href="#eggs-produce" data-bare-link="true">eggs produce</a></li>
 <li><a href="#eggs-remove" data-bare-link="true">eggs remove</a></li>
 <li><a href="#eggs-toolsclean" data-bare-link="true">eggs tools:clean</a></li>
@@ -206,8 +206,6 @@ sudo eggs dad # get help from dad to finalize ISO
 
 <p>adapt monitor resolution for VM only</p>
 
-<p>adapt monitor resolution for VM only</p>
-
 <p>USAGE
   $ eggs adapt</p>
 
@@ -219,8 +217,6 @@ sudo eggs dad # get help from dad to finalize ISO
   $ eggs adjust</p>
 
 <h2 id="eggs-autocomplete-SHELL-">eggs autocomplete [SHELL]</h2>
-
-<p>display autocomplete installation instructions</p>
 
 <p>display autocomplete installation instructions</p>
 
@@ -240,8 +236,6 @@ sudo eggs dad # get help from dad to finalize ISO
   $ eggs autocomplete --refresh-cache</p>
 
 <h2 id="eggs-calamares">eggs calamares</h2>
-
-<p>calamares or install or configure it</p>
 
 <p>calamares or install or configure it</p>
 
@@ -266,8 +260,6 @@ sudo eggs dad # get help from dad to finalize ISO
 
 <p>ask help from daddy (gui interface)!</p>
 
-<p>ask help from daddy (gui interface)!</p>
-
 <p>USAGE
   $ eggs dad</p>
 
@@ -276,8 +268,6 @@ sudo eggs dad # get help from dad to finalize ISO
   -v, --verbose</p>
 
 <h2 id="eggs-export-deb">eggs export:deb</h2>
-
-<p>export package eggs-v7-x-x-1.deb in the destination host</p>
 
 <p>export package eggs-v7-x-x-1.deb in the destination host</p>
 
@@ -296,8 +286,6 @@ sudo eggs dad # get help from dad to finalize ISO
 
 <p>remove and export docType documentation of the sources in the destination host</p>
 
-<p>remove and export docType documentation of the sources in the destination host</p>
-
 <p>USAGE
   $ eggs export:docs</p>
 
@@ -305,8 +293,6 @@ sudo eggs dad # get help from dad to finalize ISO
   -h, --help  show CLI help</p>
 
 <h2 id="eggs-export-iso">eggs export:iso</h2>
-
-<p>export iso in the destination host</p>
 
 <p>export iso in the destination host</p>
 
@@ -321,8 +307,6 @@ sudo eggs dad # get help from dad to finalize ISO
 
 <p>display help for eggs</p>
 
-<p>display help for &lt;%= config.bin %&gt;</p>
-
 <p>USAGE
   $ eggs help [COMMAND]</p>
 
@@ -336,8 +320,6 @@ sudo eggs dad # get help from dad to finalize ISO
 
 <p>informations about system and eggs</p>
 
-<p>informations about system and eggs</p>
-
 <p>USAGE
   $ eggs info</p>
 
@@ -345,30 +327,7 @@ sudo eggs dad # get help from dad to finalize ISO
   $ eggs info
   You will find here informations about penguin's eggs!</p>
 
-<h2 id="eggs-init">eggs init</h2>
-
-<p>Initialize eggs and install packages prerequisites to run eggs</p>
-
-<p>Initialize eggs and install packages prerequisites to run eggs</p>
-
-<p>USAGE
-  $ eggs init</p>
-
-<p>OPTIONS
-  -h, --help     show CLI help
-  -v, --verbose  verbose</p>
-
-<p>ALIASES
-  $ eggs fertilize
-  $ eggs prerequisites</p>
-
-<p>EXAMPLE
-  ~$ eggs init
-  init eggs, install prerequisites and create configuration files</p>
-
 <h2 id="eggs-install">eggs install</h2>
-
-<p>eggs installer - (the egg became penguin)</p>
 
 <p>eggs installer - (the egg became penguin)</p>
 
@@ -395,8 +354,6 @@ sudo eggs dad # get help from dad to finalize ISO
 
 <p>kill the eggs/free the nest</p>
 
-<p>kill the eggs/free the nest</p>
-
 <p>USAGE
   $ eggs kill</p>
 
@@ -412,17 +369,32 @@ sudo eggs dad # get help from dad to finalize ISO
 
 <p>ask for mommy (gui interface)!</p>
 
-<p>ask for mommy (gui interface)!</p>
-
 <p>USAGE
   $ eggs mom</p>
 
 <p>OPTIONS
   -h, --help  show CLI help</p>
 
-<h2 id="eggs-produce">eggs produce</h2>
+<h2 id="eggs-prerequisites">eggs prerequisites</h2>
 
-<p>the system produce an egg: livecd creation.</p>
+<p>Initialize eggs and install packages prerequisites to run eggs</p>
+
+<p>USAGE
+  $ eggs prerequisites</p>
+
+<p>OPTIONS
+  -h, --help     show CLI help
+  -v, --verbose  verbose</p>
+
+<p>ALIASES
+  $ eggs fertilize
+  $ eggs init</p>
+
+<p>EXAMPLE
+  ~$ eggs init
+  Initialize eggs, install prerequisites and create configuration files</p>
+
+<h2 id="eggs-produce">eggs produce</h2>
 
 <p>the system produce an egg: livecd creation.</p>
 
@@ -489,8 +461,6 @@ sudo eggs dad # get help from dad to finalize ISO
 
 <p>remove eggs, eggs configurations, prerequisites, calamares, calamares configurations</p>
 
-<p>remove eggs, eggs configurations, prerequisites, calamares, calamares configurations</p>
-
 <p>USAGE
   $ eggs remove</p>
 
@@ -518,8 +488,6 @@ sudo eggs dad # get help from dad to finalize ISO
 
 <p>clean system log, apt, etc</p>
 
-<p>clean system log, apt, etc</p>
-
 <p>USAGE
   $ eggs tools:clean</p>
 
@@ -528,8 +496,6 @@ sudo eggs dad # get help from dad to finalize ISO
   -v, --verbose  verbose</p>
 
 <h2 id="eggs-tools-initrd">eggs tools:initrd</h2>
-
-<p>Test initrd</p>
 
 <p>Test initrd</p>
 
@@ -546,8 +512,6 @@ sudo eggs dad # get help from dad to finalize ISO
 
 <p>install/clean locales</p>
 
-<p>install/clean locales</p>
-
 <p>USAGE
   $ eggs tools:locales</p>
 
@@ -557,8 +521,6 @@ sudo eggs dad # get help from dad to finalize ISO
   -v, --verbose    verbose</p>
 
 <h2 id="eggs-tools-pve">eggs tools:pve</h2>
-
-<p>enable/start/stop pve-live</p>
 
 <p>enable/start/stop pve-live</p>
 
@@ -577,8 +539,6 @@ sudo eggs dad # get help from dad to finalize ISO
 
 <p>sanitize</p>
 
-<p>sanitize</p>
-
 <p>USAGE
   $ eggs tools:sanitize</p>
 
@@ -586,8 +546,6 @@ sudo eggs dad # get help from dad to finalize ISO
   -h, --help  show CLI help</p>
 
 <h2 id="eggs-tools-skel">eggs tools:skel</h2>
-
-<p>update skel from home configuration</p>
 
 <p>update skel from home configuration</p>
 
@@ -607,8 +565,6 @@ sudo eggs dad # get help from dad to finalize ISO
 
 <p>configure eggs to install without internet</p>
 
-<p>configure eggs to install without internet</p>
-
 <p>USAGE
   $ eggs tools:yolk</p>
 
@@ -622,9 +578,6 @@ sudo eggs dad # get help from dad to finalize ISO
 <h2 id="eggs-update">eggs update</h2>
 
 <p>update the penguin's eggs tool.</p>
-
-<p>update the penguin's eggs tool.
-This method always works, both with npm and deb packages.</p>
 
 <p>USAGE
   $ eggs update</p>
@@ -713,7 +666,7 @@ This method always works, both with npm and deb packages.</p>
 
   <ol class='man-decor man-foot man foot'>
     <li class='tl'>penguins-eggs.net</li>
-    <li class='tc'>January 2021</li>
+    <li class='tc'>February 2021</li>
     <li class='tr'>eggs(1)</li>
   </ol>
 
