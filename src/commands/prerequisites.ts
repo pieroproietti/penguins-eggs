@@ -46,13 +46,13 @@ export default class Prerequisites extends Command {
             await exec('eggs autocomplete > /dev/null')
             await exec('cp ~/.cache/penguins-eggs/autocomplete/functions/bash/eggs.bash /etc/bash_completion.d/')
          } else {
-            Utils.error('eggs can\'t automatically install autocomplete on node8/i386.' )
+            Utils.error('eggs can\'t install autocomplete on node8/i386.' )
             console.log()
-            Utils.warning(`if you want autcomplete for eggs, run:`)
-            console.log()
-            console.log('sudo eggs automplete')
-            console.log('sudo cp ~/.cache/penguins-eggs/autocomplete/functions/bash/eggs.bash /etc/bash_completion.d/')
-            console.log()
+            // Utils.warning(`if you want autcomplete for eggs, run:`)
+            // console.log()
+            // console.log('sudo eggs automplete')
+            // console.log('sudo cp ~/.cache/penguins-eggs/autocomplete/functions/bash/eggs.bash /etc/bash_completion.d/')
+            // console.log()
          }
 
          // Man
