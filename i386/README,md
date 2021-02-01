@@ -6,3 +6,11 @@ Aprire il link globby index e modificare la riga 28
 
 
     **} catch (_) {**
+    
+/home/artisan/penguins-eggs/node_modules/globby/index.js:28
+/home/artisan/penguins-eggs/node_modules/@oclif/errors/node_modules/fs-extra/lib/mkdirs/make-dir.js:85
+/home/artisan/penguins-eggs/node_modules/@oclif/errors/node_modules/fs-extra/lib/mkdirs/make-dir.js:134
+/home/artisan/penguins-eggs/node_modules/@oclif/errors/node_modules/fs-extra/lib/empty/index.js:33
+/home/artisan/penguins-eggs/node_modules/@oclif/errors/node_modules/fs-extra/lib/remove/rimraf.js:293
+/home/artisan/penguins-eggs/node_modules/@oclif/errors/node_modules/fs-extra/lib/ensure/file.js:47
+/home/artisan/penguins-eggs/node_modules/@oclif/errors/node_modules/fs-extra/lib/ensure/symlink-type.js:22

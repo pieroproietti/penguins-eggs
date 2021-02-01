@@ -12,6 +12,9 @@ import { IInstall } from '../interfaces'
 import chalk = require('chalk')
 import fs = require('fs')
 import path = require('path')
+import autocomplete = require('@oclif/plugin-autocomplete')
+
+
 
 const exec = require('../lib/utils').exec
 
@@ -38,8 +41,10 @@ export default class Prerequisites extends Command {
 
       if (Utils.isRoot(this.id)) {
          // Aggiungere autocomplete
-         await exec('eggs autocomplete > /dev/null')
-         await exec('cp ~/.cache/penguins-eggs/autocomplete/functions/bash/eggs.bash /etc/bash_completion.d/')
+         autocomplete
+
+         //await exec('eggs autocomplete > /dev/null')
+         //await exec('cp ~/.cache/penguins-eggs/autocomplete/functions/bash/eggs.bash /etc/bash_completion.d/')
 
          // Man
          this.man(verbose)
