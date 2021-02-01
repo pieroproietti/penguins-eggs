@@ -18,21 +18,21 @@ const exec = require('../lib/utils').exec
 /**
  * 
  */
-export default class Init extends Command {
+export default class Prerequisites extends Command {
    static description = 'Initialize eggs and install packages prerequisites to run eggs'
 
-   static aliases = ['fertilize', 'prerequisites']
+   static aliases = ['fertilize', 'init']
    static flags = {
       help: flags.help({ char: 'h' }),
       verbose: flags.boolean({ char: 'v', description: 'verbose' }),
    }
 
-   static examples = [`~$ eggs init\ninit eggs, install prerequisites and create configuration files`]
+   static examples = [`~$ eggs init\nInitialize eggs, install prerequisites and create configuration files`]
 
    async run() {
       Utils.titles(this.id + ' ' + this.argv)
 
-      const { flags } = this.parse(Init)
+      const { flags } = this.parse(Prerequisites)
 
       const verbose = flags.verbose
 
@@ -50,11 +50,11 @@ export default class Init extends Command {
          // crea i link in /usr/lib/penguins-eggs/conf/distros
          await Pacman.copyDistroTemplate(verbose)
 
-         const i = await Init.thatWeNeed(verbose)
+         const i = await Prerequisites.thatWeNeed(verbose)
          if (i.clean || i.configuration || i.links) {
             if (await Utils.customConfirm(`Select yes to continue...`)) {
                console.log('installing prerequisites...')
-               await Init.install(i, verbose)
+               await Prerequisites.install(i, verbose)
                await Pacman.configurationInstall(verbose)
             }
          } else {
