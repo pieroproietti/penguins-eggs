@@ -60,9 +60,7 @@ export default class Ovary {
    constructor(snapshot_prefix='', snapshot_basename='', theme='', compression='') {
       this.settings = new Settings()
 
-      console.log(compression)
-      console.log(compression)
-      
+    
       // I flags di produce hanno la preferenza
       if (snapshot_prefix!=='') {
          this.snapshot_prefix = snapshot_prefix
@@ -879,7 +877,7 @@ export default class Ovary {
       /**
        * configuro add-penguins-desktop-icons in /etc/xdg/autostart
        */
-      let dirAutostart = '/etc/xdg/autostart'
+      let dirAutostart = `${this.settings.work_dir.merged}/etc/xdg/autostart`
       let dirRun = '/usr/bin'
       if (fs.existsSync(dirAutostart)) {
          // Creo l'avviatore xdg DEVE essere add-penguins-links.desktop
