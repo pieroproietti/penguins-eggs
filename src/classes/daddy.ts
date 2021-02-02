@@ -79,6 +79,7 @@ export default class Daddy {
                 config.compression = 'xz -Xbcj x86'
             }
 
+
             await this.settings.save(config)
 
             // Controllo se serve il kill
@@ -102,24 +103,22 @@ export default class Daddy {
             } else if (config.compression === 'xz -Xbcj x86') {
                 flags += '--max'
             }
-
-                flags += ` --theme=${config.theme} `
-            }
-            Utils.titles('produce' + ' ' + flags)
-            console.log(chalk.cyan('Daddy, what else did you leave for me?'))
-            const myAddons = {} as IMyAddons
-            const ovary = new Ovary(config.snapshot_prefix, config.snapshot_basename, config.theme, config.compression)
-            if (await ovary.fertilization()) {
-                await ovary.produce(config.snapshot_basename, false, false, false, config.theme, myAddons, verbose)
-                ovary.finished(false)
-            }
+            flags += ` --theme=${config.theme} `
+        }
+        Utils.titles('produce' + ' ' + flags)
+        console.log(chalk.cyan('Daddy, what else did you leave for me?'))
+        const myAddons = {} as IMyAddons
+        const scriptOnly = false
+        const yolkRenew = false
+        const final = false
+        const ovary = new Ovary(config.snapshot_prefix, config.snapshot_basename, config.theme, config.compression)
+        Utils.warning('Produce an egg...')
+        if (await ovary.fertilization()) {
+           await ovary.produce(scriptOnly, yolkRenew, final, myAddons, verbose)
+           ovary.finished(scriptOnly)
         }
     }
-
 }
-
-
-
 
 
 /**

@@ -112,9 +112,9 @@ export default class Produce extends Command {
 
          const verbose = flags.verbose
 
-         const script = flags.script
+         const scriptOnly = flags.script
 
-         const yolk = flags.yolk
+         const yolkRenew = flags.yolk
 
          const final = flags.final
 
@@ -141,9 +141,8 @@ export default class Produce extends Command {
          const ovary = new Ovary(prefix, basename, theme, compression)
          Utils.warning('Produce an egg...')
          if (await ovary.fertilization()) {
-
-            await ovary.produce(basename, script, yolk, final, theme, myAddons, verbose)
-            ovary.finished(script)
+            await ovary.produce(scriptOnly, yolkRenew, final, myAddons, verbose)
+            ovary.finished(scriptOnly)
          }
       }
    }

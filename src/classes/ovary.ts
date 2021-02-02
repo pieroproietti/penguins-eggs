@@ -48,35 +48,31 @@ export default class Ovary {
    arch_efi = 'x86_64-efi'
 
    // Sono utilizzate per passare i flag di produce
-   snapshot_prefix=''
-   snapshot_basename=''
-   theme=''
-   compression=''
+   snapshot_prefix = ''
+   snapshot_basename = ''
+   theme = ''
+   compression = ''
 
    /**
     * Egg
     * @param compression
     */
-   constructor(snapshot_prefix='', snapshot_basename='', theme='', compression='') {
+   constructor(snapshot_prefix = '', snapshot_basename = '', theme = '', compression = '') {
       this.settings = new Settings()
 
-    
+
       // I flags di produce hanno la preferenza
-      if (snapshot_prefix!=='') {
+      if (snapshot_prefix !== '') {
          this.snapshot_prefix = snapshot_prefix
       }
-      if (snapshot_basename!==''){
+      if (snapshot_basename !== '') {
          this.snapshot_basename = snapshot_basename
       }
-      if (theme!=='') {
+      if (theme !== '') {
          this.theme = theme
       }
-      if (compression !=='') {
+      if (compression !== '') {
          this.compression = compression
-      }
-
-      if (process.arch === 'ia32') {
-         this.arch_efi = 'i386-efi'
       }
    }
 
@@ -86,7 +82,24 @@ export default class Ovary {
     * @returns {boolean} success
     */
    async fertilization(): Promise<boolean> {
-      if (await this.settings.load(this.snapshot_prefix, this.snapshot_basename, this.theme, this.compression)) {
+      if (await this.settings.load()) {
+         if (this.snapshot_prefix !== '') {
+            this.settings.config.snapshot_prefix = this.snapshot_prefix
+         }
+
+         if (this.snapshot_basename !== '') {
+            this.settings.config.snapshot_basename = this.snapshot_basename
+         }
+
+         if (this.theme !== '') {
+            this.settings.config.theme = this.theme
+         }
+
+         if (this.compression !== '') {
+            this.settings.config.compression = this.compression
+         }
+
+
          if (this.settings.listFreeSpace()) {
             if (await Utils.customConfirm('Select yes to continue...')) return true
          }
@@ -98,7 +111,7 @@ export default class Ovary {
     *
     * @param basename
     */
-   async produce(basename = '', script_only = false, yolkRenew = false, final = false, theme = '', myAddons: IMyAddons, verbose = false) {
+   async produce(scriptOnly = false, yolkRenew = false, final = false, myAddons: IMyAddons, verbose = false) {
 
       const yolk = new Repo()
       if (!yolk.exists()) {
@@ -106,7 +119,7 @@ export default class Ovary {
          await yolk.create(verbose)
       } else {
          if (yolkRenew) {
-            Utils.warning('force local repo yolk renew...')
+            Utils.warning('force renew local repository yolk...')
             yolk.clean()
             await yolk.create(verbose)
          } else {
@@ -118,7 +131,7 @@ export default class Ovary {
          shx.mkdir('-p', this.settings.config.snapshot_dir)
       }
 
-      await this.settings.loadRemix(basename, theme)
+      await this.settings.loadRemix(this.snapshot_basename, this.theme)
 
       if (Utils.isLive()) {
          console.log(chalk.red('>>> eggs: This is a live system! An egg cannot be produced from an egg!'))
@@ -140,23 +153,20 @@ export default class Ovary {
             this.incubator = new Incubator(this.settings.remix, this.settings.distro, this.settings.config.user_opt, verbose)
             this.incubator.config(final)
          }
-         await this.isolinux(theme, verbose)
+         await this.isolinux(this.theme, verbose)
          await this.copyKernel()
          if (this.settings.config.make_efi) {
-            await this.makeEfi(theme, verbose)
+            await this.makeEfi(this.theme, verbose)
          }
 
          await this.bindLiveFs(verbose)
          await this.createUserLive(verbose)
          if (Pacman.isXInstalled()) {
-            await this.createAutostart(theme, myAddons)
+            await this.createAutostart(this.theme, myAddons)
          }
          await this.editLiveFs(verbose)
-         await this.makeSquashfs(script_only, verbose)
-         await this.makeIso(script_only, verbose)
-         if (Pacman.isXInstalled()) {
-            shx.exec('rm /etc/xdg/autostart/penguins-links-add.desktop')
-         }
+         await this.makeSquashfs(scriptOnly, verbose)
+         await this.makeIso(scriptOnly, verbose)
          await this.bindVfs(verbose)
          await this.ubindVfs(verbose)
          await this.uBindLiveFs(verbose)
@@ -477,7 +487,7 @@ export default class Ovary {
    /**
     * squashFs: crea in live filesystem.squashfs
     */
-   async makeSquashfs(script_only = false, verbose = false) {
+   async makeSquashfs(scriptOnly = false, verbose = false) {
       let echo = { echo: false, ignore: false }
       if (verbose) {
          echo = { echo: true, ignore: false }
@@ -520,7 +530,7 @@ export default class Ovary {
       let cmd = `mksquashfs ${this.settings.work_dir.merged} ${this.settings.work_dir.pathIso}/live/filesystem.squashfs ${compression} -wildcards -ef ${this.settings.config.snapshot_excludes} ${this.settings.session_excludes} `
       cmd = cmd.replace(/\s\s+/g, ' ')
       Utils.writeX(`${this.settings.work_dir.path}mksquashfs`, cmd)
-      if (!script_only) {
+      if (!scriptOnly) {
          await exec(cmd, echo)
       }
    }
@@ -817,7 +827,7 @@ export default class Ovary {
       }
 
 
-     const pathHomeLive = `/home/${this.settings.config.user_opt}`
+      const pathHomeLive = `/home/${this.settings.config.user_opt}`
 
       // Copia icona penguins-eggs
       shx.cp(path.resolve(__dirname, '../../assets/eggs.png'), '/usr/share/icons/')
@@ -1128,7 +1138,7 @@ export default class Ovary {
    /**
     * makeIsoImage
     */
-   async makeIso(script_only = false, verbose = false) {
+   async makeIso(scriptOnly = false, verbose = false) {
       let echo = { echo: false, ignore: false }
       if (verbose) {
          echo = { echo: true, ignore: false }
@@ -1174,9 +1184,9 @@ export default class Ovary {
                           -output ${this.settings.config.snapshot_dir}${this.settings.config.snapshot_prefix}${this.settings.isoFilename} \
                           ${this.settings.work_dir.pathIso}`
 
-                          cmd = cmd.replace(/\s\s+/g, ' ')
+      cmd = cmd.replace(/\s\s+/g, ' ')
       Utils.writeX(`${this.settings.work_dir.path}makeIso`, cmd)
-      if (!script_only) {
+      if (!scriptOnly) {
          await exec(cmd, echo)
          await exec
       }
@@ -1216,11 +1226,11 @@ export default class Ovary {
 
    /**
     * finished = show the results
-    * @param script_only 
+    * @param scriptOnly 
     */
-   finished(script_only = false) {
+   finished(scriptOnly = false) {
       Utils.titles('produce')
-      if (!script_only) {
+      if (!scriptOnly) {
          console.log('eggs is finished!\n\nYou can find the file iso: ' + chalk.cyanBright(this.settings.config.snapshot_prefix + this.settings.isoFilename) + '\nin the nest: ' + chalk.cyanBright(this.settings.config.snapshot_dir) + '.')
       } else {
          console.log('eggs is finished!\n\nYou can find the scripts to build iso: ' + chalk.cyanBright(this.settings.config.snapshot_prefix + this.settings.isoFilename) + '\nin the ovarium: ' + chalk.cyanBright(this.settings.work_dir.path) + '.')
