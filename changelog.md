@@ -18,6 +18,10 @@ You can follow the project also consulting the [commit history](https://github.c
 ## Changelog
 Versions are listed on reverse order, the first is the last one.
 
+
+### eggs-7.7.30.1_deb
+* bugfix export:iso, changed locales array to user configuration plus en_US.UTF8.
+
 ### eggs-7.7.29.1_deb
 * workaround to solve problems compatility oclif-plugings with node8, actually all commands works on i386, except autocomplete and command-not-found.
 
