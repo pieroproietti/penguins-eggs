@@ -18,6 +18,8 @@ You can follow the project also consulting the [commit history](https://github.c
 ## Changelog
 Versions are listed on reverse order, the first is the last one.
 
+### eggs-7.7.31.1_deb
+* bugfix export:iso, I hope definitive!
 
 ### eggs-7.7.30.1_deb
 * bugfix export:iso, changed locales array to user configuration plus en_US.UTF8.
