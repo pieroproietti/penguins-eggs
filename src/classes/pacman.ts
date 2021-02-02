@@ -17,6 +17,7 @@ import Settings from './settings'
 import { execSync } from 'child_process'
 import { IConfig } from '../interfaces'
 import { ServerResponse } from 'http'
+import { engineStrict } from 'pjson'
 
 
 const exec = require('../lib/utils').exec
@@ -297,10 +298,17 @@ export default class Pacman {
       config.ssh_pass = true
       config.timezone = 'Europe/Rome'
       config.pmount_fixed = false
-      config.locales_default = 'it_IT.UTF-8'
-      config.locales = ['it_IT.UTF-8', 'en_US.UTF-8', 'es_ES.UTF-8', 'pt_BR.UTF-8', 'fr_FR.UTF-8', 'de_DE.UTF-8', 'pl_PL', 'ru_RU']
-
-
+      let env = process.env
+      if (env.LANG !== undefined) {
+         config.locales_default = env.LANG
+      } else {
+         config.locales_default = 'en_US.UTF-8'
+      }
+      if (config.locales_default === 'en_US.UTF-8'){
+         config.locales = ['en_US.UTF-8']
+      } else {
+         config.locales = [config.locales_default, 'en_US.UTF-8']
+      }
 
       if (!this.packageIsInstalled('calamares')) {
          config.force_installer = false
