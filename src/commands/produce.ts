@@ -46,15 +46,14 @@ export default class Produce extends Command {
 
    static examples = [
       `$ sudo eggs produce \nproduce an ISO called [hostname]-[arch]-YYYY-MM-DD_HHMM.iso, compressed xz (standard compression).\nIf hostname=ugo and arch=i386 ugo-x86-2020-08-25_1215.iso\n`,
-   /* `$ sudo eggs produce -v\nthe same as the previuos, but with more explicative output\n`,
-      `$ sudo eggs produce -vf\nthe same as the previuos, compression lz4 (fast compression, but about 30%\nless compressed compared xz standard)\n`,
-      `$ sudo eggs produce -vm\nthe same as the previuos, compression xz (normal compression)\n`,
-      `$ sudo eggs produce -vm\nthe same as the previuos, compression xz -Xbcj x86 (max compression, about 10%\nmore compressed compared xz standard)\n`,
+      `$ sudo eggs produce -v\nthe same as the previuos, but with more explicative output\n`,
+      `$ sudo eggs produce -vf\nthe same as the previuos, compression lz4 (fastest but about 30%\nless compressed than xz)\n`,
+      `$ sudo eggs produce -vm\nthe same as the previuos, compression xz (normal compression xz)\n`,
+      `$ sudo eggs produce -vm\nthe same as the previuos, compression xz -Xbcj x86 (max compression, about 10%\nmore compressed)\n`,
       `$ sudo eggs produce -vf --basename leo --theme debian --adapt \nproduce an ISO called leo-i386-2020-08-25_1215.iso compression lz4,\nusing Debian theme and link to adapt\n`,
       `$ sudo eggs produce -v --basename leo --theme debian --adapt \nproduce an ISO called leo-i386-2020-08-25_1215.iso compression xz,\nusing Debian theme and link to adapt\n`,
       `$ sudo eggs produce -v --basename leo --rsupport \nproduce an ISO called leo-i386-2020-08-25_1215.iso compression xz, using eggs\ntheme and link to dwagent\n`,
       `$ sudo eggs produce -vs --basename leo --rsupport \nproduce scripts to build an ISO as the previus example. Scripts can be found\nin /home/eggs/ovarium and you can customize all you need\n` 
-   */
    ]
 
    async run() {

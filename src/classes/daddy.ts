@@ -109,7 +109,7 @@ export default class Daddy {
             Utils.titles('produce' + ' ' + flags)
             console.log(chalk.cyan('Daddy, what else did you leave for me?'))
             const myAddons = {} as IMyAddons
-            const ovary = new Ovary(config.compression)
+            const ovary = new Ovary(config.snapshot_prefix, config.snapshot_basename, config.theme, config.compression)
             if (await ovary.fertilization()) {
                 await ovary.produce(config.snapshot_basename, false, false, false, config.theme, myAddons, verbose)
                 ovary.finished(false)
