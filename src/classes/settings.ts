@@ -68,7 +68,7 @@ export default class Settings {
 
    isoFilename = '' // resulting name of the iso
 
-   
+
    constructor(compression = '') {
 
       this.config.compression = compression
@@ -83,12 +83,12 @@ export default class Settings {
       this.distro = new Distro(this.remix)
    }
 
-   
+
    /**
     * 
     * @param config 
     */
-   async save(config: IConfig){
+   async save(config: IConfig) {
       fs.writeFileSync(config_file, yaml.dump(config), 'utf-8')
    }
 
@@ -96,7 +96,7 @@ export default class Settings {
     * Load configuration from config_file
     * @returns {boolean} Success
     */
-   async load(snapshot_prefix='', snapshot_basename='', theme='', compression='' ): Promise<boolean> {
+   async load(snapshot_prefix = '', snapshot_basename = '', theme = '', compression = ''): Promise<boolean> {
       let foundSettings = true
 
       if (!fs.existsSync(config_file)) {
@@ -108,16 +108,16 @@ export default class Settings {
       this.config = yaml.load(fs.readFileSync(config_file, 'utf-8')) as IConfig
 
       // Reimposto config se sono passati flags da produce
-      if (snapshot_prefix!== ''){
+      if (snapshot_prefix !== '') {
          this.config.snapshot_prefix = snapshot_basename
       }
-      if (snapshot_basename!== ''){
+      if (snapshot_basename !== '') {
          this.config.snapshot_basename = snapshot_basename
       }
-      if (theme !=''){
+      if (theme !== '') {
          this.config.theme = theme
       }
-      if (compression !==''){
+      if (compression !== '') {
          this.config.compression = compression
       }
 
@@ -139,7 +139,7 @@ export default class Settings {
          this.config.snapshot_basename = os.hostname()
       }
       if (this.config.make_efi) {
-         if (! Utils.isUefi()) {
+         if (!Utils.isUefi()) {
             Utils.error('You choose to create an UEFI image, but miss to install grub-efi-amd64 package.')
             Utils.error('Please install it before to create an UEFI image:')
             Utils.warning('sudo apt install grub-efi-amd64')
@@ -174,10 +174,10 @@ export default class Settings {
          this.config.root_passwd = 'evolution'
       }
 
-      if (this.config.timezone === undefined || this.config.timezone ==='' ){
+      if (this.config.timezone === undefined || this.config.timezone === '') {
          this.config.timezone = shx.exec('cat /etc/timezone', { silent: true }).stdout.trim()
       }
-      
+
 
       return foundSettings
    }

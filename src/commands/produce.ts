@@ -18,9 +18,9 @@ import Prerequisites from '../commands/prerequisites'
 
 export default class Produce extends Command {
    static flags = {
-      prefix: flags.string({ char: 'b', description: 'prefix' }),
+      prefix: flags.string({ char: 'p', description: 'prefix' }),
       basename: flags.string({ char: 'b', description: 'basename' }),
-      normal: flags.boolean({ char: 'n', description: 'max compression' }),
+      normal: flags.boolean({ char: 'n', description: 'normal compression' }),
       max: flags.boolean({ char: 'm', description: 'max compression' }),
       fast: flags.boolean({ char: 'f', description: 'fast compression' }),
       verbose: flags.boolean({ char: 'v', description: 'verbose' }),
@@ -46,14 +46,15 @@ export default class Produce extends Command {
 
    static examples = [
       `$ sudo eggs produce \nproduce an ISO called [hostname]-[arch]-YYYY-MM-DD_HHMM.iso, compressed xz (standard compression).\nIf hostname=ugo and arch=i386 ugo-x86-2020-08-25_1215.iso\n`,
-      `$ sudo eggs produce -v\nthe same as the previuos, but with more explicative output\n`,
+   /* `$ sudo eggs produce -v\nthe same as the previuos, but with more explicative output\n`,
       `$ sudo eggs produce -vf\nthe same as the previuos, compression lz4 (fast compression, but about 30%\nless compressed compared xz standard)\n`,
       `$ sudo eggs produce -vm\nthe same as the previuos, compression xz (normal compression)\n`,
       `$ sudo eggs produce -vm\nthe same as the previuos, compression xz -Xbcj x86 (max compression, about 10%\nmore compressed compared xz standard)\n`,
       `$ sudo eggs produce -vf --basename leo --theme debian --adapt \nproduce an ISO called leo-i386-2020-08-25_1215.iso compression lz4,\nusing Debian theme and link to adapt\n`,
       `$ sudo eggs produce -v --basename leo --theme debian --adapt \nproduce an ISO called leo-i386-2020-08-25_1215.iso compression xz,\nusing Debian theme and link to adapt\n`,
       `$ sudo eggs produce -v --basename leo --rsupport \nproduce an ISO called leo-i386-2020-08-25_1215.iso compression xz, using eggs\ntheme and link to dwagent\n`,
-      `$ sudo eggs produce -vs --basename leo --rsupport \nproduce scripts to build an ISO as the previus example. Scripts can be found\nin /home/eggs/ovarium and you can customize all you need\n`
+      `$ sudo eggs produce -vs --basename leo --rsupport \nproduce scripts to build an ISO as the previus example. Scripts can be found\nin /home/eggs/ovarium and you can customize all you need\n` 
+   */
    ]
 
    async run() {
@@ -104,6 +105,8 @@ export default class Produce extends Command {
          let compression = '' // se vuota, compression viene definita da loadsettings, default xz
          if (flags.fast) {
             compression = 'lz4'
+         } else if (flags.normal) {
+            compression = 'xz'
          } else if (flags.max) {
             compression = 'xz -Xbcj x86'
          }

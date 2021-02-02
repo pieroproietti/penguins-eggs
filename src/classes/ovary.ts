@@ -60,11 +60,22 @@ export default class Ovary {
    constructor(snapshot_prefix='', snapshot_basename='', theme='', compression='') {
       this.settings = new Settings()
 
+      console.log(compression)
+      console.log(compression)
+      
       // I flags di produce hanno la preferenza
-      this.snapshot_prefix = snapshot_prefix
-      this.snapshot_basename = snapshot_basename
-      this.theme = theme
-      this.compression = compression
+      if (snapshot_prefix!=='') {
+         this.snapshot_prefix = snapshot_prefix
+      }
+      if (snapshot_basename!==''){
+         this.snapshot_basename = snapshot_basename
+      }
+      if (theme!=='') {
+         this.theme = theme
+      }
+      if (compression !=='') {
+         this.compression = compression
+      }
 
       if (process.arch === 'ia32') {
          this.arch_efi = 'i386-efi'

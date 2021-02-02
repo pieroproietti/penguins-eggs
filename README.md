@@ -99,7 +99,7 @@ $ npm install -g penguins-eggs
 $ eggs COMMAND
 running command...
 $ eggs (-v|--version|version)
-penguins-eggs/7.7.29 linux-ia32 node-v8.17.0
+penguins-eggs/7.7.29 linux-x64 node-v14.15.4
 $ eggs --help [COMMAND]
 USAGE
   $ eggs COMMAND
@@ -387,11 +387,11 @@ USAGE
 
 OPTIONS
   -b, --basename=basename  basename
-  -b, --prefix=prefix      prefix
   -f, --fast               fast compression
   -h, --help               show CLI help
   -m, --max                max compression
-  -n, --normal             max compression
+  -n, --normal             normal compression
+  -p, --prefix=prefix      prefix
   -s, --script             script mode. Generate scripts to manage iso build
   -v, --verbose            verbose
   -y, --yolk               -y force yolk renew
