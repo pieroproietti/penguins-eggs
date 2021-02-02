@@ -99,7 +99,7 @@ $ npm install -g penguins-eggs
 $ eggs COMMAND
 running command...
 $ eggs (-v|--version|version)
-penguins-eggs/7.7.30 linux-x64 node-v14.15.4
+penguins-eggs/7.7.30 linux-ia32 node-v8.17.0
 $ eggs --help [COMMAND]
 USAGE
   $ eggs COMMAND
@@ -110,7 +110,6 @@ USAGE
 # Commands
 <!-- commands -->
 * [`eggs adapt`](#eggs-adapt)
-* [`eggs autocomplete [SHELL]`](#eggs-autocomplete-shell)
 * [`eggs calamares`](#eggs-calamares)
 * [`eggs dad`](#eggs-dad)
 * [`eggs export:deb`](#eggs-exportdeb)
@@ -150,29 +149,6 @@ ALIASES
 ```
 
 _See code: [src/commands/adapt.ts](https://github.com/pieroproietti/penguins-eggs/blob/v7.7.30/src/commands/adapt.ts)_
-
-## `eggs autocomplete [SHELL]`
-
-display autocomplete installation instructions
-
-```
-USAGE
-  $ eggs autocomplete [SHELL]
-
-ARGUMENTS
-  SHELL  shell type
-
-OPTIONS
-  -r, --refresh-cache  Refresh cache (ignores displaying instructions)
-
-EXAMPLES
-  $ eggs autocomplete
-  $ eggs autocomplete bash
-  $ eggs autocomplete zsh
-  $ eggs autocomplete --refresh-cache
-```
-
-_See code: [@oclif/plugin-autocomplete](https://github.com/oclif/plugin-autocomplete/blob/v0.3.0/src/commands/autocomplete/index.ts)_
 
 ## `eggs calamares`
 

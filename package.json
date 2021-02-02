@@ -88,8 +88,8 @@
     "commands": "./lib/commands",
     "bin": "eggs",
     "plugins": [
-      "@oclif/plugin-autocomplete",
       "@oclif/plugin-help",
+      "@oclif/plugin-autocomplete",
       "@oclif/plugin-not-found",
       "@oclif/plugin-warn-if-update-available"
     ]

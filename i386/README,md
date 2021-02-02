@@ -12,40 +12,24 @@ modificare linea 28 da:
 a:
     } catch (_) {
 
-ed a questo punto i comandi vengono caricati ed eseguiti.
+A questo punto i comandi vengono caricati ed eseguiti.
 
+Non essendo possibile fissare i plugin, pur andando a versioni precedenti,
+e rimuovendoli da comunque errore, li lascio inalterati
 
-Rimane pero il problema dei plugin di oclif, in particolare:
 * oclif-plugin-autocomplete
 * oclif-plugin-not-found
-* plugin-warn-if-update-available. Da controllare
+* plugin-warn-if-update-available
 
-Pur provando a risolvere, editando e correggendo i seguenti file, il problema sussiste.
 
-* ./node_modules/@oclif/errors/node_modules/fs-extra/lib/mkdirs/make-dir.js:85
-* ./node_modules/@oclif/errors/node_modules/fs-extra/lib/mkdirs/make-dir.js:134
-* ./node_modules/@oclif/errors/node_modules/fs-extra/lib/empty/index.js:33
-* ./node_modules/@oclif/errors/node_modules/fs-extra/lib/remove/rimraf.js:293
-* ./node_modules/@oclif/errors/node_modules/fs-extra/lib/ensure/file.js:47
-* ./node_modules/@oclif/errors/node_modules/fs-extra/lib/ensure/symlink-type.js:22
-
-A questo punto, al momento ho semplicemente rimosso la chiamata ad plugin-autocomplete se
-i386 e dovrebbe funzionare praticamente tutto.
-
-Si crea errore, pero se si sbaglia comando invece del suggerimento del comando corretto.
-
-La soluzione e al momento accetabile.
-
-# Creazione del pacchetto deb per i386
+autocomplete è ok, viene sostituito dalla copia di eggs.bash in /etc/bash_completion.d
 
 Aprire il link oclif-tarball-config.js e modificare i TARGET, alla riga 8, aggiungendo
 
+const TARGETS = [
     'linux-x86',
-
- dopo di questo si puo creare il pacchetto per i386
-
- Artisan
- <piero.proietti@gmail.com>
- 
-
+    'win32-x64',
+    'win32-x86',
+    'darwin-x64',
+];
 
