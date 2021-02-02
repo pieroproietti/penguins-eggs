@@ -103,7 +103,6 @@ export default class Daddy {
                 flags += '--max'
             }
 
-            if (config.theme !== '') {
                 flags += ` --theme=${config.theme} `
             }
             Utils.titles('produce' + ' ' + flags)
