@@ -46,7 +46,7 @@ export default class Prerequisites extends Command {
             await exec('eggs autocomplete > /dev/null')
             await exec('cp ~/.cache/penguins-eggs/autocomplete/functions/bash/eggs.bash /etc/bash_completion.d/')
          } else {
-            await exec('cp ./scripts/eggs.bash /etc/bash_completion.d/')
+            await exec(`cp ${__dirname}/scripts/eggs.bash /etc/bash_completion.d/`)
          }
 
          // Man
