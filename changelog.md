@@ -18,8 +18,8 @@ You can follow the project also consulting the [commit history](https://github.c
 ## Changelog
 Versions are listed on reverse order, the first is the last one.
 
-### eggs-7.7.31.2-perrisbrevery-deb
-* bugfix add autocomplete in i386, added preinst, postinst, prerm, postrm in deb packages (-perrisbrevery)
+### eggs-7.7.32.1-perrisbrevery-deb
+* bugfix add autocomplete in i386. Added control, preinst, postinst, prerm, postrm in deb packages 
 
 ### eggs-7.7.31.1_deb
 * bugfix export:iso, I hope definitive!
