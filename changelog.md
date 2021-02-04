@@ -18,7 +18,10 @@ You can follow the project also consulting the [commit history](https://github.c
 ## Changelog
 Versions are listed on reverse order, the first is the last one.
 
-### eggs-7.7.32.1-perrisbrevery-deb
+### eggs-7.7.33.1-deb
+* added display user and password on liveCD. Most prerequisites packages are now as dependecies
+
+### eggs-7.7.32.1-deb
 * bugfix add autocomplete in i386. Added control, preinst, postinst, prerm, postrm in deb packages 
 
 ### eggs-7.7.31.1_deb

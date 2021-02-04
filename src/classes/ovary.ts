@@ -1188,7 +1188,6 @@ export default class Ovary {
       Utils.writeX(`${this.settings.work_dir.path}makeIso`, cmd)
       if (!scriptOnly) {
          await exec(cmd, echo)
-         await exec
       }
 
       /**
@@ -1244,7 +1243,10 @@ export default class Ovary {
          console.log(chalk.cyanBright(`sudo ./ubind`))
          console.log(`happy hacking!`)
       }
-   }
+      console.log()
+      console.log('Remember, on liveCD user =' + chalk.cyanBright(this.settings.config.user_opt) + '/' + chalk.cyanBright(this.settings.config.user_opt_passwd))
+      console.log('                    root =' + chalk.cyanBright('root') + '/' + chalk.cyanBright(this.settings.config.root_passwd))
+}
 
 
 }
