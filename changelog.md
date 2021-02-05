@@ -18,7 +18,7 @@ You can follow the project also consulting the [commit history](https://github.c
 ## Changelog
 Versions are listed on reverse order, the first is the last one.
 
-### eggs-7.8.01.1-deb
+### eggs-7.8.10.1-deb
 * perrisbrewey: un salto in birreria ed i preinst, postinst, prerm e postrm sono cotti!
 
 ### eggs-7.7.33.1-deb
