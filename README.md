@@ -15,10 +15,6 @@ penguins-eggs
 <!-- toc -->
 * [Index](#index)
 * [Presentation](#presentation)
-* [Addons](#addons)
-* [mon and dad](#mon-and-dad)
-* [yolk](#yolk)
-* [What distributions can I use?](#what-distributions-can-i-use)
 * [Packages](#packages)
 * [Usage](#usage)
 * [Commands](#commands)
@@ -277,7 +273,7 @@ OPTIONS
   --all  see all commands in CLI
 ```
 
-_See code: [@oclif/plugin-help](https://github.com/oclif/plugin-help/blob/v3.2.1/src/commands/help.ts)_
+_See code: [@oclif/plugin-help](https://github.com/oclif/plugin-help/blob/v3.2.2/src/commands/help.ts)_
 
 ## `eggs info`
 

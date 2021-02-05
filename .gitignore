@@ -34,4 +34,5 @@ node_modules/
 npm-debug.log*
 pids
 man/man1/*
+perrisbrewery/eggs*
 
