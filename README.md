@@ -52,10 +52,10 @@ Eggs is born on Debian strecth/buster, full support Debian bullseys, Devuan beow
 Some iso images remastered with eggs are in the [sourceforge page of the project](https://sourceforge.net/projects/penguins-eggs/files/iso/). 
 
 # Packages
-eggs is released as deb package and npm package. If you use nodejs npm version can be indicated, most of users need just deb version.
+eggs is released as deb package and npm package. Most users need just deb version, if you already use nodejs the npm package can be installed too, 
 
 ## deb packages
-eggs is released deb packages for i386 and amd64 architectures.
+eggs is released deb packages for i386 and amd64 architectures. Due the characteristic of eggs, they can installed in Debian, Devuan or Ubuntu based distros, withouth worries about different versions, except for the architecture. Lately was added scripts for preinst, postinst, prerm and postrm not presents in the original.
 
 ### Install
 This simplest way to installe eggs is download the [package eggs](https://sourceforge.net/projects/penguins-eggs/files/packages-deb/) from [sourceforge page of the project](https://sourceforge.net/projects/penguins-eggs/) and install it
