@@ -16,9 +16,9 @@ remotePathIso: /home/artisan/sourceforge/iso/
 
 
 # local directories - only for developers 
-localPathDeb: ~/penguins-eggs/dist/deb/
+localPathDeb: ~/penguins-eggs/perrisbrewery/
 localPathDoc: ~/penguins-eggs/docs
 localPathIso: /home/eggs
 
 # filter package files
-filterDeb: eggs-7.7.??-1-
+filterDeb: eggs_7.8.??-1_
