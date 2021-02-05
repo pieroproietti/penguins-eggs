@@ -31,22 +31,22 @@ penguins-eggs is a console utility, in active development, who let you to remast
 
 The scope of this project is to implement the process of remastering your version of Linux, generate it as ISO image to burn on a CD/DVD or copy to a usb key to boot your system. You can also boot your egg - via remote boot - on your LAN. You can easily install your live system with gui calamares installer or eggs cli installer.
 
-All it is written in pure typescript, so ideally can be used with differents Linux distros. Yes, there are big differences about package manager used, but not so much in the way to work of bash and various programs used to build the iso.
+All it is written in pure typescript, so ideally can be used with differents Linux distros. Yes, there are big differences about package manager used, but not so much in the way to work of bash and in the various programs used to build the iso.
 
-penguins-eggs, at the moment 2020 november 2 is a mature tool and is extremely usefull, You can easily create your organization/school version of Linux and deploy it on your LAN, give it to your friends as usb key or publish yours eggs in the internet!
+penguins-eggs, at the moment 2021 febrary is a mature tool and is extremely usefull, You can easily create your personal customized iso or your organization/school version of Linux and deploy it on your LAN, give it to your friends as usb key or publish yours eggs in the internet!
 
 Try penguins-eggs yes, it is a console utility - no GUI - but don't be scared, penguins-eggs is a console command - really very simple - if you are able to open a terminal, you can use it and yours final users will enjoy of full gui and pratical installer to install your livecd.
 
-# Addons
-Starting with version 7.6.x, an addons architecture has been added  to eggs, that allows third parties to develop extensions. Note that we currently have an extension for the theme that includes both calamares branding and installer link and icon. In addition, also as addon has been developed others addons, to chosen hoosing between GUI or CLI installation, adapd video resolution, etc.
+## Addons
+Starting with version 7.6.x an addons architecture was been added to eggs, that allows third parties to develop extensions. Note that we currently have an extension for the theme that includes both calamares branding and installer link and icon. In addition, also as addon has been developed others addons, to chosen hoosing between GUI or CLI installation, adapt video resolution, etc.
 
-# mon and dad
-I recently added two lightweight GUIs integrated with eggs: mom and dad. While mom is a bash script made in two versions - one with zenity and the other with whiptail - and guides the user to the various commands and documentation. Dad is a short way to creating the iso, all you have to do is type in **sudo eggs dad** and follow simple instructions.
-
-# yolk 
+## yolk 
 yolk so called - staying on the subject of eggs - is a local repository included in the livecd that contains a minimum of indispensable packages during installation. Thanks to yolk, you can safely install your system without the need for an internet connection.
 
-# What distributions can I use?
+## Two great helpers!
+I recently added two lightweight helpers integrated with eggs: mom and dad. While mom is a bash script with whiptail - and guides the user to the various commands and documentation. Dad is a short way to creating the iso: all you have to do is type in **sudo eggs dad** and follow simple instructions.
+
+## What distributions can I use?
 Eggs is born on Debian strecth/buster, full support Debian bullseys, Devuan beowulf, Ubuntu focal, bionic and derivatives. I usually try it against Debian buster, Devuan beowulf, Linux Mint 19.3 tricia (bionic derivated) and Linux Mint 20 ulyana (focal derivated) before releases. I tried it successfully in LMDE 4 debbie, and deepin. Eggs, generally must work with all the derivates from that distros.
 
 Some iso images remastered with eggs are in the [sourceforge page of the project](https://sourceforge.net/projects/penguins-eggs/files/iso/). 
