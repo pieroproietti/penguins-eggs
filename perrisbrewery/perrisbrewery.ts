@@ -71,8 +71,6 @@ function convert(pathSources='', source = '') {
 
 
     // shx.exec(`mv ${name}-${version}.deb ${dest}`)
-    // shx.exec(`rm ${tempDir} -rf`)
-
-    console.log(`pacchetto creato: ${dest}"`)
+    shx.exec(`rm ${tempDir} -rf`)
 }
 
