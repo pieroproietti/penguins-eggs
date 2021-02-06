@@ -1,6 +1,10 @@
 eggs(1) -- A reproductive system for penguins
 =============================================
 
+<!-- Istruzioni per aggiustamento versione html -->
+
+<!-- visual studio code press ctrl-shift+P digit uppercase -->
+
 <!-- toc -->
 
 <!-- tocstop -->

@@ -15,7 +15,7 @@ mkdir -p man/man1
 sed -n '/<!-- usage -->/,/<!-- usagestop -->/p' README.md > man/sources/usage.md
 sed -n '/<!-- commands -->/,/<!-- commandsstop -->/p' README.md > man/sources/commands.md
 # tolgo i tags <code> in command
-sed -i 's|`||g' man/sources/commands.md
+# sed -i 's|`||g' man/sources/commands.md
 # tolgo See code: in command
 sed -i 's|_See code:.*||g' man/sources/commands.md
 

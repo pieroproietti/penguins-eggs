@@ -1,6 +1,10 @@
 eggs(1) -- A reproductive system for penguins
 =============================================
 
+<!-- Istruzioni per aggiustamento versione html -->
+
+<!-- visual studio code press ctrl-shift+P digit uppercase -->
+
 <!-- toc -->
 
 <!-- tocstop -->
@@ -51,35 +55,35 @@ The scope of this project is to implement the process of remastering your versio
 
 <!-- commands -->
 <!-- commands -->
-* [eggs adapt](#eggs-adapt)
-* [eggs autocomplete [SHELL]](#eggs-autocomplete-shell)
-* [eggs calamares](#eggs-calamares)
-* [eggs dad](#eggs-dad)
-* [eggs export:deb](#eggs-exportdeb)
-* [eggs export:docs](#eggs-exportdocs)
-* [eggs export:iso](#eggs-exportiso)
-* [eggs help [COMMAND]](#eggs-help-command)
-* [eggs info](#eggs-info)
-* [eggs install](#eggs-install)
-* [eggs kill](#eggs-kill)
-* [eggs mom](#eggs-mom)
-* [eggs prerequisites](#eggs-prerequisites)
-* [eggs produce](#eggs-produce)
-* [eggs remove](#eggs-remove)
-* [eggs tools:clean](#eggs-toolsclean)
-* [eggs tools:initrd](#eggs-toolsinitrd)
-* [eggs tools:locales](#eggs-toolslocales)
-* [eggs tools:pve](#eggs-toolspve)
-* [eggs tools:sanitize](#eggs-toolssanitize)
-* [eggs tools:skel](#eggs-toolsskel)
-* [eggs tools:yolk](#eggs-toolsyolk)
-* [eggs update](#eggs-update)
+* [`eggs adapt`](#eggs-adapt)
+* [`eggs autocomplete [SHELL]`](#eggs-autocomplete-shell)
+* [`eggs calamares`](#eggs-calamares)
+* [`eggs dad`](#eggs-dad)
+* [`eggs export:deb`](#eggs-exportdeb)
+* [`eggs export:docs`](#eggs-exportdocs)
+* [`eggs export:iso`](#eggs-exportiso)
+* [`eggs help [COMMAND]`](#eggs-help-command)
+* [`eggs info`](#eggs-info)
+* [`eggs install`](#eggs-install)
+* [`eggs kill`](#eggs-kill)
+* [`eggs mom`](#eggs-mom)
+* [`eggs prerequisites`](#eggs-prerequisites)
+* [`eggs produce`](#eggs-produce)
+* [`eggs remove`](#eggs-remove)
+* [`eggs tools:clean`](#eggs-toolsclean)
+* [`eggs tools:initrd`](#eggs-toolsinitrd)
+* [`eggs tools:locales`](#eggs-toolslocales)
+* [`eggs tools:pve`](#eggs-toolspve)
+* [`eggs tools:sanitize`](#eggs-toolssanitize)
+* [`eggs tools:skel`](#eggs-toolsskel)
+* [`eggs tools:yolk`](#eggs-toolsyolk)
+* [`eggs update`](#eggs-update)
 
-## eggs adapt
+## `eggs adapt`
 
 adapt monitor resolution for VM only
 
-
+```
 USAGE
   $ eggs adapt
 
@@ -89,15 +93,15 @@ OPTIONS
 
 ALIASES
   $ eggs adjust
+```
 
 
 
-
-## eggs autocomplete [SHELL]
+## `eggs autocomplete [SHELL]`
 
 display autocomplete installation instructions
 
-
+```
 USAGE
   $ eggs autocomplete [SHELL]
 
@@ -112,15 +116,15 @@ EXAMPLES
   $ eggs autocomplete bash
   $ eggs autocomplete zsh
   $ eggs autocomplete --refresh-cache
+```
 
 
 
-
-## eggs calamares
+## `eggs calamares`
 
 calamares or install or configure it
 
-
+```
 USAGE
   $ eggs calamares
 
@@ -137,30 +141,30 @@ EXAMPLES
 
   ~$ sudo eggs calamares -i 
   install calamares and create it's configuration's files
+```
 
 
 
-
-## eggs dad
+## `eggs dad`
 
 ask help from daddy (gui interface)!
 
-
+```
 USAGE
   $ eggs dad
 
 OPTIONS
   -h, --help     show CLI help
   -v, --verbose
+```
 
 
 
-
-## eggs export:deb
+## `eggs export:deb`
 
 export package eggs-v7-x-x-1.deb in the destination host
 
-
+```
 USAGE
   $ eggs export:deb
 
@@ -171,44 +175,44 @@ OPTIONS
   --amd64      export amd64 arch
   --armel      export armel arch
   --i386       export i386 arch
+```
 
 
 
-
-## eggs export:docs
+## `eggs export:docs`
 
 remove and export docType documentation of the sources in the destination host
 
-
+```
 USAGE
   $ eggs export:docs
 
 OPTIONS
   -h, --help  show CLI help
+```
 
 
 
-
-## eggs export:iso
+## `eggs export:iso`
 
 export iso in the destination host
 
-
+```
 USAGE
   $ eggs export:iso
 
 OPTIONS
   -c, --clean  delete old ISOs before to copy
   -h, --help   show CLI help
+```
 
 
 
-
-## eggs help [COMMAND]
+## `eggs help [COMMAND]`
 
 display help for eggs
 
-
+```
 USAGE
   $ eggs help [COMMAND]
 
@@ -217,30 +221,30 @@ ARGUMENTS
 
 OPTIONS
   --all  see all commands in CLI
+```
 
 
 
-
-## eggs info
+## `eggs info`
 
 informations about system and eggs
 
-
+```
 USAGE
   $ eggs info
 
 EXAMPLE
   $ eggs info
   You will find here informations about penguin's eggs!
+```
 
 
 
-
-## eggs install
+## `eggs install`
 
 eggs installer - (the egg became penguin)
 
-
+```
 USAGE
   $ eggs install
 
@@ -259,15 +263,15 @@ ALIASES
 EXAMPLE
   $ eggs install
   Install the system with eggs cli installer(default)
+```
 
 
 
-
-## eggs kill
+## `eggs kill`
 
 kill the eggs/free the nest
 
-
+```
 USAGE
   $ eggs kill
 
@@ -278,29 +282,29 @@ OPTIONS
 EXAMPLE
   $ eggs kill
   kill the eggs/free the nest
+```
 
 
 
-
-## eggs mom
+## `eggs mom`
 
 ask for mommy (gui interface)!
 
-
+```
 USAGE
   $ eggs mom
 
 OPTIONS
   -h, --help  show CLI help
+```
 
 
 
-
-## eggs prerequisites
+## `eggs prerequisites`
 
 Initialize eggs and install packages prerequisites to run eggs
 
-
+```
 USAGE
   $ eggs prerequisites
 
@@ -315,15 +319,15 @@ ALIASES
 EXAMPLE
   ~$ eggs init
   Initialize eggs, install prerequisites and create configuration files
+```
 
 
 
-
-## eggs produce
+## `eggs produce`
 
 the system produce an egg: livecd creation.
 
-
+```
 USAGE
   $ eggs produce
 
@@ -382,15 +386,15 @@ EXAMPLES
   $ sudo eggs produce -vs --basename leo --rsupport 
   produce scripts to build an ISO as the previus example. Scripts can be found
   in /home/eggs/ovarium and you can customize all you need
+```
 
 
 
-
-## eggs remove
+## `eggs remove`
 
 remove eggs, eggs configurations, prerequisites, calamares, calamares configurations
 
-
+```
 USAGE
   $ eggs remove
 
@@ -413,30 +417,30 @@ EXAMPLES
 
   $ sudo eggs remove --all
   remove eggs, eggs configurations, prerequisites, calamares, calamares configurations
+```
 
 
 
-
-## eggs tools:clean
+## `eggs tools:clean`
 
 clean system log, apt, etc
 
-
+```
 USAGE
   $ eggs tools:clean
 
 OPTIONS
   -h, --help     show CLI help
   -v, --verbose  verbose
+```
 
 
 
-
-## eggs tools:initrd
+## `eggs tools:initrd`
 
 Test initrd
 
-
+```
 USAGE
   $ eggs tools:initrd
 
@@ -445,15 +449,15 @@ OPTIONS
   -v, --verbose
   --check=check  check if necessary to clean initrd.img
   --clean=clean  clean the initrd.img
+```
 
 
 
-
-## eggs tools:locales
+## `eggs tools:locales`
 
 install/clean locales
 
-
+```
 USAGE
   $ eggs tools:locales
 
@@ -461,15 +465,15 @@ OPTIONS
   -h, --help       show CLI help
   -r, --reinstall  reinstall locales
   -v, --verbose    verbose
+```
 
 
 
-
-## eggs tools:pve
+## `eggs tools:pve`
 
 enable/start/stop pve-live
 
-
+```
 USAGE
   $ eggs tools:pve
 
@@ -480,29 +484,29 @@ OPTIONS
   -v, --verbose  stop service
   --start        start
   --stop         stop service
+```
 
 
 
-
-## eggs tools:sanitize
+## `eggs tools:sanitize`
 
 sanitize
 
-
+```
 USAGE
   $ eggs tools:sanitize
 
 OPTIONS
   -h, --help  show CLI help
+```
 
 
 
-
-## eggs tools:skel
+## `eggs tools:skel`
 
 update skel from home configuration
 
-
+```
 USAGE
   $ eggs tools:skel
 
@@ -514,15 +518,15 @@ OPTIONS
 EXAMPLE
   $ eggs skel --user mauro
   desktop configuration of user mauro will get used as default
+```
 
 
 
-
-## eggs tools:yolk
+## `eggs tools:yolk`
 
 configure eggs to install without internet
 
-
+```
 USAGE
   $ eggs tools:yolk
 
@@ -532,15 +536,15 @@ OPTIONS
 
 EXAMPLE
   $ eggs yolk -v
+```
 
 
 
-
-## eggs update
+## `eggs update`
 
 update the penguin's eggs tool.
 
-
+```
 USAGE
   $ eggs update
 
@@ -557,7 +561,7 @@ DESCRIPTION
 EXAMPLE
   $ eggs update
   update/upgrade the penguin's eggs tool
-
+```
 
 
 <!-- commandsstop -->
