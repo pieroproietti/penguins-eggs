@@ -29,8 +29,8 @@ case "$1" in
     rm -f /usr/share/applications/penguins-eggs.destop
 
     # sanitize xdg links
-    rm etc/xdg/autostart/add-penguins-desktop-icons.desktop
-    rm /etc/xdg/autostart/add-penguins-links.desktop
+    rm -f /etc/xdg/autostart/add-penguins-desktop-icons.desktop
+    rm -f /etc/xdg/autostart/add-penguins-links.desktop
 
     # sanitize others
     rm -f /usr/bin/pve-live.sh
@@ -60,11 +60,11 @@ case "$1" in
     rm -rf "$calamares_global_modules/sources-yolk-unmount"
 
     # buster/beowulf sanitize calamares scripts
-    rm -f /usr/sbin/bootloader-config*
-    rm -f /usr/sbin/create-tmp*
-    rm -f /usr/sbin/remove-link*
-    rm -f /usr/sbin/sources-yolk*
-    rm -f /usr/sbin/sources-yolk-unmount*
+    rm -f "/usr/sbin/bootloader-config*"
+    rm -f "/usr/sbin/create-tmp*"
+    rm -f "/usr/sbin/remove-link*"
+    rm -f "/usr/sbin/sources-yolk*"
+    rm -f "/usr/sbin/sources-yolk-unmount*"
 
     # bionic sanitize calamares global modules
     rm -rf "$calamares_global_modules/automirror"
@@ -74,10 +74,10 @@ case "$1" in
     rm -rf "$calamares_global_modules/bug"
 
     # bionic sanitize calamares scripts
-    rm -f /usr/sbin/add386arch*
-    rm -f /usr/sbin/after-bootloader*
-    rm -f /usr/sbin/before-bootloader*
-    rm -f /usr/sbin/bug.*
+    rm -f "/usr/sbin/add386arch*"
+    rm -f "/usr/sbin/after-bootloader*"
+    rm -f "/usr/sbin/before-bootloader*"
+    rm -f "/usr/sbin/bug.*"
 
 
     ;;

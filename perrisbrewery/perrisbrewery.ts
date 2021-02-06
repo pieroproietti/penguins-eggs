@@ -43,9 +43,13 @@ function convert(pathSources='', source = '') {
     const version = sourceVersion + "-" + mantainerVersion
     console.log(`version: ${version}`)
 
-    let arch = source.substring(source.indexOf(version) + 9, version.length +11)
-    if ((arch !== 'amd64') && (arch !== 'armel')) {
-        arch = 'i386'
+    let arch = "i386"
+    if (source.includes('amd64')){
+        arch = "amd64"
+    }
+
+    if (source.includes('armel')){
+        arch = "armel"
     }
     console.log(`arch: ${arch}`)
 

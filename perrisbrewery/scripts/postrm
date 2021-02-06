@@ -21,8 +21,28 @@ set -e
 
 case "$1" in
     purge|remove|upgrade|failed-upgrade|abort-install|abort-upgrade|disappear)
-        rm /etc/penguins-eggs.d -rf
-        rm /usr/local/share/penguins-eggs/
+        # eggs
+        rm -rf /usr/lib/penguins-eggs/
+
+        # eggc configurazione
+        rm -rf /etc/penguins-eggs.d/
+        rm -rf /usr/local/share/penguins-eggs/
+
+        # sanitize applications links
+        rm -f /usr/share/applications/penguins-adapt.destop
+        rm -f /usr/share/applications/penguins-clinstaller.destop
+        rm -f /usr/share/applications/penguins-eggs.destop
+
+        # sanitize xdg links
+        rm -f /etc/xdg/autostart/add-penguins-desktop-icons.desktop
+        rm -f /etc/xdg/autostart/add-penguins-links.desktop
+
+        # sanitize others
+        rm -f /usr/bin/pve-live.sh
+        rm -f /etc/systemd/system/pve-live.service
+
+        # eggs old files not used now
+        rm -f /etc/penguins-eggs.conf
     ;;
 
     *)
