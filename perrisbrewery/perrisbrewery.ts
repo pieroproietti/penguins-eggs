@@ -3,7 +3,6 @@
  * 
  */
 
-import { execSync } from "child_process"
 import fs = require('fs')
 import shx = require('shelljs')
 import mustache = require('mustache')
@@ -34,7 +33,14 @@ function convert(pathSources='', source = '') {
     const name = 'eggs'
 
     console.log(`source: ${source}`)
-    const version = source.substring(source.indexOf('eggs_')+5, source.indexOf('eggs_') + 13)
+    const sourceVersion = source.substring(source.indexOf('eggs_')+5, source.indexOf('eggs_') + 11)
+    console.log(`sourceVersion: ${sourceVersion}`)
+
+    const mantainerOldVersion = source.substring(source.indexOf('eggs_')+12, source.indexOf('eggs_') + 13)
+    let mantainerVersion = +mantainerOldVersion +1
+    console.log(`mantainerVersion: ${mantainerVersion}`)
+
+    const version = sourceVersion + "-" + mantainerVersion
     console.log(`version: ${version}`)
 
     let arch = source.substring(source.indexOf(version) + 9, version.length +11)
