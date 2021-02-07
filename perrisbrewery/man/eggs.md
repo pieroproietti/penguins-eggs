@@ -1,13 +1,6 @@
 eggs(1) -- A reproductive system for penguins
 =============================================
 
-* [Index](#index)
-* [Presentation](#presentation)
-* [Packages](#packages)
-* [Usage](#usage)
-* [Commands](#commands)
-* [Terminal samples](#terminal-samples)
-* [That&#39;s all Folks!](#thats-all-folks)
 
 
 ## SYNOPSIS

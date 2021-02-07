@@ -29,8 +29,6 @@ let commands = ''
 const commandsStart = '<!-- commands -->'
 let isCommands = false
 const commandsStop = '<!-- commandsstop -->'
-
-
 for (let i = 0; i < readme.length; i++) {
    let isComment = false
    if (readme[i].includes('<!--')) {
@@ -67,9 +65,6 @@ for (let i = 0; i < readme.length; i++) {
    }
    if (isCommands && !isComment) {
       if (! readme[i].includes('See code')){
-         if(readme[i].includes('<a href="#-')) {
-            readme[i].toLowerCase()
-         }
          commands += readme[i] + '\n'
       }
    }
@@ -77,7 +72,7 @@ for (let i = 0; i < readme.length; i++) {
 
 const template = fs.readFileSync('template/man.template', 'utf8')
 const view = {
-   toc: toc,
+   toc: '',
    usage: usage,
    commands: commands,
 }
@@ -85,7 +80,24 @@ const view = {
 fs.writeFileSync(`man/eggs.md`, mustache.render(template, view))
 
 shx.cp('man/eggs.md', 'man/eggs')
-shx.exec(`ronn --roff --html man/eggs  --manual='eggs manual' --organization=penguins-eggs.net  --style=toc,80c --section 1 -o man/`)
+shx.exec(`ronn --roff --manual='eggs manual' --organization=penguins-eggs.net  --style=toc,80c      man/eggs --section 1 -o man/`)
+shx.exec(`ronn --html --manual='eggs manual' --organization=penguins-eggs.net  --style=toc,dark,man man/eggs --section 1 -o man/`)
+
 shx.rm('man/eggs')
 shx.exec('gzip man/eggs.1')
 shx.mv('man/eggs.1.gz', 'man/eggs.1')
+
+// modifica man/eggs.1.html 
+shx.mv(`man/eggs.1.html`, 'man/source.html')
+const sourceHtml = fs.readFileSync(`man/source.html`, { encoding: 'utf8' }).split('\n')
+let destHtml = ''
+for (let i = 0; i < sourceHtml.length; i++) {
+   if(sourceHtml[i].includes('<a href="#-EGGS-')) {
+      sourceHtml[i] = sourceHtml[i].toLowerCase()
+   }
+   destHtml += sourceHtml[i] + '\n'
+}
+fs.writeFileSync(`man/eggs.1.html`, destHtml)
+
+const home = `/home/artisan/`
+shx.exec(`sensible-browser "file://${home}penguins-eggs/perrisbrewery/man/eggs.1.html"`)
