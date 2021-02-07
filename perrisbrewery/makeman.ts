@@ -5,11 +5,13 @@
 import fs = require('fs')
 import shx = require('shelljs')
 import mustache = require('mustache')
-// import path = require('path')
 
 console.log('Perri\'s Brewery')
 
 const readme = fs.readFileSync(`../README.md`, { encoding: 'utf8' }).split('\n')
+
+shx.exec(`rm man -rf`)
+shx.exec(`mkdir man`)
 
 let toc = ''
 const tocStart = '<!-- toc -->'
@@ -76,9 +78,13 @@ const view = {
    usage: usage,
    commands: commands,
 }
-fs.writeFileSync(`eggs.md`, mustache.render(template, view))
+fs.writeFileSync(`man/eggs`, mustache.render(template, view))
 
-shx.exec(`ronn --roff --html eggs.md  --manual='eggs manual' --organization=penguins-eggs.net  --style=toc,80c --section 1 -o man/man1/`)
+shx.exec(`ronn --roff --html man/eggs  --manual='eggs manual' --organization=penguins-eggs.net  --style=toc,80c --section 1 -o man/`)
+shx.exec('gzip man/eggs')
+shx.exec('mv man/eggs.gz man/eggs.1')
+
+
 
 // console.log(`INIZIO toc`)
 // console.log(toc)
@@ -89,7 +95,7 @@ shx.exec(`ronn --roff --html eggs.md  --manual='eggs manual' --organization=peng
 // console.log(`FINE usage`)
 
 // console.log(`INIZIO commands`)
- console.log(commands)
+//  console.log(commands)
 // console.log(`FINE commands`)
 
 
