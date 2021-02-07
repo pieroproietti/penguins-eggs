@@ -35,7 +35,7 @@ The scope of this project is to implement the process of remastering your versio
 
 {{commands}}
 
-## FILE
+## FILES
       /etc/penguins-eggs.d
         all eggs configurations are here
 

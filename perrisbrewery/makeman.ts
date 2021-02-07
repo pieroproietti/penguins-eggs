@@ -5,6 +5,7 @@
 import fs = require('fs')
 import shx = require('shelljs')
 import mustache = require('mustache')
+import { isFunction } from 'util'
 
 console.log('Perri\'s Brewery')
 
@@ -66,11 +67,13 @@ for (let i = 0; i < readme.length; i++) {
    }
    if (isCommands && !isComment) {
       if (! readme[i].includes('See code')){
+         if(readme[i].includes('<a href="#-')) {
+            readme[i].toLowerCase()
+         }
          commands += readme[i] + '\n'
       }
    }
 }
-
 
 const template = fs.readFileSync('template/man.template', 'utf8')
 const view = {
@@ -78,24 +81,11 @@ const view = {
    usage: usage,
    commands: commands,
 }
-fs.writeFileSync(`man/eggs`, mustache.render(template, view))
 
+fs.writeFileSync(`man/eggs.md`, mustache.render(template, view))
+
+shx.cp('man/eggs.md', 'man/eggs')
 shx.exec(`ronn --roff --html man/eggs  --manual='eggs manual' --organization=penguins-eggs.net  --style=toc,80c --section 1 -o man/`)
-shx.exec('gzip man/eggs')
-shx.exec('mv man/eggs.gz man/eggs.1')
-
-
-
-// console.log(`INIZIO toc`)
-// console.log(toc)
-// console.log(`FINE toc`)
-
-// console.log(`INIZIO usage`)
-// console.log(usage)
-// console.log(`FINE usage`)
-
-// console.log(`INIZIO commands`)
-//  console.log(commands)
-// console.log(`FINE commands`)
-
-
+shx.rm('man/eggs')
+shx.exec('gzip man/eggs.1')
+shx.mv('man/eggs.1.gz', 'man/eggs.1')
