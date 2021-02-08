@@ -5,7 +5,6 @@
 import fs = require('fs')
 import shx = require('shelljs')
 import mustache = require('mustache')
-import { isFunction } from 'util'
 
 console.log('Perri\'s Brewery')
 
@@ -61,43 +60,117 @@ for (let i = 0; i < readme.length; i++) {
       toc += readme[i] + '\n'
    }
    if (isUsage && !isComment) {
+      if (readme[i].includes('`')) {
+         if (!readme[i].includes('```')) {
+            readme[i] = readme[i].replace('`', '')
+            readme[i] = readme[i].replace('`', '')
+         }
+      }
       usage += readme[i] + '\n'
    }
    if (isCommands && !isComment) {
-      if (! readme[i].includes('See code')){
+      if (!readme[i].includes('See code')) {
+         if (readme[i].includes('`')) {
+            if (!readme[i].includes('```')) {
+               readme[i] = readme[i].replace('`', '')
+               readme[i] = readme[i].replace('`', '')
+            }
+         }
          commands += readme[i] + '\n'
       }
    }
 }
 
-const template = fs.readFileSync('template/man.template', 'utf8')
+/**
+ * Creazione della versione markdown
+ */
+console.log('creazione versione markdown')
+const template = fs.readFileSync('template/man.template.md', 'utf8')
 const view = {
    toc: '',
    usage: usage,
    commands: commands,
 }
-
 fs.writeFileSync(`man/eggs.md`, mustache.render(template, view))
-
 shx.cp('man/eggs.md', 'man/eggs')
-shx.exec(`ronn --roff --manual='eggs manual' --organization=penguins-eggs.net  --style=toc,80c      man/eggs --section 1 -o man/`)
-shx.exec(`ronn --html --manual='eggs manual' --organization=penguins-eggs.net  --style=toc,dark,man man/eggs --section 1 -o man/`)
 
-shx.rm('man/eggs')
+
+/**
+ *  Postproduzione versione md
+ * 
+ * mustache inserisce &#x60;&#x60;&#x60; al posto di ```
+ */
+shx.mv(`man/eggs.md`, 'man/md-1.md')
+const sourceMd = fs.readFileSync(`man/md-1.md`, { encoding: 'utf8' }).split('\n')
+let destMd = ''
+for (let i = 0; i < sourceMd.length; i++) {
+   if (sourceMd[i].includes('&#x60;&#x60;&#x60;')) {
+      console.log('trovato!')
+      sourceMd[i] = sourceMd[i].replace('&#x60;&#x60;&#x60;', '```')
+   }
+   destMd += sourceMd[i] + '\n'
+}
+fs.writeFileSync(`man/eggs.md`, destMd)
+
+
+/**
+ * Creazione versione man
+ */
+console.log(`creazione versione man`)
+shx.exec(`ronn --roff --manual='eggs manual' --organization=penguins-eggs.net  --style=toc,80c man/eggs --section 1 -o man/`)
+
+console.log(`compressione versione man`)
 shx.exec('gzip man/eggs.1')
 shx.mv('man/eggs.1.gz', 'man/eggs.1')
 
-// modifica man/eggs.1.html 
-shx.mv(`man/eggs.1.html`, 'man/source.html')
-const sourceHtml = fs.readFileSync(`man/source.html`, { encoding: 'utf8' }).split('\n')
+/**
+ * creazione versione html
+ */
+console.log(`creazione versione html`)
+shx.exec(`ronn --html --manual='eggs manual' --organization=penguins-eggs.net  --style=toc,man  man/eggs --section 1 -o man`)
+
+// postproduzione html 1
+console.log(`postproduzione html 1`)
+shx.mv(`man/eggs.1.html`, 'man/html-1.html')
+let sourceHtml = fs.readFileSync(`man/html-1.html`, { encoding: 'utf8' }).split('\n')
 let destHtml = ''
 for (let i = 0; i < sourceHtml.length; i++) {
-   if(sourceHtml[i].includes('<a href="#-EGGS-')) {
+   if (sourceHtml[i].includes('<a href="#EGGS-')) {
       sourceHtml[i] = sourceHtml[i].toLowerCase()
+      if (sourceHtml[i].indexOf('[')) {
+         sourceHtml[i] = sourceHtml[i].replace('command', 'COMMAND')
+         sourceHtml[i] = sourceHtml[i].replace('command', 'COMMAND')
+         sourceHtml[i] = sourceHtml[i].replace('shell', 'SHELL')
+         sourceHtml[i] = sourceHtml[i].replace('shell', 'SHELL')
+      }
+   }
+   destHtml += sourceHtml[i] + '\n'
+}
+fs.writeFileSync(`man/html-2.html`, destHtml)
+
+
+// postproduzione html 2
+console.log(`postproduzione html 2`)
+sourceHtml = fs.readFileSync(`man/html-2.html`, { encoding: 'utf8' }).split('\n')
+destHtml = ''
+for (let i = 0; i < sourceHtml.length; i++) {
+   if (sourceHtml[i].includes('<p>```')) {
+      sourceHtml[i] = sourceHtml[i].replace('<p>```', '<pre>')
+   }
+   if (sourceHtml[i].includes('```</p>')) {
+      sourceHtml[i] = sourceHtml[i].replace('```</p>', '`</pre>')
    }
    destHtml += sourceHtml[i] + '\n'
 }
 fs.writeFileSync(`man/eggs.1.html`, destHtml)
+
+
+/**
+ * pulizia
+ */
+shx.rm('man/eggs')
+shx.rm('man/html-1.html')
+shx.rm('man/html-2.html')
 
 const home = `/home/artisan/`
 shx.exec(`sensible-browser "file://${home}penguins-eggs/perrisbrewery/man/eggs.1.html"`)

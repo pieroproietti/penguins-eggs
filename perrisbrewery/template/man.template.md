@@ -5,22 +5,40 @@ eggs(1) -- A reproductive system for penguins
 
 ## SYNOPSIS
 
-{{{usage}}}
+```
+$ npm install -g penguins-eggs
+
+$ eggs COMMAND
+
+running command...
+
+$ eggs (-v|--version|version)
+
+penguins-eggs/7.8.10 linux-x64 node-v14.15.4
+
+$ eggs --help [COMMAND]
+
+USAGE
+
+$ eggs COMMAND
+...
+```
 
 Most of the commands of eggs need sudo, but there are exceptions for export, info and mom.
 
 examples:
 
 ```
-sudo eggs init  # initialize eggs, create man pages and autocomplete for eggs
-sudo eggs produce # create an ISO of the system
-sudo eggs kill # delete the created ISO and clean the nest
+sudo eggs init
+sudo eggs produce
+sudo eggs kill
 ```
+
 There are too, two interactive helpers:
 
 ```
-eggs mom # interactive GUI (be kind with mom, she don't need sudo)
-sudo eggs dad # get help from dad to finalize ISO
+eggs mom 
+sudo eggs dad
 ```
 
 Help yorself signing in the forum or in facebook group page or asking me.
