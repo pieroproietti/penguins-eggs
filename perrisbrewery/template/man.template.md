@@ -7,19 +7,13 @@ eggs(1) -- A reproductive system for penguins
 
 ```
 $ npm install -g penguins-eggs
-
 $ eggs COMMAND
-
 running command...
-
 $ eggs (-v|--version|version)
-
-penguins-eggs/7.8.10 linux-x64 node-v14.15.4
-
+penguins-eggs/{{version}} {{linuxVersion}} {{nodeVersion}}}
 $ eggs --help [COMMAND]
 
 USAGE
-
 $ eggs COMMAND
 ...
 ```

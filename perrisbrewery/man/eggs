@@ -7,19 +7,13 @@ eggs(1) -- A reproductive system for penguins
 
 ```
 $ npm install -g penguins-eggs
-
 $ eggs COMMAND
-
 running command...
-
 $ eggs (-v|--version|version)
-
-penguins-eggs/7.8.10 linux-x64 node-v14.15.4
-
+penguins-eggs/7.8.10 linux-x64 node-v14.15.4}
 $ eggs --help [COMMAND]
 
 USAGE
-
 $ eggs COMMAND
 ...
 ```
@@ -51,31 +45,31 @@ The scope of this project is to implement the process of remastering your versio
 
 ## COMMANDS
 
-* [eggs adapt](#eggs-adapt)
-* [eggs autocomplete [SHELL]](#eggs-autocomplete-shell)
-* [eggs calamares](#eggs-calamares)
-* [eggs dad](#eggs-dad)
-* [eggs export:deb](#eggs-exportdeb)
-* [eggs export:docs](#eggs-exportdocs)
-* [eggs export:iso](#eggs-exportiso)
-* [eggs help [COMMAND]](#eggs-help-command)
-* [eggs info](#eggs-info)
-* [eggs install](#eggs-install)
-* [eggs kill](#eggs-kill)
-* [eggs mom](#eggs-mom)
-* [eggs prerequisites](#eggs-prerequisites)
-* [eggs produce](#eggs-produce)
-* [eggs remove](#eggs-remove)
-* [eggs tools:clean](#eggs-toolsclean)
-* [eggs tools:initrd](#eggs-toolsinitrd)
-* [eggs tools:locales](#eggs-toolslocales)
-* [eggs tools:pve](#eggs-toolspve)
-* [eggs tools:sanitize](#eggs-toolssanitize)
-* [eggs tools:skel](#eggs-toolsskel)
-* [eggs tools:yolk](#eggs-toolsyolk)
-* [eggs update](#eggs-update)
+* [&#x60;eggs adapt&#x60;](#eggs-adapt)
+* [&#x60;eggs autocomplete [SHELL]&#x60;](#eggs-autocomplete-shell)
+* [&#x60;eggs calamares&#x60;](#eggs-calamares)
+* [&#x60;eggs dad&#x60;](#eggs-dad)
+* [&#x60;eggs export:deb&#x60;](#eggs-exportdeb)
+* [&#x60;eggs export:docs&#x60;](#eggs-exportdocs)
+* [&#x60;eggs export:iso&#x60;](#eggs-exportiso)
+* [&#x60;eggs help [COMMAND]&#x60;](#eggs-help-command)
+* [&#x60;eggs info&#x60;](#eggs-info)
+* [&#x60;eggs install&#x60;](#eggs-install)
+* [&#x60;eggs kill&#x60;](#eggs-kill)
+* [&#x60;eggs mom&#x60;](#eggs-mom)
+* [&#x60;eggs prerequisites&#x60;](#eggs-prerequisites)
+* [&#x60;eggs produce&#x60;](#eggs-produce)
+* [&#x60;eggs remove&#x60;](#eggs-remove)
+* [&#x60;eggs tools:clean&#x60;](#eggs-toolsclean)
+* [&#x60;eggs tools:initrd&#x60;](#eggs-toolsinitrd)
+* [&#x60;eggs tools:locales&#x60;](#eggs-toolslocales)
+* [&#x60;eggs tools:pve&#x60;](#eggs-toolspve)
+* [&#x60;eggs tools:sanitize&#x60;](#eggs-toolssanitize)
+* [&#x60;eggs tools:skel&#x60;](#eggs-toolsskel)
+* [&#x60;eggs tools:yolk&#x60;](#eggs-toolsyolk)
+* [&#x60;eggs update&#x60;](#eggs-update)
 
-## eggs adapt
+## &#x60;eggs adapt&#x60;
 
 adapt monitor resolution for VM only
 
@@ -92,7 +86,7 @@ ALIASES
 &#x60;&#x60;&#x60;
 
 
-## eggs autocomplete [SHELL]
+## &#x60;eggs autocomplete [SHELL]&#x60;
 
 display autocomplete installation instructions
 
@@ -114,7 +108,7 @@ EXAMPLES
 &#x60;&#x60;&#x60;
 
 
-## eggs calamares
+## &#x60;eggs calamares&#x60;
 
 calamares or install or configure it
 
@@ -138,7 +132,7 @@ EXAMPLES
 &#x60;&#x60;&#x60;
 
 
-## eggs dad
+## &#x60;eggs dad&#x60;
 
 ask help from daddy (gui interface)!
 
@@ -152,7 +146,7 @@ OPTIONS
 &#x60;&#x60;&#x60;
 
 
-## eggs export:deb
+## &#x60;eggs export:deb&#x60;
 
 export package eggs-v7-x-x-1.deb in the destination host
 
@@ -170,7 +164,7 @@ OPTIONS
 &#x60;&#x60;&#x60;
 
 
-## eggs export:docs
+## &#x60;eggs export:docs&#x60;
 
 remove and export docType documentation of the sources in the destination host
 
@@ -183,7 +177,7 @@ OPTIONS
 &#x60;&#x60;&#x60;
 
 
-## eggs export:iso
+## &#x60;eggs export:iso&#x60;
 
 export iso in the destination host
 
@@ -197,7 +191,7 @@ OPTIONS
 &#x60;&#x60;&#x60;
 
 
-## eggs help [COMMAND]
+## &#x60;eggs help [COMMAND]&#x60;
 
 display help for eggs
 
@@ -213,7 +207,7 @@ OPTIONS
 &#x60;&#x60;&#x60;
 
 
-## eggs info
+## &#x60;eggs info&#x60;
 
 informations about system and eggs
 
@@ -227,7 +221,7 @@ EXAMPLE
 &#x60;&#x60;&#x60;
 
 
-## eggs install
+## &#x60;eggs install&#x60;
 
 eggs installer - (the egg became penguin)
 
@@ -253,7 +247,7 @@ EXAMPLE
 &#x60;&#x60;&#x60;
 
 
-## eggs kill
+## &#x60;eggs kill&#x60;
 
 kill the eggs&#x2F;free the nest
 
@@ -271,7 +265,7 @@ EXAMPLE
 &#x60;&#x60;&#x60;
 
 
-## eggs mom
+## &#x60;eggs mom&#x60;
 
 ask for mommy (gui interface)!
 
@@ -284,7 +278,7 @@ OPTIONS
 &#x60;&#x60;&#x60;
 
 
-## eggs prerequisites
+## &#x60;eggs prerequisites&#x60;
 
 Initialize eggs and install packages prerequisites to run eggs
 
@@ -306,7 +300,7 @@ EXAMPLE
 &#x60;&#x60;&#x60;
 
 
-## eggs produce
+## &#x60;eggs produce&#x60;
 
 the system produce an egg: livecd creation.
 
@@ -372,7 +366,7 @@ EXAMPLES
 &#x60;&#x60;&#x60;
 
 
-## eggs remove
+## &#x60;eggs remove&#x60;
 
 remove eggs, eggs configurations, prerequisites, calamares, calamares configurations
 
@@ -402,7 +396,7 @@ EXAMPLES
 &#x60;&#x60;&#x60;
 
 
-## eggs tools:clean
+## &#x60;eggs tools:clean&#x60;
 
 clean system log, apt, etc
 
@@ -416,7 +410,7 @@ OPTIONS
 &#x60;&#x60;&#x60;
 
 
-## eggs tools:initrd
+## &#x60;eggs tools:initrd&#x60;
 
 Test initrd
 
@@ -432,7 +426,7 @@ OPTIONS
 &#x60;&#x60;&#x60;
 
 
-## eggs tools:locales
+## &#x60;eggs tools:locales&#x60;
 
 install&#x2F;clean locales
 
@@ -447,7 +441,7 @@ OPTIONS
 &#x60;&#x60;&#x60;
 
 
-## eggs tools:pve
+## &#x60;eggs tools:pve&#x60;
 
 enable&#x2F;start&#x2F;stop pve-live
 
@@ -465,7 +459,7 @@ OPTIONS
 &#x60;&#x60;&#x60;
 
 
-## eggs tools:sanitize
+## &#x60;eggs tools:sanitize&#x60;
 
 sanitize
 
@@ -478,7 +472,7 @@ OPTIONS
 &#x60;&#x60;&#x60;
 
 
-## eggs tools:skel
+## &#x60;eggs tools:skel&#x60;
 
 update skel from home configuration
 
@@ -497,7 +491,7 @@ EXAMPLE
 &#x60;&#x60;&#x60;
 
 
-## eggs tools:yolk
+## &#x60;eggs tools:yolk&#x60;
 
 configure eggs to install without internet
 
@@ -514,7 +508,7 @@ EXAMPLE
 &#x60;&#x60;&#x60;
 
 
-## eggs update
+## &#x60;eggs update&#x60;
 
 update the penguin&#39;s eggs tool.
 

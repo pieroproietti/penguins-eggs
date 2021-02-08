@@ -6,81 +6,120 @@
 import fs = require('fs')
 import shx = require('shelljs')
 import mustache = require('mustache')
-import path = require ('path')
-
-console.log('Perri\'s Brewery')
-const sourcesDir = process.argv[2]
-
-console.log(`sourcesDir: ${sourcesDir}`)
-
-const pathSources=path.dirname(sourcesDir)
-console.log(`pathSources: ${pathSources}`)
+import path = require('path')
 
 
-const filenames = fs.readdirSync(pathSources)
-filenames.forEach(file => {
-    if (file.endsWith('.deb')){
-        console.log(pathSources+'/'+file)
-        convert(pathSources, file)
-    }
-})
+import makeMarkdown from './make_markdown'
+import makeMan from './make_man'
+import makeManHtml from './make_man_html'
+
 
 /**
  * 
- * @param source 
  */
-function convert(pathSources='', source = '') {
-    const name = 'eggs'
+export default class Perrisbrewery {
+    sourceVersion = ''
+    buildVersion = ''
+    linuxArch = ''
+    nodeVersion = ''
+    buildDir = ''
+    htmlDir = ''
 
-    console.log(`source: ${source}`)
-    const sourceVersion = source.substring(source.indexOf('eggs_')+5, source.indexOf('eggs_') + 11)
-    console.log(`sourceVersion: ${sourceVersion}`)
 
-    const mantainerOldVersion = source.substring(source.indexOf('eggs_')+12, source.indexOf('eggs_') + 13)
-    let mantainerVersion = +mantainerOldVersion +1
-    console.log(`mantainerVersion: ${mantainerVersion}`)
+    go(sourcesDir = '') {
+        console.log('Perri\'s Brewery')
 
-    const version = sourceVersion + "-" + mantainerVersion
-    console.log(`version: ${version}`)
+        console.log(`sourcesDir: ${sourcesDir} `)
 
-    let arch = "i386"
-    if (source.includes('amd64')){
-        arch = "amd64"
+        const pathSources = path.dirname(sourcesDir)
+        console.log(`pathSources: ${pathSources} `)
+
+        const filenames = fs.readdirSync(pathSources)
+        filenames.forEach(file => {
+            if (file.endsWith('.deb')) {
+                console.log(pathSources + '/' + file)
+                this.unpackDeb(pathSources, file)
+
+                this.makeControl()
+
+                const removeTriploApice = true
+                makeMarkdown(this.sourceVersion+'-'+this.buildVersion,removeTriploApice)
+                makeMan(this.buildDir)
+                makeManHtml()
+
+                this.packDeb()
+            }
+        })
     }
 
-    if (source.includes('armel')){
-        arch = "armel"
+    /**
+     * 
+     * @param pathSources 
+     * @param source 
+     */
+    unpackDeb(pathSources = '', source = '') {
+        const name = 'eggs'
+
+        console.log(`source: ${source} `)
+        this.sourceVersion = source.substring(source.indexOf('eggs_') + 5, source.indexOf('eggs_') + 11)
+        console.log(`sourceVersion: ${this.sourceVersion} `)
+
+        this.buildVersion = source.substring(source.indexOf('eggs_') + 12, source.indexOf('eggs_') + 13)
+        console.log(`mantainerVersion: ${this.buildVersion} `)
+
+        const version = this.sourceVersion + "-" + this.buildVersion
+        console.log(`version: ${version} `)
+
+        this.linuxArch = "i386"
+        if (source.includes('amd64')) {
+            this.linuxArch = "amd64"
+        }
+
+        if (source.includes('armel')) {
+            this.linuxArch = "armel"
+        }
+        console.log(`arch: ${this.linuxArch} `)
+
+        this.buildDir = `eggs_${version}_${this.linuxArch}`
+        console.log(`buildDir: ${this.buildDir}`)
+
+        const dest = `${name}_${version}_${this.linuxArch}.deb`
+        console.log(`dest: ${dest} `)
+
+        if (fs.existsSync(this.buildDir)) {
+            shx.exec(`rm ${this.buildDir} -rf`)
+        }
+        shx.exec(`mkdir ${this.buildDir} `)
+        shx.exec(`dpkg-deb -R ${pathSources}/${source} ${this.buildDir}`)
+        shx.exec(`cd ${this.buildDir}`)
+        shx.exec(`dh_make -sc lgpl2 -e piero.proietti@gmail.com --createorig`)
+        shx.exec(`cd ..`)
+        shx.exec(`cp ./scripts/* ${this.buildDir}/DEBIAN`)
+
+
+        this.nodeVersion = process.version
+
+
+        return
     }
-    console.log(`arch: ${arch}`)
 
-    const tempDir = `eggs_${version}_${arch}`
-    console.log(`tempDir: ${tempDir}`)
 
-    const dest = `${name}_${version}_${arch}.deb`
-    console.log(`dest: ${dest}`)
-
-    if (fs.existsSync(tempDir)) {
-        shx.exec(`rm ${tempDir} -rf`)
+    /**
+     * makeControl
+     */
+    makeControl(){
+        const template = fs.readFileSync('template/control.template', 'utf8')
+        const view = {
+            version: version,
+            arch: this.linuxArch,
+        }
+        fs.writeFileSync(`${this.buildDir}/DEBIAN/control`, mustache.render(template, view))
     }
-    shx.exec(`mkdir ${tempDir}`)
-    shx.exec(`dpkg-deb -R ${pathSources}/${source} ${tempDir}`)
-    shx.exec(`cd ${tempDir}`)
-    shx.exec(`dh_make -sc lgpl2 -e piero.proietti@gmail.com --createorig`)
-    shx.exec(`cd ..`)
-    shx.exec(`cp ./scripts/* ${tempDir}/DEBIAN`)
-
-
-    const template = fs.readFileSync('template/control.template', 'utf8')
-    const view = {
-        version: version,
-        arch: arch,
+    /**
+     * 
+     */
+    packDeb() {
+        shx.exec(`dpkg-deb --build ${this.buildDir}`)
+        shx.exec(`rm ${this.buildDir} -rf`)
     }
-    fs.writeFileSync(`${tempDir}/DEBIAN/control`, mustache.render(template, view))
-
-    shx.exec(`dpkg-deb --build ${tempDir}`)
-
-
-    // shx.exec(`mv ${name}-${version}.deb ${dest}`)
-    shx.exec(`rm ${tempDir} -rf`)
 }
-
