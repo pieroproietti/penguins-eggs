@@ -1,0 +1,694 @@
+.TH "UOVA" "1" "February 2021" "" ""
+.SH "NAME"
+\fBuova\fR - uova e pulcini!
+.SS "Penguin's eggs are generated and new birds are ready to fly..."
+.P
+\fB\fBsources\fR \fI\(lahttps://img.shields.io/badge/github-sources-blue\(ra\fR\fR \fI\(lahttps://github.com/pieroproietti/penguins-eggs\(ra\fR \fB\fBblog\fR \fI\(lahttps://img.shields.io/badge/blog-penguin's%20eggs-blue\(ra\fR\fR \fI\(lahttps://penguins-eggs.net\(ra\fR \fB\fBsources-documentation\fR \fI\(lahttps://img.shields.io/badge/sources-documentation-blue\(ra\fR\fR \fI\(lahttps://penguins-eggs.sourceforge.io/\(ra\fR \fB\fBguide\fR \fI\(lahttps://img.shields.io/badge/guide-penguin's%20eggs-blue\(ra\fR\fR \fI\(lahttps://penguins-eggs.net/book/\(ra\fR \fB\fBnpm version\fR \fI\(lahttps://img.shields.io/npm/v/penguins-eggs.svg\(ra\fR\fR \fI\(lahttps://npmjs.org/package/penguins-eggs\(ra\fR \fB\fBdeb\fR \fI\(lahttps://img.shields.io/badge/deb-packages-orange\(ra\fR\fR \fI\(lahttps://sourceforge.net/projects/penguins-eggs/files/packages-deb\(ra\fR \fB\fBiso\fR \fI\(lahttps://img.shields.io/badge/iso-images-orange\(ra\fR\fR \fI\(lahttps://sourceforge.net/projects/penguins-eggs/files/iso\(ra\fR
+.SH "INDEX"
+.RS 0
+.IP \(bu 4
+\fBIndex\fR \fI(Index)\fR
+.IP \(bu 4
+\fBPresentation\fR \fI(Presentation)\fR
+.IP \(bu 4
+\fBPackages\fR \fI(Packages)\fR
+.IP \(bu 4
+\fBUsage\fR \fI(Usage)\fR
+.IP \(bu 4
+\fBCommands\fR \fI(Commands)\fR
+.IP \(bu 4
+\fBTerminal samples\fR \fI(Terminal samples)\fR
+.IP \(bu 4
+\fBThat's all Folks!\fR \fI(That's all Folks!)\fR
+.RE 0
+
+.SH "PRESENTATION"
+.P
+penguins-eggs is a console utility, in active development, who let you to remaster your system and redistribuite it as iso images or from the lan via PXE remote boot.
+.P
+The scope of this project is to implement the process of remastering your version of Linux, generate it as ISO image to burn on a CD/DVD or copy to a usb key to boot your system. You can also boot your egg - via remote boot - on your LAN. You can easily install your live system with gui calamares installer or eggs cli installer.
+.P
+All it is written in pure typescript, so ideally can be used with differents Linux distros. Yes, there are big differences about package manager used, but not so much in the way to work of bash and in the various programs used to build the iso.
+.P
+penguins-eggs, at the moment 2021 febrary is a mature tool and is extremely usefull, You can easily create your personal customized iso or your organization/school version of Linux and deploy it on your LAN, give it to your friends as usb key or publish yours eggs in the internet!
+.P
+Try penguins-eggs yes, it is a console utility - no GUI - but don't be scared, penguins-eggs is a console command - really very simple - if you are able to open a terminal, you can use it and yours final users will enjoy of full gui and pratical installer to install your livecd.
+.SS "Addons"
+.P
+Starting with version 7.6.x an addons architecture was been added to eggs, that allows third parties to develop extensions. Note that we currently have an extension for the theme that includes both calamares branding and installer link and icon. In addition, also as addon has been developed others addons, to chosen hoosing between GUI or CLI installation, adapt video resolution, etc.
+.SS "yolk"
+.P
+yolk so called - staying on the subject of eggs - is a local repository included in the livecd that contains a minimum of indispensable packages during installation. Thanks to yolk, you can safely install your system without the need o an active internet connection.
+.SS "Two great helpers!"
+.P
+I recently added two lightweight helpers integrated with eggs: mom and dad. While mom is a bash script with whiptail - and guides the user to the various commands and documentation. Dad is a short way to creating the iso: all you have to do is type in \fBsudo eggs dad\fR and follow simple instructions.
+.SS "What distributions can I use?"
+.P
+Eggs is born on Debian strecth/buster, full support Debian bullseys, Devuan beowulf, Ubuntu focal, bionic and derivatives. I usually try it against Debian buster, Devuan beowulf, Linux Mint 19.3 tricia (bionic derivated) and Linux Mint 20 ulyana (focal derivated) before releases. I tried it successfully in LMDE 4 debbie, and deepin. Eggs, generally must work with all the derivates from that distros.
+.P
+Some iso images remastered with eggs are in the \fBsourceforge page of the project\fR \fI\(lahttps://sourceforge.net/projects/penguins-eggs/files/iso/\(ra\fR.
+.SH "PACKAGES"
+.P
+eggs is released as deb package and npm package. Most users need just deb version, if you already use nodejs the npm package can be installed too,
+.SS "deb packages"
+.P
+eggs is released deb packages for i386 and amd64 architectures. Due the characteristic of eggs, they can installed in Debian, Devuan or Ubuntu based distros, withouth worries about different versions, except for the architecture. Lately was added scripts for preinst, postinst, prerm and postrm not presents in the original.
+.SS "Install"
+.P
+This simplest way to install eggs is download the \fBpackage eggs\fR \fI\(lahttps://sourceforge.net/projects/penguins-eggs/files/packages-deb/\(ra\fR from \fBsourceforge page of the project\fR \fI\(lahttps://sourceforge.net/projects/penguins-eggs/\(ra\fR and install it
+.P
+.RS 2
+.nf
+sudo dpkg -i eggs_7.7.33-1_amd64.deb
+.fi
+.RE
+.P
+or, on a i386 system:
+.P
+.RS 2
+.nf
+sudo dpkg -i eggs_7.7.33-1_i386.deb
+.fi
+.RE
+.SS "update"
+.P
+The fastest way to use sudo eggs update and choose basket. Eggs let you to select the last 4 versions in the basket and install it.
+.P
+\fBsudo eggs update\fR
+.P
+Of course, if your distro include eggs in the repository, you can use apt too.
+.P
+\fINote about deb packages\fR You can use the same package for all distributions using deb, naturally choosing the appropriate architecture (i386/amd64).
+.SS "npm packages"
+.P
+If you have nodejs installed, you can install penguins-eggs with the utility npm (node package manager).
+.P
+Simply copy and past the following lines:
+.P
+\fBsudo npm config set unsafe-perm true\fR
+.P
+\fBsudo npm i penguins-eggs@latest -g\fR
+.SS "update"
+.P
+\fBsudo eggs update\fR
+.SH "USAGE"
+.P
+.RS 2
+.nf
+$ npm install -g penguins-eggs
+$ eggs COMMAND
+running command...
+$ eggs (-v|--version|version)
+penguins-eggs/7.8.10 linux-x64 node-v14.15.4
+$ eggs --help \[lB]COMMAND\[rB]
+USAGE
+  $ eggs COMMAND
+...
+.fi
+.RE
+.SH "COMMANDS"
+.RS 0
+.IP \(bu 4
+\fB\fBeggs adapt\fR\fR \fI(eggs adapt)\fR
+.IP \(bu 4
+\fB\fBeggs autocomplete \[lB]SHELL\[rB]\fR\fR \fI(eggs autocomplete \[lB]SHELL\[rB])\fR
+.IP \(bu 4
+\fB\fBeggs calamares\fR\fR \fI(eggs calamares)\fR
+.IP \(bu 4
+\fB\fBeggs dad\fR\fR \fI(eggs dad)\fR
+.IP \(bu 4
+\fB\fBeggs export:deb\fR\fR \fI(eggs export:deb)\fR
+.IP \(bu 4
+\fB\fBeggs export:docs\fR\fR \fI(eggs export:docs)\fR
+.IP \(bu 4
+\fB\fBeggs export:iso\fR\fR \fI(eggs export:iso)\fR
+.IP \(bu 4
+\fB\fBeggs help \[lB]COMMAND\[rB]\fR\fR \fI(eggs help \[lB]COMMAND\[rB])\fR
+.IP \(bu 4
+\fB\fBeggs info\fR\fR \fI(eggs info)\fR
+.IP \(bu 4
+\fB\fBeggs install\fR\fR \fI(eggs install)\fR
+.IP \(bu 4
+\fB\fBeggs kill\fR\fR \fI(eggs kill)\fR
+.IP \(bu 4
+\fB\fBeggs mom\fR\fR \fI(eggs mom)\fR
+.IP \(bu 4
+\fB\fBeggs prerequisites\fR\fR \fI(eggs prerequisites)\fR
+.IP \(bu 4
+\fB\fBeggs produce\fR\fR \fI(eggs produce)\fR
+.IP \(bu 4
+\fB\fBeggs remove\fR\fR \fI(eggs remove)\fR
+.IP \(bu 4
+\fB\fBeggs tools:clean\fR\fR \fI(eggs tools:clean)\fR
+.IP \(bu 4
+\fB\fBeggs tools:initrd\fR\fR \fI(eggs tools:initrd)\fR
+.IP \(bu 4
+\fB\fBeggs tools:locales\fR\fR \fI(eggs tools:locales)\fR
+.IP \(bu 4
+\fB\fBeggs tools:pve\fR\fR \fI(eggs tools:pve)\fR
+.IP \(bu 4
+\fB\fBeggs tools:sanitize\fR\fR \fI(eggs tools:sanitize)\fR
+.IP \(bu 4
+\fB\fBeggs tools:skel\fR\fR \fI(eggs tools:skel)\fR
+.IP \(bu 4
+\fB\fBeggs tools:yolk\fR\fR \fI(eggs tools:yolk)\fR
+.IP \(bu 4
+\fB\fBeggs update\fR\fR \fI(eggs update)\fR
+.RE 0
+
+.SS "\fBeggs adapt\fR"
+.P
+adapt monitor resolution for VM only
+.P
+.RS 2
+.nf
+USAGE
+  $ eggs adapt
+
+OPTIONS
+  -h, --help     show CLI help
+  -v, --verbose
+
+ALIASES
+  $ eggs adjust
+.fi
+.RE
+.P
+\fISee code: \fBsrc/commands/adapt.ts\fI \fI\(lahttps://github.com/pieroproietti/penguins-eggs/blob/v7.8.10/src/commands/adapt.ts\(ra\fI\fR
+.SS "\fBeggs autocomplete \[lB]SHELL\[rB]\fR"
+.P
+display autocomplete installation instructions
+.P
+.RS 2
+.nf
+USAGE
+  $ eggs autocomplete \[lB]SHELL\[rB]
+
+ARGUMENTS
+  SHELL  shell type
+
+OPTIONS
+  -r, --refresh-cache  Refresh cache (ignores displaying instructions)
+
+EXAMPLES
+  $ eggs autocomplete
+  $ eggs autocomplete bash
+  $ eggs autocomplete zsh
+  $ eggs autocomplete --refresh-cache
+.fi
+.RE
+.P
+\fISee code: \fB@oclif/plugin-autocomplete\fI \fI\(lahttps://github.com/oclif/plugin-autocomplete/blob/v0.3.0/src/commands/autocomplete/index.ts\(ra\fI\fR
+.SS "\fBeggs calamares\fR"
+.P
+calamares or install or configure it
+.P
+.RS 2
+.nf
+USAGE
+  $ eggs calamares
+
+OPTIONS
+  -f, --final    final: remove eggs prerequisites, calamares and all it's dependencies
+  -h, --help     show CLI help
+  -i, --install  install calamares and it's dependencies
+  -v, --verbose
+  --theme=theme  theme/branding for eggs and calamares
+
+EXAMPLES
+  ~$ sudo eggs calamares 
+  create/renew calamares configuration's files
+
+  ~$ sudo eggs calamares -i 
+  install calamares and create it's configuration's files
+.fi
+.RE
+.P
+\fISee code: \fBsrc/commands/calamares.ts\fI \fI\(lahttps://github.com/pieroproietti/penguins-eggs/blob/v7.8.10/src/commands/calamares.ts\(ra\fI\fR
+.SS "\fBeggs dad\fR"
+.P
+ask help from daddy (gui interface)!
+.P
+.RS 2
+.nf
+USAGE
+  $ eggs dad
+
+OPTIONS
+  -h, --help     show CLI help
+  -v, --verbose
+.fi
+.RE
+.P
+\fISee code: \fBsrc/commands/dad.ts\fI \fI\(lahttps://github.com/pieroproietti/penguins-eggs/blob/v7.8.10/src/commands/dad.ts\(ra\fI\fR
+.SS "\fBeggs export:deb\fR"
+.P
+export package eggs-v7-x-x-1.deb in the destination host
+.P
+.RS 2
+.nf
+USAGE
+  $ eggs export:deb
+
+OPTIONS
+  -c, --clean  remove old .deb before to copy
+  -h, --help   show CLI help
+  --all        export all archs
+  --amd64      export amd64 arch
+  --armel      export armel arch
+  --i386       export i386 arch
+.fi
+.RE
+.P
+\fISee code: \fBsrc/commands/export/deb.ts\fI \fI\(lahttps://github.com/pieroproietti/penguins-eggs/blob/v7.8.10/src/commands/export/deb.ts\(ra\fI\fR
+.SS "\fBeggs export:docs\fR"
+.P
+remove and export docType documentation of the sources in the destination host
+.P
+.RS 2
+.nf
+USAGE
+  $ eggs export:docs
+
+OPTIONS
+  -h, --help  show CLI help
+.fi
+.RE
+.P
+\fISee code: \fBsrc/commands/export/docs.ts\fI \fI\(lahttps://github.com/pieroproietti/penguins-eggs/blob/v7.8.10/src/commands/export/docs.ts\(ra\fI\fR
+.SS "\fBeggs export:iso\fR"
+.P
+export iso in the destination host
+.P
+.RS 2
+.nf
+USAGE
+  $ eggs export:iso
+
+OPTIONS
+  -c, --clean  delete old ISOs before to copy
+  -h, --help   show CLI help
+.fi
+.RE
+.P
+\fISee code: \fBsrc/commands/export/iso.ts\fI \fI\(lahttps://github.com/pieroproietti/penguins-eggs/blob/v7.8.10/src/commands/export/iso.ts\(ra\fI\fR
+.SS "\fBeggs help \[lB]COMMAND\[rB]\fR"
+.P
+display help for eggs
+.P
+.RS 2
+.nf
+USAGE
+  $ eggs help \[lB]COMMAND\[rB]
+
+ARGUMENTS
+  COMMAND  command to show help for
+
+OPTIONS
+  --all  see all commands in CLI
+.fi
+.RE
+.P
+\fISee code: \fB@oclif/plugin-help\fI \fI\(lahttps://github.com/oclif/plugin-help/blob/v3.2.2/src/commands/help.ts\(ra\fI\fR
+.SS "\fBeggs info\fR"
+.P
+informations about system and eggs
+.P
+.RS 2
+.nf
+USAGE
+  $ eggs info
+
+EXAMPLE
+  $ eggs info
+  You will find here informations about penguin's eggs!
+.fi
+.RE
+.P
+\fISee code: \fBsrc/commands/info.ts\fI \fI\(lahttps://github.com/pieroproietti/penguins-eggs/blob/v7.8.10/src/commands/info.ts\(ra\fI\fR
+.SS "\fBeggs install\fR"
+.P
+eggs installer - (the egg became penguin)
+.P
+.RS 2
+.nf
+USAGE
+  $ eggs install
+
+OPTIONS
+  -c, --cli        try to use antiX installer (cli)
+  -g, --gui        use Calamares installer (gui)
+  -h, --info       show CLI help
+  -l, --lvmremove  remove lvm /dev/pve
+  -m, --mx         try to use MX installer (gui)
+  -u, --umount     umount devices
+  -v, --verbose    verbose
+
+ALIASES
+  $ eggs hatch
+
+EXAMPLE
+  $ eggs install
+  Install the system with eggs cli installer(default)
+.fi
+.RE
+.P
+\fISee code: \fBsrc/commands/install.ts\fI \fI\(lahttps://github.com/pieroproietti/penguins-eggs/blob/v7.8.10/src/commands/install.ts\(ra\fI\fR
+.SS "\fBeggs kill\fR"
+.P
+kill the eggs/free the nest
+.P
+.RS 2
+.nf
+USAGE
+  $ eggs kill
+
+OPTIONS
+  -h, --help     show CLI help
+  -v, --verbose  verbose
+
+EXAMPLE
+  $ eggs kill
+  kill the eggs/free the nest
+.fi
+.RE
+.P
+\fISee code: \fBsrc/commands/kill.ts\fI \fI\(lahttps://github.com/pieroproietti/penguins-eggs/blob/v7.8.10/src/commands/kill.ts\(ra\fI\fR
+.SS "\fBeggs mom\fR"
+.P
+ask for mommy (gui interface)!
+.P
+.RS 2
+.nf
+USAGE
+  $ eggs mom
+
+OPTIONS
+  -h, --help  show CLI help
+.fi
+.RE
+.P
+\fISee code: \fBsrc/commands/mom.ts\fI \fI\(lahttps://github.com/pieroproietti/penguins-eggs/blob/v7.8.10/src/commands/mom.ts\(ra\fI\fR
+.SS "\fBeggs prerequisites\fR"
+.P
+Initialize eggs and install packages prerequisites to run eggs
+.P
+.RS 2
+.nf
+USAGE
+  $ eggs prerequisites
+
+OPTIONS
+  -h, --help     show CLI help
+  -v, --verbose  verbose
+
+ALIASES
+  $ eggs fertilize
+  $ eggs init
+
+EXAMPLE
+  ~$ eggs init
+  Initialize eggs, install prerequisites and create configuration files
+.fi
+.RE
+.P
+\fISee code: \fBsrc/commands/prerequisites.ts\fI \fI\(lahttps://github.com/pieroproietti/penguins-eggs/blob/v7.8.10/src/commands/prerequisites.ts\(ra\fI\fR
+.SS "\fBeggs produce\fR"
+.P
+the system produce an egg: livecd creation.
+.P
+.RS 2
+.nf
+USAGE
+  $ eggs produce
+
+OPTIONS
+  -b, --basename=basename  basename
+  -f, --fast               fast compression
+  -h, --help               show CLI help
+  -m, --max                max compression
+  -n, --normal             normal compression
+  -p, --prefix=prefix      prefix
+  -s, --script             script mode. Generate scripts to manage iso build
+  -v, --verbose            verbose
+  -y, --yolk               -y force yolk renew
+  --adapt                  adapt video resolution in VM
+  --final                  final: remove eggs prerequisites, calamares and all it's dependencies
+  --ichoice                allows the user to choose the installation type cli/gui
+  --pve                    administration of virtual machines (Proxmox-VE)
+  --rsupport               remote support via dwagent
+  --theme=theme            theme/branding for eggs and calamares
+
+ALIASES
+  $ eggs spawn
+  $ eggs lay
+
+EXAMPLES
+  $ sudo eggs produce 
+  produce an ISO called \[lB]hostname\[rB]-\[lB]arch\[rB]-YYYY-MM-DD_HHMM.iso, compressed xz (standard compression).
+  If hostname=ugo and arch=i386 ugo-x86-2020-08-25_1215.iso
+
+  $ sudo eggs produce -v
+  the same as the previuos, but with more explicative output
+
+  $ sudo eggs produce -vf
+  the same as the previuos, compression lz4 (fastest but about 30%
+  less compressed than xz)
+
+  $ sudo eggs produce -vm
+  the same as the previuos, compression xz (normal compression xz)
+
+  $ sudo eggs produce -vm
+  the same as the previuos, compression xz -Xbcj x86 (max compression, about 10%
+  more compressed)
+
+  $ sudo eggs produce -vf --basename leo --theme debian --adapt 
+  produce an ISO called leo-i386-2020-08-25_1215.iso compression lz4,
+  using Debian theme and link to adapt
+
+  $ sudo eggs produce -v --basename leo --theme debian --adapt 
+  produce an ISO called leo-i386-2020-08-25_1215.iso compression xz,
+  using Debian theme and link to adapt
+
+  $ sudo eggs produce -v --basename leo --rsupport 
+  produce an ISO called leo-i386-2020-08-25_1215.iso compression xz, using eggs
+  theme and link to dwagent
+
+  $ sudo eggs produce -vs --basename leo --rsupport 
+  produce scripts to build an ISO as the previus example. Scripts can be found
+  in /home/eggs/ovarium and you can customize all you need
+.fi
+.RE
+.P
+\fISee code: \fBsrc/commands/produce.ts\fI \fI\(lahttps://github.com/pieroproietti/penguins-eggs/blob/v7.8.10/src/commands/produce.ts\(ra\fI\fR
+.SS "\fBeggs remove\fR"
+.P
+remove eggs, eggs configurations, prerequisites, calamares, calamares configurations
+.P
+.RS 2
+.nf
+USAGE
+  $ eggs remove
+
+OPTIONS
+  -a, --all            remove all
+  -h, --help           show CLI help
+  -p, --prerequisites  remove eggs packages prerequisites
+  -v, --verbose        verbose
+  --purge              remove eggs, eggs configuration
+
+EXAMPLES
+  $ sudo eggs remove 
+  remove eggs
+
+  $ sudo eggs remove --purge 
+  remove eggs, eggs configurations
+
+  $ sudo eggs remove --prerequisites 
+  remove packages prerequisites, calamares, calamares configurations
+
+  $ sudo eggs remove --all
+  remove eggs, eggs configurations, prerequisites, calamares, calamares configurations
+.fi
+.RE
+.P
+\fISee code: \fBsrc/commands/remove.ts\fI \fI\(lahttps://github.com/pieroproietti/penguins-eggs/blob/v7.8.10/src/commands/remove.ts\(ra\fI\fR
+.SS "\fBeggs tools:clean\fR"
+.P
+clean system log, apt, etc
+.P
+.RS 2
+.nf
+USAGE
+  $ eggs tools:clean
+
+OPTIONS
+  -h, --help     show CLI help
+  -v, --verbose  verbose
+.fi
+.RE
+.P
+\fISee code: \fBsrc/commands/tools/clean.ts\fI \fI\(lahttps://github.com/pieroproietti/penguins-eggs/blob/v7.8.10/src/commands/tools/clean.ts\(ra\fI\fR
+.SS "\fBeggs tools:initrd\fR"
+.P
+Test initrd
+.P
+.RS 2
+.nf
+USAGE
+  $ eggs tools:initrd
+
+OPTIONS
+  -h, --help     show CLI help
+  -v, --verbose
+  --check=check  check if necessary to clean initrd.img
+  --clean=clean  clean the initrd.img
+.fi
+.RE
+.P
+\fISee code: \fBsrc/commands/tools/initrd.ts\fI \fI\(lahttps://github.com/pieroproietti/penguins-eggs/blob/v7.8.10/src/commands/tools/initrd.ts\(ra\fI\fR
+.SS "\fBeggs tools:locales\fR"
+.P
+install/clean locales
+.P
+.RS 2
+.nf
+USAGE
+  $ eggs tools:locales
+
+OPTIONS
+  -h, --help       show CLI help
+  -r, --reinstall  reinstall locales
+  -v, --verbose    verbose
+.fi
+.RE
+.P
+\fISee code: \fBsrc/commands/tools/locales.ts\fI \fI\(lahttps://github.com/pieroproietti/penguins-eggs/blob/v7.8.10/src/commands/tools/locales.ts\(ra\fI\fR
+.SS "\fBeggs tools:pve\fR"
+.P
+enable/start/stop pve-live
+.P
+.RS 2
+.nf
+USAGE
+  $ eggs tools:pve
+
+OPTIONS
+  -d, --disable  disable
+  -e, --enable   enable
+  -h, --help     show CLI help
+  -v, --verbose  stop service
+  --start        start
+  --stop         stop service
+.fi
+.RE
+.P
+\fISee code: \fBsrc/commands/tools/pve.ts\fI \fI\(lahttps://github.com/pieroproietti/penguins-eggs/blob/v7.8.10/src/commands/tools/pve.ts\(ra\fI\fR
+.SS "\fBeggs tools:sanitize\fR"
+.P
+sanitize
+.P
+.RS 2
+.nf
+USAGE
+  $ eggs tools:sanitize
+
+OPTIONS
+  -h, --help  show CLI help
+.fi
+.RE
+.P
+\fISee code: \fBsrc/commands/tools/sanitize.ts\fI \fI\(lahttps://github.com/pieroproietti/penguins-eggs/blob/v7.8.10/src/commands/tools/sanitize.ts\(ra\fI\fR
+.SS "\fBeggs tools:skel\fR"
+.P
+update skel from home configuration
+.P
+.RS 2
+.nf
+USAGE
+  $ eggs tools:skel
+
+OPTIONS
+  -h, --help       show CLI help
+  -u, --user=user  user to be used
+  -v, --verbose
+
+EXAMPLE
+  $ eggs skel --user mauro
+  desktop configuration of user mauro will get used as default
+.fi
+.RE
+.P
+\fISee code: \fBsrc/commands/tools/skel.ts\fI \fI\(lahttps://github.com/pieroproietti/penguins-eggs/blob/v7.8.10/src/commands/tools/skel.ts\(ra\fI\fR
+.SS "\fBeggs tools:yolk\fR"
+.P
+configure eggs to install without internet
+.P
+.RS 2
+.nf
+USAGE
+  $ eggs tools:yolk
+
+OPTIONS
+  -h, --help     show CLI help
+  -v, --verbose
+
+EXAMPLE
+  $ eggs yolk -v
+.fi
+.RE
+.P
+\fISee code: \fBsrc/commands/tools/yolk.ts\fI \fI\(lahttps://github.com/pieroproietti/penguins-eggs/blob/v7.8.10/src/commands/tools/yolk.ts\(ra\fI\fR
+.SS "\fBeggs update\fR"
+.P
+update the penguin's eggs tool.
+.P
+.RS 2
+.nf
+USAGE
+  $ eggs update
+
+OPTIONS
+  -a, --apt      if eggs package is .deb, update from distro repositories
+  -b, --basket   if eggs package is .deb, update from eggs basket
+  -h, --help     show CLI help
+  -n, --npm      if eggs package is .npm, update from npmjs.com
+  -v, --verbose  verbose
+
+DESCRIPTION
+  This method always works, both with npm and deb packages.
+
+EXAMPLE
+  $ eggs update
+  update/upgrade the penguin's eggs tool
+.fi
+.RE
+.P
+\fISee code: \fBsrc/commands/update.ts\fI \fI\(lahttps://github.com/pieroproietti/penguins-eggs/blob/v7.8.10/src/commands/update.ts\(ra\fI\fR
+.SH "TERMINAL SAMPLES"
+.P
+\fBterminal samples\fR \fI\(lahttps://github.com/pieroproietti/penguins-eggs/blob/master/documents/terminal-lessons/eggs_help.gif?raw=true\(ra\fR
+.SH "THAT'S ALL FOLKS!"
+.P
+No need other configurations, penguins-eggs are battery included or better, as in the real, live is inside! :-D
+.SS "More informations"
+.P
+There is \fBuser's manual\fR \fI\(lahttps://penguins-eggs.net/book/\(ra\fR and same other documentation in \fBdocuments folder\fR \fI\(la./documents\(ra\fR of this repository.
+.P
+Contact me via \fBgitter\fR \fI\(lahttps://gitter.im/penguins-eggs-1/community\(ra\fR, or open an \fBissue\fR \fI\(lahttps://github.com/pieroproietti/penguins-eggs/issues\(ra\fR on github.
+.RS 0
+.IP \(bu 4
+penguin's eggs site: \fBpenguin's eggs\fR \fI\(lahttps://penguins-eggs.net\(ra\fR
+.IP \(bu 4
+facebook personal: \fBPiero Proietti\fR \fI\(lahttps://www.facebook.com/thewind61\(ra\fR
+.IP \(bu 4
+facebook group:  \fBPenguin's Eggs\fR \fI\(lahttps://www.facebook.com/groups/128861437762355/\(ra\fR
+.IP \(bu 4
+facebook page:  \fBPenguin's Eggs\fR \fI\(lahttps://www.facebook.com/penguinseggs\(ra\fR
+.IP \(bu 4
+mail: \fI\(lapiero.proietti@gmail.com\(ra\fR
+.RE 0
+
+.SS "Copyright and licenses"
+.P
+Copyright (c) 2017, 2020 \fBPiero Proietti\fR \fI\(lahttps://penguins-eggs.net/about-me.html\(ra\fR, dual licensed under the MIT or GPL Version 2 licenses.

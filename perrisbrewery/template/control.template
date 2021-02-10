@@ -1,9 +1,0 @@
-Package: eggs
-Version: {{version}}
-Section: main
-Priority: standard
-Architecture: {{arch}}
-Maintainer: artisan <piero.proietti@gmail.com>
-Description: eggs Perri's Brewery edition: remaster your system and distribuite it
-Depends: isolinux, syslinux, squashfs-tools, xorriso, live-boot, live-boot-initramfs-tools, dpkg-dev, rsync, xterm, whois, dosfstools, parted
-Suggest: calamares, qml-module-qtquick2, qml-module-qtquick-controls
