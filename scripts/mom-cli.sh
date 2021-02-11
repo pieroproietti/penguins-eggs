@@ -10,7 +10,7 @@ function main {
       # 20 righe. 75 caratteri, 16 altezza menu list
       answer=$(
       whiptail --title "mommy" --menu "Mama's gonna keep baby cosy and warm..." 22 75 14 \
-         "init"            "init eggs, install prerequisites" \
+         "prerequisites"            "init eggs, install prerequisites" \
          "dad"             "lead you to configurare and iso production" \
          "help"            "help" \
          "info"            "get informations" \
@@ -21,7 +21,7 @@ function main {
          "update"          "update eggs package" \
          "Documentation"   "documentation about eggs" \
          "Export"          "export /deb/docs/iso" \
-         "Tools"           "clean/initrd/locales/pve/sanitize/skel/yolk" \
+         "Tools"           "clean/locales/skel/yolk" \
          "quit"            "exit" 3>&2 2>&1 1>&3
       )
 
@@ -29,8 +29,8 @@ function main {
          "quit")
             theEnd ;;
 
-         "init")
-            init ;;
+         "prerequisites")
+            prerequisites ;;
 
          "dad")
             dad ;;
@@ -197,8 +197,8 @@ function kill {
 
 
 ################################
-function init {
-   sudo eggs init
+function prerequisites {
+   sudo eggs prerequisites
    press_a_key_to_continue
 }
 
