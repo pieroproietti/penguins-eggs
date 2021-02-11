@@ -20,6 +20,7 @@
 /dist
 /docs
 /lib
+/perrisbrewery/workdir/*
 /tmp
 /yarn.lock
 /calamares-settings-debian
@@ -33,5 +34,4 @@ node_modules
 node_modules/
 npm-debug.log*
 pids
-perrisbrewery/workdir/*
 
