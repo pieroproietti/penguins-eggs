@@ -18,6 +18,9 @@ You can follow the project also consulting the [commit history](https://github.c
 ## Changelog
 Versions are listed on reverse order, the first is the last one.
 
+### eggs-7.8.11
+* tolti i comandi tools:initrd, tools:pve, tools:sanitize, nouva versione man.
+
 ### eggs-7.8.10
 * perrisbrewey: un salto in birreria ed i preinst, postinst, prerm e postrm sono cotti!
 

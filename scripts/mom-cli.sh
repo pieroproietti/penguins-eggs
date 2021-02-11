@@ -284,10 +284,7 @@ function tools {
    answer=$(
    whiptail --title "TOOLS" --menu "eggs companions tools" 22 75 14 \
       "clean"     "clean system logs, apt cache, etc" \
-      "initrd"    "initrd (experimental)" \
       "locales"   "install/clean locales" \
-      "pve"       "enable/start/stop pve-live (experimental)" \
-      "sanitize"  "remove various scripts eggs related and sanitize" \
       "skel"      "update /etc/skel from current user or user configuration" \
       "yolk"      "configure an internal apt repository in /usr/local/yolk" \
       "quit"   "previus" 3>&2 2>&1 1>&3
