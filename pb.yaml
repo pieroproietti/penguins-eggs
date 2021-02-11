@@ -1,0 +1,7 @@
+name: eggs
+path: ./dist/deb/
+sourceVersion: 7.8.10
+buildVersion: '1'
+linuxArch: amd64
+tempDir: eggs_7.8.10-1_amd64
+nodeVersion: v14.15.4
