@@ -51,7 +51,6 @@
     "eslint-config-oclif-typescript": "^0.2.0",
     "mocha": "^8.2.1",
     "nyc": "^15.1.0",
-    "perrisbrewery": "0.0.1",
     "prettier": "^2.2.1",
     "ts-node": "^9.1.1",
     "typedoc": "^0.20.24",
