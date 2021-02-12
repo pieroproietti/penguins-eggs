@@ -19,7 +19,7 @@ function main {
          "produce"         "produce and ISO of your system" \
          "remove"          "remove eggs" \
          "update"          "update eggs package" \
-         "Documentation"   "book/book_translated/site/manual/man" \
+         "Documentation"   "book/book_translated/manual/man" \
          "Export"          "deb/docs/iso" \
          "Tools"           "clean/locales/skel/yolk" \
          "quit"            "exit" 3>&2 2>&1 1>&3
@@ -82,7 +82,6 @@ function documentation {
          whiptail --title "DOCUMENTATION" --menu "You can choose local or internet documentation, html or man" 22 75 14 \
          "book"            "gui/internet penguin's eggs book - italian -" \
          "book_translated" "gui/internet penguin's eggs book - translated -" \
-         "site"            "gui/internet https://penguins-eggs.net" \
          "manual"          "gui/local man page eggs html" \
          "man"             "cli/local man page eggs" \
          "quit"            "previus" 3>&2 2>&1 1>&3
@@ -97,8 +96,6 @@ function documentation {
             documentation_man ;;
          "manual")
             documentation_html ;;
-         "site")
-            documentation_site ;;
       esac
 }
 
