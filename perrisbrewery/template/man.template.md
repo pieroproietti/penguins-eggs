@@ -3,39 +3,51 @@ eggs(1) -- A reproductive system for penguins
 
 {{toc}}
 
-## SYNOPSIS
+# SYNOPSIS
 
-{{{usage}}}
+```
+$ npm install -g penguins-eggs
+$ eggs COMMAND
+running command...
+$ eggs (-v|--version|version)
+penguins-eggs/{{version}} {{linuxVersion}} {{nodeVersion}}}
+$ eggs --help [COMMAND]
+
+USAGE
+$ eggs COMMAND
+```
 
 Most of the commands of eggs need sudo, but there are exceptions for export, info and mom.
 
 examples:
 
 ```
-sudo eggs init  # initialize eggs, create man pages and autocomplete for eggs
-sudo eggs produce # create an ISO of the system
-sudo eggs kill # delete the created ISO and clean the nest
+sudo eggs init
+sudo eggs produce
+sudo eggs kill
 ```
+
 There are too, two interactive helpers:
 
 ```
-eggs mom # interactive GUI (be kind with mom, she don't need sudo)
-sudo eggs dad # get help from dad to finalize ISO
+eggs mom
+sudo eggs dad
 ```
 
 Help yorself signing in the forum or in facebook group page or asking me.
 
-## DESCRIPTION
+
+# DESCRIPTION
 
 eggs is a console utility, in active development, who let you to remaster your system and redistribuite it as iso image.
 
 The scope of this project is to implement the process of remastering your version of Linux, generate it as ISO image to burn on a CD/DVD or copy to a usb key to boot your system. You can easily install your live system with gui installer (calamares)  or eggs cli installer.
 
-## COMMANDS
+# COMMANDS
 
-{{commands}}
+{{{commands}}}
 
-## FILES
+# FILES
       /etc/penguins-eggs.d
         all eggs configurations are here
 
@@ -49,16 +61,16 @@ The scope of this project is to implement the process of remastering your versio
         here eggs is installed
 
 
-## TROUBLES
-Different versions of eggs can have differents configurations files. This can lead to get errors. 
+# TROUBLES
+Different versions of eggs can have differents configurations files. This can lead to get errors.
 
 A fast workaround for this trouble can be:
 
 * download eggs
 * remove eggs
-+ remove it's configurations
+* remove it's configurations
 * reinstall new version
-+ run sudo eggs init
+* run sudo eggs init
 
 Here are the commands to do:
 
@@ -66,7 +78,7 @@ Here are the commands to do:
 
 * **sudo apt --purge eggs** # remove eggs
 
-* **sudo rm /usr/penguins-eggs/ rf** # remove eggs 
+* **sudo rm /usr/penguins-eggs/ rf** # remove eggs
 
 * **sudo rm /etc/penguins-eggs.d -rf** # remove eggs configurations files
 
@@ -78,12 +90,12 @@ Here are the commands to do:
 
 Report problems o new ideas in: <https://github.com/pieroproietti/penguins-eggs/issues>
 
-## RESOURCES AND DOCUMENTATION
+# RESOURCES AND DOCUMENTATION
 Consult website to find  documentation, forum. There is a facebook gruop and page too.
 
 * website: **https://penguins-eggs.net**
 * gitHub repository: **https://github.com/pieroproietti/penguins-eggs**
 
-## AUTHOR
+# AUTHOR
 
 Piero Proietti <piero.proietti@gmail.com>

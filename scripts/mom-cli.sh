@@ -10,7 +10,7 @@ function main {
       # 20 righe. 75 caratteri, 16 altezza menu list
       answer=$(
       whiptail --title "mommy" --menu "Mama's gonna keep baby cosy and warm..." 22 75 14 \
-         "init"            "init eggs, install prerequisites" \
+         "prerequisites"   "init eggs, install prerequisites" \
          "dad"             "lead you to configurare and iso production" \
          "help"            "help" \
          "info"            "get informations" \
@@ -19,9 +19,9 @@ function main {
          "produce"         "produce and ISO of your system" \
          "remove"          "remove eggs" \
          "update"          "update eggs package" \
-         "Documentation"   "documentation about eggs" \
-         "Export"          "export /deb/docs/iso" \
-         "Tools"           "clean/initrd/locales/pve/sanitize/skel/yolk" \
+         "Documentation"   "book/book_translated/manual/man" \
+         "Export"          "deb/docs/iso" \
+         "Tools"           "clean/locales/skel/yolk" \
          "quit"            "exit" 3>&2 2>&1 1>&3
       )
 
@@ -29,8 +29,8 @@ function main {
          "quit")
             theEnd ;;
 
-         "init")
-            init ;;
+         "prerequisites")
+            prerequisites ;;
 
          "dad")
             dad ;;
@@ -82,7 +82,6 @@ function documentation {
          whiptail --title "DOCUMENTATION" --menu "You can choose local or internet documentation, html or man" 22 75 14 \
          "book"            "gui/internet penguin's eggs book - italian -" \
          "book_translated" "gui/internet penguin's eggs book - translated -" \
-         "site"            "gui/internet https://penguins-eggs.net" \
          "manual"          "gui/local man page eggs html" \
          "man"             "cli/local man page eggs" \
          "quit"            "previus" 3>&2 2>&1 1>&3
@@ -97,8 +96,6 @@ function documentation {
             documentation_man ;;
          "manual")
             documentation_html ;;
-         "site")
-            documentation_site ;;
       esac
 }
 
@@ -125,7 +122,7 @@ function documentation_man {
 
 ################################
 function documentation_html {
-   sensible-browser "file:///usr/lib/penguins-eggs/man/man1/eggs.md.1.html"
+   sensible-browser "file:///usr/lib/penguins-eggs/man/man1/eggs.1.html"
 }
 
 
@@ -197,8 +194,8 @@ function kill {
 
 
 ################################
-function init {
-   sudo eggs init
+function prerequisites {
+   sudo eggs prerequisites
    press_a_key_to_continue
 }
 
@@ -284,10 +281,7 @@ function tools {
    answer=$(
    whiptail --title "TOOLS" --menu "eggs companions tools" 22 75 14 \
       "clean"     "clean system logs, apt cache, etc" \
-      "initrd"    "initrd (experimental)" \
       "locales"   "install/clean locales" \
-      "pve"       "enable/start/stop pve-live (experimental)" \
-      "sanitize"  "remove various scripts eggs related and sanitize" \
       "skel"      "update /etc/skel from current user or user configuration" \
       "yolk"      "configure an internal apt repository in /usr/local/yolk" \
       "quit"   "previus" 3>&2 2>&1 1>&3

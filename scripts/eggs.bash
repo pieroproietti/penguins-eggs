@@ -21,10 +21,7 @@ prerequisites --help --verbose
 produce --prefix --basename --normal --max --fast --verbose --yolk --script --help --final --theme --adapt --ichoice --rsupport --pve
 remove --all --help --purge --prerequisites --verbose
 tools:clean --help --verbose
-tools:initrd --help --verbose --clean --check
 tools:locales --help --reinstall --verbose
-tools:pve --help --enable --disable --start --stop --verbose
-tools:sanitize --help
 tools:skel --help --user --verbose
 tools:yolk --help --verbose
 update --help --apt --basket --npm --verbose

@@ -16,7 +16,7 @@ remotePathIso: /home/artisan/sourceforge/iso/
 
 
 # local directories - only for developers 
-localPathDeb: ~/penguins-eggs/perrisbrewery/
+localPathDeb: ~/penguins-eggs/perrisbrewery/workdir/
 localPathDoc: ~/penguins-eggs/docs
 localPathIso: /home/eggs
 
