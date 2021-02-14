@@ -41,6 +41,9 @@ case "$1" in
         rm -f /usr/bin/pve-live.sh
         rm -f /etc/systemd/system/pve-live.service
 
+        # remove yolk
+        rm -rf /usr/local/yolk
+
         # eggs old files not used now
         rm -f /etc/penguins-eggs.conf
     ;;
