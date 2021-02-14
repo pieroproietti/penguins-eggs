@@ -96,20 +96,7 @@ export default class Xdg {
             shx.sed('-i', `AutomaticLoginEnable=False`, `AutomaticLoginEnable=True`, `${chroot}/etc/gdm3/custom.conf`)
             shx.sed('-i', `AutomaticLogin=${olduser}`, `AutomaticLogin=artisan=${newuser}`, `${chroot}/etc/gdm3/custom.conf`)
          }
-      } else {
-         if (Pacman.packageIsInstalled('systemd')) {
-            shx.mkdir('/etc/systemd/system/getty@.service.d')
-            let content = ''
-            content += '[Service]'
-            content += 'ExecStart='
-            content += 'ExecStart=-/sbin/agetty --noclear --autologin ' + newuser + ' %I $TERM'
-            const file = '/etc/systemd/system/getty@.service.d/override.conf'
-            shx.rm(file)
-            fs.writeFileSync(file, content)
-            shx.chmod('x', file)
-         }
       }
-
    }
 
    /**
@@ -246,8 +233,6 @@ export default class Xdg {
       // cat /etc/defualt/useradd
       // ls -lart /etc/skel
    }
-
-
 }
 
 /**
