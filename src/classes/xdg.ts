@@ -84,17 +84,32 @@ export default class Xdg {
     * @param chroot
     */
    static async autologin(olduser: string, newuser: string, chroot = '/') {
-      if (Pacman.packageIsInstalled('lightdm')) {
-         shx.sed('-i', `autologin-user=${olduser}`, `autologin-user=${newuser}`, `${chroot}/etc/lightdm/lightdm.conf`)
-      } else if (Pacman.packageIsInstalled('sddm')) {
-         shx.sed('-i', `User=${olduser}`, `User=${newuser}`, `${chroot}/etc/sddm.conf`)
-      } else if (Pacman.packageIsInstalled('slim')) {
-         shx.sed('-i', `autologin no`, `autologin yes`, `${chroot}/etc/slim.conf`)
-         shx.sed('-i', `default_user ${olduser}`, `default_user ${newuser}`, `${chroot}/etc/slim.conf`)
-      } else if (Pacman.packageIsInstalled('gdm3')) {
-         shx.sed('-i', `AutomaticLoginEnable=False`, `AutomaticLoginEnable=True`, `${chroot}/etc/gdm3/custom.conf`)
-         shx.sed('-i', `AutomaticLogin=${olduser}`, `AutomaticLogin=artisan=${newuser}`, `${chroot}/etc/gdm3/custom.conf`)
+      if (Pacman.isXInstalled()) {
+         if (Pacman.packageIsInstalled('lightdm')) {
+            shx.sed('-i', `autologin-user=${olduser}`, `autologin-user=${newuser}`, `${chroot}/etc/lightdm/lightdm.conf`)
+         } else if (Pacman.packageIsInstalled('sddm')) {
+            shx.sed('-i', `User=${olduser}`, `User=${newuser}`, `${chroot}/etc/sddm.conf`)
+         } else if (Pacman.packageIsInstalled('slim')) {
+            shx.sed('-i', `autologin no`, `autologin yes`, `${chroot}/etc/slim.conf`)
+            shx.sed('-i', `default_user ${olduser}`, `default_user ${newuser}`, `${chroot}/etc/slim.conf`)
+         } else if (Pacman.packageIsInstalled('gdm3')) {
+            shx.sed('-i', `AutomaticLoginEnable=False`, `AutomaticLoginEnable=True`, `${chroot}/etc/gdm3/custom.conf`)
+            shx.sed('-i', `AutomaticLogin=${olduser}`, `AutomaticLogin=artisan=${newuser}`, `${chroot}/etc/gdm3/custom.conf`)
+         }
+      } else {
+         if (Pacman.packageIsInstalled('systemd')) {
+            shx.mkdir('/etc/systemd/system/getty@.service.d')
+            let content = ''
+            content += '[Service]'
+            content += 'ExecStart='
+            content += 'ExecStart=-/sbin/agetty --noclear --autologin ' + newuser + ' %I $TERM'
+            const file = '/etc/systemd/system/getty@.service.d/override.conf'
+            shx.rm(file)
+            fs.writeFileSync(file, content)
+            shx.chmod('x', file)
+         }
       }
+
    }
 
    /**
