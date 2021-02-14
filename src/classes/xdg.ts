@@ -84,16 +84,18 @@ export default class Xdg {
     * @param chroot
     */
    static async autologin(olduser: string, newuser: string, chroot = '/') {
-      if (Pacman.packageIsInstalled('lightdm')) {
-         shx.sed('-i', `autologin-user=${olduser}`, `autologin-user=${newuser}`, `${chroot}/etc/lightdm/lightdm.conf`)
-      } else if (Pacman.packageIsInstalled('sddm')) {
-         shx.sed('-i', `User=${olduser}`, `User=${newuser}`, `${chroot}/etc/sddm.conf`)
-      } else if (Pacman.packageIsInstalled('slim')) {
-         shx.sed('-i', `autologin no`, `autologin yes`, `${chroot}/etc/slim.conf`)
-         shx.sed('-i', `default_user ${olduser}`, `default_user ${newuser}`, `${chroot}/etc/slim.conf`)
-      } else if (Pacman.packageIsInstalled('gdm3')) {
-         shx.sed('-i', `AutomaticLoginEnable=False`, `AutomaticLoginEnable=True`, `${chroot}/etc/gdm3/custom.conf`)
-         shx.sed('-i', `AutomaticLogin=${olduser}`, `AutomaticLogin=artisan=${newuser}`, `${chroot}/etc/gdm3/custom.conf`)
+      if (Pacman.isXInstalled()) {
+         if (Pacman.packageIsInstalled('lightdm')) {
+            shx.sed('-i', `autologin-user=${olduser}`, `autologin-user=${newuser}`, `${chroot}/etc/lightdm/lightdm.conf`)
+         } else if (Pacman.packageIsInstalled('sddm')) {
+            shx.sed('-i', `User=${olduser}`, `User=${newuser}`, `${chroot}/etc/sddm.conf`)
+         } else if (Pacman.packageIsInstalled('slim')) {
+            shx.sed('-i', `autologin no`, `autologin yes`, `${chroot}/etc/slim.conf`)
+            shx.sed('-i', `default_user ${olduser}`, `default_user ${newuser}`, `${chroot}/etc/slim.conf`)
+         } else if (Pacman.packageIsInstalled('gdm3')) {
+            shx.sed('-i', `AutomaticLoginEnable=False`, `AutomaticLoginEnable=True`, `${chroot}/etc/gdm3/custom.conf`)
+            shx.sed('-i', `AutomaticLogin=${olduser}`, `AutomaticLogin=artisan=${newuser}`, `${chroot}/etc/gdm3/custom.conf`)
+         }
       }
    }
 
@@ -231,8 +233,6 @@ export default class Xdg {
       // cat /etc/defualt/useradd
       // ls -lart /etc/skel
    }
-
-
 }
 
 /**

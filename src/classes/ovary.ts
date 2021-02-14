@@ -36,6 +36,8 @@ import Settings from './settings'
 import Systemctl from './systemctl'
 import Bleach from './bleach'
 import Repo from './yolk'
+import cliAutologin = require('../lib/cli-autologin')
+
 
 /**
  * Ovary:
@@ -163,6 +165,8 @@ export default class Ovary {
          await this.createUserLive(verbose)
          if (Pacman.isXInstalled()) {
             await this.createAutostart(this.theme, myAddons)
+         } else {
+            cliAutologin.add(this.settings.config.user_opt, this.settings.config.user_opt_passwd, this.settings.config.root_passwd, this.settings.work_dir.merged)
          }
          await this.editLiveFs(verbose)
          await this.makeSquashfs(scriptOnly, verbose)

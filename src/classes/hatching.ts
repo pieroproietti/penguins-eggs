@@ -16,8 +16,9 @@ import Utils from './utils'
 import Pacman from './pacman'
 import { IDevices, IDevice } from '../interfaces'
 import * as diskusage from 'diskusage'
-import { RSA_X931_PADDING } from 'constants'
 import Xdg from './xdg'
+import cliAutologin = require('../lib/cli-autologin')
+
 
 const exec = require('../lib/utils').exec
 
@@ -125,7 +126,6 @@ export default class Hatching {
             console.log(`- ` + chalk.bgGreen.black(`name: `) + chalk.bgGreen.whiteBright(this.users.name))
             console.log(`- ` + chalk.bgGreen.black(`fullname: `) + chalk.bgGreen.whiteBright(this.users.fullname))
             console.log(`- ` + chalk.bgGreen.black(`user password: `) + chalk.bgGreen.whiteBright(this.users.password))
-            console.log(`- ` + chalk.bgGreen.black(`autologin: `) + chalk.bgGreen.whiteBright(this.users.autologin))
             console.log(`- ` + chalk.bgGreen.black(`root password: `) + chalk.bgGreen.whiteBright(this.users.rootpassword))
             console.log()
 
@@ -227,7 +227,6 @@ export default class Hatching {
          console.log(`- name: ` + chalk.cyanBright(this.users.name))
          console.log(`- fullname: ` + chalk.cyanBright(this.users.fullname))
          console.log(`- user password: ` + chalk.cyanBright(this.users.password))
-         console.log(`- autologin: ` + chalk.cyanBright(this.users.autologin))
          console.log(`- root password: ` + chalk.cyanBright(this.users.rootpassword))
 
          console.log(`- name: ` + chalk.cyanBright(this.host.name))
@@ -380,10 +379,18 @@ export default class Hatching {
             console.log(`changePassword: ${error}`)
          }
 
-         try {
-            await Xdg.autologin(Utils.getPrimaryUser(), this.users.name, this.target)
-         } catch (error) {
-            console.log(`autologin: ${error}`)
+         if (Pacman.isXInstalled()){
+            try {
+               await Xdg.autologin(Utils.getPrimaryUser(), this.users.name, this.target)
+            } catch (error) {
+               console.log(`autologin: ${error}`)
+            }
+         } else {
+            try {
+               cliAutologin.remove(this.target)
+            } catch (error) {
+               console.log(`cli autologin: ${error}`)
+            }
          }
 
          try {
@@ -1144,13 +1151,6 @@ adduser ${name} \
                name: 'password',
                message: 'Enter a password for the user: ',
                default: 'evolution'
-            },
-            {
-               type: 'list',
-               name: 'autologin',
-               message: 'Did you want autolongin: ',
-               choices: ['Yes', 'No'],
-               default: 'Yes'
             },
             {
                type: 'password',
