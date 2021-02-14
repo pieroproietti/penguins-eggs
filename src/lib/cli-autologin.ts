@@ -50,13 +50,13 @@ async function motdAdd(user: string, userPasswd: string, rootPasswd: string, chr
     motdRemove(chroot)
 
     let eggsMotd = fs.readFileSync(fileMotd, 'utf-8')
-    eggsMotd += '#eggs-message\n'
+    eggsMotd += '>>> eggs\n'
     eggsMotd += 'This is a live eggs system!\n'
-    eggsMotd += `You are logged as ${user}, with password: ${userPasswd}. root password is: ${rootPasswd} \n`
+    eggsMotd += `You are logged as ${user}, your password is: ${userPasswd}. root password: ${rootPasswd}\n`
     eggsMotd += 'After installation you can add your favorite desktop, for example xfce4, cinnammon, \n'
     eggsMotd += 'mate, gnome, kde, etc and use the calamares graphical installation\n'
-    eggsMotd += 'You can install it with eggs cli installer. eg: sudo eggs install\n'
-    eggsMotd += '#eggs-message-stop\n\n'
+    eggsMotd += 'You can hatch the egg with cli installer: sudo eggs install\n'
+    eggsMotd += 'eggs <<<\n'
     fs.writeFileSync(fileMotd, eggsMotd)
 }
 
@@ -68,9 +68,9 @@ async function motdRemove(chroot = '/') {
     const fileMotd = `${chroot}/etc/motd`
     let motd = fs.readFileSync(fileMotd, 'utf-8').split('\n')
     let cleanMotd = ''
-    const eggsMessageStart = '#eggs-message'
+    const eggsMessageStart = '>>> eggs'
     let isEggsMessage = false
-    const eggsMessageStop = '#eggs-message-stop'
+    const eggsMessageStop = 'eggs <<<'
     for (let i = 0; i < motd.length; i++) {
         if (motd[i].includes(eggsMessageStart)) {
             isEggsMessage = true

@@ -18,6 +18,9 @@ You can follow the project also consulting the [commit history](https://github.c
 ## Changelog
 Versions are listed on reverse order, the first is the last one.
 
+### eggs-7.8.12
+* added cli-autologin in naked live versions. 
+
 ### eggs-7.8.11
 * removed unused commands: initrd, pve and sanitize. New version eggs.1 man and eggs.1.html
 
