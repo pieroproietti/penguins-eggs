@@ -19,7 +19,7 @@ You can follow the project also consulting the [commit history](https://github.c
 Versions are listed on reverse order, the first is the last one.
 
 ### eggs-7.8.13
-* modified pre e post install scripts and added check presence /usr/man/man1 and /etc/bash_completion.d. 
+* modified pre e post install scripts and added check presence directory man1   and bash_completion.d. 
 
 ### eggs-7.8.12
 * added cli-autologin in naked live versions. 
