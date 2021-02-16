@@ -16,8 +16,8 @@ set -e
 
 case "$1" in
     install|upgrade)
-    # eggs
-    rm -rf /usr/lib/penguins-eggs/
+    # pulizia dei link non rimovibili da apt
+    rm -rf /usr/lib/penguins-eggs/distros
 
     # eggc configurazione
     rm -rf /etc/penguins-eggs.d/

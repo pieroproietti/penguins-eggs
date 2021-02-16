@@ -4,9 +4,7 @@
 # pre-remove script
 ################################################
 
-# Questo rm consente la rimozione pulita di eggs,
-# difatti apt non cancellerebbe i link create da node 
-# nella directory distros
+# pulizia dei link non rimovibili da apt
 rm /usr/lib/penguins-eggs/conf/distros -rf
 
 # Rimuoviamo il manuale di eggs, copiato da eggs prerequisites

@@ -1,5 +1,5 @@
 #!/bin/sh
-# postinst script for eggs-7.7.32
+# postinst script for eggs-7.8.13
 #
 # see: dh_installdeb(1)
 
@@ -21,14 +21,16 @@ set -e
 case "$1" in
     configure)
         # aggiungo bash completion
-        if [ -d "/etc/bash_completion.d/" ]; then
-            cp /usr/lib/penguins-eggs/scripts/eggs.bash /etc/bash_completion.d/
+        if [ ! -d "/etc/bash_completion.d/" ]; then
+            mkdir /etc/bash_completion.d/
         fi
+        cp /usr/lib/penguins-eggs/scripts/eggs.bash /etc/bash_completion.d/
         # aggiungo manuale
-        if [ -d "/usr/local/man/man1" ]; then
-            cp /usr/lib/penguins-eggs/man/man1/eggs.1 /usr/local/man/man1
-            mandb > /dev/null
+        if [ ! -d "/usr/local/man/man1" ]; then
+            mkdir /usr/local/man/man1
         fi
+        cp /usr/lib/penguins-eggs/man/man1/eggs.1 /usr/local/man/man1
+        mandb > /dev/null
 
         echo "run sudo eggs prerequisites to configure" 
     ;;
