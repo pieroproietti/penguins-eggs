@@ -21,9 +21,9 @@ All the ISOs include nodejs and eggs installed (.npm package), so you can update
 
 ```sudo eggs update```
 
-# Linux Mint - tricia
+# Linux Mint - ulyana
 
-* **xfce** - Linux Mint 19.3 (based on Ubuntu bionic), xfce (amd64 and i386)
+* **cinnamon** - Linux Mint 20.1 (based on Ubuntu focal), cinnamon (amd64)
 
 ## More informations
 

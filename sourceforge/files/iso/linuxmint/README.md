@@ -34,12 +34,11 @@ It's community-driven. Users are encouraged to send feedback to the project so t
 Based on Debian and Ubuntu, it provides about 30,000 packages and one of the best software managers.
 It's safe and reliable. Thanks to a conservative approach to software updates, a unique Update Manager and the robustness of its Linux architecture, Linux Mint requires very little maintenance (no regressions, no antivirus, no anti-spyware...etc).
 
-* **debbie** - Linux Mint Debian Edition 4 (based on Debian buster)
+* **debbie** - LMDE4 (based on Debian buster)
 * **tricia** - Linux Mint 19.3 (based on Ubuntu bionic)
 * **ulyana** - Linux Mint 20 (based on Ubuntu focal)
+* **ulyssa** - Linux Mint 20.1 (based on Ubuntu focal)
 
-## Linux Mint Debian Edition 4 Debbie
-* **debbie** - LMDE4 Debbie, remastered with eggs, without any modifications except for wallpapers and develop tools.
 
 # Disclaim
 __Please note what this project is in no way connected to Linux Mint in any official way, it’s just my personal experiment__.

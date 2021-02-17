@@ -23,7 +23,7 @@ All the ISOs include nodejs and eggs installed (.npm package), so you can update
 
 # Linux Mint - ulyana
 
-* **ulyana** - Linux Mint 20.0 (based on Ubuntu focal), cinnamon (amd64)
+* **cinnamon** - Linux Mint 20.0 (based on Ubuntu focal), cinnamon (amd64)
 
 ## More informations
 
