@@ -21,8 +21,9 @@ All ISOs are based on Debian buster, Debian bullseye
 # Debian bullseye
 
 * **naked** - just the juice, without GUI. You can start here to build your revolution! (i386 and amd64)
-
-* **lite** - it's not naked, but just dressed with xfce4 and the tools to develop. (i386 and amd64)
+* **xfce** - it's not naked, but just dressed with xfce4 and firefox. You can from here for a lite xfce remix. (i386)
+* **mate** - it's not naked, but just dressed with mate and firefox.  You can from here for a lite mate remix. (i386)
+* **gnome** - it's not naked, but just dressed with gnome and firefox. You can from here for a lite mate remix. (i386)
 
 # Disclaim
 __Please note what this project is in no way connected to Debian in any official way, it’s just my personal experiment__.
