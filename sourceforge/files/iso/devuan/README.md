@@ -13,18 +13,16 @@ penguins-eggs
 
 # Penguin's eggs remastered ISOs
 
-All ISOs are based on Devuan beowulf
+All ISOs are based on Devuan beowulf 3.1
 
 # user/password
 * ```live/evolution```
 * ```root/evolution```
 
-All the ISOs include nodejs and eggs installed (.npm package), so you can update your eggs tool with the command:
-
-```sudo eggs update```
+All ISOs include eggs, you can udate it with sudo eggs update.
 
 # Devuan 
-* **beowulf** - like debu, but devual based
+* **devuan-beowulf-xfce** - a remaster of devuan installable with GUI installer calamares.
 
 # Disclaim
 __Please note what this project is in no way connected to Devuan in any official way, it’s just my personal experiment__.
