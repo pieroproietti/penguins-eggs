@@ -19,7 +19,7 @@ All ISOs are based on Devuan beowulf 3.1
 * ```live/evolution```
 * ```root/evolution```
 
-All ISOs include eggs, you can udate it with sudo eggs update.
+All ISOs include eggs, you can udate it with: ```sudo eggs update```.
 
 # Devuan 
 * **devuan-beowulf-xfce** - a remaster of devuan installable with GUI installer calamares.

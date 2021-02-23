@@ -17,7 +17,7 @@ penguins-eggs
 * ```live/evolution```
 * ```root/evolution```
 
-All ISOs include eggs, you can udate it with sudo eggs update.
+All ISOs include eggs, you can udate it with: ```sudo eggs update```.
 
 # Linux Mint
 The purpose of Linux Mint is to produce a modern, elegant and comfortable operating system which is both powerful and easy to use.
