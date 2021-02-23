@@ -103,10 +103,19 @@ class Distro implements IDistro {
       this.versionId = shell.exec('lsb_release -c -s', { silent: true }).stdout.toString().trim()
 
       if (this.versionId === 'n/a') {
+         // Configurazione per bullseye
          if (fs.existsSync('/etc/debian_version')) {
             const debianVersion = fs.readFileSync('/etc/debian_version', 'utf8')
             if (debianVersion.trim() === 'bullseye/sid') {
                this.versionId = 'bullseye'
+            }
+         }
+      } else if (this.versionId === 'sid') {
+         // Configurazione per siduction
+         if (fs.existsSync('/etc/debian_version')) {
+            const debianVersion = fs.readFileSync('/etc/debian_version', 'utf8')
+            if (debianVersion.trim() === 'bullseye/sid') {
+               this.versionId = 'siduction'
             }
          }
       }
@@ -143,6 +152,12 @@ class Distro implements IDistro {
 
          // Debian 11 bullseye
       } else if (this.versionId === 'bullseye') {
+         this.distroId = 'Debian'
+         this.distroLike = 'Debian'
+         this.versionLike = 'bullseye'
+
+         // Debian 11 siduction
+      } else if (this.versionId === 'siduction') {
          this.distroId = 'Debian'
          this.distroLike = 'Debian'
          this.versionLike = 'bullseye'

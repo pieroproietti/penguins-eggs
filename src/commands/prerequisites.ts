@@ -84,7 +84,9 @@ export default class Prerequisites extends Command {
          exec(`mkdir ${man1Dir} -p`)
       }
       const manPage = path.resolve(__dirname, '../../man/man1/eggs.1')
-      exec(`cp ${manPage} ${man1Dir}`)
+      if (fs.existsSync(manPage )) {
+         exec(`cp ${manPage} ${man1Dir}`)
+      }
       if (verbose) {
          exec(`mandb`)
       } else {
