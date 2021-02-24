@@ -367,6 +367,33 @@ export default class Pacman {
       execSync(cmd)
    }
 
+
+   /**
+   * Installa manPage
+   */
+   static async manPageInstall(verbose = false) {
+      if (Utils.isNpmPackage()) {
+         const man1Dir = '/usr/local/man/man1'
+         const man1eggs = '/usr/local/man/man1/eggs.1'
+         if (fs.existsSync(man1eggs)) {
+            exec(`rm ${man1eggs}`)
+         }
+         if (!fs.existsSync(man1Dir)) {
+            exec(`mkdir ${man1Dir} -p`)
+         }
+         const manPage = path.resolve(__dirname, '../../man/man1/eggs.1')
+         if (fs.existsSync(manPage)) {
+            exec(`cp ${manPage} ${man1Dir}`)
+         }
+         if (verbose) {
+            exec(`mandb`)
+         } else {
+            exec(`mandb > /dev/null`)
+         }
+         console.log('man eggs installed')
+      }
+   }
+
    /**
     * 
     * @param rootPen 
