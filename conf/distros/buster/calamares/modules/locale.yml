@@ -11,8 +11,8 @@
 # the locale page can be set through keys *region* and *zone*.
 # If either is not set, defaults to America/New_York.
 #
-region:                     "America"
-zone:                       "New_York"
+region:                     "Europe"
+zone:                       "Rome"
 
 
 # System locales are detected in the following order:
