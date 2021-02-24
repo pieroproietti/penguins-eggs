@@ -34,5 +34,5 @@ node_modules/
 npm-debug.log*
 pids
 perrisbrewery/workdir/*
-!perrisbrewery/workdir/.gitkeep 
+!perrisbrewery/workdir/.gitkeep
 
