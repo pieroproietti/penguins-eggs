@@ -19,6 +19,13 @@ export default class ExportIso extends Command {
     const { flags } = this.parse(ExportIso)
     Utils.titles(this.id + ' ' + this.argv)
 
+    let arch = 'x64'
+    if (process.arch === 'ia32') {
+      arch = 'i386'
+    } else if (process.arch === 'armel') {
+      arch = 'armel'
+    }
+
     const Tu = new Tools()
     Utils.warning(ExportIso.description)
     await Tu.loadSettings()
