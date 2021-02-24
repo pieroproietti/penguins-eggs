@@ -11,6 +11,7 @@ import { IInstall } from '../interfaces'
 
 import chalk = require('chalk')
 import { execSync } from 'child_process'
+import { remove } from '../lib/cli-autologin'
 
 const exec = require('../lib/utils').exec
 
@@ -45,37 +46,39 @@ export default class Remove extends Command {
          verbose = true
       }
 
-      if (Utils.isRoot(this.id)) {
-         if (flags.all) {
-            await Remove.all(verbose)
-         } else if (flags.prerequisites) {
-            await Remove.prerequisites(verbose)
+      if (Utils.isRoot(){
+         if(Utils.isDebPackage()) {
+            Utils.warning('You are using eggs as deb package.')
+            console.log('To remove eggs:')
+            console.log('sudo apt purge eggs')
+            console.log('sudo apt autoremove')
+         } else if(Utils.isSources()) {
+            Utils.warning('you are using from sources.')
+            if (flags.all) {
+               await Remove.prerequisites()
+               await Pacman.configurationRemove()
+            }
          } else {
-            await Remove.eggs(flags.purge, verbose)
+            if (flags.all) {
+               await Remove.all(verbose)
+            } else if (flags.prerequisites) {
+               await Remove.prerequisites(verbose)
+            } else {
+               await Pacman.configurationRemove(verbose)
+               await Remove.eggs(verbose)
+            }
          }
       }
    }
 
 
    /**
-    * rimuove eggs e configuration
+    * rimuove eggs
     */
-   static async eggs(removeConfiguration = false, verbose = false) {
-      Utils.titles('remove eggs, eggs configuration')
+   static async eggs(verbose = false) {
+      Utils.titles('remove eggs package')
       if (await Utils.customConfirm(`Select yes to continue...`)) {
-         const remove = true
-         await Pacman.linksInUsr(remove, verbose)
-         if (Utils.isDebPackage() || !Utils.isSources()) {
-            if (Utils.isDebPackage()) {
-               await exec('apt-get remove eggs')
-               await exec(`rm ${Utils.rootPenguin()} -rf`)
-            } else {
-               execSync('npm remove penguins-eggs -g')
-            }
-         }
-         if (removeConfiguration) {
-            await Pacman.configurationRemove()
-         }
+            execSync('npm remove penguins-eggs -g')
       }
    }
 
@@ -86,7 +89,8 @@ export default class Remove extends Command {
    static async all(verbose = false) {
       const removeConfiguration = true
       await Remove.prerequisites(verbose)
-      await Remove.eggs(removeConfiguration, verbose)
+      await Remove.eggs(verbose)
+      await Pacman.configurationRemove(verbose)
    }
 
    /**
