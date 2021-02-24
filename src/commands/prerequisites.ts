@@ -12,9 +12,6 @@ import { IInstall } from '../interfaces'
 import chalk = require('chalk')
 import fs = require('fs')
 import path = require('path')
-import { utils } from 'mocha'
-
-
 
 const exec = require('../lib/utils').exec
 
@@ -42,28 +39,25 @@ export default class Prerequisites extends Command {
       if (Utils.isRoot(this.id)) {
 
          // Aggiungere autocomplete
-         if (process.arch!=='ia32'){
-            await exec('eggs autocomplete > /dev/null')
-            await exec('cp ~/.cache/penguins-eggs/autocomplete/functions/bash/eggs.bash /etc/bash_completion.d/')
-         } else {
-            await exec(`cp ${__dirname}/../../scripts/eggs.bash /etc/bash_completion.d/`)
+         if (!Utils.isDebPackage()) {
+            if (process.arch !== 'ia32') {
+               await exec(`cp ${__dirname}/../../scripts/eggs.bash /etc/bash_completion.d/`)
+            }
          }
 
-         // Man
-         this.man(verbose)
-
+         await this.manPageInstall(verbose)
          if (!Pacman.configurationCheck()) {
             await Pacman.configurationInstall()
          }
          // crea i link in /usr/lib/penguins-eggs/conf/distros
-         await Pacman.copyDistroTemplate(verbose)
-
          const i = await Prerequisites.thatWeNeed(verbose)
-         if (i.clean || i.configuration || i.links) {
+         if (i.needApt || i.configuration || i.distroTemplate) {
             if (await Utils.customConfirm(`Select yes to continue...`)) {
                console.log('installing prerequisites...')
                await Prerequisites.install(i, verbose)
-               await Pacman.configurationInstall(verbose)
+               // Dovrebbero essre compresi in Prerequisites install
+               // await Pacman.configurationInstall(verbose)
+               // await Pacman.distroTemplateInstall(verbose)
             }
          } else {
             console.log('prerequisites: all is OK, nothing to do!')
@@ -71,28 +65,31 @@ export default class Prerequisites extends Command {
       }
    }
 
+
    /**
     * Installa manuale
     */
-   man(verbose = false) {
-      const man1Dir = '/usr/local/man/man1'
-      const man1eggs = '/usr/local/man/man1/eggs.1'
-      if (fs.existsSync(man1eggs)) {
-         exec(`rm ${man1eggs}`)
+   async manPageInstall(verbose = false) {
+      if (Utils.isNpmPackage()) {
+         const man1Dir = '/usr/local/man/man1'
+         const man1eggs = '/usr/local/man/man1/eggs.1'
+         if (fs.existsSync(man1eggs)) {
+            exec(`rm ${man1eggs}`)
+         }
+         if (!fs.existsSync(man1Dir)) {
+            exec(`mkdir ${man1Dir} -p`)
+         }
+         const manPage = path.resolve(__dirname, '../../man/man1/eggs.1')
+         if (fs.existsSync(manPage)) {
+            exec(`cp ${manPage} ${man1Dir}`)
+         }
+         if (verbose) {
+            exec(`mandb`)
+         } else {
+            exec(`mandb > /dev/null`)
+         }
+         console.log('man eggs installed')
       }
-      if (!fs.existsSync(man1Dir)) {
-         exec(`mkdir ${man1Dir} -p`)
-      }
-      const manPage = path.resolve(__dirname, '../../man/man1/eggs.1')
-      if (fs.existsSync(manPage )) {
-         exec(`cp ${manPage} ${man1Dir}`)
-      }
-      if (verbose) {
-         exec(`mandb`)
-      } else {
-         exec(`mandb > /dev/null`)
-      }
-      console.log('man eggs installed')
    }
 
    /**
@@ -103,7 +100,7 @@ export default class Prerequisites extends Command {
    static async thatWeNeed(verbose = false): Promise<IInstall> {
       const i = {} as IInstall
 
-      i.links = !Pacman.linksCheck()
+      i.distroTemplate = !Pacman.distroTemplateCheck()
 
       if (process.arch === 'x64') {
          i.efi = (!Pacman.packageIsInstalled('grub-efi-amd64'))
@@ -120,14 +117,14 @@ export default class Prerequisites extends Command {
       i.prerequisites = !await Pacman.prerequisitesCheck()
 
       if (i.efi || i.calamares || i.prerequisites) {
-         i.clean = true
+         i.needApt = true
       }
 
-      if (i.clean || i.configuration || i.links) {
+      if (i.needApt || i.configuration || i.distroTemplate) {
          Utils.warning(`Eggs will execute the following tasks:`)
 
-         if (i.clean) {
-            console.log('- udpate the system')
+         if (i.needApt) {
+            console.log('- update the system')
             console.log(chalk.yellow('  apt update --yes\n'))
          }
 
@@ -148,8 +145,8 @@ export default class Prerequisites extends Command {
                Pacman.configurationInstall(verbose)
             }
 
-            if (i.links) {
-               console.log('- create links to different distros\n')
+            if (i.distroTemplate) {
+               console.log('- copy distro template\n')
             }
 
             const packagesLocalisation = Pacman.packagesLocalisation()
@@ -166,16 +163,16 @@ export default class Prerequisites extends Command {
             console.log(chalk.yellow('  apt install -y ' + Pacman.debs2line(packages) + '\n'))
          }
 
-         if (i.clean) {
+         if (i.needApt) {
             console.log('- cleaning apt\n')
          }
 
-         if (i.configuration || i.clean) {
+         if (i.configuration || i.needApt) {
             console.log('- creating/updating configuration')
             console.log('  files: ' + chalk.yellow('/etc/penguins-eggs.d/eggs.yaml') + ' and ' + chalk.yellow('/usr/local/share/penguins-eggs/exclude.list\n'))
          }
 
-         if (i.clean) {
+         if (i.needApt) {
             Utils.warning('Be sure! It\'s just a series of apt install from your repositories. You can follows them using flag --verbose')
          }
       }
@@ -195,11 +192,11 @@ export default class Prerequisites extends Command {
          await Pacman.configurationInstall(verbose)
       }
 
-      if (i.links) {
-         await Pacman.copyDistroTemplate(verbose)
+      if (i.distroTemplate) {
+         await Pacman.distroTemplateInstall(verbose)
       }
 
-      if (i.clean) {
+      if (i.needApt) {
          Utils.warning('apt-get update --yes')
          await exec('apt-get update --yes', echo)
       }
@@ -219,7 +216,7 @@ export default class Prerequisites extends Command {
          await Pacman.calamaresInstall(verbose)
       }
 
-      if (i.clean) {
+      if (i.needApt) {
          Utils.warning('cleaning the system...')
          const bleach = new Bleach()
          await bleach.clean(verbose)

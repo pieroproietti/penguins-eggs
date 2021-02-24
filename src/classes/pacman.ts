@@ -100,7 +100,7 @@ export default class Pacman {
                packages.push('task-german')
             } else if (locales[i] === `pl_PL.UTF-8`) {
                packages.push('task-polish')
-            }else if (locales[i] === `de_DE.UTF-8`) {
+            } else if (locales[i] === `de_DE.UTF-8`) {
                packages.push('task-russian')
             }
          }
@@ -151,7 +151,6 @@ export default class Pacman {
             break
          }
       }
-
       for (const i in this.debs4eggs) {
          if (!this.packageIsInstalled(this.debs4eggs[i])) {
             installed = false
@@ -165,7 +164,6 @@ export default class Pacman {
     *
     */
    static async prerequisitesInstall(verbose = true): Promise<boolean> {
-      // verbose = true
       const echo = Utils.setEcho(verbose)
       const retVal = false
       const versionLike = Pacman.versionLike()
@@ -281,7 +279,7 @@ export default class Pacman {
 
 
       const config = {} as IConfig
-      config.version = Utils.getPackageVersion() 
+      config.version = Utils.getPackageVersion()
       config.snapshot_dir = '/home/eggs'
       config.snapshot_prefix = ''
       config.snapshot_excludes = '/usr/local/share/penguins-eggs/exclude.list'
@@ -304,7 +302,7 @@ export default class Pacman {
       } else {
          config.locales_default = 'en_US.UTF-8'
       }
-      if (config.locales_default === 'en_US.UTF-8'){
+      if (config.locales_default === 'en_US.UTF-8') {
          config.locales = ['en_US.UTF-8']
       } else {
          config.locales = [config.locales_default, 'en_US.UTF-8']
@@ -333,9 +331,6 @@ export default class Pacman {
    static async configurationRemove(verbose = true): Promise<void> {
       const echo = Utils.setEcho(verbose)
 
-      // Se è un pacchetto debian rimuove anche /usr/lib/penguins-eggs
-      // viene fatto in remove.ts
-
       if (fs.existsSync('/etc/penguins-eggs.d')) {
          await exec('rm /etc/penguins-eggs.d -rf', echo)
       }
@@ -350,7 +345,7 @@ export default class Pacman {
    /**
     * 
     */
-   static linksCheck(): boolean {
+   static distroTemplateCheck(): boolean {
       const versionLike = Pacman.versionLike()
       return fs.existsSync(`/etc/penguins-eggs.d/distros/${versionLike}`)
    }
@@ -358,14 +353,14 @@ export default class Pacman {
    /**
     * 
     */
-   static async copyDistroTemplate(verbose = false) {
+   static async distroTemplateInstall(verbose = false) {
       if (verbose) {
-         console.log('copyDistroTemplate')
+         console.log('installDistroTemplate')
       }
       const rootPen = Utils.rootPenguin()
       const versionLike = Pacman.versionLike()
       if (Utils.isDebPackage()) {
-         await Pacman.linksInUsr(false, verbose)
+         await Pacman.links4Debs(false, verbose)
       }
       // L = follow links è OK da source, ora il problema è copiare i link da npm o rifarli
       let cmd = `cp -rL ${rootPen}/conf/distros/${versionLike} /etc/penguins-eggs.d/distros`
@@ -376,7 +371,7 @@ export default class Pacman {
     * 
     * @param rootPen 
     */
-   static async linksInUsr(remove = false, verbose = false) {
+   static async links4Debs(remove = false, verbose = false) {
       if (Utils.isDebPackage() || !Utils.isSources()) {
          const rootPen = Utils.rootPenguin()
 

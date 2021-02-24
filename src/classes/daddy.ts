@@ -36,6 +36,14 @@ export default class Daddy {
 
     async helpMe(verbose = false) {
 
+        // Controllo configurazione
+        if (!Pacman.configurationCheck()) {
+            console.log('- creating configuration dir...')
+            await Pacman.configurationInstall(verbose)
+        } else {
+            console.log('- configuration already present')
+        }
+
         // Controllo prerequisites
         if (!Pacman.prerequisitesCheck()) {
             console.log('- installing prerequisites...')
@@ -44,12 +52,11 @@ export default class Daddy {
             console.log('- prerequisites already present')
         }
 
-        // Controllo configurazione
-        if (!Pacman.configurationCheck()) {
-            console.log('- creating configuration...')
-            Pacman.configurationInstall(verbose)
+        if (!Pacman.distroTemplateCheck()){
+            console.log('- distro template install...')
+            await Pacman.distroTemplateInstall(verbose)
         } else {
-            console.log('- configuration already present')
+            console.log('- distro template already present')
         }
 
 
@@ -61,7 +68,7 @@ export default class Daddy {
             config = this.settings.config
 
             // Edito i campi
-            let nc: string = await editConfig(config)
+            let nc: string = await this.editConfig(config)
             let newConf = JSON.parse(nc)
 
             // salvo le mdifiche      
@@ -114,76 +121,80 @@ export default class Daddy {
         const ovary = new Ovary(config.snapshot_prefix, config.snapshot_basename, config.theme, config.compression)
         Utils.warning('Produce an egg...')
         if (await ovary.fertilization()) {
-           await ovary.produce(scriptOnly, yolkRenew, final, myAddons, verbose)
-           ovary.finished(scriptOnly)
+            await ovary.produce(scriptOnly, yolkRenew, final, myAddons, verbose)
+            ovary.finished(scriptOnly)
         }
     }
-}
 
+    /**
+     * 
+     * @param c 
+     */
+    editConfig(c: IConfig): Promise<string> {
 
-/**
- * 
- * @param c 
- */
-function editConfig(c: IConfig): Promise<string> {
+        console.log(chalk.cyan('Edit and save LiveCD parameters'))
+        let compressionOpt = 0
+        if (c.compression === 'xz') {
+            compressionOpt = 1
+        } else if (c.compression === 'xz -Xbcj x86') {
+            compressionOpt = 2
+        }
 
-    console.log(chalk.cyan('Edit and save LiveCD parameters'))
-    let compressionOpt = 0
-    if (c.compression === 'xz') {
-        compressionOpt = 1
-    } else if (c.compression === 'xz -Xbcj x86') {
-        compressionOpt = 2
-    }
-
-    return new Promise(function (resolve) {
-        const questions: Array<Record<string, any>> = [
-            {
-                type: 'input',
-                name: 'snapshot_prefix',
-                message: 'LiveCD iso prefix: ',
-                default: c.snapshot_prefix
-            },
-            {
-                type: 'input',
-                name: 'snapshot_basename',
-                message: 'LiveCD iso basename: ',
-                default: c.snapshot_basename
-            },
-            {
-                type: 'input',
-                name: 'user_opt',
-                message: 'LiveCD user:',
-                default: c.user_opt
-            },
-            {
-                type: 'input',
-                name: 'user_opt_passwd',
-                message: 'LiveCD user password: ',
-                default: c.user_opt_passwd
-            },
-            {
-                type: 'input',
-                name: 'root_passwd',
-                message: 'LiveCD root password: ',
-                default: c.root_passwd
-            },
-            {
-                type: 'input',
-                name: 'theme',
-                message: 'LiveCD theme: ',
-                default: c.theme
-            },
-            {
-                type: 'list',
-                name: 'compression',
-                message: 'LiveCD compression: ',
-                choices: ['fast', 'normal', 'max'],
-                default: compressionOpt
-            }
-
-        ]
-        inquirer.prompt(questions).then(function (options) {
-            resolve(JSON.stringify(options))
+        if (c.snapshot_prefix===''){
+            c.snapshot_prefix = 'egg-of-' + this.settings.distro.distroId.toLowerCase() + '-' + this.settings.distro.versionId.toLowerCase() + '-'
+        }
+    
+        return new Promise(function (resolve) {
+            const questions: Array<Record<string, any>> = [
+                {
+                    type: 'input',
+                    name: 'snapshot_prefix',
+                    message: 'LiveCD iso prefix: ',
+                    default: c.snapshot_prefix
+                },
+                {
+                    type: 'input',
+                    name: 'snapshot_basename',
+                    message: 'LiveCD iso basename: ',
+                    default: c.snapshot_basename
+                },
+                {
+                    type: 'input',
+                    name: 'user_opt',
+                    message: 'LiveCD user:',
+                    default: c.user_opt
+                },
+                {
+                    type: 'input',
+                    name: 'user_opt_passwd',
+                    message: 'LiveCD user password: ',
+                    default: c.user_opt_passwd
+                },
+                {
+                    type: 'input',
+                    name: 'root_passwd',
+                    message: 'LiveCD root password: ',
+                    default: c.root_passwd
+                },
+                {
+                    type: 'input',
+                    name: 'theme',
+                    message: 'LiveCD theme: ',
+                    default: c.theme
+                },
+                {
+                    type: 'list',
+                    name: 'compression',
+                    message: 'LiveCD compression: ',
+                    choices: ['fast', 'normal', 'max'],
+                    default: compressionOpt
+                }
+    
+            ]
+            inquirer.prompt(questions).then(function (options) {
+                resolve(JSON.stringify(options))
+            })
         })
-    })
+    }
 }
+

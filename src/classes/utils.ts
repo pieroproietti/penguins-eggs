@@ -279,12 +279,23 @@ export default class Utils {
       return ret
    }
 
+   /**
+    * Controlla se è un pacchetto sorgente
+    */
    static isSources(): boolean {
       let ret = false
       if (__dirname.substring(0, 6) === '/home/') {
          ret = true
       }
       return ret
+   }
+
+
+   /**
+    * Controlla se è un pacchetto npm
+    */
+   static isNpmPackage(): boolean {
+      return !(this.isDebPackage() || this.isSources())
    }
 
    /**

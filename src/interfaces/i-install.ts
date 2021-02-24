@@ -5,12 +5,12 @@
 */
 
 export interface IInstall {
-    links: boolean,
+    distroTemplate: boolean,
     efi: boolean,
     calamares: boolean,
     configuration: boolean,
     prerequisites: boolean,
-    clean: boolean,
+    needApt: boolean,
  }
  
  
