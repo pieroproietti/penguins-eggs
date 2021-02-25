@@ -18,6 +18,9 @@ You can follow the project also consulting the [commit history](https://github.c
 ## Changelog
 Versions are listed on reverse order, the first is the last one.
 
+### eggs-7.8.18
+* cleaning and extendig pre e post installations, man, npm package, etc
+
 ### eggs-7.8.15
 * add filter for arch in export:iso
 
