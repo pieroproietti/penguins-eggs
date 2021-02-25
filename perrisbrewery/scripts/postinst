@@ -32,7 +32,7 @@ case "$1" in
         cp /usr/lib/penguins-eggs/manpages/doc/man/eggs.1.gz /usr/share/man/man1
         mandb > /dev/null
 
-        echo "run sudo eggs prerequisites to configure" 
+        echo "run sudo eggs config to configure" 
     ;;
 
     abort-upgrade|abort-remove|abort-deconfigure)
