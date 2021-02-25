@@ -9,24 +9,24 @@ _eggs()
   local commands="
 adapt --verbose --help
 calamares --help --verbose --install --final --theme
+config --help --verbose
 dad --help --verbose
 export:deb --help --clean --armel --amd64 --i386 --all
 export:docs --help
 export:iso --help --clean
 info 
-install --info --gui --mx --cli --umount --lvmremove --verbose
+install --cli --mx --umount --lvmremove --help --verbose
 kill --help --verbose
 mom --help
-prerequisites --help --verbose
 produce --prefix --basename --normal --max --fast --verbose --yolk --script --help --final --theme --adapt --ichoice --rsupport --pve
-remove --all --help --purge --prerequisites --verbose
+remove --purge --prerequisites --calamares --help --verbose
 tools:clean --help --verbose
 tools:locales --help --reinstall --verbose
 tools:skel --help --user --verbose
 tools:yolk --help --verbose
 update --help --apt --basket --npm --verbose
-autocomplete --refresh-cache
 help --all
+autocomplete --refresh-cache
 "
 
   if [[ "$cur" != "-"* ]]; then
