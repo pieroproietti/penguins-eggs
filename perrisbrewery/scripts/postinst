@@ -29,7 +29,7 @@ case "$1" in
         if [ ! -d "/usr/share/man/man1" ]; then
             mkdir /usr/share/man/man1 -p
         fi
-        cp /usr/lib/penguins-eggs/manpages/doc/man/* /usr/share/man/man1
+        cp /usr/lib/penguins-eggs/manpages/doc/man/eggs.1.gz /usr/share/man/man1
         mandb > /dev/null
 
         echo "run sudo eggs prerequisites to configure" 
