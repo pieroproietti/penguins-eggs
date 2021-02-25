@@ -72,7 +72,7 @@
     "/conf",
     "/lib",
     "/npm-shrinkwrap.json",
-    "/man",
+    "/manpages",
     "/oclif.manifest.json",
     "/scripts",
     "/templates"
