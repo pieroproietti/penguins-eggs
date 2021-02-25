@@ -374,12 +374,11 @@ export default class Pacman {
       if (Utils.isNpmPackage()) {
          // La directory per i manpages dovrebbe essere
          // /debian/manpages/doc/man/
-         const man1Dir = '/usr/local/manpages/doc/man/'
-         const man1eggs = '/usr/share/man/man1/eggs.1'
+         const man1Dir = '/usr/share/man/man1/'
          if (!fs.existsSync(man1Dir)) {
             exec(`mkdir ${man1Dir} -p`)
          }
-         const manPage = path.resolve(__dirname, '../../manpages/doc/man/eggs.1')
+         const manPage = path.resolve(__dirname, '../../manpages/doc/man/eggs.1.gz')
          if (fs.existsSync(manPage)) {
             exec(`cp ${manPage} ${man1Dir}`)
          }

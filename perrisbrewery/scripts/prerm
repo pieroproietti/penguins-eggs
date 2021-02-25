@@ -7,10 +7,9 @@
 # pulizia dei link non rimovibili da apt
 rm /usr/lib/penguins-eggs/conf/distros -rf
 
-# Rimuoviamo il manuale di eggs, copiato da eggs prerequisites
-if [ -f "/usr/local/man/man1/eggs.1" ]; then
-    rm /usr/local/man/man1/eggs.1
-    # ed aggiorniamo mandb
+# Rimuoviamo il manuale di eggs
+if [ -f "/usr/share/man/man1/eggs.1.gz" ]; then
+    rm /usr/share/man/man1/eggs.1
     mandb >/dev/null
 fi
 
