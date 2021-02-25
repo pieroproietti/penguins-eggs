@@ -26,7 +26,7 @@ export default class Install extends Command {
 
    static aliases = ['hatch']
 
-   static examples = [`$ eggs install\nInstall the system\n`]
+   static examples = [`$ eggs install\nInstall the system using GUI or CLI installer\n`]
 
    /**
     * Execute
