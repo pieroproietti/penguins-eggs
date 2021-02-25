@@ -191,7 +191,7 @@ export default class Config extends Command {
          await Pacman.calamaresInstall(verbose)
       }
 
-      if (i.needApt) {
+      if (i.needApt || i.calamares) {
          Utils.warning('cleaning the system...')
          const bleach = new Bleach()
          await bleach.clean(verbose)

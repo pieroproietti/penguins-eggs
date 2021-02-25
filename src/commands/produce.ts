@@ -10,7 +10,7 @@
 import { Command, flags } from '@oclif/command'
 import Utils from '../classes/utils'
 import Ovary from '../classes/ovary'
-import Pacman from '../classes/pacman'
+import Config from './config'
 import chalk = require('chalk')
 import { IMyAddons } from '../interfaces'
 
@@ -128,10 +128,10 @@ export default class Produce extends Command {
          myAddons.ichoice = flags.ichoice
          myAddons.pve = flags.pve
 
-         const i = await Prerequisites.thatWeNeed(verbose)
-         if (i.clean || i.configuration || i.links) {
+         const i = await Config.thatWeNeed(verbose)
+         if (i.needApt || i.configuration || i.distroTemplate) {
             if (await Utils.customConfirm(`Select yes to continue...`)) {
-               await Prerequisites.install(i, verbose)
+               await Config.install(i, verbose)
             }
          }
          Utils.titles(this.id + ' ' + this.argv)

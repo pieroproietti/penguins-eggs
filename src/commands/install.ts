@@ -8,25 +8,25 @@ import { Command, flags } from '@oclif/command'
 import shx = require('shelljs')
 import Utils from '../classes/utils'
 import Hatching from '../classes/hatching'
+import Pacman from '../classes/pacman'
 
 /**
  * Class Install
  */
 export default class Install extends Command {
    static flags = {
-      info: flags.help({ char: 'h' }),
-      gui: flags.boolean({ char: 'g', description: 'use Calamares installer (gui)' }),
-      mx: flags.boolean({ char: 'm', description: 'try to use MX installer (gui)' }),
-      cli: flags.boolean({ char: 'c', description: 'try to use antiX installer (cli)' }),
+      cli: flags.boolean({ char: 'c', description: 'force use eggs CLI installer' }),
+      mx: flags.boolean({ char: 'm', description: 'try to use GUI MX installer' }),
       umount: flags.boolean({ char: 'u', description: 'umount devices' }),
       lvmremove: flags.boolean({ char: 'l', description: 'remove lvm /dev/pve' }),
+      help: flags.help({ char: 'h' }),
       verbose: flags.boolean({ char: 'v', description: 'verbose' })
    }
-   static description = 'eggs installer - (the egg became penguin)'
+   static description = 'system installer - the egg became a penguin'
 
    static aliases = ['hatch']
 
-   static examples = [`$ eggs install\nInstall the system with eggs cli installer(default)\n`]
+   static examples = [`$ eggs install\nInstall the system\n`]
 
    /**
     * Execute
@@ -53,18 +53,19 @@ export default class Install extends Command {
 
       if (Utils.isRoot(this.id)) {
          if (Utils.isLive()) {
-            if (flags.gui) {
+            if (Pacman.packageIsInstalled('calamares') && ! flags.cli){
                shx.exec('calamares')
-            } else if (flags.mx || flags.cli) {
-               await mountAntix()
-               shx.exec('minstall')
-               await umountAntix()
+            } else if (flags.mx) {
+               if (Pacman.packageIsInstalled('minstall')) {
+                  await mountAntix()
+                  shx.exec('minstall')
+                  await umountAntix()
+               }
             } else {
                const hatching = new Hatching()
                if (lvmremove) {
                   Utils.warning('Removing lvm')
                   await hatching.lvmRemove(verbose)
-                  Utils.titles('install')
                }
                Utils.warning('Installing the system / spawning the egg...')
                await hatching.questions(verbose, umount)

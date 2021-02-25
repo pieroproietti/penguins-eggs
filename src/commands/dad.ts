@@ -14,7 +14,7 @@ const exec = require('../lib/utils').exec
 
 export default class Dad extends Command {
 
-  static description = 'ask help from daddy'
+  static description = 'ask help from daddy - configuration helper'
 
   static flags = {
     help: flags.help({ char: 'h' }),
