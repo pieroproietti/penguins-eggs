@@ -12,7 +12,7 @@ import Pacman from '../classes/pacman'
 import Utils from  '../classes/utils'
 
 export default class Mom extends Command {
-  static description = 'ask for mommy (gui interface)!'
+  static description = 'ask for mommy'
 
   static flags = {
     help: flags.help({ char: 'h' }),

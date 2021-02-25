@@ -18,21 +18,21 @@ const exec = require('../lib/utils').exec
 /**
  * 
  */
-export default class Prerequisites extends Command {
-   static description = 'Initialize eggs and install packages prerequisites to run eggs'
+export default class Config extends Command {
+   static description = 'Configure eggs and install packages prerequisites to run it'
 
-   static aliases = ['fertilize', 'init']
+   static aliases = ['prerequisites']
    static flags = {
       help: flags.help({ char: 'h' }),
       verbose: flags.boolean({ char: 'v', description: 'verbose' }),
    }
 
-   static examples = [`~$ eggs init\nInitialize eggs, install prerequisites and create configuration files`]
+   static examples = [`~$ sudo eggs config\nConfigure eggs and install prerequisites`]
 
    async run() {
       Utils.titles(this.id + ' ' + this.argv)
 
-      const { flags } = this.parse(Prerequisites)
+      const { flags } = this.parse(Config)
 
       const verbose = flags.verbose
 
@@ -51,17 +51,17 @@ export default class Prerequisites extends Command {
             await Pacman.configurationInstall()
          }
          // crea i link in /usr/lib/penguins-eggs/conf/distros
-         const i = await Prerequisites.thatWeNeed(verbose)
+         const i = await Config.thatWeNeed(verbose)
          if (i.needApt || i.configuration || i.distroTemplate) {
             if (await Utils.customConfirm(`Select yes to continue...`)) {
                console.log('installing prerequisites...')
-               await Prerequisites.install(i, verbose)
-               // Dovrebbero essre compresi in Prerequisites install
+               await Config.install(i, verbose)
+               // Dovrebbero essere compresi in Prerequisites install
                // await Pacman.configurationInstall(verbose)
                // await Pacman.distroTemplateInstall(verbose)
             }
          } else {
-            console.log('prerequisites: all is OK, nothing to do!')
+            console.log('config: all is OK, nothing to do!')
          }
       }
    }

@@ -16,7 +16,7 @@ const exec = require('../lib/utils').exec
  * 
  */
 export default class Update extends Command {
-   static description = "update the penguin's eggs tool.\nThis method always works, both with npm and deb packages."
+   static description = "update the penguin's eggs tool"
 
    static examples = [`$ eggs update\nupdate/upgrade the penguin's eggs tool`]
 

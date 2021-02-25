@@ -80,7 +80,6 @@ export default class Pacman {
       settings.load()
       const locales: string[] = settings.config.locales
 
-      // Aggiungere anche bullseye
       if ((versionLike === 'buster') || versionLike === 'bullseye' || (versionLike === 'beowulf')) {
          for (let i = 0; i < locales.length; i++) {
             if (locales[i] === process.env.LANG) {
@@ -109,6 +108,7 @@ export default class Pacman {
 
       return packages
    }
+
    /**
     * Crea array packages dei pacchetti da installare/rimuovere
     */
@@ -189,7 +189,6 @@ export default class Pacman {
     *
     */
    static async prerequisitesRemove(verbose = true): Promise<boolean> {
-      // verbose = true
       const echo = Utils.setEcho(verbose)
       const retVal = false
       const versionLike = Pacman.versionLike()
@@ -373,6 +372,8 @@ export default class Pacman {
    */
    static async manPageInstall(verbose = false) {
       if (Utils.isNpmPackage()) {
+         // La directory per i manpages dovrebbe essere
+         // /debian/manpages/doc/man/
          const man1Dir = '/usr/local/man/man1'
          const man1eggs = '/usr/local/man/man1/eggs.1'
          if (fs.existsSync(man1eggs)) {

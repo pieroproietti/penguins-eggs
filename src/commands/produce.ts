@@ -13,8 +13,6 @@ import Ovary from '../classes/ovary'
 import Pacman from '../classes/pacman'
 import chalk = require('chalk')
 import { IMyAddons } from '../interfaces'
-import Prequisites from '../commands/prerequisites'
-import Prerequisites from '../commands/prerequisites'
 
 export default class Produce extends Command {
    static flags = {
@@ -40,7 +38,7 @@ export default class Produce extends Command {
       pve: flags.boolean({ description: `administration of virtual machines (Proxmox-VE)` })
    }
 
-   static description = 'the system produce an egg: livecd creation.'
+   static description = 'the system produce an egg: iso image of your system'
 
    static aliases = ['spawn', 'lay']
 

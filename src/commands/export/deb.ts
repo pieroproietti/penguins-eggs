@@ -5,7 +5,7 @@ import Utils from '../../classes/utils'
 const exec = require('../../lib/utils').exec;
 
 export default class ExportDeb extends Command {
-  static description = 'export package eggs-v7-x-x-1.deb in the destination host'
+  static description = 'export deb/docs/iso to the destination host'
 
   static flags = {
     help: flags.help({ char: 'h' }),
