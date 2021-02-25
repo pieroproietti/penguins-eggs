@@ -95,7 +95,7 @@ $ npm install -g penguins-eggs
 $ eggs COMMAND
 running command...
 $ eggs (-v|--version|version)
-penguins-eggs/7.8.16 linux-x64 node-v14.16.0
+penguins-eggs/7.8.18 linux-x64 node-v14.16.0
 $ eggs --help [COMMAND]
 USAGE
   $ eggs COMMAND
@@ -108,6 +108,7 @@ USAGE
 * [`eggs adapt`](#eggs-adapt)
 * [`eggs autocomplete [SHELL]`](#eggs-autocomplete-shell)
 * [`eggs calamares`](#eggs-calamares)
+* [`eggs config`](#eggs-config)
 * [`eggs dad`](#eggs-dad)
 * [`eggs export:deb`](#eggs-exportdeb)
 * [`eggs export:docs`](#eggs-exportdocs)
@@ -117,7 +118,6 @@ USAGE
 * [`eggs install`](#eggs-install)
 * [`eggs kill`](#eggs-kill)
 * [`eggs mom`](#eggs-mom)
-* [`eggs prerequisites`](#eggs-prerequisites)
 * [`eggs produce`](#eggs-produce)
 * [`eggs remove`](#eggs-remove)
 * [`eggs tools:clean`](#eggs-toolsclean)
@@ -142,7 +142,7 @@ ALIASES
   $ eggs adjust
 ```
 
-_See code: [src/commands/adapt.ts](https://github.com/pieroproietti/penguins-eggs/blob/v7.8.16/src/commands/adapt.ts)_
+_See code: [src/commands/adapt.ts](https://github.com/pieroproietti/penguins-eggs/blob/v7.8.18/src/commands/adapt.ts)_
 
 ## `eggs autocomplete [SHELL]`
 
@@ -190,11 +190,33 @@ EXAMPLES
   install calamares and create it's configuration's files
 ```
 
-_See code: [src/commands/calamares.ts](https://github.com/pieroproietti/penguins-eggs/blob/v7.8.16/src/commands/calamares.ts)_
+_See code: [src/commands/calamares.ts](https://github.com/pieroproietti/penguins-eggs/blob/v7.8.18/src/commands/calamares.ts)_
+
+## `eggs config`
+
+Configure eggs and install packages prerequisites to run it
+
+```
+USAGE
+  $ eggs config
+
+OPTIONS
+  -h, --help     show CLI help
+  -v, --verbose  verbose
+
+ALIASES
+  $ eggs prerequisites
+
+EXAMPLE
+  ~$ sudo eggs config
+  Configure eggs and install prerequisites
+```
+
+_See code: [src/commands/config.ts](https://github.com/pieroproietti/penguins-eggs/blob/v7.8.18/src/commands/config.ts)_
 
 ## `eggs dad`
 
-ask help from daddy (gui interface)!
+ask help from daddy - configuration helper
 
 ```
 USAGE
@@ -205,11 +227,11 @@ OPTIONS
   -v, --verbose
 ```
 
-_See code: [src/commands/dad.ts](https://github.com/pieroproietti/penguins-eggs/blob/v7.8.16/src/commands/dad.ts)_
+_See code: [src/commands/dad.ts](https://github.com/pieroproietti/penguins-eggs/blob/v7.8.18/src/commands/dad.ts)_
 
 ## `eggs export:deb`
 
-export package eggs-v7-x-x-1.deb in the destination host
+export deb/docs/iso to the destination host
 
 ```
 USAGE
@@ -224,7 +246,7 @@ OPTIONS
   --i386       export i386 arch
 ```
 
-_See code: [src/commands/export/deb.ts](https://github.com/pieroproietti/penguins-eggs/blob/v7.8.16/src/commands/export/deb.ts)_
+_See code: [src/commands/export/deb.ts](https://github.com/pieroproietti/penguins-eggs/blob/v7.8.18/src/commands/export/deb.ts)_
 
 ## `eggs export:docs`
 
@@ -238,7 +260,7 @@ OPTIONS
   -h, --help  show CLI help
 ```
 
-_See code: [src/commands/export/docs.ts](https://github.com/pieroproietti/penguins-eggs/blob/v7.8.16/src/commands/export/docs.ts)_
+_See code: [src/commands/export/docs.ts](https://github.com/pieroproietti/penguins-eggs/blob/v7.8.18/src/commands/export/docs.ts)_
 
 ## `eggs export:iso`
 
@@ -253,7 +275,7 @@ OPTIONS
   -h, --help   show CLI help
 ```
 
-_See code: [src/commands/export/iso.ts](https://github.com/pieroproietti/penguins-eggs/blob/v7.8.16/src/commands/export/iso.ts)_
+_See code: [src/commands/export/iso.ts](https://github.com/pieroproietti/penguins-eggs/blob/v7.8.18/src/commands/export/iso.ts)_
 
 ## `eggs help [COMMAND]`
 
@@ -285,22 +307,21 @@ EXAMPLE
   You will find here informations about penguin's eggs!
 ```
 
-_See code: [src/commands/info.ts](https://github.com/pieroproietti/penguins-eggs/blob/v7.8.16/src/commands/info.ts)_
+_See code: [src/commands/info.ts](https://github.com/pieroproietti/penguins-eggs/blob/v7.8.18/src/commands/info.ts)_
 
 ## `eggs install`
 
-eggs installer - (the egg became penguin)
+system installer - the egg became a penguin
 
 ```
 USAGE
   $ eggs install
 
 OPTIONS
-  -c, --cli        try to use antiX installer (cli)
-  -g, --gui        use Calamares installer (gui)
-  -h, --info       show CLI help
+  -c, --cli        force use eggs CLI installer
+  -h, --help       show CLI help
   -l, --lvmremove  remove lvm /dev/pve
-  -m, --mx         try to use MX installer (gui)
+  -m, --mx         try to use GUI MX installer
   -u, --umount     umount devices
   -v, --verbose    verbose
 
@@ -309,10 +330,10 @@ ALIASES
 
 EXAMPLE
   $ eggs install
-  Install the system with eggs cli installer(default)
+  Install the system using GUI or CLI installer
 ```
 
-_See code: [src/commands/install.ts](https://github.com/pieroproietti/penguins-eggs/blob/v7.8.16/src/commands/install.ts)_
+_See code: [src/commands/install.ts](https://github.com/pieroproietti/penguins-eggs/blob/v7.8.18/src/commands/install.ts)_
 
 ## `eggs kill`
 
@@ -331,11 +352,11 @@ EXAMPLE
   kill the eggs/free the nest
 ```
 
-_See code: [src/commands/kill.ts](https://github.com/pieroproietti/penguins-eggs/blob/v7.8.16/src/commands/kill.ts)_
+_See code: [src/commands/kill.ts](https://github.com/pieroproietti/penguins-eggs/blob/v7.8.18/src/commands/kill.ts)_
 
 ## `eggs mom`
 
-ask for mommy (gui interface)!
+ask for mommy - gui helper
 
 ```
 USAGE
@@ -345,34 +366,11 @@ OPTIONS
   -h, --help  show CLI help
 ```
 
-_See code: [src/commands/mom.ts](https://github.com/pieroproietti/penguins-eggs/blob/v7.8.16/src/commands/mom.ts)_
-
-## `eggs prerequisites`
-
-Initialize eggs and install packages prerequisites to run eggs
-
-```
-USAGE
-  $ eggs prerequisites
-
-OPTIONS
-  -h, --help     show CLI help
-  -v, --verbose  verbose
-
-ALIASES
-  $ eggs fertilize
-  $ eggs init
-
-EXAMPLE
-  ~$ eggs init
-  Initialize eggs, install prerequisites and create configuration files
-```
-
-_See code: [src/commands/prerequisites.ts](https://github.com/pieroproietti/penguins-eggs/blob/v7.8.16/src/commands/prerequisites.ts)_
+_See code: [src/commands/mom.ts](https://github.com/pieroproietti/penguins-eggs/blob/v7.8.18/src/commands/mom.ts)_
 
 ## `eggs produce`
 
-the system produce an egg: livecd creation.
+the system produce an egg: iso image of your system
 
 ```
 USAGE
@@ -435,38 +433,38 @@ EXAMPLES
   in /home/eggs/ovarium and you can customize all you need
 ```
 
-_See code: [src/commands/produce.ts](https://github.com/pieroproietti/penguins-eggs/blob/v7.8.16/src/commands/produce.ts)_
+_See code: [src/commands/produce.ts](https://github.com/pieroproietti/penguins-eggs/blob/v7.8.18/src/commands/produce.ts)_
 
 ## `eggs remove`
 
-remove eggs, eggs configurations, prerequisites, calamares, calamares configurations
+remove eggs and others stuff
 
 ```
 USAGE
   $ eggs remove
 
 OPTIONS
-  -a, --all            remove all
+  -c, --calamares      remove calamares and dependencies
   -h, --help           show CLI help
   -p, --prerequisites  remove eggs packages prerequisites
   -v, --verbose        verbose
-  --purge              remove eggs, eggs configuration
+  --purge              remove eggs and configurations
 
 EXAMPLES
   $ sudo eggs remove 
   remove eggs
 
   $ sudo eggs remove --purge 
-  remove eggs, eggs configurations
+  remove eggs and configurations
 
   $ sudo eggs remove --prerequisites 
-  remove packages prerequisites, calamares, calamares configurations
+  remove eggs, eggs configurations, packages prerequisites, calamares, calamares configurations
 
-  $ sudo eggs remove --all
-  remove eggs, eggs configurations, prerequisites, calamares, calamares configurations
+  $ sudo eggs remove --calamares 
+  remove calamares and dependecies
 ```
 
-_See code: [src/commands/remove.ts](https://github.com/pieroproietti/penguins-eggs/blob/v7.8.16/src/commands/remove.ts)_
+_See code: [src/commands/remove.ts](https://github.com/pieroproietti/penguins-eggs/blob/v7.8.18/src/commands/remove.ts)_
 
 ## `eggs tools:clean`
 
@@ -481,7 +479,7 @@ OPTIONS
   -v, --verbose  verbose
 ```
 
-_See code: [src/commands/tools/clean.ts](https://github.com/pieroproietti/penguins-eggs/blob/v7.8.16/src/commands/tools/clean.ts)_
+_See code: [src/commands/tools/clean.ts](https://github.com/pieroproietti/penguins-eggs/blob/v7.8.18/src/commands/tools/clean.ts)_
 
 ## `eggs tools:locales`
 
@@ -497,7 +495,7 @@ OPTIONS
   -v, --verbose    verbose
 ```
 
-_See code: [src/commands/tools/locales.ts](https://github.com/pieroproietti/penguins-eggs/blob/v7.8.16/src/commands/tools/locales.ts)_
+_See code: [src/commands/tools/locales.ts](https://github.com/pieroproietti/penguins-eggs/blob/v7.8.18/src/commands/tools/locales.ts)_
 
 ## `eggs tools:skel`
 
@@ -517,7 +515,7 @@ EXAMPLE
   desktop configuration of user mauro will get used as default
 ```
 
-_See code: [src/commands/tools/skel.ts](https://github.com/pieroproietti/penguins-eggs/blob/v7.8.16/src/commands/tools/skel.ts)_
+_See code: [src/commands/tools/skel.ts](https://github.com/pieroproietti/penguins-eggs/blob/v7.8.18/src/commands/tools/skel.ts)_
 
 ## `eggs tools:yolk`
 
@@ -535,11 +533,11 @@ EXAMPLE
   $ eggs yolk -v
 ```
 
-_See code: [src/commands/tools/yolk.ts](https://github.com/pieroproietti/penguins-eggs/blob/v7.8.16/src/commands/tools/yolk.ts)_
+_See code: [src/commands/tools/yolk.ts](https://github.com/pieroproietti/penguins-eggs/blob/v7.8.18/src/commands/tools/yolk.ts)_
 
 ## `eggs update`
 
-update the penguin's eggs tool.
+update the penguin's eggs tool
 
 ```
 USAGE
@@ -552,15 +550,12 @@ OPTIONS
   -n, --npm      if eggs package is .npm, update from npmjs.com
   -v, --verbose  verbose
 
-DESCRIPTION
-  This method always works, both with npm and deb packages.
-
 EXAMPLE
   $ eggs update
   update/upgrade the penguin's eggs tool
 ```
 
-_See code: [src/commands/update.ts](https://github.com/pieroproietti/penguins-eggs/blob/v7.8.16/src/commands/update.ts)_
+_See code: [src/commands/update.ts](https://github.com/pieroproietti/penguins-eggs/blob/v7.8.18/src/commands/update.ts)_
 <!-- commandsstop -->
 
 # Terminal samples
