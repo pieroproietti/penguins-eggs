@@ -9,16 +9,18 @@ function main {
    while true; do
       # 20 righe. 75 caratteri, 16 altezza menu list
       answer=$(
-      whiptail --title "mommy" --menu "Mama's gonna keep baby cosy and warm..." 22 75 14 \
-         "prerequisites"   "init eggs, install prerequisites" \
-         "dad"             "lead you to configurare and iso production" \
-         "help"            "help" \
-         "info"            "get informations" \
-         "install"         "install your system on hard disk" \
-         "kill"            "delete ISOs" \
-         "produce"         "produce and ISO of your system" \
-         "remove"          "remove eggs" \
-         "update"          "update eggs package" \
+      whiptail --title "mommy" --menu "Mama's gonna keep baby cosy and warm..." 22 75 16 \
+         "config"          "configure eggs, install prerequisites" \
+         "adapt"           "adapt monitor resolution for VM only" \
+         "calamares"       "configure calamares or install and configure it" \
+         "dad"             "ask help from daddy - configuration helper" \
+         "help"            "display help for eggs" \
+         "info"            "informations about system and eggs" \
+         "install"         "system installer - the egg became a penguin" \
+         "kill"            "kill the eggs/free the nest" \
+         "produce"         "the system produce an egg: iso image of your system" \
+         "remove"          "remove eggs and others stuff" \
+         "update"          "update the penguin's eggs tool" \
          "Documentation"   "book/book_translated/manual/man" \
          "Export"          "deb/docs/iso" \
          "Tools"           "clean/locales/skel/yolk" \
@@ -29,8 +31,14 @@ function main {
          "quit")
             theEnd ;;
 
-         "prerequisites")
-            prerequisites ;;
+         "config")
+            config ;;
+
+         "calamares")
+            calamares ;;
+
+         "adapt")
+            adapt ;;
 
          "dad")
             dad ;;
@@ -68,6 +76,45 @@ function main {
       esac
 
    done
+}
+
+################################
+function adapt {
+   eggs adapt
+}
+
+################################
+function config {
+   sudo eggs config
+   press_a_key_to_continue
+}
+
+################################
+function calamares {
+      answer=$(
+         whiptail --title "Calamares installer" --menu "You can choose local or internet documentation, html or man" 22 75 14 \
+         "configure"       "gui/internet penguin's eggs book - italian -" \
+         "installa"        "gui/internet penguin's eggs book - translated -" \
+         "quit"            "previus" 3>&2 2>&1 1>&3
+      )
+
+      case "$answer" in 
+         "configure")
+            calamares_configure ;;
+
+         "install")
+            calamares_install ;;
+      esac
+}
+
+################################
+function calamares_configure {
+   sudo eggs calamares 
+}
+
+################################
+function calamares_install {
+   sudo eggs calamares --install
 }
 
 
@@ -192,13 +239,6 @@ function kill {
    press_a_key_to_continue
 }
 
-
-################################
-function prerequisites {
-   sudo eggs prerequisites
-   press_a_key_to_continue
-}
-
 ################################
 function produce {
    answer=$(
@@ -240,22 +280,28 @@ function compress {
 function remove {
    answer=$(
    whiptail --title "remove" --menu "Remove prerequisites, eggs or purge..." 22 75 14 \
+      "calamares"       "remove calamares installer" \
       "prerequisites"   "remove prerequisites only" \
-      "all"             "remove prerequisites and eggs" \
       "purge"           "remove prerequisites, eggs and purge" 
       "quit"   "previus" 3>&2 2>&1 1>&3
    )
 
    case "$answer" in 
+      "calamares")
+         remove_calamares ;;
+
       "prerequisites")
          remove_prerequisites ;;
-
-      "all")
-         remove_all ;;
 
       "purge")
          remove_purge ;;
    esac
+}
+
+################################
+function remove_calamares {
+   sudo eggs remove --calamares
+   press_a_key_to_continue
 }
 
 ################################
@@ -264,11 +310,6 @@ function remove_prerequisites {
    press_a_key_to_continue
 }
 
-################################
-function remove_all {
-   sudo eggs remove --all
-   press_a_key_to_continue
-}
 
 ################################
 function remove_purge {
@@ -291,17 +332,8 @@ function tools {
       "clean")
          tools_clean ;;
 
-      "initrd")
-         tools_initrd ;;
-
       "locales")
          tools_locales ;;
-
-      "pve")
-         tools_pve ;;
-
-      "sanitize")
-         tools_sanitize ;;
 
       "skel")
          tools_skel ;;
@@ -319,26 +351,8 @@ function tools_clean {
 }
 
 ################################
-function tools_initrd {
-   sudo eggs tools:initrd
-   press_a_key_to_continue
-}
-
-################################
 function tools_locales {
    sudo eggs tools:locales
-   press_a_key_to_continue
-}
-
-################################
-function tools_pve {
-   sudo eggs tools:pve
-   press_a_key_to_continue
-}
-
-################################
-function tools_sanitize {
-   sudo eggs tools:sanitize
    press_a_key_to_continue
 }
 
