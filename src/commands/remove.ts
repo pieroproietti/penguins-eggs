@@ -83,7 +83,6 @@ export default class Remove extends Command {
              */
             Utils.warning('You are using eggs as npm package.')
             if (await Utils.customConfirm()) {
-               execSync('npm remove penguins-eggs -g')
                if (flags.purge) {
                   await Pacman.configurationRemove()
                }
@@ -93,6 +92,7 @@ export default class Remove extends Command {
                if (flags.calamares) {
                   await Pacman.calamaresRemove()
                }
+               execSync('npm remove penguins-eggs -g')
             }
          }
       }
