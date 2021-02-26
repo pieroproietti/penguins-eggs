@@ -18,8 +18,8 @@ You can follow the project also consulting the [commit history](https://github.c
 ## Changelog
 Versions are listed on reverse order, the first is the last one.
 
-### eggs-7.8.19
-* bugfix sddm, bugfix for penguins-eggs package npm
+### eggs-7.8.20
+* all bugfix sddm desktop manages, npm package bugfixes
 
 ### eggs-7.8.18
 * cleaning and extendig pre e post installations, man, npm package, etc

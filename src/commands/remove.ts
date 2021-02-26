@@ -23,13 +23,13 @@ export default class Remove extends Command {
 
    static examples = [
       `$ sudo eggs remove \nremove eggs\n`,
-      `$ sudo eggs remove --prerequisites \nremove eggs, eggs configurations, packages prerequisites, calamares, calamares configurations\n`,
+      `$ sudo eggs remove --prerequisites \nremove eggs, eggs configurations, packages prerequisites\n`,
       `$ sudo eggs remove --calamares \nremove calamares and dependecies\n`,
    ]
 
    static flags = {
       prerequisites: flags.boolean({ char: 'p', description: 'remove eggs packages prerequisites' }),
-      calamares: flags.boolean({ char: 'c', description: 'remove calamares and dependencies' }),
+      calamares: flags.boolean({ char: 'c', description: 'remove calamares and calamares dependencies' }),
       help: flags.help({ char: 'h' }),
       verbose: flags.boolean({ char: 'v', description: 'verbose' })
    }
@@ -91,9 +91,9 @@ export default class Remove extends Command {
                execSync('rm -f /usr/share/man/man1/eggs.1.gz')
                // Rimuove eggs
                execSync('npm remove penguins-eggs -g')
-               }
             }
          }
       }
    }
 }
+
