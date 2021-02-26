@@ -23,13 +23,11 @@ export default class Remove extends Command {
 
    static examples = [
       `$ sudo eggs remove \nremove eggs\n`,
-      `$ sudo eggs remove --purge \nremove eggs and configurations\n`,
       `$ sudo eggs remove --prerequisites \nremove eggs, eggs configurations, packages prerequisites, calamares, calamares configurations\n`,
       `$ sudo eggs remove --calamares \nremove calamares and dependecies\n`,
    ]
 
    static flags = {
-      purge: flags.boolean({ description: 'remove eggs and configurations' }),
       prerequisites: flags.boolean({ char: 'p', description: 'remove eggs packages prerequisites' }),
       calamares: flags.boolean({ char: 'c', description: 'remove calamares and dependencies' }),
       help: flags.help({ char: 'h' }),
@@ -50,7 +48,7 @@ export default class Remove extends Command {
           * package debian
           */
          if (Utils.isDebPackage()) {
-            Utils.warning('You are using  eggs as package deb. I\'ll will purge it')
+            Utils.warning('You are using  eggs as package deb. I\'ll will remove it')
             execSync('apt-get remove eggs')
             if (await Utils.customConfirm()) {
                if (flags.prerequisites) {
@@ -64,11 +62,8 @@ export default class Remove extends Command {
              * sources
              */
          } else if (Utils.isSources()) {
-            Utils.warning('You are using  eggs as sources. I\'ll not remove it')
+            Utils.warning('You are using  eggs as sources. I\'ll NOT remove it')
             if (await Utils.customConfirm()) {
-               if (flags.purge) {
-                  await Pacman.configurationRemove()
-               }
                if (flags.prerequisites) {
                   await Pacman.prerequisitesRemove()
                }
@@ -81,18 +76,22 @@ export default class Remove extends Command {
             /**
              * npm package
              */
-            Utils.warning('You are using eggs as npm package.')
+            Utils.warning(`You are using eggs as npm package. I'll remove it.`)
             if (await Utils.customConfirm()) {
-               if (flags.purge) {
-                  await Pacman.configurationRemove()
-               }
                if (flags.prerequisites) {
                   await Pacman.prerequisitesRemove()
                }
                if (flags.calamares) {
                   await Pacman.calamaresRemove()
                }
+               await Pacman.configurationRemove()
+               // Rimuove eggs completion
+               execSync('rm -f /etc/bash_completion.d/eggs.bash')
+               // Rimuove manpages
+               execSync('rm -f /usr/share/man/man1/eggs.1.gz')
+               // Rimuove eggs
                execSync('npm remove penguins-eggs -g')
+               }
             }
          }
       }
