@@ -20,7 +20,7 @@ import Bleach from './bleach'
 export default class Yolk {
 
     dir = '/usr/local/yolk'
-
+    
     /**
      * 
      * @param verbose 
@@ -32,7 +32,6 @@ export default class Yolk {
          * deb [trusted=yes] file:/usr/local/yolk ./
          * 
          */
-
         console.log('updating system...')
         if (!Pacman.commandIsInstalled('dpkg-scanpackages')) {
             process.exit(0)
@@ -66,8 +65,7 @@ export default class Yolk {
             console.log(`downloading package ${packages[i]} and it's dependencies...`)
             cmd = `apt-cache depends --recurse --no-recommends --no-suggests --no-conflicts --no-breaks --no-replaces --no-enhances ${packages[i]} | grep "^\\w" | sort -u`
             let depends = await execute(cmd)
-            const aDepends = depends.split('\n')
-            iDeps(aDepends)
+            await this.installDeps(depends.split('\n'))
         }
 
         // Creo Package.gz
@@ -101,24 +99,28 @@ export default class Yolk {
         return fs.existsSync(check)
     }
 
-}
+    /**
+     * 
+     * @param depends 
+     */
+    async installDeps(depends: string[]) {
 
-/**
- * 
- * @param depends 
- */
-function iDeps(depends: string[]) {
-    const downloads: string[] = []
-    for (let i = 0; i < depends.length; i++) {
-        if (!Pacman.packageIsInstalled(depends[i])) {
-            downloads.push(depends[i])
+        // scarico solo le dipendenze non installate
+        const toDownloads: string[] = []
+        for (let i = 0; i < depends.length; i++) {
+            if (! await Pacman.packageIsInstalled(depends[i])) {
+                toDownloads.push(depends[i])
+            }
+        }
+
+        // e li vado a scaricare in /usr/local/yolk
+        for (let i = 0; i < toDownloads.length; i++) {
+            process.chdir(this.dir)
+            const cmd = `apt-get download ${toDownloads[i]}`
+            Utils.warning(`- ${cmd}`)
+            await execute(cmd)
         }
     }
-
-    for (let i = 0; i < downloads.length; i++) {
-        const cmd = `apt-get download ${downloads[i]}`
-        Utils.warning(`- ${cmd}`)
-        execute(cmd)
-    }
+    
 
 }

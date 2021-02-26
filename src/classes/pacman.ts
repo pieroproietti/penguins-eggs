@@ -19,6 +19,8 @@ import { IConfig } from '../interfaces'
 import { ServerResponse } from 'http'
 import { engineStrict } from 'pjson'
 
+import { execute, pipe } from '@getvim/execute'
+
 
 const exec = require('../lib/utils').exec
 
@@ -500,9 +502,9 @@ export default class Pacman {
    * restuisce VERO se il pacchetto è installato
    * @param debPackage
    */
-   static packageIsInstalled(debPackage: string): boolean {
+   static async packageIsInstalled(debPackage: string): Promise<boolean> {
       let installed = false
-      const cmd = `/usr/bin/dpkg -s ${debPackage} | grep Status`
+      const cmd = `/usr/bin/dpkg -s ${debPackage} | grep Status:`
       const stdout = shx.exec(cmd, { silent: true }).stdout.trim()
       if (stdout === 'Status: install ok installed') {
          installed = true
