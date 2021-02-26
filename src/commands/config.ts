@@ -56,9 +56,6 @@ export default class Config extends Command {
             if (await Utils.customConfirm(`Select yes to continue...`)) {
                console.log('installing prerequisites...')
                await Config.install(i, verbose)
-               // Dovrebbero essere compresi in Prerequisites install
-               // await Pacman.configurationInstall(verbose)
-               // await Pacman.distroTemplateInstall(verbose)
             }
          } else {
             console.log('config: all is OK, nothing to do!')
@@ -157,7 +154,7 @@ export default class Config extends Command {
 
    /**
     * 
-    * @param links 
+    * @param i
     * @param verbose 
     */
    static async install(i: IInstall, verbose = false) {

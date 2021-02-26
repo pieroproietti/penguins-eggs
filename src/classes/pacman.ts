@@ -314,8 +314,11 @@ export default class Pacman {
 
       if (!Utils.isUefi()) {
          config.make_efi = false
-         console.log(`Due the lacks of grub-efi-amd64 package set make_efi = false`)
+         if (process.arch === 'x64') {
+            console.log(`Due the lacks of grub-efi-amd64 package set make_efi = false`)
+         }
       }
+      
       const settings = new Settings()
       settings.save(config)
 
