@@ -64,8 +64,8 @@ export default class Pacman {
    /**
     * controlla se Xserver è installato
     */
-   static isXInstalled(): boolean {
-      return this.packageIsInstalled('xserver-xorg-core') || this.packageIsInstalled('xserver-xorg-core-hwe-18.04')
+   static async isXInstalled(): Promise <boolean> {
+      return await this.packageIsInstalled('xserver-xorg-core') || await this.packageIsInstalled('xserver-xorg-core-hwe-18.04')
    }
 
 
