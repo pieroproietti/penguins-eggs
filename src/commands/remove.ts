@@ -28,7 +28,8 @@ export default class Remove extends Command {
    ]
 
    static flags = {
-      prerequisites: flags.boolean({ char: 'p', description: 'remove eggs packages prerequisites' }),
+      autoremove: flags.boolean({ char: 'r', description: 'remove eggs packages dependencies' }),
+      purge: flags.boolean({ char: 'p', description: 'remove eggs configurations files' }),
       calamares: flags.boolean({ char: 'c', description: 'remove calamares and calamares dependencies' }),
       help: flags.help({ char: 'h' }),
       verbose: flags.boolean({ char: 'v', description: 'verbose' })
@@ -49,11 +50,9 @@ export default class Remove extends Command {
           */
          if (Utils.isDebPackage()) {
             Utils.warning('You are using  eggs as package deb. I\'ll will remove it')
-            execSync('apt-get remove eggs')
+            execSync('apt remove eggs')
+            Utils.warning('You are using  eggs as package deb. I\'ll will remove it')
             if (await Utils.customConfirm()) {
-               if (flags.prerequisites) {
-                  execSync('apt-get autoremove')
-               }
                if (flags.calamares) {
                   await Pacman.calamaresRemove()
                }
@@ -62,14 +61,17 @@ export default class Remove extends Command {
              * sources
              */
          } else if (Utils.isSources()) {
-            Utils.warning('You are using  eggs as sources. I\'ll NOT remove it')
             if (await Utils.customConfirm()) {
-               if (flags.prerequisites) {
+               if (flags.autoremove) {
                   await Pacman.prerequisitesRemove()
                }
                if (flags.calamares) {
                   await Pacman.calamaresRemove()
                }
+               if (flags.purge) {
+                  await Pacman.configurationRemove()
+               }
+               Utils.warning('You are using  eggs as sources. I\'ll NOT remove it')
             }
 
          } else {
@@ -78,17 +80,20 @@ export default class Remove extends Command {
              */
             Utils.warning(`You are using eggs as npm package. I'll remove it.`)
             if (await Utils.customConfirm()) {
-               if (flags.prerequisites) {
+               if (flags.autoremove) {
                   await Pacman.prerequisitesRemove()
                }
                if (flags.calamares) {
                   await Pacman.calamaresRemove()
                }
-               await Pacman.configurationRemove()
                // Rimuove eggs completion
                execSync('rm -f /etc/bash_completion.d/eggs.bash')
                // Rimuove manpages
                execSync('rm -f /usr/share/man/man1/eggs.1.gz')
+               // purge configurations files
+               if (flags.purge){
+                  await Pacman.configurationRemove()
+               }
                // Rimuove eggs
                execSync('npm remove penguins-eggs -g')
             }

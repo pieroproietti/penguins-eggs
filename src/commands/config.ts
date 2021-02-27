@@ -51,22 +51,19 @@ export default class Config extends Command {
          }
 
          if (!Pacman.configurationCheck()) {
+            // Serve solo per avere il file di configurazione
             await Pacman.configurationInstall()
-         } else if (Pacman.configurationRenewCheck()) {
+         } else if (!Pacman.configurationRenewCheck()) {
+            Utils.warning('config: refreshing configuration..')
             await Pacman.configurationFresh()
          }
          // crea i link in /usr/lib/penguins-eggs/conf/distros
          const i = await Config.thatWeNeed(silent, verbose)
          if (i.needApt || i.configuration || i.distroTemplate) {
-            if (silent) {
-               await Config.install(i, verbose)
-            } else {
-               if (await Utils.customConfirm(`Select yes to continue...`)) {
-                  await Config.install(i, verbose)
-               }
-            }
+            Utils.warning('config: creating configuration..')
+            await Config.install(i, verbose)
          } else {
-            console.log('config: all is OK, nothing to do!')
+            Utils.warning('config: nothing to do!')
          }
       }
    }
@@ -101,10 +98,6 @@ export default class Config extends Command {
       }
 
       if (i.needApt || i.configuration || i.distroTemplate) {
-         if (!silent) {
-            Utils.warning(`Eggs will execute the following tasks:`)
-         }
-
          if (i.needApt) {
             console.log('- update the system')
             console.log(chalk.yellow('  apt update --yes\n'))
