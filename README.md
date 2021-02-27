@@ -203,7 +203,7 @@ USAGE
 OPTIONS
   -h, --help     show CLI help
   -v, --verbose  verbose
-  --silent       silent
+  -y, --yes      assume yes
 
 ALIASES
   $ eggs prerequisites
@@ -446,8 +446,9 @@ USAGE
 
 OPTIONS
   -c, --calamares      remove calamares and calamares dependencies
+  -d, --prerequisites  remove eggs packages dependencies
   -h, --help           show CLI help
-  -p, --prerequisites  remove eggs packages prerequisites
+  -p, --purge          remove eggs configurations files
   -v, --verbose        verbose
 
 EXAMPLES

@@ -18,8 +18,8 @@ You can follow the project also consulting the [commit history](https://github.c
 ## Changelog
 Versions are listed on reverse order, the first is the last one.
 
-### eggs-7.8.21
-* apt remove and apt purge working, same for eggs remove in npmPackages and sources
+### eggs-7.8.22
+* apt remove and apt purge working, same for eggs remove in npm Package and sources
 
 ### eggs-7.8.20
 * all bugfix sddm desktop manages, npm package bugfixes
