@@ -30,9 +30,10 @@ case "$1" in
             mkdir /usr/share/man/man1 -p
         fi
         cp /usr/lib/penguins-eggs/manpages/doc/man/eggs.1.gz /usr/share/man/man1
-        mandb > /dev/null
+
+        # Avvia configurazione automatica
         eggs config --silent
-        echo "eggs installed..." 
+        echo "eggs was installed..." 
     ;;
 
     abort-upgrade|abort-remove|abort-deconfigure)
