@@ -89,15 +89,17 @@ export default class Config extends Command {
          console.log()
       }
 
-      i.configuration = !Pacman.configurationCheck() && !Pacman.configurationRenewCheck()
-
+      i.configurationInstall = !Pacman.configurationCheck()
+      if (!i.configurationInstall){
+         i.configurationRefresh = !Pacman.configurationRenewCheck()
+      }
       i.prerequisites = !await Pacman.prerequisitesCheck()
 
       if (i.efi || i.calamares || i.prerequisites) {
          i.needApt = true
       }
 
-      if (i.needApt || i.configuration || i.distroTemplate) {
+      if (i.needApt || i.configurationInstall || i.configurationRefresh || i.distroTemplate) {
          if (i.needApt) {
             console.log('- update the system')
             console.log(chalk.yellow('  apt update --yes\n'))
@@ -115,9 +117,14 @@ export default class Config extends Command {
             const packages = Pacman.packages(verbose)
             console.log(chalk.yellow('  apt install --yes ' + Pacman.debs2line(packages)))
 
-            if (i.configuration) {
+            if (i.configurationInstall) {
                Utils.warning('creating configuration\'s files...')
                Pacman.configurationInstall(verbose)
+            }
+
+            if (i.configurationRefresh) {
+               Utils.warning('refreshing configuration\'s files...')
+               Pacman.configurationFresh()
             }
 
             if (i.distroTemplate) {

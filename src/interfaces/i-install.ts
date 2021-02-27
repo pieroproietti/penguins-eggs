@@ -8,7 +8,8 @@ export interface IInstall {
     distroTemplate: boolean,
     efi: boolean,
     calamares: boolean,
-    configuration: boolean,
+    configurationInstall: boolean,
+    configurationRefresh: boolean,
     prerequisites: boolean,
     needApt: boolean,
  }
