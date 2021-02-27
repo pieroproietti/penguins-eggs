@@ -49,12 +49,6 @@ export default class Config extends Command {
             await Pacman.manPageInstall(verbose)
          }
 
-         // Serve solo per avere i file di configurazione
-         if (!Pacman.configurationCheck()) {
-            await Pacman.configurationInstall()
-         }
-
-
          // Vede che cosa c'è da fare...
          const i = await Config.thatWeNeed(yes, verbose)
 

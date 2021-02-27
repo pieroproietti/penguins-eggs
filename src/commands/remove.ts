@@ -45,18 +45,25 @@ export default class Remove extends Command {
       }
 
       if (Utils.isRoot()) {
-         /**
-          * package debian
-          */
          if (Utils.isDebPackage()) {
-            Utils.warning('You are using  eggs as package deb. I\'ll will remove it')
-            execSync('apt remove eggs')
-            Utils.warning('You are using  eggs as package deb. I\'ll will remove it')
+            /**
+             * debian package
+             */
             if (await Utils.customConfirm()) {
                if (flags.calamares) {
                   await Pacman.calamaresRemove()
                }
+
+               if (flags.purge) {
+                  execSync('apt purge eggs')
+               } else {
+                  execSync('apt remove eggs')
+               }
+               if (flags.prerequisites) {
+                  execSync('apt autoremove')
+               }
             }
+
             /**
              * sources
              */
@@ -91,7 +98,7 @@ export default class Remove extends Command {
                // Rimuove manpages
                execSync('rm -f /usr/share/man/man1/eggs.1.gz')
                // purge configurations files
-               if (flags.purge){
+               if (flags.purge) {
                   await Pacman.configurationRemove()
                }
                // Rimuove eggs
