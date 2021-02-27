@@ -28,8 +28,8 @@ export default class Remove extends Command {
    ]
 
    static flags = {
-      autoremove: flags.boolean({ char: 'r', description: 'remove eggs packages dependencies' }),
       purge: flags.boolean({ char: 'p', description: 'remove eggs configurations files' }),
+      prerequisites: flags.boolean({ char: 'd', description: 'remove eggs packages dependencies' }),
       calamares: flags.boolean({ char: 'c', description: 'remove calamares and calamares dependencies' }),
       help: flags.help({ char: 'h' }),
       verbose: flags.boolean({ char: 'v', description: 'verbose' })
@@ -62,7 +62,7 @@ export default class Remove extends Command {
              */
          } else if (Utils.isSources()) {
             if (await Utils.customConfirm()) {
-               if (flags.autoremove) {
+               if (flags.prerequisites) {
                   await Pacman.prerequisitesRemove()
                }
                if (flags.calamares) {
@@ -80,7 +80,7 @@ export default class Remove extends Command {
              */
             Utils.warning(`You are using eggs as npm package. I'll remove it.`)
             if (await Utils.customConfirm()) {
-               if (flags.autoremove) {
+               if (flags.prerequisites) {
                   await Pacman.prerequisitesRemove()
                }
                if (flags.calamares) {

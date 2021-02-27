@@ -147,13 +147,13 @@ export default class Pacman {
       let installed = true
 
       for (const i in this.debs4notRemove) {
-         if (!this.packageIsInstalled(this.debs4notRemove[i])) {
+         if (!await this.packageIsInstalled(this.debs4notRemove[i])) {
             installed = false
             break
          }
       }
       for (const i in this.debs4eggs) {
-         if (!this.packageIsInstalled(this.debs4eggs[i])) {
+         if (!await this.packageIsInstalled(this.debs4eggs[i])) {
             installed = false
             break
          }
@@ -257,10 +257,15 @@ export default class Pacman {
    /**
     * Ritorna vero se machine-id è uguale
     */
-   static async configurationRenewCheck(): Promise<boolean> {
+   static async configurationMachineNew(verbose = false): Promise<boolean> {
       const settings = new Settings()
       await settings.load()
-      const result = Utils.machineId() === settings.config.machine_id
+      const result = Utils.machineId() !== settings.config.machine_id
+      if (verbose) {
+         if (result) {
+            console.log('configurationMachineNew: True')
+         }
+      }
       return result
    }
 

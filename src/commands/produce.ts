@@ -129,7 +129,7 @@ export default class Produce extends Command {
          myAddons.pve = flags.pve
 
          const i = await Config.thatWeNeed(verbose)
-         if (i.needApt || i.configuration || i.distroTemplate) {
+         if (i.needApt || i.configurationInstall || i.configurationRefresh || i.distroTemplate) {
             if (await Utils.customConfirm(`Select yes to continue...`)) {
                await Config.install(i, verbose)
             }
