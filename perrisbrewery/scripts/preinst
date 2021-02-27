@@ -20,7 +20,7 @@ case "$1" in
     rm -rf /usr/lib/penguins-eggs/distros
 
     # eggc configurazione
-    rm -rf /etc/penguins-eggs.d/
+    # rm -rf /etc/penguins-eggs.d/
     rm -rf /usr/local/share/penguins-eggs/
 
     # sanitize applications links

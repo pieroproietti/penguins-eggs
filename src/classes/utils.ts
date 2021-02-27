@@ -54,6 +54,13 @@ export default class Utils {
    }
 
    /**
+    * 
+    */
+   static machineId(): string {
+      return fs.readFileSync('/etc/machine-id', 'utf-8').trim()
+   }
+
+   /**
     *
     * @param msg
     */

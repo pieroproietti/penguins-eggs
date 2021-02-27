@@ -16,11 +16,8 @@ import Distro from './distro'
 import Settings from './settings'
 import { execSync } from 'child_process'
 import { IConfig } from '../interfaces'
-import { ServerResponse } from 'http'
-import { engineStrict } from 'pjson'
-
 import { execute, pipe } from '@getvim/execute'
-
+import { remove } from '../lib/cli-autologin'
 
 const exec = require('../lib/utils').exec
 
@@ -38,8 +35,9 @@ export default class Pacman {
 
    distro = {} as IDistro
 
+   settings = {}
+
    constructor() {
-      this.distro = new Distro(this.remix)
       const versionLike = this.distro.versionLike
    }
 
@@ -64,7 +62,7 @@ export default class Pacman {
    /**
     * controlla se Xserver è installato
     */
-   static async isXInstalled(): Promise <boolean> {
+   static async isXInstalled(): Promise<boolean> {
       return await this.packageIsInstalled('xserver-xorg-core') || await this.packageIsInstalled('xserver-xorg-core-hwe-18.04')
    }
 
@@ -80,6 +78,7 @@ export default class Pacman {
 
       const settings = new Settings()
       settings.load()
+
       const locales: string[] = settings.config.locales
 
       if ((versionLike === 'buster') || versionLike === 'bullseye' || (versionLike === 'beowulf')) {
@@ -256,29 +255,19 @@ export default class Pacman {
    }
 
    /**
-    * Creazione del file di configurazione /etc/penguins-eggs
+    * Ritorna vero se machine-id è uguale
     */
-   static async configurationInstall(links = true, verbose = true): Promise<void> {
-      const confRoot = '/etc/penguins-eggs.d'
-      if (!fs.existsSync(confRoot)) {
-         execSync(`mkdir ${confRoot}`)
-      }
-      const addons = `${confRoot}/addons`
-      const distros = `${confRoot}/distros`
-      if (fs.existsSync(addons)) {
-         execSync(`rm -rf ${addons}`)
-      }
-      if (fs.existsSync(distros)) {
-         execSync(`rm -rf ${distros}`)
-      }
-      execSync(`mkdir -p ${distros}`)
+   static async configurationRenewCheck(): Promise<boolean> {
+      const settings = new Settings()
+      await settings.load()
+      const result = Utils.machineId() === settings.config.machine_id
+      return result
+   }
 
-      shx.ln('-s', path.resolve(__dirname, '../../addons'), addons)
-      shx.cp(path.resolve(__dirname, '../../conf/README.md'), '/etc/penguins-eggs.d/')
-      shx.cp(path.resolve(__dirname, '../../conf/tools.yaml'), config_tools)
-      // shx.cp(path.resolve(__dirname, '../../conf/eggs.yaml'), config_file)
-
-
+   /**
+    * 
+    */
+   static async configurationFresh() {
       const config = {} as IConfig
       config.version = Utils.getPackageVersion()
       config.snapshot_dir = '/home/eggs'
@@ -320,13 +309,41 @@ export default class Pacman {
             console.log(`Due the lacks of grub-efi-amd64 package set make_efi = false`)
          }
       }
-      
+      /**
+       * Salvo la configurazione di eggs.yaml
+       */
+      config.machine_id = Utils.machineId()
       const settings = new Settings()
-      settings.save(config)
+      await settings.save(config)
+   }
+
+   /**
+    * Creazione del file di configurazione /etc/penguins-eggs
+    */
+   static async configurationInstall(links = true, verbose = true): Promise<void> {
+      const confRoot = '/etc/penguins-eggs.d'
+      if (!fs.existsSync(confRoot)) {
+         execSync(`mkdir ${confRoot}`)
+      }
+      const addons = `${confRoot}/addons`
+      const distros = `${confRoot}/distros`
+      if (fs.existsSync(addons)) {
+         execSync(`rm -rf ${addons}`)
+      }
+      if (fs.existsSync(distros)) {
+         execSync(`rm -rf ${distros}`)
+      }
+      execSync(`mkdir -p ${distros}`)
+
+      shx.ln('-s', path.resolve(__dirname, '../../addons'), addons)
+      shx.cp(path.resolve(__dirname, '../../conf/README.md'), '/etc/penguins-eggs.d/')
+      shx.cp(path.resolve(__dirname, '../../conf/tools.yaml'), config_tools)
 
       // creazione del file delle esclusioni
       shx.mkdir('-p', '/usr/local/share/penguins-eggs/')
       shx.cp(path.resolve(__dirname, '../../conf/exclude.list'), '/usr/local/share/penguins-eggs')
+
+      await Pacman.configurationFresh()
    }
 
    /**
@@ -371,28 +388,32 @@ export default class Pacman {
       execSync(cmd)
    }
 
+   /**
+    * 
+    * @param verbose 
+    */
+   static async autocompleteInstall(verbose = false) {
+      await exec(`cp ${__dirname}/../../scripts/eggs.bash /etc/bash_completion.d/`)
+      if (verbose) {
+         console.log('autocomplete installed...')
+      }
+   }
 
    /**
    * Installa manPage
    */
    static async manPageInstall(verbose = false) {
-      if (Utils.isNpmPackage()) {
-         // La directory per i manpages dovrebbe essere
-         // /debian/manpages/doc/man/
-         const man1Dir = '/usr/share/man/man1/'
-         if (!fs.existsSync(man1Dir)) {
-            exec(`mkdir ${man1Dir} -p`)
-         }
-         const manPage = path.resolve(__dirname, '../../manpages/doc/man/eggs.1.gz')
-         if (fs.existsSync(manPage)) {
-            exec(`cp ${manPage} ${man1Dir}`)
-         }
-         if (verbose) {
-            exec(`mandb`)
-         } else {
-            exec(`mandb > /dev/null`)
-         }
-         console.log('man eggs installed')
+      const man1Dir = '/usr/share/man/man1/'
+      if (!fs.existsSync(man1Dir)) {
+         exec(`mkdir ${man1Dir} -p`)
+      }
+      const manPage = path.resolve(__dirname, '../../manpages/doc/man/eggs.1.gz')
+      if (fs.existsSync(manPage)) {
+         exec(`cp ${manPage} ${man1Dir}`)
+      }
+      exec(`mandb > /dev/null`)
+      if (verbose) {
+         console.log('manPage eggs installed...')
       }
    }
 

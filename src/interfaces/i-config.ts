@@ -20,4 +20,5 @@ export interface IConfig {
     pmount_fixed: boolean
     netconfig_opt: string
     ifnames_opt: string
+    machine_id: string
   }

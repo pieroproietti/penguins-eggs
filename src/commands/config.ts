@@ -23,6 +23,7 @@ export default class Config extends Command {
 
    static aliases = ['prerequisites']
    static flags = {
+      silent: flags.boolean({ description: 'silent' }),
       help: flags.help({ char: 'h' }),
       verbose: flags.boolean({ char: 'v', description: 'verbose' }),
    }
@@ -30,32 +31,39 @@ export default class Config extends Command {
    static examples = [`~$ sudo eggs config\nConfigure eggs and install prerequisites`]
 
    async run() {
-      Utils.titles(this.id + ' ' + this.argv)
-
       const { flags } = this.parse(Config)
-
+      const silent = flags.silent
       const verbose = flags.verbose
+
+      if (!silent) {
+         Utils.titles(this.id + ' ' + this.argv)
+      }
 
       if (Utils.isRoot(this.id)) {
 
-         // Aggiungere autocomplete
-         if (!Utils.isDebPackage()) {
-            if (process.arch !== 'ia32') {
-               await exec(`cp ${__dirname}/../../scripts/eggs.bash /etc/bash_completion.d/`)
-            }
+         /**
+          * Se siamo in un pacchetto npm
+          * Aggiunge autocomplete e manPage
+          */
+         if (!Utils.isNpmPackage()) {
+            await Pacman.autocompleteInstall(verbose)
+            await Pacman.manPageInstall(verbose)
          }
 
-         await Pacman.manPageInstall(verbose)
-         
          if (!Pacman.configurationCheck()) {
             await Pacman.configurationInstall()
+         } else if (Pacman.configurationRenewCheck()) {
+            await Pacman.configurationFresh()
          }
          // crea i link in /usr/lib/penguins-eggs/conf/distros
-         const i = await Config.thatWeNeed(verbose)
+         const i = await Config.thatWeNeed(silent, verbose)
          if (i.needApt || i.configuration || i.distroTemplate) {
-            if (await Utils.customConfirm(`Select yes to continue...`)) {
-               console.log('installing prerequisites...')
+            if (silent) {
                await Config.install(i, verbose)
+            } else {
+               if (await Utils.customConfirm(`Select yes to continue...`)) {
+                  await Config.install(i, verbose)
+               }
             }
          } else {
             console.log('config: all is OK, nothing to do!')
@@ -69,7 +77,7 @@ export default class Config extends Command {
     * @param links
     * @param verbose 
     */
-   static async thatWeNeed(verbose = false): Promise<IInstall> {
+   static async thatWeNeed(silent = false, verbose = false): Promise<IInstall> {
       const i = {} as IInstall
 
       i.distroTemplate = !Pacman.distroTemplateCheck()
@@ -84,7 +92,7 @@ export default class Config extends Command {
          console.log()
       }
 
-      i.configuration = !Pacman.configurationCheck()
+      i.configuration = !Pacman.configurationCheck() && !Pacman.configurationRenewCheck()
 
       i.prerequisites = !await Pacman.prerequisitesCheck()
 
@@ -93,7 +101,9 @@ export default class Config extends Command {
       }
 
       if (i.needApt || i.configuration || i.distroTemplate) {
-         Utils.warning(`Eggs will execute the following tasks:`)
+         if (!silent) {
+            Utils.warning(`Eggs will execute the following tasks:`)
+         }
 
          if (i.needApt) {
             console.log('- update the system')

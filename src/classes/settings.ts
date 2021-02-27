@@ -101,7 +101,7 @@ export default class Settings {
 
       if (!fs.existsSync(config_file)) {
          console.log(`cannot find configuration file ${config_file},`)
-         console.log(`please generate it with: sudo eggs prerequisites`)
+         console.log(`please generate it with: sudo eggs config`)
          process.exit(1)
       }
 
@@ -247,7 +247,6 @@ export default class Settings {
          console.log('If necessary, you can create more available space')
          console.log('by removing previous  snapshots and saved copies:')
       }
-
    }
 
    /**

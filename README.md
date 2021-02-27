@@ -203,6 +203,7 @@ USAGE
 OPTIONS
   -h, --help     show CLI help
   -v, --verbose  verbose
+  --silent       silent
 
 ALIASES
   $ eggs prerequisites

@@ -31,8 +31,8 @@ case "$1" in
         fi
         cp /usr/lib/penguins-eggs/manpages/doc/man/eggs.1.gz /usr/share/man/man1
         mandb > /dev/null
-
-        echo "run sudo eggs config to configure" 
+        eggs config --silent
+        echo "eggs installed..." 
     ;;
 
     abort-upgrade|abort-remove|abort-deconfigure)
