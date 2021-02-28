@@ -91,20 +91,18 @@ export default class Xdg {
 
             // sddm
          } else if (Pacman.packageIsInstalled('sddm')) {
-            const fileConf = `${chroot}/etc/sddm.conf`
-            const dirConf = `${chroot}/etc/sddm.conf.d`
-            const autologin = `${dirConf}/autologin.conf`
-            const content = `[Autologin]\nUser=${newuser}\n`
+            let fileConf = `${chroot}/etc/sddm.conf`
             if (fs.existsSync(fileConf)) {
-               shx.sed('-i', `User=${olduser}`, `User=${newuser}`, `${chroot}/etc/sddm.conf`)
+               shx.sed('-i', `User=${olduser}`, `User=${newuser}`, `${fileConf}`)
             } else {
-               if (!fs.existsSync(dirConf)) {
-                  shx.mkdir(dirConf)
-               }
+               const dirConf = `${chroot}/etc/sddm.conf.d`
+               const autologin = `${dirConf}/autologin.conf`
                if (fs.existsSync(autologin)) {
-                  shx.rm(autologin)
+                  shx.sed('-i', `User=${olduser}`, `User=${newuser}`, `${autologin}`)
+               } else {
+                  const content = `[Autologin]\nUser=${newuser}\n`
+                  fs.writeFileSync(autologin, content, 'utf-8')
                }
-               fs.writeFileSync(autologin, content, 'utf-8')
             }
 
             // slim

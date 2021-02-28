@@ -19,7 +19,7 @@ You can follow the project also consulting the [commit history](https://github.c
 Versions are listed on reverse order, the first is the last one.
 
 ### eggs-7.8.22
-* apt remove and apt purge working, same for eggs remove in npm Package and sources
+* apt remove and apt purge working, same for eggs remove in npm Package and sources. sddb bugfix
 
 ### eggs-7.8.20
 * all bugfix sddm desktop manages, npm package bugfixes
