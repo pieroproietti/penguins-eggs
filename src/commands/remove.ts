@@ -51,11 +51,13 @@ export default class Remove extends Command {
              */
             if (await Utils.customConfirm()) {
                if (flags.calamares) {
-                  await Pacman.calamaresRemove()
+                  if (Pacman.calamaresCheck()){
+                     await Pacman.calamaresRemove()
+                  }
                }
 
                if (flags.purge) {
-                  execSync('apt-get purge eggs')
+                  execSync('apt-get remove eggs --purge')
                } else {
                   execSync('apt-get remove eggs')
                }

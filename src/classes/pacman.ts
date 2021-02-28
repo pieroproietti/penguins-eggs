@@ -204,7 +204,7 @@ export default class Pacman {
    }
 
    /**
-    *
+    * Torna verso se calamares è installato
     */
    static async calamaresCheck(): Promise<boolean> {
       let installed = true
