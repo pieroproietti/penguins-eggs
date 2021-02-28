@@ -93,12 +93,12 @@ export default class Xdg {
          } else if (Pacman.packageIsInstalled('sddm')) {
             let fileConf = `${chroot}/etc/sddm.conf`
             if (fs.existsSync(fileConf)) {
-               shx.sed('-i', `User=${olduser}`, `User=${newuser}`, `${fileConf}`)
+               shx.sed('-i', `User=${olduser}`, `User=${newuser}`, fileConf)
             } else {
                const dirConf = `${chroot}/etc/sddm.conf.d`
                const autologin = `${dirConf}/autologin.conf`
                if (fs.existsSync(autologin)) {
-                  shx.sed('-i', `User=${olduser}`, `User=${newuser}`, `${autologin}`)
+                  shx.sed('-i', `User=${olduser}`, `User=${newuser}`, autologin)
                } else {
                   const content = `[Autologin]\nUser=${newuser}\n`
                   fs.writeFileSync(autologin, content, 'utf-8')
