@@ -57,12 +57,12 @@ export default class Remove extends Command {
                }
 
                if (flags.purge) {
-                  execSync('apt-get remove eggs --purge')
+                  execSync('apt-get purge eggs --yes')
                } else {
-                  execSync('apt-get remove eggs')
+                  execSync('apt-get remove eggs --yes')
                }
                if (flags.prerequisites) {
-                  execSync('apt-get autoremove')
+                  execSync('apt-get autoremove --yes')
                }
             }
 
