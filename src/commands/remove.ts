@@ -51,7 +51,7 @@ export default class Remove extends Command {
              */
             if (await Utils.customConfirm()) {
                if (flags.calamares) {
-                  if (Pacman.calamaresCheck()){
+                  if (await Pacman.calamaresCheck()){
                      await Pacman.calamaresRemove()
                   }
                }
