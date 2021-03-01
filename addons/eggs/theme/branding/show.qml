@@ -79,7 +79,7 @@ Presentation
             anchors.horizontalCenter: slide2.horizontalCenter
             anchors.top: background.top
             text: qsTr("<h1>Penguin's eggs</h1><br/>"+
-                  "<br/><p>The reproductive system for the penguins!</p></br>")
+                  "<br/><h2>Reproductive system for the penguins!</h2>")
             wrapMode: Text.WordWrap
             width: 600
             horizontalAlignment: Text.Center
