@@ -85,12 +85,13 @@ export default class Xdg {
     */
    static async autologin(olduser: string, newuser: string, chroot = '/') {
       if (Pacman.isXInstalled()) {
-         if (Pacman.packageIsInstalled('lightdm')) {
+         if (await Pacman.packageIsInstalled('lightdm')) {
             // Lightdm
             shx.sed('-i', `autologin-user=${olduser}`, `autologin-user=${newuser}`, `${chroot}/etc/lightdm/lightdm.conf`)
+         }
 
-            // sddm
-         } else if (Pacman.packageIsInstalled('sddm')) {
+         // sddm
+         if (await Pacman.packageIsInstalled('sddm')) {
             let fileConf = `${chroot}/etc/sddm.conf`
             if (fs.existsSync(fileConf)) {
                shx.sed('-i', `User=${olduser}`, `User=${newuser}`, fileConf)
@@ -104,14 +105,16 @@ export default class Xdg {
                   fs.writeFileSync(autologin, content, 'utf-8')
                }
             }
+         }
 
-            // slim
-         } else if (Pacman.packageIsInstalled('slim')) {
+         // slim
+         if (await Pacman.packageIsInstalled('slim')) {
             shx.sed('-i', `autologin no`, `autologin yes`, `${chroot}/etc/slim.conf`)
             shx.sed('-i', `default_user ${olduser}`, `default_user ${newuser}`, `${chroot}/etc/slim.conf`)
+         }
 
-            // gdm3
-         } else if (Pacman.packageIsInstalled('gdm3')) {
+         // gdm3
+         if (await Pacman.packageIsInstalled('gdm3')) {
             shx.sed('-i', `AutomaticLoginEnable=False`, `AutomaticLoginEnable=True`, `${chroot}/etc/gdm3/custom.conf`)
             shx.sed('-i', `AutomaticLogin=${olduser}`, `AutomaticLogin=artisan=${newuser}`, `${chroot}/etc/gdm3/custom.conf`)
          }
