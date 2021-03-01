@@ -40,6 +40,10 @@ export default class Utils {
    static vmlinuz(): string {
       const cmd = `cat /proc/cmdline|/usr/bin/cut -f1 -d ' ' |/usr/bin/cut -f2 -d '='`
       let vmlinuz = shx.exec(cmd, { silent: true }).stdout.trim()
+      // Path btrf
+      if (vmlinuz.startsWith('/@')){
+         vmlinuz=vmlinuz.substr(2)
+      }
       return vmlinuz
    }
 
