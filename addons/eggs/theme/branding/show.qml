@@ -34,7 +34,7 @@ Presentation
 
     Timer {
         id: advanceTimer
-        interval: 10000
+        interval: 5000
         running: presentation.activatedInCalamares
         repeat: true
         onTriggered: nextSlide()
@@ -53,7 +53,7 @@ Presentation
             font.pixelSize : 22
             color: "#002439"
             anchors.horizontalCenter: slide1.horizontalCenter
-            anchors.top: background.bottom
+            anchors.top: background.top
             text: qsTr("<h1>Penguin's eggs</h1><br/>"+
                   "<br/>Created by Piero Proietti, thinking to the community.<br/>"+
                   "<br/>sources: htts://github.com/pieroproietti/penguins-eggs"+
@@ -77,7 +77,7 @@ Presentation
             font.pixelSize : 22
             color: "#002439"
             anchors.horizontalCenter: slide2.horizontalCenter
-            anchors.top: background.bottom
+            anchors.top: background.top
             text: qsTr("<h1>Penguin's eggs</h1><br/>"+
                   "<br/><p>The reproductive system for the penguins!</p></br>")
             wrapMode: Text.WordWrap
@@ -101,7 +101,7 @@ Presentation
             font.pixelSize : 22
             color: "#002439"
             anchors.horizontalCenter: slide3.horizontalCenter
-            anchors.top: background.bottom
+            anchors.top: background.top
             text: qsTr("<h1>Penguin's eggs</h1><br/>"+
                   "<br/><p>Start the reproduction of your system! Produce yours eggs and simply install them on another computer. You can do it!</p>")
             wrapMode: Text.WordWrap
@@ -113,7 +113,7 @@ Presentation
     Slide {
         Image {
             id: slide4
-            source: "slide4.png"
+            source: "slide9.png"
             anchors.centerIn: parent
             anchors.top: background.bottom
             width: 810
@@ -125,7 +125,7 @@ Presentation
             font.pixelSize : 22
             color: "#002439"
             anchors.horizontalCenter: slide4.horizontalCenter
-            anchors.top: background.bottom
+            anchors.top: background.top
             text: qsTr("<h1>Penguin's eggs</h1><br/>"+
                   "<br/><p>With penguin's eggs you can bring your system with you and use or install elsewhere.</p>")
             wrapMode: Text.WordWrap
@@ -149,7 +149,7 @@ Presentation
             font.pixelSize : 22
             color: "#002439"
             anchors.horizontalCenter: slide5.horizontalCenter
-            anchors.top: background.bottom
+            anchors.top: background.top
             text: qsTr("<h1>Penguin's eggs</h1><br/>"+
                   "<br/><p>Eggs is a terminal tool, but it's simple and nice. Write eggs without else and get the list</p></br>")
             wrapMode: Text.WordWrap
@@ -175,7 +175,7 @@ Presentation
             text: qsTr("<h1>Penguin's eggs</h1><br/>"+
                   "<br/><p>Please wait, we are hatching the eggs... <br/><br/>Don't disturb the process, in few time You will have a new penguin.</p>")
             anchors.horizontalCenter: slide6.horizontalCenter
-            anchors.top: background.bottom
+            anchors.top: background.top
             wrapMode: Text.WordWrap
             width: 600
             horizontalAlignment: Text.Center
@@ -197,7 +197,7 @@ Presentation
             font.pixelSize : 22
             color: "#002439"
             anchors.horizontalCenter: slide7.horizontalCenter
-            anchors.top: background.bottom
+            anchors.top: background.top
             text: qsTr("<h1>Penguin's eggs</h1><br/>"+
                   "<br/>"+
                   "<br/>"+
