@@ -27,33 +27,39 @@ Presentation
 {
     id: presentation
 
-    Timer {
-        interval: 10000
-        running: true
-        repeat: true
-        onTriggered: presentation.goToNextSlide()
+    function nextSlide() {
+        console.log("QML Component (default slideshow) Next slide");
+        presentation.goToNextSlide();
     }
+
+    Timer {
+        id: advanceTimer
+        interval: 10000
+        running: presentation.activatedInCalamares
+        repeat: true
+        onTriggered: nextSlide()
+    }
+
     Slide {
         Image {
             id: slide1
             source: "slide1.png"
-            anchors.centerIn: parent
-            width: 810
-            height: 485
+            width: 810; height: 485
             fillMode: Image.PreserveAspectFit
+            anchors.centerIn: parent
         }
          Text {
             font.family: "Helvetica"
             font.pixelSize : 22
             color: "#002439"
             anchors.horizontalCenter: slide1.horizontalCenter
-            anchors.top: slide1.verticalCenter
+            anchors.top: background.bottom
             text: qsTr("<h1>Penguin's eggs</h1><br/>"+
                   "<br/>Created by Piero Proietti, thinking to the community.<br/>"+
                   "<br/>sources: htts://github.com/pieroproietti/penguins-eggs"+
                   "<br/>email: piero.proietti@gmail.com")
             wrapMode: Text.WordWrap
-            width: 600
+            width: presentation.widt
             horizontalAlignment: Text.Center
         }
     }
@@ -62,8 +68,8 @@ Presentation
             id: slide2
             source: "slide2.png"
             anchors.centerIn: parent
-            width: 810
-            height: 485
+            anchors.top: background.bottom
+            width: 810; height: 485
             fillMode: Image.PreserveAspectFit
         }
          Text {
@@ -85,6 +91,7 @@ Presentation
             id: slide3
             source: "slide3.png"
             anchors.centerIn: parent
+            anchors.top: background.bottom
             width: 810
             height: 485
             fillMode: Image.PreserveAspectFit
@@ -108,6 +115,7 @@ Presentation
             id: slide4
             source: "slide4.png"
             anchors.centerIn: parent
+            anchors.top: background.bottom
             width: 810
             height: 485
             fillMode: Image.PreserveAspectFit
@@ -131,6 +139,7 @@ Presentation
             id: slide5
             source: "slide5.png"
             anchors.centerIn: parent
+            anchors.top: background.bottom
             width: 810
             height: 485
             fillMode: Image.PreserveAspectFit
@@ -154,6 +163,7 @@ Presentation
             id: slide6
             source: "slide6.png"
             anchors.centerIn: parent
+            anchors.top: background.bottom
             width: 810
             height: 485
             fillMode: Image.PreserveAspectFit
@@ -177,6 +187,7 @@ Presentation
             id: slide7
             source: "slide7.png"
             anchors.centerIn: parent
+            anchors.top: background.bottom
             width: 810
             height: 485
             fillMode: Image.PreserveAspectFit
@@ -199,5 +210,20 @@ Presentation
             horizontalAlignment: Text.Center
         }
     }
+    // When this slideshow is loaded as a V1 slideshow, only
+    // activatedInCalamares is set, which starts the timer (see above).
+    //
+    // In V2, also the onActivate() and onLeave() methods are called.
+    // These example functions log a message (and re-start the slides
+    // from the first).
+    function onActivate() {
+        console.log("QML Component (default slideshow) activated");
+        presentation.currentSlide = 0;
+    }
+
+    function onLeave() {
+        console.log("QML Component (default slideshow) deactivated");
+    }
 
 }
+
