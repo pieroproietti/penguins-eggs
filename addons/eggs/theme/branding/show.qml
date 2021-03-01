@@ -77,7 +77,7 @@ Presentation
             font.pixelSize : 22
             color: "#002439"
             anchors.horizontalCenter: slide2.horizontalCenter
-            anchors.top: slide2.verticalCenter
+            anchors.top: background.bottom
             text: qsTr("<h1>Penguin's eggs</h1><br/>"+
                   "<br/><p>The reproductive system for the penguins!</p></br>")
             wrapMode: Text.WordWrap
@@ -101,7 +101,7 @@ Presentation
             font.pixelSize : 22
             color: "#002439"
             anchors.horizontalCenter: slide3.horizontalCenter
-            anchors.top: slide3.verticalCenter
+            anchors.top: background.bottom
             text: qsTr("<h1>Penguin's eggs</h1><br/>"+
                   "<br/><p>Start the reproduction of your system! Produce yours eggs and simply install them on another computer. You can do it!</p>")
             wrapMode: Text.WordWrap
@@ -125,7 +125,7 @@ Presentation
             font.pixelSize : 22
             color: "#002439"
             anchors.horizontalCenter: slide4.horizontalCenter
-            anchors.top: slide4.verticalCenter
+            anchors.top: background.bottom
             text: qsTr("<h1>Penguin's eggs</h1><br/>"+
                   "<br/><p>With penguin's eggs you can bring your system with you and use or install elsewhere.</p>")
             wrapMode: Text.WordWrap
@@ -149,7 +149,7 @@ Presentation
             font.pixelSize : 22
             color: "#002439"
             anchors.horizontalCenter: slide5.horizontalCenter
-            anchors.top: slide5.verticalCenter
+            anchors.top: background.bottom
             text: qsTr("<h1>Penguin's eggs</h1><br/>"+
                   "<br/><p>Eggs is a terminal tool, but it's simple and nice. Write eggs without else and get the list</p></br>")
             wrapMode: Text.WordWrap
@@ -175,7 +175,7 @@ Presentation
             text: qsTr("<h1>Penguin's eggs</h1><br/>"+
                   "<br/><p>Please wait, we are hatching the eggs... <br/><br/>Don't disturb the process, in few time You will have a new penguin.</p>")
             anchors.horizontalCenter: slide6.horizontalCenter
-            anchors.top: slide6.verticalCenter
+            anchors.top: background.bottom
             wrapMode: Text.WordWrap
             width: 600
             horizontalAlignment: Text.Center
@@ -197,7 +197,7 @@ Presentation
             font.pixelSize : 22
             color: "#002439"
             anchors.horizontalCenter: slide7.horizontalCenter
-            anchors.top: slide7.verticalCenter
+            anchors.top: background.bottom
             text: qsTr("<h1>Penguin's eggs</h1><br/>"+
                   "<br/>"+
                   "<br/>"+
