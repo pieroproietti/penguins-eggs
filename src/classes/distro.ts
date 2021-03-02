@@ -118,7 +118,15 @@ class Distro implements IDistro {
                this.versionId = 'siduction'
             }
          }
+      } else if (this.versionId === 'testing') {
+         // Configurazione per netrunner
+         const debianVersion = fs.readFileSync('/etc/debian_version', 'utf8')
+         if (debianVersion.trim() === 'buster/sid') {
+            this.versionId = 'netrunner'
+         }
       }
+         
+
       
       /**
        * LINUX MINT dall 19 in poi
@@ -161,6 +169,11 @@ class Distro implements IDistro {
          this.distroId = 'Debian'
          this.distroLike = 'Debian'
          this.versionLike = 'bullseye'
+
+      } else if (this.versionId === 'netrunner') {
+         this.distroId = 'Debian'
+         this.distroLike = 'Debian'
+         this.versionLike = 'buster'
 
          // Debian 10 buster
       } else if (this.versionId === 'buster') {
