@@ -16,8 +16,7 @@ import Distro from './distro'
 import Settings from './settings'
 import { execSync } from 'child_process'
 import { IConfig } from '../interfaces'
-import { execute, pipe } from '@getvim/execute'
-import { remove } from '../lib/cli-autologin'
+
 
 const exec = require('../lib/utils').exec
 
