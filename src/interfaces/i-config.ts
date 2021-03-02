@@ -21,4 +21,6 @@ export interface IConfig {
     netconfig_opt: string
     ifnames_opt: string
     machine_id: string
+    vmlinuz: string
+    initrd_imd: string
   }

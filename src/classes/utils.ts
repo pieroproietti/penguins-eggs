@@ -38,8 +38,12 @@ export default class Utils {
     * ricava path per vmlinuz
     */
    static vmlinuz(): string {
-      let result = fs.readFileSync('/proc/cmdline', 'utf-8')
-      result = result.substr(result.indexOf('@'))
+      let results = fs.readFileSync('/proc/cmdline','utf8').split(' ')
+      let result=results[0]
+      result = result.substring(result.indexOf('=')+1)
+      if (result.indexOf('@')>0) {
+         result = result.substring(result.indexOf('@')+1)
+      }
       return result
    }
 

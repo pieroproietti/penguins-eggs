@@ -133,8 +133,8 @@ export default class Settings {
          }
       }
 
-      this.kernel_image = Utils.vmlinuz()
-      this.initrd_image = Utils.initrdImg()
+      this.kernel_image = this.config.vmlinuz
+      this.initrd_image = this.config.initrd_imd
       this.vmlinuz = this.kernel_image.substr(this.kernel_image.lastIndexOf('/'))
       this.initrdImg = this.initrd_image.substr(this.initrd_image.lastIndexOf('/'))
 
@@ -186,8 +186,6 @@ export default class Settings {
       console.log(`compression:       ${this.config.compression}`)
       console.log(`force_installer:   ${this.config.force_installer}`)
       console.log(`user_opt:          ${this.config.user_opt}`)
-      console.log(`netconfig_opt:     ${this.config.netconfig_opt}`)
-      console.log(`ifnames_opt:       ${this.config.ifnames_opt}`)
       console.log(`locales:           ${this.config.locales}`)
       console.log(`locale default:    ${this.config.locales_default}`)
       console.log(`ssh_pass:          ${this.config.ssh_pass}`)

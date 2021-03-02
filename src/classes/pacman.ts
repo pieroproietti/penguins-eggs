@@ -318,6 +318,8 @@ export default class Pacman {
        * Salvo la configurazione di eggs.yaml
        */
       config.machine_id = Utils.machineId()
+      config.vmlinuz = Utils.vmlinuz()
+      config.initrd_imd = Utils.initrdImg()
       const settings = new Settings()
       await settings.save(config)
    }
