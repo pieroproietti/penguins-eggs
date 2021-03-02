@@ -33,6 +33,7 @@ node_modules
 node_modules/
 npm-debug.log*
 pids
+pb.yaml
 perrisbrewery/workdir/*
 !perrisbrewery/workdir/.gitkeep
 

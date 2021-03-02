@@ -18,6 +18,9 @@ You can follow the project also consulting the [commit history](https://github.c
 ## Changelog
 Versions are listed on reverse order, the first is the last one.
 
+### eggs-7.8.23
+* patch for remove //@ in path btrfs, moved vmlinuz and initrd_img configurations in eggs.yml
+
 ### eggs-7.8.22
 * apt remove and apt purge working, sddb bugfix, calamares show revisited
 
@@ -25,7 +28,7 @@ Versions are listed on reverse order, the first is the last one.
 * all bugfix sddm desktop manages, npm package bugfixes
 
 ### eggs-7.8.18
-* cleaning and extendig pre e post installations, man, npm package, etc
+* cleaning and extending pre e post installations, man, npm package, etc
 
 ### eggs-7.8.15
 * add filter for arch in export:iso
