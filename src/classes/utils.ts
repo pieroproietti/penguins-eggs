@@ -38,13 +38,9 @@ export default class Utils {
     * ricava path per vmlinuz
     */
    static vmlinuz(): string {
-      const cmd = `cat /proc/cmdline|/usr/bin/cut -f1 -d ' ' |/usr/bin/cut -f2 -d '='`
-      let vmlinuz = shx.exec(cmd, { silent: true }).stdout.trim()
-      // Path btrf
-      if (vmlinuz.startsWith('/@')){
-         vmlinuz=vmlinuz.substr(2)
-      }
-      return vmlinuz
+      let result = fs.readFileSync('/proc/cmdline', 'utf-8')
+      result = result.substr(result.indexOf('@'))
+      return result
    }
 
    /**
@@ -375,7 +371,7 @@ export default class Utils {
     * @param path
     */
    static isMountpoint(path = ''): boolean {
-      
+
       const cmd = `mountpoint -q ${path}`
       // return 0 if the directory is a mountpoint, non-zero if not.
       const result: number = shx.exec(cmd, { silent: true }).code
@@ -386,7 +382,7 @@ export default class Utils {
     * return true if eggs run as root
     * @returns isRoot
     */
-   static isRoot(command=''): boolean {
+   static isRoot(command = ''): boolean {
       if (process.getuid && process.getuid() === 0) {
          return true
       }
@@ -423,20 +419,20 @@ export default class Utils {
 
       const nets = networkInterfaces();
       const results = Object.create(null); // or just '{}', an empty object
-      
+
       let address = ''
       for (const name of Object.keys(nets)) {
-          for (const net of nets[name]) {
-              // skip over non-ipv4 and internal (i.e. 127.0.0.1) addresses
-              if (net.family === 'IPv4' && !net.internal) {
-                  if (!results[name]) {
-                      results[name] = [];
-                  }
-                  results[name].push(net.address)
-                  address = net.address
-              }
-          }
-      }      
+         for (const net of nets[name]) {
+            // skip over non-ipv4 and internal (i.e. 127.0.0.1) addresses
+            if (net.family === 'IPv4' && !net.internal) {
+               if (!results[name]) {
+                  results[name] = [];
+               }
+               results[name].push(net.address)
+               address = net.address
+            }
+         }
+      }
       return address
    }
 
@@ -448,20 +444,20 @@ export default class Utils {
 
       const nets = networkInterfaces();
       const results = Object.create(null); // or just '{}', an empty object
-      
+
       let netmask = ''
       for (const name of Object.keys(nets)) {
-          for (const net of nets[name]) {
-              // skip over non-ipv4 and internal (i.e. 127.0.0.1) addresses
-              if (net.family === 'IPv4' && !net.internal) {
-                  if (!results[name]) {
-                      results[name] = [];
-                  }
-                  results[name].push(net.address)
-                  netmask = net.netmask
-              }
-          }
-      }      
+         for (const net of nets[name]) {
+            // skip over non-ipv4 and internal (i.e. 127.0.0.1) addresses
+            if (net.family === 'IPv4' && !net.internal) {
+               if (!results[name]) {
+                  results[name] = [];
+               }
+               results[name].push(net.address)
+               netmask = net.netmask
+            }
+         }
+      }
       return netmask
    }
 
