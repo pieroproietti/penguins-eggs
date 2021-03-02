@@ -75,7 +75,8 @@ Presentation
          Text {
             font.family: "Helvetica"
             font.pixelSize : 22
-            color: "#002439"
+            // color: "#002439"
+            color: "#aa3333"
             anchors.horizontalCenter: slide2.horizontalCenter
             anchors.top: background.top
             text: qsTr("<h1>Penguin's eggs</h1><br/>"+
@@ -99,7 +100,7 @@ Presentation
          Text {
             font.family: "Helvetica"
             font.pixelSize : 22
-            color: "#002439"
+            color: "#aa3333"
             anchors.horizontalCenter: slide3.horizontalCenter
             anchors.top: background.top
             text: qsTr("<h1>Penguin's eggs</h1><br/>"+
@@ -123,7 +124,7 @@ Presentation
          Text {
             font.family: "Helvetica"
             font.pixelSize : 22
-            color: "#002439"
+            color: "#aa3333"
             anchors.horizontalCenter: slide4.horizontalCenter
             anchors.top: background.top
             text: qsTr("<h1>Penguin's eggs</h1><br/>"+
@@ -147,7 +148,7 @@ Presentation
          Text {
             font.family: "Helvetica"
             font.pixelSize : 22
-            color: "#002439"
+            color: "#aa3333"
             anchors.horizontalCenter: slide5.horizontalCenter
             anchors.top: background.top
             text: qsTr("<h1>Penguin's eggs</h1><br/>"+
@@ -171,7 +172,7 @@ Presentation
          Text {
             font.family: "Helvetica"
             font.pixelSize : 22
-            color: "#002439"
+            color: "#aa3333"
             text: qsTr("<h1>Penguin's eggs</h1><br/>"+
                   "<br/><p>Please wait, we are hatching the eggs... <br/><br/>Don't disturb the process, in few time You will have a new penguin.</p>")
             anchors.horizontalCenter: slide6.horizontalCenter
@@ -195,7 +196,7 @@ Presentation
          Text {
             font.family: "Helvetica"
             font.pixelSize : 22
-            color: "#002439"
+            color: "#aa3333"
             anchors.horizontalCenter: slide7.horizontalCenter
             anchors.top: background.top
             text: qsTr("<h1>Penguin's eggs</h1><br/>"+
@@ -224,6 +225,4 @@ Presentation
     function onLeave() {
         console.log("QML Component (default slideshow) deactivated");
     }
-
 }
-
