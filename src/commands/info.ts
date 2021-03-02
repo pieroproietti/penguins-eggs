@@ -60,13 +60,13 @@ You will find here informations about penguin's eggs!
       }
 
       console.log(line)
-      let installType = 'npm'
+      let installType = 'npm package'
       if (Utils.isDebPackage()) {
-         installType = 'deb'
+         installType = 'deb package'
       } else if (Utils.isSources()){
-         installType = 'sources'
+         installType = 'source'
       }
-      console.log('You are running eggs as: ' + chalk.bgGreen(installType))
+      console.log('Eggs is running as: ' + chalk.bgGreen(installType))
 
       if (Utils.isLive()) {
          console.log('System: ' + chalk.bgGreen('LIVE') + ' system')
