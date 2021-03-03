@@ -8,7 +8,6 @@
 
 import fs = require('fs')
 import Utils from './utils'
-import Settings from './settings'
 import shx  = require('shelljs')
 
 // libraries
@@ -19,12 +18,7 @@ const exec = require('../lib/utils').exec
  * Bleach:
  */
 export default class Bleach {
-   settings = {} as Settings
    
-   constructor(){
-      this.settings = new Settings()
-      this.settings.load()
-   }
    /**
     * clean
     * @param verbose 

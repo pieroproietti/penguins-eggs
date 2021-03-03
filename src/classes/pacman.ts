@@ -208,7 +208,7 @@ export default class Pacman {
    static async calamaresCheck(): Promise<boolean> {
       let installed = true
       for (const i in this.debs4calamares) {
-         if (!this.packageIsInstalled(this.debs4calamares[i])) {
+         if (! await this.packageIsInstalled(this.debs4calamares[i])) {
             installed = false
             break
          }

@@ -9,7 +9,6 @@ import shx = require('shelljs')
 import fs = require('fs')
 import os = require('os')
 import path = require('path')
-import Ovary from './ovary'
 import Pacman from './pacman'
 import Utils from './utils'
 import chalk = require('chalk')
@@ -133,13 +132,15 @@ export default class Xdg {
          console.log('preparing /etc/skel\n')
       }
 
-      const ovary = new Ovary()
-      await ovary.fertilization()
 
       /**
        * Salva la vecchia skel in skel_data_ora.backup
+       * 
+       * used just during debug
        */
-      await exec(`mv /etc/skel ${ovary.settings.config.snapshot_dir}skel_${Utils.formatDate(new Date())}.backup`, echo)
+      // const ovary = new Ovary()
+      // await ovary.fertilization()
+      // await exec(`mv /etc/skel ${ovary.settings.config.snapshot_dir}skel_${Utils.formatDate(new Date())}.backup`, echo)
 
       // Crea nuova skel
       await exec(`mkdir -p /etc/skel`, echo)

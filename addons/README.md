@@ -15,6 +15,7 @@ prodotto, al momento abbiamo 5 vendor:
 * eggs
 * ufficiozero
 * guadalinex
+* openos
 
 # Sintassi per l'uso
 Il caso generico è:
@@ -48,8 +49,12 @@ specifico eggs si mostrerà con "i soliti pinguini...".
 Configura a video anche sulla live, un link per scaricare ed avviare l'assistenza remota,
 e carica in /usr/local/bin lo script di installazione.
 
+### proxmox-ve
+Pone sul desktop l'icona pe il collegamento a https://127.0.0.1;8006 per gestire le macchine virtuali.
+
 ## debian
 Ho qui inserito la versione di debian delle impostazioni per calamares e l'icona di avvio per lo stesso.
+
 ### theme
 Fornisce il branding debian da calamares-settings-debian
 
