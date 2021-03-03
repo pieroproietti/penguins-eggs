@@ -1,3 +1,7 @@
+# Sebastien:
+# this file will be overwritten by eggs branding.ts
+# use openos-logo as name of productLogo and productIcon
+---
 componentName: OpenOS-DE
 welcomeStyleCalamares: true
 strings:
