@@ -51,13 +51,11 @@ Presentation
          Text {
             font.family: "Helvetica"
             font.pixelSize : 22
-            color: "#002439"
+            color: "#aa3333"
             anchors.horizontalCenter: slide1.horizontalCenter
             anchors.top: background.top
             text: qsTr("<h1>Penguin's eggs</h1><br/>"+
-                  "<br/>Created by Piero Proietti, thinking to the community.<br/>"+
-                  "<br/>sources: htts://github.com/pieroproietti/penguins-eggs"+
-                  "<br/>email: piero.proietti@gmail.com")
+                  "<br/><h2>Reproductive system for the penguins!</h2>")
             wrapMode: Text.WordWrap
             width: presentation.widt
             horizontalAlignment: Text.Center
@@ -80,7 +78,9 @@ Presentation
             anchors.horizontalCenter: slide2.horizontalCenter
             anchors.top: background.top
             text: qsTr("<h1>Penguin's eggs</h1><br/>"+
-                  "<br/><h2>Reproductive system for the penguins!</h2>")
+                  "<br/>Created by Piero Proietti, thinking to the community.<br/>"+
+                  "<br/>sources: htts://github.com/pieroproietti/penguins-eggs"+
+                  "<br/>email: piero.proietti@gmail.com")
             wrapMode: Text.WordWrap
             width: 600
             horizontalAlignment: Text.Center
