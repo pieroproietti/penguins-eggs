@@ -19,7 +19,7 @@ You can follow the project also consulting the [commit history](https://github.c
 Versions are listed on reverse order, the first is the last one.
 
 ### eggs-7.8.25
-* eggs ask for calamares if not installed, fixes in theme openos
+* eggs ask for calamares if not installed, fixes in themes eggs and openos
 
 ### eggs-7.8.24
 * added theme openos from Sebastien <admi.openos.neon@gmail.com>
