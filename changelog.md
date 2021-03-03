@@ -19,11 +19,10 @@ You can follow the project also consulting the [commit history](https://github.c
 Versions are listed on reverse order, the first is the last one.
 
 ### eggs-7.8.25
-* eggs ask for calamares if not installed, fixes in themes eggs and openos
+* eggs ask for calamares if it is not installed, fixes in themes eggs and openos
 
 ### eggs-7.8.24
 * added theme openos from Sebastien <admi.openos.neon@gmail.com>
-
 
 ### eggs-7.8.23
 * patch for remove //@ in path btrfs, moved vmlinuz and initrd_img configurations in eggs.yml
