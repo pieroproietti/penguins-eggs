@@ -18,6 +18,9 @@ You can follow the project also consulting the [commit history](https://github.c
 ## Changelog
 Versions are listed on reverse order, the first is the last one.
 
+### eggs-7.8.26
+* bufixes and compression filter by processor
+
 ### eggs-7.8.25
 * eggs ask for calamares if it is not installed, fixes in themes eggs and openos
 
