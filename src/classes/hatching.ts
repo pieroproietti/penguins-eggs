@@ -379,7 +379,7 @@ export default class Hatching {
             console.log(`changePassword: ${error}`)
          }
 
-         if (Pacman.isXInstalled()){
+         if (Pacman.isGui()){
             try {
                await Xdg.autologin(Utils.getPrimaryUser(), this.users.name, this.target)
             } catch (error) {

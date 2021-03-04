@@ -49,7 +49,7 @@ You will find here informations about penguin's eggs!
       } else {
          console.log('Configuration file:  ' + chalk.bgRed('ko'))
       }
-      if (await Pacman.isXInstalled()) {
+      if (await Pacman.isGui()) {
          if (await Pacman.calamaresCheck()) {
             console.log('GUI Installer:       ' + chalk.bgGreen('ok'))
          } else {

@@ -59,10 +59,31 @@ export default class Pacman {
    static debs4calamares = ['calamares', 'qml-module-qtquick2', 'qml-module-qtquick-controls']
 
    /**
-    * controlla se Xserver è installato
+    * controlla se è installato xserver-xorg-core
     */
-   static async isXInstalled(): Promise<boolean> {
-      return await this.packageIsInstalled('xserver-xorg-core') || await this.packageIsInstalled('xserver-xorg-core-hwe-18.04')
+   static async isXorg(): Promise<boolean> {
+      return await Pacman.packageIsInstalled('xserver-xorg-core') || await Pacman.packageIsInstalled('xserver-xorg-core-hwe-18.04')
+   }
+
+   /**
+    * Constrolla se è installato wayland
+    */
+   static async isWayland(): Promise<boolean> {
+      return await Pacman.packageIsInstalled('wayland')
+   }
+
+   /**
+    * Check if the system is just CLI
+    */
+   static async isCli(): Promise<boolean> {
+      return ! await this.isGui()
+   }
+
+   /**
+    * Check if the system is GUI able
+    */
+   static async isGui(): Promise<boolean> {
+      return await this.isXorg() || await this.isWayland()
    }
 
 
@@ -173,7 +194,7 @@ export default class Pacman {
       if ((versionLike === 'buster') || (versionLike === 'beowulf') || (versionLike === 'bullseye') || (versionLike === 'stretch')) {
          await exec(`apt-get install --yes --no-install-recommends ${this.debs2line(this.packagesLocalisation(verbose))}`, echo)
       }
-      if (!this.isXInstalled()) {
+      if (this.isCli()) {
          /**
           * live-config-getty-generator
           * 
@@ -222,7 +243,7 @@ export default class Pacman {
    static async calamaresInstall(verbose = true): Promise<void> {
       // verbose = true
       const echo = Utils.setEcho(verbose)
-      if (this.isXInstalled()) {
+      if (this.isGui()) {
          await exec(`apt-get install --yes ${this.debs2line(this.debs4calamares)}`, echo)
       } else {
          console.log("It's not possible to use calamares in a system without GUI")

@@ -84,7 +84,7 @@ export default class Config extends Command {
          i.efi = (!Pacman.packageIsInstalled('grub-efi-amd64'))
       }
 
-      if (! await Pacman.calamaresCheck() && (await Pacman.isXInstalled())) {
+      if (! await Pacman.calamaresCheck() && (await Pacman.isGui())) {
          Utils.warning('config: you are on a graphics system, I suggest to use the GUI installer calamares')
          i.calamares = (await Utils.customConfirm('Want to install calamares?'))
          console.log()

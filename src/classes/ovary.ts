@@ -163,7 +163,7 @@ export default class Ovary {
 
          await this.bindLiveFs(verbose)
          await this.createUserLive(verbose)
-         if (Pacman.isXInstalled()) {
+         if (Pacman.isGui()) {
             await this.createAutostart(this.theme, myAddons)
          } else {
             cliAutologin.add(this.settings.config.user_opt, this.settings.config.user_opt_passwd, this.settings.config.root_passwd, this.settings.work_dir.merged)
