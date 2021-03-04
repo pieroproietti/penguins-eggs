@@ -40,23 +40,17 @@ export default class Daddy {
         if (!Pacman.configurationCheck()) {
             console.log('- creating configuration dir...')
             await Pacman.configurationInstall(verbose)
-        } else {
-            console.log('- configuration already present')
         }
 
         // Controllo prerequisites
         if (!Pacman.prerequisitesCheck()) {
             console.log('- installing prerequisites...')
             Pacman.prerequisitesInstall(verbose)
-        } else {
-            console.log('- prerequisites already present')
         }
 
         if (!Pacman.distroTemplateCheck()){
             console.log('- distro template install...')
             await Pacman.distroTemplateInstall(verbose)
-        } else {
-            console.log('- distro template already present')
         }
 
 
