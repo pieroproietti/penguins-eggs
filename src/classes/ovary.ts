@@ -530,7 +530,8 @@ export default class Ovary {
       if (fs.existsSync(`${this.settings.work_dir.pathIso}/live/filesystem.squashfs`)) {
          fs.unlinkSync(`${this.settings.work_dir.pathIso}/live/filesystem.squashfs`)
       }
-      // let cmd = `mksquashfs ${this.work_dir.merged} ${this.work_dir.pathIso}/live/filesystem.squashfs ${compression} ${(this.mksq_opt === '' ? '' : ' ' + this.mksq_opt)} -wildcards -ef ${this.snapshot_excludes} ${this.session_excludes} `
+
+      // let cmd = `mksquashfs ${this.settings.work_dir.merged} ${this.settings.work_dir.pathIso}/live/filesystem.squashfs ${compression} -wildcards -ef ${this.settings.config.snapshot_excludes} ${this.settings.session_excludes} `
       let cmd = `mksquashfs ${this.settings.work_dir.merged} ${this.settings.work_dir.pathIso}/live/filesystem.squashfs ${compression} -wildcards -ef ${this.settings.config.snapshot_excludes} ${this.settings.session_excludes} `
       cmd = cmd.replace(/\s\s+/g, ' ')
       Utils.writeX(`${this.settings.work_dir.path}mksquashfs`, cmd)
