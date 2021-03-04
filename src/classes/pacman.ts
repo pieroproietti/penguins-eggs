@@ -62,14 +62,14 @@ export default class Pacman {
     * controlla se è installato xserver-xorg-core
     */
    static async isXorg(): Promise<boolean> {
-      return await Pacman.packageIsInstalled('xserver-xorg-core') || await Pacman.packageIsInstalled('xserver-xorg-core-hwe-18.04')
+      return Pacman.packageIsInstalled('xserver-xorg-core') || Pacman.packageIsInstalled('xserver-xorg-core-hwe-18.04')
    }
 
    /**
     * Constrolla se è installato wayland
     */
    static async isWayland(): Promise<boolean> {
-      return await Pacman.packageIsInstalled('wayland')
+      return Pacman.packageIsInstalled('wayland')
    }
 
    /**
@@ -550,7 +550,7 @@ export default class Pacman {
    * restuisce VERO se il pacchetto è installato
    * @param debPackage
    */
-   static async packageIsInstalled(debPackage: string): Promise<boolean> {
+   static packageIsInstalled(debPackage: string): boolean {
       let installed = false
       const cmd = `/usr/bin/dpkg -s ${debPackage} | grep Status:`
       const stdout = shx.exec(cmd, { silent: true }).stdout.trim()

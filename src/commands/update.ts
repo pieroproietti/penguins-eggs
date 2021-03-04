@@ -201,7 +201,7 @@ export default class Update extends Command {
     * 
     */
    async getDebFromApt() {
-      if (await Pacman.packageAptAvailable('eggs')) {
+      if (Pacman.packageAptAvailable('eggs')) {
          await exec(`apt reinstall eggs`)
       } else {
          console.log(`eggs is not present in your repositories`)

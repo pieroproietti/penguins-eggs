@@ -108,7 +108,7 @@ export default class Yolk {
         // scarico solo le dipendenze non installate
         const toDownloads: string[] = []
         for (let i = 0; i < depends.length; i++) {
-            if (! await Pacman.packageIsInstalled(depends[i])) {
+            if (!Pacman.packageIsInstalled(depends[i])) {
                 toDownloads.push(depends[i])
             }
         }
