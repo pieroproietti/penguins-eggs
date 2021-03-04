@@ -11,6 +11,8 @@ import Bleach from '../../classes/bleach'
 export default class Clean extends Command {
    static description = 'clean system log, apt, etc'
 
+   static aliases = ['clean']
+
    static flags = {
       help: flags.help({ char: 'h' }),
       verbose: flags.boolean({ char: 'v', description: 'verbose' })

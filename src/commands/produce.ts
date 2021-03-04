@@ -105,7 +105,11 @@ export default class Produce extends Command {
          } else if (flags.normal) {
             compression = 'xz'
          } else if (flags.max) {
-            compression = 'xz -Xbcj x86'
+            let filter = 'ia64'
+            if (process.arch === 'x32' || process.arch === 'ia32'){
+               const filter = 'x86'
+            }
+            compression = 'xz -Xbcj ' + filter
          }
 
          const verbose = flags.verbose

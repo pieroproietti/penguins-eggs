@@ -72,7 +72,7 @@ export default class Config extends Command {
 
    /**
     * 
-    * @param links
+    * 
     * @param verbose 
     */
    static async thatWeNeed(yes = false, verbose = false): Promise<IInstall> {
@@ -87,7 +87,6 @@ export default class Config extends Command {
       if (! await Pacman.calamaresCheck() && (await Pacman.isGui())) {
          Utils.warning('config: you are on a graphics system, I suggest to use the GUI installer calamares')
          i.calamares = (await Utils.customConfirm('Want to install calamares?'))
-         console.log()
       }
 
       i.configurationInstall = !Pacman.configurationCheck()
@@ -112,8 +111,14 @@ export default class Config extends Command {
          }
 
          if (i.efi) {
-            console.log('- install efi packages')
-            console.log(chalk.yellow('  apt install -y grub-efi-amd64\n'))
+            if (process.arch === 'x32') {
+               // do nothing
+            } else if (process.arch === 'ia32') {
+               // do nothing
+            } else if (process.arch === 'x64') {
+               console.log('- install efi packages')
+               console.log(chalk.yellow('  apt install -y grub-efi-amd64\n'))
+            }
          }
 
          if (i.prerequisites) {

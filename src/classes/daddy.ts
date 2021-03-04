@@ -48,7 +48,7 @@ export default class Daddy {
             Pacman.prerequisitesInstall(verbose)
         }
 
-        if (!Pacman.distroTemplateCheck()){
+        if (!Pacman.distroTemplateCheck()) {
             console.log('- distro template install...')
             await Pacman.distroTemplateInstall(verbose)
         }
@@ -77,7 +77,11 @@ export default class Daddy {
             } else if (newConf.compression === 'normal') {
                 config.compression = 'xz'
             } else if (newConf.compression === 'max') {
-                config.compression = 'xz -Xbcj x86'
+                let filter = 'ia64'
+                if (process.arch === 'x32' || process.arch === 'ia32') {
+                    const filter = 'x86'
+                }
+                config.compression = 'xz -Xbcj ' + filter
             }
 
 
@@ -134,10 +138,10 @@ export default class Daddy {
             compressionOpt = 2
         }
 
-        if (c.snapshot_prefix===''){
+        if (c.snapshot_prefix === '') {
             c.snapshot_prefix = 'egg-of-' + this.settings.distro.distroId.toLowerCase() + '-' + this.settings.distro.versionId.toLowerCase() + '-'
         }
-    
+
         return new Promise(function (resolve) {
             const questions: Array<Record<string, any>> = [
                 {
@@ -183,7 +187,7 @@ export default class Daddy {
                     choices: ['fast', 'normal', 'max'],
                     default: compressionOpt
                 }
-    
+
             ]
             inquirer.prompt(questions).then(function (options) {
                 resolve(JSON.stringify(options))
