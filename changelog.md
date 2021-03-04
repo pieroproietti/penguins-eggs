@@ -18,6 +18,9 @@ You can follow the project also consulting the [commit history](https://github.c
 ## Changelog
 Versions are listed on reverse order, the first is the last one.
 
+### eggs-7.8.27
+* removed the compression filter by processor (x86)
+
 ### eggs-7.8.26
 * bufixes and compression filter by processor
 

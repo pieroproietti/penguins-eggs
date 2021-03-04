@@ -77,9 +77,9 @@ export default class Daddy {
             } else if (newConf.compression === 'normal') {
                 config.compression = 'xz'
             } else if (newConf.compression === 'max') {
-                let filter = 'ia64'
-                if (process.arch === 'x32' || process.arch === 'ia32') {
-                    const filter = 'x86'
+                let filter = 'x86'
+                if (process.arch === 'armel') {
+                    const filter = 'ARM'
                 }
                 config.compression = 'xz -Xbcj ' + filter
             }
