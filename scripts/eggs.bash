@@ -9,7 +9,7 @@ _eggs()
   local commands="
 adapt --verbose --help
 calamares --help --verbose --install --final --theme
-config --yes --help --verbose
+config --silent --help --verbose
 dad --help --verbose
 export:deb --help --clean --armel --amd64 --i386 --all
 export:docs --help

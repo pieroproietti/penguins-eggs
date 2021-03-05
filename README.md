@@ -202,8 +202,8 @@ USAGE
 
 OPTIONS
   -h, --help     show CLI help
+  -s, --silent   assume yes
   -v, --verbose  verbose
-  -y, --yes      assume yes
 
 ALIASES
   $ eggs prerequisites

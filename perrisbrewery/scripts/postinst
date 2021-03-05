@@ -32,7 +32,7 @@ case "$1" in
         cp /usr/lib/penguins-eggs/manpages/doc/man/eggs.1.gz /usr/share/man/man1
 
         # Avvia configurazione automatica
-        eggs config --yes
+        eggs config --silent
         echo "eggs was installed..." 
     ;;
 

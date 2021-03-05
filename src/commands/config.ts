@@ -19,219 +19,219 @@ const exec = require('../lib/utils').exec
  * 
  */
 export default class Config extends Command {
-   static description = 'Configure eggs and install packages prerequisites to run it'
+    static description = 'Configure eggs and install packages prerequisites to run it'
 
-   static aliases = ['prerequisites']
-   static flags = {
-      yes: flags.boolean({ char: 'y', description: 'assume yes' }),
-      help: flags.help({ char: 'h' }),
-      verbose: flags.boolean({ char: 'v', description: 'verbose' }),
-   }
+    static aliases = ['prerequisites']
+    static flags = {
+        silent: flags.boolean({ char: 's', description: 'assume yes' }),
+        help: flags.help({ char: 'h' }),
+        verbose: flags.boolean({ char: 'v', description: 'verbose' }),
+    }
 
-   static examples = [`~$ sudo eggs config\nConfigure eggs and install prerequisites`]
+    static examples = [`~$ sudo eggs config\nConfigure eggs and install prerequisites`]
 
-   async run() {
-      const { flags } = this.parse(Config)
-      const yes = flags.yes
-      const verbose = flags.verbose
+    async run() {
+        const { flags } = this.parse(Config)
+        const silent = flags.silent
+        const verbose = flags.verbose
 
-      if (!yes) {
-         Utils.titles(this.id + ' ' + this.argv)
-      }
+        if (!silent) {
+            Utils.titles(this.id + ' ' + this.argv)
+        }
 
-      if (Utils.isRoot(this.id)) {
-         /**
-          * Se siamo in un pacchetto npm
-          * Aggiunge autocomplete e manPage
-          */
-         if (!Utils.isNpmPackage()) {
-            await Pacman.autocompleteInstall(verbose)
-            await Pacman.manPageInstall(verbose)
-         }
+        if (Utils.isRoot(this.id)) {
+            /**
+             * Se siamo in un pacchetto npm
+             * Aggiunge autocomplete e manPage
+             */
+            if (!Utils.isNpmPackage()) {
+                await Pacman.autocompleteInstall(verbose)
+                await Pacman.manPageInstall(verbose)
+            }
 
-         // Vede che cosa c'è da fare...
-         const i = await Config.thatWeNeed(yes, verbose)
+            // Vede che cosa c'è da fare...
+            const i = await Config.thatWeNeed(silent, verbose)
 
-         /**
-          * ...e lo fa!
-          */
-         if (i.needApt || i.configurationInstall || i.configurationRefresh || i.distroTemplate) {
-            if (yes) {
-               await Config.install(i, yes, verbose)
+            /**
+             * ...e lo fa!
+             */
+            if (i.needApt || i.configurationInstall || i.configurationRefresh || i.distroTemplate) {
+                if (silent) {
+                    await Config.install(i, silent, verbose)
+                } else {
+                    if (await Utils.customConfirm()) {
+                        await Config.install(i, verbose)
+                    }
+                }
             } else {
-               if (await Utils.customConfirm()) {
-                  await Config.install(i, verbose)
-               }
+                Utils.warning('config: nothing to do!')
             }
-         } else {
-            Utils.warning('config: nothing to do!')
-         }
-      }
-   }
+        }
+    }
 
 
-   /**
-    * 
-    * 
-    * @param verbose 
-    */
-   static async thatWeNeed(yes = false, verbose = false): Promise<IInstall> {
-      let i = {} as IInstall
+    /**
+     * 
+     * 
+     * @param verbose 
+     */
+    static async thatWeNeed(silent = false, verbose = false): Promise<IInstall> {
+        let i = {} as IInstall
 
-      i.distroTemplate = !Pacman.distroTemplateCheck()
+        i.distroTemplate = !Pacman.distroTemplateCheck()
 
-      if (process.arch === 'x64') {
-         i.efi = (!Pacman.packageIsInstalled('grub-efi-amd64'))
-      }
+        if (process.arch === 'x64') {
+            i.efi = (!Pacman.packageIsInstalled('grub-efi-amd64'))
+        }
 
-      if (! await Pacman.calamaresCheck() && (await Pacman.isGui())) {
-         Utils.warning('config: you are on a graphics system, I suggest to use the GUI installer calamares')
-         i.calamares = (await Utils.customConfirm('Want to install calamares?'))
-      }
-
-      i.configurationInstall = !Pacman.configurationCheck()
-      if (!i.configurationInstall) {
-         i.configurationRefresh = !Pacman.configurationMachineNew()
-      }
-
-      i.prerequisites = !await Pacman.prerequisitesCheck()
-
-      if (i.efi || i.calamares || i.prerequisites) {
-         i.needApt = true
-      }
-
-      /**
-       * Visualizza cosa c'è da fare
-       */
-      if (i.needApt || i.configurationInstall || i.configurationRefresh || i.distroTemplate || i.prerequisites) {
-         Utils.warning('config: that we need...')
-         if (i.needApt) {
-            console.log('- update the system')
-            console.log(chalk.yellow('  apt update --yes\n'))
-         }
-
-         if (i.efi) {
-            if (process.arch === 'x32') {
-               // do nothing
-            } else if (process.arch === 'ia32') {
-               // do nothing
-            } else if (process.arch === 'x64') {
-               console.log('- install efi packages')
-               console.log(chalk.yellow('  apt install -y grub-efi-amd64\n'))
+        if (!await Pacman.calamaresCheck() && (await Pacman.isGui())) {
+            Utils.warning('config: you are on a graphic system, I suggest to use the GUI installer calamares')
+            if (silent) {
+                i.calamares = true
+            } else {
+                i.calamares = (await Utils.customConfirm('Want You install calamares?'))
             }
-         }
+        }
 
-         if (i.prerequisites) {
-            console.log('- install prerequisites')
-            console.log(chalk.yellow('  apt install --yes ' + Pacman.debs2line(Pacman.debs4notRemove)))
+        i.configurationInstall = !Pacman.configurationCheck()
+        if (!i.configurationInstall) {
+            i.configurationRefresh = !Pacman.configurationMachineNew()
+        }
 
-            const packages = Pacman.packages(verbose)
-            console.log(chalk.yellow('  apt install --yes ' + Pacman.debs2line(packages)))
+        i.prerequisites = !await Pacman.prerequisitesCheck()
+
+        if (i.efi || i.calamares || i.prerequisites) {
+            i.needApt = true
+        }
+
+        /**
+         * Visualizza cosa c'è da fare
+         */
+        if (i.needApt || i.configurationInstall || i.configurationRefresh || i.distroTemplate || i.prerequisites) {
+            Utils.warning('config: that we need...')
+            if (i.needApt) {
+                console.log('- update the system')
+                console.log(chalk.yellow('  apt update --yes\n'))
+            }
+
+            if (i.efi) {
+                if (process.arch === 'x32') {
+                    // do nothing
+                } else if (process.arch === 'x64') {
+                    console.log('- install efi packages')
+                    console.log(chalk.yellow('  apt install -y grub-efi-amd64\n'))
+                }
+            }
+
+            if (i.prerequisites) {
+                console.log('- install prerequisites')
+                console.log(chalk.yellow('  apt install --yes ' + Pacman.debs2line(Pacman.debs4notRemove)))
+
+                const packages = Pacman.packages(verbose)
+                console.log(chalk.yellow('  apt install --yes ' + Pacman.debs2line(packages)))
+
+                if (i.configurationInstall) {
+                    console.log('- creating configuration\'s files...')
+                    Pacman.configurationInstall(verbose)
+                }
+
+                if (i.configurationRefresh) {
+                    console.log('- refreshing configuration\'s files...')
+                    Pacman.configurationFresh()
+                }
+
+                if (i.distroTemplate) {
+                    console.log('- copy distro template\n')
+                }
+
+                const packagesLocalisation = Pacman.packagesLocalisation()
+                if (packagesLocalisation.length > 0) {
+                    console.log('- localisation')
+                    console.log(chalk.yellow('  apt install --yes --no-install-recommends live-task-localisation ' + Pacman.debs2line(packagesLocalisation)) + '\n')
+                } else {
+                    console.log()
+                }
+            }
+
+            if (i.calamares && !silent) {
+                console.log('- install calamares')
+                const packages = Pacman.debs4calamares
+                console.log(chalk.yellow('  apt install -y ' + Pacman.debs2line(packages) + '\n'))
+            }
+
+            if (i.needApt) {
+                console.log('- cleaning apt\n')
+            }
 
             if (i.configurationInstall) {
-               console.log('- creating configuration\'s files...')
-               Pacman.configurationInstall(verbose)
+                console.log('- creating/updating configuration')
+                console.log('  files: ' + chalk.yellow('/etc/penguins-eggs.d/eggs.yaml') + ' and ' + chalk.yellow('/usr/local/share/penguins-eggs/exclude.list\n'))
+            } else if (i.configurationRefresh) {
+                console.log('- refreshing configuration for new machine')
             }
 
-            if (i.configurationRefresh) {
-               console.log('- refreshing configuration\'s files...')
-               Pacman.configurationFresh()
+            if (i.needApt) {
+                Utils.warning('Be sure! It\'s just a series of apt install from your repo.\nYou can follows them using flag --verbose')
             }
+        }
+        return i
+    }
 
-            if (i.distroTemplate) {
-               console.log('- copy distro template\n')
-            }
 
-            const packagesLocalisation = Pacman.packagesLocalisation()
-            if (packagesLocalisation.length > 0) {
-               console.log('- localisation')
-               console.log(chalk.yellow('  apt install --yes --no-install-recommends live-task-localisation ' + Pacman.debs2line(packagesLocalisation)) + '\n')
+    /**
+     * 
+     * @param i
+     * @param verbose 
+     */
+    static async install(i: IInstall, silent = false, verbose = false) {
+        const echo = Utils.setEcho(verbose)
+
+        Utils.warning('config: install')
+
+        if (i.configurationInstall) {
+            Utils.warning('creating configuration...')
+            await Pacman.configurationInstall(verbose)
+        }
+
+        if (i.configurationRefresh) {
+            Utils.warning('refreshing configuration for new machine...')
+            await Pacman.configurationMachineNew(verbose)
+        }
+
+        if (i.distroTemplate) {
+            Utils.warning('coping distro templates...')
+            await Pacman.distroTemplateInstall(verbose)
+        }
+
+        if (i.needApt) {
+            Utils.warning('updating system...')
+            await exec('apt-get update --yes', echo)
+        }
+
+        if (i.efi) {
+            Utils.warning('Installing uefi support...')
+            await Pacman.packageInstall('grub-efi-amd64')
+        }
+
+        if (i.prerequisites) {
+            Utils.warning('Installing prerequisites...')
+            await Pacman.prerequisitesInstall(verbose)
+        }
+
+        if (i.calamares) {
+            if (silent) {
+                // da silent solo avviso
+                Utils.error('config: you are on a graphic system, but I can\'t install calamares now!\nI suggest to install calamares GUI installer before to produce your ISO.\nJust write:\n    sudo eggs install -calamares')
             } else {
-               console.log()
+                Utils.warning('Installing calamares...')
+                await Pacman.calamaresInstall(verbose)
             }
-         }
 
-         if (i.calamares) {
-            console.log('- install calamares')
-            const packages = await Pacman.debs4calamares
-            console.log(chalk.yellow('  apt install -y ' + Pacman.debs2line(packages) + '\n'))
-         }
-
-         if (i.needApt) {
-            console.log('- cleaning apt\n')
-         }
-
-         if (i.configurationInstall) {
-            console.log('- creating/updating configuration')
-            console.log('  files: ' + chalk.yellow('/etc/penguins-eggs.d/eggs.yaml') + ' and ' + chalk.yellow('/usr/local/share/penguins-eggs/exclude.list\n'))
-         } else if (i.configurationRefresh) {
-            console.log('- refreshing configuration for new machine')
-         }
-
-         if (i.needApt) {
-            Utils.warning('Be sure! It\'s just a series of apt install from your repo.\nYou can follows them using flag --verbose')
-         }
-      }
-      return i
-   }
-
-
-   /**
-    * 
-    * @param i
-    * @param verbose 
-    */
-   static async install(i: IInstall, yes=false, verbose = false) {
-      const echo = Utils.setEcho(verbose)
-
-      Utils.warning('config: install')
-
-      if (i.configurationInstall) {
-         Utils.warning('creating configuration...')
-         await Pacman.configurationInstall(verbose)
-      }
-
-      if (i.configurationRefresh) {
-         Utils.warning('refreshing configuration for new machine...')
-         await Pacman.configurationMachineNew(verbose)
-      }
-
-
-      if (i.distroTemplate) {
-         Utils.warning('coping distro templates...')
-         await Pacman.distroTemplateInstall(verbose)
-      }
-
-      if (i.needApt) {
-         Utils.warning('updating system...')
-         await exec('apt-get update --yes', echo)
-      }
-
-      if (i.efi) {
-         Utils.warning('Installing uefi support...')
-         await Pacman.packageInstall('grub-efi-amd64')
-      }
-
-      if (i.prerequisites) {
-         Utils.warning('Installing prerequisites...')
-         await Pacman.prerequisitesInstall(verbose)
-      }
-
-      if (i.calamares) {
-         if (!yes) {
-            Utils.warning('Installing calamares...')
-            await Pacman.calamaresInstall(verbose)
-         } else {
-            Utils.error('config: Your system is GUI able, but calamares it\'s not installed!\nPlease install calamares before to produce your ISO.\nJust write:')
-            Utils.warning('sudo eggs calamares --install')
-         }
-      }
-
-      if (i.needApt || i.calamares) {
-         Utils.warning('cleaning the system...')
-         const bleach = new Bleach()
-         await bleach.clean(verbose)
-      }
-
-   }
+            if (i.needApt || i.calamares) {
+                Utils.warning('cleaning the system...')
+                const bleach = new Bleach()
+                await bleach.clean(verbose)
+            }
+        }
+    }
 }
