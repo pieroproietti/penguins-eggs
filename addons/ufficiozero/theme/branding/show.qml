@@ -33,13 +33,14 @@ Presentation
         repeat: true
         onTriggered: presentation.goToNextSlide()
     }
+
     Slide {
         Image {
             id: slide1
             source: "slide1.png"
             anchors.centerIn: parent
-            width: 800
-            height: 480
+            anchors.top: background.bottom
+            width: 810; height: 485
             fillMode: Image.PreserveAspectFit
         }
     }
@@ -49,8 +50,8 @@ Presentation
             id: slide2
             source: "slide2.png"
             anchors.centerIn: parent
-            width: 800
-            height: 480
+            anchors.top: background.bottom
+            width: 810; height: 485
             fillMode: Image.PreserveAspectFit
         }
     }
@@ -60,8 +61,8 @@ Presentation
             id: slide03
             source: "slide3.png"
             anchors.centerIn: parent
-            width: 800
-            height: 480
+            anchors.top: background.bottom
+            width: 810; height: 485
             fillMode: Image.PreserveAspectFit
         }
     }
@@ -71,8 +72,8 @@ Presentation
             id: slide4
             source: "slide4.png"
             anchors.centerIn: parent
-            width: 800
-            height: 480
+            anchors.top: background.bottom
+            width: 810; height: 485
             fillMode: Image.PreserveAspectFit
         }
     }
@@ -82,8 +83,8 @@ Presentation
             id: slide5
             source: "slide5.png"
             anchors.centerIn: parent
-            width: 800
-            height: 480
+            anchors.top: background.bottom
+            width: 810; height: 485
             fillMode: Image.PreserveAspectFit
         }
     }
@@ -93,8 +94,8 @@ Presentation
             id: slide6
             source: "slide6.png"
             anchors.centerIn: parent
-            width: 800
-            height: 480
+            anchors.top: background.bottom
+            width: 810; height: 485
             fillMode: Image.PreserveAspectFit
         }
     }

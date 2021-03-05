@@ -128,23 +128,23 @@ class Distro implements IDistro {
        
     
       /**
-       * LINUX MINT dall 19 in poi
+       * Linuxmint dall 19 in poi
        */
 
       // LinuxMint 19 tara, 19.1 tessa, 19.2 Tina, 19.3 Tricia
       if (this.versionId === 'tara' || this.versionId === 'tessa' || this.versionId === 'tina' || this.versionId === 'tricia') {
-         this.distroId = 'Linux Mint'
+         this.distroId = 'Linuxmint'
          this.distroLike = 'Ubuntu'
          this.versionLike = 'bionic'
 
          // LinuxMint 20 ulyana, 20.1 ulyssa
       } else if (this.versionId === 'ulyana' || this.versionId === 'ulyssa') {
-         this.distroId = 'Linux Mint'
+         this.distroId = 'Linuxmint'
          this.distroLike = 'Ubuntu'
          this.versionLike = 'focal'
 
          /**
-          * LINUX MINT DEBIAN EDITION (LMDE)
+          * Linuxmint DEBIAN EDITION (LMDE)
           */
 
          // LMDE 4 debbie

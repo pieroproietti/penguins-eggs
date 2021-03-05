@@ -44,9 +44,10 @@ Presentation
         Image {
             id: slide1
             source: "slide1.png"
+            anchors.centerIn: parent
+            anchors.top: background.bottom
             width: 810; height: 485
             fillMode: Image.PreserveAspectFit
-            anchors.centerIn: parent
         }
          Text {
             font.family: "Helvetica"
@@ -91,8 +92,7 @@ Presentation
             source: "slide3.png"
             anchors.centerIn: parent
             anchors.top: background.bottom
-            width: 810
-            height: 485
+            width: 810; height: 485
             fillMode: Image.PreserveAspectFit
         }
          Text {
@@ -115,8 +115,7 @@ Presentation
             source: "slide9.png"
             anchors.centerIn: parent
             anchors.top: background.bottom
-            width: 810
-            height: 485
+            width: 810; height: 485
             fillMode: Image.PreserveAspectFit
         }
          Text {
@@ -139,8 +138,7 @@ Presentation
             source: "slide5.png"
             anchors.centerIn: parent
             anchors.top: background.bottom
-            width: 810
-            height: 485
+            width: 810; height: 485
             fillMode: Image.PreserveAspectFit
         }
          Text {
@@ -163,8 +161,7 @@ Presentation
             source: "slide6.png"
             anchors.centerIn: parent
             anchors.top: background.bottom
-            width: 810
-            height: 485
+            width: 810; height: 485
             fillMode: Image.PreserveAspectFit
         }
          Text {
