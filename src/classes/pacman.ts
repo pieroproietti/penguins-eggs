@@ -244,7 +244,6 @@ export default class Pacman {
       // verbose = true
       const echo = Utils.setEcho(verbose)
       if (this.isGui()) {
-         await exec('apt-get update')
          await exec(`apt-get install --yes ${this.debs2line(this.debs4calamares)}`, echo)
       } else {
          console.log("It's not possible to use calamares in a system without GUI")

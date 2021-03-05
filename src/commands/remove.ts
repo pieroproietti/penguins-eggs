@@ -11,7 +11,6 @@ import { IInstall } from '../interfaces'
 
 import chalk = require('chalk')
 import { execSync } from 'child_process'
-import { remove } from '../lib/cli-autologin'
 
 const exec = require('../lib/utils').exec
 
@@ -24,13 +23,11 @@ export default class Remove extends Command {
    static examples = [
       `$ sudo eggs remove \nremove eggs\n`,
       `$ sudo eggs remove --prerequisites \nremove eggs, eggs configurations, packages prerequisites\n`,
-      `$ sudo eggs remove --calamares \nremove calamares and dependecies\n`,
    ]
 
    static flags = {
       purge: flags.boolean({ char: 'p', description: 'remove eggs configurations files' }),
       prerequisites: flags.boolean({ char: 'd', description: 'remove eggs packages dependencies' }),
-      calamares: flags.boolean({ char: 'c', description: 'remove calamares and calamares dependencies' }),
       help: flags.help({ char: 'h' }),
       verbose: flags.boolean({ char: 'v', description: 'verbose' })
    }
@@ -50,12 +47,6 @@ export default class Remove extends Command {
              * debian package
              */
             if (await Utils.customConfirm()) {
-               if (flags.calamares) {
-                  if (await Pacman.calamaresCheck()){
-                     await Pacman.calamaresRemove()
-                  }
-               }
-
                if (flags.purge) {
                   execSync('apt-get purge eggs --yes')
                } else {
@@ -74,9 +65,6 @@ export default class Remove extends Command {
                if (flags.prerequisites) {
                   await Pacman.prerequisitesRemove()
                }
-               if (flags.calamares) {
-                  await Pacman.calamaresRemove()
-               }
                if (flags.purge) {
                   await Pacman.configurationRemove()
                }
@@ -91,9 +79,6 @@ export default class Remove extends Command {
             if (await Utils.customConfirm()) {
                if (flags.prerequisites) {
                   await Pacman.prerequisitesRemove()
-               }
-               if (flags.calamares) {
-                  await Pacman.calamaresRemove()
                }
                // Rimuove eggs completion
                execSync('rm -f /etc/bash_completion.d/eggs.bash')

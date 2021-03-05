@@ -10,6 +10,7 @@ import Settings from '../classes/settings'
 import Incubator from '../classes/incubation/incubator'
 import Pacman from '../classes/pacman'
 import { IRemix } from '../interfaces'
+import { FAILSAFE_SCHEMA } from 'js-yaml'
 
 export default class Calamares extends Command {
    static description = 'calamares or install or configure it'
@@ -24,7 +25,8 @@ export default class Calamares extends Command {
       help: flags.help({ char: 'h' }),
       verbose: flags.boolean({ char: 'v' }),
       install: flags.boolean({ char: 'i', description: 'install calamares and it\'s dependencies' }),
-      final: flags.boolean({ char: 'f', description: 'final: remove eggs prerequisites, calamares and all it\'s dependencies' }),
+      final: flags.boolean({ char: 'f', description: 'final: remove calamares and all it\'s dependencies after the installation' }),
+      remove: flags.boolean({ char: 'r', description: 'remove calamares and it\'s dependencies' }),
       theme: flags.string({ description: 'theme/branding for eggs and calamares' })
    }
 
@@ -37,6 +39,11 @@ export default class Calamares extends Command {
       let verbose = false
       if (flags.verbose) {
          verbose = true
+      }
+
+      let remove = false
+      if (flags.remove) {
+         remove = true
       }
 
       let install = false
@@ -78,6 +85,20 @@ export default class Calamares extends Command {
             }
          } else {
             console.log(`You cannot use calamares installer without X system!`)
+         }
+
+         // Remove calamares
+         if (remove && !(install || final)) {
+            if (await Pacman.calamaresCheck()) {
+               if (await this.settings.load()) {
+                  await Pacman.calamaresRemove()
+                  // force_installer a false
+                  this.settings.config.force_installer = false
+                  this.settings.save(this.settings.config)
+               }
+            } else {
+               Utils.warning('Use must use just --remove flag if you decided to remove calamares GUI installer')
+            }
          }
       }
    }

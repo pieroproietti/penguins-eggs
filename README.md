@@ -201,9 +201,9 @@ USAGE
   $ eggs config
 
 OPTIONS
-  -h, --help     show CLI help
-  -s, --silent   assume yes
-  -v, --verbose  verbose
+  -h, --help           show CLI help
+  -n, --nointeractive  assume yes
+  -v, --verbose        verbose
 
 ALIASES
   $ eggs prerequisites
