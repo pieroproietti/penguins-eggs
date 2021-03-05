@@ -93,8 +93,9 @@ function config {
 function calamares {
       answer=$(
          whiptail --title "Calamares installer" --menu "You can choose local or internet documentation, html or man" 22 75 14 \
-         "configure"       "gui/internet penguin's eggs book - italian -" \
-         "installa"        "gui/internet penguin's eggs book - translated -" \
+         "configure"       "create calamares configuration" \
+         "install"         "install calamares and create configuration" \
+         "remove"          "remove calamares installer" \
          "quit"            "previus" 3>&2 2>&1 1>&3
       )
 
@@ -104,6 +105,9 @@ function calamares {
 
          "install")
             calamares_install ;;
+
+         "remove")
+            calamares_remove ;;
       esac
 }
 
@@ -115,6 +119,11 @@ function calamares_configure {
 ################################
 function calamares_install {
    sudo eggs calamares --install
+}
+
+################################
+function calamares_remove {
+   sudo eggs calamares --remove
 }
 
 
@@ -169,7 +178,7 @@ function documentation_man {
 
 ################################
 function documentation_html {
-   sensible-browser "file:///usr/lib/penguins-eggs/anpages/doc/man/eggs.1.html"
+   sensible-browser "file:///usr/lib/penguins-eggs/manpages/doc/man/eggs.1.html"
 }
 
 
@@ -280,18 +289,18 @@ function compress {
 function remove {
    answer=$(
    whiptail --title "remove" --menu "Remove prerequisites, eggs or purge..." 22 75 14 \
-      "calamares"       "remove calamares installer" \
-      "prerequisites"   "remove prerequisites only" \
-      "purge"           "remove prerequisites, eggs and purge" 
+      "all"             "remove eggs, prerequisites and purge" \
+      "purge"           "remove eggs and purge"  \
+      "autoremove"      "remove eggs and prerequisites" \
       "quit"   "previus" 3>&2 2>&1 1>&3
    )
 
    case "$answer" in 
-      "calamares")
-         remove_calamares ;;
+      "all")
+         remove_all ;;
 
-      "prerequisites")
-         remove_prerequisites ;;
+      "autoremove")
+         remove_autoremove ;;
 
       "purge")
          remove_purge ;;
@@ -299,14 +308,14 @@ function remove {
 }
 
 ################################
-function remove_calamares {
-   sudo eggs remove --calamares
+function remove_all {
+   sudo eggs remove --autoremove --purge
    press_a_key_to_continue
 }
 
 ################################
-function remove_prerequisites {
-   sudo eggs remove --prerequisites
+function remove_autoremove {
+   sudo eggs remove --autoremove
    press_a_key_to_continue
 }
 
