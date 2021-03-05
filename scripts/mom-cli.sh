@@ -169,7 +169,7 @@ function documentation_man {
 
 ################################
 function documentation_html {
-   sensible-browser "file:///usr/lib/penguins-eggs/man/man1/eggs.1.html"
+   sensible-browser "file:///usr/lib/penguins-eggs/anpages/doc/man/eggs.1.html"
 }
 
 
