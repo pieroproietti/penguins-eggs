@@ -218,11 +218,12 @@ export default class Config extends Command {
       }
 
       if (i.calamares) {
-         if (! yes) {
+         if (!yes) {
             Utils.warning('Installing calamares...')
             await Pacman.calamaresInstall(verbose)
          } else {
-            Utils.error('config: Your system is GUI able, but calamares it\'s not installed!\nPlease install it before to produce your ISO. Just:\n sudo eggs calamares --install')
+            Utils.error('config: Your system is GUI able, but calamares it\'s not installed!\nPlease install calamares before to produce your ISO.\nJust write:')
+            Utils.warning('sudo eggs calamares --install')
          }
       }
 
