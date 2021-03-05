@@ -108,12 +108,12 @@ export default class Config extends Command {
          * Visualizza cosa c'è da fare
          */
         Utils.warning('config: that we need...')
-        if (i.needApt) {
+        if (i.needApt && !nointeractive) {
             console.log('- update the system')
             console.log(chalk.yellow('  apt update --yes\n'))
         }
 
-        if (i.efi) {
+        if (i.efi && !nointeractive) {
             if (process.arch === 'x32') {
                 // do nothing
             } else if (process.arch === 'x64') {
@@ -122,7 +122,7 @@ export default class Config extends Command {
             }
         }
 
-        if (i.prerequisites) {
+        if (i.prerequisites && !nointeractive) {
             console.log('- install prerequisites')
             console.log(chalk.yellow('  apt install --yes ' + Pacman.debs2line(Pacman.debs4notRemove)))
 
@@ -160,7 +160,7 @@ export default class Config extends Command {
             console.log(chalk.yellow('  apt install -y ' + Pacman.debs2line(packages) + '\n'))
         }
 
-        if (i.needApt) {
+        if (i.needApt && !nointeractive) {
             console.log('- cleaning apt\n')
         }
 
@@ -171,7 +171,7 @@ export default class Config extends Command {
             console.log('- refreshing configuration for new machine')
         }
 
-        if (i.needApt) {
+        if (i.needApt && !nointeractive) {
             Utils.warning('Be sure! It\'s just a series of apt install from your repo.\nYou can follows them using flag --verbose')
         }
         return i
@@ -212,7 +212,8 @@ export default class Config extends Command {
 
         if (i.efi) {
             if (nointeractive) {
-                Utils.error('config: you are on a system UEFI capable, but I can\'t install grub-efi-amd now!\nI suggest to install grub-efi-amd64 before to produce your ISO.\nJust write:\n    sudo apt install grub-efi-amd64')
+                Utils.error('config: you are on a system UEFI capable, but I can\'t install grub-efi-amd now!')
+                Utils.warning('I suggest You to install grub-efi-amd64 before to produce your ISO.\nJust write:\n    sudo apt install grub-efi-amd64')
             } else {
                 Utils.warning('Installing uefi support...')
                 await exec('apt-get install grub-efi-amd64 --yes', echo) //Pacman.packageInstall('grub-efi-amd64')
@@ -227,7 +228,8 @@ export default class Config extends Command {
         if (i.calamares) {
             if (nointeractive) {
                 // solo un avviso
-                Utils.error('config: you are on a graphic system, but I can\'t install calamares now!\nI suggest to install calamares GUI installer before to produce your ISO.\nJust write:\n    sudo eggs calamares --install')
+                Utils.error('config: you are on a graphic system, but I can\'t install calamares now!')
+                Utils.warning('I suggest You to install calamares GUI installer before to produce your ISO.\nJust write:\n    sudo eggs calamares --install')
             } else {
                 Utils.warning('Installing calamares...')
                 await Pacman.calamaresInstall(verbose)

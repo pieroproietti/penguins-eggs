@@ -27,7 +27,7 @@ export default class Remove extends Command {
 
    static flags = {
       purge: flags.boolean({ char: 'p', description: 'remove eggs configurations files' }),
-      prerequisites: flags.boolean({ char: 'd', description: 'remove eggs packages dependencies' }),
+      autoremove: flags.boolean({ char: 'a', description: 'remove eggs packages dependencies' }),
       help: flags.help({ char: 'h' }),
       verbose: flags.boolean({ char: 'v', description: 'verbose' })
    }
@@ -52,7 +52,7 @@ export default class Remove extends Command {
                } else {
                   execSync('apt-get remove eggs --yes')
                }
-               if (flags.prerequisites) {
+               if (flags.autoremove) {
                   execSync('apt-get autoremove --yes')
                }
             }
@@ -62,7 +62,7 @@ export default class Remove extends Command {
              */
          } else if (Utils.isSources()) {
             if (await Utils.customConfirm()) {
-               if (flags.prerequisites) {
+               if (flags.autoremove) {
                   await Pacman.prerequisitesRemove()
                }
                if (flags.purge) {
@@ -77,7 +77,7 @@ export default class Remove extends Command {
              */
             Utils.warning(`You are using eggs as npm package. I'll remove it.`)
             if (await Utils.customConfirm()) {
-               if (flags.prerequisites) {
+               if (flags.autoremove) {
                   await Pacman.prerequisitesRemove()
                }
                // Rimuove eggs completion

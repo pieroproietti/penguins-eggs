@@ -176,9 +176,10 @@ USAGE
   $ eggs calamares
 
 OPTIONS
-  -f, --final    final: remove eggs prerequisites, calamares and all it's dependencies
+  -f, --final    final: remove calamares and all it's dependencies after the installation
   -h, --help     show CLI help
   -i, --install  install calamares and it's dependencies
+  -r, --remove   remove calamares and it's dependencies
   -v, --verbose
   --theme=theme  theme/branding for eggs and calamares
 
@@ -445,11 +446,10 @@ USAGE
   $ eggs remove
 
 OPTIONS
-  -c, --calamares      remove calamares and calamares dependencies
-  -d, --prerequisites  remove eggs packages dependencies
-  -h, --help           show CLI help
-  -p, --purge          remove eggs configurations files
-  -v, --verbose        verbose
+  -a, --autoremove  remove eggs packages dependencies
+  -h, --help        show CLI help
+  -p, --purge       remove eggs configurations files
+  -v, --verbose     verbose
 
 EXAMPLES
   $ sudo eggs remove 
@@ -457,9 +457,6 @@ EXAMPLES
 
   $ sudo eggs remove --prerequisites 
   remove eggs, eggs configurations, packages prerequisites
-
-  $ sudo eggs remove --calamares 
-  remove calamares and dependecies
 ```
 
 _See code: [src/commands/remove.ts](https://github.com/pieroproietti/penguins-eggs/blob/v7.8.28/src/commands/remove.ts)_

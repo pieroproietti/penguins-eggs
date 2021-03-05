@@ -8,8 +8,8 @@ _eggs()
 
   local commands="
 adapt --verbose --help
-calamares --help --verbose --install --final --theme
-config --silent --help --verbose
+calamares --help --verbose --install --final --remove --theme
+config --nointeractive --help --verbose
 dad --help --verbose
 export:deb --help --clean --armel --amd64 --i386 --all
 export:docs --help
@@ -19,7 +19,7 @@ install --cli --mx --umount --lvmremove --help --verbose
 kill --help --verbose
 mom --help
 produce --prefix --basename --normal --max --fast --verbose --yolk --script --help --final --theme --adapt --ichoice --rsupport --pve
-remove --purge --prerequisites --calamares --help --verbose
+remove --purge --autoremove --help --verbose
 tools:clean --help --verbose
 tools:locales --help --reinstall --verbose
 tools:skel --help --user --verbose
