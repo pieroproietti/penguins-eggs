@@ -23,7 +23,7 @@ export default class Config extends Command {
 
     static aliases = ['prerequisites']
     static flags = {
-        silent: flags.boolean({ char: 's', description: 'assume yes' }),
+        nointeractive: flags.boolean({ char: 'n', description: 'assume yes' }),
         help: flags.help({ char: 'h' }),
         verbose: flags.boolean({ char: 'v', description: 'verbose' }),
     }
@@ -32,10 +32,10 @@ export default class Config extends Command {
 
     async run() {
         const { flags } = this.parse(Config)
-        const silent = flags.silent
+        const nointeractive = flags.nointeractive
         const verbose = flags.verbose
 
-        if (!silent) {
+        if (!nointeractive) {
             Utils.titles(this.id + ' ' + this.argv)
         }
 
@@ -50,14 +50,14 @@ export default class Config extends Command {
             }
 
             // Vede che cosa c'è da fare...
-            const i = await Config.thatWeNeed(silent, verbose)
+            const i = await Config.thatWeNeed(nointeractive, verbose)
 
             /**
              * ...e lo fa!
              */
             if (i.needApt || i.configurationInstall || i.configurationRefresh || i.distroTemplate) {
-                if (silent) {
-                    await Config.install(i, silent, verbose)
+                if (nointeractive) {
+                    await Config.install(i, nointeractive, verbose)
                 } else {
                     if (await Utils.customConfirm()) {
                         await Config.install(i, verbose)
@@ -75,7 +75,7 @@ export default class Config extends Command {
      * 
      * @param verbose 
      */
-    static async thatWeNeed(silent = false, verbose = false): Promise<IInstall> {
+    static async thatWeNeed(nointeractive = false, verbose = false): Promise<IInstall> {
         let i = {} as IInstall
 
         i.distroTemplate = !Pacman.distroTemplateCheck()
@@ -86,7 +86,7 @@ export default class Config extends Command {
 
         if (!await Pacman.calamaresCheck() && (await Pacman.isGui())) {
             Utils.warning('config: you are on a graphic system, I suggest to use the GUI installer calamares')
-            if (silent) {
+            if (nointeractive) {
                 i.calamares = true
             } else {
                 i.calamares = (await Utils.customConfirm('Want You install calamares?'))
@@ -107,72 +107,72 @@ export default class Config extends Command {
         /**
          * Visualizza cosa c'è da fare
          */
-        if (i.needApt || i.configurationInstall || i.configurationRefresh || i.distroTemplate || i.prerequisites) {
-            Utils.warning('config: that we need...')
-            if (i.needApt) {
-                console.log('- update the system')
-                console.log(chalk.yellow('  apt update --yes\n'))
+        Utils.warning('config: that we need...')
+        if (i.needApt) {
+            console.log('- update the system')
+            console.log(chalk.yellow('  apt update --yes\n'))
+        }
+
+        if (i.efi) {
+            if (process.arch === 'x32') {
+                // do nothing
+            } else if (process.arch === 'x64') {
+                console.log('- install efi packages')
+                console.log(chalk.yellow('  apt install -y grub-efi-amd64\n'))
             }
+        }
 
-            if (i.efi) {
-                if (process.arch === 'x32') {
-                    // do nothing
-                } else if (process.arch === 'x64') {
-                    console.log('- install efi packages')
-                    console.log(chalk.yellow('  apt install -y grub-efi-amd64\n'))
-                }
-            }
+        if (i.prerequisites) {
+            console.log('- install prerequisites')
+            console.log(chalk.yellow('  apt install --yes ' + Pacman.debs2line(Pacman.debs4notRemove)))
 
-            if (i.prerequisites) {
-                console.log('- install prerequisites')
-                console.log(chalk.yellow('  apt install --yes ' + Pacman.debs2line(Pacman.debs4notRemove)))
-
-                const packages = Pacman.packages(verbose)
-                console.log(chalk.yellow('  apt install --yes ' + Pacman.debs2line(packages)))
-
-                if (i.configurationInstall) {
-                    console.log('- creating configuration\'s files...')
-                    Pacman.configurationInstall(verbose)
-                }
-
-                if (i.configurationRefresh) {
-                    console.log('- refreshing configuration\'s files...')
-                    Pacman.configurationFresh()
-                }
-
-                if (i.distroTemplate) {
-                    console.log('- copy distro template\n')
-                }
-
-                const packagesLocalisation = Pacman.packagesLocalisation()
-                if (packagesLocalisation.length > 0) {
-                    console.log('- localisation')
-                    console.log(chalk.yellow('  apt install --yes --no-install-recommends live-task-localisation ' + Pacman.debs2line(packagesLocalisation)) + '\n')
-                } else {
-                    console.log()
-                }
-            }
-
-            if (i.calamares && !silent) {
-                console.log('- install calamares')
-                const packages = Pacman.debs4calamares
-                console.log(chalk.yellow('  apt install -y ' + Pacman.debs2line(packages) + '\n'))
-            }
-
-            if (i.needApt) {
-                console.log('- cleaning apt\n')
-            }
+            const packages = Pacman.packages(verbose)
+            console.log(chalk.yellow('  apt install --yes ' + Pacman.debs2line(packages)))
 
             if (i.configurationInstall) {
-                console.log('- creating/updating configuration')
-                console.log('  files: ' + chalk.yellow('/etc/penguins-eggs.d/eggs.yaml') + ' and ' + chalk.yellow('/usr/local/share/penguins-eggs/exclude.list\n'))
-            } else if (i.configurationRefresh) {
-                console.log('- refreshing configuration for new machine')
+                console.log('- creating configuration\'s files...')
+                Pacman.configurationInstall(verbose)
             }
 
-            if (i.needApt) {
-                Utils.warning('Be sure! It\'s just a series of apt install from your repo.\nYou can follows them using flag --verbose')
+            if (i.configurationRefresh) {
+                console.log('- refreshing configuration\'s files...')
+                Pacman.configurationFresh()
             }
+
+            if (i.distroTemplate) {
+                console.log('- copy distro template\n')
+            }
+
+            /*
+            const packagesLocalisation = Pacman.packagesLocalisation()
+            if (packagesLocalisation.length > 0) {
+                console.log('- localisation')
+                console.log(chalk.yellow('  apt install --yes --no-install-recommends live-task-localisation ' + Pacman.debs2line(packagesLocalisation)) + '\n')
+            } else {
+                console.log()
+            }
+            */
+        }
+
+        if (i.calamares && !nointeractive) {
+            console.log('- install calamares')
+            const packages = Pacman.debs4calamares
+            console.log(chalk.yellow('  apt install -y ' + Pacman.debs2line(packages) + '\n'))
+        }
+
+        if (i.needApt) {
+            console.log('- cleaning apt\n')
+        }
+
+        if (i.configurationInstall) {
+            console.log('- creating/updating configuration')
+            console.log('  files: ' + chalk.yellow('/etc/penguins-eggs.d/eggs.yaml') + ' and ' + chalk.yellow('/usr/local/share/penguins-eggs/exclude.list\n'))
+        } else if (i.configurationRefresh) {
+            console.log('- refreshing configuration for new machine')
+        }
+
+        if (i.needApt) {
+            Utils.warning('Be sure! It\'s just a series of apt install from your repo.\nYou can follows them using flag --verbose')
         }
         return i
     }
@@ -183,7 +183,7 @@ export default class Config extends Command {
      * @param i
      * @param verbose 
      */
-    static async install(i: IInstall, silent = false, verbose = false) {
+    static async install(i: IInstall, nointeractive = false, verbose = false) {
         const echo = Utils.setEcho(verbose)
 
         Utils.warning('config: install')
@@ -203,14 +203,20 @@ export default class Config extends Command {
             await Pacman.distroTemplateInstall(verbose)
         }
 
-        if (i.needApt) {
-            Utils.warning('updating system...')
-            await exec('apt-get update --yes', echo)
+        if (i.needApt && !nointeractive) {
+            if (!nointeractive) {
+                Utils.warning('updating system...')
+                await exec('apt-get update --yes', echo)
+            }
         }
 
         if (i.efi) {
-            Utils.warning('Installing uefi support...')
-            await Pacman.packageInstall('grub-efi-amd64')
+            if (nointeractive) {
+                Utils.error('config: you are on a system UEFI capable, but I can\'t install grub-efi-amd now!\nI suggest to install grub-efi-amd64 before to produce your ISO.\nJust write:\n    sudo apt install grub-efi-amd64')
+            } else {
+                Utils.warning('Installing uefi support...')
+                await exec('apt-get install grub-efi-amd64 --yes', echo) //Pacman.packageInstall('grub-efi-amd64')
+            }
         }
 
         if (i.prerequisites) {
@@ -219,19 +225,19 @@ export default class Config extends Command {
         }
 
         if (i.calamares) {
-            if (silent) {
-                // da silent solo avviso
-                Utils.error('config: you are on a graphic system, but I can\'t install calamares now!\nI suggest to install calamares GUI installer before to produce your ISO.\nJust write:\n    sudo eggs install -calamares')
+            if (nointeractive) {
+                // solo un avviso
+                Utils.error('config: you are on a graphic system, but I can\'t install calamares now!\nI suggest to install calamares GUI installer before to produce your ISO.\nJust write:\n    sudo eggs calamares --install')
             } else {
                 Utils.warning('Installing calamares...')
                 await Pacman.calamaresInstall(verbose)
             }
+        }
 
-            if (i.needApt || i.calamares) {
-                Utils.warning('cleaning the system...')
-                const bleach = new Bleach()
-                await bleach.clean(verbose)
-            }
+        if (i.needApt && !nointeractive) {
+            Utils.warning('cleaning the system...')
+            const bleach = new Bleach()
+            await bleach.clean(verbose)
         }
     }
 }
