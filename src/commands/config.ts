@@ -57,7 +57,7 @@ export default class Config extends Command {
           */
          if (i.needApt || i.configurationInstall || i.configurationRefresh || i.distroTemplate) {
             if (yes) {
-               await Config.install(i, verbose)
+               await Config.install(i, yes, verbose)
             } else {
                if (await Utils.customConfirm()) {
                   await Config.install(i, verbose)
@@ -181,7 +181,7 @@ export default class Config extends Command {
     * @param i
     * @param verbose 
     */
-   static async install(i: IInstall, verbose = false) {
+   static async install(i: IInstall, yes=false, verbose = false) {
       const echo = Utils.setEcho(verbose)
 
       Utils.warning('config: install')
@@ -218,8 +218,12 @@ export default class Config extends Command {
       }
 
       if (i.calamares) {
-         Utils.warning('Installing calamares...')
-         await Pacman.calamaresInstall(verbose)
+         if (! yes) {
+            Utils.warning('Installing calamares...')
+            await Pacman.calamaresInstall(verbose)
+         } else {
+            Utils.error('config: Your system is GUI able, but calamares it\'s not installed!\nPlease install it before to produce your ISO. Just:\n sudo eggs calamares --install')
+         }
       }
 
       if (i.needApt || i.calamares) {
