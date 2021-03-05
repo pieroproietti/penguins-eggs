@@ -49,6 +49,7 @@ You will find here informations about penguin's eggs!
       } else {
          console.log('Configuration file:  ' + chalk.bgRed('ko'))
       }
+
       if (await Pacman.isGui()) {
          if (await Pacman.calamaresCheck()) {
             console.log('GUI Installer:       ' + chalk.bgGreen('ok'))
@@ -59,11 +60,23 @@ You will find here informations about penguin's eggs!
          console.log('GUI Installer:       ' + chalk.bgGreen('cli installer'))
       }
 
+      if (process.arch === 'x64') {
+         if (!settings.config.make_efi) {
+            if (Pacman.packageIsInstalled('grub-efi-amd64')) {
+               console.log('EFI: ' + chalk.bgRed('ko') + ' edit file /etc/penguins-eggs.d/eggs.yaml and set ' + chalk.green('make_efi: true'))
+            } else {
+               console.log('EFI: ' + chalk.bgRed('ko') + '\nrun ' + chalk.green(' apt install grub-efi-amd64') + ', edit ' + chalk.green('/etc/penguins-eggs.d/eggs.yaml') + ' and set ' + chalk.green('make_efi: true'))
+            }
+         } else {
+            console.log('EFI: ' + chalk.bgGreen('ok'))
+         }
+      }
+
       console.log(line)
       let installType = 'npm package'
       if (Utils.isDebPackage()) {
          installType = 'deb package'
-      } else if (Utils.isSources()){
+      } else if (Utils.isSources()) {
          installType = 'source'
       }
       console.log('Eggs is running as: ' + chalk.bgGreen(installType))
@@ -71,7 +84,7 @@ You will find here informations about penguin's eggs!
       if (Utils.isLive()) {
          console.log('System: ' + chalk.bgGreen('LIVE') + ' system')
       } else {
-            console.log('System: ' + chalk.bgCyan('INSTALLED'))
+         console.log('System: ' + chalk.bgCyan('INSTALLED'))
       }
 
       console.log(line)
