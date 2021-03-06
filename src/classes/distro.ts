@@ -36,6 +36,7 @@
 'use strict'
 import fs = require('fs')
 import shell = require('shelljs')
+import inquirer = require('inquirer')
 
 import { IRemix, IDistro } from '../interfaces'
 
@@ -66,6 +67,12 @@ class Distro implements IDistro {
       this.supportUrl = ''
       this.bugReportUrl = ''
 
+   }
+
+   /**
+    * torna come promise 
+    */
+   async load() {
       const file = '/etc/os-release'
       let data: any
       if (fs.existsSync(file)) {
@@ -98,20 +105,26 @@ class Distro implements IDistro {
       }
 
       /**
-       * lsb_release -c -s
+       * lsb_release -cs per versione ed lsb_release -is per distribuzione
        */
-      this.versionId = shell.exec('lsb_release -c -s', { silent: true }).stdout.toString().trim()
+      this.versionId = shell.exec('lsb_release -cs', { silent: true }).stdout.toString().trim()
+      this.distroId = shell.exec('lsb_release -is', { silent: true }).stdout.toString().trim()
 
+      /**
+       * Per casi equivoci conviene normalizzare versionId
+       */
       if (this.versionId === 'n/a') {
-         // Configurazione per bullseye
-         if (fs.existsSync('/etc/debian_version')) {
+         // può essere Deepin apricot
+         if (this.distroId = 'Deepin') {
+            this.versionId = 'apricot'
+         } else if (fs.existsSync('/etc/debian_version')) {
             const debianVersion = fs.readFileSync('/etc/debian_version', 'utf8')
             if (debianVersion.trim() === 'bullseye/sid') {
                this.versionId = 'bullseye'
             }
          }
       } else if (this.versionId === 'sid') {
-         // Configurazione per siduction
+         // sinora ho trovato solo siduction
          if (fs.existsSync('/etc/debian_version')) {
             const debianVersion = fs.readFileSync('/etc/debian_version', 'utf8')
             if (debianVersion.trim() === 'bullseye/sid') {
@@ -119,119 +132,101 @@ class Distro implements IDistro {
             }
          }
       } else if (this.versionId === 'testing') {
-         const checkDistroId = shell.exec('lsb_release -i -s', { silent: true }).stdout.toString().trim()
-         if (checkDistroId === 'Netrunner') {
-            this.distroId = 'Netrunner'
-            this.versionId = 'buster'
+         // provo a trasformarla in bullseye
+         if (fs.existsSync('/etc/debian_version')) {
+            const debianVersion = fs.readFileSync('/etc/debian_version', 'utf8')
+            if (debianVersion.trim() === 'bullseye/sid') {
+               this.versionId = 'bullseye'
+            }
          }
       }
-       
-    
-      /**
-       * Linuxmint dall 19 in poi
-       */
 
-      // LinuxMint 19 tara, 19.1 tessa, 19.2 Tina, 19.3 Tricia
-      if (this.versionId === 'tara' || this.versionId === 'tessa' || this.versionId === 'tina' || this.versionId === 'tricia') {
-         this.distroId = 'Linuxmint'
-         this.distroLike = 'Ubuntu'
-         this.versionLike = 'bionic'
+      // Procedo analizzanto solo versionId...
 
-         // LinuxMint 20 ulyana, 20.1 ulyssa
-      } else if (this.versionId === 'ulyana' || this.versionId === 'ulyssa') {
-         this.distroId = 'Linuxmint'
-         this.distroLike = 'Ubuntu'
-         this.versionLike = 'focal'
-
-         /**
-          * Linuxmint DEBIAN EDITION (LMDE)
-          */
-
-         // LMDE 4 debbie
-      } else if (this.versionId === 'debbie') {
-         this.distroId = 'LMDE'
+      // prima Debian, Devuan ed Ubuntu
+      if (this.versionId === 'jessie') {
+         // Debian 8 jessie
          this.distroLike = 'Debian'
-         this.versionLike = 'buster'
-
-         /**
-          * DEBIAN
-          */
-
-         // Debian 11 bullseye
-      } else if (this.versionId === 'bullseye') {
-         this.distroId = 'Debian'
-         this.distroLike = 'Debian'
-         this.versionLike = 'bullseye'
-
-         // Debian 11 siduction
-      } else if (this.versionId === 'siduction') {
-         this.distroId = 'Debian'
-         this.distroLike = 'Debian'
-         this.versionLike = 'bullseye'
-
-      } else if (this.versionId === 'netrunner') {
-         this.distroId = 'Netrunner'
-         this.distroLike = 'Debian'
-         this.versionLike = 'buster'
-
-         // Debian 10 buster
-      } else if (this.versionId === 'buster') {
-         this.distroId = 'Debian'
-         this.distroLike = 'Debian'
-         this.versionLike = 'buster'
-
-         // Debian 9 stretch
+         this.versionLike = 'jessie'
       } else if (this.versionId === 'stretch') {
-         this.distroId = 'Debian'
+         // Debian 9 stretch
          this.distroLike = 'Debian'
          this.versionLike = 'stretch'
-      } // Deepin 20
-      else if (this.versionId === 'n/a') {
-         const checkDistroId = shell.exec('lsb_release -i -s', { silent: true }).stdout.toString().trim()
-         if (checkDistroId === 'Deepin') {
-            this.distroId = 'Deepin'
-            this.versionId = 'apricot'
-         } else {
-            this.distroId = checkDistroId
-            this.versionId = 'unknown'
-         }
+      } else if (this.versionId === 'buster') {
+         // Debian 10 buster
+         this.distroLike = 'Debian'
+         this.versionLike = 'buster'
+      } else if (this.versionId === 'bullseye') {
+         // Debian 11 bullseye
          this.distroLike = 'Debian'
          this.versionLike = 'bullseye'
 
-         /**
-          * DEVUAN
-          */
       } else if (this.versionId === 'beowulf') {
-         this.distroId = 'Devuan'
-         this.versionId = 'beowulf'
          this.distroLike = 'Devuan'
          this.versionLike = 'beowulf'
 
-         /**
-          * UBUNTU
-          */
-         // 20.10 groovy
+      } else if (this.versionId === 'bionic') {
+         // Ubuntu 18.04 bionic LTS eol aprile 2023
+         this.distroLike = 'Ubuntu'
+         this.versionLike = 'bionic'
+      } else if (this.versionId === 'focal') {
+         // Ubuntu 20.04 focal LTS
+         this.distroLike = 'Ubuntu'
+         this.versionLike = 'focal'
       } else if (this.versionId === 'groovy') {
-         this.distroId = 'Ubuntu'
+         // Ubuntu 20.10 groovy
          this.distroLike = 'Ubuntu'
          this.versionLike = 'groovy'
 
-         // 20.04 focal LTS
-      } else if (this.versionId === 'focal') {
-         this.distroId = 'Ubuntu'
+      // quindi le derivate...
+
+      } else if (this.versionId === 'roma') {
+         // UfficioZero roma
+         this.distroLike = 'Devuan'
+         this.versionLike = 'beowulf'
+      } else if (this.versionId === 'tropea') {
+         // UfficioZero tropea
          this.distroLike = 'Ubuntu'
          this.versionLike = 'focal'
-
-         // Ubuntu 18.04 bionic LTS eol aprile 2023
-      } else if (this.versionId === 'bionic') {
-         this.distroId = 'Ubuntu'
+      } else if (this.versionId === 'vieste') {
+         // UfficioZero tropea
          this.distroLike = 'Ubuntu'
          this.versionLike = 'bionic'
-      } else {
-         console.log("Sorry, this distro is not supported, I'll try Debian Buster mode!")
-         this.distroId = 'custom'
+      } else if (this.versionId === 'siena') {
+         // UfficioZero siena
          this.distroLike = 'Debian'
          this.versionLike = 'buster'
+
+      } else if (this.versionId === 'tara' || this.versionId === 'tessa' || this.versionId === 'tina' || this.versionId === 'tricia') {
+         // LinuxMint 19.x
+         this.distroLike = 'Ubuntu'
+         this.versionLike = 'bionic'
+      } else if (this.versionId === 'ulyana' || this.versionId === 'ulyssa') {
+         // LinuxMint 20.x
+         this.distroLike = 'Ubuntu'
+         this.versionLike = 'focal'
+      } else if (this.versionId === 'debbie') {
+         // LMDE 4 debbie
+         this.distroLike = 'Debian'
+         this.versionLike = 'buster'
+
+      } else if (this.versionId === 'apricot') {
+         // Deepin 20 apricot
+         this.distroLike = 'Debian'
+         this.versionLike = 'bullseye'
+
+      } else if (this.versionId === 'siduction') {
+         // Debian 11 Siduction
+         this.distroLike = 'Debian'
+         this.versionLike = 'bullseye'
+
+      } else {
+
+         // se proprio non riesco chiedo l'intervento dell'utente
+
+         console.log("This distro is not yet recognized, but you can choose a compatible version")
+         this.distroLike = await getDistroLike()
+         this.versionLike = await getVersionLike(this.distroLike)
       }
 
       /**
@@ -262,3 +257,52 @@ class Distro implements IDistro {
 }
 
 export default Distro
+
+
+async function getDistroLike(): Promise<any> {
+   return new Promise(function (resolve) {
+      const questions: Array<Record<string, any>> = [
+         {
+            type: 'list',
+            name: 'versionLike',
+            message: 'Select the janitor: ',
+            choices: ['Debian', 'Devuan', 'Ubuntu']
+         }
+      ]
+      inquirer.prompt(questions).then(function (options) {
+         resolve(JSON.stringify(options))
+      })
+   })
+}
+
+/**
+ * 
+ * @param driveList 
+ * @param partitionTypes 
+ * @param verbose 
+ */
+async function getVersionLike(distro = 'Debian'): Promise<any> {
+
+   let versions: string[] = []
+   if (distro === 'Debian') {
+      versions = ['jessie', 'stretch', 'buster', 'bullseye']
+   } else if (distro === 'Devuan') {
+      versions = ['beowulf']
+   } else if (distro === 'Ubuntu') {
+      versions = ['bionic', 'focal', 'groovy']
+   }
+
+   return new Promise(function (resolve) {
+      const questions: Array<Record<string, any>> = [
+         {
+            type: 'list',
+            name: 'versionLike',
+            message: 'Select the janitor: ',
+            choices: versions
+         }
+      ]
+      inquirer.prompt(questions).then(function (options) {
+         resolve(JSON.stringify(options))
+      })
+   })
+}
