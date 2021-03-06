@@ -67,12 +67,7 @@ class Distro implements IDistro {
       this.supportUrl = ''
       this.bugReportUrl = ''
 
-   }
 
-   /**
-    * torna come promise 
-    */
-   async load() {
       const file = '/etc/os-release'
       let data: any
       if (fs.existsSync(file)) {
@@ -178,7 +173,7 @@ class Distro implements IDistro {
          this.distroLike = 'Ubuntu'
          this.versionLike = 'groovy'
 
-      // quindi le derivate...
+         // quindi le derivate...
 
       } else if (this.versionId === 'roma') {
          // UfficioZero roma
@@ -225,8 +220,11 @@ class Distro implements IDistro {
          // se proprio non riesco chiedo l'intervento dell'utente
 
          console.log("This distro is not yet recognized, but you can choose a compatible version")
-         this.distroLike = await getDistroLike()
-         this.versionLike = await getVersionLike(this.distroLike)
+         // Dato che occorre await evito al momento
+         // this.distroLike = await getDistroLike()
+         // this.versionLike = await getVersionLike(this.distroLike)
+         this.distroLike = 'Debian'
+         this.versionLike = 'buster'
       }
 
       /**
@@ -254,9 +252,9 @@ class Distro implements IDistro {
       this.isolinuxPath = '/usr/lib/ISOLINUX/'
       this.syslinuxPath = '/usr/lib/syslinux/modules/bios/'
    }
-}
 
-export default Distro
+
+   export default Distro
 
 
 async function getDistroLike(): Promise<any> {
