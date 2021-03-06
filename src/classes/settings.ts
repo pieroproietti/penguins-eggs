@@ -172,23 +172,24 @@ export default class Settings {
     */
    async show() {
       console.log(`application_name:  ${this.app.name} ${this.app.version}`)
-      console.log(`config_file:       ${config_file}`)
+      // console.log(`config_file:       ${config_file}`)
       console.log(`snapshot_dir:      ${this.config.snapshot_dir}`)
+      console.log(`snapshot_prefix: ${this.config.snapshot_prefix}`)
       console.log(`snapshot_basename: ${this.config.snapshot_basename}`)
-      console.log(`snapshot_excludes: ${this.config.snapshot_excludes}`)
+      // console.log(`snapshot_excludes: ${this.config.snapshot_excludes}`)
       console.log(`kernel_image:      ${this.kernel_image}`)
       console.log(`initrd_image:      ${this.initrd_image}`)
       console.log(`work_dir:          ${this.work_dir.path}`)
-      console.log(`efi_work:          ${this.efi_work}`)
-      console.log(`make_efi:          ${this.config.make_efi}`)
-      console.log(`make_md5sum:       ${this.config.make_md5sum}`)
-      console.log(`make_isohybrid:    ${this.config.make_isohybrid}`)
+      //console.log(`efi_work:          ${this.efi_work}`)
+      // console.log(`make_efi:          ${this.config.make_efi}`)
+      // console.log(`make_md5sum:       ${this.config.make_md5sum}`)
+      // console.log(`make_isohybrid:    ${this.config.make_isohybrid}`)
       console.log(`compression:       ${this.config.compression}`)
-      console.log(`force_installer:   ${this.config.force_installer}`)
+      // console.log(`force_installer:   ${this.config.force_installer}`)
       console.log(`user_opt:          ${this.config.user_opt}`)
       console.log(`locales:           ${this.config.locales}`)
       console.log(`locale default:    ${this.config.locales_default}`)
-      console.log(`ssh_pass:          ${this.config.ssh_pass}`)
+      //console.log(`ssh_pass:          ${this.config.ssh_pass}`)
       if (this.config.make_efi) {
          if (!Utils.isUefi()) {
             Utils.error('You choose to create an UEFI image, but miss to install grub-efi-amd64 package.')
@@ -202,9 +203,6 @@ export default class Settings {
             this.config.make_efi = false
          }
       }
-
-
-
    }
 
    /**

@@ -53,11 +53,11 @@ export class Buster {
       if (process.arch === 'ia32') {
          this.dirCalamaresModules = '/usr/lib/calamares/modules/'
       }
-      this.rootTemplate = `./../../../../conf/distros/${this.distro.versionId}/calamares/`
+      this.rootTemplate = `./../../../../conf/distros/${this.distro.versionLike}/calamares/`
       // Correzione necessaria per LMDE4 debbie
-      if (this.distro.versionId === 'debbie') {
-         this.rootTemplate = `./../../../../conf/distros/buster/calamares/`
-      }
+      // if (this.distro.versionId === 'debbie') {
+      //   this.rootTemplate = `./../../../../conf/distros/buster/calamares/`
+      // }
       this.rootTemplate = path.resolve(__dirname, this.rootTemplate) + '/'
    }
 

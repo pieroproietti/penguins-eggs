@@ -11,6 +11,7 @@ import Utils from '../classes/utils'
 import Settings from '../classes/settings'
 import Pacman from '../classes/pacman'
 import chalk = require('chalk')
+import Distro from '../classes/distro'
 
 /**
  * Get informations about system
@@ -31,30 +32,32 @@ You will find here informations about penguin's eggs!
       settings.load()
 
       const line = '-----------------------------------------------------------------'
-      console.log(line)
+      //console.log(line)
       settings.show()
 
-      console.log(line)
-      shx.exec('lsb_release -a')
-
-      console.log(line)
+      const distroId = shx.exec('lsb_release -is', {silent: true}).stdout.trim()
+      const versionId = shx.exec('lsb_release -cs', {silent: true}).stdout.trim()
+      console.log('distroId:          ' + distroId)
+      console.log('versionId:         ' + versionId)
+      console.log('distroLike:        ' + chalk.green(settings.distro.distroLike))
+      console.log('versionLike:       ' + chalk.green(settings.distro.versionLike))
       if (await Pacman.prerequisitesCheck()) {
-         console.log('Eggs prerequisites:  ' + chalk.bgGreen('ok'))
+         console.log('eggs prerequisites:' + chalk.bgGreen('ok'))
       } else {
-         console.log('Eggs prerequisites:  ' + chalk.bgRed('ko'))
+         console.log('eggs prerequisites:' + chalk.bgRed('ko'))
       }
 
       if (await Pacman.configurationCheck()) {
-         console.log('Configuration file:  ' + chalk.bgGreen('ok'))
+         console.log('configuration:     ' + chalk.bgGreen('ok'))
       } else {
-         console.log('Configuration file:  ' + chalk.bgRed('ko'))
+         console.log('configuration:     ' + chalk.bgRed('ko'))
       }
 
       if (await Pacman.isGui()) {
          if (await Pacman.calamaresCheck()) {
-            console.log('GUI Installer:       ' + chalk.bgGreen('ok'))
+            console.log('GUI Installer:     ' + chalk.bgGreen('ok'))
          } else {
-            console.log('GUI Installer:       ' + chalk.bgBlue('ko'))
+            console.log('GUI Installer:     ' + chalk.bgBlue('ko'))
          }
       } else {
          console.log('GUI Installer:       ' + chalk.bgGreen('cli installer'))
@@ -63,30 +66,30 @@ You will find here informations about penguin's eggs!
       if (process.arch === 'x64') {
          if (!settings.config.make_efi) {
             if (Pacman.packageIsInstalled('grub-efi-amd64')) {
-               console.log('EFI: ' + chalk.bgRed('ko') + ' edit file /etc/penguins-eggs.d/eggs.yaml and set ' + chalk.green('make_efi: true'))
+               console.log('EFI              : ' + chalk.bgRed('ko') + ' edit file /etc/penguins-eggs.d/eggs.yaml and set ' + chalk.green('make_efi: true'))
             } else {
-               console.log('EFI: ' + chalk.bgRed('ko') + '\nrun ' + chalk.green(' apt install grub-efi-amd64') + ', edit ' + chalk.green('/etc/penguins-eggs.d/eggs.yaml') + ' and set ' + chalk.green('make_efi: true'))
+               console.log('EFI              : ' + chalk.bgRed('ko') + ' run ' + chalk.green(' apt install grub-efi-amd64') + ', edit ' + chalk.green('/etc/penguins-eggs.d/eggs.yaml') + ' and set ' + chalk.green('make_efi: true'))
             }
          } else {
             console.log('EFI: ' + chalk.bgGreen('ok'))
          }
       }
 
-      console.log(line)
+      // console.log(line)
       let installType = 'npm package'
       if (Utils.isDebPackage()) {
          installType = 'deb package'
       } else if (Utils.isSources()) {
          installType = 'source'
       }
-      console.log('Eggs is running as: ' + chalk.bgGreen(installType))
+      console.log('eggs is running as:' + chalk.bgGreen(installType))
 
       if (Utils.isLive()) {
-         console.log('System: ' + chalk.bgGreen('LIVE') + ' system')
+         console.log('system is:         ' + chalk.bgGreen('LIVE') + ' system')
       } else {
-         console.log('System: ' + chalk.bgCyan('INSTALLED'))
+         console.log('system is:         ' + chalk.bgCyan('INSTALLED'))
       }
 
-      console.log(line)
+      // console.log(line)
    }
 }

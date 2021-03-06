@@ -127,12 +127,8 @@ class Distro implements IDistro {
             }
          }
       } else if (this.versionId === 'testing') {
-         // provo a trasformarla in bullseye
-         if (fs.existsSync('/etc/debian_version')) {
-            const debianVersion = fs.readFileSync('/etc/debian_version', 'utf8')
-            if (debianVersion.trim() === 'bullseye/sid') {
-               this.versionId = 'bullseye'
-            }
+         if (this.distroId = 'Netrunner') {
+            this.versionId = 'buster/sid'
          }
       }
 
@@ -214,7 +210,10 @@ class Distro implements IDistro {
          // Debian 11 Siduction
          this.distroLike = 'Debian'
          this.versionLike = 'bullseye'
-
+      } else if (this.versionId === 'buster/sid') {
+         // Netrunner
+         this.distroLike= 'Debian'
+         this.versionLike= 'buster'
       } else {
 
          // se proprio non riesco chiedo l'intervento dell'utente
@@ -252,11 +251,14 @@ class Distro implements IDistro {
       this.isolinuxPath = '/usr/lib/ISOLINUX/'
       this.syslinuxPath = '/usr/lib/syslinux/modules/bios/'
    }
+}
+
+export default Distro
 
 
-   export default Distro
-
-
+/**
+ * richiesta di versione da parte dell'utente
+ */
 async function getDistroLike(): Promise<any> {
    return new Promise(function (resolve) {
       const questions: Array<Record<string, any>> = [
