@@ -18,6 +18,9 @@ You can follow the project also consulting the [commit history](https://github.c
 ## Changelog
 Versions are listed on reverse order, the first is the last one.
 
+### eggs-7.8.30
+* rewrite of distros.ts class: cleanup and reorganization
+
 ### eggs-7.8.29
 * eggs mom change in accord with new commands and flags
 
