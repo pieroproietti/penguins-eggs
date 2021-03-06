@@ -37,6 +37,7 @@ import Systemctl from './systemctl'
 import Bleach from './bleach'
 import Repo from './yolk'
 import cliAutologin = require('../lib/cli-autologin')
+import { fail } from 'assert'
 
 
 /**
@@ -484,8 +485,26 @@ export default class Ovary {
       if (verbose) {
          console.log('ovary: liveKernel')
       }
-      shx.cp(this.settings.kernel_image, `${this.settings.work_dir.pathIso}/live/`)
-      shx.cp(this.settings.initrd_image, `${this.settings.work_dir.pathIso}/live/`)
+      let failVmlinuz = false
+      if (fs.existsSync(this.settings.kernel_image)) {
+         shx.cp(this.settings.kernel_image, `${this.settings.work_dir.pathIso}/live/`)
+      } else {
+         failVmlinuz = true
+      }
+
+      let failInitrd = false
+      if (fs.existsSync(this.settings.kernel_image)) {
+         shx.cp(this.settings.initrd_image, `${this.settings.work_dir.pathIso}/live/`)
+      } else {
+         failInitrd = true
+      }
+
+      if (failVmlinuz || failInitrd) {
+         Utils.error(`something went wrong! Cannot find ${this.settings.kernel_image} or ${this.settings.initrd_image}`)
+         Utils.warning('Try to edit /etc/penguins-eggs.d/eggs.yaml and check for vmlinuz: /path/to/vmlinuz')
+         Utils.warning('and initrd_img: vmlinuz: /path/to/initrm_img')
+         process.exit(1)
+      }
    }
 
    /**
