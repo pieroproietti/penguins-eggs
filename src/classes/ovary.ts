@@ -142,7 +142,6 @@ export default class Ovary {
          }
 
          await this.liveCreateStructure(verbose)
-
          if (Pacman.packageIsInstalled('calamares')) {
             if (this.settings.config.force_installer && !(await Pacman.calamaresCheck())) {
                console.log('Installing ' + chalk.bgGray('calamares') + ' due force_installer=yes.')
@@ -169,6 +168,7 @@ export default class Ovary {
          }
          await this.editLiveFs(verbose)
          await this.makeSquashfs(scriptOnly, verbose)
+         await this.makeDotDisk(verbose)
          await this.makeIso(scriptOnly, verbose)
          await this.bindVfs(verbose)
          await this.ubindVfs(verbose)
@@ -557,6 +557,25 @@ export default class Ovary {
       }
    }
 
+   /**
+    * info Debian GNU/Linux 10.8.0 "Buster" - Official i386 NETINST 20210206-10:54
+    * mkisofs xorriso -as mkisofs -r -checksum_algorithm_iso md5,sha1,sha256,sha512 -V 'Debian 10.8.0 i386 n' -o /srv/cdbuilder.debian.org/dst/deb-cd/out/2busteri386/debian-10.8.0-i386-NETINST-1.iso -jigdo-jigdo /srv/cdbuilder.debian.org/dst/deb-cd/out/2busteri386/debian-10.8.0-i386-NETINST-1.jigdo -jigdo-template /srv/cdbuilder.debian.org/dst/deb-cd/out/2busteri386/debian-10.8.0-i386-NETINST-1.template -jigdo-map Debian=/srv/cdbuilder.debian.org/src/ftp/debian/ -jigdo-exclude boot1 -md5-list /srv/cdbuilder.debian.org/src/deb-cd/tmp/2busteri386/buster/md5-check -jigdo-min-file-size 1024 -jigdo-exclude 'README*' -jigdo-exclude /doc/ -jigdo-exclude /md5sum.txt -jigdo-exclude /.disk/ -jigdo-exclude /pics/ -jigdo-exclude 'Release*' -jigdo-exclude 'Packages*' -jigdo-exclude 'Sources*' -J -joliet-long -cache-inodes -isohybrid-mbr syslinux/usr/lib/ISOLINUX/isohdpfx.bin -b isolinux/isolinux.bin -c isolinux/boot.cat -boot-load-size 4 -boot-info-table -no-emul-boot -eltorito-alt-boot -e boot/grub/efi.img -no-emul-boot -isohybrid-gpt-basdat -isohybrid-apm-hfsplus boot1 CD1
+    */
+   makeDotDisk(verbose = false) {
+      const dotDisk = this.settings.work_dir.pathIso + '/.disk'
+      if (fs.existsSync(dotDisk)) {
+         shx.rm('-rf',dotDisk)
+      }
+      shx.mkdir('-p', dotDisk )
+      // info
+      const infoFile = dotDisk + 'info'
+      const infoContent = this.settings.remix.fullname
+      fs.writeFileSync(infoFile, infoContent, 'utf-8')
+
+      // mkisofs
+      const mkisofsFile = dotDisk + 'mkisofs'
+      const mkisofsContent = ''
+   }
    /**
     * Restituisce true per le direcory da montare con overlay
     * 
@@ -1275,7 +1294,7 @@ export default class Ovary {
       console.log()
       console.log('Remember, on liveCD user =' + chalk.cyanBright(this.settings.config.user_opt) + '/' + chalk.cyanBright(this.settings.config.user_opt_passwd))
       console.log('                    root =' + chalk.cyanBright('root') + '/' + chalk.cyanBright(this.settings.config.root_passwd))
-}
+   }
 
 
 }
