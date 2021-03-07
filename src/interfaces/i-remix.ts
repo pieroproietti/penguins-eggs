@@ -1,5 +1,6 @@
 export interface IRemix {
    name: string
+   fullname: string
    branding: string
    versionName: string
    versionNumber: string

@@ -144,6 +144,8 @@ export default class Xdg {
       // const ovary = new Ovary()
       // await ovary.fertilization()
       // await exec(`mv /etc/skel ${ovary.settings.config.snapshot_dir}skel_${Utils.formatDate(new Date())}.backup`, echo)
+      // Rimuove la skel
+      await exec(`rm /etc/skel -rf`, echo)
 
       // Crea nuova skel
       await exec(`mkdir -p /etc/skel`, echo)
@@ -208,7 +210,7 @@ export default class Xdg {
       await execIfExist(`rm -rf`, `/etc/skel/.config/mpv`, verbose)
       // await execIfExist(`rm -rf`, `/etc/skel/.config/nemo`, verbose)
       await execIfExist(`rm -rf`, `/etc/skel/.config/obs-studio`, verbose)
-      if (!Pacman.packageIsInstalled('plank')) {
+      if (! Pacman.packageIsInstalled('plank')) {
          await execIfExist(`rm -rf`, `/etc/skel/.config/plank`, verbose)
       }
       await execIfExist(`rm -rf`, `/etc/skel/.config/Postman`, verbose)
