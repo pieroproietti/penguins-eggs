@@ -174,13 +174,25 @@ export default class Settings {
       console.log(`application_name:  ${this.app.name} ${this.app.version}`)
       // console.log(`config_file:       ${config_file}`)
       console.log(`snapshot_dir:      ${this.config.snapshot_dir}`)
-      console.log(`snapshot_prefix: ${this.config.snapshot_prefix}`)
+      if (this.config.snapshot_prefix===''){
+         console.log('snapshot_prefix:   ' + chalk.bgYellow('no value') + ', use eggs dad or edit /etc/penguins-eggs/eggs.yaml')
+      } else {
+         console.log('snapshot_prefix:   ' + chalk.green (this.config.snapshot_prefix))
+      }
       console.log(`snapshot_basename: ${this.config.snapshot_basename}`)
       // console.log(`snapshot_excludes: ${this.config.snapshot_excludes}`)
-      console.log(`kernel_image:      ${this.kernel_image}`)
-      console.log(`initrd_image:      ${this.initrd_image}`)
+      if (fs.existsSync(this.kernel_image)){
+         console.log(`kernel_image:      ` + chalk.green(this.kernel_image))
+      } else {
+         console.log('kernel_image:      ' + chalk.red(this.kernel_image) + ' not found! Please edit /etc/penguins-eggs.d/eggs.yaml')
+      }
+      if (fs.existsSync(this.initrd_image)) {
+         console.log('initrd_image:      ' + chalk.green(this.initrd_image))
+      } else {
+         console.log('initrd_image:      ' + chalk.red(this.initrd_image) + ' not found! Please edit /etc/penguins-eggs.d/eggs.yaml')
+      }
       console.log(`work_dir:          ${this.work_dir.path}`)
-      //console.log(`efi_work:          ${this.efi_work}`)
+      // console.log(`efi_work:          ${this.efi_work}`)
       // console.log(`make_efi:          ${this.config.make_efi}`)
       // console.log(`make_md5sum:       ${this.config.make_md5sum}`)
       // console.log(`make_isohybrid:    ${this.config.make_isohybrid}`)

@@ -37,8 +37,8 @@ You will find here informations about penguin's eggs!
 
       const distroId = shx.exec('lsb_release -is', {silent: true}).stdout.trim()
       const versionId = shx.exec('lsb_release -cs', {silent: true}).stdout.trim()
-      console.log('distroId:          ' + chalk.green(distroId))
-      console.log('versionId:         ' + chalk.green(versionId))
+      console.log('distroId:          ' + chalk.cyan(distroId))
+      console.log('versionId:         ' + chalk.cyan(versionId))
       console.log('distroLike:        ' + settings.distro.distroLike)
       console.log('versionLike:       ' + settings.distro.versionLike)
       if (await Pacman.prerequisitesCheck()) {
@@ -57,7 +57,7 @@ You will find here informations about penguin's eggs!
          if (await Pacman.calamaresCheck()) {
             console.log('GUI Installer:     ' + chalk.bgGreen('ok'))
          } else {
-            console.log('GUI Installer:     ' + chalk.bgBlue('ko'))
+            console.log('GUI Installer:     ' + chalk.bgYellow('ko') + ' if you want calamares, run ' + chalk.cyan('sudo calamares --install'))
          }
       } else {
          console.log('GUI Installer:       ' + chalk.bgGreen('cli installer'))
@@ -66,12 +66,12 @@ You will find here informations about penguin's eggs!
       if (process.arch === 'x64') {
          if (!settings.config.make_efi) {
             if (Pacman.packageIsInstalled('grub-efi-amd64')) {
-               console.log('EFI              : ' + chalk.bgRed('ko') + ' edit file /etc/penguins-eggs.d/eggs.yaml and set ' + chalk.green('make_efi: true'))
+               console.log('EFI              : ' + chalk.bgRed('ko') + ' edit file /etc/penguins-eggs.d/eggs.yaml and set ' + chalk.cyan('make_efi: true'))
             } else {
-               console.log('EFI              : ' + chalk.bgRed('ko') + ' run ' + chalk.green(' apt install grub-efi-amd64') + ', edit ' + chalk.green('/etc/penguins-eggs.d/eggs.yaml') + ' and set ' + chalk.green('make_efi: true'))
+               console.log('EFI              : ' + chalk.bgRed('ko') + ' run ' + chalk.cyan('apt install grub-efi-amd64') + ', edit ' + chalk.cyan('/etc/penguins-eggs.d/eggs.yaml') + ' and set ' + chalk.green('make_efi: true'))
             }
          } else {
-            console.log('EFI: ' + chalk.bgGreen('ok'))
+            console.log('EFI              : ' + chalk.bgGreen('ok'))
          }
       }
 
