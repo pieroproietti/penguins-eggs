@@ -31,7 +31,7 @@ export default class ExportDeb extends Command {
       if (flags.clean) {
         console.log('cleaning remote host...')
         let arch = 'amd64.deb'
-        if (process.arch === 'ia32') {
+        if (process.arch === 'x32') {
           arch = 'i386.deb'
         }
         if (flags.armel) {
@@ -50,7 +50,7 @@ export default class ExportDeb extends Command {
       // esportazione
       console.log('copy to remote host...')
       let arch = 'amd64.deb'
-      if (process.arch === 'ia32') {
+      if (process.arch === 'x32') {
         arch = 'i386.deb'
       }
       if (flags.armel) {

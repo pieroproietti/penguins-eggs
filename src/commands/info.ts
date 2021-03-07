@@ -37,10 +37,10 @@ You will find here informations about penguin's eggs!
 
       const distroId = shx.exec('lsb_release -is', {silent: true}).stdout.trim()
       const versionId = shx.exec('lsb_release -cs', {silent: true}).stdout.trim()
-      console.log('distroId:          ' + distroId)
-      console.log('versionId:         ' + versionId)
-      console.log('distroLike:        ' + chalk.green(settings.distro.distroLike))
-      console.log('versionLike:       ' + chalk.green(settings.distro.versionLike))
+      console.log('distroId:          ' + chalk.green(distroId))
+      console.log('versionId:         ' + chalk.green(versionId))
+      console.log('distroLike:        ' + settings.distro.distroLike)
+      console.log('versionLike:       ' + settings.distro.versionLike)
       if (await Pacman.prerequisitesCheck()) {
          console.log('eggs prerequisites:' + chalk.bgGreen('ok'))
       } else {

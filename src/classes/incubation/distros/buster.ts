@@ -50,14 +50,10 @@ export class Buster {
       this.user_opt = user_opt
       this.verbose = verbose
       this.final = final 
-      if (process.arch === 'ia32') {
+      if (process.arch === 'x32') {
          this.dirCalamaresModules = '/usr/lib/calamares/modules/'
       }
       this.rootTemplate = `./../../../../conf/distros/${this.distro.versionLike}/calamares/`
-      // Correzione necessaria per LMDE4 debbie
-      // if (this.distro.versionId === 'debbie') {
-      //   this.rootTemplate = `./../../../../conf/distros/buster/calamares/`
-      // }
       this.rootTemplate = path.resolve(__dirname, this.rootTemplate) + '/'
    }
 

@@ -40,7 +40,7 @@ export default class Basket {
         if (this.lastVersion === '') {
             let arch = 'amd64'
 
-            if (process.arch === 'ia32' || process.arch === 'x32') {
+            if (process.arch === 'x32' || process.arch === 'x32') {
                 arch = 'i386'
             }
             const url = `https://penguins-eggs.net/versions/all/${arch}/`
@@ -68,7 +68,7 @@ export default class Basket {
         }
 
         let arch = 'amd64'
-        if (process.arch === 'ia32' || process.arch === 'x32') {
+        if (process.arch === 'x32' || process.arch === 'x32') {
             arch = 'i386'
         } else if (process.arch === 'arm') {
             arch = 'armel'

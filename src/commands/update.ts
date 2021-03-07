@@ -187,7 +187,7 @@ export default class Update extends Command {
       await Tu.loadSettings()
 
       let arch = 'amd64'
-      if (process.arch === 'ia32') {
+      if (process.arch === 'x32') {
          arch ='i386'
       }
       Utils.warning(`import from lan`)
