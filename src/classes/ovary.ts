@@ -568,14 +568,20 @@ export default class Ovary {
       }
       shx.mkdir('-p', dotDisk )
       // info
-      const infoFile = dotDisk + 'info'
-      const infoContent = this.settings.remix.fullname
-      fs.writeFileSync(infoFile, infoContent, 'utf-8')
+      let file = dotDisk + '/info'
+      let content = this.settings.config.snapshot_prefix + this.settings.config.snapshot_basename
+      fs.writeFileSync(file, content, 'utf-8')
 
-      // mkisofs
-      const mkisofsFile = dotDisk + 'mkisofs'
-      const mkisofsContent = ''
+      // shx.cp (scripts + '/mkisofs', dotDisk + '/mkisofs')
+      file = dotDisk + '/mkisofs'
+      content = '# at the moment it\'s just a stub'
+
+      const scripts = this.settings.work_dir.path
+      fs.writeFileSync(file, content, 'utf-8')
+
+      shx.cp (scripts + '/mksquashfs', dotDisk + '/mksquashfs')
    }
+
    /**
     * Restituisce true per le direcory da montare con overlay
     * 
@@ -1233,7 +1239,7 @@ export default class Ovary {
                           ${this.settings.work_dir.pathIso}`
 
       cmd = cmd.replace(/\s\s+/g, ' ')
-      Utils.writeX(`${this.settings.work_dir.path}makeIso`, cmd)
+      Utils.writeX(`${this.settings.work_dir.path}mkisofs`, cmd)
       if (!scriptOnly) {
          await exec(cmd, echo)
       }
@@ -1287,7 +1293,7 @@ export default class Ovary {
          console.log(`Make all yours modifications in the directories filesystem.squashfs and iso.`)
          console.log(`After when you are ready:`)
          console.log(chalk.cyanBright(`sudo ./mksquashfs`))
-         console.log(chalk.cyanBright(`sudo ./makeIso`))
+         console.log(chalk.cyanBright(`sudo ./mkisofs`))
          console.log(chalk.cyanBright(`sudo ./ubind`))
          console.log(`happy hacking!`)
       }
