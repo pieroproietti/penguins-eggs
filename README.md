@@ -95,7 +95,7 @@ $ npm install -g penguins-eggs
 $ eggs COMMAND
 running command...
 $ eggs (-v|--version|version)
-penguins-eggs/7.8.31 linux-x64 node-v14.16.0
+penguins-eggs/7.8.31 linux-x64 node-v14.15.4
 $ eggs --help [COMMAND]
 USAGE
   $ eggs COMMAND
@@ -123,6 +123,7 @@ USAGE
 * [`eggs tools:clean`](#eggs-toolsclean)
 * [`eggs tools:locales`](#eggs-toolslocales)
 * [`eggs tools:skel`](#eggs-toolsskel)
+* [`eggs tools:statistics [FILE]`](#eggs-toolsstatistics-file)
 * [`eggs tools:yolk`](#eggs-toolsyolk)
 * [`eggs update`](#eggs-update)
 
@@ -517,6 +518,22 @@ EXAMPLE
 ```
 
 _See code: [src/commands/tools/skel.ts](https://github.com/pieroproietti/penguins-eggs/blob/v7.8.31/src/commands/tools/skel.ts)_
+
+## `eggs tools:statistics [FILE]`
+
+describe the command here
+
+```
+USAGE
+  $ eggs tools:statistics [FILE]
+
+OPTIONS
+  -f, --force
+  -h, --help       show CLI help
+  -n, --name=name  name to print
+```
+
+_See code: [src/commands/tools/statistics.ts](https://github.com/pieroproietti/penguins-eggs/blob/v7.8.31/src/commands/tools/statistics.ts)_
 
 ## `eggs tools:yolk`
 
