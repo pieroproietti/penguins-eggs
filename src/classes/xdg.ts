@@ -208,7 +208,9 @@ export default class Xdg {
       await execIfExist(`rm -rf`, `/etc/skel/.config/mpv`, verbose)
       // await execIfExist(`rm -rf`, `/etc/skel/.config/nemo`, verbose)
       await execIfExist(`rm -rf`, `/etc/skel/.config/obs-studio`, verbose)
-      await execIfExist(`rm -rf`, `/etc/skel/.config/plank`, verbose)
+      if (!Pacman.packageIsInstalled('plank')) {
+         await execIfExist(`rm -rf`, `/etc/skel/.config/plank`, verbose)
+      }
       await execIfExist(`rm -rf`, `/etc/skel/.config/Postman`, verbose)
       await execIfExist(`rm -rf`, `/etc/skel/.config/procps`, verbose)
       // await execIfExist(`rm -rf`, `/etc/skel/.config/pulse`, verbose)
@@ -238,12 +240,16 @@ export default class Xdg {
       await execIfExist(`rm -rf`, `/etc/skel/.local/share/icons`, verbose)
       await execIfExist(`rm -rf`, `/etc/skel/.local/share/keyrings`, verbose)
       await execIfExist(`rm -rf`, `/etc/skel/.local/share/nemo`, verbose)
-      await execIfExist(`rm -rf`, `/etc/skel/.local/share/plank`, verbose)
+      if (!Pacman.packageIsInstalled('plank')) {
+         await execIfExist(`rm -rf`, `/etc/skel/.local/share/plank`, verbose)
+      }
       await execIfExist(`rm -rf`, `/etc/skel/.local/share/recently-used.xbel`, verbose)
       await execIfExist(`rm -rf`, `/etc/skel/.local/share/shotwell`, verbose)
       await execIfExist(`rm -rf`, `/etc/skel/.local/share/totem`, verbose)
       await execIfExist(`rm -rf`, `/etc/skel/.local/share/Trash`, verbose)
       await execIfExist(`rm -rf`, `/etc/skel/.local/share/webkitgtk`, verbose)
+
+
 
       // Sistemo i diritti della skel
       await exec(`chmod a+rwx,g-w,o-w /etc/skel/ -R`, echo)
