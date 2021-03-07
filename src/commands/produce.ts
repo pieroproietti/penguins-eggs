@@ -105,7 +105,6 @@ export default class Produce extends Command {
          } else if (flags.normal) {
             compression = 'xz'
          } else if (flags.max) {
-            }
             compression = 'xz -Xbcj x86'
          }
 

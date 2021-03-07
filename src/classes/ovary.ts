@@ -37,8 +37,6 @@ import Systemctl from './systemctl'
 import Bleach from './bleach'
 import Repo from './yolk'
 import cliAutologin = require('../lib/cli-autologin')
-import { fail } from 'assert'
-
 
 /**
  * Ovary:
@@ -995,6 +993,13 @@ export default class Ovary {
       const echo = Utils.setEcho(verbose)
       if (verbose) {
          console.log('ovary: makeEfi')
+      }
+
+      // Controlla la presenza di grub-common ed esce
+      if (!Pacman.packageIsInstalled('grub-common')) {
+         Utils.error(`something went wrong! Cannot find package grub-common.`)
+         Utils.warning('Problably your system boot with rEFInd or others, to generate a UEFI image we need grub too')
+         process.exit(1)
       }
 
       /**

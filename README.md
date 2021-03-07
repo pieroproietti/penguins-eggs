@@ -118,6 +118,7 @@ USAGE
 * [`eggs install`](#eggs-install)
 * [`eggs kill`](#eggs-kill)
 * [`eggs mom`](#eggs-mom)
+* [`eggs produce`](#eggs-produce)
 * [`eggs remove`](#eggs-remove)
 * [`eggs tools:clean`](#eggs-toolsclean)
 * [`eggs tools:locales`](#eggs-toolslocales)
@@ -368,6 +369,73 @@ OPTIONS
 ```
 
 _See code: [src/commands/mom.ts](https://github.com/pieroproietti/penguins-eggs/blob/v7.8.31/src/commands/mom.ts)_
+
+## `eggs produce`
+
+the system produce an egg: iso image of your system
+
+```
+USAGE
+  $ eggs produce
+
+OPTIONS
+  -b, --basename=basename  basename
+  -f, --fast               fast compression
+  -h, --help               show CLI help
+  -m, --max                max compression
+  -n, --normal             normal compression
+  -p, --prefix=prefix      prefix
+  -s, --script             script mode. Generate scripts to manage iso build
+  -v, --verbose            verbose
+  -y, --yolk               -y force yolk renew
+  --adapt                  adapt video resolution in VM
+  --final                  final: remove eggs prerequisites, calamares and all it's dependencies
+  --ichoice                allows the user to choose the installation type cli/gui
+  --pve                    administration of virtual machines (Proxmox-VE)
+  --rsupport               remote support via dwagent
+  --theme=theme            theme/branding for eggs and calamares
+
+ALIASES
+  $ eggs spawn
+  $ eggs lay
+
+EXAMPLES
+  $ sudo eggs produce 
+  produce an ISO called [hostname]-[arch]-YYYY-MM-DD_HHMM.iso, compressed xz (standard compression).
+  If hostname=ugo and arch=i386 ugo-x86-2020-08-25_1215.iso
+
+  $ sudo eggs produce -v
+  the same as the previuos, but with more explicative output
+
+  $ sudo eggs produce -vf
+  the same as the previuos, compression lz4 (fastest but about 30%
+  less compressed than xz)
+
+  $ sudo eggs produce -vm
+  the same as the previuos, compression xz (normal compression xz)
+
+  $ sudo eggs produce -vm
+  the same as the previuos, compression xz -Xbcj x86 (max compression, about 10%
+  more compressed)
+
+  $ sudo eggs produce -vf --basename leo --theme debian --adapt 
+  produce an ISO called leo-i386-2020-08-25_1215.iso compression lz4,
+  using Debian theme and link to adapt
+
+  $ sudo eggs produce -v --basename leo --theme debian --adapt 
+  produce an ISO called leo-i386-2020-08-25_1215.iso compression xz,
+  using Debian theme and link to adapt
+
+  $ sudo eggs produce -v --basename leo --rsupport 
+  produce an ISO called leo-i386-2020-08-25_1215.iso compression xz, using eggs
+  theme and link to dwagent
+
+  $ sudo eggs produce -vs --basename leo --rsupport 
+  produce scripts to build an ISO as the previus example. Scripts can be found
+  in /home/eggs/ovarium and you can customize all you need
+```
+
+_See code: [src/commands/produce.ts](https://github.com/pieroproietti/penguins-eggs/blob/v7.8.31/src/commands/produce.ts)_
 
 ## `eggs remove`
 
