@@ -50,6 +50,7 @@ export default class ExportDeb extends Command {
       // esportazione
       console.log('copy to remote host...')
       let arch = 'amd64.deb'
+      console.log(process.arch)
       if (process.arch === 'x32') {
         arch = 'i386.deb'
       }
