@@ -18,11 +18,11 @@ You can follow the project also consulting the [commit history](https://github.c
 ## Changelog
 Versions are listed on reverse order, the first is the last one.
 
-### eggs-7.8.32
-* added .disk folder in iso with same informations
+### eggs-7.8.33
+* added .disk folder in iso with info, mkiso, etc. added version in calamares, bugfix ia32
 
 ### eggs-7.8.31
-* bugfixes: renamed all ia32 to x32 ERROR, check the presence of vmlinuz and initrd_img else stop, versionLike in rootTemplate of calamares
+* bugfixes: check the presence of vmlinuz and initrd_img else stop, versionLike in rootTemplate of calamares
 
 ### eggs-7.8.30
 * rewrite of distros.ts class: cleanup and reorganization
