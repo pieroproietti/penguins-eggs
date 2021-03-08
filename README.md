@@ -123,7 +123,7 @@ USAGE
 * [`eggs tools:clean`](#eggs-toolsclean)
 * [`eggs tools:locales`](#eggs-toolslocales)
 * [`eggs tools:skel`](#eggs-toolsskel)
-* [`eggs tools:statistics`](#eggs-toolsstatistics)
+* [`eggs tools:stat`](#eggs-toolsstat)
 * [`eggs tools:yolk`](#eggs-toolsyolk)
 * [`eggs update`](#eggs-update)
 
@@ -519,25 +519,24 @@ EXAMPLE
 
 _See code: [src/commands/tools/skel.ts](https://github.com/pieroproietti/penguins-eggs/blob/v7.8.32/src/commands/tools/skel.ts)_
 
-## `eggs tools:statistics`
+## `eggs tools:stat`
 
-describe the command here
+get statistics from sourceforge
 
 ```
 USAGE
-  $ eggs tools:statistics
+  $ eggs tools:stat
 
 OPTIONS
   -h, --help   show CLI help
-  -m, --month  stats month
-  -w, --week   stats week
-  -y, --year   stats year
+  -m, --month  current month
+  -y, --year   current year
 
 ALIASES
   $ eggs stat
 ```
 
-_See code: [src/commands/tools/statistics.ts](https://github.com/pieroproietti/penguins-eggs/blob/v7.8.32/src/commands/tools/statistics.ts)_
+_See code: [src/commands/tools/stat.ts](https://github.com/pieroproietti/penguins-eggs/blob/v7.8.32/src/commands/tools/stat.ts)_
 
 ## `eggs tools:yolk`
 

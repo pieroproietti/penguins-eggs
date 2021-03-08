@@ -24,6 +24,7 @@ export default class Config extends Command {
     static aliases = ['prerequisites']
     static flags = {
         nointeractive: flags.boolean({ char: 'n', description: 'assume yes' }),
+        renew: flags.boolean({char: 'r', description: 'remove and create configuraration'}),
         help: flags.help({ char: 'h' }),
         verbose: flags.boolean({ char: 'v', description: 'verbose' }),
     }
@@ -40,6 +41,10 @@ export default class Config extends Command {
         }
 
         if (Utils.isRoot(this.id)) {
+            if (flags.renew){
+                await exec('rm /etc/penguins-eggs.d -rf')
+            }
+
             /**
              * Se siamo in un pacchetto npm
              * Aggiunge autocomplete e manPage
