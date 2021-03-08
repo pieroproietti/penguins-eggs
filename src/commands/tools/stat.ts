@@ -2,20 +2,19 @@ import { Command, flags } from '@oclif/command'
 import Utils from '../../classes/utils'
 const yaml = require('js-yaml')
 
-export default class ToolsStatistics extends Command {
-  static description = 'describe the command here'
+export default class ToolsStat extends Command {
+  static description = 'get statistics from sourceforge'
 
   static flags = {
     help: flags.help({ char: 'h' }),
-    week: flags.boolean({ char: 'w', description: 'stats week' }),
-    month: flags.boolean({ char: 'm', description: 'stats month' }),
-    year: flags.boolean({ char: 'y', description: 'stats year' }),
+    month: flags.boolean({ char: 'm', description: 'current month' }),
+    year: flags.boolean({ char: 'y', description: 'current year' }),
   }
 
   static aliases = ['stat']
 
   async run() {
-    const { args, flags } = this.parse(ToolsStatistics)
+    const { args, flags } = this.parse(ToolsStat)
     Utils.titles(this.id + ' ' + this.argv)
 
     let yesterday = new Date()
@@ -34,8 +33,6 @@ export default class ToolsStatistics extends Command {
     let end = year + '-' + month + '-' + day
     let start = year + '-' + month + '-' + day
 
-
-
     if (flags.month) {
       start = year + '-' + month + '-01'
     }
@@ -44,7 +41,7 @@ export default class ToolsStatistics extends Command {
       start = year + '-01-01'
     }
 
-    console.log('start:' + start + ', end: ' + end + '\n')
+    this.log('start: ' + start + ', end: ' + end + '\n')
     await this.show(start, end, 'packages-deb')
     await this.show(start, end, 'iso')
   }
@@ -57,8 +54,8 @@ export default class ToolsStatistics extends Command {
     const axios = require('axios').default
     const res = await axios.get(url)
     const data = res.data
-    
     console.log(data.countries)
     //console.log(yaml.dump(data))
   }
 }
+
