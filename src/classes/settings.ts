@@ -271,15 +271,9 @@ export default class Settings {
       } else {
          this.remix.branding = theme
       }
-
-      if (basename !== '') {
-         this.remix.name = basename
-         this.remix.versionName = basename
-      } else {
-         this.remix.name = this.config.snapshot_basename
-         let fullname = this.config.snapshot_prefix + this.config.snapshot_basename
-         this.remix.fullname = fullname.replace(/-/g, ' ').replace('egg of ', '')
-         this.remix.versionName = this.remix.fullname.toUpperCase()
-      }
+      this.remix.name = this.config.snapshot_basename
+      let fullname = this.config.snapshot_prefix + this.config.snapshot_basename
+      this.remix.fullname = fullname.replace(/-/g, ' ').replace('egg of ', '')
+      this.remix.versionName = this.remix.fullname.toUpperCase()
    }
 }

@@ -19,12 +19,18 @@ export function branding(remix: IRemix, distro: IDistro, brand = '', verbose = f
    const supportUrl: string = distro.supportUrl
    const bugReportUrl = 'https://github.com/pieroproietti/penguins-eggs/issues'
 
-   const productName = remix.fullname
+   const productName = remix.versionName // Questa va nel titolo ed in basso
    const shortProductName = remix.fullname
-   const version = remix.versionNumber + ' ( ' + remix.versionName + ')'
+   const today = new Date()
+   let day = ("0" + today.getDate()).slice(-2);
+   let month = ("0" + (today.getMonth() + 1)).slice(-2);
+   let year = today.getFullYear();
+   let version = year + '-' + month + '-' + day
+
+
    const shortVersion = remix.versionNumber
-   const versionedName = remix.fullname
-   const shortVersionedName = remix.versionName // E la stringa che finisce nel titolo
+   const versionedName = remix.fullname  + ' ('+ version + ')' // Questa la mette nella descrizione andrebbe aggiunta la versione dal nome della iso
+   const shortVersionedName = remix.versionName + version
    let bootloaderEntryName = distro.distroLike
 
    // Necessario: Devuan e LMDE devono avere EFI=Debian

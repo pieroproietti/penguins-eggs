@@ -151,7 +151,7 @@ export default class Ovary {
             }
             // Calamares prende il tema da settings.remix.branding
             this.incubator = new Incubator(this.settings.remix, this.settings.distro, this.settings.config.user_opt, verbose)
-            this.incubator.config(final)
+            await this.incubator.config(final)
          }
          await this.isolinux(this.theme, verbose)
          await this.copyKernel()
@@ -574,11 +574,55 @@ export default class Ovary {
 
       // shx.cp (scripts + '/mkisofs', dotDisk + '/mkisofs')
       file = dotDisk + '/mkisofs'
-      content = '# at the moment it\'s just a stub'
 
-      const scripts = this.settings.work_dir.path
+      let uefi_opt = ''
+      if (this.settings.config.make_efi) {
+         uefi_opt = '-eltorito-alt-boot -e boot/grub/efiboot.img -isohybrid-gpt-basdat -no-emul-boot'
+      }
+
+
+      /**
+       * per ovviare al problema che doDisk viene chiamato 
+       * prima di makeISO genero il comando al solo scopo
+       * di salvarlo nella iso
+       */
+      let isoHybridOption = `-isohybrid-mbr ${this.settings.distro.isolinuxPath}isohdpfx.bin `
+      if (this.settings.config.make_isohybrid) {
+         if (fs.existsSync('/usr/lib/syslinux/mbr/isohdpfx.bin')) {
+            isoHybridOption = '-isohybrid-mbr /usr/lib/syslinux/mbr/isohdpfx.bin'
+         } else if (fs.existsSync('/usr/lib/syslinux/isohdpfx.bin')) {
+            isoHybridOption = '-isohybrid-mbr /usr/lib/syslinux/isohdpfx.bin'
+         } else if (fs.existsSync('/usr/lib/ISOLINUX/isohdpfx.bin')) {
+            isoHybridOption = '-isohybrid-mbr /usr/lib/ISOLINUX/isohdpfx.bin'
+         } else {
+            Utils.warning("Can't create isohybrid. File: isohdpfx.bin not found. The resulting image will be a standard iso file")
+         }
+      }
+      this.settings.isoFilename = Utils.getFilename(this.settings.remix.name)
+
+      content = `xorriso  -as mkisofs \
+                          -volid ${this.settings.isoFilename} \
+                          -joliet-long \
+                          -l \
+                          -iso-level 3 \
+                          -b isolinux/isolinux.bin \
+                          ${isoHybridOption} \
+                          -partition_offset 16 \
+                          -c isolinux/boot.cat \
+                          -no-emul-boot \
+                          -boot-load-size 4 \
+                          -boot-info-table \
+                          ${uefi_opt} \
+                          -output ${this.settings.config.snapshot_dir}${this.settings.config.snapshot_prefix}${this.settings.isoFilename} \
+                          ${this.settings.work_dir.pathIso}`
+
+      /**
+       * rimuovo gli spazi
+       */
+      content  = content.replace(/\s\s+/g, ' ')
       fs.writeFileSync(file, content, 'utf-8')
 
+      const scripts = this.settings.work_dir.path
       shx.cp (scripts + '/mksquashfs', dotDisk + '/mksquashfs')
    }
 

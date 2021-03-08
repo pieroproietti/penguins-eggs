@@ -57,6 +57,7 @@ export default class ToolsStatistics extends Command {
     const axios = require('axios').default
     const res = await axios.get(url)
     const data = res.data
+    
     console.log(data.countries)
     //console.log(yaml.dump(data))
   }

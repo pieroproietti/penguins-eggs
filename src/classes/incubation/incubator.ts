@@ -59,26 +59,27 @@ export default class Incubator {
       const echo = Utils.setEcho(verbose)
 
       this.createCalamaresDirs()
-      this.createBranding()
       if (this.distro.versionLike === 'buster') {
          const buster = new Buster(this.remix, this.distro, final, this.user_opt, this.verbose)
-         buster.create()
+         await buster.create()
       } else if (this.distro.versionLike === 'bullseye') {
          const bullseye = new Bullseye(this.remix, this.distro, final, this.user_opt, this.verbose)
-         bullseye.create()
+         await bullseye.create()
       } else if (this.distro.versionLike === 'beowulf') {
          const beowulf = new Beowulf(this.remix, this.distro, final, this.user_opt, this.verbose)
-         beowulf.create()
+         await beowulf.create()
       } else if (this.distro.versionLike === 'focal') {
          const focal = new Focal(this.remix, this.distro, final, this.user_opt, this.verbose)
-         focal.create()
+         await focal.create()
       } else if (this.distro.versionLike === 'groovy') {
          const groovy = new Groovy(this.remix, this.distro, final, this.user_opt, this.verbose)
-         groovy.create()
+         await groovy.create()
       } else if (this.distro.versionLike === 'bionic') {
          const bionic = new Bionic(this.remix, this.distro, final, this.user_opt, this.verbose)
-         bionic.create()
+         await bionic.create()
       }
+      this.createBranding()
+
    }
 
    /**
