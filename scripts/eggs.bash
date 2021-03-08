@@ -9,8 +9,8 @@ _eggs()
   local commands="
 adapt --verbose --help
 calamares --help --verbose --install --final --remove --theme
-config --nointeractive --help --verbose
-dad --help --verbose
+config --nointeractive --renew --help --verbose
+dad --help --renew --verbose
 export:deb --help --clean --armel --amd64 --i386 --all
 export:docs --help
 export:iso --help --clean
@@ -23,6 +23,7 @@ remove --purge --autoremove --help --verbose
 tools:clean --help --verbose
 tools:locales --help --reinstall --verbose
 tools:skel --help --user --verbose
+tools:stat --help --month --year
 tools:yolk --help --verbose
 update --help --apt --basket --npm --verbose
 help --all
