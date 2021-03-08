@@ -26,11 +26,9 @@ export function branding(remix: IRemix, distro: IDistro, brand = '', verbose = f
    let month = ("0" + (today.getMonth() + 1)).slice(-2);
    let year = today.getFullYear();
    let version = year + '-' + month + '-' + day
-
-
-   const shortVersion = remix.versionNumber
+   const shortVersion = version
    const versionedName = remix.fullname  + ' ('+ version + ')' // Questa la mette nella descrizione andrebbe aggiunta la versione dal nome della iso
-   const shortVersionedName = remix.versionName + version
+   const shortVersionedName = remix.versionName + ' ' + version
    let bootloaderEntryName = distro.distroLike
 
    // Necessario: Devuan e LMDE devono avere EFI=Debian

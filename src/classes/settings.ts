@@ -28,6 +28,7 @@ import Distro from './distro'
 import Pacman from './pacman'
 
 import { IConfig } from '../interfaces/'
+import { O_NOATIME } from 'constants'
 
 
 const config_file = '/etc/penguins-eggs.d/eggs.yaml' as string
@@ -272,8 +273,9 @@ export default class Settings {
          this.remix.branding = theme
       }
       this.remix.name = this.config.snapshot_basename
-      let fullname = this.config.snapshot_prefix + this.config.snapshot_basename
-      this.remix.fullname = fullname.replace(/-/g, ' ').replace('egg of ', '')
-      this.remix.versionName = this.remix.fullname.toUpperCase()
+      let name = this.config.snapshot_prefix + this.config.snapshot_basename
+      name = name.replace(/-/g, ' ').replace('egg of ', '')
+      this.remix.fullname = name
+      this.remix.versionName = name.toUpperCase()
    }
 }

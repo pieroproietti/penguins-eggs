@@ -205,6 +205,7 @@ USAGE
 OPTIONS
   -h, --help           show CLI help
   -n, --nointeractive  assume yes
+  -r, --renew          remove and create configuraration
   -v, --verbose        verbose
 
 ALIASES
@@ -227,6 +228,7 @@ USAGE
 
 OPTIONS
   -h, --help     show CLI help
+  -r, --renew    remove and create configuraration
   -v, --verbose
 ```
 
