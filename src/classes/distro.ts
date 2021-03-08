@@ -110,7 +110,7 @@ class Distro implements IDistro {
        */
       if (this.versionId === 'n/a') {
          // può essere Deepin apricot
-         if (this.distroId = 'Deepin') {
+         if (this.distroId === 'Deepin') {
             this.versionId = 'apricot'
          } else if (fs.existsSync('/etc/debian_version')) {
             const debianVersion = fs.readFileSync('/etc/debian_version', 'utf8')
