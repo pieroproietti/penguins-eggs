@@ -127,7 +127,7 @@ class Distro implements IDistro {
             }
          }
       } else if (this.versionId === 'testing') {
-         if (this.distroId = 'Netrunner') {
+         if (this.distroId === 'Netrunner') {
             this.versionId = 'buster/sid'
          }
       }

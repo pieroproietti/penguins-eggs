@@ -275,12 +275,11 @@ export default class Settings {
       if (basename !== '') {
          this.remix.name = basename
          this.remix.versionName = basename
-         this.remix.fullname = basename
       } else {
          this.remix.name = this.config.snapshot_basename
-         this.remix.fullname = this.config.snapshot_prefix + this.config.snapshot_basename
-         this.remix.fullname = this.remix.fullname.replace('-', ' ')
-               this.remix.versionName = this.config.snapshot_basename
+         let fullname = this.config.snapshot_prefix + this.config.snapshot_basename
+         this.remix.fullname = fullname.replace(/-/g, ' ').replace('egg of ', '')
+         this.remix.versionName = this.remix.fullname.toUpperCase()
       }
    }
 }

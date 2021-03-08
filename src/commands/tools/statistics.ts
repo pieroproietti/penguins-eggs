@@ -7,7 +7,6 @@ export default class ToolsStatistics extends Command {
 
   static flags = {
     help: flags.help({ char: 'h' }),
-    day: flags.boolean({ char: 'd', description: 'stats day' }),
     week: flags.boolean({ char: 'w', description: 'stats week' }),
     month: flags.boolean({ char: 'm', description: 'stats month' }),
     year: flags.boolean({ char: 'y', description: 'stats year' }),
@@ -19,38 +18,46 @@ export default class ToolsStatistics extends Command {
     const { args, flags } = this.parse(ToolsStatistics)
     Utils.titles(this.id + ' ' + this.argv)
 
-    let date_ob = new Date();
+    let yesterday = new Date()
+    yesterday.setDate(yesterday.getDate() - 1)
 
     // current date
     // adjust 0 before single digit date
-    let day = ("0" + date_ob.getDate()).slice(-2);
+    let day = ("0" + yesterday.getDate()).slice(-2);
 
     // current month
-    let month = ("0" + (date_ob.getMonth() + 1)).slice(-2);
+    let month = ("0" + (yesterday.getMonth() + 1)).slice(-2);
 
     // current year
-    let year = date_ob.getFullYear();
+    let year = yesterday.getFullYear();
 
-    let end = year + '-' + month + '-' + day 
+    let end = year + '-' + month + '-' + day
     let start = year + '-' + month + '-' + day
 
+
+
     if (flags.month) {
-      start= year + '-' + month + '-01' 
+      start = year + '-' + month + '-01'
     }
 
     if (flags.year) {
-      start= year + '-01-01' 
+      start = year + '-01-01'
     }
 
+    console.log('start:' + start + ', end: ' + end + '\n')
+    await this.show(start, end, 'packages-deb')
+    await this.show(start, end, 'iso')
+  }
 
-    let url = 'https://sourceforge.net/projects/penguins-eggs/files/stats/json'
+  async show(start: string, end: string, type = 'packages-deb') {
+    let url = `https://sourceforge.net/projects/penguins-eggs/files/${type}/stats/json`
     const request = '?start_date=' + start + '&end_date=' + end
-    url += request   
-    console.log(url)
+    url += request
+    console.log(type)
     const axios = require('axios').default
     const res = await axios.get(url)
     const data = res.data
-    console.log(yaml.dump(data))
-
+    console.log(data.countries)
+    //console.log(yaml.dump(data))
   }
 }

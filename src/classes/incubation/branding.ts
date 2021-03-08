@@ -19,13 +19,13 @@ export function branding(remix: IRemix, distro: IDistro, brand = '', verbose = f
    const supportUrl: string = distro.supportUrl
    const bugReportUrl = 'https://github.com/pieroproietti/penguins-eggs/issues'
 
-   const productName = remix.fullname // remix.versionId
-   const shortProductName = remix.name
+   const productName = remix.fullname
+   const shortProductName = remix.fullname
    const version = remix.versionNumber + ' ( ' + remix.versionName + ')'
    const shortVersion = remix.versionNumber
-   const versionedName = remix.name
-   const shortVersionedName = remix.versionName
-   let bootloaderEntryName = distro.distroId
+   const versionedName = remix.fullname
+   const shortVersionedName = remix.versionName // E la stringa che finisce nel titolo
+   let bootloaderEntryName = distro.distroLike
 
    // Necessario: Devuan e LMDE devono avere EFI=Debian
    if (bootloaderEntryName === 'Devuan') {
