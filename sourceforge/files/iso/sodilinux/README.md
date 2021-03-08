@@ -14,13 +14,22 @@ penguins-eggs
 
 All ISOs are based on [Sodilinux](https://sodilinux.itd.cnr.it/)
 
+So.Di.Linux è un progetto che si colloca nella linea di ricerca dell'Istituto per le Tecnologie Didattiche del CNR dedicata a "La scuola del futuro: modelli, metodologie e prototipi per l'innovazione educativa." Frutto della collaborazione scientifica fra [ITD-CNR](http://www.itd.cnr.it/) e [AICA](http://www.aicanet.it/) (Associazione Italiana per il Calcolo Automatico), dal 2003 il progetto ha avuto come oggetto una ricerca finalizzata alla realizzazione e alla diffusione di una serie di strumenti didattici Open Source nel mondo della scuola.
 
+![sodilinux](https://sodilinux.itd.cnr.it/pluginfile.php/26/mod_page/content/5/100000000000021800000128CC8FF28D.jpg)
 # user/password
 * ```live/evolution```
 * ```root/evolution```
 
-* **egg_of_sodilinux-o2025** sodilinux remastered with eggs
+* **egg_of_sodilinux-o2025** la versione di Sodilinux rimasterizzata con eggs e che può pure figliare!
 
-# Disclaim
-__Please note what this project is in no way connected to Sodilinux in any official way, it’s just my personal experiment__.
+Spero possa essere il mio piccolo contributo, non conosco molto ancora questo sistema, ma lo trovo molto interessante perchè rivolto ai giovani ed alla scuola.
+
+Cercherò di apprenderne le capacità facendone uso con mio nipote.
+
+Piero Proietti <piero.proietti@gmail.com>
+
+# Avviso
+
+__Si prega di notare che questo progetto di mera rimasterizzazione di Sodilinux non è in nessun modo ufficialmente connesso con Sodilinux. E' solo un mio esperimento personale__.
 
