@@ -119,7 +119,7 @@ export default class Config extends Command {
         }
 
         if (i.efi && !nointeractive) {
-            if (process.arch === 'x32') {
+            if (process.arch === 'ia32') {
                 // do nothing
             } else if (process.arch === 'x64') {
                 console.log('- install efi packages')

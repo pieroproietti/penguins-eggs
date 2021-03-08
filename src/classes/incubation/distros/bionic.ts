@@ -53,7 +53,7 @@ export class Bionic {
       this.user_opt = user_opt
       this.verbose = verbose
       this.final = final
-      if (process.arch === 'x32') {
+      if (process.arch === 'ia32') {
          this.dirCalamaresModules = '/usr/lib/calamares/modules/'
       }
       this.rootTemplate = `./../../../../conf/distros/${this.distro.versionLike}/calamares/`

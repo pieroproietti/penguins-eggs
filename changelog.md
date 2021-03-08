@@ -22,7 +22,7 @@ Versions are listed on reverse order, the first is the last one.
 * added .disk folder in iso with same informations
 
 ### eggs-7.8.31
-* bugfixes: renamed all ia32 to x32, check the presence of vmlinuz and initrd_img else stop, versionLike in rootTemplate of calamares
+* bugfixes: renamed all ia32 to x32 ERROR, check the presence of vmlinuz and initrd_img else stop, versionLike in rootTemplate of calamares
 
 ### eggs-7.8.30
 * rewrite of distros.ts class: cleanup and reorganization

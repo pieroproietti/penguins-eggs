@@ -66,7 +66,7 @@ export default class Tools {
             const settings = new Settings()
             settings.load()
             let arch = 'x64'
-            if (process.arch === 'x32') {
+            if (process.arch === 'ia32') {
               arch = 'i386'
             } else if (process.arch === 'armel') {
               arch = 'armel'

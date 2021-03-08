@@ -49,7 +49,7 @@ export default class Yolk {
          */
         const packages = ['grub-pc', 'cryptsetup', 'keyutils']
         let arch = 'amd64'
-        if (process.arch === 'x32') {
+        if (process.arch === 'ia32') {
             arch = 'i386'
         } else {
             packages.push('grub-efi-amd64')
