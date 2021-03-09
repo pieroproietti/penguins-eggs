@@ -55,23 +55,23 @@ You will find here informations about penguin's eggs!
 
       if (await Pacman.isGui()) {
          if (await Pacman.calamaresCheck()) {
-            console.log('GUI Installer:     ' + chalk.bgGreen('ok'))
+            console.log('installer:         ' + chalk.bgGreen('GUI'))
          } else {
-            console.log('GUI Installer:     ' + chalk.bgYellow('ko') + ' if you want calamares, run ' + chalk.cyan('sudo calamares --install'))
+            console.log('installer:        ' + chalk.bgYellow('CLI') + ' if you want calamares, run ' + chalk.cyan('sudo eggs calamares --install'))
          }
       } else {
-         console.log('GUI Installer:       ' + chalk.bgGreen('cli installer'))
+         console.log('installer:           ' + chalk.bgGreen('CLI'))
       }
 
       if (process.arch === 'x64') {
          if (!settings.config.make_efi) {
             if (Pacman.packageIsInstalled('grub-efi-amd64')) {
-               console.log('EFI              : ' + chalk.bgRed('ko') + ' edit file /etc/penguins-eggs.d/eggs.yaml and set ' + chalk.cyan('make_efi: true'))
+               console.log('EFI:               ' + chalk.bgRed('ko') + ' run ' + chalk.cyan('sudo eggs dad -c') + ' or edit ' + chalk.cyan('/etc/penguins-eggs.d/eggs.yaml') + ' and set ' + chalk.cyan('make_efi: true'))
             } else {
-               console.log('EFI              : ' + chalk.bgRed('ko') + ' run ' + chalk.cyan('apt install grub-efi-amd64') + ', edit ' + chalk.cyan('/etc/penguins-eggs.d/eggs.yaml') + ' and set ' + chalk.green('make_efi: true'))
+               console.log('EFI:               ' + chalk.bgRed('ko') + ' run ' + chalk.cyan('apt install grub-efi-amd64') + ' and ' + chalk.cyan('/etc/penguins-eggs.d/eggs.yaml') + ' and set ' + chalk.green('make_efi: true'))
             }
          } else {
-            console.log('EFI              : ' + chalk.bgGreen('ok'))
+            console.log('EFI:               ' + chalk.bgGreen('ok'))
          }
       }
 

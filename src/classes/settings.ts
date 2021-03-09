@@ -176,7 +176,7 @@ export default class Settings {
       // console.log(`config_file:       ${config_file}`)
       console.log(`snapshot_dir:      ${this.config.snapshot_dir}`)
       if (this.config.snapshot_prefix===''){
-         console.log('snapshot_prefix:   ' + chalk.bgYellow('no value') + ', use eggs dad or edit /etc/penguins-eggs/eggs.yaml')
+         console.log('snapshot_prefix:   ' + chalk.bgYellow('no value') + ' run ' + chalk.cyan('sudo eggs dad -c') + ' or edit ' + chalk.cyan('/etc/penguins-eggs.d/eggs.yaml'))
       } else {
          console.log('snapshot_prefix:   ' + chalk.green (this.config.snapshot_prefix))
       }

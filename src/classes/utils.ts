@@ -27,6 +27,16 @@ import figlet = require('figlet')
 export default class Utils {
 
    /**
+    * Restituisce il prefisso della iso
+    * @param distroId 
+    * @param versionId 
+    */
+   static snapshotPrefix(distroId: string, versionId: string) : string {
+      let result = 'egg-of-' + distroId.toLowerCase() + '-' + versionId.toLowerCase() + '-'
+      result = result.replace(`/`,'-')
+   }
+
+   /**
    * Controlla se il sistema è avviato con systemd
    */
    static isSystemd(): boolean {

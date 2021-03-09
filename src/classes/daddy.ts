@@ -139,8 +139,7 @@ export default class Daddy {
         }
 
         if (c.snapshot_prefix === '') {
-            c.snapshot_prefix = 'egg-of-' + this.settings.distro.distroId.toLowerCase() + '-' + this.settings.distro.versionId.toLowerCase() + '-'
-            c.snapshot_prefix = c.snapshot_prefix .replace(`/`,'-')
+            c.snapshot_prefix = Utils.snapshotPrefix(this.settings.distro.distroId, this.settings.distro.versionId)
         }
 
         return new Promise(function (resolve) {
