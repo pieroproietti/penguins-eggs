@@ -18,6 +18,9 @@ You can follow the project also consulting the [commit history](https://github.c
 ## Changelog
 Versions are listed on reverse order, the first is the last one.
 
+### eggs-7.8.35
+* adaptment to mx linux, machine-id, grub-efi-amd64-bin in place of grub-efi-amd64 in Utils.isUEFI(). Perhaps we must test also grub-efi-ia32-bin for i386?
+
 ### eggs-7.8.34
 * added .disk folder in iso with info, mkiso, etc. added version in calamares, bugfix ia32, isGui, and others
 
