@@ -34,6 +34,7 @@ export default class Utils {
    static snapshotPrefix(distroId: string, versionId: string) : string {
       let result = 'egg-of-' + distroId.toLowerCase() + '-' + versionId.toLowerCase() + '-'
       result = result.replace(`/`,'-')
+      return result
    }
 
    /**

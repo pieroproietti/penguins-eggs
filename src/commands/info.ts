@@ -57,10 +57,10 @@ You will find here informations about penguin's eggs!
          if (await Pacman.calamaresCheck()) {
             console.log('installer:         ' + chalk.bgGreen('GUI'))
          } else {
-            console.log('installer:        ' + chalk.bgYellow('CLI') + ' if you want calamares, run ' + chalk.cyan('sudo eggs calamares --install'))
+            console.log('installer:         ' + chalk.bgYellow('CLI') + ' if you want calamares, run ' + chalk.cyan('sudo eggs calamares --install'))
          }
       } else {
-         console.log('installer:           ' + chalk.bgGreen('CLI'))
+         console.log('installer:            ' + chalk.bgGreen('CLI'))
       }
 
       if (process.arch === 'x64') {
