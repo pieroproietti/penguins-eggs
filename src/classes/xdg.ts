@@ -83,7 +83,7 @@ export default class Xdg {
     * @param chroot
     */
    static async autologin(olduser: string, newuser: string, chroot = '/') {
-      if (Pacman.isGui()) {
+      if (await Pacman.isGui()) {
          if (Pacman.packageIsInstalled('lightdm')) {
             // Lightdm
             shx.sed('-i', `autologin-user=${olduser}`, `autologin-user=${newuser}`, `${chroot}/etc/lightdm/lightdm.conf`)
