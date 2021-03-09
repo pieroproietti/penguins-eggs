@@ -75,6 +75,8 @@ export default class Utils {
       let result = ''
       if (fs.existsSync('/etc/machine-id')) {
          result = fs.readFileSync('/etc/machine-id', 'utf-8').trim()
+      } else (fs.existsSync('/var/lib/dbus/machine-id')) {
+         result = fs.readFileSync('/var/lib/dbus/machine-id', 'utf-8').trim()
       }
       return result
    }

@@ -86,7 +86,7 @@ export default class Config extends Command {
         i.distroTemplate = !Pacman.distroTemplateCheck()
 
         if (process.arch === 'x64') {
-            i.efi = (!Pacman.packageIsInstalled('grub-efi-amd64'))
+            i.efi = (!Utils.isUefi())
         }
 
         if (!await Pacman.calamaresCheck() && (await Pacman.isGui())) {
