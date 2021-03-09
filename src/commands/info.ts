@@ -65,7 +65,7 @@ You will find here informations about penguin's eggs!
 
       if (process.arch === 'x64') {
          if (!settings.config.make_efi) {
-            if (Pacman.packageIsInstalled('grub-efi-amd64')) {
+            if (Utils.isUefi()) {
                console.log('EFI:               ' + chalk.bgRed('ko') + ' run ' + chalk.cyan('sudo eggs dad -c') + ' or edit ' + chalk.cyan('/etc/penguins-eggs.d/eggs.yaml') + ' and set ' + chalk.cyan('make_efi: true'))
             } else {
                console.log('EFI:               ' + chalk.bgRed('ko') + ' run ' + chalk.cyan('apt install grub-efi-amd64') + ' and ' + chalk.cyan('/etc/penguins-eggs.d/eggs.yaml') + ' and set ' + chalk.green('make_efi: true'))

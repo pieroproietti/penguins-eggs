@@ -31,9 +31,9 @@ export default class Utils {
     * @param distroId 
     * @param versionId 
     */
-   static snapshotPrefix(distroId: string, versionId: string) : string {
+   static snapshotPrefix(distroId: string, versionId: string): string {
       let result = 'egg-of-' + distroId.toLowerCase() + '-' + versionId.toLowerCase() + '-'
-      result = result.replace(`/`,'-')
+      result = result.replace(`/`, '-')
       return result
    }
 
@@ -49,11 +49,11 @@ export default class Utils {
     * ricava path per vmlinuz
     */
    static vmlinuz(): string {
-      let results = fs.readFileSync('/proc/cmdline','utf8').split(' ')
-      let result=results[0]
-      result = result.substring(result.indexOf('=')+1)
-      if (result.indexOf('@')>0) {
-         result = result.substring(result.indexOf('@')+1)
+      let results = fs.readFileSync('/proc/cmdline', 'utf8').split(' ')
+      let result = results[0]
+      result = result.substring(result.indexOf('=') + 1)
+      if (result.indexOf('@') > 0) {
+         result = result.substring(result.indexOf('@') + 1)
       }
       return result
    }
@@ -69,10 +69,14 @@ export default class Utils {
    }
 
    /**
-    * 
+    * Occore vedere un modo per creare machine-id dove non esiste
     */
    static machineId(): string {
-      return fs.readFileSync('/etc/machine-id', 'utf-8').trim()
+      let result = ''
+      if (fs.existsSync('/etc/machine-id')) {
+         result = fs.readFileSync('/etc/machine-id', 'utf-8').trim()
+      }
+      return result
    }
 
    /**
@@ -283,7 +287,8 @@ export default class Utils {
    static isUefi(): boolean {
       let isUefi = false
       if (process.arch === 'x64') {
-         if (Pacman.packageIsInstalled('grub-efi-amd64')) {
+         // grub-efi-amd64-bin grub-efi-ia32-bin
+         if (Pacman.packageIsInstalled('grub-efi-amd64-bin')) {
             isUefi = true
          }
       }

@@ -239,7 +239,7 @@ class Distro implements IDistro {
        * ln -s /run/live/medium/live/filesystem.squashfs /live/boot-dev/antiX/linuxfs
        */
       if (fs.existsSync('/etc/antix-version')) {
-         this.distroId = 'antiX/MX'
+         this.distroId = 'MX'
          // if (!fs.existsSync('/live/boot-dev/antiX/')) {
          //    shell.exec('mkdir /live/boot-dev/antiX/ -p')
          //  }
