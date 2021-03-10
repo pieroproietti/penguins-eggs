@@ -194,7 +194,7 @@ export default class Pacman {
       if ((versionLike === 'buster') || (versionLike === 'beowulf') || (versionLike === 'bullseye') || (versionLike === 'stretch')) {
          await exec(`apt-get install --yes --no-install-recommends ${this.debs2line(this.packagesLocalisation(verbose))}`, echo)
       }
-      if (this.isCli()) {
+      if (await Pacman.isCli()) {
          /**
           * live-config-getty-generator
           * 

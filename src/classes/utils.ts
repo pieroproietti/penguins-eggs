@@ -39,6 +39,8 @@ export default class Utils {
 
    /**
    * Controlla se il sistema è avviato con systemd
+   * funziona anche in MX che utilizza systemd
+   * ma viene avviato con init
    */
    static isSystemd(): boolean {
       // return (shx.exec(`pidof systemd`).stdout.trim() === '1')
