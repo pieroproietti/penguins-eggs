@@ -37,10 +37,8 @@ You will find here informations about penguin's eggs!
 
       const distroId = shx.exec('lsb_release -is', {silent: true}).stdout.trim()
       const versionId = shx.exec('lsb_release -cs', {silent: true}).stdout.trim()
-      console.log('distroId:          ' + chalk.cyan(distroId))
-      console.log('versionId:         ' + chalk.cyan(versionId))
-      console.log('distroLike:        ' + settings.distro.distroLike)
-      console.log('versionLike:       ' + settings.distro.versionLike)
+      console.log('distroId:          ' + chalk.green(distroId) + '/' + chalk.green(versionId))
+      console.log('distroLike:        ' + settings.distro.distroLike + '/' + settings.distro.versionLike)
       if (await Pacman.prerequisitesCheck()) {
          console.log('eggs prerequisites:' + chalk.bgGreen('ok'))
       } else {
@@ -82,14 +80,12 @@ You will find here informations about penguin's eggs!
       } else if (Utils.isSources()) {
          installType = 'source'
       }
-      console.log('eggs is running as:' + chalk.bgGreen(installType))
+      console.log('eggs running as:   ' + chalk.green(installType))
 
       if (Utils.isLive()) {
-         console.log('system is:         ' + chalk.bgGreen('LIVE') + ' system')
+         console.log('system is:         ' + chalk.green('LIVE'))
       } else {
-         console.log('system is:         ' + chalk.bgCyan('INSTALLED'))
+         console.log('system is:         ' + chalk.green('INSTALLED'))
       }
-
-      // console.log(line)
    }
 }
