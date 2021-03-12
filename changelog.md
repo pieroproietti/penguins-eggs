@@ -19,7 +19,7 @@ You can follow the project also consulting the [commit history](https://github.c
 Versions are listed on reverse order, the first is the last one.
 
 ### eggs-7.8.36
-* added livecd theme for openos other little things
+* added livecd theme for openos, added full name on the livecd boot and in installed system boot
 
 ### eggs-7.8.35
 * adaptment to mx linux, machine-id, grub-efi-amd64-bin in place of grub-efi-amd64 in Utils.isUEFI(). Perhaps we must test also grub-efi-ia32-bin for i386?
