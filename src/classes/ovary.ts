@@ -450,20 +450,22 @@ export default class Ovary {
       // splashSrc e menuSrc possono essere configurate dal tema
       let splashSrc = path.resolve(__dirname, '../../assets/penguins-eggs-splash.png')
       let menuSrc = path.resolve(__dirname, `../../conf/distros/${this.settings.distro.versionLike}/isolinux/menu.template.cfg`)
-      if (theme !== 'eggs') {
-         const splashCandidate = path.resolve(__dirname, `../../addons/${theme}/theme/livecd/splash.png`)
-         if (fs.existsSync(splashCandidate)) {
-            splashSrc = splashCandidate
-         }
-         const menuCandidate = path.resolve(__dirname, `../../addons/${theme}/theme/livecd/menu.template.cfg`)
-         if (fs.existsSync(menuCandidate)) {
-            menuSrc = menuCandidate
-         }
+
+      // if a theme exist, change splash with theme splash
+      const splashCandidate = path.resolve(__dirname, `../../addons/${theme}/theme/livecd/splash.png`)
+      if (fs.existsSync(splashCandidate)) {
+         splashSrc = splashCandidate
+      }
+
+      // if a theme exist, change menu with theme menu for isolinux
+      const menuCandidate = path.resolve(__dirname, `../../addons/${theme}/theme/livecd/menu.template.cfg`)
+      if (fs.existsSync(menuCandidate)) {
+         menuSrc = menuCandidate
       }
       fs.copyFileSync(splashSrc, splashDest)
       const template = fs.readFileSync(menuSrc, 'utf8')
       const view = {
-         customName: this.settings.remix.name,
+         fullname: this.settings.remix.fullname.toUpperCase(),
          kernel: Utils.kernerlVersion(),
          vmlinuz: `/live${this.settings.vmlinuz}`,
          initrdImg: `/live${this.settings.initrdImg}`,
@@ -564,9 +566,9 @@ export default class Ovary {
    makeDotDisk(verbose = false) {
       const dotDisk = this.settings.work_dir.pathIso + '/.disk'
       if (fs.existsSync(dotDisk)) {
-         shx.rm('-rf',dotDisk)
+         shx.rm('-rf', dotDisk)
       }
-      shx.mkdir('-p', dotDisk )
+      shx.mkdir('-p', dotDisk)
       // info
       let file = dotDisk + '/info'
       let content = this.settings.config.snapshot_prefix + this.settings.config.snapshot_basename
@@ -619,11 +621,11 @@ export default class Ovary {
       /**
        * rimuovo gli spazi
        */
-      content  = content.replace(/\s\s+/g, ' ')
+      content = content.replace(/\s\s+/g, ' ')
       fs.writeFileSync(file, content, 'utf-8')
 
       const scripts = this.settings.work_dir.path
-      shx.cp (scripts + '/mksquashfs', dotDisk + '/mksquashfs')
+      shx.cp(scripts + '/mksquashfs', dotDisk + '/mksquashfs')
    }
 
    /**
@@ -1203,15 +1205,16 @@ export default class Ovary {
       const themeDest = `${this.settings.work_dir.pathIso}/boot/grub/theme.cfg`
       const splashDest = `${this.settings.work_dir.pathIso}/isolinux/splash.png`
 
-      if (theme !== 'eggs') {
-         const splashCandidate = path.resolve(__dirname, `../../addons/${theme}/theme/livecd/splash.png`)
-         if (fs.existsSync(splashCandidate)) {
-            splashSrc = splashCandidate
-         }
-         const themeCandidate = path.resolve(__dirname, `../../addons/${theme}/theme/livecd/theme.cfg`)
-         if (fs.existsSync(themeCandidate)) {
-            themeSrc = themeCandidate
-         }
+      // if a theme exist, change splash with theme splash of the theme
+      const splashCandidate = path.resolve(__dirname, `../../addons/${theme}/theme/livecd/splash.png`)
+      if (fs.existsSync(splashCandidate)) {
+         splashSrc = splashCandidate
+      }
+
+      // if a theme exist, change theme.cfg with theme.cfg of the theme
+      const themeCandidate = path.resolve(__dirname, `../../addons/${theme}/theme/livecd/theme.cfg`)
+      if (fs.existsSync(themeCandidate)) {
+         themeSrc = themeCandidate
       }
       fs.copyFileSync(themeSrc, themeDest)
       fs.copyFileSync(splashSrc, splashDest)
@@ -1220,7 +1223,7 @@ export default class Ovary {
       // Utilizzo mustache
       const template = fs.readFileSync(grubSrc, 'utf8')
       const view = {
-         customName: this.settings.remix.name,
+         fullname: this.settings.remix.fullname.toUpperCase(),
          kernel: Utils.kernerlVersion(),
          vmlinuz: `/live${this.settings.vmlinuz}`,
          initrdImg: `/live${this.settings.initrdImg}`,
@@ -1266,6 +1269,7 @@ export default class Ovary {
 
       this.settings.isoFilename = Utils.getFilename(this.settings.remix.name)
 
+      //
       let cmd = `xorriso  -as mkisofs \
                           -volid ${this.settings.isoFilename} \
                           -joliet-long \
