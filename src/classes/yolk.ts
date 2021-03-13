@@ -52,7 +52,7 @@ export default class Yolk {
         if (process.arch === 'ia32') {
             arch = 'i386'
         } else {
-            packages.push('grub-efi-amd64')
+            packages.push('grub-efi-amd64-bin')
             packages.push('shim-signed')
         }
 

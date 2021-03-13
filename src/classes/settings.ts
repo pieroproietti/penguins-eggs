@@ -126,9 +126,9 @@ export default class Settings {
       }
       if (this.config.make_efi) {
          if (!Utils.isUefi()) {
-            Utils.error('You choose to create an UEFI image, but miss to install grub-efi-amd64 package.')
+            Utils.error('You choose to create an UEFI image, but miss to install grub-efi-amd64-bin package.')
             Utils.error('Please install it before to create an UEFI image:')
-            Utils.warning('sudo apt install grub-efi-amd64')
+            Utils.warning('sudo apt install grub-efi-amd64-bin')
             Utils.error('or edit /etc/penguins-eggs.d/eggs.yaml and set the valuer of make_efi = false')
             this.config.make_efi = false
          }
@@ -205,9 +205,9 @@ export default class Settings {
       //console.log(`ssh_pass:          ${this.config.ssh_pass}`)
       if (this.config.make_efi) {
          if (!Utils.isUefi()) {
-            Utils.error('You choose to create an UEFI image, but miss to install grub-efi-amd64 package.')
+            Utils.error('You choose to create an UEFI image, but miss to install grub-efi-amd64-bin package.')
             Utils.error('Please install it before to create an UEFI image:')
-            Utils.warning('sudo apt install grub-efi-amd64')
+            Utils.warning('sudo apt install grub-efi-amd64-bin')
             this.config.make_efi = false
          } else if (!Pacman.packageIsInstalled('dosfstools')) {
             Utils.error('You choose to create an UEFI image, but miss to install dosfstools package.')

@@ -123,7 +123,7 @@ export default class Config extends Command {
                 // do nothing
             } else if (process.arch === 'x64') {
                 console.log('- install efi packages')
-                console.log(chalk.yellow('  apt install -y grub-efi-amd64\n'))
+                console.log(chalk.yellow('  apt install -y grub-efi-amd64-bin\n'))
             }
         }
 
@@ -218,10 +218,10 @@ export default class Config extends Command {
         if (i.efi) {
             if (nointeractive) {
                 Utils.error('config: you are on a system UEFI capable, but I can\'t install grub-efi-amd now!')
-                Utils.warning('I suggest You to install grub-efi-amd64 before to produce your ISO.\nJust write:\n    sudo apt install grub-efi-amd64')
+                Utils.warning('I suggest You to install grub-efi-amd64-bin before to produce your ISO.\nJust write:\n    sudo apt install ')
             } else {
                 Utils.warning('Installing uefi support...')
-                await exec('apt-get install grub-efi-amd64 --yes', echo) //Pacman.packageInstall('grub-efi-amd64')
+                await exec('apt-get install grub-efi-amd64-bin --yes', echo) //Pacman.packageInstall('grub-efi-amd64-bin')
             }
         }
 
