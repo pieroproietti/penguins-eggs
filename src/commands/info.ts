@@ -58,7 +58,7 @@ You will find here informations about penguin's eggs!
             console.log('installer:         ' + chalk.bgYellow('CLI') + ' if you want calamares, run ' + chalk.cyan('sudo eggs calamares --install'))
          }
       } else {
-         console.log('installer:            ' + chalk.bgGreen('CLI'))
+         console.log('installer:         ' + chalk.bgGreen('CLI'))
       }
 
       if (process.arch === 'x64') {
