@@ -1,7 +1,7 @@
 # Architettura i386 node 8.17.0
 
 
-# Compilazione con node8 per architettura i386
+## Compilazione con node8 per architettura i386
 
 Aprire il link globby index e modificare la riga 28
 
@@ -32,4 +32,18 @@ const TARGETS = [
     'win32-x86',
     'darwin-x64',
 ];
+
+## Editing su i386
+
+Per i386 ne code, ne atom - entrambi a 64 bit funzionano. Per un lungo periodo ho utilizzato l'ottimo sublime ma,
+sempre con una certa difficoltà. Attualmente utilizzo lo scarno ma potente [lite](https://github.com/rxi/lite) un editor brasiliano basato su LUA,
+che utilizzo soprattutto per la similitudine estetica con code.
+
+Una avvertenza, la chiusura delle finestre in lite non avviene con tasto destro del mouse ma con CTRL-w.
+
+E' un buon prodotto, per me un editor secondario che non conosco bene, ma mi consente di modificare le poche differenze tra la versione
+amd64 e quella i386 con qualcosa che non mi confonde.
+
+
+
 
