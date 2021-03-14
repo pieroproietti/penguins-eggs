@@ -27,25 +27,23 @@ export function remove(distro: IDistro): string {
 export function tryInstall(distro: IDistro): string {
    // Per i linguaggi trovare BCP47 libreria...
 
-   const LANG = process.env.LANG
+   const processLang = process.env.LANG
 
    let lang = 'en_gb'
 
-   /*
-   if (LANG === 'it_IT.UTF-8') {
+   if (processLang === 'it_IT.UTF-8') {
       lang = 'it'
-   } else if (LANG === 'en_US.UTF-8') {
+   } else if (processLang === 'en_US.UTF-8') {
       lang = 'en_gb'
-   } else if (LANG === 'es_PE.UTF-8') {
+   } else if (processLang === 'es_PE.UTF-8') {
       lang = 'es_es'
-   } else if (LANG === 'pt_BR.UTF-8') {
+   } else if (processLang === 'pt_BR.UTF-8') {
       lang = 'pt_br'
-   } else if (LANG === 'fr_FR.UTF-8') {
+   } else if (processLang === 'fr_FR.UTF-8') {
       lang = 'fr'
-   } else if (LANG === 'de_DE.UTF-8') {
+   } else if (processLang === 'de_DE.UTF-8') {
       lang = 'de'
    }
-   */
 
    let text = `  - try_install:\n`
 
@@ -86,6 +84,7 @@ function removeEggs(distro: IDistro): string {
       const deb2check = packages[i].trimLeft().trimRight()
       text += addIfExist(deb2check)
    }
+
    /**
     * Rimuove i pacchetti di localizzazione
     */
@@ -96,6 +95,8 @@ function removeEggs(distro: IDistro): string {
          text += addIfExist(deb2check)
       }
    }
+   text += addIfExist('calamares')
+
    return text
 }
 

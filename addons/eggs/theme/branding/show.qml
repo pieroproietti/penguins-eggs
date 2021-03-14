@@ -56,7 +56,8 @@ Presentation
             anchors.horizontalCenter: slide1.horizontalCenter
             anchors.top: background.top
             text: qsTr("<h1>Penguin's eggs</h1><br/>"+
-                  "<br/><h2>The reproductive system for penguins!</h2>")
+                  "<br/><h2>The reproductive system for penguins!</h2>"
+                  "<br/>h2>https://penguins-eggs.net</h2>")
             wrapMode: Text.WordWrap
             width: presentation.widt
             horizontalAlignment: Text.Center
@@ -201,8 +202,7 @@ Presentation
             anchors.top: background.top
             text: qsTr("<h1>Penguin's eggs</h1><br/>"+
                   "<br/>Created by Piero Proietti, thinking to the community.<br/>"+
-                  "<br/>site: htts://penguins-eggs.net"+
-                  "<br/>sources: htts://github.com/pieroproietti/penguins-eggs"+
+                  "<br/>issues: htts://github.com/pieroproietti/penguins-eggs"+
                   "<br/>email: piero.proietti@gmail.com")
             wrapMode: Text.WordWrap
             width: 600
