@@ -75,7 +75,7 @@ Presentation
     Slide {
         Image {
             id: slide4
-            source: "slide9.png"
+            source: "slide4.png"
             anchors.centerIn: parent
             anchors.top: background.bottom
             width: 810; height: 485

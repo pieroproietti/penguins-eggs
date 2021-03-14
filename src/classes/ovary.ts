@@ -419,7 +419,7 @@ export default class Ovary {
          console.log('ovary: isolinux')
       }
 
-      // Creo le directory du destinazione
+      // Creo le directory di destinazione
       if (!fs.existsSync(this.settings.work_dir.pathIso)) {
          shx.mkdir('-p', `${this.settings.work_dir.pathIso}/boot/grub/${this.arch_efi}`)
          shx.mkdir('-p', `${this.settings.work_dir.pathIso}/efi/boot`)
@@ -944,7 +944,7 @@ export default class Ovary {
       // flags
       if (myAddons.adapt) {
          // Per lxde, lxqt, deepin, mate, xfce4
-         if (Pacman.packageIsInstalled('lxde-core') || Pacman.packageIsInstalled('lxqt-core') || Pacman.packageIsInstalled('deepin-desktop-base') || Pacman.packageIsInstalled('mate-desktop') || Pacman.packageIsInstalled('ubuntu-mate-core') || Pacman.packageIsInstalled('xfce4')) {
+         if (Pacman.packageIsInstalled('lxde-core') || Pacman.packageIsInstalled('deepin-desktop-base') || Pacman.packageIsInstalled('mate-desktop') || Pacman.packageIsInstalled('ubuntu-mate-core') || Pacman.packageIsInstalled('xfce4')) {
             shx.cp(path.resolve(__dirname, '../../assets/penguins-adapt.desktop'), `${this.settings.work_dir.merged}/usr/share/applications/`)
          }
       }
