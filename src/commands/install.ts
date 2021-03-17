@@ -22,7 +22,7 @@ export default class Install extends Command {
       help: flags.help({ char: 'h' }),
       verbose: flags.boolean({ char: 'v', description: 'verbose' })
    }
-   static description = 'system installer - the egg became a penguin'
+   static description = 'command-line system installer - the egg became a penguin!'
 
    static aliases = ['hatch']
 
@@ -67,9 +67,9 @@ export default class Install extends Command {
                   Utils.warning('Removing lvm')
                   await hatching.lvmRemove(verbose)
                }
-               const confirm = await installer.confirm(verbose)
-               await hatching.getOptions(verbose, umount)
+               const confirm = await hatching.confirm(verbose)
                if (confirm) {
+                  await hatching.getOptions(verbose)
                   await hatching.install(verbose, umount)
                }
             }
@@ -79,8 +79,6 @@ export default class Install extends Command {
       }
    }
 }
-
-
 
 /**
  * 
@@ -150,6 +148,10 @@ async function mountAntix() {
    showexec('mount -t tmpfs -o rw,noatime,size=10240k,mode=755 tmpfs /etc/live/bin')
 }
 
+/**
+ * 
+ * @param cmd 
+ */
 async function showexec(cmd = '') {
    console.log(cmd)
    shx.exec(cmd)
