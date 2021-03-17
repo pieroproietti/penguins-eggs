@@ -7,7 +7,8 @@
 import { Command, flags } from '@oclif/command'
 import shx = require('shelljs')
 import Utils from '../classes/utils'
-import Hatching from '../classes/hatching'
+import Hatching from '../classes/hatching/installer'
+import Options from '../classes/hatching/options'
 import Pacman from '../classes/pacman'
 
 /**
@@ -52,7 +53,7 @@ export default class Install extends Command {
       }
 
       if (Utils.isRoot(this.id)) {
-         if (Utils.isLive()) {
+         // if (Utils.isLive()) {
             if (Pacman.packageIsInstalled('calamares') && ! flags.cli){
                shx.exec('calamares')
             } else if (flags.mx) {
@@ -68,12 +69,17 @@ export default class Install extends Command {
                   await hatching.lvmRemove(verbose)
                }
                Utils.warning('Installing the system / spawning the egg...')
-               await hatching.questions(verbose, umount)
+               const options = new Options()
+                  await options.getOptions(verbose, umount)
+                  const confirm = await options.confirm(verbose)
+                  if (confirm){
+                     await hatching.install(verbose, umount)
+                  }
             }
          } else {
             Utils.warning(`You are in an installed system!`)
          }
-      }
+      //}
    }
 }
 

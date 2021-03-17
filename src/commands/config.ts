@@ -12,6 +12,8 @@ import { IInstall } from '../interfaces'
 import chalk = require('chalk')
 import fs = require('fs')
 import path = require('path')
+import Distro from '../classes/distro'
+import { IRemix, IDistro } from '../interfaces'
 
 const exec = require('../lib/utils').exec
 
@@ -41,7 +43,7 @@ export default class Config extends Command {
         }
 
         if (Utils.isRoot(this.id)) {
-            if (flags.clean){
+            if (flags.clean) {
                 await exec('rm /etc/penguins-eggs.d -rf')
             }
 
@@ -90,11 +92,17 @@ export default class Config extends Command {
         }
 
         if (!await Pacman.calamaresCheck() && (await Pacman.isGui())) {
-            Utils.warning('config: you are on a graphic system, I suggest to use the GUI installer calamares')
-            if (nointeractive) {
-                i.calamares = true
-            } else {
-                i.calamares = (await Utils.customConfirm('Want You install calamares?'))
+            // Se non è stretch o jessie
+
+            const remix = {} as IRemix
+            const distro = new Distro(remix)
+            if (calamaresAble()) {
+                Utils.warning('config: you are on a graphic system, I suggest to use the GUI installer calamares')
+                if (nointeractive) {
+                    i.calamares = true
+                } else {
+                    i.calamares = (await Utils.customConfirm('Want You install calamares?'))
+                }
             }
         }
 
@@ -231,13 +239,15 @@ export default class Config extends Command {
         }
 
         if (i.calamares) {
-            if (nointeractive) {
-                // solo un avviso
-                Utils.error('config: you are on a graphic system, but I can\'t install calamares now!')
-                Utils.warning('I suggest You to install calamares GUI installer before to produce your ISO.\nJust write:\n    sudo eggs calamares --install')
-            } else {
-                Utils.warning('Installing calamares...')
-                await Pacman.calamaresInstall(verbose)
+            if (calamaresAble()) {
+                if (nointeractive) {
+                    // solo un avviso
+                    Utils.error('config: you are on a graphic system, I suggest to use the GUI installer calamares. I can\'t install calamares now!')
+                    Utils.warning('I suggest You to install calamares GUI installer before to produce your ISO.\nJust write:\n    sudo eggs calamares --install')
+                } else {
+                    Utils.warning('Installing calamares...')
+                    await Pacman.calamaresInstall(verbose)
+                }
             }
         }
 
@@ -247,4 +257,14 @@ export default class Config extends Command {
             await bleach.clean(verbose)
         }
     }
+}
+
+function calamaresAble(): boolean {
+    let result = true
+    const remix = {} as IRemix
+    const distro = new Distro(remix)
+    if (distro.versionLike === 'jessie' || distro.versionLike === 'stretch') {
+        result = false
+    }
+    return result
 }

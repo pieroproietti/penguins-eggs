@@ -14,10 +14,10 @@ import inquirer = require('inquirer')
 import drivelist = require('drivelist')
 import Utils from './utils'
 import Pacman from './pacman'
-import { IDevices, IDevice } from '../interfaces'
+import { IDevices, IDevice } from './../interfaces'
 import * as diskusage from 'diskusage'
 import Xdg from './xdg'
-import cliAutologin = require('../lib/cli-autologin')
+import cliAutologin = require('./../lib/cli-autologin')
 
 
 const exec = require('../lib/utils').exec
@@ -86,7 +86,8 @@ export default class Hatching {
    /**
     * question
     */
-   async questions(verbose = false, umount = false): Promise<void> {
+   async confirm(verbose = false, umount = false): Promise<boolean> {
+      let result = false
       if (verbose) {
          Utils.warning('hatching: questions')
       }
@@ -98,18 +99,19 @@ export default class Hatching {
       if (await Utils.customConfirm(msg1)) {
          if (await Utils.customConfirm(msg2)) {
             if (await Utils.customConfirm(msg3)) {
-               this.install(verbose, umount)
+               result = true
             }
          }
       }
+      return result
    }
 
    /**
-    * install
+    * getOptions
     */
-   async install(verbose = false, umount = false) {
+   async getOptions(verbose = false, umount = false) {
       if (verbose) {
-         Utils.warning('>>>hatching: install')
+         Utils.warning('install')
       }
       while (true) {
          /**
@@ -117,7 +119,9 @@ export default class Hatching {
           */
          while (true) {
             Utils.titles(`install`)
-            Utils.warning('get users')
+            if (verbose){
+               Utils.warning('user configuration')
+            }
             const optionsUsers: any = await this.getOptionsUsers(verbose)
             this.users = JSON.parse(optionsUsers)
 
@@ -256,17 +260,24 @@ export default class Hatching {
             process.exit()
          }
       }
+   }
 
+
+   /**
+    * install
+    * @param verbose 
+    * @param umount 
+    * @returns 
+    */
+   async install(verbose = false, umount = false) {
       Utils.titles(`install`)
       console.log()
       Utils.warning(`The process of installation is running...`)
       if (fs.existsSync('/sys/firmware/efi/efivars')) {
          this.efi = true
       }
-
       const diskSize = await this.getDiskSize(this.disk.installationDevice, verbose)
       console.log(`diskSize: ${diskSize}`)
-
       if (umount) {
          try {
             await this.umountVFS(verbose)
@@ -379,7 +390,7 @@ export default class Hatching {
             console.log(`changePassword: ${error}`)
          }
 
-         if (await Pacman.isGui()){
+         if (await Pacman.isGui()) {
             try {
                await Xdg.autologin(Utils.getPrimaryUser(), this.users.name, this.target)
             } catch (error) {
@@ -410,8 +421,6 @@ export default class Hatching {
          } catch (error) {
             console.log(`umount4target: ${error}`)
          }
-
-
          this.finished()
       }
    }
@@ -419,7 +428,7 @@ export default class Hatching {
    /**
     * setTimezone
     */
-   async setTimezone(verbose = false) {
+   private async setTimezone(verbose = false) {
       const echo = Utils.setEcho(verbose)
       if (verbose) {
          Utils.warning('hatching: setTimezone')
@@ -442,7 +451,7 @@ export default class Hatching {
     * @param workPhone
     * @param homePhone
     */
-   async addUser(name = 'live', password = 'evolution', fullName = '', roomNumber = '', workPhone = '', homePhone = '', verbose = false): Promise<void> {
+   private async addUser(name = 'live', password = 'evolution', fullName = '', roomNumber = '', workPhone = '', homePhone = '', verbose = false): Promise<void> {
       const echo = Utils.setEcho(verbose)
       if (verbose) {
          Utils.warning('hatching: addUser')
@@ -467,7 +476,7 @@ adduser ${name} \
     * @param name
     * @param newPassword
     */
-   async changePassword(name = 'live', newPassword = 'evolution', verbose = false) {
+   private async changePassword(name = 'live', newPassword = 'evolution', verbose = false) {
       const echo = Utils.setEcho(verbose)
       if (verbose) {
          Utils.warning('hatching: changePassword')
@@ -497,7 +506,7 @@ adduser ${name} \
     * @param target
     * @param options
     */
-   async grubInstall(verbose = false) {
+   private async grubInstall(verbose = false) {
       const echo = Utils.setEcho(verbose)
       if (verbose) {
          Utils.warning('hatching: grubInstall')
@@ -516,7 +525,7 @@ adduser ${name} \
    /**
     * updateInitramfs()
     */
-   async updateInitramfs(verbose = false) {
+   private async updateInitramfs(verbose = false) {
       const echo = Utils.setEcho(verbose)
       if (verbose) {
          Utils.warning('hatching: updateInitramfs')
@@ -528,7 +537,7 @@ adduser ${name} \
    /**
     * mountVFS()
     */
-   async mountVFS(verbose = false) {
+   private async mountVFS(verbose = false) {
       const echo = Utils.setEcho(verbose)
       if (verbose) {
          Utils.warning('hatching: mountVFS')
@@ -547,7 +556,7 @@ adduser ${name} \
     * umountVFS()
     * @param target
     */
-   async umountVFS(verbose = false) {
+   private async umountVFS(verbose = false) {
       const echo = Utils.setEcho(verbose)
       if (verbose) {
          Utils.warning('hatching: umountVFS')
@@ -588,7 +597,7 @@ adduser ${name} \
     * fstab()
     * @param devices
     */
-   async fstab(installDevice: string, verbose = false) {
+   private async fstab(installDevice: string, verbose = false) {
       // const echo = Utils.setEcho(verbose)
       if (verbose) {
          Utils.warning('hatching: fstab')
@@ -647,7 +656,7 @@ adduser ${name} \
     * name()
     * @param options
     */
-   async name(verbose = false) {
+   private async name(verbose = false) {
       const echo = Utils.setEcho(verbose)
       if (verbose) {
          Utils.warning('hatching: name')
@@ -664,7 +673,7 @@ adduser ${name} \
     * resolvConf()
     * @param options
     */
-   async resolvConf(verbose = false) {
+   private async resolvConf(verbose = false) {
       const echo = Utils.setEcho(verbose)
       if (verbose) {
          Utils.warning('hatching: resolvConf')
@@ -691,7 +700,7 @@ adduser ${name} \
     * interfaces()
     * @param options
     */
-   async interfaces(verbose = false) {
+   private async interfaces(verbose = false) {
       const echo = Utils.setEcho(verbose)
       if (verbose) {
          Utils.warning('hatching: interfaces')
@@ -716,7 +725,7 @@ adduser ${name} \
     * hostname
     * @param verbose 
     */
-   async hostname(verbose = false) {
+   private async hostname(verbose = false) {
       const file = `${this.target}/etc/hostname`
       let text = this.host.name + '\n'
       fs.writeFileSync(file, text)
@@ -725,7 +734,7 @@ adduser ${name} \
     * hosts()
     * @param options
     */
-   async hosts(verbose = false) {
+   private async hosts(verbose = false) {
       // const echo = Utils.setEcho(verbose)
       if (verbose) {
          Utils.warning('hatching: hosts')
@@ -751,7 +760,7 @@ adduser ${name} \
    /**
     * 
     */
-   async removeInstaller(verbose = false) {
+   private async removeInstaller(verbose = false) {
       if (verbose) {
          Utils.warning('hatching: removeInstaller()')
       }
@@ -776,7 +785,7 @@ adduser ${name} \
     * @param devices
     * @param verbose
     */
-   async egg2system(verbose = false): Promise<void> {
+   private async egg2system(verbose = false): Promise<void> {
       const echo = Utils.setEcho(verbose)
       if (verbose) {
          Utils.warning('hatching: egg2system')
@@ -842,7 +851,7 @@ adduser ${name} \
     *
     * @param devices
     */
-   async mkfs(verbose = false): Promise<boolean> {
+   private async mkfs(verbose = false): Promise<boolean> {
       const echo = Utils.setEcho(verbose)
       if (verbose) {
          Utils.warning('hatching: mkfs')
@@ -885,7 +894,7 @@ adduser ${name} \
     *
     * @param devices
     */
-   async mount4target(verbose = false): Promise<boolean> {
+   private async mount4target(verbose = false): Promise<boolean> {
       const echo = Utils.setEcho(verbose)
       if (verbose) {
          Utils.warning('hatching: mount4target')
@@ -928,7 +937,7 @@ adduser ${name} \
     * @param target
     * @param devices
     */
-   async umount4target(verbose = false): Promise<boolean> {
+   private async umount4target(verbose = false): Promise<boolean> {
       const echo = Utils.setEcho(verbose)
       if (verbose) {
          Utils.warning('hatching: umount4target')
@@ -958,7 +967,7 @@ adduser ${name} \
     * @param partitionType
     * @param verbose
     */
-   async diskPartition(device: string, partitionType: string, verbose = false): Promise<boolean> {
+   private async diskPartition(device: string, partitionType: string, verbose = false): Promise<boolean> {
       let retVal = false
       const echo = Utils.setEcho(verbose)
       if (verbose) {
@@ -1010,7 +1019,7 @@ adduser ${name} \
       } else if (partitionType === 'lvm2' && this.efi) {
          console.log('LVM2 on UEFI: to be implemented!')
          process.exit(0)
-         
+
       } else if (partitionType === 'lvm2' && !this.efi) {
          // Preparo tabella partizioni
          await exec(`parted --script ${device} mklabel msdos`)
@@ -1084,7 +1093,7 @@ adduser ${name} \
     *
     * @param device
     */
-   async isRotational(device: string, verbose = false): Promise<boolean> {
+   private async isRotational(device: string, verbose = false): Promise<boolean> {
       // const echo = Utils.setEcho(verbose)
       if (verbose) {
          Utils.warning('hatching: isRotational')
@@ -1106,7 +1115,7 @@ adduser ${name} \
     *
     * @param device
     */
-   async getDiskSize(device: string, verbose = false): Promise<number> {
+   private async getDiskSize(device: string, verbose = false): Promise<number> {
       // const echo = Utils.setEcho(verbose)
       if (verbose) {
          Utils.warning('hatching: getDiskSize')
@@ -1126,7 +1135,7 @@ adduser ${name} \
     *
     * @param verbose
     */
-   async getOptionsUsers(verbose = false) {
+   private async getOptionsUsers(verbose = false) {
       const echo = Utils.setEcho(verbose)
       if (verbose) {
          Utils.warning('hatching: getOptionsUsers()')
@@ -1170,7 +1179,7 @@ adduser ${name} \
     *
     * @param verbose
     */
-   async getOptionsHost(verbose = false) {
+   private async getOptionsHost(verbose = false) {
       const echo = Utils.setEcho(verbose)
       if (verbose) {
          Utils.warning('hatching: getOptionsHost()')
@@ -1201,7 +1210,7 @@ adduser ${name} \
     *
     * @param verbose
     */
-   async getOptionsNet(verbose = false) {
+   private async getOptionsNet(verbose = false) {
       const echo = Utils.setEcho(verbose)
       if (verbose) {
          Utils.warning('hatching: getOptionsNet()')
@@ -1271,7 +1280,7 @@ adduser ${name} \
     * @param partitionTypes
     * @param verbose
     */
-   async getOptionsDisk(driveList: string[], partitionTypes: string[], verbose = false): Promise<any> {
+   private async getOptionsDisk(driveList: string[], partitionTypes: string[], verbose = false): Promise<any> {
       const echo = Utils.setEcho(verbose)
       if (verbose) {
          Utils.warning('hatching: getOptionsDisk()')
