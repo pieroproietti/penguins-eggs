@@ -13,6 +13,7 @@ import inquirer = require('inquirer')
 import drivelist = require('drivelist')
 import Utils from '../utils'
 import { IDevices, IDevice } from '../../interfaces'
+import { title } from 'node:process'
 const exec = require('../../lib/utils').exec
 
 /**
@@ -104,17 +105,16 @@ export default class Hatching {
     */
    async getOptions(verbose = false, umount = false) {
       if (verbose) {
-         Utils.warning('install')
+         Utils.warning('getOptions')
       }
       while (true) {
          /**
           * users configuration
           */
          while (true) {
-            Utils.warning('user configuration')
+            title('user configuration')
             const optionsUsers: any = await this.getUsers(verbose)
             this.users = JSON.parse(optionsUsers)
-            const result = JSON.parse(await Utils.customConfirmAbort())
             this.showUsers()
             if (await this.configAbort()) {
                break
@@ -125,8 +125,7 @@ export default class Hatching {
           * host configuration
           */
          while (true) {
-            Utils.titles(`install`)
-            Utils.warning('get options host')
+            title(`get options host`)
             const optionsHost: any = await this.getHost(verbose)
             this.host = JSON.parse(optionsHost)
             this.showHost()
@@ -139,6 +138,7 @@ export default class Hatching {
           * net configuration
           */
          while (true) {
+            title(`net configuration`)
             const optionsNet: any = await this.getNet(verbose)
             this.net = JSON.parse(optionsNet)
             this.showNet()
@@ -157,8 +157,7 @@ export default class Hatching {
          })
          const partitionTypes = ['simple', 'lvm2']
          while (true) {
-            Utils.titles(`install`)
-            Utils.warning('get disk configuration')
+            Utils.titles(`disk configuration`)
 
             const optionsDisk: any = await this.getOptionsDisk(aDrives, partitionTypes, verbose)
             this.disk = JSON.parse(optionsDisk)
@@ -171,8 +170,8 @@ export default class Hatching {
          /**
           * Conferma finale
           */
-         Utils.titles(`install`)
-         this.showAll()
+          title('confirm installations')
+          this.showAll()
          if (await this.configAbort()) {
             break
          }
@@ -445,3 +444,14 @@ export default class Hatching {
 }
 
 const ifaces: string[] = fs.readdirSync('/sys/class/net/')
+
+/**
+ * 
+ * @param message 
+ */
+function title(message: string) {
+   Utils.titles(`Installation`)
+   Utils.warning(message)
+}
+
+
