@@ -19,7 +19,7 @@ import * as diskusage from 'diskusage'
 import Xdg from './xdg'
 import cliAutologin = require('../lib/cli-autologin')
 
-const exec = require('../../lib/utils').exec
+const exec = require('../lib/utils').exec
 
 /**
  * Queste definizioni sono SOLO per hatching
