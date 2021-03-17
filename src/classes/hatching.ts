@@ -422,7 +422,7 @@ adduser ${name} \
     * @param devices
     */
    private async fstab(installDevice: string, verbose = false) {
-      Utils.warning('creating fstab')s
+      Utils.warning('creating fstab')
       // const echo = Utils.setEcho(verbose)
 
       if (verbose) {
