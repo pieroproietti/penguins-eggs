@@ -137,7 +137,7 @@ export default class Pacman {
       const versionLike = Pacman.versionLike()
       const packages = this.debs4eggs
 
-      if ((versionLike === 'buster') || (versionLike === 'beowulf') || (versionLike === 'bullseye') || (versionLike === 'stretch')) {
+      if ((versionLike === 'buster') || (versionLike === 'beowulf') || (versionLike === 'bullseye') || (versionLike === 'stretch') || (versionLike === 'jessie')) {
          packages.push('live-config')
       } else if ((versionLike === 'focal')) {
          packages.push('live-config')
@@ -191,7 +191,7 @@ export default class Pacman {
 
       await exec(`apt-get install --yes ${this.debs2line(this.packages(verbose))}`, echo)
       await exec(`apt-get install --yes ${this.debs2line(this.debs4notRemove)}`, echo)
-      if ((versionLike === 'buster') || (versionLike === 'beowulf') || (versionLike === 'bullseye') || (versionLike === 'stretch')) {
+      if ((versionLike === 'buster') || (versionLike === 'beowulf') || (versionLike === 'bullseye') || (versionLike === 'stretch') || (versionLike === 'jessie')) {
          await exec(`apt-get install --yes --no-install-recommends ${this.debs2line(this.packagesLocalisation(verbose))}`, echo)
       }
       if (await Pacman.isCli()) {
@@ -465,6 +465,13 @@ export default class Pacman {
          await this.ln(`${buster}/calamares/calamares-modules/sources-yolk-unmount`, `${bullseye}/calamares/calamares-modules/sources-yolk-unmount`, remove, verbose)
          await this.ln(`${buster}/calamares/modules`, `${bullseye}/calamares/modules`, remove, verbose)
 
+         // Debian 8 - jessie
+         const jessie = `${rootPen}/conf/distros/jessie`
+         await this.ln(`${buster}/grub`, `${jessie}/grub`, remove, verbose)
+         await this.ln(`${buster}/isolinux`, `${jessie}/isolinux`, remove, verbose)
+         await this.ln(`${buster}/locales`, `${jessie}/locales`, remove, verbose)
+         await this.ln(`${buster}/calamares`, `${jessie}/calamares`, remove, verbose)
+         
          // Debian 9 - stretch
          const stretch = `${rootPen}/conf/distros/stretch`
          await this.ln(`${buster}/grub`, `${stretch}/grub`, remove, verbose)
