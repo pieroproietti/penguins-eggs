@@ -316,7 +316,7 @@ _See code: [src/commands/info.ts](https://github.com/pieroproietti/penguins-eggs
 
 ## `eggs install`
 
-system installer - the egg became a penguin
+command-line system installer - the egg became a penguin!
 
 ```
 USAGE

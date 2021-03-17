@@ -95,7 +95,8 @@ export default class Hatching {
       if (fs.existsSync('/sys/firmware/efi/efivars')) {
          this.efi = true
       }
-      const diskSize = await this.getDiskSize(this.disk.installationDevice, verbose)
+
+      Utils.warning('getting disk size' + this.disk.installationDevice + ': ' + await this.getDiskSize(this.disk.installationDevice, verbose))
       if (umount) {
          try {
             await this.umountVFS(verbose)
@@ -141,11 +142,11 @@ export default class Hatching {
             console.log(`fstab: ${error}`)
          }
 
-         try {
-            await this.name(verbose)
-         } catch (error) {
-            console.log(`name: ${error}`)
-         }
+         // try {
+         // await this.hostname(verbose)
+         // } catch (error) {
+         //console.log(`hostname: ${error}`)
+         // }
 
          try {
             await this.resolvConf(verbose)
@@ -247,6 +248,7 @@ export default class Hatching {
     * setTimezone
     */
    private async setTimezone(verbose = false) {
+      Utils.warning('setting timezone')
       const echo = Utils.setEcho(verbose)
       if (verbose) {
          Utils.warning('hatching: setTimezone')
@@ -325,6 +327,7 @@ adduser ${name} \
     * @param options
     */
    private async grubInstall(verbose = false) {
+      Utils.warning('installing grub in ' + this.target)
       const echo = Utils.setEcho(verbose)
       if (verbose) {
          Utils.warning('hatching: grubInstall')
@@ -344,6 +347,7 @@ adduser ${name} \
     * updateInitramfs()
     */
    private async updateInitramfs(verbose = false) {
+      Utils.warning('updating initrd.img')
       const echo = Utils.setEcho(verbose)
       if (verbose) {
          Utils.warning('hatching: updateInitramfs')
@@ -356,6 +360,7 @@ adduser ${name} \
     * mountVFS()
     */
    private async mountVFS(verbose = false) {
+      Utils.warning('mounting vfs')
       const echo = Utils.setEcho(verbose)
       if (verbose) {
          Utils.warning('hatching: mountVFS')
@@ -375,6 +380,7 @@ adduser ${name} \
     * @param target
     */
    private async umountVFS(verbose = false) {
+      Utils.warning('umounting vfs')
       const echo = Utils.setEcho(verbose)
       if (verbose) {
          Utils.warning('hatching: umountVFS')
@@ -416,7 +422,9 @@ adduser ${name} \
     * @param devices
     */
    private async fstab(installDevice: string, verbose = false) {
+      Utils.warning('creating fstab')s
       // const echo = Utils.setEcho(verbose)
+
       if (verbose) {
          Utils.warning('hatching: fstab')
       }
@@ -474,13 +482,14 @@ adduser ${name} \
     * name()
     * @param options
     */
-   private async name(verbose = false) {
+   private async hostname(verbose = false) {
+      Utils.warning('settings hostname')
       const echo = Utils.setEcho(verbose)
       if (verbose) {
-         Utils.warning('hatching: name')
+         Utils.warning('hatching: hostname')
       }
 
-      const file = `${this.target}/etc/name`
+      const file = `${this.target}/etc/hostname`
       const text = this.host.name
 
       await exec(`rm ${file}`, echo)
@@ -492,6 +501,7 @@ adduser ${name} \
     * @param options
     */
    private async resolvConf(verbose = false) {
+      Utils.warning('setting /etc/resolv.conf')
       const echo = Utils.setEcho(verbose)
       if (verbose) {
          Utils.warning('hatching: resolvConf')
@@ -543,16 +553,18 @@ adduser ${name} \
     * hostname
     * @param verbose 
     */
-   private async hostname(verbose = false) {
-      const file = `${this.target}/etc/hostname`
-      let text = this.host.name + '\n'
-      fs.writeFileSync(file, text)
-   }
+   // private async hostname(verbose = false) {
+   //    const file = `${this.target}/etc/hostname`
+   //    let text = this.host.name + '\n'
+   //    fs.writeFileSync(file, text)
+   // }
+
    /**
     * hosts()
     * @param options
     */
    private async hosts(verbose = false) {
+      Utils.warning('settings hosts')
       // const echo = Utils.setEcho(verbose)
       if (verbose) {
          Utils.warning('hatching: hosts')
@@ -604,6 +616,7 @@ adduser ${name} \
     * @param verbose
     */
    private async egg2system(verbose = false): Promise<void> {
+      Utils.warning('copyng filesystem in ' + this.target)
       const echo = Utils.setEcho(verbose)
       if (verbose) {
          Utils.warning('hatching: egg2system')
@@ -670,10 +683,9 @@ adduser ${name} \
     * @param devices
     */
    private async mkfs(verbose = false): Promise<boolean> {
+      Utils.warning('formatting disk')
+
       const echo = Utils.setEcho(verbose)
-      if (verbose) {
-         Utils.warning('hatching: mkfs')
-      }
 
       const result = true
 
@@ -713,10 +725,8 @@ adduser ${name} \
     * @param devices
     */
    private async mount4target(verbose = false): Promise<boolean> {
+      Utils.warning('mount target partion: ' + this.target)
       const echo = Utils.setEcho(verbose)
-      if (verbose) {
-         Utils.warning('hatching: mount4target')
-      }
 
       if (!fs.existsSync(this.target)) {
          await exec(`mkdir ${this.target}`, echo)
@@ -756,6 +766,7 @@ adduser ${name} \
     * @param devices
     */
    private async umount4target(verbose = false): Promise<boolean> {
+      Utils.warning('umounting target partitions')
       const echo = Utils.setEcho(verbose)
       if (verbose) {
          Utils.warning('hatching: umount4target')
@@ -962,11 +973,9 @@ adduser ${name} \
       console.log('The user name is ' + chalk.cyanBright(this.users.name) + '.')
       console.log('Enjoy Your new penguin!')
       console.log(`Note: it is recommended to run the command ` + chalk.cyanBright(`sudo update-initramfs -u`) + ` after next reboot.`)
-      console.log('Press any key to exit')
-      require('child_process').spawnSync('read _ ', {
-         shell: true,
-         stdio: [0, 1, 2]
-      })
+      console.log('Press any key to reboot...')
+      require('child_process').spawnSync('read _ ', { shell: true, stdio: [0, 1, 2] })
+      shx.exec('reboot')
    }
 
 
