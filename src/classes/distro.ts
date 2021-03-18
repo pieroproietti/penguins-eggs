@@ -229,7 +229,7 @@ class Distro implements IDistro {
       /**
        * Selezione il mountpoint per squashfs
        */
-      if (this.versionLike === 'jessie' || this.versionLike === 'stretch' || this.versionLike === 'bionic' || this.versionLike === 'xenial') {
+      if (this.versionLike === 'jessie' || this.versionLike === 'bionic' || this.versionLike === 'xenial') { // tolta strecth
          this.mountpointSquashFs = '/lib/live/mount/medium/live/filesystem.squashfs'
       } else {
          this.mountpointSquashFs = '/run/live/medium/live/filesystem.squashfs'
@@ -275,34 +275,3 @@ async function getDistroLike(): Promise<any> {
    })
 }
 
-/**
- * 
- * @param driveList 
- * @param partitionTypes 
- * @param verbose 
- */
-async function getVersionLike(distro = 'Debian'): Promise<any> {
-
-   let versions: string[] = []
-   if (distro === 'Debian') {
-      versions = ['jessie', 'stretch', 'buster', 'bullseye']
-   } else if (distro === 'Devuan') {
-      versions = ['beowulf']
-   } else if (distro === 'Ubuntu') {
-      versions = ['bionic', 'focal', 'groovy']
-   }
-
-   return new Promise(function (resolve) {
-      const questions: Array<Record<string, any>> = [
-         {
-            type: 'list',
-            name: 'versionLike',
-            message: 'Select the janitor: ',
-            choices: versions
-         }
-      ]
-      inquirer.prompt(questions).then(function (options) {
-         resolve(JSON.stringify(options))
-      })
-   })
-}
