@@ -229,11 +229,11 @@ class Distro implements IDistro {
        * Selezione il mountpoint per squashfs
        */
       if (this.versionLike === 'jessie' || this.versionLike === 'stretch' || this.versionLike === 'bionic' || this.versionLike === 'xenial') {
-         this.mountpointSquashFs = '/lib/live/mount/rootfs/filesystem.squashfs'
-         //this.mountpointSquashFs = '/lib/live/mount/medium/live/filesystem.squashfs'
+         this.mountpointSquashFs = '/lib/live/mount/medium/live/filesystem.squashfs'
       } else {
          this.mountpointSquashFs = '/run/live/medium/live/filesystem.squashfs'
       }
+
       /**
        * MX LINUX
        * ln -s /run/live/medium/live/filesystem.squashfs /live/boot-dev/antiX/linuxfs
@@ -245,6 +245,7 @@ class Distro implements IDistro {
          //  }
          // this.mountpointSquashFs = '/live/boot-dev/antiX/linuxfs'
       }
+
       /**
        * e le posizioni per isolinux e syslinux
        */
@@ -254,24 +255,3 @@ class Distro implements IDistro {
 }
 
 export default Distro
-
-
-/**
- * richiesta di versione da parte dell'utente
- */
-async function getDistroLike(): Promise<any> {
-   return new Promise(function (resolve) {
-      const questions: Array<Record<string, any>> = [
-         {
-            type: 'list',
-            name: 'versionLike',
-            message: 'Select the janitor: ',
-            choices: ['Debian', 'Devuan', 'Ubuntu']
-         }
-      ]
-      inquirer.prompt(questions).then(function (options) {
-         resolve(JSON.stringify(options))
-      })
-   })
-}
-
