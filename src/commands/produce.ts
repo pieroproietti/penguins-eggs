@@ -103,6 +103,7 @@ export default class Produce extends Command {
           * Analisi del tipo di compressione del kernel
           * 
           * zgrep CONFIG_KERNEL_ /boot/config-$(uname -r)
+          * zgrep CONFIG_OVERLAY_FS /boot/config-$(uname -r)
           */
          let compression = '' // se vuota, compression viene definita da loadsettings, default xz
          if (flags.fast) {

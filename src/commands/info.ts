@@ -87,5 +87,8 @@ You will find here informations about penguin's eggs!
       } else {
          console.log('system is:         ' + chalk.green('INSTALLED'))
       }
+
+      shx.exec('zgrep CONFIG_KERNEL_ /boot/config-$(uname -r)')
+      shx.exec('zgrep CONFIG_OVERLAY_FS /boot/config-$(uname -r)')
    }
 }
