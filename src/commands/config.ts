@@ -120,27 +120,29 @@ export default class Config extends Command {
         /**
          * Visualizza cosa c'è da fare
          */
-        Utils.warning('config: that we need...')
-        if (i.needApt && !nointeractive) {
-            console.log('- update the system')
-            console.log(chalk.yellow('  apt update --yes\n'))
-        }
-
-        if (i.efi && !nointeractive) {
-            if (process.arch === 'ia32') {
-                // do nothing
-            } else if (process.arch === 'x64') {
-                console.log('- install efi packages')
-                console.log(chalk.yellow('  apt install -y grub-efi-amd64-bin\n'))
+        if (!nointeractive) {
+            Utils.warning('config: that we need...')
+            if (i.needApt) {
+                console.log('- update the system')
+                console.log(chalk.yellow('  apt update --yes\n'))
             }
-        }
 
-        if (i.prerequisites && !nointeractive) {
-            console.log('- install prerequisites')
-            console.log(chalk.yellow('  apt install --yes ' + Pacman.debs2line(Pacman.debs4notRemove)))
+            if (i.efi) {
+                if (process.arch === 'ia32') {
+                    // do nothing
+                } else if (process.arch === 'x64') {
+                    console.log('- install efi packages')
+                    console.log(chalk.yellow('  apt install -y grub-efi-amd64-bin\n'))
+                }
+            }
 
-            const packages = Pacman.packages(verbose)
-            console.log(chalk.yellow('  apt install --yes ' + Pacman.debs2line(packages)))
+            if (i.prerequisites) {
+                console.log('- install prerequisites')
+                console.log(chalk.yellow('  apt install --yes ' + Pacman.debs2line(Pacman.debs4notRemove)))
+
+                const packages = Pacman.packages(verbose)
+                console.log(chalk.yellow('  apt install --yes ' + Pacman.debs2line(packages)))
+            }
 
             if (i.configurationInstall) {
                 console.log('- creating configuration\'s files...')
@@ -165,27 +167,27 @@ export default class Config extends Command {
                 console.log()
             }
             */
-        }
 
-        if (i.calamares && !nointeractive) {
-            console.log('- install calamares')
-            const packages = Pacman.debs4calamares
-            console.log(chalk.yellow('  apt install -y ' + Pacman.debs2line(packages) + '\n'))
-        }
+            if (i.calamares) {
+                console.log('- install calamares')
+                const packages = Pacman.debs4calamares
+                console.log(chalk.yellow('  apt install -y ' + Pacman.debs2line(packages) + '\n'))
+            }
 
-        if (i.needApt && !nointeractive) {
-            console.log('- cleaning apt\n')
-        }
+            if (i.needApt) {
+                console.log('- cleaning apt\n')
+            }
 
-        if (i.configurationInstall) {
-            console.log('- creating/updating configuration')
-            console.log('  files: ' + chalk.yellow('/etc/penguins-eggs.d/eggs.yaml') + ' and ' + chalk.yellow('/usr/local/share/penguins-eggs/exclude.list\n'))
-        } else if (i.configurationRefresh) {
-            console.log('- refreshing configuration for new machine')
-        }
+            if (i.configurationInstall) {
+                console.log('- creating/updating configuration')
+                console.log('  files: ' + chalk.yellow('/etc/penguins-eggs.d/eggs.yaml') + ' and ' + chalk.yellow('/usr/local/share/penguins-eggs/exclude.list\n'))
+            } else if (i.configurationRefresh) {
+                console.log('- refreshing configuration for new machine')
+            }
 
-        if (i.needApt && !nointeractive) {
-            Utils.warning('Be sure! It\'s just a series of apt install from your repo.\nYou can follows them using flag --verbose')
+            if (i.needApt) {
+                Utils.warning('Be sure! It\'s just a series of apt install from your repo.\nYou can follows them using flag --verbose')
+            }
         }
         return i
     }
