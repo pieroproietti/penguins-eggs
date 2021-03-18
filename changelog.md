@@ -18,8 +18,12 @@ You can follow the project also consulting the [commit history](https://github.c
 ## Changelog
 Versions are listed on reverse order, the first is the last one.
 
+### eggs-7.8.38
+* working in cli installer
+
 ### eggs-7.8.37
 * added livecd theme for ufficiozero, check option --final in produce and calamares
+
 ### eggs-7.8.36
 * added livecd theme for openos, added full name on the livecd boot and in installed system boot
 
