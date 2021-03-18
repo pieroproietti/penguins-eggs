@@ -212,12 +212,11 @@ class Distro implements IDistro {
          this.versionLike = 'bullseye'
       } else if (this.versionId === 'buster/sid') {
          // Netrunner
-         this.distroLike= 'Debian'
-         this.versionLike= 'buster'
+         this.distroLike = 'Debian'
+         this.versionLike = 'buster'
       } else {
 
          // se proprio non riesco chiedo l'intervento dell'utente
-
          console.log("This distro is not yet recognized, but you can choose a compatible version")
          // Dato che occorre await evito al momento
          // this.distroLike = await getDistroLike()
@@ -229,8 +228,9 @@ class Distro implements IDistro {
       /**
        * Selezione il mountpoint per squashfs
        */
-      if (this.versionLike === 'jessie' || this.versionLike === 'bionic' || this.versionLike === 'xenial') { // tolta strecth
-         this.mountpointSquashFs = '/lib/live/mount/medium/live/filesystem.squashfs'
+      if (this.versionLike === 'jessie' || this.versionLike === 'stretch' || this.versionLike === 'bionic' || this.versionLike === 'xenial') {
+         this.mountpointSquashFs = '/lib/live/mount/rootfs/filesystem.squashfs'
+         //this.mountpointSquashFs = '/lib/live/mount/medium/live/filesystem.squashfs'
       } else {
          this.mountpointSquashFs = '/run/live/medium/live/filesystem.squashfs'
       }
