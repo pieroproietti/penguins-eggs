@@ -99,9 +99,14 @@ export default class Produce extends Command {
             basename = flags.basename
          }
 
+         /**
+          * Analisi del tipo di compressione del kernel
+          * 
+          * zgrep CONFIG_KERNEL_ /boot/config-$(uname -r)
+          */
          let compression = '' // se vuota, compression viene definita da loadsettings, default xz
          if (flags.fast) {
-            compression = 'lz4'
+            compression = 'lz4 -Xhc'
          } else if (flags.normal) {
             compression = 'xz'
          } else if (flags.max) {
