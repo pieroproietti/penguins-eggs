@@ -156,6 +156,10 @@ class Distro implements IDistro {
          this.distroLike = 'Devuan'
          this.versionLike = 'beowulf'
 
+      } else if (this.versionId === 'xenial') {
+         // Ubuntu xenial
+         this.distroLike = 'Ubuntu'
+         this.versionLike = 'xenial'
       } else if (this.versionId === 'bionic') {
          // Ubuntu 18.04 bionic LTS eol aprile 2023
          this.distroLike = 'Ubuntu'
