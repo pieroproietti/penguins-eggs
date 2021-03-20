@@ -108,8 +108,9 @@ export default class Incubator {
       /**
        * ADDONS
        */
-      let calamaresBranding = path.resolve(__dirname, `../../../addons/${this.remix.branding}/theme/branding`)
-      if (fs.existsSync(calamaresBranding)) {
+       // let calamaresBranding = path.resolve(__dirname, `../../../addons/${this.remix.branding}/theme/branding`)
+       let calamaresBranding = path.resolve(__dirname, `../../../addons/${this.remix.branding}/theme/calamares/branding`)
+       if (fs.existsSync(calamaresBranding)) {
          if (!fs.existsSync(`/etc/calamares/branding/${this.remix.branding}`)) {
             fs.mkdirSync(`/etc/calamares/branding/${this.remix.branding}`)
          }

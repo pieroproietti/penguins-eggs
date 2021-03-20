@@ -88,8 +88,39 @@ export default class Fisherman {
      * @param name 
      * @param replaces [['search','replace']]
      */
-    async buildModule(name: string) {
-        const moduleSource = path.resolve(__dirname, `${this.rootTemplate}/modules/${name}.yml`)
+    async buildModule(name: string, vendor = '') {
+        let moduleSource = path.resolve(__dirname, `${this.rootTemplate}/modules/${name}.yml`)
+
+        /**
+         * We need vendor here to have possibility to load custom modules for calamares
+         * the custom modules live in: /addons/vendor/theme/calamares/modules
+         * and - if exist - take priority on distro modules on /conf/distros/calamares/modules
+         * 
+         * example:
+         * 
+         * ./addons/openos/theme/calamares/modules/partition.yml 
+         * take place of:
+         * ./conf/distros/bullseye/calamares/modules/partition.yml
+         * and end in:
+         * /etc/calamares/modules/partition.conf
+         * 
+         * And we solve the issue of Sebastien who need btrfs
+         * 
+         */
+
+        /**
+         * Aggiungere la modifica in guadalinex e ufficiozero 
+         */
+        if (vendor !== '') {
+            const customModuleSource = path.resolve(__dirname, `../../../addons/${vendor}/theme/calamares/modules/${name}.yml`)
+            if (fs.existsSync(customModuleSource)) {
+                console.log(moduleSource)
+                moduleSource = customModuleSource
+                console.log(moduleSource)
+            }
+
+        } 
+        
         const moduleDest = `${this.dirModules}${name}.conf`
         if (fs.existsSync(moduleSource)) {
             if (this.verbose) this.show(name, 'module', moduleDest)
