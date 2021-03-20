@@ -107,16 +107,10 @@ export default class Fisherman {
          * And we solve the issue of Sebastien who need btrfs
          * 
          */
-
-        /**
-         * Aggiungere la modifica in guadalinex e ufficiozero 
-         */
         if (vendor !== '') {
             const customModuleSource = path.resolve(__dirname, `../../../addons/${vendor}/theme/calamares/modules/${name}.yml`)
             if (fs.existsSync(customModuleSource)) {
-                console.log(moduleSource)
                 moduleSource = customModuleSource
-                console.log(moduleSource)
             }
 
         } 
