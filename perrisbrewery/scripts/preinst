@@ -13,13 +13,25 @@ set -e
 # for details, see https://www.debian.org/doc/debian-policy/ or
 # the debian-policy package
 
+# vedere come accontentare adriano/julian
+# apt purge calamares eggs
+# rm -rf /etc/calamares/
+# rm -rf /etc/penguins-eggs.d/
+# rm -rf /usr/local/share/penguins-eggs/
+# rm -rf /usr/lib/calamares/
+# rm -f /etc/penguins-eggs.conf
+# rm -f /usr/share/applications/penguins-eggs-adapt.desktop
+# rm -f /usr/share/applications/penguins-eggs.desktop
+# rm -f /usr/share/applications/penguins-eggs-installer.desktop
+# rm -f /usr/bin/penguins-links-add.sh
+# rm -rf /usr/lib/penguins-eggs/
 
 case "$1" in
     install|upgrade)
     # pulizia dei link non rimovibili da apt
     rm -rf /usr/lib/penguins-eggs/distros
 
-    # eggc configurazione
+    # eggs configurazione
     # rm -rf /etc/penguins-eggs.d/
     rm -rf /usr/local/share/penguins-eggs/
 
