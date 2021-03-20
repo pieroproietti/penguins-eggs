@@ -62,7 +62,7 @@ export class Beowulf {
 
       await fisherman.settings(this.remix.branding)
 
-      await fisherman.buildModule('partition')
+      await fisherman.buildModule('partition', this.remix.branding)
       await fisherman.buildModule('mount')
       await fisherman.moduleUnpackfs() //
       await fisherman.buildCalamaresModule('sources-yolk')
