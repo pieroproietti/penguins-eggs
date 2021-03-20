@@ -92,7 +92,7 @@ initialPartitioningChoice: none
 #
 # The default is "none" (no swap) if that is one of the enabled options, otherwise
 # one of the items from the options.
-initialSwapChoice: none
+initialSwapChoice: small
 
 # Default partition table type, used when a "erase" disk is made.
 #

@@ -57,7 +57,7 @@ Presentation
             anchors.top: background.top
             text: qsTr("<h1>Penguin's eggs</h1><br/>"+
                   "<br/><h2>The reproductive system for penguins!</h2>"+
-                  "<br/><h2>https://penguins-eggs.net</h2>")
+                  "<br/><h3>https://penguins-eggs.net</h3>")
             wrapMode: Text.WordWrap
             width: presentation.widt
             horizontalAlignment: Text.Center
@@ -174,7 +174,7 @@ Presentation
             text: qsTr("<h1>Penguin's eggs</h1><br/>"+
                   "<br/>"+
                   "<br/>"+
-                  "<br/><p>Follow the penguin's eggs development, can be funny and istructive.</p>" +
+                  "<br/><p>Follow the penguin's eggs development, can be funny.</p>" +
                   "<p>Penguin's eggs and it's developer need help, " +
                   "use this tool, enjoy and if you can collaborate.</p>"+
                   "<br/>That's all peoples!")
@@ -201,9 +201,9 @@ Presentation
             anchors.horizontalCenter: slide7.horizontalCenter
             anchors.top: background.top
             text: qsTr("<h1>Penguin's eggs</h1><br/>"+
-                  "<br/>Created by Piero Proietti, thinking to the community.<br/>"+
-                  "<br/>issues: htts://github.com/pieroproietti/penguins-eggs"+
-                  "<br/>email: piero.proietti@gmail.com")
+                  "<h2>Created by Piero Proietti</h2><br/>"+
+                  "<h3>issues: htts://github.com/pieroproietti/penguins-eggs</h3>"+
+                  "<h3>email: piero.proietti@gmail.com</h3>")
             wrapMode: Text.WordWrap
             width: 600
             horizontalAlignment: Text.Center
