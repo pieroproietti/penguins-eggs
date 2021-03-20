@@ -107,7 +107,8 @@ export default class Produce extends Command {
           */
          let compression = '' // se vuota, compression viene definita da loadsettings, default xz
          if (flags.fast) {
-            compression = 'lz4 -Xhc'
+            // compression = 'lz4 -Xhc'
+            compression = 'lz4'
          } else if (flags.normal) {
             compression = 'xz'
          } else if (flags.max) {
