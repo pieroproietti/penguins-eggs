@@ -27,6 +27,7 @@ We need build-essential and fakeroot
 
 ## dowonload kernel source
 
+* `sudo apt-get install linux-source-4.19.0`
 * `sudo apt-get install linux-source-3.19.8`
 
 * `sudo apt-get build-dep linux`
