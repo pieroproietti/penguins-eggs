@@ -22,17 +22,23 @@ All ISOs are based on Debian jessie
 
 * **naked** - just the juice, without GUI. You can start here to build your revolution! (i386 and amd64)
 
-## Nota su Debian 8 jessie
-Su Debian 8 jessie non è possibile utilizzare eggs per la mancanza di overlayfs nel kernel 3.16.x tale caratteristica è resente solo dalla versione 3.19 del kernel. Sono riuscito, comunque a produrre la iso, dopo aver installato un kernel bpo (backported) credo il 4.9.x che supporta unionfs.
+## Note on Debian 8 jessie
+On Debian 8 jessie it is not possible to use eggs with the original kernel 3.16, due the lack of overlayfs. This feature is available only from the 3.19 version of the kernel. I managed, however, to produce the iso, after installing a backported kernel (4.9.0-0.bpo.12-amd64) who suppert overlayfs.
 
-A questo punto è stato necessario installare i pacchetti:
+After was necessary to install the follow packages (from Debian stretch repository):
 * live-boot_20170112_all.deb
 * live-boot-initramfs-tools_20170112_all.deb
-di provenienza Debian stretch
 
-e ricompilare eggs direttamente sulla macchina jessie.
+and we solved almost all the problems.
 
-Attenzione: aggiornare eggs su jessie con una versione standard porta alla impossibilità di installazione. 
+For same reasons - I don't know at the moment, eggs compiled on different version of Debian don't want to run correctly on the system and end with the error:
+
+* Error: /usr/lib/x86_64-linux-gnu/libstdc++.so.6: version `CXXABI_1.3.9' not found (required by /usr/lib/penguins-eggs/node_modules/drivelist/build/Release/drivelist.node)
+
+I solved this simply recompiling eggs directly on Debian jessie.
+
+# Warning: 
+__upgrading eggs on jessie with a standard version will lead to an inability to install__.
 
 # Disclaim
 __Please note what this project is in no way connected to Debian in any official way, it’s just my personal experiment__.
