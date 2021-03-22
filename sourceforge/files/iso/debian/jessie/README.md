@@ -38,7 +38,17 @@ I made eggs compiled for jessie for both i386 and amd64 architecture and put the
 
 apt-cache search linux-image to see that kernel was possible to install
 
-apt-get install inux-image-4.9.0-0.bpo.12-amd64
+apt-get install linux-image-4.9.0-0.bpo.12-amd64
+
+### update kernel from ubuntu
+After varius temptatives I found the kernel linux-image-4.9.0-0.bpo.12-amd64 had problems with jessie, the system frozen sametime and I decided to found another kernel more adapt. Yesterday MUGIWARA LUFFY from OpenOS-Neon group suggest me mainline and I found [ubuntu mailine](https://kernel.ubuntu.com/~kernel-ppa/mainline/linux-3.19.y.z-review/current/)
+
+I choose [linux-image-3.19.8-992-generic_3.19.8-992.201607122201_amd64.deb](https://kernel.ubuntu.com/~kernel-ppa/mainline/linux-3.19.y.z-review/current/linux-image-3.19.8-992-generic_3.19.8-992.201607122201_amd64.deb) and [linux-image-3.19.8-992-generic_3.19.8-992.201607122201_i386.deb](https://kernel.ubuntu.com/~kernel-ppa/mainline/linux-3.19.y.z-review/current/linux-image-3.19.8-992-generic_3.19.8-992.201607122201_i386.deb) according to the architecture.
+
+install this kernel request module-init-tools too.
+
+But we end with good results on amd64.
+
 
 ### install live-boot (from stretch repository)
 After this was necessary to update live-boot with a versione who support the creation of initrd image with support of overlayfs.
