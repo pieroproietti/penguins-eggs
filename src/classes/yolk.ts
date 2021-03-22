@@ -32,7 +32,7 @@ export default class Yolk {
          * deb [trusted=yes] file:/usr/local/yolk ./
          * 
          */
-        console.log('updating system...')
+        Utils.warning('updating system...')
         if (!Pacman.commandIsInstalled('dpkg-scanpackages')) {
             process.exit(0)
         }
@@ -62,7 +62,7 @@ export default class Yolk {
         // Per tutti i pacchetti cerca le dipendenze, controlla se non siano installate e le scarico.
         for (let i = 0; i < packages.length; i++) {
             let cmd = ''
-            console.log(`downloading package ${packages[i]} and it's dependencies...`)
+            Utils.warning(`downloading package ${packages[i]} and it's dependencies...`)
             cmd = `apt-cache depends --recurse --no-recommends --no-suggests --no-conflicts --no-breaks --no-replaces --no-enhances ${packages[i]} | grep "^\\w" | sort -u`
             let depends = await execute(cmd)
             await this.installDeps(depends.split('\n'))
@@ -70,16 +70,16 @@ export default class Yolk {
 
         // Creo Package.gz
         const cmd = 'dpkg-scanpackages -m . | gzip -c > Packages.gz'
-        console.log(cmd)
+        Utils.warning(cmd)
         await execute(cmd)
 
         // Creo Release
         const date = await execute('date -R -u')
         const content = `Archive: stable\nComponent: yolk\nOrigin: penguins-eggs\nArchitecture: ${arch}\nDate: ${date}\n`
-        console.log('Creating Release')
+        Utils.warning('Writing Release')
         fs.writeFileSync('Release', content)
 
-        console.log('Cleaning apt...')
+        Utils.warning('Cleaning apt cache')
         const bleach = new Bleach()
         await bleach.clean(verbose)
     }

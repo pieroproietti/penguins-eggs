@@ -18,6 +18,9 @@ You can follow the project also consulting the [commit history](https://github.c
 ## Changelog
 Versions are listed on reverse order, the first is the last one.
 
+### eggs-7.8.40
+* zstd -Xcompression-level 1 take place of lz4 in fast compression, others adpment for jessie.
+
 ### eggs-7.8.39
 * added possibility to customize default partition in theme: openos will have btrfs as default
 

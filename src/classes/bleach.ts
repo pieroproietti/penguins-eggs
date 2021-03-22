@@ -73,8 +73,12 @@ export default class Bleach {
          Utils.warning('cleaning journald')
       }
       if (Utils.isSystemd()) {
-         await exec('journalctl --rotate', echo)
-         await exec('journalctl --vacuum-time=1s', echo)
+         try {
+            await exec('journalctl --rotate', echo)
+            await exec('journalctl --vacuum-time=1s', echo)
+         } catch (error) {
+            Utils.error(error)
+         }
       } else {
          // Truncate logs, remove archived logs.
          await exec(`find /var/log -name "*gz" -print0 | xargs -0r rm -f`, echo)

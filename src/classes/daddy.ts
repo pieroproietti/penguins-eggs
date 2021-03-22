@@ -73,7 +73,8 @@ export default class Daddy {
             config.root_passwd = newConf.root_passwd
             config.theme = newConf.theme
             if (newConf.compression === 'fast') {
-                config.compression = 'lz4'
+                // config.compression = 'lz4'
+                config.compression = 'zstd -Xcompression-level 1 -b 262144'
             } else if (newConf.compression === 'normal') {
                 config.compression = 'xz'
             } else if (newConf.compression === 'max') {
@@ -101,7 +102,7 @@ export default class Daddy {
             }
 
             // produce
-            if (config.compression === 'lz4') {
+            if (config.compression === 'zstd -Xcompression-level 1 -b 262144') {
                 flags += '--fast'
             } else if (config.compression === 'xz') {
                 flags += '--normal'
