@@ -42,8 +42,8 @@ export default class Bleach {
          Utils.warning('cleaning apt')
       }
 
-      await exec('apt clean', echo)
-      await exec('apt autoclean', echo)
+      await exec('apt-get clean', echo)
+      await exec('apt-get autoclean', echo)
       const dest = '/var/lib/apt/lists/'
       rmdir(dest, verbose)
    }

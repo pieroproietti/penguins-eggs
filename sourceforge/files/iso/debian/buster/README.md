@@ -21,8 +21,9 @@ All ISOs are based on Debian buster, Debian bullseye
 # Debian buster 
 
 * **naked** - just the juice, without GUI. You can start here to build your revolution! (i386 and amd64)
-* **lite** - it's not naked, but just dressed with xfce4 and the tools to develop. (i386 and amd64)
-* **myway**  - it is my personal version with cinnamon, mostly for development, but include common office tools; (amd64)
+* **xfce** - it's not naked, but just dressed with xfce4 and the tools to develop. (i386 and amd64)
+* **lxqt** - it's not naked, but just dressed with lxqt and the tools to develop. (i386 and amd64)
+* **cinnamon**  - was my personal version with cinnamon, mostly for development, but include common office tools; (amd64)
 
 # Disclaim
 __Please note what this project is in no way connected to Debian in any official way, it’s just my personal experiment__.
