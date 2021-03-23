@@ -162,6 +162,7 @@ function documentation_book {
 
 ################################
 function documentation_book_translated {
+   # sensible-editor sensible-pager
    sensible-browser "https://translate.google.com/translate?hl=en&sl=auto&tl=en&u=https%3A%2F%2Fpenguins-eggs.net%2Fbook%2Fitaliano"
 }
 
