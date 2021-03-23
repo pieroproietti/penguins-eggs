@@ -307,6 +307,11 @@ informations about system and eggs
 USAGE
   $ eggs info
 
+OPTIONS
+  -c, --compressor  compressors list
+  -h, --help        show CLI help
+  -v, --verbose
+
 EXAMPLE
   $ eggs info
   You will find here informations about penguin's eggs!
