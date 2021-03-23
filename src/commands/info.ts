@@ -5,19 +5,27 @@
  * license: MIT
  */
 
-import { Command } from '@oclif/command'
+import { Command, flags } from '@oclif/command'
+import fs = require('fs')
 import shx = require('shelljs')
 import Utils from '../classes/utils'
 import Settings from '../classes/settings'
 import Pacman from '../classes/pacman'
 import chalk = require('chalk')
 import Distro from '../classes/distro'
+import { compact } from '@oclif/plugin-help/lib/util'
 
 /**
  * Get informations about system
  */
 export default class Info extends Command {
    static description = 'informations about system and eggs'
+
+   static flags = {
+      help: flags.help({ char: 'h' }),
+      compressor: flags.boolean({ char: 'c', description: 'compressors list' }),
+      verbose: flags.boolean({ char: 'v' }),
+   }
 
    static examples = [
       `$ eggs info
@@ -28,6 +36,8 @@ You will find here informations about penguin's eggs!
    async run() {
       Utils.titles(this.id + ' ' + this.argv)
 
+      const { flags } = this.parse(Info)
+
       const settings = new Settings()
       settings.load()
 
@@ -35,8 +45,8 @@ You will find here informations about penguin's eggs!
       //console.log(line)
       settings.show()
 
-      const distroId = shx.exec('lsb_release -is', {silent: true}).stdout.trim()
-      const versionId = shx.exec('lsb_release -cs', {silent: true}).stdout.trim()
+      const distroId = shx.exec('lsb_release -is', { silent: true }).stdout.trim()
+      const versionId = shx.exec('lsb_release -cs', { silent: true }).stdout.trim()
       console.log('distroId:          ' + chalk.green(distroId) + '/' + chalk.green(versionId))
       console.log('distroLike:        ' + settings.distro.distroLike + '/' + settings.distro.versionLike)
       if (await Pacman.prerequisitesCheck()) {
@@ -88,7 +98,29 @@ You will find here informations about penguin's eggs!
          console.log('system is:         ' + chalk.green('INSTALLED'))
       }
 
-      shx.exec('zgrep CONFIG_KERNEL_ /boot/config-$(uname -r)')
-      shx.exec('zgrep CONFIG_OVERLAY_FS /boot/config-$(uname -r)')
+      if (flags.compressor) {
+         let info = ''
+         shx.exec('mksquashfs ', {silent: false})
+         const output = fs.readFileSync('output', 'utf-8').split('\n')
+         const infoStart = '-comp '
+         let isCompressor = false
+         const infoStop = '-b '
+         for (let i = 0; i < info.length; i++) {
+            if (output[i].includes(infoStart)) {
+               console.log(output[i])
+               isCompressor = true
+            }
+            if (output[i].includes(infoStop)) {
+               isCompressor = false
+            }
+            if (isCompressor ){
+               info += output[i] + '\n'
+            }
+         }
+         console.log(info)
+      }
    }
+   // shx.exec('zgrep CONFIG_KERNEL_ /boot/config-$(uname -r)')
+   // shx.exec('zgrep CONFIG_OVERLAY_FS /boot/config-$(uname -r)')
 }
+
