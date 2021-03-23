@@ -19,7 +19,7 @@ You can follow the project also consulting the [commit history](https://github.c
 Versions are listed on reverse order, the first is the last one.
 
 ### eggs-7.8.41
-* removed drivelist package from eggs, jessie now work with the mainstrem eggs
+* removed drivelist package from eggs, jessie now work with the mainstrem eggs, remove xterm from dependencies
 
 ### eggs-7.8.40
 * zstd -Xcompression-level 1 take place of lz4 in fast compression, others adpment for jessie.
