@@ -64,16 +64,6 @@ I toke following packages from Debian stretch repository:
 
 * live-tools_20151214+nmu1_all.deb (I didn't install it but we can try)
 
-### recompile eggs on jessie or use the package eggs from [packages-jessie-backports](./packages-jessie-backports).
-
-For same reasons - I don't know at the moment -  eggs compiled on different version of Debian don't want to run correctly on the system and end with the error:
-
-* **Error: /usr/lib/x86_64-linux-gnu/libstdc++.so.6: version `CXXABI_1.3.9' not found (required by /usr/lib/penguins-eggs/node_modules/drivelist/build/Release/drivelist.node)**
-
-strings /usr/lib/x86_64-linux-gnu/libstdc++.so.6 | grep CXXABI
-
-Perhaps the best will be to change npm package drivelist and use something else, to get the driver's list. For now solved this recompiling eggs (modules) on Debian jessie with gcc version 4.9.2.
-
 ### that's all folks!
 All the packages need to use eggs on Debian jessie are in [packages-jessie-backports](./packages-jessie-backports)
 
