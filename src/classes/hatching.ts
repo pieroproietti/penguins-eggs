@@ -7,7 +7,7 @@
  */
 import os = require('os')
 import inquirer = require('inquirer')
-import drivelist = require('drivelist')
+//import drivelist = require('drivelist')
 
 import fs = require('fs')
 import chalk = require('chalk')
@@ -1060,11 +1060,17 @@ adduser ${name} \
          /**
           * disk and partition
           */
-         const drives: any = await drivelist.list()
+         // const drives: any = await drivelist.list()
+         // const aDrives: string[] = []
+         // drives.forEach((element: { device: string }) => {
+         //    aDrives.push(element.device)
+         // })
+         const drives = shx.exec('lsblk |grep disk|cut -f 1 "-d\ "',{silent: true}).split('\n')
          const aDrives: string[] = []
-         drives.forEach((element: { device: string }) => {
-            aDrives.push(element.device)
+         drives.forEach((element: string) => {
+            aDrives.push('/dev/' + element)
          })
+
          const partitionTypes = ['simple', 'lvm2']
          while (true) {
             Utils.titles(`disk configuration`)
