@@ -657,7 +657,7 @@ export default class Utils {
     * Penguin's are gettings alive!
     */
    static titles(command = ''): void {
-      clear()
+      console.clear()
       console.log(chalk.cyan(figlet.textSync('eggs')))
       console.log(chalk.bgGreen.white('   ' + pjson.name + '   ') + chalk.bgWhite.blue(" Perri's Brewery edition ") + chalk.bgRed.whiteBright('    ver. ' + pjson.version + '   '))
       console.log('command: ' + chalk.bgBlack.white(command) + '\n')
