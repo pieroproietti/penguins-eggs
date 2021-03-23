@@ -21,38 +21,42 @@ All ISOs are based on Debian jessie
 # Debian jessie
 
 * **naked** - just the juice, without GUI. You can start here to build your revolution! (i386 and amd64)
+* **xfce** - as naked but dressed with xfce4. (i386 and amd64)
 
 ## Note on Debian 8 jessie
-On Debian 8 jessie it is not possible, due the lack of overlayfs, to use eggs with the original kernel 3.16.0-11-amd64. This feature: overlayfs, is available only from the 3.19 version of the kernel. I managed, however, to produce the iso, after installing a backported kernel (4.9.0-0.bpo.12-amd64) who suppert overlayfs.
+On Debian 8 jessie it is not possible, due the lack of overlayfs on the original kernel 3.16.0, to use eggs. This feature: overlayfs, is available only from the kernel 3.19.x. I managed, however, to produce the iso, after installing a backported kernel (4.9.0-0.bpo.12-amd64) who suppert overlayfs.
 
-We need to update live-tools too to create an initrd.img capable to use overlayfs in place of the previus aufs, I tested the live package on stretch version, and work.
+We need to update live-tools packages too to create an initrd.img capable to use overlayfs in place of the previus aufs, so I tested the live packages from stretch version, and it work.
 
-Last we need to compile eggs and modules, with gcc version 4.9.2 to solve a problem with an npm package used from eggs (drivelist)
+Last we need to compile eggs modules, with gcc version 4.9.2 to solve a problem with an npm package used from eggs (drivelist)
 
 * Error: /usr/lib/x86_64-linux-gnu/libstdc++.so.6: version `CXXABI_1.3.9' not found (required by /usr/lib/penguins-eggs/node_modules/drivelist/build/Release/drivelist.node)
 
-I made eggs compiled for jessie for both i386 and amd64 architecture and put them in [packages-jessie-backports](./packages-jessie-backports).
+So I compile eggs on jessie for both i386 and amd64 architecture and put them in [packages-jessie-backports](./packages-jessie-backports).
 
 
-### update kernel from bpo
+### update kernel from Debian bpo
 
 apt-cache search linux-image to see that kernel was possible to install
 
 apt-get install linux-image-4.9.0-0.bpo.12-amd64
 
+This kernel support overlayfs and generally run, but after same temptatives I found was responsable of same instability of the system. I discover this putting back the old kernel 3.16.x and the distro run fine.
+
 ### update kernel from ubuntu
-After varius temptatives I found the kernel linux-image-4.9.0-0.bpo.12-amd64 had problems with jessie, the system frozen sametime and I decided to found another kernel more adapt. Yesterday MUGIWARA LUFFY from OpenOS-Neon group suggest me mainline and I found [ubuntu mailine](https://kernel.ubuntu.com/~kernel-ppa/mainline/linux-3.19.y.z-review/current/)
+I decided to try another kernel more adapt. Both, aosucas499 from [guadalinex](https://distrowatch.com/table.php?distribution=guadalinex) and MUGIWARA LUFFY from OpenOS-Neon group suggest me [ubuntu mailine](https://kernel.ubuntu.com/~kernel-ppa/mainline/linux-3.19.y.z-review/current/)
 
 I choose [linux-image-3.19.8-992-generic_3.19.8-992.201607122201_amd64.deb](https://kernel.ubuntu.com/~kernel-ppa/mainline/linux-3.19.y.z-review/current/linux-image-3.19.8-992-generic_3.19.8-992.201607122201_amd64.deb) and [linux-image-3.19.8-992-generic_3.19.8-992.201607122201_i386.deb](https://kernel.ubuntu.com/~kernel-ppa/mainline/linux-3.19.y.z-review/current/linux-image-3.19.8-992-generic_3.19.8-992.201607122201_i386.deb) according to the architecture.
 
 install this kernel request module-init-tools too.
 
-But we end with good results on amd64.
+But we end with good results on amd64 and i386 architecture.
 
 
 ### install live-boot (from stretch repository)
 After this was necessary to update live-boot with a versione who support the creation of initrd image with support of overlayfs.
-I take follow packages (from Debian stretch repository):
+
+I toke following packages from Debian stretch repository:
 
 * live-boot_20170112_all.deb
 
@@ -68,9 +72,7 @@ For same reasons - I don't know at the moment -  eggs compiled on different vers
 
 strings /usr/lib/x86_64-linux-gnu/libstdc++.so.6 | grep CXXABI
 
-Perhaps the best will be to change npm package drivelist and use something else, to get the driver's list.
-
-For now solved this recompiling eggs (modules) on Debian jessie with gcc version 4.9.2.
+Perhaps the best will be to change npm package drivelist and use something else, to get the driver's list. For now solved this recompiling eggs (modules) on Debian jessie with gcc version 4.9.2.
 
 ### that's all folks!
 All the packages need to use eggs on Debian jessie are in [packages-jessie-backports](./packages-jessie-backports)
