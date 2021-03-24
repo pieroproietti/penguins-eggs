@@ -22,9 +22,12 @@ All ISOs are based on Debian jessie
 
 ## Download and install a kernel capable of overlayfs
 
-* (amd64)[https://kernel.ubuntu.com/~kernel-ppa/mainline/linux-3.19.y.z-review/current/linux-image-3.19.8-992-generic_3.19.8-992.201607122201_amd64.deb]
+* amd64
+https://kernel.ubuntu.com/~kernel-ppa/mainline/linux-3.19.y.z-review/current/linux-image-3.19.8-992-generic_3.19.8-992.201607122201_amd64.deb
 
-* (i386)[linux-image-3.19.8-992-generic_3.19.8-992.201607122201_i386.deb
+
+* i386
+https://kernel.ubuntu.com/~kernel-ppa/mainline/linux-3.19.y.z-review/linux-image-3.19.8-992-generic_3.19.8-992.201607122201_i386.deb
 
 ## Download and install packages live from stretch 
 You must download and install the files listed in this directory
