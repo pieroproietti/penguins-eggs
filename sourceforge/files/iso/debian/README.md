@@ -12,25 +12,19 @@ penguins-eggs
 
 # Debian remastered ISOs
 
-All ISOs are based on Debian buster, Debian bullseye
+All ISOs are based on Debian varius versions
 
 # user/password
 * ```live/evolution```
 * ```root/evolution```
 
-# Debian buster 
+* Debian 8 jessie (old-old-stable)
 
-* **naked** - just the juice, without GUI. You can start here to build your revolution! (i386 and amd64)
-* **lite** - it's not naked, but just dressed with xfce4 and the tools to develop. (i386 and amd64)
-* **myway**  - it is my personal version with cinnamon. Mostly for development, but include common office tools; (amd64)
++ Debian 9 stretch (old-stable)
 
-# Debian bullseye
+* Debian 10 buster (stable)
 
-* **naked** - just the juice, without GUI. You can start here to build your revolution! (i386 and amd64)
-* **xfce** - it's not naked, but just dressed with xfce4 and firefox. You can from here for a lite xfce remix. (i386)
-* **mate** - it's not naked, but just dressed with mate and firefox.  You can from here for a lite mate remix. (i386)
-* **gnome** - it's not naked, but just dressed with gnome and firefox. You can from here for a lite gnome remix. (i386)
-* **kde** - it's not naked, but just dressed with kde and conquetor. You can from here for a lite kde remix. (amd64)
+* Debian 11 bullseye (testing)
 
 # Disclaim
 __Please note what this project is in no way connected to Debian in any official way, it’s just my personal experiment__.

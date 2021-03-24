@@ -21,36 +21,22 @@ All ISOs are based on Debian jessie
 # Debian jessie
 
 * **naked** - just the juice, without GUI. You can start here to build your revolution! (i386 and amd64)
-* **xfce** - as naked but dressed with xfce4. (i386 and amd64)
+* **mate** - as naked but dressed with mate. (i386 and amd64)
 
 ## Note on Debian 8 jessie
 On Debian 8 jessie it is not possible, due the lack of overlayfs on the original kernel 3.16.0, to use eggs. This feature: overlayfs, is available only from the kernel 3.19.x. I managed, however, to produce the iso, after installing a backported kernel (4.9.0-0.bpo.12-amd64) who suppert overlayfs.
 
 We need to update live-tools packages too to create an initrd.img capable to use overlayfs in place of the previus aufs, so I tested the live packages from stretch version, and it work.
 
-Last we need to compile eggs modules, with gcc version 4.9.2 to solve a problem with an npm package used from eggs (drivelist)
 
-* Error: /usr/lib/x86_64-linux-gnu/libstdc++.so.6: version `CXXABI_1.3.9' not found (required by /usr/lib/penguins-eggs/node_modules/drivelist/build/Release/drivelist.node)
-
-So I compile eggs on jessie for both i386 and amd64 architecture and put them in [packages-jessie-backports](./packages-jessie-backports).
-
-
-### update kernel from Debian bpo
-
-apt-cache search linux-image to see that kernel was possible to install
-
-apt-get install linux-image-4.9.0-0.bpo.12-amd64
-
-This kernel support overlayfs and generally run, but after same temptatives I found was responsable of same instability of the system. I discover this putting back the old kernel 3.16.x and the distro run fine.
-
-### update kernel from ubuntu
-I decided to try another kernel more adapt. Both, aosucas499 from [guadalinex](https://distrowatch.com/table.php?distribution=guadalinex) and MUGIWARA LUFFY from OpenOS-Neon group suggest me [ubuntu mailine](https://kernel.ubuntu.com/~kernel-ppa/mainline/linux-3.19.y.z-review/current/)
+### update kernel from ubuntu mainline
+After same temptatives with kernel 4.x.x-bpo from the same repository of jessies, I decided to try another kernel more adapt. Both, aosucas499 from [guadalinex](https://distrowatch.com/table.php?distribution=guadalinex) and MUGIWARA LUFFY from OpenOS-Neon telegram group suggest me to look in [ubuntu mailine](https://kernel.ubuntu.com/~kernel-ppa/mainline/linux-3.19.y.z-review/current/).
 
 I choose [linux-image-3.19.8-992-generic_3.19.8-992.201607122201_amd64.deb](https://kernel.ubuntu.com/~kernel-ppa/mainline/linux-3.19.y.z-review/current/linux-image-3.19.8-992-generic_3.19.8-992.201607122201_amd64.deb) and [linux-image-3.19.8-992-generic_3.19.8-992.201607122201_i386.deb](https://kernel.ubuntu.com/~kernel-ppa/mainline/linux-3.19.y.z-review/current/linux-image-3.19.8-992-generic_3.19.8-992.201607122201_i386.deb) according to the architecture.
 
-install this kernel request module-init-tools too.
+This kernel brings good results in both amd64 and i386 architecture.
 
-But we end with good results on amd64 and i386 architecture.
+__Note: Anyway, I still left the original kernel too. In case of problems, you can always start with the original jessie kernel. Just remember that in this way the system becomes sterile, unable to reproduce.__
 
 
 ### install live-boot (from stretch repository)
