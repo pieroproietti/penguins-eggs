@@ -30,11 +30,11 @@ We need to update live-tools packages too to create an initrd.img capable to use
 
 
 ### update kernel from ubuntu mainline
-After same temptatives with kernel 4.x.x-bpo from the same repository of jessies, I decided to try another kernel more adapt. Both, aosucas499 from [guadalinex](https://distrowatch.com/table.php?distribution=guadalinex) and MUGIWARA LUFFY from OpenOS-Neon telegram group suggest me to look in [ubuntu mailine](https://kernel.ubuntu.com/~kernel-ppa/mainline/linux-3.19.y.z-review/current/).
+After same temptatives with kernel 4.x.x-bpo from the same repository of jessie, I decided to try another kernel more adapt. Both, aosucas499 from [guadalinex](https://distrowatch.com/table.php?distribution=guadalinex) and Mugiwara Luffy from OpenOS-Neon telegram group suggest me to look in [ubuntu mailine](https://kernel.ubuntu.com/~kernel-ppa/mainline/linux-3.19.y.z-review/current/).
 
 I choose [linux-image-3.19.8-992-generic_3.19.8-992.201607122201_amd64.deb](https://kernel.ubuntu.com/~kernel-ppa/mainline/linux-3.19.y.z-review/current/linux-image-3.19.8-992-generic_3.19.8-992.201607122201_amd64.deb) and [linux-image-3.19.8-992-generic_3.19.8-992.201607122201_i386.deb](https://kernel.ubuntu.com/~kernel-ppa/mainline/linux-3.19.y.z-review/current/linux-image-3.19.8-992-generic_3.19.8-992.201607122201_i386.deb) according to the architecture.
 
-This kernel brings good results in both amd64 and i386 architecture.
+This kernel bring good results in both amd64 and i386 architecture.
 
 __Note: Anyway, I still left the original kernel too. In case of problems, after the installation, you can always start with the original jessie kernel 3.16.x. Just remember that starting with original kernel lead to "sterilize" the system: you cannot produce eggs!__
 
