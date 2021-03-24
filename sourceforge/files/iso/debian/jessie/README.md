@@ -48,13 +48,14 @@ I toke following packages from Debian stretch repository:
 
 * live-boot-initramfs-tools_20170112_all.deb
 
-* live-tools_20151214+nmu1_all.deb (I didn't install it but we can try)
+* live-tools_20151214+nmu1_all.deb
 
-### that's all folks!
-All the packages need to use eggs on Debian jessie are in [packages-jessie-backports](./packages-jessie-backports)
+All the packages you need to use eggs on Debian jessie are in [packages-jessie-backports](./packages-jessie-backports/)
 
 ### Warning: 
 * __as in stretch comp lz4 is not supported, so we can't have fast compression, use normal or max__.
+
+### that's all folks!
 
 # Disclaim
 __Please note what this project is in no way connected to Debian in any official way, it’s just my personal experiment__.
