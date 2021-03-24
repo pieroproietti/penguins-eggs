@@ -18,21 +18,13 @@ On the road of Remastersys, SystemBack and father Knoppix!
 Penguin's eggs is a terminal utility, in active development, which allows you to remaster your system and redistribute it as an ISO image.
 
 # Installation
-Download the package according your architecture
+Download the package according your architecture, **sudo apt install eggs_7.8.41-amd64.deb** and **sudo apt install -f**.
 
-sudo apt install eggs_7.8.41-amd64.deb
-
-sudo apt install -f
-
-# Create your first iso image
-
+# Configure and create your first iso image
 sudo eggs dad
 
-And You are ready to re-produce your system with eggs!
-
 # Easy to learn, easy to to update
-**man eggs** on cli system, eggs mom with gui. eggs don't need to be included in your apt sources, just type **sudo eggs update** and choose fresh eggs from the basket.
-
+**man eggs** on cli system, **eggs mom** with gui. eggs don't need to be included in your apt sources, just type **sudo eggs update** and choose fresh eggs from the basket.
 
 ## Features 
 Created on Debian buster (stable) support jessie (old-old-stable), stretch (old-stable) and bullseye (testing).
