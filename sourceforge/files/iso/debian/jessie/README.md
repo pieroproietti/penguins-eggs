@@ -36,7 +36,7 @@ I choose [linux-image-3.19.8-992-generic_3.19.8-992.201607122201_amd64.deb](http
 
 This kernel brings good results in both amd64 and i386 architecture.
 
-__Note: Anyway, I still left the original kernel too. In case of problems, you can always start with the original jessie kernel. Just remember that in this way the system becomes sterile, unable to reproduce.__
+__Note: Anyway, I still left the original kernel too. In case of problems, after the installation, you can always start with the original jessie kernel 3.16.x. Just remember that starting with original kernel lead to "sterilize" the system: you cannot produce eggs!__
 
 
 ### install live-boot (from stretch repository)
@@ -54,7 +54,6 @@ I toke following packages from Debian stretch repository:
 All the packages need to use eggs on Debian jessie are in [packages-jessie-backports](./packages-jessie-backports)
 
 ### Warning: 
-* __upgrading eggs on jessie with a standard version will lead to an inability to install__.
 * __as in stretch comp lz4 is not supported, so we can't have fast compression, use normal or max__.
 
 # Disclaim
