@@ -950,7 +950,6 @@ export default class Ovary {
          }
       }
 
-      console.log(myAddons)
       if (myAddons.ichoice) {
          installerUrl = 'eggs-ichoice.desktop'
          installerIcon = 'system-software-install'

@@ -18,6 +18,9 @@ You can follow the project also consulting the [commit history](https://github.c
 ## Changelog
 Versions are listed on reverse order, the first is the last one.
 
+### eggs-7.8.42
+* eggs clean modifications in calamares before to remove, bugfix in eggs calamares --remove. Addedd flag --addons in produce, take place of --adapt, --pve, etc.
+
 ### eggs-7.8.41
 * removed drivelist package from eggs, jessie now work with the mainstrem eggs, removed xterm from dependencies
 
