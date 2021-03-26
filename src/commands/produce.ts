@@ -135,20 +135,21 @@ export default class Produce extends Command {
                await Config.install(i, verbose)
             }
          }
-         console.log(flags.addons)
 
          const myAddons = {} as IMyAddons
-         if (flags.addons.includes('adapt')){
-            myAddons.adapt = true
-         }
-         if (flags.addons.includes('ichoice')){
-            myAddons.ichoice = true
-         }
-         if (flags.addons.includes('pve')){
-            myAddons.pve = true
-         }
-         if (flags.addons.includes('rsupport')){
-            myAddons.rsupport = true
+         if (flags.addons != undefined) {
+            if (flags.addons.includes('adapt')){
+               myAddons.adapt = true
+            }
+            if (flags.addons.includes('ichoice')){
+               myAddons.ichoice = true
+            }
+            if (flags.addons.includes('pve')){
+               myAddons.pve = true
+            }
+            if (flags.addons.includes('rsupport')){
+               myAddons.rsupport = true
+            }
          }
 
          console.log(myAddons)
