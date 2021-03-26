@@ -260,7 +260,8 @@ export default class Pacman {
       if (fs.existsSync('/etc/calamares')) {
          await exec('rm /etc/calamares -rf', echo)
       }
-      await exec(`apt-get remove --purge --yes ${this.debs2line(this.debs4calamares)}`, echo)
+      // await exec(`apt-get remove --purge --yes ${this.debs2line(this.debs4calamares)}`, echo)
+      await exec(`apt-get remove --purge --yes calamares`, echo)
       await exec('apt-get autoremove --yes', echo)
       return retVal
    }
