@@ -21,10 +21,6 @@ set -e
 
 case "$1" in
     install|upgrade)
-        FILE=/var/lib/dpkg/info/calamares.list
-        if [ -f "$FILE" ]; then
-            # Qui andrebbe divert
-        fi
     ;;
 
     abort-upgrade)
