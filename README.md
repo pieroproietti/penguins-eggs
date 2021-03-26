@@ -396,12 +396,9 @@ OPTIONS
   -s, --script             script mode. Generate scripts to manage iso build
   -v, --verbose            verbose
   -y, --yolk               -y force yolk renew
-  --adapt                  adapt video resolution in VM
+  --addons=addons          addons to be used: adapt, ichoice, pve, rsupport
   --final                  final: remove eggs prerequisites, calamares and all it's dependencies
-  --ichoice                allows the user to choose the installation type cli/gui
-  --pve                    administration of virtual machines (Proxmox-VE)
-  --rsupport               remote support via dwagent
-  --theme=theme            theme/branding for eggs and calamares
+  --theme=theme            theme for livecd, calamares branding and partitions
 
 ALIASES
   $ eggs spawn

@@ -1,0 +1,14 @@
+
+# buster
+/etc/calamares
+
+/usr/lib/x86_64-linux-gnu/calamares/modules/bootloader-config  
+/usr/sbin/bootloader-config.sh
+
+/usr/lib/x86_64-linux-gnu/calamares/modules/remove-link  
+/usr/sbin/remove-link.sh
+
+/usr/lib/x86_64-linux-gnu/calamares/modules/sources-yolk  
+/usr/sbin/sources-yolk.sh
+
+/usr/lib/x86_64-linux-gnu/calamares/modules/sources-yolk-unmount

@@ -1,0 +1,24 @@
+#!/usr/bin/env xdg-open
+[Desktop Entry]
+Encoding=UTF-8
+Name=adapt resolution
+Type=Application
+Exec=eggs adapt
+Icon=video-display
+Categories=GNOME;GTK;Utility;
+Name[it]=Adatta risoluzione
+GenericName[it]=Adatta 
+Comment[it]=Adatta risoluzione alla finestra VM
+Name[en]=Adapt
+GenericName[en]=Adapt
+Comment[en]=Adapt resolution to VM window
+Name[es]=Adaptar
+GenericName[es]=Adaptar
+Comment[es]=Adaptar la resolución a la ventana VM
+Name[pt]=Adaptar
+GenericName[pt]=Adaptar
+Comment[pt]=Adaptar a resolução à janela VM
+Name[fr]=Adapter
+GenericName[fr]=Adapter
+Comment[fr]=Adapter la résolution à la fenêtre VM
+

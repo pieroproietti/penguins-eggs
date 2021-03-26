@@ -17,4 +17,21 @@ if [ -f "/etc/bash_completion.d/eggs.bash" ]; then
     rm /etc/bash_completion.d/eggs.bash
 fi
 
+    FILE=/var/lib/dpkg/info/calamares.list
+    #if [ -f "$FILE" ]; then
+        rm -rf /etc/calamares
+
+        rm -rf /usr/lib/x86_64-linux-gnu/calamares/modules/bootloader-config  
+        rm -f /usr/sbin/bootloader-config.sh
+
+        rm -rf /usr/lib/x86_64-linux-gnu/calamares/modules/remove-link  
+        rm -f /usr/sbin/remove-link.sh
+
+        rm -rf /usr/lib/x86_64-linux-gnu/calamares/modules/sources-yolk  
+        rm -f /usr/sbin/sources-yolk.sh
+
+        rm -rf /usr/lib/x86_64-linux-gnu/calamares/modules/sources-yolk-unmount
+        #  usa /usr/sbin/sources-yolk.sh
+    #fi
+
 exit 0

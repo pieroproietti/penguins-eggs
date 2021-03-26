@@ -14,28 +14,17 @@ set -e
 # the debian-policy package
 
 # vedere come accontentare adriano/julian
+# https://stackoverflow.com/questions/18599599/apt-get-commands-from-within-a-deb-postinst
+# calamares è installato se esiste /var/lib/dpkg/info/calamares.list
 # rm -rf /etc/calamares/
 # rm -rf /usr/lib/calamares/
 
 case "$1" in
     install|upgrade)
-        calamares=calalamares
-        dpkg -s $calamares &> /dev/null
-        if [ $? -ne 0 ]; then
-            echo "calamares not installed"  
-            sudo apt-get update
-            sudo apt-get install $calamares
-            
-        else
-            echo    "installed"
-
-
-            # Hide upstream calamares icon when this package is installed
-            dpkg-divert --quiet --package penguins-eggs \
-                        --divert /etc/calamares.orig \
-                --rename /etc/calamares
-        ;;
-
+        FILE=/var/lib/dpkg/info/calamares.list
+        if [ -f "$FILE" ]; then
+            # Qui andrebbe divert
+        fi
     ;;
 
     abort-upgrade)

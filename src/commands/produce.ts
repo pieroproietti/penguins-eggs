@@ -13,6 +13,10 @@ import Ovary from '../classes/ovary'
 import Config from './config'
 import chalk = require('chalk')
 import { IMyAddons } from '../interfaces'
+import fs = require('fs')
+import path = require('path')
+import { add } from '../lib/cli-autologin'
+import { SSL_OP_EPHEMERAL_RSA } from 'node:constants'
 
 export default class Produce extends Command {
    static flags = {
@@ -28,14 +32,8 @@ export default class Produce extends Command {
 
       // addon vendor/addon configurazioni dei vendors
       final: flags.boolean({ description: 'final: remove eggs prerequisites, calamares and all it\'s dependencies' }),
-      theme: flags.string({ description: 'theme/branding for eggs and calamares' }),
-      // addons: flags.string({ multiple: true, description: 'addons to be used' }),
-
-      // addon per prodotti di terze parti, presenti SOLO in eggs
-      adapt: flags.boolean({ description: 'adapt video resolution in VM' }),
-      ichoice: flags.boolean({ description: 'allows the user to choose the installation type cli/gui' }),
-      rsupport: flags.boolean({ description: `remote support via dwagent` }),
-      pve: flags.boolean({ description: `administration of virtual machines (Proxmox-VE)` })
+      theme: flags.string({ description: 'theme for livecd, calamares branding and partitions' }),
+      addons: flags.string({ multiple: true, description: 'addons to be used: adapt, ichoice, pve, rsupport' }),
    }
 
    static description = 'the system produce an egg: iso image of your system'
@@ -58,32 +56,33 @@ export default class Produce extends Command {
       Utils.titles(this.id + ' ' + this.argv)
       const { flags } = this.parse(Produce)
       if (Utils.isRoot(this.id)) {
+
          /**
           * ADDONS dei vendors
+          * Fino a 3
           */
-         /*
          let addons = []
          if (flags.addons) {
-            console.log(`addons: ${flags.addons}`)
-            addons = flags.addons //array
+            let addons = flags.addons // array
             addons.forEach(addon => {
+               // se non viene specificato il vendor il default è eggs
+               if (addon.indexOf('//') === -1 ) { 
+                  addon = 'eggs/'+ addon
+               }
                let dirAddon = path.resolve(__dirname, `../../addons/${addon}`)
-               // console.log(`dirAddon: ${dirAddon}`)
                if (!fs.existsSync(dirAddon)) {
-                  console.log(`addon: ${addon} not found`)
-                  return
+                  console.log(dirAddon)
+                  Utils.warning('addon: ' + chalk.white(addon) + ' not found, terminate!')
+                  process.exit()
                }
 
                let vendorAddon = addon.substring(0, addon.search('/'))
-               // console.log(`vendorAddon: ${vendorAddon}`)
                let nameAddon = addon.substring(addon.search('/') + 1, addon.length)
-               // Impostazione dei flag theme ed installed_choice se usati come addons
                if (nameAddon === 'theme') {
                   flags.theme = vendorAddon
                }
             })
          }
-         */
 
          /**
           * composizione dei flag
@@ -130,20 +129,32 @@ export default class Produce extends Command {
             theme = flags.theme
          }
 
-         const myAddons = {} as IMyAddons
-         myAddons.adapt = flags.adapt
-         myAddons.rsupport = flags.rsupport
-         myAddons.ichoice = flags.ichoice
-         myAddons.pve = flags.pve
-
          const i = await Config.thatWeNeed(verbose)
          if (i.needApt || i.configurationInstall || i.configurationRefresh || i.distroTemplate) {
             if (await Utils.customConfirm(`Select yes to continue...`)) {
                await Config.install(i, verbose)
             }
          }
-         Utils.titles(this.id + ' ' + this.argv)
+         console.log(flags.addons)
 
+         const myAddons = {} as IMyAddons
+         if (flags.addons.includes('adapt')){
+            myAddons.adapt = true
+         }
+         if (flags.addons.includes('ichoice')){
+            myAddons.ichoice = true
+         }
+         if (flags.addons.includes('pve')){
+            myAddons.pve = true
+         }
+         if (flags.addons.includes('rsupport')){
+            myAddons.rsupport = true
+         }
+
+         console.log(myAddons)
+         // process.exit(1)
+
+         Utils.titles(this.id + ' ' + this.argv)
          const ovary = new Ovary(prefix, basename, theme, compression)
          Utils.warning('Produce an egg...')
          if (await ovary.fertilization()) {

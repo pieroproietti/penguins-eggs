@@ -1,0 +1,25 @@
+#!/usr/bin/env xdg-open
+[Desktop Entry]
+Encoding=UTF-8
+Name=Proxmox VE local
+Type=Application
+Exec=xdg-open https://127.0.0.1:8006
+Icon=eggs-pve
+Categories=GNOME;GTK;Utility;
+Name[it]=Proxmox VE local
+GenericName[it]=Proxmox VE local
+Comment[it]=Proxmox VE local
+Name[en]=Proxmox VE local
+GenericName[en]=Proxmox VE local
+Comment[en]=Proxmox VE local
+Name[es]=Proxmox VE local
+GenericName[es]=Proxmox VE local
+Comment[es]=Proxmox VE local
+Name[pt]=Proxmox VE local
+GenericName[pt]=Proxmox VE local
+Comment[pt]=Proxmox VE local
+Name[fr]=Proxmox VE local
+GenericName[fr]=Proxmox VE local
+Comment[fr]=Proxmox VE local
+
+

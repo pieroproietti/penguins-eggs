@@ -945,18 +945,18 @@ export default class Ovary {
       if (myAddons.adapt) {
          // Per lxde, lxqt, deepin, mate, xfce4
          if (Pacman.packageIsInstalled('lxde-core') || Pacman.packageIsInstalled('deepin-desktop-base') || Pacman.packageIsInstalled('mate-desktop') || Pacman.packageIsInstalled('ubuntu-mate-core') || Pacman.packageIsInstalled('xfce4')) {
-            shx.cp(path.resolve(__dirname, '../../assets/penguins-adapt.desktop'), `${this.settings.work_dir.merged}/usr/share/applications/`)
+            let dirAddon = path.resolve(__dirname, `../../addons/eggs/adapt/`)
+            shx.cp(`${dirAddon}/applications/eggs-adapt.desktop`, `${this.settings.work_dir.merged}/usr/share/applications/`)
          }
       }
 
+      console.log(myAddons)
       if (myAddons.ichoice) {
-         installerUrl = 'penguins-ichoice.desktop'
+         installerUrl = 'eggs-ichoice.desktop'
          installerIcon = 'system-software-install'
-         let dirAddon = path.resolve(__dirname, `../../addons/eggs/installer-choice/`)
-         shx.cp(`${dirAddon}/applications/penguins-ichoice.desktop`, `${this.settings.work_dir.merged}/usr/share/applications/`)
-         shx.cp(`${dirAddon}/bin/installer-choice.sh`, `${this.settings.work_dir.merged}/usr/local/bin/`)
-         shx.mkdir('-p', `/usr/local/share/penguins-eggs/`)
-         shx.cp(`${dirAddon}/html/installer-choice.html`, `${this.settings.work_dir.merged}/usr/local/share/penguins-eggs/`)
+         let dirAddon = path.resolve(__dirname, `../../addons/eggs/ichoice/`)
+         shx.cp(`${dirAddon}/applications/eggs-ichoice.desktop`, `${this.settings.work_dir.merged}/usr/share/applications/`)
+         shx.cp(`${dirAddon}/bin/eggs-ichoice.sh`, `${this.settings.work_dir.merged}/usr/local/bin/`)
       }
 
       if (myAddons.pve) {
@@ -964,17 +964,15 @@ export default class Ovary {
          const pve = new PveLive()
          pve.create(this.settings.work_dir.merged)
 
-         let dirAddon = path.resolve(__dirname, `../../addons/eggs/proxmox-ve`)
-         shx.cp(`${dirAddon}/artwork/proxmox-ve.png`, `${this.settings.work_dir.merged}/usr/share/icons/`)
-         shx.cp(`${dirAddon}/applications/penguins-pve.desktop`, `${this.settings.work_dir.merged}/usr/share/applications/`)
+         let dirAddon = path.resolve(__dirname, `../../addons/eggs/pve`)
+         shx.cp(`${dirAddon}/artwork/eggs-pve.png`, `${this.settings.work_dir.merged}/usr/share/icons/`)
+         shx.cp(`${dirAddon}/applications/eggs-pve.desktop`, `${this.settings.work_dir.merged}/usr/share/applications/`)
       }
 
       if (myAddons.rsupport) {
-         let dirAddon = path.resolve(__dirname, `../../addons/eggs/dwagent`)
-         shx.cp(`${dirAddon}/applications/penguins-dwagent.desktop`, `${this.settings.work_dir.merged}/usr/share/applications/`)
-         shx.cp(`${dirAddon}/bin/dwagent.sh`, `${this.settings.work_dir.merged}/usr/local/bin/`)
-         shx.chmod('+x', `${this.settings.work_dir.merged}/usr/local/bin/dwagent.sh`)
-         shx.cp(`${dirAddon}/artwork/remote-assistance.png`, `${this.settings.work_dir.merged}/usr/share/icons/`)
+         let dirAddon = path.resolve(__dirname, `../../addons/eggs/rsupport`)
+         shx.cp(`${dirAddon}/applications/eggs-rsupport.desktop`, `${this.settings.work_dir.merged}/usr/share/applications/`)
+         shx.cp(`${dirAddon}/artwork/eggs-rsupport.png`, `${this.settings.work_dir.merged}/usr/share/icons/`)
       }
 
       /**
@@ -998,14 +996,14 @@ export default class Ovary {
          text += `cp /usr/share/applications/${installerUrl} $DESKTOP\n`
          if (Pacman.packageIsInstalled('lxde-core')) {
             text += this.lxdeLink('penguins-eggs.desktop', 'penguin\'s eggs', 'eggs')
-            if (myAddons.adapt) text += this.lxdeLink('penguins-adapt.desktop', 'Adapt', 'video-display')
-            if (myAddons.pve) text += this.lxdeLink('penguins-pve.desktop', 'Proxmox VE', 'proxmox-ve')
-            if (myAddons.rsupport) text += this.lxdeLink('penguins-dwagent.desktop', 'Remote assistance', 'remote-assistance')
+            if (myAddons.adapt) text += this.lxdeLink('eggs-adapt.desktop', 'Adapt', 'video-display')
+            if (myAddons.pve) text += this.lxdeLink('eggs-pve.desktop', 'Proxmox VE', 'proxmox-ve')
+            if (myAddons.rsupport) text += this.lxdeLink('eggs-rsupport.desktop', 'Remote assistance', 'remote-assistance')
          } else {
             text += 'cp /usr/share/applications/penguins-eggs.desktop $DESKTOP\n'
-            if (myAddons.adapt) text += 'cp /usr/share/applications/penguins-adapt.desktop $DESKTOP\n'
-            if (myAddons.pve) text += 'cp /usr/share/applications/penguins-pve.desktop $DESKTOP\n'
-            if (myAddons.rsupport) text += 'cp /usr/share/applications/penguins-dwagent.desktop $DESKTOP\n'
+            if (myAddons.adapt) text += 'cp /usr/share/applications/eggs-adapt.desktop $DESKTOP\n'
+            if (myAddons.pve) text += 'cp /usr/share/applications/eggs-pve.desktop $DESKTOP\n'
+            if (myAddons.rsupport) text += 'cp /usr/share/applications/eggs-rsupport.desktop $DESKTOP\n'
          }
          fs.writeFileSync(script, text, 'utf8')
          await exec(`chmod a+x ${script}`, echo)
