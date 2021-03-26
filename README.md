@@ -460,7 +460,7 @@ EXAMPLES
   $ sudo eggs remove 
   remove eggs
 
-  $ sudo eggs remove --prerequisites 
+  $ sudo eggs remove --purge 
   remove eggs, eggs configurations, packages prerequisites
 ```
 
