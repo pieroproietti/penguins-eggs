@@ -22,7 +22,7 @@ export default class Remove extends Command {
 
    static examples = [
       `$ sudo eggs remove \nremove eggs\n`,
-      `$ sudo eggs remove --prerequisites \nremove eggs, eggs configurations, packages prerequisites\n`,
+      `$ sudo eggs remove --purge \nremove eggs, eggs configurations, packages prerequisites\n`,
    ]
 
    static flags = {
