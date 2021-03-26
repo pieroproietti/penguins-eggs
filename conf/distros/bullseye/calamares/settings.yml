@@ -2,7 +2,7 @@
 # settings
 ---
 # "local" is LIBDIR/calamares/modules with settings in SHARE/calamares/modules
-modules-search: [local, /usr/lib/calamares/modules]
+modules-search: [local, //modules]
 
 sequence:
   # Phase 1 - prepare.

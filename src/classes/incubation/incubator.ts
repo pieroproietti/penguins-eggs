@@ -98,12 +98,6 @@ export default class Incubator {
       if (!fs.existsSync('/etc/calamares/modules')) {
          fs.mkdirSync('/etc/calamares/modules')
       }
-      if (!fs.existsSync('/usr/lib/calamares')) {
-         fs.mkdirSync('/usr/lib/calamares/')
-      }
-      if (!fs.existsSync('/usr/lib/calamares/modules')) {
-         fs.mkdirSync('/usr/lib/calamares/modules')
-      }
 
       /**
        * ADDONS

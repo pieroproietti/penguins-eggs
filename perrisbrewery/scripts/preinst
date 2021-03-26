@@ -16,8 +16,6 @@ set -e
 # vedere come accontentare adriano/julian
 # https://stackoverflow.com/questions/18599599/apt-get-commands-from-within-a-deb-postinst
 # calamares è installato se esiste /var/lib/dpkg/info/calamares.list
-# rm -rf /etc/calamares/
-# rm -rf /usr/lib/calamares/
 
 case "$1" in
     install|upgrade)
