@@ -18,6 +18,7 @@ if [ -f "/etc/bash_completion.d/eggs.bash" ]; then
 fi
 
     FILE=/var/lib/dpkg/info/calamares.list
+    # i386-linux-gnu/ o x86_64-linux-gnu
     #if [ -f "$FILE" ]; then
         rm -rf /etc/calamares
 

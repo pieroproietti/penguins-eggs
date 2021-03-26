@@ -48,7 +48,7 @@ export class Beowulf {
       this.verbose = verbose
       this.final = final
       if (process.arch === 'ia32') {
-         this.dirCalamaresModules = '/usr/lib/calamares/modules/'
+         this.dirCalamaresModules = '/usr/lib/i386-linux-gnu/calamares/modules/'
       }
       this.rootTemplate = `./../../../../conf/distros/${this.distro.versionLike}/calamares/`
       this.rootTemplate = path.resolve(__dirname, this.rootTemplate) + '/'
