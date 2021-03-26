@@ -66,20 +66,23 @@ export default class Calamares extends Command {
          if (await Pacman.isGui()) {
             if (!remove) {
                if (await Utils.customConfirm(`Select yes to continue...`)) {
-                  // installa calamares 
+                  /**
+                   * Install calamares
+                   */
                   if (install) {
                      Utils.warning('Installing calamares...')
                      await Pacman.calamaresInstall()
-
-                     // setta force_installer a vero
-                     this.settings.config.force_installer = true
-                     this.settings.save(this.settings.config)
+                     // if (await this.settings.load()) {
+                     //    this.settings.config.force_installer = true
+                     //    this.settings.save(this.settings.config)
+                     // }
                   }
 
-                  // Configura calamares
+                  /**
+                   * Configure calamares
+                   */
                   if (Pacman.packageIsInstalled('calamares')) {
                      Utils.warning('Configuring calamares...')
-                     this.settings = new Settings()
                      if (await this.settings.load()) {
                         await this.settings.loadRemix(this.settings.config.snapshot_basename, theme)
                         this.incubator = new Incubator(this.settings.remix, this.settings.distro, this.settings.config.user_opt, verbose)
@@ -88,14 +91,15 @@ export default class Calamares extends Command {
                   }
                }
             } else {
-               // remove calamares
+               /**
+                * Remove calamares
+                */
                if (await Pacman.calamaresCheck()) {
-                  if (await this.settings.load()) {
-                     await Pacman.calamaresRemove()
-                     // force_installer a false
-                     this.settings.config.force_installer = false
-                     this.settings.save(this.settings.config)
-                  }
+                  await Pacman.calamaresRemove()
+                  // if (await this.settings.load()) {
+                  //    this.settings.config.force_installer = false
+                  //    this.settings.save(this.settings.config)
+                  // }
                }
             }
          } else {
