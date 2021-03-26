@@ -410,26 +410,26 @@ EXAMPLES
   If hostname=ugo and arch=i386 ugo-x86-2020-08-25_1215.iso
 
   $ sudo eggs produce -v
-  the same as the previuos, but with more explicative output
+  same as the previuos, but with more explicative output
 
   $ sudo eggs produce -vf
-  the same as the previuos, compression lz4 (fastest but about 30%
+  same as the previuos, compression lz4 or zstd (fastest but about 30%
   less compressed than xz)
 
   $ sudo eggs produce -vm
-  the same as the previuos, compression xz (normal compression xz)
+  same as the previuos, compression xz (normal compression xz)
 
   $ sudo eggs produce -vm
-  the same as the previuos, compression xz -Xbcj x86 (max compression, about 10%
+  same as the previuos, compression xz -Xbcj x86 (max compression, about 10%
   more compressed)
 
-  $ sudo eggs produce -vf --basename leo --theme debian --adapt 
+  $ sudo eggs produce -vf --basename leo --theme debian --addons adapt 
   produce an ISO called leo-i386-2020-08-25_1215.iso compression lz4,
   using Debian theme and link to adapt
 
-  $ sudo eggs produce -v --basename leo --theme debian --adapt 
+  $ sudo eggs produce -v --basename leo --theme debian --addons rsupport 
   produce an ISO called leo-i386-2020-08-25_1215.iso compression xz,
-  using Debian theme and link to adapt
+  using Debian theme and link to dwagent
 
   $ sudo eggs produce -v --basename leo --rsupport 
   produce an ISO called leo-i386-2020-08-25_1215.iso compression xz, using eggs

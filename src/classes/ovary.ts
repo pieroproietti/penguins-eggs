@@ -37,6 +37,7 @@ import Systemctl from './systemctl'
 import Bleach from './bleach'
 import Repo from './yolk'
 import cliAutologin = require('../lib/cli-autologin')
+import { utils } from 'mocha'
 
 /**
  * Ovary:
@@ -555,6 +556,7 @@ export default class Ovary {
       cmd = cmd.replace(/\s\s+/g, ' ')
       Utils.writeX(`${this.settings.work_dir.path}mksquashfs`, cmd)
       if (!scriptOnly) {
+         Utils.warning('squashing filesystem: ' + compression)
          await exec(cmd, echo)
       }
    }

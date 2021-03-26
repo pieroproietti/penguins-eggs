@@ -15,8 +15,6 @@ import chalk = require('chalk')
 import { IMyAddons } from '../interfaces'
 import fs = require('fs')
 import path = require('path')
-import { add } from '../lib/cli-autologin'
-import { SSL_OP_EPHEMERAL_RSA } from 'node:constants'
 
 export default class Produce extends Command {
    static flags = {
@@ -42,12 +40,12 @@ export default class Produce extends Command {
 
    static examples = [
       `$ sudo eggs produce \nproduce an ISO called [hostname]-[arch]-YYYY-MM-DD_HHMM.iso, compressed xz (standard compression).\nIf hostname=ugo and arch=i386 ugo-x86-2020-08-25_1215.iso\n`,
-      `$ sudo eggs produce -v\nthe same as the previuos, but with more explicative output\n`,
-      `$ sudo eggs produce -vf\nthe same as the previuos, compression lz4 (fastest but about 30%\nless compressed than xz)\n`,
-      `$ sudo eggs produce -vm\nthe same as the previuos, compression xz (normal compression xz)\n`,
-      `$ sudo eggs produce -vm\nthe same as the previuos, compression xz -Xbcj x86 (max compression, about 10%\nmore compressed)\n`,
-      `$ sudo eggs produce -vf --basename leo --theme debian --adapt \nproduce an ISO called leo-i386-2020-08-25_1215.iso compression lz4,\nusing Debian theme and link to adapt\n`,
-      `$ sudo eggs produce -v --basename leo --theme debian --adapt \nproduce an ISO called leo-i386-2020-08-25_1215.iso compression xz,\nusing Debian theme and link to adapt\n`,
+      `$ sudo eggs produce -v\nsame as the previuos, but with more explicative output\n`,
+      `$ sudo eggs produce -vf\nsame as the previuos, compression lz4 or zstd (fastest but about 30%\nless compressed than xz)\n`,
+      `$ sudo eggs produce -vm\nsame as the previuos, compression xz (normal compression xz)\n`,
+      `$ sudo eggs produce -vm\nsame as the previuos, compression xz -Xbcj x86 (max compression, about 10%\nmore compressed)\n`,
+      `$ sudo eggs produce -vf --basename leo --theme debian --addons adapt \nproduce an ISO called leo-i386-2020-08-25_1215.iso compression lz4,\nusing Debian theme and link to adapt\n`,
+      `$ sudo eggs produce -v --basename leo --theme debian --addons rsupport \nproduce an ISO called leo-i386-2020-08-25_1215.iso compression xz,\nusing Debian theme and link to dwagent\n`,
       `$ sudo eggs produce -v --basename leo --rsupport \nproduce an ISO called leo-i386-2020-08-25_1215.iso compression xz, using eggs\ntheme and link to dwagent\n`,
       `$ sudo eggs produce -vs --basename leo --rsupport \nproduce scripts to build an ISO as the previus example. Scripts can be found\nin /home/eggs/ovarium and you can customize all you need\n` 
    ]
@@ -151,9 +149,6 @@ export default class Produce extends Command {
                myAddons.rsupport = true
             }
          }
-
-         console.log(myAddons)
-         // process.exit(1)
 
          Utils.titles(this.id + ' ' + this.argv)
          const ovary = new Ovary(prefix, basename, theme, compression)
