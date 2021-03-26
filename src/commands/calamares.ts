@@ -10,7 +10,6 @@ import Settings from '../classes/settings'
 import Incubator from '../classes/incubation/incubator'
 import Pacman from '../classes/pacman'
 import { IRemix } from '../interfaces'
-import { FAILSAFE_SCHEMA } from 'js-yaml'
 
 export default class Calamares extends Command {
    static description = 'calamares or install or configure it'
@@ -34,6 +33,8 @@ export default class Calamares extends Command {
 
    async run() {
       Utils.titles(this.id + ' ' + this.argv)
+
+      this.settings = new Settings()
 
       const { flags } = this.parse(Calamares)
       let verbose = false
@@ -72,10 +73,10 @@ export default class Calamares extends Command {
                   if (install) {
                      Utils.warning('Installing calamares...')
                      await Pacman.calamaresInstall()
-                     // if (await this.settings.load()) {
-                     //    this.settings.config.force_installer = true
-                     //    this.settings.save(this.settings.config)
-                     // }
+                     if (await this.settings.load()) {
+                        this.settings.config.force_installer = true
+                        this.settings.save(this.settings.config)
+                     }
                   }
 
                   /**
@@ -96,10 +97,10 @@ export default class Calamares extends Command {
                 */
                if (await Pacman.calamaresCheck()) {
                   await Pacman.calamaresRemove()
-                  // if (await this.settings.load()) {
-                  //    this.settings.config.force_installer = false
-                  //    this.settings.save(this.settings.config)
-                  // }
+                  if (await this.settings.load()) {
+                     this.settings.config.force_installer = false
+                     this.settings.save(this.settings.config)
+                  }
                }
             }
          } else {
