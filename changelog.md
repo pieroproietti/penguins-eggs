@@ -19,7 +19,7 @@ You can follow the project also consulting the [commit history](https://github.c
 Versions are listed on reverse order, the first is the last one.
 
 ### eggs-7.8.43
-* select beetwhen zstd/lz4/gzip for fast compression. In produce we have --release in place of --final (add max compression and sterilize)
+* select between zstd/lz4/gzip for fast compression. In produce we have --release in place of --final (add max compression and sterilize)
 
 ### eggs-7.8.42
 * eggs clean diversion in calamares before remove, bugfix in eggs calamares --remove and --install. Added --addons in produce, take place of --adapt, --pve
