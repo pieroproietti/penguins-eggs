@@ -95,7 +95,7 @@ $ npm install -g penguins-eggs
 $ eggs COMMAND
 running command...
 $ eggs (-v|--version|version)
-penguins-eggs/7.8.42 linux-x64 node-v14.16.0
+penguins-eggs/7.8.43 linux-x64 node-v14.16.0
 $ eggs --help [COMMAND]
 USAGE
   $ eggs COMMAND
@@ -143,7 +143,7 @@ ALIASES
   $ eggs adjust
 ```
 
-_See code: [src/commands/adapt.ts](https://github.com/pieroproietti/penguins-eggs/blob/v7.8.42/src/commands/adapt.ts)_
+_See code: [src/commands/adapt.ts](https://github.com/pieroproietti/penguins-eggs/blob/v7.8.43/src/commands/adapt.ts)_
 
 ## `eggs autocomplete [SHELL]`
 
@@ -192,7 +192,7 @@ EXAMPLES
   install calamares and create it's configuration's files
 ```
 
-_See code: [src/commands/calamares.ts](https://github.com/pieroproietti/penguins-eggs/blob/v7.8.42/src/commands/calamares.ts)_
+_See code: [src/commands/calamares.ts](https://github.com/pieroproietti/penguins-eggs/blob/v7.8.43/src/commands/calamares.ts)_
 
 ## `eggs config`
 
@@ -216,7 +216,7 @@ EXAMPLE
   Configure eggs and install prerequisites
 ```
 
-_See code: [src/commands/config.ts](https://github.com/pieroproietti/penguins-eggs/blob/v7.8.42/src/commands/config.ts)_
+_See code: [src/commands/config.ts](https://github.com/pieroproietti/penguins-eggs/blob/v7.8.43/src/commands/config.ts)_
 
 ## `eggs dad`
 
@@ -232,7 +232,7 @@ OPTIONS
   -v, --verbose
 ```
 
-_See code: [src/commands/dad.ts](https://github.com/pieroproietti/penguins-eggs/blob/v7.8.42/src/commands/dad.ts)_
+_See code: [src/commands/dad.ts](https://github.com/pieroproietti/penguins-eggs/blob/v7.8.43/src/commands/dad.ts)_
 
 ## `eggs export:deb`
 
@@ -251,7 +251,7 @@ OPTIONS
   --i386       export i386 arch
 ```
 
-_See code: [src/commands/export/deb.ts](https://github.com/pieroproietti/penguins-eggs/blob/v7.8.42/src/commands/export/deb.ts)_
+_See code: [src/commands/export/deb.ts](https://github.com/pieroproietti/penguins-eggs/blob/v7.8.43/src/commands/export/deb.ts)_
 
 ## `eggs export:docs`
 
@@ -265,7 +265,7 @@ OPTIONS
   -h, --help  show CLI help
 ```
 
-_See code: [src/commands/export/docs.ts](https://github.com/pieroproietti/penguins-eggs/blob/v7.8.42/src/commands/export/docs.ts)_
+_See code: [src/commands/export/docs.ts](https://github.com/pieroproietti/penguins-eggs/blob/v7.8.43/src/commands/export/docs.ts)_
 
 ## `eggs export:iso`
 
@@ -280,7 +280,7 @@ OPTIONS
   -h, --help   show CLI help
 ```
 
-_See code: [src/commands/export/iso.ts](https://github.com/pieroproietti/penguins-eggs/blob/v7.8.42/src/commands/export/iso.ts)_
+_See code: [src/commands/export/iso.ts](https://github.com/pieroproietti/penguins-eggs/blob/v7.8.43/src/commands/export/iso.ts)_
 
 ## `eggs help [COMMAND]`
 
@@ -317,7 +317,7 @@ EXAMPLE
   You will find here informations about penguin's eggs!
 ```
 
-_See code: [src/commands/info.ts](https://github.com/pieroproietti/penguins-eggs/blob/v7.8.42/src/commands/info.ts)_
+_See code: [src/commands/info.ts](https://github.com/pieroproietti/penguins-eggs/blob/v7.8.43/src/commands/info.ts)_
 
 ## `eggs install`
 
@@ -343,7 +343,7 @@ EXAMPLE
   Install the system using GUI or CLI installer
 ```
 
-_See code: [src/commands/install.ts](https://github.com/pieroproietti/penguins-eggs/blob/v7.8.42/src/commands/install.ts)_
+_See code: [src/commands/install.ts](https://github.com/pieroproietti/penguins-eggs/blob/v7.8.43/src/commands/install.ts)_
 
 ## `eggs kill`
 
@@ -362,7 +362,7 @@ EXAMPLE
   kill the eggs/free the nest
 ```
 
-_See code: [src/commands/kill.ts](https://github.com/pieroproietti/penguins-eggs/blob/v7.8.42/src/commands/kill.ts)_
+_See code: [src/commands/kill.ts](https://github.com/pieroproietti/penguins-eggs/blob/v7.8.43/src/commands/kill.ts)_
 
 ## `eggs mom`
 
@@ -376,7 +376,7 @@ OPTIONS
   -h, --help  show CLI help
 ```
 
-_See code: [src/commands/mom.ts](https://github.com/pieroproietti/penguins-eggs/blob/v7.8.42/src/commands/mom.ts)_
+_See code: [src/commands/mom.ts](https://github.com/pieroproietti/penguins-eggs/blob/v7.8.43/src/commands/mom.ts)_
 
 ## `eggs produce`
 
@@ -410,21 +410,17 @@ EXAMPLES
   If hostname=ugo and arch=i386 ugo-x86-2020-08-25_1215.iso
 
   $ sudo eggs produce -v
-  same as the previuos, but with more explicative output
+  same as previuos, but with --verbose output
 
   $ sudo eggs produce -vf
-  same as the previuos, compression lz4 or zstd (fastest but about 30%
-  less compressed than xz)
+  same as previuos, compression zstd, lz4 or gzip (depend from system capability)
 
   $ sudo eggs produce -vm
-  same as the previuos, compression xz (normal compression xz)
-
-  $ sudo eggs produce -vm
-  same as the previuos, compression xz -Xbcj x86 (max compression, about 10%
+  same as previuos, compression xz -Xbcj x86 (max compression, about 10%
   more compressed)
 
   $ sudo eggs produce -vf --basename leo --theme debian --addons adapt 
-  produce an ISO called leo-i386-2020-08-25_1215.iso compression lz4,
+  produce an ISO called leo-i386-2020-08-25_1215.iso compression fast,
   using Debian theme and link to adapt
 
   $ sudo eggs produce -v --basename leo --theme debian --addons rsupport 
@@ -440,7 +436,7 @@ EXAMPLES
   in /home/eggs/ovarium and you can customize all you need
 ```
 
-_See code: [src/commands/produce.ts](https://github.com/pieroproietti/penguins-eggs/blob/v7.8.42/src/commands/produce.ts)_
+_See code: [src/commands/produce.ts](https://github.com/pieroproietti/penguins-eggs/blob/v7.8.43/src/commands/produce.ts)_
 
 ## `eggs remove`
 
@@ -464,7 +460,7 @@ EXAMPLES
   remove eggs, eggs configurations, packages prerequisites
 ```
 
-_See code: [src/commands/remove.ts](https://github.com/pieroproietti/penguins-eggs/blob/v7.8.42/src/commands/remove.ts)_
+_See code: [src/commands/remove.ts](https://github.com/pieroproietti/penguins-eggs/blob/v7.8.43/src/commands/remove.ts)_
 
 ## `eggs tools:clean`
 
@@ -482,7 +478,7 @@ ALIASES
   $ eggs clean
 ```
 
-_See code: [src/commands/tools/clean.ts](https://github.com/pieroproietti/penguins-eggs/blob/v7.8.42/src/commands/tools/clean.ts)_
+_See code: [src/commands/tools/clean.ts](https://github.com/pieroproietti/penguins-eggs/blob/v7.8.43/src/commands/tools/clean.ts)_
 
 ## `eggs tools:locales`
 
@@ -498,7 +494,7 @@ OPTIONS
   -v, --verbose    verbose
 ```
 
-_See code: [src/commands/tools/locales.ts](https://github.com/pieroproietti/penguins-eggs/blob/v7.8.42/src/commands/tools/locales.ts)_
+_See code: [src/commands/tools/locales.ts](https://github.com/pieroproietti/penguins-eggs/blob/v7.8.43/src/commands/tools/locales.ts)_
 
 ## `eggs tools:skel`
 
@@ -521,7 +517,7 @@ EXAMPLE
   desktop configuration of user mauro will get used as default
 ```
 
-_See code: [src/commands/tools/skel.ts](https://github.com/pieroproietti/penguins-eggs/blob/v7.8.42/src/commands/tools/skel.ts)_
+_See code: [src/commands/tools/skel.ts](https://github.com/pieroproietti/penguins-eggs/blob/v7.8.43/src/commands/tools/skel.ts)_
 
 ## `eggs tools:stat`
 
@@ -540,7 +536,7 @@ ALIASES
   $ eggs stat
 ```
 
-_See code: [src/commands/tools/stat.ts](https://github.com/pieroproietti/penguins-eggs/blob/v7.8.42/src/commands/tools/stat.ts)_
+_See code: [src/commands/tools/stat.ts](https://github.com/pieroproietti/penguins-eggs/blob/v7.8.43/src/commands/tools/stat.ts)_
 
 ## `eggs tools:yolk`
 
@@ -558,7 +554,7 @@ EXAMPLE
   $ eggs yolk -v
 ```
 
-_See code: [src/commands/tools/yolk.ts](https://github.com/pieroproietti/penguins-eggs/blob/v7.8.42/src/commands/tools/yolk.ts)_
+_See code: [src/commands/tools/yolk.ts](https://github.com/pieroproietti/penguins-eggs/blob/v7.8.43/src/commands/tools/yolk.ts)_
 
 ## `eggs update`
 
@@ -580,7 +576,7 @@ EXAMPLE
   update/upgrade the penguin's eggs tool
 ```
 
-_See code: [src/commands/update.ts](https://github.com/pieroproietti/penguins-eggs/blob/v7.8.42/src/commands/update.ts)_
+_See code: [src/commands/update.ts](https://github.com/pieroproietti/penguins-eggs/blob/v7.8.43/src/commands/update.ts)_
 <!-- commandsstop -->
 
 # Terminal samples
