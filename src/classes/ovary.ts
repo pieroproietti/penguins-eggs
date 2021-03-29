@@ -38,6 +38,7 @@ import Bleach from './bleach'
 import Repo from './yolk'
 import cliAutologin = require('../lib/cli-autologin')
 import { utils } from 'mocha'
+import Distro from './distro'
 
 /**
  * Ovary:
@@ -113,7 +114,7 @@ export default class Ovary {
     *
     * @param basename
     */
-   async produce(scriptOnly = false, yolkRenew = false, final = false, myAddons: IMyAddons, verbose = false) {
+   async produce(scriptOnly = false, yolkRenew = false, release = false, myAddons: IMyAddons, verbose = false) {
 
       const yolk = new Repo()
       if (!yolk.exists()) {
@@ -143,7 +144,8 @@ export default class Ovary {
          }
 
          await this.liveCreateStructure(verbose)
-         if (Pacman.packageIsInstalled('calamares')) {
+
+         if (this.settings.distro.guiInstaller && await Pacman.isGui()) {
             if (this.settings.config.force_installer && !(await Pacman.calamaresCheck())) {
                console.log('Installing ' + chalk.bgGray('calamares') + ' due force_installer=yes.')
                await Pacman.calamaresInstall(verbose)
@@ -152,9 +154,11 @@ export default class Ovary {
             }
             // Calamares prende il tema da settings.remix.branding
             this.incubator = new Incubator(this.settings.remix, this.settings.distro, this.settings.config.user_opt, verbose)
-            await this.incubator.config(final)
+            await this.incubator.config(release)
          }
+
          await this.isolinux(this.theme, verbose)
+
          await this.copyKernel()
          if (this.settings.config.make_efi) {
             await this.makeEfi(this.theme, verbose)

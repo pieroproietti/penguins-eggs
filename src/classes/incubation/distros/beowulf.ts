@@ -25,7 +25,7 @@ export class Beowulf {
 
    distro: IDistro
 
-   final = false
+   release = false
 
    user_opt: string
 
@@ -41,12 +41,12 @@ export class Beowulf {
     * @param displaymanager
     * @param verbose
     */
-   constructor(remix: IRemix, distro: IDistro, final: boolean, user_opt: string, verbose = false) {
+   constructor(remix: IRemix, distro: IDistro, release: boolean, user_opt: string, verbose = false) {
       this.remix = remix
       this.distro = distro
       this.user_opt = user_opt
       this.verbose = verbose
-      this.final = final
+      this.release = release
       if (process.arch === 'ia32') {
          this.dirCalamaresModules = '/usr/lib/i386-linux-gnu/calamares/modules/'
       }
@@ -78,7 +78,7 @@ export class Beowulf {
       await fisherman.buildCalamaresModule('bootloader-config')
       await fisherman.buildModule('grubcf')
       await fisherman.buildModule('bootloader')
-      await fisherman.modulePackages(this.distro, this.final) //
+      await fisherman.modulePackages(this.distro, this.release) //
       await fisherman.buildModule('luksbootkeyfile')
       await fisherman.buildModule('plymouthcfg')
       await fisherman.buildModule('initramfscfg')

@@ -54,28 +54,28 @@ export default class Incubator {
    /**
     * config
     */
-   async config(final = false) {
+   async config(release = false) {
       const verbose = true
       const echo = Utils.setEcho(verbose)
 
       this.createCalamaresDirs()
       if (this.distro.versionLike === 'buster') {
-         const buster = new Buster(this.remix, this.distro, final, this.user_opt, this.verbose)
+         const buster = new Buster(this.remix, this.distro, release, this.user_opt, this.verbose)
          await buster.create()
       } else if (this.distro.versionLike === 'bullseye') {
-         const bullseye = new Bullseye(this.remix, this.distro, final, this.user_opt, this.verbose)
+         const bullseye = new Bullseye(this.remix, this.distro, release, this.user_opt, this.verbose)
          await bullseye.create()
       } else if (this.distro.versionLike === 'beowulf') {
-         const beowulf = new Beowulf(this.remix, this.distro, final, this.user_opt, this.verbose)
+         const beowulf = new Beowulf(this.remix, this.distro, release, this.user_opt, this.verbose)
          await beowulf.create()
       } else if (this.distro.versionLike === 'focal') {
-         const focal = new Focal(this.remix, this.distro, final, this.user_opt, this.verbose)
+         const focal = new Focal(this.remix, this.distro, release, this.user_opt, this.verbose)
          await focal.create()
       } else if (this.distro.versionLike === 'groovy') {
-         const groovy = new Groovy(this.remix, this.distro, final, this.user_opt, this.verbose)
+         const groovy = new Groovy(this.remix, this.distro, release, this.user_opt, this.verbose)
          await groovy.create()
       } else if (this.distro.versionLike === 'bionic') {
-         const bionic = new Bionic(this.remix, this.distro, final, this.user_opt, this.verbose)
+         const bionic = new Bionic(this.remix, this.distro, release, this.user_opt, this.verbose)
          await bionic.create()
       }
       this.createBranding()

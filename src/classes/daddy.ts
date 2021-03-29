@@ -9,6 +9,7 @@ import Utils from '../classes/utils'
 import Pacman from '../classes/pacman'
 import Settings from '../classes/settings'
 import Ovary from '../classes/ovary'
+import Compressors from '../classes/compressors'
 import inquirer = require('inquirer')
 import { IConfig } from '../interfaces'
 import yaml = require('js-yaml')
@@ -72,9 +73,22 @@ export default class Daddy {
             config.user_opt_passwd = newConf.user_opt_passwd
             config.root_passwd = newConf.root_passwd
             config.theme = newConf.theme
+
+            /**
+             * Analisi del tipo di compressione del kernel
+             * 
+             */
+            const compressors = new (Compressors)
+            await compressors.populate()
+            let fastest = 'gzip'
+            if (compressors.isEnabled.zstd) {
+                fastest = 'zstd -Xcompression-level 1 -b 262144'
+            } else if (compressors.isEnabled.lz4) {
+                fastest = 'lz4'
+            }
+
             if (newConf.compression === 'fast') {
-                // config.compression = 'lz4'
-                config.compression = 'zstd -Xcompression-level 1 -b 262144'
+                config.compression = fastest
             } else if (newConf.compression === 'normal') {
                 config.compression = 'xz'
             } else if (newConf.compression === 'max') {
@@ -84,7 +98,6 @@ export default class Daddy {
                 }
                 config.compression = 'xz -Xbcj ' + filter
             }
-
 
             await this.settings.save(config)
 
@@ -102,26 +115,20 @@ export default class Daddy {
             }
 
             // produce
-            if (config.compression === 'zstd -Xcompression-level 1 -b 262144') {
-                flags += '--fast'
-            } else if (config.compression === 'xz') {
-                flags += '--normal'
-            } else if (config.compression === 'xz -Xbcj x86') {
-                flags += '--max'
+            flags += ' --' + newConf.compression
+            flags += ' --theme=' + config.theme
+            Utils.titles('produce' + ' ' + flags)
+            console.log(chalk.cyan('Daddy, what else did you leave for me?'))
+            const myAddons = {} as IMyAddons
+            const scriptOnly = false
+            const yolkRenew = false
+            const final = false
+            const ovary = new Ovary(config.snapshot_prefix, config.snapshot_basename, config.theme, config.compression)
+            Utils.warning('Produce an egg...')
+            if (await ovary.fertilization()) {
+                await ovary.produce(scriptOnly, yolkRenew, final, myAddons, verbose)
+                ovary.finished(scriptOnly)
             }
-            flags += ` --theme=${config.theme} `
-        }
-        Utils.titles('produce' + ' ' + flags)
-        console.log(chalk.cyan('Daddy, what else did you leave for me?'))
-        const myAddons = {} as IMyAddons
-        const scriptOnly = false
-        const yolkRenew = false
-        const final = false
-        const ovary = new Ovary(config.snapshot_prefix, config.snapshot_basename, config.theme, config.compression)
-        Utils.warning('Produce an egg...')
-        if (await ovary.fertilization()) {
-            await ovary.produce(scriptOnly, yolkRenew, final, myAddons, verbose)
-            ovary.finished(scriptOnly)
         }
     }
 
@@ -185,7 +192,7 @@ export default class Daddy {
                     type: 'list',
                     name: 'compression',
                     message: 'LiveCD compression: ',
-                    choices: ['fast', 'normal', 'max'],
+                    choices: ['fast', 'max'],
                     default: compressionOpt
                 }
 

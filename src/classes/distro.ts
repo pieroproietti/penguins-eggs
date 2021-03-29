@@ -54,6 +54,7 @@ class Distro implements IDistro {
    homeUrl: string
    supportUrl: string
    bugReportUrl: string
+   guiInstaller: boolean
 
    constructor(remix: IRemix) {
       this.distroId = ''
@@ -66,6 +67,7 @@ class Distro implements IDistro {
       this.homeUrl = ''
       this.supportUrl = ''
       this.bugReportUrl = ''
+      this.guiInstaller = true
 
 
       const file = '/etc/os-release'
@@ -237,6 +239,14 @@ class Distro implements IDistro {
       } else {
          this.mountpointSquashFs = '/run/live/medium/live/filesystem.squashfs'
       }
+
+      /**
+       * isCalamaresCompliant
+       */
+       if (this.versionLike === 'jessie' || this.versionLike === 'stretch' || this.versionLike === 'xenial') {
+          this.guiInstaller = false
+      }
+      
 
       /**
        * MX LINUX

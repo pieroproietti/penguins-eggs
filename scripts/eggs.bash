@@ -18,7 +18,7 @@ info --help --compressor --verbose
 install --cli --mx --umount --lvmremove --help --verbose
 kill --help --verbose
 mom --help
-produce --prefix --basename --normal --max --fast --verbose --yolk --script --help --final --theme --addons
+produce --prefix --basename --normal --max --fast --verbose --yolk --script --help --theme --addons --release
 remove --purge --autoremove --help --verbose
 tools:clean --help --verbose
 tools:locales --help --reinstall --verbose
@@ -26,8 +26,8 @@ tools:skel --help --user --verbose
 tools:stat --help --month --year
 tools:yolk --help --verbose
 update --help --apt --basket --npm --verbose
-help --all
 autocomplete --refresh-cache
+help --all
 "
 
   if [[ "$cur" != "-"* ]]; then

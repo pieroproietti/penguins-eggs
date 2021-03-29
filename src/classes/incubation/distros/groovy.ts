@@ -32,7 +32,7 @@ export class Groovy {
 
    distro: IDistro
 
-   final = false
+   release = false
 
    user_opt: string
 
@@ -51,12 +51,12 @@ export class Groovy {
     * @param displaymanager
     * @param verbose
     */
-   constructor(remix: IRemix, distro: IDistro, final: boolean, user_opt: string, verbose = false) {
+   constructor(remix: IRemix, distro: IDistro, release: boolean, user_opt: string, verbose = false) {
       this.remix = remix
       this.distro = distro
       this.user_opt = user_opt
       this.verbose = verbose
-      this.final = final
+      this.release = release
       if (process.arch === 'ia32') {
          this.dirCalamaresModules = '/usr/lib/i386-linux-gnu/calamares/modules/'
       }
@@ -94,7 +94,7 @@ export class Groovy {
       await fisherman.buildModule('bootloader')
       await fisherman.contextualprocess('after_bootloader')
       await fisherman.shellprocess('add386arch')
-      await fisherman.modulePackages(this.distro, this.final) //
+      await fisherman.modulePackages(this.distro, this.release) //
       await fisherman.moduleRemoveuser(this.user_opt)
       await fisherman.buildCalamaresModule('remove-link', true)
       await fisherman.buildCalamaresModule('sources-yolk-unmount', false)      

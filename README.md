@@ -397,7 +397,7 @@ OPTIONS
   -v, --verbose            verbose
   -y, --yolk               -y force yolk renew
   --addons=addons          addons to be used: adapt, ichoice, pve, rsupport
-  --final                  final: remove eggs prerequisites, calamares and all it's dependencies
+  --release                release: configure GUI installer to remove eggs and calamares after installation
   --theme=theme            theme for livecd, calamares branding and partitions
 
 ALIASES
