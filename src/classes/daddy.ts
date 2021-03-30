@@ -192,7 +192,7 @@ export default class Daddy {
                     type: 'list',
                     name: 'compression',
                     message: 'LiveCD compression: ',
-                    choices: ['fast', 'max'],
+                    choices: ['fast', 'normal', 'max'],
                     default: compressionOpt
                 }
 
