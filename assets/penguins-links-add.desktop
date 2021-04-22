@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+Name=Penguin's links add
+Exec=penguins-links-add.sh
+StartupNotify=false
+NoDisplay=true
+
+X-GNOME-Autostart-Phase=Initialization
+X-KDE-autostart-phase=1

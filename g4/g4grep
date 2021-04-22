@@ -1,0 +1,1 @@
+git grep $1 $2 $3 $(git rev-list --all)

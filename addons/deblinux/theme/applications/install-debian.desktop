@@ -1,0 +1,13 @@
+[Desktop Entry]
+Type=Application
+Version=1.0
+Name=Install DebLinux
+GenericName=Calamares Installer
+Exec=/sbin/install-debian
+Comment=Calamares — Installer for Debian Live
+Keywords=calamares;system;install;debian;installer
+Icon=install-debian
+Terminal=false
+Categories=Qt;System;
+StartupWMClass=calamares
+StartupNotify=True

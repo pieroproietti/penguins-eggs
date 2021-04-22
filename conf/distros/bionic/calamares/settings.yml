@@ -1,0 +1,52 @@
+# UBUNTU bionic
+# Configuration file for Calamares
+# Syntax is YAML 1.2
+---
+modules-search:
+  - local
+  - /usr/lib/calamares/modules/
+sequence:
+  - show:
+      - welcome
+      - locale
+      - keyboard
+      - partition
+      - users
+      - summary
+  - exec:
+      - partition
+      - mount
+      - unpackfs
+      - sources-yolk
+      - machineid
+      - fstab
+      - locale
+      - keyboard
+      - localecfg
+      - luksbootkeyfile
+      - users
+      - displaymanager
+      - networkcfg
+      - hwclock
+      #- before-bootloader-mkdirs
+      - bug
+      - initramfscfg
+      - initramfs
+      - grubcfg
+      #- before-bootloader
+      - bootloader
+      - after-bootloader
+      - add386arch
+      - packages
+      - removeuser
+      - remove-link
+      - sources-yolk-unmount
+      - umount
+  - show:
+      - finished
+branding: {{branding}}
+prompt-install: true
+dont-chroot: false
+oem-setup: false
+disable-cancel: false
+disable-cancel-during-exec: false

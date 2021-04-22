@@ -1,0 +1,24 @@
+#!/usr/bin/env xdg-open
+[Desktop Entry]
+Encoding=UTF-8
+Name=Penguin's eggs cli-installer
+Type=Application
+Terminal=true
+Exec=sudo /usr/bin/eggs install
+Icon=utilities-terminal
+Categories=GNOME;GTK;Utility;
+Name[it]=Installa sistema cli
+GenericName[it]=Installa sistema cli
+Comment[it]=Installazione del sistema cli
+Name[en]=System installation cli
+GenericName[en]=System installation cli
+Comment[en]=System installation cli
+Name[es]=Instalación del sistema cli
+GenericName[es]=Instalación del sistema cli
+Comment[es]=Instalación del sistema cli
+Name[pt]=Instalação do sistema cli
+GenericName[pt]=Instalação do sistema cli
+Comment[pt]=Instalação do sistema cli
+Name[fr]=Installation du système cli
+GenericName[fr]=Installation du système cli
+Comment[fr]=Installation du système cli

@@ -1,0 +1,79 @@
+{
+  "name": "perrisbrewery",
+  "version": "0.1.4",
+  "author": "Piero Proietti",
+  "bin": {
+    "pb": "./bin/run"
+  },
+  "bugs": "https://github.com/pieroproietti/perrisbrewery/issues",
+  "dependencies": {
+    "@oclif/command": "^1.8.0",
+    "@oclif/config": "^1.17.0",
+    "@oclif/plugin-help": "^3.2.2",
+    "chalk": "^4.1.0",
+    "clear": "^0.1.0",
+    "detect-character-encoding": "^0.8.0",
+    "figlet": "^1.5.0",
+    "js-yaml": "^4.0.0",
+    "mustache": "^4.2.0",
+    "path": "^0.12.7",
+    "pjson": "^1.0.9",
+    "rehype": "^11.0.0",
+    "rehype-document": "^5.1.0",
+    "rehype-format": "^3.1.0",
+    "rehype-stringify": "^8.0.0",
+    "remark": "^13.0.0",
+    "remark-gfm": "^1.0.0",
+    "remark-man": "^7.0.0",
+    "remark-parse": "^9.0.0",
+    "remark-rehype": "^8.0.0",
+    "shelljs": "^0.8.4",
+    "to-vfile": "^6.1.0",
+    "tslib": "^2.1.0",
+    "unified": "^9.2.1",
+    "vfile": "^4.2.1",
+    "vfile-reporter": "^6.0.2"
+  },
+  "devDependencies": {
+    "@oclif/dev-cli": "^1.26.0",
+    "@types/clear": "^0.1.1",
+    "@types/figlet": "^1.5.0",
+    "@types/js-yaml": "^4.0.0",
+    "@types/mustache": "^4.1.1",
+    "@types/node": "^14.14.37",
+    "@types/shelljs": "^0.8.8",
+    "eslint": "^5.3.0",
+    "eslint-config-oclif": "^3.1.0",
+    "eslint-config-oclif-typescript": "^0.2.0",
+    "globby": "^11.0.3",
+    "install": "^0.13.0",
+    "npm": "^7.7.5",
+    "ts-node": "^9.1.1",
+    "typescript": "^4.2.3"
+  },
+  "engines": {
+    "node": ">=8.0.0"
+  },
+  "files": [
+    "/bin",
+    "/lib",
+    "/perrisbrewery"
+  ],
+  "homepage": "https://github.com/pieroproietti/perrisbrewery",
+  "keywords": [
+    "oclif"
+  ],
+  "license": "MIT",
+  "main": "lib/index.js",
+  "oclif": {
+    "bin": "pb"
+  },
+  "repository": "pieroproietti/perrisbrewery",
+  "scripts": {
+    "posttest": "eslint . --ext .ts --config .eslintrc",
+    "prepack": "rm -rf lib && tsc -b && oclif-dev readme",
+    "test": "echo NO TESTS",
+    "version": "oclif-dev readme && git add README.md"
+  },
+  "types": "lib/index.d.ts"
+}

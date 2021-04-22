@@ -1,0 +1,6 @@
+[submodule "submodules/dev-cli"]
+	path = submodules/dev-cli
+	url = https://github.com/pieroproietti/dev-cli
+[submodule "submodules/perrisbrewery"]
+	path = submodules/perrisbrewery
+	url = https://github.com/pieroproietti/perrisbrewery

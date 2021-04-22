@@ -1,0 +1,111 @@
+{
+  "name": "penguins-eggs",
+  "description": "Perri's Brewery edition: remaster your system and distribuite it",
+  "version": "7.8.46",
+  "author": "Piero Proietti @pieroproietti",
+  "bin": {
+    "eggs": "bin/run"
+  },
+  "homepage": "https://penguins-eggs.net/",
+  "repository": "https://github.com/pieroproietti/penguins-eggs",
+  "bugs": "https://github.com/pieroproietti/penguins-eggs/issues",
+  "dependencies": {
+    "@getvim/execute": "^1.0.0",
+    "@oclif/command": "^1.8.0",
+    "@oclif/plugin-autocomplete": "0.3.0",
+    "@oclif/plugin-help": "^3.2.2",
+    "@oclif/plugin-not-found": "^1.2.4",
+    "@oclif/plugin-warn-if-update-available": "^1.7.0",
+    "axios": "^0.21.1",
+    "chalk": "^4.1.0",
+    "clear": "^0.1.0",
+    "diskusage": "^1.1.3",
+    "figlet": "^1.5.0",
+    "globby": "^10.0.2",
+    "ink": "github:vadimdemedes/ink",
+    "ink-ascii": "github:pieroproietti/ink-ascii",
+    "inquirer": "^8.0.0",
+    "js-yaml": "^4.0.0",
+    "line-reader": "^0.4.0",
+    "mustache": "^4.2.0",
+    "network": "^0.5.0",
+    "pjson": "^1.0.9",
+    "react": "^16.8.0 ",
+    "shelljs": "^0.8.4",
+    "tslib": "^ 2.2.0"
+  },
+  "devDependencies": {
+    "@oclif/dev-cli": "./submodules/dev-cli",
+    "@oclif/test": "^1.2.8",
+    "@types/chai": "^4.2.16",
+    "@types/clear": "^0.1.1",
+    "@types/figlet": "^1.5.0",
+    "@types/inquirer": "^7.3.1",
+    "@types/js-yaml": "^4.0.0",
+    "@types/mocha": "^8.2.2",
+    "@types/mustache": "^4.1.1",
+    "@types/node": "^14.14.41",
+    "@types/react": "^17.0.3",
+    "@types/shelljs": "^0.8.8",
+    "@typescript-eslint/eslint-plugin": "^4.22.0",
+    "chai": "^4.3.4",
+    "eslint": "^7.24.0",
+    "mocha": "^8.3.2",
+    "nyc": "^15.1.0",
+    "perrisbrewery": "./submodules/perrisbrewery",
+    "prettier": "^2.2.1",
+    "ts-node": "^9.1.1",
+    "typedoc": "^0.20.35",
+    "typescript": "^4.2.4"
+  },
+  "warn-if-update-available": {
+    "timeoutInDays": 7,
+    "message": "<%= config.name %> update available from <%= chalk.greenBright(config.version) %> to <%= chalk.greenBright(latest). use: sudo eggs update %>.",
+    "registry": "https://registry.npmjs.org"
+  },
+  "engines": {
+    "node": ">8.17.0"
+  },
+  "files": [
+    "/assets",
+    "/addons",
+    "/assistant",
+    "/bin",
+    "/conf",
+    "/lib",
+    "/npm-shrinkwrap.json",
+    "/manpages",
+    "/oclif.manifest.json",
+    "/scripts",
+    "/templates"
+  ],
+  "keywords": [
+    "oclif"
+  ],
+  "license": "MIT",
+  "main": "lib/index.js",
+  "oclif": {
+    "commands": "./lib/commands",
+    "bin": "eggs",
+    "plugins": [
+      "@oclif/plugin-help",
+      "@oclif/plugin-autocomplete",
+      "@oclif/plugin-not-found",
+      "@oclif/plugin-warn-if-update-available"
+    ]
+  },
+  "scripts": {
+    "docs": "rm docs -rf && npx typedoc src --out docs",
+    "build": "tsc -p .",
+    "deb": "oclif-dev pack:deb && npx pb",
+    "postpack": "rm -f oclif.manifest.json",
+    "posttest": "eslint . --ext .ts --config .eslintrc",
+    "prepack": "rm lib -rf && tsc -b && oclif-dev manifest && oclif-dev readme",
+    "test": "nyc --extension .ts mocha --forbid-only \"test/**/*.test.ts\"",
+    "version": "oclif-dev readme && git add README.md",
+    "lint": "eslint . --ext .ts --config .eslintrc",
+    "lint-and-fix": "eslint . --ext .ts --fix --config .eslintrc",
+    "prettier-format": "prettier --config .prettierrc 'src/**/*.ts' --write"
+  },
+  "types": "lib/index.d.ts"
+}

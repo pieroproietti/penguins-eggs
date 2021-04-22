@@ -1,0 +1,27 @@
+---
+componentName:   debian
+welcomeStyleCalamares: true
+
+strings:
+    productName:         Debian GNU/Linux
+    shortProductName:    Debian testing
+    version:             11 (bullseye)
+    shortVersion:        11
+    versionedName:       Debian 11 (bullseye)
+    shortVersionedName:  Debian 11
+    bootloaderEntryName: Debian
+    productUrl:          https://debian.org
+    supportUrl:          https://www.debian.org/support
+    releaseNotesUrl:     https://www.debian.org/releases/bullseye/releasenotes
+
+images:
+    productLogo:         "debian-logo.png"
+    productIcon:         "debian-logo.png"
+    productWelcome:      "welcome.png"
+
+slideshow:               "show.qml"
+
+style:
+   sidebarBackground:    "#2c3133"
+   sidebarText:          "#FFFFFF"
+   sidebarTextSelect:    "#4d7079"
