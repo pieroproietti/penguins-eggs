@@ -161,16 +161,9 @@ export default class Think extends Command {
                <Box flexDirection="row">
                   <Box marginRight={1}><Text>Contacts: </Text></Box>
                   <Box flexDirection="column">
-                     <Box marginRight={2}><Text>blog           </Text><Text color="cyan">https://penguins-eggs.net</Text></Box>
-                     <Box marginRight={2}><Text>mail           </Text><Text color="cyan">mailto://pieroproietti@gmail.com</Text></Box>
-                     <Box marginRight={2}><Text>source         </Text><Text color="cyan">https://github.com/pieroproietti/penguins-eggs</Text></Box>
-                     <Box marginRight={2}><Text>issue          </Text><Text color="cyan">https://github.com/pieroproietti/penguins-eggs/issues/48</Text></Box>
-                     <Box marginRight={2}><Text>gitter         </Text><Text color="cyan">https://gitter.im/penguins-eggs-1/community</Text></Box>
-                     <Box marginRight={2}><Text>facebook page  </Text><Text color="cyan">https://www.facebook.com/penguinseggs</Text></Box>
-                     <Box marginRight={2}><Text>facebook group </Text><Text color="cyan">https://www.facebook.com/groups/128861437762355</Text></Box>
-                     <Box marginRight={2}><Text>discord        </Text><Text color="cyan">https://discord.com/channels/411456265160491009/411456265903144961</Text></Box>
-                     <Box marginRight={2}><Text>telegram       </Text><Text color="cyan">https://t.me/penguinseggs</Text></Box>
-                     <Box marginRight={2}><Text>jitsi.org      </Text><Text color="cyan">https://meet.jit.si/PenguinsEggsHelp</Text></Box>
+                     <Box marginRight={2}><Text>blog    </Text><Text color="cyan">https://penguins-eggs.net</Text></Box>
+                     <Box marginRight={2}><Text>sources </Text><Text color="cyan">https://github.com/pieroproietti/penguins-eggs</Text></Box>
+                     <Box marginRight={2}><Text>meeting </Text><Text color="cyan">https://meet.jit.si/PenguinsEggsMeeting</Text></Box>
                   </Box>
                </Box>
             </Box>
