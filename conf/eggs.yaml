@@ -1,0 +1,93 @@
+# Penguin's eggs
+# eggs.yaml
+---
+# version
+version: '7.7.7'
+
+# You can change the location of 'snapshot_dir' (location of final iso file) 
+# in case you don't have enough space on the system. 
+# default: /home/eggs
+snapshot_dir: '/home/eggs/'
+
+# The name of the snapshot file will be hostname-{arch}_{yyyy-mm-dd_hhmm}.iso.
+# If you'd like to replace "hostname" with something different,
+# change it here. (example: snapshot_basename="my-buster-live")
+#
+# prefix iso file
+# You can choose a prefix like 'UfficioZero_'
+# default ''
+snapshot_prefix: ''
+
+# Note: hostname use the name of the host
+#
+# default hostname
+snapshot_basename: 'hostname'
+
+# You can change the rsync excludes file here - if you know what you're doing -
+# be sure to use the full path to the file.
+#
+# default /usr/local/share/excludes/penguins-eggs-snapshot-exclude.list
+snapshot_excludes: '/usr/local/share/penguins-eggs/exclude.list'
+
+# user to be used in the liveCd
+# default live
+user_opt: 'live'
+
+# password of user to be used in the liveCd
+# default evolution
+user_opt_passwd: 'evolution'
+
+# root password to be used in liveCd
+# default evolution
+root_passwd: 'evolution'
+
+# theme to be used as default
+# default: eggs
+theme: ''
+
+# Force installation package calamares if is not already installed.
+# default no if calamares is not installed 
+force_installer: false
+
+# Set to true to create boot files for uefi.
+# default true if grub_efi_amd64 package is installed
+make_efi: false
+
+# Change to false if you don't want the md5sum file created with the iso.
+# default yes
+make_md5sum: true
+
+# Change to fale if you want a plain iso image instead of isohybrid.
+# Default true
+make_isohybrid: true
+
+# Compression algorithm
+# Allowed values are, in order of speed-size tradeoff: lz4, lzo, gzip, xz  
+# default xz
+compression: 'xz'
+
+# Allow password login to ssh for users (not root).
+# If ssh_pass=true, then PasswordAuthentication will be set to true
+# If ssh_pass=false, then PasswordAuthentication will be set to false
+# In either of the above cases, if PermitRootLogin was set to true,
+# it will be changed to "prohibit-password" (meaning with auth keys only)
+# default true
+ssh_pass: true
+
+# timezone 
+# default Europe/Rome
+timezone: Europe/Rome
+
+# locales to be builded
+locales:
+  - en_US.UTF-8
+  - it_IT.UTF-8
+
+# default locales
+locales_default: it_IT.UTF-8
+
+##
+# The following fields are actually not used in eggs
+pmount_fixed: false
+netconfig_opt: ''
+ifnames_opt: ''

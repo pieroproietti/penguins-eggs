@@ -1,0 +1,23 @@
+[Desktop Entry]
+Name=Installazione Linux
+GenericName=Installazione Linux
+Exec=eggs-ichoice.sh
+Terminal=true
+Type=Application
+Icon=system-software-install
+Categories=system
+Name[it]=Installazione cli/gui
+GenericName[it]=Installazione cli/gui
+Comment[it]=Installazione cli/gui
+Name[en]=Installation cli/gui
+GenericName[en]=Installation cli/gui
+Comment[en]=Installation cli/gui
+Name[es]=Instalación cli/gui
+GenericName[es]=Instalación cli/gui
+Comment[es]=Instalación cli/gui
+Name[pt]=Instalação cli/gui
+GenericName[pt]=Instalação cli/gui
+Comment[pt]=Instalação cli/gui
+Name[fr]=Installation cli/gui
+GenericName[fr]=Installation cli/gui
+Comment[fr]=Installation cli/gui

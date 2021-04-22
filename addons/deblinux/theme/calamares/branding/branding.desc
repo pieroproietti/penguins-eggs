@@ -1,0 +1,23 @@
+#versionLike: buster
+componentName: eggs
+welcomeStyleCalamares: true
+strings:
+  productName: deblinux-pc
+  shortProductName: deblinux-pc
+  version: '2019/09/18 08:26-02 ( Emperor)'
+  shortVersion: '2019/09/18 08:26-02'
+  versionedName: deblinux-pc
+  shortVersionedName: Emperor
+  bootloaderEntryName: deblinux-pc
+  productUrl: ''
+  supportUrl: 'https://www.debian.org/support'
+  releaseNotesUrl: 'https://github.com/pieroproietti/penguins-eggs'
+images:
+  productLogo: eggs-logo.png
+  productIcon: eggs-logo.png
+  productWelcome: welcome.png
+slideshow: show.qml
+style:
+  sidebarBackground: '#2c3133'
+  sidebarText: '#FFFFFF'
+  sidebarTextSelect: '#4d7079'

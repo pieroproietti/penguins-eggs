@@ -1,0 +1,5 @@
+[Desktop Entry]
+Type=Link
+Name=%name%
+Icon=%icon%
+URL=/usr/share/applications/%url%

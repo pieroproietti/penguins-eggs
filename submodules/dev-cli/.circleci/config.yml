@@ -1,0 +1,97 @@
+---
+version: 2.1
+orbs:
+  node: circleci/node@4.2.0
+jobs:
+  test-node: &test
+    parameters:
+      node-version:
+        type: string
+        description: "node.js version to install"
+    docker:
+      - image: oclif/nsis:12.0.0-16
+    working_directory: ~/cli
+    environment:
+      NYC: "yarn exec nyc -- --nycrc-path node_modules/@oclif/nyc-config/.nycrc"
+    steps:
+      - checkout
+      - run: &setup_yarn
+          name: Setup Yarn
+          command: |
+            mkdir -p .yarn
+            echo "--install.cache-path $(pwd)/.yarn/cache" >> .yarnrc
+            echo "--install.prefer-offline" >> .yarnrc
+            echo "yarn-offline-mirror $(pwd)/.yarn/offline-mirror" >> .yarnrc
+      - node/install: &install_node
+          install-yarn: true
+          node-version: << parameters.node-version >>
+      - run: &create_cache_key_file
+          name: "Create Cache Key File"
+          command: |
+            echo "node: $(node --version)" >> .circleci-cache-key
+            echo "yarn: $(yarn --version)" >> .circleci-cache-key
+            echo "yarnrc: $(sha256sum .yarnrc)" >> .circleci-cache-key
+            echo ".circleci/config.yml: $(sha256sum .circleci/config.yml)" >> .circleci-cache-key
+      - node/install-packages: &install_node_packages
+          cache-path: ".yarn"
+          cache-version: &cache_key |
+            {{checksum ".circleci-cache-key"}}
+          pkg-manager: yarn
+          include-branch-in-cache-key: false
+      - run: 'echo "Node: `node --version`"'
+      - run: .circleci/loadgpg
+      - run: yarn add -D nyc@13 @oclif/nyc-config@1
+      - run: ./node_modules/.bin/tsc
+      - run: ./bin/run --version
+      - run: ./bin/run --help
+      - run: |
+          $NYC yarn test
+          curl -s https://codecov.io/bash | bash
+  release:
+    <<: *test
+    steps:
+      - add_ssh_keys
+      - checkout
+      - run: *setup_yarn
+      - node/install: *install_node
+      - run: *create_cache_key_file
+      - node/install-packages: *install_node_packages
+      - run: .circleci/loadgpg
+      - run: yarn global add @oclif/semantic-release@3 semantic-release@17
+      - run: yarn --frozen-lockfile
+      - run: ./bin/run pack
+      - run: ./bin/run pack:deb
+      - run: ./bin/run pack:win
+      - run: ./bin/run publish
+      - run: ./bin/run publish:deb
+      - run: ./bin/run publish:win
+      - run: |
+          export PATH=/usr/local/share/.config/yarn/global/node_modules/.bin:$PATH
+          semantic-release -e @oclif/semantic-release
+      - run: yarn add -D nyc@13 @oclif/nyc-config@1
+      - save_cache:
+          key: v6-yarn-{{checksum ".circleci/config.yml"}}-{{checksum "yarn.lock"}}
+          paths:
+            - ~/cli/node_modules
+            - ~/cli/tmp/cache
+            - /usr/local/share/.cache/yarn
+            - /usr/local/share/.config/yarn
+
+workflows:
+  version: 2.1
+  build:
+    jobs:
+      - test-node:
+          matrix:
+            parameters:
+              node-version:
+                - "10"
+                - "12"
+                - "14"
+      - release:
+          node-version: "14"
+          context: org-global
+          filters:
+            branches: {only: master}
+          requires:
+            - test-node

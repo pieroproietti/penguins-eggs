@@ -1,0 +1,5 @@
+# Ubuntu Bionic
+# finished
+---
+restartNowMode: user-checked
+restartNowCommand: "systemctl -i reboot"
