@@ -23,7 +23,7 @@
     "figlet": "^1.5.0",
     "globby": "^10.0.2",
     "ink": "vadimdemedes/ink",
-    "ink-ascii": "./vendors/ink-ascii",
+    "ink-ascii": "pieroproietti/ink-ascii",
     "inquirer": "^8.0.0",
     "js-yaml": "^4.0.0",
     "line-reader": "^0.4.0",
