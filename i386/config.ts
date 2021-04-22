@@ -1,1 +1,1 @@
-../submodules/dev-cli/src/tarballs/config.ts
+../vendors/dev-cli/src/tarballs/config.ts
