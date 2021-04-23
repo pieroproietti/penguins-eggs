@@ -22,8 +22,7 @@
  * Ubuntu 19.10 (eoan)   expired
  * Ubuntu 20.04 (focal) LTS   active
  * Ubuntu 20.10 (groovy) active
- * 
- * active distros
+ * Ubuntu 21.04 (hirsute) active
  *
  * stretch old
  * buster
@@ -174,6 +173,10 @@ class Distro implements IDistro {
          // Ubuntu 20.10 groovy
          this.distroLike = 'Ubuntu'
          this.versionLike = 'groovy'
+      } else if (this.versionId === 'hirsute') {
+         // Ubuntu 21.04 hirsute
+         this.distroLike = 'Ubuntu'
+         this.versionLike = 'hirsute'
 
          // quindi le derivate...
 
