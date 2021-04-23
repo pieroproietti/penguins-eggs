@@ -529,6 +529,15 @@ export default class Pacman {
          await this.ln(`${focal}/isolinux`, `${groovy}/isolinux`, remove, verbose)
          await this.ln(`${focal}/locale.gen.template`, `${groovy}/locale.gen.template`, remove, verbose)
          await this.ln(`${buster}/calamares/modules/displaymanager.yml`, `${groovy}/calamares/modules/displaymanager.yml`, remove, verbose)
+
+         // Ubuntu 21.04 hirsute
+         const hirsute = `${rootPen}/conf/distros/hirsute`
+         await this.ln(`${focal}/calamares`, `${hirsute}/calamares`, remove, verbose)
+         await this.ln(`${focal}/grub`, `${hirsute}/grub`, remove, verbose)
+         await this.ln(`${focal}/isolinux`, `${hirsute}/isolinux`, remove, verbose)
+         await this.ln(`${focal}/locale.gen.template`, `${hirsute}/locale.gen.template`, remove, verbose)
+         await this.ln(`${buster}/calamares/modules/displaymanager.yml`, `${hirsute}/calamares/modules/displaymanager.yml`, remove, verbose)
+         
       }
    }
 
