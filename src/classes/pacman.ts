@@ -537,7 +537,6 @@ export default class Pacman {
          await this.ln(`${focal}/isolinux`, `${hirsute}/isolinux`, remove, verbose)
          await this.ln(`${focal}/locale.gen.template`, `${hirsute}/locale.gen.template`, remove, verbose)
          await this.ln(`${buster}/calamares/modules/displaymanager.yml`, `${hirsute}/calamares/modules/displaymanager.yml`, remove, verbose)
-         
       }
    }
 
