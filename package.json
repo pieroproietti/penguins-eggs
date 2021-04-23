@@ -1,7 +1,7 @@
 {
   "name": "penguins-eggs",
   "description": "Perri's Brewery edition: remaster your system and distribuite it",
-  "version": "7.8.46",
+  "version": "7.8.47",
   "author": "Piero Proietti @pieroproietti",
   "bin": {
     "eggs": "bin/run"
@@ -99,7 +99,7 @@
     "deb": "oclif-dev pack:deb && npx pb",
     "postpack": "rm -f oclif.manifest.json",
     "posttest": "eslint . --ext .ts --config .eslintrc",
-    "prepack": "rm lib -rf && tsc -b && oclif-dev manifest && oclif-dev readme",
+    "prepack": "rm lib -rf && tsc -b && npx oclif-dev manifest && oclif-dev readme",
     "test": "nyc --extension .ts mocha --forbid-only \"test/**/*.test.ts\"",
     "version": "oclif-dev readme && git add README.md",
     "lint": "eslint . --ext .ts --config .eslintrc",
