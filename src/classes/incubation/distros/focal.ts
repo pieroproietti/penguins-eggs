@@ -1,6 +1,6 @@
 /**
  * penguins-eggs: focal.ts
- *
+ * used for: groovy, hirsute
  * author: Piero Proietti
  * mail: piero.proietti@gmail.com
  */
@@ -72,7 +72,6 @@ export class Focal {
       const fisherman = new Fisherman(this.distro, this.dirModules, this.dirCalamaresModules, this.rootTemplate, this.verbose)
 
       await fisherman.settings(this.remix.branding)
-
       await fisherman.buildModule('partition', this.remix.branding)
       await fisherman.buildModule('mount')
       await fisherman.moduleUnpackfs()
