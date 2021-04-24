@@ -14,7 +14,6 @@ import { Buster } from './distros/buster'
 import { Bullseye } from './distros/bullseye'
 import { Beowulf } from './distros/beowulf'
 import { Focal } from './distros/focal'
-import { Groovy } from './distros/groovy'
 import { Bionic } from './distros/bionic'
 
 const exec = require('../../lib/utils').exec
@@ -72,8 +71,11 @@ export default class Incubator {
          const focal = new Focal(this.remix, this.distro, release, this.user_opt, this.verbose)
          await focal.create()
       } else if (this.distro.versionLike === 'groovy') {
-         const groovy = new Groovy(this.remix, this.distro, release, this.user_opt, this.verbose)
+         const groovy = new Focal(this.remix, this.distro, release, this.user_opt, this.verbose)
          await groovy.create()
+      } else if (this.distro.versionLike === 'hirsute') {
+         const hirsute = new Focal(this.remix, this.distro, release, this.user_opt, this.verbose)
+         await hirsute.create()
       } else if (this.distro.versionLike === 'bionic') {
          const bionic = new Bionic(this.remix, this.distro, release, this.user_opt, this.verbose)
          await bionic.create()
