@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# Authors: Piero Proietti, Christopher Hopp
+
 ##
 # eggs dialog cli
 ##
@@ -9,21 +11,22 @@ function main {
    while true; do
       # 20 righe. 75 caratteri, 16 altezza menu list
       answer=$(
-      whiptail --title "mommy" --menu "Mama's gonna keep baby cosy and warm..." 22 75 16 \
+      whiptail --title "mommy" --menu "Mama's gonna keep baby cozy and warm..." 22 75 16 \
          "config"          "configure eggs, install prerequisites" \
          "adapt"           "adapt monitor resolution for VM only" \
          "calamares"       "configure calamares or install and configure it" \
          "dad"             "ask help from daddy - configuration helper" \
          "help"            "display help for eggs" \
          "info"            "informations about system and eggs" \
-         "install"         "system installer - the egg became a penguin" \
+         "install"         "system installer - the egg becomes a penguin" \
          "kill"            "kill the eggs/free the nest" \
-         "produce"         "the system produce an egg: iso image of your system" \
+         "produce"         "the system produces an egg: iso image of your system" \
          "remove"          "remove eggs and others stuff" \
+         "think"           "thinking about the future" \
          "update"          "update the penguin's eggs tool" \
-         "Documentation"   "book/book_translated/manual/man" \
-         "Export"          "deb/docs/iso" \
-         "Tools"           "clean/locales/skel/yolk" \
+         "documentation"   "book/book_translated/manual/man" \
+         "export"          "deb/docs/iso" \
+         "tools"           "clean/locales/skel/yolk" \
          "quit"            "exit" 3>&2 2>&1 1>&3
       )
 
@@ -61,13 +64,16 @@ function main {
          "remove")
             remove ;;
 
-         "Documentation")
+         "think")
+            think ;;
+
+         "documentation")
             documentation ;;
 
-         "Export")
+         "export")
             Export ;;
 
-         "Tools")
+         "tools")
             tools ;;
 
          "update")
@@ -96,7 +102,7 @@ function calamares {
          "configure"       "create calamares configuration" \
          "install"         "install calamares and create configuration" \
          "remove"          "remove calamares installer" \
-         "quit"            "previus" 3>&2 2>&1 1>&3
+         "quit"            "previous" 3>&2 2>&1 1>&3
       )
 
       case "$answer" in 
@@ -140,7 +146,7 @@ function documentation {
          "book_translated" "gui/internet penguin's eggs book - translated -" \
          "manual"          "gui/local man page eggs html" \
          "man"             "cli/local man page eggs" \
-         "quit"            "previus" 3>&2 2>&1 1>&3
+         "quit"            "previous" 3>&2 2>&1 1>&3
       )
 
       case "$answer" in 
@@ -192,7 +198,7 @@ function Export {
          "deb"    "export package eggs-v7-x-x-1.deb in the destination host" \
          "docs"   "export docType source's documentation in the destination host" \
          "iso"    "export iso image in the destination host" \
-         "quit"   "previus" 3>&2 2>&1 1>&3
+         "quit"   "previous" 3>&2 2>&1 1>&3
       )
 
       case "$answer" in 
@@ -256,7 +262,7 @@ function produce {
       "fast"    "create fast an ISO (lz4 compression)" \
       "standard"  "create an ISO standard compression (xz compression)" \
       "compress"  "create an ISO max compression (xz -Xbcj x86)" \
-      "quit"   "previus" 3>&2 2>&1 1>&3
+      "quit"   "previous" 3>&2 2>&1 1>&3
    )
 
    case "$answer" in 
@@ -293,7 +299,7 @@ function remove {
       "all"             "remove eggs, prerequisites and purge" \
       "purge"           "remove eggs and purge"  \
       "autoremove"      "remove eggs and prerequisites" \
-      "quit"   "previus" 3>&2 2>&1 1>&3
+      "quit"   "previous" 3>&2 2>&1 1>&3
    )
 
    case "$answer" in 
@@ -335,7 +341,7 @@ function tools {
       "locales"   "install/clean locales" \
       "skel"      "update /etc/skel from current user or user configuration" \
       "yolk"      "configure an internal apt repository in /usr/local/yolk" \
-      "quit"   "previus" 3>&2 2>&1 1>&3
+      "quit"   "previous" 3>&2 2>&1 1>&3
    )
 
    case "$answer" in 
@@ -384,6 +390,12 @@ function update {
    press_a_key_to_continue
 }
 
+
+################################
+function think {
+   eggs think
+   press_a_key_to_continue
+}
 
 function press_a_key_to_continue {
    read -p "Press enter to continue"
