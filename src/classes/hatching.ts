@@ -358,6 +358,8 @@ adduser ${name} \
          Utils.warning('hatching: updateInitramfs')
       }
 
+      // in /etc/initramfs-tools/conf.d/calamares-safe-initramfs.conf
+      // UMASK=0077
       await exec(`chroot ${this.target}  update-initramfs -u -k $(uname -r)`, echo)
    }
 
