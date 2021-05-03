@@ -229,6 +229,13 @@ export default class Ovary {
          console.log('ovary: editLiveFs')
       }
 
+      // Aggiungo UMASK=0077 in /etc/initramfs-tools/conf.d/calamares-safe-initramfs.conf
+      let text = 'UMASK=0077\n'
+      let file = '/etc/initramfs-tools/conf.d/eggs-safe-initramfs.conf'
+      Utils.write(file, text)
+      
+
+
       // sudo systemctl disable wpa_supplicant
 
       // Truncate logs, remove archived logs.
