@@ -12,7 +12,7 @@ import path = require('path')
 import Pacman from './pacman'
 import Utils from './utils'
 import chalk = require('chalk')
-import { execSync } from 'node:child_process'
+
 
 // libraries
 const exec = require('../lib/utils').exec
