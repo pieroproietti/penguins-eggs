@@ -3,7 +3,7 @@ import Utils from '../classes/utils'
 
 const exec = require('../lib/utils').exec
 
-export default class Adaptp extends Command {
+export default class Adapt extends Command {
    static description = 'adapt monitor resolution for VM only'
    static aliases = ['adjust']
 
@@ -13,7 +13,7 @@ export default class Adaptp extends Command {
    }
 
    async run() {
-      const { args, flags } = this.parse(Adaptp)
+      const { args, flags } = this.parse(Adapt)
 
       let verbose = false
       if (flags.verbose) {

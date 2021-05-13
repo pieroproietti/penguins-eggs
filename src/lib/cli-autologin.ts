@@ -55,7 +55,8 @@ async function motdAdd(user: string, userPasswd: string, rootPasswd: string, chr
     eggsMotd += `You are logged as ${user}, your password is: ${userPasswd}. root password: ${rootPasswd}\n`
     eggsMotd += 'After installation you can add your favorite desktop, for example xfce4, cinnammon, \n'
     eggsMotd += 'mate, gnome, kde, etc and use the calamares graphical installation\n'
-    eggsMotd += 'You can hatch the egg with cli installer: sudo eggs install\n'
+    eggsMotd += 'You can hatch the egg with inside cli installer: sudo eggs install\n'
+    eggsMotd += 'or with krill: sudo krill install\n'
     eggsMotd += 'eggs <<<\n'
     fs.writeFileSync(fileMotd, eggsMotd)
 }
