@@ -64,48 +64,48 @@ export default class Calamares extends Command {
       console.log(`theme: ${theme}`)
 
       if (Utils.isRoot(this.id)) {
-         if (await Pacman.isGui()) {
-            if (!remove) {
-               if (await Utils.customConfirm(`Select yes to continue...`)) {
-                  /**
-                   * Install calamares
-                   */
-                  if (install) {
-                     Utils.warning('Installing calamares...')
-                     await Pacman.calamaresInstall()
-                     if (await this.settings.load()) {
-                        this.settings.config.force_installer = true
-                        this.settings.save(this.settings.config)
-                     }
-                  }
-
-                  /**
-                   * Configure calamares
-                   */
-                  if (Pacman.packageIsInstalled('calamares')) {
-                     Utils.warning('Configuring calamares...')
-                     if (await this.settings.load()) {
-                        await this.settings.loadRemix(this.settings.config.snapshot_basename, theme)
-                        this.incubator = new Incubator(this.settings.remix, this.settings.distro, this.settings.config.user_opt, verbose)
-                        await this.incubator.config(final)
-                     }
+         // if (await Pacman.isGui()) {
+         if (!remove) {
+            if (await Utils.customConfirm(`Select yes to continue...`)) {
+               /**
+                * Install calamares
+                */
+               if (install) {
+                  Utils.warning('Installing calamares...')
+                  await Pacman.calamaresInstall()
+                  if (await this.settings.load()) {
+                     this.settings.config.force_installer = true
+                     this.settings.save(this.settings.config)
                   }
                }
-            } else {
+
                /**
-                * Remove calamares
+                * Configure calamares
                 */
-               if (await Pacman.calamaresCheck()) {
-                  await Pacman.calamaresRemove()
+               if (Pacman.packageIsInstalled('calamares')) {
+                  Utils.warning('Configuring calamares...')
                   if (await this.settings.load()) {
-                     this.settings.config.force_installer = false
-                     this.settings.save(this.settings.config)
+                     await this.settings.loadRemix(this.settings.config.snapshot_basename, theme)
+                     this.incubator = new Incubator(this.settings.remix, this.settings.distro, this.settings.config.user_opt, verbose)
+                     await this.incubator.config(final)
                   }
                }
             }
          } else {
-            console.log(`You cannot use calamares installer without X system!`)
+            /**
+             * Remove calamares
+             */
+            if (await Pacman.calamaresCheck()) {
+               await Pacman.calamaresRemove()
+               if (await this.settings.load()) {
+                  this.settings.config.force_installer = false
+                  this.settings.save(this.settings.config)
+               }
+            }
          }
+         //} else {
+         //   console.log(`You cannot use calamares installer without X system!`)
+         //}
       }
    }
 }
