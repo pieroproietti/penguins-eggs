@@ -18,6 +18,8 @@ You can follow the project also consulting the [commit history](https://github.c
 # Penguin's krll
 I'm actually working in krill, a smart and ligth CLI Linux installer. it will be possible to use krill on all systems, both CLI and GUI. While krill has its own configuration, where calamares is present, it will use the calamares installer configuration.
 
+**Note:** krill will erase **entirely** your destination disk, don't let to install more than a system on the disk, it is at the moment immature and experimental. Use it at your own risk and preferibly on VM or system without valuable datas.
+
 ## Changelog
 Versions are listed on reverse order, the first is the last one.
 
