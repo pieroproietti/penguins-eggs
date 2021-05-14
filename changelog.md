@@ -18,6 +18,9 @@ You can follow the project also consulting the [commit history](https://github.c
 ## Changelog
 Versions are listed on reverse order, the first is the last one.
 
+### eggs-7.8.48
+* remove unused dependencies, announcing krill installer for CLI versions
+
 ### eggs-7.8.47
 * added Ubuntu hirsute (Ubuntu 20.04) to compatibily list
 
