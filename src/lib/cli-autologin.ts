@@ -3,6 +3,8 @@ import fs = require('fs')
 import path = require('path')
 import Utils from '../classes/utils'
 
+// Comando per avviare ubiquity: sudo --preserve-env DBUS_SESSION_BUS_ADDRESS, XDG_RUNTIME sh -c 'calamares'
+
 /**
  * 
  * @param chroot 
