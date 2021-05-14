@@ -15,6 +15,9 @@ penguins-eggs
 Usually the last version is the right one. Detailed instrunctions for usage are published on the [penguin's eggs book](https://penguins-eggs.net/book). 
 You can follow the project also consulting the [commit history](https://github.com/pieroproietti/penguins-eggs/commits/master). 
 
+# Penguin's krll
+I'm actually working in krill, a smart and ligth CLI Linux installer. it will be possible to use krill on all systems, both CLI and GUI. While krill has its own configuration, where calamares is present, it will use the calamares installer configuration.
+
 ## Changelog
 Versions are listed on reverse order, the first is the last one.
 
