@@ -11,6 +11,8 @@ import Incubator from '../classes/incubation/incubator'
 import Pacman from '../classes/pacman'
 import { IRemix } from '../interfaces'
 
+import fs from 'fs'
+
 export default class Calamares extends Command {
    static description = 'calamares or install or configure it'
 
@@ -76,6 +78,7 @@ export default class Calamares extends Command {
                      if (await this.settings.load()) {
                         this.settings.config.force_installer = true
                         this.settings.save(this.settings.config)
+                        // setCalamaresPolicies() to do
                      }
                   }
 
@@ -109,4 +112,3 @@ export default class Calamares extends Command {
       }
    }
 }
-
