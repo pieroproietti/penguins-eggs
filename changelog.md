@@ -15,11 +15,16 @@ penguins-eggs
 Usually the last version is the right one. Detailed instrunctions for usage are published on the [penguin's eggs book](https://penguins-eggs.net/book). 
 You can follow the project also consulting the [commit history](https://github.com/pieroproietti/penguins-eggs/commits/master). 
 
+# Penguin's krll
+I'm actually working in krill, a smart and ligth CLI Linux installer. it will be possible to use krill on all systems, both CLI and GUI. While krill has its own configuration, where calamares is present, it will use the calamares installer configuration.
+
+**Note:** krill will erase **entirely** your destination disk, don't let to install more than a system on the disk, it is at the moment immature and experimental. Use it at your own risk and preferibly on VM or system without valuable datas.
+
 ## Changelog
 Versions are listed on reverse order, the first is the last one.
 
 ### eggs-7.8.48
-* remove unused dependencies, announcing krill installer for CLI versions
+* remove unused dependencies, announcing krill installer for CLI version
 
 ### eggs-7.8.47
 * added Ubuntu hirsute (Ubuntu 20.04) to compatibily list
