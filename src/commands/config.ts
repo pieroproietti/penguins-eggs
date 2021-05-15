@@ -5,13 +5,11 @@
  * license: MIT
  */
 import { Command, flags } from '@oclif/command'
+import chalk from 'chalk'
 import Utils from '../classes/utils'
 import Pacman from '../classes/pacman'
 import Bleach from '../classes/bleach'
 import { IInstall } from '../interfaces'
-import chalk = require('chalk')
-import fs = require('fs')
-import path = require('path')
 import Distro from '../classes/distro'
 import { IRemix, IDistro } from '../interfaces'
 
