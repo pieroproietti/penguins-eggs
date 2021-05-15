@@ -22,13 +22,14 @@
 
 import { Command, flags } from '@oclif/command'
 import shx from 'shelljs'
+import pjson from 'pjson'
 import Utils from '../classes/utils'
 import React from 'react'
 import { render, Text, Box } from 'ink'
-import Ascii from "ink-ascii"
+import Gradient from 'ink-gradient'
+import BigText from 'ink-big-text'
 import Settings from '../classes/settings'
 import Pacman from '../classes/pacman'
-import { prompts } from 'inquirer'
 const exec = require('../lib/utils').exec
 
 
@@ -56,18 +57,35 @@ export default class Think extends Command {
       settings.load()
 
 
-
-      /**
-       * Title
-       */
       const Title = () => (
-         <Box>
-            <Text backgroundColor="green">      {settings.app.name}      </Text>
-            <Text backgroundColor="white" color="blue"> Perri's brewery edition </Text>
-            <Text backgroundColor="red">       ver. {settings.app.version}       </Text>
-         </Box>
+         <>
+            <Box flexDirection="row">
+               <Box>
+                  <Gradient name="fruit">
+                     <BigText text={pjson.shortName} font="simple" />
+                  </Gradient>
+               </Box>
+
+               <Box margin={2} justifyContent="center" flexDirection="column">
+                  <Box >
+                     <Text>A reproductive system for penguins!</Text>
+                  </Box>
+                  <Box>
+                     <Text> </Text>
+                  </Box>
+                  <Box>
+                     <Text>(C) 2021 Penguin's eggs</Text>
+                  </Box>
+               </Box>
+            </Box>
+            <Box flexDirection="row">
+               <Text backgroundColor="green">     {pjson.name}      </Text>
+               <Text backgroundColor="white" color="blue"> Perri's brewery edition </Text>
+               <Text backgroundColor="red">       ver. {pjson.version}       </Text>
+            </Box>
+         </>
       )
-      render(<Title />)
+      // render(<Title/>)
 
       /**
        * nest
@@ -79,7 +97,7 @@ export default class Think extends Command {
             <Box marginRight={2}><Text>ovarium: <Text color="cyan">{settings.work_dir.path}</Text></Text></Box>
          </Box>
       )
-      render(<Nest />)
+      //render(<Nest />)
 
 
       /**
@@ -178,7 +196,6 @@ export default class Think extends Command {
        */
       const Main = () => (
          <>
-            <Ascii font="Standard" text="eggs" />
             <Title />
             <Box >
                <Live />

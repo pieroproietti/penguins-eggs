@@ -17,7 +17,8 @@ import chalk = require('chalk')
 import Pacman from './pacman'
 import React from 'react'
 import { render, Text, Box } from 'ink'
-import Ascii from "ink-ascii"
+import Gradient from 'ink-gradient'
+import BigText from 'ink-big-text'
 
 
 
