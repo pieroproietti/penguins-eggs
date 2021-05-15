@@ -24,12 +24,13 @@ e rimuovendoli da comunque errore, li lascio inalterati
 * plugin-warn-if-update-available
 
 
-autocomplete è ok, viene sostituito dalla copfia di eggs.bash in /etc/bash_completion.d
+autocomplete è ok, viene sostituito dalla copia di eggs.bash in /etc/bash_completion.d
 
 Aprire il link config.ts e modificare i TARGET, alla riga 8, aggiungendo
 
 const TARGETS = [
     'linux-x86',
+   // 'linux-arm',
     'win32-x64',
     'win32-x86',
     'darwin-x64',
