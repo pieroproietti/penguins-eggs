@@ -949,9 +949,9 @@ export default class Ovary {
       if (Pacman.packageIsInstalled('calamares')) {
          shx.cp(path.resolve(__dirname, `../../addons/${theme}/theme/applications/install-debian.desktop`), `${this.settings.work_dir.merged}/usr/share/applications/`)
       } else {
-         installerUrl = 'penguins-clinstaller.desktop'
+         installerUrl = 'penguins-krill.desktop'
          installerIcon = 'utilities-terminal'
-         shx.cp(path.resolve(__dirname, '../../assets/penguins-clinstaller.desktop'), `${this.settings.work_dir.merged}/usr/share/applications/`)
+         shx.cp(path.resolve(__dirname, '../../assets/penguins-krill.desktop'), `${this.settings.work_dir.merged}/usr/share/applications/`)
       }
 
       // flags
