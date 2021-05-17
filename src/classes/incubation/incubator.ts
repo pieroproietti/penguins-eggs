@@ -24,6 +24,8 @@ const exec = require('../../lib/utils').exec
 export default class Incubator {
    verbose = false
 
+   isCalamares = false
+
    remix: IRemix
 
    distro: IDistro
@@ -40,7 +42,8 @@ export default class Incubator {
     * @param distro
     * @param verbose
     */
-   constructor(remix: IRemix, distro: IDistro, user_opt = 'live', verbose = false) {
+   constructor(isCalamares = true, remix: IRemix, distro: IDistro, user_opt = 'live', verbose = false) {
+      this.isCalamares = isCalamares
       this.remix = remix
       this.distro = distro
       this.user_opt = user_opt
@@ -57,9 +60,10 @@ export default class Incubator {
       const verbose = true
       const echo = Utils.setEcho(verbose)
 
-      this.createCalamaresDirs()
+      await this.createInstallerDirs()
+
       if (this.distro.versionLike === 'buster') {
-         const buster = new Buster(this.remix, this.distro, release, this.user_opt, this.verbose)
+         const buster = new Buster(this.isCalamares, this.remix, this.distro, release, this.user_opt, this.verbose)
          await buster.create()
       } else if (this.distro.versionLike === 'bullseye') {
          const bullseye = new Bullseye(this.remix, this.distro, release, this.user_opt, this.verbose)
@@ -87,30 +91,35 @@ export default class Incubator {
    /**
     *
     */
-   private createCalamaresDirs() {
-      if (!fs.existsSync('/etc/calamares')) {
-         fs.mkdirSync('/etc/calamares')
+   private createInstallerDirs() {
+      let installer = 'krill'
+      if (this.isCalamares) {
+         installer = 'calamares'
       }
-      if (!fs.existsSync('/etc/calamares/branding')) {
-         fs.mkdirSync('/etc/calamares/branding')
+
+      if (!fs.existsSync('/etc/' + installer)) {
+         fs.mkdirSync('/etc/' + installer)
       }
-      if (!fs.existsSync('/etc/calamares/branding/eggs')) {
-         fs.mkdirSync('/etc/calamares/branding/eggs')
+      if (!fs.existsSync('/etc/' + installer + '/branding')) {
+         fs.mkdirSync('/etc/' + installer + '/branding')
       }
-      if (!fs.existsSync('/etc/calamares/modules')) {
-         fs.mkdirSync('/etc/calamares/modules')
+      if (!fs.existsSync('/etc/' + installer + '/branding/eggs')) {
+         fs.mkdirSync('/etc/' + installer + '/branding/eggs')
       }
+      if (!fs.existsSync('/etc/' + installer + '/modules')) {
+         fs.mkdirSync('/etc/' + installer + '/modules')
+      }
+
 
       /**
        * ADDONS
        */
-       // let calamaresBranding = path.resolve(__dirname, `../../../addons/${this.remix.branding}/theme/branding`)
-       const calamaresBranding = path.resolve(__dirname, `../../../addons/${this.remix.branding}/theme/calamares/branding`)
-       if (fs.existsSync(calamaresBranding)) {
-         if (!fs.existsSync(`/etc/calamares/branding/${this.remix.branding}`)) {
-            fs.mkdirSync(`/etc/calamares/branding/${this.remix.branding}`)
+      const calamaresBranding = path.resolve(__dirname, `../../../addons/${this.remix.branding}/theme/calamares/branding`)
+      if (fs.existsSync(calamaresBranding)) {
+         if (!fs.existsSync('/etc/' + installer + `/branding/${this.remix.branding}`)) {
+            fs.mkdirSync('/etc/' + installer + `/branding/${this.remix.branding}`)
          }
-         shx.cp(`${calamaresBranding}/*`, `/etc/calamares/branding/${this.remix.branding}/`)
+         shx.cp(`${calamaresBranding}/*`, '/etc/' + installer + `/branding/${this.remix.branding}/`)
       } else {
          console.log(`${calamaresBranding} not found!`)
          process.exit()
@@ -139,10 +148,15 @@ export default class Incubator {
     *
     */
    private createBranding() {
+      let installer = 'krill'
+      if (this.isCalamares) {
+         installer = 'calamares'
+      }
+
       const branding = require('./branding').branding
-      const dir = `/etc/calamares/branding/${this.remix.branding}/`
+      const dir = '/etc/' + installer + '/branding/' + this.remix.branding + '/'
       if (!fs.existsSync(dir)) {
-         fs.mkdirSync(dir)
+         shx.exec(dir + ' -p')
       }
       const file = dir + 'branding.desc'
       const content = branding(this.remix, this.distro, this.verbose)
