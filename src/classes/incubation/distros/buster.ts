@@ -24,6 +24,8 @@ const exec = require('../../../lib/utils').exec
 export class Buster {
    verbose = false
 
+   isCalamares = false
+
    remix: IRemix
 
    distro: IDistro
@@ -44,15 +46,27 @@ export class Buster {
     * @param displaymanager
     * @param verbose
     */
-   constructor(remix: IRemix, distro: IDistro, release: boolean, user_opt: string, verbose = false) {
+   constructor(isCalamares: boolean, remix: IRemix, distro: IDistro, release: boolean, user_opt: string, verbose = false) {
+      this.isCalamares = isCalamares
       this.remix = remix
       this.distro = distro
       this.user_opt = user_opt
       this.verbose = verbose
-      this.release = release 
-      if (process.arch === 'ia32') {
-         this.dirCalamaresModules = '/usr/lib/i386-linux-gnu/calamares/modules/'
+      this.release = release
+      if (isCalamares) {
+         if (process.arch === 'ia32') {
+            this.dirCalamaresModules = '/usr/lib/i386-linux-gnu/calamares/modules/'
+         }
+      } else {
+         this.dirCalamaresModules = '/usr/lib/x86_64-linux-gnu/krill/modules/'
+         if (process.arch === 'ia32') {
+            this.dirCalamaresModules = '/usr/lib/i386-linux-gnu/krill/modules/'
+         }
+         // da rimuovere e spostare in krill
+         shx.exec('mkdir ' + this.dirCalamaresModules + ' -p')
+         this.dirModules = '/etc/krill/modules/'
       }
+      // I template sono gli stessi, semplicemente non vengono usati da krill
       this.rootTemplate = `./../../../../conf/distros/${this.distro.versionLike}/calamares/`
       this.rootTemplate = path.resolve(__dirname, this.rootTemplate) + '/'
    }

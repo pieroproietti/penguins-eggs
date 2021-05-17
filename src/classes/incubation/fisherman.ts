@@ -21,6 +21,9 @@ interface IReplaces {
 }
 
 export default class Fisherman {
+
+    isCalamares: boolean
+    
     distro: IDistro
 
     dirModules = ''
@@ -31,7 +34,8 @@ export default class Fisherman {
 
     verbose = false
 
-    constructor(distro: IDistro, dirModules: string, dirCalamaresModules: string, rootTemplate: string, verbose = false) {
+    constructor(isCalamares: boolean, distro: IDistro, dirModules: string, dirCalamaresModules: string, rootTemplate: string, verbose = false) {
+        this.isCalamares = isCalamares
         this.distro = distro
         this.dirModules = dirModules
         this.dirCalamaresModules = dirCalamaresModules
@@ -43,6 +47,10 @@ export default class Fisherman {
     * write setting
     */
     async settings(branding = 'eggs') {
+        let installer = 'krill'
+        if (this.isCalamares){
+            installer='calamares'
+        }
         const settings = '/etc/calamares/settings.conf'
         shx.cp(`${this.rootTemplate}/settings.yml`, settings)
         let s = '# ' 
