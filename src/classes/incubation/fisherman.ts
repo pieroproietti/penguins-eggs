@@ -11,6 +11,7 @@ import path = require('path')
 
 import { IRemix, IDistro } from '../../interfaces'
 import chalk = require('chalk')
+import Pacman from '../pacman'
 import Utils from '../utils'
 
 const exec = require('../../lib/utils').exec
@@ -22,8 +23,8 @@ interface IReplaces {
 
 export default class Fisherman {
 
-    isCalamares: boolean
-    
+    installer = 'krill'
+
     distro: IDistro
 
     dirModules = ''
@@ -34,8 +35,10 @@ export default class Fisherman {
 
     verbose = false
 
-    constructor(isCalamares: boolean, distro: IDistro, dirModules: string, dirCalamaresModules: string, rootTemplate: string, verbose = false) {
-        this.isCalamares = isCalamares
+    constructor(distro: IDistro, dirModules: string, dirCalamaresModules: string, rootTemplate: string, verbose = false) {
+        if (Pacman.packageIsInstalled('calamares')) {
+            this.installer = 'calamares'
+        }
         this.distro = distro
         this.dirModules = dirModules
         this.dirCalamaresModules = dirCalamaresModules
@@ -47,13 +50,9 @@ export default class Fisherman {
     * write setting
     */
     async settings(branding = 'eggs') {
-        let installer = 'krill'
-        if (this.isCalamares){
-            installer='calamares'
-        }
-        const settings = '/etc/calamares/settings.conf'
+        const settings = '/etc/' + this.installer + '/settings.conf'
         shx.cp(`${this.rootTemplate}/settings.yml`, settings)
-        let s = '# ' 
+        let s = '# '
         if (Utils.isSystemd()) {
             s = '- '
         }
@@ -121,8 +120,8 @@ export default class Fisherman {
                 moduleSource = customModuleSource
             }
 
-        } 
-        
+        }
+
         const moduleDest = `${this.dirModules}${name}.conf`
         if (fs.existsSync(moduleSource)) {
             if (this.verbose) this.show(name, 'module', moduleDest)
@@ -139,18 +138,18 @@ export default class Fisherman {
      * @param isScript 
      */
     async buildCalamaresModule(name: string, isScript = true): Promise<string> {
-        const moduleSource = path.resolve(__dirname, `${this.rootTemplate}/calamares-modules/${name}`)
+        const moduleTemplate = path.resolve(__dirname, `${this.rootTemplate}/calamares-modules/${name}`)
         const moduleDest = this.dirCalamaresModules + name
         const moduleScript = `/usr/sbin/${name}.sh`
-
-        if (this.verbose) this.show(name, 'calamares_module', moduleDest)
+  
+        if (this.verbose) this.show(name, this.installer + '_module', moduleDest)
 
         if (!fs.existsSync(moduleDest)) {
             fs.mkdirSync(moduleDest)
         }
-        shx.cp(`${moduleSource}/module.yml`, `${moduleDest}/module.desc`)
+        shx.cp(`${moduleTemplate}/module.yml`, `${moduleDest}/module.desc`)
         if (isScript) {
-            shx.cp(`${moduleSource}/${name}.sh`, moduleScript)
+            shx.cp(`${moduleTemplate}/${name}.sh`, moduleScript)
             await exec(`chmod +x ${moduleScript}`)
         }
         return moduleScript
