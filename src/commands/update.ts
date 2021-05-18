@@ -194,7 +194,11 @@ export default class Update extends Command {
       console.log()
       const cmd = `scp ${Tu.config.remoteUser}@${Tu.config.remoteHost}:${Tu.config.remotePathDeb}${Tu.config.filterDeb}${arch}.deb /tmp`
       await exec(cmd, { echo: true, capture: true })
-      console.log('sudo dpkg -i /tmp/eggs_*.deb')
+
+
+      if (await Utils.customConfirm(`Want to install ${Tu.config.filterDeb}${arch}.deb`)) {
+         await exec(`dpkg -i /tmp/${Tu.config.filterDeb}${arch}.deb`)
+     }
    }
 
    /**
