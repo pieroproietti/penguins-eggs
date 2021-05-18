@@ -58,7 +58,7 @@ export class Buster {
       this.release = release
 
       this.dirModules='/etc/' + this.installer + '/modules/'
-      if (process.arch === 'ia32') {
+      if (process.arch === 'x32') {
          this.dirCalamaresModules = '/usr/lib/i386-linux-gnu/' + this.installer + '/modules/'
       } else {
          this.dirCalamaresModules = '/usr/lib/x86_64-linux-gnu/' + this.installer + '/modules/'

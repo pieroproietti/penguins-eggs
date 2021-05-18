@@ -152,7 +152,11 @@ export default class Ovary {
                const bleach = new Bleach
                await bleach.clean(verbose)
             }
-            // Calamares prende il tema da settings.remix.branding
+            /**
+             * Anche non accettando l'installazione di calamares
+             * viene creata la configurazione dell'installer: krill/calamares
+             * L'installer prende il tema da settings.remix.branding
+             */ 
             this.incubator = new Incubator(this.settings.remix, this.settings.distro, this.settings.config.user_opt, verbose)
             await this.incubator.config(release)
          }

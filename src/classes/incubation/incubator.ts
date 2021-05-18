@@ -102,6 +102,13 @@ export default class Incubator {
       let installer = 'krill'
       if (this.isCalamares) {
          installer = 'calamares'
+         // Remove krill configuration if present
+         shx.exec('rm /etc/krill -rf')
+         if (process.arch==='ia32') {
+            shx.exec('rm /usr/lib/i386-linux-gnu/krill -rf')
+         } else {
+            shx.exec('rm /usr/lib/x86_64-linux-gnu/krill -rf')
+         }
       }
 
       if (!fs.existsSync('/etc/' + installer)) {
