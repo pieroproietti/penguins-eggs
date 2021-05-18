@@ -10,6 +10,7 @@ import shx = require('shelljs')
 import Utils from '../utils'
 import { IRemix, IDistro } from '../../interfaces'
 
+import { Jessie } from './distros/jessie'
 import { Buster } from './distros/buster'
 import { Bullseye } from './distros/bullseye'
 import { Beowulf } from './distros/beowulf'
@@ -65,7 +66,10 @@ export default class Incubator {
       const echo = Utils.setEcho(verbose)
 
       this.createInstallerDirs()
-      if (this.distro.versionLike === 'buster') {
+      if (this.distro.versionLike === 'jessie') {
+         const jessie = new Jessie(this.remix, this.distro, release, this.user_opt, this.verbose)
+         await jessie.create()
+      } else if (this.distro.versionLike === 'buster') {
          const buster = new Buster(this.remix, this.distro, release, this.user_opt, this.verbose)
          await buster.create()
       } else if (this.distro.versionLike === 'bullseye') {
