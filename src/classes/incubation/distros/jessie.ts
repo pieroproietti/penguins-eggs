@@ -14,6 +14,7 @@ import path = require('path')
 
 import { IRemix, IDistro } from '../../../interfaces'
 
+import Pacman from '../../pacman'
 import Fisherman from '../fisherman'
 
 const exec = require('../../../lib/utils').exec
@@ -23,6 +24,8 @@ const exec = require('../../../lib/utils').exec
  */
 export class Buster {
    verbose = false
+
+   installer = 'krill'
 
    remix: IRemix
 
@@ -45,15 +48,25 @@ export class Buster {
     * @param verbose
     */
    constructor(remix: IRemix, distro: IDistro, release: boolean, user_opt: string, verbose = false) {
+      if (Pacman.packageIsInstalled('calamares')) {
+         this.installer = 'calamares'
+      }
       this.remix = remix
       this.distro = distro
       this.user_opt = user_opt
       this.verbose = verbose
       this.release = release 
+
+      this.dirModules='/etc/' + this.installer + '/modules/'
       if (process.arch === 'ia32') {
-         this.dirCalamaresModules = '/usr/lib/i386-linux-gnu/krill/modules/'
+         this.dirCalamaresModules = '/usr/lib/i386-linux-gnu/' + this.installer + '/modules/'
+      } else {
+         this.dirCalamaresModules = '/usr/lib/x86_64-linux-gnu/' + this.installer + '/modules/'
       }
-      this.rootTemplate = `./../../../../conf/distros/${this.distro.versionLike}/krill/`
+      shx.exec('mkdir ' + this.dirCalamaresModules + ' -p')
+
+      // I template sono gli stessi, semplicemente non vengono usati da krill
+      this.rootTemplate = `./../../../../conf/distros/${this.distro.versionLike}/calamares/`
       this.rootTemplate = path.resolve(__dirname, this.rootTemplate) + '/'
    }
 
