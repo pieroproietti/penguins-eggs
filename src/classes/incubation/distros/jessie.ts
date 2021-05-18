@@ -22,7 +22,7 @@ const exec = require('../../../lib/utils').exec
 /**
  *
  */
-export class Buster {
+export class Jessie {
    verbose = false
 
    installer = 'krill'
