@@ -15,6 +15,7 @@ import { Bullseye } from './distros/bullseye'
 import { Beowulf } from './distros/beowulf'
 import { Focal } from './distros/focal'
 import { Bionic } from './distros/bionic'
+import Pacman from '../pacman'
 
 const exec = require('../../lib/utils').exec
 
@@ -42,8 +43,11 @@ export default class Incubator {
     * @param distro
     * @param verbose
     */
-   constructor(isCalamares = true, remix: IRemix, distro: IDistro, user_opt = 'live', verbose = false) {
-      this.isCalamares = isCalamares
+   constructor(remix: IRemix, distro: IDistro, user_opt = 'live', verbose = false) {
+      if (Pacman.packageIsInstalled('calamares')) {
+         this.isCalamares = true
+      }
+
       this.remix = remix
       this.distro = distro
       this.user_opt = user_opt
@@ -60,10 +64,9 @@ export default class Incubator {
       const verbose = true
       const echo = Utils.setEcho(verbose)
 
-      await this.createInstallerDirs()
-
+      this.createInstallerDirs()
       if (this.distro.versionLike === 'buster') {
-         const buster = new Buster(this.isCalamares, this.remix, this.distro, release, this.user_opt, this.verbose)
+         const buster = new Buster(this.remix, this.distro, release, this.user_opt, this.verbose)
          await buster.create()
       } else if (this.distro.versionLike === 'bullseye') {
          const bullseye = new Bullseye(this.remix, this.distro, release, this.user_opt, this.verbose)

@@ -86,17 +86,10 @@ export default class Calamares extends Command {
                    * Configure calamares
                    */
                   if (await this.settings.load()) {
-                     if (Pacman.packageIsInstalled('calamares')) {
-                        Utils.warning('Configuring calamares...')
-                        await this.settings.loadRemix(this.settings.config.snapshot_basename, theme)
-                        this.incubator = new Incubator(true, this.settings.remix, this.settings.distro, this.settings.config.user_opt, verbose)
-                        await this.incubator.config(final)
-                     } else {
-                        Utils.warning('Configuring krill...')
-                        await this.settings.loadRemix(this.settings.config.snapshot_basename, theme)
-                        this.incubator = new Incubator(false, this.settings.remix, this.settings.distro, this.settings.config.user_opt, verbose)
-                        await this.incubator.config(final)
-                     }
+                     Utils.warning('Configuring installer')
+                     await this.settings.loadRemix(this.settings.config.snapshot_basename, theme)
+                     this.incubator = new Incubator(this.settings.remix, this.settings.distro, this.settings.config.user_opt, verbose)
+                     await this.incubator.config(final)
                   }
                }
             } else {
