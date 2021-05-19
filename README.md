@@ -473,6 +473,8 @@ OPTIONS
   -v, --verbose
 ```
 
+_See code: [src/commands/think.ts](https://github.com/pieroproietti/penguins-eggs/blob/v7.8.49/src/commands/think.ts)_
+
 ## `eggs tools:clean`
 
 clean system log, apt, etc
