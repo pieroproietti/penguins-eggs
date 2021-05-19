@@ -69,6 +69,9 @@ export default class Incubator {
       if (this.distro.versionLike === 'jessie') {
          const jessie = new Jessie(this.remix, this.distro, release, this.user_opt, this.verbose)
          await jessie.create()
+      } else if (this.distro.versionLike === 'stretch') {
+         const stretch = new Jessie(this.remix, this.distro, release, this.user_opt, this.verbose)
+         await stretch.create()
       } else if (this.distro.versionLike === 'buster') {
          const buster = new Buster(this.remix, this.distro, release, this.user_opt, this.verbose)
          await buster.create()
