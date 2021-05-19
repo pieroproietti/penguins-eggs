@@ -15,7 +15,7 @@ import Pacman from '../classes/pacman'
  */
 export default class Install extends Command {
    static flags = {
-      cli: flags.boolean({ char: 'c', description: 'force use eggs CLI installer' }),
+      cli: flags.boolean({ char: 'c', description: 'force use CLI installer' }),
       help: flags.help({ char: 'h' }),
       verbose: flags.boolean({ char: 'v', description: 'verbose' })
    }
@@ -42,7 +42,7 @@ export default class Install extends Command {
          if (Utils.isLive()) {
             if (Pacman.packageIsInstalled('calamares') && !flags.cli) {
                shx.exec('calamares')
-            } else if (Pacman.packageIsInstalled('krill') {
+            } else if (Pacman.packageIsInstalled('krill')) {
                shx.exec('krill install')
             } else {
                const hatching = new Hatching()
