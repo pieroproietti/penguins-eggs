@@ -24,31 +24,9 @@ export default class ExportDeb extends Command {
     Utils.warning(ExportDeb.description)
     await Tu.loadSettings()
 
-    if (Utils.isRoot()) {
-      Utils.warning('You must use eggs export:deb in user mode, without sudo')
-    } else {
-      // rimozione
-      if (flags.clean) {
-        console.log('cleaning remote host...')
-        let arch = 'amd64.deb'
-        if (process.arch === 'ia32') {
-          arch = 'i386.deb'
-        }
-        if (flags.armel) {
-          arch = 'armel.deb'
-        } else if (flags.amd64) {
-          arch = 'amd64.deb'
-        } else if (flags.i386) {
-          arch = 'i386.deb'
-        } else if (flags.all) {
-          arch = '*.deb'
-        }
-        const cmd = `ssh ${Tu.config.remoteUser}@${Tu.config.remoteHost} rm -rf ${Tu.config.remotePathDeb}${Tu.config.filterDeb}${arch}`
-        await exec(cmd, { echo: true, capture: true })
-      }
-
-      // esportazione
-      console.log('copy to remote host...')
+    // rimozione
+    if (flags.clean) {
+      console.log('cleaning remote host...')
       let arch = 'amd64.deb'
       if (process.arch === 'ia32') {
         arch = 'i386.deb'
@@ -62,8 +40,27 @@ export default class ExportDeb extends Command {
       } else if (flags.all) {
         arch = '*.deb'
       }
-      const cmd = `scp ${Tu.config.localPathDeb}${Tu.config.filterDeb}${arch} root@${Tu.config.remoteHost}:${Tu.config.remotePathDeb}`
+      const cmd = `ssh ${Tu.config.remoteUser}@${Tu.config.remoteHost} rm -rf ${Tu.config.remotePathDeb}${Tu.config.filterDeb}${arch}`
       await exec(cmd, { echo: true, capture: true })
     }
+
+    // esportazione
+    console.log('copy to remote host...')
+    let arch = 'amd64.deb'
+    if (process.arch === 'ia32') {
+      arch = 'i386.deb'
+    }
+    if (flags.armel) {
+      arch = 'armel.deb'
+    } else if (flags.amd64) {
+      arch = 'amd64.deb'
+    } else if (flags.i386) {
+      arch = 'i386.deb'
+    } else if (flags.all) {
+      arch = '*.deb'
+    }
+    const cmd = `scp ${Tu.config.localPathDeb}${Tu.config.filterDeb}${arch} root@${Tu.config.remoteHost}:${Tu.config.remotePathDeb}`
+    await exec(cmd, { echo: true, capture: true })
+
   }
 }
