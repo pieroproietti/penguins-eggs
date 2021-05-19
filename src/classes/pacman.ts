@@ -481,14 +481,15 @@ export default class Pacman {
          await this.ln(`${buster}/grub`, `${jessie}/grub`, remove, verbose)
          await this.ln(`${buster}/isolinux`, `${jessie}/isolinux`, remove, verbose)
          await this.ln(`${buster}/locales`, `${jessie}/locales`, remove, verbose)
-         await this.ln(`${buster}/calamares`, `${jessie}/calamares`, remove, verbose)
+         //await this.ln(`${buster}/calamares`, `${jessie}/calamares`, remove, verbose)
          
          // Debian 9 - stretch
          const stretch = `${rootPen}/conf/distros/stretch`
          await this.ln(`${buster}/grub`, `${stretch}/grub`, remove, verbose)
          await this.ln(`${buster}/isolinux`, `${stretch}/isolinux`, remove, verbose)
          await this.ln(`${buster}/locales`, `${stretch}/locales`, remove, verbose)
-         await this.ln(`${buster}/calamares`, `${stretch}/calamares`, remove, verbose)
+         await this.ln(`${jessie}/krill`, `${stretch}/krill`, remove, verbose)
+         //await this.ln(`${buster}/calamares`, `${stretch}/calamares`, remove, verbose)
 
          // Devuan beowulf
          const beowulf = `${rootPen}/conf/distros/beowulf`
