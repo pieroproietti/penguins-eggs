@@ -13,7 +13,7 @@ export default class ExportDeb extends Command {
     armel: flags.boolean({ description: 'export armel arch' }),
     amd64: flags.boolean({ description: 'export amd64 arch' }),
     i386: flags.boolean({ description: 'export i386 arch' }),
-    all: flags.boolean({ description: 'export all archs' }),
+    all: flags.boolean({ char: 'a', description: 'export all archs' }),
   }
 
   async run() {

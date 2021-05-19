@@ -244,9 +244,9 @@ USAGE
   $ eggs export:deb
 
 OPTIONS
+  -a, --all    export all archs
   -c, --clean  remove old .deb before to copy
   -h, --help   show CLI help
-  --all        export all archs
   --amd64      export amd64 arch
   --armel      export armel arch
   --i386       export i386 arch
