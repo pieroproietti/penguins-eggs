@@ -77,7 +77,7 @@ export default class Ovary {
       if (compression !== '') {
          this.compression = compression
       }
-    
+
    }
 
    /**
@@ -153,11 +153,12 @@ export default class Ovary {
                const bleach = new Bleach
                await bleach.clean(verbose)
             }
+         } else {
             /**
              * Anche non accettando l'installazione di calamares
              * viene creata la configurazione dell'installer: krill/calamares
              * L'installer prende il tema da settings.remix.branding
-             */ 
+             */
             this.incubator = new Incubator(this.settings.remix, this.settings.distro, this.settings.config.user_opt, verbose)
             await this.incubator.config(release)
          }
@@ -238,7 +239,7 @@ export default class Ovary {
       let text = 'UMASK=0077\n'
       let file = '/etc/initramfs-tools/conf.d/eggs-safe-initramfs.conf'
       Utils.write(file, text)
-      
+
 
 
       // sudo systemctl disable wpa_supplicant
@@ -965,7 +966,7 @@ export default class Ovary {
          if (Pacman.packageIsInstalled('lxde-core') || Pacman.packageIsInstalled('deepin-desktop-base') || Pacman.packageIsInstalled('mate-desktop') || Pacman.packageIsInstalled('ubuntu-mate-core') || Pacman.packageIsInstalled('xfce4')) {
             const dirAddon = path.resolve(__dirname, `../../addons/eggs/adapt/`)
             shx.cp(`${dirAddon}/applications/eggs-adapt.desktop`, `${this.settings.work_dir.merged}/usr/share/applications/`)
-            shx.cp(`${dirAddon}/bin/eggs-adapt.sh`, `${this.settings.work_dir.merged}/usr/local/bin/`)
+            // shx.cp(`${dirAddon}/bin/eggs-adapt.sh`, `${this.settings.work_dir.merged}/usr/local/bin/`)
          }
       }
 
