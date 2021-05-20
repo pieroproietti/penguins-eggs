@@ -23,6 +23,9 @@ I'm actually working in krill, a smart and ligth CLI Linux installer. it will be
 ## Changelog
 Versions are listed on reverse order, the first is the last one.
 
+### eggs-7.8.50
+* more steps to krill, eggs now produce configuration for krill or calamares in all the distro/version
+
 ### eggs-7.8.49
 * a step more to krill: configuration for jessie and stretch. More modern versions use same configuration of calamares.
 
