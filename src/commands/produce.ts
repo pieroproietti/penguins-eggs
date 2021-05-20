@@ -110,6 +110,11 @@ export default class Produce extends Command {
             fastest = 'lz4'
          }
 
+         // jessie e stretch usano solo normal
+         const settings = new Settings()
+         if (settings.distro.versionLike==='jessie' ||settings.distro.versionLike==='stretch'){
+            fastest = 'gzip'
+         }
 
 
          let compression = '' // se vuota, compression viene definita da loadsettings, default xz
@@ -121,11 +126,6 @@ export default class Produce extends Command {
             compression = 'xz -Xbcj x86'
          }
 
-         // jessie e stretch usano solo normal
-         const settings = new Settings()
-         if (settings.distro.versionLike==='jessie' ||settings.distro.versionLike==='stretch'){
-            compression = 'xz'
-         }
 
          const verbose = flags.verbose
 
