@@ -25,6 +25,8 @@ export default class Fisherman {
 
     installer = 'krill'
 
+    installerModules = 'krill-modules'
+
     distro: IDistro
 
     dirModules = ''
@@ -38,6 +40,13 @@ export default class Fisherman {
     constructor(distro: IDistro, dirModules: string, dirCalamaresModules: string, rootTemplate: string, verbose = false) {
         if (Pacman.packageIsInstalled('calamares')) {
             this.installer = 'calamares'
+        }
+
+        /**
+         * solo jessie e stretch non hanno calamares 
+         */
+        if (! (distro.versionLike === 'jessie' || distro.versionLike === 'stretch')) {
+            this.installerModules = 'calamares-modules'
         }
         this.distro = distro
         this.dirModules = dirModules
@@ -138,10 +147,10 @@ export default class Fisherman {
      * @param isScript 
      */
     async buildCalamaresModule(name: string, isScript = true): Promise<string> {
-        const moduleTemplate = path.resolve(__dirname, `${this.rootTemplate}/calamares-modules/${name}`)
+        const moduleTemplate = path.resolve(__dirname, this.rootTemplate + '/' + this.installerModules + '/' + name)
         const moduleDest = this.dirCalamaresModules + name
         const moduleScript = `/usr/sbin/${name}.sh`
-  
+
         if (this.verbose) this.show(name, this.installer + '_module', moduleDest)
 
         if (!fs.existsSync(moduleDest)) {
@@ -161,7 +170,7 @@ export default class Fisherman {
      * @param name 
      */
     async buildCalamaresPy(name: string) {
-        const moduleSource = path.resolve(__dirname, `${this.rootTemplate}/calamares-modules/${name}/`)
+        const moduleSource = path.resolve(__dirname, this.rootTemplate + '/' + this.installerModules + '/' + name)
         const moduleDest = this.dirCalamaresModules + '/' + name
 
         if (this.verbose) this.show(name, 'python', moduleDest)
@@ -249,7 +258,7 @@ export default class Fisherman {
     async moduleRemoveuser(username: string) {
         const name = 'removeuser'
         this.buildModule(name)
-        shx.sed('-i', '{{username}}', username, `${this.dirModules}/${name}.conf`)
+        shx.sed('-i', '{{username}}', username, `${this.dirModules}${name}.conf`)
     }
 
 }

@@ -65,8 +65,8 @@ export class Jessie {
       }
       shx.exec('mkdir ' + this.dirCalamaresModules + ' -p')
 
-      // I template sono gli stessi, semplicemente non vengono usati da krill
-      this.rootTemplate = `./../../../../conf/distros/${this.distro.versionLike}/calamares/`
+      // I template sono gli stessi per buster, bullseye, etc. Ma NON per jessie e stretch
+      this.rootTemplate = './../../../../conf/distros/' +this.distro.versionLike + '/' + this.installer +'/'
       this.rootTemplate = path.resolve(__dirname, this.rootTemplate) + '/'
    }
 
@@ -82,7 +82,7 @@ export class Jessie {
       await fisherman.buildModule('partition', this.remix.branding)
       // await fisherman.buildModule('mount')
       // await fisherman.moduleUnpackfs()
-      // await fisherman.buildCalamaresModule('sources-yolk', true)
+      await fisherman.buildCalamaresModule('sources-yolk', true)
       // await fisherman.buildModule('machineid')
       // await fisherman.buildModule('fstab')
       // await fisherman.buildModule('locale')
