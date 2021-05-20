@@ -42,8 +42,6 @@ export default class Install extends Command {
          if (Utils.isLive()) {
             if (Pacman.packageIsInstalled('calamares') && !flags.cli) {
                shx.exec('calamares')
-            } else if (Pacman.packageIsInstalled('krill')) {
-               shx.exec('krill install')
             } else {
                const hatching = new Hatching()
                const confirm = await hatching.confirm(verbose)
