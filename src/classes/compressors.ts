@@ -1,6 +1,7 @@
 
-import { string } from '@oclif/command/lib/flags'
-import { restoreDefaultPrompts } from 'inquirer'
+/**
+ * test i compressori disponibili
+ */
 import shx = require('shelljs')
 
 export default class Compressors {
@@ -47,8 +48,5 @@ export default class Compressors {
         }
         return result
     }
-
-
-
 }
 
