@@ -77,6 +77,7 @@ export default class Ovary {
       if (compression !== '') {
          this.compression = compression
       }
+    
    }
 
    /**

@@ -16,6 +16,7 @@ import chalk = require('chalk')
 import { IMyAddons } from '../interfaces'
 import fs = require('fs')
 import path = require('path')
+import Settings from '../classes/settings'
 
 export default class Produce extends Command {
    static flags = {
@@ -109,6 +110,8 @@ export default class Produce extends Command {
             fastest = 'lz4'
          }
 
+
+
          let compression = '' // se vuota, compression viene definita da loadsettings, default xz
          if (flags.fast) {
             compression = fastest
@@ -116,6 +119,12 @@ export default class Produce extends Command {
             compression = 'xz'
          } else if (flags.max) {
             compression = 'xz -Xbcj x86'
+         }
+
+         // jessie e stretch usano solo normal
+         const settings = new Settings()
+         if (settings.distro.versionLike==='jessie' ||settings.distro.versionLike==='stretch'){
+            compression = 'xz'
          }
 
          const verbose = flags.verbose
