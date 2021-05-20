@@ -12,6 +12,7 @@ import Pacman from '../classes/pacman'
 import { IRemix } from '../interfaces'
 
 import fs from 'fs'
+import { exec } from '../lib/utils'
 
 export default class Calamares extends Command {
    static description = 'calamares or install or configure it'
@@ -66,7 +67,12 @@ export default class Calamares extends Command {
       console.log(`theme: ${theme}`)
 
       if (Utils.isRoot(this.id)) {
+         let installer = 'krill'
          if (await Pacman.isGui()) {
+            let installer = 'calamares'
+         }
+
+         if (installer === 'calamares') {
             if (!remove) {
                if (await Utils.customConfirm(`Select yes to continue...`)) {
                   /**
@@ -105,8 +111,36 @@ export default class Calamares extends Command {
                }
             }
          } else {
-            console.log(`You cannot use calamares installer without X system!`)
+            // Installer krill
+            if (!remove) {
+               if (await Utils.customConfirm(`Select yes to continue...`)) {
+                  /**
+                   * Install krill
+                   */
+                  if (install) {
+                     if (!Pacman.packageIsInstalled('krill')){
+                        console.log('Download krill from https://sourceforge.com/project/penguins-eggs/files')
+                     }
+                  }
+
+                  /**
+                   * Configure krill
+                   */
+                  if (await this.settings.load()) {
+                     Utils.warning('Configuring krill')
+                     await this.settings.loadRemix(this.settings.config.snapshot_basename, theme)
+                     this.incubator = new Incubator(this.settings.remix, this.settings.distro, this.settings.config.user_opt, verbose)
+                     await this.incubator.config(final)
+                  }
+               }
+            } else {
+               /**
+                * Remove krill
+                */
+               await exec('apt purge krill')
+            }
          }
       }
    }
 }
+
