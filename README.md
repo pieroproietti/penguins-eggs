@@ -602,14 +602,11 @@ No need other configurations, penguins-eggs are battery included or better, as i
 ## More informations
 There is [user's manual](https://penguins-eggs.net/book/) and same other documentation in [documents folder](./documents) of this repository.
 
-Contact me via [gitter](https://gitter.im/penguins-eggs-1/community), or open an [issue](https://github.com/pieroproietti/penguins-eggs/issues) on github.
+* [penguin's eggs blog](https://penguins-eggs.net)    
+* [facebook penguin's eggs group](https://www.facebook.com/groups/128861437762355/)
+* [sources](https://github.com/pieroproietti/penguins-krill)
 
-* penguin's eggs site: [penguin's eggs](https://penguins-eggs.net)
-* facebook personal: [Piero Proietti](https://www.facebook.com/thewind61)
-* facebook group:  [Penguin's Eggs](https://www.facebook.com/groups/128861437762355/)
-* facebook page:  [Penguin's Eggs](https://www.facebook.com/penguinseggs)
-* mail: piero.proietti@gmail.com
-
+You can contact me at pieroproietti@gmail.com or [meet me](https://meet.jit.si/PenguinsEggsMeeting)
 
 ## Copyright and licenses
 Copyright (c) 2017, 2020 [Piero Proietti](https://penguins-eggs.net/about-me.html), dual licensed under the MIT or GPL Version 2 licenses.
