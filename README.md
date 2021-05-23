@@ -29,7 +29,7 @@ The scope of this project is to implement the process of remastering your versio
 
 All it is written in pure typescript, so ideally can be used with differents Linux distros. Yes, there are big differences about package manager used, but not so much in the way to work of bash and in the various programs used to build the iso.
 
-penguins-eggs, at the moment 2021 febrary is a mature tool and is extremely usefull, You can easily create your personal customized iso or your organization/school version of Linux and deploy it on your LAN, give it to your friends as usb key or publish yours eggs in the internet!
+penguins-eggs, at the moment 2021 may is a mature tool and is extremely usefull, You can easily create your personal customized iso or your organization/school version of Linux and deploy it on your LAN, give it to your friends as usb key or publish yours eggs in the internet!
 
 Try penguins-eggs yes, it is a console utility - no GUI - but don't be scared, penguins-eggs is a console command - really very simple - if you are able to open a terminal, you can use it and yours final users will enjoy of full gui and pratical installer to install your livecd.
 
@@ -39,11 +39,14 @@ Starting with version 7.6.x an addons architecture was been added to eggs, that 
 ## yolk 
 yolk so called - staying on the subject of eggs - is a local repository included in the livecd that contains a minimum of indispensable packages during installation. Thanks to yolk, you can safely install your system without the need o an active internet connection.
 
+## krill
+I'm writing a new CLI installer aside the original one included in eggs: [krill](https://github.com/pieroproietti/penguins-krill). Krill let you to install your system in a nice CLI interface using the same, or similar - for jessie and stretch - configuration of [calamares](calamares.io). 
+
 ## Two great helpers!
-I recently added two lightweight helpers integrated with eggs: mom and dad. While mom is a bash script with whiptail - and guides the user to the various commands and documentation. Dad is a short way to creating the iso: all you have to do is type in **sudo eggs dad** and follow simple instructions.
+I added two lightweight helpers integrated with eggs: mom and dad. While mom is a bash script with whiptail - and guides the user to the various commands and documentation. Dad is a short way to creating the iso: all you have to do is type in **sudo eggs dad** and follow simple instructions.
 
 ## What distributions can I use?
-Eggs is born on Debian strecth/buster, full support Debian bullseys, Devuan beowulf, Ubuntu focal, bionic and derivatives. I usually try it against Debian buster, Devuan beowulf, Linux Mint 19.3 tricia (bionic derivated) and Linux Mint 20 ulyana (focal derivated) before releases. I tried it successfully in LMDE 4 debbie, and deepin. Eggs, generally must work with all the derivates from that distros.
+Eggs is born on Debian strecth/buster, full support Debian from jessie to bullseye, Devuan beowulf, Ubuntu focal, bionic and derivatives. I usually try it against Debian buster, Devuan beowulf, Linux Mint 19.3 tricia (bionic derivated) and Linux Mint 20 ulyana (focal derivated) before releases. I tried it successfully in LMDE 4 debbie, and deepin. Eggs, generally must work with all the derivates from that distros.
 
 Some iso images remastered with eggs are in the [sourceforge page of the project](https://sourceforge.net/projects/penguins-eggs/files/iso/). 
 
@@ -57,19 +60,19 @@ eggs is released deb packages for i386 and amd64 architectures. Due the characte
 This simplest way to install eggs is download the [package eggs](https://sourceforge.net/projects/penguins-eggs/files/packages-deb/) from [sourceforge page of the project](https://sourceforge.net/projects/penguins-eggs/) and install it
 
 ```
-sudo dpkg -i eggs_7.7.33-1_amd64.deb
+sudo dpkg -i eggs_7.8.50-1_amd64.deb
 ```
 
 or, on a i386 system:
 ```
-sudo dpkg -i eggs_7.7.33-1_i386.deb
+sudo dpkg -i eggs_7.8.50-1_i386.deb
 ```
 ### update
-The fastest way to use sudo eggs update and choose basket. Eggs let you to select the last 4 versions in the basket and install it.
+The fastest way to use sudo eggs update and choose basket. Eggs let you to select the last 4 versions on the [basket](https://sourceforge.net/projects/penguins-eggs/files/packages-deb/) and install it.
 
 ```sudo eggs update```
 
-Of course, if your distro include eggs in the repository, you can use apt too.
+Of course, if your distro include eggs in the repository, you can use apt.
 
 
 _Note about deb packages_ You can use the same package for all distributions using deb, naturally choosing the appropriate architecture (i386/amd64).
@@ -609,4 +612,4 @@ There is [user's manual](https://penguins-eggs.net/book/) and same other documen
 You can contact me at pieroproietti@gmail.com or [meet me](https://meet.jit.si/PenguinsEggsMeeting)
 
 ## Copyright and licenses
-Copyright (c) 2017, 2020 [Piero Proietti](https://penguins-eggs.net/about-me.html), dual licensed under the MIT or GPL Version 2 licenses.
+Copyright (c) 2017, 2021 [Piero Proietti](https://penguins-eggs.net/about-me.html), dual licensed under the MIT or GPL Version 2 licenses.
