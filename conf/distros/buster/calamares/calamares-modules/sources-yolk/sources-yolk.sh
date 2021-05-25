@@ -1,12 +1,11 @@
 #!/bin/bash
 
+# sources-yolk
 #
-# Questa versione utilizza SOLO yolk 
-# durante l'installazione.
-# sources-yolk.sh
-#    aggiunge yolk, rimuove list ed esegue apt non autenticato
-# sources-yolk.sh
-# -u rimuove yolk e ri-aggiunge le list
+# utilizza solo la repository yolk durante l'installazione.
+# 
+# sources-yolk -u
+# rimuove yolk e reimposta le apt-list
 
 function main {
     #####################################################################
@@ -22,27 +21,27 @@ function main {
 
 #####################################################################
 function remove_list {
-    if [ -f "$LIST_BACKUP" ]; then
-        rm "$LIST_BACKUP"
+    if [ -f "${SOURCES_LIST_BACKUP}" ]; then
+        rm "${SOURCES_LIST_BACKUP}"
     fi
-    mv "$LIST $LIST_BACKUP"
+    mv ${SOURCES_LIST} ${SOURCES_LIST_BACKUP}
 
-    if [ -d "$LIST_D_BACKUP" ]; then
-        rm "$LIST_D_BACKUP" -rf
+    if [ -d "${SOURCES_LIST_D_BACKUP}" ]; then
+        rm "${SOURCES_LIST_D_BACKUP}" -rf
     fi
-    mv "$LIST_D $APT_LIST_D_BACKUP"
+    mv ${SOURCES_LIST_D} ${SOURCES_LIST_D_BACKUP}
 }
 
 function add_list {
-    if [ -f "$LIST" ]; then
-        rm "$LIST" 
+    if [ -f "${SOURCES_LIST}" ]; then
+        rm "${SOURCES_LIST}" 
     fi
-    mv "$APT_LIST_BACKUP $LIST"
+    mv ${SOURCES_LIST_BACKUP} ${SOURCES_LIST}
 
-    if [ -d "$LIST_D" ]; then
-        rm "$LIST_D" -rf
+    if [ -d "${SOURCES_LIST_D}" ]; then
+        rm "${SOURCES_LIST_D}" -rf
     fi        
-    mv "$LIST_D_BACKUP $LIST_D"
+    mv ${SOURCES_LIST_D_BACKUP} ${SOURCES_LIST_D}
 }
 
 
@@ -51,13 +50,13 @@ function add_yolk {
     cat << EOF > $CHROOT/etc/apt/sources.list.d/yolk.list
     deb [trusted=yes] file:/usr/local/yolk ./
 EOF
-    chroot $CHROOT apt-get --allow-unauthenticated update -y
+    chroot ${CHROOT} apt-get --allow-unauthenticated update -y
 }
 
 function remove_yolk {
     add_list
-    rm $CHROOT/etc/apt/sources.list.d/yolk.list
-    chroot $CHROOT apt-get update -y
+    rm ${CHROOT}/etc/apt/sources.list.d/yolk.list
+    chroot ${CHROOT} apt-get update -y
 }
 
 
@@ -65,11 +64,11 @@ function remove_yolk {
 # Lo script inizia qui
 CHROOT=$(mount | grep proc | grep calamares | awk '{print $3}' | sed -e "s#/proc##g")
 
-LIST = "$CHROOT/etc/apt/sources.list"
-LIST_BACKUP = "$LIST.backup"
+SOURCE_LIST="${CHROOT}/etc/apt/sources.list"
+SOURCE_LIST_BACKUP="${SOURCE_LIST}.backup"
 
-LIST_D = "$CHROOT/etc/apt/sources.list.d"
-LIST_D_BACKUP = "$LIST_D.backup"
+SOURCES_LIST_D="${CHROOT}/etc/apt/sources.list.d"
+SOURCES_LIST_D_BACKUP="${SOURCES_LIST_D}.backup"
 
 main $1
 exit 0
