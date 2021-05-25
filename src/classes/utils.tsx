@@ -6,6 +6,10 @@
  * license: MIT
  */
 
+ import React from 'react';
+ import { render, Box, Text } from 'ink'
+ import Title from '../components/elements/title'
+
 import shx = require('shelljs')
 import fs = require('fs')
 import dns = require('dns')
@@ -14,13 +18,7 @@ import os = require('os')
 import pjson = require('pjson')
 import inquirer = require('inquirer')
 import chalk = require('chalk')
-import Pacman from './pacman'
-import React from 'react'
-import { render, Text, Box } from 'ink'
-import Gradient from 'ink-gradient'
-import BigText from 'ink-big-text'
-
-
+//import Pacman from './pacman'
 
 import clear = require('clear')
 import figlet = require('figlet')
@@ -93,11 +91,12 @@ export default class Utils {
     * @param msg
     */
    static warning(msg = '') {
-      console.log('eggs >>> ' + chalk.cyanBright(msg) + '.')
+      console.log(pjson.shortName + ' >>> ' + chalk.cyanBright(msg) + '.')
    }
 
    static error(msg = '') {
-      console.log('eggs >>> ' + chalk.bgGrey(msg) + '.')
+      
+      console.log(pjson.shortName + ' >>> ' + chalk.bgGrey(msg) + '.')
    }
 
    /**
@@ -158,7 +157,7 @@ export default class Utils {
     * @returns penguins-eggs
     */
    static getPackageName(): string {
-      return pjson.name
+      return pjson.shortName
    }
 
    /**
@@ -296,10 +295,11 @@ export default class Utils {
    static isUefi(): boolean {
       let isUefi = false
       if (process.arch === 'x64') {
-         // grub-efi-amd64-bin grub-efi-ia32-bin
+         /*
          if (Pacman.packageIsInstalled('grub-efi-amd64-bin')) {
             isUefi = true
          }
+         */
       }
       return isUefi
    }
@@ -346,7 +346,7 @@ export default class Utils {
     * @returns eggs
     */
    static getFriendName(): string {
-      return 'eggs'
+      return pjson.shortName
    }
 
    /**
@@ -414,8 +414,9 @@ export default class Utils {
    static isRoot(command = ''): boolean {
       if (process.getuid && process.getuid() === 0) {
          return true
+      } else {
+         Utils.titles(pjson.shortName + ' ' + command + ` need to run with root privileges. Please, prefix it with sudo`)
       }
-      Utils.warning(chalk.white(`${Utils.getFriendName()} ${command}`) + ` need to run with root privileges. Please, prefix it with sudo`)
       return false
    }
 
@@ -639,7 +640,7 @@ export default class Utils {
     *
     * @param msg
     */
-    static async customConfirmAbort(msg = 'Select yes to continue, No to repeat, Abort to exit... '): Promise<any> {
+    static async customConfirmAbort(msg = 'Confirm'): Promise<any> {
       return new Promise(function (resolve) {
          const questions: Array<Record<string, any>> = [
             {
@@ -663,11 +664,11 @@ export default class Utils {
     */
     static async titles(command = ''): Promise<void> {
       console.clear()
-      console.log(figlet.textSync('eggs'))
-      console.log(chalk.bgGreen.whiteBright('      ' + pjson.name + '      ') + 
-      chalk.bgWhite.blue(" Perri's Brewery edition ") + 
-      chalk.bgRed.whiteBright('       ver. ' + pjson.version + '       '))
-      console.log('command: ' + chalk.bgBlack.white(command) + '\n')
+      render (<>
+            <Title />
+            <Box><Text> </Text></Box>
+            <Text>{command}</Text>
+            </>)
    }
 
    /**
