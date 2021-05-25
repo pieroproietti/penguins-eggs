@@ -5,62 +5,58 @@
 # utilizza solo la repository yolk durante l'installazione.
 # 
 # sources-yolk -u
-# rimuove yolk e reimposta le apt-list
+# rimuove yolk e reimposta le apt-list originali
 
 function main {
     #####################################################################
     # unmount: remove yolk.list
     #####################################################################
     if [ "$1" = "-u" ]; then
-        remove_yolk
+        backup2original
+        yolk_list_remove
     else
-        add_yolk
+        original2backup
+        yolk_list_create
     fi
 }
 
 
 #####################################################################
-function remove_list {
-    if [ -f "${SOURCES_LIST_BACKUP}" ]; then
-        echo rm "${SOURCES_LIST_BACKUP}"
-        rm "${SOURCES_LIST_BACKUP}"
+function original2backup {
+    if [ -d "$KRILL_APT_SAVE" ]; then
+        rm $KRILL_APT_SAVE -rf
     fi
-    echo "mv ${SOURCES_LIST} ${SOURCES_LIST_BACKUP}"
-    "mv ${SOURCES_LIST} ${SOURCES_LIST_BACKUP}"
+    mkdir $KRILL_APT_SAVE -p
 
-    if [ -d "${SOURCES_LIST_D_BACKUP}" ]; then
-        echo rm "${SOURCES_LIST_D_BACKUP}" -rf
-        rm "${SOURCES_LIST_D_BACKUP}" -rf
-    fi
-    echo "mv ${SOURCES_LIST_D} ${SOURCES_LIST_D_BACKUP}"
-    "mv ${SOURCES_LIST_D} ${SOURCES_LIST_D_BACKUP}"
+    mv $APT_ROOT/$SOURCES_LIST $KRILL_APT_SAVE
+    mv $APT_ROOT/$SOURCES_LIST_D $KRILL_APT_SAVE
 }
 
-function add_list {
-    if [ -f "${SOURCES_LIST}" ]; then
-        rm "${SOURCES_LIST}"
+function backup2original {
+    if [ -f "$APT_ROOT/$SOURCES_LIST" ]; then
+        rm $APT_ROOT/$SOURCES_LIST
     fi
-    "mv ${SOURCES_LIST_BACKUP} ${SOURCES_LIST}"
-
-    if [ -d "${SOURCES_LIST_D}" ]; then
-        rm "${SOURCES_LIST_D}" -rf
+    if [ -d "$APT_ROOT/$SOURCES_LIST_D" ]; then
+        rm $APT_ROOT/$SOURCES_LIST_D -rf
     fi
-    "mv ${SOURCES_LIST_D_BACKUP} ${SOURCES_LIST_D}"
+    mv $KRILL_APT_SAVE/$SOURCES_LIST $APT_ROOT
+    mv $KRILL_APT_SAVE/$SOURCES_LIST_D/ $APT_ROOT
 }
 
 
-function add_yolk {
-    remove_list
+
+
+function yolk_list_create {
+    mkdir $CHROOT/etc/apt/sources.list.d/
     cat << EOF > $CHROOT/etc/apt/sources.list.d/yolk.list
     deb [trusted=yes] file:/usr/local/yolk ./
 EOF
-    chroot ${CHROOT} apt-get --allow-unauthenticated update -y
+    "chroot ${CHROOT} apt-get --allow-unauthenticated update -y"
 }
 
-function remove_yolk {
-    add_list
-    rm ${CHROOT}/etc/apt/sources.list.d/yolk.list
-    chroot ${CHROOT} apt-get update -y
+function yolk_list_remove {
+    # rm $CHROOT/etc/apt/sources.list.d/yolk.list
+    chroot $CHROOT apt-get update -y
 }
 
 
@@ -68,16 +64,15 @@ function remove_yolk {
 # Lo script inizia qui
 CHROOT=$(mount | grep proc | grep calamares | awk '{print $3}' | sed -e "s#/proc##g")
 
-SOURCES_LIST="${CHROOT}/etc/apt/sources.list"
-SOURCES_LIST_BACKUP="${SOURCES_LIST}.backup"
+APT_ROOT="${CHROOT}/etc/apt"
+SOURCES_LIST="sources.list"
+SOURCES_LIST_D="sources.list.d"
+KRILL_APT_SAVE="/tmp/calamares-krill-temp"
 
-SOURCES_LIST_D="${CHROOT}/etc/apt/sources.list.d"
-SOURCES_LIST_D_BACKUP="${SOURCES_LIST_D}.backup"
-
+clear
 echo "sources.list: $SOURCES_LIST"
-echo "sources.list.backup: $SOURCES_LIST_BACKUP"
-echo "sources.list.s: $SOURCES_LIST_D"
-echo "sources.list.d.backup: $SOURCES_LIST_D_BACKUP"
-
+echo "sources.list.d: $SOURCES_LIST_D"
+echo "KRILL_APT_SAVE: $KRILL_APT_SAVE"
+echo ""
 main $1
 exit 0
