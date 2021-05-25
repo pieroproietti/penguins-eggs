@@ -69,7 +69,7 @@ export default class Calamares extends Command {
       if (Utils.isRoot(this.id)) {
          let installer = 'krill'
          if (await Pacman.isGui()) {
-            let installer = 'calamares'
+            installer = 'calamares'
          }
 
          if (installer === 'calamares') {
