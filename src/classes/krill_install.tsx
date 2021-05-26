@@ -36,7 +36,7 @@ const exec = require('../lib/utils').exec
       - networkcfg // this.interfaces, this.resolv.conf
       - hwclock // da fare
       - services-systemd //da fare
-      - bootloader-config //???
+      - bootloader-config // eseguo il modulo di calamares
       - grubcfg // ??
       - bootloader // grubInstall
       - packages // da fare
@@ -333,6 +333,17 @@ export default class Hatching {
          try {
             redraw(<Install message={message} percent={percent} />)
             await this.hosts()
+         } catch (error) {
+            message += JSON.stringify(error)
+            redraw(<Install message={message} percent={percent} />)
+         }
+         await checkIt(message)
+
+         message = "bootloader-config "
+         percent = 0.63
+         try {
+            redraw(<Install message={message} percent={percent} />)
+            await this.execCalamaresModule('bootloader-config')
          } catch (error) {
             message += JSON.stringify(error)
             redraw(<Install message={message} percent={percent} />)

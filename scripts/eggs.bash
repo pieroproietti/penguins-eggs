@@ -14,13 +14,12 @@ dad --help --clean --verbose
 export:deb --help --clean --armel --amd64 --i386 --all
 export:docs --help
 export:iso --help --clean
-info --help --compressor --verbose
+info --verbose --help
 install --cli --help --verbose
 kill --help --verbose
 mom --help
 produce --prefix --basename --fast --normal --max --verbose --yolk --script --help --theme --addons --release
 remove --purge --autoremove --help --verbose
-think --verbose --help
 tools:clean --help --verbose
 tools:locales --help --reinstall --verbose
 tools:skel --help --user --verbose

@@ -55,8 +55,8 @@ EOF
 }
 
 function yolk_list_remove {
-    # rm $CHROOT/etc/apt/sources.list.d/yolk.list
-    chroot $CHROOT apt-get update -y
+    rm $CHROOT/etc/apt/sources.list.d/yolk.list
+    #chroot $CHROOT apt-get update -y
 }
 
 
@@ -68,11 +68,10 @@ APT_ROOT="${CHROOT}/etc/apt"
 SOURCES_LIST="sources.list"
 SOURCES_LIST_D="sources.list.d"
 KRILL_APT_SAVE="/tmp/calamares-krill-temp"
-
-clear
-echo "sources.list: $SOURCES_LIST"
-echo "sources.list.d: $SOURCES_LIST_D"
-echo "KRILL_APT_SAVE: $KRILL_APT_SAVE"
-echo ""
+#clear
+#echo "sources.list: $SOURCES_LIST"
+#echo "sources.list.d: $SOURCES_LIST_D"
+#echo "KRILL_APT_SAVE: $KRILL_APT_SAVE"
+#echo ""
 main $1
 exit 0

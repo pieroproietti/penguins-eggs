@@ -1,23 +1,5 @@
 /**
- * ink-text-input - Text input.
- * ink-spinner - Spinner.
- * ink-select-input - Select (dropdown) input.
- * ink-link - Link component.
- * ink-gradient - Gradient color component.
- * ink-big-text - Awesome text component.
- * ink-image - Display images inside the terminal.
- * ink-tab - Tab component.
- * ink-color-pipe - Create color text with simpler style strings in Ink.
- * ink-multi-select - Select one or more values from a list
- * ink-divider - A divider component.
- * ink-progress-bar - Configurable component for rendering progress bars.
- * ink-table - Table component.
- * ink-ascii - Awesome text component with more font choices, based on Figlet.
- * ink-markdown - Render syntax highlighted Markdown.
- * ink-quicksearch-input - Select component with fast quicksearch-like navigation.
- * ink-confirm-input - Yes/No confirmation input.
- * ink-syntax-highlight - Code syntax highlighting.
- * ink-form - Form component.
+ * info
  */
 
 import { Command, flags } from '@oclif/command'
@@ -139,11 +121,12 @@ export default class Info extends Command {
          <>
             <Box ><Text> </Text></Box>
             <Box borderStyle="round" marginRight={2} flexDirection="column">
-               <Box ><Text>You can install your iso both with calamares GUI installer or using krill, the new installer CLI.</Text></Box>
-               <Box><Text>Just: sudo eggs install. krill use the same configurations of calamares, but it is krill - a different species - not so evolute but work just with CLI.</Text></Box>
+               <Box ><Text>You can install ISOs made with eggs, with calamares GUI installer or using krill, the inside CLI installer.</Text></Box>
+               <Box><Text>Krill - still experimental - is an opportunity if you are scarce in RAM, or if you are working in old distros not supported by calamares.</Text></Box>
+               <Box><Text>sudo eggs install will run calamares - if installed - or krill. sudo eggs install -c will force CLI installation</Text></Box>
                <Box ><Text> </Text></Box>
                <Box flexDirection="row">
-                  <Box marginRight={1}><Text>Contacts: </Text></Box>
+                  <Box marginRight={1}><Text>Info: </Text></Box>
                   <Box flexDirection="column">
                      <Box marginRight={2}><Text>blog    </Text><Text color="cyan">https://penguins-eggs.net</Text></Box>
                      <Box marginRight={2}><Text>sources </Text><Text color="cyan">https://github.com/pieroproietti/penguins-eggs</Text></Box>
