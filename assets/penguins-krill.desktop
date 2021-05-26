@@ -2,15 +2,15 @@
 [Desktop Entry]
 Type=Application
 Version=1.0
-Name=Install Linux
+Name=Krill Linux installer
 GenericName=krill Installer
 Exec=sudo /usr/bin/eggs install
 Comment=Krill — Linux system installer
 Keywords=krill;system;install;debian;installer
-Icon=utilities-terminal
+Icon=krill
 Terminal=true
 Categories=System;
-Name[it]=Installa sistema
+Name[it]=Krill Installer
 GenericName[it]=Installa sistema
 Comment[it]=Installazione sistema krill
 Name[en]=Install system
