@@ -426,7 +426,7 @@ export default class Hatching {
             try {
                message = "autologin GUI"
                percent = 0.80
-               Xdg.autologin(Utils.getPrimaryUser(), this.users.name)
+               await Xdg.autologin(Utils.getPrimaryUser(), this.users.name, this.installTarget)
                redraw(<Install message={message} percent={percent} />)
             } catch (error) {
                message += JSON.stringify(error)
@@ -844,16 +844,16 @@ adduser ${name} \
             this.devices.boot.fsType = `ext2`
             this.devices.boot.mountPoint = '/boot'
          }
-         await exec('mke2fs -t ' + this.devices.boot.fsType + ' ' + this.devices.boot.name, echo)
+         await exec('mke2fs -Ft ' + this.devices.boot.fsType + ' ' + this.devices.boot.name, echo)
       }
 
 
       if (this.devices.root.name !== 'none') {
-         await exec('mke2fs -t ' + this.devices.root.fsType + ' ' + this.devices.root.name, echo)
+         await exec('mke2fs -Ft ' + this.devices.root.fsType + ' ' + this.devices.root.name, echo)
       }
 
       if (this.devices.data.name !== 'none') {
-         await exec('mke2fs -t ' + this.devices.data.fsType + ' ' + this.devices.data.name, echo)
+         await exec('mke2fs -Ft ' + this.devices.data.fsType + ' ' + this.devices.data.name, echo)
       }
 
       if (this.devices.swap.name !== 'none') {
@@ -990,6 +990,10 @@ adduser ${name} \
 
       let retVal = false
 
+      await exec('wipefs -a ' + device)
+      //await exec('dd if=/dev/zero of=' + device + ' bs=512 count=1 conv=notrunc')
+
+
       if (partitionType === 'simple' && !this.efi) {
 
          /**
@@ -1038,7 +1042,7 @@ adduser ${name} \
          /**
          * LVM2, non EFI
          */
-          await exec(`parted --script ${device} mklabel msdos`)
+         await exec(`parted --script ${device} mklabel msdos`)
 
          // Creo partizioni
          await exec(`parted --script ${device} mkpart primary ext2 1 512`)
