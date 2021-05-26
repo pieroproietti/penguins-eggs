@@ -7,7 +7,7 @@
 import { Command, flags } from '@oclif/command'
 import shx = require('shelljs')
 import Utils from '../classes/utils'
-import Hatching from '../classes/hatching'
+import Prepare from '../classes/krill_prepare'
 import Pacman from '../classes/pacman'
 
 /**
@@ -21,7 +21,7 @@ export default class Install extends Command {
    }
    static description = 'command-line system installer - the egg became a penguin!'
 
-   static aliases = ['hatch']
+   static aliases = ['hatch', 'krill']
 
    static examples = [`$ eggs install\nInstall the system using GUI or CLI installer\n`]
 
@@ -43,16 +43,13 @@ export default class Install extends Command {
             if (Pacman.packageIsInstalled('calamares') && !flags.cli) {
                shx.exec('calamares')
             } else {
-               const hatching = new Hatching()
-               const confirm = await hatching.confirm(verbose)
-               if (confirm) {
-                  await hatching.getOptions(verbose)
-                  await hatching.install(verbose)
-               }
+               const krill = new Prepare()
+               await krill.prepare()
             }
-         } else {
-            Utils.warning(`You are in an installed system!`)
          }
+      } else {
+         Utils.warning(`You are in an installed system!`)
       }
    }
 }
+

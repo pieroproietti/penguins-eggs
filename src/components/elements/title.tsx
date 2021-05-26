@@ -21,7 +21,7 @@ export default function Title({ title = "krill" }) {
                </Gradient>
             </Box>
 
-            <Box margin={2} justifyContent="center" flexDirection="column">
+            <Box margin={0} justifyContent="center" flexDirection="column">
                <Box >
                   <Text>The penguin's reproductive system</Text>
                   </Box>

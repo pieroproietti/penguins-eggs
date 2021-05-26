@@ -120,7 +120,6 @@ USAGE
 * [`eggs info`](#eggs-info)
 * [`eggs install`](#eggs-install)
 * [`eggs kill`](#eggs-kill)
-* [`eggs krill`](#eggs-krill)
 * [`eggs mom`](#eggs-mom)
 * [`eggs produce`](#eggs-produce)
 * [`eggs remove`](#eggs-remove)
@@ -365,20 +364,6 @@ EXAMPLE
 ```
 
 _See code: [src/commands/kill.ts](https://github.com/pieroproietti/penguins-eggs/blob/v7.8.50/src/commands/kill.ts)_
-
-## `eggs krill`
-
-a nice CLI system installer
-
-```
-USAGE
-  $ eggs krill
-
-OPTIONS
-  -h, --help  show CLI help
-```
-
-_See code: [src/commands/krill.ts](https://github.com/pieroproietti/penguins-eggs/blob/v7.8.50/src/commands/krill.ts)_
 
 ## `eggs mom`
 
