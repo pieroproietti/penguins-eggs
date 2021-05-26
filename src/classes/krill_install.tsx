@@ -844,20 +844,20 @@ adduser ${name} \
             this.devices.boot.fsType = `ext2`
             this.devices.boot.mountPoint = '/boot'
          }
-         await exec(`mkfs -t ${this.devices.boot.fsType} ${this.devices.boot.name}`, echo)
+         await exec('mke2fs -t ' + this.devices.boot.fsType + ' ' + this.devices.boot.name, echo)
       }
 
 
       if (this.devices.root.name !== 'none') {
-         await exec(`mkfs -t ${this.devices.root.fsType} ${this.devices.root.name}`, echo)
+         await exec('mke2fs -t ' + this.devices.root.fsType + ' ' + this.devices.root.name, echo)
       }
 
       if (this.devices.data.name !== 'none') {
-         await exec(`mkfs -t ${this.devices.data.fsType} ${this.devices.data.name}`, echo)
+         await exec('mke2fs -t ' + this.devices.data.fsType + ' ' + this.devices.data.name, echo)
       }
 
       if (this.devices.swap.name !== 'none') {
-         await exec(`mkswap ${this.devices.swap.name}`, echo)
+         await exec('mkswap ' + this.devices.swap.name, echo)
       }
       return result
    }
@@ -990,7 +990,33 @@ adduser ${name} \
 
       let retVal = false
 
-      if (partitionType === 'simple' && this.efi) {
+      if (partitionType === 'simple' && !this.efi) {
+
+         /**
+          * simple, non EFI
+          */
+         await exec(`parted --script ${device} mklabel msdos`, echo)
+         await exec(`parted --script --align optimal ${device} mkpart primary 1MiB 95%`, echo)
+         await exec(`parted --script ${device} set 1 boot on`, echo)
+         await exec(`parted --script --align optimal ${device} mkpart primary 95% 100%`, echo)
+
+         this.devices.efi.name = `none`
+         this.devices.boot.name = `none`
+         this.devices.root.name = `${device}1`
+         this.devices.root.fsType = 'ext4'
+         this.devices.root.mountPoint = '/'
+         this.devices.data.name = `none`
+         this.devices.swap.name = `${device}2`
+         this.devices.swap.fsType = 'swap'
+         this.devices.swap.mountPoint = 'none'
+
+         retVal = true
+
+      } else if (partitionType === 'simple' && this.efi) {
+
+         /**
+          * simple, EFI
+          */
          await exec(`parted --script ${device} mklabel gpt mkpart primary 0% 1% mkpart primary 1% 95% mkpart primary 95% 100%`, echo)
          await exec(`parted --script ${device} set 1 boot on`, echo)
          await exec(`parted --script ${device} set 1 esp on`, echo)
@@ -998,47 +1024,21 @@ adduser ${name} \
          this.devices.efi.name = `${device}1`
          this.devices.efi.fsType = 'F 32 -I'
          this.devices.efi.mountPoint = '/boot/efi'
-
          this.devices.boot.name = `none`
-
          this.devices.root.name = `${device}2`
          this.devices.root.fsType = 'ext4'
          this.devices.root.mountPoint = '/'
-
          this.devices.data.name = `none`
-
          this.devices.swap.name = `${device}3`
          this.devices.swap.fsType = 'swap'
 
          retVal = true
-      } else if (partitionType === 'simple' && !this.efi) {
-         await exec(`parted --script ${device} mklabel msdos`, echo)
-         await exec(`parted --script --align optimal ${device} mkpart primary 1MiB 95%`, echo)
-         await exec(`parted --script ${device} set 1 boot on`, echo)
-         await exec(`parted --script --align optimal ${device} mkpart primary 95% 100%`, echo)
-
-         this.devices.efi.name = `none`
-
-         this.devices.boot.name = `none`
-
-         this.devices.root.name = `${device}1`
-         this.devices.root.fsType = 'ext4'
-         this.devices.root.mountPoint = '/'
-
-         this.devices.data.name = `none`
-
-         this.devices.swap.name = `${device}2`
-         this.devices.swap.fsType = 'swap'
-         this.devices.swap.mountPoint = 'none'
-
-         retVal = true
-      } else if (partitionType === 'lvm2' && this.efi) {
-         console.log('LVM2 on UEFI: to be implemented!')
-         process.exit(0)
-
       } else if (partitionType === 'lvm2' && !this.efi) {
-         // Preparo tabella partizioni
-         await exec(`parted --script ${device} mklabel msdos`)
+
+         /**
+         * LVM2, non EFI
+         */
+          await exec(`parted --script ${device} mklabel msdos`)
 
          // Creo partizioni
          await exec(`parted --script ${device} mkpart primary ext2 1 512`)
@@ -1084,6 +1084,12 @@ adduser ${name} \
 
          this.devices.swap.name = `/dev/pve/swap`
          retVal = true
+      } else if (partitionType === 'lvm2' && this.efi) {
+         /**
+         * LVM2, EFI
+         */
+         console.log('LVM2 on UEFI: to be implemented!')
+         process.exit(0)
       }
       return retVal
    }
