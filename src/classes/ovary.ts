@@ -943,6 +943,7 @@ export default class Ovary {
 
       // Copia icona penguins-eggs
       shx.cp(path.resolve(__dirname, '../../assets/eggs.png'), '/usr/share/icons/')
+      shx.cp(path.resolve(__dirname, '../../assets/krill.png'), '/usr/share/icons/')
 
       /**
        * creazione dei link in /usr/share/applications
