@@ -146,9 +146,9 @@ export default class Hatching {
 
    keyboardVariant = ''
 
-   dirCalamaresModules = '/usr/lib/x86_64-linux-gnu/krill/modules/'
-
    dirModules = '/etc/krill/modules/'
+
+   dirCalamaresModules = '/usr/lib/x86_64-linux-gnu/krill/modules/'
 
    installer = 'krill'
 
@@ -246,7 +246,7 @@ export default class Hatching {
          percent = 0.06
          try {
             redraw(<Install message={message} percent={percent} />)
-            await this.mountVFS()
+            await this.mountvfs()
          } catch (error) {
             message += JSON.stringify(error)
             redraw(<Install message={message} percent={percent} />)
@@ -268,6 +268,7 @@ export default class Hatching {
 
          // sources-yolk
          message = 'sources-yolk'
+         percent = 0.40
          try {
             redraw(<Install message={message} percent={percent} spinner={true} />)
             await this.execCalamaresModule('sources-yolk')
@@ -328,7 +329,7 @@ export default class Hatching {
 
 
          message = "Creating hosts "
-         percent = 0.9
+         percent = 0.60
          try {
             redraw(<Install message={message} percent={percent} />)
             await this.hosts()
@@ -461,7 +462,7 @@ export default class Hatching {
          percent = 0.92
          try {
             redraw(<Install message={message} percent={percent} />)
-            await this.umountVFS()
+            await this.umountvfs()
             await this.umount()
          } catch (error) {
             message += JSON.stringify(error)
@@ -579,10 +580,6 @@ adduser ${name} \
       } else {
          text += 'RESUME=UUID=' + Utils.uuid(this.devices.swap.name)
       }
-      /**
-       * così è in calamares: RESUME=UUID=5863c921-ca91-4457-bf16-8b653308eb38
-       *                      RESUME=UUID=5863c921-ca91-4457-bf16-8b653308eb38
-       */
       Utils.write(file, text)
    }
 
@@ -593,12 +590,10 @@ adduser ${name} \
     */
    private async initramfs() {
       const echo = { echo: false, ignore: false }
-      const version = shx.exec('uname -r').stdout.trim()
-      const kernelVersion = '/boot/vmlinuz-' + version + '-generic'
-      const initrdVersion = '/boot/initrd.img-' + version + '-generic'
-      await exec('chroot ' + this.installTarget + ' mkinitramfs -o ' + initrdVersion + ' ' + kernelVersion)
-
-      checkIt('vediamo che fa')
+      // const version = shx.exec('uname -r').stdout.trim()
+      // const kernelVersion = '/boot/vmlinuz-' + version + '-generic'
+      // const initrdVersion = '/boot/initrd.img-' + version + '-generic'
+      // await exec('chroot ' + this.installTarget + ' mkinitramfs -o ' + initrdVersion + ' ' + kernelVersion)
 
       await exec('chroot ' + this.installTarget + ' update-initramfs -u -k + $(uname -r)', echo)
    }
@@ -698,7 +693,6 @@ adduser ${name} \
     */
    private async interfaces() {
       const echo = { echo: false, ignore: false }
-      //const echo = Utils.setEcho(verbose)
 
       if (this.net.addressType === 'static') {
          const file = `${this.installTarget} /etc/network / interfaces`
@@ -872,8 +866,7 @@ adduser ${name} \
    }
 
    /**
-    *
-    * @param devices
+    * mount
     */
    private async mount(): Promise<boolean> {
       const echo = { echo: false, ignore: false }
@@ -882,7 +875,7 @@ adduser ${name} \
          await exec(`mkdir ${this.installTarget}`, echo)
       }
 
-      // Monto la root
+      // root
       await exec(`mount ${this.devices.root.name} ${this.installTarget}${this.devices.root.mountPoint}`, echo)
       await exec(`tune2fs -c 0 -i 0 ${this.devices.root.name}`, echo)
       await exec(`rm -rf ${this.installTarget}/lost+found`, echo)
@@ -911,13 +904,10 @@ adduser ${name} \
    }
 
    /**
-    *
-    * @param target
-    * @param devices
+    * umount
     */
    private async umount(): Promise<boolean> {
       const echo = { echo: false, ignore: false }
-      //const echo = Utils.setEcho(verbose)
 
       if (this.efi) {
          await exec(`umount ${this.installTarget}/boot/efi`, echo)
@@ -938,12 +928,10 @@ adduser ${name} \
    }
 
    /**
-   * mountVFS()
+   * mountvfs()
    */
-   private async mountVFS() {
+   private async mountvfs() {
       const echo = { echo: true, ignore: true }
-
-      await checkIt('target: ' + this.installTarget)
 
       await exec('mkdir ' + this.installTarget + '/dev')
       await exec('mkdir ' + this.installTarget + '/dev/pts')
@@ -956,15 +944,11 @@ adduser ${name} \
       await exec(`mount -o bind /proc ${this.installTarget}/proc`, echo)
       await exec(`mount -o bind /sys ${this.installTarget}/sys`, echo)
       await exec(`mount -o bind /run ${this.installTarget}/run`, echo)
-      // process.exit()
-      await checkIt('mountVFS')
    }
 
    /**
-    * umountVFS()
-    * @param target
     */
-   private async umountVFS() {
+   private async umountvfs() {
       const echo = { echo: false, ignore: false }
 
       if (Utils.isMountpoint(`${this.installTarget}/dev/pts`)) {
@@ -1139,22 +1123,18 @@ adduser ${name} \
     * execCalamaresModule
     * @param name 
     */
-       private async execCalamaresModule(name: string) {
-         const moduleName = this.dirCalamaresModules + name
-         if (fs.existsSync(moduleName)) {
-            const calamaresModule = yaml.load(moduleName) as ICalamaresModule
-            const command = calamaresModule.command
-            if (command!=='') {
-               shx.exec(command)
-            } else {
-               console.log('non trovo command')
-            }
-         } else {
-            console.log('calamares module: ' + name + ', not found!')
+   private async execCalamaresModule(name: string) {
+      const dirCalamaresModules = '/usr/lib/x86_64-linux-gnu/calamares/modules/'
+      const moduleName = dirCalamaresModules + name + '/module.desc'
+      if (fs.existsSync(moduleName)) {
+         const calamaresModule = yaml.load(fs.readFileSync(moduleName, 'utf8')) as ICalamaresModule
+         const command = calamaresModule.command
+         if (command !== '' || command !== undefined) {
+            shx.exec(command)
          }
-         await checkIt('name')
       }
-   
+   }
+
    /**
     * only show the result
     */

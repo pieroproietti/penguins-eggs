@@ -31,6 +31,8 @@ import BigText from 'ink-big-text'
 import Settings from '../classes/settings'
 import Pacman from '../classes/pacman'
 const exec = require('../lib/utils').exec
+import fs from 'fs'
+import yaml from 'js-yaml'
 
 
 export default class Think extends Command {
@@ -51,7 +53,6 @@ export default class Think extends Command {
 
       const echo = Utils.setEcho(verbose)
       console.clear()
-      //Utils.titles(this.id + ' ' + this.argv)
 
       const settings = new Settings()
       settings.load()
@@ -212,3 +213,4 @@ export default class Think extends Command {
       render(<Main />)
    }
 }
+
