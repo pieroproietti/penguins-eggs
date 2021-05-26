@@ -18,7 +18,7 @@ import os = require('os')
 import pjson = require('pjson')
 import inquirer = require('inquirer')
 import chalk = require('chalk')
-//import Pacman from './pacman'
+import Pacman from './pacman'
 
 import clear = require('clear')
 import figlet = require('figlet')

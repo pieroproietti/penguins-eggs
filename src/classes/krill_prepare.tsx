@@ -28,7 +28,7 @@ import getPassword from '../lib/get_password'
 
 import selectKeyboardLayout from '../lib/select_keyboard_layout';
 
-import Hatching from './krill_hatching'
+import Hatching from './krill_install'
 
 interface IWelcome {
   language: string

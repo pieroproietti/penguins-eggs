@@ -33,9 +33,9 @@ import Pacman from '../classes/pacman'
 const exec = require('../lib/utils').exec
 import fs from 'fs'
 import yaml from 'js-yaml'
+import Title from '../components/elements/title'
 
-
-export default class Think extends Command {
+export default class Info extends Command {
    static description = 'thinking a different approach to CLI...'
 
    static flags = {
@@ -44,7 +44,7 @@ export default class Think extends Command {
    }
 
    async run() {
-      const { args, flags } = this.parse(Think)
+      const { args, flags } = this.parse(Info)
 
       let verbose = false
       if (flags.verbose) {
@@ -57,36 +57,6 @@ export default class Think extends Command {
       const settings = new Settings()
       settings.load()
 
-
-      const Title = () => (
-         <>
-            <Box flexDirection="row">
-               <Box>
-                  <Gradient name="fruit">
-                     <BigText text={pjson.shortName} font="simple" />
-                  </Gradient>
-               </Box>
-
-               <Box margin={2} justifyContent="center" flexDirection="column">
-                  <Box >
-                     <Text>A reproductive system for penguins!</Text>
-                  </Box>
-                  <Box>
-                     <Text> </Text>
-                  </Box>
-                  <Box>
-                     <Text>(C) 2021 Penguin's eggs</Text>
-                  </Box>
-               </Box>
-            </Box>
-            <Box flexDirection="row">
-               <Text backgroundColor="green">     {pjson.name}      </Text>
-               <Text backgroundColor="white" color="blue"> Perri's brewery edition </Text>
-               <Text backgroundColor="red">       ver. {pjson.version}       </Text>
-            </Box>
-         </>
-      )
-      // render(<Title/>)
 
       /**
        * nest
@@ -169,13 +139,8 @@ export default class Think extends Command {
          <>
             <Box ><Text> </Text></Box>
             <Box borderStyle="round" marginRight={2} flexDirection="column">
-               <Box ><Text>This is mostly an example of what you can achieve by using react in a CLI environment.</Text></Box>
-               <Box ><Text> </Text></Box>
-               <Box><Text>The idea is to rewrite some parts of eggs using react to improve the interactivity and especially to allow to write a CLI installer that looks similar to a GUI installer.</Text></Box>
-               <Box ><Text> </Text></Box>
-               <Box ><Text>A modern CLI installer would help facilitate users with low RAM machines and would also be very versatile.</Text></Box>
-               <Box ><Text> </Text></Box>
-               <Text>I'm trying to use <Text color="cyan">https://github.com/vadimdemedes/ink</Text>, to build a better CLI interface. If there is someone experienced in react, and want support me would be <Text inverse>really welcome</Text>.</Text>
+               <Box ><Text>You can install your iso both with calamares GUI installer or using krill, the new installer CLI.</Text></Box>
+               <Box><Text>Just: sudo eggs install. krill use the same configurations of calamares, but it is krill - a different species - not so evolute but work just with CLI.</Text></Box>
                <Box ><Text> </Text></Box>
                <Box flexDirection="row">
                   <Box marginRight={1}><Text>Contacts: </Text></Box>

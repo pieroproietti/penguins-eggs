@@ -39,7 +39,7 @@ const exec = require('../lib/utils').exec
       - bootloader-config //???
       - grubcfg // ??
       - bootloader // grubInstall
-      - packages // dafare
+      - packages // da fare
       - luksbootkeyfile // Volumi criptati LUKS da fare
       - plymouthcfg // da fare
       - initramfscfg OK
@@ -556,7 +556,7 @@ adduser ${name} \
    private async bootloader() {
       const echo = { echo: false, ignore: false }
 
-      await exec('chroot ' + this.installTarget + ' apt update')
+      // await exec('chroot ' + this.installTarget + ' apt update')
       if (this.efi) {
          await exec(`chroot ${this.installTarget} apt install grub-efi-amd64-bin --yes`)
       } else {
@@ -590,11 +590,6 @@ adduser ${name} \
     */
    private async initramfs() {
       const echo = { echo: false, ignore: false }
-      // const version = shx.exec('uname -r').stdout.trim()
-      // const kernelVersion = '/boot/vmlinuz-' + version + '-generic'
-      // const initrdVersion = '/boot/initrd.img-' + version + '-generic'
-      // await exec('chroot ' + this.installTarget + ' mkinitramfs -o ' + initrdVersion + ' ' + kernelVersion)
-
       await exec('chroot ' + this.installTarget + ' update-initramfs -u -k + $(uname -r)', echo)
    }
 
@@ -651,8 +646,7 @@ adduser ${name} \
    }
 
    /**
-    * name()
-    * @param options
+    * hostname
     */
    private async hostname() {
       const echo = { echo: false, ignore: false }
@@ -666,7 +660,6 @@ adduser ${name} \
 
    /**
     * resolvConf()
-    * @param options
     */
    private async resolvConf() {
       const echo = { echo: false, ignore: false }
@@ -685,11 +678,7 @@ adduser ${name} \
    }
 
    /**
-    *
-    * auto lo
-    *
-    * interfaces()
-    * @param options
+    * interfaces
     */
    private async interfaces() {
       const echo = { echo: false, ignore: false }
@@ -710,8 +699,7 @@ adduser ${name} \
    }
 
    /**
-    * hosts()
-    * @param options
+    * hosts
     */
    private async hosts() {
 
@@ -733,7 +721,7 @@ adduser ${name} \
    }
 
    /**
-    * 
+    * removeInstaller
     */
    private async removeInstaller() {
       let file = `${this.installTarget}/usr/bin/penguins-links-add.sh`
@@ -763,7 +751,6 @@ adduser ${name} \
 
    /**
     * unpackfs
-    * @param verbose
     */
    private async unpackfs(): Promise<void> {
       const echo = Utils.setEcho(this.verbose)
@@ -826,8 +813,7 @@ adduser ${name} \
 
 
    /**
-    *
-    * @param devices
+    * mkfs
     */
    private async mkfs(): Promise<boolean> {
       // this.disk.fsType = partitions.filesystemType
@@ -1092,7 +1078,7 @@ adduser ${name} \
    }
 
    /**
-    *
+    * isRotational
     * @param device
     */
    private async isRotational(device: string): Promise<boolean> {
@@ -1108,19 +1094,8 @@ adduser ${name} \
    }
 
    /**
-    *
-    * @param device
-    * non serve per krill
-    * eliminare diskusage con node-disk-info o altro
-    */
-   private async getDiskSize(device: string): Promise<number> {
-      let size = 0
-      return size
-   }
-
-
-   /**
     * execCalamaresModule
+    * 
     * @param name 
     */
    private async execCalamaresModule(name: string) {
@@ -1167,5 +1142,5 @@ function redraw(elem: JSX.Element) {
  * @param message 
  */
 async function checkIt(message: string) {
-   await Utils.customConfirm(message + ', you can open a terminal to check')
+   // await Utils.customConfirm(message + ', you can open a terminal to check')
 }
