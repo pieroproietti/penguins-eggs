@@ -23,9 +23,9 @@ interface IReplaces {
 
 export default class Fisherman {
 
-    installer = 'krill'
+    installer = 'eggs'
 
-    installerModules = 'krill-modules'
+    installerModules = 'eggs-modules'
 
     distro: IDistro
 

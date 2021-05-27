@@ -20,7 +20,6 @@ export default function Title({ title = "krill" }) {
                   <BigText text={pjson.shortName} font="simple"/>
                </Gradient>
             </Box>
-
             <Box margin={0} justifyContent="center" flexDirection="column">
                <Box >
                   <Text>The penguin's reproductive system</Text>
@@ -29,11 +28,10 @@ export default function Title({ title = "krill" }) {
                   <Text> </Text>
                </Box>
                <Box>
-                  <Text>  (C) 2020-2021 Piero Proietti</Text>
+                  <Text>  (C) 2017-2021 Piero Proietti</Text>
                </Box>
             </Box>
          </Box>
-
          <Box flexDirection="row">
             <Text backgroundColor="green">     {pjson.name}      </Text>
             <Text backgroundColor="white" color="blue"> Perri's brewery edition </Text>

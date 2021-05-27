@@ -132,7 +132,7 @@ export default class Info extends Command {
          <>
             <Box ><Text> </Text></Box>
             <Box borderStyle="round" marginRight={2} flexDirection="column">
-               <Box ><Text>You can install ISOs made with eggs, with calamares GUI installer or using krill, the inside CLI installer.</Text></Box>
+               <Box ><Text>ISOs made with eggs can be installed with calamares GUI installer or using krill, the CLI installer inside eggs.</Text></Box>
                <Box><Text>Krill - still experimental - is an opportunity if you are scarce in RAM, or if you are working in old distros not supported by calamares.</Text></Box>
                <Box><Text>sudo eggs install will run calamares - if installed - or krill. sudo eggs install -c will force CLI installation</Text></Box>
                <Box ><Text> </Text></Box>

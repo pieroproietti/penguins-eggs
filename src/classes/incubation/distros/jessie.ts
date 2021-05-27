@@ -25,7 +25,7 @@ const exec = require('../../../lib/utils').exec
 export class Jessie {
    verbose = false
 
-   installer = 'krill'
+   installer = 'eggs'
 
    remix: IRemix
 
@@ -35,11 +35,12 @@ export class Jessie {
 
    user_opt: string
 
+   // per jessie e stretc rootTemplate è SEMPRE krill
    rootTemplate = './../../../../conf/distros/buster/krill/'
 
-   dirCalamaresModules = '/usr/lib/x86_64-linux-gnu/krill/modules/'
+   dirCalamaresModules = '/usr/lib/x86_64-linux-gnu/eggs/modules/'
 
-   dirModules = '/etc/krill/modules/'
+   dirModules = '/etc/eggs/modules/'
 
    /**
     * @param remix
