@@ -19,7 +19,7 @@ You can follow the project also consulting the [commit history](https://github.c
 Versions are listed on reverse order, the first is the last one.
 
 ### eggs-8.0.0
-* krill installer come with eggs. 
+* krill installer come now with eggs. 
 
 This is major version, why? 
 

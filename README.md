@@ -40,15 +40,15 @@ Starting with version 7.6.x an addons architecture was been added to eggs, that 
 yolk so called - staying on the subject of eggs - is a local repository included in the livecd that contains a minimum of indispensable packages during installation. Thanks to yolk, you can safely install your system without the need o an active internet connection.
 
 ## krill
-I'm writing a new CLI installer aside the original one included in eggs: [krill](https://github.com/pieroproietti/penguins-krill). Krill let you to install your system in a nice CLI interface using the same, or similar - for jessie and stretch - configuration of [calamares](calamares.io). 
+I wrote a new CLI installer krill who is now included in eggs. Krill let you to install your system in a nice CLI interface using the same, configuration created by eggs for [calamares](calamares.io). This lead to have "about the same" experience installing, from old distros to new one and for GUI and CLI
 
 ## Two great helpers!
-I added two lightweight helpers integrated with eggs: mom and dad. While mom is a bash script with whiptail - and guides the user to the various commands and documentation. Dad is a short way to creating the iso: all you have to do is type in **sudo eggs dad** and follow simple instructions.
+I added two light helpers integrated with eggs: mom and dad. While mom is a bash script with whiptail - and guides the user to the various commands and documentation. dad started as a short way to create the iso: all you have to do is type in **sudo eggs dad** and follow simple instructions, but it is also a way to reset configuration **sudo dad -c**.
 
 ## What distributions can I use?
-Eggs is born on Debian strecth/buster, full support Debian from jessie to bullseye, Devuan beowulf, Ubuntu focal, bionic and derivatives. I usually try it against Debian buster, Devuan beowulf, Linux Mint 19.3 tricia (bionic derivated) and Linux Mint 20 ulyana (focal derivated) before releases. I tried it successfully in LMDE 4 debbie, and deepin. Eggs, generally must work with all the derivates from that distros.
+Eggs is born on Debian strecth/buster, full support Debian from jessie to sid (bullseye) Support too Devuan beowulf, Ubuntu focal, bionic and derivatives. I usually try it against Debian varius versions, Devuan beowulf, Linux Mint 19.3 tricia (bionic derivated) and Linux Mint 20 ulyana (focal derivated) before releases. I tried it successfully in LMDE 4 debbie, and deepin. Eggs, generally must work with all the derivates from that distros.
 
-Some iso images remastered with eggs are in the [sourceforge page of the project](https://sourceforge.net/projects/penguins-eggs/files/iso/). 
+Some examples of iso images remastered with eggs are in the [sourceforge page of the project](https://sourceforge.net/projects/penguins-eggs/files/iso/). 
 
 # Packages
 eggs is released as deb package and npm package. Most users need just deb version, if you already use nodejs the npm package can be installed too, 
@@ -60,12 +60,12 @@ eggs is released deb packages for i386 and amd64 architectures. Due the characte
 This simplest way to install eggs is download the [package eggs](https://sourceforge.net/projects/penguins-eggs/files/packages-deb/) from [sourceforge page of the project](https://sourceforge.net/projects/penguins-eggs/) and install it
 
 ```
-sudo dpkg -i eggs_7.8.50-1_amd64.deb
+sudo dpkg -i eggs_8.0.0-1_amd64.deb
 ```
 
 or, on a i386 system:
 ```
-sudo dpkg -i eggs_7.8.50-1_i386.deb
+sudo dpkg -i eggs_8.0.0-1_i386.deb
 ```
 ### update
 The fastest way to use sudo eggs update and choose basket. Eggs let you to select the last 4 versions on the [basket](https://sourceforge.net/projects/penguins-eggs/files/packages-deb/) and install it.

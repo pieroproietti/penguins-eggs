@@ -22,7 +22,6 @@ function main {
          "kill"            "kill the eggs/free the nest" \
          "produce"         "the system produces an egg: iso image of your system" \
          "remove"          "remove eggs and others stuff" \
-         "think"           "thinking about the future" \
          "update"          "update the penguin's eggs tool" \
          "documentation"   "book/book_translated/manual/man" \
          "export"          "deb/docs/iso" \
@@ -63,9 +62,6 @@ function main {
 
          "remove")
             remove ;;
-
-         "think")
-            think ;;
 
          "documentation")
             documentation ;;
@@ -390,12 +386,6 @@ function update {
    press_a_key_to_continue
 }
 
-
-################################
-function think {
-   eggs think
-   press_a_key_to_continue
-}
 
 function press_a_key_to_continue {
    read -p "Press enter to continue"

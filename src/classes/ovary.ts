@@ -37,7 +37,6 @@ import Systemctl from './systemctl'
 import Bleach from './bleach'
 import Repo from './yolk'
 import cliAutologin = require('../lib/cli-autologin')
-import { utils } from 'mocha'
 import Distro from './distro'
 
 /**
@@ -153,15 +152,14 @@ export default class Ovary {
                const bleach = new Bleach
                await bleach.clean(verbose)
             }
-         } else {
-            /**
-             * Anche non accettando l'installazione di calamares
-             * viene creata la configurazione dell'installer: krill/calamares
-             * L'installer prende il tema da settings.remix.branding
-             */
-            this.incubator = new Incubator(this.settings.remix, this.settings.distro, this.settings.config.user_opt, verbose)
-            await this.incubator.config(release)
          }
+         /**
+          * Anche non accettando l'installazione di calamares
+          * viene creata la configurazione dell'installer: krill/calamares
+          * L'installer prende il tema da settings.remix.branding
+          */
+         this.incubator = new Incubator(this.settings.remix, this.settings.distro, this.settings.config.user_opt, verbose)
+         await this.incubator.config(release)
 
          await this.isolinux(this.theme, verbose)
 
