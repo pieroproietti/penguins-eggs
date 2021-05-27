@@ -15,13 +15,17 @@ penguins-eggs
 Usually the last version is the right one. Detailed instrunctions for usage are published on the [penguin's eggs book](https://penguins-eggs.net/book). 
 You can follow the project also consulting the [commit history](https://github.com/pieroproietti/penguins-eggs/commits/master). 
 
-# Penguin's krll
-I'm actually working in krill, a smart and ligth CLI Linux installer. it will be possible to use krill on all systems, both CLI and GUI. While krill has its own configuration, where calamares is present, it will use the calamares installer configuration.
-
-**Note:** krill will erase **entirely** your destination disk, don't let to install more than a system on the disk, it is at the moment immature and experimental. Use it at your own risk and preferibly on VM or system without valuable datas.
-
 ## Changelog
 Versions are listed on reverse order, the first is the last one.
+
+### eggs-8.0.0
+* krill installer come with eggs. 
+
+This is major version, why? 
+
+In short: I removed the old CLI installer with the new krill installer with all it's armamentary and experiences: react components for visualization (only for eggs install and eggs info), same configuration for GUI and CLI installer, compiled with node-8.17.0 for all the architectures and just a bit cleaning.
+
+I hope to receive [feedback](https://github.com/pieroproietti/penguins-eggs/issues).
 
 ### eggs-7.8.50
 * more steps to krill, eggs now produce configuration for krill or calamares in all the distro/version
