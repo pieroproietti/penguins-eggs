@@ -90,8 +90,9 @@ export default class Config extends Command {
         }
 
         if (!await Pacman.calamaresCheck() && (await Pacman.isGui())) {
-            // Se non è stretch o jessie
-
+            /**
+             * Se non è jessie o stretch...
+             */
             const remix = {} as IRemix
             const distro = new Distro(remix)
             if (calamaresAble()) {
@@ -126,9 +127,7 @@ export default class Config extends Command {
             }
 
             if (i.efi) {
-                if (process.arch === 'ia32') {
-                    // do nothing
-                } else if (process.arch === 'x64') {
+                if (process.arch === 'x64') {
                     console.log('- install efi packages')
                     console.log(chalk.yellow('  apt install -y grub-efi-amd64-bin\n'))
                 }

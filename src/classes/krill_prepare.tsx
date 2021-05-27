@@ -3,6 +3,7 @@ import React from 'react';
 import { render, RenderOptions } from 'ink'
 import Utils from './utils'
 import shx from 'shelljs'
+import fs from 'fs'
 
 import Welcome from '../components/welcome'
 import Location from '../components/location'
@@ -11,7 +12,6 @@ import Keyboard from '../components/keyboard'
 import Users from '../components/users'
 import Network from '../components/network'
 import Summary from '../components/summary'
-// import Install from './components/install' 
 
 import selectLanguages from '../lib/select_languages'
 import selectRegions from '../lib/select_regions'
@@ -256,7 +256,8 @@ export default class Krill {
    * NETWORK
    */
   async network() {
-    let iface = ''
+    const ifaces: string[] = fs.readdirSync('/sys/class/net/')
+    let iface = ifaces[0]
     let addressType = 'dhcp'
     let address = ''
     let netmask = ''

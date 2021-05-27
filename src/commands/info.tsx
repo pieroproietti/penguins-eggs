@@ -108,11 +108,22 @@ export default class Info extends Command {
       )
       render(<Ko />)
 
+      const Krill = () => (
+         <Text backgroundColor="green">Krill</Text>
+      )
+      render(<Krill />)
+
+      const Calamares = () => (
+         <Text backgroundColor="green">Calamares</Text>
+      )
+      render(<Calamares />)
+
+
       const Checks = () => (
          <Box borderStyle="round" marginRight={2} flexDirection="row">
             <Box marginRight={2}><Text>dependencies: {dependencies ? <Ok /> : <Ko />}</Text></Box>
             <Box marginRight={2}><Text>configurations: {configurations ? <Ok /> : <Ko />}</Text></Box>
-            <Box marginRight={2}><Text>installer: {installer ? <Ok /> : <Ko />}</Text></Box>
+            <Box marginRight={2}><Text>installer: {installer ? <Calamares /> : <Krill />}</Text></Box>
          </Box>
       )
       render(<Checks />)

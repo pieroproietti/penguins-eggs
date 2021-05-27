@@ -664,11 +664,11 @@ export default class Utils {
     */
     static async titles(command = ''): Promise<void> {
       console.clear()
-      render (<>
-            <Title />
-            <Box><Text> </Text></Box>
-            <Text>{command}</Text>
-            </>)
+      console.log(figlet.textSync('eggs'))
+      console.log(chalk.bgGreen.whiteBright('      ' + pjson.name + '      ') + 
+      chalk.bgWhite.blue(" Perri's Brewery edition ") + 
+      chalk.bgRed.whiteBright('       ver. ' + pjson.version + '       '))
+      console.log('command: ' + chalk.bgBlack.white(command) + '\n')      
    }
 
    /**
