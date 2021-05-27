@@ -54,7 +54,7 @@ export default function Network({ iface, addressType, address, netmask, gateway,
           <Box flexDirection="row">
             <Steps step={6} />
             <Box flexDirection="column">
-            <Box><Text>Network interface: </Text><Text color='green'>{Interface}</Text></Box>
+            <Box><Text>Network interface: </Text><Text color='green'>{iface}</Text></Box>
             <Box><Text>Address type: </Text><Text color='green'>{addressType}</Text></Box>
             <Box><Text>address: </Text><Text color='green'>{address}</Text></Box>
             <Box><Text>netmask: </Text><Text color='green'>{netmask}</Text></Box>
