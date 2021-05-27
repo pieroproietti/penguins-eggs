@@ -28,7 +28,7 @@ interface IReplaces {
 export class Bionic {
    verbose = false
 
-   installer = 'krill'
+   installer = 'eggs'
 
    remix: IRemix
 

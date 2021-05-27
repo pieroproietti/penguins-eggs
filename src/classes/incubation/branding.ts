@@ -6,7 +6,6 @@
  */
 import yaml = require('js-yaml')
 import { IRemix, IDistro } from '../../interfaces'
-import Ovary from '../ovary'
 
 /**
  *
