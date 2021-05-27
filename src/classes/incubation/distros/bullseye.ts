@@ -25,7 +25,7 @@ const exec = require('../../../lib/utils').exec
 export class Bullseye {
    verbose = false
 
-   installer = 'krill'
+   installer = 'eggs'
 
    remix: IRemix
 

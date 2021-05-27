@@ -22,7 +22,7 @@ const exec = require('../../../lib/utils').exec
 export class Beowulf {
    verbose = false
 
-   installer = 'krill'
+   installer = 'eggs'
 
    remix: IRemix
 

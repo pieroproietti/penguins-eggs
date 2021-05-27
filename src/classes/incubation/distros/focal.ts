@@ -29,7 +29,7 @@ interface IReplaces {
 export class Focal {
    verbose = false
 
-   installer = 'krill'
+   installer = 'eggs'
    
    remix: IRemix
 

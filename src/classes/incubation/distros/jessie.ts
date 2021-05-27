@@ -36,7 +36,7 @@ export class Jessie {
    user_opt: string
 
    // per jessie e stretc rootTemplate è SEMPRE krill
-   rootTemplate = './../../../../conf/distros/buster/krill/'
+   rootTemplate = './../../../../conf/distros/buster/eggs/'
 
    dirCalamaresModules = '/usr/lib/x86_64-linux-gnu/eggs/modules/'
 
