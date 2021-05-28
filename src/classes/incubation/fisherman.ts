@@ -21,50 +21,19 @@ interface IReplaces {
     replace: string
 }
 
-interface IInstaller {
-    name : string,
-    rootTemplate: string,
-    rootConfiguration: string,
-    rootModules: string,
-    rootMultiarch: string,
-}
-
 
 
 export default class Fisherman {
 
-    installer = 'eggs'
-
-    installerConf='/etc/penguins-eggs.d/eggs/'
-
-    installerModules = 'eggs-modules'
+    installer = {} as IInstaller
 
     distro: IDistro
 
-    dirModules = ''
-
-    dirCalamaresModules = ''
-
-    rootTemplate = ''
-
     verbose = false
 
-    constructor(distro: IDistro, dirModules: string, dirCalamaresModules: string, rootTemplate: string, verbose = false) {
-        if (Pacman.packageIsInstalled('calamares')) {
-            this.installer = 'calamares'
-            this.installerConf = '/etc/calamares'
-        }
-
-        /**
-         * solo jessie e stretch non hanno calamares 
-         */
-        if (! (distro.versionLike === 'jessie' || distro.versionLike === 'stretch')) {
-            this.installerModules = 'calamares-modules'
-        }
+    constructor(distro: IDistro, installer: IInstaller, , verbose = false) {
+        this.installer = installer
         this.distro = distro
-        this.dirModules = dirModules
-        this.dirCalamaresModules = dirCalamaresModules
-        this.rootTemplate = rootTemplate
         this.verbose = verbose
     }
 
@@ -72,11 +41,8 @@ export default class Fisherman {
     * write setting
     */
     async settings(branding = 'eggs') {
-        let settings = '/etc/' + this.installer + '/settings.conf'
-        if (this.installer==='eggs') {
-            settings = this.rootTemplate + 'settings.conf'
-        }
-        shx.cp(`${this.rootTemplate}/settings.yml`, settings)
+        let settings = this.installer.rootConfiguration + 'settings.conf'
+        shx.cp(this.installer.rootTemplate + 'settings.yml', settings)
         let s = '# '
         if (Utils.isSystemd()) {
             s = '- '
@@ -90,8 +56,8 @@ export default class Fisherman {
      * @param name 
      */
     async shellprocess(name: string) {
-        const moduleSource = path.resolve(__dirname, `${this.rootTemplate}/modules/shellprocess_${name}.yml`)
-        const moduleDest = `${this.dirModules}/shellprocess_${name}.conf`
+        const moduleSource = path.resolve(__dirname, this.installer.rootTemplate + '/modules/shellprocess_' + name + '.yml')
+        const moduleDest = this.installer.rootConfiguration + 'shellprocess_' + name + '.conf'
         if (fs.existsSync(moduleSource)) {
             if (this.verbose) this.show(name, 'shellprocess', moduleDest)
             shx.cp(moduleSource, moduleDest)
@@ -105,8 +71,8 @@ export default class Fisherman {
     * @param name 
     */
     async contextualprocess(name: string) {
-        const moduleSource = path.resolve(__dirname, `${this.rootTemplate}/modules/${name}_context.yml`)
-        const moduleDest = `${this.dirModules}/${name}_context.conf`
+        const moduleSource = path.resolve(__dirname, this.installer.rootTemplate + 'modules ' + name + '_context.yml')
+        const moduleDest = this.installer.rootConfiguration + '/' + name + '_context.conf'
         if (fs.existsSync(moduleSource)) {
             if (this.verbose) this.show(name, 'contextualprocess', moduleDest)
             shx.cp(moduleSource, moduleDest)
@@ -121,7 +87,7 @@ export default class Fisherman {
      * @param replaces [['search','replace']]
      */
     async buildModule(name: string, vendor = '') {
-        let moduleSource = path.resolve(__dirname, `${this.rootTemplate}/modules/${name}.yml`)
+        let moduleSource = path.resolve(__dirname, this.installer.rootTemplate + '/modules/' + name + '.yml')
 
         /**
          * We need vendor here to have possibility to load custom modules for calamares
@@ -147,7 +113,7 @@ export default class Fisherman {
 
         }
 
-        const moduleDest = `${this.dirModules}${name}.conf`
+        const moduleDest = this.installer.rootConfiguration + 'modules/' + name + ''.conf'
         if (fs.existsSync(moduleSource)) {
             if (this.verbose) this.show(name, 'module', moduleDest)
             shx.cp(moduleSource, moduleDest)

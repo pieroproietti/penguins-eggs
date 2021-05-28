@@ -20,12 +20,6 @@ import Pacman from '../pacman'
 
 const exec = require('../../lib/utils').exec
 
-interface IInstaller {
-   name: string,
-   rootTemplate: string,
-   rootConfiguration: string,
-   rootMultiarch: string,
-}
 
 
 /**
@@ -127,7 +121,6 @@ export default class Incubator {
     */
    private createInstallerDirs() {
       if (this.installer.name === 'calamares') {
-
          // Remove krill configuration if present
          shx.exec('rm /etc/penguins-eggs.d/krill -rf')
          if (process.arch === 'x32') {
@@ -152,7 +145,7 @@ export default class Incubator {
       if (!fs.existsSync(this.installer.rootConfiguration + 'modules')) {
          fs.mkdirSync(this.installer.rootConfiguration + 'modules')
       }
-      // multiarch root e modules
+      // multiarch e modules
       if (!fs.existsSync(this.installer.rootMultiarch)) {
          fs.mkdirSync(this.installer.rootMultiarch)
       }
@@ -202,7 +195,7 @@ export default class Incubator {
    private createBranding() {
 
       const branding = require('./branding').branding
-      const dir = this.installerConf + '/branding/' + this.remix.branding + '/'
+      const dir = this.installer.rootConfiguration + '/branding/' + this.remix.branding + '/'
       if (!fs.existsSync(dir)) {
          shx.exec(dir + ' -p')
       }

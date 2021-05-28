@@ -25,7 +25,7 @@ const exec = require('../../../lib/utils').exec
 export class Jessie {
    verbose = false
 
-   installer = 'eggs'
+   installer = {} as IInstaller
 
    remix: IRemix
 
@@ -48,27 +48,14 @@ export class Jessie {
     * @param displaymanager
     * @param verbose
     */
-   constructor(remix: IRemix, distro: IDistro, release: boolean, user_opt: string, verbose = false) {
-      if (Pacman.packageIsInstalled('calamares')) {
-         this.installer = 'calamares'
-      }
+   constructor(installer : IInstaller, remix: IRemix, distro: IDistro, release: boolean, user_opt: string, verbose = false) {
+      this.installer = installer
       this.remix = remix
       this.distro = distro
       this.user_opt = user_opt
       this.verbose = verbose
       this.release = release
 
-      if (this.installer==='calamares'){
-         this.dirModules = '/etc/' + this.installer + '/modules/'
-      } else {
-         this.dirModules = '/etc/' + this.installer + '/modules/'
-      }
-      if (process.arch === 'x32') {
-         this.dirCalamaresModules = '/usr/lib/i386-linux-gnu/' + this.installer + '/modules/'
-      } else {
-         this.dirCalamaresModules = '/usr/lib/x86_64-linux-gnu/' + this.installer + '/modules/'
-      }
-      shx.exec('mkdir ' + this.dirCalamaresModules + ' -p')
 
       /**
        * I template sono quelli di calamares per buster, bullseye, etc
@@ -86,7 +73,7 @@ export class Jessie {
     *
     */
    async create() {
-      const fisherman = new Fisherman(this.distro, this.dirModules, this.dirCalamaresModules, this.rootTemplate, this.verbose)
+      const fisherman = new Fisherman(this.distro, this.installer, this.verbose)
 
       await fisherman.settings(this.remix.branding)
 

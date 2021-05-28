@@ -11,6 +11,7 @@ export { IWorkDir } from './i-workdir'
 export { IInstall} from './i-install'
 export { IExec} from './i-exec'
 export { IConfig} from './i-config'
+export { IInstaller} from './i-installer'
 
 // Per krill
 export { IBranding } from './i-branding'
