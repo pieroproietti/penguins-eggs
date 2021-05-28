@@ -35,12 +35,12 @@ export class Jessie {
 
    user_opt: string
 
-   // per jessie e stretc rootTemplate è SEMPRE krill
-   rootTemplate = './../../../../conf/distros/buster/eggs/'
+   // per jessie e stretch rootTemplate è SEMPRE eggs
+   rootTemplate = './../../../../conf/distros/jessie/eggs/'
 
-   dirCalamaresModules = '/usr/lib/x86_64-linux-gnu/eggs/modules/'
+   dirCalamaresModules = '/usr/lib/x86_64-linux-gnu/eggs/'
 
-   dirModules = '/etc/eggs/modules/'
+   dirModules = '/etc/penguins-eggs.d/eggs/'
 
    /**
     * @param remix
@@ -56,19 +56,29 @@ export class Jessie {
       this.distro = distro
       this.user_opt = user_opt
       this.verbose = verbose
-      this.release = release 
+      this.release = release
 
-      this.dirModules='/etc/' + this.installer + '/modules/'
-      if (process.arch === 'ia32') {
+      if (this.installer==='calamares'){
+         this.dirModules = '/etc/' + this.installer + '/modules/'
+      } else {
+         this.dirModules = '/etc/' + this.installer + '/modules/'
+      }
+      if (process.arch === 'x32') {
          this.dirCalamaresModules = '/usr/lib/i386-linux-gnu/' + this.installer + '/modules/'
       } else {
          this.dirCalamaresModules = '/usr/lib/x86_64-linux-gnu/' + this.installer + '/modules/'
       }
       shx.exec('mkdir ' + this.dirCalamaresModules + ' -p')
 
-      // I template sono gli stessi per buster, bullseye, etc. Ma NON per jessie e stretch
-      this.rootTemplate = './../../../../conf/distros/' +this.distro.versionLike + '/' + this.installer +'/'
-      this.rootTemplate = path.resolve(__dirname, this.rootTemplate) + '/'
+      /**
+       * I template sono quelli di calamares per buster, bullseye, etc
+       * 
+       * this.rootTemplate = path.resolve(__dirname, './../../../../conf/distros/' + this.distro.versionLike + '/calamares/')
+       * 
+       * Ma NON per jessie e stretch
+       */
+      this.rootTemplate = path.resolve(__dirname, './../../../../conf/distros/' + this.distro.versionLike + '/eggs/')
+      console.log('rootTemplate=' + this.rootTemplate)
    }
 
 
