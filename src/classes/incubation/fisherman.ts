@@ -21,9 +21,21 @@ interface IReplaces {
     replace: string
 }
 
+interface IInstaller {
+    name : string,
+    rootTemplate: string,
+    rootConfiguration: string,
+    rootModules: string,
+    rootMultiarch: string,
+}
+
+
+
 export default class Fisherman {
 
     installer = 'eggs'
+
+    installerConf='/etc/penguins-eggs.d/eggs/'
 
     installerModules = 'eggs-modules'
 
@@ -40,6 +52,7 @@ export default class Fisherman {
     constructor(distro: IDistro, dirModules: string, dirCalamaresModules: string, rootTemplate: string, verbose = false) {
         if (Pacman.packageIsInstalled('calamares')) {
             this.installer = 'calamares'
+            this.installerConf = '/etc/calamares'
         }
 
         /**
@@ -59,7 +72,10 @@ export default class Fisherman {
     * write setting
     */
     async settings(branding = 'eggs') {
-        const settings = '/etc/' + this.installer + '/settings.conf'
+        let settings = '/etc/' + this.installer + '/settings.conf'
+        if (this.installer==='eggs') {
+            settings = this.rootTemplate + 'settings.conf'
+        }
         shx.cp(`${this.rootTemplate}/settings.yml`, settings)
         let s = '# '
         if (Utils.isSystemd()) {

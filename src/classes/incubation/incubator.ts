@@ -20,23 +20,29 @@ import Pacman from '../pacman'
 
 const exec = require('../../lib/utils').exec
 
+interface IInstaller {
+   name: string,
+   rootTemplate: string,
+   rootConfiguration: string,
+   rootMultiarch: string,
+}
+
+
 /**
  *
  */
 export default class Incubator {
    verbose = false
 
-   isCalamares = false
+   installer = {} as IInstaller
+
+   installerConf = '/etc/penguins-eggs.d/eggs/'
 
    remix: IRemix
 
    distro: IDistro
 
    user_opt: string
-
-   sourcesMedia = false
-
-   sourcesTrusted = true
 
    /**
     *
@@ -46,7 +52,25 @@ export default class Incubator {
     */
    constructor(remix: IRemix, distro: IDistro, user_opt = 'live', verbose = false) {
       if (Pacman.packageIsInstalled('calamares')) {
-         this.isCalamares = true
+         this.installer.name = 'calamares'
+         this.installer.rootConfiguration = '/etc/calamares/'
+         if (process.arch === 'x32') {
+            this.installer.rootMultiarch = '/usr/lib/i386-linux-gnu/calamares/'
+         } else if (process.arch === 'x64') {
+            this.installer.rootMultiarch = '/usr/lib/x86_64-linux-gnu/calamares/'
+         } else if (process.arch === 'armel') {
+            this.installer.rootMultiarch = '/usr/lib/armel-linux-gnu/calamares/'
+         }
+      } else {
+         this.installer.name = 'krill'
+         this.installer.rootConfiguration = '/etc/penguins-eggs.d/krill/'
+         if (process.arch === 'x32') {
+            this.installer.rootMultiarch = '/usr/lib/i386-linux-gnu/penguins-eggs/krill/'
+         } else if (process.arch === 'x64') {
+            this.installer.rootMultiarch = '/usr/lib/x86_64-linux-gnu/penguins-eggs/krill/'
+         } else if (process.arch === 'armel') {
+            this.installer.rootMultiarch = '/usr/lib/armel-linux-gnu/penguins-eggs/krill/'
+         }
       }
 
       this.remix = remix
@@ -102,86 +126,83 @@ export default class Incubator {
     *
     */
    private createInstallerDirs() {
-      let installer = 'krill'
-      if (this.isCalamares) {
-         installer = 'calamares'
+      if (this.installer.name === 'calamares') {
 
          // Remove krill configuration if present
-         shx.exec('rm /etc/krill -rf')
-         if (process.arch==='ia32') {
+         shx.exec('rm /etc/penguins-eggs.d/krill -rf')
+         if (process.arch === 'x32') {
             shx.exec('rm /usr/lib/i386-linux-gnu/krill -rf')
-         } else {
+         } else if (process.arch === 'x64') {
             shx.exec('rm /usr/lib/x86_64-linux-gnu/krill -rf')
+         } else if (process.arch === 'x64') {
+            shx.exec('rm /usr/lib/armel-linux-gnu/krill -rf')
          }
-
-         // create link to calamares configuration
-         // shx.exec('ln -s /etc/calamares /etc/krill')
-         // if (process.arch==='ia32') {
-         //    shx.exec('ln -s /usr/lib/i386-linux-gnu/calamares /usr/lib/i386-linux-gnu/krill')
-         // } else {
-         //   shx.exec('ln -s /usr/lib/x86_64-linux-gnu/calamares /usr/lib/x86_64-linux-gnu/krill')
-         // }
-
       }
 
-      if (!fs.existsSync('/etc/' + installer)) {
-         fs.mkdirSync('/etc/' + installer)
+      // rootConfiguration krill calamares
+      if (!fs.existsSync(this.installer.rootConfiguration)) {
+         fs.mkdirSync(this.installer.rootConfiguration)
       }
-      if (!fs.existsSync('/etc/' + installer + '/branding')) {
-         fs.mkdirSync('/etc/' + installer + '/branding')
+      if (!fs.existsSync(this.installer.rootConfiguration + 'branding')) {
+         fs.mkdirSync(this.installer.rootConfiguration + 'branding')
       }
-      if (!fs.existsSync('/etc/' + installer + '/branding/eggs')) {
-         fs.mkdirSync('/etc/' + installer + '/branding/eggs')
+      if (!fs.existsSync(this.installer.rootConfiguration + 'branding/eggs')) {
+         fs.mkdirSync(this.installer.rootConfiguration + 'branding/eggs')
       }
-      if (!fs.existsSync('/etc/' + installer + '/modules')) {
-         fs.mkdirSync('/etc/' + installer + '/modules')
+      if (!fs.existsSync(this.installer.rootConfiguration + 'modules')) {
+         fs.mkdirSync(this.installer.rootConfiguration + 'modules')
+      }
+      // multiarch root e modules
+      if (!fs.existsSync(this.installer.rootMultiarch)) {
+         fs.mkdirSync(this.installer.rootMultiarch)
+      }
+      if (!fs.existsSync(this.installer.rootMultiarch + 'modules')) {
+         fs.mkdirSync(this.installer.rootMultiarch + 'modules')
       }
 
 
       /**
-       * ADDONS
+       * ADDONS (only for calamares)
        */
-      const calamaresBranding = path.resolve(__dirname, `../../../addons/${this.remix.branding}/theme/calamares/branding`)
-      if (fs.existsSync(calamaresBranding)) {
-         if (!fs.existsSync('/etc/' + installer + `/branding/${this.remix.branding}`)) {
-            fs.mkdirSync('/etc/' + installer + `/branding/${this.remix.branding}`)
+      if (this.installer.name === 'calamares') {
+         const calamaresBranding = path.resolve(__dirname, `../../../addons/${this.remix.branding}/theme/calamares/branding`)
+         if (fs.existsSync(calamaresBranding)) {
+            if (!fs.existsSync(this.installer.rootConfiguration + `branding/${this.remix.branding}`)) {
+               fs.mkdirSync(this.installer.rootConfiguration + `branding/${this.remix.branding}`)
+            }
+            shx.cp(calamaresBranding + '/*', this.installer.rootConfiguration + `branding/${this.remix.branding}/`)
+         } else {
+            console.log(`${calamaresBranding} not found!`)
+            process.exit()
          }
-         shx.cp(`${calamaresBranding}/*`, '/etc/' + installer + `/branding/${this.remix.branding}/`)
-      } else {
-         console.log(`${calamaresBranding} not found!`)
-         process.exit()
-      }
 
-      const calamaresIcon = path.resolve(__dirname, `../../../addons/${this.remix.branding}/theme/artwork/install-debian.png`)
-      if (fs.existsSync(calamaresIcon)) {
-         shx.cp(calamaresIcon, '/usr/share/icons/')
-      } else {
-         console.log(`${calamaresIcon} not found!`)
-         process.exit()
-      }
+         const calamaresIcon = path.resolve(__dirname, `../../../addons/${this.remix.branding}/theme/artwork/install-debian.png`)
+         if (fs.existsSync(calamaresIcon)) {
+            shx.cp(calamaresIcon, '/usr/share/icons/')
+         } else {
+            console.log(`${calamaresIcon} not found!`)
+            process.exit()
+         }
 
-      const calamaresLauncher = path.resolve(__dirname, `../../../addons/${this.remix.branding}/theme/applications/install-debian.desktop`)
-      if (fs.existsSync(calamaresLauncher)) {
-         shx.cp(calamaresLauncher, '/usr/share/applications/')
-      } else {
-         console.log(`${calamaresLauncher} not found!`)
-         process.exit()
+         const calamaresLauncher = path.resolve(__dirname, `../../../addons/${this.remix.branding}/theme/applications/install-debian.desktop`)
+         if (fs.existsSync(calamaresLauncher)) {
+            shx.cp(calamaresLauncher, '/usr/share/applications/')
+         } else {
+            console.log(`${calamaresLauncher} not found!`)
+            process.exit()
+         }
+         // script di avvio
+         shx.cp(path.resolve(__dirname, '../../../assets/calamares/install-debian'), '/sbin/install-debian')
       }
-      // script di avvio
-      shx.cp(path.resolve(__dirname, '../../../assets/calamares/install-debian'), '/sbin/install-debian')
    }
 
    /**
     *
     */
    private createBranding() {
-      let installer = 'krill'
-      if (this.isCalamares) {
-         installer = 'calamares'
-      }
 
       const branding = require('./branding').branding
-      const dir = '/etc/' + installer + '/branding/' + this.remix.branding + '/'
+      const dir = this.installerConf + '/branding/' + this.remix.branding + '/'
       if (!fs.existsSync(dir)) {
          shx.exec(dir + ' -p')
       }
