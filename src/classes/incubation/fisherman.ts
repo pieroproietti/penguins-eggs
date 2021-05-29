@@ -11,8 +11,8 @@ import path = require('path')
 
 import { IRemix, IDistro } from '../../interfaces'
 import chalk = require('chalk')
-import Pacman from '../pacman'
 import Utils from '../utils'
+import {IInstaller} from '../../interfaces/index'
 
 const exec = require('../../lib/utils').exec
 
@@ -31,7 +31,7 @@ export default class Fisherman {
 
     verbose = false
 
-    constructor(distro: IDistro, installer: IInstaller, , verbose = false) {
+    constructor(distro: IDistro, installer: IInstaller, verbose = false) {
         this.installer = installer
         this.distro = distro
         this.verbose = verbose
@@ -41,8 +41,8 @@ export default class Fisherman {
     * write setting
     */
     async settings(branding = 'eggs') {
-        let settings = this.installer.rootConfiguration + 'settings.conf'
-        shx.cp(this.installer.rootTemplate + 'settings.yml', settings)
+        let settings = this.installer.configuration + 'settings.conf'
+        shx.cp(this.installer.template + 'settings.yml', settings)
         let s = '# '
         if (Utils.isSystemd()) {
             s = '- '
@@ -56,8 +56,8 @@ export default class Fisherman {
      * @param name 
      */
     async shellprocess(name: string) {
-        const moduleSource = path.resolve(__dirname, this.installer.rootTemplate + '/modules/shellprocess_' + name + '.yml')
-        const moduleDest = this.installer.rootConfiguration + 'shellprocess_' + name + '.conf'
+        const moduleSource = path.resolve(__dirname, this.installer.templateModules + 'shellprocess_' + name + '.yml')
+        const moduleDest = this.installer.modules + 'shellprocess_' + name + '.conf'
         if (fs.existsSync(moduleSource)) {
             if (this.verbose) this.show(name, 'shellprocess', moduleDest)
             shx.cp(moduleSource, moduleDest)
@@ -71,8 +71,8 @@ export default class Fisherman {
     * @param name 
     */
     async contextualprocess(name: string) {
-        const moduleSource = path.resolve(__dirname, this.installer.rootTemplate + 'modules ' + name + '_context.yml')
-        const moduleDest = this.installer.rootConfiguration + '/' + name + '_context.conf'
+        const moduleSource = path.resolve(__dirname, this.installer.templateModules + name + '_context.yml')
+        const moduleDest = this.installer.modules + name + '_context.conf'
         if (fs.existsSync(moduleSource)) {
             if (this.verbose) this.show(name, 'contextualprocess', moduleDest)
             shx.cp(moduleSource, moduleDest)
@@ -87,7 +87,7 @@ export default class Fisherman {
      * @param replaces [['search','replace']]
      */
     async buildModule(name: string, vendor = '') {
-        let moduleSource = path.resolve(__dirname, this.installer.rootTemplate + '/modules/' + name + '.yml')
+        let moduleSource = path.resolve(__dirname, this.installer.modules + name + '.yml')
 
         /**
          * We need vendor here to have possibility to load custom modules for calamares
@@ -113,7 +113,7 @@ export default class Fisherman {
 
         }
 
-        const moduleDest = this.installer.rootConfiguration + 'modules/' + name + ''.conf'
+        const moduleDest = this.installer.modules + name + '.conf'
         if (fs.existsSync(moduleSource)) {
             if (this.verbose) this.show(name, 'module', moduleDest)
             shx.cp(moduleSource, moduleDest)
@@ -129,8 +129,8 @@ export default class Fisherman {
      * @param isScript 
      */
     async buildCalamaresModule(name: string, isScript = true): Promise<string> {
-        const moduleTemplate = path.resolve(__dirname, this.rootTemplate + '/' + this.installerModules + '/' + name)
-        const moduleDest = this.dirCalamaresModules + name
+        const moduleTemplate = path.resolve(__dirname, this.installer.templateModules + name)
+        const moduleDest = this.installer.multiarchModules + name
         const moduleScript = `/usr/sbin/${name}.sh`
 
         if (this.verbose) this.show(name, this.installer + '_module', moduleDest)
@@ -152,8 +152,8 @@ export default class Fisherman {
      * @param name 
      */
     async buildCalamaresPy(name: string) {
-        const moduleSource = path.resolve(__dirname, this.rootTemplate + '/' + this.installerModules + '/' + name)
-        const moduleDest = this.dirCalamaresModules + '/' + name
+        const moduleSource = path.resolve(__dirname, this.installer.templateMultiarch + '/' + name)
+        const moduleDest = this.installer.multiarchModules + name
 
         if (this.verbose) this.show(name, 'python', moduleDest)
         if (!fs.existsSync(moduleDest)) {
@@ -196,7 +196,7 @@ export default class Fisherman {
         const name = 'finished'
         await this.buildModule(name)
         const restartNowCommand = 'reboot'
-        shx.sed('-i', '{{restartNowCommand}}', restartNowCommand, `${this.dirModules}/${name}.conf`)
+        shx.sed('-i', '{{restartNowCommand}}', restartNowCommand, `${this.installer.modules}/${name}.conf`)
     }
 
     /**
@@ -205,7 +205,7 @@ export default class Fisherman {
     async moduleUnpackfs() {
         const name = 'unpackfs'
         this.buildModule(name)
-        shx.sed('-i', '{{source}}', this.distro.mountpointSquashFs, `${this.dirModules}/${name}.conf`)
+        shx.sed('-i', '{{source}}', this.distro.mountpointSquashFs, `${this.installer.modules}/${name}.conf`)
     }
 
     /**
@@ -215,7 +215,7 @@ export default class Fisherman {
         const name = 'displaymanager'
         const displaymanager = require('./fisherman-helper/displaymanager').displaymanager
         this.buildModule(name)
-        shx.sed('-i', '{{displaymanagers}}', displaymanager(), `${this.dirModules}/${name}.conf`)
+        shx.sed('-i', '{{displaymanagers}}', displaymanager(), `${this.installer.modules}/${name}.conf`)
     }
 
     /**
@@ -227,11 +227,11 @@ export default class Fisherman {
         const tryInstall = require('./fisherman-helper/packages').tryInstall
         this.buildModule(name)
         if (remove) {
-            shx.sed('-i', '{{remove}}', removePackages(distro), `${this.dirModules}/${name}.conf`)
+            shx.sed('-i', '{{remove}}', removePackages(distro), `${this.installer.modules}/${name}.conf`)
         } else {
-            shx.sed('-i', '{{remove}}', '', `${this.dirModules}/${name}.conf`)
+            shx.sed('-i', '{{remove}}', '', `${this.installer.modules}/${name}.conf`)
         }
-        shx.sed('-i', '{{try_install}}', tryInstall(distro), `${this.dirModules}/${name}.conf`)
+        shx.sed('-i', '{{try_install}}', tryInstall(distro), `${this.installer.modules}/${name}.conf`)
     }
 
     /**
@@ -240,7 +240,7 @@ export default class Fisherman {
     async moduleRemoveuser(username: string) {
         const name = 'removeuser'
         this.buildModule(name)
-        shx.sed('-i', '{{username}}', username, `${this.dirModules}${name}.conf`)
+        shx.sed('-i', '{{username}}', username, `${this.installer.modules}${name}.conf`)
     }
 
 }
