@@ -27,9 +27,9 @@ export function installer (name= 'krill') : IInstaller {
 
 
    if (versionLike()==='jessie' || versionLike()==='stretch') {
-      installer.template = '/etc/penguins-eggs/' + versionLike() + '/krill/'
+      installer.template = '/etc/penguins-eggs.d/distros/' + versionLike() + '/krill/'
    } else {
-      installer.template = '/etc/penguins-eggs/distros/' + versionLike() + '/' + installer + '/'
+      installer.template = '/etc/penguins-eggs.d/distros/' + versionLike() + '/' + installer + '/'
    }
    installer.templateModules = installer.template + 'modules/'
    installer.templateMultiarch + installer.template + installer + '-modules/'

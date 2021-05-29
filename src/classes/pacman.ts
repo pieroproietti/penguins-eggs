@@ -488,8 +488,7 @@ export default class Pacman {
          await this.ln(`${buster}/grub`, `${stretch}/grub`, remove, verbose)
          await this.ln(`${buster}/isolinux`, `${stretch}/isolinux`, remove, verbose)
          await this.ln(`${buster}/locales`, `${stretch}/locales`, remove, verbose)
-         // gia esiste await this.ln(`${jessie}/krill`, `${stretch}/krill`, remove, verbose)
-         //await this.ln(`${buster}/calamares`, `${stretch}/calamares`, remove, verbose)
+         await this.ln(`${jessie}/krill`, `${stretch}/krill`, remove, verbose)
 
          // Devuan beowulf
          const beowulf = `${rootPen}/conf/distros/beowulf`
