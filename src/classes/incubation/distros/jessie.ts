@@ -13,8 +13,7 @@ import yaml = require('js-yaml')
 import path = require('path')
 
 import { IRemix, IDistro } from '../../../interfaces'
-
-import Pacman from '../../pacman'
+import {IInstaller} from '../../../interfaces/i-installer'
 import Fisherman from '../fisherman'
 
 const exec = require('../../../lib/utils').exec
@@ -35,12 +34,6 @@ export class Jessie {
 
    user_opt: string
 
-   // per jessie e stretch rootTemplate è SEMPRE eggs
-   rootTemplate = './../../../../conf/distros/jessie/eggs/'
-
-   dirCalamaresModules = '/usr/lib/x86_64-linux-gnu/eggs/'
-
-   dirModules = '/etc/penguins-eggs.d/eggs/'
 
    /**
     * @param remix
@@ -55,17 +48,6 @@ export class Jessie {
       this.user_opt = user_opt
       this.verbose = verbose
       this.release = release
-
-
-      /**
-       * I template sono quelli di calamares per buster, bullseye, etc
-       * 
-       * this.rootTemplate = path.resolve(__dirname, './../../../../conf/distros/' + this.distro.versionLike + '/calamares/')
-       * 
-       * Ma NON per jessie e stretch
-       */
-      this.rootTemplate = path.resolve(__dirname, './../../../../conf/distros/' + this.distro.versionLike + '/eggs/')
-      console.log('rootTemplate=' + this.rootTemplate)
    }
 
 

@@ -12,11 +12,14 @@ import { IRemix, IDistro } from '../../interfaces'
 
 import { Jessie } from './distros/jessie'
 import { Buster } from './distros/buster'
-import { Bullseye } from './distros/bullseye'
-import { Beowulf } from './distros/beowulf'
-import { Focal } from './distros/focal'
-import { Bionic } from './distros/bionic'
+// import { Bullseye } from './distros/bullseye'
+// import { Beowulf } from './distros/beowulf'
+// import { Focal } from './distros/focal'
+// import { Bionic } from './distros/bionic'
+
 import Pacman from '../pacman'
+import {installer} from './installer'
+import {IInstaller} from '../../interfaces/i-installer'
 
 const exec = require('../../lib/utils').exec
 
@@ -29,8 +32,6 @@ export default class Incubator {
    verbose = false
 
    installer = {} as IInstaller
-
-   installerConf = '/etc/penguins-eggs.d/eggs/'
 
    remix: IRemix
 
@@ -46,27 +47,10 @@ export default class Incubator {
     */
    constructor(remix: IRemix, distro: IDistro, user_opt = 'live', verbose = false) {
       if (Pacman.packageIsInstalled('calamares')) {
-         this.installer.name = 'calamares'
-         this.installer.rootConfiguration = '/etc/calamares/'
-         if (process.arch === 'x32') {
-            this.installer.rootMultiarch = '/usr/lib/i386-linux-gnu/calamares/'
-         } else if (process.arch === 'x64') {
-            this.installer.rootMultiarch = '/usr/lib/x86_64-linux-gnu/calamares/'
-         } else if (process.arch === 'armel') {
-            this.installer.rootMultiarch = '/usr/lib/armel-linux-gnu/calamares/'
-         }
+         this.installer= installer('calamares')
       } else {
-         this.installer.name = 'krill'
-         this.installer.rootConfiguration = '/etc/penguins-eggs.d/krill/'
-         if (process.arch === 'x32') {
-            this.installer.rootMultiarch = '/usr/lib/i386-linux-gnu/penguins-eggs/krill/'
-         } else if (process.arch === 'x64') {
-            this.installer.rootMultiarch = '/usr/lib/x86_64-linux-gnu/penguins-eggs/krill/'
-         } else if (process.arch === 'armel') {
-            this.installer.rootMultiarch = '/usr/lib/armel-linux-gnu/penguins-eggs/krill/'
-         }
+         this.installer= installer('krill')
       }
-
       this.remix = remix
       this.distro = distro
       this.user_opt = user_opt
@@ -85,32 +69,32 @@ export default class Incubator {
 
       this.createInstallerDirs()
       if (this.distro.versionLike === 'jessie') {
-         const jessie = new Jessie(this.remix, this.distro, release, this.user_opt, this.verbose)
+         const jessie = new Jessie(this.installer, this.remix, this.distro, release, this.user_opt, this.verbose)
          await jessie.create()
       } else if (this.distro.versionLike === 'stretch') {
-         const stretch = new Jessie(this.remix, this.distro, release, this.user_opt, this.verbose)
+         const stretch = new Jessie(this.installer, this.remix, this.distro, release, this.user_opt, this.verbose)
          await stretch.create()
       } else if (this.distro.versionLike === 'buster') {
-         const buster = new Buster(this.remix, this.distro, release, this.user_opt, this.verbose)
+         const buster = new Buster(this.installer, this.remix, this.distro, release, this.user_opt, this.verbose)
          await buster.create()
       } else if (this.distro.versionLike === 'bullseye') {
-         const bullseye = new Bullseye(this.remix, this.distro, release, this.user_opt, this.verbose)
-         await bullseye.create()
+         // const bullseye = new Bullseye(this.remix, this.distro, release, this.user_opt, this.verbose)
+         // await bullseye.create()
       } else if (this.distro.versionLike === 'beowulf') {
-         const beowulf = new Beowulf(this.remix, this.distro, release, this.user_opt, this.verbose)
-         await beowulf.create()
+         // const beowulf = new Beowulf(this.remix, this.distro, release, this.user_opt, this.verbose)
+         // await beowulf.create()
       } else if (this.distro.versionLike === 'focal') {
-         const focal = new Focal(this.remix, this.distro, release, this.user_opt, this.verbose)
-         await focal.create()
+         // const focal = new Focal(this.remix, this.distro, release, this.user_opt, this.verbose)
+         // await focal.create()
       } else if (this.distro.versionLike === 'groovy') {
-         const groovy = new Focal(this.remix, this.distro, release, this.user_opt, this.verbose)
-         await groovy.create()
+         // const groovy = new Focal(this.remix, this.distro, release, this.user_opt, this.verbose)
+         // await groovy.create()
       } else if (this.distro.versionLike === 'hirsute') {
-         const hirsute = new Focal(this.remix, this.distro, release, this.user_opt, this.verbose)
-         await hirsute.create()
+         // const hirsute = new Focal(this.remix, this.distro, release, this.user_opt, this.verbose)
+         // await hirsute.create()
       } else if (this.distro.versionLike === 'bionic') {
-         const bionic = new Bionic(this.remix, this.distro, release, this.user_opt, this.verbose)
-         await bionic.create()
+         // const bionic = new Bionic(this.remix, this.distro, release, this.user_opt, this.verbose)
+         // await bionic.create()
       }
       this.createBranding()
 
@@ -122,35 +106,29 @@ export default class Incubator {
    private createInstallerDirs() {
       if (this.installer.name === 'calamares') {
          // Remove krill configuration if present
-         shx.exec('rm /etc/penguins-eggs.d/krill -rf')
-         if (process.arch === 'x32') {
-            shx.exec('rm /usr/lib/i386-linux-gnu/krill -rf')
-         } else if (process.arch === 'x64') {
-            shx.exec('rm /usr/lib/x86_64-linux-gnu/krill -rf')
-         } else if (process.arch === 'x64') {
-            shx.exec('rm /usr/lib/armel-linux-gnu/krill -rf')
-         }
+         shx.exec('rm ' + this.installer.configuration + '-rf')
+         shx.exec('rm ' + this.installer.multiarchModules + '-rf')
       }
 
       // rootConfiguration krill calamares
-      if (!fs.existsSync(this.installer.rootConfiguration)) {
-         fs.mkdirSync(this.installer.rootConfiguration)
+      if (!fs.existsSync(this.installer.configuration)) {
+         fs.mkdirSync(this.installer.configuration)
       }
-      if (!fs.existsSync(this.installer.rootConfiguration + 'branding')) {
-         fs.mkdirSync(this.installer.rootConfiguration + 'branding')
+      if (!fs.existsSync(this.installer.configuration + 'branding')) {
+         fs.mkdirSync(this.installer.configuration + 'branding')
       }
-      if (!fs.existsSync(this.installer.rootConfiguration + 'branding/eggs')) {
-         fs.mkdirSync(this.installer.rootConfiguration + 'branding/eggs')
+      if (!fs.existsSync(this.installer.configuration + 'branding/eggs')) {
+         fs.mkdirSync(this.installer.configuration + 'branding/eggs')
       }
-      if (!fs.existsSync(this.installer.rootConfiguration + 'modules')) {
-         fs.mkdirSync(this.installer.rootConfiguration + 'modules')
+      if (!fs.existsSync(this.installer.configuration + 'modules')) {
+         fs.mkdirSync(this.installer.configuration + 'modules')
       }
       // multiarch e modules
-      if (!fs.existsSync(this.installer.rootMultiarch)) {
-         fs.mkdirSync(this.installer.rootMultiarch)
+      if (!fs.existsSync(this.installer.multiarchModules)) {
+         fs.mkdirSync(this.installer.multiarchModules)
       }
-      if (!fs.existsSync(this.installer.rootMultiarch + 'modules')) {
-         fs.mkdirSync(this.installer.rootMultiarch + 'modules')
+      if (!fs.existsSync(this.installer.multiarchModules + 'modules')) {
+         fs.mkdirSync(this.installer.multiarchModules + 'modules')
       }
 
 
@@ -160,10 +138,10 @@ export default class Incubator {
       if (this.installer.name === 'calamares') {
          const calamaresBranding = path.resolve(__dirname, `../../../addons/${this.remix.branding}/theme/calamares/branding`)
          if (fs.existsSync(calamaresBranding)) {
-            if (!fs.existsSync(this.installer.rootConfiguration + `branding/${this.remix.branding}`)) {
-               fs.mkdirSync(this.installer.rootConfiguration + `branding/${this.remix.branding}`)
+            if (!fs.existsSync(this.installer.configuration + `branding/${this.remix.branding}`)) {
+               fs.mkdirSync(this.installer.configuration + `branding/${this.remix.branding}`)
             }
-            shx.cp(calamaresBranding + '/*', this.installer.rootConfiguration + `branding/${this.remix.branding}/`)
+            shx.cp(calamaresBranding + '/*', this.installer.configuration + `branding/${this.remix.branding}/`)
          } else {
             console.log(`${calamaresBranding} not found!`)
             process.exit()
@@ -195,7 +173,7 @@ export default class Incubator {
    private createBranding() {
 
       const branding = require('./branding').branding
-      const dir = this.installer.rootConfiguration + '/branding/' + this.remix.branding + '/'
+      const dir = this.installer.configuration + 'branding/' + this.remix.branding + '/'
       if (!fs.existsSync(dir)) {
          shx.exec(dir + ' -p')
       }
