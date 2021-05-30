@@ -481,7 +481,6 @@ export default class Pacman {
          await this.ln(`${buster}/grub`, `${jessie}/grub`, remove, verbose)
          await this.ln(`${buster}/isolinux`, `${jessie}/isolinux`, remove, verbose)
          await this.ln(`${buster}/locales`, `${jessie}/locales`, remove, verbose)
-         //await this.ln(`${buster}/calamares`, `${jessie}/calamares`, remove, verbose)
          
          // Debian 9 - stretch
          const stretch = `${rootPen}/conf/distros/stretch`
