@@ -22,17 +22,17 @@ export function installer (name= 'krill') : IInstaller {
    } else {
       installer.configuration = '/etc/penguins-eggs.d/krill/'
    }
-   installer.modules = installer.configuration + installer + '/'
-   installer.multiarchModules = '/usr/lib/' + multiarch() + '/' + installer + '/'
-
+   installer.modules = installer.configuration + 'modules/'
+   installer.multiarch = '/usr/lib/' + multiarch() + '/' + installer.name + '/'
+   installer.multiarchModules = installer.multiarch + 'modules/'
 
    if (versionLike()==='jessie' || versionLike()==='stretch') {
       installer.template = '/etc/penguins-eggs.d/distros/' + versionLike() + '/krill/'
    } else {
-      installer.template = '/etc/penguins-eggs.d/distros/' + versionLike() + '/' + installer + '/'
+      installer.template = '/etc/penguins-eggs.d/distros/' + versionLike() + '/' + installer.name + '/'
    }
    installer.templateModules = installer.template + 'modules/'
-   installer.templateMultiarch + installer.template + installer + '-modules/'
+   installer.templateMultiarch = installer.template + installer.name + '-modules/'
 
    return installer
 }

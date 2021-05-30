@@ -12,6 +12,7 @@
    name: string,
    configuration: string,
    modules: string,
+   multiarch: string,
    multiarchModules: string,
 
    template: string,
