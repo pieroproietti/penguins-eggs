@@ -18,6 +18,10 @@ You can follow the project also consulting the [commit history](https://github.c
 ## Changelog
 Versions are listed on reverse order, the first is the last one.
 
+
+### eggs-8.0.1
+* test on bullseye with and without calamares
+
 ### eggs-8.0.0 
 * krill installer come now with eggs. 
 

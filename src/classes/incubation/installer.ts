@@ -44,7 +44,7 @@ export function installer(): IInstaller {
       installer.templateMultiarch = installer.template + 'krill-modules/'
    }
 
-   console.log(installer)
+   // console.log(installer)
    return installer
 }
 
