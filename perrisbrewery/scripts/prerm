@@ -22,17 +22,28 @@ fi
     #if [ -f "$FILE" ]; then
         rm -rf /etc/calamares
 
-        rm -rf /usr/lib/x86_64-linux-gnu/calamares/modules/bootloader-config  
+        # remove scripts calamares/krill
         rm -f /usr/sbin/bootloader-config.sh
-
-        rm -rf /usr/lib/x86_64-linux-gnu/calamares/modules/remove-link  
         rm -f /usr/sbin/remove-link.sh
-
-        rm -rf /usr/lib/x86_64-linux-gnu/calamares/modules/sources-yolk  
         rm -f /usr/sbin/sources-yolk.sh
 
+        # remove calamares-modules x86_64
+        rm -rf /usr/lib/x86_64-linux-gnu/calamares/modules/bootloader-config  
+        rm -rf /usr/lib/x86_64-linux-gnu/calamares/modules/remove-link  
+        rm -rf /usr/lib/x86_64-linux-gnu/calamares/modules/sources-yolk  
         rm -rf /usr/lib/x86_64-linux-gnu/calamares/modules/sources-yolk-unmount
-        #  usa /usr/sbin/sources-yolk.sh
+
+        # remove calamares-modules i386
+        rm -rf /usr/lib/i386-linux-gnu/calamares/modules/bootloader-config  
+        rm -rf /usr/lib/i386-linux-gnu/calamares/modules/remove-link  
+        rm -rf /usr/lib/i386-linux-gnu/calamares/modules/sources-yolk  
+        rm -rf /usr/lib/i386-linux-gnu/calamares/modules/sources-yolk-unmount
+
+        # remove calamares-modules armel
+        rm -rf /usr/lib/armel-linux-gnu/calamares/modules/bootloader-config  
+        rm -rf /usr/lib/armel-linux-gnu/calamares/modules/remove-link  
+        rm -rf /usr/lib/armel-linux-gnu/calamares/modules/sources-yolk  
+        rm -rf /usr/lib/armel-linux-gnu/calamares/modules/sources-yolk-unmount
     #fi
 
 exit 0
