@@ -42,8 +42,6 @@ export class Buster {
     * @param displaymanager
     * @param verbose
     */
-
-    //        
    constructor(installer : IInstaller, remix: IRemix, distro: IDistro, release: boolean, user_opt: string, verbose = false) {
       this.installer = installer
 

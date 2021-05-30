@@ -87,7 +87,7 @@ export default class Fisherman {
      * @param replaces [['search','replace']]
      */
     async buildModule(name: string, vendor = '') {
-        let moduleSource = path.resolve(__dirname, this.installer.modules + name + '.yml')
+        let moduleSource = path.resolve(__dirname, this.installer.templateModules + name + '.yml')
 
         /**
          * We need vendor here to have possibility to load custom modules for calamares
@@ -113,6 +113,7 @@ export default class Fisherman {
 
         }
 
+        
         const moduleDest = this.installer.modules + name + '.conf'
         if (fs.existsSync(moduleSource)) {
             if (this.verbose) this.show(name, 'module', moduleDest)
@@ -134,9 +135,9 @@ export default class Fisherman {
         const moduleScript = `/usr/sbin/${name}.sh`
 
 
-        console.log('moduleDest: ' + moduleDest)
-        console.log('moduleTemplate: ' + moduleTemplate)
-        console.log('moduleScript: ' + moduleScript)
+        // console.log('moduleDest: ' + moduleDest)
+        // console.log('moduleTemplate: ' + moduleTemplate)
+        // console.log('moduleScript: ' + moduleScript)
 
         if (this.verbose) this.show(name, this.installer + '_module', moduleDest)
 
@@ -201,7 +202,7 @@ export default class Fisherman {
         const name = 'finished'
         await this.buildModule(name)
         const restartNowCommand = 'reboot'
-        shx.sed('-i', '{{restartNowCommand}}', restartNowCommand, `${this.installer.modules}/${name}.conf`)
+        shx.sed('-i', '{{restartNowCommand}}', restartNowCommand, this.installer.modules + name +'.conf')
     }
 
     /**
@@ -210,7 +211,7 @@ export default class Fisherman {
     async moduleUnpackfs() {
         const name = 'unpackfs'
         this.buildModule(name)
-        shx.sed('-i', '{{source}}', this.distro.mountpointSquashFs, `${this.installer.modules}/${name}.conf`)
+        shx.sed('-i', '{{source}}', this.distro.mountpointSquashFs, this.installer.modules + name + '.conf')
     }
 
     /**
@@ -220,7 +221,7 @@ export default class Fisherman {
         const name = 'displaymanager'
         const displaymanager = require('./fisherman-helper/displaymanager').displaymanager
         this.buildModule(name)
-        shx.sed('-i', '{{displaymanagers}}', displaymanager(), `${this.installer.modules}/${name}.conf`)
+        shx.sed('-i', '{{displaymanagers}}', displaymanager(), this.installer.modules + name + '.conf')
     }
 
     /**
@@ -232,11 +233,11 @@ export default class Fisherman {
         const tryInstall = require('./fisherman-helper/packages').tryInstall
         this.buildModule(name)
         if (remove) {
-            shx.sed('-i', '{{remove}}', removePackages(distro), `${this.installer.modules}/${name}.conf`)
+            shx.sed('-i', '{{remove}}', removePackages(distro), this.installer.modules + name + '.conf')
         } else {
-            shx.sed('-i', '{{remove}}', '', `${this.installer.modules}/${name}.conf`)
+            shx.sed('-i', '{{remove}}', '', this.installer.modules + name + '.conf')
         }
-        shx.sed('-i', '{{try_install}}', tryInstall(distro), `${this.installer.modules}/${name}.conf`)
+        shx.sed('-i', '{{try_install}}', tryInstall(distro), this.installer.modules + name + '.conf')
     }
 
     /**
@@ -245,7 +246,7 @@ export default class Fisherman {
     async moduleRemoveuser(username: string) {
         const name = 'removeuser'
         this.buildModule(name)
-        shx.sed('-i', '{{username}}', username, `${this.installer.modules}${name}.conf`)
+        shx.sed('-i', '{{username}}', username, this.installer.modules + name + '.conf')
     }
 
 }

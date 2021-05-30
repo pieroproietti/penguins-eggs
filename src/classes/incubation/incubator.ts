@@ -12,10 +12,10 @@ import { IRemix, IDistro } from '../../interfaces'
 
 import { Jessie } from './distros/jessie'
 import { Buster } from './distros/buster'
-// import { Bullseye } from './distros/bullseye'
-// import { Beowulf } from './distros/beowulf'
-// import { Focal } from './distros/focal'
-// import { Bionic } from './distros/bionic'
+import { Bullseye } from './distros/bullseye'
+import { Beowulf } from './distros/beowulf'
+import { Focal } from './distros/focal'
+import { Bionic } from './distros/bionic'
 
 import Pacman from '../pacman'
 import {installer} from './installer'
@@ -47,7 +47,7 @@ export default class Incubator {
     */
    constructor(remix: IRemix, distro: IDistro, user_opt = 'live', verbose = false) {
       if (Pacman.packageIsInstalled('calamares')) {
-         this.installer= installer('calamares')
+         this.installer = installer('calamares')
       } else {
          this.installer= installer('krill')
       }
@@ -78,23 +78,23 @@ export default class Incubator {
          const buster = new Buster(this.installer, this.remix, this.distro, release, this.user_opt, this.verbose)
          await buster.create()
       } else if (this.distro.versionLike === 'bullseye') {
-         // const bullseye = new Bullseye(this.remix, this.distro, release, this.user_opt, this.verbose)
-         // await bullseye.create()
+         const bullseye = new Bullseye(this.installer, this.remix, this.distro, release, this.user_opt, this.verbose)
+         await bullseye.create()
       } else if (this.distro.versionLike === 'beowulf') {
-         // const beowulf = new Beowulf(this.remix, this.distro, release, this.user_opt, this.verbose)
-         // await beowulf.create()
+         const beowulf = new Beowulf(this.installer, this.remix, this.distro, release, this.user_opt, this.verbose)
+         await beowulf.create()
       } else if (this.distro.versionLike === 'focal') {
-         // const focal = new Focal(this.remix, this.distro, release, this.user_opt, this.verbose)
-         // await focal.create()
+         const focal = new Focal(this.installer, this.remix, this.distro, release, this.user_opt, this.verbose)
+         await focal.create()
       } else if (this.distro.versionLike === 'groovy') {
-         // const groovy = new Focal(this.remix, this.distro, release, this.user_opt, this.verbose)
-         // await groovy.create()
+         const groovy =  new Focal(this.installer, this.remix, this.distro, release, this.user_opt, this.verbose)
+         await groovy.create()
       } else if (this.distro.versionLike === 'hirsute') {
-         // const hirsute = new Focal(this.remix, this.distro, release, this.user_opt, this.verbose)
-         // await hirsute.create()
+         const hirsute =  new Focal(this.installer, this.remix, this.distro, release, this.user_opt, this.verbose)
+         await hirsute.create()
       } else if (this.distro.versionLike === 'bionic') {
-         // const bionic = new Bionic(this.remix, this.distro, release, this.user_opt, this.verbose)
-         // await bionic.create()
+         const bionic = new Bionic(this.installer, this.remix, this.distro, release, this.user_opt, this.verbose)
+         await bionic.create()
       }
       this.createBranding()
 
@@ -104,10 +104,10 @@ export default class Incubator {
     *
     */
    private createInstallerDirs() {
-      if (this.installer.name === 'calamares') {
-         // Remove krill configuration if present
-         shx.exec('rm ' + this.installer.configuration + '-rf')
-         shx.exec('rm ' + this.installer.multiarch + '-rf')
+      if (this.installer.name !== 'calamares') {
+         // Remove krill configuration and multiarc if present
+         shx.exec('rm ' + this.installer.configuration + ' -rf')
+         shx.exec('rm ' + this.installer.multiarch +  ' -rf')
       }
 
       // rootConfiguration krill calamares
