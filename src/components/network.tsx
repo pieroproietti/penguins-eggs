@@ -25,15 +25,15 @@ type NetworkProps = {
 
 
 export default function Network({ iface, addressType, address, netmask, gateway, dns }: NetworkProps) {
-  let installer = 'krill'
   let productName = 'unknown'
   let version = 'x.x.x'
+  let configRoot = '/etc/penguins-eggs.d/krill/'
   if (fs.existsSync('/etc/calamares/settings.conf')) {
-    installer = 'calamares'
-  }
-  const settings = yaml.load(fs.readFileSync('/etc/' + installer + '/settings.conf', 'utf-8')) as unknown as ISettings
+    configRoot = '/etc/calamares/'
+   }
+  const settings = yaml.load(fs.readFileSync(configRoot + 'settings.conf', 'utf-8')) as unknown as ISettings
   const branding = settings.branding
-  const calamares = yaml.load(fs.readFileSync('/etc/' + installer + '/branding/' + branding + '/branding.desc', 'utf-8')) as unknown as IBranding
+  const calamares = yaml.load(fs.readFileSync(configRoot + 'branding/' + branding + '/branding.desc', 'utf-8')) as unknown as IBranding
   productName = calamares.strings.productName
   version = calamares.strings.version
 
