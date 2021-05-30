@@ -18,14 +18,16 @@ You can follow the project also consulting the [commit history](https://github.c
 ## Changelog
 Versions are listed on reverse order, the first is the last one.
 
-### eggs-8.0.0
+### eggs-8.0.0 
 * krill installer come now with eggs. 
 
-This is major version, why? 
+#### This is major version, why? 
+In short: I removed the old CLI installer with the new krill installer with all it's armamentary and experiences: react components for visualization (only for eggs install and eggs info) and same configuration for GUI and CLI installer. 
 
-In short: I removed the old CLI installer with the new krill installer with all it's armamentary and experiences: react components for visualization (only for eggs install and eggs info), same configuration for GUI and CLI installer, compiled with node-8.17.0 for all the architectures and just a bit cleaning.
+I'm using actually node-8.17.0 to can build for all the architectures (i386, amd64, armel).
 
 I hope to receive [feedback](https://github.com/pieroproietti/penguins-eggs/issues).
+
 
 ### eggs-7.8.50
 * more steps to krill, eggs now produce configuration for krill or calamares in all the distro/version
