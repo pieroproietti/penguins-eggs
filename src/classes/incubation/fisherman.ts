@@ -133,6 +133,11 @@ export default class Fisherman {
         const moduleDest = this.installer.multiarchModules + name
         const moduleScript = `/usr/sbin/${name}.sh`
 
+
+        console.log('moduleDest: ' + moduleDest)
+        console.log('moduleTemplate: ' + moduleTemplate)
+        console.log('moduleScript: ' + moduleScript)
+
         if (this.verbose) this.show(name, this.installer + '_module', moduleDest)
 
         if (!fs.existsSync(moduleDest)) {

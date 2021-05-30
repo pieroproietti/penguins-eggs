@@ -107,7 +107,7 @@ export default class Incubator {
       if (this.installer.name === 'calamares') {
          // Remove krill configuration if present
          shx.exec('rm ' + this.installer.configuration + '-rf')
-         shx.exec('rm ' + this.installer.multiarchModules + '-rf')
+         shx.exec('rm ' + this.installer.multiarch + '-rf')
       }
 
       // rootConfiguration krill calamares
@@ -124,11 +124,11 @@ export default class Incubator {
          fs.mkdirSync(this.installer.configuration + 'modules')
       }
       // multiarch e modules
+      if (!fs.existsSync(this.installer.multiarch)) {
+         fs.mkdirSync(this.installer.multiarch)
+      }
       if (!fs.existsSync(this.installer.multiarchModules)) {
          fs.mkdirSync(this.installer.multiarchModules)
-      }
-      if (!fs.existsSync(this.installer.multiarchModules + 'modules')) {
-         fs.mkdirSync(this.installer.multiarchModules + 'modules')
       }
 
 
