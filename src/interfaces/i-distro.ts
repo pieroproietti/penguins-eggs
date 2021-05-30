@@ -9,5 +9,5 @@ export interface IDistro {
    homeUrl: string
    supportUrl: string
    bugReportUrl: string
-   guiInstaller: boolean
+   calamaresAble: boolean
 }

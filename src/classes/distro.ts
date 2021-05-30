@@ -53,7 +53,7 @@ class Distro implements IDistro {
    homeUrl: string
    supportUrl: string
    bugReportUrl: string
-   guiInstaller: boolean
+   calamaresAble: boolean
 
    constructor(remix: IRemix) {
       this.distroId = ''
@@ -66,7 +66,7 @@ class Distro implements IDistro {
       this.homeUrl = ''
       this.supportUrl = ''
       this.bugReportUrl = ''
-      this.guiInstaller = true
+      this.calamaresAble = true
 
 
       const file = '/etc/os-release'
@@ -247,7 +247,7 @@ class Distro implements IDistro {
        * isCalamaresCompliant
        */
        if (this.versionLike === 'jessie' || this.versionLike === 'stretch' || this.versionLike === 'xenial') {
-          this.guiInstaller = false
+          this.calamaresAble = false
       }
       
 

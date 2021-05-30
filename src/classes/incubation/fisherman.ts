@@ -12,7 +12,7 @@ import path = require('path')
 import { IRemix, IDistro } from '../../interfaces'
 import chalk = require('chalk')
 import Utils from '../utils'
-import {IInstaller} from '../../interfaces/index'
+import { IInstaller } from '../../interfaces/index'
 
 const exec = require('../../lib/utils').exec
 
@@ -113,7 +113,7 @@ export default class Fisherman {
 
         }
 
-        
+
         const moduleDest = this.installer.modules + name + '.conf'
         if (fs.existsSync(moduleSource)) {
             if (this.verbose) this.show(name, 'module', moduleDest)
@@ -134,12 +134,11 @@ export default class Fisherman {
         const moduleDest = this.installer.multiarchModules + name
         const moduleScript = `/usr/sbin/${name}.sh`
 
-
         // console.log('moduleDest: ' + moduleDest)
         // console.log('moduleTemplate: ' + moduleTemplate)
         // console.log('moduleScript: ' + moduleScript)
 
-        if (this.verbose) this.show(name, this.installer + '_module', moduleDest)
+        if (this.verbose) this.show(name, 'module', moduleDest)
 
         if (!fs.existsSync(moduleDest)) {
             fs.mkdirSync(moduleDest)
@@ -202,7 +201,7 @@ export default class Fisherman {
         const name = 'finished'
         await this.buildModule(name)
         const restartNowCommand = 'reboot'
-        shx.sed('-i', '{{restartNowCommand}}', restartNowCommand, this.installer.modules + name +'.conf')
+        shx.sed('-i', '{{restartNowCommand}}', restartNowCommand, this.installer.modules + name + '.conf')
     }
 
     /**

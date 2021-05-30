@@ -18,8 +18,8 @@ import { Focal } from './distros/focal'
 import { Bionic } from './distros/bionic'
 
 import Pacman from '../pacman'
-import {installer} from './installer'
-import {IInstaller} from '../../interfaces/i-installer'
+import { installer } from './installer'
+import { IInstaller } from '../../interfaces/i-installer'
 
 const exec = require('../../lib/utils').exec
 
@@ -46,11 +46,7 @@ export default class Incubator {
     * @param verbose
     */
    constructor(remix: IRemix, distro: IDistro, user_opt = 'live', verbose = false) {
-      if (Pacman.packageIsInstalled('calamares')) {
-         this.installer = installer('calamares')
-      } else {
-         this.installer= installer('krill')
-      }
+      this.installer = installer()
       this.remix = remix
       this.distro = distro
       this.user_opt = user_opt
@@ -87,10 +83,10 @@ export default class Incubator {
          const focal = new Focal(this.installer, this.remix, this.distro, release, this.user_opt, this.verbose)
          await focal.create()
       } else if (this.distro.versionLike === 'groovy') {
-         const groovy =  new Focal(this.installer, this.remix, this.distro, release, this.user_opt, this.verbose)
+         const groovy = new Focal(this.installer, this.remix, this.distro, release, this.user_opt, this.verbose)
          await groovy.create()
       } else if (this.distro.versionLike === 'hirsute') {
-         const hirsute =  new Focal(this.installer, this.remix, this.distro, release, this.user_opt, this.verbose)
+         const hirsute = new Focal(this.installer, this.remix, this.distro, release, this.user_opt, this.verbose)
          await hirsute.create()
       } else if (this.distro.versionLike === 'bionic') {
          const bionic = new Bionic(this.installer, this.remix, this.distro, release, this.user_opt, this.verbose)
@@ -107,7 +103,7 @@ export default class Incubator {
       if (this.installer.name !== 'calamares') {
          // Remove krill configuration and multiarc if present
          shx.exec('rm ' + this.installer.configuration + ' -rf')
-         shx.exec('rm ' + this.installer.multiarch +  ' -rf')
+         shx.exec('rm ' + this.installer.multiarch + ' -rf')
       }
 
       // rootConfiguration krill calamares
