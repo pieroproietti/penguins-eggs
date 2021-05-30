@@ -11,42 +11,49 @@
  * templateMultiarch = template + installer + '-modules/'
  * 
 */
-import {IInstaller, IRemix} from '../../interfaces/index'
+import { IInstaller, IRemix } from '../../interfaces/index'
 import Distro from '../../classes/distro'
+import Pacman from '../../classes/pacman'
 
-export function installer (name= 'krill') : IInstaller {
-   let installer =  {} as IInstaller
-   installer.name = name
-   if (installer.name === 'calamares') {
+export function installer(): IInstaller {
+   let installer = {} as IInstaller
+   if (Pacman.packageIsInstalled('calamares')) {
+      installer.name = 'calamares'
       installer.configuration = '/etc/calamares/'
+      installer.multiarch = '/usr/lib/' + multiarch() + '/calamares/'
    } else {
+      installer.name = 'krill'
       installer.configuration = '/etc/penguins-eggs.d/krill/'
+      installer.multiarch = '/usr/lib/' + multiarch() + '/penguins-eggs/'
    }
-   installer.modules = installer.configuration + 'modules/'
-   installer.multiarch = '/usr/lib/' + multiarch() + '/' + installer.name + '/'
    installer.multiarchModules = installer.multiarch + 'modules/'
+   installer.modules = installer.configuration + 'modules/'
 
-   if (versionLike()==='jessie' || versionLike()==='stretch') {
-      installer.template = '/etc/penguins-eggs.d/distros/' + versionLike() + '/krill/'
+   /**
+    * i template nelle versioni calamaresAble sono QUELLI di calamares
+    */
+   const remix = {} as IRemix
+   const distro = new Distro(remix)
+   if (distro.calamaresAble) {
+      installer.template = '/etc/penguins-eggs.d/distros/' + distro.versionLike + '/calamares/'
+      installer.templateModules = installer.template + 'modules/'
+      installer.templateMultiarch = installer.template + 'calamares-modules/'
    } else {
-      installer.template = '/etc/penguins-eggs.d/distros/' + versionLike() + '/' + installer.name + '/'
+      installer.template = '/etc/penguins-eggs.d/distros/' + distro.versionLike + '/krill/'
+      installer.templateModules = installer.template + 'modules/'
+      installer.templateMultiarch = installer.template + 'krill-modules/'
    }
-   installer.templateModules = installer.template + 'modules/'
-   installer.templateMultiarch = installer.template + installer.name + '-modules/'
 
+   console.log(installer)
    return installer
 }
 
-
-function versionLike() :string {
-   const remix = {} as IRemix
-   const distro = new Distro(remix)
-   return distro.versionLike
-}
-
-
+/**
+ * 
+ * @returns 
+ */
 function multiarch(): string {
-   let archLinuxGnu= ''
+   let archLinuxGnu = 'i386-linux-gnu'
 
    if (process.arch === 'x32') {
       archLinuxGnu = 'i386-linux-gnu'

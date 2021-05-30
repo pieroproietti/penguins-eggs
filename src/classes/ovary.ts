@@ -145,7 +145,7 @@ export default class Ovary {
 
          await this.liveCreateStructure(verbose)
 
-         if (this.settings.distro.guiInstaller && await Pacman.isGui()) {
+         if (this.settings.distro.calamaresAble && await Pacman.isGui()) {
             if (this.settings.config.force_installer && !(await Pacman.calamaresCheck())) {
                console.log('Installing ' + chalk.bgGray('calamares') + ' due force_installer=yes.')
                await Pacman.calamaresInstall(verbose)
