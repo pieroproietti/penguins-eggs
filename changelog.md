@@ -18,6 +18,8 @@ You can follow the project also consulting the [commit history](https://github.c
 ## Changelog
 Versions are listed on reverse order, the first is the last one.
 
+### eggs-8.0.2
+* after two years we resolve a bug in eggs old more than two years, now I'm using mkinitramfs and NOT update-initramfs -u 
 
 ### eggs-8.0.1
 * test on bullseye with and without calamares
