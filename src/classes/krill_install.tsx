@@ -601,7 +601,8 @@ adduser ${name} \
     */
    private async initramfs() {
       const echo = { echo: false, ignore: false }
-      await exec('chroot ' + this.installTarget + ' update-initramfs -u -k + $(uname -r)', echo)
+      await exec('chroot ' + this.installTarget + ' mkinitramfs -o ~/initrd.img-$(uname -r)', echo)
+      await exec('chroot ' + this.installTarget + ' mv ~/initrd.img-$(uname -r) /boot', echo)
    }
 
 
@@ -1165,5 +1166,5 @@ function redraw(elem: JSX.Element) {
  * @param message 
  */
 async function checkIt(message: string) {
-   await Utils.customConfirm(message)
+   // await Utils.customConfirm(message)
 }
