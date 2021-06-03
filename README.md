@@ -231,6 +231,7 @@ USAGE
 
 OPTIONS
   -c, --clean    remove old configuration before to create
+  -d, --default  remove old configuration and force default
   -h, --help     show CLI help
   -v, --verbose
 ```
