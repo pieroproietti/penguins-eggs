@@ -256,7 +256,7 @@ export default class Hatching {
 
          // unpackfs
          message = "Unpacking filesystem "
-         percent = 0.09
+         percent = 0.10
          try {
             redraw(<Install message={message} percent={percent} spinner={true} />)
             await this.unpackfs()
@@ -422,7 +422,7 @@ export default class Hatching {
 
 
          // se xserver o wayland è GUI
-         if (Pacman.isGui()) {
+         if (await Pacman.isGui()) {
             try {
                message = "autologin GUI"
                percent = 0.80
@@ -567,11 +567,11 @@ adduser ${name} \
    private async bootloader() {
       const echo = { echo: false, ignore: false }
 
-      // await exec('chroot ' + this.installTarget + ' apt update')
+      await exec('chroot ' + this.installTarget + ' apt update', echo)
       if (this.efi) {
-         await exec(`chroot ${this.installTarget} apt install grub-efi-amd64-bin --yes`)
+         await exec(`chroot ${this.installTarget} apt install grub-efi-amd64-bin --yes`, echo)
       } else {
-         await exec(`chroot ${this.installTarget} apt install grub-pc --yes`)
+         await exec(`chroot ${this.installTarget} apt install grub-pc --yes`, echo)
       }
       await exec('chroot ' + this.installTarget + ' grub-install ' + this.disk.installationDevice, echo)
       await exec('chroot ' + this.installTarget + ' update-grub', echo)
@@ -999,18 +999,18 @@ adduser ${name} \
          /**
           * simple, non EFI
           */
-         await exec(`parted --script ${device} mklabel msdos`, echo)
-         await exec(`parted --script --align optimal ${device} mkpart primary 1MiB 95%`, echo)
-         await exec(`parted --script ${device} set 1 boot on`, echo)
-         await exec(`parted --script --align optimal ${device} mkpart primary 95% 100%`, echo)
+         await exec('parted --script ' + device + ' mklabel msdos', echo)
+         await exec('parted --script --align optimal ' + device + ' mkpart primary 1MiB 95%', echo)
+         await exec('parted --script ' + device + ' set 1 boot on', echo)
+         await exec('parted --script --align optimal ' + device + ' mkpart primary 95% 100%', echo)
 
          this.devices.efi.name = `none`
          this.devices.boot.name = `none`
-         this.devices.root.name = `${device}1`
+         this.devices.root.name = device + '1'
          this.devices.root.fsType = 'ext4'
          this.devices.root.mountPoint = '/'
          this.devices.data.name = `none`
-         this.devices.swap.name = `${device}2`
+         this.devices.swap.name = device + '2'
          this.devices.swap.fsType = 'swap'
          this.devices.swap.mountPoint = 'none'
 
@@ -1021,19 +1021,21 @@ adduser ${name} \
          /**
           * simple, EFI
           */
-         await exec(`parted --script ${device} mklabel gpt mkpart primary 0% 1% mkpart primary 1% 95% mkpart primary 95% 100%`, echo)
-         await exec(`parted --script ${device} set 1 boot on`, echo)
-         await exec(`parted --script ${device} set 1 esp on`, echo)
+         await exec('parted --script ' + device + ' mklabel gpt mkpart primary 0% 1% mkpart primary 1% 95% mkpart primary linux-swap 95% 100%', echo)
+         await exec('parted --script ' + device + ' set 1 boot on', echo)
+         await exec('parted --script ' + device + ' set 1 esp on', echo)
 
-         this.devices.efi.name = `${device}1`
+         this.devices.efi.name = device + '1'
          this.devices.efi.fsType = 'F 32 -I'
          this.devices.efi.mountPoint = '/boot/efi'
          this.devices.boot.name = `none`
-         this.devices.root.name = `${device}2`
+
+         this.devices.root.name = device + '2'
          this.devices.root.fsType = 'ext4'
          this.devices.root.mountPoint = '/'
          this.devices.data.name = `none`
-         this.devices.swap.name = `${device}3`
+
+         this.devices.swap.name = device + '3'
          this.devices.swap.fsType = 'swap'
 
          retVal = true
@@ -1163,5 +1165,5 @@ function redraw(elem: JSX.Element) {
  * @param message 
  */
 async function checkIt(message: string) {
-   // await Utils.customConfirm(message + ', you can open a terminal to check')
+   await Utils.customConfirm(message)
 }

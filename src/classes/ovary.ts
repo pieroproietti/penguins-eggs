@@ -1076,7 +1076,7 @@ export default class Ovary {
     * makeEfi
     * Create /boot and /efi for UEFI
     */
-   async makeEfi(theme = 'eggs', verbose = false) {
+    async makeEfi(theme = 'eggs', verbose = false) {
       const echo = Utils.setEcho(verbose)
       if (verbose) {
          console.log('ovary: makeEfi')
@@ -1251,6 +1251,7 @@ export default class Ovary {
       }
       fs.writeFileSync(grubDest, mustache.render(template, view))
    }
+
 
    /**
     * makeIsoImage

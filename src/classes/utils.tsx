@@ -295,11 +295,13 @@ export default class Utils {
    static isUefi(): boolean {
       let isUefi = false
       if (process.arch === 'x64') {
-         /*
          if (Pacman.packageIsInstalled('grub-efi-amd64-bin')) {
             isUefi = true
          }
-         */
+      } else if (process.arch === 'arm') { 
+         if (Pacman.packageIsInstalled('grub-efi-arm-bin')) {
+            isUefi = true
+         }
       }
       return isUefi
    }

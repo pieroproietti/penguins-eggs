@@ -19,6 +19,7 @@ export default class Dad extends Command {
   static flags = {
     help: flags.help({ char: 'h' }),
     clean: flags.boolean({ char: 'c', description: 'remove old configuration before to create' }),
+    default: flags.boolean({ char: 'd', description: 'remove old configuration and force default' }),
     verbose: flags.boolean({ char: 'v' }),
   }
 
@@ -27,11 +28,11 @@ export default class Dad extends Command {
     console.log(chalk.cyan('Daddy, what else did you leave for me?'))
     const { flags } = this.parse(Dad)
     if (Utils.isRoot(this.id)) {
-      if (flags.clean){
+      if (flags.clean || flags.default){
         await exec('rm /etc/penguins-eggs.d -rf')
       }
       const daddy = new Daddy()
-      daddy.helpMe(flags.verbose)
+      daddy.helpMe(flags.default, flags.verbose)
     }
   }
 }

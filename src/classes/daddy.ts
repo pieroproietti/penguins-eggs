@@ -35,8 +35,8 @@ export default class Daddy {
     settings = {} as Settings
 
 
-    async helpMe(verbose = false) {
-
+    async helpMe(loadDefault = false, verbose = false) {
+        console.log('loadDefault:' + loadDefault)
         // Controllo configurazione
         if (!Pacman.configurationCheck()) {
             console.log('- creating configuration dir...')
@@ -60,14 +60,20 @@ export default class Daddy {
         this.settings = new Settings()
         let config = {} as IConfig
         if (await this.settings.load()) {
-
             config = this.settings.config
+            let jsonConf: string
+            if (!loadDefault) {
+                jsonConf = await this.editConfig(config)
+            } else {
+                if (config.snapshot_prefix === '') {
+                    config.snapshot_prefix = Utils.snapshotPrefix(this.settings.distro.distroId, this.settings.distro.versionId)
+                    config.compression = 'fast'
+                }
+                jsonConf = JSON.stringify(config)
+            }
+            const newConf = JSON.parse(jsonConf)
 
-            // Edito i campi
-            const nc: string = await this.editConfig(config)
-            const newConf = JSON.parse(nc)
-
-            // salvo le mdifiche      
+            // salvo le modifiche      
             config.snapshot_basename = newConf.snapshot_basename
             config.snapshot_prefix = newConf.snapshot_prefix
             config.user_opt = newConf.user_opt
@@ -102,17 +108,23 @@ export default class Daddy {
 
             await this.settings.save(config)
 
-            // Controllo se serve il kill
+
             let flags = ''
-            if (verbose) {
-                flags = '--verbose '
-            }
-            Utils.titles('kill' + flags)
-            console.log(chalk.cyan('Daddy, what else did you leave for me?'))
-            await this.settings.listFreeSpace()
-            if (await Utils.customConfirm()) {
+            if (loadDefault) {
                 await exec(`rm ${this.settings.work_dir.path} -rf`)
                 await exec(`rm ${this.settings.config.snapshot_dir} -rf`)
+            } else {
+                // Controllo se serve il kill
+                if (verbose) {
+                    flags = '--verbose '
+                }
+                Utils.titles('kill' + flags)
+                console.log(chalk.cyan('Daddy, what else did you leave for me?'))
+                await this.settings.listFreeSpace()
+                if (await Utils.customConfirm()) {
+                    await exec(`rm ${this.settings.work_dir.path} -rf`)
+                    await exec(`rm ${this.settings.config.snapshot_dir} -rf`)
+                }
             }
 
             // produce
@@ -133,12 +145,12 @@ export default class Daddy {
         }
     }
 
+
     /**
      * 
      * @param c 
      */
     editConfig(c: IConfig): Promise<string> {
-
         console.log(chalk.cyan('Edit and save LiveCD parameters'))
         let compressionOpt = 0
         if (c.compression === 'xz') {
@@ -203,5 +215,6 @@ export default class Daddy {
             })
         })
     }
+
 }
 
