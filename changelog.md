@@ -18,6 +18,9 @@ You can follow the project also consulting the [commit history](https://github.c
 ## Changelog
 Versions are listed on reverse order, the first is the last one.
 
+### eggs-8.0.3
+* cleaning and testing krill: uefi down in bullseye, ok buster and probably others versions
+
 ### eggs-8.0.2
 * after two years we resolve a bug in eggs old more than two years, now I'm using mkinitramfs and NOT update-initramfs -u 
 
