@@ -39,7 +39,7 @@ export default class Basket {
     async last(): Promise<string> {
         if (this.lastVersion === '') {
             let arch = 'amd64'
-            if (process.arch === 'i386') {
+            if (process.arch === 'ia32') {
                 arch = 'i386'
             } else if (process.arch === 'arm') {
                 arch = 'armel'
@@ -71,7 +71,7 @@ export default class Basket {
         }
 
         let arch = 'amd64'
-        if (process.arch === 'i386') {
+        if (process.arch === 'ia32') {
             arch = 'i386'
         } else if (process.arch === 'x64') {
             arch = 'amd64'
