@@ -6,6 +6,6 @@ Priority: {{{priority}}}
 Architecture: {{{arch}}}
 Maintainer: {{{mantainer}}}
 Description: {{{description}}}
-Depends: squashfs-tools, xorriso, live-boot, live-boot-initramfs-tools, dpkg-dev, rsync, whois, dosfstools, parted,  whiptail, xdg-user-dirs, bash-completion
+Depends: {{{depends}}}
 Suggest: calamares, qml-module-qtquick2, qml-module-qtquick-controls
 Conflicts: calamares-settings-debian, calamares-settings-ubuntu
