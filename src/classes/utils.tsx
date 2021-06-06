@@ -285,7 +285,7 @@ export default class Utils {
     * @returns {boolean} true se l'architettura è i686
     */
    static isi686(): boolean {
-      return process.arch === 'x32'
+      return process.arch === 'ia32'
    }
 
    /**
