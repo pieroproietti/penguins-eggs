@@ -192,7 +192,7 @@ export default class Update extends Command {
       await exec(cmd, { echo: true, capture: true })
 
       let arch = ''
-      if (process.arch === 'amd64') {
+      if (process.arch === 'x64') {
          arch = 'amd64.deb'
       } else if (process.arch === 'x32') {
          arch = 'i386.deb'

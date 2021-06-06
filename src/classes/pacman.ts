@@ -361,10 +361,17 @@ export default class Pacman {
 
       if (!Utils.isUefi()) {
          config.make_efi = false
+         let arch = 'amd64'
          if (process.arch === 'x64') {
-            console.log(`Due the lacks of grub-efi-amd64-bin package set make_efi = false`)
+            arch = 'amd64'
+         } else if (process.arch === 'arm64') {
+            arch = 'armel'
+         } else if (process.arch === 'arm64') {
+            arch = 'arm64'
          }
+         console.log('Due the lacks of grub-efi-' + arch + '-bin package set make_efi = false')
       }
+      
       /**
        * Salvo la configurazione di eggs.yaml
        */
