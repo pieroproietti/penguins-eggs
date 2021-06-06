@@ -54,7 +54,8 @@ export default class Pacman {
     * bionic   live-config live-task-localization
     * 
     */
-   static debs4eggs = ['isolinux', 'syslinux', 'squashfs-tools', 'xorriso', 'live-boot', 'live-boot-initramfs-tools', 'dpkg-dev']
+   static debs4eggs = ['squashfs-tools', 'xorriso', 'live-boot', 'live-boot-initramfs-tools', 'dpkg-dev']
+   static debs4cisc = ['isolinux', 'syslinux']
    static debs4notRemove = ['rsync', 'whois', 'dosfstools', 'parted']
    static debs4calamares = ['calamares', 'qml-module-qtquick2', 'qml-module-qtquick-controls']
 
@@ -137,6 +138,13 @@ export default class Pacman {
       const versionLike = Pacman.versionLike()
       const packages = this.debs4eggs
 
+      // Aggiungo syslinux, isolinux per cisc
+      if (process.arch === 'amd64' || process.arch === 'i386') {
+         packages.concat(this.debs4cisc)
+      }
+
+
+
       if ((versionLike === 'buster') || (versionLike === 'beowulf') || (versionLike === 'bullseye') || (versionLike === 'stretch') || (versionLike === 'jessie')) {
          packages.push('live-config')
       } else if ((versionLike === 'focal')) {
@@ -172,12 +180,24 @@ export default class Pacman {
             break
          }
       }
+
       for (const i in this.debs4eggs) {
          if (!await this.packageIsInstalled(this.debs4eggs[i])) {
             installed = false
             break
          }
       }
+
+      // Aggiungo isolinux e syslinux solo per cisc
+      for (const i in this.debs4eggs) {
+         if (process.arch === 'amd64' || process.arch === 'i386') {
+            if (!await this.packageIsInstalled(this.debs4cisc[i])) {
+               installed = false
+               break
+            }
+         }
+      }
+
       return installed
    }
 
@@ -229,7 +249,7 @@ export default class Pacman {
    static async calamaresCheck(): Promise<boolean> {
       let installed = true
       for (const i in this.debs4calamares) {
-         if (! this.packageIsInstalled(this.debs4calamares[i])) {
+         if (!this.packageIsInstalled(this.debs4calamares[i])) {
             installed = false
             break
          }
@@ -481,7 +501,7 @@ export default class Pacman {
          await this.ln(`${buster}/grub`, `${jessie}/grub`, remove, verbose)
          await this.ln(`${buster}/isolinux`, `${jessie}/isolinux`, remove, verbose)
          await this.ln(`${buster}/locales`, `${jessie}/locales`, remove, verbose)
-         
+
          // Debian 9 - stretch
          const stretch = `${rootPen}/conf/distros/stretch`
          await this.ln(`${buster}/grub`, `${stretch}/grub`, remove, verbose)
