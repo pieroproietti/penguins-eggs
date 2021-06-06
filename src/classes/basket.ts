@@ -31,7 +31,7 @@ export default class Basket {
 
     constructor() {
         this.lastVersion = ''
-     }
+    }
 
     /**
      * 
@@ -39,16 +39,19 @@ export default class Basket {
     async last(): Promise<string> {
         if (this.lastVersion === '') {
             let arch = 'amd64'
-
-            if (process.arch === 'ia32') {
+            if (process.arch === 'i386') {
                 arch = 'i386'
+            } else if (process.arch === 'arm') {
+                arch = 'armel'
+            } else if (process.arch === 'arm64') {
+                arch = 'arm64'
             }
             const url = `https://penguins-eggs.net/versions/all/${arch}/`
             const axios = require('axios').default
-    
+
             const res = await axios.get(url)
             const data = res.data
-    
+
             // Ordino le versioni
             data.sort((a: any, b: any) => (a.version < b.version) ? 1 : ((b.version < a.version) ? -1 : 0))
             this.lastVersion = data[0].version
@@ -68,10 +71,14 @@ export default class Basket {
         }
 
         let arch = 'amd64'
-        if (process.arch === 'ia32') {
+        if (process.arch === 'i386') {
             arch = 'i386'
+        } else if (process.arch === 'x64') {
+            arch = 'amd64'
         } else if (process.arch === 'arm') {
             arch = 'armel'
+        } else if (process.arch === 'arm64') {
+            arch = 'arm64'
         }
         const url = `https://penguins-eggs.net/versions/all/${arch}/`
         const axios = require('axios').default

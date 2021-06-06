@@ -251,6 +251,7 @@ OPTIONS
   -c, --clean  remove old .deb before to copy
   -h, --help   show CLI help
   --amd64      export amd64 arch
+  --arm64      export arm64 arch
   --armel      export armel arch
   --i386       export i386 arch
 ```

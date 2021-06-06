@@ -191,9 +191,22 @@ export default class Update extends Command {
       const cmd = `scp ${Tu.config.remoteUser}@${Tu.config.remoteHost}:${Tu.config.remotePathDeb}${Tu.config.filterDeb}${process.arch}.deb /tmp`
       await exec(cmd, { echo: true, capture: true })
 
-      if (await Utils.customConfirm(`Want to install ${Tu.config.filterDeb}${process.arch}.deb`)) {
-         await exec(`dpkg -i /tmp/${Tu.config.filterDeb}${process.arch}.deb`)
-     }
+      let arch = ''
+      if (process.arch === 'amd64') {
+         arch = 'amd64.deb'
+      } else if (process.arch === 'x32') {
+         arch = 'i386.deb'
+      } else if (process.arch === 'arm64') {
+         arch = 'arm64.deb'
+      } else if (process.arch === 'arm') {
+         arch = 'armel.deb'
+      } else {
+         arch = '*.deb'
+      }
+
+      if (await Utils.customConfirm(`Want to install ${Tu.config.filterDeb}${arch}`)) {
+         await exec(`dpkg -i /tmp/${Tu.config.filterDeb}${process.arch}`)
+      }
    }
 
    /**
