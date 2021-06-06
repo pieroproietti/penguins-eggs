@@ -84,10 +84,10 @@ I hope to receive [feedback](https://github.com/pieroproietti/penguins-eggs/issu
 * added livecd theme for openos, added full name on the livecd boot and in installed system boot
 
 ### eggs-7.8.35
-* adaptment to mx linux, machine-id, grub-efi-amd64-bin in place of grub-efi-amd64 in Utils.isUEFI(). Perhaps we must test also grub-efi-ia32-bin for i386?
+* adaptment to mx linux, machine-id, grub-efi-amd64-bin in place of grub-efi-amd64 in Utils.isUEFI(). Perhaps we must test also grub-efi-i386-bin for i386?
 
 ### eggs-7.8.34
-* added .disk folder in iso with info, mkiso, etc. added version in calamares, bugfix ia32, isGui, and others
+* added .disk folder in iso with info, mkiso, etc. added version in calamares, isGui, and others
 
 ### eggs-7.8.31
 * bugfixes: check the presence of vmlinuz and initrd_img else stop, versionLike in rootTemplate of calamares (deprecated)

@@ -56,11 +56,18 @@ export default class Yolk {
          */
         const packages = ['grub-pc', 'cryptsetup', 'keyutils']
         let arch = 'amd64'
-        if (process.arch === 'ia32') {
+        if (process.arch === 'i386') {
             arch = 'i386'
-        } else {
-            packages.push('grub-efi-amd64-bin')
+        }else if (process.arch === 'x64') {
+            arch = 'amd64'
             // packages.push('shim-signed')
+            packages.push('grub-efi-amd64-bin')
+        }else if (process.arch === 'arm') {
+            arch = 'armel'
+            packages.push('grub-efi-armel-bin')
+        } else if (process.arch === 'arm64') {
+            arch = 'arm64'
+            packages.push('grub-efi-arm64-bin')
         }
 
         // I Downloads avverranno nell directory corrente

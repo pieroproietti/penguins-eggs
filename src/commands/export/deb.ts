@@ -10,9 +10,10 @@ export default class ExportDeb extends Command {
   static flags = {
     help: flags.help({ char: 'h' }),
     clean: flags.boolean({ char: 'c', description: 'remove old .deb before to copy' }),
-    armel: flags.boolean({ description: 'export armel arch' }),
     amd64: flags.boolean({ description: 'export amd64 arch' }),
     i386: flags.boolean({ description: 'export i386 arch' }),
+    armel: flags.boolean({ description: 'export armel arch' }),
+    arm64: flags.boolean({ description: 'export arm64 arch' }),
     all: flags.boolean({ char: 'a', description: 'export all archs' }),
   }
 
@@ -27,16 +28,15 @@ export default class ExportDeb extends Command {
     // rimozione
     if (flags.clean) {
       console.log('cleaning remote host...')
-      let arch = 'amd64.deb'
-      if (process.arch === 'ia32') {
-        arch = 'i386.deb'
-      }
-      if (flags.armel) {
-        arch = 'armel.deb'
-      } else if (flags.amd64) {
+      let arch = 'amd64'
+      if (flags.amd64) {
         arch = 'amd64.deb'
       } else if (flags.i386) {
         arch = 'i386.deb'
+      } else if (flags.arm64) {
+        arch = 'arm64.deb'
+      } else if (flags.armel) {
+        arch = 'armel.deb'
       } else if (flags.all) {
         arch = '*.deb'
       }
@@ -47,18 +47,18 @@ export default class ExportDeb extends Command {
     // esportazione
     console.log('copy to remote host...')
     let arch = 'amd64.deb'
-    if (process.arch === 'ia32') {
-      arch = 'i386.deb'
-    }
-    if (flags.armel) {
-      arch = 'armel.deb'
-    } else if (flags.amd64) {
+    if (flags.amd64) {
       arch = 'amd64.deb'
     } else if (flags.i386) {
       arch = 'i386.deb'
+    } else if (flags.amd64) {
+      arch = 'arm64.deb'
+    } else if (flags.armel) {
+      arch = 'armel.deb'
     } else if (flags.all) {
       arch = '*.deb'
     }
+
     const cmd = `scp ${Tu.config.localPathDeb}${Tu.config.filterDeb}${arch} root@${Tu.config.remoteHost}:${Tu.config.remotePathDeb}`
     await exec(cmd, { echo: true, capture: true })
 

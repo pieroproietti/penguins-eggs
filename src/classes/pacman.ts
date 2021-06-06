@@ -139,7 +139,7 @@ export default class Pacman {
       const packages = this.debs4eggs
 
       // Aggiungo syslinux, isolinux per cisc
-      if (process.arch === 'amd64' || process.arch === 'i386') {
+      if (process.arch === 'x64' || process.arch === 'i386') {
          packages.concat(this.debs4cisc)
       }
 
@@ -190,7 +190,7 @@ export default class Pacman {
 
       // Aggiungo isolinux e syslinux solo per cisc
       for (const i in this.debs4eggs) {
-         if (process.arch === 'amd64' || process.arch === 'i386') {
+         if (process.arch === 'x64' || process.arch === 'i386') {
             if (!await this.packageIsInstalled(this.debs4cisc[i])) {
                installed = false
                break
