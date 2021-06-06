@@ -227,9 +227,9 @@ export default class Config extends Command {
             if (process.arch === 'x64') {
                arch = 'amd64'
             } else if (process.arch === 'arm64') {
-               arch = 'armel'
-            } else if (process.arch === 'arm64') {
                arch = 'arm64'
+            } else if (process.arch === 'arm') {
+               arch = 'armel'
             }
             if (nointeractive) {
                 Utils.error('config: you are on a system UEFI capable, but I can\'t install grub-efi-' + arch + '-bin now!')

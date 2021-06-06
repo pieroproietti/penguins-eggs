@@ -55,7 +55,6 @@ export default class Pacman {
     * 
     */
    static debs4eggs = ['squashfs-tools', 'xorriso', 'live-boot', 'live-boot-initramfs-tools', 'dpkg-dev']
-   static debs4cisc = ['isolinux', 'syslinux']
    static debs4notRemove = ['rsync', 'whois', 'dosfstools', 'parted']
    static debs4calamares = ['calamares', 'qml-module-qtquick2', 'qml-module-qtquick-controls']
 
@@ -135,16 +134,15 @@ export default class Pacman {
     * Crea array packages dei pacchetti da installare/rimuovere
     */
    static packages(verbose = false): string[] {
-      const versionLike = Pacman.versionLike()
       const packages = this.debs4eggs
-
-      // Aggiungo syslinux, isolinux per cisc
+      // dipendenze BIOS standard
       if (process.arch === 'x64' || process.arch === 'i386') {
-         packages.concat(this.debs4cisc)
+         packages.push('isolinux')
+         packages.push('syslinux')
       }
 
-
-
+      // Aggiungo pacchetti per versione
+      const versionLike = Pacman.versionLike()
       if ((versionLike === 'buster') || (versionLike === 'beowulf') || (versionLike === 'bullseye') || (versionLike === 'stretch') || (versionLike === 'jessie')) {
          packages.push('live-config')
       } else if ((versionLike === 'focal')) {
@@ -175,26 +173,23 @@ export default class Pacman {
       let installed = true
 
       for (const i in this.debs4notRemove) {
-         if (!await this.packageIsInstalled(this.debs4notRemove[i])) {
+         if (!this.packageIsInstalled(this.debs4notRemove[i])) {
             installed = false
             break
          }
       }
 
       for (const i in this.debs4eggs) {
-         if (!await this.packageIsInstalled(this.debs4eggs[i])) {
+         if (!this.packageIsInstalled(this.debs4eggs[i])) {
             installed = false
             break
          }
       }
 
       // Aggiungo isolinux e syslinux solo per cisc
-      for (const i in this.debs4eggs) {
-         if (process.arch === 'x64' || process.arch === 'i386') {
-            if (!await this.packageIsInstalled(this.debs4cisc[i])) {
-               installed = false
-               break
-            }
+      if (process.arch === 'x64' || process.arch === 'i386') {
+         if (!this.packageIsInstalled('isolinux') || !this.packageIsInstalled('syslinux')) {
+            installed = false
          }
       }
 
@@ -208,7 +203,7 @@ export default class Pacman {
       const echo = Utils.setEcho(verbose)
       const retVal = false
       const versionLike = Pacman.versionLike()
-
+      console.log(`apt-get install --yes ${this.debs2line(this.packages(verbose))}`)
       await exec(`apt-get install --yes ${this.debs2line(this.packages(verbose))}`, echo)
       await exec(`apt-get install --yes ${this.debs2line(this.debs4notRemove)}`, echo)
       if ((versionLike === 'buster') || (versionLike === 'beowulf') || (versionLike === 'bullseye') || (versionLike === 'stretch') || (versionLike === 'jessie')) {
@@ -371,7 +366,7 @@ export default class Pacman {
          }
          console.log('Due the lacks of grub-efi-' + arch + '-bin package set make_efi = false')
       }
-      
+
       /**
        * Salvo la configurazione di eggs.yaml
        */

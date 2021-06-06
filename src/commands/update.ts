@@ -188,9 +188,6 @@ export default class Update extends Command {
 
       Utils.warning(`import from lan`)
       console.log()
-      const cmd = `scp ${Tu.config.remoteUser}@${Tu.config.remoteHost}:${Tu.config.remotePathDeb}${Tu.config.filterDeb}${process.arch}.deb /tmp`
-      await exec(cmd, { echo: true, capture: true })
-
       let arch = ''
       if (process.arch === 'x64') {
          arch = 'amd64.deb'
@@ -204,8 +201,12 @@ export default class Update extends Command {
          arch = '*.deb'
       }
 
+      const cmd = `scp ${Tu.config.remoteUser}@${Tu.config.remoteHost}:${Tu.config.remotePathDeb}${Tu.config.filterDeb}${arch} /tmp`
+      await exec(cmd, { echo: true, capture: true })
+
+
       if (await Utils.customConfirm(`Want to install ${Tu.config.filterDeb}${arch}`)) {
-         await exec(`dpkg -i /tmp/${Tu.config.filterDeb}${process.arch}`)
+         await exec(`dpkg -i /tmp/${Tu.config.filterDeb}${arch}`)
       }
    }
 
