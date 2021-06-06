@@ -55,7 +55,7 @@ export function installer(): IInstaller {
 function multiarch(): string {
    let archLinuxGnu = 'i386-linux-gnu'
 
-   if (process.arch === 'x32') {
+   if (process.arch === 'ia32') {
       archLinuxGnu = 'i386-linux-gnu'
    } else if (process.arch === 'x64') {
       archLinuxGnu = 'x86_64-linux-gnu'

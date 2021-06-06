@@ -187,11 +187,13 @@ export default class Update extends Command {
       await Tu.loadSettings()
 
       Utils.warning(`import from lan`)
-      console.log()
+      console.log('==================================================')
+      console.log(process.arch)
+      console.log('==================================================')
       let arch = ''
       if (process.arch === 'x64') {
          arch = 'amd64.deb'
-      } else if (process.arch === 'x32') {
+      } else if (process.arch === 'ia32') {
          arch = 'i386.deb'
       } else if (process.arch === 'arm64') {
          arch = 'arm64.deb'
