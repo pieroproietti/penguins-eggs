@@ -360,9 +360,9 @@ export default class Pacman {
          if (process.arch === 'x64') {
             arch = 'amd64'
          } else if (process.arch === 'arm64') {
-            arch = 'armel'
-         } else if (process.arch === 'arm64') {
             arch = 'arm64'
+         } else if (process.arch === 'arm') {
+            arch = 'armel'
          }
          console.log('Due the lacks of grub-efi-' + arch + '-bin package set make_efi = false')
       }

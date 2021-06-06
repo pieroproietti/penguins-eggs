@@ -96,7 +96,7 @@ export default class Config extends Command {
             const remix = {} as IRemix
             const distro = new Distro(remix)
             if (calamaresAble()) {
-                Utils.warning('config: you are on a graphic system, I suggest to use the GUI installer calamares')
+                Utils.warning('config: you are on a graphic system, I suggest to install the GUI installer calamares')
                 if (nointeractive) {
                     i.calamares = true
                 } else {
@@ -251,7 +251,7 @@ export default class Config extends Command {
             if (calamaresAble()) {
                 if (nointeractive) {
                     // solo un avviso
-                    Utils.error('config: you are on a graphic system, I suggest to use the GUI installer calamares. I can\'t install calamares now!')
+                    Utils.error('config: you are on a graphic system, I suggest to install the GUI installer calamares. I can\'t install calamares now!')
                     Utils.warning('I suggest You to install calamares GUI installer before to produce your ISO.\nJust write:\n    sudo eggs calamares --install')
                 } else {
                     Utils.warning('Installing calamares...')
