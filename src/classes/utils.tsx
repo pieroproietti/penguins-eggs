@@ -6,9 +6,9 @@
  * license: MIT
  */
 
- import React from 'react';
- import { render, Box, Text } from 'ink'
- import Title from '../components/elements/title'
+import React from 'react';
+import { render, Box, Text } from 'ink'
+import Title from '../components/elements/title'
 
 import shx = require('shelljs')
 import fs = require('fs')
@@ -95,7 +95,7 @@ export default class Utils {
    }
 
    static error(msg = '') {
-      
+
       console.log(pjson.shortName + ' >>> ' + chalk.bgGrey(msg) + '.')
    }
 
@@ -297,7 +297,12 @@ export default class Utils {
          if (Pacman.packageIsInstalled('grub-efi-amd64-bin')) {
             isUefi = true
          }
-      } else if (process.arch === 'arm') { 
+      } else if (process.arch === 'arm64') {
+         // arm è SEMPRE uefi
+         if (Pacman.packageIsInstalled('grub-efi-arm64-bin')) {
+            isUefi = true
+         }
+      } else if (process.arch === 'arm') {
          if (Pacman.packageIsInstalled('grub-efi-arm-bin')) {
             isUefi = true
          }
@@ -641,7 +646,7 @@ export default class Utils {
     *
     * @param msg
     */
-    static async customConfirmAbort(msg = 'Confirm'): Promise<any> {
+   static async customConfirmAbort(msg = 'Confirm'): Promise<any> {
       return new Promise(function (resolve) {
          const questions: Array<Record<string, any>> = [
             {
@@ -663,13 +668,13 @@ export default class Utils {
     * titles
     * Penguin's are gettings alive!
     */
-    static async titles(command = ''): Promise<void> {
+   static async titles(command = ''): Promise<void> {
       console.clear()
       console.log(figlet.textSync('eggs'))
-      console.log(chalk.bgGreen.whiteBright('      ' + pjson.name + '      ') + 
-      chalk.bgWhite.blue(" Perri's Brewery edition ") + 
-      chalk.bgRed.whiteBright('       ver. ' + pjson.version + '       '))
-      console.log('command: ' + chalk.bgBlack.white(command) + '\n')      
+      console.log(chalk.bgGreen.whiteBright('      ' + pjson.name + '      ') +
+         chalk.bgWhite.blue(" Perri's Brewery edition ") +
+         chalk.bgRed.whiteBright('       ver. ' + pjson.version + '       '))
+      console.log('command: ' + chalk.bgBlack.white(command) + '\n')
    }
 
    /**

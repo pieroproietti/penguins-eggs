@@ -78,6 +78,7 @@ export default class Yolk {
             let cmd = ''
             Utils.warning(`downloading package ${packages[i]} and it's dependencies...`)
             cmd = `apt-cache depends --recurse --no-recommends --no-suggests --no-conflicts --no-breaks --no-replaces --no-enhances ${packages[i]} | grep "^\\w" | sort -u`
+            console.log(cmd)
             const depends = await execute(cmd)
             await this.installDeps(depends.split('\n'))
         }
