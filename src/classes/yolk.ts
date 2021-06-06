@@ -56,7 +56,7 @@ export default class Yolk {
          */
         const packages = ['grub-pc', 'cryptsetup', 'keyutils']
         let arch = 'amd64'
-        if (process.arch === 'i386') {
+        if (process.arch === 'ia32') {
             arch = 'i386'
         }else if (process.arch === 'x64') {
             arch = 'amd64'
