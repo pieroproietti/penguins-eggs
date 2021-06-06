@@ -186,18 +186,13 @@ export default class Update extends Command {
       const Tu = new Tools
       await Tu.loadSettings()
 
-      let arch = 'amd64'
-      if (process.arch === 'ia32') {
-         arch ='i386'
-      }
       Utils.warning(`import from lan`)
       console.log()
-      const cmd = `scp ${Tu.config.remoteUser}@${Tu.config.remoteHost}:${Tu.config.remotePathDeb}${Tu.config.filterDeb}${arch}.deb /tmp`
+      const cmd = `scp ${Tu.config.remoteUser}@${Tu.config.remoteHost}:${Tu.config.remotePathDeb}${Tu.config.filterDeb}${process.arch}.deb /tmp`
       await exec(cmd, { echo: true, capture: true })
 
-
-      if (await Utils.customConfirm(`Want to install ${Tu.config.filterDeb}${arch}.deb`)) {
-         await exec(`dpkg -i /tmp/${Tu.config.filterDeb}${arch}.deb`)
+      if (await Utils.customConfirm(`Want to install ${Tu.config.filterDeb}${process.arch}.deb`)) {
+         await exec(`dpkg -i /tmp/${Tu.config.filterDeb}${process.arch}.deb`)
      }
    }
 
