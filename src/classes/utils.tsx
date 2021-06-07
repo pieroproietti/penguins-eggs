@@ -196,9 +196,15 @@ export default class Utils {
     * @returns eggName
     */
    static getFilename(basename = ''): string {
-      let arch = 'x64'
-      if (Utils.isi686()) {
+      let arch = 'amd64'
+      if (process.arch==='x64') {
+         arch = 'amd64'
+      } else if (process.arch==='ia32') {
          arch = 'i386'
+      } else if (process.arch==='arm64') {
+         arch = 'arm64'
+      } else if (process.arch==='arm') {
+         arch = 'armel'
       }
 
       let isoName = `${basename}-${arch}_${Utils.formatDate(new Date())}`

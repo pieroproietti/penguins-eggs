@@ -37,18 +37,21 @@ Try penguins-eggs yes, it is a console utility - no GUI - but don't be scared, p
 Starting with version 7.6.x an addons architecture was been added to eggs, that allows third parties to develop extensions. Note that we currently have an extension for the theme that includes both calamares branding and installer link and icon. In addition, also as addon has been developed others addons, to chosen hoosing between GUI or CLI installation, adapt video resolution, etc.
 
 ## yolk 
-yolk so called - staying on the subject of eggs - is a local repository included in the livecd that contains a minimum of indispensable packages during installation. Thanks to yolk, you can safely install your system without the need o an active internet connection.
+yolk so called - staying on the subject of eggs - is a local repository included in the livecd that contains a minimum of indispensable packages during installation. Thanks to yolk, you can safely install your system without the need of an active internet connection.
 
 ## krill
-I wrote a new CLI installer krill who is now included in eggs. Krill let you to install your system in a nice CLI interface using the same, configuration created by eggs for [calamares](calamares.io). This lead to have "about the same" experience installing, from old distros to new one and for GUI and CLI
+Starting with eggs 8.0.0 I included a new CLI installer named krill. krill let you to install your system in a nice CLI interface using the same, configuration created by eggs for [calamares](calamares.io). This lead to have "about the same" experience installing, from old distros to new one and for GUI and CLI. To use krill in place of calamares in GUI system just: **sudo eggs install --cli**
 
-## Two great helpers!
-I added two light helpers integrated with eggs: mom and dad. While mom is a bash script with whiptail - and guides the user to the various commands and documentation. dad started as a short way to create the iso: all you have to do is type in **sudo eggs dad** and follow simple instructions, but it is also a way to reset configuration **sudo dad -c**.
+## Two great helpers: mom and dad!
+I added two light assistants integrated with eggs: mom and dad. While mom is a bash script with whiptail - and guides the user to the various commands and documentation. dad started as a short way to create the iso: all you have to do is type in **sudo eggs dad** and follow simple instructions, but it is also a way to reset configuration **sudo dad -c** and one to reset configuration, load defaults and kill previous eggs, just **sudo eggs dad -d**.
 
 ## What distributions can I use?
-Eggs is born on Debian strecth/buster, full support Debian from jessie to sid (bullseye) Support too Devuan beowulf, Ubuntu focal, bionic and derivatives. I usually try it against Debian varius versions, Devuan beowulf, Linux Mint 19.3 tricia (bionic derivated) and Linux Mint 20 ulyana (focal derivated) before releases. I tried it successfully in LMDE 4 debbie, and deepin. Eggs, generally must work with all the derivates from that distros.
+eggs was born on Debian strecth/buster, but actually full support Debian from jessie to sid (bullseye), Devuan beowulf, Ubuntu focal, bionic and derivatives. I actually try it against Debian varius versions, before releases. I tried it successfully in LMDE 4 debbie, and deepin. eggs, generally must work with all the derivates from that distros.
 
 Some examples of iso images remastered with eggs are in the [sourceforge page of the project](https://sourceforge.net/projects/penguins-eggs/files/iso/). 
+
+## What architecture can I use?
+From eggs v. 8.0.4 I'm releasing eggs in 4 architectures: i386, amd64, arm64 and armel. eggs - at the moment - produce in i386 and amd64, but need again same test on arm64 and armel. I'm working on that now.
 
 # Packages
 eggs is released as deb package and npm package. Most users need just deb version, if you already use nodejs the npm package can be installed too, 
