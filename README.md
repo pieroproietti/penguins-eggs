@@ -53,7 +53,7 @@ eggs was born on Debian strecth/buster, but actually full support Debian from je
 Some examples of iso images remastered with eggs are in the [sourceforge page of the project](https://sourceforge.net/projects/penguins-eggs/files/iso/). 
 
 ## What architecture can I use?
-From eggs v. 8.0.4 I'm releasing eggs in 4 architectures: i386, amd64, arm64 and armel. eggs - at the moment - produce in i386 and amd64, but need again same test on arm64 and armel. I'm working on that now.
+From eggs v. 8.0.4 I'm releasing eggs in 4 differents architectures: **i386**, **amd64**, **arm64** and **armel**. eggs - at the moment - produce in i386 and amd64, but can be installed already on arm64 and armel. I'm just working now to complete it for arm.
 
 # Packages
 eggs is released as deb package and npm package. Most users need just deb version, if you already use nodejs the npm package can be installed too, 
