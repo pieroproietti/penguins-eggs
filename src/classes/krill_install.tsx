@@ -567,26 +567,27 @@ adduser ${name} \
          } else {
             await exec(`chroot ${this.installTarget} apt install grub-pc --yes` + this.toNull, echo)
          }
-         await exec('chroot ' + this.installTarget + ' grub-install ' + this.disk.installationDevice + this.toNull, echo)
-         await exec('chroot ' + this.installTarget + ' update-grub', echo)
-         await exec('sleep 1', echo)
       }
+      await exec('chroot ' + this.installTarget + ' grub-install ' + this.disk.installationDevice + this.toNull, echo)
+      await exec('chroot ' + this.installTarget + ' update-grub', echo)
+      await exec('sleep 1', echo)
+   }
 
-      /**
-       * 
-      */
-      initramfsCfg(installDevice: string) {
-         // userSwapChoices = ['none', 'small', 'suspend', 'file']
+   /**
+    * 
+   */
+   initramfsCfg(installDevice: string) {
+      // userSwapChoices = ['none', 'small', 'suspend', 'file']
 
-         const file = this.installTarget + '/etc/initramfs-tools/conf.d/resume'
-         let text = ''
-         if (this.partitions.userSwapChoice === 'none' || this.partitions.userSwapChoice === 'file') {
-            text += '#RESUME=none\n'
-         } else {
-            text += 'RESUME=UUID=' + Utils.uuid(this.devices.swap.name)
-         }
-         Utils.write(file, text)
+      const file = this.installTarget + '/etc/initramfs-tools/conf.d/resume'
+      let text = ''
+      if (this.partitions.userSwapChoice === 'none' || this.partitions.userSwapChoice === 'file') {
+         text += '#RESUME=none\n'
+      } else {
+         text += 'RESUME=UUID=' + Utils.uuid(this.devices.swap.name)
       }
+      Utils.write(file, text)
+   }
 
 
 
