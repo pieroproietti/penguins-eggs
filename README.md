@@ -125,6 +125,7 @@ USAGE
 * [`eggs export:iso`](#eggs-exportiso)
 * [`eggs help [COMMAND]`](#eggs-help-command)
 * [`eggs info`](#eggs-info)
+* [`eggs install`](#eggs-install)
 * [`eggs kill`](#eggs-kill)
 * [`eggs mom`](#eggs-mom)
 * [`eggs produce`](#eggs-produce)
@@ -324,6 +325,30 @@ OPTIONS
 ```
 
 _See code: [src/commands/info.ts](https://github.com/pieroproietti/penguins-eggs/blob/v8.0.5/src/commands/info.ts)_
+
+## `eggs install`
+
+command-line system installer - the egg became a penguin!
+
+```
+USAGE
+  $ eggs install
+
+OPTIONS
+  -c, --cli      force use CLI installer
+  -h, --help     show CLI help
+  -v, --verbose  verbose
+
+ALIASES
+  $ eggs hatch
+  $ eggs krill
+
+EXAMPLE
+  $ eggs install
+  Install the system using GUI or CLI installer
+```
+
+_See code: [src/commands/install.ts](https://github.com/pieroproietti/penguins-eggs/blob/v8.0.5/src/commands/install.ts)_
 
 ## `eggs kill`
 
