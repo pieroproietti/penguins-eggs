@@ -553,24 +553,17 @@ adduser ${name} \
    private async bootloader() {
       const echo = { echo: false, ignore: false }
 
-      // await exec('chroot ' + this.installTarget + ' apt update', echo)
+      await exec('chroot ' + this.installTarget + ' apt update', echo)
       if (this.efi) {
-         if (process.arch === 'x64') {
-            await exec(`chroot ${this.installTarget} apt install grub-efi-amd64-bin --yes` + this.toNull, echo)
-         } else if (process.arch === 'ia32') {
-            // no EFI per ia32 at the moment
-            await exec(`chroot ${this.installTarget} apt install grub-pc --yes` + this.toNull, echo)
-         } else if (process.arch === 'arm64') {
-            await exec(`chroot ${this.installTarget} apt install grub-efi-arm64-bin --yes` + this.toNull, echo)
-         } else if (process.arch === 'arm') {
-            await exec(`chroot ${this.installTarget} apt install grub-efi-armel-bin --yes` + this.toNull, echo)
-         } else {
-            await exec(`chroot ${this.installTarget} apt install grub-pc --yes` + this.toNull, echo)
-         }
+         await exec('chroot ' + this.installTarget + ' apt install grub-efi-' + Utils.debianArch() + ' --yes' + this.toNull, echo)
+      } else {
+         await exec(`chroot ${this.installTarget} apt install grub-pc --yes` + this.toNull, echo)
       }
+
       await exec('chroot ' + this.installTarget + ' grub-install ' + this.disk.installationDevice + this.toNull, echo)
       await exec('chroot ' + this.installTarget + ' update-grub', echo)
       await exec('sleep 1', echo)
+      await Utils.customConfirm('installazione per ' + process.arch)
    }
 
    /**

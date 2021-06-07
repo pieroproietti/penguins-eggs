@@ -10,6 +10,7 @@ import fs = require('fs')
 import yaml = require('js-yaml')
 
 import Settings from './settings'
+import Utils from './utils'
 //import { IConfigTools } from '../interfaces'
 // import { IConfigTools } from '../interfaces/i-config-tools'
 
@@ -65,18 +66,8 @@ export default class Tools {
        */
       const settings = new Settings()
       settings.load()
-      let arch = 'amd64'
-      if (process.arch === 'x64') {
-        arch = 'amd64'
-      } else if (process.arch === 'ia32') {
-        arch = 'i386'
-      } else if (process.arch === 'arm64') {
-        arch = 'arm64'
-      } else if (process.arch === 'armel') {
-        arch = 'armel'
-      }
       this.snapshot_dir = settings.config.snapshot_dir
-      this.snapshot_name = settings.config.snapshot_prefix + settings.config.snapshot_basename + '-' + arch + '_'
+      this.snapshot_name = settings.config.snapshot_prefix + settings.config.snapshot_basename + '-' + Utils.debianArch() + '_'
     } else {
       console.log(`Can't find: ${this.tools_yaml}`)
       process.exit(1)

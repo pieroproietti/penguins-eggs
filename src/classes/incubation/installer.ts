@@ -59,6 +59,8 @@ function multiarch(): string {
       archLinuxGnu = 'i386-linux-gnu'
    } else if (process.arch === 'x64') {
       archLinuxGnu = 'x86_64-linux-gnu'
+   } else if (process.arch === 'arm64') {
+      archLinuxGnu = 'arm64-linux-gnu'
    } else if (process.arch === 'armel') {
       archLinuxGnu = 'armel-linux-gnu'
    }

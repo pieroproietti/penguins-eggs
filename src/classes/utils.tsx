@@ -191,23 +191,34 @@ export default class Utils {
    }
 
    /**
+    * debArch
+    * Node process.arch -> Debian arch
+    * @returns arch
+    */
+   static debianArch(): string {
+      let arch = ''
+      if (process.arch === 'x64') {
+         arch = 'amd64'
+      } else if (process.arch === 'ia32') {
+         arch = 'i386'
+         if (shx.exec('uname -m').stderr.trim() === 'x86_64') {
+            arch = 'amd64'
+         }
+      } else if (process.arch === 'arm64') {
+         arch = 'arm64'
+      } else if (process.arch === 'arm') {
+         arch = 'armel'
+      }
+      return arch
+   }
+   /**
     * Return the eggName with architecture and date
     * @param basename
     * @returns eggName
     */
    static getFilename(basename = ''): string {
-      let arch = 'amd64'
-      if (process.arch==='x64') {
-         arch = 'amd64'
-      } else if (process.arch==='ia32') {
-         arch = 'i386'
-      } else if (process.arch==='arm64') {
-         arch = 'arm64'
-      } else if (process.arch==='arm') {
-         arch = 'armel'
-      }
 
-      let isoName = `${basename}-${arch}_${Utils.formatDate(new Date())}`
+      let isoName = `${basename}-${this.debianArch()}_${Utils.formatDate(new Date())}`
       if (isoName.length >= 28) {
          isoName = isoName.substr(0, 28) // 28 +  4 .iso = 32 lunghezza max di volid
       }
@@ -299,17 +310,8 @@ export default class Utils {
     */
    static isUefi(): boolean {
       let isUefi = false
-      if (process.arch === 'x64') {
-         if (Pacman.packageIsInstalled('grub-efi-amd64-bin')) {
-            isUefi = true
-         }
-      } else if (process.arch === 'arm64') {
-         // arm è SEMPRE uefi
-         if (Pacman.packageIsInstalled('grub-efi-arm64-bin')) {
-            isUefi = true
-         }
-      } else if (process.arch === 'arm') {
-         if (Pacman.packageIsInstalled('grub-efi-arm-bin')) {
+      if (Utils.debianArch() !== 'i386') {
+         if (Pacman.packageIsInstalled('grub-efi-' + Utils.debianArch() + '-bin')) {
             isUefi = true
          }
       }
