@@ -85,7 +85,7 @@ export default class Config extends Command {
 
         i.distroTemplate = !Pacman.distroTemplateCheck()
 
-        if (process.arch === 'x64') {
+        if (Utils.debianArch() !== 'i386') {
             i.efi = (!Utils.isUefi())
         }
 
@@ -127,9 +127,9 @@ export default class Config extends Command {
             }
 
             if (i.efi) {
-                if (process.arch === 'x64') {
+                if (Utils.debianArch() !== 'i386') {
                     console.log('- install efi packages')
-                    console.log(chalk.yellow('  apt install -y grub-efi-amd64-bin\n'))
+                    console.log(chalk.yellow('  apt install -y grub-efi-' + Utils.debianArch() + '-bin\n'))
                 }
             }
 
@@ -223,20 +223,12 @@ export default class Config extends Command {
         }
 
         if (i.efi) {
-            let arch = 'amd64'
-            if (process.arch === 'x64') {
-               arch = 'amd64'
-            } else if (process.arch === 'arm64') {
-               arch = 'arm64'
-            } else if (process.arch === 'arm') {
-               arch = 'armel'
-            }
             if (nointeractive) {
-                Utils.error('config: you are on a system UEFI capable, but I can\'t install grub-efi-' + arch + '-bin now!')
-                Utils.warning('I suggest You to install grub-efi-' + arch + '-bin before to produce your ISO.\nJust write:\n    sudo apt install ')
+                Utils.error('config: you are on a system UEFI capable, but I can\'t install grub-efi-' + Utils.debianArch() + '-bin now!')
+                Utils.warning('I suggest You to install grub-efi-' + Utils.debianArch() + '-bin before to produce your ISO.\nJust write:\n    sudo apt install ')
             } else {
                 Utils.warning('Installing uefi support...')
-                await exec('apt-get install grub-efi-' + arch + '-bin --yes', echo)
+                await exec('apt-get install grub-efi-' + Utils.debianArch() + '-bin --yes', echo)
             }
         }
 

@@ -38,17 +38,7 @@ export default class Basket {
      */
     async last(): Promise<string> {
         if (this.lastVersion === '') {
-            let arch = 'amd64'
-            if (process.arch === 'x64') {
-                arch = 'amd64'
-            } else if (process.arch === 'ia32') {
-                arch = 'i386'
-            } else if (process.arch === 'arm') {
-                arch = 'armel'
-            } else if (process.arch === 'arm64') {
-                arch = 'arm64'
-            }
-            const url = `https://penguins-eggs.net/versions/all/${arch}/`
+            const url = 'https://penguins-eggs.net/versions/all/' + Utils.debianArch() + '/'
             const axios = require('axios').default
 
             const res = await axios.get(url)
@@ -72,17 +62,7 @@ export default class Basket {
             process.exit(1)
         }
 
-        let arch = 'amd64'
-        if (process.arch === 'ia32') {
-            arch = 'i386'
-        } else if (process.arch === 'x64') {
-            arch = 'amd64'
-        } else if (process.arch === 'arm') {
-            arch = 'armel'
-        } else if (process.arch === 'arm64') {
-            arch = 'arm64'
-        }
-        const url = `https://penguins-eggs.net/versions/all/${arch}/`
+        const url = 'https://penguins-eggs.net/versions/all/' + Utils.debianArch() + '/'
         const axios = require('axios').default
 
         const res = await axios.get(url)
@@ -118,7 +98,7 @@ export default class Basket {
         if (answer.selected === 'abort') {
             process.exit(0)
         }
-        const deb = 'eggs_' + answer.selected + '-1_' + arch + '.deb'
+        const deb = 'eggs_' + answer.selected + '-1_' + Utils.debianArch() + '.deb'
         const download = 'https://sourceforge.net/projects/penguins-eggs/files/packages-deb/' + deb
 
         /**

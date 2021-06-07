@@ -187,28 +187,12 @@ export default class Update extends Command {
       await Tu.loadSettings()
 
       Utils.warning(`import from lan`)
-      console.log('==================================================')
-      console.log(process.arch)
-      console.log('==================================================')
-      let arch = ''
-      if (process.arch === 'x64') {
-         arch = 'amd64.deb'
-      } else if (process.arch === 'ia32') {
-         arch = 'i386.deb'
-      } else if (process.arch === 'arm64') {
-         arch = 'arm64.deb'
-      } else if (process.arch === 'arm') {
-         arch = 'armel.deb'
-      } else {
-         arch = '*.deb'
-      }
-
-      const cmd = `scp ${Tu.config.remoteUser}@${Tu.config.remoteHost}:${Tu.config.remotePathDeb}${Tu.config.filterDeb}${arch} /tmp`
+      const cmd = `scp ${Tu.config.remoteUser}@${Tu.config.remoteHost}:${Tu.config.remotePathDeb}${Tu.config.filterDeb}${Utils.debianArch()}.deb /tmp`
       await exec(cmd, { echo: true, capture: true })
 
 
-      if (await Utils.customConfirm(`Want to install ${Tu.config.filterDeb}${arch}`)) {
-         await exec(`dpkg -i /tmp/${Tu.config.filterDeb}${arch}`)
+      if (await Utils.customConfirm(`Want to install ${Tu.config.filterDeb}${Utils.debianArch()}.deb`)) {
+         await exec(`dpkg -i /tmp/${Tu.config.filterDeb}${Utils.debianArch()}.deb`)
       }
    }
 
