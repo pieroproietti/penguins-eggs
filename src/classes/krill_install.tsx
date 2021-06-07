@@ -555,30 +555,38 @@ adduser ${name} \
 
       // await exec('chroot ' + this.installTarget + ' apt update', echo)
       if (this.efi) {
-         await exec(`chroot ${this.installTarget} apt install grub-efi-amd64-bin --yes` + this.toNull, echo)
-      } else {
-         await exec(`chroot ${this.installTarget} apt install grub-pc --yes` + this.toNull, echo)
+         if (process.arch === 'x64') {
+            await exec(`chroot ${this.installTarget} apt install grub-efi-amd64-bin --yes` + this.toNull, echo)
+         } else if (process.arch === 'ia32') {
+            // no EFI per ia32 at the moment
+            await exec(`chroot ${this.installTarget} apt install grub-pc --yes` + this.toNull, echo)
+         } else if (process.arch === 'arm64') {
+            await exec(`chroot ${this.installTarget} apt install grub-efi-arm64-bin --yes` + this.toNull, echo)
+         } else if (process.arch === 'arm') {
+            await exec(`chroot ${this.installTarget} apt install grub-efi-armel-bin --yes` + this.toNull, echo)
+         } else {
+            await exec(`chroot ${this.installTarget} apt install grub-pc --yes` + this.toNull, echo)
+         }
+         await exec('chroot ' + this.installTarget + ' grub-install ' + this.disk.installationDevice + this.toNull, echo)
+         await exec('chroot ' + this.installTarget + ' update-grub', echo)
+         await exec('sleep 1', echo)
       }
-      await exec('chroot ' + this.installTarget + ' grub-install ' + this.disk.installationDevice + this.toNull, echo)
-      await exec('chroot ' + this.installTarget + ' update-grub', echo)
-      await exec('sleep 1', echo)
-   }
 
-   /**
-    * 
-   */
-   initramfsCfg(installDevice: string) {
-      // userSwapChoices = ['none', 'small', 'suspend', 'file']
+      /**
+       * 
+      */
+      initramfsCfg(installDevice: string) {
+         // userSwapChoices = ['none', 'small', 'suspend', 'file']
 
-      const file = this.installTarget + '/etc/initramfs-tools/conf.d/resume'
-      let text = ''
-      if (this.partitions.userSwapChoice === 'none' || this.partitions.userSwapChoice === 'file') {
-         text += '#RESUME=none\n'
-      } else {
-         text += 'RESUME=UUID=' + Utils.uuid(this.devices.swap.name)
+         const file = this.installTarget + '/etc/initramfs-tools/conf.d/resume'
+         let text = ''
+         if (this.partitions.userSwapChoice === 'none' || this.partitions.userSwapChoice === 'file') {
+            text += '#RESUME=none\n'
+         } else {
+            text += 'RESUME=UUID=' + Utils.uuid(this.devices.swap.name)
+         }
+         Utils.write(file, text)
       }
-      Utils.write(file, text)
-   }
 
 
 
@@ -831,12 +839,12 @@ adduser ${name} \
             this.devices.boot.fsType = `ext2`
             this.devices.boot.mountPoint = '/boot'
          }
-         await exec('mke2fs -Ft ' + this.devices.boot.fsType + ' ' + this.devices.boot.name  + this.toNull, echo)
+         await exec('mke2fs -Ft ' + this.devices.boot.fsType + ' ' + this.devices.boot.name + this.toNull, echo)
       }
 
 
       if (this.devices.root.name !== 'none') {
-         await exec('mke2fs -Ft ' + this.devices.root.fsType + ' ' + this.devices.root.name  + this.toNull, echo)
+         await exec('mke2fs -Ft ' + this.devices.root.fsType + ' ' + this.devices.root.name + this.toNull, echo)
       }
 
       if (this.devices.data.name !== 'none') {
@@ -844,7 +852,7 @@ adduser ${name} \
       }
 
       if (this.devices.swap.name !== 'none') {
-         await exec('mkswap ' + this.devices.swap.name  + this.toNull, echo)
+         await exec('mkswap ' + this.devices.swap.name + this.toNull, echo)
       }
       return result
    }
