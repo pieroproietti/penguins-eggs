@@ -356,9 +356,11 @@ export default class Pacman {
 
       if (!Utils.isUefi()) {
          config.make_efi = false
-         let arch = 'amd64'
+         let arch = ''
          if (process.arch === 'x64') {
             arch = 'amd64'
+         } else if (process.arch === 'ia32') {
+            arch = 'i386'
          } else if (process.arch === 'arm64') {
             arch = 'arm64'
          } else if (process.arch === 'arm') {

@@ -18,6 +18,9 @@ You can follow the project also consulting the [commit history](https://github.c
 ## Changelog
 Versions are listed on reverse order, the first is the last one.
 
+### eggs-8.0.5
+* fix bug in install due the addictions of two new architectures
+
 ### eggs-8.0.4
 * added arm64 package and started test on arm64 and armel architectures.
 eggs will run on armel and arm64 architecture, but we need to generate a new UEFI section for this builds.
