@@ -67,7 +67,7 @@ export default class Tools {
       const settings = new Settings()
       settings.load()
       this.snapshot_dir = settings.config.snapshot_dir
-      this.snapshot_name = settings.config.snapshot_prefix + settings.config.snapshot_basename + '-' + Utils.debianArch() + '_'
+      this.snapshot_name = settings.config.snapshot_prefix + settings.config.snapshot_basename + '-' + Utils.machineArch() + '_'
     } else {
       console.log(`Can't find: ${this.tools_yaml}`)
       process.exit(1)

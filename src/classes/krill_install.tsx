@@ -553,9 +553,9 @@ adduser ${name} \
    private async bootloader() {
       const echo = { echo: false, ignore: false }
 
-      await exec('chroot ' + this.installTarget + ' apt update', echo)
+      // await exec('chroot ' + this.installTarget + ' apt update', echo)
       if (this.efi) {
-         await exec('chroot ' + this.installTarget + ' apt install grub-efi-' + Utils.debianArch() + ' --yes' + this.toNull, echo)
+         await exec('chroot ' + this.installTarget + ' apt install grub-efi-' + Utils.machineArch() + ' --yes' + this.toNull, echo)
       } else {
          await exec(`chroot ${this.installTarget} apt install grub-pc --yes` + this.toNull, echo)
       }
@@ -563,7 +563,7 @@ adduser ${name} \
       await exec('chroot ' + this.installTarget + ' grub-install ' + this.disk.installationDevice + this.toNull, echo)
       await exec('chroot ' + this.installTarget + ' update-grub', echo)
       await exec('sleep 1', echo)
-      await Utils.customConfirm('installazione per ' + process.arch)
+      // await Utils.customConfirm('installazione per ' + process.arch)
    }
 
    /**

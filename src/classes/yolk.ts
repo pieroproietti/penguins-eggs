@@ -55,8 +55,8 @@ export default class Yolk {
          * I pacchetti che servono per l'installazione sono solo questi
          */
         const packages = ['grub-pc', 'cryptsetup', 'keyutils']
-        if (Utils.debianArch() !== 'i386') {
-            packages.push('grub-efi-' + Utils.debianArch() + '-bin')
+        if (Utils.machineArch() !== 'i386') {
+            packages.push('grub-efi-' + Utils.machineArch() + '-bin')
         }
 
         // I Downloads avverranno nell directory corrente
@@ -79,7 +79,7 @@ export default class Yolk {
 
         // Creo Release
         const date = await execute('date -R -u')
-        const content = `Archive: stable\nComponent: yolk\nOrigin: penguins-eggs\nArchitecture: ${Utils.debianArch()}\nDate: ${date}\n`
+        const content = `Archive: stable\nComponent: yolk\nOrigin: penguins-eggs\nArchitecture: ${Utils.machineArch()}\nDate: ${date}\n`
         Utils.warning('Writing Release')
         fs.writeFileSync('Release', content)
 

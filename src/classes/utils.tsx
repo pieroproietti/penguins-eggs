@@ -195,15 +195,34 @@ export default class Utils {
     * Node process.arch -> Debian arch
     * @returns arch
     */
-   static debianArch(): string {
+    static machineArch(): string {
       let arch = ''
       if (process.arch === 'x64') {
          arch = 'amd64'
       } else if (process.arch === 'ia32') {
          arch = 'i386'
-         if (shx.exec('uname -m').stderr.trim() === 'x86_64') {
+         // ma, se è installato node386 come in rasberry-desktop...
+         if (shx.exec('uname -m', {silent: true}).stdout.trim() === 'x86_64') {
             arch = 'amd64'
          }
+      } else if (process.arch === 'arm64') {
+         arch = 'arm64'
+      } else if (process.arch === 'arm') {
+         arch = 'armel'
+      }
+      return arch
+   }
+
+   /**
+    * eggsArch 
+    * @returns 
+    */
+   static eggsArch(): string {
+      let arch = ''
+      if (process.arch === 'x64') {
+         arch = 'amd64'
+      } else if (process.arch === 'ia32') {
+         arch = 'i386'
       } else if (process.arch === 'arm64') {
          arch = 'arm64'
       } else if (process.arch === 'arm') {
@@ -218,7 +237,7 @@ export default class Utils {
     */
    static getFilename(basename = ''): string {
 
-      let isoName = `${basename}-${this.debianArch()}_${Utils.formatDate(new Date())}`
+      let isoName = `${basename}-${this.machineArch()}_${Utils.formatDate(new Date())}`
       if (isoName.length >= 28) {
          isoName = isoName.substr(0, 28) // 28 +  4 .iso = 32 lunghezza max di volid
       }
@@ -310,8 +329,8 @@ export default class Utils {
     */
    static isUefi(): boolean {
       let isUefi = false
-      if (Utils.debianArch() !== 'i386') {
-         if (Pacman.packageIsInstalled('grub-efi-' + Utils.debianArch() + '-bin')) {
+      if (Utils.machineArch() !== 'i386') {
+         if (Pacman.packageIsInstalled('grub-efi-' + Utils.machineArch() + '-bin')) {
             isUefi = true
          }
       }

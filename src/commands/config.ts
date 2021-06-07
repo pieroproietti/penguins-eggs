@@ -85,7 +85,7 @@ export default class Config extends Command {
 
         i.distroTemplate = !Pacman.distroTemplateCheck()
 
-        if (Utils.debianArch() !== 'i386') {
+        if (Utils.machineArch() !== 'i386') {
             i.efi = (!Utils.isUefi())
         }
 
@@ -127,9 +127,9 @@ export default class Config extends Command {
             }
 
             if (i.efi) {
-                if (Utils.debianArch() !== 'i386') {
+                if (Utils.machineArch() !== 'i386') {
                     console.log('- install efi packages')
-                    console.log(chalk.yellow('  apt install -y grub-efi-' + Utils.debianArch() + '-bin\n'))
+                    console.log(chalk.yellow('  apt install -y grub-efi-' + Utils.machineArch() + '-bin\n'))
                 }
             }
 
@@ -224,11 +224,11 @@ export default class Config extends Command {
 
         if (i.efi) {
             if (nointeractive) {
-                Utils.error('config: you are on a system UEFI capable, but I can\'t install grub-efi-' + Utils.debianArch() + '-bin now!')
-                Utils.warning('I suggest You to install grub-efi-' + Utils.debianArch() + '-bin before to produce your ISO.\nJust write:\n    sudo apt install ')
+                Utils.error('config: you are on a system UEFI capable, but I can\'t install grub-efi-' + Utils.machineArch() + '-bin now!')
+                Utils.warning('I suggest You to install grub-efi-' + Utils.machineArch() + '-bin before to produce your ISO.\nJust write:\n    sudo apt install ')
             } else {
                 Utils.warning('Installing uefi support...')
-                await exec('apt-get install grub-efi-' + Utils.debianArch() + '-bin --yes', echo)
+                await exec('apt-get install grub-efi-' + Utils.machineArch() + '-bin --yes', echo)
             }
         }
 
