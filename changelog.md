@@ -19,7 +19,7 @@ You can follow the project also consulting the [commit history](https://github.c
 Versions are listed on reverse order, the first is the last one.
 
 ### eggs-8.0.5
-* fix bug in install due the addictions of two new architectures
+* added eggsArch and machineArch to respect rasberry-desktop-i386 but with kernel amd64
 
 ### eggs-8.0.4
 * added arm64 package and started test on arm64 and armel architectures.
