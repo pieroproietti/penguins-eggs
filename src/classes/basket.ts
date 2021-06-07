@@ -38,7 +38,7 @@ export default class Basket {
      */
     async last(): Promise<string> {
         if (this.lastVersion === '') {
-            const url = 'https://penguins-eggs.net/versions/all/' + Utils.debianArch() + '/'
+            const url = 'https://penguins-eggs.net/versions/all/' + Utils.eggsArch() + '/'
             const axios = require('axios').default
 
             const res = await axios.get(url)
@@ -62,7 +62,7 @@ export default class Basket {
             process.exit(1)
         }
 
-        const url = 'https://penguins-eggs.net/versions/all/' + Utils.debianArch() + '/'
+        const url = 'https://penguins-eggs.net/versions/all/' + Utils.eggsArch() + '/'
         const axios = require('axios').default
 
         const res = await axios.get(url)
@@ -98,7 +98,7 @@ export default class Basket {
         if (answer.selected === 'abort') {
             process.exit(0)
         }
-        const deb = 'eggs_' + answer.selected + '-1_' + Utils.debianArch() + '.deb'
+        const deb = 'eggs_' + answer.selected + '-1_' + Utils.eggsArch() + '.deb'
         const download = 'https://sourceforge.net/projects/penguins-eggs/files/packages-deb/' + deb
 
         /**

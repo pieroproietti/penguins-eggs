@@ -136,7 +136,7 @@ export default class Pacman {
    static packages(verbose = false): string[] {
       const packages = this.debs4eggs
       // dipendenze BIOS standard
-      if (Utils.debianArch()  === 'amd64' || Utils.debianArch() === 'i386') {
+      if (Utils.machineArch()  === 'amd64' || Utils.machineArch() === 'i386') {
          packages.push('isolinux')
          packages.push('syslinux')
       }
@@ -356,7 +356,7 @@ export default class Pacman {
 
       if (!Utils.isUefi()) {
          config.make_efi = false
-         console.log('Due the lacks of grub-efi-' + Utils.debianArch() + '-bin package set make_efi = false')
+         console.log('Due the lacks of grub-efi-' + Utils.machineArch() + '-bin package set make_efi = false')
       }
 
       /**
