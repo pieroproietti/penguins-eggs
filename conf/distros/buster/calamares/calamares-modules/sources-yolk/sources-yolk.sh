@@ -32,8 +32,8 @@ function backup_apt {
     fi
     mkdir $APT_BACKUP -p
 
-    mv $APT_ROOT/sources.list $APT_BACKUP
-    mv $APT_ROOT/sources.list.d/ $APT_BACKUP
+    mv "$APT_ROOT/sources.list $APT_BACKUP"
+    mv "$APT_ROOT/sources.list.d/ $APT_BACKUP"
 }
 
 ##############################
@@ -47,7 +47,7 @@ function restore_apt {
         rm "$APT_ROOT/sources.list"
     fi
     if [ -d "$APT_ROOT/sources.list.d" ]; then
-        "rm $APT_ROOT/sources.list.d -rf"
+        rm "$APT_ROOT/sources.list.d -rf"
     fi
 
     mv "$APT_BACKUP/sources.list" $APT_ROOT
@@ -61,17 +61,17 @@ function restore_apt {
 ##############################
 function yolk {
     mkdir "$APT_ROOT/sources.list.d"
-    cat << EOF > $CHROOT/etc/apt/sources.list.d/yolk.list
-    deb [trusted=yes] file:/usr/local/yolk ./
+cat << EOF > $CHROOT/etc/apt/sources.list.d/yolk.list
+deb [trusted=yes] file:/usr/local/yolk ./
 EOF
-    "chroot ${CHROOT} apt-get --allow-unauthenticated update -y"
+    chroot ${CHROOT} apt-get --allow-unauthenticated update -y
 }
 
 # Lo script inizia qui
-CHROOT=$(mount | grep proc | grep calamares | awk '{print $3}' | sed -e "s#/proc##g")
+CHROOT = $(mount | grep proc | grep calamares | awk '{print $3}' | sed -e "s#/proc##g")
 
-APT_ROOT="${CHROOT}/etc/apt"
-APT_BACKUP="/tmp/calamares-krill-temp"
+APT_ROOT = "${CHROOT}/etc/apt"
+APT_BACKUP = "/tmp/calamares-krill-temp"
 
 # clear
 echo "APT_ROOT: $APT_ROOT"
