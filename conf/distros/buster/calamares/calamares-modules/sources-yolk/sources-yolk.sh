@@ -1,62 +1,63 @@
 #!/bin/bash
 
-# sources-yolk
 #
-# utilizza solo la repository yolk durante l'installazione.
-# 
-# sources-yolk -u
-# rimuove yolk e reimposta le apt-list originali
+# Questa versione utilizza SOLO yolk 
+# durante l'installazione.
+# sources-yolk.sh
+#    aggiunge yolk, rimuove list ed esegue apt non autenticato
+# sources-yolk.sh
+# -u rimuove yolk e ri-aggiunge le list
 
 function main {
     #####################################################################
     # unmount: remove yolk.list
     #####################################################################
     if [ "$1" = "-u" ]; then
-        backup2original
-        yolk_list_remove
+        remove_yolk
     else
-        original2backup
-        yolk_list_create
+        add_yolk
     fi
 }
 
 
 #####################################################################
-function original2backup {
-    if [ -d "$KRILL_APT_SAVE" ]; then
-        rm $KRILL_APT_SAVE -rf
+function remove_list {
+    if [ -f "$LIST_BACKUP" ]; then
+        rm "$LIST_BACKUP"
     fi
-    mkdir $KRILL_APT_SAVE -p
+    mv "$LIST $LIST_BACKUP"
 
-    mv $APT_ROOT/$SOURCES_LIST $KRILL_APT_SAVE
-    mv $APT_ROOT/$SOURCES_LIST_D $KRILL_APT_SAVE
+    if [ -d "$LIST_D_BACKUP" ]; then
+        rm "$LIST_D_BACKUP" -rf
+    fi
+    mv "$LIST_D $APT_LIST_D_BACKUP"
 }
 
-function backup2original {
-    if [ -f "$APT_ROOT/$SOURCES_LIST" ]; then
-        rm $APT_ROOT/$SOURCES_LIST
+function add_list {
+    if [ -f "$LIST" ]; then
+        rm "$LIST" 
     fi
-    if [ -d "$APT_ROOT/$SOURCES_LIST_D" ]; then
-        rm $APT_ROOT/$SOURCES_LIST_D -rf
-    fi
-    mv $KRILL_APT_SAVE/$SOURCES_LIST $APT_ROOT
-    mv $KRILL_APT_SAVE/$SOURCES_LIST_D/ $APT_ROOT
+    mv "$APT_LIST_BACKUP $LIST"
+
+    if [ -d "$LIST_D" ]; then
+        rm "$LIST_D" -rf
+    fi        
+    mv "$LIST_D_BACKUP $LIST_D"
 }
 
 
-
-
-function yolk_list_create {
-    mkdir $CHROOT/etc/apt/sources.list.d/
+function add_yolk {
+    remove_list
     cat << EOF > $CHROOT/etc/apt/sources.list.d/yolk.list
     deb [trusted=yes] file:/usr/local/yolk ./
 EOF
-    "chroot ${CHROOT} apt-get --allow-unauthenticated update -y"
+    chroot $CHROOT apt-get --allow-unauthenticated update -y
 }
 
-function yolk_list_remove {
+function remove_yolk {
+    add_list
     rm $CHROOT/etc/apt/sources.list.d/yolk.list
-    #chroot $CHROOT apt-get update -y
+    chroot $CHROOT apt-get update -y
 }
 
 
@@ -64,14 +65,11 @@ function yolk_list_remove {
 # Lo script inizia qui
 CHROOT=$(mount | grep proc | grep calamares | awk '{print $3}' | sed -e "s#/proc##g")
 
-APT_ROOT="${CHROOT}/etc/apt"
-SOURCES_LIST="sources.list"
-SOURCES_LIST_D="sources.list.d"
-KRILL_APT_SAVE="/tmp/calamares-krill-temp"
-#clear
-#echo "sources.list: $SOURCES_LIST"
-#echo "sources.list.d: $SOURCES_LIST_D"
-#echo "KRILL_APT_SAVE: $KRILL_APT_SAVE"
-#echo ""
+LIST = "$CHROOT/etc/apt/sources.list"
+LIST_BACKUP = "$LIST.backup"
+
+LIST_D = "$CHROOT/etc/apt/sources.list.d"
+LIST_D_BACKUP = "$LIST_D.backup"
+
 main $1
 exit 0
