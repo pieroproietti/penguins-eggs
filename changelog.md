@@ -18,6 +18,9 @@ You can follow the project also consulting the [commit history](https://github.c
 ## Changelog
 Versions are listed on reverse order, the first is the last one.
 
+### eggs-8.0.6
+* we end the restucturation and reach the crucial point: makeEfi for arm... to do!
+
 ### eggs-8.0.5
 * added eggsArch and machineArch to respect rasberry-desktop-i386 but with kernel amd64
 
