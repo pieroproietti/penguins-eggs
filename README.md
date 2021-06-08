@@ -111,6 +111,9 @@ USAGE
   $ eggs COMMAND
 ...
 ```
+## Save a log file in production
+```sudo eggs produce --fast --verbose | tee eggs.log```
+
 <!-- usagestop -->
 
 # Commands

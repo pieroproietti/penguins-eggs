@@ -191,8 +191,7 @@ export default class Utils {
    }
 
    /**
-    * debArch
-    * Node process.arch -> Debian arch
+    * machineArch
     * @returns arch
     */
     static machineArch(): string {
@@ -211,6 +210,16 @@ export default class Utils {
          arch = 'armel'
       }
       return arch
+   }
+
+   /**
+    * machineUEFI
+    * @returns arch
+    */
+    static machineUEFI(): string {
+      // arch_efi = 'x86_64-efi' = uname -m + '-efi'
+      let arch_efi = shx.exec('uname -m', {silent: true}).stdout.trim() + '-efi'
+      return arch_efi
    }
 
    /**

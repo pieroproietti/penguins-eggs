@@ -47,8 +47,6 @@ export default class Ovary {
 
    settings = {} as Settings
 
-   arch_efi = 'x86_64-efi'
-
    // Sono utilizzate per passare i flag di produce
    snapshot_prefix = ''
    snapshot_basename = ''
@@ -161,7 +159,10 @@ export default class Ovary {
          this.incubator = new Incubator(this.settings.remix, this.settings.distro, this.settings.config.user_opt, verbose)
          await this.incubator.config(release)
 
-         await this.isolinux(this.theme, verbose)
+         // Creo isolinux solo per amd64 e i386
+         if (Utils.machineArch() === 'amd64' || Utils.machineArch() === 'i386') {
+            await this.isolinux(this.theme, verbose)
+         }
 
          await this.copyKernel()
          if (this.settings.config.make_efi) {
@@ -215,6 +216,18 @@ export default class Ovary {
       if (!fs.existsSync(this.settings.work_dir.merged)) {
          shx.mkdir('-p', this.settings.work_dir.merged)
       }
+
+      /**
+       * Creo le directory di destinazione per boot, efi, isolinux e live
+       * precedentemente in isolinux
+       */
+      if (!fs.existsSync(this.settings.work_dir.pathIso)) {
+         shx.mkdir('-p', `${this.settings.work_dir.pathIso}/boot/grub/${Utils.machineUEFI()}`)
+         shx.mkdir('-p', `${this.settings.work_dir.pathIso}/efi/boot`)
+         shx.mkdir('-p', `${this.settings.work_dir.pathIso}/isolinux`)
+         shx.mkdir('-p', `${this.settings.work_dir.pathIso}/live`)
+      }
+      shx.mkdir('-p', `${this.settings.work_dir.pathIso}/live`)
    }
 
    /**
@@ -434,16 +447,6 @@ export default class Ovary {
       if (verbose) {
          console.log('ovary: isolinux')
       }
-
-      // Creo le directory di destinazione
-      if (!fs.existsSync(this.settings.work_dir.pathIso)) {
-         shx.mkdir('-p', `${this.settings.work_dir.pathIso}/boot/grub/${this.arch_efi}`)
-         shx.mkdir('-p', `${this.settings.work_dir.pathIso}/efi/boot`)
-         shx.mkdir('-p', `${this.settings.work_dir.pathIso}/isolinux`)
-         shx.mkdir('-p', `${this.settings.work_dir.pathIso}/live`)
-      }
-      shx.mkdir('-p', `${this.settings.work_dir.pathIso}/live`)
-
 
       // copio i file di isolinux
       const isolinuxbin = `${this.settings.distro.isolinuxPath}isolinux.bin`
@@ -1076,7 +1079,7 @@ export default class Ovary {
     * makeEfi
     * Create /boot and /efi for UEFI
     */
-    async makeEfi(theme = 'eggs', verbose = false) {
+   async makeEfi(theme = 'eggs', verbose = false) {
       const echo = Utils.setEcho(verbose)
       if (verbose) {
          console.log('ovary: makeEfi')
@@ -1104,7 +1107,7 @@ export default class Ovary {
       let text = ''
       text += 'search --file --set=root /isolinux/isolinux.cfg\n'
       text += 'set prefix=($root)/boot/grub\n'
-      text += `source $prefix/${this.arch_efi}/grub.cfg\n`
+      text += `source $prefix/${Utils.machineUEFI()}/grub.cfg\n`
       Utils.write(grubCfg, text)
 
       /**
@@ -1136,22 +1139,22 @@ export default class Ovary {
       }
     }
     */
-      shx.mkdir('-p', `./boot/grub/${this.arch_efi}`)
+      shx.mkdir('-p', `./boot/grub/${Utils.machineUEFI()}`)
       shx.mkdir('-p', './efi/boot')
 
       // copy splash
       //shx.cp(path.resolve(__dirname, '../../assets/penguins-eggs-splash.png'), `${this.settings.efi_work}/boot/grub/spash.png`)
 
       // second grub.cfg file
-      let cmd = `for i in $(ls /usr/lib/grub/${this.arch_efi}|grep part_|grep .mod|sed \'s/.mod//\'); do echo "insmod $i" >> boot/grub/${this.arch_efi}/grub.cfg; done`
+      let cmd = `for i in $(ls /usr/lib/grub/${Utils.machineUEFI()}|grep part_|grep .mod|sed \'s/.mod//\'); do echo "insmod $i" >> boot/grub/${Utils.machineUEFI()}/grub.cfg; done`
       await exec(cmd, echo)
 
       // Additional modules so we don't boot in blind mode. I don't know which ones are really needed.
       // cmd = `for i in efi_gop efi_uga ieee1275_fb vbe vga video_bochs video_cirrus jpeg png gfxterm ; do echo "insmod $i" >> boot/grub/x86_64-efi/grub.cfg ; done`
-      cmd = `for i in efi_gop efi_gop efi_uga gfxterm video_bochs video_cirrus jpeg png ; do echo "insmod $i" >> boot/grub/${this.arch_efi}/grub.cfg ; done`
+      cmd = `for i in efi_gop efi_gop efi_uga gfxterm video_bochs video_cirrus jpeg png ; do echo "insmod $i" >> boot/grub/${Utils.machineUEFI()}/grub.cfg ; done`
       await exec(cmd, echo)
 
-      await exec(`echo source /boot/grub/grub.cfg >> boot/grub/${this.arch_efi}/grub.cfg`, echo)
+      await exec(`echo source /boot/grub/grub.cfg >> boot/grub/${Utils.machineUEFI()}/grub.cfg`, echo)
       /**
        * fine lavoro in efi_work
        */
@@ -1163,7 +1166,7 @@ export default class Ovary {
       await exec('tar -cvf memdisk boot', echo)
 
       // make the grub image
-      await exec(`grub-mkimage -O ${this.arch_efi} -m memdisk -o bootx64.efi -p '(memdisk)/boot/grub' search iso9660 configfile normal memdisk tar cat part_msdos part_gpt fat ext2 ntfs ntfscomp hfsplus chain boot linux`, echo)
+      await exec(`grub-mkimage -O ${Utils.machineUEFI()} -m memdisk -o bootx64.efi -p '(memdisk)/boot/grub' search iso9660 configfile normal memdisk tar cat part_msdos part_gpt fat ext2 ntfs ntfscomp hfsplus chain boot linux`, echo)
 
       // pospd (torna a efi_work)
       process.chdir(this.settings.efi_work)
@@ -1182,7 +1185,7 @@ export default class Ovary {
       // ###############################
 
       // copy modules and font
-      shx.cp('-r', `/usr/lib/grub/${this.arch_efi}/*`, `boot/grub/${this.arch_efi}/`)
+      shx.cp('-r', `/usr/lib/grub/${Utils.machineUEFI()}/*`, `boot/grub/${Utils.machineUEFI()}/`)
 
       // if this doesn't work try another font from the same place (grub's default, unicode.pf2, is much larger)
       // Either of these will work, and they look the same to me. Unicode seems to work with qemu. -fsr

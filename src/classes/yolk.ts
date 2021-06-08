@@ -54,7 +54,13 @@ export default class Yolk {
         /**
          * I pacchetti che servono per l'installazione sono solo questi
          */
-        const packages = ['grub-pc', 'cryptsetup', 'keyutils']
+        const packages = ['cryptsetup', 'keyutils']
+
+        // grub-pc solo per architettura CISC
+        if (Utils.machineArch() === 'amd64' || Utils.machineArch() === 'i386') {
+            packages.push('grub-pc')
+        }
+
         if (Utils.machineArch() !== 'i386') {
             packages.push('grub-efi-' + Utils.machineArch() + '-bin')
         }
@@ -67,7 +73,6 @@ export default class Yolk {
             let cmd = ''
             Utils.warning(`downloading package ${packages[i]} and it's dependencies...`)
             cmd = `apt-cache depends --recurse --no-recommends --no-suggests --no-conflicts --no-breaks --no-replaces --no-enhances ${packages[i]} | grep "^\\w" | sort -u`
-            console.log(cmd)
             const depends = await execute(cmd)
             await this.installDeps(depends.split('\n'))
         }
