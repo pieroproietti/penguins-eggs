@@ -19,7 +19,7 @@ You can follow the project also consulting the [commit history](https://github.c
 Versions are listed on reverse order, the first is the last one.
 
 ### eggs-8.0.6
-* we end the restucturation and reach the crucial point: makeEfi for arm... to do!
+* finished restucturation to include arm. Now we need two thing: adapt krill installer to UEFI (calamares not present in arm) and finally make UEFI for arm. 
 
 ### eggs-8.0.5
 * added eggsArch and machineArch to respect rasberry-desktop-i386 but with kernel amd64

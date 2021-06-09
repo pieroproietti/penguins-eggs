@@ -93,10 +93,13 @@ export default class Info extends Command {
 
       const dependencies = await Pacman.prerequisitesCheck()
       const configurations = Pacman.configurationCheck()
+      let uefi = Utils.isUefi()
+
       let installer = false
       if (await Pacman.isGui()) {
          installer = await Pacman.calamaresCheck()
       }
+
 
       const Ok = () => (
          <Text backgroundColor="green">OK</Text>
@@ -109,12 +112,12 @@ export default class Info extends Command {
       render(<Ko />)
 
       const Krill = () => (
-         <Text backgroundColor="green">Krill</Text>
+         <Text backgroundColor="yellow">krill</Text>
       )
       render(<Krill />)
 
       const Calamares = () => (
-         <Text backgroundColor="green">Calamares</Text>
+         <Text backgroundColor="green">calamares</Text>
       )
       render(<Calamares />)
 
@@ -123,6 +126,7 @@ export default class Info extends Command {
          <Box borderStyle="round" marginRight={2} flexDirection="row">
             <Box marginRight={2}><Text>dependencies: {dependencies ? <Ok /> : <Ko />}</Text></Box>
             <Box marginRight={2}><Text>configurations: {configurations ? <Ok /> : <Ko />}</Text></Box>
+            <Box marginRight={2}><Text>uefi: {uefi ? <Ok /> : <Ko />}</Text></Box>
             <Box marginRight={2}><Text>installer: {installer ? <Calamares /> : <Krill />}</Text></Box>
          </Box>
       )

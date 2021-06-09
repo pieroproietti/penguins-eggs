@@ -706,7 +706,7 @@ export default class Utils {
     */
    static async titles(command = ''): Promise<void> {
       console.clear()
-      console.log(figlet.textSync('eggs'))
+      console.log(figlet.textSync('eggs', { font: 'Standard'}))
       console.log(chalk.bgGreen.whiteBright('      ' + pjson.name + '      ') +
          chalk.bgWhite.blue(" Perri's Brewery edition ") +
          chalk.bgRed.whiteBright('       ver. ' + pjson.version + '       '))

@@ -16,9 +16,7 @@ export default function Title({ title = "krill" }) {
       <>
          <Box flexDirection="row">
             <Box>
-               <Gradient name="fruit">
                   <BigText text={pjson.shortName} font="simple"/>
-               </Gradient>
             </Box>
             <Box margin={0} justifyContent="center" flexDirection="column">
                <Box >
