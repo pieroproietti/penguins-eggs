@@ -1126,19 +1126,17 @@ export default class Ovary {
       process.chdir(this.settings.efi_work)
 
       /**
-       * start with empty directories Clear dir boot and efi
+       * start with empty directories: clear dir boot and efi
        */
-      /*
-    const files = fs.readdirSync('.');
-    for (var i in files) {
-      if (files[i] === './boot') {
-        await exec(`rm ./boot -rf`, echo)
+      const files = fs.readdirSync('.');
+      for (var i in files) {
+         if (files[i] === './boot') {
+            await exec(`rm ./boot -rf`, echo)
+         }
+         if (files[i] === './efi') {
+            await exec(`rm ./efi -rf`, echo)
+         }
       }
-      if (files[i] === './efi') {
-        await exec(`rm ./efi -rf`, echo)
-      }
-    }
-    */
       shx.mkdir('-p', `./boot/grub/${Utils.machineUEFI()}`)
       shx.mkdir('-p', './efi/boot')
 

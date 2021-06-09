@@ -205,7 +205,7 @@ export default class Hatching {
 
       if (await this.partition(this.disk.installationDevice, this.disk.partionType)) {
          message = "Formatting file system "
-         percent = 0.05
+         percent = 0.01
          try {
             redraw(<Install message={message} percent={percent} />)
             await this.mkfs()
