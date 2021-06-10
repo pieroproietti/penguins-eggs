@@ -54,7 +54,7 @@ export default class Pacman {
     * bionic   live-config live-task-localization
     * 
     */
-   static debs4eggs = ['squashfs-tools', 'xorriso', 'live-boot', 'live-boot-initramfs-tools', 'dpkg-dev']
+   static debs4eggs = ['squashfs-tools', 'xorriso', 'live-boot', 'live-boot-initramfs-tools', 'dpkg-dev', 'syslinux']
    static debs4notRemove = ['rsync', 'whois', 'dosfstools', 'parted']
    static debs4calamares = ['calamares', 'qml-module-qtquick2', 'qml-module-qtquick-controls']
 
@@ -135,13 +135,9 @@ export default class Pacman {
     */
    static packages(verbose = false): string[] {
       const packages = this.debs4eggs
-      // dipendenze BIOS standard
+      // Aggiungo isolinux SOLO per CISC
       if (Utils.machineArch()  === 'amd64' || Utils.machineArch() === 'i386') {
          packages.push('isolinux')
-         packages.push('syslinux')
-      } else {
-         // però su arm serve, comunque, syslinux-common per memdisk
-         packages.push('syslinux-common')
       }
 
       // Aggiungo pacchetti per versione
@@ -189,13 +185,9 @@ export default class Pacman {
          }
       }
 
-      // Aggiungo isolinux e syslinux solo per cisc
+      // Aggiungo isolinux SOLO per CISC
       if (process.arch === 'x64' || process.arch === 'i386') {
-         if (!this.packageIsInstalled('isolinux') || !this.packageIsInstalled('syslinux')) {
-            installed = false
-         }
-      } else {
-         if (!this.packageIsInstalled('syslinux-common')) {
+         if (!this.packageIsInstalled('isolinux')) {
             installed = false
          }
       }

@@ -130,6 +130,7 @@ export default class Daddy {
             // produce
             if (loadDefault) {
                 flags += ' --verbose'
+                verbose = true
             }
             flags += ' --' + newConf.compression
             flags += ' --theme=' + config.theme
