@@ -250,7 +250,6 @@ class Distro implements IDistro {
           this.calamaresAble = false
       }
       
-
       /**
        * MX LINUX
        * ln -s /run/live/medium/live/filesystem.squashfs /live/boot-dev/antiX/linuxfs

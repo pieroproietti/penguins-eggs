@@ -95,7 +95,7 @@ export default class Config extends Command {
              */
             const remix = {} as IRemix
             const distro = new Distro(remix)
-            if (calamaresAble()) {
+            if (Pacman.calamaresAble()) {
                 Utils.warning('config: you are on a graphic system, I suggest to install the GUI installer calamares')
                 if (nointeractive) {
                     i.calamares = true
@@ -240,7 +240,7 @@ export default class Config extends Command {
         Utils.warning('prerequisites installed!')
 
         if (i.calamares) {
-            if (calamaresAble()) {
+            if (Pacman.calamaresAble()) {
                 if (nointeractive) {
                     // solo un avviso
                     Utils.error('config: you are on a graphic system, I suggest to install the GUI installer calamares. I can\'t install calamares now!')
@@ -260,12 +260,3 @@ export default class Config extends Command {
     }
 }
 
-function calamaresAble(): boolean {
-    let result = true
-    const remix = {} as IRemix
-    const distro = new Distro(remix)
-    if (distro.versionLike === 'jessie' || distro.versionLike === 'stretch') {
-        result = false
-    }
-    return result
-}

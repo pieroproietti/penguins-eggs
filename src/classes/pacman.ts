@@ -139,6 +139,9 @@ export default class Pacman {
       if (Utils.machineArch()  === 'amd64' || Utils.machineArch() === 'i386') {
          packages.push('isolinux')
          packages.push('syslinux')
+      } else {
+         // però su arm serve, comunque, syslinux-common per memdisk
+         packages.push('syslinux-common')
       }
 
       // Aggiungo pacchetti per versione
@@ -189,6 +192,10 @@ export default class Pacman {
       // Aggiungo isolinux e syslinux solo per cisc
       if (process.arch === 'x64' || process.arch === 'i386') {
          if (!this.packageIsInstalled('isolinux') || !this.packageIsInstalled('syslinux')) {
+            installed = false
+         }
+      } else {
+         if (!this.packageIsInstalled('syslinux-common')) {
             installed = false
          }
       }
@@ -252,6 +259,21 @@ export default class Pacman {
       return installed
    }
 
+   /**
+    * Controlla se calamares è installabile
+    * @returns 
+    */
+   static calamaresAble(): boolean {
+      const remix = {} as IRemix
+      const distro = new Distro(remix)
+
+      let result = distro.calamaresAble
+      if (process.arch === 'armel' || process.arch === 'arm64') {
+          result = false
+      }
+      return result
+  }
+  
    /**
     *
     */
