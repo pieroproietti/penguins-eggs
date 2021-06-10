@@ -54,7 +54,7 @@ export default class Pacman {
     * bionic   live-config live-task-localization
     * 
     */
-   static debs4eggs = ['squashfs-tools', 'xorriso', 'live-boot', 'live-boot-initramfs-tools', 'dpkg-dev', 'syslinux']
+   static debs4eggs = ['squashfs-tools', 'xorriso', 'live-boot', 'live-boot-initramfs-tools', 'dpkg-dev', 'syslinux', 'syslinux-common']
    static debs4notRemove = ['rsync', 'whois', 'dosfstools', 'parted']
    static debs4calamares = ['calamares', 'qml-module-qtquick2', 'qml-module-qtquick-controls']
 
@@ -135,6 +135,7 @@ export default class Pacman {
     */
    static packages(verbose = false): string[] {
       const packages = this.debs4eggs
+      
       // Aggiungo isolinux SOLO per CISC
       if (Utils.machineArch()  === 'amd64' || Utils.machineArch() === 'i386') {
          packages.push('isolinux')
