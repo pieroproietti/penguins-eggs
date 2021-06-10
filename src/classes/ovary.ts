@@ -1303,6 +1303,8 @@ export default class Ovary {
                           ${uefi_opt} \
                           -output ${this.settings.config.snapshot_dir}${this.settings.config.snapshot_prefix}${this.settings.isoFilename} \
                           ${this.settings.work_dir.pathIso}`
+                          
+                          // /usr/lib/ISOLINUX/isohdpfx.bin
 
       cmd = cmd.replace(/\s\s+/g, ' ')
       Utils.writeX(`${this.settings.work_dir.path}mkisofs`, cmd)
