@@ -18,6 +18,9 @@ You can follow the project also consulting the [commit history](https://github.c
 ## Changelog
 Versions are listed on reverse order, the first is the last one.
 
+### eggs-8.0.7
+* added syslinux-common to dependencies. Thanx to feedback from <aravind@stmdocs.in>.
+
 ### eggs-8.0.6
 * finished restucturation to include arm. Now we need two things: adapt krill installer to UEFI and finally make UEFI for arm. 
 
