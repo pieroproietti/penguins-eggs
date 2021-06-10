@@ -35,7 +35,11 @@ export default class ExportDeb extends Command {
 
     // esportazione
     console.log('copy to remote host...')
-    let arch = Utils.eggsArch() + '.deb'
+    let arch = Utils.eggsArch()
+    if (flags.all) {
+      arch='*'
+    }
+    arch += '.deb'
     const cmd = 'scp ' + Tu.config.localPathDeb + Tu.config.filterDeb+arch + ' root@' + Tu.config.remoteHost + ':' +Tu.config.remotePathDeb
     await exec(cmd, { echo: true, capture: true })
 
