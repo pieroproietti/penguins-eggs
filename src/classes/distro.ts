@@ -266,7 +266,13 @@ class Distro implements IDistro {
        * e le posizioni per isolinux e syslinux
        */
       this.isolinuxPath = '/usr/lib/ISOLINUX/'
-      this.syslinuxPath = '/usr/lib/syslinux/modules/bios/'
+      this.syslinuxPath = '/usr/lib/syslinux/modules/'
+      /**
+       * /usr/lib/syslinux/modules/bios
+       * syslinuxPath '/usr/lib/syslinux/ contiene mbr, memdisk e modules
+       * in modules abbiamo bios, efi32 ed efi64
+       * forse in arm andrebbe il contenuto di efi64
+       */
    }
 }
 

@@ -160,9 +160,9 @@ export default class Ovary {
          await this.incubator.config(release)
 
          // Creo isolinux solo per amd64 e i386
-         if (Utils.machineArch() === 'amd64' || Utils.machineArch() === 'i386') {
-            await this.isolinux(this.theme, verbose)
-         }
+         // if (Utils.machineArch() === 'amd64' || Utils.machineArch() === 'i386') {
+         await this.isolinux(this.theme, verbose)
+         // }
 
          await this.copyKernel()
          if (this.settings.config.make_efi) {
@@ -440,7 +440,7 @@ export default class Ovary {
 
 
    /**
-    *  async isoCreateStructure() {
+    *  async isolinux
     */
    async isolinux(theme = 'eggs', verbose = false) {
       const echo = Utils.setEcho(verbose)
@@ -452,10 +452,18 @@ export default class Ovary {
       const isolinuxbin = `${this.settings.distro.isolinuxPath}isolinux.bin`
       const vesamenu = `${this.settings.distro.syslinuxPath}vesamenu.c32`
 
-      await exec(`rsync -a ${this.settings.distro.syslinuxPath}chain.c32 ${this.settings.work_dir.pathIso}/isolinux/`, echo)
-      await exec(`rsync -a ${this.settings.distro.syslinuxPath}ldlinux.c32 ${this.settings.work_dir.pathIso}/isolinux/`, echo)
-      await exec(`rsync -a ${this.settings.distro.syslinuxPath}libcom32.c32 ${this.settings.work_dir.pathIso}/isolinux/`, echo)
-      await exec(`rsync -a ${this.settings.distro.syslinuxPath}libutil.c32 ${this.settings.work_dir.pathIso}/isolinux/`, echo)
+      // da ritoccare ponendo i vari casi
+      if (process.arch!=='arm64') {
+         await exec(`rsync -a ${this.settings.distro.syslinuxPath}efi64/chain.c32 ${this.settings.work_dir.pathIso}/isolinux/`, echo)
+         await exec(`rsync -a ${this.settings.distro.syslinuxPath}efi64/ldlinux.c32 ${this.settings.work_dir.pathIso}/isolinux/`, echo)
+         await exec(`rsync -a ${this.settings.distro.syslinuxPath}efi64/libcom32.c32 ${this.settings.work_dir.pathIso}/isolinux/`, echo)
+         await exec(`rsync -a ${this.settings.distro.syslinuxPath}efi64/libutil.c32 ${this.settings.work_dir.pathIso}/isolinux/`, echo)
+      }
+
+      await exec(`rsync -a ${this.settings.distro.syslinuxPath}bios/chain.c32 ${this.settings.work_dir.pathIso}/isolinux/`, echo)
+      await exec(`rsync -a ${this.settings.distro.syslinuxPath}bios/ldlinux.c32 ${this.settings.work_dir.pathIso}/isolinux/`, echo)
+      await exec(`rsync -a ${this.settings.distro.syslinuxPath}bios/libcom32.c32 ${this.settings.work_dir.pathIso}/isolinux/`, echo)
+      await exec(`rsync -a ${this.settings.distro.syslinuxPath}bios/libutil.c32 ${this.settings.work_dir.pathIso}/isolinux/`, echo)
       await exec(`rsync -a ${isolinuxbin} ${this.settings.work_dir.pathIso}/isolinux/`, echo)
       await exec(`rsync -a ${vesamenu} ${this.settings.work_dir.pathIso}/isolinux/`, echo)
 
@@ -1303,8 +1311,8 @@ export default class Ovary {
                           ${uefi_opt} \
                           -output ${this.settings.config.snapshot_dir}${this.settings.config.snapshot_prefix}${this.settings.isoFilename} \
                           ${this.settings.work_dir.pathIso}`
-                          
-                          // /usr/lib/ISOLINUX/isohdpfx.bin
+
+      // /usr/lib/ISOLINUX/isohdpfx.bin
 
       cmd = cmd.replace(/\s\s+/g, ' ')
       Utils.writeX(`${this.settings.work_dir.path}mkisofs`, cmd)
