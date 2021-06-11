@@ -452,18 +452,10 @@ export default class Ovary {
       const isolinuxbin = `${this.settings.distro.isolinuxPath}isolinux.bin`
       const vesamenu = `${this.settings.distro.syslinuxPath}vesamenu.c32`
 
-      // da ritoccare ponendo i vari casi
-      if (process.arch!=='arm64') {
-         await exec(`rsync -a ${this.settings.distro.syslinuxPath}efi64/chain.c32 ${this.settings.work_dir.pathIso}/isolinux/`, echo)
-         await exec(`rsync -a ${this.settings.distro.syslinuxPath}efi64/ldlinux.c32 ${this.settings.work_dir.pathIso}/isolinux/`, echo)
-         await exec(`rsync -a ${this.settings.distro.syslinuxPath}efi64/libcom32.c32 ${this.settings.work_dir.pathIso}/isolinux/`, echo)
-         await exec(`rsync -a ${this.settings.distro.syslinuxPath}efi64/libutil.c32 ${this.settings.work_dir.pathIso}/isolinux/`, echo)
-      }
-
-      await exec(`rsync -a ${this.settings.distro.syslinuxPath}bios/chain.c32 ${this.settings.work_dir.pathIso}/isolinux/`, echo)
-      await exec(`rsync -a ${this.settings.distro.syslinuxPath}bios/ldlinux.c32 ${this.settings.work_dir.pathIso}/isolinux/`, echo)
-      await exec(`rsync -a ${this.settings.distro.syslinuxPath}bios/libcom32.c32 ${this.settings.work_dir.pathIso}/isolinux/`, echo)
-      await exec(`rsync -a ${this.settings.distro.syslinuxPath}bios/libutil.c32 ${this.settings.work_dir.pathIso}/isolinux/`, echo)
+      await exec(`rsync -a ${this.settings.distro.syslinuxPath}chain.c32 ${this.settings.work_dir.pathIso}/isolinux/`, echo)
+      await exec(`rsync -a ${this.settings.distro.syslinuxPath}ldlinux.c32 ${this.settings.work_dir.pathIso}/isolinux/`, echo)
+      await exec(`rsync -a ${this.settings.distro.syslinuxPath}libcom32.c32 ${this.settings.work_dir.pathIso}/isolinux/`, echo)
+      await exec(`rsync -a ${this.settings.distro.syslinuxPath}libutil.c32 ${this.settings.work_dir.pathIso}/isolinux/`, echo)
       await exec(`rsync -a ${isolinuxbin} ${this.settings.work_dir.pathIso}/isolinux/`, echo)
       await exec(`rsync -a ${vesamenu} ${this.settings.work_dir.pathIso}/isolinux/`, echo)
 
