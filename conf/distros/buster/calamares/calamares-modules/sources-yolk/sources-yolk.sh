@@ -68,14 +68,15 @@ EOF
 }
 
 # Lo script inizia qui
-CHROOT = $(mount | grep proc | grep calamares | awk '{print $3}' | sed -e "s#/proc##g")
+# attenzione agli spazi, controllare tutto
+# CHROOT=$(mount | grep proc | grep calamares | awk '{print $3}' | sed -e "s#/proc##g")
+CHROOT=$(mount | grep proc | grep calamares | awk '{print $3}' | sed -e "s#/proc##g")
 
-APT_ROOT = "${CHROOT}/etc/apt"
-APT_BACKUP = "/tmp/calamares-krill-temp"
-
+APT_ROOT="${CHROOT}/etc/apt"
+APT_BACKUP="/tmp/calamares-krill-temp"
 # clear
-echo "APT_ROOT: $APT_ROOT"
-echo "APT_BACKUP: $APT_BACKUP"
+# echo "APT_ROOT: $APT_ROOT"
+# echo "APT_BACKUP: $APT_BACKUP"
 # echo ""
 main $1
 exit 0
