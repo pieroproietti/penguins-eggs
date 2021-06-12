@@ -159,10 +159,8 @@ export default class Ovary {
          this.incubator = new Incubator(this.settings.remix, this.settings.distro, this.settings.config.user_opt, verbose)
          await this.incubator.config(release)
 
-         // Creo isolinux solo per amd64 e i386
-         // if (Utils.machineArch() === 'amd64' || Utils.machineArch() === 'i386') {
+         await this.syslinux()
          await this.isolinux(this.theme, verbose)
-         // }
 
          await this.copyKernel()
          if (this.settings.config.make_efi) {
@@ -440,6 +438,21 @@ export default class Ovary {
 
 
    /**
+   * syslinux
+   */
+   async syslinux(verbose = false) {
+      const echo = Utils.setEcho(verbose)
+      if (verbose) {
+         console.log('ovary: syslinux')
+      }
+      await exec('rsync -a ' + this.settings.distro.syslinuxPath + 'vesamenu.c32' + ' ' + this.settings.work_dir.pathIso + 'isolinux/', echo)
+      await exec('rsync -a ' + this.settings.distro.syslinuxPath + 'chain.c32' + ' ' + this.settings.work_dir.pathIso + 'isolinux/', echo)
+      await exec('rsync -a ' + this.settings.distro.syslinuxPath + 'ldlinux.c32' + ' ' + this.settings.work_dir.pathIso + 'isolinux/', echo)
+      await exec('rsync -a ' + this.settings.distro.syslinuxPath + 'libcom32.c32' + ' ' + this.settings.work_dir.pathIso + 'isolinux/', echo)
+      await exec('rsync -a ' + this.settings.distro.syslinuxPath + 'libutil.c32' + ' ' + this.settings.work_dir.pathIso + 'isolinux/', echo)
+   }
+
+   /**
     *  async isolinux
     */
    async isolinux(theme = 'eggs', verbose = false) {
@@ -448,39 +461,27 @@ export default class Ovary {
          console.log('ovary: isolinux')
       }
 
-      // copio i file di isolinux
-      const isolinuxbin = `${this.settings.distro.isolinuxPath}isolinux.bin`
-      const vesamenu = `${this.settings.distro.syslinuxPath}vesamenu.c32`
+      await exec('rsync -a ' + this.settings.distro.isolinuxPath + 'isolinux.bin' + ' ' + this.settings.work_dir.pathIso + 'isolinux/', echo)
+      fs.copyFileSync(path.resolve(__dirname, '../../conf/distros/' + this.settings.distro.versionLike + '/' + 'isolinux/isolinux.template.cfg'), this.settings.work_dir.pathIso + 'isolinux/isolinux.cfg')
+      fs.copyFileSync(path.resolve(__dirname, '../../conf/distros/' + this.settings.distro.versionLike + '/' + 'isolinux/stdmenu.template.cfg'), this.settings.work_dir.pathIso + 'isolinux/stdmenu.cfg')
+      const menuDest = this.settings.work_dir.pathIso + 'isolinux/menu.cfg'
+      const splashDest = this.settings.work_dir.pathIso + 'isolinux/splash.png'
 
-      await exec(`rsync -a ${this.settings.distro.syslinuxPath}chain.c32 ${this.settings.work_dir.pathIso}/isolinux/`, echo)
-      await exec(`rsync -a ${this.settings.distro.syslinuxPath}ldlinux.c32 ${this.settings.work_dir.pathIso}/isolinux/`, echo)
-      await exec(`rsync -a ${this.settings.distro.syslinuxPath}libcom32.c32 ${this.settings.work_dir.pathIso}/isolinux/`, echo)
-      await exec(`rsync -a ${this.settings.distro.syslinuxPath}libutil.c32 ${this.settings.work_dir.pathIso}/isolinux/`, echo)
-      await exec(`rsync -a ${isolinuxbin} ${this.settings.work_dir.pathIso}/isolinux/`, echo)
-      await exec(`rsync -a ${vesamenu} ${this.settings.work_dir.pathIso}/isolinux/`, echo)
-
-      fs.copyFileSync(path.resolve(__dirname, `../../conf/distros/${this.settings.distro.versionLike}/isolinux/isolinux.template.cfg`), `${this.settings.work_dir.pathIso}/isolinux/isolinux.cfg`)
-      fs.copyFileSync(path.resolve(__dirname, `../../conf/distros/${this.settings.distro.versionLike}/isolinux/stdmenu.template.cfg`), `${this.settings.work_dir.pathIso}/isolinux/stdmenu.cfg`)
-
-      // creazione del menu e splash
-      const menuDest = `${this.settings.work_dir.pathIso}/isolinux/menu.cfg`
-      const splashDest = `${this.settings.work_dir.pathIso}/isolinux/splash.png`
-
-      // splashSrc e menuSrc possono essere configurate dal tema
+      /**
+       * splashSrc e menuSrc possono essere riconfigurati dal tema
+       */
       let splashSrc = path.resolve(__dirname, '../../assets/penguins-eggs-splash.png')
-      let menuSrc = path.resolve(__dirname, `../../conf/distros/${this.settings.distro.versionLike}/isolinux/menu.template.cfg`)
-
-      // if a theme exist, change splash with theme splash
-      const splashCandidate = path.resolve(__dirname, `../../addons/${theme}/theme/livecd/splash.png`)
+      const splashCandidate = path.resolve(__dirname, '../../addons/' + theme + '/theme/livecd/splash.png')
       if (fs.existsSync(splashCandidate)) {
          splashSrc = splashCandidate
       }
 
-      // if a theme exist, change menu with theme menu for isolinux
-      const menuCandidate = path.resolve(__dirname, `../../addons/${theme}/theme/livecd/menu.template.cfg`)
+      let menuSrc = path.resolve(__dirname, '../../conf/distros/' + this.settings.distro.versionLike + 'isolinux/menu.template.cfg')
+      const menuCandidate = path.resolve(__dirname, '../../addons/' + theme + '/theme/livecd/menu.template.cfg')
       if (fs.existsSync(menuCandidate)) {
          menuSrc = menuCandidate
       }
+
       fs.copyFileSync(splashSrc, splashDest)
       const template = fs.readFileSync(menuSrc, 'utf8')
       const view = {

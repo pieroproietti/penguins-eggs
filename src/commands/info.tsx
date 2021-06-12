@@ -101,6 +101,7 @@ export default class Info extends Command {
       }
 
 
+
       const Ok = () => (
          <Text backgroundColor="green">OK</Text>
       )
@@ -111,23 +112,27 @@ export default class Info extends Command {
       )
       render(<Ko />)
 
-      const Krill = () => (
-         <Text backgroundColor="yellow">krill</Text>
-      )
-      render(<Krill />)
+      /** 
+       * CLI va verde se naked, altrimenti giallo
+       */
 
-      const Calamares = () => (
-         <Text backgroundColor="green">calamares</Text>
+      const CLI = () => (
+         <Text backgroundColor="green">CLI</Text>
       )
-      render(<Calamares />)
+      render(<CLI />)
+
+      const GUI = () => (
+         <Text backgroundColor="green">GUI</Text>
+      )
+      render(<GUI />)
 
 
       const Checks = () => (
          <Box borderStyle="round" marginRight={2} flexDirection="row">
             <Box marginRight={2}><Text>dependencies: {dependencies ? <Ok /> : <Ko />}</Text></Box>
             <Box marginRight={2}><Text>configurations: {configurations ? <Ok /> : <Ko />}</Text></Box>
+            <Box marginRight={2}><Text>installer: {installer ? <GUI /> : <CLI />}</Text></Box>
             <Box marginRight={2}><Text>uefi: {uefi ? <Ok /> : <Ko />}</Text></Box>
-            <Box marginRight={2}><Text>installer: {installer ? <Calamares /> : <Krill />}</Text></Box>
          </Box>
       )
       render(<Checks />)
@@ -136,9 +141,9 @@ export default class Info extends Command {
          <>
             <Box ><Text> </Text></Box>
             <Box borderStyle="round" marginRight={2} flexDirection="column">
-               <Box ><Text>ISOs made with eggs can be installed with calamares GUI installer or using krill, the CLI installer inside eggs.</Text></Box>
-               <Box><Text>Krill - still experimental - is an opportunity if you are scarce in RAM, or if you are working in old distros not supported by calamares.</Text></Box>
-               <Box><Text>sudo eggs install will run calamares - if installed - or krill. sudo eggs install -c will force CLI installation</Text></Box>
+               <Box ><Text>ISO images made with eggs can be installed with either the calamares GUI installer or the krill CLI installer. eggs includes krill installer inside.</Text></Box>
+               <Box><Text>krill installer is an opportunity if you are low on RAM, working on old distros or on architectures not yet supported by calamares.</Text></Box>
+               <Box><Text>Usage: sudo eggs install will allways run calamares if present, sudo eggs install --cli will force CLI installer.</Text></Box>
                <Box ><Text> </Text></Box>
                <Box flexDirection="row">
                   <Box marginRight={1}><Text>Info: </Text></Box>
