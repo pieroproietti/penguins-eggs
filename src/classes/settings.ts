@@ -122,7 +122,7 @@ export default class Settings {
       this.work_dir.merged = this.work_dir.path + 'filesystem.squashfs'
 
       this.efi_work = this.work_dir.path + 'efi/'
-      this.work_dir.pathIso = this.work_dir.path + 'iso'
+      this.work_dir.pathIso = this.work_dir.path + 'iso/'
 
       if (this.config.snapshot_basename === 'hostname') {
          this.config.snapshot_basename = os.hostname()
@@ -148,7 +148,6 @@ export default class Settings {
        * user's name. If the name is not "user" then add boot option. ALso use
        * the same username for cleaning geany history.
        */
-
       if (this.config.user_opt === undefined || this.config.user_opt === '') {
          // this.user_opt = shx.exec('awk -F":" \'/1000:1000/ { print $1 }\' /etc/passwd', { silent: true }).stdout.trim()
          if (this.config.user_opt === '') {
