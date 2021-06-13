@@ -102,29 +102,65 @@ export default class Incubator {
    private createInstallerDirs() {
       if (this.installer.name !== 'calamares') {
          // Remove krill configuration and multiarc if present
-         shx.exec('rm ' + this.installer.configuration + ' -rf')
-         shx.exec('rm ' + this.installer.multiarch + ' -rf')
+         try {
+            shx.exec('rm ' + this.installer.configuration + ' -rf')
+         } catch (error) {
+            console.log('error: ' + error + ' removing ' + this.installer.configuration + ' -rf')
+         }
+         try {
+            shx.exec('rm ' + this.installer.multiarch + ' -rf')
+         } catch (error) {
+            console.log('error: ' + error + ' removing ' + this.installer.multiarch + ' -rf')
+         }
       }
 
       // rootConfiguration krill calamares
       if (!fs.existsSync(this.installer.configuration)) {
-         fs.mkdirSync(this.installer.configuration)
+         try {
+            fs.mkdirSync(this.installer.configuration)
+         } catch (error) {
+            console.log('error: ' + error + ' creating ' + this.installer.configuration)
+         }
       }
+
       if (!fs.existsSync(this.installer.configuration + 'branding')) {
-         fs.mkdirSync(this.installer.configuration + 'branding')
+         try {
+            fs.mkdirSync(this.installer.configuration + 'branding')
+         } catch (error) {
+            console.log('error: ' + error + ' creating ' + this.installer.configuration + 'branding')
+         }
       }
+
       if (!fs.existsSync(this.installer.configuration + 'branding/eggs')) {
-         fs.mkdirSync(this.installer.configuration + 'branding/eggs')
+         try {
+            fs.mkdirSync(this.installer.configuration + 'branding/eggs')
+         } catch (error) {
+            console.log('error: ' + error + ' creating ' + this.installer.configuration + 'branding/eggs')
+         }
       }
+
       if (!fs.existsSync(this.installer.configuration + 'modules')) {
-         fs.mkdirSync(this.installer.configuration + 'modules')
+         try {
+            fs.mkdirSync(this.installer.configuration + 'modules')
+         } catch (error) {
+            console.log('error: ' + error + ' creating ' + this.installer.configuration + 'modules')
+         }
       }
-      // multiarch e modules
+
       if (!fs.existsSync(this.installer.multiarch)) {
-         fs.mkdirSync(this.installer.multiarch)
+         try {
+            fs.mkdirSync(this.installer.multiarch)
+         } catch (error) {
+            console.log('error: ' + error + ' creating ' + this.installer.multiarch)
+         }
       }
+
       if (!fs.existsSync(this.installer.multiarchModules)) {
-         fs.mkdirSync(this.installer.multiarchModules)
+         try {
+            fs.mkdirSync(this.installer.multiarchModules)
+         } catch (error) {
+            console.log('error: ' + error + ' creating ' + this.installer.multiarchModules)
+         }
       }
 
 
@@ -135,7 +171,11 @@ export default class Incubator {
          const calamaresBranding = path.resolve(__dirname, `../../../addons/${this.remix.branding}/theme/calamares/branding`)
          if (fs.existsSync(calamaresBranding)) {
             if (!fs.existsSync(this.installer.configuration + `branding/${this.remix.branding}`)) {
-               fs.mkdirSync(this.installer.configuration + `branding/${this.remix.branding}`)
+               try {
+                  fs.mkdirSync(this.installer.configuration + `branding/${this.remix.branding}`)
+               } catch (error) {
+                  console.log('error: ' + error + ' creating ' + this.installer.configuration + `branding/${this.remix.branding}`)
+               }
             }
             shx.cp(calamaresBranding + '/*', this.installer.configuration + `branding/${this.remix.branding}/`)
          } else {
