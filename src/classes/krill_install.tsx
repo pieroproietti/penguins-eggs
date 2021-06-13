@@ -557,7 +557,10 @@ adduser ${name} \
        * Attualmente serve fare l'update qua per EFI
        * controllare bootloader-config
        */
-      // await exec('chroot ' + this.installTarget + ' apt update', echo)
+      /**
+       * await exec('chroot ' + this.installTarget + ' apt update', echo)
+       * viene eseguita da bootloader-config
+       */
       if (this.efi) {
          await exec('chroot ' + this.installTarget + ' apt install grub-efi-' + Utils.machineArch() + ' --yes' + this.toNull, echo)
       } else {
