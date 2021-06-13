@@ -192,27 +192,54 @@ export default class Ovary {
          console.log('Overy: liveCreateStructure')
       }
 
-      Utils.warning(`Creatings egg in ${this.settings.work_dir.path}`)
+      Utils.warning(`Creating egg in ${this.settings.work_dir.path}`)
 
       if (!fs.existsSync(this.settings.work_dir.path)) {
-         shx.mkdir('-p', this.settings.work_dir.path)
+         try {
+            shx.mkdir('-p', this.settings.work_dir.path)
+         } catch (error) {
+            console.log('error: ' + error + ' creating ' + this.settings.work_dir.path)
+         }
       }
 
       if (!fs.existsSync(this.settings.work_dir.path + '/README.md')) {
-         shx.cp(path.resolve(__dirname, '../../conf/README.md'), this.settings.work_dir.path + 'README.md')
+         try {
+            shx.cp(path.resolve(__dirname, '../../conf/README.md'), this.settings.work_dir.path + 'README.md')
+         } catch (error) {
+            console.log('error: ' + error + ' creating ' + path.resolve(__dirname, '../../conf/README.md'), this.settings.work_dir.path + 'README.md')
+         }
       }
 
       if (!fs.existsSync(this.settings.work_dir.lowerdir)) {
-         shx.mkdir('-p', this.settings.work_dir.lowerdir)
+         try {
+            shx.mkdir('-p', this.settings.work_dir.lowerdir)
+         } catch (error) {
+            console.log('error: ' + error + ' creating ' + this.settings.work_dir.lowerdir)
+         }
       }
+
       if (!fs.existsSync(this.settings.work_dir.upperdir)) {
-         shx.mkdir('-p', this.settings.work_dir.upperdir)
+         try {
+            shx.mkdir('-p', this.settings.work_dir.upperdir)
+         } catch (error) {
+            console.log('error: ' + error + ' creating ' + this.settings.work_dir.upperdir)
+         }
       }
+
       if (!fs.existsSync(this.settings.work_dir.workdir)) {
-         shx.mkdir('-p', this.settings.work_dir.workdir)
+         try {
+            shx.mkdir('-p', this.settings.work_dir.workdir)
+         } catch (error) {
+            console.log('error: ' + error + ' creating ' + this.settings.work_dir.workdir)
+         }
       }
+
       if (!fs.existsSync(this.settings.work_dir.merged)) {
-         shx.mkdir('-p', this.settings.work_dir.merged)
+         try {
+            shx.mkdir('-p', this.settings.work_dir.merged)
+         } catch (error) {
+            console.log('error: ' + error + ' creating ' + this.settings.work_dir.merged)
+         }
       }
 
       /**
@@ -220,12 +247,30 @@ export default class Ovary {
        * precedentemente in isolinux
        */
       if (!fs.existsSync(this.settings.work_dir.pathIso)) {
-         shx.mkdir('-p', `${this.settings.work_dir.pathIso}/boot/grub/${Utils.machineUEFI()}`)
-         shx.mkdir('-p', `${this.settings.work_dir.pathIso}/efi/boot`)
-         shx.mkdir('-p', `${this.settings.work_dir.pathIso}/isolinux`)
-         shx.mkdir('-p', `${this.settings.work_dir.pathIso}/live`)
+         try {
+            shx.mkdir('-p', this.settings.work_dir.pathIso + '/boot/grub/' + Utils.machineUEFI())
+         } catch (error) {
+            console.log('error: ' + error + ' creating ' + this.settings.work_dir.pathIso + '/boot/grub/' + Utils.machineUEFI())
+         }
+
+         try {
+            shx.mkdir('-p', this.settings.work_dir.pathIso + '/efi/boot')
+         } catch (error) {
+            console.log('error: ' + error + ' creating ' + this.settings.work_dir.pathIso + '/efi/boot')
+         }
+
+         try {
+            shx.mkdir('-p', this.settings.work_dir.pathIso + '/isolinux')
+         } catch (error) {
+            shx.mkdir('-p', this.settings.work_dir.pathIso + '/isolinux')
+         }
+
+         try {
+            shx.mkdir('-p', this.settings.work_dir.pathIso + '/live')
+         } catch (error) {
+            shx.mkdir('-p', this.settings.work_dir.pathIso + '/live')
+         }
       }
-      shx.mkdir('-p', `${this.settings.work_dir.pathIso}/live`)
    }
 
    /**
