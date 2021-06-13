@@ -62,6 +62,9 @@ export default class Yolk {
         }
 
         if (Utils.machineArch() !== 'i386') {
+            // Aggiunto anche grub-efi-amd64 oltre a grub-efi-*-bin 
+            // per la rimasterizzazione efi anche in bios
+            packages.push('grub-efi-' + Utils.machineArch())
             packages.push('grub-efi-' + Utils.machineArch() + '-bin')
         }
 

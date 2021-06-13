@@ -196,8 +196,13 @@ export default class Hatching {
       let percent = 0.0
       let message = "Checking EFI"
       redraw(<Install message={message} percent={percent} />)
-      if (fs.existsSync('/sys/firmware/efi/efivars')) {
-         this.efi = true
+      try {
+         if (fs.existsSync('/sys/firmware/efi/efivars')) {
+            this.efi = true
+         }
+      } catch (error) {
+         message += JSON.stringify(error)
+         redraw(<Install message={message} percent={percent} />)
       }
       // await checkIt(message)
 
@@ -261,7 +266,7 @@ export default class Hatching {
             message += JSON.stringify(error)
             redraw(<Install message={message} percent={percent} />)
          }
-         await checkIt(message)
+         // await checkIt(message)
 
 
          message = "Setting time zone "
@@ -334,7 +339,7 @@ export default class Hatching {
             message += JSON.stringify(error)
             redraw(<Install message={message} percent={percent} />)
          }
-         await checkIt(message)
+         // await checkIt(message)
 
 
          message = "bootloader "
@@ -1117,12 +1122,12 @@ adduser ${name} \
          const command = calamaresModule.command
          console.log('command: ' + command)
          if (command !== '' || command !== undefined) {
-            shx.exec(command)
+            await exec(command)
          }
       } else {
-         console.log('executing: ' + moduleName + ', ' + moduleName + ' NOT exist!')
+         console.log('exexCalamaresModule: module ' + moduleName + ' NOT exist!')
+         process.exit(1)
       }
-      await checkIt('execCalamaresModules')
    }
 
    /**
