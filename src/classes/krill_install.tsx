@@ -21,7 +21,7 @@ const exec = require('../lib/utils').exec
 /**
  * // calamares-root-27zh5uyy
  * 
- * Ideally, I want to respect this schema and rename the function this way
+ * Ideally, I want to respect this schema
       - partition
       - mount
       - unpackfs
@@ -48,7 +48,6 @@ const exec = require('../lib/utils').exec
       - remove-link
       - sources-yolk-unmount
       - umount
-
  */
 
 interface ICalamaresModule {
@@ -197,15 +196,20 @@ export default class Hatching {
       let percent = 0.0
       let message = "Checking EFI"
       redraw(<Install message={message} percent={percent} />)
-      if (fs.existsSync('/sys/firmware/efi/efivars')) {
-         this.efi = true
+      try {
+         if (fs.existsSync('/sys/firmware/efi/efivars')) {
+            this.efi = true
+         }
+      } catch (error) {
+         message += JSON.stringify(error)
+         redraw(<Install message={message} percent={percent} />)
       }
-      await checkIt(message)
+      // await checkIt(message)
 
 
       if (await this.partition(this.disk.installationDevice, this.disk.partionType)) {
          message = "Formatting file system "
-         percent = 0.05
+         percent = 0.01
          try {
             redraw(<Install message={message} percent={percent} />)
             await this.mkfs()
@@ -213,7 +217,7 @@ export default class Hatching {
             message += JSON.stringify(error)
             redraw(<Install message={message} percent={percent} />)
          }
-         await checkIt(message)
+         // await checkIt(message)
 
          // mount
          message = "Mounting target file system "
@@ -225,7 +229,7 @@ export default class Hatching {
             message += JSON.stringify(error)
             redraw(<Install message={message} percent={percent} />)
          }
-         await checkIt(message)
+         // await checkIt(message)
 
          // mountvfs
          message = "Mounting target file system vfs "
@@ -237,7 +241,7 @@ export default class Hatching {
             message += JSON.stringify(error)
             redraw(<Install message={message} percent={percent} />)
          }
-         await checkIt(message)
+         // await checkIt(message)
 
 
          // unpackfs
@@ -250,7 +254,7 @@ export default class Hatching {
             message += JSON.stringify(error)
             redraw(<Install message={message} percent={percent} />)
          }
-         await checkIt(message)
+         // await checkIt(message)
 
          // sources-yolk
          message = 'sources-yolk'
@@ -262,7 +266,7 @@ export default class Hatching {
             message += JSON.stringify(error)
             redraw(<Install message={message} percent={percent} />)
          }
-         await checkIt(message)
+         // await checkIt(message)
 
 
          message = "Setting time zone "
@@ -274,7 +278,7 @@ export default class Hatching {
             message += JSON.stringify(error)
             redraw(<Install message={message} percent={percent} />)
          }
-         await checkIt(message)
+         // await checkIt(message)
 
 
          message = "Creating fstab "
@@ -286,7 +290,7 @@ export default class Hatching {
             message += JSON.stringify(error)
             redraw(<Install message={message} percent={percent} />)
          }
-         await checkIt(message)
+         // await checkIt(message)
 
 
          message = "Create hostname "
@@ -298,7 +302,7 @@ export default class Hatching {
             message += JSON.stringify(error)
             redraw(<Install message={message} percent={percent} />)
          }
-         await checkIt(message)
+         // await checkIt(message)
 
 
          message = "Network "
@@ -311,7 +315,7 @@ export default class Hatching {
             message += JSON.stringify(error)
             redraw(<Install message={message} percent={30.2} />)
          }
-         await checkIt(message)
+         // await checkIt(message)
 
 
          message = "Creating hosts "
@@ -323,7 +327,8 @@ export default class Hatching {
             message += JSON.stringify(error)
             redraw(<Install message={message} percent={percent} />)
          }
-         await checkIt(message)
+         // await checkIt(message)
+
 
          message = "bootloader-config "
          percent = 0.63
@@ -334,7 +339,7 @@ export default class Hatching {
             message += JSON.stringify(error)
             redraw(<Install message={message} percent={percent} />)
          }
-         await checkIt(message)
+         // await checkIt(message)
 
 
          message = "bootloader "
@@ -346,7 +351,7 @@ export default class Hatching {
             message += JSON.stringify(error)
             redraw(<Install message={message} percent={percent} />)
          }
-         await checkIt(message)
+         // await checkIt(message)
 
 
          message = "initramfs configure"
@@ -358,7 +363,7 @@ export default class Hatching {
             message += JSON.stringify(error)
             redraw(<Install message={message} percent={percent} />)
          }
-         await checkIt(message)
+         // await checkIt(message)
 
 
          message = "initramfs "
@@ -370,8 +375,7 @@ export default class Hatching {
             message += JSON.stringify(error)
             redraw(<Install message={message} percent={percent} />)
          }
-         await checkIt(message)
-
+         // await checkIt(message)
 
          message = "Removing user live "
          percent = 0.70
@@ -382,7 +386,7 @@ export default class Hatching {
             message += JSON.stringify(error)
             redraw(<Install message={message} percent={percent} />)
          }
-         await checkIt(message)
+         // await checkIt(message)
 
          message = "Adding user "
          percent = 0.73
@@ -393,7 +397,7 @@ export default class Hatching {
             message += JSON.stringify(error)
             redraw(<Install message={message} percent={percent} />)
          }
-         await checkIt(message)
+         // await checkIt(message)
 
          message = "adding user password "
          percent = 0.77
@@ -404,10 +408,8 @@ export default class Hatching {
             message += JSON.stringify(error)
             redraw(<Install message={message} percent={percent} />)
          }
-         await checkIt(message)
+         // await checkIt(message)
 
-
-         // se xserver o wayland è GUI
          if (await Pacman.isGui()) {
             try {
                message = "autologin GUI"
@@ -429,7 +431,7 @@ export default class Hatching {
                redraw(<Install message={message} percent={percent} />)
             }
          }
-         await checkIt(message)
+         // await checkIt(message)
 
          message = "remove installer"
          percent = 0.87
@@ -440,7 +442,7 @@ export default class Hatching {
             message += JSON.stringify(error)
             redraw(<Install message={message} percent={percent} />)
          }
-         await checkIt(message)
+         // await checkIt(message)
 
 
          message = "sources yolk unmount"
@@ -452,8 +454,7 @@ export default class Hatching {
             message += JSON.stringify(error)
             redraw(<Install message={message} percent={percent} />)
          }
-         await checkIt(message)
-
+         // await checkIt(message)
 
          message = "umount"
          percent = 0.92
@@ -465,8 +466,7 @@ export default class Hatching {
             message += JSON.stringify(error)
             redraw(<Install message={message} percent={percent} />)
          }
-         await checkIt(message)
-
+         // await checkIt(message)
 
          message = "finished"
          percent = 100.0
@@ -553,7 +553,14 @@ adduser ${name} \
    private async bootloader() {
       const echo = { echo: false, ignore: false }
 
-      // await exec('chroot ' + this.installTarget + ' apt update', echo)
+      /**
+       * Attualmente serve fare l'update qua per EFI
+       * controllare bootloader-config
+       */
+      /**
+       * await exec('chroot ' + this.installTarget + ' apt update', echo)
+       * viene eseguita da bootloader-config
+       */
       if (this.efi) {
          await exec('chroot ' + this.installTarget + ' apt install grub-efi-' + Utils.machineArch() + ' --yes' + this.toNull, echo)
       } else {
@@ -1111,13 +1118,18 @@ adduser ${name} \
     * @param name 
     */
    private async execCalamaresModule(name: string) {
-      const moduleName = this.installer.modules + name + '/module.desc'
+      const moduleName = this.installer.multiarchModules + name + '/module.desc'
+      console.log('executing: ' + moduleName)
       if (fs.existsSync(moduleName)) {
          const calamaresModule = yaml.load(fs.readFileSync(moduleName, 'utf8')) as ICalamaresModule
          const command = calamaresModule.command
+         console.log('command: ' + command)
          if (command !== '' || command !== undefined) {
-            shx.exec(command)
+            await exec(command)
          }
+      } else {
+         console.log('exexCalamaresModule: module ' + moduleName + ' NOT exist!')
+         process.exit(1)
       }
    }
 
@@ -1153,5 +1165,5 @@ function redraw(elem: JSX.Element) {
  * @param message 
  */
 async function checkIt(message: string) {
-   // await Utils.customConfirm(message)
+   await Utils.customConfirm(message)
 }

@@ -18,8 +18,11 @@ You can follow the project also consulting the [commit history](https://github.c
 ## Changelog
 Versions are listed on reverse order, the first is the last one.
 
+### eggs-8.0.7
+* added syslinux-common to dependencies, thanx to aravind@stmdocs.in, uefi installation tested and working amd64
+
 ### eggs-8.0.6
-* we end the restucturation and reach the crucial point: makeEfi for arm... to do!
+* finished restucturation to include arm. Now we need two things: adapt krill installer to UEFI and finally make UEFI for arm. 
 
 ### eggs-8.0.5
 * added eggsArch and machineArch to respect rasberry-desktop-i386 but with kernel amd64
