@@ -250,7 +250,6 @@ class Distro implements IDistro {
           this.calamaresAble = false
       }
       
-
       /**
        * MX LINUX
        * ln -s /run/live/medium/live/filesystem.squashfs /live/boot-dev/antiX/linuxfs
@@ -268,6 +267,14 @@ class Distro implements IDistro {
        */
       this.isolinuxPath = '/usr/lib/ISOLINUX/'
       this.syslinuxPath = '/usr/lib/syslinux/modules/bios/'
+
+      /**
+       * però...
+       * 
+       * syslinuxPath '/usr/lib/syslinux/ contiene mbr, memdisk e modules
+       * in modules abbiamo bios, efi32 ed efi64
+       * forse in arm andrebbe il contenuto di efi64
+       */
    }
 }
 
