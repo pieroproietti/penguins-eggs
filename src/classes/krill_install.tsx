@@ -110,6 +110,7 @@ import { IInstaller, IDevices, IDevice } from '../interfaces'
 import Pacman from './pacman';
 import { installer } from './incubation/installer'
 import Xdg from './xdg';
+import Distro from './distro';
 
 /**
  * hatch, installazione
@@ -340,7 +341,6 @@ export default class Hatching {
             redraw(<Install message={message} percent={percent} />)
          }
          // await checkIt(message)
-
 
          message = "bootloader "
          percent = 0.63
@@ -1113,11 +1113,74 @@ adduser ${name} \
    }
 
    /**
+    * execModule
+    * @param 
+    */
+
+   /*
+    before_bootloadr_mkdir_context
+
+    dontChroot: true
+    timeout: 10
+    firmwareType:
+      efi:
+        - -cp /cdrom/casper/vmlinuz @@ROOT@@/boot/vmlinuz-$(uname -r)
+        - -mkdir -pv @@ROOT@@/media/cdrom
+        - -mount --bind /cdrom @@ROOT@@/media/cdrom
+      bios:
+        - -cp /cdrom/casper/vmlinuz @@ROOT@@/boot/vmlinuz-$(uname -r)
+
+   before_bootloader_context
+   firmwareType:
+     bios: "-/bin/true"
+     "*":
+    - command: apt-get update
+      timeout: 120
+    - command: apt install -y --no-upgrade -o Acquire::gpgv::Options::=--ignore-time-conflict grub-efi-$(if grep -q 64 /sys/firmware/efi/fw_platform_size; then echo amd64-signed; else echo ia32; fi)
+      timeout: 300
+    - command: apt install -y --no-upgrade --allow-unauthenticated -o Acquire::gpgv::Options::=--ignore-time-conflict shim-signed
+      timeout: 300
+
+   
+   bootloader Ubuntu diverge solo per       efiBootloaderId: "ubuntu"
+   grubInstall: "grub-install"
+   grubMkconfig: "grub-mkconfig"
+   grubCfg: "/boot/grub/grub.cfg"
+   grubProbe: "grub-probe"
+   efiBootMgr: "efibootmgr"
+
+   after_bootloader
+   ---
+   dontChroot: false
+   timeout: 120
+   firmwareType:
+   "*": "-for i in `ls @@ROOT@@/home/`; do rm @@ROOT@@/home/$i/Desktop/lubuntu-calamares.desktop || exit 0; done"
+   */
+
+   private async execModule(name: string) {
+      const moduleName = this.installer.modules + name + '.conf'
+      console.log('executing: ' + name)
+      if (fs.existsSync(moduleName)) {
+         const calamaresModule = yaml.load(fs.readFileSync(moduleName, 'utf8')) as ICalamaresModule
+         const command = calamaresModule.command
+         console.log('command: ' + command)
+         if (command !== '' || command !== undefined) {
+            await exec(command)
+         }
+      } else {
+         console.log('execModule: module ' + moduleName + ' NOT exist!')
+         process.exit(1)
+      }
+   }
+
+   /**
     * execCalamaresModule
     * 
     * @param name 
     */
    private async execCalamaresModule(name: string) {
+      const echo = { echo: false, ignore: false }
+
       const moduleName = this.installer.multiarchModules + name + '/module.desc'
       console.log('executing: ' + moduleName)
       if (fs.existsSync(moduleName)) {
@@ -1128,8 +1191,17 @@ adduser ${name} \
             await exec(command)
          }
       } else {
-         console.log('exexCalamaresModule: module ' + moduleName + ' NOT exist!')
-         process.exit(1)
+         await exec('chroot ' + this.installTarget + 'apt-get update', echo)
+         if (this.efi) {
+            await exec('chroot ' + this.installTarget + ' apt install grub-efi-' + Utils.machineArch() + ' --yes', echo)
+         } else {
+            await exec(`chroot ${this.installTarget} apt install grub-pc --yes`, echo)
+         }
+         // await exec('sleep 1', echo)
+         // await exec('chroot ' + this.installTarget + ' grub-install ' + this.disk.installationDevice, echo)
+         // await exec('chroot ' + this.installTarget + ' update-grub', echo)
+         // await exec('sleep 1', echo)
+         // await Utils.customConfirm('UBUNTU STOP')
       }
    }
 
