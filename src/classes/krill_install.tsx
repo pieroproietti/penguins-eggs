@@ -198,9 +198,7 @@ export default class Hatching {
       let message = "Checking EFI"
       redraw(<Install message={message} percent={percent} />)
       try {
-         if (fs.existsSync('/sys/firmware/efi/efivars')) {
-            this.efi = true
-         }
+         this.efi = fs.existsSync('/sys/firmware/efi/efivars')
       } catch (error) {
          message += JSON.stringify(error)
          redraw(<Install message={message} percent={percent} />)
@@ -340,7 +338,7 @@ export default class Hatching {
             message += JSON.stringify(error)
             redraw(<Install message={message} percent={percent} />)
          }
-         // await checkIt(message)
+         await checkIt(message)
 
          message = "bootloader "
          percent = 0.63
@@ -1157,22 +1155,6 @@ adduser ${name} \
    "*": "-for i in `ls @@ROOT@@/home/`; do rm @@ROOT@@/home/$i/Desktop/lubuntu-calamares.desktop || exit 0; done"
    */
 
-   private async execModule(name: string) {
-      const moduleName = this.installer.modules + name + '.conf'
-      console.log('executing: ' + name)
-      if (fs.existsSync(moduleName)) {
-         const calamaresModule = yaml.load(fs.readFileSync(moduleName, 'utf8')) as ICalamaresModule
-         const command = calamaresModule.command
-         console.log('command: ' + command)
-         if (command !== '' || command !== undefined) {
-            await exec(command)
-         }
-      } else {
-         console.log('execModule: module ' + moduleName + ' NOT exist!')
-         process.exit(1)
-      }
-   }
-
    /**
     * execCalamaresModule
     * 
@@ -1191,17 +1173,83 @@ adduser ${name} \
             await exec(command)
          }
       } else {
-         await exec('chroot ' + this.installTarget + 'apt-get update', echo)
-         if (this.efi) {
-            await exec('chroot ' + this.installTarget + ' apt install grub-efi-' + Utils.machineArch() + ' --yes', echo)
-         } else {
-            await exec(`chroot ${this.installTarget} apt install grub-pc --yes`, echo)
+         /**
+          * patch per ubuntu sostituisce bootloader-config e bootloader
+          * 
+          * Il problema risiede nel fatto che non esegue update e neppure la installazione di grub-pc o grun-efi
+          * controllare yolk e trovare le opzioni per farlo funzionare
+          * 
+          */
+
+         let cmd = ''
+         // install -y --no-upgrade --allow-unauthenticated -o Acquire::gpgv::Options::=--ignore-time-conflict
+         try {
+            cmd= 'chroot ' + this.installTarget + ' apt-get update'
+            await exec(cmd, echo)
+         } catch (error) {
+            console.log(error)
          }
-         // await exec('sleep 1', echo)
-         // await exec('chroot ' + this.installTarget + ' grub-install ' + this.disk.installationDevice, echo)
-         // await exec('chroot ' + this.installTarget + ' update-grub', echo)
-         // await exec('sleep 1', echo)
-         // await Utils.customConfirm('UBUNTU STOP')
+         await Utils.customConfirmAbort(cmd)
+
+         try {
+            cmd ='chroot ' + this.installTarget + ' sleep 1'
+            await exec(cmd, echo)
+         } catch (error) {
+            console.log(error)
+         }
+         await Utils.customConfirmAbort(cmd)
+
+         let aptInstallOptions = 'apt install -y --no-upgrade --allow-unauthenticated -o Acquire::gpgv::Options::=--ignore-time-conflict '
+         if (this.efi) {
+            cmd = 'chroot ' + this.installTarget + aptInstallOptions + ' grub-efi-' + Utils.machineArch()
+            await exec(cmd, echo)
+         } else {
+            cmd = 'chroot ' + this.installTarget + aptInstallOptions + ' grub-pc'
+            await exec(cmd, echo)
+         }
+         await Utils.customConfirmAbort(cmd)
+
+         try {
+            cmd = 'chroot ' + this.installTarget + ' sleep 1'
+            await exec(cmd, echo)
+         } catch (error) {
+            console.log(error)
+         }
+         await Utils.customConfirmAbort(cmd)
+
+
+         try {
+            cmd = 'chroot ' + this.installTarget + ' grub-install ' + this.disk.installationDevice
+            await exec(cmd, echo)
+         } catch (error) {
+            console.log(error)
+         }
+         await Utils.customConfirmAbort(cmd)
+
+         try {
+            cmd = 'chroot ' + this.installTarget + ' grub-mkconfig -o /boot/grub/grub.cfg'
+            await exec(cmd, echo)
+         } catch (error) {
+            console.log(error)
+         }
+         await Utils.customConfirmAbort(cmd)
+
+
+         try {
+            cmd = 'chroot ' + this.installTarget + ' update-grub'
+            await exec(cmd, echo)
+         } catch (error) {
+            console.log(error)
+         }
+         await Utils.customConfirmAbort(cmd)
+
+         try {
+            cmd = 'chroot ' + this.installTarget + ' sleep 1'
+            await exec(cmd, echo)
+         } catch (error) {
+            console.log(error)
+         }
+         await Utils.customConfirmAbort('cmd')
       }
    }
 
