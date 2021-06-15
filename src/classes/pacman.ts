@@ -547,6 +547,8 @@ export default class Pacman {
          await this.ln(`${buster}/calamares/modules/packages.yml`, `${focal}/calamares/modules/packages.yml`, remove, verbose)
          await this.ln(`${buster}/calamares/modules/removeuser.yml`, `${focal}/calamares/modules/removeuser.yml`, remove, verbose)
          await this.ln(`${buster}/calamares/modules/displaymanager.yml`, `${focal}/calamares/modules/displaymanager.yml`, remove, verbose)
+         // Patch a colori
+         // await this.ln(`${buster}/calamares/calamares-modules/bootloader-config`, `${focal}/calamares/calamares-modules/bootloader-config`, remove, verbose)
 
          // Ubuntu 18.04  - bionic
          const bionic = `${rootPen}/conf/distros/bionic`
