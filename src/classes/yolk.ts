@@ -81,13 +81,14 @@ export default class Yolk {
         }
 
         // Creo Package.gz
-        const cmd = 'dpkg-scanpackages -m . | gzip -c > Packages.gz'
+        //const cmd = 'dpkg-scanpackages -m . | gzip -c > Packages.gz'
+        const cmd = 'dpkg-scanpackages -h  md5,sha1,sha256 . | gzip -c > Packages.gz'
         Utils.warning(cmd)
         await execute(cmd)
 
         // Creo Release
         const date = await execute('date -R -u')
-        const content = `Archive: stable\nComponent: yolk\nOrigin: penguins-eggs\nArchitecture: ${Utils.machineArch()}\nDate: ${date}\n`
+        const content = 'Archive: stable\nComponent: yolk\nOrigin: penguins-eggs\nArchitecture: ' + Utils.machineArch() +'\nDate: '+ date + '\n'
         Utils.warning('Writing Release')
         fs.writeFileSync('Release', content)
 
