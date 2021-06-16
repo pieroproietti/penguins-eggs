@@ -1186,7 +1186,7 @@ adduser ${name} \
          let cmd = ''
          // install -y --no-upgrade --allow-unauthenticated -o Acquire::gpgv::Options::=--ignore-time-conflict
          try {
-            cmd= 'chroot ' + this.installTarget + ' apt-get update'
+            cmd = 'chroot ' + this.installTarget + ' apt-get update'
             await exec(cmd, echo)
          } catch (error) {
             console.log(error)
@@ -1194,7 +1194,7 @@ adduser ${name} \
          await Utils.customConfirm(cmd)
 
          try {
-            cmd ='chroot ' + this.installTarget + ' sleep 1'
+            cmd = 'chroot ' + this.installTarget + ' sleep 1'
             await exec(cmd, echo)
          } catch (error) {
             console.log(error)
@@ -1203,13 +1203,21 @@ adduser ${name} \
 
          let aptInstallOptions = 'apt install -y --no-upgrade --allow-unauthenticated -o Acquire::gpgv::Options::=--ignore-time-conflict '
          if (this.efi) {
-            cmd = 'chroot ' + this.installTarget + aptInstallOptions + ' grub-efi-' + Utils.machineArch()
-            console.log(cmd)
-            await exec(cmd, echo)
+            try {
+               cmd = 'chroot ' + this.installTarget + aptInstallOptions + ' grub-efi-' + Utils.machineArch() + '  --allow-unauthenticated'
+               console.log(cmd)
+               await exec(cmd, echo)
+            } catch (error) {
+               console.log(error)
+            }
          } else {
-            cmd = 'chroot ' + this.installTarget + aptInstallOptions + ' grub-pc'
-            console.log(cmd)
-            await exec(cmd, echo)
+            try {
+               cmd = 'chroot ' + this.installTarget + aptInstallOptions + ' grub-pc'
+               console.log(cmd)
+               await exec(cmd, echo)
+            } catch (error) {
+               console.log(error)
+            }
          }
          await Utils.customConfirm(cmd)
 
