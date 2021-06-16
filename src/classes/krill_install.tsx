@@ -1176,7 +1176,7 @@ adduser ${name} \
          /**
           * patch per ubuntu sostituisce bootloader-config e bootloader
           * 
-          * Il problema risiede nel fatto che non esegue update e neppure la installazione di grub-pc o grun-efi
+          * Il problema risiede nel fatto che non esegue update e neppure la installazione di grub-pc o grub-efi
           * controllare yolk e trovare le opzioni per farlo funzionare
           * 
           */
