@@ -1164,8 +1164,8 @@ adduser ${name} \
       const echo = { echo: false, ignore: false }
 
       const moduleName = this.installer.multiarchModules + name + '/module.desc'
-      console.log('executing: ' + moduleName)
       if (fs.existsSync(moduleName)) {
+         console.log('analyzing: ' + moduleName)
          const calamaresModule = yaml.load(fs.readFileSync(moduleName, 'utf8')) as ICalamaresModule
          const command = calamaresModule.command
          console.log('command: ' + command)
@@ -1181,6 +1181,8 @@ adduser ${name} \
           * 
           */
 
+         await Utils.customConfirm('failure on analyzing: ' + moduleName + ', press a key to continue...')
+
          let cmd = ''
          // install -y --no-upgrade --allow-unauthenticated -o Acquire::gpgv::Options::=--ignore-time-conflict
          try {
@@ -1189,7 +1191,7 @@ adduser ${name} \
          } catch (error) {
             console.log(error)
          }
-         await Utils.customConfirmAbort(cmd)
+         await Utils.customConfirm(cmd)
 
          try {
             cmd ='chroot ' + this.installTarget + ' sleep 1'
@@ -1197,17 +1199,19 @@ adduser ${name} \
          } catch (error) {
             console.log(error)
          }
-         await Utils.customConfirmAbort(cmd)
+         await Utils.customConfirm(cmd)
 
          let aptInstallOptions = 'apt install -y --no-upgrade --allow-unauthenticated -o Acquire::gpgv::Options::=--ignore-time-conflict '
          if (this.efi) {
             cmd = 'chroot ' + this.installTarget + aptInstallOptions + ' grub-efi-' + Utils.machineArch()
+            console.log(cmd)
             await exec(cmd, echo)
          } else {
             cmd = 'chroot ' + this.installTarget + aptInstallOptions + ' grub-pc'
+            console.log(cmd)
             await exec(cmd, echo)
          }
-         await Utils.customConfirmAbort(cmd)
+         await Utils.customConfirm(cmd)
 
          try {
             cmd = 'chroot ' + this.installTarget + ' sleep 1'
