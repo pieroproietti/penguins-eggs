@@ -112,7 +112,7 @@ export default class Ovary {
     *
     * @param basename
     */
-   async produce(scriptOnly = false, yolkRenew = false, release = false, myAddons: IMyAddons, verbose = false) {
+   async produce(backup = false, scriptOnly = false, yolkRenew = false, release = false, myAddons: IMyAddons, verbose = false) {
 
       const yolk = new Repo()
       if (!yolk.exists()) {
@@ -168,21 +168,35 @@ export default class Ovary {
          }
 
          await this.bindLiveFs(verbose)
-         await this.createUserLive(verbose)
+         if (backup) {
+            await this.bindUsersDatas(verbose)
+         } else {
+            await this.createUserLive(verbose)
+         }
+
          if (await Pacman.isGui()) {
             await this.createAutostart(this.theme, myAddons)
          } else {
-            cliAutologin.add(this.settings.distro.distroId, this.settings.distro.versionId, this.settings.config.user_opt, this.settings.config.user_opt_passwd, this.settings.config.root_passwd, this.settings.work_dir.merged)
+            if (backup) {
+               cliAutologin.add(this.settings.distro.distroId, this.settings.distro.versionId, Utils.getPrimaryUser(), '*******', '*******', this.settings.work_dir.merged)
+            } else {
+               cliAutologin.add(this.settings.distro.distroId, this.settings.distro.versionId, this.settings.config.user_opt, this.settings.config.user_opt_passwd, this.settings.config.root_passwd, this.settings.work_dir.merged)
+            }
          }
-         await this.editLiveFs(verbose)
-         await this.makeSquashfs(scriptOnly, verbose)
-         await this.makeDotDisk(verbose)
-         await this.makeIso(scriptOnly, verbose)
-         await this.bindVfs(verbose)
-         await this.ubindVfs(verbose)
-         await this.uBindLiveFs(verbose)
+
       }
+      await this.editLiveFs(verbose)
+      await this.makeSquashfs(scriptOnly, verbose)
+      if (backup) {
+         await this.ubindUsersDatas(verbose)
+      }
+      await this.makeDotDisk(verbose)
+      await this.makeIso(scriptOnly, verbose)
+      await this.bindVfs(verbose)
+      await this.ubindVfs(verbose)
+      await this.uBindLiveFs(verbose)
    }
+
 
    /**
     * Crea la struttura della workdir
@@ -192,27 +206,54 @@ export default class Ovary {
          console.log('Overy: liveCreateStructure')
       }
 
-      Utils.warning(`Creatings egg in ${this.settings.work_dir.path}`)
+      Utils.warning(`Creating egg in ${this.settings.work_dir.path}`)
 
       if (!fs.existsSync(this.settings.work_dir.path)) {
-         shx.mkdir('-p', this.settings.work_dir.path)
+         try {
+            shx.mkdir('-p', this.settings.work_dir.path)
+         } catch (error) {
+            console.log('error: ' + error + ' creating ' + this.settings.work_dir.path)
+         }
       }
 
       if (!fs.existsSync(this.settings.work_dir.path + '/README.md')) {
-         shx.cp(path.resolve(__dirname, '../../conf/README.md'), this.settings.work_dir.path + 'README.md')
+         try {
+            shx.cp(path.resolve(__dirname, '../../conf/README.md'), this.settings.work_dir.path + 'README.md')
+         } catch (error) {
+            console.log('error: ' + error + ' creating ' + path.resolve(__dirname, '../../conf/README.md'), this.settings.work_dir.path + 'README.md')
+         }
       }
 
       if (!fs.existsSync(this.settings.work_dir.lowerdir)) {
-         shx.mkdir('-p', this.settings.work_dir.lowerdir)
+         try {
+            shx.mkdir('-p', this.settings.work_dir.lowerdir)
+         } catch (error) {
+            console.log('error: ' + error + ' creating ' + this.settings.work_dir.lowerdir)
+         }
       }
+
       if (!fs.existsSync(this.settings.work_dir.upperdir)) {
-         shx.mkdir('-p', this.settings.work_dir.upperdir)
+         try {
+            shx.mkdir('-p', this.settings.work_dir.upperdir)
+         } catch (error) {
+            console.log('error: ' + error + ' creating ' + this.settings.work_dir.upperdir)
+         }
       }
+
       if (!fs.existsSync(this.settings.work_dir.workdir)) {
-         shx.mkdir('-p', this.settings.work_dir.workdir)
+         try {
+            shx.mkdir('-p', this.settings.work_dir.workdir)
+         } catch (error) {
+            console.log('error: ' + error + ' creating ' + this.settings.work_dir.workdir)
+         }
       }
+
       if (!fs.existsSync(this.settings.work_dir.merged)) {
-         shx.mkdir('-p', this.settings.work_dir.merged)
+         try {
+            shx.mkdir('-p', this.settings.work_dir.merged)
+         } catch (error) {
+            console.log('error: ' + error + ' creating ' + this.settings.work_dir.merged)
+         }
       }
 
       /**
@@ -220,12 +261,30 @@ export default class Ovary {
        * precedentemente in isolinux
        */
       if (!fs.existsSync(this.settings.work_dir.pathIso)) {
-         shx.mkdir('-p', `${this.settings.work_dir.pathIso}/boot/grub/${Utils.machineUEFI()}`)
-         shx.mkdir('-p', `${this.settings.work_dir.pathIso}/efi/boot`)
-         shx.mkdir('-p', `${this.settings.work_dir.pathIso}/isolinux`)
-         shx.mkdir('-p', `${this.settings.work_dir.pathIso}/live`)
+         try {
+            shx.mkdir('-p', this.settings.work_dir.pathIso + '/boot/grub/' + Utils.machineUEFI())
+         } catch (error) {
+            console.log('error: ' + error + ' creating ' + this.settings.work_dir.pathIso + '/boot/grub/' + Utils.machineUEFI())
+         }
+
+         try {
+            shx.mkdir('-p', this.settings.work_dir.pathIso + '/efi/boot')
+         } catch (error) {
+            console.log('error: ' + error + ' creating ' + this.settings.work_dir.pathIso + '/efi/boot')
+         }
+
+         try {
+            shx.mkdir('-p', this.settings.work_dir.pathIso + '/isolinux')
+         } catch (error) {
+            shx.mkdir('-p', this.settings.work_dir.pathIso + '/isolinux')
+         }
+
+         try {
+            shx.mkdir('-p', this.settings.work_dir.pathIso + '/live')
+         } catch (error) {
+            shx.mkdir('-p', this.settings.work_dir.pathIso + '/live')
+         }
       }
-      shx.mkdir('-p', `${this.settings.work_dir.pathIso}/live`)
    }
 
    /**
@@ -895,7 +954,56 @@ export default class Ovary {
       Utils.writeXs(`${this.settings.work_dir.path}ubindvfs`, cmds)
    }
 
+
    /**
+    * 
+    * @param verbose 
+    */
+   async bindUsersDatas(verbose = false) {
+      const echo = Utils.setEcho(verbose)
+      if (verbose) {
+         console.log('ovary: saveUsersDatas')
+      }
+
+      const cmds: string[] = []
+      const cmd = `chroot ${this.settings.work_dir.merged} getent passwd {1000..60000} |awk -F: '{print $1}'`
+      const result = await exec(cmd, {
+         echo: verbose,
+         ignore: false,
+         capture: true
+      })
+      const users: string[] = result.data.split('\n')
+      for (let i = 0; i < users.length - 1; i++) {
+         cmds.push(await rexec('mkdir ' + this.settings.work_dir.merged + '/home/' + users[i], verbose))
+         cmds.push(await rexec('mount --bind --make-slave /home/' + users[i] + ' ' + this.settings.work_dir.merged + '/home/' + users[i], verbose))
+      }
+   }
+
+   /**
+ * 
+ * @param verbose 
+ */
+   async ubindUsersDatas(verbose = false) {
+      const echo = Utils.setEcho(verbose)
+      if (verbose) {
+         console.log('ovary: saveUsersDatas')
+      }
+
+      const cmds: string[] = []
+      const cmd = `chroot ${this.settings.work_dir.merged} getent passwd {1000..60000} |awk -F: '{print $1}'`
+      const result = await exec(cmd, {
+         echo: verbose,
+         ignore: false,
+         capture: true
+      })
+      const users: string[] = result.data.split('\n')
+      for (let i = 0; i < users.length - 1; i++) {
+         cmds.push(await rexec('umount ' + this.settings.work_dir.merged + '/home/' + users[i], verbose))
+      }
+   }
+
+   /**
+    * list degli utenti: grep -E 1[0-9]{3}  /etc/passwd | sed s/:/\ / | awk '{print $1}'
     * create la home per user_opt
     * @param verbose
     */
