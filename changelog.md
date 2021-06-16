@@ -19,7 +19,7 @@ You can follow the project also consulting the [commit history](https://github.c
 Versions are listed on reverse order, the first is the last one.
 
 ### eggs-8.0.8
-* added --backup to produce, testing krill for ubuntu
+* added --backup to produce: to save users datas, eggs install ok in debian and ubuntu
 
 ### eggs-8.0.7
 * added syslinux-common to dependencies, thanx to aravind@stmdocs.in, uefi installation tested and working amd64
