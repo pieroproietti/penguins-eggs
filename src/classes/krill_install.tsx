@@ -1201,7 +1201,7 @@ adduser ${name} \
          }
          await Utils.customConfirm(cmd)
 
-         let aptInstallOptions = 'apt install -y --no-upgrade --allow-unauthenticated -o Acquire::gpgv::Options::=--ignore-time-conflict '
+         let aptInstallOptions = ' apt install -y --no-upgrade --allow-unauthenticated -o Acquire::gpgv::Options::=--ignore-time-conflict '
          if (this.efi) {
             try {
                cmd = 'chroot ' + this.installTarget + aptInstallOptions + ' grub-efi-' + Utils.machineArch() + '  --allow-unauthenticated'
