@@ -1209,6 +1209,7 @@ adduser ${name} \
                await exec(cmd, echo)
             } catch (error) {
                console.log(error)
+               await Utils.customConfirm(cmd)
             }
          } else {
             try {
@@ -1217,6 +1218,7 @@ adduser ${name} \
                await exec(cmd, echo)
             } catch (error) {
                console.log(error)
+               await Utils.customConfirm(cmd)
             }
          }
          await Utils.customConfirm(cmd)
