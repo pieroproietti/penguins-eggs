@@ -338,7 +338,7 @@ export default class Hatching {
             message += JSON.stringify(error)
             redraw(<Install message={message} percent={percent} />)
          }
-         await checkIt(message)
+         // await checkIt(message)
 
          message = "bootloader "
          percent = 0.63
@@ -1175,89 +1175,87 @@ adduser ${name} \
       } else {
          /**
           * patch per ubuntu sostituisce bootloader-config e bootloader
-          * 
           */
 
          if (name === 'bootloader-config') {
-            // await Utils.customConfirm('failure on analyzing: ' + moduleName + ', press a key to continue...')
-
-            let cmd = ''
-            try {
-               cmd = 'chroot ' + this.installTarget + ' ' + 'apt-get update'
-               await exec(cmd, echo)
-            } catch (error) {
-               console.log(error)
-            }
-            // await Utils.customConfirm(cmd)
-
-            try {
-               cmd = 'chroot ' + this.installTarget + ' sleep 1'
-               await exec(cmd, echo)
-            } catch (error) {
-               console.log(error)
-            }
-            // await Utils.customConfirm(cmd)
-
-            let aptInstallOptions = ' apt install -y --no-upgrade --allow-unauthenticated -o Acquire::gpgv::Options::=--ignore-time-conflict '
-            if (this.efi) {
-               try {
-                  cmd = 'chroot ' + this.installTarget + aptInstallOptions + ' grub-efi-' + Utils.machineArch() + '  --allow-unauthenticated'
-                  await exec(cmd, echo)
-               } catch (error) {
-                  await Utils.customConfirm(cmd)
-               }
-            } else {
-               try {
-                  cmd = 'chroot ' + this.installTarget + aptInstallOptions + ' grub-pc'
-                  await exec(cmd, echo)
-               } catch (error) {
-                  await Utils.customConfirm(cmd)
-               }
-            }
-            // await Utils.customConfirm(cmd)
-
-            try {
-               cmd = 'chroot ' + this.installTarget + ' sleep 1'
-               await exec(cmd, echo)
-            } catch (error) {
-               console.log(error)
-            }
-            // await Utils.customConfirmAbort(cmd)
-
-
-            try {
-               cmd = 'chroot ' + this.installTarget + ' grub-install ' + this.disk.installationDevice
-               await exec(cmd, echo)
-            } catch (error) {
-               console.log(error)
-            }
-            // await Utils.customConfirmAbort(cmd)
-
-            try {
-               cmd = 'chroot ' + this.installTarget + ' grub-mkconfig -o /boot/grub/grub.cfg'
-               await exec(cmd, echo)
-            } catch (error) {
-               console.log(error)
-            }
-            // await Utils.customConfirmAbort(cmd)
-
-            try {
-               cmd = 'chroot ' + this.installTarget + ' update-grub'
-               await exec(cmd, echo)
-            } catch (error) {
-               console.log(error)
-            }
-            // await Utils.customConfirmAbort(cmd)
-
-            try {
-               cmd = 'chroot ' + this.installTarget + ' sleep 1'
-               await exec(cmd, echo)
-            } catch (error) {
-               console.log(error)
-            }
-            // await Utils.customConfirmAbort('cmd')
+            await this.bootloaderConfigUbuntu()
          }
+      }
+   }
 
+   /**
+    * 
+    */
+   async bootloaderConfigUbuntu() {
+      const echo = { echo: false, ignore: false }
+
+      let cmd = ''
+      try {
+         cmd = 'chroot ' + this.installTarget + ' ' + 'apt-get update -y ' + this.toNull
+         await exec(cmd, echo)
+      } catch (error) {
+         console.log(error)
+      }
+
+      try {
+         cmd = 'chroot ' + this.installTarget + ' sleep 1' + this.toNull
+         await exec(cmd, echo)
+      } catch (error) {
+         console.log(error)
+      }
+
+      let aptInstallOptions = ' apt install -y --no-upgrade --allow-unauthenticated -o Acquire::gpgv::Options::=--ignore-time-conflict '
+      if (this.efi) {
+         try {
+            cmd = 'chroot ' + this.installTarget + aptInstallOptions + ' grub-efi-' + Utils.machineArch() + '  --allow-unauthenticated ' + this.toNull
+            await exec(cmd, echo)
+         } catch (error) {
+            console.log('cmd: ' + cmd + ' error: ' + error)
+         }
+      } else {
+         try {
+            cmd = 'chroot ' + this.installTarget + aptInstallOptions + ' grub-pc' + this.toNull
+            await exec(cmd, echo)
+         } catch (error) {
+            console.log('cmd: ' + cmd + ' error: ' + error)
+         }
+      }
+
+      try {
+         cmd = 'chroot ' + this.installTarget + ' sleep 1' + this.toNull
+         await exec(cmd, echo)
+      } catch (error) {
+         console.log('cmd: ' + cmd + ' error: ' + error)
+      }
+
+
+      try {
+         cmd = 'chroot ' + this.installTarget + ' grub-install ' + this.disk.installationDevice + this.toNull
+         await exec(cmd, echo)
+      } catch (error) {
+         console.log('cmd: ' + cmd + ' error: ' + error)
+      }
+
+      try {
+         cmd = 'chroot ' + this.installTarget + ' grub-mkconfig -o /boot/grub/grub.cfg' + this.toNull
+         await exec(cmd, echo)
+      } catch (error) {
+         console.log('cmd: ' + cmd + ' error: ' + error)
+      }
+      // await Utils.customConfirmAbort(cmd)
+
+      try {
+         cmd = 'chroot ' + this.installTarget + ' update-grub' + this.toNull
+         await exec(cmd, echo)
+      } catch (error) {
+         console.log('cmd: ' + cmd + ' error: ' + error)
+      }
+
+      try {
+         cmd = 'chroot ' + this.installTarget + ' sleep 1' + this.toNull
+         await exec(cmd, echo)
+      } catch (error) {
+         console.log('cmd: ' + cmd + ' error: ' + error)
       }
    }
 
