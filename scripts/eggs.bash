@@ -18,7 +18,7 @@ info --verbose --help
 install --cli --help --verbose
 kill --help --verbose
 mom --help
-produce --prefix --basename --fast --normal --max --verbose --yolk --script --help --theme --addons --release
+produce --prefix --basename --backup --fast --normal --max --verbose --yolk --script --help --theme --addons --release
 remove --purge --autoremove --help --verbose
 tools:clean --help --verbose
 tools:locales --help --reinstall --verbose

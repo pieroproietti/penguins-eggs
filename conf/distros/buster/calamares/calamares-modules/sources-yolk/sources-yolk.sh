@@ -66,7 +66,7 @@ function restore_apt {
 function yolk {
     mkdir "$APT_ROOT/sources.list.d"
 cat << EOF > $CHROOT/etc/apt/sources.list.d/yolk.list
-deb [trusted=yes] file:/usr/local/yolk ./
+deb [trusted=yes] file:///usr/local/yolk ./
 EOF
 chroot ${CHROOT} apt-get --allow-unauthenticated update -y
 }
