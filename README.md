@@ -105,7 +105,7 @@ $ npm install -g penguins-eggs
 $ eggs COMMAND
 running command...
 $ eggs (-v|--version|version)
-penguins-eggs/8.0.8 linux-x64 node-v8.17.0
+penguins-eggs/8.0.8 linux-x64 node-v12.22.1
 $ eggs --help [COMMAND]
 USAGE
   $ eggs COMMAND
@@ -392,18 +392,19 @@ USAGE
   $ eggs produce
 
 OPTIONS
-  -b, --basename=basename  basename
-  -f, --fast               fast compression
-  -h, --help               show CLI help
-  -m, --max                max compression
-  -n, --normal             normal compression
-  -p, --prefix=prefix      prefix
-  -s, --script             script mode. Generate scripts to manage iso build
-  -v, --verbose            verbose
-  -y, --yolk               -y force yolk renew
-  --addons=addons          addons to be used: adapt, ichoice, pve, rsupport
-  --release                release: configure GUI installer to remove eggs and calamares after installation
-  --theme=theme            theme for livecd, calamares branding and partitions
+  -b, --backup         backup mode
+  -f, --fast           fast compression
+  -h, --help           show CLI help
+  -m, --max            max compression
+  -n, --normal         normal compression
+  -p, --prefix=prefix  prefix
+  -s, --script         script mode. Generate scripts to manage iso build
+  -v, --verbose        verbose
+  -y, --yolk           -y force yolk renew
+  --addons=addons      addons to be used: adapt, ichoice, pve, rsupport
+  --basename=basename  basename
+  --release            release: configure GUI installer to remove eggs and calamares after installation
+  --theme=theme        theme for livecd, calamares branding and partitions
 
 ALIASES
   $ eggs spawn

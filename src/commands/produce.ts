@@ -21,7 +21,8 @@ import Settings from '../classes/settings'
 export default class Produce extends Command {
    static flags = {
       prefix: flags.string({ char: 'p', description: 'prefix' }),
-      basename: flags.string({ char: 'b', description: 'basename' }),
+      basename: flags.string({ description: 'basename' }),
+      backup: flags.boolean({ char: 'b', description: 'backup mode' }),
       fast: flags.boolean({ char: 'f', description: 'fast compression' }),
       normal: flags.boolean({ char: 'n', description: 'normal compression' }),
       max: flags.boolean({ char: 'm', description: 'max compression' }),
@@ -126,6 +127,7 @@ export default class Produce extends Command {
             compression = 'xz -Xbcj x86'
          }
 
+         const backup = flags.backup
 
          const verbose = flags.verbose
 
@@ -167,11 +169,12 @@ export default class Produce extends Command {
             }
          }
 
+
          Utils.titles(this.id + ' ' + this.argv)
          const ovary = new Ovary(prefix, basename, theme, compression)
          Utils.warning('Produce an egg...')
          if (await ovary.fertilization()) {
-            await ovary.produce(scriptOnly, yolkRenew, release, myAddons, verbose)
+            await ovary.produce(backup, scriptOnly, yolkRenew, release, myAddons, verbose)
             ovary.finished(scriptOnly)
          }
       }

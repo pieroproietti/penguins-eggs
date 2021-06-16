@@ -112,7 +112,7 @@ export default class Ovary {
     *
     * @param basename
     */
-   async produce(scriptOnly = false, yolkRenew = false, release = false, myAddons: IMyAddons, verbose = false) {
+   async produce(backup = false, scriptOnly = false, yolkRenew = false, release = false, myAddons: IMyAddons, verbose = false) {
 
       const yolk = new Repo()
       if (!yolk.exists()) {
@@ -168,7 +168,11 @@ export default class Ovary {
          }
 
          await this.bindLiveFs(verbose)
-         await this.createUserLive(verbose)
+         if (backup) {
+            await this.saveUsersData(verbose)
+         } else {
+            await this.createUserLive(verbose)
+         }
          if (await Pacman.isGui()) {
             await this.createAutostart(this.theme, myAddons)
          } else {
@@ -940,7 +944,38 @@ export default class Ovary {
       Utils.writeXs(`${this.settings.work_dir.path}ubindvfs`, cmds)
    }
 
+
    /**
+    * 
+    * @param verbose 
+    */
+   async saveUsersData(verbose= false) {
+      const echo = Utils.setEcho(verbose)
+      if (verbose) {
+         console.log('ovary: createUserLive')
+      }
+
+      /**
+       * save all users data 
+       */
+      const cmds: string[] = []
+      const cmd = `chroot ${this.settings.work_dir.merged} getent passwd {1000..60000} |awk -F: '{print $1}'`
+      const result = await exec(cmd, {
+         echo: verbose,
+         ignore: false,
+         capture: true
+      })
+      const users: string[] = result.data.split('\n')
+      for (let i = 0; i < users.length - 1; i++) {
+         cmds.push(await rexec(`cp /home/${users[i]} ${this.settings.work_dir.merged}/home -R`, verbose))
+         cmds.push(await rexec(`chown ${users[i]}:${users[i]} ${this.settings.work_dir.merged}/home/${users[i]} -R`, verbose))
+      }
+
+
+   }
+
+   /**
+    * list degli utenti: grep -E 1[0-9]{3}  /etc/passwd | sed s/:/\ / | awk '{print $1}'
     * create la home per user_opt
     * @param verbose
     */
