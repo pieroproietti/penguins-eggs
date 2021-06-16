@@ -169,24 +169,34 @@ export default class Ovary {
 
          await this.bindLiveFs(verbose)
          if (backup) {
-            await this.saveUsersData(verbose)
+            await this.bindUsersDatas(verbose)
          } else {
             await this.createUserLive(verbose)
          }
+
          if (await Pacman.isGui()) {
             await this.createAutostart(this.theme, myAddons)
          } else {
-            cliAutologin.add(this.settings.distro.distroId, this.settings.distro.versionId, this.settings.config.user_opt, this.settings.config.user_opt_passwd, this.settings.config.root_passwd, this.settings.work_dir.merged)
+            if (backup) {
+               cliAutologin.add(this.settings.distro.distroId, this.settings.distro.versionId, Utils.getPrimaryUser(), '*******', '*******', this.settings.work_dir.merged)
+            } else {
+               cliAutologin.add(this.settings.distro.distroId, this.settings.distro.versionId, this.settings.config.user_opt, this.settings.config.user_opt_passwd, this.settings.config.root_passwd, this.settings.work_dir.merged)
+            }
          }
-         await this.editLiveFs(verbose)
-         await this.makeSquashfs(scriptOnly, verbose)
-         await this.makeDotDisk(verbose)
-         await this.makeIso(scriptOnly, verbose)
-         await this.bindVfs(verbose)
-         await this.ubindVfs(verbose)
-         await this.uBindLiveFs(verbose)
+
       }
+      await this.editLiveFs(verbose)
+      await this.makeSquashfs(scriptOnly, verbose)
+      if (backup) {
+         await this.ubindUsersDatas(verbose)
+      }
+      await this.makeDotDisk(verbose)
+      await this.makeIso(scriptOnly, verbose)
+      await this.bindVfs(verbose)
+      await this.ubindVfs(verbose)
+      await this.uBindLiveFs(verbose)
    }
+
 
    /**
     * Crea la struttura della workdir
@@ -949,15 +959,12 @@ export default class Ovary {
     * 
     * @param verbose 
     */
-   async saveUsersData(verbose= false) {
+   async bindUsersDatas(verbose = false) {
       const echo = Utils.setEcho(verbose)
       if (verbose) {
-         console.log('ovary: createUserLive')
+         console.log('ovary: saveUsersDatas')
       }
 
-      /**
-       * save all users data 
-       */
       const cmds: string[] = []
       const cmd = `chroot ${this.settings.work_dir.merged} getent passwd {1000..60000} |awk -F: '{print $1}'`
       const result = await exec(cmd, {
@@ -967,11 +974,32 @@ export default class Ovary {
       })
       const users: string[] = result.data.split('\n')
       for (let i = 0; i < users.length - 1; i++) {
-         cmds.push(await rexec(`cp /home/${users[i]} ${this.settings.work_dir.merged}/home -R`, verbose))
-         cmds.push(await rexec(`chown ${users[i]}:${users[i]} ${this.settings.work_dir.merged}/home/${users[i]} -R`, verbose))
+         cmds.push(await rexec('mkdir ' + this.settings.work_dir.merged + '/home/' + users[i], verbose))
+         cmds.push(await rexec('mount --bind --make-slave /home/' + users[i] + ' ' + this.settings.work_dir.merged + '/home/' + users[i], verbose))
+      }
+   }
+
+   /**
+ * 
+ * @param verbose 
+ */
+   async ubindUsersDatas(verbose = false) {
+      const echo = Utils.setEcho(verbose)
+      if (verbose) {
+         console.log('ovary: saveUsersDatas')
       }
 
-
+      const cmds: string[] = []
+      const cmd = `chroot ${this.settings.work_dir.merged} getent passwd {1000..60000} |awk -F: '{print $1}'`
+      const result = await exec(cmd, {
+         echo: verbose,
+         ignore: false,
+         capture: true
+      })
+      const users: string[] = result.data.split('\n')
+      for (let i = 0; i < users.length - 1; i++) {
+         cmds.push(await rexec('umount ' + this.settings.work_dir.merged + '/home/' + users[i], verbose))
+      }
    }
 
    /**

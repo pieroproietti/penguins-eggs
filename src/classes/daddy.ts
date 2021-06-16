@@ -137,7 +137,7 @@ export default class Daddy {
             Utils.titles('produce' + ' ' + flags)
             console.log(chalk.cyan('Daddy, what else did you leave for me?'))
             const myAddons = {} as IMyAddons
-            const backup = true
+            const backup = false
             const scriptOnly = false
             const yolkRenew = false
             const final = false
