@@ -17,7 +17,10 @@ penguins-eggs
 * ```live/evolution```
 * ```root/evolution```
 
-All the ISOs include nodejs and eggs installed (.npm package), so you can update your eggs tool with the command:
+# Attention
+This remastered deepin boot install in uefi and bios standard. But the installed system will boot normally only with bios standard, if you are not expert use this just on bios standard systems.
+
+All the ISOs include eggs and calamares installed, so you can update your eggs tool with the command:
 
 ```sudo eggs update```
 
