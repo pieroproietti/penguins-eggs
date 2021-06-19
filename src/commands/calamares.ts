@@ -87,7 +87,7 @@ export default class Calamares extends Command {
                      if (await this.settings.load()) {
                         this.settings.config.force_installer = true
                         this.settings.save(this.settings.config)
-                        adminPolicyCalamares()
+                        await adminPolicyCalamares()
                      }
                   }
 
@@ -150,14 +150,8 @@ export default class Calamares extends Command {
 /**
  * adminPolicyCalamares
  */
-function adminPolicyCalamares() {
+async function adminPolicyCalamares() {
    const policyFile = '/usr/share/polkit-1/actions/com.github.calamares.calamares.policy'
-   const data = fs.readFileSync(policyFile, "utf-8")
-   const find = '<allow_active>auth_admin</allow_active>'
-   const replace = '<allow_active>yes</allow_active>'
-   data.replace(find, replace)
-   fs.writeFileSync(policyFile, data)
+   await exec(`sed -i 's/auth_admin/yes/' ${policyFile}`)
+   let data = fs.readFileSync(policyFile, "utf-8")
 }
-
-
-
