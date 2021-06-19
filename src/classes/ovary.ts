@@ -535,7 +535,7 @@ export default class Ovary {
          splashSrc = splashCandidate
       }
 
-      let menuSrc = path.resolve(__dirname, '../../conf/distros/' + this.settings.distro.versionLike + 'isolinux/menu.template.cfg')
+      let menuSrc = path.resolve(__dirname, '../../conf/distros/' + this.settings.distro.versionLike + '/isolinux/menu.template.cfg')
       const menuCandidate = path.resolve(__dirname, '../../addons/' + theme + '/theme/livecd/menu.template.cfg')
       if (fs.existsSync(menuCandidate)) {
          menuSrc = menuCandidate
