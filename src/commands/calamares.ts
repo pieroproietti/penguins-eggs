@@ -11,6 +11,8 @@ import Incubator from '../classes/incubation/incubator'
 import Pacman from '../classes/pacman'
 import { IRemix } from '../interfaces'
 
+import xml2js from 'xml2js'
+
 import fs from 'fs'
 import { exec } from '../lib/utils'
 
@@ -75,6 +77,7 @@ export default class Calamares extends Command {
          if (installer === 'calamares') {
             if (!remove) {
                if (await Utils.customConfirm(`Select yes to continue...`)) {
+
                   /**
                    * Install calamares
                    */
@@ -84,7 +87,7 @@ export default class Calamares extends Command {
                      if (await this.settings.load()) {
                         this.settings.config.force_installer = true
                         this.settings.save(this.settings.config)
-                        // setCalamaresPolicies() to do
+                        adminPolicyCalamares()
                      }
                   }
 
@@ -118,7 +121,7 @@ export default class Calamares extends Command {
                    * Install krill
                    */
                   if (install) {
-                     if (!Pacman.packageIsInstalled('krill')){
+                     if (!Pacman.packageIsInstalled('krill')) {
                         console.log('Download krill from https://sourceforge.com/project/penguins-eggs/files')
                      }
                   }
@@ -143,4 +146,18 @@ export default class Calamares extends Command {
       }
    }
 }
+
+/**
+ * adminPolicyCalamares
+ */
+function adminPolicyCalamares() {
+   const policyFile = '/usr/share/polkit-1/actions/com.github.calamares.calamares.policy'
+   const data = fs.readFileSync(policyFile, "utf-8")
+   const find = '<allow_active>auth_admin</allow_active>'
+   const replace = '<allow_active>yes</allow_active>'
+   data.replace(find, replace)
+   fs.writeFileSync(policyFile, data)
+}
+
+
 
