@@ -18,6 +18,9 @@ You can follow the project also consulting the [commit history](https://github.c
 ## Changelog
 Versions are listed on reverse order, the first is the last one.
 
+### eggs-8.0.10
+* added linuxmint 20.3 uma
+
 ### eggs-8.0.9
 * sudo eggs calamares --install now install and configure calamares to run without asking for password
 
