@@ -11,8 +11,6 @@ import Incubator from '../classes/incubation/incubator'
 import Pacman from '../classes/pacman'
 import { IRemix } from '../interfaces'
 
-import xml2js from 'xml2js'
-
 import fs from 'fs'
 import { exec } from '../lib/utils'
 
@@ -153,5 +151,4 @@ export default class Calamares extends Command {
 async function adminPolicyCalamares() {
    const policyFile = '/usr/share/polkit-1/actions/com.github.calamares.calamares.policy'
    await exec(`sed -i 's/auth_admin/yes/' ${policyFile}`)
-   let data = fs.readFileSync(policyFile, "utf-8")
 }
