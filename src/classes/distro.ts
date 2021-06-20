@@ -201,7 +201,7 @@ class Distro implements IDistro {
          // LinuxMint 19.x
          this.distroLike = 'Ubuntu'
          this.versionLike = 'bionic'
-      } else if (this.versionId === 'ulyana' || this.versionId === 'ulyssa') {
+      } else if (this.versionId === 'ulyana' || this.versionId === 'ulyssa' || this.versionId === 'uma') {
          // LinuxMint 20.x
          this.distroLike = 'Ubuntu'
          this.versionLike = 'focal'
