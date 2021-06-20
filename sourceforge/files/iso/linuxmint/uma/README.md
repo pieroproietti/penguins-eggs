@@ -19,9 +19,9 @@ penguins-eggs
 
 All ISOs include eggs, you can udate it with: ```sudo eggs update```.
 
-# Linux Mint - ulyana
+# Linux Mint - uma
 
-* **cinnamon** - Linux Mint 20.2 (based on Ubuntu focal), cinnamon (amd64)
+* **cinnamon** - Linux Mint 20.3 (based on Ubuntu focal), cinnamon (amd64)
 
 ## More informations
 
