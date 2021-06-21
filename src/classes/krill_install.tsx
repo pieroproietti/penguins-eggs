@@ -789,7 +789,6 @@ adduser ${name} \
       f += ' --filter="- /var/lib/dbus/machine-id"'
 
       // Added for newer version of live-config/live-boot
-      // in sid (to become Jessie)
       f += ' --filter="- /lib/live/image"'
       f += ' --filter="- /lib/live/mount"'
       f += ' --filter="- /lib/live/overlay"'
@@ -803,17 +802,18 @@ adduser ${name} \
 
       f += ' --filter="- /run/*"'
 
+      //       --progress \
+
       cmd = `\
       rsync \
       --archive \
       --delete -before \
       --delete -excluded \
+      --info=progress2 \
       ${f} \
       / ${this.installTarget}`
 
-      shx.exec(cmd.trim(), {
-         async: false
-      })
+      await exec(cmd.trim())
    }
 
 
@@ -1167,9 +1167,10 @@ adduser ${name} \
       if (fs.existsSync(moduleName)) {
          console.log('analyzing: ' + moduleName)
          const calamaresModule = yaml.load(fs.readFileSync(moduleName, 'utf8')) as ICalamaresModule
-         const command = calamaresModule.command
+         let command = calamaresModule.command
          console.log('command: ' + command)
          if (command !== '' || command !== undefined) {
+            command += this.toNull
             await exec(command)
          }
       } else {
