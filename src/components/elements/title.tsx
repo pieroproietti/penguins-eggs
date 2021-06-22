@@ -25,9 +25,6 @@ export default function Title({ title = "krill" }) {
                <Box>
                   <Text> </Text>
                </Box>
-               <Box>
-                  <Text>  (C) 2017-2021 Piero Proietti</Text>
-               </Box>
             </Box>
          </Box>
          <Box flexDirection="row">

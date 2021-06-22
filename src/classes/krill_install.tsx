@@ -6,6 +6,8 @@
  *
  */
 
+ import { IRemix, IDistro, IApp, IWorkDir } from '../interfaces'
+
 import React from 'react';
 import { render, RenderOptions } from 'ink'
 import Install from '../components/install'
@@ -151,6 +153,10 @@ export default class Hatching {
 
    toNull = ' > /dev/null 2>&1'
 
+   remix = {} as IRemix
+
+   distro = {} as IDistro
+
 
    /**
     * constructor
@@ -183,6 +189,8 @@ export default class Hatching {
       this.devices.root = {} as IDevice
       this.devices.data = {} as IDevice
       this.devices.swap = {} as IDevice
+
+      this.distro = new Distro(this.remix)
    }
 
    /**
@@ -753,11 +761,16 @@ adduser ${name} \
       fs.writeFileSync(file, content)
    }
 
-
    /**
     * unpackfs
     */
-   private async unpackfs(): Promise<void> {
+    private async unpackfs(): Promise<void> {
+      const echo = Utils.setEcho(this.verbose)
+      const cmd='unsquashfs -d ' + this.installTarget + ' -f ' + this.distro.squashFs
+      await exec(cmd)
+   }
+
+    private async rsyncUnpackfs(): Promise<void> {
       const echo = Utils.setEcho(this.verbose)
 
       let cmd = ''
