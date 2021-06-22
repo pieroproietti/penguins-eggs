@@ -18,6 +18,9 @@ You can follow the project also consulting the [commit history](https://github.c
 ## Changelog
 Versions are listed on reverse order, the first is the last one.
 
+### eggs-8.0.13
+* now we are using unsquashfs during the unpacking phase in cli krill installer
+
 ### eggs-8.0.12
 * we are using cfonts simple for titles, removed package figlet
 
