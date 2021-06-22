@@ -49,6 +49,7 @@ class Distro implements IDistro {
    versionLike: string
    isolinuxPath: string
    syslinuxPath: string
+   squashFs: string
    mountpointSquashFs: string
    homeUrl: string
    supportUrl: string
@@ -62,6 +63,7 @@ class Distro implements IDistro {
       this.versionLike = ''
       this.isolinuxPath = ''
       this.syslinuxPath = ''
+      this.squashFs = ''
       this.mountpointSquashFs = ''
       this.homeUrl = ''
       this.supportUrl = ''
@@ -238,8 +240,10 @@ class Distro implements IDistro {
        * Selezione il mountpoint per squashfs
        */
       if (this.versionLike === 'jessie' || this.versionLike === 'stretch' || this.versionLike === 'bionic' || this.versionLike === 'xenial') {
+         this.squashFs = '/lib/live/mount/medium/live/filesystem.squashfs'
          this.mountpointSquashFs = '/lib/live/mount/medium/live/filesystem.squashfs'
       } else {
+         this.squashFs = '/run/live/medium/live/filesystem.squashfs'
          this.mountpointSquashFs = '/run/live/medium/live/filesystem.squashfs'
       }
 
