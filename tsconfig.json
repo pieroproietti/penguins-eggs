@@ -8,7 +8,8 @@
     "outDir": "lib",
     "rootDir": "src",
     "strict": true,
-    "target": "es2017"
+    "target": "es2017",
+    "typeRoots": ["./src/types"]
   },
   "include": [
     "src/**/*"

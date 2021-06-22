@@ -16,7 +16,7 @@ export default function Title({ title = "krill" }) {
       <>
          <Box flexDirection="row">
             <Box>
-                  <BigText text={pjson.shortName} font="simple"/>
+                  <BigText text={pjson.shortName} font="chrome"/>
             </Box>
             <Box margin={0} justifyContent="center" flexDirection="column">
                <Box >
@@ -24,9 +24,6 @@ export default function Title({ title = "krill" }) {
                   </Box>
                <Box>
                   <Text> </Text>
-               </Box>
-               <Box>
-                  <Text>  (C) 2017-2021 Piero Proietti</Text>
                </Box>
             </Box>
          </Box>
