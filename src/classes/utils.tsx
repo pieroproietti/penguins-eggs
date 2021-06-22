@@ -6,10 +6,11 @@
  * license: MIT
  */
 
-import React from 'react';
-import { render, Box, Text } from 'ink'
-import Title from '../components/elements/title'
+// import React from 'react';
+// import { render, RenderOptions, Box, Text } from 'ink'
+// import Title from '../components/elements/title'
 
+import cfonts = require('cfonts')
 import shx = require('shelljs')
 import fs = require('fs')
 import dns = require('dns')
@@ -21,7 +22,7 @@ import chalk = require('chalk')
 import Pacman from './pacman'
 
 import clear = require('clear')
-import figlet = require('figlet')
+//import figlet = require('figlet')
 
 /**
  * Utils: general porpourse utils
@@ -713,14 +714,24 @@ unknown target format aarch64-efi
     * titles
     * Penguin's are gettings alive!
     */
-   static async titles(command = ''): Promise<void> {
+   static async titles2(command = ''): Promise<void> {
       console.clear()
-      console.log(figlet.textSync('eggs', { font: 'Standard'}))
+      //console.log(figlet.textSync('eggs', { font: 'Standard'}))
       console.log(chalk.bgGreen.whiteBright('      ' + pjson.name + '      ') +
          chalk.bgWhite.blue(" Perri's Brewery edition ") +
          chalk.bgRed.whiteBright('       ver. ' + pjson.version + '       '))
       console.log('command: ' + chalk.bgBlack.white(command) + '\n')
    }
+
+   static titles(command = '') {
+      console.clear()
+      cfonts.say('eggs', {font: 'chrome'}) //simple / tiny
+      console.log(chalk.bgGreen.whiteBright('      ' + pjson.name + '      ') +
+         chalk.bgWhite.blue(" Perri's Brewery edition ") +
+         chalk.bgRed.whiteBright('       ver. ' + pjson.version + '       '))
+      console.log('command: ' + chalk.bgBlack.white(command) + '\n')
+   }
+    
 
    /**
     *
