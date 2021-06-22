@@ -753,11 +753,17 @@ adduser ${name} \
       fs.writeFileSync(file, content)
    }
 
+   private async unpackfs(): Promise<void> {
+      const echo = Utils.setEcho(this.verbose)
+      const src = '/run/live/medium/live/filesystem.squashfs'
+      const cmd='unsquashfs -f -d ' + src + ' ' + this.installTarget
+      await exec(cmd)
+   }
 
    /**
     * unpackfs
     */
-   private async unpackfs(): Promise<void> {
+    private async rsyncUnpackfs(): Promise<void> {
       const echo = Utils.setEcho(this.verbose)
 
       let cmd = ''
