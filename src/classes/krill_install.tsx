@@ -756,7 +756,7 @@ adduser ${name} \
    private async unpackfs(): Promise<void> {
       const echo = Utils.setEcho(this.verbose)
       const src = '/run/live/medium/live/filesystem.squashfs'
-      const cmd='unsquashfs -f -d ' + src + ' ' + this.installTarget
+      const cmd='unsquashfs -d ' + this.installTarget + ' -f ' + src
       await exec(cmd)
    }
 
