@@ -725,7 +725,7 @@ unknown target format aarch64-efi
 
    static titles(command = '') {
       console.clear()
-      cfonts.say('eggs', {font: 'chrome'}) //simple / tiny
+      cfonts.say('eggs', {font: 'simple'})
       console.log(chalk.bgGreen.whiteBright('      ' + pjson.name + '      ') +
          chalk.bgWhite.blue(" Perri's Brewery edition ") +
          chalk.bgRed.whiteBright('       ver. ' + pjson.version + '       '))
