@@ -6,7 +6,8 @@
  *
  */
 
- import { IRemix, IDistro, IApp, IWorkDir } from '../interfaces'
+import { IRemix, IDistro, IApp, IWorkDir } from '../interfaces'
+import Settings from './settings'
 
 import React from 'react';
 import { render, RenderOptions } from 'ink'
@@ -31,7 +32,7 @@ const exec = require('../lib/utils').exec
       - machineid // da fare
       - fstab
       - locale // da fare
-      - keyboard // da fare
+      - keyboard
       - localecfg // da fare
       - users // rivedere
       - displaymanager // autologin
@@ -153,6 +154,8 @@ export default class Hatching {
 
    toNull = ' > /dev/null 2>&1'
 
+   settings = {} as Settings
+
    remix = {} as IRemix
 
    distro = {} as IDistro
@@ -164,6 +167,8 @@ export default class Hatching {
    constructor(location: ILocation, keyboard: IKeyboard, partitions: IPartitions, users: IUsers) {
 
       this.installer = installer()
+
+      this.settings = new Settings()
 
       this.language = location.language
       this.region = location.region
@@ -201,6 +206,8 @@ export default class Hatching {
     */
    async install(verbose = false) {
       this.verbose = verbose
+
+      await this.settings.load()
 
       let percent = 0.0
       let message = "Checking EFI"
@@ -310,6 +317,15 @@ export default class Hatching {
          }
          // await checkIt(message)
 
+         message = "settings keyboard "
+         percent = 0.48
+         try {
+            this.setKeyboard()
+         } catch (error) {
+            message += JSON.stringify(error)
+            redraw(<Install message={message} percent={percent} />)
+         }
+         // await checkIt(message)
 
          message = "Create hostname "
          percent = 0.50
@@ -670,6 +686,31 @@ adduser ${name} \
    }
 
    /**
+    * setKeyboard
+    */
+   private async setKeyboard() {
+      const file = this.installTarget + '/etc/default/keyboard'
+      let content = '# KEYBOARD CONFIGURATION FILE\n\n'
+      content += '# Consult the keyboard(5) manual page.\n\n'
+      content += 'XKBMODEL="' + this.keyboardModel + '"\n'
+      content += 'XKBLAYOUT="' + this.keyboardLayout + '"\n'
+      content += 'XKBVARIANT="' + this.keyboardVariant + '"\n'
+      content += 'XKBOPTIONS=""\n'
+      content += '\n'
+      content += 'BACKSPACE="guess"\n'
+      Utils.write(file, content)
+
+      // lancio setucon in chroot per salvare la tastiera
+      const echo = { echo: false, ignore: false }
+      const cmd = 'chroot ' + this.installTarget + ' ' + 'setupcon ' + this.toNull
+      try {
+         await exec(cmd, echo)
+      } catch (error) {
+         console.log(error)
+      }
+   }
+
+   /**
     * hostname
     */
    private async hostname() {
@@ -775,23 +816,23 @@ adduser ${name} \
    /**
     * unpackfs
     */
-    private async unpackfs(): Promise<void> {
+   private async unpackfs(): Promise<void> {
       const echo = Utils.setEcho(this.verbose)
-      const cmd='unsquashfs -d ' + this.installTarget + ' -f ' + this.distro.squashFs
+      const cmd = 'unsquashfs -d ' + this.installTarget + ' -f ' + this.distro.squashFs
       await exec(cmd)
    }
 
    /**
     * syncfs
     */
-    private async syncfs(): Promise<void> {
+   private async syncfs(): Promise<void> {
       const echo = Utils.setEcho(this.verbose)
 
       let cmd = ''
       let f = ''
       f += ' --filter="- /cdrom/*"'
       f += ' --filter="- /dev/*"'
-      f += ' --filter="- /home/*"'
+      f += ' --filter="- /home/' + this.settings.config.user_opt + '/*"' // esclude da rsync solo utente live
       f += ' --filter="- /live"'
       f += ' --filter="- /media/*"'
       f += ' --filter="- /mnt/*"'
