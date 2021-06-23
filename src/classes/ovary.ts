@@ -159,10 +159,10 @@ export default class Ovary {
          this.incubator = new Incubator(this.settings.remix, this.settings.distro, this.settings.config.user_opt, verbose)
          await this.incubator.config(release)
 
-         await this.syslinux()
+         await this.syslinux(verbose)
          await this.isolinux(this.theme, verbose)
 
-         await this.copyKernel()
+         await this.copyKernel(verbose)
          if (this.settings.config.make_efi) {
             await this.makeEfi(this.theme, verbose)
          }

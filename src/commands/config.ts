@@ -225,7 +225,7 @@ export default class Config extends Command {
         if (i.efi) {
             if (nointeractive) {
                 Utils.error('config: you are on a system UEFI capable, but I can\'t install grub-efi-' + Utils.machineArch() + '-bin now!')
-                Utils.warning('I suggest You to install grub-efi-' + Utils.machineArch() + '-bin before to produce your ISO.\nJust write:\n    sudo apt install ')
+                Utils.warning('I suggest You to install grub-efi-' + Utils.machineArch() + '-bin before to produce your ISO.\nJust write:\n    sudo apt install grub-efi-' + Utils.machineArch())
             } else {
                 Utils.warning('Installing uefi support...')
                 await exec('apt-get install grub-efi-' + Utils.machineArch() + '-bin --yes', echo)
