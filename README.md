@@ -36,14 +36,14 @@ Try penguins-eggs yes, it is a console utility - no GUI - but don't be scared, p
 ## Addons
 Starting with version 7.6.x an addons architecture was been added to eggs, that allows third parties to develop extensions. Note that we currently have an extension for the theme that includes both calamares branding and installer link and icon. In addition, also as addon has been developed others addons, to chosen hoosing between GUI or CLI installation, adapt video resolution, etc.
 
+## backup mode
+You can use the backup mode by simply adding --backup in the produce command. This way eggs will save your users data and accounts and will not add the a live user, you will have to log in with the main user of your system with the his password. **Note:** since eggs always configures autologin, you may have same a security risk with valuable data. Use this option only for your personal stuff and do not share the iso on the network.
+
 ## yolk 
 yolk so called - staying on the subject of eggs - is a local repository included in the livecd that contains a minimum of indispensable packages during installation. Thanks to yolk, you can safely install your system without the need of an active internet connection.
 
 ## krill
 Starting with eggs 8.0.0 I included a new CLI installer named krill. krill let you to install your system in a nice CLI interface using the same, configuration created by eggs for [calamares](calamares.io). This lead to have "about the same" experience installing, from old distros to new one and for GUI and CLI. To use krill in place of calamares in GUI system just: **sudo eggs install --cli**
-
-## backup mode
-You can use the backup mode by simply adding --backup in the produce command. This way eggs will save your users data and accounts and will not add the a live user, you will have to log in with the main user of your system with the his password. **Note:** since eggs always configures autologin, you may have same a security risk with valuable data. Use this option only for your personal stuff and do not share the iso on the network.
 
 ## Two great helpers: mom and dad!
 I added two light assistants integrated with eggs: mom and dad. While mom is a bash script with whiptail - and guides the user to the various commands and documentation, dad started as a short way to create the iso. All you have to do is type in **sudo eggs dad** and follow simple instructions. It it possible too to short the way to reset configuration **sudo dad -c** or - again more fast - reset configuration, load defaults, kill previous eggs. Type just **sudo eggs dad -d** and you will immidiatly able to produce the egg in the default nest /home/eggs.
