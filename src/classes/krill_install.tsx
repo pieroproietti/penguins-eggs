@@ -264,7 +264,7 @@ export default class Hatching {
          // await checkIt(message)
 
          message = "Syncronize filesystem "
-         percent = 0.34
+         percent = 0.35
          try {
             redraw(<Install message={message} percent={percent} spinner={true} />)
             await this.syncfs()
