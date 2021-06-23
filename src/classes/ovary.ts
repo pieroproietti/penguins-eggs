@@ -8,8 +8,6 @@
  *
  */
 
-// NOTA: Aggiungere da qualche parte la copia di install-debian in /usr/bin
-
 // packages
 import fs = require('fs')
 import path = require('path')
