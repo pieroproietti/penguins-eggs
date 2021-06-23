@@ -263,6 +263,17 @@ export default class Hatching {
          }
          // await checkIt(message)
 
+         message = "Syncronize filesystem "
+         percent = 0.34
+         try {
+            redraw(<Install message={message} percent={percent} spinner={true} />)
+            await this.syncfs()
+         } catch (error) {
+            message += JSON.stringify(error)
+            redraw(<Install message={message} percent={percent} />)
+         }
+         // await checkIt(message)
+
          // sources-yolk
          message = 'sources-yolk'
          percent = 0.40
@@ -770,7 +781,10 @@ adduser ${name} \
       await exec(cmd)
    }
 
-    private async rsyncUnpackfs(): Promise<void> {
+   /**
+    * syncfs
+    */
+    private async syncfs(): Promise<void> {
       const echo = Utils.setEcho(this.verbose)
 
       let cmd = ''
@@ -1124,51 +1138,6 @@ adduser ${name} \
    }
 
    /**
-    * execModule
-    * @param 
-    */
-
-   /*
-    before_bootloadr_mkdir_context
-
-    dontChroot: true
-    timeout: 10
-    firmwareType:
-      efi:
-        - -cp /cdrom/casper/vmlinuz @@ROOT@@/boot/vmlinuz-$(uname -r)
-        - -mkdir -pv @@ROOT@@/media/cdrom
-        - -mount --bind /cdrom @@ROOT@@/media/cdrom
-      bios:
-        - -cp /cdrom/casper/vmlinuz @@ROOT@@/boot/vmlinuz-$(uname -r)
-
-   before_bootloader_context
-   firmwareType:
-     bios: "-/bin/true"
-     "*":
-    - command: apt-get update
-      timeout: 120
-    - command: apt install -y --no-upgrade -o Acquire::gpgv::Options::=--ignore-time-conflict grub-efi-$(if grep -q 64 /sys/firmware/efi/fw_platform_size; then echo amd64-signed; else echo ia32; fi)
-      timeout: 300
-    - command: apt install -y --no-upgrade --allow-unauthenticated -o Acquire::gpgv::Options::=--ignore-time-conflict shim-signed
-      timeout: 300
-
-   
-   bootloader Ubuntu diverge solo per       efiBootloaderId: "ubuntu"
-   grubInstall: "grub-install"
-   grubMkconfig: "grub-mkconfig"
-   grubCfg: "/boot/grub/grub.cfg"
-   grubProbe: "grub-probe"
-   efiBootMgr: "efibootmgr"
-
-   after_bootloader
-   ---
-   dontChroot: false
-   timeout: 120
-   firmwareType:
-   "*": "-for i in `ls @@ROOT@@/home/`; do rm @@ROOT@@/home/$i/Desktop/lubuntu-calamares.desktop || exit 0; done"
-   */
-
-   /**
     * execCalamaresModule
     * 
     * @param name 
@@ -1190,7 +1159,6 @@ adduser ${name} \
          /**
           * patch per ubuntu sostituisce bootloader-config e bootloader
           */
-
          if (name === 'bootloader-config') {
             await this.bootloaderConfigUbuntu()
          }

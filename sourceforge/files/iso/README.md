@@ -25,63 +25,71 @@ All the ISOs include eggs installed (deb package). You can update your eggs tool
 
 # ISOs
 
-I work mostly on Debian stable, so here you can find same personal versions and other examples.
+I work mostly on Debian, so here you can find more personal versions and other examples.
 
 # Debian
+## jessie 
+* **naked** - just the juice, without GUI. You can start here to build your revolution! (i386/amd64)
+* **minino** - a remaster of [minino-tde](https://github.com/aosucas499/minino-TDE) a spanish remaster of [Minino Queiles 3.1](https://minino.galpon.org/es) (i386)
+
+## stretch
+* **naked** - just the juice, without GUI. You can start here to build your revolution! (i386/amd64)
+
 ## buster
-
 * **naked** - just the juice, without GUI. You can start here to build your revolution! (i386 and amd64)
-
-* **lite** - it's not naked, but just dressed with xfce4 and the tools to develop. (i386 and amd64)
-
-* **debu**  - it is my personal version with cinnamon, mostly for development, but include common office tools; (amd64)
 
 ## bullseye
 
 * **naked** - just the juice, without GUI. You can start here to build your revolution! (i386 and amd64)
 
-* **lite** - just dressed with xfce, firefox, visual studio code, nodejs and stacer (amd64 and i386)
-
 # Ubuntu
 
 ## bionic LTS
-* **lubuntu** - Lubuntu 18.04 remastered with eggs, w, updated and remastered with eggs, without any modifications except for wallpapers.
+* **lubuntu** - Lubuntu 18.04 remastered with eggs, updated and remastered with eggs, without any modifications except for wallpapers. (i386)
 
 ## focal LTS
-* **focal** - Ubuntu 20.04 focal gnome3, remastered with eggs, without any modifications. 
-* **ubuntuweb** - Ubuntu web remix gnome3, remastered with eggs, without any modifications. 
+* **naked** - Ubuntu 20.04 just the juice, without GUI. You can start here to build your revolution! (amd64)
+* **gnome3** - Ubuntu 20.04 focal gnome3, remastered with eggs, without any modifications. (amd64)
 
-## groovy
-* **groovy** - Ubuntu 20.10 groovy. 
+## hirsute
+* **gnome3*** - Ubuntu 21.04 hirsute gnome3, remastered with eggs, without any modifications. (amd64)
 
 # Devuan 
-* **beowulf** - like debu, but devual based
+* **beowulf** - like debu, but devual based.  (amd64)
 
-# From derivated distros
+# Derivated distros
 
 ## Deepin
-* **deepin** deepin 20 remastered based on Debian buster
+* **deepin** deeping 20.2.1 remastered based on Debian buster. [deepin](https://www.deepin.org/en/) (amd64)
 
 ## Linux Mint 
-* **ulyana** - Linux Mint 20 remastered with eggs, without any modifications except for wallpapers and develop tools. (amd64) 
-* **patricia** - Linux Mint 19.3 xfce, updated and remastered with eggs, without any modifications except for wallpapers. (amd64/i386)
-* **debbie** - LMDE4 Debbie, remastered with eggs, without any modifications except for wallpapers and develop tools. (amd64/i386) based on Debian buster
+* **ulyana** - Linux Mint 20.0 remastered with eggs, without any modifications except for wallpapers and develop tools. (amd64) 
+* **ulyssa** - Linux Mint 20.1 remastered with eggs, without any modifications except for wallpapers and develop tools. (amd64) 
+* **uma** - Linux Mint 20.2 remastered with eggs, without any modifications except for wallpapers and develop tools. (amd64) 
+* **patricia** - Linux Mint 19.3 xfce, updated and remastered with eggs, without any modifications except for wallpapers. (i386/amd64))
+* **debbie** - LMDE4 Debbie, remastered with eggs, without any modifications except for wallpapers and develop tools. (i386/amd64)) based on Debian buster
 
-## MX Linux 
-* **mx** - Linux MX 19.3 installable with gui installer calamares 
+## Neon
+The latest and greatest of [KDE](https://neon.kde.org/) community software packaged on a rock-solid base.
 
-## Proxmox-VE
-* **naked-ve** - Proxmox VE 6.3 cli (amd64 plus virtualization enabled);
-* **live-ve** - Proxmox VE 6.3 with xfce (amd64 plus virtualization enabled) with developer tools, virt-viewer (need amd64 plus virtualization enabled);
-* **incubator** - Proxmox VE 6.3 cinnamon (amd64 plus virtualization enabled) with depeloper tools, office, gimp, etc;
+* **plasma** User Edition remastered with eggs
+* **plasma-testing** Testing Edition remastered with eggs
 
-## UfficioZero
-* **roma** - UffucioZero Roma (x86), based on Devuan beowulf;
-* **siena** - UfficioZero Siena (x86) based on LMDE4;
-* **tropea** - UfficioZero Tropea (amd64)based on Linuxmint 20.0 ulyana;
-* **vieste** - UfficioZero Vieste (amd64) based on Linuxmint 19.3 tricia;
+## Sodilinux
+An italian school distro based on linuxmint with mate and complete for the school
 
-You can re-create remix from yourself by downloading the originals ISOs, and using eggs to remaster it.
+* **orizzonti-2025** [Sodilinux](https://sodilinux.itd.cnr.it/) 
+
+## Raspberry Pi OS
+* ** ** a remastered [Raspberry Pi OS](https://www.raspberrypi.org/software/) (amd64)
+
+## TeLOS
+From Greece with love! All ISOs are based on [TeLOS](https://sourceforge.net/projects/teloslinux/),
+TeLOS Linux is a project from our friend [Ion](https://sourceforge.net/u/telos/profile/)
+
+* **egg-of-telos-bullseye-dev-x64** a remastered version of **TeLOS-mini**. Here You can find the [original](https://sourceforge.net/projects/lite.teloslinux.p/files/iso/)
+* **egg-of-telos-bullseye-dev-i386** an i386 version of **TeLOS-mini**. 
+
 
 # That's all Folks!
 No need other configurations, penguins-eggs are battery included or better, as in the real, live is inside! :-D
