@@ -18,6 +18,9 @@ You can follow the project also consulting the [commit history](https://github.c
 ## Changelog
 Versions are listed on reverse order, the first is the last one.
 
+### eggs-8.0.16
+* creating a backup produce ISO prefixed by "backup-" not "egg-of-", eggs export:iso include now --backup option too
+
 ### eggs-8.0.15
 * krill finally support changing keyboard
 
