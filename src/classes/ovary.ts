@@ -188,8 +188,8 @@ export default class Ovary {
       if (backup) {
          await this.ubindUsersDatas(verbose)
       }
-      await this.makeDotDisk(verbose)
-      await this.makeIso(scriptOnly, verbose)
+      await this.makeDotDisk(backup, verbose)
+      await this.makeIso(backup, scriptOnly, verbose)
       await this.bindVfs(verbose)
       await this.ubindVfs(verbose)
       await this.uBindLiveFs(verbose)
@@ -635,75 +635,6 @@ export default class Ovary {
          Utils.warning('squashing filesystem: ' + compression)
          await exec(cmd, echo)
       }
-   }
-
-   /**
-    * info Debian GNU/Linux 10.8.0 "Buster" - Official i386 NETINST 20210206-10:54
-    * mkisofs xorriso -as mkisofs -r -checksum_algorithm_iso md5,sha1,sha256,sha512 -V 'Debian 10.8.0 i386 n' -o /srv/cdbuilder.debian.org/dst/deb-cd/out/2busteri386/debian-10.8.0-i386-NETINST-1.iso -jigdo-jigdo /srv/cdbuilder.debian.org/dst/deb-cd/out/2busteri386/debian-10.8.0-i386-NETINST-1.jigdo -jigdo-template /srv/cdbuilder.debian.org/dst/deb-cd/out/2busteri386/debian-10.8.0-i386-NETINST-1.template -jigdo-map Debian=/srv/cdbuilder.debian.org/src/ftp/debian/ -jigdo-exclude boot1 -md5-list /srv/cdbuilder.debian.org/src/deb-cd/tmp/2busteri386/buster/md5-check -jigdo-min-file-size 1024 -jigdo-exclude 'README*' -jigdo-exclude /doc/ -jigdo-exclude /md5sum.txt -jigdo-exclude /.disk/ -jigdo-exclude /pics/ -jigdo-exclude 'Release*' -jigdo-exclude 'Packages*' -jigdo-exclude 'Sources*' -J -joliet-long -cache-inodes -isohybrid-mbr syslinux/usr/lib/ISOLINUX/isohdpfx.bin -b isolinux/isolinux.bin -c isolinux/boot.cat -boot-load-size 4 -boot-info-table -no-emul-boot -eltorito-alt-boot -e boot/grub/efi.img -no-emul-boot -isohybrid-gpt-basdat -isohybrid-apm-hfsplus boot1 CD1
-    */
-   makeDotDisk(verbose = false) {
-      const dotDisk = this.settings.work_dir.pathIso + '/.disk'
-      if (fs.existsSync(dotDisk)) {
-         shx.rm('-rf', dotDisk)
-      }
-      shx.mkdir('-p', dotDisk)
-      // info
-      let file = dotDisk + '/info'
-      let content = this.settings.config.snapshot_prefix + this.settings.config.snapshot_basename
-      fs.writeFileSync(file, content, 'utf-8')
-
-      // shx.cp (scripts + '/mkisofs', dotDisk + '/mkisofs')
-      file = dotDisk + '/mkisofs'
-
-      let uefi_opt = ''
-      if (this.settings.config.make_efi) {
-         uefi_opt = '-eltorito-alt-boot -e boot/grub/efiboot.img -isohybrid-gpt-basdat -no-emul-boot'
-      }
-
-
-      /**
-       * per ovviare al problema che doDisk viene chiamato 
-       * prima di makeISO genero il comando al solo scopo
-       * di salvarlo nella iso
-       */
-      let isoHybridOption = `-isohybrid-mbr ${this.settings.distro.isolinuxPath}isohdpfx.bin `
-      if (this.settings.config.make_isohybrid) {
-         if (fs.existsSync('/usr/lib/syslinux/mbr/isohdpfx.bin')) {
-            isoHybridOption = '-isohybrid-mbr /usr/lib/syslinux/mbr/isohdpfx.bin'
-         } else if (fs.existsSync('/usr/lib/syslinux/isohdpfx.bin')) {
-            isoHybridOption = '-isohybrid-mbr /usr/lib/syslinux/isohdpfx.bin'
-         } else if (fs.existsSync('/usr/lib/ISOLINUX/isohdpfx.bin')) {
-            isoHybridOption = '-isohybrid-mbr /usr/lib/ISOLINUX/isohdpfx.bin'
-         } else {
-            Utils.warning("Can't create isohybrid. File: isohdpfx.bin not found. The resulting image will be a standard iso file")
-         }
-      }
-      this.settings.isoFilename = Utils.getFilename(this.settings.remix.name)
-
-      content = `xorriso  -as mkisofs \
-                          -volid ${this.settings.isoFilename} \
-                          -joliet-long \
-                          -l \
-                          -iso-level 3 \
-                          -b isolinux/isolinux.bin \
-                          ${isoHybridOption} \
-                          -partition_offset 16 \
-                          -c isolinux/boot.cat \
-                          -no-emul-boot \
-                          -boot-load-size 4 \
-                          -boot-info-table \
-                          ${uefi_opt} \
-                          -output ${this.settings.config.snapshot_dir}${this.settings.config.snapshot_prefix}${this.settings.isoFilename} \
-                          ${this.settings.work_dir.pathIso}`
-
-      /**
-       * rimuovo gli spazi
-       */
-      content = content.replace(/\s\s+/g, ' ')
-      fs.writeFileSync(file, content, 'utf-8')
-
-      const scripts = this.settings.work_dir.path
-      shx.cp(scripts + '/mksquashfs', dotDisk + '/mksquashfs')
    }
 
    /**
@@ -1360,11 +1291,87 @@ export default class Ovary {
       fs.writeFileSync(grubDest, mustache.render(template, view))
    }
 
+   /**
+    * info Debian GNU/Linux 10.8.0 "Buster" - Official i386 NETINST 20210206-10:54
+    * mkisofs xorriso -as mkisofs -r -checksum_algorithm_iso md5,sha1,sha256,sha512 -V 'Debian 10.8.0 i386 n' -o /srv/cdbuilder.debian.org/dst/deb-cd/out/2busteri386/debian-10.8.0-i386-NETINST-1.iso -jigdo-jigdo /srv/cdbuilder.debian.org/dst/deb-cd/out/2busteri386/debian-10.8.0-i386-NETINST-1.jigdo -jigdo-template /srv/cdbuilder.debian.org/dst/deb-cd/out/2busteri386/debian-10.8.0-i386-NETINST-1.template -jigdo-map Debian=/srv/cdbuilder.debian.org/src/ftp/debian/ -jigdo-exclude boot1 -md5-list /srv/cdbuilder.debian.org/src/deb-cd/tmp/2busteri386/buster/md5-check -jigdo-min-file-size 1024 -jigdo-exclude 'README*' -jigdo-exclude /doc/ -jigdo-exclude /md5sum.txt -jigdo-exclude /.disk/ -jigdo-exclude /pics/ -jigdo-exclude 'Release*' -jigdo-exclude 'Packages*' -jigdo-exclude 'Sources*' -J -joliet-long -cache-inodes -isohybrid-mbr syslinux/usr/lib/ISOLINUX/isohdpfx.bin -b isolinux/isolinux.bin -c isolinux/boot.cat -boot-load-size 4 -boot-info-table -no-emul-boot -eltorito-alt-boot -e boot/grub/efi.img -no-emul-boot -isohybrid-gpt-basdat -isohybrid-apm-hfsplus boot1 CD1
+    */
+   makeDotDisk(backup = false, verbose = false) {
+      const dotDisk = this.settings.work_dir.pathIso + '/.disk'
+      if (fs.existsSync(dotDisk)) {
+         shx.rm('-rf', dotDisk)
+      }
+      shx.mkdir('-p', dotDisk)
+      // info
+      let file = dotDisk + '/info'
+      let content = this.settings.config.snapshot_prefix + this.settings.config.snapshot_basename
+      fs.writeFileSync(file, content, 'utf-8')
+
+      // shx.cp (scripts + '/mkisofs', dotDisk + '/mkisofs')
+      file = dotDisk + '/mkisofs'
+
+      let uefi_opt = ''
+      if (this.settings.config.make_efi) {
+         uefi_opt = '-eltorito-alt-boot -e boot/grub/efiboot.img -isohybrid-gpt-basdat -no-emul-boot'
+      }
+
+
+      /**
+       * per ovviare al problema che doDisk viene chiamato 
+       * prima di makeISO genero il comando al solo scopo
+       * di salvarlo nella iso
+       */
+      let isoHybridOption = `-isohybrid-mbr ${this.settings.distro.isolinuxPath}isohdpfx.bin `
+      if (this.settings.config.make_isohybrid) {
+         if (fs.existsSync('/usr/lib/syslinux/mbr/isohdpfx.bin')) {
+            isoHybridOption = '-isohybrid-mbr /usr/lib/syslinux/mbr/isohdpfx.bin'
+         } else if (fs.existsSync('/usr/lib/syslinux/isohdpfx.bin')) {
+            isoHybridOption = '-isohybrid-mbr /usr/lib/syslinux/isohdpfx.bin'
+         } else if (fs.existsSync('/usr/lib/ISOLINUX/isohdpfx.bin')) {
+            isoHybridOption = '-isohybrid-mbr /usr/lib/ISOLINUX/isohdpfx.bin'
+         } else {
+            Utils.warning("Can't create isohybrid. File: isohdpfx.bin not found. The resulting image will be a standard iso file")
+         }
+      }
+      let volid = Utils.getVolid(this.settings.remix.name)
+      let prefix = this.settings.config.snapshot_prefix
+      if (prefix.substring(0, 7) === 'egg-of-') {
+         if (backup) {
+            prefix = 'backup-' + prefix.substring(7)
+         }
+      }
+      let output = this.settings.config.snapshot_dir + prefix + volid
+
+      content = `xorriso  -as mkisofs \
+                          -volid ${volid} \
+                          -joliet-long \
+                          -l \
+                          -iso-level 3 \
+                          -b isolinux/isolinux.bin \
+                          ${isoHybridOption} \
+                          -partition_offset 16 \
+                          -c isolinux/boot.cat \
+                          -no-emul-boot \
+                          -boot-load-size 4 \
+                          -boot-info-table \
+                          ${uefi_opt} \
+                          -output ${output} \
+                          ${this.settings.work_dir.pathIso}`
+
+      /**
+       * rimuovo gli spazi
+       */
+      content = content.replace(/\s\s+/g, ' ')
+      fs.writeFileSync(file, content, 'utf-8')
+
+      const scripts = this.settings.work_dir.path
+      shx.cp(scripts + '/mksquashfs', dotDisk + '/mksquashfs')
+   }
+
 
    /**
     * makeIsoImage
     */
-   async makeIso(scriptOnly = false, verbose = false) {
+   async makeIso(backup = false, scriptOnly = false, verbose = false) {
       let echo = { echo: false, ignore: false }
       if (verbose) {
          echo = { echo: true, ignore: false }
@@ -1391,12 +1398,20 @@ export default class Ovary {
             Utils.warning("Can't create isohybrid. File: isohdpfx.bin not found. The resulting image will be a standard iso file")
          }
       }
+      let volid = Utils.getVolid(this.settings.remix.name)
+      let prefix = this.settings.config.snapshot_prefix
+      if (prefix.substring(0, 7) === 'egg-of-') {
+         if (backup) {
+            prefix = 'backup-' + prefix.substring(7)
+         }
+      }
+      let output = this.settings.config.snapshot_dir + prefix + volid
 
-      this.settings.isoFilename = Utils.getFilename(this.settings.remix.name)
+      // salvo in isoFile per salvare il risultato
+      this.settings.isoFilename = prefix + volid
 
-      //
       let cmd = `xorriso  -as mkisofs \
-                          -volid ${this.settings.isoFilename} \
+                          -volid ${volid} \
                           -joliet-long \
                           -l \
                           -iso-level 3 \
@@ -1408,7 +1423,7 @@ export default class Ovary {
                           -boot-load-size 4 \
                           -boot-info-table \
                           ${uefi_opt} \
-                          -output ${this.settings.config.snapshot_dir}${this.settings.config.snapshot_prefix}${this.settings.isoFilename} \
+                          -output ${output} \
                           ${this.settings.work_dir.pathIso}`
 
       // /usr/lib/ISOLINUX/isohdpfx.bin
@@ -1459,9 +1474,9 @@ export default class Ovary {
    finished(scriptOnly = false) {
       Utils.titles('produce')
       if (!scriptOnly) {
-         console.log('eggs is finished!\n\nYou can find the file iso: ' + chalk.cyanBright(this.settings.config.snapshot_prefix + this.settings.isoFilename) + '\nin the nest: ' + chalk.cyanBright(this.settings.config.snapshot_dir) + '.')
+         console.log('eggs is finished!\n\nYou can find the file iso: ' + chalk.cyanBright(this.settings.isoFilename) + '\nin the nest: ' + chalk.cyanBright(this.settings.config.snapshot_dir) + '.')
       } else {
-         console.log('eggs is finished!\n\nYou can find the scripts to build iso: ' + chalk.cyanBright(this.settings.config.snapshot_prefix + this.settings.isoFilename) + '\nin the ovarium: ' + chalk.cyanBright(this.settings.work_dir.path) + '.')
+         console.log('eggs is finished!\n\nYou can find the scripts to build iso: ' + chalk.cyanBright(this.settings.isoFilename) + '\nin the ovarium: ' + chalk.cyanBright(this.settings.work_dir.path) + '.')
          console.log(`usage`)
          console.log(chalk.cyanBright(`cd ${this.settings.work_dir.path}`))
          console.log(chalk.cyanBright(`sudo ./bind`))

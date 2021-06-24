@@ -291,8 +291,9 @@ USAGE
   $ eggs export:iso
 
 OPTIONS
-  -c, --clean  delete old ISOs before to copy
-  -h, --help   show CLI help
+  -b, --backup  export backup ISOs
+  -c, --clean   delete old ISOs before to copy
+  -h, --help    show CLI help
 ```
 
 _See code: [src/commands/export/iso.ts](https://github.com/pieroproietti/penguins-eggs/blob/v8.0.15/src/commands/export/iso.ts)_
