@@ -12,6 +12,7 @@ export default class ExportIso extends Command {
 
   static flags = {
     help: flags.help({ char: 'h' }),
+    backup: flags.boolean({ char: 'b', description: 'export backup ISOs' }),
     clean: flags.boolean({ char: 'c', description: 'delete old ISOs before to copy' }),
   }
 
@@ -22,6 +23,12 @@ export default class ExportIso extends Command {
     const Tu = new Tools()
     Utils.warning(ExportIso.description)
     await Tu.loadSettings()
+    if (flags.backup) {
+      if(Tu.snapshot_name.substring(0,7)==='egg-of-') {
+        Tu.snapshot_name = 'backup-' +Tu.snapshot_name.substring(7)
+      }
+    }
+
     let cmd = `ssh root@${Tu.config.remoteHost} rm -rf ${Tu.config.remotePathIso}${Tu.snapshot_name}*`
     if (flags.clean) {
       Utils.warning('cleaning destination...')
