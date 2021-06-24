@@ -768,16 +768,9 @@ adduser ${name} \
 
 
    /**
-    * 
+    * networkcfg
     */
    private async networkcfg() {
-      // this.network.interface
-      // this.network.addressType
-      // this.network.address
-      // this.network.netMask
-      // this.network.gateway
-      // this.network.gateway
-
 
       const file = this.installTarget + '/etc/network/interfaces'
       let content = '# created by eggs\n\n'
