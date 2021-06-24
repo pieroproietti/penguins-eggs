@@ -29,6 +29,18 @@ import getPassword from '../lib/get_password'
 import selectKeyboardLayout from '../lib/select_keyboard_layout';
 
 import Hatching from './krill_install'
+//import { INet } from '../interfaces';
+
+interface INet {
+  interface: string
+  addressType: string
+  address: string
+  netMask: string
+  gateway: string
+  domainName: string
+  dns: string
+}
+
 
 interface IWelcome {
   language: string
@@ -70,9 +82,10 @@ export default class Krill {
     const oKeyboard = await this.keyboard()
     const oPartitions = await this.partitions()
     const oUsers = await this.users()
+    const oNetwork = await this.network()
     await this.network()
     await this.summary(oLocation, oKeyboard, oPartitions)
-    await this.install(oLocation, oKeyboard, oPartitions, oUsers)
+    await this.install(oLocation, oKeyboard, oPartitions, oUsers, oNetwork )
   }
 
 
@@ -255,7 +268,7 @@ export default class Krill {
   /**
    * NETWORK
    */
-  async network() {
+  async network() : Promise<INet> {
     const ifaces: string[] = fs.readdirSync('/sys/class/net/')
     let iface = ifaces[0]
     let addressType = 'dhcp'
@@ -264,6 +277,8 @@ export default class Krill {
     let gateway = ''
     let dns = ''
 
+    
+
     let networkElem: JSX.Element
     while (true) {
       networkElem = <Network iface={iface} addressType={addressType} address={address} netmask={netmask} gateway={gateway} dns={dns}/>
@@ -271,6 +286,19 @@ export default class Krill {
         break
       }
     }
+
+    // const isDhcp = addressType==='static'
+    
+    return {
+      interface: iface,
+      addressType: addressType,
+      address: address,
+      netMask: netmask,
+      gateway: gateway,
+      domainName: '',
+      dns: dns
+    }
+    
   }
 
   /**
@@ -289,8 +317,8 @@ export default class Krill {
   /**
    * INSTALL
    */
-  async install(location: ILocation, keyboard: IKeyboard, partitions: IPartitions, users: IUsers) {
-    const hatching = new Hatching(location, keyboard, partitions, users)
+  async install(location: ILocation, keyboard: IKeyboard, partitions: IPartitions, users: IUsers, network: INet) {
+    const hatching = new Hatching(location, keyboard, partitions, users, network)
     hatching.install(true)
   }
 }

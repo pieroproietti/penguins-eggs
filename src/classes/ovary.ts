@@ -1334,11 +1334,13 @@ export default class Ovary {
       }
       let volid = Utils.getVolid(this.settings.remix.name)
       let prefix = this.settings.config.snapshot_prefix
-      if (prefix.substring(0, 7) === 'egg-of-') {
-         if (backup) {
+      if (backup) {
+         if (prefix.substring(0, 7) === 'egg-of-') {
             prefix = 'backup-' + prefix.substring(7)
+         } else {
+            prefix = 'backup-' + prefix
          }
-      }
+      } 
       let output = this.settings.config.snapshot_dir + prefix + volid
 
       content = `xorriso  -as mkisofs \
@@ -1400,11 +1402,13 @@ export default class Ovary {
       }
       let volid = Utils.getVolid(this.settings.remix.name)
       let prefix = this.settings.config.snapshot_prefix
-      if (prefix.substring(0, 7) === 'egg-of-') {
-         if (backup) {
+      if (backup) {
+         if (prefix.substring(0, 7) === 'egg-of-') {
             prefix = 'backup-' + prefix.substring(7)
+         } else {
+            prefix = 'backup-' + prefix
          }
-      }
+      } 
       let output = this.settings.config.snapshot_dir + prefix + volid
 
       // salvo in isoFile per salvare il risultato
