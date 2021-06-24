@@ -42,7 +42,7 @@ From version 8.0.10 You can use the backup mode by simply adding --backup in the
 ## krill
 Starting with eggs 8.0.0 I included a new CLI installer named krill. krill let you to install your system in a nice CLI interface using the same, configuration created by eggs for [calamares](calamares.io). This lead to have "about the same" experience installing, from old distros to new one and for GUI and CLI. To force using krill in place of calamares in a GUI system just: **sudo eggs install --cli**
 
-## mom and dad!
+## mom and dad
 I added two light assistants integrated with eggs: mom and dad. While mom is a bash script with whiptail - and guides the user to the various commands and documentation, dad started as a short way to create the iso. All you have to do is type in **sudo eggs dad** and follow simple instructions. It it possible too to short the way to reset configuration **sudo dad -c** or - again more fast - reset configuration, load defaults, kill previous eggs. Type just **sudo eggs dad -d** and you will immidiatly able to produce the egg in the default nest /home/eggs.
 
 I suggest to leave the default values unchanged during the development of your remaster. You will be more fast in producing eggs, enjoy of dad after reinstalling eggs. If you need more space, simply mount your big device in /home/eggs.
