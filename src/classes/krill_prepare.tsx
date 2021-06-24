@@ -4,6 +4,7 @@ import { render, RenderOptions } from 'ink'
 import Utils from './utils'
 import shx from 'shelljs'
 import fs from 'fs'
+import dns from 'dns'
 
 // libraries
 const exec = require('../lib/utils').exec
@@ -36,7 +37,6 @@ import selectAddressType from '../lib/select_address_type'
 
 import Hatching from './krill_install'
 import { utimes } from 'fs/promises';
-//import { INet } from '../interfaces';
 
 interface INet {
   iface: string
@@ -276,17 +276,31 @@ export default class Krill {
    */
   async network(): Promise<INet> {
     const i = {} as INet
+    // const ni = os.networkInterfaces()
+    // console.log(ni)
+    // await Utils.customConfirm()
+    // address <string> The assigned IPv4 or IPv6 address
+    // netmask <string> The IPv4 or IPv6 network mask
+    // family <string> Either IPv4 or IPv6
+    // mac <string> The MAC address of the network interface
+    // internal <boolean> true if the network interface is a loopback or similar interface that is not remotely accessible; otherwise false
+    // scopeid <number> The numeric IPv6 scope ID (only specified when family is IPv6)
+    // cidr <string> The assigned IPv4 or IPv6 address with the routing prefix in CIDR notation. If the netmask is invalid, this property is set to null
+
+
     const ifaces: string[] = fs.readdirSync('/sys/class/net/')
-    const address = shx.exec(`ip addr show |grep -w inet |grep -v 127.0.0.1|awk '{ print $2}'| cut -d "/" -f 1`, {silent: true}).stdout.trim()
-    const netmask = shx.exec(`ip addr show |grep -w inet |grep -v 127.0.0.1|awk '{ print $2}'| cut -d "/" -f 2`, {silent: true}).stdout.trim()
-    const broadcast = shx.exec(`ip addr show |grep -w inet |grep -v 127.0.0.1|awk '{ print $4}'`, {silent: true}).stdout.trim()
-    const iface = shx.exec(`ip addr show | awk 'FNR==7 {print $2}' | tr -d :`, {silent: true}).stdout.trim()
+    const address = shx.exec(`ip addr show |grep -w inet |grep -v 127.0.0.1|awk '{ print $2}'| cut -d "/" -f 1`, { silent: true }).stdout.trim()
+    const netmask: string = shx.exec(`ip addr show |grep -w inet |grep -v 127.0.0.1|awk '{ print $2}'| cut -d "/" -f 2`, { silent: true }).stdout.trim()
+    const broadcast = shx.exec(`ip addr show |grep -w inet |grep -v 127.0.0.1|awk '{ print $4}'`, { silent: true }).stdout.trim()
+    const iface = shx.exec(`ip addr show | awk 'FNR==7 {print $2}' | tr -d :`, { silent: true }).stdout.trim()
+    const gateway = shx.exec(`route -n | grep 'UG[ \t]' | awk '{print $2}'`, { silent: true }).stdout.trim()
 
     i.iface = iface
     i.addressType = 'dhcp'
-    i.address = ''
-    i.gateway = ''
-    i.dns = ''
+    i.address = address
+    i.netmask = netmask
+    i.gateway = gateway
+    i.dns = dns.getServers()[0]
     i.domainName = ''
 
     let networkElem: JSX.Element
@@ -297,9 +311,10 @@ export default class Krill {
       } else {
         i.iface = iface
         i.addressType = 'dhcp'
-        i.address = ''
-        i.gateway = ''
-        i.dns = ''
+        i.address = address
+        i.netmask = netmask
+        i.gateway = gateway
+        i.dns = dns.getServers()[0]
         i.domainName = ''
       }
 
@@ -366,4 +381,18 @@ function redraw(elem: JSX.Element) {
 
   shx.exec('clear')
   render(elem, opt)
+}
+
+function netmask2CIDR(mask: string) {
+  const countCharOccurences = (string: string, char: string) => string.split(char).length - 1;
+
+  const decimalToBinary = (dec: number) => (dec >>> 0).toString(2);
+  const getNetMaskParts = (nmask: string) => nmask.split('.').map(Number);
+  const netmask2CIDR = (netmask: string) =>
+    countCharOccurences(
+      getNetMaskParts(netmask)
+        .map(part => decimalToBinary(part))
+        .join(''),
+      '1'
+    );
 }
