@@ -254,13 +254,13 @@ unknown target format aarch64-efi
     * @param basename
     * @returns eggName
     */
-   static getFilename(basename = ''): string {
+   static getVolid(basename = ''): string {
+      let volid = `${basename}-${this.machineArch()}_${Utils.formatDate(new Date())}`
 
-      let isoName = `${basename}-${this.machineArch()}_${Utils.formatDate(new Date())}`
-      if (isoName.length >= 28) {
-         isoName = isoName.substr(0, 28) // 28 +  4 .iso = 32 lunghezza max di volid
+      if (volid.length >= 28) {
+         volid = volid.substr(0, 28) // 28 +  4 .iso = 32 lunghezza max di volid
       }
-      return `${isoName}.iso`
+      return `${volid}.iso`
    }
 
    /**
