@@ -33,23 +33,22 @@ penguins-eggs, at the moment 2021 may is a mature tool and is extremely usefull,
 
 Try penguins-eggs yes, it is a console utility - no GUI - but don't be scared, penguins-eggs is a console command - really very simple - if you are able to open a terminal, you can use it and yours final users will enjoy of full gui and pratical installer to install your livecd.
 
-## addons
+### addons
 Starting with version 7.6.x, an addons architecture was added to eggs, allowing third parties to develop extensions. Note that currently we have an extension for the theme that includes both branding calamares, link and installer icon. In addition, also as an addon has been developed choose between GUI or CLI installation, adjust the video resolution, remote support, etc.
 
-## backup
+### backup
 From version 8.0.10 You can use the backup mode by simply adding --backup in the produce command. This way eggs will save your users data and accounts and will not add a live user, you will have to log in with the main user of your system with the his password. **Note:** since eggs always configures autologin, you may have a security risk with valuable data. Use this option only for your personal stuff and do not share the iso on the network.
 
-## krill
+### krill
 Starting with eggs 8.0.0 I included a new CLI installer named krill. krill let you to install your system in a nice CLI interface using the same, configuration created by eggs for [calamares](calamares.io). This lead to have "about the same" experience installing, from old distros to new one and for GUI and CLI. To force using krill in place of calamares in a GUI system just: **sudo eggs install --cli**
 
-## mom and dad
-I added two light assistants integrated with eggs: mom and dad. While mom is a bash script with whiptail - and guides the user to the various commands and documentation, dad started as a short way to create the iso. All you have to do is type in **sudo eggs dad** and follow simple instructions. It it possible too to short the way to reset configuration **sudo dad -c** or - again more fast - reset configuration, load defaults, kill previous eggs. Type just **sudo eggs dad -d** and you will immidiatly able to produce the egg in the default nest /home/eggs.
+### mom and dad
+I've added two lightweight assistants integrated with eggs: mom and dad. While mom is a bash script with whiptail - and guides the user to the various commands and documentation, dad started as a short way to create isos. All you have to do is type **sudo eggs dad** and follow simple instructions. You can also shortcut the way to reset the configuration **sudo dad -c** or - even faster - reset the configuration, load defaults, kill created isos. Simply type **sudo eggs dad -d** and you will immediately be able to produce the egg in the default /home/eggs nest.
 
 I suggest to leave the default values unchanged during the development of your remaster. You will be more fast in producing eggs, enjoy of dad after reinstalling eggs. If you need more space, simply mount your big device in /home/eggs.
 
-## yolk 
+### yolk 
 yolk so called - staying on the subject of eggs - is a local repository included in the livecd that contains a minimum of indispensable packages during installation. Thanks to yolk, you can safely install your system without the need of an active internet connection.
-
 
 ## What distributions can I use?
 eggs was born on Debian strecth/buster, but actually full support Debian from jessie to sid (bullseye), Devuan beowulf, Ubuntu focal, bionic and derivatives. I actually try it against Debian varius versions, before releases. I tried it successfully in LMDE 4 debbie, and deepin. eggs, generally must work with all the derivates from that distros.
@@ -59,7 +58,7 @@ Some examples of iso images remastered with eggs are in the [sourceforge page of
 ## What architecture can I use?
 From eggs v. 8.0.4 I'm releasing eggs in 4 differents architectures: **i386**, **amd64**, **arm64** and **armel**. eggs - at the moment - produce in i386 and amd64, but can be installed already on arm64 and armel. This mean who it is possible to install it in [raspberrypi](https://www.raspberrypi.org/), but again not possible to produce a [Raspberry Pi OS](https://www.raspberrypi.org/software/) egg in armel or arm64. I'm just working now to complete this step. 
 
-**Note:** Of course it is possible to produce iso for [Raspberry Pi Desktop](https://downloads.raspberrypi.org/rpd_x86/images/rpd_x86-2021-01-12/2021-01-11-raspios-buster-i386.iso) i386 based.
+**Note:** Of course it is possible to produce iso for [Raspberry Pi Desktop](https://downloads.raspberrypi.org/rpd_x86/images/) amd64 based.
 
 # Packages
 eggs is released as deb package and npm package. Most users need just deb version, if you already use nodejs the npm package can be installed too, 
