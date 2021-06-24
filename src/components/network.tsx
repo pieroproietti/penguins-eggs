@@ -13,7 +13,6 @@ import fs from 'fs'
 import { ISettings, IBranding } from '../interfaces'
 import { Interface } from 'readline'
 
-
 type NetworkProps = {
   iface?: string,
   addressType?: string,

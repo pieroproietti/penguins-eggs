@@ -5,6 +5,9 @@ import Utils from './utils'
 import shx from 'shelljs'
 import fs from 'fs'
 
+// libraries
+const exec = require('../lib/utils').exec
+
 import Welcome from '../components/welcome'
 import Location from '../components/location'
 import Partitions from '../components/partitions'
@@ -26,16 +29,20 @@ import getUserFullname from '../lib/get_user_fullname'
 import getHostname from '../lib/get_hostname'
 import getPassword from '../lib/get_password'
 
-import selectKeyboardLayout from '../lib/select_keyboard_layout';
+import selectKeyboardLayout from '../lib/select_keyboard_layout'
+
+import selectInterface from '../lib/select_interface'
+import selectAddressType from '../lib/select_address_type'
 
 import Hatching from './krill_install'
+import { utimes } from 'fs/promises';
 //import { INet } from '../interfaces';
 
 interface INet {
-  interface: string
+  iface: string
   addressType: string
   address: string
-  netMask: string
+  netmask: string
   gateway: string
   domainName: string
   dns: string
@@ -83,9 +90,8 @@ export default class Krill {
     const oPartitions = await this.partitions()
     const oUsers = await this.users()
     const oNetwork = await this.network()
-    await this.network()
     await this.summary(oLocation, oKeyboard, oPartitions)
-    await this.install(oLocation, oKeyboard, oPartitions, oUsers, oNetwork )
+    await this.install(oLocation, oKeyboard, oPartitions, oUsers, oNetwork)
   }
 
 
@@ -266,39 +272,45 @@ export default class Krill {
   }
 
   /**
-   * NETWORK
+   * Network
    */
-  async network() : Promise<INet> {
+  async network(): Promise<INet> {
+    const i = {} as INet
     const ifaces: string[] = fs.readdirSync('/sys/class/net/')
-    let iface = ifaces[0]
-    let addressType = 'dhcp'
-    let address = ''
-    let netmask = ''
-    let gateway = ''
-    let dns = ''
+    const address = shx.exec(`ip addr show |grep -w inet |grep -v 127.0.0.1|awk '{ print $2}'| cut -d "/" -f 1`, {silent: true}).stdout.trim()
+    const netmask = shx.exec(`ip addr show |grep -w inet |grep -v 127.0.0.1|awk '{ print $2}'| cut -d "/" -f 2`, {silent: true}).stdout.trim()
+    const broadcast = shx.exec(`ip addr show |grep -w inet |grep -v 127.0.0.1|awk '{ print $4}'`, {silent: true}).stdout.trim()
+    const iface = shx.exec(`ip addr show | awk 'FNR==7 {print $2}' | tr -d :`, {silent: true}).stdout.trim()
 
-    
+    i.iface = iface
+    i.addressType = 'dhcp'
+    i.address = ''
+    i.gateway = ''
+    i.dns = ''
+    i.domainName = ''
 
     let networkElem: JSX.Element
     while (true) {
-      networkElem = <Network iface={iface} addressType={addressType} address={address} netmask={netmask} gateway={gateway} dns={dns}/>
+      networkElem = <Network iface={i.iface} addressType={i.addressType} address={i.address} netmask={i.netmask} gateway={i.gateway} dns={i.dns} />
       if (await confirm(networkElem, "Confirm Network datas?")) {
         break
+      } else {
+        i.iface = iface
+        i.addressType = 'dhcp'
+        i.address = ''
+        i.gateway = ''
+        i.dns = ''
+        i.domainName = ''
       }
-    }
 
-    // const isDhcp = addressType==='static'
-    
-    return {
-      interface: iface,
-      addressType: addressType,
-      address: address,
-      netMask: netmask,
-      gateway: gateway,
-      domainName: '',
-      dns: dns
+      i.iface = await selectInterface(i.iface, ifaces)
+      i.addressType = await selectAddressType()
+      if (i.addressType === 'static') {
+        i.address = address
+      }
+
     }
-    
+    return i
   }
 
   /**
@@ -342,7 +354,7 @@ async function confirm(elem: JSX.Element, msg = "Confirm") {
 }
 
 /**
- * Occorre farglierlo rigenerare a forze
+ * Occorre farglierlo rigenerare a forza
  * anche quando NON cambiano i dati
  * forceUpdate
  */

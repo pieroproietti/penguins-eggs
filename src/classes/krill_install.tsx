@@ -95,14 +95,14 @@ interface IHost {
    domain: string
 }
 interface INet {
-   interface: string
+   iface: string
    addressType: string
    address: string
-   netMask: string
+   netmask: string
    gateway: string
    domainName: string
    dns: string
-}
+ }
 
 interface IDisk {
    installationDevice: string
@@ -756,10 +756,10 @@ adduser ${name} \
          let text = ``
          text += `auto lo\n`
          text += `iface lo inet manual\n`
-         text += `auto ${this.network.interface} \n`
-         text += `iface ${this.network.interface} inet ${this.network.addressType} \n`
+         text += `auto ${this.network.iface} \n`
+         text += `iface ${this.network.iface} inet ${this.network.addressType} \n`
          text += `address ${this.network.address} \n`
-         text += `netmask ${this.network.netMask} \n`
+         text += `netmask ${this.network.netmask} \n`
          text += `gateway ${this.network.gateway} \n`
 
          fs.writeFileSync(file, text)
@@ -783,10 +783,10 @@ adduser ${name} \
       let content = '# created by eggs\n\n'
       content += 'auto lo\n'
       content += 'iface lo inet loopback\n\n'
-      content += 'iface ' + this.network.interface + ' inet ' + this.network.addressType
+      content += 'iface ' + this.network.iface + ' inet ' + this.network.addressType
       if (this.network.addressType !== 'dhcp') {
          content += '    address ' + this.network.address + '\n'
-         content += '    netmask ' + this.network.netMask + '\n'
+         content += '    netmask ' + this.network.netmask + '\n'
          content += '    gateway ' + this.network.gateway + '\n'
       }
       Utils.write(file, content)
