@@ -6,7 +6,7 @@
  *
  */
 
-import { IRemix, IDistro, IApp, IWorkDir } from '../interfaces'
+import { IRemix, IDistro, INet } from '../interfaces'
 import Settings from './settings'
 
 import React from 'react';
@@ -21,35 +21,35 @@ import Utils from './utils'
 import cliAutologin = require('../lib/cli-autologin')
 const exec = require('../lib/utils').exec
 
+
 /**
- * // calamares-root-27zh5uyy
  * 
  * Ideally, I want to respect this schema
       - partition
       - mount
       - unpackfs
       - sources-yolk
-      - machineid // da fare
+      - machineid // to do
       - fstab
-      - locale // da fare
+      - locale // to do
       - keyboard
-      - localecfg // da fare
+      - localecfg // to do
       - users // rivedere
       - displaymanager // autologin
-      - networkcfg // this.interfaces, this.resolv.conf
-      - hwclock // da fare
-      - services-systemd //da fare
-      - bootloader-config // eseguo il modulo di calamares
-      - grubcfg // ??
-      - bootloader // grubInstall
-      - packages // da fare
-      - luksbootkeyfile // Volumi criptati LUKS da fare
-      - plymouthcfg // da fare
+      - networkcfg 
+      - hwclock // to do
+      - services-systemd // to do
+      - bootloader-config // compatible calamares-module bootloader-config
+      - grubcfg // 
+      - bootloader // compatible calamares-module calamares-modules grubInstall
+      - packages // to do
+      - luksbootkeyfile // to do
+      - plymouthcfg // to do
       - initramfscfg OK
       - initramfs OK
-      - removeuser
-      - remove-link
-      - sources-yolk-unmount
+      - removeuser 
+      - remove-link // OK
+      - sources-yolk-unmount // compatible calamares-modules sources-yolk-unmount
       - umount
  */
 
@@ -94,15 +94,6 @@ interface IHost {
    name: string
    domain: string
 }
-interface INet {
-   iface: string
-   addressType: string
-   address: string
-   netmask: string
-   gateway: string
-   domainName: string
-   dns: string
- }
 
 interface IDisk {
    installationDevice: string
@@ -274,7 +265,7 @@ export default class Hatching {
             message += JSON.stringify(error)
             redraw(<Install message={message} percent={percent} />)
          }
-         // await checkIt(message)
+         await checkIt(message)
 
          message = "Syncronize filesystem "
          percent = 0.35
@@ -285,7 +276,7 @@ export default class Hatching {
             message += JSON.stringify(error)
             redraw(<Install message={message} percent={percent} />)
          }
-         // await checkIt(message)
+         await checkIt(message)
 
          // sources-yolk
          message = 'sources-yolk'
@@ -574,7 +565,7 @@ adduser ${name} \
       const echo = { echo: false, ignore: false }
 
       if (Utils.isLive()) {
-         const user: string = Utils.getPrimaryUser()
+         const user: string = this.settings.config.user_opt
          const cmd = `chroot ${this.installTarget} deluser --remove-home ${user}`
          await exec(cmd, echo)
       }

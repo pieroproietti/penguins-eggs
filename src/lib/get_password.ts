@@ -2,7 +2,7 @@
 import { option } from '@oclif/command/lib/flags';
 import inquirer = require('inquirer')
 
-export default async function gePassword(initial: string): Promise<string> {
+export default async function getPassword(initial: string): Promise<string> {
 
    const requireLetterAndNumber = (value: string) => {
       if (/\w/.test(value) && /\d/.test(value)) {
@@ -14,14 +14,14 @@ export default async function gePassword(initial: string): Promise<string> {
       const questions: Array<Record<string, any>> = [
          {
             type: 'password',
-            message: 'Repeat password: ',
+            message: 'Choose a password to keep your account safe: ',
             name: 'password',
             default: initial,
             // validate: requireLetterAndNumber,
          },
          {
             type: 'password',
-            message: 'Choose a password to keep your account safe: ',
+            message: 'Confirm your password: ',
             name: 'confirmPassword',
             default: initial,
             // validate: requireLetterAndNumber,

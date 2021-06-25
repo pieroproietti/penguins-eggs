@@ -169,8 +169,9 @@ export default class Ovary {
          if (backup) {
             await this.bindUsersDatas(verbose)
          } else {
-            await this.createUserLive(verbose)
+            await this.cleanUsersAccounts((verbose))
          }
+         await this.createUserLive(verbose)
 
          if (await Pacman.isGui()) {
             await this.createAutostart(this.theme, myAddons)
@@ -181,7 +182,6 @@ export default class Ovary {
                cliAutologin.add(this.settings.distro.distroId, this.settings.distro.versionId, this.settings.config.user_opt, this.settings.config.user_opt_passwd, this.settings.config.root_passwd, this.settings.work_dir.merged)
             }
          }
-
       }
       await this.editLiveFs(verbose)
       await this.makeSquashfs(scriptOnly, verbose)
@@ -932,6 +932,29 @@ export default class Ovary {
    }
 
    /**
+    * 
+    * @param verbose 
+    */
+   async cleanUsersAccounts(verbose = false) {
+      const echo = Utils.setEcho(verbose)
+      /**
+       * delete all user in chroot
+       */
+       const cmds: string[] = []
+       const cmd = `chroot ${this.settings.work_dir.merged} getent passwd {1000..60000} |awk -F: '{print $1}'`
+       const result = await exec(cmd, {
+          echo: verbose,
+          ignore: false,
+          capture: true
+       })
+       const users: string[] = result.data.split('\n')
+       for (let i = 0; i < users.length - 1; i++) {
+          cmds.push(await rexec(`chroot ${this.settings.work_dir.merged} deluser ${users[i]}`, verbose))
+       }
+
+   }
+
+   /**
     * list degli utenti: grep -E 1[0-9]{3}  /etc/passwd | sed s/:/\ / | awk '{print $1}'
     * create la home per user_opt
     * @param verbose
@@ -941,22 +964,7 @@ export default class Ovary {
       if (verbose) {
          console.log('ovary: createUserLive')
       }
-
-      /**
-       * delete all user in chroot
-       */
       const cmds: string[] = []
-      const cmd = `chroot ${this.settings.work_dir.merged} getent passwd {1000..60000} |awk -F: '{print $1}'`
-      const result = await exec(cmd, {
-         echo: verbose,
-         ignore: false,
-         capture: true
-      })
-      const users: string[] = result.data.split('\n')
-      for (let i = 0; i < users.length - 1; i++) {
-         cmds.push(await rexec(`chroot ${this.settings.work_dir.merged} deluser ${users[i]}`, verbose))
-      }
-
       cmds.push(await rexec(`chroot ${this.settings.work_dir.merged} adduser ${this.settings.config.user_opt} --home /home/${this.settings.config.user_opt} --shell /bin/bash --disabled-password --gecos ",,,"`, verbose))
       cmds.push(await rexec(`chroot ${this.settings.work_dir.merged} echo ${this.settings.config.user_opt}:${this.settings.config.user_opt_passwd} | chroot ${this.settings.work_dir.merged} chpasswd `, verbose))
       cmds.push(await rexec(`chroot ${this.settings.work_dir.merged} usermod -aG sudo ${this.settings.config.user_opt}`, verbose))
