@@ -18,11 +18,14 @@ You can follow the project also consulting the [commit history](https://github.c
 ## Changelog
 Versions are listed on reverse order, the first is the last one.
 
+### eggs-8.0.18
+* krill finally support network configuration
+
 ### eggs-8.0.16
 * creating a backup produce ISO prefixed by "backup-" not "egg-of-", eggs export:iso include now --backup option too
 
 ### eggs-8.0.15
-* krill finally support changing keyboard
+* krill finally support keyboard configuration
 
 ### eggs-8.0.14
 * re added rsync, after unsquashfs, to let modifications in live to be reflected in the installed system
