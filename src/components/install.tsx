@@ -58,7 +58,7 @@ export default function Install({ message, percent, spinner = false }: InstallPr
               <Newline />
               <Box flexDirection="row"><Text>Step: </Text><Text color="cyan">{message}</Text></Box>
               <Newline />
-              <Box borderStyle="bold"><Text>{progressBar}</Text></Box>
+              <Box><Text>{progressBar}</Text></Box>
             </Box>
           </Box>
         </Box>

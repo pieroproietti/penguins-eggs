@@ -15,6 +15,7 @@ import Pacman from '../classes/pacman'
 import Utils from './utils'
 import Distro from './distro'
 import Settings from './settings'
+import { AxiosAdapter, AxiosResponse } from 'axios'
 
 
 const exec = require('../lib/utils').exec
@@ -41,12 +42,17 @@ export default class Basket {
             const url = 'https://penguins-eggs.net/versions/all/' + Utils.eggsArch() + '/'
             const axios = require('axios').default
 
-            const res = await axios.get(url)
-            const data = res.data
+            try {
+                const res = await axios.get(url)
+                const data = res.data
 
-            // Ordino le versioni
-            data.sort((a: any, b: any) => (a.version < b.version) ? 1 : ((b.version < a.version) ? -1 : 0))
-            this.lastVersion = data[0].version
+                // Ordino le versioni
+                data.sort((a: any, b: any) => (a.version < b.version) ? 1 : ((b.version < a.version) ? -1 : 0))
+                this.lastVersion = data[0].version
+            } catch (error) {
+                console.log('cannot reach eggs\'s basket')
+            }
+
         }
         return this.lastVersion
     }

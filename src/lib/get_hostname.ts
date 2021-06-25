@@ -9,7 +9,7 @@ export default async function getHostname(initial: string): Promise<string> {
          {
             type: 'input',
             name: 'hostname',
-            message: "What is the name of this computer? ",
+            message: "Choose a name for this computer? ",
             default: initial
          },
       ]
