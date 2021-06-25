@@ -721,6 +721,7 @@ adduser ${name} \
       let content = '# created by eggs\n\n'
       content += 'auto lo\n'
       content += 'iface lo inet loopback\n\n'
+      content += 'auto ' + this.network.iface + '\n'
       content += 'iface ' + this.network.iface + ' inet ' + this.network.addressType + '\n'
       if (this.network.addressType !== 'dhcp') {
          content += '    address ' + this.network.address + '\n'
