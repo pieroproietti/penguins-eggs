@@ -1,7 +1,7 @@
 export { IAddons, IMyAddons } from './i-addons'
 export { IDevice, IDevices } from './i-devices'
 export { IRemix } from './i-remix'
-export { INet } from './i-net'
+//export { INet } from './i-net'
 export { IUser } from './i-user'
 export { IApp } from './i-app'
 // export { IDriveList } from './i-drive-list'

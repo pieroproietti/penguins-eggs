@@ -95,13 +95,14 @@ interface IHost {
    domain: string
 }
 interface INet {
-   interface: string
+   iface: string
    addressType: string
    address: string
-   netMask: string
+   netmask: string
    gateway: string
+   domainName: string
    dns: string
-}
+ }
 
 interface IDisk {
    installationDevice: string
@@ -132,9 +133,11 @@ export default class Hatching {
 
    users = {} as IUsers
 
+   network = {} as INet
+
    host = {} as IHost
 
-   net = {} as INet
+   //   net = {} as INet
 
    disk = {} as IDisk
 
@@ -164,11 +167,12 @@ export default class Hatching {
    /**
     * constructor
     */
-   constructor(location: ILocation, keyboard: IKeyboard, partitions: IPartitions, users: IUsers) {
+   constructor(location: ILocation, keyboard: IKeyboard, partitions: IPartitions, users: IUsers, network: INet) {
 
       this.installer = installer()
 
       this.settings = new Settings()
+
 
       this.language = location.language
       this.region = location.region
@@ -177,6 +181,8 @@ export default class Hatching {
       this.keyboardModel = keyboard.keyboardModel
       this.keyboardLayout = keyboard.keyboardLayout
       this.keyboardVariant = keyboard.keyboardVariant
+
+      this.network = network
 
       this.disk.fsType = partitions.filesystemType
       this.disk.installationDevice = partitions.installationDevice
@@ -327,8 +333,18 @@ export default class Hatching {
          }
          // await checkIt(message)
 
-         message = "Create hostname "
+         message = "networkcfg"
          percent = 0.50
+         try {
+            this.networkcfg()
+         } catch (error) {
+            message += JSON.stringify(error)
+            redraw(<Install message={message} percent={percent} />)
+         }
+         // await checkIt(message)
+
+         message = "Create hostname "
+         percent = 0.53
          try {
             redraw(<Install message={message} percent={percent} />)
             await this.hostname()
@@ -337,20 +353,6 @@ export default class Hatching {
             redraw(<Install message={message} percent={percent} />)
          }
          // await checkIt(message)
-
-
-         message = "Network "
-         percent = 0.53
-         try {
-            redraw(<Install message={message} percent={percent} />)
-            await this.resolvConf()
-            await this.interfaces()
-         } catch (error) {
-            message += JSON.stringify(error)
-            redraw(<Install message={message} percent={30.2} />)
-         }
-         // await checkIt(message)
-
 
          message = "Creating hosts "
          percent = 0.60
@@ -711,6 +713,37 @@ adduser ${name} \
    }
 
    /**
+    * networkcfg
+    */
+   private async networkcfg() {
+
+      const file = this.installTarget + '/etc/network/interfaces'
+      let content = '# created by eggs\n\n'
+      content += 'auto lo\n'
+      content += 'iface lo inet loopback\n\n'
+      content += 'auto ' + this.network.iface + '\n'
+      content += 'iface ' + this.network.iface + ' inet ' + this.network.addressType + '\n'
+      if (this.network.addressType !== 'dhcp') {
+         content += '    address ' + this.network.address + '\n'
+         content += '    netmask ' + this.network.netmask + '\n'
+         content += '    gateway ' + this.network.gateway + '\n'
+      }
+      Utils.write(file, content)
+
+      /**
+       * resolv.conf
+       */
+      if (this.network.addressType !== 'dhcp') {
+         const file = this.installTarget + '/etc/resolv.conf'
+         let content = '# created by eggs\n\n'
+         content += 'nameserver ' + this.network.dns + '\n'
+         content += 'nameserver 8.8.8.8\n'
+         content += 'nameserver 8.8.4.4\n'
+         Utils.write(file, content)
+      }
+   }
+
+   /**
     * hostname
     */
    private async hostname() {
@@ -724,54 +757,14 @@ adduser ${name} \
    }
 
    /**
-    * resolvConf()
-    */
-   private async resolvConf() {
-      const echo = { echo: false, ignore: false }
-
-      if (this.net.addressType === 'static') {
-         const file = this.installTarget + '/etc/resolv.conf'
-
-         let text = ``
-         text += `search ${this.host.domain} \n`
-         text += `domain ${this.host.domain} \n`
-         for (let index = 0; index < this.net.dns.length; ++index) {
-            text += `nameserver ${this.net.dns[index]} \n`
-         }
-         fs.writeFileSync(file, text)
-      }
-   }
-
-   /**
-    * interfaces
-    */
-   private async interfaces() {
-      const echo = { echo: false, ignore: false }
-
-      if (this.net.addressType === 'static') {
-         const file = `${this.installTarget} /etc/network / interfaces`
-         let text = ``
-         text += `auto lo\n`
-         text += `iface lo inet manual\n`
-         text += `auto ${this.net.interface} \n`
-         text += `iface ${this.net.interface} inet ${this.net.addressType} \n`
-         text += `address ${this.net.address} \n`
-         text += `netmask ${this.net.netMask} \n`
-         text += `gateway ${this.net.gateway} \n`
-
-         fs.writeFileSync(file, text)
-      }
-   }
-
-   /**
     * hosts
     */
    private async hosts() {
 
       const file = this.installTarget + '/etc/hosts'
       let text = '127.0.0.1 localhost localhost.localdomain\n'
-      if (this.net.addressType === 'static') {
-         text += `${this.net.address} ${this.host.name} ${this.host.name}.${this.host.domain} pvelocalhost\n`
+      if (this.network.addressType === 'static') {
+         text += `${this.network.address} ${this.host.name} ${this.host.name}.${this.host.domain} pvelocalhost\n`
       } else {
          text += `127.0.1.1 ${this.host.name} ${this.host.name}.${this.host.domain} \n`
       }

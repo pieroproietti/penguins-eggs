@@ -13,7 +13,6 @@ import fs from 'fs'
 import { ISettings, IBranding } from '../interfaces'
 import { Interface } from 'readline'
 
-
 type NetworkProps = {
   iface?: string,
   addressType?: string,
@@ -54,12 +53,12 @@ export default function Network({ iface, addressType, address, netmask, gateway,
           <Box flexDirection="row">
             <Steps step={6} />
             <Box flexDirection="column">
-            <Box><Text>Network interface: </Text><Text color='green'>{iface}</Text></Box>
-            <Box><Text>Address type: </Text><Text color='green'>{addressType}</Text></Box>
-            <Box><Text>address: </Text><Text color='green'>{address}</Text></Box>
-            <Box><Text>netmask: </Text><Text color='green'>{netmask}</Text></Box>
-            <Box><Text>gateway: </Text><Text color='green'>{gateway}</Text></Box>
-            <Box><Text>dns: </Text><Text color='green'>{dns}</Text></Box>
+            <Box><Text>interface: </Text><Text color='green'>{iface}</Text></Box>
+            <Box><Text>type     : </Text><Text color='green'>{addressType}</Text></Box>
+            <Box><Text>address  : </Text><Text color='green'>{address}</Text></Box>
+            <Box><Text>netmask  : </Text><Text color='green'>{netmask}</Text></Box>
+            <Box><Text>gateway  : </Text><Text color='green'>{gateway}</Text></Box>
+            <Box><Text>dns      : </Text><Text color='green'>{dns}</Text></Box>
             </Box>
           </Box>
         </Box>

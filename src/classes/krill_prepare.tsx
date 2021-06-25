@@ -4,6 +4,10 @@ import { render, RenderOptions } from 'ink'
 import Utils from './utils'
 import shx from 'shelljs'
 import fs from 'fs'
+import dns from 'dns'
+
+// libraries
+const exec = require('../lib/utils').exec
 
 import Welcome from '../components/welcome'
 import Location from '../components/location'
@@ -26,9 +30,26 @@ import getUserFullname from '../lib/get_user_fullname'
 import getHostname from '../lib/get_hostname'
 import getPassword from '../lib/get_password'
 
-import selectKeyboardLayout from '../lib/select_keyboard_layout';
+import selectKeyboardLayout from '../lib/select_keyboard_layout'
+
+import selectInterface from '../lib/select_interface'
+import selectAddressType from '../lib/select_address_type'
+import getAddress from '../lib/get_address'
+import getNetmask from '../lib/get_netmask'
+import getGateway from '../lib/get_gateway'
 
 import Hatching from './krill_install'
+
+interface INet {
+  iface: string
+  addressType: string
+  address: string
+  netmask: string
+  gateway: string
+  domainName: string
+  dns: string
+}
+
 
 interface IWelcome {
   language: string
@@ -70,9 +91,9 @@ export default class Krill {
     const oKeyboard = await this.keyboard()
     const oPartitions = await this.partitions()
     const oUsers = await this.users()
-    await this.network()
+    const oNetwork = await this.network()
     await this.summary(oLocation, oKeyboard, oPartitions)
-    await this.install(oLocation, oKeyboard, oPartitions, oUsers)
+    await this.install(oLocation, oKeyboard, oPartitions, oUsers, oNetwork)
   }
 
 
@@ -253,24 +274,52 @@ export default class Krill {
   }
 
   /**
-   * NETWORK
+   * Network
    */
-  async network() {
+  async network(): Promise<INet> {
+    const i = {} as INet
+
     const ifaces: string[] = fs.readdirSync('/sys/class/net/')
-    let iface = ifaces[0]
-    let addressType = 'dhcp'
-    let address = ''
-    let netmask = ''
-    let gateway = ''
-    let dns = ''
+
+    const iface = shx.exec(`ifconfig | awk 'FNR==1 { print $1 }' | tr --d :`, { silent: true }).stdout.trim()
+    const address = shx.exec(`ifconfig | grep -w inet |grep -v 127.0.0.1| awk '{print $2}' | cut -d ":" -f 2`, { silent: true }).stdout.trim()
+    const netmask: string = shx.exec(`ifconfig | grep -w inet |grep -v 127.0.0.1| awk '{print $4}' | cut -d ":" -f 2`, { silent: true }).stdout.trim()
+    const gateway = shx.exec(`route -n | grep 'UG[ \t]' | awk '{print $2}'`, { silent: true }).stdout.trim()
+    const broadcast = shx.exec(`ifconfig | grep -w inet |grep -v 127.0.0.1| awk '{print $6}' | cut -d ":" -f 2'`, { silent: true }).stdout.trim()
+    const dns0 = dns.getServers()[0]
+
+    i.iface = iface
+    i.addressType = 'dhcp'
+    i.address = address
+    i.netmask = netmask
+    i.gateway = gateway
+    i.dns = dns0
+    i.domainName = ''
 
     let networkElem: JSX.Element
     while (true) {
-      networkElem = <Network iface={iface} addressType={addressType} address={address} netmask={netmask} gateway={gateway} dns={dns}/>
+      networkElem = <Network iface={i.iface} addressType={i.addressType} address={i.address} netmask={i.netmask} gateway={i.gateway} dns={i.dns} />
       if (await confirm(networkElem, "Confirm Network datas?")) {
         break
+      } else {
+        i.iface = iface
+        i.addressType = 'dhcp'
+        i.address = address
+        i.netmask = netmask
+        i.gateway = gateway
+        i.dns = dns0
+        i.domainName = ''
+      }
+
+      i.iface = await selectInterface(i.iface, ifaces)
+      i.addressType = await selectAddressType()
+      if (i.addressType === 'static') {
+        i.address = await getAddress(i.address)
+        i.netmask = await getNetmask(i.netmask)
+        i.gateway = await getGateway(i.gateway)
       }
     }
+    return i
   }
 
   /**
@@ -289,8 +338,8 @@ export default class Krill {
   /**
    * INSTALL
    */
-  async install(location: ILocation, keyboard: IKeyboard, partitions: IPartitions, users: IUsers) {
-    const hatching = new Hatching(location, keyboard, partitions, users)
+  async install(location: ILocation, keyboard: IKeyboard, partitions: IPartitions, users: IUsers, network: INet) {
+    const hatching = new Hatching(location, keyboard, partitions, users, network)
     hatching.install(true)
   }
 }
@@ -314,7 +363,7 @@ async function confirm(elem: JSX.Element, msg = "Confirm") {
 }
 
 /**
- * Occorre farglierlo rigenerare a forze
+ * Occorre farglierlo rigenerare a forza
  * anche quando NON cambiano i dati
  * forceUpdate
  */
@@ -326,4 +375,18 @@ function redraw(elem: JSX.Element) {
 
   shx.exec('clear')
   render(elem, opt)
+}
+
+function netmask2CIDR(mask: string) {
+  const countCharOccurences = (string: string, char: string) => string.split(char).length - 1;
+
+  const decimalToBinary = (dec: number) => (dec >>> 0).toString(2);
+  const getNetMaskParts = (nmask: string) => nmask.split('.').map(Number);
+  const netmask2CIDR = (netmask: string) =>
+    countCharOccurences(
+      getNetMaskParts(netmask)
+        .map(part => decimalToBinary(part))
+        .join(''),
+      '1'
+    );
 }
