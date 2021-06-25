@@ -334,7 +334,7 @@ export default class Hatching {
          // await checkIt(message)
 
          message = "networkcfg"
-         percent = 0.49
+         percent = 0.50
          try {
             this.networkcfg()
          } catch (error) {
@@ -344,7 +344,7 @@ export default class Hatching {
          // await checkIt(message)
 
          message = "Create hostname "
-         percent = 0.50
+         percent = 0.53
          try {
             redraw(<Install message={message} percent={percent} />)
             await this.hostname()
@@ -353,20 +353,6 @@ export default class Hatching {
             redraw(<Install message={message} percent={percent} />)
          }
          // await checkIt(message)
-
-
-         message = "Network "
-         percent = 0.53
-         try {
-            redraw(<Install message={message} percent={percent} />)
-            await this.resolvConf()
-            await this.interfaces()
-         } catch (error) {
-            message += JSON.stringify(error)
-            redraw(<Install message={message} percent={30.2} />)
-         }
-         // await checkIt(message)
-
 
          message = "Creating hosts "
          percent = 0.60
@@ -727,47 +713,6 @@ adduser ${name} \
    }
 
    /**
-    * resolvConf()
-    */
-   private async resolvConf() {
-      const echo = { echo: false, ignore: false }
-
-      if (this.network.addressType === 'static') {
-         const file = this.installTarget + '/etc/resolv.conf'
-
-         let text = ``
-         text += `search ${this.host.domain} \n`
-         text += `domain ${this.host.domain} \n`
-         for (let index = 0; index < this.network.dns.length; ++index) {
-            text += `nameserver ${this.network.dns[index]} \n`
-         }
-         fs.writeFileSync(file, text)
-      }
-   }
-
-   /**
-    * interfaces
-    */
-   private async interfaces() {
-      const echo = { echo: false, ignore: false }
-
-      if (this.network.addressType === 'static') {
-         const file = `${this.installTarget}/etc/network/interfaces`
-         let text = ``
-         text += `auto lo\n`
-         text += `iface lo inet manual\n`
-         text += `auto ${this.network.iface} \n`
-         text += `iface ${this.network.iface} inet ${this.network.addressType} \n`
-         text += `address ${this.network.address} \n`
-         text += `netmask ${this.network.netmask} \n`
-         text += `gateway ${this.network.gateway} \n`
-
-         fs.writeFileSync(file, text)
-      }
-   }
-
-
-   /**
     * networkcfg
     */
    private async networkcfg() {
@@ -776,7 +721,7 @@ adduser ${name} \
       let content = '# created by eggs\n\n'
       content += 'auto lo\n'
       content += 'iface lo inet loopback\n\n'
-      content += 'iface ' + this.network.iface + ' inet ' + this.network.addressType
+      content += 'iface ' + this.network.iface + ' inet ' + this.network.addressType + '\n'
       if (this.network.addressType !== 'dhcp') {
          content += '    address ' + this.network.address + '\n'
          content += '    netmask ' + this.network.netmask + '\n'
@@ -784,13 +729,15 @@ adduser ${name} \
       }
       Utils.write(file, content)
 
-      // configuro /etc/resolv.conf
+      /**
+       * resolv.conf
+       */
       if (this.network.addressType !== 'dhcp') {
          const file = this.installTarget + '/etc/resolv.conf'
          let content = '# created by eggs\n\n'
-         content += 'nameserver ' + this.network.dns
-         content += 'nameserver 8.8.8.8'
-         content += 'nameserver 8.8.4.4'
+         content += 'nameserver ' + this.network.dns + '\n'
+         content += 'nameserver 8.8.8.8\n'
+         content += 'nameserver 8.8.4.4\n'
          Utils.write(file, content)
       }
    }
