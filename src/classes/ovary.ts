@@ -149,6 +149,7 @@ export default class Ovary {
                await bleach.clean(verbose)
             }
          }
+
          /**
           * Anche non accettando l'installazione di calamares
           * viene creata la configurazione dell'installer: krill/calamares
@@ -891,7 +892,7 @@ export default class Ovary {
    async bindUsersDatas(verbose = false) {
       const echo = Utils.setEcho(verbose)
       if (verbose) {
-         console.log('ovary: saveUsersDatas')
+         Utils.warning('bindUsersDatas')
       }
 
       const cmds: string[] = []
@@ -903,8 +904,11 @@ export default class Ovary {
       })
       const users: string[] = result.data.split('\n')
       for (let i = 0; i < users.length - 1; i++) {
-         cmds.push(await rexec('mkdir ' + this.settings.work_dir.merged + '/home/' + users[i], verbose))
-         cmds.push(await rexec('mount --bind --make-slave /home/' + users[i] + ' ' + this.settings.work_dir.merged + '/home/' + users[i], verbose))
+         // ad esclusione dell'utente live...
+         if (users[i] !== this.settings.config.user_opt) {
+            cmds.push(await rexec('mkdir ' + this.settings.work_dir.merged + '/home/' + users[i], verbose))
+            cmds.push(await rexec('mount --bind --make-slave /home/' + users[i] + ' ' + this.settings.work_dir.merged + '/home/' + users[i], verbose))
+         }
       }
    }
 
@@ -915,7 +919,7 @@ export default class Ovary {
    async ubindUsersDatas(verbose = false) {
       const echo = Utils.setEcho(verbose)
       if (verbose) {
-         console.log('ovary: saveUsersDatas')
+         Utils.warning('ubindUsersDatas')
       }
 
       const cmds: string[] = []
@@ -927,7 +931,10 @@ export default class Ovary {
       })
       const users: string[] = result.data.split('\n')
       for (let i = 0; i < users.length - 1; i++) {
-         cmds.push(await rexec('umount ' + this.settings.work_dir.merged + '/home/' + users[i], verbose))
+         // ad esclusione dell'utente live...
+         if (users[i] !== this.settings.config.user_opt) {
+            cmds.push(await rexec('umount ' + this.settings.work_dir.merged + '/home/' + users[i], verbose))
+         }
       }
    }
 
@@ -940,17 +947,17 @@ export default class Ovary {
       /**
        * delete all user in chroot
        */
-       const cmds: string[] = []
-       const cmd = `chroot ${this.settings.work_dir.merged} getent passwd {1000..60000} |awk -F: '{print $1}'`
-       const result = await exec(cmd, {
-          echo: verbose,
-          ignore: false,
-          capture: true
-       })
-       const users: string[] = result.data.split('\n')
-       for (let i = 0; i < users.length - 1; i++) {
-          cmds.push(await rexec(`chroot ${this.settings.work_dir.merged} deluser ${users[i]}`, verbose))
-       }
+      const cmds: string[] = []
+      const cmd = `chroot ${this.settings.work_dir.merged} getent passwd {1000..60000} |awk -F: '{print $1}'`
+      const result = await exec(cmd, {
+         echo: verbose,
+         ignore: false,
+         capture: true
+      })
+      const users: string[] = result.data.split('\n')
+      for (let i = 0; i < users.length - 1; i++) {
+         cmds.push(await rexec(`chroot ${this.settings.work_dir.merged} deluser ${users[i]}`, verbose))
+      }
 
    }
 
@@ -1348,7 +1355,7 @@ export default class Ovary {
          } else {
             prefix = 'backup-' + prefix
          }
-      } 
+      }
       let output = this.settings.config.snapshot_dir + prefix + volid
 
       content = `xorriso  -as mkisofs \
@@ -1416,7 +1423,7 @@ export default class Ovary {
          } else {
             prefix = 'backup-' + prefix
          }
-      } 
+      }
       let output = this.settings.config.snapshot_dir + prefix + volid
 
       // salvo in isoFile per salvare il risultato
