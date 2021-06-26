@@ -19,7 +19,7 @@ You can follow the project also consulting the [commit history](https://github.c
 Versions are listed on reverse order, the first is the last one.
 
 ### eggs-8.0.19
-* just changed the user live remotion after installation, due incompatibility with backup operation
+* just changed the way user live is removed after installation, due incompatibility with backup operation
 
 ### eggs-8.0.18
 * krill finally support network configuration
