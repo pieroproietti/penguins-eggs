@@ -65,6 +65,7 @@ async function motdAdd(distro: string, version: string, user: string, userPasswd
     eggsMotd += `You are logged as ${user}, your password is: ${userPasswd}. root password: ${rootPasswd}\n`
     eggsMotd += `to install the system, type: ${installer}\n`
     eggsMotd += 'eggs <<<\n'
+    eggsMotd.trimEnd() + '\n'
     fs.writeFileSync(fileMotd, eggsMotd)
 }
 
@@ -92,7 +93,7 @@ async function motdRemove(chroot = '/') {
             remove = false
         }
     }
-    cleanMotd+='\n'
+    cleanMotd.trimEnd() + '\n'
     fs.writeFileSync(fileMotd, cleanMotd)
 }
 

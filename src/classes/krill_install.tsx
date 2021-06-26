@@ -265,7 +265,7 @@ export default class Hatching {
             message += JSON.stringify(error)
             redraw(<Install message={message} percent={percent} />)
          }
-         await checkIt(message)
+         // await checkIt(message)
 
          message = "Syncronize filesystem "
          percent = 0.35
@@ -276,7 +276,7 @@ export default class Hatching {
             message += JSON.stringify(error)
             redraw(<Install message={message} percent={percent} />)
          }
-         await checkIt(message)
+         // await checkIt(message)
 
          // sources-yolk
          message = 'sources-yolk'
