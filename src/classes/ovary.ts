@@ -76,8 +76,6 @@ export default class Ovary {
    }
 
    /**
-    * inizializzazioni che non possono essere messe nel constructor
-    * a causa delle chiamate async.
     * @returns {boolean} success
     */
    async fertilization(): Promise<boolean> {
@@ -177,23 +175,26 @@ export default class Ovary {
          if (await Pacman.isGui()) {
             await this.createAutostart(this.theme, myAddons)
          } else {
+            cliAutologin.add(this.settings.distro.distroId, this.settings.distro.versionId, this.settings.config.user_opt, this.settings.config.user_opt_passwd, this.settings.config.root_passwd, this.settings.work_dir.merged)
+            /*
             if (backup) {
                cliAutologin.add(this.settings.distro.distroId, this.settings.distro.versionId, Utils.getPrimaryUser(), '*******', '*******', this.settings.work_dir.merged)
             } else {
                cliAutologin.add(this.settings.distro.distroId, this.settings.distro.versionId, this.settings.config.user_opt, this.settings.config.user_opt_passwd, this.settings.config.root_passwd, this.settings.work_dir.merged)
             }
+            */
          }
+         await this.editLiveFs(verbose)
+         await this.makeSquashfs(scriptOnly, verbose)
+         if (backup) {
+            await this.ubindUsersDatas(verbose)
+         }
+         await this.makeDotDisk(backup, verbose)
+         await this.makeIso(backup, scriptOnly, verbose)
+         await this.bindVfs(verbose)
+         await this.ubindVfs(verbose)
+         await this.uBindLiveFs(verbose)
       }
-      await this.editLiveFs(verbose)
-      await this.makeSquashfs(scriptOnly, verbose)
-      if (backup) {
-         await this.ubindUsersDatas(verbose)
-      }
-      await this.makeDotDisk(backup, verbose)
-      await this.makeIso(backup, scriptOnly, verbose)
-      await this.bindVfs(verbose)
-      await this.ubindVfs(verbose)
-      await this.uBindLiveFs(verbose)
    }
 
 
@@ -1310,7 +1311,7 @@ export default class Ovary {
     * info Debian GNU/Linux 10.8.0 "Buster" - Official i386 NETINST 20210206-10:54
     * mkisofs xorriso -as mkisofs -r -checksum_algorithm_iso md5,sha1,sha256,sha512 -V 'Debian 10.8.0 i386 n' -o /srv/cdbuilder.debian.org/dst/deb-cd/out/2busteri386/debian-10.8.0-i386-NETINST-1.iso -jigdo-jigdo /srv/cdbuilder.debian.org/dst/deb-cd/out/2busteri386/debian-10.8.0-i386-NETINST-1.jigdo -jigdo-template /srv/cdbuilder.debian.org/dst/deb-cd/out/2busteri386/debian-10.8.0-i386-NETINST-1.template -jigdo-map Debian=/srv/cdbuilder.debian.org/src/ftp/debian/ -jigdo-exclude boot1 -md5-list /srv/cdbuilder.debian.org/src/deb-cd/tmp/2busteri386/buster/md5-check -jigdo-min-file-size 1024 -jigdo-exclude 'README*' -jigdo-exclude /doc/ -jigdo-exclude /md5sum.txt -jigdo-exclude /.disk/ -jigdo-exclude /pics/ -jigdo-exclude 'Release*' -jigdo-exclude 'Packages*' -jigdo-exclude 'Sources*' -J -joliet-long -cache-inodes -isohybrid-mbr syslinux/usr/lib/ISOLINUX/isohdpfx.bin -b isolinux/isolinux.bin -c isolinux/boot.cat -boot-load-size 4 -boot-info-table -no-emul-boot -eltorito-alt-boot -e boot/grub/efi.img -no-emul-boot -isohybrid-gpt-basdat -isohybrid-apm-hfsplus boot1 CD1
     */
-   makeDotDisk(backup = false, verbose = false) {
+   async makeDotDisk(backup = false, verbose = false) {
       const dotDisk = this.settings.work_dir.pathIso + '/.disk'
       if (fs.existsSync(dotDisk)) {
          shx.rm('-rf', dotDisk)
@@ -1415,19 +1416,14 @@ export default class Ovary {
             Utils.warning("Can't create isohybrid. File: isohdpfx.bin not found. The resulting image will be a standard iso file")
          }
       }
-      let volid = Utils.getVolid(this.settings.remix.name)
-      let prefix = this.settings.config.snapshot_prefix
-      if (backup) {
-         if (prefix.substring(0, 7) === 'egg-of-') {
-            prefix = 'backup-' + prefix.substring(7)
-         } else {
-            prefix = 'backup-' + prefix
-         }
-      }
-      let output = this.settings.config.snapshot_dir + prefix + volid
+      const prefix = Utils.getPrefix(this.settings.config.snapshot_prefix,backup)
+      const volid = Utils.getVolid(this.settings.remix.name)
+      const postfix = Utils.getPostfix()
 
-      // salvo in isoFile per salvare il risultato
-      this.settings.isoFilename = prefix + volid
+      // salvo in isoFile per mostrare alla fine
+      this.settings.isoFilename = prefix + volid + postfix
+      const output = this.settings.config.snapshot_dir + this.settings.isoFilename
+
 
       let cmd = `xorriso  -as mkisofs \
                           -volid ${volid} \
