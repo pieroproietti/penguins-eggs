@@ -25,8 +25,8 @@ import selectInstallationDevice from '../lib/select_installation_device'
 import selectUserSwapChoice from '../lib/select_user_swap_choice'
 import selectFileSystemType from '../lib/select_filesystem_type'
 
-import getUserName from '../lib/get_user_name'
-import getUserFullname from '../lib/get_user_fullname'
+import getUsername from '../lib/get_username'
+import getUserfullname from '../lib/get_userfullname'
 import getHostname from '../lib/get_hostname'
 import getPassword from '../lib/get_password'
 
@@ -40,16 +40,7 @@ import getGateway from '../lib/get_gateway'
 
 import Hatching from './krill_install'
 
-interface INet {
-  iface: string
-  addressType: string
-  address: string
-  netmask: string
-  gateway: string
-  domainName: string
-  dns: string
-}
-
+import { INet } from '../interfaces'
 
 interface IWelcome {
   language: string
@@ -235,32 +226,23 @@ export default class Krill {
       usersElem = <Users name={name} fullname={fullname} hostname={hostname} password={password} rootPassword={rootPassword} autologin={autologin} sameUserPassword={sameUserPassword} />
       if (await confirm(usersElem, "Confirm Users datas?")) {
         break
-      } else {
-        name = ''
-        fullname = ''
-        password = ''
-        rootPassword = ''
-        hostname = ''
-        autologin = true
-        sameUserPassword = true
       }
 
       usersElem = <Users name={name} fullname={fullname} hostname={hostname} password={password} rootPassword={rootPassword} autologin={autologin} sameUserPassword={sameUserPassword} />
       redraw(usersElem)
-      name = await getUserName(name)
+      name = await getUsername(name)
 
       usersElem = <Users name={name} fullname={fullname} hostname={hostname} password={password} rootPassword={rootPassword} autologin={autologin} sameUserPassword={sameUserPassword} />
       redraw(usersElem)
-      fullname = await getUserFullname(fullname)
-
-      usersElem = <Users name={name} fullname={fullname} hostname={hostname} password={password} rootPassword={rootPassword} autologin={autologin} sameUserPassword={sameUserPassword} />
-      redraw(usersElem)
-      hostname = await getHostname(hostname)
+      fullname = await getUserfullname(fullname)
 
       usersElem = <Users name={name} fullname={fullname} hostname={hostname} password={password} rootPassword={rootPassword} autologin={autologin} sameUserPassword={sameUserPassword} />
       redraw(usersElem)
       password = await getPassword(password)
 
+      usersElem = <Users name={name} fullname={fullname} hostname={hostname} password={password} rootPassword={rootPassword} autologin={autologin} sameUserPassword={sameUserPassword} />
+      redraw(usersElem)
+      hostname = await getHostname(hostname)
     }
 
     return {

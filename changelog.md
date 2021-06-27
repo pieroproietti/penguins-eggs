@@ -18,6 +18,9 @@ You can follow the project also consulting the [commit history](https://github.c
 ## Changelog
 Versions are listed on reverse order, the first is the last one.
 
+### eggs-8.0.19
+* live user is now created also for backups, iso volid became just basename, no limitations on name of isos
+
 ### eggs-8.0.18
 * krill finally support network configuration
 
