@@ -265,20 +265,13 @@ export default class Krill {
     const i = {} as INet
 
     const ifaces: string[] = fs.readdirSync('/sys/class/net/')
-
-    const iface = shx.exec(`ifconfig | awk 'FNR==1 { print $1 }' | tr --d :`, { silent: true }).stdout.trim()
-    const address = shx.exec(`ifconfig | grep -w inet |grep -v 127.0.0.1| awk '{print $2}' | cut -d ":" -f 2`, { silent: true }).stdout.trim()
-    const netmask: string = shx.exec(`ifconfig | grep -w inet |grep -v 127.0.0.1| awk '{print $4}' | cut -d ":" -f 2`, { silent: true }).stdout.trim()
-    const gateway = shx.exec(`route -n | grep 'UG[ \t]' | awk '{print $2}'`, { silent: true }).stdout.trim()
-    const broadcast = shx.exec(`ifconfig | grep -w inet |grep -v 127.0.0.1| awk '{print $6}' | cut -d ":" -f 2'`, { silent: true }).stdout.trim()
-
-    i.iface = iface
+    i.iface = Utils.iface()
     i.addressType = 'dhcp'
-    i.address = address
-    i.netmask = netmask
-    i.gateway = gateway
-    i.dns = dns.getServers()
-    i.domain = shx.exec('dnsdomainname').stdout.trim()
+    i.address = Utils.address()
+    i.netmask = Utils.netmask()
+    i.gateway = Utils.gateway()
+    i.dns = Utils.getDns()
+    i.domain = Utils.getDomain()
     let dnsString = ''
     for (const element of i.dns) {
       dnsString += element + '; '
@@ -286,17 +279,9 @@ export default class Krill {
 
     let networkElem: JSX.Element
     while (true) {
-      networkElem = <Network iface={i.iface} addressType={i.addressType} address={i.address} netmask={i.netmask} gateway={i.gateway} dns={dnsString} />
+      networkElem = <Network iface={i.iface} addressType={i.addressType} address={i.address} netmask={i.netmask} gateway={i.gateway} domain={i.domain} dns={dnsString} />
       if (await confirm(networkElem, "Confirm Network datas?")) {
         break
-      } else {
-        i.iface = iface
-        i.addressType = 'dhcp'
-        i.address = address
-        i.netmask = netmask
-        i.gateway = gateway
-        i.dns = dns.getServers()
-        i.domain = shx.exec('dnsdomainname').stdout.trim()
       }
 
       i.iface = await selectInterface(i.iface, ifaces)
@@ -306,12 +291,11 @@ export default class Krill {
         i.netmask = await getNetmask(i.netmask)
         i.gateway = await getGateway(i.gateway)
         i.domain = await getDomain(i.domain)
-        
-        let dnsString = ''
+        i.dns = (await getDns(dnsString)).split(';')
+        dnsString = ''
         for (const element of i.dns) {
           dnsString += element + '; '
         }
-        i.dns = await getDns(dnsString)
       }
     }
     return i

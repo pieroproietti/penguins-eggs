@@ -35,7 +35,7 @@ export default function Install({ message, percent, spinner = false }: InstallPr
   version = calamares.strings.version
 
   let perc = Math.round(percent * 100)
-  let barLen = 50
+  let barLen = 52
   let progress = Math.round(barLen * percent)
   let todo = barLen - progress
   let clean: string = "·".repeat(todo)
@@ -57,7 +57,8 @@ export default function Install({ message, percent, spinner = false }: InstallPr
               <Box flexDirection="row"><Text>Installing: </Text><Text color="cyan">{productName}</Text></Box>
               <Newline />
               <Box flexDirection="row"><Text>Step: </Text><Text color="cyan">{message}</Text></Box>
-              <Newline />
+              <Newline/>
+              <Box><Text>Progress:</Text></Box>
               <Box><Text>{progressBar}</Text></Box>
             </Box>
           </Box>

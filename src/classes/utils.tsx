@@ -508,7 +508,8 @@ unknown target format aarch64-efi
    /**
     * return the name of network device
     */
-   static netDeviceName(): string {
+   static iface(): string {
+      // return shx.exec(`ifconfig | awk 'FNR==1 { print $1 }' | tr --d :`, { silent: true }).stdout.trim()
       const interfaces: any = Object.keys(os.networkInterfaces())
       let netDeviceName = ''
       for (const k in interfaces) {
@@ -522,67 +523,41 @@ unknown target format aarch64-efi
    /**
     * todo
     */
-   static netAddress(): string {
-      const { networkInterfaces } = require('os')
-
-      const nets = networkInterfaces();
-      const results = Object.create(null); // or just '{}', an empty object
-
-      let address = ''
-      for (const name of Object.keys(nets)) {
-         for (const net of nets[name]) {
-            // skip over non-ipv4 and internal (i.e. 127.0.0.1) addresses
-            if (net.family === 'IPv4' && !net.internal) {
-               if (!results[name]) {
-                  results[name] = [];
-               }
-               results[name].push(net.address)
-               address = net.address
-            }
-         }
-      }
-      return address
+   static address(): string {
+      return shx.exec(`ifconfig | grep -w inet |grep -v 127.0.0.1| awk '{print $2}' | cut -d ":" -f 2`, { silent: true }).stdout.trim()
    }
 
    /**
-    * todo
+    * netmask
     */
-   static netMasK(): string {
-      const { networkInterfaces } = require('os')
-
-      const nets = networkInterfaces();
-      const results = Object.create(null); // or just '{}', an empty object
-
-      let netmask = ''
-      for (const name of Object.keys(nets)) {
-         for (const net of nets[name]) {
-            // skip over non-ipv4 and internal (i.e. 127.0.0.1) addresses
-            if (net.family === 'IPv4' && !net.internal) {
-               if (!results[name]) {
-                  results[name] = [];
-               }
-               results[name].push(net.address)
-               netmask = net.netmask
-            }
-         }
-      }
-      return netmask
+   static netmask(): string {
+      return shx.exec(`ifconfig | grep -w inet |grep -v 127.0.0.1| awk '{print $4}' | cut -d ":" -f 2`, { silent: true }).stdout.trim()
    }
 
    /**
     * @returns dns
     */
-   static netDns(): string[] {
+   static getDns(): string[] {
       return dns.getServers()
+   }
+   
+   static getDomain() : string {
+      return shx.exec('dnsdomainname', {silent: true}).stdout.trim()
+      // return shx.exec(`route -n | grep 'UG[ \t]' | awk '{print $2}'`, { silent: true }).stdout.trim()
    }
 
    /**
+    * 
+    * @returns 
+    */
+   static broadcast(): string {
+      return shx.exec(`ifconfig | grep -w inet |grep -v 127.0.0.1| awk '{print $6}' | cut -d ":" -f 2'`, { silent: true }).stdout.trim()
+   }
+   /**
     * @returns gateway
     */
-   static netGateway(): string {
-      const cmd = `traceroute -m1 -n 8.8.8.8| grep ms| awk '{print $2}'`
-      const gw = shx.exec(cmd, { silent: true }).stdout.trim()
-      return gw
+   static gateway(): string {
+      return shx.exec(`route -n | grep 'UG[ \t]' | awk '{print $2}'`, { silent: true }).stdout.trim()
    }
 
    /**
