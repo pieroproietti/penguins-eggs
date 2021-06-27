@@ -2,7 +2,7 @@
   "name": "penguins-eggs",
   "shortName": "eggs",
   "description": "Perri's Brewery edition: remaster your system and distribuite it",
-  "version": "8.0.18",
+  "version": "8.0.19",
   "author": "Piero Proietti @pieroproietti",
   "bin": {
     "eggs": "bin/run"
@@ -34,6 +34,7 @@
   "devDependencies": {
     "@oclif/dev-cli": "./vendors/dev-cli",
     "@oclif/test": "^1.2.8",
+    "@types/axios": "^0.14.0",
     "@types/clear": "^0.1.1",
     "@types/figlet": "^1.5.0",
     "@types/ink-big-text": "^1.2.0",
