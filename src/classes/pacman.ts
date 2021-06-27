@@ -488,9 +488,12 @@ export default class Pacman {
       if (fs.existsSync(manPage)) {
          exec(`cp ${manPage} ${man1Dir}`)
       }
-      exec(`mandb > /dev/null`)
-      if (verbose) {
-         console.log('manPage eggs installed...')
+      if (shx.exec('which mandb',{silent: true}).stdout.trim() !=='') {
+         await exec(`mandb > /dev/null`)
+         if (verbose) {
+            console.log('manPage eggs installed...')
+         }
+  
       }
    }
 

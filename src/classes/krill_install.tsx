@@ -727,7 +727,10 @@ adduser ${name} \
       if (this.network.addressType !== 'dhcp') {
          const file = this.installTarget + '/etc/resolv.conf'
          let content = '# created by eggs\n\n'
-         content += 'nameserver ' + this.network.dns + '\n'
+         content += 'domain ' + this.network.domain + '\n'
+         for (const element of this.network.dns) {
+            content += 'nameserver ' + element + '\n'
+          }
          content += 'nameserver 8.8.8.8\n'
          content += 'nameserver 8.8.4.4\n'
          Utils.write(file, content)
