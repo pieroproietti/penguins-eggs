@@ -731,8 +731,6 @@ adduser ${name} \
          for (const element of this.network.dns) {
             content += 'nameserver ' + element + '\n'
           }
-         content += 'nameserver 8.8.8.8\n'
-         content += 'nameserver 8.8.4.4\n'
          Utils.write(file, content)
       }
    }
