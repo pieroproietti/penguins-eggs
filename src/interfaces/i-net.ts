@@ -4,6 +4,6 @@ export interface INet {
    address: string
    netmask: string
    gateway: string
-   domainName: string
-   dns: string
+   domain: string
+   dns: string []
  }
