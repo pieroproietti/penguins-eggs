@@ -19,11 +19,12 @@ type NetworkProps = {
   address?: string,
   netmask?: string,
   gateway?: string,
+  domain: string
   dns?: string,
 }
 
 
-export default function Network({ iface, addressType, address, netmask, gateway, dns }: NetworkProps) {
+export default function Network({ iface, addressType, address, netmask, gateway, domain, dns }: NetworkProps) {
   let productName = 'unknown'
   let version = 'x.x.x'
   let configRoot = '/etc/penguins-eggs.d/krill/'
@@ -58,6 +59,7 @@ export default function Network({ iface, addressType, address, netmask, gateway,
             <Box><Text>address  : </Text><Text color='green'>{address}</Text></Box>
             <Box><Text>netmask  : </Text><Text color='green'>{netmask}</Text></Box>
             <Box><Text>gateway  : </Text><Text color='green'>{gateway}</Text></Box>
+            <Box><Text>domain   : </Text><Text color='green'>{domain}</Text></Box>
             <Box><Text>dns      : </Text><Text color='green'>{dns}</Text></Box>
             </Box>
           </Box>
