@@ -14,20 +14,21 @@
 import { IInstaller, IRemix } from '../../interfaces/index'
 import Distro from '../../classes/distro'
 import Pacman from '../../classes/pacman'
+import Utils from '../utils'
 
 export function installer(): IInstaller {
    let installer = {} as IInstaller
    if (Pacman.packageIsInstalled('calamares')) {
       installer.name = 'calamares'
       installer.configuration = '/etc/calamares/'
-      installer.multiarch = '/usr/lib/' + multiarch() + '/calamares/'
+      installer.multiarch = multiarch() + 'calamares/'
    } else {
       installer.name = 'krill'
       installer.configuration = '/etc/penguins-eggs.d/krill/'
-      installer.multiarch = '/usr/lib/' + multiarch() + '/penguins-eggs/'
+      installer.multiarch = multiarch() + 'penguins-eggs/'
    }
-   installer.multiarchModules = installer.multiarch + 'modules/'
    installer.modules = installer.configuration + 'modules/'
+   installer.multiarchModules = installer.multiarch + 'modules/'
 
    /**
     * i template nelle versioni calamaresAble sono QUELLI di calamares
@@ -43,8 +44,6 @@ export function installer(): IInstaller {
       installer.templateModules = installer.template + 'modules/'
       installer.templateMultiarch = installer.template + 'krill-modules/'
    }
-
-   // console.log(installer)
    return installer
 }
 
@@ -53,17 +52,15 @@ export function installer(): IInstaller {
  * @returns 
  */
 function multiarch(): string {
-   let archLinuxGnu = 'i386-linux-gnu'
-
-   if (process.arch === 'ia32') {
-      archLinuxGnu = 'i386-linux-gnu'
-   } else if (process.arch === 'x64') {
-      archLinuxGnu = 'x86_64-linux-gnu'
-   } else if (process.arch === 'arm64') {
-      archLinuxGnu = 'arm64-linux-gnu'
-   } else if (process.arch === 'armel') {
-      archLinuxGnu = 'armel-linux-gnu'
+   let multiarch = ''
+   if (Utils.machineArch() === 'amd64') {
+      multiarch = '/usr/lib/x86_64-linux-gnu/'
+   } else if (Utils.machineArch() === 'i386') {
+      multiarch = '/usr/lib/i386-linux-gnu/'
+   } else if (Utils.machineArch() === 'armel') {
+      multiarch = '/usr/lib/'
+   } else if (Utils.machineArch() === 'arm64') {
+      multiarch = '/usr/lib/'
    }
-
-   return archLinuxGnu
+   return multiarch
 }

@@ -273,8 +273,11 @@ export default class Krill {
     i.dns = Utils.getDns()
     i.domain = Utils.getDomain()
     let dnsString = ''
-    for (const element of i.dns) {
-      dnsString += element + '; '
+    for (let c = 0; c < i.dns.length; c++) {
+      dnsString += i.dns[c].trim()
+      if (c < i.dns.length - 1) {
+        dnsString += '; '
+      }
     }
 
     let networkElem: JSX.Element
@@ -293,8 +296,11 @@ export default class Krill {
         i.domain = await getDomain(i.domain)
         i.dns = (await getDns(dnsString)).split(';')
         dnsString = ''
-        for (const element of i.dns) {
-          dnsString += element + '; '
+        for (let c = 0; c < i.dns.length; c++) {
+          dnsString += i.dns[c].trim()
+          if (c < i.dns.length - 1) {
+            dnsString += '; '
+          }
         }
       }
     }
