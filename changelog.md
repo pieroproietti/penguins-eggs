@@ -18,6 +18,9 @@ You can follow the project also consulting the [commit history](https://github.c
 ## Changelog
 Versions are listed on reverse order, the first is the last one.
 
+### eggs-8.0.22
+* just same refactoring and removed last ; in krill_prepare networking dns
+
 ### eggs-8.0.20
 * added domain and dns network configuration in krill
 
