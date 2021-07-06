@@ -1,10 +1,6 @@
 # 1. Create compressed squashfs image
 
-Use `mksquashfs` to create a compressed image from a directory. Depending on how compressible the files are you could put on much more than 4.7 GB on a single disc.
-
-    mksquashfs /path/to/my/directory image.sqfs
-
-You can use a different compression algorithm with e.g. `-comp zstd` or append multiple times to one archive to fill it up to almost the allowable size.
+We are starting with /home/eggs/ovarium/iso/live/filesystem.squashfs created by eggs
 
 # 2. Reencrypt the image to wrap it in a LUKS container
 
@@ -12,9 +8,67 @@ Create a little additional room for the reencryption routine at the end of the i
 
 This operation can potentially **eat your data**, so make sure you have a backup or can regenrate the file.
 
-    truncate -s +8M filesystem.squashfs
-    cryptsetup -q reencrypt --encrypt --type luks2 \
-      --resilience none --disable-locks --reduce-device-size 8M filesystem.squashfs
+    # create an empty volume
+    dd if=/dev/zero of=crypted-filesystem.img bs=1 count=0 seek=32G
+
+    # Next, we will encrypt our container
+    sudo cryptsetup luksFormat crypted-filesystem.img 
+
+    # Now, we can unlock our container and map it as /dev/mapper/filesystem
+    sudo cryptsetup luksOpen crypted-filesystem.img cryped-filesystem
+
+    # format crypted-filesystem
+    sudo mkfs.ext4 /dev/mapper/crypted-filesystem
+
+
+    # mount volume crypted
+    sudo mount /dev/mapper/crypted-filesystem ./crypted-filesystem
+
+    cp /home/eggs/ovarium/iso/live/filesystem.squashfs ./crypted-filesystem
+
+    # copia dei files in /dev/mapper/filesystem 
+    cp /filesystem /crypted-filesystem -R
+
+    # umount
+    sudo umount ./crypted-filesystem 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    # before to encrypt you can mount filesystemfs.squashfs simply:
+    sudo mount /home/eggs/ovarium/iso/live/filesystem.squashfs /mnt/
+
+
+
+
+
+    # add 32M additional spaces
+    sudo truncate -s +32M /home/eggs/ovarium/iso/live/filesystem.squashfs
+
+    # crypto
+    sudo cryptsetup -q reencrypt --encrypt --type luks2 --resilience none --disable-locks --reduce-device-size 32M \
+    /home/eggs/ovarium/iso/live/filesystem.squashfs \
+    crypted_filesystem.squashfs
+
+    # open 
+    # sudo cryptsetup luksOpen /dev/mapper/crypted_filesystem.squashfs decrypted_filesystem.squashfs --verbose --debug
+
+    # this should work
+    sudo cryptsetup --type luks2 open /dev/mapper/crypted_filesystem.squashfs decrypted_filesystem.squashfs --verbose --debug
+
+    # mount
+    sudo mount /dev/mapper/decrypted_filesystem.squashfs /mnt
 
 You can check with `cryptsetup luksDump filesystem.squashfs` that the data segment is offset at only half the additional size and then trim the size accordingly.
 
