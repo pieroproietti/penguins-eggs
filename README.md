@@ -216,7 +216,7 @@ USAGE
   $ eggs config
 
 OPTIONS
-  -c, --clean          remove old configuration before to create
+  -c, --clean          remove old configuration before to create new one
   -h, --help           show CLI help
   -n, --nointeractive  assume yes
   -v, --verbose        verbose
