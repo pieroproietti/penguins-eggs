@@ -24,12 +24,18 @@ case "$1" in
         if [ ! -d "/etc/bash_completion.d/" ]; then
             mkdir /etc/bash_completion.d/
         fi
-        cp /usr/lib/penguins-eggs/scripts/eggs.bash /etc/bash_completion.d/
+
+        if [ -f "/usr/lib/penguins-eggs/scripts/eggs.bash" ]; then
+            cp /usr/lib/penguins-eggs/scripts/eggs.bash /etc/bash_completion.d/
+        fi
+
         # aggiungo manuale
         if [ ! -d "/usr/share/man/man1" ]; then
             mkdir /usr/share/man/man1 -p
         fi
-        cp /usr/lib/penguins-eggs/manpages/doc/man/eggs.1.gz /usr/share/man/man1
+        if [ -f "/usr/lib/penguins-eggs/manpages/doc/man/eggs.1.gz" ]; then
+            cp /usr/lib/penguins-eggs/manpages/doc/man/eggs.1.gz /usr/share/man/man1
+        fi
 
         # Avvia configurazione automatica
         eggs config --nointeractive
