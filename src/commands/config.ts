@@ -24,7 +24,7 @@ export default class Config extends Command {
     static aliases = ['prerequisites']
     static flags = {
         nointeractive: flags.boolean({ char: 'n', description: 'assume yes' }),
-        clean: flags.boolean({ char: 'c', description: 'remove old configuration before to create' }),
+        clean: flags.boolean({ char: 'c', description: 'remove old configuration before to create new one' }),
         help: flags.help({ char: 'h' }),
         verbose: flags.boolean({ char: 'v', description: 'verbose' }),
     }
@@ -57,9 +57,6 @@ export default class Config extends Command {
             // Vede che cosa c'è da fare...
             const i = await Config.thatWeNeed(nointeractive, verbose)
 
-            /**
-             * ...e lo fa!
-             */
             if (i.needApt || i.configurationInstall || i.configurationRefresh || i.distroTemplate) {
                 if (nointeractive) {
                     await Config.install(i, nointeractive, verbose)
@@ -68,8 +65,6 @@ export default class Config extends Command {
                         await Config.install(i, verbose)
                     }
                 }
-            } else {
-                Utils.warning('config: nothing to do!')
             }
         }
     }
@@ -155,16 +150,6 @@ export default class Config extends Command {
                 console.log('- copy distro template\n')
             }
 
-            /*
-            const packagesLocalisation = Pacman.packagesLocalisation()
-            if (packagesLocalisation.length > 0) {
-                console.log('- localisation')
-                console.log(chalk.yellow('  apt install --yes --no-install-recommends live-task-localisation ' + Pacman.debs2line(packagesLocalisation)) + '\n')
-            } else {
-                console.log()
-            }
-            */
-
             if (i.calamares) {
                 console.log('- install calamares')
                 const packages = Pacman.debs4calamares
@@ -233,8 +218,11 @@ export default class Config extends Command {
         }
 
         if (i.prerequisites) {
-            Utils.warning('Installing prerequisites...')
-            await Pacman.prerequisitesInstall(verbose)
+            if (nointeractive) {
+                Utils.warning('Can\'t installa prerequisites now...')
+            } else {
+                await Pacman.prerequisitesInstall(verbose)
+            }
         }
 
         Utils.warning('prerequisites installed!')
@@ -242,7 +230,6 @@ export default class Config extends Command {
         if (i.calamares) {
             if (Pacman.calamaresAble()) {
                 if (nointeractive) {
-                    // solo un avviso
                     Utils.error('config: you are on a graphic system, I suggest to install the GUI installer calamares. I can\'t install calamares now!')
                     Utils.warning('I suggest You to install calamares GUI installer before to produce your ISO.\nJust write:\n    sudo eggs calamares --install')
                 } else {
@@ -259,4 +246,3 @@ export default class Config extends Command {
         }
     }
 }
-
