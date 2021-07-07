@@ -49,5 +49,21 @@ Now we can copy our filesystem.squashfs in our luks-volume
 ## umount and close
 
  sudo umount /mnt
- 
+
  sudo cryptsetup luksClose mapped-volume
+
+
+* [Cryptosetup for Debian](https://cryptsetup-team.pages.debian.net/cryptsetup/)
+* [full disk encryption ubuntu](https://help.ubuntu.com/community/Full_Disk_Encryption_Howto_2019)
+* [live-boot](https://manpages.debian.org/unstable/live-boot-doc/live-boot.7.en.html)
+
+live-boot is a hook for the initramfs-tools, used to generate a initramfs capable to boot live systems, such as those created by live-helper(7). This includes the Live systems ISOs, netboot tarballs, and usb stick images.
+
+At boot time it will look for a (read-only) medium containing a "/live" directory where a root filesystems (often a compressed filesystem image like squashfs) is stored. If found, it will create a writable environment, using aufs, to boot the system from.
+
+Here the problem is how to change the way live-boot work to:
+
+look for a  (read-only) medium containing a "/luks" directory where a root filesystems is stored. If found it must open the the luks-volume, take the filesystem image from there and create a writable environment, using aufs, to boot the system from.
+
+A possible alternative can be use persistence file, who can be created in a usb too and encrypted in the same way.
+
