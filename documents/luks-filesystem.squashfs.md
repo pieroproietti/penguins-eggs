@@ -2,62 +2,52 @@
 
 We are starting with /home/eggs/ovarium/iso/live/filesystem.squashfs created by eggs
 
-# 2. Reencrypt the image to wrap it in a LUKS container
+Before to encrypt you can mount filesystemfs.squashfs simply:
+
+    sudo mount /home/eggs/ovarium/iso/live/filesystem.squashfs /mnt/
+
+
+# 1. Create an empy volume to copy (is working now)
+
+## create an empty volume to copy filesystem.squashfs
+    sudo dd if=/dev/zero of=luks-volume bs=1 count=0 seek=1G
+
+## Next, we will encrypt our container
+    sudo cryptsetup luksFormat luks-volume
+
+## Now, we can unlock our container and map it as /dev/mapper/filesystem
+    sudo cryptsetup luksOpen luks-volume mapped-volume
+
+## format mapped-volume
+    sudo mkfs.ext4 /dev/mapper/mapped-volume
+
+## mount volume mapped-volume
+    sudo mount /dev/mapper/mapped-volume /mnt
+
+## copy filesystem in /mnt
+    cp /home/eggs/ovarium/iso/live/filesystem.squashfs /mnt
+
+## umount
+    sudu umount /mnt
+
+## Close mapped-volume
+    sudo cryptsetup luksClose mapped-volume
+
+## unlock and map 
+    sudo cryptsetup luksOpen luks-volume mapped-volume
+
+
+# Second way. Reencrypt the image to wrap it in a LUKS container
 
 Create a little additional room for the reencryption routine at the end of the image. Only half of the additional room is used for the header, so the manpage recommends using double the recommended minimum header size – so 32 MiB for `luks2`. Less is okay if you don't need the metadata space or are close to the maximum disc size.
 
 This operation can potentially **eat your data**, so make sure you have a backup or can regenrate the file.
 
-    # create an empty volume
-    dd if=/dev/zero of=crypted-filesystem.img bs=1 count=0 seek=32G
-
-    # Next, we will encrypt our container
-    sudo cryptsetup luksFormat crypted-filesystem.img 
-
-    # Now, we can unlock our container and map it as /dev/mapper/filesystem
-    sudo cryptsetup luksOpen crypted-filesystem.img cryped-filesystem
-
-    # format crypted-filesystem
-    sudo mkfs.ext4 /dev/mapper/crypted-filesystem
-
-
-    # mount volume crypted
-    sudo mount /dev/mapper/crypted-filesystem ./crypted-filesystem
-
-    cp /home/eggs/ovarium/iso/live/filesystem.squashfs ./crypted-filesystem
-
-    # copia dei files in /dev/mapper/filesystem 
-    cp /filesystem /crypted-filesystem -R
-
-    # umount
-    sudo umount ./crypted-filesystem 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    # before to encrypt you can mount filesystemfs.squashfs simply:
-    sudo mount /home/eggs/ovarium/iso/live/filesystem.squashfs /mnt/
-
-
-
-
-
-    # add 32M additional spaces
-    sudo truncate -s +32M /home/eggs/ovarium/iso/live/filesystem.squashfs
+    # add 8M additional spaces
+    sudo truncate -s +8M /home/eggs/ovarium/iso/live/filesystem.squashfs
 
     # crypto
-    sudo cryptsetup -q reencrypt --encrypt --type luks2 --resilience none --disable-locks --reduce-device-size 32M \
+    sudo cryptsetup -q reencrypt --encrypt --type luks2 --resilience none --disable-locks --reduce-device-size 8M \
     /home/eggs/ovarium/iso/live/filesystem.squashfs \
     crypted_filesystem.squashfs
 
