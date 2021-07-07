@@ -38,8 +38,8 @@ case "$1" in
         fi
 
         # Avvia configurazione automatica
+        echo "eggs was installed, now configuring it..." 
         eggs config --nointeractive
-        echo "eggs was installed..." 
     ;;
 
     abort-upgrade|abort-remove|abort-deconfigure)
