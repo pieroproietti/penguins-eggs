@@ -165,11 +165,6 @@ export default class Ovary {
          }
 
          await this.bindLiveFs(verbose)
-         if (backup) {
-            await this.bindUsersDatas(verbose)
-         } else {
-            await this.cleanUsersAccounts((verbose))
-         }
          await this.createUserLive(verbose)
 
          if (await Pacman.isGui()) {
@@ -187,7 +182,42 @@ export default class Ovary {
          await this.editLiveFs(verbose)
          await this.makeSquashfs(scriptOnly, verbose)
          if (backup) {
-            await this.ubindUsersDatas(verbose)
+            console.log('You will be prompted to give crucial informations to protect your users data')
+            const volumeSize = await this.getUsersDatasSize() + 8 * 1024 *1024
+            let cmd = 'dd if=/dev/zero of=luks-users-data bs=1 count=0 seek=1G' // + volumeSize
+            console.log(cmd)
+            require('child_process').execSync(cmd,{stdio: 'inherit'})
+
+            // Qua serve che immettiamo la password
+            cmd ='cryptsetup luksFormat luks-users-data'
+            console.log(cmd)
+            require('child_process').execSync(cmd,{stdio: 'inherit'})
+            
+            cmd ='cryptsetup luksOpen luks-users-data eggs-users-data'
+            console.log(cmd)
+            require('child_process').execSync(cmd,{stdio: 'inherit'})
+
+            cmd ='mkfs.ext4 /dev/mapper/eggs-users-data'
+            console.log(cmd)
+            shx.exec(cmd)
+
+            cmd ='mount /dev/mapper/eggs-users-data /mnt'
+            console.log(cmd)
+            require('child_process').execSync(cmd,{stdio: 'inherit'})
+
+            await this.copyUsersDatas(verbose)
+
+            cmd ='umount /mnt'
+            console.log(cmd)
+            require('child_process').execSync(cmd,{stdio: 'inherit'})
+
+            cmd = 'cryptsetup luksClose eggs-users-data'
+            console.log(cmd)
+            require('child_process').execSync(cmd,{stdio: 'inherit'})
+
+            cmd ='mv luks-users-data /home/eggs/ovarium/iso/live'
+            console.log(cmd)
+            require('child_process').execSync(cmd,{stdio: 'inherit'})
          }
          await this.makeDotDisk(backup, verbose)
          await this.makeIso(backup, scriptOnly, verbose)
@@ -890,10 +920,10 @@ export default class Ovary {
     * 
     * @param verbose 
     */
-   async bindUsersDatas(verbose = false) {
+    async getUsersDatasSize(verbose = false) : Promise <number> {
       const echo = Utils.setEcho(verbose)
       if (verbose) {
-         Utils.warning('bindUsersDatas')
+         Utils.warning('copyUsersDatas')
       }
 
       const cmds: string[] = []
@@ -904,23 +934,24 @@ export default class Ovary {
          capture: true
       })
       const users: string[] = result.data.split('\n')
+      let size = 0
       for (let i = 0; i < users.length - 1; i++) {
          // ad esclusione dell'utente live...
          if (users[i] !== this.settings.config.user_opt) {
-            cmds.push(await rexec('mkdir ' + this.settings.work_dir.merged + '/home/' + users[i], verbose))
-            cmds.push(await rexec('mount --bind --make-slave /home/' + users[i] + ' ' + this.settings.work_dir.merged + '/home/' + users[i], verbose))
+            size += parseInt(shx.exec('du --summarize /home/' + users[i]  + `|awk '{ print $1 }'`).stdout.trim())
          }
       }
+      return size
    }
 
    /**
- * 
- * @param verbose 
- */
-   async ubindUsersDatas(verbose = false) {
+    * 
+    * @param verbose 
+    */
+    async copyUsersDatas(verbose = false) {
       const echo = Utils.setEcho(verbose)
       if (verbose) {
-         Utils.warning('ubindUsersDatas')
+         Utils.warning('copyUsersDatas')
       }
 
       const cmds: string[] = []
@@ -934,7 +965,8 @@ export default class Ovary {
       for (let i = 0; i < users.length - 1; i++) {
          // ad esclusione dell'utente live...
          if (users[i] !== this.settings.config.user_opt) {
-            cmds.push(await rexec('umount ' + this.settings.work_dir.merged + '/home/' + users[i], verbose))
+            cmds.push(await rexec('mkdir /mnt/' + users[i], verbose))
+            cmds.push(await rexec('rsync -a /home/' + users[i] + ' ' + '/mnt/' + users[i], verbose))
          }
       }
    }
