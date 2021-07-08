@@ -18,6 +18,9 @@ You can follow the project also consulting the [commit history](https://github.c
 ## Changelog
 Versions are listed on reverse order, the first is the last one.
 
+### eggs-8.0.26
+* eggs produce --backup now is working with luks: all users accounts and their home are saved in crypted volume
+
 ### eggs-8.0.24
 * partial rewrite in perrisbrewery due a problem from same version 8.0.18 - 8.0.23. I hope it is solved, but need confirm
 

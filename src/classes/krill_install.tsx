@@ -909,9 +909,6 @@ adduser ${name} \
       execSync('cp /mnt/etc/shadow /tmp/calamares-krill-installer/etc/', { stdio: 'inherit' })
       execSync('cp /mnt/etc/group /tmp/calamares-krill-installer/etc/', { stdio: 'inherit' })
 
-      await checkIt('vedi che succede...')
-
-
       Utils.warning('unmount /mnt')
       execSync('umount /mnt', { stdio: 'inherit' })
 
