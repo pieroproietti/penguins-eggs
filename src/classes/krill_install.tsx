@@ -21,6 +21,7 @@ import Utils from './utils'
 import cliAutologin = require('../lib/cli-autologin')
 const exec = require('../lib/utils').exec
 
+import { execSync } from 'child_process'
 
 /**
  * 
@@ -277,6 +278,22 @@ export default class Hatching {
             redraw(<Install message={message} percent={percent} />)
          }
          // await checkIt(message)
+
+         // We restore users only if present /run/live/medium/live/luks-users-data
+         if (fs.existsSync('/run/live/medium/live/luks-users-data')) {
+            message = "Restore users data from backup "
+            percent = 0.37
+            try {
+               redraw(<Install message={message} percent={percent} spinner={true} />)
+               await this.restoreUsersData()
+            } catch (error) {
+               message += JSON.stringify(error)
+               redraw(<Install message={message} percent={percent} />)
+            }
+            // await checkIt(message)
+         }
+
+
 
          // sources-yolk
          message = 'sources-yolk'
@@ -869,6 +886,28 @@ adduser ${name} \
       await exec(cmd.trim())
    }
 
+   /**
+    * 
+    */
+   private async restoreUsersData() {
+      console.log('Opening volume luks-users-data and map it in /dev/mapper/eggs-users-data. You will insert the same passphrase you choose before')
+      execSync('sudo cryptsetup luksOpen /run/live/medium/live/luks-users-data eggs-users-data', { stdio: 'inherit' })
+
+      console.log('mounting volume eggs-users-data in /mnt')
+      execSync('sudo mount /dev/mapper/eggs-users-data /mnt', { stdio: 'inherit' })
+
+      console.log('copying users home in the installed system')
+      execSync('rsync -a /mnt/home/ /tmp/calamares-krill-installer/home/', { stdio: 'inherit' })
+
+      console.log('copying users accounts in the installed system')
+      execSync('cp /mnt/etc/passwd /tmp/calamares-krill-installer/etc/', { stdio: 'inherit' })
+
+      console.log('unmount /mnt')
+      execSync('umount /mnt', { stdio: 'inherit' })
+
+      console.log('closing eggs-users-data')
+      execSync('cryptsetup luksClose eggs-users-data', { stdio: 'inherit' })
+   }
 
    /**
     * mkfs
