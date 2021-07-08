@@ -8,7 +8,7 @@ Before to encrypt it you can mount filesystemfs.squashfs simply:
 
 We want to place our filesystem.squasfs in a luks-volume and hopefully try to unlock and mount our luks-volume during live-boot them load filesystem.squashfs and continue with standard operations.
 
-# Create an empy luks-volume
+# Create an empy luks-users-data
 
 ## create an empty volume to copy filesystem.squashfs
  sudo dd if=/dev/zero of=luks-volume bs=1 count=0 seek=1G
@@ -33,7 +33,7 @@ Now we can copy our filesystem.squashfs in our luks-volume
  cp /home/eggs/ovarium/iso/live/filesystem.squashfs /mnt
 
 ## umount
- sudu umount /mnt
+ sudo umount /mnt
 
 ## Close mapped-volume
  sudo cryptsetup luksClose mapped-volume
@@ -51,6 +51,63 @@ Now we can copy our filesystem.squashfs in our luks-volume
  sudo umount /mnt
 
  sudo cryptsetup luksClose mapped-volume
+
+# Create and restore the luck-users-data
+
+## backup
+
+Well trying to create and include luks-users-data in the iso...
+
+If we pass --backup option in the produce command, then:
+
+ sudo eggs produce --fast
+
+ sudo dd if=/dev/zero of=luks-users-data bs=1 count=0 seek=1G
+
+ sudo cryptsetup luksFormat luks-users-data
+
+ sudo cryptsetup luksOpen luks-users-data eggs-users-data
+
+ sudo mkfs.ext4 /dev/mapper/eggs-users-data
+
+ sudo mount /dev/mapper/eggs-users-data /mnt
+
+ sudo cp /home/ /mnt -R
+
+ sudo umount /mnt
+
+ sudo cryptsetup luksClose eggs-users-data
+
+ sudo mv luks-users-data /home/eggs/ovarium/iso/live
+
+At this point we can finalize the iso.
+
+## restore
+
+We can understand the necessity to restore luks-users-data from the presence of the file
+/run/live/medium/live/luks-users-data after the boot from iso
+
+### starting to restore
+After the process unpackfs and rsyncfs in krill, if /run/live/medium/live/luks-users-data 
+is present:
+
+ sudo cryptsetup luksOpen /run/live/medium/live/luks-users-data eggs-users-data
+
+ sudo mount /dev/mapper/eggs-users-data /mnt # well be mounted read-only
+
+At this point it is a joke to restore users data, during krill process.
+
+krill use '/tmp/calamares-krill-root' as installTarget, so
+
+### restoring users-data
+ sudo cp /mnt/ /tmp/calamares-krill-root/home -R
+
+### unmount and close luks
+ sudo umount /mnt
+
+ sudo cryptsetup luksClose eggs-users-data
+
+### continue the installation process
 
 
 # live-boot
