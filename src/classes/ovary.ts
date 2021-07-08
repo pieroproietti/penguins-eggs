@@ -203,8 +203,6 @@ export default class Ovary {
             Utils.warning('Saving users datas in eggs-users-data')
             await this.copyUsersDatas(verbose)
 
-            // await Utils.customConfirm('check /mnt')
-
             Utils.warning('Unmount /mnt')
             execSync('umount /mnt', { stdio: 'inherit' })
 
@@ -962,7 +960,7 @@ export default class Ovary {
       for (let i = 0; i < users.length - 1; i++) {
          // ad esclusione dell'utente live...
          if (users[i] !== this.settings.config.user_opt) {
-            execSync('mkdir /mnt/home/' + users[i], { stdio: 'inherit' })
+            execSync('mkdir -p /mnt/home/' + users[i], { stdio: 'inherit' })
             execSync('rsync -a /mnt/home/' + users[i] + '/ ' + '/mnt/home/' + users[i] +'/', { stdio: 'inherit' })
          }
       }
