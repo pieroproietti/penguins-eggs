@@ -1,146 +1,129 @@
-# 1. Create compressed squashfs image
+# Trying to use a luks-volume to encript filesystem.squashfs
 
-We are starting with /home/eggs/ovarium/iso/live/filesystem.squashfs created by eggs
+We are starting with /home/eggs/ovarium/iso/live/filesystem.squashfs created by eggs.
 
-# 2. Reencrypt the image to wrap it in a LUKS container
+Before to encrypt it you can mount filesystemfs.squashfs simply:
 
-Create a little additional room for the reencryption routine at the end of the image. Only half of the additional room is used for the header, so the manpage recommends using double the recommended minimum header size – so 32 MiB for `luks2`. Less is okay if you don't need the metadata space or are close to the maximum disc size.
+ sudo mount /home/eggs/ovarium/iso/live/filesystem.squashfs /mnt/
 
-This operation can potentially **eat your data**, so make sure you have a backup or can regenrate the file.
+We want to place our filesystem.squasfs in a luks-volume and hopefully try to unlock and mount our luks-volume during live-boot them load filesystem.squashfs and continue with standard operations.
 
-    # create an empty volume
-    dd if=/dev/zero of=crypted-filesystem.img bs=1 count=0 seek=32G
+# Create an empy luks-users-data
 
-    # Next, we will encrypt our container
-    sudo cryptsetup luksFormat crypted-filesystem.img 
+## create an empty volume to copy filesystem.squashfs
+ sudo dd if=/dev/zero of=luks-volume bs=1 count=0 seek=1G
 
-    # Now, we can unlock our container and map it as /dev/mapper/filesystem
-    sudo cryptsetup luksOpen crypted-filesystem.img cryped-filesystem
+## Next, we will encrypt our container
+ sudo cryptsetup luksFormat luks-volume
 
-    # format crypted-filesystem
-    sudo mkfs.ext4 /dev/mapper/crypted-filesystem
+## Now, we can unlock our container and map it as mapped-volume
+ sudo cryptsetup luksOpen luks-volume mapped-volume
 
+## format mapped-volume
+ sudo mkfs.ext4 /dev/mapper/mapped-volume
 
-    # mount volume crypted
-    sudo mount /dev/mapper/crypted-filesystem ./crypted-filesystem
 
-    cp /home/eggs/ovarium/iso/live/filesystem.squashfs ./crypted-filesystem
+# Copy filesystem.squashfs in our luks-volume
+Now we can copy our filesystem.squashfs in our luks-volume
 
-    # copia dei files in /dev/mapper/filesystem 
-    cp /filesystem /crypted-filesystem -R
+## mount volume mapped-volume
+ sudo mount /dev/mapper/mapped-volume /mnt
 
-    # umount
-    sudo umount ./crypted-filesystem 
+## copy 
+ cp /home/eggs/ovarium/iso/live/filesystem.squashfs /mnt
 
+## umount
+ sudo umount /mnt
 
+## Close mapped-volume
+ sudo cryptsetup luksClose mapped-volume
 
+# unlock and map, mount, umount and close our luks-volume
 
+## unlock and map 
+ sudo cryptsetup luksOpen luks-volume mapped-volume
 
+## mount 
+ sudo mount /dev/mapper/mapped-volume /mnt
 
+## umount and close
 
+ sudo umount /mnt
 
+ sudo cryptsetup luksClose mapped-volume
 
+# Create and restore the luck-users-data
 
+## backup
 
+Well trying to create and include luks-users-data in the iso...
 
+If we pass --backup option in the produce command, then:
 
+ sudo eggs produce --fast
 
+ sudo dd if=/dev/zero of=luks-users-data bs=1 count=0 seek=1G
 
-    # before to encrypt you can mount filesystemfs.squashfs simply:
-    sudo mount /home/eggs/ovarium/iso/live/filesystem.squashfs /mnt/
+ sudo cryptsetup luksFormat luks-users-data
 
+ sudo cryptsetup luksOpen luks-users-data eggs-users-data
 
+ sudo mkfs.ext4 /dev/mapper/eggs-users-data
 
+ sudo mount /dev/mapper/eggs-users-data /mnt
 
+ sudo cp /home/ /mnt -R
 
-    # add 32M additional spaces
-    sudo truncate -s +32M /home/eggs/ovarium/iso/live/filesystem.squashfs
+ sudo umount /mnt
 
-    # crypto
-    sudo cryptsetup -q reencrypt --encrypt --type luks2 --resilience none --disable-locks --reduce-device-size 32M \
-    /home/eggs/ovarium/iso/live/filesystem.squashfs \
-    crypted_filesystem.squashfs
+ sudo cryptsetup luksClose eggs-users-data
 
-    # open 
-    # sudo cryptsetup luksOpen /dev/mapper/crypted_filesystem.squashfs decrypted_filesystem.squashfs --verbose --debug
+ sudo mv luks-users-data /home/eggs/ovarium/iso/live
 
-    # this should work
-    sudo cryptsetup --type luks2 open /dev/mapper/crypted_filesystem.squashfs decrypted_filesystem.squashfs --verbose --debug
+At this point we can finalize the iso.
 
-    # mount
-    sudo mount /dev/mapper/decrypted_filesystem.squashfs /mnt
+## restore
 
-You can check with `cryptsetup luksDump filesystem.squashfs` that the data segment is offset at only half the additional size and then trim the size accordingly.
+We can understand the necessity to restore luks-users-data from the presence of the file
+/run/live/medium/live/luks-users-data after the boot from iso
 
-    truncate -s -4M filesystem.squashfs
+### starting to restore
+After the process unpackfs and rsyncfs in krill, if /run/live/medium/live/luks-users-data 
+is present:
 
-# 3. Burn encrypted container to a DVD
+ sudo cryptsetup luksOpen /run/live/medium/live/luks-users-data eggs-users-data
 
-Now simply burn the `filesystem.squashfs` to a disc like you would do with an `*.iso`. In graphical tools you probably need to select "All Files" to be able to select it.
+ sudo mount /dev/mapper/eggs-users-data /mnt # well be mounted read-only
 
-    growisofs -dvd-compat -Z /dev/sr0=image.sqfs
+At this point it is a joke to restore users data, during krill process.
 
-# 4. Congratulations
+krill use '/tmp/calamares-krill-root' as installTarget, so
 
-If your graphical desktop uses some sort of automounter you should see a password prompt pop up after the disc tray is reloaded. Otherwise handle it like you would handle a normal encrypted block device and mount the squashfs filesystem inside.
+### restoring users-data
+ sudo cp /mnt/ /tmp/calamares-krill-root/home -R
 
-    sudo cryptsetup open /dev/sr0 cryptdvd
-    sudo mount -t squashfs /dev/mapper/cryptdvd /mnt
+### unmount and close luks
+ sudo umount /mnt
 
----
+ sudo cryptsetup luksClose eggs-users-data
 
-# Add Integrity Checking and Error Correction
+### continue the installation process
 
-With a compressed and encrypted image like the one above, everything can go to sh\*t if there is a single bit flip in the encrypted container, leading to a chain of unrecoverable errors. I'm not going into any longevity comparisons between optical media and hard disks but we all know DVDs can go bad through scratches, dirt or decomposition. Ideally, you're able to correct erroneous sectors but at the absolute minimum you'll want to know when your data is garbled.
 
-Hence, I looked into some methods to add checksumming and parity data to the image.
+# live-boot
 
-## I) Simple and Compatible with PAR2
+live-boot is a hook for the initramfs-tools, used to generate a initramfs capable to boot live systems, such as those created by live-helper(7). This includes the Live systems ISOs, netboot tarballs, and usb stick images.
 
-The simple approach would be to just generate some parity blocks with `par2`. This tool is widespread and will probably still be obtainable in a few decade's time. Being a Reed-Solomon erasure coding, you can specify how much parity data you would like to have, in percent. The calculations will take a lot of time on multi-Gigabyte images though.
+At boot time it will look for a (read-only) medium containing a "/live" directory where a root filesystems (often a compressed filesystem image like squashfs) is stored. If found, it will create a writable environment, using aufs, to boot the system from.
 
-    par2 create -r10 image.sqfs
+Here the problem is how to change the way live-boot work to:
 
-This will create a number of files next to the image, that you can then burn to the disc in a standard UDF filesystem.
+look for a  (read-only) medium containing a "/luks" directory where a root filesystems is stored. If found it must open the the luks-volume, take the filesystem image from there and create a writable environment, using aufs, to boot the system from.
 
-    growisofs -Z /dev/sr0 -udf ./
+A possible alternative perhaps can be using persistence file, who can be created in a usb too and encrypted in the same way.
 
-## II) Integrity and Error-Correction with `dm-verity`
+# Links
 
-Another solution is to use another device-mapper layer of the Linux kernel. Although this is a relatively new feature, it should be widely available already – at least in a recent Ubuntu. `dm-verity` creates a tree-like structure of block hashes up to a root hash, that needs to be stored externally somehow. It creates a cryptographically sound method to verify the integrity of the disc and it allows adding – again Reed-Solomon coded – parity blocks to restore detected bad blocks.
-
-Since it is a device-mapper which is supposed to work with raw disk devices, I would expect it to fare better with unresponsive or badly scratched discs, that return many bad sectors. But for lack of a reliable way to inject precise faults on optical discs I cannot test this assumption. I am not sure how this method behaves if you were to have a bad sector exactly where the verity superblock is supposed to be on the disc.
-
-There is two methods to this. Either you create the hash-tree and parity blocks in files next to the encrypted image and then burn them in a UDF filesystem like in method I). Or you reuse the same image file and specify offsets for the different parts. The former would have the advantage that you can add README files and reuse existing recovery tools to read the files from disc and then try to restore them locally. The latter would minimize the number of layers but does require some calculation for the offsets. Either way you somehow need to store the generated root  hash for this to make any sense at all! I propose writing it on the disc itself or encoding it in a QR code and printing it on the leaflet that you put in the case.
-
-### Calculating Offsets
-
-If we want to reuse a single file with `veritysetup`, you need to know where to place the hash and error correction blocks.
-
-The hash offset is relatively straightforward, since it is simply the amount of data you have, i.e. the size of the image. First of all make sure that it is a multiple of `4096` bytes, which is the default blocksize of `veritysetup`! `mksquashfs` uses a default block size of 128 KiB, so this should be given here. Therefore `--hash-offset`and `--data-blocks` are calculated as:
-
-    stat -c%s image.sqfs |\
-      awk '{ printf "--hash-offset=%d --data-blocks=%d\n", $1, $1/4096 }'
-
-The `--fec-offset` is a little more tricky because you need to know how many hash blocks are going to be written, which is not *completely trivial* due to the tree structure. You can calculate it recursively though. The following Python snippet assumes 4k data and hash sectors and 32 bit hashes, thereby fitting 128 hashes into one hash block.
-
-```python
-import math
-# hs := hash sectors, ds := data sectors
-def hs(ds, superblock=False):
-  h = 1 if superblock else 0
-  while ds > 1:
-    ds = math.ceil(ds / 128)
-    h += ds
-  return h
-```
-
-So for a small file with 72884224 bytes or 17794 data blocks, it would result in 144 hash blocks. The `--fec-offset` would then be `(data-blocks + hash-blocks) * 4096` – in this case 73474048. The format command for my small test file would then be:
-
-    veritysetup format --fec-roots=24 --data-blocks=17794 --hash-offset=72884224 --fec-offset=73474048 {--fec-device=,,}image.sqfs
-
-## TODO / WARNING
-
-So far I couldn't verify any actual corruption cases where I overwrote the first few blocks with `dd` ...
-
-This may or may not have been due to [cryptsetup/cryptsetup#554](https://gitlab.com/cryptsetup/cryptsetup/-/issues/554). I haven't checked again since then.
+* [Cryptosetup for Debian](https://cryptsetup-team.pages.debian.net/cryptsetup/)
+* [full disk encryption ubuntu](https://help.ubuntu.com/community/Full_Disk_Encryption_Howto_2019)
+* [live-boot](https://manpages.debian.org/unstable/live-boot-doc/live-boot.7.en.html)
