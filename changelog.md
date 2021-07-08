@@ -21,13 +21,13 @@ Versions are listed on reverse order, the first is the last one.
 ### eggs-8.0.24
 * partial rewrite in perrisbrewery due a problem from same version 8.0.18 - 8.0.23. I hope it is solved, but need confirm
 
-### eggs-8.0.22
+### eggs-8.0.22 retired
 * just same refactoring and removed last ; in krill_prepare networking dns
 
-### eggs-8.0.20
+### eggs-8.0.20 retired
 * added domain and dns network configuration in krill
 
-### eggs-8.0.19
+### eggs-8.0.19 retired
 * live user is now created also for backups, iso volid became just basename, no limitations on name of isos
 
 ### eggs-8.0.18
