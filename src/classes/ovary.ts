@@ -182,34 +182,37 @@ export default class Ovary {
          await this.makeSquashfs(scriptOnly, verbose)
 
          if (backup) {
-            console.log('You will be prompted to give crucial informations to protect your users data')
+            Utils.warning('You will be prompted to give crucial informations to protect your users data')
+            Utils.warning('Your passphrase will be not written in any way on the support, so it is literally unrecoverable.')
             const volumeSize = await this.getUsersDatasSize(verbose) + 8 * 1024 * 1024
-            console.log('Creating volume luks-users-data')
+            Utils.warning('Creating volume luks-users-data')
             execSync('dd if=/dev/zero of=/tmp/luks-users-data bs=1 count=0 seek=1G', { stdio: 'inherit' })
 
-            console.log('Formatting volume luks-users-data. You will insert a passphrase and confirm it')
+            Utils.warning('Formatting volume luks-users-data. You will insert a passphrase and confirm it')
             execSync('cryptsetup luksFormat /tmp/luks-users-data', { stdio: 'inherit' })
 
-            console.log('Opening volume luks-users-data and map it in /dev/mapper/eggs-users-data. You will insert the same passphrase you choose before')
+            Utils.warning('Opening volume luks-users-data and map it in /dev/mapper/eggs-users-data. You will insert the same passphrase you choose before')
             execSync('cryptsetup luksOpen /tmp/luks-users-data eggs-users-data', { stdio: 'inherit' })
 
-            console.log('Formatting volume eggs-users-data with ext4')
+            Utils.warning('Formatting volume eggs-users-data with ext4')
             execSync('mkfs.ext4 /dev/mapper/eggs-users-data', { stdio: 'inherit' })
 
-            console.log('mounting volume eggs-users-data in /mnt')
+            Utils.warning('mounting volume eggs-users-data in /mnt')
             execSync('mount /dev/mapper/eggs-users-data /mnt', { stdio: 'inherit' })
 
-            console.log('Saving users datas in eggs-users-data')
+            Utils.warning('Saving users datas in eggs-users-data')
             await this.copyUsersDatas(verbose)
 
-            console.log('Unmount /mnt')
+            // await Utils.customConfirm('check /mnt')
+
+            Utils.warning('Unmount /mnt')
             execSync('umount /mnt', { stdio: 'inherit' })
 
-            console.log('closing eggs-users-data')
+            Utils.warning('closing eggs-users-data')
             execSync('cryptsetup luksClose eggs-users-data', { stdio: 'inherit' })
 
-            console.log('moving luks-users-data in ' + this.settings.config.snapshot_dir + '/iso/live')
-            execSync('mv /tmp/luks-users-data ' + this.settings.config.snapshot_dir + '/iso/live', { stdio: 'inherit' })
+            Utils.warning('moving luks-users-data in ' + this.settings.config.snapshot_dir + 'ovarium/iso/live')
+            execSync('mv /tmp/luks-users-data ' + this.settings.config.snapshot_dir + 'ovarium/iso/live', { stdio: 'inherit' })
          }
 
          await this.makeDotDisk(backup, verbose)
@@ -960,11 +963,13 @@ export default class Ovary {
          // ad esclusione dell'utente live...
          if (users[i] !== this.settings.config.user_opt) {
             execSync('mkdir /mnt/home/' + users[i], { stdio: 'inherit' })
-            execSync('rsync -a /home/' + users[i] + ' ' + '/mnt/home/' + users[i], { stdio: 'inherit' })
+            execSync('rsync -a /mnt/home/' + users[i] + '/ ' + '/mnt/home/' + users[i] +'/', { stdio: 'inherit' })
          }
       }
       execSync('mkdir -p /mnt/etc', { stdio: 'inherit' })
       execSync('cp /etc/passwd /mnt/etc', { stdio: 'inherit' })
+      execSync('cp /etc/shadow /mnt/etc', { stdio: 'inherit' })
+      execSync('cp /etc/group /mnt/etc', { stdio: 'inherit' })
    }
 
    /**

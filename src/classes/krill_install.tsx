@@ -431,16 +431,20 @@ export default class Hatching {
          }
          // await checkIt(message)
 
-         message = "Adding user "
-         percent = 0.73
-         try {
-            redraw(<Install message={message} percent={percent} />)
-            await this.addUser(this.users.name, this.users.password, this.users.fullname, '', '', '')
-         } catch (error) {
-            message += JSON.stringify(error)
-            redraw(<Install message={message} percent={percent} />)
+
+         // We create user only if NOT present /run/live/medium/live/luks-users-data
+         if (!fs.existsSync('/run/live/medium/live/luks-users-data')) {
+            message = "Adding user "
+            percent = 0.73
+            try {
+               redraw(<Install message={message} percent={percent} />)
+               await this.addUser(this.users.name, this.users.password, this.users.fullname, '', '', '')
+            } catch (error) {
+               message += JSON.stringify(error)
+               redraw(<Install message={message} percent={percent} />)
+            }
+            // await checkIt(message)
          }
-         // await checkIt(message)
 
          message = "adding user password "
          percent = 0.77
@@ -747,7 +751,7 @@ adduser ${name} \
          content += 'domain ' + this.network.domain + '\n'
          for (const element of this.network.dns) {
             content += 'nameserver ' + element + '\n'
-          }
+         }
          Utils.write(file, content)
       }
    }
@@ -890,22 +894,28 @@ adduser ${name} \
     * 
     */
    private async restoreUsersData() {
-      console.log('Opening volume luks-users-data and map it in /dev/mapper/eggs-users-data. You will insert the same passphrase you choose before')
+      Utils.warning('Opening volume luks-users-data and map it in /dev/mapper/eggs-users-data.')
+      Utils.warning('You will insert the same passphrase you choose during the backup production')
       execSync('sudo cryptsetup luksOpen /run/live/medium/live/luks-users-data eggs-users-data', { stdio: 'inherit' })
 
-      console.log('mounting volume eggs-users-data in /mnt')
+      Utils.warning('mounting volume eggs-users-data in /mnt')
       execSync('sudo mount /dev/mapper/eggs-users-data /mnt', { stdio: 'inherit' })
 
-      console.log('copying users home in the installed system')
+      Utils.warning('copying users home in the installed system')
       execSync('rsync -a /mnt/home/ /tmp/calamares-krill-installer/home/', { stdio: 'inherit' })
 
-      console.log('copying users accounts in the installed system')
+      Utils.warning('copying users accounts in the installed system')
       execSync('cp /mnt/etc/passwd /tmp/calamares-krill-installer/etc/', { stdio: 'inherit' })
+      execSync('cp /mnt/etc/shadow /tmp/calamares-krill-installer/etc/', { stdio: 'inherit' })
+      execSync('cp /mnt/etc/group /tmp/calamares-krill-installer/etc/', { stdio: 'inherit' })
 
-      console.log('unmount /mnt')
+      await checkIt('vedi che succede...')
+
+
+      Utils.warning('unmount /mnt')
       execSync('umount /mnt', { stdio: 'inherit' })
 
-      console.log('closing eggs-users-data')
+      Utils.warning('closing eggs-users-data')
       execSync('cryptsetup luksClose eggs-users-data', { stdio: 'inherit' })
    }
 
