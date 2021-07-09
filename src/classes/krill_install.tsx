@@ -901,8 +901,12 @@ adduser ${name} \
       Utils.warning('mounting volume eggs-users-data in /mnt')
       execSync('sudo mount /dev/mapper/eggs-users-data /mnt', { stdio: 'inherit' })
 
+      Utils.warning('removing live user in the installed system')
+      execSync('rm -rf /tmp/calamares-krill-installer/home/*', { stdio: 'inherit' })
+
       Utils.warning('copying users home in the installed system')
       execSync('rsync -a /mnt/home/ /tmp/calamares-krill-installer/home/', { stdio: 'inherit' })
+
 
       Utils.warning('copying users accounts in the installed system')
       execSync('cp /mnt/etc/passwd /tmp/calamares-krill-installer/etc/', { stdio: 'inherit' })
@@ -914,6 +918,9 @@ adduser ${name} \
 
       Utils.warning('closing eggs-users-data')
       execSync('cryptsetup luksClose eggs-users-data', { stdio: 'inherit' })
+
+
+
    }
 
    /**

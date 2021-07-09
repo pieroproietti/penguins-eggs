@@ -50,7 +50,8 @@ case "$1" in
         # remove penguins-eggs multiarch (krill-modules)
         rm -rf /usr/lib/i386-linux-gnu/penguins-eggs/
         rm -rf /usr/lib/x86_64-linux-gnu/penguins-eggs/
-        rm -rf /usr/lib/penguins-eggs/
+        # armel and arm64 have all in /usr/lib/penguins-eggs/
+        # so don't need to be removed
     ;;
 
     *)
