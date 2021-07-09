@@ -21,6 +21,7 @@ import Utils from './utils'
 import cliAutologin = require('../lib/cli-autologin')
 const exec = require('../lib/utils').exec
 
+import { execSync } from 'child_process'
 
 /**
  * 
@@ -278,6 +279,22 @@ export default class Hatching {
          }
          // await checkIt(message)
 
+         // We restore users only if present /run/live/medium/live/luks-users-data
+         if (fs.existsSync('/run/live/medium/live/luks-users-data')) {
+            message = "Restore users data from backup "
+            percent = 0.37
+            try {
+               redraw(<Install message={message} percent={percent} spinner={true} />)
+               await this.restoreUsersData()
+            } catch (error) {
+               message += JSON.stringify(error)
+               redraw(<Install message={message} percent={percent} />)
+            }
+            // await checkIt(message)
+         }
+
+
+
          // sources-yolk
          message = 'sources-yolk'
          percent = 0.40
@@ -414,16 +431,20 @@ export default class Hatching {
          }
          // await checkIt(message)
 
-         message = "Adding user "
-         percent = 0.73
-         try {
-            redraw(<Install message={message} percent={percent} />)
-            await this.addUser(this.users.name, this.users.password, this.users.fullname, '', '', '')
-         } catch (error) {
-            message += JSON.stringify(error)
-            redraw(<Install message={message} percent={percent} />)
+
+         // We create user only if NOT present /run/live/medium/live/luks-users-data
+         if (!fs.existsSync('/run/live/medium/live/luks-users-data')) {
+            message = "Adding user "
+            percent = 0.73
+            try {
+               redraw(<Install message={message} percent={percent} />)
+               await this.addUser(this.users.name, this.users.password, this.users.fullname, '', '', '')
+            } catch (error) {
+               message += JSON.stringify(error)
+               redraw(<Install message={message} percent={percent} />)
+            }
+            // await checkIt(message)
          }
-         // await checkIt(message)
 
          message = "adding user password "
          percent = 0.77
@@ -730,7 +751,7 @@ adduser ${name} \
          content += 'domain ' + this.network.domain + '\n'
          for (const element of this.network.dns) {
             content += 'nameserver ' + element + '\n'
-          }
+         }
          Utils.write(file, content)
       }
    }
@@ -869,6 +890,38 @@ adduser ${name} \
       await exec(cmd.trim())
    }
 
+   /**
+    * 
+    */
+   private async restoreUsersData() {
+      Utils.warning('Opening volume luks-users-data and map it in /dev/mapper/eggs-users-data.')
+      Utils.warning('You will insert the same passphrase you choose during the backup production')
+      execSync('sudo cryptsetup luksOpen /run/live/medium/live/luks-users-data eggs-users-data', { stdio: 'inherit' })
+
+      Utils.warning('mounting volume eggs-users-data in /mnt')
+      execSync('sudo mount /dev/mapper/eggs-users-data /mnt', { stdio: 'inherit' })
+
+      Utils.warning('removing live user in the installed system')
+      execSync('rm -rf /tmp/calamares-krill-installer/home/*', { stdio: 'inherit' })
+
+      Utils.warning('copying users home in the installed system')
+      execSync('rsync -a /mnt/home/ /tmp/calamares-krill-installer/home/', { stdio: 'inherit' })
+
+
+      Utils.warning('copying users accounts in the installed system')
+      execSync('cp /mnt/etc/passwd /tmp/calamares-krill-installer/etc/', { stdio: 'inherit' })
+      execSync('cp /mnt/etc/shadow /tmp/calamares-krill-installer/etc/', { stdio: 'inherit' })
+      execSync('cp /mnt/etc/group /tmp/calamares-krill-installer/etc/', { stdio: 'inherit' })
+
+      Utils.warning('unmount /mnt')
+      execSync('umount /mnt', { stdio: 'inherit' })
+
+      Utils.warning('closing eggs-users-data')
+      execSync('cryptsetup luksClose eggs-users-data', { stdio: 'inherit' })
+
+
+
+   }
 
    /**
     * mkfs
