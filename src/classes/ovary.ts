@@ -949,21 +949,20 @@ export default class Ovary {
       }
 
       const cmds: string[] = []
-      const cmd = `chroot ${this.settings.work_dir.merged} getent passwd {1000..60000} |awk -F: '{print $1}'`
+      // take original users in croot there is just live now
+      const cmd = `getent passwd {1000..60000} |awk -F: '{print $1}'`
       const result = await exec(cmd, {
          echo: verbose,
          ignore: false,
          capture: true
       })
-
-      execSync('mkdir -p /mnt/home', { stdio: 'inherit' })
       const users: string[] = result.data.split('\n')
+      execSync('mkdir -p /mnt/home', { stdio: 'inherit' })
       for (let i = 0; i < users.length - 1; i++) {
          // ad esclusione dell'utente live...
          if (users[i] !== this.settings.config.user_opt) {
             execSync('mkdir -p /mnt/home/' + users[i], { stdio: 'inherit' })
             execSync('rsync -a /home/' + users[i] + '/ ' + '/mnt/home/' + users[i] +'/', { stdio: 'inherit' })
-            await Utils.customConfirm('check user: '+ users[i])
          }
       }
       execSync('mkdir -p /mnt/etc', { stdio: 'inherit' })

@@ -55,7 +55,7 @@ export default class Pacman {
     * 
     */
    static debs4eggs = ['squashfs-tools', 'xorriso', 'live-boot', 'live-boot-initramfs-tools', 'dpkg-dev', 'syslinux-common', 'isolinux', 'net-tools']
-   static debs4notRemove = ['rsync', 'whois', 'dosfstools', 'parted']
+   static debs4notRemove = ['rsync', 'whois', 'dosfstools', 'parted', 'cryptsetup']
    static debs4calamares = ['calamares', 'qml-module-qtquick2', 'qml-module-qtquick-controls']
 
    /**
