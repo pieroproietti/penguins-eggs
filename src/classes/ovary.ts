@@ -13,8 +13,9 @@ import fs = require('fs')
 import path = require('path')
 import os = require('os')
 import shx = require('shelljs')
-import chalk = require('chalk')
-import mustache = require('mustache')
+
+import chalk from 'chalk'
+import mustache from 'mustache'
 
 import PveLive from './pve-live'
 
@@ -36,6 +37,8 @@ import Bleach from './bleach'
 import Repo from './yolk'
 import cliAutologin = require('../lib/cli-autologin')
 import Distro from './distro'
+import { execSync } from 'child_process'
+
 
 /**
  * Ovary:
@@ -45,10 +48,12 @@ export default class Ovary {
 
    settings = {} as Settings
 
-   // Sono utilizzate per passare i flag di produce
    snapshot_prefix = ''
+
    snapshot_basename = ''
+
    theme = ''
+
    compression = ''
 
    /**
@@ -165,30 +170,50 @@ export default class Ovary {
          }
 
          await this.bindLiveFs(verbose)
-         if (backup) {
-            await this.bindUsersDatas(verbose)
-         } else {
-            await this.cleanUsersAccounts((verbose))
-         }
+         await this.cleanUsersAccounts()
          await this.createUserLive(verbose)
 
          if (await Pacman.isGui()) {
             await this.createAutostart(this.theme, myAddons)
          } else {
             cliAutologin.add(this.settings.distro.distroId, this.settings.distro.versionId, this.settings.config.user_opt, this.settings.config.user_opt_passwd, this.settings.config.root_passwd, this.settings.work_dir.merged)
-            /*
-            if (backup) {
-               cliAutologin.add(this.settings.distro.distroId, this.settings.distro.versionId, Utils.getPrimaryUser(), '*******', '*******', this.settings.work_dir.merged)
-            } else {
-               cliAutologin.add(this.settings.distro.distroId, this.settings.distro.versionId, this.settings.config.user_opt, this.settings.config.user_opt_passwd, this.settings.config.root_passwd, this.settings.work_dir.merged)
-            }
-            */
          }
          await this.editLiveFs(verbose)
          await this.makeSquashfs(scriptOnly, verbose)
+
          if (backup) {
-            await this.ubindUsersDatas(verbose)
+            Utils.warning('You will be prompted to give crucial informations to protect your users data')
+            Utils.warning('Your passphrase will be not written in any way on the support, so it is literally unrecoverable.')
+            const volumeSize = await this.getUsersDatasSize(verbose) + 8 * 1024 * 1024
+            Utils.warning('Creating volume luks-users-data')
+            execSync('dd if=/dev/zero of=/tmp/luks-users-data bs=1 count=0 seek=1G', { stdio: 'inherit' })
+
+            Utils.warning('Formatting volume luks-users-data. You will insert a passphrase and confirm it')
+            execSync('cryptsetup luksFormat /tmp/luks-users-data', { stdio: 'inherit' })
+
+            Utils.warning('Opening volume luks-users-data and map it in /dev/mapper/eggs-users-data')
+            Utils.warning('You will insert the same passphrase you choose before')
+            execSync('cryptsetup luksOpen /tmp/luks-users-data eggs-users-data', { stdio: 'inherit' })
+
+            Utils.warning('Formatting volume eggs-users-data with ext4')
+            execSync('mkfs.ext4 /dev/mapper/eggs-users-data', { stdio: 'inherit' })
+
+            Utils.warning('mounting volume eggs-users-data in /mnt')
+            execSync('mount /dev/mapper/eggs-users-data /mnt', { stdio: 'inherit' })
+
+            Utils.warning('Saving users datas in eggs-users-data')
+            await this.copyUsersDatas(verbose)
+
+            Utils.warning('Unmount /mnt')
+            execSync('umount /mnt', { stdio: 'inherit' })
+
+            Utils.warning('closing eggs-users-data')
+            execSync('cryptsetup luksClose eggs-users-data', { stdio: 'inherit' })
+
+            Utils.warning('moving luks-users-data in ' + this.settings.config.snapshot_dir + 'ovarium/iso/live')
+            execSync('mv /tmp/luks-users-data ' + this.settings.config.snapshot_dir + 'ovarium/iso/live', { stdio: 'inherit' })
          }
+
          await this.makeDotDisk(backup, verbose)
          await this.makeIso(backup, scriptOnly, verbose)
          await this.bindVfs(verbose)
@@ -890,10 +915,10 @@ export default class Ovary {
     * 
     * @param verbose 
     */
-   async bindUsersDatas(verbose = false) {
+   async getUsersDatasSize(verbose = false): Promise<number> {
       const echo = Utils.setEcho(verbose)
       if (verbose) {
-         Utils.warning('bindUsersDatas')
+         Utils.warning('copyUsersDatas')
       }
 
       const cmds: string[] = []
@@ -904,39 +929,47 @@ export default class Ovary {
          capture: true
       })
       const users: string[] = result.data.split('\n')
+      let size = 0
       for (let i = 0; i < users.length - 1; i++) {
          // ad esclusione dell'utente live...
          if (users[i] !== this.settings.config.user_opt) {
-            cmds.push(await rexec('mkdir ' + this.settings.work_dir.merged + '/home/' + users[i], verbose))
-            cmds.push(await rexec('mount --bind --make-slave /home/' + users[i] + ' ' + this.settings.work_dir.merged + '/home/' + users[i], verbose))
+            size += parseInt(shx.exec('du --summarize /home/' + users[i] + `|awk '{ print $1 }'`).stdout.trim())
          }
       }
+      return size
    }
 
    /**
- * 
- * @param verbose 
- */
-   async ubindUsersDatas(verbose = false) {
+    * 
+    * @param verbose 
+    */
+   async copyUsersDatas(verbose = false) {
       const echo = Utils.setEcho(verbose)
       if (verbose) {
-         Utils.warning('ubindUsersDatas')
+         Utils.warning('copyUsersDatas')
       }
 
       const cmds: string[] = []
-      const cmd = `chroot ${this.settings.work_dir.merged} getent passwd {1000..60000} |awk -F: '{print $1}'`
+      // take original users in croot there is just live now
+      const cmd = `getent passwd {1000..60000} |awk -F: '{print $1}'`
       const result = await exec(cmd, {
          echo: verbose,
          ignore: false,
          capture: true
       })
       const users: string[] = result.data.split('\n')
+      execSync('mkdir -p /mnt/home', { stdio: 'inherit' })
       for (let i = 0; i < users.length - 1; i++) {
          // ad esclusione dell'utente live...
          if (users[i] !== this.settings.config.user_opt) {
-            cmds.push(await rexec('umount ' + this.settings.work_dir.merged + '/home/' + users[i], verbose))
+            execSync('mkdir -p /mnt/home/' + users[i], { stdio: 'inherit' })
+            execSync('rsync -a /home/' + users[i] + '/ ' + '/mnt/home/' + users[i] +'/', { stdio: 'inherit' })
          }
       }
+      execSync('mkdir -p /mnt/etc', { stdio: 'inherit' })
+      execSync('cp /etc/passwd /mnt/etc', { stdio: 'inherit' })
+      execSync('cp /etc/shadow /mnt/etc', { stdio: 'inherit' })
+      execSync('cp /etc/group /mnt/etc', { stdio: 'inherit' })
    }
 
    /**
@@ -1416,7 +1449,7 @@ export default class Ovary {
             Utils.warning("Can't create isohybrid. File: isohdpfx.bin not found. The resulting image will be a standard iso file")
          }
       }
-      const prefix = Utils.getPrefix(this.settings.config.snapshot_prefix,backup)
+      const prefix = Utils.getPrefix(this.settings.config.snapshot_prefix, backup)
       const volid = Utils.getVolid(this.settings.remix.name)
       const postfix = Utils.getPostfix()
 
