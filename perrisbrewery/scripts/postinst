@@ -37,10 +37,10 @@ case "$1" in
             cp /usr/lib/penguins-eggs/manpages/doc/man/eggs.1.gz /usr/share/man/man1
         fi
 
-        # Avvia configurazione automatica
+        # deve essere chiamato SOLO da new-postinst
+        # mentre viene chiamato anche da old
         eggs config --nointeractive
         echo "eggs was installed..." 
-        #echo "configure it with eggs config or use eggs dad -d" 
     ;;
 
     abort-upgrade|abort-remove|abort-deconfigure)

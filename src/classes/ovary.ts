@@ -191,7 +191,8 @@ export default class Ovary {
             Utils.warning('Formatting volume luks-users-data. You will insert a passphrase and confirm it')
             execSync('cryptsetup luksFormat /tmp/luks-users-data', { stdio: 'inherit' })
 
-            Utils.warning('Opening volume luks-users-data and map it in /dev/mapper/eggs-users-data. You will insert the same passphrase you choose before')
+            Utils.warning('Opening volume luks-users-data and map it in /dev/mapper/eggs-users-data')
+            Utils.warning('You will insert the same passphrase you choose before')
             execSync('cryptsetup luksOpen /tmp/luks-users-data eggs-users-data', { stdio: 'inherit' })
 
             Utils.warning('Formatting volume eggs-users-data with ext4')
