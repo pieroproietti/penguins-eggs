@@ -135,36 +135,42 @@ export default class Pacman {
     */
    static packages(verbose = false): string[] {
       const packages = this.debs4eggs
-      
-      /**
-       * Pacchetti dipendenti da architettura
-       * 
-       * - i386/amd64
-       *   - syslinux
-       * 
-       * - armel/arm64
-       *   - syslinux-efi
-       */
-       if (Utils.machineArch()  === 'amd64' || Utils.machineArch() === 'i386') {
+
+    /**
+     * Pacchetti dipendenti dalla ARCHITETTURA
+     * 
+     * POSSONO essere messi nelle dipendenze
+     */
+     if (Utils.machineArch() === 'amd64' || Utils.machineArch() === 'i386') {
          packages.push('syslinux')
-      } else if (Utils.machineArch()  === 'armel' || Utils.machineArch() === 'arm64') {
+      } else if (Utils.machineArch() === 'armel' || Utils.machineArch() === 'arm64') {
          packages.push('syslinux-efi')
       }
 
-      // Aggiungo pacchetti per versione
-      const versionLike = Pacman.versionLike()
+      /**
+      * I pacchetti dipendenti dalla VERSIONE
+      * 
+      * NON POSSONO essere messi nelle dipendenze
+      * ma, DEVONO essere installati in sede di runtime
+      */
+       const versionLike = Pacman.versionLike()
       if ((versionLike === 'buster') || (versionLike === 'beowulf') || (versionLike === 'bullseye') || (versionLike === 'stretch') || (versionLike === 'jessie')) {
          packages.push('live-config')
       } else if ((versionLike === 'focal')) {
          packages.push('live-config')
       }
 
-      // systemd / sysvinit
-      const init: string = shx.exec('ps --no-headers -o comm 1', { silent: !verbose }).trim()
+      /**
+      * Pacchetti dipendenti dall'INIZIALIZZAZIONE: systemd/sysvinit
+      * 
+      * NON POSSONO essere messi nelle dipendenze,
+      * ma DEVONO essere installati in sede di runtime
+      */
+       const init: string = shx.exec('ps --no-headers -o comm 1', { silent: !verbose }).trim()
       let config = ''
       if (init === 'systemd') {
          if (versionLike === 'bionic') {
-            // config = 'open-infrastructure-system-config'
+            config = 'open-infrastructure-system-config'
          } else {
             config = 'live-config-systemd'
          }
@@ -196,12 +202,18 @@ export default class Pacman {
          }
       }
 
-      // Aggiungo isolinux SOLO per CISC
-      // if (process.arch === 'x64' || process.arch === 'i386') {
-      //   if (!this.packageIsInstalled('isolinux')) {
-      //      installed = false
-      //   }
-      //}
+      /**
+       * Pacchetti dipendenti da architettura
+       */
+      if (Utils.machineArch() === 'amd64' || Utils.machineArch() === 'i386') {
+         if (!this.packageIsInstalled('syslinux')) {
+            installed = false
+         }
+      } else if (Utils.machineArch() === 'armel' || Utils.machineArch() === 'arm64') {
+         if (!this.packageIsInstalled('syslinux-efi')) {
+            installed = false
+         }
+      }
 
       return installed
    }
@@ -272,11 +284,11 @@ export default class Pacman {
 
       let result = distro.calamaresAble
       if (process.arch === 'armel' || process.arch === 'arm64') {
-          result = false
+         result = false
       }
       return result
-  }
-  
+   }
+
    /**
     *
     */
@@ -488,12 +500,12 @@ export default class Pacman {
       if (fs.existsSync(manPage)) {
          exec(`cp ${manPage} ${man1Dir}`)
       }
-      if (shx.exec('which mandb',{silent: true}).stdout.trim() !=='') {
+      if (shx.exec('which mandb', { silent: true }).stdout.trim() !== '') {
          await exec(`mandb > /dev/null`)
          if (verbose) {
             console.log('manPage eggs installed...')
          }
-  
+
       }
    }
 
