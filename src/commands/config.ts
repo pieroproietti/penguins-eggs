@@ -12,6 +12,7 @@ import Bleach from '../classes/bleach'
 import { IInstall } from '../interfaces'
 import Distro from '../classes/distro'
 import { IRemix, IDistro } from '../interfaces'
+import { array2spaced } from '../lib/dependencies'
 
 const exec = require('../lib/utils').exec
 
@@ -131,7 +132,7 @@ export default class Config extends Command {
             if (i.prerequisites) {
                 console.log('- install prerequisites')
                 const packages = Pacman.packages(verbose)
-                console.log(chalk.yellow('  apt install --yes ' + Pacman.debs2line(packages)))
+                console.log(chalk.yellow('  apt install --yes ' + array2spaced(packages)))
             }
 
             if (i.configurationInstall) {
@@ -151,7 +152,7 @@ export default class Config extends Command {
             if (i.calamares) {
                 console.log('- install calamares')
                 const packages = Pacman.debs4calamares
-                console.log(chalk.yellow('  apt install -y ' + Pacman.debs2line(packages) + '\n'))
+                console.log(chalk.yellow('  apt install -y ' + array2spaced(packages) + '\n'))
             }
 
             if (i.needApt) {
