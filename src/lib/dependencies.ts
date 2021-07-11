@@ -25,19 +25,19 @@ export function array2comma(packages: string[]): string {
 
 
 export const depCommon = [
-   'squashfs-tools',
-   'xorriso',
-   'live-boot',
-   'live-boot-initramfs-tools',
-   'dpkg-dev',
-   'syslinux-common',
-   'isolinux',
    'cryptsetup',
    'dosfstools',
+   'dpkg-dev',
+   'isolinux',
+   'live-boot',
+   'live-boot-initramfs-tools',
    'net-tools',
    'parted',
    'rsync',
-   'whois'
+   'squashfs-tools',
+//   'syslinux-common',
+   'whois',
+   'xorriso'
 ]
 
 /**
@@ -79,14 +79,11 @@ export const depVersions = [
 /**
  * dependecies for init
  * 
- * We need for buster derivate with sysvinit MX-LINUX and probably others
+ * We need for buster derivate with systemd and using sysvinit 
+ * like MX-LINUX and probably others
  * 
  */
 export const depInit = [
-   {
-      package: 'live-config-systemd',
-      init: 'systemd'
-   },
    {
       package: 'live-config-sysvinit',
       init: 'sysvinit'

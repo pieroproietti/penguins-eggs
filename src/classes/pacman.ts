@@ -1,24 +1,5 @@
-/*
-# 
-# PACCHETTI SEMPRE INSTALLATI
-# apt purge squashfs-tools xorriso live-boot live-boot-initramfs-tools dpkg-dev syslinux-common isolinux net-tools
-#
-# PACCHETTI DIPENDENTI DA ARCHITETTURA
-# syslynux i386/and64
-# syslinux-efi arm64/armel
-#
-# PACCHETTI DIPENDENTI DA VERSIONE
-# live-config solo Debian/Devuan/focal
-#
-# PACCHETTI DIPENDENTI DA INIT E VERSIONE
-#
-# live-config-sysvinit
-# live-config-systemd solo Debian/Devuan/focal
-# open-infrastructure-system-config bionic
-*/
-
 /**
- * penguins-eggs-v7
+ * penguins-eggs-v8
  * author: Piero Proietti
  * email: piero.proietti@gmail.com
  * license: MIT
@@ -68,16 +49,6 @@ export default class Pacman {
       return distro.versionLike
    }
 
-
-   /**
-    * buster   OK
-    * beowulf  OK
-    * focal    live-task-localization
-    * bionic   live-config live-task-localization
-    * 
-    */
-   static debs4eggs = ['squashfs-tools', 'xorriso', 'live-boot', 'live-boot-initramfs-tools', 'dpkg-dev', 'syslinux-common', 'isolinux', 'net-tools']
-   static debs4notRemove = ['rsync', 'whois', 'dosfstools', 'parted', 'cryptsetup']
    static debs4calamares = ['calamares', 'qml-module-qtquick2', 'qml-module-qtquick-controls']
 
    /**
@@ -174,9 +145,9 @@ export default class Pacman {
          }
       })
 
-      const init: string = shx.exec('ps --no-headers -o comm 1', { silent: !verbose }).trim()
+      const initType: string = shx.exec('ps --no-headers -o comm 1', { silent: !verbose }).trim()
       depInit.forEach((dep) => {
-         if (dep.init.includes(init)) {
+         if (dep.init.includes(initType)) {
             packages.push(dep.package)
          }
       })
@@ -227,9 +198,9 @@ export default class Pacman {
       }
 
       if (installed) {
-         const test: string = shx.exec('ps --no-headers -o comm 1', { silent: !verbose }).trim()
+         const initType: string = shx.exec('ps --no-headers -o comm 1', { silent: !verbose }).trim()
          depInit.forEach((dep) => {
-            if (dep.init.includes(test)) {
+            if (dep.init.includes(initType)) {
                if (!this.packageIsInstalled(dep.package)) {
                   installed = false
                }
@@ -248,10 +219,11 @@ export default class Pacman {
       const versionLike = Pacman.versionLike()
       console.log(`apt-get install --yes ${this.debs2line(this.packages(verbose))}`)
       await exec(`apt-get install --yes ${this.debs2line(this.packages(verbose))}`, echo)
-      await exec(`apt-get install --yes ${this.debs2line(this.debs4notRemove)}`, echo)
+
       if ((versionLike === 'buster') || (versionLike === 'beowulf') || (versionLike === 'bullseye') || (versionLike === 'stretch') || (versionLike === 'jessie')) {
          await exec(`apt-get install --yes --no-install-recommends ${this.debs2line(this.packagesLocalisation(verbose))}`, echo)
       }
+
       if (await Pacman.isCli()) {
          /**
           * live-config-getty-generator
