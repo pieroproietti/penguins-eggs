@@ -11,16 +11,27 @@
  * @param packages array packages
  */
 export function array2comma(packages: string[]): string {
-   let spaced = ''
+   let commaSep = ''
    const last = packages.length
 
    for (let i = 0; i < last; i++) {
-      spaced += packages[i]
-      if (i < last -1 ) {
-         spaced +=', '
+      commaSep += packages[i]
+      if (i < last - 1) {
+         commaSep += ', '
       }
    }
+   return commaSep
+}
+
+
+export function array2spaced(packages: string[]) {
+   let spaced = ''
+   for (const i in packages) {
+      spaced += packages[i] + ' '
+   }
    return spaced
+}
+   
 }
 
 
@@ -35,7 +46,7 @@ export const depCommon = [
    'parted',
    'rsync',
    'squashfs-tools',
-//   'syslinux-common',
+   //   'syslinux-common',
    'whois',
    'xorriso'
 ]

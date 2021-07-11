@@ -5,7 +5,7 @@
  * license: MIT
  */
 
-import { depCommon, depArch, depVersions, depInit } from '../lib/dependencies'
+import { array2spaced, depCommon, depArch, depVersions, depInit } from '../lib/dependencies'
 
 import fs = require('fs')
 import os = require('os')
@@ -124,12 +124,10 @@ export default class Pacman {
    }
 
    /**
-    * Crea array packages dei pacchetti da installare/rimuovere
+    * Crea array packages dei pacchetti da installare
     */
    static packages(verbose = false): string[] {
-
-      // packages = depCommon + depArch + depVersion + depInit
-      const packages = depCommon // this.debs4eggs
+      const packages = depCommon
 
       const arch = Utils.machineArch()
       depArch.forEach((dep) => {
@@ -217,11 +215,11 @@ export default class Pacman {
       const echo = Utils.setEcho(verbose)
       const retVal = false
       const versionLike = Pacman.versionLike()
-      console.log(`apt-get install --yes ${this.debs2line(this.packages(verbose))}`)
-      await exec(`apt-get install --yes ${this.debs2line(this.packages(verbose))}`, echo)
+      console.log(`apt-get install --yes ${array2spaced(this.packages(verbose))}`)
+      await exec(`apt-get install --yes ${array2spaced(this.packages(verbose))}`, echo)
 
       if ((versionLike === 'buster') || (versionLike === 'beowulf') || (versionLike === 'bullseye') || (versionLike === 'stretch') || (versionLike === 'jessie')) {
-         await exec(`apt-get install --yes --no-install-recommends ${this.debs2line(this.packagesLocalisation(verbose))}`, echo)
+         await exec(`apt-get install --yes --no-install-recommends ${array2spaced(this.packagesLocalisation(verbose))}`, echo)
       }
 
       if (await Pacman.isCli()) {
@@ -244,9 +242,10 @@ export default class Pacman {
       const retVal = false
       const versionLike = Pacman.versionLike()
 
-      await exec(`apt-get purge --yes ${this.debs2line(this.packages(verbose), 'remove')}`, echo)
+      await exec(`apt-get purge --yes ${array2spaced(this.filterInstalled(this.packages(verbose)))}`, echo)
+
       if ((versionLike === 'buster') || (versionLike === 'beowulf')) {
-         await exec(`apt-get purge --yes  ${this.debs2line(this.packagesLocalisation(verbose), 'remove')}`, echo)
+         await exec(`apt-get purge --yes  ${array2spaced(this.filterInstalled(this.packagesLocalisation(verbose)))}`, echo)
       }
 
       await exec('apt-get autoremove --yes', echo)
@@ -295,7 +294,7 @@ export default class Pacman {
             Utils.error('Pacman.calamaresInstall() apt-get update --yes ' + e.error)
          }
          try {
-            await exec(`apt-get install --yes ${this.debs2line(this.debs4calamares)}`, echo)
+            await exec(`apt-get install --yes ${array2spaced(this.debs4calamares)}`, echo)
          } catch (e) {
             Utils.error('Pacman.calamaresInstall() apt-get install --yes' + e.error)
          }
@@ -315,7 +314,6 @@ export default class Pacman {
       if (fs.existsSync('/etc/calamares')) {
          await exec('rm /etc/calamares -rf', echo)
       }
-      // await exec(`apt-get remove --purge --yes ${this.debs2line(this.debs4calamares)}`, echo)
       await exec(`apt-get remove --purge --yes calamares`, echo)
       await exec('apt-get autoremove --yes', echo)
       return retVal
@@ -700,23 +698,20 @@ export default class Pacman {
       return retVal
    }
 
+
    /**
     *
     * @param packages array packages
     */
-   static debs2line(packages: string[], action = 'install'): string {
-      let line = ''
+   static filterInstalled(packages: string[]): string[] {
+
+      let installed: string[] = []
+
       for (const i in packages) {
-         if (action === 'install') {
-            if (!Pacman.packageIsInstalled(packages[i])) {
-               line += packages[i] + ' '
-            }
-         } else {
-            if (Pacman.packageIsInstalled(packages[i])) {
-               line += packages[i] + ' '
-            }
+         if (Pacman.packageIsInstalled(packages[i])) {
+            installed.push(packages[i])
          }
       }
-      return line
+      return installed
    }
 }
