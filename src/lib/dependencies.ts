@@ -23,7 +23,11 @@ export function array2comma(packages: string[]): string {
    return commaSep
 }
 
-
+/**
+ * 
+ * @param packages 
+ * @returns 
+ */
 export function array2spaced(packages: string[]) {
    let spaced = ''
    for (const i in packages) {
@@ -31,10 +35,11 @@ export function array2spaced(packages: string[]) {
    }
    return spaced
 }
-   
-}
 
 
+/**
+ * common dependencies
+ */
 export const depCommon = [
    'cryptsetup',
    'dosfstools',
