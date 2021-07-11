@@ -130,8 +130,6 @@ export default class Config extends Command {
 
             if (i.prerequisites) {
                 console.log('- install prerequisites')
-                console.log(chalk.yellow('  apt install --yes ' + Pacman.debs2line(Pacman.debs4notRemove)))
-
                 const packages = Pacman.packages(verbose)
                 console.log(chalk.yellow('  apt install --yes ' + Pacman.debs2line(packages)))
             }
