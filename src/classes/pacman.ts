@@ -1,9 +1,30 @@
+/*
+# 
+# PACCHETTI SEMPRE INSTALLATI
+# apt purge squashfs-tools xorriso live-boot live-boot-initramfs-tools dpkg-dev syslinux-common isolinux net-tools
+#
+# PACCHETTI DIPENDENTI DA ARCHITETTURA
+# syslynux i386/and64
+# syslinux-efi arm64/armel
+#
+# PACCHETTI DIPENDENTI DA VERSIONE
+# live-config solo Debian/Devuan/focal
+#
+# PACCHETTI DIPENDENTI DA INIT E VERSIONE
+#
+# live-config-sysvinit
+# live-config-systemd solo Debian/Devuan/focal
+# open-infrastructure-system-config bionic
+*/
+
 /**
  * penguins-eggs-v7
  * author: Piero Proietti
  * email: piero.proietti@gmail.com
  * license: MIT
  */
+
+import { depCommon, depArch, depVersions, depInit } from '../lib/dependencies'
 
 import fs = require('fs')
 import os = require('os')
@@ -16,6 +37,7 @@ import Distro from './distro'
 import Settings from './settings'
 import { execSync } from 'child_process'
 import { IConfig } from '../interfaces'
+import { versions } from 'process'
 
 
 const exec = require('../lib/utils').exec
@@ -134,50 +156,30 @@ export default class Pacman {
     * Crea array packages dei pacchetti da installare/rimuovere
     */
    static packages(verbose = false): string[] {
-      const packages = this.debs4eggs
 
-    /**
-     * Pacchetti dipendenti dalla ARCHITETTURA
-     * 
-     * POSSONO essere messi nelle dipendenze
-     */
-     if (Utils.machineArch() === 'amd64' || Utils.machineArch() === 'i386') {
-         packages.push('syslinux')
-      } else if (Utils.machineArch() === 'armel' || Utils.machineArch() === 'arm64') {
-         packages.push('syslinux-efi')
-      }
+      // packages = depCommon + depArch + depVersion + depInit
+      const packages = depCommon // this.debs4eggs
 
-      /**
-      * I pacchetti dipendenti dalla VERSIONE
-      * 
-      * NON POSSONO essere messi nelle dipendenze
-      * ma, DEVONO essere installati in sede di runtime
-      */
-       const versionLike = Pacman.versionLike()
-      if ((versionLike === 'buster') || (versionLike === 'beowulf') || (versionLike === 'bullseye') || (versionLike === 'stretch') || (versionLike === 'jessie')) {
-         packages.push('live-config')
-      } else if ((versionLike === 'focal')) {
-         packages.push('live-config')
-      }
-
-      /**
-      * Pacchetti dipendenti dall'INIZIALIZZAZIONE: systemd/sysvinit
-      * 
-      * NON POSSONO essere messi nelle dipendenze,
-      * ma DEVONO essere installati in sede di runtime
-      */
-       const init: string = shx.exec('ps --no-headers -o comm 1', { silent: !verbose }).trim()
-      let config = ''
-      if (init === 'systemd') {
-         if (versionLike === 'bionic') {
-            config = 'open-infrastructure-system-config'
-         } else {
-            config = 'live-config-systemd'
+      const arch = Utils.machineArch()
+      depArch.forEach((dep) => {
+         if (dep.arch.includes(arch)) {
+            packages.push(dep.package)
          }
-      } else {
-         config = 'live-config-sysvinit'
-      }
-      packages.push(config)
+      })
+
+      const version = Pacman.versionLike()
+      depVersions.forEach((dep) => {
+         if (dep.versions.includes(version)) {
+            packages.push(dep.package)
+         }
+      })
+
+      const init: string = shx.exec('ps --no-headers -o comm 1', { silent: !verbose }).trim()
+      depInit.forEach((dep) => {
+         if (dep.init.includes(init)) {
+            packages.push(dep.package)
+         }
+      })
       return packages
    }
 
@@ -185,36 +187,55 @@ export default class Pacman {
    /**
     * Restituisce VERO se i prerequisiti sono installati
     */
-   static async prerequisitesCheck(): Promise<boolean> {
+   static async prerequisitesCheck(verbose = false): Promise<boolean> {
       let installed = true
 
-      for (const i in this.debs4notRemove) {
-         if (!this.packageIsInstalled(this.debs4notRemove[i])) {
-            installed = false
-            break
+      // Controllo depCommon e depArch SOLO se il pacchetto è npm
+      if (Utils.isNpmPackage()) {
+
+         // controllo depCommon
+         depCommon.forEach(dep => {
+            if (!this.packageIsInstalled(dep)) {
+               installed = false
+            }
+         })
+
+         if (installed) {
+            // controllo depArch
+            const arch = Utils.machineArch()
+
+            depArch.forEach((dep) => {
+               if (dep.arch.includes(arch)) {
+                  if (!this.packageIsInstalled(dep.package)) {
+                     installed = false
+                  }
+               }
+            })
          }
       }
 
-      for (const i in this.debs4eggs) {
-         if (!this.packageIsInstalled(this.debs4eggs[i])) {
-            installed = false
-            break
-         }
+      // Controlli da effettuare SEMPRE version e init
+      if (installed) {
+         const version = Pacman.versionLike()
+         depVersions.forEach((dep) => {
+            if (dep.versions.includes(version)) {
+               if (!this.packageIsInstalled(dep.package)) {
+                  installed = false
+               }
+            }
+         })
       }
 
-      /**
-       * Pacchetti dipendenti da architettura
-       */
-      if (Utils.machineArch() === 'amd64' || Utils.machineArch() === 'i386') {
-         if (!this.packageIsInstalled('syslinux')) {
-            installed = false
-         }
-      } else if (Utils.machineArch() === 'armel' || Utils.machineArch() === 'arm64') {
-         if (!this.packageIsInstalled('syslinux-efi')) {
-            installed = false
-         }
+      if (installed) {
+         const test: string = shx.exec('ps --no-headers -o comm 1', { silent: !verbose }).trim()
+         depInit.forEach((dep) => {
+            if (dep.init.includes(test)) {
+               if (!this.packageIsInstalled(dep.package)) {
+                  installed = false
+               }
+            }
+         })
       }
-
       return installed
    }
 
@@ -251,9 +272,9 @@ export default class Pacman {
       const retVal = false
       const versionLike = Pacman.versionLike()
 
-      await exec(`apt-get purge --yes ${this.debs2line(this.packages(verbose))}`, echo)
+      await exec(`apt-get purge --yes ${this.debs2line(this.packages(verbose), 'remove')}`, echo)
       if ((versionLike === 'buster') || (versionLike === 'beowulf')) {
-         await exec(`apt-get purge --yes  ${this.debs2line(this.packagesLocalisation(verbose))}`, echo)
+         await exec(`apt-get purge --yes  ${this.debs2line(this.packagesLocalisation(verbose), 'remove')}`, echo)
       }
 
       await exec('apt-get autoremove --yes', echo)
@@ -711,12 +732,19 @@ export default class Pacman {
     *
     * @param packages array packages
     */
-   static debs2line(packages: string[]): string {
+   static debs2line(packages: string[], action = 'install'): string {
       let line = ''
       for (const i in packages) {
-         line += packages[i] + ' '
+         if (action === 'install') {
+            if (!Pacman.packageIsInstalled(packages[i])) {
+               line += packages[i] + ' '
+            }
+         } else {
+            if (Pacman.packageIsInstalled(packages[i])) {
+               line += packages[i] + ' '
+            }
+         }
       }
       return line
    }
-
 }
