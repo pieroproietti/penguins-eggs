@@ -18,8 +18,6 @@ import Distro from './distro'
 import Settings from './settings'
 import { execSync } from 'child_process'
 import { IConfig } from '../interfaces'
-import { versions } from 'process'
-
 
 const exec = require('../lib/utils').exec
 
@@ -31,25 +29,30 @@ const config_tools = '/etc/penguins-eggs.d/tools.yaml' as string
  * @remarks all the utilities
  */
 export default class Pacman {
-
-   // Aggiunte remix e distro per permettere la copia delle configurazione SOLO dell version corrente
-   remix = {} as IRemix
+   static debs4calamares = ['calamares', 'qml-module-qtquick2', 'qml-module-qtquick-controls']
 
    distro = {} as IDistro
 
+   remix = {} as IRemix
+
    settings = {}
 
+   /**
+    * 
+    */
    constructor() {
       const versionLike = this.distro.versionLike
    }
 
+   /**
+    * 
+    * @returns 
+    */
    static versionLike(): string {
       const remix = {} as IRemix
       const distro = new Distro(remix)
       return distro.versionLike
    }
-
-   static debs4calamares = ['calamares', 'qml-module-qtquick2', 'qml-module-qtquick-controls']
 
    /**
     * controlla se è installato xserver-xorg-core
@@ -79,49 +82,6 @@ export default class Pacman {
       return await this.isXorg() || await this.isWayland()
    }
 
-
-   /**
-    * 
-    * @param remove 
-    * @param verbose 
-    */
-   static packagesLocalisation(remove = false, verbose = false) {
-      const versionLike = Pacman.versionLike()
-      const packages = []
-
-      const settings = new Settings()
-      settings.load()
-
-      const locales: string[] = settings.config.locales
-
-      if ((versionLike === 'buster') || versionLike === 'bullseye' || (versionLike === 'beowulf')) {
-         for (let i = 0; i < locales.length; i++) {
-            if (locales[i] === process.env.LANG) {
-               continue
-            }
-            if (locales[i] === `it_IT.UTF-8`) {
-               packages.push('task-italian')
-            } else if (locales[i] === `en_US.UTF-8`) {
-               packages.push('task-english')
-            } else if (locales[i] === `es_PE.UTF-8`) {
-               packages.push('task-spanish')
-            } else if (locales[i] === `pt_BR.UTF-8`) {
-               packages.push('task-brazilian-portuguese')
-            } else if (locales[i] === `fr_FR.UTF-8`) {
-               packages.push('task-french')
-            } else if (locales[i] === `de_DE.UTF-8`) {
-               packages.push('task-german')
-            } else if (locales[i] === `pl_PL.UTF-8`) {
-               packages.push('task-polish')
-            } else if (locales[i] === `de_DE.UTF-8`) {
-               packages.push('task-russian')
-            }
-         }
-         packages.push('live-task-localisation')
-      }
-
-      return packages
-   }
 
    /**
     * Crea array packages dei pacchetti da installare
@@ -161,7 +121,6 @@ export default class Pacman {
 
       // Controllo depCommon e depArch SOLO se il pacchetto è npm
       if (Utils.isNpmPackage()) {
-
          // controllo depCommon
          depCommon.forEach(dep => {
             if (!this.packageIsInstalled(dep)) {
@@ -215,9 +174,11 @@ export default class Pacman {
       const echo = Utils.setEcho(verbose)
       const retVal = false
       const versionLike = Pacman.versionLike()
-      console.log(`apt-get install --yes ${array2spaced(this.packages(verbose))}`)
+
+      // console.log(`apt-get install --yes ${array2spaced(this.packages(verbose))}`)
       await exec(`apt-get install --yes ${array2spaced(this.packages(verbose))}`, echo)
 
+      // localization
       if ((versionLike === 'buster') || (versionLike === 'beowulf') || (versionLike === 'bullseye') || (versionLike === 'stretch') || (versionLike === 'jessie')) {
          await exec(`apt-get install --yes --no-install-recommends ${array2spaced(this.packagesLocalisation(verbose))}`, echo)
       }
@@ -698,7 +659,6 @@ export default class Pacman {
       return retVal
    }
 
-
    /**
     *
     * @param packages array packages
@@ -713,5 +673,54 @@ export default class Pacman {
          }
       }
       return installed
+   }
+
+   /**
+    * @param remove 
+    * @param verbose 
+    * 
+    * Va solo a runtime, l'idea era di localizzare per naked
+    */
+   static packagesLocalisation(remove = false, verbose = false) {
+      const versionLike = Pacman.versionLike()
+      const packages = []
+
+      const settings = new Settings()
+      settings.load()
+
+      const locales: string[] = settings.config.locales
+
+      if ((versionLike === 'jessie') ||
+         (versionLike === 'stretch') ||
+         (versionLike === 'buster') ||
+         versionLike === 'bullseye' ||
+         (versionLike === 'beowulf')) {
+
+         for (let i = 0; i < locales.length; i++) {
+            if (locales[i] === process.env.LANG) {
+               continue
+            }
+            if (locales[i] === `it_IT.UTF-8`) {
+               packages.push('task-italian')
+            } else if (locales[i] === `en_US.UTF-8`) {
+               packages.push('task-english')
+            } else if (locales[i] === `es_PE.UTF-8`) {
+               packages.push('task-spanish')
+            } else if (locales[i] === `pt_BR.UTF-8`) {
+               packages.push('task-brazilian-portuguese')
+            } else if (locales[i] === `fr_FR.UTF-8`) {
+               packages.push('task-french')
+            } else if (locales[i] === `de_DE.UTF-8`) {
+               packages.push('task-german')
+            } else if (locales[i] === `pl_PL.UTF-8`) {
+               packages.push('task-polish')
+            } else if (locales[i] === `de_DE.UTF-8`) {
+               packages.push('task-russian')
+            }
+         }
+         packages.push('live-task-localisation')
+      }
+
+      return packages
    }
 }
