@@ -18,11 +18,14 @@ You can follow the project also consulting the [commit history](https://github.c
 ## Changelog
 Versions are listed on reverse order, the first is the last one.
 
+### eggs-8.0.27
+* rewrite/refactor pacman and perrisbrewery using new common dependencies.ts introduced now (article on the blog)
+
 ### eggs-8.0.26
 * eggs produce --backup working with luks: all users accounts and their home are saved in crypted volume. bugfix postrm. I added cryptsetup to the dependencies, so you will be forced to use sudo apt install -f to install eggs
 
-### eggs-8.0.24
-* partial rewrite in perrisbrewery due a problem from same version 8.0.18 - 8.0.23. I hope it is solved, but need confirm
+### eggs-8.0.24 retired
+* partial rewrite in perrisbrewery due a problem from same version 8.0.18 - 8.0.23. I hope it is solved, but need confirm. It was a bug in the postrm script corrected in eggs-8.0.26 version
 
 ### eggs-8.0.22 retired
 * just same refactoring and removed last ; in krill_prepare networking dns
