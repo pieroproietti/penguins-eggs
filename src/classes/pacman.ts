@@ -1,9 +1,11 @@
 /**
- * penguins-eggs-v7
+ * penguins-eggs-v8
  * author: Piero Proietti
  * email: piero.proietti@gmail.com
  * license: MIT
  */
+
+import { array2spaced, depCommon, depArch, depVersions, depInit } from '../lib/dependencies'
 
 import fs = require('fs')
 import os = require('os')
@@ -17,7 +19,6 @@ import Settings from './settings'
 import { execSync } from 'child_process'
 import { IConfig } from '../interfaces'
 
-
 const exec = require('../lib/utils').exec
 
 const config_file = '/etc/penguins-eggs.d/eggs.yaml' as string
@@ -28,35 +29,30 @@ const config_tools = '/etc/penguins-eggs.d/tools.yaml' as string
  * @remarks all the utilities
  */
 export default class Pacman {
-
-   // Aggiunte remix e distro per permettere la copia delle configurazione SOLO dell version corrente
-   remix = {} as IRemix
+   static debs4calamares = ['calamares', 'qml-module-qtquick2', 'qml-module-qtquick-controls']
 
    distro = {} as IDistro
 
+   remix = {} as IRemix
+
    settings = {}
 
+   /**
+    * 
+    */
    constructor() {
       const versionLike = this.distro.versionLike
    }
 
+   /**
+    * 
+    * @returns 
+    */
    static versionLike(): string {
       const remix = {} as IRemix
       const distro = new Distro(remix)
       return distro.versionLike
    }
-
-
-   /**
-    * buster   OK
-    * beowulf  OK
-    * focal    live-task-localization
-    * bionic   live-config live-task-localization
-    * 
-    */
-   static debs4eggs = ['squashfs-tools', 'xorriso', 'live-boot', 'live-boot-initramfs-tools', 'dpkg-dev', 'syslinux-common', 'isolinux', 'net-tools']
-   static debs4notRemove = ['rsync', 'whois', 'dosfstools', 'parted', 'cryptsetup']
-   static debs4calamares = ['calamares', 'qml-module-qtquick2', 'qml-module-qtquick-controls']
 
    /**
     * controlla se è installato xserver-xorg-core
@@ -88,90 +84,31 @@ export default class Pacman {
 
 
    /**
-    * 
-    * @param remove 
-    * @param verbose 
-    */
-   static packagesLocalisation(remove = false, verbose = false) {
-      const versionLike = Pacman.versionLike()
-      const packages = []
-
-      const settings = new Settings()
-      settings.load()
-
-      const locales: string[] = settings.config.locales
-
-      if ((versionLike === 'buster') || versionLike === 'bullseye' || (versionLike === 'beowulf')) {
-         for (let i = 0; i < locales.length; i++) {
-            if (locales[i] === process.env.LANG) {
-               continue
-            }
-            if (locales[i] === `it_IT.UTF-8`) {
-               packages.push('task-italian')
-            } else if (locales[i] === `en_US.UTF-8`) {
-               packages.push('task-english')
-            } else if (locales[i] === `es_PE.UTF-8`) {
-               packages.push('task-spanish')
-            } else if (locales[i] === `pt_BR.UTF-8`) {
-               packages.push('task-brazilian-portuguese')
-            } else if (locales[i] === `fr_FR.UTF-8`) {
-               packages.push('task-french')
-            } else if (locales[i] === `de_DE.UTF-8`) {
-               packages.push('task-german')
-            } else if (locales[i] === `pl_PL.UTF-8`) {
-               packages.push('task-polish')
-            } else if (locales[i] === `de_DE.UTF-8`) {
-               packages.push('task-russian')
-            }
-         }
-         packages.push('live-task-localisation')
-      }
-
-      return packages
-   }
-
-   /**
-    * Crea array packages dei pacchetti da installare/rimuovere
+    * Crea array packages dei pacchetti da installare
     */
    static packages(verbose = false): string[] {
-      const packages = this.debs4eggs
-      
-      /**
-       * Pacchetti dipendenti da architettura
-       * 
-       * - i386/amd64
-       *   - syslinux
-       * 
-       * - armel/arm64
-       *   - syslinux-efi
-       */
-       if (Utils.machineArch()  === 'amd64' || Utils.machineArch() === 'i386') {
-         packages.push('syslinux')
-      } else if (Utils.machineArch()  === 'armel' || Utils.machineArch() === 'arm64') {
-         packages.push('syslinux-efi')
-      }
+      const packages = depCommon
 
-      // Aggiungo pacchetti per versione
-      const versionLike = Pacman.versionLike()
-      if ((versionLike === 'buster') || (versionLike === 'beowulf') || (versionLike === 'bullseye') || (versionLike === 'stretch') || (versionLike === 'jessie')) {
-         packages.push('live-config')
-      } else if ((versionLike === 'focal')) {
-         packages.push('live-config')
-      }
-
-      // systemd / sysvinit
-      const init: string = shx.exec('ps --no-headers -o comm 1', { silent: !verbose }).trim()
-      let config = ''
-      if (init === 'systemd') {
-         if (versionLike === 'bionic') {
-            // config = 'open-infrastructure-system-config'
-         } else {
-            config = 'live-config-systemd'
+      const arch = Utils.machineArch()
+      depArch.forEach((dep) => {
+         if (dep.arch.includes(arch)) {
+            packages.push(dep.package)
          }
-      } else {
-         config = 'live-config-sysvinit'
-      }
-      packages.push(config)
+      })
+
+      const version = Pacman.versionLike()
+      depVersions.forEach((dep) => {
+         if (dep.versions.includes(version)) {
+            packages.push(dep.package)
+         }
+      })
+
+      const initType: string = shx.exec('ps --no-headers -o comm 1', { silent: !verbose }).trim()
+      depInit.forEach((dep) => {
+         if (dep.init.includes(initType)) {
+            packages.push(dep.package)
+         }
+      })
       return packages
    }
 
@@ -179,30 +116,54 @@ export default class Pacman {
    /**
     * Restituisce VERO se i prerequisiti sono installati
     */
-   static async prerequisitesCheck(): Promise<boolean> {
+   static async prerequisitesCheck(verbose = false): Promise<boolean> {
       let installed = true
 
-      for (const i in this.debs4notRemove) {
-         if (!this.packageIsInstalled(this.debs4notRemove[i])) {
-            installed = false
-            break
+      // Controllo depCommon e depArch SOLO se il pacchetto è npm
+      if (Utils.isNpmPackage()) {
+         // controllo depCommon
+         depCommon.forEach(dep => {
+            if (!this.packageIsInstalled(dep)) {
+               installed = false
+            }
+         })
+
+         if (installed) {
+            // controllo depArch
+            const arch = Utils.machineArch()
+
+            depArch.forEach((dep) => {
+               if (dep.arch.includes(arch)) {
+                  if (!this.packageIsInstalled(dep.package)) {
+                     installed = false
+                  }
+               }
+            })
          }
       }
 
-      for (const i in this.debs4eggs) {
-         if (!this.packageIsInstalled(this.debs4eggs[i])) {
-            installed = false
-            break
-         }
+      // Controlli da effettuare SEMPRE version e init
+      if (installed) {
+         const version = Pacman.versionLike()
+         depVersions.forEach((dep) => {
+            if (dep.versions.includes(version)) {
+               if (!this.packageIsInstalled(dep.package)) {
+                  installed = false
+               }
+            }
+         })
       }
 
-      // Aggiungo isolinux SOLO per CISC
-      // if (process.arch === 'x64' || process.arch === 'i386') {
-      //   if (!this.packageIsInstalled('isolinux')) {
-      //      installed = false
-      //   }
-      //}
-
+      if (installed) {
+         const initType: string = shx.exec('ps --no-headers -o comm 1', { silent: !verbose }).trim()
+         depInit.forEach((dep) => {
+            if (dep.init.includes(initType)) {
+               if (!this.packageIsInstalled(dep.package)) {
+                  installed = false
+               }
+            }
+         })
+      }
       return installed
    }
 
@@ -213,12 +174,15 @@ export default class Pacman {
       const echo = Utils.setEcho(verbose)
       const retVal = false
       const versionLike = Pacman.versionLike()
-      console.log(`apt-get install --yes ${this.debs2line(this.packages(verbose))}`)
-      await exec(`apt-get install --yes ${this.debs2line(this.packages(verbose))}`, echo)
-      await exec(`apt-get install --yes ${this.debs2line(this.debs4notRemove)}`, echo)
+
+      // console.log(`apt-get install --yes ${array2spaced(this.packages(verbose))}`)
+      await exec(`apt-get install --yes ${array2spaced(this.packages(verbose))}`, echo)
+
+      // localization
       if ((versionLike === 'buster') || (versionLike === 'beowulf') || (versionLike === 'bullseye') || (versionLike === 'stretch') || (versionLike === 'jessie')) {
-         await exec(`apt-get install --yes --no-install-recommends ${this.debs2line(this.packagesLocalisation(verbose))}`, echo)
+         await exec(`apt-get install --yes --no-install-recommends ${array2spaced(this.packagesLocalisation(verbose))}`, echo)
       }
+
       if (await Pacman.isCli()) {
          /**
           * live-config-getty-generator
@@ -239,9 +203,10 @@ export default class Pacman {
       const retVal = false
       const versionLike = Pacman.versionLike()
 
-      await exec(`apt-get purge --yes ${this.debs2line(this.packages(verbose))}`, echo)
+      await exec(`apt-get purge --yes ${array2spaced(this.filterInstalled(this.packages(verbose)))}`, echo)
+
       if ((versionLike === 'buster') || (versionLike === 'beowulf')) {
-         await exec(`apt-get purge --yes  ${this.debs2line(this.packagesLocalisation(verbose))}`, echo)
+         await exec(`apt-get purge --yes  ${array2spaced(this.filterInstalled(this.packagesLocalisation(verbose)))}`, echo)
       }
 
       await exec('apt-get autoremove --yes', echo)
@@ -272,11 +237,11 @@ export default class Pacman {
 
       let result = distro.calamaresAble
       if (process.arch === 'armel' || process.arch === 'arm64') {
-          result = false
+         result = false
       }
       return result
-  }
-  
+   }
+
    /**
     *
     */
@@ -290,7 +255,7 @@ export default class Pacman {
             Utils.error('Pacman.calamaresInstall() apt-get update --yes ' + e.error)
          }
          try {
-            await exec(`apt-get install --yes ${this.debs2line(this.debs4calamares)}`, echo)
+            await exec(`apt-get install --yes ${array2spaced(this.debs4calamares)}`, echo)
          } catch (e) {
             Utils.error('Pacman.calamaresInstall() apt-get install --yes' + e.error)
          }
@@ -310,7 +275,6 @@ export default class Pacman {
       if (fs.existsSync('/etc/calamares')) {
          await exec('rm /etc/calamares -rf', echo)
       }
-      // await exec(`apt-get remove --purge --yes ${this.debs2line(this.debs4calamares)}`, echo)
       await exec(`apt-get remove --purge --yes calamares`, echo)
       await exec('apt-get autoremove --yes', echo)
       return retVal
@@ -488,12 +452,12 @@ export default class Pacman {
       if (fs.existsSync(manPage)) {
          exec(`cp ${manPage} ${man1Dir}`)
       }
-      if (shx.exec('which mandb',{silent: true}).stdout.trim() !=='') {
+      if (shx.exec('which mandb', { silent: true }).stdout.trim() !== '') {
          await exec(`mandb > /dev/null`)
          if (verbose) {
             console.log('manPage eggs installed...')
          }
-  
+
       }
    }
 
@@ -699,12 +663,64 @@ export default class Pacman {
     *
     * @param packages array packages
     */
-   static debs2line(packages: string[]): string {
-      let line = ''
+   static filterInstalled(packages: string[]): string[] {
+
+      let installed: string[] = []
+
       for (const i in packages) {
-         line += packages[i] + ' '
+         if (Pacman.packageIsInstalled(packages[i])) {
+            installed.push(packages[i])
+         }
       }
-      return line
+      return installed
    }
 
+   /**
+    * @param remove 
+    * @param verbose 
+    * 
+    * Va solo a runtime, l'idea era di localizzare per naked
+    */
+   static packagesLocalisation(remove = false, verbose = false) {
+      const versionLike = Pacman.versionLike()
+      const packages = []
+
+      const settings = new Settings()
+      settings.load()
+
+      const locales: string[] = settings.config.locales
+
+      if ((versionLike === 'jessie') ||
+         (versionLike === 'stretch') ||
+         (versionLike === 'buster') ||
+         versionLike === 'bullseye' ||
+         (versionLike === 'beowulf')) {
+
+         for (let i = 0; i < locales.length; i++) {
+            if (locales[i] === process.env.LANG) {
+               continue
+            }
+            if (locales[i] === `it_IT.UTF-8`) {
+               packages.push('task-italian')
+            } else if (locales[i] === `en_US.UTF-8`) {
+               packages.push('task-english')
+            } else if (locales[i] === `es_PE.UTF-8`) {
+               packages.push('task-spanish')
+            } else if (locales[i] === `pt_BR.UTF-8`) {
+               packages.push('task-brazilian-portuguese')
+            } else if (locales[i] === `fr_FR.UTF-8`) {
+               packages.push('task-french')
+            } else if (locales[i] === `de_DE.UTF-8`) {
+               packages.push('task-german')
+            } else if (locales[i] === `pl_PL.UTF-8`) {
+               packages.push('task-polish')
+            } else if (locales[i] === `de_DE.UTF-8`) {
+               packages.push('task-russian')
+            }
+         }
+         packages.push('live-task-localisation')
+      }
+
+      return packages
+   }
 }

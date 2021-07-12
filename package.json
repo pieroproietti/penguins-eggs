@@ -2,7 +2,7 @@
   "name": "penguins-eggs",
   "shortName": "eggs",
   "description": "Perri's Brewery edition: remaster your system and distribuite it",
-  "version": "8.0.26",
+  "version": "8.0.27",
   "author": "Piero Proietti @pieroproietti",
   "bin": {
     "eggs": "bin/run"
@@ -95,7 +95,7 @@
   "scripts": {
     "docs": "rm docs -rf && npx typedoc src --out docs",
     "build": "tsc -p .",
-    "deb": "oclif-dev pack:deb && npx pb",
+    "deb": "oclif-dev pack:deb && npx pb -m",
     "postpack": "rm -f oclif.manifest.json",
     "posttest": "eslint . --ext .ts --config .eslintrc",
     "prepack": "rm lib -rf && tsc -b && oclif-dev manifest && oclif-dev readme",
