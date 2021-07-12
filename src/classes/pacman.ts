@@ -78,8 +78,20 @@ export default class Pacman {
    /**
     * Check if the system is GUI able
     */
-   static async isGui(): Promise<boolean> {
+    static async isGui(): Promise<boolean> {
       return await this.isXorg() || await this.isWayland()
+   }
+
+   /**
+    * 
+    * @returns 
+    */
+   static guiEnabled(): boolean {
+      let enabled= true
+      if (process.env.DISPLAY === '') {
+         enabled= false
+      }
+      return enabled
    }
 
 
