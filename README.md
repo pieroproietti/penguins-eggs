@@ -209,7 +209,7 @@ _See code: [src/commands/calamares.ts](https://github.com/pieroproietti/penguins
 
 ## `eggs config`
 
-Configure eggs and install packages prerequisites to run it
+Configure and install prerequisites deb packages to run it
 
 ```
 USAGE
@@ -226,7 +226,7 @@ ALIASES
 
 EXAMPLE
   ~$ sudo eggs config
-  Configure eggs and install prerequisites
+  Configure and install prerequisites deb packages to run it
 ```
 
 _See code: [src/commands/config.ts](https://github.com/pieroproietti/penguins-eggs/blob/v8.0.27/src/commands/config.ts)_

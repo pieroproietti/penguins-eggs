@@ -1,5 +1,5 @@
 /**
- * penguins-eggs-v7
+ * penguins-eggs-v8
  * author: Piero Proietti
  * email: piero.proietti@gmail.com
  * license: MIT
@@ -20,7 +20,7 @@ const exec = require('../lib/utils').exec
  * 
  */
 export default class Config extends Command {
-    static description = 'Configure eggs and install packages prerequisites to run it'
+    static description = 'Configure and install prerequisites deb packages to run it'
 
     static aliases = ['prerequisites']
     static flags = {
@@ -30,7 +30,7 @@ export default class Config extends Command {
         verbose: flags.boolean({ char: 'v', description: 'verbose' }),
     }
 
-    static examples = [`~$ sudo eggs config\nConfigure eggs and install prerequisites`]
+    static examples = [`~$ sudo eggs config\nConfigure and install prerequisites deb packages to run it`]
 
     async run() {
         const { flags } = this.parse(Config)
@@ -51,11 +51,11 @@ export default class Config extends Command {
              * Aggiunge autocomplete e manPage
              */
             if (!Utils.isNpmPackage()) {
-                await Pacman.autocompleteInstall(verbose)
+                await Pacman.autocompleteInstall(nointeractive)
                 await Pacman.manPageInstall(verbose)
             }
 
-            // Vede che cosa c'è da fare...
+            // Vediamo che cosa c'è da fare...
             const i = await Config.thatWeNeed(nointeractive, verbose)
 
             if (i.needApt || i.configurationInstall || i.configurationRefresh || i.distroTemplate) {
@@ -63,7 +63,7 @@ export default class Config extends Command {
                     await Config.install(i, nointeractive, verbose)
                 } else {
                     if (await Utils.customConfirm()) {
-                        await Config.install(i, verbose)
+                        await Config.install(i, nointeractive, verbose)
                     }
                 }
             }
@@ -116,7 +116,7 @@ export default class Config extends Command {
          * Visualizza cosa c'è da fare
          */
         if (!nointeractive) {
-            Utils.warning('config: that we need...')
+            Utils.warning('config: we need...')
             if (i.needApt) {
                 console.log('- update the system')
                 console.log(chalk.yellow('  apt update --yes\n'))
@@ -182,7 +182,7 @@ export default class Config extends Command {
     static async install(i: IInstall, nointeractive = false, verbose = false) {
         const echo = Utils.setEcho(verbose)
 
-        Utils.warning('config: install')
+        Utils.warning('config: so, we install')
 
         if (i.configurationInstall) {
             Utils.warning('creating configuration...')
@@ -223,8 +223,6 @@ export default class Config extends Command {
                 await Pacman.prerequisitesInstall(verbose)
             }
         }
-
-        Utils.warning('prerequisites installed!')
 
         if (i.calamares) {
             if (Pacman.calamaresAble()) {

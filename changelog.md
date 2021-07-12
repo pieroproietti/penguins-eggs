@@ -18,6 +18,9 @@ You can follow the project also consulting the [commit history](https://github.c
 ## Changelog
 Versions are listed on reverse order, the first is the last one.
 
+### eggs-8.0.27
+* rewrite/refactor pacman and perrisbrewery using new common dependencies.ts introduced now (article on the blog)
+
 ### eggs-8.0.26
 * eggs produce --backup working with luks: all users accounts and their home are saved in crypted volume. bugfix postrm. I added cryptsetup to the dependencies, so you will be forced to use sudo apt install -f to install eggs
 
