@@ -22,5 +22,5 @@ export interface IConfig {
     ifnames_opt: string
     machine_id: string
     vmlinuz: string
-    initrd_imd: string
+    initrd_img: string
   }
