@@ -180,26 +180,26 @@ export default class Ovary {
          }
          await this.editLiveFs(verbose)
          await this.makeSquashfs(scriptOnly, verbose)
+         await this.uBindLiveFs(verbose) // Lo smonto prima della fase di backup
 
          if (backup) {
+            Utils.titles('produce --backup')
             Utils.warning('You will be prompted to give crucial informations to protect your users data')
-            Utils.warning('Your passphrase will be not written in any way on the support, so it is literally unrecoverable.')
-            const usersDataSize = await this.getUsersDatasSize(verbose)
+            Utils.warning('I\'m calculatings users datas needs. Please wait...')
 
-            // 
-            /**
-             * from https://gist.github.com/ansemjo/6f1cf9d9b8f7ce8f70813f52c63b74a6
-             * we need a volume greater than the users-size plus 8M
-             */
+            const usersDataSize = await this.getUsersDatasSize(verbose) // 799MB = 837,812,224 
             Utils.warning('User\'s data are: ' + Utils.formatBytes(usersDataSize))
-            const additionalSpace = 8 * 1024 * 1024
-            Utils.warning('We need additional space of : ' + Utils.formatBytes(additionalSpace, 2))
+            Utils.warning('Your passphrase will be not written in any way on the support, so it is literally unrecoverable.')
 
-            let volumeSize = usersDataSize + additionalSpace
-            const minimunSize = 128 * 1024 * 1024
+            const binaryHeaderSize = 4194304 // 4MB = 4,194,304 
+            Utils.warning('We need additional space of : ' + Utils.formatBytes(binaryHeaderSize, 2))
+            let volumeSize = usersDataSize + binaryHeaderSize
+            const minimunSize = 33554432 // 32M = 33,554,432
             if (volumeSize < minimunSize) {
-               volumeSize = minimunSize
+              volumeSize = minimunSize
             }
+            volumeSize *= 1.02 // aggiungo un 2% per sicurezza
+            
             Utils.warning('Creating volume luks-users-data of ' + Utils.formatBytes(volumeSize, 0))
             Utils.warning('dd if=/dev/zero of=/tmp/luks-users-data bs=1 count=0 seek=' + Utils.formatBytes(volumeSize, 0))
             execSync('dd if=/dev/zero of=/tmp/luks-users-data bs=1 count=0 seek=' + Utils.formatBytes(volumeSize, 0), { stdio: 'inherit' })
@@ -211,7 +211,7 @@ export default class Ovary {
             execSync('cryptsetup luksOpen /tmp/luks-users-data eggs-users-data', { stdio: 'inherit' })
 
             Utils.warning('Formatting volume eggs-users-data with ext4')
-            execSync('mkfs.ext4 /dev/mapper/eggs-users-data', { stdio: 'inherit' })
+            execSync('mkfs.ext2 /dev/mapper/eggs-users-data', { stdio: 'inherit' })
 
             Utils.warning('mounting volume eggs-users-data in /mnt')
             execSync('mount /dev/mapper/eggs-users-data /mnt', { stdio: 'inherit' })
@@ -231,9 +231,12 @@ export default class Ovary {
 
          await this.makeDotDisk(backup, verbose)
          await this.makeIso(backup, scriptOnly, verbose)
-         await this.bindVfs(verbose)
-         await this.ubindVfs(verbose)
-         await this.uBindLiveFs(verbose)
+         /**
+          * ubindVfs NON serve e ubindLiveFS è stato spostato PRIMA del backup
+          */
+         // await this.bindVfs(verbose)
+         // await this.ubindVfs(verbose)
+         // await this.uBindLiveFs(verbose)
       }
    }
 
@@ -937,22 +940,22 @@ export default class Ovary {
       }
 
       const cmds: string[] = []
-      const cmd = `chroot ${this.settings.work_dir.merged} getent passwd {1000..60000} |awk -F: '{print $1}'`
+      const cmd = `chroot / getent passwd {1000..60000} |awk -F: '{print $1}'`
       const result = await exec(cmd, {
          echo: verbose,
          ignore: false,
          capture: true
       })
       const users: string[] = result.data.split('\n')
+      console.log(users)
       let size = 0
       console.log('We found just ' + users.length + ' users')
-      for (let i = 0; i < users.length; i++) {
-         // ad esclusione dell'utente live e SOLO gli user NON /home/eggs for example
+      for (let i = 0; i < users.length -1; i++) {
+         // esclude tutte le cartelle che NON sono users
          if (users[i] !== this.settings.config.user_opt) {
-            let cmd = `du --summarize /home/${users[i]} |awk '{ print $1 }'`
-            // console.log(cmd)
-            size += parseInt(shx.exec(cmd).stdout.trim())
-            // console.log('size: ' +size)
+            // du restituisce size in Kbytes senza -b
+            const bytes = parseInt(shx.exec(`du -b --summarize /home/${users[i]} |awk '{ print $1 }'`).stdout.trim())
+            size += bytes
          }
       }
       return size
