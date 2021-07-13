@@ -61,6 +61,12 @@ export default class Utils {
       if (result.indexOf('@') > 0) {
          result = result.substring(result.indexOf('@') + 1)
       }
+      if (!fs.existsSync(result)) {
+         if (fs.existsSync('/boot' + result)) {
+            result = '/boot' + result
+         }
+      }
+      
       return result
    }
 
