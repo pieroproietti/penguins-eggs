@@ -184,13 +184,28 @@ export default class Ovary {
          if (backup) {
             Utils.warning('You will be prompted to give crucial informations to protect your users data')
             Utils.warning('Your passphrase will be not written in any way on the support, so it is literally unrecoverable.')
-            const volumeSize = await this.getUsersDatasSize(verbose) + 8 * 1024 * 1024
-            Utils.warning('Creating volume luks-users-data')
-            execSync('dd if=/dev/zero of=/tmp/luks-users-data bs=1 count=0 seek=1G', { stdio: 'inherit' })
+            const usersDataSize = await this.getUsersDatasSize(verbose)
+
+            // 
+            /**
+             * from https://gist.github.com/ansemjo/6f1cf9d9b8f7ce8f70813f52c63b74a6
+             * we need a volume greater than the users-size plus 8M
+             */
+            Utils.warning('User\'s data are: ' + Utils.formatBytes(usersDataSize))
+            const additionalSpace = 8 * 1024 * 1024
+            Utils.warning('We need additional space of : ' + Utils.formatBytes(additionalSpace, 2))
+
+            let volumeSize = usersDataSize + additionalSpace
+            const minimunSize = 128 * 1024 * 1024
+            if (volumeSize < minimunSize) {
+               volumeSize = minimunSize
+            }
+            Utils.warning('Creating volume luks-users-data of ' + Utils.formatBytes(volumeSize, 0))
+            Utils.warning('dd if=/dev/zero of=/tmp/luks-users-data bs=1 count=0 seek=' + Utils.formatBytes(volumeSize, 0))
+            execSync('dd if=/dev/zero of=/tmp/luks-users-data bs=1 count=0 seek=' + Utils.formatBytes(volumeSize, 0), { stdio: 'inherit' })
 
             Utils.warning('Formatting volume luks-users-data. You will insert a passphrase and confirm it')
             execSync('cryptsetup luksFormat /tmp/luks-users-data', { stdio: 'inherit' })
-
             Utils.warning('Opening volume luks-users-data and map it in /dev/mapper/eggs-users-data')
             Utils.warning('You will insert the same passphrase you choose before')
             execSync('cryptsetup luksOpen /tmp/luks-users-data eggs-users-data', { stdio: 'inherit' })
@@ -930,10 +945,14 @@ export default class Ovary {
       })
       const users: string[] = result.data.split('\n')
       let size = 0
-      for (let i = 0; i < users.length - 1; i++) {
-         // ad esclusione dell'utente live...
+      console.log('We found just ' + users.length + ' users')
+      for (let i = 0; i < users.length; i++) {
+         // ad esclusione dell'utente live e SOLO gli user NON /home/eggs for example
          if (users[i] !== this.settings.config.user_opt) {
-            size += parseInt(shx.exec('du --summarize /home/' + users[i] + `|awk '{ print $1 }'`).stdout.trim())
+            let cmd = `du --summarize /home/${users[i]} |awk '{ print $1 }'`
+            // console.log(cmd)
+            size += parseInt(shx.exec(cmd).stdout.trim())
+            // console.log('size: ' +size)
          }
       }
       return size
@@ -963,7 +982,7 @@ export default class Ovary {
          // ad esclusione dell'utente live...
          if (users[i] !== this.settings.config.user_opt) {
             execSync('mkdir -p /mnt/home/' + users[i], { stdio: 'inherit' })
-            execSync('rsync -a /home/' + users[i] + '/ ' + '/mnt/home/' + users[i] +'/', { stdio: 'inherit' })
+            execSync('rsync -a /home/' + users[i] + '/ ' + '/mnt/home/' + users[i] + '/', { stdio: 'inherit' })
          }
       }
       execSync('mkdir -p /mnt/etc', { stdio: 'inherit' })
