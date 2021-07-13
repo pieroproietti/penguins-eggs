@@ -606,7 +606,7 @@ export default class Ovary {
       if (failVmlinuz || failInitrd) {
          Utils.error(`something went wrong! Cannot find ${this.settings.kernel_image} or ${this.settings.initrd_image}`)
          Utils.warning('Try to edit /etc/penguins-eggs.d/eggs.yaml and check for vmlinuz: /path/to/vmlinuz')
-         Utils.warning('and initrd_img: vmlinuz: /path/to/initrm_img')
+         Utils.warning('and initrd_img: vmlinuz: /path/to/initrd_img')
          process.exit(1)
       }
    }
