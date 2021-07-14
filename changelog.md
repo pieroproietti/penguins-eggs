@@ -18,6 +18,9 @@ You can follow the project also consulting the [commit history](https://github.c
 ## Changelog
 Versions are listed on reverse order, the first is the last one.
 
+### eggs-8.0.28
+* backup adapt luks encrypted volume to user's data size. Working on standard and full encrypted filesystem systems
+
 ### eggs-8.0.27
 * rewrite/refactor pacman and perrisbrewery using new common dependencies.ts introduced now (article on the blog)
 
