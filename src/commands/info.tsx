@@ -100,8 +100,6 @@ export default class Info extends Command {
          installer = await Pacman.calamaresCheck()
       }
 
-
-
       const Ok = () => (
          <Text backgroundColor="green">OK</Text>
       )

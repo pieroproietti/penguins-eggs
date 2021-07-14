@@ -129,10 +129,13 @@ export default class Config extends Command {
                 }
             }
 
+
             if (i.prerequisites) {
-                console.log('- install prerequisites')
-                const packages = Pacman.packages(verbose)
-                console.log(chalk.yellow('  apt install --yes ' + array2spaced(packages)))
+                console.log('- install packages prerequisites')
+                const packages = Pacman.filterInstalled(Pacman.packages(verbose))
+                if (packages.length > 0) {
+                    console.log(chalk.yellow('  apt install --yes ' + array2spaced(packages)))
+                }
             }
 
             if (i.configurationInstall) {
@@ -208,7 +211,7 @@ export default class Config extends Command {
 
         if (i.efi) {
             if (nointeractive) {
-                Utils.error('config: you are on a system UEFI capable, but I can\'t install grub-efi-' + Utils.machineArch() + '-bin now!')
+                Utils.error('config: you are on a system UEFI')
                 Utils.warning('I suggest You to install grub-efi-' + Utils.machineArch() + '-bin before to produce your ISO.\nJust write:\n    sudo apt install grub-efi-' + Utils.machineArch())
             } else {
                 Utils.warning('Installing uefi support...')
@@ -227,7 +230,7 @@ export default class Config extends Command {
         if (i.calamares) {
             if (Pacman.calamaresAble()) {
                 if (nointeractive) {
-                    Utils.error('config: you are on a graphic system, I suggest to install the GUI installer calamares. I can\'t install calamares now!')
+                    Utils.error('config: you are on a graphic system, I suggest to install the GUI installer calamares')
                     Utils.warning('I suggest You to install calamares GUI installer before to produce your ISO.\nJust write:\n    sudo eggs calamares --install')
                 } else {
                     Utils.warning('Installing calamares...')

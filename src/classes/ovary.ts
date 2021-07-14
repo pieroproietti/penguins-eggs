@@ -44,6 +44,9 @@ import { execSync } from 'child_process'
  * Ovary:
  */
 export default class Ovary {
+
+   toNull = ' > /dev/null 2>&1'
+
    incubator = {} as Incubator
 
    settings = {} as Settings
@@ -180,13 +183,28 @@ export default class Ovary {
          }
          await this.editLiveFs(verbose)
          await this.makeSquashfs(scriptOnly, verbose)
+         await this.uBindLiveFs(verbose) // Lo smonto prima della fase di backup
 
          if (backup) {
+            Utils.titles('produce --backup')
             Utils.warning('You will be prompted to give crucial informations to protect your users data')
+            Utils.warning('I\'m calculatings users datas needs. Please wait...')
+
+            const usersDataSize = await this.getUsersDatasSize(verbose) // 799MB = 837,812,224 
+            Utils.warning('User\'s data are: ' + Utils.formatBytes(usersDataSize))
             Utils.warning('Your passphrase will be not written in any way on the support, so it is literally unrecoverable.')
-            const volumeSize = await this.getUsersDatasSize(verbose) + 8 * 1024 * 1024
-            Utils.warning('Creating volume luks-users-data')
-            execSync('dd if=/dev/zero of=/tmp/luks-users-data bs=1 count=0 seek=1G', { stdio: 'inherit' })
+
+            const binaryHeaderSize = 4194304 // 4MB = 4,194,304 
+            Utils.warning('We need additional space of : ' + Utils.formatBytes(binaryHeaderSize, 2))
+            let volumeSize = usersDataSize + binaryHeaderSize
+            const minimunSize = 33554432 // 32M = 33,554,432
+            if (volumeSize < minimunSize) {
+               volumeSize = minimunSize
+            }
+            volumeSize *= 1.10 // add 10% space until 1GB, with 2GB 4% is enought
+
+            Utils.warning('Creating volume luks-users-data of ' + Utils.formatBytes(volumeSize, 0))
+            execSync('dd if=/dev/zero of=/tmp/luks-users-data bs=1 count=0 seek=' + Utils.formatBytes(volumeSize, 0) + this.toNull, { stdio: 'inherit' })
 
             Utils.warning('Formatting volume luks-users-data. You will insert a passphrase and confirm it')
             execSync('cryptsetup luksFormat /tmp/luks-users-data', { stdio: 'inherit' })
@@ -196,7 +214,7 @@ export default class Ovary {
             execSync('cryptsetup luksOpen /tmp/luks-users-data eggs-users-data', { stdio: 'inherit' })
 
             Utils.warning('Formatting volume eggs-users-data with ext4')
-            execSync('mkfs.ext4 /dev/mapper/eggs-users-data', { stdio: 'inherit' })
+            execSync('mkfs.ext2 /dev/mapper/eggs-users-data' + this.toNull, { stdio: 'inherit' })
 
             Utils.warning('mounting volume eggs-users-data in /mnt')
             execSync('mount /dev/mapper/eggs-users-data /mnt', { stdio: 'inherit' })
@@ -216,9 +234,6 @@ export default class Ovary {
 
          await this.makeDotDisk(backup, verbose)
          await this.makeIso(backup, scriptOnly, verbose)
-         await this.bindVfs(verbose)
-         await this.ubindVfs(verbose)
-         await this.uBindLiveFs(verbose)
       }
    }
 
@@ -606,7 +621,7 @@ export default class Ovary {
       if (failVmlinuz || failInitrd) {
          Utils.error(`something went wrong! Cannot find ${this.settings.kernel_image} or ${this.settings.initrd_image}`)
          Utils.warning('Try to edit /etc/penguins-eggs.d/eggs.yaml and check for vmlinuz: /path/to/vmlinuz')
-         Utils.warning('and initrd_img: vmlinuz: /path/to/initrm_img')
+         Utils.warning('and initrd_img: vmlinuz: /path/to/initrd_img')
          process.exit(1)
       }
    }
@@ -922,18 +937,22 @@ export default class Ovary {
       }
 
       const cmds: string[] = []
-      const cmd = `chroot ${this.settings.work_dir.merged} getent passwd {1000..60000} |awk -F: '{print $1}'`
+      const cmd = `chroot / getent passwd {1000..60000} |awk -F: '{print $1}'`
       const result = await exec(cmd, {
          echo: verbose,
          ignore: false,
          capture: true
       })
-      const users: string[] = result.data.split('\n')
+      // Filter serve a rimuovere gli elementi vuoti
+      const users: string[] = result.data.split('\n').filter(Boolean)
       let size = 0
-      for (let i = 0; i < users.length - 1; i++) {
-         // ad esclusione dell'utente live...
+      Utils.warning('We found ' + users.length + ' users')
+      for (let i = 0; i < users.length; i++) {
+         // esclude tutte le cartelle che NON sono users
          if (users[i] !== this.settings.config.user_opt) {
-            size += parseInt(shx.exec('du --summarize /home/' + users[i] + `|awk '{ print $1 }'`).stdout.trim())
+            // du restituisce size in Kbytes senza -b
+            const bytes = parseInt(shx.exec(`du -b --summarize /home/${users[i]} |awk '{ print $1 }'`, { silent: true }).stdout.trim())
+            size += bytes
          }
       }
       return size
@@ -963,7 +982,7 @@ export default class Ovary {
          // ad esclusione dell'utente live...
          if (users[i] !== this.settings.config.user_opt) {
             execSync('mkdir -p /mnt/home/' + users[i], { stdio: 'inherit' })
-            execSync('rsync -a /home/' + users[i] + '/ ' + '/mnt/home/' + users[i] +'/', { stdio: 'inherit' })
+            execSync('rsync -a /home/' + users[i] + '/ ' + '/mnt/home/' + users[i] + '/', { stdio: 'inherit' })
          }
       }
       execSync('mkdir -p /mnt/etc', { stdio: 'inherit' })

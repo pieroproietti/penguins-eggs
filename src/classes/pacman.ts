@@ -78,8 +78,20 @@ export default class Pacman {
    /**
     * Check if the system is GUI able
     */
-   static async isGui(): Promise<boolean> {
+    static async isGui(): Promise<boolean> {
       return await this.isXorg() || await this.isWayland()
+   }
+
+   /**
+    * 
+    * @returns 
+    */
+   static guiEnabled(): boolean {
+      let enabled= true
+      if (process.env.DISPLAY === '') {
+         enabled= false
+      }
+      return enabled
    }
 
 
@@ -188,7 +200,11 @@ export default class Pacman {
           * live-config-getty-generator
           * 
           * Viene rimosso in naked, altrimenti non funziona il login
-          * generando un errore getty. Sarebbe utile individuarne le ragioni.
+          * generando un errore getty. 
+          * Sarebbe utile individuarne le ragioni, forse rompe anche sul desktop
+          * non permettendo di cambiare terminale e loggarsi
+          * 
+          * A che serve? 
           */
          await exec(`rm /lib/systemd/system-generators/live-config-getty-generator`)
       }
@@ -246,7 +262,6 @@ export default class Pacman {
     *
     */
    static async calamaresInstall(verbose = true): Promise<void> {
-      // verbose = true
       const echo = Utils.setEcho(verbose)
       if (this.isGui()) {
          try {
@@ -257,7 +272,7 @@ export default class Pacman {
          try {
             await exec(`apt-get install --yes ${array2spaced(this.debs4calamares)}`, echo)
          } catch (e) {
-            Utils.error('Pacman.calamaresInstall() apt-get install --yes' + e.error)
+            Utils.error(`Pacman.calamaresInstall() apt-get install --yes ${array2spaced(this.debs4calamares)}` + e.error)
          }
 
       } else {
@@ -353,7 +368,7 @@ export default class Pacman {
        */
       config.machine_id = Utils.machineId()
       config.vmlinuz = Utils.vmlinuz()
-      config.initrd_imd = Utils.initrdImg()
+      config.initrd_img = Utils.initrdImg()
       const settings = new Settings()
       await settings.save(config)
    }

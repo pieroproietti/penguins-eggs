@@ -40,7 +40,7 @@ export default class Install extends Command {
 
       if (Utils.isRoot(this.id)) {
          if (Utils.isLive()) {
-            if (Pacman.packageIsInstalled('calamares') && !flags.cli) {
+            if (Pacman.packageIsInstalled('calamares') && Pacman.guiEnabled() && !flags.cli) {
                shx.exec('calamares')
             } else {
                const krill = new Prepare()
