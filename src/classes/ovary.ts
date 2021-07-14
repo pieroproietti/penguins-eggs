@@ -201,7 +201,7 @@ export default class Ovary {
             if (volumeSize < minimunSize) {
                volumeSize = minimunSize
             }
-            volumeSize *= 1.04 // aggiungo un 4% per sicurezza
+            volumeSize *= 1.10 // add 10% space until 1GB, with 2GB 4% is enought
 
             Utils.warning('Creating volume luks-users-data of ' + Utils.formatBytes(volumeSize, 0))
             execSync('dd if=/dev/zero of=/tmp/luks-users-data bs=1 count=0 seek=' + Utils.formatBytes(volumeSize, 0) + this.toNull, { stdio: 'inherit' })
@@ -951,7 +951,7 @@ export default class Ovary {
          // esclude tutte le cartelle che NON sono users
          if (users[i] !== this.settings.config.user_opt) {
             // du restituisce size in Kbytes senza -b
-            const bytes = parseInt(shx.exec(`du -b --summarize /home/${users[i]} |awk '{ print $1 }'`).stdout.trim())
+            const bytes = parseInt(shx.exec(`du -b --summarize /home/${users[i]} |awk '{ print $1 }'`, { silent: true }).stdout.trim())
             size += bytes
          }
       }
