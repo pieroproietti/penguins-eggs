@@ -44,6 +44,9 @@ import { execSync } from 'child_process'
  * Ovary:
  */
 export default class Ovary {
+
+   toNull = ' > /dev/null 2>&1'
+
    incubator = {} as Incubator
 
    settings = {} as Settings
@@ -196,22 +199,22 @@ export default class Ovary {
             let volumeSize = usersDataSize + binaryHeaderSize
             const minimunSize = 33554432 // 32M = 33,554,432
             if (volumeSize < minimunSize) {
-              volumeSize = minimunSize
+               volumeSize = minimunSize
             }
-            volumeSize *= 1.02 // aggiungo un 2% per sicurezza
-            
+            volumeSize *= 1.04 // aggiungo un 4% per sicurezza
+
             Utils.warning('Creating volume luks-users-data of ' + Utils.formatBytes(volumeSize, 0))
-            Utils.warning('dd if=/dev/zero of=/tmp/luks-users-data bs=1 count=0 seek=' + Utils.formatBytes(volumeSize, 0))
-            execSync('dd if=/dev/zero of=/tmp/luks-users-data bs=1 count=0 seek=' + Utils.formatBytes(volumeSize, 0), { stdio: 'inherit' })
+            execSync('dd if=/dev/zero of=/tmp/luks-users-data bs=1 count=0 seek=' + Utils.formatBytes(volumeSize, 0) + this.toNull, { stdio: 'inherit' })
 
             Utils.warning('Formatting volume luks-users-data. You will insert a passphrase and confirm it')
             execSync('cryptsetup luksFormat /tmp/luks-users-data', { stdio: 'inherit' })
+
             Utils.warning('Opening volume luks-users-data and map it in /dev/mapper/eggs-users-data')
             Utils.warning('You will insert the same passphrase you choose before')
             execSync('cryptsetup luksOpen /tmp/luks-users-data eggs-users-data', { stdio: 'inherit' })
 
             Utils.warning('Formatting volume eggs-users-data with ext4')
-            execSync('mkfs.ext2 /dev/mapper/eggs-users-data', { stdio: 'inherit' })
+            execSync('mkfs.ext2 /dev/mapper/eggs-users-data' + this.toNull, { stdio: 'inherit' })
 
             Utils.warning('mounting volume eggs-users-data in /mnt')
             execSync('mount /dev/mapper/eggs-users-data /mnt', { stdio: 'inherit' })
@@ -231,12 +234,6 @@ export default class Ovary {
 
          await this.makeDotDisk(backup, verbose)
          await this.makeIso(backup, scriptOnly, verbose)
-         /**
-          * ubindVfs NON serve e ubindLiveFS è stato spostato PRIMA del backup
-          */
-         // await this.bindVfs(verbose)
-         // await this.ubindVfs(verbose)
-         // await this.uBindLiveFs(verbose)
       }
    }
 
@@ -946,11 +943,11 @@ export default class Ovary {
          ignore: false,
          capture: true
       })
-      const users: string[] = result.data.split('\n')
-      console.log(users)
+      // Filter serve a rimuovere gli elementi vuoti
+      const users: string[] = result.data.split('\n').filter(Boolean)
       let size = 0
-      console.log('We found just ' + users.length + ' users')
-      for (let i = 0; i < users.length -1; i++) {
+      Utils.warning('We found ' + users.length + ' users')
+      for (let i = 0; i < users.length; i++) {
          // esclude tutte le cartelle che NON sono users
          if (users[i] !== this.settings.config.user_opt) {
             // du restituisce size in Kbytes senza -b
