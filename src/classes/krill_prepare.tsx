@@ -43,38 +43,8 @@ import getDns from '../lib/get_dns'
 import Hatching from './krill_install'
 
 import { INet } from '../interfaces'
-import { getDefaultSettings } from 'http2';
+import {IWelcome, ILocation, IKeyboard, IPartitions, IUsers} from '../interfaces/i-krill'
 
-interface IWelcome {
-  language: string
-}
-
-interface ILocation {
-  language: string,
-  region: string,
-  zone: string
-}
-
-interface IKeyboard {
-  keyboardModel: string,
-  keyboardLayout: string,
-  keyboardVariant: string
-}
-
-interface IPartitions {
-  installationDevice: string,
-  filesystemType: string,
-  userSwapChoice: string
-}
-
-interface IUsers {
-  name: string,
-  fullname: string,
-  password: string,
-  rootPassword: string,
-  autologin: boolean,
-  hostname: string
-}
 
 export default class Krill {
 
@@ -180,6 +150,7 @@ export default class Krill {
   */
   async partitions(): Promise<IPartitions> {
     let installationDevice = '/dev/sda'
+    let installationMode = 'standard'
     let filesystemType = 'ext4'
     let userSwapChoice = 'small'
     let partitionsElem: JSX.Element
@@ -208,6 +179,7 @@ export default class Krill {
     }
     return {
       installationDevice: installationDevice,
+      installationMode: installationMode,
       filesystemType: filesystemType,
       userSwapChoice: userSwapChoice
     }

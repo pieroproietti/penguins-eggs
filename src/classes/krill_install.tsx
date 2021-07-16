@@ -20,6 +20,7 @@ import shx = require('shelljs')
 import Utils from './utils'
 import cliAutologin = require('../lib/cli-autologin')
 const exec = require('../lib/utils').exec
+import {IWelcome, ILocation, IKeyboard, IPartitions, IUsers} from '../interfaces/i-krill'
 
 import { execSync } from 'child_process'
 
@@ -54,6 +55,7 @@ import { execSync } from 'child_process'
       - umount
  */
 
+// interface solo per hatching
 interface ICalamaresModule {
    type: string,
    name: string,
@@ -62,35 +64,6 @@ interface ICalamaresModule {
    timeout: number
 }
 
-
-interface ILocation {
-   language: string,
-   region: string,
-   zone: string
-}
-
-interface IKeyboard {
-   keyboardModel: string,
-   keyboardLayout: string,
-   keyboardVariant: string
-}
-
-interface IPartitions {
-   installationDevice: string,
-   filesystemType: string,
-   userSwapChoice: string
-}
-
-interface IUsers {
-   name: string,
-   fullname: string,
-   password: string,
-   rootPassword: string,
-   autologin: boolean,
-   hostname: string
-}
-
-// Solo per hatching
 interface IHost {
    name: string
    domain: string
