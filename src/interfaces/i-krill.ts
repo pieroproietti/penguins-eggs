@@ -29,3 +29,12 @@ export interface IUsers {
    autologin: boolean,
    hostname: string
 }
+
+// interface solo per hatching
+export interface ICalamaresModule {
+   type: string,
+   name: string,
+   interface: string,
+   command: string,
+   timeout: number
+}
