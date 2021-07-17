@@ -22,6 +22,7 @@ import selectRegions from '../lib/select_regions'
 import selectZones from '../lib/select_zones'
 
 import selectInstallationDevice from '../lib/select_installation_device'
+import selectInstallationMode from '../lib/select_installation_mode'
 import selectUserSwapChoice from '../lib/select_user_swap_choice'
 import selectFileSystemType from '../lib/select_filesystem_type'
 
@@ -153,26 +154,32 @@ export default class Krill {
     let installationMode = 'standard'
     let filesystemType = 'ext4'
     let userSwapChoice = 'small'
+
     let partitionsElem: JSX.Element
     while (true) {
-      partitionsElem = <Partitions installationDevice={installationDevice} filesystemType={filesystemType} userSwapChoice={userSwapChoice} />
+      partitionsElem = <Partitions installationDevice={installationDevice} installationMode={installationMode} filesystemType={filesystemType} userSwapChoice={userSwapChoice} />
       if (await confirm(partitionsElem, "Confirm Partitions datas?")) {
         break
       } else {
         installationDevice = ''
+        installationMode = ''
         filesystemType = ''
         userSwapChoice = ''
       }
 
-      partitionsElem = <Partitions installationDevice={installationDevice} filesystemType={filesystemType} userSwapChoice={userSwapChoice} />
+      partitionsElem = <Partitions installationDevice={installationDevice} installationMode={installationMode} filesystemType={filesystemType} userSwapChoice={userSwapChoice} />
       redraw(partitionsElem)
       installationDevice = await selectInstallationDevice()
 
-      partitionsElem = <Partitions installationDevice={installationDevice} filesystemType={filesystemType} userSwapChoice={userSwapChoice} />
+      partitionsElem = <Partitions installationDevice={installationDevice} installationMode={installationMode} filesystemType={filesystemType} userSwapChoice={userSwapChoice} />
+      redraw(partitionsElem)
+      installationMode = await selectInstallationMode()
+
+      partitionsElem = <Partitions installationDevice={installationDevice} installationMode={installationMode} filesystemType={filesystemType} userSwapChoice={userSwapChoice} />
       redraw(partitionsElem)
       filesystemType = await selectFileSystemType()
 
-      partitionsElem = <Partitions installationDevice={installationDevice} filesystemType={filesystemType} userSwapChoice={userSwapChoice} />
+      partitionsElem = <Partitions installationDevice={installationDevice} installationMode={installationMode} filesystemType={filesystemType} userSwapChoice={userSwapChoice} />
       redraw(partitionsElem)
       userSwapChoice = await selectUserSwapChoice()
 

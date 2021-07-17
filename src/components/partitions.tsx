@@ -12,12 +12,13 @@ import { ISettings, IBranding, IPartitions } from '../interfaces'
 
 type partitionsProps = {
     installationDevice?: string,
+    installationMode?: string,
     filesystemType?: string,
     userSwapChoice?: string
 }
 
 
-export default function Partitions({ installationDevice, filesystemType, userSwapChoice }: partitionsProps) {
+export default function Partitions({ installationDevice, installationMode, filesystemType, userSwapChoice }: partitionsProps) {
     let installer = 'krill'
     let productName = 'unknown'
     let version = 'x.x.x'
@@ -61,6 +62,7 @@ export default function Partitions({ installationDevice, filesystemType, userSwa
                             <Box><Text>present on the selected storage device</Text></Box>
                             <Newline />
                             <Box><Text>Installation device: </Text><Text color="cyan">{installationDevice}</Text></Box>
+                            <Box><Text>Installation mode: </Text><Text color="cyan">{installationMode}</Text></Box>
                             <Box><Text>Filesystem: </Text><Text color="cyan">{filesystemType}</Text></Box>
                             <Box><Text>User swap choice: : </Text><Text color="cyan">{userSwapChoice}</Text></Box>
                         </Box>
