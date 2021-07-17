@@ -865,10 +865,6 @@ adduser ${name} \
     * mkfs
     */
    private async mkfs(): Promise<boolean> {
-      // this.disk.fsType = partitions.filesystemType
-      // this.disk.installationDevice = partitions.installationDevice
-      // this.disk.partionType = 'simple'
-
       const echo = { echo: false, ignore: false }
 
       const result = true
@@ -884,7 +880,6 @@ adduser ${name} \
          }
          await exec('mke2fs -Ft ' + this.devices.boot.fsType + ' ' + this.devices.boot.name + this.toNull, echo)
       }
-
 
       if (this.devices.root.name !== 'none') {
          await exec('mke2fs -Ft ' + this.devices.root.fsType + ' ' + this.devices.root.name + this.toNull, echo)
@@ -1033,7 +1028,7 @@ adduser ${name} \
       if (p.installationMode === 'standard' && !this.efi) {
 
          /**
-          * formattazione standard, non EFI working
+          * formattazione standard, BIOS working
           */
          await exec('parted --script ' + p.installationDevice + ' mklabel msdos' + this.toNull, echo)
          await exec('parted --script --align optimal ' + p.installationDevice + ' mkpart primary 1MiB 95%' + this.toNull, echo)
@@ -1053,10 +1048,10 @@ adduser ${name} \
          retVal = true
 
       } else if (p.installationMode === 'standard' && this.efi) {
-
          /**
           * formattazione standard, EFI NOT working
           */
+
          await exec('parted --script ' + p.installationDevice + ' mklabel gpt mkpart primary 0% 1% mkpart primary 1% 95% mkpart primary linux-swap 95% 100%' + this.toNull, echo)
          await exec('parted --script ' + p.installationDevice + ' set 1 boot on' + this.toNull, echo)
          await exec('parted --script ' + p.installationDevice + ' set 1 esp on' + this.toNull, echo)
@@ -1075,7 +1070,7 @@ adduser ${name} \
          this.devices.swap.fsType = 'swap'
 
          retVal = true
-         
+
       } else if (p.installationMode === 'full-encrypted' && !this.efi) {
          /**
           * formattazione full-encrypted, BIOS standard
@@ -1087,10 +1082,10 @@ adduser ${name} \
           */
 
       } else if (p.installationMode === 'lvm2' && !this.efi) {
-
          /**
          * LVM2, non EFI PROXMOX-VE
          */
+
          await exec(`parted --script ${p.installationDevice} mklabel msdos`)
 
          // Creo partizioni
