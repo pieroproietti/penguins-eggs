@@ -69,12 +69,6 @@ interface IHost {
    domain: string
 }
 
-interface IDisk {
-   installationDevice: string
-   partionType: string
-   fsType: string
-}
-
 import { IInstaller, IDevices, IDevice } from '../interfaces'
 import Pacman from './pacman';
 import { installer } from './incubation/installer'
@@ -103,8 +97,6 @@ export default class Hatching {
    host = {} as IHost
 
    //   net = {} as INet
-
-   disk = {} as IDisk
 
    partitions = {} as IPartitions
 
@@ -149,9 +141,9 @@ export default class Hatching {
 
       this.network = network
 
-      this.disk.fsType = partitions.filesystemType
-      this.disk.installationDevice = partitions.installationDevice
-      this.disk.partionType = 'simple'
+      // this.disk.installationDevice = partitions.installationDevice
+      // this.disk.installationMode = partitions.installationMode
+      // this.disk.fsType = partitions.filesystemType
 
       this.partitions = partitions
 
@@ -192,7 +184,7 @@ export default class Hatching {
       // await checkIt(message)
 
 
-      if (await this.partition(this.disk.installationDevice, this.disk.partionType)) {
+      if (await this.partition(this.partitions)) {
          message = "Formatting file system "
          percent = 0.01
          try {
@@ -297,7 +289,7 @@ export default class Hatching {
          percent = 0.47
          try {
             redraw(<Install message={message} percent={percent} />)
-            await this.fstab(this.disk.installationDevice)
+            await this.fstab(this.partitions.installationDevice)
          } catch (error) {
             message += JSON.stringify(error)
             redraw(<Install message={message} percent={percent} />)
@@ -374,7 +366,7 @@ export default class Hatching {
          percent = 0.65
          try {
             redraw(<Install message={message} percent={percent} />)
-            this.initramfsCfg(this.disk.installationDevice)
+            this.initramfsCfg(this.partitions.installationDevice)
          } catch (error) {
             message += JSON.stringify(error)
             redraw(<Install message={message} percent={percent} />)
@@ -587,7 +579,7 @@ adduser ${name} \
          await exec(`chroot ${this.installTarget} apt install grub-pc --yes` + this.toNull, echo)
       }
 
-      await exec('chroot ' + this.installTarget + ' grub-install ' + this.disk.installationDevice + this.toNull, echo)
+      await exec('chroot ' + this.installTarget + ' grub-install ' + this.partitions.installationDevice + this.toNull, echo)
       await exec('chroot ' + this.installTarget + ' update-grub', echo)
       await exec('sleep 1', echo)
       // await Utils.customConfirm('installazione per ' + process.arch)
@@ -1058,72 +1050,73 @@ adduser ${name} \
     * @param partitionType
     * @param verbose
     */
-   private async partition(device: string, partitionType: string): Promise<boolean> {
-      const echo = { echo: false, ignore: false }
+   //private async partition(device: string, partitionType: string): Promise<boolean> {
+   private async partition(p: IPartitions): Promise<boolean> {
+         const echo = { echo: false, ignore: false }
 
       let retVal = false
 
-      await exec('wipefs -a ' + device + this.toNull)
+      await exec('wipefs -a ' + this.partitions.installationDevice + this.toNull)
       //await exec('dd if=/dev/zero of=' + device + ' bs=512 count=1 conv=notrunc')
 
 
-      if (partitionType === 'simple' && !this.efi) {
+      if (p.installationMode === 'standard' && !this.efi) {
 
          /**
           * simple, non EFI
           */
-         await exec('parted --script ' + device + ' mklabel msdos' + this.toNull, echo)
-         await exec('parted --script --align optimal ' + device + ' mkpart primary 1MiB 95%' + this.toNull, echo)
-         await exec('parted --script ' + device + ' set 1 boot on' + this.toNull, echo)
-         await exec('parted --script --align optimal ' + device + ' mkpart primary 95% 100%' + this.toNull, echo)
+         await exec('parted --script ' + p.installationDevice + ' mklabel msdos' + this.toNull, echo)
+         await exec('parted --script --align optimal ' + p.installationDevice + ' mkpart primary 1MiB 95%' + this.toNull, echo)
+         await exec('parted --script ' + p.installationDevice + ' set 1 boot on' + this.toNull, echo)
+         await exec('parted --script --align optimal ' + p.installationDevice + ' mkpart primary 95% 100%' + this.toNull, echo)
 
          this.devices.efi.name = `none`
          this.devices.boot.name = `none`
-         this.devices.root.name = device + '1'
+         this.devices.root.name = p.installationDevice + '1'
          this.devices.root.fsType = 'ext4'
          this.devices.root.mountPoint = '/'
          this.devices.data.name = `none`
-         this.devices.swap.name = device + '2'
+         this.devices.swap.name = p.installationDevice + '2'
          this.devices.swap.fsType = 'swap'
          this.devices.swap.mountPoint = 'none'
 
          retVal = true
 
-      } else if (partitionType === 'simple' && this.efi) {
+      } else if (p.installationMode === 'standard' && this.efi) {
 
          /**
           * simple, EFI
           */
-         await exec('parted --script ' + device + ' mklabel gpt mkpart primary 0% 1% mkpart primary 1% 95% mkpart primary linux-swap 95% 100%' + this.toNull, echo)
-         await exec('parted --script ' + device + ' set 1 boot on' + this.toNull, echo)
-         await exec('parted --script ' + device + ' set 1 esp on' + this.toNull, echo)
+         await exec('parted --script ' + p.installationDevice + ' mklabel gpt mkpart primary 0% 1% mkpart primary 1% 95% mkpart primary linux-swap 95% 100%' + this.toNull, echo)
+         await exec('parted --script ' + p.installationDevice + ' set 1 boot on' + this.toNull, echo)
+         await exec('parted --script ' + p.installationDevice + ' set 1 esp on' + this.toNull, echo)
 
-         this.devices.efi.name = device + '1'
+         this.devices.efi.name = p.installationDevice + '1'
          this.devices.efi.fsType = 'F 32 -I'
          this.devices.efi.mountPoint = '/boot/efi'
          this.devices.boot.name = `none`
 
-         this.devices.root.name = device + '2'
+         this.devices.root.name = p.installationDevice + '2'
          this.devices.root.fsType = 'ext4'
          this.devices.root.mountPoint = '/'
          this.devices.data.name = `none`
 
-         this.devices.swap.name = device + '3'
+         this.devices.swap.name = p.installationDevice + '3'
          this.devices.swap.fsType = 'swap'
 
          retVal = true
-      } else if (partitionType === 'lvm2' && !this.efi) {
+      } else if (p.installationMode === 'lvm2' && !this.efi) {
 
          /**
          * LVM2, non EFI
          */
-         await exec(`parted --script ${device} mklabel msdos`)
+         await exec(`parted --script ${p.installationDevice} mklabel msdos`)
 
          // Creo partizioni
-         await exec(`parted --script ${device} mkpart primary ext2 1 512`)
-         await exec(`parted --script --align optimal ${device} set 1 boot on`)
-         await exec(`parted --script --align optimal ${device} mkpart primary ext2 512 100%`)
-         await exec(`parted --script ${device} set 2 lvm on`)
+         await exec(`parted --script ${p.installationDevice} mkpart primary ext2 1 512`)
+         await exec(`parted --script --align optimal ${p.installationDevice} set 1 boot on`)
+         await exec(`parted --script --align optimal ${p.installationDevice} mkpart primary ext2 512 100%`)
+         await exec(`parted --script ${p.installationDevice} set 2 lvm on`)
 
          // Partizione LVM
          const lvmPartname = shx.exec(`fdisk $1 -l | grep 8e | awk '{print $1}' | cut -d "/" -f3`).stdout.trim()
@@ -1149,7 +1142,7 @@ adduser ${name} \
 
          this.devices.efi.name = `none`
 
-         this.devices.boot.name = `${device}1`
+         this.devices.boot.name = `${p.installationDevice}1`
          this.devices.root.fsType = 'ext2'
          this.devices.root.mountPoint = '/boot'
 
@@ -1163,7 +1156,7 @@ adduser ${name} \
 
          this.devices.swap.name = `/dev/pve/swap`
          retVal = true
-      } else if (partitionType === 'lvm2' && this.efi) {
+      } else if (p.installationMode === 'lvm2' && this.efi) {
          /**
          * LVM2, EFI
          */
@@ -1264,7 +1257,7 @@ adduser ${name} \
 
 
       try {
-         cmd = 'chroot ' + this.installTarget + ' grub-install ' + this.disk.installationDevice + this.toNull
+         cmd = 'chroot ' + this.installTarget + ' grub-install ' + this.partitions.installationDevice + this.toNull
          await exec(cmd, echo)
       } catch (error) {
          console.log('cmd: ' + cmd + ' error: ' + error)
@@ -1297,7 +1290,7 @@ adduser ${name} \
     * only show the result
     */
    finished() {
-      redraw(<Finished installationDevice={this.disk.installationDevice} hostName={this.host.name} userName={this.users.name} />)
+      redraw(<Finished installationDevice={this.partitions.installationDevice} hostName={this.host.name} userName={this.users.name} />)
       require('child_process').spawnSync('read _ ', { shell: true, stdio: [0, 1, 2] })
       shx.exec('reboot')
    }
