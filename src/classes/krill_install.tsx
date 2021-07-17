@@ -6,26 +6,7 @@
  *
  */
 
-import { IRemix, IDistro, INet } from '../interfaces'
-import Settings from './settings'
-
-import React from 'react';
-import { render, RenderOptions } from 'ink'
-import Install from '../components/install'
-import Finished from '../components/finished'
-
-import fs = require('fs')
-import yaml from 'js-yaml'
-import shx = require('shelljs')
-import Utils from './utils'
-import cliAutologin = require('../lib/cli-autologin')
-const exec = require('../lib/utils').exec
-import {IWelcome, ILocation, IKeyboard, IPartitions, IUsers} from '../interfaces/i-krill'
-
-import { execSync } from 'child_process'
-
 /**
- * 
  * Ideally, I want to respect this schema
       - partition
       - mount
@@ -55,28 +36,33 @@ import { execSync } from 'child_process'
       - umount
  */
 
-// interface solo per hatching
-interface ICalamaresModule {
-   type: string,
-   name: string,
-   interface: string,
-   command: string,
-   timeout: number
-}
 
-interface IHost {
-   name: string
-   domain: string
-}
+import { IRemix, IDistro, INet } from '../interfaces'
+import Settings from './settings'
 
-import { IInstaller, IDevices, IDevice } from '../interfaces'
+import React from 'react';
+import { render, RenderOptions } from 'ink'
+import Install from '../components/install'
+import Finished from '../components/finished'
+
+import fs = require('fs')
+import yaml from 'js-yaml'
+import shx = require('shelljs')
+import Utils from './utils'
+import cliAutologin = require('../lib/cli-autologin')
+
 import Pacman from './pacman';
 import { installer } from './incubation/installer'
 import Xdg from './xdg';
 import Distro from './distro';
 
+import { IInstaller, IDevices, IDevice } from '../interfaces'
+import { ICalamaresModule, ILocation, IKeyboard, IPartitions, IUsers } from '../interfaces/i-krill'
+import { execSync } from 'child_process'
+const exec = require('../lib/utils').exec
+
 /**
- * hatch, installazione
+ * hatching: installazione o cova!!!
  */
 export default class Hatching {
 
@@ -93,10 +79,6 @@ export default class Hatching {
    users = {} as IUsers
 
    network = {} as INet
-
-   host = {} as IHost
-
-   //   net = {} as INet
 
    partitions = {} as IPartitions
 
@@ -130,7 +112,6 @@ export default class Hatching {
 
       this.settings = new Settings()
 
-
       this.language = location.language
       this.region = location.region
       this.zone = location.zone
@@ -141,14 +122,7 @@ export default class Hatching {
 
       this.network = network
 
-      // this.disk.installationDevice = partitions.installationDevice
-      // this.disk.installationMode = partitions.installationMode
-      // this.disk.fsType = partitions.filesystemType
-
       this.partitions = partitions
-
-      this.host.name = users.hostname
-      this.host.domain = 'lan'
 
       this.users = users
 
@@ -661,7 +635,6 @@ adduser ${name} \
       text += `# ${this.devices.swap.name} ${this.devices.swap.mountPoint} ${this.devices.swap.fsType} ${mountOptsSwap}\n`
       text += `UUID=${Utils.uuid(this.devices.swap.name)} ${this.devices.swap.mountPoint} ${this.devices.swap.fsType} ${mountOptsSwap}\n`
       Utils.write(file, text)
-
    }
 
    /**
@@ -728,7 +701,7 @@ adduser ${name} \
       const echo = { echo: false, ignore: false }
 
       const file = this.installTarget + '/etc/hostname'
-      const text = this.host.name
+      const text = this.users.hostname
 
       await exec(`rm ${file} `, echo)
       fs.writeFileSync(file, text)
@@ -742,9 +715,9 @@ adduser ${name} \
       const file = this.installTarget + '/etc/hosts'
       let text = '127.0.0.1 localhost localhost.localdomain\n'
       if (this.network.addressType === 'static') {
-         text += `${this.network.address} ${this.host.name} ${this.host.name}.${this.host.domain} pvelocalhost\n`
+         text += `${this.network.address} ${this.users.hostname} pvelocalhost\n`
       } else {
-         text += `127.0.1.1 ${this.host.name} ${this.host.name}.${this.host.domain} \n`
+         text += `127.0.1.1 ${this.users.hostname} \n`
       }
       text += `# The following lines are desirable for IPv6 capable hosts\n`
       text += `:: 1     ip6 - localhost ip6 - loopback\n`
@@ -1052,18 +1025,15 @@ adduser ${name} \
     */
    //private async partition(device: string, partitionType: string): Promise<boolean> {
    private async partition(p: IPartitions): Promise<boolean> {
-         const echo = { echo: false, ignore: false }
+      const echo = { echo: false, ignore: false }
 
       let retVal = false
 
       await exec('wipefs -a ' + this.partitions.installationDevice + this.toNull)
-      //await exec('dd if=/dev/zero of=' + device + ' bs=512 count=1 conv=notrunc')
-
-
       if (p.installationMode === 'standard' && !this.efi) {
 
          /**
-          * simple, non EFI
+          * formattazione standard, non EFI working
           */
          await exec('parted --script ' + p.installationDevice + ' mklabel msdos' + this.toNull, echo)
          await exec('parted --script --align optimal ' + p.installationDevice + ' mkpart primary 1MiB 95%' + this.toNull, echo)
@@ -1085,7 +1055,7 @@ adduser ${name} \
       } else if (p.installationMode === 'standard' && this.efi) {
 
          /**
-          * simple, EFI
+          * formattazione standard, EFI NOT working
           */
          await exec('parted --script ' + p.installationDevice + ' mklabel gpt mkpart primary 0% 1% mkpart primary 1% 95% mkpart primary linux-swap 95% 100%' + this.toNull, echo)
          await exec('parted --script ' + p.installationDevice + ' set 1 boot on' + this.toNull, echo)
@@ -1105,10 +1075,21 @@ adduser ${name} \
          this.devices.swap.fsType = 'swap'
 
          retVal = true
+         
+      } else if (p.installationMode === 'full-encrypted' && !this.efi) {
+         /**
+          * formattazione full-encrypted, BIOS standard
+          */
+
+      } else if (p.installationMode === 'full-encrypted' && this.efi) {
+         /**
+          * formattazione full-encrypted, EFI
+          */
+
       } else if (p.installationMode === 'lvm2' && !this.efi) {
 
          /**
-         * LVM2, non EFI
+         * LVM2, non EFI PROXMOX-VE
          */
          await exec(`parted --script ${p.installationDevice} mklabel msdos`)
 
@@ -1290,7 +1271,7 @@ adduser ${name} \
     * only show the result
     */
    finished() {
-      redraw(<Finished installationDevice={this.partitions.installationDevice} hostName={this.host.name} userName={this.users.name} />)
+      redraw(<Finished installationDevice={this.partitions.installationDevice} hostName={this.users.hostname} userName={this.users.name} />)
       require('child_process').spawnSync('read _ ', { shell: true, stdio: [0, 1, 2] })
       shx.exec('reboot')
    }
