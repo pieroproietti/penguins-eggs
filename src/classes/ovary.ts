@@ -1256,9 +1256,6 @@ export default class Ovary {
       shx.mkdir('-p', `./boot/grub/${Utils.machineUEFI()}`)
       shx.mkdir('-p', './efi/boot')
 
-      // copy splash
-      //shx.cp(path.resolve(__dirname, '../../assets/penguins-eggs-splash.png'), `${this.settings.efi_work}/boot/grub/spash.png`)
-
       // second grub.cfg file
       let cmd = `for i in $(ls /usr/lib/grub/${Utils.machineUEFI()}|grep part_|grep .mod|sed \'s/.mod//\'); do echo "insmod $i" >> boot/grub/${Utils.machineUEFI()}/grub.cfg; done`
       await exec(cmd, echo)
