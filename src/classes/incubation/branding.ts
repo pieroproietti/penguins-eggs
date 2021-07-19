@@ -28,15 +28,16 @@ export function branding(remix: IRemix, distro: IDistro, brand = '', verbose = f
    const shortVersion = version
    const versionedName = remix.fullname  + ' ('+ version + ')' // Questa la mette nella descrizione andrebbe aggiunta la versione dal nome della iso
    const shortVersionedName = remix.versionName + ' ' + version
-   //let bootloaderEntryName = distro.distroId
-   let bootloaderEntryName = distro.distroId // perchè avevo messo remix.fullname?
 
-   // Necessario: Devuan e LMDE devono avere EFI=Debian
+   let bootloaderEntryName = distro.distroId
+
+   // Necessario: Devuan e LMDE devono avere EFI=Debian altrimenti non funziona EFI
    if (bootloaderEntryName === 'Devuan') {
       bootloaderEntryName = 'Debian'
    } else if (bootloaderEntryName === 'LMDE') {
       bootloaderEntryName = 'Debian'
    }
+
    const productUrl = homeUrl
    const releaseNotesUrl = 'https://github.com/pieroproietti/penguins-eggs/changelog.md'
    const productLogo = `${remix.branding}-logo.png`
