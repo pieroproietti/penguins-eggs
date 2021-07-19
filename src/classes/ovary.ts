@@ -201,7 +201,14 @@ export default class Ovary {
             if (volumeSize < minimunSize) {
                volumeSize = minimunSize
             }
-            volumeSize *= 1.10 // add 10% space until 1GB, with 2GB 4% is enought
+
+            if (volumeSize < 536870912) { // 512MB 536,870,912
+               volumeSize *= 1.15 // add 15%
+            } else if (volumeSize > 536870912 && (volumeSize < 1073741824)) { // 1GB 1,073,741,824
+               volumeSize *= 1.10 // add 10%
+            } else if (volumeSize > 1073741824) { // 1GB 1,073,741,824
+               volumeSize *= 1.05 // add 5% 
+            }
 
             Utils.warning('Creating volume luks-users-data of ' + Utils.formatBytes(volumeSize, 0))
             execSync('dd if=/dev/zero of=/tmp/luks-users-data bs=1 count=0 seek=' + Utils.formatBytes(volumeSize, 0) + this.toNull, { stdio: 'inherit' })
@@ -221,6 +228,9 @@ export default class Ovary {
 
             Utils.warning('Saving users datas in eggs-users-data')
             await this.copyUsersDatas(verbose)
+
+            const bytesUsed = parseInt(shx.exec(`du -b --summarize /mnt |awk '{ print $1 }'`, { silent: true }).stdout.trim())
+            Utils.warning('We used ' + Utils.formatBytes(bytesUsed, 0) + ' on ' + Utils.formatBytes(volumeSize, 0) + ' in volume luks-users-data')
 
             Utils.warning('Unmount /mnt')
             execSync('umount /mnt', { stdio: 'inherit' })
@@ -1245,9 +1255,6 @@ export default class Ovary {
       }
       shx.mkdir('-p', `./boot/grub/${Utils.machineUEFI()}`)
       shx.mkdir('-p', './efi/boot')
-
-      // copy splash
-      //shx.cp(path.resolve(__dirname, '../../assets/penguins-eggs-splash.png'), `${this.settings.efi_work}/boot/grub/spash.png`)
 
       // second grub.cfg file
       let cmd = `for i in $(ls /usr/lib/grub/${Utils.machineUEFI()}|grep part_|grep .mod|sed \'s/.mod//\'); do echo "insmod $i" >> boot/grub/${Utils.machineUEFI()}/grub.cfg; done`

@@ -9,7 +9,7 @@ export default async function selectUserSwapChoice(): Promise<string> {
 
    let partitions = {} as IPartitions
    if (fs.existsSync('/etc/calamares/modules/partition.conf')) {
-      partitions = yaml.load(fs.readFileSync('c', 'utf-8')) as unknown as IPartitions
+      partitions = yaml.load(fs.readFileSync('/etc/calamares/modules/partition.conf', 'utf-8')) as unknown as IPartitions
    } else {
       partitions.userSwapChoices = ['none', 'small', 'suspend', 'file']
       partitions.initialSwapChoice = 'small'
