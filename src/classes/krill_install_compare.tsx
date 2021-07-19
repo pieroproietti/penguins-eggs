@@ -115,7 +115,7 @@ export default class Hatching {
 
    installer = {} as IInstaller
 
-   installTarget = '/tmp/calamares-krill-installer'
+   installTarget = '/tmp/calamares-krill-root'
 
    verbose = false
 
@@ -902,16 +902,16 @@ adduser ${name} \
       execSync('sudo mount /dev/mapper/eggs-users-data /mnt', { stdio: 'inherit' })
 
       Utils.warning('removing live user in the installed system')
-      execSync('rm -rf /tmp/calamares-krill-installer/home/*', { stdio: 'inherit' })
+      execSync('rm -rf /tmp/calamares-krill-root/home/*', { stdio: 'inherit' })
 
       Utils.warning('copying users home in the installed system')
-      execSync('rsync -a /mnt/home/ /tmp/calamares-krill-installer/home/', { stdio: 'inherit' })
+      execSync('rsync -a /mnt/home/ /tmp/calamares-krill-root/home/', { stdio: 'inherit' })
 
 
       Utils.warning('copying users accounts in the installed system')
-      execSync('cp /mnt/etc/passwd /tmp/calamares-krill-installer/etc/', { stdio: 'inherit' })
-      execSync('cp /mnt/etc/shadow /tmp/calamares-krill-installer/etc/', { stdio: 'inherit' })
-      execSync('cp /mnt/etc/group /tmp/calamares-krill-installer/etc/', { stdio: 'inherit' })
+      execSync('cp /mnt/etc/passwd /tmp/calamares-krill-root/etc/', { stdio: 'inherit' })
+      execSync('cp /mnt/etc/shadow /tmp/calamares-krill-root/etc/', { stdio: 'inherit' })
+      execSync('cp /mnt/etc/group /tmp/calamares-krill-root/etc/', { stdio: 'inherit' })
 
       Utils.warning('unmount /mnt')
       execSync('umount /mnt', { stdio: 'inherit' })
