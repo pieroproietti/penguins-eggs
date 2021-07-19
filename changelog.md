@@ -18,6 +18,9 @@ You can follow the project also consulting the [commit history](https://github.c
 ## Changelog
 Versions are listed on reverse order, the first is the last one.
 
+### eggs-8.0.30
+* bugfix: krill installer: eggs install now support installation on UEFI systems
+
 ### eggs-8.0.28
 * backup adapt luks encrypted volume to user's data size. Working on standard and full encrypted filesystem systems
 
