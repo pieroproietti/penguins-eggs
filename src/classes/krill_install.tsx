@@ -68,7 +68,7 @@ export default class Hatching {
 
    installer = {} as IInstaller
 
-   installTarget = '/tmp/calamares-krill-installer'
+   installTarget = '/tmp/calamares-krill-root'
 
    verbose = false
 
@@ -209,7 +209,10 @@ export default class Hatching {
          }
          // await checkIt(message)
 
-         // We restore users only if present /run/live/medium/live/luks-users-data
+         /**
+          * RESTORE USERS DATA
+          */
+         
          if (fs.existsSync('/run/live/medium/live/luks-users-data')) {
             message = "Restore users data from backup "
             percent = 0.37
@@ -360,7 +363,11 @@ export default class Hatching {
          // await checkIt(message)
 
 
-         // We create user only if NOT present /run/live/medium/live/luks-users-data
+         /**
+          * IF NOT RESTORE-USERS-ACCOUNTS
+          * 
+          * create user
+          */
          if (!fs.existsSync('/run/live/medium/live/luks-users-data')) {
             message = "Adding user "
             percent = 0.73
@@ -526,31 +533,9 @@ adduser ${name} \
     * @param options
     */
    private async bootloader() {
-      const echo = { echo: false, ignore: false }
-
-      /**
-       * Attualmente serve fare l'update qua per EFI
-       * controllare bootloader-config
-       */
-      /**
-       * await exec('chroot ' + this.installTarget + ' apt update', echo)
-       * apt install 
-       * vengolo eseguite da bootloader-config
-       * ATTUALMENTE ESCLUSE
-       * 
-       * modprobe efivarfs
-       * 
-       */
-      // if (this.efi) {
-      //   await exec('chroot ' + this.installTarget + ' apt install grub-efi-' + Utils.machineArch() + ' --yes' + this.toNull, echo)
-      // } else {
-      //         await exec(`chroot ${this.installTarget} apt install grub-pc --yes` + this.toNull, echo)
-      // }
-
-      await exec('chroot ' + this.installTarget + ' grub-install ' + this.partitions.installationDevice + this.toNull, echo)
-      await exec('chroot ' + this.installTarget + ' update-grub', echo)
-      await exec('sleep 1', echo)
-      // await Utils.customConfirm('installazione per ' + process.arch)
+      await exec('chroot ' + this.installTarget + ' grub-install ' + this.partitions.installationDevice) // + this.toNull
+      await exec('chroot ' + this.installTarget + ' update-grub') // + this.toNull
+      await exec('sleep 1')  // + this.toNull
    }
 
    /**
@@ -822,6 +807,7 @@ adduser ${name} \
       await exec(cmd.trim())
    }
 
+
    /**
     * 
     */
@@ -834,16 +820,16 @@ adduser ${name} \
       execSync('sudo mount /dev/mapper/eggs-users-data /mnt', { stdio: 'inherit' })
 
       Utils.warning('removing live user in the installed system')
-      execSync('rm -rf /tmp/calamares-krill-installer/home/*', { stdio: 'inherit' })
+      execSync('rm -rf /tmp/calamares-krill-root/home/*', { stdio: 'inherit' })
 
       Utils.warning('copying users home in the installed system')
-      execSync('rsync -a /mnt/home/ /tmp/calamares-krill-installer/home/', { stdio: 'inherit' })
+      execSync('rsync -a /mnt/home/ /tmp/calamares-krill-root/home/', { stdio: 'inherit' })
 
 
       Utils.warning('copying users accounts in the installed system')
-      execSync('cp /mnt/etc/passwd /tmp/calamares-krill-installer/etc/', { stdio: 'inherit' })
-      execSync('cp /mnt/etc/shadow /tmp/calamares-krill-installer/etc/', { stdio: 'inherit' })
-      execSync('cp /mnt/etc/group /tmp/calamares-krill-installer/etc/', { stdio: 'inherit' })
+      execSync('cp /mnt/etc/passwd /tmp/calamares-krill-root/etc/', { stdio: 'inherit' })
+      execSync('cp /mnt/etc/shadow /tmp/calamares-krill-root/etc/', { stdio: 'inherit' })
+      execSync('cp /mnt/etc/group /tmp/calamares-krill-root/etc/', { stdio: 'inherit' })
 
       Utils.warning('unmount /mnt')
       execSync('umount /mnt', { stdio: 'inherit' })
@@ -971,6 +957,17 @@ adduser ${name} \
       await exec(`mount -o bind /dev/pts ${this.installTarget}/dev/pts` + this.toNull, echo)
       await exec(`mount -o bind /proc ${this.installTarget}/proc` + this.toNull, echo)
       await exec(`mount -o bind /sys ${this.installTarget}/sys` + this.toNull, echo)
+      /**
+       * I know, that's very old thread, but maybe will help for someone. 
+       * Most guides suggest the same solution to mount virtual filesystems before chroot:
+       * for i in /dev /dev/pts /proc /sys /run; do sudo mount -B $i /mnt$i; done
+       * But now (maybe related to efivars/efivarfs changes) this loop skips one very special sub-mountpoint 
+       * - /sys/firmware/efi/efivars and efibootmgr/grub fails.
+       * 
+       * https://unix.stackexchange.com/questions/91620/efi-variables-are-not-supported-on-this-system
+       */
+
+      await exec(`mount -o bind /sys/firmware/efi/efivars ${this.installTarget}/sys/firmware/efi/efivars` + this.toNull, echo)
       await exec(`mount -o bind /run ${this.installTarget}/run` + this.toNull, echo)
    }
 
@@ -1001,6 +998,11 @@ adduser ${name} \
 
       if (Utils.isMountpoint(`${this.installTarget}/sys/fs/fuse/connections`)) {
          await exec(`umount ${this.installTarget}/sys/fs/fuse/connections` + this.toNull, echo)
+         await exec('sleep 1', echo)
+      }
+
+      if (Utils.isMountpoint(`${this.installTarget}/firmware/efi/efivars`)) {
+         await exec(`umount ${this.installTarget}/firmware/efi/efivars` + this.toNull, echo)
          await exec('sleep 1', echo)
       }
 
@@ -1170,7 +1172,7 @@ adduser ${name} \
          console.log('command: ' + command)
          if (command !== '' || command !== undefined) {
             command += this.toNull
-            await exec(command)
+            execSync(command)
          }
       } else {
          /**
