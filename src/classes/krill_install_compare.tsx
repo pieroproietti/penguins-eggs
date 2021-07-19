@@ -6,7 +6,25 @@
  *
  */
 
+import { IRemix, IDistro, INet } from '../interfaces'
+import Settings from './settings'
+
+import React from 'react';
+import { render, RenderOptions } from 'ink'
+import Install from '../components/install'
+import Finished from '../components/finished'
+
+import fs = require('fs')
+import yaml from 'js-yaml'
+import shx = require('shelljs')
+import Utils from './utils'
+import cliAutologin = require('../lib/cli-autologin')
+const exec = require('../lib/utils').exec
+
+import { execSync } from 'child_process'
+
 /**
+ * 
  * Ideally, I want to respect this schema
       - partition
       - mount
@@ -36,33 +54,62 @@
       - umount
  */
 
+interface ICalamaresModule {
+   type: string,
+   name: string,
+   interface: string,
+   command: string,
+   timeout: number
+}
 
-import { IRemix, IDistro, INet } from '../interfaces'
-import Settings from './settings'
 
-import React from 'react';
-import { render, RenderOptions } from 'ink'
-import Install from '../components/install'
-import Finished from '../components/finished'
+interface ILocation {
+   language: string,
+   region: string,
+   zone: string
+}
 
-import fs = require('fs')
-import yaml from 'js-yaml'
-import shx = require('shelljs')
-import Utils from './utils'
-import cliAutologin = require('../lib/cli-autologin')
+interface IKeyboard {
+   keyboardModel: string,
+   keyboardLayout: string,
+   keyboardVariant: string
+}
 
+interface IPartitions {
+   installationDevice: string,
+   filesystemType: string,
+   userSwapChoice: string
+}
+
+interface IUsers {
+   name: string,
+   fullname: string,
+   password: string,
+   rootPassword: string,
+   autologin: boolean,
+   hostname: string
+}
+
+// Solo per hatching
+interface IHost {
+   name: string
+   domain: string
+}
+
+interface IDisk {
+   installationDevice: string
+   partionType: string
+   fsType: string
+}
+
+import { IInstaller, IDevices, IDevice } from '../interfaces'
 import Pacman from './pacman';
 import { installer } from './incubation/installer'
 import Xdg from './xdg';
 import Distro from './distro';
 
-import { IInstaller, IDevices, IDevice } from '../interfaces'
-import { ICalamaresModule, ILocation, IKeyboard, IPartitions, IUsers } from '../interfaces/i-krill'
-import { execSync } from 'child_process'
-const exec = require('../lib/utils').exec
-
 /**
- * hatching: installazione o cova!!!
+ * hatch, installazione
  */
 export default class Hatching {
 
@@ -79,6 +126,12 @@ export default class Hatching {
    users = {} as IUsers
 
    network = {} as INet
+
+   host = {} as IHost
+
+   //   net = {} as INet
+
+   disk = {} as IDisk
 
    partitions = {} as IPartitions
 
@@ -102,13 +155,16 @@ export default class Hatching {
 
    distro = {} as IDistro
 
+
    /**
     * constructor
     */
    constructor(location: ILocation, keyboard: IKeyboard, partitions: IPartitions, users: IUsers, network: INet) {
 
       this.installer = installer()
+
       this.settings = new Settings()
+
 
       this.language = location.language
       this.region = location.region
@@ -120,7 +176,14 @@ export default class Hatching {
 
       this.network = network
 
+      this.disk.fsType = partitions.filesystemType
+      this.disk.installationDevice = partitions.installationDevice
+      this.disk.partionType = 'simple'
+
       this.partitions = partitions
+
+      this.host.name = users.hostname
+      this.host.domain = 'lan'
 
       this.users = users
 
@@ -131,8 +194,6 @@ export default class Hatching {
       this.devices.swap = {} as IDevice
 
       this.distro = new Distro(this.remix)
-
-      this.efi = fs.existsSync('/sys/firmware/efi/efivars')
    }
 
    /**
@@ -147,9 +208,18 @@ export default class Hatching {
       await this.settings.load()
 
       let percent = 0.0
-      let message = ""
+      let message = "Checking EFI"
+      redraw(<Install message={message} percent={percent} />)
+      try {
+         this.efi = fs.existsSync('/sys/firmware/efi/efivars')
+      } catch (error) {
+         message += JSON.stringify(error)
+         redraw(<Install message={message} percent={percent} />)
+      }
+      // await checkIt(message)
 
-      if (await this.partition()) {
+
+      if (await this.partition(this.disk.installationDevice, this.disk.partionType)) {
          message = "Formatting file system "
          percent = 0.01
          try {
@@ -209,10 +279,7 @@ export default class Hatching {
          }
          // await checkIt(message)
 
-         /**
-          * RESTORE USERS DATA
-          */
-         
+         // We restore users only if present /run/live/medium/live/luks-users-data
          if (fs.existsSync('/run/live/medium/live/luks-users-data')) {
             message = "Restore users data from backup "
             percent = 0.37
@@ -225,6 +292,8 @@ export default class Hatching {
             }
             // await checkIt(message)
          }
+
+
 
          // sources-yolk
          message = 'sources-yolk'
@@ -255,7 +324,7 @@ export default class Hatching {
          percent = 0.47
          try {
             redraw(<Install message={message} percent={percent} />)
-            await this.fstab(this.partitions.installationDevice)
+            await this.fstab(this.disk.installationDevice)
          } catch (error) {
             message += JSON.stringify(error)
             redraw(<Install message={message} percent={percent} />)
@@ -332,7 +401,7 @@ export default class Hatching {
          percent = 0.65
          try {
             redraw(<Install message={message} percent={percent} />)
-            this.initramfsCfg(this.partitions.installationDevice)
+            this.initramfsCfg(this.disk.installationDevice)
          } catch (error) {
             message += JSON.stringify(error)
             redraw(<Install message={message} percent={percent} />)
@@ -363,11 +432,7 @@ export default class Hatching {
          // await checkIt(message)
 
 
-         /**
-          * IF NOT RESTORE-USERS-ACCOUNTS
-          * 
-          * create user
-          */
+         // We create user only if NOT present /run/live/medium/live/luks-users-data
          if (!fs.existsSync('/run/live/medium/live/luks-users-data')) {
             message = "Adding user "
             percent = 0.73
@@ -533,9 +598,26 @@ adduser ${name} \
     * @param options
     */
    private async bootloader() {
-      await exec('chroot ' + this.installTarget + ' grub-install ' + this.partitions.installationDevice) // + this.toNull
-      await exec('chroot ' + this.installTarget + ' update-grub') // + this.toNull
-      await exec('sleep 1')  // + this.toNull
+      const echo = { echo: false, ignore: false }
+
+      /**
+       * Attualmente serve fare l'update qua per EFI
+       * controllare bootloader-config
+       */
+      /**
+       * await exec('chroot ' + this.installTarget + ' apt update', echo)
+       * viene eseguita da bootloader-config
+       */
+      if (this.efi) {
+         await exec('chroot ' + this.installTarget + ' apt install grub-efi-' + Utils.machineArch() + ' --yes' + this.toNull, echo)
+      } else {
+         await exec(`chroot ${this.installTarget} apt install grub-pc --yes` + this.toNull, echo)
+      }
+
+      await exec('chroot ' + this.installTarget + ' grub-install ' + this.disk.installationDevice + this.toNull, echo)
+      await exec('chroot ' + this.installTarget + ' update-grub', echo)
+      await exec('sleep 1', echo)
+      // await Utils.customConfirm('installazione per ' + process.arch)
    }
 
    /**
@@ -614,6 +696,7 @@ adduser ${name} \
       text += `# ${this.devices.swap.name} ${this.devices.swap.mountPoint} ${this.devices.swap.fsType} ${mountOptsSwap}\n`
       text += `UUID=${Utils.uuid(this.devices.swap.name)} ${this.devices.swap.mountPoint} ${this.devices.swap.fsType} ${mountOptsSwap}\n`
       Utils.write(file, text)
+
    }
 
    /**
@@ -631,7 +714,7 @@ adduser ${name} \
       content += 'BACKSPACE="guess"\n'
       Utils.write(file, content)
 
-      // lancio setupcon in chroot per salvare la tastiera
+      // lancio setucon in chroot per salvare la tastiera
       const echo = { echo: false, ignore: false }
       const cmd = 'chroot ' + this.installTarget + ' ' + 'setupcon ' + this.toNull
       try {
@@ -680,7 +763,7 @@ adduser ${name} \
       const echo = { echo: false, ignore: false }
 
       const file = this.installTarget + '/etc/hostname'
-      const text = this.users.hostname
+      const text = this.host.name
 
       await exec(`rm ${file} `, echo)
       fs.writeFileSync(file, text)
@@ -694,9 +777,9 @@ adduser ${name} \
       const file = this.installTarget + '/etc/hosts'
       let text = '127.0.0.1 localhost localhost.localdomain\n'
       if (this.network.addressType === 'static') {
-         text += `${this.network.address} ${this.users.hostname} pvelocalhost\n`
+         text += `${this.network.address} ${this.host.name} ${this.host.name}.${this.host.domain} pvelocalhost\n`
       } else {
-         text += `127.0.1.1 ${this.users.hostname} \n`
+         text += `127.0.1.1 ${this.host.name} ${this.host.name}.${this.host.domain} \n`
       }
       text += `# The following lines are desirable for IPv6 capable hosts\n`
       text += `:: 1     ip6 - localhost ip6 - loopback\n`
@@ -807,7 +890,6 @@ adduser ${name} \
       await exec(cmd.trim())
    }
 
-
    /**
     * 
     */
@@ -845,6 +927,10 @@ adduser ${name} \
     * mkfs
     */
    private async mkfs(): Promise<boolean> {
+      // this.disk.fsType = partitions.filesystemType
+      // this.disk.installationDevice = partitions.installationDevice
+      // this.disk.partionType = 'simple'
+
       const echo = { echo: false, ignore: false }
 
       const result = true
@@ -854,13 +940,13 @@ adduser ${name} \
       }
 
       if (this.devices.boot.name !== 'none') {
-         // controllare se non vada !== undefined
          if (this.devices.boot.fsType === undefined) {
             this.devices.boot.fsType = `ext2`
             this.devices.boot.mountPoint = '/boot'
          }
          await exec('mke2fs -Ft ' + this.devices.boot.fsType + ' ' + this.devices.boot.name + this.toNull, echo)
       }
+
 
       if (this.devices.root.name !== 'none') {
          await exec('mke2fs -Ft ' + this.devices.root.fsType + ' ' + this.devices.root.name + this.toNull, echo)
@@ -905,7 +991,6 @@ adduser ${name} \
          await exec(`tune2fs -c 0 -i 0 ${this.devices.data.name}` + this.toNull, echo)
       }
 
-      // efi
       if (this.efi) {
          if (!fs.existsSync(this.installTarget + this.devices.efi.mountPoint)) {
             await exec(`mkdir ${this.installTarget}${this.devices.efi.mountPoint} -p` + this.toNull, echo)
@@ -926,12 +1011,10 @@ adduser ${name} \
          await exec('sleep 1', echo)
       }
 
-      // data
       if (this.devices.data.name !== `none`) {
          await exec(`umount ${this.devices.data.name}` + this.toNull, echo)
       }
 
-      // root
       if (this.devices.boot.name !== `none`) {
          await exec(`umount ${this.devices.boot.name}` + this.toNull, echo)
       }
@@ -957,17 +1040,6 @@ adduser ${name} \
       await exec(`mount -o bind /dev/pts ${this.installTarget}/dev/pts` + this.toNull, echo)
       await exec(`mount -o bind /proc ${this.installTarget}/proc` + this.toNull, echo)
       await exec(`mount -o bind /sys ${this.installTarget}/sys` + this.toNull, echo)
-      /**
-       * I know, that's very old thread, but maybe will help for someone. 
-       * Most guides suggest the same solution to mount virtual filesystems before chroot:
-       * for i in /dev /dev/pts /proc /sys /run; do sudo mount -B $i /mnt$i; done
-       * But now (maybe related to efivars/efivarfs changes) this loop skips one very special sub-mountpoint 
-       * - /sys/firmware/efi/efivars and efibootmgr/grub fails.
-       * 
-       * https://unix.stackexchange.com/questions/91620/efi-variables-are-not-supported-on-this-system
-       */
-
-      await exec(`mount -o bind /sys/firmware/efi/efivars ${this.installTarget}/sys/firmware/efi/efivars` + this.toNull, echo)
       await exec(`mount -o bind /run ${this.installTarget}/run` + this.toNull, echo)
    }
 
@@ -1001,11 +1073,6 @@ adduser ${name} \
          await exec('sleep 1', echo)
       }
 
-      if (Utils.isMountpoint(`${this.installTarget}/firmware/efi/efivars`)) {
-         await exec(`umount ${this.installTarget}/firmware/efi/efivars` + this.toNull, echo)
-         await exec('sleep 1', echo)
-      }
-
       if (Utils.isMountpoint(`${this.installTarget}/sys`)) {
          await exec(`umount ${this.installTarget}/sys` + this.toNull, echo)
          await exec('sleep 1', echo)
@@ -1013,84 +1080,77 @@ adduser ${name} \
    }
 
    /**
-    * 
-    * @param p 
-    * @returns 
+    *
+    * @param device
+    * @param partitionType
+    * @param verbose
     */
-   private async partition(): Promise<boolean> {
+   private async partition(device: string, partitionType: string): Promise<boolean> {
       const echo = { echo: false, ignore: false }
 
       let retVal = false
 
-      await exec('wipefs -a ' + this.partitions.installationDevice + this.toNull)
-      if (this.partitions.installationMode === 'standard' && !this.efi) {
+      await exec('wipefs -a ' + device + this.toNull)
+      //await exec('dd if=/dev/zero of=' + device + ' bs=512 count=1 conv=notrunc')
+
+
+      if (partitionType === 'simple' && !this.efi) {
 
          /**
-          * formattazione standard, BIOS working
+          * simple, non EFI
           */
-         await exec('parted --script ' + this.partitions.installationDevice + ' mklabel msdos' + this.toNull, echo)
-         await exec('parted --script --align optimal ' + this.partitions.installationDevice + ' mkpart primary 1MiB 95%' + this.toNull, echo)
-         await exec('parted --script ' + this.partitions.installationDevice + ' set 1 boot on' + this.toNull, echo)
-         await exec('parted --script --align optimal ' + this.partitions.installationDevice + ' mkpart primary 95% 100%' + this.toNull, echo)
+         await exec('parted --script ' + device + ' mklabel msdos' + this.toNull, echo)
+         await exec('parted --script --align optimal ' + device + ' mkpart primary 1MiB 95%' + this.toNull, echo)
+         await exec('parted --script ' + device + ' set 1 boot on' + this.toNull, echo)
+         await exec('parted --script --align optimal ' + device + ' mkpart primary 95% 100%' + this.toNull, echo)
 
          this.devices.efi.name = `none`
          this.devices.boot.name = `none`
-         this.devices.root.name = this.partitions.installationDevice + '1'
+         this.devices.root.name = device + '1'
          this.devices.root.fsType = 'ext4'
          this.devices.root.mountPoint = '/'
          this.devices.data.name = `none`
-         this.devices.swap.name = this.partitions.installationDevice + '2'
+         this.devices.swap.name = device + '2'
          this.devices.swap.fsType = 'swap'
          this.devices.swap.mountPoint = 'none'
 
          retVal = true
 
-      } else if (this.partitions.installationMode === 'standard' && this.efi) {
+      } else if (partitionType === 'simple' && this.efi) {
+
          /**
-          * formattazione standard, EFI NOT working 
+          * simple, EFI
           */
+         await exec('parted --script ' + device + ' mklabel gpt mkpart primary 0% 1% mkpart primary 1% 95% mkpart primary linux-swap 95% 100%' + this.toNull, echo)
+         await exec('parted --script ' + device + ' set 1 boot on' + this.toNull, echo)
+         await exec('parted --script ' + device + ' set 1 esp on' + this.toNull, echo)
 
-         await exec('parted --script ' + this.partitions.installationDevice + ' mklabel gpt mkpart primary 0% 1% mkpart primary 1% 95% mkpart primary linux-swap 95% 100%' + this.toNull, echo)
-         await exec('parted --script ' + this.partitions.installationDevice + ' set 1 boot on' + this.toNull, echo)
-         await exec('parted --script ' + this.partitions.installationDevice + ' set 1 esp on' + this.toNull, echo)
-
-         this.devices.efi.name = this.partitions.installationDevice + '1'
+         this.devices.efi.name = device + '1'
          this.devices.efi.fsType = 'F 32 -I'
          this.devices.efi.mountPoint = '/boot/efi'
          this.devices.boot.name = `none`
 
-         this.devices.root.name = this.partitions.installationDevice + '2'
+         this.devices.root.name = device + '2'
          this.devices.root.fsType = 'ext4'
          this.devices.root.mountPoint = '/'
          this.devices.data.name = `none`
 
-         this.devices.swap.name = this.partitions.installationDevice + '3'
+         this.devices.swap.name = device + '3'
          this.devices.swap.fsType = 'swap'
 
          retVal = true
+      } else if (partitionType === 'lvm2' && !this.efi) {
 
-      } else if (this.partitions.installationMode === 'full-encrypted' && !this.efi) {
          /**
-          * formattazione full-encrypted, BIOS standard
-          */
-
-      } else if (this.partitions.installationMode === 'full-encrypted' && this.efi) {
-         /**
-          * formattazione full-encrypted, EFI
-          */
-
-      } else if (this.partitions.installationMode === 'lvm2' && !this.efi) {
-         /**
-         * LVM2, non EFI PROXMOX-VE
+         * LVM2, non EFI
          */
-
-         await exec(`parted --script ${this.partitions.installationDevice} mklabel msdos`)
+         await exec(`parted --script ${device} mklabel msdos`)
 
          // Creo partizioni
-         await exec(`parted --script ${this.partitions.installationDevice} mkpart primary ext2 1 512`)
-         await exec(`parted --script --align optimal ${this.partitions.installationDevice} set 1 boot on`)
-         await exec(`parted --script --align optimal ${this.partitions.installationDevice} mkpart primary ext2 512 100%`)
-         await exec(`parted --script ${this.partitions.installationDevice} set 2 lvm on`)
+         await exec(`parted --script ${device} mkpart primary ext2 1 512`)
+         await exec(`parted --script --align optimal ${device} set 1 boot on`)
+         await exec(`parted --script --align optimal ${device} mkpart primary ext2 512 100%`)
+         await exec(`parted --script ${device} set 2 lvm on`)
 
          // Partizione LVM
          const lvmPartname = shx.exec(`fdisk $1 -l | grep 8e | awk '{print $1}' | cut -d "/" -f3`).stdout.trim()
@@ -1116,7 +1176,7 @@ adduser ${name} \
 
          this.devices.efi.name = `none`
 
-         this.devices.boot.name = `${this.partitions.installationDevice}1`
+         this.devices.boot.name = `${device}1`
          this.devices.root.fsType = 'ext2'
          this.devices.root.mountPoint = '/boot'
 
@@ -1130,7 +1190,7 @@ adduser ${name} \
 
          this.devices.swap.name = `/dev/pve/swap`
          retVal = true
-      } else if (this.partitions.installationMode === 'lvm2' && this.efi) {
+      } else if (partitionType === 'lvm2' && this.efi) {
          /**
          * LVM2, EFI
          */
@@ -1172,7 +1232,7 @@ adduser ${name} \
          console.log('command: ' + command)
          if (command !== '' || command !== undefined) {
             command += this.toNull
-            execSync(command)
+            await exec(command)
          }
       } else {
          /**
@@ -1231,12 +1291,11 @@ adduser ${name} \
 
 
       try {
-         cmd = 'chroot ' + this.installTarget + ' grub-install ' + this.partitions.installationDevice + this.toNull
+         cmd = 'chroot ' + this.installTarget + ' grub-install ' + this.disk.installationDevice + this.toNull
          await exec(cmd, echo)
       } catch (error) {
          console.log('cmd: ' + cmd + ' error: ' + error)
       }
-
 
       try {
          cmd = 'chroot ' + this.installTarget + ' grub-mkconfig -o /boot/grub/grub.cfg' + this.toNull
@@ -1265,7 +1324,7 @@ adduser ${name} \
     * only show the result
     */
    finished() {
-      redraw(<Finished installationDevice={this.partitions.installationDevice} hostName={this.users.hostname} userName={this.users.name} />)
+      redraw(<Finished installationDevice={this.disk.installationDevice} hostName={this.host.name} userName={this.users.name} />)
       require('child_process').spawnSync('read _ ', { shell: true, stdio: [0, 1, 2] })
       shx.exec('reboot')
    }
