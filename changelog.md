@@ -18,6 +18,9 @@ You can follow the project also consulting the [commit history](https://github.c
 ## Changelog
 Versions are listed on reverse order, the first is the last one.
 
+### eggs-8.1.0
+* bugfix: eggs tools:clean don't remove more /var/lib/apt/list, where was a problem with mintupdate
+
 ### eggs-8.0.30
 * bugfix: krill installer: eggs install now support installation on UEFI systems
 
