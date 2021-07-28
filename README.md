@@ -37,7 +37,7 @@ Try penguins-eggs yes, it is a console utility - no GUI - but don't be scared, p
 Starting with version 7.6.x, an addons architecture was added to eggs, allowing third parties to develop extensions. Note that currently we have an extension for the theme that includes both branding calamares, link and installer icon. In addition, also as an addon has been developed choose between GUI or CLI installation, adjust the video resolution, remote support, etc.
 
 ### backup
-From version 8.0.10 You can use the backup mode by simply adding --backup in the produce command. This way eggs will save your users data and accounts and will not add a live user, you will have to log in with the main user of your system with the his password. **Note:** since eggs always configures autologin, you may have a security risk with valuable data. Use this option only for your personal stuff and do not share the iso on the network.
+From version 8.0.30 You can use the backup mode by simply adding --backup to the produce command: sudo eggs produce --backup. In this way eggs will save your users data and accounts in a crypted luks2 volume who is restored just after the installation only if you are able to introduce the passpharafe decided by the ower.
 
 ### krill
 Starting with eggs 8.0.0 I included a new CLI installer named krill. krill let you to install your system in a nice CLI interface using the same, configuration created by eggs for [calamares](calamares.io). This lead to have "about the same" experience installing, from old distros to new one and for GUI and CLI. To force using krill in place of calamares in a GUI system just: **sudo eggs install --cli**
