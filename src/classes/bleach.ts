@@ -44,8 +44,8 @@ export default class Bleach {
 
       await exec('apt-get clean', echo)
       await exec('apt-get autoclean', echo)
-      const dest = '/var/lib/apt/lists/'
-      rmdir(dest, verbose)
+      // const dest = '/var/lib/apt/lists/'
+      // rmdir(dest, verbose)
    }
 
    /**
