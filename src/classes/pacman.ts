@@ -187,6 +187,7 @@ export default class Pacman {
       const retVal = false
       const versionLike = Pacman.versionLike()
 
+      //apt install --yes ' + array2spaced(packages))
       // console.log(`apt-get install --yes ${array2spaced(this.packages(verbose))}`)
       await exec(`apt-get install --yes ${array2spaced(this.packages(verbose))}`, echo)
 
