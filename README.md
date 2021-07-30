@@ -108,7 +108,7 @@ $ npm install -g penguins-eggs
 $ eggs COMMAND
 running command...
 $ eggs (-v|--version|version)
-penguins-eggs/8.1.2 linux-x64 node-v12.22.2
+penguins-eggs/8.1.2 linux-x64 node-v12.22.4
 $ eggs --help [COMMAND]
 USAGE
   $ eggs COMMAND
@@ -341,6 +341,7 @@ USAGE
 OPTIONS
   -c, --cli      force use CLI installer
   -h, --help     show CLI help
+  -m, --mx       to use mx-installer
   -v, --verbose  verbose
 
 ALIASES
