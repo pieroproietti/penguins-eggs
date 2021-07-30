@@ -13,6 +13,7 @@ import { IInstall } from '../interfaces'
 import Distro from '../classes/distro'
 import { IRemix, IDistro } from '../interfaces'
 import { array2spaced } from '../lib/dependencies'
+import { execSync } from 'child_process'
 
 const exec = require('../lib/utils').exec
 
@@ -132,7 +133,7 @@ export default class Config extends Command {
 
             if (i.prerequisites) {
                 console.log('- install packages prerequisites')
-                const packages = Pacman.filterInstalled(Pacman.packages(verbose))
+                const packages = Pacman.excludeInstalled(Pacman.packages(verbose))
                 if (packages.length > 0) {
                     console.log(chalk.yellow('  apt install --yes ' + array2spaced(packages)))
                 }
@@ -223,7 +224,10 @@ export default class Config extends Command {
             if (nointeractive) {
                 Utils.warning('Can\'t installa prerequisites now...')
             } else {
-                await Pacman.prerequisitesInstall(verbose)
+                const packages = Pacman.excludeInstalled(Pacman.packages(verbose))
+                if (packages.length > 0) {
+                   execSync('apt-get install --yes ' + array2spaced(packages))
+                }
             }
         }
 

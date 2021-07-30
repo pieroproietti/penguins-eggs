@@ -9,6 +9,8 @@ import shx = require('shelljs')
 import Utils from '../classes/utils'
 import Prepare from '../classes/krill_prepare'
 import Pacman from '../classes/pacman'
+import fs from 'fs'
+import { execSync } from 'child_process'
 
 /**
  * Class Install
@@ -16,6 +18,7 @@ import Pacman from '../classes/pacman'
 export default class Install extends Command {
    static flags = {
       cli: flags.boolean({ char: 'c', description: 'force use CLI installer' }),
+      mx: flags.boolean({ char: 'm', description: 'to use mx-installer' }),
       help: flags.help({ char: 'h' }),
       verbose: flags.boolean({ char: 'v', description: 'verbose' })
    }
@@ -40,15 +43,34 @@ export default class Install extends Command {
 
       if (Utils.isRoot(this.id)) {
          if (Utils.isLive()) {
-            if (Pacman.packageIsInstalled('calamares') && Pacman.guiEnabled() && !flags.cli) {
-               shx.exec('calamares')
+            /**
+            * MX-21_beta1_x64 Wildflower July 27, 2021
+            * 
+            * ln -s /lib/live/mount/rootfs/filesystem.squashfs/ /live/aufs
+            * ln -s /lib/live/mount/rootfs/filesystem.squashfs/ /live/linux
+           */
+            if (Pacman.packageIsInstalled('mx-installer') && Pacman.guiEnabled() && !flags.mx) {
+               if (!fs.existsSync('/live/')) {
+                  execSync('mkdir /live/ ')
+               }
+               if (!fs.existsSync('/live/aufs')) {
+                  execSync('ln -s /lib/live/mount/rootfs/filesystem.squashfs/ /live/aufs')
+               }
+               if (!fs.existsSync('/live/linux')) {
+                  execSync('ln -s /lib/live/mount/rootfs/filesystem.squashfs/ /live/linux')
+               }
+               execSync('minstall')
             } else {
-               const krill = new Prepare()
-               await krill.prepare()
+               if (Pacman.packageIsInstalled('calamares') && Pacman.guiEnabled() && !flags.cli) {
+                  execSync('calamares')
+               } else {
+                  const krill = new Prepare()
+                  await krill.prepare()
+               }
             }
+         } else {
+            Utils.warning(`You are in an installed system!`)
          }
-      } else {
-         Utils.warning(`You are in an installed system!`)
       }
    }
 }
