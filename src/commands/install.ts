@@ -49,7 +49,7 @@ export default class Install extends Command {
             * ln -s /lib/live/mount/rootfs/filesystem.squashfs/ /live/aufs
             * ln -s /lib/live/mount/rootfs/filesystem.squashfs/ /live/linux
            */
-            if (Pacman.packageIsInstalled('mx-installer') && Pacman.guiEnabled() && !flags.mx) {
+            if (Pacman.packageIsInstalled('mx-installer') && Pacman.guiEnabled() && flags.mx) {
                if (!fs.existsSync('/live/')) {
                   execSync('mkdir /live/ ')
                }

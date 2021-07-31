@@ -1072,6 +1072,10 @@ export default class Ovary {
       let installerIcon = `install-debian`
       if (Pacman.packageIsInstalled('calamares')) {
          shx.cp(path.resolve(__dirname, `../../addons/${theme}/theme/applications/install-debian.desktop`), `${this.settings.work_dir.merged}/usr/share/applications/`)
+      } else if (Pacman.packageIsInstalled('mx-installer')) {
+         installerUrl = 'penguins-minstall.desktop'
+         installerIcon = '/usr/share/gazelle-installer-data/logo.png'
+         shx.cp(path.resolve(__dirname, '../../assets/penguins-minstall.desktop'), `${this.settings.work_dir.merged}/usr/share/applications/`)
       } else {
          installerUrl = 'penguins-krill.desktop'
          installerIcon = 'utilities-terminal'
