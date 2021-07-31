@@ -25,17 +25,15 @@ All the ISOs include eggs installed (deb package). You can update your eggs tool
 
 # Linux MX
 
-* **egg-of-mx-buster-xfce** - remaster of MX19
-* **egg-of-mx-bullseye-xfce** - remaster of MX21
+* **egg-of-mx-buster-kde-amd64** - remaster of MX19
+* **egg-of-mx-bullseye-xfce-amd64** - remaster of MX21
 
 
 I'm playing with it and trying to add eggs support to mx-installer to see if it is possible to use it for others Debian based distros. 
+At the moment this is the result:
+* **egg-of-debian-bullseye-xfce-amd64** - 
 
-MX already have it's own tool to remaster it: mx-snapshot. 
-
-Will be nice, if possible, to use mx-installer on others remix Debian based. I'm trying to add it to eggs.
-
-smartmontools
+This is a Debian bullseye xfce, not MX, with the possibility to be installed with: krill, mx-installer and calamares.
 
 # Disclaim
 __Please note what this project is in no way connected to MX-Linux in any official way, it’s just my personal experiment__.
