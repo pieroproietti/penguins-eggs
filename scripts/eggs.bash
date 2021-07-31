@@ -10,12 +10,12 @@ _eggs()
 adapt --verbose --help
 calamares --help --verbose --install --final --remove --theme
 config --nointeractive --clean --help --verbose
-dad --help --clean --verbose
-export:deb --help --clean --armel --amd64 --i386 --all
+dad --help --clean --default --verbose
+export:deb --help --clean --amd64 --i386 --armel --arm64 --all
 export:docs --help
-export:iso --help --clean
+export:iso --help --backup --clean
 info --verbose --help
-install --cli --help --verbose
+install --cli --mx --help --verbose
 kill --help --verbose
 mom --help
 produce --prefix --basename --backup --fast --normal --max --verbose --yolk --script --help --theme --addons --release
@@ -26,8 +26,8 @@ tools:skel --help --user --verbose
 tools:stat --help --month --year
 tools:yolk --help --verbose
 update --help --apt --basket --npm --verbose
-help --all
 autocomplete --refresh-cache
+help --all
 "
 
   if [[ "$cur" != "-"* ]]; then

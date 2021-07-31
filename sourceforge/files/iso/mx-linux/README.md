@@ -25,13 +25,17 @@ All the ISOs include eggs installed (deb package). You can update your eggs tool
 
 # Linux MX
 
-* **egg-of-buster-xfce** - remaster of MX19
-* **egg-of-bullseye-xfce** - remaster of MX21
+* **egg-of-mx-buster-xfce** - remaster of MX19
+* **egg-of-mx-bullseye-xfce** - remaster of MX21
 
 
 I'm playing with it and trying to add eggs support to mx-installer to see if it is possible to use it for others Debian based distros. 
 
 MX already have it's own tool to remaster it: mx-snapshot. 
+
+Will be nice, if possible, to use mx-installer on others remix Debian based. I'm trying to add it to eggs.
+
+smartmontools
 
 # Disclaim
 __Please note what this project is in no way connected to MX-Linux in any official way, it’s just my personal experiment__.
