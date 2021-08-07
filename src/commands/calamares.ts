@@ -85,7 +85,7 @@ export default class Calamares extends Command {
                      if (await this.settings.load()) {
                         this.settings.config.force_installer = true
                         this.settings.save(this.settings.config)
-                        await adminPolicyCalamares()
+                        // await adminPolicyCalamares()
                      }
                   }
 

@@ -31,9 +31,10 @@ All the ISOs include eggs installed (deb package). You can update your eggs tool
 
 I'm playing with it and trying to add eggs support to mx-installer to see if it is possible to use it for others Debian based distros. 
 At the moment this is the result:
+
 * **egg-of-debian-bullseye-xfce-amd64** - 
 
-This is a Debian bullseye xfce, not MX, with the possibility to be installed with: krill, mx-installer and calamares.
+This is a standard Debian bullseye xfce - not MX - with the possibility to be installed with: krill, mx-installer and calamares and remastered with eggs.
 
 # Disclaim
 __Please note what this project is in no way connected to MX-Linux in any official way, it’s just my personal experiment__.
