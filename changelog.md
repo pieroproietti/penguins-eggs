@@ -18,6 +18,9 @@ You can follow the project also consulting the [commit history](https://github.c
 ## Changelog
 Versions are listed on reverse order, the first is the last one.
 
+### eggs-8.1.3
+* calamares now, will be always enabled with no password if it is installed by eggs calamares --install or eggs config
+
 ### eggs-8.1.2
 * MX21: they have so good mx-snapshot and mx-installer. I just want play with it and tried remastering it with eggs, install with krill, calamares and minstall! So, I'm starting to support mx-installer as calamares light alternative.
 
