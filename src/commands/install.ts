@@ -59,6 +59,8 @@ export default class Install extends Command {
                if (!fs.existsSync('/live/linux')) {
                   execSync('ln -s /lib/live/mount/rootfs/filesystem.squashfs/ /live/linux')
                }
+               // execSync('apt update')
+               // execSync('apt install smartmontools')
                execSync('minstall')
             } else {
                if (Pacman.packageIsInstalled('calamares') && Pacman.guiEnabled() && !flags.cli) {

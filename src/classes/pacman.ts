@@ -284,6 +284,11 @@ export default class Pacman {
          } catch (e) {
             Utils.error(`Pacman.calamaresInstall() apt-get install --yes ${array2spaced(this.debs4calamares)}` + e.error)
          }
+         /**
+          *  Abilita calamares all'utilizzo senza la richiesta di password
+          */
+         const policyFile = '/usr/share/polkit-1/actions/com.github.calamares.calamares.policy'
+         await exec(`sed -i 's/auth_admin/yes/' ${policyFile}`)
 
       } else {
          console.log("It's not possible to use calamares in a system without GUI")
