@@ -289,7 +289,6 @@ export default class Pacman {
           */
          const policyFile = '/usr/share/polkit-1/actions/com.github.calamares.calamares.policy'
          await exec(`sed -i 's/auth_admin/yes/' ${policyFile}`)
-
       } else {
          console.log("It's not possible to use calamares in a system without GUI")
       }
