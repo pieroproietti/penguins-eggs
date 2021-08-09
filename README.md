@@ -67,7 +67,23 @@ eggs is released as deb package and npm package. Most users need just deb versio
 eggs is released deb packages for i386 and amd64 architectures. Due the characteristic of eggs, they can installed in Debian, Devuan or Ubuntu based distros, withouth worries about different versions, except for the architecture. Lately was added scripts for preinst, postinst, prerm and postrm not presents in the original.
 
 ### Install
-This simplest way to install eggs is download the [package eggs](https://sourceforge.net/projects/penguins-eggs/files/packages-deb/) from [sourceforge page of the project](https://sourceforge.net/projects/penguins-eggs/) and install it
+
+Copy and past to add the **penguins-eggs-ppa** to your sources lists
+
+```
+curl -SsL https://pieroproietti.github.io/penguins-eggs-ppa/debian/KEY.gpg | sudo apt-key add -
+sudo curl -s --compressed -o /etc/apt/sources.list.d/penguins-eggs-ppa.list "https://pieroproietti.github.io/penguins-eggs-ppa/debian/penguins-eggs-ppa.list"
+```
+
+Update your repositories and install eggs
+
+```
+sudo apt update
+sudo apt install eggs
+```
+
+
+If you don't want to add **penguins-eggs-ppa** on your list, you can install eggs downloading it from [package eggs](https://sourceforge.net/projects/penguins-eggs/files/packages-deb/) from [sourceforge page of the project](https://sourceforge.net/projects/penguins-eggs/) and install it
 
 ```
 sudo dpkg -i eggs_8.0.0-1_amd64.deb
@@ -78,12 +94,11 @@ or, on a i386 system:
 sudo dpkg -i eggs_8.0.0-1_i386.deb
 ```
 ### update
-The fastest way to use sudo eggs update and choose basket. Eggs let you to select the last 4 versions on the [basket](https://sourceforge.net/projects/penguins-eggs/files/packages-deb/) and install it.
+If you installed **penguins-eggs-ppa**, you will get and update eggs with your usual tools: apt, synaptic or others packages manager.
+
+If not choosen to not install **penguins-eggs-ppa**, you can again easily update eggs with the command ```sudo eggs update``` and choose basket. Eggs let you to select the last 4 versions on the [basket](https://sourceforge.net/projects/penguins-eggs/files/packages-deb/) and install it.
 
 ```sudo eggs update```
-
-Of course, if your distro include eggs in the repository, you can use apt.
-
 
 _Note about deb packages_ You can use the same package for all distributions using deb, naturally choosing the appropriate architecture (i386/amd64).
 
