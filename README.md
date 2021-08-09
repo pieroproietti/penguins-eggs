@@ -68,7 +68,7 @@ eggs is released deb packages for i386 and amd64 architectures. Due the characte
 
 ### Install
 
-#### with penguins-eggs-ppa
+#### configure penguins-eggs-ppa
 Copy and past to add the **penguins-eggs-ppa** to your sources lists
 
 ```
@@ -99,7 +99,6 @@ sudo dpkg -i eggs_8.0.0-1_i386.deb
 
 #### with penguins-eggs-ppa
 If you installed **penguins-eggs-ppa**, you will get and update eggs with your usual tools: apt, synaptic or others packages manager.
-
 
 #### update from the eggs basket
 If you choose to not install **penguins-eggs-ppa**, You can again easily update eggs with the command ```sudo eggs update``` and choose basket. Eggs let you to select the last 4 versions on the [basket](https://sourceforge.net/projects/penguins-eggs/files/packages-deb/) and install it.
