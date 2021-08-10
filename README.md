@@ -25,25 +25,25 @@ penguins-eggs
 # Presentation
 penguins-eggs is a console utility, in active development, who let you to remaster your system and redistribuite it as iso images or from the lan via PXE remote boot.
 
-The scope of this project is to implement the process of remastering your version of Linux, generate it as ISO image to burn on a CD/DVD or copy to a usb key to boot your system. You can also boot your egg - via remote boot - on your LAN. You can easily install your live system with gui calamares installer or eggs cli installer.
+The scope of this project is to implement the process of remastering your version of Linux, generate it as ISO image to burn on a CD/DVD or copy to a usb key to boot your system. You can also boot your egg - via remote boot - on your LAN. You can easily install your live system with GUI calamares installer or the inside krill CLI installer.
 
 All it is written in pure typescript, so ideally can be used with differents Linux distros. Yes, there are big differences about package manager used, but not so much in the way to work of bash and in the various programs used to build the iso.
 
-penguins-eggs, at the moment 2021 may is a mature tool and is extremely usefull, You can easily create your personal customized iso or your organization/school version of Linux and deploy it on your LAN, give it to your friends as usb key or publish yours eggs in the internet!
+penguins-eggs, at the moment 2021 is a mature tool and is extremely usefull, You can easily create your personal customized ISO or your organization/school version of Linux and deploy it, give it to your friends as usb key or publish yours ISOs in the internet!
 
-Try penguins-eggs yes, it is a console utility - no GUI - but don't be scared, penguins-eggs is a console command - really very simple - if you are able to open a terminal, you can use it and yours final users will enjoy of full gui and pratical installer to install your livecd.
+Try eggs. Tes, it is a console utility - no GUI - but don't be scared, eggs is a console command - really very simple - if you are able to open a terminal, you can use it and yours final users will enjoy of full GUI, pratical installer to install your livecd.
 
 ### addons
-Starting with version 7.6.x, an addons architecture was added to eggs, allowing third parties to develop extensions. Note that currently we have an extension for the theme that includes both branding calamares, link and installer icon. In addition, also as an addon has been developed choose between GUI or CLI installation, adjust the video resolution, remote support, etc.
+Starting with version 7.6.x, an addons architecture was added to eggs, allowing third parties to develop extensions. Note that currently we have an extension for the theme that includes calamares branding, link and installer icon. In addition, as addon has been developed adapt to adjust the video resolution in VM, remote support, installer choice, etc.
 
 ### backup
-From version 8.0.30 You can use the backup mode by simply adding --backup to the produce command: sudo eggs produce --backup. In this way eggs will save your users data and accounts in a crypted luks2 volume who is restored just after the installation only if you are able to introduce the passpharafe decided by the ower.
+From version 8.0.30 You can use the backup mode by simply adding --backup to the produce command: sudo eggs produce --backup. In this way eggs will save your users data and accounts in a crypted luks2 volume who is restored just after the installation only if  eeyou are able to introduce the passpharafe decided by the ower.
 
 ### krill
-Starting with eggs 8.0.0 I included a new CLI installer named krill. krill let you to install your system in a nice CLI interface using the same, configuration created by eggs for [calamares](calamares.io). This lead to have "about the same" experience installing, from old distros to new one and for GUI and CLI. To force using krill in place of calamares in a GUI system just: **sudo eggs install --cli**
+Starting with version 8.0.0, eggs include a new CLI installer named krill. krill let you to install your system in a nice CLI interface using the same, configuration created by eggs for [calamares](calamares.io). This lead to have "about the same" experience installing, from old distros to new one and for GUI and CLI. To force using krill in place of calamares in a GUI system just: **sudo eggs install --cli**
 
 ### mom and dad
-I've added two lightweight assistants integrated with eggs: mom and dad. While mom is a bash script with whiptail - and guides the user to the various commands and documentation, dad started as a short way to create isos. All you have to do is type **sudo eggs dad** and follow simple instructions. You can also shortcut the way to reset the configuration **sudo dad -c** or - even faster - reset the configuration, load defaults, kill created isos. Simply type **sudo eggs dad -d** and you will immediately be able to produce the egg in the default /home/eggs nest.
+There are two lightweight assistants integrated with eggs: **mom** and **dad**. While **mom** is a bash script with whiptail - and guides the user to the various commands and documentation, **dad** started as a short way to ISO creation. All you have to do is type **sudo eggs dad** and follow simple instructions. You can also shortcut the way to reset the configuration **sudo dad -c** or - even faster - reset the configuration, load defaults and kill created ISOs. Just type **sudo eggs dad -d** and you will immediately be able to produce the egg in the default /home/eggs nest.
 
 I suggest to leave the default values unchanged during the development of your remaster. You will be more fast in producing eggs, enjoy of dad after reinstalling eggs. If you need more space, simply mount your big device in /home/eggs.
 
@@ -51,20 +51,20 @@ I suggest to leave the default values unchanged during the development of your r
 yolk so called - staying on the subject of eggs - is a local repository included in the livecd that contains a minimum of indispensable packages during installation. Thanks to yolk, you can safely install your system without the need of an active internet connection.
 
 ## What distributions can I use?
-eggs was born on Debian strecth/buster, but actually full support Debian from jessie to sid (bullseye), Devuan beowulf, Ubuntu focal, bionic and derivatives. I actually try it against Debian varius versions, before releases. I tried it successfully in LMDE 4 debbie, and deepin. eggs, generally must work with all the derivates from that distros.
+eggs was born on Debian strecth/buster, but actually full support Debian from jessie to bullseye, Devuan beowulf, Ubuntu bionic, focal, hirsute and derivatives. I actually try it against Debian varius versions, before releases. I tried it successfully with a lot of derivated, in particular Linux Mint uma, LMDE 4 debbie, deepin, neon Os, etc. eggs, generally must work with all the derivates from Debian, Devuan and Ubuntu distros.
 
 Some examples of iso images remastered with eggs are in the [sourceforge page of the project](https://sourceforge.net/projects/penguins-eggs/files/iso/). 
 
 ## What architecture can I use?
-From eggs v. 8.0.4 I'm releasing eggs in 4 differents architectures: **i386**, **amd64**, **arm64** and **armel**. eggs - at the moment - produce in i386 and amd64, but can be installed already on arm64 and armel. This mean who it is possible to install it in [raspberrypi](https://www.raspberrypi.org/), but again not possible to produce a [Raspberry Pi OS](https://www.raspberrypi.org/software/) egg in armel or arm64. I'm just working now to complete this step. 
+Until version 8.0.30 I released eggs in i386, amd64, arm64 and armel. Actually I'm releasing eggs in 3 differents architectures: **amd64**, **arm64** and **armel**. eggs - at the moment - produce in i386 and amd64, but can be installed already on arm64 and armel. This mean who it is possible to install it in [raspberrypi](https://www.raspberrypi.org/), but again not possible to produce a [Raspberry Pi OS](https://www.raspberrypi.org/software/) egg in armel or arm64. I'm just working now to complete this step. 
 
 **Note:** Of course it is possible to produce iso for [Raspberry Pi Desktop](https://downloads.raspberrypi.org/rpd_x86/images/) amd64 based.
 
 # Packages
-eggs is released as deb package and npm package. Most users need just deb version, if you already use nodejs the npm package can be installed too, 
+eggs is released as deb package and npm package. Most users need just deb version. If you already use nodejs the npm package can be installed too, 
 
 ## deb packages
-eggs is released deb packages for i386 and amd64 architectures. Due the characteristic of eggs, they can installed in Debian, Devuan or Ubuntu based distros, withouth worries about different versions, except for the architecture. Lately was added scripts for preinst, postinst, prerm and postrm not presents in the original.
+eggs is released deb packages, due the characteristic of eggs, they can installed in Debian, Devuan or Ubuntu based distros, withouth worries about different versions, except for the architecture (i386, amd74, etc). Lately was added scripts for preinst, postinst, prerm and postrm not presents in the original.
 
 ### Install
 
@@ -75,7 +75,6 @@ Copy and past to add the **penguins-eggs-ppa** to your sources lists
 curl -SsL https://pieroproietti.github.io/penguins-eggs-ppa/debian/KEY.gpg | sudo apt-key add -
 sudo curl -s --compressed -o /etc/apt/sources.list.d/penguins-eggs-ppa.list "https://pieroproietti.github.io/penguins-eggs-ppa/debian/penguins-eggs-ppa.list"
 ```
-
 Update your repositories and install eggs
 
 ```
@@ -85,7 +84,7 @@ sudo apt install eggs
 
 #### download and installing eggs from sourceforce
 
-If you don't want to add **penguins-eggs-ppa** on your list, you can install eggs downloading it from [package eggs](https://sourceforge.net/projects/penguins-eggs/files/packages-deb/) from [sourceforge page of the project](https://sourceforge.net/projects/penguins-eggs/) and install it
+If you don't want to add **penguins-eggs-ppa** on your list, you can install eggs again downloading it from [package eggs](https://sourceforge.net/projects/penguins-eggs/files/packages-deb/) from [sourceforge page of the project](https://sourceforge.net/projects/penguins-eggs/) and installing it
 
 ```
 sudo dpkg -i eggs_8.0.0-1_amd64.deb
@@ -97,11 +96,10 @@ sudo dpkg -i eggs_8.0.0-1_i386.deb
 ```
 ### update
 
-#### with penguins-eggs-ppa
-If you installed **penguins-eggs-ppa**, you will get and update eggs with your usual tools: apt, synaptic or others packages manager.
+If you installed **penguins-eggs-ppa**, you will get and update eggs with your usual tools: apt, synaptic or others packages manager. Example:
+```sudo apt update```
 
-#### update from the eggs basket
-If you choose to not install **penguins-eggs-ppa**, You can again easily update eggs with the command ```sudo eggs update``` and choose basket. Eggs let you to select the last 4 versions on the [basket](https://sourceforge.net/projects/penguins-eggs/files/packages-deb/) and install it.
+Viceversa, you can again easily update eggs with the command ```sudo eggs update``` and choose basket. Eggs let you to select the last 4 versions from the [basket](https://sourceforge.net/projects/penguins-eggs/files/packages-deb/) and install it.
 
 ```sudo eggs update```
 
@@ -614,9 +612,6 @@ _See code: [src/commands/update.ts](https://github.com/pieroproietti/penguins-eg
 
 ![terminal samples](https://github.com/pieroproietti/penguins-eggs/blob/master/documents/terminal-lessons/eggs_help.gif?raw=true)
 
-# That's all Folks!
-No need other configurations, penguins-eggs are battery included or better, as in the real, live is inside! :-D
-
 ## More informations
 There is [user's manual](https://penguins-eggs.net/book/) and same other documentation in [documents folder](./documents) of this repository.
 
@@ -625,6 +620,9 @@ There is [user's manual](https://penguins-eggs.net/book/) and same other documen
 * [sources](https://github.com/pieroproietti/penguins-krill)
 
 You can contact me at pieroproietti@gmail.com or [meet me](https://meet.jit.si/PenguinsEggsMeeting)
+
+# That's all Folks!
+No need other configurations, penguins-eggs are battery included or better, as in the real, life is inside! :-D
 
 ## Copyright and licenses
 Copyright (c) 2017, 2021 [Piero Proietti](https://penguins-eggs.net/about-me.html), dual licensed under the MIT or GPL Version 2 licenses.
