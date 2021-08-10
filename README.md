@@ -18,7 +18,6 @@ penguins-eggs
 * [Packages](#packages)
 * [Usage](#usage)
 * [Commands](#commands)
-* [Terminal samples](#terminal-samples)
 * [That's all Folks!](#thats-all-folks)
 <!-- tocstop -->
 
@@ -353,8 +352,6 @@ OPTIONS
   -h, --help     show CLI help
   -v, --verbose
 ```
-
-_See code: [src/commands/info.ts](https://github.com/pieroproietti/penguins-eggs/blob/v8.1.3/src/commands/info.ts)_
 
 ## `eggs install`
 
