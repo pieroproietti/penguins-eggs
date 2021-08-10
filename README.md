@@ -51,28 +51,30 @@ I suggest to leave the default values unchanged during the development of your r
 yolk as it is called - to stay on the subject of eggs - is a small local repository that is included in the livecd filesystem. yolk contains the minimum number of packages that are essential to use during the installation. Thanks to yolk, you can safely install the system without the need for an active internet connection.
 
 ## What distributions can I use?
-eggs was born on Debian strecth/buster, but it fully supports Debian from jessie to bullseye, Devuan beowulf, Ubuntu bionic, focal, hirsute and derivatives. I normally test on multiple distributions before releasing it. It has been used successfully on many derivatives in particular Linux Mint uma, LMDE 4 debbie, deepin, neon Os, etc.
+eggs was born on Debian strecth/buster, but it fully supports Debian from jessie to bullseye, Devuan beowulf, Ubuntu bionic, focal, hirsute and derivatives. I normally test on multiple distributions before releasing it. It has been used successfully on many derivatives in particular Linux Mint uma, LMDE 4 debbie, deepin linux, KDE neon, MX Linux and many others.
 
 eggs, generally, should work with all Debian, Devuan and Ubuntu derivatives.
 
 Some examples of iso images remastered with eggs are in the [sourceforge page of the project](https://sourceforge.net/projects/penguins-eggs/files/iso/). 
 
 ## What architecture can I use?
-Until version 8.0.30 I released eggs in i386, amd64, arm64 and armel. Actually I'm releasing eggs in 3 differents architectures: **amd64**, **arm64** and **armel**. 
+Up to version 8.0.30 I have released eggs for i386, amd64, arm64 and armel architectures. 
 
-eggs - at the moment - produce in i386 and amd64, but can be installed already on arm64 and armel. This mean who it is possible to install it in [raspberrypi](https://www.raspberrypi.org/), but again not possible to produce a [Raspberry Pi OS](https://www.raspberrypi.org/software/) egg in armel or arm64. I'm just working now to complete this step. 
+Since version 8.10 I was forced to drop the build for the i386 architecture because I encountered problems with the node8.1.17 version. 
 
-**Note:** Of course it is possible to produce iso for [Raspberry Pi Desktop](https://downloads.raspberrypi.org/rpd_x86/images/) amd64 based.
+eggs can currently be used successfully and produces bootable ISOs for i386 and amd64 architectures. Versions for arm64 and armel can also be installed and work, but the ISO produced is not bootable.
+
+I am working on this and would need assistance and testers.
 
 # Packages
-eggs is released as deb package and npm package. Most users need just deb version. If you already use nodejs the npm package can be installed too, 
+eggs is released as **deb** package and **npm** package, most users need just **deb** version. 
 
 ## deb packages
-eggs is released deb packages, due the characteristic of eggs, they can installed in Debian, Devuan or Ubuntu based distros, withouth worries about different versions, except for the architecture (i386, amd74, etc). Lately was added scripts for preinst, postinst, prerm and postrm not presents in the original.
+eggs is released as deb package. eggs packages can be installed regardless of version on distributions based on Debian, Devuan or Ubuntu. Of course choosing the appropriate architecture for your system: i386, amd64, arm64 or armel.
 
-### Install
+### Installing
 
-#### configure penguins-eggs-ppa
+#### Using penguins-eggs-ppa
 Copy and past to add the **penguins-eggs-ppa** to your sources lists
 
 ```
@@ -113,7 +115,7 @@ _Note about deb packages_ You can use the same package for all distributions usi
 
 ## npm packages
 
-If you have nodejs installed, you can install penguins-eggs with the utility npm (node package manager).
+If you have nodejs installed, you can install penguins-eggs with the utility npm.
 
 Simply copy and past the following lines:
 
@@ -614,10 +616,6 @@ EXAMPLE
 _See code: [src/commands/update.ts](https://github.com/pieroproietti/penguins-eggs/blob/v8.1.3/src/commands/update.ts)_
 <!-- commandsstop -->
 
-# Terminal samples
-
-![terminal samples](https://github.com/pieroproietti/penguins-eggs/blob/master/documents/terminal-lessons/eggs_help.gif?raw=true)
-
 ## More informations
 There is [user's manual](https://penguins-eggs.net/book/) and same other documentation in [documents folder](./documents) of this repository.
 
@@ -625,7 +623,7 @@ There is [user's manual](https://penguins-eggs.net/book/) and same other documen
 * [facebook penguin's eggs group](https://www.facebook.com/groups/128861437762355/)
 * [sources](https://github.com/pieroproietti/penguins-krill)
 
-You can contact me at pieroproietti@gmail.com or [meet me](https://meet.jit.si/PenguinsEggsMeeting)
+You can mail me at pieroproietti@gmail.com or [meet me](https://meet.jit.si/PenguinsEggsMeeting) on jitsi meet.
 
 # That's all Folks!
 No need other configurations, penguins-eggs are battery included or better, as in the real, life is inside! :-D
