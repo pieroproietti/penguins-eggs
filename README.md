@@ -23,27 +23,27 @@ penguins-eggs
 <!-- tocstop -->
 
 # Presentation
-penguins-eggs is a console utility, in active development, who let you to remaster your system and redistribuite it as iso images or from the lan via PXE remote boot.
+penguins-eggs is an actively developing console utility that allows you to remaster your system and redistribute it as iso images or over LAN via PXE remote booting.
 
-The scope of this project is to implement the process of remastering your version of Linux, generate it as ISO image to burn on a CD/DVD or copy to a usb key to boot your system. You can also boot your egg - via remote boot - on your LAN. You can easily install your live system with GUI calamares installer or the inside krill CLI installer.
+The purpose of this project is to facilitate the process of remastering your version of Linux, generating it as an ISO image to burn to a CD/DVD or copying it to a USB key to boot your system. You can also boot your live image - via remote boot - on your LAN. You can easily install your system using the calamares GUI installer or the krill CLI installer included with eggs.
 
-All it is written in pure typescript, so ideally can be used with differents Linux distros. Yes, there are big differences about package manager used, but not so much in the way to work of bash and in the various programs used to build the iso.
+eggs is written entirely in pure typescript and could, therefore, be adapted in the future to other Linux distributions by rewriting the package manager part. There are, in fact, many differences in the package manager used by the distro, but relatively less in the way bash and the various programs used to create the ISO work.
 
-penguins-eggs, at the moment 2021 is a mature tool and is extremely usefull, You can easily create your personal customized ISO or your organization/school version of Linux and deploy it, give it to your friends as usb key or publish yours ISOs in the internet!
+penguins-eggs is now a mature, sophisticated and extremely useful tool, allowing you to easily create your own ISO or create it for the needs of your organization/community/school, etc and deploy it. 
 
-Try eggs. Tes, it is a console utility - no GUI - but don't be scared, eggs is a console command - really very simple - if you are able to open a terminal, you can use it and yours final users will enjoy of full GUI, pratical installer to install your livecd.
+Don't be scared, yes eggs is a console utility - no GUI - but don't be afraid, eggs is really very simple, if you are able to open a terminal, you can use it and your end users will enjoy a full GUI, a handy installer to install your livecd. You will still have the pleasure of all the sophistication possible in a CLI tool such as command autocomplete, man pages, guides, etc.
 
 ### addons
-Starting with version 7.6.x, an addons architecture was added to eggs, allowing third parties to develop extensions. Note that currently we have an extension for the theme that includes calamares branding, link and installer icon. In addition, as addon has been developed adapt to adjust the video resolution in VM, remote support, installer choice, etc.
+eggs is also extensible via an addons architecture that can allow you to develop extensions, specifically to make your own original themes. For example, you can create a theme that includes branding, link and startup icon for the calamares GUI installer. Also, as an addon it has been developed adapt to adjust video resolution in VM, rsupport for remote support, installer choice, etc.
 
 ### backup
-From version 8.0.30 You can use the backup mode by simply adding --backup to the produce command: sudo eggs produce --backup. In this way eggs will save your users data and accounts in a crypted luks2 volume who is restored just after the installation only if  eeyou are able to introduce the passpharafe decided by the ower.
+From version 8.0.30 you can use the backup mode by simply adding --backup to the produce command: **sudo eggs produce --backup**.This way eggs will save your users' data and accounts in an encrypted luks2 volume that is restored right after installation only if you are able to enter the passphrase decided by the owner.
 
 ### krill
-Starting with version 8.0.0, eggs include a new CLI installer named krill. krill let you to install your system in a nice CLI interface using the same, configuration created by eggs for [calamares](calamares.io). This lead to have "about the same" experience installing, from old distros to new one and for GUI and CLI. To force using krill in place of calamares in a GUI system just: **sudo eggs install --cli**
+eggs includes a CLI installer called krill. krill allows you to install your system in a nice CLI interface using the same configuration created by eggs for [calamares] (calamares.io). This results in a similar installation experience between krill and calamares and can be used on all supported distributions. To force the use of krill instead of calamares in a GUI system, just **sudo eggs install --cli**.
 
 ### mom and dad
-There are two lightweight assistants integrated with eggs: **mom** and **dad**. While **mom** is a bash script with whiptail - and guides the user to the various commands and documentation, **dad** started as a short way to ISO creation. All you have to do is type **sudo eggs dad** and follow simple instructions. You can also shortcut the way to reset the configuration **sudo dad -c** or - even faster - reset the configuration, load defaults and kill created ISOs. Just type **sudo eggs dad -d** and you will immediately be able to produce the egg in the default /home/eggs nest.
+There are also two lightweight assistants built in with eggs: **mom** and **dad**. While **mom** is a bash script with whiptail - and guides the user to the various commands and documentation, **dad** started as a shortcut to creating an ISO. All you have to do is type **sudo eggs dad** and follow simple instructions. You can also shortcut it again by resetting the pre-existing configuration: **sudo dad -c**  or, even faster, reset the configuration, load the defaults and kill all the created ISOs. Just type **sudo eggs dad -d** and you will immediately be able to produce a new egg in the default nest: /home/eggs.
 
 I suggest to leave the default values unchanged during the development of your remaster. You will be more fast in producing eggs, enjoy of dad after reinstalling eggs. If you need more space, simply mount your big device in /home/eggs.
 
