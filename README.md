@@ -48,15 +48,19 @@ There are also two lightweight assistants built in with eggs: **mom** and **dad*
 I suggest to leave the default values unchanged during the development of your remaster. You will be more fast in producing eggs, enjoy of dad after reinstalling eggs. If you need more space, simply mount your big device in /home/eggs.
 
 ### yolk 
-yolk so called - staying on the subject of eggs - is a local repository included in the livecd that contains a minimum of indispensable packages during installation. Thanks to yolk, you can safely install your system without the need of an active internet connection.
+yolk as it is called - to stay on the subject of eggs - is a small local repository that is included in the livecd filesystem. yolk contains the minimum number of packages that are essential to use during the installation. Thanks to yolk, you can safely install the system without the need for an active internet connection.
 
 ## What distributions can I use?
-eggs was born on Debian strecth/buster, but actually full support Debian from jessie to bullseye, Devuan beowulf, Ubuntu bionic, focal, hirsute and derivatives. I actually try it against Debian varius versions, before releases. I tried it successfully with a lot of derivated, in particular Linux Mint uma, LMDE 4 debbie, deepin, neon Os, etc. eggs, generally must work with all the derivates from Debian, Devuan and Ubuntu distros.
+eggs was born on Debian strecth/buster, but it fully supports Debian from jessie to bullseye, Devuan beowulf, Ubuntu bionic, focal, hirsute and derivatives. I normally test on multiple distributions before releasing it. It has been used successfully on many derivatives in particular Linux Mint uma, LMDE 4 debbie, deepin, neon Os, etc.
+
+eggs, generally, should work with all Debian, Devuan and Ubuntu derivatives.
 
 Some examples of iso images remastered with eggs are in the [sourceforge page of the project](https://sourceforge.net/projects/penguins-eggs/files/iso/). 
 
 ## What architecture can I use?
-Until version 8.0.30 I released eggs in i386, amd64, arm64 and armel. Actually I'm releasing eggs in 3 differents architectures: **amd64**, **arm64** and **armel**. eggs - at the moment - produce in i386 and amd64, but can be installed already on arm64 and armel. This mean who it is possible to install it in [raspberrypi](https://www.raspberrypi.org/), but again not possible to produce a [Raspberry Pi OS](https://www.raspberrypi.org/software/) egg in armel or arm64. I'm just working now to complete this step. 
+Until version 8.0.30 I released eggs in i386, amd64, arm64 and armel. Actually I'm releasing eggs in 3 differents architectures: **amd64**, **arm64** and **armel**. 
+
+eggs - at the moment - produce in i386 and amd64, but can be installed already on arm64 and armel. This mean who it is possible to install it in [raspberrypi](https://www.raspberrypi.org/), but again not possible to produce a [Raspberry Pi OS](https://www.raspberrypi.org/software/) egg in armel or arm64. I'm just working now to complete this step. 
 
 **Note:** Of course it is possible to produce iso for [Raspberry Pi Desktop](https://downloads.raspberrypi.org/rpd_x86/images/) amd64 based.
 
