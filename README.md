@@ -39,7 +39,7 @@ eggs is also extensible via an addons architecture that can allow you to develop
 From version 8.0.30 you can use the backup mode by simply adding --backup to the produce command: **sudo eggs produce --backup**.This way eggs will save your users' data and accounts in an encrypted luks2 volume that is restored right after installation only if you are able to enter the passphrase decided by the owner.
 
 ### krill
-eggs includes a CLI installer called krill. krill allows you to install your system in a nice CLI interface using the same configuration created by eggs for [calamares] (calamares.io). This results in a similar installation experience between krill and calamares and can be used on all supported distributions. To force the use of krill instead of calamares in a GUI system, just **sudo eggs install --cli**.
+eggs includes a CLI installer called krill. krill allows you to install your system in a nice CLI interface using the same configuration created by eggs for [calamares](https://calamares.io). This results in a similar installation experience between krill and calamares and can be used on all supported distributions. To force the use of krill instead of calamares in a GUI system, just **sudo eggs install --cli**.
 
 ### mom and dad
 There are also two lightweight assistants built in with eggs: **mom** and **dad**. While **mom** is a bash script with whiptail - and guides the user to the various commands and documentation, **dad** started as a shortcut to creating an ISO. All you have to do is type **sudo eggs dad** and follow simple instructions. You can also shortcut it again by resetting the pre-existing configuration: **sudo dad -c**  or, even faster, reset the configuration, load the defaults and kill all the created ISOs. Just type **sudo eggs dad -d** and you will immediately be able to produce a new egg in the default nest: /home/eggs.
@@ -50,18 +50,18 @@ I suggest to leave the default values unchanged during the development of your r
 yolk as it is called - to stay on the subject of eggs - is a small local repository that is included in the livecd filesystem. yolk contains the minimum number of packages that are essential to use during the installation. Thanks to yolk, you can safely install the system without the need for an active internet connection.
 
 ## What distributions can I use?
-eggs was born on Debian strecth/buster, but it fully supports Debian from jessie to bullseye, Devuan beowulf, Ubuntu bionic, focal, hirsute and derivatives. I normally test on multiple distributions before releasing it. It has been used successfully on many derivatives in particular Linux Mint uma, LMDE 4 debbie, deepin linux, KDE neon, MX Linux and many others.
+eggs was born on Debian strecth/buster - actually I work mostly in bullseye - and it fully supports Debian from jessie to bullseye, Devuan beowulf, Ubuntu bionic, focal, hirsute and derivatives. I normally test on multiple distributions before releasing it. It has been used successfully on many derivatives in particular Linux Mint uma, LMDE 4 debbie, deepin linux, KDE neon, MX Linux and many others.
 
 eggs, generally, should work with all Debian, Devuan and Ubuntu derivatives.
 
 Some examples of iso images remastered with eggs are in the [sourceforge page of the project](https://sourceforge.net/projects/penguins-eggs/files/iso/). 
 
 ## What architecture can I use?
-Up to version 8.0.30 I have released eggs for i386, amd64, arm64 and armel architectures. 
+Until august 2021 - up to version 8.0.30 - I have released eggs for i386, amd64, arm64 and armel architectures. 
 
-Since version 8.10 I was forced to drop the build for the i386 architecture because I encountered problems with the node8.1.17 version. 
+Since version 8.1.0 I was forced to drop the build for the i386 architecture because I experiment unsurmountable problems with node8.17.0 the last version of node supporting this architecture. 
 
-eggs can currently be used successfully and produces bootable ISOs for i386 and amd64 architectures. Versions for arm64 and armel can also be installed and work, but the ISO produced is not bootable.
+eggs can currently be used successfully and produces bootable ISOs for i386 and amd64 architectures. Versions for arm64 and armel can also be installed and work, but - at the moment - the ISO produced is not bootable.
 
 I am working on this and would need assistance and testers.
 
@@ -73,13 +73,11 @@ eggs is released as deb package. eggs packages can be installed regardless of ve
 
 ### Installing
 
-#### Using penguins-eggs-ppa
+**Installig eggs via ppa**
 Copy and past to add the **penguins-eggs-ppa** to your sources lists
 
 ```
 curl -SsL https://pieroproietti.github.io/penguins-eggs-ppa/debian/KEY.gpg | sudo apt-key add -
-```
-```
 sudo curl -s --compressed -o /etc/apt/sources.list.d/penguins-eggs-ppa.list "https://pieroproietti.github.io/penguins-eggs-ppa/debian/penguins-eggs-ppa.list"
 ```
 Update your repositories and install eggs
@@ -89,8 +87,10 @@ sudo apt update
 sudo apt install eggs
 ```
 
-#### download and installing eggs from sourceforce
+If you install **penguins-eggs-ppa**, you will get and update eggs with your usual tools: apt, synaptic or others packages manager. Example:
+```sudo apt update```
 
+**Installig eggs from the package .deb**
 If you don't want to add **penguins-eggs-ppa** on your list, you can install eggs again downloading it from [package eggs](https://sourceforge.net/projects/penguins-eggs/files/packages-deb/) from [sourceforge page of the project](https://sourceforge.net/projects/penguins-eggs/) and installing it
 
 ```
@@ -101,12 +101,8 @@ or, on a i386 system:
 ```
 sudo dpkg -i eggs_8.0.0-1_i386.deb
 ```
-### update
 
-If you installed **penguins-eggs-ppa**, you will get and update eggs with your usual tools: apt, synaptic or others packages manager. Example:
-```sudo apt update```
-
-Viceversa, you can again easily update eggs with the command ```sudo eggs update``` and choose basket. Eggs let you to select the last 4 versions from the [basket](https://sourceforge.net/projects/penguins-eggs/files/packages-deb/) and install it.
+You can again easily update eggs with the command ```sudo eggs update``` and choose basket. Eggs let you to select the last 4 versions from the [basket](https://sourceforge.net/projects/penguins-eggs/files/packages-deb/) and install it.
 
 ```sudo eggs update```
 
@@ -622,8 +618,8 @@ There is [user's manual](https://penguins-eggs.net/book/) and same other documen
 
 You can mail me at pieroproietti@gmail.com or [meet me](https://meet.jit.si/PenguinsEggsMeeting) on jitsi meet.
 
-# That's all Folks!
+## That's all Folks!
 No need other configurations, penguins-eggs are battery included or better, as in the real, life is inside! :-D
 
-## Copyright and licenses
+# Copyright and licenses
 Copyright (c) 2017, 2021 [Piero Proietti](https://penguins-eggs.net/about-me.html), dual licensed under the MIT or GPL Version 2 licenses.
