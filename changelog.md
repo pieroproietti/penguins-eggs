@@ -10,7 +10,25 @@ penguins-eggs
 [![deb](https://img.shields.io/badge/deb-packages-orange)](https://sourceforge.net/projects/penguins-eggs/files/packages-deb)
 [![iso](https://img.shields.io/badge/iso-images-orange)](https://sourceforge.net/projects/penguins-eggs/files/iso)
 
-# Penguin's eggs Debian package
+# Penguin's eggs Debian packages
+
+There are two ways to install deb package, include the eggs repository in your system or download package and install with ```dpkg```.
+
+## Installig eggs via ppa
+Copy and past to add the **penguins-eggs-ppa** to your sources lists
+
+```
+curl -SsL https://pieroproietti.github.io/penguins-eggs-ppa/debian/KEY.gpg | sudo apt-key add -
+sudo curl -s --compressed -o /etc/apt/sources.list.d/penguins-eggs-ppa.list "https://pieroproietti.github.io/penguins-eggs-ppa/debian/penguins-eggs-ppa.list"
+```
+Update your repositories and install eggs
+
+```
+sudo apt update
+sudo apt install eggs
+```
+
+## Download eggs package and Install
 
 Usually the last version is the right one. Detailed instrunctions for usage are published on the [penguin's eggs book](https://penguins-eggs.net/book). 
 You can follow the project also consulting the [commit history](https://github.com/pieroproietti/penguins-eggs/commits/master). 
