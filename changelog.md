@@ -36,6 +36,9 @@ You can follow the project also consulting the [commit history](https://github.c
 ## Changelog
 Versions are listed on reverse order, the first is the last one.
 
+### eggs-8.1.4
+* reset prefix se viene passato basename, passaggio a node16
+
 ### eggs-8.1.3
 * calamares now, will be always enabled with no password if it is installed by eggs calamares --install or eggs config
 
