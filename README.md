@@ -18,7 +18,7 @@ penguins-eggs
 * [Packages](#packages)
 * [Usage](#usage)
 * [Commands](#commands)
-* [That's all Folks!](#thats-all-folks)
+* [Copyright and licenses](#copyright-and-licenses)
 <!-- tocstop -->
 
 # Presentation
@@ -129,7 +129,7 @@ $ npm install -g penguins-eggs
 $ eggs COMMAND
 running command...
 $ eggs (-v|--version|version)
-penguins-eggs/8.1.3 linux-x64 node-v12.22.4
+penguins-eggs/8.1.3 linux-x64 node-v16.6.2
 $ eggs --help [COMMAND]
 USAGE
   $ eggs COMMAND
@@ -348,6 +348,8 @@ OPTIONS
   -h, --help     show CLI help
   -v, --verbose
 ```
+
+_See code: [src/commands/info.ts](https://github.com/pieroproietti/penguins-eggs/blob/v8.1.3/src/commands/info.ts)_
 
 ## `eggs install`
 

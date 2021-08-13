@@ -94,6 +94,7 @@ export default class Ovary {
 
          if (this.snapshot_basename !== '') {
             this.settings.config.snapshot_basename = this.snapshot_basename
+            this.settings.config.snapshot_prefix = ''
          }
 
          if (this.theme !== '') {
