@@ -37,7 +37,7 @@ You can follow the project also consulting the [commit history](https://github.c
 Versions are listed on reverse order, the first is the last one.
 
 ### eggs-8.1.4
-* reset prefix se viene passato basename, passaggio a node16
+* reset prefix if you choose --basename YourName you will get YourName-amd64_2021-08-13_1031.iso. Switch to nodejs v16.6.2
 
 ### eggs-8.1.3
 * calamares now, will be always enabled with no password if it is installed by eggs calamares --install or eggs config
