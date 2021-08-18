@@ -99,10 +99,13 @@ export default class Xdg {
 
          // sddm
          if (Pacman.packageIsInstalled('sddm')) {
-            // cat /etc/sddm.conf 
-            // Autologin]
-            // User=artisan
-            // Session=plasma.desktop
+            /**
+             * Debian live ha /etc/sddm.conf
+             * [Autologin]
+             * User=artisan
+             * Session=plasma.desktop
+             * 
+             */
             const fileConf = `${chroot}/etc/sddm.conf`
             if (fs.existsSync(fileConf)) {
                // it work 15/7/2021 but don't log... why????
