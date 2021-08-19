@@ -27,7 +27,7 @@
     "inquirer": "^8.0.0",
     "js-yaml": "^4.0.0",
     "mustache": "^4.2.0",
-    "npm": "^7.20.3",
+    "npm": "^7.20.6",
     "pjson": "github:pieroproietti/pjson",
     "react": "^16.14.0",
     "shelljs": "^0.8.4"
@@ -37,6 +37,7 @@
     "@oclif/test": "^1.2.8",
     "@types/axios": "^0.14.0",
     "@types/clear": "^0.1.1",
+    "@types/figlet": "^1.5.4",
     "@types/ink-big-text": "^1.2.0",
     "@types/ink-gradient": "^2.0.1",
     "@types/inquirer": "^7.3.1",
@@ -54,8 +55,8 @@
     "perrisbrewery": "./vendors/perrisbrewery",
     "prettier": "^2.3.0",
     "ts-node": "^9.1.1",
-    "typedoc": "^0.20.36",
-    "typescript": "^4.2.4"
+    "typedoc": "^0.21.6",
+    "typescript": "^4.3.5"
   },
   "warn-if-update-available": {
     "timeoutInDays": 7,

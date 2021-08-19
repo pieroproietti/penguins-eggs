@@ -201,7 +201,7 @@ export default class Pacman {
       await exec(`apt-get install --yes ${array2spaced(this.packages(verbose))}`, echo)
 
       // localization
-      if ((versionLike === 'buster') || (versionLike === 'beowulf') || (versionLike === 'bullseye') || (versionLike === 'stretch') || (versionLike === 'jessie')) {
+      if ((versionLike === 'bullseye') || (versionLike === 'buster') || (versionLike === 'beowulf') || (versionLike === 'stretch') || (versionLike === 'jessie')) {
          await exec(`apt-get install --yes --no-install-recommends ${array2spaced(this.packagesLocalisation(verbose))}`, echo)
       }
 
