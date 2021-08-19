@@ -129,7 +129,7 @@ $ npm install -g penguins-eggs
 $ eggs COMMAND
 running command...
 $ eggs (-v|--version|version)
-penguins-eggs/8.1.4 linux-x64 node-v16.6.2
+penguins-eggs/8.1.4 linux-x64 node-v14.17.5
 $ eggs --help [COMMAND]
 USAGE
   $ eggs COMMAND
@@ -334,7 +334,7 @@ OPTIONS
   --all  see all commands in CLI
 ```
 
-_See code: [@oclif/plugin-help](https://github.com/oclif/plugin-help/blob/v3.2.2/src/commands/help.ts)_
+_See code: [@oclif/plugin-help](https://github.com/oclif/plugin-help/blob/v3.2.3/src/commands/help.ts)_
 
 ## `eggs info`
 
@@ -348,6 +348,8 @@ OPTIONS
   -h, --help     show CLI help
   -v, --verbose
 ```
+
+_See code: [src/commands/info.ts](https://github.com/pieroproietti/penguins-eggs/blob/v8.1.4/src/commands/info.ts)_
 
 ## `eggs install`
 
