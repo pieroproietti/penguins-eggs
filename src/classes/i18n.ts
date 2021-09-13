@@ -11,9 +11,8 @@
 // packages
 import fs = require('fs')
 import path = require('path')
-import os = require('os')
 import shx = require('shelljs')
-import chalk = require('chalk')
+import { execSync } from 'child_process'
 
 // interfaces
 
@@ -87,7 +86,7 @@ export default class I18n {
              * apt-get install locales --yes
              */
             console.log('reinstall package locales')
-            shx.exec('apt-get reinstall locales --yes')
+            execSync('apt-get reinstall locales --yes')
 
             // Eseguire localepurge file /etc/locale.nopurge
 
@@ -97,7 +96,7 @@ export default class I18n {
             if (this.verbose) {
                 console.log('executing locale-gen')
             }
-            shx.exec('/usr/sbin/locale-gen')
+            execSync('/usr/sbin/locale-gen')
         }
 
 
@@ -124,6 +123,5 @@ export default class I18n {
          * Elimina 4,1kB /usr/share/man/es/man8
          * Elimina 4,1kB /usr/share/man/es
          */
-
     }
 }

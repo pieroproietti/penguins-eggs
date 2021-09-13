@@ -1,12 +1,8 @@
 /**
- *
+ * displaymanagers
  */
-
 import Pacman from '../../pacman'
 
-/**
- * restituisce displaymanagers in uso
- */
 export function displaymanager(): string {
    let text = ''
 
