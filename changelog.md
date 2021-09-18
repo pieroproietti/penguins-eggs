@@ -18,6 +18,27 @@ You can follow the project also consulting the [commit history](https://github.c
 ## Changelog
 Versions are listed on reverse order, the first is the last one.
 
+### eggs-8.17-0 
+* I toke version 8.0.28 and rebuild it to be compatible with node8.17. Actually it run in bullseye too, but We must to rebuild the changement from 8.0.30 to t.1.4
+
+## eggs-8.1.4
+* reset prefix if you choose --basename YourName you will get YourName-amd64_2021-08-13_1031.iso
+
+### eggs-8.1.3
+* calamares now, will be always enabled with no password if it is installed by eggs calamares --install or eggs config
+
+### eggs-8.1.2
+* MX21: they have so good mx-snapshot and mx-installer. I just want play with it and tried remastering it with eggs, install with krill, calamares and minstall! So, I'm starting to support mx-installer as calamares light alternative.
+
+### eggs-8.1.1
+* note: same as versione 8.1.0 but using node10, to solve the problem in 8.1.0 version 
+
+### eggs-8.1.0 retired
+* bugfix: eggs tools:clean don't remove more /var/lib/apt/list, where was a problem with mintupdate ((in this version due a problem with node8, krill and eggs info was not working)
+
+### eggs-8.0.30
+* bugfix: krill installer: eggs install now support installation on UEFI systems
+
 ### eggs-8.0.28
 * backup adapt luks encrypted volume to user's data size. Working on standard and full encrypted filesystem systems
 
