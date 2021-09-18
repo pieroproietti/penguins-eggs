@@ -1,0 +1,25 @@
+Format: 1.8
+Date: Thu, 16 Sep 2021 16:53:23 +0200
+Source: python-minimal
+Binary: python-minimal
+Architecture: all
+Version: 99:99
+Distribution: unstable
+Urgency: low
+Maintainer: Piero Proietti <piero.proietti@gmail.com>
+Changed-By: Piero Proietti <piero.proietti@gmail.com>
+Description:
+ python-minimal - dummy python-minimal package
+Changes:
+ python-minimal (99:99) unstable; urgency=low
+ .
+   * First version
+Checksums-Sha1:
+ 934c1632b808adf65658d8ca5057164466aa8f49 2176 python-minimal_99_all.deb
+ 6f31bd408672e3feb9ac852040a88256ea0d02c0 4501 python-minimal_99_amd64.buildinfo
+Checksums-Sha256:
+ b5201b618c62d12a3185366fe6e81996803fe32b833be0a48223edf0ce21022d 2176 python-minimal_99_all.deb
+ 005df73582226325e8aa9e5235473c44969d675566d8d179b65bc130435a9e8f 4501 python-minimal_99_amd64.buildinfo
+Files:
+ 122ad3c66deaeb2a78c967ee1a9cd812 2176 misc optional python-minimal_99_all.deb
+ 5afc41036a472479fab30736363d59ed 4501 misc optional python-minimal_99_amd64.buildinfo
