@@ -12,7 +12,6 @@ import path = require('path')
 import Pacman from './pacman'
 import Utils from './utils'
 import chalk = require('chalk')
-import { dir } from 'console'
 
 
 // libraries
@@ -100,30 +99,23 @@ export default class Xdg {
 
          // sddm
          if (Pacman.packageIsInstalled('sddm')) {
-            /**
-             * sddm può essere configurato in /etc/sddm.conf, oppure in sddm.conf.d, creando autologin.conf
-             * KDE Start->SystemSettings->StartupAndStutdown->LoginScreen(SDDM) crea in sddm.conf.d  kde_settings.conf
-             * Debian live ha /etc/sddm.conf
-             */
-            let dirConf = chroot + '/etc/'
-            let fileConf = dirConf + 'sddm.conf'
-            if (!fs.existsSync(fileConf)) {
-               dirConf = dirConf + 'sddm.conf.d'
-               fileConf = dirConf + 'autologin.conf'
-               if (!fs.existsSync(fileConf)) {
-                  fileConf = dirConf + 'kde_settings.conf'
-                  if (!fs.existsSync(fileConf)) {
-                     dirConf = chroot + '/etc/'
-                     fileConf = dirConf + 'sddm.conf'
-                  }
-               }
+            // cat /etc/sddm.conf 
+            // Autologin]
+            // User=artisan
+            // Session=plasma.desktop
+            const fileConf = `${chroot}/etc/sddm.conf`
+            if (fs.existsSync(fileConf)) {
+               // it work 15/7/2021 but don't log... why????
                shx.sed('-i', `User=${olduser}`, `User=${newuser}`, fileConf)
             } else {
-               let content = ''
-               content += '[Autologin]\n'
-               content += 'User=' + newuser + '\n'
-               content += 'Session=plasma.desktop\n'
-               fs.writeFileSync(fileConf, content)
+               const dirConf = `${chroot}/etc/sddm.conf.d`
+               const autologin = `${dirConf}/autologin.conf`
+               if (fs.existsSync(autologin)) {
+                  shx.sed('-i', `User=${olduser}`, `User=${newuser}`, autologin)
+               } else {
+                  const content = `[Autologin]\nUser=${newuser}\n`
+                  fs.writeFileSync(autologin, content, 'utf-8')
+               }
             }
          }
 
@@ -135,7 +127,6 @@ export default class Xdg {
          }
       }
    }
-
 
    /**
     * Copia della configuirazione in /etc/skel

@@ -18,80 +18,56 @@ penguins-eggs
 * [Packages](#packages)
 * [Usage](#usage)
 * [Commands](#commands)
-* [Copyright and licenses](#copyright-and-licenses)
+* [Terminal samples](#terminal-samples)
+* [That's all Folks!](#thats-all-folks)
 <!-- tocstop -->
 
 # Presentation
-penguins-eggs is an actively developing console utility that allows you to remaster your system and redistribute it as iso images or over LAN via PXE remote booting.
+penguins-eggs is a console utility, in active development, who let you to remaster your system and redistribuite it as iso images or from the lan via PXE remote boot.
 
-The purpose of this project is to facilitate the process of remastering your version of Linux, generating it as an ISO image to burn to a CD/DVD or copying it to a USB key to boot your system. You can also boot your live image - via remote boot - on your LAN. You can easily install your system using the calamares GUI installer or the krill CLI installer included with eggs.
+The scope of this project is to implement the process of remastering your version of Linux, generate it as ISO image to burn on a CD/DVD or copy to a usb key to boot your system. You can also boot your egg - via remote boot - on your LAN. You can easily install your live system with gui calamares installer or eggs cli installer.
 
-eggs is written entirely in pure typescript and could, therefore, be adapted in the future to other Linux distributions by rewriting the package manager part. There are, in fact, many differences in the package manager used by the distro, but relatively less in the way bash and the various programs used to create the ISO work.
+All it is written in pure typescript, so ideally can be used with differents Linux distros. Yes, there are big differences about package manager used, but not so much in the way to work of bash and in the various programs used to build the iso.
 
-penguins-eggs is now a mature, sophisticated and extremely useful tool, allowing you to easily create your own ISO or create it for the needs of your organization/community/school, etc and deploy it. 
+penguins-eggs, at the moment 2021 may is a mature tool and is extremely usefull, You can easily create your personal customized iso or your organization/school version of Linux and deploy it on your LAN, give it to your friends as usb key or publish yours eggs in the internet!
 
-Don't be scared, yes eggs is a console utility - no GUI - but don't be afraid, eggs is really very simple, if you are able to open a terminal, you can use it and your end users will enjoy a full GUI, a handy installer to install your livecd. You will still have the pleasure of all the sophistication possible in a CLI tool such as command autocomplete, man pages, guides, etc.
+Try penguins-eggs yes, it is a console utility - no GUI - but don't be scared, penguins-eggs is a console command - really very simple - if you are able to open a terminal, you can use it and yours final users will enjoy of full gui and pratical installer to install your livecd.
 
 ### addons
-eggs is also extensible via an addons architecture that can allow you to develop extensions, specifically to make your own original themes. For example, you can create a theme that includes branding, link and startup icon for the calamares GUI installer. Also, as an addon it has been developed adapt to adjust video resolution in VM, rsupport for remote support, installer choice, etc.
+Starting with version 7.6.x, an addons architecture was added to eggs, allowing third parties to develop extensions. Note that currently we have an extension for the theme that includes both branding calamares, link and installer icon. In addition, also as an addon has been developed choose between GUI or CLI installation, adjust the video resolution, remote support, etc.
 
 ### backup
-From version 8.0.30 you can use the backup mode by simply adding --backup to the produce command: **sudo eggs produce --backup**.This way eggs will save your users' data and accounts in an encrypted luks2 volume that is restored right after installation only if you are able to enter the passphrase decided by the owner.
+From version 8.0.10 You can use the backup mode by simply adding --backup in the produce command. This way eggs will save your users data and accounts and will not add a live user, you will have to log in with the main user of your system with the his password. **Note:** since eggs always configures autologin, you may have a security risk with valuable data. Use this option only for your personal stuff and do not share the iso on the network.
 
 ### krill
-eggs includes a CLI installer called krill. krill allows you to install your system in a nice CLI interface using the same configuration created by eggs for [calamares](https://calamares.io). This results in a similar installation experience between krill and calamares and can be used on all supported distributions. To force the use of krill instead of calamares in a GUI system, just **sudo eggs install --cli**.
+Starting with eggs 8.0.0 I included a new CLI installer named krill. krill let you to install your system in a nice CLI interface using the same, configuration created by eggs for [calamares](calamares.io). This lead to have "about the same" experience installing, from old distros to new one and for GUI and CLI. To force using krill in place of calamares in a GUI system just: **sudo eggs install --cli**
 
 ### mom and dad
-There are also two lightweight assistants built in with eggs: **mom** and **dad**. While **mom** is a bash script with whiptail - and guides the user to the various commands and documentation, **dad** started as a shortcut to creating an ISO. All you have to do is type **sudo eggs dad** and follow simple instructions. You can also shortcut it again by resetting the pre-existing configuration: **sudo dad -c**  or, even faster, reset the configuration, load the defaults and kill all the created ISOs. Just type **sudo eggs dad -d** and you will immediately be able to produce a new egg in the default nest: /home/eggs.
+I've added two lightweight assistants integrated with eggs: mom and dad. While mom is a bash script with whiptail - and guides the user to the various commands and documentation, dad started as a short way to create isos. All you have to do is type **sudo eggs dad** and follow simple instructions. You can also shortcut the way to reset the configuration **sudo dad -c** or - even faster - reset the configuration, load defaults, kill created isos. Simply type **sudo eggs dad -d** and you will immediately be able to produce the egg in the default /home/eggs nest.
 
 I suggest to leave the default values unchanged during the development of your remaster. You will be more fast in producing eggs, enjoy of dad after reinstalling eggs. If you need more space, simply mount your big device in /home/eggs.
 
 ### yolk 
-yolk as it is called - to stay on the subject of eggs - is a small local repository that is included in the livecd filesystem. yolk contains the minimum number of packages that are essential to use during the installation. Thanks to yolk, you can safely install the system without the need for an active internet connection.
+yolk so called - staying on the subject of eggs - is a local repository included in the livecd that contains a minimum of indispensable packages during installation. Thanks to yolk, you can safely install your system without the need of an active internet connection.
 
 ## What distributions can I use?
-eggs was born on Debian strecth/buster - actually I work mostly in bullseye - and it fully supports Debian from jessie to bullseye, Devuan beowulf, Ubuntu bionic, focal, hirsute and derivatives. I normally test on multiple distributions before releasing it. It has been used successfully on many derivatives in particular Linux Mint uma, LMDE 4 debbie, deepin linux, KDE neon, MX Linux and many others.
-
-eggs, generally, should work with all Debian, Devuan and Ubuntu derivatives.
+eggs was born on Debian strecth/buster, but actually full support Debian from jessie to sid (bullseye), Devuan beowulf, Ubuntu focal, bionic and derivatives. I actually try it against Debian varius versions, before releases. I tried it successfully in LMDE 4 debbie, and deepin. eggs, generally must work with all the derivates from that distros.
 
 Some examples of iso images remastered with eggs are in the [sourceforge page of the project](https://sourceforge.net/projects/penguins-eggs/files/iso/). 
 
 ## What architecture can I use?
-Until august 2021 - up to version 8.0.30 - I have released eggs for i386, amd64, arm64 and armel architectures. 
+From eggs v. 8.0.4 I'm releasing eggs in 4 differents architectures: **i386**, **amd64**, **arm64** and **armel**. eggs - at the moment - produce in i386 and amd64, but can be installed already on arm64 and armel. This mean who it is possible to install it in [raspberrypi](https://www.raspberrypi.org/), but again not possible to produce a [Raspberry Pi OS](https://www.raspberrypi.org/software/) egg in armel or arm64. I'm just working now to complete this step. 
 
-Since version 8.1.0 I was forced to drop the build for the i386 architecture because I experiment unsurmountable problems with node8.17.0 the last version of node supporting this architecture. 
-
-eggs can currently be used successfully and produces bootable ISOs for i386 and amd64 architectures. Versions for arm64 and armel can also be installed and work, but - at the moment - the ISO produced is not bootable.
-
-I am working on this and would need assistance and testers.
+**Note:** Of course it is possible to produce iso for [Raspberry Pi Desktop](https://downloads.raspberrypi.org/rpd_x86/images/) amd64 based.
 
 # Packages
-eggs is released as **deb** package and **npm** package, most users need just **deb** version. 
+eggs is released as deb package and npm package. Most users need just deb version, if you already use nodejs the npm package can be installed too, 
 
 ## deb packages
-eggs is released as deb package. eggs packages can be installed regardless of version on distributions based on Debian, Devuan or Ubuntu. Of course choosing the appropriate architecture for your system: i386, amd64, arm64 or armel.
+eggs is released deb packages for i386 and amd64 architectures. Due the characteristic of eggs, they can installed in Debian, Devuan or Ubuntu based distros, withouth worries about different versions, except for the architecture. Lately was added scripts for preinst, postinst, prerm and postrm not presents in the original.
 
-### Installing
-
-**Installig eggs via ppa**
-Copy and past to add the **penguins-eggs-ppa** to your sources lists
-
-```
-curl -SsL https://pieroproietti.github.io/penguins-eggs-ppa/debian/KEY.gpg | sudo apt-key add -
-sudo curl -s --compressed -o /etc/apt/sources.list.d/penguins-eggs-ppa.list "https://pieroproietti.github.io/penguins-eggs-ppa/debian/penguins-eggs-ppa.list"
-```
-Update your repositories and install eggs
-
-```
-sudo apt update
-sudo apt install eggs
-```
-
-If you install **penguins-eggs-ppa**, you will get and update eggs with your usual tools: apt, synaptic or others packages manager. Example:
-```sudo apt update```
-
-**Installig eggs from the package .deb**
-If you don't want to add **penguins-eggs-ppa** on your list, you can install eggs again downloading it from [package eggs](https://sourceforge.net/projects/penguins-eggs/files/packages-deb/) from [sourceforge page of the project](https://sourceforge.net/projects/penguins-eggs/) and installing it
+### Install
+This simplest way to install eggs is download the [package eggs](https://sourceforge.net/projects/penguins-eggs/files/packages-deb/) from [sourceforge page of the project](https://sourceforge.net/projects/penguins-eggs/) and install it
 
 ```
 sudo dpkg -i eggs_8.0.0-1_amd64.deb
@@ -101,16 +77,19 @@ or, on a i386 system:
 ```
 sudo dpkg -i eggs_8.0.0-1_i386.deb
 ```
-
-You can again easily update eggs with the command ```sudo eggs update``` and choose basket. Eggs let you to select the last 4 versions from the [basket](https://sourceforge.net/projects/penguins-eggs/files/packages-deb/) and install it.
+### update
+The fastest way to use sudo eggs update and choose basket. Eggs let you to select the last 4 versions on the [basket](https://sourceforge.net/projects/penguins-eggs/files/packages-deb/) and install it.
 
 ```sudo eggs update```
+
+Of course, if your distro include eggs in the repository, you can use apt.
+
 
 _Note about deb packages_ You can use the same package for all distributions using deb, naturally choosing the appropriate architecture (i386/amd64).
 
 ## npm packages
 
-If you have nodejs installed, you can install penguins-eggs with the utility npm.
+If you have nodejs installed, you can install penguins-eggs with the utility npm (node package manager).
 
 Simply copy and past the following lines:
 
@@ -129,7 +108,7 @@ $ npm install -g penguins-eggs
 $ eggs COMMAND
 running command...
 $ eggs (-v|--version|version)
-penguins-eggs/8.1.4 linux-x64 node-v12.22.5
+penguins-eggs/8.0.30 linux-x64 node-v8.17.0
 $ eggs --help [COMMAND]
 USAGE
   $ eggs COMMAND
@@ -177,7 +156,7 @@ ALIASES
   $ eggs adjust
 ```
 
-_See code: [src/commands/adapt.ts](https://github.com/pieroproietti/penguins-eggs/blob/v8.1.4/src/commands/adapt.ts)_
+_See code: [src/commands/adapt.ts](https://github.com/pieroproietti/penguins-eggs/blob/v8.0.30/src/commands/adapt.ts)_
 
 ## `eggs autocomplete [SHELL]`
 
@@ -226,7 +205,7 @@ EXAMPLES
   install calamares and create it's configuration's files
 ```
 
-_See code: [src/commands/calamares.ts](https://github.com/pieroproietti/penguins-eggs/blob/v8.1.4/src/commands/calamares.ts)_
+_See code: [src/commands/calamares.ts](https://github.com/pieroproietti/penguins-eggs/blob/v8.0.30/src/commands/calamares.ts)_
 
 ## `eggs config`
 
@@ -250,7 +229,7 @@ EXAMPLE
   Configure and install prerequisites deb packages to run it
 ```
 
-_See code: [src/commands/config.ts](https://github.com/pieroproietti/penguins-eggs/blob/v8.1.4/src/commands/config.ts)_
+_See code: [src/commands/config.ts](https://github.com/pieroproietti/penguins-eggs/blob/v8.0.30/src/commands/config.ts)_
 
 ## `eggs dad`
 
@@ -267,7 +246,7 @@ OPTIONS
   -v, --verbose
 ```
 
-_See code: [src/commands/dad.ts](https://github.com/pieroproietti/penguins-eggs/blob/v8.1.4/src/commands/dad.ts)_
+_See code: [src/commands/dad.ts](https://github.com/pieroproietti/penguins-eggs/blob/v8.0.30/src/commands/dad.ts)_
 
 ## `eggs export:deb`
 
@@ -287,7 +266,7 @@ OPTIONS
   --i386       export i386 arch
 ```
 
-_See code: [src/commands/export/deb.ts](https://github.com/pieroproietti/penguins-eggs/blob/v8.1.4/src/commands/export/deb.ts)_
+_See code: [src/commands/export/deb.ts](https://github.com/pieroproietti/penguins-eggs/blob/v8.0.30/src/commands/export/deb.ts)_
 
 ## `eggs export:docs`
 
@@ -301,7 +280,7 @@ OPTIONS
   -h, --help  show CLI help
 ```
 
-_See code: [src/commands/export/docs.ts](https://github.com/pieroproietti/penguins-eggs/blob/v8.1.4/src/commands/export/docs.ts)_
+_See code: [src/commands/export/docs.ts](https://github.com/pieroproietti/penguins-eggs/blob/v8.0.30/src/commands/export/docs.ts)_
 
 ## `eggs export:iso`
 
@@ -317,7 +296,7 @@ OPTIONS
   -h, --help    show CLI help
 ```
 
-_See code: [src/commands/export/iso.ts](https://github.com/pieroproietti/penguins-eggs/blob/v8.1.4/src/commands/export/iso.ts)_
+_See code: [src/commands/export/iso.ts](https://github.com/pieroproietti/penguins-eggs/blob/v8.0.30/src/commands/export/iso.ts)_
 
 ## `eggs help [COMMAND]`
 
@@ -334,7 +313,7 @@ OPTIONS
   --all  see all commands in CLI
 ```
 
-_See code: [@oclif/plugin-help](https://github.com/oclif/plugin-help/blob/v3.2.3/src/commands/help.ts)_
+_See code: [@oclif/plugin-help](https://github.com/oclif/plugin-help/blob/v3.2.2/src/commands/help.ts)_
 
 ## `eggs info`
 
@@ -349,7 +328,7 @@ OPTIONS
   -v, --verbose
 ```
 
-_See code: [src/commands/info.ts](https://github.com/pieroproietti/penguins-eggs/blob/v8.1.4/src/commands/info.ts)_
+_See code: [src/commands/info.ts](https://github.com/pieroproietti/penguins-eggs/blob/v8.0.30/src/commands/info.ts)_
 
 ## `eggs install`
 
@@ -362,7 +341,6 @@ USAGE
 OPTIONS
   -c, --cli      force use CLI installer
   -h, --help     show CLI help
-  -m, --mx       to use mx-installer
   -v, --verbose  verbose
 
 ALIASES
@@ -374,7 +352,7 @@ EXAMPLE
   Install the system using GUI or CLI installer
 ```
 
-_See code: [src/commands/install.ts](https://github.com/pieroproietti/penguins-eggs/blob/v8.1.4/src/commands/install.ts)_
+_See code: [src/commands/install.ts](https://github.com/pieroproietti/penguins-eggs/blob/v8.0.30/src/commands/install.ts)_
 
 ## `eggs kill`
 
@@ -393,7 +371,7 @@ EXAMPLE
   kill the eggs/free the nest
 ```
 
-_See code: [src/commands/kill.ts](https://github.com/pieroproietti/penguins-eggs/blob/v8.1.4/src/commands/kill.ts)_
+_See code: [src/commands/kill.ts](https://github.com/pieroproietti/penguins-eggs/blob/v8.0.30/src/commands/kill.ts)_
 
 ## `eggs mom`
 
@@ -407,7 +385,7 @@ OPTIONS
   -h, --help  show CLI help
 ```
 
-_See code: [src/commands/mom.ts](https://github.com/pieroproietti/penguins-eggs/blob/v8.1.4/src/commands/mom.ts)_
+_See code: [src/commands/mom.ts](https://github.com/pieroproietti/penguins-eggs/blob/v8.0.30/src/commands/mom.ts)_
 
 ## `eggs produce`
 
@@ -468,7 +446,7 @@ EXAMPLES
   in /home/eggs/ovarium and you can customize all you need
 ```
 
-_See code: [src/commands/produce.ts](https://github.com/pieroproietti/penguins-eggs/blob/v8.1.4/src/commands/produce.ts)_
+_See code: [src/commands/produce.ts](https://github.com/pieroproietti/penguins-eggs/blob/v8.0.30/src/commands/produce.ts)_
 
 ## `eggs remove`
 
@@ -492,7 +470,7 @@ EXAMPLES
   remove eggs, eggs configurations, packages prerequisites
 ```
 
-_See code: [src/commands/remove.ts](https://github.com/pieroproietti/penguins-eggs/blob/v8.1.4/src/commands/remove.ts)_
+_See code: [src/commands/remove.ts](https://github.com/pieroproietti/penguins-eggs/blob/v8.0.30/src/commands/remove.ts)_
 
 ## `eggs tools:clean`
 
@@ -510,7 +488,7 @@ ALIASES
   $ eggs clean
 ```
 
-_See code: [src/commands/tools/clean.ts](https://github.com/pieroproietti/penguins-eggs/blob/v8.1.4/src/commands/tools/clean.ts)_
+_See code: [src/commands/tools/clean.ts](https://github.com/pieroproietti/penguins-eggs/blob/v8.0.30/src/commands/tools/clean.ts)_
 
 ## `eggs tools:locales`
 
@@ -526,7 +504,7 @@ OPTIONS
   -v, --verbose    verbose
 ```
 
-_See code: [src/commands/tools/locales.ts](https://github.com/pieroproietti/penguins-eggs/blob/v8.1.4/src/commands/tools/locales.ts)_
+_See code: [src/commands/tools/locales.ts](https://github.com/pieroproietti/penguins-eggs/blob/v8.0.30/src/commands/tools/locales.ts)_
 
 ## `eggs tools:skel`
 
@@ -549,7 +527,7 @@ EXAMPLE
   desktop configuration of user mauro will get used as default
 ```
 
-_See code: [src/commands/tools/skel.ts](https://github.com/pieroproietti/penguins-eggs/blob/v8.1.4/src/commands/tools/skel.ts)_
+_See code: [src/commands/tools/skel.ts](https://github.com/pieroproietti/penguins-eggs/blob/v8.0.30/src/commands/tools/skel.ts)_
 
 ## `eggs tools:stat`
 
@@ -568,7 +546,7 @@ ALIASES
   $ eggs stat
 ```
 
-_See code: [src/commands/tools/stat.ts](https://github.com/pieroproietti/penguins-eggs/blob/v8.1.4/src/commands/tools/stat.ts)_
+_See code: [src/commands/tools/stat.ts](https://github.com/pieroproietti/penguins-eggs/blob/v8.0.30/src/commands/tools/stat.ts)_
 
 ## `eggs tools:yolk`
 
@@ -586,7 +564,7 @@ EXAMPLE
   $ eggs yolk -v
 ```
 
-_See code: [src/commands/tools/yolk.ts](https://github.com/pieroproietti/penguins-eggs/blob/v8.1.4/src/commands/tools/yolk.ts)_
+_See code: [src/commands/tools/yolk.ts](https://github.com/pieroproietti/penguins-eggs/blob/v8.0.30/src/commands/tools/yolk.ts)_
 
 ## `eggs update`
 
@@ -608,8 +586,15 @@ EXAMPLE
   update/upgrade the penguin's eggs tool
 ```
 
-_See code: [src/commands/update.ts](https://github.com/pieroproietti/penguins-eggs/blob/v8.1.4/src/commands/update.ts)_
+_See code: [src/commands/update.ts](https://github.com/pieroproietti/penguins-eggs/blob/v8.0.30/src/commands/update.ts)_
 <!-- commandsstop -->
+
+# Terminal samples
+
+![terminal samples](https://github.com/pieroproietti/penguins-eggs/blob/master/documents/terminal-lessons/eggs_help.gif?raw=true)
+
+# That's all Folks!
+No need other configurations, penguins-eggs are battery included or better, as in the real, live is inside! :-D
 
 ## More informations
 There is [user's manual](https://penguins-eggs.net/book/) and same other documentation in [documents folder](./documents) of this repository.
@@ -618,10 +603,7 @@ There is [user's manual](https://penguins-eggs.net/book/) and same other documen
 * [facebook penguin's eggs group](https://www.facebook.com/groups/128861437762355/)
 * [sources](https://github.com/pieroproietti/penguins-krill)
 
-You can mail me at pieroproietti@gmail.com or [meet me](https://meet.jit.si/PenguinsEggsMeeting) on jitsi meet.
+You can contact me at pieroproietti@gmail.com or [meet me](https://meet.jit.si/PenguinsEggsMeeting)
 
-## That's all Folks!
-No need other configurations, penguins-eggs are battery included or better, as in the real, life is inside! :-D
-
-# Copyright and licenses
+## Copyright and licenses
 Copyright (c) 2017, 2021 [Piero Proietti](https://penguins-eggs.net/about-me.html), dual licensed under the MIT or GPL Version 2 licenses.

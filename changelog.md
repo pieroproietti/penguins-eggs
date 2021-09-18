@@ -10,49 +10,13 @@ penguins-eggs
 [![deb](https://img.shields.io/badge/deb-packages-orange)](https://sourceforge.net/projects/penguins-eggs/files/packages-deb)
 [![iso](https://img.shields.io/badge/iso-images-orange)](https://sourceforge.net/projects/penguins-eggs/files/iso)
 
-# Penguin's eggs Debian packages
-
-There are two ways to install deb package, include the eggs repository in your system or download package and install with ```dpkg```.
-
-## Installig eggs via ppa
-Copy and past to add the **penguins-eggs-ppa** to your sources lists
-
-```
-curl -SsL https://pieroproietti.github.io/penguins-eggs-ppa/debian/KEY.gpg | sudo apt-key add -
-sudo curl -s --compressed -o /etc/apt/sources.list.d/penguins-eggs-ppa.list "https://pieroproietti.github.io/penguins-eggs-ppa/debian/penguins-eggs-ppa.list"
-```
-Update your repositories and install eggs
-
-```
-sudo apt update
-sudo apt install eggs
-```
-
-## Download eggs package and Install
+# Penguin's eggs Debian package
 
 Usually the last version is the right one. Detailed instrunctions for usage are published on the [penguin's eggs book](https://penguins-eggs.net/book). 
 You can follow the project also consulting the [commit history](https://github.com/pieroproietti/penguins-eggs/commits/master). 
 
 ## Changelog
 Versions are listed on reverse order, the first is the last one.
-
-### eggs-8.1.4
-* reset prefix if you choose --basename YourName you will get YourName-amd64_2021-08-13_1031.iso
-
-### eggs-8.1.3
-* calamares now, will be always enabled with no password if it is installed by eggs calamares --install or eggs config
-
-### eggs-8.1.2
-* MX21: they have so good mx-snapshot and mx-installer. I just want play with it and tried remastering it with eggs, install with krill, calamares and minstall! So, I'm starting to support mx-installer as calamares light alternative.
-
-### eggs-8.1.1
-* note: same as versione 8.1.0 but using node10, to solve the problem in 8.1.0 version 
-
-### eggs-8.1.0 retired
-* bugfix: eggs tools:clean don't remove more /var/lib/apt/list, where was a problem with mintupdate ((in this version due a problem with node8, krill and eggs info was not working)
-
-### eggs-8.0.30
-* bugfix: krill installer: eggs install now support installation on UEFI systems
 
 ### eggs-8.0.28
 * backup adapt luks encrypted volume to user's data size. Working on standard and full encrypted filesystem systems

@@ -34,11 +34,10 @@
 
 'use strict'
 import fs = require('fs')
-import shx = require('shelljs')
+import shell = require('shelljs')
 import inquirer = require('inquirer')
 
 import { IRemix, IDistro } from '../interfaces'
-
 
 /**
  * Classe
@@ -106,8 +105,8 @@ class Distro implements IDistro {
       /**
        * lsb_release -cs per versione ed lsb_release -is per distribuzione
        */
-      this.versionId = shx.exec('lsb_release -cs', { silent: true }).stdout.toString().trim()
-      this.distroId = shx.exec('lsb_release -is', { silent: true }).stdout.toString().trim()
+      this.versionId = shell.exec('lsb_release -cs', { silent: true }).stdout.toString().trim()
+      this.distroId = shell.exec('lsb_release -is', { silent: true }).stdout.toString().trim()
 
       /**
        * Per casi equivoci conviene normalizzare versionId
@@ -257,15 +256,14 @@ class Distro implements IDistro {
       
       /**
        * MX LINUX
+       * ln -s /run/live/medium/live/filesystem.squashfs /live/boot-dev/antiX/linuxfs
        */
       if (fs.existsSync('/etc/antix-version')) {
-         /**
-          * MX-21_beta1_x64 Wildflower July 27, 2021
-          * 
-          * ln -s /lib/live/mount/rootfs/filesystem.squashfs/ /live/aufs
-          * ln -s /lib/live/mount/rootfs/filesystem.squashfs/ /live/linux
-         */
-         this.distroId = 'mx'
+         this.distroId = 'MX'
+         // if (!fs.existsSync('/live/boot-dev/antiX/')) {
+         //    shell.exec('mkdir /live/boot-dev/antiX/ -p')
+         //  }
+         // this.mountpointSquashFs = '/live/boot-dev/antiX/linuxfs'
       }
 
       /**
