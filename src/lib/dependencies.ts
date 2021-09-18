@@ -105,28 +105,3 @@ export const depInit = [
       init: 'sysvinit'
    }
 ]
-
-
-/*
-Questi sono i pacchetti live in debian11 live
-live-boot
-live-boot-doc
-live-config 
-live-config-boot *
-live-config-systemd
-live-tools
-live-task-localisation * This metapackage installs packages and documentation to help support Debian live environments for other languages.
-live-task-recommend * This metapackage installs recommended packages and documentation to help support Debian live environments.
-calamares-setting-debian
-
-Questi sono i pacchetti live in debian11 live rimasterizzata da live e debian11 rimasterizzata 
-
-live-boot
-live-boot-doc
-live-boot-initramfs-tools
-live-config
-live-config-doc
-live-config-systemd
-live-tools
-
-*/

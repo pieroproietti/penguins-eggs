@@ -78,7 +78,7 @@ export default class Pacman {
    /**
     * Check if the system is GUI able
     */
-   static async isGui(): Promise<boolean> {
+    static async isGui(): Promise<boolean> {
       return await this.isXorg() || await this.isWayland()
    }
 
@@ -87,9 +87,9 @@ export default class Pacman {
     * @returns 
     */
    static guiEnabled(): boolean {
-      let enabled = true
+      let enabled= true
       if (process.env.DISPLAY === '') {
-         enabled = false
+         enabled= false
       }
       return enabled
    }
@@ -115,18 +115,13 @@ export default class Pacman {
          }
       })
 
-      return packages
-
-      /**
-      * Attualmente escluse, sembrerebbe non servire in mx 
-      */
       const initType: string = shx.exec('ps --no-headers -o comm 1', { silent: !verbose }).trim()
       depInit.forEach((dep) => {
          if (dep.init.includes(initType)) {
             packages.push(dep.package)
          }
       })
-
+      return packages
    }
 
 
@@ -171,11 +166,6 @@ export default class Pacman {
          })
       }
 
-      return installed
-
-      /**
-      * Attualmente escluse, sembrerebbe non servire in mx 
-      */
       if (installed) {
          const initType: string = shx.exec('ps --no-headers -o comm 1', { silent: !verbose }).trim()
          depInit.forEach((dep) => {
@@ -186,6 +176,7 @@ export default class Pacman {
             }
          })
       }
+      return installed
    }
 
    /**
@@ -196,12 +187,11 @@ export default class Pacman {
       const retVal = false
       const versionLike = Pacman.versionLike()
 
-      //apt install --yes ' + array2spaced(packages))
       // console.log(`apt-get install --yes ${array2spaced(this.packages(verbose))}`)
       await exec(`apt-get install --yes ${array2spaced(this.packages(verbose))}`, echo)
 
       // localization
-      if ((versionLike === 'bullseye') || (versionLike === 'buster') || (versionLike === 'beowulf') || (versionLike === 'stretch') || (versionLike === 'jessie')) {
+      if ((versionLike === 'buster') || (versionLike === 'beowulf') || (versionLike === 'bullseye') || (versionLike === 'stretch') || (versionLike === 'jessie')) {
          await exec(`apt-get install --yes --no-install-recommends ${array2spaced(this.packagesLocalisation(verbose))}`, echo)
       }
 
@@ -229,10 +219,10 @@ export default class Pacman {
       const retVal = false
       const versionLike = Pacman.versionLike()
 
-      await exec(`apt-get purge --yes ${array2spaced(this.excludeInstalled(this.packages(verbose)))}`, echo)
+      await exec(`apt-get purge --yes ${array2spaced(this.filterInstalled(this.packages(verbose)))}`, echo)
 
       if ((versionLike === 'buster') || (versionLike === 'beowulf')) {
-         await exec(`apt-get purge --yes  ${array2spaced(this.excludeInstalled(this.packagesLocalisation(verbose)))}`, echo)
+         await exec(`apt-get purge --yes  ${array2spaced(this.filterInstalled(this.packagesLocalisation(verbose)))}`, echo)
       }
 
       await exec('apt-get autoremove --yes', echo)
@@ -284,11 +274,7 @@ export default class Pacman {
          } catch (e) {
             Utils.error(`Pacman.calamaresInstall() apt-get install --yes ${array2spaced(this.debs4calamares)}` + e.error)
          }
-         /**
-          *  Abilita calamares all'utilizzo senza la richiesta di password
-          */
-         const policyFile = '/usr/share/polkit-1/actions/com.github.calamares.calamares.policy'
-         await exec(`sed -i 's/auth_admin/yes/' ${policyFile}`)
+
       } else {
          console.log("It's not possible to use calamares in a system without GUI")
       }
@@ -619,7 +605,6 @@ export default class Pacman {
       if (stdout === 'Status: install ok installed') {
          installed = true
       }
-      //console.log(debPackage + ' ' + installed)
       return installed
    }
 
@@ -693,16 +678,16 @@ export default class Pacman {
     *
     * @param packages array packages
     */
-   static excludeInstalled(packages: string[]): string[] {
+   static filterInstalled(packages: string[]): string[] {
 
-      let notInstalled: string[] = []
+      let installed: string[] = []
 
       for (const i in packages) {
-         if (!Pacman.packageIsInstalled(packages[i])) {
-            notInstalled.push(packages[i])
+         if (Pacman.packageIsInstalled(packages[i])) {
+            installed.push(packages[i])
          }
       }
-      return notInstalled
+      return installed
    }
 
    /**
