@@ -18,6 +18,9 @@ You can follow the project also consulting the [commit history](https://github.c
 ## Changelog
 Versions are listed on reverse order, the first is the last one.
 
+### eggs-8.17-1
+* building hen a debian bullseye xfce liveCD installable with all the necessary to build eggs from sources. 
+
 ### eggs-8.17-0 
 * I toke version 8.0.28 and rebuild it to be compatible with node8.17. Actually it run in bullseye too, but We must to rebuild the changement from 8.0.30 to t.1.4
 
