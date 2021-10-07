@@ -1,27 +1,49 @@
 # Nodejs version on eggs packages
 
-From the version eggs-7-5-122 I changed the version of the reference node, returning to the old version nodejs 8. This guarantees the possibility of creating debian packages for both the i386 architecture as well as for amd64. Not everything comes for free, and in order to not have two source lines, I had to switch to node8 also for the amd64 version. In all the way, actually we can compile vs node8, node10, node12 and node14, but - of course - we need to be compatible with node8 to can create packages in the i386 architecture.
-
-Starting a little before eggs-7.6.0 I solved this problem, wrote a wrapper and are now using the last Nodejs v8.x on i386 architecture and Nodejs v14.x on amd64.
+From the version eggs-8.17 I changed the version of the reference node, returning to the old version nodejs 8.17.0 This guarantees the possibility of creating debian packages for the i386 architecture as well as for amd64, arm64 and armel.
 
 # Nodejs on i386 
-The last official version for this architecture is Node.js v8.x, we can install it.
-
-## Ubuntu
-```curl -sL https://deb.nodesource.com/setup_8.x | sudo -E bash -```
-```sudo apt-get install -y nodejs```
+The last official version for this architecture is Node.js v8.x, we can install it. 
+We must use the manual installation.
 
 ## Debian
-```curl -sL https://deb.nodesource.com/setup_8.x | bash -```
-```apt-get install -y nodejs```
+Add the NodeSource package signing key
+```
+KEYRING=/usr/share/keyrings/nodesource.gpg
+curl -fsSL https://deb.nodesource.com/gpgkey/nodesource.gpg.key | gpg --dearmor | sudo tee "$KEYRING" >/dev/null
+# wget can also be used:
+# wget --quiet -O - https://deb.nodesource.com/gpgkey/nodesource.gpg.key | gpg --dearmor | sudo tee "$KEYRING" >/dev/null
+gpg --no-default-keyring --keyring "$KEYRING" --list-keys
+```
 
-and finally, we check the nodejs version:
+Add the desired NodeSource repository
+```
+# Replace with the branch of Node.js or io.js you want to install: node_6.x, node_8.x, etc...
+VERSION=node_8.x
+# Replace with the keyring above, if different
+KEYRING=/usr/share/keyrings/nodesource.gpg
+# The below command will set this correctly, but if lsb_release isn't available, you can set it manually:
+# - For Debian distributions: jessie, sid, etc...
+# - For Ubuntu distributions: xenial, bionic, etc...
+# - For Debian or Ubuntu derived distributions your best option is to use the codename corresponding to the upstream release your distribution is based off. This is an advanced scenario and unsupported if your distribution is not listed as supported per earlier in this README.
+DISTRO="$(lsb_release -s -c)"
+echo "deb [signed-by=$KEYRING] https://deb.nodesource.com/$VERSION $DISTRO main" | sudo tee /etc/apt/sources.list.d/nodesource.list
+echo "deb-src [signed-by=$KEYRING] https://deb.nodesource.com/$VERSION $DISTRO main" | sudo tee -a /etc/apt/sources.list.d/nodesource.list
+```
+
+```
+sudo nano /etc/apt/sources.list.d/nodesource.list
+```
+and change bullseye to sid.
+
+Install pyton-minimal-fake, you can found it in scripts, without it is not possible to install in nodejs.
+
+
+```apt update```
 
 ```apt-cache policy nodejs ```
 
 ```sudo apt install nodejs=8.17.0-1nodesource1```
-
-to install the nodejs version 8.
 
 After that is better to look apt upgrade of nodejs
 
@@ -38,29 +60,6 @@ sudo apt-mark unhold nodejs
 ```
 
 In this way when you upgrade the system, the version of nodejs10 from the original reporitory of Debian will not be installed.
-
-
-## node v. 8 vs v. 14
-
-I used very few new caracteristics from the current version, mostly are about fs package.
-
-* isDirectory() from version 10
-* isSymbolicLink() from version 10
-
-Well, today I push the node8 vs node14 used things in n8.ts, so now we are again compatible with node8 and can start agein to built eggs i386 packages.
-
-# x86 package node8 
-You must to be in a x86 system.
-
-* edit ./node_modules/@oclif/dev-cli/lib/tarballs/config.js
-* add 'linux-x86' in TARGET line 53 on config.js
-
-For comodity I put a link: oclif-tarball-config.js to ./node_modules/@oclif/dev-cli/lib/tarballs/config.js, so you can edit this one directly.
-
-At this point run
-```
-sudo npm run deb
-```
 
 # Version of packages 
 We must be compatible with node8, so this is the result of:
