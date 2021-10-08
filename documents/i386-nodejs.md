@@ -1,10 +1,9 @@
 # Nodejs version on eggs packages
-
-From the version eggs-8.17 I changed the version of the reference node, returning to the old version nodejs 8.17.0 This guarantees the possibility of creating debian packages for the i386 architecture as well as for amd64, arm64 and armel.
+From the version eggs-8.17.x we changed the version of the reference node, returning to the old version nodejs 8.17.0.
+This guarantees the possibility of creating debian packages for the i386 architecture as well as for amd64, arm64 and armel.
 
 # Nodejs on i386 
-The last official version for this architecture is Node.js v8.x, we can install it. 
-We must use the manual installation.
+The last official version for this architecture is Node.js v8.17.0. We must use the manual installation.
 
 ## Debian
 Add the NodeSource package signing key
@@ -77,7 +76,7 @@ js-yaml          3.14.1  3.14.1   4.0.0  penguins-eggs
   "dependencies": {
     "@getvim/execute": "^1.0.0",
     "@oclif/command": "^1.8.0",
-    "@oclif/plugin-autocomplete": "^0.3.0",
+    "@oclif/plugin-autocomplete": "^0.1.0",
     "@oclif/plugin-help": "^3.2.1",
     "@oclif/plugin-not-found": "^1.2.4",
     "@oclif/plugin-warn-if-update-available": "^1.7.0",

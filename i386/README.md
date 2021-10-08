@@ -1,5 +1,30 @@
 # Architettura i386 node 8.17.0
 
+Attualmente la compilazione per i386 viene effettuata su una macchina amd64 sulla quale è installato node-8.17.0.
+
+Per installare node-8.17.0 su debian bullseye occorre prima installare il pacchetto python-minimal.deb che si trova nella directory scripts. Si tratta di un pacchetto fake, necessario solo per l'installazione di nodejs-8.17.0, non occorre averlo installato per eggs.
+
+# node 8.17.0 e compatibilità con oclif
+Main packages	
+@oclif/command@<2
+@oclif/config@<2
+@oclif/errors@<2
+@oclif/parser@<4
+@oclif/plugin-help@<4
+
+Typescript
+typescript@<4
+
+Plugin principali
+@oclif/plugin-autocomplete@<1
+@oclif/plugin-commands@<2
+@oclif/plugin-help@<4
+@oclif/plugin-not-found@<2
+@oclif/plugin-plugins@<2
+@oclif/plugin-update@<2
+plugin-warn-if-update-available@<2
+plugin-which@<2
+
 
 ## Compilazione con node8 per architettura i386
 
