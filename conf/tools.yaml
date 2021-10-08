@@ -21,4 +21,4 @@ localPathDoc: ~/penguins-eggs/docs
 localPathIso: /home/eggs
 
 # filter package files
-filterDeb: eggs_8.0.*-1_
+filterDeb: eggs_8.*.*-1_

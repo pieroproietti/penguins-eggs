@@ -2,7 +2,7 @@
   "name": "penguins-eggs",
   "shortName": "eggs",
   "description": "Perri's Brewery edition: remaster your system and distribuite it",
-  "version": "8.17.0",
+  "version": "8.17.1",
   "author": "Piero Proietti @pieroproietti",
   "bin": {
     "eggs": "bin/run"
@@ -13,7 +13,7 @@
   "dependencies": {
     "@getvim/execute": "^1.0.0",
     "@oclif/command": "^1.8.0",
-    "@oclif/plugin-autocomplete": "0.3.0",
+    "@oclif/plugin-autocomplete": "0.1.0",
     "@oclif/plugin-help": "^3.2.2",
     "@oclif/plugin-not-found": "^1.2.4",
     "@oclif/plugin-warn-if-update-available": "^1.7.0",
