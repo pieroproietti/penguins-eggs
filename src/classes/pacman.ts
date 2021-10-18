@@ -559,6 +559,14 @@ export default class Pacman {
          await this.ln(`${focal}/isolinux`, `${hirsute}/isolinux`, remove, verbose)
          await this.ln(`${focal}/locale.gen.template`, `${hirsute}/locale.gen.template`, remove, verbose)
          await this.ln(`${buster}/calamares/modules/displaymanager.yml`, `${hirsute}/calamares/modules/displaymanager.yml`, remove, verbose)
+
+         // Ubuntu 21.10 impish
+         const impish = `${rootPen}/conf/distros/impish`
+         await this.ln(`${focal}/calamares`, `${impish}/calamares`, remove, verbose)
+         await this.ln(`${focal}/grub`, `${impish}/grub`, remove, verbose)
+         await this.ln(`${focal}/isolinux`, `${impish}/isolinux`, remove, verbose)
+         await this.ln(`${focal}/locale.gen.template`, `${impish}/locale.gen.template`, remove, verbose)
+         await this.ln(`${buster}/calamares/modules/displaymanager.yml`, `${impish}/calamares/modules/displaymanager.yml`, remove, verbose)
       }
    }
 

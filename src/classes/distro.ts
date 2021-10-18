@@ -23,7 +23,8 @@
  * Ubuntu 20.04 (focal) LTS   active
  * Ubuntu 20.10 (groovy) active
  * Ubuntu 21.04 (hirsute) active
- *
+ * Ubuntu 21.10 (impish)
+ * 
  * stretch old
  * buster
  * xenial old
@@ -179,6 +180,10 @@ class Distro implements IDistro {
          // Ubuntu 21.04 hirsute
          this.distroLike = 'Ubuntu'
          this.versionLike = 'hirsute'
+      } else if (this.versionId === 'impish') {
+         // Ubuntu 21.10 impish
+         this.distroLike = 'Ubuntu'
+         this.versionLike = 'impish'
 
          // quindi le derivate...
 

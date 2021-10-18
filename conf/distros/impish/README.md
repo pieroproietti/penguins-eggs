@@ -1,4 +1,4 @@
-# Ubuntu 21.04 hirsute
+# Ubuntu 21.10 impish
 
 It take all configuration from Ubuntu focal
 
@@ -6,4 +6,4 @@ Used by
 - hirsute
 
 ISSUES
-* added 23 april 2021
+* added 16 october 2021
