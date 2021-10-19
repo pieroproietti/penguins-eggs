@@ -88,6 +88,9 @@ export default class Incubator {
       } else if (this.distro.versionLike === 'hirsute') {
          const hirsute = new Focal(this.installer, this.remix, this.distro, release, this.user_opt, this.verbose)
          await hirsute.create()
+      } else if (this.distro.versionLike === 'impish') {
+         const impish = new Focal(this.installer, this.remix, this.distro, release, this.user_opt, this.verbose)
+         await impish.create()
       } else if (this.distro.versionLike === 'bionic') {
          const bionic = new Bionic(this.installer, this.remix, this.distro, release, this.user_opt, this.verbose)
          await bionic.create()
