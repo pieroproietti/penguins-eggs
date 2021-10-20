@@ -78,10 +78,9 @@ or, on a i386 system:
 sudo dpkg -i eggs_8.17.3-1_i386.deb
 ```
 ### update
-I've recently had problems with the penguins-eggs-ppa repository and would need help getting it working again.
+I've recently had problems with the **penguins-eggs-ppa** repository and would need help getting it working again.
 
 #### penguins-eggs-ppa (actually broken)
-# Installation with penguins-eggs-ppa
 Copy and paste in a terminal window the following two lines
 
 curl -SsL https://pieroproietti.github.io/penguins-eggs-ppa/debian/KEY.gpg | sudo apt-key add -
@@ -89,32 +88,17 @@ sudo curl -s --compressed -o /etc/apt/sources.list.d/penguins-eggs-ppa.list "htt
 
 Update your repositories: sudo apt update and install eggs: sudo apt install eggs
 
-#### download new version from penguins-eggs from terminal
+_Note: actually the ppa repository of eggs is broken._
+
+#### Automatic download new version from eggs
 
 The fastest way to use sudo eggs update and choose basket. Eggs let you to select the last 4 versions on the [basket](https://sourceforge.net/projects/penguins-eggs/files/packages-deb/) and install it.
 
 ```sudo eggs update```
 
-Of course, if your distro include eggs in the repository, you can use apt.
-
-_Note about deb packages_ You can use the same package for all distributions using deb, naturally choosing the appropriate architecture (i386/amd64).
-
-#### manual download new version from penguins-eggs from terminal
+#### Manual download new version from penguins-eggs
 Simply download eggs from [sourgeforge page](https://sourceforge.net/projects/penguins-eggs/files/packages-deb/) and install it with the standard command **sudo dpkg -i eggs_8.17.3-1_amd64.deb**.
 
-## npm packages
-
-If you have nodejs installed, you can install penguins-eggs with the utility npm (node package manager).
-
-Simply copy and past the following lines:
-
-```sudo npm config set unsafe-perm true```
-
-```sudo npm i penguins-eggs@latest -g```
-
-### update
-
-```sudo eggs update```
 
 # Usage
 <!-- usage -->
