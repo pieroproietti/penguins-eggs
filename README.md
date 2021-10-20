@@ -70,22 +70,37 @@ eggs is released deb packages for i386 and amd64 architectures. Due the characte
 This simplest way to install eggs is download the [package eggs](https://sourceforge.net/projects/penguins-eggs/files/packages-deb/) from [sourceforge page of the project](https://sourceforge.net/projects/penguins-eggs/) and install it
 
 ```
-sudo dpkg -i eggs_8.0.0-1_amd64.deb
+sudo dpkg -i eggs_8.17.3-1_amd64.deb
 ```
 
 or, on a i386 system:
 ```
-sudo dpkg -i eggs_8.0.0-1_i386.deb
+sudo dpkg -i eggs_8.17.3-1_i386.deb
 ```
 ### update
+I've recently had problems with the penguins-eggs-ppa repository and would need help getting it working again.
+
+#### penguins-eggs-ppa (actually broken)
+# Installation with penguins-eggs-ppa
+Copy and paste in a terminal window the following two lines
+
+curl -SsL https://pieroproietti.github.io/penguins-eggs-ppa/debian/KEY.gpg | sudo apt-key add -
+sudo curl -s --compressed -o /etc/apt/sources.list.d/penguins-eggs-ppa.list "https://pieroproietti.github.io/penguins-eggs-ppa/debian/penguins-eggs-ppa.list"
+
+Update your repositories: sudo apt update and install eggs: sudo apt install eggs
+
+#### download new version from penguins-eggs from terminal
+
 The fastest way to use sudo eggs update and choose basket. Eggs let you to select the last 4 versions on the [basket](https://sourceforge.net/projects/penguins-eggs/files/packages-deb/) and install it.
 
 ```sudo eggs update```
 
 Of course, if your distro include eggs in the repository, you can use apt.
 
-
 _Note about deb packages_ You can use the same package for all distributions using deb, naturally choosing the appropriate architecture (i386/amd64).
+
+#### manual download new version from penguins-eggs from terminal
+Simply download eggs from [sourgeforge page](https://sourceforge.net/projects/penguins-eggs/files/packages-deb/) and install it with the standard command **sudo dpkg -i eggs_8.17.3-1_amd64.deb**.
 
 ## npm packages
 
