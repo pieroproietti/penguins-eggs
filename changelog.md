@@ -18,8 +18,12 @@ You can follow the project also consulting the [commit history](https://github.c
 ## Changelog
 Versions are listed on reverse order, the first is the last one.
 
+### eggs-8.17-3
+* removed https check in axios.get(), it was generating error despite hpps://penguins-eggs.net certificate is correct
+
 ### eggs-8.17-2
 * added ubuntu umpish in the list of compatible distros
+
 ### eggs-8.17-1
 * building hen a debian bullseye xfce liveCD installable with all the necessary to build eggs from sources. 
 
