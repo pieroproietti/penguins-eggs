@@ -107,7 +107,7 @@ Simply download new versions of eggs from [sourgeforge page](https://sourceforge
 
 # Usage
 In addition to the description of the commands in this README, you can consult the [Official book](https://penguins-eggs.net/book/#official-book). 
-For developers there is also other documentation included in the **documents**  and **o386** directories of this repository, 
+For developers there is also other documentation included in the [documents](./documents)  and [o386](./i386) directories of this repository, 
 
 <!-- usage -->
 ```sh-session
