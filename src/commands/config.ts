@@ -235,6 +235,7 @@ export default class Config extends Command {
                 } else {
                     Utils.warning('Installing calamares...')
                     await Pacman.calamaresInstall(verbose)
+                    await Pacman.calamaresPolicies()
                 }
             }
         }

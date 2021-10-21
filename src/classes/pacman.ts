@@ -263,7 +263,7 @@ export default class Pacman {
     */
    static async calamaresInstall(verbose = true): Promise<void> {
       const echo = Utils.setEcho(verbose)
-      if (this.isGui()) {
+      if (await this.isGui()) {
          try {
             await exec('apt-get update --yes', echo)
          } catch (e) {
@@ -280,6 +280,14 @@ export default class Pacman {
       }
    }
 
+   /**
+   * calamaresPolicies
+   */
+       static async calamaresPolicies() {
+         const policyFile = '/usr/share/polkit-1/actions/com.github.calamares.calamares.policy'
+         await exec(`sed -i 's/auth_admin/yes/' ${policyFile}`)
+      }
+   
    /**
     *
     */
@@ -303,6 +311,8 @@ export default class Pacman {
       const listExists = fs.existsSync('/usr/local/share/penguins-eggs/exclude.list')
       return (confExists && listExists)
    }
+
+
 
    /**
     * Ritorna vero se machine-id è uguale
