@@ -31,7 +31,7 @@ All it is written in pure typescript, so ideally can be used with differents Lin
 
 penguins-eggs, at the moment 2021 may is a mature tool and is extremely usefull, You can easily create your personal customized iso or your organization/school version of Linux and deploy it on your LAN, give it to your friends as usb key or publish yours eggs in the internet!
 
-Try penguins-eggs yes, it is a console utility - no GUI - but don't be scared, penguins-eggs is a console command - really very simple - if you are able to open a terminal, you can use it and yours final users will enjoy of full gui and pratical installer to install your livecd.
+Try penguins-eggs, yes it is a console utility - no GUI - but don't be scared, penguins-eggs is a console command - really very simple - if you are able to open a terminal, you can use it and yours final users will enjoy of full gui and pratical installer to install your livecd.
 
 ### addons
 Starting with version 7.6.x, an addons architecture was added to eggs, allowing third parties to develop extensions. Note that currently we have an extension for the theme that includes both branding calamares, link and installer icon. In addition, also as an addon has been developed choose between GUI or CLI installation, adjust the video resolution, remote support, etc.
@@ -61,13 +61,27 @@ From eggs v. 8.0.4 I'm releasing eggs in 4 differents architectures: **i386**, *
 **Note:** Of course it is possible to produce iso for [Raspberry Pi Desktop](https://downloads.raspberrypi.org/rpd_x86/images/) amd64 based.
 
 # Packages
-eggs is released as deb package and npm package. Most users need just deb version, if you already use nodejs the npm package can be installed too, 
+eggs is released as deb package and npm package. Most users need just deb version, if you already use nodejs the npm package can be installed too.
 
 ## deb packages
-eggs is released deb packages for i386 and amd64 architectures. Due the characteristic of eggs, they can installed in Debian, Devuan or Ubuntu based distros, withouth worries about different versions, except for the architecture. Lately was added scripts for preinst, postinst, prerm and postrm not presents in the original.
+eggs is released deb packages for i386, amd64, armal and arm64 architectures. Due the characteristic of eggs, they can installed in Debian, Devuan or Ubuntu based distros, withouth worries about different versions, except for the architecture. It include standard scripts for preinst, postinst, prerm and postrm.
 
-### Install
-This simplest way to install eggs is download the [package eggs](https://sourceforge.net/projects/penguins-eggs/files/packages-deb/) from [sourceforge page of the project](https://sourceforge.net/projects/penguins-eggs/) and install it
+## Install eggs
+There are more than a way to install eggs, the most common it's to use penguins-eggs-ppa.
+
+### Using penguins-eggs-ppa
+eggs have it's repository ppa, You can use it, copy and paste in a terminal window the following two lines
+
+```
+curl -SsL https://pieroproietti.github.io/penguins-eggs-ppa/debian/KEY.gpg | sudo apt-key add -
+sudo curl -s --compressed -o /etc/apt/sources.list.d/penguins-eggs-ppa.list "https://pieroproietti.github.io/penguins-eggs-ppa/debian/penguins-eggs-ppa.list"
+```
+Update your repositories: **sudo apt update** and install eggs: **sudo apt install eggs**.
+
+
+### Download the package and install with dpkg
+
+The simplest way to install eggs is download the [package eggs](https://sourceforge.net/projects/penguins-eggs/files/packages-deb/) from [sourceforge page of the project](https://sourceforge.net/projects/penguins-eggs/) and install it
 
 ```
 sudo dpkg -i eggs_8.17.3-1_amd64.deb
@@ -77,27 +91,18 @@ or, on a i386 system:
 ```
 sudo dpkg -i eggs_8.17.3-1_i386.deb
 ```
-### update
-I've recently had problems with the **penguins-eggs-ppa** repository and would need help getting it working again.
 
-#### penguins-eggs-ppa (actually broken)
-Copy and paste in a terminal window the following two lines
+## Upgrade eggs
+If you are using penguins-eggs-ppa You can ugrade eggs as others packages just: **sudo apt upgrage**.
 
-curl -SsL https://pieroproietti.github.io/penguins-eggs-ppa/debian/KEY.gpg | sudo apt-key add -
-sudo curl -s --compressed -o /etc/apt/sources.list.d/penguins-eggs-ppa.list "https://pieroproietti.github.io/penguins-eggs-ppa/debian/penguins-eggs-ppa.list"
 
-Update your repositories: sudo apt update and install eggs: sudo apt install eggs
-
-_Note: actually the ppa repository of eggs is broken._
-
-#### Automatic download new version from eggs
-
-The fastest way to use sudo eggs update and choose basket. Eggs let you to select the last 4 versions on the [basket](https://sourceforge.net/projects/penguins-eggs/files/packages-deb/) and install it.
+### Upgrade from basket
+If you are using not the penguins-eggs-ppa, the fastest way to use sudo eggs update and choose basket. Eggs let you to select the last 4 versions on the [basket](https://sourceforge.net/projects/penguins-eggs/files/packages-deb/) and install it.
 
 ```sudo eggs update```
 
-#### Manual download new version from penguins-eggs
-Simply download eggs from [sourgeforge page](https://sourceforge.net/projects/penguins-eggs/files/packages-deb/) and install it with the standard command **sudo dpkg -i eggs_8.17.3-1_amd64.deb**.
+### Manual upgrade 
+Simply download new versions of eggs from [sourgeforge page](https://sourceforge.net/projects/penguins-eggs/files/packages-deb/) and install it with the standard command **sudo dpkg -i eggs_8.17.x-1_amd64.deb**.
 
 
 # Usage
