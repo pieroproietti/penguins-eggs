@@ -78,7 +78,7 @@ export default class Pacman {
    /**
     * Check if the system is GUI able
     */
-    static async isGui(): Promise<boolean> {
+   static async isGui(): Promise<boolean> {
       return await this.isXorg() || await this.isWayland()
    }
 
@@ -87,9 +87,9 @@ export default class Pacman {
     * @returns 
     */
    static guiEnabled(): boolean {
-      let enabled= true
+      let enabled = true
       if (process.env.DISPLAY === '') {
-         enabled= false
+         enabled = false
       }
       return enabled
    }
@@ -283,11 +283,11 @@ export default class Pacman {
    /**
    * calamaresPolicies
    */
-       static async calamaresPolicies() {
-         const policyFile = '/usr/share/polkit-1/actions/com.github.calamares.calamares.policy'
-         await exec(`sed -i 's/auth_admin/yes/' ${policyFile}`)
-      }
-   
+   static async calamaresPolicies() {
+      const policyFile = '/usr/share/polkit-1/actions/com.github.calamares.calamares.policy'
+      await exec(`sed -i 's/auth_admin/yes/' ${policyFile}`)
+   }
+
    /**
     *
     */
