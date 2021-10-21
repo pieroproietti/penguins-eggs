@@ -107,7 +107,7 @@ Simply download new versions of eggs from [sourgeforge page](https://sourceforge
 
 # Usage
 In addition to the description of the commands in this README, you can consult the [Official book](https://penguins-eggs.net/book/#official-book). 
-For developers there is also other documentation included in the [documents](./documents)  and [o386](./i386) directories of this repository, 
+There is also other documentation - mostly for developers - included in the [documents](./documents)  and [i386](./i386) directories of this repository, 
 
 <!-- usage -->
 ```sh-session
@@ -608,6 +608,7 @@ There is [user's manual](https://penguins-eggs.net/book/) and same other documen
 
 * [penguin's eggs blog](https://penguins-eggs.net)    
 * [facebook penguin's eggs group](https://www.facebook.com/groups/128861437762355/)
+* [twitter](https://twitter.com/pieroproietti)
 * [sources](https://github.com/pieroproietti/penguins-krill)
 
 You can contact me at pieroproietti@gmail.com or [meet me](https://meet.jit.si/PenguinsEggsMeeting)
