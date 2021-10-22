@@ -18,6 +18,10 @@ You can follow the project also consulting the [commit history](https://github.c
 ## Changelog
 Versions are listed on reverse order, the first is the last one.
 
+
+### eggs-8.17-4
+* calamaresPolicies moved to Pacman, now eggs config configures calamares policies too
+
 ### eggs-8.17-3
 * removed https check in axios.get(), it was generating error despite hpps://penguins-eggs.net certificate is correct
 
