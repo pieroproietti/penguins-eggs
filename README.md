@@ -603,7 +603,7 @@ _See code: [src/commands/update.ts](https://github.com/pieroproietti/penguins-eg
 No need other configurations, penguins-eggs are battery included or better, as in the real, live is inside! :-D
 
 ## More informations
-There an [Penguin's eggs official book](https://penguins-eggs.net/book/) and same other documentation - mostly for developer - on [penguins-eggs repo](https://github.com/pieroproietti/penguins-eggs) under **documents** and **i386**.
+There is a [Penguin's eggs official book](https://penguins-eggs.net/book/) and same other documentation - mostly for developers - on [penguins-eggs repo](https://github.com/pieroproietti/penguins-eggs) under **documents** and **i386**.
 
 * [penguin's eggs blog](https://penguins-eggs.net)    
 * [facebook penguin's eggs group](https://www.facebook.com/groups/128861437762355/)
