@@ -106,8 +106,7 @@ Simply download new versions of eggs from [sourgeforge page](https://sourceforge
 
 
 # Usage
-In addition to the description of the commands in this README, you can consult the [Official book](https://penguins-eggs.net/book/#official-book). 
-There is also other documentation - mostly for developers - included in the [documents](./documents)  and [i386](./i386) directories of this repository, 
+In addition to the description of the commands in this README, you can consult the [Penguin's eggs official book](https://penguins-eggs.net/book/).
 
 <!-- usage -->
 ```sh-session
@@ -604,7 +603,7 @@ _See code: [src/commands/update.ts](https://github.com/pieroproietti/penguins-eg
 No need other configurations, penguins-eggs are battery included or better, as in the real, live is inside! :-D
 
 ## More informations
-There is [user's manual](https://penguins-eggs.net/book/) and same other documentation in [documents folder](./documents) of this repository.
+There an [Penguin's eggs official book](https://penguins-eggs.net/book/) and same other documentation - mostly for developer - on [penguins-eggs repo](https://github.com/pieroproietti/penguins-eggs) under **documents** and **i386**.
 
 * [penguin's eggs blog](https://penguins-eggs.net)    
 * [facebook penguin's eggs group](https://www.facebook.com/groups/128861437762355/)
