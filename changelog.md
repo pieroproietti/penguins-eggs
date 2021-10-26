@@ -34,7 +34,7 @@ Versions are listed on reverse order, the first is the last one.
 * I toke version 8.0.28 and rebuild it to be compatible with node8.17. Actually it run in bullseye too, but We must to rebuild the changement from 8.0.30 to t.1.4
 
 ### Older versions 
-You can find older versions on the [repo](https://github.com/pieroproietti/penguins-eggs) under in **changelog-old.md** under **documents**
+You can find older versions on the [penguins-eggs repo](https://github.com/pieroproietti/penguins-eggs) under in **changelog-old.md** under **documents**
 
 # Node8.17.0
 I'm using actually node-8.17.0 version to build against all architectures (amd64, i386, arm64 and armel). Yes, there are same limits - compared with later versions of node - but it is the only way to release eggs for i386.
