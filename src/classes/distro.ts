@@ -24,6 +24,7 @@
  * Ubuntu 20.10 (groovy) active
  * Ubuntu 21.04 (hirsute) active
  * Ubuntu 21.10 (impish)
+ * Ubuntu 22.04 (jammy) LTS
  * 
  * stretch old
  * buster
@@ -184,6 +185,10 @@ class Distro implements IDistro {
          // Ubuntu 21.10 impish
          this.distroLike = 'Ubuntu'
          this.versionLike = 'impish'
+      } else if (this.versionId === 'jammy') {
+         // Ubuntu 22.04 jammy
+         this.distroLike = 'Ubuntu'
+         this.versionLike = 'jammy'
 
          // quindi le derivate...
 

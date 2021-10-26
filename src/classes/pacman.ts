@@ -577,6 +577,15 @@ export default class Pacman {
          await this.ln(`${focal}/isolinux`, `${impish}/isolinux`, remove, verbose)
          await this.ln(`${focal}/locale.gen.template`, `${impish}/locale.gen.template`, remove, verbose)
          await this.ln(`${buster}/calamares/modules/displaymanager.yml`, `${impish}/calamares/modules/displaymanager.yml`, remove, verbose)
+
+         // Ubuntu 22.04 jammy
+         const jammy = `${rootPen}/conf/distros/jammy`
+         await this.ln(`${focal}/calamares`, `${jammy}/calamares`, remove, verbose)
+         await this.ln(`${focal}/grub`, `${jammy}/grub`, remove, verbose)
+         await this.ln(`${focal}/isolinux`, `${jammy}/isolinux`, remove, verbose)
+         await this.ln(`${focal}/locale.gen.template`, `${jammy}/locale.gen.template`, remove, verbose)
+         await this.ln(`${buster}/calamares/modules/displaymanager.yml`, `${jammy}/calamares/modules/displaymanager.yml`, remove, verbose)
+
       }
    }
 
