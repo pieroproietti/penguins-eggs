@@ -497,27 +497,6 @@ export default class Pacman {
          // Debian 10 - Buster 
          const buster = `${rootPen}/conf/distros/buster`
 
-
-         // Debian 12 - bookworm
-         const bookworm = `${rootPen}/conf/distros/bullseye`
-         await this.ln(`${buster}/grub`, `${bookworm}/grub`, remove, verbose)
-         await this.ln(`${buster}/isolinux`, `${bookworm}/isolinux`, remove, verbose)
-         await this.ln(`${buster}/locales`, `${bookworm}/locales`, remove, verbose)
-         await this.ln(`${buster}/calamares/calamares-modules/remove-link`, `${bookworm}/calamares/calamares-modules/remove-link`, remove, verbose)
-         await this.ln(`${buster}/calamares/calamares-modules/sources-yolk`, `${bookworm}/calamares/calamares-modules/sources-yolk`, remove, verbose)
-         await this.ln(`${buster}/calamares/calamares-modules/sources-yolk-unmount`, `${bookworm}/calamares/calamares-modules/sources-yolk-unmount`, remove, verbose)
-         await this.ln(`${buster}/calamares/modules`, `${bookworm}/calamares/modules`, remove, verbose)
-
-         // Debian 11 - bullseye
-         const bullseye = `${rootPen}/conf/distros/bullseye`
-         await this.ln(`${buster}/grub`, `${bullseye}/grub`, remove, verbose)
-         await this.ln(`${buster}/isolinux`, `${bullseye}/isolinux`, remove, verbose)
-         await this.ln(`${buster}/locales`, `${bullseye}/locales`, remove, verbose)
-         await this.ln(`${buster}/calamares/calamares-modules/remove-link`, `${bullseye}/calamares/calamares-modules/remove-link`, remove, verbose)
-         await this.ln(`${buster}/calamares/calamares-modules/sources-yolk`, `${bullseye}/calamares/calamares-modules/sources-yolk`, remove, verbose)
-         await this.ln(`${buster}/calamares/calamares-modules/sources-yolk-unmount`, `${bullseye}/calamares/calamares-modules/sources-yolk-unmount`, remove, verbose)
-         await this.ln(`${buster}/calamares/modules`, `${bullseye}/calamares/modules`, remove, verbose)
-
          // Debian 8 - jessie
          const jessie = `${rootPen}/conf/distros/jessie`
          await this.ln(`${buster}/grub`, `${jessie}/grub`, remove, verbose)
@@ -530,6 +509,25 @@ export default class Pacman {
          await this.ln(`${buster}/isolinux`, `${stretch}/isolinux`, remove, verbose)
          await this.ln(`${buster}/locales`, `${stretch}/locales`, remove, verbose)
          await this.ln(`${jessie}/krill`, `${stretch}/krill`, remove, verbose)
+
+
+         // Debian 11 - bullseye
+         const bullseye = `${rootPen}/conf/distros/bullseye`
+         await this.ln(`${buster}/grub`, `${bullseye}/grub`, remove, verbose)
+         await this.ln(`${buster}/isolinux`, `${bullseye}/isolinux`, remove, verbose)
+         await this.ln(`${buster}/locales`, `${bullseye}/locales`, remove, verbose)
+         await this.ln(`${buster}/calamares`, `${bullseye}/calamares`, remove, verbose)
+         // await this.ln(`${buster}/calamares/calamares-modules/remove-link`, `${bullseye}/calamares/calamares-modules/remove-link`, remove, verbose)
+         // await this.ln(`${buster}/calamares/calamares-modules/sources-yolk`, `${bullseye}/calamares/calamares-modules/sources-yolk`, remove, verbose)
+         // await this.ln(`${buster}/calamares/calamares-modules/sources-yolk-unmount`, `${bullseye}/calamares/calamares-modules/sources-yolk-unmount`, remove, verbose)
+         // await this.ln(`${buster}/calamares/modules`, `${bullseye}/calamares/modules`, remove, verbose)
+
+         // Debian 12 - bookworm
+         const bookworm = `${rootPen}/conf/distros/bookworm`
+         await this.ln(`${buster}/grub`, `${bookworm}/grub`, remove, verbose)
+         await this.ln(`${buster}/isolinux`, `${bookworm}/isolinux`, remove, verbose)
+         await this.ln(`${buster}/locales`, `${bookworm}/locales`, remove, verbose)
+         await this.ln(`${buster}/calamares`, `${bookworm}/calamares`, remove, verbose)
 
          // Devuan beowulf
          const beowulf = `${rootPen}/conf/distros/beowulf`
