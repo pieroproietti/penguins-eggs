@@ -54,13 +54,13 @@ I work mostly on Debian, so here you can find more personal versions and other e
 * **gnome3** - Ubuntu 20.04 focal gnome3, remastered with eggs, without any modifications. (amd64)
 
 ## hirsute
-* **gnome3*** - Ubuntu 21.04 hirsute gnome3, remastered with eggs, without any modifications. (amd64)
+* **gnome3** - Ubuntu 21.04 hirsute gnome3, remastered with eggs, without any modifications. (amd64)
 
 ## impish
-* **gnome3*** - Ubuntu 21.10 impish gnome3, remastered with eggs, without any modifications. (amd64)
+* **gnome3** - Ubuntu 21.10 impish gnome3, remastered with eggs, without any modifications. (amd64)
 
 ## jammy
-* **gnome3*** - Ubuntu 22.04 jammy gnome3, remastered with eggs, without any modifications. (amd64)
+* **gnome3** - Ubuntu 22.04 jammy gnome3, remastered with eggs, without any modifications. (amd64)
 
 
 # Devuan 
