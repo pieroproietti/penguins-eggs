@@ -42,6 +42,8 @@ I work mostly on Debian, so here you can find more personal versions and other e
 
 * **naked** - just the juice, without GUI. You can start here to build your revolution! (i386 and amd64)
 
+## bookworm
+
 # Ubuntu
 
 ## bionic LTS
@@ -53,6 +55,13 @@ I work mostly on Debian, so here you can find more personal versions and other e
 
 ## hirsute
 * **gnome3*** - Ubuntu 21.04 hirsute gnome3, remastered with eggs, without any modifications. (amd64)
+
+## impish
+* **gnome3*** - Ubuntu 21.10 impish gnome3, remastered with eggs, without any modifications. (amd64)
+
+## jammy
+* **gnome3*** - Ubuntu 22.04 jammy gnome3, remastered with eggs, without any modifications. (amd64)
+
 
 # Devuan 
 * **beowulf** - like debu, but devual based.  (amd64)
