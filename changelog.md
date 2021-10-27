@@ -18,6 +18,11 @@ You can follow the project also consulting the [commit history](https://github.c
 ## Changelog
 Versions are listed on reverse order, the first is the last one.
 
+### eggs-8.17-5
+* added Ubuntu 22.04 jammy, paths to templates 
+I modified in ovary paths to templates from /usr/lib/penguins-eggs/conf/distros to right path /etc/penguins-eggs.d/distros this can impact in many cases
+becouse most configurations distros are just directory filled with links to buster or focal made from pacmand during installation
+
 ### eggs-8.17-4
 * calamaresPolicies moved to Pacman, now eggs config configures calamares policies too
 
