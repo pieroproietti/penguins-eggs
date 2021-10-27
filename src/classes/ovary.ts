@@ -571,8 +571,10 @@ export default class Ovary {
       }
 
       await exec('rsync -a ' + this.settings.distro.isolinuxPath + 'isolinux.bin' + ' ' + this.settings.work_dir.pathIso + 'isolinux/', echo)
-      fs.copyFileSync(path.resolve(__dirname, '../../conf/distros/' + this.settings.distro.versionLike + '/' + 'isolinux/isolinux.template.cfg'), this.settings.work_dir.pathIso + 'isolinux/isolinux.cfg')
-      fs.copyFileSync(path.resolve(__dirname, '../../conf/distros/' + this.settings.distro.versionLike + '/' + 'isolinux/stdmenu.template.cfg'), this.settings.work_dir.pathIso + 'isolinux/stdmenu.cfg')
+      //fs.copyFileSync(path.resolve(__dirname, '../../conf/distros/' + this.settings.distro.versionLike + '/' + 'isolinux/isolinux.template.cfg'), this.settings.work_dir.pathIso + 'isolinux/isolinux.cfg')
+      fs.copyFileSync(path.resolve('/etc/penguins-eggs.d/distros/' + this.settings.distro.versionLike + '/' + 'isolinux/isolinux.template.cfg'), this.settings.work_dir.pathIso + 'isolinux/isolinux.cfg')
+      //fs.copyFileSync(path.resolve(__dirname, '../../conf/distros/' + this.settings.distro.versionLike + '/' + 'isolinux/stdmenu.template.cfg'), this.settings.work_dir.pathIso + 'isolinux/stdmenu.cfg')
+      fs.copyFileSync(path.resolve('/etc/penguins-eggs.d/distros/' + this.settings.distro.versionLike + '/' + 'isolinux/stdmenu.template.cfg'), this.settings.work_dir.pathIso + 'isolinux/stdmenu.cfg')
       const menuDest = this.settings.work_dir.pathIso + 'isolinux/menu.cfg'
       const splashDest = this.settings.work_dir.pathIso + 'isolinux/splash.png'
 
@@ -1322,13 +1324,16 @@ export default class Ovary {
       /**
        * Do the main grub.cfg (which gets loaded last):
        */
-      fs.copyFileSync(path.resolve(__dirname, `../../conf/distros/${this.settings.distro.versionLike}/grub/loopback.cfg`), `${this.settings.work_dir.pathIso}/boot/grub/loopback.cfg`)
+       // fs.copyFileSync(path.resolve(__dirname, `../../conf/distros/${this.settings.distro.versionLike}/grub/loopback.cfg`), `${this.settings.work_dir.pathIso}/boot/grub/loopback.cfg`)
+       fs.copyFileSync(`/etc/penguins-eggs.d/distros/${this.settings.distro.versionLike}/grub/loopback.cfg`, `${this.settings.work_dir.pathIso}/boot/grub/loopback.cfg`)
 
       /**
        * in theme va al momento theme.cfg e splash.png
        */
-      const grubSrc = path.resolve(__dirname, `../../conf/distros/${this.settings.distro.versionLike}/grub/grub.template.cfg`)
-      let themeSrc = path.resolve(__dirname, `../../conf/distros/${this.settings.distro.versionLike}/grub/theme.cfg`)
+      // const grubSrc = path.resolve(__dirname, `../../conf/distros/${this.settings.distro.versionLike}/grub/grub.template.cfg`)
+      const grubSrc = `/etc/penguins-eggs.d/distros/${this.settings.distro.versionLike}/grub/grub.template.cfg`
+      // let themeSrc = path.resolve(__dirname, `../../conf/distros/${this.settings.distro.versionLike}/grub/theme.cfg`)
+      let themeSrc = `/etc/penguins-eggs.ddistros/${this.settings.distro.versionLike}/grub/theme.cfg`
       let splashSrc = path.resolve(__dirname, '../../assets/penguins-eggs-splash.png')
 
       const grubDest = `${this.settings.work_dir.pathIso}/boot/grub/grub.cfg`
