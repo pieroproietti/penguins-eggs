@@ -21,6 +21,8 @@ Versions are listed on reverse order, the first is the last one.
 ### eggs-8.17-6
 * added Debian 12 bookworm
 
+Actually bullseye take all configuration from buster, simply a bit
+
 ### eggs-8.17-5
 * added Ubuntu 22.04 jammy, paths to templates 
 
