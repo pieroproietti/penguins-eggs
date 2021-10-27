@@ -76,6 +76,9 @@ export default class Incubator {
       } else if (this.distro.versionLike === 'bullseye') {
          const bullseye = new Bullseye(this.installer, this.remix, this.distro, release, this.user_opt, this.verbose)
          await bullseye.create()
+      } else if (this.distro.versionLike === 'bookworm') {
+         const bookworm = new Bullseye(this.installer, this.remix, this.distro, release, this.user_opt, this.verbose)
+         await bookworm.create()
       } else if (this.distro.versionLike === 'beowulf') {
          const beowulf = new Beowulf(this.installer, this.remix, this.distro, release, this.user_opt, this.verbose)
          await beowulf.create()

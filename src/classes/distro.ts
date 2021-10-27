@@ -7,9 +7,10 @@
  */
 
 /**
- * Debian 11 bullseye
- * Debian 10 (buster) — l'attuale versione stable
- * Debian 9 (stretch) — l'attuale versione oldstable
+ * Debian 12 bookworm testing
+ * Debian 11 bullseye stable
+ * Debian 10 (buster) — old-stable
+ * Debian 9 (stretch) — old-old-stable
  *
  * Devuan ASCII
  * Devuan beowlf
@@ -114,13 +115,14 @@ class Distro implements IDistro {
        * Per casi equivoci conviene normalizzare versionId
        */
       if (this.versionId === 'n/a') {
-         // può essere Deepin apricot
+         // può essere Deepin apricot p
          if (this.distroId === 'Deepin') {
             this.versionId = 'apricot'
          } else if (fs.existsSync('/etc/debian_version')) {
+            // bookworm?
             const debianVersion = fs.readFileSync('/etc/debian_version', 'utf8')
-            if (debianVersion.trim() === 'bullseye/sid') {
-               this.versionId = 'bullseye'
+            if (debianVersion.trim() === 'bookworm/sid') {
+               this.versionId = 'bookworm'
             }
          }
       } else if (this.versionId === 'sid') {
@@ -156,6 +158,10 @@ class Distro implements IDistro {
          // Debian 11 bullseye
          this.distroLike = 'Debian'
          this.versionLike = 'bullseye'
+      } else if (this.versionId === 'bookworm') {
+         // Debian 11 bullseye
+         this.distroLike = 'Debian'
+         this.versionLike = 'bookworm'
 
       } else if (this.versionId === 'beowulf') {
          this.distroLike = 'Devuan'

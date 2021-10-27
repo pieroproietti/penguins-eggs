@@ -497,6 +497,17 @@ export default class Pacman {
          // Debian 10 - Buster 
          const buster = `${rootPen}/conf/distros/buster`
 
+
+         // Debian 12 - bookworm
+         const bookworm = `${rootPen}/conf/distros/bullseye`
+         await this.ln(`${buster}/grub`, `${bookworm}/grub`, remove, verbose)
+         await this.ln(`${buster}/isolinux`, `${bookworm}/isolinux`, remove, verbose)
+         await this.ln(`${buster}/locales`, `${bookworm}/locales`, remove, verbose)
+         await this.ln(`${buster}/calamares/calamares-modules/remove-link`, `${bookworm}/calamares/calamares-modules/remove-link`, remove, verbose)
+         await this.ln(`${buster}/calamares/calamares-modules/sources-yolk`, `${bookworm}/calamares/calamares-modules/sources-yolk`, remove, verbose)
+         await this.ln(`${buster}/calamares/calamares-modules/sources-yolk-unmount`, `${bookworm}/calamares/calamares-modules/sources-yolk-unmount`, remove, verbose)
+         await this.ln(`${buster}/calamares/modules`, `${bookworm}/calamares/modules`, remove, verbose)
+
          // Debian 11 - bullseye
          const bullseye = `${rootPen}/conf/distros/bullseye`
          await this.ln(`${buster}/grub`, `${bullseye}/grub`, remove, verbose)
