@@ -13,7 +13,7 @@ penguins-eggs
 
 # Penguin's eggs remastered ISOs
 
-All ISOs are based on Devuan beowulf
+All ISOs are based on Ubuntu 21.10 impish
 
 # user/password
 * ```live/evolution```
@@ -26,30 +26,11 @@ All the ISOs include nodejs and eggs installed (.npm package), so you can update
 # Ubuntu
 Ubuntu is a Linux distribution based on Debian mostly composed of free and open-source software. Ubuntu is officially released in three editions: Desktop, Server, and Core for Internet of things devices and robots. All the editions can run on the computer alone, or in a virtual machine. Ubuntu is a popular operating system for cloud computing, with support for OpenStack. Ubuntu's default desktop has been GNOME, since version 17.10.
 
-# bionic 18.04 LTS
-Released on april 2018 this version is the first LTS Long Term Support.
-
-# jammy 22.04
-Still in devolpment, will be release on april 2022.
-
-# impish 21.10
-Release on october 2021, this is the last version of Ubuntu.
-
-# hirsute 21.04
-Release on april 2021.
-
-# groovy 20.10
-Release on october 2020.
-
-# focal 20.04 LTS
-Released on april 2020, this version is the last LTS Long Term 
+* **impish** It's just a ubuntu 21.10 remastered with eggs.
 
 # That's all Folks!
 No need other configurations, penguins-eggs are battery included or better, as in the real, live is inside! :-D
 
 ## More informations
 
-You can find more informations at [ufficiozero](https://www.ufficiozero.org/).
-
-# Disclaim
-__Please note what this project is in no way connected to Ubuntu in any official way, it’s just my personal experiment__.
+You can find more informations at [Ubuntu](https://www.ubuntu.com/).

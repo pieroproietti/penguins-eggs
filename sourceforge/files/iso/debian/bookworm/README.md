@@ -12,21 +12,13 @@ penguins-eggs
 
 # Debian remastered ISOs
 
-All ISOs are based on Debian varius versions
+All ISOs are based on Debian bookworm
 
 # user/password
 * ```live/evolution```
 * ```root/evolution```
 
-* Debian 8 jessie (EOF LTS 2022-06-30)
-
-+ Debian 9 stretch (EOF 2022-06-30)
-
-* Debian 10 buster (old-stable)
-
-* Debian 11 bullseye (stable)
-
-* Debian 12 bookworm (testinf)
+# Debian bookworm
 
 # Disclaim
 __Please note what this project is in no way connected to Debian in any official way, it’s just my personal experiment__.
