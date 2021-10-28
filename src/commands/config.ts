@@ -39,8 +39,18 @@ export default class Config extends Command {
 
         if (!nointeractive) {
             Utils.titles(this.id + ' ' + this.argv)
+            if (Utils.isDebPackage()) {
+                console.log('eggs running as package .deb')
+            }
+            if (Utils.isNpmPackage()) {
+                console.log('eggs running as package .npm')
+            }
+            if (Utils.isSources()) {
+                console.log('eggs running from sources')
+            }
         }
 
+              
         if (Utils.isRoot(this.id)) {
             if (flags.clean) {
                 await exec('rm /etc/penguins-eggs.d -rf')
@@ -221,7 +231,7 @@ export default class Config extends Command {
 
         if (i.prerequisites) {
             if (nointeractive) {
-                Utils.warning('Can\'t installa prerequisites now...')
+                Utils.warning('Can\'t install prerequisites now...')
             } else {
                 await Pacman.prerequisitesInstall(verbose)
             }

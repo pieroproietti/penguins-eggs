@@ -167,6 +167,7 @@ export default class Pacman {
       }
 
       if (installed) {
+         // initType = systemd/sysvinit
          const initType: string = shx.exec('ps --no-headers -o comm 1', { silent: !verbose }).trim()
          depInit.forEach((dep) => {
             if (dep.init.includes(initType)) {
