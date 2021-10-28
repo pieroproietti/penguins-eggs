@@ -452,7 +452,6 @@ unknown target format aarch64-efi
 
    /**
     * Return the Debian version
-    * @remarks to move in Utils
     * @returns {number} Versione di Debian
     */
    static getDebianVersion(): number {

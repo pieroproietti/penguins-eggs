@@ -47,6 +47,8 @@ export const depCommon = [
    'isolinux',
    'live-boot',
    'live-boot-initramfs-tools',
+   // metto qua live-config controllare in bionic
+   'live-config',
    'net-tools',
    'parted',
    'rsync',
