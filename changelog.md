@@ -18,6 +18,11 @@ You can follow the project also consulting the [commit history](https://github.c
 ## Changelog
 Versions are listed on reverse order, the first is the last one.
 
+### eggs-8.17-7
+* live-config was reintroduced in package dependencies
+
+I worked in pacman.links4Debs trying to reorder the code. Inserted in eggs config the display of the type of eggs package in use, corrected the isDebPackage(), isNpmPackage() functions in pacman. live-config is not taken because it's part of the version dependencies (bionic doesn't want it - but I should check)
+
 ### eggs-8.17-6
 * added Debian 12 bookworm
 
