@@ -51,7 +51,8 @@ export const depCommon = [
    'parted',
    'rsync',
    'squashfs-tools',
-   //   'syslinux-common',
+   // syslynox-common era stato tolto
+   'syslinux-common',
    'whois',
    'xorriso'
 ]
@@ -72,15 +73,16 @@ export const depArch = [
 
 /**
  * dependencies for versions
+ * non prende live-config
  */
 export const depVersions = [
    {
       package: 'live-config',
-      versions: ['jessie', 'stretch', 'buster', 'bullseye', 'beowulf', 'focal', 'groovy', 'hirsute']
+      versions: ['jessie', 'stretch', 'buster', 'bullseye', 'bookworm','beowulf', 'focal', 'groovy', 'hirsute', 'jammy']
    },
    {
       package: 'live-config-systemd',
-      versions: ['jessie', 'stretch', 'buster', 'bullseye', 'focal', 'groovy', 'hirsute']
+      versions: ['jessie', 'stretch', 'buster', 'bullseye', 'bookworm', 'focal', 'groovy', 'hirsute', 'jammy']
    },
    {
       package: 'live-config-sysvinit',

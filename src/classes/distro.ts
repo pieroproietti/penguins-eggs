@@ -115,7 +115,7 @@ class Distro implements IDistro {
        * Per casi equivoci conviene normalizzare versionId
        */
       if (this.versionId === 'n/a') {
-         // può essere Deepin apricot p
+         // può essere Deepin apricot
          if (this.distroId === 'Deepin') {
             this.versionId = 'apricot'
          } else if (fs.existsSync('/etc/debian_version')) {

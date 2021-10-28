@@ -390,10 +390,12 @@ unknown target format aarch64-efi
 
    /**
     * Controlla se è un pacchetto deb
+    * /usr/lib/penguins-eggs/bin/node
     */
    static isDebPackage(): boolean {
       let ret = false
-      if (process.execPath !== '/usr/bin/node') {
+      //if (process.execPath !== '/usr/bin/node') {
+      if (process.execPath === '/usr/lib/penguins-eggs/bin/node') {
          ret = true
       }
       return ret
