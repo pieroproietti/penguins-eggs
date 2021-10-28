@@ -442,12 +442,12 @@ export default class Pacman {
     */
    static async distroTemplateInstall(verbose = false) {
       if (verbose) {
-         console.log('installDistroTemplate')
+         console.log('distroTemplateInstall')
       }
       const rootPen = Utils.rootPenguin()
       const versionLike = Pacman.versionLike()
       if (Utils.isDebPackage()) {
-         await Pacman.links4Debs(false, verbose)
+         await Pacman.links4Debs(verbose)
       }
       // L = follow links è OK da source, ora il problema è copiare i link da npm o rifarli
       const cmd = `cp -rL ${rootPen}/conf/distros/${versionLike} /etc/penguins-eggs.d/distros`
@@ -490,53 +490,60 @@ export default class Pacman {
     * 
     * @param rootPen 
     */
-   static async links4Debs(remove = false, verbose = false) {
+   static async links4Debs(verbose = false) {
+      const remove = false
+      
+      /**
+       * Poichè i pacchetti deb, non si portano i link
+       * links4Debs in /usr/lib/penguins-eggs/config/distro
+       * ricostruisce i link per TUTTE le distribuzioni
+       * 
+       * Dato che non utilizzo più i pacchetti npm forse, 
+       * converrebbe rimuovere i vari link per semplicità
+       * 
+       */
+
       if (Utils.isDebPackage() || !Utils.isSources()) {
          const rootPen = Utils.rootPenguin()
 
          // Debian 10 - Buster 
          const buster = `${rootPen}/conf/distros/buster`
 
-         // Debian 8 - jessie
+         // Debian 8 - jessie. Eredita grub, isolinux e locales da buster, contiene krill al posto di calamares
          const jessie = `${rootPen}/conf/distros/jessie`
          await this.ln(`${buster}/grub`, `${jessie}/grub`, remove, verbose)
          await this.ln(`${buster}/isolinux`, `${jessie}/isolinux`, remove, verbose)
          await this.ln(`${buster}/locales`, `${jessie}/locales`, remove, verbose)
 
-         // Debian 9 - stretch
+         // Debian 9 - stretch. Eredita grub, isolinux, locales da buster, usa krill di jessie al posto di calamares
          const stretch = `${rootPen}/conf/distros/stretch`
          await this.ln(`${buster}/grub`, `${stretch}/grub`, remove, verbose)
          await this.ln(`${buster}/isolinux`, `${stretch}/isolinux`, remove, verbose)
          await this.ln(`${buster}/locales`, `${stretch}/locales`, remove, verbose)
          await this.ln(`${jessie}/krill`, `${stretch}/krill`, remove, verbose)
 
-
-         // Debian 11 - bullseye
+         // Debian 11 - bullseye. Eredita tutto da buster
          const bullseye = `${rootPen}/conf/distros/bullseye`
          await this.ln(`${buster}/grub`, `${bullseye}/grub`, remove, verbose)
          await this.ln(`${buster}/isolinux`, `${bullseye}/isolinux`, remove, verbose)
          await this.ln(`${buster}/locales`, `${bullseye}/locales`, remove, verbose)
          await this.ln(`${buster}/calamares`, `${bullseye}/calamares`, remove, verbose)
-         // await this.ln(`${buster}/calamares/calamares-modules/remove-link`, `${bullseye}/calamares/calamares-modules/remove-link`, remove, verbose)
-         // await this.ln(`${buster}/calamares/calamares-modules/sources-yolk`, `${bullseye}/calamares/calamares-modules/sources-yolk`, remove, verbose)
-         // await this.ln(`${buster}/calamares/calamares-modules/sources-yolk-unmount`, `${bullseye}/calamares/calamares-modules/sources-yolk-unmount`, remove, verbose)
-         // await this.ln(`${buster}/calamares/modules`, `${bullseye}/calamares/modules`, remove, verbose)
 
-         // Debian 12 - bookworm
+         // Debian 12 - bookworm. Eredita tutto da buster
          const bookworm = `${rootPen}/conf/distros/bookworm`
          await this.ln(`${buster}/grub`, `${bookworm}/grub`, remove, verbose)
          await this.ln(`${buster}/isolinux`, `${bookworm}/isolinux`, remove, verbose)
          await this.ln(`${buster}/locales`, `${bookworm}/locales`, remove, verbose)
          await this.ln(`${buster}/calamares`, `${bookworm}/calamares`, remove, verbose)
 
-         // Devuan beowulf
+         // Devuan beowulf. Eredita tutto da buster
          const beowulf = `${rootPen}/conf/distros/beowulf`
          await this.ln(`${buster}/grub`, `${beowulf}/grub`, remove, verbose)
          await this.ln(`${buster}/isolinux`, `${beowulf}/isolinux`, remove, verbose)
          await this.ln(`${buster}/locales`, `${beowulf}/locales`, remove, verbose)
          await this.ln(`${buster}/calamares`, `${beowulf}/calamares`, remove, verbose)
 
-         // Ubuntu 20.04 - focal
+         // Ubuntu 20.04 - focal. Eredita da buster i seguenti
          const focal = `${rootPen}/conf/distros/focal`
          await this.ln(`${buster}/grub/loopback.cfg`, `${focal}/grub/loopback.cfg`, remove, verbose)
          await this.ln(`${buster}/grub/theme.cfg`, `${focal}/grub/theme.cfg`, remove, verbose)
@@ -547,11 +554,12 @@ export default class Pacman {
          await this.ln(`${buster}/calamares/calamares-modules/sources-yolk-unmount`, `${focal}/calamares/calamares-modules/sources-yolk-unmount`, remove, verbose)
          await this.ln(`${buster}/calamares/modules/packages.yml`, `${focal}/calamares/modules/packages.yml`, remove, verbose)
          await this.ln(`${buster}/calamares/modules/removeuser.yml`, `${focal}/calamares/modules/removeuser.yml`, remove, verbose)
+         await this.ln(`${buster}/calamares/modules/unpackfs.yml`, `${focal}/calamares/modules/unpackfs.yml`, remove, verbose)
          await this.ln(`${buster}/calamares/modules/displaymanager.yml`, `${focal}/calamares/modules/displaymanager.yml`, remove, verbose)
          // Patch a colori
          // await this.ln(`${buster}/calamares/calamares-modules/bootloader-config`, `${focal}/calamares/calamares-modules/bootloader-config`, remove, verbose)
 
-         // Ubuntu 18.04  - bionic
+         // Ubuntu 18.04  - bionic. Eredita da focal grub ed isolinux, da buster i seguenti
          const bionic = `${rootPen}/conf/distros/bionic`
          await this.ln(`${focal}/grub`, `${bionic}/grub`, remove, verbose)
          await this.ln(`${focal}/isolinux`, `${bionic}/isolinux`, remove, verbose)
@@ -563,7 +571,7 @@ export default class Pacman {
          await this.ln(`${buster}/calamares/modules/unpackfs.yml`, `${bionic}/calamares/modules/unpackfs.yml`, remove, verbose)
          await this.ln(`${buster}/calamares/modules/displaymanager.yml`, `${bionic}/calamares/modules/displaymanager.yml`, remove, verbose)
 
-         // Ubuntu 20.10 groovy
+         // Ubuntu 20.10 groovy. Eredita da focal
          const groovy = `${rootPen}/conf/distros/groovy`
          await this.ln(`${focal}/calamares`, `${groovy}/calamares`, remove, verbose)
          await this.ln(`${focal}/grub`, `${groovy}/grub`, remove, verbose)
@@ -571,7 +579,7 @@ export default class Pacman {
          await this.ln(`${focal}/locale.gen.template`, `${groovy}/locale.gen.template`, remove, verbose)
          await this.ln(`${buster}/calamares/modules/displaymanager.yml`, `${groovy}/calamares/modules/displaymanager.yml`, remove, verbose)
 
-         // Ubuntu 21.04 hirsute
+         // Ubuntu 21.04 hirsute. Eredita da focal
          const hirsute = `${rootPen}/conf/distros/hirsute`
          await this.ln(`${focal}/calamares`, `${hirsute}/calamares`, remove, verbose)
          await this.ln(`${focal}/grub`, `${hirsute}/grub`, remove, verbose)
@@ -579,7 +587,7 @@ export default class Pacman {
          await this.ln(`${focal}/locale.gen.template`, `${hirsute}/locale.gen.template`, remove, verbose)
          await this.ln(`${buster}/calamares/modules/displaymanager.yml`, `${hirsute}/calamares/modules/displaymanager.yml`, remove, verbose)
 
-         // Ubuntu 21.10 impish
+         // Ubuntu 21.10 impish. Eredita da focal
          const impish = `${rootPen}/conf/distros/impish`
          await this.ln(`${focal}/calamares`, `${impish}/calamares`, remove, verbose)
          await this.ln(`${focal}/grub`, `${impish}/grub`, remove, verbose)
@@ -587,14 +595,13 @@ export default class Pacman {
          await this.ln(`${focal}/locale.gen.template`, `${impish}/locale.gen.template`, remove, verbose)
          await this.ln(`${buster}/calamares/modules/displaymanager.yml`, `${impish}/calamares/modules/displaymanager.yml`, remove, verbose)
 
-         // Ubuntu 22.04 jammy
+         // Ubuntu 22.04 jammy. Eredita da focal
          const jammy = `${rootPen}/conf/distros/jammy`
          await this.ln(`${focal}/calamares`, `${jammy}/calamares`, remove, verbose)
          await this.ln(`${focal}/grub`, `${jammy}/grub`, remove, verbose)
          await this.ln(`${focal}/isolinux`, `${jammy}/isolinux`, remove, verbose)
          await this.ln(`${focal}/locale.gen.template`, `${jammy}/locale.gen.template`, remove, verbose)
          await this.ln(`${buster}/calamares/modules/displaymanager.yml`, `${jammy}/calamares/modules/displaymanager.yml`, remove, verbose)
-
       }
    }
 
