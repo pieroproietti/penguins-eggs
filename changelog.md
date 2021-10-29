@@ -18,6 +18,11 @@ You can follow the project also consulting the [commit history](https://github.c
 ## Changelog
 Versions are listed on reverse order, the first is the last one.
 
+### eggs-8.17-8
+* restored bionic compatubility
+
+I worked in pacman: rewrote pacman.packages() for installation than removal.
+
 ### eggs-8.17-7
 * live-config was reintroduced in package dependencies
 
