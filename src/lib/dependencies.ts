@@ -39,6 +39,7 @@ export function array2spaced(packages: string[]) {
 
 /**
  * common dependencies
+ * sudo apt purge cryptsetup dosfstools dpkg-dev isolinux live-boot live-boot-initramfs-tools  squashfs-tools syslinux-common whois xorriso
  */
 export const depCommon = [
    'cryptsetup',
@@ -47,20 +48,17 @@ export const depCommon = [
    'isolinux',
    'live-boot',
    'live-boot-initramfs-tools',
-   // metto qua live-config controllare in bionic
-   'live-config',
    'net-tools',
    'parted',
    'rsync',
    'squashfs-tools',
-   // syslynox-common era stato tolto
    'syslinux-common',
    'whois',
    'xorriso'
 ]
 
 /**
- * Dependencies for arch
+ * Dependencies for architectures
  */
 export const depArch = [
    {
@@ -75,6 +73,7 @@ export const depArch = [
 
 /**
  * dependencies for versions
+ * 
  * non prende live-config
  */
 export const depVersions = [
