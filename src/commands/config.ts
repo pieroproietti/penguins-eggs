@@ -142,7 +142,8 @@ export default class Config extends Command {
 
             if (i.prerequisites) {
                 console.log('- install packages prerequisites')
-                const packages = Pacman.filterInstalled(Pacman.packages(verbose))
+                const packages = Pacman.packages(verbose)
+                
                 if (packages.length > 0) {
                     console.log(chalk.yellow('  apt install --yes ' + array2spaced(packages)))
                 }

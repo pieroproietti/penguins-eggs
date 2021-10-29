@@ -98,29 +98,59 @@ export default class Pacman {
    /**
     * Crea array packages dei pacchetti da installare
     */
-   static packages(verbose = false): string[] {
-      const packages = depCommon
+   static packages(remove = false, verbose = false): string[] {
+      let packages: string[] = []
+      const packagesInstall: string[] = []
+      const packagesRemove: string[] = []
 
-      const arch = Utils.machineArch()
-      depArch.forEach((dep) => {
-         if (dep.arch.includes(arch)) {
-            packages.push(dep.package)
-         }
-      })
+      if (!Utils.isDebPackage()) {
+         depCommon.forEach((elem) => {
+            if (!this.packageIsInstalled(elem)) {
+               packagesInstall.push(elem)
+            } else {
+               packagesRemove.push(elem)
+            }
+         })
 
+         const arch = Utils.machineArch()
+         depArch.forEach((dep) => {
+            if (dep.arch.includes(arch)) {
+               if (!this.packageIsInstalled(dep.package)) {
+                  packagesInstall.push(dep.package)
+               } else {
+                  packagesRemove.push(dep.package)
+               }
+            }
+         })
+      }
+
+      // Version e initType da controllare
       const version = Pacman.versionLike()
       depVersions.forEach((dep) => {
          if (dep.versions.includes(version)) {
-            packages.push(dep.package)
+            if (!this.packageIsInstalled(dep.package)) {
+               packagesInstall.push(dep.package)
+            } else {
+               packagesRemove.push(dep.package)
+            }
          }
       })
 
       const initType: string = shx.exec('ps --no-headers -o comm 1', { silent: !verbose }).trim()
       depInit.forEach((dep) => {
          if (dep.init.includes(initType)) {
-            packages.push(dep.package)
+            if (!this.packageIsInstalled(dep.package)) {
+               packagesInstall.push(dep.package)
+            } else {
+               packagesRemove.push(dep.package)
+            }
          }
       })
+
+      packages = packagesInstall
+      if (remove) {
+         packages= packagesRemove
+      }
       return packages
    }
 
@@ -130,52 +160,10 @@ export default class Pacman {
     */
    static async prerequisitesCheck(verbose = false): Promise<boolean> {
       let installed = true
+      let packages = Pacman.packages(false, verbose)
 
-      // Controllo depCommon e depArch SOLO se il pacchetto è npm
-      if (Utils.isNpmPackage()) {
-         // controllo depCommon
-         depCommon.forEach(dep => {
-            if (!this.packageIsInstalled(dep)) {
-               installed = false
-            }
-         })
-
-         if (installed) {
-            // controllo depArch
-            const arch = Utils.machineArch()
-
-            depArch.forEach((dep) => {
-               if (dep.arch.includes(arch)) {
-                  if (!this.packageIsInstalled(dep.package)) {
-                     installed = false
-                  }
-               }
-            })
-         }
-      }
-
-      // Controlli da effettuare SEMPRE version e init
-      if (installed) {
-         const version = Pacman.versionLike()
-         depVersions.forEach((dep) => {
-            if (dep.versions.includes(version)) {
-               if (!this.packageIsInstalled(dep.package)) {
-                  installed = false
-               }
-            }
-         })
-      }
-
-      if (installed) {
-         // initType = systemd/sysvinit
-         const initType: string = shx.exec('ps --no-headers -o comm 1', { silent: !verbose }).trim()
-         depInit.forEach((dep) => {
-            if (dep.init.includes(initType)) {
-               if (!this.packageIsInstalled(dep.package)) {
-                  installed = false
-               }
-            }
-         })
+      if (packages.length > 0) {
+         installed = false
       }
       return installed
    }
@@ -188,13 +176,12 @@ export default class Pacman {
       const retVal = false
       const versionLike = Pacman.versionLike()
 
-      // console.log(`apt-get install --yes ${array2spaced(this.packages(verbose))}`)
-      await exec(`apt-get install --yes ${array2spaced(this.packages(verbose))}`, echo)
+      await exec(`apt-get install --yes ${array2spaced(this.packages(false, verbose))}`, echo)
 
-      // localization
-      if ((versionLike === 'buster') || (versionLike === 'beowulf') || (versionLike === 'bullseye') || (versionLike === 'stretch') || (versionLike === 'jessie')) {
-         await exec(`apt-get install --yes --no-install-recommends ${array2spaced(this.packagesLocalisation(verbose))}`, echo)
-      }
+      // localization Annullato
+      // if ((versionLike === 'buster') || (versionLike === 'beowulf') || (versionLike === 'bullseye') || (versionLike === 'bookworm') || (versionLike === 'stretch') || (versionLike === 'jessie')) {
+      //    await exec(`apt-get install --yes --no-install-recommends ${array2spaced(this.packagesLocalisation(verbose))}`, echo)
+      // }
 
       if (await Pacman.isCli()) {
          /**
@@ -213,14 +200,15 @@ export default class Pacman {
    }
 
    /**
-    *
+    * I want to support just source and deb, so this will be removed
     */
    static async prerequisitesRemove(verbose = true): Promise<boolean> {
       const echo = Utils.setEcho(verbose)
       const retVal = false
       const versionLike = Pacman.versionLike()
 
-      await exec(`apt-get purge --yes ${array2spaced(this.filterInstalled(this.packages(verbose)))}`, echo)
+      // console.log(`apt-get purge --yes ${array2spaced(this.filterInstalled(this.packages(true, verbose)))}`)
+      await exec(`apt-get purge --yes ${array2spaced(this.filterInstalled(this.packages(true, verbose)))}`, echo)
 
       if ((versionLike === 'buster') || (versionLike === 'beowulf')) {
          await exec(`apt-get purge --yes  ${array2spaced(this.filterInstalled(this.packagesLocalisation(verbose)))}`, echo)
@@ -392,7 +380,7 @@ export default class Pacman {
       if (!fs.existsSync(confRoot)) {
          execSync(`mkdir ${confRoot}`)
       }
-      const addons = `${confRoot}/addons`
+      const addons = `${confRoot} /addons`
       const distros = `${confRoot}/distros`
       if (fs.existsSync(addons)) {
          execSync(`rm -rf ${addons}`)
@@ -493,7 +481,7 @@ export default class Pacman {
     */
    static async links4Debs(verbose = false) {
       const remove = false
-      
+
       /**
        * Poichè i pacchetti deb, non si portano i link
        * links4Debs in /usr/lib/penguins-eggs/config/distro
@@ -721,6 +709,9 @@ export default class Pacman {
    /**
     *
     * @param packages array packages
+    * 
+    * Probabilmente da rimuovere, viene usata solo da prerequisitesRemove
+    * 
     */
    static filterInstalled(packages: string[]): string[] {
 
