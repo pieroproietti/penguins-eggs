@@ -178,10 +178,6 @@ export default class Pacman {
 
       await exec(`apt-get install --yes ${array2spaced(this.packages(false, verbose))}`, echo)
 
-      // localization Annullato
-      // if ((versionLike === 'buster') || (versionLike === 'beowulf') || (versionLike === 'bullseye') || (versionLike === 'bookworm') || (versionLike === 'stretch') || (versionLike === 'jessie')) {
-      //    await exec(`apt-get install --yes --no-install-recommends ${array2spaced(this.packagesLocalisation(verbose))}`, echo)
-      // }
 
       if (await Pacman.isCli()) {
          /**
@@ -207,12 +203,7 @@ export default class Pacman {
       const retVal = false
       const versionLike = Pacman.versionLike()
 
-      // console.log(`apt-get purge --yes ${array2spaced(this.filterInstalled(this.packages(true, verbose)))}`)
       await exec(`apt-get purge --yes ${array2spaced(this.filterInstalled(this.packages(true, verbose)))}`, echo)
-
-      if ((versionLike === 'buster') || (versionLike === 'beowulf')) {
-         await exec(`apt-get purge --yes  ${array2spaced(this.filterInstalled(this.packagesLocalisation(verbose)))}`, echo)
-      }
 
       await exec('apt-get autoremove --yes', echo)
       return retVal
@@ -725,52 +716,4 @@ export default class Pacman {
       return installed
    }
 
-   /**
-    * @param remove 
-    * @param verbose 
-    * 
-    * Va solo a runtime, l'idea era di localizzare per naked
-    */
-   static packagesLocalisation(remove = false, verbose = false) {
-      const versionLike = Pacman.versionLike()
-      const packages = []
-
-      const settings = new Settings()
-      settings.load()
-
-      const locales: string[] = settings.config.locales
-
-      if ((versionLike === 'jessie') ||
-         (versionLike === 'stretch') ||
-         (versionLike === 'buster') ||
-         versionLike === 'bullseye' ||
-         (versionLike === 'beowulf')) {
-
-         for (let i = 0; i < locales.length; i++) {
-            if (locales[i] === process.env.LANG) {
-               continue
-            }
-            if (locales[i] === `it_IT.UTF-8`) {
-               packages.push('task-italian')
-            } else if (locales[i] === `en_US.UTF-8`) {
-               packages.push('task-english')
-            } else if (locales[i] === `es_PE.UTF-8`) {
-               packages.push('task-spanish')
-            } else if (locales[i] === `pt_BR.UTF-8`) {
-               packages.push('task-brazilian-portuguese')
-            } else if (locales[i] === `fr_FR.UTF-8`) {
-               packages.push('task-french')
-            } else if (locales[i] === `de_DE.UTF-8`) {
-               packages.push('task-german')
-            } else if (locales[i] === `pl_PL.UTF-8`) {
-               packages.push('task-polish')
-            } else if (locales[i] === `de_DE.UTF-8`) {
-               packages.push('task-russian')
-            }
-         }
-         packages.push('live-task-localisation')
-      }
-
-      return packages
-   }
 }
