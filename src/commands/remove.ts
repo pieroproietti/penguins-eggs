@@ -52,7 +52,16 @@ export default class Remove extends Command {
                } else {
                   execSync('apt-get remove eggs --yes')
                }
+
                if (flags.autoremove) {
+                  /**
+                   * Rimozione dipendenze da versione live-config / open-infrastructure-system-config (ubuntu bionic)
+                   */
+                  if (Pacman.packageIsInstalled('open-infrastructure-system-config')) {
+                     execSync('apt-get purge open-infrastructure-system-config --yes')
+                  } else if (Pacman.packageIsInstalled('live-config')) {
+                     execSync('apt-get purge live-config --yes')
+                  }
                   execSync('apt-get autoremove --yes')
                }
             }
@@ -65,31 +74,17 @@ export default class Remove extends Command {
                if (flags.autoremove) {
                   await Pacman.prerequisitesRemove()
                }
+
                if (flags.purge) {
                   await Pacman.configurationRemove()
+
+                  // eggs completion
+                  execSync('rm -f /etc/bash_completion.d/eggs.bash')
+
+                  // manpages
+                  execSync('rm -f /usr/share/man/man1/eggs.1.gz')
                }
                Utils.warning('You are using  eggs as sources. I\'ll NOT remove it')
-            }
-
-         } else {
-            /**
-             * npm package
-             */
-            Utils.warning(`You are using eggs as npm package. I'll remove it.`)
-            if (await Utils.customConfirm()) {
-               if (flags.autoremove) {
-                  await Pacman.prerequisitesRemove()
-               }
-               // Rimuove eggs completion
-               execSync('rm -f /etc/bash_completion.d/eggs.bash')
-               // Rimuove manpages
-               execSync('rm -f /usr/share/man/man1/eggs.1.gz')
-               // purge configurations files
-               if (flags.purge) {
-                  await Pacman.configurationRemove()
-               }
-               // Rimuove eggs
-               execSync('npm remove penguins-eggs -g')
             }
          }
       }
