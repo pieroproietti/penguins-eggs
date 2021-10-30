@@ -41,12 +41,12 @@ export default class Config extends Command {
             Utils.titles(this.id + ' ' + this.argv)
             if (Utils.isDebPackage()) {
                 console.log('eggs running as package .deb')
-            }
-            if (Utils.isNpmPackage()) {
-                console.log('eggs running as package .npm')
-            }
-            if (Utils.isSources()) {
+            } else if (Utils.isSources()) {
                 console.log('eggs running from sources')
+            } else if (Utils.isNpmPackage()) {
+                console.log('eggs running as package .npm')
+                console.log()
+                console.log('The eggs npm package is supported until version 8.17.8, install eggs as deb package or use eggs from source.')
             }
         }
 
@@ -60,7 +60,7 @@ export default class Config extends Command {
              * Se siamo in un pacchetto npm
              * Aggiunge autocomplete e manPage
              */
-            if (!Utils.isNpmPackage()) {
+            if (!Utils.isSources()) {
                 await Pacman.autocompleteInstall(nointeractive)
                 await Pacman.manPageInstall(verbose)
             }
