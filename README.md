@@ -474,7 +474,10 @@ EXAMPLES
   remove eggs
 
   $ sudo eggs remove --purge 
-  remove eggs, eggs configurations, packages prerequisites
+  remove eggs, eggs configurations, configuration's files
+
+  $ sudo eggs remove --autoremove 
+  remove eggs, eggs configurations, packages dependencies
 ```
 
 _See code: [src/commands/remove.ts](https://github.com/pieroproietti/penguins-eggs/blob/v8.17.9/src/commands/remove.ts)_

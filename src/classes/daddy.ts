@@ -36,7 +36,6 @@ export default class Daddy {
 
 
     async helpMe(loadDefault = false, verbose = false) {
-        console.log('loadDefault:' + loadDefault)
         // Controllo configurazione
         if (!Pacman.configurationCheck()) {
             console.log('- creating configuration dir...')
@@ -44,9 +43,9 @@ export default class Daddy {
         }
 
         // Controllo prerequisites
-        if (!Pacman.prerequisitesCheck()) {
+        if (!await Pacman.prerequisitesCheck()) {
             console.log('- installing prerequisites...')
-            Pacman.prerequisitesInstall(verbose)
+            await Pacman.prerequisitesInstall(verbose)
         }
 
         // Templates
@@ -127,7 +126,10 @@ export default class Daddy {
                 }
             }
 
-            // produce
+
+            /**
+             * produce
+             */
             if (loadDefault) {
                 flags += ' --verbose'
                 verbose = true

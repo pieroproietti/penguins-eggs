@@ -28,6 +28,7 @@ export default class Dad extends Command {
     console.log(chalk.cyan('Daddy, what else did you leave for me?'))
     const { flags } = this.parse(Dad)
     if (Utils.isRoot(this.id)) {
+
       if (flags.clean || flags.default){
         await exec('rm /etc/penguins-eggs.d -rf')
       }

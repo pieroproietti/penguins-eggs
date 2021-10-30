@@ -65,7 +65,9 @@ export default class Pacman {
     * Constrolla se è installato wayland
     */
    static async isWayland(): Promise<boolean> {
-      return Pacman.packageIsInstalled('wayland')
+      // loginctl show-session 1 |grep Type
+      // loginctl show-session $(awk '/tty/ {print $1}' <(loginctl)) -p Type | awk -F= '{print $2}'
+      return Pacman.packageIsInstalled('xwayland')
    }
 
    /**
@@ -371,7 +373,7 @@ export default class Pacman {
       if (!fs.existsSync(confRoot)) {
          execSync(`mkdir ${confRoot}`)
       }
-      const addons = `${confRoot} /addons`
+      const addons = `${confRoot}/addons`
       const distros = `${confRoot}/distros`
       if (fs.existsSync(addons)) {
          execSync(`rm -rf ${addons}`)

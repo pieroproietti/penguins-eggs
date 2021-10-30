@@ -126,7 +126,6 @@ export default class Config extends Command {
          * Visualizza cosa c'è da fare
          */
         if (!nointeractive) {
-            Utils.warning('config: we need...')
             if (i.needApt) {
                 console.log('- update the system')
                 console.log(chalk.yellow('  apt update --yes\n'))
