@@ -18,6 +18,9 @@ You can follow the project also consulting the [commit history](https://github.c
 ## Changelog
 Versions are listed on reverse order, the first is the last one.
 
+### eggs-8.17-9
+* removed npm package and localization, bugfixes in command eggs remove --autoremove
+
 ### eggs-8.17-8
 * restored bionic compatubility
 

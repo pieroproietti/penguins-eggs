@@ -8,8 +8,6 @@ import { Command, flags } from '@oclif/command'
 import Utils from '../classes/utils'
 import Pacman from '../classes/pacman'
 import { IInstall } from '../interfaces'
-
-import chalk = require('chalk')
 import { execSync } from 'child_process'
 
 const exec = require('../lib/utils').exec
@@ -22,7 +20,8 @@ export default class Remove extends Command {
 
    static examples = [
       `$ sudo eggs remove \nremove eggs\n`,
-      `$ sudo eggs remove --purge \nremove eggs, eggs configurations, packages prerequisites\n`,
+      `$ sudo eggs remove --purge \nremove eggs, eggs configurations, configuration's files\n`,
+      `$ sudo eggs remove --autoremove \nremove eggs, eggs configurations, packages dependencies\n`,
    ]
 
    static flags = {
@@ -42,17 +41,14 @@ export default class Remove extends Command {
       }
 
       if (Utils.isRoot()) {
+         /**
+         * debian package
+         */
          if (Utils.isDebPackage()) {
-            /**
-             * debian package
-             */
             if (await Utils.customConfirm()) {
-               if (flags.purge) {
-                  execSync('apt-get purge eggs --yes')
-               } else {
-                  execSync('apt-get remove eggs --yes')
-               }
-
+               /**
+               * in caso di autoremove, tolgo le dipendenze di versione PRIMA di eggs, altrimenti si inchioda
+               */
                if (flags.autoremove) {
                   /**
                    * Rimozione dipendenze da versione live-config / open-infrastructure-system-config (ubuntu bionic)
@@ -62,14 +58,24 @@ export default class Remove extends Command {
                   } else if (Pacman.packageIsInstalled('live-config')) {
                      execSync('apt-get purge live-config --yes')
                   }
+               }
+
+               if (flags.purge) {
+                  execSync('apt-get purge eggs --yes')
+               } else {
+                  execSync('apt-get remove eggs --yes')
+               }
+
+               if (flags.autoremove) {
                   execSync('apt-get autoremove --yes')
                }
             }
+         }
 
-            /**
-             * sources
-             */
-         } else if (Utils.isSources()) {
+         /**
+         * sources
+         */
+         if (Utils.isSources()) {
             if (await Utils.customConfirm()) {
                if (flags.autoremove) {
                   await Pacman.prerequisitesRemove()
