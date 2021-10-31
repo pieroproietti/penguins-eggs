@@ -588,7 +588,6 @@ OPTIONS
   -a, --apt      if eggs package is .deb, update from distro repositories
   -b, --basket   if eggs package is .deb, update from eggs basket
   -h, --help     show CLI help
-  -n, --npm      if eggs package is .npm, update from npmjs.com
   -v, --verbose  verbose
 
 EXAMPLE
