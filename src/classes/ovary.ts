@@ -179,7 +179,7 @@ export default class Ovary {
          if (await Pacman.isGui()) {
             await this.createAutostart(this.theme, myAddons)
          } else {
-            // cliAutologin.add(this.settings.distro.distroId, this.settings.distro.versionId, this.settings.config.user_opt, this.settings.config.user_opt_passwd, this.settings.config.root_passwd, this.settings.work_dir.merged)
+            cliAutologin.add(this.settings.distro.distroId, this.settings.distro.versionId, this.settings.config.user_opt, this.settings.config.user_opt_passwd, this.settings.config.root_passwd, this.settings.work_dir.merged)
          }
          await this.editLiveFs(verbose)
          await this.makeSquashfs(scriptOnly, verbose)
