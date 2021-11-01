@@ -7,10 +7,11 @@
  */
 
 /**
- * Debian 12 bookworm testing
- * Debian 11 bullseye stable
+ * Debian 8 (jessie)
+ * Debian 9 (stretch)
  * Debian 10 (buster) — old-stable
- * Debian 9 (stretch) — old-old-stable
+ * Debian 11 bullseye - stable
+ * Debian 12 bookworm - testing/unstable
  *
  * Devuan ASCII
  * Devuan beowlf
@@ -21,18 +22,12 @@
  * Ubuntu 18.10 (cosmic) expired
  * Ubuntu 19.04 (disco)  expired
  * Ubuntu 19.10 (eoan)   expired
- * Ubuntu 20.04 (focal) LTS   active
+ * Ubuntu 20.04 (focal) LTS active
  * Ubuntu 20.10 (groovy) active
  * Ubuntu 21.04 (hirsute) active
- * Ubuntu 21.10 (impish)
+ * Ubuntu 21.10 (impish) active
  * Ubuntu 22.04 (jammy) LTS
  * 
- * stretch old
- * buster
- * xenial old
- * bionic old
- * eoan
- * focal
  */
 
 'use strict'

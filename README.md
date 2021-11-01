@@ -79,7 +79,6 @@ sudo curl -s --compressed -o /etc/apt/sources.list.d/penguins-eggs-ppa.list "htt
 
 Update your repositories: **sudo apt update** and install eggs: **sudo apt install eggs**.
 
-
 ### Download the package and install with dpkg
 
 The simplest way to install eggs is download the [package eggs](https://sourceforge.net/projects/penguins-eggs/files/packages-deb/) from [sourceforge page of the project](https://sourceforge.net/projects/penguins-eggs/) and install it
