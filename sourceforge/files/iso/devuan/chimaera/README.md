@@ -23,15 +23,7 @@ All ISOs include eggs, you can udate it with: ```sudo eggs update```.
 
 # Devuan 
 
-**beowulf**
-oldstable Debian version buster
-
 **chimaera**
-stable Debian version bullseye
-
-**daedalus**
-in development Debian version bookworm
-
 
 # Disclaim
 __Please note what this project is in no way connected to Devuan in any official way, it’s just my personal experiment__.
