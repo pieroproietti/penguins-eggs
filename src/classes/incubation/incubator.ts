@@ -12,7 +12,6 @@ import { IRemix, IDistro } from '../../interfaces'
 
 import { Jessie } from './distros/jessie'
 import { Buster } from './distros/buster'
-import { Bullseye } from './distros/bullseye'
 import { Beowulf } from './distros/beowulf'
 import { Focal } from './distros/focal'
 import { Bionic } from './distros/bionic'
@@ -74,14 +73,17 @@ export default class Incubator {
          const buster = new Buster(this.installer, this.remix, this.distro, release, this.user_opt, this.verbose)
          await buster.create()
       } else if (this.distro.versionLike === 'bullseye') {
-         const bullseye = new Bullseye(this.installer, this.remix, this.distro, release, this.user_opt, this.verbose)
+         const bullseye = new Buster(this.installer, this.remix, this.distro, release, this.user_opt, this.verbose)
          await bullseye.create()
       } else if (this.distro.versionLike === 'bookworm') {
-         const bookworm = new Bullseye(this.installer, this.remix, this.distro, release, this.user_opt, this.verbose)
+         const bookworm = new Buster(this.installer, this.remix, this.distro, release, this.user_opt, this.verbose)
          await bookworm.create()
       } else if (this.distro.versionLike === 'beowulf') {
          const beowulf = new Beowulf(this.installer, this.remix, this.distro, release, this.user_opt, this.verbose)
          await beowulf.create()
+      } else if (this.distro.versionLike === 'chimaera') {
+         const chimaera = new Beowulf(this.installer, this.remix, this.distro, release, this.user_opt, this.verbose)
+         await chimaera.create()
       } else if (this.distro.versionLike === 'focal') {
          const focal = new Focal(this.installer, this.remix, this.distro, release, this.user_opt, this.verbose)
          await focal.create()

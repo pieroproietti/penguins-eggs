@@ -14,8 +14,8 @@
  * Debian 12 bookworm - testing/unstable
  *
  * Devuan ASCII
- * Devuan beowlf
- * Devuan Chimaera
+ * Devuan beowlf - old-stable
+ * Devuan Chimaera - stable
  *
  * Ubuntu 16.04 (xenial) LTS  active
  * Ubuntu 18.04 (bionic) LTS  active
@@ -161,6 +161,10 @@ class Distro implements IDistro {
       } else if (this.versionId === 'beowulf') {
          this.distroLike = 'Devuan'
          this.versionLike = 'beowulf'
+      } else if (this.versionId === 'chimaera') {
+         this.distroLike = 'Devuan'
+         this.versionLike = 'chimaera'
+
 
       } else if (this.versionId === 'xenial') {
          // Ubuntu xenial
