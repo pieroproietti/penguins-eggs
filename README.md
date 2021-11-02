@@ -51,7 +51,7 @@ I suggest to leave the default values unchanged during the development of your r
 yolk so called - staying on the subject of eggs - is a local repository included in the livecd that contains a minimum of indispensable packages during installation. Thanks to yolk, you can safely install your system without the need of an active internet connection.
 
 ## What distributions can I use?
-eggs was born on Debian strecth/buster, but actually full support Debian from jessie to sid (bullseye), Devuan beowulf, Ubuntu focal, bionic and derivatives. I actually try it against Debian varius versions, before releases. I tried it successfully in LMDE 4 debbie, and deepin. eggs, generally must work with all the derivates from that distros.
+eggs was born on Debian strecth/buster, but actually full support Debian from jessie to bookworm/sid, Devuan beowulf, chimaera, daedalus, Ubuntu bionic, focal, , hirsute, impish, jammy and all derivatives including Linux mint, Deepin, neon KDE, etc. I continuisly try it against Debian various versions, before releases, I tried it successfully in LMDE 4 debbie, and deepin. eggs, generally must work with all the derivates from Debian, Devuan and Ubuntu.
 
 Some examples of iso images remastered with eggs are in the [sourceforge page of the project](https://sourceforge.net/projects/penguins-eggs/files/iso/). 
 
