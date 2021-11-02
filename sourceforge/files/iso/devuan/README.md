@@ -22,7 +22,10 @@ All ISOs are based on Devuan beowulf 3.1
 All ISOs include eggs, you can udate it with: ```sudo eggs update```.
 
 # Devuan 
-* **devuan-beowulf-xfce** - a remaster of devuan installable with GUI installer calamares.
+
+**beowulf**
+
+**chimaera**
 
 # Disclaim
 __Please note what this project is in no way connected to Devuan in any official way, it’s just my personal experiment__.

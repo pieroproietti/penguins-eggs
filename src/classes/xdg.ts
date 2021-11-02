@@ -89,7 +89,7 @@ export default class Xdg {
          // slim
          if (Pacman.packageIsInstalled('slim')) {
             shx.sed('-i', `auto_login no`, `auto_login yes`, `${chroot}/etc/slim.conf`)
-            shx.sed('-i', `default_user ${olduser}`, `default_user ${newuser}`, `${chroot}/etc/slim`)
+            shx.sed('-i', `default_user ${olduser}`, `default_user ${newuser}`, `${chroot}/etc/slim.conf`)
          }
 
          // lightdm
