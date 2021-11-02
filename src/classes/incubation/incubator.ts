@@ -84,6 +84,9 @@ export default class Incubator {
       } else if (this.distro.versionLike === 'chimaera') {
          const chimaera = new Beowulf(this.installer, this.remix, this.distro, release, this.user_opt, this.verbose)
          await chimaera.create()
+      } else if (this.distro.versionLike === 'daedalus') {
+         const daedalus = new Beowulf(this.installer, this.remix, this.distro, release, this.user_opt, this.verbose)
+         await daedalus.create()
       } else if (this.distro.versionLike === 'focal') {
          const focal = new Focal(this.installer, this.remix, this.distro, release, this.user_opt, this.verbose)
          await focal.create()
