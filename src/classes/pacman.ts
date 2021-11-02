@@ -532,6 +532,13 @@ export default class Pacman {
          await this.ln(`${buster}/locales`, `${chimaera}/locales`, remove, verbose)
          await this.ln(`${buster}/calamares`, `${chimaera}/calamares`, remove, verbose)
 
+         // Devuan daedalus. Eredita tutto da buster
+         const daedalus = `${rootPen}/conf/distros/daedalus`
+         await this.ln(`${buster}/grub`, `${daedalus}/grub`, remove, verbose)
+         await this.ln(`${buster}/isolinux`, `${daedalus}/isolinux`, remove, verbose)
+         await this.ln(`${buster}/locales`, `${daedalus}/locales`, remove, verbose)
+         await this.ln(`${buster}/calamares`, `${daedalus}/calamares`, remove, verbose)
+
          // Ubuntu 20.04 - focal. Eredita da buster i seguenti
          const focal = `${rootPen}/conf/distros/focal`
          await this.ln(`${buster}/grub/loopback.cfg`, `${focal}/grub/loopback.cfg`, remove, verbose)
