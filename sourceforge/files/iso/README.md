@@ -41,8 +41,17 @@ I work mostly on Debian, so here you can find more personal versions and other e
 ## bullseye
 
 * **naked** - just the juice, without GUI. You can start here to build your revolution! (i386 and amd64)
+* **hen** - with xfce, node-8.17.0, git and all the necessary to start to mantain eggs
+* **xfce** with xfce
+* **kde** with kde plasma
+* **gnome** with gnome3
 
 ## bookworm
+* **naked** - just the juice, without GUI. You can start here to build your revolution! (i386 and amd64)
+* **hen** - with xfce, node-8.17.0, git and all the necessary to start to mantain eggs
+* **xfce** with xfce
+* **kde** with kde plasma
+* **gnome** with gnome3
 
 # Ubuntu
 
@@ -51,7 +60,7 @@ I work mostly on Debian, so here you can find more personal versions and other e
 
 ## focal LTS
 * **naked** - Ubuntu 20.04 just the juice, without GUI. You can start here to build your revolution! (amd64)
-* **gnome3** - Ubuntu 20.04 focal gnome3, remastered with eggs, without any modifications. (amd64)
+* **gnome** - Ubuntu 20.04 focal gnome, remastered with eggs, without any modifications. (amd64)
 
 ## hirsute
 * **gnome3** - Ubuntu 21.04 hirsute gnome3, remastered with eggs, without any modifications. (amd64)
@@ -64,7 +73,15 @@ I work mostly on Debian, so here you can find more personal versions and other e
 
 
 # Devuan 
-* **beowulf** - like debu, but devual based.  (amd64)
+
+## beowulf
+**xfce** with xfce
+
+## chimaera
+**xfce** with xfce
+
+## daedalus
+**xfce** with xfce
 
 # Derivated distros
 
