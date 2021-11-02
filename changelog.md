@@ -18,6 +18,11 @@ You can follow the project also consulting the [commit history](https://github.c
 ## Changelog
 Versions are listed on reverse order, the first is the last one.
 
+### eggs-8.17-10
+* added Devuan chimaera
+
+I also cleaned the templates of the distros removing bullseye as it was just a copy of buster
+
 ### eggs-8.17-9
 * removed npm package and localization, bugfixes in command eggs remove --autoremove
 
