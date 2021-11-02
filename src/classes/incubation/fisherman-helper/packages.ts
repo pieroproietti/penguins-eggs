@@ -85,16 +85,6 @@ function removeEggs(distro: IDistro): string {
       text += addIfExist(deb2check)
    }
 
-   /**
-    * Rimuove i pacchetti di localizzazione
-    */
-   if ((distro.versionLike === 'buster') || (distro.versionLike === 'beowulf')) {
-      const packages = Pacman.packagesLocalisation()
-      for (const i in packages) {
-         const deb2check = packages[i].trimLeft().trimRight()
-         text += addIfExist(deb2check)
-      }
-   }
    text += addIfExist('calamares')
 
    return text

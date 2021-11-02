@@ -74,7 +74,6 @@ export const depArch = [
 /**
  * dependencies for versions
  * 
- * non prende live-config
  */
 export const depVersions = [
    {

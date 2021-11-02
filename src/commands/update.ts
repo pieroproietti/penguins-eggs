@@ -24,7 +24,6 @@ export default class Update extends Command {
       help: flags.help({ char: 'h' }),
       apt: flags.boolean({ char: 'a', description: 'if eggs package is .deb, update from distro repositories' }),
       basket: flags.boolean({ char: 'b', description: 'if eggs package is .deb, update from eggs basket' }),
-      npm: flags.boolean({ char: 'n', description: 'if eggs package is .npm, update from npmjs.com' }),
       verbose: flags.boolean({ char: 'v', description: 'verbose' })
    }
 
@@ -38,8 +37,6 @@ export default class Update extends Command {
             Utils.warning(`You are on penguins-eggs v. ${Utils.getPackageVersion()} from sources`)
          } else if (Utils.isDebPackage()) {
             Utils.warning(`You are on eggs-${Utils.getPackageVersion()} installed as package .deb`)
-         } else {
-            Utils.warning(`You are on penguins-eggs@${Utils.getPackageVersion()} installed as package npm`)
          }
 
          let apt = false
@@ -50,11 +47,6 @@ export default class Update extends Command {
             Utils.warning('eggs-' + aptVersion + ' is available via apt')
          } else {
             Utils.warning('eggs is not available your repositories')
-         }
-
-         const npmVersion = await Pacman.packageNpmLast('penguins-eggs')
-         if (npmVersion !== '') {
-            Utils.warning('penguins-eggs@' + npmVersion + ' available via npm')
          }
 
          const basket = new Basket()
@@ -68,13 +60,11 @@ export default class Update extends Command {
           * e, questo corrisponde al tipo di pacchetto 
           * installato
           */
-         if (flags.npm || flags.apt || flags.basket) {
+         if (flags.apt || flags.basket) {
             if (Utils.isDebPackage() && flags.apt) {
                await this.getDebFromApt()
             } else if (Utils.isDebPackage() && flags.basket) {
                await basket.get()
-            } else if (flags.npm) {
-               await this.getFromNpm()
             } else {
                await this.chooseUpdate()
             }
@@ -101,8 +91,6 @@ export default class Update extends Command {
          await this.getDebFromApt()
       } else if (choose === 'basket') {
          await basket.get()
-      } else if (choose === 'npm') {
-         await this.getFromNpm()
       } else if (choose === 'lan') {
          await this.getDebFromLan()
       } else if (choose === 'manual') {
@@ -122,8 +110,6 @@ export default class Update extends Command {
       choices.push(new inquirer.Separator('select, download and update from basket'))
       choices.push('lan')
       choices.push(new inquirer.Separator('automatic import and update from lan'))
-      choices.push('npm')
-      choices.push(new inquirer.Separator('automatic import and update from npmjs.com'))
       choices.push('manual')
       choices.push(new inquirer.Separator('manual download from sourceforge.net and update with dpkg'))
       choices.push('sources')
@@ -144,14 +130,6 @@ export default class Update extends Command {
       return answer.selected
    }
 
-
-   /**
-    * getFromNpm
-    */
-   async getFromNpm() {
-      shx.exec(`npm update ${Utils.getPackageName()}@latest -g`)
-   }
-
    /**
     * 
     * @param aptVersion 
@@ -165,9 +143,9 @@ export default class Update extends Command {
       console.log('cd ~')
       console.log('git clone https://github.com/pieroproietti/penguins-eggs')
       console.log('')
-      console.log('Before to use eggs, remember to install npm packages:')
+      console.log('Before to use eggs, remember to run ./init to install npm packages:')
       console.log('cd ~/penguins-eggs')
-      console.log('npm install')
+      console.log('./init')
    }
 
    /**
@@ -200,7 +178,7 @@ export default class Update extends Command {
     * 
     */
    async getDebFromApt() {
-      if (Pacman.packageAptAvailable('eggs')) {
+      if (await Pacman.packageAptAvailable('eggs')) {
          await exec(`apt reinstall eggs`)
       } else {
          console.log(`eggs is not present in your repositories`)

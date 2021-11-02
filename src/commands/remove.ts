@@ -8,8 +8,6 @@ import { Command, flags } from '@oclif/command'
 import Utils from '../classes/utils'
 import Pacman from '../classes/pacman'
 import { IInstall } from '../interfaces'
-
-import chalk = require('chalk')
 import { execSync } from 'child_process'
 
 const exec = require('../lib/utils').exec
@@ -22,7 +20,8 @@ export default class Remove extends Command {
 
    static examples = [
       `$ sudo eggs remove \nremove eggs\n`,
-      `$ sudo eggs remove --purge \nremove eggs, eggs configurations, packages prerequisites\n`,
+      `$ sudo eggs remove --purge \nremove eggs, eggs configurations, configuration's files\n`,
+      `$ sudo eggs remove --autoremove \nremove eggs, eggs configurations, packages dependencies\n`,
    ]
 
    static flags = {
@@ -42,54 +41,56 @@ export default class Remove extends Command {
       }
 
       if (Utils.isRoot()) {
+         /**
+         * debian package
+         */
          if (Utils.isDebPackage()) {
-            /**
-             * debian package
-             */
             if (await Utils.customConfirm()) {
+               /**
+               * in caso di autoremove, tolgo le dipendenze di versione PRIMA di eggs, altrimenti si inchioda
+               */
+               if (flags.autoremove) {
+                  /**
+                   * Rimozione dipendenze da versione live-config / open-infrastructure-system-config (ubuntu bionic)
+                   */
+                  if (Pacman.packageIsInstalled('open-infrastructure-system-config')) {
+                     execSync('apt-get purge open-infrastructure-system-config --yes')
+                  } else if (Pacman.packageIsInstalled('live-config')) {
+                     execSync('apt-get purge live-config --yes')
+                  }
+               }
+
                if (flags.purge) {
                   execSync('apt-get purge eggs --yes')
                } else {
                   execSync('apt-get remove eggs --yes')
                }
+
                if (flags.autoremove) {
                   execSync('apt-get autoremove --yes')
                }
             }
+         }
 
-            /**
-             * sources
-             */
-         } else if (Utils.isSources()) {
+         /**
+         * sources
+         */
+         if (Utils.isSources()) {
             if (await Utils.customConfirm()) {
                if (flags.autoremove) {
                   await Pacman.prerequisitesRemove()
                }
+
                if (flags.purge) {
                   await Pacman.configurationRemove()
+
+                  // eggs completion
+                  execSync('rm -f /etc/bash_completion.d/eggs.bash')
+
+                  // manpages
+                  execSync('rm -f /usr/share/man/man1/eggs.1.gz')
                }
                Utils.warning('You are using  eggs as sources. I\'ll NOT remove it')
-            }
-
-         } else {
-            /**
-             * npm package
-             */
-            Utils.warning(`You are using eggs as npm package. I'll remove it.`)
-            if (await Utils.customConfirm()) {
-               if (flags.autoremove) {
-                  await Pacman.prerequisitesRemove()
-               }
-               // Rimuove eggs completion
-               execSync('rm -f /etc/bash_completion.d/eggs.bash')
-               // Rimuove manpages
-               execSync('rm -f /usr/share/man/man1/eggs.1.gz')
-               // purge configurations files
-               if (flags.purge) {
-                  await Pacman.configurationRemove()
-               }
-               // Rimuove eggs
-               execSync('npm remove penguins-eggs -g')
             }
          }
       }

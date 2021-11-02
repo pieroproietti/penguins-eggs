@@ -99,15 +99,20 @@ export default class Xdg {
 
          // sddm
          if (Pacman.packageIsInstalled('sddm')) {
-            // cat /etc/sddm.conf 
-            // Autologin]
-            // User=artisan
-            // Session=plasma.desktop
+
+            let sddmChanged = false
+            // Cerco configurazione nel file sddm.conf
             const fileConf = `${chroot}/etc/sddm.conf`
             if (fs.existsSync(fileConf)) {
-               // it work 15/7/2021 but don't log... why????
-               shx.sed('-i', `User=${olduser}`, `User=${newuser}`, fileConf)
-            } else {
+               const content = fs.readFileSync(fileConf)
+               if (content.includes('[Autologin]')) {
+                  shx.sed('-i', `User=${olduser}`, `User=${newuser}`, fileConf)
+                  sddmChanged = true
+               }
+            }
+
+            // Se non l'ho trovato, modifico /etc/sddm.conf.d/autologin.conf
+            if (!sddmChanged) {
                const dirConf = `${chroot}/etc/sddm.conf.d`
                const autologin = `${dirConf}/autologin.conf`
                if (fs.existsSync(autologin)) {

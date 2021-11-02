@@ -65,7 +65,9 @@ export default class Pacman {
     * Constrolla se è installato wayland
     */
    static async isWayland(): Promise<boolean> {
-      return Pacman.packageIsInstalled('wayland')
+      // loginctl show-session 1 |grep Type
+      // loginctl show-session $(awk '/tty/ {print $1}' <(loginctl)) -p Type | awk -F= '{print $2}'
+      return Pacman.packageIsInstalled('xwayland')
    }
 
    /**
@@ -178,10 +180,6 @@ export default class Pacman {
 
       await exec(`apt-get install --yes ${array2spaced(this.packages(false, verbose))}`, echo)
 
-      // localization Annullato
-      // if ((versionLike === 'buster') || (versionLike === 'beowulf') || (versionLike === 'bullseye') || (versionLike === 'bookworm') || (versionLike === 'stretch') || (versionLike === 'jessie')) {
-      //    await exec(`apt-get install --yes --no-install-recommends ${array2spaced(this.packagesLocalisation(verbose))}`, echo)
-      // }
 
       if (await Pacman.isCli()) {
          /**
@@ -207,12 +205,7 @@ export default class Pacman {
       const retVal = false
       const versionLike = Pacman.versionLike()
 
-      // console.log(`apt-get purge --yes ${array2spaced(this.filterInstalled(this.packages(true, verbose)))}`)
       await exec(`apt-get purge --yes ${array2spaced(this.filterInstalled(this.packages(true, verbose)))}`, echo)
-
-      if ((versionLike === 'buster') || (versionLike === 'beowulf')) {
-         await exec(`apt-get purge --yes  ${array2spaced(this.filterInstalled(this.packagesLocalisation(verbose)))}`, echo)
-      }
 
       await exec('apt-get autoremove --yes', echo)
       return retVal
@@ -380,7 +373,7 @@ export default class Pacman {
       if (!fs.existsSync(confRoot)) {
          execSync(`mkdir ${confRoot}`)
       }
-      const addons = `${confRoot} /addons`
+      const addons = `${confRoot}/addons`
       const distros = `${confRoot}/distros`
       if (fs.existsSync(addons)) {
          execSync(`rm -rf ${addons}`)
@@ -531,6 +524,13 @@ export default class Pacman {
          await this.ln(`${buster}/isolinux`, `${beowulf}/isolinux`, remove, verbose)
          await this.ln(`${buster}/locales`, `${beowulf}/locales`, remove, verbose)
          await this.ln(`${buster}/calamares`, `${beowulf}/calamares`, remove, verbose)
+
+         // Devuan chimaera. Eredita tutto da buster
+         const chimaera = `${rootPen}/conf/distros/chimaera`
+         await this.ln(`${buster}/grub`, `${chimaera}/grub`, remove, verbose)
+         await this.ln(`${buster}/isolinux`, `${chimaera}/isolinux`, remove, verbose)
+         await this.ln(`${buster}/locales`, `${chimaera}/locales`, remove, verbose)
+         await this.ln(`${buster}/calamares`, `${chimaera}/calamares`, remove, verbose)
 
          // Ubuntu 20.04 - focal. Eredita da buster i seguenti
          const focal = `${rootPen}/conf/distros/focal`
@@ -725,52 +725,4 @@ export default class Pacman {
       return installed
    }
 
-   /**
-    * @param remove 
-    * @param verbose 
-    * 
-    * Va solo a runtime, l'idea era di localizzare per naked
-    */
-   static packagesLocalisation(remove = false, verbose = false) {
-      const versionLike = Pacman.versionLike()
-      const packages = []
-
-      const settings = new Settings()
-      settings.load()
-
-      const locales: string[] = settings.config.locales
-
-      if ((versionLike === 'jessie') ||
-         (versionLike === 'stretch') ||
-         (versionLike === 'buster') ||
-         versionLike === 'bullseye' ||
-         (versionLike === 'beowulf')) {
-
-         for (let i = 0; i < locales.length; i++) {
-            if (locales[i] === process.env.LANG) {
-               continue
-            }
-            if (locales[i] === `it_IT.UTF-8`) {
-               packages.push('task-italian')
-            } else if (locales[i] === `en_US.UTF-8`) {
-               packages.push('task-english')
-            } else if (locales[i] === `es_PE.UTF-8`) {
-               packages.push('task-spanish')
-            } else if (locales[i] === `pt_BR.UTF-8`) {
-               packages.push('task-brazilian-portuguese')
-            } else if (locales[i] === `fr_FR.UTF-8`) {
-               packages.push('task-french')
-            } else if (locales[i] === `de_DE.UTF-8`) {
-               packages.push('task-german')
-            } else if (locales[i] === `pl_PL.UTF-8`) {
-               packages.push('task-polish')
-            } else if (locales[i] === `de_DE.UTF-8`) {
-               packages.push('task-russian')
-            }
-         }
-         packages.push('live-task-localisation')
-      }
-
-      return packages
-   }
 }
