@@ -19,7 +19,9 @@ You can follow the project also consulting the [commit history](https://github.c
 Versions are listed on reverse order, the first is the last one.
 
 ### eggs-8.17-11
-* added Devuan daedalus, bugfix tools:stat, removed apt in favor of apt-get, tested on jessie, strecth and buster
+* added Devuan daedalus, bugfix tools:stat, removed apt in favor of apt-get.
+
+Hard tested on all Debian version from jessie to bookworm, i386 and amd64, installable with calamares or krill installers
 
 ### eggs-8.17-10
 * added Devuan chimaera

@@ -192,7 +192,10 @@ export default class Pacman {
           * 
           * A che serve? 
           */
-         await exec(`rm /lib/systemd/system-generators/live-config-getty-generator`)
+         const fileToRemove ='/lib/systemd/system-generators/live-config-getty-generator'
+         if (fs.existsSync(fileToRemove)) {
+            await exec(`rm ${fileToRemove}`)
+         }
       }
       return retVal
    }
