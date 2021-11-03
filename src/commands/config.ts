@@ -128,13 +128,13 @@ export default class Config extends Command {
         if (!nointeractive) {
             if (i.needApt) {
                 console.log('- update the system')
-                console.log(chalk.yellow('  apt update --yes\n'))
+                console.log(chalk.yellow('  apt-get update --yes\n'))
             }
 
             if (i.efi) {
                 if (Utils.machineArch() !== 'i386') {
                     console.log('- install efi packages')
-                    console.log(chalk.yellow('  apt install -y grub-efi-' + Utils.machineArch() + '-bin\n'))
+                    console.log(chalk.yellow('  apt-get install -y grub-efi-' + Utils.machineArch() + '-bin\n'))
                 }
             }
 
@@ -144,7 +144,7 @@ export default class Config extends Command {
                 const packages = Pacman.packages(verbose)
                 
                 if (packages.length > 0) {
-                    console.log(chalk.yellow('  apt install --yes ' + array2spaced(packages)))
+                    console.log(chalk.yellow('  apt-get install --yes ' + array2spaced(packages)))
                 }
             }
 
@@ -165,7 +165,7 @@ export default class Config extends Command {
             if (i.calamares) {
                 console.log('- install calamares')
                 const packages = Pacman.debs4calamares
-                console.log(chalk.yellow('  apt install -y ' + array2spaced(packages) + '\n'))
+                console.log(chalk.yellow('  apt-get install -y ' + array2spaced(packages) + '\n'))
             }
 
             if (i.needApt) {

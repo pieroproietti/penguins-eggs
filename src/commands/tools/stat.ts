@@ -1,5 +1,11 @@
 import { Command, flags } from '@oclif/command'
 import Utils from '../../classes/utils'
+const axios = require('axios')
+const https = require('https')
+const agent = new https.Agent({
+    rejectUnauthorized: false
+})
+
 const yaml = require('js-yaml')
 
 export default class ToolsStat extends Command {
@@ -51,8 +57,8 @@ export default class ToolsStat extends Command {
     const request = '?start_date=' + start + '&end_date=' + end
     url += request
     console.log(type)
-    const axios = require('axios').default
-    const res = await axios.get(url)
+    // const axios = require('axios').default
+    const res = await axios.get(url, { httpsAgent: agent })
     const data = res.data
     console.log(data.countries)
     //console.log(yaml.dump(data))

@@ -11,11 +11,13 @@ import path = require('path')
 import shx = require('shelljs')
 import { IRemix } from '../interfaces'
 import Pacman from '../classes/pacman'
-
 import Utils from './utils'
-import Distro from './distro'
-import Settings from './settings'
-import { AxiosAdapter, AxiosResponse } from 'axios'
+
+const axios = require('axios')
+const https = require('https')
+const agent = new https.Agent({
+    rejectUnauthorized: false
+})
 
 
 const exec = require('../lib/utils').exec
@@ -40,10 +42,11 @@ export default class Basket {
     async last(): Promise<string> {
         if (this.lastVersion === '') {
             const url = 'https://penguins-eggs.net/versions/all/' + Utils.eggsArch() + '/'
-            const axios = require('axios').default
 
             try {
-                const res = await axios.get(url)
+                const res = await axios.get(url, { httpsAgent: agent })
+
+                // const res = await axios.get(url)
                 const data = res.data
 
                 // Ordino le versioni
@@ -69,18 +72,7 @@ export default class Basket {
         }
 
         const url = 'https://penguins-eggs.net/versions/all/' + Utils.eggsArch() + '/'
-        //const axios = require('axios').default
-        const axios = require('axios')
-
-        console.log(url)
-        const https = require('https');
-        // At request level
-        const agent = new https.Agent({
-        rejectUnauthorized: false
-        });
-
         const res = await axios.get(url, { httpsAgent: agent })
-        //const res = await axios.get(url)
         const data = res.data
 
         // Ordino le versioni
