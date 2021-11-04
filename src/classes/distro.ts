@@ -198,7 +198,12 @@ class Distro implements IDistro {
          this.versionLike = 'jammy'
 
          // quindi le derivate...
+      } else if (this.versionId === 'kali-rolling') {
+         // Kali
+         this.distroLike = 'Debian'
+         this.versionLike = 'bookworm'
 
+         // UfficioZero roma
       } else if (this.versionId === 'roma') {
          // UfficioZero roma
          this.distroLike = 'Devuan'
