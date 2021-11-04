@@ -46,9 +46,13 @@ export default class Utils {
    * funziona anche in MX che utilizza systemd
    * ma viene avviato con init
    */
-   static isSystemd(): boolean {
+    static isSystemd(): boolean {
       // return (shx.exec(`pidof systemd`).stdout.trim() === '1')
       return (shx.exec(`ps -p 1 -o comm=`).stdout.trim() === 'systemd')
+   }
+   static isSysvinit(): boolean {
+      // return (shx.exec(`pidof systemd`).stdout.trim() === '1')
+      return (shx.exec(`ps -p 1 -o comm=`).stdout.trim() === 'init')
    }
 
    /**

@@ -12,7 +12,10 @@ import Pacman from '../classes/pacman'
  */
 export async function add(distro: string, version: string, user: string, userPasswd: string, rootPasswd: string, chroot = '/') {
     if (Utils.isSystemd()) {
-        const fileOverride = `${chroot}/etc/systemd/system/getty@.service.d/override.conf`
+        /**
+         * Systemd
+         */
+         const fileOverride = `${chroot}/etc/systemd/system/getty@.service.d/override.conf`
         const dirOverride = path.dirname(fileOverride)
         if (fs.existsSync(dirOverride)) {
             shx.exec(`rm ${dirOverride} -rf`)
@@ -24,8 +27,18 @@ export async function add(distro: string, version: string, user: string, userPas
         content += 'ExecStart=-/sbin/agetty --noclear --autologin ' + user + ' %I $TERM' + '\n'
         fs.writeFileSync(fileOverride, content)
         shx.exec(`chmod +x ${fileOverride}`)
-        await motdAdd(distro, version, user, userPasswd, rootPasswd, chroot)
+    } else if (Utils.isSysvinit()) {
+        /**
+         * sysvinit
+         */
+        const inittab = chroot + '/etc/inittab'
+        console.log(inittab)
+        const login = `1:2345:respawn:/sbin/getty --noclear 38400 tty1`
+        const auto = `1:12345:respawn:/sbin/agetty --autologin live --noclear 38400 tty1 linux`
+        const initContent = fs.readFileSync(inittab, 'utf8')
+        fs.writeFileSync(inittab, initContent.replaceAll(login, auto))
     }
+    await motdAdd(distro, version, user, userPasswd, rootPasswd, chroot)
 }
 
 /**
@@ -34,13 +47,26 @@ export async function add(distro: string, version: string, user: string, userPas
  */
 export async function remove(chroot = '/') {
     if (Utils.isSystemd()) {
-        const fileOverride = `${chroot}/etc/systemd/system/getty@.service.d/override.conf`
+        /**
+         * Systemd
+         */
+         const fileOverride = `${chroot}/etc/systemd/system/getty@.service.d/override.conf`
         const dirOverride = path.dirname(fileOverride)
         if (fs.existsSync(dirOverride)) {
             shx.exec(`rm ${dirOverride} -rf`)
         }
-        await motdRemove(chroot)
+    } else if (Utils.isSysvinit()) {
+        /**
+        * sysvinit
+        */
+        const inittab = chroot + '/etc/inittab'
+        console.log(inittab)
+        const login = `1:2345:respawn:/sbin/getty --noclear 38400 tty1`
+        const auto = `1:12345:respawn:/sbin/agetty --autologin live --noclear 38400 tty1 linux`
+        const initContent = fs.readFileSync(inittab, 'utf8')
+        fs.writeFileSync(inittab, initContent.replaceAll(auto, login))
     }
+    await motdRemove(chroot)
 }
 
 /**
@@ -83,9 +109,9 @@ async function motdRemove(chroot = '/') {
     for (let i = 0; i < motd.length; i++) {
         if (motd[i].includes(startRemove)) {
             remove = true
-        } 
+        }
         if (!remove) {
-            if (motd[i]!=='\n') {
+            if (motd[i] !== '\n') {
                 cleanMotd += motd[i] + '\n'
             }
         }

@@ -334,6 +334,8 @@ OPTIONS
   -v, --verbose
 ```
 
+_See code: [src/commands/info.ts](https://github.com/pieroproietti/penguins-eggs/blob/v8.17.12/src/commands/info.ts)_
+
 ## `eggs install`
 
 command-line system installer - the egg became a penguin!
