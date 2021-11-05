@@ -19,7 +19,7 @@ You can follow the project also consulting the [commit history](https://github.c
 Versions are listed on reverse order, the first is the last one.
 
 ### eggs-8.17-12
-* added kali-rolling
+* added kali-rolling, added cli-autologin Devuan (sysvinit)
 
 ### eggs-8.17-11
 * added Devuan daedalus, bugfix tools:stat, removed apt in favor of apt-get.
