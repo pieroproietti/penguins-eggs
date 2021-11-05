@@ -3,6 +3,7 @@ import fs = require('fs')
 import path = require('path')
 import Utils from '../classes/utils'
 import Pacman from '../classes/pacman'
+import { serialize } from 'v8'
 
 // Comando per avviare ubiquity: sudo --preserve-env DBUS_SESSION_BUS_ADDRESS, XDG_RUNTIME sh -c 'calamares'
 
@@ -15,7 +16,7 @@ export async function add(distro: string, version: string, user: string, userPas
         /**
          * Systemd
          */
-         const fileOverride = `${chroot}/etc/systemd/system/getty@.service.d/override.conf`
+        const fileOverride = `${chroot}/etc/systemd/system/getty@.service.d/override.conf`
         const dirOverride = path.dirname(fileOverride)
         if (fs.existsSync(dirOverride)) {
             shx.exec(`rm ${dirOverride} -rf`)
@@ -33,25 +34,32 @@ export async function add(distro: string, version: string, user: string, userPas
          * sysvinit
          */
         const inittab = chroot + '/etc/inittab'
-        console.log(inittab)
-        const login = `1:2345:respawn:/sbin/getty --noclear 38400 tty1`
-        const auto = `1:12345:respawn:/sbin/agetty --autologin live --noclear 38400 tty1 linux`
-        const initContent = fs.readFileSync(inittab, 'utf8')
-        fs.writeFileSync(inittab, initContent.replace(login, auto))
+        const search = `1:2345`
+        const replace = `1:2345:respawn:/sbin/agetty --autologin ${user} 38400 tty1`
+        let content = ''
+        const lines = fs.readFileSync(inittab, 'utf-8').split('\n')
+        for (let i = 0; i < lines.length; i++) {
+            if (lines[i].includes(search)) {
+                lines[i]= replace
+            }
+            content += lines[i] + '\n'
+        }
+        fs.writeFileSync(inittab, content, 'utf-8')
         await motdAdd(distro, version, user, userPasswd, rootPasswd, chroot)
-    } 
+    }
 }
 
 /**
  * 
  * @param chroot 
+ * @param user 
  */
-export async function remove(chroot = '/') {
+export async function remove(chroot = '/', user = 'live') {
     if (Utils.isSystemd()) {
         /**
          * Systemd
          */
-         const fileOverride = `${chroot}/etc/systemd/system/getty@.service.d/override.conf`
+        const fileOverride = `${chroot}/etc/systemd/system/getty@.service.d/override.conf`
         const dirOverride = path.dirname(fileOverride)
         if (fs.existsSync(dirOverride)) {
             shx.exec(`rm ${dirOverride} -rf`)
@@ -61,13 +69,19 @@ export async function remove(chroot = '/') {
         /**
         * sysvinit
         */
-        const inittab = chroot + '/etc/inittab'
-        console.log(inittab)
-        const login = `1:2345:respawn:/sbin/getty --noclear 38400 tty1`
-        const auto = `1:12345:respawn:/sbin/agetty --autologin live --noclear 38400 tty1 linux`
-        const initContent = fs.readFileSync(inittab, 'utf8')
-        fs.writeFileSync(inittab, initContent.replace(auto, login))
-        await motdRemove(chroot)
+         const inittab = chroot + '/etc/inittab'
+         const search = `1:2345`
+         const replace = `1:12345:respawn:/sbin/getty 38400 tty1`
+         let content = ''
+         const lines = fs.readFileSync(inittab, 'utf-8').split('\n')
+         for (let i = 0; i < lines.length; i++) {
+             if (lines[i].includes(search)) {
+                 lines[i]= replace
+             }
+             content += lines[i] + '\n'
+         }
+         fs.writeFileSync(inittab, content, 'utf-8')
+         await motdRemove()
     }
 }
 
