@@ -27,6 +27,7 @@ export async function add(distro: string, version: string, user: string, userPas
         content += 'ExecStart=-/sbin/agetty --noclear --autologin ' + user + ' %I $TERM' + '\n'
         fs.writeFileSync(fileOverride, content)
         shx.exec(`chmod +x ${fileOverride}`)
+        await motdAdd(distro, version, user, userPasswd, rootPasswd, chroot)
     } else if (Utils.isSysvinit()) {
         /**
          * sysvinit
@@ -36,9 +37,9 @@ export async function add(distro: string, version: string, user: string, userPas
         const login = `1:2345:respawn:/sbin/getty --noclear 38400 tty1`
         const auto = `1:12345:respawn:/sbin/agetty --autologin live --noclear 38400 tty1 linux`
         const initContent = fs.readFileSync(inittab, 'utf8')
-        fs.writeFileSync(inittab, initContent.replaceAll(login, auto))
-    }
-    await motdAdd(distro, version, user, userPasswd, rootPasswd, chroot)
+        fs.writeFileSync(inittab, initContent.replace(login, auto))
+        await motdAdd(distro, version, user, userPasswd, rootPasswd, chroot)
+    } 
 }
 
 /**
@@ -55,6 +56,7 @@ export async function remove(chroot = '/') {
         if (fs.existsSync(dirOverride)) {
             shx.exec(`rm ${dirOverride} -rf`)
         }
+        await motdRemove(chroot)
     } else if (Utils.isSysvinit()) {
         /**
         * sysvinit
@@ -64,9 +66,9 @@ export async function remove(chroot = '/') {
         const login = `1:2345:respawn:/sbin/getty --noclear 38400 tty1`
         const auto = `1:12345:respawn:/sbin/agetty --autologin live --noclear 38400 tty1 linux`
         const initContent = fs.readFileSync(inittab, 'utf8')
-        fs.writeFileSync(inittab, initContent.replaceAll(auto, login))
+        fs.writeFileSync(inittab, initContent.replace(auto, login))
+        await motdRemove(chroot)
     }
-    await motdRemove(chroot)
 }
 
 /**
