@@ -32,10 +32,11 @@ export async function add(distro: string, version: string, user: string, userPas
     } else if (Utils.isSysvinit()) {
         /**
          * sysvinit
+         * 1:235:respawn:/sbin/getty 38400 tty1
          */
         const inittab = chroot + '/etc/inittab'
-        const search = `1:2345`
-        const replace = `1:2345:respawn:/sbin/agetty --autologin ${user} 38400 tty1`
+        const search = `1:2345:respawn:/sbin/getty`
+        const replace = `1:2345:respawn:/sbin/getty --noclear --autologin ${user} 38400 tty1`
         let content = ''
         const lines = fs.readFileSync(inittab, 'utf-8').split('\n')
         for (let i = 0; i < lines.length; i++) {
@@ -54,7 +55,7 @@ export async function add(distro: string, version: string, user: string, userPas
  * @param chroot 
  * @param user 
  */
-export async function remove(chroot = '/', user = 'live') {
+export async function remove(chroot = '/') {
     if (Utils.isSystemd()) {
         /**
          * Systemd
@@ -70,8 +71,8 @@ export async function remove(chroot = '/', user = 'live') {
         * sysvinit
         */
          const inittab = chroot + '/etc/inittab'
-         const search = `1:2345`
-         const replace = `1:12345:respawn:/sbin/getty 38400 tty1`
+         const search = `1:2345:respawn:/sbin/getty`
+         const replace = `1:2345:respawn:/sbin/getty --noclear 38400 tty1         `
          let content = ''
          const lines = fs.readFileSync(inittab, 'utf-8').split('\n')
          for (let i = 0; i < lines.length; i++) {
