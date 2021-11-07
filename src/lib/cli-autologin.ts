@@ -29,14 +29,15 @@ export async function add(distro: string, version: string, user: string, userPas
         fs.writeFileSync(fileOverride, content)
         shx.exec(`chmod +x ${fileOverride}`)
         await motdAdd(distro, version, user, userPasswd, rootPasswd, chroot)
+
     } else if (Utils.isSysvinit()) {
         /**
          * sysvinit
-         * 1:235:respawn:/sbin/getty 38400 tty1
          */
         const inittab = chroot + '/etc/inittab'
         const search = `1:2345:respawn:/sbin/getty`
-        const replace = `1:2345:respawn:/sbin/getty --noclear --autologin ${user} 38400 tty1`
+        // const replace = `1:2345:respawn:/sbin/getty --noclear --autologin ${user} 38400 tty1`
+        const replace = `1:2345:respawn:/sbin/getty --autologin ${user} 38400 tty1`
         let content = ''
         const lines = fs.readFileSync(inittab, 'utf-8').split('\n')
         for (let i = 0; i < lines.length; i++) {
@@ -66,13 +67,15 @@ export async function remove(chroot = '/') {
             shx.exec(`rm ${dirOverride} -rf`)
         }
         await motdRemove(chroot)
+
     } else if (Utils.isSysvinit()) {
         /**
         * sysvinit
         */
          const inittab = chroot + '/etc/inittab'
          const search = `1:2345:respawn:/sbin/getty`
-         const replace = `1:2345:respawn:/sbin/getty --noclear 38400 tty1         `
+         // const replace = `1:2345:respawn:/sbin/getty --noclear 38400 tty1         `
+         const replace = `1:2345:respawn:/sbin/getty 38400 tty1         `
          let content = ''
          const lines = fs.readFileSync(inittab, 'utf-8').split('\n')
          for (let i = 0; i < lines.length; i++) {
@@ -82,7 +85,7 @@ export async function remove(chroot = '/') {
              content += lines[i] + '\n'
          }
          fs.writeFileSync(inittab, content, 'utf-8')
-         await motdRemove()
+        await motdRemove(chroot)
     }
 }
 
@@ -104,11 +107,10 @@ async function motdAdd(distro: string, version: string, user: string, userPasswd
 
     let eggsMotd = fs.readFileSync(fileMotd, 'utf-8')
     eggsMotd += '>>> eggs\n'
-    eggsMotd += `This is a live ${distro}/${version} system createb by penguin's eggs.\n`
+    eggsMotd += `This is a live ${distro}/${version} system created by penguin's eggs.\n`
     eggsMotd += `You are logged as ${user}, your password is: ${userPasswd}. root password: ${rootPasswd}\n`
     eggsMotd += `to install the system, type: ${installer}\n`
     eggsMotd += 'eggs <<<\n'
-    //eggsMotd.trimEnd() + '\n'
     fs.writeFileSync(fileMotd, eggsMotd)
 }
 
@@ -128,7 +130,7 @@ async function motdRemove(chroot = '/') {
             remove = true
         }
         if (!remove) {
-            if (motd[i] !== '\n') {
+            if (motd[i] !== '') {
                 cleanMotd += motd[i] + '\n'
             }
         }
@@ -136,7 +138,6 @@ async function motdRemove(chroot = '/') {
             remove = false
         }
     }
-    // cleanMotd.trimEnd() + '\n'
-    fs.writeFileSync(fileMotd, cleanMotd)
+    fs.writeFileSync(fileMotd, cleanMotd, 'utf-8')
 }
 
