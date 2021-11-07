@@ -86,7 +86,7 @@ export async function remove(chroot = '/') {
          }
          fs.writeFileSync(inittab, content, 'utf-8')
         await motdRemove(chroot)
-    }
+    } // to add: openrc and runit for Devuan
 }
 
 /**
