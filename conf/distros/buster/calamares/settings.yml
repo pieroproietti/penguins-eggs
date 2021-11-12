@@ -34,7 +34,7 @@ sequence:
       - keyboard
       - localecfg
       - users
-      - displaymanager
+      {{d}}displaymanager
       - networkcfg
       - hwclock
       {{s}}services-systemd
