@@ -49,11 +49,12 @@ export default class Fisherman {
             s = '- '
         }
 
-        let d = '# '        
+        let d = '# '
         if (displaymanager() !== '') {
             d = '- '
         }
         shx.sed('-i', '{{s}}', s, settings)
+        shx.sed('-i', '{{d}}', s, settings)
         shx.sed('-i', '{{branding}}', branding, settings)
     }
 
