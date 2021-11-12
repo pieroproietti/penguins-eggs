@@ -13,6 +13,7 @@ import { IRemix, IDistro } from '../../interfaces'
 import chalk = require('chalk')
 import Utils from '../utils'
 import { IInstaller } from '../../interfaces/index'
+import { displaymanager } from './fisherman-helper/displaymanager'
 
 const exec = require('../../lib/utils').exec
 
@@ -46,6 +47,11 @@ export default class Fisherman {
         let s = '# '
         if (Utils.isSystemd()) {
             s = '- '
+        }
+
+        let d = '# '        
+        if (displaymanager() !== '') {
+            d = '- '
         }
         shx.sed('-i', '{{s}}', s, settings)
         shx.sed('-i', '{{branding}}', branding, settings)

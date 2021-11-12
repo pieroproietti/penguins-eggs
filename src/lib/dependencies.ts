@@ -78,7 +78,7 @@ export const depArch = [
 export const depVersions = [
    {
       package: 'live-config',
-      versions: ['jessie', 'stretch', 'buster', 'bullseye', 'bookworm','beowulf', 'focal', 'groovy', 'hirsute', 'jammy']
+      versions: ['jessie', 'stretch', 'buster'] //, 'bullseye', 'bookworm','beowulf', 'focal', 'groovy', 'hirsute', 'jammy']
    },
    {
       package: 'live-config-systemd',
