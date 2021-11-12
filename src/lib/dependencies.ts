@@ -82,11 +82,11 @@ export const depVersions = [
    },
    {
       package: 'live-config-systemd',
-      versions: ['jessie', 'stretch', 'buster', 'bullseye', 'bookworm','beowulf', 'focal', 'groovy', 'hirsute', 'jammy']
+      versions: ['jessie', 'stretch'] //, 'buster', 'bullseye', 'bookworm', 'focal', 'groovy', 'hirsute', 'jammy']
    },
    {
       package: 'live-config-sysvinit',
-      versions: ['beowulf']
+      versions: ['beowulf'] //, 'chimaera'
    },
    {
       package: 'open-infrastructure-system-config',
