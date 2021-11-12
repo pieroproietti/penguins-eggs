@@ -54,7 +54,7 @@ export default class Fisherman {
             d = '- '
         }
         shx.sed('-i', '{{s}}', s, settings)
-        shx.sed('-i', '{{d}}', s, settings)
+        shx.sed('-i', '{{d}}', d, settings)
         shx.sed('-i', '{{branding}}', branding, settings)
     }
 

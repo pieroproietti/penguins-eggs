@@ -25,7 +25,7 @@ sequence:
       - localecfg
       - luksbootkeyfile
       - users
-      - displaymanager
+      {{d}}displaymanager
       - networkcfg
       - hwclock
       #- before-bootloader-mkdirs
