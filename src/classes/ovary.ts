@@ -1333,7 +1333,7 @@ export default class Ovary {
       // const grubSrc = path.resolve(__dirname, `../../conf/distros/${this.settings.distro.versionLike}/grub/grub.template.cfg`)
       const grubSrc = `/etc/penguins-eggs.d/distros/${this.settings.distro.versionLike}/grub/grub.template.cfg`
       // let themeSrc = path.resolve(__dirname, `../../conf/distros/${this.settings.distro.versionLike}/grub/theme.cfg`)
-      let themeSrc = `/etc/penguins-eggs.ddistros/${this.settings.distro.versionLike}/grub/theme.cfg`
+      let themeSrc = `/etc/penguins-eggs.d/distros/${this.settings.distro.versionLike}/grub/theme.cfg`
       let splashSrc = path.resolve(__dirname, '../../assets/penguins-eggs-splash.png')
 
       const grubDest = `${this.settings.work_dir.pathIso}/boot/grub/grub.cfg`
