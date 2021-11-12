@@ -43,7 +43,7 @@ sequence:
       - localecfg
       - luksbootkeyfile
       - users
-      - displaymanager
+      {{d}}displaymanager
       - networkcfg
       - hwclock
       - contextualprocess@before_bootloader_mkdirs
