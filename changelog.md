@@ -19,9 +19,9 @@ You can follow the project also consulting the [commit history](https://github.c
 Versions are listed on reverse order, the first is the last one.
 
 ### eggs-8.17-13
-* added calamares configuration no-display-manager, removed live confing in Debian bullseye, Devuan chimaera, Ubuntu focal and next
+* added calamares configuration no-display-manager, removed live-config and live-config-systemd in Debian bullseye, Devuan chimaera, Ubuntu focal and next
 
-I must to chech if removing live config bring problems and check if it is possible to remove it in buster
+I must to check if removing live-config and live-config-systemd bring problems and check if it is possible to remove it in buster, and previous versions
 
 ### eggs-8.17-12
 * added kali-rolling, added cli-autologin Devuan (sysvinit)
