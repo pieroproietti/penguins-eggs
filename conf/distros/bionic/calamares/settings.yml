@@ -18,14 +18,14 @@ sequence:
       - mount
       - unpackfs
       - sources-yolk
-      - machineid
+      - {{hasSystemd}}machineid
       - fstab
       - locale
       - keyboard
       - localecfg
       - luksbootkeyfile
       - users
-      {{d}}displaymanager
+      {{hasDisplaymanager}}displaymanager
       - networkcfg
       - hwclock
       #- before-bootloader-mkdirs

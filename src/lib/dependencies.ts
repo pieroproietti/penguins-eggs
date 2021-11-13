@@ -78,19 +78,19 @@ export const depArch = [
 export const depVersions = [
    {
       package: 'live-config',
-      versions: ['jessie', 'stretch', 'buster'] //, 'bullseye', 'bookworm','beowulf', 'focal', 'groovy', 'hirsute', 'jammy']
+      versions: ['jessie', 'stretch'] // jessie and stretch need it
    },
    {
       package: 'live-config-systemd',
-      versions: ['jessie', 'stretch'] //, 'buster', 'bullseye', 'bookworm', 'focal', 'groovy', 'hirsute', 'jammy']
+      versions: ['jessie', 'stretch', 'buster'] // jessie, stretch and buster need it
    },
    {
       package: 'live-config-sysvinit',
-      versions: ['beowulf'] //, 'chimaera'
+      versions: ['beowulf'] // only Devuan beowulf
    },
    {
       package: 'open-infrastructure-system-config',
-      versions: ['bionic']
+      versions: ['bionic'] // only Ubuntu bionic
    }
 ]
 

@@ -44,17 +44,17 @@ export default class Fisherman {
     async settings(branding = 'eggs') {
         let settings = this.installer.configuration + 'settings.conf'
         shx.cp(this.installer.template + 'settings.yml', settings)
-        let s = '# '
+        let hasSystemd = '# '
         if (Utils.isSystemd()) {
-            s = '- '
+            hasSystemd = '- '
         }
 
-        let d = '# '
+        let hasDisplaymanager = '# '
         if (displaymanager() !== '') {
-            d = '- '
+            hasDisplaymanager = '- '
         }
-        shx.sed('-i', '{{s}}', s, settings)
-        shx.sed('-i', '{{d}}', d, settings)
+        shx.sed('-i', '{{hasSystemd}}', hasSystemd, settings)
+        shx.sed('-i', '{{hasDisplaymanager}}', hasDisplaymanager, settings)
         shx.sed('-i', '{{branding}}', branding, settings)
     }
 
