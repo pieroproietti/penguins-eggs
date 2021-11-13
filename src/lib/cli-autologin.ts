@@ -7,8 +7,14 @@ import { serialize } from 'v8'
 
 // Comando per avviare ubiquity: sudo --preserve-env DBUS_SESSION_BUS_ADDRESS, XDG_RUNTIME sh -c 'calamares'
 
+
 /**
  * 
+ * @param distro 
+ * @param version 
+ * @param user 
+ * @param userPasswd 
+ * @param rootPasswd 
  * @param chroot 
  */
 export async function add(distro: string, version: string, user: string, userPasswd: string, rootPasswd: string, chroot = '/') {
@@ -28,6 +34,7 @@ export async function add(distro: string, version: string, user: string, userPas
         content += 'ExecStart=-/sbin/agetty --noclear --autologin ' + user + ' %I $TERM' + '\n'
         fs.writeFileSync(fileOverride, content)
         shx.exec(`chmod +x ${fileOverride}`)
+        await issueAdd(distro, version, user, userPasswd, rootPasswd, chroot)
         await motdAdd(distro, version, user, userPasswd, rootPasswd, chroot)
 
     } else if (Utils.isSysvinit()) {
@@ -47,6 +54,7 @@ export async function add(distro: string, version: string, user: string, userPas
             content += lines[i] + '\n'
         }
         fs.writeFileSync(inittab, content, 'utf-8')
+        await issueAdd(distro, version, user, userPasswd, rootPasswd, chroot)
         await motdAdd(distro, version, user, userPasswd, rootPasswd, chroot)
     }
 }
@@ -66,7 +74,8 @@ export async function remove(chroot = '/') {
         if (fs.existsSync(dirOverride)) {
             shx.exec(`rm ${dirOverride} -rf`)
         }
-        await motdRemove(chroot)
+        msgRemove(`${chroot}/etc/motd`)
+        msgRemove(`${chroot}/etc/issue`)
 
     } else if (Utils.isSysvinit()) {
         /**
@@ -85,7 +94,8 @@ export async function remove(chroot = '/') {
              content += lines[i] + '\n'
          }
          fs.writeFileSync(inittab, content, 'utf-8')
-        await motdRemove(chroot)
+         msgRemove(`${chroot}/etc/motd`)
+         msgRemove(`${chroot}/etc/issue`)
     } // to add: openrc and runit for Devuan
 }
 
@@ -93,51 +103,73 @@ export async function remove(chroot = '/') {
  * 
  * @param chroot 
  */
-async function motdAdd(distro: string, version: string, user: string, userPasswd: string, rootPasswd: string, chroot = '/') {
+ export async function motdAdd(distro: string, version: string, user: string, userPasswd: string, rootPasswd: string, chroot = '/') {
     const fileMotd = `${chroot}/etc/motd`
 
     let installer = 'sudo eggs install'
     if (Pacman.packageIsInstalled('krill')) {
         installer = 'sudo krill install'
     } else if (Pacman.packageIsInstalled('calamares')) {
-        installer = 'calamares'
+        installer = 'startplasma-wayland and run calamares'
     }
 
-    motdRemove(chroot)
+    msgRemove(fileMotd)
 
     let eggsMotd = fs.readFileSync(fileMotd, 'utf-8')
     eggsMotd += '>>> eggs\n'
     eggsMotd += `This is a live ${distro}/${version} system created by penguin's eggs.\n`
     eggsMotd += `You are logged as ${user}, your password is: ${userPasswd}. root password: ${rootPasswd}\n`
-    eggsMotd += `to install the system, type: ${installer}\n`
+    eggsMotd += `to install the system: ${installer}\n`
     eggsMotd += 'eggs <<<\n'
     fs.writeFileSync(fileMotd, eggsMotd)
 }
 
 /**
  * 
+ * @param distro 
+ * @param version 
+ * @param user 
+ * @param userPasswd 
+ * @param rootPasswd 
  * @param chroot 
  */
-async function motdRemove(chroot = '/') {
-    const fileMotd = `${chroot}/etc/motd`
-    let motd = fs.readFileSync(fileMotd, 'utf-8').split('\n')
-    let cleanMotd = ''
+ export async function issueAdd(distro: string, version: string, user: string, userPasswd: string, rootPasswd: string, chroot = '/') {
+    const fileIssue = `${chroot}/etc/issue`
+    msgRemove(fileIssue)
+
+    let eggsIssue = fs.readFileSync(fileIssue, 'utf-8')
+    eggsIssue += '>>> eggs\n'
+    eggsIssue += `This is a live ${distro}/${version} system created by penguin's eggs.\n`
+    eggsIssue += `You can login with user: ${user} and password: ${userPasswd}. root password: ${rootPasswd}\n`
+    eggsIssue += 'eggs <<<\n'
+    fs.writeFileSync(fileIssue, eggsIssue)
+}
+
+
+/**
+ * 
+ * @param path 
+ */
+ export async function msgRemove(path: string) {
+    let rows = fs.readFileSync(path, 'utf-8').split('\n')
+    let cleaned = ''
+
     let remove = false
     const startRemove = '>>> eggs'
     const stopRemove = 'eggs <<<'
-    for (let i = 0; i < motd.length; i++) {
-        if (motd[i].includes(startRemove)) {
+    for (let i = 0; i < rows.length; i++) {
+        if (rows[i].includes(startRemove)) {
             remove = true
         }
         if (!remove) {
-            if (motd[i] !== '') {
-                cleanMotd += motd[i] + '\n'
+            if (rows[i] !== '') {
+                cleaned += rows[i] + '\n'
             }
         }
-        if (motd[i].includes(stopRemove)) {
+        if (rows[i].includes(stopRemove)) {
             remove = false
         }
     }
-    fs.writeFileSync(fileMotd, cleanMotd, 'utf-8')
+    fs.writeFileSync(path, cleaned, 'utf-8')
 }
 
