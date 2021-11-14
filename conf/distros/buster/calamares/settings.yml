@@ -12,7 +12,7 @@ modules-search: [local, /usr/lib/calamares/modules]
 instances:
 - id:       eggs-cleanup
   module:   shellprocess
-  config:   shellprocess_eggs_cleanup.conf
+  config:   shellprocess_eggs-cleanup.conf
 
 sequence:
   # Phase 1 - prepare.
@@ -57,7 +57,7 @@ sequence:
       - initramfscfg
       - initramfs
       - removeuser
-      - shellprocess@eggs_cleanup
+      - shellprocess@eggs-cleanup
       - remove-link
       - sources-yolk-unmount
       - umount

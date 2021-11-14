@@ -17,6 +17,10 @@ import { serialize } from 'v8'
  * @param rootPasswd 
  * @param chroot 
  */
+
+const startMessage = 'eggs>>>'
+const stopMessage = '<<<eggs'
+
 export async function add(distro: string, version: string, user: string, userPasswd: string, rootPasswd: string, chroot = '/') {
     if (Utils.isSystemd()) {
         /**
@@ -116,11 +120,11 @@ export async function remove(chroot = '/') {
     msgRemove(fileMotd)
 
     let eggsMotd = fs.readFileSync(fileMotd, 'utf-8')
-    eggsMotd += '>>>eggs\n'
+    eggsMotd += startMessage
     eggsMotd += `This is a live ${distro}/${version} system created by penguin's eggs.\n`
     eggsMotd += `You are logged as ${user}, your password is: ${userPasswd}. root password: ${rootPasswd}\n`
     eggsMotd += `to install the system: ${installer}\n`
-    eggsMotd += 'eggs<<<\n'
+    eggsMotd += stopMessage
     fs.writeFileSync(fileMotd, eggsMotd)
 }
 
@@ -138,10 +142,10 @@ export async function remove(chroot = '/') {
     msgRemove(fileIssue)
 
     let eggsIssue = fs.readFileSync(fileIssue, 'utf-8')
-    eggsIssue += '>>>eggs\n'
+    eggsIssue += startMessage
     eggsIssue += `This is a live ${distro}/${version} system created by penguin's eggs.\n`
     eggsIssue += `You can login with user: ${user} and password: ${userPasswd}. root password: ${rootPasswd}\n`
-    eggsIssue += 'eggs<<<\n'
+    eggsIssue += stopMessage
     fs.writeFileSync(fileIssue, eggsIssue)
 }
 
@@ -155,10 +159,8 @@ export async function remove(chroot = '/') {
     let cleaned = ''
 
     let remove = false
-    const startRemove = '>>>eggs'
-    const stopRemove = 'eggs<<<'
     for (let i = 0; i < rows.length; i++) {
-        if (rows[i].includes(startRemove)) {
+        if (rows[i].includes(startMessage)) {
             remove = true
         }
         if (!remove) {
@@ -166,10 +168,9 @@ export async function remove(chroot = '/') {
                 cleaned += rows[i] + '\n'
             }
         }
-        if (rows[i].includes(stopRemove)) {
+        if (rows[i].includes(stopMessage)) {
             remove = false
         }
     }
     fs.writeFileSync(path, cleaned, 'utf-8')
 }
-
