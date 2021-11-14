@@ -116,11 +116,11 @@ export async function remove(chroot = '/') {
     msgRemove(fileMotd)
 
     let eggsMotd = fs.readFileSync(fileMotd, 'utf-8')
-    eggsMotd += '>>> eggs\n'
+    eggsMotd += '>>>eggs\n'
     eggsMotd += `This is a live ${distro}/${version} system created by penguin's eggs.\n`
     eggsMotd += `You are logged as ${user}, your password is: ${userPasswd}. root password: ${rootPasswd}\n`
     eggsMotd += `to install the system: ${installer}\n`
-    eggsMotd += 'eggs <<<\n'
+    eggsMotd += 'eggs<<<\n'
     fs.writeFileSync(fileMotd, eggsMotd)
 }
 

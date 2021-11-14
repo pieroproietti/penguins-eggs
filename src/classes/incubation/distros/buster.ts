@@ -83,7 +83,7 @@ export class Buster {
       await fisherman.buildModule('plymouthcfg')
       await fisherman.buildModule('initramfscfg')
       await fisherman.buildModule('initramfs')
-      await fisherman.shellprocess('eggs-cleanup')
+      await fisherman.shellprocess('eggs_cleanup')
       await fisherman.moduleRemoveuser(this.user_opt)
       await fisherman.buildCalamaresModule('sources-yolk-unmount', false)
       await fisherman.buildModule('umount')
