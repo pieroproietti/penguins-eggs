@@ -4,10 +4,15 @@
 # "local" is LIBDIR/calamares/modules with settings in SHARE/calamares/modules
 modules-search: [local, /usr/lib/calamares/modules]
 
+#instances:
+#- id:       owncloud
+#  module:   webview
+#  config:   owncloud.conf
+
 instances:
 - id:       eggs-cleanup
   module:   shellprocess
-  config:   shellprocess-eggs.conf
+  config:   shellprocess_eggs_cleanup.conf
 
 sequence:
   # Phase 1 - prepare.
@@ -52,7 +57,7 @@ sequence:
       - initramfscfg
       - initramfs
       - removeuser
-      - shellprocess@eggs-cleanup 
+      - shellprocess@eggs_cleanup
       - remove-link
       - sources-yolk-unmount
       - umount

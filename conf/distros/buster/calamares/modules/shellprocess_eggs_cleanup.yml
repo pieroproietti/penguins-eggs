@@ -4,6 +4,3 @@ timeout: 30
 script:
     - "sed -i '/^>>>eggs/,/^\<<<eggs/{/^#/!{/^\$/!d;};}' @@ROOT@@/etc/issue"
     - "sed -i '/^>>>eggs/,/^\<<<eggs/{/^#/!{/^\$/!d;};}' @@ROOT@@/etc/motd"
-    
-
-
