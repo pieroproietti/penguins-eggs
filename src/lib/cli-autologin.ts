@@ -138,10 +138,10 @@ export async function remove(chroot = '/') {
     msgRemove(fileIssue)
 
     let eggsIssue = fs.readFileSync(fileIssue, 'utf-8')
-    eggsIssue += '>>> eggs\n'
+    eggsIssue += '>>>eggs\n'
     eggsIssue += `This is a live ${distro}/${version} system created by penguin's eggs.\n`
     eggsIssue += `You can login with user: ${user} and password: ${userPasswd}. root password: ${rootPasswd}\n`
-    eggsIssue += 'eggs <<<\n'
+    eggsIssue += 'eggs<<<\n'
     fs.writeFileSync(fileIssue, eggsIssue)
 }
 
@@ -155,8 +155,8 @@ export async function remove(chroot = '/') {
     let cleaned = ''
 
     let remove = false
-    const startRemove = '>>> eggs'
-    const stopRemove = 'eggs <<<'
+    const startRemove = '>>>eggs'
+    const stopRemove = 'eggs<<<'
     for (let i = 0; i < rows.length; i++) {
         if (rows[i].includes(startRemove)) {
             remove = true
