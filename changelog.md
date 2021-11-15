@@ -19,7 +19,7 @@ You can follow the project also consulting the [commit history](https://github.c
 Versions are listed on reverse order, the first is the last one.
 
 ### eggs-8.17-14
-* just refactoring and stabilization
+* refactoring and stabilization, added messages in issue and motd and remove then with calamares and krill
 
 ### eggs-8.17-13
 * added calamares configuration no-display-manager, removed live-config and live-config-systemd in Debian bullseye, Devuan chimaera, Ubuntu focal and next
