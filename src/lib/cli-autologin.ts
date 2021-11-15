@@ -112,7 +112,7 @@ export async function remove(chroot = '/') {
 
     let installer = 'sudo eggs install'
     if (Pacman.packageIsInstalled('calamares')) {
-        if (Pacman.packageIsInstalled('kde-desktop-plasma')) {
+        if (Pacman.packageIsInstalled('plasma-desktop')) {
             installer = 'startplasma-wayland and run calamares'
         }else if (Pacman.packageIsInstalled('xfce4')) {
             installer = 'startxfce4 and run calamares'
