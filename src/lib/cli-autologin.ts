@@ -126,7 +126,7 @@ export async function remove(chroot = '/') {
     eggsMotd += `This is a live ${distro}/${version} system created by penguin's eggs.\n`
     eggsMotd += `You are logged as ${user}, your password is: ${userPasswd}. root password: ${rootPasswd}\n`
     eggsMotd += `to install the system: ${installer}\n`
-    eggsMotd += stopMessage
+    eggsMotd += stopMessage+ '\n'
     fs.writeFileSync(fileMotd, eggsMotd)
 }
 
@@ -147,7 +147,7 @@ export async function remove(chroot = '/') {
     eggsIssue += startMessage + '\n'
     eggsIssue += `This is a live ${distro}/${version} system created by penguin's eggs.\n`
     eggsIssue += `You can login with user: ${user} and password: ${userPasswd}. root password: ${rootPasswd}\n`
-    eggsIssue += stopMessage
+    eggsIssue += stopMessage + '\n'
     fs.writeFileSync(fileIssue, eggsIssue)
 }
 
