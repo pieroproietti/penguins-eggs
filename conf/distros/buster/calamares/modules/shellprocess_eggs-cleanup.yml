@@ -1,4 +1,4 @@
 ---
 dontChroot: false
-timeout: 10
+timeout: 30
 script: "/usr/sbin/eggs-cleanup.sh"

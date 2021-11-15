@@ -18,8 +18,8 @@ import { serialize } from 'v8'
  * @param chroot 
  */
 
-const startMessage = 'eggs>>>'
-const stopMessage = '<<<eggs'
+const startMessage = 'eggs-start-message'
+const stopMessage = 'eggs-stop-message'
 
 export async function add(distro: string, version: string, user: string, userPasswd: string, rootPasswd: string, chroot = '/') {
     if (Utils.isSystemd()) {
@@ -111,16 +111,18 @@ export async function remove(chroot = '/') {
     const fileMotd = `${chroot}/etc/motd`
 
     let installer = 'sudo eggs install'
-    if (Pacman.packageIsInstalled('krill')) {
-        installer = 'sudo krill install'
-    } else if (Pacman.packageIsInstalled('calamares')) {
-        installer = 'startplasma-wayland and run calamares'
+    if (Pacman.packageIsInstalled('calamares')) {
+        if (Pacman.packageIsInstalled('kde-desktop-plasma')) {
+            installer = 'startplasma-wayland and run calamares'
+        }else if (Pacman.packageIsInstalled('xfce4')) {
+            installer = 'startxfce4 and run calamares'
+        }
     }
 
     msgRemove(fileMotd)
 
     let eggsMotd = fs.readFileSync(fileMotd, 'utf-8')
-    eggsMotd += startMessage
+    eggsMotd += startMessage + '\n'
     eggsMotd += `This is a live ${distro}/${version} system created by penguin's eggs.\n`
     eggsMotd += `You are logged as ${user}, your password is: ${userPasswd}. root password: ${rootPasswd}\n`
     eggsMotd += `to install the system: ${installer}\n`
@@ -142,7 +144,7 @@ export async function remove(chroot = '/') {
     msgRemove(fileIssue)
 
     let eggsIssue = fs.readFileSync(fileIssue, 'utf-8')
-    eggsIssue += startMessage
+    eggsIssue += startMessage + '\n'
     eggsIssue += `This is a live ${distro}/${version} system created by penguin's eggs.\n`
     eggsIssue += `You can login with user: ${user} and password: ${userPasswd}. root password: ${rootPasswd}\n`
     eggsIssue += stopMessage
