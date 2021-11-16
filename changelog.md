@@ -18,6 +18,9 @@ You can follow the project also consulting the [commit history](https://github.c
 ## Changelog
 Versions are listed on reverse order, the first is the last one.
 
+### eggs-8.17-15
+* changement in --backup option and check it work, producing encrypted backup and restorings
+
 ### eggs-8.17-14
 * refactoring and stabilization, added messages in issue and motd and remove then with calamares and krill
 
