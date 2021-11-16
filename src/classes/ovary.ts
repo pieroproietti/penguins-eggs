@@ -176,7 +176,6 @@ export default class Ovary {
          await this.cleanUsersAccounts()
          await this.createUserLive(verbose)
 
-
          const displaymanager = require('./incubation/fisherman-helper/displaymanager').displaymanager
          if (await Pacman.isGui()) {
             if (displaymanager() !== '' ) {

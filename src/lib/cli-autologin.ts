@@ -113,9 +113,9 @@ export async function motdAdd(distro: string, version: string, user: string, use
     let installer = 'sudo eggs install'
     if (Pacman.packageIsInstalled('calamares')) {
         if (Pacman.packageIsInstalled('plasma-desktop')) {
-            installer = 'startplasma-wayland and run calamares'
+            installer = 'startplasma-wayland to run GUI and run calamares, or from terminal sudo eggs install -c'
         } else if (Pacman.packageIsInstalled('xfce4')) {
-            installer = 'startxfce4 and run calamares'
+            installer = 'startxfce4 ti ryn GUI and run calamares, or from terminal sudo eggs install -c'
         }
     }
 
@@ -144,8 +144,8 @@ export async function issueAdd(distro: string, version: string, user: string, us
 
     let eggsIssue = fs.readFileSync(fileIssue, 'utf-8')
     eggsIssue += startMessage + '\n'
-    eggsIssue += `This is a ` + chalk.bold(`live ${distro}/${version} system`) + ` created by penguin's eggs.\n`
-    eggsIssue += `Yu can login with user: ` + chalk.bold(user) + ` and password: ` + chalk.bold(userPasswd) + `, root password: ` + chalk.bold(rootPasswd) + `\n`
+    eggsIssue += `This is a ${distro}/${version} system created by penguin's eggs.\n`
+    eggsIssue += `You can login with user: ` + chalk.bold(user) + ` and password: ` + chalk.bold(userPasswd) + `, root password: ` + chalk.bold(rootPasswd) + `\n`
 
     eggsIssue += stopMessage + '\n'
     fs.writeFileSync(fileIssue, eggsIssue)
