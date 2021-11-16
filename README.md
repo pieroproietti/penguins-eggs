@@ -61,16 +61,15 @@ From eggs v. 8.0.4 I'm releasing eggs in 4 differents architectures: **i386**, *
 **Note:** Of course it is possible to produce iso for [Raspberry Pi Desktop](https://downloads.raspberrypi.org/rpd_x86/images/) amd64 based.
 
 # Packages
-eggs is released as deb package and npm package. Most users need just deb version, if you already use nodejs the npm package can be installed too.
-
-## deb packages
-eggs is released deb packages for i386, amd64, armal and arm64 architectures. Due the characteristic of eggs, they can installed in Debian, Devuan or Ubuntu based distros, withouth worries about different versions, except for the architecture. It include standard scripts for preinst, postinst, prerm and postrm.
+eggs is released deb packages for i386, amd64, armel and arm64 architectures. Due the characteristic of eggs, they can installed in Debian, Devuan or Ubuntu based distros, withouth worries about different versions, except for the architecture. It include standard scripts for preinst, postinst, prerm and postrm.
+The packages usually go before in sourgeforce page of eggs, (unstable version) and later in ppa (stable version).
 
 ## Install eggs
 There are more than a way to install eggs, the most common it's to use penguins-eggs-ppa.
 
-### Using penguins-eggs-ppa
-eggs have it's repository ppa, You can use it, copy and paste in a terminal window the following two lines
+### Using penguins-eggs-ppa (stable version)
+
+eggs have it's repository ppa, You can use it, copy and paste in a terminal window the following two lines:
 
 ```
 curl -SsL  https://pieroproietti.github.io/penguins-eggs-ppa/KEY.gpg | gpg --dearmor | sudo tee /usr/share/keyrings/penguins-eggs-ppa-keyring.gpg
@@ -93,7 +92,7 @@ sudo dpkg -i eggs_8.17.3-1_i386.deb
 ```
 
 ## Upgrade eggs
-If you are using penguins-eggs-ppa You can ugrade eggs as others packages just: **sudo apt upgrage**.
+If you are using penguins-eggs-ppa You can ugrade eggs as others packages just: **sudo apt upgrade**.
 
 
 ### Upgrade from basket
@@ -101,7 +100,7 @@ If you are using not the penguins-eggs-ppa, the fastest way to use sudo eggs upd
 
 ```sudo eggs update```
 
-### Manual upgrade 
+### Manual upgrade
 Simply download new versions of eggs from [sourgeforge page](https://sourceforge.net/projects/penguins-eggs/files/packages-deb/) and install it with the standard command **sudo dpkg -i eggs_8.17.x-1_amd64.deb**.
 
 

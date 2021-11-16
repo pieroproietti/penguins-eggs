@@ -269,9 +269,9 @@ unknown target format aarch64-efi
    static getPrefix(prefix: string, backup = false) {
       if (backup) {
          if (prefix.substring(0, 7) === 'egg-of-') {
-            prefix = 'backup-' + prefix.substring(7)
+            prefix = 'egg-backup-' + prefix.substring(7)
          } else {
-            prefix = 'backup-' + prefix
+            prefix = 'egg-backup-' + prefix
          }
       }
       return prefix
