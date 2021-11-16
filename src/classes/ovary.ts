@@ -176,11 +176,20 @@ export default class Ovary {
          await this.cleanUsersAccounts()
          await this.createUserLive(verbose)
 
+
+         const displaymanager = require('./incubation/fisherman-helper/displaymanager').displaymanager
          if (await Pacman.isGui()) {
-            await this.createAutostart(this.theme, myAddons)
+            if (displaymanager() !== '' ) {
+               await this.createAutostart(this.theme, myAddons)
+            } else {
+               cliAutologin.issueAdd(this.settings.distro.distroId, this.settings.distro.versionId, this.settings.config.user_opt, this.settings.config.user_opt_passwd, this.settings.config.root_passwd, this.settings.work_dir.merged)
+               cliAutologin.motdAdd(this.settings.distro.distroId, this.settings.distro.versionId, this.settings.config.user_opt, this.settings.config.user_opt_passwd, this.settings.config.root_passwd, this.settings.work_dir.merged)
+            }
          } else {
             cliAutologin.add(this.settings.distro.distroId, this.settings.distro.versionId, this.settings.config.user_opt, this.settings.config.user_opt_passwd, this.settings.config.root_passwd, this.settings.work_dir.merged)
          }
+
+
          await this.editLiveFs(verbose)
          await this.makeSquashfs(scriptOnly, verbose)
          await this.uBindLiveFs(verbose) // Lo smonto prima della fase di backup
@@ -190,7 +199,7 @@ export default class Ovary {
             Utils.warning('You will be prompted to give crucial informations to protect your users data')
             Utils.warning('I\'m calculatings users datas needs. Please wait...')
 
-            const usersDataSize = await this.getUsersDatasSize(verbose) // 799MB = 837,812,224 
+            const usersDataSize = await this.getUsersDatasSize(verbose) //  837,812,224  // 700 MB
             Utils.warning('User\'s data are: ' + Utils.formatBytes(usersDataSize))
             Utils.warning('Your passphrase will be not written in any way on the support, so it is literally unrecoverable.')
 
@@ -202,13 +211,21 @@ export default class Ovary {
                volumeSize = minimunSize
             }
 
+            /*
             if (volumeSize < 536870912) { // 512MB 536,870,912
                volumeSize *= 1.15 // add 15%
             } else if (volumeSize > 536870912 && (volumeSize < 1073741824)) { // 1GB 1,073,741,824
                volumeSize *= 1.10 // add 10%
             } else if (volumeSize > 1073741824) { // 1GB 1,073,741,824
-               volumeSize *= 1.05 // add 5% 
+               volumeSize *= 1.05 // add 10%
             }
+            volumeSize += 1073741824 // add 1 GB
+            */
+
+            /**
+             * C'è un problema di blocchi
+             * sudo tune2fs -l /dev/sda1 | grep -i 'block size' = 4096 
+             */
 
             Utils.warning('Creating volume luks-users-data of ' + Utils.formatBytes(volumeSize, 0))
             execSync('dd if=/dev/zero of=/tmp/luks-users-data bs=1 count=0 seek=' + Utils.formatBytes(volumeSize, 0) + this.toNull, { stdio: 'inherit' })
@@ -958,15 +975,19 @@ export default class Ovary {
       // Filter serve a rimuovere gli elementi vuoti
       const users: string[] = result.data.split('\n').filter(Boolean)
       let size = 0
+      let blocksNeed = 0
       Utils.warning('We found ' + users.length + ' users')
       for (let i = 0; i < users.length; i++) {
          // esclude tutte le cartelle che NON sono users
          if (users[i] !== this.settings.config.user_opt) {
             // du restituisce size in Kbytes senza -b
-            const bytes = parseInt(shx.exec(`du -b --summarize /home/${users[i]} |awk '{ print $1 }'`, { silent: true }).stdout.trim())
-            size += bytes
+            // const bytes = parseInt(shx.exec(`du -b --summarize /home/${users[i]} |awk '{ print $1 }'`, { silent: true }).stdout.trim())
+            // size += bytes
+            const blocks = parseInt(shx.exec(`du --summarize /home/${users[i]} |awk '{ print $1 }'`, { silent: true }).stdout.trim())
+            blocksNeed += blocks
          }
       }
+      size = blocksNeed * 4096  
       return size
    }
 
@@ -1416,9 +1437,9 @@ export default class Ovary {
       let prefix = this.settings.config.snapshot_prefix
       if (backup) {
          if (prefix.substring(0, 7) === 'egg-of-') {
-            prefix = 'backup-' + prefix.substring(7)
+            prefix = 'egg-EB-' + prefix.substring(7)
          } else {
-            prefix = 'backup-' + prefix
+            prefix = 'egg-EB-' + prefix
          }
       }
       let output = this.settings.config.snapshot_dir + prefix + volid
