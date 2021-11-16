@@ -1437,9 +1437,9 @@ export default class Ovary {
       let prefix = this.settings.config.snapshot_prefix
       if (backup) {
          if (prefix.substring(0, 7) === 'egg-of-') {
-            prefix = 'backup-' + prefix.substring(7)
+            prefix = 'egg-EB-' + prefix.substring(7)
          } else {
-            prefix = 'backup-' + prefix
+            prefix = 'egg-EB-' + prefix
          }
       }
       let output = this.settings.config.snapshot_dir + prefix + volid

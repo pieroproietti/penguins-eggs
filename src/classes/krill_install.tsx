@@ -413,6 +413,10 @@ export default class Hatching {
                redraw(<Install message={message} percent={percent} />)
             }
          }
+         // eggs-cleanup forced
+         await cliAutologin.msgRemove(`${this.installTarget}/etc/motd`)
+         await cliAutologin.msgRemove(`${this.installTarget}/etc/issue`)
+ 
          // await checkIt(message)
 
          message = "remove installer"
@@ -836,9 +840,6 @@ adduser ${name} \
 
       Utils.warning('closing eggs-users-data')
       execSync('cryptsetup luksClose eggs-users-data', { stdio: 'inherit' })
-
-
-
    }
 
    /**
