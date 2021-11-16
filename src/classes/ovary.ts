@@ -178,9 +178,9 @@ export default class Ovary {
 
          const displaymanager = require('./incubation/fisherman-helper/displaymanager').displaymanager
          if (await Pacman.isGui()) {
-            if (displaymanager() !== '' ) {
-               await this.createAutostart(this.theme, myAddons)
-            } else {
+            // 
+            await this.createAutostart(this.theme, myAddons)
+            if (displaymanager() === '' ) {
                cliAutologin.issueAdd(this.settings.distro.distroId, this.settings.distro.versionId, this.settings.config.user_opt, this.settings.config.user_opt_passwd, this.settings.config.root_passwd, this.settings.work_dir.merged)
                cliAutologin.motdAdd(this.settings.distro.distroId, this.settings.distro.versionId, this.settings.config.user_opt, this.settings.config.user_opt_passwd, this.settings.config.root_passwd, this.settings.work_dir.merged)
             }
