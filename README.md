@@ -61,16 +61,15 @@ From eggs v. 8.0.4 I'm releasing eggs in 4 differents architectures: **i386**, *
 **Note:** Of course it is possible to produce iso for [Raspberry Pi Desktop](https://downloads.raspberrypi.org/rpd_x86/images/) amd64 based.
 
 # Packages
-eggs is released as deb package and npm package. Most users need just deb version, if you already use nodejs the npm package can be installed too.
-
-## deb packages
-eggs is released deb packages for i386, amd64, armal and arm64 architectures. Due the characteristic of eggs, they can installed in Debian, Devuan or Ubuntu based distros, withouth worries about different versions, except for the architecture. It include standard scripts for preinst, postinst, prerm and postrm.
+eggs is released deb packages for i386, amd64, armel and arm64 architectures. Due the characteristic of eggs, they can installed in Debian, Devuan or Ubuntu based distros, withouth worries about different versions, except for the architecture. It include standard scripts for preinst, postinst, prerm and postrm.
+The packages usually go before in sourgeforce page of eggs, (unstable version) and later in ppa (stable version).
 
 ## Install eggs
 There are more than a way to install eggs, the most common it's to use penguins-eggs-ppa.
 
-### Using penguins-eggs-ppa
-eggs have it's repository ppa, You can use it, copy and paste in a terminal window the following two lines
+### Using penguins-eggs-ppa (stable version)
+
+eggs have it's repository ppa, You can use it, copy and paste in a terminal window the following two lines:
 
 ```
 curl -SsL  https://pieroproietti.github.io/penguins-eggs-ppa/KEY.gpg | gpg --dearmor | sudo tee /usr/share/keyrings/penguins-eggs-ppa-keyring.gpg
@@ -93,7 +92,7 @@ sudo dpkg -i eggs_8.17.3-1_i386.deb
 ```
 
 ## Upgrade eggs
-If you are using penguins-eggs-ppa You can ugrade eggs as others packages just: **sudo apt upgrage**.
+If you are using penguins-eggs-ppa You can ugrade eggs as others packages just: **sudo apt upgrade**.
 
 
 ### Upgrade from basket
@@ -101,7 +100,7 @@ If you are using not the penguins-eggs-ppa, the fastest way to use sudo eggs upd
 
 ```sudo eggs update```
 
-### Manual upgrade 
+### Manual upgrade
 Simply download new versions of eggs from [sourgeforge page](https://sourceforge.net/projects/penguins-eggs/files/packages-deb/) and install it with the standard command **sudo dpkg -i eggs_8.17.x-1_amd64.deb**.
 
 
@@ -114,7 +113,7 @@ $ npm install -g penguins-eggs
 $ eggs COMMAND
 running command...
 $ eggs (-v|--version|version)
-penguins-eggs/8.17.14 linux-x64 node-v8.17.0
+penguins-eggs/8.17.15 linux-x64 node-v8.17.0
 $ eggs --help [COMMAND]
 USAGE
   $ eggs COMMAND
@@ -162,7 +161,7 @@ ALIASES
   $ eggs adjust
 ```
 
-_See code: [src/commands/adapt.ts](https://github.com/pieroproietti/penguins-eggs/blob/v8.17.14/src/commands/adapt.ts)_
+_See code: [src/commands/adapt.ts](https://github.com/pieroproietti/penguins-eggs/blob/v8.17.15/src/commands/adapt.ts)_
 
 ## `eggs autocomplete [SHELL]`
 
@@ -211,7 +210,7 @@ EXAMPLES
   install calamares and create it's configuration's files
 ```
 
-_See code: [src/commands/calamares.ts](https://github.com/pieroproietti/penguins-eggs/blob/v8.17.14/src/commands/calamares.ts)_
+_See code: [src/commands/calamares.ts](https://github.com/pieroproietti/penguins-eggs/blob/v8.17.15/src/commands/calamares.ts)_
 
 ## `eggs config`
 
@@ -235,7 +234,7 @@ EXAMPLE
   Configure and install prerequisites deb packages to run it
 ```
 
-_See code: [src/commands/config.ts](https://github.com/pieroproietti/penguins-eggs/blob/v8.17.14/src/commands/config.ts)_
+_See code: [src/commands/config.ts](https://github.com/pieroproietti/penguins-eggs/blob/v8.17.15/src/commands/config.ts)_
 
 ## `eggs dad`
 
@@ -252,7 +251,7 @@ OPTIONS
   -v, --verbose
 ```
 
-_See code: [src/commands/dad.ts](https://github.com/pieroproietti/penguins-eggs/blob/v8.17.14/src/commands/dad.ts)_
+_See code: [src/commands/dad.ts](https://github.com/pieroproietti/penguins-eggs/blob/v8.17.15/src/commands/dad.ts)_
 
 ## `eggs export:deb`
 
@@ -272,7 +271,7 @@ OPTIONS
   --i386       export i386 arch
 ```
 
-_See code: [src/commands/export/deb.ts](https://github.com/pieroproietti/penguins-eggs/blob/v8.17.14/src/commands/export/deb.ts)_
+_See code: [src/commands/export/deb.ts](https://github.com/pieroproietti/penguins-eggs/blob/v8.17.15/src/commands/export/deb.ts)_
 
 ## `eggs export:docs`
 
@@ -286,7 +285,7 @@ OPTIONS
   -h, --help  show CLI help
 ```
 
-_See code: [src/commands/export/docs.ts](https://github.com/pieroproietti/penguins-eggs/blob/v8.17.14/src/commands/export/docs.ts)_
+_See code: [src/commands/export/docs.ts](https://github.com/pieroproietti/penguins-eggs/blob/v8.17.15/src/commands/export/docs.ts)_
 
 ## `eggs export:iso`
 
@@ -302,7 +301,7 @@ OPTIONS
   -h, --help    show CLI help
 ```
 
-_See code: [src/commands/export/iso.ts](https://github.com/pieroproietti/penguins-eggs/blob/v8.17.14/src/commands/export/iso.ts)_
+_See code: [src/commands/export/iso.ts](https://github.com/pieroproietti/penguins-eggs/blob/v8.17.15/src/commands/export/iso.ts)_
 
 ## `eggs help [COMMAND]`
 
@@ -334,7 +333,7 @@ OPTIONS
   -v, --verbose
 ```
 
-_See code: [src/commands/info.ts](https://github.com/pieroproietti/penguins-eggs/blob/v8.17.14/src/commands/info.ts)_
+_See code: [src/commands/info.ts](https://github.com/pieroproietti/penguins-eggs/blob/v8.17.15/src/commands/info.ts)_
 
 ## `eggs install`
 
@@ -358,7 +357,7 @@ EXAMPLE
   Install the system using GUI or CLI installer
 ```
 
-_See code: [src/commands/install.ts](https://github.com/pieroproietti/penguins-eggs/blob/v8.17.14/src/commands/install.ts)_
+_See code: [src/commands/install.ts](https://github.com/pieroproietti/penguins-eggs/blob/v8.17.15/src/commands/install.ts)_
 
 ## `eggs kill`
 
@@ -377,7 +376,7 @@ EXAMPLE
   kill the eggs/free the nest
 ```
 
-_See code: [src/commands/kill.ts](https://github.com/pieroproietti/penguins-eggs/blob/v8.17.14/src/commands/kill.ts)_
+_See code: [src/commands/kill.ts](https://github.com/pieroproietti/penguins-eggs/blob/v8.17.15/src/commands/kill.ts)_
 
 ## `eggs mom`
 
@@ -391,7 +390,7 @@ OPTIONS
   -h, --help  show CLI help
 ```
 
-_See code: [src/commands/mom.ts](https://github.com/pieroproietti/penguins-eggs/blob/v8.17.14/src/commands/mom.ts)_
+_See code: [src/commands/mom.ts](https://github.com/pieroproietti/penguins-eggs/blob/v8.17.15/src/commands/mom.ts)_
 
 ## `eggs produce`
 
@@ -452,7 +451,7 @@ EXAMPLES
   in /home/eggs/ovarium and you can customize all you need
 ```
 
-_See code: [src/commands/produce.ts](https://github.com/pieroproietti/penguins-eggs/blob/v8.17.14/src/commands/produce.ts)_
+_See code: [src/commands/produce.ts](https://github.com/pieroproietti/penguins-eggs/blob/v8.17.15/src/commands/produce.ts)_
 
 ## `eggs remove`
 
@@ -479,7 +478,7 @@ EXAMPLES
   remove eggs, eggs configurations, packages dependencies
 ```
 
-_See code: [src/commands/remove.ts](https://github.com/pieroproietti/penguins-eggs/blob/v8.17.14/src/commands/remove.ts)_
+_See code: [src/commands/remove.ts](https://github.com/pieroproietti/penguins-eggs/blob/v8.17.15/src/commands/remove.ts)_
 
 ## `eggs tools:clean`
 
@@ -497,7 +496,7 @@ ALIASES
   $ eggs clean
 ```
 
-_See code: [src/commands/tools/clean.ts](https://github.com/pieroproietti/penguins-eggs/blob/v8.17.14/src/commands/tools/clean.ts)_
+_See code: [src/commands/tools/clean.ts](https://github.com/pieroproietti/penguins-eggs/blob/v8.17.15/src/commands/tools/clean.ts)_
 
 ## `eggs tools:locales`
 
@@ -513,7 +512,7 @@ OPTIONS
   -v, --verbose    verbose
 ```
 
-_See code: [src/commands/tools/locales.ts](https://github.com/pieroproietti/penguins-eggs/blob/v8.17.14/src/commands/tools/locales.ts)_
+_See code: [src/commands/tools/locales.ts](https://github.com/pieroproietti/penguins-eggs/blob/v8.17.15/src/commands/tools/locales.ts)_
 
 ## `eggs tools:skel`
 
@@ -536,7 +535,7 @@ EXAMPLE
   desktop configuration of user mauro will get used as default
 ```
 
-_See code: [src/commands/tools/skel.ts](https://github.com/pieroproietti/penguins-eggs/blob/v8.17.14/src/commands/tools/skel.ts)_
+_See code: [src/commands/tools/skel.ts](https://github.com/pieroproietti/penguins-eggs/blob/v8.17.15/src/commands/tools/skel.ts)_
 
 ## `eggs tools:stat`
 
@@ -555,7 +554,7 @@ ALIASES
   $ eggs stat
 ```
 
-_See code: [src/commands/tools/stat.ts](https://github.com/pieroproietti/penguins-eggs/blob/v8.17.14/src/commands/tools/stat.ts)_
+_See code: [src/commands/tools/stat.ts](https://github.com/pieroproietti/penguins-eggs/blob/v8.17.15/src/commands/tools/stat.ts)_
 
 ## `eggs tools:yolk`
 
@@ -573,7 +572,7 @@ EXAMPLE
   $ eggs yolk -v
 ```
 
-_See code: [src/commands/tools/yolk.ts](https://github.com/pieroproietti/penguins-eggs/blob/v8.17.14/src/commands/tools/yolk.ts)_
+_See code: [src/commands/tools/yolk.ts](https://github.com/pieroproietti/penguins-eggs/blob/v8.17.15/src/commands/tools/yolk.ts)_
 
 ## `eggs update`
 
@@ -594,7 +593,7 @@ EXAMPLE
   update/upgrade the penguin's eggs tool
 ```
 
-_See code: [src/commands/update.ts](https://github.com/pieroproietti/penguins-eggs/blob/v8.17.14/src/commands/update.ts)_
+_See code: [src/commands/update.ts](https://github.com/pieroproietti/penguins-eggs/blob/v8.17.15/src/commands/update.ts)_
 <!-- commandsstop -->
 
 # Terminal samples
