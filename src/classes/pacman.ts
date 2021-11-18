@@ -18,6 +18,7 @@ import Distro from './distro'
 import Settings from './settings'
 import { execSync } from 'child_process'
 import { IConfig } from '../interfaces'
+import { env } from 'process'
 
 const exec = require('../lib/utils').exec
 
@@ -58,16 +59,19 @@ export default class Pacman {
     * controlla se è installato xserver-xorg-core
     */
    static async isXorg(): Promise<boolean> {
-      return Pacman.packageIsInstalled('xserver-xorg-core') || Pacman.packageIsInstalled('xserver-xorg-core-hwe-18.04')
+      // XDG_SESSION_TYPE=x11
+      // return Pacman.packageIsInstalled('xserver-xorg-core') || Pacman.packageIsInstalled('xserver-xorg-core-hwe-18.04')
+      return  process.env.XDG_SESSION_TYPE === 'x11'
+
    }
 
    /**
     * Constrolla se è installato wayland
     */
    static async isWayland(): Promise<boolean> {
-      // loginctl show-session 1 |grep Type
-      // loginctl show-session $(awk '/tty/ {print $1}' <(loginctl)) -p Type | awk -F= '{print $2}'
-      return Pacman.packageIsInstalled('xwayland')
+      // XDG_SESSION_TYPE=wayland
+      // return Pacman.packageIsInstalled('xwayland')
+      return  process.env.XDG_SESSION_TYPE === 'wayland'
    }
 
    /**
@@ -151,7 +155,7 @@ export default class Pacman {
 
       packages = packagesInstall
       if (remove) {
-         packages= packagesRemove
+         packages = packagesRemove
       }
       return packages
    }
@@ -192,7 +196,7 @@ export default class Pacman {
           * 
           * A che serve? 
           */
-         const fileToRemove ='/lib/systemd/system-generators/live-config-getty-generator'
+         const fileToRemove = '/lib/systemd/system-generators/live-config-getty-generator'
          if (fs.existsSync(fileToRemove)) {
             await exec(`rm ${fileToRemove}`)
          }
