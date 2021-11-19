@@ -9,6 +9,8 @@ import shx = require('shelljs')
 import Utils from '../classes/utils'
 import Prepare from '../classes/krill_prepare'
 import Pacman from '../classes/pacman'
+import { emitWarning } from 'process'
+import chalk = require('chalk')
 
 /**
  * Class Install
@@ -40,8 +42,11 @@ export default class Install extends Command {
 
       if (Utils.isRoot(this.id)) {
          if (Utils.isLive()) {
-            if (Pacman.packageIsInstalled('calamares') && Pacman.guiEnabled() && !flags.cli) {
-               shx.exec('calamares')
+            if (Pacman.packageIsInstalled('calamares') && Pacman.isRunningGui() && !flags.cli) {
+               shx.exec('/usb/sbin/install-debian')
+            } else if (Pacman.packageIsInstalled('calamares') && !flags.cli) {
+               Utils.warning('Calamares installer is present, start GUI and choose calamares to install the system')
+               Utils.warning('If you still want to use krill, type: ' + chalk.bold('sudo eggs install --cli'))
             } else {
                const krill = new Prepare()
                await krill.prepare()

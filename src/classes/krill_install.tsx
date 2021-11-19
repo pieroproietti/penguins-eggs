@@ -392,7 +392,7 @@ export default class Hatching {
          }
          // await checkIt(message)
 
-         if (await Pacman.isGui()) {
+         if (Pacman.isInstalledGui()) {
             try {
                message = "autologin GUI"
                percent = 0.80

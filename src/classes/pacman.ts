@@ -56,49 +56,58 @@ export default class Pacman {
    }
 
    /**
-    * controlla se è installato xserver-xorg-core
+    * check if it's installed xorg
+    * @returns true if xorg is installed
     */
-   static async isXorg(): Promise<boolean> {
-      // XDG_SESSION_TYPE=x11
-      // return Pacman.packageIsInstalled('xserver-xorg-core') || Pacman.packageIsInstalled('xserver-xorg-core-hwe-18.04')
-      return  process.env.XDG_SESSION_TYPE === 'x11'
+   static isInstalledXorg(): boolean {
+      return this.packageIsInstalled('xserver-xorg-core')
+   }
+
+   /**
+    * check if it's installed wayland
+    * @returns true if wayland
+    */
+   static isInstalledWayland(): boolean {
+      return this.packageIsInstalled('xwayland') // this.packageIsInstalled('wayland-protocols')
+   }
+
+   /**
+    * 
+    * @returns true se GUI
+    */
+   static isInstalledGui(): boolean {
+      return ( this.isInstalledXorg() || this.isInstalledWayland())
+   }
+
+   /**
+    * controlla se è operante xserver-xorg-core
+    */
+    static isRunningXorg(): boolean {
+      return process.env.XDG_SESSION_TYPE === 'x11'
 
    }
 
    /**
-    * Constrolla se è installato wayland
+    * Constrolla se è operante wayland
     */
-   static async isWayland(): Promise<boolean> {
-      // XDG_SESSION_TYPE=wayland
-      // return Pacman.packageIsInstalled('xwayland')
-      return  process.env.XDG_SESSION_TYPE === 'wayland'
-   }
-
-   /**
-    * Check if the system is just CLI
-    */
-   static async isCli(): Promise<boolean> {
-      return ! await this.isGui()
+   static isRunningWayland(): boolean {
+      return process.env.XDG_SESSION_TYPE === 'wayland'
    }
 
    /**
     * Check if the system is GUI able
     */
-   static async isGui(): Promise<boolean> {
-      return await this.isXorg() || await this.isWayland()
+    static isRunningGui(): boolean {
+      return this.isRunningXorg() || this.isRunningWayland()
    }
 
    /**
-    * 
-    * @returns 
+    * Check if the system is just CLI
     */
-   static guiEnabled(): boolean {
-      let enabled = true
-      if (process.env.DISPLAY === '') {
-         enabled = false
-      }
-      return enabled
+   static isRunningCli(): boolean {
+      return !this.isRunningGui()
    }
+
 
 
    /**
@@ -185,7 +194,7 @@ export default class Pacman {
       await exec(`apt-get install --yes ${array2spaced(this.packages(false, verbose))}`, echo)
 
 
-      if (await Pacman.isCli()) {
+      if (! Pacman.isInstalledGui()) {
          /**
           * live-config-getty-generator
           * 
@@ -252,7 +261,7 @@ export default class Pacman {
     */
    static async calamaresInstall(verbose = true): Promise<void> {
       const echo = Utils.setEcho(verbose)
-      if (await this.isGui()) {
+      if (this.isInstalledGui()) {
          try {
             await exec('apt-get update --yes', echo)
          } catch (e) {

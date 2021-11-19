@@ -96,7 +96,7 @@ export default class Info extends Command {
       let uefi = Utils.isUefi()
 
       let installer = false
-      if (await Pacman.isGui()) {
+      if (await Pacman.isInstalledGui()) {
          installer = await Pacman.calamaresCheck()
       }
 
