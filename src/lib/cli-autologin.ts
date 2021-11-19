@@ -21,7 +21,7 @@ import chalk = require('chalk')
 const startMessage = 'eggs-start-message'
 const stopMessage = 'eggs-stop-message'
 
-export async function add(distro: string, version: string, user: string, userPasswd: string, rootPasswd: string, chroot = '/') {
+export async function addAutologin(distro: string, version: string, user: string, userPasswd: string, rootPasswd: string, chroot = '/') {
     if (Utils.isSystemd()) {
         /**
          * Systemd
@@ -38,8 +38,8 @@ export async function add(distro: string, version: string, user: string, userPas
         content += 'ExecStart=-/sbin/agetty --noclear --autologin ' + user + ' %I $TERM' + '\n'
         fs.writeFileSync(fileOverride, content)
         shx.exec(`chmod +x ${fileOverride}`)
-        await issueAdd(distro, version, user, userPasswd, rootPasswd, chroot)
-        await motdAdd(distro, version, user, userPasswd, rootPasswd, chroot)
+        await addIssue(distro, version, user, userPasswd, rootPasswd, chroot)
+        await addMotd(distro, version, user, userPasswd, rootPasswd, chroot)
 
     } else if (Utils.isSysvinit()) {
         /**
@@ -58,8 +58,8 @@ export async function add(distro: string, version: string, user: string, userPas
             content += lines[i] + '\n'
         }
         fs.writeFileSync(inittab, content, 'utf-8')
-        await issueAdd(distro, version, user, userPasswd, rootPasswd, chroot)
-        await motdAdd(distro, version, user, userPasswd, rootPasswd, chroot)
+        await addIssue(distro, version, user, userPasswd, rootPasswd, chroot)
+        await addMotd(distro, version, user, userPasswd, rootPasswd, chroot)
     }
 }
 
@@ -107,15 +107,15 @@ export async function remove(chroot = '/') {
  * 
  * @param chroot 
  */
-export async function motdAdd(distro: string, version: string, user: string, userPasswd: string, rootPasswd: string, chroot = '/') {
+export async function addMotd(distro: string, version: string, user: string, userPasswd: string, rootPasswd: string, chroot = '/') {
     const fileMotd = `${chroot}/etc/motd`
 
     let installer = 'sudo eggs install'
     if (Pacman.packageIsInstalled('calamares')) {
         if (Pacman.packageIsInstalled('plasma-desktop')) {
-            installer = 'startplasma-wayland to run GUI and run calamares, or from terminal sudo eggs install -c'
+            installer = 'startplasma-wayland to run GUI and launch calamares, or from terminal sudo eggs install -c'
         } else if (Pacman.packageIsInstalled('xfce4')) {
-            installer = 'startxfce4 ti ryn GUI and run calamares, or from terminal sudo eggs install -c'
+            installer = 'startxfce4 to run GUI and launch calamares, or from terminal sudo eggs install -c'
         }
     }
 
@@ -138,7 +138,7 @@ export async function motdAdd(distro: string, version: string, user: string, use
  * @param rootPasswd 
  * @param chroot 
  */
-export async function issueAdd(distro: string, version: string, user: string, userPasswd: string, rootPasswd: string, chroot = '/') {
+export async function addIssue(distro: string, version: string, user: string, userPasswd: string, rootPasswd: string, chroot = '/') {
     const fileIssue = `${chroot}/etc/issue`
     msgRemove(fileIssue)
 

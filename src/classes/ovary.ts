@@ -147,7 +147,7 @@ export default class Ovary {
 
          await this.liveCreateStructure(verbose)
 
-         if (Pacman.calamaresAble() && await Pacman.isGui()) {
+         if (Pacman.calamaresAble() && await Pacman.isInstalledGui()) {
             if (this.settings.config.force_installer && !(await Pacman.calamaresCheck())) {
                console.log('Installing ' + chalk.bgGray('calamares') + ' due force_installer=yes.')
                await Pacman.calamaresInstall(verbose)
@@ -177,15 +177,15 @@ export default class Ovary {
          await this.createUserLive(verbose)
 
          const displaymanager = require('./incubation/fisherman-helper/displaymanager').displaymanager
-         if (await Pacman.isGui()) {
-            // 
-            await this.createAutostart(this.theme, myAddons)
-            if (displaymanager() === '' ) {
-               cliAutologin.issueAdd(this.settings.distro.distroId, this.settings.distro.versionId, this.settings.config.user_opt, this.settings.config.user_opt_passwd, this.settings.config.root_passwd, this.settings.work_dir.merged)
-               cliAutologin.motdAdd(this.settings.distro.distroId, this.settings.distro.versionId, this.settings.config.user_opt, this.settings.config.user_opt_passwd, this.settings.config.root_passwd, this.settings.work_dir.merged)
+         if (Pacman.isInstalledGui()) {
+            await this.createXdgAutostart(this.theme, myAddons)
+            if (displaymanager() === '') {
+               // If GUI is installed and not Desktop manager 
+               cliAutologin.addIssue(this.settings.distro.distroId, this.settings.distro.versionId, this.settings.config.user_opt, this.settings.config.user_opt_passwd, this.settings.config.root_passwd, this.settings.work_dir.merged)
+               cliAutologin.addMotd(this.settings.distro.distroId, this.settings.distro.versionId, this.settings.config.user_opt, this.settings.config.user_opt_passwd, this.settings.config.root_passwd, this.settings.work_dir.merged)
             }
          } else {
-            cliAutologin.add(this.settings.distro.distroId, this.settings.distro.versionId, this.settings.config.user_opt, this.settings.config.user_opt_passwd, this.settings.config.root_passwd, this.settings.work_dir.merged)
+            cliAutologin.addAutologin(this.settings.distro.distroId, this.settings.distro.versionId, this.settings.config.user_opt, this.settings.config.user_opt_passwd, this.settings.config.root_passwd, this.settings.work_dir.merged)
          }
 
 
@@ -986,7 +986,7 @@ export default class Ovary {
             blocksNeed += blocks
          }
       }
-      size = blocksNeed * 4096  
+      size = blocksNeed * 4096
       return size
    }
 
@@ -1071,10 +1071,10 @@ export default class Ovary {
    /**
     * 
     */
-   async createAutostart(theme = 'eggs', myAddons: IMyAddons, verbose = false) {
+   async createXdgAutostart(theme = 'eggs', myAddons: IMyAddons, verbose = false) {
       const echo = Utils.setEcho(verbose)
       if (verbose) {
-         console.log('ovary: createAutostart()')
+         console.log('ovary: createXdgAutostart()')
       }
 
 
@@ -1167,7 +1167,8 @@ export default class Ovary {
          fs.writeFileSync(script, text, 'utf8')
          await exec(`chmod a+x ${script}`, echo)
       }
-      Xdg.autologin(Utils.getPrimaryUser(), this.settings.config.user_opt, this.settings.work_dir.merged)
+
+      await Xdg.autologin(Utils.getPrimaryUser(), this.settings.config.user_opt, this.settings.work_dir.merged)
    }
 
    /**
@@ -1344,8 +1345,8 @@ export default class Ovary {
       /**
        * Do the main grub.cfg (which gets loaded last):
        */
-       // fs.copyFileSync(path.resolve(__dirname, `../../conf/distros/${this.settings.distro.versionLike}/grub/loopback.cfg`), `${this.settings.work_dir.pathIso}/boot/grub/loopback.cfg`)
-       fs.copyFileSync(`/etc/penguins-eggs.d/distros/${this.settings.distro.versionLike}/grub/loopback.cfg`, `${this.settings.work_dir.pathIso}/boot/grub/loopback.cfg`)
+      // fs.copyFileSync(path.resolve(__dirname, `../../conf/distros/${this.settings.distro.versionLike}/grub/loopback.cfg`), `${this.settings.work_dir.pathIso}/boot/grub/loopback.cfg`)
+      fs.copyFileSync(`/etc/penguins-eggs.d/distros/${this.settings.distro.versionLike}/grub/loopback.cfg`, `${this.settings.work_dir.pathIso}/boot/grub/loopback.cfg`)
 
       /**
        * in theme va al momento theme.cfg e splash.png

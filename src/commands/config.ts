@@ -95,7 +95,7 @@ export default class Config extends Command {
             i.efi = (!Utils.isUefi())
         }
 
-        if (!await Pacman.calamaresCheck() && (await Pacman.isGui())) {
+        if (!await Pacman.calamaresCheck() && (Pacman.isInstalledGui())) {
             /**
              * Se non è jessie o stretch...
              */

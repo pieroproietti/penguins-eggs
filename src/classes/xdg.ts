@@ -84,7 +84,7 @@ export default class Xdg {
     * @param chroot
     */
    static async autologin(olduser: string, newuser: string, chroot = '/') {
-      if (await Pacman.isGui()) {
+      if (await Pacman.isInstalledGui()) {
 
          // slim
          if (Pacman.packageIsInstalled('slim')) {
