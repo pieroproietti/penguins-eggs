@@ -19,6 +19,12 @@ All ISOs are based on Debian bookworm
 * ```root/evolution```
 
 # Debian bookworm
+* **naked** - just the juice, without GUI. You can start here to build your revolution!
+* **xfce** - it's not naked, but just dressed with xfce4 and firefox. 
+* **mate** - it's not naked, but just dressed with mate and firefox. 
+* **gnome** - it's not naked, but just dressed with gnome and firefox. 
+* **kde** - it's not naked, but just dressed with kde and conquetor. 
+* **waydroid** - it's not naked, but just dressed with kde and waydroid. 
 
 # Disclaim
 __Please note what this project is in no way connected to Debian in any official way, it’s just my personal experiment__.
