@@ -60,9 +60,9 @@ export class Focal {
    async create() {
       const fisherman = new Fisherman(this.distro, this.installer, this.verbose)
 
-      console.log('creating settings: ' + this.remix.branding)
+      // console.log('creating settings: ' + this.remix.branding)
       await fisherman.settings(this.remix.branding)
-      console.log('creating modules: ' + this.remix.branding)
+      // console.log('creating modules: ' + this.remix.branding)
       await fisherman.buildModule('partition', this.remix.branding)
       await fisherman.buildModule('mount')
       await fisherman.moduleUnpackfs()

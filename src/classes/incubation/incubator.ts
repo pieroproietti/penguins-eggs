@@ -12,7 +12,6 @@ import { IRemix, IDistro } from '../../interfaces'
 
 import { Jessie } from './distros/jessie'
 import { Buster } from './distros/buster'
-import { Beowulf } from './distros/beowulf'
 import { Focal } from './distros/focal'
 import { Bionic } from './distros/bionic'
 
@@ -79,16 +78,16 @@ export default class Incubator {
       } else if (this.distro.versionLike === 'bookworm') {
          const bookworm = new Buster(this.installer, this.remix, this.distro, release, this.user_opt, this.verbose)
          await bookworm.create()
-      } else if (this.distro.versionLike === 'beowulf') {
-         const beowulf = new Beowulf(this.installer, this.remix, this.distro, release, this.user_opt, this.verbose)
-         await beowulf.create()
-
          // DEVUAN
+
+      } else if (this.distro.versionLike === 'beowulf') {
+         const beowulf = new Buster(this.installer, this.remix, this.distro, release, this.user_opt, this.verbose)
+         await beowulf.create()
       } else if (this.distro.versionLike === 'chimaera') {
-         const chimaera = new Beowulf(this.installer, this.remix, this.distro, release, this.user_opt, this.verbose)
+         const chimaera = new Buster(this.installer, this.remix, this.distro, release, this.user_opt, this.verbose)
          await chimaera.create()
       } else if (this.distro.versionLike === 'daedalus') {
-         const daedalus = new Beowulf(this.installer, this.remix, this.distro, release, this.user_opt, this.verbose)
+         const daedalus = new Buster(this.installer, this.remix, this.distro, release, this.user_opt, this.verbose)
          await daedalus.create()
 
          // UBUNTU
