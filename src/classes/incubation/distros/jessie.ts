@@ -60,31 +60,8 @@ export class Jessie {
       await fisherman.settings(this.remix.branding)
 
       await fisherman.buildModule('partition', this.remix.branding)
-      // await fisherman.buildModule('mount')
-      // await fisherman.moduleUnpackfs()
       await fisherman.buildCalamaresModule('sources-yolk', true)
-      // await fisherman.buildModule('machineid')
-      // await fisherman.buildModule('fstab')
-      // await fisherman.buildModule('locale')
-      // await fisherman.buildModule('keyboard')
-      // await fisherman.buildModule('localecfg')
-      // await fisherman.buildModule('users')
-      // await fisherman.moduleDisplaymanager()
-      // await fisherman.buildModule('networkcfg')
-      // await fisherman.buildModule('hwclock')
-      // await fisherman.buildModule('services-systemd')
-      // await fisherman.buildCalamaresModule('bootloader-config', true)
-      // await fisherman.buildModule('grubcfg') // python
-      // await fisherman.buildModule('bootloader') // python
-      // await fisherman.modulePackages(this.distro, this.release) //
-      // await fisherman.buildModule('luksbootkeyfile')
-      // await fisherman.buildModule('plymouthcfg')
-      // await fisherman.buildModule('initramfscfg')
-      // await fisherman.buildModule('initramfs')
       await fisherman.moduleRemoveuser(this.user_opt)
       await fisherman.buildCalamaresModule('sources-yolk-unmount', false)
-      // await fisherman.buildModule('umount')
-      // await fisherman.buildCalamaresModule('remove-link')
-      // await fisherman.moduleFinished()
    }
 }
