@@ -13,7 +13,7 @@ penguins-eggs
 
 # Penguin's eggs remastered ISOs
 
-All ISOs are based on KDE Neon User Edition 64bit
+All ISOs are based on KDE Neon User Edition and KDE Neon developer edition. 
 
 # user/password
 * ```live/evolution```
@@ -22,7 +22,9 @@ All ISOs are based on KDE Neon User Edition 64bit
 All ISOs include eggs, you can udate it with: ```sudo eggs update```.
 
 # KDE 
-* **egg-of-ubuntu-focal-neon** - just a remaster of neon-user-20210225-0945.iso with eggs, unchanded. You can install it, made your version and reproduce the iso again, and again, and again...
+* **egg-of-ubuntu-focal-user** - just a remaster of neon-user-20210225-0945.iso with eggs, unchanded. You can install it, made your version and reproduce the iso again, and again, and again...
+
+* **egg-of-ubuntu-focal-developer** - just a remaster of neon-developer with eggs and toold to develop eggs. You can install it, made your version and reproduce the iso again, and again, and again...
 
 # Disclaim
 __Please note what this project is in no way connected to Devuan in any official way, it’s just my personal experiment__.
