@@ -164,7 +164,7 @@ class Distro implements IDistro {
       } else if (this.versionId === 'chimaera') {
          this.distroLike = 'Devuan'
          this.versionLike = 'chimaera'
-      } else if (this.versionId === 'daedalus ceres') {
+      } else if (this.versionId === 'daedalus') {
          this.distroLike = 'Devuan'
          this.versionLike = 'daedalus'
 
