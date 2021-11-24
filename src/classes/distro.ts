@@ -45,6 +45,7 @@ class Distro implements IDistro {
    distroLike: string
    versionId: string
    versionLike: string
+   packageManager: string
    isolinuxPath: string
    syslinuxPath: string
    squashFs: string
@@ -59,6 +60,7 @@ class Distro implements IDistro {
       this.distroLike = ''
       this.versionId = ''
       this.versionLike = ''
+      this.packageManager = 'apt'
       this.isolinuxPath = ''
       this.syslinuxPath = ''
       this.squashFs = ''

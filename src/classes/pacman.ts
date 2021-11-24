@@ -19,6 +19,7 @@ import Settings from './settings'
 import { execSync } from 'child_process'
 import { IConfig } from '../interfaces'
 import { env } from 'process'
+import { threadId } from 'worker_threads'
 
 const exec = require('../lib/utils').exec
 
@@ -45,6 +46,13 @@ export default class Pacman {
       const versionLike = this.distro.versionLike
    }
 
+
+   static packageManager(): string {
+      const remix = {} as IRemix
+      const distro = new Distro(remix)
+      return distro.packageManager
+   }
+
    /**
     * 
     * @returns 
@@ -68,7 +76,7 @@ export default class Pacman {
     * @returns true if wayland
     */
    static isInstalledWayland(): boolean {
-      return this.packageIsInstalled('xwayland') // this.packageIsInstalled('wayland-protocols')
+      return this.packageIsInstalled('xwayland')
    }
 
    /**
@@ -76,13 +84,13 @@ export default class Pacman {
     * @returns true se GUI
     */
    static isInstalledGui(): boolean {
-      return ( this.isInstalledXorg() || this.isInstalledWayland())
+      return (this.isInstalledXorg() || this.isInstalledWayland())
    }
 
    /**
     * controlla se è operante xserver-xorg-core
     */
-    static isRunningXorg(): boolean {
+   static isRunningXorg(): boolean {
       return process.env.XDG_SESSION_TYPE === 'x11'
 
    }
@@ -97,7 +105,7 @@ export default class Pacman {
    /**
     * Check if the system is GUI able
     */
-    static isRunningGui(): boolean {
+   static isRunningGui(): boolean {
       return this.isRunningXorg() || this.isRunningWayland()
    }
 
@@ -194,7 +202,7 @@ export default class Pacman {
       await exec(`apt-get install --yes ${array2spaced(this.packages(false, verbose))}`, echo)
 
 
-      if (! Pacman.isInstalledGui()) {
+      if (!Pacman.isInstalledGui()) {
          /**
           * live-config-getty-generator
           * 
@@ -654,11 +662,20 @@ export default class Pacman {
    * @param debPackage
    */
    static packageIsInstalled(debPackage: string): boolean {
+
       let installed = false
-      const cmd = `/usr/bin/dpkg -s ${debPackage} | grep Status:`
-      const stdout = shx.exec(cmd, { silent: true }).stdout.trim()
-      if (stdout === 'Status: install ok installed') {
-         installed = true
+      if (this.packageManager() === 'apt') {
+         const cmd = `/usr/bin/dpkg -s ${debPackage} | grep Status:`
+         const stdout = shx.exec(cmd, { silent: true }).stdout.trim()
+         if (stdout === 'Status: install ok installed') {
+            installed = true
+         }
+      } else (this.packageManager() === 'dnf') {
+         const cmd = `/usr/bin/dnf list installed ${debPackage}|grep ${debPackage}`
+         const stdout = shx.exec(cmd, { silent: true }).stdout.trim()
+         if (stdout.includes(debPackage)) {
+            installed = true
+         }
       }
       return installed
    }
@@ -747,5 +764,4 @@ export default class Pacman {
       }
       return installed
    }
-
 }
