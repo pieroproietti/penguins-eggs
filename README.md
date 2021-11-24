@@ -83,7 +83,7 @@ Update your repositories: **sudo apt update** and install eggs: **sudo apt insta
 The simplest way to install eggs is download the [package eggs](https://sourceforge.net/projects/penguins-eggs/files/packages-deb/) from [sourceforge page of the project](https://sourceforge.net/projects/penguins-eggs/) and install it
 
 ```
-sudo dpkg -i eggs_8.17.3-1_amd64.deb
+sudo dpkg -i eggs_14.18.0-1_amd64.deb
 ```
 
 or, on a i386 system:
