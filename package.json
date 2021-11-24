@@ -32,7 +32,7 @@
     "shelljs": "^0.8.4"
   },
   "devDependencies": {
-    "@oclif/dev-cli": "1.26.1",
+    "@oclif/dev-cli": "./vendors/dev-cli",
     "@oclif/test": "^1.2.8",
     "@types/axios": "^0.14.0",
     "@types/clear": "^0.1.1",

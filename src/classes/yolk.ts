@@ -43,7 +43,7 @@ export default class Yolk {
         try {
             await exec('apt-get update --yes', echo)
         } catch (e) {
-            Utils.error('Yolk.create() apt-get update --yes ' + e.error)
+            Utils.error('Yolk.create() apt-get update --yes ') // + e.error)
         }
         if (!this.exists()) {
             shx.exec(`mkdir ${this.dir} -p`)
