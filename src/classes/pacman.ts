@@ -685,19 +685,24 @@ export default class Pacman {
    * restuisce VERO se il pacchetto è installato
    * @param debPackage
    */
-   static async packageAptAvailable(debPackage: string): Promise<boolean> {
-      let disponible = false
-      const cmd = `apt-cache show ${debPackage} | grep Package:`
-      const test = `Package: ${debPackage}`
-      const stdout = shx.exec(cmd, { silent: true }).stdout.trim()
-      // console.log('===================================')
-      // console.log('[' + stdout + ']')
-      // console.log('[' + test + ']')
-      // console.log('===================================')
-      if (stdout === test) {
-         disponible = true
+   static async packageAptAvailable(packageName: string): Promise<boolean> {
+      let available = false
+      if (this.packageManager() === 'apt') {
+         const cmd = `apt-cache show ${packageName} | grep Package:`
+         const test = `Package: ${packageName}`
+         const stdout = shx.exec(cmd, { silent: true }).stdout.trim()
+         if (stdout === test) {
+            available = true
+         }
+      } else (this.packageManager() === 'dnf') {
+         const cmd = `/usr/bin/dnf list available ${packageName}|grep ${packageName}`
+         const stdout = shx.exec(cmd, { silent: true }).stdout.trim()
+         if (stdout.includes(packageName)) {
+            available = true
+         }
       }
-      return disponible
+
+      return available
    }
 
 
@@ -722,26 +727,32 @@ export default class Pacman {
     */
    static async commandIsInstalled(cmd: string): Promise<boolean> {
       let installed = false
+
       const stdout = shx.exec(`command -v ${cmd}`, { silent: true }).stdout.trim()
       if (stdout !== '') {
          installed = true
       } else {
          Utils.warning(`${cmd} is not in your search path or is not installed!`)
       }
-
       return installed
    }
 
    /**
-    * Install the package debPackage
-    * @param debPackage {string} Pacchetto Debian da installare
+    * Install the package packageName
+    * @param packageName {string} Pacchetto Debian da installare
     * @returns {boolean} True if success
     */
-   static async packageInstall(debPackage: string): Promise<boolean> {
+   static async packageInstall(packageName: string): Promise<boolean> {
       let retVal = false
 
-      if (shx.exec(`/usr/bin/apt-get install -y ${debPackage}`, { silent: true }) === '0') {
-         retVal = true
+      if (this.packageManager() === 'apt') {
+         if (shx.exec(`/usr/bin/apt-get install -y ${packageName}`, { silent: true }) === '0') {
+            retVal = true
+         }
+      } else (this.packageManager() === 'dnf') {
+         if (shx.exec(`/usr/bin/dnf install joe - y ${packageName}`, { silent: true }) === '0') {
+            retVal = true
+         }
       }
       return retVal
    }
