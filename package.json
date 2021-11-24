@@ -21,7 +21,7 @@
     "cfonts": "^2.9.3",
     "chalk": "^4.1.0",
     "clear": "^0.1.0",
-    "ink": "github:pieroproietti/ink",
+    "ink": "github:vadimdemedes/ink",
     "ink-big-text": "^1.2.0",
     "ink-gradient": "^2.0.0",
     "inquirer": "^8.0.0",
@@ -32,7 +32,7 @@
     "shelljs": "^0.8.4"
   },
   "devDependencies": {
-    "@oclif/dev-cli": "./vendors/dev-cli",
+    "@oclif/dev-cli": "1.26.1",
     "@oclif/test": "^1.2.8",
     "@types/axios": "^0.14.0",
     "@types/clear": "^0.1.1",
