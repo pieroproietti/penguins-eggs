@@ -265,12 +265,12 @@ export default class Pacman {
          try {
             await exec('apt-get update --yes', echo)
          } catch (e) {
-            Utils.error('Pacman.calamaresInstall() apt-get update --yes ' + e.error)
+            Utils.error('Pacman.calamaresInstall() apt-get update --yes ') // + e.error as string)
          }
          try {
             await exec(`apt-get install --yes ${array2spaced(this.debs4calamares)}`, echo)
          } catch (e) {
-            Utils.error(`Pacman.calamaresInstall() apt-get install --yes ${array2spaced(this.debs4calamares)}` + e.error)
+            Utils.error(`Pacman.calamaresInstall() apt-get install --yes ${array2spaced(this.debs4calamares)}`) // + e.error)
          }
 
       } else {

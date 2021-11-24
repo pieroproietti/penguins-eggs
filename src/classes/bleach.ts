@@ -77,7 +77,7 @@ export default class Bleach {
             await exec('journalctl --rotate', echo)
             await exec('journalctl --vacuum-time=1s', echo)
          } catch (error) {
-            Utils.error(error)
+            Utils.error(error as string)
          }
       } else {
          // Truncate logs, remove archived logs.

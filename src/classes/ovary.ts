@@ -105,9 +105,8 @@ export default class Ovary {
          }
 
 
-         if (this.settings.listFreeSpace()) {
-            if (await Utils.customConfirm('Select yes to continue...')) return true
-         }
+         this.settings.listFreeSpace()
+         if (await Utils.customConfirm('Select yes to continue...')) return true
       }
       return false
    }

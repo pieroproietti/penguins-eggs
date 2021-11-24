@@ -2,7 +2,7 @@
   "name": "penguins-eggs",
   "shortName": "eggs",
   "description": "Perri's Brewery edition: remaster your system and distribuite it",
-  "version": "8.17.16",
+  "version": "14.18.0",
   "author": "Piero Proietti @pieroproietti",
   "bin": {
     "eggs": "bin/run"
@@ -21,7 +21,7 @@
     "cfonts": "^2.9.3",
     "chalk": "^4.1.0",
     "clear": "^0.1.0",
-    "ink": "github:pieroproietti/ink",
+    "ink": "github:vadimdemedes/ink",
     "ink-big-text": "^1.2.0",
     "ink-gradient": "^2.0.0",
     "inquirer": "^8.0.0",
