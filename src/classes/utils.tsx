@@ -532,7 +532,7 @@ unknown target format aarch64-efi
    }
 
    /**
-    * todo
+    * address
     */
    static address(): string {
       /**
@@ -555,6 +555,18 @@ unknown target format aarch64-efi
    }
 
    /**
+    * 
+    * @returns 
+    */
+    static broadcast(): string {
+      /**
+       * ip a | grep -w inet |grep -v 127.0.0.1| awk '{print $4}' 
+       * ifconfig | grep -w inet |grep -v 127.0.0.1| awk '{print $6}' | cut -d ":" -f 2
+       */
+      return shx.exec(`ip a | grep -w inet |grep -v 127.0.0.1| awk '{print $4}'`, { silent: true }).stdout.trim()
+   }
+
+   /**
     * @returns dns
     */
    static getDns(): string[] {
@@ -566,17 +578,7 @@ unknown target format aarch64-efi
       // return shx.exec(`route -n | grep 'UG[ \t]' | awk '{print $2}'`, { silent: true }).stdout.trim()
    }
 
-   /**
-    * 
-    * @returns 
-    */
-   static broadcast(): string {
-      /**
-       * ip a | grep -w inet |grep -v 127.0.0.1| awk '{print $4}' 
-       * ifconfig | grep -w inet |grep -v 127.0.0.1| awk '{print $6}' | cut -d ":" -f 2
-       */
-      return shx.exec(`ip a | grep -w inet |grep -v 127.0.0.1| awk '{print $4}'`, { silent: true }).stdout.trim()
-   }
+   
    /**
     * @returns gateway
     */

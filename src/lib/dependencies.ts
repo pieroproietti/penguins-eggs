@@ -39,6 +39,7 @@ export function array2spaced(packages: string[]) {
 
 /**
  * common dependencies
+ * removable: isolinux live-boot live-boot-doc live-boot-initramfs-tools live-tools syslinux syslinux-common
  * sudo apt purge cryptsetup dosfstools dpkg-dev isolinux live-boot live-boot-initramfs-tools  squashfs-tools syslinux-common coreutils xorriso
  */
 export const depCommon = [
