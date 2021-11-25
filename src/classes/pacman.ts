@@ -670,7 +670,7 @@ export default class Pacman {
          if (stdout === 'Status: install ok installed') {
             installed = true
          }
-      } else (this.packageManager() === 'dnf') {
+      } else if (this.packageManager() === 'dnf') {
          const cmd = `/usr/bin/dnf list installed ${debPackage}|grep ${debPackage}`
          const stdout = shx.exec(cmd, { silent: true }).stdout.trim()
          if (stdout.includes(debPackage)) {
@@ -694,7 +694,7 @@ export default class Pacman {
          if (stdout === test) {
             available = true
          }
-      } else (this.packageManager() === 'dnf') {
+      } else if (this.packageManager() === 'dnf') {
          const cmd = `/usr/bin/dnf list available ${packageName}|grep ${packageName}`
          const stdout = shx.exec(cmd, { silent: true }).stdout.trim()
          if (stdout.includes(packageName)) {
@@ -749,7 +749,7 @@ export default class Pacman {
          if (shx.exec(`/usr/bin/apt-get install -y ${packageName}`, { silent: true }) === '0') {
             retVal = true
          }
-      } else (this.packageManager() === 'dnf') {
+      } else if (this.packageManager() === 'dnf') {
          if (shx.exec(`/usr/bin/dnf install joe - y ${packageName}`, { silent: true }) === '0') {
             retVal = true
          }
