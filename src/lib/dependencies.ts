@@ -48,7 +48,7 @@ export const depCommon = [
    'isolinux',
    'live-boot',
    'live-boot-initramfs-tools',
-   'net-tools',
+   // 'net-tools', // ifconfig
    'parted',
    'rsync',
    'squashfs-tools',
