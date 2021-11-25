@@ -18,6 +18,9 @@ You can follow the project also consulting the [commit history](https://github.c
 ## Changelog
 Versions are listed on reverse order, the first is the last one.
 
+### eggs-8.17-17
+* backport: removed net-tools from dependencies, added coreutils for whoami
+
 ### eggs-8.17-16
 * tested against devuan beowulf, chiamaera, debian buster, bullseye, bookstorm, neon developer (ubuntu focal)
 
