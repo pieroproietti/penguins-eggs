@@ -531,19 +531,40 @@ unknown target format aarch64-efi
       return netDeviceName
    }
 
-   /**
-    * todo
+      /**
+    * address
     */
-   static address(): string {
-      return shx.exec(`ifconfig | grep -w inet |grep -v 127.0.0.1| awk '{print $2}' | cut -d ":" -f 2`, { silent: true }).stdout.trim()
-   }
-
-   /**
-    * netmask
-    */
-   static netmask(): string {
-      return shx.exec(`ifconfig | grep -w inet |grep -v 127.0.0.1| awk '{print $4}' | cut -d ":" -f 2`, { silent: true }).stdout.trim()
-   }
+       static address(): string {
+         /**
+          * ip a | grep -w inet |grep -v 127.0.0.1| awk '{print $2}' | cut -d "/" -f 1
+          * ifconfig | grep -w inet |grep -v 127.0.0.1| awk '{print $2}' | cut -d ":" -f 2`
+          * 
+         */ 
+         return shx.exec(`ip a | grep -w inet |grep -v 127.0.0.1| awk '{print $2}' | cut -d "/" -f 1`, { silent: true }).stdout.trim()
+      }
+   
+      /**
+       * netmask
+       */
+      static netmask(): string {
+         /**
+          * ip a | grep -w inet |grep -v 127.0.0.1| awk '{print $2}' | cut -d "/" -f 2
+          * ifconfig | grep -w inet |grep -v 127.0.0.1| awk '{print $4}' | cut -d ":" -f 2
+          */
+         return shx.exec(`ip a | grep -w inet |grep -v 127.0.0.1| awk '{print $2}' | cut -d "/" -f 2`, { silent: true }).stdout.trim()
+      }
+   
+      /**
+       * 
+       * @returns 
+       */
+       static broadcast(): string {
+         /**
+          * ip a | grep -w inet |grep -v 127.0.0.1| awk '{print $4}' 
+          * ifconfig | grep -w inet |grep -v 127.0.0.1| awk '{print $6}' | cut -d ":" -f 2
+          */
+         return shx.exec(`ip a | grep -w inet |grep -v 127.0.0.1| awk '{print $4}'`, { silent: true }).stdout.trim()
+      }
 
    /**
     * @returns dns
@@ -557,13 +578,6 @@ unknown target format aarch64-efi
       // return shx.exec(`route -n | grep 'UG[ \t]' | awk '{print $2}'`, { silent: true }).stdout.trim()
    }
 
-   /**
-    * 
-    * @returns 
-    */
-   static broadcast(): string {
-      return shx.exec(`ifconfig | grep -w inet |grep -v 127.0.0.1| awk '{print $6}' | cut -d ":" -f 2'`, { silent: true }).stdout.trim()
-   }
    /**
     * @returns gateway
     */

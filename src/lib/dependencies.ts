@@ -36,24 +36,23 @@ export function array2spaced(packages: string[]) {
    return spaced
 }
 
-
 /**
  * common dependencies
- * sudo apt purge cryptsetup dosfstools dpkg-dev isolinux live-boot live-boot-initramfs-tools  squashfs-tools syslinux-common whois xorriso
+ * sudo apt purge cryptsetup dosfstools dpkg-dev isolinux live-boot live-boot-initramfs-tools  squashfs-tools syslinux-common coreutils xorriso
  */
-export const depCommon = [
+ export const depCommon = [
    'cryptsetup',
    'dosfstools',
-   'dpkg-dev',
+   'dpkg-dev', // occorre per creare la repository yolk
    'isolinux',
    'live-boot',
    'live-boot-initramfs-tools',
-   'net-tools',
+   // 'net-tools', // ifconfig
    'parted',
    'rsync',
    'squashfs-tools',
    'syslinux-common',
-   'whois',
+   'coreutils', // whoami
    'xorriso'
 ]
 
