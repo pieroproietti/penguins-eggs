@@ -15,8 +15,6 @@ import yaml = require('js-yaml')
 import shx = require('shelljs')
 import pjson = require('pjson')
 import chalk = require('chalk')
-import React from 'react'
-import { render, Text, Box } from 'ink'
 
 
 // interfaces

@@ -1,4 +1,5 @@
 export interface IDistro {
+   familyId: string
    distroId: string
    distroLike: string
    versionId: string

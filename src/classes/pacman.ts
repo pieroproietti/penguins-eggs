@@ -18,9 +18,6 @@ import Distro from './distro'
 import Settings from './settings'
 import { execSync } from 'child_process'
 import { IConfig } from '../interfaces'
-import { env } from 'process'
-import { threadId } from 'worker_threads'
-
 const exec = require('../lib/utils').exec
 
 const config_file = '/etc/penguins-eggs.d/eggs.yaml' as string
@@ -37,8 +34,6 @@ export default class Pacman {
 
    remix = {} as IRemix
 
-   settings = {}
-
    /**
     * 
     */
@@ -46,21 +41,14 @@ export default class Pacman {
       const versionLike = this.distro.versionLike
    }
 
-
-   static packageManager(): string {
-      const remix = {} as IRemix
-      const distro = new Distro(remix)
-      return distro.packageManager
-   }
-
    /**
     * 
     * @returns 
     */
-   static versionLike(): string {
+   static distro(): IDistro {
       const remix = {} as IRemix
       const distro = new Distro(remix)
-      return distro.versionLike
+      return distro
    }
 
    /**
@@ -664,13 +652,13 @@ export default class Pacman {
    static packageIsInstalled(debPackage: string): boolean {
 
       let installed = false
-      if (this.packageManager() === 'apt') {
+      if (this.distro().familyId === 'debian') {
          const cmd = `/usr/bin/dpkg -s ${debPackage} | grep Status:`
          const stdout = shx.exec(cmd, { silent: true }).stdout.trim()
          if (stdout === 'Status: install ok installed') {
             installed = true
          }
-      } else if (this.packageManager() === 'dnf') {
+      } else if (this.distro().familyId === 'fedora') {
          const cmd = `/usr/bin/dnf list installed ${debPackage}|grep ${debPackage}`
          const stdout = shx.exec(cmd, { silent: true }).stdout.trim()
          if (stdout.includes(debPackage)) {
@@ -687,14 +675,14 @@ export default class Pacman {
    */
    static async packageAptAvailable(packageName: string): Promise<boolean> {
       let available = false
-      if (this.packageManager() === 'apt') {
+      if (this.distro().familyId === 'debian') {
          const cmd = `apt-cache show ${packageName} | grep Package:`
          const test = `Package: ${packageName}`
          const stdout = shx.exec(cmd, { silent: true }).stdout.trim()
          if (stdout === test) {
             available = true
          }
-      } else if (this.packageManager() === 'dnf') {
+      } else if (this.distro().familyId === 'fedora') {
          const cmd = `/usr/bin/dnf list available ${packageName}|grep ${packageName}`
          const stdout = shx.exec(cmd, { silent: true }).stdout.trim()
          if (stdout.includes(packageName)) {
@@ -745,11 +733,11 @@ export default class Pacman {
    static async packageInstall(packageName: string): Promise<boolean> {
       let retVal = false
 
-      if (this.packageManager() === 'apt') {
+      if (this.distro().familyId === 'debian') {
          if (shx.exec(`/usr/bin/apt-get install -y ${packageName}`, { silent: true }) === '0') {
             retVal = true
          }
-      } else if (this.packageManager() === 'dnf') {
+      } else if (this.distro().familyId === 'fedora') {
          if (shx.exec(`/usr/bin/dnf install joe - y ${packageName}`, { silent: true }) === '0') {
             retVal = true
          }

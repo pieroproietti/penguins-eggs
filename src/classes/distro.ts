@@ -41,6 +41,7 @@ import { IRemix, IDistro } from '../interfaces'
  * Classe
  */
 class Distro implements IDistro {
+   familyId: string
    distroId: string
    distroLike: string
    versionId: string
@@ -56,6 +57,7 @@ class Distro implements IDistro {
    calamaresAble: boolean
 
    constructor(remix: IRemix) {
+      this.familyId = 'debian'
       this.distroId = ''
       this.distroLike = ''
       this.versionId = ''
@@ -249,6 +251,20 @@ class Distro implements IDistro {
          // Netrunner
          this.distroLike = 'Debian'
          this.versionLike = 'buster'
+
+         /**
+          * ArchLinux
+          */
+      } else if (this.distroId === 'EndeavourOS') {
+         this.familyId = "archlinux"
+         this.versionId = 'rolling' // rolling
+         this.distroLike = 'Arch'
+         this.versionLike = 'rolling'
+      } else if (this.distroId === 'ManjaroLinux') {
+         this.familyId = "archlinux"
+         this.versionId = 'rolling' // pavho
+         this.distroLike = 'Arch'
+         this.versionLike = 'rolling'
       } else {
 
          // se proprio non riesco chiedo l'intervento dell'utente
@@ -274,10 +290,10 @@ class Distro implements IDistro {
       /**
        * isCalamaresCompliant
        */
-       if (this.versionLike === 'jessie' || this.versionLike === 'stretch' || this.versionLike === 'xenial') {
-          this.calamaresAble = false
+      if (this.versionLike === 'jessie' || this.versionLike === 'stretch' || this.versionLike === 'xenial') {
+         this.calamaresAble = false
       }
-      
+
       /**
        * MX LINUX
        * ln -s /run/live/medium/live/filesystem.squashfs /live/boot-dev/antiX/linuxfs
