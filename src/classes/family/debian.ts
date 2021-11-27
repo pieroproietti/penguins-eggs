@@ -127,10 +127,8 @@ export default class Debian {
     static async prerequisitesInstall(verbose = true): Promise<boolean> {
         const echo = Utils.setEcho(verbose)
         const retVal = false
-        const versionLike = this.distro().versionLike
 
         await exec(`apt-get install --yes ${array2spaced(this.packages(false, verbose))}`, echo)
-
 
         if (!Pacman.isInstalledGui()) {
             /**
@@ -215,18 +213,10 @@ export default class Debian {
     static packageIsInstalled(debPackage: string): boolean {
 
         let installed = false
-        if (this.distro().familyId === 'debian') {
-            const cmd = `/usr/bin/dpkg -s ${debPackage} | grep Status:`
-            const stdout = shx.exec(cmd, { silent: true }).stdout.trim()
-            if (stdout === 'Status: install ok installed') {
-                installed = true
-            }
-        } else if (this.distro().familyId === 'fedora') {
-            const cmd = `/usr/bin/dnf list installed ${debPackage}|grep ${debPackage}`
-            const stdout = shx.exec(cmd, { silent: true }).stdout.trim()
-            if (stdout.includes(debPackage)) {
-                installed = true
-            }
+        const cmd = `/usr/bin/dpkg -s ${debPackage} | grep Status:`
+        const stdout = shx.exec(cmd, { silent: true }).stdout.trim()
+        if (stdout === 'Status: install ok installed') {
+            installed = true
         }
         return installed
     }
@@ -238,19 +228,11 @@ export default class Debian {
     */
     static async packageAptAvailable(packageName: string): Promise<boolean> {
         let available = false
-        if (this.distro().familyId === 'debian') {
-            const cmd = `apt-cache show ${packageName} | grep Package:`
-            const test = `Package: ${packageName}`
-            const stdout = shx.exec(cmd, { silent: true }).stdout.trim()
-            if (stdout === test) {
-                available = true
-            }
-        } else if (this.distro().familyId === 'fedora') {
-            const cmd = `/usr/bin/dnf list available ${packageName}|grep ${packageName}`
-            const stdout = shx.exec(cmd, { silent: true }).stdout.trim()
-            if (stdout.includes(packageName)) {
-                available = true
-            }
+        const cmd = `apt-cache show ${packageName} | grep Package:`
+        const test = `Package: ${packageName}`
+        const stdout = shx.exec(cmd, { silent: true }).stdout.trim()
+        if (stdout === test) {
+            available = true
         }
 
         return available
@@ -275,16 +257,9 @@ export default class Debian {
      */
     static async packageInstall(packageName: string): Promise<boolean> {
         let retVal = false
-
-        if (this.distro().familyId === 'debian') {
             if (shx.exec(`/usr/bin/apt-get install -y ${packageName}`, { silent: true }) === '0') {
                 retVal = true
             }
-        } else if (this.distro().familyId === 'fedora') {
-            if (shx.exec(`/usr/bin/dnf install joe - y ${packageName}`, { silent: true }) === '0') {
-                retVal = true
-            }
-        }
         return retVal
     }
 }
