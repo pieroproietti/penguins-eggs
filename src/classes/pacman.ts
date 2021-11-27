@@ -111,8 +111,6 @@ export default class Pacman {
       return !this.isRunningGui()
    }
 
-
-
    /**
     * Crea array packages dei pacchetti da installare
     */
@@ -123,7 +121,6 @@ export default class Pacman {
       }
       return packages
    }
-
 
    /**
     * Restituisce VERO se i prerequisiti sono installati
