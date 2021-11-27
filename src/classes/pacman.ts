@@ -20,6 +20,8 @@ import { execSync } from 'child_process'
 import { IConfig } from '../interfaces'
 const exec = require('../lib/utils').exec
 
+import Debian from './family/debian'
+
 const config_file = '/etc/penguins-eggs.d/eggs.yaml' as string
 const config_tools = '/etc/penguins-eggs.d/tools.yaml' as string
 
@@ -49,7 +51,13 @@ export default class Pacman {
     * @returns true if xorg is installed
     */
    static isInstalledXorg(): boolean {
-      return this.packageIsInstalled('xserver-xorg-core')
+      let installed = false
+      if (this.distro().familyId === 'debian') {
+         if (Debian.isInstalledXorg()) {
+            installed = true
+         }
+      }
+      return installed
    }
 
    /**
@@ -57,7 +65,13 @@ export default class Pacman {
     * @returns true if wayland
     */
    static isInstalledWayland(): boolean {
-      return this.packageIsInstalled('xwayland')
+      let installed = false
+      if (this.distro().familyId === 'debian') {
+         if (Debian.isInstalledWayland()) {
+            installed = true
+         }
+      }
+      return installed
    }
 
    /**
@@ -104,56 +118,8 @@ export default class Pacman {
     */
    static packages(remove = false, verbose = false): string[] {
       let packages: string[] = []
-      const packagesInstall: string[] = []
-      const packagesRemove: string[] = []
-
-      if (!Utils.isDebPackage()) {
-         depCommon.forEach((elem) => {
-            if (!this.packageIsInstalled(elem)) {
-               packagesInstall.push(elem)
-            } else {
-               packagesRemove.push(elem)
-            }
-         })
-
-         const arch = Utils.machineArch()
-         depArch.forEach((dep) => {
-            if (dep.arch.includes(arch)) {
-               if (!this.packageIsInstalled(dep.package)) {
-                  packagesInstall.push(dep.package)
-               } else {
-                  packagesRemove.push(dep.package)
-               }
-            }
-         })
-      }
-
-      // Version e initType da controllare
-      const version = this.distro().versionLike
-      depVersions.forEach((dep) => {
-         if (dep.versions.includes(version)) {
-            if (!this.packageIsInstalled(dep.package)) {
-               packagesInstall.push(dep.package)
-            } else {
-               packagesRemove.push(dep.package)
-            }
-         }
-      })
-
-      const initType: string = shx.exec('ps --no-headers -o comm 1', { silent: !verbose }).trim()
-      depInit.forEach((dep) => {
-         if (dep.init.includes(initType)) {
-            if (!this.packageIsInstalled(dep.package)) {
-               packagesInstall.push(dep.package)
-            } else {
-               packagesRemove.push(dep.package)
-            }
-         }
-      })
-
-      packages = packagesInstall
-      if (remove) {
-         packages = packagesRemove
+      if (this.distro().familyId === 'debian') {
+         packages = Debian.packages(remove, verbose)
       }
       return packages
    }
@@ -164,7 +130,7 @@ export default class Pacman {
     */
    static async prerequisitesCheck(verbose = false): Promise<boolean> {
       let installed = true
-      let packages = Pacman.packages(false, verbose)
+      let packages = this.packages(false, verbose)
 
       if (packages.length > 0) {
          installed = false
@@ -176,43 +142,11 @@ export default class Pacman {
     *
     */
    static async prerequisitesInstall(verbose = true): Promise<boolean> {
-      const echo = Utils.setEcho(verbose)
-      const retVal = false
-      const versionLike = this.distro().versionLike
+      let retVal = false
 
-      await exec(`apt-get install --yes ${array2spaced(this.packages(false, verbose))}`, echo)
-
-
-      if (!Pacman.isInstalledGui()) {
-         /**
-          * live-config-getty-generator
-          * 
-          * Viene rimosso in naked, altrimenti non funziona il login
-          * generando un errore getty. 
-          * Sarebbe utile individuarne le ragioni, forse rompe anche sul desktop
-          * non permettendo di cambiare terminale e loggarsi
-          * 
-          * A che serve? 
-          */
-         const fileToRemove = '/lib/systemd/system-generators/live-config-getty-generator'
-         if (fs.existsSync(fileToRemove)) {
-            await exec(`rm ${fileToRemove}`)
-         }
+      if (this.distro().familyId === 'debian') {
+         retVal = await Debian.prerequisitesInstall(verbose)
       }
-      return retVal
-   }
-
-   /**
-    * I want to support just source and deb, so this will be removed
-    */
-   static async prerequisitesRemove(verbose = true): Promise<boolean> {
-      const echo = Utils.setEcho(verbose)
-      const retVal = false
-      const versionLike = this.distro().versionLike
-
-      await exec(`apt-get purge --yes ${array2spaced(this.filterInstalled(this.packages(true, verbose)))}`, echo)
-
-      await exec('apt-get autoremove --yes', echo)
       return retVal
    }
 
@@ -221,12 +155,10 @@ export default class Pacman {
     */
    static async calamaresCheck(): Promise<boolean> {
       let installed = true
-      for (const i in this.debs4calamares) {
-         if (!this.packageIsInstalled(this.debs4calamares[i])) {
-            installed = false
-            break
-         }
+      if (this.distro().familyId === 'debian') {
+         installed = await Debian.calamaresCheck()
       }
+
       return installed
    }
 
@@ -249,44 +181,33 @@ export default class Pacman {
     *
     */
    static async calamaresInstall(verbose = true): Promise<void> {
-      const echo = Utils.setEcho(verbose)
       if (this.isInstalledGui()) {
-         try {
-            await exec('apt-get update --yes', echo)
-         } catch (e) {
-            Utils.error('Pacman.calamaresInstall() apt-get update --yes ') // + e.error as string)
+         if (this.distro().familyId === 'debian') {
+            Debian.calamaresInstall(verbose)
          }
-         try {
-            await exec(`apt-get install --yes ${array2spaced(this.debs4calamares)}`, echo)
-         } catch (e) {
-            Utils.error(`Pacman.calamaresInstall() apt-get install --yes ${array2spaced(this.debs4calamares)}`) // + e.error)
-         }
-
       } else {
          console.log("It's not possible to use calamares in a system without GUI")
       }
+
    }
 
    /**
    * calamaresPolicies
    */
    static async calamaresPolicies() {
-      const policyFile = '/usr/share/polkit-1/actions/com.github.calamares.calamares.policy'
-      await exec(`sed -i 's/auth_admin/yes/' ${policyFile}`)
+      if (this.distro().familyId === 'debian') {
+         await Debian.calamaresPolicies()
+      }
    }
 
    /**
     *
     */
    static async calamaresRemove(verbose = true): Promise<boolean> {
-      const echo = Utils.setEcho(verbose)
-
-      const retVal = false
-      if (fs.existsSync('/etc/calamares')) {
-         await exec('rm /etc/calamares -rf', echo)
+      let retVal = false
+      if (this.distro().familyId === 'debian') {
+         retVal = await Debian.calamaresRemove(verbose)
       }
-      await exec(`apt-get remove --purge --yes calamares`, echo)
-      await exec('apt-get autoremove --yes', echo)
       return retVal
    }
 
@@ -370,6 +291,7 @@ export default class Pacman {
       await settings.save(config)
    }
 
+
    /**
     * Creazione del file di configurazione /etc/penguins-eggs
     */
@@ -396,7 +318,7 @@ export default class Pacman {
       shx.mkdir('-p', '/usr/local/share/penguins-eggs/')
       shx.cp(path.resolve(__dirname, '../../conf/exclude.list'), '/usr/local/share/penguins-eggs')
 
-      await Pacman.configurationFresh()
+      await this.configurationFresh()
    }
 
    /**
@@ -646,17 +568,7 @@ export default class Pacman {
 
       let installed = false
       if (this.distro().familyId === 'debian') {
-         const cmd = `/usr/bin/dpkg -s ${debPackage} | grep Status:`
-         const stdout = shx.exec(cmd, { silent: true }).stdout.trim()
-         if (stdout === 'Status: install ok installed') {
-            installed = true
-         }
-      } else if (this.distro().familyId === 'fedora') {
-         const cmd = `/usr/bin/dnf list installed ${debPackage}|grep ${debPackage}`
-         const stdout = shx.exec(cmd, { silent: true }).stdout.trim()
-         if (stdout.includes(debPackage)) {
-            installed = true
-         }
+         installed = Debian.packageIsInstalled(debPackage)
       }
       return installed
    }
@@ -668,33 +580,23 @@ export default class Pacman {
    */
    static async packageAptAvailable(packageName: string): Promise<boolean> {
       let available = false
-      if (this.distro().familyId === 'debian') {
-         const cmd = `apt-cache show ${packageName} | grep Package:`
-         const test = `Package: ${packageName}`
-         const stdout = shx.exec(cmd, { silent: true }).stdout.trim()
-         if (stdout === test) {
-            available = true
-         }
-      } else if (this.distro().familyId === 'fedora') {
-         const cmd = `/usr/bin/dnf list available ${packageName}|grep ${packageName}`
-         const stdout = shx.exec(cmd, { silent: true }).stdout.trim()
-         if (stdout.includes(packageName)) {
-            available = true
-         }
-      }
 
+      if (this.distro().familyId === 'debian') {
+         available = Debian.packageIsInstalled(packageName)
+      }
       return available
    }
 
-
+   /**
+    * 
+    * @param debPackage 
+    * @returns 
+    */
    static async packageAptLast(debPackage: string): Promise<string> {
       let version = ''
-      const cmd = `apt-cache show ${debPackage} | grep Version:`
-      const stdout = shx.exec(cmd, { silent: true }).stdout.trim()
-      version = stdout.substring(9)
-      // console.log('===================================')
-      // console.log('[' + version + ']')
-      // console.log('===================================')
+      if (this.distro().familyId === 'debian') {
+         version = await Debian.packageAptLast(debPackage)
+      }
       return version
    }
 
@@ -727,13 +629,7 @@ export default class Pacman {
       let retVal = false
 
       if (this.distro().familyId === 'debian') {
-         if (shx.exec(`/usr/bin/apt-get install -y ${packageName}`, { silent: true }) === '0') {
-            retVal = true
-         }
-      } else if (this.distro().familyId === 'fedora') {
-         if (shx.exec(`/usr/bin/dnf install joe - y ${packageName}`, { silent: true }) === '0') {
-            retVal = true
-         }
+         retVal = await Debian.packageInstall(packageName)
       }
       return retVal
    }
