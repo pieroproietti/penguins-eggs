@@ -36,13 +36,6 @@ export default class Pacman {
 
    /**
     * 
-    */
-   constructor() {
-      const versionLike = this.distro.versionLike
-   }
-
-   /**
-    * 
     * @returns 
     */
    static distro(): IDistro {
@@ -136,7 +129,7 @@ export default class Pacman {
       }
 
       // Version e initType da controllare
-      const version = Pacman.versionLike()
+      const version = this.distro().versionLike
       depVersions.forEach((dep) => {
          if (dep.versions.includes(version)) {
             if (!this.packageIsInstalled(dep.package)) {
@@ -185,7 +178,7 @@ export default class Pacman {
    static async prerequisitesInstall(verbose = true): Promise<boolean> {
       const echo = Utils.setEcho(verbose)
       const retVal = false
-      const versionLike = Pacman.versionLike()
+      const versionLike = this.distro().versionLike
 
       await exec(`apt-get install --yes ${array2spaced(this.packages(false, verbose))}`, echo)
 
@@ -215,7 +208,7 @@ export default class Pacman {
    static async prerequisitesRemove(verbose = true): Promise<boolean> {
       const echo = Utils.setEcho(verbose)
       const retVal = false
-      const versionLike = Pacman.versionLike()
+      const versionLike = this.distro().versionLike
 
       await exec(`apt-get purge --yes ${array2spaced(this.filterInstalled(this.packages(true, verbose)))}`, echo)
 
@@ -427,7 +420,7 @@ export default class Pacman {
     * 
     */
    static distroTemplateCheck(): boolean {
-      const versionLike = Pacman.versionLike()
+      const versionLike = this.distro().versionLike
       return fs.existsSync(`/etc/penguins-eggs.d/distros/${versionLike}`)
    }
 
@@ -439,7 +432,7 @@ export default class Pacman {
          console.log('distroTemplateInstall')
       }
       const rootPen = Utils.rootPenguin()
-      const versionLike = Pacman.versionLike()
+      const versionLike = this.distro().versionLike
       if (Utils.isDebPackage()) {
          await Pacman.links4Debs(verbose)
       }
