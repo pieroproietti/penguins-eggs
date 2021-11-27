@@ -78,7 +78,7 @@ export default class Remove extends Command {
          if (Utils.isSources()) {
             if (await Utils.customConfirm()) {
                if (flags.autoremove) {
-                  await Pacman.prerequisitesRemove()
+                  // await Pacman.prerequisitesRemove()
                }
 
                if (flags.purge) {
