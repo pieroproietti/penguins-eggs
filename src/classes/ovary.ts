@@ -166,7 +166,9 @@ export default class Ovary {
          await this.incubator.config(release)
 
          await this.syslinux(verbose)
-         await this.isolinux(this.theme, verbose)
+         if (Pacman.distro().familyId === 'debian') {
+            await this.isolinux(this.theme, verbose)
+         }
 
          await this.copyKernel(verbose)
          if (this.settings.config.make_efi) {
@@ -370,12 +372,12 @@ export default class Ovary {
          console.log('ovary: editLiveFs')
       }
 
-      // Aggiungo UMASK=0077 in /etc/initramfs-tools/conf.d/calamares-safe-initramfs.conf
-      let text = 'UMASK=0077\n'
-      let file = '/etc/initramfs-tools/conf.d/eggs-safe-initramfs.conf'
-      Utils.write(file, text)
-
-
+      if (Pacman.distro().familyId === 'debian') {
+         // Aggiungo UMASK=0077 in /etc/initramfs-tools/conf.d/calamares-safe-initramfs.conf
+         let text = 'UMASK=0077\n'
+         let file = '/etc/initramfs-tools/conf.d/eggs-safe-initramfs.conf'
+         Utils.write(file, text)
+      }
 
       // sudo systemctl disable wpa_supplicant
 
@@ -475,11 +477,13 @@ export default class Ovary {
        * Clear configs from /etc/network/interfaces, wicd and NetworkManager
        * and netman, so they aren't stealthily included in the snapshot.
        */
-      if (fs.existsSync(`${this.settings.work_dir.merged}/etc/network/interfaces`)) {
-         await exec(`rm ${this.settings.work_dir.merged}/etc/network/interfaces`, echo)
+      if (Pacman.distro().familyId === 'debian') {
+         if (fs.existsSync(`${this.settings.work_dir.merged}/etc/network/interfaces`)) {
+            await exec(`rm ${this.settings.work_dir.merged}/etc/network/interfaces`, echo)
+         }
+         await exec(`touch ${this.settings.work_dir.merged}/etc/network/interfaces`, echo)
+         Utils.write(`${this.settings.work_dir.merged}/etc/network/interfaces`, 'auto lo\niface lo inet loopback')
       }
-      await exec(`touch ${this.settings.work_dir.merged}/etc/network/interfaces`, echo)
-      Utils.write(`${this.settings.work_dir.merged}/etc/network/interfaces`, 'auto lo\niface lo inet loopback')
 
       /**
        * Per tutte le distro systemd
@@ -676,13 +680,19 @@ export default class Ovary {
       //   this.addRemoveExclusion(true, fexcludes[i])
       // }
 
-      const rcd = ['rc0.d', 'rc1.d', 'rc2.d', 'rc3.d', 'rc4.d', 'rc5.d', 'rc6.d', 'rcS.d']
-      let files: string[]
-      for (const i in rcd) {
-         files = fs.readdirSync(`${this.settings.work_dir.merged}/etc/${rcd[i]}`)
-         for (const n in files) {
-            if (files[n].includes('cryptdisks')) {
-               this.addRemoveExclusion(true, `/etc/${rcd[i]}${files[n]}`)
+
+      /**
+       * Non sò che fa, ma sicuro non serve per archlinux
+       */
+      if (Pacman.distro().familyId === 'debian') {
+         const rcd = ['rc0.d', 'rc1.d', 'rc2.d', 'rc3.d', 'rc4.d', 'rc5.d', 'rc6.d', 'rcS.d']
+         let files: string[]
+         for (const i in rcd) {
+            files = fs.readdirSync(`${this.settings.work_dir.merged}/etc/${rcd[i]}`)
+            for (const n in files) {
+               if (files[n].includes('cryptdisks')) {
+                  this.addRemoveExclusion(true, `/etc/${rcd[i]}${files[n]}`)
+               }
             }
          }
       }
@@ -1042,7 +1052,8 @@ export default class Ovary {
       })
       const users: string[] = result.data.split('\n')
       for (let i = 0; i < users.length - 1; i++) {
-         cmds.push(await rexec(`chroot ${this.settings.work_dir.merged} deluser ${users[i]}`, verbose))
+         // cmds.push(await rexec(`chroot ${this.settings.work_dir.merged} deluser ${users[i]}`, verbose))
+         cmds.push(await rexec(`chroot ${this.settings.work_dir.merged} userdel ${users[i]}`, verbose))
       }
 
    }
@@ -1058,9 +1069,17 @@ export default class Ovary {
          console.log('ovary: createUserLive')
       }
       const cmds: string[] = []
-      cmds.push(await rexec(`chroot ${this.settings.work_dir.merged} adduser ${this.settings.config.user_opt} --home /home/${this.settings.config.user_opt} --shell /bin/bash --disabled-password --gecos ",,,"`, verbose))
+      /**
+       * sto passando ai comandi useradd, usermod, etc ho tolto --disabled-password non necessario e --gecos ",,,"
+       */
+      //cmds.push(await rexec(`chroot ${this.settings.work_dir.merged} adduser ${this.settings.config.user_opt} --home /home/${this.settings.config.user_opt} --shell /bin/bash --disabled-password --gecos ",,,"`, verbose))
+      cmds.push(await rexec(`chroot ${this.settings.work_dir.merged} useradd ${this.settings.config.user_opt} --home /home/${this.settings.config.user_opt} --shell /bin/bash `, verbose))
       cmds.push(await rexec(`chroot ${this.settings.work_dir.merged} echo ${this.settings.config.user_opt}:${this.settings.config.user_opt_passwd} | chroot ${this.settings.work_dir.merged} chpasswd `, verbose))
-      cmds.push(await rexec(`chroot ${this.settings.work_dir.merged} usermod -aG sudo ${this.settings.config.user_opt}`, verbose))
+      if (Pacman.distro().familyId === 'debian') {
+         cmds.push(await rexec(`chroot ${this.settings.work_dir.merged} usermod -aG sudo ${this.settings.config.user_opt}`, verbose))
+      } else if (Pacman.distro().familyId === 'archlinux') {
+         cmds.push(await rexec(`chroot ${this.settings.work_dir.merged} usermod -aG wheel ${this.settings.config.user_opt}`, verbose))
+      }
 
       /**
        * Cambio passwd su root in chroot
@@ -1445,21 +1464,22 @@ export default class Ovary {
       }
       let output = this.settings.config.snapshot_dir + prefix + volid
 
+
       content = `xorriso  -as mkisofs \
-                          -volid ${volid} \
-                          -joliet-long \
-                          -l \
-                          -iso-level 3 \
-                          -b isolinux/isolinux.bin \
-                          ${isoHybridOption} \
-                          -partition_offset 16 \
-                          -c isolinux/boot.cat \
-                          -no-emul-boot \
-                          -boot-load-size 4 \
-                          -boot-info-table \
-                          ${uefi_opt} \
-                          -output ${output} \
-                          ${this.settings.work_dir.pathIso}`
+         -volid ${volid} \
+         -joliet-long \
+         -l \
+         -iso-level 3 \
+         -b isolinux/isolinux.bin \
+         ${isoHybridOption} \
+         -partition_offset 16 \
+         -c isolinux/boot.cat \
+         -no-emul-boot \
+         -boot-load-size 4 \
+         -boot-info-table \
+         ${uefi_opt} \
+         -output ${output} \
+         ${this.settings.work_dir.pathIso}`
 
       /**
        * rimuovo gli spazi
@@ -1510,7 +1530,9 @@ export default class Ovary {
       this.settings.isoFilename = prefix + volid + postfix
       const output = this.settings.config.snapshot_dir + this.settings.isoFilename
 
-
+      /**
+       * default debian
+       */
       let cmd = `xorriso  -as mkisofs \
                           -volid ${volid} \
                           -joliet-long \
@@ -1526,6 +1548,26 @@ export default class Ovary {
                           ${uefi_opt} \
                           -output ${output} \
                           ${this.settings.work_dir.pathIso}`
+      
+      /**
+       * Archlinux
+       */
+      if (Pacman.distro().familyId === 'archlinux') {
+         cmd = `xorriso  -as mkisofs \
+         -volid ${volid} \
+         -joliet-long \
+         -l \
+         -iso-level 3 \
+         ${isoHybridOption} \
+         -partition_offset 16 \
+         -no-emul-boot \
+         -boot-load-size 4 \
+         -boot-info-table \
+         ${uefi_opt} \
+         -output ${output} \
+         ${this.settings.work_dir.pathIso}`
+       }
+                  
 
       // /usr/lib/ISOLINUX/isohdpfx.bin
 
