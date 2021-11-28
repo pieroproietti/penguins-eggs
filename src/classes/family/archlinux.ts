@@ -28,8 +28,8 @@ const config_tools = '/etc/penguins-eggs.d/tools.yaml' as string
  * Utils: general porpourse utils
  * @remarks all the utilities
  */
-export default class Debian {
-    static debs4calamares = ['calamares', 'qml-module-qtquick2', 'qml-module-qtquick-controls']
+export default class Archlinux {
+    static debs4calamares = ['calamares'] //, 'qml-module-qtquick2', 'qml-module-qtquick-controls'
 
     /**
      * check if it's installed xorg
