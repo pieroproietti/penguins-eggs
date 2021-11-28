@@ -43,24 +43,20 @@ export default class Config extends Command {
                 console.log('eggs running as package .deb')
             } else if (Utils.isSources()) {
                 console.log('eggs running from sources')
-            } else if (Utils.isNpmPackage()) {
-                console.log('eggs running as package .npm')
-                console.log()
-                console.log('The eggs npm package is supported until version 8.17.8, install eggs as deb package or use eggs from source.')
             }
         }
 
-              
+
         if (Utils.isRoot(this.id)) {
             if (flags.clean) {
                 await exec('rm /etc/penguins-eggs.d -rf')
             }
 
             /**
-             * Se siamo in un pacchetto npm
+             * Se stiamo utilizzando eggs da sorgenti
              * Aggiunge autocomplete e manPage
              */
-            if (!Utils.isSources()) {
+            if (Utils.isSources()) {
                 await Pacman.autocompleteInstall(nointeractive)
                 await Pacman.manPageInstall(verbose)
             }
@@ -127,14 +123,18 @@ export default class Config extends Command {
          */
         if (!nointeractive) {
             if (i.needApt) {
-                console.log('- update the system')
-                console.log(chalk.yellow('  apt-get update --yes\n'))
+                if (Pacman.distro().familyId === 'debian') {
+                    console.log('- update the system')
+                    console.log(chalk.yellow('  apt-get update --yes\n'))
+                }
             }
 
             if (i.efi) {
-                if (Utils.machineArch() !== 'i386') {
-                    console.log('- install efi packages')
-                    console.log(chalk.yellow('  apt-get install -y grub-efi-' + Utils.machineArch() + '-bin\n'))
+                if (Pacman.distro().familyId === 'debian') {
+                    if (Utils.machineArch() !== 'i386') {
+                        console.log('- install efi packages')
+                        console.log(chalk.yellow('  apt install -y grub-efi-' + Utils.machineArch() + '-bin\n'))
+                    }
                 }
             }
 
@@ -142,9 +142,9 @@ export default class Config extends Command {
             if (i.prerequisites) {
                 console.log('- install packages prerequisites')
                 const packages = Pacman.packages(verbose)
-                
+
                 if (packages.length > 0) {
-                    console.log(chalk.yellow('  apt-get install --yes ' + array2spaced(packages)))
+                    console.log(chalk.yellow('  will install: install  ' + array2spaced(packages)))
                 }
             }
 
@@ -165,7 +165,7 @@ export default class Config extends Command {
             if (i.calamares) {
                 console.log('- install calamares')
                 const packages = Pacman.debs4calamares
-                console.log(chalk.yellow('  apt-get install -y ' + array2spaced(packages) + '\n'))
+                console.log(chalk.yellow('  will install: ' + array2spaced(packages) + '\n'))
             }
 
             if (i.needApt) {
@@ -214,8 +214,10 @@ export default class Config extends Command {
 
         if (i.needApt && !nointeractive) {
             if (!nointeractive) {
-                Utils.warning('updating system...')
-                await exec('apt-get update --yes', echo)
+                if (Pacman.distro().familyId === 'debian') {
+                    Utils.warning('updating system...')
+                    await exec('apt-get update --yes', echo)
+                }
             }
         }
 
@@ -224,8 +226,10 @@ export default class Config extends Command {
                 Utils.error('config: you are on a system UEFI')
                 Utils.warning('I suggest You to install grub-efi-' + Utils.machineArch() + '-bin before to produce your ISO.\nJust write:\n    sudo apt install grub-efi-' + Utils.machineArch())
             } else {
-                Utils.warning('Installing uefi support...')
-                await exec('apt-get install grub-efi-' + Utils.machineArch() + '-bin --yes', echo)
+                if (Pacman.distro().familyId === 'debian') {
+                    Utils.warning('Installing uefi support...')
+                    await exec('apt-get install grub-efi-' + Utils.machineArch() + '-bin --yes', echo)
+                }
             }
         }
 
@@ -252,8 +256,10 @@ export default class Config extends Command {
 
         if (i.needApt && !nointeractive) {
             Utils.warning('cleaning the system...')
-            const bleach = new Bleach()
-            await bleach.clean(verbose)
+            if (Pacman.distro().familyId === 'debian') {
+                const bleach = new Bleach()
+                await bleach.clean(verbose)
+            }
         }
     }
 }
