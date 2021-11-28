@@ -36,8 +36,6 @@ import shell = require('shelljs')
 import inquirer = require('inquirer')
 
 import { IRemix, IDistro } from '../interfaces'
-import Pacman from './pacman'
-import Utils from './utils'
 
 /**
  * Classe
