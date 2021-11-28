@@ -29,14 +29,18 @@ const config_tools = '/etc/penguins-eggs.d/tools.yaml' as string
  * @remarks all the utilities
  */
 export default class Archlinux {
-    static debs4calamares = ['calamares'] //, 'qml-module-qtquick2', 'qml-module-qtquick-controls'
+    static debs4calamares = ['calamares']
+    // Dipendenze pacman -Qi calamares
+    // kconfig  kcoreaddons  kiconthemes  ki18n  kio solid  yaml-cpp  kpmcore>=4.2.0 mkinitcpio-openswap  
+    // boost-libs  ckbcomp  hwinfo qt5-svg  polkit-qt5  gtk-update-icon-cache plasma-framework  
+    // qt5-xmlpatterns  squashfs-tools libpwquality  appstream-qt  icu
 
     /**
      * check if it's installed xorg
      * @returns true if xorg is installed
      */
     static isInstalledXorg(): boolean {
-        return this.packageIsInstalled('xserver-xorg-core')
+        return this.packageIsInstalled('xorg-server-common')
     }
 
     /**
@@ -48,62 +52,42 @@ export default class Archlinux {
     }
 
     /**
-     * Crea array packages dei pacchetti da installare
+     * Crea array pacchetti da installare/rimuovere
      */
     static packages(remove = false, verbose = false): string[] {
-        let packages: string[] = []
-        const packagesInstall: string[] = []
-        const packagesRemove: string[] = []
+        let packages = [
+            'arch-install-scripts',
+            'awk', 
+            'dosfstools',
+            'e2fsprogs',
+            'erofs-utils',
+            'findutils',
+            'gzip',
+            'libarchive',
+            'libisoburn',
+            'mtools',
+            'openssl',
+            'pacman',
+            'sed',
+            'squashfs-tools',
+        ]
 
-        if (!Utils.isDebPackage()) {
-            depCommon.forEach((elem) => {
-                if (!this.packageIsInstalled(elem)) {
-                    packagesInstall.push(elem)
-                } else {
-                    packagesRemove.push(elem)
-                }
-            })
+        let packagesInstall: string[] = []
+        let packagesRemove: string[] = []
 
-            const arch = Utils.machineArch()
-            depArch.forEach((dep) => {
-                if (dep.arch.includes(arch)) {
-                    if (!this.packageIsInstalled(dep.package)) {
-                        packagesInstall.push(dep.package)
-                    } else {
-                        packagesRemove.push(dep.package)
-                    }
-                }
-            })
-        }
-
-        // Version e initType da controllare
-        const version = Pacman.distro().versionLike
-        depVersions.forEach((dep) => {
-            if (dep.versions.includes(version)) {
-                if (!this.packageIsInstalled(dep.package)) {
-                    packagesInstall.push(dep.package)
-                } else {
-                    packagesRemove.push(dep.package)
-                }
+        packages.forEach((elem) => {
+            if (!this.packageIsInstalled(elem)) {
+                packagesInstall.push(elem)
+            } else {
+                packagesRemove.push(elem)
             }
         })
 
-        const initType: string = shx.exec('ps --no-headers -o comm 1', { silent: !verbose }).trim()
-        depInit.forEach((dep) => {
-            if (dep.init.includes(initType)) {
-                if (!this.packageIsInstalled(dep.package)) {
-                    packagesInstall.push(dep.package)
-                } else {
-                    packagesRemove.push(dep.package)
-                }
-            }
-        })
-
-        packages = packagesInstall
         if (remove) {
-            packages = packagesRemove
+            return packagesRemove
+        } else {
+            return packagesInstall
         }
-        return packages
     }
 
     /**
@@ -113,7 +97,7 @@ export default class Archlinux {
         const echo = Utils.setEcho(verbose)
         const retVal = false
 
-        await exec(`apt-get install --yes ${array2spaced(this.packages(false, verbose))}`, echo)
+        await exec(`pacman -S --yes ${array2spaced(this.packages(false, verbose))}`, echo)
 
         if (!Pacman.isInstalledGui()) {
             /**
@@ -155,14 +139,14 @@ export default class Archlinux {
     static async calamaresInstall(verbose = true): Promise<void> {
         const echo = Utils.setEcho(verbose)
         try {
-            await exec('apt-get update --yes', echo)
+            await exec('pacman -Sy', echo)
         } catch (e) {
-            Utils.error('Debian.calamaresInstall() apt-get update --yes ') // + e.error as string)
+            Utils.error('Archlinux.calamaresInstall() apt-get update --yes ') // + e.error as string)
         }
         try {
-            await exec(`apt-get install --yes ${array2spaced(this.debs4calamares)}`, echo)
+            await exec(`pacman -Sy ${array2spaced(this.debs4calamares)}`, echo)
         } catch (e) {
-            Utils.error(`Debian.calamaresInstall() apt-get install --yes ${array2spaced(this.debs4calamares)}`) // + e.error)
+            Utils.error(`Archlinux.calamaresInstall() apt-get install --yes ${array2spaced(this.debs4calamares)}`) // + e.error)
         }
 
     }
@@ -185,22 +169,21 @@ export default class Archlinux {
         if (fs.existsSync('/etc/calamares')) {
             await exec('rm /etc/calamares -rf', echo)
         }
-        await exec(`apt-get remove --purge --yes calamares`, echo)
-        await exec('apt-get autoremove --yes', echo)
+        await exec(`yay -Rns calamares`, echo)
         return retVal
     }
 
 
     /**
     * restuisce VERO se il pacchetto è installato
-    * @param debPackage
+    * @param packageName
     */
-    static packageIsInstalled(debPackage: string): boolean {
+    static packageIsInstalled(packageName: string): boolean {
 
         let installed = false
-        const cmd = `/usr/bin/dpkg -s ${debPackage} | grep Status:`
+        const cmd = `/usr/bin/pacman -Qi ${packageName} | grep Status:`
         const stdout = shx.exec(cmd, { silent: true }).stdout.trim()
-        if (stdout === 'Status: install ok installed') {
+        if (stdout.includes(packageName) {
             installed = true
         }
         return installed
@@ -213,7 +196,7 @@ export default class Archlinux {
      */
     static async packageInstall(packageName: string): Promise<boolean> {
         let retVal = false
-        if (shx.exec(`/usr/bin/apt-get install -y ${packageName}`, { silent: true }) === '0') {
+        if (shx.exec(`/usr/bin/pacman -Si ${packageName}`, { silent: true }) === '0') {
             retVal = true
         }
         return retVal
@@ -222,24 +205,26 @@ export default class Archlinux {
 
     /**
     * restuisce VERO se il pacchetto è installato
-    * @param debPackage
+    * @param packageName
     */
     static async packageAptAvailable(packageName: string): Promise<boolean> {
         let available = false
-        const cmd = `apt-cache show ${packageName} | grep Package:`
-        const test = `Package: ${packageName}`
+        const cmd = `/usr/bin/pacman -Q ${packageName} | grep Package:`
         const stdout = shx.exec(cmd, { silent: true }).stdout.trim()
-        if (stdout === test) {
+        if (stdout.includes(packageName)) {
             available = true
         }
-
         return available
     }
 
-
-    static async packageAptLast(debPackage: string): Promise<string> {
+    /**
+     * 
+     * @param packageName 
+     * @returns 
+     */
+    static async packageAptLast(packageName: string): Promise<string> {
         let version = ''
-        const cmd = `apt-cache show ${debPackage} | grep Version:`
+        const cmd = `/usr/bin/pacman -Q ${packageName} | grep Version:`
         const stdout = shx.exec(cmd, { silent: true }).stdout.trim()
         version = stdout.substring(9)
         // console.log('===================================')
