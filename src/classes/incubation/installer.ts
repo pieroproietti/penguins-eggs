@@ -62,5 +62,9 @@ function multiarch(): string {
    } else if (Utils.machineArch() === 'arm64') {
       multiarch = '/usr/lib/'
    }
+
+   if (Pacman.distro().familyId === 'archlinux') {
+      multiarch = '/usr/lib/'
+   }
    return multiarch
 }

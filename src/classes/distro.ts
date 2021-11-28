@@ -36,6 +36,8 @@ import shell = require('shelljs')
 import inquirer = require('inquirer')
 
 import { IRemix, IDistro } from '../interfaces'
+import Pacman from './pacman'
+import Utils from './utils'
 
 /**
  * Classe
@@ -311,6 +313,9 @@ class Distro implements IDistro {
        */
       this.isolinuxPath = '/usr/lib/ISOLINUX/'
       this.syslinuxPath = '/usr/lib/syslinux/modules/bios/'
+      if (this.familyId === 'archlinux') {
+         this.syslinuxPath = '/usr/lib/syslinux/bios/'
+      }
 
       /**
        * però...
