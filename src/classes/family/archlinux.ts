@@ -183,7 +183,7 @@ export default class Archlinux {
         let installed = false
         const cmd = `/usr/bin/pacman -Qi ${packageName} | grep Status:`
         const stdout = shx.exec(cmd, { silent: true }).stdout.trim()
-        if (stdout.includes(packageName) {
+        if (stdout.includes(packageName)) {
             installed = true
         }
         return installed
