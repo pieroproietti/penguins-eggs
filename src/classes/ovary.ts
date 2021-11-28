@@ -117,17 +117,19 @@ export default class Ovary {
     */
    async produce(backup = false, scriptOnly = false, yolkRenew = false, release = false, myAddons: IMyAddons, verbose = false) {
 
-      const yolk = new Repo()
-      if (!yolk.exists()) {
-         Utils.warning('local repo yolk creation...')
-         await yolk.create(verbose)
-      } else {
-         if (yolkRenew) {
-            Utils.warning('force renew local repository yolk...')
-            yolk.clean()
+      if (Pacman.distro().familyId === 'debian') {
+         const yolk = new Repo()
+         if (!yolk.exists()) {
+            Utils.warning('local repo yolk creation...')
             await yolk.create(verbose)
          } else {
-            Utils.warning('Using preesixent yolk...')
+            if (yolkRenew) {
+               Utils.warning('force renew local repository yolk...')
+               yolk.clean()
+               await yolk.create(verbose)
+            } else {
+               Utils.warning('Using preesixent yolk...')
+            }
          }
       }
 
