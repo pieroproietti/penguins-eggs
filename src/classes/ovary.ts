@@ -168,7 +168,11 @@ export default class Ovary {
          await this.syslinux(verbose)
          if (Pacman.distro().familyId === 'debian') {
             await this.isolinux(this.theme, verbose)
+         } else {
+            // Archlinux
+            await exec('cp /usr/lib/syslinux/bios/isohdpfx.bin ' + this.settings.distro.isolinuxPath)
          }
+
 
          await this.copyKernel(verbose)
          if (this.settings.config.make_efi) {
@@ -1552,13 +1556,39 @@ export default class Ovary {
       /**
        * Archlinux
        */
+      /*
+      xorriso -as mkisofs \
+               -volid ARCH_202111 \
+               -full-iso9660-filenames \
+               -joliet \
+               -joliet-long \
+               -iso-level 3 \
+
+               -rational-rock \
+               -appid Arch Linux baseline \
+               -publisher Arch Linux <https://archlinux.org> \
+               -preparer prepared by mkarchiso \
+               -isohybrid-mbr /home/artisan/archiso-gen/arch_work_dir/iso/syslinux/isohdpfx.bin \
+               --mbr-force-bootable -partition_offset 16 \
+               -eltorito-boot syslinux/isolinux.bin \
+               -eltorito-catalog syslinux/boot.cat \
+               -no-emul-boot \
+               -boot-load-size 4 \
+               -boot-info-table \
+               -append_partition 2 C12A7328-F81F-11D2-BA4B-00A0C93EC93B /home/artisan/archiso-gen/arch_work_dir/efiboot.img \
+               -eltorito-alt-boot -e --interval:appended_partition_2:all:: \
+               -no-emul-boot \
+               -isohybrid-gpt-basdat \
+               -output /home/artisan/archiso-gen/arch_out_dir/archlinux-baseline-2021.11.29-x86_64.iso \
+               /home/artisan/archiso-gen/arch_work_dir/iso/
+      */
       if (Pacman.distro().familyId === 'archlinux') {
          cmd = `xorriso  -as mkisofs \
          -volid ${volid} \
+         -joliet \
          -joliet-long \
-         -l \
          -iso-level 3 \
-         ${isoHybridOption} \
+         -isohybrid-mbr /usr/lib/syslinux/bios/isohdpfx.bin
          -partition_offset 16 \
          -no-emul-boot \
          -boot-load-size 4 \
