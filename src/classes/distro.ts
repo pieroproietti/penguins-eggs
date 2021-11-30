@@ -311,6 +311,7 @@ class Distro implements IDistro {
       this.syslinuxPath = '/usr/lib/syslinux/modules/bios/'
       if (this.familyId === 'archlinux') {
          this.syslinuxPath = '/usr/lib/syslinux/bios/'
+         this.isolinuxPath = this.syslinuxPath
       }
 
       /**

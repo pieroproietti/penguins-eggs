@@ -522,6 +522,7 @@ export default class Pacman {
          await this.ln(`${focal}/isolinux`, `${jammy}/isolinux`, remove, verbose)
          await this.ln(`${focal}/locale.gen.template`, `${jammy}/locale.gen.template`, remove, verbose)
          await this.ln(`${buster}/calamares/modules/displaymanager.yml`, `${jammy}/calamares/modules/displaymanager.yml`, remove, verbose)
+
       }
    }
 
