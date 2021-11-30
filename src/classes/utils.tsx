@@ -46,7 +46,7 @@ export default class Utils {
    * funziona anche in MX che utilizza systemd
    * ma viene avviato con init
    */
-    static isSystemd(): boolean {
+   static isSystemd(): boolean {
       // return (shx.exec(`pidof systemd`).stdout.trim() === '1')
       return (shx.exec(`ps -p 1 -o comm=`).stdout.trim() === 'systemd')
    }
@@ -70,7 +70,7 @@ export default class Utils {
             result = '/boot' + result
          }
       }
-      
+
       return result
    }
 
@@ -89,9 +89,9 @@ export default class Utils {
          version = vmlinuz.substring(vmlinuz.indexOf('-'))
 
       } else if (Pacman.distro().familyId === 'archlinux') {
-            console.log('archlinux')
-            initrd = 'initramfs-linux.img'
-            version = ''
+         console.log('archlinux')
+         initrd = 'initramfs-linux.img'
+         version = ''
       }
       return path + initrd + version
    }
@@ -397,7 +397,11 @@ unknown target format aarch64-efi
    static isUefi(): boolean {
       let isUefi = false
       if (Utils.machineArch() !== 'i386') {
-         if (Pacman.packageIsInstalled('grub-efi-' + Utils.machineArch() + '-bin')) {
+         if (Pacman.distro().familyId === 'debian') {
+            if (Pacman.packageIsInstalled('grub-efi-' + Utils.machineArch() + '-bin')) {
+               isUefi = true
+            }
+         } else if (Pacman.distro().familyId === 'archlinux') {
             isUefi = true
          }
       }
@@ -551,7 +555,7 @@ unknown target format aarch64-efi
        * ip a | grep -w inet |grep -v 127.0.0.1| awk '{print $2}' | cut -d "/" -f 1
        * ifconfig | grep -w inet |grep -v 127.0.0.1| awk '{print $2}' | cut -d ":" -f 2`
        * 
-      */ 
+      */
       return shx.exec(`ip a | grep -w inet |grep -v 127.0.0.1| awk '{print $2}' | cut -d "/" -f 1`, { silent: true }).stdout.trim()
    }
 
@@ -570,7 +574,7 @@ unknown target format aarch64-efi
     * 
     * @returns 
     */
-    static broadcast(): string {
+   static broadcast(): string {
       /**
        * ip a | grep -w inet |grep -v 127.0.0.1| awk '{print $4}' 
        * ifconfig | grep -w inet |grep -v 127.0.0.1| awk '{print $6}' | cut -d ":" -f 2
@@ -584,13 +588,13 @@ unknown target format aarch64-efi
    static getDns(): string[] {
       return dns.getServers()
    }
-   
-   static getDomain() : string {
-      return shx.exec('dnsdomainname', {silent: true}).stdout.trim()
+
+   static getDomain(): string {
+      return shx.exec('dnsdomainname', { silent: true }).stdout.trim()
       // return shx.exec(`route -n | grep 'UG[ \t]' | awk '{print $2}'`, { silent: true }).stdout.trim()
    }
 
-   
+
    /**
     * @returns gateway
     */
@@ -790,15 +794,15 @@ unknown target format aarch64-efi
     * @param decimals 
     * @returns 
     */
-   static formatBytes(bytes: number, decimals = 2) : string {
+   static formatBytes(bytes: number, decimals = 2): string {
       if (bytes === 0) return '0 Bytes';
-  
+
       const k = 1024;
       const dm = decimals < 0 ? 0 : decimals;
       const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
-  
+
       const i = Math.floor(Math.log(bytes) / Math.log(k));
-  
+
       return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + sizes[i];
-  }
+   }
 }

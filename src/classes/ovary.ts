@@ -1247,12 +1247,23 @@ export default class Ovary {
          console.log('ovary: makeEfi')
       }
 
-      // Controlla la presenza di grub-common ed esce
-      if (!Pacman.packageIsInstalled('grub-common')) {
+      // Controlla la presenza di grub
+      let grubInstalled = false
+      if (Pacman.distro().familyId === 'debian') {
+         if (!Pacman.packageIsInstalled('grub-common')) {
+            grubInstalled = true
+         }
+      } else if (Pacman.distro().familyId === 'archlinux') {
+         if (!Pacman.packageIsInstalled('grub')) {
+            grubInstalled = true
+         }
+      }
+      if (!grubInstalled) {
          Utils.error(`something went wrong! Cannot find package grub-common.`)
          Utils.warning('Problably your system boot with rEFInd or others, to generate a UEFI image we need grub too')
          process.exit(1)
       }
+
 
       /**
        * Carica il primo grub.cfg dal memdisk, quindi in sequenza
@@ -1597,11 +1608,12 @@ export default class Ovary {
          -preparer "prepared by eggs" \
          -isohybrid-mbr /usr/lib/syslinux/bios/isohdpfx.bin
          -eltorito-boot isolinux/isolinux.bin \
-         -partition_offset 16 \
          -no-emul-boot \
          -boot-load-size 4 \
          -boot-info-table \
-         ${uefi_opt} \
+         -eltorito-alt-boot -e boot/grub/efiboot.img \
+         -no-emul-boot \
+         -isohybrid-gpt-basdat \
          -output ${output} \
          ${this.settings.work_dir.pathIso}`
        }
