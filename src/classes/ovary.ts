@@ -169,8 +169,7 @@ export default class Ovary {
          if (Pacman.distro().familyId === 'debian') {
             await this.isolinux(this.theme, verbose)
          } else {
-            // Archlinux
-            await exec('cp /usr/lib/syslinux/bios/isohdpfx.bin ' + this.settings.distro.isolinuxPath)
+            await this.isolinux(this.theme, verbose)
          }
 
 
@@ -577,6 +576,7 @@ export default class Ovary {
       const echo = Utils.setEcho(verbose)
       if (verbose) {
          console.log('ovary: syslinux')
+         console.log('syslinux path: ' + this.settings.distro.syslinuxPath)
       }
       await exec('rsync -a ' + this.settings.distro.syslinuxPath + 'vesamenu.c32' + ' ' + this.settings.work_dir.pathIso + 'isolinux/', echo)
       await exec('rsync -a ' + this.settings.distro.syslinuxPath + 'chain.c32' + ' ' + this.settings.work_dir.pathIso + 'isolinux/', echo)
@@ -1588,6 +1588,7 @@ export default class Ovary {
          -joliet-long \
          -iso-level 3 \
          -isohybrid-mbr /usr/lib/syslinux/bios/isohdpfx.bin
+         -eltorito-boot isolinux/isolinux.bin \
          -partition_offset 16 \
          -no-emul-boot \
          -boot-load-size 4 \
