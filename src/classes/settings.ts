@@ -27,10 +27,7 @@ import Utils from './utils'
 import Incubator from './incubation/incubator'
 import Distro from './distro'
 import Pacman from './pacman'
-
 import { IConfig } from '../interfaces'
-import { O_NOATIME } from 'constants'
-
 
 const config_file = '/etc/penguins-eggs.d/eggs.yaml' as string
 
