@@ -5,24 +5,12 @@
  * license: MIT
  */
 
-import { array2spaced, depCommon, depArch, depVersions, depInit } from '../../lib/dependencies'
-
 import fs = require('fs')
-import os = require('os')
-import path = require('path')
 import shx = require('shelljs')
-import { IRemix, IDistro } from '../../interfaces'
-
 import Utils from '../utils'
-import Distro from '../distro'
-import Settings from '../settings'
-import { execSync } from 'child_process'
-import { IConfig } from '../../interfaces'
 import Pacman from '../pacman'
-const exec = require('../../lib/utils').exec
-
-const config_file = '/etc/penguins-eggs.d/eggs.yaml' as string
-const config_tools = '/etc/penguins-eggs.d/tools.yaml' as string
+import { array2spaced } from '../../lib/dependencies'
+import { exec } from '../../lib/utils'
 
 /**
  * Utils: general porpourse utils
@@ -30,10 +18,6 @@ const config_tools = '/etc/penguins-eggs.d/tools.yaml' as string
  */
 export default class Archlinux {
     static debs4calamares = ['calamares']
-    // Dipendenze pacman -Qi calamares
-    // kconfig  kcoreaddons  kiconthemes  ki18n  kio solid  yaml-cpp  kpmcore>=4.2.0 mkinitcpio-openswap  
-    // boost-libs  ckbcomp  hwinfo qt5-svg  polkit-qt5  gtk-update-icon-cache plasma-framework  
-    // qt5-xmlpatterns  squashfs-tools libpwquality  appstream-qt  icu
 
     /**
      * check if it's installed xorg
@@ -57,7 +41,7 @@ export default class Archlinux {
     static packages(remove = false, verbose = false): string[] {
         let packages = [
             'arch-install-scripts',
-            'awk', 
+            'awk',
             'dosfstools',
             'e2fsprogs',
             'erofs-utils',
@@ -72,21 +56,21 @@ export default class Archlinux {
             'squashfs-tools',
         ]
 
-        let packagesInstall: string[] = []
-        let packagesRemove: string[] = []
+        let toInstall: string[] = []
+        let toRemove: string[] = []
 
         packages.forEach((elem) => {
             if (!this.packageIsInstalled(elem)) {
-                packagesInstall.push(elem)
+                toInstall.push(elem)
             } else {
-                packagesRemove.push(elem)
+                toRemove.push(elem)
             }
         })
 
         if (remove) {
-            return packagesRemove
+            return toRemove
         } else {
-            return packagesInstall
+            return toInstall
         }
     }
 
@@ -232,5 +216,4 @@ export default class Archlinux {
         // console.log('===================================')
         return version
     }
-
 }

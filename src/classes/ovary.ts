@@ -195,7 +195,6 @@ export default class Ovary {
             cliAutologin.addAutologin(this.settings.distro.distroId, this.settings.distro.versionId, this.settings.config.user_opt, this.settings.config.user_opt_passwd, this.settings.config.root_passwd, this.settings.work_dir.merged)
          }
 
-
          await this.editLiveFs(verbose)
          await this.makeSquashfs(scriptOnly, verbose)
          await this.uBindLiveFs(verbose) // Lo smonto prima della fase di backup
@@ -1556,6 +1555,7 @@ export default class Ovary {
       /**
        * Archlinux
        */
+
       /*
       xorriso -as mkisofs \
                -volid ARCH_202111 \
@@ -1563,7 +1563,6 @@ export default class Ovary {
                -joliet \
                -joliet-long \
                -iso-level 3 \
-
                -rational-rock \
                -appid Arch Linux baseline \
                -publisher Arch Linux <https://archlinux.org> \
@@ -1598,9 +1597,6 @@ export default class Ovary {
          ${this.settings.work_dir.pathIso}`
        }
                   
-
-      // /usr/lib/ISOLINUX/isohdpfx.bin
-
       cmd = cmd.replace(/\s\s+/g, ' ')
       Utils.writeX(`${this.settings.work_dir.path}mkisofs`, cmd)
       if (!scriptOnly) {

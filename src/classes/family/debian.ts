@@ -5,24 +5,15 @@
  * license: MIT
  */
 
-import { array2spaced, depCommon, depArch, depVersions, depInit } from '../../lib/dependencies'
 
 import fs = require('fs')
 import os = require('os')
 import path = require('path')
 import shx = require('shelljs')
-import { IRemix, IDistro } from '../../interfaces'
-
 import Utils from '../utils'
-import Distro from '../distro'
-import Settings from '../settings'
-import { execSync } from 'child_process'
-import { IConfig } from '../../interfaces'
 import Pacman from '../pacman'
-const exec = require('../../lib/utils').exec
-
-const config_file = '/etc/penguins-eggs.d/eggs.yaml' as string
-const config_tools = '/etc/penguins-eggs.d/tools.yaml' as string
+import { exec } from '../../lib/utils'
+import { array2spaced, depCommon, depArch, depVersions, depInit } from '../../lib/dependencies'
 
 /**
  * Utils: general porpourse utils
@@ -52,15 +43,15 @@ export default class Debian {
      */
     static packages(remove = false, verbose = false): string[] {
         let packages: string[] = []
-        const packagesInstall: string[] = []
-        const packagesRemove: string[] = []
+        const toInstall: string[] = []
+        const toRemove: string[] = []
 
         if (!Utils.isDebPackage()) {
             depCommon.forEach((elem) => {
                 if (!this.packageIsInstalled(elem)) {
-                    packagesInstall.push(elem)
+                    toInstall.push(elem)
                 } else {
-                    packagesRemove.push(elem)
+                    toRemove.push(elem)
                 }
             })
 
@@ -68,9 +59,9 @@ export default class Debian {
             depArch.forEach((dep) => {
                 if (dep.arch.includes(arch)) {
                     if (!this.packageIsInstalled(dep.package)) {
-                        packagesInstall.push(dep.package)
+                        toInstall.push(dep.package)
                     } else {
-                        packagesRemove.push(dep.package)
+                        toRemove.push(dep.package)
                     }
                 }
             })
@@ -81,9 +72,9 @@ export default class Debian {
         depVersions.forEach((dep) => {
             if (dep.versions.includes(version)) {
                 if (!this.packageIsInstalled(dep.package)) {
-                    packagesInstall.push(dep.package)
+                    toInstall.push(dep.package)
                 } else {
-                    packagesRemove.push(dep.package)
+                    toRemove.push(dep.package)
                 }
             }
         })
@@ -92,16 +83,16 @@ export default class Debian {
         depInit.forEach((dep) => {
             if (dep.init.includes(initType)) {
                 if (!this.packageIsInstalled(dep.package)) {
-                    packagesInstall.push(dep.package)
+                    toInstall.push(dep.package)
                 } else {
-                    packagesRemove.push(dep.package)
+                    toRemove.push(dep.package)
                 }
             }
         })
 
-        packages = packagesInstall
+        packages = toInstall
         if (remove) {
-            packages = packagesRemove
+            packages = toRemove
         }
         return packages
     }
@@ -247,5 +238,4 @@ export default class Debian {
         // console.log('===================================')
         return version
     }
-
 }
