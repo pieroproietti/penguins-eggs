@@ -1581,6 +1581,7 @@ export default class Ovary {
                -output /home/artisan/archiso-gen/arch_out_dir/archlinux-baseline-2021.11.29-x86_64.iso \
                /home/artisan/archiso-gen/arch_work_dir/iso/
       */
+
       if (Pacman.distro().familyId === 'archlinux') {
          cmd = `xorriso  -as mkisofs \
          -volid ${volid} \

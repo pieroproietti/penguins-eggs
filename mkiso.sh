@@ -3,6 +3,10 @@
 # Created at: 2021-11-30_1002
 # By: penguins_eggs v. 16.13.0
 # ==> Perri's Brewery edition <== 
+# Prima di avviare eggs dare:
+# editare eggs.yaml initrd_img: /boot/initrd-linux.img
+# sudo pacman -S syslinux squashfs-tools xorriso rsync
+
 
 sudo rm /home/eggs/ovarium/iso/syslinux -rf
 sudo mkdir /home/eggs/ovarium/iso/syslinux
