@@ -80,8 +80,20 @@ export default class Utils {
    static initrdImg(): string {
       const vmlinuz = Utils.vmlinuz()
       const path = vmlinuz.substring(0, vmlinuz.lastIndexOf('/')) + '/'
-      const version = vmlinuz.substring(vmlinuz.indexOf('-'))
-      return path + 'initrd.img' + version
+
+      let initrd = ''
+      let version = ''
+      if (Pacman.distro().familyId === 'debian') {
+         console.log('Debian')
+         initrd = 'initrd.img'
+         version = vmlinuz.substring(vmlinuz.indexOf('-'))
+
+      } else if (Pacman.distro().familyId === 'archlinux') {
+            console.log('archlinux')
+            initrd = 'initramfs-linux.img'
+            version = ''
+      }
+      return path + initrd + version
    }
 
    /**
