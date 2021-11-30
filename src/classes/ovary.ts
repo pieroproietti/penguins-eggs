@@ -1456,6 +1456,8 @@ export default class Ovary {
             Utils.warning("Can't create isohybrid. File: isohdpfx.bin not found. The resulting image will be a standard iso file")
          }
       }
+
+
       let volid = Utils.getVolid(this.settings.remix.name)
       let prefix = this.settings.config.snapshot_prefix
       if (backup) {
@@ -1585,9 +1587,14 @@ export default class Ovary {
       if (Pacman.distro().familyId === 'archlinux') {
          cmd = `xorriso  -as mkisofs \
          -volid ${volid} \
+         -full-iso9660-filenames \
          -joliet \
          -joliet-long \
          -iso-level 3 \
+         -rational-rock \
+         -appid "Arch Linux baseline" \
+         -publisher "Arch Linux <https://archlinux.org>" \
+         -preparer "prepared by eggs" \
          -isohybrid-mbr /usr/lib/syslinux/bios/isohdpfx.bin
          -eltorito-boot isolinux/isolinux.bin \
          -partition_offset 16 \
