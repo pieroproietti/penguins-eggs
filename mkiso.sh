@@ -6,6 +6,7 @@
 # Prima di avviare eggs dare:
 # editare eggs.yaml initrd_img: /boot/initrd-linux.img
 # sudo pacman -S syslinux squashfs-tools xorriso rsync
+# arch-install-scripts-24-2-any
 
 
 sudo rm /home/eggs/ovarium/iso/syslinux -rf
