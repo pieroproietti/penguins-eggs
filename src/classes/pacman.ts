@@ -21,6 +21,7 @@ import { IConfig } from '../interfaces'
 const exec = require('../lib/utils').exec
 
 import Debian from './family/debian'
+import Archlinux from './family/archlinux'
 
 const config_file = '/etc/penguins-eggs.d/eggs.yaml' as string
 const config_tools = '/etc/penguins-eggs.d/tools.yaml' as string
@@ -365,9 +366,17 @@ export default class Pacman {
     * @param verbose 
     */
    static async autocompleteInstall(verbose = false) {
-      await exec(`cp ${__dirname}/../../scripts/eggs.bash /etc/bash_completion.d/`)
-      if (verbose) {
-         console.log('autocomplete installed...')
+      if (Pacman.packageIsInstalled('bash-completion')) {
+         if (!fs.existsSync('/etc/bash_completion.d/')) {
+            Utils.warning('/etc/bash_completion.d/ NOT exists')
+            await exec(`mkdir /etc/bash_completion.d/`)
+         } else[
+            Utils.warning('/etc/bash_completion.d/ exists')
+         ]
+         await exec(`cp ${__dirname}/../../scripts/eggs.bash /etc/bash_completion.d/`)
+         if (verbose) {
+            console.log('autocomplete installed...')
+         }
       }
    }
 
@@ -375,20 +384,19 @@ export default class Pacman {
    * Installa manPage
    */
    static async manPageInstall(verbose = false) {
-      const man1Dir = '/usr/share/man/man1/'
-      if (!fs.existsSync(man1Dir)) {
-         exec(`mkdir ${man1Dir} -p`)
-      }
       const manPage = path.resolve(__dirname, '../../manpages/doc/man/eggs.1.gz')
       if (fs.existsSync(manPage)) {
-         exec(`cp ${manPage} ${man1Dir}`)
-      }
-      if (shx.exec('which mandb', { silent: true }).stdout.trim() !== '') {
-         await exec(`mandb > /dev/null`)
-         if (verbose) {
-            console.log('manPage eggs installed...')
+         const man1Dir = '/usr/share/man/man1/'
+         if (!fs.existsSync(man1Dir)) {
+            exec(`mkdir ${man1Dir} -p`)
          }
-
+         exec(`cp ${manPage} ${man1Dir}`)
+         if (shx.exec('which mandb', { silent: true }).stdout.trim() !== '') {
+            await exec(`mandb > /dev/null`)
+            if (verbose) {
+               console.log('manPage eggs installed...')
+            }
+         }
       }
    }
 
@@ -562,11 +570,13 @@ export default class Pacman {
    * restuisce VERO se il pacchetto è installato
    * @param debPackage
    */
-   static packageIsInstalled(debPackage: string): boolean {
+   static packageIsInstalled(packageName: string): boolean {
 
       let installed = false
       if (this.distro().familyId === 'debian') {
-         installed = Debian.packageIsInstalled(debPackage)
+         installed = Debian.packageIsInstalled(packageName)
+      } else if (this.distro().familyId === 'archlinux') {
+         installed = Archlinux.packageIsInstalled(packageName)
       }
       return installed
    }
