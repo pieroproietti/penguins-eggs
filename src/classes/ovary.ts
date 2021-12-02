@@ -36,7 +36,6 @@ import Systemctl from './systemctl'
 import Bleach from './bleach'
 import Repo from './yolk'
 import cliAutologin = require('../lib/cli-autologin')
-import Distro from './distro'
 import { execSync } from 'child_process'
 
 
@@ -1072,12 +1071,10 @@ export default class Ovary {
          console.log('ovary: createUserLive')
       }
       const cmds: string[] = []
-      /**
-       * sto passando ai comandi useradd, usermod, etc ho tolto --disabled-password non necessario e --gecos ",,,"
-       */
-      //cmds.push(await rexec(`chroot ${this.settings.work_dir.merged} adduser ${this.settings.config.user_opt} --home /home/${this.settings.config.user_opt} --shell /bin/bash --disabled-password --gecos ",,,"`, verbose))
-      cmds.push(await rexec(`chroot ${this.settings.work_dir.merged} useradd ${this.settings.config.user_opt} --home /home/${this.settings.config.user_opt} --shell /bin/bash `, verbose))
-      cmds.push(await rexec(`chroot ${this.settings.work_dir.merged} echo ${this.settings.config.user_opt}:${this.settings.config.user_opt_passwd} | chroot ${this.settings.work_dir.merged} chpasswd `, verbose))
+      cmds.push(await rexec('chroot ' + this.settings.work_dir.merged + ' mkdir /home/' + this.settings.config.user_opt, verbose))
+      cmds.push(await rexec('chroot ' + this.settings.work_dir.merged + ' useradd ' + this.settings.config.user_opt + ' --home-dir /home/' + this.settings.config.user_opt + ' --shell /bin/bash ', verbose))
+      cmds.push(await rexec('chroot ' + this.settings.work_dir.merged + ' echo ' + this.settings.config.user_opt + ':' + this.settings.config.user_opt_passwd + '| chroot ' + this.settings.work_dir.merged + ' chpasswd', verbose))
+      cmds.push(await rexec('chroot  ' + this.settings.work_dir.merged + ' chown ' + this.settings.config.user_opt + ':' + this.settings.config.user_opt + ' /home/' + this.settings.config.user_opt + ' -R', verbose))
       if (Pacman.distro().familyId === 'debian') {
          cmds.push(await rexec(`chroot ${this.settings.work_dir.merged} usermod -aG sudo ${this.settings.config.user_opt}`, verbose))
       } else if (Pacman.distro().familyId === 'archlinux') {
