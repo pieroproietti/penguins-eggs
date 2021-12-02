@@ -1250,11 +1250,11 @@ export default class Ovary {
       // Controlla la presenza di grub
       let grubInstalled = false
       if (Pacman.distro().familyId === 'debian') {
-         if (!Pacman.packageIsInstalled('grub-common')) {
+         if (Pacman.packageIsInstalled('grub-common')) {
             grubInstalled = true
          }
       } else if (Pacman.distro().familyId === 'archlinux') {
-         if (!Pacman.packageIsInstalled('grub')) {
+         if (Pacman.packageIsInstalled('grub')) {
             grubInstalled = true
          }
       }
