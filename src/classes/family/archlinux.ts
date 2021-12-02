@@ -163,9 +163,8 @@ export default class Archlinux {
     * @param packageName
     */
     static packageIsInstalled(packageName: string): boolean {
-
         let installed = false
-        const cmd = `/usr/bin/pacman -Qi ${packageName} | grep Status:`
+        const cmd = `/usr/bin/pacman -Qi ${packageName}`
         const stdout = shx.exec(cmd, { silent: true }).stdout.trim()
         if (stdout.includes(packageName)) {
             installed = true

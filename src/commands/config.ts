@@ -40,15 +40,16 @@ export default class Config extends Command {
         if (!nointeractive) {
             Utils.titles(this.id + ' ' + this.argv)
             if (Utils.isDebPackage()) {
-                console.log('eggs running as package .deb')
+                Utils.warning('running as package .deb')
             } else if (Utils.isSources()) {
-                console.log('eggs running from sources')
+                Utils.warning('running as sources')
             }
         }
 
 
         if (Utils.isRoot(this.id)) {
             if (flags.clean) {
+                Utils.warning('removing old configurations')
                 await exec('rm /etc/penguins-eggs.d -rf')
             }
 
@@ -57,11 +58,14 @@ export default class Config extends Command {
              * Aggiunge autocomplete e manPage
              */
             if (Utils.isSources()) {
-                await Pacman.autocompleteInstall(nointeractive)
+                Utils.warning('creating autocomplete...')
+                await Pacman.autocompleteInstall(verbose)
+                Utils.warning('creating eggs man page...')
                 await Pacman.manPageInstall(verbose)
             }
 
             // Vediamo che cosa c'è da fare...
+            Utils.warning('what we need?')
             const i = await Config.thatWeNeed(nointeractive, verbose)
 
             if (i.needApt || i.configurationInstall || i.configurationRefresh || i.distroTemplate) {

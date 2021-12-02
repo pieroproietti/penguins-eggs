@@ -84,12 +84,12 @@ export default class Utils {
       let initrd = ''
       let version = ''
       if (Pacman.distro().familyId === 'debian') {
-         console.log('Debian')
+         // console.log('Debian')
          initrd = 'initrd.img'
          version = vmlinuz.substring(vmlinuz.indexOf('-'))
 
       } else if (Pacman.distro().familyId === 'archlinux') {
-         console.log('archlinux')
+         // console.log('archlinux')
          initrd = 'initramfs-linux.img'
          version = ''
       }

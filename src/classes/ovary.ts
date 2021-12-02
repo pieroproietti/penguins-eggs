@@ -1586,8 +1586,8 @@ export default class Ovary {
                -boot-info-table \
                -append_partition 2 C12A7328-F81F-11D2-BA4B-00A0C93EC93B /home/artisan/archiso-gen/arch_work_dir/efiboot.img \
                -eltorito-alt-boot -e --interval:appended_partition_2:all:: \
-               -no-emul-boot \
                -isohybrid-gpt-basdat \
+               -no-emul-boot \
                -output /home/artisan/archiso-gen/arch_out_dir/archlinux-baseline-2021.11.29-x86_64.iso \
                /home/artisan/archiso-gen/arch_work_dir/iso/
       */
@@ -1609,8 +1609,8 @@ export default class Ovary {
          -boot-load-size 4 \
          -boot-info-table \
          -eltorito-alt-boot -e boot/grub/efiboot.img \
+         -isohybrid-gpt-basdat
          -no-emul-boot \
-         -isohybrid-gpt-basdat \
          -output ${output} \
          ${this.settings.work_dir.pathIso}`
        }
