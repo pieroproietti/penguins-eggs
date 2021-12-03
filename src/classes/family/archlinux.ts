@@ -54,6 +54,7 @@ export default class Archlinux {
             'pacman',
             'rsync',
             'sed',
+            'syslinux',
             'squashfs-tools',
         ]
 
