@@ -1551,7 +1551,7 @@ export default class Ovary {
                           -joliet-long \
                           -l \
                           -iso-level 3 \
-                          -b isolinux/isolinux.bin \
+                          -eltorito-boot isolinux/isolinux.bin \
                           ${isoHybridOption} \
                           -partition_offset 16 \
                           -c isolinux/boot.cat \
@@ -1602,7 +1602,7 @@ export default class Ovary {
          -rational-rock \
          -appid "Arch Linux baseline" \
          -publisher "Arch Linux <https://archlinux.org>" \
-         -preparer "prepared by eggs" \
+         -preparer "prepared by eggs <https://penguins-eggs.net>" \
          -isohybrid-mbr /usr/lib/syslinux/bios/isohdpfx.bin
          -eltorito-boot isolinux/isolinux.bin \
          -no-emul-boot \
