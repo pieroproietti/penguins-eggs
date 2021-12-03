@@ -162,8 +162,10 @@ export default class Config extends Command {
 
             if (i.calamares) {
                 console.log('- install calamares')
-                const packages = Pacman.debs4calamares
-                console.log(chalk.yellow('  will install: ' + array2spaced(packages) + '\n'))
+                if (Pacman.distro().familyId === 'debian') {
+                    const packages = Pacman.debs4calamares
+                    console.log(chalk.yellow('  will install: ' + array2spaced(packages) + '\n'))
+                }
             }
 
             if (i.needApt) {
