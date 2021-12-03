@@ -262,8 +262,8 @@ export default class Ovary {
             execSync('mv /tmp/luks-users-data ' + this.settings.config.snapshot_dir + 'ovarium/iso/live', { stdio: 'inherit' })
          }
 
-         await this.makeDotDisk(backup, verbose)
-         await this.makeIso(backup, scriptOnly, verbose)
+         let xorrisoCommand = this.makeDotDisk(backup, verbose)
+         await this.makeIso(xorrisoCommand, backup, scriptOnly, verbose)
       }
    }
 
@@ -1071,9 +1071,11 @@ export default class Ovary {
          console.log('ovary: createUserLive')
       }
       const cmds: string[] = []
+      cmds.push(await rexec('chroot ' + this.settings.work_dir.merged + ' rm /home/' + this.settings.config.user_opt + ' -rf', verbose))
       cmds.push(await rexec('chroot ' + this.settings.work_dir.merged + ' mkdir /home/' + this.settings.config.user_opt, verbose))
       cmds.push(await rexec('chroot ' + this.settings.work_dir.merged + ' useradd ' + this.settings.config.user_opt + ' --home-dir /home/' + this.settings.config.user_opt + ' --shell /bin/bash ', verbose))
       cmds.push(await rexec('chroot ' + this.settings.work_dir.merged + ' echo ' + this.settings.config.user_opt + ':' + this.settings.config.user_opt_passwd + '| chroot ' + this.settings.work_dir.merged + ' chpasswd', verbose))
+      cmds.push(await rexec('chroot  ' + this.settings.work_dir.merged + ' cp /etc/skel/. /home/' + this.settings.config.user_opt + ' -R', verbose))
       cmds.push(await rexec('chroot  ' + this.settings.work_dir.merged + ' chown ' + this.settings.config.user_opt + ':' + this.settings.config.user_opt + ' /home/' + this.settings.config.user_opt + ' -R', verbose))
       if (Pacman.distro().familyId === 'debian') {
          cmds.push(await rexec(`chroot ${this.settings.work_dir.merged} usermod -aG sudo ${this.settings.config.user_opt}`, verbose))
@@ -1427,45 +1429,25 @@ export default class Ovary {
     * info Debian GNU/Linux 10.8.0 "Buster" - Official i386 NETINST 20210206-10:54
     * mkisofs xorriso -as mkisofs -r -checksum_algorithm_iso md5,sha1,sha256,sha512 -V 'Debian 10.8.0 i386 n' -o /srv/cdbuilder.debian.org/dst/deb-cd/out/2busteri386/debian-10.8.0-i386-NETINST-1.iso -jigdo-jigdo /srv/cdbuilder.debian.org/dst/deb-cd/out/2busteri386/debian-10.8.0-i386-NETINST-1.jigdo -jigdo-template /srv/cdbuilder.debian.org/dst/deb-cd/out/2busteri386/debian-10.8.0-i386-NETINST-1.template -jigdo-map Debian=/srv/cdbuilder.debian.org/src/ftp/debian/ -jigdo-exclude boot1 -md5-list /srv/cdbuilder.debian.org/src/deb-cd/tmp/2busteri386/buster/md5-check -jigdo-min-file-size 1024 -jigdo-exclude 'README*' -jigdo-exclude /doc/ -jigdo-exclude /md5sum.txt -jigdo-exclude /.disk/ -jigdo-exclude /pics/ -jigdo-exclude 'Release*' -jigdo-exclude 'Packages*' -jigdo-exclude 'Sources*' -J -joliet-long -cache-inodes -isohybrid-mbr syslinux/usr/lib/ISOLINUX/isohdpfx.bin -b isolinux/isolinux.bin -c isolinux/boot.cat -boot-load-size 4 -boot-info-table -no-emul-boot -eltorito-alt-boot -e boot/grub/efi.img -no-emul-boot -isohybrid-gpt-basdat -isohybrid-apm-hfsplus boot1 CD1
     */
-   async makeDotDisk(backup = false, verbose = false) {
+   makeDotDisk(backup = false, verbose = false) : string {
       const dotDisk = this.settings.work_dir.pathIso + '/.disk'
       if (fs.existsSync(dotDisk)) {
          shx.rm('-rf', dotDisk)
       }
       shx.mkdir('-p', dotDisk)
-      // info
+
+
+      // .disk/info
       let file = dotDisk + '/info'
       let content = this.settings.config.snapshot_prefix + this.settings.config.snapshot_basename
       fs.writeFileSync(file, content, 'utf-8')
 
-      // shx.cp (scripts + '/mkisofs', dotDisk + '/mkisofs')
+      // .disk/mksquashfs
+      const scripts = this.settings.work_dir.path
+      shx.cp(scripts + '/mksquashfs', dotDisk + '/mksquashfs')
+
+      // .disk/mkisofs
       file = dotDisk + '/mkisofs'
-
-      let uefi_opt = ''
-      if (this.settings.config.make_efi) {
-         uefi_opt = '-eltorito-alt-boot -e boot/grub/efiboot.img -isohybrid-gpt-basdat -no-emul-boot'
-      }
-
-
-      /**
-       * per ovviare al problema che doDisk viene chiamato 
-       * prima di makeISO genero il comando al solo scopo
-       * di salvarlo nella iso
-       */
-      let isoHybridOption = `-isohybrid-mbr ${this.settings.distro.isolinuxPath}isohdpfx.bin `
-      if (this.settings.config.make_isohybrid) {
-         if (fs.existsSync('/usr/lib/syslinux/mbr/isohdpfx.bin')) {
-            isoHybridOption = '-isohybrid-mbr /usr/lib/syslinux/mbr/isohdpfx.bin'
-         } else if (fs.existsSync('/usr/lib/syslinux/isohdpfx.bin')) {
-            isoHybridOption = '-isohybrid-mbr /usr/lib/syslinux/isohdpfx.bin'
-         } else if (fs.existsSync('/usr/lib/ISOLINUX/isohdpfx.bin')) {
-            isoHybridOption = '-isohybrid-mbr /usr/lib/ISOLINUX/isohdpfx.bin'
-         } else {
-            Utils.warning("Can't create isohybrid. File: isohdpfx.bin not found. The resulting image will be a standard iso file")
-         }
-      }
-
-
       let volid = Utils.getVolid(this.settings.remix.name)
       let prefix = this.settings.config.snapshot_prefix
       if (backup) {
@@ -1476,133 +1458,86 @@ export default class Ovary {
          }
       }
       let output = this.settings.config.snapshot_dir + prefix + volid
-
-
-      content = `xorriso  -as mkisofs \
-         -volid ${volid} \
-         -joliet-long \
-         -l \
-         -iso-level 3 \
-         -b isolinux/isolinux.bin \
-         ${isoHybridOption} \
-         -partition_offset 16 \
-         -c isolinux/boot.cat \
-         -no-emul-boot \
-         -boot-load-size 4 \
-         -boot-info-table \
-         ${uefi_opt} \
-         -output ${output} \
-         ${this.settings.work_dir.pathIso}`
+      content = this.xorrisoCommand()
 
       /**
        * rimuovo gli spazi
        */
       content = content.replace(/\s\s+/g, ' ')
       fs.writeFileSync(file, content, 'utf-8')
-
-      const scripts = this.settings.work_dir.path
-      shx.cp(scripts + '/mksquashfs', dotDisk + '/mksquashfs')
+      return content
    }
 
-
    /**
-    * makeIsoImage
+    * 
+    * @param backup 
+    * @returns 
     */
-   async makeIso(backup = false, scriptOnly = false, verbose = false) {
-      let echo = { echo: false, ignore: false }
-      if (verbose) {
-         echo = { echo: true, ignore: false }
-      }
-
-      if (verbose) {
-         console.log('ovary: makeIso')
-      }
-
-      let uefi_opt = ''
-      if (this.settings.config.make_efi) {
-         uefi_opt = '-eltorito-alt-boot -e boot/grub/efiboot.img -isohybrid-gpt-basdat -no-emul-boot'
-      }
-
-      let isoHybridOption = `-isohybrid-mbr ${this.settings.distro.isolinuxPath}isohdpfx.bin `
-      if (this.settings.config.make_isohybrid) {
-         if (fs.existsSync('/usr/lib/syslinux/mbr/isohdpfx.bin')) {
-            isoHybridOption = '-isohybrid-mbr /usr/lib/syslinux/mbr/isohdpfx.bin'
-         } else if (fs.existsSync('/usr/lib/syslinux/isohdpfx.bin')) {
-            isoHybridOption = '-isohybrid-mbr /usr/lib/syslinux/isohdpfx.bin'
-         } else if (fs.existsSync('/usr/lib/ISOLINUX/isohdpfx.bin')) {
-            isoHybridOption = '-isohybrid-mbr /usr/lib/ISOLINUX/isohdpfx.bin'
-         } else {
-            Utils.warning("Can't create isohybrid. File: isohdpfx.bin not found. The resulting image will be a standard iso file")
-         }
-      }
+    xorrisoCommand(backup = false): string {
+      let command = ''
       const prefix = Utils.getPrefix(this.settings.config.snapshot_prefix, backup)
       const volid = Utils.getVolid(this.settings.remix.name)
       const postfix = Utils.getPostfix()
-
-      // salvo in isoFile per mostrare alla fine
       this.settings.isoFilename = prefix + volid + postfix
       const output = this.settings.config.snapshot_dir + this.settings.isoFilename
+      const distro =  Pacman.distro()
+      const appid =`-appid "${distro.distroId}" `
+      const publisher = `-publisher "${distro.distroId}/${distro.versionId}" `
+      const preparer = `-preparer "prepared by eggs <https://penguins-eggs.net>" `
 
-      /**
-       * default debian
-       */
-      let cmd = `xorriso  -as mkisofs \
-                          -volid ${volid} \
-                          -joliet-long \
-                          -l \
-                          -iso-level 3 \
-                          -eltorito-boot isolinux/isolinux.bin \
-                          ${isoHybridOption} \
-                          -partition_offset 16 \
-                          -c isolinux/boot.cat \
-                          -no-emul-boot \
-                          -boot-load-size 4 \
-                          -boot-info-table \
-                          ${uefi_opt} \
-                          -output ${output} \
-                          ${this.settings.work_dir.pathIso}`
-      
-      /**
-       * Archlinux
-       */
+      if (distro.familyId === 'debian') {
+         let isoHybridMbr = `-isohybrid-mbr ${this.settings.distro.isolinuxPath}isohdpfx.bin `
+         if (this.settings.config.make_isohybrid) {
+            if (fs.existsSync('/usr/lib/syslinux/mbr/isohdpfx.bin')) {
+               isoHybridMbr = '-isohybrid-mbr /usr/lib/syslinux/mbr/isohdpfx.bin'
+            } else if (fs.existsSync('/usr/lib/syslinux/isohdpfx.bin')) {
+               isoHybridMbr = '-isohybrid-mbr /usr/lib/syslinux/isohdpfx.bin'
+            } else if (fs.existsSync('/usr/lib/ISOLINUX/isohdpfx.bin')) {
+               isoHybridMbr = '-isohybrid-mbr /usr/lib/ISOLINUX/isohdpfx.bin'
+            } else {
+               Utils.warning("Can't create isohybrid. File: isohdpfx.bin not found. The resulting image will be a standard iso file")
+            }
+         }
 
-      /*
-      xorriso -as mkisofs \
-               -volid ARCH_202111 \
-               -full-iso9660-filenames \
-               -joliet \
-               -joliet-long \
-               -iso-level 3 \
-               -rational-rock \
-               -appid Arch Linux baseline \
-               -publisher Arch Linux <https://archlinux.org> \
-               -preparer prepared by mkarchiso \
-               -isohybrid-mbr /home/artisan/archiso-gen/arch_work_dir/iso/syslinux/isohdpfx.bin \
-               --mbr-force-bootable -partition_offset 16 \
-               -eltorito-boot syslinux/isolinux.bin \
-               -eltorito-catalog syslinux/boot.cat \
-               -no-emul-boot \
-               -boot-load-size 4 \
-               -boot-info-table \
-               -append_partition 2 C12A7328-F81F-11D2-BA4B-00A0C93EC93B /home/artisan/archiso-gen/arch_work_dir/efiboot.img \
-               -eltorito-alt-boot -e --interval:appended_partition_2:all:: \
-               -isohybrid-gpt-basdat \
-               -no-emul-boot \
-               -output /home/artisan/archiso-gen/arch_out_dir/archlinux-baseline-2021.11.29-x86_64.iso \
-               /home/artisan/archiso-gen/arch_work_dir/iso/
-      */
+         let uefi_opt = ''
+         if (this.settings.config.make_efi) {
+            uefi_opt = '-eltorito-alt-boot -e boot/grub/efiboot.img \
+                        -isohybrid-gpt-basdat \
+                        -no-emul-boot'
+         }
 
-      if (Pacman.distro().familyId === 'archlinux') {
-         cmd = `xorriso  -as mkisofs \
+         command = `xorriso -as mkisofs \
          -volid ${volid} \
          -full-iso9660-filenames \
          -joliet \
          -joliet-long \
          -iso-level 3 \
          -rational-rock \
-         -appid "Arch Linux baseline" \
-         -publisher "Arch Linux <https://archlinux.org>" \
-         -preparer "prepared by eggs <https://penguins-eggs.net>" \
+         ${appid} \
+         ${publisher} \
+         ${preparer} \
+         ${isoHybridMbr} \
+         -eltorito-boot isolinux/isolinux.bin \
+         -no-emul-boot \
+         -boot-load-size 4 \
+         -boot-info-table \
+         ${uefi_opt} \
+         -isohybrid-gpt-basdat
+         -no-emul-boot \
+         -output ${output} \
+         ${this.settings.work_dir.pathIso}`
+
+      } else if (distro.familyId === 'archlinux') {
+         command = `xorriso -as mkisofs \
+         -volid ${volid} \
+         -full-iso9660-filenames \
+         -joliet \
+         -joliet-long \
+         -iso-level 3 \
+         -rational-rock \
+         ${appid} \
+         ${publisher} \
+         ${preparer} \
          -isohybrid-mbr /usr/lib/syslinux/bios/isohdpfx.bin
          -eltorito-boot isolinux/isolinux.bin \
          -no-emul-boot \
@@ -1613,9 +1548,21 @@ export default class Ovary {
          -no-emul-boot \
          -output ${output} \
          ${this.settings.work_dir.pathIso}`
-       }
-                  
-      cmd = cmd.replace(/\s\s+/g, ' ')
+      }
+      return command
+   }
+
+   /**
+    * makeIsoImage
+    */
+   async makeIso(cmd: string, backup = false, scriptOnly = false, verbose = false) {
+      let echo = { echo: false, ignore: false }
+      if (verbose) {
+         echo = { echo: true, ignore: false }
+         console.log('ovary: makeIso')
+      }
+      console.log(cmd)
+
       Utils.writeX(`${this.settings.work_dir.path}mkisofs`, cmd)
       if (!scriptOnly) {
          await exec(cmd, echo)

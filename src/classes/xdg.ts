@@ -176,6 +176,9 @@ export default class Xdg {
          files.push('.kde')
       }
 
+      // Node version manager
+      files.push('.nvm')
+
       Utils.warning('copying hidden files')
       for (const i in files) {
          if (fs.existsSync(`/home/${user}/${files[i]}`)) {
