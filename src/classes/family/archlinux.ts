@@ -17,7 +17,7 @@ import { exec } from '../../lib/utils'
  * @remarks all the utilities
  */
 export default class Archlinux {
-    static debs4calamares = ['calamares']
+    static packs4calamares = ['calamares']
 
     /**
      * check if it's installed xorg
@@ -108,8 +108,8 @@ export default class Archlinux {
      */
     static async calamaresCheck(): Promise<boolean> {
         let installed = true
-        for (const i in this.debs4calamares) {
-            if (!this.packageIsInstalled(this.debs4calamares[i])) {
+        for (const i in this.packs4calamares) {
+            if (!this.packageIsInstalled(this.packs4calamares[i])) {
                 installed = false
                 break
             }
@@ -124,14 +124,9 @@ export default class Archlinux {
     static async calamaresInstall(verbose = true): Promise<void> {
         const echo = Utils.setEcho(verbose)
         try {
-            await exec('pacman -Sy', echo)
+            await exec(`pacman -Sy ${array2spaced(this.packs4calamares)}`, echo)
         } catch (e) {
-            Utils.error('Archlinux.calamaresInstall() apt-get update --yes ') // + e.error as string)
-        }
-        try {
-            await exec(`pacman -Sy ${array2spaced(this.debs4calamares)}`, echo)
-        } catch (e) {
-            Utils.error(`Archlinux.calamaresInstall() apt-get install --yes ${array2spaced(this.debs4calamares)}`) // + e.error)
+            Utils.error(`Archlinux.calamaresInstall() pacman -Sy ${array2spaced(this.packs4calamares)}`) // + e.error)
         }
 
     }

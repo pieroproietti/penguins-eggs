@@ -119,7 +119,7 @@ export default class Utils {
 
    static error(msg = '') {
 
-      console.log(pjson.shortName + ' >>> ' + chalk.bgGrey(msg) + '.')
+      console.log(pjson.shortName + ' >>> ' + chalk.bgRed(msg) + '.')
    }
 
    /**

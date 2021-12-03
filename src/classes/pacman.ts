@@ -57,7 +57,12 @@ export default class Pacman {
          if (Debian.isInstalledXorg()) {
             installed = true
          }
+      } else if (this.distro().familyId === 'archlinux') {
+         if (Archlinux.isInstalledXorg()) {
+            installed = true
+         }
       }
+
       return installed
    }
 
@@ -71,8 +76,12 @@ export default class Pacman {
          if (Debian.isInstalledWayland()) {
             installed = true
          }
+      } else if (this.distro().familyId === 'archlinux') {
+         if (Archlinux.isInstalledWayland()) {
+            installed = true
+         }
+         return installed
       }
-      return installed
    }
 
    /**
@@ -159,6 +168,8 @@ export default class Pacman {
       let installed = true
       if (this.distro().familyId === 'debian') {
          installed = await Debian.calamaresCheck()
+      } else if (this.distro().familyId === 'archlinux') {
+         installed = await Archlinux.calamaresCheck()
       }
 
       return installed
@@ -169,10 +180,7 @@ export default class Pacman {
     * @returns 
     */
    static calamaresAble(): boolean {
-      const remix = {} as IRemix
-      const distro = new Distro(remix)
-
-      let result = distro.calamaresAble
+      let result = this.distro().calamaresAble
       if (process.arch === 'armel' || process.arch === 'arm64') {
          result = false
       }
@@ -186,11 +194,10 @@ export default class Pacman {
       if (this.isInstalledGui()) {
          if (this.distro().familyId === 'debian') {
             Debian.calamaresInstall(verbose)
+         } else if (this.distro().familyId === 'archlinux') {
+            Archlinux.calamaresInstall(verbose)
          }
-      } else {
-         console.log("It's not possible to use calamares in a system without GUI")
       }
-
    }
 
    /**
