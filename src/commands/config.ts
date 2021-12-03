@@ -46,7 +46,6 @@ export default class Config extends Command {
             }
         }
 
-
         if (Utils.isRoot(this.id)) {
             if (flags.clean) {
                 Utils.warning('removing old configurations')
@@ -55,7 +54,7 @@ export default class Config extends Command {
 
             /**
              * Se stiamo utilizzando eggs da sorgenti
-             * Aggiunge autocomplete e manPage
+             * Aggiungo autocomplete e manPage
              */
             if (Utils.isSources()) {
                 Utils.warning('creating autocomplete...')
@@ -96,11 +95,6 @@ export default class Config extends Command {
         }
 
         if (!await Pacman.calamaresCheck() && (Pacman.isInstalledGui())) {
-            /**
-             * Se non è jessie o stretch...
-             */
-            const remix = {} as IRemix
-            const distro = new Distro(remix)
             if (Pacman.calamaresAble()) {
                 Utils.warning('config: you are on a graphic system, I suggest to install the GUI installer calamares')
                 if (nointeractive) {
@@ -127,8 +121,8 @@ export default class Config extends Command {
          */
         if (!nointeractive) {
             if (i.needApt) {
+                console.log('- update the system')
                 if (Pacman.distro().familyId === 'debian') {
-                    console.log('- update the system')
                     console.log(chalk.yellow('  apt-get update --yes\n'))
                 }
             }
@@ -148,7 +142,7 @@ export default class Config extends Command {
                 const packages = Pacman.packages(verbose)
 
                 if (packages.length > 0) {
-                    console.log(chalk.yellow('  will install: install  ' + array2spaced(packages)))
+                    console.log(chalk.yellow('  will install: ' + array2spaced(packages)))
                 }
             }
 
