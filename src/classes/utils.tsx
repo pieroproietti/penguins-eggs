@@ -22,6 +22,7 @@ import chalk = require('chalk')
 import Pacman from './pacman'
 
 import clear = require('clear')
+import { green, whiteBright } from 'chalk'
 //import figlet = require('figlet')
 
 /**
@@ -118,8 +119,7 @@ export default class Utils {
    }
 
    static error(msg = '') {
-
-      console.log(pjson.shortName + ' >>> ' + chalk.bgRed(msg) + '.')
+      console.log(pjson.shortName + ' >>> ' + chalk.bgMagentaBright(chalk,whiteBright(msg)) + '.')
    }
 
    /**
