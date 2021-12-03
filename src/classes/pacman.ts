@@ -80,8 +80,8 @@ export default class Pacman {
          if (Archlinux.isInstalledWayland()) {
             installed = true
          }
-         return installed
       }
+      return installed
    }
 
    /**
