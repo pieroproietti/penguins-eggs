@@ -52,6 +52,7 @@ export default class Archlinux {
             'mtools',
             'openssl',
             'pacman',
+            'rsync',
             'sed',
             'squashfs-tools',
         ]
@@ -81,7 +82,7 @@ export default class Archlinux {
         const echo = Utils.setEcho(verbose)
         const retVal = false
 
-        await exec(`pacman -S --yes ${array2spaced(this.packages(false, verbose))}`, echo)
+        await exec(`pacman -Sy ${array2spaced(this.packages(false, verbose))}`, echo)
 
         if (!Pacman.isInstalledGui()) {
             /**

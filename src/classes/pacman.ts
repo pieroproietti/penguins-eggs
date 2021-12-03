@@ -119,6 +119,8 @@ export default class Pacman {
       let packages: string[] = []
       if (this.distro().familyId === 'debian') {
          packages = Debian.packages(remove, verbose)
+      } else if (this.distro().familyId === 'archlinux') {
+         packages = Archlinux.packages(remove, verbose)
       }
       return packages
    }
@@ -144,6 +146,8 @@ export default class Pacman {
 
       if (this.distro().familyId === 'debian') {
          retVal = await Debian.prerequisitesInstall(verbose)
+      } else if (this.distro().familyId === 'archlinux') {
+         retVal = await Archlinux.prerequisitesInstall(verbose)
       }
       return retVal
    }
