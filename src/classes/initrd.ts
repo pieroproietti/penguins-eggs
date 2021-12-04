@@ -1,5 +1,5 @@
 /**
- * penguins-eggs: ovary.ts VERSIONE DEBIAN-LIVE
+ * penguins-eggs: initrd
  * author: Piero Proietti
  * mail: piero.proietti@gmail.com
  * 
