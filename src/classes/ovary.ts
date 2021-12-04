@@ -1426,8 +1426,9 @@ export default class Ovary {
    }
 
    /**
-    * info Debian GNU/Linux 10.8.0 "Buster" - Official i386 NETINST 20210206-10:54
-    * mkisofs xorriso -as mkisofs -r -checksum_algorithm_iso md5,sha1,sha256,sha512 -V 'Debian 10.8.0 i386 n' -o /srv/cdbuilder.debian.org/dst/deb-cd/out/2busteri386/debian-10.8.0-i386-NETINST-1.iso -jigdo-jigdo /srv/cdbuilder.debian.org/dst/deb-cd/out/2busteri386/debian-10.8.0-i386-NETINST-1.jigdo -jigdo-template /srv/cdbuilder.debian.org/dst/deb-cd/out/2busteri386/debian-10.8.0-i386-NETINST-1.template -jigdo-map Debian=/srv/cdbuilder.debian.org/src/ftp/debian/ -jigdo-exclude boot1 -md5-list /srv/cdbuilder.debian.org/src/deb-cd/tmp/2busteri386/buster/md5-check -jigdo-min-file-size 1024 -jigdo-exclude 'README*' -jigdo-exclude /doc/ -jigdo-exclude /md5sum.txt -jigdo-exclude /.disk/ -jigdo-exclude /pics/ -jigdo-exclude 'Release*' -jigdo-exclude 'Packages*' -jigdo-exclude 'Sources*' -J -joliet-long -cache-inodes -isohybrid-mbr syslinux/usr/lib/ISOLINUX/isohdpfx.bin -b isolinux/isolinux.bin -c isolinux/boot.cat -boot-load-size 4 -boot-info-table -no-emul-boot -eltorito-alt-boot -e boot/grub/efi.img -no-emul-boot -isohybrid-gpt-basdat -isohybrid-apm-hfsplus boot1 CD1
+    * makeDotDisk
+    * create .disk/info, .disk/mksquashfs, .disk/mkiso
+    * return mkiso
     */
    makeDotDisk(backup = false, verbose = false) : string {
       const dotDisk = this.settings.work_dir.pathIso + '/.disk'
@@ -1471,8 +1472,8 @@ export default class Ovary {
    /**
     * 
     * @param backup 
-    * @returns 
-    */
+    * @returns cmd 4 mkiso
+    */ 
     xorrisoCommand(backup = false): string {
       let command = ''
       const prefix = Utils.getPrefix(this.settings.config.snapshot_prefix, backup)
@@ -1553,7 +1554,8 @@ export default class Ovary {
    }
 
    /**
-    * makeIsoImage
+    * makeIso
+    * cmd: cmd 4 xorirriso
     */
    async makeIso(cmd: string, backup = false, scriptOnly = false, verbose = false) {
       let echo = { echo: false, ignore: false }
@@ -1567,38 +1569,6 @@ export default class Ovary {
       if (!scriptOnly) {
          await exec(cmd, echo)
       }
-
-      /**
-       * Ultima versione
-       * Tolto -cache-inodes (veniva ignorato)
-       *
-       * Non solo supportati, almeno da xorriso 1.5.0, i flag:
-       *   -h 256
-       *   -s 63
-       *
-       * Sarebbero da sostituire i flag brevi con quelli estesi, rimangono:
-       *   -l
-       *   -b
-       *   -c
-       *
-       * Il seguente è un esempio corrente funzionante:
-       *
-       * xorriso  -as makeIsofs
-       *                              volid incubator-x64_2020-06-05_100.iso
-       *                              -joliet-long
-       *                              -l
-       *                              -iso-level 3
-       *                              -b isolinux/isolinux.bin
-       *                              -isohybrid-mbr /usr/lib/ISOLINUX/isohdpfx.bin
-       *                              -partition_offset 16
-       *                              -c isolinux/boot.cat
-       *                              -no-emul-boot
-       *                              -boot-load-size 4
-       *                              -boot-info-table
-       *                              -output /home/eggs/incubator-x64_2020-06-05_100.iso
-       *                              /home/eggs/ovarium/iso
-       */
-
    }
 
    /**
