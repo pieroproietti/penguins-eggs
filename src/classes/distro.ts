@@ -276,9 +276,9 @@ class Distro implements IDistro {
          /**
           * se proprio non riesco provo con Debian buster
           */
-         console.log("This distro is not yet recognized, I'll try Debian bullseye")
+         console.log("This distro is not yet recognized, I'll try Debian buster")
          this.distroLike = 'Debian'
-         this.versionLike = 'bullseye'
+         this.versionLike = 'buster'
       }
 
       /**
