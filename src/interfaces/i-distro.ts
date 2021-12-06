@@ -11,5 +11,5 @@ export interface IDistro {
    homeUrl: string
    supportUrl: string
    bugReportUrl: string
-   calamaresAble: boolean
+   isCalamaresAvailable: boolean
 }

@@ -58,11 +58,13 @@ export default class Utils {
 
    /**
     * ricava path per vmlinuz
+    * BOOT_IMAGE=(hd0,msdos1)/vmlinuz-5.15.6-200.fc35.x86_64 root=UUID=91cf614e-62a1-464c-904f-38d0a1ceb7a7 ro rootflags=subvol=root rhgb quiet
     */
    static vmlinuz(): string {
       const results = fs.readFileSync('/proc/cmdline', 'utf8').split(' ')
       let result = results[0]
-      result = result.substring(result.indexOf('=') + 1)
+      // result = result.substring(result.indexOf('=') + 1)
+      result = result.substring(result.indexOf('/'))
       if (result.indexOf('@') > 0) {
          result = result.substring(result.indexOf('@') + 1)
       }
@@ -85,14 +87,14 @@ export default class Utils {
       let initrd = ''
       let version = ''
       if (Pacman.distro().familyId === 'debian') {
-         // console.log('Debian')
          initrd = 'initrd.img'
          version = vmlinuz.substring(vmlinuz.indexOf('-'))
-
       } else if (Pacman.distro().familyId === 'archlinux') {
-         // console.log('archlinux')
          initrd = 'initramfs-linux.img'
          version = ''
+      } else if (Pacman.distro().familyId === 'fedora') {
+         initrd = 'initramfs'
+         version = vmlinuz.substring(vmlinuz.indexOf('-')) + '.img'
       }
       return path + initrd + version
    }
@@ -389,23 +391,6 @@ unknown target format aarch64-efi
     */
    static isi686(): boolean {
       return process.arch === 'ia32'
-   }
-
-   /**
-    * Check se la macchina ha grub adatto ad efi
-    */
-   static isUefi(): boolean {
-      let isUefi = false
-      if (Utils.machineArch() !== 'i386') {
-         if (Pacman.distro().familyId === 'debian') {
-            if (Pacman.packageIsInstalled('grub-efi-' + Utils.machineArch() + '-bin')) {
-               isUefi = true
-            }
-         } else if (Pacman.distro().familyId === 'archlinux') {
-            isUefi = true
-         }
-      }
-      return isUefi
    }
 
    /**

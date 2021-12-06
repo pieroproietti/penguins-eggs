@@ -147,7 +147,7 @@ export default class Ovary {
 
          await this.liveCreateStructure(verbose)
 
-         if (Pacman.calamaresAble() && await Pacman.isInstalledGui()) {
+         if (Pacman.distro().isCalamaresAvailable && await Pacman.isInstalledGui()) {
             if (this.settings.config.force_installer && !(await Pacman.calamaresCheck())) {
                console.log('Installing ' + chalk.bgGray('calamares') + ' due force_installer=yes.')
                await Pacman.calamaresInstall(verbose)
@@ -174,7 +174,9 @@ export default class Ovary {
 
          await this.copyKernel(verbose)
          if (this.settings.config.make_efi) {
-            await this.makeEfi(this.theme, verbose)
+            if (Pacman.distro().familyId === 'debian') {
+               await this.makeEfi(this.theme, verbose)
+            }
          }
 
          await this.bindLiveFs(verbose)
@@ -1256,7 +1258,12 @@ export default class Ovary {
          if (Pacman.packageIsInstalled('grub')) {
             grubInstalled = true
          }
+      } else if (Pacman.distro().familyId === 'fedora') {
+         if (Pacman.packageIsInstalled('grub2-common.noarch')) {
+            grubInstalled = true
+         }
       }
+      
       if (!grubInstalled) {
          Utils.error(`something went wrong! Cannot find package grub-common.`)
          Utils.warning('Problably your system boot with rEFInd or others, to generate a UEFI image we need grub too')

@@ -53,7 +53,7 @@ class Distro implements IDistro {
    homeUrl: string
    supportUrl: string
    bugReportUrl: string
-   calamaresAble: boolean
+   isCalamaresAvailable: boolean
 
    constructor(remix: IRemix) {
       this.familyId = 'debian'
@@ -68,7 +68,7 @@ class Distro implements IDistro {
       this.homeUrl = ''
       this.supportUrl = ''
       this.bugReportUrl = ''
-      this.calamaresAble = true
+      this.isCalamaresAvailable = true
 
 
       const file = '/etc/os-release'
@@ -263,15 +263,22 @@ class Distro implements IDistro {
          this.versionId = 'rolling' // pavho
          this.distroLike = 'Arch'
          this.versionLike = 'rolling'
-      } else {
 
-         // se proprio non riesco chiedo l'intervento dell'utente
-         console.log("This distro is not yet recognized, but you can choose a compatible version")
-         // Dato che occorre await evito al momento
-         // this.distroLike = await getDistroLike()
-         // this.versionLike = await getVersionLike(this.distroLike)
+         /**
+          * Fedora
+          */
+      } else if (this.distroId === 'Fedora') {
+         this.familyId = "fedora"
+         this.distroLike = 'Fedora'
+         this.versionLike = 'ThirtyFive'
+      } else {
+         
+         /**
+          * se proprio non riesco provo con Debian buster
+          */
+         console.log("This distro is not yet recognized, I'll try Debian bullseye")
          this.distroLike = 'Debian'
-         this.versionLike = 'buster'
+         this.versionLike = 'bullseye'
       }
 
       /**
@@ -286,11 +293,23 @@ class Distro implements IDistro {
       }
 
       /**
-       * isCalamaresCompliant
+       * setting syslinux and isolinux paths
        */
-      if (this.versionLike === 'jessie' || this.versionLike === 'stretch' || this.versionLike === 'xenial') {
-         this.calamaresAble = false
+       if (this.familyId === 'debian') {
+         this.isolinuxPath = '/usr/lib/ISOLINUX/'
+         this.syslinuxPath = '/usr/lib/syslinux/modules/bios/'
+      } else if (this.familyId === 'archlinux') {
+         this.syslinuxPath = '/usr/lib/syslinux/bios/'
+         this.isolinuxPath = this.syslinuxPath
+      } else if (this.familyId === 'fedora') {
+         this.syslinuxPath = '/usr/share/syslinux/'
+         this.isolinuxPath = '/usr/share/syslinux/'
       }
+
+
+      /**
+       * Special cases...
+       */
 
       /**
        * MX LINUX
@@ -298,29 +317,7 @@ class Distro implements IDistro {
        */
       if (fs.existsSync('/etc/antix-version')) {
          this.distroId = 'MX'
-         // if (!fs.existsSync('/live/boot-dev/antiX/')) {
-         //    shell.exec('mkdir /live/boot-dev/antiX/ -p')
-         //  }
-         // this.mountpointSquashFs = '/live/boot-dev/antiX/linuxfs'
       }
-
-      /**
-       * e le posizioni per isolinux e syslinux
-       */
-      this.isolinuxPath = '/usr/lib/ISOLINUX/'
-      this.syslinuxPath = '/usr/lib/syslinux/modules/bios/'
-      if (this.familyId === 'archlinux') {
-         this.syslinuxPath = '/usr/lib/syslinux/bios/'
-         this.isolinuxPath = this.syslinuxPath
-      }
-
-      /**
-       * però...
-       * 
-       * syslinuxPath '/usr/lib/syslinux/ contiene mbr, memdisk e modules
-       * in modules abbiamo bios, efi32 ed efi64
-       * forse in arm andrebbe il contenuto di efi64
-       */
    }
 }
 

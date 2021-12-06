@@ -93,7 +93,7 @@ export default class Info extends Command {
 
       const dependencies = await Pacman.prerequisitesCheck()
       const configurations = Pacman.configurationCheck()
-      let uefi = Utils.isUefi()
+      let uefi = Pacman.isUefi()
 
       let installer = false
       if (await Pacman.isInstalledGui()) {
