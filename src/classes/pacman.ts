@@ -434,7 +434,7 @@ export default class Pacman {
    }
 
    /**
-    * 
+    * distroTemplateCheck
     */
    static distroTemplateCheck(): boolean {
       const versionLike = this.distro().versionLike
@@ -448,29 +448,10 @@ export default class Pacman {
       if (verbose) {
          console.log('distroTemplateInstall')
       }
-      const rootPen = Utils.rootPenguin()
-      const versionLike = this.distro().versionLike
-      const cmd = `cp -rL ${rootPen}/conf/distros/${versionLike} /etc/penguins-eggs.d/distros`
-      execSync(cmd)
-      this.links4Debs()
-   }
-
-
-   /**
-    * 
-    * @param rootPen 
-    */
-   static async links4Debs(verbose = false) {
-      const remove = false
-
-      /**
-       * Poichè i pacchetti deb, non si portano i link
-       * links4Debs in /usr/lib/penguins-eggs/config/distro
-       * bisogna ricostruire i link, sarebbe da fare solo 
-       * per la distribuzione corrente e solo in /etc/penguins-eggs
-       */
+      const echo = Utils.setEcho(verbose)
 
       const rootPen = Utils.rootPenguin()
+      await exec(`mkdir /etc/penguins-eggs.d/distros/${this.distro().versionLike}`)
 
       /**
        * Debian 10 - Buster: è il master per tutte le distro
@@ -482,50 +463,50 @@ export default class Pacman {
        */
       if (this.distro().versionLike === 'jessie') {
          const dest = `/etc/penguins-eggs.d/distros/jessie`
-         await exec(`cp -r ${buster}/grub ${dest}/grub`)
-         await exec(`cp -r ${buster}/isolinux ${dest}/isolinux`)
-         await exec(`cp -r ${buster}/locales ${dest}/locales`)
-         await exec(`cp -r ${rootPen}/conf/distros/jessie/krill ${dest}/krill`)
+         await exec(`cp -r ${buster}/grub ${dest}/grub`, echo)
+         await exec(`cp -r ${buster}/isolinux ${dest}/isolinux`, echo)
+         await exec(`cp -r ${buster}/locales ${dest}/locales`, echo)
+         await exec(`cp -r ${rootPen}/conf/distros/jessie/krill ${dest}/krill`, echo)
 
          /**
           * Debian 9 stretch:  eredita grub, isolinux e locales da buster, contiene krill al posto di calamares
           */
       } else if (this.distro().versionLike === 'stretch') {
          const dest = `/etc/penguins-eggs.d/distros/stretch`
-         await exec(`cp -r ${buster}/grub ${dest}/grub`)
-         await exec(`cp -r ${buster}/isolinux ${dest}/isolinux`)
-         await exec(`cp -r ${buster}/locales ${dest}/locales`)
-         await exec(`cp -r ${rootPen}/conf/distros/jessie/krill ${dest}/krill`)
+         await exec(`cp -r ${buster}/grub ${dest}/grub`, echo)
+         await exec(`cp -r ${buster}/isolinux ${dest}/isolinux`, echo)
+         await exec(`cp -r ${buster}/locales ${dest}/locales`, echo)
+         await exec(`cp -r ${rootPen}/conf/distros/jessie/krill ${dest}/krill`, echo)
 
          /**
           * Debian 10 buster: eredita tutto da buster
           */
       } else if (this.distro().versionLike === 'bollseye') {
          const dest = `/etc/penguins-eggs.d/distros/buster`
-         await exec(`cp -r ${buster}/grub ${dest}/grub`)
-         await exec(`cp -r ${buster}/isolinux ${dest}/isolinux`)
-         await exec(`cp -r ${buster}/locales ${dest}/locales`)
-         await exec(`cp -r ${buster}/calamares ${dest}/calamares`)
+         await exec(`cp -r ${buster}/grub ${dest}/grub`, echo)
+         await exec(`cp -r ${buster}/isolinux ${dest}/isolinux`, echo)
+         await exec(`cp -r ${buster}/locales ${dest}/locales`, echo)
+         await exec(`cp -r ${buster}/calamares ${dest}/calamares`, echo)
 
          /**
           * Debian 11 bullseye: eredita tutto da buster
           */
       } else if (this.distro().versionLike === 'bollseye') {
          const dest = `/etc/penguins-eggs.d/distros/bullseye`
-         await exec(`cp -r ${buster}/grub ${dest}/grub`)
-         await exec(`cp -r ${buster}/isolinux ${dest}/isolinux`)
-         await exec(`cp -r ${buster}/locales ${dest}/locales`)
-         await exec(`cp -r ${buster}/calamares ${dest}/calamares`)
+         await exec(`cp -r ${buster}/grub ${dest}/grub`, echo)
+         await exec(`cp -r ${buster}/isolinux ${dest}/isolinux`, echo)
+         await exec(`cp -r ${buster}/locales ${dest}/locales`, echo)
+         await exec(`cp -r ${buster}/calamares ${dest}/calamares`, echo)
 
          /**
           * Debian 12 bookworm: eredita tutto da buster
           */
       } else if (this.distro().versionLike === 'bookworm') {
          const dest = `/etc/penguins-eggs.d/distros/bookworm`
-         await exec(`cp -r ${buster}/grub ${dest}/grub`)
-         await exec(`cp -r ${buster}/isolinux ${dest}/isolinux`)
-         await exec(`cp -r ${buster}/locales ${dest}/locales`)
-         await exec(`cp -r ${buster}/calamares ${dest}/calamares`)
+         await exec(`cp -r ${buster}/grub ${dest}/grub`, echo)
+         await exec(`cp -r ${buster}/isolinux ${dest}/isolinux`, echo)
+         await exec(`cp -r ${buster}/locales ${dest}/locales`, echo)
+         await exec(`cp -r ${buster}/calamares ${dest}/calamares`, echo)
 
          /***********************************************************************************
           * Devuan
@@ -536,30 +517,30 @@ export default class Pacman {
           */
       } else if (this.distro().versionLike === 'beowulf') {
          const dest = `/etc/penguins-eggs.d/distros/beowulf`
-         await exec(`cp -r ${buster}/grub ${dest}/grub`)
-         await exec(`cp -r ${buster}/isolinux ${dest}/isolinux`)
-         await exec(`cp -r ${buster}/locales ${dest}/locales`)
-         await exec(`cp -r ${buster}/calamares ${dest}/calamares`)
+         await exec(`cp -r ${buster}/grub ${dest}/grub`, echo)
+         await exec(`cp -r ${buster}/isolinux ${dest}/isolinux`, echo)
+         await exec(`cp -r ${buster}/locales ${dest}/locales`, echo)
+         await exec(`cp -r ${buster}/calamares ${dest}/calamares`, echo)
 
          /**
           * Devuan chimaera: eredita tutto da buster
           */
       } else if (this.distro().versionLike === 'chimaera') {
          const dest = `/etc/penguins-eggs.d/distros/chimaera`
-         await exec(`cp -r ${buster}/grub ${dest}/grub`)
-         await exec(`cp -r ${buster}/isolinux ${dest}/isolinux`)
-         await exec(`cp -r ${buster}/locales ${dest}/locales`)
-         await exec(`cp -r ${buster}/calamares ${dest}/calamares`)
+         await exec(`cp -r ${buster}/grub ${dest}/grub`, echo)
+         await exec(`cp -r ${buster}/isolinux ${dest}/isolinux`, echo)
+         await exec(`cp -r ${buster}/locales ${dest}/locales`, echo)
+         await exec(`cp -r ${buster}/calamares ${dest}/calamares`, echo)
 
          /**
           * Devuan daedalus: eredita tutto da buster
           */
       } else if (this.distro().versionLike === 'daedalus') {
          const dest = `/etc/penguins-eggs.d/distros/daedalus`
-         await exec(`cp -r ${buster}/grub ${dest}/grub`)
-         await exec(`cp -r ${buster}/isolinux ${dest}/isolinux`)
-         await exec(`cp -r ${buster}/locales ${dest}/locales`)
-         await exec(`cp -r ${buster}/calamares ${dest}/calamares`)
+         await exec(`cp -r ${buster}/grub ${dest}/grub`, echo)
+         await exec(`cp -r ${buster}/isolinux ${dest}/isolinux`, echo)
+         await exec(`cp -r ${buster}/locales ${dest}/locales`, echo)
+         await exec(`cp -r ${buster}/calamares ${dest}/calamares`, echo)
 
          /***********************************************************************************
           * Ubuntu
@@ -572,38 +553,40 @@ export default class Pacman {
          const dest = `/etc/penguins-eggs.d/distros/bionic`
 
          const bionic = `${rootPen}/conf/distros/bionic`
-         await exec(`cp -r ${bionic} ${dest}`)
+         await exec(`cp -r ${bionic} ${dest}`, echo)
 
          const focal = `${rootPen}/conf/distros/focal`
-         await exec(`cp -r ${focal}/grub ${dest}/grub`)
-         await exec(`cp -r ${focal}/isolinux ${dest}/isolinux`)
+         await exec(`cp -r ${focal}/grub ${dest}/grub`, echo)
+         await exec(`cp -r ${focal}/isolinux ${dest}/isolinux`, echo)
 
-         await exec(`cp -r ${buster}/calamares/calamares-modules/remove-link ${dest}/calamares/calamares-modules/remove-link`)
-         await exec(`cp -r ${buster}/calamares/calamares-modules/sources-yolk ${dest}/calamares/calamares-modules/sources-yolk`)
-         await exec(`cp -r ${buster}/calamares/calamares-modules/sources-yolk-unmount ${dest}/calamares/calamares-modules/sources-yolk-unmount`)
-         await exec(`cp -r ${buster}/calamares/modules/packages.yml ${dest}/calamares/modules/packages.yml`)
-         await exec(`cp -r ${buster}/calamares/modules/removeuser.yml ${dest}/calamares/modules/removeuser.yml`)
-         await exec(`cp -r ${buster}/calamares/modules/unpackfs.yml ${dest}/calamares/modules/unpackfs.yml`)
-         await exec(`cp -r ${buster}/calamares/modules/displaymanager.yml ${dest}/calamares/modules/displaymanager.yml`)
+         await exec(`cp -r ${buster}/calamares/calamares-modules/remove-link ${dest}/calamares/calamares-modules/remove-link`, echo)
+         await exec(`cp -r ${buster}/calamares/calamares-modules/sources-yolk ${dest}/calamares/calamares-modules/sources-yolk`, echo)
+         await exec(`cp -r ${buster}/calamares/calamares-modules/sources-yolk-unmount ${dest}/calamares/calamares-modules/sources-yolk-unmount`, echo)
+         await exec(`cp -r ${buster}/calamares/modules/packages.yml ${dest}/calamares/modules/packages.yml`, echo)
+         await exec(`cp -r ${buster}/calamares/modules/removeuser.yml ${dest}/calamares/modules/removeuser.yml`, echo)
+         await exec(`cp -r ${buster}/calamares/modules/unpackfs.yml ${dest}/calamares/modules/unpackfs.yml`, echo)
+         await exec(`cp -r ${buster}/calamares/modules/displaymanager.yml ${dest}/calamares/modules/displaymanager.yml`, echo)
 
          /**
           * Ubuntu focal: eredita da focal e buster
           */
       } else if (this.distro().versionLike === 'focal') {
          const dest = `/etc/penguins-eggs.d/distros/focal`
-         const focal = `${rootPen}/conf/distros/focal`
-         await exec(`cp -r ${focal} ${dest}`)
+         const focal = `${rootPen}/conf/distros/focal/*`
+         await exec(`cp -r ${focal} ${dest}`, echo)
 
-         await exec(`cp -r ${buster}/grub/loopback.cfg ${dest}/grub/loopback.cfg`)
-         await exec(`cp -r ${buster}/isolinux/grub/theme.cfg ${dest}/isolinux/grub/theme.cfg`)
-         await exec(`cp -r ${buster}/isolinux/isolinux.template.cfg ${dest}/isolinux/isolinux.template.cfg`)
-         await exec(`cp -r ${buster}/calamares/calamares-modules/remove-link ${dest}/calamares/calamares-modules/remove-link`)
-         await exec(`cp -r ${buster}/calamares/calamares-modules/sources-yolk ${dest}/calamares/calamares-modules/sources-yolk`)
-         await exec(`cp -r ${buster}/calamares/calamares-modules/sources-yolk-unmount ${dest}/calamares/calamares-modules/sources-yolk-unmount`)
-         await exec(`cp -r ${buster}/calamares/modules/packages.yml ${dest}/calamares/modules/packages.yml`)
-         await exec(`cp -r ${buster}/calamares/modules/removeuser.yml ${dest}/calamares/modules/removeuser.yml`)
-         await exec(`cp -r ${buster}/calamares/modules/unpackfs.yml ${dest}/calamares/modules/unpackfs.yml`)
-         await exec(`cp -r ${buster}/calamares/modules/displaymanager.yml ${dest}/calamares/modules/displaymanager.yml`)
+         await exec(`cp -r ${buster}/grub/loopback.cfg ${dest}/grub/loopback.cfg`, echo)
+         await exec(`cp -r ${buster}/grub/theme.cfg ${dest}/grub/theme.cfg`, echo)
+         await exec(`cp -r ${buster}/isolinux/isolinux.template.cfg ${dest}/isolinux/isolinux.template.cfg`, echo)
+         await exec(`cp -r ${buster}/isolinux/stdmenu.template.cfg ${dest}/isolinux/stdmenu.template.cfg`, echo)
+         
+         await exec(`cp -r ${buster}/calamares/calamares-modules/remove-link ${dest}/calamares/calamares-modules/remove-link`, echo)
+         await exec(`cp -r ${buster}/calamares/calamares-modules/sources-yolk ${dest}/calamares/calamares-modules/sources-yolk`, echo)
+         await exec(`cp -r ${buster}/calamares/calamares-modules/sources-yolk-unmount ${dest}/calamares/calamares-modules/sources-yolk-unmount`, echo)
+         await exec(`cp -r ${buster}/calamares/modules/packages.yml ${dest}/calamares/modules/packages.yml`, echo)
+         await exec(`cp -r ${buster}/calamares/modules/removeuser.yml ${dest}/calamares/modules/removeuser.yml`, echo)
+         await exec(`cp -r ${buster}/calamares/modules/unpackfs.yml ${dest}/calamares/modules/unpackfs.yml`, echo)
+         await exec(`cp -r ${buster}/calamares/modules/displaymanager.yml ${dest}/calamares/modules/displaymanager.yml`, echo)
 
          /**
           * Ubuntu 20.10 groovy: eredita da focal e buster
@@ -611,18 +594,20 @@ export default class Pacman {
       } else if (this.distro().versionLike === 'groovy') {
          const dest = `/etc/penguins-eggs.d/distros/groovy`
          const focal = `${rootPen}/conf/distros/focal`
-         await exec(`cp -r ${focal} ${dest}`)
+         await exec(`cp -r ${focal} ${dest}`, echo)
 
-         await exec(`cp -r ${buster}/grub/loopback.cfg ${dest}/grub/loopback.cfg`)
-         await exec(`cp -r ${buster}/isolinux/grub/theme.cfg ${dest}/isolinux/grub/theme.cfg`)
-         await exec(`cp -r ${buster}/isolinux/isolinux.template.cfg ${dest}/isolinux/isolinux.template.cfg`)
-         await exec(`cp -r ${buster}/calamares/calamares-modules/remove-link ${dest}/calamares/calamares-modules/remove-link`)
-         await exec(`cp -r ${buster}/calamares/calamares-modules/sources-yolk ${dest}/calamares/calamares-modules/sources-yolk`)
-         await exec(`cp -r ${buster}/calamares/calamares-modules/sources-yolk-unmount ${dest}/calamares/calamares-modules/sources-yolk-unmount`)
-         await exec(`cp -r ${buster}/calamares/modules/packages.yml ${dest}/calamares/modules/packages.yml`)
-         await exec(`cp -r ${buster}/calamares/modules/removeuser.yml ${dest}/calamares/modules/removeuser.yml`)
-         await exec(`cp -r ${buster}/calamares/modules/unpackfs.yml ${dest}/calamares/modules/unpackfs.yml`)
-         await exec(`cp -r ${buster}/calamares/modules/displaymanager.yml ${dest}/calamares/modules/displaymanager.yml`)
+         await exec(`cp -r ${buster}/grub/loopback.cfg ${dest}/grub/loopback.cfg`, echo)
+         await exec(`cp -r ${buster}/grub/theme.cfg ${dest}/grub/theme.cfg`, echo)
+         await exec(`cp -r ${buster}/isolinux/isolinux.template.cfg ${dest}/isolinux/isolinux.template.cfg`, echo)
+         await exec(`cp -r ${buster}/isolinux/stdmenu.template.cfg ${dest}/isolinux/stdmenu.template.cfg`, echo)
+
+         await exec(`cp -r ${buster}/calamares/calamares-modules/remove-link ${dest}/calamares/calamares-modules/remove-link`, echo)
+         await exec(`cp -r ${buster}/calamares/calamares-modules/sources-yolk ${dest}/calamares/calamares-modules/sources-yolk`, echo)
+         await exec(`cp -r ${buster}/calamares/calamares-modules/sources-yolk-unmount ${dest}/calamares/calamares-modules/sources-yolk-unmount`, echo)
+         await exec(`cp -r ${buster}/calamares/modules/packages.yml ${dest}/calamares/modules/packages.yml`, echo)
+         await exec(`cp -r ${buster}/calamares/modules/removeuser.yml ${dest}/calamares/modules/removeuser.yml`, echo)
+         await exec(`cp -r ${buster}/calamares/modules/unpackfs.yml ${dest}/calamares/modules/unpackfs.yml`, echo)
+         await exec(`cp -r ${buster}/calamares/modules/displaymanager.yml ${dest}/calamares/modules/displaymanager.yml`, echo)
 
          /**
           * Ubuntu 21.04 hirsute: eredita da focal e buster
@@ -630,18 +615,20 @@ export default class Pacman {
       } else if (this.distro().versionLike === 'hirsute') {
          const dest = `/etc/penguins-eggs.d/distros/hirsute`
          const focal = `${rootPen}/conf/distros/focal`
-         await exec(`cp -r ${focal} ${dest}`)
+         await exec(`cp -r ${focal} ${dest}`, echo)
 
-         await exec(`cp -r ${buster}/grub/loopback.cfg ${dest}/grub/loopback.cfg`)
-         await exec(`cp -r ${buster}/isolinux/grub/theme.cfg ${dest}/isolinux/grub/theme.cfg`)
-         await exec(`cp -r ${buster}/isolinux/isolinux.template.cfg ${dest}/isolinux/isolinux.template.cfg`)
-         await exec(`cp -r ${buster}/calamares/calamares-modules/remove-link ${dest}/calamares/calamares-modules/remove-link`)
-         await exec(`cp -r ${buster}/calamares/calamares-modules/sources-yolk ${dest}/calamares/calamares-modules/sources-yolk`)
-         await exec(`cp -r ${buster}/calamares/calamares-modules/sources-yolk-unmount ${dest}/calamares/calamares-modules/sources-yolk-unmount`)
-         await exec(`cp -r ${buster}/calamares/modules/packages.yml ${dest}/calamares/modules/packages.yml`)
-         await exec(`cp -r ${buster}/calamares/modules/removeuser.yml ${dest}/calamares/modules/removeuser.yml`)
-         await exec(`cp -r ${buster}/calamares/modules/unpackfs.yml ${dest}/calamares/modules/unpackfs.yml`)
-         await exec(`cp -r ${buster}/calamares/modules/displaymanager.yml ${dest}/calamares/modules/displaymanager.yml`)
+         await exec(`cp -r ${buster}/grub/loopback.cfg ${dest}/grub/loopback.cfg`, echo)
+         await exec(`cp -r ${buster}/grub/theme.cfg ${dest}/grub/theme.cfg`, echo)
+         await exec(`cp -r ${buster}/isolinux/isolinux.template.cfg ${dest}/isolinux/isolinux.template.cfg`, echo)
+         await exec(`cp -r ${buster}/isolinux/stdmenu.template.cfg ${dest}/isolinux/stdmenu.template.cfg`, echo)
+
+         await exec(`cp -r ${buster}/calamares/calamares-modules/remove-link ${dest}/calamares/calamares-modules/remove-link`, echo)
+         await exec(`cp -r ${buster}/calamares/calamares-modules/sources-yolk ${dest}/calamares/calamares-modules/sources-yolk`, echo)
+         await exec(`cp -r ${buster}/calamares/calamares-modules/sources-yolk-unmount ${dest}/calamares/calamares-modules/sources-yolk-unmount`, echo)
+         await exec(`cp -r ${buster}/calamares/modules/packages.yml ${dest}/calamares/modules/packages.yml`, echo)
+         await exec(`cp -r ${buster}/calamares/modules/removeuser.yml ${dest}/calamares/modules/removeuser.yml`, echo)
+         await exec(`cp -r ${buster}/calamares/modules/unpackfs.yml ${dest}/calamares/modules/unpackfs.yml`, echo)
+         await exec(`cp -r ${buster}/calamares/modules/displaymanager.yml ${dest}/calamares/modules/displaymanager.yml`, echo)
 
          /**
           * Ubuntu 21.10 impish: eredita da focal e buster
@@ -649,18 +636,20 @@ export default class Pacman {
       } else if (this.distro().versionLike === 'impish') {
          const dest = `/etc/penguins-eggs.d/distros/impish`
          const focal = `${rootPen}/conf/distros/focal`
-         await exec(`cp -r ${focal} ${dest}`)
+         await exec(`cp -r ${focal} ${dest}`, echo)
 
-         await exec(`cp -r ${buster}/grub/loopback.cfg ${dest}/grub/loopback.cfg`)
-         await exec(`cp -r ${buster}/isolinux/grub/theme.cfg ${dest}/isolinux/grub/theme.cfg`)
-         await exec(`cp -r ${buster}/isolinux/isolinux.template.cfg ${dest}/isolinux/isolinux.template.cfg`)
-         await exec(`cp -r ${buster}/calamares/calamares-modules/remove-link ${dest}/calamares/calamares-modules/remove-link`)
-         await exec(`cp -r ${buster}/calamares/calamares-modules/sources-yolk ${dest}/calamares/calamares-modules/sources-yolk`)
-         await exec(`cp -r ${buster}/calamares/calamares-modules/sources-yolk-unmount ${dest}/calamares/calamares-modules/sources-yolk-unmount`)
-         await exec(`cp -r ${buster}/calamares/modules/packages.yml ${dest}/calamares/modules/packages.yml`)
-         await exec(`cp -r ${buster}/calamares/modules/removeuser.yml ${dest}/calamares/modules/removeuser.yml`)
-         await exec(`cp -r ${buster}/calamares/modules/unpackfs.yml ${dest}/calamares/modules/unpackfs.yml`)
-         await exec(`cp -r ${buster}/calamares/modules/displaymanager.yml ${dest}/calamares/modules/displaymanager.yml`)
+         await exec(`cp -r ${buster}/grub/loopback.cfg ${dest}/grub/loopback.cfg`, echo)
+         await exec(`cp -r ${buster}/grub/theme.cfg ${dest}/grub/theme.cfg`, echo)
+         await exec(`cp -r ${buster}/isolinux/isolinux.template.cfg ${dest}/isolinux/isolinux.template.cfg`, echo)
+         await exec(`cp -r ${buster}/isolinux/stdmenu.template.cfg ${dest}/isolinux/stdmenu.template.cfg`, echo)
+
+         await exec(`cp -r ${buster}/calamares/calamares-modules/remove-link ${dest}/calamares/calamares-modules/remove-link`, echo)
+         await exec(`cp -r ${buster}/calamares/calamares-modules/sources-yolk ${dest}/calamares/calamares-modules/sources-yolk`, echo)
+         await exec(`cp -r ${buster}/calamares/calamares-modules/sources-yolk-unmount ${dest}/calamares/calamares-modules/sources-yolk-unmount`, echo)
+         await exec(`cp -r ${buster}/calamares/modules/packages.yml ${dest}/calamares/modules/packages.yml`, echo)
+         await exec(`cp -r ${buster}/calamares/modules/removeuser.yml ${dest}/calamares/modules/removeuser.yml`, echo)
+         await exec(`cp -r ${buster}/calamares/modules/unpackfs.yml ${dest}/calamares/modules/unpackfs.yml`, echo)
+         await exec(`cp -r ${buster}/calamares/modules/displaymanager.yml ${dest}/calamares/modules/displaymanager.yml`, echo)
 
          /**
           * Ubuntu 22.04 jammy: eredita da focal e buster
@@ -668,18 +657,20 @@ export default class Pacman {
       } else if (this.distro().versionLike === 'jammy') {
          const dest = `/etc/penguins-eggs.d/distros/jammy`
          const focal = `${rootPen}/conf/distros/focal`
-         await exec(`cp -r ${focal} ${dest}`)
+         await exec(`cp -r ${focal} ${dest}`, echo)
 
-         await exec(`cp -r ${buster}/grub/loopback.cfg ${dest}/grub/loopback.cfg`)
-         await exec(`cp -r ${buster}/isolinux/grub/theme.cfg ${dest}/isolinux/grub/theme.cfg`)
-         await exec(`cp -r ${buster}/isolinux/isolinux.template.cfg ${dest}/isolinux/isolinux.template.cfg`)
-         await exec(`cp -r ${buster}/calamares/calamares-modules/remove-link ${dest}/calamares/calamares-modules/remove-link`)
-         await exec(`cp -r ${buster}/calamares/calamares-modules/sources-yolk ${dest}/calamares/calamares-modules/sources-yolk`)
-         await exec(`cp -r ${buster}/calamares/calamares-modules/sources-yolk-unmount ${dest}/calamares/calamares-modules/sources-yolk-unmount`)
-         await exec(`cp -r ${buster}/calamares/modules/packages.yml ${dest}/calamares/modules/packages.yml`)
-         await exec(`cp -r ${buster}/calamares/modules/removeuser.yml ${dest}/calamares/modules/removeuser.yml`)
-         await exec(`cp -r ${buster}/calamares/modules/unpackfs.yml ${dest}/calamares/modules/unpackfs.yml`)
-         await exec(`cp -r ${buster}/calamares/modules/displaymanager.yml ${dest}/calamares/modules/displaymanager.yml`)
+         await exec(`cp -r ${buster}/grub/loopback.cfg ${dest}/grub/loopback.cfg`, echo)
+         await exec(`cp -r ${buster}/grub/theme.cfg ${dest}/grub/theme.cfg`, echo)
+         await exec(`cp -r ${buster}/isolinux/isolinux.template.cfg ${dest}/isolinux/isolinux.template.cfg`, echo)
+         await exec(`cp -r ${buster}/isolinux/stdmenu.template.cfg ${dest}/isolinux/stdmenu.template.cfg`, echo)
+
+         await exec(`cp -r ${buster}/calamares/calamares-modules/remove-link ${dest}/calamares/calamares-modules/remove-link`, echo)
+         await exec(`cp -r ${buster}/calamares/calamares-modules/sources-yolk ${dest}/calamares/calamares-modules/sources-yolk`, echo)
+         await exec(`cp -r ${buster}/calamares/calamares-modules/sources-yolk-unmount ${dest}/calamares/calamares-modules/sources-yolk-unmount`, echo)
+         await exec(`cp -r ${buster}/calamares/modules/packages.yml ${dest}/calamares/modules/packages.yml`, echo)
+         await exec(`cp -r ${buster}/calamares/modules/removeuser.yml ${dest}/calamares/modules/removeuser.yml`, echo)
+         await exec(`cp -r ${buster}/calamares/modules/unpackfs.yml ${dest}/calamares/modules/unpackfs.yml`, echo)
+         await exec(`cp -r ${buster}/calamares/modules/displaymanager.yml ${dest}/calamares/modules/displaymanager.yml`, echo)
       }
    }
 

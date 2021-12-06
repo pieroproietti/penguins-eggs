@@ -2,7 +2,7 @@
 # eggs.yaml
 ---
 # version
-version: '8.*.*'
+version: '16.*.*'
 
 # You can change the location of 'snapshot_dir' (location of final iso file) 
 # in case you don't have enough space on the system. 
