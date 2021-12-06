@@ -22,6 +22,7 @@ const exec = require('../lib/utils').exec
 
 import Debian from './family/debian'
 import Archlinux from './family/archlinux'
+import Fedora from './family/fedora'
 
 const config_file = '/etc/penguins-eggs.d/eggs.yaml' as string
 const config_tools = '/etc/penguins-eggs.d/tools.yaml' as string
@@ -61,6 +62,10 @@ export default class Pacman {
          if (Archlinux.isInstalledXorg()) {
             installed = true
          }
+      } else if (this.distro().familyId === 'fedora') {
+         if (Fedora.isInstalledXorg()) {
+            installed = true
+         }
       }
 
       return installed
@@ -80,9 +85,34 @@ export default class Pacman {
          if (Archlinux.isInstalledWayland()) {
             installed = true
          }
+      } else if (this.distro().familyId === 'fedora') {
+         if (Fedora.isInstalledWayland()) {
+            installed = true
+         }
       }
       return installed
    }
+
+   /**
+    * Check se la macchina ha grub adatto ad efi
+    * Forse conviene spostarlo in pacman
+    */
+   static isUefi(): boolean {
+      let isUefi = false
+      if (Utils.machineArch() !== 'i386') {
+         if (this.distro().familyId === 'debian') {
+            if (this.packageIsInstalled('grub-efi-' + Utils.machineArch() + '-bin')) {
+               isUefi = true
+            }
+         } else if (Pacman.distro().familyId === 'archlinux') {
+            isUefi = true
+         } else if (Pacman.distro().familyId === 'fedora') {
+            isUefi = true
+         }
+      }
+      return isUefi
+   }
+
 
    /**
     * 
@@ -130,6 +160,8 @@ export default class Pacman {
          packages = Debian.packages(remove, verbose)
       } else if (this.distro().familyId === 'archlinux') {
          packages = Archlinux.packages(remove, verbose)
+      } else if (this.distro().familyId === 'fedora') {
+         packages = Fedora.packages(remove, verbose)
       }
       return packages
    }
@@ -157,9 +189,12 @@ export default class Pacman {
          retVal = await Debian.prerequisitesInstall(verbose)
       } else if (this.distro().familyId === 'archlinux') {
          retVal = await Archlinux.prerequisitesInstall(verbose)
+      } else if (this.distro().familyId === 'fedora') {
+         retVal = await Fedora.prerequisitesInstall(verbose)
       }
       return retVal
    }
+
 
    /**
     * Torna verso se calamares è installato
@@ -170,6 +205,8 @@ export default class Pacman {
          installed = await Debian.calamaresCheck()
       } else if (this.distro().familyId === 'archlinux') {
          installed = await Archlinux.calamaresCheck()
+      } else if (this.distro().familyId === 'fedora') {
+         installed = await Fedora.calamaresCheck()
       }
 
       return installed
@@ -179,8 +216,8 @@ export default class Pacman {
     * Controlla se calamares è installabile
     * @returns 
     */
-   static calamaresAble(): boolean {
-      let result = this.distro().calamaresAble
+   static isCalamaresAvailable(): boolean {
+      let result = this.distro().isCalamaresAvailable
       if (process.arch === 'armel' || process.arch === 'arm64') {
          result = false
       }
@@ -196,6 +233,8 @@ export default class Pacman {
             Debian.calamaresInstall(verbose)
          } else if (this.distro().familyId === 'archlinux') {
             Archlinux.calamaresInstall(verbose)
+         } else if (this.distro().familyId === 'fedora') {
+            Fedora.calamaresInstall(verbose)
          }
       }
    }
@@ -206,6 +245,10 @@ export default class Pacman {
    static async calamaresPolicies() {
       if (this.distro().familyId === 'debian') {
          await Debian.calamaresPolicies()
+      } else if (this.distro().familyId === 'archlinux') {
+         await Archlinux.calamaresPolicies()
+      } else if (this.distro().familyId === 'fedora') {
+         await Fedora.calamaresPolicies()
       }
    }
 
@@ -216,6 +259,10 @@ export default class Pacman {
       let retVal = false
       if (this.distro().familyId === 'debian') {
          retVal = await Debian.calamaresRemove(verbose)
+      } else if (this.distro().familyId === 'archlinux') {
+         retVal = await Archlinux.calamaresRemove(verbose)
+      } else if (this.distro().familyId === 'fedora') {
+         retVal = await Fedora.calamaresRemove(verbose)
       }
       return retVal
    }
@@ -285,7 +332,7 @@ export default class Pacman {
          console.log(`Due the lacks of calamares package set force_installer = false`)
       }
 
-      if (!Utils.isUefi()) {
+      if (!Pacman.isUefi()) {
          config.make_efi = false
          console.log('Due the lacks of grub-efi-' + Utils.machineArch() + '-bin package set make_efi = false')
       }
@@ -588,6 +635,8 @@ export default class Pacman {
          installed = Debian.packageIsInstalled(packageName)
       } else if (this.distro().familyId === 'archlinux') {
          installed = Archlinux.packageIsInstalled(packageName)
+      } else if (this.distro().familyId === 'fedora') {
+         installed = Fedora.packageIsInstalled(packageName)
       }
       return installed
    }
@@ -649,6 +698,10 @@ export default class Pacman {
 
       if (this.distro().familyId === 'debian') {
          retVal = await Debian.packageInstall(packageName)
+      } else if (this.distro().familyId === 'archlinux') {
+         retVal = await Archlinux.packageInstall(packageName)
+      } else if (this.distro().familyId === 'fedora') {
+         retVal = await Fedora.packageInstall(packageName)
       }
       return retVal
    }

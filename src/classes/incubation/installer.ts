@@ -31,11 +31,11 @@ export function installer(): IInstaller {
    installer.multiarchModules = installer.multiarch + 'modules/'
 
    /**
-    * i template nelle versioni calamaresAble sono QUELLI di calamares
+    * i template nelle versioni isCalamaresAvailable sono QUELLI di calamares
     */
    const remix = {} as IRemix
    const distro = new Distro(remix)
-   if (distro.calamaresAble) {
+   if (distro.isCalamaresAvailable) {
       installer.template = '/etc/penguins-eggs.d/distros/' + distro.versionLike + '/calamares/'
       installer.templateModules = installer.template + 'modules/'
       installer.templateMultiarch = installer.template + 'calamares-modules/'

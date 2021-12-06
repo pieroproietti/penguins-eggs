@@ -91,11 +91,11 @@ export default class Config extends Command {
         i.distroTemplate = !Pacman.distroTemplateCheck()
 
         if (Utils.machineArch() !== 'i386') {
-            i.efi = (!Utils.isUefi())
+            i.efi = (!Pacman.isUefi())
         }
 
         if (!await Pacman.calamaresCheck() && (Pacman.isInstalledGui())) {
-            if (Pacman.calamaresAble()) {
+            if (Pacman.isCalamaresAvailable()) {
                 Utils.warning('config: you are on a graphic system, I suggest to install the GUI installer calamares')
                 if (nointeractive) {
                     i.calamares = true
@@ -242,7 +242,7 @@ export default class Config extends Command {
         }
 
         if (i.calamares) {
-            if (Pacman.calamaresAble()) {
+            if (Pacman.isCalamaresAvailable()) {
                 if (nointeractive) {
                     Utils.error('config: you are on a graphic system, I suggest to install the GUI installer calamares')
                     Utils.warning('I suggest You to install calamares GUI installer before to produce your ISO.\nJust write:\n    sudo eggs calamares --install')

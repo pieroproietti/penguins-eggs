@@ -123,7 +123,7 @@ export default class Settings {
          this.config.snapshot_basename = os.hostname()
       }
       if (this.config.make_efi) {
-         if (!Utils.isUefi()) {
+         if (!Pacman.isUefi()) {
             Utils.error('You choose to create an UEFI image, but miss to install grub-efi-amd64-bin package.')
             Utils.error('Please install it before to create an UEFI image:')
             Utils.warning('sudo apt install grub-efi-amd64-bin')
@@ -201,7 +201,7 @@ export default class Settings {
       console.log(`locale default:    ${this.config.locales_default}`)
       //console.log(`ssh_pass:          ${this.config.ssh_pass}`)
       if (this.config.make_efi) {
-         if (!Utils.isUefi()) {
+         if (!Pacman.isUefi()) {
             Utils.error('You choose to create an UEFI image, but miss to install grub-efi-amd64-bin package.')
             Utils.error('Please install it before to create an UEFI image:')
             Utils.warning('sudo apt install grub-efi-amd64-bin')
