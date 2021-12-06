@@ -27,15 +27,15 @@ export default class Debian {
      * @returns true if xorg is installed
      */
     static isInstalledXorg(): boolean {
-        /**
-         * in ubuntu bionic we have xorg-xserver-core-18.04
-         * in the place of xorg-xserver-core
-         */
-        let xserver = 'xserver-xorg-core'
+        let test = 'xserver-xorg-core'
         if (Pacman.distro().versionId === 'bionic') {
-            xserver = 'xorg-xserver-core-18.04'
+            /**
+             * BUT_ on Ubuntu bionic we have:
+             * xserver-xorg-core-hwe-18.04
+             */
+            test = 'xserver-xorg-core-hwe-18.04'
         }
-        return this.packageIsInstalled(xserver)
+        return this.packageIsInstalled(test)
     }
 
     /**
