@@ -157,22 +157,24 @@ export async function addIssue(distro: string, version: string, user: string, us
  * @param path 
  */
 export async function msgRemove(path: string) {
-    let rows = fs.readFileSync(path, 'utf-8').split('\n')
-    let cleaned = ''
+    if (fs.existsSync(path)) {
+        let rows = fs.readFileSync(path, 'utf-8').split('\n')
+        let cleaned = ''
 
-    let remove = false
-    for (let i = 0; i < rows.length; i++) {
-        if (rows[i].includes(startMessage)) {
-            remove = true
-        }
-        if (!remove) {
-            if (rows[i] !== '') {
-                cleaned += rows[i] + '\n'
+        let remove = false
+        for (let i = 0; i < rows.length; i++) {
+            if (rows[i].includes(startMessage)) {
+                remove = true
+            }
+            if (!remove) {
+                if (rows[i] !== '') {
+                    cleaned += rows[i] + '\n'
+                }
+            }
+            if (rows[i].includes(stopMessage)) {
+                remove = false
             }
         }
-        if (rows[i].includes(stopMessage)) {
-            remove = false
-        }
+        fs.writeFileSync(path, cleaned, 'utf-8')
     }
-    fs.writeFileSync(path, cleaned, 'utf-8')
 }
