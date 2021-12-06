@@ -127,7 +127,6 @@ export default class Pacman {
     */
    static isRunningXorg(): boolean {
       return process.env.XDG_SESSION_TYPE === 'x11'
-
    }
 
    /**
@@ -230,11 +229,11 @@ export default class Pacman {
    static async calamaresInstall(verbose = true): Promise<void> {
       if (this.isInstalledGui()) {
          if (this.distro().familyId === 'debian') {
-            Debian.calamaresInstall(verbose)
+            await Debian.calamaresInstall(verbose)
          } else if (this.distro().familyId === 'archlinux') {
-            Archlinux.calamaresInstall(verbose)
+            await Archlinux.calamaresInstall(verbose)
          } else if (this.distro().familyId === 'fedora') {
-            Fedora.calamaresInstall(verbose)
+            await Fedora.calamaresInstall(verbose)
          }
       }
    }
@@ -552,12 +551,19 @@ export default class Pacman {
       } else if (this.distro().versionLike === 'bionic') {
          const dest = `/etc/penguins-eggs.d/distros/bionic`
 
-         const bionic = `${rootPen}/conf/distros/bionic`
+         const bionic = `${rootPen}/conf/distros/bionic/*`
          await exec(`cp -r ${bionic} ${dest}`, echo)
 
-         const focal = `${rootPen}/conf/distros/focal`
+         // Prendo prima da focal
+         const focal = `${rootPen}/conf/distros/focal/`
          await exec(`cp -r ${focal}/grub ${dest}/grub`, echo)
          await exec(`cp -r ${focal}/isolinux ${dest}/isolinux`, echo)
+
+         // Poi da buster
+         await exec(`cp -r ${buster}/grub/loopback.cfg ${dest}/grub/loopback.cfg`, echo)
+         await exec(`cp -r ${buster}/grub/theme.cfg ${dest}/grub/theme.cfg`, echo)
+         await exec(`cp -r ${buster}/isolinux/isolinux.template.cfg ${dest}/isolinux/isolinux.template.cfg`, echo)
+         await exec(`cp -r ${buster}/isolinux/stdmenu.template.cfg ${dest}/isolinux/stdmenu.template.cfg`, echo)
 
          await exec(`cp -r ${buster}/calamares/calamares-modules/remove-link ${dest}/calamares/calamares-modules/remove-link`, echo)
          await exec(`cp -r ${buster}/calamares/calamares-modules/sources-yolk ${dest}/calamares/calamares-modules/sources-yolk`, echo)
@@ -593,7 +599,7 @@ export default class Pacman {
           */
       } else if (this.distro().versionLike === 'groovy') {
          const dest = `/etc/penguins-eggs.d/distros/groovy`
-         const focal = `${rootPen}/conf/distros/focal`
+         const focal = `${rootPen}/conf/distros/focal/*`
          await exec(`cp -r ${focal} ${dest}`, echo)
 
          await exec(`cp -r ${buster}/grub/loopback.cfg ${dest}/grub/loopback.cfg`, echo)
@@ -614,7 +620,7 @@ export default class Pacman {
           */
       } else if (this.distro().versionLike === 'hirsute') {
          const dest = `/etc/penguins-eggs.d/distros/hirsute`
-         const focal = `${rootPen}/conf/distros/focal`
+         const focal = `${rootPen}/conf/distros/focal/*`
          await exec(`cp -r ${focal} ${dest}`, echo)
 
          await exec(`cp -r ${buster}/grub/loopback.cfg ${dest}/grub/loopback.cfg`, echo)
@@ -635,7 +641,7 @@ export default class Pacman {
           */
       } else if (this.distro().versionLike === 'impish') {
          const dest = `/etc/penguins-eggs.d/distros/impish`
-         const focal = `${rootPen}/conf/distros/focal`
+         const focal = `${rootPen}/conf/distros/focal/*`
          await exec(`cp -r ${focal} ${dest}`, echo)
 
          await exec(`cp -r ${buster}/grub/loopback.cfg ${dest}/grub/loopback.cfg`, echo)
@@ -656,7 +662,7 @@ export default class Pacman {
           */
       } else if (this.distro().versionLike === 'jammy') {
          const dest = `/etc/penguins-eggs.d/distros/jammy`
-         const focal = `${rootPen}/conf/distros/focal`
+         const focal = `${rootPen}/conf/distros/focal/*`
          await exec(`cp -r ${focal} ${dest}`, echo)
 
          await exec(`cp -r ${buster}/grub/loopback.cfg ${dest}/grub/loopback.cfg`, echo)
