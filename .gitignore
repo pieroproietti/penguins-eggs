@@ -38,3 +38,5 @@ perrisbrewery/workdir/*
 manpages/doc/man/eggs.1.gz
 pb.yaml
 vendors/
+# initramfs generated
+*-eggs.img
