@@ -176,6 +176,8 @@ export default class Ovary {
          if (this.settings.config.make_efi) {
             if (Pacman.distro().familyId === 'debian') {
                await this.makeEfi(this.theme, verbose)
+            } else if (Pacman.distro().familyId === 'archlinux') {
+               await this.makeEfi(this.theme, verbose)
             }
          }
 
@@ -579,11 +581,11 @@ export default class Ovary {
          console.log('ovary: syslinux')
          console.log('syslinux path: ' + this.settings.distro.syslinuxPath)
       }
-      await exec('rsync -a ' + this.settings.distro.syslinuxPath + 'vesamenu.c32' + ' ' + this.settings.work_dir.pathIso + 'isolinux/', echo)
-      await exec('rsync -a ' + this.settings.distro.syslinuxPath + 'chain.c32' + ' ' + this.settings.work_dir.pathIso + 'isolinux/', echo)
-      await exec('rsync -a ' + this.settings.distro.syslinuxPath + 'ldlinux.c32' + ' ' + this.settings.work_dir.pathIso + 'isolinux/', echo)
-      await exec('rsync -a ' + this.settings.distro.syslinuxPath + 'libcom32.c32' + ' ' + this.settings.work_dir.pathIso + 'isolinux/', echo)
-      await exec('rsync -a ' + this.settings.distro.syslinuxPath + 'libutil.c32' + ' ' + this.settings.work_dir.pathIso + 'isolinux/', echo)
+      await exec(`cp ${this.settings.distro.syslinuxPath}/vesamenu.c32 ${this.settings.work_dir.pathIso}/isolinux/`, echo)
+      await exec(`cp ${this.settings.distro.syslinuxPath}/chain.c32 ${this.settings.work_dir.pathIso}/isolinux/`, echo)
+      await exec(`cp ${this.settings.distro.syslinuxPath}/ldlinux.c32 ${this.settings.work_dir.pathIso}/isolinux/`, echo)
+      await exec(`cp ${this.settings.distro.syslinuxPath}/libcom32.c32 ${this.settings.work_dir.pathIso}/isolinux/`, echo)
+      await exec(`cp ${this.settings.distro.syslinuxPath}/libutil.c32 ${this.settings.work_dir.pathIso}/isolinux/`, echo)
    }
 
    /**
@@ -595,11 +597,9 @@ export default class Ovary {
          console.log('ovary: isolinux')
       }
 
-      await exec('rsync -a ' + this.settings.distro.isolinuxPath + 'isolinux.bin' + ' ' + this.settings.work_dir.pathIso + 'isolinux/', echo)
-      //fs.copyFileSync(path.resolve(__dirname, '../../conf/distros/' + this.settings.distro.versionLike + '/' + 'isolinux/isolinux.template.cfg'), this.settings.work_dir.pathIso + 'isolinux/isolinux.cfg')
-      fs.copyFileSync(path.resolve('/etc/penguins-eggs.d/distros/' + this.settings.distro.versionLike + '/' + 'isolinux/isolinux.template.cfg'), this.settings.work_dir.pathIso + 'isolinux/isolinux.cfg')
-      //fs.copyFileSync(path.resolve(__dirname, '../../conf/distros/' + this.settings.distro.versionLike + '/' + 'isolinux/stdmenu.template.cfg'), this.settings.work_dir.pathIso + 'isolinux/stdmenu.cfg')
-      fs.copyFileSync(path.resolve('/etc/penguins-eggs.d/distros/' + this.settings.distro.versionLike + '/' + 'isolinux/stdmenu.template.cfg'), this.settings.work_dir.pathIso + 'isolinux/stdmenu.cfg')
+      await exec(`cp ${this.settings.distro.isolinuxPath}/isolinux.bin ${this.settings.work_dir.pathIso}/isolinux/`, echo)
+      await exec(`cp /etc/penguins-eggs.d/distros/${this.settings.distro.versionLike}/isolinux/isolinux.template.cfg ${this.settings.work_dir.pathIso}/isolinux/isolinux.cfg`, echo)
+      await exec(`cp /etc/penguins-eggs.d/distros/${this.settings.distro.versionLike}/isolinux/stdmenu.template.cfg ${this.settings.work_dir.pathIso}/isolinux/stdmenu.cfg`, echo)
       const menuDest = this.settings.work_dir.pathIso + 'isolinux/menu.cfg'
       const splashDest = this.settings.work_dir.pathIso + 'isolinux/splash.png'
 
