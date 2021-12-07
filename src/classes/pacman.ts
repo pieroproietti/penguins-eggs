@@ -101,7 +101,7 @@ export default class Pacman {
       let isUefi = false
       if (this.distro().familyId === 'debian') {
          if ((Utils.machineArch() !== 'i386') && (this.packageIsInstalled('grub-efi-' + Utils.machineArch() + '-bin'))) {
-               isUefi = true
+            isUefi = true
          }
       } else if (Pacman.distro().familyId === 'archlinux') {
          isUefi = true
@@ -675,6 +675,18 @@ export default class Pacman {
          await exec(`cp -r ${buster}/calamares/modules/removeuser.yml ${dest}/calamares/modules/removeuser.yml`, echo)
          await exec(`cp -r ${buster}/calamares/modules/unpackfs.yml ${dest}/calamares/modules/unpackfs.yml`, echo)
          await exec(`cp -r ${buster}/calamares/modules/displaymanager.yml ${dest}/calamares/modules/displaymanager.yml`, echo)
+
+         /***********************************************************************************
+         * Fedora
+         **********************************************************************************/
+
+         /**
+          * Fedora 35 ThirtyFive: eredita da ThirtyFive
+          */
+      } else if (this.distro().versionLike === 'thirtyfive') {
+         const dest = `/etc/penguins-eggs.d/distros/thirtyfive/`
+         const thirtytive = `${rootPen}/conf/distros/thirtyfive/*`
+         await exec(`cp -r ${thirtytive} ${dest}`, echo)
       }
    }
 

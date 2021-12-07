@@ -267,10 +267,10 @@ class Distro implements IDistro {
          /**
           * Fedora
           */
-      } else if (this.distroId === 'Fedora') {
+      } else if (this.versionId === 'ThirtyFive') {
          this.familyId = "fedora"
          this.distroLike = 'Fedora'
-         this.versionLike = 'ThirtyFive'
+         this.versionLike = 'thirtyfive'
       } else {
          
          /**
