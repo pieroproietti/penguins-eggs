@@ -2,9 +2,9 @@
 # Configuration file for Calamares
 # Syntax is YAML 1.2
 ---
-modules-search:
-  - local
-  - /usr/lib/calamares/modules/
+# "local" is LIBDIR/calamares/modules with settings in SHARE/calamares/modules
+modules-search: [local, /usr/lib/calamares/modules]
+
 sequence:
   - show:
       - welcome
