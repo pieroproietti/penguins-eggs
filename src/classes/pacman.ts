@@ -99,16 +99,14 @@ export default class Pacman {
     */
    static isUefi(): boolean {
       let isUefi = false
-      if (Utils.machineArch() !== 'i386') {
-         if (this.distro().familyId === 'debian') {
-            if (this.packageIsInstalled('grub-efi-' + Utils.machineArch() + '-bin')) {
+      if (this.distro().familyId === 'debian') {
+         if ((Utils.machineArch() !== 'i386') && (this.packageIsInstalled('grub-efi-' + Utils.machineArch() + '-bin'))) {
                isUefi = true
-            }
-         } else if (Pacman.distro().familyId === 'archlinux') {
-            isUefi = true
-         } else if (Pacman.distro().familyId === 'fedora') {
-            isUefi = true
          }
+      } else if (Pacman.distro().familyId === 'archlinux') {
+         isUefi = true
+      } else if (Pacman.distro().familyId === 'fedora') {
+         isUefi = true
       }
       return isUefi
    }
@@ -585,7 +583,7 @@ export default class Pacman {
          await exec(`cp -r ${buster}/grub/theme.cfg ${dest}/grub/theme.cfg`, echo)
          await exec(`cp -r ${buster}/isolinux/isolinux.template.cfg ${dest}/isolinux/isolinux.template.cfg`, echo)
          await exec(`cp -r ${buster}/isolinux/stdmenu.template.cfg ${dest}/isolinux/stdmenu.template.cfg`, echo)
-         
+
          await exec(`cp -r ${buster}/calamares/calamares-modules/remove-link ${dest}/calamares/calamares-modules/remove-link`, echo)
          await exec(`cp -r ${buster}/calamares/calamares-modules/sources-yolk ${dest}/calamares/calamares-modules/sources-yolk`, echo)
          await exec(`cp -r ${buster}/calamares/calamares-modules/sources-yolk-unmount ${dest}/calamares/calamares-modules/sources-yolk-unmount`, echo)
