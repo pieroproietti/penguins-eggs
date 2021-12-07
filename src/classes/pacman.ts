@@ -683,10 +683,22 @@ export default class Pacman {
          /**
           * Fedora 35 ThirtyFive: eredita da ThirtyFive
           */
-      } else if (this.distro().versionLike === 'thirtyfive') {
+       } else if (this.distro().versionLike === 'thirtyfive') {
          const dest = `/etc/penguins-eggs.d/distros/thirtyfive/`
          const thirtytive = `${rootPen}/conf/distros/thirtyfive/*`
          await exec(`cp -r ${thirtytive} ${dest}`, echo)
+
+         /***********************************************************************************
+         * Arch Linux
+         **********************************************************************************/
+
+         /**
+          * Endeavour rolling: eredita da rolling
+          */
+       } else if (this.distro().versionLike === 'rolling') {
+         const dest = `/etc/penguins-eggs.d/distros/rolling/`
+         const rolling = `${rootPen}/conf/distros/rolling/*`
+         await exec(`cp -r ${rolling} ${dest}`, echo)
       }
    }
 
