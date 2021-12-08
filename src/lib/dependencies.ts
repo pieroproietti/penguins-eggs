@@ -5,7 +5,6 @@
 * depInit
 */
 
-
 /**
  *
  * @param packages array packages
@@ -47,8 +46,9 @@ export const depCommon = [
    'dosfstools',
    'dpkg-dev', // occorre per creare la repository yolk
    'isolinux',
-   'live-boot',
-   'live-boot-initramfs-tools',
+//   'live-boot',
+//   'live-boot-initramfs-tools',
+   'dracut',
    'parted',
    'rsync',
    'squashfs-tools',
