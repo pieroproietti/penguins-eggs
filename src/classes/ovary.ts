@@ -1088,8 +1088,9 @@ export default class Ovary {
       /**
        * Cambio passwd su root in chroot
        */
-      cmds.push(await rexec(`chroot ${this.settings.work_dir.merged} echo root:${this.settings.config.root_passwd} | chroot ${this.settings.work_dir.merged} chpasswd `, verbose))
-      // Utils.writeXs(`${this.settings.work_dir.path}create_user_live`, cmds)
+      if (Pacman.distro().familyId !== 'fedora'){
+         cmds.push(await rexec(`chroot ${this.settings.work_dir.merged} echo root:${this.settings.config.root_passwd} | chroot ${this.settings.work_dir.merged} chpasswd `, verbose))
+      }
    }
 
    /**
@@ -1629,9 +1630,6 @@ async function makeIfNotExist(path: string, verbose = false): Promise<string> {
  * @param echo
  */
 async function rexec(cmd: string, verbose = false): Promise<string> {
-   if (verbose) {
-      console.log(cmd)
-   }
    const echo = Utils.setEcho(verbose)
 
    await exec(cmd, echo)
