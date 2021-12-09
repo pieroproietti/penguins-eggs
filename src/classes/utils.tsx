@@ -255,11 +255,14 @@ unknown target format aarch64-efi
       // grub-mkimage vuole: i386-efi, x86_64-efi, arm-efi, arm64-efi,
       let machineArch = this.machineArch()
       if (machineArch === 'amd64') {
-         machineArch = 'x86_64'
+         machineArch = 'x86_64-efi'
       } else if (machineArch === 'armel') {
-         machineArch = 'arm'
+         machineArch = 'arm-efi'
       }
-      return machineArch + '-efi'
+      if (Pacman.distro().familyId === 'fedora') {
+         machineArch = 'i386-pc'
+      }
+      return machineArch
    }
 
    /**

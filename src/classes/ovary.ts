@@ -174,11 +174,7 @@ export default class Ovary {
 
          await this.copyKernel(verbose)
          if (this.settings.config.make_efi) {
-            if (Pacman.distro().familyId === 'debian') {
-               await this.makeEfi(this.theme, verbose)
-            } else if (Pacman.distro().familyId === 'archlinux') {
-               await this.makeEfi(this.theme, verbose)
-            }
+            await this.makeEfi(this.theme, verbose)
          }
 
          await this.bindLiveFs(verbose)
@@ -1076,21 +1072,19 @@ export default class Ovary {
       cmds.push(await rexec('chroot ' + this.settings.work_dir.merged + ' rm /home/' + this.settings.config.user_opt + ' -rf', verbose))
       cmds.push(await rexec('chroot ' + this.settings.work_dir.merged + ' mkdir /home/' + this.settings.config.user_opt, verbose))
       cmds.push(await rexec('chroot ' + this.settings.work_dir.merged + ' useradd ' + this.settings.config.user_opt + ' --home-dir /home/' + this.settings.config.user_opt + ' --shell /bin/bash ', verbose))
-      cmds.push(await rexec('chroot ' + this.settings.work_dir.merged + ' echo ' + this.settings.config.user_opt + ':' + this.settings.config.user_opt_passwd + '| chroot ' + this.settings.work_dir.merged + ' chpasswd', verbose))
+      // cmds.push(await rexec('chroot ' + this.settings.work_dir.merged + ' echo ' + this.settings.config.user_opt + ':' + this.settings.config.user_opt_passwd + '| chroot ' + this.settings.work_dir.merged + ' chpasswd', verbose))
       cmds.push(await rexec('chroot  ' + this.settings.work_dir.merged + ' cp /etc/skel/. /home/' + this.settings.config.user_opt + ' -R', verbose))
       cmds.push(await rexec('chroot  ' + this.settings.work_dir.merged + ' chown ' + this.settings.config.user_opt + ':' + this.settings.config.user_opt + ' /home/' + this.settings.config.user_opt + ' -R', verbose))
       if (Pacman.distro().familyId === 'debian') {
          cmds.push(await rexec(`chroot ${this.settings.work_dir.merged} usermod -aG sudo ${this.settings.config.user_opt}`, verbose))
-      } else if (Pacman.distro().familyId === 'archlinux') {
+      } else if ((Pacman.distro().familyId === 'fedora') || (Pacman.distro().familyId === 'archlinux')) {
          cmds.push(await rexec(`chroot ${this.settings.work_dir.merged} usermod -aG wheel ${this.settings.config.user_opt}`, verbose))
       }
 
       /**
-       * Cambio passwd su root in chroot
+       * Cambio passwd root
        */
-      if (Pacman.distro().familyId !== 'fedora'){
-         cmds.push(await rexec(`chroot ${this.settings.work_dir.merged} echo root:${this.settings.config.root_passwd} | chroot ${this.settings.work_dir.merged} chpasswd `, verbose))
-      }
+      // cmds.push(await rexec(`chroot ${this.settings.work_dir.merged} echo root:${this.settings.config.root_passwd} | chroot ${this.settings.work_dir.merged} chpasswd `, verbose))
    }
 
    /**
@@ -1264,7 +1258,7 @@ export default class Ovary {
             grubInstalled = true
          }
       }
-      
+
       if (!grubInstalled) {
          Utils.error(`something went wrong! Cannot find package grub-common.`)
          Utils.warning('Problably your system boot with rEFInd or others, to generate a UEFI image we need grub too')
@@ -1341,8 +1335,11 @@ export default class Ovary {
       await exec('tar -cvf memdisk boot', echo)
 
       // make the grub image
-      await exec(`grub-mkimage -O ${Utils.machineUEFI()} -m memdisk -o bootx64.efi -p '(memdisk)/boot/grub' search iso9660 configfile normal memdisk tar cat part_msdos part_gpt fat ext2 ntfs ntfscomp hfsplus chain boot linux`, echo)
-
+      let grubMkImage = 'grub-mkimage '
+      if (Pacman.distro().familyId === 'fedora') {
+         grubMkImage = 'grub2-mkimage '
+      }
+      await exec(`${grubMkImage} -O ${Utils.machineUEFI()} -m memdisk -o bootx64.efi -p '(memdisk)/boot/grub' search iso9660 configfile normal memdisk tar cat part_msdos part_gpt fat ext2 ntfs ntfscomp hfsplus chain boot linux`, echo)
       // pospd (torna a efi_work)
       process.chdir(this.settings.efi_work)
 
@@ -1438,7 +1435,7 @@ export default class Ovary {
     * create .disk/info, .disk/mksquashfs, .disk/mkiso
     * return mkiso
     */
-   makeDotDisk(backup = false, verbose = false) : string {
+   makeDotDisk(backup = false, verbose = false): string {
       const dotDisk = this.settings.work_dir.pathIso + '/.disk'
       if (fs.existsSync(dotDisk)) {
          shx.rm('-rf', dotDisk)
@@ -1481,16 +1478,16 @@ export default class Ovary {
     * 
     * @param backup 
     * @returns cmd 4 mkiso
-    */ 
-    xorrisoCommand(backup = false): string {
+    */
+   xorrisoCommand(backup = false): string {
       let command = ''
       const prefix = Utils.getPrefix(this.settings.config.snapshot_prefix, backup)
       const volid = Utils.getVolid(this.settings.remix.name)
       const postfix = Utils.getPostfix()
       this.settings.isoFilename = prefix + volid + postfix
       const output = this.settings.config.snapshot_dir + this.settings.isoFilename
-      const distro =  Pacman.distro()
-      const appid =`-appid "${distro.distroId}" `
+      const distro = Pacman.distro()
+      const appid = `-appid "${distro.distroId}" `
       const publisher = `-publisher "${distro.distroId}/${distro.versionId}" `
       const preparer = `-preparer "prepared by eggs <https://penguins-eggs.net>" `
 
@@ -1536,6 +1533,27 @@ export default class Ovary {
          -output ${output} \
          ${this.settings.work_dir.pathIso}`
 
+      } else if (distro.familyId === 'fedora') {
+         command = `xorriso -as mkisofs \
+         -volid ${volid} \
+         -full-iso9660-filenames \
+         -joliet \
+         -joliet-long \
+         -iso-level 3 \
+         -rational-rock \
+         ${appid} \
+         ${publisher} \
+         ${preparer} \
+         -isohybrid-mbr /usr/share/syslinux/isohdpfx.bin
+         -eltorito-boot isolinux/isolinux.bin \
+         -no-emul-boot \
+         -boot-load-size 4 \
+         -boot-info-table \
+         -eltorito-alt-boot -e boot/grub/efiboot.img \
+         -isohybrid-gpt-basdat
+         -no-emul-boot \
+         -output ${output} \
+         ${this.settings.work_dir.pathIso}`
       } else if (distro.familyId === 'archlinux') {
          command = `xorriso -as mkisofs \
          -volid ${volid} \
