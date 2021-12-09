@@ -24,7 +24,7 @@ export default class Fedora {
      * @returns true if xorg is installed
      */
     static isInstalledXorg(): boolean {
-        return this.packageIsInstalled('xorg-x11-server-Xorg*')
+        return this.packageIsInstalled('xorg-x11-server-Xorg.x86_64')
     }
 
     /**
@@ -126,7 +126,10 @@ export default class Fedora {
     */
     static async calamaresPolicies() {
         const policyFile = '/usr/share/polkit-1/actions/com.github.calamares.calamares.policy'
-        await exec(`sed -i 's/auth_admin/yes/' ${policyFile}`)
+        /**
+         * Su fedora occorre vedere come fare!
+         */
+        // await exec(`sed -i 's/auth_admin/yes/' ${policyFile}`)
     }
 
     /**
