@@ -22,7 +22,7 @@ mount -o bind /run                     /sysroot/run
 mount -o bind /sys                     /sysroot/sys
 #mount -o bind /sys/fs/cgroup           /sysroot/sys/cgroup
 #mount -o bind /sys/fs/pstore           /sysroot/sys/pstore 
-mount -o bind /sys/fs/bpf              /sysroot/sys/bpf
+mount -o bind /sys/fs/bpf              /sysroot/sys/fs/bpf
 mount -o bind /sys/fs/fuse/connections /sysroot/sys/fs/fuse/connections
 mount -o bind /sys/fs/selinux          /sysroot/sys/fs/selinux
 mount -o bind /sys/kernel/debug        /sysroot/sys/kernel/debug
