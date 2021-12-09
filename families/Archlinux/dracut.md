@@ -23,6 +23,13 @@ Esiste, sempre in Debian ma non nelle altre, il pacchetto:
 dracut-live che dovrebbe adattare dracut alla creazione 
 di un initramfs.img capace di avviare una iso.
 
+# mount
+```/dev/sr0 /run/initramfs/live/medium```
+```/dev/sr0 /run/initramfs/live/```
+
+In Debian c'è un file in /etc/dracut.conf.d/10-debian.conf che pone hostonly=yes,
+il problema è che ponendolo a no, non riesco più a vedere /dev/sr0
+
 
 # altro
 Vedere se /etc/dracut.conf.d/ deve contenre menu.cfg
