@@ -113,7 +113,7 @@ $ npm install -g penguins-eggs
 $ eggs COMMAND
 running command...
 $ eggs (-v|--version|version)
-penguins-eggs/16.13.0 linux-x64 node-v16.13.0
+penguins-eggs/16.13.0 linux-x64 node-v16.11.1
 $ eggs --help [COMMAND]
 USAGE
   $ eggs COMMAND
@@ -160,8 +160,6 @@ OPTIONS
 ALIASES
   $ eggs adjust
 ```
-
-_See code: [lib/commands/adapt.js](https://github.com/pieroproietti/penguins-eggs/blob/v16.13.0/lib/commands/adapt.js)_
 
 ## `eggs autocomplete [SHELL]`
 
@@ -210,8 +208,6 @@ EXAMPLES
   install calamares and create it's configuration's files
 ```
 
-_See code: [lib/commands/calamares.js](https://github.com/pieroproietti/penguins-eggs/blob/v16.13.0/lib/commands/calamares.js)_
-
 ## `eggs config`
 
 Configure and install prerequisites deb packages to run it
@@ -234,8 +230,6 @@ EXAMPLE
   Configure and install prerequisites deb packages to run it
 ```
 
-_See code: [lib/commands/config.js](https://github.com/pieroproietti/penguins-eggs/blob/v16.13.0/lib/commands/config.js)_
-
 ## `eggs dad`
 
 ask help from daddy - configuration helper
@@ -250,8 +244,6 @@ OPTIONS
   -h, --help     show CLI help
   -v, --verbose
 ```
-
-_See code: [lib/commands/dad.js](https://github.com/pieroproietti/penguins-eggs/blob/v16.13.0/lib/commands/dad.js)_
 
 ## `eggs export:deb`
 
@@ -271,8 +263,6 @@ OPTIONS
   --i386       export i386 arch
 ```
 
-_See code: [lib/commands/export/deb.js](https://github.com/pieroproietti/penguins-eggs/blob/v16.13.0/lib/commands/export/deb.js)_
-
 ## `eggs export:docs`
 
 remove and export docType documentation of the sources in the destination host
@@ -284,8 +274,6 @@ USAGE
 OPTIONS
   -h, --help  show CLI help
 ```
-
-_See code: [lib/commands/export/docs.js](https://github.com/pieroproietti/penguins-eggs/blob/v16.13.0/lib/commands/export/docs.js)_
 
 ## `eggs export:iso`
 
@@ -300,8 +288,6 @@ OPTIONS
   -c, --clean   delete old ISOs before to copy
   -h, --help    show CLI help
 ```
-
-_See code: [lib/commands/export/iso.js](https://github.com/pieroproietti/penguins-eggs/blob/v16.13.0/lib/commands/export/iso.js)_
 
 ## `eggs help [COMMAND]`
 
@@ -333,8 +319,6 @@ OPTIONS
   -v, --verbose
 ```
 
-_See code: [lib/commands/info.js](https://github.com/pieroproietti/penguins-eggs/blob/v16.13.0/lib/commands/info.js)_
-
 ## `eggs install`
 
 command-line system installer - the egg became a penguin!
@@ -357,8 +341,6 @@ EXAMPLE
   Install the system using GUI or CLI installer
 ```
 
-_See code: [lib/commands/install.js](https://github.com/pieroproietti/penguins-eggs/blob/v16.13.0/lib/commands/install.js)_
-
 ## `eggs kill`
 
 kill the eggs/free the nest
@@ -376,8 +358,6 @@ EXAMPLE
   kill the eggs/free the nest
 ```
 
-_See code: [lib/commands/kill.js](https://github.com/pieroproietti/penguins-eggs/blob/v16.13.0/lib/commands/kill.js)_
-
 ## `eggs mom`
 
 ask for mommy - gui helper
@@ -389,8 +369,6 @@ USAGE
 OPTIONS
   -h, --help  show CLI help
 ```
-
-_See code: [lib/commands/mom.js](https://github.com/pieroproietti/penguins-eggs/blob/v16.13.0/lib/commands/mom.js)_
 
 ## `eggs produce`
 
@@ -451,8 +429,6 @@ EXAMPLES
   in /home/eggs/ovarium and you can customize all you need
 ```
 
-_See code: [lib/commands/produce.js](https://github.com/pieroproietti/penguins-eggs/blob/v16.13.0/lib/commands/produce.js)_
-
 ## `eggs remove`
 
 remove eggs and others stuff
@@ -478,8 +454,6 @@ EXAMPLES
   remove eggs, eggs configurations, packages dependencies
 ```
 
-_See code: [lib/commands/remove.js](https://github.com/pieroproietti/penguins-eggs/blob/v16.13.0/lib/commands/remove.js)_
-
 ## `eggs tools:clean`
 
 clean system log, apt, etc
@@ -496,8 +470,6 @@ ALIASES
   $ eggs clean
 ```
 
-_See code: [lib/commands/tools/clean.js](https://github.com/pieroproietti/penguins-eggs/blob/v16.13.0/lib/commands/tools/clean.js)_
-
 ## `eggs tools:locales`
 
 install/clean locales
@@ -511,8 +483,6 @@ OPTIONS
   -r, --reinstall  reinstall locales
   -v, --verbose    verbose
 ```
-
-_See code: [lib/commands/tools/locales.js](https://github.com/pieroproietti/penguins-eggs/blob/v16.13.0/lib/commands/tools/locales.js)_
 
 ## `eggs tools:skel`
 
@@ -535,8 +505,6 @@ EXAMPLE
   desktop configuration of user mauro will get used as default
 ```
 
-_See code: [lib/commands/tools/skel.js](https://github.com/pieroproietti/penguins-eggs/blob/v16.13.0/lib/commands/tools/skel.js)_
-
 ## `eggs tools:stat`
 
 get statistics from sourceforge
@@ -554,8 +522,6 @@ ALIASES
   $ eggs stat
 ```
 
-_See code: [lib/commands/tools/stat.js](https://github.com/pieroproietti/penguins-eggs/blob/v16.13.0/lib/commands/tools/stat.js)_
-
 ## `eggs tools:yolk`
 
 configure eggs to install without internet
@@ -571,8 +537,6 @@ OPTIONS
 EXAMPLE
   $ eggs yolk -v
 ```
-
-_See code: [lib/commands/tools/yolk.js](https://github.com/pieroproietti/penguins-eggs/blob/v16.13.0/lib/commands/tools/yolk.js)_
 
 ## `eggs update`
 
@@ -592,8 +556,6 @@ EXAMPLE
   $ eggs update
   update/upgrade the penguin's eggs tool
 ```
-
-_See code: [lib/commands/update.js](https://github.com/pieroproietti/penguins-eggs/blob/v16.13.0/lib/commands/update.js)_
 <!-- commandsstop -->
 
 # Terminal samples
