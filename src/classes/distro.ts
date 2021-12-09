@@ -258,11 +258,11 @@ class Distro implements IDistro {
          this.versionId = 'rolling' // rolling
          this.distroLike = 'Arch'
          this.versionLike = 'rolling'
-      } else if (this.distroId === 'ManjaroLinux') {
+      } else if (this.versionId === 'Qonos') {
          this.familyId = "archlinux"
-         this.versionId = 'rolling' // pavho
+         this.versionId = 'qonos'
          this.distroLike = 'Arch'
-         this.versionLike = 'rolling'
+         this.versionLike = 'rolling' // pavho'
 
          /**
           * Fedora

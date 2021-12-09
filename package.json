@@ -93,11 +93,11 @@
     },
     "scripts": {
         "docs": "rm docs -rf && npx typedoc src --out docs",
-        "build": "/home/artisan/.nvm/versions/node/v16.13.0/bin/tsc -p .",
+        "build": "tsc -p .",
         "deb": "oclif-dev pack:deb && npx pb -m",
         "postpack": "rm -f oclif.manifest.json",
         "posttest": "eslint . --ext .ts --config .eslintrc",
-        "prepack": "rm lib -rf && /home/artisan/.nvm/versions/node/v16.13.0/bin/tsc -b && oclif-dev manifest && oclif-dev readme",
+        "prepack": "rm lib -rf && tsc -b && oclif-dev manifest && oclif-dev readme",
         "test": "nyc --extension .ts mocha --forbid-only \"test/**/*.test.ts\"",
         "version": "oclif-dev readme && git add README.md",
         "lint": "eslint . --ext .ts --config .eslintrc",

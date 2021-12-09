@@ -90,8 +90,14 @@ export default class Utils {
          initrd = 'initrd.img'
          version = vmlinuz.substring(vmlinuz.indexOf('-'))
       } else if (Pacman.distro().familyId === 'archlinux') {
-         initrd = 'initramfs-linux.img'
-         version = ''
+         if (Pacman.distro().versionIs === 'rolling') {
+            initrd = 'initramfs-linux.img'
+            version = ''
+         } else if (Pacman.distro().versionId === 'qonos') {
+            // initramfs-5.13-x86_64.img
+            initrd = 'initramfs'
+            version = vmlinuz.substring(vmlinuz.indexOf('-')) + '.img'
+            }
       } else if (Pacman.distro().familyId === 'fedora') {
          initrd = 'initramfs'
          version = vmlinuz.substring(vmlinuz.indexOf('-')) + '.img'
