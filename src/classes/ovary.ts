@@ -621,6 +621,7 @@ export default class Ovary {
          kernel: Utils.kernerlVersion(),
          vmlinuz: `/live${this.settings.vmlinuz}`,
          initrdImg: `/live${this.settings.initrdImg}`,
+         cdlabel: `${Utils.getVolid(this.settings.remix.name)}`,
          usernameOpt: this.settings.config.user_opt,
          netconfigOpt: this.settings.config.netconfig_opt,
          timezoneOpt: this.settings.config.timezone,

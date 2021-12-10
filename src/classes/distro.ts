@@ -298,12 +298,12 @@ class Distro implements IDistro {
        if (this.familyId === 'debian') {
          this.isolinuxPath = '/usr/lib/ISOLINUX/'
          this.syslinuxPath = '/usr/lib/syslinux/modules/bios/'
-      } else if (this.familyId === 'archlinux') {
-         this.syslinuxPath = '/usr/lib/syslinux/bios/'
-         this.isolinuxPath = this.syslinuxPath
       } else if (this.familyId === 'fedora') {
          this.syslinuxPath = '/usr/share/syslinux/'
          this.isolinuxPath = '/usr/share/syslinux/'
+      } else if (this.familyId === 'archlinux') {
+         this.syslinuxPath = '/usr/lib/syslinux/bios/'
+         this.isolinuxPath = this.syslinuxPath
       }
 
 
