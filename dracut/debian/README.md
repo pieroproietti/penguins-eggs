@@ -16,4 +16,17 @@ dracut: dracut module 'biosdevname' will not be installed, because command 'bios
 * nvme: NVM-Express is a fast, scalable host controller interface designed to address the needs for not only PCI Express based solid state drives, but also NVMe-oF(over fabrics).
 * biosdevname: takes a kernel device name as an argument, and returns the BIOS-given name it "should" be.
 
+# Packages to install
 
+* nvme-cli 
+* keyutils
+* rng-tools-debian
+* multipath-tools
+* biosdevname non si trova in packages
+
+After that we have just this: 
+```
+dracut: dracut module 'bootchart' will not be installed, because command '/sbin/bootchartd' could not be found!
+dracut: dracut module 'nvmf' depends on 'network', which can't be installed
+dracut: dracut module 'biosdevname' will not be installed, because command 'biosdevname' could not be found!
+```
