@@ -267,10 +267,20 @@ class Distro implements IDistro {
          /**
           * Fedora
           */
-      } else if (this.versionId === 'ThirtyFive') {
+       } else if (this.versionId === 'ThirtyFive') {
          this.familyId = "fedora"
          this.distroLike = 'Fedora'
          this.versionLike = 'thirtyfive'
+
+
+         /**
+          * openSuse
+          */
+       } else if (this.distroId === 'openSUSE') {
+         this.familyId = "suse"
+         this.distroLike = 'SUSE'
+         this.versionId = 'tumbleweed'
+         this.versionLike = 'tumbleweed'
       } else {
          
          /**

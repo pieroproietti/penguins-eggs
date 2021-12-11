@@ -89,8 +89,11 @@ export default class Utils {
       if (Pacman.distro().familyId === 'debian') {
          initrd = 'initrd.img'
          version = vmlinuz.substring(vmlinuz.indexOf('-'))
+      } else if (Pacman.distro().familyId === 'fedora') {
+         initrd = 'initramfs'
+         version = vmlinuz.substring(vmlinuz.indexOf('-')) + '.img'
       } else if (Pacman.distro().familyId === 'archlinux') {
-         if (Pacman.distro().versionIs === 'rolling') {
+         if (Pacman.distro().versionId === 'rolling') {
             initrd = 'initramfs-linux.img'
             version = ''
          } else if (Pacman.distro().versionId === 'qonos') {
@@ -98,10 +101,10 @@ export default class Utils {
             initrd = 'initramfs'
             version = vmlinuz.substring(vmlinuz.indexOf('-')) + '.img'
             }
-      } else if (Pacman.distro().familyId === 'fedora') {
-         initrd = 'initramfs'
-         version = vmlinuz.substring(vmlinuz.indexOf('-')) + '.img'
-      }
+         } else if (Pacman.distro().familyId === 'suse') {
+            initrd = 'initrd'
+            version = vmlinuz.substring(vmlinuz.indexOf('-'))
+         }
       return path + initrd + version
    }
 
