@@ -314,6 +314,9 @@ class Distro implements IDistro {
       } else if (this.familyId === 'archlinux') {
          this.syslinuxPath = '/usr/lib/syslinux/bios/'
          this.isolinuxPath = this.syslinuxPath
+      } else if (this.familyId === 'suse') {
+         this.syslinuxPath = '/usr/share/syslinux/'
+         this.isolinuxPath = this.syslinuxPath
       }
 
 
