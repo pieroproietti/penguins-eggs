@@ -21,8 +21,9 @@ import { IConfig } from '../interfaces'
 const exec = require('../lib/utils').exec
 
 import Debian from './family/debian'
-import Archlinux from './family/archlinux'
 import Fedora from './family/fedora'
+import Archlinux from './family/archlinux'
+import Suse from './family/suse'
 
 const config_file = '/etc/penguins-eggs.d/eggs.yaml' as string
 const config_tools = '/etc/penguins-eggs.d/tools.yaml' as string
@@ -58,12 +59,16 @@ export default class Pacman {
          if (Debian.isInstalledXorg()) {
             installed = true
          }
+      } else if (this.distro().familyId === 'fedora') {
+         if (Fedora.isInstalledXorg()) {
+            installed = true
+         }
       } else if (this.distro().familyId === 'archlinux') {
          if (Archlinux.isInstalledXorg()) {
             installed = true
          }
-      } else if (this.distro().familyId === 'fedora') {
-         if (Fedora.isInstalledXorg()) {
+      } else if (this.distro().familyId === 'suse') {
+         if (Suse.isInstalledXorg()) {
             installed = true
          }
       }
@@ -81,12 +86,16 @@ export default class Pacman {
          if (Debian.isInstalledWayland()) {
             installed = true
          }
+      } else if (this.distro().familyId === 'fedora') {
+         if (Fedora.isInstalledWayland()) {
+            installed = true
+         }
       } else if (this.distro().familyId === 'archlinux') {
          if (Archlinux.isInstalledWayland()) {
             installed = true
          }
-      } else if (this.distro().familyId === 'fedora') {
-         if (Fedora.isInstalledWayland()) {
+      } else if (this.distro().familyId === 'suse') {
+         if (Suse.isInstalledWayland()) {
             installed = true
          }
       }
@@ -103,9 +112,11 @@ export default class Pacman {
          if ((Utils.machineArch() !== 'i386') && (this.packageIsInstalled('grub-efi-' + Utils.machineArch() + '-bin'))) {
             isUefi = true
          }
+      } else if (Pacman.distro().familyId === 'fedora') {
+         isUefi = true
       } else if (Pacman.distro().familyId === 'archlinux') {
          isUefi = true
-      } else if (Pacman.distro().familyId === 'fedora') {
+      } else if (Pacman.distro().familyId === 'suse') {
          isUefi = true
       }
       return isUefi
@@ -155,10 +166,12 @@ export default class Pacman {
       let packages: string[] = []
       if (this.distro().familyId === 'debian') {
          packages = Debian.packages(remove, verbose)
-      } else if (this.distro().familyId === 'archlinux') {
-         packages = Archlinux.packages(remove, verbose)
       } else if (this.distro().familyId === 'fedora') {
          packages = Fedora.packages(remove, verbose)
+      } else if (this.distro().familyId === 'archlinux') {
+         packages = Archlinux.packages(remove, verbose)
+      } else if (this.distro().familyId === 'suse') {
+         packages = Suse.packages(remove, verbose)
       }
       return packages
    }
@@ -184,10 +197,12 @@ export default class Pacman {
 
       if (this.distro().familyId === 'debian') {
          retVal = await Debian.prerequisitesInstall(verbose)
-      } else if (this.distro().familyId === 'archlinux') {
-         retVal = await Archlinux.prerequisitesInstall(verbose)
       } else if (this.distro().familyId === 'fedora') {
          retVal = await Fedora.prerequisitesInstall(verbose)
+      } else if (this.distro().familyId === 'archlinux') {
+         retVal = await Archlinux.prerequisitesInstall(verbose)
+      } else if (this.distro().familyId === 'suse') {
+         retVal = await Suse.prerequisitesInstall(verbose)
       }
       return retVal
    }
@@ -200,10 +215,12 @@ export default class Pacman {
       let installed = true
       if (this.distro().familyId === 'debian') {
          installed = await Debian.calamaresCheck()
-      } else if (this.distro().familyId === 'archlinux') {
-         installed = await Archlinux.calamaresCheck()
       } else if (this.distro().familyId === 'fedora') {
          installed = await Fedora.calamaresCheck()
+      } else if (this.distro().familyId === 'archlinux') {
+         installed = await Archlinux.calamaresCheck()
+      } else if (this.distro().familyId === 'suse') {
+         installed = await Suse.calamaresCheck()
       }
 
       return installed
@@ -228,10 +245,12 @@ export default class Pacman {
       if (this.isInstalledGui()) {
          if (this.distro().familyId === 'debian') {
             await Debian.calamaresInstall(verbose)
-         } else if (this.distro().familyId === 'archlinux') {
-            await Archlinux.calamaresInstall(verbose)
          } else if (this.distro().familyId === 'fedora') {
             await Fedora.calamaresInstall(verbose)
+         } else if (this.distro().familyId === 'archlinux') {
+            await Archlinux.calamaresInstall(verbose)
+         } else if (this.distro().familyId === 'suse') {
+            await Suse.calamaresInstall(verbose)
          }
       }
    }
@@ -242,10 +261,12 @@ export default class Pacman {
    static async calamaresPolicies() {
       if (this.distro().familyId === 'debian') {
          await Debian.calamaresPolicies()
-      } else if (this.distro().familyId === 'archlinux') {
-         await Archlinux.calamaresPolicies()
       } else if (this.distro().familyId === 'fedora') {
          await Fedora.calamaresPolicies()
+      } else if (this.distro().familyId === 'archlinux') {
+         await Archlinux.calamaresPolicies()
+      } else if (this.distro().familyId === 'suse') {
+         await Suse.calamaresPolicies()
       }
    }
 
@@ -256,10 +277,12 @@ export default class Pacman {
       let retVal = false
       if (this.distro().familyId === 'debian') {
          retVal = await Debian.calamaresRemove(verbose)
-      } else if (this.distro().familyId === 'archlinux') {
-         retVal = await Archlinux.calamaresRemove(verbose)
       } else if (this.distro().familyId === 'fedora') {
          retVal = await Fedora.calamaresRemove(verbose)
+      } else if (this.distro().familyId === 'archlinux') {
+         retVal = await Archlinux.calamaresRemove(verbose)
+      } else if (this.distro().familyId === 'suse') {
+         retVal = await Suse.calamaresRemove(verbose)
       }
       return retVal
    }
@@ -699,6 +722,18 @@ export default class Pacman {
          const dest = `/etc/penguins-eggs.d/distros/rolling/`
          const rolling = `${rootPen}/conf/distros/rolling/*`
          await exec(`cp -r ${rolling} ${dest}`, echo)
+
+         /***********************************************************************************
+         * openSuse
+         **********************************************************************************/
+
+         /**
+          * openSUSE tumbleweed: eredita da tumbleweed
+          */
+       } else if (this.distro().versionLike === 'tumbleweed') {
+         const dest = `/etc/penguins-eggs.d/distros/tumbleweed/`
+         const tumbleweed = `${rootPen}/conf/distros/tumbleweed/*`
+         await exec(`cp -r ${tumbleweed} ${dest}`, echo)
       }
    }
 
@@ -712,10 +747,12 @@ export default class Pacman {
       let installed = false
       if (this.distro().familyId === 'debian') {
          installed = Debian.packageIsInstalled(packageName)
-      } else if (this.distro().familyId === 'archlinux') {
-         installed = Archlinux.packageIsInstalled(packageName)
       } else if (this.distro().familyId === 'fedora') {
          installed = Fedora.packageIsInstalled(packageName)
+      } else if (this.distro().familyId === 'archlinux') {
+         installed = Archlinux.packageIsInstalled(packageName)
+      } else if (this.distro().familyId === 'suse') {
+         installed = Suse.packageIsInstalled(packageName)
       }
       return installed
    }

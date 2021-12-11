@@ -1,0 +1,8 @@
+# Debian Buster
+# sources-yolk-unmount
+---
+type: "job"
+name: "sources-yolk-unmount"
+interface: "process"
+command: "/usr/sbin/sources-yolk.sh -u"
+timeout: 600

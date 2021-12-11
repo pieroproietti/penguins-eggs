@@ -1,0 +1,7 @@
+# Debian Buster
+# unpackfs
+---
+unpack:
+    -   source: {{source}}
+        sourcefs: "squashfs"
+        destination: ""
