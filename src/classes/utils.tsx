@@ -256,16 +256,20 @@ unknown target format aarch64-efi
     */
    static machineUEFI(): string {
       // grub-mkimage vuole: i386-efi, x86_64-efi, arm-efi, arm64-efi,
-      let machineArch = this.machineArch()
-      if (machineArch === 'amd64') {
-         machineArch = 'x86_64-efi'
-      } else if (machineArch === 'armel') {
-         machineArch = 'arm-efi'
+      let arch = this.machineArch()
+      let machineUEFI=''
+      if (arch === 'amd64') {
+         machineUEFI = 'x86_64-efi'
+      } else if (arch === 'armel') {
+         machineUEFI = 'arm-efi'
       }
       if (Pacman.distro().familyId === 'fedora') {
-         machineArch = 'i386-pc'
+         machineUEFI = 'i386-efi'
+      } else if (Pacman.distro().familyId === 'suse') {
+         machineUEFI = 'i386-efi'
       }
-      return machineArch
+
+      return machineUEFI
    }
 
    /**

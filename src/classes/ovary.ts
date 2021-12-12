@@ -1356,14 +1356,7 @@ export default class Ovary {
 
       // make the grub image
       let grubMkImage = 'grub-mkimage '
-      let destArch = Utils.machineArch()
-      if (Pacman.distro().familyId === 'fedora') {
-         grubMkImage = 'grub2-mkimage '
-         destArch = 'i386-efi'
-      } else if (Pacman.distro().familyId === 'suse') {
-         grubMkImage = 'grub2-mkimage '
-         destArch = 'i386-efi'
-      }
+      let destArch = Utils.machineUEFI()
 
       await exec(`${grubMkImage} -O ${destArch} -m memdisk -o bootx64.efi -p '(memdisk)/boot/grub' search iso9660 configfile normal memdisk tar cat part_msdos part_gpt fat ext2 ntfs ntfscomp hfsplus chain boot linux`, echo)
       // pospd (torna a efi_work)

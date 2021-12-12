@@ -46,9 +46,15 @@ export const depCommon = [
    'dosfstools',
    'dpkg-dev', // occorre per creare la repository yolk
    'isolinux',
-//   'live-boot',
-//   'live-boot-initramfs-tools',
-   'dracut',
+   /**
+    * live-boot-initramfs-tools, live-boot
+    */
+   'live-boot',
+   'live-boot-initramfs-tools',
+   /**
+    * dracut
+    */
+   // 'dracut',
    'parted',
    'rsync',
    'squashfs-tools',
