@@ -52,19 +52,5 @@ export function installer(): IInstaller {
  * @returns 
  */
 function multiarch(): string {
-   let multiarch = ''
-   if (Utils.machineArch() === 'amd64') {
-      multiarch = '/usr/lib/x86_64-linux-gnu/'
-   } else if (Utils.machineArch() === 'i386') {
-      multiarch = '/usr/lib/i386-linux-gnu/'
-   } else if (Utils.machineArch() === 'armel') {
-      multiarch = '/usr/lib/'
-   } else if (Utils.machineArch() === 'arm64') {
-      multiarch = '/usr/lib/'
-   }
-
-   if (Pacman.distro().familyId === 'archlinux') {
-      multiarch = '/usr/lib/'
-   }
-   return multiarch
+   return Pacman.distro().usrLibPath
 }
