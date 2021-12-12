@@ -579,6 +579,11 @@ export default class Ovary {
       }
       await exec(`cp ${this.settings.distro.syslinuxPath}/vesamenu.c32 ${this.settings.work_dir.pathIso}/isolinux/`, echo)
       await exec(`cp ${this.settings.distro.syslinuxPath}/chain.c32 ${this.settings.work_dir.pathIso}/isolinux/`, echo)
+      /**
+       * per openSuse non sono riusciuto a determinare
+       * quale pacchetto installi: 
+       * ldllinux.c43, libcom32 e libutil.c32
+       */
       if (Pacman.distro().familyId !== 'suse') {
          await exec(`cp ${this.settings.distro.syslinuxPath}/ldlinux.c32 ${this.settings.work_dir.pathIso}/isolinux/`, echo)
          await exec(`cp ${this.settings.distro.syslinuxPath}/libcom32.c32 ${this.settings.work_dir.pathIso}/isolinux/`, echo)
@@ -595,28 +600,34 @@ export default class Ovary {
          console.log('ovary: isolinux')
       }
 
+      /**
+       * isolinux.bin
+       */
       await exec(`cp ${this.settings.distro.isolinuxPath}/isolinux.bin ${this.settings.work_dir.pathIso}/isolinux/`, echo)
-      await exec(`cp /etc/penguins-eggs.d/distros/${this.settings.distro.versionLike}/isolinux/isolinux.template.cfg ${this.settings.work_dir.pathIso}/isolinux/isolinux.cfg`, echo)
-      await exec(`cp /etc/penguins-eggs.d/distros/${this.settings.distro.versionLike}/isolinux/stdmenu.template.cfg ${this.settings.work_dir.pathIso}/isolinux/stdmenu.cfg`, echo)
-      const menuDest = this.settings.work_dir.pathIso + 'isolinux/menu.cfg'
-      const splashDest = this.settings.work_dir.pathIso + 'isolinux/splash.png'
 
       /**
-       * splashSrc e menuSrc possono essere riconfigurati dal tema
+       * splash
        */
-      let splashSrc = path.resolve(__dirname, '../../assets/penguins-eggs-splash.png')
-      const splashCandidate = path.resolve(__dirname, '../../addons/' + theme + '/theme/livecd/splash.png')
-      if (fs.existsSync(splashCandidate)) {
-         splashSrc = splashCandidate
+       const splashDest = `${this.settings.work_dir.pathIso}/isolinux/splash.png`
+      const splashSrc = path.resolve(__dirname, `../../addons/${theme}/theme/livecd/splash.png`)
+      if (!fs.existsSync(splashSrc)) {
+         Utils.warning('Cannot find: ' + splashSrc)
+         process.exit()
       }
-
-      let menuSrc = path.resolve(__dirname, '../../conf/distros/' + this.settings.distro.versionLike + '/isolinux/menu.template.cfg')
-      const menuCandidate = path.resolve(__dirname, '../../addons/' + theme + '/theme/livecd/menu.template.cfg')
-      if (fs.existsSync(menuCandidate)) {
-         menuSrc = menuCandidate
-      }
-
       fs.copyFileSync(splashSrc, splashDest)
+
+      /**
+       * menu
+       */
+       const menuDest = this.settings.work_dir.pathIso + 'isolinux/menu.cfg'
+      let menuSrc = path.resolve(__dirname, `../../addons/${theme}/theme/livecd/menu.template.cfg`)
+      if (Pacman.distro().familyId !== 'debian'){
+         menuSrc = path.resolve(__dirname, `../../addons/${theme}/theme/livecd/menu.dracut.cfg`)
+      }
+      if (!fs.existsSync(menuSrc)) {
+         Utils.warning('Cannot find: ' + menuSrc)
+         process.exit()
+      }
       const template = fs.readFileSync(menuSrc, 'utf8')
       const view = {
          fullname: this.settings.remix.fullname.toUpperCase(),
@@ -1287,33 +1298,17 @@ export default class Ovary {
       text += `source $prefix/${Utils.machineUEFI()}/grub.cfg\n`
       Utils.write(grubCfg, text)
 
-      /**
-       * Andiamo a costruire efi_work
-       */
-      if (!fs.existsSync(this.settings.efi_work)) {
-         shx.mkdir('-p', this.settings.efi_work)
-      }
-
-      // salviamo currentDir
+      // Salviamo la directory corrente
       const currentDir = process.cwd()
 
       /**
-       * efi_work
+       * Creiamo efi-work
        */
-      process.chdir(this.settings.efi_work)
-
-      /**
-       * start with empty directories: clear dir boot and efi
-       */
-      const files = fs.readdirSync('.');
-      for (var i in files) {
-         if (files[i] === './boot') {
-            await exec(`rm ./boot -rf`, echo)
-         }
-         if (files[i] === './efi') {
-            await exec(`rm ./efi -rf`, echo)
-         }
+      if (fs.existsSync(this.settings.efi_work)) {
+         await exec(`rm ${this.settings.efi_work} -rf`, echo)
       }
+      shx.mkdir('-p', this.settings.efi_work)
+      process.chdir(this.settings.efi_work)
       shx.mkdir('-p', `./boot/grub/${Utils.machineUEFI()}`)
       shx.mkdir('-p', './efi/boot')
 
@@ -1322,7 +1317,6 @@ export default class Ovary {
       await exec(cmd, echo)
 
       // Additional modules so we don't boot in blind mode. I don't know which ones are really needed.
-      // cmd = `for i in efi_gop efi_uga ieee1275_fb vbe vga video_bochs video_cirrus jpeg png gfxterm ; do echo "insmod $i" >> boot/grub/x86_64-efi/grub.cfg ; done`
       cmd = `for i in efi_gop efi_gop efi_uga gfxterm video_bochs video_cirrus jpeg png ; do echo "insmod $i" >> boot/grub/${Utils.machineUEFI()}/grub.cfg ; done`
       await exec(cmd, echo)
 
@@ -1331,16 +1325,17 @@ export default class Ovary {
        * fine lavoro in efi_work
        */
 
-      // Torniamo alla directory precedente
       process.chdir(tempDir)
+
 
       // make a tarred "memdisk" to embed in the grub image
       await exec('tar -cvf memdisk boot', echo)
 
       // make the grub image
       await exec(`${whichGrubIsInstalled}-mkimage  -O ${Utils.machineUEFI()} -m memdisk -o bootx64.efi -p '(memdisk)/boot/grub' search iso9660 configfile normal memdisk tar cat part_msdos part_gpt fat ext2 ntfs ntfscomp hfsplus chain boot linux`, echo)
-      // pospd (torna a efi_work)
+      // popcd (torna a efi_work)
       process.chdir(this.settings.efi_work)
+      Utils.warning("Ritorno a: " + process.cwd())
 
       // copy the grub image to efi/boot (to go later in the device's root)
       shx.cp(`${tempDir}/bootx64.efi`, `./efi/boot`)
@@ -1360,65 +1355,57 @@ export default class Ovary {
 
       // if this doesn't work try another font from the same place (grub's default, unicode.pf2, is much larger)
       // Either of these will work, and they look the same to me. Unicode seems to work with qemu. -fsr
-      if (fs.existsSync('/usr/share/grub/unicode.pf2')){
+      if (fs.existsSync('/usr/share/grub/unicode.pf2')) {
          fs.copyFileSync('/usr/share/grub/unicode.pf2', 'boot/grub/font.pf2')
-      } else if (fs.existsSync('/usr/share/grub2/unicode.pf2')){
+      } else if (fs.existsSync('/usr/share/grub2/unicode.pf2')) {
          fs.copyFileSync('/usr/share/grub2/unicode.pf2', 'boot/grub/font.pf2')
       }
-
-
-      // doesn't need to be root-owned ${pwd} = current Directory
-      // const user = Utils.getPrimaryUser()
-      // await exec(`chown -R ${user}:${user} $(pwd) 2>/dev/null`, echo)
-      // console.log(`pwd: ${pwd}`)
-      // await exec(`chown -R ${user}:${user} $(pwd)`, echo)
-
-      // Cleanup efi temps
       await exec('umount img-mnt', echo)
       await exec('rmdir img-mnt', echo)
 
-      // popD Torna alla directory corrente
       process.chdir(currentDir)
 
-      // Copy efi files to iso
+      /**
+       * copia dei file da efi-work in iso/
+       */
       await exec(`rsync -ax  ${this.settings.efi_work}/boot ${this.settings.work_dir.pathIso}/`, echo)
       await exec(`rsync -ax ${this.settings.efi_work}/efi  ${this.settings.work_dir.pathIso}/`, echo)
 
       /**
        * Do the main grub.cfg (which gets loaded last):
        */
-      // fs.copyFileSync(path.resolve(__dirname, `../../conf/distros/${this.settings.distro.versionLike}/grub/loopback.cfg`), `${this.settings.work_dir.pathIso}/boot/grub/loopback.cfg`)
       fs.copyFileSync(`/etc/penguins-eggs.d/distros/${this.settings.distro.versionLike}/grub/loopback.cfg`, `${this.settings.work_dir.pathIso}/boot/grub/loopback.cfg`)
 
       /**
-       * in theme va al momento theme.cfg e splash.png
+       * prepare splash
        */
-      // const grubSrc = path.resolve(__dirname, `../../conf/distros/${this.settings.distro.versionLike}/grub/grub.template.cfg`)
-      const grubSrc = `/etc/penguins-eggs.d/distros/${this.settings.distro.versionLike}/grub/grub.template.cfg`
-      // let themeSrc = path.resolve(__dirname, `../../conf/distros/${this.settings.distro.versionLike}/grub/theme.cfg`)
-      let themeSrc = `/etc/penguins-eggs.d/distros/${this.settings.distro.versionLike}/grub/theme.cfg`
-      let splashSrc = path.resolve(__dirname, '../../assets/penguins-eggs-splash.png')
-
-      const grubDest = `${this.settings.work_dir.pathIso}/boot/grub/grub.cfg`
-      const themeDest = `${this.settings.work_dir.pathIso}/boot/grub/theme.cfg`
       const splashDest = `${this.settings.work_dir.pathIso}/isolinux/splash.png`
-
-      // if a theme exist, change splash with theme splash of the theme
-      const splashCandidate = path.resolve(__dirname, `../../addons/${theme}/theme/livecd/splash.png`)
-      if (fs.existsSync(splashCandidate)) {
-         splashSrc = splashCandidate
+      const splashSrc = path.resolve(__dirname, `../../addons/${theme}/theme/livecd/splash.png`)
+      if (!fs.existsSync(splashSrc)) {
+         Utils.warning('Cannot find: ' + splashSrc)
+         process.exit()
       }
-
-      // if a theme exist, change theme.cfg with theme.cfg of the theme
-      const themeCandidate = path.resolve(__dirname, `../../addons/${theme}/theme/livecd/theme.cfg`)
-      if (fs.existsSync(themeCandidate)) {
-         themeSrc = themeCandidate
-      }
-      fs.copyFileSync(themeSrc, themeDest)
       fs.copyFileSync(splashSrc, splashDest)
 
+      /**
+       * prepare theme
+       */
+      const themeDest = `${this.settings.work_dir.pathIso}/boot/grub/theme.cfg`
+      const themeSrc = path.resolve(__dirname, `../../addons/${theme}/theme/livecd/theme.cfg`)
+      if (!fs.existsSync(themeSrc)) {
+         Utils.warning('Cannot find: ' + themeSrc)
+         process.exit()
+      }
+      fs.copyFileSync(themeSrc, themeDest)
 
-      // Utilizzo mustache
+      /**
+       * prepare grub.cfg
+       */
+      let grubSrc = `/etc/penguins-eggs.d/distros/${this.settings.distro.versionLike}/grub/grub.template.cfg`
+      if (Pacman.distro().familyId !== 'debian') {
+         grubSrc = `/etc/penguins-eggs.d/distros/${this.settings.distro.versionLike}/grub/grub.dracut.cfg`
+      }
+      const grubDest = `${this.settings.work_dir.pathIso}/boot/grub/grub.cfg`
       const template = fs.readFileSync(grubSrc, 'utf8')
       const view = {
          fullname: this.settings.remix.fullname.toUpperCase(),
