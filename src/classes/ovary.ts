@@ -1249,10 +1249,11 @@ export default class Ovary {
       }
    }
 
+   // #######################################################################################
    /**
     * makeEfi
-    * Create /boot and /efi for UEFI
     */
+   // #######################################################################################
    async makeEfi(theme = 'eggs', verbose = false) {
       const echo = Utils.setEcho(verbose)
       if (verbose) {
@@ -1260,26 +1261,8 @@ export default class Ovary {
       }
 
       // Controlla la presenza di grub
-      let grubInstalled = false
-      if (Pacman.distro().familyId === 'debian') {
-         if (Pacman.packageIsInstalled('grub-common')) {
-            grubInstalled = true
-         }
-      } else if (Pacman.distro().familyId === 'fedora') {
-         if (Pacman.packageIsInstalled('grub2-common.noarch')) {
-            grubInstalled = true
-         }
-      } else if (Pacman.distro().familyId === 'archlinux') {
-         if (Pacman.packageIsInstalled('grub')) {
-            grubInstalled = true
-         }
-      } else if (Pacman.distro().familyId === 'suse') {
-         if (Pacman.packageIsInstalled('grub2')) {
-            grubInstalled = true
-         }
-      }
-
-      if (!grubInstalled) {
+      let whichGrubIsInstalled = Pacman.whichGrubIsInstalled()
+      if (whichGrubIsInstalled === '') {
          Utils.error(`something went wrong! Cannot find package grub-common.`)
          Utils.warning('Problably your system boot with rEFInd or others, to generate a UEFI image we need grub too')
          process.exit(1)
@@ -1355,10 +1338,7 @@ export default class Ovary {
       await exec('tar -cvf memdisk boot', echo)
 
       // make the grub image
-      let grubMkImage = 'grub-mkimage '
-      let destArch = Utils.machineUEFI()
-
-      await exec(`${grubMkImage} -O ${destArch} -m memdisk -o bootx64.efi -p '(memdisk)/boot/grub' search iso9660 configfile normal memdisk tar cat part_msdos part_gpt fat ext2 ntfs ntfscomp hfsplus chain boot linux`, echo)
+      await exec(`${whichGrubIsInstalled}-mkimage  -O ${Utils.machineUEFI()} -m memdisk -o bootx64.efi -p '(memdisk)/boot/grub' search iso9660 configfile normal memdisk tar cat part_msdos part_gpt fat ext2 ntfs ntfscomp hfsplus chain boot linux`, echo)
       // pospd (torna a efi_work)
       process.chdir(this.settings.efi_work)
 
@@ -1376,7 +1356,7 @@ export default class Ovary {
       // ###############################
 
       // copy modules and font
-      shx.cp('-r', `/usr/lib/grub/${destArch}/*`, `boot/grub/${Utils.machineUEFI()}/`)
+      shx.cp('-r', `/usr/lib/grub/${Utils.machineUEFI()}/*`, `boot/grub/${Utils.machineUEFI()}/`)
 
       // if this doesn't work try another font from the same place (grub's default, unicode.pf2, is much larger)
       // Either of these will work, and they look the same to me. Unicode seems to work with qemu. -fsr
@@ -1453,6 +1433,8 @@ export default class Ovary {
       }
       fs.writeFileSync(grubDest, mustache.render(template, view))
    }
+   // #######################################################################################
+
 
    /**
     * makeDotDisk
