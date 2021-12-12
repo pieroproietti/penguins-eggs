@@ -49,6 +49,28 @@ export default class Pacman {
       return distro
    }
 
+
+   static whichGrubIsInstalled() : string{
+      let grubInstalled = ''
+      if (this.distro().familyId === 'debian') {
+         if (this.packageIsInstalled('grub-common')) {
+            grubInstalled = 'grub'
+         }
+      } else if (this.distro().familyId === 'fedora') {
+         if (this.packageIsInstalled('grub2-common.noarch')) {
+            grubInstalled = 'grub2'
+         }
+      } else if (this.distro().familyId === 'archlinux') {
+         if (this.packageIsInstalled('grub')) {
+            grubInstalled = 'grub'
+         }
+      } else if (this.distro().familyId === 'suse') {
+         if (this.packageIsInstalled('grub2')) {
+            grubInstalled = 'grub2'
+         }
+      }
+      return grubInstalled
+   }
    /**
     * check if it's installed xorg
     * @returns true if xorg is installed
