@@ -802,6 +802,7 @@ export default class Ovary {
     * @param verbose
     */
    async bindLiveFs(verbose = false) {
+      verbose = false
       const echo = Utils.setEcho(verbose)
       if (verbose) {
          console.log('ovary: bindLiveFs')
@@ -1288,9 +1289,18 @@ export default class Ovary {
        * grub.cfg2 -> /boot/grub/x86_64-efi
        * grub.cfg3 -> /boot/grub
        */
-      const tempDir = shx.exec('mktemp -d /tmp/work_temp.XXXX', { silent: true }).stdout.trim()
-      shx.mkdir('-p', `${tempDir}/boot/grub`)
-      const grubCfg = `${tempDir}/boot/grub/grub.cfg`
+      
+      /**
+       * Creo o cancello e creo: memdiskDir
+       */
+      const memdiskDir = this.settings.work_dir.path + 'memdiskDir'
+      if(fs.existsSync(memdiskDir)) {
+         await exec(`rm ${memdiskDir} -rf`, echo)
+      }
+      shx.mkdir('-p', `${memdiskDir}`)
+      shx.mkdir('-p', `${memdiskDir}/boot`)
+      shx.mkdir('-p', `${memdiskDir}/boot/grub`)
+      const grubCfg = `${memdiskDir}/boot/grub/grub.cfg`
       let text = ''
       text += 'search --file --set=root /isolinux/isolinux.cfg\n'
       text += 'set prefix=($root)/boot/grub\n'
@@ -1299,38 +1309,38 @@ export default class Ovary {
 
 
       /**
-       * Creiamo efi-work
+       * Creo o cancello e creo: efi-work
        */
       if (fs.existsSync(this.settings.efi_work)) {
          await exec(`rm ${this.settings.efi_work} -rf`, echo)
       }
       shx.mkdir('-p', this.settings.efi_work)
       process.chdir(this.settings.efi_work)
-      shx.mkdir('-p', `./boot/grub/${Utils.machineUEFI()}`)
-      shx.mkdir('-p', './efi/boot')
+      shx.mkdir('-p', `${this.settings.efi_work}/boot/grub/${Utils.machineUEFI()}`)
+      shx.mkdir('-p', `${this.settings.efi_work}/efi/boot`)
 
       // second grub.cfg file
-      let cmd = `for i in $(ls /usr/lib/grub/${Utils.machineUEFI()}|grep part_|grep .mod|sed \'s/.mod//\'); do echo "insmod $i" >> boot/grub/${Utils.machineUEFI()}/grub.cfg; done`
+      let cmd = `for i in $(ls /usr/lib/grub/${Utils.machineUEFI()}|grep part_|grep .mod|sed \'s/.mod//\'); do echo "insmod $i" >> ${this.settings.efi_work}/boot/grub/${Utils.machineUEFI()}/grub.cfg; done`
       await exec(cmd, echo)
 
       // Additional modules so we don't boot in blind mode. I don't know which ones are really needed.
-      cmd = `for i in efi_gop efi_gop efi_uga gfxterm video_bochs video_cirrus jpeg png ; do echo "insmod $i" >> boot/grub/${Utils.machineUEFI()}/grub.cfg ; done`
+      cmd = `for i in efi_gop efi_gop efi_uga gfxterm video_bochs video_cirrus jpeg png ; do echo "insmod $i" >> ${this.settings.efi_work}/boot/grub/${Utils.machineUEFI()}/grub.cfg ; done`
       await exec(cmd, echo)
 
-      await exec(`echo source /boot/grub/grub.cfg >> boot/grub/${Utils.machineUEFI()}/grub.cfg`, echo)
+      await exec(`echo source /boot/grub/grub.cfg >> ${this.settings.efi_work}/boot/grub/${Utils.machineUEFI()}/grub.cfg`, echo)
       /**
        * fine lavoro in efi_work
        */
 
       /**
-       * torno in tempDir
+       * torno in memdiskDir
        */
-       process.chdir(tempDir)
+       process.chdir(memdiskDir)
       // make a tarred "memdisk" to embed in the grub image
       await exec('tar -cvf memdisk boot', echo)
 
       // make the grub image
-      await exec(`${whichGrubIsInstalled}-mkimage  -O ${Utils.machineUEFI()} -m memdisk -o bootx64.efi -p '(memdisk)/boot/grub' search iso9660 configfile normal memdisk tar cat part_msdos part_gpt fat ext2 ntfs ntfscomp hfsplus chain boot linux`, echo)
+      await exec(`${whichGrubIsInstalled}-mkimage  -O ${Utils.machineUEFI()} -m memdisk -o ${memdiskDir}/bootx64.efi -p '(memdisk)/boot/grub' search iso9660 configfile normal memdisk tar cat part_msdos part_gpt fat ext2 ntfs ntfscomp hfsplus chain boot linux`, echo)
 
 
       /**
@@ -1338,22 +1348,22 @@ export default class Ovary {
        */
        process.chdir(this.settings.efi_work)
       // copy the grub image to efi/boot (to go later in the device's root)
-      shx.cp(`${tempDir}/bootx64.efi`, `${this.settings.efi_work}/efi/boot`)
+      shx.cp(`${memdiskDir}/bootx64.efi`, `${this.settings.efi_work}/efi/boot`)
 
       /**
        * Creazione immagine di boot: efiboot.img
        */
       await exec(`dd if=/dev/zero of=${this.settings.efi_work}/boot/grub/efiboot.img bs=1K count=1440`, echo)
       await exec(`/sbin/mkdosfs -F 12 ${this.settings.efi_work}/boot/grub/efiboot.img`, echo)
-      shx.mkdir('-p', `${tempDir}/img-mnt`)
-      await exec(`mount -o loop ${this.settings.efi_work}/boot/grub/efiboot.img ${tempDir}/img-mnt`, echo)
-      shx.mkdir('-p', `${tempDir}img-mnt/efi/boot`)
-      shx.cp('-r', `${tempDir}/bootx64.efi`, `${tempDir}/img-mnt/efi/boot`)
+      shx.mkdir('-p', `${memdiskDir}/img-mnt`)
+      await exec(`mount -o loop ${this.settings.efi_work}/boot/grub/efiboot.img ${memdiskDir}/img-mnt`, echo)
+      shx.mkdir('-p', `${memdiskDir}/img-mnt/efi/boot`)
+      shx.cp('-r', `${memdiskDir}/bootx64.efi`, `${memdiskDir}/img-mnt/efi/boot`)
 
       // ###############################
 
-      // copy modules and font in tempDir?
-      shx.cp('-r', `/usr/lib/grub/${Utils.machineUEFI()}/*`, `${tempDir}/boot/grub/${Utils.machineUEFI()}/`)
+      // copy modules and font in memdiskDir?
+      shx.cp('-r', `/usr/lib/grub/${Utils.machineUEFI()}/*`, `${memdiskDir}/boot/grub/${Utils.machineUEFI()}/`)
 
       // if this doesn't work try another font from the same place (grub's default, unicode.pf2, is much larger)
       // Either of these will work, and they look the same to me. Unicode seems to work with qemu. -fsr
@@ -1362,8 +1372,8 @@ export default class Ovary {
       } else if (fs.existsSync('/usr/share/grub2/unicode.pf2')) {
          fs.copyFileSync('/usr/share/grub2/unicode.pf2', 'boot/grub/font.pf2')
       }
-      await exec(`umount ${tempDir}/img-mnt`, echo)
-      await exec(`rmdir ${tempDir}/img-mnt`, echo)
+      await exec(`umount ${memdiskDir}/img-mnt`, echo)
+      await exec(`rmdir ${memdiskDir}/img-mnt`, echo)
 
       process.chdir(currentDir)
 
