@@ -4,6 +4,7 @@ export interface IDistro {
    distroLike: string
    versionId: string
    versionLike: string
+   usrLibPath: string
    isolinuxPath: string
    syslinuxPath: string
    squashFs: string

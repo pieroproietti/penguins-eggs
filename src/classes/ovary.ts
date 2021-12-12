@@ -579,9 +579,11 @@ export default class Ovary {
       }
       await exec(`cp ${this.settings.distro.syslinuxPath}/vesamenu.c32 ${this.settings.work_dir.pathIso}/isolinux/`, echo)
       await exec(`cp ${this.settings.distro.syslinuxPath}/chain.c32 ${this.settings.work_dir.pathIso}/isolinux/`, echo)
-      await exec(`cp ${this.settings.distro.syslinuxPath}/ldlinux.c32 ${this.settings.work_dir.pathIso}/isolinux/`, echo)
-      await exec(`cp ${this.settings.distro.syslinuxPath}/libcom32.c32 ${this.settings.work_dir.pathIso}/isolinux/`, echo)
-      await exec(`cp ${this.settings.distro.syslinuxPath}/libutil.c32 ${this.settings.work_dir.pathIso}/isolinux/`, echo)
+      if (Pacman.distro().familyId !== 'suse') {
+         await exec(`cp ${this.settings.distro.syslinuxPath}/ldlinux.c32 ${this.settings.work_dir.pathIso}/isolinux/`, echo)
+         await exec(`cp ${this.settings.distro.syslinuxPath}/libcom32.c32 ${this.settings.work_dir.pathIso}/isolinux/`, echo)
+         await exec(`cp ${this.settings.distro.syslinuxPath}/libutil.c32 ${this.settings.work_dir.pathIso}/isolinux/`, echo)
+      }
    }
 
    /**
@@ -1079,11 +1081,18 @@ export default class Ovary {
          cmds.push(await rexec('chroot ' + this.settings.work_dir.merged + ' echo ' + this.settings.config.user_opt + ':' + this.settings.config.user_opt_passwd + '| chroot ' + this.settings.work_dir.merged + ' chpasswd', verbose))
       }
       cmds.push(await rexec('chroot  ' + this.settings.work_dir.merged + ' cp /etc/skel/. /home/' + this.settings.config.user_opt + ' -R', verbose))
-      cmds.push(await rexec('chroot  ' + this.settings.work_dir.merged + ' chown ' + this.settings.config.user_opt + ':' + this.settings.config.user_opt + ' /home/' + this.settings.config.user_opt + ' -R', verbose))
-      if (Pacman.distro().familyId === 'debian') {
-         cmds.push(await rexec(`chroot ${this.settings.work_dir.merged} usermod -aG sudo ${this.settings.config.user_opt}`, verbose))
-      } else if ((Pacman.distro().familyId === 'fedora') || (Pacman.distro().familyId === 'archlinux')) {
+
+      if (Pacman.distro().familyId !== 'suse') {
+         cmds.push(await rexec('chroot  ' + this.settings.work_dir.merged + ' chown ' + this.settings.config.user_opt + ':' + this.settings.config.user_opt + ' /home/' + this.settings.config.user_opt + ' -R', verbose))
+      } else {
+         cmds.push(await rexec('chroot  ' + this.settings.work_dir.merged + ' chown ' + this.settings.config.user_opt + ':users' + ' /home/' + this.settings.config.user_opt + ' -R', verbose))
+      }
+
+      // Aggiungo utente a sudo o wheel
+      if (Pacman.distro().familyId !== 'debian') {
          cmds.push(await rexec(`chroot ${this.settings.work_dir.merged} usermod -aG wheel ${this.settings.config.user_opt}`, verbose))
+      } else {
+         cmds.push(await rexec(`chroot ${this.settings.work_dir.merged} usermod -aG sudo ${this.settings.config.user_opt}`, verbose))
       }
 
       /**
@@ -1256,12 +1265,16 @@ export default class Ovary {
          if (Pacman.packageIsInstalled('grub-common')) {
             grubInstalled = true
          }
+      } else if (Pacman.distro().familyId === 'fedora') {
+         if (Pacman.packageIsInstalled('grub2-common.noarch')) {
+            grubInstalled = true
+         }
       } else if (Pacman.distro().familyId === 'archlinux') {
          if (Pacman.packageIsInstalled('grub')) {
             grubInstalled = true
          }
-      } else if (Pacman.distro().familyId === 'fedora') {
-         if (Pacman.packageIsInstalled('grub2-common.noarch')) {
+      } else if (Pacman.distro().familyId === 'suse') {
+         if (Pacman.packageIsInstalled('grub2')) {
             grubInstalled = true
          }
       }
@@ -1343,10 +1356,16 @@ export default class Ovary {
 
       // make the grub image
       let grubMkImage = 'grub-mkimage '
+      let destArch = Utils.machineArch()
       if (Pacman.distro().familyId === 'fedora') {
          grubMkImage = 'grub2-mkimage '
+         destArch = 'i386-efi'
+      } else if (Pacman.distro().familyId === 'suse') {
+         grubMkImage = 'grub2-mkimage '
+         destArch = 'i386-efi'
       }
-      await exec(`${grubMkImage} -O ${Utils.machineUEFI()} -m memdisk -o bootx64.efi -p '(memdisk)/boot/grub' search iso9660 configfile normal memdisk tar cat part_msdos part_gpt fat ext2 ntfs ntfscomp hfsplus chain boot linux`, echo)
+
+      await exec(`${grubMkImage} -O ${destArch} -m memdisk -o bootx64.efi -p '(memdisk)/boot/grub' search iso9660 configfile normal memdisk tar cat part_msdos part_gpt fat ext2 ntfs ntfscomp hfsplus chain boot linux`, echo)
       // pospd (torna a efi_work)
       process.chdir(this.settings.efi_work)
 
@@ -1364,11 +1383,16 @@ export default class Ovary {
       // ###############################
 
       // copy modules and font
-      shx.cp('-r', `/usr/lib/grub/${Utils.machineUEFI()}/*`, `boot/grub/${Utils.machineUEFI()}/`)
+      shx.cp('-r', `/usr/lib/grub/${destArch}/*`, `boot/grub/${Utils.machineUEFI()}/`)
 
       // if this doesn't work try another font from the same place (grub's default, unicode.pf2, is much larger)
       // Either of these will work, and they look the same to me. Unicode seems to work with qemu. -fsr
-      fs.copyFileSync('/usr/share/grub/unicode.pf2', 'boot/grub/font.pf2')
+      if (fs.existsSync('/usr/share/grub/unicode.pf2')){
+         fs.copyFileSync('/usr/share/grub/unicode.pf2', 'boot/grub/font.pf2')
+      } else if (fs.existsSync('/usr/share/grub2/unicode.pf2')){
+         fs.copyFileSync('/usr/share/grub2/unicode.pf2', 'boot/grub/font.pf2')
+      }
+
 
       // doesn't need to be root-owned ${pwd} = current Directory
       // const user = Utils.getPrimaryUser()

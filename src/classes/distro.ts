@@ -36,6 +36,7 @@ import shell = require('shelljs')
 import inquirer = require('inquirer')
 
 import { IRemix, IDistro } from '../interfaces'
+import Utils from './utils'
 
 /**
  * Classe
@@ -46,6 +47,7 @@ class Distro implements IDistro {
    distroLike: string
    versionId: string
    versionLike: string
+   usrLibPath: string
    isolinuxPath: string
    syslinuxPath: string
    squashFs: string
@@ -61,6 +63,7 @@ class Distro implements IDistro {
       this.distroLike = ''
       this.versionId = ''
       this.versionLike = ''
+      this.usrLibPath = '/usr/lib'
       this.isolinuxPath = ''
       this.syslinuxPath = ''
       this.squashFs = ''
@@ -267,7 +270,7 @@ class Distro implements IDistro {
          /**
           * Fedora
           */
-       } else if (this.versionId === 'ThirtyFive') {
+      } else if (this.versionId === 'ThirtyFive') {
          this.familyId = "fedora"
          this.distroLike = 'Fedora'
          this.versionLike = 'thirtyfive'
@@ -276,13 +279,13 @@ class Distro implements IDistro {
          /**
           * openSuse
           */
-       } else if (this.distroId === 'openSUSE') {
+      } else if (this.distroId === 'openSUSE') {
          this.familyId = "suse"
          this.distroLike = 'SUSE'
          this.versionId = 'tumbleweed'
          this.versionLike = 'tumbleweed'
       } else {
-         
+
          /**
           * se proprio non riesco provo con Debian buster
           */
@@ -303,22 +306,27 @@ class Distro implements IDistro {
       }
 
       /**
-       * setting syslinux and isolinux paths
+       * setting paths: syslinux, isolinux, usrLib
        */
-       if (this.familyId === 'debian') {
+      if (this.familyId === 'debian') {
          this.isolinuxPath = '/usr/lib/ISOLINUX/'
          this.syslinuxPath = '/usr/lib/syslinux/modules/bios/'
+         if (Utils.machineArch() === 'amd64') {
+            this.usrLibPath = '/usr/lib/x86_64-linux-gnu/'
+         } else if (Utils.machineArch() === 'i386') {
+            this.usrLibPath = '/usr/lib/i386-linux-gnu/'
+         }
       } else if (this.familyId === 'fedora') {
          this.syslinuxPath = '/usr/share/syslinux/'
-         this.isolinuxPath = '/usr/share/syslinux/'
+         this.isolinuxPath = this.syslinuxPath
       } else if (this.familyId === 'archlinux') {
          this.syslinuxPath = '/usr/lib/syslinux/bios/'
          this.isolinuxPath = this.syslinuxPath
       } else if (this.familyId === 'suse') {
          this.syslinuxPath = '/usr/share/syslinux/'
          this.isolinuxPath = this.syslinuxPath
+         this.usrLibPath = '/usr/lib64/'
       }
-
 
       /**
        * Special cases...
