@@ -36,7 +36,6 @@ import shell = require('shelljs')
 import inquirer = require('inquirer')
 
 import { IRemix, IDistro } from '../interfaces'
-import Utils from './utils'
 
 /**
  * Classe
@@ -311,9 +310,8 @@ class Distro implements IDistro {
       if (this.familyId === 'debian') {
          this.isolinuxPath = '/usr/lib/ISOLINUX/'
          this.syslinuxPath = '/usr/lib/syslinux/modules/bios/'
-         if (Utils.machineArch() === 'amd64') {
-            this.usrLibPath = '/usr/lib/x86_64-linux-gnu/'
-         } else if (Utils.machineArch() === 'i386') {
+         this.usrLibPath = '/usr/lib/x86_64-linux-gnu/'
+         if (process.arch === 'ia32') {
             this.usrLibPath = '/usr/lib/i386-linux-gnu/'
          }
       } else if (this.familyId === 'fedora') {
