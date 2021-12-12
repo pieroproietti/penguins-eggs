@@ -32,7 +32,7 @@
         "shelljs": "^0.8.4"
     },
     "devDependencies": {
-        "@oclif/dev-cli": "^1.26.9",
+        "@oclif/dev-cli":  "github:oclif/dev-cli",
         "@oclif/test": "^1.2.8",
         "@types/axios": "^0.14.0",
         "@types/clear": "^0.1.1",
@@ -47,7 +47,6 @@
         "@types/react": "^17.0.5",
         "@types/shelljs": "^0.8.8",
         "@typescript-eslint/eslint-plugin": "^4.23.0",
-        "dev-cli": "github:oclif/dev-cli",
         "eslint": "^7.26.0",
         "globby": "^10.0.2",
         "mocha": "^8.4.0",
