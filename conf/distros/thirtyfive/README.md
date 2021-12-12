@@ -1,3 +1,3 @@
-# Archlinux
+# fedoras
 
 do to
