@@ -1271,14 +1271,16 @@ export default class Ovary {
          console.log('ovary: makeEfi')
       }
 
-      // Controlla la presenza di grub
+      const currentDir = process.cwd()
+
+      /**
+       * il pachetto grub/grub2 DEVE essere presente
+       */
       let whichGrubIsInstalled = Pacman.whichGrubIsInstalled()
       if (whichGrubIsInstalled === '') {
-         Utils.error(`something went wrong! Cannot find package grub-common.`)
-         Utils.warning('Problably your system boot with rEFInd or others, to generate a UEFI image we need grub too')
+         Utils.error(`Something went wrong! Cannot find grub`)
          process.exit(1)
       }
-
 
       /**
        * Carica il primo grub.cfg dal memdisk, quindi in sequenza
@@ -1287,19 +1289,14 @@ export default class Ovary {
        * grub.cfg3 -> /boot/grub
        */
       const tempDir = shx.exec('mktemp -d /tmp/work_temp.XXXX', { silent: true }).stdout.trim()
-
-      // for initial grub.cfg
       shx.mkdir('-p', `${tempDir}/boot/grub`)
       const grubCfg = `${tempDir}/boot/grub/grub.cfg`
-      shx.touch(grubCfg)
       let text = ''
       text += 'search --file --set=root /isolinux/isolinux.cfg\n'
       text += 'set prefix=($root)/boot/grub\n'
       text += `source $prefix/${Utils.machineUEFI()}/grub.cfg\n`
       Utils.write(grubCfg, text)
 
-      // Salviamo la directory corrente
-      const currentDir = process.cwd()
 
       /**
        * Creiamo efi-work
@@ -1325,33 +1322,38 @@ export default class Ovary {
        * fine lavoro in efi_work
        */
 
-      process.chdir(tempDir)
-
-
+      /**
+       * torno in tempDir
+       */
+       process.chdir(tempDir)
       // make a tarred "memdisk" to embed in the grub image
       await exec('tar -cvf memdisk boot', echo)
 
       // make the grub image
       await exec(`${whichGrubIsInstalled}-mkimage  -O ${Utils.machineUEFI()} -m memdisk -o bootx64.efi -p '(memdisk)/boot/grub' search iso9660 configfile normal memdisk tar cat part_msdos part_gpt fat ext2 ntfs ntfscomp hfsplus chain boot linux`, echo)
-      // popcd (torna a efi_work)
-      process.chdir(this.settings.efi_work)
-      Utils.warning("Ritorno a: " + process.cwd())
 
+
+      /**
+       * torno in efi-work
+       */
+       process.chdir(this.settings.efi_work)
       // copy the grub image to efi/boot (to go later in the device's root)
-      shx.cp(`${tempDir}/bootx64.efi`, `./efi/boot`)
+      shx.cp(`${tempDir}/bootx64.efi`, `${this.settings.efi_work}/efi/boot`)
 
-      // Do the boot image "boot/grub/efiboot.img"
-      await exec('dd if=/dev/zero of=boot/grub/efiboot.img bs=1K count=1440', echo)
-      await exec('/sbin/mkdosfs -F 12 boot/grub/efiboot.img', echo)
-      shx.mkdir('-p', 'img-mnt')
-      await exec('mount -o loop boot/grub/efiboot.img img-mnt', echo)
-      shx.mkdir('-p', 'img-mnt/efi/boot')
-      shx.cp('-r', `${tempDir}/bootx64.efi`, 'img-mnt/efi/boot/')
+      /**
+       * Creazione immagine di boot: efiboot.img
+       */
+      await exec(`dd if=/dev/zero of=${this.settings.efi_work}/boot/grub/efiboot.img bs=1K count=1440`, echo)
+      await exec(`/sbin/mkdosfs -F 12 ${this.settings.efi_work}/boot/grub/efiboot.img`, echo)
+      shx.mkdir('-p', `${tempDir}/img-mnt`)
+      await exec(`mount -o loop ${this.settings.efi_work}/boot/grub/efiboot.img ${tempDir}/img-mnt`, echo)
+      shx.mkdir('-p', `${tempDir}img-mnt/efi/boot`)
+      shx.cp('-r', `${tempDir}/bootx64.efi`, `${tempDir}/img-mnt/efi/boot`)
 
       // ###############################
 
-      // copy modules and font
-      shx.cp('-r', `/usr/lib/grub/${Utils.machineUEFI()}/*`, `boot/grub/${Utils.machineUEFI()}/`)
+      // copy modules and font in tempDir?
+      shx.cp('-r', `/usr/lib/grub/${Utils.machineUEFI()}/*`, `${tempDir}/boot/grub/${Utils.machineUEFI()}/`)
 
       // if this doesn't work try another font from the same place (grub's default, unicode.pf2, is much larger)
       // Either of these will work, and they look the same to me. Unicode seems to work with qemu. -fsr
@@ -1360,8 +1362,8 @@ export default class Ovary {
       } else if (fs.existsSync('/usr/share/grub2/unicode.pf2')) {
          fs.copyFileSync('/usr/share/grub2/unicode.pf2', 'boot/grub/font.pf2')
       }
-      await exec('umount img-mnt', echo)
-      await exec('rmdir img-mnt', echo)
+      await exec(`umount ${tempDir}/img-mnt`, echo)
+      await exec(`rmdir ${tempDir}/img-mnt`, echo)
 
       process.chdir(currentDir)
 
