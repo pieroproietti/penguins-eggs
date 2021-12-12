@@ -116,7 +116,7 @@ export default class Settings {
       this.work_dir.workdir = this.work_dir.path + '.overlay/workdir'
       this.work_dir.merged = this.work_dir.path + 'filesystem.squashfs'
 
-      this.efi_work = this.work_dir.path + 'efi/'
+      this.efi_work = this.work_dir.path + 'efi-work/'
       this.work_dir.pathIso = this.work_dir.path + 'iso/'
 
       if (this.config.snapshot_basename === 'hostname') {
