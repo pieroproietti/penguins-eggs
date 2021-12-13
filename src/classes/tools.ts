@@ -70,8 +70,8 @@ export default class Tools {
       console.log(`Can't find: ${this.tools_yaml}`)
       process.exit(1)
     }
+
     return foundSettings
   }
 }
-
 

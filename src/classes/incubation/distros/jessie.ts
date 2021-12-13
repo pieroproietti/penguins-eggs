@@ -1,6 +1,6 @@
 /**
  * penguins-eggs: jessie.ts
- * 
+ *
  * it work both: jessie
  *
  * author: Piero Proietti
@@ -12,11 +12,11 @@ import shx  from 'shelljs'
 import yaml  from 'js-yaml'
 import path  from 'path'
 
-import { IRemix, IDistro } from '../../../interfaces'
+import {IRemix, IDistro} from '../../../interfaces'
 import {IInstaller} from '../../../interfaces/i-installer'
 import Fisherman from '../fisherman'
 
-import { exec } from '../../../lib/utils'
+import {exec} from '../../../lib/utils'
 
 /**
  *
@@ -34,7 +34,6 @@ export class Jessie {
 
    user_opt: string
 
-
    /**
     * @param remix
     * @param distro
@@ -42,26 +41,25 @@ export class Jessie {
     * @param verbose
     */
    constructor(installer : IInstaller, remix: IRemix, distro: IDistro, release: boolean, user_opt: string, verbose = false) {
-      this.installer = installer
-      this.remix = remix
-      this.distro = distro
-      this.user_opt = user_opt
-      this.verbose = verbose
-      this.release = release
+     this.installer = installer
+     this.remix = remix
+     this.distro = distro
+     this.user_opt = user_opt
+     this.verbose = verbose
+     this.release = release
    }
-
 
    /**
     *
     */
    async create() {
-      const fisherman = new Fisherman(this.distro, this.installer, this.verbose)
+     const fisherman = new Fisherman(this.distro, this.installer, this.verbose)
 
-      await fisherman.settings(this.remix.branding)
+     await fisherman.settings(this.remix.branding)
 
-      await fisherman.buildModule('partition', this.remix.branding)
-      await fisherman.buildCalamaresModule('sources-yolk', true)
-      await fisherman.moduleRemoveuser(this.user_opt)
-      await fisherman.buildCalamaresModule('sources-yolk-unmount', false)
+     await fisherman.buildModule('partition', this.remix.branding)
+     await fisherman.buildCalamaresModule('sources-yolk', true)
+     await fisherman.moduleRemoveuser(this.user_opt)
+     await fisherman.buildCalamaresModule('sources-yolk-unmount', false)
    }
 }

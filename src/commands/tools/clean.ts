@@ -4,7 +4,7 @@
  * email: piero.proietti@gmail.com
  * license: MIT
  */
-import { Command, flags } from '@oclif/command'
+import {Command, flags} from '@oclif/command'
 import Utils from '../../classes/utils'
 import Bleach from '../../classes/bleach'
 
@@ -14,24 +14,24 @@ export default class Clean extends Command {
    static aliases = ['clean']
 
    static flags = {
-      help: flags.help({ char: 'h' }),
-      verbose: flags.boolean({ char: 'v', description: 'verbose' })
+     help: flags.help({char: 'h'}),
+     verbose: flags.boolean({char: 'v', description: 'verbose'}),
    }
 
    async run() {
-      const { flags } = this.parse(Clean)
-      Utils.titles(this.id + ' ' + this.argv)
+     const {flags} = this.parse(Clean)
+     Utils.titles(this.id + ' ' + this.argv)
 
-      let verbose = false
-      if (flags.verbose) {
-         verbose = true
-      }
+     let verbose = false
+     if (flags.verbose) {
+       verbose = true
+     }
 
-      if (Utils.isRoot()) {
-         if (await Utils.customConfirm(`Select yes to continue...`)) {
-            const bleach = new Bleach()
-            bleach.clean(verbose)
-         }
-      }
+     if (Utils.isRoot()) {
+       if (await Utils.customConfirm('Select yes to continue...')) {
+         const bleach = new Bleach()
+         bleach.clean(verbose)
+       }
+     }
    }
 }

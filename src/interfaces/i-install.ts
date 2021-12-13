@@ -13,5 +13,4 @@ export interface IInstall {
     prerequisites: boolean,
     needApt: boolean,
  }
- 
- 
+
