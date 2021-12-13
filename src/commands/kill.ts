@@ -11,8 +11,7 @@ import Utils from '../classes/utils'
 import Settings from '../classes/settings'
 import { IWorkDir } from '../interfaces/i-workdir'
 
-//import { execute, pipe } from '@getvim/execute'
-const exec = require('../lib/utils').exec
+import {exec} from'../lib/utils'
 
 export default class Kill extends Command {
    config_file = '/etc/penguins-eggs.d/eggs.yaml' as string

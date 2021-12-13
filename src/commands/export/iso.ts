@@ -4,7 +4,7 @@
 import { Command, flags } from '@oclif/command'
 import Tools from '../../classes/tools'
 import Utils from '../../classes/utils'
-const exec = require('../../lib/utils').exec;
+import {exec} from'../../lib/utils'
 
 export default class ExportIso extends Command {
 

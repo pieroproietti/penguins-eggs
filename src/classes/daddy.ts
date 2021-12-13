@@ -18,7 +18,7 @@ import fs = require('fs')
 import { IMyAddons } from '../interfaces'
 import chalk  from 'chalk'
 
-const exec = require('../lib/utils').exec
+import {exec} from'../lib/utils'
 
 interface editConf {
     snapshot_basename: string

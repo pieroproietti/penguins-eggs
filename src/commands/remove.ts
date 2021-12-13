@@ -10,7 +10,7 @@ import Pacman from '../classes/pacman'
 import { IInstall } from '../interfaces'
 import { execSync } from 'child_process'
 
-const exec = require('../lib/utils').exec
+import {exec} from'../lib/utils'
 
 /**
  *

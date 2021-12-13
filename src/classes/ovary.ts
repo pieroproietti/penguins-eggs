@@ -22,7 +22,7 @@ import PveLive from './pve-live'
 import { IMyAddons } from '../interfaces'
 
 // libraries
-const exec = require('../lib/utils').exec
+import {exec} from'../lib/utils'
 
 // classes
 import Utils from './utils'
@@ -1354,26 +1354,24 @@ export default class Ovary {
        */
       await exec(`dd if=/dev/zero of=${this.settings.efi_work}/boot/grub/efiboot.img bs=1K count=1440`, echo)
       await exec(`/sbin/mkdosfs -F 12 ${this.settings.efi_work}/boot/grub/efiboot.img`, echo)
-      shx.mkdir('-p', `${memdiskDir}/img-mnt`)
+      await exec(`mkdir ${memdiskDir}/img-mnt`, echo)
       await exec(`mount -o loop ${this.settings.efi_work}/boot/grub/efiboot.img ${memdiskDir}/img-mnt`, echo)
-      shx.mkdir('-p', `${memdiskDir}/img-mnt/efi/boot`)
-      shx.cp('-r', `${memdiskDir}/bootx64.efi`, `${memdiskDir}/img-mnt/efi/boot`)
+      await exec(`mkdir ${memdiskDir}/img-mnt/efi`, echo)
+      await exec(`mkdir ${memdiskDir}/img-mnt/efi/boot`, echo)
+      await exec(`cp -r ${memdiskDir}/bootx64.efi ${memdiskDir}/img-mnt/efi/boot`, echo)
 
       // ###############################
 
       // copy modules and font in memdiskDir?
-      shx.cp('-r', `/usr/lib/grub/${Utils.machineUEFI()}/*`, `${memdiskDir}/boot/grub/${Utils.machineUEFI()}/`)
+      await exec(`cp -r /usr/lib/grub/${Utils.machineUEFI()}/* ${memdiskDir}/boot/grub/${Utils.machineUEFI()}/`, echo)
 
       // if this doesn't work try another font from the same place (grub's default, unicode.pf2, is much larger)
       // Either of these will work, and they look the same to me. Unicode seems to work with qemu. -fsr
       if (fs.existsSync('/usr/share/grub/unicode.pf2')) {
-         fs.copyFileSync('/usr/share/grub/unicode.pf2', 'boot/grub/font.pf2')
+         await exec(`cp '/usr/share/grub/unicode.pf2 ${this.settings.efi_work}/boot/grub/font.pf2`, echo)
       } else if (fs.existsSync('/usr/share/grub2/unicode.pf2')) {
-         fs.copyFileSync('/usr/share/grub2/unicode.pf2', 'boot/grub/font.pf2')
+         await exec(`cp '/usr/share/grub2/unicode.pf2 ${this.settings.efi_work}/boot/grub/font.pf2`, echo)
       }
-      await exec(`umount ${memdiskDir}/img-mnt`, echo)
-      await exec(`rmdir ${memdiskDir}/img-mnt`, echo)
-
       process.chdir(currentDir)
 
       /**
@@ -1430,6 +1428,10 @@ export default class Ovary {
          locales: process.env.LANG,
       }
       fs.writeFileSync(grubDest, mustache.render(template, view))
+
+      await exec(`umount ${memdiskDir}/img-mnt`, echo)
+      await exec(`rmdir ${memdiskDir}/img-mnt`, echo)
+
    }
    // #######################################################################################
 

@@ -9,7 +9,7 @@ import Utils from '../classes/utils'
 import Daddy from '../classes/daddy'
 import chalk = require('chalk')
 
-const exec = require('../lib/utils').exec
+import {exec} from'../lib/utils'
 
 
 export default class Dad extends Command {

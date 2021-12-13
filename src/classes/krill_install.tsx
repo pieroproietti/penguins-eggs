@@ -59,7 +59,7 @@ import Distro from './distro';
 import { IInstaller, IDevices, IDevice } from '../interfaces'
 import { ICalamaresModule, ILocation, IKeyboard, IPartitions, IUsers } from '../interfaces/i-krill'
 import { execSync } from 'child_process'
-const exec = require('../lib/utils').exec
+import {exec} from'../lib/utils'
 
 /**
  * hatching: installazione o cova!!!

@@ -19,7 +19,6 @@ import Settings from './settings'
 import { execSync } from 'child_process'
 import { IConfig } from '../interfaces'
 import { exec } from '../lib/utils'
-//const exec = require('../lib/utils').exec
 
 import Debian from './family/debian'
 import Fedora from './family/fedora'

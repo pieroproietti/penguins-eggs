@@ -1,7 +1,7 @@
 import { Command, flags } from '@oclif/command'
 import Utils from '../classes/utils'
 
-const exec = require('../lib/utils').exec
+import {exec} from'../lib/utils'
 
 export default class Adapt extends Command {
    static description = 'adapt monitor resolution for VM only'

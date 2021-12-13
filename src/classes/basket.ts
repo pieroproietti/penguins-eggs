@@ -20,7 +20,7 @@ const agent = new https.Agent({
 })
 
 
-const exec = require('../lib/utils').exec
+import {exec} from'../lib/utils'
 
 const config_file = '/etc/penguins-eggs.d/eggs.yaml' as string
 const config_tools = '/etc/penguins-eggs.d/tools.yaml' as string
