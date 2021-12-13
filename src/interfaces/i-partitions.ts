@@ -1,6 +1,6 @@
 export type IPartitions = {
     efiSystemPartition: string,
-    
+
     userSwapChoices: string[],
     drawNestedPartitions: boolean,
     alwaysShowPartitionLabels: boolean,

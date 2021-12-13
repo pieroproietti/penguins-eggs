@@ -10,129 +10,129 @@ import fs from 'fs'
 import Utils from './utils'
 
 // libraries
-import {exec} from'../lib/utils'
-
+import {exec} from '../lib/utils'
 
 /**
  * Bleach:
  */
 export default class Bleach {
-   
-   /**
+  /**
     * clean
-    * @param verbose 
+    * @param verbose
     */
-   async clean(verbose = false) {
+  async clean(verbose = false) {
+    await this.cleanApt(verbose)
+    await this.cleanHistory(verbose)
+    await this.cleanJournal(verbose)
+    await this.cleanSystemCache(verbose)
+  }
 
-      await this.cleanApt(verbose)
-      await this.cleanHistory(verbose)
-      await this.cleanJournal(verbose)
-      await this.cleanSystemCache(verbose)
-   }
-
-   /**
+  /**
     * cleanApt
-    * @param verbose 
+    * @param verbose
     */
-   private async cleanApt(verbose = false) {
-      let echo = { echo: false, ignore: true, capture: false }
-      if (verbose) {
-         echo = { echo: true, ignore: true, capture: false }
-         Utils.warning('cleaning apt')
-      }
+  private async cleanApt(verbose = false) {
+    let echo = {echo: false, ignore: true, capture: false}
+    if (verbose) {
+      echo = {echo: true, ignore: true, capture: false}
+      Utils.warning('cleaning apt')
+    }
 
-      await exec('apt-get clean', echo)
-      await exec('apt-get autoclean', echo)
-      const dest = '/var/lib/apt/lists/'
-      rmdir(dest, verbose)
-   }
+    await exec('apt-get clean', echo)
+    await exec('apt-get autoclean', echo)
+    const dest = '/var/lib/apt/lists/'
+    rmdir(dest, verbose)
+  }
 
-   /**
+  /**
     * cleanHistory
-    * @param verbose 
+    * @param verbose
     */
-   private async cleanHistory(verbose = false) {
-      if (verbose) {
-         Utils.warning('cleaning bash history')
-      }
-      const dest = '/root/.bash_history'
-      if (fs.existsSync(dest)) {
-         await rm(dest, verbose)
-      }
-   }
+  private async cleanHistory(verbose = false) {
+    if (verbose) {
+      Utils.warning('cleaning bash history')
+    }
 
-   /**
+    const dest = '/root/.bash_history'
+    if (fs.existsSync(dest)) {
+      await rm(dest, verbose)
+    }
+  }
+
+  /**
     * cleanJournal
-    * @param verbose 
+    * @param verbose
     */
-   private async cleanJournal(verbose = false) {
-      let echo = { echo: false, ignore: true, capture: false }
-      if (verbose) {
-         echo = { echo: true, ignore: true, capture: false }
-         Utils.warning('cleaning journald')
-      }
-      if (Utils.isSystemd()) {
-         try {
-            await exec('journalctl --rotate', echo)
-            await exec('journalctl --vacuum-time=1s', echo)
-         } catch (error) {
-            Utils.error(error as string)
-         }
-      } else {
-         // Truncate logs, remove archived logs.
-         await exec(`find /var/log -name "*gz" -print0 | xargs -0r rm -f`, echo)
-         await exec(`find /var/log/ -type f -exec truncate -s 0 {} \\;`, echo)
-      }
-   }
+  private async cleanJournal(verbose = false) {
+    let echo = {echo: false, ignore: true, capture: false}
+    if (verbose) {
+      echo = {echo: true, ignore: true, capture: false}
+      Utils.warning('cleaning journald')
+    }
 
-   /**
+    if (Utils.isSystemd()) {
+      try {
+        await exec('journalctl --rotate', echo)
+        await exec('journalctl --vacuum-time=1s', echo)
+      } catch (error) {
+        Utils.error(error as string)
+      }
+    } else {
+      // Truncate logs, remove archived logs.
+      await exec('find /var/log -name "*gz" -print0 | xargs -0r rm -f', echo)
+      await exec('find /var/log/ -type f -exec truncate -s 0 {} \\;', echo)
+    }
+  }
+
+  /**
     * cleanSystemCache
-    * @param verbose 
+    * @param verbose
     */
-   private async cleanSystemCache(verbose = false) {
-      let echo = { echo: false, ignore: true, capture: false }
-      if (verbose) {
-         echo = { echo: true, ignore: true, capture: false }
-         Utils.warning('cleaning system cache')
-      }
-      // Clear PageCache only.
-      await exec('sync; echo 1 > /proc/sys/vm/drop_caches', echo)
+  private async cleanSystemCache(verbose = false) {
+    let echo = {echo: false, ignore: true, capture: false}
+    if (verbose) {
+      echo = {echo: true, ignore: true, capture: false}
+      Utils.warning('cleaning system cache')
+    }
 
-      // Clear dentries and inodes.
-      await exec('sync; echo 2 > /proc/sys/vm/drop_caches', echo)
+    // Clear PageCache only.
+    await exec('sync; echo 1 > /proc/sys/vm/drop_caches', echo)
 
-      // Clear PageCache, dentries and inodes.
-      await exec('sync; echo 3 > /proc/sys/vm/drop_caches', echo)
-   }
+    // Clear dentries and inodes.
+    await exec('sync; echo 2 > /proc/sys/vm/drop_caches', echo)
+
+    // Clear PageCache, dentries and inodes.
+    await exec('sync; echo 3 > /proc/sys/vm/drop_caches', echo)
+  }
 }
-
 
 /**
  *
  * @param dest
  */
 async function rm(dest = '', verbose = false) {
-   let echo = { echo: false, ignore: true, capture: false }
-   if (verbose) {
-      echo = { echo: true, ignore: true, capture: false }
-   }
+  let echo = {echo: false, ignore: true, capture: false}
+  if (verbose) {
+    echo = {echo: true, ignore: true, capture: false}
+  }
 
-   if (fs.existsSync(dest)) {
-      await exec(`rm ${dest} -rf`, echo)
-   } else {
-      console.log(`non esiste ${dest}`)
-   }
+  if (fs.existsSync(dest)) {
+    await exec(`rm ${dest} -rf`, echo)
+  } else {
+    console.log(`non esiste ${dest}`)
+  }
 }
 
 async function rmdir(dest = '', verbose = false) {
-   let echo = { echo: false, ignore: true, capture: false }
-   if (verbose) {
-      echo = { echo: true, ignore: true, capture: false }
-   }
-   const result: string[] = fs.readdirSync(dest)
-   if (result.length > 0) {
-      await exec(`rm ${dest} -rf`, echo)
-   }
+  let echo = {echo: false, ignore: true, capture: false}
+  if (verbose) {
+    echo = {echo: true, ignore: true, capture: false}
+  }
+
+  const result: string[] = fs.readdirSync(dest)
+  if (result.length > 0) {
+    await exec(`rm ${dest} -rf`, echo)
+  }
 }
 
 /**

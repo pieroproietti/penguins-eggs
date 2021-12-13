@@ -1,28 +1,28 @@
-import { Command, flags } from '@oclif/command'
+import {Command, flags} from '@oclif/command'
 import Utils from '../../classes/utils'
 import axios from 'axios'
 import https from 'https'
 const agent = new https.Agent({
-    rejectUnauthorized: false
+  rejectUnauthorized: false,
 })
 import yaml from 'js-yaml'
 
 /**
- * 
+ *
  */
 export default class ToolsStat extends Command {
   static description = 'get statistics from sourceforge'
 
   static flags = {
-    help: flags.help({ char: 'h' }),
-    month: flags.boolean({ char: 'm', description: 'current month' }),
-    year: flags.boolean({ char: 'y', description: 'current year' }),
+    help: flags.help({char: 'h'}),
+    month: flags.boolean({char: 'm', description: 'current month'}),
+    year: flags.boolean({char: 'y', description: 'current year'}),
   }
 
   static aliases = ['stat']
 
   async run() {
-    const { args, flags } = this.parse(ToolsStat)
+    const {args, flags} = this.parse(ToolsStat)
     Utils.titles(this.id + ' ' + this.argv)
 
     const yesterday = new Date()
@@ -30,13 +30,13 @@ export default class ToolsStat extends Command {
 
     // current date
     // adjust 0 before single digit date
-    const day = ("0" + yesterday.getDate()).slice(-2);
+    const day = ('0' + yesterday.getDate()).slice(-2)
 
     // current month
-    const month = ("0" + (yesterday.getMonth() + 1)).slice(-2);
+    const month = ('0' + (yesterday.getMonth() + 1)).slice(-2)
 
     // current year
-    const year = yesterday.getFullYear();
+    const year = yesterday.getFullYear()
 
     const end = year + '-' + month + '-' + day
     let start = year + '-' + month + '-' + day
@@ -60,10 +60,10 @@ export default class ToolsStat extends Command {
     url += request
     console.log(type)
     // const axios = require('axios').default
-    const res = await axios.get(url, { httpsAgent: agent })
+    const res = await axios.get(url, {httpsAgent: agent})
     const data = res.data
     console.log(data.countries)
-    //console.log(yaml.dump(data))
+    // console.log(yaml.dump(data))
   }
 }
 

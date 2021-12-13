@@ -9,11 +9,10 @@ import fs  from 'fs'
 import shx  from 'shelljs'
 import yaml  from 'js-yaml'
 import path  from 'path'
-import { IInstaller, IRemix, IDistro } from '../../../interfaces'
+import {IInstaller, IRemix, IDistro} from '../../../interfaces'
 import Fisherman from '../fisherman'
 
-import { exec } from '../../../lib/utils'
-
+import {exec} from '../../../lib/utils'
 
 interface IReplaces {
    search: string
@@ -27,7 +26,7 @@ export class Focal {
    verbose = false
 
    installer = {} as IInstaller
-   
+
    remix: IRemix
 
    distro: IDistro
@@ -36,59 +35,58 @@ export class Focal {
 
    user_opt: string
 
-
    /**
     * @param remix
     * @param distro
     * @param displaymanager
     * @param verbose
     */
-    constructor(installer : IInstaller, remix: IRemix, distro: IDistro, release: boolean, user_opt: string, verbose = false) {
-      this.installer = installer
-      this.remix = remix
-      this.distro = distro
-      this.user_opt = user_opt
-      this.verbose = verbose
-      this.release = release
+   constructor(installer : IInstaller, remix: IRemix, distro: IDistro, release: boolean, user_opt: string, verbose = false) {
+     this.installer = installer
+     this.remix = remix
+     this.distro = distro
+     this.user_opt = user_opt
+     this.verbose = verbose
+     this.release = release
    }
 
    /**
     *
     */
    async create() {
-      const fisherman = new Fisherman(this.distro, this.installer, this.verbose)
+     const fisherman = new Fisherman(this.distro, this.installer, this.verbose)
 
-      // console.log('creating settings: ' + this.remix.branding)
-      await fisherman.settings(this.remix.branding)
-      // console.log('creating modules: ' + this.remix.branding)
-      await fisherman.buildModule('partition', this.remix.branding)
-      await fisherman.buildModule('mount')
-      await fisherman.moduleUnpackfs()
-      await fisherman.buildCalamaresModule('sources-yolk', true)      
-      await fisherman.buildModule('machineid')
-      await fisherman.buildModule('fstab')
-      await fisherman.buildModule('locale')
-      await fisherman.buildModule('keyboard')
-      await fisherman.buildModule('localecfg')
-      await fisherman.buildModule('luksbootkeyfile')
-      await fisherman.buildModule('users')
-      await fisherman.moduleDisplaymanager()
-      await fisherman.buildModule('networkcfg')
-      await fisherman.buildModule('hwclock')
-      await fisherman.contextualprocess('before_bootloader_mkdirs')
-      await fisherman.shellprocess('bug-LP#1829805')
-      await fisherman.buildModule('initramfs')
-      await fisherman.buildModule('grubcfg')
-      await fisherman.contextualprocess('before_bootloader')
-      await fisherman.buildModule('bootloader')
-      await fisherman.contextualprocess('after_bootloader')
-      await fisherman.shellprocess('add386arch')
-      await fisherman.modulePackages(this.distro, this.release) //
-      await fisherman.moduleRemoveuser(this.user_opt)
-      await fisherman.buildCalamaresModule('remove-link', true)
-      await fisherman.buildCalamaresModule('sources-yolk', false)      
-      await fisherman.buildCalamaresModule('sources-yolk-unmount', false)      
-      await fisherman.buildModule('umount')
-      await fisherman.buildModule('finished')
+     // console.log('creating settings: ' + this.remix.branding)
+     await fisherman.settings(this.remix.branding)
+     // console.log('creating modules: ' + this.remix.branding)
+     await fisherman.buildModule('partition', this.remix.branding)
+     await fisherman.buildModule('mount')
+     await fisherman.moduleUnpackfs()
+     await fisherman.buildCalamaresModule('sources-yolk', true)
+     await fisherman.buildModule('machineid')
+     await fisherman.buildModule('fstab')
+     await fisherman.buildModule('locale')
+     await fisherman.buildModule('keyboard')
+     await fisherman.buildModule('localecfg')
+     await fisherman.buildModule('luksbootkeyfile')
+     await fisherman.buildModule('users')
+     await fisherman.moduleDisplaymanager()
+     await fisherman.buildModule('networkcfg')
+     await fisherman.buildModule('hwclock')
+     await fisherman.contextualprocess('before_bootloader_mkdirs')
+     await fisherman.shellprocess('bug-LP#1829805')
+     await fisherman.buildModule('initramfs')
+     await fisherman.buildModule('grubcfg')
+     await fisherman.contextualprocess('before_bootloader')
+     await fisherman.buildModule('bootloader')
+     await fisherman.contextualprocess('after_bootloader')
+     await fisherman.shellprocess('add386arch')
+     await fisherman.modulePackages(this.distro, this.release) //
+     await fisherman.moduleRemoveuser(this.user_opt)
+     await fisherman.buildCalamaresModule('remove-link', true)
+     await fisherman.buildCalamaresModule('sources-yolk', false)
+     await fisherman.buildCalamaresModule('sources-yolk-unmount', false)
+     await fisherman.buildModule('umount')
+     await fisherman.buildModule('finished')
    }
 }

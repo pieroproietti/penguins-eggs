@@ -11,5 +11,4 @@ export interface IInitrd {
     zz_resume_auto: boolean,
 
  }
- 
- 
+
