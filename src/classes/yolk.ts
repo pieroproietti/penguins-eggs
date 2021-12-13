@@ -5,15 +5,16 @@
  * license: MIT
  */
 import { Command, flags } from '@oclif/command'
-import shx = require('shelljs')
-import fs = require('fs')
+import shx from 'shelljs'
+import fs from 'fs'
 
 import Utils from './utils'
-import { execute, pipe } from '@getvim/execute'
+//import { execute, pipe } from '@getvim/execute'
 import Pacman from './pacman'
 import { execSync } from 'child_process'
 import Bleach from './bleach'
 
+const execute = require('../lib/utils').execute
 const exec = require('../lib/utils').exec
 
 /**

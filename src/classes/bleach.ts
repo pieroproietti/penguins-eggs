@@ -6,9 +6,8 @@
  * mail: piero.proietti@gmail.com
  */
 
-import fs = require('fs')
+import fs from 'fs'
 import Utils from './utils'
-import shx  = require('shelljs')
 
 // libraries
 const exec = require('../lib/utils').exec

@@ -14,8 +14,8 @@ import Compressors from '../classes/compressors'
 import Config from './config'
 import chalk = require('chalk')
 import { IMyAddons } from '../interfaces'
-import fs = require('fs')
-import path = require('path')
+import fs from 'fs'
+import path from 'path'
 import Settings from '../classes/settings'
 
 export default class Produce extends Command {

@@ -2,7 +2,7 @@
 /**
  * test i compressori disponibili
  */
-import shx = require('shelljs')
+import shx from 'shelljs'
 
 export default class Compressors {
     isEnabled = {

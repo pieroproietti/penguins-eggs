@@ -12,7 +12,7 @@ import Pacman from '../classes/pacman'
 import { IRemix } from '../interfaces'
 
 import fs from 'fs'
-import { exec } from '../lib/utils'
+// import { exec } from '../lib/utils'
 
 export default class Calamares extends Command {
    static description = 'calamares or install or configure it'

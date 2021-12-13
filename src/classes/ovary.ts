@@ -10,10 +10,9 @@
 
 // packages
 import fs = require('fs')
-import path = require('path')
-import os = require('os')
-import shx = require('shelljs')
-
+import path from 'path'
+import os from 'os'
+import shx from 'shelljs'
 import chalk from 'chalk'
 import mustache from 'mustache'
 

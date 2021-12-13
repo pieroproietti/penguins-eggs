@@ -9,13 +9,12 @@
  */
 
 // packages
-import fs = require('fs')
-import os = require('os')
-import yaml = require('js-yaml')
-import shx = require('shelljs')
-import pjson = require('pjson')
-import chalk = require('chalk')
-
+import fs from 'fs'
+import os from 'os'
+import yaml from 'js-yaml'
+import shx from 'shelljs'
+import pjson from 'pjson'
+import chalk from 'chalk'
 
 // interfaces
 import { IRemix, IDistro, IApp, IWorkDir } from '../interfaces'

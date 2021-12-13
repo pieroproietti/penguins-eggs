@@ -5,12 +5,12 @@
  * license: MIT
  */
 import { Command, flags } from '@oclif/command'
-import shx = require('shelljs')
+import shx from 'shelljs'
 import Utils from '../classes/utils'
 import Prepare from '../classes/krill_prepare'
 import Pacman from '../classes/pacman'
 import { emitWarning } from 'process'
-import chalk = require('chalk')
+import chalk  from 'chalk'
 
 /**
  * Class Install

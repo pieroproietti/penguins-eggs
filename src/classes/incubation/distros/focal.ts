@@ -5,13 +5,11 @@
  * mail: piero.proietti@gmail.com
  */
 
-import fs = require('fs')
-import shx = require('shelljs')
-import yaml = require('js-yaml')
-import path = require('path')
-
+import fs  from 'fs'
+import shx  from 'shelljs'
+import yaml  from 'js-yaml'
+import path  from 'path'
 import { IInstaller, IRemix, IDistro } from '../../../interfaces'
-
 import Fisherman from '../fisherman'
 
 

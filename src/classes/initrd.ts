@@ -8,8 +8,8 @@
  */
 
 // packages
-import fs = require('fs')
-import shx = require('shelljs')
+import fs from 'fs'
+import shx  from 'shelljs'
 import { IInitrd } from '../interfaces'
 
 /**

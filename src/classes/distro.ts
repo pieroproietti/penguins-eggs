@@ -31,9 +31,9 @@
  */
 
 'use strict'
-import fs = require('fs')
-import shell = require('shelljs')
-import inquirer = require('inquirer')
+import fs  from 'fs'
+import shell  from 'shelljs'
+import inquirer  from 'inquirer'
 
 import { IRemix, IDistro } from '../interfaces'
 

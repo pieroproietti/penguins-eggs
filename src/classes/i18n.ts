@@ -9,11 +9,12 @@
  */
 
 // packages
-import fs = require('fs')
-import path = require('path')
-import os = require('os')
-import shx = require('shelljs')
-import chalk = require('chalk')
+import fs  from 'fs'
+import path  from 'path'
+import os  from 'os'
+import shx  from 'shelljs'
+import chalk  from 'chalk'
+import mustache  from 'mustache'
 
 // interfaces
 
@@ -21,7 +22,6 @@ import chalk = require('chalk')
 
 // classes
 import Settings from './settings'
-import mustache = require('mustache')
 
 
 /**

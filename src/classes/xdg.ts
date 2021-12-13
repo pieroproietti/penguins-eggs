@@ -5,14 +5,13 @@
  * license: MIT
  */
 
-import shx = require('shelljs')
-import fs = require('fs')
-import os = require('os')
-import path = require('path')
+import shx from 'shelljs'
+import fs from 'fs'
+import os from 'os'
+import path from 'path'
 import Pacman from './pacman'
 import Utils from './utils'
-import chalk = require('chalk')
-
+import chalk from 'chalk'
 
 // libraries
 const exec = require('../lib/utils').exec

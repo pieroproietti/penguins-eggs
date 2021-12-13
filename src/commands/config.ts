@@ -14,7 +14,9 @@ import Distro from '../classes/distro'
 import { IRemix, IDistro } from '../interfaces'
 import { array2spaced } from '../lib/dependencies'
 
-const exec = require('../lib/utils').exec
+// NOTA 
+//const exec = require('../lib/utils').exec
+import { exec } from '../lib/utils'
 
 /**
  * 

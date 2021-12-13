@@ -4,7 +4,7 @@
  * author: Piero Proietti
  * mail: piero.proietti@gmail.com
  */
-import yaml = require('js-yaml')
+import yaml  from 'js-yaml'
 import { IRemix, IDistro } from '../../interfaces'
 
 /**

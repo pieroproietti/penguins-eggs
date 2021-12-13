@@ -5,14 +5,12 @@
  * license: MIT
  */
 
-import os = require('os')
-import fs = require('fs')
-import yaml = require('js-yaml')
+import os from 'os'
+import fs from 'fs'
+import yaml from 'js-yaml'
 
 import Settings from './settings'
 import Utils from './utils'
-//import { IConfigTools } from '../interfaces'
-// import { IConfigTools } from '../interfaces/i-config-tools'
 
 interface IConfigTools {
   remoteHost: string

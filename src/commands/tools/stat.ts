@@ -1,13 +1,15 @@
 import { Command, flags } from '@oclif/command'
 import Utils from '../../classes/utils'
-const axios = require('axios')
-const https = require('https')
+import axios from 'axios'
+import https from 'https'
 const agent = new https.Agent({
     rejectUnauthorized: false
 })
+import yaml from 'js-yaml'
 
-const yaml = require('js-yaml')
-
+/**
+ * 
+ */
 export default class ToolsStat extends Command {
   static description = 'get statistics from sourceforge'
 

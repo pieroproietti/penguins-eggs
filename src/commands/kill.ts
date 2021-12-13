@@ -11,8 +11,8 @@ import Utils from '../classes/utils'
 import Settings from '../classes/settings'
 import { IWorkDir } from '../interfaces/i-workdir'
 
-import { execute, pipe } from '@getvim/execute'
-
+//import { execute, pipe } from '@getvim/execute'
+const exec = require('../lib/utils').exec
 
 export default class Kill extends Command {
    config_file = '/etc/penguins-eggs.d/eggs.yaml' as string
@@ -47,8 +47,8 @@ export default class Kill extends Command {
          await settings.load()
          await settings.listFreeSpace()
          if (await Utils.customConfirm()) {
-            await execute(`rm ${settings.work_dir.path} -rf`, echo)
-            await execute(`rm ${settings.config.snapshot_dir} -rf`, echo)
+            await exec(`rm ${settings.work_dir.path} -rf`, echo)
+            await exec(`rm ${settings.config.snapshot_dir} -rf`, echo)
          }
       }
    }
