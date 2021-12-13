@@ -10,7 +10,7 @@ import Utils from '../classes/utils'
 import Tools from '../classes/tools'
 import Pacman from '../classes/pacman'
 import Basket from '../classes/basket'
-const exec = require('../lib/utils').exec
+import {exec} from'../lib/utils'
 
 /**
  * 

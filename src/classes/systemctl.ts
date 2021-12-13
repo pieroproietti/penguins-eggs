@@ -7,7 +7,7 @@
  * Presa da https://github.com/VolantisDev/node-systemctl
  */
 
- const exec = require('../lib/utils').exec
+ import {exec} from'../lib/utils'
 
 export default class SistemdCtl {
 

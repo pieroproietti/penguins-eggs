@@ -19,7 +19,7 @@ import Pacman from '../pacman'
 import { installer } from './installer'
 import { IInstaller } from '../../interfaces/i-installer'
 
-const exec = require('../../lib/utils').exec
+import {exec} from '../../lib/utils'
 
 
 

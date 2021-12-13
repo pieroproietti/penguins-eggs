@@ -14,7 +14,7 @@ import Utils from './utils'
 import chalk from 'chalk'
 
 // libraries
-const exec = require('../lib/utils').exec
+import {exec} from '../lib/utils'
 
 const xdg_dirs = ['DESKTOP', 'DOWNLOAD', 'TEMPLATES', 'PUBLICSHARE', 'DOCUMENTS', 'MUSIC', 'PICTURES', 'VIDEOS']
 

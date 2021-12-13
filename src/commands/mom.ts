@@ -8,7 +8,7 @@ import { Command, flags } from '@oclif/command'
 import path from 'path'
 import Utils from '../classes/utils'
 
-const exec = require('../lib/utils').exec
+import {exec} from'../lib/utils'
 
 export default class Mom extends Command {
   static description = 'ask for mommy - gui helper'

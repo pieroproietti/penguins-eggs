@@ -21,7 +21,6 @@ import inquirer from 'inquirer'
 import chalk from 'chalk'
 import Pacman from './pacman'
 import { green, whiteBright } from 'chalk'
-//import figlet = require('figlet')
 
 /**
  * Utils: general porpourse utils

@@ -15,7 +15,7 @@ import Utils from '../utils'
 import { IInstaller } from '../../interfaces/index'
 import { displaymanager } from './fisherman-helper/displaymanager'
 
-const exec = require('../../lib/utils').exec
+import {exec} from '../../lib/utils'
 
 interface IReplaces {
     search: string

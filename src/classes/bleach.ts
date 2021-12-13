@@ -10,7 +10,7 @@ import fs from 'fs'
 import Utils from './utils'
 
 // libraries
-const exec = require('../lib/utils').exec
+import {exec} from'../lib/utils'
 
 
 /**

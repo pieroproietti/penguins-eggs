@@ -2,7 +2,7 @@ import { Command, flags } from '@oclif/command'
 import Tools from '../../classes/tools'
 import Utils from '../../classes/utils'
 
-const exec = require('../../lib/utils').exec
+import {exec} from'../../lib/utils'
 
 export default class ExportDocs extends Command {
   static description = 'remove and export docType documentation of the sources in the destination host'

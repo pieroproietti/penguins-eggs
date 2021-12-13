@@ -15,7 +15,7 @@ import { execSync } from 'child_process'
 import Bleach from './bleach'
 
 const execute = require('../lib/utils').execute
-const exec = require('../lib/utils').exec
+import {exec} from'../lib/utils'
 
 /**
  * 
