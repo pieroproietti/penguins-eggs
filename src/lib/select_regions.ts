@@ -2,7 +2,6 @@
 import inquirer = require('inquirer')
 
 export default async function selectRegions(): Promise<string> {
-
   const questions: Array<Record<string, any>> = [
     {
       type: 'list',
@@ -20,12 +19,11 @@ export default async function selectRegions(): Promise<string> {
         'Europe',
         'Pacific',
       ],
-      default: 'Europe'
-    }
+      default: 'Europe',
+    },
   ]
 
   return new Promise(function (resolve) {
-
     inquirer.prompt(questions).then(function (options) {
       resolve(options.region)
     })
