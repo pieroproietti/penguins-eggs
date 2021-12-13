@@ -45,7 +45,7 @@ import { render, RenderOptions } from 'ink'
 import Install from '../components/install'
 import Finished from '../components/finished'
 
-import fs = require('fs')
+import fs from 'fs'
 import yaml from 'js-yaml'
 import shx = require('shelljs')
 import Utils from './utils'

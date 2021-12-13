@@ -5,12 +5,12 @@
 * mail: piero.proietti@gmail.com
 */
 
-import fs = require('fs')
-import shx = require('shelljs')
-import path = require('path')
+import fs  from 'fs'
+import shx  from 'shelljs'
+import path  from 'path'
 
 import { IRemix, IDistro } from '../../interfaces'
-import chalk = require('chalk')
+import chalk  from 'chalk'
 import Utils from '../utils'
 import { IInstaller } from '../../interfaces/index'
 import { displaymanager } from './fisherman-helper/displaymanager'

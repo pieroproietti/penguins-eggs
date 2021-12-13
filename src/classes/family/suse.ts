@@ -5,8 +5,8 @@
  * license: MIT
  */
 
-import fs = require('fs')
-import shx = require('shelljs')
+import fs  from 'fs'
+import shx  from 'shelljs'
 import Utils from '../utils'
 import Pacman from '../pacman'
 import { array2spaced } from '../../lib/dependencies'

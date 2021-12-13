@@ -5,7 +5,7 @@
  * license: MIT
  */
 
-import fs = require('fs')
+import fs from 'fs'
 
 export default class n8 {
    /**

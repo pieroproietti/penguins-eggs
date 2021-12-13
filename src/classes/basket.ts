@@ -13,8 +13,8 @@ import { IRemix } from '../interfaces'
 import Pacman from '../classes/pacman'
 import Utils from './utils'
 
-const axios = require('axios')
-const https = require('https')
+import axios  from 'axios'
+import  https from 'https'
 const agent = new https.Agent({
     rejectUnauthorized: false
 })

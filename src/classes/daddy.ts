@@ -12,11 +12,11 @@ import Ovary from '../classes/ovary'
 import Compressors from '../classes/compressors'
 import inquirer = require('inquirer')
 import { IConfig } from '../interfaces'
-import yaml = require('js-yaml')
+import yaml from 'js-yaml'
 import fs = require('fs')
 
 import { IMyAddons } from '../interfaces'
-import chalk = require('chalk')
+import chalk  from 'chalk'
 
 const exec = require('../lib/utils').exec
 

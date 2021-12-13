@@ -6,10 +6,10 @@
  */
 
 
-import fs = require('fs')
-import os = require('os')
-import path = require('path')
-import shx = require('shelljs')
+import fs  from 'fs'
+import os  from 'os'
+import path  from 'path'
+import shx  from 'shelljs'
 import Utils from '../utils'
 import Pacman from '../pacman'
 import { exec } from '../../lib/utils'

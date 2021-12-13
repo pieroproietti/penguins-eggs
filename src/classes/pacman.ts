@@ -7,10 +7,10 @@
 
 import { array2spaced, depCommon, depArch, depVersions, depInit } from '../lib/dependencies'
 
-import fs = require('fs')
-import os = require('os')
-import path = require('path')
-import shx = require('shelljs')
+import fs from 'fs'
+import os from 'os'
+import path from 'path'
+import shx from 'shelljs'
 import { IRemix, IDistro } from '../interfaces'
 
 import Utils from './utils'
@@ -18,7 +18,8 @@ import Distro from './distro'
 import Settings from './settings'
 import { execSync } from 'child_process'
 import { IConfig } from '../interfaces'
-const exec = require('../lib/utils').exec
+import { exec } from '../lib/utils'
+//const exec = require('../lib/utils').exec
 
 import Debian from './family/debian'
 import Fedora from './family/fedora'

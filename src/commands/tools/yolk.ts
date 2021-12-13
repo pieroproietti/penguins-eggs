@@ -5,9 +5,8 @@
  * license: MIT
  */
 import { Command, flags } from '@oclif/command'
-import shx = require('shelljs')
-import fs = require('fs')
-
+import shx from 'shelljs'
+import fs from 'fs'
 import Utils from '../../classes/utils'
 import Yolk from '../../classes/yolk'
 

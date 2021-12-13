@@ -4,9 +4,9 @@
  * author: Piero Proietti
  * mail: piero.proietti@gmail.com
  */
-import fs = require('fs')
-import path = require('path')
-import shx = require('shelljs')
+import fs  from 'fs'
+import path  from 'path'
+import shx  from 'shelljs'
 import Utils from '../utils'
 import { IRemix, IDistro } from '../../interfaces'
 

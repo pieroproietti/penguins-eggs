@@ -10,18 +10,16 @@
 // import { render, RenderOptions, Box, Text } from 'ink'
 // import Title from '../components/elements/title'
 
-import cfonts = require('cfonts')
-import shx = require('shelljs')
-import fs = require('fs')
-import dns = require('dns')
-import path = require('path')
-import os = require('os')
-import pjson = require('pjson')
-import inquirer = require('inquirer')
-import chalk = require('chalk')
+import cfonts from 'cfonts'
+import shx from 'shelljs'
+import fs from 'fs'
+import dns from 'dns'
+import path from 'path'
+import os from 'os'
+import pjson from 'pjson'
+import inquirer from 'inquirer'
+import chalk from 'chalk'
 import Pacman from './pacman'
-
-import clear = require('clear')
 import { green, whiteBright } from 'chalk'
 //import figlet = require('figlet')
 
