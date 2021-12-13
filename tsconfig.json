@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "jsx": "react-jsx",
+    "jsx": "react",
     "declaration": true,
     "importHelpers": true,
     "module": "commonjs",
