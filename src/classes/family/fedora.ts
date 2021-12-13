@@ -40,15 +40,15 @@ export default class Fedora {
      */
     static packages(remove = false, verbose = false): string[] {
         // Preso qualcosa da livecd-tools
-        let packages = [
+        const packages = [
             'xorriso',
             'xz-lzma-compat',
             'syslinux',
             'squashfs-tools',
         ]
 
-        let toInstall: string[] = []
-        let toRemove: string[] = []
+        const toInstall: string[] = []
+        const toRemove: string[] = []
 
         packages.forEach((elem) => {
             if (!this.packageIsInstalled(elem)) {

@@ -12,8 +12,8 @@ import path  from 'path'
 import { IInstaller, IRemix, IDistro } from '../../../interfaces'
 import Fisherman from '../fisherman'
 
+import { exec } from '../../../lib/utils'
 
-const exec = require('../../../lib/utils').exec
 
 interface IReplaces {
    search: string

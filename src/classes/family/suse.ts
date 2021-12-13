@@ -40,14 +40,14 @@ export default class Suse {
      */
     static packages(remove = false, verbose = false): string[] {
         // Preso qualcosa da livecd-tools
-        let packages = [
+        const packages = [
             'xorriso',
             'syslinux',
             'squashfs',
         ]
 
-        let toInstall: string[] = []
-        let toRemove: string[] = []
+        const toInstall: string[] = []
+        const toRemove: string[] = []
 
         packages.forEach((elem) => {
             if (!this.packageIsInstalled(elem)) {

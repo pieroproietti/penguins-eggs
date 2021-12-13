@@ -17,7 +17,7 @@ import Pacman from '../../classes/pacman'
 import Utils from '../utils'
 
 export function installer(): IInstaller {
-   let installer = {} as IInstaller
+   const installer = {} as IInstaller
    if (Pacman.packageIsInstalled('calamares')) {
       installer.name = 'calamares'
       installer.configuration = '/etc/calamares/'

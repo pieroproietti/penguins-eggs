@@ -39,7 +39,7 @@ export default class Archlinux {
      * Crea array pacchetti da installare/rimuovere
      */
     static packages(remove = false, verbose = false): string[] {
-        let packages = [
+        const packages = [
             'arch-install-scripts',
             'awk',
             'dosfstools',
@@ -58,8 +58,8 @@ export default class Archlinux {
             'squashfs-tools',
         ]
 
-        let toInstall: string[] = []
-        let toRemove: string[] = []
+        const toInstall: string[] = []
+        const toRemove: string[] = []
 
         packages.forEach((elem) => {
             if (!this.packageIsInstalled(elem)) {

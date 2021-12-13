@@ -36,7 +36,7 @@ import Bleach from './bleach'
 import Repo from './yolk'
 import cliAutologin = require('../lib/cli-autologin')
 import { execSync } from 'child_process'
-
+import { displaymanager} from './incubation/fisherman-helper/displaymanager'
 
 /**
  * Ovary:
@@ -180,7 +180,7 @@ export default class Ovary {
          await this.cleanUsersAccounts()
          await this.createUserLive(verbose)
 
-         const displaymanager = require('./incubation/fisherman-helper/displaymanager').displaymanager
+         //const displaymanager = require('./incubation/fisherman-helper/displaymanager').displaymanager
          if (Pacman.isInstalledGui()) {
             await this.createXdgAutostart(this.theme, myAddons)
             if (displaymanager() === '') {
@@ -261,7 +261,7 @@ export default class Ovary {
             execSync('mv /tmp/luks-users-data ' + this.settings.config.snapshot_dir + 'ovarium/iso/live', { stdio: 'inherit' })
          }
 
-         let xorrisoCommand = this.makeDotDisk(backup, verbose)
+         const xorrisoCommand = this.makeDotDisk(backup, verbose)
          await this.makeIso(xorrisoCommand, backup, scriptOnly, verbose)
       }
    }
@@ -374,8 +374,8 @@ export default class Ovary {
 
       if (Pacman.distro().familyId === 'debian') {
          // Aggiungo UMASK=0077 in /etc/initramfs-tools/conf.d/calamares-safe-initramfs.conf
-         let text = 'UMASK=0077\n'
-         let file = '/etc/initramfs-tools/conf.d/eggs-safe-initramfs.conf'
+         const text = 'UMASK=0077\n'
+         const file = '/etc/initramfs-tools/conf.d/eggs-safe-initramfs.conf'
          Utils.write(file, text)
       }
 
@@ -1276,7 +1276,7 @@ export default class Ovary {
       /**
        * il pachetto grub/grub2 DEVE essere presente
        */
-      let whichGrubIsInstalled = Pacman.whichGrubIsInstalled()
+      const whichGrubIsInstalled = Pacman.whichGrubIsInstalled()
       if (whichGrubIsInstalled === '') {
          Utils.error(`Something went wrong! Cannot find grub`)
          process.exit(1)
@@ -1460,7 +1460,7 @@ export default class Ovary {
 
       // .disk/mkisofs
       file = dotDisk + '/mkisofs'
-      let volid = Utils.getVolid(this.settings.remix.name)
+      const volid = Utils.getVolid(this.settings.remix.name)
       let prefix = this.settings.config.snapshot_prefix
       if (backup) {
          if (prefix.substring(0, 7) === 'egg-of-') {
@@ -1469,7 +1469,7 @@ export default class Ovary {
             prefix = 'egg-EB-' + prefix
          }
       }
-      let output = this.settings.config.snapshot_dir + prefix + volid
+      const output = this.settings.config.snapshot_dir + prefix + volid
       content = this.xorrisoCommand()
 
       /**
