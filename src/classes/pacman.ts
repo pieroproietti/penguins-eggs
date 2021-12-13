@@ -203,7 +203,7 @@ export default class Pacman {
     */
    static async prerequisitesCheck(verbose = false): Promise<boolean> {
       let installed = true
-      let packages = this.packages(false, verbose)
+      const packages = this.packages(false, verbose)
 
       if (packages.length > 0) {
          installed = false
@@ -853,7 +853,7 @@ export default class Pacman {
     */
    static filterInstalled(packages: string[]): string[] {
 
-      let installed: string[] = []
+      const installed: string[] = []
 
       for (const i in packages) {
          if (Pacman.packageIsInstalled(packages[i])) {

@@ -17,7 +17,7 @@ import { IInstaller, IRemix, IDistro } from '../../../interfaces'
 
 import Fisherman from '../fisherman'
 
-const exec = require('../../../lib/utils').exec
+import { exec } from '../../../lib/utils'
 
 /**
  *

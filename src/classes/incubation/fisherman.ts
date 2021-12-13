@@ -42,7 +42,7 @@ export default class Fisherman {
     * write setting
     */
     async settings(branding = 'eggs') {
-        let settings = this.installer.configuration + 'settings.conf'
+        const settings = this.installer.configuration + 'settings.conf'
         shx.cp(this.installer.template + 'settings.yml', settings)
         let hasSystemd = '# '
         if (Utils.isSystemd()) {

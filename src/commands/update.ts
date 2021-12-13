@@ -11,6 +11,7 @@ import Tools from '../classes/tools'
 import Pacman from '../classes/pacman'
 import Basket from '../classes/basket'
 import {exec} from'../lib/utils'
+import inquirer  from 'inquirer'
 
 /**
  * 
@@ -103,7 +104,6 @@ export default class Update extends Command {
     * 
     */
    async chosenDeb(): Promise<string> {
-      const inquirer = require('inquirer')
       const choices: string[] = ['abort']
       choices.push(new inquirer.Separator('exit from update'))
       choices.push('basket')
