@@ -13,6 +13,7 @@
     "dependencies": {
         "@oclif/command": "^1",
         "@oclif/config": "^1",
+        "@oclif/dev-cli": "github:oclif/dev-cli",
         "@oclif/plugin-autocomplete": "0.3.0",
         "@oclif/plugin-help": "^3",
         "@oclif/plugin-not-found": "^1.2.6",
@@ -31,7 +32,6 @@
         "shelljs": "^0.8.4"
     },
     "devDependencies": {
-        "@oclif/dev-cli":  "github:oclif/dev-cli",
         "@oclif/test": "^1.2.8",
         "@types/figlet": "^1.5.0",
         "@types/ink-big-text": "^1.2.0",
