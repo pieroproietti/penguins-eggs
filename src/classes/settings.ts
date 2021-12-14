@@ -9,8 +9,8 @@
  */
 
 // packages
-import fs from 'fs'
-import os from 'os'
+import fs from 'node:fs'
+import os from 'node:os'
 import yaml from 'js-yaml'
 import shx from 'shelljs'
 import pjson from 'pjson'
@@ -118,31 +118,27 @@ export default class Settings {
        this.config.snapshot_basename = os.hostname()
      }
 
-     if (this.config.make_efi) {
-       if (!Pacman.isUefi()) {
-         Utils.error('You choose to create an UEFI image, but miss to install grub-efi-amd64-bin package.')
-         Utils.error('Please install it before to create an UEFI image:')
-         Utils.warning('sudo apt install grub-efi-amd64-bin')
-         Utils.error('or edit /etc/penguins-eggs.d/eggs.yaml and set the valuer of make_efi = false')
-         this.config.make_efi = false
-       }
+     if (this.config.make_efi && !Pacman.isUefi()) {
+       Utils.error('You choose to create an UEFI image, but miss to install grub-efi-amd64-bin package.')
+       Utils.error('Please install it before to create an UEFI image:')
+       Utils.warning('sudo apt install grub-efi-amd64-bin')
+       Utils.error('or edit /etc/penguins-eggs.d/eggs.yaml and set the valuer of make_efi = false')
+       this.config.make_efi = false
      }
 
      this.kernel_image = this.config.vmlinuz
      this.initrd_image = this.config.initrd_img
-     this.vmlinuz = this.kernel_image.substr(this.kernel_image.lastIndexOf('/'))
-     this.initrdImg = this.initrd_image.substr(this.initrd_image.lastIndexOf('/'))
+     this.vmlinuz = this.kernel_image.slice(this.kernel_image.lastIndexOf('/'))
+     this.initrdImg = this.initrd_image.slice(this.initrd_image.lastIndexOf('/'))
 
      /**
        * Use the login name set in the config file. If not set, use the primary
        * user's name. If the name is not "user" then add boot option. ALso use
        * the same username for cleaning geany history.
        */
-     if (this.config.user_opt === undefined || this.config.user_opt === '') {
-       // this.user_opt = shx.exec('awk -F":" \'/1000:1000/ { print $1 }\' /etc/passwd', { silent: true }).stdout.trim()
-       if (this.config.user_opt === '') {
-         this.config.user_opt = 'live'
-       }
+     if ((this.config.user_opt === undefined || this.config.user_opt === '') && // this.user_opt = shx.exec('awk -F":" \'/1000:1000/ { print $1 }\' /etc/passwd', { silent: true }).stdout.trim()
+         this.config.user_opt === '') {
+       this.config.user_opt = 'live'
      }
 
      if (this.config.user_opt_passwd === '') {
@@ -226,7 +222,7 @@ export default class Settings {
      /** Lo spazio usato da SquashFS non è stimabile da live
        * errore buffer troppo piccolo
        */
-     const gb = 1048576
+     const gb = 1_048_576
      let spaceAvailable = 0
      if (!Utils.isLive()) {
        console.log(`Disk space used: ${Math.round((Utils.getUsedSpace() / gb) * 10) / 10} GB`)
@@ -263,11 +259,7 @@ export default class Settings {
      this.remix.versionNumber = Utils.getPackageVersion()
      this.remix.kernel = Utils.kernerlVersion()
 
-     if (theme === '') {
-       this.remix.branding = 'eggs'
-     } else {
-       this.remix.branding = theme
-     }
+     this.remix.branding = theme === '' ? 'eggs' : theme
 
      this.remix.name = this.config.snapshot_basename
      let name = this.config.snapshot_prefix + this.config.snapshot_basename

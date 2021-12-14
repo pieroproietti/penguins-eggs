@@ -23,13 +23,13 @@ export default class Calamares extends Command {
    static flags = {
      help: flags.help({char: 'h'}),
      verbose: flags.boolean({char: 'v'}),
-     install: flags.boolean({char: 'i', description: 'install calamares and it\'s dependencies'}),
-     final: flags.boolean({char: 'f', description: 'final: remove calamares and all it\'s dependencies after the installation'}),
-     remove: flags.boolean({char: 'r', description: 'remove calamares and it\'s dependencies'}),
+     install: flags.boolean({char: 'i', description: "install calamares and it's dependencies"}),
+     final: flags.boolean({char: 'f', description: "final: remove calamares and all it's dependencies after the installation"}),
+     remove: flags.boolean({char: 'r', description: "remove calamares and it's dependencies"}),
      theme: flags.string({description: 'theme/branding for eggs and calamares'}),
    }
 
-   static examples = ['~$ sudo eggs calamares \ncreate/renew calamares configuration\'s files\n', '~$ sudo eggs calamares -i \ninstall calamares and create it\'s configuration\'s files\n']
+   static examples = ["~$ sudo eggs calamares \ncreate/renew calamares configuration's files\n", "~$ sudo eggs calamares -i \ninstall calamares and create it's configuration's files\n"]
 
    async run() {
      Utils.titles(this.id + ' ' + this.argv)
@@ -108,15 +108,12 @@ export default class Calamares extends Command {
              }
            }
          }
-       } else if (await Utils.customConfirm('Select yes to continue...')) {
-         if (await this.settings.load()) {
-           Utils.warning('Configuring krill')
-           await this.settings.loadRemix(this.settings.config.snapshot_basename, theme)
-           this.incubator = new Incubator(this.settings.remix, this.settings.distro, this.settings.config.user_opt, verbose)
-           await this.incubator.config(final)
-         }
+       } else if (await Utils.customConfirm('Select yes to continue...') && await this.settings.load()) {
+         Utils.warning('Configuring krill')
+         await this.settings.loadRemix(this.settings.config.snapshot_basename, theme)
+         this.incubator = new Incubator(this.settings.remix, this.settings.distro, this.settings.config.user_opt, verbose)
+         await this.incubator.config(final)
        }
      }
    }
 }
-

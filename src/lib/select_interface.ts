@@ -3,7 +3,7 @@
  */
 import inquirer from 'inquirer'
 
-export default async function selectInterface(iface = 'eth0', ifaces: string []) : Promise<string> {
+export default async function selectInterface(iface = 'eth0', ifaces: string[]): Promise<string> {
   const questions: Array<Record<string, any>> = [
     {
       type: 'list',

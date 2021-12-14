@@ -9,8 +9,8 @@ import shx from 'shelljs'
 import Utils from '../classes/utils'
 import Prepare from '../classes/krill_prepare'
 import Pacman from '../classes/pacman'
-import {emitWarning} from 'process'
-import chalk  from 'chalk'
+import {emitWarning} from 'node:process'
+import chalk from 'chalk'
 
 /**
  * Class Install
@@ -58,4 +58,3 @@ export default class Install extends Command {
      }
    }
 }
-

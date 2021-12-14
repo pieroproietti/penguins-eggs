@@ -3,7 +3,7 @@ import inquirer = require('inquirer')
 import shx from 'shelljs'
 
 export default async function selectInstallationDevice(): Promise<string> {
-  const drives = shx.exec('lsblk |grep disk|cut -f 1 "-d\ "', {silent: true}).stdout.trim().split('\n')
+  const drives = shx.exec('lsblk |grep disk|cut -f 1 "-d "', {silent: true}).stdout.trim().split('\n')
   const driveList: string[] = []
   drives.forEach((element: string) => {
     driveList.push('/dev/' + element)
@@ -24,4 +24,3 @@ export default async function selectInstallationDevice(): Promise<string> {
     })
   })
 }
-

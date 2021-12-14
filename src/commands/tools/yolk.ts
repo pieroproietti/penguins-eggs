@@ -6,7 +6,7 @@
  */
 import {Command, flags} from '@oclif/command'
 import shx from 'shelljs'
-import fs from 'fs'
+import fs from 'node:fs'
 import Utils from '../../classes/utils'
 import Yolk from '../../classes/yolk'
 

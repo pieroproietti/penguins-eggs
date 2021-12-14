@@ -6,9 +6,9 @@
  */
 
 import shx from 'shelljs'
-import fs from 'fs'
-import os from 'os'
-import path from 'path'
+import fs from 'node:fs'
+import os from 'node:os'
+import path from 'node:path'
 import Pacman from './pacman'
 import Utils from './utils'
 import chalk from 'chalk'

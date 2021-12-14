@@ -11,7 +11,7 @@ import Tools from '../classes/tools'
 import Pacman from '../classes/pacman'
 import Basket from '../classes/basket'
 import {exec} from '../lib/utils'
-import inquirer  from 'inquirer'
+import inquirer from 'inquirer'
 
 /**
  *
@@ -19,7 +19,7 @@ import inquirer  from 'inquirer'
 export default class Update extends Command {
    static description = "update the penguin's eggs tool"
 
-   static examples = ['$ eggs update\nupdate/upgrade the penguin\'s eggs tool']
+   static examples = ["$ eggs update\nupdate/upgrade the penguin's eggs tool"]
 
    static flags = {
      help: flags.help({char: 'h'}),
@@ -86,16 +86,37 @@ export default class Update extends Command {
      console.log()
      const choose = await this.chosenDeb()
      Utils.titles(`updating via ${choose}`)
-     if (choose === 'apt') {
+     switch (choose) {
+     case 'apt': {
        await this.getDebFromApt()
-     } else if (choose === 'basket') {
+
+       break
+     }
+
+     case 'basket': {
        await basket.get()
-     } else if (choose === 'lan') {
+
+       break
+     }
+
+     case 'lan': {
        await this.getDebFromLan()
-     } else if (choose === 'manual') {
+
+       break
+     }
+
+     case 'manual': {
        this.getDebFromManual()
-     } else if (choose === 'sources') {
+
+       break
+     }
+
+     case 'sources': {
        this.getFromSources()
+
+       break
+     }
+     // No default
      }
    }
 
@@ -104,14 +125,10 @@ export default class Update extends Command {
     */
    async chosenDeb(): Promise<string> {
      const choices: string[] = ['abort']
-     choices.push(new inquirer.Separator('exit from update'))
-     choices.push('basket')
-     choices.push(new inquirer.Separator('select, download and update from basket'))
-     choices.push('lan')
-     choices.push(new inquirer.Separator('automatic import and update from lan'))
-     choices.push('manual')
-     choices.push(new inquirer.Separator('manual download from sourceforge.net and update with dpkg'))
-     choices.push('sources')
+     choices.push(new inquirer.Separator('exit from update'), 'basket')
+     choices.push(new inquirer.Separator('select, download and update from basket'), 'lan')
+     choices.push(new inquirer.Separator('automatic import and update from lan'), 'manual')
+     choices.push(new inquirer.Separator('manual download from sourceforge.net and update with dpkg'), 'sources')
      choices.push(new inquirer.Separator('download sources from github.com'))
 
      const questions: Array<Record<string, any>> = [
@@ -155,7 +172,7 @@ export default class Update extends Command {
      console.log('Download package from: \n\nhttps://sourceforge.net/projects/penguins-eggs/files/packages-deb/')
      console.log('\nand install it with:')
      const basket = new Basket()
-     console.log('\nsudo dpkg -i eggs_' + await basket.last() + '-1.deb')
+     console.log('\nsudo dpkg -i eggs_' + (await basket.last()) + '-1.deb')
    }
 
    /**

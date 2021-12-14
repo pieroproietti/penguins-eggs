@@ -33,11 +33,7 @@ function addIfExist(package2check: string): string {
       displayManager = 'gdm'
     }
 
-    if (text === '') {
-      text += `- ${displayManager}\n`
-    } else {
-      text += `                 - ${displayManager}\n`
-    }
+    text += text === '' ? `- ${displayManager}\n` : `                 - ${displayManager}\n`
   }
 
   return text

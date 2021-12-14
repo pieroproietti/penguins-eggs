@@ -5,5 +5,5 @@ export interface INet {
    netmask: string
    gateway: string
    domain: string
-   dns: string []
- }
+   dns: string[]
+}

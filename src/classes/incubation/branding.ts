@@ -4,7 +4,7 @@
  * author: Piero Proietti
  * mail: piero.proietti@gmail.com
  */
-import yaml  from 'js-yaml'
+import yaml from 'js-yaml'
 import {IRemix, IDistro} from '../../interfaces'
 
 /**
@@ -26,7 +26,7 @@ export function branding(remix: IRemix, distro: IDistro, brand = '', verbose = f
   const year = today.getFullYear()
   const version = year + '-' + month + '-' + day
   const shortVersion = version
-  const versionedName = remix.fullname  + ' (' + version + ')' // Questa la mette nella descrizione andrebbe aggiunta la versione dal nome della iso
+  const versionedName = remix.fullname + ' (' + version + ')' // Questa la mette nella descrizione andrebbe aggiunta la versione dal nome della iso
   const shortVersionedName = remix.versionName + ' ' + version
 
   let bootloaderEntryName = distro.distroId

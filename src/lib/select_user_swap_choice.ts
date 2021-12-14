@@ -1,7 +1,7 @@
 'use strict'
 import inquirer = require('inquirer')
 import yaml from 'js-yaml'
-import fs from 'fs'
+import fs from 'node:fs'
 import {IPartitions} from '../interfaces'
 
 export default async function selectUserSwapChoice(): Promise<string> {

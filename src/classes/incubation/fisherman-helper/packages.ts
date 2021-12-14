@@ -1,4 +1,4 @@
-import {O_APPEND} from 'constants'
+import {O_APPEND} from 'node:constants'
 import {IDistro} from '../../../interfaces'
 /**
  *
@@ -31,18 +31,43 @@ export function tryInstall(distro: IDistro): string {
 
   let lang = 'en_gb'
 
-  if (processLang === 'it_IT.UTF-8') {
+  switch (processLang) {
+  case 'it_IT.UTF-8': {
     lang = 'it'
-  } else if (processLang === 'en_US.UTF-8') {
+
+    break
+  }
+
+  case 'en_US.UTF-8': {
     lang = 'en_gb'
-  } else if (processLang === 'es_PE.UTF-8') {
+
+    break
+  }
+
+  case 'es_PE.UTF-8': {
     lang = 'es_es'
-  } else if (processLang === 'pt_BR.UTF-8') {
+
+    break
+  }
+
+  case 'pt_BR.UTF-8': {
     lang = 'pt_br'
-  } else if (processLang === 'fr_FR.UTF-8') {
+
+    break
+  }
+
+  case 'fr_FR.UTF-8': {
     lang = 'fr'
-  } else if (processLang === 'de_DE.UTF-8') {
+
+    break
+  }
+
+  case 'de_DE.UTF-8': {
     lang = 'de'
+
+    break
+  }
+  // No default
   }
 
   let text = '  - try_install:\n'
@@ -51,7 +76,7 @@ export function tryInstall(distro: IDistro): string {
   text += `    - hunspell-${lang}\n`
 
   // Pacchetti da installare a seconda della distribuzione
-  if ((distro.versionLike === 'focal') || (distro.versionLike === 'bionic')) {
+  if (distro.versionLike === 'focal' || distro.versionLike === 'bionic') {
     text += `    - language-pack-${lang}\n`
   }
 
@@ -80,7 +105,7 @@ function removeEggs(distro: IDistro): string {
   const packages = Pacman.packages()
   let text = ''
   for (const i in packages) {
-    const deb2check = packages[i].trimLeft().trimRight()
+    const deb2check = packages[i].trimStart().trimEnd()
     text += addIfExist(deb2check)
   }
 

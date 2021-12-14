@@ -14,8 +14,8 @@ import Compressors from '../classes/compressors'
 import Config from './config'
 import chalk = require('chalk')
 import {IMyAddons} from '../interfaces'
-import fs from 'fs'
-import path from 'path'
+import fs from 'node:fs'
+import path from 'node:path'
 import Settings from '../classes/settings'
 
 export default class Produce extends Command {
@@ -63,9 +63,9 @@ export default class Produce extends Command {
        const addons = []
        if (flags.addons) {
          const addons = flags.addons // array
-         addons.forEach(addon => {
+         for (let addon of addons) {
            // se non viene specificato il vendor il default è eggs
-           if (addon.indexOf('//') === -1) {
+           if (!addon.includes('//')) {
              addon = 'eggs/' + addon
            }
 
@@ -76,12 +76,12 @@ export default class Produce extends Command {
              process.exit()
            }
 
-           const vendorAddon = addon.substring(0, addon.search('/'))
+           const vendorAddon = addon.slice(0, Math.max(0, addon.search('/')))
            const nameAddon = addon.substring(addon.search('/') + 1, addon.length)
            if (nameAddon === 'theme') {
              flags.theme = vendorAddon
            }
-         })
+         }
        }
 
        /**
@@ -102,7 +102,7 @@ export default class Produce extends Command {
           * Analisi del tipo di compressione del kernel
           *
           */
-       const compressors = new (Compressors)()
+       const compressors = new Compressors()
        await compressors.populate()
        let fastest = 'gzip'
        if (compressors.isEnabled.zstd) {
@@ -145,10 +145,8 @@ export default class Produce extends Command {
        }
 
        const i = await Config.thatWeNeed(verbose)
-       if (i.needApt || i.configurationInstall || i.configurationRefresh || i.distroTemplate) {
-         if (await Utils.customConfirm('Select yes to continue...')) {
-           await Config.install(i, verbose)
-         }
+       if ((i.needApt || i.configurationInstall || i.configurationRefresh || i.distroTemplate) && await Utils.customConfirm('Select yes to continue...')) {
+         await Config.install(i, verbose)
        }
 
        const myAddons = {} as IMyAddons
@@ -180,4 +178,3 @@ export default class Produce extends Command {
      }
    }
 }
-
