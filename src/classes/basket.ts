@@ -14,7 +14,7 @@ import Pacman from '../classes/pacman'
 import Utils from './utils'
 
 import axios from 'axios'
-import https from 'node:https'
+import https from 'https'
 const agent = new https.Agent({
   rejectUnauthorized: false,
 })

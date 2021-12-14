@@ -1,7 +1,7 @@
 /**
  *
  */
-import {Command, flags} from '@oclif/command'
+import {Command, Flags} from '@oclif/core' 
 import Tools from '../../classes/tools'
 import Utils from '../../classes/utils'
 import {exec} from '../../lib/utils'
@@ -10,13 +10,13 @@ export default class ExportIso extends Command {
    static description = 'export iso in the destination host'
 
    static flags = {
-     help: flags.help({char: 'h'}),
-     backup: flags.boolean({char: 'b', description: 'export backup ISOs'}),
-     clean: flags.boolean({char: 'c', description: 'delete old ISOs before to copy'}),
+     help: Flags.help({char: 'h'}),
+     backup: Flags.boolean({char: 'b', description: 'export backup ISOs'}),
+     clean: Flags.boolean({char: 'c', description: 'delete old ISOs before to copy'}),
    }
 
-   async run() {
-     const {flags} = this.parse(ExportIso)
+   async run() :Promise <void> {
+     const {flags} = await this.parse(ExportIso)
      Utils.titles(this.id + ' ' + this.argv)
 
      const Tu = new Tools()

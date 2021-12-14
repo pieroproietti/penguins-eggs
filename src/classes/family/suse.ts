@@ -5,7 +5,7 @@
  * license: MIT
  */
 
-import fs from 'node:fs'
+import fs from 'fs'
 import shx from 'shelljs'
 import Utils from '../utils'
 import Pacman from '../pacman'

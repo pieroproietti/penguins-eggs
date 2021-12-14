@@ -4,7 +4,7 @@
  * email: piero.proietti@gmail.com
  * license: MIT
  */
-import {Command, flags} from '@oclif/command'
+import {Command, Flags}from '@oclif/core'
 
 import fs = require('fs')
 import Utils from '../classes/utils'
@@ -21,16 +21,16 @@ export default class Kill extends Command {
    static description = 'kill the eggs/free the nest'
 
    static flags = {
-     help: flags.help({char: 'h'}),
-     verbose: flags.boolean({char: 'v', description: 'verbose'}),
+     help: Flags.help({char: 'h'}),
+     verbose: Flags.boolean({char: 'v', description: 'verbose'}),
    }
 
    static examples = ['$ eggs kill\nkill the eggs/free the nest']
 
-   async run() {
+   async run() :Promise <void> {
      await Utils.titles(this.id + ' ' + this.argv)
 
-     const {flags} = this.parse(Kill)
+     const {flags} = await this.parse(Kill)
      let verbose = false
      if (flags.verbose) {
        verbose = true

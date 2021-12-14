@@ -7,16 +7,16 @@
 
 import {array2spaced, depCommon, depArch, depVersions, depInit} from '../lib/dependencies'
 
-import fs from 'node:fs'
-import os from 'node:os'
-import path from 'node:path'
+import fs from 'fs'
+import os from 'os'
+import path from 'path'
 import shx from 'shelljs'
 import {IRemix, IDistro} from '../interfaces'
 
 import Utils from './utils'
 import Distro from './distro'
 import Settings from './settings'
-import {execSync} from 'node:child_process'
+import {execSync} from 'child_process'
 import {IConfig} from '../interfaces'
 import {exec} from '../lib/utils'
 

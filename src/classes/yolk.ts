@@ -6,12 +6,12 @@
  */
 import {Command, flags} from '@oclif/command'
 import shx from 'shelljs'
-import fs from 'node:fs'
+import fs from 'fs'
 
 import Utils from './utils'
 // import { execute, pipe } from '@getvim/execute'
 import Pacman from './pacman'
-import {execSync} from 'node:child_process'
+import {execSync} from 'child_process'
 import Bleach from './bleach'
 
 const execute = require('../lib/utils').execute

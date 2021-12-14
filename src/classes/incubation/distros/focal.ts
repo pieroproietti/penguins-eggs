@@ -5,10 +5,10 @@
  * mail: piero.proietti@gmail.com
  */
 
-import fs from 'node:fs'
+import fs from 'fs'
 import shx from 'shelljs'
 import yaml from 'js-yaml'
-import path from 'node:path'
+import path from 'path'
 import {IInstaller, IRemix, IDistro} from '../../../interfaces'
 import Fisherman from '../fisherman'
 

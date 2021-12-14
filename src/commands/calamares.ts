@@ -4,7 +4,7 @@
  * email: piero.proietti@gmail.com
  * license: MIT
  */
-import {Command, flags} from '@oclif/command'
+import {Command, Flags} from '@oclif/core'
 import Utils from '../classes/utils'
 import Settings from '../classes/settings'
 import Incubator from '../classes/incubation/incubator'
@@ -21,22 +21,22 @@ export default class Calamares extends Command {
    settings = {} as Settings
 
    static flags = {
-     help: flags.help({char: 'h'}),
-     verbose: flags.boolean({char: 'v'}),
-     install: flags.boolean({char: 'i', description: "install calamares and it's dependencies"}),
-     final: flags.boolean({char: 'f', description: "final: remove calamares and all it's dependencies after the installation"}),
-     remove: flags.boolean({char: 'r', description: "remove calamares and it's dependencies"}),
-     theme: flags.string({description: 'theme/branding for eggs and calamares'}),
+     help: Flags.help({char: 'h'}),
+     verbose: Flags.boolean({char: 'v'}),
+     install: Flags.boolean({char: 'i', description: "install calamares and it's dependencies"}),
+     final: Flags.boolean({char: 'f', description: "final: remove calamares and all it's dependencies after the installation"}),
+     remove: Flags.boolean({char: 'r', description: "remove calamares and it's dependencies"}),
+     theme: Flags.string({description: 'theme/branding for eggs and calamares'}),
    }
 
    static examples = ["~$ sudo eggs calamares \ncreate/renew calamares configuration's files\n", "~$ sudo eggs calamares -i \ninstall calamares and create it's configuration's files\n"]
 
-   async run() {
+   async run() :Promise <void> {
      Utils.titles(this.id + ' ' + this.argv)
 
      this.settings = new Settings()
 
-     const {flags} = this.parse(Calamares)
+     const {flags} = await this.parse(Calamares)
      let verbose = false
      if (flags.verbose) {
        verbose = true

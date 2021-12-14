@@ -7,34 +7,34 @@
  * email: piero.proietti@gmail.com
  * license: MIT
  */
-import {Command, flags} from '@oclif/command'
+import {Command, Flags}from '@oclif/core'
 import Utils from '../classes/utils'
 import Ovary from '../classes/ovary'
 import Compressors from '../classes/compressors'
 import Config from './config'
 import chalk = require('chalk')
 import {IMyAddons} from '../interfaces'
-import fs from 'node:fs'
-import path from 'node:path'
+import fs from 'fs'
+import path from 'path'
 import Settings from '../classes/settings'
 
 export default class Produce extends Command {
-   static flags = {
-     prefix: flags.string({char: 'p', description: 'prefix'}),
-     basename: flags.string({description: 'basename'}),
-     backup: flags.boolean({char: 'b', description: 'backup mode'}),
-     fast: flags.boolean({char: 'f', description: 'fast compression'}),
-     normal: flags.boolean({char: 'n', description: 'normal compression'}),
-     max: flags.boolean({char: 'm', description: 'max compression'}),
-     verbose: flags.boolean({char: 'v', description: 'verbose'}),
-     yolk: flags.boolean({char: 'y', description: '-y force yolk renew'}),
-     script: flags.boolean({char: 's', description: 'script mode. Generate scripts to manage iso build'}),
-     help: flags.help({char: 'h'}),
+   static Flags = {
+     prefix: Flags.string({char: 'p', description: 'prefix'}),
+     basename: Flags.string({description: 'basename'}),
+     backup: Flags.boolean({char: 'b', description: 'backup mode'}),
+     fast: Flags.boolean({char: 'f', description: 'fast compression'}),
+     normal: Flags.boolean({char: 'n', description: 'normal compression'}),
+     max: Flags.boolean({char: 'm', description: 'max compression'}),
+     verbose: Flags.boolean({char: 'v', description: 'verbose'}),
+     yolk: Flags.boolean({char: 'y', description: '-y force yolk renew'}),
+     script: Flags.boolean({char: 's', description: 'script mode. Generate scripts to manage iso build'}),
+     help: Flags.help({char: 'h'}),
 
      // addon vendor/addon configurazioni dei vendors
-     theme: flags.string({description: 'theme for livecd, calamares branding and partitions'}),
-     addons: flags.string({multiple: true, description: 'addons to be used: adapt, ichoice, pve, rsupport'}),
-     release: flags.boolean({description: 'release: configure GUI installer to remove eggs and calamares after installation'}),
+     theme: Flags.string({description: 'theme for livecd, calamares branding and partitions'}),
+     addons: Flags.string({multiple: true, description: 'addons to be used: adapt, ichoice, pve, rsupport'}),
+     release: Flags.boolean({description: 'release: configure GUI installer to remove eggs and calamares after installation'}),
    }
 
    static description = 'the system produce an egg: iso image of your system'
@@ -52,9 +52,9 @@ export default class Produce extends Command {
      '$ sudo eggs produce -vs --basename leo --rsupport \nproduce scripts to build an ISO as the previus example. Scripts can be found\nin /home/eggs/ovarium and you can customize all you need\n',
    ]
 
-   async run() {
+   async run() :Promise <void> {
      Utils.titles(this.id + ' ' + this.argv)
-     const {flags} = this.parse(Produce)
+     const {flags} = await this.parse(Produce)
      if (Utils.isRoot(this.id)) {
        /**
           * ADDONS dei vendors

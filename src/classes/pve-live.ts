@@ -16,7 +16,7 @@
  */
 
 import Systemctl from './systemctl'
-import path from 'node:path'
+import path from 'path'
 import shx from 'shelljs'
 
 export default class PveLive {

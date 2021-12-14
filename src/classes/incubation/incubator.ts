@@ -4,8 +4,8 @@
  * author: Piero Proietti
  * mail: piero.proietti@gmail.com
  */
-import fs from 'node:fs'
-import path from 'node:path'
+import fs from 'fs'
+import path from 'path'
 import shx from 'shelljs'
 import Utils from '../utils'
 import {IRemix, IDistro} from '../../interfaces'

@@ -4,7 +4,7 @@
  * email: piero.proietti@gmail.com
  * license: MIT
  */
-import {Command, flags} from '@oclif/command'
+import {Command, Flags}from '@oclif/core'
 import chalk from 'chalk'
 import Utils from '../classes/utils'
 import Pacman from '../classes/pacman'
@@ -24,16 +24,16 @@ export default class Config extends Command {
 
    static aliases = ['prerequisites']
    static flags = {
-     nointeractive: flags.boolean({char: 'n', description: 'assume yes'}),
-     clean: flags.boolean({char: 'c', description: 'remove old configuration before to create new one'}),
-     help: flags.help({char: 'h'}),
-     verbose: flags.boolean({char: 'v', description: 'verbose'}),
+     nointeractive: Flags.boolean({char: 'n', description: 'assume yes'}),
+     clean: Flags.boolean({char: 'c', description: 'remove old configuration before to create new one'}),
+     help: Flags.help({char: 'h'}),
+     verbose: Flags.boolean({char: 'v', description: 'verbose'}),
    }
 
    static examples = ['~$ sudo eggs config\nConfigure and install prerequisites deb packages to run it']
 
-   async run() {
-     const {flags} = this.parse(Config)
+   async run() :Promise <void> {
+     const {flags} = await this.parse(Config)
      const nointeractive = flags.nointeractive
      const verbose = flags.verbose
 

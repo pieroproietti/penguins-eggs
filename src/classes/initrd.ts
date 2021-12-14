@@ -8,7 +8,7 @@
  */
 
 // packages
-import fs from 'node:fs'
+import fs from 'fs'
 import shx from 'shelljs'
 import {IInitrd} from '../interfaces'
 

@@ -2,7 +2,7 @@
 import inquirer = require('inquirer')
 import shx from 'shelljs'
 import yaml from 'js-yaml'
-import fs from 'node:fs'
+import fs from 'fs'
 import {IPartitions} from '../interfaces'
 
 export default async function selectFileSystemType(): Promise<string> {

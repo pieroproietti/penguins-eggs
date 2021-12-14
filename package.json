@@ -11,12 +11,13 @@
     "repository": "https://github.com/pieroproietti/penguins-eggs",
     "bugs": "https://github.com/pieroproietti/penguins-eggs/issues",
     "dependencies": {
-        "@oclif/command": "^1.8.10",
-        "@oclif/config": "^1.18.2",
+        "@oclif/core": "^1",
         "@oclif/plugin-autocomplete": "0.3.0",
         "@oclif/plugin-help": "^3.2.17",
         "@oclif/plugin-not-found": "^1.2.6",
+        "@oclif/plugin-plugins": "^2.0.1",
         "@oclif/plugin-warn-if-update-available": "^2.0.2",
+        "@oclif/plugin-version": "^1",
         "@typescript-eslint/parser": "^5.7.0",
         "axios": "^0.24.0",
         "cfonts": "^2.10.0",
@@ -33,7 +34,6 @@
         "tslib": "^1.14.1"
     },
     "devDependencies": {
-        "@oclif/dev-cli": "github:pieroproietti/dev-cli",
         "@oclif/test": "^1.2.9",
         "@types/chai": "^4.3.0",
         "@types/ink-big-text": "^1.2.0",
@@ -80,13 +80,18 @@
     "license": "MIT",
     "main": "lib/index.js",
     "oclif": {
+        "topicSeparator": ":",
+        "additionalHelpFlags": ["-h"],
+        "additionalVersionFlags": ["-v"],
         "commands": "./lib/commands",
         "bin": "eggs",
         "plugins": [
             "@oclif/plugin-help",
+            "@oclif/plugin-plugins",
             "@oclif/plugin-autocomplete",
             "@oclif/plugin-not-found",
-            "@oclif/plugin-warn-if-update-available"
+            "@oclif/plugin-warn-if-update-available",
+            "@oclif/plugin-version"
         ]
     },
     "scripts": {

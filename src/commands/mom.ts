@@ -4,8 +4,8 @@
  * email: piero.proietti@gmail.com
  * license: MIT
  */
-import {Command, flags} from '@oclif/command'
-import path from 'node:path'
+import {Command, Flags}from '@oclif/core'
+import path from 'path'
 import Utils from '../classes/utils'
 
 import {exec} from '../lib/utils'
@@ -14,10 +14,10 @@ export default class Mom extends Command {
    static description = 'ask for mommy - gui helper'
 
    static flags = {
-     help: flags.help({char: 'h'}),
+     help: Flags.help({char: 'h'}),
    }
 
-   async run() {
+   async run() :Promise <void> {
      Utils.titles(this.id + ' ' + this.argv)
      // No sudo!
      if (process.getuid && process.getuid() === 0) {

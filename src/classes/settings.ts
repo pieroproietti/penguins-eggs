@@ -9,8 +9,8 @@
  */
 
 // packages
-import fs from 'node:fs'
-import os from 'node:os'
+import fs from 'fs'
+import os from 'os'
 import yaml from 'js-yaml'
 import shx from 'shelljs'
 import pjson from 'pjson'
