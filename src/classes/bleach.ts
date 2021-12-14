@@ -6,7 +6,7 @@
  * mail: piero.proietti@gmail.com
  */
 
-import fs from 'fs'
+import fs from 'node:fs'
 import Utils from './utils'
 
 // libraries
@@ -179,4 +179,3 @@ x11.debug_logs
 yum.clean_all
 yum.vacuum
 */
-

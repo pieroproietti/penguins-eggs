@@ -1,9 +1,9 @@
 /**
-* depCommon
-* depArch
-* depVersion
-* depInit
-*/
+ * depCommon
+ * depArch
+ * depVersion
+ * depInit
+ */
 
 /**
  *

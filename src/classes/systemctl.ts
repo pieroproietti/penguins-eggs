@@ -26,9 +26,9 @@ export default class SistemdCtl {
     return new Promise((resolve, reject) => {
       run('is-enabled', serviceName)
       .then(result => {
-        resolve(result.stdout.indexOf('enabled') != -1)
+        resolve(result.stdout.includes('enabled'))
       })
-      .catch(function (err) {
+      .catch(function (error) {
         resolve(false)
       })
     })

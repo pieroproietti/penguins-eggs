@@ -23,8 +23,8 @@ const stopMessage = 'eggs-stop-message'
 export async function addAutologin(distro: string, version: string, user: string, userPasswd: string, rootPasswd: string, chroot = '/') {
   if (Utils.isSystemd()) {
     /**
-         * Systemd
-         */
+       * Systemd
+       */
     const fileOverride = `${chroot}/etc/systemd/system/getty@.service.d/override.conf`
     const dirOverride = path.dirname(fileOverride)
     if (fs.existsSync(dirOverride)) {
@@ -42,8 +42,8 @@ export async function addAutologin(distro: string, version: string, user: string
     await addMotd(distro, version, user, userPasswd, rootPasswd, chroot)
   } else if (Utils.isSysvinit()) {
     /**
-         * sysvinit
-         */
+       * sysvinit
+       */
     const inittab = chroot + '/etc/inittab'
     const search = '1:2345:respawn:/sbin/getty'
     // const replace = `1:2345:respawn:/sbin/getty --noclear --autologin ${user} 38400 tty1`
@@ -72,8 +72,8 @@ export async function addAutologin(distro: string, version: string, user: string
 export async function remove(chroot = '/') {
   if (Utils.isSystemd()) {
     /**
-         * Systemd
-         */
+       * Systemd
+       */
     const fileOverride = `${chroot}/etc/systemd/system/getty@.service.d/override.conf`
     const dirOverride = path.dirname(fileOverride)
     if (fs.existsSync(dirOverride)) {
@@ -84,8 +84,8 @@ export async function remove(chroot = '/') {
     msgRemove(`${chroot}/etc/issue`)
   } else if (Utils.isSysvinit()) {
     /**
-        * sysvinit
-        */
+       * sysvinit
+       */
     const inittab = chroot + '/etc/inittab'
     const search = '1:2345:respawn:/sbin/getty'
     // const replace = `1:2345:respawn:/sbin/getty --noclear 38400 tty1         `
@@ -164,18 +164,16 @@ export async function msgRemove(path: string) {
     let cleaned = ''
 
     let remove = false
-    for (let i = 0; i < rows.length; i++) {
-      if (rows[i].includes(startMessage)) {
+    for (const row of rows) {
+      if (row.includes(startMessage)) {
         remove = true
       }
 
-      if (!remove) {
-        if (rows[i] !== '') {
-          cleaned += rows[i] + '\n'
-        }
+      if (!remove && row !== '') {
+        cleaned += row + '\n'
       }
 
-      if (rows[i].includes(stopMessage)) {
+      if (row.includes(stopMessage)) {
         remove = false
       }
     }

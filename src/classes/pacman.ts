@@ -7,16 +7,16 @@
 
 import {array2spaced, depCommon, depArch, depVersions, depInit} from '../lib/dependencies'
 
-import fs from 'fs'
-import os from 'os'
-import path from 'path'
+import fs from 'node:fs'
+import os from 'node:os'
+import path from 'node:path'
 import shx from 'shelljs'
 import {IRemix, IDistro} from '../interfaces'
 
 import Utils from './utils'
 import Distro from './distro'
 import Settings from './settings'
-import {execSync} from 'child_process'
+import {execSync} from 'node:child_process'
 import {IConfig} from '../interfaces'
 import {exec} from '../lib/utils'
 
@@ -49,7 +49,7 @@ export default class Pacman {
      return distro
    }
 
-   static whichGrubIsInstalled() : string {
+   static whichGrubIsInstalled(): string {
      let grubInstalled = ''
      if (this.distro().familyId === 'debian') {
        if (this.packageIsInstalled('grub-common')) {
@@ -63,10 +63,8 @@ export default class Pacman {
        if (this.packageIsInstalled('grub')) {
          grubInstalled = 'grub'
        }
-     } else if (this.distro().familyId === 'suse') {
-       if (this.packageIsInstalled('grub2')) {
-         grubInstalled = 'grub2'
-       }
+     } else if (this.distro().familyId === 'suse' && this.packageIsInstalled('grub2')) {
+       grubInstalled = 'grub2'
      }
 
      return grubInstalled
@@ -90,10 +88,8 @@ export default class Pacman {
        if (Archlinux.isInstalledXorg()) {
          installed = true
        }
-     } else if (this.distro().familyId === 'suse') {
-       if (Suse.isInstalledXorg()) {
-         installed = true
-       }
+     } else if (this.distro().familyId === 'suse' && Suse.isInstalledXorg()) {
+       installed = true
      }
 
      return installed
@@ -117,10 +113,8 @@ export default class Pacman {
        if (Archlinux.isInstalledWayland()) {
          installed = true
        }
-     } else if (this.distro().familyId === 'suse') {
-       if (Suse.isInstalledWayland()) {
-         installed = true
-       }
+     } else if (this.distro().familyId === 'suse' && Suse.isInstalledWayland()) {
+       installed = true
      }
 
      return installed
@@ -133,7 +127,7 @@ export default class Pacman {
    static isUefi(): boolean {
      let isUefi = false
      if (this.distro().familyId === 'debian') {
-       if ((Utils.machineArch() !== 'i386') && (this.packageIsInstalled('grub-efi-' + Utils.machineArch() + '-bin'))) {
+       if (Utils.machineArch() !== 'i386' && this.packageIsInstalled('grub-efi-' + Utils.machineArch() + '-bin')) {
          isUefi = true
        }
      } else if (Pacman.distro().familyId === 'fedora') {
@@ -152,7 +146,7 @@ export default class Pacman {
     * @returns true se GUI
     */
    static isInstalledGui(): boolean {
-     return (this.isInstalledXorg() || this.isInstalledWayland())
+     return this.isInstalledXorg() || this.isInstalledWayland()
    }
 
    /**
@@ -283,8 +277,8 @@ export default class Pacman {
    }
 
    /**
-   * calamaresPolicies
-   */
+    * calamaresPolicies
+    */
    static async calamaresPolicies() {
      if (this.distro().familyId === 'debian') {
        await Debian.calamaresPolicies()
@@ -321,7 +315,7 @@ export default class Pacman {
    static configurationCheck(): boolean {
      const confExists = fs.existsSync(config_file)
      const listExists = fs.existsSync('/usr/local/share/penguins-eggs/exclude.list')
-     return (confExists && listExists)
+     return confExists && listExists
    }
 
    /**
@@ -331,10 +325,8 @@ export default class Pacman {
      const settings = new Settings()
      await settings.load()
      const result = Utils.machineId() !== settings.config.machine_id
-     if (verbose) {
-       if (result) {
-         console.log('configurationMachineNew: True')
-       }
+     if (verbose && result) {
+       console.log('configurationMachineNew: True')
      }
 
      return result
@@ -363,17 +355,9 @@ export default class Pacman {
      config.timezone = 'Europe/Rome'
      config.pmount_fixed = false
      const env = process.env
-     if (env.LANG !== undefined) {
-       config.locales_default = env.LANG
-     } else {
-       config.locales_default = 'en_US.UTF-8'
-     }
+     config.locales_default = env.LANG !== undefined ? env.LANG : 'en_US.UTF-8'
 
-     if (config.locales_default === 'en_US.UTF-8') {
-       config.locales = ['en_US.UTF-8']
-     } else {
-       config.locales = [config.locales_default, 'en_US.UTF-8']
-     }
+     config.locales = config.locales_default === 'en_US.UTF-8' ? ['en_US.UTF-8'] : [config.locales_default, 'en_US.UTF-8']
 
      if (!this.packageIsInstalled('calamares')) {
        config.force_installer = false
@@ -455,9 +439,7 @@ export default class Pacman {
        if (!fs.existsSync('/etc/bash_completion.d/')) {
          Utils.warning('/etc/bash_completion.d/ NOT exists')
          await exec('mkdir /etc/bash_completion.d/')
-       } else [
-         Utils.warning('/etc/bash_completion.d/ exists'),
-       ]
+       } else [Utils.warning('/etc/bash_completion.d/ exists')]
        await exec(`cp ${__dirname}/../../scripts/eggs.bash /etc/bash_completion.d/`)
        if (verbose) {
          console.log('autocomplete installed...')
@@ -466,8 +448,8 @@ export default class Pacman {
    }
 
    /**
-   * Installa manPage
-   */
+    * Installa manPage
+    */
    static async manPageInstall(verbose = false) {
      const manPage = path.resolve(__dirname, '../../manpages/doc/man/eggs.1.gz')
      if (fs.existsSync(manPage)) {
@@ -734,8 +716,8 @@ export default class Pacman {
        await exec(`cp -r ${buster}/calamares/modules/displaymanager.yml ${dest}/calamares/modules/displaymanager.yml`, echo)
 
        /***********************************************************************************
-         * Fedora
-         **********************************************************************************/
+          * Fedora
+          **********************************************************************************/
 
        /**
           * Fedora 35 ThirtyFive: eredita da ThirtyFive
@@ -746,8 +728,8 @@ export default class Pacman {
        await exec(`cp -r ${thirtytive} ${dest}`, echo)
 
        /***********************************************************************************
-         * Arch Linux
-         **********************************************************************************/
+          * Arch Linux
+          **********************************************************************************/
 
        /**
           * Endeavour rolling: eredita da rolling
@@ -758,8 +740,8 @@ export default class Pacman {
        await exec(`cp -r ${rolling} ${dest}`, echo)
 
        /***********************************************************************************
-         * openSuse
-         **********************************************************************************/
+          * openSuse
+          **********************************************************************************/
 
        /**
           * openSUSE tumbleweed: eredita da tumbleweed
@@ -772,9 +754,9 @@ export default class Pacman {
    }
 
    /**
-   * restuisce VERO se il pacchetto è installato
-   * @param debPackage
-   */
+    * restuisce VERO se il pacchetto è installato
+    * @param debPackage
+    */
    static packageIsInstalled(packageName: string): boolean {
      let installed = false
      if (this.distro().familyId === 'debian') {
@@ -791,9 +773,9 @@ export default class Pacman {
    }
 
    /**
-   * restuisce VERO se il pacchetto è installato
-   * @param debPackage
-   */
+    * restuisce VERO se il pacchetto è installato
+    * @param debPackage
+    */
    static async packageAptAvailable(packageName: string): Promise<boolean> {
      let available = false
 

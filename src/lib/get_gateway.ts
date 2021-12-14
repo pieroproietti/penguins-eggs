@@ -1,4 +1,3 @@
-
 'use strict'
 import inquirer = require('inquirer')
 

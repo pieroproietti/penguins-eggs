@@ -25,9 +25,7 @@ export default class Kill extends Command {
      verbose: flags.boolean({char: 'v', description: 'verbose'}),
    }
 
-   static examples = [
-     '$ eggs kill\nkill the eggs/free the nest',
-   ]
+   static examples = ['$ eggs kill\nkill the eggs/free the nest']
 
    async run() {
      await Utils.titles(this.id + ' ' + this.argv)

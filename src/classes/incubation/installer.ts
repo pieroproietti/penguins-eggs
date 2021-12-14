@@ -10,7 +10,7 @@
  * templateModules = template + '/modules/'
  * templateMultiarch = template + installer + '-modules/'
  *
-*/
+ */
 import {IInstaller, IRemix} from '../../interfaces'
 import Distro from '../../classes/distro'
 import Pacman from '../../classes/pacman'

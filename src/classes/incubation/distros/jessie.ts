@@ -7,10 +7,10 @@
  * mail: piero.proietti@gmail.com
  */
 
-import fs  from 'fs'
-import shx  from 'shelljs'
-import yaml  from 'js-yaml'
-import path  from 'path'
+import fs from 'node:fs'
+import shx from 'shelljs'
+import yaml from 'js-yaml'
+import path from 'node:path'
 
 import {IRemix, IDistro} from '../../../interfaces'
 import {IInstaller} from '../../../interfaces/i-installer'
@@ -40,7 +40,7 @@ export class Jessie {
     * @param displaymanager
     * @param verbose
     */
-   constructor(installer : IInstaller, remix: IRemix, distro: IDistro, release: boolean, user_opt: string, verbose = false) {
+   constructor(installer: IInstaller, remix: IRemix, distro: IDistro, release: boolean, user_opt: string, verbose = false) {
      this.installer = installer
      this.remix = remix
      this.distro = distro

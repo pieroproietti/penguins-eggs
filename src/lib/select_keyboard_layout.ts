@@ -31,21 +31,13 @@ icon = /usr/local/share/pixmaps/latam.png
 
 import inquirer from 'inquirer'
 
-export default async function selectKeyboardLayout() : Promise<string> {
+export default async function selectKeyboardLayout(): Promise<string> {
   const questions: Array<Record<string, any>> = [
     {
       type: 'list',
       name: 'layout',
       message: 'Select layout: ',
-      choices: [
-        'br',
-        'gb',
-        'es',
-        'it',
-        'latam',
-        'pt',
-        'us',
-      ],
+      choices: ['br', 'gb', 'es', 'it', 'latam', 'pt', 'us'],
       default: 'es',
     },
   ]

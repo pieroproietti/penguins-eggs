@@ -5,7 +5,7 @@
  * license: MIT
  */
 
-import fs from 'fs'
+import fs from 'node:fs'
 
 export default class n8 {
   /**
@@ -41,12 +41,7 @@ export default class n8 {
     // console.log(util.inspect(dir, false, null, true /* enable colors */))
 
     let dirname = ''
-    if (process.versions.node.split('.')[0] === '8') {
-      dirname = JSON.stringify(dir).replace('"', '').replace('"', '')
-    } else {
-      // se Node>8 restituisce dirent.name
-      dirname = dir.name
-    }
+    dirname = process.versions.node.split('.')[0] === '8' ? JSON.stringify(dir).replace('"', '').replace('"', '') : dir.name
 
     return dirname
   }

@@ -3,16 +3,13 @@
  */
 import inquirer from 'inquirer'
 
-export default async function selectAddressType() : Promise<string> {
+export default async function selectAddressType(): Promise<string> {
   const questions: Array<Record<string, any>> = [
     {
       type: 'list',
       name: 'option',
       message: 'Select address type: ',
-      choices: [
-        'dhcp',
-        'static',
-      ],
+      choices: ['dhcp', 'static'],
       default: 'dhcp',
     },
   ]

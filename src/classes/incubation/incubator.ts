@@ -4,9 +4,9 @@
  * author: Piero Proietti
  * mail: piero.proietti@gmail.com
  */
-import fs  from 'fs'
-import path  from 'path'
-import shx  from 'shelljs'
+import fs from 'node:fs'
+import path from 'node:path'
+import shx from 'shelljs'
 import Utils from '../utils'
 import {IRemix, IDistro} from '../../interfaces'
 
@@ -61,51 +61,108 @@ export default class Incubator {
 
      this.createInstallerDirs()
      // DEBIAN
-     if (this.distro.versionLike === 'jessie') {
+     switch (this.distro.versionLike) {
+     case 'jessie': {
        const jessie = new Jessie(this.installer, this.remix, this.distro, release, this.user_opt, this.verbose)
        await jessie.create()
-     } else if (this.distro.versionLike === 'stretch') {
+
+       break
+     }
+
+     case 'stretch': {
        const stretch = new Jessie(this.installer, this.remix, this.distro, release, this.user_opt, this.verbose)
        await stretch.create()
-     } else if (this.distro.versionLike === 'buster') {
+
+       break
+     }
+
+     case 'buster': {
        const buster = new Buster(this.installer, this.remix, this.distro, release, this.user_opt, this.verbose)
        await buster.create()
-     } else if (this.distro.versionLike === 'bullseye') {
+
+       break
+     }
+
+     case 'bullseye': {
        const bullseye = new Buster(this.installer, this.remix, this.distro, release, this.user_opt, this.verbose)
        await bullseye.create()
-     } else if (this.distro.versionLike === 'bookworm') {
+
+       break
+     }
+
+     case 'bookworm': {
        const bookworm = new Buster(this.installer, this.remix, this.distro, release, this.user_opt, this.verbose)
        await bookworm.create()
        // DEVUAN
-     } else if (this.distro.versionLike === 'beowulf') {
+
+       break
+     }
+
+     case 'beowulf': {
        const beowulf = new Buster(this.installer, this.remix, this.distro, release, this.user_opt, this.verbose)
        await beowulf.create()
-     } else if (this.distro.versionLike === 'chimaera') {
+
+       break
+     }
+
+     case 'chimaera': {
        const chimaera = new Buster(this.installer, this.remix, this.distro, release, this.user_opt, this.verbose)
        await chimaera.create()
-     } else if (this.distro.versionLike === 'daedalus') {
+
+       break
+     }
+
+     case 'daedalus': {
        const daedalus = new Buster(this.installer, this.remix, this.distro, release, this.user_opt, this.verbose)
        await daedalus.create()
 
        // UBUNTU
-     } else if (this.distro.versionLike === 'focal') {
+
+       break
+     }
+
+     case 'focal': {
        const focal = new Focal(this.installer, this.remix, this.distro, release, this.user_opt, this.verbose)
        await focal.create()
-     } else if (this.distro.versionLike === 'groovy') {
+
+       break
+     }
+
+     case 'groovy': {
        const groovy = new Focal(this.installer, this.remix, this.distro, release, this.user_opt, this.verbose)
        await groovy.create()
-     } else if (this.distro.versionLike === 'hirsute') {
+
+       break
+     }
+
+     case 'hirsute': {
        const hirsute = new Focal(this.installer, this.remix, this.distro, release, this.user_opt, this.verbose)
        await hirsute.create()
-     } else if (this.distro.versionLike === 'impish') {
+
+       break
+     }
+
+     case 'impish': {
        const impish = new Focal(this.installer, this.remix, this.distro, release, this.user_opt, this.verbose)
        await impish.create()
-     } else if (this.distro.versionLike === 'jammy') {
+
+       break
+     }
+
+     case 'jammy': {
        const jammy = new Focal(this.installer, this.remix, this.distro, release, this.user_opt, this.verbose)
        await jammy.create()
-     } else if (this.distro.versionLike === 'bionic') {
+
+       break
+     }
+
+     case 'bionic': {
        const bionic = new Bionic(this.installer, this.remix, this.distro, release, this.user_opt, this.verbose)
        await bionic.create()
+
+       break
+     }
+     // No default
      }
 
      this.createBranding()

@@ -220,24 +220,12 @@ export default async function selectRegions(region = ''): Promise<string> {
 
   const antartica = ['Casey', 'Davis', 'DumontDUrville', 'Macquarie', 'Mawson', 'McMurdo', 'Palmer', 'Rothera', 'Syowa', 'Troll', 'Vostok']
 
-  const australia = ['Adelaide',
-    'Brisbane',
-    'Broken_Hill',
-    'Canberra',
-    'Currie',
-    'Darwin',
-    'Eucla',
-    'Hobart',
-    'Lindeman',
-    'Lord_Howe',
-    'Melbourne',
-    'Perth',
-    'Sydney',
-    'Yancowinna']
+  const australia = ['Adelaide', 'Brisbane', 'Broken_Hill', 'Canberra', 'Currie', 'Darwin', 'Eucla', 'Hobart', 'Lindeman', 'Lord_Howe', 'Melbourne', 'Perth', 'Sydney', 'Yancowinna']
 
   const artic = ['Longyearbyen']
 
-  const asia = ['Aden',
+  const asia = [
+    'Aden',
     'Almaty',
     'Amman',
     'Anadyr',
@@ -326,11 +314,13 @@ export default async function selectRegions(region = ''): Promise<string> {
     'Yakutsk',
     'Yangon',
     'Yekaterinburg',
-    'Yerevan']
+    'Yerevan',
+  ]
 
   const atlantic = ['Azores', 'Bermuda', 'Canary', 'Cape_Verde', 'Faroe', 'Jan_Mayen', 'Madeira', 'Reykjavik', 'South_Georgia', 'St_Helena', 'Stanley']
 
-  const europe = ['Amsterdam',
+  const europe = [
+    'Amsterdam',
     'Andorra',
     'Astrakhan',
     'Athens',
@@ -389,11 +379,13 @@ export default async function selectRegions(region = ''): Promise<string> {
     'Warsaw',
     'Zagreb',
     'Zaporozhye',
-    'Zurich']
+    'Zurich',
+  ]
 
   const indian = ['Antananarivo', 'Chagos', 'Christmas', 'Cocos', 'Comoro', 'Kerguelen', 'Mahe', 'Maldives', 'Mauritius', 'Mayotte', 'Reunion']
 
-  const pacific = ['Apia',
+  const pacific = [
+    'Apia',
     'Auckland',
     'Bougainville',
     'Chatham',
@@ -435,11 +427,13 @@ export default async function selectRegions(region = ''): Promise<string> {
     'Truk',
     'Wake',
     'Wallis',
-    'Yap']
+    'Yap',
+  ]
 
   const us = ['Alaska', 'Aleutian', 'Arizona', 'Central', 'Eastern', 'Hawaii', 'Indiana-Starke', 'Michigan', 'Mountain', 'Pacific', 'Samoa']
 
-  const etc = ['GMT',
+  const etc = [
+    'GMT',
     'GMT+0',
     'GMT+1',
     'GMT+10',
@@ -473,28 +467,66 @@ export default async function selectRegions(region = ''): Promise<string> {
     'UCT',
     'UTC',
     'Universal',
-    'Zulu']
+    'Zulu',
+  ]
 
-  let zone = [] as string []
+  let zone = [] as string[]
 
-  if (region === 'Atlantic') {
+  switch (region) {
+  case 'Atlantic': {
     zone = atlantic
-  } else if (region === 'Africa') {
+
+    break
+  }
+
+  case 'Africa': {
     zone = africa
-  } else if (region === 'America') {
+
+    break
+  }
+
+  case 'America': {
     zone = america
-  } else if (region === 'Antarctica') {
+
+    break
+  }
+
+  case 'Antarctica': {
     zone = antartica
-  } else if (region === 'Artic') {
+
+    break
+  }
+
+  case 'Artic': {
     zone = artic
-  } else if (region === 'Australia') {
+
+    break
+  }
+
+  case 'Australia': {
     zone = australia
-  } else if (region === 'Europe') {
+
+    break
+  }
+
+  case 'Europe': {
     zone = europe
-  } else if (region === 'India') {
+
+    break
+  }
+
+  case 'India': {
     zone = indian
-  } else if (region === 'Pacific') {
+
+    break
+  }
+
+  case 'Pacific': {
     zone = pacific
+
+    break
+  }
+  // No default
   }
 
   const questions: Array<Record<string, any>> = [

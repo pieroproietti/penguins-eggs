@@ -11,7 +11,7 @@
 
 import {IExec} from '../interfaces'
 
-export function exec(command: string, {echo = false, ignore = false, capture = false} = {}) : Promise <IExec> {
+export function exec(command: string, {echo = false, ignore = false, capture = false} = {}): Promise<IExec> {
   if (echo) {
     console.log(command)
   }
@@ -20,7 +20,7 @@ export function exec(command: string, {echo = false, ignore = false, capture = f
   // const childProcess = spawn('bash', ['-c', command], { stdio: capture ? 'pipe' : 'inherit' });
   // const childProcess = spawn('bash', ['-c', command], { stdio: capture ? 'pipe' : ignore ? 'ignore' : 'inherit' });
   const childProcess = spawn('bash', ['-c', command], {
-    stdio: ignore ? 'ignore' : capture ? 'pipe' : 'inherit',
+    stdio: ignore ? 'ignore' : (capture ? 'pipe' : 'inherit'),
   })
 
   return new Promise((resolve, reject) => {

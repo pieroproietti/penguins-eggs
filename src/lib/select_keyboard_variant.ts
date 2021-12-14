@@ -6,4 +6,3 @@
  * localectl list-x11-keymap-variants
  * localectl list-x11-keymap-options | grep grp:
  */
-

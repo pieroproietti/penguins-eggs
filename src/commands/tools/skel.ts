@@ -36,11 +36,7 @@ desktop configuration of user mauro will get used as default`,
      }
 
      let user = ''
-     if (flags.user) {
-       user = flags.user
-     } else {
-       user = Utils.getPrimaryUser()
-     }
+     user = flags.user ? flags.user : Utils.getPrimaryUser()
 
      Utils.warning(`user: ${user}`)
 
