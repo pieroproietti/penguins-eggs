@@ -1,4 +1,4 @@
-import {Command, flags} from '@oclif/command'
+import {Command, Flags} from '@oclif/core'
 import Tools from '../../classes/tools'
 import Utils from '../../classes/utils'
 
@@ -8,11 +8,11 @@ export default class ExportDocs extends Command {
    static description = 'remove and export docType documentation of the sources in the destination host'
 
    static flags = {
-     help: flags.help({char: 'h'}),
+     help: Flags.help({char: 'h'}),
    }
 
-   async run() {
-     const {args, flags} = this.parse(ExportDocs)
+   async run() :Promise <void> {
+     const {args, flags} = await this.parse(ExportDocs)
 
      const Tu = new Tools()
      Utils.titles(this.id + ' ' + this.argv)

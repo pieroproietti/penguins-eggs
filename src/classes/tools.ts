@@ -5,8 +5,8 @@
  * license: MIT
  */
 
-import os from 'node:os'
-import fs from 'node:fs'
+import os from 'os'
+import fs from 'fs'
 import yaml from 'js-yaml'
 
 import Settings from './settings'

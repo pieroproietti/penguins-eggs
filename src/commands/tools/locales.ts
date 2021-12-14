@@ -1,4 +1,4 @@
-import {Command, flags} from '@oclif/command'
+import {Command, Flags} from '@oclif/core'
 
 import shx = require('shelljs')
 import path = require('path')
@@ -13,15 +13,15 @@ export default class Locales extends Command {
    static description = 'install/clean locales'
 
    static flags = {
-     help: flags.help({char: 'h'}),
-     reinstall: flags.boolean({char: 'r', description: 'reinstall locales'}),
-     verbose: flags.boolean({char: 'v', description: 'verbose'}),
+     help: Flags.help({char: 'h'}),
+     reinstall: Flags.boolean({char: 'r', description: 'reinstall locales'}),
+     verbose: Flags.boolean({char: 'v', description: 'verbose'}),
    }
 
-   async run() {
+   async run() :Promise <void>{
      Utils.titles(this.id + ' ' + this.argv)
 
-     const {args, flags} = this.parse(Locales)
+     const {args, flags} = await this.parse(Locales)
 
      let verbose = false
      if (flags.verbose) {

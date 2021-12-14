@@ -31,7 +31,7 @@
  */
 
 'use strict'
-import fs from 'node:fs'
+import fs from 'fs'
 import shell from 'shelljs'
 import inquirer from 'inquirer'
 

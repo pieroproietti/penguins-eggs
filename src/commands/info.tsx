@@ -2,31 +2,25 @@
  * info
  */
 
-import { Command, flags } from '@oclif/command'
+import { Command, Flags }from '@oclif/core'
 import shx from 'shelljs'
-import pjson from 'pjson'
 import Utils from '../classes/utils'
 import React from 'react'
 import { render, Text, Box } from 'ink'
-import Gradient from 'ink-gradient'
-import BigText from 'ink-big-text'
 import Settings from '../classes/settings'
 import Pacman from '../classes/pacman'
-const exec = require('../lib/utils').exec
-import fs from 'fs'
-import yaml from 'js-yaml'
 import Title from '../components/elements/title'
 
 export default class Info extends Command {
    static description = 'thinking a different approach to CLI...'
 
    static flags = {
-      verbose: flags.boolean({ char: 'v' }),
-      help: flags.help({ char: 'h' })
+      verbose: Flags.boolean({ char: 'v' }),
+      help: Flags.help({ char: 'h' })
    }
 
-   async run() {
-      const { args, flags } = this.parse(Info)
+   async run() :Promise <void> {
+      const { args, flags } = await this.parse(Info)
 
       let verbose = false
       if (flags.verbose) {

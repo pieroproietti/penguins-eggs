@@ -1,4 +1,4 @@
-import {O_APPEND} from 'node:constants'
+import {O_APPEND} from 'constants'
 import {IDistro} from '../../../interfaces'
 /**
  *

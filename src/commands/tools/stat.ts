@@ -1,7 +1,7 @@
-import {Command, flags} from '@oclif/command'
+import {Command, Flags} from '@oclif/core'
 import Utils from '../../classes/utils'
 import axios from 'axios'
-import https from 'node:https'
+import https from 'https'
 const agent = new https.Agent({
   rejectUnauthorized: false,
 })
@@ -14,15 +14,15 @@ export default class ToolsStat extends Command {
    static description = 'get statistics from sourceforge'
 
    static flags = {
-     help: flags.help({char: 'h'}),
-     month: flags.boolean({char: 'm', description: 'current month'}),
-     year: flags.boolean({char: 'y', description: 'current year'}),
+     help: Flags.help({char: 'h'}),
+     month: Flags.boolean({char: 'm', description: 'current month'}),
+     year: Flags.boolean({char: 'y', description: 'current year'}),
    }
 
    static aliases = ['stat']
 
-   async run() {
-     const {args, flags} = this.parse(ToolsStat)
+   async run() :Promise <void> {
+     const {args, flags} = await this.parse(ToolsStat)
      Utils.titles(this.id + ' ' + this.argv)
 
      const yesterday = new Date()

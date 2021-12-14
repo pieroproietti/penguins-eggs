@@ -4,7 +4,7 @@
  * email: piero.proietti@gmail.com
  * license: MIT
  */
-import {Command, flags} from '@oclif/command'
+import {Command, Flags} from '@oclif/core'
 import shx = require('shelljs')
 import Utils from '../classes/utils'
 import Tools from '../classes/tools'
@@ -22,15 +22,15 @@ export default class Update extends Command {
    static examples = ["$ eggs update\nupdate/upgrade the penguin's eggs tool"]
 
    static flags = {
-     help: flags.help({char: 'h'}),
-     apt: flags.boolean({char: 'a', description: 'if eggs package is .deb, update from distro repositories'}),
-     basket: flags.boolean({char: 'b', description: 'if eggs package is .deb, update from eggs basket'}),
-     verbose: flags.boolean({char: 'v', description: 'verbose'}),
+     help: Flags.help({char: 'h'}),
+     apt: Flags.boolean({char: 'a', description: 'if eggs package is .deb, update from distro repositories'}),
+     basket: Flags.boolean({char: 'b', description: 'if eggs package is .deb, update from eggs basket'}),
+     verbose: Flags.boolean({char: 'v', description: 'verbose'}),
    }
 
-   async run() {
+   async run() :Promise <void> {
      Utils.titles(this.id + ' ' + this.argv)
-     const {flags} = this.parse(Update)
+     const {flags} = await this.parse(Update)
      if (Utils.isRoot(this.id)) {
        Utils.titles(this.id + ' ' + this.argv)
 
@@ -125,12 +125,18 @@ export default class Update extends Command {
     */
    async chosenDeb(): Promise<string> {
      const choices: string[] = ['abort']
+     choices.push('basket')
+     choices.push('lan')
+     choices.push('manual')
+     choices.push('sources')
+
+     /*
      choices.push(new inquirer.Separator('exit from update'), 'basket')
      choices.push(new inquirer.Separator('select, download and update from basket'), 'lan')
      choices.push(new inquirer.Separator('automatic import and update from lan'), 'manual')
      choices.push(new inquirer.Separator('manual download from sourceforge.net and update with dpkg'), 'sources')
      choices.push(new inquirer.Separator('download sources from github.com'))
-
+    */
      const questions: Array<Record<string, any>> = [
        {
          type: 'list',

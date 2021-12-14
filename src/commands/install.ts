@@ -4,12 +4,12 @@
  * email: piero.proietti@gmail.com
  * license: MIT
  */
-import {Command, flags} from '@oclif/command'
+import {Command, Flags}from '@oclif/core'
 import shx from 'shelljs'
 import Utils from '../classes/utils'
 import Prepare from '../classes/krill_prepare'
 import Pacman from '../classes/pacman'
-import {emitWarning} from 'node:process'
+import {emitWarning} from 'process'
 import chalk from 'chalk'
 
 /**
@@ -17,9 +17,9 @@ import chalk from 'chalk'
  */
 export default class Install extends Command {
    static flags = {
-     cli: flags.boolean({char: 'c', description: 'force use CLI installer'}),
-     help: flags.help({char: 'h'}),
-     verbose: flags.boolean({char: 'v', description: 'verbose'}),
+     cli: Flags.boolean({char: 'c', description: 'force use CLI installer'}),
+     help: Flags.help({char: 'h'}),
+     verbose: Flags.boolean({char: 'v', description: 'verbose'}),
    }
 
    static description = 'command-line system installer - the egg became a penguin!'
@@ -31,10 +31,10 @@ export default class Install extends Command {
    /**
     * Execute
     */
-   async run() {
+   async run() :Promise <void> {
      Utils.titles(this.id + ' ' + this.argv)
 
-     const {flags} = this.parse(Install)
+     const {flags} = await this.parse(Install)
 
      let verbose = false
      if (flags.verbose) {

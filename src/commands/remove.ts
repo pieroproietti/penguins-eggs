@@ -4,11 +4,11 @@
  * email: piero.proietti@gmail.com
  * license: MIT
  */
-import {Command, flags} from '@oclif/command'
+import {Command, Flags} from '@oclif/core'
 import Utils from '../classes/utils'
 import Pacman from '../classes/pacman'
 import {IInstall} from '../interfaces'
-import {execSync} from 'node:child_process'
+import {execSync} from 'child_process'
 
 import {exec} from '../lib/utils'
 
@@ -21,16 +21,16 @@ export default class Remove extends Command {
    static examples = ['$ sudo eggs remove \nremove eggs\n', "$ sudo eggs remove --purge \nremove eggs, eggs configurations, configuration's files\n", '$ sudo eggs remove --autoremove \nremove eggs, eggs configurations, packages dependencies\n']
 
    static flags = {
-     purge: flags.boolean({char: 'p', description: 'remove eggs configurations files'}),
-     autoremove: flags.boolean({char: 'a', description: 'remove eggs packages dependencies'}),
-     help: flags.help({char: 'h'}),
-     verbose: flags.boolean({char: 'v', description: 'verbose'}),
+     purge: Flags.boolean({char: 'p', description: 'remove eggs configurations files'}),
+     autoremove: Flags.boolean({char: 'a', description: 'remove eggs packages dependencies'}),
+     help: Flags.help({char: 'h'}),
+     verbose: Flags.boolean({char: 'v', description: 'verbose'}),
    }
 
-   async run() {
+   async run() :Promise <void> {
      Utils.titles(this.id + ' ' + this.argv)
 
-     const {flags} = this.parse(Remove)
+     const {flags} = await this.parse(Remove)
      let verbose = false
      if (flags.verbose) {
        verbose = true

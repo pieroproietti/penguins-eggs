@@ -5,7 +5,7 @@
  * license: MIT
  */
 
-import fs from 'node:fs'
+import fs from 'fs'
 
 export default class n8 {
   /**

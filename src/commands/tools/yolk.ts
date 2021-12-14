@@ -4,9 +4,9 @@
  * email: piero.proietti@gmail.com
  * license: MIT
  */
-import {Command, flags} from '@oclif/command'
+import {Command, Flags}from '@oclif/core'
 import shx from 'shelljs'
-import fs from 'node:fs'
+import fs from 'fs'
 import Utils from '../../classes/utils'
 import Yolk from '../../classes/yolk'
 
@@ -19,8 +19,8 @@ export default class DevYolk extends Command {
    static examples = ['$ eggs yolk -v']
 
    static flags = {
-     help: flags.help({char: 'h'}),
-     verbose: flags.boolean({char: 'v'}),
+     help: Flags.help({char: 'h'}),
+     verbose: Flags.boolean({char: 'v'}),
    }
 
    static dir = '/usr/local/yolk'
@@ -28,10 +28,10 @@ export default class DevYolk extends Command {
    /**
     *
     */
-   async run() {
+   async run() :Promise <void> {
      Utils.titles(this.id + ' ' + this.argv)
 
-     const {flags} = this.parse(DevYolk)
+     const {flags} = await this.parse(DevYolk)
 
      let verbose = false
      if (flags.verbose) {

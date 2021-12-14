@@ -4,52 +4,52 @@
  * email: piero.proietti@gmail.com
  * license: MIT
  */
-import {Command, flags} from '@oclif/command'
+import { Command, Flags } from '@oclif/core'
 import Utils from '../../classes/utils'
 import fs = require('fs')
 import Xdg from '../../classes/xdg'
 
 export default class Skel extends Command {
-   static description = 'update skel from home configuration'
+  static description = 'update skel from home configuration'
 
-   static aliases = ['skel']
+  static aliases = ['skel']
 
-   static examples = [
-     `$ eggs skel --user mauro
+  static examples = [
+    `$ eggs skel --user mauro
 desktop configuration of user mauro will get used as default`,
-   ]
+  ]
 
-   static flags = {
-     help: flags.help({char: 'h'}),
-     user: flags.string({char: 'u', description: 'user to be used'}),
-     verbose: flags.boolean({char: 'v'}),
-   }
+  static flags = {
+    help: Flags.help({ char: 'h' }),
+    user: Flags.string({ char: 'u', description: 'user to be used' }),
+    verbose: Flags.boolean({ char: 'v' }),
+  }
 
-   async run() {
-     Utils.titles(this.id + ' ' + this.argv)
+  async run(): Promise<void> {
+    Utils.titles(this.id + ' ' + this.argv)
 
-     const {flags} = this.parse(Skel)
+    const { flags } = await this.parse(Skel)
 
-     let verbose = false
-     if (flags.verbose) {
-       verbose = true
-     }
+    let verbose = false
+    if (flags.verbose) {
+      verbose = true
+    }
 
-     let user = ''
-     user = flags.user ? flags.user : Utils.getPrimaryUser()
+    let user = ''
+    user = flags.user ? flags.user : Utils.getPrimaryUser()
 
-     Utils.warning(`user: ${user}`)
+    Utils.warning(`user: ${user}`)
 
-     const homeSource = `/home/${user}`
-     if (!fs.existsSync(homeSource)) {
-       Utils.error(`User ${user} not exist or not exist a proper home`)
-       Utils.warning('terminate')
-       process.exit(0)
-     }
+    const homeSource = `/home/${user}`
+    if (!fs.existsSync(homeSource)) {
+      Utils.error(`User ${user} not exist or not exist a proper home`)
+      Utils.warning('terminate')
+      process.exit(0)
+    }
 
-     if (Utils.isRoot()) {
-       Utils.titles('skel')
-       Xdg.skel(user, verbose)
-     }
-   }
+    if (Utils.isRoot()) {
+      Utils.titles('skel')
+      Xdg.skel(user, verbose)
+    }
+  }
 }

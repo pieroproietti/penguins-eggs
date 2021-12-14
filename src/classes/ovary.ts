@@ -10,8 +10,8 @@
 
 // packages
 import fs = require('fs')
-import path from 'node:path'
-import os from 'node:os'
+import path from 'path'
+import os from 'os'
 import shx from 'shelljs'
 import chalk from 'chalk'
 import mustache from 'mustache'
@@ -35,7 +35,7 @@ import Systemctl from './systemctl'
 import Bleach from './bleach'
 import Repo from './yolk'
 import cliAutologin = require('../lib/cli-autologin')
-import {execSync} from 'node:child_process'
+import {execSync} from 'child_process'
 import {displaymanager} from './incubation/fisherman-helper/displaymanager'
 
 /**
