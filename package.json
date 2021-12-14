@@ -12,11 +12,7 @@
     "bugs": "https://github.com/pieroproietti/penguins-eggs/issues",
     "dependencies": {
         "@oclif/core": "^1",
-        "@oclif/plugin-autocomplete": "0.3.0",
         "@oclif/plugin-help": "^3.2.17",
-        "@oclif/plugin-not-found": "^1.2.6",
-        "@oclif/plugin-plugins": "^2.0.1",
-        "@oclif/plugin-warn-if-update-available": "^2.0.2",
         "@oclif/plugin-version": "^1",
         "@typescript-eslint/parser": "^5.7.0",
         "axios": "^0.24.0",
@@ -87,10 +83,6 @@
         "commands": "./dist/commands",
         "plugins": [
             "@oclif/plugin-help",
-            "@oclif/plugin-plugins",
-            "@oclif/plugin-autocomplete",
-            "@oclif/plugin-not-found",
-            "@oclif/plugin-warn-if-update-available",
             "@oclif/plugin-version"
         ],
         "topicSeparator": " ",
