@@ -1,5 +1,0 @@
-mkdir ./vendors
-cd vendors
-# git clone https://github.com/pieroproietti/dev-cli
-git clone https://github.com/pieroproietti/perrisbrewery
-yarn

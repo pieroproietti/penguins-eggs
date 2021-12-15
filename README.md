@@ -410,7 +410,23 @@ the system produce an egg: iso image of your system
 
 ```
 USAGE
-  $ eggs produce
+  $ eggs produce [-p <value>] [--basename <value>] [-b] [-f] [-n] [-m] [-v] [-y] [-s] [-h] [--theme <value>]
+    [--addons <value>] [--release]
+
+FLAGS
+  -b, --backup          backup mode
+  -f, --fast            fast compression
+  -h, --help            Show CLI help.
+  -m, --max             max compression
+  -n, --normal          normal compression
+  -p, --prefix=<value>  prefix
+  -s, --script          script mode. Generate scripts to manage iso build
+  -v, --verbose         verbose
+  -y, --yolk            -y force yolk renew
+  --addons=<value>...   addons to be used: adapt, ichoice, pve, rsupport
+  --basename=<value>    basename
+  --release             release: configure GUI installer to remove eggs and calamares after installation
+  --theme=<value>       theme for livecd, calamares branding and partitions
 
 DESCRIPTION
   the system produce an egg: iso image of your system

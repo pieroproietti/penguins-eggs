@@ -12,14 +12,15 @@ import Utils from '../classes/utils'
 import Ovary from '../classes/ovary'
 import Compressors from '../classes/compressors'
 import Config from './config'
-import chalk = require('chalk')
+import chalk from 'chalk'
 import {IMyAddons} from '../interfaces'
 import fs from 'fs'
 import path from 'path'
 import Settings from '../classes/settings'
 
 export default class Produce extends Command {
-   static Flags = {
+
+   static flags = {
      prefix: Flags.string({char: 'p', description: 'prefix'}),
      basename: Flags.string({description: 'basename'}),
      backup: Flags.boolean({char: 'b', description: 'backup mode'}),
@@ -30,8 +31,6 @@ export default class Produce extends Command {
      yolk: Flags.boolean({char: 'y', description: '-y force yolk renew'}),
      script: Flags.boolean({char: 's', description: 'script mode. Generate scripts to manage iso build'}),
      help: Flags.help({char: 'h'}),
-
-     // addon vendor/addon configurazioni dei vendors
      theme: Flags.string({description: 'theme for livecd, calamares branding and partitions'}),
      addons: Flags.string({multiple: true, description: 'addons to be used: adapt, ichoice, pve, rsupport'}),
      release: Flags.boolean({description: 'release: configure GUI installer to remove eggs and calamares after installation'}),
@@ -54,6 +53,7 @@ export default class Produce extends Command {
 
    async run() :Promise <void> {
      Utils.titles(this.id + ' ' + this.argv)
+
      const {flags} = await this.parse(Produce)
      if (Utils.isRoot(this.id)) {
        /**

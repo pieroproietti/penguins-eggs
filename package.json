@@ -50,11 +50,10 @@
         "eslint-config-oclif-typescript": "^1.0.2",
         "globby": "^11.0.1",
         "mocha": "^9.1.3",
-        "oclif": "^2.0.1",
         "nyc": "^15.1.0",
-        "shx": "^0.3.3",
-        "perrisbrewery": "./vendors/perrisbrewery",
+        "oclif": "^2.0.1",
         "prettier": "^2.5.0",
+        "shx": "^0.3.3",
         "ts-node": "^10.2.1",
         "typedoc": "^0.22.10",
         "typescript": "^4.5.4"
@@ -68,7 +67,7 @@
         "/assistant",
         "/bin",
         "/conf",
-        "/lib",
+        "/dist",
         "/manpages",
         "/oclif.manifest.json",
         "/scripts",
@@ -103,7 +102,8 @@
     "scripts": {
         "docs": "rm docs -rf && npx typedoc src --out docs",
         "build": "tsc -p .",
-        "deb": "oclif pack:deb && npx pb -m",
+        "deb": "oclif pack:deb",
+        "tar": "oclif pack:tarballs --root=. --targets=linux-x64 --no-xz",
         "postpack": "rm -f oclif.manifest.json",
         "posttest": "eslint . --ext .ts --config .eslintrc",
         "prepack": "rm lib -rf && tsc -b && oclif manifest && oclif readme",
@@ -113,5 +113,5 @@
         "lint-and-fix": "eslint . --ext .ts --fix --config .eslintrc",
         "prettier-format": "prettier --config .prettierrc 'src/**/*.ts' --write"
     },
-    "types": "lib/index.d.ts"
+    "types": "dist/index.d.ts"
 }
