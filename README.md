@@ -124,24 +124,25 @@ USAGE
 # Commands
 <!-- commands -->
 * [`eggs adapt`](#eggs-adapt)
+* [`eggs autocomplete [SHELL]`](#eggs-autocomplete-shell)
 * [`eggs calamares`](#eggs-calamares)
-* [`eggs commands:help [COMMAND]`](#eggs-commandshelp-command)
+* [`eggs commands help [COMMAND]`](#eggs-commands-help-command)
 * [`eggs config`](#eggs-config)
 * [`eggs dad`](#eggs-dad)
-* [`eggs export:deb`](#eggs-exportdeb)
-* [`eggs export:docs`](#eggs-exportdocs)
-* [`eggs export:iso`](#eggs-exportiso)
+* [`eggs export deb`](#eggs-export-deb)
+* [`eggs export docs`](#eggs-export-docs)
+* [`eggs export iso`](#eggs-export-iso)
 * [`eggs info`](#eggs-info)
 * [`eggs install`](#eggs-install)
 * [`eggs kill`](#eggs-kill)
 * [`eggs mom`](#eggs-mom)
 * [`eggs produce`](#eggs-produce)
 * [`eggs remove`](#eggs-remove)
-* [`eggs tools:clean`](#eggs-toolsclean)
-* [`eggs tools:locales`](#eggs-toolslocales)
-* [`eggs tools:skel`](#eggs-toolsskel)
-* [`eggs tools:stat`](#eggs-toolsstat)
-* [`eggs tools:yolk`](#eggs-toolsyolk)
+* [`eggs tools clean`](#eggs-tools-clean)
+* [`eggs tools locales`](#eggs-tools-locales)
+* [`eggs tools skel`](#eggs-tools-skel)
+* [`eggs tools stat`](#eggs-tools-stat)
+* [`eggs tools yolk`](#eggs-tools-yolk)
 * [`eggs update`](#eggs-update)
 * [`eggs version`](#eggs-version)
 
@@ -165,6 +166,35 @@ ALIASES
 ```
 
 _See code: [dist/commands/adapt.ts](https://github.com/pieroproietti/penguins-eggs/blob/v9.0.0/dist/commands/adapt.ts)_
+
+## `eggs autocomplete [SHELL]`
+
+display autocomplete installation instructions
+
+```
+USAGE
+  $ eggs autocomplete [SHELL] [-r]
+
+ARGUMENTS
+  SHELL  shell type
+
+FLAGS
+  -r, --refresh-cache  Refresh cache (ignores displaying instructions)
+
+DESCRIPTION
+  display autocomplete installation instructions
+
+EXAMPLES
+  $ eggs autocomplete
+
+  $ eggs autocomplete bash
+
+  $ eggs autocomplete zsh
+
+  $ eggs autocomplete --refresh-cache
+```
+
+_See code: [@oclif/plugin-autocomplete](https://github.com/oclif/plugin-autocomplete/blob/v1.0.0/src/commands/autocomplete/index.ts)_
 
 ## `eggs calamares`
 
@@ -195,13 +225,13 @@ EXAMPLES
 
 _See code: [dist/commands/calamares.ts](https://github.com/pieroproietti/penguins-eggs/blob/v9.0.0/dist/commands/calamares.ts)_
 
-## `eggs commands:help [COMMAND]`
+## `eggs commands help [COMMAND]`
 
 display help for eggs
 
 ```
 USAGE
-  $ eggs commands:help [COMMAND] [--json] [--all]
+  $ eggs commands help [COMMAND] [--json] [--all]
 
 ARGUMENTS
   COMMAND  command to show help for
@@ -261,13 +291,13 @@ DESCRIPTION
 
 _See code: [dist/commands/dad.ts](https://github.com/pieroproietti/penguins-eggs/blob/v9.0.0/dist/commands/dad.ts)_
 
-## `eggs export:deb`
+## `eggs export deb`
 
 export deb/docs/iso to the destination host
 
 ```
 USAGE
-  $ eggs export:deb [-h] [-c] [--amd64] [--i386] [--armel] [--arm64] [-a]
+  $ eggs export deb [-h] [-c] [--amd64] [--i386] [--armel] [--arm64] [-a]
 
 FLAGS
   -a, --all    export all archs
@@ -282,15 +312,13 @@ DESCRIPTION
   export deb/docs/iso to the destination host
 ```
 
-_See code: [dist/commands/export/deb.ts](https://github.com/pieroproietti/penguins-eggs/blob/v9.0.0/dist/commands/export/deb.ts)_
-
-## `eggs export:docs`
+## `eggs export docs`
 
 remove and export docType documentation of the sources in the destination host
 
 ```
 USAGE
-  $ eggs export:docs [-h]
+  $ eggs export docs [-h]
 
 FLAGS
   -h, --help  Show CLI help.
@@ -299,15 +327,13 @@ DESCRIPTION
   remove and export docType documentation of the sources in the destination host
 ```
 
-_See code: [dist/commands/export/docs.ts](https://github.com/pieroproietti/penguins-eggs/blob/v9.0.0/dist/commands/export/docs.ts)_
-
-## `eggs export:iso`
+## `eggs export iso`
 
 export iso in the destination host
 
 ```
 USAGE
-  $ eggs export:iso [-h] [-b] [-c]
+  $ eggs export iso [-h] [-b] [-c]
 
 FLAGS
   -b, --backup  export backup ISOs
@@ -317,8 +343,6 @@ FLAGS
 DESCRIPTION
   export iso in the destination host
 ```
-
-_See code: [dist/commands/export/iso.ts](https://github.com/pieroproietti/penguins-eggs/blob/v9.0.0/dist/commands/export/iso.ts)_
 
 ## `eggs info`
 
@@ -499,13 +523,13 @@ EXAMPLES
 
 _See code: [dist/commands/remove.ts](https://github.com/pieroproietti/penguins-eggs/blob/v9.0.0/dist/commands/remove.ts)_
 
-## `eggs tools:clean`
+## `eggs tools clean`
 
 clean system log, apt, etc
 
 ```
 USAGE
-  $ eggs tools:clean [-h] [-v]
+  $ eggs tools clean [-h] [-v]
 
 FLAGS
   -h, --help     Show CLI help.
@@ -518,15 +542,13 @@ ALIASES
   $ eggs clean
 ```
 
-_See code: [dist/commands/tools/clean.ts](https://github.com/pieroproietti/penguins-eggs/blob/v9.0.0/dist/commands/tools/clean.ts)_
-
-## `eggs tools:locales`
+## `eggs tools locales`
 
 install/clean locales
 
 ```
 USAGE
-  $ eggs tools:locales [-h] [-r] [-v]
+  $ eggs tools locales [-h] [-r] [-v]
 
 FLAGS
   -h, --help       Show CLI help.
@@ -537,15 +559,13 @@ DESCRIPTION
   install/clean locales
 ```
 
-_See code: [dist/commands/tools/locales.ts](https://github.com/pieroproietti/penguins-eggs/blob/v9.0.0/dist/commands/tools/locales.ts)_
-
-## `eggs tools:skel`
+## `eggs tools skel`
 
 update skel from home configuration
 
 ```
 USAGE
-  $ eggs tools:skel [-h] [-u <value>] [-v]
+  $ eggs tools skel [-h] [-u <value>] [-v]
 
 FLAGS
   -h, --help          Show CLI help.
@@ -563,15 +583,13 @@ EXAMPLES
   desktop configuration of user mauro will get used as default
 ```
 
-_See code: [dist/commands/tools/skel.ts](https://github.com/pieroproietti/penguins-eggs/blob/v9.0.0/dist/commands/tools/skel.ts)_
-
-## `eggs tools:stat`
+## `eggs tools stat`
 
 get statistics from sourceforge
 
 ```
 USAGE
-  $ eggs tools:stat [-h] [-m] [-y]
+  $ eggs tools stat [-h] [-m] [-y]
 
 FLAGS
   -h, --help   Show CLI help.
@@ -585,15 +603,13 @@ ALIASES
   $ eggs stat
 ```
 
-_See code: [dist/commands/tools/stat.ts](https://github.com/pieroproietti/penguins-eggs/blob/v9.0.0/dist/commands/tools/stat.ts)_
-
-## `eggs tools:yolk`
+## `eggs tools yolk`
 
 configure eggs to install without internet
 
 ```
 USAGE
-  $ eggs tools:yolk [-h] [-v]
+  $ eggs tools yolk [-h] [-v]
 
 FLAGS
   -h, --help     Show CLI help.
@@ -605,8 +621,6 @@ DESCRIPTION
 EXAMPLES
   $ eggs yolk -v
 ```
-
-_See code: [dist/commands/tools/yolk.ts](https://github.com/pieroproietti/penguins-eggs/blob/v9.0.0/dist/commands/tools/yolk.ts)_
 
 ## `eggs update`
 
