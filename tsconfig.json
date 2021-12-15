@@ -3,13 +3,12 @@
     "jsx": "react",
     "declaration": true,
     "importHelpers": true,
-    "module": "commonjs",
     "esModuleInterop": true,
+    "module": "commonjs",
     "outDir": "dist",
     "rootDir": "src",
     "strict": true,
-    "target": "es2017",
-    "typeRoots": ["./src/types"]
+    "target": "es2019"
   },
   "include": [
     "src/**/*"
