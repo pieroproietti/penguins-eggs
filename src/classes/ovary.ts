@@ -1341,7 +1341,7 @@ export default class Ovary {
     cmd = `for i in efi_gop efi_gop efi_uga gfxterm video_bochs video_cirrus jpeg png ; do echo "insmod $i" >> ${this.settings.efi_work}/boot/grub/${Utils.machineUEFI()}/grub.cfg ; done`
     await exec(cmd, echo)
 
-    await exec(`echo source /boot/grub/grub.cfg >> ${this.settings.efi_work}/boot/grub/${Utils.machineUEFI()}/grub.cfg`, echo)
+    await exec(`echo source /boot/grub/grub.cfg >> ${efiWorkDir}/boot/grub/${Utils.machineUEFI()}/grub.cfg`, echo)
     /**
       * fine lavoro in efi_work
       * andiamo in memdiskDir
@@ -1418,11 +1418,11 @@ export default class Ovary {
     /**
       * prepare grub.cfg
       */
-    let grubSrc = `/etc/penguins-eggs.d/distros/${versionLike}/grub/grub.template.cfg`
+    let grubSrc = path.resolve(__dirname, `../../addons/${theme}/theme/livecd/grub.template.cfg`)
     if (Pacman.distro().familyId !== 'debian') {
-      grubSrc = `/etc/penguins-eggs.d/distros/${versionLike}/grub/grub.dracut.cfg`
+      grubSrc = path.resolve(__dirname, `../../addons/${theme}/theme/livecd/grub.template.cfg`)
     }
-    const grubDest = `${this.settings.work_dir.pathIso}/boot/grub/grub.cfg`
+    const grubDest = `${isoDir}/boot/grub/grub.cfg`
     const template = fs.readFileSync(grubSrc, 'utf8')
     const view = {
       fullname: this.settings.remix.fullname.toUpperCase(),
@@ -1533,6 +1533,8 @@ export default class Ovary {
          ${preparer} \
          ${isoHybridMbr} \
          -eltorito-boot isolinux/isolinux.bin \
+         -partition_offset 16 \
+         -c isolinux/boot.cat \
          -no-emul-boot \
          -boot-load-size 4 \
          -boot-info-table \
@@ -1558,6 +1560,8 @@ export default class Ovary {
          ${preparer} \
          -isohybrid-mbr /usr/share/syslinux/isohdpfx.bin
          -eltorito-boot isolinux/isolinux.bin \
+         -partition_offset 16 \
+         -c isolinux/boot.cat \         
          -no-emul-boot \
          -boot-load-size 4 \
          -boot-info-table \
@@ -1583,6 +1587,8 @@ export default class Ovary {
          ${preparer} \
          -isohybrid-mbr /usr/lib/syslinux/bios/isohdpfx.bin
          -eltorito-boot isolinux/isolinux.bin \
+         -partition_offset 16 \
+         -c isolinux/boot.cat \         
          -no-emul-boot \
          -boot-load-size 4 \
          -boot-info-table \
