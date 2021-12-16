@@ -1279,7 +1279,7 @@ export default class Ovary {
     await exec(`mkdir ${memdiskDir}/boot/grub/${Utils.machineUEFI()}`, echo)
 
     /**
-     * primo grub.cfs in memdisk
+     * for initial grub.cfg in memdisk
      */
     const grubCfg = `${memdiskDir}/boot/grub/grub.cfg`
     let text = ''
@@ -1288,9 +1288,11 @@ export default class Ovary {
     text += `source $prefix/${Utils.machineUEFI()}/grub.cfg\n`
     Utils.write(grubCfg, text)
 
+    // #################################
+
     /**
-      * Creo o cancello/creo: efi-work
-      */
+    * start with empty efiWorkDir
+    */
     if (fs.existsSync(efiWorkDir)) {
       await exec(`rm ${efiWorkDir} -rf`, echo)
     }
@@ -1304,7 +1306,33 @@ export default class Ovary {
     await exec(`mkdir ${efiWorkDir}/efi/boot`, echo)
 
     /**
-     * second grub.cfg in efiWork
+    * copy splash to efiWorkDir
+    */
+    // cp "$iso_dir"/isolinux/splash.png 
+    /**
+      * prepare splash
+      */
+     const splashDest = `${isoDir}/isolinux/splash.png`
+     const splashSrc = path.resolve(__dirname, `../../addons/${theme}/theme/livecd/splash.png`)
+     if (!fs.existsSync(splashSrc)) {
+       Utils.warning('Cannot find: ' + splashSrc)
+       process.exit()
+     }
+     await exec(`cp ${splashSrc} ${splashDest}`)
+ 
+     /**
+       * prepare theme
+       */
+     const themeDest = `${isoDir}/boot/grub/theme.cfg`
+     const themeSrc = path.resolve(__dirname, `../../addons/${theme}/theme/livecd/theme.cfg`)
+     if (!fs.existsSync(themeSrc)) {
+       Utils.warning('Cannot find: ' + themeSrc)
+       process.exit()
+     }
+     await exec(`cp ${themeSrc} ${themeDest}`)
+ 
+    /**
+     * second grub.cfg file in efiWork
      */
     let cmd = `for i in $(ls /usr/lib/grub/${Utils.machineUEFI()}|grep part_|grep .mod|sed \'s/.mod//\'); do echo "insmod $i" >> ${this.settings.efi_work}/boot/grub/${Utils.machineUEFI()}/grub.cfg; done`
     await exec(cmd, echo)
@@ -1316,46 +1344,65 @@ export default class Ovary {
     await exec(`echo source /boot/grub/grub.cfg >> ${this.settings.efi_work}/boot/grub/${Utils.machineUEFI()}/grub.cfg`, echo)
     /**
       * fine lavoro in efi_work
+      * andiamo in memdiskDir
       */
 
     /**
       * torno in memdiskDir
       */
     // make a tarred "memdisk" to embed in the grub image
-    await exec('tar -cvf memdisk boot', echo)
+    await exec(`tar -cvf ${memdiskDir}/memdisk ${memdiskDir}/boot`, echo)
 
     // make the grub image
-    await exec(`${grubName}-mkimage  -O ${Utils.machineUEFI()} -m memdisk -o ${memdiskDir}/bootx64.efi -p '(memdisk)/boot/grub' search iso9660 configfile normal memdisk tar cat part_msdos part_gpt fat ext2 ntfs ntfscomp hfsplus chain boot linux`, echo)
+    //          grub-mkimage        -O "x86_64-efi"            -m "memdisk"             -o "bootx64.efi"             -p '(memdisk)/boot/grub' search iso9660 configfile normal memdisk tar cat part_msdos part_gpt fat ext2 ntfs ntfscomp hfsplus chain boot linux
+    await exec(`${grubName}-mkimage  -O ${Utils.machineUEFI()} -m ${memdiskDir}/memdisk -o ${memdiskDir}/bootx64.efi -p '${memdiskDir}/boot/grub' search iso9660 configfile normal memdisk tar cat part_msdos part_gpt fat ext2 ntfs ntfscomp hfsplus chain boot linux`, echo)
 
     /**
-      * torno in efi-work
-      */
-    // copy the grub image to efi/boot (to go later in the device's root)
+    * copy the grub image to efi/boot (to go later in the device's root)
+    */
+    // 	        popd torna in efiWorkDir
+    //          cp "$tempdir"/bootx64.efi efi/boot
     await exec(`cp ${memdiskDir}/bootx64.efi ${efiWorkDir}/efi/boot`, echo)
 
     /**
-      * Creazione immagine di boot: efiboot.img
-      */
-     Utils.warning("Creating boot image efiboot")
+    * Do the boot image "boot/grub/efiboot.img"
+    */
+    Utils.warning("Creating boot image efiboot")
+    //          dd if=/dev/zero of=boot/grub/efiboot.img               bs=1K count=1440
     await exec(`dd if=/dev/zero of=${efiWorkDir}/boot/grub/efiboot.img bs=1K count=1440`, echo)
+    //          /sbin/mkdosfs -F 12              boot/grub/efiboot.img
     await exec(`/sbin/mkdosfs -F 12 ${efiWorkDir}/boot/grub/efiboot.img`, echo)
-    await exec(`mkdir ${memdiskDir}/img-mnt`, echo)
-    await exec(`mount -o loop ${efiWorkDir}/boot/grub/efiboot.img ${memdiskDir}/img-mnt`, echo)
-    await exec(`mkdir ${memdiskDir}/img-mnt/efi`, echo)
-    await exec(`mkdir ${memdiskDir}/img-mnt/efi/boot`, echo)
+    //                  mkdir img-
+    await exec(`mkdir ${efiWorkDir}/img-mnt`, echo)
+    //          mount -o loop boot/grub/efiboot.img img-mnt
+    await exec(`mount -o loop ${efiWorkDir}/boot/grub/efiboot.img ${efiWorkDir}/img-mnt`, echo)
+    //          mkdir -p           img-mnt/efi/boot
+    await exec(`mkdir ${efiWorkDir}/img-mnt/efi`, echo)
+    await exec(`mkdir ${efiWorkDir}/img-mnt/efi/boot`, echo)
     await exec(`cp -r ${memdiskDir}/bootx64.efi ${efiWorkDir}/img-mnt/efi/boot`, echo)
 
-    // copy modules and font in memdiskDir?
-    Utils.warning("Copy modules and font in")
+    Utils.warning("Copy modules and font")
+    //          cp -r /usr/lib/grub/x86_64-efi/* boot/grub/x86_64-efi/
     await exec(`cp -r /usr/lib/grub/${Utils.machineUEFI()}/* ${efiWorkDir}/boot/grub/${Utils.machineUEFI()}/`, echo)
 
     // if this doesn't work try another font from the same place (grub's default, unicode.pf2, is much larger)
     // Either of these will work, and they look the same to me. Unicode seems to work with qemu. -fsr
     if (fs.existsSync('/usr/share/grub/unicode.pf2')) {
-      await exec(`cp '/usr/share/grub/unicode.pf2 ${efiWorkDir}/boot/grub/font.pf2`, echo)
+      await exec(`cp /usr/share/grub/unicode.pf2 ${efiWorkDir}/boot/grub/font.pf2`, echo)
     } else if (fs.existsSync('/usr/share/grub2/unicode.pf2')) {
-      await exec(`cp '/usr/share/grub2/unicode.pf2 ${efiWorkDir}/boot/grub/font.pf2`, echo)
+      await exec(`cp /usr/share/grub2/unicode.pf2 ${efiWorkDir}/boot/grub/font.pf2`, echo)
     }
+
+    /**
+    * umount e remove
+    */
+    // umount img-mnt
+    await exec(`umount ${efiWorkDir}/img-mnt`, echo)
+    // rmdir img-mnt
+    await exec(`rmdir ${efiWorkDir}/img-mnt`, echo)
+    // rm -rf "$tempdir"
+    await exec(`rm ${memdiskDir}/img-mnt -rf`, echo)
+  
 
     /**
       * copia dei file da efi-work in iso/
@@ -1366,29 +1413,7 @@ export default class Ovary {
     /**
       * Do the main grub.cfg (which gets loaded last):
       */
-    await exec(`cp /etc/penguins-eggs.d/distros/${versionLike}/grub/loopback.cfg ${this.settings.work_dir.pathIso}/boot/grub/loopback.cfg`, echo)
-
-    /**
-      * prepare splash
-      */
-    const splashDest = `${this.settings.work_dir.pathIso}/isolinux/splash.png`
-    const splashSrc = path.resolve(__dirname, `../../addons/${theme}/theme/livecd/splash.png`)
-    if (!fs.existsSync(splashSrc)) {
-      Utils.warning('Cannot find: ' + splashSrc)
-      process.exit()
-    }
-    await exec(`cp ${splashSrc} ${splashDest}`)
-
-    /**
-      * prepare theme
-      */
-    const themeDest = `${isoDir}/boot/grub/theme.cfg`
-    const themeSrc = path.resolve(__dirname, `../../addons/${theme}/theme/livecd/theme.cfg`)
-    if (!fs.existsSync(themeSrc)) {
-      Utils.warning('Cannot find: ' + themeSrc)
-      process.exit()
-    }
-    await exec(`cp ${themeSrc} ${themeDest}`)
+    await exec(`cp /etc/penguins-eggs.d/distros/${versionLike}/grub/loopback.cfg ${isoDir}/boot/grub/loopback.cfg`, echo)
 
     /**
       * prepare grub.cfg
@@ -1410,15 +1435,11 @@ export default class Ovary {
       lang: process.env.LANG,
       locales: process.env.LANG,
     }
-    await exec(`cp ${grubDest} ${mustache.render(template, view)}`, echo)
-
-    /**
-     * umount e remove
-     */
-    await exec(`umount ${memdiskDir}/img-mnt`, echo)
-    await exec(`rmdir ${memdiskDir}/img-mnt`, echo)
+    fs.writeFileSync(grubDest, mustache.render(template, view))
   }
+
   // #######################################################################################
+
 
   /**
    * makeDotDisk
