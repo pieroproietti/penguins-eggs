@@ -1414,10 +1414,7 @@ export default class Ovary {
     /**
       * prepare grub.cfg
       */
-    let grubSrc = path.resolve(__dirname, `../../addons/${theme}/theme/livecd/grub.dracut.cfg`)
-    if (Pacman.distro().familyId !== 'debian') {
-      grubSrc = path.resolve(__dirname, `../../addons/${theme}/theme/livecd/grub.template.cfg`)
-    }
+    const grubSrc = `/etc/penguins-eggs.d/distros/${versionLike}/grub/grub.template.cfg`
     const grubDest = `${isoDir}/boot/grub/grub.cfg`
     const template = fs.readFileSync(grubSrc, 'utf8')
     const view = {
