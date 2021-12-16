@@ -1334,63 +1334,60 @@ export default class Ovary {
     /**
      * second grub.cfg file in efiWork
      */
-    let cmd = `for i in $(ls /usr/lib/grub/${Utils.machineUEFI()}|grep part_|grep .mod|sed \'s/.mod//\'); do echo "insmod $i" >> ${this.settings.efi_work}/boot/grub/${Utils.machineUEFI()}/grub.cfg; done`
+    //         for i in $(ls /usr/lib/grub/x86_64-efi            |grep part_|grep \.mod|sed 's/.mod//'); do echo "insmod $i" >>               boot/grub/x86_64-efi/grub.cfg; done
+    let cmd = `for i in $(ls /usr/lib/grub/${Utils.machineUEFI()}|grep part_|grep \.mod|sed 's/.mod//'); do echo "insmod $i" >> ${efiWorkDir}/boot/grub/${Utils.machineUEFI()}/grub.cfg; done`
     await exec(cmd, echo)
-
     // Additional modules so we don't boot in blind mode. I don't know which ones are really needed.
-    cmd = `for i in efi_gop efi_gop efi_uga gfxterm video_bochs video_cirrus jpeg png ; do echo "insmod $i" >> ${this.settings.efi_work}/boot/grub/${Utils.machineUEFI()}/grub.cfg ; done`
+    //     for i in efi_gop efi_uga ieee1275_fb vbe vga video_bochs video_cirrus jpeg png gfxterm ; do echo "insmod $i" >>               boot/grub/x86_64-efi/grub.cfg ; done
+    cmd = `for i in efi_gop efi_uga ieee1275_fb vbe vga video_bochs video_cirrus jpeg png gfxterm ; do echo "insmod $i" >> ${efiWorkDir}/boot/grub/${Utils.machineUEFI()}/grub.cfg ; done`
     await exec(cmd, echo)
+    //          echo "source /boot/grub/grub.cfg" >>               boot/grub/x86_64-efi/grub.cfg
+    await exec(`echo "source /boot/grub/grub.cfg" >> ${efiWorkDir}/boot/grub/${Utils.machineUEFI()}/grub.cfg`, echo)
 
-    await exec(`echo source /boot/grub/grub.cfg >> ${efiWorkDir}/boot/grub/${Utils.machineUEFI()}/grub.cfg`, echo)
     /**
-      * fine lavoro in efi_work
       * andiamo in memdiskDir
-      */
-
-    /**
-      * torno in memdiskDir
       */
     // make a tarred "memdisk" to embed in the grub image
     await exec(`tar -cvf ${memdiskDir}/memdisk ${memdiskDir}/boot`, echo)
 
     // make the grub image
-    //          grub-mkimage        -O "x86_64-efi"            -m "memdisk"             -o "bootx64.efi"             -p '(memdisk)/boot/grub' search iso9660 configfile normal memdisk tar cat part_msdos part_gpt fat ext2 ntfs ntfscomp hfsplus chain boot linux
-    await exec(`${grubName}-mkimage  -O ${Utils.machineUEFI()} -m ${memdiskDir}/memdisk -o ${memdiskDir}/bootx64.efi -p '${memdiskDir}/boot/grub' search iso9660 configfile normal memdisk tar cat part_msdos part_gpt fat ext2 ntfs ntfscomp hfsplus chain boot linux`, echo)
+    //          grub-mkimage         -O "x86_64-efi"             -m "memdisk"               -o "bootx64.efi"               -p '  (memdisk)/boot/grub' search   iso9660 configfile normal memdisk tar cat part_msdos part_gpt fat ext2 ntfs ntfscomp hfsplus chain boot linux
+    await exec(`${grubName}-mkimage  -O "${Utils.machineUEFI()}" -m "${memdiskDir}/memdisk" -o "${memdiskDir}/bootx64.efi" -p '${memdiskDir}/boot/grub' search iso9660 configfile normal memdisk tar cat part_msdos part_gpt fat ext2 ntfs ntfscomp hfsplus chain boot linux`, echo)
 
-    /**
-    * copy the grub image to efi/boot (to go later in the device's root)
-    */
     // 	        popd torna in efiWorkDir
-    //          cp "$tempdir"/bootx64.efi efi/boot
+
+    // copy the grub image to efi/boot (to go later in the device's root)
     await exec(`cp ${memdiskDir}/bootx64.efi ${efiWorkDir}/efi/boot`, echo)
 
-    /**
-    * Do the boot image "boot/grub/efiboot.img"
-    */
-    Utils.warning("Creating boot image efiboot")
+    // #######################
+		// ## Do the boot image "boot/grub/efiboot.img"
+
+    Utils.warning(`Creating ${efiWorkDir}/boot/grub/efiboot.img`)
     //          dd if=/dev/zero of=boot/grub/efiboot.img               bs=1K count=1440
     await exec(`dd if=/dev/zero of=${efiWorkDir}/boot/grub/efiboot.img bs=1K count=1440`, echo)
     //          /sbin/mkdosfs -F 12              boot/grub/efiboot.img
     await exec(`/sbin/mkdosfs -F 12 ${efiWorkDir}/boot/grub/efiboot.img`, echo)
-    //                  mkdir img-
+    //          mkdir img-mnt
     await exec(`mkdir ${efiWorkDir}/img-mnt`, echo)
-    //          mount -o loop boot/grub/efiboot.img img-mnt
+    //          mount -o loop               boot/grub/efiboot.img               img-mnt
     await exec(`mount -o loop ${efiWorkDir}/boot/grub/efiboot.img ${efiWorkDir}/img-mnt`, echo)
-    //          mkdir -p           img-mnt/efi/boot
+    //          mkdir -p            img-mnt/efi/boot
     await exec(`mkdir ${efiWorkDir}/img-mnt/efi`, echo)
     await exec(`mkdir ${efiWorkDir}/img-mnt/efi/boot`, echo)
+        //          cp "$tempdir"/bootx64.efi                     img-mnt/efi/boot/
     await exec(`cp -r ${memdiskDir}/bootx64.efi ${efiWorkDir}/img-mnt/efi/boot`, echo)
 
+    // #######################
     Utils.warning("Copy modules and font")
-    //          cp -r /usr/lib/grub/x86_64-efi/* boot/grub/x86_64-efi/
+    //          cp    /usr/lib/grub/x86_64-efi/* boot/grub/x86_64-efi/
     await exec(`cp -r /usr/lib/grub/${Utils.machineUEFI()}/* ${efiWorkDir}/boot/grub/${Utils.machineUEFI()}/`, echo)
 
     // if this doesn't work try another font from the same place (grub's default, unicode.pf2, is much larger)
     // Either of these will work, and they look the same to me. Unicode seems to work with qemu. -fsr
     if (fs.existsSync('/usr/share/grub/unicode.pf2')) {
       await exec(`cp /usr/share/grub/unicode.pf2 ${efiWorkDir}/boot/grub/font.pf2`, echo)
-    } else if (fs.existsSync('/usr/share/grub2/unicode.pf2')) {
-      await exec(`cp /usr/share/grub2/unicode.pf2 ${efiWorkDir}/boot/grub/font.pf2`, echo)
+    } else if (fs.existsSync('/usr/share/grub2/ascii.pf2')) {
+      await exec(`cp /usr/share/grub2/ascii.pf2 ${efiWorkDir}/boot/grub/font.pf2`, echo)
     }
 
     /**
@@ -1403,12 +1400,11 @@ export default class Ovary {
     // rm -rf "$tempdir"
     await exec(`rm ${memdiskDir}/img-mnt -rf`, echo)
   
-
     /**
       * copia dei file da efi-work in iso/
       */
-    await exec(`rsync -ax  ${efiWorkDir}/boot ${isoDir}/`, echo)
-    await exec(`rsync -ax ${efiWorkDir}/efi  ${isoDir}/`, echo)
+    await exec(`rsync -avx  ${efiWorkDir}/boot ${isoDir}/`, echo)
+    await exec(`rsync -avx ${efiWorkDir}/efi  ${isoDir}/`, echo)
 
     /**
       * Do the main grub.cfg (which gets loaded last):
@@ -1418,7 +1414,7 @@ export default class Ovary {
     /**
       * prepare grub.cfg
       */
-    let grubSrc = path.resolve(__dirname, `../../addons/${theme}/theme/livecd/grub.template.cfg`)
+    let grubSrc = path.resolve(__dirname, `../../addons/${theme}/theme/livecd/grub.dracut.cfg`)
     if (Pacman.distro().familyId !== 'debian') {
       grubSrc = path.resolve(__dirname, `../../addons/${theme}/theme/livecd/grub.template.cfg`)
     }
@@ -1435,6 +1431,7 @@ export default class Ovary {
       lang: process.env.LANG,
       locales: process.env.LANG,
     }
+    //          cp "$grub_template" "$work_dir"/iso/boot/grub/grub.cfg
     fs.writeFileSync(grubDest, mustache.render(template, view))
   }
 
