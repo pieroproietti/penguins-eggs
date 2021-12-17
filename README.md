@@ -126,12 +126,12 @@ USAGE
 * [`eggs adapt`](#eggs-adapt)
 * [`eggs autocomplete [SHELL]`](#eggs-autocomplete-shell)
 * [`eggs calamares`](#eggs-calamares)
-* [`eggs commands help [COMMAND]`](#eggs-commands-help-command)
 * [`eggs config`](#eggs-config)
 * [`eggs dad`](#eggs-dad)
 * [`eggs export deb`](#eggs-export-deb)
 * [`eggs export docs`](#eggs-export-docs)
 * [`eggs export iso`](#eggs-export-iso)
+* [`eggs help [COMMAND]`](#eggs-help-command)
 * [`eggs info`](#eggs-info)
 * [`eggs install`](#eggs-install)
 * [`eggs kill`](#eggs-kill)
@@ -224,25 +224,6 @@ EXAMPLES
 ```
 
 _See code: [dist/commands/calamares.ts](https://github.com/pieroproietti/penguins-eggs/blob/v9.0.0/dist/commands/calamares.ts)_
-
-## `eggs commands help [COMMAND]`
-
-display help for eggs
-
-```
-USAGE
-  $ eggs commands help [COMMAND] [--json] [--all]
-
-ARGUMENTS
-  COMMAND  command to show help for
-
-FLAGS
-  --all   see all commands in CLI
-  --json  Format output as json.
-
-DESCRIPTION
-  display help for eggs
-```
 
 ## `eggs config`
 
@@ -343,6 +324,26 @@ FLAGS
 DESCRIPTION
   export iso in the destination host
 ```
+
+## `eggs help [COMMAND]`
+
+display help for eggs
+
+```
+USAGE
+  $ eggs help [COMMAND] [--all]
+
+ARGUMENTS
+  COMMAND  command to show help for
+
+FLAGS
+  --all  see all commands in CLI
+
+DESCRIPTION
+  display help for eggs
+```
+
+_See code: [@oclif/plugin-help](https://github.com/oclif/plugin-help/blob/v3.3.1/src/commands/help.ts)_
 
 ## `eggs info`
 
