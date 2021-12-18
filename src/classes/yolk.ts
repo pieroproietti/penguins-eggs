@@ -4,24 +4,18 @@
  * email: piero.proietti@gmail.com
  * license: MIT
  */
-import { Command, flags } from '@oclif/command'
-import shx from 'shelljs'
-import fs from 'node:fs'
-
+import fs from 'fs'
 import Utils from './utils'
-// import { execute, pipe } from '@getvim/execute'
 import Pacman from './pacman'
-import { execSync } from 'node:child_process'
+import { execSync } from 'child_process'
 import Bleach from './bleach'
-
-const execute = require('../lib/utils').execute
 import { exec } from '../lib/utils'
 
 /**
  *
  */
 export default class Yolk {
-  dir = '/usr/local/yolk'
+  dir = '/var/local/yolk'
 
   /**
    *
@@ -47,7 +41,8 @@ export default class Yolk {
     }
 
     if (!this.exists()) {
-      shx.exec(`mkdir ${this.dir} -p`)
+      await exec(`mkdir ${this.dir} -p`, echo)
+      await exec(`chown _apt:root ${this.dir} -R`, echo)
     } else {
       this.clean()
     }
@@ -77,7 +72,7 @@ export default class Yolk {
       let cmd = ''
       Utils.warning(`downloading package ${package_} and it's dependencies...`)
       cmd = `apt-cache depends --recurse --no-recommends --no-suggests --no-conflicts --no-breaks --no-replaces --no-enhances ${package_} | grep "^\\w" | sort -u`
-      const depends = await execute(cmd)
+      const depends = (await exec (cmd, {echo: false, capture: true})).data
       await this.installDeps(depends.split('\n'))
     }
 
@@ -85,10 +80,10 @@ export default class Yolk {
     // const cmd = 'dpkg-scanpackages -m . | gzip -c > Packages.gz'
     const cmd = 'dpkg-scanpackages -h  md5,sha1,sha256 . | gzip -c > Packages.gz'
     Utils.warning(cmd)
-    await execute(cmd)
+    await exec(cmd)
 
     // Creo Release
-    const date = await execute('date -R -u')
+    const date = await exec('date -R -u')
     const content = 'Archive: stable\nComponent: yolk\nOrigin: penguins-eggs\nArchitecture: ' + Utils.machineArch() + '\nDate: ' + date + '\n'
     Utils.warning('Writing Release')
     fs.writeFileSync('Release', content)
@@ -121,17 +116,19 @@ export default class Yolk {
     // scarico solo le dipendenze non installate
     const toDownloads: string[] = []
     for (const depend of depends) {
-      if (!Pacman.packageIsInstalled(depend)) {
-        toDownloads.push(depend)
+      if (depend !== '') {
+        if (!Pacman.packageIsInstalled(depend)) {
+          toDownloads.push(depend)
+        }
       }
     }
 
     // e li vado a scaricare in /usr/local/yolk
     for (const toDownload of toDownloads) {
       process.chdir(this.dir)
-      const cmd = `apt-get download ${toDownload}`
-      Utils.warning(`- ${cmd}`)
-      await execute(cmd)
+        const cmd = `apt-get download ${toDownload}`
+        Utils.warning(`- ${cmd}`)
+        await exec(cmd)
     }
   }
 }
