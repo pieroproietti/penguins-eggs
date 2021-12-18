@@ -7,7 +7,7 @@
  * Presa da https://github.com/VolantisDev/node-systemctl
  */
 
-import {exec} from '../lib/utils'
+import { exec } from '../lib/utils'
 
 export default class SistemdCtl {
   async daemonReload() {
@@ -25,12 +25,12 @@ export default class SistemdCtl {
   async isEnabled(serviceName: string) {
     return new Promise((resolve, reject) => {
       run('is-enabled', serviceName)
-      .then(result => {
-        resolve(result.data.includes('enabled'))
-      })
-      .catch(function (error) {
-        resolve(false)
-      })
+        .then((result) => {
+          resolve(result.data.includes('enabled'))
+        })
+        .catch(function (error) {
+          resolve(false)
+        })
     })
   }
 

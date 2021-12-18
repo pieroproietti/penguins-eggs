@@ -1,34 +1,34 @@
-import {Command, flags} from '@oclif/command'
+import { Command, Flags } from '@oclif/core'
 import Utils from '../classes/utils'
 
-import {exec} from '../lib/utils'
+import { exec } from '../lib/utils'
 
 export default class Adapt extends Command {
-   static description = 'adapt monitor resolution for VM only'
-   static aliases = ['adjust']
+  static description = 'adapt monitor resolution for VM only'
+  static aliases = ['adjust']
 
-   static flags = {
-     verbose: flags.boolean({char: 'v'}),
-     help: flags.help({char: 'h'}),
-   }
+  static flags = {
+    verbose: Flags.boolean({ char: 'v' }),
+    help: Flags.help({ char: 'h' })
+  }
 
-   async run() {
-     const {args, flags} = this.parse(Adapt)
+  async run(): Promise<void> {
+    const { args, flags } = await this.parse(Adapt)
 
-     let verbose = false
-     if (flags.verbose) {
-       verbose = true
-     }
+    let verbose = false
+    if (flags.verbose) {
+      verbose = true
+    }
 
-     const echo = Utils.setEcho(verbose)
+    const echo = Utils.setEcho(verbose)
 
-     // const {args, flags} = this.parse(Adjust)
-     Utils.titles(this.id + ' ' + this.argv)
+    // const {args, flags} = this.parse(Adjust)
+    Utils.titles(this.id + ' ' + this.argv)
 
-     Utils.warning('Adapt monitor resolutions to the size of window in virtual machines')
-     await exec('xrandr --output Virtual-0 --auto', echo)
-     await exec('xrandr --output Virtual-1 --auto', echo)
-     await exec('xrandr --output Virtual-2 --auto', echo)
-     await exec('xrandr --output Virtual-3 --auto', echo)
-   }
+    Utils.warning('Adapt monitor resolutions to the size of window in virtual machines')
+    await exec('xrandr --output Virtual-0 --auto', echo)
+    await exec('xrandr --output Virtual-1 --auto', echo)
+    await exec('xrandr --output Virtual-2 --auto', echo)
+    await exec('xrandr --output Virtual-3 --auto', echo)
+  }
 }

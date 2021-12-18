@@ -11,7 +11,7 @@
  * templateMultiarch = template + installer + '-modules/'
  *
  */
-import {IInstaller, IRemix} from '../../interfaces'
+import { IInstaller, IRemix } from '../../interfaces'
 import Distro from '../../classes/distro'
 import Pacman from '../../classes/pacman'
 import Utils from '../utils'
@@ -32,8 +32,8 @@ export function installer(): IInstaller {
   installer.multiarchModules = installer.multiarch + 'modules/'
 
   /**
-    * i template nelle versioni isCalamaresAvailable sono QUELLI di calamares
-    */
+   * i template nelle versioni isCalamaresAvailable sono QUELLI di calamares
+   */
   const remix = {} as IRemix
   const distro = new Distro(remix)
   if (distro.isCalamaresAvailable) {

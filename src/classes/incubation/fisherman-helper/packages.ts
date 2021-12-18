@@ -1,5 +1,5 @@
-import {O_APPEND} from 'node:constants'
-import {IDistro} from '../../../interfaces'
+import { O_APPEND } from 'node:constants'
+import { IDistro } from '../../../interfaces'
 /**
  *
  */
@@ -32,42 +32,42 @@ export function tryInstall(distro: IDistro): string {
   let lang = 'en_gb'
 
   switch (processLang) {
-  case 'it_IT.UTF-8': {
-    lang = 'it'
+    case 'it_IT.UTF-8': {
+      lang = 'it'
 
-    break
-  }
+      break
+    }
 
-  case 'en_US.UTF-8': {
-    lang = 'en_gb'
+    case 'en_US.UTF-8': {
+      lang = 'en_gb'
 
-    break
-  }
+      break
+    }
 
-  case 'es_PE.UTF-8': {
-    lang = 'es_es'
+    case 'es_PE.UTF-8': {
+      lang = 'es_es'
 
-    break
-  }
+      break
+    }
 
-  case 'pt_BR.UTF-8': {
-    lang = 'pt_br'
+    case 'pt_BR.UTF-8': {
+      lang = 'pt_br'
 
-    break
-  }
+      break
+    }
 
-  case 'fr_FR.UTF-8': {
-    lang = 'fr'
+    case 'fr_FR.UTF-8': {
+      lang = 'fr'
 
-    break
-  }
+      break
+    }
 
-  case 'de_DE.UTF-8': {
-    lang = 'de'
+    case 'de_DE.UTF-8': {
+      lang = 'de'
 
-    break
-  }
-  // No default
+      break
+    }
+    // No default
   }
 
   let text = '  - try_install:\n'
