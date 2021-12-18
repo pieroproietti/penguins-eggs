@@ -9,9 +9,9 @@ import fs from 'node:fs'
 
 export default class n8 {
   /**
-    *
-    * @param dirPath
-    */
+   *
+   * @param dirPath
+   */
   static isDirectory(name: string): boolean {
     // console.log (`isDirectory: ${name}`)
     const path = '/' + name

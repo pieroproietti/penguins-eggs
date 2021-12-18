@@ -10,16 +10,16 @@ import fs from 'node:fs'
 import Utils from './utils'
 
 // libraries
-import {exec} from '../lib/utils'
+import { exec } from '../lib/utils'
 
 /**
  * Bleach:
  */
 export default class Bleach {
   /**
-    * clean
-    * @param verbose
-    */
+   * clean
+   * @param verbose
+   */
   async clean(verbose = false) {
     await this.cleanApt(verbose)
     await this.cleanHistory(verbose)
@@ -28,13 +28,13 @@ export default class Bleach {
   }
 
   /**
-    * cleanApt
-    * @param verbose
-    */
+   * cleanApt
+   * @param verbose
+   */
   private async cleanApt(verbose = false) {
-    let echo = {echo: false, ignore: true, capture: false}
+    let echo = { echo: false, ignore: true, capture: false }
     if (verbose) {
-      echo = {echo: true, ignore: true, capture: false}
+      echo = { echo: true, ignore: true, capture: false }
       Utils.warning('cleaning apt')
     }
 
@@ -45,9 +45,9 @@ export default class Bleach {
   }
 
   /**
-    * cleanHistory
-    * @param verbose
-    */
+   * cleanHistory
+   * @param verbose
+   */
   private async cleanHistory(verbose = false) {
     if (verbose) {
       Utils.warning('cleaning bash history')
@@ -60,13 +60,13 @@ export default class Bleach {
   }
 
   /**
-    * cleanJournal
-    * @param verbose
-    */
+   * cleanJournal
+   * @param verbose
+   */
   private async cleanJournal(verbose = false) {
-    let echo = {echo: false, ignore: true, capture: false}
+    let echo = { echo: false, ignore: true, capture: false }
     if (verbose) {
-      echo = {echo: true, ignore: true, capture: false}
+      echo = { echo: true, ignore: true, capture: false }
       Utils.warning('cleaning journald')
     }
 
@@ -85,13 +85,13 @@ export default class Bleach {
   }
 
   /**
-    * cleanSystemCache
-    * @param verbose
-    */
+   * cleanSystemCache
+   * @param verbose
+   */
   private async cleanSystemCache(verbose = false) {
-    let echo = {echo: false, ignore: true, capture: false}
+    let echo = { echo: false, ignore: true, capture: false }
     if (verbose) {
-      echo = {echo: true, ignore: true, capture: false}
+      echo = { echo: true, ignore: true, capture: false }
       Utils.warning('cleaning system cache')
     }
 
@@ -111,9 +111,9 @@ export default class Bleach {
  * @param dest
  */
 async function rm(dest = '', verbose = false) {
-  let echo = {echo: false, ignore: true, capture: false}
+  let echo = { echo: false, ignore: true, capture: false }
   if (verbose) {
-    echo = {echo: true, ignore: true, capture: false}
+    echo = { echo: true, ignore: true, capture: false }
   }
 
   if (fs.existsSync(dest)) {
@@ -124,9 +124,9 @@ async function rm(dest = '', verbose = false) {
 }
 
 async function rmdir(dest = '', verbose = false) {
-  let echo = {echo: false, ignore: true, capture: false}
+  let echo = { echo: false, ignore: true, capture: false }
   if (verbose) {
-    echo = {echo: true, ignore: true, capture: false}
+    echo = { echo: true, ignore: true, capture: false }
   }
 
   const result: string[] = fs.readdirSync(dest)

@@ -14,7 +14,7 @@ import Utils from './utils'
 import chalk from 'chalk'
 
 // libraries
-import {exec} from '../lib/utils'
+import { exec } from '../lib/utils'
 
 const xdg_dirs = ['DESKTOP', 'DOWNLOAD', 'TEMPLATES', 'PUBLICSHARE', 'DOCUMENTS', 'MUSIC', 'PICTURES', 'VIDEOS']
 
@@ -24,9 +24,9 @@ const xdg_dirs = ['DESKTOP', 'DOWNLOAD', 'TEMPLATES', 'PUBLICSHARE', 'DOCUMENTS'
  */
 export default class Xdg {
   /**
-    *
-    * @param xdg_dir
-    */
+   *
+   * @param xdg_dir
+   */
   static traduce(xdg_dir = '', traduce = true): string {
     let retval = ''
     if (traduce === false) {
@@ -34,9 +34,9 @@ export default class Xdg {
       retval = xdg_dir.charAt(0).toUpperCase() + xdg_dir.slice(1).toLowerCase()
       console.log(retval)
     } else {
-      xdg_dirs.forEach(async dir => {
+      xdg_dirs.forEach(async (dir) => {
         if (dir === xdg_dir) {
-          retval = path.basename(shx.exec(`sudo -u ${Utils.getPrimaryUser()} xdg-user-dir ${dir}`, {silent: true}).stdout.trim())
+          retval = path.basename(shx.exec(`sudo -u ${Utils.getPrimaryUser()} xdg-user-dir ${dir}`, { silent: true }).stdout.trim())
         }
       })
     }
@@ -45,19 +45,19 @@ export default class Xdg {
   }
 
   /**
-    *
-    * @param user
-    * @param chroot
-    * @param verbose
-    */
+   *
+   * @param user
+   * @param chroot
+   * @param verbose
+   */
   static async create(user: string, chroot: string, traduce = true, verbose = false) {
     const echo = Utils.setEcho(verbose)
 
     /**
-       * Creo solo la cartella DESKTOP perchè serve per i link, eventualmente posso creare le altre
-       * ma c'è il problema di traduce/non traduce
-       */
-    xdg_dirs.forEach(async dir => {
+     * Creo solo la cartella DESKTOP perchè serve per i link, eventualmente posso creare le altre
+     * ma c'è il problema di traduce/non traduce
+     */
+    xdg_dirs.forEach(async (dir) => {
       if (dir === 'DESKTOP') {
         await Xdg.mk(chroot, `/home/${user}/` + this.traduce(dir, traduce), verbose)
       }
@@ -65,10 +65,10 @@ export default class Xdg {
   }
 
   /**
-    *
-    * @param chroot
-    * @param pathPromise
-    */
+   *
+   * @param chroot
+   * @param pathPromise
+   */
   static async mk(chroot: string, path: string, verbose = false) {
     const echo = Utils.setEcho(verbose)
 
@@ -78,11 +78,11 @@ export default class Xdg {
   }
 
   /**
-    *
-    * @param olduser
-    * @param newuser
-    * @param chroot
-    */
+   *
+   * @param olduser
+   * @param newuser
+   * @param chroot
+   */
   static async autologin(olduser: string, newuser: string, chroot = '/') {
     if (await Pacman.isInstalledGui()) {
       // slim
@@ -131,10 +131,10 @@ export default class Xdg {
   }
 
   /**
-    * Copia della configuirazione in /etc/skel
-    * @param user
-    * @param verbose
-    */
+   * Copia della configuirazione in /etc/skel
+   * @param user
+   * @param verbose
+   */
   static async skel(user: string, verbose = false) {
     const echo = Utils.setEcho(verbose)
 

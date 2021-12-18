@@ -20,63 +20,63 @@ import path from 'node:path'
 import shx from 'shelljs'
 
 export default class PveLive {
-   systemctl = {} as Systemctl
+  systemctl = {} as Systemctl
 
-   constructor() {
-     this.systemctl = new Systemctl()
-   }
+  constructor() {
+    this.systemctl = new Systemctl()
+  }
 
-   /**
-    * enable PveLIve
-    */
-   enable() {
-     this.systemctl.enable('pve-live')
-   }
+  /**
+   * enable PveLIve
+   */
+  enable() {
+    this.systemctl.enable('pve-live')
+  }
 
-   /**
-    * disable
-    */
-   disable() {
-     this.systemctl.disable('pve-live')
-   }
+  /**
+   * disable
+   */
+  disable() {
+    this.systemctl.disable('pve-live')
+  }
 
-   create(root = '/') {
-     this.createScript(root)
-     this.createService(root)
-   }
+  create(root = '/') {
+    this.createScript(root)
+    this.createService(root)
+  }
 
-   /**
-    *
-    */
-   createScript(root = '/') {
-     shx.cp(path.resolve(__dirname, '../../scripts/pve-live.sh'), root + '/usr/bin/')
-   }
+  /**
+   *
+   */
+  createScript(root = '/') {
+    shx.cp(path.resolve(__dirname, '../../scripts/pve-live.sh'), root + '/usr/bin/')
+  }
 
-   /**
-    *
-    */
-   createService(root = '/') {
-     shx.cp(path.resolve(__dirname, '../../scripts/pve-live.service'), root + '/lib/systemd/system/')
-   }
+  /**
+   *
+   */
+  createService(root = '/') {
+    shx.cp(path.resolve(__dirname, '../../scripts/pve-live.service'), root + '/lib/systemd/system/')
+  }
 
-   /**
-    *
-    */
-   start() {
-     this.systemctl.start('lxcfs')
-     this.systemctl.start('pve-cluster')
-     this.systemctl.start('pve-firewall')
-     // this.systemctl.start('pve-guests')
-     this.systemctl.start('pve-ha-crm')
-     this.systemctl.start('pve-ha-lrm')
-   }
+  /**
+   *
+   */
+  start() {
+    this.systemctl.start('lxcfs')
+    this.systemctl.start('pve-cluster')
+    this.systemctl.start('pve-firewall')
+    // this.systemctl.start('pve-guests')
+    this.systemctl.start('pve-ha-crm')
+    this.systemctl.start('pve-ha-lrm')
+  }
 
-   stop() {
-     this.systemctl.stop('lxcfs')
-     this.systemctl.stop('pve-cluster')
-     this.systemctl.stop('pve-firewall')
-     // this.systemctl.stop('pve-guests')
-     this.systemctl.stop('pve-ha-crm')
-     this.systemctl.stop('pve-ha-lrm')
-   }
+  stop() {
+    this.systemctl.stop('lxcfs')
+    this.systemctl.stop('pve-cluster')
+    this.systemctl.stop('pve-firewall')
+    // this.systemctl.stop('pve-guests')
+    this.systemctl.stop('pve-ha-crm')
+    this.systemctl.stop('pve-ha-lrm')
+  }
 }

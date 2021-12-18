@@ -3,8 +3,16 @@
     "oclif",
     "oclif-typescript"
   ],
-  "root": true,
   "rules": {
-    "node/no-missing-import": 1
+    "@typescript-eslint/no-empty-function": "off",
+    "node/no-extraneous-import": "off",
+    "unicorn/prefer-module": "off",
+    "unicorn/prefer-ternary": "off",
+    "unicorn/prefer-array-some": "off",
+    "unicorn/consistent-function-scoping": "off",
+    "unicorn/consistent-destructuring": "off",
+    "unicorn/prefer-node-protocol": "off",
+    "unicorn/prefer-spread": "off",
+    "unicorn/import-style": "off"
   }
 }

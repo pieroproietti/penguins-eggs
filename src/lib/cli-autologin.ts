@@ -23,8 +23,8 @@ const stopMessage = 'eggs-stop-message'
 export async function addAutologin(distro: string, version: string, user: string, userPasswd: string, rootPasswd: string, chroot = '/') {
   if (Utils.isSystemd()) {
     /**
-       * Systemd
-       */
+     * Systemd
+     */
     const fileOverride = `${chroot}/etc/systemd/system/getty@.service.d/override.conf`
     const dirOverride = path.dirname(fileOverride)
     if (fs.existsSync(dirOverride)) {
@@ -42,8 +42,8 @@ export async function addAutologin(distro: string, version: string, user: string
     await addMotd(distro, version, user, userPasswd, rootPasswd, chroot)
   } else if (Utils.isSysvinit()) {
     /**
-       * sysvinit
-       */
+     * sysvinit
+     */
     const inittab = chroot + '/etc/inittab'
     const search = '1:2345:respawn:/sbin/getty'
     // const replace = `1:2345:respawn:/sbin/getty --noclear --autologin ${user} 38400 tty1`
@@ -72,8 +72,8 @@ export async function addAutologin(distro: string, version: string, user: string
 export async function remove(chroot = '/') {
   if (Utils.isSystemd()) {
     /**
-       * Systemd
-       */
+     * Systemd
+     */
     const fileOverride = `${chroot}/etc/systemd/system/getty@.service.d/override.conf`
     const dirOverride = path.dirname(fileOverride)
     if (fs.existsSync(dirOverride)) {
@@ -84,8 +84,8 @@ export async function remove(chroot = '/') {
     msgRemove(`${chroot}/etc/issue`)
   } else if (Utils.isSysvinit()) {
     /**
-       * sysvinit
-       */
+     * sysvinit
+     */
     const inittab = chroot + '/etc/inittab'
     const search = '1:2345:respawn:/sbin/getty'
     // const replace = `1:2345:respawn:/sbin/getty --noclear 38400 tty1         `
