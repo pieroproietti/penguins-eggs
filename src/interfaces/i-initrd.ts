@@ -5,8 +5,8 @@
 */
 
 export interface IInitrd {
-   cryptoroot: boolean
-   crypttab: boolean
-   resume: boolean
-   zz_resume_auto: boolean
+  cryptoroot: boolean
+  crypttab: boolean
+  resume: boolean
+  zz_resume_auto: boolean
 }

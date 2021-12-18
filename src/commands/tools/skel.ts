@@ -16,13 +16,13 @@ export default class Skel extends Command {
 
   static examples = [
     `$ eggs skel --user mauro
-desktop configuration of user mauro will get used as default`,
+desktop configuration of user mauro will get used as default`
   ]
 
   static flags = {
     help: Flags.help({ char: 'h' }),
     user: Flags.string({ char: 'u', description: 'user to be used' }),
-    verbose: Flags.boolean({ char: 'v' }),
+    verbose: Flags.boolean({ char: 'v' })
   }
 
   async run(): Promise<void> {

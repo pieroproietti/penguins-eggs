@@ -38,8 +38,8 @@ export default async function selectKeyboardLayout(): Promise<string> {
       name: 'layout',
       message: 'Select layout: ',
       choices: ['br', 'gb', 'es', 'it', 'latam', 'pt', 'us'],
-      default: 'es',
-    },
+      default: 'es'
+    }
   ]
 
   return new Promise(function (resolve) {

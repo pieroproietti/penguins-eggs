@@ -31,88 +31,88 @@
  */
 
 'use strict'
-import fs from 'fs'
+import fs from 'node:fs'
 import shell from 'shelljs'
 import inquirer from 'inquirer'
 
-import {IRemix, IDistro} from '../interfaces'
+import { IRemix, IDistro } from '../interfaces'
 
 /**
  * Classe
  */
 class Distro implements IDistro {
-   familyId: string
-   distroId: string
-   distroLike: string
-   versionId: string
-   versionLike: string
-   usrLibPath: string
-   isolinuxPath: string
-   syslinuxPath: string
-   squashFs: string
-   mountpointSquashFs: string
-   homeUrl: string
-   supportUrl: string
-   bugReportUrl: string
-   isCalamaresAvailable: boolean
+  familyId: string
+  distroId: string
+  distroLike: string
+  versionId: string
+  versionLike: string
+  usrLibPath: string
+  isolinuxPath: string
+  syslinuxPath: string
+  squashFs: string
+  mountpointSquashFs: string
+  homeUrl: string
+  supportUrl: string
+  bugReportUrl: string
+  isCalamaresAvailable: boolean
 
-   constructor(remix: IRemix) {
-     this.familyId = 'debian'
-     this.distroId = ''
-     this.distroLike = ''
-     this.versionId = ''
-     this.versionLike = ''
-     this.usrLibPath = '/usr/lib'
-     this.isolinuxPath = ''
-     this.syslinuxPath = ''
-     this.squashFs = ''
-     this.mountpointSquashFs = ''
-     this.homeUrl = ''
-     this.supportUrl = ''
-     this.bugReportUrl = ''
-     this.isCalamaresAvailable = true
+  constructor(remix: IRemix) {
+    this.familyId = 'debian'
+    this.distroId = ''
+    this.distroLike = ''
+    this.versionId = ''
+    this.versionLike = ''
+    this.usrLibPath = '/usr/lib'
+    this.isolinuxPath = ''
+    this.syslinuxPath = ''
+    this.squashFs = ''
+    this.mountpointSquashFs = ''
+    this.homeUrl = ''
+    this.supportUrl = ''
+    this.bugReportUrl = ''
+    this.isCalamaresAvailable = true
 
-     const file = '/etc/os-release'
-     let data: any
-     if (fs.existsSync(file)) {
-       data = fs.readFileSync(file, 'utf8')
-     }
+    const file = '/etc/os-release'
+    let data: any
+    if (fs.existsSync(file)) {
+      data = fs.readFileSync(file, 'utf8')
+    }
 
-      // inizio
-      enum info {
-         HOME_URL,
-         SUPPORT_URL,
-         BUG_REPORT_URL
+    // inizio
+    enum info {
+      HOME_URL,
+      SUPPORT_URL,
+      BUG_REPORT_URL
+    }
+
+    const os: Array<string> = []
+    os[info.HOME_URL] = 'HOME_URL='
+    os[info.SUPPORT_URL] = 'SUPPORT_URL='
+    os[info.BUG_REPORT_URL] = 'BUG_REPORT_URL='
+    for (const temp in data) {
+      if (!data[temp].search(os[info.HOME_URL])) {
+        this.homeUrl = data[temp].slice(os[info.HOME_URL].length).replace(/"/g, '')
       }
 
-      const os: Array<string> = []
-      os[info.HOME_URL] = 'HOME_URL='
-      os[info.SUPPORT_URL] = 'SUPPORT_URL='
-      os[info.BUG_REPORT_URL] = 'BUG_REPORT_URL='
-      for (const temp in data) {
-        if (!data[temp].search(os[info.HOME_URL])) {
-          this.homeUrl = data[temp].slice(os[info.HOME_URL].length).replace(/"/g, '')
-        }
-
-        if (!data[temp].search(os[info.SUPPORT_URL])) {
-          this.supportUrl = data[temp].slice(os[info.SUPPORT_URL].length).replace(/"/g, '')
-        }
-
-        if (!data[temp].search(os[info.BUG_REPORT_URL])) {
-          this.bugReportUrl = data[temp].slice(os[info.BUG_REPORT_URL].length).replace(/"/g, '')
-        }
+      if (!data[temp].search(os[info.SUPPORT_URL])) {
+        this.supportUrl = data[temp].slice(os[info.SUPPORT_URL].length).replace(/"/g, '')
       }
 
-      /**
-       * lsb_release -cs per versione ed lsb_release -is per distribuzione
-       */
-      this.versionId = shell.exec('lsb_release -cs', {silent: true}).stdout.toString().trim()
-      this.distroId = shell.exec('lsb_release -is', {silent: true}).stdout.toString().trim()
+      if (!data[temp].search(os[info.BUG_REPORT_URL])) {
+        this.bugReportUrl = data[temp].slice(os[info.BUG_REPORT_URL].length).replace(/"/g, '')
+      }
+    }
 
-      /**
-       * Per casi equivoci conviene normalizzare versionId
-       */
-      switch (this.versionId) {
+    /**
+     * lsb_release -cs per versione ed lsb_release -is per distribuzione
+     */
+    this.versionId = shell.exec('lsb_release -cs', { silent: true }).stdout.toString().trim()
+    this.distroId = shell.exec('lsb_release -is', { silent: true }).stdout.toString().trim()
+
+    /**
+     * Per casi equivoci conviene normalizzare versionId
+     */
+    switch (this.versionId) {
       case 'n/a': {
         // può essere Deepin apricot
         if (this.distroId === 'Deepin') {
@@ -148,12 +148,12 @@ class Distro implements IDistro {
         break
       }
       // No default
-      }
+    }
 
-      // Procedo analizzanto solo versionId...
+    // Procedo analizzanto solo versionId...
 
-      // prima Debian, Devuan ed Ubuntu
-      switch (this.versionId) {
+    // prima Debian, Devuan ed Ubuntu
+    switch (this.versionId) {
       case 'jessie': {
         // Debian 8 jessie
         this.distroLike = 'Debian'
@@ -366,64 +366,65 @@ class Distro implements IDistro {
         this.versionLike = 'buster'
 
         /**
-          * ArchLinux
-          */
+         * ArchLinux
+         */
 
         break
       }
 
-      default: if (this.distroId === 'EndeavourOS') {
-        this.familyId = 'archlinux'
-        this.versionId = 'rolling' // rolling
-        this.distroLike = 'Arch'
-        this.versionLike = 'rolling'
-      } else if (this.versionId === 'Qonos') {
-        this.familyId = 'archlinux'
-        this.versionId = 'qonos'
-        this.distroLike = 'Arch'
-        this.versionLike = 'rolling' // pavho'
+      default:
+        if (this.distroId === 'EndeavourOS') {
+          this.familyId = 'archlinux'
+          this.versionId = 'rolling' // rolling
+          this.distroLike = 'Arch'
+          this.versionLike = 'rolling'
+        } else if (this.versionId === 'Qonos') {
+          this.familyId = 'archlinux'
+          this.versionId = 'qonos'
+          this.distroLike = 'Arch'
+          this.versionLike = 'rolling' // pavho'
 
-        /**
-          * Fedora
-          */
-      } else if (this.versionId === 'ThirtyFive') {
-        this.familyId = 'fedora'
-        this.distroLike = 'Fedora'
-        this.versionLike = 'thirtyfive'
+          /**
+           * Fedora
+           */
+        } else if (this.versionId === 'ThirtyFive') {
+          this.familyId = 'fedora'
+          this.distroLike = 'Fedora'
+          this.versionLike = 'thirtyfive'
 
-        /**
-          * openSuse
-          */
-      } else if (this.distroId === 'openSUSE') {
-        this.familyId = 'suse'
-        this.distroLike = 'SUSE'
-        this.versionId = 'tumbleweed'
-        this.versionLike = 'tumbleweed'
-      } else {
-        /**
-          * se proprio non riesco provo con Debian buster
-          */
-        console.log("This distro is not yet recognized, I'll try Debian buster")
-        this.distroLike = 'Debian'
-        this.versionLike = 'buster'
-      }
-      }
+          /**
+           * openSuse
+           */
+        } else if (this.distroId === 'openSUSE') {
+          this.familyId = 'suse'
+          this.distroLike = 'SUSE'
+          this.versionId = 'tumbleweed'
+          this.versionLike = 'tumbleweed'
+        } else {
+          /**
+           * se proprio non riesco provo con Debian buster
+           */
+          console.log("This distro is not yet recognized, I'll try Debian buster")
+          this.distroLike = 'Debian'
+          this.versionLike = 'buster'
+        }
+    }
 
-      /**
-       * Selezione il mountpoint per squashfs
-       */
-      if (this.versionLike === 'jessie' || this.versionLike === 'stretch' || this.versionLike === 'bionic' || this.versionLike === 'xenial') {
-        this.squashFs = '/lib/live/mount/medium/live/filesystem.squashfs'
-        this.mountpointSquashFs = '/lib/live/mount/medium/live/filesystem.squashfs'
-      } else {
-        this.squashFs = '/run/live/medium/live/filesystem.squashfs'
-        this.mountpointSquashFs = '/run/live/medium/live/filesystem.squashfs'
-      }
+    /**
+     * Selezione il mountpoint per squashfs
+     */
+    if (this.versionLike === 'jessie' || this.versionLike === 'stretch' || this.versionLike === 'bionic' || this.versionLike === 'xenial') {
+      this.squashFs = '/lib/live/mount/medium/live/filesystem.squashfs'
+      this.mountpointSquashFs = '/lib/live/mount/medium/live/filesystem.squashfs'
+    } else {
+      this.squashFs = '/run/live/medium/live/filesystem.squashfs'
+      this.mountpointSquashFs = '/run/live/medium/live/filesystem.squashfs'
+    }
 
-      /**
-       * setting paths: syslinux, isolinux, usrLib
-       */
-      switch (this.familyId) {
+    /**
+     * setting paths: syslinux, isolinux, usrLib
+     */
+    switch (this.familyId) {
       case 'debian': {
         this.isolinuxPath = '/usr/lib/ISOLINUX/'
         this.syslinuxPath = '/usr/lib/syslinux/modules/bios/'
@@ -457,20 +458,20 @@ class Distro implements IDistro {
         break
       }
       // No default
-      }
+    }
 
-      /**
-       * Special cases...
-       */
+    /**
+     * Special cases...
+     */
 
-      /**
-       * MX LINUX
-       * ln -s /run/live/medium/live/filesystem.squashfs /live/boot-dev/antiX/linuxfs
-       */
-      if (fs.existsSync('/etc/antix-version')) {
-        this.distroId = 'MX'
-      }
-   }
+    /**
+     * MX LINUX
+     * ln -s /run/live/medium/live/filesystem.squashfs /live/boot-dev/antiX/linuxfs
+     */
+    if (fs.existsSync('/etc/antix-version')) {
+      this.distroId = 'MX'
+    }
+  }
 }
 
 export default Distro
