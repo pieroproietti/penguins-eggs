@@ -8,8 +8,8 @@ export default async function selectRegions(): Promise<string> {
       name: 'region',
       message: 'Select your region: ',
       choices: ['Atlantic', 'Africa', 'America', 'Antarctica', 'Artic', 'Australia', 'Europe', 'India', 'Europe', 'Pacific'],
-      default: 'Europe',
-    },
+      default: 'Europe'
+    }
   ]
 
   return new Promise(function (resolve) {

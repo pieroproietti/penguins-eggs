@@ -9,9 +9,9 @@
  * @returns {Promise<{code: number, data: string | undefined, error: Object}>}
  */
 
-import {IExec} from '../interfaces'
+import { IExec } from '../interfaces'
 
-export function exec(command: string, {echo = false, ignore = false, capture = false} = {}): Promise<IExec> {
+export function exec(command: string, { echo = false, ignore = false, capture = false } = {}): Promise<IExec> {
   if (echo) {
     console.log(command)
   }
@@ -20,7 +20,7 @@ export function exec(command: string, {echo = false, ignore = false, capture = f
   // const childProcess = spawn('bash', ['-c', command], { stdio: capture ? 'pipe' : 'inherit' });
   // const childProcess = spawn('bash', ['-c', command], { stdio: capture ? 'pipe' : ignore ? 'ignore' : 'inherit' });
   const childProcess = spawn('bash', ['-c', command], {
-    stdio: ignore ? 'ignore' : (capture ? 'pipe' : 'inherit'),
+    stdio: ignore ? 'ignore' : capture ? 'pipe' : 'inherit'
   })
 
   return new Promise((resolve, reject) => {
@@ -33,14 +33,14 @@ export function exec(command: string, {echo = false, ignore = false, capture = f
     }
 
     childProcess.on('error', function (error: string) {
-      reject({code: 1, error: error})
+      reject({ code: 1, error: error })
     })
 
     childProcess.on('close', function (code: number) {
       if (code > 0) {
-        reject({code: code, error: 'Command failed with code ' + code})
+        reject({ code: code, error: 'Command failed with code ' + code })
       } else {
-        resolve({code: code, data: stdout})
+        resolve({ code: code, data: stdout })
       }
     })
   })

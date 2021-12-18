@@ -4,9 +4,9 @@
  * email: piero.proietti@gmail.com
  * license: MIT
  */
-import {Command, Flags}from '@oclif/core'
+import { Command, Flags } from '@oclif/core'
 import shx from 'shelljs'
-import fs from 'fs'
+import fs from 'node:fs'
 import Utils from '../../classes/utils'
 import Yolk from '../../classes/yolk'
 
@@ -14,37 +14,37 @@ import Yolk from '../../classes/yolk'
  *
  */
 export default class DevYolk extends Command {
-   static description = 'configure eggs to install without internet'
+  static description = 'configure eggs to install without internet'
 
-   static examples = ['$ eggs yolk -v']
+  static examples = ['$ eggs yolk -v']
 
-   static flags = {
-     help: Flags.help({char: 'h'}),
-     verbose: Flags.boolean({char: 'v'}),
-   }
+  static flags = {
+    help: Flags.help({ char: 'h' }),
+    verbose: Flags.boolean({ char: 'v' })
+  }
 
-   static dir = '/usr/local/yolk'
+  static dir = '/usr/local/yolk'
 
-   /**
-    *
-    */
-   async run() :Promise <void> {
-     Utils.titles(this.id + ' ' + this.argv)
+  /**
+   *
+   */
+  async run(): Promise<void> {
+    Utils.titles(this.id + ' ' + this.argv)
 
-     const {flags} = await this.parse(DevYolk)
+    const { flags } = await this.parse(DevYolk)
 
-     let verbose = false
-     if (flags.verbose) {
-       verbose = true
-     }
+    let verbose = false
+    if (flags.verbose) {
+      verbose = true
+    }
 
-     if (Utils.isRoot()) {
-       if (fs.existsSync(DevYolk.dir)) {
-         shx.exec(`rm ${DevYolk.dir} -rf `)
-       }
+    if (Utils.isRoot()) {
+      if (fs.existsSync(DevYolk.dir)) {
+        shx.exec(`rm ${DevYolk.dir} -rf `)
+      }
 
-       const yolk = new Yolk()
-       await yolk.create(verbose)
-     }
-   }
+      const yolk = new Yolk()
+      await yolk.create(verbose)
+    }
+  }
 }

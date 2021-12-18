@@ -40,3 +40,4 @@ pb.yaml
 vendors/
 # initramfs generated
 *-eggs.img
+package-lock.json
