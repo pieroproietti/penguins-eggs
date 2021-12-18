@@ -6,11 +6,6 @@
  * license: MIT
  */
 
-// import React from 'react';
-// import { render, RenderOptions, Box, Text } from 'ink'
-// import Title from '../components/elements/title'
-
-import cfonts from 'cfonts'
 import shx from 'shelljs'
 import fs from 'fs'
 import dns from 'dns'
@@ -765,7 +760,9 @@ unknown target format aarch64-efi
 
    static titles(command = '') {
       console.clear()
-      cfonts.say('eggs', { font: 'simple' })
+      console.log('==============================================')
+      console.log('oOo E G G S: the penguin\s way of reproduction')
+      console.log('==============================================')
       console.log(chalk.bgGreen.whiteBright('      ' + pjson.name + '      ') +
          chalk.bgWhite.blue(" Perri's Brewery edition ") +
          chalk.bgRed.whiteBright('       ver. ' + pjson.version + '       '))
