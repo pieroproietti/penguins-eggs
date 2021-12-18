@@ -20,7 +20,7 @@ export default function Title({ title = "krill" }) {
             </Box>
             <Box margin={0} justifyContent="center" flexDirection="column">
                <Box >
-                  <Text>The penguin's reproductive system</Text>
+                  <Text>The reproductive system of penguins</Text>
                   </Box>
                <Box>
                   <Text> </Text>
