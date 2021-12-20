@@ -624,7 +624,7 @@ export default class Ovary {
     /**
      * stdmenu
      */
-     const menuStdDest =this.settings.work_dir.pathIso + 'isolinux/stdmenu.cfg'
+    const menuStdDest = this.settings.work_dir.pathIso + 'isolinux/stdmenu.cfg'
     let menuStdSrc = path.resolve(__dirname, `../../addons/${theme}/theme/livecd/stdmenu.cfg`)
     if (fs.existsSync(menuStdSrc)) {
       menuStdSrc = path.resolve(__dirname, `../../addons/eggs/theme/livecd/stdmenu.cfg`)
@@ -634,7 +634,7 @@ export default class Ovary {
     /**
      * menu
      */
-     const menuDest = this.settings.work_dir.pathIso + 'isolinux/menu.cfg'
+    const menuDest = this.settings.work_dir.pathIso + 'isolinux/menu.cfg'
     let menuSrc = path.resolve(__dirname, `../../addons/${theme}/theme/livecd/menu.template.cfg`)
     if (Pacman.distro().familyId !== 'debian') {
       menuSrc = path.resolve(__dirname, `../../addons/${theme}/theme/livecd/menu.dracut.cfg`)
@@ -1518,72 +1518,87 @@ export default class Ovary {
     const appid = `-appid "${distro.distroId}" `
     const publisher = `-publisher "${distro.distroId}/${distro.versionId}" `
     const preparer = '-preparer "prepared by eggs <https://penguins-eggs.net>" '
+    
+    let isoHybridMbr = `-isohybrid-mbr ${this.settings.distro.isolinuxPath}isohdpfx.bin `
+    if (this.settings.config.make_isohybrid) {
+       if (fs.existsSync('/usr/lib/syslinux/mbr/isohdpfx.bin')) {
+        isoHybridMbr = '-isohybrid-mbr /usr/lib/syslinux/mbr/isohdpfx.bin'
+       } else if (fs.existsSync('/usr/lib/syslinux/isohdpfx.bin')) {
+        isoHybridMbr = '-isohybrid-mbr /usr/lib/syslinux/isohdpfx.bin'
+       } else if (fs.existsSync('/usr/lib/ISOLINUX/isohdpfx.bin')) {
+        isoHybridMbr = '-isohybrid-mbr /usr/lib/ISOLINUX/isohdpfx.bin'
+       } else {
+          Utils.warning("Can't create isohybrid. File: isohdpfx.bin not found. The resulting image will be a standard iso file")
+       }
+    }
 
-    switch (distro.familyId) {
-      case 'debian': {
-        let isoHybridMbr = `-isohybrid-mbr ${this.settings.distro.isolinuxPath}isohdpfx.bin `
-        if (this.settings.config.make_isohybrid) {
-          if (fs.existsSync('/usr/lib/syslinux/mbr/isohdpfx.bin')) {
-            isoHybridMbr = '-isohybrid-mbr /usr/lib/syslinux/mbr/isohdpfx.bin'
-          } else if (fs.existsSync('/usr/lib/syslinux/isohdpfx.bin')) {
-            isoHybridMbr = '-isohybrid-mbr /usr/lib/syslinux/isohdpfx.bin'
-          } else if (fs.existsSync('/usr/lib/ISOLINUX/isohdpfx.bin')) {
-            isoHybridMbr = '-isohybrid-mbr /usr/lib/ISOLINUX/isohdpfx.bin'
-          } else {
-            Utils.warning("Can't create isohybrid. File: isohdpfx.bin not found. The resulting image will be a standard iso file")
-          }
-        }
+    let uefi_elToritoAltBoot = ''
+    let uefi_e = ''
+    let uefi_isohybridGptBasdat = ''
+    let uefi_noEmulBoot = ''
+    if (this.settings.config.make_efi) {
+      uefi_elToritoAltBoot = '-eltorito-alt-boot'
+      uefi_e = '-e boot/grub/efiboot.img'
+      uefi_isohybridGptBasdat = '-isohybrid-gpt-basdat'
+      uefi_noEmulBoot = '-no-emul-boot'
+    }
 
-        let uefi_noEmulBoot = ''
-        let uefi_elToritoAltBoot = ''
-        let uefi_e = ''
-        let uefi_isohybridGptBasdat = ''
-        if (this.settings.config.make_efi) {
-          uefi_noEmulBoot = '-no-emul-boot'
-          uefi_elToritoAltBoot = '-eltorito-alt-boot'
-          uefi_e = '-e boot/grub/efiboot.img'
-          uefi_isohybridGptBasdat = '-isohybrid-gpt-basdat'
-        }
-        
-        command = `xorriso -as mkisofs \
-         -volid ${volid} \
-         -full-iso9660-filenames \
-         -joliet \
+
+    /**
+      * info Debian GNU/Linux 10.8.0 "Buster" - Official i386 NETINST 20210206-10:54
+      * mkisofs xorriso -as mkisofs 
+      * -r 
+      * -checksum_algorithm_iso md5,sha1,sha256,sha512 
+      * -V 'Debian 10.8.0 i386 n' 
+      * -o /srv/cdbuilder.debian.org/dst/deb-cd/out/2busteri386/debian-10.8.0-i386-NETINST-1.iso 
+      *       -jigdo-jigdo /srv/cdbuilder.debian.org/dst/deb-cd/out/2busteri386/debian-10.8.0-i386-NETINST-1.jigdo 
+      *       -jigdo-template /srv/cdbuilder.debian.org/dst/deb-cd/out/2busteri386/debian-10.8.0-i386-NETINST-1.template 
+      *       -jigdo-map Debian=/srv/cdbuilder.debian.org/src/ftp/debian/ 
+      *       -jigdo-exclude boot1 
+      * -md5-list /srv/cdbuilder.debian.org/src/deb-cd/tmp/2busteri386/buster/md5-check 
+      *       -jigdo-min-file-size 1024 
+      *       -jigdo-exclude 'README*' 
+      *       -jigdo-exclude /doc/ 
+      *       -jigdo-exclude /md5sum.txt 
+      *       -jigdo-exclude /.disk/ 
+      *       -jigdo-exclude /pics/ 
+      *       -jigdo-exclude 'Release*' 
+      *       -jigdo-exclude 'Packages*' 
+      *       -jigdo-exclude 'Sources*' 
+      * -J 
+      * -joliet-long 
+      * -cache-inodes 
+      * -isohybrid-mbr syslinux/usr/lib/ISOLINUX/isohdpfx.bin 
+      * -b isolinux/isolinux.bin                 
+      * -c isolinux/boot.cat 
+      * -boot-load-size 4 
+      * -boot-info-table 
+      * -no-emul-boot 
+      * -eltorito-alt-boot 
+      * -e boot/grub/efi.img 
+      * -no-emul-boot 
+      * -isohybrid-gpt-basdat 
+      *         isohybrid-apm-hfsplus 
+      * boot1 CD1
+      */
+    command = `xorriso -as mkisofs \
+         -r
+         -V ${volid} \
+         -o ${output} \
+         -J \
          -joliet-long \
-         -iso-level 3 \
-         -rational-rock \
-         ${appid} \
-         ${publisher} \
-         ${preparer} \
+         -cache-inodes  \
          ${isoHybridMbr} \
-         -eltorito-boot isolinux/isolinux.bin \
+         -b isolinux/isolinux.bin \
          -c isolinux/boot.cat \
-         -partition_offset 16 \
          -boot-load-size 4 \
          -boot-info-table \
-         ${uefi_noEmulBoot} \
+         -no-emul-boot \
+         ${uefi_elToritoAltBoot} \
          ${uefi_e} \
-         ${uefi_elToritoAltBoot}
+         ${uefi_noEmulBoot} \
          ${uefi_isohybridGptBasdat}
-         -output ${output} \
          ${this.settings.work_dir.pathIso}`
-
-         break
-      }
-
-      case 'fedora': {
-        command = ``
-
-        break
-      }
-
-      case 'archlinux': {
-        command = ``
-
-        break
-      }
-      // No default
-    }
 
     return command
   }
