@@ -1,9 +1,8 @@
 import pjson from 'pjson'
 
 import React from 'react'
-import { render, Text, Box } from 'ink'
+import { render, Text, Box, Newline } from 'ink'
 import Gradient from 'ink-gradient'
-import BigText from 'ink-big-text'
 
 
 type TitleProps = {
@@ -14,17 +13,14 @@ export default function Title({ title = "krill" }) {
    return (
       // font="slick"
       <>
-         <Box flexDirection="row">
+         <Box flexDirection="column" >
             <Box>
-                  <BigText text={pjson.shortName} font="simple"/>
             </Box>
-            <Box margin={0} justifyContent="center" flexDirection="column">
-               <Box >
-                  <Text>The reproductive system of penguins</Text>
-                  </Box>
-               <Box>
-                  <Text> </Text>
-               </Box>
+            <Box>
+               <Text> E G G S: the reproductive system of penguins</Text>
+            </Box>
+            <Box>
+               <Newline />
             </Box>
          </Box>
          <Box flexDirection="row">

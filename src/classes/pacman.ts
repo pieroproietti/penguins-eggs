@@ -517,7 +517,7 @@ export default class Pacman {
       /**
        * Debian 10 buster: eredita tutto da buster
        */
-    } else if (this.distro().versionLike === 'bollseye') {
+    } else if (this.distro().versionLike === 'buster') {
       const dest = '/etc/penguins-eggs.d/distros/buster'
       await exec(`cp -r ${buster}/grub ${dest}/grub`, echo)
       await exec(`cp -r ${buster}/isolinux ${dest}/isolinux`, echo)
@@ -527,7 +527,7 @@ export default class Pacman {
       /**
        * Debian 11 bullseye: eredita tutto da buster
        */
-    } else if (this.distro().versionLike === 'bollseye') {
+    } else if (this.distro().versionLike === 'bullseye') {
       const dest = '/etc/penguins-eggs.d/distros/bullseye'
       await exec(`cp -r ${buster}/grub ${dest}/grub`, echo)
       await exec(`cp -r ${buster}/isolinux ${dest}/isolinux`, echo)
