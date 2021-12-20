@@ -6,6 +6,7 @@ dist
 lib
 manpages/doc/man/eggs.1.gz
 node_modules
+packages-lock.json
 pb.yaml
 perrisbrewery/workdir/*
 !perrisbrewery/workdir/.gitkeep
