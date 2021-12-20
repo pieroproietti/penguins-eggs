@@ -622,9 +622,19 @@ export default class Ovary {
     fs.copyFileSync(splashSrc, splashDest)
 
     /**
+     * stdmenu
+     */
+     const menuStdDest =this.settings.work_dir.pathIso + 'isolinux/stdmenu.cfg'
+    let menuStdSrc = path.resolve(__dirname, `../../addons/${theme}/theme/livecd/stdmenu.cfg`)
+    if (fs.existsSync(menuStdSrc)) {
+      menuStdSrc = path.resolve(__dirname, `../../addons/eggs/theme/livecd/stdmenu.cfg`)
+    }
+    fs.copyFileSync(menuStdSrc, menuStdDest)
+
+    /**
      * menu
      */
-    const menuDest = this.settings.work_dir.pathIso + 'isolinux/menu.cfg'
+     const menuDest = this.settings.work_dir.pathIso + 'isolinux/menu.cfg'
     let menuSrc = path.resolve(__dirname, `../../addons/${theme}/theme/livecd/menu.template.cfg`)
     if (Pacman.distro().familyId !== 'debian') {
       menuSrc = path.resolve(__dirname, `../../addons/${theme}/theme/livecd/menu.dracut.cfg`)
@@ -1524,13 +1534,17 @@ export default class Ovary {
           }
         }
 
-        let uefi_opt = ''
+        let uefi_noEmulBoot = ''
+        let uefi_elToritoAltBoot = ''
+        let uefi_e = ''
+        let uefi_isohybridGptBasdat = ''
         if (this.settings.config.make_efi) {
-          uefi_opt = '-eltorito-alt-boot -e boot/grub/efiboot.img \
-                        -isohybrid-gpt-basdat \
-                        -no-emul-boot'
+          uefi_noEmulBoot = '-no-emul-boot'
+          uefi_elToritoAltBoot = '-eltorito-alt-boot'
+          uefi_e = '-e boot/grub/efiboot.img'
+          uefi_isohybridGptBasdat = '-isohybrid-gpt-basdat'
         }
-
+        
         command = `xorriso -as mkisofs \
          -volid ${volid} \
          -full-iso9660-filenames \
@@ -1543,70 +1557,28 @@ export default class Ovary {
          ${preparer} \
          ${isoHybridMbr} \
          -eltorito-boot isolinux/isolinux.bin \
-         -partition_offset 16 \
          -c isolinux/boot.cat \
-         -no-emul-boot \
+         -partition_offset 16 \
          -boot-load-size 4 \
          -boot-info-table \
-         ${uefi_opt} \
-         -isohybrid-gpt-basdat
-         -no-emul-boot \
+         ${uefi_noEmulBoot} \
+         ${uefi_e} \
+         ${uefi_elToritoAltBoot}
+         ${uefi_isohybridGptBasdat}
          -output ${output} \
          ${this.settings.work_dir.pathIso}`
 
-        break
+         break
       }
 
       case 'fedora': {
-        command = `xorriso -as mkisofs \
-         -volid ${volid} \
-         -full-iso9660-filenames \
-         -joliet \
-         -joliet-long \
-         -iso-level 3 \
-         -rational-rock \
-         ${appid} \
-         ${publisher} \
-         ${preparer} \
-         -isohybrid-mbr /usr/share/syslinux/isohdpfx.bin
-         -eltorito-boot isolinux/isolinux.bin \
-         -partition_offset 16 \
-         -c isolinux/boot.cat \         
-         -no-emul-boot \
-         -boot-load-size 4 \
-         -boot-info-table \
-         -eltorito-alt-boot -e boot/grub/efiboot.img \
-         -isohybrid-gpt-basdat
-         -no-emul-boot \
-         -output ${output} \
-         ${this.settings.work_dir.pathIso}`
+        command = ``
 
         break
       }
 
       case 'archlinux': {
-        command = `xorriso -as mkisofs \
-         -volid ${volid} \
-         -full-iso9660-filenames \
-         -joliet \
-         -joliet-long \
-         -iso-level 3 \
-         -rational-rock \
-         ${appid} \
-         ${publisher} \
-         ${preparer} \
-         -isohybrid-mbr /usr/lib/syslinux/bios/isohdpfx.bin
-         -eltorito-boot isolinux/isolinux.bin \
-         -partition_offset 16 \
-         -c isolinux/boot.cat \         
-         -no-emul-boot \
-         -boot-load-size 4 \
-         -boot-info-table \
-         -eltorito-alt-boot -e boot/grub/efiboot.img \
-         -isohybrid-gpt-basdat
-         -no-emul-boot \
-         -output ${output} \
-         ${this.settings.work_dir.pathIso}`
+        command = ``
 
         break
       }
