@@ -1299,8 +1299,8 @@ export default class Ovary {
     const grubCfg = `${memdiskDir}/boot/grub/grub.cfg`
     let text = ''
     text += 'search --file --set=root /isolinux/isolinux.cfg\n'
-    text += 'set prefix=($root)/boot/grub\n'
-    text += `source $prefix/${Utils.machineUEFI()}/grub.cfg\n`
+    text += 'set prefix=(\$root)/boot/grub\n'
+    text += `source \$prefix/${Utils.machineUEFI()}/grub.cfg\n`
     Utils.write(grubCfg, text)
 
     // #################################
