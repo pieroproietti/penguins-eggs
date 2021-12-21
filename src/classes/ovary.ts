@@ -37,7 +37,6 @@ import Repo from './yolk'
 import cliAutologin = require('../lib/cli-autologin')
 import { execSync } from 'node:child_process'
 import { displaymanager } from './incubation/fisherman-helper/displaymanager'
-import { updateTupleTypeNode } from 'typescript'
 
 /**
  * Ovary:
@@ -253,7 +252,7 @@ export default class Ovary {
       }
 
       const xorrisoCommand = this.makeDotDisk(backup, verbose)
-      await this.makeIso(xorrisoCommand, backup, scriptOnly, verbose)
+      await this.makeIso(xorrisoCommand, scriptOnly, verbose)
     }
   }
 
@@ -604,10 +603,22 @@ export default class Ovary {
       console.log('ovary: isolinux')
     }
 
+
     /**
      * isolinux.bin
      */
     await exec(`cp ${this.settings.distro.isolinuxPath}/isolinux.bin ${this.settings.work_dir.pathIso}/isolinux/`, echo)
+
+    /**
+     * isolinux.cfg
+     */
+    const isolinuxCfgDest = 'isolinux/isolinux.cfg'
+    const isolinuxCfgSrc = path.resolve(__dirname, `../../addons/${theme}/theme/livecd/isolinux.template.cfg`)
+    if (!fs.existsSync(isolinuxCfgSrc)) {
+      Utils.warning('Cannot find: ' + isolinuxCfgSrc)
+      process.exit()
+    }
+    fs.copyFileSync(path.resolve('/etc/penguins-eggs.d/distros/' + this.settings.distro.versionLike + '/' + 'isolinux/isolinux.template.cfg'), this.settings.work_dir.pathIso + 'isolinux/isolinux.cfg')
 
     /**
      * splash
@@ -618,7 +629,6 @@ export default class Ovary {
       Utils.warning('Cannot find: ' + splashSrc)
       process.exit()
     }
-
     fs.copyFileSync(splashSrc, splashDest)
 
     /**
@@ -1471,7 +1481,6 @@ export default class Ovary {
     if (fs.existsSync(dotDisk)) {
       shx.rm('-rf', dotDisk)
     }
-
     shx.mkdir('-p', dotDisk)
 
     // .disk/info
@@ -1484,20 +1493,8 @@ export default class Ovary {
     shx.cp(scripts + '/mksquashfs', dotDisk + '/mksquashfs')
 
     // .disk/mkisofs
+    content = this.xorrisoCommand(backup).replace(/\s\s+/g, ' ')
     file = dotDisk + '/mkisofs'
-    const volid = Utils.getVolid(this.settings.remix.name)
-    let prefix = this.settings.config.snapshot_prefix
-    if (backup) {
-      prefix = prefix.slice(0, 7) === 'egg-of-' ? 'egg-EB-' + prefix.slice(7) : 'egg-EB-' + prefix
-    }
-
-    const output = this.settings.config.snapshot_dir + prefix + volid
-    content = this.xorrisoCommand()
-
-    /**
-     * rimuovo gli spazi
-     */
-    content = content.replace(/\s\s+/g, ' ')
     fs.writeFileSync(file, content, 'utf-8')
     return content
   }
@@ -1508,28 +1505,31 @@ export default class Ovary {
    * @returns cmd 4 mkiso
    */
   xorrisoCommand(backup = false): string {
-    let command = ''
-    const prefix = Utils.getPrefix(this.settings.config.snapshot_prefix, backup)
     const volid = Utils.getVolid(this.settings.remix.name)
+
+    let prefix = this.settings.config.snapshot_prefix
+    if (backup) {
+      prefix = prefix.slice(0, 7) === 'egg-of-' ? 'egg-eb-' + prefix.slice(7) : 'egg-eb-' + prefix
+    }
+
     const postfix = Utils.getPostfix()
     this.settings.isoFilename = prefix + volid + postfix
     const output = this.settings.config.snapshot_dir + this.settings.isoFilename
-    const distro = Pacman.distro()
-    const appid = `-appid "${distro.distroId}" `
-    const publisher = `-publisher "${distro.distroId}/${distro.versionId}" `
+
+    let command = ''
+    const appid = `-appid "${this.settings.distro.distroId}" `
+    const publisher = `-publisher "${this.settings.distro.distroId}/${this.settings.distro.versionId}" `
     const preparer = '-preparer "prepared by eggs <https://penguins-eggs.net>" '
-    
-    let isoHybridMbr = `-isohybrid-mbr ${this.settings.distro.isolinuxPath}isohdpfx.bin `
+
+
+    let isoHybridMbr = ``
     if (this.settings.config.make_isohybrid) {
-       if (fs.existsSync('/usr/lib/syslinux/mbr/isohdpfx.bin')) {
-        isoHybridMbr = '-isohybrid-mbr /usr/lib/syslinux/mbr/isohdpfx.bin'
-       } else if (fs.existsSync('/usr/lib/syslinux/isohdpfx.bin')) {
-        isoHybridMbr = '-isohybrid-mbr /usr/lib/syslinux/isohdpfx.bin'
-       } else if (fs.existsSync('/usr/lib/ISOLINUX/isohdpfx.bin')) {
-        isoHybridMbr = '-isohybrid-mbr /usr/lib/ISOLINUX/isohdpfx.bin'
-       } else {
-          Utils.warning("Can't create isohybrid. File: isohdpfx.bin not found. The resulting image will be a standard iso file")
-       }
+      const isolinuxFile = this.settings.distro.isolinuxPath + 'isohdpfx.bin'
+      if (fs.existsSync(isolinuxFile)) {
+        isoHybridMbr = `-isohybrid-mbr ${isolinuxFile}`
+      } else {
+        Utils.warning(`Can't create isohybrid image. File: ${isolinuxFile} not found. \nThe resulting image will be a standard iso file`)
+      }
     }
 
     let uefi_elToritoAltBoot = ''
@@ -1555,7 +1555,7 @@ export default class Ovary {
       *       -jigdo-template /srv/cdbuilder.debian.org/dst/deb-cd/out/2busteri386/debian-10.8.0-i386-NETINST-1.template 
       *       -jigdo-map Debian=/srv/cdbuilder.debian.org/src/ftp/debian/ 
       *       -jigdo-exclude boot1 
-      * -md5-list /srv/cdbuilder.debian.org/src/deb-cd/tmp/2busteri386/buster/md5-check 
+      *       -md5-list /srv/cdbuilder.debian.org/src/deb-cd/tmp/2busteri386/buster/md5-check 
       *       -jigdo-min-file-size 1024 
       *       -jigdo-exclude 'README*' 
       *       -jigdo-exclude /doc/ 
@@ -1582,7 +1582,8 @@ export default class Ovary {
       * boot1 CD1
       */
     command = `xorriso -as mkisofs \
-         -r
+         -r \
+         -checksum_algorithm_iso md5,sha1,sha256,sha512 \
          -V ${volid} \
          -o ${output} \
          -J \
@@ -1607,7 +1608,7 @@ export default class Ovary {
    * makeIso
    * cmd: cmd 4 xorirriso
    */
-  async makeIso(cmd: string, backup = false, scriptOnly = false, verbose = false) {
+  async makeIso(cmd: string, scriptOnly = false, verbose = false) {
     let echo = { echo: false, ignore: false }
     if (verbose) {
       echo = { echo: true, ignore: false }
@@ -1644,8 +1645,8 @@ export default class Ovary {
     }
 
     console.log()
-    console.log('Remember, on liveCD user =' + chalk.cyanBright(this.settings.config.user_opt) + '/' + chalk.cyanBright(this.settings.config.user_opt_passwd))
-    console.log('                    root =' + chalk.cyanBright('root') + '/' + chalk.cyanBright(this.settings.config.root_passwd))
+    console.log('Remember, on liveCD user = ' + chalk.cyanBright(this.settings.config.user_opt) + '/' + chalk.cyanBright(this.settings.config.user_opt_passwd))
+    console.log('                    root = ' + chalk.cyanBright('root') + '/' + chalk.cyanBright(this.settings.config.root_passwd))
   }
 }
 
