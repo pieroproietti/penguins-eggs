@@ -1,0 +1,1116 @@
+#!/usr/bin/env bash
+
+version="refractasnapshot-10.2.10 (20191218)"
+
+TEXTDOMAIN=refractasnapshot-base
+TEXTDOMAINDIR=/usr/share/locale/
+
+# Copyright: fsmithred@gmail.com 2011-2019
+# based on refractasnapshot-8.0.4 by Dean Linkous with ideas
+# borrowed from dzsnapshot-gui.sh by David Hare, which was based on an
+# earlier version of this script.
+# UEFI code adapted from similar scripts by Colin Watson and Patrick J. Volkerding
+
+# License: GPL-3
+# This is free software with NO WARRANTY. Use at your own risk!
+
+# DESCRIPTION
+# This script makes a copy of your system with rsync and then creates
+# an iso file to be used as a live-cd. There are options in the config
+# file to change the location of the copy and the location of the final
+# iso file, in case there's not enough room on the system drive. Read
+# the config file for more options. (/etc/refractasnapshot.conf)
+
+
+
+# If you want to change any defaults, change them in the configfile.
+# Default is /etc/refractasnapshot.conf
+# If you want to use a different config file for testing,
+# either change this variable here or use the -c, --config option on
+# the command-line. (Command-line option will supercede this setting.) 
+# Normally, users should not edit anything in this script.
+configfile="/etc/refractasnapshot.conf"
+
+
+show_help () {
+	printf "$help_text"
+	exit 0
+}
+
+help_text=$"
+	Usage:  $0  [option]
+	
+	Run with no options to create .iso file for a live, bootable CD
+	or DVD copy of the running system.
+	
+	valid options:
+		-h, --help		show this help text
+		-v, --version	display the version information
+		-d. --debug		debug mode
+		-c, --config	specify a different config file
+						(file name must be next argument)
+
+	example:
+		refractasnapshot -n -c myconfigs
+
+	*** See $configfile for information about settings.
+
+"
+
+while [[ $1 == -* ]]; do
+	case "$1" in
+	
+		-h|--help)
+			show_help ;;
+		
+		-v|--version)
+			printf "\n$version\n\n"
+			exit 0 ;;
+		
+		-c|--config)
+			shift
+			configfile="$1"
+			printf "\n config file is $configfile\n\n"
+			shift
+			;;
+		
+		-d|--debug)
+			DEBUG="yes"
+			shift ;;
+				
+		*) 
+			printf "\t invalid option: $1 \n\n"
+			printf "\t Try:  $0 -h for full help. \n\n"
+			exit 1 ;;
+    esac
+done		
+
+
+# Check that user is root.
+[[ $(id -u) -eq 0 ]] || { echo -e "\n\t You need to be root!\n" ; exit 1 ; }
+
+[[ -e "$configfile" ]] || { echo "Configuration file, $configfile  is missing." ; exit 1 ; }
+
+# Fix root's path (for Buster/Beowulf and later)
+PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+
+source "$configfile"
+
+# Record errors in a logfile.
+exec 2>"$error_log"
+
+if [[ $DEBUG = "yes" ]] ; then
+	set -x
+fi
+
+
+echo "configfile is $configfile"
+echo "make_efi is $make_efi"
+
+# Check for grub-efi.
+check_grub () {
+if [[ $make_efi = "yes" ]] ; then
+	if ! (dpkg -l | grep "^ii" | grep "grub-efi-amd64" |grep -v "bin"); then
+		echo $"grub-efi-amd64 is not installed" 
+		grub_message=$"Warning: grub-efi-amd64 is not installed. The snapshot may not be compatible with UEFI. 
+To disable this warning, set make_efi=no in $configfile or set force_efi=yes for special use.
+"
+		if [[ $force_efi = "yes" ]] ; then
+			make_efi="yes"
+		else
+			make_efi="no"
+		fi
+		echo "force_efi is $force_efi"
+		echo "make_efi is $make_efi"
+	fi
+	if [[ ! -e /var/lib/dpkg/info/dosfstools.list ]] ; then
+		echo $"dosfstools is not installed"
+		dosfstools_message=$"Warning: dosfstools is not installed. Your snapshot will not boot in uefi mode."
+		force_efi="no"
+		make_efi="no"
+		echo "force_efi is $force_efi"
+		echo "make_efi is $make_efi"
+	fi
+fi
+
+}
+
+
+show_snapshot_help () {
+
+	zless "$snapshot_help" 
+	choose_task
+
+}
+
+
+find_text_editor () {
+	
+# Default text editor is nano. Make sure it exists if user intends to  ### This needs attention!!!   <<<<<<<<<
+# edit files before squashing the filesystem.
+#if [[ $edit_boot_menu = "yes" ]] ; then
+	[[ -e $text_editor ]] || { echo -e $"\n Error! The text editor is set to ${text_editor},
+ but it is not installed. Edit $configfile
+ and set the text_editor variable to the editor of your choice.
+ (examples: /usr/bin/vim, /usr/bin/joe)\n" ; exit 1 ; }
+#fi
+}
+
+
+unpatch_init () {
+
+#  Check for previous patch.
+if $(grep -q nuke "$target_file") ; then
+	echo $"
+It looks like $target_file was previously patched by an 
+earlier version of refractasnapshot. This patch is no longer needed.
+You can comment out the added lines as shown below (or remove the
+commented lines) and then run 'update-initramfs -u'.
+
+If you don't want to do that, dont worry; 
+it won't hurt anything if you leave it the way it is.
+
+Do not change or remove the lines that begin with \"mount\"
+
+	mount -n -o move /sys ${rootmnt}/sys
+	#nuke /sys
+	#ln -s ${rootmnt}/sys /sys
+	mount -n -o move /proc ${rootmnt}/proc
+	#nuke /proc
+	#ln -s ${rootmnt}/proc /proc
+"
+	
+	while true ; do
+		echo $"Open $target_file in an editor? (y/N)"
+		read ans
+		case $ans in
+			[Yy]*)	"$text_editor" "$target_file"
+					update-initramfs -u
+					break ;;
+				*)	break ;;
+		esac
+	done
+
+echo -e $"\n  Wait for the disk report to complete...\n\n"
+
+fi
+
+}
+
+
+
+check_copies () {
+	
+# Function to check for old snapshots and filesystem copy and their total size
+if [[ -d $snapshot_dir ]]; then
+	if ls "$snapshot_dir"/*.iso > /dev/null ; then
+		snapshot_count=$(ls "$snapshot_dir"/*.iso | wc -l)
+	else
+		snapshot_count="0"
+	fi
+	snapshot_size=$(du -sh "$snapshot_dir" | awk '{print $1}')
+	if [[ -z $snapshot_size ]]; then
+		snapshot_size="0 bytes"
+	fi
+else
+	snapshot_count="0"
+	snapshot_size="0 bytes"
+fi
+
+# Check for saved copy of the system
+if [[ -d "$work_dir"/myfs ]]; then
+    saved_size=$(du -sh "$work_dir"/myfs | awk '{ print $1 }')
+    saved_copy=$(echo $"* You have a saved copy of the system using $saved_size of space
+   located at $work_dir/myfs.")
+fi
+
+
+# Create a message to say whether the filesystem copy will be saved or not.
+if [[ $save_work = "yes" ]]; then
+	save_message=$(echo $"* The temporary copy of the filesystem will be saved 
+   at $work_dir/myfs.")
+else
+	save_message=$(echo $"* The temporary copy of the filesystem will be created 
+   at $work_dir/myfs and removed when this program finishes.")
+fi
+}
+
+
+check_directories () {
+	
+# Create snapshot_dir and work_dir if necessary.
+
+# Don't use /media/* for $snapshot_dir or $work_dir unless it is a mounted filesystem
+snapdir_is_remote=$(echo ${snapshot_dir} | awk -F / '{ print "/" $2 "/" $3 }' | grep /media/)
+workdir_is_remote=$(echo ${work_dir} | awk -F / '{ print "/" $2 "/" $3 }' | grep /media/)
+
+if [ -n "$snapdir_is_remote" ] && cat /proc/mounts | grep -q ${snapdir_is_remote}; then
+   echo "$snapshot_dir is mounted"
+elif [ -n "$snapdir_is_remote" ] ; then
+   echo $" Error.. The selected snapshot directory cannot be accessed. Do you need to mount it?"
+   exit 1
+fi
+
+if [ -n "$workdir_is_remote" ] && cat /proc/mounts | grep -q ${workdir_is_remote}; then
+   echo "$work_dir is mounted"
+elif [ -n "$workdir_is_remote" ] ; then
+   echo $" Error.. The selected work directory cannot be accessed. Do you need to mount it?"
+   exit 1
+fi
+
+
+# Check that snapshot_dir exists
+if ! [[ -d $snapshot_dir ]]; then
+	mkdir -p "$snapshot_dir"
+	chmod 777 "$snapshot_dir"
+fi
+
+
+# Check that work directories exist or create them.
+if [[ $save_work = "no" ]]; then
+    if [[ -d $work_dir ]]; then
+        rm -rf "$work_dir"
+    fi
+    mkdir -p "$work_dir"/iso
+    mkdir -p "$work_dir"/myfs
+elif [[ $save_work = "yes" ]]; then
+	if ! [[ -d $work_dir ]]; then
+	    mkdir -p "$work_dir"/iso
+        mkdir -p "$work_dir"/myfs
+    fi
+fi
+}
+
+
+check_space () {
+	
+# Check disk space on mounted /, /home, /media, /mnt, /tmp
+disk_space=$(df -h -x tmpfs -x devtmpfs -x iso9660 | awk '{ print "  " $2 "\t" $3 "\t" $4 "\t" $5 "  \t" $6 "\t\t\t" $1 }')
+}
+
+
+# Check initrd for cryptroot, resume, cryptsetup.
+check_initrd () {
+if lsinitramfs "$initrd_image" | grep -q conf.d/cryptroot ; then
+	remove_cryptroot="yes"
+	cryptroot_message="The snapshot initrd will be modified to allow booting the unencrypted snapshot."
+elif lsinitramfs "$initrd_image" | grep -q cryptroot/crypttab ; then
+	remove_cryptroot="yes"
+	cryptroot_message="The snapshot initrd will be modified to allow booting the unencrypted snapshot."
+fi
+if lsinitramfs "$initrd_image" | egrep -q 'conf.d/resume|conf.d/zz-resume-auto' ; then
+	remove_resume="yes"
+	swap_message="The snapshot initrd will be modified to allow booting without the host's swap partition."
+fi
+if [ "$initrd_crypt" = yes ] ; then
+	if lsinitramfs "$initrd_image" | grep -q cryptsetup ; then
+		crypt_message="The host initrd already allows live-usb encrypted persistence. No change is needed."
+		initrd_crypt="no"
+	else
+		crypt_message="The host initrd will be modified to allow live-usb encrypted persistence.
+A backup copy will be made at ${initrd_image}_pre-snapshot. (Does not apply to any re-run tasks.)"
+	fi
+fi
+}
+
+extract_initrd () {
+
+	mkdir /tmp/extracted
+	pushd /tmp/extracted
+
+	COMPRESSION=$(file -L "$initrd_image" | egrep -o 'gzip compressed|XZ compressed|cpio archive')
+
+	if [ "$COMPRESSION" = "gzip compressed" ]; then
+		echo "Archive is gzip compressed..."
+		zcat "$initrd_image" | cpio -i
+
+	elif [ "$COMPRESSION" = "XZ compressed" ]; then
+		echo "Archive is XZ compressed..."
+		xzcat "$initrd_image" | cpio -d -i -m
+
+	elif [ "$COMPRESSION" = "cpio archive" ]; then
+		echo "Archive is cpio archive..."
+		(cpio -i ; zcat | cpio -i) < "$initrd_image"
+		exit_code="$?"
+		if [ "$exit_code" -ne 0 ] ; then
+			(cpio -i ; xzcat | cpio -i) < "$initrd_image"
+			exit_code="$?"
+			if [ "$exit_code" -ne 0 ] ; then
+				echo "Decompression error" && exit 1
+			else
+				COMPRESSION="XZ compressed"
+			fi
+		else
+			COMPRESSION="gzip compressed"
+		fi
+		
+		echo "COMPRESSION is $COMPRESSION"
+
+	else
+		echo "Decompession error..." && exit 1
+	fi
+
+	popd
+
+	echo "Initrd is extracted"
+
+}
+
+edit_initrd () {
+
+	pushd /tmp/extracted
+
+	if [ -f conf/conf.d/cryptroot ] ; then
+		echo "Removing cryptroot"
+		rm -f conf/conf.d/cryptroot
+	elif [ -f cryptroot/crypttab ] ; then
+		echo "Removing crypttab"
+		rm -f cryptroot/crypttab
+	fi
+
+	if [ -f conf/conf.d/resume ] ; then
+		echo "Removing resume"
+		rm -f conf/conf.d/resume
+		rm -f "$work_dir"/myfs/etc/initramfs-tools/conf.d/resume
+	elif [ -f conf/conf.d/zz-resume-auto ] ; then
+		echo "Removing resume"
+		rm -f conf/conf.d/zz-resume-auto
+                rm -f "$work_dir"/myfs/etc/initramfs-tools/conf.d/resume
+	fi
+
+	popd
+
+}
+
+rebuild_initrd () {
+
+
+	pushd /tmp/extracted
+
+	if [ "$COMPRESSION" = "gzip compressed" ] ; then
+		find . -print0 | cpio -0 -H newc -o | gzip -c > ${work_dir}/iso/live/${initrd_image##*/}
+	elif [ "$COMPRESSION" = "XZ compressed" ] ; then
+		find . | cpio -o -H newc | xz --check=crc32 --x86 --lzma2=dict=512KiB > ${work_dir}/iso/live/${initrd_image##*/}
+	else
+		echo "Compression error..." 
+		exit 1
+	fi
+	
+	popd
+
+	rm -rf /tmp/extracted
+
+}
+
+clean_initrd () {
+
+extract_initrd
+edit_initrd
+rebuild_initrd
+
+}
+
+ 
+report_space () {
+	
+# Show current settings and disk space
+
+if [[ -f "/usr/bin/less" ]] ; then
+	pager="/usr/bin/less"
+else
+	pager="/bin/more"
+fi
+
+
+echo $"
+ You will need plenty of free space. It is recommended that free space 
+ (Avail) in the partition that holds the work directory (probably \"/\")
+ should be two times the total installed system size (Used). You can 
+ deduct the space taken up by previous snapshots and any saved copies of
+ the system from the Used amount.
+
+ ${grub_message}
+ ${dosfstools_message}
+
+ * You have $snapshot_count snapshots taking up $snapshot_size of disk space.
+ $saved_copy
+ $save_message
+ * The snapshot directory is currently set to $snapshot_dir
+ $tmp_warning
+
+ You can change these and other settings by editing 
+ $configfile.
+
+ Turn off NUM LOCK for some laptops.
+
+ ${crypt_message}
+ ${cryptroot_message}
+ ${swap_message}
+
+ Current disk usage:
+ (For complete listing, exit and run 'df -h')
+
+ $disk_space
+ 
+ To proceed, press q.
+ To exit, press q and then press ctrl-c
+" | "$pager"
+
+}
+
+choose_task () {
+
+if [[ $make_efi = "yes" ]] ; then
+	uefi_message=$"uefi enabled"
+else
+	uefi_message=$"uefi disabled"
+fi
+
+while true; do
+	echo $"
+ Choose a task.
+ 
+ 1. Create a snapshot ($uefi_message)
+ 2. Re-squash and make iso (no-copy)
+ 3. Re-make efi files and iso (no-copy, no-squash)
+ 4. Re-run xorriso only. (make iso, no-copy, no-squash)
+ 5. Help
+ 6. Exit
+ "
+	read ans
+	case $ans in
+	1) # Create snapshot
+
+		echo $"This may take a moment while the program checks for free space.    "
+		check_copies
+		check_directories
+		check_space
+		check_initrd
+		report_space
+
+		set_distro_name
+		housekeeping
+
+		if [[ $initrd_crypt = "yes" ]] ; then
+			prepare_initrd_crypt
+		fi
+
+		# The real work starts here 01
+		cd "$work_dir"
+		copy_isolinux
+		copy_kernel
+		copy_filesystem
+		if [ "$remove_cryptroot" = yes ] || [ "$remove_resume" = yes ] ; then
+			clean_initrd
+		fi
+		edit_system
+		get_filename
+
+		if [[ $make_efi = "yes" ]] ; then
+			mkefi
+		fi
+
+		add_extras
+		set_boot_options
+
+		if [[ $edit_boot_menu = "yes" ]] ; then
+			edit_boot_menus
+		fi
+
+		squash_filesystem
+		make_iso_fs
+		cleanup
+		final_message
+
+		exit 0 ;;
+
+	2) # Re-squash
+		if [[ $make_efi = "yes" ]] ; then
+			uefi_opt="-eltorito-alt-boot -e boot/grub/efiboot.img -isohybrid-gpt-basdat -no-emul-boot"
+		fi
+		# The real work starts here 02
+		cd "$work_dir"
+		get_filename
+		squash_filesystem
+		make_iso_fs
+		final_message
+		exit 0 ;;
+
+	3) # Re-make efi
+		# The real work starts here 03
+		[[ $make_efi = "yes" ]] || exit 1
+		cd "$work_dir"
+		get_filename
+		set_distro_name
+		mkefi
+		set_boot_options
+		find_editor
+		edit_boot_menus
+		make_iso_fs
+		final_message
+		exit 0 ;;
+
+	4) # Re-make iso
+		# The real work starts here 04
+		if [[ $make_efi = "yes" ]] ; then
+			uefi_opt="-eltorito-alt-boot -e boot/grub/efiboot.img -isohybrid-gpt-basdat -no-emul-boot"
+		fi
+		cd "$work_dir"
+		get_filename
+		make_iso_fs
+		final_message
+		exit 0 ;;
+
+	5) show_snapshot_help ;;
+
+	[6qQxX]) exit 0 ;;
+	  
+	esac
+done
+ 
+}
+
+
+
+set_distro_name () {
+	
+if [[ $iso_dir = "/usr/lib/refractasnapshot/iso" ]] && [[ $boot_menu = "live.cfg" ]] ; then
+
+	DISTRO=$(lsb_release -i -s 2>/dev/null)
+
+	if $(grep -q Refracta /etc/issue) ; then
+		DISTRO="Refracta"
+	fi
+
+	while true ; do
+		echo $"
+	This is the distribution name that will appear in the boot menu for the
+	live image. You can change it to something else, or you can blank this,
+	and the the menu entries will just say \"GNU/Linux <kernel-version>\"
+	"
+#		# Redirect stderr from the error log to the screen,
+#		# so we can see the prompts from read.
+		exec 2>&1
+		read -p $"	Enter, erase or change distro name: " -i "$DISTRO" -e answer
+#		# Resume logging errors.
+		exec 2>>"$error_log"
+		break
+	done
+
+	if [[ -z "$answer" ]] ; then
+		DISTRO="GNU/Linux `uname -r`"
+	else
+		DISTRO="$answer"
+	fi
+fi
+}
+
+
+housekeeping () {
+	
+# Test for systemd, util-linux version and patch intramfs-tools/init.
+if [[ $patch_init_nosystemd = "yes" ]] ; then
+	utillinux_version=$(dpkg -l util-linux | awk '/util-linux/ { print $3 }' | cut -d. -f2)
+	target_file="/usr/share/initramfs-tools/init"
+#	patch_file="/usr/lib/refractasnapshot/init_for_util-lin.patch"
+	
+	if [[ ! -h /sbin/init ]] ; then 
+		if [[ $utillinux_version -ge 25 ]] ; then
+			unpatch_init
+		fi
+	fi
+fi		
+
+
+# Use the login name set in the config file. If not set, use the primary
+# user's name. If the name is not "user" then add boot option. ALso use
+# the same username for cleaning geany history.
+
+if [[ -n "$username" ]] ; then
+	username_opt="username=$username"
+else
+	username=$(awk -F":" '/1000:1000/ { print $1 }' /etc/passwd)
+	if [[ $username != user ]] ; then
+		username_opt="username=$username"
+	fi
+fi
+
+
+# Check that kernel and initrd exist
+[[ -e "$kernel_image" ]] || kernel_message=" Warning:   Kernel image is missing. "
+[[ -e "$initrd_image" ]] || initrd_message=" Warning:   initrd image is missing. "
+if [[ -n "$kernel_message" ]] || [[ -n "$initrd_message" ]] ; then
+	echo $"
+$kernel_message
+$initrd_message
+
+ Make sure the kernel_image and/or initrd_image  
+ set in the config file are correct, and check 
+ that the boot menu is also correct.
+"
+	exit 1
+fi
+
+
+# update the mlocate database 
+if [[ $update_mlocate = "yes" ]]; then
+	echo -e $"\nRunning updatedb...\n"
+	updatedb
+fi
+
+
+}
+
+
+prepare_initrd_crypt () {
+	
+	# Prepare initrd to use encryption
+	# This is only going to work if the latest kernel version is running.
+	# (i.e. the one linked from /initrd.img)
+	# Add '-k all' or specify the initrd to use???
+
+	cp "$initrd_image" "${initrd_image}_pre-snapshot"
+	sed -i 's/.*CRYPTSETUP=.*/CRYPTSETUP=y/' /etc/cryptsetup-initramfs/conf-hook
+	
+	if [[ -f /usr/sbin/update-initramfs.orig.initramfs-tools ]] ; then
+		/usr/sbin/update-initramfs.orig.initramfs-tools -u
+	else 
+		/usr/sbin/update-initramfs -u
+	fi	
+
+}
+
+
+copy_isolinux () {
+
+if [[ -f /usr/lib/ISOLINUX/isolinux.bin ]] ; then
+	isolinuxbin="/usr/lib/ISOLINUX/isolinux.bin"
+elif [[ -f /usr/lib/syslinux/isolinux.bin ]] ; then
+	isolinuxbin="/usr/lib/syslinux/isolinux.bin"
+else
+	echo $"You need to install the isolinux package."
+	exit 1
+fi
+
+# @@@@  Warning: This will replace these files in custom iso_dir  @@@@@
+if [[ -f /usr/lib/syslinux/modules/bios/vesamenu.c32 ]] ; then
+	vesamenu="/usr/lib/syslinux/modules/bios/vesamenu.c32"
+	rsync -a /usr/lib/syslinux/modules/bios/chain.c32 "$iso_dir"/isolinux/
+	rsync -a /usr/lib/syslinux/modules/bios/ldlinux.c32 "$iso_dir"/isolinux/
+	rsync -a /usr/lib/syslinux/modules/bios/libcom32.c32 "$iso_dir"/isolinux/
+	rsync -a /usr/lib/syslinux/modules/bios/libutil.c32 "$iso_dir"/isolinux/
+else
+	vesamenu="/usr/lib/syslinux/vesamenu.c32"
+fi
+rsync -a "$isolinuxbin" "$iso_dir"/isolinux/
+rsync -a "$vesamenu" "$iso_dir"/isolinux/
+
+# Add Refracta-specific boot help files
+if [[ $refracta_boot_help = "yes" ]] ; then
+	cp -a /usr/lib/refractasnapshot/boot_help/*  "$iso_dir"/isolinux/
+fi
+
+}
+
+# Let iso/, vmlinuz and initrd.img get copied, even if work_dir was saved,
+# in case they have changed.
+
+copy_kernel () {
+
+	rsync -a "$iso_dir"/ "$work_dir"/iso/
+	cp "$kernel_image" "$work_dir"/iso/live/
+	cp "$initrd_image" "$work_dir"/iso/live/
+
+}
+
+
+copy_filesystem () {
+
+	if [[ $limit_cpu = "yes" ]] ; then
+		[[ $(type -p cpulimit) ]] || \
+		while true ; do
+			echo -n $"
+	 The cpulimit program is not installed. Your CPU will not be limited.
+	 Would you like to continue anyway? (y/N) 
+	 "
+	    read ans
+	    case $ans in
+	      [Yy]*) break ;;
+	      *) exit 0 ;;
+	    esac
+	done
+		cpulimit -e rsync -l "$limit" &
+		pid="$!"
+	fi
+	rsync -av / myfs/ ${rsync_option1} ${rsync_option2} ${rsync_option3} \
+		--exclude="$work_dir" --exclude="$snapshot_dir" --exclude="$efi_work" --exclude-from="$snapshot_excludes"
+	if [[ -n "$pid" ]] ; then
+		kill "$pid"
+	fi 
+
+}
+
+
+edit_system () {
+	
+# Truncate logs, remove archived logs.
+find myfs/var/log -name "*gz" -print0 | xargs -0r rm -f
+find myfs/var/log/ -type f -exec truncate -s 0 {} \;
+
+
+# Allow all fixed drives to be mounted with pmount
+if [[ $pmount_fixed = "yes" ]] ; then
+	if [[ -f "$work_dir"/myfs/etc/pmount.allow ]]; then
+		sed -i 's:#/dev/sd\[a-z\]:/dev/sd\[a-z\]:' "$work_dir"/myfs/etc/pmount.allow
+	fi
+fi
+
+# Clear list of recently used files in geany for primary user.
+if [[ $clear_geany = "yes" ]] ; then
+	sed -i 's/recent_files=.*;/recent_files=/' "$work_dir"/myfs/home/"$username"/.config/geany/geany.conf
+fi
+
+
+# Enable or disable password login through ssh for users (not root)
+# Remove obsolete live-config file
+if [[ -e "$work_dir"/myfs/lib/live/config/1161-openssh-server ]] ; then
+	rm -f "$work_dir"/myfs/lib/live/config/1161-openssh-server
+fi
+
+sed -i 's/PermitRootLogin yes/PermitRootLogin prohibit-password/' "$work_dir"/myfs/etc/ssh/sshd_config
+
+if [[ $ssh_pass = "yes" ]] ; then
+	sed -i 's|.*PasswordAuthentication.*no|PasswordAuthentication yes|' "$work_dir"/myfs/etc/ssh/sshd_config
+#	sed -i 's|#.*PasswordAuthentication.*yes|PasswordAuthentication yes|' "$work_dir"/myfs/etc/ssh/sshd_config
+elif [[ $ssh_pass = "no" ]] ; then
+	sed -i 's|.*PasswordAuthentication.*yes|PasswordAuthentication no|' "$work_dir"/myfs/etc/ssh/sshd_config
+fi
+
+# /etc/fstab should exist, even if it's empty,
+# to prevent error messages at boot
+touch "$work_dir"/myfs/etc/fstab
+
+# Blank out systemd machine id. If it does not exist, systemd-journald
+# will fail, but if it exists and is empty, systemd will automatically
+# set up a new unique ID.
+
+if [ -e "$work_dir"/myfs/etc/machine-id ]
+then
+	rm -f "$work_dir"/myfs/etc/machine-id
+	: > "$work_dir"/myfs/etc/machine-id
+fi
+
+# add some basic files to /dev
+mknod -m 622 "$work_dir"/myfs/dev/console c 5 1
+mknod -m 666 "$work_dir"/myfs/dev/null c 1 3
+mknod -m 666 "$work_dir"/myfs/dev/zero c 1 5
+mknod -m 666 "$work_dir"/myfs/dev/ptmx c 5 2
+mknod -m 666 "$work_dir"/myfs/dev/tty c 5 0
+mknod -m 444 "$work_dir"/myfs/dev/random c 1 8
+mknod -m 444 "$work_dir"/myfs/dev/urandom c 1 9
+chown -v root:tty "$work_dir"/myfs/dev/{console,ptmx,tty}
+
+ln -sv /proc/self/fd "$work_dir"/myfs/dev/fd
+ln -sv /proc/self/fd/0 "$work_dir"/myfs/dev/stdin
+ln -sv /proc/self/fd/1 "$work_dir"/myfs/dev/stdout
+ln -sv /proc/self/fd/2 "$work_dir"/myfs/dev/stderr
+ln -sv /proc/kcore "$work_dir"/myfs/dev/core
+mkdir -v "$work_dir"/myfs/dev/shm
+mkdir -v "$work_dir"/myfs/dev/pts
+chmod 1777 "$work_dir"/myfs/dev/shm
+
+# Clear configs from /etc/network/interfaces, wicd and NetworkManager
+# and netman, so they aren't stealthily included in the snapshot.
+if [[ -z $netconfig_opt ]] ; then
+	echo "# The loopback network interface
+auto lo
+iface lo inet loopback
+" > "$work_dir"/myfs/etc/network/interfaces
+	rm -f "$work_dir"/myfs/var/lib/wicd/configurations/*
+	rm -f "$work_dir"/myfs/etc/wicd/wireless-settings.conf
+	rm -f "$work_dir"/myfs/etc/NetworkManager/system-connections/*
+	rm -f "$work_dir"/myfs/etc/network/wifi/*
+fi
+
+}
+
+
+get_filename () {
+
+	# Need to define $filename here (moved up from genisoimage)
+	# and use it as directory name to identify the build on the cdrom.
+	# and put package list inside that directory
+	if [[ $stamp = "datetime" ]]; then
+	    # use this variable so iso and sha256 have same time stamp
+		filename="$snapshot_basename"-$(date +%Y%m%d_%H%M).iso
+	else
+	    n=1
+	    while [[ -f "$snapshot_dir"/snapshot$n.iso ]]; do
+	        ((n++))
+	    done
+	    filename="$snapshot_basename"$n.iso
+	fi
+
+}
+
+
+# create /boot and /efi for uefi.
+mkefi () {
+
+uefi_opt="-eltorito-alt-boot -e boot/grub/efiboot.img -isohybrid-gpt-basdat -no-emul-boot"
+
+
+#################################
+
+tempdir="$(mktemp -d /tmp/work_temp.XXXX)"
+
+# for initial grub.cfg
+mkdir -p "$tempdir"/boot/grub
+
+
+cat >"$tempdir"/boot/grub/grub.cfg <<EOF
+search --file --set=root /isolinux/isolinux.cfg
+set prefix=(\$root)/boot/grub
+source \$prefix/x86_64-efi/grub.cfg
+EOF
+
+#################################
+if ! [ -d "$efi_work" ] ; then
+	mkdir "$efi_work"
+fi
+
+pushd "$efi_work"
+
+	# start with empty directories.
+
+	if [ -d "boot" ] ; then
+		rm -rf boot
+	fi
+	
+	if [ -d "efi" ] ; then
+		rm -rf efi
+	fi
+
+	mkdir -p boot/grub/x86_64-efi
+	mkdir -p efi/boot
+
+	# copy splash
+	cp "$iso_dir"/isolinux/splash.png boot/grub/splash.png
+	
+	# second grub.cfg file
+	for i in $(ls /usr/lib/grub/x86_64-efi|grep part_|grep \.mod|sed 's/.mod//'); do echo "insmod $i" >> boot/grub/x86_64-efi/grub.cfg; done
+	# Additional modules so we don't boot in blind mode. I don't know which ones are really needed.
+	for i in efi_gop efi_uga ieee1275_fb vbe vga video_bochs video_cirrus jpeg png gfxterm ; do echo "insmod $i" >> boot/grub/x86_64-efi/grub.cfg ; done
+
+	echo "source /boot/grub/grub.cfg" >> boot/grub/x86_64-efi/grub.cfg
+	
+	pushd "$tempdir"
+	
+		# make a tarred "memdisk" to embed in the grub image
+		tar -cvf memdisk boot
+		
+		# make the grub image
+		grub-mkimage -O "x86_64-efi" -m "memdisk" -o "bootx64.efi" -p '(memdisk)/boot/grub' search iso9660 configfile normal memdisk tar cat part_msdos part_gpt fat ext2 ntfs ntfscomp hfsplus chain boot linux
+		
+	popd
+	
+	# copy the grub image to efi/boot (to go later in the device's root)
+	cp "$tempdir"/bootx64.efi efi/boot
+	
+	#######################
+	
+	## Do the boot image "boot/grub/efiboot.img"
+	
+	dd if=/dev/zero of=boot/grub/efiboot.img bs=1K count=1440
+	/sbin/mkdosfs -F 12 boot/grub/efiboot.img
+	
+	mkdir img-mnt
+	
+	mount -o loop boot/grub/efiboot.img img-mnt
+	
+	mkdir -p img-mnt/efi/boot
+	
+	cp "$tempdir"/bootx64.efi img-mnt/efi/boot/
+	
+	#######################
+	
+	# copy modules and font
+	cp /usr/lib/grub/x86_64-efi/* boot/grub/x86_64-efi/
+	
+	# if this doesn't work try another font from the same place (grub's default, unicode.pf2, is much larger)
+	# Either of these will work, and they look the same to me. Unicode seems to work with qemu. -fsr
+#	cp /usr/share/grub/ascii.pf2 boot/grub/font.pf2
+	cp /usr/share/grub/unicode.pf2 boot/grub/font.pf2
+	
+	# doesn't need to be root-owned
+	chown -R 1000:1000 $(pwd) 2>/dev/null
+	
+	# Cleanup efi temps
+	umount img-mnt
+	rmdir img-mnt
+	rm -rf "$tempdir"
+
+popd
+
+
+# Copy efi files to iso
+rsync -avx "$efi_work"/boot "$work_dir"/iso/
+rsync -avx "$efi_work"/efi  "$work_dir"/iso/
+
+# Do the main grub.cfg (which gets loaded last):
+cp "$grub_template" "$work_dir"/iso/boot/grub/grub.cfg
+
+}
+
+
+add_extras () {
+
+	# Prepend the dir name with a constant,
+	# so you can find and delete the old ones
+	# that might have different snapshot basenames.
+	dir_prefix="pkglist"
+	
+	for dir in "$work_dir"/iso/"$dir_prefix"* ; do
+		rm -r "$dir"
+	done
+	mkdir -p "$work_dir"/iso/"${dir_prefix}_${filename%.iso}"
+	dpkg -l | egrep "ii|hi" | awk '{ print $2 }' > "$work_dir"/iso/"${dir_prefix}_${filename%.iso}"/package_list
+	
+	# Add the Release Notes to the iso
+	if [[ -f /usr/share/doc/_Release_Notes/Release_Notes ]] ; then
+		rsync -a /usr/share/doc/_Release_Notes/Release_Notes "$work_dir"/iso/
+	fi
+
+}
+
+
+set_boot_options () {
+
+	# Create the boot menu unless iso_dir is not default.       
+	if [ "$iso_dir" = "/usr/lib/refractasnapshot/iso" ] ; then
+		sed -i "s:\${DISTRO}:$DISTRO:g" "$work_dir"/iso/isolinux/"$boot_menu"
+		sed -i "s:\${netconfig_opt}:$netconfig_opt:g" "$work_dir"/iso/isolinux/"$boot_menu"
+		sed -i "s:\${ifnames_opt}:$ifnames_opt:g" "$work_dir"/iso/isolinux/"$boot_menu"
+		sed -i "s:\${username_opt}:$username_opt:g" "$work_dir"/iso/isolinux/"$boot_menu"
+	fi
+	
+	if [[ $make_efi = "yes" ]] ; then
+		sed -i "s:\${DISTRO}:$DISTRO:g" "$work_dir"/iso/boot/grub/grub.cfg
+		sed -i "s:\${netconfig_opt}:$netconfig_opt:g" "$work_dir"/iso/boot/grub/grub.cfg
+		sed -i "s:\${username_opt}:$username_opt:g" "$work_dir"/iso/boot/grub/grub.cfg
+		sed -i "s:\${ifnames_opt}:$ifnames_opt:g" "$work_dir"/iso/boot/grub/grub.cfg
+	fi
+
+}
+
+
+edit_boot_menus () {
+
+	if [[ $edit_boot_menu = "yes" ]]; then
+		echo $"
+	 You may now go to another virtual console to edit any files in the work
+	 directory, or hit ENTER and edit the boot menu.
+	 "
+	 read -p " "
+	 "$text_editor" "$work_dir"/iso/isolinux/"$boot_menu"
+		if [[ $make_efi = "yes" ]] ; then
+			"$text_editor" "$work_dir"/iso/boot/grub/grub.cfg
+		fi
+	fi
+
+}
+
+
+squash_filesystem () {
+
+	echo "Squashing the filesystem..."
+	if [[ $limit_cpu = "yes" ]] ; then
+		[[ $(type -p cpulimit) ]] || \
+		while true ; do
+			echo -n $"
+	 The cpulimit program is not installed. Your CPU will not be limited.
+	 Would you like to continue anyway? (y/N) 
+"
+	    read ans
+	    case $ans in
+	      [Yy]*) break ;;
+	      *) exit 0 ;;
+	    esac
+	done
+		cpulimit -e mksquashfs -l "$limit" &
+		pid="$!"
+	fi
+	mksquashfs myfs/ iso/live/filesystem.squashfs ${mksq_opt} -noappend
+	if [[ -n "$pid" ]] ; then
+		kill "$pid"
+	fi 
+	
+	# This code is redundant, because $work_dir gets removed later, but
+	# it might help by making more space on the hard drive for the iso.
+	if [[ $save_work = "no" ]]; then
+	    rm -rf myfs
+	fi
+
+}
+
+
+make_iso_fs () {
+
+# create the iso file, make it isohybrid
+# create sha256sum file for the iso
+echo $"Creating CD/DVD image file..."
+
+# If isohdpfx.bin gets moved again, maybe use:   isohdpfx=$(find /usr/lib/ -name isohdpfx.bin)
+    if [[ $make_isohybrid = "yes" ]]; then
+       if [[ -f /usr/lib/syslinux/mbr/isohdpfx.bin ]] ; then
+          isohybrid_opt="-isohybrid-mbr /usr/lib/syslinux/mbr/isohdpfx.bin"
+       elif [[ -f /usr/lib/syslinux/isohdpfx.bin ]] ; then
+                    isohybrid_opt="-isohybrid-mbr /usr/lib/syslinux/isohdpfx.bin"
+       elif [[ -f /usr/lib/ISOLINUX/isohdpfx.bin ]] ; then
+          isohybrid_opt="-isohybrid-mbr /usr/lib/ISOLINUX/isohdpfx.bin"
+		else
+			echo $"Can't create isohybrid.  File: isohdpfx.bin not found. The resulting image will be a standard iso file."
+		fi
+	fi
+
+[[ -n "$volid" ]] || volid="liveiso"
+
+    xorriso -as mkisofs -r -J -joliet-long -l -iso-level 3 ${isohybrid_opt} \
+    -partition_offset 16 -V "$volid"  -b isolinux/isolinux.bin -c isolinux/boot.cat -no-emul-boot \
+    -boot-load-size 4 -boot-info-table ${uefi_opt} -o "$snapshot_dir"/"$filename" iso/ 
+
+	if [[ $make_sha256sum = "yes" ]]; then
+		cd "$snapshot_dir"
+		sha256sum "$filename" > "$filename".sha256
+		cd "$work_dir"
+	fi
+
+}
+
+
+cleanup () {
+
+	if [[ $save_work = "no" ]]; then
+	    echo $"Cleaning..."
+	    cd /
+	    rm -rf "$work_dir"
+	#else
+	#    rm "$work_dir"/iso/live/filesystem.squashfs
+	fi
+
+}
+
+final_message () {
+
+	echo -e $"\n\tAll finished!\n"
+
+}
+
+
+######################################
+
+
+check_grub
+choose_task
+
+
