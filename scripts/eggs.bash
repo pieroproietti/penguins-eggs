@@ -12,6 +12,7 @@ _eggs_autocomplete()
 
   local commands="
 adapt --verbose --help
+bro --help
 calamares --help --verbose --install --final --remove --theme
 config --nointeractive --clean --help --verbose
 dad --help --clean --default --verbose
@@ -31,7 +32,7 @@ tools:stat --help --month --year
 tools:yolk --help --verbose
 update --help --apt --basket --verbose
 autocomplete --refresh-cache
-commands:help --json --all
+help --all
 version 
 "
 
