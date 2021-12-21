@@ -1278,7 +1278,8 @@ export default class Ovary {
   // #######################################################################################
   /**
    * makeEfi
-   */
+  * boot/grub.cfg manca
+  */
   // #######################################################################################
   async makeEfi(theme = 'eggs', verbose = false) {
     const echo = Utils.setEcho(verbose)
@@ -1365,7 +1366,6 @@ export default class Ovary {
       Utils.warning('Cannot find: ' + themeSrc)
       process.exit()
     }
-
     await exec(`cp ${themeSrc} ${themeDest}`)
 
     /**
@@ -1448,12 +1448,17 @@ export default class Ovary {
      */
     await exec(`cp /etc/penguins-eggs.d/distros/${versionLike}/grub/loopback.cfg ${isoDir}/boot/grub/loopback.cfg`, echo)
 
+
     /**
-     * prepare grub.cfg
-     */
-    const grubSrc = `/etc/penguins-eggs.d/distros/${versionLike}/grub/grub.template.cfg`
+    * prepare grub.cfg da grub.template.cfg
+    */
+    const grubTemplatePath = path.resolve(__dirname, `../../addons/${theme}/theme/livecd/grub.template.cfg`)
+    if (!fs.existsSync(grubTemplatePath)) {
+      Utils.warning('Cannot find: ' + grubTemplatePath )
+      process.exit()
+    }
     const grubDest = `${isoDir}/boot/grub/grub.cfg`
-    const template = fs.readFileSync(grubSrc, 'utf8')
+    const template = fs.readFileSync(grubTemplatePath, 'utf8')
     const view = {
       fullname: this.settings.remix.fullname.toUpperCase(),
       kernel: Utils.kernerlVersion(),
@@ -1465,7 +1470,6 @@ export default class Ovary {
       lang: process.env.LANG,
       locales: process.env.LANG
     }
-    //          cp "$grub_template" "$work_dir"/iso/boot/grub/grub.cfg
     fs.writeFileSync(grubDest, mustache.render(template, view))
   }
 
@@ -1485,7 +1489,7 @@ export default class Ovary {
 
     // .disk/info
     let file = dotDisk + '/info'
-    let content = this.settings.config.snapshot_prefix + this.settings.config.snapshot_basename
+    let content = Utils.getVolid(this.settings.remix.name) //this.settings.config.snapshot_prefix + this.settings.config.snapshot_basename
     fs.writeFileSync(file, content, 'utf-8')
 
     // .disk/mksquashfs

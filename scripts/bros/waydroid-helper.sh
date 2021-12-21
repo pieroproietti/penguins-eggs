@@ -11,7 +11,7 @@ function main {
    while true; do
       # 20 righe. 75 caratteri, 16 altezza menu list
       answer=$(
-      whiptail --title "waydroid helper" --menu "Mama's gonna keep baby cozy and warm..." 22 75 16 \
+      whiptail --title "bro waydroid helper" --menu "Brothers in arms..." 22 75 16 \
          "install"       "install waydroid" \
          "remove"        "remove waydroid" \
          "session"       "start waydroid session" \
