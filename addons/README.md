@@ -1,86 +1,80 @@
 # eggs addons
 
-``ATTENZIONE: Non tutte le caratteristiche sono state implementate, al momento funziona SOLO
---theme vendor.``
+## Themes
 
-Sto provando a far funzionare eggs con la possibilità per gli utilizzatori di configurarne l'aspetto 
-grafico o altre caratteristiche. Ho scelto il termine addons al posto del più canonico plugins,
-perchè vi è la possibilità utilizzando oclif-dev di scrivere dei veri e propri plugins che potranno
-fornire al tool comandi aggiuntivi, hooks ed altre caratteristiche utilizzando oclif/plugin-plugins.
+You can customize the boot of live images made with eggs using **themes**.
 
-Gli addons risiedono nella cartella addons, al primo livello c'è il vendor, colui che ha realizzato il 
-prodotto, al momento abbiamo 5 vendor:
-* debian
-* deblinux
-* eggs
-* ufficiozero
-* guadalinex
-* openos
+A **theme** consists of a simple folder under addons, called with the name of 
+vendor (in the example: blissos), that includes:
 
-# Sintassi per l'uso
-Il caso generico è:
-```--addons vendor/addon```
+```
+blissos/
+    theme
+        applications
+        artwork
+        calamares
+            branding
+            modules
+        livecd
+```
 
-Ad esempio per utilizzare il branding debian
-
-```sudo eggs -fv --addons debian/theme``` 
-
-per il theme, assistant e dwagent, esistono delle scorciatoie, quindi:
-
-```sudo eggs -fv --theme debian``` è equivalente a ```sudo eggs -fv --addons debian/theme
-
-è possibile, inoltre inserire più addons con un solo flag:
-
-```sudo eggs -fv --addons ufficiozero/theme eggs/dwagent```
-
-Installa il tema debian, dwagent da eggs.
-
-# Addon presenti
-
-## eggs
-Per omogeneità ho voluto configurare eggs come addon. Se non diversamente specificato
-vengono utilizzati i componenti di eggs.
-
-### theme
-Contiene il tema di default. Non è necessario specificarlo, se non viene fornito un tema
-specifico eggs si mostrerà con "i soliti pinguini...".
-
-### dwagent
-Configura a video anche sulla live, un link per scaricare ed avviare l'assistenza remota,
-e carica in /usr/local/bin lo script di installazione.
-
-### proxmox-ve
-Pone sul desktop l'icona pe il collegamento a https://127.0.0.1;8006 per gestire le macchine virtuali.
-
-## debian
-Ho qui inserito la versione di debian delle impostazioni per calamares e l'icona di avvio per lo stesso.
-
-### theme
-Fornisce il branding debian da calamares-settings-debian
-
-# deblinux
-deblinux è una remix con desktop mate, realizzata da Andrea Carbonaro.
-
-### assistant
-Permette la scelta tra l'installer grafico o l'installer manuale.
-
-### theme
-Tema per eggs di deblinux.
+* in **applications** we have the desktop link named **install-debian.desktop** into calamares startup;
+* in **artwork** the icon named **install-debian.png** for the calamares launcher
+* in **calamares** we have two directories: **branding** with your slides for calamares and **modules**
+* **livecd** includes grub and isolinux templates, buoot splash named **splash.png** and theme for grub and isolinux.
 
 
-## ufficiozero
-Ufficio Zero Linux è un sistema operativo open source ideato da SIITE SRLS, che ha acquisito 
-lo storico dominio e mette a disposizione del team di sviluppo vari server virtuali per ospitare 
-i servizi web, servizi mail, repository e server di condivisione ad uso del team di sviluppo.
+# How to proceed in creating an original theme
+Copy the structure of an existing theme and rename it with your desired name. mutheme
+
+Example with sources: need to install build-essential, git and nodejs v.16.
+
+```
+sudo apt install build-essential git nodejs 
+git clone https://github.com/pieroproietti/penguins-eggs
+cd penguins-eggs
+npm install
+cp -r addons/blissos addons/mytheme
+```
+edit your theme with a nice editor.
+```
+sudo ./eggs produce --fast --theme mytheme
+```
+Example with eggs installed as package:
+```
+sudo cd /usr/lib/penguins-eggs
+sudo cp -r addons/blissos addons/mytheme
+```
+edit your theme with a nice editor.
+```
+sudo eggs produce --fast --theme mytheme
+```
 
 
-### theme
-Tema di ufficiozero.
+# Other addons (vendor eggs)
 
+Themes are nothing more than addons developed by third parties: vendors.
 
+For eggs - the default vendor, named **eggs** - in addition to the default 
+theme there are additional addons provided:
 
+* **--adapt** it is an addon that I often use - working mainly on virtual machines - 
+and allows me to to adapt with a click the monitor of the VM to the set 
+video window;
+* __--ichoice__ allows the selection of the installer between calamares and krill 
+(recommended on machines with little memory < 1GB);
+* __--pve__ create a desktop icon to admin a [proxmox-ve](https://www.proxmox.com/en/proxmox-ve) installed locally, it's incredible but can work on the live iso too. You can follow this easy guide: [Install Proxmox VE on Debian 11 Bullseye](https://pve.proxmox.com/wiki/Install_Proxmox_VE_on_Debian_11_Bullseye);
+* __--rsupport__ create an icon for [dwagent](https://www.dwservice.net) that must be installed locally.
 
+# More informations
+There is a [Penguin's eggs official book](https://penguins-eggs.net/book/) and same other documentation - mostly for developers - on [penguins-eggs repo](https://github.com/pieroproietti/penguins-eggs) under **documents** and **i386**.
 
+* [penguin's eggs blog](https://penguins-eggs.net)    
+* [facebook penguin's eggs group](https://www.facebook.com/groups/128861437762355/)
+* [twitter](https://twitter.com/pieroproietti)
+* [sources](https://github.com/pieroproietti/penguins-krill)
 
+You can contact me at pieroproietti@gmail.com or [meet me](https://meet.jit.si/PenguinsEggsMeeting)
 
-
+## Copyright and licenses
+Copyright (c) 2017, 2021 [Piero Proietti](https://penguins-eggs.net/about-me.html), dual licensed under the MIT or GPL Version 2 licenses.
