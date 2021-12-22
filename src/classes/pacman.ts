@@ -499,8 +499,8 @@ export default class Pacman {
      */
     if (this.distro().versionLike === 'jessie') {
       const dest = '/etc/penguins-eggs.d/distros/jessie'
-      await exec(`cp -r ${buster}/grub ${dest}/grub`, echo)
-      await exec(`cp -r ${buster}/isolinux ${dest}/isolinux`, echo)
+      // await exec(`cp -r ${buster}/grub ${dest}/grub`, echo)
+      // await exec(`cp -r ${buster}/isolinux ${dest}/isolinux`, echo)
       await exec(`cp -r ${buster}/locales ${dest}/locales`, echo)
       await exec(`cp -r ${rootPen}/conf/distros/jessie/krill ${dest}/krill`, echo)
 
@@ -509,8 +509,8 @@ export default class Pacman {
        */
     } else if (this.distro().versionLike === 'stretch') {
       const dest = '/etc/penguins-eggs.d/distros/stretch'
-      await exec(`cp -r ${buster}/grub ${dest}/grub`, echo)
-      await exec(`cp -r ${buster}/isolinux ${dest}/isolinux`, echo)
+      // await exec(`cp -r ${buster}/grub ${dest}/grub`, echo)
+      // await exec(`cp -r ${buster}/isolinux ${dest}/isolinux`, echo)
       await exec(`cp -r ${buster}/locales ${dest}/locales`, echo)
       await exec(`cp -r ${rootPen}/conf/distros/jessie/krill ${dest}/krill`, echo)
 
@@ -519,8 +519,8 @@ export default class Pacman {
        */
     } else if (this.distro().versionLike === 'buster') {
       const dest = '/etc/penguins-eggs.d/distros/buster'
-      await exec(`cp -r ${buster}/grub ${dest}/grub`, echo)
-      await exec(`cp -r ${buster}/isolinux ${dest}/isolinux`, echo)
+      // await exec(`cp -r ${buster}/grub ${dest}/grub`, echo)
+      // await exec(`cp -r ${buster}/isolinux ${dest}/isolinux`, echo)
       await exec(`cp -r ${buster}/locales ${dest}/locales`, echo)
       await exec(`cp -r ${buster}/calamares ${dest}/calamares`, echo)
 
@@ -529,8 +529,8 @@ export default class Pacman {
        */
     } else if (this.distro().versionLike === 'bullseye') {
       const dest = '/etc/penguins-eggs.d/distros/bullseye'
-      await exec(`cp -r ${buster}/grub ${dest}/grub`, echo)
-      await exec(`cp -r ${buster}/isolinux ${dest}/isolinux`, echo)
+      // await exec(`cp -r ${buster}/grub ${dest}/grub`, echo)
+      // await exec(`cp -r ${buster}/isolinux ${dest}/isolinux`, echo)
       await exec(`cp -r ${buster}/locales ${dest}/locales`, echo)
       await exec(`cp -r ${buster}/calamares ${dest}/calamares`, echo)
 
@@ -539,8 +539,8 @@ export default class Pacman {
        */
     } else if (this.distro().versionLike === 'bookworm') {
       const dest = '/etc/penguins-eggs.d/distros/bookworm'
-      await exec(`cp -r ${buster}/grub ${dest}/grub`, echo)
-      await exec(`cp -r ${buster}/isolinux ${dest}/isolinux`, echo)
+      // await exec(`cp -r ${buster}/grub ${dest}/grub`, echo)
+      // await exec(`cp -r ${buster}/isolinux ${dest}/isolinux`, echo)
       await exec(`cp -r ${buster}/locales ${dest}/locales`, echo)
       await exec(`cp -r ${buster}/calamares ${dest}/calamares`, echo)
 
@@ -553,8 +553,8 @@ export default class Pacman {
        */
     } else if (this.distro().versionLike === 'beowulf') {
       const dest = '/etc/penguins-eggs.d/distros/beowulf'
-      await exec(`cp -r ${buster}/grub ${dest}/grub`, echo)
-      await exec(`cp -r ${buster}/isolinux ${dest}/isolinux`, echo)
+      // await exec(`cp -r ${buster}/grub ${dest}/grub`, echo)
+      // await exec(`cp -r ${buster}/isolinux ${dest}/isolinux`, echo)
       await exec(`cp -r ${buster}/locales ${dest}/locales`, echo)
       await exec(`cp -r ${buster}/calamares ${dest}/calamares`, echo)
 
@@ -563,8 +563,8 @@ export default class Pacman {
        */
     } else if (this.distro().versionLike === 'chimaera') {
       const dest = '/etc/penguins-eggs.d/distros/chimaera'
-      await exec(`cp -r ${buster}/grub ${dest}/grub`, echo)
-      await exec(`cp -r ${buster}/isolinux ${dest}/isolinux`, echo)
+      // await exec(`cp -r ${buster}/grub ${dest}/grub`, echo)
+      // await exec(`cp -r ${buster}/isolinux ${dest}/isolinux`, echo)
       await exec(`cp -r ${buster}/locales ${dest}/locales`, echo)
       await exec(`cp -r ${buster}/calamares ${dest}/calamares`, echo)
 
@@ -573,8 +573,8 @@ export default class Pacman {
        */
     } else if (this.distro().versionLike === 'daedalus') {
       const dest = '/etc/penguins-eggs.d/distros/daedalus'
-      await exec(`cp -r ${buster}/grub ${dest}/grub`, echo)
-      await exec(`cp -r ${buster}/isolinux ${dest}/isolinux`, echo)
+      // await exec(`cp -r ${buster}/grub ${dest}/grub`, echo)
+      // await exec(`cp -r ${buster}/isolinux ${dest}/isolinux`, echo)
       await exec(`cp -r ${buster}/locales ${dest}/locales`, echo)
       await exec(`cp -r ${buster}/calamares ${dest}/calamares`, echo)
 
@@ -593,14 +593,14 @@ export default class Pacman {
 
       // Prendo prima da focal
       const focal = `${rootPen}/conf/distros/focal/`
-      await exec(`cp -r ${focal}/grub ${dest}/grub`, echo)
-      await exec(`cp -r ${focal}/isolinux ${dest}/isolinux`, echo)
+      // await exec(`cp -r ${focal}/grub ${dest}/grub`, echo)
+      // await exec(`cp -r ${focal}/isolinux ${dest}/isolinux`, echo)
 
       // Poi da buster
-      await exec(`cp -r ${buster}/grub/loopback.cfg ${dest}/grub/loopback.cfg`, echo)
-      await exec(`cp -r ${buster}/grub/theme.cfg ${dest}/grub/theme.cfg`, echo)
-      await exec(`cp -r ${buster}/isolinux/isolinux.template.cfg ${dest}/isolinux/isolinux.template.cfg`, echo)
-      await exec(`cp -r ${buster}/isolinux/stdmenu.template.cfg ${dest}/isolinux/stdmenu.template.cfg`, echo)
+      // await exec(`cp -r ${buster}/grub/loopback.cfg ${dest}/grub/loopback.cfg`, echo)
+      // await exec(`cp -r ${buster}/grub/theme.cfg ${dest}/grub/theme.cfg`, echo)
+      // await exec(`cp -r ${buster}/isolinux/isolinux.template.cfg ${dest}/isolinux/isolinux.template.cfg`, echo)
+      // await exec(`cp -r ${buster}/isolinux/stdmenu.template.cfg ${dest}/isolinux/stdmenu.template.cfg`, echo)
 
       await exec(`cp -r ${buster}/calamares/calamares-modules/remove-link ${dest}/calamares/calamares-modules/remove-link`, echo)
       await exec(`cp -r ${buster}/calamares/calamares-modules/sources-yolk ${dest}/calamares/calamares-modules/sources-yolk`, echo)
@@ -618,10 +618,10 @@ export default class Pacman {
       const focal = `${rootPen}/conf/distros/focal/*`
       await exec(`cp -r ${focal} ${dest}`, echo)
 
-      await exec(`cp -r ${buster}/grub/loopback.cfg ${dest}/grub/loopback.cfg`, echo)
-      await exec(`cp -r ${buster}/grub/theme.cfg ${dest}/grub/theme.cfg`, echo)
-      await exec(`cp -r ${buster}/isolinux/isolinux.template.cfg ${dest}/isolinux/isolinux.template.cfg`, echo)
-      await exec(`cp -r ${buster}/isolinux/stdmenu.template.cfg ${dest}/isolinux/stdmenu.template.cfg`, echo)
+      // await exec(`cp -r ${buster}/grub/loopback.cfg ${dest}/grub/loopback.cfg`, echo)
+      // await exec(`cp -r ${buster}/grub/theme.cfg ${dest}/grub/theme.cfg`, echo)
+      // await exec(`cp -r ${buster}/isolinux/isolinux.template.cfg ${dest}/isolinux/isolinux.template.cfg`, echo)
+      // await exec(`cp -r ${buster}/isolinux/stdmenu.template.cfg ${dest}/isolinux/stdmenu.template.cfg`, echo)
 
       await exec(`cp -r ${buster}/calamares/calamares-modules/remove-link ${dest}/calamares/calamares-modules/remove-link`, echo)
       await exec(`cp -r ${buster}/calamares/calamares-modules/sources-yolk ${dest}/calamares/calamares-modules/sources-yolk`, echo)
@@ -639,10 +639,10 @@ export default class Pacman {
       const focal = `${rootPen}/conf/distros/focal/*`
       await exec(`cp -r ${focal} ${dest}`, echo)
 
-      await exec(`cp -r ${buster}/grub/loopback.cfg ${dest}/grub/loopback.cfg`, echo)
-      await exec(`cp -r ${buster}/grub/theme.cfg ${dest}/grub/theme.cfg`, echo)
-      await exec(`cp -r ${buster}/isolinux/isolinux.template.cfg ${dest}/isolinux/isolinux.template.cfg`, echo)
-      await exec(`cp -r ${buster}/isolinux/stdmenu.template.cfg ${dest}/isolinux/stdmenu.template.cfg`, echo)
+      // await exec(`cp -r ${buster}/grub/loopback.cfg ${dest}/grub/loopback.cfg`, echo)
+      // await exec(`cp -r ${buster}/grub/theme.cfg ${dest}/grub/theme.cfg`, echo)
+      // await exec(`cp -r ${buster}/isolinux/isolinux.template.cfg ${dest}/isolinux/isolinux.template.cfg`, echo)
+      // await exec(`cp -r ${buster}/isolinux/stdmenu.template.cfg ${dest}/isolinux/stdmenu.template.cfg`, echo)
 
       await exec(`cp -r ${buster}/calamares/calamares-modules/remove-link ${dest}/calamares/calamares-modules/remove-link`, echo)
       await exec(`cp -r ${buster}/calamares/calamares-modules/sources-yolk ${dest}/calamares/calamares-modules/sources-yolk`, echo)
@@ -660,10 +660,10 @@ export default class Pacman {
       const focal = `${rootPen}/conf/distros/focal/*`
       await exec(`cp -r ${focal} ${dest}`, echo)
 
-      await exec(`cp -r ${buster}/grub/loopback.cfg ${dest}/grub/loopback.cfg`, echo)
-      await exec(`cp -r ${buster}/grub/theme.cfg ${dest}/grub/theme.cfg`, echo)
-      await exec(`cp -r ${buster}/isolinux/isolinux.template.cfg ${dest}/isolinux/isolinux.template.cfg`, echo)
-      await exec(`cp -r ${buster}/isolinux/stdmenu.template.cfg ${dest}/isolinux/stdmenu.template.cfg`, echo)
+      // await exec(`cp -r ${buster}/grub/loopback.cfg ${dest}/grub/loopback.cfg`, echo)
+      // await exec(`cp -r ${buster}/grub/theme.cfg ${dest}/grub/theme.cfg`, echo)
+      // await exec(`cp -r ${buster}/isolinux/isolinux.template.cfg ${dest}/isolinux/isolinux.template.cfg`, echo)
+      // await exec(`cp -r ${buster}/isolinux/stdmenu.template.cfg ${dest}/isolinux/stdmenu.template.cfg`, echo)
 
       await exec(`cp -r ${buster}/calamares/calamares-modules/remove-link ${dest}/calamares/calamares-modules/remove-link`, echo)
       await exec(`cp -r ${buster}/calamares/calamares-modules/sources-yolk ${dest}/calamares/calamares-modules/sources-yolk`, echo)
@@ -681,10 +681,10 @@ export default class Pacman {
       const focal = `${rootPen}/conf/distros/focal/*`
       await exec(`cp -r ${focal} ${dest}`, echo)
 
-      await exec(`cp -r ${buster}/grub/loopback.cfg ${dest}/grub/loopback.cfg`, echo)
-      await exec(`cp -r ${buster}/grub/theme.cfg ${dest}/grub/theme.cfg`, echo)
-      await exec(`cp -r ${buster}/isolinux/isolinux.template.cfg ${dest}/isolinux/isolinux.template.cfg`, echo)
-      await exec(`cp -r ${buster}/isolinux/stdmenu.template.cfg ${dest}/isolinux/stdmenu.template.cfg`, echo)
+      // await exec(`cp -r ${buster}/grub/loopback.cfg ${dest}/grub/loopback.cfg`, echo)
+      // await exec(`cp -r ${buster}/grub/theme.cfg ${dest}/grub/theme.cfg`, echo)
+      // await exec(`cp -r ${buster}/isolinux/isolinux.template.cfg ${dest}/isolinux/isolinux.template.cfg`, echo)
+      // await exec(`cp -r ${buster}/isolinux/stdmenu.template.cfg ${dest}/isolinux/stdmenu.template.cfg`, echo)
 
       await exec(`cp -r ${buster}/calamares/calamares-modules/remove-link ${dest}/calamares/calamares-modules/remove-link`, echo)
       await exec(`cp -r ${buster}/calamares/calamares-modules/sources-yolk ${dest}/calamares/calamares-modules/sources-yolk`, echo)
@@ -702,10 +702,10 @@ export default class Pacman {
       const focal = `${rootPen}/conf/distros/focal/*`
       await exec(`cp -r ${focal} ${dest}`, echo)
 
-      await exec(`cp -r ${buster}/grub/loopback.cfg ${dest}/grub/loopback.cfg`, echo)
-      await exec(`cp -r ${buster}/grub/theme.cfg ${dest}/grub/theme.cfg`, echo)
-      await exec(`cp -r ${buster}/isolinux/isolinux.template.cfg ${dest}/isolinux/isolinux.template.cfg`, echo)
-      await exec(`cp -r ${buster}/isolinux/stdmenu.template.cfg ${dest}/isolinux/stdmenu.template.cfg`, echo)
+      // await exec(`cp -r ${buster}/grub/loopback.cfg ${dest}/grub/loopback.cfg`, echo)
+      // await exec(`cp -r ${buster}/grub/theme.cfg ${dest}/grub/theme.cfg`, echo)
+      // await exec(`cp -r ${buster}/isolinux/isolinux.template.cfg ${dest}/isolinux/isolinux.template.cfg`, echo)
+      // await exec(`cp -r ${buster}/isolinux/stdmenu.template.cfg ${dest}/isolinux/stdmenu.template.cfg`, echo)
 
       await exec(`cp -r ${buster}/calamares/calamares-modules/remove-link ${dest}/calamares/calamares-modules/remove-link`, echo)
       await exec(`cp -r ${buster}/calamares/calamares-modules/sources-yolk ${dest}/calamares/calamares-modules/sources-yolk`, echo)

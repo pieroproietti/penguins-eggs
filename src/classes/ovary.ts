@@ -613,7 +613,7 @@ export default class Ovary {
      * isolinux.theme.cfg
      */
     const isolinuxThemeDest = this.settings.work_dir.pathIso + 'isolinux/isolinux.theme.cfg'
-    let isolinuxThemeSrc = path.resolve(__dirname, `../../addons/${theme}/theme/livecd/isolinux.theme.cfg`)
+    const isolinuxThemeSrc = path.resolve(__dirname, `../../addons/${theme}/theme/livecd/isolinux.theme.cfg`)
     if (!fs.existsSync(isolinuxThemeSrc)) {
       Utils.warning('Cannot find: ' + isolinuxThemeSrc)
       process.exit()
@@ -647,13 +647,13 @@ export default class Ovary {
     /**
      * splash
      */
-     const splashDest = `${this.settings.work_dir.pathIso}/isolinux/splash.png`
-     const splashSrc = path.resolve(__dirname, `../../addons/${theme}/theme/livecd/splash.png`)
-     if (!fs.existsSync(splashSrc)) {
+    const splashDest = `${this.settings.work_dir.pathIso}/isolinux/splash.png`
+    const splashSrc = path.resolve(__dirname, `../../addons/${theme}/theme/livecd/splash.png`)
+    if (!fs.existsSync(splashSrc)) {
       Utils.warning('Cannot find: ' + splashSrc)
       process.exit()
-     }
-     fs.copyFileSync(splashSrc, splashDest)
+    }
+    fs.copyFileSync(splashSrc, splashDest)
 
   }
 
@@ -1297,16 +1297,15 @@ export default class Ovary {
     await exec(`mkdir ${memdiskDir}`)
     await exec(`mkdir ${memdiskDir}/boot`, echo)
     await exec(`mkdir ${memdiskDir}/boot/grub`, echo)
-    // await exec(`mkdir ${memdiskDir}/boot/grub/${Utils.machineUEFI()}`, echo)
 
     /**
      * for initial grub.cfg in memdisk
      */
     const grubCfg = `${memdiskDir}/boot/grub/grub.cfg`
     let text = ''
-    text += 'search --file --set=root /isolinux/isolinux.cfg\n'
-    text += 'set prefix=(\\$root)/boot/grub\n'
-    text += `source \\$prefix/${Utils.machineUEFI()}/grub.cfg\n`
+    text += 'search --file --set=root /.disk/info\n'
+    text += 'set prefix=($root)/boot/grub\n'
+    text += `source $prefix/x86_64-efi/grub.cfg\n`
     Utils.write(grubCfg, text)
 
     // #################################
@@ -1334,16 +1333,16 @@ export default class Ovary {
     }
     await exec(`cp ${splashSrc} ${splashDest}`)
 
-     
+
     /**
      * copy theme
      */
-     const themeDest = `${efiWorkDir}/boot/grub/theme.cfg`
-     const themeSrc = path.resolve(__dirname, `../../addons/${theme}/theme/livecd/isolinux.theme.cfg`)
-     if (!fs.existsSync(themeSrc)) {
-       Utils.warning('Cannot find: ' + themeSrc)
-       process.exit()
-     }
+    const themeDest = `${efiWorkDir}/boot/grub/theme.cfg`
+    const themeSrc = path.resolve(__dirname, `../../addons/${theme}/theme/livecd/isolinux.theme.cfg`)
+    if (!fs.existsSync(themeSrc)) {
+      Utils.warning('Cannot find: ' + themeSrc)
+      process.exit()
+    }
     await exec(`cp ${themeSrc} ${themeDest}`)
 
     await exec(`mkdir ${efiWorkDir}/boot/grub/${Utils.machineUEFI()}`, echo)
@@ -1353,11 +1352,14 @@ export default class Ovary {
     /**
      * second grub.cfg file in efiWork
      */
-    let cmd = `for i in $(ls /usr/lib/grub/|grep part_|grep \.mod|sed 's/.mod//'); do echo "insmod $i" >> ${efiWorkDir}/boot/grub/${Utils.machineUEFI()}/grub.cfg; done`
+    //         for i in $(ls /usr/lib/grub/x86_64-efi            |grep part_|grep \.mod|sed 's/.mod//'); do echo "insmod $i" >>              boot/grub/x86_64-efi/grub.cfg; done
+    let cmd = `for i in $(ls /usr/lib/grub/${Utils.machineUEFI()}|grep part_|grep \.mod|sed 's/.mod//'); do echo "insmod $i" >> ${efiWorkDir}boot/grub/${Utils.machineUEFI()}/grub.cfg; done`
     await exec(cmd, echo)
+    //     for i in efi_gop efi_uga ieee1275_fb vbe vga video_bochs video_cirrus jpeg png gfxterm ; do echo "insmod $i" >> boot/grub/x86_64-efi/grub.cfg ; done
     cmd = `for i in efi_gop efi_uga ieee1275_fb vbe vga video_bochs video_cirrus jpeg png gfxterm ; do echo "insmod $i" >> ${efiWorkDir}/boot/grub/${Utils.machineUEFI()}/grub.cfg ; done`
     await exec(cmd, echo)
     await exec(`echo "source /boot/grub/grub.cfg" >> ${efiWorkDir}/boot/grub/${Utils.machineUEFI()}/grub.cfg`, echo)
+
 
     /**
      * andiamo in memdiskDir
@@ -1390,14 +1392,14 @@ export default class Ovary {
     await exec(`mkdir ${efiWorkDir}/img-mnt`, echo)
 
     await exec(`mount -o loop ${efiWorkDir}/boot/grub/efiboot.img ${efiWorkDir}/img-mnt`, echo)
-    
+
     await exec(`mkdir ${efiWorkDir}/img-mnt/efi`, echo)
     await exec(`mkdir ${efiWorkDir}/img-mnt/efi/boot`, echo)
 
     await exec(`cp -r ${memdiskDir}/bootx64.efi ${efiWorkDir}/img-mnt/efi/boot`, echo)
 
     // #######################
-    
+
     // copy modules and font
     await exec(`cp -r /usr/lib/grub/${Utils.machineUEFI()}/* ${efiWorkDir}/boot/grub/${Utils.machineUEFI()}/`, echo)
 
@@ -1411,7 +1413,7 @@ export default class Ovary {
 
     // doesn't need to be root-owned
     // chown -R 1000:1000 $(pwd) 2>/dev/null
-  
+
     // Cleanup efi temps
     await exec(`umount ${efiWorkDir}/img-mnt`, echo)
     // await exec(`rmdir ${efiWorkDir}/img-mnt`, echo)
@@ -1429,8 +1431,8 @@ export default class Ovary {
     // grub.theme.cfg
     const grubThemeSrc = path.resolve(__dirname, `../../addons/${theme}/theme/livecd/grub.theme.cfg`)
     const grubThemeDest = `${isoDir}/boot/grub/grub.theme.cfg`
-    if (! fs.existsSync(grubThemeSrc)) {
-      Utils.warning('Cannot find: ' + grubThemeSrc )
+    if (!fs.existsSync(grubThemeSrc)) {
+      Utils.warning('Cannot find: ' + grubThemeSrc)
       process.exit()
     }
     fs.copyFileSync(grubThemeSrc, grubThemeDest)
@@ -1457,6 +1459,12 @@ export default class Ovary {
       locales: process.env.LANG
     }
     fs.writeFileSync(grubDest, mustache.render(template, view))
+
+    /**
+    * loopback.cfg
+    */
+    fs.writeFileSync(`${isoDir}/boot/grub/loopback.cfg`, 'source /boot/grub/grub.cfg\n')
+
   }
 
   // #######################################################################################
@@ -1572,25 +1580,26 @@ export default class Ovary {
       *         isohybrid-apm-hfsplus 
       * boot1 CD1
       */
+
     command = `xorriso -as mkisofs \
-         -r \
-         -checksum_algorithm_iso md5,sha1,sha256,sha512 \
-         -V ${volid} \
-         -o ${output} \
-         -J \
-         -joliet-long \
-         -cache-inodes  \
-         ${isoHybridMbr} \
-         -b isolinux/isolinux.bin \
-         -c isolinux/boot.cat \
-         -boot-load-size 4 \
-         -boot-info-table \
-         -no-emul-boot \
-         ${uefi_elToritoAltBoot} \
-         ${uefi_e} \
-         ${uefi_noEmulBoot} \
-         ${uefi_isohybridGptBasdat}
-         ${this.settings.work_dir.pathIso}`
+     -r \
+     -checksum_algorithm_iso md5,sha1,sha256,sha512 \
+     -V ${volid} \
+     -o ${output} \
+     -J \
+     -joliet-long \
+     -cache-inodes  \
+     ${isoHybridMbr} \
+     -b isolinux/isolinux.bin \
+     -c isolinux/boot.cat \
+     -boot-load-size 4 \
+     -boot-info-table \
+     -no-emul-boot \
+     ${uefi_elToritoAltBoot} \
+     ${uefi_e} \
+     ${uefi_noEmulBoot} \
+     ${uefi_isohybridGptBasdat}
+     ${this.settings.work_dir.pathIso}`
 
     /**
      * how is made in refracta 
@@ -1614,8 +1623,25 @@ export default class Ovary {
      * ${uefi_opt} \
      * -o "$snapshot_dir"/"$filename" iso/ 
      */
-     
-     
+    command = `xorriso -as mkisofs \
+     -J \
+     -joliet-long \
+     -l \
+     -iso-level 3 \
+     ${isoHybridMbr} \
+     -partition_offset 16 \
+     -V ${volid} \
+     -b isolinux/isolinux.bin \
+     -c isolinux/boot.cat \
+     -no-emul-boot \
+     -boot-load-size 4 \
+     -boot-info-table \
+     ${uefi_elToritoAltBoot} \
+     ${uefi_e} \
+     ${uefi_isohybridGptBasdat} \
+     ${uefi_noEmulBoot} \
+     -o ${output} ${this.settings.work_dir.pathIso}`
+
     return command
   }
 
