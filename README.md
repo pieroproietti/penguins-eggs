@@ -125,6 +125,7 @@ USAGE
 <!-- commands -->
 * [`eggs adapt`](#eggs-adapt)
 * [`eggs autocomplete [SHELL]`](#eggs-autocomplete-shell)
+* [`eggs bro`](#eggs-bro)
 * [`eggs calamares`](#eggs-calamares)
 * [`eggs config`](#eggs-config)
 * [`eggs dad`](#eggs-dad)
@@ -195,6 +196,23 @@ EXAMPLES
 ```
 
 _See code: [@oclif/plugin-autocomplete](https://github.com/oclif/plugin-autocomplete/blob/v1.0.0/src/commands/autocomplete/index.ts)_
+
+## `eggs bro`
+
+bro: waydroid helper
+
+```
+USAGE
+  $ eggs bro [-h]
+
+FLAGS
+  -h, --help  Show CLI help.
+
+DESCRIPTION
+  bro: waydroid helper
+```
+
+_See code: [src/commands/bro.ts](https://github.com/pieroproietti/penguins-eggs/blob/v9.0.0/src/commands/bro.ts)_
 
 ## `eggs calamares`
 

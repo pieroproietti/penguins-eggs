@@ -610,52 +610,26 @@ export default class Ovary {
     await exec(`cp ${this.settings.distro.isolinuxPath}/isolinux.bin ${this.settings.work_dir.pathIso}/isolinux/`, echo)
 
     /**
-     * isolinux.cfg
+     * isolinux.theme.cfg
      */
-    const isolinuxCfgDest = 'isolinux/isolinux.cfg'
-    const isolinuxCfgSrc = path.resolve(__dirname, `../../addons/${theme}/theme/livecd/isolinux.template.cfg`)
-    if (!fs.existsSync(isolinuxCfgSrc)) {
-      Utils.warning('Cannot find: ' + isolinuxCfgSrc)
+    const isolinuxThemeDest = this.settings.work_dir.pathIso + 'isolinux/isolinux.theme.cfg'
+    let isolinuxThemeSrc = path.resolve(__dirname, `../../addons/${theme}/theme/livecd/isolinux.theme.cfg`)
+    if (!fs.existsSync(isolinuxThemeSrc)) {
+      Utils.warning('Cannot find: ' + isolinuxThemeSrc)
       process.exit()
     }
-    fs.copyFileSync(path.resolve('/etc/penguins-eggs.d/distros/' + this.settings.distro.versionLike + '/' + 'isolinux/isolinux.template.cfg'), this.settings.work_dir.pathIso + 'isolinux/isolinux.cfg')
+    fs.copyFileSync(isolinuxThemeSrc, isolinuxThemeDest)
 
     /**
-     * splash
+     * isolinux.cfg from isolinux.template.cfg
      */
-    const splashDest = `${this.settings.work_dir.pathIso}/isolinux/splash.png`
-    const splashSrc = path.resolve(__dirname, `../../addons/${theme}/theme/livecd/splash.png`)
-    if (!fs.existsSync(splashSrc)) {
-      Utils.warning('Cannot find: ' + splashSrc)
+    const isolinuxDest = this.settings.work_dir.pathIso + 'isolinux/isolinux.cfg'
+    let isolinuxTemplate = path.resolve(__dirname, `../../addons/${theme}/theme/livecd/isolinux.template.cfg`)
+    if (!fs.existsSync(isolinuxTemplate)) {
+      Utils.warning('Cannot find: ' + isolinuxTemplate)
       process.exit()
     }
-    fs.copyFileSync(splashSrc, splashDest)
-
-    /**
-     * stdmenu
-     */
-    const menuStdDest = this.settings.work_dir.pathIso + 'isolinux/stdmenu.cfg'
-    let menuStdSrc = path.resolve(__dirname, `../../addons/${theme}/theme/livecd/stdmenu.cfg`)
-    if (fs.existsSync(menuStdSrc)) {
-      menuStdSrc = path.resolve(__dirname, `../../addons/eggs/theme/livecd/stdmenu.cfg`)
-    }
-    fs.copyFileSync(menuStdSrc, menuStdDest)
-
-    /**
-     * menu
-     */
-    const menuDest = this.settings.work_dir.pathIso + 'isolinux/menu.cfg'
-    let menuSrc = path.resolve(__dirname, `../../addons/${theme}/theme/livecd/menu.template.cfg`)
-    if (Pacman.distro().familyId !== 'debian') {
-      menuSrc = path.resolve(__dirname, `../../addons/${theme}/theme/livecd/menu.dracut.cfg`)
-    }
-
-    if (!fs.existsSync(menuSrc)) {
-      Utils.warning('Cannot find: ' + menuSrc)
-      process.exit()
-    }
-
-    const template = fs.readFileSync(menuSrc, 'utf8')
+    const template = fs.readFileSync(isolinuxTemplate, 'utf8')
     const view = {
       fullname: this.settings.remix.fullname.toUpperCase(),
       kernel: Utils.kernerlVersion(),
@@ -668,7 +642,19 @@ export default class Ovary {
       lang: process.env.LANG,
       locales: process.env.LANG
     }
-    fs.writeFileSync(menuDest, mustache.render(template, view))
+    fs.writeFileSync(isolinuxDest, mustache.render(template, view))
+
+    /**
+     * splash
+     */
+     const splashDest = `${this.settings.work_dir.pathIso}/isolinux/splash.png`
+     const splashSrc = path.resolve(__dirname, `../../addons/${theme}/theme/livecd/splash.png`)
+     if (!fs.existsSync(splashSrc)) {
+      Utils.warning('Cannot find: ' + splashSrc)
+      process.exit()
+     }
+     fs.copyFileSync(splashSrc, splashDest)
+
   }
 
   /**
@@ -1353,7 +1339,7 @@ export default class Ovary {
      * copy theme
      */
      const themeDest = `${efiWorkDir}/boot/grub/theme.cfg`
-     const themeSrc = path.resolve(__dirname, `../../addons/${theme}/theme/livecd/theme.cfg`)
+     const themeSrc = path.resolve(__dirname, `../../addons/${theme}/theme/livecd/isolinux.theme.cfg`)
      if (!fs.existsSync(themeSrc)) {
        Utils.warning('Cannot find: ' + themeSrc)
        process.exit()
@@ -1439,18 +1425,26 @@ export default class Ovary {
     await exec(`rsync -avx ${efiWorkDir}/efi  ${isoDir}/`, echo)
 
     // Do the main grub.cfg (which gets loaded last):
-    await exec(`cp /etc/penguins-eggs.d/distros/${versionLike}/grub/loopback.cfg ${isoDir}/boot/grub/`, echo)
+
+    // grub.theme.cfg
+    const grubThemeSrc = path.resolve(__dirname, `../../addons/${theme}/theme/livecd/grub.theme.cfg`)
+    const grubThemeDest = `${isoDir}/boot/grub/grub.theme.cfg`
+    if (! fs.existsSync(grubThemeSrc)) {
+      Utils.warning('Cannot find: ' + grubThemeSrc )
+      process.exit()
+    }
+    fs.copyFileSync(grubThemeSrc, grubThemeDest)
 
     /**
-    * prepare grub.cfg da grub.template.cfg
+    * prepare grub.cfg from grub.template.cfg
     */
-    const grubTemplatePath = path.resolve(__dirname, `../../addons/${theme}/theme/livecd/grub.template.cfg`)
-    if (!fs.existsSync(grubTemplatePath)) {
-      Utils.warning('Cannot find: ' + grubTemplatePath )
+    const grubTemplate = path.resolve(__dirname, `../../addons/${theme}/theme/livecd/grub.template.cfg`)
+    if (!fs.existsSync(grubTemplate)) {
+      Utils.warning('Cannot find: ' + grubTemplate)
       process.exit()
     }
     const grubDest = `${isoDir}/boot/grub/grub.cfg`
-    const template = fs.readFileSync(grubTemplatePath, 'utf8')
+    const template = fs.readFileSync(grubTemplate, 'utf8')
     const view = {
       fullname: this.settings.remix.fullname.toUpperCase(),
       kernel: Utils.kernerlVersion(),

@@ -39,19 +39,19 @@ Presentation
         anchors.fill: parent
 
         Image {
-            id: background
-            source: "slide1.png"
+            id: background1
+            source: "slide1"
             width: 900; height: 600
             fillMode: Image.PreserveAspectFit
             anchors.centerIn: parent
         }
     }
-    
+
     Slide {
         anchors.fill: parent
 
         Image {
-            id: background1
+            id: background2
             source: "slide2.png"
             width: 900; height: 600
             fillMode: Image.PreserveAspectFit
@@ -63,7 +63,7 @@ Presentation
         anchors.fill: parent
 
         Image {
-            id: background2
+            id: background3
             source: "slide3.png"
             width: 900; height: 600
             fillMode: Image.PreserveAspectFit
