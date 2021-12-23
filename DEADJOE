@@ -1,0 +1,36 @@
+
+*** These modified files were found in JOE when it aborted on Thu Dec 23 18:20:02 2021
+*** JOE was aborted by UNIX signal 1
+
+*** File '(Unnamed)'
+/home/artisan/penguins-eggs/.git/COMMIT_EDITMSG
+
+*** File '/home/artisan/penguins-eggs/.git/COMMIT_EDITMSG'
+
+# Immetti
+ il messaggio[A di commit per le modifiche. Le righe che iniziano
+# con '#' saranno ignorate e un messaggio vuoto interromperà il commit.
+#
+# Sul branch master
+# Il tuo branch è aggiornato rispetto a 'origin/master'.
+#
+# Modifiche di cui verrà eseguito il commit:
+#	modificato:             addons/blissos/theme/livecd/splash.png
+#	rinominato:             addons/debian/theme/branding/branding.desc -> addons/debian/theme/calamares/branding/branding.desc
+#	rinominato:             addons/debian/theme/branding/debian-logo.png -> addons/debian/theme/calamares/branding/debian-logo.png
+#	rinominato:             addons/debian/theme/branding/show.qml -> addons/debian/theme/calamares/branding/show.qml
+#	rinominato:             addons/debian/theme/branding/slide1.png -> addons/debian/theme/calamares/branding/slide1.png
+#	rinominato:             addons/debian/theme/branding/welcome.png -> addons/debian/theme/calamares/branding/welcome.png
+#	nuovo file:             addons/debian/theme/calamares/modules/partition.yml
+#	modificato:             addons/debian/theme/livecd/splash.png
+#	modificato:             conf/tools.yaml
+#	eliminato:              splash.pcx
+#	modificato:             src/classes/ovary.ts
+#	modificato:             src/classes/pacman.ts
+#
+
+*** File '* Startup Log *'
+Processing '/etc/joe/editorrc'...
+Processing '/etc/joe/ftyperc'...
+Finished processing /etc/joe/ftyperc
+Finished processing /etc/joe/editorrc
