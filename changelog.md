@@ -18,6 +18,15 @@ You can follow the project also consulting the [commit history](https://github.c
 ## Changelog
 Versions are listed on reverse order, the first is the last one.
 
+### eggs-9.0.0-BETA
+* A Christmas present! 
+
+A preview of eggs version 9.x! Even if the aspect remains substantially unchanged, internally a lot has changed: we have moved to node 16 and the new version of oclif. Everything has been done to create a way to manage even more distributions, not only Debian, Devuan, Ubuntu and derivatives, but also Fedora and Arch Linux. This version however does NOT yet include Fedora, nor Arch Linux, I have to solve the problems related to the use of dracut instead of initramfs-tools of Debian.
+
+If you wand follow penguin's eggs evolution, You can follow [Discussion](https://github.com/pieroproietti/penguins-eggs/discussions).
+
+I wish You Merry Christmas and Happy New Year
+
 ### eggs-8.17-16
 * tested against devuan beowulf, chiamaera, debian buster, bullseye, bookstorm, neon developer (ubuntu focal)
 
