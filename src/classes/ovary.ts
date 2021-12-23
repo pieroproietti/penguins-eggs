@@ -1321,6 +1321,9 @@ export default class Ovary {
     await exec(`mkdir ${efiWorkDir}`, echo)
     await exec(`mkdir ${efiWorkDir}/boot`, echo)
     await exec(`mkdir ${efiWorkDir}/boot/grub`, echo)
+    await exec(`mkdir ${efiWorkDir}/boot/grub/${Utils.machineUEFI()}`, echo)
+    await exec(`mkdir ${efiWorkDir}/efi`, echo)
+    await exec(`mkdir ${efiWorkDir}/efi/boot`, echo)
 
     /**
     * copy splash to efiWorkDir
@@ -1344,10 +1347,6 @@ export default class Ovary {
       process.exit()
     }
     await exec(`cp ${themeSrc} ${themeDest}`)
-
-    await exec(`mkdir ${efiWorkDir}/boot/grub/${Utils.machineUEFI()}`, echo)
-    await exec(`mkdir ${efiWorkDir}/efi`, echo)
-    await exec(`mkdir ${efiWorkDir}/efi/boot`, echo)
 
     /**
      * second grub.cfg file in efiWork
@@ -1396,7 +1395,8 @@ export default class Ovary {
     await exec(`mkdir ${efiWorkDir}/img-mnt/efi`, echo)
     await exec(`mkdir ${efiWorkDir}/img-mnt/efi/boot`, echo)
 
-    await exec(`cp -r ${memdiskDir}/bootx64.efi ${efiWorkDir}/img-mnt/efi/boot`, echo)
+    // era cp -r
+    await exec(`cp ${memdiskDir}/bootx64.efi ${efiWorkDir}/img-mnt/efi/boot`, echo)
 
     // #######################
 
@@ -1706,7 +1706,6 @@ async function makeIfNotExist(path: string, verbose = false): Promise<string> {
     cmd = `mkdir ${path} -p`
     await exec(cmd, echo)
   }
-
   return cmd
 }
 

@@ -575,8 +575,9 @@ export default class Pacman {
       const bionic = `${rootPen}/conf/distros/bionic/*`
       await exec(`cp -r ${bionic} ${dest}`, echo)
 
-      // Prendo prima da focal
-      const focal = `${rootPen}/conf/distros/focal/`
+      // quindi da focal 
+      const focal = `${rootPen}/conf/distros/focal/*`
+      await exec(`cp -r ${focal} ${dest}`, echo)
 
       // Poi da buster
       await exec(`cp -r ${buster}/calamares/calamares-modules/remove-link ${dest}/calamares/calamares-modules/remove-link`, echo)
