@@ -11,3 +11,4 @@ pb.yaml
 perrisbrewery/workdir/*
 !perrisbrewery/workdir/.gitkeep
 tmp
+mkinitcpio/*.img

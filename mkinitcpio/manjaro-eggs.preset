@@ -1,0 +1,16 @@
+# mkinitcpio preset file for the 'manjaro-eggs' package
+
+ALL_config="/etc/mkinitcpio.conf"
+ALL_kver="/boot/vmlinuz-5.13-x86_64"
+
+PRESETS=('default' 'fallback')
+HOOKS="base udev modconf keyboard block net squashfs filesystems"
+
+#default_config="/etc/mkinitcpio.conf"
+default_image="./initramfs-5.13-x86_64.img"
+#default_options=""
+
+fallback_config="/etc/mkinitcpio.conf"
+fallback_image="./initramfs-5.13-x86_64-fallback.img"
+fallback_options="-S autodetect"
+
