@@ -371,43 +371,53 @@ class Distro implements IDistro {
 
         break
       }
+      case 'Harpy-Eagle': {
+        this.familyId = 'archlinux'
+        this.distroLike = 'Arch'
+        this.versionLike = 'rolling'
+        break
+      }
 
-      default:
-        if (this.distroId === 'EndeavourOS') {
-          this.familyId = 'archlinux'
-          this.versionId = 'rolling' // rolling
-          this.distroLike = 'Arch'
-          this.versionLike = 'rolling'
-        } else if (this.versionId === 'Qonos') {
-          this.familyId = 'archlinux'
-          this.versionId = 'qonos'
-          this.distroLike = 'Arch'
-          this.versionLike = 'rolling' // pavho'
+      case 'Qonos': {
+        this.familyId = 'archlinux'
+        this.distroLike = 'Arch'
+        this.versionLike = 'rolling'
+        break
 
-          /**
-           * Fedora
-           */
-        } else if (this.versionId === 'ThirtyFive') {
-          this.familyId = 'fedora'
-          this.distroLike = 'Fedora'
-          this.versionLike = 'thirtyfive'
+        /**
+         * Fedora
+         */
+      }
 
-          /**
-           * openSuse
-           */
-        } else if (this.distroId === 'openSUSE') {
-          this.familyId = 'suse'
-          this.distroLike = 'SUSE'
-          this.versionId = 'tumbleweed'
-          this.versionLike = 'tumbleweed'
-        } else {
-          /**
-           * se proprio non riesco provo con Debian buster
-           */
-          console.log("This distro is not yet recognized, I'll try Debian buster")
-          this.distroLike = 'Debian'
-          this.versionLike = 'buster'
-        }
+      case 'ThirtyFive': {
+        this.familyId = 'fedora'
+        this.distroLike = 'Fedora'
+        this.versionLike = 'thirtyfive'
+        break
+
+        /**
+         * openSuse
+         */
+      }
+
+      case 'tumbleweed': {
+        this.familyId = 'suse'
+        this.distroLike = 'SUSE'
+        this.versionId = 'tumbleweed'
+        this.versionLike = 'tumbleweed'
+
+        break
+      }
+
+      default: {
+        /**
+         * se proprio non riesco provo con Debian buster
+         */
+        console.log("This distro is not yet recognized, I'll try Debian buster")
+        this.distroLike = 'Debian'
+        this.versionLike = 'buster'
+
+      }
     }
 
     /**

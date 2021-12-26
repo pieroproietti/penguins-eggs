@@ -5,7 +5,8 @@
 # Prepare a manjaro hen
 
 * install manjaro-xfce-21.1.6-minimal-211017-linux513.iso
-* install code ```git clone https://AUR.archlinux.org/cgit/aur.git/snapshot/visual-studio-code-bin```
+* install code: ```sudo pacman -S vscode```
+* or install code:```git clone https://AUR.archlinux.org/cgit/aur.git/snapshot/visual-studio-code-bin```
     * ```cd visual-studio-code-bin```
     *```makepkg -si```
 * ```sudo pacman -S base-devel```

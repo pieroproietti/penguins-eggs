@@ -129,7 +129,7 @@ export default class Settings {
     this.kernel_image = this.config.vmlinuz
     this.initrd_image = this.config.initrd_img
     this.vmlinuz = this.kernel_image.slice(this.kernel_image.lastIndexOf('/'))
-    this.initrdImg = this.initrd_image.slice(this.initrd_image.lastIndexOf('/'))
+    this.initrdImg = this.initrd_image // .slice(this.initrd_image.lastIndexOf('/'))
 
     /**
      * Use the login name set in the config file. If not set, use the primary
