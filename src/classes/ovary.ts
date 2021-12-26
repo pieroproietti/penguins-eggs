@@ -666,24 +666,23 @@ export default class Ovary {
       console.log('ovary: liveKernel')
     }
 
-    let lackVmlinuz = false
+    let lackVmlinuzImage = false
     if (fs.existsSync(this.settings.kernel_image)) {
       await exec(`cp ${this.settings.kernel_image} ${this.settings.work_dir.pathIso}/live/`, echo)
     } else {
       Utils.error(`Cannot find ${this.settings.kernel_image}`)
-      lackVmlinuz = true
+      lackVmlinuzImage = true
     }
 
-    let lackInitrd = false
-    console.log(this.settings.initrdImg)
-    if (fs.existsSync(this.settings.initrdImg)) {
+    let lackInitrdImage = false
+    if (fs.existsSync(this.settings.initrd_image)) {
       await exec(`cp ${this.settings.initrd_image} ${this.settings.work_dir.pathIso}/live/`, echo)
     } else {
       Utils.error(`Cannot find ${this.settings.initrdImg}`)
-      lackInitrd = true
+      lackInitrdImage = true
     }
 
-    if (lackVmlinuz || lackInitrd) {
+    if (lackVmlinuzImage || lackInitrdImage) {
       Utils.warning('Try to edit /etc/penguins-eggs.d/eggs.yaml and check for')
       Utils.warning(`vmlinuz: ${this.settings.kernel_image}`)
       Utils.warning(`initrd_img: ${this.settings.initrd_image}`)

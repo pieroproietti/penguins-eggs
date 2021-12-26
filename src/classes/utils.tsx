@@ -85,7 +85,6 @@ export default class Utils {
          initrd = 'initramfs'
          version = vmlinuz.substring(vmlinuz.indexOf('-')) + '.img'
       } else if (Pacman.distro().familyId === 'archlinux') {
-         ///boot/-linux-lts.img
          initrd = 'initramfs'
          version = vmlinuz.substring(vmlinuz.indexOf('-')) + '.img'
       } else if (Pacman.distro().familyId === 'suse') {
