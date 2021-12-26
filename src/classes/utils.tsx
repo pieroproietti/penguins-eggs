@@ -85,18 +85,13 @@ export default class Utils {
          initrd = 'initramfs'
          version = vmlinuz.substring(vmlinuz.indexOf('-')) + '.img'
       } else if (Pacman.distro().familyId === 'archlinux') {
-         if (Pacman.distro().versionId === 'rolling') {
-            initrd = 'initramfs-linux.img'
-            version = ''
-         } else if (Pacman.distro().versionId === 'qonos') {
-            // initramfs-5.13-x86_64.img
-            initrd = 'initramfs'
-            version = vmlinuz.substring(vmlinuz.indexOf('-')) + '.img'
-            }
-         } else if (Pacman.distro().familyId === 'suse') {
-            initrd = 'initrd'
-            version = vmlinuz.substring(vmlinuz.indexOf('-'))
-         }
+         ///boot/-linux-lts.img
+         initrd = 'initramfs'
+         version = vmlinuz.substring(vmlinuz.indexOf('-')) + '.img'
+      } else if (Pacman.distro().familyId === 'suse') {
+         initrd = 'initrd'
+         version = vmlinuz.substring(vmlinuz.indexOf('-'))
+      }
       return path + initrd + version
    }
 
@@ -122,8 +117,9 @@ export default class Utils {
    }
 
    static error(msg = '') {
-      console.log(pjson.shortName + ' >>> ' + chalk.bgMagentaBright(chalk,whiteBright(msg)) + '.')
+      console.error(pjson.shortName + ' >>> ' + chalk.bgMagentaBright(chalk.whiteBright(msg)) + '.')
    }
+
 
    /**
     * Return the primary user's name
@@ -249,7 +245,7 @@ unknown target format aarch64-efi
    static machineUEFI(): string {
       // grub-mkimage vuole: i386-efi, x86_64-efi, arm-efi, arm64-efi,
       let arch = this.machineArch()
-      let machineUEFI=''
+      let machineUEFI = ''
       if (arch === 'amd64') {
          machineUEFI = 'x86_64-efi'
       } else if (arch === 'armel') {

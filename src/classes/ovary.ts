@@ -661,28 +661,32 @@ export default class Ovary {
    * copy kernel
    */
   async copyKernel(verbose = false) {
+    const echo = Utils.setEcho(verbose)
     if (verbose) {
       console.log('ovary: liveKernel')
     }
 
-    let failVmlinuz = false
+    let lackVmlinuz = false
     if (fs.existsSync(this.settings.kernel_image)) {
-      shx.cp(this.settings.kernel_image, `${this.settings.work_dir.pathIso}/live/`)
+      await exec(`cp ${this.settings.kernel_image} ${this.settings.work_dir.pathIso}/live/`, echo)
     } else {
-      failVmlinuz = true
+      Utils.error(`Cannot find ${this.settings.kernel_image}`)
+      lackVmlinuz = true
     }
 
-    let failInitrd = false
-    if (fs.existsSync(this.settings.kernel_image)) {
-      shx.cp(this.settings.initrd_image, `${this.settings.work_dir.pathIso}/live/`)
+    let lackInitrd = false
+    console.log(this.settings.initrdImg)
+    if (fs.existsSync(this.settings.initrdImg)) {
+      await exec(`cp ${this.settings.initrd_image} ${this.settings.work_dir.pathIso}/live/`, echo)
     } else {
-      failInitrd = true
+      Utils.error(`Cannot find ${this.settings.initrdImg}`)
+      lackInitrd = true
     }
 
-    if (failVmlinuz || failInitrd) {
-      Utils.error(`something went wrong! Cannot find ${this.settings.kernel_image} or ${this.settings.initrd_image}`)
-      Utils.warning('Try to edit /etc/penguins-eggs.d/eggs.yaml and check for vmlinuz: /path/to/vmlinuz')
-      Utils.warning('and initrd_img: vmlinuz: /path/to/initrd_img')
+    if (lackVmlinuz || lackInitrd) {
+      Utils.warning('Try to edit /etc/penguins-eggs.d/eggs.yaml and check for')
+      Utils.warning(`vmlinuz: ${this.settings.kernel_image}`)
+      Utils.warning(`initrd_img: ${this.settings.initrd_image}`)
       process.exit(1)
     }
   }
