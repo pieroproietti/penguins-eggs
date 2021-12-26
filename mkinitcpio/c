@@ -1,0 +1,9 @@
+sudo mkinitcpio -p ./manjaro-eggs.preset
+sudo rm /home/eggs/ovarium/iso/live/*.img
+sudo cp initramfs* /home/eggs/ovarium/iso/live
+cd /home/eggs
+sudo rm egg-of-manjarolinux-qonos-xfce-amd64_2021-12-26_1225.iso
+cd ovarium
+sudo ./mkisofs
+cd /home/artisan/penguins-eggs
+./eggs export iso
