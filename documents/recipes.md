@@ -122,7 +122,13 @@ You can find more informations at [Penguin's eggs blog](https://penguins-eggs.ne
 ## Contacts
 Feel free to contact [me](https://gitter.im/penguins-eggs-1/community?source=orgpage) or open an issue on [github](https://github.com/pieroproietti/penguins-eggs/issues).
 
-* mail: piero.proietti@gmail.com
+* [blog](https://penguins-eggs.net)    
+* [facebook](https://www.facebook.com/groups/128861437762355/) Penguin's eggs group
+* [mail](mailto://piero.proietti@gmail.com): piero.proietti@gmail.com
+* [sources](https://github.com/pieroproietti/penguins-krill)
+* [telegram](telegram.me/PieroProietti) PieroProietti
+* [twitter](https://twitter.com/pieroproietti) pieroproietti
 
 ## Copyright and licenses
 Copyright (c) 2017, 2020 [Piero Proietti](https://penguins-eggs.net/about-me.html), dual licensed under the MIT or GPL Version 2 licenses.
+

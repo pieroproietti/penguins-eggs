@@ -685,10 +685,11 @@ No need other configurations, penguins-eggs are battery included or better, as i
 ## More informations
 There is a [Penguin's eggs official book](https://penguins-eggs.net/book/) and same other documentation - mostly for developers - on [penguins-eggs repo](https://github.com/pieroproietti/penguins-eggs) under **documents** and **i386**.
 
-* [penguin's eggs blog](https://penguins-eggs.net)    
+* [blog](https://penguins-eggs.net)    
 * [facebook penguin's eggs group](https://www.facebook.com/groups/128861437762355/)
-* [twitter](https://twitter.com/pieroproietti)
 * [sources](https://github.com/pieroproietti/penguins-krill)
+* [telegram](telegram.me/PieroProietti)
+* [twitter](https://twitter.com/pieroproietti)
 
 You can contact me at pieroproietti@gmail.com or [meet me](https://meet.jit.si/PenguinsEggsMeeting)
 
