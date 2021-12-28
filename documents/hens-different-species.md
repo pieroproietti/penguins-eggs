@@ -18,15 +18,18 @@ can adapt the monitor of the VM to the window, cut and past and so on.
 
 
 # Prepare a Debian hen
-
-* install [Debian](https://cdimage.debian.org/debian-cd/current/amd64/iso-cd/debian-11.2.0-amd64-netinst.iso)
+We try to install a light version of Debian
+* install [Debian](https://cdimage.debian.org/debian-cd/current/amd64/iso-cd/debian-11.2.0-amd64-netinst.iso) don't install GUI now.
 * install light GUI xfce: ```apt install xfce4 xfce4-terminal firefox-esr lightdm```
+
+## Adding developing tools
 * install code: [download](https://code.visualstudio.com/download#) and install with ```sudo dpkg -i code_1.63.2-1639562499_amd64.deb```
 * install build-essential: ```apt install build-essential```
 * install nodejs: as root
 ```curl -fsSL https://deb.nodesource.com/setup_16.x | bash -```
 ```apt-get install -y nodejs```
 * install spice-vdagent: ```apt install spice-vdagent```
+* continue with downloading eggs
 
 # Prepare a manjaro hen
 We try to install a light version on manjaro
@@ -38,7 +41,7 @@ We try to install a light version on manjaro
 * install node: ```sudo pacman -S "nodejs=16.13.1"``` I choose version 16.13.1 just to be pair with Debian hen
 * install npm: ```sudo pacman -S npm```
 * install spice-vdgent: ```sudo pacman -S spice-vdagent```
-
+* continue with downloading eggs
 
 # Downloading eggs from repo:
 * get eggs: ```git clone https://pieroproietti/penguins-eggs```
