@@ -28,6 +28,7 @@ We try to install a light version of Debian
 * install nodejs: as root
 ```curl -fsSL https://deb.nodesource.com/setup_16.x | bash -```
 ```apt-get install -y nodejs```
+* install git: ```apt install git```
 * install spice-vdagent: ```apt install spice-vdagent```
 * continue with downloading eggs
 
