@@ -1,10 +1,10 @@
-
+# Hens, different species
 An hen is a female penguin able to produce eggs. 
 
 In our case it is a light workstation we build to develop and test penguins-eggs. 
 
 We need a light system becouse, often our tests consist on the creation of a live version 
-of the system itself and this became a long history with heavvy systems.
+of the system itself and this became a long history with heavy systems.
 
 Generally i use to work a virtual machine, on a Proxmox VE installation, with minimum requisites:
 * cores: 2
@@ -16,10 +16,13 @@ Generally i use to work a virtual machine, on a Proxmox VE installation, with mi
 In the host system I have virt-viewer installed and on the virtual machine I install always spice-vdagent to 
 can adapt the monitor of the VM to the window, cut and past and so on.
 
+The entire process of prepare an egg take about 1/2 minutes using --fast option, and the resultig image is about 
+1.2 GB on Debian with --max compression.
+
 
 # Prepare a Debian hen
 We try to install a light version of Debian
-* install [Debian](https://cdimage.debian.org/debian-cd/current/amd64/iso-cd/debian-11.2.0-amd64-netinst.iso) don't install GUI now.
+* install [Debian](https://cdimage.debian.org/debian-cd/current/amd64/iso-cd/debian-11.2.0-amd64-netinst.iso), we need just a nel-install, don't install GUI at this point.
 * install light GUI xfce: ```apt install xfce4 xfce4-terminal firefox-esr lightdm```
 
 ## Adding developing tools
@@ -30,7 +33,8 @@ We try to install a light version of Debian
 ```apt-get install -y nodejs```
 * install git: ```apt install git```
 * install spice-vdagent: ```apt install spice-vdagent```
-* continue with downloading eggs
+* continue with [downloading eggs form repo](#downloading-eggs-from-repo)
+
 
 # Prepare a manjaro hen
 We try to install a light version on manjaro
@@ -42,7 +46,7 @@ We try to install a light version on manjaro
 * install node: ```sudo pacman -S "nodejs=16.13.1"``` I choose version 16.13.1 just to be pair with Debian hen
 * install npm: ```sudo pacman -S npm```
 * install spice-vdgent: ```sudo pacman -S spice-vdagent```
-* continue with downloading eggs
+* continue with [downloading eggs form repo](#downloading-eggs-from-repo)
 
 # Downloading eggs from repo:
 * get eggs: ```git clone https://pieroproietti/penguins-eggs```
