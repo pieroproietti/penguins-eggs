@@ -1,9 +1,15 @@
-eggs(1) -- A reproductive system for penguins: eggs v{{{sourceVersion}}}
+eggs(1) -- the reproductive system of penguins: eggs v{{{sourceVersion}}}
 ==========================================================================
 
 {{toc}}
 
 # SYNOPSIS
+deb package
+```
+$ sudo dpkg -i eggs_{{{sourceVersion}}}_amd64.deb
+```
+
+npm package
 ```
 $ npm install -g penguins-eggs
 $ eggs COMMAND
@@ -41,7 +47,7 @@ Help yorself signing in the forum or in facebook group page or asking me.
 
 eggs is a console utility, in active development, who let you to remaster your system and redistribuite it as iso image.
 
-The scope of this project is to implement the process of remastering your version of Linux, generate it as ISO image to burn on a CD/DVD or copy to a usb key to boot your system. You can easily install your live system with gui installer (calamares)  or eggs cli installer.
+The scope of this project is to implement the process of remastering your version of Linux, generate it as ISO image to burn on a CD/DVD or copy to a usb key to boot your system. You can easily install your live system with gui installer (calamares)  or eggs cle installer (krill).
 
 # COMMANDS
 
@@ -62,13 +68,6 @@ The scope of this project is to implement the process of remastering your versio
 
 
 # TROUBLES
-Different versions of eggs can have differents configurations files. This can lead to get errors.
-
-A fast workaround for this troubles can be:
-
-* sudo eggs dad -c
-
-or just download eggs without install:
 
 * **sudo eggs update** # select basket, choose the version and download it but not install. The package will saver in /tmp;
 
