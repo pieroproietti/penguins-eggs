@@ -42,10 +42,10 @@ say "Booting  GNU/Linux Live (kernel 5.13.19-2-MANJARO)..."
 ```
 
 ## Remove previous iso image
-sudo rm /home/eggs/egg-of-manjarolinux-qonos-xfce-amd64_2021-12-29_1449.iso 
+```sudo rm /home/eggs/egg-of-*```
 
 ## build a new iso image
-sudo /home/eggs/ovarium/mkisofs
+```sudo /home/eggs/ovarium/mkisofs```
 
 
 # Garuda
