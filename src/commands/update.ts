@@ -163,9 +163,9 @@ export default class Update extends Command {
     console.log('cd ~')
     console.log('git clone https://github.com/pieroproietti/penguins-eggs')
     console.log('')
-    console.log('Before to use eggs, remember to run ./init to install npm packages:')
+    console.log('Before to use eggs from sources, remember to install npm packages:')
     console.log('cd ~/penguins-eggs')
-    console.log('./init')
+    console.log('npm install')
   }
 
   /**
