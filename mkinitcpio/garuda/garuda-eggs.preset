@@ -1,0 +1,15 @@
+# mkinitcpio preset file for the 'manjaro-eggs' package
+
+ALL_config="./garuda-mkinitcpio.conf"
+ALL_kver="/boot/vmlinuz-linux-lts"
+
+PRESETS=('default')
+HOOKS="base udev modconf keyboard block squashfs filesystems"
+default_config="./garuda-mkinitcpio.conf"
+default_image="./initramfs-linux-lts.img"
+#default_options=""
+
+# early_modules="udev miso_pxe_mbd"
+# HOOKS="udev miso miso_loop_mnt miso_pxe_common miso_pxe_http miso_pxe_nbd miso_pxe_nfs keymap"
+# LATEHOOKS="miso_pxe_common"
+# CLEANUPHOOKS=""miso_shutdown_udev"
