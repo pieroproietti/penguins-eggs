@@ -31,8 +31,9 @@ edit isolinux.cfg, as follow:
 ...
 squashfs=LABEL={{{volid}}}:/live/filesystem.squashfs 
 ```
-replave  ```{{{volid}}}``` with the content of ```.disk/info``` 
-The folder .disk  is present under ovarium. Example:
+replace ```{{{volid}}}``` with the content of ```.disk/info``` 
+
+The folder ```.disk```  is present under folder ```iso``` in ```ovarium```. Example:
 
 ```
 say "Booting  GNU/Linux Live (kernel 5.13.19-2-MANJARO)..."
