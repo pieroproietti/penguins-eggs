@@ -1,11 +1,9 @@
 # mkinitcpio-squashfs
 
 ## installation
-```git clone https://github.com/RegalisTechnologies/mkinitcpio-squashfs```
-```cd mkinitcpio-squashfs/dist/archlinux```
-```makepkg -si```
-
-installa anche il pacchetto pv
+* ```git clone https://github.com/RegalisTechnologies/mkinitcpio-squashfs```
+* ```cd mkinitcpio-squashfs/dist/archlinux```
+* ```makepkg -si```
 
 # manjaro
 in /etc/mkinitcpio.conf edit HOOKS with
@@ -42,8 +40,11 @@ say "Booting  GNU/Linux Live (kernel 5.13.19-2-MANJARO)..."
   append initrd=/live/initramfs-5.13-x86_64.img squashfs=LABEL=xfce:/live/filesystem.squashfs boot=live components locales=it_IT.utf8
 ```
 
-### Remove previous iso image
+## Remove previous iso image
 sudo rm /home/eggs/egg-of-manjarolinux-qonos-xfce-amd64_2021-12-29_1449.iso 
 
-### build a new iso image
+## build a new iso image
 sudo /home/eggs/ovarium/mkisofs
+
+
+# Garuda
