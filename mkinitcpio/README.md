@@ -9,35 +9,41 @@ installa anche il pacchetto pv
 
 # manjaro
 in /etc/mkinitcpio.conf edit HOOKS with
-```HOOKS=(base udev autodetect block squashfs filesystems)```
+```HOOKS=(base udev modconf block squashfs filesystems)```
 
-Provare anche con ```modconf``` invece di ```autodetect```
+It is possible to test with ```autodetect``` in place f ```modconf```
 
-ls /usr/lib/initcpio/install/ 
+## comandi per visualizzare gli hook disponibili
+``` ls /usr/lib/initcpio/install/ ``` 
+``` mkinitcpio -L``` 
 
-mkinitcpio -L
+## initramfs creation
+```mkinitcpio -g initramfs-5.13-x86_64.img```
 
-mkinitcpio -g initramfs-5.13-x86_64.img
+## copy initramfs-5.13-x86_64.img on iso
+```sudo cp initramfs-5.13-x86_64.img /home/eggs/ovarium/iso/live/```
 
-# 
-dopo la generazione della immagine, questa va copiata nella iso
+## we need to change the kernel parameters in isolinux.cfg
 
-sudo cp initramfs-5.13-x86_64.img /home/eggs/ovarium/iso/live/
+edit isolinux.cfg, as follow:
 
-inoltre, va modificato il file:
-sudo nano /home/eggs/ovarium/iso/live/isolinux/isolinux.cfg
+```sudo nano /home/eggs/ovarium/iso/live/isolinux/isolinux.cfg```
 
+```
+...
+squashfs=LABEL={{{volid}}}:/live/filesystem.squashfs 
+```
+replave  ```{{{volid}}}``` with the content of ```.disk/info``` 
+The folder .disk  is present under ovarium. Example:
 
+```
 say "Booting  GNU/Linux Live (kernel 5.13.19-2-MANJARO)..."
   linux /live/vmlinuz-5.13-x86_64
-  # append initrd=/live/initramfs-5.13-x86_64.img boot=live components locales=it_IT.utf8 quiet splansh
-  append initrd=/live/initramfs-5.13-x86_64.img squashfs=LABEL=xfce:/live/filesystem.squashfs squashfs_copy=true boot=live components locales=it_IT.utf8
-
+  append initrd=/live/initramfs-5.13-x86_64.img squashfs=LABEL=xfce:/live/filesystem.squashfs boot=live components locales=it_IT.utf8
+```
 
 ### Remove previous iso image
 sudo rm /home/eggs/egg-of-manjarolinux-qonos-xfce-amd64_2021-12-29_1449.iso 
 
 ### build a new iso image
 sudo /home/eggs/ovarium/mkisofs
-
-# garuda
