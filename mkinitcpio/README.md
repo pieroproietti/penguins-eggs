@@ -53,8 +53,10 @@ say "Booting  GNU/Linux Live (kernel 5.13.19-2-MANJARO)..."
 ## export the new iso image to test
 We have in ```/etc/penguins-eggs.d/tools.yml``` the follow lines,
 
-```remoteHost: 192.168.61.2```
-```remotePathIso: /home/artisan/sourceforge/iso/```
+```
+remoteHost: 192.168.61.2
+remotePathIso: /home/artisan/sourceforge/iso/
+```
 
 I use a Proxmox VE installation to manage my VMs, so we need to export our iso to the host, under
 the path ```/var/lib/vz/template/so```. It is a repetitive task for me, and boring enouth digit the 
