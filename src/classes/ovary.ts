@@ -37,6 +37,7 @@ import Repo from './yolk'
 import cliAutologin = require('../lib/cli-autologin')
 import { execSync } from 'node:child_process'
 import { displaymanager } from './incubation/fisherman-helper/displaymanager'
+import { timingSafeEqual } from 'crypto'
 
 /**
  * Ovary:
@@ -629,18 +630,19 @@ export default class Ovary {
       Utils.warning('Cannot find: ' + isolinuxTemplate)
       process.exit()
     }
+
+    let kernel_parameters = `boot=live components locales=${process.env.LANG}`
+    if (this.settings.distro.familyId === "archlinux"){
+      kernel_parameters = `boot=live squashfs=LABEL=${Utils.getVolid(this.settings.remix.name)}:/live/filesystem.squashfs locales=${process.env.LANG}`
+    }
+
     const template = fs.readFileSync(isolinuxTemplate, 'utf8')
     const view = {
       fullname: this.settings.remix.fullname.toUpperCase(),
       kernel: Utils.kernerlVersion(),
       vmlinuz: `/live${this.settings.vmlinuz}`,
       initrdImg: `/live${this.settings.initrdImg}`,
-      cdlabel: `${Utils.getVolid(this.settings.remix.name)}`,
-      usernameOpt: this.settings.config.user_opt,
-      netconfigOpt: this.settings.config.netconfig_opt,
-      timezoneOpt: this.settings.config.timezone,
-      lang: process.env.LANG,
-      locales: process.env.LANG
+      kernel_parameters: kernel_parameters,
     }
     fs.writeFileSync(isolinuxDest, mustache.render(template, view))
 
