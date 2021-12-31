@@ -1,6 +1,6 @@
-nano mkinitcpio/manjaro/mkinitcpio.conf
+#nano mkinitcpio/manjaro/mkinitcpio.conf
 sudo cp mkinitcpio/manjaro/mkinitcpio.conf /etc/
-sudo mkinitcpio -g /home/eggs/ovarium/iso/live/initramfs-5.13-x86_64.img 
+sudo mkinitcpio -g /home/eggs/ovarium/iso/live/initramfs-5.15-x86_64.img
 sudo rm /home/eggs/egg-of*
 sudo /home/eggs/ovarium/mkisofs
-./eggs export iso -c
+./eggs export iso

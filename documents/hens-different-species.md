@@ -49,10 +49,13 @@ We try to install a light version on manjaro
 * continue with [downloading eggs form repo](#downloading-eggs-from-repo)
 
 # Downloading eggs from repo:
-* get eggs: ```git clone https://pieroproietti/penguins-eggs```
+* get eggs: ```git clone https://github-com/pieroproietti/penguins-eggs```
 * install node packages in eggs
     * ```cd penguins-eggs```
     * ```npm i```
+    
+# Downloading mkinitcpio-squashfs from repo:
+* git clone https://github-com/pieroproietti/mkinitcpio-squashfs
 
 # Configure eggs
 eggs need differents packages to work, this packages are installed by the command: sudo config, 
