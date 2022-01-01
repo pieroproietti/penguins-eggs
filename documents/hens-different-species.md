@@ -47,7 +47,7 @@ We try to install a light version on manjaro
 * install npm: ```sudo pacman -S npm```
 
 ## Downloading mkinitcpio-squashfs
-*  ```git clone https://github-com/pieroproietti/mkinitcpio-squashfs```
+*  ```git clone https://github,com/pieroproietti/mkinitcpio-squashfs```
 
 ## Downloading 
 * ```git clone https://gitlab.manjaro.org/tools/development-tools/manjaro-tools/```
