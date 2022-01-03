@@ -1,0 +1,8 @@
+# Debian Buster
+# packages
+---
+backend: apt
+
+operations:
+{{remove}}
+{{try_install}}

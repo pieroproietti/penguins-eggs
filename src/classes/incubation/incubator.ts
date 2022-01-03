@@ -60,6 +60,7 @@ export default class Incubator {
     const echo = Utils.setEcho(verbose)
 
     this.createInstallerDirs()
+
     // DEBIAN
     switch (this.distro.versionLike) {
       case 'jessie': {
@@ -76,12 +77,6 @@ export default class Incubator {
         break
       }
 
-      case 'buster': {
-        const buster = new Buster(this.installer, this.remix, this.distro, release, this.user_opt, this.verbose)
-        await buster.create()
-
-        break
-      }
 
       case 'bullseye': {
         const bullseye = new Buster(this.installer, this.remix, this.distro, release, this.user_opt, this.verbose)
@@ -117,6 +112,17 @@ export default class Incubator {
         await daedalus.create()
 
         // UBUNTU
+
+        break
+      }
+
+      /**
+       * Manjaro
+       */
+      case 'rolling': {
+        console.log( `manjaro qonos`)
+        const rolling = new Buster(this.installer, this.remix, this.distro, release, this.user_opt, this.verbose)
+        await rolling.create()
 
         break
       }
@@ -162,6 +168,8 @@ export default class Incubator {
 
         break
       }
+
+     
       // No default
     }
 
