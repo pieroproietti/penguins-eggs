@@ -442,7 +442,6 @@ class Distro implements IDistro {
         if (process.arch === 'ia32') {
           this.usrLibPath = '/usr/lib/i386-linux-gnu/'
         }
-
         break
       }
 
