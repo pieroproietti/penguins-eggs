@@ -1,9 +1,8 @@
 #nano mkinitcpio/manjaro/mkinitcpio.conf
-cd ../mkinitcpio-squashfs
-sudo make
-cd ../penguins-eggs
-sudo cp mkinitcpio/manjaro/mkinitcpio.conf /etc/
-sudo mkinitcpio -g /home/eggs/ovarium/iso/live/initramfs-5.15-x86_64.img
+#cd ../mkinitcpio-squashfs
+#sudo make
+#cd ../penguins-eggs
+sudo mkinitcpio -c mkinitcpio/manjaro/mkinitcpio.conf -g /home/eggs/ovarium/iso/live/initramfs-5.15-x86_64.img
 sudo rm /home/eggs/egg-of*
 sudo /home/eggs/ovarium/mkisofs
-./eggs export iso
+./eggs export iso -c
