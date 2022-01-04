@@ -705,8 +705,8 @@ export default class Ovary {
     let initrdImg = Utils.initrdImg()
     initrdImg = initrdImg.substring(initrdImg.lastIndexOf('/') + 1)
     Utils.warning(`Creating ${initrdImg} in ${this.settings.work_dir.pathIso}/live/`)
-    
-    await exec(`mkinitcpio -c mkinitcpio/manjaro/mkinitcpio.conf -g ${this.settings.work_dir.pathIso}/live/${initrdImg}`, echo)
+    // shx.cp(path.resolve(__dirname, '../../conf/README.md'), this.settings.work_dir.path + 'README.md')
+    await exec(`mkinitcpio -c ${path.resolve(__dirname, '../../mkinitcpio/manjaro/mkinitcpio.conf')} -g ${this.settings.work_dir.pathIso}/live/${initrdImg}`, echo)
   }
 
   /**
