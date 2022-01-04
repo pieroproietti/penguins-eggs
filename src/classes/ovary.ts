@@ -145,9 +145,6 @@ export default class Ovary {
     if (Utils.isLive()) {
       console.log(chalk.red('>>> eggs: This is a live system! An egg cannot be produced from an egg!'))
     } else {
-      if (verbose) {
-        console.log(`egg ${this.settings.remix.name}`)
-      }
 
       await this.liveCreateStructure(verbose)
 

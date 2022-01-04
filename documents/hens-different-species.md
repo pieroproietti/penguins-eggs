@@ -52,6 +52,8 @@ We try to install a light version on manjaro
 ## Downloading 
 * ```git clone https://gitlab.manjaro.org/tools/development-tools/manjaro-tools/```
 
+You must copy the folder ```initcpio``` in ```/usr/lib/initcpio``` to get ```miso```, ```miso_loop_mnt``` used in mkinitcpio configuration.
+
 * continue with [downloading eggs form repo](#downloading-eggs-from-repo)
 
 # Downloading eggs from repo:
