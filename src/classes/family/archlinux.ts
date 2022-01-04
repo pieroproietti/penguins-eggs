@@ -106,7 +106,8 @@ export default class Archlinux {
   /**
    *
    */
-  static async calamaresInstall(verbose = true): Promise<void> {
+  static async calamaresInstall(verbose = false): Promise<void> {
+    verbose = true // serve per pacman
     const echo = Utils.setEcho(verbose)
     try {
       await exec(`pacman -Sy ${array2spaced(this.packs4calamares)}`, echo)
@@ -127,8 +128,9 @@ export default class Archlinux {
    *
    */
   static async calamaresRemove(verbose = true): Promise<boolean> {
-    const echo = Utils.setEcho(verbose)
+    verbose = true // serve per pacman
 
+    const echo = Utils.setEcho(verbose)
     const retVal = false
     if (fs.existsSync('/etc/calamares')) {
       await exec('rm /etc/calamares -rf', echo)

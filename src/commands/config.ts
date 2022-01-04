@@ -10,8 +10,6 @@ import Utils from '../classes/utils'
 import Pacman from '../classes/pacman'
 import Bleach from '../classes/bleach'
 import { IInstall } from '../interfaces'
-import Distro from '../classes/distro'
-import { IRemix, IDistro } from '../interfaces'
 import { array2spaced } from '../lib/dependencies'
 
 import { exec } from '../lib/utils'
@@ -66,7 +64,6 @@ export default class Config extends Command {
       // Vediamo che cosa c'è da fare...
       Utils.warning('what we need?')
       const i = await Config.thatWeNeed(nointeractive, verbose)
-
       if (i.needApt || i.configurationInstall || i.configurationRefresh || i.distroTemplate) {
         if (nointeractive) {
           await Config.install(i, nointeractive, verbose)
@@ -223,7 +220,6 @@ export default class Config extends Command {
 
     if (i.calamares && Pacman.isCalamaresAvailable()) {
       if (nointeractive) {
-        Utils.error('config: you are on a graphic system, I suggest to install the GUI installer calamares')
         Utils.warning('I suggest You to install calamares GUI installer before to produce your ISO.\nJust write:\n    sudo eggs calamares --install')
       } else {
         Utils.warning('Installing calamares...')
