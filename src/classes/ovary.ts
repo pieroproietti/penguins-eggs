@@ -162,7 +162,8 @@ export default class Ovary {
       await this.syslinux(verbose)
       await (Pacman.distro().familyId === 'debian' ? this.isolinux(this.theme, verbose) : this.isolinux(this.theme, verbose))
 
-      await this.copyKernel(verbose)
+      await this.kernelCopy(verbose)
+      await this.initrdCopy(verbose)
       if (this.settings.config.make_efi) {
         await this.makeEfi(this.theme, verbose)
       }
@@ -632,7 +633,7 @@ export default class Ovary {
     }
 
     let kernel_parameters = `boot=live components locales=${process.env.LANG}`
-    if (this.settings.distro.familyId === "archlinux"){
+    if (this.settings.distro.familyId === "archlinux") {
       kernel_parameters = `boot=live squashfs=LABEL=${Utils.getVolid(this.settings.remix.name)}:/live/filesystem.squashfs locales=${process.env.LANG}`
     }
 
@@ -662,10 +663,10 @@ export default class Ovary {
   /**
    * copy kernel
    */
-  async copyKernel(verbose = false) {
+  async kernelCopy(verbose = false) {
     const echo = Utils.setEcho(verbose)
     if (verbose) {
-      console.log('ovary: liveKernel')
+      console.log('ovary: kernelCopy')
     }
 
     let lackVmlinuzImage = false
@@ -676,6 +677,34 @@ export default class Ovary {
       lackVmlinuzImage = true
     }
 
+    if (lackVmlinuzImage) {
+      Utils.warning('Try to edit /etc/penguins-eggs.d/eggs.yaml and check for')
+      Utils.warning(`vmlinuz: ${this.settings.kernel_image}`)
+      process.exit(1)
+    }
+  }
+
+  /**
+   * 
+   */
+  async initrdCreate(verbose = false) {
+    const echo = Utils.setEcho(verbose)
+    if (verbose) {
+      console.log('ovary: initrdCreate')
+    }
+    
+  }
+
+  /**
+   * 
+   * @param verbose 
+   * @returns 
+   */
+  async initrdCopy(verbose = false) {
+    const echo = Utils.setEcho(verbose)
+    if (verbose) {
+      console.log('ovary: initrdCopy')
+    }
     let lackInitrdImage = false
     if (fs.existsSync(this.settings.initrd_image)) {
       await exec(`cp ${this.settings.initrd_image} ${this.settings.work_dir.pathIso}/live/`, echo)
@@ -684,9 +713,8 @@ export default class Ovary {
       lackInitrdImage = true
     }
 
-    if (lackVmlinuzImage || lackInitrdImage) {
+    if (lackInitrdImage) {
       Utils.warning('Try to edit /etc/penguins-eggs.d/eggs.yaml and check for')
-      Utils.warning(`vmlinuz: ${this.settings.kernel_image}`)
       Utils.warning(`initrd_img: ${this.settings.initrd_image}`)
       process.exit(1)
     }
