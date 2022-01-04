@@ -37,7 +37,6 @@ import Repo from './yolk'
 import cliAutologin = require('../lib/cli-autologin')
 import { execSync } from 'node:child_process'
 import { displaymanager } from './incubation/fisherman-helper/displaymanager'
-import { timingSafeEqual } from 'crypto'
 
 /**
  * Ovary:
@@ -48,6 +47,8 @@ export default class Ovary {
   incubator = {} as Incubator
 
   settings = {} as Settings
+
+  familyId = ''
 
   snapshot_prefix = ''
 
@@ -87,6 +88,9 @@ export default class Ovary {
    */
   async fertilization(): Promise<boolean> {
     if (await this.settings.load()) {
+
+      this.familyId = this.settings.distro.familyId
+
       if (this.snapshot_prefix !== '') {
         this.settings.config.snapshot_prefix = this.snapshot_prefix
       }
@@ -103,9 +107,12 @@ export default class Ovary {
         this.settings.config.compression = this.compression
       }
 
+
       this.settings.listFreeSpace()
       if (await Utils.customConfirm('Select yes to continue...')) return true
     }
+
+
 
     return false
   }
@@ -115,7 +122,7 @@ export default class Ovary {
    * @param basename
    */
   async produce(backup = false, scriptOnly = false, yolkRenew = false, release = false, myAddons: IMyAddons, verbose = false) {
-    if (Pacman.distro().familyId === 'debian') {
+    if (this.familyId === 'debian') {
       const yolk = new Repo()
       if (!yolk.exists()) {
         Utils.warning('local repo yolk creation...')
@@ -144,7 +151,7 @@ export default class Ovary {
 
       await this.liveCreateStructure(verbose)
 
-      if (Pacman.distro().isCalamaresAvailable && (await Pacman.isInstalledGui()) && this.settings.config.force_installer && !(await Pacman.calamaresCheck())) {
+      if (this.settings.distro.isCalamaresAvailable && (Pacman.isInstalledGui()) && this.settings.config.force_installer && !(await Pacman.calamaresCheck())) {
         console.log('Installing ' + chalk.bgGray('calamares') + ' due force_installer=yes.')
         await Pacman.calamaresInstall(verbose)
         const bleach = new Bleach()
@@ -160,10 +167,18 @@ export default class Ovary {
       await this.incubator.config(release)
 
       await this.syslinux(verbose)
-      await (Pacman.distro().familyId === 'debian' ? this.isolinux(this.theme, verbose) : this.isolinux(this.theme, verbose))
-
+      await this.isolinux(this.theme, verbose)
       await this.kernelCopy(verbose)
-      await this.initrdCopy(verbose)
+      /**
+       * we need different behaviour on
+       * initrd for different familis
+       */
+      if (this.familyId === 'debian') {
+        await this.initrdCopy(verbose)
+      } else if (this.familyId === 'archlinux') {
+        await this.initrdCreate(verbose)
+      }
+
       if (this.settings.config.make_efi) {
         await this.makeEfi(this.theme, verbose)
       }
@@ -363,7 +378,7 @@ export default class Ovary {
       console.log('ovary: editLiveFs')
     }
 
-    if (Pacman.distro().familyId === 'debian') {
+    if (this.familyId === 'debian') {
       // Aggiungo UMASK=0077 in /etc/initramfs-tools/conf.d/calamares-safe-initramfs.conf
       const text = 'UMASK=0077\n'
       const file = '/etc/initramfs-tools/conf.d/eggs-safe-initramfs.conf'
@@ -466,7 +481,7 @@ export default class Ovary {
      * Clear configs from /etc/network/interfaces, wicd and NetworkManager
      * and netman, so they aren't stealthily included in the snapshot.
      */
-    if (Pacman.distro().familyId === 'debian') {
+    if (this.familyId === 'debian') {
       if (fs.existsSync(`${this.settings.work_dir.merged}/etc/network/interfaces`)) {
         await exec(`rm ${this.settings.work_dir.merged}/etc/network/interfaces`, echo)
       }
@@ -589,7 +604,7 @@ export default class Ovary {
      * quale pacchetto installi:
      * ldllinux.c43, libcom32 e libutil.c32
      */
-    if (Pacman.distro().familyId !== 'suse') {
+    if (this.familyId !== 'suse') {
       await exec(`cp ${this.settings.distro.syslinuxPath}/ldlinux.c32 ${this.settings.work_dir.pathIso}/isolinux/`, echo)
       await exec(`cp ${this.settings.distro.syslinuxPath}/libcom32.c32 ${this.settings.work_dir.pathIso}/isolinux/`, echo)
       await exec(`cp ${this.settings.distro.syslinuxPath}/libutil.c32 ${this.settings.work_dir.pathIso}/isolinux/`, echo)
@@ -633,7 +648,7 @@ export default class Ovary {
     }
 
     let kernel_parameters = `boot=live components locales=${process.env.LANG}`
-    if (this.settings.distro.familyId === "archlinux") {
+    if (this.familyId === "archlinux") {
       kernel_parameters = `boot=live squashfs=LABEL=${Utils.getVolid(this.settings.remix.name)}:/live/filesystem.squashfs locales=${process.env.LANG}`
     }
 
@@ -685,14 +700,16 @@ export default class Ovary {
   }
 
   /**
-   * 
+   * necessita di verbose
    */
   async initrdCreate(verbose = false) {
+    verbose = true
     const echo = Utils.setEcho(verbose)
-    if (verbose) {
-      console.log('ovary: initrdCreate')
-    }
+    let initrdImg = Utils.initrdImg()
+    initrdImg = initrdImg.substring(initrdImg.lastIndexOf('/') + 1)
+    Utils.warning(`Creating ${initrdImg} in ${this.settings.work_dir.pathIso}/live/`)
     
+    await exec(`mkinitcpio -c mkinitcpio/manjaro/mkinitcpio.conf -g ${this.settings.work_dir.pathIso}/live/${initrdImg}`, echo)
   }
 
   /**
@@ -701,6 +718,7 @@ export default class Ovary {
    * @returns 
    */
   async initrdCopy(verbose = false) {
+    Utils.warning(`initrdCopy`)
     const echo = Utils.setEcho(verbose)
     if (verbose) {
       console.log('ovary: initrdCopy')
@@ -744,7 +762,7 @@ export default class Ovary {
     /**
      * Non sò che fa, ma sicuro non serve per archlinux
      */
-    if (Pacman.distro().familyId === 'debian') {
+    if (this.familyId === 'debian') {
       const rcd = ['rc0.d', 'rc1.d', 'rc2.d', 'rc3.d', 'rc4.d', 'rc5.d', 'rc6.d', 'rcS.d']
       let files: string[]
       for (const i in rcd) {
@@ -1123,7 +1141,7 @@ export default class Ovary {
     const cmds: string[] = []
     cmds.push(await rexec('chroot ' + this.settings.work_dir.merged + ' rm /home/' + this.settings.config.user_opt + ' -rf', verbose))
     cmds.push(await rexec('chroot ' + this.settings.work_dir.merged + ' mkdir /home/' + this.settings.config.user_opt, verbose))
-    if (Pacman.distro().familyId === 'fedora') {
+    if (this.familyId === 'fedora') {
       cmds.push(await rexec('chroot ' + this.settings.work_dir.merged + ' useradd ' + this.settings.config.user_opt + ' --home-dir /home/' + this.settings.config.user_opt + ' --shell /bin/bash --password ' + this.settings.config.user_opt_passwd, verbose))
     } else {
       cmds.push(await rexec('chroot ' + this.settings.work_dir.merged + ' useradd ' + this.settings.config.user_opt + ' --home-dir /home/' + this.settings.config.user_opt + ' --shell /bin/bash ', verbose))
@@ -1132,14 +1150,14 @@ export default class Ovary {
 
     cmds.push(await rexec('chroot  ' + this.settings.work_dir.merged + ' cp /etc/skel/. /home/' + this.settings.config.user_opt + ' -R', verbose))
 
-    if (Pacman.distro().familyId !== 'suse') {
+    if (this.familyId !== 'suse') {
       cmds.push(await rexec('chroot  ' + this.settings.work_dir.merged + ' chown ' + this.settings.config.user_opt + ':' + this.settings.config.user_opt + ' /home/' + this.settings.config.user_opt + ' -R', verbose))
     } else {
       cmds.push(await rexec('chroot  ' + this.settings.work_dir.merged + ' chown ' + this.settings.config.user_opt + ':users' + ' /home/' + this.settings.config.user_opt + ' -R', verbose))
     }
 
     // Aggiungo utente a sudo o wheel
-    if (Pacman.distro().familyId !== 'debian') {
+    if (this.familyId !== 'debian') {
       cmds.push(await rexec(`chroot ${this.settings.work_dir.merged} usermod -aG wheel ${this.settings.config.user_opt}`, verbose))
     } else {
       cmds.push(await rexec(`chroot ${this.settings.work_dir.merged} usermod -aG sudo ${this.settings.config.user_opt}`, verbose))
@@ -1148,7 +1166,7 @@ export default class Ovary {
     /**
      * Cambio passwd root
      */
-    if (Pacman.distro().familyId !== 'fedora') {
+    if (this.familyId !== 'fedora') {
       cmds.push(await rexec(`chroot ${this.settings.work_dir.merged} echo root:${this.settings.config.root_passwd} | chroot ${this.settings.work_dir.merged} chpasswd `, verbose))
     }
   }
