@@ -120,7 +120,6 @@ export default class Incubator {
        * Manjaro
        */
       case 'rolling': {
-        console.log( `manjaro qonos`)
         const rolling = new Buster(this.installer, this.remix, this.distro, release, this.user_opt, this.verbose)
         await rolling.create()
 
