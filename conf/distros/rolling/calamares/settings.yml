@@ -1,5 +1,4 @@
-# Archlinux
-# settings
+# Archlinux settings
 ---
 # "local" is LIBDIR/calamares/modules with settings in SHARE/calamares/modules
 modules-search: [local, /usr/lib/calamares/modules, /usr/share/calamares]
@@ -52,7 +51,7 @@ sequence:
       #- initramfscfg
       #- initramfs
       - removeuser
-      - shellprocess@eggs-cleanup
+      #- shellprocess@eggs-cleanup
       #- remove-link
       #- sources-yolk-unmount
       - umount
