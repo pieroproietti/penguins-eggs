@@ -94,6 +94,4 @@ data/*
 recovery/*
 
 # archlinux
-/var/cache/pacman/pkg/*
-
-
+var/cache/pacman/pkg/*
