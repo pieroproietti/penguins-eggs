@@ -183,7 +183,6 @@ export default class Ovary {
       await this.bindLiveFs(verbose)
       await this.cleanUsersAccounts()
       await this.createUserLive(verbose)
-      console.log('finished createUser!')
 
       // const displaymanager = require('./incubation/fisherman-helper/displaymanager').displaymanager
       if (Pacman.isInstalledGui()) {
