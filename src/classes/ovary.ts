@@ -183,6 +183,7 @@ export default class Ovary {
       await this.bindLiveFs(verbose)
       await this.cleanUsersAccounts()
       await this.createUserLive(verbose)
+      console.log('finished createUser!')
 
       // const displaymanager = require('./incubation/fisherman-helper/displaymanager').displaymanager
       if (Pacman.isInstalledGui()) {
@@ -1141,23 +1142,20 @@ export default class Ovary {
     cmds.push(await rexec('chroot ' + this.settings.work_dir.merged + ' useradd ' + this.settings.config.user_opt + ' --home-dir /home/' + this.settings.config.user_opt + ' --shell /bin/bash ', verbose))
     cmds.push(await rexec('chroot ' + this.settings.work_dir.merged + ' echo ' + this.settings.config.user_opt + ':' + this.settings.config.user_opt_passwd + '| chroot ' + this.settings.work_dir.merged + ' chpasswd', verbose))
 
-    cmds.push(await rexec('chroot  ' + this.settings.work_dir.merged + ' cp /etc/skel/. /home/' + this.settings.config.user_opt + ' -R', verbose))
+    // cmds.push(await rexec('chroot  ' + this.settings.work_dir.merged + ' cp /etc/skel/. /home/' + this.settings.config.user_opt + ' -R', verbose))
     cmds.push(await rexec('chroot  ' + this.settings.work_dir.merged + ' chown ' + this.settings.config.user_opt + ':users' + ' /home/' + this.settings.config.user_opt + ' -R', verbose))
 
     if (this.familyId === 'debian') {
-      // Aggiungo utente a sudo se debian
+      // add user live to sudo
       cmds.push(await rexec(`chroot ${this.settings.work_dir.merged} usermod -aG sudo ${this.settings.config.user_opt}`, verbose))
     } else if (this.familyId === 'archlinux') {
-      // aggiungo utente ad wheel e autologin
+      // adduser live to wheel and autologin
       cmds.push(await rexec(`chroot ${this.settings.work_dir.merged} usermod -aG wheel ${this.settings.config.user_opt}`, verbose))
       cmds.push(await rexec(`chroot ${this.settings.work_dir.merged} usermod -aG autologin ${this.settings.config.user_opt}`, verbose))
     }
 
-    /**
-     * Cambio passwd root
-     */
-    if (this.familyId !== 'fedora') {
-      cmds.push(await rexec(`chroot ${this.settings.work_dir.merged} echo root:${this.settings.config.root_passwd} | chroot ${this.settings.work_dir.merged} chpasswd `, verbose))
+    if (this.familyId === 'debian' || this.familyId === 'archlinux') {
+      cmds.push(await rexec('chroot ' + this.settings.work_dir.merged + ' echo root:' + this.settings.config.root_passwd + '| chroot ' + this.settings.work_dir.merged + ' chpasswd', verbose))
     }
   }
 
@@ -1195,9 +1193,9 @@ export default class Ovary {
     // flags
     if (myAddons.adapt) {
       // if (Pacman.packageIsInstalled('lxde-core') || Pacman.packageIsInstalled('deepin-desktop-base') || Pacman.packageIsInstalled('mate-desktop') || Pacman.packageIsInstalled('ubuntu-mate-core') || Pacman.packageIsInstalled('xfce4')) {
-        const dirAddon = path.resolve(__dirname, `../../addons/eggs/adapt/`)
-        await exec (`cp ${dirAddon}/applications/eggs-adapt.desktop ${this.settings.work_dir.merged}/usr/share/applications/`, echo)
-        await exec(`cp ${dirAddon}/bin/eggs-adapt.sh ${this.settings.work_dir.merged}/usr/local/bin/`, echo)
+      const dirAddon = path.resolve(__dirname, `../../addons/eggs/adapt/`)
+      shx.cp(`${dirAddon}/applications/eggs-adapt.desktop`, `${this.settings.work_dir.merged}/usr/share/applications/`)
+      shx.cp(`${dirAddon}/bin/eggs-adapt.sh`, `${this.settings.work_dir.merged}/usr/local/bin/`)
       // }
     }
 
