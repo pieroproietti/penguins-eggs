@@ -1,13 +1,8 @@
-# Debian buster, Debian bullseye, Devuan beowulf
+# Archlinux
 # settings
 ---
 # "local" is LIBDIR/calamares/modules with settings in SHARE/calamares/modules
-modules-search: [local, /usr/lib/calamares/modules]
-
-#instances:
-#- id:       owncloud
-#  module:   webview
-#  config:   owncloud.conf
+modules-search: [local, /usr/lib/calamares/modules, /usr/share/calamares]
 
 instances:
 - id:       eggs-cleanup
@@ -37,8 +32,8 @@ sequence:
       - partition
       - mount
       - unpackfs
-      - sources-yolk
-      {{hasSystemd}}machineid
+      # sources-yolk
+      #{{hasSystemd}}machineid
       - fstab
       - locale
       - keyboard
@@ -47,19 +42,19 @@ sequence:
       {{hasDisplaymanager}}displaymanager 
       - networkcfg
       - hwclock
-      {{hasSystemd}}services-systemd 
-      - bootloader-config
+      #{{hasSystemd}}services-systemd 
+      #- bootloader-config
       - grubcfg
       - bootloader
       - packages
       - luksbootkeyfile
       - plymouthcfg
-      - initramfscfg
-      - initramfs
+      #- initramfscfg
+      #- initramfs
       - removeuser
       - shellprocess@eggs-cleanup
-      - remove-link
-      - sources-yolk-unmount
+      #- remove-link
+      #- sources-yolk-unmount
       - umount
 
   # Phase 3 - postinstall.
