@@ -1148,8 +1148,9 @@ export default class Ovary {
       // Aggiungo utente a sudo se debian
       cmds.push(await rexec(`chroot ${this.settings.work_dir.merged} usermod -aG sudo ${this.settings.config.user_opt}`, verbose))
     } else if (this.familyId === 'archlinux') {
-      // aggiungo utente a wheel 
+      // aggiungo utente ad wheel e autologin
       cmds.push(await rexec(`chroot ${this.settings.work_dir.merged} usermod -aG wheel ${this.settings.config.user_opt}`, verbose))
+      cmds.push(await rexec(`chroot ${this.settings.work_dir.merged} usermod -aG autologin ${this.settings.config.user_opt}`, verbose))
     }
 
     /**
@@ -1192,14 +1193,14 @@ export default class Ovary {
     }
 
     // flags
-    if (
-      myAddons.adapt && // Per lxde, lxqt, deepin, mate, xfce4
-      (Pacman.packageIsInstalled('lxde-core') || Pacman.packageIsInstalled('deepin-desktop-base') || Pacman.packageIsInstalled('mate-desktop') || Pacman.packageIsInstalled('ubuntu-mate-core') || Pacman.packageIsInstalled('xfce4'))
-    ) {
-      const dirAddon = path.resolve(__dirname, '../../addons/eggs/adapt/')
-      shx.cp(`${dirAddon}/applications/eggs-adapt.desktop`, `${this.settings.work_dir.merged}/usr/share/applications/`)
-      shx.cp(`${dirAddon}/bin/penguins-adapt.sh`, `${this.settings.work_dir.merged}/usr/local/bin/`)
+    if (myAddons.adapt) {
+      if (Pacman.packageIsInstalled('lxde-core') || Pacman.packageIsInstalled('deepin-desktop-base') || Pacman.packageIsInstalled('mate-desktop') || Pacman.packageIsInstalled('ubuntu-mate-core') || Pacman.packageIsInstalled('xfce4')) {
+        const dirAddon = path.resolve(__dirname, `../../addons/eggs/adapt/`)
+        await exec (`cp ${dirAddon}/applications/eggs-adapt.desktop ${this.settings.work_dir.merged}/usr/share/applications/`, echo)
+        await exec(`cp ${dirAddon}/bin/eggs-adapt.sh ${this.settings.work_dir.merged}/usr/local/bin/`, echo)
+      }
     }
+
 
     if (myAddons.ichoice) {
       installerUrl = 'eggs-ichoice.desktop'
