@@ -14,6 +14,7 @@ import { Jessie } from './distros/jessie'
 import { Buster } from './distros/buster'
 import { Focal } from './distros/focal'
 import { Bionic } from './distros/bionic'
+import { Rolling } from './distros/rolling'
 
 import Pacman from '../pacman'
 import { installer } from './installer'
@@ -120,7 +121,7 @@ export default class Incubator {
        * Manjaro
        */
       case 'rolling': {
-        const rolling = new Buster(this.installer, this.remix, this.distro, release, this.user_opt, this.verbose)
+        const rolling = new Rolling(this.installer, this.remix, this.distro, release, this.user_opt, this.verbose)
         await rolling.create()
 
         break
