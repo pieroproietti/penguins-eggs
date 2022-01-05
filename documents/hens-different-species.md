@@ -38,7 +38,7 @@ We try to install a light version of Debian
 
 # Prepare a manjaro hen
 We try to install a light version on manjaro
-* install iso/manjaro-xfce-21.2.0-211220-linux515.iso
+* install manjaro-xfce-21.2.1-220103-linux515.iso
 
 ## Addind developing tools
 * install code: ```sudo pacman -S vscode```
@@ -46,13 +46,22 @@ We try to install a light version on manjaro
 * install node: ```sudo pacman -S "nodejs=16.13.1"``` I choose version 16.13.1 just to be pair with Debian hen
 * install npm: ```sudo pacman -S npm```
 
-## Downloading mkinitcpio-squashfs
-*  ```git clone https://github,com/pieroproietti/mkinitcpio-squashfs```
+## Downloading mkinitcpio-eggs-squashfs
+* ```git clone https://gitlab.manjaro.org/ste74/mkinitcpio-eggs-squashfs-git```
 
-## Downloading 
+```cd mkinitcpio-eggs-squashfs```
+```makepkg -i```
+
+
+## Downloading eggs
+* ```git clone https://gitlab.manjaro.org/ste74/penguins-eggs-dev```
+* ```cd penguins-eggs```
+* ```makepkg -i```
+
+## Original repositories
+You can use the sources too:
 * ```git clone https://gitlab.manjaro.org/tools/development-tools/manjaro-tools/```
-
-You must copy the folder ```initcpio``` in ```/usr/lib/initcpio``` to get ```miso```, ```miso_loop_mnt``` used in mkinitcpio configuration.
+* ```git clone https://github,com/pieroproietti/mkinitcpio-squashfs```
 
 * continue with [downloading eggs form repo](#downloading-eggs-from-repo)
 
