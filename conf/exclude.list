@@ -93,7 +93,7 @@ var/cache/brightness-settings-cache/*
 data/*
 recovery/*
 
-
-
+# archlinux
+/var/cache/pacman/pkg/*
 
 
