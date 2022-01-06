@@ -59,9 +59,9 @@ We try to install a light version on manjaro
 * ```makepkg -i```
 
 ## Original repositories
-You can use the sources too:
-* ```git clone https://gitlab.manjaro.org/tools/development-tools/manjaro-tools/```
+You can use eggs from sources too:
 * ```git clone https://github,com/pieroproietti/mkinitcpio-squashfs```
+* ```git clone https://github,com/pieroproietti/penguins-eggs/```
 
 * continue with [downloading eggs form repo](#downloading-eggs-from-repo)
 
