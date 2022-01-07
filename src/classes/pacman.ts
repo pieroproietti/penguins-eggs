@@ -435,14 +435,13 @@ export default class Pacman {
    * @param verbose
    */
   static async autocompleteInstall(verbose = false) {
-    if (Pacman.packageIsInstalled('bash-completion')) {
-      if (!fs.existsSync('/etc/bash_completion.d/')) {
-        Utils.warning('/etc/bash_completion.d/ NOT exists')
-        await exec('mkdir /etc/bash_completion.d/')
-      } else [Utils.warning('/etc/bash_completion.d/ exists')]
-      await exec(`cp ${__dirname}/../../scripts/eggs.bash /etc/bash_completion.d/`)
-      if (verbose) {
-        console.log('autocomplete installed...')
+    if (this.distro().familyId === 'debian') {
+      if (Pacman.packageIsInstalled('bash-completion')) {
+        await exec(`cp ${__dirname}/../../scripts/eggs.bash /etc/bash_completion.d/`)
+      }
+    } else if (this.distro().familyId === 'archlinux') {
+      if (Pacman.packageIsInstalled('bash-completion')) {
+        await exec(`cp ${__dirname}/../../scripts/eggs.bash /usr/share/bash-completion/completions/`)
       }
     }
   }
