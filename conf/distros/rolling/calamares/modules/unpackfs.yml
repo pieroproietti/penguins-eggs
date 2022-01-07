@@ -1,7 +1,12 @@
 # Debian Buster
 # unpackfs
+/run/miso/bootmnt/live/x86_64/livefs.sfs
+cd live
+mkdir x86_64
+ln -s ../filesystem.squashfs ./x86_64/livefs.sfs
+source=/run/miso/bootmnt/live/filesystem.squashfs
 ---
 unpack:
-    -   source: {{source}}
+    -   source: /run/miso/bootmnt/live/filesystem.squashfs
         sourcefs: "squashfs"
         destination: ""
