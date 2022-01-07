@@ -274,7 +274,7 @@ export default class Ovary {
        */
       if (this.familyId === 'archlinux') {
         await exec (`mkdir ${this.settings.work_dir.pathIso}/live/x86_64`, echo)
-        await exec (`ln -s ${this.settings.work_dir.pathIso}/live/filesystem.squashfs ${this.settings.work_dir.pathIso}/live/x86_64/livefs.sfs`, echo)
+        await exec (`ln ${this.settings.work_dir.pathIso}/live/filesystem.squashfs ${this.settings.work_dir.pathIso}/live/x86_64/livefs.sfs`, echo)
       }
       await this.makeIso(xorrisoCommand, scriptOnly, verbose)
     }
@@ -657,7 +657,7 @@ export default class Ovary {
     let kernel_parameters = `boot=live components locales=${process.env.LANG}`
     let volid = Utils.getVolid(this.settings.remix.name)
     if (this.familyId === "archlinux") {
-      kernel_parameters = `misobasedir=live misolabel={{{volid}}} boot=live locales=${process.env.LANG}`
+      kernel_parameters = `misobasedir=live misolabel=${volid} boot=live locales=${process.env.LANG}`
     }
 
     const template = fs.readFileSync(isolinuxTemplate, 'utf8')
