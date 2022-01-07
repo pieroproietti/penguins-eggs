@@ -1162,7 +1162,7 @@ export default class Ovary {
     } else if (this.familyId === 'archlinux') {
       // adduser live to wheel and autologin
       cmds.push(await rexec(`chroot ${this.settings.work_dir.merged} usermod -aG wheel ${this.settings.config.user_opt}`, verbose))
-      // cmds.push(await rexec(`chroot ${this.settings.work_dir.merged} if [ $(getent group autologin) ]; then usermod -aG autologin ${this.settings.config.user_opt}`, verbose))
+      // Stefano: commenta o aggiungi un patch per l'autologin in gnome, forse è meglio che aggiungi il gruppo autologin per risolvere
       cmds.push(await rexec(`chroot ${this.settings.work_dir.merged} usermod -aG autologin ${this.settings.config.user_opt}`, verbose))
     }
 
