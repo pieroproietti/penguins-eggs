@@ -1163,6 +1163,7 @@ export default class Ovary {
       // adduser live to wheel and autologin
       cmds.push(await rexec(`chroot ${this.settings.work_dir.merged} usermod -aG wheel ${this.settings.config.user_opt}`, verbose))
       // Stefano: commenta o aggiungi un patch per l'autologin in gnome, forse è meglio che aggiungi il gruppo autologin per risolvere
+      cmds.push(await rexec(`chroot ${this.settings.work_dir.merged} test $(grep "autologin" /etc/group) || groupadd -r autologin, verbose))
       cmds.push(await rexec(`chroot ${this.settings.work_dir.merged} usermod -aG autologin ${this.settings.config.user_opt}`, verbose))
     }
 
