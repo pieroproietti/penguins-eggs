@@ -427,7 +427,7 @@ class Distro implements IDistro {
       this.mountpointSquashFs = '/run/live/medium/live/filesystem.squashfs'
     }
     if (this.familyId === "archlinux") {
-      // ln -s /run/media/live/xfce/ /run/live/medium
+      this.mountpointSquashFs="/run/miso/bootmnt/live/filesystem.squashfs"
     }
 
     /**
