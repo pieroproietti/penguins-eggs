@@ -1,0 +1,12 @@
+post_install() {
+
+#Link at the executable
+ln -sf /usr/lib/penguins-eggs/bin/run /usr/bin/eggs
+
+}
+
+post_upgrade() {
+
+post_install
+
+}
