@@ -122,6 +122,8 @@ export default class Ovary {
    * @param basename
    */
   async produce(backup = false, scriptOnly = false, yolkRenew = false, release = false, myAddons: IMyAddons, verbose = false) {
+    const echo = Utils.setEcho(verbose)
+
     if (this.familyId === 'debian') {
       const yolk = new Repo()
       if (!yolk.exists()) {
@@ -266,6 +268,14 @@ export default class Ovary {
       }
 
       const xorrisoCommand = this.makeDotDisk(backup, verbose)
+
+      /**
+       * patch to emulate miso archilinux
+       */
+      if (this.familyId === 'archlinux') {
+        await exec (`mkdir ${this.settings.work_dir.pathIso}/live/x86_64`, echo)
+        await exec (`ln ${this.settings.work_dir.pathIso}/live/filesystem.squashfs ${this.settings.work_dir.pathIso}/live/x86_64/livefs.sfs`, echo)
+      }
       await this.makeIso(xorrisoCommand, scriptOnly, verbose)
     }
   }
@@ -645,8 +655,9 @@ export default class Ovary {
     }
 
     let kernel_parameters = `boot=live components locales=${process.env.LANG}`
+    let volid = Utils.getVolid(this.settings.remix.name)
     if (this.familyId === "archlinux") {
-      kernel_parameters = `boot=live squashfs=LABEL=${Utils.getVolid(this.settings.remix.name)}:/live/filesystem.squashfs locales=${process.env.LANG}`
+      kernel_parameters = `misobasedir=live misolabel=${volid} boot=live locales=${process.env.LANG}`
     }
 
     const template = fs.readFileSync(isolinuxTemplate, 'utf8')
@@ -1151,6 +1162,7 @@ export default class Ovary {
     } else if (this.familyId === 'archlinux') {
       // adduser live to wheel and autologin
       cmds.push(await rexec(`chroot ${this.settings.work_dir.merged} usermod -aG wheel ${this.settings.config.user_opt}`, verbose))
+      // Stefano: commenta o aggiungi un patch per l'autologin in gnome, forse è meglio che aggiungi il gruppo autologin per risolvere
       cmds.push(await rexec(`chroot ${this.settings.work_dir.merged} usermod -aG autologin ${this.settings.config.user_opt}`, verbose))
     }
 
