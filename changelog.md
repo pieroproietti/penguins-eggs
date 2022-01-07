@@ -18,6 +18,12 @@ You can follow the project also consulting the [commit history](https://github.c
 ## Changelog
 Versions are listed on reverse order, the first is the last one.
 
+### eggs-9.0.1
+The first version of eggs fully functional on Debian, Devuan, Ubuntu and... Manjaro!!! And soon will come other distros of the Arch Linux family.
+
+### eggs-9.0.0
+* An Epiphany present! 
+
 ### eggs-9.0.0-BETA
 * A Christmas present! 
 
