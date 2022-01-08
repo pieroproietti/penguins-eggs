@@ -36,8 +36,16 @@ It's safe and reliable. Thanks to a conservative approach to software updates, a
 * **tricia** - Linux Mint 19.3 (based on Ubuntu bionic)
 * **ulyana** - Linux Mint 20 (based on Ubuntu focal)
 * **ulyssa** - Linux Mint 20.1 (based on Ubuntu focal)
+* **xfce** - Linux Mint 19.3 (based on Ubuntu bionic), xfce (amd64 and i386)
+
+## More informations:
+
+* Repository: [penguins-eggs](https://github.com/pieroproietti/penguins-eggs)
+* Blog: [penguins-eggs](https://penguins-eggs.net)
+
+* You can find more informations on this Linux distro at: [Linux Mint](https://linuxmint.com/).
 
 
 # Disclaim
-__Please note what this project is in no way connected to Linux Mint in any official way, it’s just my personal experiment__.
+__Please note what this project is in no way connected to the original distro in any official way, it’s just my personal experiment.__
 

@@ -49,7 +49,7 @@ No need other configurations, penguins-eggs are battery included or better, as i
 
 ## More informations
 
-You can find more informations at [ufficiozero](https://www.ufficiozero.org/).
+You can find more informations at [ubuntu](https://ubuntu.com/).
 
 # Disclaim
-__Please note what this project is in no way connected to Ubuntu in any official way, it’s just my personal experiment__.
+__Please note what this project is in no way connected to the original distro in any official way, it’s just my personal experiment.__

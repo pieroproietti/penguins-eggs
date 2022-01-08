@@ -26,6 +26,13 @@ All ISOs are based on Debian bookworm
 * **kde** - it's not naked, but just dressed with kde and conquetor. 
 * **waydroid** - it's not naked, but just dressed with kde and waydroid. 
 
+## More informations:
+
+* Repository: [penguins-eggs](https://github.com/pieroproietti/penguins-eggs)
+* Blog: [penguins-eggs](https://penguins-eggs.net)
+
+* You can find more informations on this Linux distro at: [Debian](https://debian.org/).
+
 # Disclaim
-__Please note what this project is in no way connected to Debian in any official way, it’s just my personal experiment__.
+__Please note what this project is in no way connected to the original distro in any official way, it’s just my personal experiment.__
 

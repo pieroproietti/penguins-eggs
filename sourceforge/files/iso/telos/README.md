@@ -30,6 +30,12 @@ Becouse I publish three version of eggs for AMD63, Armel and i386 and the shorte
 Both this editions: x64 and i386 are not so much optimized like the original, I use them just to code, compile and remaster them to test eggs.
 But I have an old ASUS netbook with 1GB RAM, probably - first or late - I will find time to adapt the 386 version on it.
 
+## More informations:
+
+* Repository: [penguins-eggs](https://github.com/pieroproietti/penguins-eggs)
+* Blog: [penguins-eggs](https://penguins-eggs.net)
+
+* You can find more informations on this Linux distro at: [TeLOS](https://sourceforge.net/projects/teloslinux/).
 
 # Disclaim
-__Please note what this project is in no way connected to TeLOS in any official way, it’s just my personal experiment__.
+__Please note what this project is in no way connected to the original distro in any official way, it’s just my personal experiment.__

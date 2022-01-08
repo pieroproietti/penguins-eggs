@@ -10,31 +10,29 @@ penguins-eggs
 [![deb](https://img.shields.io/badge/deb-packages-orange)](https://sourceforge.net/projects/penguins-eggs/files/packages-deb)
 [![iso](https://img.shields.io/badge/iso-images-orange)](https://sourceforge.net/projects/penguins-eggs/files/iso)
 
-# Debian remastered ISOs
 
-All ISOs are based on Debian buster, Debian bullseye
+# Penguin's eggs remastered ISOs
 
 # user/password
 * ```live/evolution```
 * ```root/evolution```
 
-# Debian bullseye
+All ISOs include eggs, you can udate it with: ```sudo eggs update```.
 
-* **naked** - just the juice, without GUI. You can start here to build your revolution!
-* **xfce** - it's not naked, but just dressed with xfce4 and firefox. 
-* **mate** - it's not naked, but just dressed with mate and firefox. 
-* **gnome** - it's not naked, but just dressed with gnome and firefox. 
-* **kde** - it's not naked, but just dressed with kde and conquetor. 
-* **waydroid** - it's not naked, but just dressed with kde and waydroid. 
+# Manjaro Linux
+
+[Manjaro](https://manjaro.org/) is a professionally made operating system that is a suitable replacement for Windows or MacOS. Multiple Desktop Environments are available through our Official and Community editions.
+
+* **egg-of-manjarolinux-qonos-xfce** - remastered version from manjaro-xfce-21.2.1-220103-linux515.iso
 
 ## More informations:
 
 * Repository: [penguins-eggs](https://github.com/pieroproietti/penguins-eggs)
 * Blog: [penguins-eggs](https://penguins-eggs.net)
 
-* You can find more informations on this Linux distro at: [Debian](https://debian.org/).
+* You can find more informations on this Linux distro at: [manjaro](https://manjaro.org/).
 
 
-# Disclaim
-__Please note what this project is in no way connected to the original distro in any official way, it’s just my personal experiment.__
+Disclaim
 
+__Please note what this project is in no way connected to Linux Mint in any official way, it’s just my personal experiment.__

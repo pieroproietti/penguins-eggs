@@ -26,6 +26,13 @@ All ISOs include eggs, you can udate it with: ```sudo eggs update```.
 
 * **egg-of-ubuntu-focal-developer** - just a remaster of neon-developer with eggs and toold to develop eggs. You can install it, made your version and reproduce the iso again, and again, and again...
 
+## More informations:
+
+* Repository: [penguins-eggs](https://github.com/pieroproietti/penguins-eggs)
+* Blog: [penguins-eggs](https://penguins-eggs.net)
+
+* You can find more informations on this Linux distro at: [Devuan](https://https://neon.kde.org/).
+
 # Disclaim
-__Please note what this project is in no way connected to Devuan in any official way, it’s just my personal experiment__.
+__Please note what this project is in no way connected to the original distro in any official way, it’s just my personal experiment.__
 

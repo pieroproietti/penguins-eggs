@@ -83,6 +83,9 @@ I work mostly on Debian, so here you can find more personal versions and other e
 ## daedalus
 **xfce** with xfce
 
+# manjaro Linux
+**xfce** with xfce
+
 # Derivated distros
 
 ## Deepin
@@ -132,6 +135,11 @@ Feel free to contact [me](https://gitter.im/penguins-eggs-1/community?source=org
 ## Copyright and licenses
 Copyright (c) 2017, 2020 [Piero Proietti](https://penguins-eggs.net/about-me.html), dual licensed under the MIT or GPL Version 2 licenses.
 
-# Disclaim 
-__Please note what this project is in no way connected to the originals distros in any official way, they are just my personal experiments__.
+## More informations:
+
+* Repository: [penguins-eggs](https://github.com/pieroproietti/penguins-eggs)
+* Blog: [penguins-eggs](https://penguins-eggs.net)
+
+# Disclaim
+__Please note what this project is in no way connected to the original distro in any official way, it’s just my personal experiment.__
 

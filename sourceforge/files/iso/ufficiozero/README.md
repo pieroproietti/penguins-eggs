@@ -42,11 +42,13 @@ If you want to read some help how-to for this version, you can use this [link](h
 If you want to read some help how-to for this version, you can use this [link](https://wiki.ufficiozero.org/doku.php?id=vieste).
 
 
-## More informations
+## More informations:
 
-You can find more informations at [ufficiozero](https://www.ufficiozero.org/).
+* Repository: [penguins-eggs](https://github.com/pieroproietti/penguins-eggs)
+* Blog: [penguins-eggs](https://penguins-eggs.net)
+
+* You can find more informations on this Linux distro at: [ufficiozero](https://www.ufficiozero.org/).
 
 # Disclaim
-__I'm proud to be part of UfficioZero, but please note what this project is in no way connected to UfficioZero in any official way, they are mostly betas__.
-
+__Please note what this project is in no way connected to the original distro in any official way, it’s just my personal experiment.__
 

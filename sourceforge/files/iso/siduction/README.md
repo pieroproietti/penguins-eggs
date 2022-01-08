@@ -22,6 +22,12 @@ All ISOs are based on Siduction
 * **egg_of_siduction-xfce** 
 * **egg_of_siduction-kde**  
 
-# Disclaim
-__Please note what this project is in no way connected to Debian in any official way, it’s just my personal experiment__.
+## More informations:
 
+* Repository: [penguins-eggs](https://github.com/pieroproietti/penguins-eggs)
+* Blog: [penguins-eggs](https://penguins-eggs.net)
+
+* You can find more informations on this Linux distro at: [Siduction Linux](https://siduction.org/).
+
+# Disclaim
+__Please note what this project is in no way connected to the original distro in any official way, it’s just my personal experiment.__
