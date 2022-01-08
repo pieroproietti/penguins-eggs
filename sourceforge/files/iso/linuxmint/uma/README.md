@@ -28,5 +28,5 @@ All ISOs include eggs, you can udate it with: ```sudo eggs update```.
 You can find more informations at [Linux Mint](https://linuxmint.com/).
 
 # Disclaim
-__Please note what this project is in no way connected to Linux Mint in any official way, it’s just my personal experiment__.
+__Please note what this project is in no way connected to the original distro in any official way, it’s just my personal experiment.__
 

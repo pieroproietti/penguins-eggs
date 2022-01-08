@@ -25,17 +25,18 @@ In the pve and incubator versions, there is a pre-configured VM with a TinyCore 
 
 You can see the virtual machine running simply by logging in as root on proxmox and booting it even without installing the system.
 
-__Please note what this project is in no way connected to Proxmox VE in any official way, it’s just my personal experiment__.
-
-
 * **naked-ve** - just the juice, without GUI. You can start here to build your revolution! (amd64)
 
 * **pve** - it's not naked, but dressed with xfce4, developer's tools and virt-viewer (amd64)
 
 * **incubator** - it's full workstation for virtualization, with cinnamon, libreoffice, gimp and tools. (amd64)
 
-## More informations
-You can find more informations at [Proxmox VE wiki](https://pve.proxmox.com/wiki/Main_Page). 
+## More informations:
+
+* Repository: [penguins-eggs](https://github.com/pieroproietti/penguins-eggs)
+* Blog: [penguins-eggs](https://penguins-eggs.net)
+
+* You can find more informations on this Linux distro at: [Proxmox VE](https://www.proxmox.com/en/proxmox-ve).
 
 # Disclaim
-__Please note what this project is in no way connected to Proxmox in any official way, it’s just my personal experiment__.
+__Please note what this project is in no way connected to the original distro in any official way, it’s just my personal experiment.__

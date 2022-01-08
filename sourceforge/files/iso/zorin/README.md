@@ -25,9 +25,12 @@ All the ISOs include nodejs and eggs installed (.npm package), so you can update
 
 * **zorin-x64**  Just a remaster of Zorin-OS-15.3-core installable with calamares
 
-## More informations
+## More informations:
 
-You can find more informations at [Zorin OS](https://zorinos.com/).
+* Repository: [penguins-eggs](https://github.com/pieroproietti/penguins-eggs)
+* Blog: [penguins-eggs](https://penguins-eggs.net)
+
+* You can find more informations on this Linux distro at: [Zorin OS](https://zorinos.com/).
 
 # Disclaim
-__Please note what this project is in no way connected to Zorin OS in any official way, it’s just my personal experiment__.
+__Please note what this project is in no way connected to the original distro in any official way, it’s just my personal experiment.__

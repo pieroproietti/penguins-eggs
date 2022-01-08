@@ -30,6 +30,13 @@ Cercherò di apprenderne le capacità facendone uso con mio nipote.
 
 Piero Proietti <piero.proietti@gmail.com>
 
+## Informazioni:
+
+* Repository: [penguins-eggs](https://github.com/pieroproietti/penguins-eggs)
+* Blog: [penguins-eggs](https://penguins-eggs.net)
+
+* Potete trovare maggiori informazioni su questa distro su: [SiDiLinux](https://sodilinux.itd.cnr.it/).
+
 # Avviso
 
 __Si prega di notare che questo progetto di mera rimasterizzazione di Sodilinux non è in nessun modo ufficialmente connesso con Sodilinux. E' solo un mio esperimento personale__.

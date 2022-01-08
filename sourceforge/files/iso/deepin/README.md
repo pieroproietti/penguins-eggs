@@ -29,10 +29,13 @@ deepin is an elegant, easy to use and reliable domestic desktop operating system
 
 * **deepin** A remastered version of deepin20.
 
-## More informations
+## More informations:
 
-You can find more informations at [deepin](https://www.deepin.org/en/).
+* Repository: [penguins-eggs](https://github.com/pieroproietti/penguins-eggs)
+* Blog: [penguins-eggs](https://penguins-eggs.net)
+
+* You can find more informations on this Linux distro at: [deepin](https://www.deepin.org/en/).
 
 # Disclaim
-__Please note what this project is in no way connected to Deepin in any official way, it’s just my personal experiment__.
+__Please note what this project is in no way connected to the original distro in any official way, it’s just my personal experiment.__
 

@@ -25,6 +25,12 @@ All ISOs include eggs, you can udate it with: ```sudo eggs update```.
 * **egg-of-netrunner-core** - just a remaster of netrunner-core with eggs, unchanded. You can install it, made your version and reproduce the iso again, and again, and again...
 * **egg-of-netrunner-xoxo** - just a remaster of netrunner-xoxo with eggs, unchanded. You can install it, made your version and reproduce the iso again, and again, and again...
 
-# Disclaim
-__Please note what this project is in no way connected to Devuan in any official way, it’s just my personal experiment__.
+## More informations:
 
+* Repository: [penguins-eggs](https://github.com/pieroproietti/penguins-eggs)
+* Blog: [penguins-eggs](https://penguins-eggs.net)
+
+* You can find more informations on this Linux distro at: [netrunner linux](https://www.netrunner.com/).
+
+# Disclaim
+__Please note what this project is in no way connected to the original distro in any official way, it’s just my personal experiment.__
