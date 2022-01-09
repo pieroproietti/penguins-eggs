@@ -25,6 +25,13 @@ All ISOs include eggs, you can udate it with: ```sudo eggs update```.
 
 **beowulf**
 
+## More informations:
+
+* Repository: [penguins-eggs](https://github.com/pieroproietti/penguins-eggs)
+* Blog: [penguins-eggs](https://penguins-eggs.net)
+
+* You can find more informations on this Linux distro at: [Devuan](https://devuan.org/).
+
 # Disclaim
 __Please note what this project is in no way connected to Devuan in any official way, it’s just my personal experiment__.
 

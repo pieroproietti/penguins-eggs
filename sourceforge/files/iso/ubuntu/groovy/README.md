@@ -31,6 +31,12 @@ Ubuntu is a Linux distribution based on Debian mostly composed of free and open-
 # That's all Folks!
 No need other configurations, penguins-eggs are battery included or better, as in the real, live is inside! :-D
 
-## More informations
+## More informations:
 
-You can find more informations at [Ubuntu](https://www.ubuntu.com/).
+* Repository: [penguins-eggs](https://github.com/pieroproietti/penguins-eggs)
+* Blog: [penguins-eggs](https://penguins-eggs.net)
+
+* You can find more informations on this Linux distro at: [Ubuntu](https://ubuntu.com).
+
+# Disclaim
+__Please note what this project is in no way connected to the original distro in any official way, it’s just my personal experiment.__

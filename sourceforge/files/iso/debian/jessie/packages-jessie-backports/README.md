@@ -41,5 +41,5 @@ You must download and install the files listed in this directory
 ### that's all folks!
 
 # Disclaim
-__Please note what this project is in no way connected to Debian in any official way, it’s just my personal experiment__.
+__Please note what this project is in no way connected to the original distro in any official way, it’s just my personal experiment.__
 

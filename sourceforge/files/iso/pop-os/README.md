@@ -25,12 +25,12 @@ All the ISOs include nodejs and eggs installed (.npm package), so you can update
 
 * **pop-os_20.10_amd64_intel_4.iso**  Just a remaster of Pop!-OS 20.10 installabe with calamares
 
-__Please note what this project is in no way connected to system76 in any official way, it’s just my personal experiment__.
+## More informations:
 
-## More informations
+* Repository: [penguins-eggs](https://github.com/pieroproietti/penguins-eggs)
+* Blog: [penguins-eggs](https://penguins-eggs.net)
 
-You can find more informations at [system76](https://pop.system76.com/).
+* You can find more informations on this Linux distro at: [system76](https://pop.system76.com/).
 
 # Disclaim
-__Please note what this project is in no way connected to Pop!-OS in any official way, it’s just my personal experiment__.
-
+__Please note what this project is in no way connected to the original distro in any official way, it’s just my personal experiment.__

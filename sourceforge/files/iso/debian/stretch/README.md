@@ -40,7 +40,13 @@ and follow the instructions.
 
 __Note__ Be sure to work without risks, cli installer can delete all yours datas, can't coesist with others system, etc. Use at your own risk. Backup your data before to try and use only for old machines - for new ones use calamares - no warranties here.
 
+## More informations:
+
+* Repository: [penguins-eggs](https://github.com/pieroproietti/penguins-eggs)
+* Blog: [penguins-eggs](https://penguins-eggs.net)
+
+* You can find more informations on this Linux distro at: [Debian](https://debian.org/).
 
 # Disclaim
-__Please note what this project is in no way connected to Debian in any official way, it’s just my personal experiment__.
+__Please note what this project is in no way connected to the original distro in any official way, it’s just my personal experiment.__
 

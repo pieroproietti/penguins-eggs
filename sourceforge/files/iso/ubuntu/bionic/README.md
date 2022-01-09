@@ -28,9 +28,12 @@ Ubuntu is a Linux distribution based on Debian mostly composed of free and open-
 
 * **bionic** It's just a lubuntu 18.04 remastered with eggs, if you need more sophisticated version look at Linux Mint tricia.
 
-## More informations
+## More informations:
 
-You can find more informations at [Ubuntu](https://www.ubuntu.com/).
+* Repository: [penguins-eggs](https://github.com/pieroproietti/penguins-eggs)
+* Blog: [penguins-eggs](https://penguins-eggs.net)
+
+* You can find more informations on this Linux distro at: [Ubuntu](https://ubuntu.com).
 
 # Disclaim
-__Please note what this project is in no way connected to Ubuntu in any official way, it’s just my personal experiment__.
+__Please note what this project is in no way connected to the original distro in any official way, it’s just my personal experiment.__
