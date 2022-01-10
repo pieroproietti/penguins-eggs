@@ -36,6 +36,8 @@ It's safe and reliable. Thanks to a conservative approach to software updates, a
 * **tricia** - Linux Mint 19.3 (based on Ubuntu bionic)
 * **ulyana** - Linux Mint 20 (based on Ubuntu focal)
 * **ulyssa** - Linux Mint 20.1 (based on Ubuntu focal)
+* **uma** - Linux Mint 20.2 (based on Ubuntu focal)
+* **una** - Linux Mint 20.3 (based on Ubuntu focal)
 * **xfce** - Linux Mint 19.3 (based on Ubuntu bionic), xfce (amd64 and i386)
 
 ## More informations:
