@@ -122,12 +122,21 @@ export default class Xdg {
         }
       }
 
-      // gdm3 or gdm
-      if (Pacman.packageIsInstalled('gdm3') || Pacman.packageIsInstalled('gdm')) {
-        const gdm3Custom = `${chroot}/etc/gdm/custom.conf`
-        shx.sed('-i', 'AutomaticLoginEnable=False', 'AutomaticLoginEnable=True', gdm3Custom)
-        shx.sed('-i', `AutomaticLogin=${olduser}`, `AutomaticLogin=${newuser}`, gdm3Custom)
+      // gdm3 in ubuntu, gdm in manjaro
+      if (Pacman.packageIsInstalled('gdm3')) {
+        const gdm3Custom = `${chroot}/etc/gdm3/custom.conf`
+        if (fs.existsSync(gdm3Custom)) {
+          shx.sed('-i', 'AutomaticLoginEnable=False', 'AutomaticLoginEnable=True', gdm3Custom)
+          shx.sed('-i', `AutomaticLogin=${olduser}`, `AutomaticLogin=${newuser}`, gdm3Custom)
+        }
+      } else if (Pacman.packageIsInstalled('gdm')) {
+        const gdmCustom = `${chroot}/etc/gdm/custom.conf`
+        if (fs.existsSync(gdmCustom)) {
+          shx.sed('-i', 'AutomaticLoginEnable=False', 'AutomaticLoginEnable=True', gdmCustom)
+          shx.sed('-i', `AutomaticLogin=${olduser}`, `AutomaticLogin=${newuser}`, gdmCustom)
+        }
       }
+
     }
   }
 

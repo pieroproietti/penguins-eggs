@@ -1,0 +1,24 @@
+componentName: eggs
+welcomeStyleCalamares: true
+strings:
+  productName: EDUCAANDOS PLUSUNOFFICIAL
+  shortProductName: EducaAndOS plusunofficial
+  version: '2021-03-22'
+  shortVersion: '2021-03-22'
+  versionedName: EducaAndOS plusunofficial (2021-03-22)
+  shortVersionedName: EDUCAANDOS PLUSUNOFFICIAL 2021-03-22
+  bootloaderEntryName: EducaAndOS plusunofficial
+  productUrl: ''
+  supportUrl: ''
+  bugReportUrl: https://github.com/pieroproietti/penguins-eggs/issues
+  releaseNotesUrl: https://github.com/pieroproietti/penguins-eggs/changelog.md
+images:
+  productLogo: eggs-logo.png
+  productIcon: eggs-logo.png
+  productWelcome: welcome.png
+slideshowAPI: 1
+slideshow: show.qml
+style:
+  sidebarBackground: '#2c3133'
+  sidebarText: '#FFFFFF'
+  sidebarTextSelect: '#4d7079'

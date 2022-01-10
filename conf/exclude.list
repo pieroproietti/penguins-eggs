@@ -75,14 +75,18 @@ var/lib/sudo/*
 var/lib/udisks/*
 var/lib/urandom/*
 
-# Toglie tutto ad eccezione di: 
+# var/log: 
+# remove all with exception of:
 # apache2, clamav, pveprozy, samba, mysql
-var/log/!(apache2|clamav|pveproxy|samba|mysql|)
+svar/log/!(apache2|clamav|pveproxy|samba|mysql)
+
+# the follow lines remove all inside ther respective dirs:
 var/log/apache2/*
 var/log/clamav/*
 var/log/pveproxy/*
 var/log/samba/*
 var/log/mysql/*
+
 
 var/mail/*
 var/spool/mail/*
