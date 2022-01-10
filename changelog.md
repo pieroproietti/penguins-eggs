@@ -18,6 +18,9 @@ You can follow the project also consulting the [commit history](https://github.c
 ## Changelog
 Versions are listed on reverse order, the first is the last one.
 
+### eggs-9.0.3
+Added linuxmint 20.3 una
+
 ### eggs-9.0.2
 Just a little changement in splash boot and varius
 

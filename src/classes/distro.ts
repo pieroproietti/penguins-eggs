@@ -326,7 +326,8 @@ class Distro implements IDistro {
 
       case 'ulyana':
       case 'ulyssa':
-      case 'uma': {
+      case 'uma':
+      case 'una': {
         // LinuxMint 20.x
         this.distroLike = 'Ubuntu'
         this.versionLike = 'focal'
