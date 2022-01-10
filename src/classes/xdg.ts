@@ -122,10 +122,11 @@ export default class Xdg {
         }
       }
 
-      // gdm3
-      if (Pacman.packageIsInstalled('gdm3')) {
-        shx.sed('-i', 'AutomaticLoginEnable=False', 'AutomaticLoginEnable=True', `${chroot}/etc/gdm3/custom.conf`)
-        shx.sed('-i', `AutomaticLogin=${olduser}`, `AutomaticLogin=${newuser}`, `${chroot}/etc/gdm3/custom.conf`)
+      // gdm3 or gdm
+      if (Pacman.packageIsInstalled('gdm3') || Pacman.packageIsInstalled('gdm')) {
+        const gdm3Custom = `${chroot}//etc/gdm/custom.conf`
+        shx.sed('-i', 'AutomaticLoginEnable=False', 'AutomaticLoginEnable=True', gdm3Custom)
+        shx.sed('-i', `AutomaticLogin=${olduser}`, `AutomaticLogin=${newuser}`, gdm3Custom)
       }
     }
   }
