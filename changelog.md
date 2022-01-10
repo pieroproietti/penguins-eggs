@@ -19,7 +19,7 @@ You can follow the project also consulting the [commit history](https://github.c
 Versions are listed on reverse order, the first is the last one.
 
 ### eggs-9.0.3
-Added linuxmint 20.3 una
+Added linuxmint 20.3 una, added educaandos theme, bug fixex in gnome
 
 ### eggs-9.0.2
 Just a little changement in splash boot and varius
