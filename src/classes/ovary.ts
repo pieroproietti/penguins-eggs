@@ -273,8 +273,8 @@ export default class Ovary {
        * patch to emulate miso archilinux
        */
       if (this.familyId === 'archlinux') {
-        await exec (`mkdir ${this.settings.work_dir.pathIso}/live/x86_64`, echo)
-        await exec (`ln ${this.settings.work_dir.pathIso}/live/filesystem.squashfs ${this.settings.work_dir.pathIso}/live/x86_64/livefs.sfs`, echo)
+        await exec(`mkdir ${this.settings.work_dir.pathIso}/live/x86_64`, echo)
+        await exec(`ln ${this.settings.work_dir.pathIso}/live/filesystem.squashfs ${this.settings.work_dir.pathIso}/live/x86_64/livefs.sfs`, echo)
       }
       await this.makeIso(xorrisoCommand, scriptOnly, verbose)
     }
@@ -1159,6 +1159,18 @@ export default class Ovary {
     if (this.familyId === 'debian') {
       // add user live to sudo
       cmds.push(await rexec(`chroot ${this.settings.work_dir.merged} usermod -aG sudo ${this.settings.config.user_opt}`, verbose))
+
+      // educaandos
+      if (this.theme === 'educaandos') {
+        cmds.push(await rexec(`chroot ${this.settings.work_dir.merged} usermod -aG adm ${this.settings.config.user_opt}`, verbose))
+        cmds.push(await rexec(`chroot ${this.settings.work_dir.merged} usermod -aG cdrom ${this.settings.config.user_opt}`, verbose))
+        cmds.push(await rexec(`chroot ${this.settings.work_dir.merged} usermod -aG dip ${this.settings.config.user_opt}`, verbose))
+        cmds.push(await rexec(`chroot ${this.settings.work_dir.merged} usermod -aG plugdev ${this.settings.config.user_opt}`, verbose))
+        cmds.push(await rexec(`chroot ${this.settings.work_dir.merged} usermod -aG lpadmin ${this.settings.config.user_opt}`, verbose))
+        cmds.push(await rexec(`chroot ${this.settings.work_dir.merged} usermod -aG sambashare ${this.settings.config.user_opt}`, verbose))
+        cmds.push(await rexec(`chroot ${this.settings.work_dir.merged} usermod -aG admin ${this.settings.config.user_opt}`, verbose))
+      }
+
     } else if (this.familyId === 'archlinux') {
       // adduser live to wheel and autologin
       cmds.push(await rexec(`chroot ${this.settings.work_dir.merged} usermod -aG wheel ${this.settings.config.user_opt}`, verbose))

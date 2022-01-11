@@ -77,8 +77,8 @@ var/lib/urandom/*
 
 # var/log: 
 # remove all with exception of:
-# apache2, clamav, pveprozy, samba, mysql
-svar/log/!(apache2|clamav|pveproxy|samba|mysql)
+# apache2, clamav, pveprozy, samba, mysql, cga-update-manager
+var/log/!(apache2|clamav|pveproxy|samba|mysql|cga-update-manager)
 
 # the follow lines remove all inside ther respective dirs:
 var/log/apache2/*
@@ -86,6 +86,9 @@ var/log/clamav/*
 var/log/pveproxy/*
 var/log/samba/*
 var/log/mysql/*
+
+# We don't want remove nothing in /var/log/cga-update-manager
+#var/log/cga-update-manager
 
 
 var/mail/*
