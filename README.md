@@ -195,7 +195,7 @@ EXAMPLES
   $ eggs autocomplete --refresh-cache
 ```
 
-_See code: [@oclif/plugin-autocomplete](https://github.com/oclif/plugin-autocomplete/blob/v1.0.0/src/commands/autocomplete/index.ts)_
+_See code: [@oclif/plugin-autocomplete](https://github.com/oclif/plugin-autocomplete/blob/v1.1.1/src/commands/autocomplete/index.ts)_
 
 ## `eggs bro`
 
@@ -345,23 +345,23 @@ DESCRIPTION
 
 ## `eggs help [COMMAND]`
 
-display help for eggs
+Display help for eggs.
 
 ```
 USAGE
-  $ eggs help [COMMAND] [--all]
+  $ eggs help [COMMAND] [-n]
 
 ARGUMENTS
-  COMMAND  command to show help for
+  COMMAND  Command to show help for.
 
 FLAGS
-  --all  see all commands in CLI
+  -n, --nested-commands  Include all nested commands in the output.
 
 DESCRIPTION
-  display help for eggs
+  Display help for eggs.
 ```
 
-_See code: [@oclif/plugin-help](https://github.com/oclif/plugin-help/blob/v3.3.1/src/commands/help.ts)_
+_See code: [@oclif/plugin-help](https://github.com/oclif/plugin-help/blob/v5.1.10/src/commands/help.ts)_
 
 ## `eggs info`
 
