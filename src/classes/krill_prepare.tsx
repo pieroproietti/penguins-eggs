@@ -1,4 +1,3 @@
-import { Command, flags } from '@oclif/command'
 import React from 'react';
 import { render, RenderOptions } from 'ink'
 import Utils from './utils'
