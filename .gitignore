@@ -4,7 +4,10 @@
 /yarn.lock
 dist
 lib
-manpages/doc/man/eggs.1.gz
+manpages/doc/man/*
+# But not these files...
+!manpages/doc/man/eggs.roll.gz
+!manpages/doc/man/README.md
 node_modules
 packages-lock.json
 pb.yaml

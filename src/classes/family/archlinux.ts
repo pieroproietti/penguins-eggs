@@ -110,7 +110,8 @@ export default class Archlinux {
     verbose = true // serve per pacman
     const echo = Utils.setEcho(verbose)
     try {
-      await exec(`pacman -Sy ${array2spaced(this.packs4calamares)}`, echo)
+      // inserito flag --noconfirm
+      await exec(`pacman -Sy --noconfirm ${array2spaced(this.packs4calamares)}`, echo)
     } catch {
       Utils.error(`Archlinux.calamaresInstall() pacman -Sy ${array2spaced(this.packs4calamares)}`) // + e.error)
     }
