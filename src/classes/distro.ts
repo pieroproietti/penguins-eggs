@@ -370,14 +370,26 @@ class Distro implements IDistro {
 
         break
       }
-      case 'Harpy-Eagle': {
+      /**
+       * GARUDA
+       */
+       case 'Harpy-Eagle': {
         this.familyId = 'archlinux'
         this.distroLike = 'Arch'
         this.versionLike = 'rolling'
         break
       }
-
-      case 'Qonos': {
+      case 'White-tailed-eagle': {
+        this.familyId = 'archlinux'
+        this.distroLike = 'Arch'
+        this.versionLike = 'rolling'
+        break
+      }
+      
+      /**
+       * Manjaro
+       */
+       case 'Qonos': {
         this.familyId = 'archlinux'
         this.distroLike = 'Arch'
         this.versionLike = 'rolling'
