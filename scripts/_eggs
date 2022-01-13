@@ -1,0 +1,246 @@
+#compdef eggs
+
+_eggs () {
+  local _command_id=${words[2]}
+  local _cur=${words[CURRENT]}
+  local -a _command_flags=()
+
+  ## public cli commands & flags
+  local -a _all_commands=(
+"adapt:adapt monitor resolution for VM only"
+"bro:bro: waydroid helper"
+"calamares:calamares or install or configure it"
+"config:Configure and install prerequisites deb packages to run it"
+"dad:ask help from daddy - configuration helper"
+"export\:deb:export deb/docs/iso to the destination host"
+"export\:docs:remove and export docType documentation of the sources in the destination host"
+"export\:iso:export iso in the destination host"
+"info:re-thinking for a different approach to CLI"
+"install:command-line system installer - the egg became a penguin!"
+"kill:kill the eggs/free the nest"
+"mom:ask for mommy - gui helper"
+"produce:the system produce an egg: iso image of your system"
+"remove:remove eggs and others stuff"
+"tools\:clean:clean system log, apt, etc"
+"tools\:locales:install/clean locales"
+"tools\:skel:update skel from home configuration"
+"tools\:stat:get statistics from sourceforge"
+"tools\:yolk:configure eggs to install without internet"
+"update:update the penguin's eggs tool"
+"autocomplete:display autocomplete installation instructions"
+"help:Display help for <%= config.bin %>."
+"version:"
+  )
+
+  _set_flags () {
+    case $_command_id in
+adapt)
+  _command_flags=(
+    "--verbose[]"
+"--help[Show CLI help.]"
+  )
+;;
+
+bro)
+  _command_flags=(
+    "--help[Show CLI help.]"
+  )
+;;
+
+calamares)
+  _command_flags=(
+    "--help[Show CLI help.]"
+"--verbose[]"
+"--install[install calamares and it's dependencies]"
+"--final[final: remove calamares and all it's dependencies after the installation]"
+"--remove[remove calamares and it's dependencies]"
+"--theme=-[theme/branding for eggs and calamares]:"
+  )
+;;
+
+config)
+  _command_flags=(
+    "--nointeractive[assume yes]"
+"--clean[remove old configuration before to create new one]"
+"--help[Show CLI help.]"
+"--verbose[verbose]"
+  )
+;;
+
+dad)
+  _command_flags=(
+    "--help[Show CLI help.]"
+"--clean[remove old configuration before to create]"
+"--default[remove old configuration and force default]"
+"--verbose[]"
+  )
+;;
+
+export:deb)
+  _command_flags=(
+    "--help[Show CLI help.]"
+"--clean[remove old .deb before to copy]"
+"--amd64[export amd64 arch]"
+"--i386[export i386 arch]"
+"--armel[export armel arch]"
+"--arm64[export arm64 arch]"
+"--all[export all archs]"
+  )
+;;
+
+export:docs)
+  _command_flags=(
+    "--help[Show CLI help.]"
+  )
+;;
+
+export:iso)
+  _command_flags=(
+    "--help[Show CLI help.]"
+"--backup[export backup ISOs]"
+"--clean[delete old ISOs before to copy]"
+  )
+;;
+
+info)
+  _command_flags=(
+    "--verbose[]"
+"--help[Show CLI help.]"
+  )
+;;
+
+install)
+  _command_flags=(
+    "--cli[force use CLI installer]"
+"--help[Show CLI help.]"
+"--verbose[verbose]"
+  )
+;;
+
+kill)
+  _command_flags=(
+    "--help[Show CLI help.]"
+"--verbose[verbose]"
+  )
+;;
+
+mom)
+  _command_flags=(
+    "--help[Show CLI help.]"
+  )
+;;
+
+produce)
+  _command_flags=(
+    "--prefix=-[prefix]:"
+"--basename=-[basename]:"
+"--backup[backup mode]"
+"--fast[fast compression]"
+"--normal[normal compression]"
+"--max[max compression]"
+"--verbose[verbose]"
+"--yolk[-y force yolk renew]"
+"--script[script mode. Generate scripts to manage iso build]"
+"--help[Show CLI help.]"
+"--theme=-[theme for livecd, calamares branding and partitions]:"
+"--addons=-[addons to be used: adapt, ichoice, pve, rsupport]:"
+"--release[release: configure GUI installer to remove eggs and calamares after installation]"
+  )
+;;
+
+remove)
+  _command_flags=(
+    "--purge[remove eggs configurations files]"
+"--autoremove[remove eggs packages dependencies]"
+"--help[Show CLI help.]"
+"--verbose[verbose]"
+  )
+;;
+
+tools:clean)
+  _command_flags=(
+    "--help[Show CLI help.]"
+"--verbose[verbose]"
+  )
+;;
+
+tools:locales)
+  _command_flags=(
+    "--help[Show CLI help.]"
+"--reinstall[reinstall locales]"
+"--verbose[verbose]"
+  )
+;;
+
+tools:skel)
+  _command_flags=(
+    "--help[Show CLI help.]"
+"--user=-[user to be used]:"
+"--verbose[]"
+  )
+;;
+
+tools:stat)
+  _command_flags=(
+    "--help[Show CLI help.]"
+"--month[current month]"
+"--year[current year]"
+  )
+;;
+
+tools:yolk)
+  _command_flags=(
+    "--help[Show CLI help.]"
+"--verbose[]"
+  )
+;;
+
+update)
+  _command_flags=(
+    "--help[Show CLI help.]"
+"--apt[if eggs package is .deb, update from distro repositories]"
+"--basket[if eggs package is .deb, update from eggs basket]"
+"--verbose[verbose]"
+  )
+;;
+
+autocomplete)
+  _command_flags=(
+    "--refresh-cache[Refresh cache (ignores displaying instructions)]"
+  )
+;;
+
+help)
+  _command_flags=(
+    "--nested-commands[Include all nested commands in the output.]"
+  )
+;;
+
+version)
+  _command_flags=(
+    
+  )
+;;
+
+    esac
+  }
+  ## end public cli commands & flags
+
+  _complete_commands () {
+    _describe -t all-commands "all commands" _all_commands
+  }
+
+  if [ $CURRENT -gt 2 ]; then
+    if [[ "$_cur" == -* ]]; then
+      _set_flags
+    else
+      _path_files
+    fi
+  fi
+
+
+  _arguments -S '1: :_complete_commands' \
+                $_command_flags
+}
+
+_eggs
