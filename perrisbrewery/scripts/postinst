@@ -20,16 +20,22 @@ set -e
 
 case "$1" in
     configure)
-        # aggiungo bash completion
-        if [ ! -d "/etc/bash_completion.d/" ]; then
-            mkdir /etc/bash_completion.d/
+
+        # Adding bash-completion for eggs
+        if [ -d "/etc/bash_completion.d/" ]; then
+            if [ -f "/usr/lib/penguins-eggs/scripts/eggs.bash" ]; then
+                cp /usr/lib/penguins-eggs/scripts/eggs.bash /etc/bash_completion.d/
+            fi
+        fi    
+
+        # Adding zsh-completion for eggs
+        if [ -d "/usr/share/zsh/functions/Completion/Zsh/" ]; then
+            if [ -f "/usr/lib/penguins-eggs/scripts/_eggs" ]; then
+                cp /usr/lib/penguins-eggs/scripts/_eggs /usr/share/zsh/functions/Completion/Zsh/
+            fi
         fi
 
-        if [ -f "/usr/lib/penguins-eggs/scripts/eggs.bash" ]; then
-            cp /usr/lib/penguins-eggs/scripts/eggs.bash /etc/bash_completion.d/
-        fi
-
-        # aggiungo manuale
+        # Adding man page
         if [ ! -d "/usr/share/man/man1" ]; then
             mkdir /usr/share/man/man1 -p
         fi
