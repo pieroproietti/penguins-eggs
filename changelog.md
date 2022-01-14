@@ -18,6 +18,9 @@ You can follow the project also consulting the [commit history](https://github.c
 ## Changelog
 Versions are listed on reverse order, the first is the last one.
 
+### eggs-9.0.4
+Added bash/zsh autocomplete, manpages and post_remove in manjaro, added zsh autocomplete in Debian families
+
 ### eggs-9.0.3
 Added linuxmint 20.3 una, added educaandos theme, bug fixex in gnome
 
