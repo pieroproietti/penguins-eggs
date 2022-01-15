@@ -21,7 +21,7 @@ All ISOs include eggs, you can udate it with: ```sudo eggs update```.
 
 # Elementary 
 
-[Elementary]https://elementary.io/) The thoughtful, capable, and ethical replacement for Windows and macOS.
+[Elementary](https://elementary.io/) The thoughtful, capable, and ethical replacement for Windows and macOS.
 
 * **egg-of-elementary-jolnir-pantheon** - remastered version from lementaryos-6.1-stable.20211218-rc.iso 
 
