@@ -21,10 +21,17 @@ set -e
 case "$1" in
     configure)
 
-        # Adding bash-completion for eggs
+        # Adding bash-completion Debian/Devuan/Ubuntu /etc/bash_completion.d/
         if [ -d "/etc/bash_completion.d/" ]; then
             if [ -f "/usr/lib/penguins-eggs/scripts/eggs.bash" ]; then
                 cp /usr/lib/penguins-eggs/scripts/eggs.bash /etc/bash_completion.d/
+            fi
+        fi    
+
+        # Adding bash-completion elementary /usr/share/bash-completion/completions/
+        if [ -d "/usr/share/bash-completion/completions//" ]; then
+            if [ -f "/usr/lib/penguins-eggs/scripts/eggs.bash" ]; then
+                cp /usr/lib/penguins-eggs/scripts/eggs.bash /usr/share/bash-completion/completions/
             fi
         fi    
 
