@@ -5,7 +5,7 @@
  * author: Piero Proietti
  * mail: piero.proietti@gmail.com
  */
-
+ 
 /**
  * Debian 8 (jessie)
  * Debian 9 (stretch)
@@ -280,6 +280,14 @@ class Distro implements IDistro {
 
         break
       }
+
+      case `jolnir`: {
+        // Elementary
+        this.distroLike = 'Ubuntu'
+        this.versionLike = 'focal'
+
+        break
+      } 
 
       case 'roma': {
         // UfficioZero roma
