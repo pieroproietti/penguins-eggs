@@ -19,7 +19,7 @@ penguins-eggs
 
 All ISOs include eggs, you can udate it with: ```sudo eggs update```.
 
-# Manjaro Linux
+# Elementary 
 
 [Elementary]https://elementary.io/) The thoughtful, capable, and ethical replacement for Windows and macOS.
 
@@ -30,7 +30,7 @@ All ISOs include eggs, you can udate it with: ```sudo eggs update```.
 * Repository: [penguins-eggs](https://github.com/pieroproietti/penguins-eggs)
 * Blog: [penguins-eggs](https://penguins-eggs.net)
 
-* You can find more informations on this Linux distro at: [Elementary]https://elementary.io/).
+* You can find more informations on this Linux distro at: [Elementary](https://elementary.io/).
 
 
 Disclaim
