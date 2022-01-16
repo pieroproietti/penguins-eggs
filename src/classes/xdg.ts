@@ -93,7 +93,14 @@ export default class Xdg {
 
       // lightdm
       if (Pacman.packageIsInstalled('lightdm')) {
-        shx.sed('-i', `autologin-user=${olduser}`, `autologin-user=${newuser}`, `${chroot}/etc/lightdm/lightdm.conf`)
+        if (fs.existsSync(`${chroot}/etc/lightdm/lightdm.conf`)){
+          shx.sed('-i', `autologin-user=${olduser}`, `autologin-user=${newuser}`, `${chroot}/etc/lightdm/lightdm.conf`)
+        } else {
+          const autologin= `${chroot}/etc/lightdm/lightdm.conf`
+          const content = `[Seat:*]\nautologin-user=${newuser}`
+          fs.writeFileSync(autologin, content, 'utf-8')
+        }
+
       }
 
       // sddm
