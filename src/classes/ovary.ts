@@ -111,9 +111,6 @@ export default class Ovary {
       this.settings.listFreeSpace()
       if (await Utils.customConfirm('Select yes to continue...')) return true
     }
-
-
-
     return false
   }
 
@@ -1201,7 +1198,6 @@ export default class Ovary {
 
     /**
      * creazione dei link in /usr/share/applications
-     *
      */
     shx.cp(path.resolve(__dirname, '../../assets/penguins-eggs.desktop'), '/usr/share/applications/')
 
@@ -1215,7 +1211,11 @@ export default class Ovary {
       shx.cp(path.resolve(__dirname, '../../assets/penguins-krill.desktop'), `${this.settings.work_dir.merged}/usr/share/applications/`)
     }
 
-    // flags
+    /**
+     * flags
+     */
+
+    // adapt
     if (myAddons.adapt) {
       // if (Pacman.packageIsInstalled('lxde-core') || Pacman.packageIsInstalled('deepin-desktop-base') || Pacman.packageIsInstalled('mate-desktop') || Pacman.packageIsInstalled('ubuntu-mate-core') || Pacman.packageIsInstalled('xfce4')) {
       const dirAddon = path.resolve(__dirname, `../../addons/eggs/adapt/`)
@@ -1224,7 +1224,7 @@ export default class Ovary {
       // }
     }
 
-
+    // ichoice
     if (myAddons.ichoice) {
       installerUrl = 'eggs-ichoice.desktop'
       installerIcon = 'system-software-install'
@@ -1233,6 +1233,7 @@ export default class Ovary {
       shx.cp(`${dirAddon}/bin/eggs-ichoice.sh`, `${this.settings.work_dir.merged}/usr/local/bin/`)
     }
 
+    // pve
     if (myAddons.pve) {
       // Imposto service pve-lite
       const pve = new PveLive()
@@ -1243,6 +1244,7 @@ export default class Ovary {
       shx.cp(`${dirAddon}/applications/eggs-pve.desktop`, `${this.settings.work_dir.merged}/usr/share/applications/`)
     }
 
+    // rsupport
     if (myAddons.rsupport) {
       const dirAddon = path.resolve(__dirname, '../../addons/eggs/rsupport')
       shx.cp(`${dirAddon}/applications/eggs-rsupport.desktop`, `${this.settings.work_dir.merged}/usr/share/applications/`)
