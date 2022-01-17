@@ -37,6 +37,7 @@ import Repo from './yolk'
 import cliAutologin = require('../lib/cli-autologin')
 import { execSync } from 'node:child_process'
 import { displaymanager } from './incubation/fisherman-helper/displaymanager'
+import { DEFAULT_ECDH_CURVE } from 'tls'
 
 /**
  * Ovary:
@@ -1280,6 +1281,14 @@ export default class Ovary {
         if (myAddons.adapt) text += 'cp /usr/share/applications/eggs-adapt.desktop $DESKTOP\n'
         if (myAddons.pve) text += 'cp /usr/share/applications/eggs-pve.desktop $DESKTOP\n'
         if (myAddons.rsupport) text += 'cp /usr/share/applications/eggs-rsupport.desktop $DESKTOP\n'
+      }
+      
+      // enable desktop links in gnome
+      if(Pacman.packageIsInstalled('gdm3') || Pacman.packageIsInstalled('gdm')) {
+        text += `chmod a+x "$DESKTOP/penguins-eggs.desktop"\n`
+        text += `gio set "$DESKTOP/penguins-eggs.desktop" metadata::trusted true\n`
+        text += `chmod a+x "$DESKTOP/install-debian.desktop"\n`
+        text += `gio set "$DESKTOP/install-debian.desktop" metadata::trusted true\n`
       }
 
       fs.writeFileSync(script, text, 'utf8')
