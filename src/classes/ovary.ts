@@ -1284,11 +1284,22 @@ export default class Ovary {
       }
       
       // enable desktop links in gnome
+      /**
+       * test -f /usr/share/applications/penguins-eggs.desktop && cp /usr/share/applications/penguins-eggs.desktop $DESKTOP
+       * test -f "$DESKTOP/penguins-eggs.desktop" && chmod a+x "$DESKTOP/penguins-eggs.desktop"
+       * test -f "$DESKTOP/penguins-eggs.desktop" && gio set "$DESKTOP/penguins-eggs.desktop" metadata::trusted true
+       * test -f /usr/share/applications/install-debian.desktop && cp /usr/share/applications/install-debian.desktop $DESKTOP
+       * test -f "$DESKTOP/install-debian.desktop" && chmod a+x $DESKTOP/install-debian.desktop
+       * test -f "$DESKTOP/install-debian.desktop" && gio set "$DESKTOP/install-debian.desktop" metadata::trusted true
+       */
       if(Pacman.packageIsInstalled('gdm3') || Pacman.packageIsInstalled('gdm')) {
-        text += `chmod a+x "$DESKTOP/penguins-eggs.desktop"\n`
-        text += `gio set "$DESKTOP/penguins-eggs.desktop" metadata::trusted true\n`
-        text += `chmod a+x "$DESKTOP/install-debian.desktop"\n`
-        text += `gio set "$DESKTOP/install-debian.desktop" metadata::trusted true\n`
+        text +=`test -f /usr/share/applications/penguins-eggs.desktop && cp /usr/share/applications/penguins-eggs.desktop $DESKTOP\n`
+        text +=`test -f "$DESKTOP/penguins-eggs.desktop" && chmod a+x "$DESKTOP/penguins-eggs.desktop"\n`
+        text +=`test -f "$DESKTOP/penguins-eggs.desktop" && gio set "$DESKTOP/penguins-eggs.desktop" metadata::trusted true\n`
+        
+        text +=`test -f /usr/share/applications/install-debian.desktop && cp /usr/share/applications/install-debian.desktop $DESKTOP\n`
+        text +=`test -f "$DESKTOP/install-debian.desktop" && chmod a+x $DESKTOP/install-debian.desktop\n`
+        text +=`test -f "$DESKTOP/install-debian.desktop" && gio set "$DESKTOP/install-debian.desktop" metadata::trusted true\n`
       }
 
       fs.writeFileSync(script, text, 'utf8')
