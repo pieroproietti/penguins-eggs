@@ -18,6 +18,9 @@ You can follow the project also consulting the [commit history](https://github.c
 ## Changelog
 Versions are listed on reverse order, the first is the last one.
 
+### eggs-9.0.7
+autologin and enabling desktop links on gnome
+
 ### eggs-9.0.6
 Added Elemantary jolnir
 
