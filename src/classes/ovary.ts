@@ -37,6 +37,7 @@ import Repo from './yolk'
 import cliAutologin = require('../lib/cli-autologin')
 import { execSync } from 'node:child_process'
 import { displaymanager } from './incubation/fisherman-helper/displaymanager'
+import { DEFAULT_ECDH_CURVE } from 'tls'
 
 /**
  * Ovary:
@@ -111,9 +112,6 @@ export default class Ovary {
       this.settings.listFreeSpace()
       if (await Utils.customConfirm('Select yes to continue...')) return true
     }
-
-
-
     return false
   }
 
@@ -1201,7 +1199,6 @@ export default class Ovary {
 
     /**
      * creazione dei link in /usr/share/applications
-     *
      */
     shx.cp(path.resolve(__dirname, '../../assets/penguins-eggs.desktop'), '/usr/share/applications/')
 
@@ -1215,7 +1212,11 @@ export default class Ovary {
       shx.cp(path.resolve(__dirname, '../../assets/penguins-krill.desktop'), `${this.settings.work_dir.merged}/usr/share/applications/`)
     }
 
-    // flags
+    /**
+     * flags
+     */
+
+    // adapt
     if (myAddons.adapt) {
       // if (Pacman.packageIsInstalled('lxde-core') || Pacman.packageIsInstalled('deepin-desktop-base') || Pacman.packageIsInstalled('mate-desktop') || Pacman.packageIsInstalled('ubuntu-mate-core') || Pacman.packageIsInstalled('xfce4')) {
       const dirAddon = path.resolve(__dirname, `../../addons/eggs/adapt/`)
@@ -1224,7 +1225,7 @@ export default class Ovary {
       // }
     }
 
-
+    // ichoice
     if (myAddons.ichoice) {
       installerUrl = 'eggs-ichoice.desktop'
       installerIcon = 'system-software-install'
@@ -1233,6 +1234,7 @@ export default class Ovary {
       shx.cp(`${dirAddon}/bin/eggs-ichoice.sh`, `${this.settings.work_dir.merged}/usr/local/bin/`)
     }
 
+    // pve
     if (myAddons.pve) {
       // Imposto service pve-lite
       const pve = new PveLive()
@@ -1243,6 +1245,7 @@ export default class Ovary {
       shx.cp(`${dirAddon}/applications/eggs-pve.desktop`, `${this.settings.work_dir.merged}/usr/share/applications/`)
     }
 
+    // rsupport
     if (myAddons.rsupport) {
       const dirAddon = path.resolve(__dirname, '../../addons/eggs/rsupport')
       shx.cp(`${dirAddon}/applications/eggs-rsupport.desktop`, `${this.settings.work_dir.merged}/usr/share/applications/`)
@@ -1278,6 +1281,14 @@ export default class Ovary {
         if (myAddons.adapt) text += 'cp /usr/share/applications/eggs-adapt.desktop $DESKTOP\n'
         if (myAddons.pve) text += 'cp /usr/share/applications/eggs-pve.desktop $DESKTOP\n'
         if (myAddons.rsupport) text += 'cp /usr/share/applications/eggs-rsupport.desktop $DESKTOP\n'
+      }
+      
+      // enable desktop links in gnome
+      if(Pacman.packageIsInstalled('gdm3') || Pacman.packageIsInstalled('gdm')) {
+        text += `chmod a+x "$DESKTOP/penguins-eggs.desktop"\n`
+        text += `gio set "$DESKTOP/penguins-eggs.desktop" metadata::trusted true\n`
+        text += `chmod a+x "$DESKTOP/install-debian.desktop"\n`
+        text += `gio set "$DESKTOP/install-debian.desktop" metadata::trusted true\n`
       }
 
       fs.writeFileSync(script, text, 'utf8')
