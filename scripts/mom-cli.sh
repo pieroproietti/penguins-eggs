@@ -1,6 +1,7 @@
 #!/bin/bash
 
 # Authors: Piero Proietti, Christopher Hopp
+# xdg-settings get default-web-browser
 
 ##
 # eggs dialog cli
@@ -159,18 +160,18 @@ function documentation {
 
 ################################
 function documentation_book {
-   sensible-browser "https://penguins-eggs.net/book/italiano"
+   xdg-open "https://penguins-eggs.net/book/italiano"
 }
 
 ################################
 function documentation_book_translated {
    # sensible-editor sensible-pager
-   sensible-browser "https://translate.google.com/translate?hl=en&sl=auto&tl=en&u=https%3A%2F%2Fpenguins-eggs.net%2Fbook%2Fitaliano"
+   xdg-open "https://translate.google.com/translate?hl=en&sl=auto&tl=en&u=https%3A%2F%2Fpenguins-eggs.net%2Fbook%2Fitaliano"
 }
 
 ################################
 function documentation_site {
-   sensible-browser "https://penguins-eggs.net"
+   xdg-open "https://penguins-eggs.net"
 }
 
 ################################
@@ -181,7 +182,7 @@ function documentation_man {
 
 ################################
 function documentation_html {
-   sensible-browser "file:///usr/lib/penguins-eggs/manpages/doc/man/eggs.html"
+   xdg-open "file:///usr/lib/penguins-eggs/manpages/doc/man/eggs.html"
 }
 
 
