@@ -31,8 +31,8 @@ tools:skel --help --user --verbose
 tools:stat --help --month --year
 tools:yolk --help --verbose
 update --help --apt --basket --verbose
+help --nested-commands
 autocomplete --refresh-cache
-help --all
 version 
 "
 
