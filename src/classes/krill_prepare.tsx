@@ -48,12 +48,16 @@ import {IWelcome, ILocation, IKeyboard, IPartitions, IUsers} from '../interfaces
 
 export default class Krill {
 
-  async prepare() {
+  /**
+   * 
+   * @param cryped 
+   */
+  async prepare(cryped=false) {
 
     const oWelcome = await this.welcome()
     const oLocation = await this.location(oWelcome.language)
     const oKeyboard = await this.keyboard()
-    const oPartitions = await this.partitions()
+    const oPartitions = await this.partitions(cryped)
     const oUsers = await this.users()
     const oNetwork = await this.network()
     await this.summary(oLocation, oKeyboard, oPartitions)
@@ -148,11 +152,39 @@ export default class Krill {
   /**
   * PARTITIONS
   */
-  async partitions(): Promise<IPartitions> {
+  async partitions(crypted = false): Promise<IPartitions> {
     let installationDevice = '/dev/sda'
     let installationMode = 'standard'
     let filesystemType = 'ext4'
     let userSwapChoice = 'small'
+    if (crypted=true) {
+      // pvscan
+      // PV /dev/mapper/sda4_crypt   VG vgubuntu        lvm2 [30,76 GiB / 32,00 MiB free]
+
+      // sudo vgscan 
+      // Found volume group "vgubuntu" using metadata type lvm2
+
+      // sudo lvscan 
+      // ACTIVE            '/dev/vgubuntu/root' [<29,78 GiB] inherit
+      // ACTIVE            '/dev/vgubuntu/swap_1' [976,00 MiB] inherit
+    
+      // ls /dev/mapper/
+      // control  sda4_crypt  vgubuntu-root  vgubuntu-swap_1
+      
+      // /dev/mapper/vgubuntu-root on / type ext4 (rw,relatime,errors=remount-ro)
+
+      // vgubuntu-root
+      // vgubuntu-swap
+      // cryptsetup luksFormat --type luks2 /dev/sda
+      // cryptsetup luksOpen /dev/sda cryptedvol
+      // Format partitions
+      // pv -tpreb /dev/zero | dd of=/dev/mapper/crypedvelo       bs=128M
+      // mkfs.ext4 /dev/mapper/backup2
+      installationDevice = '/dev/sda'
+      installationMode = 'crypted'
+      filesystemType = 'ext4'
+      userSwapChoice = 'small'
+    }
 
     let partitionsElem: JSX.Element
     while (true) {
