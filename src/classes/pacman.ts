@@ -453,7 +453,7 @@ export default class Pacman {
   /**
    * Installa manPage
    */
-  static async manPageInstall(verbose = false) {
+   static async manPageInstall(verbose = false) {
     const manPageSrc = path.resolve(__dirname, '../../manpages/doc/man/eggs.roll.gz')
     if (fs.existsSync(manPageSrc)) {
       const man1Dir = '/usr/share/man/man1/'

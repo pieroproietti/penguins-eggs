@@ -4,8 +4,9 @@
 /yarn.lock
 dist
 lib
+# remove all in 
 manpages/doc/man/*
-# But not these files...
+# ... but not these files...
 !manpages/doc/man/eggs.roll.gz
 !manpages/doc/man/eggs.html
 !manpages/doc/man/README.md
