@@ -110,7 +110,9 @@ export default class Produce extends Command {
         fastest = 'lz4'
       }
 
-      // jessie e stretch usano solo normal
+      /**
+       * jessie e stretch will use gzip for fastest
+      */
       const settings = new Settings()
       if (settings.distro.versionLike === 'jessie' || settings.distro.versionLike === 'stretch') {
         fastest = 'gzip'
@@ -138,6 +140,9 @@ export default class Produce extends Command {
         compression = 'xz -Xbcj x86'
       }
 
+      /**
+       * theme: if not defined will use eggs
+       */
       let theme = 'eggs'
       if (flags.theme !== undefined) {
         theme = flags.theme
