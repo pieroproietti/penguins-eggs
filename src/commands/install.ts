@@ -18,6 +18,7 @@ import chalk from 'chalk'
 export default class Install extends Command {
   static flags = {
     cli: Flags.boolean({ char: 'c', description: 'force use CLI installer' }),
+    crypted: Flags.boolean({ char: 'k', description: 'crypted CLI installation' }),
     help: Flags.help({ char: 'h' }),
     verbose: Flags.boolean({ char: 'v', description: 'verbose' })
   }
@@ -36,6 +37,11 @@ export default class Install extends Command {
 
     const { flags } = await this.parse(Install)
 
+    let crypted = false
+    if (flags.crypted) {
+      crypted = true
+    }
+
     let verbose = false
     if (flags.verbose) {
       verbose = true
@@ -50,7 +56,7 @@ export default class Install extends Command {
           Utils.warning('If you still want to use krill, type: ' + chalk.bold('sudo eggs install --cli'))
         } else {
           const krill = new Prepare()
-          await krill.prepare()
+          await krill.prepare(crypted)
         }
       }
     } else {
