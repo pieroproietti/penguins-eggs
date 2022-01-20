@@ -516,7 +516,7 @@ unknown target format aarch64-efi
    /**
     * get the kernel version
     */
-   static kernerlVersion(): string {
+   static kernelVersion(): string {
       return os.release()
    }
 

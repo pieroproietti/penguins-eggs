@@ -398,7 +398,7 @@ during the installation.
 Yolk is created automatically during the produce, but if the repository exists then produce will
 use the previous version. 
 
-You can, of course, recreate yolk repository in /usr/local/yolk giving command: sudo eggs tools:yolk, or - short way - add flag -y in produce.
+You can, of course, recreate yolk repository in /var/local/yolk giving command: sudo eggs tools:yolk, or - short way - add flag -y in produce.
 
 bugfix: Devuan don't start using it's name in EFI, so eggs change bootloaderEntryName=Debian for
 this distro.
@@ -413,7 +413,7 @@ One user pointed out to me an annoying problem with eggs, the impossibility of i
 
 After studying it, I am proud to present yolk, a very small local repository, responsible for making it possible to install the system in the absence of internet. 
 
-There are no changes in the way to use the eggs but, during the production process, a small repo is created in /usr/local/yolk, and the related calamares modules are built to add this local repo to the apt sources. 
+There are no changes in the way to use the eggs but, during the production process, a small repo is created in /var/local/yolk, and the related calamares modules are built to add this local repo to the apt sources. 
 
 Yolk is very little, about 2.1 MB and contains only the following packages: grub-pc, grub-pc-bin, cryptsetup, keyutils, grub-efi-amd64 and rub-efi-amd64-bin. 
 

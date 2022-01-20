@@ -351,6 +351,14 @@ class Distro implements IDistro {
         break
       }
 
+      case 'elsie': {
+        // LMDE 5 elsie
+        this.distroLike = 'Debian'
+        this.versionLike = 'bullseye'
+
+        break
+      }
+
       case 'apricot': {
         // Deepin 20 apricot
         this.distroLike = 'Debian'

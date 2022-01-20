@@ -49,7 +49,7 @@ function add_list {
 function add_yolk {
     remove_list
     cat << EOF > $CHROOT/etc/apt/sources.list.d/yolk.list
-    deb [trusted=yes] file:/usr/local/yolk ./
+    deb [trusted=yes] file:/var/local/yolk ./
 EOF
     chroot $CHROOT apt-get --allow-unauthenticated update -y
 }

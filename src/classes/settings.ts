@@ -259,7 +259,7 @@ export default class Settings {
    */
   async loadRemix(basename = '', theme = '') {
     this.remix.versionNumber = Utils.getPackageVersion()
-    this.remix.kernel = Utils.kernerlVersion()
+    this.remix.kernel = Utils.kernelVersion()
 
     this.remix.branding = theme === '' ? 'eggs' : theme
 
