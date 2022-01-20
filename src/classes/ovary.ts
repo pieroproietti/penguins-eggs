@@ -37,7 +37,6 @@ import Repo from './yolk'
 import cliAutologin = require('../lib/cli-autologin')
 import { execSync } from 'node:child_process'
 import { displaymanager } from './incubation/fisherman-helper/displaymanager'
-import { DEFAULT_ECDH_CURVE } from 'tls'
 
 /**
  * Ovary:
@@ -1388,8 +1387,7 @@ export default class Ovary {
      */
     const grubCfg = `${memdiskDir}/boot/grub/grub.cfg`
     let text = ''
-  //text += 'search --file --set=root /.disk/info\n'
-    text += 'search --file --set=root /isolinux/isolinux.cfg\n'
+    text += 'search --file --set=root /.disk/info\n'
     text += 'set prefix=($root)/boot/grub\n'
     text += `source $prefix/${Utils.machineUEFI()}/grub.cfg\n`
     Utils.write(grubCfg, text)
@@ -1427,7 +1425,7 @@ export default class Ovary {
      * copy theme
      */
     const themeDest = `${efiWorkDir}/boot/grub/theme.cfg`
-    const themeSrc = path.resolve(__dirname, `../../addons/${theme}/theme/livecd/isolinux.theme.cfg`)
+    const themeSrc = path.resolve(__dirname, `../../addons/${theme}/theme/livecd/grub.theme.cfg`)
     if (!fs.existsSync(themeSrc)) {
       Utils.warning('Cannot find: ' + themeSrc)
       process.exit()
