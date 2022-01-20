@@ -337,7 +337,7 @@ function tools {
       "clean"     "clean system logs, apt cache, etc" \
       "locales"   "install/clean locales" \
       "skel"      "update /etc/skel from current user or user configuration" \
-      "yolk"      "configure an internal apt repository in /usr/local/yolk" \
+      "yolk"      "configure an internal apt repository in /var/local/yolk" \
       "quit"   "previous" 3>&2 2>&1 1>&3
    )
 

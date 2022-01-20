@@ -23,7 +23,7 @@ export default class DevYolk extends Command {
     verbose: Flags.boolean({ char: 'v' })
   }
 
-  static dir = '/usr/local/yolk'
+  static dir = '/var/local/yolk'
 
   /**
    *
