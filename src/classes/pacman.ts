@@ -437,7 +437,11 @@ export default class Pacman {
   static async autocompleteInstall(verbose = false) {
     if (this.distro().familyId === 'debian') {
       if (Pacman.packageIsInstalled('bash-completion')) {
-        await exec(`cp ${__dirname}/../../scripts/eggs.bash /etc/bash_completion.d/`)
+        if (fs.existsSync('/usr/share/bash-completion/completions/')) {
+          await exec(`cp ${__dirname}/../../scripts/eggs.bash /usr/share/bash-completion/completions/`)
+        } else if (fs.existsSync('/etc/bash_completion.d/')) {
+          await exec(`cp ${__dirname}/../../scripts/eggs.bash /etc/bash_completion.d/`)
+        }
       }
     } else if (this.distro().familyId === 'archlinux') {
       if (Pacman.packageIsInstalled('bash-completion')) {
@@ -449,15 +453,15 @@ export default class Pacman {
   /**
    * Installa manPage
    */
-  static async manPageInstall(verbose = false) {
-    const manPage = path.resolve(__dirname, '../../manpages/doc/man/eggs.1.gz')
-    if (fs.existsSync(manPage)) {
+   static async manPageInstall(verbose = false) {
+    const manPageSrc = path.resolve(__dirname, '../../manpages/doc/man/eggs.roll.gz')
+    if (fs.existsSync(manPageSrc)) {
       const man1Dir = '/usr/share/man/man1/'
       if (!fs.existsSync(man1Dir)) {
         exec(`mkdir ${man1Dir} -p`)
       }
-
-      exec(`cp ${manPage} ${man1Dir}`)
+      const manPageDest = man1Dir + 'eggs.1.gz'
+      exec(`cp ${manPageSrc} ${manPageDest}`)
       if (shx.exec('which mandb', { silent: true }).stdout.trim() !== '') {
         await exec('mandb > /dev/null')
         if (verbose) {
