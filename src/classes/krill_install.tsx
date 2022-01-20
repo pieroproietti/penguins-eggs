@@ -150,6 +150,7 @@ export default class Hatching {
       let message = ""
 
       if (await this.partition()) {
+
          message = "Formatting file system "
          percent = 0.01
          try {
@@ -1070,16 +1071,30 @@ adduser ${name} \
 
          retVal = true
 
-      } else if (this.partitions.installationMode === 'full-encrypted' && !this.efi) {
          /**
           * formattazione full-encrypted, BIOS standard
+          * cryptsetup -y -v --type luks2 luksFormat this.partitions.installationDevice
+          * cryptsetup luksOpen /dev/sda vgeggs
+          * Enter passphrase for /dev/sda: this.partitions.luksPassphrase
+          * pv -tpreb /dev/zero | dd of=/dev/mapper/vgeggs bs=128M
+          * mkfs.ext4 /dev/mapper/vgeggs
+          * cryptsetup luksClose vgeggs
           */
-
-      } else if (this.partitions.installationMode === 'full-encrypted' && this.efi) {
-         /**
-          * formattazione full-encrypted, EFI
-          */
-
+       } else if (this.partitions.installationMode === 'full-encrypted' && !this.efi) {
+         await exec (`cryptsetup -y -v --type luks2 luksFormat ${this.partitions.installationDevice}`, echo)
+         await exec(`cryptsetup luksOpen ${this.partitions.installationDevice} vgeggs`, echo)
+         await exec(`pv -tpreb /dev/zero | dd of=/dev/mapper/vgeggs bs=128M`, echo)
+         this.devices.efi.name = `none`
+         this.devices.boot.name = `none`
+         this.devices.root.name = '/dev/mapper/vgeggs'
+         this.devices.root.fsType = this.partitions.filesystemType
+         this.devices.root.mountPoint = '/'
+         this.devices.data.name = `none`
+         this.devices.swap.name = 'none'
+         this.devices.swap.fsType = 'none'
+         this.devices.swap.mountPoint = 'none'
+         retVal = true
+         
       } else if (this.partitions.installationMode === 'lvm2' && !this.efi) {
          /**
          * LVM2, non EFI PROXMOX-VE

@@ -387,11 +387,12 @@ command-line system installer - the egg became a penguin!
 
 ```
 USAGE
-  $ eggs install [-c] [-h] [-v]
+  $ eggs install [-c] [-k] [-h] [-v]
 
 FLAGS
   -c, --cli      force use CLI installer
   -h, --help     Show CLI help.
+  -k, --crypted  crypted CLI installation
   -v, --verbose  verbose
 
 DESCRIPTION
