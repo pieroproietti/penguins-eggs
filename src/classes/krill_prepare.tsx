@@ -155,62 +155,41 @@ export default class Krill {
   async partitions(crypted = false): Promise<IPartitions> {
     let installationDevice = '/dev/sda'
     let installationMode = 'standard'
+    let luksPassphrase = 'evolution'
     let filesystemType = 'ext4'
     let userSwapChoice = 'small'
     if (crypted=true) {
-      // pvscan
-      // PV /dev/mapper/sda4_crypt   VG vgubuntu        lvm2 [30,76 GiB / 32,00 MiB free]
-
-      // sudo vgscan 
-      // Found volume group "vgubuntu" using metadata type lvm2
-
-      // sudo lvscan 
-      // ACTIVE            '/dev/vgubuntu/root' [<29,78 GiB] inherit
-      // ACTIVE            '/dev/vgubuntu/swap_1' [976,00 MiB] inherit
-    
-      // ls /dev/mapper/
-      // control  sda4_crypt  vgubuntu-root  vgubuntu-swap_1
-      
-      // /dev/mapper/vgubuntu-root on / type ext4 (rw,relatime,errors=remount-ro)
-
-      // vgubuntu-root
-      // vgubuntu-swap
-      // cryptsetup luksFormat --type luks2 /dev/sda
-      // cryptsetup luksOpen /dev/sda cryptedvol
-      // Format partitions
-      // pv -tpreb /dev/zero | dd of=/dev/mapper/crypedvelo       bs=128M
-      // mkfs.ext4 /dev/mapper/backup2
-      installationDevice = '/dev/sda'
-      installationMode = 'crypted'
-      filesystemType = 'ext4'
-      userSwapChoice = 'small'
+      installationMode = 'full-encrypted'
     }
-
+    
     let partitionsElem: JSX.Element
     while (true) {
-      partitionsElem = <Partitions installationDevice={installationDevice} installationMode={installationMode} filesystemType={filesystemType} userSwapChoice={userSwapChoice} />
+      partitionsElem = <Partitions installationDevice={installationDevice} installationMode={installationMode} luksPassphrase={luksPassphrase} filesystemType={filesystemType} userSwapChoice={userSwapChoice} />
       if (await confirm(partitionsElem, "Confirm Partitions datas?")) {
         break
       } else {
         installationDevice = ''
-        installationMode = ''
+        if (crypted=true) {
+          installationMode = 'full-encrypted'
+        }
+        luksPassphrase = 'evolution'
         filesystemType = ''
         userSwapChoice = ''
       }
 
-      partitionsElem = <Partitions installationDevice={installationDevice} installationMode={installationMode} filesystemType={filesystemType} userSwapChoice={userSwapChoice} />
+      partitionsElem = <Partitions installationDevice={installationDevice} installationMode={installationMode} luksPassphrase={luksPassphrase} filesystemType={filesystemType} userSwapChoice={userSwapChoice} />
       redraw(partitionsElem)
       installationDevice = await selectInstallationDevice()
 
-      partitionsElem = <Partitions installationDevice={installationDevice} installationMode={installationMode} filesystemType={filesystemType} userSwapChoice={userSwapChoice} />
+      partitionsElem = <Partitions installationDevice={installationDevice} installationMode={installationMode} luksPassphrase={luksPassphrase} filesystemType={filesystemType} userSwapChoice={userSwapChoice} />
       redraw(partitionsElem)
       installationMode = await selectInstallationMode()
 
-      partitionsElem = <Partitions installationDevice={installationDevice} installationMode={installationMode} filesystemType={filesystemType} userSwapChoice={userSwapChoice} />
+      partitionsElem = <Partitions installationDevice={installationDevice} installationMode={installationMode} luksPassphrase={luksPassphrase} filesystemType={filesystemType} userSwapChoice={userSwapChoice} />
       redraw(partitionsElem)
       filesystemType = await selectFileSystemType()
 
-      partitionsElem = <Partitions installationDevice={installationDevice} installationMode={installationMode} filesystemType={filesystemType} userSwapChoice={userSwapChoice} />
+      partitionsElem = <Partitions installationDevice={installationDevice} installationMode={installationMode} luksPassphrase={luksPassphrase} filesystemType={filesystemType} userSwapChoice={userSwapChoice} />
       redraw(partitionsElem)
       userSwapChoice = await selectUserSwapChoice()
 
@@ -218,6 +197,7 @@ export default class Krill {
     return {
       installationDevice: installationDevice,
       installationMode: installationMode,
+      luksPassphrase: luksPassphrase,
       filesystemType: filesystemType,
       userSwapChoice: userSwapChoice
     }
