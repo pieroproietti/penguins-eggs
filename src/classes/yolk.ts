@@ -25,7 +25,7 @@ export default class Yolk {
     /**
      * riga apt
      *
-     * deb [trusted=yes] file:/usr/local/yolk ./
+     * deb [trusted=yes] file:/var/local/yolk ./
      *
      */
     Utils.warning('updating system...')
@@ -123,7 +123,7 @@ export default class Yolk {
       }
     }
 
-    // e li vado a scaricare in /usr/local/yolk
+    // e li vado a scaricare in /var/local/yolk
     for (const toDownload of toDownloads) {
       process.chdir(this.dir)
         const cmd = `apt-get download ${toDownload}`

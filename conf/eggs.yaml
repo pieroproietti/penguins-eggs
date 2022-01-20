@@ -26,8 +26,8 @@ snapshot_basename: 'hostname'
 # You can change the rsync excludes file here - if you know what you're doing -
 # be sure to use the full path to the file.
 #
-# default /usr/local/share/excludes/penguins-eggs-snapshot-exclude.list
-snapshot_excludes: '/usr/local/share/penguins-eggs/exclude.list'
+# default /var/local/share/excludes/penguins-eggs-snapshot-exclude.list
+snapshot_excludes: '/var/local/share/penguins-eggs/exclude.list'
 
 # user to be used in the liveCd
 # default live

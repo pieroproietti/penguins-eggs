@@ -45,7 +45,7 @@ case "$1" in
         rm -f /etc/systemd/system/pve-live.service
 
         # remove yolk
-        #rm -rf /usr/local/yolk
+        #rm -rf /var/local/yolk
         rm -rf /var/local/yolk
 
         # remove penguins-eggs multiarch (krill-modules)
