@@ -661,7 +661,7 @@ export default class Ovary {
     const template = fs.readFileSync(isolinuxTemplate, 'utf8')
     const view = {
       fullname: this.settings.remix.fullname.toUpperCase(),
-      kernel: Utils.kernerlVersion(),
+      kernel: Utils.kernelVersion(),
       vmlinuz: `/live${this.settings.vmlinuz}`,
       initrdImg: `/live${this.settings.initrdImg}`,
       kernel_parameters: kernel_parameters,
@@ -678,7 +678,6 @@ export default class Ovary {
       process.exit()
     }
     fs.copyFileSync(splashSrc, splashDest)
-
   }
 
   /**
@@ -1389,9 +1388,10 @@ export default class Ovary {
      */
     const grubCfg = `${memdiskDir}/boot/grub/grub.cfg`
     let text = ''
-    text += 'search --file --set=root /.disk/info\n'
+    text += 'search --file --set=root /isolinux/isolinux.cfg\n'
+    //text += 'search --file --set=root /.disk/info\n'
     text += 'set prefix=($root)/boot/grub\n'
-    text += `source $prefix/x86_64-efi/grub.cfg\n`
+    text += `source $prefix/${Utils.machineUEFI()}/grub.cfg\n`
     Utils.write(grubCfg, text)
 
     // #################################
@@ -1516,7 +1516,7 @@ export default class Ovary {
 
     // grub.theme.cfg
     const grubThemeSrc = path.resolve(__dirname, `../../addons/${theme}/theme/livecd/grub.theme.cfg`)
-    const grubThemeDest = `${isoDir}/boot/grub/grub.theme.cfg`
+    const grubThemeDest = `${isoDir}/boot/grub/theme.cfg`
     if (!fs.existsSync(grubThemeSrc)) {
       Utils.warning('Cannot find: ' + grubThemeSrc)
       process.exit()
@@ -1526,31 +1526,35 @@ export default class Ovary {
     /**
     * prepare grub.cfg from grub.template.cfg
     */
-    const grubTemplate = path.resolve(__dirname, `../../addons/${theme}/theme/livecd/grub.template.cfg`)
-    if (!fs.existsSync(grubTemplate)) {
+     const grubTemplate = path.resolve(__dirname, `../../addons/${theme}/theme/livecd/grub.template.cfg`)
+     if (!fs.existsSync(grubTemplate)) {
       Utils.warning('Cannot find: ' + grubTemplate)
       process.exit()
     }
+
+    let kernel_parameters = `boot=live locales=${process.env.LANG}`
+    let volid = Utils.getVolid(this.settings.remix.name)
+    if (this.familyId === "archlinux") {
+      kernel_parameters = `misobasedir=live misolabel=${volid} boot=live locales=${process.env.LANG}`
+    }
+
     const grubDest = `${isoDir}/boot/grub/grub.cfg`
     const template = fs.readFileSync(grubTemplate, 'utf8')
     const view = {
       fullname: this.settings.remix.fullname.toUpperCase(),
-      kernel: Utils.kernerlVersion(),
+      kernel: Utils.kernelVersion(),
       vmlinuz: `/live${this.settings.vmlinuz}`,
       initrdImg: `/live${this.settings.initrdImg}`,
-      usernameOpt: this.settings.config.user_opt,
-      netconfigOpt: this.settings.config.netconfig_opt,
-      timezoneOpt: this.settings.config.timezone,
-      lang: process.env.LANG,
-      locales: process.env.LANG
-    }
+      kernel_parameters: kernel_parameters,
+ }
     fs.writeFileSync(grubDest, mustache.render(template, view))
 
     /**
     * loopback.cfg
     */
+    // const grubLoopback = path.resolve(__dirname, `../../addons/${theme}/theme/livecd/grub.loopback.cfg`)
+    //fs.copyFileSync(grubLoopback, `${this.settings.work_dir.pathIso}/boot/grub/loopback.cfg`)
     fs.writeFileSync(`${isoDir}/boot/grub/loopback.cfg`, 'source /boot/grub/grub.cfg\n')
-
   }
 
   // #######################################################################################
@@ -1569,7 +1573,7 @@ export default class Ovary {
 
     // .disk/info
     let file = dotDisk + '/info'
-    let content = Utils.getVolid(this.settings.remix.name) //this.settings.config.snapshot_prefix + this.settings.config.snapshot_basename
+    let content = Utils.getVolid(this.settings.remix.name)
     fs.writeFileSync(file, content, 'utf-8')
 
     // .disk/mksquashfs
