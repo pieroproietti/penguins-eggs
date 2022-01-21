@@ -645,7 +645,7 @@ export default class Ovary {
      * isolinux.cfg from isolinux.template.cfg
      */
     const isolinuxDest = this.settings.work_dir.pathIso + 'isolinux/isolinux.cfg'
-    let isolinuxTemplate = path.resolve(__dirname, `../../addons/${theme}/theme/livecd/isolinux.template.cfg`)
+    let isolinuxTemplate = path.resolve(__dirname, `../../addons/templates/isolinux.template`)
     if (!fs.existsSync(isolinuxTemplate)) {
       Utils.warning('Cannot find: ' + isolinuxTemplate)
       process.exit()
@@ -1524,7 +1524,7 @@ export default class Ovary {
     /**
     * prepare grub.cfg from grub.template.cfg
     */
-     const grubTemplate = path.resolve(__dirname, `../../addons/${theme}/theme/livecd/grub.template.cfg`)
+     const grubTemplate = path.resolve(__dirname, `../../addons/templates/grub.template`)
      if (!fs.existsSync(grubTemplate)) {
       Utils.warning('Cannot find: ' + grubTemplate)
       process.exit()
@@ -1550,8 +1550,6 @@ export default class Ovary {
     /**
     * loopback.cfg
     */
-    // const grubLoopback = path.resolve(__dirname, `../../addons/${theme}/theme/livecd/grub.loopback.cfg`)
-    //fs.copyFileSync(grubLoopback, `${this.settings.work_dir.pathIso}/boot/grub/loopback.cfg`)
     fs.writeFileSync(`${isoDir}/boot/grub/loopback.cfg`, 'source /boot/grub/grub.cfg\n')
   }
 
