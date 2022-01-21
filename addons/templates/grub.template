@@ -21,7 +21,7 @@ menuentry "{{{fullname}}} (kernel {{{kernel}}})" {
     linux {{{vmlinuz}}} {{{kernel_parameters}}} quiet splash
     initrd {{{initrdImg}}} 
 }
-menuentry "safe" {
+menuentry "{{{fullname}}} safe" {
   set gfxpayload=keep
   linux {{{vmlinuz}}} {{{kernel_parameters}}}
   initrd {{{initrdImg}}} 
