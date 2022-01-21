@@ -1,4 +1,3 @@
-#
 # eggs: isolinux.cfg
 #
 
@@ -27,3 +26,4 @@ label safe
 label Boot from local disk
   com32 chain.c32
   append hd1 1 swap
+  
