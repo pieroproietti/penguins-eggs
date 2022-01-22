@@ -57,7 +57,7 @@ Presentation
             anchors.horizontalCenter: reproductiveSystem.horizontalCenter
             anchors.top: background.top
             text: qsTr("<h1>Penguin's eggs</h1><br/>"+
-                  "<h2>The reproductive system for penguins!</h2>"+
+                  "<h2>eggs: the reproductive system of penguins!</h2>"+
                   "<h3>https://penguins-eggs.net</h3>")
             wrapMode: Text.WordWrap
             width: 800
