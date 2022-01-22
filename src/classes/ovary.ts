@@ -1447,8 +1447,16 @@ export default class Ovary {
     /**
      * andiamo in memdiskDir
      */
-    // make a tarred "memdisk" to embed in the grub image
-    await exec(`tar -cvf ${memdiskDir}/memdisk ${memdiskDir}/boot`, echo)
+
+    /**
+     * make a tarred "memdisk" to embed in the grub image
+     * 
+     * NOTE: it's CRUCIAL to chdir before tar!!!
+     */
+    const currentDir = process.cwd()
+    process.chdir(memdiskDir)
+    await exec(`tar -cvf memdisk boot`, echo)
+    process.chdir(currentDir)
 
     // make the grub image
 

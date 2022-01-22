@@ -1,7 +1,7 @@
 {
     "name": "penguins-eggs",
     "description": "Perri's Brewery edition: remaster your system and distribuite it",
-    "version": "9.0.9",
+    "version": "9.0.10",
     "author": "Piero Proietti @pieroproietti",
     "bin": {
         "eggs": "bin/run"
@@ -14,7 +14,7 @@
         "@oclif/plugin-not-found": "^2.2.4",
         "@oclif/plugin-version": "^1.0.4",
         "@oclif/plugin-warn-if-update-available": "^2.0.4",
-        "axios": "^0.24.0",
+        "axios": "^0.25.0",
         "chalk": "^4.1.0",
         "ink": "^3.2.0",
         "ink-big-text": "^1.2.0",
@@ -34,25 +34,25 @@
         "@types/ink-gradient": "^2.0.1",
         "@types/inquirer": "^8.1.3",
         "@types/js-yaml": "^4.0.5",
-        "@types/mocha": "^9.0.0",
+        "@types/mocha": "^9.1.0",
         "@types/mustache": "^4.1.2",
         "@types/node": "^16.11.13",
         "@types/react": "^17.0.38",
-        "@types/shelljs": "^0.8.10",
+        "@types/shelljs": "^0.8.11",
         "chai": "^4.3.4",
         "eslint": "^7.3.2",
         "eslint-config-oclif": "^4.0.0",
         "eslint-config-oclif-typescript": "^1.0.2",
         "globby": "^11.0.1",
-        "mocha": "^9.1.3",
+        "mocha": "^9.1.4",
         "nyc": "^15.1.0",
         "oclif": "github:pieroproietti/oclif",
         "perrisbrewery": "github:pieroproietti/perrisbrewery",
         "prettier": "^2.5.1",
         "shx": "^0.3.4",
         "ts-node": "^10.4.0",
-        "typedoc": "^0.22.10",
-        "typescript": "^4.5.4"
+        "typedoc": "^0.22.11",
+        "typescript": "^4.5.5"
     },
     "dirname": "eggs",
     "engines": {
