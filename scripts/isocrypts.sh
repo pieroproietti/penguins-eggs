@@ -166,7 +166,8 @@ echo "filesystem.squashfs size: $filesize"
 
 devflag=0
 
-if [ $filesize -lt 4294967295 ]
+##if [ $filesize -lt 4294967295 ]
+if [ $filesize -lt 17179869180 ]
 then
     echo
     echo filesystem.squashfs is under the 4GB iso6990 limit
