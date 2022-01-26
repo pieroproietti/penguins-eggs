@@ -266,14 +266,13 @@ export default class Ovary {
         await exec(`sync`, echo)
 
         let cryptoClose = await exec(`cryptsetup close luks-users-data`, echo)
-        console.log(cryptoClose)
         if (cryptoClose.code !== 0) {
           Utils.warning(`Error: ${cryptoClose.code} ${cryptoClose.data}`)
           process.exit(1)
         }
 
         Utils.warning('Enter the desired passphrase for the encrypted livecd below.')
-        let crytoSetup = await exec(`cryptsetup --type plain -c aes-xts-plain64 -h sha512 -s 512 open ${device} luks-users-data`, echo)
+        let crytoSetup = await exec(`cryptsetup --type plain -c aes-xts-plain64 -h sha512 -s 512 open ${device} /tmp/luks-users-data`, echo)
         if (crytoSetup.code !== 0) {
           Utils.warning(`Error: ${crytoSetup.code} ${crytoSetup.data}`)
           process.exit(1)
