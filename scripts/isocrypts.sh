@@ -1,6 +1,34 @@
 #!/bin/bash
 # https://askubuntu.com/questions/1041916/booting-encrypted-squashfs-from-live-cd
 
+# 1) crea livecd
+# 2) crea ovarium/iso(boot/grub,efi,isolinux,live)
+# 3) bind 
+
+# dopo il bind 
+# 4) /etc/cryptsetup-initramfs/conf-hook
+# cat >> /etc/cryptsetup-initramfs/conf-hook <<'EOF'
+# CRYPTSETUP=Y
+# EOF
+# 5) patch -d /usr/share/initramfs-tools/scripts /usr/share/initramfs-tools/scripts/casper-helpers <<'EOF'
+# @@ -141,6 +141,13 @@
+#                  losetup -o "$offset" "$dev" "$fspath"
+#              else
+#                  losetup "$dev" "$fspath"
+# +                modprobe dm-crypt
+# +                mkdir /mnt
+# +                echo "Enter passphrase: " >&6
+# +                cryptsetup --type plain -c aes-xts-plain64 -h sha512 -s 512 open "$dev" squash >&6
+# +                mount -t ext4 /dev/mapper/squash /mnt
+# +                dev="$(losetup -f)"
+# +                losetup "$dev" /mnt/filesystem.squashfs
+#             fi
+#             echo "$dev"
+#             return 0
+# EOF
+# copyKernel
+# makesquashfs
+
 echo 
 echo Setting up /tmp/livecd
 echo 
@@ -13,7 +41,7 @@ sudo apt-get update
 sudo apt-get install -y grub2 xorriso squashfs-tools cryptsetup
 
 echo 
-echo Copying over existing system Qua verrebbe sostituita dal bind
+echo Copying over existing system
 echo 
 sudo rsync -av --one-file-system --exclude=/swapfile --exclude=/proc/* --exclude=/dev/* \
 --exclude=/sys/* --exclude=/tmp/* --exclude=/lost+found \
@@ -25,7 +53,7 @@ sudo rsync -av --one-file-system --exclude=/swapfile --exclude=/proc/* --exclude
 --exclude=/etc/lightdm/lightdm.conf --exclude=/tmp/livecd/chroot/rootfs / /tmp/livecd/chroot/rootfs
 
 echo 
-echo Setting up links to chroot monta i vfs
+echo Setting up links to chroot
 echo 
 sudo mount --bind /dev/ /tmp/livecd/chroot/rootfs/dev
 sudo mount -t proc proc /tmp/livecd/chroot/rootfs/proc
@@ -33,7 +61,7 @@ sudo mount -t sysfs sysfs /tmp/livecd/chroot/rootfs/sys
 sudo mount -o bind /run /tmp/livecd/chroot/rootfs/run
 
 echo 
-echo Processing chroot commands, in chroot
+echo Processing chroot commands
 echo 
 cat <<'ABC' | sudo chroot /tmp/livecd/chroot/rootfs /bin/bash
 LANG=
@@ -80,7 +108,7 @@ sudo cp -vp /tmp/livecd/chroot/rootfs/boot/initrd.img-${kversion} /tmp/livecd/cd
 sudo cp -vp /tmp/livecd/chroot/rootfs/boot/memtest86+.bin /tmp/livecd/cd/boot
 
 echo 
-echo Removing chroot links - umount vsf
+echo Removing chroot links
 echo 
 sudo umount /tmp/livecd/chroot/rootfs/proc
 sudo umount /tmp/livecd/chroot/rootfs/sys
@@ -166,8 +194,7 @@ echo "filesystem.squashfs size: $filesize"
 
 devflag=0
 
-##if [ $filesize -lt 4294967295 ]
-if [ $filesize -lt 17179869180 ]
+if [ $filesize -lt 4294967295 ]
 then
     echo
     echo filesystem.squashfs is under the 4GB iso6990 limit
