@@ -13,7 +13,7 @@ sudo apt-get update
 sudo apt-get install -y grub2 xorriso squashfs-tools cryptsetup
 
 echo 
-echo Copying over existing system
+echo Copying over existing system Qua verrebbe sostituita dal bind
 echo 
 sudo rsync -av --one-file-system --exclude=/swapfile --exclude=/proc/* --exclude=/dev/* \
 --exclude=/sys/* --exclude=/tmp/* --exclude=/lost+found \
@@ -25,7 +25,7 @@ sudo rsync -av --one-file-system --exclude=/swapfile --exclude=/proc/* --exclude
 --exclude=/etc/lightdm/lightdm.conf --exclude=/tmp/livecd/chroot/rootfs / /tmp/livecd/chroot/rootfs
 
 echo 
-echo Setting up links to chroot
+echo Setting up links to chroot monta i vfs
 echo 
 sudo mount --bind /dev/ /tmp/livecd/chroot/rootfs/dev
 sudo mount -t proc proc /tmp/livecd/chroot/rootfs/proc
@@ -33,7 +33,7 @@ sudo mount -t sysfs sysfs /tmp/livecd/chroot/rootfs/sys
 sudo mount -o bind /run /tmp/livecd/chroot/rootfs/run
 
 echo 
-echo Processing chroot commands
+echo Processing chroot commands, in chroot
 echo 
 cat <<'ABC' | sudo chroot /tmp/livecd/chroot/rootfs /bin/bash
 LANG=
@@ -80,7 +80,7 @@ sudo cp -vp /tmp/livecd/chroot/rootfs/boot/initrd.img-${kversion} /tmp/livecd/cd
 sudo cp -vp /tmp/livecd/chroot/rootfs/boot/memtest86+.bin /tmp/livecd/cd/boot
 
 echo 
-echo Removing chroot links
+echo Removing chroot links - umount vsf
 echo 
 sudo umount /tmp/livecd/chroot/rootfs/proc
 sudo umount /tmp/livecd/chroot/rootfs/sys
