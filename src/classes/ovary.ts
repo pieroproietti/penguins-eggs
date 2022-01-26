@@ -204,36 +204,20 @@ export default class Ovary {
         Utils.warning('You will be prompted to give crucial informations to protect your users data')
         Utils.warning("I'm calculatings users datas needs. Please wait...")
 
-        const usersDataSize = await this.getUsersDatasSize(verbose) //  837,812,224  // 700 MB
+        const usersDataSize = await this.getUsersDatasSize(verbose) 
         Utils.warning("User's data are: " + Utils.formatBytes(usersDataSize))
         Utils.warning('Your passphrase will be not written in any way on the support, so it is literally unrecoverable.')
 
-        const binaryHeaderSize = 4_194_304 // 4MB = 4,194,304
-        Utils.warning('We need additional space of : ' + Utils.formatBytes(binaryHeaderSize, 2))
-        let volumeSize = usersDataSize + binaryHeaderSize
-        const minimunSize = 33_554_432 // 32M = 33,554,432
-        if (volumeSize < minimunSize) {
-          volumeSize = minimunSize
-        }
-
-        /*
-           if (volumeSize < 536870912) { // 512MB 536,870,912
-              volumeSize *= 1.15 // add 15%
-           } else if (volumeSize > 536870912 && (volumeSize < 1073741824)) { // 1GB 1,073,741,824
-              volumeSize *= 1.10 // add 10%
-           } else if (volumeSize > 1073741824) { // 1GB 1,073,741,824
-              volumeSize *= 1.05 // add 10%
-           }
-           volumeSize += 1073741824 // add 1 GB
-           */
-
-        /**
-         * C'è un problema di blocchi
-         * sudo tune2fs -l /dev/sda1 | grep -i 'block size' = 4096
-         */
+        // volumeSize = usersDataSize + 10% + binaryHeaderSize
+        const binaryHeaderSize = 4194304
+        let volumeSize = usersDataSize * 1.1 + binaryHeaderSize
+        let blocks = Math.ceil(volumeSize/1024)
 
         Utils.warning('Creating volume luks-users-data of ' + Utils.formatBytes(volumeSize, 0))
-        execSync('dd if=/dev/zero of=/tmp/luks-users-data bs=1 count=0 seek=' + Utils.formatBytes(volumeSize, 0) + this.toNull, { stdio: 'inherit' })
+        execSync(`dd if=/dev/zero of=/tmp/luks-users-data bs=1024 count=${blocks} status=progress`) //, { stdio: 'inherit' })
+
+        // execSync(`losetup -f`)
+        // losetup "$dev" /tmp/livecd/cd/casper/filesystem.squashfs
 
         Utils.warning('Formatting volume luks-users-data. You will insert a passphrase and confirm it')
         execSync('cryptsetup luksFormat /tmp/luks-users-data', { stdio: 'inherit' })
@@ -1057,20 +1041,19 @@ export default class Ovary {
     // Filter serve a rimuovere gli elementi vuoti
     const users: string[] = result.data.split('\n').filter(Boolean)
     let size = 0
-    let blocksNeed = 0
     Utils.warning('We found ' + users.length + ' users')
     for (const user of users) {
-      // esclude tutte le cartelle che NON sono users
+      // esclude live user
       if (user !== this.settings.config.user_opt) {
-        // du restituisce size in Kbytes senza -b
-        // const bytes = parseInt(shx.exec(`du -b --summarize /home/${users[i]} |awk '{ print $1 }'`, { silent: true }).stdout.trim())
-        // size += bytes
-        const blocks = Number.parseInt(shx.exec(`du --summarize /home/${user} |awk '{ print $1 }'`, { silent: true }).stdout.trim())
-        blocksNeed += blocks
+        const sizeUser = await exec(` du --block-size=1 --summarize /home/artisan | awk '{print $1}'`, {echo: verbose, ignore: false, capture: true})
+        console.log('sizeUser.data: ' + sizeUser.data)
+        console.log('sizeUser.code: ' + sizeUser.code)
+        size += Number.parseInt(sizeUser.data)
       }
     }
+    console.log('size: ' + size)
+    await exec(`read -p "Press enter to continue"`)
 
-    size = blocksNeed * 4096
     return size
   }
 
@@ -1280,7 +1263,7 @@ export default class Ovary {
         if (myAddons.pve) text += 'cp /usr/share/applications/eggs-pve.desktop $DESKTOP\n'
         if (myAddons.rsupport) text += 'cp /usr/share/applications/eggs-rsupport.desktop $DESKTOP\n'
       }
-      
+
       // enable desktop links in gnome
       /**
        * test -f /usr/share/applications/penguins-eggs.desktop && cp /usr/share/applications/penguins-eggs.desktop $DESKTOP
@@ -1290,14 +1273,14 @@ export default class Ovary {
        * test -f "$DESKTOP/install-debian.desktop" && chmod a+x $DESKTOP/install-debian.desktop
        * test -f "$DESKTOP/install-debian.desktop" && gio set "$DESKTOP/install-debian.desktop" metadata::trusted true
        */
-      if(Pacman.packageIsInstalled('gdm3') || Pacman.packageIsInstalled('gdm')) {
-        text +=`test -f /usr/share/applications/penguins-eggs.desktop && cp /usr/share/applications/penguins-eggs.desktop $DESKTOP\n`
-        text +=`test -f "$DESKTOP/penguins-eggs.desktop" && chmod a+x "$DESKTOP/penguins-eggs.desktop"\n`
-        text +=`test -f "$DESKTOP/penguins-eggs.desktop" && gio set "$DESKTOP/penguins-eggs.desktop" metadata::trusted true\n`
-        
-        text +=`test -f /usr/share/applications/install-debian.desktop && cp /usr/share/applications/install-debian.desktop $DESKTOP\n`
-        text +=`test -f "$DESKTOP/install-debian.desktop" && chmod a+x $DESKTOP/install-debian.desktop\n`
-        text +=`test -f "$DESKTOP/install-debian.desktop" && gio set "$DESKTOP/install-debian.desktop" metadata::trusted true\n`
+      if (Pacman.packageIsInstalled('gdm3') || Pacman.packageIsInstalled('gdm')) {
+        text += `test -f /usr/share/applications/penguins-eggs.desktop && cp /usr/share/applications/penguins-eggs.desktop $DESKTOP\n`
+        text += `test -f "$DESKTOP/penguins-eggs.desktop" && chmod a+x "$DESKTOP/penguins-eggs.desktop"\n`
+        text += `test -f "$DESKTOP/penguins-eggs.desktop" && gio set "$DESKTOP/penguins-eggs.desktop" metadata::trusted true\n`
+
+        text += `test -f /usr/share/applications/install-debian.desktop && cp /usr/share/applications/install-debian.desktop $DESKTOP\n`
+        text += `test -f "$DESKTOP/install-debian.desktop" && chmod a+x $DESKTOP/install-debian.desktop\n`
+        text += `test -f "$DESKTOP/install-debian.desktop" && gio set "$DESKTOP/install-debian.desktop" metadata::trusted true\n`
       }
 
       fs.writeFileSync(script, text, 'utf8')
@@ -1532,8 +1515,8 @@ export default class Ovary {
     /**
     * prepare grub.cfg from grub.template.cfg
     */
-     const grubTemplate = path.resolve(__dirname, `../../addons/templates/grub.template`)
-     if (!fs.existsSync(grubTemplate)) {
+    const grubTemplate = path.resolve(__dirname, `../../addons/templates/grub.template`)
+    if (!fs.existsSync(grubTemplate)) {
       Utils.warning('Cannot find: ' + grubTemplate)
       process.exit()
     }
@@ -1552,7 +1535,7 @@ export default class Ovary {
       vmlinuz: `/live${this.settings.vmlinuz}`,
       initrdImg: `/live${this.settings.initrdImg}`,
       kernel_parameters: kernel_parameters,
- }
+    }
     fs.writeFileSync(grubDest, mustache.render(template, view))
 
     /**
