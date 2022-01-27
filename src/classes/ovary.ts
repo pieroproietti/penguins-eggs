@@ -313,10 +313,10 @@ export default class Ovary {
         await exec(`mv ${luksFile} ${this.settings.config.snapshot_dir}ovarium/iso/live`, echo)
       }
 
-      // cryptsetup luksOpen --type luks2 /home/eggs/ovarium/iso/live/luks-users-data luks-users-data
-      // mount /home/eggs/ovarium/iso/live/luks-users-data /mnt/
-      // umount /home/eggs/ovarium/iso/live/luks-users-data
-      // cryptsetup luksClose luks-users-data
+      // sudo cryptsetup luksOpen --type luks2 /home/eggs/ovarium/iso/live/luks-users-data luks-users-data
+      // sudo mount /dev/mapper/luks-users-data /mnt/
+      // sudo umount /dev/mapper/luks-users-data
+      // sudo cryptsetup luksClose luks-users-data
 
       const xorrisoCommand = this.makeDotDisk(backup, verbose)
 
