@@ -161,7 +161,7 @@ export default class Ovary {
        * reCreate = false is just for develop
        * put reCreate = true in release
        */
-      let reCreate = false
+      let reCreate = true
       if (reCreate) { // start pre-backup
         /**
          * Anche non accettando l'installazione di calamares
@@ -1138,9 +1138,8 @@ export default class Ovary {
     for (let i = 0; i < users.length - 1; i++) {
       // ad esclusione dell'utente live...
       if (users[i] !== this.settings.config.user_opt) {
-        Utils.warning(`copyUsersDatas:${users[i]} `)
-        await exec(`mkdir -p ${luksMountpoint}/${users[i]}`, echo)
-        await exec(`rsync -a /home/${users[i]} ${luksMountpoint}/home/${users[i]}`, echo)
+        // await exec(`mkdir -p ${luksMountpoint}/home/${users[i]}`, echo)
+        await exec(`rsync -a /home/${users[i]} ${luksMountpoint}/home/`, echo)
       }
     }
     await exec(`mkdir -p ${luksMountpoint}/etc`, echo)
