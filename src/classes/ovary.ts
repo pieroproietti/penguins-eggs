@@ -161,7 +161,7 @@ export default class Ovary {
        * reCreate = false is just for develop
        * put reCreate = true in release
        */
-      let reCreate = false
+      let reCreate = true
       if (reCreate) { // start pre-backup
         /**
          * Anche non accettando l'installazione di calamares
@@ -243,6 +243,7 @@ export default class Ovary {
         let luksName = 'luks-users-data'
         let luksFile =  `/tmp/${luksName}`
         let luksDevice =  `/dev/mapper/${luksName}`
+        let luksMountpoint = `/mnt`
 
         Utils.warning('Getting users data size')
         const usersDataSize = await this.getUsersDatasSize(verbose)
@@ -293,11 +294,11 @@ export default class Ovary {
           process.exit(1)
         }
 
-        Utils.warning(`mount ${luksDevice} /mnt`)
-        await exec(`mount ${luksDevice} /mnt`, echo)
+        Utils.warning(`mount ${luksDevice} ${luksMountpoint}`)
+        await exec(`mount ${luksDevice} ${luksMountpoint}`, echo)
 
         Utils.warning(`Saving users datas in ${luksName}`)
-        await this.copyUsersDatas(verbose)
+        await this.copyUsersDatas(luksMountpoint, verbose)
 
         Utils.warning(`umount ${luksDevice} /mnt`)
         await exec(`umount ${luksDevice}`, echo)
@@ -1117,9 +1118,8 @@ export default class Ovary {
    *
    * @param verbose
    */
-  async copyUsersDatas(verbose = false) {
+  async copyUsersDatas(luksMountpoint = '/mnt', verbose = false) {
     const echo = Utils.setEcho(verbose)
-    const echoYes = Utils.setEcho(true)
     if (verbose) {
       Utils.warning('copyUsersDatas')
     }
@@ -1129,19 +1129,18 @@ export default class Ovary {
     const cmd = "getent passwd {1000..60000} |awk -F: '{print $1}'"
     const result = await exec(cmd, echo)
     const users: string[] = result.data.split('\n')
-    await exec('mkdir -p /mnt/home', echo)
+    await exec(`mkdir -p ${luksMountpoint}/home`, echo)
     for (let i = 0; i < users.length - 1; i++) {
       // ad esclusione dell'utente live...
       if (users[i] !== this.settings.config.user_opt) {
-        await exec('mkdir -p /mnt/home/' + users[i], echo)
-        await exec('rsync -a /home/' + users[i] + '/ ' + '/mnt/home/' + users[i] + '/', echo)
+        await exec(`mkdir -p ${luksMountpoint}/${users[i]}`, echo)
+        await exec(`rsync -a /home/${users[i]}/  ${luksMountpoint}/home/${users[i]}`, echo)
       }
     }
-
-    await exec('mkdir -p /mnt/etc', echo)
-    await exec('cp /etc/passwd /mnt/etc', echo)
-    await exec('cp /etc/shadow /mnt/etc', echo)
-    await exec('cp /etc/group /mnt/etc', echo)
+    await exec(`mkdir -p ${luksMountpoint}/etc`, echo)
+    await exec(`cp /etc/passwd ${luksMountpoint}/etc`, echo)
+    await exec(`cp /etc/shadow ${luksMountpoint}/etc`, echo)
+    await exec(`cp /etc/group ${luksMountpoint}/etc`, echo)
   }
 
   /**
