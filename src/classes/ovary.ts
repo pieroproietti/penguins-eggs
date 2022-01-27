@@ -238,10 +238,13 @@ export default class Ovary {
 
       if (backup) {
         Utils.titles('produce --backup')
-        Utils.warning('You will be prompted to give crucial informations to protect your users data.')
-        Utils.warning('Your passphrase will be not written in any way on the support, so it is literally unrecoverable.')
+        Utils.warning('You will be prompted to give crucial informations to protect your users data')
+        Utils.warning('Your passphrase will be not written in any way on the support, so it is literally unrecoverable')
+        let luksName = 'luks-users-data'
+        let luksFile =  `/tmp/${luksName}`
+        let luksDevice =  `/dev/mapper/${luksName}`
 
-        Utils.warning('Getting users data size.')
+        Utils.warning('Getting users data size')
         const usersDataSize = await this.getUsersDatasSize(verbose)
         Utils.warning("User's data are: " + Utils.formatBytes(usersDataSize))
 
@@ -249,7 +252,7 @@ export default class Ovary {
         const binaryHeaderSize = 4194304
         let volumeSize = usersDataSize * 1.1 + binaryHeaderSize
         let blocks = Math.ceil(volumeSize / 1024)
-        await exec(`dd if=/dev/zero of=/tmp/luks-users-data bs=1024 count=${blocks}`, echo) //  status=progress
+        await exec(`dd if=/dev/zero of=${luksFile} bs=1024 count=${blocks}`, echo)
         let findDevice = await exec(`losetup -f` , { echo: verbose, ignore: false, capture: true })
         let device = ''
         if (findDevice.code !== 0) {
@@ -258,53 +261,52 @@ export default class Ovary {
         } else {
           device = findDevice.data.trim()
         }
-        await exec(`losetup ${device} /tmp/luks-users-data`, echo)
+        await exec(`losetup ${device} ${luksFile}`, echo)
 
-        Utils.warning('Enter a large string of random text below to setup the pre-encryption.')
-        await exec(`cryptsetup --type plain -c aes-xts-plain64 -h sha512 -s 512 open "${device}" luks-users-data`, echoYes)
+        Utils.warning('Enter a large string of random text below to setup the pre-encryption')
+        await exec(`cryptsetup --type plain -c aes-xts-plain64 -h sha512 -s 512 open "${device}" ${luksName}`, echoYes)
         
-        Utils.warning('Pre-encrypting entire squashfs with random data')
-        await exec(`dd if=/dev/zero of=/dev/mapper/luks-users-data bs=1024 count=${blocks}`, echo)
+        Utils.warning(`Pre-encrypting entire ${luksName} with random data`)
+        await exec(`dd if=/dev/zero of=${luksDevice} bs=1024 count=${blocks}`, echo)
         await exec(`sync`, echo)
         await exec(`sync`, echo)
         await exec(`sync`, echo)
         await exec(`sync`, echo)
 
-        let cryptoClose = await exec(`cryptsetup close luks-users-data`, echo)
+        let cryptoClose = await exec(`cryptsetup close ${luksName}`, echo)
         if (cryptoClose.code !== 0) {
           Utils.warning(`Error: ${cryptoClose.code} ${cryptoClose.data}`)
           process.exit(1)
         }
 
-        Utils.warning('Enter the desired passphrase for the encrypted livecd below.')
-        let crytoSetup = await exec(`cryptsetup --type plain -c aes-xts-plain64 -h sha512 -s 512 open ${device} luks-users-data`, echoYes)
+        Utils.warning(`Enter the desired passphrase for the encrypted ${luksName} below`)
+        let crytoSetup = await exec(`cryptsetup --type plain -c aes-xts-plain64 -h sha512 -s 512 open ${device} ${luksName}`, echoYes)
         if (crytoSetup.code !== 0) {
           Utils.warning(`Error: ${crytoSetup.code} ${crytoSetup.data}`)
           process.exit(1)
         }
 
-        Utils.warning('Formatting /tmp/luks-users-data to ext4')
-        let formattingExt4 = await exec(`sudo mkfs.ext4 -m 0 /dev/mapper/luks-users-data`, echo)
+        Utils.warning(`Formatting ${luksDevice} to ext4`)
+        let formattingExt4 = await exec(`sudo mkfs.ext4 -m 0 ${luksDevice}`, echo)
         if (formattingExt4.code !== 0) {
           Utils.warning(`Error: ${formattingExt4.code} ${formattingExt4.data}`)
           process.exit(1)
         }
 
+        Utils.warning(`mount ${luksDevice} /mnt`)
+        await exec(`mount ${luksDevice} /mnt`, echo)
 
-        Utils.warning('mount /dev/mapper/luks-users-data /mnt')
-        await exec('mount /dev/mapper/luks-users-data /mnt', echo)
-
-        Utils.warning('Saving users datas in eggs-users-data')
+        Utils.warning(`Saving users datas in ${luksName}`)
         await this.copyUsersDatas(verbose)
 
-        Utils.warning('umount /dev/mapper/luks-users-data /mnt')
-        await exec('umount /dev/mapper/luks-users-data', echo)
+        Utils.warning(`umount ${luksDevice} /mnt`)
+        await exec(`umount ${luksDevice}`, echo)
 
-        Utils.warning('cryptsetup luksClose eggs-users-data')
-        await exec('cryptsetup luksClose eggs-users-data', echo)
+        Utils.warning(`cryptsetup luksClose ${luksName}`)
+        await exec(`cryptsetup luksClose ${luksName}`, echo)
 
-        Utils.warning('moving luks-users-data in ' + this.settings.config.snapshot_dir + 'ovarium/iso/live')
-        await exec('mv /tmp/luks-users-data ' + this.settings.config.snapshot_dir + 'ovarium/iso/live', echo)
+        Utils.warning(`moving ${luksFile} in ${this.settings.config.snapshot_dir}ovarium/iso/live`)
+        await exec(`mv ${luksFile} ${this.settings.config.snapshot_dir}ovarium/iso/live`, echo)
       }
 
       const xorrisoCommand = this.makeDotDisk(backup, verbose)
