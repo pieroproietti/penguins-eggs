@@ -155,9 +155,13 @@ export default class Ovary {
       }
 
       /**
-       * ATTENTION: jump to backup
+       * NOTE: reCreate = false 
+       * 
+       * reCreate = false is just for develop
+       * put reCreate = true in release
        */
-      //if (!true) { // start pre-backup
+      let reCreate = false
+      if (reCreate) { // start pre-backup
         /**
          * Anche non accettando l'installazione di calamares
          * viene creata la configurazione dell'installer: krill/calamares
@@ -226,11 +230,10 @@ export default class Ovary {
             apt clean
             ricopiare kernel ed initrd
            */
-        //}
+        // }
         await this.makeSquashfs(scriptOnly, verbose)
         await this.uBindLiveFs(verbose) // Lo smonto prima della fase di backup
-
-      // } // fine pre-backuo
+      } 
 
       if (backup) {
         Utils.titles('produce --backup')
@@ -244,7 +247,7 @@ export default class Ovary {
         const binaryHeaderSize = 4194304
         let volumeSize = usersDataSize * 1.1 + binaryHeaderSize
         let blocks = Math.ceil(volumeSize / 1024)
-        await exec(`dd if=/dev/zero of=/tmp/luks-users-data bs=1024 count=${blocks} status=progress`, echo)
+        await exec(`dd if=/dev/zero of=/tmp/luks-users-data bs=1024 count=${blocks}`, echo) //  status=progress
         let findDevice = await exec(`losetup -f` , { echo: verbose, ignore: false, capture: true })
         let device = ''
         if (findDevice.code !== 0) {
@@ -256,10 +259,11 @@ export default class Ovary {
         await exec(`losetup ${device} /tmp/luks-users-data`, echo)
 
         Utils.warning('Enter a large string of random text below to setup the pre-encryption.')
+        // Chiede password
         await exec(`cryptsetup --type plain -c aes-xts-plain64 -h sha512 -s 512 open "${device}" luks-users-data`, echo)
         
         Utils.warning('Pre-encrypting entire squashfs with random data')
-        await exec(`dd if=/dev/zero of=/dev/mapper/luks-users-data bs=1024 count=${blocks} status=progress`, echo)
+        await exec(`dd if=/dev/zero of=/dev/mapper/luks-users-data bs=1024 count=${blocks}`, echo) // status=progress
         await exec(`sync`, echo)
         await exec(`sync`, echo)
         await exec(`sync`, echo)
@@ -272,7 +276,8 @@ export default class Ovary {
         }
 
         Utils.warning('Enter the desired passphrase for the encrypted livecd below.')
-        let crytoSetup = await exec(`cryptsetup --type plain -c aes-xts-plain64 -h sha512 -s 512 open ${device} /tmp/luks-users-data`, echo)
+        // Chiede password
+        let crytoSetup = await exec(`cryptsetup --type plain -c aes-xts-plain64 -h sha512 -s 512 open ${device} luks-users-data`, echo)
         if (crytoSetup.code !== 0) {
           Utils.warning(`Error: ${crytoSetup.code} ${crytoSetup.data}`)
           process.exit(1)
