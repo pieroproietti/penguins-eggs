@@ -43,7 +43,7 @@ import getDns from '../lib/get_dns'
 import Hatching from './krill_install'
 
 import { INet } from '../interfaces'
-import {IWelcome, ILocation, IKeyboard, IPartitions, IUsers} from '../interfaces/i-krill'
+import { IWelcome, ILocation, IKeyboard, IPartitions, IUsers } from '../interfaces/i-krill'
 
 
 export default class Krill {
@@ -52,7 +52,7 @@ export default class Krill {
    * 
    * @param cryped 
    */
-  async prepare(cryped=false) {
+  async prepare(cryped = false) {
 
     const oWelcome = await this.welcome()
     const oLocation = await this.location(oWelcome.language)
@@ -155,13 +155,13 @@ export default class Krill {
   async partitions(crypted = false): Promise<IPartitions> {
     let installationDevice = '/dev/sda'
     let installationMode = 'standard'
+    if (crypted) {
+      installationMode = 'full-encrypted'
+    }
     let luksPassphrase = 'evolution'
     let filesystemType = 'ext4'
     let userSwapChoice = 'small'
-    if (crypted=true) {
-      installationMode = 'full-encrypted'
-    }
-    
+
     let partitionsElem: JSX.Element
     while (true) {
       partitionsElem = <Partitions installationDevice={installationDevice} installationMode={installationMode} luksPassphrase={luksPassphrase} filesystemType={filesystemType} userSwapChoice={userSwapChoice} />
@@ -169,7 +169,8 @@ export default class Krill {
         break
       } else {
         installationDevice = ''
-        if (crypted=true) {
+        installationMode = 'standard'
+        if (crypted) {
           installationMode = 'full-encrypted'
         }
         luksPassphrase = 'evolution'

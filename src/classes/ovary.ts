@@ -120,6 +120,7 @@ export default class Ovary {
    */
   async produce(backup = false, scriptOnly = false, yolkRenew = false, release = false, myAddons: IMyAddons, verbose = false) {
     const echo = Utils.setEcho(verbose)
+    const echoYes = Utils.setEcho(true)
 
     if (this.familyId === 'debian') {
       const yolk = new Repo()
@@ -155,114 +156,167 @@ export default class Ovary {
       }
 
       /**
-       * Anche non accettando l'installazione di calamares
-       * viene creata la configurazione dell'installer: krill/calamares
-       * L'installer prende il tema da settings.remix.branding
+       * NOTE: reCreate = false 
+       * 
+       * reCreate = false is just for develop
+       * put reCreate = true in release
        */
-      this.incubator = new Incubator(this.settings.remix, this.settings.distro, this.settings.config.user_opt, verbose)
-      await this.incubator.config(release)
+      let reCreate = true
+      if (reCreate) { // start pre-backup
+        /**
+         * Anche non accettando l'installazione di calamares
+         * viene creata la configurazione dell'installer: krill/calamares
+         * L'installer prende il tema da settings.remix.branding
+         */
+        this.incubator = new Incubator(this.settings.remix, this.settings.distro, this.settings.config.user_opt, verbose)
+        await this.incubator.config(release)
 
-      await this.syslinux(verbose)
-      await this.isolinux(this.theme, verbose)
-      await this.kernelCopy(verbose)
-      /**
-       * we need different behaviour on
-       * initrd for different familis
-       */
-      if (this.familyId === 'debian') {
-        await this.initrdCopy(verbose)
-      } else if (this.familyId === 'archlinux') {
-        await this.initrdCreate(verbose)
-      }
-
-      if (this.settings.config.make_efi) {
-        await this.makeEfi(this.theme, verbose)
-      }
-
-      await this.bindLiveFs(verbose)
-      await this.cleanUsersAccounts()
-      await this.createUserLive(verbose)
-
-      // const displaymanager = require('./incubation/fisherman-helper/displaymanager').displaymanager
-      if (Pacman.isInstalledGui()) {
-        await this.createXdgAutostart(this.theme, myAddons)
-        if (displaymanager() === '') {
-          // If GUI is installed and not Desktop manager
-          cliAutologin.addIssue(this.settings.distro.distroId, this.settings.distro.versionId, this.settings.config.user_opt, this.settings.config.user_opt_passwd, this.settings.config.root_passwd, this.settings.work_dir.merged)
-          cliAutologin.addMotd(this.settings.distro.distroId, this.settings.distro.versionId, this.settings.config.user_opt, this.settings.config.user_opt_passwd, this.settings.config.root_passwd, this.settings.work_dir.merged)
+        await this.syslinux(verbose)
+        await this.isolinux(this.theme, verbose)
+        await this.kernelCopy(verbose)
+        /**
+         * we need different behaviour on
+         * initrd for different familis
+         */
+        if (this.familyId === 'debian') {
+          await this.initrdCopy(verbose)
+        } else if (this.familyId === 'archlinux') {
+          await this.initrdCreate(verbose)
         }
-      } else {
-        cliAutologin.addAutologin(this.settings.distro.distroId, this.settings.distro.versionId, this.settings.config.user_opt, this.settings.config.user_opt_passwd, this.settings.config.root_passwd, this.settings.work_dir.merged)
-      }
 
-      await this.editLiveFs(verbose)
-      await this.makeSquashfs(scriptOnly, verbose)
-      await this.uBindLiveFs(verbose) // Lo smonto prima della fase di backup
+        if (this.settings.config.make_efi) {
+          await this.makeEfi(this.theme, verbose)
+        }
+
+        await this.bindLiveFs(verbose)
+        await this.cleanUsersAccounts()
+        await this.createUserLive(verbose)
+
+        if (Pacman.isInstalledGui()) {
+          await this.createXdgAutostart(this.theme, myAddons)
+          if (displaymanager() === '') {
+            // If GUI is installed and not Desktop manager
+            cliAutologin.addIssue(this.settings.distro.distroId, this.settings.distro.versionId, this.settings.config.user_opt, this.settings.config.user_opt_passwd, this.settings.config.root_passwd, this.settings.work_dir.merged)
+            cliAutologin.addMotd(this.settings.distro.distroId, this.settings.distro.versionId, this.settings.config.user_opt, this.settings.config.user_opt_passwd, this.settings.config.root_passwd, this.settings.work_dir.merged)
+          }
+        } else {
+          cliAutologin.addAutologin(this.settings.distro.distroId, this.settings.distro.versionId, this.settings.config.user_opt, this.settings.config.user_opt_passwd, this.settings.config.root_passwd, this.settings.work_dir.merged)
+        }
+
+        await this.editLiveFs(verbose)
+        // if (full-iso-backup) {
+        /**
+         * cat >> /etc/cryptsetup-initramfs/conf-hook <<'DEF'
+          CRYPTSETUP=Y
+          DEF
+          patch -d /usr/share/initramfs-tools/scripts /usr/share/initramfs-tools/scripts/casper-helpers <<'GHI'
+          @@ -141,6 +141,13 @@
+                          losetup -o "$offset" "$dev" "$fspath"
+                      else
+                          losetup "$dev" "$fspath"
+          +                modprobe dm-crypt
+          +                mkdir /mnt
+          +                echo "Enter passphrase: " >&6
+          +                cryptsetup --type plain -c aes-xts-plain64 -h sha512 -s 512 open "$dev" squash >&6
+          +                mount -t ext4 /dev/mapper/squash /mnt
+          +                dev="$(losetup -f)"
+          +                losetup "$dev" /mnt/filesystem.squashfs
+                      fi
+                      echo "$dev"
+                      return 0
+          GHI
+          depmod -a $(uname -r)
+          update-initramfs -u -k $(uname -r)
+          apt autoremove
+          apt clean
+          ricopiare kernel ed initrd
+         */
+        // }
+        await this.makeSquashfs(scriptOnly, verbose)
+        await this.uBindLiveFs(verbose) // Lo smonto prima della fase di backup
+      }
 
       if (backup) {
-        Utils.titles('produce --backup')
-        Utils.warning('You will be prompted to give crucial informations to protect your users data')
-        Utils.warning("I'm calculatings users datas needs. Please wait...")
+        let luksName = 'luks-users-data'
+        let luksFile = `/tmp/${luksName}`
+        let luksDevice = `/dev/mapper/${luksName}`
+        let luksMountpoint = `/mnt`
 
-        const usersDataSize = await this.getUsersDatasSize(verbose) //  837,812,224  // 700 MB
+        Utils.warning('Starting backup procedure')
+
+        Utils.warning('Getting users data size')
+        const usersDataSize = await this.getUsersDatasSize(verbose)
         Utils.warning("User's data are: " + Utils.formatBytes(usersDataSize))
-        Utils.warning('Your passphrase will be not written in any way on the support, so it is literally unrecoverable.')
 
-        const binaryHeaderSize = 4_194_304 // 4MB = 4,194,304
-        Utils.warning('We need additional space of : ' + Utils.formatBytes(binaryHeaderSize, 2))
-        let volumeSize = usersDataSize + binaryHeaderSize
-        const minimunSize = 33_554_432 // 32M = 33,554,432
-        if (volumeSize < minimunSize) {
-          volumeSize = minimunSize
+        const binaryHeaderSize = 4194304
+        let volumeSize = usersDataSize * 1.2 + binaryHeaderSize
+        let blocks = Math.ceil(volumeSize / 1024)
+        Utils.warning(`Setting up encrypted ${luksFile} file of ${Utils.formatBytes(volumeSize)}`)
+        await exec(`dd if=/dev/zero of=${luksFile} bs=1024 count=${blocks}`, echo)
+
+        // find first unused device
+        let findFirstUnusedDevice = await exec(`losetup -f`, { echo: verbose, ignore: false, capture: true })
+        let firstUnusedDevice = ''
+        if (findFirstUnusedDevice.code !== 0) {
+          Utils.warning(`Error: ${findFirstUnusedDevice.code} ${findFirstUnusedDevice.data}`)
+          process.exit(1)
+        } else {
+          firstUnusedDevice = findFirstUnusedDevice.data.trim()
         }
+        await exec(`losetup ${firstUnusedDevice} ${luksFile}`, echo)
+
+        Utils.warning('Enter a large string of random text below to setup the pre-encryption')
+        await exec(`cryptsetup -y -v --type luks2 luksFormat  ${luksFile}`, echoYes)
+
+        // Utils.warning(`Pre-encrypting entire ${luksFile} with random data`)
+        // await exec(`dd if=/dev/zero of=${luksDevice} bs=1024 count=${blocks}`, echo)
+        // await exec(`sync`, echo)
+        // await exec(`sync`, echo)
+        // await exec(`sync`, echo)
+        // await exec(`sync`, echo)
 
         /*
-           if (volumeSize < 536870912) { // 512MB 536,870,912
-              volumeSize *= 1.15 // add 15%
-           } else if (volumeSize > 536870912 && (volumeSize < 1073741824)) { // 1GB 1,073,741,824
-              volumeSize *= 1.10 // add 10%
-           } else if (volumeSize > 1073741824) { // 1GB 1,073,741,824
-              volumeSize *= 1.05 // add 10%
-           }
-           volumeSize += 1073741824 // add 1 GB
-           */
+        let cryptoClose = await exec(`cryptsetup close ${luksName}`, echo)
+        if (cryptoClose.code !== 0) {
+          Utils.warning(`Error: ${cryptoClose.code} ${cryptoClose.data}`)
+          process.exit(1)
+        }
+        */
 
-        /**
-         * C'è un problema di blocchi
-         * sudo tune2fs -l /dev/sda1 | grep -i 'block size' = 4096
-         */
+        Utils.warning(`Enter the desired passphrase for the encrypted ${luksName} below`)
+        let crytoSetup = await exec(`cryptsetup luksOpen --type luks2 ${luksFile} ${luksName}`, echoYes)
+        if (crytoSetup.code !== 0) {
+          Utils.warning(`Error: ${crytoSetup.code} ${crytoSetup.data}`)
+          process.exit(1)
+        }
 
-        Utils.warning('Creating volume luks-users-data of ' + Utils.formatBytes(volumeSize, 0))
-        execSync('dd if=/dev/zero of=/tmp/luks-users-data bs=1 count=0 seek=' + Utils.formatBytes(volumeSize, 0) + this.toNull, { stdio: 'inherit' })
+        Utils.warning(`Formatting ${luksDevice} to ext4`)
+        let formattingExt4 = await exec(`sudo mkfs.ext2 ${luksDevice}`, echo)
+        if (formattingExt4.code !== 0) {
+          Utils.warning(`Error: ${formattingExt4.code} ${formattingExt4.data}`)
+          process.exit(1)
+        }
 
-        Utils.warning('Formatting volume luks-users-data. You will insert a passphrase and confirm it')
-        execSync('cryptsetup luksFormat /tmp/luks-users-data', { stdio: 'inherit' })
+        Utils.warning(`mount ${luksDevice} ${luksMountpoint}`)
+        await exec(`mount ${luksDevice} ${luksMountpoint}`, echo)
 
-        Utils.warning('Opening volume luks-users-data and map it in /dev/mapper/eggs-users-data')
-        Utils.warning('You will insert the same passphrase you choose before')
-        execSync('cryptsetup luksOpen /tmp/luks-users-data eggs-users-data', { stdio: 'inherit' })
+        Utils.warning(`Saving users datas in ${luksName}`)
+        await this.copyUsersDatas(luksMountpoint, verbose)
 
-        Utils.warning('Formatting volume eggs-users-data with ext4')
-        execSync('mkfs.ext2 /dev/mapper/eggs-users-data' + this.toNull, { stdio: 'inherit' })
+        Utils.warning(`umount ${luksDevice}`)
+        await exec(`umount ${luksDevice}`, echo)
 
-        Utils.warning('mounting volume eggs-users-data in /mnt')
-        execSync('mount /dev/mapper/eggs-users-data /mnt', { stdio: 'inherit' })
+        Utils.warning(`cryptsetup luksClose ${luksName}`)
+        await exec(`cryptsetup luksClose ${luksName}`, echo)
 
-        Utils.warning('Saving users datas in eggs-users-data')
-        await this.copyUsersDatas(verbose)
-
-        const bytesUsed = Number.parseInt(shx.exec("du -b --summarize /mnt |awk '{ print $1 }'", { silent: true }).stdout.trim())
-        Utils.warning('We used ' + Utils.formatBytes(bytesUsed, 0) + ' on ' + Utils.formatBytes(volumeSize, 0) + ' in volume luks-users-data')
-
-        Utils.warning('Unmount /mnt')
-        execSync('umount /mnt', { stdio: 'inherit' })
-
-        Utils.warning('closing eggs-users-data')
-        execSync('cryptsetup luksClose eggs-users-data', { stdio: 'inherit' })
-
-        Utils.warning('moving luks-users-data in ' + this.settings.config.snapshot_dir + 'ovarium/iso/live')
-        execSync('mv /tmp/luks-users-data ' + this.settings.config.snapshot_dir + 'ovarium/iso/live', { stdio: 'inherit' })
+        Utils.warning(`moving ${luksFile} in ${this.settings.config.snapshot_dir}ovarium/iso/live`)
+        await exec(`mv ${luksFile} ${this.settings.config.snapshot_dir}ovarium/iso/live`, echo)
       }
+
+      // sudo cryptsetup luksOpen --type luks2 /home/eggs/ovarium/iso/live/luks-users-data luks-users-data
+      // sudo mount /dev/mapper/luks-users-data /mnt/
+      // sudo umount /dev/mapper/luks-users-data
+      // sudo cryptsetup luksClose luks-users-data
 
       const xorrisoCommand = this.makeDotDisk(backup, verbose)
 
@@ -1043,34 +1097,25 @@ export default class Ovary {
    */
   async getUsersDatasSize(verbose = false): Promise<number> {
     const echo = Utils.setEcho(verbose)
+    const echoYes = Utils.setEcho(true)
     if (verbose) {
-      Utils.warning('copyUsersDatas')
+      Utils.warning('getUsersDatas')
     }
 
     const cmds: string[] = []
     const cmd = "chroot / getent passwd {1000..60000} |awk -F: '{print $1}'"
-    const result = await exec(cmd, {
-      echo: verbose,
-      ignore: false,
-      capture: true
-    })
+    const result = await exec(cmd, { echo: verbose, ignore: false, capture: true })
     // Filter serve a rimuovere gli elementi vuoti
     const users: string[] = result.data.split('\n').filter(Boolean)
     let size = 0
-    let blocksNeed = 0
     Utils.warning('We found ' + users.length + ' users')
     for (const user of users) {
-      // esclude tutte le cartelle che NON sono users
+      // esclude live user
       if (user !== this.settings.config.user_opt) {
-        // du restituisce size in Kbytes senza -b
-        // const bytes = parseInt(shx.exec(`du -b --summarize /home/${users[i]} |awk '{ print $1 }'`, { silent: true }).stdout.trim())
-        // size += bytes
-        const blocks = Number.parseInt(shx.exec(`du --summarize /home/${user} |awk '{ print $1 }'`, { silent: true }).stdout.trim())
-        blocksNeed += blocks
+        const sizeUser = await exec(` du --block-size=1 --summarize /home/artisan | awk '{print $1}'`, { echo: verbose, ignore: false, capture: true })
+        size += Number.parseInt(sizeUser.data)
       }
     }
-
-    size = blocksNeed * 4096
     return size
   }
 
@@ -1078,34 +1123,29 @@ export default class Ovary {
    *
    * @param verbose
    */
-  async copyUsersDatas(verbose = false) {
+  async copyUsersDatas(luksMountpoint = '/mnt', verbose = false) {
     const echo = Utils.setEcho(verbose)
     if (verbose) {
       Utils.warning('copyUsersDatas')
     }
 
     const cmds: string[] = []
-    // take original users in croot there is just live now
+    // take originals users in chroot there they just live now
     const cmd = "getent passwd {1000..60000} |awk -F: '{print $1}'"
-    const result = await exec(cmd, {
-      echo: verbose,
-      ignore: false,
-      capture: true
-    })
+    const result = await exec(cmd, { echo: verbose, ignore: false, capture: true })
     const users: string[] = result.data.split('\n')
-    execSync('mkdir -p /mnt/home', { stdio: 'inherit' })
+    await exec(`mkdir -p ${luksMountpoint}/home`, echo)
     for (let i = 0; i < users.length - 1; i++) {
       // ad esclusione dell'utente live...
       if (users[i] !== this.settings.config.user_opt) {
-        execSync('mkdir -p /mnt/home/' + users[i], { stdio: 'inherit' })
-        execSync('rsync -a /home/' + users[i] + '/ ' + '/mnt/home/' + users[i] + '/', { stdio: 'inherit' })
+        // await exec(`mkdir -p ${luksMountpoint}/home/${users[i]}`, echo)
+        await exec(`rsync -a /home/${users[i]} ${luksMountpoint}/home/`, echo)
       }
     }
-
-    execSync('mkdir -p /mnt/etc', { stdio: 'inherit' })
-    execSync('cp /etc/passwd /mnt/etc', { stdio: 'inherit' })
-    execSync('cp /etc/shadow /mnt/etc', { stdio: 'inherit' })
-    execSync('cp /etc/group /mnt/etc', { stdio: 'inherit' })
+    await exec(`mkdir -p ${luksMountpoint}/etc`, echo)
+    await exec(`cp /etc/passwd ${luksMountpoint}/etc`, echo)
+    await exec(`cp /etc/shadow ${luksMountpoint}/etc`, echo)
+    await exec(`cp /etc/group ${luksMountpoint}/etc`, echo)
   }
 
   /**
@@ -1280,7 +1320,7 @@ export default class Ovary {
         if (myAddons.pve) text += 'cp /usr/share/applications/eggs-pve.desktop $DESKTOP\n'
         if (myAddons.rsupport) text += 'cp /usr/share/applications/eggs-rsupport.desktop $DESKTOP\n'
       }
-      
+
       // enable desktop links in gnome
       /**
        * test -f /usr/share/applications/penguins-eggs.desktop && cp /usr/share/applications/penguins-eggs.desktop $DESKTOP
@@ -1290,14 +1330,14 @@ export default class Ovary {
        * test -f "$DESKTOP/install-debian.desktop" && chmod a+x $DESKTOP/install-debian.desktop
        * test -f "$DESKTOP/install-debian.desktop" && gio set "$DESKTOP/install-debian.desktop" metadata::trusted true
        */
-      if(Pacman.packageIsInstalled('gdm3') || Pacman.packageIsInstalled('gdm')) {
-        text +=`test -f /usr/share/applications/penguins-eggs.desktop && cp /usr/share/applications/penguins-eggs.desktop $DESKTOP\n`
-        text +=`test -f "$DESKTOP/penguins-eggs.desktop" && chmod a+x "$DESKTOP/penguins-eggs.desktop"\n`
-        text +=`test -f "$DESKTOP/penguins-eggs.desktop" && gio set "$DESKTOP/penguins-eggs.desktop" metadata::trusted true\n`
-        
-        text +=`test -f /usr/share/applications/install-debian.desktop && cp /usr/share/applications/install-debian.desktop $DESKTOP\n`
-        text +=`test -f "$DESKTOP/install-debian.desktop" && chmod a+x $DESKTOP/install-debian.desktop\n`
-        text +=`test -f "$DESKTOP/install-debian.desktop" && gio set "$DESKTOP/install-debian.desktop" metadata::trusted true\n`
+      if (Pacman.packageIsInstalled('gdm3') || Pacman.packageIsInstalled('gdm')) {
+        text += `test -f /usr/share/applications/penguins-eggs.desktop && cp /usr/share/applications/penguins-eggs.desktop $DESKTOP\n`
+        text += `test -f "$DESKTOP/penguins-eggs.desktop" && chmod a+x "$DESKTOP/penguins-eggs.desktop"\n`
+        text += `test -f "$DESKTOP/penguins-eggs.desktop" && gio set "$DESKTOP/penguins-eggs.desktop" metadata::trusted true\n`
+
+        text += `test -f /usr/share/applications/install-debian.desktop && cp /usr/share/applications/install-debian.desktop $DESKTOP\n`
+        text += `test -f "$DESKTOP/install-debian.desktop" && chmod a+x $DESKTOP/install-debian.desktop\n`
+        text += `test -f "$DESKTOP/install-debian.desktop" && gio set "$DESKTOP/install-debian.desktop" metadata::trusted true\n`
       }
 
       fs.writeFileSync(script, text, 'utf8')
@@ -1532,8 +1572,8 @@ export default class Ovary {
     /**
     * prepare grub.cfg from grub.template.cfg
     */
-     const grubTemplate = path.resolve(__dirname, `../../addons/templates/grub.template`)
-     if (!fs.existsSync(grubTemplate)) {
+    const grubTemplate = path.resolve(__dirname, `../../addons/templates/grub.template`)
+    if (!fs.existsSync(grubTemplate)) {
       Utils.warning('Cannot find: ' + grubTemplate)
       process.exit()
     }
@@ -1552,7 +1592,7 @@ export default class Ovary {
       vmlinuz: `/live${this.settings.vmlinuz}`,
       initrdImg: `/live${this.settings.initrdImg}`,
       kernel_parameters: kernel_parameters,
- }
+    }
     fs.writeFileSync(grubDest, mustache.render(template, view))
 
     /**
