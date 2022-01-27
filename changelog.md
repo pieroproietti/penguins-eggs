@@ -18,6 +18,9 @@ You can follow the project also consulting the [commit history](https://github.c
 ## Changelog
 Versions are listed on reverse order, the first is the last one.
 
+### eggs-9.0.11
+--backup option: users homes and configurations are saved in LUKS volume inside ISO, then restored by krill.
+
 ### eggs-9.0.10
 From version 9.0.10, finally we can boot UEFI and standard BIOS.
 
