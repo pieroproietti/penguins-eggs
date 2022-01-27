@@ -120,6 +120,7 @@ export default class Ovary {
    */
   async produce(backup = false, scriptOnly = false, yolkRenew = false, release = false, myAddons: IMyAddons, verbose = false) {
     const echo = Utils.setEcho(verbose)
+    const echoYes = Utils.setEcho(true)
 
     if (this.familyId === 'debian') {
       const yolk = new Repo()
@@ -237,11 +238,12 @@ export default class Ovary {
 
       if (backup) {
         Utils.titles('produce --backup')
-        Utils.warning('You will be prompted to give crucial informations to protect your users data')
+        Utils.warning('You will be prompted to give crucial informations to protect your users data.')
+        Utils.warning('Your passphrase will be not written in any way on the support, so it is literally unrecoverable.')
 
+        Utils.warning('Getting users data size.')
         const usersDataSize = await this.getUsersDatasSize(verbose)
         Utils.warning("User's data are: " + Utils.formatBytes(usersDataSize))
-        Utils.warning('Your passphrase will be not written in any way on the support, so it is literally unrecoverable.')
 
         Utils.warning('Setting up encrypted squashfs file')
         const binaryHeaderSize = 4194304
@@ -259,11 +261,10 @@ export default class Ovary {
         await exec(`losetup ${device} /tmp/luks-users-data`, echo)
 
         Utils.warning('Enter a large string of random text below to setup the pre-encryption.')
-        // Chiede password
-        await exec(`cryptsetup --type plain -c aes-xts-plain64 -h sha512 -s 512 open "${device}" luks-users-data`, echo)
+        await exec(`cryptsetup --type plain -c aes-xts-plain64 -h sha512 -s 512 open "${device}" luks-users-data`, echoYes)
         
         Utils.warning('Pre-encrypting entire squashfs with random data')
-        await exec(`dd if=/dev/zero of=/dev/mapper/luks-users-data bs=1024 count=${blocks}`, echo) // status=progress
+        await exec(`dd if=/dev/zero of=/dev/mapper/luks-users-data bs=1024 count=${blocks}`, echo)
         await exec(`sync`, echo)
         await exec(`sync`, echo)
         await exec(`sync`, echo)
@@ -276,33 +277,34 @@ export default class Ovary {
         }
 
         Utils.warning('Enter the desired passphrase for the encrypted livecd below.')
-        // Chiede password
-        let crytoSetup = await exec(`cryptsetup --type plain -c aes-xts-plain64 -h sha512 -s 512 open ${device} luks-users-data`, echo)
+        let crytoSetup = await exec(`cryptsetup --type plain -c aes-xts-plain64 -h sha512 -s 512 open ${device} luks-users-data`, echoYes)
         if (crytoSetup.code !== 0) {
           Utils.warning(`Error: ${crytoSetup.code} ${crytoSetup.data}`)
           process.exit(1)
         }
 
-        Utils.warning('Formating /tmp/luks-users-data to ext4')
-        let formattingExt4 = await exec(`sudo mkfs.ext4 -m 0 /dev/mapper/luks-users-data}`, echo)
+        Utils.warning('Formatting /tmp/luks-users-data to ext4')
+        let formattingExt4 = await exec(`sudo mkfs.ext4 -m 0 /dev/mapper/luks-users-data`, echo)
         if (formattingExt4.code !== 0) {
           Utils.warning(`Error: ${formattingExt4.code} ${formattingExt4.data}`)
           process.exit(1)
         }
 
 
+        Utils.warning('mount /dev/mapper/luks-users-data /mnt')
+        await exec('mount /dev/mapper/luks-users-data /mnt', echo)
+
         Utils.warning('Saving users datas in eggs-users-data')
-        await exec('mount /dev/mapper/luks-users-data /mnt')
         await this.copyUsersDatas(verbose)
 
-        Utils.warning('Unmount /mnt')
-        execSync('umount /mnt', { stdio: 'inherit' })
+        Utils.warning('umount /dev/mapper/luks-users-data /mnt')
+        await exec('umount /dev/mapper/luks-users-data', echo)
 
-        Utils.warning('closing eggs-users-data')
-        execSync('cryptsetup luksClose eggs-users-data', { stdio: 'inherit' })
+        Utils.warning('cryptsetup luksClose eggs-users-data')
+        await exec('cryptsetup luksClose eggs-users-data', echo)
 
         Utils.warning('moving luks-users-data in ' + this.settings.config.snapshot_dir + 'ovarium/iso/live')
-        execSync('mv /tmp/luks-users-data ' + this.settings.config.snapshot_dir + 'ovarium/iso/live', { stdio: 'inherit' })
+        await exec('mv /tmp/luks-users-data ' + this.settings.config.snapshot_dir + 'ovarium/iso/live', echo)
       }
 
       const xorrisoCommand = this.makeDotDisk(backup, verbose)
@@ -1103,8 +1105,6 @@ export default class Ovary {
       // esclude live user
       if (user !== this.settings.config.user_opt) {
         const sizeUser = await exec(` du --block-size=1 --summarize /home/artisan | awk '{print $1}'`, { echo: verbose, ignore: false, capture: true })
-        console.log('sizeUser.data: ' + sizeUser.data)
-        console.log('sizeUser.code: ' + sizeUser.code)
         size += Number.parseInt(sizeUser.data)
       }
     }
@@ -1117,32 +1117,29 @@ export default class Ovary {
    */
   async copyUsersDatas(verbose = false) {
     const echo = Utils.setEcho(verbose)
+    const echoYes = Utils.setEcho(true)
     if (verbose) {
       Utils.warning('copyUsersDatas')
     }
 
     const cmds: string[] = []
-    // take original users in croot there is just live now
+    // take originals users in chroot there they just live now
     const cmd = "getent passwd {1000..60000} |awk -F: '{print $1}'"
-    const result = await exec(cmd, {
-      echo: verbose,
-      ignore: false,
-      capture: true
-    })
+    const result = await exec(cmd, echo)
     const users: string[] = result.data.split('\n')
-    execSync('mkdir -p /mnt/home', { stdio: 'inherit' })
+    await exec('mkdir -p /mnt/home', echo)
     for (let i = 0; i < users.length - 1; i++) {
       // ad esclusione dell'utente live...
       if (users[i] !== this.settings.config.user_opt) {
-        execSync('mkdir -p /mnt/home/' + users[i], { stdio: 'inherit' })
-        execSync('rsync -a /home/' + users[i] + '/ ' + '/mnt/home/' + users[i] + '/', { stdio: 'inherit' })
+        await exec('mkdir -p /mnt/home/' + users[i], echo)
+        await exec('rsync -a /home/' + users[i] + '/ ' + '/mnt/home/' + users[i] + '/', echo)
       }
     }
 
-    execSync('mkdir -p /mnt/etc', { stdio: 'inherit' })
-    execSync('cp /etc/passwd /mnt/etc', { stdio: 'inherit' })
-    execSync('cp /etc/shadow /mnt/etc', { stdio: 'inherit' })
-    execSync('cp /etc/group /mnt/etc', { stdio: 'inherit' })
+    await exec('mkdir -p /mnt/etc', echo)
+    await exec('cp /etc/passwd /mnt/etc', echo)
+    await exec('cp /etc/shadow /mnt/etc', echo)
+    await exec('cp /etc/group /mnt/etc', echo)
   }
 
   /**
