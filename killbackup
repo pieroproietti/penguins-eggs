@@ -1,0 +1,4 @@
+sudo rm /dev/mapper/luks-users-data
+sudo rm /tmp/luks-users-data
+
+
