@@ -39,15 +39,17 @@ export default class Analyze extends Command {
     }
 
     const echo = Utils.setEcho(verbose)
-
+    let totalSize = 0
     if (Utils.isRoot(this.id)) {
       Utils.warning('eggs will analyze your system, to get users and servers data')
       if (await Utils.customConfirm()) {
         const users = await this.fill()
         for (let i = 0; i < users.length; i++)
           if (users[i].saveIt) {
-            console.log(users[i].home)
+            console.log(`user: ${users[i].login} \thome: ${users[i].home} \tsize: ${users[i].size}`)
+            totalSize+=users[i].size
           }
+          console.log(`Total size: ${totalSize}`)
       }
     }
   }
@@ -56,7 +58,7 @@ export default class Analyze extends Command {
    * fill
    */
   async fill(): Promise<Users[]> {
-    try {
+    //try {
       const usersArray = []
       await access('/etc/passwd', constants.R_OK | constants.W_OK);
       const passwd = fs.readFileSync('/etc/passwd', 'utf-8').split('\n')
@@ -69,10 +71,10 @@ export default class Analyze extends Command {
         }
       }
       return usersArray
-    } catch {
-      console.error("can't read /etc/passwd");
-      process.exit(1)
-    }
+    //} catch {
+      //console.error("can't read /etc/passwd");
+      //process.exit(1)
+    //}
   }
 }
 
