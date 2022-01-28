@@ -53,7 +53,7 @@ export default class Users {
          */
         if (this.home != undefined) {
             if (this.home.substring(0, 4) === '/dev/' ||
-            this.home.substring(0, 5) === '/proc/' ||
+            this.home.substring(0, 4) === '/proc' ||
             this.home.substring(0, 4) === '/run/' ||
             this.home.substring(0, 4) === '/sys/' ||
             this.home.substring(0, 4) === '/tmp/') {
