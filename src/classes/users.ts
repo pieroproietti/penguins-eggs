@@ -1,11 +1,12 @@
 /**
  * User
  */
-
 import fs from 'fs'
 import { exec } from '../lib/utils'
 
-
+/**
+ * 
+ */
 export default class Users {
     public login: string
     public password: string
@@ -47,35 +48,54 @@ export default class Users {
         }
 
         /**
-         * 
+         * /dev, /proc, /run, /sys, /tmp
+         * are excluded to be save
          */
-        switch (this.home) {
-            case '/':
-            case '/bin':
-            case '/dev':
-            case '/var/backups':
-            case '/run/systemd':
-            case '/run/uuidd':
-            case '/proc':
-            case '/run/avahi-daemon':
-            case '/usr/bin':
-            case '/usr/sbin':
-            case '/var/lib/colord':
-            case '/var/lib/geoclue':
-            case '/var/lib/misc':
-            case '/nonexistent':
-            case '/run':
-            case '/var/mail': {
+        if (this.home != undefined) {
+            if (this.home.substring(0, 4) === '/dev/' ||
+            this.home.substring(0, 5) === '/proc/' ||
+            this.home.substring(0, 4) === '/run/' ||
+            this.home.substring(0, 4) === '/sys/' ||
+            this.home.substring(0, 4) === '/tmp/') {
                 size = 0
-                break
-            }
-            default: {
-                saveIt = true
-            }
-                this.saveIt = saveIt
-                this.size = size
-                this.hasHome = hasHome
+            } else {
+                switch (this.home) {
+                    case '/':
+                    case '/root':
+                    case '/not/existent': {
+                        size = 0
+                        break
+                    }
+                    /**
+                     * under /usr
+                     */
+                    case '/usr/bin':
+                    case '/usr/sbin': {
+                        size = 0
+                        break
+                    }
 
-        }
+                    /** 
+                     * under var
+                     */
+                    case '/var/backups':
+                    case '/var/lib/colord':
+                    case '/var/lib/geoclue':
+                    case '/var/lib/misc':
+                    case '/var/mail': {
+                        size = 0
+                        break
+                    }
+
+                    default: {
+                        saveIt = true
+                        break
+                    }
+                }
+            }
+            this.saveIt = saveIt
+            this.size = size
+            this.hasHome = hasHome
+}
     }
 }
