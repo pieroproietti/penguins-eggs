@@ -1110,9 +1110,9 @@ export default class Ovary {
     let size = 0
     Utils.warning('We found ' + users.length + ' users')
     for (const user of users) {
-      // esclude live user
+      // exclude user live
       if (user !== this.settings.config.user_opt) {
-        const sizeUser = await exec(` du --block-size=1 --summarize /home/artisan | awk '{print $1}'`, { echo: verbose, ignore: false, capture: true })
+        const sizeUser = await exec(` du --block-size=1 --summarize /home/${user} | awk '{print $1}'`, { echo: verbose, ignore: false, capture: true })
         size += Number.parseInt(sizeUser.data)
       }
     }
@@ -1136,10 +1136,12 @@ export default class Ovary {
     const users: string[] = result.data.split('\n')
     await exec(`mkdir -p ${luksMountpoint}/home`, echo)
     for (let i = 0; i < users.length - 1; i++) {
-      // ad esclusione dell'utente live...
+      // exclude live user
       if (users[i] !== this.settings.config.user_opt) {
-        // await exec(`mkdir -p ${luksMountpoint}/home/${users[i]}`, echo)
-        await exec(`rsync -a /home/${users[i]} ${luksMountpoint}/home/`, echo)
+        // check if home exist
+        if (fs.existsSync(`/home/${users[i]}`)) {
+          await exec(`rsync -a /home/${users[i]} ${luksMountpoint}/home/`, echo)
+        }
       }
     }
     await exec(`mkdir -p ${luksMountpoint}/etc`, echo)
