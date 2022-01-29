@@ -23,7 +23,7 @@ export default class ExportIso extends Command {
     Utils.warning(ExportIso.description)
     await Tu.loadSettings()
     if (flags.backup) {
-      Tu.snapshot_name = Tu.snapshot_name.slice(0, 7) === 'egg-of-' ? 'backup-' + Tu.snapshot_name.slice(7) : 'backup-' + Tu.snapshot_name
+      Tu.snapshot_name = Tu.snapshot_name.slice(0, 7) === 'egg-of-' ? 'egg-eb-' + Tu.snapshot_name.slice(7) : 'backup-' + Tu.snapshot_name
     }
 
     let cmd = `ssh root@${Tu.config.remoteHost} rm -rf ${Tu.config.remotePathIso}${Tu.snapshot_name}*`
