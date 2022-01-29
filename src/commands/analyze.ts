@@ -12,7 +12,6 @@ import { IWorkDir } from '../interfaces/i-workdir'
 import { access } from 'fs/promises'
 import { constants } from 'fs'
 import Users from '../classes/users'
-import IAnalyze from '../interfaces/i-analyze'
 
 
 export default class Analyze extends Command {

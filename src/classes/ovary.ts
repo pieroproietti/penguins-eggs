@@ -35,8 +35,12 @@ import Systemctl from './systemctl'
 import Bleach from './bleach'
 import Repo from './yolk'
 import cliAutologin = require('../lib/cli-autologin')
-import { execSync } from 'node:child_process'
 import { displaymanager } from './incubation/fisherman-helper/displaymanager'
+
+// backup
+import { access } from 'fs/promises'
+import { constants } from 'fs'
+import Users from './users'
 
 /**
  * Ovary:
@@ -202,54 +206,33 @@ export default class Ovary {
         } else {
           cliAutologin.addAutologin(this.settings.distro.distroId, this.settings.distro.versionId, this.settings.config.user_opt, this.settings.config.user_opt_passwd, this.settings.config.root_passwd, this.settings.work_dir.merged)
         }
-
         await this.editLiveFs(verbose)
-        // if (full-iso-backup) {
-        /**
-         * cat >> /etc/cryptsetup-initramfs/conf-hook <<'DEF'
-          CRYPTSETUP=Y
-          DEF
-          patch -d /usr/share/initramfs-tools/scripts /usr/share/initramfs-tools/scripts/casper-helpers <<'GHI'
-          @@ -141,6 +141,13 @@
-                          losetup -o "$offset" "$dev" "$fspath"
-                      else
-                          losetup "$dev" "$fspath"
-          +                modprobe dm-crypt
-          +                mkdir /mnt
-          +                echo "Enter passphrase: " >&6
-          +                cryptsetup --type plain -c aes-xts-plain64 -h sha512 -s 512 open "$dev" squash >&6
-          +                mount -t ext4 /dev/mapper/squash /mnt
-          +                dev="$(losetup -f)"
-          +                losetup "$dev" /mnt/filesystem.squashfs
-                      fi
-                      echo "$dev"
-                      return 0
-          GHI
-          depmod -a $(uname -r)
-          update-initramfs -u -k $(uname -r)
-          apt autoremove
-          apt clean
-          ricopiare kernel ed initrd
-         */
-        // }
         await this.makeSquashfs(scriptOnly, verbose)
         await this.uBindLiveFs(verbose) // Lo smonto prima della fase di backup
       }
 
       if (backup) {
-        let luksName = 'luks-users-data'
+        let luksName = 'luks-eggs-backup'
         let luksFile = `/tmp/${luksName}`
         let luksDevice = `/dev/mapper/${luksName}`
         let luksMountpoint = `/mnt`
 
         Utils.warning('Starting backup procedure')
 
-        Utils.warning('Getting users data size')
-        const usersDataSize = await this.getUsersDatasSize(verbose)
-        Utils.warning("User's data are: " + Utils.formatBytes(usersDataSize))
+        let totalSize = 0
+        Utils.warning('eggs will analyze your system, to get users and servers data')
+        const users = await this.usersFill()
+        for (let i = 0; i < users.length; i++)
+          if (users[i].saveIt) {
+            console.log(`user: ${users[i].login} \thome: ${users[i].home} \tsize: ${users[i].size}`)
+            totalSize+=users[i].size
+          }
+          console.log(`Total size: ${totalSize}`)
+
+        Utils.warning("User's data are: " + Utils.formatBytes(totalSize))
 
         const binaryHeaderSize = 4194304
-        let volumeSize = usersDataSize * 1.2 + binaryHeaderSize
+        let volumeSize = totalSize * 1.2 + binaryHeaderSize
         let blocks = Math.ceil(volumeSize / 1024)
         Utils.warning(`Setting up encrypted ${luksFile} file of ${Utils.formatBytes(volumeSize)}`)
         await exec(`dd if=/dev/zero of=${luksFile} bs=1024 count=${blocks}`, echo)
@@ -268,21 +251,6 @@ export default class Ovary {
         Utils.warning('Enter a large string of random text below to setup the pre-encryption')
         await exec(`cryptsetup -y -v --type luks2 luksFormat  ${luksFile}`, echoYes)
 
-        // Utils.warning(`Pre-encrypting entire ${luksFile} with random data`)
-        // await exec(`dd if=/dev/zero of=${luksDevice} bs=1024 count=${blocks}`, echo)
-        // await exec(`sync`, echo)
-        // await exec(`sync`, echo)
-        // await exec(`sync`, echo)
-        // await exec(`sync`, echo)
-
-        /*
-        let cryptoClose = await exec(`cryptsetup close ${luksName}`, echo)
-        if (cryptoClose.code !== 0) {
-          Utils.warning(`Error: ${cryptoClose.code} ${cryptoClose.data}`)
-          process.exit(1)
-        }
-        */
-
         Utils.warning(`Enter the desired passphrase for the encrypted ${luksName} below`)
         let crytoSetup = await exec(`cryptsetup luksOpen --type luks2 ${luksFile} ${luksName}`, echoYes)
         if (crytoSetup.code !== 0) {
@@ -300,7 +268,7 @@ export default class Ovary {
         Utils.warning(`mount ${luksDevice} ${luksMountpoint}`)
         await exec(`mount ${luksDevice} ${luksMountpoint}`, echo)
 
-        Utils.warning(`Saving users datas in ${luksName}`)
+        Utils.warning(`Saving datas in ${luksName}`)
         await this.copyUsersDatas(luksMountpoint, verbose)
 
         Utils.warning(`umount ${luksDevice}`)
@@ -1825,6 +1793,25 @@ export default class Ovary {
     console.log('Remember, on liveCD user = ' + chalk.cyanBright(this.settings.config.user_opt) + '/' + chalk.cyanBright(this.settings.config.user_opt_passwd))
     console.log('                    root = ' + chalk.cyanBright('root') + '/' + chalk.cyanBright(this.settings.config.root_passwd))
   }
+
+  /**
+  * fill
+  */
+  async usersFill(): Promise<Users[]> {
+    const usersArray = []
+    await access('/etc/passwd', constants.R_OK | constants.W_OK);
+    const passwd = fs.readFileSync('/etc/passwd', 'utf-8').split('\n')
+    for (let i = 0; i < passwd.length; i++) {
+      var line = passwd[i].split(':')
+      const users = new Users(line[0], line[1], line[2], line[3], line[4], line[5], line[6])
+      await users.getValues()
+      if (users.password !== undefined) {
+        usersArray.push(users)
+      }
+    }
+    return usersArray
+}
+
 }
 
 /**
