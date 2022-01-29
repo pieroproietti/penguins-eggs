@@ -165,7 +165,7 @@ export default class Ovary {
        * reCreate = false is just for develop
        * put reCreate = true in release
        */
-      let reCreate = true
+      let reCreate = false
       if (reCreate) { // start pre-backup
         /**
          * Anche non accettando l'installazione di calamares
@@ -225,9 +225,9 @@ export default class Ovary {
         for (let i = 0; i < users.length; i++)
           if (users[i].saveIt) {
             console.log(`user: ${users[i].login} \thome: ${users[i].home} \tsize: ${users[i].size}`)
-            totalSize+=users[i].size
+            totalSize += users[i].size
           }
-          console.log(`Total size: ${totalSize}`)
+        console.log(`Total size: ${totalSize}`)
 
         Utils.warning("User's data are: " + Utils.formatBytes(totalSize))
 
@@ -269,7 +269,7 @@ export default class Ovary {
         await exec(`mount ${luksDevice} ${luksMountpoint}`, echo)
 
         Utils.warning(`Saving datas in ${luksName}`)
-        await this.copyUsersDatas(luksMountpoint, verbose)
+        await this.copyUsersDatas(users, luksMountpoint, true)
 
         Utils.warning(`umount ${luksDevice}`)
         await exec(`umount ${luksDevice}`, echo)
@@ -281,11 +281,10 @@ export default class Ovary {
         await exec(`mv ${luksFile} ${this.settings.config.snapshot_dir}ovarium/iso/live`, echo)
       }
 
-      // sudo cryptsetup luksOpen --type luks2 /home/eggs/ovarium/iso/live/luks-users-data luks-users-data
-      // sudo mount /dev/mapper/luks-users-data /mnt/
-      // sudo umount /dev/mapper/luks-users-data
-      // sudo cryptsetup luksClose luks-users-data
-
+      // sudo cryptsetup luksOpen --type luks2 /home/eggs/ovarium/iso/live/luks-eggs-backup luks-eggs-backup
+      // sudo mount /dev/mapper/luks-eggs-backup /mnt/
+      // sudo umount /dev/mapper/luks-eggs-backup
+      // sudo cryptsetup luksClose luks-eggs-backup
       const xorrisoCommand = this.makeDotDisk(backup, verbose)
 
       /**
@@ -1063,65 +1062,6 @@ export default class Ovary {
    *
    * @param verbose
    */
-  async getUsersDatasSize(verbose = false): Promise<number> {
-    const echo = Utils.setEcho(verbose)
-    const echoYes = Utils.setEcho(true)
-    if (verbose) {
-      Utils.warning('getUsersDatas')
-    }
-
-    const cmds: string[] = []
-    const cmd = "chroot / getent passwd {1000..60000} |awk -F: '{print $1}'"
-    const result = await exec(cmd, { echo: verbose, ignore: false, capture: true })
-    // Filter serve a rimuovere gli elementi vuoti
-    const users: string[] = result.data.split('\n').filter(Boolean)
-    let size = 0
-    Utils.warning('We found ' + users.length + ' users')
-    for (const user of users) {
-      // exclude user live
-      if (user !== this.settings.config.user_opt) {
-        const sizeUser = await exec(` du --block-size=1 --summarize /home/${user} | awk '{print $1}'`, { echo: verbose, ignore: false, capture: true })
-        size += Number.parseInt(sizeUser.data)
-      }
-    }
-    return size
-  }
-
-  /**
-   *
-   * @param verbose
-   */
-  async copyUsersDatas(luksMountpoint = '/mnt', verbose = false) {
-    const echo = Utils.setEcho(verbose)
-    if (verbose) {
-      Utils.warning('copyUsersDatas')
-    }
-
-    const cmds: string[] = []
-    // take originals users in chroot there they just live now
-    const cmd = "getent passwd {1000..60000} |awk -F: '{print $1}'"
-    const result = await exec(cmd, { echo: verbose, ignore: false, capture: true })
-    const users: string[] = result.data.split('\n')
-    await exec(`mkdir -p ${luksMountpoint}/home`, echo)
-    for (let i = 0; i < users.length - 1; i++) {
-      // exclude live user
-      if (users[i] !== this.settings.config.user_opt) {
-        // check if home exist
-        if (fs.existsSync(`/home/${users[i]}`)) {
-          await exec(`rsync -a /home/${users[i]} ${luksMountpoint}/home/`, echo)
-        }
-      }
-    }
-    await exec(`mkdir -p ${luksMountpoint}/etc`, echo)
-    await exec(`cp /etc/passwd ${luksMountpoint}/etc`, echo)
-    await exec(`cp /etc/shadow ${luksMountpoint}/etc`, echo)
-    await exec(`cp /etc/group ${luksMountpoint}/etc`, echo)
-  }
-
-  /**
-   *
-   * @param verbose
-   */
   async cleanUsersAccounts(verbose = false) {
     const echo = Utils.setEcho(verbose)
     /**
@@ -1810,8 +1750,36 @@ export default class Ovary {
       }
     }
     return usersArray
-}
+  }
 
+  /**
+   *
+   * @param verbose
+   */
+  async copyUsersDatas(usersArray: Users[], luksMountpoint = '/mnt', verbose = false) {
+    const echo = Utils.setEcho(verbose)
+    if (verbose) {
+      Utils.warning('copyUsersDatas')
+    }
+
+    const cmds: string[] = []
+    for (let i = 0; i < usersArray.length ; i++) {
+      if (usersArray[i].saveIt) {
+        if (fs.existsSync(usersArray[i].home)) {
+          await exec(`mkdir -p ${luksMountpoint}/ROOT${usersArray[i].home}`, echo)
+          await exec(`rsync -a ${usersArray[i].home} ${luksMountpoint}/ROOT${usersArray[i].home}`, echo)
+        }
+      }
+    }
+    await exec(`mkdir -p ${luksMountpoint}/etc`, echo)
+    await exec(`cp /etc/passwd ${luksMountpoint}/etc`, echo)
+    await exec(`cp /etc/shadow ${luksMountpoint}/etc`, echo)
+    await exec(`cp /etc/group ${luksMountpoint}/etc`, echo)
+  }
+  // sudo cryptsetup luksOpen --type luks2 /home/eggs/ovarium/iso/live/luks-eggs-backup luks-eggs-backup
+  // sudo mount /dev/mapper/luks-eggs-backup /mnt/
+  // sudo umount /dev/mapper/luks-eggs-backup
+  // sudo cryptsetup luksClose luks-eggs-backup
 }
 
 /**
