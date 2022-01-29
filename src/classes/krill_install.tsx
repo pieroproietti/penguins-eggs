@@ -199,6 +199,7 @@ export default class Hatching {
          }
          // await checkIt(message)
 
+         /*
          message = "Syncronize filesystem "
          percent = 0.35
          try {
@@ -208,23 +209,22 @@ export default class Hatching {
             message += JSON.stringify(error)
             redraw(<Install message={message} percent={percent} />)
          }
-         // await checkIt(message)
+         */
 
          /**
           * RESTORE USERS DATA
           */
-         
-         if (fs.existsSync('/run/live/medium/live/luks-users-data')) {
-            message = "Restore users data from backup "
+         if (fs.existsSync('/run/live/medium/live/luks-eggs-backup')) {
+            message = "Restore users and servers data from backup "
             percent = 0.37
-            try {
+            //try {
                redraw(<Install message={message} percent={percent} spinner={true} />)
-               await this.restoreUsersData()
-            } catch (error) {
-               message += JSON.stringify(error)
-               redraw(<Install message={message} percent={percent} />)
-            }
-            // await checkIt(message)
+               await this.restoreUsersData(true)
+            //} catch (error) {
+               //message += JSON.stringify(error)
+               //redraw(<Install message={message} percent={percent} />)
+            //}
+            await checkIt(message)
          }
 
          // sources-yolk
@@ -369,7 +369,7 @@ export default class Hatching {
           * 
           * create user
           */
-         if (!fs.existsSync('/run/live/medium/live/luks-users-data')) {
+         if (!fs.existsSync('/run/live/medium/live/luks-backup-data')) {
             message = "Adding user "
             percent = 0.73
             try {
@@ -816,31 +816,34 @@ adduser ${name} \
    /**
     * 
     */
-   private async restoreUsersData() {
-      Utils.warning('Opening volume luks-users-data and map it in /dev/mapper/eggs-users-data.')
+   private async restoreUsersData(verbose=true) {
+      const echo = Utils.setEcho(verbose)
+  
+      Utils.warning('Opening volume luks-backup-data and map it in /dev/mapper/luks-eggs-backup.')
       Utils.warning('You will insert the same passphrase you choose during the backup production')
-      execSync('sudo cryptsetup luksOpen /run/live/medium/live/luks-users-data eggs-users-data', { stdio: 'inherit' })
+      await exec('sudo cryptsetup luksOpen /run/live/medium/live/luks-backup-data luks-eggs-backup', echo)
 
-      Utils.warning('mounting volume eggs-users-data in /mnt')
-      execSync('sudo mount /dev/mapper/eggs-users-data /mnt', { stdio: 'inherit' })
+      Utils.warning('mounting volume luks-eggs-backup in /mnt')
+      await exec('sudo mount /dev/mapper/luks-eggs-backup /mnt', echo)
 
       Utils.warning('removing live user in the installed system')
-      execSync('rm -rf /tmp/calamares-krill-root/home/*', { stdio: 'inherit' })
+      await exec('rm -rf /tmp/calamares-krill-root/home/*', echo)
 
       Utils.warning('copying users home in the installed system')
-      execSync('rsync -a /mnt/home/ /tmp/calamares-krill-root/home/', { stdio: 'inherit' })
-
+      await exec('rsync -a /mnt/ROOT/ /tmp/calamares-krill-root/', echo)
 
       Utils.warning('copying users accounts in the installed system')
-      execSync('cp /mnt/etc/passwd /tmp/calamares-krill-root/etc/', { stdio: 'inherit' })
-      execSync('cp /mnt/etc/shadow /tmp/calamares-krill-root/etc/', { stdio: 'inherit' })
-      execSync('cp /mnt/etc/group /tmp/calamares-krill-root/etc/', { stdio: 'inherit' })
+      await exec('cp /mnt/etc/passwd /tmp/calamares-krill-root/etc/', echo)
+      await exec('cp /mnt/etc/shadow /tmp/calamares-krill-root/etc/', echo)
+      await exec('cp /mnt/etc/group /tmp/calamares-krill-root/etc/', echo)
 
+
+      process.exit()
       Utils.warning('unmount /mnt')
-      execSync('umount /mnt', { stdio: 'inherit' })
+      await exec('umount /mnt', echo)
 
-      Utils.warning('closing eggs-users-data')
-      execSync('cryptsetup luksClose eggs-users-data', { stdio: 'inherit' })
+      Utils.warning('closing luks-eggs-backup')
+      await exec('cryptsetup luksClose luks-eggs-backup', echo)
    }
 
    /**

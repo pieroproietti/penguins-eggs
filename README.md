@@ -124,6 +124,7 @@ USAGE
 # Commands
 <!-- commands -->
 * [`eggs adapt`](#eggs-adapt)
+* [`eggs analyze`](#eggs-analyze)
 * [`eggs autocomplete [SHELL]`](#eggs-autocomplete-shell)
 * [`eggs bro`](#eggs-bro)
 * [`eggs calamares`](#eggs-calamares)
@@ -167,6 +168,27 @@ ALIASES
 ```
 
 _See code: [src/commands/adapt.ts](https://github.com/pieroproietti/penguins-eggs/blob/v9.0.11/src/commands/adapt.ts)_
+
+## `eggs analyze`
+
+analyze situation
+
+```
+USAGE
+  $ eggs analyze [-h] [-v]
+
+FLAGS
+  -h, --help     Show CLI help.
+  -v, --verbose  verbose
+
+DESCRIPTION
+  analyze situation
+
+EXAMPLES
+  $ sudo eggs analyze
+```
+
+_See code: [src/commands/analyze.ts](https://github.com/pieroproietti/penguins-eggs/blob/v9.0.11/src/commands/analyze.ts)_
 
 ## `eggs autocomplete [SHELL]`
 

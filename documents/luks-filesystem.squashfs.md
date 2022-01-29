@@ -8,7 +8,7 @@ Before to encrypt it you can mount filesystemfs.squashfs simply:
 
 We want to place our filesystem.squasfs in a luks-volume and hopefully try to unlock and mount our luks-volume during live-boot them load filesystem.squashfs and continue with standard operations.
 
-# Create an empy luks-users-data
+# Create an empy luks-eggs-backup
 
 ## create an empty volume to copy filesystem.squashfs
  sudo dd if=/dev/zero of=luks-volume bs=1 count=0 seek=1G
@@ -56,17 +56,17 @@ Now we can copy our filesystem.squashfs in our luks-volume
 
 ## backup
 
-Well trying to create and include luks-users-data in the iso...
+Well trying to create and include luks-eggs-backup in the iso...
 
 If we pass --backup option in the produce command, then:
 
  sudo eggs produce --fast
 
- sudo dd if=/dev/zero of=luks-users-data bs=1 count=0 seek=1G
+ sudo dd if=/dev/zero of=luks-eggs-backup bs=1 count=0 seek=1G
 
- sudo cryptsetup luksFormat luks-users-data
+ sudo cryptsetup luksFormat luks-eggs-backup
 
- sudo cryptsetup luksOpen luks-users-data eggs-users-data
+ sudo cryptsetup luksOpen luks-eggs-backup eggs-users-data
 
  sudo mkfs.ext4 /dev/mapper/eggs-users-data
 
@@ -78,20 +78,20 @@ If we pass --backup option in the produce command, then:
 
  sudo cryptsetup luksClose eggs-users-data
 
- sudo mv luks-users-data /home/eggs/ovarium/iso/live
+ sudo mv luks-eggs-backup /home/eggs/ovarium/iso/live
 
 At this point we can finalize the iso.
 
 ## restore
 
-We can understand the necessity to restore luks-users-data from the presence of the file
-/run/live/medium/live/luks-users-data after the boot from iso
+We can understand the necessity to restore luks-eggs-backup from the presence of the file
+/run/live/medium/live/luks-eggs-backup after the boot from iso
 
 ### starting to restore
-After the process unpackfs and rsyncfs in krill, if /run/live/medium/live/luks-users-data 
+After the process unpackfs and rsyncfs in krill, if /run/live/medium/live/luks-eggs-backup 
 is present:
 
- sudo cryptsetup luksOpen /run/live/medium/live/luks-users-data eggs-users-data
+ sudo cryptsetup luksOpen /run/live/medium/live/luks-eggs-backup eggs-users-data
 
  sudo mount /dev/mapper/eggs-users-data /mnt # well be mounted read-only
 

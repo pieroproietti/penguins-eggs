@@ -165,7 +165,7 @@ export default class Ovary {
        * reCreate = false is just for develop
        * put reCreate = true in release
        */
-      let reCreate = false
+      let reCreate = true
       if (reCreate) { // start pre-backup
         /**
          * Anche non accettando l'installazione di calamares
