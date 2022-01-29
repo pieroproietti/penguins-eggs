@@ -217,14 +217,14 @@ export default class Hatching {
          if (fs.existsSync('/run/live/medium/live/luks-eggs-backup')) {
             message = "Restore users and servers data from backup "
             percent = 0.37
-            //try {
+            try {
                redraw(<Install message={message} percent={percent} spinner={true} />)
                await this.restoreUsersData(true)
-            //} catch (error) {
-               //message += JSON.stringify(error)
-               //redraw(<Install message={message} percent={percent} />)
-            //}
-            await checkIt(message)
+            } catch (error) {
+               message += JSON.stringify(error)
+               redraw(<Install message={message} percent={percent} />)
+            }
+            //await checkIt(message)
          }
 
          // sources-yolk
@@ -369,7 +369,7 @@ export default class Hatching {
           * 
           * create user
           */
-         if (!fs.existsSync('/run/live/medium/live/luks-backup-data')) {
+         if (!fs.existsSync('/run/live/medium/live/luks-eggs-backup')) {
             message = "Adding user "
             percent = 0.73
             try {
@@ -819,9 +819,9 @@ adduser ${name} \
    private async restoreUsersData(verbose=true) {
       const echo = Utils.setEcho(verbose)
   
-      Utils.warning('Opening volume luks-backup-data and map it in /dev/mapper/luks-eggs-backup.')
+      Utils.warning('Opening volume luks-eggs-backup and map it in /dev/mapper/luks-eggs-backup.')
       Utils.warning('You will insert the same passphrase you choose during the backup production')
-      await exec('sudo cryptsetup luksOpen /run/live/medium/live/luks-backup-data luks-eggs-backup', echo)
+      await exec('sudo cryptsetup luksOpen /run/live/medium/live/luks-eggs-backup luks-eggs-backup', echo)
 
       Utils.warning('mounting volume luks-eggs-backup in /mnt')
       await exec('sudo mount /dev/mapper/luks-eggs-backup /mnt', echo)
@@ -830,15 +830,13 @@ adduser ${name} \
       await exec('rm -rf /tmp/calamares-krill-root/home/*', echo)
 
       Utils.warning('copying users home in the installed system')
-      await exec('rsync -a /mnt/ROOT/ /tmp/calamares-krill-root/', echo)
+      await exec('rsync -a /mnt/ROOT/ /tmp/calamares-krill-root', echo)
 
       Utils.warning('copying users accounts in the installed system')
       await exec('cp /mnt/etc/passwd /tmp/calamares-krill-root/etc/', echo)
       await exec('cp /mnt/etc/shadow /tmp/calamares-krill-root/etc/', echo)
       await exec('cp /mnt/etc/group /tmp/calamares-krill-root/etc/', echo)
 
-
-      process.exit()
       Utils.warning('unmount /mnt')
       await exec('umount /mnt', echo)
 
