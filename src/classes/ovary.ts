@@ -222,17 +222,16 @@ export default class Ovary {
         let totalSize = 0
         Utils.warning('eggs will analyze your system, to get users and servers data')
         const users = await this.usersFill()
-        for (let i = 0; i < users.length; i++)
+        for (let i = 0; i < users.length; i++) {
           if (users[i].saveIt) {
             console.log(`user: ${users[i].login} \thome: ${users[i].home} \tsize: ${users[i].size}`)
             totalSize += users[i].size
           }
-        console.log(`Total size: ${totalSize}`)
-
-        Utils.warning("User's data are: " + Utils.formatBytes(totalSize))
+        }
+        Utils.warning("Backup data size is: " + Utils.formatBytes(totalSize))
 
         const binaryHeaderSize = 4194304
-        let volumeSize = totalSize * 1.2 + binaryHeaderSize
+        let volumeSize = totalSize * 1.1 + binaryHeaderSize
         let blocks = Math.ceil(volumeSize / 1024)
         Utils.warning(`Setting up encrypted ${luksFile} file of ${Utils.formatBytes(volumeSize)}`)
         await exec(`dd if=/dev/zero of=${luksFile} bs=1024 count=${blocks}`, echo)
@@ -269,7 +268,7 @@ export default class Ovary {
         await exec(`mount ${luksDevice} ${luksMountpoint}`, echo)
 
         Utils.warning(`Saving datas in ${luksName}`)
-        await this.copyUsersDatas(users, luksMountpoint, true)
+        await this.backupPrivateDatas(users, luksMountpoint, true)
 
         Utils.warning(`umount ${luksDevice}`)
         await exec(`umount ${luksDevice}`, echo)
@@ -1756,10 +1755,10 @@ export default class Ovary {
    *
    * @param verbose
    */
-  async copyUsersDatas(usersArray: Users[], luksMountpoint = '/mnt', verbose = false) {
+  async backupPrivateDatas(usersArray: Users[], luksMountpoint = '/mnt', verbose = false) {
     const echo = Utils.setEcho(verbose)
     if (verbose) {
-      Utils.warning('copyUsersDatas')
+      Utils.warning('backupPrivateDatas')
     }
 
     const cmds: string[] = []
@@ -1767,7 +1766,10 @@ export default class Ovary {
       if (usersArray[i].saveIt) {
         if (fs.existsSync(usersArray[i].home)) {
           await exec(`mkdir -p ${luksMountpoint}/ROOT${usersArray[i].home}`, echo)
-          await exec(`rsync -a ${usersArray[i].home} ${luksMountpoint}/ROOT${usersArray[i].home}`, echo)
+          const source = usersArray[i].home
+          let dest = luksMountpoint + '/ROOT' + usersArray[i].home
+          dest =  dest.substring(0, dest.lastIndexOf('/'))
+          await exec(`rsync --archive ${source} ${dest}`, echo)
         }
       }
     }
