@@ -219,7 +219,7 @@ export default class Hatching {
             percent = 0.37
             try {
                redraw(<Install message={message} percent={percent} spinner={true} />)
-               await this.restoreUsersData(true)
+               await this.restorePrivateData(true)
             } catch (error) {
                message += JSON.stringify(error)
                redraw(<Install message={message} percent={percent} />)
@@ -816,32 +816,38 @@ adduser ${name} \
    /**
     * 
     */
-   private async restoreUsersData(verbose=true) {
+   private async restorePrivateData(verbose=true) {
       const echo = Utils.setEcho(verbose)
+      let luksName = 'luks-eggs-backup'
+      let luksFile = `/tmp/${luksName}`
+      let luksLiveDevice = `/run/live/medium/live/luks-eggs-backup/${luksName}`
+      let luksMountpoint = `/mnt`
+
   
-      Utils.warning('Opening volume luks-eggs-backup and map it in /dev/mapper/luks-eggs-backup.')
-      Utils.warning('You will insert the same passphrase you choose during the backup production')
-      await exec('sudo cryptsetup luksOpen /run/live/medium/live/luks-eggs-backup luks-eggs-backup', echo)
+      Utils.warning(`Opening volume ${luksName}, you MUST user the same passphrase you choose during the backup`)
+      await exec(`sudo cryptsetup luksOpen ${luksLiveDevice} ${luksName}`, echo)
 
-      Utils.warning('mounting volume luks-eggs-backup in /mnt')
-      await exec('sudo mount /dev/mapper/luks-eggs-backup /mnt', echo)
+      Utils.warning(`mounting volume ${luksName} in ${luksMountpoint}`)
+      await exec(`sudo mount ${luksLiveDevice} ${luksMountpoint}`, echo)
 
-      Utils.warning('removing live user in the installed system')
-      await exec('rm -rf /tmp/calamares-krill-root/home/*', echo)
+      Utils.warning('Removing live user in the installed system')
+      await exec(`rm -rf /tmp/calamares-krill-root/home/*`, echo)
 
-      Utils.warning('copying users home in the installed system')
-      await exec('rsync -a /mnt/ROOT/ /tmp/calamares-krill-root', echo)
+      Utils.warning('Restoring backup data on the installing system')
+      await exec('rsync -a /mnt/ROOT/ /tmp/calamares-krill-root/', echo)
+      // Remember... 
+      // await exec('rsync -a /mnt/ROOT/ /tmp/calamares-krill-root/', echo)
 
-      Utils.warning('copying users accounts in the installed system')
+      Utils.warning('Restoring accounts on the installing system')
       await exec('cp /mnt/etc/passwd /tmp/calamares-krill-root/etc/', echo)
       await exec('cp /mnt/etc/shadow /tmp/calamares-krill-root/etc/', echo)
       await exec('cp /mnt/etc/group /tmp/calamares-krill-root/etc/', echo)
 
-      Utils.warning('unmount /mnt')
+      Utils.warning(`unmount volume ${luksName}`)
       await exec('umount /mnt', echo)
 
-      Utils.warning('closing luks-eggs-backup')
-      await exec('cryptsetup luksClose luks-eggs-backup', echo)
+      Utils.warning(`Closing volume ${luksName}`)
+      await exec(`cryptsetup luksClose ${luksName}`, echo)
    }
 
    /**
