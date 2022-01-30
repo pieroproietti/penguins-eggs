@@ -102,6 +102,11 @@ export default class Hatching {
 
    distro = {} as IDistro
 
+   luksName = ''
+   luksFile = ''
+   luksDevice = ''
+   luksMountpoint = ''
+
    /**
     * constructor
     */
@@ -133,6 +138,13 @@ export default class Hatching {
       this.distro = new Distro(this.remix)
 
       this.efi = fs.existsSync('/sys/firmware/efi/efivars')
+
+      // Per il restore dei dati
+      this.luksName = 'luks-eggs-backup'
+      this.luksFile = `/run/live/medium/live/${this.luksName}`
+      this.luksDevice = `/dev/mapper/${this.luksName}`
+      this.luksMountpoint = `/mnt`
+   
    }
 
    /**
@@ -214,8 +226,9 @@ export default class Hatching {
          /**
           * RESTORE USERS DATA
           */
-         if (fs.existsSync('/run/live/medium/live/luks-eggs-backup')) {
-            message = "Restore users and servers data from backup "
+
+         if (fs.existsSync(this.luksFile)) {
+            message = "Restore private data from backup "
             percent = 0.37
             try {
                redraw(<Install message={message} percent={percent} spinner={true} />)
@@ -369,7 +382,7 @@ export default class Hatching {
           * 
           * create user
           */
-         if (!fs.existsSync('/run/live/medium/live/luks-eggs-backup')) {
+         if (!fs.existsSync(this.luksFile)) {
             message = "Adding user "
             percent = 0.73
             try {
@@ -816,38 +829,41 @@ adduser ${name} \
    /**
     * 
     */
-   private async restorePrivateData(verbose=true) {
+   private async restorePrivateData(verbose=false) {
       const echo = Utils.setEcho(verbose)
-      let luksName = 'luks-eggs-backup'
-      let luksFile = `/tmp/${luksName}`
-      let luksLiveDevice = `/run/live/medium/live/luks-eggs-backup/${luksName}`
-      let luksMountpoint = `/mnt`
-
+      const echoYes = Utils.setEcho(verbose)
   
-      Utils.warning(`Opening volume ${luksName}, you MUST user the same passphrase you choose during the backup`)
-      await exec(`sudo cryptsetup luksOpen ${luksLiveDevice} ${luksName}`, echo)
+      Utils.warning(`Opening volume ${this.luksName}, you MUST user the same passphrase you choose during the backup`)
+      let crytoSetup = await exec(`cryptsetup luksOpen --type luks2 ${this.luksFile} ${this.luksName}`, echoYes)
 
-      Utils.warning(`mounting volume ${luksName} in ${luksMountpoint}`)
-      await exec(`sudo mount ${luksLiveDevice} ${luksMountpoint}`, echo)
 
-      Utils.warning('Removing live user in the installed system')
+      Utils.warning(`mount ${this.luksDevice} ${this.luksMountpoint}`)
+      await exec(`mount ${this.luksDevice} ${this.luksMountpoint}`, echo)
+
+      Utils.warning('Removing live user on the destination system')
       await exec(`rm -rf /tmp/calamares-krill-root/home/*`, echo)
 
       Utils.warning('Restoring backup data on the installing system')
-      await exec('rsync -a /mnt/ROOT/ /tmp/calamares-krill-root/', echo)
+      await exec(`rsync -a ${this.luksMountpoint}/ROOT/ /tmp/calamares-krill-root/`, echo)
       // Remember... 
       // await exec('rsync -a /mnt/ROOT/ /tmp/calamares-krill-root/', echo)
 
+      /**
+       * Utils.warning('After rsync: exit to continue...')
+       * await exec('/bin/bash', echo)
+       * 
+       */
+ 
       Utils.warning('Restoring accounts on the installing system')
-      await exec('cp /mnt/etc/passwd /tmp/calamares-krill-root/etc/', echo)
-      await exec('cp /mnt/etc/shadow /tmp/calamares-krill-root/etc/', echo)
-      await exec('cp /mnt/etc/group /tmp/calamares-krill-root/etc/', echo)
+      await exec(`cp ${this.luksMountpoint}/etc/passwd /tmp/calamares-krill-root/etc/`, echo)
+      await exec(`cp ${this.luksMountpoint}/etc/shadow /tmp/calamares-krill-root/etc/`, echo)
+      await exec(`cp ${this.luksMountpoint}/etc/group /tmp/calamares-krill-root/etc/`, echo)
 
-      Utils.warning(`unmount volume ${luksName}`)
-      await exec('umount /mnt', echo)
+      Utils.warning(`unmount volume ${this.luksName}`)
+      await exec(`umount ${this.luksMountpoint}`, echo)
 
-      Utils.warning(`Closing volume ${luksName}`)
-      await exec(`cryptsetup luksClose ${luksName}`, echo)
+      Utils.warning(`Closing volume ${this.luksName}`)
+      await exec(`cryptsetup luksClose ${this.luksName}`, echo)
    }
 
    /**
