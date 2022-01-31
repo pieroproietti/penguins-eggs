@@ -235,9 +235,20 @@ export default class Ovary {
          */
         const binaryHeaderSize = 4194304
         let volumeSize = totalSize * 1.2 + binaryHeaderSize
-        let blockSize = 512
-        let blocks = Math.ceil(volumeSize/ blockSize)
-        Utils.warning(`Creating an encrypted file ${luksFile} blocks=${blocks}, block size: ${blockSize}, size: ${Utils.formatBytes(blocks*blockSize)}`)
+
+        // Deciding blockSize and blocks
+        let blockSize = 1024
+        let blocks = Math.ceil(volumeSize / blockSize)
+
+        // We need a minimum size of 32 MB
+        let minimunSize=33554432 // 32 * 1024 *1024
+        if (totalSize < minimunSize) {
+        }
+        if (blocks * blockSize < minimunSize) {
+          blocks = Math.ceil(minimunSize / blockSize)
+        }
+
+        Utils.warning(`Creating an encrypted file ${luksFile} blocks=${blocks}, block size: ${blockSize}, size: ${Utils.formatBytes(blocks * blockSize)}`)
         await exec(`dd if=/dev/zero of=${luksFile} bs=${blockSize} count=${blocks}`, echo)
 
         // find first unused device
@@ -1766,13 +1777,13 @@ export default class Ovary {
     }
 
     const cmds: string[] = []
-    for (let i = 0; i < usersArray.length ; i++) {
+    for (let i = 0; i < usersArray.length; i++) {
       if (usersArray[i].saveIt) {
         if (fs.existsSync(usersArray[i].home)) {
           await exec(`mkdir -p ${luksMountpoint}/ROOT${usersArray[i].home}`, echo)
           const source = usersArray[i].home
           let dest = luksMountpoint + '/ROOT' + usersArray[i].home
-          dest =  dest.substring(0, dest.lastIndexOf('/'))
+          dest = dest.substring(0, dest.lastIndexOf('/'))
           await exec(`rsync --archive ${source} ${dest}`, echo)
         }
       }
