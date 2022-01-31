@@ -869,7 +869,21 @@ export default class Ovary {
    * - mergedAndOverlay creazione directory, overlay e mount rw
    *
    * @param dir
-   *
+   * merged(dir: string): boolean {
+    const normalDirs = [
+      'cdrom',
+      'dev',
+      'home',
+      // 'live',
+      'media',
+      'mnt',
+      'opt',
+      'proc',
+      'run',
+      'sys',
+      'swapfile',
+      'tmp'
+    ]
    * @returns merged
    */
   merged(dir: string): boolean {
@@ -880,6 +894,7 @@ export default class Ovary {
       // 'live',
       'media',
       'mnt',
+      'opt',
       'proc',
       'run',
       'sys',
