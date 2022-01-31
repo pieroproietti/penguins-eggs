@@ -45,10 +45,11 @@ export default class Analyze extends Command {
         const users = await this.fill()
         for (let i = 0; i < users.length; i++)
           if (users[i].saveIt) {
-            console.log(`user: ${users[i].login} \thome: ${users[i].home} \tsize: ${users[i].size}`)
+            console.log(`user: ${users[i].login} \thome: ${users[i].home.padEnd(16)} \tsize: ${Utils.formatBytes(users[i].size)} \tBytes: ${users[i].size} `)
+            // console.log(`user: ${users[i].login} \thome: ${users[i].home} \tsize: ${users[i].size}`)
             totalSize+=users[i].size
           }
-          console.log(`Total size: ${totalSize}`)
+          console.log(`Total\t\t\t\t\tSize: ${Utils.formatBytes(totalSize)} \tBytes: ${totalSize}`)
       }
     }
   }

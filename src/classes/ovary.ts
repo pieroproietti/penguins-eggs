@@ -224,17 +224,21 @@ export default class Ovary {
         const users = await this.usersFill()
         for (let i = 0; i < users.length; i++) {
           if (users[i].saveIt) {
-            console.log(`user: ${users[i].login} \thome: ${users[i].home} \tsize: ${users[i].size}`)
+            console.log(`user: ${users[i].login} \thome: ${users[i].home.padEnd(16)} \tsize: ${Utils.formatBytes(users[i].size)} \tBytes: ${users[i].size} `)
             totalSize += users[i].size
           }
         }
-        Utils.warning("Backup data size is: " + Utils.formatBytes(totalSize))
+        console.log(`Total\t\t\t\t\tSize: ${Utils.formatBytes(totalSize)} \tBytes: ${totalSize}`)
 
+        /**
+         * after we get size, we can start building luks-volume
+         */
         const binaryHeaderSize = 4194304
-        let volumeSize = totalSize * 1.1 + binaryHeaderSize
-        let blocks = Math.ceil(volumeSize / 1024)
-        Utils.warning(`Setting up encrypted ${luksFile} file of ${Utils.formatBytes(volumeSize)}`)
-        await exec(`dd if=/dev/zero of=${luksFile} bs=1024 count=${blocks}`, echo)
+        let volumeSize = totalSize * 1.2 + binaryHeaderSize
+        let blockSize = 512
+        let blocks = Math.ceil(volumeSize/ blockSize)
+        Utils.warning(`Creating an encrypted file ${luksFile} blocks=${blocks}, block size: ${blockSize}, size: ${Utils.formatBytes(blocks*blockSize)}`)
+        await exec(`dd if=/dev/zero of=${luksFile} bs=${blockSize} count=${blocks}`, echo)
 
         // find first unused device
         let findFirstUnusedDevice = await exec(`losetup -f`, { echo: verbose, ignore: false, capture: true })
@@ -268,7 +272,7 @@ export default class Ovary {
         await exec(`mount ${luksDevice} ${luksMountpoint}`, echo)
 
         Utils.warning(`Saving datas in ${luksName}`)
-        await this.backupPrivateDatas(users, luksMountpoint, true)
+        await this.backupPrivateDatas(users, luksMountpoint, verbose)
 
         Utils.warning(`umount ${luksDevice}`)
         await exec(`umount ${luksDevice}`, echo)
