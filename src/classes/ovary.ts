@@ -241,7 +241,7 @@ export default class Ovary {
         let blocks = Math.ceil(volumeSize / blockSize)
 
         // We need a minimum size of 32 MB
-        let minimunSize=33554432 // 32 * 1024 *1024
+        let minimunSize=134217728 // 128 * 1024 *1024
         if (totalSize < minimunSize) {
         }
         if (blocks * blockSize < minimunSize) {
