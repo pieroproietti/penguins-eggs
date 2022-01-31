@@ -41,16 +41,14 @@ export default class Analyze extends Command {
     let totalSize = 0
     if (Utils.isRoot(this.id)) {
       Utils.warning('eggs will analyze your system, to get users and servers data')
-      if (await Utils.customConfirm()) {
-        const users = await this.fill()
-        for (let i = 0; i < users.length; i++)
-          if (users[i].saveIt) {
-            console.log(`user: ${users[i].login} \thome: ${users[i].home.padEnd(16)} \tsize: ${Utils.formatBytes(users[i].size)} \tBytes: ${users[i].size} `)
-            // console.log(`user: ${users[i].login} \thome: ${users[i].home} \tsize: ${users[i].size}`)
-            totalSize+=users[i].size
-          }
-          console.log(`Total\t\t\t\t\tSize: ${Utils.formatBytes(totalSize)} \tBytes: ${totalSize}`)
-      }
+      const users = await this.fill()
+      for (let i = 0; i < users.length; i++)
+        if (users[i].saveIt) {
+          console.log(`user: ${users[i].login} \thome: ${users[i].home.padEnd(16)} \tsize: ${Utils.formatBytes(users[i].size)} \tBytes: ${users[i].size} `)
+          // console.log(`user: ${users[i].login} \thome: ${users[i].home} \tsize: ${users[i].size}`)
+          totalSize += users[i].size
+        }
+      console.log(`Total\t\t\t\t\tSize: ${Utils.formatBytes(totalSize)} \tBytes: ${totalSize}`)
     }
   }
 
@@ -59,21 +57,21 @@ export default class Analyze extends Command {
    */
   async fill(): Promise<Users[]> {
     //try {
-      const usersArray = []
-      await access('/etc/passwd', constants.R_OK | constants.W_OK);
-      const passwd = fs.readFileSync('/etc/passwd', 'utf-8').split('\n')
-      for (let i = 0; i < passwd.length; i++) {
-        var line = passwd[i].split(':')
-        const users = new Users(line[0], line[1], line[2], line[3], line[4], line[5], line[6])
-        await users.getValues()
-        if (users.password !== undefined) {
-          usersArray.push(users)
-        }
+    const usersArray = []
+    await access('/etc/passwd', constants.R_OK | constants.W_OK);
+    const passwd = fs.readFileSync('/etc/passwd', 'utf-8').split('\n')
+    for (let i = 0; i < passwd.length; i++) {
+      var line = passwd[i].split(':')
+      const users = new Users(line[0], line[1], line[2], line[3], line[4], line[5], line[6])
+      await users.getValues()
+      if (users.password !== undefined) {
+        usersArray.push(users)
       }
-      return usersArray
+    }
+    return usersArray
     //} catch {
-      //console.error("can't read /etc/passwd");
-      //process.exit(1)
+    //console.error("can't read /etc/passwd");
+    //process.exit(1)
     //}
   }
 }
