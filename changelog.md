@@ -18,6 +18,9 @@ You can follow the project also consulting the [commit history](https://github.c
 ## Changelog
 Versions are listed on reverse order, the first is the last one.
 
+### eggs-9.0.14
+--backup option: set minimun luks volume size to 128 MB; it's possible to move nest under /opt
+
 ### eggs-9.0.12
 --backup option: save users and SERVERS datas in LUKS volume inside ISO, then can be restored by krill. 
 
