@@ -1044,11 +1044,14 @@ export default class Ovary {
           }
 
           cmds.push(`\n# remove in ${this.settings.work_dir.merged} and ${this.settings.work_dir.lowerdir}`)
-          if (dirname !== 'home') {
+
+          /**
+           * We can't remove the nest!!!
+           */
+          let nest = this.settings.work_dir.path.split('/')
+          if (dirname !== nest[1]) { // We can't remove first level nest
             cmds.push(await rexec(`rm ${this.settings.work_dir.merged}/${dirname} -rf`, verbose))
           }
-
-          cmds.push(await rexec(`rm ${this.settings.work_dir.lowerdir}/${dirname} -rf`, verbose))
         } else if (N8.isFile(dirname)) {
           cmds.push(`\n# ${dirname} = file`)
           cmds.push(await rexec(`rm ${this.settings.work_dir.merged}/${dirname}`, verbose))
