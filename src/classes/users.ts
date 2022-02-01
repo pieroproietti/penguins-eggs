@@ -93,8 +93,17 @@ export default class Users {
                 }
             }
 
-            if (saveIt) {
+            /**
+             * exclude to save if home don't exist
+             */
+            if (!fs.existsSync(this.home)) {
+                saveIt = false
+            }
 
+            /**
+             * others motivations to exclude
+             */
+            if (saveIt) {
                 switch (this.home) {
                     /**
                      * exclude always /
@@ -136,6 +145,7 @@ export default class Users {
                         break
                     }
                 }
+
             }
             this.saveIt = saveIt
             this.size = size
