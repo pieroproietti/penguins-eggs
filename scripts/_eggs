@@ -8,6 +8,7 @@ _eggs () {
   ## public cli commands & flags
   local -a _all_commands=(
 "adapt:adapt monitor resolution for VM only"
+"analyze:analyze situation"
 "bro:bro: waydroid helper"
 "calamares:calamares or install or configure it"
 "config:Configure and install prerequisites deb packages to run it"
@@ -38,6 +39,13 @@ adapt)
   _command_flags=(
     "--verbose[]"
 "--help[Show CLI help.]"
+  )
+;;
+
+analyze)
+  _command_flags=(
+    "--help[Show CLI help.]"
+"--verbose[verbose]"
   )
 ;;
 
@@ -112,6 +120,7 @@ info)
 install)
   _command_flags=(
     "--cli[force use CLI installer]"
+"--crypted[crypted CLI installation]"
 "--help[Show CLI help.]"
 "--verbose[verbose]"
   )
