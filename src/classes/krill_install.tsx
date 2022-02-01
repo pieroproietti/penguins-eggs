@@ -232,7 +232,7 @@ export default class Hatching {
             percent = 0.37
             try {
                redraw(<Install message={message} percent={percent} spinner={true} />)
-               await exec('eggs restore --krill')
+               await exec('eggs restore --krill --verbose')
             } catch (error) {
                message += JSON.stringify(error)
                redraw(<Install message={message} percent={percent} />)
