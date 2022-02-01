@@ -12,6 +12,7 @@ _eggs_autocomplete()
 
   local commands="
 adapt --verbose --help
+analyze --help --verbose
 bro --help
 calamares --help --verbose --install --final --remove --theme
 config --nointeractive --clean --help --verbose
@@ -20,7 +21,7 @@ export:deb --help --clean --amd64 --i386 --armel --arm64 --all
 export:docs --help
 export:iso --help --backup --clean
 info --verbose --help
-install --cli --help --verbose
+install --cli --crypted --help --verbose
 kill --help --verbose
 mom --help
 produce --prefix --basename --backup --fast --normal --max --verbose --yolk --script --help --theme --addons --release
@@ -31,8 +32,8 @@ tools:skel --help --user --verbose
 tools:stat --help --month --year
 tools:yolk --help --verbose
 update --help --apt --basket --verbose
-help --nested-commands
 autocomplete --refresh-cache
+help --nested-commands
 version 
 "
 
