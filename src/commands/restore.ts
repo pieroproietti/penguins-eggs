@@ -9,7 +9,6 @@ import { Command, Flags } from '@oclif/core'
 import fs = require('fs')
 import Utils from '../classes/utils'
 import { exec } from '../lib/utils'
-import Calamares from './calamares'
 
 
 export default class Restore extends Command {
@@ -32,7 +31,7 @@ export default class Restore extends Command {
   static examples = ['$ sudo eggs restore']
 
   async run(): Promise<void> {
-    Utils.titles(this.id + ' ' + this.argv)
+    //Utils.titles(this.id + ' ' + this.argv)
 
     const { flags } = await this.parse(Restore)
     let verbose = false
