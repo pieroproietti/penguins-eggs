@@ -18,6 +18,9 @@ You can follow the project also consulting the [commit history](https://github.c
 ## Changelog
 Versions are listed on reverse order, the first is the last one.
 
+### eggs-9.0.15
+--backup option: a new common command restore was added it will be be used inside krill (OK) or calamares (to do)
+
 ### eggs-9.0.14
 --backup option: set minimun luks volume size to 128 MB; it's possible to move nest under /opt
 
