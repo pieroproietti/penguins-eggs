@@ -113,7 +113,7 @@ $ npm install -g penguins-eggs
 $ eggs COMMAND
 running command...
 $ eggs (--version|-v)
-penguins-eggs/9.0.14 linux-x64 node-v16.13.2
+penguins-eggs/9.0.15 linux-x64 node-v16.13.2
 $ eggs --help [COMMAND]
 USAGE
   $ eggs COMMAND
@@ -168,7 +168,7 @@ ALIASES
   $ eggs adjust
 ```
 
-_See code: [src/commands/adapt.ts](https://github.com/pieroproietti/penguins-eggs/blob/v9.0.14/src/commands/adapt.ts)_
+_See code: [src/commands/adapt.ts](https://github.com/pieroproietti/penguins-eggs/blob/v9.0.15/src/commands/adapt.ts)_
 
 ## `eggs analyze`
 
@@ -189,7 +189,7 @@ EXAMPLES
   $ sudo eggs analyze
 ```
 
-_See code: [src/commands/analyze.ts](https://github.com/pieroproietti/penguins-eggs/blob/v9.0.14/src/commands/analyze.ts)_
+_See code: [src/commands/analyze.ts](https://github.com/pieroproietti/penguins-eggs/blob/v9.0.15/src/commands/analyze.ts)_
 
 ## `eggs autocomplete [SHELL]`
 
@@ -235,7 +235,7 @@ DESCRIPTION
   bro: waydroid helper
 ```
 
-_See code: [src/commands/bro.ts](https://github.com/pieroproietti/penguins-eggs/blob/v9.0.14/src/commands/bro.ts)_
+_See code: [src/commands/bro.ts](https://github.com/pieroproietti/penguins-eggs/blob/v9.0.15/src/commands/bro.ts)_
 
 ## `eggs calamares`
 
@@ -264,7 +264,7 @@ EXAMPLES
   install calamares and create it's configuration's files
 ```
 
-_See code: [src/commands/calamares.ts](https://github.com/pieroproietti/penguins-eggs/blob/v9.0.14/src/commands/calamares.ts)_
+_See code: [src/commands/calamares.ts](https://github.com/pieroproietti/penguins-eggs/blob/v9.0.15/src/commands/calamares.ts)_
 
 ## `eggs config`
 
@@ -291,7 +291,7 @@ EXAMPLES
   Configure and install prerequisites deb packages to run it
 ```
 
-_See code: [src/commands/config.ts](https://github.com/pieroproietti/penguins-eggs/blob/v9.0.14/src/commands/config.ts)_
+_See code: [src/commands/config.ts](https://github.com/pieroproietti/penguins-eggs/blob/v9.0.15/src/commands/config.ts)_
 
 ## `eggs dad`
 
@@ -311,7 +311,7 @@ DESCRIPTION
   ask help from daddy - configuration helper
 ```
 
-_See code: [src/commands/dad.ts](https://github.com/pieroproietti/penguins-eggs/blob/v9.0.14/src/commands/dad.ts)_
+_See code: [src/commands/dad.ts](https://github.com/pieroproietti/penguins-eggs/blob/v9.0.15/src/commands/dad.ts)_
 
 ## `eggs export deb`
 
@@ -402,7 +402,7 @@ DESCRIPTION
   re-thinking for a different approach to CLI
 ```
 
-_See code: [src/commands/info.ts](https://github.com/pieroproietti/penguins-eggs/blob/v9.0.14/src/commands/info.ts)_
+_See code: [src/commands/info.ts](https://github.com/pieroproietti/penguins-eggs/blob/v9.0.15/src/commands/info.ts)_
 
 ## `eggs install`
 
@@ -430,7 +430,7 @@ EXAMPLES
   Install the system using GUI or CLI installer
 ```
 
-_See code: [src/commands/install.ts](https://github.com/pieroproietti/penguins-eggs/blob/v9.0.14/src/commands/install.ts)_
+_See code: [src/commands/install.ts](https://github.com/pieroproietti/penguins-eggs/blob/v9.0.15/src/commands/install.ts)_
 
 ## `eggs kill`
 
@@ -452,7 +452,7 @@ EXAMPLES
   kill the eggs/free the nest
 ```
 
-_See code: [src/commands/kill.ts](https://github.com/pieroproietti/penguins-eggs/blob/v9.0.14/src/commands/kill.ts)_
+_See code: [src/commands/kill.ts](https://github.com/pieroproietti/penguins-eggs/blob/v9.0.15/src/commands/kill.ts)_
 
 ## `eggs mom`
 
@@ -469,7 +469,7 @@ DESCRIPTION
   ask for mommy - gui helper
 ```
 
-_See code: [src/commands/mom.ts](https://github.com/pieroproietti/penguins-eggs/blob/v9.0.14/src/commands/mom.ts)_
+_See code: [src/commands/mom.ts](https://github.com/pieroproietti/penguins-eggs/blob/v9.0.15/src/commands/mom.ts)_
 
 ## `eggs produce`
 
@@ -534,7 +534,7 @@ EXAMPLES
   in /home/eggs/ovarium and you can customize all you need
 ```
 
-_See code: [src/commands/produce.ts](https://github.com/pieroproietti/penguins-eggs/blob/v9.0.14/src/commands/produce.ts)_
+_See code: [src/commands/produce.ts](https://github.com/pieroproietti/penguins-eggs/blob/v9.0.15/src/commands/produce.ts)_
 
 ## `eggs remove`
 
@@ -564,7 +564,7 @@ EXAMPLES
   remove eggs, eggs configurations, packages dependencies
 ```
 
-_See code: [src/commands/remove.ts](https://github.com/pieroproietti/penguins-eggs/blob/v9.0.14/src/commands/remove.ts)_
+_See code: [src/commands/remove.ts](https://github.com/pieroproietti/penguins-eggs/blob/v9.0.15/src/commands/remove.ts)_
 
 ## `eggs restore`
 
@@ -587,7 +587,7 @@ EXAMPLES
   $ sudo eggs restore
 ```
 
-_See code: [src/commands/restore.ts](https://github.com/pieroproietti/penguins-eggs/blob/v9.0.14/src/commands/restore.ts)_
+_See code: [src/commands/restore.ts](https://github.com/pieroproietti/penguins-eggs/blob/v9.0.15/src/commands/restore.ts)_
 
 ## `eggs tools clean`
 
@@ -710,7 +710,7 @@ EXAMPLES
   update/upgrade the penguin's eggs tool
 ```
 
-_See code: [src/commands/update.ts](https://github.com/pieroproietti/penguins-eggs/blob/v9.0.14/src/commands/update.ts)_
+_See code: [src/commands/update.ts](https://github.com/pieroproietti/penguins-eggs/blob/v9.0.15/src/commands/update.ts)_
 
 ## `eggs version`
 
