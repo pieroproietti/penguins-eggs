@@ -140,6 +140,7 @@ USAGE
 * [`eggs mom`](#eggs-mom)
 * [`eggs produce`](#eggs-produce)
 * [`eggs remove`](#eggs-remove)
+* [`eggs restore`](#eggs-restore)
 * [`eggs tools clean`](#eggs-tools-clean)
 * [`eggs tools locales`](#eggs-tools-locales)
 * [`eggs tools skel`](#eggs-tools-skel)
@@ -564,6 +565,29 @@ EXAMPLES
 ```
 
 _See code: [src/commands/remove.ts](https://github.com/pieroproietti/penguins-eggs/blob/v9.0.14/src/commands/remove.ts)_
+
+## `eggs restore`
+
+Restore users, server and datas from luks-eggs-backup
+
+```
+USAGE
+  $ eggs restore [-c] [-k] [-h] [-v]
+
+FLAGS
+  -c, --calamares  calamares
+  -h, --help       Show CLI help.
+  -k, --krill      krill
+  -v, --verbose    verbose
+
+DESCRIPTION
+  Restore users, server and datas from luks-eggs-backup
+
+EXAMPLES
+  $ sudo eggs restore
+```
+
+_See code: [src/commands/restore.ts](https://github.com/pieroproietti/penguins-eggs/blob/v9.0.14/src/commands/restore.ts)_
 
 ## `eggs tools clean`
 
