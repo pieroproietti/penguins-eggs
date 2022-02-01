@@ -56,23 +56,23 @@ export default class Analyze extends Command {
    * fill
    */
   async fill(): Promise<Users[]> {
-    //try {
-    const usersArray = []
-    await access('/etc/passwd', constants.R_OK | constants.W_OK);
-    const passwd = fs.readFileSync('/etc/passwd', 'utf-8').split('\n')
-    for (let i = 0; i < passwd.length; i++) {
-      var line = passwd[i].split(':')
-      const users = new Users(line[0], line[1], line[2], line[3], line[4], line[5], line[6])
-      await users.getValues()
-      if (users.password !== undefined) {
-        usersArray.push(users)
+    try {
+      const usersArray = []
+      await access('/etc/passwd', constants.R_OK | constants.W_OK);
+      const passwd = fs.readFileSync('/etc/passwd', 'utf-8').split('\n')
+      for (let i = 0; i < passwd.length; i++) {
+        var line = passwd[i].split(':')
+        const users = new Users(line[0], line[1], line[2], line[3], line[4], line[5], line[6])
+        await users.getValues()
+        if (users.password !== undefined) {
+          usersArray.push(users)
+        }
       }
+      return usersArray
+    } catch {
+      console.error("can't read /etc/passwd");
+      process.exit(1)
     }
-    return usersArray
-    //} catch {
-    //console.error("can't read /etc/passwd");
-    //process.exit(1)
-    //}
   }
 }
 
