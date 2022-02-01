@@ -232,7 +232,7 @@ export default class Hatching {
             percent = 0.37
             try {
                redraw(<Install message={message} percent={percent} spinner={true} />)
-               await this.restorePrivateData(true)
+               await exec('eggs restore --krill --verbose')
             } catch (error) {
                message += JSON.stringify(error)
                redraw(<Install message={message} percent={percent} />)
@@ -825,46 +825,6 @@ adduser ${name} \
       await exec(cmd.trim())
    }
 
-
-   /**
-    * 
-    */
-   private async restorePrivateData(verbose=false) {
-      const echo = Utils.setEcho(verbose)
-      const echoYes = Utils.setEcho(verbose)
-  
-      Utils.warning(`Opening volume ${this.luksName}, you MUST user the same passphrase you choose during the backup`)
-      let crytoSetup = await exec(`cryptsetup luksOpen --type luks2 ${this.luksFile} ${this.luksName}`, echoYes)
-
-
-      Utils.warning(`mount ${this.luksDevice} ${this.luksMountpoint}`)
-      await exec(`mount ${this.luksDevice} ${this.luksMountpoint}`, echo)
-
-      Utils.warning('Removing live user on the destination system')
-      await exec(`rm -rf /tmp/calamares-krill-root/home/*`, echo)
-
-      Utils.warning('Restoring backup data on the installing system')
-      await exec(`rsync -a ${this.luksMountpoint}/ROOT/ /tmp/calamares-krill-root/`, echo)
-      // Remember... 
-      // await exec('rsync -a /mnt/ROOT/ /tmp/calamares-krill-root/', echo)
-
-      /**
-       * Utils.warning('After rsync: exit to continue...')
-       * await exec('/bin/bash', echo)
-       * 
-       */
- 
-      Utils.warning('Restoring accounts on the installing system')
-      await exec(`cp ${this.luksMountpoint}/etc/passwd /tmp/calamares-krill-root/etc/`, echo)
-      await exec(`cp ${this.luksMountpoint}/etc/shadow /tmp/calamares-krill-root/etc/`, echo)
-      await exec(`cp ${this.luksMountpoint}/etc/group /tmp/calamares-krill-root/etc/`, echo)
-
-      Utils.warning(`unmount volume ${this.luksName}`)
-      await exec(`umount ${this.luksMountpoint}`, echo)
-
-      Utils.warning(`Closing volume ${this.luksName}`)
-      await exec(`cryptsetup luksClose ${this.luksName}`, echo)
-   }
 
    /**
     * mkfs
