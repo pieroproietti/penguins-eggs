@@ -572,13 +572,13 @@ Restore users, server and datas from luks-eggs-backup
 
 ```
 USAGE
-  $ eggs restore [-c] [-k] [-h] [-v]
+  $ eggs restore [-k] [-f <value>] [-h] [-v]
 
 FLAGS
-  -c, --calamares  calamares
-  -h, --help       Show CLI help.
-  -k, --krill      krill
-  -v, --verbose    verbose
+  -f, --file=<value>  file with LUKS volume encrypted
+  -h, --help          Show CLI help.
+  -k, --krill         krill
+  -v, --verbose       verbose
 
 DESCRIPTION
   Restore users, server and datas from luks-eggs-backup

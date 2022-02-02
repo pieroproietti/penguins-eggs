@@ -126,6 +126,11 @@ export default class Ovary {
     const echo = Utils.setEcho(verbose)
     const echoYes = Utils.setEcho(true)
 
+    let luksName = 'luks-eggs-backup'
+    let luksFile = `/tmp/${luksName}`
+    let luksDevice = `/dev/mapper/${luksName}`
+    let luksMountpoint = `/mnt`
+
     if (this.familyId === 'debian') {
       const yolk = new Repo()
       if (!yolk.exists()) {
@@ -157,6 +162,27 @@ export default class Ovary {
         await Pacman.calamaresInstall(verbose)
         const bleach = new Bleach()
         await bleach.clean(verbose)
+      }
+
+      if (backup) {
+        /**
+         *  We will remove users and servers homes from ISO
+         */
+        console.log(`The following private data will removed from your ISO:`)
+        const users = await this.usersFill()
+        for (let i = 0; i < users.length; i++) {
+          if (users[i].saveIt) {
+            console.log(`- user: ${users[i].login.padEnd(16)} \thome: ${users[i].home}`)
+            if (users[i].login !== 'root') {
+              this.addRemoveExclusion(true, users[i].home)
+            }
+          }
+        }
+      } else {
+        /**
+         *  We will remove all the users from ISO, but servers and data will be included uncrypted
+         */
+        Utils.warning('eggs will remove all the users from ISO, but servers and data will be included uncrypted')
       }
 
       /**
@@ -212,20 +238,18 @@ export default class Ovary {
       }
 
       if (backup) {
-        let luksName = 'luks-eggs-backup'
-        let luksFile = `/tmp/${luksName}`
-        let luksDevice = `/dev/mapper/${luksName}`
-        let luksMountpoint = `/mnt`
 
         Utils.warning('Starting backup procedure')
 
         let totalSize = 0
-        Utils.warning('eggs will analyze your system, to get users and servers data')
+        console.log(`The following private data will be copied inside a LUKS volume:`)
         const users = await this.usersFill()
         for (let i = 0; i < users.length; i++) {
-          if (users[i].saveIt) {
-            console.log(`user: ${users[i].login} \thome: ${users[i].home.padEnd(16)} \tsize: ${Utils.formatBytes(users[i].size)} \tBytes: ${users[i].size} `)
-            totalSize += users[i].size
+          if (users[i].login !== 'root') {
+            if (users[i].saveIt) {
+              console.log(`user: ${users[i].login} \thome: ${users[i].home.padEnd(16)} \tsize: ${Utils.formatBytes(users[i].size)} \tBytes: ${users[i].size} `)
+              totalSize += users[i].size
+            }
           }
         }
         console.log(`Total\t\t\t\t\tSize: ${Utils.formatBytes(totalSize)} \tBytes: ${totalSize}`)
@@ -241,7 +265,7 @@ export default class Ovary {
         let blocks = Math.ceil(volumeSize / blockSize)
 
         // We need a minimum size of 32 MB
-        let minimunSize=134217728 // 128 * 1024 *1024
+        let minimunSize = 134217728 // 128 * 1024 *1024
         if (totalSize < minimunSize) {
         }
         if (blocks * blockSize < minimunSize) {
