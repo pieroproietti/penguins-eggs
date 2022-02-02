@@ -56,7 +56,7 @@ export default class Users {
             { path: 'mnt', saveIt: false },
             { path: 'opt', saveIt: true },
             { path: 'proc', saveIt: false },
-            { path: 'root', saveIt: true },
+            { path: 'root', saveIt: false },
             { path: 'run', saveIt: false },
             { path: 'sbin', saveIt: false },
             { path: 'sys', saveIt: false },
