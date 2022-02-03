@@ -26,15 +26,17 @@ kill --help --verbose
 mom --help
 produce --prefix --basename --backup --fast --normal --max --verbose --yolk --script --help --theme --addons --release
 remove --purge --autoremove --help --verbose
+syncfrom --krill --file --help --verbose
+syncto --krill --file --help --verbose
 tools:clean --help --verbose
 tools:locales --help --reinstall --verbose
 tools:skel --help --user --verbose
 tools:stat --help --month --year
 tools:yolk --help --verbose
 update --help --apt --basket --verbose
-autocomplete --refresh-cache
 help --nested-commands
 version 
+autocomplete --refresh-cache
 "
 
   function __trim_colon_commands()
