@@ -810,34 +810,14 @@ export default class Ovary {
    * - normal solo la creazione della directory, nessun mount
    * - merged creazione della directory e mount ro
    * - mergedAndOverlay creazione directory, overlay e mount rw
-   *
-   * @param dir
-   * merged(dir: string): boolean {
-    const normalDirs = [
-      'cdrom',
-      'dev',
-      'home',
-      // 'live',
-      'media',
-      'mnt',
-      'opt',
-      'proc',
-      'run',
-      'sys',
-      'swapfile',
-      'tmp'
-    ]
-   * @returns merged
    */
   merged(dir: string): boolean {
-    const normalDirs = [
+    const nomergedDirs = [
       'cdrom',
       'dev',
       'home',
-      // 'live',
       'media',
       'mnt',
-      'opt',
       'proc',
       'run',
       'sys',
@@ -845,11 +825,11 @@ export default class Ovary {
       'tmp'
     ]
     // deepin ha due directory /data e recovery
-    normalDirs.push('data', 'recovery')
+    nomergedDirs.push('data', 'recovery')
 
     let merged = true
-    for (const normalDir of normalDirs) {
-      if (dir === normalDir) {
+    for (const nomergedDir of nomergedDirs) {
+      if (dir === nomergedDir) {
         merged = false
       }
     }
