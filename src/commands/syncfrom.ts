@@ -17,7 +17,7 @@ export default class Syncfrom extends Command {
   luksFile = `/run/live/medium/live/${this.luksName}`
   luksDevice = `/dev/mapper/${this.luksName}`
   luksMountpoint = '/tmp/eggs-backup'
-  rootDir = '/'
+  rootDir = ''
 
   static description = 'Restore users, server and datas from luks-eggs-backup'
 
@@ -133,14 +133,24 @@ export default class Syncfrom extends Command {
     const echo = Utils.setEcho(verbose)
     const echoYes = Utils.setEcho(true) // echoYes serve solo per cryptsetup luksOpen
 
-    Utils.warning(`LUKS open volume: ${this.luksName}`)
-    await exec(`cryptsetup luksOpen --type luks2 ${this.luksFile} ${this.luksName}`, echoYes)
+    if (!fs.existsSync(this.luksDevice)) {
+      Utils.warning(`LUKS open volume: ${this.luksName}`)
+      await exec(`cryptsetup luksOpen --type luks2 ${this.luksFile} ${this.luksName}`, echoYes)
+    } else {
+      Utils.warning(`LUKS volume: ${this.luksName} already open`)
+    }
 
-    Utils.warning(`mount volume: ${this.luksDevice} on ${this.luksMountpoint}`)
     if (!fs.existsSync(this.luksMountpoint)) {
       await exec(`mkdir -p ${this.luksMountpoint}`, echo)
     }
-    await exec(`mount ${this.luksDevice} ${this.luksMountpoint}`, echo)
+
+    if (!Utils.isMountpoint(this.luksMountpoint)) {
+      Utils.warning(`mount volume: ${this.luksDevice} on ${this.luksMountpoint}`)
+      await exec(`mount ${this.luksDevice} ${this.luksMountpoint}`, echo)
+    } else {
+      Utils.warning(`mount volume: ${this.luksDevice} already mounted on ${this.luksMountpoint}`)
+    }
+
   }
 
   /**
@@ -153,8 +163,10 @@ export default class Syncfrom extends Command {
       await exec(`umount ${this.luksMountpoint}`, echo)
     }
 
-    Utils.warning(`LUKS close volume: ${this.luksName}`)
-    await exec(`cryptsetup luksClose ${this.luksName}`, echo)
+    if (fs.existsSync(this.luksDevice)) {
+      Utils.warning(`LUKS close volume: ${this.luksName}`)
+      await exec(`cryptsetup luksClose ${this.luksName}`, echo)
+    }
   }
 
 }
