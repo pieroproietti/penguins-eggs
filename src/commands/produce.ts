@@ -35,7 +35,7 @@ export default class Produce extends Command {
     release: Flags.boolean({ description: 'release: configure GUI installer to remove eggs and calamares after installation' })
   }
 
-  static description = 'the system produce an egg: iso image of your system'
+  static description = 'produce a live image from your system whithout your data'
 
   static aliases = ['spawn', 'lay']
 
