@@ -198,7 +198,7 @@ export default class Syncto extends Command {
             Utils.warning(`Error: ${formatting.code} ${formatting.data}`)
             process.exit(1)
         }
-        this.luksClose()
+        // this.luksClose()
     }
 
 
@@ -209,15 +209,25 @@ export default class Syncto extends Command {
         const echo = Utils.setEcho(verbose)
         const echoYes = Utils.setEcho(true) // echoYes serve solo per cryptsetup luksOpen
 
-        Utils.warning(`LUKS open volume: ${this.luksName}`)
-        await exec(`cryptsetup luksOpen --type luks2 ${this.luksFile} ${this.luksName}`, echoYes)
-
-        Utils.warning(`mount volume: ${this.luksDevice} on ${this.luksMountpoint}`)
-        if (!fs.existsSync(this.luksMountpoint)) {
-            await exec (`mkdir -p ${this.luksMountpoint}`, echo)
+        if (!fs.existsSync(this.luksDevice)) {
+            Utils.warning(`LUKS open volume: ${this.luksName}`)
+            await exec(`cryptsetup luksOpen --type luks2 ${this.luksFile} ${this.luksName}`, echoYes)
+        } else {
+            Utils.warning(`LUKS volume: ${this.luksName} already open`)
         }
-        await exec(`mount ${this.luksDevice} ${this.luksMountpoint}`, echo)
+
+        if (!fs.existsSync(this.luksMountpoint)) {
+            await exec(`mkdir -p ${this.luksMountpoint}`, echo)
+        }
+
+        if (!Utils.isMountpoint(this.luksMountpoint)) {
+            Utils.warning(`mount volume: ${this.luksDevice} on ${this.luksMountpoint}`)
+            await exec(`mount ${this.luksDevice} ${this.luksMountpoint}`, echo)
+        } else {
+            Utils.warning(`mount volume: ${this.luksDevice} already mounted on ${this.luksMountpoint}`)
+        }
     }
+
 
     /**
     * 
@@ -225,12 +235,14 @@ export default class Syncto extends Command {
     async luksClose(verbose = false) {
         const echo = Utils.setEcho(verbose)
 
-        if(Utils.isMountpoint(this.luksMountpoint)) {
+        if (Utils.isMountpoint(this.luksMountpoint)) {
             await exec(`umount ${this.luksMountpoint}`, echo)
         }
 
-        Utils.warning(`LUKS close volume: ${this.luksName}`)
-        await exec(`cryptsetup luksClose ${this.luksName}`, echo)
+        if (fs.existsSync(this.luksDevice)) {
+            Utils.warning(`LUKS close volume: ${this.luksName}`)
+            await exec(`cryptsetup luksClose ${this.luksName}`, echo)
+        }
     }
 
 }
