@@ -32,6 +32,8 @@ export default class Syncto extends Command {
         verbose: Flags.boolean({ char: 'v', description: 'verbose' })
     }
 
+    static aliases = ['backup']
+
     static examples = ['$ sudo eggs restore']
 
     /**
