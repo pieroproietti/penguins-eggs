@@ -18,6 +18,9 @@ You can follow the project also consulting the [commit history](https://github.c
 ## Changelog
 Versions are listed on reverse order, the first is the last one.
 
+### eggs-9.0.16
+we have two more commands: eggs syncfrom (restore) and eggs syncto (backup), eggs produce --backup remove servers and users from live servers datas and put when on a LUKS volume, eggs produce remove only users data and let to have working servers examples. A machine once installed with krill or calamares, can get users and datas from the LUKS volume.
+
 ### eggs-9.0.15
 --backup option: a new common command restore was added it will be be used inside krill (OK) or calamares (to do)
 
