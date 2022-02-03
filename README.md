@@ -573,14 +573,13 @@ Restore users, server and datas from luks-eggs-backup
 
 ```
 USAGE
-  $ eggs syncfrom [-k] [-r <value>] [-f <value>] [-h] [-v]
+  $ eggs syncfrom [-f <value>] [-r <value>] [-h] [-v]
 
 FLAGS
-  -f, --file=<value>  file with LUKS volume encrypted
-  -h, --help          Show CLI help.
-  -k, --krill         krill
-  -r, --root=<value>  root mount of the installed system
-  -v, --verbose       verbose
+  -f, --file=<value>     file with LUKS volume encrypted
+  -h, --help             Show CLI help.
+  -r, --rootdir=<value>  rootdir of the installed system, when used from live
+  -v, --verbose          verbose
 
 DESCRIPTION
   Restore users, server and datas from luks-eggs-backup

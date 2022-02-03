@@ -232,12 +232,12 @@ export default class Hatching {
             percent = 0.37
             try {
                redraw(<Install message={message} percent={percent} spinner={true} />)
-               await exec('eggs syncfrom -f /tmp/calamares-krill-root/')
+               await exec('eggs syncfrom --rootdir /tmp/calamares-krill-root/')
             } catch (error) {
                message += JSON.stringify(error)
                redraw(<Install message={message} percent={percent} />)
             }
-            await checkIt(message)
+            // await checkIt(message)
          }
 
          // sources-yolk
