@@ -584,6 +584,9 @@ FLAGS
 DESCRIPTION
   Restore users, server and datas from luks-eggs-backup
 
+ALIASES
+  $ eggs restore
+
 EXAMPLES
   $ sudo eggs restore
 ```
@@ -606,6 +609,9 @@ FLAGS
 
 DESCRIPTION
   Backup users, server and datas to luks-eggs-backup
+
+ALIASES
+  $ eggs backup
 
 EXAMPLES
   $ sudo eggs restore

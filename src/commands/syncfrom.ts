@@ -28,6 +28,8 @@ export default class Syncfrom extends Command {
     verbose: Flags.boolean({ char: 'v', description: 'verbose' })
   }
 
+  static aliases = ['restore']
+
   static examples = ['$ sudo eggs restore']
 
   async run(): Promise<void> {
@@ -58,16 +60,11 @@ export default class Syncfrom extends Command {
     if (Utils.isRoot(this.id)) {
       if (fileVolume === '') {
         fileVolume = '/run/live/medium/live/luks-eggs-backup'
-        Utils.warning(`You didn't give any file, I will use ${fileVolume}`)
       }
 
       if (!Utils.isLive()) {
         /**
          * WORKING FROM INSTALLED
-         */
-
-        /**
-         * restore con file on INSTALLED system
          */
         if (fs.existsSync(fileVolume)) {
           this.luksName = path.basename(fileVolume)
@@ -76,10 +73,8 @@ export default class Syncfrom extends Command {
           this.luksMountpoint = '/tmp/eggs-backup'
 
           await this.restorePrivateData(verbose)
-          if (this.rootDir === '/') {
-            if (await Utils.customConfirm(`Your system was updated! Press a key to reboot`)) {
-              await exec('reboot')
-            }
+          if (await Utils.customConfirm(`Your system was updated! Press a key to reboot`)) {
+            await exec('reboot')
           }
         } else {
           Utils.warning(`Can't find ${this.luksFile}`)
@@ -88,20 +83,11 @@ export default class Syncfrom extends Command {
         /**
          * WORKING FROM LIVE
          */
-
-        /**
-         * restore con file from LIVE system
-         */
         this.luksName = path.basename(fileVolume)
         this.luksFile = fileVolume
         this.luksDevice = `/dev/mapper/${this.luksName}`
         this.luksMountpoint = '/tmp/eggs-backup'
         await this.restorePrivateData(verbose)
-        if (await Utils.customConfirm(`Your INSTALLED system was updated! Press a key to reboot`)) {
-          await exec('reboot')
-        } else {
-          Utils.warning(`Check yours options...}`)
-        }
       }
     }
   }
