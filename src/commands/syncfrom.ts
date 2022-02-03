@@ -76,8 +76,10 @@ export default class Syncfrom extends Command {
           this.luksMountpoint = '/tmp/eggs-backup'
 
           await this.restorePrivateData(verbose)
-          if (await Utils.customConfirm(`Your system was updated! Press a key to reboot`)) {
-            await exec('reboot')
+          if (this.rootDir === '/') {
+            if (await Utils.customConfirm(`Your system was updated! Press a key to reboot`)) {
+              await exec('reboot')
+            }
           }
         } else {
           Utils.warning(`Can't find ${this.luksFile}`)
