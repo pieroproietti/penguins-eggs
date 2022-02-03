@@ -19,7 +19,11 @@ You can follow the project also consulting the [commit history](https://github.c
 Versions are listed on reverse order, the first is the last one.
 
 ### eggs-9.0.16
-we have two more commands: eggs syncfrom (restore) and eggs syncto (backup), eggs produce --backup remove servers and users from live servers datas and put when on a LUKS volume, eggs produce remove only users data and let to have working servers examples. A machine once installed with krill or calamares, can get users and datas from the LUKS volume.
+We have two new commands: ```eggs syncfrom``` (restore) and ```eggs syncto``` (backup), ```eggs produce --backup``` remove servers and users from live, and put their datas on a LUKS volume, ```eggs produce``` just remove users, and let to have working servers examples. A machine once installed with krill or calamares, can get users and servers datas from the LUKS volume. NOTE: krill will restore users and servers data automatically, using calamares You need to mount the rootdir of your installed system and, give the following command: ```sudo eggs syncfrom -f /path/to/luks-eggs-backup -r /path/to/rootdir```
+
+**AS FAR AS I KNOW: ** it's possbile to change the nest directory, changing the value in ```eggs.yaml``` under /etc/penguins-eggs.d.  Example: ```set snapshot_dir: '/opt/eggs/'```
+
+**NOTE:** Using this new feathure can di dangerous for your data, ```syncfrom``` replace all users homes and all servers homes with data from the luck-eggs-backup, insert this data in another system can easily end in a disaster.
 
 ### eggs-9.0.15
 --backup option: a new common command restore was added it will be be used inside krill (OK) or calamares (to do)
