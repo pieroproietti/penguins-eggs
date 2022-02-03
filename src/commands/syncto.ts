@@ -68,10 +68,42 @@ export default class Syncto extends Command {
             }
             if (fs.existsSync(fileVolume)) {
                 await this.luksOpen(verbose)
+                await this.backup(verbose)
                 await this.luksClose(verbose)
             }
         }
     }
+
+
+
+    /**
+     *
+     * @param verbose
+     */
+    async backup(verbose = false) {
+        const echo = Utils.setEcho(verbose)
+        if (verbose) {
+            Utils.warning('backup')
+        }
+        const usersArray = await this.usersFill()
+        const cmds: string[] = []
+        for (let i = 0; i < usersArray.length; i++) {
+            if (usersArray[i].saveIt) {
+                if (fs.existsSync(usersArray[i].home)) {
+                    await exec(`mkdir -p ${this.luksMountpoint}/ROOT${usersArray[i].home}`, echo)
+                    const source = usersArray[i].home
+                    let dest = this.luksMountpoint + '/ROOT' + usersArray[i].home
+                    dest = dest.substring(0, dest.lastIndexOf('/'))
+                    await exec(`rsync --archive ${source} ${dest}`, echo)
+                }
+            }
+        }
+        await exec(`mkdir -p ${this.luksMountpoint}/etc`, echo)
+        await exec(`cp /etc/passwd ${this.luksMountpoint}/etc`, echo)
+        await exec(`cp /etc/shadow ${this.luksMountpoint}/etc`, echo)
+        await exec(`cp /etc/group ${this.luksMountpoint}/etc`, echo)
+    }
+
 
     /**
     * usersFill
@@ -171,8 +203,17 @@ export default class Syncto extends Command {
      */
     async luksOpen(verbose = false) {
         const echo = Utils.setEcho(verbose)
+        const echoYes = Utils.setEcho(true)
 
         Utils.warning(`LUKS open volume: ${this.luksName}`)
+        await exec(`cryptsetup luksOpen --type luks2 ${this.luksFile} ${this.luksName}`, echoYes)
+
+        Utils.warning(`mount volume: ${this.luksDevice} on ${this.luksMountpoint}`)
+        if (!fs.existsSync(this.luksMountpoint)) {
+            await exec (`mkdir -p ${this.luksMountpoint}`)
+        }
+        await exec(`mount ${this.luksDevice} ${this.luksMountpoint}`, echoYes)
+
     }
 
 
