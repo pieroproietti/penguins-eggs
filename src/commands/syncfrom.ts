@@ -1,5 +1,5 @@
 /**
- * penguins-eggs-v7 based on Debian live
+ * penguins-eggs-v9
  * author: Piero Proietti
  * email: piero.proietti@gmail.com
  * license: MIT
@@ -13,18 +13,17 @@ import { exec } from '../lib/utils'
 
 
 export default class Syncfrom extends Command {
-  config_file = '/etc/penguins-eggs.d/eggs.yaml' as string
-
   luksName = 'luks-eggs-backup'
   luksFile = `/run/live/medium/live/${this.luksName}`
   luksDevice = `/dev/mapper/${this.luksName}`
   luksMountpoint = '/tmp/eggs-backup'
+  rootDir = '/'
 
   static description = 'Restore users, server and datas from luks-eggs-backup'
 
   static flags = {
-    krill: Flags.boolean({ char: 'k', description: 'krill' }),
     file: Flags.string({ char: 'f', description: "file with LUKS volume encrypted" }),
+    rootdir: Flags.string({ char: 'r', description: 'rootdir of the installed system, when used from live' }),
     help: Flags.help({ char: 'h' }),
     verbose: Flags.boolean({ char: 'v', description: 'verbose' })
   }
@@ -44,55 +43,38 @@ export default class Syncfrom extends Command {
       fileVolume = flags.file
     }
 
+    if (Utils.isLive()) {
+      if (flags.rootdir) {
+        this.rootDir = flags.rootdir
+      } else {
+        Utils.warning(`Argument --rootdir is mandatory, when running from live! Process will terminate`)
+        process.exit()
+      }
+    } else {
+      this.rootDir = '/'
+    }
+
     const echo = Utils.setEcho(verbose)
     if (Utils.isRoot(this.id)) {
-      if (flags.file && flags.krill) {
-        Utils.warning(`You must use eggs restore or with`)
+      if (fileVolume === '') {
+        fileVolume = '/run/live/medium/live/luks-eggs-backup'
+        Utils.warning(`You didn't give any file, I will use ${fileVolume}`)
       }
 
       if (!Utils.isLive()) {
         /**
-         * restore con file
+         * WORKING FROM INSTALLED
          */
-        if (fileVolume !== '') {
-          if (fs.existsSync(fileVolume)) {
-            this.luksName = path.basename(fileVolume)
-            this.luksFile = fileVolume
-            this.luksDevice = `/dev/mapper/${this.luksName}`
-            this.luksMountpoint = '/tmp/eggs-backup'
-            await this.restorePrivateData(verbose)
-          } else {
-            Utils.warning(`Can't find ${this.luksFile}`)
-          }
-        } else {
-          /**
-           * restore con krill su LIVE
-           */
-          if (flags.krill) {
-            this.luksName = 'luks-eggs-backup'
-            this.luksFile = `/run/live/medium/live/${this.luksName}`
-            this.luksDevice = `/dev/mapper/${this.luksName}`
-            this.luksMountpoint = '/tmp/eggs-backup'
-            if (fs.existsSync(this.luksFile)) {
-              await this.restorePrivateData(verbose)
-              if (await Utils.customConfirm(`Your installed system was updated! Press a key to reboot`)) {
-                await exec('reboot')
-              }
-              Utils.warning(`Can't find ${this.luksFile}, sure You used eggs backup to produce this LIVE?`)
-            }
-          } else {
-            Utils.warning(`You can use eggs restore --krill only from LIVE system`)
-          }
-        }
-      } else {
+
         /**
-         * SIAMO SU IN SISTEMA INSTALLATO
+         * restore con file on INSTALLED system
          */
         if (fs.existsSync(fileVolume)) {
           this.luksName = path.basename(fileVolume)
           this.luksFile = fileVolume
           this.luksDevice = `/dev/mapper/${this.luksName}`
           this.luksMountpoint = '/tmp/eggs-backup'
+
           await this.restorePrivateData(verbose)
           if (await Utils.customConfirm(`Your system was updated! Press a key to reboot`)) {
             await exec('reboot')
@@ -100,54 +82,92 @@ export default class Syncfrom extends Command {
         } else {
           Utils.warning(`Can't find ${this.luksFile}`)
         }
+      } else {
+        /**
+         * WORKING FROM LIVE
+         */
+
+        /**
+         * restore con file from LIVE system
+         */
+        this.luksName = path.basename(fileVolume)
+        this.luksFile = fileVolume
+        this.luksDevice = `/dev/mapper/${this.luksName}`
+        this.luksMountpoint = '/tmp/eggs-backup'
+        await this.restorePrivateData(verbose)
+        if (await Utils.customConfirm(`Your INSTALLED system was updated! Press a key to reboot`)) {
+          await exec('reboot')
+        } else {
+          Utils.warning(`Check yours options...}`)
+        }
       }
     }
   }
+
 
   /**
    * 
    * @param verbose 
    */
   private async restorePrivateData(verbose = false) {
+    const echo = Utils.setEcho(verbose)
 
     if (!fs.existsSync(this.luksMountpoint)) {
       await exec(`mkdir ${this.luksMountpoint}`)
     }
 
-    const echo = Utils.setEcho(verbose)
-    const echoYes = Utils.setEcho(verbose)
-
-    Utils.warning(`Opening volume ${this.luksName}, you MUST user the same passphrase you choose during the backup`)
-    let crytoSetup = await exec(`cryptsetup luksOpen --type luks2 ${this.luksFile} ${this.luksName}`, echoYes)
-
-    Utils.warning(`mount ${this.luksDevice} ${this.luksMountpoint}`)
-    await exec(`mount ${this.luksDevice} ${this.luksMountpoint}`, echoYes)
+    await this.luksOpen()
 
     /**
-     * ONLY IN INSTALLING SYSTEMS
+     * ONLY FROM LIVE
      * rm home, subst /etc/passwd, /etc/shadow, /etc/groups
      */
     if (Utils.isLive()) {
-      Utils.warning('Removing live user on the destination system')
-      await exec(`rm -rf /tmp/calamares-krill-root/home/*`, echo)
+      if (this.rootDir !== '/') {
+        Utils.warning('Removing live user on destination system')
+        await exec(`rm -rf ${this.rootDir}/home/*`, echo)
+        Utils.warning('Restoring accounts')
+        await exec(`cp ${this.luksMountpoint}/etc/passwd ${this.rootDir}/etc/`, echo)
+        await exec(`cp ${this.luksMountpoint}/etc/shadow ${this.rootDir}/etc/`, echo)
+        await exec(`cp ${this.luksMountpoint}/etc/group ${this.rootDir}/etc/`, echo)
+      }
+    }
+    Utils.warning('Restoring backup data')
+    await exec(`rsync -a ${this.luksMountpoint}/ROOT/ ${this.rootDir}/`, echo)
 
-      Utils.warning('Restoring accounts on the installing system')
-      await exec(`cp ${this.luksMountpoint}/etc/passwd /tmp/calamares-krill-root/etc/`, echo)
-      await exec(`cp ${this.luksMountpoint}/etc/shadow /tmp/calamares-krill-root/etc/`, echo)
-      await exec(`cp ${this.luksMountpoint}/etc/group /tmp/calamares-krill-root/etc/`, echo)
-      Utils.warning('Restoring backup data on the installing system')
-      await exec(`rsync -a ${this.luksMountpoint}/ROOT/ /tmp/calamares-krill-root/`, echo)
-    } else {
-      Utils.warning('Restoring backup data on the installing system')
-      await exec(`rsync -a ${this.luksMountpoint}/ROOT/ /`, echo)
+    await this.luksClose()
+  }
+
+  /**
+   * 
+   */
+  async luksOpen(verbose = false) {
+    const echo = Utils.setEcho(verbose)
+    const echoYes = Utils.setEcho(true) // echoYes serve solo per cryptsetup luksOpen
+
+    Utils.warning(`LUKS open volume: ${this.luksName}`)
+    await exec(`cryptsetup luksOpen --type luks2 ${this.luksFile} ${this.luksName}`, echoYes)
+
+    Utils.warning(`mount volume: ${this.luksDevice} on ${this.luksMountpoint}`)
+    if (!fs.existsSync(this.luksMountpoint)) {
+      await exec(`mkdir -p ${this.luksMountpoint}`, echo)
+    }
+    await exec(`mount ${this.luksDevice} ${this.luksMountpoint}`, echo)
+  }
+
+  /**
+  * 
+  */
+  async luksClose(verbose = false) {
+    const echo = Utils.setEcho(verbose)
+
+    if (Utils.isMountpoint(this.luksMountpoint)) {
+      await exec(`umount ${this.luksMountpoint}`, echo)
     }
 
-
-    Utils.warning(`unmount volume ${this.luksName}`)
-    await exec(`umount ${this.luksMountpoint}`, echo)
-
-    Utils.warning(`Closing volume ${this.luksName}`)
+    Utils.warning(`LUKS close volume: ${this.luksName}`)
     await exec(`cryptsetup luksClose ${this.luksName}`, echo)
   }
+
 }
 
