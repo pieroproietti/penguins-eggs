@@ -10,10 +10,12 @@ import fs = require('fs')
 import path = require('path')
 import Utils from '../classes/utils'
 import { exec } from '../lib/utils'
+
 // backup
 import { access } from 'fs/promises'
 import { constants } from 'fs'
 import Users from '../classes/users'
+import { deepStrictEqual } from 'assert'
 
 export default class Syncto extends Command {
     luksName = 'luks-eggs-backup'
@@ -203,19 +205,17 @@ export default class Syncto extends Command {
      */
     async luksOpen(verbose = false) {
         const echo = Utils.setEcho(verbose)
-        const echoYes = Utils.setEcho(true)
+        const echoYes = Utils.setEcho(true) // echoYes serve solo per cryptsetup luksOpen
 
         Utils.warning(`LUKS open volume: ${this.luksName}`)
         await exec(`cryptsetup luksOpen --type luks2 ${this.luksFile} ${this.luksName}`, echoYes)
 
         Utils.warning(`mount volume: ${this.luksDevice} on ${this.luksMountpoint}`)
         if (!fs.existsSync(this.luksMountpoint)) {
-            await exec (`mkdir -p ${this.luksMountpoint}`)
+            await exec (`mkdir -p ${this.luksMountpoint}`, echo)
         }
-        await exec(`mount ${this.luksDevice} ${this.luksMountpoint}`, echoYes)
-
+        await exec(`mount ${this.luksDevice} ${this.luksMountpoint}`, echo)
     }
-
 
     /**
     * 
@@ -223,12 +223,12 @@ export default class Syncto extends Command {
     async luksClose(verbose = false) {
         const echo = Utils.setEcho(verbose)
 
+        if(Utils.isMountpoint(this.luksMountpoint)) {
+            await exec(`umount ${this.luksMountpoint}`, echo)
+        }
+
         Utils.warning(`LUKS close volume: ${this.luksName}`)
         await exec(`cryptsetup luksClose ${this.luksName}`, echo)
     }
 
 }
-
-
-
-

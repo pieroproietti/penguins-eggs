@@ -140,7 +140,8 @@ USAGE
 * [`eggs mom`](#eggs-mom)
 * [`eggs produce`](#eggs-produce)
 * [`eggs remove`](#eggs-remove)
-* [`eggs restore`](#eggs-restore)
+* [`eggs syncfrom`](#eggs-syncfrom)
+* [`eggs syncto`](#eggs-syncto)
 * [`eggs tools clean`](#eggs-tools-clean)
 * [`eggs tools locales`](#eggs-tools-locales)
 * [`eggs tools skel`](#eggs-tools-skel)
@@ -566,18 +567,19 @@ EXAMPLES
 
 _See code: [src/commands/remove.ts](https://github.com/pieroproietti/penguins-eggs/blob/v9.0.15/src/commands/remove.ts)_
 
-## `eggs restore`
+## `eggs syncfrom`
 
 Restore users, server and datas from luks-eggs-backup
 
 ```
 USAGE
-  $ eggs restore [-k] [-f <value>] [-h] [-v]
+  $ eggs syncfrom [-k] [-r <value>] [-f <value>] [-h] [-v]
 
 FLAGS
   -f, --file=<value>  file with LUKS volume encrypted
   -h, --help          Show CLI help.
   -k, --krill         krill
+  -r, --root=<value>  root mount of the installed system
   -v, --verbose       verbose
 
 DESCRIPTION
@@ -587,7 +589,30 @@ EXAMPLES
   $ sudo eggs restore
 ```
 
-_See code: [src/commands/restore.ts](https://github.com/pieroproietti/penguins-eggs/blob/v9.0.15/src/commands/restore.ts)_
+_See code: [src/commands/syncfrom.ts](https://github.com/pieroproietti/penguins-eggs/blob/v9.0.15/src/commands/syncfrom.ts)_
+
+## `eggs syncto`
+
+Backup users, server and datas to luks-eggs-backup
+
+```
+USAGE
+  $ eggs syncto [-k] [-f <value>] [-h] [-v]
+
+FLAGS
+  -f, --file=<value>  file LUKS volume encrypted
+  -h, --help          Show CLI help.
+  -k, --krill         krill
+  -v, --verbose       verbose
+
+DESCRIPTION
+  Backup users, server and datas to luks-eggs-backup
+
+EXAMPLES
+  $ sudo eggs restore
+```
+
+_See code: [src/commands/syncto.ts](https://github.com/pieroproietti/penguins-eggs/blob/v9.0.15/src/commands/syncto.ts)_
 
 ## `eggs tools clean`
 

@@ -238,91 +238,10 @@ export default class Ovary {
       }
 
       if (backup) {
-
-        Utils.warning('Starting backup procedure')
-
-        let totalSize = 0
-        console.log(`The following private data will be copied inside a LUKS volume:`)
-        const users = await this.usersFill()
-        for (let i = 0; i < users.length; i++) {
-          if (users[i].login !== 'root') {
-            if (users[i].saveIt) {
-              console.log(`user: ${users[i].login} \thome: ${users[i].home.padEnd(16)} \tsize: ${Utils.formatBytes(users[i].size)} \tBytes: ${users[i].size} `)
-              totalSize += users[i].size
-            }
-          }
-        }
-        console.log(`Total\t\t\t\t\tSize: ${Utils.formatBytes(totalSize)} \tBytes: ${totalSize}`)
-
-        /**
-         * after we get size, we can start building luks-volume
-         */
-        const binaryHeaderSize = 4194304
-        let volumeSize = totalSize * 1.2 + binaryHeaderSize
-
-        // Deciding blockSize and blocks
-        let blockSize = 1024
-        let blocks = Math.ceil(volumeSize / blockSize)
-
-        // We need a minimum size of 32 MB
-        let minimunSize = 134217728 // 128 * 1024 *1024
-        if (totalSize < minimunSize) {
-        }
-        if (blocks * blockSize < minimunSize) {
-          blocks = Math.ceil(minimunSize / blockSize)
-        }
-
-        Utils.warning(`Creating an encrypted file ${luksFile} blocks=${blocks}, block size: ${blockSize}, size: ${Utils.formatBytes(blocks * blockSize)}`)
-        await exec(`dd if=/dev/zero of=${luksFile} bs=${blockSize} count=${blocks}`, echo)
-
-        // find first unused device
-        let findFirstUnusedDevice = await exec(`losetup -f`, { echo: verbose, ignore: false, capture: true })
-        let firstUnusedDevice = ''
-        if (findFirstUnusedDevice.code !== 0) {
-          Utils.warning(`Error: ${findFirstUnusedDevice.code} ${findFirstUnusedDevice.data}`)
-          process.exit(1)
-        } else {
-          firstUnusedDevice = findFirstUnusedDevice.data.trim()
-        }
-        await exec(`losetup ${firstUnusedDevice} ${luksFile}`, echo)
-
-        Utils.warning('Enter a large string of random text below to setup the pre-encryption')
-        await exec(`cryptsetup -y -v --type luks2 luksFormat  ${luksFile}`, echoYes)
-
-        Utils.warning(`Enter the desired passphrase for the encrypted ${luksName} below`)
-        let crytoSetup = await exec(`cryptsetup luksOpen --type luks2 ${luksFile} ${luksName}`, echoYes)
-        if (crytoSetup.code !== 0) {
-          Utils.warning(`Error: ${crytoSetup.code} ${crytoSetup.data}`)
-          process.exit(1)
-        }
-
-        Utils.warning(`Formatting ${luksDevice} to ext4`)
-        let formattingExt4 = await exec(`sudo mkfs.ext2 ${luksDevice}`, echo)
-        if (formattingExt4.code !== 0) {
-          Utils.warning(`Error: ${formattingExt4.code} ${formattingExt4.data}`)
-          process.exit(1)
-        }
-
-        Utils.warning(`mount ${luksDevice} ${luksMountpoint}`)
-        await exec(`mount ${luksDevice} ${luksMountpoint}`, echo)
-
-        Utils.warning(`Saving datas in ${luksName}`)
-        await this.backupPrivateDatas(users, luksMountpoint, verbose)
-
-        Utils.warning(`umount ${luksDevice}`)
-        await exec(`umount ${luksDevice}`, echo)
-
-        Utils.warning(`cryptsetup luksClose ${luksName}`)
-        await exec(`cryptsetup luksClose ${luksName}`, echo)
-
+        await exec('eggs syncto')
         Utils.warning(`moving ${luksFile} in ${this.settings.config.snapshot_dir}ovarium/iso/live`)
         await exec(`mv ${luksFile} ${this.settings.config.snapshot_dir}ovarium/iso/live`, echo)
       }
-
-      // sudo cryptsetup luksOpen --type luks2 /home/eggs/ovarium/iso/live/luks-eggs-backup luks-eggs-backup
-      // sudo mount /dev/mapper/luks-eggs-backup /mnt/
-      // sudo umount /dev/mapper/luks-eggs-backup
-      // sudo cryptsetup luksClose luks-eggs-backup
       const xorrisoCommand = this.makeDotDisk(backup, verbose)
 
       /**
@@ -1807,38 +1726,6 @@ export default class Ovary {
     }
     return usersArray
   }
-
-  /**
-   *
-   * @param verbose
-   */
-  async backupPrivateDatas(usersArray: Users[], luksMountpoint = '/mnt', verbose = false) {
-    const echo = Utils.setEcho(verbose)
-    if (verbose) {
-      Utils.warning('backupPrivateDatas')
-    }
-
-    const cmds: string[] = []
-    for (let i = 0; i < usersArray.length; i++) {
-      if (usersArray[i].saveIt) {
-        if (fs.existsSync(usersArray[i].home)) {
-          await exec(`mkdir -p ${luksMountpoint}/ROOT${usersArray[i].home}`, echo)
-          const source = usersArray[i].home
-          let dest = luksMountpoint + '/ROOT' + usersArray[i].home
-          dest = dest.substring(0, dest.lastIndexOf('/'))
-          await exec(`rsync --archive ${source} ${dest}`, echo)
-        }
-      }
-    }
-    await exec(`mkdir -p ${luksMountpoint}/etc`, echo)
-    await exec(`cp /etc/passwd ${luksMountpoint}/etc`, echo)
-    await exec(`cp /etc/shadow ${luksMountpoint}/etc`, echo)
-    await exec(`cp /etc/group ${luksMountpoint}/etc`, echo)
-  }
-  // sudo cryptsetup luksOpen --type luks2 /home/eggs/ovarium/iso/live/luks-eggs-backup luks-eggs-backup
-  // sudo mount /dev/mapper/luks-eggs-backup /mnt/
-  // sudo umount /dev/mapper/luks-eggs-backup
-  // sudo cryptsetup luksClose luks-eggs-backup
 }
 
 /**
