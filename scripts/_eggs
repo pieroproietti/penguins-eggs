@@ -22,15 +22,17 @@ _eggs () {
 "mom:ask for mommy - gui helper"
 "produce:the system produce an egg: iso image of your system"
 "remove:remove eggs and others stuff"
+"syncfrom:Restore users, server and datas from luks-eggs-backup"
+"syncto:Backup users, server and datas to luks-eggs-backup"
 "tools\:clean:clean system log, apt, etc"
 "tools\:locales:install/clean locales"
 "tools\:skel:update skel from home configuration"
 "tools\:stat:get statistics from sourceforge"
 "tools\:yolk:configure eggs to install without internet"
 "update:update the penguin's eggs tool"
-"autocomplete:display autocomplete installation instructions"
 "help:Display help for <%= config.bin %>."
 "version:"
+"autocomplete:display autocomplete installation instructions"
   )
 
   _set_flags () {
@@ -166,6 +168,24 @@ remove)
   )
 ;;
 
+syncfrom)
+  _command_flags=(
+    "--krill[krill]"
+"--file=-[file with LUKS volume encrypted]:"
+"--help[Show CLI help.]"
+"--verbose[verbose]"
+  )
+;;
+
+syncto)
+  _command_flags=(
+    "--krill[krill]"
+"--file=-[file LUKS volume encrypted]:"
+"--help[Show CLI help.]"
+"--verbose[verbose]"
+  )
+;;
+
 tools:clean)
   _command_flags=(
     "--help[Show CLI help.]"
@@ -213,12 +233,6 @@ update)
   )
 ;;
 
-autocomplete)
-  _command_flags=(
-    "--refresh-cache[Refresh cache (ignores displaying instructions)]"
-  )
-;;
-
 help)
   _command_flags=(
     "--nested-commands[Include all nested commands in the output.]"
@@ -228,6 +242,12 @@ help)
 version)
   _command_flags=(
     
+  )
+;;
+
+autocomplete)
+  _command_flags=(
+    "--refresh-cache[Refresh cache (ignores displaying instructions)]"
   )
 ;;
 
