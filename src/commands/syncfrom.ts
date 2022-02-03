@@ -12,7 +12,7 @@ import Utils from '../classes/utils'
 import { exec } from '../lib/utils'
 
 
-export default class Restore extends Command {
+export default class Syncfrom extends Command {
   config_file = '/etc/penguins-eggs.d/eggs.yaml' as string
 
   luksName = 'luks-eggs-backup'
@@ -33,7 +33,7 @@ export default class Restore extends Command {
 
   async run(): Promise<void> {
 
-    const { flags } = await this.parse(Restore)
+    const { flags } = await this.parse(Syncfrom)
     let verbose = false
     if (flags.verbose) {
       verbose = true
