@@ -19,12 +19,12 @@ penguins-eggs
 
 All ISOs include eggs, you can udate it with: ```sudo eggs update```.
 
-# [BlissOS - Android for your PC](https://blissos.org/)
+# [Waydroid - Container-based Android for Linux](https://waydro.id/)
 
- An Open Source OS, based on Android, that incorporates many optimizations, features, and expanded device support. And it is available for just about any Chromebook, Windows/Linux PC or tablet released in the last 4 years.
+ A container-based approach to boot a full Android system on a regular GNU/Linux system like Ubuntu.
 
-* **egg-of-ubuntu-focal-blissos-base** - remastered version from ubuntu-20.04.3-desktop-amd64.iso (minimum installation)
-* **egg-of-ubuntu-focal-blissos-hen** - the same as previous plus developer tools for eggs
+* **egg-of-ubuntu-focal-waydroid-base** - remastered version from ubuntu-20.04.3-desktop-amd64.iso (minimum installation)
+* **egg-of-ubuntu-focal-waydroid-hen** - the same as previous plus developer tools for eggs
 
 **Note:** Please, use always ```theme=blissos```
 
@@ -33,7 +33,7 @@ All ISOs include eggs, you can udate it with: ```sudo eggs update```.
 * Repository: [penguins-eggs](https://github.com/pieroproietti/penguins-eggs)
 * Blog: [penguins-eggs](https://penguins-eggs.net)
 
-* You can find more informations on this Linux distro at: [BlissOS - Android for your PC](https://blissos.org/).
+* You can find more informations on this Linux distro at: [Waydroid - Container-based Android for Linux](https://waydro.id/).
 
 
 Disclaim
