@@ -36,7 +36,7 @@ A new installation, can easyly get users and servers data from a luks-eggs-backu
 
 **DISCLAIM:** using this new feathures can be dangerous for your data:
 * ```syncfrom``` replace all users homes and all servers homes with data from the luck-eggs-backup, insert this data in not appropriate system can easily end in a long disaster recovery;
-* I want stress you again on the fact we are working with a livefs binded to the REAL filesystem, this mean who removing a directory under /nest/ovarium/filesystem.squashfs mean remove it from the REAL filesystem.
+* I want stress you again on the fact we are working with a **live filesystem** mounted binded to the **REAL filesystem**. This mean who removing a directory under the nest, usually ```/nest/ovarium/filesystem.squashfs```, mean remove it from the REAL filesystem. So, if something went wrong during the iso production and You remain with live filesystem binded, the shortest way to solve the problem is to reboot the machine.
 
 ### eggs-9.0.15
 --backup option: a new common command restore was added it will be be used inside krill (OK) or calamares (to do)
