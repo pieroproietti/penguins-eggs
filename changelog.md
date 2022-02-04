@@ -19,7 +19,7 @@ You can follow the project also consulting the [commit history](https://github.c
 Versions are listed on reverse order, the first is the last one.
 
 ### eggs-9.0.18
-* renamed blissos theme theme to waydroid, moved egg-of-ubuntu-impish-waydroid and egg-of-debian-bookworm-waydroid under the same place due the strong affinity.
+* renamed blissos theme to waydroid, moved egg-of-ubuntu-impish-waydroid and egg-of-debian-bookworm-waydroid together under the same place: [waydroid](https://sourceforge.net/projects/penguins-eggs/files/iso/waydroid/), due the strong affinity.
 
 ### eggs-9.0.16
 * ```eggs produce``` just remove users accounts and home. This let to have working servers examples;
@@ -93,78 +93,11 @@ If you wand follow penguin's eggs evolution, You can follow [Discussion](https:/
 
 I wish You Merry Christmas and Happy New Year
 
-### eggs-8.17-16
-* tested against devuan beowulf, chiamaera, debian buster, bullseye, bookstorm, neon developer (ubuntu focal)
-
-### eggs-8.17-15
-* changement in --backup option and check it work, producing encrypted backup and restorings
-
-### eggs-8.17-14
-* refactoring and stabilization, added messages in issue and motd and remove then with calamares and krill
-
-### eggs-8.17-13
-* added calamares configuration no-display-manager, removed live-config and live-config-systemd in Debian bullseye, Devuan chimaera, Ubuntu focal and next
-
-I must to check if removing live-config and live-config-systemd bring problems and check if it is possible to remove it in buster, and previous versions
-
-### eggs-8.17-12
-* added kali-rolling, added cli-autologin Devuan (sysvinit)
-
-### eggs-8.17-11
-* added Devuan daedalus, bugfix tools:stat, removed apt in favor of apt-get.
-
-Hard tested on all Debian version from jessie to bookworm, i386 and amd64, installable with calamares or krill installers
-
-### eggs-8.17-10
-* added Devuan chimaera
-
-I also cleaned the templates of the distros removing bullseye as it was just a copy of buster
-
-### eggs-8.17-9
-* removed npm package and localization, bugfixes in command eggs remove --autoremove
-
-### eggs-8.17-8
-* restored bionic compatubility
-
-I worked in pacman: rewrote pacman.packages() for installation than removal.
-
-### eggs-8.17-7
-* live-config was reintroduced in package dependencies
-
-I worked in pacman.links4Debs trying to reorder the code. Inserted in eggs config the display of the type of eggs package in use, corrected the isDebPackage(), isNpmPackage() functions in pacman. live-config is not taken because it's part of the version dependencies (bionic doesn't want it - but I should check)
-
-### eggs-8.17-6
-* added Debian 12 bookworm
-
-Actually bullseye take all configuration from buster, simply a bit
-
-### eggs-8.17-5
-* added Ubuntu 22.04 jammy, paths to templates 
-
-I modified in class ovary paths to templates from /usr/lib/penguins-eggs/conf/distros to right path /etc/penguins-eggs.d/distros. 
-
-This can impact in many cases becouse most configurations distros are just a directory filled with links to buster or focal made from class pacman during installation
-
-### eggs-8.17-4
-* calamaresPolicies moved to Pacman, now eggs config configures calamares policies too
-
-### eggs-8.17-3
-* removed https check in axios.get(), it was generating error despite hpps://penguins-eggs.net certificate is correct
-
-### eggs-8.17-2
-* added ubuntu umpish in the list of compatible distros
-
-### eggs-8.17-1
-* building hen a debian bullseye xfce liveCD installable with all the necessary to build eggs from sources. 
-
-### eggs-8.17-0 
-* I toke version 8.0.28 and rebuild it to be compatible with node8.17. Actually it run in bullseye too, but We must to rebuild the changement from 8.0.30 to t.1.4
+### eggs-8.17-17
+* tested against devuan beowulf/chimaera, debian buster/bullseye/bookworm, neon developer (ubuntu focal). This is the last version for i386 architecture.
 
 ### Older versions 
 You can find older versions on the [penguins-eggs repo](https://github.com/pieroproietti/penguins-eggs) under in **changelog-old.md** under **documents**
-
-# Node8.17.0
-I'm using actually node-8.17.0 version to build against all architectures (amd64, i386, arm64 and armel). Yes, there are same limits - compared with later versions of node - but it is the only way to release eggs for i386.
 
 # Help
 Don't esitate to ask me for suggestions and help. I hope to receive [feedback](https://github.com/pieroproietti/penguins-eggs/issues).
