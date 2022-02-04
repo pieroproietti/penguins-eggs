@@ -494,7 +494,7 @@ _See code: [src/commands/mom.ts](https://github.com/pieroproietti/penguins-eggs/
 
 ## `eggs produce`
 
-the system produce an egg: iso image of your system
+produce a live image from your system whithout your data
 
 ```
 USAGE
@@ -517,7 +517,7 @@ FLAGS
   --theme=<value>       theme for livecd, calamares branding and partitions
 
 DESCRIPTION
-  the system produce an egg: iso image of your system
+  produce a live image from your system whithout your data
 
 ALIASES
   $ eggs spawn
