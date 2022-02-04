@@ -39,15 +39,16 @@ Starting with version 7.6.x, an addons architecture was added to eggs, allowing 
 ### backup
 From version 8.0.10 You can use the backup mode by simply adding --backup in the produce command. This way eggs will save your users data and accounts and will not add a live user, you will have to log in with the main user of your system with the his password. **Note:** since eggs always configures autologin, you may have a security risk with valuable data. Use this option only for your personal stuff and do not share the iso on the network.
 
-We have two new commands: ```eggs syncfrom``` (restore) and ```eggs syncto``` (backup).
 * ```eggs produce``` just remove users accounts and home. This let to have working servers examples;
 * ```eggs produce --backup``` remove servers and users data from live, and put them on a LUKS volume.
 
+From version 9.0.16 we have two new commands: ```eggs syncfrom``` (alias restore) and ```eggs syncto``` (alias backup).
+
 A working installation, can easily sync users and servers data from a luks-eggs-backup:
-* ```eggs syncto -f /tmp/luks-eggs-backup``` (backup users and servers data to LUKS volume /tmp/luks-eggs-backup)
+* ```eggs syncto -f /tmp/luks-eggs-backup``` backup users and servers data to LUKS volume /tmp/luks-eggs-backup:
 
 A new installation, can easyly get users and servers data from a luks-eggs-backup:
-* ```eggs syncfrom from -f /tmp/luks-eggs-backup``` (restore users and servers data from the LUKS volume /tmp/luks-eggs-backup)
+* ```eggs syncfrom from -f /tmp/luks-eggs-backup``` restore users and servers data from the LUKS volume /tmp/luks-eggs-backup.
 
 **NOTE:** 
 * krill: ```sudo eggs install --cli``` will restore users and servers data automatically;
@@ -56,7 +57,7 @@ A new installation, can easyly get users and servers data from a luks-eggs-backu
 
 **DISCLAIM:** using this new feathures can be dangerous for your data:
 * ```syncfrom``` replace all users homes and all servers homes with data from the luck-eggs-backup, Force this data in not appropriate system can easily end in a long disaster recovery;
-* I want stress you again on the fact we are working with a **live filesystem** mounted binded to the **REAL filesystem**. This mean who removing a directory under the nest, usually ```/nest/ovarium/filesystem.squashfs```, mean remove it from the REAL filesystem. So, if something went wrong during the iso production and You remain with live filesystem again binded, the shortest way to solve the problem is sumply to reboot.
+* I want stress you again on the fact we are working with a **live filesystem** mounted binded to the **REAL filesystem**. This mean who removing a directory under the nest, usually ```/nest/ovarium/filesystem.squashfs```, mean remove it from the REAL filesystem. So, if something went wrong during the iso production and You remain with live filesystem again binded, the shortest way to solve the problem is simply reboot.
 
 ### krill
 Starting with eggs 8.0.0 I included a new CLI installer named krill. krill let you to install your system in a nice CLI interface using the same, configuration created by eggs for [calamares](calamares.io). This lead to have "about the same" experience installing, from old distros to new one and for GUI and CLI. To force using krill in place of calamares in a GUI system just: **sudo eggs install --cli**
