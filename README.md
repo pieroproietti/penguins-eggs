@@ -39,6 +39,25 @@ Starting with version 7.6.x, an addons architecture was added to eggs, allowing 
 ### backup
 From version 8.0.10 You can use the backup mode by simply adding --backup in the produce command. This way eggs will save your users data and accounts and will not add a live user, you will have to log in with the main user of your system with the his password. **Note:** since eggs always configures autologin, you may have a security risk with valuable data. Use this option only for your personal stuff and do not share the iso on the network.
 
+We have two new commands: ```eggs syncfrom``` (restore) and ```eggs syncto``` (backup).
+* ```eggs produce``` just remove users accounts and home. This let to have working servers examples;
+* ```eggs produce --backup``` remove servers and users data from live, and put them on a LUKS volume.
+
+A working installation, can easily sync users and servers data from a luks-eggs-backup:
+* ```eggs syncto -f /tmp/luks-eggs-backup``` (backup users and servers data to LUKS volume /tmp/luks-eggs-backup)
+
+A new installation, can easyly get users and servers data from a luks-eggs-backup:
+* ```eggs syncfrom from -f /tmp/luks-eggs-backup``` (restore users and servers data from the LUKS volume /tmp/luks-eggs-backup)
+
+**NOTE:** 
+* krill: ```sudo eggs install --cli``` will restore users and servers data automatically;
+* installing with calamares: when installation is finished, you need to mount the rootdir of your installed system and, give the following command: ```sudo eggs syncfrom -f /path/to/luks-eggs-backup -r /path/to/rootdir```
+* it's possbile actually to change the nest directory, editing configuration file ```/etc/penguins-eggs.d/eggs.yaml```. Example: ```set snapshot_dir: '/opt/eggs/'```, but you can't use the following: /etc, /boot, /usr and /var.
+
+**DISCLAIM:** using this new feathures can be dangerous for your data:
+* ```syncfrom``` replace all users homes and all servers homes with data from the luck-eggs-backup, Force this data in not appropriate system can easily end in a long disaster recovery;
+* I want stress you again on the fact we are working with a **live filesystem** mounted binded to the **REAL filesystem**. This mean who removing a directory under the nest, usually ```/nest/ovarium/filesystem.squashfs```, mean remove it from the REAL filesystem. So, if something went wrong during the iso production and You remain with live filesystem again binded, the shortest way to solve the problem is sumply to reboot.
+
 ### krill
 Starting with eggs 8.0.0 I included a new CLI installer named krill. krill let you to install your system in a nice CLI interface using the same, configuration created by eggs for [calamares](calamares.io). This lead to have "about the same" experience installing, from old distros to new one and for GUI and CLI. To force using krill in place of calamares in a GUI system just: **sudo eggs install --cli**
 
@@ -83,12 +102,12 @@ Update your repositories: **sudo apt update** and install eggs: **sudo apt insta
 The simplest way to install eggs is download the [package eggs](https://sourceforge.net/projects/penguins-eggs/files/packages-deb/) from [sourceforge page of the project](https://sourceforge.net/projects/penguins-eggs/) and install it
 
 ```
-sudo dpkg -i eggs_14.18.0-1_amd64.deb
+sudo dpkg -i eggs_9.0.16-1_amd64.deb
 ```
 
 or, on a i386 system:
 ```
-sudo dpkg -i eggs_8.17.3-1_i386.deb
+sudo dpkg -i eggs_8.17.17-1_i386.deb
 ```
 
 ## Upgrade eggs
