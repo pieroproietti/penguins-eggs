@@ -18,6 +18,9 @@ You can follow the project also consulting the [commit history](https://github.c
 ## Changelog
 Versions are listed on reverse order, the first is the last one.
 
+### eggs-9.0.18
+* renamed blissos theme theme to waydroid, moved egg-of-ubuntu-impish-waydroid and egg-of-debian-bookworm-waydroid under the same place due the strong affinity.
+
 ### eggs-9.0.16
 * ```eggs produce``` just remove users accounts and home. This let to have working servers examples;
 * ```eggs produce --backup``` remove servers and users data from live, and put them on a LUKS volume.

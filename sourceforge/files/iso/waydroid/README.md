@@ -23,10 +23,10 @@ All ISOs include eggs, you can udate it with: ```sudo eggs update```.
 
  A container-based approach to boot a full Android system on a regular GNU/Linux system like Ubuntu.
 
-* **egg-of-ubuntu-impish-waydroid-base** - remastered version from ubuntu-20.04.3-desktop-amd64.iso (minimum installation)
-* **egg-of-ubuntu-impish-waydroid-hen** - the same as previous plus developer tools for eggs
+* **egg-of-ubuntu-impish-waydroid** - remastered version from ubuntu-20.04.3-desktop-amd64.iso (minimum installation)
+* **eggs-of-debian-bookworm-waydroid** - it's not a naked version! Made for developers to not get crazy with X11 dependencies, it not use a Deskop Manager like (sddm, gdm3, etc), but you need to login from console and run ```startplasma-wayland``` to get GUI. 
 
-**Note:** Please, use always ```theme=blissos```
+**Note:** Please, use always ```theme=waydroid```
 
 ## More informations:
 

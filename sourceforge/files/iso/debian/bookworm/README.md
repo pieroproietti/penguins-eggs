@@ -24,7 +24,6 @@ All ISOs are based on Debian bookworm
 * **mate** - it's not naked, but just dressed with mate and firefox. 
 * **gnome** - it's not naked, but just dressed with gnome and firefox. 
 * **kde** - it's not naked, but just dressed with kde and conquetor. 
-* **waydroid** - it's not a naked version, but you need to login in console mode and run ```startplasma-wayland``` to get GUI
 
 ## More informations:
 

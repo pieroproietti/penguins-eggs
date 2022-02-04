@@ -25,7 +25,6 @@ All ISOs are based on Debian buster, Debian bullseye
 * **mate** - it's not naked, but just dressed with mate and firefox. 
 * **gnome** - it's not naked, but just dressed with gnome and firefox. 
 * **kde** - it's not naked, but just dressed with kde and conquetor. 
-* **waydroid** - it's not naked, but just dressed with kde and waydroid. 
 
 ## More informations:
 
