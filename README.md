@@ -44,7 +44,7 @@ From version 8.0.10 You can use the backup mode by simply adding --backup in the
 
 From version 9.0.16 we have two new commands: ```eggs syncfrom``` (alias restore) and ```eggs syncto``` (alias backup).
 
-A working installation, can easily sync users and servers data from a luks-eggs-backup:
+A working installation, can easily sync users and servers data to a luks-eggs-backup:
 * ```eggs syncto -f /tmp/luks-eggs-backup``` backup users and servers data to LUKS volume /tmp/luks-eggs-backup:
 
 A new installation, can easyly get users and servers data from a luks-eggs-backup:

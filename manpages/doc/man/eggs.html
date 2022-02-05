@@ -6,10 +6,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
   </head>
   <body>
-    <h1>eggs(1) -- the reproductive system of penguins: eggs v9.0.7-1</h1>
+    <h1>eggs(1) -- the reproductive system of penguins: eggs v9.0.18-1</h1>
     <h1>SYNOPSIS</h1>
     <p>deb package</p>
-    <pre><code>$ sudo dpkg -i eggs_9.0.7-1_amd64.deb
+    <pre><code>$ sudo dpkg -i eggs_9.0.18-1_amd64.deb
 </code></pre>
     <p>npm package</p>
     <pre><code>$ npm install -g penguins-eggs
@@ -17,7 +17,7 @@ $ eggs COMMAND
 running command...
 $ eggs (-v|--version|version)
 
-penguins-eggs/9.0.7-1 linux-x64 node-v16.13.2
+penguins-eggs/9.0.18-1 linux-x64 node-v16.13.2
 $ eggs --help [COMMAND]
 
 USAGE
@@ -40,6 +40,7 @@ sudo eggs dad
     <h1>COMMANDS</h1>
     <ul>
       <li><a href="#eggs-adapt"><code>eggs adapt</code></a></li>
+      <li><a href="#eggs-analyze"><code>eggs analyze</code></a></li>
       <li><a href="#eggs-autocomplete-shell"><code>eggs autocomplete [SHELL]</code></a></li>
       <li><a href="#eggs-bro"><code>eggs bro</code></a></li>
       <li><a href="#eggs-calamares"><code>eggs calamares</code></a></li>
@@ -55,6 +56,8 @@ sudo eggs dad
       <li><a href="#eggs-mom"><code>eggs mom</code></a></li>
       <li><a href="#eggs-produce"><code>eggs produce</code></a></li>
       <li><a href="#eggs-remove"><code>eggs remove</code></a></li>
+      <li><a href="#eggs-syncfrom"><code>eggs syncfrom</code></a></li>
+      <li><a href="#eggs-syncto"><code>eggs syncto</code></a></li>
       <li><a href="#eggs-tools-clean"><code>eggs tools clean</code></a></li>
       <li><a href="#eggs-tools-locales"><code>eggs tools locales</code></a></li>
       <li><a href="#eggs-tools-skel"><code>eggs tools skel</code></a></li>
@@ -77,6 +80,21 @@ DESCRIPTION
 
 ALIASES
   $ eggs adjust
+</code></pre>
+    <h2><code>eggs analyze</code></h2>
+    <p>analyze situation</p>
+    <pre><code>USAGE
+  $ eggs analyze [-h] [-v]
+
+FLAGS
+  -h, --help     Show CLI help.
+  -v, --verbose  verbose
+
+DESCRIPTION
+  analyze situation
+
+EXAMPLES
+  $ sudo eggs analyze
 </code></pre>
     <h2><code>eggs autocomplete [SHELL]</code></h2>
     <p>display autocomplete installation instructions</p>
@@ -240,11 +258,12 @@ DESCRIPTION
     <h2><code>eggs install</code></h2>
     <p>command-line system installer - the egg became a penguin!</p>
     <pre><code>USAGE
-  $ eggs install [-c] [-h] [-v]
+  $ eggs install [-c] [-k] [-h] [-v]
 
 FLAGS
   -c, --cli      force use CLI installer
   -h, --help     Show CLI help.
+  -k, --crypted  crypted CLI installation
   -v, --verbose  verbose
 
 DESCRIPTION
@@ -286,7 +305,7 @@ DESCRIPTION
   ask for mommy - gui helper
 </code></pre>
     <h2><code>eggs produce</code></h2>
-    <p>the system produce an egg: iso image of your system</p>
+    <p>produce a live image from your system whithout your data</p>
     <pre><code>USAGE
   $ eggs produce [-p &#x3C;value>] [--basename &#x3C;value>] [-b] [-f] [-n] [-m] [-v] [-y] [-s] [-h] [--theme &#x3C;value>]
     [--addons &#x3C;value>] [--release]
@@ -307,7 +326,7 @@ FLAGS
   --theme=&#x3C;value>       theme for livecd, calamares branding and partitions
 
 DESCRIPTION
-  the system produce an egg: iso image of your system
+  produce a live image from your system whithout your data
 
 ALIASES
   $ eggs spawn
@@ -367,6 +386,46 @@ EXAMPLES
 
   $ sudo eggs remove --autoremove 
   remove eggs, eggs configurations, packages dependencies
+</code></pre>
+    <h2><code>eggs syncfrom</code></h2>
+    <p>Restore users, server and datas from luks-eggs-backup</p>
+    <pre><code>USAGE
+  $ eggs syncfrom [-f &#x3C;value>] [-r &#x3C;value>] [-h] [-v]
+
+FLAGS
+  -f, --file=&#x3C;value>     file with LUKS volume encrypted
+  -h, --help             Show CLI help.
+  -r, --rootdir=&#x3C;value>  rootdir of the installed system, when used from live
+  -v, --verbose          verbose
+
+DESCRIPTION
+  Restore users, server and datas from luks-eggs-backup
+
+ALIASES
+  $ eggs restore
+
+EXAMPLES
+  $ sudo eggs restore
+</code></pre>
+    <h2><code>eggs syncto</code></h2>
+    <p>Backup users, server and datas to luks-eggs-backup</p>
+    <pre><code>USAGE
+  $ eggs syncto [-k] [-f &#x3C;value>] [-h] [-v]
+
+FLAGS
+  -f, --file=&#x3C;value>  file LUKS volume encrypted
+  -h, --help          Show CLI help.
+  -k, --krill         krill
+  -v, --verbose       verbose
+
+DESCRIPTION
+  Backup users, server and datas to luks-eggs-backup
+
+ALIASES
+  $ eggs backup
+
+EXAMPLES
+  $ sudo eggs restore
 </code></pre>
     <h2><code>eggs tools clean</code></h2>
     <p>clean system log, apt, etc</p>
