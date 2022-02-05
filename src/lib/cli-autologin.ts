@@ -3,7 +3,10 @@ import fs = require('fs')
 import path = require('path')
 import Utils from '../classes/utils'
 import Pacman from '../classes/pacman'
-import chalk = require('chalk')
+import chalk from 'chalk'
+
+// libraries
+import { exec } from '../lib/utils'
 
 // Comando per avviare ubiquity: sudo --preserve-env DBUS_SESSION_BUS_ADDRESS, XDG_RUNTIME sh -c 'calamares'
 
@@ -123,6 +126,10 @@ export async function addMotd(distro: string, version: string, user: string, use
   }
 
   msgRemove(fileMotd)
+  
+  if (!fs.existsSync(fileMotd)){
+    await exec(`touch ${fileMotd}`)
+  }
 
   let eggsMotd = fs.readFileSync(fileMotd, 'utf-8')
   eggsMotd += startMessage + '\n'
