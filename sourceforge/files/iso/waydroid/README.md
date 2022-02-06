@@ -25,6 +25,8 @@ All ISOs include eggs, you can udate it with: ```sudo eggs update```.
 
 * **egg-of-ubuntu-impish-waydroid** - remastered version from ubuntu-20.04.3-desktop-amd64.iso (minimum installation)
 * **eggs-of-debian-bookworm-waydroid** - it's not a naked version! Made for developers to not get crazy with X11 dependencies, it not use a Deskop Manager like (sddm, gdm3, etc), but you need to login from console and run ```startplasma-wayland``` to get GUI. 
+* **eggs-of-debian-bullseye-rebecca** - it's a derivated from ab historycal wayland distro, remastered with eggs. Work on UEFI, ogin as ```live```, password ```evolution```, chose kde and open a terminal: ```wlsudo calamares``` to install.
+
 
 **Note:** Please, use always ```theme=waydroid```
 
