@@ -17,7 +17,6 @@ export interface IKeyboard {
 export interface IPartitions {
   installationDevice: string
   installationMode: string
-  luksPassphrase: string
   filesystemType: string
   userSwapChoice: string
 }
