@@ -53,15 +53,14 @@ export default class Krill {
    * @param cryped 
    */
   async prepare(cryped = false) {
-
-    const oWelcome = await this.welcome()
-    const oLocation = await this.location(oWelcome.language)
-    const oKeyboard = await this.keyboard()
-    const oPartitions = await this.partitions(cryped)
-    const oUsers = await this.users()
-    const oNetwork = await this.network()
-    await this.summary(oLocation, oKeyboard, oPartitions)
-    await this.install(oLocation, oKeyboard, oPartitions, oUsers, oNetwork)
+      const oWelcome = await this.welcome()
+      const oLocation = await this.location(oWelcome.language)
+      const oKeyboard = await this.keyboard()
+      const oPartitions = await this.partitions(cryped)
+      const oUsers = await this.users()
+      const oNetwork = await this.network()
+      await this.summary(oLocation, oKeyboard, oPartitions)
+      await this.install(oLocation, oKeyboard, oPartitions, oUsers, oNetwork)
   }
 
 

@@ -274,7 +274,7 @@ export default class Hatching {
             message += JSON.stringify(error)
             redraw(<Install message={message} percent={percent} />)
          }
-         // await checkIt(message)
+         await checkIt(message)
 
          message = "settings keyboard "
          percent = 0.48
@@ -1003,15 +1003,17 @@ adduser ${name} \
     * @returns 
     */
    private async partition(): Promise<boolean> {
-      const echo = { echo: false, ignore: false }
+      const echo = Utils.setEcho(true) //    { echo: false, ignore: false }
 
       let retVal = false
 
-      await exec('wipefs -a ' + this.partitions.installationDevice + this.toNull)
+      await exec('wipefs -a ' + this.partitions.installationDevice + this.toNull, echo)
+      console.log('installationMode: ' + this.partitions.installationMode)
+     
       if (this.partitions.installationMode === 'standard' && !this.efi) {
 
          /**
-          * formattazione standard, BIOS working
+          * standard BIOS: working
           */
          await exec('parted --script ' + this.partitions.installationDevice + ' mklabel msdos' + this.toNull, echo)
          await exec('parted --script --align optimal ' + this.partitions.installationDevice + ' mkpart primary 1MiB 95%' + this.toNull, echo)
@@ -1032,7 +1034,7 @@ adduser ${name} \
 
       } else if (this.partitions.installationMode === 'standard' && this.efi) {
          /**
-          * formattazione standard, EFI NOT working 
+          * UEFI: gpt, UEFI working
           */
 
          await exec('parted --script ' + this.partitions.installationDevice + ' mklabel gpt mkpart primary 0% 1% mkpart primary 1% 95% mkpart primary linux-swap 95% 100%' + this.toNull, echo)
@@ -1054,28 +1056,75 @@ adduser ${name} \
 
          retVal = true
 
+       } else if (this.partitions.installationMode === 'full-encrypted') { // && this.efi) {
          /**
-          * formattazione full-encrypted, BIOS standard
-          * cryptsetup -y -v --type luks2 luksFormat this.partitions.installationDevice
-          * cryptsetup luksOpen /dev/sda vgeggs
-          * Enter passphrase for /dev/sda: this.partitions.luksPassphrase
-          * pv -tpreb /dev/zero | dd of=/dev/mapper/vgeggs bs=128M
-          * mkfs.ext4 /dev/mapper/vgeggs
-          * cryptsetup luksClose vgeggs
-          */
-       } else if (this.partitions.installationMode === 'full-encrypted' && !this.efi) {
-         await exec (`cryptsetup -y -v --type luks2 luksFormat ${this.partitions.installationDevice}`, echo)
-         await exec(`cryptsetup luksOpen ${this.partitions.installationDevice} vgeggs`, echo)
-         await exec(`pv -tpreb /dev/zero | dd of=/dev/mapper/vgeggs bs=128M`, echo)
-         this.devices.efi.name = `none`
-         this.devices.boot.name = `none`
-         this.devices.root.name = '/dev/mapper/vgeggs'
-         this.devices.root.fsType = this.partitions.filesystemType
+          * UEFI: gpt, UEFI, full-encrypt
+         */
+          let echoYes = Utils.setEcho(true)
+
+         const device =this.partitions.installationDevice
+          await exec(`parted --script ${device} mklabel gpt`)
+          await exec(`parted --script ${device} mkpart efi fat32           34s 256MiB`, echoYes) //dev/sda1 EFI
+          await exec(`parted --script ${device} mkpart boot ext2       256MiB 768MiB`, echoYes) //dev/sda2 boot
+          await exec(`parted --script ${device} mkpart root ext4       768MiB  30GiB`, echoYes) //dev/sda3 root
+          await exec(`parted --script ${device} mkpart swap linux-swap  30GiB  100%s`, echoYes) //dev/sda4 swap sino fine
+
+          await exec(`parted ${device} set 1 boot on`, echoYes)
+          await exec(`parted ${device} set 1 esp on`, echoYes)
+
+         // EFI 256M
+         console.log('EFI 256M')
+         this.devices.efi.name = 'efi' // `${this.partitions.installationDevice}1`
+         this.devices.efi.fsType = 'F 32 -I'
+         this.devices.efi.mountPoint = '/boot/efi'
+
+         // BOOT 512M
+         console.log('BOOT 515M')
+         this.devices.boot.name = `boot`
+         this.devices.boot.fsType = 'ext4'
+         this.devices.boot.mountPoint = '/boot'
+
+         // ROOT 29G
+         console.log('ROOT 29G')
+         let crytoRoot = await exec(`cryptsetup -y -v luksFormat --type luks2 ${this.partitions.installationDevice}3`, echoYes)
+         if (crytoRoot.code !== 0) {
+             Utils.warning(`Error: ${crytoRoot.code} ${crytoRoot.data}`)
+             process.exit(1)
+         }
+
+         Utils.warning(`Enter the passphrase for the encrypted ${this.partitions.installationDevice}3 below`)
+         let crytoRootOpen = await exec(`cryptsetup luksOpen --type luks2 ${this.partitions.installationDevice}3 root-crypted`, echoYes)
+         if (crytoRootOpen.code !== 0) {
+             Utils.warning(`Error: ${crytoRootOpen.code} ${crytoRootOpen.data}`)
+             process.exit(1)
+         }
+ 
+ 
+         // SWAP 1G
+         console.log('SWAP 1G')
+         let crytoSwap = await exec(`cryptsetup -y -v luksFormat --type luks2 ${this.partitions.installationDevice}4`, echoYes)
+         if (crytoSwap.code !== 0) {
+             Utils.warning(`Error: ${crytoSwap.code} ${crytoSwap.data}`)
+             process.exit(1)
+         }
+
+         Utils.warning(`Enter the passphrase for the encrypted ${this.partitions.installationDevice}4 below`)
+         let crytoSwapOpen = await exec(`cryptsetup luksOpen --type luks2 ${this.partitions.installationDevice}4 swap-crypted`, echoYes)
+         if (crytoSwapOpen.code !== 0) {
+             Utils.warning(`Error: ${crytoSwapOpen.code} ${crytoSwapOpen.data}`)
+             process.exit(1)
+         }
+
+
+         this.devices.root.name = '/dev/mapper/root-crypted'
+         this.devices.root.fsType = 'ext4'
          this.devices.root.mountPoint = '/'
+
+         this.devices.swap.name = '/dev/mapper/swap-crypted'
+         this.devices.swap.fsType = 'swap'
+
          this.devices.data.name = `none`
-         this.devices.swap.name = 'none'
-         this.devices.swap.fsType = 'none'
-         this.devices.swap.mountPoint = 'none'
+
          retVal = true
          
       } else if (this.partitions.installationMode === 'lvm2' && !this.efi) {
