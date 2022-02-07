@@ -4,17 +4,16 @@ Non è semplice per me descrivere Proxmox VE, vi lascio alla loro [presentazione
 
 Diciamo che fornisce un servizio di virtualizzazione, come vmware o virtualbox, gestibile sia in locale che attraverso il web. L'indirizzo del sito è https://nome-della-macchina-o-ip:8006
 
-Da questo, interamente con interfaccia grafica, è possibile creare, cancellare, gestire le macchine virtuali.
+Da questo indirizzo, interamente con interfaccia accessibile via browser, è possibile creare, cancellare, gestire le macchine virtuali.
 
 Solo una nota, installate - se potete - proxmox ve su una macchina con almeno 4 GB di RAM, preferibilmente 8 GB o 16 per un utilizzo "reale" e per poter assegnare alle macchine virtuali un congruo spazio di memoria 2/4 GB di RAM.
 
 
 ## Installazione
 
-``ATTENZIONE:`` L'utilizzo dell'installazione da CLI con il comando ```sudo eggs hatch``` è distruttivo, nel senso che cancellerà completamente il vostro disco rigido.
+``ATTENZIONE:`` L'utilizzo dell'installazione da CLI con il comando ```sudo eggs install -cli``` è distruttivo, nel senso che cancellerà completamente il vostro disco rigido.
 
-
-Per installare LMDE+Proxmox VE utilizzare il comando ```eggs hatch``` (tenuto conto di quanto riportato sopra) che creerà su /dev/sda:
+Per installare LMDE+Proxmox VE utilizzare il comando ```eggs install -cli``` (tenuto conto di quanto riportato sopra) che creerà su /dev/sda:
 
 * una partizione LVM (```/dev/sda2```);
 * un gruppo di volumi di nome penguin e tre differenti device: 
