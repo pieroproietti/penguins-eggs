@@ -25,7 +25,7 @@ All ISOs include eggs, you can udate it with: ```sudo eggs update```.
 
 * **egg-of-ubuntu-impish-waydroid** - remastered version from ubuntu-20.04.3-desktop-amd64.iso (minimum installation)
 * **eggs-of-debian-bookworm-waydroid** - it's not a naked version! Made for developers to not get crazy with X11 dependencies, it not use a Deskop Manager like (sddm, gdm3, etc), but you need to login from console and run ```startplasma-wayland``` to get GUI. 
-* **eggs-of-debian-bullseye-rebecca** - it's a derivated from an historycal wayland distro: [Rebecca Black OS](https://sourceforge.net/projects/rebeccablackos/) from [nerdopolis](https://sourceforge.net/u/nerdopolis/profile/). I just remastered it with eggs, it work on UEFI and BIOS standard. To install: login as ```live```, password ```evolution```, choose kde and open a terminal: ```wlsudo calamares``` to install.
+* **eggs-of-debian-bullseye-rebecca** - remastered from (RebeccaBlackOS)[https://sourceforge.net/projects/rebeccablackos/) from [nerdopolis](https://sourceforge.net/u/nerdopolis/profile/). It's a Debian-based live distribution which can be used to run Wayland desktop sessions. RebeccaBlackOS can run a number of popular open source desktop environments on top of a Wayland graphical session. The distribution was (and remains) one of the only Linux distributions to run a Wayland session from live media. The distribution is available in 32-bit and 64-bit builds for the x86 architecture. Work on UEFI and BIOS standard. To install: login as ```live```, password ```evolution```, choose kde and open a terminal: ```wlsudo calamares``` to install.
 
 **Note:** Please, use always ```theme=waydroid```
 
