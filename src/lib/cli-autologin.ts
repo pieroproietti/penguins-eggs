@@ -125,11 +125,11 @@ export async function addMotd(distro: string, version: string, user: string, use
     }
   }
 
-  msgRemove(fileMotd)
-  
   if (!fs.existsSync(fileMotd)){
     await exec(`touch ${fileMotd}`)
   }
+  
+  msgRemove(fileMotd)
 
   let eggsMotd = fs.readFileSync(fileMotd, 'utf-8')
   eggsMotd += startMessage + '\n'
