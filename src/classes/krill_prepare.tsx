@@ -157,7 +157,6 @@ export default class Krill {
     if (crypted) {
       installationMode = 'full-encrypted'
     }
-    let luksPassphrase = 'evolution'
     let filesystemType = 'ext4'
     let userSwapChoice = 'small'
 
@@ -172,7 +171,6 @@ export default class Krill {
         if (crypted) {
           installationMode = 'full-encrypted'
         }
-        luksPassphrase = 'evolution'
         filesystemType = ''
         userSwapChoice = ''
       }
@@ -197,7 +195,6 @@ export default class Krill {
     return {
       installationDevice: installationDevice,
       installationMode: installationMode,
-      luksPassphrase: luksPassphrase,
       filesystemType: filesystemType,
       userSwapChoice: userSwapChoice
     }
