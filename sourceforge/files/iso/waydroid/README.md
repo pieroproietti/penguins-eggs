@@ -23,7 +23,7 @@ All ISOs include eggs, you can udate it with: ```sudo eggs update```.
 
  A container-based approach to boot a full Android system on a regular GNU/Linux system like Ubuntu.
 
-* **egg-of-ubuntu-impish-waydroid** - remastered version from ubuntu-20.04.3-desktop-amd64.iso (minimum installation)
+* **egg-of-ubuntu-impish-waydroid** - remastered version from [waydroid/linux/alpha/ubuntu/impish/01-20-22/](https://sourceforge.net/projects/blissos-dev/files/waydroid/linux/alpha/ubuntu/impish/01-20-22/)
 * **eggs-of-debian-bookworm-waydroid** - it's not a naked version! Made for developers to not get crazy with X11 dependencies, it not use a Deskop Manager like (sddm, gdm3, etc), but you need to login from console and run ```startplasma-wayland``` to get GUI. 
 * **eggs-of-debian-bullseye-rebecca** - remastered from [RebeccaBlackOS](https://sourceforge.net/projects/rebeccablackos/) from [nerdopolis](https://sourceforge.net/u/nerdopolis/profile/). See more on [Distrowatch](https://distrowatch.com/table.php?distribution=rebeccablackos). Rebecca work on UEFI and BIOS standard, to install: login: ```live```, password: ```evolution```; choose KDE and run from a terminal: ```wlsudo calamares```.
 
