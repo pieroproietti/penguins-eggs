@@ -162,7 +162,7 @@ export default class Krill {
 
     let partitionsElem: JSX.Element
     while (true) {
-      partitionsElem = <Partitions installationDevice={installationDevice} installationMode={installationMode} luksPassphrase={luksPassphrase} filesystemType={filesystemType} userSwapChoice={userSwapChoice} />
+      partitionsElem = <Partitions installationDevice={installationDevice} installationMode={installationMode} filesystemType={filesystemType} userSwapChoice={userSwapChoice} />
       if (await confirm(partitionsElem, "Confirm Partitions datas?")) {
         break
       } else {
@@ -175,19 +175,19 @@ export default class Krill {
         userSwapChoice = ''
       }
 
-      partitionsElem = <Partitions installationDevice={installationDevice} installationMode={installationMode} luksPassphrase={luksPassphrase} filesystemType={filesystemType} userSwapChoice={userSwapChoice} />
+      partitionsElem = <Partitions installationDevice={installationDevice} installationMode={installationMode} filesystemType={filesystemType} userSwapChoice={userSwapChoice} />
       redraw(partitionsElem)
       installationDevice = await selectInstallationDevice()
 
-      partitionsElem = <Partitions installationDevice={installationDevice} installationMode={installationMode} luksPassphrase={luksPassphrase} filesystemType={filesystemType} userSwapChoice={userSwapChoice} />
+      partitionsElem = <Partitions installationDevice={installationDevice} installationMode={installationMode} filesystemType={filesystemType} userSwapChoice={userSwapChoice} />
       redraw(partitionsElem)
       installationMode = await selectInstallationMode()
 
-      partitionsElem = <Partitions installationDevice={installationDevice} installationMode={installationMode} luksPassphrase={luksPassphrase} filesystemType={filesystemType} userSwapChoice={userSwapChoice} />
+      partitionsElem = <Partitions installationDevice={installationDevice} installationMode={installationMode} filesystemType={filesystemType} userSwapChoice={userSwapChoice} />
       redraw(partitionsElem)
       filesystemType = await selectFileSystemType()
 
-      partitionsElem = <Partitions installationDevice={installationDevice} installationMode={installationMode} luksPassphrase={luksPassphrase} filesystemType={filesystemType} userSwapChoice={userSwapChoice} />
+      partitionsElem = <Partitions installationDevice={installationDevice} installationMode={installationMode} filesystemType={filesystemType} userSwapChoice={userSwapChoice} />
       redraw(partitionsElem)
       userSwapChoice = await selectUserSwapChoice()
 

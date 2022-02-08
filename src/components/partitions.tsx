@@ -13,13 +13,12 @@ import { ISettings, IBranding, IPartitions } from '../interfaces'
 type partitionsProps = {
     installationDevice?: string,
     installationMode?: string,
-    luksPassphrase: string,
     filesystemType?: string,
     userSwapChoice?: string
 }
 
 
-export default function Partitions({ installationDevice, installationMode, luksPassphrase, filesystemType, userSwapChoice }: partitionsProps) {
+export default function Partitions({ installationDevice, installationMode, filesystemType, userSwapChoice }: partitionsProps) {
     let installer = 'krill'
     let productName = 'unknown'
     let version = 'x.x.x'
@@ -68,7 +67,6 @@ export default function Partitions({ installationDevice, installationMode, luksP
                             <Box><Text>BIOS: </Text><Text color="cyan">{bios}</Text></Box>
                             <Box><Text>Installation device: </Text><Text color="cyan">{installationDevice}</Text></Box>
                             <Box><Text>Installation mode: </Text><Text color="cyan">{installationMode}</Text></Box>
-                            <Box><Text>LUKS passphrase: </Text><Text color="cyan">{luksPassphrase}</Text></Box>
                             <Box><Text>Filesystem: </Text><Text color="cyan">{filesystemType}</Text></Box>
                             <Box><Text>User swap choice: : </Text><Text color="cyan">{userSwapChoice}</Text></Box>
                         </Box>
