@@ -56,7 +56,7 @@ export default class Install extends Command {
           Utils.warning('If you still want to use krill, type: ' + chalk.bold('sudo eggs install --cli'))
         } else {
           const krill = new Prepare()
-          await krill.prepare(crypted)
+          await krill.prepare(crypted, verbose)
         }
       }
     } else {

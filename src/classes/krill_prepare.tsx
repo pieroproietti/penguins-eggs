@@ -52,7 +52,7 @@ export default class Krill {
    * 
    * @param cryped 
    */
-  async prepare(cryped = false) {
+  async prepare(cryped = false, verbose = false) {
       const oWelcome = await this.welcome()
       const oLocation = await this.location(oWelcome.language)
       const oKeyboard = await this.keyboard()
@@ -60,7 +60,7 @@ export default class Krill {
       const oUsers = await this.users()
       const oNetwork = await this.network()
       await this.summary(oLocation, oKeyboard, oPartitions)
-      await this.install(oLocation, oKeyboard, oPartitions, oUsers, oNetwork)
+      await this.install(oLocation, oKeyboard, oPartitions, oUsers, oNetwork, verbose)
   }
 
 
@@ -310,9 +310,9 @@ export default class Krill {
   /**
    * INSTALL
    */
-  async install(location: ILocation, keyboard: IKeyboard, partitions: IPartitions, users: IUsers, network: INet) {
+  async install(location: ILocation, keyboard: IKeyboard, partitions: IPartitions, users: IUsers, network: INet, verbose=false) {
     const hatching = new Hatching(location, keyboard, partitions, users, network)
-    hatching.install(true)
+    hatching.install(verbose)
   }
 }
 

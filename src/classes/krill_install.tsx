@@ -1003,7 +1003,7 @@ adduser ${name} \
     * @returns 
     */
    private async partition(): Promise<boolean> {
-      const echo = Utils.setEcho(false)
+      const echo = Utils.setEcho(this.verbose)
       let echoYes = Utils.setEcho(true)
 
       let retVal = false
@@ -1055,12 +1055,13 @@ adduser ${name} \
           * ===========================================================================================
           */
 
-         await exec(`parted --script ${installDevice} mklabel gpt mkpart${this.toNull}`, echo)
-         await exec(`parted --script ${installDevice} primary 0% 1%${this.toNull}`, echo)
-         await exec(`parted --script ${installDevice} mkpart primary 1% 95%${this.toNull}`, echo)
-         await exec(`parted --script ${installDevice} mkpart primary linux-swap 95% 100%${this.toNull}`, echo)
-         await exec(`parted --script ${installDevice} set 1 boot${this.toNull}`, echo)
-         await exec(`parted --script ${installDevice} set 1 esp on${this.toNull}`, echo)
+         await exec(`parted --script ${installDevice} mklabel gpt ${this.toNull}`, echo)
+         await exec(`parted --script ${installDevice}mkpart ${this.toNull}`, echo)
+         await exec(`parted --script ${installDevice} primary 0% 1% ${this.toNull}`, echo)
+         await exec(`parted --script ${installDevice} mkpart primary 1% 95% ${this.toNull}`, echo)
+         await exec(`parted --script ${installDevice} mkpart primary linux-swap 95% 100% ${this.toNull}`, echo)
+         await exec(`parted --script ${installDevice} set 1 boot ${this.toNull}`, echo)
+         await exec(`parted --script ${installDevice} set 1 esp on ${this.toNull}`, echo)
 
          this.devices.efi.name = `${installDevice}1`
          this.devices.efi.fsType = 'F 32 -I'
