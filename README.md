@@ -143,9 +143,74 @@ USAGE
 
 # Commands
 <!-- commands -->
+* [`eggs adapt`](#eggs-adapt)
+* [`eggs analyze`](#eggs-analyze)
 * [`eggs autocomplete [SHELL]`](#eggs-autocomplete-shell)
+* [`eggs bro`](#eggs-bro)
+* [`eggs calamares`](#eggs-calamares)
+* [`eggs config`](#eggs-config)
+* [`eggs dad`](#eggs-dad)
+* [`eggs export deb`](#eggs-export-deb)
+* [`eggs export docs`](#eggs-export-docs)
+* [`eggs export iso`](#eggs-export-iso)
 * [`eggs help [COMMAND]`](#eggs-help-command)
+* [`eggs info`](#eggs-info)
+* [`eggs install`](#eggs-install)
+* [`eggs kill`](#eggs-kill)
+* [`eggs mom`](#eggs-mom)
+* [`eggs produce`](#eggs-produce)
+* [`eggs remove`](#eggs-remove)
+* [`eggs syncfrom`](#eggs-syncfrom)
+* [`eggs syncto`](#eggs-syncto)
+* [`eggs tools clean`](#eggs-tools-clean)
+* [`eggs tools locales`](#eggs-tools-locales)
+* [`eggs tools skel`](#eggs-tools-skel)
+* [`eggs tools stat`](#eggs-tools-stat)
+* [`eggs tools yolk`](#eggs-tools-yolk)
+* [`eggs update`](#eggs-update)
 * [`eggs version`](#eggs-version)
+
+## `eggs adapt`
+
+adapt monitor resolution for VM only
+
+```
+USAGE
+  $ eggs adapt [-v] [-h]
+
+FLAGS
+  -h, --help     Show CLI help.
+  -v, --verbose
+
+DESCRIPTION
+  adapt monitor resolution for VM only
+
+ALIASES
+  $ eggs adjust
+```
+
+_See code: [src/commands/adapt.ts](https://github.com/pieroproietti/penguins-eggs/blob/v9.0.20/src/commands/adapt.ts)_
+
+## `eggs analyze`
+
+analyze situation
+
+```
+USAGE
+  $ eggs analyze [-h] [-v]
+
+FLAGS
+  -h, --help     Show CLI help.
+  -v, --verbose  verbose
+
+DESCRIPTION
+  analyze situation
+
+EXAMPLES
+  $ sudo eggs analyze
+```
+
+_See code: [src/commands/analyze.ts](https://github.com/pieroproietti/penguins-eggs/blob/v9.0.20/src/commands/analyze.ts)_
 
 ## `eggs autocomplete [SHELL]`
 
@@ -176,6 +241,152 @@ EXAMPLES
 
 _See code: [@oclif/plugin-autocomplete](https://github.com/oclif/plugin-autocomplete/blob/v1.2.0/src/commands/autocomplete/index.ts)_
 
+## `eggs bro`
+
+bro: waydroid helper
+
+```
+USAGE
+  $ eggs bro [-h]
+
+FLAGS
+  -h, --help  Show CLI help.
+
+DESCRIPTION
+  bro: waydroid helper
+```
+
+_See code: [src/commands/bro.ts](https://github.com/pieroproietti/penguins-eggs/blob/v9.0.20/src/commands/bro.ts)_
+
+## `eggs calamares`
+
+calamares or install or configure it
+
+```
+USAGE
+  $ eggs calamares [-h] [-v] [-i] [-f] [-r] [--theme <value>]
+
+FLAGS
+  -f, --final      final: remove calamares and all it's dependencies after the installation
+  -h, --help       Show CLI help.
+  -i, --install    install calamares and it's dependencies
+  -r, --remove     remove calamares and it's dependencies
+  -v, --verbose
+  --theme=<value>  theme/branding for eggs and calamares
+
+DESCRIPTION
+  calamares or install or configure it
+
+EXAMPLES
+  ~$ sudo eggs calamares 
+  create/renew calamares configuration's files
+
+  ~$ sudo eggs calamares -i 
+  install calamares and create it's configuration's files
+```
+
+_See code: [src/commands/calamares.ts](https://github.com/pieroproietti/penguins-eggs/blob/v9.0.20/src/commands/calamares.ts)_
+
+## `eggs config`
+
+Configure and install prerequisites deb packages to run it
+
+```
+USAGE
+  $ eggs config [-n] [-c] [-h] [-v]
+
+FLAGS
+  -c, --clean          remove old configuration before to create new one
+  -h, --help           Show CLI help.
+  -n, --nointeractive  assume yes
+  -v, --verbose        verbose
+
+DESCRIPTION
+  Configure and install prerequisites deb packages to run it
+
+ALIASES
+  $ eggs prerequisites
+
+EXAMPLES
+  ~$ sudo eggs config
+  Configure and install prerequisites deb packages to run it
+```
+
+_See code: [src/commands/config.ts](https://github.com/pieroproietti/penguins-eggs/blob/v9.0.20/src/commands/config.ts)_
+
+## `eggs dad`
+
+ask help from daddy - configuration helper
+
+```
+USAGE
+  $ eggs dad [-h] [-c] [-d] [-v]
+
+FLAGS
+  -c, --clean    remove old configuration before to create
+  -d, --default  remove old configuration and force default
+  -h, --help     Show CLI help.
+  -v, --verbose
+
+DESCRIPTION
+  ask help from daddy - configuration helper
+```
+
+_See code: [src/commands/dad.ts](https://github.com/pieroproietti/penguins-eggs/blob/v9.0.20/src/commands/dad.ts)_
+
+## `eggs export deb`
+
+export deb/docs/iso to the destination host
+
+```
+USAGE
+  $ eggs export deb [-h] [-c] [--amd64] [--i386] [--armel] [--arm64] [-a]
+
+FLAGS
+  -a, --all    export all archs
+  -c, --clean  remove old .deb before to copy
+  -h, --help   Show CLI help.
+  --amd64      export amd64 arch
+  --arm64      export arm64 arch
+  --armel      export armel arch
+  --i386       export i386 arch
+
+DESCRIPTION
+  export deb/docs/iso to the destination host
+```
+
+## `eggs export docs`
+
+remove and export docType documentation of the sources in the destination host
+
+```
+USAGE
+  $ eggs export docs [-h]
+
+FLAGS
+  -h, --help  Show CLI help.
+
+DESCRIPTION
+  remove and export docType documentation of the sources in the destination host
+```
+
+## `eggs export iso`
+
+export iso in the destination host
+
+```
+USAGE
+  $ eggs export iso [-h] [-b] [-c]
+
+FLAGS
+  -b, --backup  export backup ISOs
+  -c, --clean   delete old ISOs before to copy
+  -h, --help    Show CLI help.
+
+DESCRIPTION
+  export iso in the destination host
+```
+
 ## `eggs help [COMMAND]`
 
 Display help for eggs.
@@ -195,6 +406,361 @@ DESCRIPTION
 ```
 
 _See code: [@oclif/plugin-help](https://github.com/oclif/plugin-help/blob/v5.1.10/src/commands/help.ts)_
+
+## `eggs info`
+
+re-thinking for a different approach to CLI
+
+```
+USAGE
+  $ eggs info [-v] [-h]
+
+FLAGS
+  -h, --help     Show CLI help.
+  -v, --verbose
+
+DESCRIPTION
+  re-thinking for a different approach to CLI
+```
+
+_See code: [src/commands/info.ts](https://github.com/pieroproietti/penguins-eggs/blob/v9.0.20/src/commands/info.ts)_
+
+## `eggs install`
+
+command-line system installer - the egg became a penguin!
+
+```
+USAGE
+  $ eggs install [-c] [-k] [-h] [-v]
+
+FLAGS
+  -c, --cli      force use CLI installer
+  -h, --help     Show CLI help.
+  -k, --crypted  crypted CLI installation
+  -v, --verbose  verbose
+
+DESCRIPTION
+  command-line system installer - the egg became a penguin!
+
+ALIASES
+  $ eggs hatch
+  $ eggs krill
+
+EXAMPLES
+  $ eggs install
+  Install the system using GUI or CLI installer
+```
+
+_See code: [src/commands/install.ts](https://github.com/pieroproietti/penguins-eggs/blob/v9.0.20/src/commands/install.ts)_
+
+## `eggs kill`
+
+kill the eggs/free the nest
+
+```
+USAGE
+  $ eggs kill [-h] [-v]
+
+FLAGS
+  -h, --help     Show CLI help.
+  -v, --verbose  verbose
+
+DESCRIPTION
+  kill the eggs/free the nest
+
+EXAMPLES
+  $ eggs kill
+  kill the eggs/free the nest
+```
+
+_See code: [src/commands/kill.ts](https://github.com/pieroproietti/penguins-eggs/blob/v9.0.20/src/commands/kill.ts)_
+
+## `eggs mom`
+
+ask for mommy - gui helper
+
+```
+USAGE
+  $ eggs mom [-h]
+
+FLAGS
+  -h, --help  Show CLI help.
+
+DESCRIPTION
+  ask for mommy - gui helper
+```
+
+_See code: [src/commands/mom.ts](https://github.com/pieroproietti/penguins-eggs/blob/v9.0.20/src/commands/mom.ts)_
+
+## `eggs produce`
+
+produce a live image from your system whithout your data
+
+```
+USAGE
+  $ eggs produce [-p <value>] [--basename <value>] [-b] [-f] [-n] [-m] [-v] [-y] [-s] [-h] [--theme <value>]
+    [--addons <value>] [--release]
+
+FLAGS
+  -b, --backup          backup mode
+  -f, --fast            fast compression
+  -h, --help            Show CLI help.
+  -m, --max             max compression
+  -n, --normal          normal compression
+  -p, --prefix=<value>  prefix
+  -s, --script          script mode. Generate scripts to manage iso build
+  -v, --verbose         verbose
+  -y, --yolk            -y force yolk renew
+  --addons=<value>...   addons to be used: adapt, ichoice, pve, rsupport
+  --basename=<value>    basename
+  --release             release: configure GUI installer to remove eggs and calamares after installation
+  --theme=<value>       theme for livecd, calamares branding and partitions
+
+DESCRIPTION
+  produce a live image from your system whithout your data
+
+ALIASES
+  $ eggs spawn
+  $ eggs lay
+
+EXAMPLES
+  $ sudo eggs produce 
+  produce an ISO called [hostname]-[arch]-YYYY-MM-DD_HHMM.iso, compressed xz (standard compression).
+  If hostname=ugo and arch=i386 ugo-x86-2020-08-25_1215.iso
+
+  $ sudo eggs produce -v
+  same as previuos, but with --verbose output
+
+  $ sudo eggs produce -vf
+  same as previuos, compression zstd, lz4 or gzip (depend from system capability)
+
+  $ sudo eggs produce -vm
+  same as previuos, compression xz -Xbcj x86 (max compression, about 10%
+  more compressed)
+
+  $ sudo eggs produce -vf --basename leo --theme debian --addons adapt 
+  produce an ISO called leo-i386-2020-08-25_1215.iso compression fast,
+  using Debian theme and link to adapt
+
+  $ sudo eggs produce -v --basename leo --theme debian --addons rsupport 
+  produce an ISO called leo-i386-2020-08-25_1215.iso compression xz,
+  using Debian theme and link to dwagent
+
+  $ sudo eggs produce -v --basename leo --rsupport 
+  produce an ISO called leo-i386-2020-08-25_1215.iso compression xz, using eggs
+  theme and link to dwagent
+
+  $ sudo eggs produce -vs --basename leo --rsupport 
+  produce scripts to build an ISO as the previus example. Scripts can be found
+  in /home/eggs/ovarium and you can customize all you need
+```
+
+_See code: [src/commands/produce.ts](https://github.com/pieroproietti/penguins-eggs/blob/v9.0.20/src/commands/produce.ts)_
+
+## `eggs remove`
+
+remove eggs and others stuff
+
+```
+USAGE
+  $ eggs remove [-p] [-a] [-h] [-v]
+
+FLAGS
+  -a, --autoremove  remove eggs packages dependencies
+  -h, --help        Show CLI help.
+  -p, --purge       remove eggs configurations files
+  -v, --verbose     verbose
+
+DESCRIPTION
+  remove eggs and others stuff
+
+EXAMPLES
+  $ sudo eggs remove 
+  remove eggs
+
+  $ sudo eggs remove --purge 
+  remove eggs, eggs configurations, configuration's files
+
+  $ sudo eggs remove --autoremove 
+  remove eggs, eggs configurations, packages dependencies
+```
+
+_See code: [src/commands/remove.ts](https://github.com/pieroproietti/penguins-eggs/blob/v9.0.20/src/commands/remove.ts)_
+
+## `eggs syncfrom`
+
+Restore users, server and datas from luks-eggs-backup
+
+```
+USAGE
+  $ eggs syncfrom [-f <value>] [-r <value>] [-h] [-v]
+
+FLAGS
+  -f, --file=<value>     file with LUKS volume encrypted
+  -h, --help             Show CLI help.
+  -r, --rootdir=<value>  rootdir of the installed system, when used from live
+  -v, --verbose          verbose
+
+DESCRIPTION
+  Restore users, server and datas from luks-eggs-backup
+
+ALIASES
+  $ eggs restore
+
+EXAMPLES
+  $ sudo eggs restore
+```
+
+_See code: [src/commands/syncfrom.ts](https://github.com/pieroproietti/penguins-eggs/blob/v9.0.20/src/commands/syncfrom.ts)_
+
+## `eggs syncto`
+
+Backup users, server and datas to luks-eggs-backup
+
+```
+USAGE
+  $ eggs syncto [-k] [-f <value>] [-h] [-v]
+
+FLAGS
+  -f, --file=<value>  file LUKS volume encrypted
+  -h, --help          Show CLI help.
+  -k, --krill         krill
+  -v, --verbose       verbose
+
+DESCRIPTION
+  Backup users, server and datas to luks-eggs-backup
+
+ALIASES
+  $ eggs backup
+
+EXAMPLES
+  $ sudo eggs restore
+```
+
+_See code: [src/commands/syncto.ts](https://github.com/pieroproietti/penguins-eggs/blob/v9.0.20/src/commands/syncto.ts)_
+
+## `eggs tools clean`
+
+clean system log, apt, etc
+
+```
+USAGE
+  $ eggs tools clean [-h] [-v]
+
+FLAGS
+  -h, --help     Show CLI help.
+  -v, --verbose  verbose
+
+DESCRIPTION
+  clean system log, apt, etc
+
+ALIASES
+  $ eggs clean
+```
+
+## `eggs tools locales`
+
+install/clean locales
+
+```
+USAGE
+  $ eggs tools locales [-h] [-r] [-v]
+
+FLAGS
+  -h, --help       Show CLI help.
+  -r, --reinstall  reinstall locales
+  -v, --verbose    verbose
+
+DESCRIPTION
+  install/clean locales
+```
+
+## `eggs tools skel`
+
+update skel from home configuration
+
+```
+USAGE
+  $ eggs tools skel [-h] [-u <value>] [-v]
+
+FLAGS
+  -h, --help          Show CLI help.
+  -u, --user=<value>  user to be used
+  -v, --verbose
+
+DESCRIPTION
+  update skel from home configuration
+
+ALIASES
+  $ eggs skel
+
+EXAMPLES
+  $ eggs skel --user mauro
+  desktop configuration of user mauro will get used as default
+```
+
+## `eggs tools stat`
+
+get statistics from sourceforge
+
+```
+USAGE
+  $ eggs tools stat [-h] [-m] [-y]
+
+FLAGS
+  -h, --help   Show CLI help.
+  -m, --month  current month
+  -y, --year   current year
+
+DESCRIPTION
+  get statistics from sourceforge
+
+ALIASES
+  $ eggs stat
+```
+
+## `eggs tools yolk`
+
+configure eggs to install without internet
+
+```
+USAGE
+  $ eggs tools yolk [-h] [-v]
+
+FLAGS
+  -h, --help     Show CLI help.
+  -v, --verbose
+
+DESCRIPTION
+  configure eggs to install without internet
+
+EXAMPLES
+  $ eggs yolk -v
+```
+
+## `eggs update`
+
+update the penguin's eggs tool
+
+```
+USAGE
+  $ eggs update [-h] [-a] [-b] [-v]
+
+FLAGS
+  -a, --apt      if eggs package is .deb, update from distro repositories
+  -b, --basket   if eggs package is .deb, update from eggs basket
+  -h, --help     Show CLI help.
+  -v, --verbose  verbose
+
+DESCRIPTION
+  update the penguin's eggs tool
+
+EXAMPLES
+  $ eggs update
+  update/upgrade the penguin's eggs tool
+```
+
+_See code: [src/commands/update.ts](https://github.com/pieroproietti/penguins-eggs/blob/v9.0.20/src/commands/update.ts)_
 
 ## `eggs version`
 
