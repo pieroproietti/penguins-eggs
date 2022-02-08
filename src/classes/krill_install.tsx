@@ -269,7 +269,7 @@ export default class Hatching {
          percent = 0.47
          try {
             redraw(<Install message={message} percent={percent} />)
-            await this.fstab(this.partitions.installationDevice, this.partitions.installationMode === 'full-encrypted')
+            await this.fstab(this.partitions.installationDevice)
          } catch (error) {
             message += JSON.stringify(error)
             redraw(<Install message={message} percent={percent} />)
@@ -633,7 +633,10 @@ adduser ${name} \
       text += `UUID=${Utils.uuid(this.devices.swap.name)} ${this.devices.swap.mountPoint} ${this.devices.swap.fsType} ${mountOptsSwap}\n`
       Utils.write(fstab, text)
 
-      if (crypted) {
+      /**
+       * crypttab
+       */
+      if (this.partitions.installationMode === 'full-encrypted') {
          const crypttab = this.installTarget + '/etc/crypttab'
          text = ``
          text += `# /etc/crypttab: mappings for encrypted partitions.`
@@ -653,8 +656,6 @@ adduser ${name} \
          text += `swap-crypted /dev/sda4`
          Utils.write(crypttab, text)
       }
-
-
    }
 
    /**
