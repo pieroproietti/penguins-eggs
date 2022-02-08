@@ -589,6 +589,31 @@ adduser ${name} \
     * @param devices
     */
    private async fstab(installDevice: string, crypted = false) {
+      let text = ''
+
+      /**
+       * crypttab
+       */
+       if (this.partitions.installationMode === 'full-encrypted') {
+         const crypttab = this.installTarget + '/etc/crypttab'
+         text = ``
+         text += `# /etc/crypttab: mappings for encrypted partitions.\n`
+         text += `#\n`
+         text += `# Each mapped device will be created in /dev/mapper, so your /etc/fstab\n`
+         text += `# should use the /dev/mapper/<name> paths for encrypted devices.\n`
+         text += `#\n`
+         text += `# See crypttab(5) for the supported syntax.\n`
+         text += `#\n`
+         text += `# NOTE: You need not list your root (/) partition here, but it must be set up\n`
+         text += `#       beforehand by the initramfs (/etc/mkinitcpio.conf). The same applies\n`
+         text += `#       to encrypted swap, which should be set up with mkinitcpio-openswap\n`
+         text += `#       for resume support.\n`
+         text += `#\n`
+         text += `# <name>               <device>                         <password> <options>\n`
+         text += `root-crypted ${this.partitions.installationDevice}3 none\n`
+         text += `swap-crypted ${this.partitions.installationDevice}4 none\n`
+         Utils.write(crypttab, text)
+      }
 
       const fstab = this.installTarget + '/etc/fstab'
       let mountOptsRoot = ''
@@ -610,8 +635,8 @@ adduser ${name} \
          mountOptsEfi = 'defaults,noatime 0 2'
          mountOptsSwap = 'defaults,noatime 0 2'
       }
-      let text = ''
 
+      text = ``
       text += `# ${this.devices.root.name} ${this.devices.root.mountPoint} ${this.devices.root.fsType} ${mountOptsRoot}\n`
       text += `UUID=${Utils.uuid(this.devices.root.name)} ${this.devices.root.mountPoint} ${this.devices.root.fsType} ${mountOptsRoot}\n`
 
@@ -633,29 +658,6 @@ adduser ${name} \
       text += `UUID=${Utils.uuid(this.devices.swap.name)} ${this.devices.swap.mountPoint} ${this.devices.swap.fsType} ${mountOptsSwap}\n`
       Utils.write(fstab, text)
 
-      /**
-       * crypttab
-       */
-      if (this.partitions.installationMode === 'full-encrypted') {
-         const crypttab = this.installTarget + '/etc/crypttab'
-         text = ``
-         text += `# /etc/crypttab: mappings for encrypted partitions.`
-         text += `#`
-         text += `# Each mapped device will be created in /dev/mapper, so your /etc/fstab`
-         text += `# should use the /dev/mapper/<name> paths for encrypted devices.`
-         text += `#`
-         text += `# See crypttab(5) for the supported syntax.`
-         text += `#`
-         text += `# NOTE: You need not list your root (/) partition here, but it must be set up`
-         text += `#       beforehand by the initramfs (/etc/mkinitcpio.conf). The same applies`
-         text += `#       to encrypted swap, which should be set up with mkinitcpio-openswap`
-         text += `#       for resume support.`
-         text += `#`
-         text += `# <name>               <device>                         <password> <options>`
-         text += `root-crypted /dev/sda3`
-         text += `swap-crypted /dev/sda4`
-         Utils.write(crypttab, text)
-      }
    }
 
    /**
@@ -1035,7 +1037,7 @@ adduser ${name} \
       const installDevice = this.partitions.installationDevice
       const installMode = this.partitions.installationMode
 
-      await exec(`wipefs -a ${installDevice}${this.toNull}`, echo)
+      await exec(`wipefs -a ${installDevice} ${this.toNull}`, echo)
 
       if (installMode === 'standard' && !this.efi) {
 
@@ -1046,9 +1048,9 @@ adduser ${name} \
           */
 
          await exec(`parted --script ${installDevice} mklabel msdos ${this.toNull}`, echo)
-         await exec(`parted --script --align optimal ${installDevice}  mkpart primary 1MiB 95%${this.toNull}`, echo)
-         await exec(`parted --script ${installDevice} set 1 boot on${this.toNull}`, echo)
-         await exec(`parted --script --align optimal ${installDevice} mkpart primary 95% 100%'${this.toNull}`, echo)
+         await exec(`parted --script --align optimal ${installDevice} mkpart primary 1MiB 95% ${this.toNull}`, echo)
+         await exec(`parted --script ${installDevice} set 1 boot on ${this.toNull}`, echo)
+         await exec(`parted --script --align optimal ${installDevice} mkpart primary 95% 100% ${this.toNull}`, echo)
 
          // EFI none
          this.devices.efi.name = `none`
