@@ -59,7 +59,7 @@ import Distro from './distro';
 import { IInstaller, IDevices, IDevice } from '../interfaces'
 import { ICalamaresModule, ILocation, IKeyboard, IPartitions, IUsers } from '../interfaces/i-krill'
 import { execSync } from 'child_process'
-import {exec} from'../lib/utils'
+import { exec } from '../lib/utils'
 
 /**
  * hatching: installazione o cova!!!
@@ -144,7 +144,7 @@ export default class Hatching {
       this.luksFile = `/run/live/medium/live/${this.luksName}`
       this.luksDevice = `/dev/mapper/${this.luksName}`
       this.luksMountpoint = `/mnt`
-   
+
    }
 
    /**
@@ -430,7 +430,7 @@ export default class Hatching {
          // eggs-cleanup forced
          await cliAutologin.msgRemove(`${this.installTarget}/etc/motd`)
          await cliAutologin.msgRemove(`${this.installTarget}/etc/issue`)
- 
+
          // await checkIt(message)
 
          message = "remove installer"
@@ -1003,144 +1003,157 @@ adduser ${name} \
     * @returns 
     */
    private async partition(): Promise<boolean> {
-      const echo = Utils.setEcho(false) //    { echo: false, ignore: false }
+      const echo = Utils.setEcho(false)
+      let echoYes = Utils.setEcho(true)
 
       let retVal = false
 
-      await exec('wipefs -a ' + this.partitions.installationDevice + this.toNull, echo)
-      console.log('installationMode: ' + this.partitions.installationMode)
-     
-      if (this.partitions.installationMode === 'standard' && !this.efi) {
+      const installDevice = this.partitions.installationDevice
+      const installMode = this.partitions.installationMode
+
+      await exec(`wipefs -a ${installDevice}${this.toNull}`, echo)
+
+      if (installMode === 'standard' && !this.efi) {
 
          /**
-          * standard BIOS: working
+          * ===========================================================================================
+          * BIOS: working
+          * ===========================================================================================
           */
-         await exec('parted --script ' + this.partitions.installationDevice + ' mklabel msdos' + this.toNull, echo)
-         await exec('parted --script --align optimal ' + this.partitions.installationDevice + ' mkpart primary 1MiB 95%' + this.toNull, echo)
-         await exec('parted --script ' + this.partitions.installationDevice + ' set 1 boot on' + this.toNull, echo)
-         await exec('parted --script --align optimal ' + this.partitions.installationDevice + ' mkpart primary 95% 100%' + this.toNull, echo)
 
+         await exec(`parted --script ${installDevice} mklabel msdos ${this.toNull}`, echo)
+         await exec(`parted --script --align optimal ${installDevice}  mkpart primary 1MiB 95%${this.toNull}`, echo)
+         await exec(`parted --script ${installDevice} set 1 boot on${this.toNull}`, echo)
+         await exec(`parted --script --align optimal ${installDevice} mkpart primary 95% 100%'${this.toNull}`, echo)
+
+         // EFI none
          this.devices.efi.name = `none`
+
+         // BOOT none
          this.devices.boot.name = `none`
-         this.devices.root.name = this.partitions.installationDevice + '1'
+
+         // ROOT
+         this.devices.root.name = `${installDevice}1`
          this.devices.root.fsType = 'ext4'
          this.devices.root.mountPoint = '/'
+
+         // DATA none
          this.devices.data.name = `none`
-         this.devices.swap.name = this.partitions.installationDevice + '2'
+
+         // SWAP
+         this.devices.swap.name = `${installDevice}2`
          this.devices.swap.fsType = 'swap'
          this.devices.swap.mountPoint = 'none'
 
          retVal = true
 
-      } else if (this.partitions.installationMode === 'standard' && this.efi) {
+      } else if (installMode === 'standard' && this.efi) {
+
          /**
-          * UEFI: gpt, UEFI working
+          * ===========================================================================================
+          * UEFI: working
+          * ===========================================================================================
           */
 
-         await exec('parted --script ' + this.partitions.installationDevice + ' mklabel gpt mkpart primary 0% 1% mkpart primary 1% 95% mkpart primary linux-swap 95% 100%' + this.toNull, echo)
-         await exec('parted --script ' + this.partitions.installationDevice + ' set 1 boot on' + this.toNull, echo)
-         await exec('parted --script ' + this.partitions.installationDevice + ' set 1 esp on' + this.toNull, echo)
+         await exec(`parted --script ${installDevice} mklabel gpt mkpart${this.toNull}`, echo)
+         await exec(`parted --script ${installDevice} primary 0% 1%${this.toNull}`, echo)
+         await exec(`parted --script ${installDevice} mkpart primary 1% 95%${this.toNull}`, echo)
+         await exec(`parted --script ${installDevice} mkpart primary linux-swap 95% 100%${this.toNull}`, echo)
+         await exec(`parted --script ${installDevice} set 1 boot${this.toNull}`, echo)
+         await exec(`parted --script ${installDevice} set 1 esp on${this.toNull}`, echo)
 
-         this.devices.efi.name = this.partitions.installationDevice + '1'
+         this.devices.efi.name = `${installDevice}1`
          this.devices.efi.fsType = 'F 32 -I'
          this.devices.efi.mountPoint = '/boot/efi'
          this.devices.boot.name = `none`
 
-         this.devices.root.name = this.partitions.installationDevice + '2'
+         this.devices.root.name = `${installDevice}2`
          this.devices.root.fsType = 'ext4'
          this.devices.root.mountPoint = '/'
          this.devices.data.name = `none`
 
-         this.devices.swap.name = this.partitions.installationDevice + '3'
+         this.devices.swap.name = `${installDevice}3`
          this.devices.swap.fsType = 'swap'
 
          retVal = true
 
-
-
-
-
-       } else if (this.partitions.installationMode === 'full-encrypted' && this.efi) {
-         /**
-          * UEFI: gpt, UEFI, full-encrypt
-         */
-         let echoYes = Utils.setEcho(true)
-
-         const device =this.partitions.installationDevice
-          await exec(`parted --script ${device} mklabel gpt`, echo)
-          await exec(`parted --script ${device} mkpart efi fat32           34s 256MiB`, echo) //dev/sda1 EFI
-          await exec(`parted --script ${device} mkpart boot ext4       256MiB 768MiB`, echo) //dev/sda2 boot
-          await exec(`parted --script ${device} mkpart root ext4       768MiB  30GiB`, echo) //dev/sda3 root
-          await exec(`parted --script ${device} mkpart swap linux-swap  30GiB  100%s`, echo) //dev/sda4 swap sino fine
-          await exec(`parted ${device} set 1 boot on`, echo)
-          await exec(`parted ${device} set 1 esp on`, echo)
+      } else if (installMode === 'full-encrypted' && this.efi) {
 
          /**
-          * EFI 256M
+          * ===========================================================================================
+          * UEFI, full-encrypt: not working
+          * ===========================================================================================
           */
-         this.devices.efi.name = `${device}1` // 'efi' 
+
+         await exec(`parted --script ${installDevice} mklabel gpt`, echo)
+         await exec(`parted --script ${installDevice} mkpart efi fat32           34s 256MiB`, echo) //dev/sda1 EFI
+         await exec(`parted --script ${installDevice} mkpart boot ext4       256MiB 768MiB`, echo) //dev/sda2 boot
+         await exec(`parted --script ${installDevice} mkpart root ext4       768MiB  30GiB`, echo) //dev/sda3 root
+         await exec(`parted --script ${installDevice} mkpart swap linux-swap  30GiB  100%s`, echo) //dev/sda4 swap sino fine
+         await exec(`parted ${installDevice} set 1 boot on`, echo)
+         await exec(`parted ${installDevice} set 1 esp on`, echo)
+
+         // EFI 256M
+         this.devices.efi.name = `${installDevice}1` // 'efi' 
          this.devices.efi.fsType = 'F 32 -I'
          this.devices.efi.mountPoint = '/boot/efi'
 
-         /**
-          * BOOT 512M
-          */
-         this.devices.boot.name = `${device}2` // 'boot' 
+         // BOOT 512M
+         this.devices.boot.name = `${installDevice}2` // 'boot' 
          this.devices.boot.fsType = 'ext4'
          this.devices.boot.mountPoint = '/boot'
 
-         /**
-          * ROOT 29G
-          */
-         let crytoRoot = await exec(`cryptsetup -y -v luksFormat --type luks2 ${device}3`, echoYes)
+         // ROOT 29G
+         let crytoRoot = await exec(`cryptsetup -y -v luksFormat --type luks2 ${installDevice}3`, echoYes)
          if (crytoRoot.code !== 0) {
-             Utils.warning(`Error: ${crytoRoot.code} ${crytoRoot.data}`)
-             process.exit(1)
+            Utils.warning(`Error: ${crytoRoot.code} ${crytoRoot.data}`)
+            process.exit(1)
          }
-         let crytoRootOpen = await exec(`cryptsetup luksOpen --type luks2 ${device}3 root-crypted`, echoYes)
+         let crytoRootOpen = await exec(`cryptsetup luksOpen --type luks2 ${installDevice}3 root-crypted`, echoYes)
          if (crytoRootOpen.code !== 0) {
-             Utils.warning(`Error: ${crytoRootOpen.code} ${crytoRootOpen.data}`)
-             process.exit(1)
+            Utils.warning(`Error: ${crytoRootOpen.code} ${crytoRootOpen.data}`)
+            process.exit(1)
          }
          this.devices.root.name = '/dev/mapper/root-crypted'
          this.devices.root.fsType = 'ext4'
          this.devices.root.mountPoint = '/'
- 
- 
-         /**
-          * SWAP 1G
-          */
+
+         // SWAP 1G
          console.log('SWAP 1G')
-         let crytoSwap = await exec(`cryptsetup -y -v luksFormat --type luks2 ${device}4`, echoYes)
+         let crytoSwap = await exec(`cryptsetup -y -v luksFormat --type luks2 ${installDevice}4`, echoYes)
          if (crytoSwap.code !== 0) {
-             Utils.warning(`Error: ${crytoSwap.code} ${crytoSwap.data}`)
-             process.exit(1)
+            Utils.warning(`Error: ${crytoSwap.code} ${crytoSwap.data}`)
+            process.exit(1)
          }
-         let crytoSwapOpen = await exec(`cryptsetup luksOpen --type luks2 ${device}4 swap-crypted`, echoYes)
+         let crytoSwapOpen = await exec(`cryptsetup luksOpen --type luks2 ${installDevice}4 swap-crypted`, echoYes)
          if (crytoSwapOpen.code !== 0) {
-             Utils.warning(`Error: ${crytoSwapOpen.code} ${crytoSwapOpen.data}`)
-             process.exit(1)
+            Utils.warning(`Error: ${crytoSwapOpen.code} ${crytoSwapOpen.data}`)
+            process.exit(1)
          }
          this.devices.swap.name = '/dev/mapper/swap-crypted'
          this.devices.swap.fsType = 'swap'
          this.devices.swap.mountPoint = 'none'
 
+         // DATA: none
          this.devices.data.name = `none`
 
          retVal = true
-         
-      } else if (this.partitions.installationMode === 'lvm2' && !this.efi) {
+
+      } else if (installMode === 'lvm2' && !this.efi) {
+
          /**
-         * LVM2, non EFI PROXMOX-VE
+         * ===========================================================================================
+         * PROXMOX VE: BIOS to check
+         * ===========================================================================================
          */
 
-         await exec(`parted --script ${this.partitions.installationDevice} mklabel msdos`)
+         await exec(`parted --script ${installDevice} mklabel msdos`)
 
          // Creo partizioni
-         await exec(`parted --script ${this.partitions.installationDevice} mkpart primary ext2 1 512`)
-         await exec(`parted --script --align optimal ${this.partitions.installationDevice} set 1 boot on`)
-         await exec(`parted --script --align optimal ${this.partitions.installationDevice} mkpart primary ext2 512 100%`)
-         await exec(`parted --script ${this.partitions.installationDevice} set 2 lvm on`)
+         await exec(`parted --script ${installDevice} mkpart primary ext2 1 512`)
+         await exec(`parted --script --align optimal ${installDevice} set 1 boot on`)
+         await exec(`parted --script --align optimal ${installDevice} mkpart primary ext2 512 100%`)
+         await exec(`parted --script ${installDevice} set 2 lvm on`)
 
          // Partizione LVM
          const lvmPartname = shx.exec(`fdisk $1 -l | grep 8e | awk '{print $1}' | cut -d "/" -f3`).stdout.trim()
@@ -1166,7 +1179,7 @@ adduser ${name} \
 
          this.devices.efi.name = `none`
 
-         this.devices.boot.name = `${this.partitions.installationDevice}1`
+         this.devices.boot.name = `${installDevice}1`
          this.devices.root.fsType = 'ext2'
          this.devices.root.mountPoint = '/boot'
 
@@ -1181,8 +1194,11 @@ adduser ${name} \
          this.devices.swap.name = `/dev/pve/swap`
          retVal = true
       } else if (this.partitions.installationMode === 'lvm2' && this.efi) {
+
          /**
-         * LVM2, EFI
+         * ===========================================================================================
+         * PROXMOX VE: UEFI to do
+         * ===========================================================================================
          */
          console.log('LVM2 on UEFI: to be implemented!')
          process.exit(0)
