@@ -269,7 +269,7 @@ export default class Hatching {
          percent = 0.47
          try {
             redraw(<Install message={message} percent={percent} />)
-            await this.fstab(this.partitions.installationDevice)
+            await this.fstab(this.partitions.installationDevice, this.partitions.installationMode === 'full-encrypted')
          } catch (error) {
             message += JSON.stringify(error)
             redraw(<Install message={message} percent={percent} />)
@@ -588,9 +588,9 @@ adduser ${name} \
     * fstab()
     * @param devices
     */
-   private async fstab(installDevice: string) {
+   private async fstab(installDevice: string, crypted = false) {
 
-      const file = this.installTarget + '/etc/fstab'
+      const fstab = this.installTarget + '/etc/fstab'
       let mountOptsRoot = ''
       let mountOptsBoot = ''
       let mountOptsData = ``
@@ -631,7 +631,30 @@ adduser ${name} \
       }
       text += `# ${this.devices.swap.name} ${this.devices.swap.mountPoint} ${this.devices.swap.fsType} ${mountOptsSwap}\n`
       text += `UUID=${Utils.uuid(this.devices.swap.name)} ${this.devices.swap.mountPoint} ${this.devices.swap.fsType} ${mountOptsSwap}\n`
-      Utils.write(file, text)
+      Utils.write(fstab, text)
+
+      if (crypted) {
+         const crypttab = this.installTarget + '/etc/crypttab'
+         text = ``
+         text += `# /etc/crypttab: mappings for encrypted partitions.`
+         text += `#`
+         text += `# Each mapped device will be created in /dev/mapper, so your /etc/fstab`
+         text += `# should use the /dev/mapper/<name> paths for encrypted devices.`
+         text += `#`
+         text += `# See crypttab(5) for the supported syntax.`
+         text += `#`
+         text += `# NOTE: You need not list your root (/) partition here, but it must be set up`
+         text += `#       beforehand by the initramfs (/etc/mkinitcpio.conf). The same applies`
+         text += `#       to encrypted swap, which should be set up with mkinitcpio-openswap`
+         text += `#       for resume support.`
+         text += `#`
+         text += `# <name>               <device>                         <password> <options>`
+         text += `root-crypted /dev/sda3`
+         text += `swap-crypted /dev/sda4`
+         Utils.write(crypttab, text)
+      }
+
+
    }
 
    /**
@@ -1056,8 +1079,7 @@ adduser ${name} \
           */
 
          await exec(`parted --script ${installDevice} mklabel gpt ${this.toNull}`, echo)
-         await exec(`parted --script ${installDevice}mkpart ${this.toNull}`, echo)
-         await exec(`parted --script ${installDevice} primary 0% 1% ${this.toNull}`, echo)
+         await exec(`parted --script ${installDevice} mkpart primary 0% 1% ${this.toNull}`, echo)
          await exec(`parted --script ${installDevice} mkpart primary 1% 95% ${this.toNull}`, echo)
          await exec(`parted --script ${installDevice} mkpart primary linux-swap 95% 100% ${this.toNull}`, echo)
          await exec(`parted --script ${installDevice} set 1 boot ${this.toNull}`, echo)
