@@ -23,7 +23,7 @@
       - hwclock // to do
       - services-systemd // to do
       - bootloader-config // compatible calamares-module bootloader-config
-      - grubcfg // 
+      - grubcfg // in /etc/defult/grub replace GRUB_CMDLINE_LINUX_DEFAULT="quiet splash resume=UUID={Utils.uuid(this.devices.swap.name)}"
       - bootloader // compatible calamares-module calamares-modules grubInstall
       - packages // to do
       - luksbootkeyfile // to do
@@ -160,9 +160,19 @@ export default class Hatching {
 
       let percent = 0.0
       let message = ""
+      let isPartitioned = false
+      message = "Creating partitions"
+      percent = 0.00
+      try {
+         redraw(<Install message={message} percent={percent} />)
+         isPartitioned = await this.partition()
+      } catch (error) {
+         message += JSON.stringify(error)
+         redraw(<Install message={message} percent={percent} />)
+      }
+      // await checkIt(message)
 
-      if (await this.partition()) {
-
+      if (isPartitioned) {
          message = "Formatting file system "
          percent = 0.01
          try {
@@ -335,6 +345,17 @@ export default class Hatching {
          try {
             redraw(<Install message={message} percent={percent} />)
             await this.bootloader()
+         } catch (error) {
+            message += JSON.stringify(error)
+            redraw(<Install message={message} percent={percent} />)
+         }
+         // await checkIt(message)
+
+         message = "grubcfg"
+         percent = 0.64
+         try {
+            redraw(<Install message={message} percent={percent} />)
+            await this.grubcfg()
          } catch (error) {
             message += JSON.stringify(error)
             redraw(<Install message={message} percent={percent} />)
@@ -570,6 +591,9 @@ adduser ${name} \
          text += 'RESUME=UUID=' + Utils.uuid(this.devices.swap.name)
       }
       Utils.write(file, text)
+
+      //
+
    }
 
 
@@ -594,7 +618,7 @@ adduser ${name} \
       /**
        * crypttab
        */
-       if (this.partitions.installationMode === 'full-encrypted') {
+      if (this.partitions.installationMode === 'full-encrypted') {
          const crypttab = this.installTarget + '/etc/crypttab'
          text = ``
          text += `# /etc/crypttab: mappings for encrypted partitions.\n`
@@ -1080,7 +1104,6 @@ adduser ${name} \
           * UEFI: working
           * ===========================================================================================
           */
-
          await exec(`parted --script ${installDevice} mklabel gpt ${this.toNull}`, echo)
          await exec(`parted --script ${installDevice} mkpart primary 0% 1% ${this.toNull}`, echo)
          await exec(`parted --script ${installDevice} mkpart primary 1% 95% ${this.toNull}`, echo)
@@ -1130,11 +1153,13 @@ adduser ${name} \
          this.devices.boot.mountPoint = '/boot'
 
          // ROOT 29G
+         redraw(<Install message={`Formatting LUKS ${installDevice}3`} percent={0} />)
          let crytoRoot = await exec(`cryptsetup -y -v luksFormat --type luks2 ${installDevice}3`, echoYes)
          if (crytoRoot.code !== 0) {
             Utils.warning(`Error: ${crytoRoot.code} ${crytoRoot.data}`)
             process.exit(1)
          }
+         redraw(<Install message={`Opening ${installDevice}3 as root-crypted`} percent={0} />)
          let crytoRootOpen = await exec(`cryptsetup luksOpen --type luks2 ${installDevice}3 root-crypted`, echoYes)
          if (crytoRootOpen.code !== 0) {
             Utils.warning(`Error: ${crytoRootOpen.code} ${crytoRootOpen.data}`)
@@ -1145,12 +1170,13 @@ adduser ${name} \
          this.devices.root.mountPoint = '/'
 
          // SWAP 1G
-         console.log('SWAP 1G')
+         redraw(<Install message={`Formatting LUKS ${installDevice}4`} percent={0} />)
          let crytoSwap = await exec(`cryptsetup -y -v luksFormat --type luks2 ${installDevice}4`, echoYes)
          if (crytoSwap.code !== 0) {
             Utils.warning(`Error: ${crytoSwap.code} ${crytoSwap.data}`)
             process.exit(1)
          }
+         redraw(<Install message={`Opening ${installDevice}4 as swap-crypted`} percent={0} />)
          let crytoSwapOpen = await exec(`cryptsetup luksOpen --type luks2 ${installDevice}4 swap-crypted`, echoYes)
          if (crytoSwapOpen.code !== 0) {
             Utils.warning(`Error: ${crytoSwapOpen.code} ${crytoSwapOpen.data}`)
@@ -1353,6 +1379,27 @@ adduser ${name} \
       }
    }
 
+   /**
+    * grubcfg
+    * - open /etc/default/grub
+    * - find GRUB_CMDLINE_LINUX_DEFAULT=
+    * - replace with GRUB_CMDLINE_LINUX_DEFAULT=
+    * 's/GRUB_CMDLINE_LINUX_DEFAULT=.*$/GRUB_CMDLINE_LINUX_DEFAULT=/g'
+    */
+   grubcfg() {
+      let file = `${this.installTarget}/etc/default/grub`
+      let content = ''
+      const grubs = fs.readFileSync(file, 'utf-8').split('\n')
+      for (let i = 0; i < grubs.length; i++) {
+         if (grubs[i].includes('GRUB_CMDLINE_LINUX_DEFAULT=')) {
+            grubs[i]=`GRUB_CMDLINE_LINUX_DEFAULT="quiet splash resume=UUID=${Utils.uuid(this.devices.swap.name)}"`
+         }
+         content += grubs[i] + '\n'
+      }
+      fs.writeFileSync(file, content, 'utf-8')
+   }
+
+   
    /**
     * only show the result
     */
