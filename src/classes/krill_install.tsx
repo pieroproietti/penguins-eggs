@@ -1056,19 +1056,22 @@ adduser ${name} \
 
          retVal = true
 
-       } else if (this.partitions.installationMode === 'full-encrypted') { // && this.efi) {
+
+
+
+
+       } else if (this.partitions.installationMode === 'full-encrypted' && this.efi) {
          /**
           * UEFI: gpt, UEFI, full-encrypt
          */
-          let echoYes = Utils.setEcho(true)
+         let echoYes = Utils.setEcho(true)
 
          const device =this.partitions.installationDevice
-          await exec(`parted --script ${device} mklabel gpt`)
-          await exec(`parted --script ${device} mkpart efi fat32           34s 256MiB`, echoYes) //dev/sda1 EFI
-          await exec(`parted --script ${device} mkpart boot ext4       256MiB 768MiB`, echoYes) //dev/sda2 boot
-          await exec(`parted --script ${device} mkpart root ext4       768MiB  30GiB`, echoYes) //dev/sda3 root
-          await exec(`parted --script ${device} mkpart swap linux-swap  30GiB  100%s`, echoYes) //dev/sda4 swap sino fine
-
+          await exec(`parted --script ${device} mklabel gpt`, echo)
+          await exec(`parted --script ${device} mkpart efi fat32           34s 256MiB`, echo) //dev/sda1 EFI
+          await exec(`parted --script ${device} mkpart boot ext4       256MiB 768MiB`, echo) //dev/sda2 boot
+          await exec(`parted --script ${device} mkpart root ext4       768MiB  30GiB`, echo) //dev/sda3 root
+          await exec(`parted --script ${device} mkpart swap linux-swap  30GiB  100%s`, echo) //dev/sda4 swap sino fine
           await exec(`parted ${device} set 1 boot on`, echo)
           await exec(`parted ${device} set 1 esp on`, echo)
 
