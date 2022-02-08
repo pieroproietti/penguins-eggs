@@ -1065,7 +1065,7 @@ adduser ${name} \
          const device =this.partitions.installationDevice
           await exec(`parted --script ${device} mklabel gpt`)
           await exec(`parted --script ${device} mkpart efi fat32           34s 256MiB`, echoYes) //dev/sda1 EFI
-          await exec(`parted --script ${device} mkpart boot ext2       256MiB 768MiB`, echoYes) //dev/sda2 boot
+          await exec(`parted --script ${device} mkpart boot ext4       256MiB 768MiB`, echoYes) //dev/sda2 boot
           await exec(`parted --script ${device} mkpart root ext4       768MiB  30GiB`, echoYes) //dev/sda3 root
           await exec(`parted --script ${device} mkpart swap linux-swap  30GiB  100%s`, echoYes) //dev/sda4 swap sino fine
 
@@ -1075,26 +1075,26 @@ adduser ${name} \
          /**
           * EFI 256M
           */
-         this.devices.efi.name = 'efi' // `${this.partitions.installationDevice}1`
+         this.devices.efi.name = `${device}1` // 'efi' 
          this.devices.efi.fsType = 'F 32 -I'
          this.devices.efi.mountPoint = '/boot/efi'
 
          /**
           * BOOT 512M
           */
-         this.devices.boot.name = `boot`
+         this.devices.boot.name = `${device}2` // 'boot' 
          this.devices.boot.fsType = 'ext4'
          this.devices.boot.mountPoint = '/boot'
 
          /**
           * ROOT 29G
           */
-         let crytoRoot = await exec(`cryptsetup -y -v luksFormat --type luks2 ${this.partitions.installationDevice}3`, echoYes)
+         let crytoRoot = await exec(`cryptsetup -y -v luksFormat --type luks2 ${device}3`, echoYes)
          if (crytoRoot.code !== 0) {
              Utils.warning(`Error: ${crytoRoot.code} ${crytoRoot.data}`)
              process.exit(1)
          }
-         let crytoRootOpen = await exec(`cryptsetup luksOpen --type luks2 ${this.partitions.installationDevice}3 root-crypted`, echoYes)
+         let crytoRootOpen = await exec(`cryptsetup luksOpen --type luks2 ${device}3 root-crypted`, echoYes)
          if (crytoRootOpen.code !== 0) {
              Utils.warning(`Error: ${crytoRootOpen.code} ${crytoRootOpen.data}`)
              process.exit(1)
@@ -1108,18 +1108,19 @@ adduser ${name} \
           * SWAP 1G
           */
          console.log('SWAP 1G')
-         let crytoSwap = await exec(`cryptsetup -y -v luksFormat --type luks2 ${this.partitions.installationDevice}4`, echoYes)
+         let crytoSwap = await exec(`cryptsetup -y -v luksFormat --type luks2 ${device}4`, echoYes)
          if (crytoSwap.code !== 0) {
              Utils.warning(`Error: ${crytoSwap.code} ${crytoSwap.data}`)
              process.exit(1)
          }
-         let crytoSwapOpen = await exec(`cryptsetup luksOpen --type luks2 ${this.partitions.installationDevice}4 swap-crypted`, echoYes)
+         let crytoSwapOpen = await exec(`cryptsetup luksOpen --type luks2 ${device}4 swap-crypted`, echoYes)
          if (crytoSwapOpen.code !== 0) {
              Utils.warning(`Error: ${crytoSwapOpen.code} ${crytoSwapOpen.data}`)
              process.exit(1)
          }
          this.devices.swap.name = '/dev/mapper/swap-crypted'
          this.devices.swap.fsType = 'swap'
+         this.devices.swap.mountPoint = 'none'
 
          this.devices.data.name = `none`
 
