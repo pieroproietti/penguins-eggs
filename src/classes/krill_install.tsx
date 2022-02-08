@@ -330,7 +330,7 @@ export default class Hatching {
 
 
          message = "bootloader-config "
-         percent = 0.63
+         percent = 0.62
          try {
             redraw(<Install message={message} percent={percent} />)
             await this.execCalamaresModule('bootloader-config')
@@ -340,19 +340,9 @@ export default class Hatching {
          }
          // await checkIt(message)
 
-         message = "bootloader "
-         percent = 0.63
-         try {
-            redraw(<Install message={message} percent={percent} />)
-            await this.bootloader()
-         } catch (error) {
-            message += JSON.stringify(error)
-            redraw(<Install message={message} percent={percent} />)
-         }
-         // await checkIt(message)
 
-         message = "grubcfg"
-         percent = 0.64
+         message = "grubcfg "
+         percent = 0.63
          try {
             redraw(<Install message={message} percent={percent} />)
             await this.grubcfg()
@@ -362,6 +352,18 @@ export default class Hatching {
          }
          // await checkIt(message)
 
+
+         message = "bootloader "
+         percent = 0.64
+         try {
+            redraw(<Install message={message} percent={percent} />)
+            await this.bootloader()
+         } catch (error) {
+            message += JSON.stringify(error)
+            redraw(<Install message={message} percent={percent} />)
+         }
+         // await checkIt(message)
+         
 
          message = "initramfs configure"
          percent = 0.65
@@ -1105,9 +1107,9 @@ adduser ${name} \
           * ===========================================================================================
           */
          await exec(`parted --script ${installDevice} mklabel gpt ${this.toNull}`, echo)
-         await exec(`parted --script ${installDevice} mkpart primary 0% 1% ${this.toNull}`, echo)
-         await exec(`parted --script ${installDevice} mkpart primary 1% 95% ${this.toNull}`, echo)
-         await exec(`parted --script ${installDevice} mkpart primary linux-swap 95% 100% ${this.toNull}`, echo)
+         await exec(`parted --script ${installDevice} mkpart efi 0% 1% ${this.toNull}`, echo)
+         await exec(`parted --script ${installDevice} mkpart root 1% 95% ${this.toNull}`, echo)
+         await exec(`parted --script ${installDevice} mkpart swap linux-swap 95% 100% ${this.toNull}`, echo)
          await exec(`parted --script ${installDevice} set 1 boot ${this.toNull}`, echo)
          await exec(`parted --script ${installDevice} set 1 esp on ${this.toNull}`, echo)
 
@@ -1135,7 +1137,7 @@ adduser ${name} \
           */
 
          await exec(`parted --script ${installDevice} mklabel gpt`, echo)
-         await exec(`parted --script ${installDevice} mkpart efi fat32           34s 256MiB`, echo) //dev/sda1 EFI
+         await exec(`parted --script ${installDevice} mkpart efi fat32          34s 256MiB`, echo) //dev/sda1 EFI
          await exec(`parted --script ${installDevice} mkpart boot ext4       256MiB 768MiB`, echo) //dev/sda2 boot
          await exec(`parted --script ${installDevice} mkpart root ext4       768MiB  30GiB`, echo) //dev/sda3 root
          await exec(`parted --script ${installDevice} mkpart swap linux-swap  30GiB  100%s`, echo) //dev/sda4 swap sino fine
