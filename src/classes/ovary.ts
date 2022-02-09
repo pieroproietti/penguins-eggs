@@ -182,7 +182,7 @@ export default class Ovary {
         /**
          *  We will remove all the users from ISO, but servers and data will be included uncrypted
          */
-        Utils.warning('eggs will remove all the users from ISO, but servers and data will be included uncrypted')
+        Utils.warning('eggs will remove all the users from ISO, but servers homes will be included uncrypted')
       }
 
       /**

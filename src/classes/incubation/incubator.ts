@@ -79,6 +79,12 @@ export default class Incubator {
       }
 
 
+      case 'buster': {
+        const buster = new Buster(this.installer, this.remix, this.distro, release, this.user_opt, this.verbose)
+        await buster.create()
+
+        break
+      }
       case 'bullseye': {
         const bullseye = new Buster(this.installer, this.remix, this.distro, release, this.user_opt, this.verbose)
         await bullseye.create()
