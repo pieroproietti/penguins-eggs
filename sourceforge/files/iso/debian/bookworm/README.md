@@ -20,10 +20,7 @@ All ISOs are based on Debian bookworm
 
 # Debian bookworm
 * **naked** - just the juice, without GUI. You can start here to build your revolution!
-* **xfce** - it's not naked, but just dressed with xfce4 and firefox. 
-* **mate** - it's not naked, but just dressed with mate and firefox. 
-* **gnome** - it's not naked, but just dressed with gnome and firefox. 
-* **kde** - it's not naked, but just dressed with kde and conquetor. 
+* **hen** - this is the "mother" of all our eggs!
 
 ## More informations:
 
