@@ -363,7 +363,7 @@ export default class Hatching {
             redraw(<Install message={message} percent={percent} />)
          }
          // await checkIt(message)
-         
+
 
          message = "initramfs configure"
          percent = 0.65
@@ -636,8 +636,11 @@ adduser ${name} \
          text += `#       for resume support.\n`
          text += `#\n`
          text += `# <name>               <device>                         <password> <options>\n`
-         text += `root-crypted ${this.partitions.installationDevice}3 none\n`
-         text += `swap-crypted ${this.partitions.installationDevice}4 none\n`
+         text += `#root-crypted ${this.partitions.installationDevice}3 none\n`
+         text += `#swap-crypted ${this.partitions.installationDevice}4 none\n`
+         text += `root-crypted UUID=${Utils.uuid(this.devices.root.name)} none luks,discard\n`
+         text += `swap-crypted UUID=${Utils.uuid(this.devices.swap.name)} none luks,swap\n`
+         
          Utils.write(crypttab, text)
       }
 
@@ -1099,6 +1102,23 @@ adduser ${name} \
 
          retVal = true
 
+      } else if (installMode === 'full-encrypted' && !this.efi) {
+
+         /**
+          * ===========================================================================================
+          * BIOS: full-encrypt: TO DO
+          * ===========================================================================================
+          */
+
+         await exec(`parted --script ${installDevice} mklabel msdos ${this.toNull}`, echo)
+         await exec(`parted --script --align optimal ${installDevice} mkpart primary 0 512MiB ${this.toNull}`, echo) // boot
+         await exec(`parted --script ${installDevice} set 1 boot on ${this.toNull}`, echo)
+         await exec(`parted --script --align optimal ${installDevice} mkpart primary 512 100$ ${this.toNull}`, echo)
+
+         console.log('BIOS: full-encrypt: AGAIN TO DO')
+         process.exit()
+
+
       } else if (installMode === 'standard' && this.efi) {
 
          /**
@@ -1132,7 +1152,7 @@ adduser ${name} \
 
          /**
           * ===========================================================================================
-          * UEFI, full-encrypt: not working
+          * UEFI, full-encrypt: working
           * ===========================================================================================
           */
 
@@ -1394,14 +1414,14 @@ adduser ${name} \
       const grubs = fs.readFileSync(file, 'utf-8').split('\n')
       for (let i = 0; i < grubs.length; i++) {
          if (grubs[i].includes('GRUB_CMDLINE_LINUX_DEFAULT=')) {
-            grubs[i]=`GRUB_CMDLINE_LINUX_DEFAULT="quiet splash resume=UUID=${Utils.uuid(this.devices.swap.name)}"`
+            grubs[i] = `GRUB_CMDLINE_LINUX_DEFAULT="quiet splash resume=UUID=${Utils.uuid(this.devices.swap.name)}"`
          }
          content += grubs[i] + '\n'
       }
       fs.writeFileSync(file, content, 'utf-8')
    }
 
-   
+
    /**
     * only show the result
     */
