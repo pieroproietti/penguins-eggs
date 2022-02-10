@@ -617,6 +617,112 @@ adduser ${name} \
    private async fstab(installDevice: string, crypted = false) {
       let text = ''
 
+/*
+================================================================
+UBUNTU SUCCESS
+================================================================
+
+fdisk /dev/sda -l
+Dispositivo   Start     Fine  Settori  Size Tipo
+/dev/sda1      2048     4095     2048    1M BIOS boot
+/dev/sda2      4096  1054719  1050624  513M EFI System efi
+/dev/sda3   1054720  2553855  1499136  732M Linux filesystem 
+/dev/sda4   2553856 67106815 64552960 30,8G Linux filesystem
+
+artisan@successione:~$ sudo pvdisplay 
+  --- Physical volume ---
+  PV Name               /dev/mapper/sda4_crypt
+  VG Name               vgkubuntu
+  PV Size               <30,77 GiB / not usable 4,00 MiB
+  Allocatable           yes 
+  PE Size               4,00 MiB
+  Total PE              7875
+  Free PE               8
+  Allocated PE          7867
+  PV UUID               6fbB2u-QJx0-FX2Q-KbSm-hC9q-H4cF-VLk1ig
+   
+
+  artisan@successione:~$ sudo vgdisplay 
+  --- Volume group ---
+  VG Name               vgkubuntu
+  System ID             
+  Format                lvm2
+  Metadata Areas        1
+  Metadata Sequence No  3
+  VG Access             read/write
+  VG Status             resizable
+  MAX LV                0
+  Cur LV                2
+  Open LV               2
+  Max PV                0
+  Cur PV                1
+  Act PV                1
+  VG Size               30,76 GiB
+  PE Size               4,00 MiB
+  Total PE              7875
+  Alloc PE / Size       7867 / 30,73 GiB
+  Free  PE / Size       8 / 32,00 MiB
+  VG UUID               1l8Noh-5BTi-bVPx-ifj2-NwXH-mN0S-GXxZkK
+   
+artisan@successione:~$ sudo lvdisplay 
+  --- Logical volume ---
+  LV Path                /dev/vgkubuntu/root
+  LV Name                root
+  VG Name                vgkubuntu
+  LV UUID                HDkCrn-Yjtv-4kxK-orYI-tDwz-UiHZ-VvJQ07
+  LV Write Access        read/write
+  LV Creation host, time kubuntu, 2021-07-15 18:50:31 +0200
+  LV Status              available
+  # open                 1
+  LV Size                <29,78 GiB
+  Current LE             7623
+  Segments               1
+  Allocation             inherit
+  Read ahead sectors     auto
+  - currently set to     256
+  Block device           253:1
+   
+  --- Logical volume ---
+  LV Path                /dev/vgkubuntu/swap_1
+  LV Name                swap_1
+  VG Name                vgkubuntu
+  LV UUID                6eQLW5-LlV8-L1jZ-f0TJ-5L5n-innr-ioLAUZ
+  LV Write Access        read/write
+  LV Creation host, time kubuntu, 2021-07-15 18:50:31 +0200
+  LV Status              available
+  # open                 2
+  LV Size                976,00 MiB
+  Current LE             244
+  Segments               1
+  Allocation             inherit
+  Read ahead sectors     auto
+  - currently set to     256
+  Block device           253:2
+
+
+/etc/crypttab
+sda4_crypt UUID=32ad9e55-83e4-47a4-b6ce-69465d30355f none luks,discard
+
+/etc/fstab
+# /etc/fstab: static file system information.
+#
+# Use 'blkid' to print the universally unique identifier for a
+# device; this may be used with UUID= as a more robust way to name devices
+# that works even if disks are added and removed. See fstab(5).
+#
+# <file system> <mount point>   <type>  <options>       <dump>  <pass>
+/dev/mapper/vgkubuntu-root /               ext4    errors=remount-ro 0       1
+# /boot was on /dev/sda3 during installation
+UUID=887ad0bf-c84c-433a-a5ba-c9517679431e /boot           ext4    defaults        0       2
+# /boot/efi was on /dev/sda2 during installation
+UUID=74CA-877C  /boot/efi       vfat    umask=0077      0       1
+/dev/mapper/vgkubuntu-swap_1 none            swap    sw              0       0
+
+================================================================
+/ UBUNTU SUCCESS
+================================================================
+*/
+
       /**
        * crypttab
        */
@@ -636,10 +742,10 @@ adduser ${name} \
          text += `#       for resume support.\n`
          text += `#\n`
          text += `# <name>               <device>                         <password> <options>\n`
-         text += `#root-crypted ${this.partitions.installationDevice}3 none\n`
-         text += `#swap-crypted ${this.partitions.installationDevice}4 none\n`
-         text += `root-crypted UUID=${Utils.uuid(this.devices.root.name)} none luks,discard\n`
-         text += `swap-crypted UUID=${Utils.uuid(this.devices.swap.name)} none luks,swap\n`
+         text += `#root_crypted was ${this.partitions.installationDevice}3 \n`
+         text += `root_crypted UUID=${Utils.uuid(this.partitions.installationDevice + '3')} none luks,discard\n`
+         text += `#swap_crypted was ${this.partitions.installationDevice}4\n`
+         text += `swap_crypted UUID=${Utils.uuid(this.partitions.installationDevice + '4')} none luks,swap\n`
          
          Utils.write(crypttab, text)
       }
@@ -1181,13 +1287,13 @@ adduser ${name} \
             Utils.warning(`Error: ${crytoRoot.code} ${crytoRoot.data}`)
             process.exit(1)
          }
-         redraw(<Install message={`Opening ${installDevice}3 as root-crypted`} percent={0} />)
-         let crytoRootOpen = await exec(`cryptsetup luksOpen --type luks2 ${installDevice}3 root-crypted`, echoYes)
+         redraw(<Install message={`Opening ${installDevice}3 as root_crypted`} percent={0} />)
+         let crytoRootOpen = await exec(`cryptsetup luksOpen --type luks2 ${installDevice}3 root_crypted`, echoYes)
          if (crytoRootOpen.code !== 0) {
             Utils.warning(`Error: ${crytoRootOpen.code} ${crytoRootOpen.data}`)
             process.exit(1)
          }
-         this.devices.root.name = '/dev/mapper/root-crypted'
+         this.devices.root.name = '/dev/mapper/root_crypted'
          this.devices.root.fsType = 'ext4'
          this.devices.root.mountPoint = '/'
 
@@ -1198,13 +1304,13 @@ adduser ${name} \
             Utils.warning(`Error: ${crytoSwap.code} ${crytoSwap.data}`)
             process.exit(1)
          }
-         redraw(<Install message={`Opening ${installDevice}4 as swap-crypted`} percent={0} />)
-         let crytoSwapOpen = await exec(`cryptsetup luksOpen --type luks2 ${installDevice}4 swap-crypted`, echoYes)
+         redraw(<Install message={`Opening ${installDevice}4 as swap_crypted`} percent={0} />)
+         let crytoSwapOpen = await exec(`cryptsetup luksOpen --type luks2 ${installDevice}4 swap_crypted`, echoYes)
          if (crytoSwapOpen.code !== 0) {
             Utils.warning(`Error: ${crytoSwapOpen.code} ${crytoSwapOpen.data}`)
             process.exit(1)
          }
-         this.devices.swap.name = '/dev/mapper/swap-crypted'
+         this.devices.swap.name = '/dev/mapper/swap_crypted'
          this.devices.swap.fsType = 'swap'
          this.devices.swap.mountPoint = 'none'
 
