@@ -18,8 +18,8 @@ You can follow the project also consulting the [commit history](https://github.c
 ## Changelog
 Versions are listed on reverse order, the first is the last one.
 
-### eggs-9.0.20-3
-* bugfix: changed to UUID in /etc/crypttab for full-encrypted systems on Ubuntu focal
+### eggs-9.0.20-4
+* bugfix: changed to UUID in /etc/crypttab for full-encrypted systems on Ubuntu focal, checked with netplan too
 
 ### eggs-9.0.20
 * krill: cleaning and fixes! Krill are small crustaceans of the order Euphausiacea continuously adapted to evolution
