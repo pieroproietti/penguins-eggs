@@ -742,10 +742,10 @@ UUID=74CA-877C  /boot/efi       vfat    umask=0077      0       1
          text += `#       for resume support.\n`
          text += `#\n`
          text += `# <name>               <device>                         <password> <options>\n`
-         text += `#root_crypted was ${this.partitions.installationDevice}3 \n`
-         text += `root_crypted UUID=${Utils.uuid(this.partitions.installationDevice + '3')} none luks,discard\n`
-         text += `#swap_crypted was ${this.partitions.installationDevice}4\n`
-         text += `swap_crypted UUID=${Utils.uuid(this.partitions.installationDevice + '4')} none luks,swap\n`
+         text += `#root-crypted was ${this.partitions.installationDevice}3 \n`
+         text += `root-crypted UUID=${Utils.uuid(this.partitions.installationDevice + '3')} none luks,discard\n`
+         text += `#swap-crypted was ${this.partitions.installationDevice}4\n`
+         text += `swap-crypted UUID=${Utils.uuid(this.partitions.installationDevice + '4')} none luks,swap\n`
          
          Utils.write(crypttab, text)
       }
@@ -1287,13 +1287,13 @@ UUID=74CA-877C  /boot/efi       vfat    umask=0077      0       1
             Utils.warning(`Error: ${crytoRoot.code} ${crytoRoot.data}`)
             process.exit(1)
          }
-         redraw(<Install message={`Opening ${installDevice}3 as root_crypted`} percent={0} />)
-         let crytoRootOpen = await exec(`cryptsetup luksOpen --type luks2 ${installDevice}3 root_crypted`, echoYes)
+         redraw(<Install message={`Opening ${installDevice}3 as root-crypted`} percent={0} />)
+         let crytoRootOpen = await exec(`cryptsetup luksOpen --type luks2 ${installDevice}3 root-crypted`, echoYes)
          if (crytoRootOpen.code !== 0) {
             Utils.warning(`Error: ${crytoRootOpen.code} ${crytoRootOpen.data}`)
             process.exit(1)
          }
-         this.devices.root.name = '/dev/mapper/root_crypted'
+         this.devices.root.name = '/dev/mapper/root-crypted'
          this.devices.root.fsType = 'ext4'
          this.devices.root.mountPoint = '/'
 
@@ -1304,13 +1304,13 @@ UUID=74CA-877C  /boot/efi       vfat    umask=0077      0       1
             Utils.warning(`Error: ${crytoSwap.code} ${crytoSwap.data}`)
             process.exit(1)
          }
-         redraw(<Install message={`Opening ${installDevice}4 as swap_crypted`} percent={0} />)
-         let crytoSwapOpen = await exec(`cryptsetup luksOpen --type luks2 ${installDevice}4 swap_crypted`, echoYes)
+         redraw(<Install message={`Opening ${installDevice}4 as swap-crypted`} percent={0} />)
+         let crytoSwapOpen = await exec(`cryptsetup luksOpen --type luks2 ${installDevice}4 swap-crypted`, echoYes)
          if (crytoSwapOpen.code !== 0) {
             Utils.warning(`Error: ${crytoSwapOpen.code} ${crytoSwapOpen.data}`)
             process.exit(1)
          }
-         this.devices.swap.name = '/dev/mapper/swap_crypted'
+         this.devices.swap.name = '/dev/mapper/swap-crypted'
          this.devices.swap.fsType = 'swap'
          this.devices.swap.mountPoint = 'none'
 
