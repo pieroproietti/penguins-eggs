@@ -829,8 +829,8 @@ adduser ${name} \
       let content = '# created by eggs\n\n'
       content += 'auto lo\n'
       content += 'iface lo inet loopback\n\n'
-      // if netplan, don't create entries on /etc/network/interfaces
-      if (! Pacman.packageIsInstalled('netplan.io')) {
+      // if netplan, don't create entries in /etc/network/interfaces
+      if (!Pacman.packageIsInstalled('netplan.io')) {
          content += 'auto ' + this.network.iface + '\n'
          content += 'iface ' + this.network.iface + ' inet ' + this.network.addressType + '\n'
          if (this.network.addressType !== 'dhcp') {
