@@ -1523,7 +1523,11 @@ adduser ${name} \
       const grubs = fs.readFileSync(file, 'utf-8').split('\n')
       for (let i = 0; i < grubs.length; i++) {
          if (grubs[i].includes('GRUB_CMDLINE_LINUX_DEFAULT=')) {
-            grubs[i] = `GRUB_CMDLINE_LINUX_DEFAULT="quiet splash resume=UUID=${Utils.uuid(this.devices.swap.name)}"`
+            if (this.partitions.installationMode === 'full-encrypted') {
+               grubs[i] = `GRUB_CMDLINE_LINUX_DEFAULT="resume=UUID=${Utils.uuid(this.devices.swap.name)}"`
+            } else {
+               grubs[i] = `quiet splash GRUB_CMDLINE_LINUX_DEFAULT="resume=UUID=${Utils.uuid(this.devices.swap.name)}"`
+            }
          }
          content += grubs[i] + '\n'
       }
