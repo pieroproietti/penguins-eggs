@@ -1451,12 +1451,20 @@ export default class Ovary {
 
     const grubDest = `${isoDir}/boot/grub/grub.cfg`
     const template = fs.readFileSync(grubTemplate, 'utf8')
+    
+    let rmModules = ''
+    if (this.settings.distro.versionId === 'focal') {
+      rmModules = 'rmmod tpm'
+    }
+
+
     const view = {
       fullname: this.settings.remix.fullname.toUpperCase(),
       kernel: Utils.kernelVersion(),
       vmlinuz: `/live${this.settings.vmlinuz}`,
       initrdImg: `/live${this.settings.initrdImg}`,
       kernel_parameters: kernel_parameters,
+      rmModules: rmModules,
     }
     fs.writeFileSync(grubDest, mustache.render(template, view))
 
