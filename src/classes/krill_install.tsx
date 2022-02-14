@@ -12,7 +12,7 @@
       - mount
       - unpackfs
       - sources-yolk
-      - machineid // to do
+      - machineid
       - fstab
       - locale // to do
       - keyboard
@@ -261,6 +261,19 @@ export default class Hatching {
             redraw(<Install message={message} percent={percent} />)
          }
          // await checkIt(message)
+
+         // machineid
+         message = 'machineid'
+         percent = 0.41
+         try {
+            redraw(<Install message={message} percent={percent} spinner={true} />)
+            await this.machineId()
+         } catch (error) {
+            message += JSON.stringify(error)
+            redraw(<Install message={message} percent={percent} />)
+         }
+         // await checkIt(message)
+
 
 
          message = "Setting time zone "
@@ -742,10 +755,10 @@ adduser ${name} \
          text += `#       for resume support.\n`
          text += `#\n`
          text += `# <name>               <device>                         <password> <options>\n`
-         text += `#root-crypted was ${this.partitions.installationDevice}3 \n`
-         text += `root-crypted UUID=${Utils.uuid(this.partitions.installationDevice + '3')} none luks,discard\n`
-         text += `#swap-crypted was ${this.partitions.installationDevice}4\n`
-         text += `swap-crypted UUID=${Utils.uuid(this.partitions.installationDevice + '4')} none luks,swap\n`
+         text += `#swap_crypted was ${this.partitions.installationDevice}3 \n`
+         text += `swap_crypted UUID=${Utils.uuid(this.partitions.installationDevice + '3')} none luks,discard\n`
+         text += `#root_crypted was ${this.partitions.installationDevice}4\n`
+         text += `root_crypted UUID=${Utils.uuid(this.partitions.installationDevice + '4')} none luks,swap\n`
 
          Utils.write(crypttab, text)
       }
@@ -1266,10 +1279,10 @@ adduser ${name} \
           */
 
          await exec(`parted --script ${installDevice} mklabel gpt`, echo)
-         await exec(`parted --script ${installDevice} mkpart efi fat32          34s 256MiB`, echo) //dev/sda1 EFI
-         await exec(`parted --script ${installDevice} mkpart boot ext4       256MiB 768MiB`, echo) //dev/sda2 boot
-         await exec(`parted --script ${installDevice} mkpart root ext4       768MiB  30GiB`, echo) //dev/sda3 root
-         await exec(`parted --script ${installDevice} mkpart swap linux-swap  30GiB  100%s`, echo) //dev/sda4 swap sino fine
+         await exec(`parted --script ${installDevice} mkpart efi fat32          34s   256MiB`, echo) //dev/sda1 EFI
+         await exec(`parted --script ${installDevice} mkpart boot ext4       256MiB   768MiB`, echo) //dev/sda2 boot
+         await exec(`parted --script ${installDevice} mkpart swap linux-swap 768MiB  8960MiB`, echo) //dev/sda3 swap
+         await exec(`parted --script ${installDevice} mkpart root ext4      8960MiB    100%s`, echo) //dev/sda4 root
          await exec(`parted ${installDevice} set 1 boot on`, echo)
          await exec(`parted ${installDevice} set 1 esp on`, echo)
 
@@ -1283,39 +1296,40 @@ adduser ${name} \
          this.devices.boot.fsType = 'ext4'
          this.devices.boot.mountPoint = '/boot'
 
-         // ROOT 29G
-         redraw(<Install message={`Formatting LUKS ${installDevice}3`} percent={0} />)
-         let crytoRoot = await exec(`cryptsetup -y -v luksFormat --type luks2 ${installDevice}3`, echoYes)
-         if (crytoRoot.code !== 0) {
-            Utils.warning(`Error: ${crytoRoot.code} ${crytoRoot.data}`)
-            process.exit(1)
-         }
-         redraw(<Install message={`Opening ${installDevice}3 as root-crypted`} percent={0} />)
-         let crytoRootOpen = await exec(`cryptsetup luksOpen --type luks2 ${installDevice}3 root-crypted`, echoYes)
-         if (crytoRootOpen.code !== 0) {
-            Utils.warning(`Error: ${crytoRootOpen.code} ${crytoRootOpen.data}`)
-            process.exit(1)
-         }
-         this.devices.root.name = '/dev/mapper/root-crypted'
-         this.devices.root.fsType = 'ext4'
-         this.devices.root.mountPoint = '/'
-
-         // SWAP 1G
+         // SWAP 8G
          redraw(<Install message={`Formatting LUKS ${installDevice}4`} percent={0} />)
-         let crytoSwap = await exec(`cryptsetup -y -v luksFormat --type luks2 ${installDevice}4`, echoYes)
+         let crytoSwap = await exec(`cryptsetup -y -v luksFormat --type luks2 ${installDevice}3`, echoYes)
          if (crytoSwap.code !== 0) {
             Utils.warning(`Error: ${crytoSwap.code} ${crytoSwap.data}`)
             process.exit(1)
          }
-         redraw(<Install message={`Opening ${installDevice}4 as swap-crypted`} percent={0} />)
-         let crytoSwapOpen = await exec(`cryptsetup luksOpen --type luks2 ${installDevice}4 swap-crypted`, echoYes)
+         redraw(<Install message={`Opening ${installDevice}3 as swap_crypted`} percent={0} />)
+         let crytoSwapOpen = await exec(`cryptsetup luksOpen --type luks2 ${installDevice}4 swap_crypted`, echoYes)
          if (crytoSwapOpen.code !== 0) {
             Utils.warning(`Error: ${crytoSwapOpen.code} ${crytoSwapOpen.data}`)
             process.exit(1)
          }
-         this.devices.swap.name = '/dev/mapper/swap-crypted'
+         this.devices.swap.name = '/dev/mapper/swap_crypted'
          this.devices.swap.fsType = 'swap'
          this.devices.swap.mountPoint = 'none'
+
+         // ROOT
+         redraw(<Install message={`Formatting LUKS ${installDevice}3`} percent={0} />)
+         let crytoRoot = await exec(`cryptsetup -y -v luksFormat --type luks2 ${installDevice}4`, echoYes)
+         if (crytoRoot.code !== 0) {
+            Utils.warning(`Error: ${crytoRoot.code} ${crytoRoot.data}`)
+            process.exit(1)
+         }
+         redraw(<Install message={`Opening ${installDevice}4 as root_crypted`} percent={0} />)
+         let crytoRootOpen = await exec(`cryptsetup luksOpen --type luks2 ${installDevice}3 root_crypted`, echoYes)
+         if (crytoRootOpen.code !== 0) {
+            Utils.warning(`Error: ${crytoRootOpen.code} ${crytoRootOpen.data}`)
+            process.exit(1)
+         }
+         this.devices.root.name = '/dev/mapper/root_crypted'
+         this.devices.root.fsType = 'ext4'
+         this.devices.root.mountPoint = '/'
+
 
          // DATA: none
          this.devices.data.name = `none`
@@ -1534,6 +1548,19 @@ adduser ${name} \
       fs.writeFileSync(file, content, 'utf-8')
    }
 
+
+   /**
+    * On Ubuntu /etc/machine-id
+    * must exist to be re-created
+    * https://unix.stackexchange.com/questions/402999/is-it-ok-to-change-etc-machine-id
+    */
+   async machineId() {
+      let file = `${this.installTarget}/etc/machine-id`
+      if (fs.existsSync(file)) {
+         await exec(`rm ${file}`)
+      }
+      await exec(`touch ${file}`)
+   }
 
    /**
     * only show the result
