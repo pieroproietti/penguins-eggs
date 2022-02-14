@@ -8,7 +8,7 @@
     },
     "bugs": "https://github.com/pieroproietti/penguins-eggs/issues",
     "dependencies": {
-        "@oclif/core": "1.3.4",
+        "@oclif/core": "github:pieroproietti/pjson",
         "@oclif/plugin-autocomplete": "1.2.0",
         "@oclif/plugin-help": "^5.1.11",
         "@oclif/plugin-not-found": "^2.3.1",
