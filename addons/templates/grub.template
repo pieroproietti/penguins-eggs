@@ -18,11 +18,13 @@ set theme=/boot/grub/theme.cfg
 
 menuentry "{{{fullname}}} (kernel {{{kernel}}})" {
     set gfxpayload=keep
+    {{{rmModules}}}
     linux {{{vmlinuz}}} {{{kernel_parameters}}} quiet splash
     initrd {{{initrdImg}}} 
 }
 menuentry "{{{fullname}}} safe" {
   set gfxpayload=keep
+  {{{rmModules}}}
   linux {{{vmlinuz}}} {{{kernel_parameters}}}
   initrd {{{initrdImg}}} 
 }

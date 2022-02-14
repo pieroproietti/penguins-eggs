@@ -18,6 +18,9 @@ You can follow the project also consulting the [commit history](https://github.c
 ## Changelog
 Versions are listed on reverse order, the first is the last one.
 
+### eggs-9.0.21-1
+* krill: full-encrypted take 8GiB swap, created module machine-id, added - on Ubuntu focal - ```rmmod tpm``` in ```/boot/grub/grub.cfg``` inside the iso.
+
 ### eggs-9.0.20-4
 * bugfix: changed to UUID in /etc/crypttab for full-encrypted systems on Ubuntu focal, checked with netplan too
 
