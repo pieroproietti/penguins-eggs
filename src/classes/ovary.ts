@@ -1453,10 +1453,9 @@ export default class Ovary {
     const template = fs.readFileSync(grubTemplate, 'utf8')
     
     let rmModules = ''
-    if (this.settings.distro.versionId === 'focal') {
+    if (this.settings.distro.versionLike === 'focal') {
       rmModules = 'rmmod tpm'
     }
-
 
     const view = {
       fullname: this.settings.remix.fullname.toUpperCase(),
