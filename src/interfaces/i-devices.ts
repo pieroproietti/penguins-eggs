@@ -8,6 +8,7 @@ export interface IDevice {
   name: string
   fsType: string
   mountPoint: string
+  cryptedFrom: string
 }
 
 export interface IDevices {
