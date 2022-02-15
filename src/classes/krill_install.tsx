@@ -1197,30 +1197,26 @@ adduser ${name} \
           * BIOS: working
           * ===========================================================================================
           */
+          await exec(`parted --script ${installDevice} mklabel msdos`, echo)
+          await exec(`parted --script --align optimal ${installDevice} mkpart primary linux-swap    1MiB     8192MiB`, echo) //dev/sda1 swap
+          await exec(`parted --script --align optimal ${installDevice} mkpart primary ext4       8192MiB     100%`, echo) //dev/sda2 root
+          await exec(`parted ${installDevice} set 1 boot on`, echo)
+          await exec(`parted ${installDevice} set 1 esp on`, echo)
 
-         await exec(`parted --script ${installDevice} mklabel msdos ${this.toNull}`, echo)
-         await exec(`parted --script --align optimal ${installDevice} mkpart primary 1MiB 95% ${this.toNull}`, echo)
-         await exec(`parted --script ${installDevice} set 1 boot on ${this.toNull}`, echo)
-         await exec(`parted --script --align optimal ${installDevice} mkpart primary 95% 100% ${this.toNull}`, echo)
-
-         // EFI none
-         this.devices.efi.name = `none`
-
-         // BOOT none
-         this.devices.boot.name = `none`
+         // SWAP
+         this.devices.swap.name = `${installDevice}1`
+         this.devices.swap.fsType = 'swap'
+         this.devices.swap.mountPoint = 'none'
 
          // ROOT
-         this.devices.root.name = `${installDevice}1`
+         this.devices.root.name = `${installDevice}2`
          this.devices.root.fsType = 'ext4'
          this.devices.root.mountPoint = '/'
 
-         // DATA none
+         // BOOT/DATA/EFI
+         this.devices.boot.name = `none`
          this.devices.data.name = `none`
-
-         // SWAP
-         this.devices.swap.name = `${installDevice}2`
-         this.devices.swap.fsType = 'swap'
-         this.devices.swap.mountPoint = 'none'
+         this.devices.efi.name = `none`
 
          retVal = true
 
@@ -1228,17 +1224,61 @@ adduser ${name} \
 
          /**
           * ===========================================================================================
-          * BIOS: full-encrypt: TO DO
+          * BIOS: full-encrypt: 
           * ===========================================================================================
           */
 
-         await exec(`parted --script ${installDevice} mklabel msdos ${this.toNull}`, echo)
-         await exec(`parted --script --align optimal ${installDevice} mkpart primary 0 512MiB ${this.toNull}`, echo) // boot
-         await exec(`parted --script ${installDevice} set 1 boot on ${this.toNull}`, echo)
-         await exec(`parted --script --align optimal ${installDevice} mkpart primary 512 100$ ${this.toNull}`, echo)
+          await exec(`parted --script ${installDevice} mklabel msdos`, echo)
+          await exec(`parted --script --align optimal ${installDevice} mkpart primary ext4          1MiB     512MiB`, echo) //dev/sda1 boot 
+          await exec(`parted --script --align optimal ${installDevice} mkpart primary linux-swap  512MiB  8704MiB`, echo) //dev/sda2 swap 8GiB
+          await exec(`parted --script --align optimal ${installDevice} mkpart primary ext4       8704MiB    100%`, echo) //dev/sda3 root remain
+          await exec(`parted ${installDevice} set 1 boot on`, echo)
+          await exec(`parted ${installDevice} set 1 esp on`, echo)
 
-         console.log('BIOS: full-encrypt: AGAIN TO DO')
-         process.exit()
+         // BOOT 512M
+         this.devices.boot.name = `${installDevice}1` // 'boot' 
+         this.devices.boot.fsType = 'ext4'
+         this.devices.boot.mountPoint = '/boot'
+
+         // SWAP 8G
+         redraw(<Install message={`Formatting LUKS ${installDevice}2`} percent={0} />)
+         let crytoSwap = await exec(`cryptsetup -y -v luksFormat --type luks2 ${installDevice}2`, echoYes)
+         if (crytoSwap.code !== 0) {
+            Utils.warning(`Error: ${crytoSwap.code} ${crytoSwap.data}`)
+            process.exit(1)
+         }
+         redraw(<Install message={`Opening ${installDevice}2 as swap_crypted`} percent={0} />)
+         let crytoSwapOpen = await exec(`cryptsetup luksOpen --type luks2 ${installDevice}2 swap_crypted`, echoYes)
+         if (crytoSwapOpen.code !== 0) {
+            Utils.warning(`Error: ${crytoSwapOpen.code} ${crytoSwapOpen.data}`)
+            process.exit(1)
+         }
+         this.devices.swap.name = '/dev/mapper/swap_crypted'
+         this.devices.swap.fsType = 'swap'
+         this.devices.swap.mountPoint = 'none'
+
+         // ROOT
+         redraw(<Install message={`Formatting LUKS ${installDevice}3`} percent={0} />)
+         let crytoRoot = await exec(`cryptsetup -y -v luksFormat --type luks2 ${installDevice}3`, echoYes)
+         if (crytoRoot.code !== 0) {
+            Utils.warning(`Error: ${crytoRoot.code} ${crytoRoot.data}`)
+            process.exit(1)
+         }
+         redraw(<Install message={`Opening ${installDevice}3 as root_crypted`} percent={0} />)
+         let crytoRootOpen = await exec(`cryptsetup luksOpen --type luks2 ${installDevice}3 root_crypted`, echoYes)
+         if (crytoRootOpen.code !== 0) {
+            Utils.warning(`Error: ${crytoRootOpen.code} ${crytoRootOpen.data}`)
+            process.exit(1)
+         }
+         this.devices.root.name = '/dev/mapper/root_crypted'
+         this.devices.root.fsType = 'ext4'
+         this.devices.root.mountPoint = '/'
+
+
+         // BOOT/DATA/EFI
+         // this.devices.boot.name = `none`
+         this.devices.data.name = `none`
+         this.devices.efi.name = `none`
 
 
       } else if (installMode === 'standard' && this.efi) {
@@ -1248,25 +1288,31 @@ adduser ${name} \
           * UEFI: working
           * ===========================================================================================
           */
-         await exec(`parted --script ${installDevice} mklabel gpt ${this.toNull}`, echo)
-         await exec(`parted --script ${installDevice} mkpart efi 0% 1% ${this.toNull}`, echo)
-         await exec(`parted --script ${installDevice} mkpart root 1% 95% ${this.toNull}`, echo)
-         await exec(`parted --script ${installDevice} mkpart swap linux-swap 95% 100% ${this.toNull}`, echo)
-         await exec(`parted --script ${installDevice} set 1 boot ${this.toNull}`, echo)
-         await exec(`parted --script ${installDevice} set 1 esp on ${this.toNull}`, echo)
+
+          await exec(`parted --script ${installDevice} mklabel gpt`, echo)
+          await exec(`parted --script ${installDevice} mkpart efi  fat32         34s   256MiB`, echo) //dev/sda1 EFI
+          await exec(`parted --script ${installDevice} mkpart swap linux-swap 768MiB  8960MiB`, echo) //dev/sda3 swap
+          await exec(`parted --script ${installDevice} mkpart root ext4      8960MiB     100%`, echo) //dev/sda4 root
+          await exec(`parted ${installDevice} set 1 boot on`, echo)
+          await exec(`parted ${installDevice} set 1 esp on`, echo)
 
          this.devices.efi.name = `${installDevice}1`
          this.devices.efi.fsType = 'F 32 -I'
          this.devices.efi.mountPoint = '/boot/efi'
          this.devices.boot.name = `none`
 
-         this.devices.root.name = `${installDevice}2`
+         this.devices.swap.name = `${installDevice}2`
+         this.devices.swap.fsType = 'swap'
+
+         this.devices.root.name = `${installDevice}3`
          this.devices.root.fsType = 'ext4'
          this.devices.root.mountPoint = '/'
-         this.devices.data.name = `none`
 
-         this.devices.swap.name = `${installDevice}3`
-         this.devices.swap.fsType = 'swap'
+         // BOOT/DATA/EFI
+         this.devices.boot.name = `none`
+         this.devices.data.name = `none`
+         // this.devices.efi.name = `none`
+
 
          retVal = true
 
@@ -1282,7 +1328,7 @@ adduser ${name} \
          await exec(`parted --script ${installDevice} mkpart efi fat32          34s   256MiB`, echo) //dev/sda1 EFI
          await exec(`parted --script ${installDevice} mkpart boot ext4       256MiB   768MiB`, echo) //dev/sda2 boot
          await exec(`parted --script ${installDevice} mkpart swap linux-swap 768MiB  8960MiB`, echo) //dev/sda3 swap
-         await exec(`parted --script ${installDevice} mkpart root ext4      8960MiB    100%s`, echo) //dev/sda4 root
+         await exec(`parted --script ${installDevice} mkpart root ext4      8960MiB     100%`, echo) //dev/sda4 root
          await exec(`parted ${installDevice} set 1 boot on`, echo)
          await exec(`parted ${installDevice} set 1 esp on`, echo)
 
@@ -1297,14 +1343,14 @@ adduser ${name} \
          this.devices.boot.mountPoint = '/boot'
 
          // SWAP 8G
-         redraw(<Install message={`Formatting LUKS ${installDevice}4`} percent={0} />)
+         redraw(<Install message={`Formatting LUKS ${installDevice}3`} percent={0} />)
          let crytoSwap = await exec(`cryptsetup -y -v luksFormat --type luks2 ${installDevice}3`, echoYes)
          if (crytoSwap.code !== 0) {
             Utils.warning(`Error: ${crytoSwap.code} ${crytoSwap.data}`)
             process.exit(1)
          }
          redraw(<Install message={`Opening ${installDevice}3 as swap_crypted`} percent={0} />)
-         let crytoSwapOpen = await exec(`cryptsetup luksOpen --type luks2 ${installDevice}4 swap_crypted`, echoYes)
+         let crytoSwapOpen = await exec(`cryptsetup luksOpen --type luks2 ${installDevice}3 swap_crypted`, echoYes)
          if (crytoSwapOpen.code !== 0) {
             Utils.warning(`Error: ${crytoSwapOpen.code} ${crytoSwapOpen.data}`)
             process.exit(1)
@@ -1314,14 +1360,14 @@ adduser ${name} \
          this.devices.swap.mountPoint = 'none'
 
          // ROOT
-         redraw(<Install message={`Formatting LUKS ${installDevice}3`} percent={0} />)
+         redraw(<Install message={`Formatting LUKS ${installDevice}4`} percent={0} />)
          let crytoRoot = await exec(`cryptsetup -y -v luksFormat --type luks2 ${installDevice}4`, echoYes)
          if (crytoRoot.code !== 0) {
             Utils.warning(`Error: ${crytoRoot.code} ${crytoRoot.data}`)
             process.exit(1)
          }
          redraw(<Install message={`Opening ${installDevice}4 as root_crypted`} percent={0} />)
-         let crytoRootOpen = await exec(`cryptsetup luksOpen --type luks2 ${installDevice}3 root_crypted`, echoYes)
+         let crytoRootOpen = await exec(`cryptsetup luksOpen --type luks2 ${installDevice}4 root_crypted`, echoYes)
          if (crytoRootOpen.code !== 0) {
             Utils.warning(`Error: ${crytoRootOpen.code} ${crytoRootOpen.data}`)
             process.exit(1)
@@ -1331,8 +1377,10 @@ adduser ${name} \
          this.devices.root.mountPoint = '/'
 
 
-         // DATA: none
+         // BOOT/DATA/EFI
+         // this.devices.boot.name = `none`
          this.devices.data.name = `none`
+         // this.devices.efi.name = `none`
 
          retVal = true
 
@@ -1540,7 +1588,7 @@ adduser ${name} \
             if (this.partitions.installationMode === 'full-encrypted') {
                grubs[i] = `GRUB_CMDLINE_LINUX_DEFAULT="resume=UUID=${Utils.uuid(this.devices.swap.name)}"`
             } else {
-               grubs[i] = `quiet splash GRUB_CMDLINE_LINUX_DEFAULT="resume=UUID=${Utils.uuid(this.devices.swap.name)}"`
+               grubs[i] = `GRUB_CMDLINE_LINUX_DEFAULT="quiet splash resume=UUID=${Utils.uuid(this.devices.swap.name)}"`
             }
          }
          content += grubs[i] + '\n'
