@@ -158,6 +158,7 @@ export default class Hatching {
 
       await this.settings.load()
 
+      // partition
       let percent = 0.0
       let message = ""
       let isPartitioned = false
@@ -169,10 +170,12 @@ export default class Hatching {
       } catch (error) {
          message += JSON.stringify(error)
          redraw(<Install message={message} percent={percent} />)
+         await checkIt(message)
       }
-      // await checkIt(message)
 
       if (isPartitioned) {
+
+         // formatting
          message = "Formatting file system "
          percent = 0.01
          try {
@@ -181,8 +184,8 @@ export default class Hatching {
          } catch (error) {
             message += JSON.stringify(error)
             redraw(<Install message={message} percent={percent} />)
+            await checkIt(message)
          }
-         // await checkIt(message)
 
          // mount
          message = "Mounting target file system "
@@ -193,8 +196,8 @@ export default class Hatching {
          } catch (error) {
             message += JSON.stringify(error)
             redraw(<Install message={message} percent={percent} />)
+            await checkIt(message)
          }
-         // await checkIt(message)
 
          // mountvfs
          message = "Mounting target file system vfs "
@@ -205,9 +208,8 @@ export default class Hatching {
          } catch (error) {
             message += JSON.stringify(error)
             redraw(<Install message={message} percent={percent} />)
+            await checkIt(message)
          }
-         // await checkIt(message)
-
 
          // unpackfs
          message = "Unpacking filesystem "
@@ -218,14 +220,15 @@ export default class Hatching {
          } catch (error) {
             message += JSON.stringify(error)
             redraw(<Install message={message} percent={percent} />)
+            await checkIt(message)
          }
-         // await checkIt(message)
 
          /**
-          * RESTORE USERS DATA
+          * IF RESTORE USERS DATA
           */
-
          if (fs.existsSync(this.luksFile)) {
+
+            // restoring users data
             message = "Restore private data from backup "
             percent = 0.37
             try {
@@ -234,8 +237,8 @@ export default class Hatching {
             } catch (error) {
                message += JSON.stringify(error)
                redraw(<Install message={message} percent={percent} />)
+               await checkIt(message)
             }
-            // await checkIt(message)
          }
 
          // sources-yolk
@@ -247,8 +250,8 @@ export default class Hatching {
          } catch (error) {
             message += JSON.stringify(error)
             redraw(<Install message={message} percent={percent} />)
+            await checkIt(message)
          }
-         // await checkIt(message)
 
          // machineid
          message = 'machineid'
@@ -259,11 +262,10 @@ export default class Hatching {
          } catch (error) {
             message += JSON.stringify(error)
             redraw(<Install message={message} percent={percent} />)
+            await checkIt(message)
          }
-         // await checkIt(message)
 
-
-
+         // timezone
          message = "Setting time zone "
          percent = 0.43
          try {
@@ -272,10 +274,11 @@ export default class Hatching {
          } catch (error) {
             message += JSON.stringify(error)
             redraw(<Install message={message} percent={percent} />)
+            await checkIt(message)
          }
-         // await checkIt(message)
 
 
+         // fstab
          message = "Creating fstab "
          percent = 0.47
          try {
@@ -284,9 +287,10 @@ export default class Hatching {
          } catch (error) {
             message += JSON.stringify(error)
             redraw(<Install message={message} percent={percent} />)
+            await checkIt(message)
          }
-         // await checkIt(message)
 
+         // keyboard
          message = "settings keyboard "
          percent = 0.48
          try {
@@ -294,9 +298,10 @@ export default class Hatching {
          } catch (error) {
             message += JSON.stringify(error)
             redraw(<Install message={message} percent={percent} />)
+            await checkIt(message)
          }
-         // await checkIt(message)
 
+         // networkcfg
          message = "networkcfg"
          percent = 0.50
          try {
@@ -304,9 +309,10 @@ export default class Hatching {
          } catch (error) {
             message += JSON.stringify(error)
             redraw(<Install message={message} percent={percent} />)
+            await checkIt(message)
          }
-         // await checkIt(message)
 
+         // hostname
          message = "Create hostname "
          percent = 0.53
          try {
@@ -315,9 +321,10 @@ export default class Hatching {
          } catch (error) {
             message += JSON.stringify(error)
             redraw(<Install message={message} percent={percent} />)
+            await checkIt(message)
          }
-         // await checkIt(message)
 
+         // hosts
          message = "Creating hosts "
          percent = 0.60
          try {
@@ -326,10 +333,10 @@ export default class Hatching {
          } catch (error) {
             message += JSON.stringify(error)
             redraw(<Install message={message} percent={percent} />)
+            await checkIt(message)
          }
-         // await checkIt(message)
 
-
+         // bootloader-config
          message = "bootloader-config "
          percent = 0.62
          try {
@@ -338,10 +345,10 @@ export default class Hatching {
          } catch (error) {
             message += JSON.stringify(error)
             redraw(<Install message={message} percent={percent} />)
+            await checkIt(message)
          }
-         // await checkIt(message)
 
-
+         // grubcfs
          message = "grubcfg "
          percent = 0.63
          try {
@@ -350,10 +357,10 @@ export default class Hatching {
          } catch (error) {
             message += JSON.stringify(error)
             redraw(<Install message={message} percent={percent} />)
+            await checkIt(message)
          }
-         // await checkIt(message)
 
-
+         // bootloader
          message = "bootloader "
          percent = 0.64
          try {
@@ -362,10 +369,10 @@ export default class Hatching {
          } catch (error) {
             message += JSON.stringify(error)
             redraw(<Install message={message} percent={percent} />)
+            await checkIt(message)
          }
-         // await checkIt(message)
 
-
+         // initramfsCfg
          message = "initramfs configure"
          percent = 0.65
          try {
@@ -374,10 +381,10 @@ export default class Hatching {
          } catch (error) {
             message += JSON.stringify(error)
             redraw(<Install message={message} percent={percent} />)
+            await checkIt(message)
          }
-         // await checkIt(message)
 
-
+         // initramfs
          message = "initramfs "
          percent = 0.67
          try {
@@ -386,9 +393,10 @@ export default class Hatching {
          } catch (error) {
             message += JSON.stringify(error)
             redraw(<Install message={message} percent={percent} />)
+            await checkIt(message)
          }
-         // await checkIt(message)
 
+         // delLiveUser
          message = "Removing user live "
          percent = 0.70
          try {
@@ -397,16 +405,16 @@ export default class Hatching {
          } catch (error) {
             message += JSON.stringify(error)
             redraw(<Install message={message} percent={percent} />)
+            await checkIt(message)
          }
-         // await checkIt(message)
 
 
          /**
-          * IF NOT RESTORE-USERS-ACCOUNTS
-          * 
-          * create user
+          * if NOT restore users data
           */
          if (!fs.existsSync(this.luksFile)) {
+
+            // addUser
             message = "Adding user "
             percent = 0.73
             try {
@@ -415,21 +423,24 @@ export default class Hatching {
             } catch (error) {
                message += JSON.stringify(error)
                redraw(<Install message={message} percent={percent} />)
+               await checkIt(message)
             }
-            // await checkIt(message)
+
+            // changePassword
+            message = "adding user password "
+            percent = 0.77
+            try {
+               redraw(<Install message={message} percent={percent} />)
+               await this.changePassword('root', this.users.rootPassword)
+            } catch (error) {
+               message += JSON.stringify(error)
+               redraw(<Install message={message} percent={percent} />)
+               await checkIt(message)
+            }
          }
 
-         message = "adding user password "
-         percent = 0.77
-         try {
-            redraw(<Install message={message} percent={percent} />)
-            await this.changePassword('root', this.users.rootPassword)
-         } catch (error) {
-            message += JSON.stringify(error)
-            redraw(<Install message={message} percent={percent} />)
-         }
-         // await checkIt(message)
 
+         // autologin
          if (Pacman.isInstalledGui()) {
             try {
                message = "autologin GUI"
@@ -439,6 +450,7 @@ export default class Hatching {
             } catch (error) {
                message += JSON.stringify(error)
                redraw(<Install message={message} percent={percent} />)
+               await checkIt(message)
             }
          } else { // autologin CLI remove DEFAULT
             message = "autologin CLI"
@@ -449,14 +461,15 @@ export default class Hatching {
             } catch (error) {
                message += JSON.stringify(error)
                redraw(<Install message={message} percent={percent} />)
+               await checkIt(message)
             }
          }
          // eggs-cleanup forced
          await cliAutologin.msgRemove(`${this.installTarget}/etc/motd`)
          await cliAutologin.msgRemove(`${this.installTarget}/etc/issue`)
 
-         // await checkIt(message)
 
+         // removeInstaller
          message = "remove installer"
          percent = 0.87
          try {
@@ -465,10 +478,10 @@ export default class Hatching {
          } catch (error) {
             message += JSON.stringify(error)
             redraw(<Install message={message} percent={percent} />)
+            await checkIt(message)
          }
-         // await checkIt(message)
 
-
+         // sourcesYolkUmount
          message = "sources yolk unmount"
          percent = 0.92
          try {
@@ -477,9 +490,10 @@ export default class Hatching {
          } catch (error) {
             message += JSON.stringify(error)
             redraw(<Install message={message} percent={percent} />)
+            await checkIt(message)
          }
-         // await checkIt(message)
 
+         // umountVfs
          message = "umount"
          percent = 0.92
          try {
@@ -489,9 +503,10 @@ export default class Hatching {
          } catch (error) {
             message += JSON.stringify(error)
             redraw(<Install message={message} percent={percent} />)
+            await checkIt(message)
          }
-         // await checkIt(message)
 
+         // finished
          message = "finished"
          percent = 100.0
          try {
@@ -500,10 +515,13 @@ export default class Hatching {
          } catch (error) {
             message += JSON.stringify(error)
             redraw(<Install message={message} percent={percent} />)
+            await checkIt(message)
          }
       }
    }
 
+
+   
    /**
     * setTimezone
     */
@@ -1079,11 +1097,11 @@ adduser ${name} \
           * BIOS: working
           * ===========================================================================================
           */
-          await exec(`parted --script ${installDevice} mklabel msdos`, echo)
-          await exec(`parted --script --align optimal ${installDevice} mkpart primary linux-swap    1MiB     8192MiB`, echo) //dev/sda1 swap
-          await exec(`parted --script --align optimal ${installDevice} mkpart primary ext4       8192MiB     100%`, echo) //dev/sda2 root
-          await exec(`parted ${installDevice} set 1 boot on`, echo)
-          await exec(`parted ${installDevice} set 1 esp on`, echo)
+         await exec(`parted --script ${installDevice} mklabel msdos`, echo)
+         await exec(`parted --script --align optimal ${installDevice} mkpart primary linux-swap    1MiB     8192MiB`, echo) //dev/sda1 swap
+         await exec(`parted --script --align optimal ${installDevice} mkpart primary ext4       8192MiB     100%`, echo) //dev/sda2 root
+         await exec(`parted ${installDevice} set 1 boot on`, echo)
+         await exec(`parted ${installDevice} set 1 esp on`, echo)
 
          // SWAP
          this.devices.swap.name = `${installDevice}1`
@@ -1110,12 +1128,12 @@ adduser ${name} \
           * ===========================================================================================
           */
 
-          await exec(`parted --script ${installDevice} mklabel msdos`, echo)
-          await exec(`parted --script --align optimal ${installDevice} mkpart primary ext4          1MiB     512MiB`, echo) //dev/sda1 boot 
-          await exec(`parted --script --align optimal ${installDevice} mkpart primary linux-swap  512MiB  8704MiB`, echo) //dev/sda2 swap 8GiB
-          await exec(`parted --script --align optimal ${installDevice} mkpart primary ext4       8704MiB    100%`, echo) //dev/sda3 root remain
-          await exec(`parted ${installDevice} set 1 boot on`, echo)
-          await exec(`parted ${installDevice} set 1 esp on`, echo)
+         await exec(`parted --script ${installDevice} mklabel msdos`, echo)
+         await exec(`parted --script --align optimal ${installDevice} mkpart primary ext4          1MiB     512MiB`, echo) //dev/sda1 boot 
+         await exec(`parted --script --align optimal ${installDevice} mkpart primary linux-swap  512MiB  8704MiB`, echo) //dev/sda2 swap 8GiB
+         await exec(`parted --script --align optimal ${installDevice} mkpart primary ext4       8704MiB    100%`, echo) //dev/sda3 root remain
+         await exec(`parted ${installDevice} set 1 boot on`, echo)
+         await exec(`parted ${installDevice} set 1 esp on`, echo)
 
          // BOOT 512M
          this.devices.boot.name = `${installDevice}1` // 'boot' 
@@ -1174,12 +1192,12 @@ adduser ${name} \
           * ===========================================================================================
           */
 
-          await exec(`parted --script ${installDevice} mklabel gpt`, echo)
-          await exec(`parted --script ${installDevice} mkpart efi  fat32         34s   256MiB`, echo) //dev/sda1 EFI
-          await exec(`parted --script ${installDevice} mkpart swap linux-swap 768MiB  8960MiB`, echo) //dev/sda3 swap
-          await exec(`parted --script ${installDevice} mkpart root ext4      8960MiB     100%`, echo) //dev/sda4 root
-          await exec(`parted ${installDevice} set 1 boot on`, echo)
-          await exec(`parted ${installDevice} set 1 esp on`, echo)
+         await exec(`parted --script ${installDevice} mklabel gpt`, echo)
+         await exec(`parted --script ${installDevice} mkpart efi  fat32         34s   256MiB`, echo) //dev/sda1 EFI
+         await exec(`parted --script ${installDevice} mkpart swap linux-swap 768MiB  8960MiB`, echo) //dev/sda3 swap
+         await exec(`parted --script ${installDevice} mkpart root ext4      8960MiB     100%`, echo) //dev/sda4 root
+         await exec(`parted ${installDevice} set 1 boot on`, echo)
+         await exec(`parted ${installDevice} set 1 esp on`, echo)
 
          this.devices.efi.name = `${installDevice}1`
          this.devices.efi.fsType = 'F 32 -I'
@@ -1481,6 +1499,34 @@ adduser ${name} \
          content += grubs[i] + '\n'
       }
       fs.writeFileSync(file, content, 'utf-8')
+
+      /*
+      if (this.distro.distroLike === 'focal') {
+         // we must add rmrmod tdm in /etc/grub.d/10_linux
+         // find:
+         // echo "	insmod gzio" | sed "s/^/$submenu_indentation/"
+         // replace, with:
+         // echo "	rmmod tpm" | sed "s/^/$submenu_indentation/" 
+         // echo "	insmod gzio" | sed "s/^/$submenu_indentation/"
+
+         let file = `${this.installTarget}/etc/grub.d/10_linux`
+         let content = ''
+
+         // Editing the follow two lines can be critic
+         let find = `echo "	insmod gzio" | sed "s/^/$submenu_indentation/"`
+         let replace = `echo "	rmmod tpm" | sed "s/^/$submenu_indentation/"\n` + find
+         const teen = fs.readFileSync(file, 'utf-8').split('\n')
+         for (let i = 0; i < grubs.length; i++) {
+            if (teen[i].includes(find)) {
+               if (this.partitions.installationMode === 'full-encrypted') {
+                  teen[i] = replace
+               }
+            }
+            content += teen[i] + '\n'
+         }
+         fs.writeFileSync(file, content, 'utf-8')
+      }
+      */
    }
 
 
