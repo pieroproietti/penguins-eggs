@@ -1,15 +1,15 @@
 {
     "name": "penguins-eggs",
     "description": "Perri's Brewery edition: remaster your system and distribuite it",
-    "version": "9.0.21",
+    "version": "9.0.22",
     "author": "Piero Proietti @pieroproietti",
     "bin": {
         "eggs": "bin/run"
     },
     "bugs": "https://github.com/pieroproietti/penguins-eggs/issues",
     "dependencies": {
-        "@oclif/core": "github:pieroproietti/core",
-        "@oclif/plugin-autocomplete": "1.2.0",
+        "@oclif/core": "github:pieroproietti/core#oclif-main",
+        "@oclif/plugin-autocomplete": "^1.2.0",
         "@oclif/plugin-help": "^5.1.11",
         "@oclif/plugin-not-found": "^2.3.1",
         "@oclif/plugin-version": "^1.0.4",
