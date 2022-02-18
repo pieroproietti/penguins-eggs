@@ -1554,8 +1554,7 @@ function redraw(elem: JSX.Element) {
  * @param message 
  */
 async function checkIt(message: string) {
-   message = 'krill generated an error: select Yes to continue, or do to abort the installation'
-   if (! await Utils.customConfirm(message)) {
-      process.exit(1)
-   }
+   Utils.error('Krill Installer generated an error, the installation process will end now')
+   console.log('Press a key to exit...')
+   require('child_process').spawnSync('read _ ', { shell: true, stdio: [0, 1, 2] })
 }

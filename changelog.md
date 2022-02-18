@@ -18,6 +18,9 @@ You can follow the project also consulting the [commit history](https://github.c
 ## Changelog
 Versions are listed on reverse order, the first is the last one.
 
+### eggs-9.0.23-1
+* krill: bugfix removed annoying bug on unmount process and use a more rational "press a key to exit" if we get errors.
+
 ### eggs-9.0.22-1
 * krill: await if catch an error, removed last grub modifications introduced with eggs-9.0.21-1 in ```/boot/grub/grub.cfg``` on the live and on the system.
 
