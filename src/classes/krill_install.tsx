@@ -348,7 +348,7 @@ export default class Hatching {
             await checkIt(message)
          }
 
-         // grubcfs
+         // grubcfg
          message = "grubcfg "
          percent = 0.63
          try {
@@ -464,7 +464,8 @@ export default class Hatching {
                await checkIt(message)
             }
          }
-         // eggs-cleanup forced
+
+         // cleanup
          await cliAutologin.msgRemove(`${this.installTarget}/etc/motd`)
          await cliAutologin.msgRemove(`${this.installTarget}/etc/issue`)
 
@@ -494,11 +495,22 @@ export default class Hatching {
          }
 
          // umountVfs
-         message = "umount"
-         percent = 0.92
+         message = "umount VFS"
+         percent = 0.95
          try {
             redraw(<Install message={message} percent={percent} />)
             await this.umountvfs()
+         } catch (error) {
+            message += JSON.stringify(error)
+            redraw(<Install message={message} percent={percent} />)
+            await checkIt(message)
+         }
+
+         // umount
+         message = "umount"
+         percent = 0.97
+         try {
+            redraw(<Install message={message} percent={percent} />)
             await this.umount()
          } catch (error) {
             message += JSON.stringify(error)
