@@ -1,5 +1,5 @@
 /**
- * penguins-eggs: hatching.js
+ * penguins-eggs: krill_install
  *
  * author: Piero Proietti
  * mail: piero.proietti@gmail.com
@@ -7,33 +7,34 @@
  */
 
 /**
- * Ideally, I want to respect this schema
-      - partition
-      - mount
-      - unpackfs
-      - sources-yolk
-      - machineid
-      - fstab
+ * Ideally, I want to respect calamares way, remplementing the same (SEMPLIFIED) steps for CLI
+ * 
+      - partition OK
+      - mount this.mountFs, this.mountVfs OK
+      - unpackfs OK
+      - sources-yolk // call execCalamaresModule('sources-yolk')
+      - machineid OK
+      - fstab OK
       - locale // to do
-      - keyboard
+      - keyboard // this.setKeyboard OK
       - localecfg // to do
-      - users // rivedere
-      - displaymanager // autologin
-      - networkcfg 
+      - users OK
+      - displaymanager // this.autologin OK
+      - networkcfg OK
       - hwclock // to do
       - services-systemd // to do
-      - bootloader-config // compatible calamares-module bootloader-config
-      - grubcfg // in /etc/defult/grub replace GRUB_CMDLINE_LINUX_DEFAULT="quiet splash resume=UUID={Utils.uuid(this.devices.swap.name)}"
-      - bootloader // compatible calamares-module calamares-modules grubInstall
+      - bootloader-config // call execCalamaresModule('bootloader-config')
+      - grubcfg OK
+      - bootloader OK
       - packages // to do
       - luksbootkeyfile // to do
       - plymouthcfg // to do
       - initramfscfg OK
       - initramfs OK
-      - removeuser 
+      - removeuser OK
       - remove-link // OK
-      - sources-yolk-unmount // compatible calamares-modules sources-yolk-unmount
-      - umount
+      - sources-yolk-unmount // execCalamaresModule('sources-yolk-unmount')
+      - umount // this.umountVfs, this.umountFs
  */
 
 
@@ -187,24 +188,24 @@ export default class Hatching {
             await checkIt(message)
          }
 
-         // mount
+         // mountFs
          message = "Mounting target file system "
          percent = 0.03
          try {
             redraw(<Install message={message} percent={percent} />)
-            await this.mount()
+            await this.mountFs()
          } catch (error) {
             message += JSON.stringify(error)
             redraw(<Install message={message} percent={percent} />)
             await checkIt(message)
          }
 
-         // mountvfs
+         // mountVfs
          message = "Mounting target file system vfs "
          percent = 0.06
          try {
             redraw(<Install message={message} percent={percent} />)
-            await this.mountvfs()
+            await this.mountVfs()
          } catch (error) {
             message += JSON.stringify(error)
             redraw(<Install message={message} percent={percent} />)
@@ -499,7 +500,7 @@ export default class Hatching {
          percent = 0.95
          try {
             redraw(<Install message={message} percent={percent} />)
-            await this.umountvfs()
+            await this.umountVfs()
          } catch (error) {
             message += JSON.stringify(error)
             redraw(<Install message={message} percent={percent} />)
@@ -511,7 +512,7 @@ export default class Hatching {
          percent = 0.97
          try {
             redraw(<Install message={message} percent={percent} />)
-            await this.umount()
+            await this.umountFs()
          } catch (error) {
             message += JSON.stringify(error)
             redraw(<Install message={message} percent={percent} />)
@@ -533,7 +534,7 @@ export default class Hatching {
    }
 
 
-   
+
    /**
     * setTimezone
     */
@@ -953,7 +954,7 @@ adduser ${name} \
    /**
     * mount
     */
-   private async mount(): Promise<boolean> {
+   private async mountFs(): Promise<boolean> {
       const echo = { echo: false, ignore: false }
 
       if (!fs.existsSync(this.installTarget)) {
@@ -990,35 +991,36 @@ adduser ${name} \
    }
 
    /**
-    * umount
+    * umountFs
     */
-   private async umount(): Promise<boolean> {
+   private async umountFs(): Promise<boolean> {
       const echo = { echo: false, ignore: false }
 
+      // efi
       if (this.efi) {
-         await exec(`umount ${this.installTarget}/boot/efi` + this.toNull, echo)
-         await exec('sleep 1', echo)
+         await this.umount(this.devices.efi.name)
       }
 
       // data
       if (this.devices.data.name !== `none`) {
-         await exec(`umount ${this.devices.data.name}` + this.toNull, echo)
+         await this.umount(this.devices.data.name)
+      }
+
+      // boot
+      if (this.devices.boot.name !== `none`) {
+         await this.umount(this.devices.boot.name)
       }
 
       // root
-      if (this.devices.boot.name !== `none`) {
-         await exec(`umount ${this.devices.boot.name}` + this.toNull, echo)
-      }
+      await this.umount(this.devices.root.name)
 
-      await exec(`umount ${this.devices.root.name}` + this.toNull, echo)
-      await exec('sleep 1', echo)
       return true
    }
 
    /**
    * mountvfs()
    */
-   private async mountvfs() {
+   private async mountVfs() {
       const echo = { echo: true, ignore: true }
 
       await exec('mkdir ' + this.installTarget + '/dev' + this.toNull)
@@ -1040,56 +1042,49 @@ adduser ${name} \
        * 
        * https://unix.stackexchange.com/questions/91620/efi-variables-are-not-supported-on-this-system
        */
-
       await exec(`mount -o bind /sys/firmware/efi/efivars ${this.installTarget}/sys/firmware/efi/efivars` + this.toNull, echo)
       await exec(`mount -o bind /run ${this.installTarget}/run` + this.toNull, echo)
    }
 
    /**
+    * 
     */
-   private async umountvfs() {
+   private async umountVfs() {
       const echo = { echo: false, ignore: false }
 
-      if (Utils.isMountpoint(`${this.installTarget}/dev/pts`)) {
-         await exec(`umount ${this.installTarget}/dev/pts` + this.toNull, echo)
-         await exec('sleep 1', echo)
-      }
+      await this.umount(`${this.installTarget}/dev/pts`)
+      await this.umount(`${this.installTarget}/dev`)
+      await this.umount(`${this.installTarget}/proc`)
+      await this.umount(`${this.installTarget}/run`)
+      await this.umount(`${this.installTarget}/sys/firmware/efi/efivars`)
+      // ${this.installTarget}/sys/fs/fuse/connections`)
+      await this.umount(`${this.installTarget}/firmware/efi/efivars`)
+      await this.umount(`${this.installTarget}/sys`)
+   }
 
-      if (Utils.isMountpoint(`${this.installTarget}/dev`)) {
-         await exec(`umount ${this.installTarget}/dev` + this.toNull, echo)
-         await exec('sleep 1', echo)
-      }
 
-      if (Utils.isMountpoint(`${this.installTarget}/proc`)) {
-         await exec(`umount ${this.installTarget}/proc` + this.toNull, echo)
-         await exec('sleep 1', echo)
-      }
+   /**
+    * 
+    * @param mountpoint 
+    */
+   private async umount(mountPoint = '') {
+      const echo = { echo: false, ignore: false }
 
-      if (Utils.isMountpoint(`${this.installTarget}/run`)) {
-         await exec(`umount ${this.installTarget}/run` + this.toNull, echo)
-         await exec('sleep 1', echo)
-      }
-
-      if (Utils.isMountpoint(`${this.installTarget}/sys/fs/fuse/connections`)) {
-         await exec(`umount ${this.installTarget}/sys/fs/fuse/connections` + this.toNull, echo)
-         await exec('sleep 1', echo)
-      }
-
-      if (Utils.isMountpoint(`${this.installTarget}/firmware/efi/efivars`)) {
-         await exec(`umount ${this.installTarget}/firmware/efi/efivars` + this.toNull, echo)
-         await exec('sleep 1', echo)
-      }
-
-      if (Utils.isMountpoint(`${this.installTarget}/sys`)) {
-         await exec(`umount ${this.installTarget}/sys` + this.toNull, echo)
-         await exec('sleep 1', echo)
+      let message = 'umount: ' + mountPoint
+      if (Utils.isMountpoint(mountPoint)) {
+         try {
+            await exec(`umount ${mountPoint}` + this.toNull, echo)
+            await exec('sleep 1', echo)
+         } catch (error) {
+            message += + mountPoint + JSON.stringify(error)
+            redraw(<Install message={message} percent={1} />)
+            await checkIt(message)
+         }
       }
    }
 
    /**
     * 
-    * @param p 
-    * @returns 
     */
    private async partition(): Promise<boolean> {
       const echo = Utils.setEcho(this.verbose)
@@ -1511,40 +1506,12 @@ adduser ${name} \
          content += grubs[i] + '\n'
       }
       fs.writeFileSync(file, content, 'utf-8')
-
-      /*
-      if (this.distro.distroLike === 'focal') {
-         // we must add rmrmod tdm in /etc/grub.d/10_linux
-         // find:
-         // echo "	insmod gzio" | sed "s/^/$submenu_indentation/"
-         // replace, with:
-         // echo "	rmmod tpm" | sed "s/^/$submenu_indentation/" 
-         // echo "	insmod gzio" | sed "s/^/$submenu_indentation/"
-
-         let file = `${this.installTarget}/etc/grub.d/10_linux`
-         let content = ''
-
-         // Editing the follow two lines can be critic
-         let find = `echo "	insmod gzio" | sed "s/^/$submenu_indentation/"`
-         let replace = `echo "	rmmod tpm" | sed "s/^/$submenu_indentation/"\n` + find
-         const teen = fs.readFileSync(file, 'utf-8').split('\n')
-         for (let i = 0; i < grubs.length; i++) {
-            if (teen[i].includes(find)) {
-               if (this.partitions.installationMode === 'full-encrypted') {
-                  teen[i] = replace
-               }
-            }
-            content += teen[i] + '\n'
-         }
-         fs.writeFileSync(file, content, 'utf-8')
-      }
-      */
    }
 
 
    /**
-    * On Ubuntu /etc/machine-id
-    * must exist to be re-created
+    * On Ubuntu 
+    * /etc/machine-id must exist to be re-created
     * https://unix.stackexchange.com/questions/402999/is-it-ok-to-change-etc-machine-id
     */
    async machineId() {
@@ -1587,5 +1554,8 @@ function redraw(elem: JSX.Element) {
  * @param message 
  */
 async function checkIt(message: string) {
-   await Utils.customConfirm(message)
+   message = 'krill generated an error: select Yes to continue, or do to abort the installation'
+   if (! await Utils.customConfirm(message)) {
+      process.exit(1)
+   }
 }
