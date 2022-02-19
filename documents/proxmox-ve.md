@@ -14,6 +14,12 @@ I just picked up my old idea of creating a complete workstation using Proxmox VE
 * pve: **NOTE**: editing configurations files in ```/etc/pve/qemu-server``` of the live it is possible to use VM images from the host
 * pve: **NOTE** remain to test that running the live from a usb key
 
+This mean who the resulting live, can be used both: as rescue tool for existing Proxmox VE installation, to install a workable WS PVE installation or to test PVE in a live environment, mounting the real hw and creating as storage a simple directory.
+
+**EXAMPLE**: I can create here a VM with id 300 on my Proxmox VE installation, share configuration files - from ```/etc/pve/qemu-server/300.conf``` and the two  resulting volumes: ```vm-300-disk-0.qcow2``` and ```vm-300-disk-1.qcow2``` living  and just with the iso, the VM can be used everythere. 
+
+* **NOTE:** the part regarding PVE live is - at the moment - more an experiment than a real feathure.
+
 
 ## Presentation
 
