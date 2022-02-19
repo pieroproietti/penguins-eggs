@@ -22,6 +22,7 @@
         "inquirer": "^8.2.0",
         "js-yaml": "^4.1.0",
         "mustache": "^4.2.0",
+        "npm": "^8.5.1",
         "pjson": "github:pieroproietti/pjson",
         "react": "^17.0.2",
         "shelljs": "0.8.5",
