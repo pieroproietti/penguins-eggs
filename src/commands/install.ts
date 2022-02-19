@@ -4,7 +4,7 @@
  * email: piero.proietti@gmail.com
  * license: MIT
  */
-import { Command, Flags } from '@oclif/core'
+import { Command, Flags, flush } from '@oclif/core'
 import shx from 'shelljs'
 import Utils from '../classes/utils'
 import Prepare from '../classes/krill_prepare'
@@ -19,6 +19,7 @@ export default class Install extends Command {
   static flags = {
     cli: Flags.boolean({ char: 'c', description: 'force use CLI installer' }),
     crypted: Flags.boolean({ char: 'k', description: 'crypted CLI installation' }),
+    pve: Flags.boolean({ char: 'p', description: 'Proxmox VE install' }),
     help: Flags.help({ char: 'h' }),
     verbose: Flags.boolean({ char: 'v', description: 'verbose' })
   }
@@ -37,9 +38,21 @@ export default class Install extends Command {
 
     const { flags } = await this.parse(Install)
 
+    let cli = false
+    if (flags.cli){
+      cli = true
+    }
+
     let crypted = false
     if (flags.crypted) {
       crypted = true
+    }
+
+    let pve = false
+    if (flags.pve) {
+      pve = true
+      crypted = false
+      cli = true
     }
 
     let verbose = false
@@ -49,14 +62,14 @@ export default class Install extends Command {
 
     if (Utils.isRoot(this.id)) {
       if (Utils.isLive()) {
-        if (Pacman.packageIsInstalled('calamares') && Pacman.isRunningGui() && !flags.cli) {
+        if (Pacman.packageIsInstalled('calamares') && Pacman.isRunningGui() && !cli) {
           shx.exec('/usb/sbin/install-debian')
-        } else if (Pacman.packageIsInstalled('calamares') && !flags.cli) {
+        } else if (Pacman.packageIsInstalled('calamares') && !cli) {
           Utils.warning('Calamares installer is present, start GUI and choose calamares to install the system')
           Utils.warning('If you still want to use krill, type: ' + chalk.bold('sudo eggs install --cli'))
         } else {
           const krill = new Prepare()
-          await krill.prepare(crypted, verbose)
+          await krill.prepare(crypted, pve, verbose)
         }
       }
     } else {

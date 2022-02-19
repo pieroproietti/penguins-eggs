@@ -201,7 +201,7 @@ export default class Hatching {
          }
 
          // mountVfs
-         message = "Mounting target file system vfs "
+         message = "Mounting on target VFS "
          percent = 0.06
          try {
             redraw(<Install message={message} percent={percent} />)
@@ -1033,16 +1033,9 @@ adduser ${name} \
       await exec(`mount -o bind /dev/pts ${this.installTarget}/dev/pts` + this.toNull, echo)
       await exec(`mount -o bind /proc ${this.installTarget}/proc` + this.toNull, echo)
       await exec(`mount -o bind /sys ${this.installTarget}/sys` + this.toNull, echo)
-      /**
-       * I know, that's very old thread, but maybe will help for someone. 
-       * Most guides suggest the same solution to mount virtual filesystems before chroot:
-       * for i in /dev /dev/pts /proc /sys /run; do sudo mount -B $i /mnt$i; done
-       * But now (maybe related to efivars/efivarfs changes) this loop skips one very special sub-mountpoint 
-       * - /sys/firmware/efi/efivars and efibootmgr/grub fails.
-       * 
-       * https://unix.stackexchange.com/questions/91620/efi-variables-are-not-supported-on-this-system
-       */
-      await exec(`mount -o bind /sys/firmware/efi/efivars ${this.installTarget}/sys/firmware/efi/efivars` + this.toNull, echo)
+      if (this.efi) {
+         await exec(`mount -o bind /sys/firmware/efi/efivars ${this.installTarget}/sys/firmware/efi/efivars` + this.toNull, echo)
+      }
       await exec(`mount -o bind /run ${this.installTarget}/run` + this.toNull, echo)
    }
 
@@ -1056,9 +1049,9 @@ adduser ${name} \
       await this.umount(`${this.installTarget}/dev`)
       await this.umount(`${this.installTarget}/proc`)
       await this.umount(`${this.installTarget}/run`)
-      await this.umount(`${this.installTarget}/sys/firmware/efi/efivars`)
-      // ${this.installTarget}/sys/fs/fuse/connections`)
-      await this.umount(`${this.installTarget}/firmware/efi/efivars`)
+      if (this.efi) {
+         await this.umount(`${this.installTarget}/sys/firmware/efi/efivars`)
+      }
       await this.umount(`${this.installTarget}/sys`)
    }
 
@@ -1300,7 +1293,7 @@ adduser ${name} \
 
          /**
          * ===========================================================================================
-         * PROXMOX VE: BIOS to check
+         * PROXMOX VE: BIOS and lvm2
          * ===========================================================================================
          */
 

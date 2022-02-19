@@ -431,12 +431,13 @@ command-line system installer - the egg became a penguin!
 
 ```
 USAGE
-  $ eggs install [-c] [-k] [-h] [-v]
+  $ eggs install [-c] [-k] [-p] [-h] [-v]
 
 FLAGS
   -c, --cli      force use CLI installer
   -h, --help     Show CLI help.
   -k, --crypted  crypted CLI installation
+  -p, --pve      Proxmox VE install
   -v, --verbose  verbose
 
 DESCRIPTION
