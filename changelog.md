@@ -18,8 +18,9 @@ You can follow the project also consulting the [commit history](https://github.c
 ## Changelog
 Versions are listed on reverse order, the first is the last one.
 
-### eggs-9.0.23-1
+### eggs-9.0.24-1
 * krill: reintroduced lvm2 partition for PVE (Proxmox VE) and trying to adapt PVE on a live, withdhpc
+* pve: added sshfs, virt-viewer
 
 ### eggs-9.0.23-1
 * krill: bugfix removed annoying bug on unmount process and use a more rational "press a key to exit" if we get errors.
