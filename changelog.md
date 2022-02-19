@@ -25,9 +25,9 @@ Versions are listed on reverse order, the first is the last one.
 * pve: create new VM on that storage and successfulli started them from live;
 * pve: **NOTE**: editing configurations files in ```/etc/pve/qemu-server``` of the live it is possible to use VM images from the host
 * pve: **NOTE** remain to test that running the live from a usb key
-* pve: all that mean who the resulting live, can be used both: as rescue tool for existing Proxmox VE installation or to get a workable PVE installed or work in a PVE live, using as storage a directory from the disk of the host: 
-Example: I can create here a VM with id 300 on my PVE, share configuration files from /etc/pve/qemu-server/300.conf and the resulting disk: vm-300-disk-0.qcow2 and vm-300-disk-1.qcow2 and just with the iso, the VM can be used everythere. 
-* **NOTE:** this at the moment more an experiment than other.
+* pve: all that mean who the resulting live, can be used both: as rescue tool for existing Proxmox VE installation or to get a workable PVE installed or work in a PVE live, using as storage a directory from the disk of the host.
+**EXAMPLE**: I can create here a VM with id 300 on my PVE, share configuration files from /etc/pve/qemu-server/300.conf and the resulting disk: vm-300-disk-0.qcow2 and vm-300-disk-1.qcow2 and just with the iso, the VM can be used everythere. 
+* **NOTE:** the part regarding PVE is - at the moment - more an experiment than a real feathure.
 
 ### eggs-9.0.23-1
 * krill: bugfix removed annoying bug on unmount process and use a more rational "press a key to exit" if we get errors.
