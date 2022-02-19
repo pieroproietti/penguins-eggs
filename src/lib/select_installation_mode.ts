@@ -1,9 +1,8 @@
 'use strict'
 import inquirer = require('inquirer')
-import shx from 'shelljs'
 
 export default async function selectInstallationMode(): Promise<string> {
-  const modes = ['standard', 'full-encrypted']
+  const modes = ['standard', 'full-encrypted', 'lvm2']
 
   const questions: Array<Record<string, any>> = [
     {
