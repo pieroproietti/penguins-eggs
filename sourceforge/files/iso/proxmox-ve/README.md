@@ -19,17 +19,12 @@ All ISOs are based on Proxmox VE 6.3
 * ```live/evolution```
 * ```root/evolution```
 
-# Proxmox VE 6.3
+# Proxmox VE 7.1 
 
-In the pve and incubator versions, there is a pre-configured VM with a TinyCore iso boot image, a Linux version with a 16 MB graphical user interface. 
+* **pve** - It is a simple remastered version of Proxmox VE 7.1, dressed with XFCE4, firefox, virt-viewer
 
-You can see the virtual machine running simply by logging in as root on proxmox and booting it even without installing the system.
+You can use live or install as your workstation to get the power of PVE. Of course, you can add firmware you need and remaster it again, or start with the cli version and add your tools.
 
-* **naked-ve** - just the juice, without GUI. You can start here to build your revolution! (amd64)
-
-* **pve** - it's not naked, but dressed with xfce4, developer's tools and virt-viewer (amd64)
-
-* **incubator** - it's full workstation for virtualization, with cinnamon, libreoffice, gimp and tools. (amd64)
 
 ## More informations:
 
