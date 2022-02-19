@@ -3,7 +3,6 @@ import { render, RenderOptions } from 'ink'
 import Utils from './utils'
 import shx from 'shelljs'
 import fs from 'fs'
-import dns from 'dns'
 
 // libraries
 const exec = require('../lib/utils').exec
@@ -52,11 +51,11 @@ export default class Krill {
    * 
    * @param cryped 
    */
-  async prepare(cryped = false, verbose = false) {
+  async prepare(cryped = false, pve = false, verbose = false) {
       const oWelcome = await this.welcome()
       const oLocation = await this.location(oWelcome.language)
       const oKeyboard = await this.keyboard()
-      const oPartitions = await this.partitions(cryped)
+      const oPartitions = await this.partitions(cryped, pve)
       const oUsers = await this.users()
       const oNetwork = await this.network()
       await this.summary(oLocation, oKeyboard, oPartitions)
@@ -151,12 +150,15 @@ export default class Krill {
   /**
   * PARTITIONS
   */
-  async partitions(crypted = false): Promise<IPartitions> {
+  async partitions(crypted = false, pve = false): Promise<IPartitions> {
     let installationDevice = '/dev/sda'
     let installationMode = 'standard'
     if (crypted) {
       installationMode = 'full-encrypted'
+    } else if (pve) {
+      installationMode = 'lvm2'
     }
+
     let filesystemType = 'ext4'
     let userSwapChoice = 'small'
 
@@ -170,6 +172,8 @@ export default class Krill {
         installationMode = 'standard'
         if (crypted) {
           installationMode = 'full-encrypted'
+        } else if (pve) {
+          installationMode = 'lvm2'
         }
         filesystemType = ''
         userSwapChoice = ''
