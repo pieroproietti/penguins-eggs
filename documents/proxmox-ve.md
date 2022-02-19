@@ -4,8 +4,10 @@
 
 ## Changelog 
 
-### eggs-9.0.24-1
 
+I just picked up my old idea of creating a complete workstation using Proxmox VE as a base. It was an old project of mine for a few years abandoned for lack of time, but given the progress made with eggs and also contingent needs I have resumed this work.
+
+### egg-of-debian-bullseye-pve-amd64_2022-02-19_1756.iso
 * pve: created a PVE Workstation, adding XFCE, firefox, virtviwewer and sshfs to can mount host:/var/lib/vz on /mnt;
 * pve: testing a PVE inside a PVE host, added storage on the live from the host as directory /mnt;
 * pve: create new VM on that storage and successfulli started them from live;
@@ -13,35 +15,41 @@
 * pve: **NOTE** remain to test that running the live from a usb key
 
 
-## old version to translate, adapt and review
+## Presentation
 
-Non è semplice per me descrivere Proxmox VE, vi lascio alla loro [presentazione](https://pve.proxmox.com/wiki/Main_Page) ed alla loro [guida](https://pve.proxmox.com/pve-docs/pve-admin-guide.html), non prima però di aver spiegato che è l'unica tecnologia di virtualizzazione che ho utilizzato in questi anni.
-
-Diciamo che fornisce un servizio di virtualizzazione, come vmware o virtualbox, gestibile sia in locale che attraverso il web. L'indirizzo del sito è https://nome-della-macchina-o-ip:8006
-
-Da questo indirizzo, interamente con interfaccia accessibile via browser, è possibile creare, cancellare, gestire le macchine virtuali.
-
-Solo una nota, installate - se potete - proxmox ve su una macchina con almeno 4 GB di RAM, preferibilmente 8 GB o 16 per un utilizzo "reale" e per poter assegnare alle macchine virtuali un congruo spazio di memoria 2/4 GB di RAM.
+It's not easy for me to describe Proxmox VE, I'll leave you with their [presentation](https://pve.proxmox.com/wiki/Main_Page) and their [guide](https://pve.proxmox.com/pve-docs/pve-admin-guide.html), but not before explaining that it's the only virtualization technology I've used over the years.
 
 
-## Installazione
+Let's say it provides a virtualization service, like vmware or virtualbox, that can be managed both locally and through the web. The website address is https://hostname-or-host-ip:8006
 
-``ATTENZIONE:`` L'utilizzo dell'installazione da CLI con il comando ```sudo eggs install -cli``` è distruttivo, nel senso che cancellerà completamente il vostro disco rigido.
+From this address, entirely with a browser-accessible interface, you can create, delete, manage virtual machines.
 
-Per installare LMDE+Proxmox VE utilizzare il comando ```eggs install -cli``` (tenuto conto di quanto riportato sopra) che creerà su /dev/sda:
+Just a note, install - if you can - Proxmox VE on a machine with at least 4 GB of RAM, preferably 8 GB or 16 for "real" use and to be able to allocate the virtual machines a fair amount of memory space 2/4 GB of RAM.
 
-* una partizione LVM (```/dev/sda2```);
-* un gruppo di volumi di nome penguin e tre differenti device: 
-  * ```/dev/penguin/root``` partizione di root (formattata ext4);
-  * ```/dev/penguin/data``` partizione mountata sotto /var/lib/vz (formattata ext4);
-  * ```/dev/penguin/swap``` partizione di swap.
 
-Inoltre, in /dev/sda1 verrà creata una piccola partizione di boot per l'avvio del sistema.
+## Installation 
+
+Of course for professional use, it is convenient to download the original iso of Proxmox VE and eventually adapt it to your needs.
+
+In case, however, you want to try the way I'm going, this is practically a replica of the machine that I use daily for my experiments with eggs. Indeed, it represents the future version, using which I'm going to replace the existing system with this one, safeguarding at the same time the various virtual libraries present in the system.
+
+**WARNING**
+
+Using the installation from CLI with the command ```sudo eggs install -cli`` is destructive in the sense that it will completely erase your destination hard drive.
+
+To install egg-of-debian-bullseye-pve-amd64 use the command ``eggs install --pve``, you will get:
+
+* a boot partition (/dev/sda1)
+* a lvm2 partition (``/dev/sda2``) contain a volume group named pve and three different devices: 
+  * ```/dev/pve/root``` root partition (ext4 formatted);
+  * ```/dev/pve/data``` partition mounted under /var/lib/vz (ext4 formatted);
+  * ```/dev/pve/swap``` swap partition.
+
+  **NOTE** At the moment it is possible to install it just with BIOS standard, UEFI is to do!
 
 ### Networking
-Nel corso dell'installazione, verranno poste alcune domande ed opzioni, ad esempio nome utente, password utente, password root, etc. Accettare SEMPRE i valori di default.
 
-Per quanto riguarda la rete, a fine installazione, si potrà modificare il tutto copiando il presente file in /etc/network/interfaces, avendo cura di inserire gli indirizzi adeguati alla propria rete.
+As for the network, at the end of the installation, you can modify it by copying this file in /etc/network/interfaces, taking care to insert the appropriate addresses for your network.
 
 ```
 iface enp0s31f6 inet manual
@@ -57,7 +65,7 @@ iface vmbr0 inet static
 
 ```
 ### Sistemazione dei log di pveproxy
-Per qualche ragione, non viene creata in /var/log/pveproxi la directory dove il daemon possa registrare i log e, di conseguenza, l'avvio del servizio fallisce. E' possibile sistemare il tutto con le seguenti istruzioni:
+If, for some reason, the directory where the daemon can record the logs is not created in /var/log/pveproxi and, consequently, the service startup fails. You can fix the problem with the following commands:
 
 ```sudo mkdir /var/log/pveproxy```
 
@@ -71,9 +79,8 @@ e riavviare il servizio.
 
 ```sudo service pveproxy restart```
 
-### Password di root
-
-Ricordarsi, se non è stata assegnata una password di root precedentemente, di assegnarla. Altrimenti non ci si potrà loggare sull'interfaccia grafica.
+### Password
+Live is set up with a user: ```live``` password: ```evolution``` and a ```root``` user with password: ```evolution```. To access the management of virtual machines, you must log in with the root account.
 
 
 ## Proxmox VE - Una vecchia presentazione
