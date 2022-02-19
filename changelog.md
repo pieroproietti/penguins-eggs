@@ -19,14 +19,7 @@ You can follow the project also consulting the [commit history](https://github.c
 Versions are listed on reverse order, the first is the last one.
 
 ### eggs-9.0.24-1
-* krill --pve flag: reintroducing lvm2 partition for Proxmox VE and testing PVE on the resulting live, with dhpc
-* For PVE see [note](https://github.com/pieroproietti/penguins-eggs/blob/master/documents/proxmox-ve.md).
-
-This mean who the resulting live, can be used both: as rescue tool for existing Proxmox VE installation, to install a workable WS PVE installation or to test PVE in a live environment, mounting the real hw and creating as storage a simple directory.
-
-**EXAMPLE**: I can create here a VM with id 300 on my Proxmox VE installation, share configuration files - from ```/etc/pve/qemu-server/300.conf``` and the two  resulting volumes: ```vm-300-disk-0.qcow2``` and ```vm-300-disk-1.qcow2``` living  and just with the iso, the VM can be used everythere. 
-
-* **NOTE:** the part regarding PVE is - at the moment - more an experiment than a real feathure.
+* krill --pve flag: reintroducing lvm2 partition for Proxmox VE and testing PVE on the resulting live with dhcp. See [pve-note](https://github.com/pieroproietti/penguins-eggs/blob/master/documents/proxmox-ve.md).
 
 ### eggs-9.0.23-1
 * krill: bugfix removed annoying bug on unmount process and use a more rational "press a key to exit" if we get errors.
