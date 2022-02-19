@@ -1,4 +1,19 @@
-# Proxmox ve
+# Proxmox VE
+
+## egg-of-debian-bullseys-pve
+
+## Changelog 
+
+### eggs-9.0.24-1
+
+* pve: created a PVE Workstation, adding XFCE, firefox, virtviwewer and sshfs to can mount host:/var/lib/vz on /mnt;
+* pve: testing a PVE inside a PVE host, added storage on the live from the host as directory /mnt;
+* pve: create new VM on that storage and successfulli started them from live;
+* pve: **NOTE**: editing configurations files in ```/etc/pve/qemu-server``` of the live it is possible to use VM images from the host
+* pve: **NOTE** remain to test that running the live from a usb key
+
+
+## old version to translate, adapt and review
 
 Non è semplice per me descrivere Proxmox VE, vi lascio alla loro [presentazione](https://pve.proxmox.com/wiki/Main_Page) ed alla loro [guida](https://pve.proxmox.com/pve-docs/pve-admin-guide.html), non prima però di aver spiegato che è l'unica tecnologia di virtualizzazione che ho utilizzato in questi anni.
 

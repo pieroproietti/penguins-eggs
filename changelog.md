@@ -20,13 +20,12 @@ Versions are listed on reverse order, the first is the last one.
 
 ### eggs-9.0.24-1
 * krill --pve flag: reintroducing lvm2 partition for Proxmox VE and testing PVE on the resulting live, with dhpc
-* pve: created a PVE Workstation, adding XFCE, firefox, virtviwewer and sshfs to can mount host:/var/lib/vz on /mnt;
-* pve: testing a PVE inside a PVE host, added storage on the live from the host as directory /mnt;
-* pve: create new VM on that storage and successfulli started them from live;
-* pve: **NOTE**: editing configurations files in ```/etc/pve/qemu-server``` of the live it is possible to use VM images from the host
-* pve: **NOTE** remain to test that running the live from a usb key
-* pve: all that mean who the resulting live, can be used both: as rescue tool for existing Proxmox VE installation or to get a workable PVE installed or work in a PVE live, using as storage a directory from the disk of the host.
-**EXAMPLE**: I can create here a VM with id 300 on my PVE, share configuration files from /etc/pve/qemu-server/300.conf and the resulting disk: vm-300-disk-0.qcow2 and vm-300-disk-1.qcow2 and just with the iso, the VM can be used everythere. 
+* For PVE see [note](https://github.com/pieroproietti/penguins-eggs/blob/master/documents/proxmox-ve.md).
+
+This mean who the resulting live, can be used both: as rescue tool for existing Proxmox VE installation, to install a workable WS PVE installation or to test PVE in a live environment, mounting the real hw and creating as storage a simple directory.
+
+**EXAMPLE**: I can create here a VM with id 300 on my Proxmox VE installation, share configuration files - from ```/etc/pve/qemu-server/300.conf``` and the two  resulting volumes: ```vm-300-disk-0.qcow2``` and ```vm-300-disk-1.qcow2``` living  and just with the iso, the VM can be used everythere. 
+
 * **NOTE:** the part regarding PVE is - at the moment - more an experiment than a real feathure.
 
 ### eggs-9.0.23-1
