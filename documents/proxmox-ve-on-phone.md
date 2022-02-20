@@ -2,7 +2,7 @@
 
 Trovandomi, attualmente sprovvisto di linea ADSL, ho pensato di utilizzare il cellulare.
 
-I seguenti sono i parametri utilizzati sulla mia macchina, da adatta a seconda del cellulare e, probabilmente, del provider in uso.
+I seguenti sono i parametri utilizzati sulla mia macchina, da adattare a seconda del cellulare e, probabilmente, del provider in uso.
 
 
 ```
