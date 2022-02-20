@@ -23,7 +23,7 @@ All ISOs are based on Proxmox VE 6.3
 
 * **pve** - It is a simple remastered version of Proxmox VE 7.1, dressed with XFCE4, firefox, virt-viewer
 
-You can use live or install as your workstation to get the power of PVE. Of course, you can add firmware you need and remaster it again, or start with the cli version and add your tools.
+You can use live or install as your workstation to get the power of PVE. Of course, you can add firmware you need and remaster it again, or start with the cli version and add your tools. See [PVE-live-changelog](https://github.com/pieroproietti/penguins-eggs/blob/master/documents/proxmox-ve-live-changelog.md)
 
 
 ## More informations:
