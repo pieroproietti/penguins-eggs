@@ -1,18 +1,23 @@
 # Proxmox VE
+Proxmox Virtual Environment is an open source server virtualization management solution based on QEMU/KVM and LXC. You can manage virtual machines, containers, highly available clusters, storage and networks with an integrated, easy-to-use web interface or via CLI. Proxmox VE code is licensed under the GNU Affero General Public License, version 3. The project is developed and maintained by [Proxmox Server Solutions GmbH](https://www.proxmox.com/).
+
+# Proxmox VE on a workstation
+There are differents guide on [Proxmox wiki](https://pve.proxmox.com/wiki/), I'm not sure this is the [last](https://pve.proxmox.com/wiki/Developer_Workstations_with_Proxmox_VE_and_X11), I follow this guide to create a live CD with Proxmox VE with a light GUI and my preferited tools.
 
 ## egg-of-debian-bullseys-pve
 
 ## Changelog 
 
-
 I just picked up my old idea of creating a complete workstation using Proxmox VE as a base. It was an old project of mine for a few years abandoned for lack of time, but given the progress made with eggs and also contingent needs I have resumed this work.
 
 ### egg-of-debian-bullseye-pve-amd64_2022-02-19_1756.iso
-* pve: created a PVE Workstation, adding XFCE, firefox, virtviwewer and sshfs to can mount host:/var/lib/vz on /mnt;
-* pve: testing a PVE inside a PVE host, added storage on the live from the host as directory /mnt;
-* pve: create new VM on that storage and successfulli started them from live;
-* pve: **NOTE**: editing configurations files in ```/etc/pve/qemu-server``` of the live it is possible to use VM images from the host
-* pve: **NOTE** remain to test that running the live from a usb key
+* created a PVE Workstation, adding XFCE, firefox, virtviwewer and sshfs to can mount host:/var/lib/vz on /mnt;
+* testing a PVE inside a PVE host, added storage on the live from the host as directory /mnt;
+* create new VM on that storage and successfulli started them from live;
+
+**NOTE**: editing configurations files in ```/etc/pve/qemu-server``` of the live it is possible to use VM images from the host
+
+**NOTE** remain to test that running the live from a usb key
 
 This mean who the resulting live, can be used both: as rescue tool for existing Proxmox VE installation, to install a workable WS PVE installation or to test PVE in a live environment, mounting the real hw and creating as storage a simple directory.
 
@@ -89,7 +94,7 @@ e riavviare il servizio.
 Live is set up with a user: ```live``` password: ```evolution``` and a ```root``` user with password: ```evolution```. To access the management of virtual machines, you must log in with the root account.
 
 
-## Proxmox VE - Una vecchia presentazione
+# Proxmox VE - Una vecchia presentazione
 
 Il giorno 22 marzo 2017 è stata rilasciata la prima beta di Proxmox VE 5 basata su Debian Stretch. Oggi il 28 aprile approfittando del fatto di dover fare pulizia sull’installazione domestica ho deciso di tentarne l’installazione tanto per anticiparmi e scoprire le novità.
 
