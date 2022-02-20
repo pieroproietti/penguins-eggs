@@ -19,7 +19,7 @@ You can follow the project also consulting the [commit history](https://github.c
 Versions are listed on reverse order, the first is the last one.
 
 ### eggs-9.0.24-1
-* krill --pve flag: reintroducing lvm2 partition for Proxmox VE and testing PVE on the resulting live with dhcp. See [pve-note](https://github.com/pieroproietti/penguins-eggs/blob/master/documents/proxmox-ve.md).
+* krill --pve flag: reintroducing lvm2 partition for Proxmox VE and testing PVE on the resulting live with dhcp. See [proxmox-ve-live-changelog](https://github.com/pieroproietti/penguins-eggs/blob/master/documents/proxmox-ve-live-changelog.md).
 
 ### eggs-9.0.23-1
 * krill: bugfix removed annoying bug on unmount process and use a more rational "press a key to exit" if we get errors.
