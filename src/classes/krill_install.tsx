@@ -1306,7 +1306,7 @@ adduser ${name} \
          await exec(`parted --script ${installDevice} set 2 lvm on`)
 
          // Partizione LVM
-         const lvmPartname = shx.exec(`fdisk $1 -l | grep 8e | awk '{print $1}' | cut -d "/" -f3`).stdout.trim()
+         const lvmPartname = shx.exec(`fdisk ${installDevice} -l |grep LVM | awk '{print $1}' | cut -d "/" -f3`).stdout.trim()         
          const lvmByteSize = Number(shx.exec(`cat /proc/partitions | grep ${lvmPartname}| awk '{print $3}' | grep "[0-9]"`).stdout.trim())
          const lvmSize = lvmByteSize / 1024
 
@@ -1319,7 +1319,7 @@ adduser ${name} \
          }
          const lvmDataSize = lvmSize - lvmRootSize - lvmSwapSize
 
-         await exec(`pvcreate /dev/${lvmPartname}`)
+         await exec(`pvcreate /dev/${lvmPartname} -ff`)
          await exec(`vgcreate pve /dev/${lvmPartname}`)
          await exec(`vgchange -an`)
          await exec(`lvcreate -L ${lvmSwapSize} -nswap pve`)
@@ -1347,11 +1347,55 @@ adduser ${name} \
 
          /**
          * ===========================================================================================
-         * PROXMOX VE: UEFI to do
+         * PROXMOX VE: lvm2 and UEFI 
          * ===========================================================================================
          */
-         console.log('LVM2 on UEFI: to be implemented!')
-         process.exit(0)
+
+         await exec(`parted --script ${installDevice} mklabel gpt`, echo)
+         await exec(`parted --script ${installDevice} mkpart efi  fat32         34s   256MiB`, echo) //dev/sda1 EFI
+         await exec(`parted --script ${installDevice} mkpart proxmox ext2    256MiB     100%`, echo) //dev/sda2 boot
+         await exec(`parted --script ${installDevice} set 2 lvm on`)
+
+         // Partizione LVM
+
+         const lvmPartname = shx.exec(`fdisk ${installDevice} -l | grep LVM | awk '{print $1}' | cut -d "/" -f3`).stdout.trim()
+         const lvmByteSize = Number(shx.exec(`cat /proc/partitions | grep ${lvmPartname}| awk '{print $3}' | grep "[0-9]"`).stdout.trim())
+         const lvmSize = lvmByteSize / 1024
+
+         // La partizione di root viene posta ad 1/4 della partizione LVM.
+         // Viene limitata fino ad un massimo di 100 GB
+         const lvmSwapSize = 4 * 1024
+         let lvmRootSize = lvmSize / 8
+         if (lvmRootSize < 20480) {
+            lvmRootSize = 20480
+         }
+         const lvmDataSize = lvmSize - lvmRootSize - lvmSwapSize
+
+         await exec(`pvcreate /dev/${lvmPartname} -ff`)
+         await exec(`vgcreate pve /dev/${lvmPartname}`)
+         await exec(`vgchange -an`)
+         await exec(`lvcreate -L ${lvmSwapSize} -nswap pve`)
+         await exec(`lvcreate -L ${lvmRootSize} -nroot pve`)
+         await exec(`lvcreate -l 100%FREE -ndata pve`)
+         await exec(`vgchange -a y pve`)
+
+         this.devices.efi.name = `${installDevice}1`
+         this.devices.efi.fsType = 'F 32 -I'
+         this.devices.efi.mountPoint = '/boot/efi'
+
+         this.devices.boot.name = `none`
+
+         this.devices.root.name = `/dev/pve/root`
+         this.devices.root.fsType = 'ext4'
+         this.devices.root.mountPoint = '/'
+
+         this.devices.data.name = `/dev/pve/data`
+         this.devices.data.fsType = 'ext4'
+         this.devices.data.mountPoint = '/var/lib/vz'
+
+         this.devices.swap.name = `/dev/pve/swap`
+
+         retVal = true         
       }
       return retVal
    }
