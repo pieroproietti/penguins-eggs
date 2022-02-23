@@ -1132,6 +1132,7 @@ adduser ${name} \
          await exec(`parted --script --align optimal ${installDevice} mkpart primary linux-swap  512MiB  8704MiB`, echo) // sda2
          await exec(`parted --script --align optimal ${installDevice} mkpart primary ext4       8704MiB     100%`, echo) // sda3
          await exec(`parted --script ${installDevice} set 1 boot on`, echo) // sda1
+         await exec(`parted --script ${installDevice} set 1 esp on`, echo) // sda1
 
          // BOOT 512M
          this.devices.boot.name = `${installDevice}1` // 'boot' 
@@ -1176,7 +1177,6 @@ adduser ${name} \
 
 
          // BOOT/DATA/EFI
-         // this.devices.boot.name = `none`
          this.devices.data.name = `none`
          this.devices.efi.name = `none`
 
