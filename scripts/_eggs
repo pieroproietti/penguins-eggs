@@ -20,7 +20,7 @@ _eggs () {
 "install:command-line system installer - the egg became a penguin!"
 "kill:kill the eggs/free the nest"
 "mom:ask for mommy - gui helper"
-"produce:the system produce an egg: iso image of your system"
+"produce:produce a live image from your system whithout your data"
 "remove:remove eggs and others stuff"
 "syncfrom:Restore users, server and datas from luks-eggs-backup"
 "syncto:Backup users, server and datas to luks-eggs-backup"
@@ -31,8 +31,8 @@ _eggs () {
 "tools\:yolk:configure eggs to install without internet"
 "update:update the penguin's eggs tool"
 "help:Display help for <%= config.bin %>."
-"version:"
 "autocomplete:display autocomplete installation instructions"
+"version:"
   )
 
   _set_flags () {
@@ -123,6 +123,7 @@ install)
   _command_flags=(
     "--cli[force use CLI installer]"
 "--crypted[crypted CLI installation]"
+"--pve[Proxmox VE install]"
 "--help[Show CLI help.]"
 "--verbose[verbose]"
   )
@@ -170,8 +171,8 @@ remove)
 
 syncfrom)
   _command_flags=(
-    "--krill[krill]"
-"--file=-[file with LUKS volume encrypted]:"
+    "--file=-[file with LUKS volume encrypted]:"
+"--rootdir=-[rootdir of the installed system, when used from live]:"
 "--help[Show CLI help.]"
 "--verbose[verbose]"
   )
@@ -239,15 +240,15 @@ help)
   )
 ;;
 
-version)
-  _command_flags=(
-    
-  )
-;;
-
 autocomplete)
   _command_flags=(
     "--refresh-cache[Refresh cache (ignores displaying instructions)]"
+  )
+;;
+
+version)
+  _command_flags=(
+    
   )
 ;;
 

@@ -59,7 +59,7 @@ import Distro from './distro';
 
 import { IInstaller, IDevices, IDevice } from '../interfaces'
 import { ICalamaresModule, ILocation, IKeyboard, IPartitions, IUsers } from '../interfaces/i-krill'
-import { execSync } from 'child_process'
+import { ChildProcess, execSync } from 'child_process'
 import { exec } from '../lib/utils'
 
 /**
@@ -1127,13 +1127,11 @@ adduser ${name} \
           * BIOS: full-encrypt: 
           * ===========================================================================================
           */
-
          await exec(`parted --script ${installDevice} mklabel msdos`, echo)
-         await exec(`parted --script --align optimal ${installDevice} mkpart primary ext4          1MiB     512MiB`, echo) //dev/sda1 boot 
-         await exec(`parted --script --align optimal ${installDevice} mkpart primary linux-swap  512MiB  8704MiB`, echo) //dev/sda2 swap 8GiB
-         await exec(`parted --script --align optimal ${installDevice} mkpart primary ext4       8704MiB    100%`, echo) //dev/sda3 root remain
-         await exec(`parted ${installDevice} set 1 boot on`, echo)
-         await exec(`parted ${installDevice} set 1 esp on`, echo)
+         await exec(`parted --script --align optimal ${installDevice} mkpart primary ext4          1MiB   512MiB`, echo) // sda1
+         await exec(`parted --script --align optimal ${installDevice} mkpart primary linux-swap  512MiB  8704MiB`, echo) // sda2
+         await exec(`parted --script --align optimal ${installDevice} mkpart primary ext4       8704MiB     100%`, echo) // sda3
+         await exec(`parted --script ${installDevice} set 1 boot on`, echo) // sda1
 
          // BOOT 512M
          this.devices.boot.name = `${installDevice}1` // 'boot' 
@@ -1191,13 +1189,12 @@ adduser ${name} \
           * UEFI: working
           * ===========================================================================================
           */
-
          await exec(`parted --script ${installDevice} mklabel gpt`, echo)
-         await exec(`parted --script ${installDevice} mkpart efi  fat32         34s   256MiB`, echo) //dev/sda1 EFI
-         await exec(`parted --script ${installDevice} mkpart swap linux-swap 768MiB  8960MiB`, echo) //dev/sda3 swap
-         await exec(`parted --script ${installDevice} mkpart root ext4      8960MiB     100%`, echo) //dev/sda4 root
-         await exec(`parted ${installDevice} set 1 boot on`, echo)
-         await exec(`parted ${installDevice} set 1 esp on`, echo)
+         await exec(`parted --script ${installDevice} mkpart efi  fat32         34s   256MiB`, echo) // sda1 EFI
+         await exec(`parted --script ${installDevice} mkpart swap linux-swap 768MiB  8960MiB`, echo) // sda2 swap
+         await exec(`parted --script ${installDevice} mkpart root ext4      8960MiB     100%`, echo) // sda3 root
+         await exec(`parted --script ${installDevice} set 1 boot on`, echo) // sda1
+         await exec(`parted --script ${installDevice} set 1 esp on`, echo) // sda1
 
          this.devices.efi.name = `${installDevice}1`
          this.devices.efi.fsType = 'F 32 -I'
@@ -1216,7 +1213,6 @@ adduser ${name} \
          this.devices.data.name = `none`
          // this.devices.efi.name = `none`
 
-
          retVal = true
 
       } else if (installMode === 'full-encrypted' && this.efi) {
@@ -1226,14 +1222,13 @@ adduser ${name} \
           * UEFI, full-encrypt: working
           * ===========================================================================================
           */
-
          await exec(`parted --script ${installDevice} mklabel gpt`, echo)
-         await exec(`parted --script ${installDevice} mkpart efi fat32          34s   256MiB`, echo) //dev/sda1 EFI
-         await exec(`parted --script ${installDevice} mkpart boot ext4       256MiB   768MiB`, echo) //dev/sda2 boot
-         await exec(`parted --script ${installDevice} mkpart swap linux-swap 768MiB  8960MiB`, echo) //dev/sda3 swap
-         await exec(`parted --script ${installDevice} mkpart root ext4      8960MiB     100%`, echo) //dev/sda4 root
-         await exec(`parted ${installDevice} set 1 boot on`, echo)
-         await exec(`parted ${installDevice} set 1 esp on`, echo)
+         await exec(`parted --script ${installDevice} mkpart efi fat32           34s   256MiB`, echo) // sda1 EFI
+         await exec(`parted --script ${installDevice} mkpart boot ext4        256MiB   768MiB`, echo) // sda2 boot
+         await exec(`parted --script ${installDevice} mkpart swap linux-swap  768MiB  8960MiB`, echo) // sda3 swap
+         await exec(`parted --script ${installDevice} mkpart root ext4       8960MiB     100%`, echo) // sda4 root
+         await exec(`parted --script ${installDevice} set 1 boot on`, echo) // sda1
+         await exec(`parted --script ${installDevice} set 1 esp on`, echo) // sda1
 
          // EFI 256M
          this.devices.efi.name = `${installDevice}1` // 'efi' 
@@ -1296,30 +1291,21 @@ adduser ${name} \
          * PROXMOX VE: BIOS and lvm2
          * ===========================================================================================
          */
-
          await exec(`parted --script ${installDevice} mklabel msdos`)
 
          // Creo partizioni
-         await exec(`parted --script ${installDevice} mkpart primary ext2 1 512`)
-         await exec(`parted --script --align optimal ${installDevice} set 1 boot on`)
-         await exec(`parted --script --align optimal ${installDevice} mkpart primary ext2 512 100%`)
-         await exec(`parted --script ${installDevice} set 2 lvm on`)
+         await exec(`parted --script ${installDevice} mkpart primary ext2 1 512`) // sda1
+         await exec(`parted --script --align optimal ${installDevice} mkpart primary ext2 512 100%`) // sda2
+         await exec(`parted --script ${installDevice} set 1 boot on`, echo) // sda1
+         await exec(`parted --script ${installDevice} set 2 lvm on`, echo) // sda2
 
-         // Partizione LVM
-         const lvmPartname = shx.exec(`fdisk ${installDevice} -l |grep LVM | awk '{print $1}' | cut -d "/" -f3`).stdout.trim()         
-         const lvmByteSize = Number(shx.exec(`cat /proc/partitions | grep ${lvmPartname}| awk '{print $3}' | grep "[0-9]"`).stdout.trim())
-         const lvmSize = lvmByteSize / 1024
+         const lvmPartInfo = await this.lvmPartInfo(installDevice)
+         const lvmPartname = lvmPartInfo[0]
+         const lvmSwapSize = lvmPartInfo[1]
+         const lvmRootSize = lvmPartInfo[2]
+         //const lvmDataSize = lvmPartInfo[3]
 
-         // La partizione di root viene posta ad 1/4 della partizione LVM.
-         // Viene limitata fino ad un massimo di 100 GB
-         const lvmSwapSize = 4 * 1024
-         let lvmRootSize = lvmSize / 8
-         if (lvmRootSize < 20480) {
-            lvmRootSize = 20480
-         }
-         const lvmDataSize = lvmSize - lvmRootSize - lvmSwapSize
-
-         await exec(`pvcreate /dev/${lvmPartname} -ff`)
+         await exec(`pvcreate /dev/${lvmPartname}`)
          await exec(`vgcreate pve /dev/${lvmPartname}`)
          await exec(`vgchange -an`)
          await exec(`lvcreate -L ${lvmSwapSize} -nswap pve`)
@@ -1342,7 +1328,9 @@ adduser ${name} \
          this.devices.data.mountPoint = '/var/lib/vz'
 
          this.devices.swap.name = `/dev/pve/swap`
+
          retVal = true
+
       } else if (this.partitions.installationMode === 'lvm2' && this.efi) {
 
          /**
@@ -1350,28 +1338,21 @@ adduser ${name} \
          * PROXMOX VE: lvm2 and UEFI 
          * ===========================================================================================
          */
-
          await exec(`parted --script ${installDevice} mklabel gpt`, echo)
-         await exec(`parted --script ${installDevice} mkpart efi  fat32         34s   256MiB`, echo) //dev/sda1 EFI
-         await exec(`parted --script ${installDevice} mkpart proxmox ext2    256MiB     100%`, echo) //dev/sda2 boot
-         await exec(`parted --script ${installDevice} set 2 lvm on`)
+         await exec(`parted --script ${installDevice} mkpart efi  fat32    34s   256MiB`, echo) // sda1 EFI
+         await exec(`parted --script ${installDevice} mkpart boot ext2  256MiB   768MiB`, echo) // sda2 boot
+         await exec(`parted --script ${installDevice} mkpart lvm  ext4  768MiB     100%`, echo) // sda3 lmv2
+         await exec(`parted --script ${installDevice} set 1 boot on`, echo) // sda1
+         await exec(`parted --script ${installDevice} set 1 esp on`, echo)  // sda1
+         await exec(`parted --script ${installDevice} set 3 lvm on`) // sda3
 
-         // Partizione LVM
+         const lvmPartInfo = await this.lvmPartInfo(installDevice)
+         const lvmPartname = lvmPartInfo[0]
+         const lvmSwapSize = lvmPartInfo[1]
+         const lvmRootSize = lvmPartInfo[2]
+         //const lvmDataSize = lvmPartInfo[3]
 
-         const lvmPartname = shx.exec(`fdisk ${installDevice} -l | grep LVM | awk '{print $1}' | cut -d "/" -f3`).stdout.trim()
-         const lvmByteSize = Number(shx.exec(`cat /proc/partitions | grep ${lvmPartname}| awk '{print $3}' | grep "[0-9]"`).stdout.trim())
-         const lvmSize = lvmByteSize / 1024
-
-         // La partizione di root viene posta ad 1/4 della partizione LVM.
-         // Viene limitata fino ad un massimo di 100 GB
-         const lvmSwapSize = 4 * 1024
-         let lvmRootSize = lvmSize / 8
-         if (lvmRootSize < 20480) {
-            lvmRootSize = 20480
-         }
-         const lvmDataSize = lvmSize - lvmRootSize - lvmSwapSize
-
-         await exec(`pvcreate /dev/${lvmPartname} -ff`)
+         await exec(`pvcreate /dev/${lvmPartname}`)
          await exec(`vgcreate pve /dev/${lvmPartname}`)
          await exec(`vgchange -an`)
          await exec(`lvcreate -L ${lvmSwapSize} -nswap pve`)
@@ -1383,7 +1364,9 @@ adduser ${name} \
          this.devices.efi.fsType = 'F 32 -I'
          this.devices.efi.mountPoint = '/boot/efi'
 
-         this.devices.boot.name = `none`
+         this.devices.boot.name = `${installDevice}2`
+         this.devices.boot.fsType = 'ext4'
+         this.devices.boot.mountPoint = '/boot'
 
          this.devices.root.name = `/dev/pve/root`
          this.devices.root.fsType = 'ext4'
@@ -1395,9 +1378,29 @@ adduser ${name} \
 
          this.devices.swap.name = `/dev/pve/swap`
 
-         retVal = true         
+         retVal = true
       }
       return retVal
+   }
+
+   /**
+    * Return lvmPartname, lvmSwapSize, lvmRootSize
+    */
+   private async lvmPartInfo(installDevice = '/dev/sda'): Promise<[string, number, number, number]> {
+      // 
+      // Partizione LVM
+      const lvmPartname = shx.exec(`fdisk ${installDevice} -l | grep LVM | awk '{print $1}' | cut -d "/" -f3`).stdout.trim()
+      const lvmByteSize = Number(shx.exec(`cat /proc/partitions | grep ${lvmPartname}| awk '{print $3}' | grep "[0-9]"`).stdout.trim())
+      const lvmSize = lvmByteSize / 1024
+
+      // La partizione di root viene posta ad 1/4 della partizione LVM, limite max 100 GB
+      const lvmSwapSize = 8192
+      let lvmRootSize = lvmSize / 8
+      if (lvmRootSize < 20480) {
+         lvmRootSize = 20480
+      }
+      const lvmDataSize = lvmSize - lvmRootSize - lvmSwapSize
+      return [lvmPartname, lvmSwapSize, lvmRootSize, lvmDataSize]
    }
 
    /**
@@ -1567,6 +1570,7 @@ adduser ${name} \
       require('child_process').spawnSync('read _ ', { shell: true, stdio: [0, 1, 2] })
       shx.exec('reboot')
    }
+
 }
 
 const ifaces: string[] = fs.readdirSync('/sys/class/net/')

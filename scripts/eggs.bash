@@ -21,12 +21,12 @@ export:deb --help --clean --amd64 --i386 --armel --arm64 --all
 export:docs --help
 export:iso --help --backup --clean
 info --verbose --help
-install --cli --crypted --help --verbose
+install --cli --crypted --pve --help --verbose
 kill --help --verbose
 mom --help
 produce --prefix --basename --backup --fast --normal --max --verbose --yolk --script --help --theme --addons --release
 remove --purge --autoremove --help --verbose
-syncfrom --krill --file --help --verbose
+syncfrom --file --rootdir --help --verbose
 syncto --krill --file --help --verbose
 tools:clean --help --verbose
 tools:locales --help --reinstall --verbose
@@ -35,8 +35,8 @@ tools:stat --help --month --year
 tools:yolk --help --verbose
 update --help --apt --basket --verbose
 help --nested-commands
-version 
 autocomplete --refresh-cache
+version 
 "
 
   function __trim_colon_commands()
