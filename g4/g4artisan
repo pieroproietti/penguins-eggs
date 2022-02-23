@@ -1,2 +1,3 @@
+#!/bin/sh
 git config --global user.email "piero.proietti@gmail.com"
 git config --global user.name "Piero Proietti"

@@ -15,7 +15,6 @@ import os from 'node:os'
 import shx from 'shelljs'
 import chalk from 'chalk'
 import mustache from 'mustache'
-
 import PveLive from './pve-live'
 
 // interfaces
@@ -1139,10 +1138,15 @@ export default class Ovary {
 
     // pve
     if (myAddons.pve) {
-      // Imposto service pve-lite
+      /**
+       * create service pve-lite
+       */
       const pve = new PveLive()
       pve.create(this.settings.work_dir.merged)
 
+      /**
+       * adding a desktop link for pve
+       */
       const dirAddon = path.resolve(__dirname, '../../addons/eggs/pve')
       shx.cp(`${dirAddon}/artwork/eggs-pve.png`, `${this.settings.work_dir.merged}/usr/share/icons/`)
       shx.cp(`${dirAddon}/applications/eggs-pve.desktop`, `${this.settings.work_dir.merged}/usr/share/applications/`)
