@@ -1,10 +1,6 @@
 #!/bin/bash
-IP=`hostname -I`
-HOSTNAME=`hostname`
-FQN=`host -TtA $HOSTNAME|grep "has address"|awk '{print $1}'`
-#
-# scrive il file /etc/hosts 
-#
+IP=$(hostname -I)
+HOSTNAME=$(hostname)
 cat <<EOF >/etc/hosts
 127.0.0.1 localhost localhost.localdomain
 ${IP} ${HOSTNAME} pvelocalhost
