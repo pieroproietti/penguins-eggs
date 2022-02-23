@@ -52,14 +52,23 @@ export default class Krill {
    * @param cryped 
    */
   async prepare(cryped = false, pve = false, verbose = false) {
-      const oWelcome = await this.welcome()
-      const oLocation = await this.location(oWelcome.language)
-      const oKeyboard = await this.keyboard()
-      const oPartitions = await this.partitions(cryped, pve)
-      const oUsers = await this.users()
-      const oNetwork = await this.network()
-      await this.summary(oLocation, oKeyboard, oPartitions)
-      await this.install(oLocation, oKeyboard, oPartitions, oUsers, oNetwork, verbose)
+
+    /**
+     * check lvm2
+     */
+    if (await this.pvExist()) {
+      Utils.warning(`There is a lvm2 volume in the system, remove it manually before installation.\nkrill installer refuses to continue`)
+      process.exit(0)
+    }
+
+    const oWelcome = await this.welcome()
+    const oLocation = await this.location(oWelcome.language)
+    const oKeyboard = await this.keyboard()
+    const oPartitions = await this.partitions(cryped, pve)
+    const oUsers = await this.users()
+    const oNetwork = await this.network()
+    await this.summary(oLocation, oKeyboard, oPartitions)
+    await this.install(oLocation, oKeyboard, oPartitions, oUsers, oNetwork, verbose)
   }
 
 
@@ -314,10 +323,23 @@ export default class Krill {
   /**
    * INSTALL
    */
-  async install(location: ILocation, keyboard: IKeyboard, partitions: IPartitions, users: IUsers, network: INet, verbose=false) {
+  async install(location: ILocation, keyboard: IKeyboard, partitions: IPartitions, users: IUsers, network: INet, verbose = false) {
     const hatching = new Hatching(location, keyboard, partitions, users, network)
     hatching.install(verbose)
   }
+
+  /**
+   * return true if pv exist
+   */
+  private async pvExist(): Promise<boolean> {
+    let exist = false
+    const check = 'pvdisplay |grep "PV Name" >/dev/null && echo 1|| echo 0'
+    if (shx.exec(check).stdout.trim() === '1') {
+      exist = true
+    }
+    return exist
+  }
+
 }
 
 

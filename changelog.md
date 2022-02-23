@@ -19,7 +19,8 @@ You can follow the project also consulting the [commit history](https://github.c
 Versions are listed on reverse order, the first is the last one.
 
 ### eggs-9.0.25-1
-* krill: added UEFI LVM2 partition. PVE now can install on UEFI
+* krill: added UEFI/LVM2 partition, so now we can install Proxmox VE both on BIOS and UEFI systems;
+* krill: installer will refuse to continue if a lvm2 volume is already present.
 
 ### eggs-9.0.24-1
 * krill --pve flag: reintroducing lvm2 partition for Proxmox VE and testing PVE on the resulting live with dhcp. See [proxmox-ve-live-changelog](https://github.com/pieroproietti/penguins-eggs/blob/master/documents/proxmox-ve-live-changelog.md).
