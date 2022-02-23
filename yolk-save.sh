@@ -1,3 +1,4 @@
+#!/bin/sh
 clear
 echo "Installing eggs saving time..."
 # yolk-restore
@@ -10,4 +11,5 @@ sudo eggs dad -d
 # yolk-restore
 sudo rm /var/local/yolk -rf
 sudo mv /var/local/yolk.saved /var/local/yolk
+
 
