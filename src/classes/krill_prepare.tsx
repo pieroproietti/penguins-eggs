@@ -77,7 +77,8 @@ export default class Krill {
    * WELCOME
    */
   async welcome(): Promise<IWelcome> {
-    let language = shx.exec('cat /etc/default/locale |grep LANG=| cut -f2 -d=|cut -f1 -d.', { silent: true }).stdout.trim()
+    
+    let language = shx.exec(`grep LANG= < /etc/default/locale| cut -f2 -d=|cut -f1 -d.`, { silent: true }).stdout.trim()
     let welcomeElem: JSX.Element
     while (true) {
       welcomeElem = <Welcome language={language} />
@@ -98,8 +99,8 @@ export default class Krill {
    * LOCATION
    */
   async location(language: string): Promise<ILocation> {
-    let region = shx.exec('cat /etc/timezone |cut -f1 -d/', { silent: true }).stdout.trim()
-    let zone = shx.exec('cat /etc/timezone |cut -f2 -d/', { silent: true }).stdout.trim()
+    let region = shx.exec('cut -f1 -d/ < /etc/timezone', { silent: true }).stdout.trim()
+    let zone = shx.exec('cut -f2 -d/ < /etc/timezone', { silent: true }).stdout.trim()
     let locationElem: JSX.Element
     while (true) {
       locationElem = <Location language={language} region={region} zone={zone} />
@@ -130,13 +131,13 @@ export default class Krill {
   * KEYBOARD
   */
   async keyboard(): Promise<IKeyboard> {
-    let keyboardModel = shx.exec('cat /etc/default/keyboard |grep XKBMODEL|cut -f2 -d=|cut -f2 "-d\\""', { silent: true }).stdout.trim()
+    let keyboardModel = shx.exec('grep XKBMODEL < /etc/default/keyboard |cut -f2 -d= | cut -f2 "-d\\""', { silent: true }).stdout.trim()
     if (keyboardModel === '') {
       keyboardModel = "pc105"
     }
-    let keyboardLayout = shx.exec('cat /etc/default/keyboard |grep XKBLAYOUT|cut -f2 -d=|cut -f2 "-d\\""', { silent: true }).stdout.trim()
-    let keyboardVariant = shx.exec('/etc/default/keyboard |grep XKBVARIANT|cut -f2 -d=|cut -f2 "-d\\""', { silent: true }).stdout.trim()
-    let keyboardOptions = shx.exec('cat /etc/default/keyboard |grep XKBOPTIONS|cut -f2 -d=|cut -f2 "-d\\""', { silent: true }).stdout.trim()
+    let keyboardLayout = shx.exec('grep XKBLAYOUT < /etc/default/keyboard | cut -f2 -d= | cut -f2 "-d\\""', { silent: true }).stdout.trim()
+    let keyboardVariant = shx.exec('grep XKBVARIANT < /etc/default/keyboard | cut -f2 -d=|cut -f2 "-d\\""', { silent: true }).stdout.trim()
+    let keyboardOptions = shx.exec('grep XKBOPTIONS < /etc/default/keyboard | cut -f2 -d= | cut -f2 "-d\\""', { silent: true }).stdout.trim()
     let keyboardElem: JSX.Element
     while (true) {
       keyboardElem = <Keyboard keyboardModel={keyboardModel} keyboardLayout={keyboardLayout} keyboardVariant={keyboardVariant} />
@@ -333,7 +334,7 @@ export default class Krill {
    */
   private async pvExist(): Promise<boolean> {
     let exist = false
-    const check = 'pvdisplay |grep "PV Name" >/dev/null && echo 1|| echo 0'
+    const check = `#!/bin/sh\npvdisplay |grep "PV Name" >/dev/null && echo 1|| echo 0`
     if (shx.exec(check).stdout.trim() === '1') {
       exist = true
     }

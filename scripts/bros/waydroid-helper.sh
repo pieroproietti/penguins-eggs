@@ -80,7 +80,7 @@ function session {
 ################################
 ################################
 function press_a_key_to_continue {
-   read -p "Press enter to continue"
+   read -rp "Press enter to continue"
 }
 
 ################################
