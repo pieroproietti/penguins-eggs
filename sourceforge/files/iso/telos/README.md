@@ -20,8 +20,8 @@ TeLOS Linux is a project from our friend [Ion](https://sourceforge.net/u/telos/p
 * ```live/evolution```
 * ```root/evolution```
 
+* **egg-of-telos-bullseye-openbox** a remastered version of **TeLOS-micro**.
 * **egg-of-telos-bookworm-kde** a remastered version of **TeLOS-mini**
-* **egg-of-telos-bookworm-openbox** a remastered version of **TeLOS-micro**.
 
 **NOTE** Here you will find my TeLOS remaster made to test the latest versions of eggs. You can find more updated TeLOS versions on their site [TeLOS](https://sourceforge.net/projects/teloslinux/), please use always ```--theme telos```
 
