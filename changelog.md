@@ -18,6 +18,9 @@ You can follow the project also consulting the [commit history](https://github.c
 ## Changelog
 Versions are listed on reverse order, the first is the last one.
 
+### eggs-9.0.26-1
+* added theme TeLOS, rewrite Utils.vmlinuz() to get get boot image from  /proc/cmdline
+
 ### eggs-9.0.25-1
 * krill: added UEFI/LVM2 partition, so now we can install Proxmox VE both on BIOS and UEFI systems;
 * krill: installer will refuse to continue if a lvm2 volume is already present.
