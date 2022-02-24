@@ -20,15 +20,11 @@ TeLOS Linux is a project from our friend [Ion](https://sourceforge.net/u/telos/p
 * ```live/evolution```
 * ```root/evolution```
 
+* **egg-of-telos-bullseye-openbox** a remastered version of **TeLOS-micro**.
 * **egg-of-telos-bullseye-dev-x64** a remastered version of **TeLOS-mini**. Here You can find the [original](https://sourceforge.net/projects/lite.teloslinux.p/files/iso/)
-* **egg-of-telos-bullseye-dev-i386** an i386 version of **TeLOS-mini**. 
+* **egg-of-telos-bullseye-dev-i386** an i386 version of **TeLOS-mini** (eggs-8.17.x)
 
-(*) This is mostly my personal dev version of [TeLOS](https://sourceforge.net/projects/teloslinux/), I removed google chrome becouse it is enought heavvy compared to falkon expecially in a KDE environment. Again, for my need, I removed Teamviewer: simply don't use it! But for a dev edition I include git, build-essential, nodejs and code. Actually I'm using TeLOS as my favorite development platform, becouse its lightness. I recommend it to start developing with eggs for its lightness, important to test a software whose debugging often requires remastering and reinstalling the same system. 
-
-Becouse I publish three version of eggs for AMD63, Armel and i386 and the shortest way to have this is to use an i386 machine for the i386 version, I decided to build an i386 version of telos.
-
-Both this editions: x64 and i386 are not so much optimized like the original, I use them just to code, compile and remaster them to test eggs.
-But I have an old ASUS netbook with 1GB RAM, probably - first or late - I will find time to adapt the 386 version on it.
+(*) They are mostly my personal versions of [TeLOS](https://sourceforge.net/projects/teloslinux/)
 
 ## More informations:
 
