@@ -53,20 +53,25 @@ export default class Utils {
     * BOOT_IMAGE=(hd0,msdos1)/vmlinuz-5.15.6-200.fc35.x86_64 root=UUID=91cf614e-62a1-464c-904f-38d0a1ceb7a7 ro rootflags=subvol=root rhgb quiet
     */
    static vmlinuz(): string {
-      const results = fs.readFileSync('/proc/cmdline', 'utf8').split(' ')
-      let result = results[0]
-      // result = result.substring(result.indexOf('=') + 1)
-      result = result.substring(result.indexOf('/'))
-      if (result.indexOf('@') > 0) {
-         result = result.substring(result.indexOf('@') + 1)
+      const cmdline = fs.readFileSync('/proc/cmdline', 'utf8')
+      // start = find BOOT_IMAGE 
+      const start = cmdline.search('BOOT_IMAGE=/')+11
+      // end first space after
+      const end = cmdline.substring(start).indexOf(' ')
+      let vmlinux = cmdline.substring(start, start + end )
+
+      // btrfs
+      if (vmlinux.indexOf('@') > 0) {
+         vmlinux = vmlinux.substring(vmlinux.indexOf(' ') + 1)
       }
-      if (!fs.existsSync(result)) {
-         if (fs.existsSync('/boot' + result)) {
-            result = '/boot' + result
+      
+      if (!fs.existsSync(vmlinux)) {
+         if (fs.existsSync('/boot' + vmlinux)) {
+            vmlinux = '/boot' + vmlinux
          }
       }
 
-      return result
+      return vmlinux
    }
 
    /**
