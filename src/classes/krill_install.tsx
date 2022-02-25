@@ -1086,6 +1086,14 @@ adduser ${name} \
       let retVal = false
 
       const installDevice = this.partitions.installationDevice
+      let p = ''
+      if (installDevice.includes('nvme')) {
+         p = 'p'
+      }
+      // /dev/nvme0  /dev/nvme0n1  /dev/nvme0n1p1  /dev/nvme0n1p2  /dev/nvme0n1p3  /dev/nvme0n1p4  /dev/nvme0n1p5  /dev/nvme0n1p6  /dev/nvme0n1p7
+                     // /dev/sda    /dev/sda1      /dev/sda2       /dev/sda3        /dev/sda4
+
+
       const installMode = this.partitions.installationMode
 
       await exec(`wipefs -a ${installDevice} ${this.toNull}`, echo)
@@ -1104,12 +1112,13 @@ adduser ${name} \
          await exec(`parted ${installDevice} set 1 esp on`, echo)
 
          // SWAP
-         this.devices.swap.name = `${installDevice}1`
+
+         this.devices.swap.name = `${installDevice}${p}1`
          this.devices.swap.fsType = 'swap'
          this.devices.swap.mountPoint = 'none'
 
          // ROOT
-         this.devices.root.name = `${installDevice}2`
+         this.devices.root.name = `${installDevice}${p}2`
          this.devices.root.fsType = 'ext4'
          this.devices.root.mountPoint = '/'
 
@@ -1135,43 +1144,43 @@ adduser ${name} \
          await exec(`parted --script ${installDevice} set 1 esp on`, echo) // sda1
 
          // BOOT 512M
-         this.devices.boot.name = `${installDevice}1` // 'boot' 
+         this.devices.boot.name = `${installDevice}${p}1` // 'boot' 
          this.devices.boot.fsType = 'ext4'
          this.devices.boot.mountPoint = '/boot'
 
          // SWAP 8G
          redraw(<Install message={`Formatting LUKS ${installDevice}2`} percent={0} />)
-         let crytoSwap = await exec(`cryptsetup -y -v luksFormat --type luks2 ${installDevice}2`, echoYes)
+         let crytoSwap = await exec(`cryptsetup -y -v luksFormat --type luks2 ${installDevice}${p}2`, echoYes)
          if (crytoSwap.code !== 0) {
             Utils.warning(`Error: ${crytoSwap.code} ${crytoSwap.data}`)
             process.exit(1)
          }
-         redraw(<Install message={`Opening ${installDevice}2 as swap_crypted`} percent={0} />)
-         let crytoSwapOpen = await exec(`cryptsetup luksOpen --type luks2 ${installDevice}2 swap_crypted`, echoYes)
+         redraw(<Install message={`Opening ${installDevice}${p}2 as swap_crypted`} percent={0} />)
+         let crytoSwapOpen = await exec(`cryptsetup luksOpen --type luks2 ${installDevice}${p}2 swap_crypted`, echoYes)
          if (crytoSwapOpen.code !== 0) {
             Utils.warning(`Error: ${crytoSwapOpen.code} ${crytoSwapOpen.data}`)
             process.exit(1)
          }
          this.devices.swap.name = '/dev/mapper/swap_crypted'
-         this.devices.swap.cryptedFrom = `${installDevice}2`
+         this.devices.swap.cryptedFrom = `${installDevice}${p}2`
          this.devices.swap.fsType = 'swap'
          this.devices.swap.mountPoint = 'none'
 
          // ROOT
-         redraw(<Install message={`Formatting LUKS ${installDevice}3`} percent={0} />)
-         let crytoRoot = await exec(`cryptsetup -y -v luksFormat --type luks2 ${installDevice}3`, echoYes)
+         redraw(<Install message={`Formatting LUKS ${installDevice}${p}3`} percent={0} />)
+         let crytoRoot = await exec(`cryptsetup -y -v luksFormat --type luks2 ${installDevice}${p}3`, echoYes)
          if (crytoRoot.code !== 0) {
             Utils.warning(`Error: ${crytoRoot.code} ${crytoRoot.data}`)
             process.exit(1)
          }
-         redraw(<Install message={`Opening ${installDevice}3 as root_crypted`} percent={0} />)
-         let crytoRootOpen = await exec(`cryptsetup luksOpen --type luks2 ${installDevice}3 root_crypted`, echoYes)
+         redraw(<Install message={`Opening ${installDevice}${p}3 as root_crypted`} percent={0} />)
+         let crytoRootOpen = await exec(`cryptsetup luksOpen --type luks2 ${installDevice}${p}3 root_crypted`, echoYes)
          if (crytoRootOpen.code !== 0) {
             Utils.warning(`Error: ${crytoRootOpen.code} ${crytoRootOpen.data}`)
             process.exit(1)
          }
          this.devices.root.name = '/dev/mapper/root_crypted'
-         this.devices.root.cryptedFrom = `${installDevice}3`
+         this.devices.root.cryptedFrom = `${installDevice}${p}3`
          this.devices.root.fsType = 'ext4'
          this.devices.root.mountPoint = '/'
 
@@ -1196,15 +1205,15 @@ adduser ${name} \
          await exec(`parted --script ${installDevice} set 1 boot on`, echo) // sda1
          await exec(`parted --script ${installDevice} set 1 esp on`, echo) // sda1
 
-         this.devices.efi.name = `${installDevice}1`
+         this.devices.efi.name = `${installDevice}${p}1`
          this.devices.efi.fsType = 'F 32 -I'
          this.devices.efi.mountPoint = '/boot/efi'
          this.devices.boot.name = `none`
 
-         this.devices.swap.name = `${installDevice}2`
+         this.devices.swap.name = `${installDevice}${p}2`
          this.devices.swap.fsType = 'swap'
 
-         this.devices.root.name = `${installDevice}3`
+         this.devices.root.name = `${installDevice}${p}3`
          this.devices.root.fsType = 'ext4'
          this.devices.root.mountPoint = '/'
 
@@ -1231,48 +1240,48 @@ adduser ${name} \
          await exec(`parted --script ${installDevice} set 1 esp on`, echo) // sda1
 
          // EFI 256M
-         this.devices.efi.name = `${installDevice}1` // 'efi' 
+         this.devices.efi.name = `${installDevice}${p}1` // 'efi' 
          this.devices.efi.fsType = 'F 32 -I'
          this.devices.efi.mountPoint = '/boot/efi'
 
          // BOOT 512M
-         this.devices.boot.name = `${installDevice}2` // 'boot' 
+         this.devices.boot.name = `${installDevice}${p}2` // 'boot' 
          this.devices.boot.fsType = 'ext4'
          this.devices.boot.mountPoint = '/boot'
 
          // SWAP 8G
-         redraw(<Install message={`Formatting LUKS ${installDevice}3`} percent={0} />)
-         let crytoSwap = await exec(`cryptsetup -y -v luksFormat --type luks2 ${installDevice}3`, echoYes)
+         redraw(<Install message={`Formatting LUKS ${installDevice}${p}3`} percent={0} />)
+         let crytoSwap = await exec(`cryptsetup -y -v luksFormat --type luks2 ${installDevice}${p}3`, echoYes)
          if (crytoSwap.code !== 0) {
             Utils.warning(`Error: ${crytoSwap.code} ${crytoSwap.data}`)
             process.exit(1)
          }
-         redraw(<Install message={`Opening ${installDevice}3 as swap_crypted`} percent={0} />)
-         let crytoSwapOpen = await exec(`cryptsetup luksOpen --type luks2 ${installDevice}3 swap_crypted`, echoYes)
+         redraw(<Install message={`Opening ${installDevice}${p}3 as swap_crypted`} percent={0} />)
+         let crytoSwapOpen = await exec(`cryptsetup luksOpen --type luks2 ${installDevice}${p}3 swap_crypted`, echoYes)
          if (crytoSwapOpen.code !== 0) {
             Utils.warning(`Error: ${crytoSwapOpen.code} ${crytoSwapOpen.data}`)
             process.exit(1)
          }
          this.devices.swap.name = '/dev/mapper/swap_crypted'
-         this.devices.swap.cryptedFrom = `${installDevice}3`
+         this.devices.swap.cryptedFrom = `${installDevice}${p}3`
          this.devices.swap.fsType = 'swap'
          this.devices.swap.mountPoint = 'none'
 
          // ROOT
          redraw(<Install message={`Formatting LUKS ${installDevice}4`} percent={0} />)
-         let crytoRoot = await exec(`cryptsetup -y -v luksFormat --type luks2 ${installDevice}4`, echoYes)
+         let crytoRoot = await exec(`cryptsetup -y -v luksFormat --type luks2 ${installDevice}${p}4`, echoYes)
          if (crytoRoot.code !== 0) {
             Utils.warning(`Error: ${crytoRoot.code} ${crytoRoot.data}`)
             process.exit(1)
          }
-         redraw(<Install message={`Opening ${installDevice}4 as root_crypted`} percent={0} />)
-         let crytoRootOpen = await exec(`cryptsetup luksOpen --type luks2 ${installDevice}4 root_crypted`, echoYes)
+         redraw(<Install message={`Opening ${installDevice}${p}4 as root_crypted`} percent={0} />)
+         let crytoRootOpen = await exec(`cryptsetup luksOpen --type luks2 ${installDevice}${p}4 root_crypted`, echoYes)
          if (crytoRootOpen.code !== 0) {
             Utils.warning(`Error: ${crytoRootOpen.code} ${crytoRootOpen.data}`)
             process.exit(1)
          }
          this.devices.root.name = '/dev/mapper/root_crypted'
-         this.devices.root.cryptedFrom = `${installDevice}4`
+         this.devices.root.cryptedFrom = `${installDevice}${p}4`
          this.devices.root.fsType = 'ext4'
          this.devices.root.mountPoint = '/'
 
