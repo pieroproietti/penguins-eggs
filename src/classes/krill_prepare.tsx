@@ -161,7 +161,12 @@ export default class Krill {
   * PARTITIONS
   */
   async partitions(crypted = false, pve = false): Promise<IPartitions> {
-    let installationDevice = '/dev/sda'
+    const drives = shx.exec('lsblk |grep disk|cut -f 1 "-d "', { silent: true }).stdout.trim().split('\n')
+    const driveList: string[] = []
+    drives.forEach((element: string) => {
+      driveList.push('/dev/' + element)
+    })
+    let installationDevice = driveList[0] // it was just /dev/sda before
     let installationMode = 'standard'
     if (crypted) {
       installationMode = 'full-encrypted'

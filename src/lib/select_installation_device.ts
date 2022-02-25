@@ -10,6 +10,7 @@ export default async function selectInstallationDevice(): Promise<string> {
   })
 
   const questions: Array<Record<string, any>> = [
+    // nvme0n1p1, nvme0n1p2, nvme0n1p3
     {
       type: 'list',
       name: 'installationDevice',
