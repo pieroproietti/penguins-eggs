@@ -15,7 +15,11 @@ import pjson from 'pjson'
 import inquirer from 'inquirer'
 import chalk from 'chalk'
 import Pacman from './pacman'
+// import child_process.spawnSync from 
+
+
 import { green, whiteBright } from 'chalk'
+import { ChildProcess, spawnSync } from 'child_process'
 
 /**
  * Utils: general porpourse utils
@@ -55,16 +59,16 @@ export default class Utils {
    static vmlinuz(): string {
       const cmdline = fs.readFileSync('/proc/cmdline', 'utf8')
       // start = find BOOT_IMAGE 
-      const start = cmdline.search('BOOT_IMAGE=/')+11
+      const start = cmdline.search('BOOT_IMAGE=/') + 11
       // end first space after
       const end = cmdline.substring(start).indexOf(' ')
-      let vmlinux = cmdline.substring(start, start + end )
+      let vmlinux = cmdline.substring(start, start + end)
 
       // btrfs
       if (vmlinux.indexOf('@') > 0) {
          vmlinux = vmlinux.substring(vmlinux.indexOf(' ') + 1)
       }
-      
+
       if (!fs.existsSync(vmlinux)) {
          if (fs.existsSync('/boot' + vmlinux)) {
             vmlinux = '/boot' + vmlinux
@@ -744,6 +748,17 @@ unknown target format aarch64-efi
             resolve(JSON.stringify(options))
          })
       })
+   }
+
+
+   /**
+    * 
+    */
+   static async pressKeyToExit(warming = 'Process will end', msg = 'Press a key to exit...') {
+      Utils.warning(warming)
+      console.log(msg)
+      const pressKeyToExit = spawnSync('read _ ', { shell: true, stdio: [0, 1, 2] })
+      process.exit(0)
    }
 
    /**
