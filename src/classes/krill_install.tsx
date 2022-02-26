@@ -1337,7 +1337,7 @@ adduser ${name} \
 
          this.devices.efi.name = `none`
 
-         this.devices.boot.name = `${installDevice}1`
+         this.devices.boot.name = `${installDevice}${p}1`
          this.devices.root.fsType = 'ext2'
          this.devices.root.mountPoint = '/boot'
 
@@ -1382,11 +1382,11 @@ adduser ${name} \
          await exec(`lvcreate -l 100%FREE -ndata pve`)
          await exec(`vgchange -a y pve`)
 
-         this.devices.efi.name = `${installDevice}1`
+         this.devices.efi.name = `${installDevice}${p}1`
          this.devices.efi.fsType = 'F 32 -I'
          this.devices.efi.mountPoint = '/boot/efi'
 
-         this.devices.boot.name = `${installDevice}2`
+         this.devices.boot.name = `${installDevice}${p}2`
          this.devices.boot.fsType = 'ext4'
          this.devices.boot.mountPoint = '/boot'
 
