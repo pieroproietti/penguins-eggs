@@ -22,10 +22,8 @@ In all the ways, this are the changements:
 
 
 * partitions module on krill must to correctly display for: SCSI, IDE, SATA, VirtIO block and NVMe
-* when the partisions are made, append a number N to devise: for example: /dev/sda first partition will be /dev/sda1, but in case of NVMe devicese, they will be added in the follow way: /dev/nvme0n1 first partition /dev/nvme0n1p1, second partition /dev/nvme0n1p2 and so on
-* probably I must make corrections on fstab and others things... not sure for now, I can't test that... I use variables, so perhaps can magically fit... but You will see
-
-
+* when the partitions are made, append a number N to device: for example: /dev/sda first partition will be /dev/sda1, but in case of NVMe devicese, they will be added in the follow way: /dev/nvme0n1 first partition /dev/nvme0n1p1, second partition /dev/nvme0n1p2 and so on
+* krill: added support to NVMe and paravirtualizated  disk; /dev/vda, /dev/nvme0n
 
  
 
