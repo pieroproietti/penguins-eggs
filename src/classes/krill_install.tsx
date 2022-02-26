@@ -1229,7 +1229,7 @@ adduser ${name} \
 
          /**
           * ===========================================================================================
-          * UEFI, full-encrypt: working
+          * UEFI, full-encrypt
           * ===========================================================================================
           */
          await exec(`parted --script ${installDevice} mklabel gpt`, echo)
@@ -1249,6 +1249,18 @@ adduser ${name} \
          this.devices.boot.name = `${installDevice}${p}2` // 'boot' 
          this.devices.boot.fsType = 'ext4'
          this.devices.boot.mountPoint = '/boot'
+
+         /**
+          *  cryptsetup return codes are: 
+          * 
+          * 1 wrong parameters, 
+          * 2 no permission (bad passphrase), 
+          * 3 out of memory, 
+          * 4 wrong device specified, 
+          * 5 device already exists or device is busy.
+          * 
+          * sometime due scarce memory 2GB, we can have the process killed
+          */
 
          // SWAP 8G
          redraw(<Install message={`Formatting LUKS ${installDevice}${p}3`} percent={0} />)
