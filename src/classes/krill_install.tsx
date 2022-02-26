@@ -1086,16 +1086,18 @@ adduser ${name} \
       let retVal = false
 
       const installDevice = this.partitions.installationDevice
+
+      /**
+       * Support for NVMe 
+       * 
+       * /dev/sda1 = /dev/nvme0n1p1
+       */
       let p = ''
       if (installDevice.includes('nvme')) {
          p = 'p'
       }
-      // /dev/nvme0  /dev/nvme0n1  /dev/nvme0n1p1  /dev/nvme0n1p2  /dev/nvme0n1p3  /dev/nvme0n1p4  /dev/nvme0n1p5  /dev/nvme0n1p6  /dev/nvme0n1p7
-                     // /dev/sda    /dev/sda1      /dev/sda2       /dev/sda3        /dev/sda4
-
 
       const installMode = this.partitions.installationMode
-
       await exec(`wipefs -a ${installDevice} ${this.toNull}`, echo)
 
       if (installMode === 'standard' && !this.efi) {
@@ -1184,7 +1186,6 @@ adduser ${name} \
          this.devices.root.fsType = 'ext4'
          this.devices.root.mountPoint = '/'
 
-
          // BOOT/DATA/EFI
          this.devices.data.name = `none`
          this.devices.efi.name = `none`
@@ -1268,7 +1269,7 @@ adduser ${name} \
          this.devices.swap.mountPoint = 'none'
 
          // ROOT
-         redraw(<Install message={`Formatting LUKS ${installDevice}4`} percent={0} />)
+         redraw(<Install message={`Formatting LUKS ${installDevice}${p}4`} percent={0} />)
          let crytoRoot = await exec(`cryptsetup -y -v luksFormat --type luks2 ${installDevice}${p}4`, echoYes)
          if (crytoRoot.code !== 0) {
             Utils.warning(`Error: ${crytoRoot.code} ${crytoRoot.data}`)

@@ -18,6 +18,9 @@ You can follow the project also consulting the [commit history](https://github.c
 ## Changelog
 Versions are listed on reverse order, the first is the last one.
 
+### eggs-9.0.27-1
+* krill: added support to NVMe and paravirtualizated  disk; /dev/vda, /dev/nvme0n
+
 ### eggs-9.0.26-1
 * added theme TeLOS, rewrite Utils.vmlinuz() to get get boot image from  /proc/cmdline
 
