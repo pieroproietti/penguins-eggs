@@ -754,11 +754,18 @@ unknown target format aarch64-efi
    /**
     * 
     */
-   static async pressKeyToExit(warming = 'Process will end', msg = 'Press a key to exit...') {
+   static async pressKeyToExit(warming = 'Process will end', canContinue = false) {
       Utils.warning(warming)
+      let msg = 'Press a key to exit...'
+      if (canContinue) {
+         msg = 'Press a key to continue...'
+      }
+      
       console.log(msg)
       const pressKeyToExit = spawnSync('read _ ', { shell: true, stdio: [0, 1, 2] })
-      process.exit(0)
+      if (!canContinue) {
+         process.exit(0)
+      }
    }
 
    /**

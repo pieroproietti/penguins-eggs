@@ -406,7 +406,8 @@ export default class Hatching {
          } catch (error) {
             message += JSON.stringify(error)
             redraw(<Install message={message} percent={percent} />)
-            await Utils.pressKeyToExit(message)
+            let canContinue = true
+            await Utils.pressKeyToExit(message, canContinue)
          }
 
 
@@ -592,11 +593,12 @@ adduser ${name} \
     */
    async delLiveUser() {
       const echo = { echo: false, ignore: false }
+      const echoYes = { echo: false, ignore: true }
 
       if (Utils.isLive()) {
          const user: string = this.settings.config.user_opt
          const cmd = `chroot ${this.installTarget} deluser --remove-home ${user}`
-         await exec(cmd, echo)
+         await exec(cmd, echoYes)
       }
    }
 
