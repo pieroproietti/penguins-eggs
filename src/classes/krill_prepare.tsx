@@ -52,13 +52,19 @@ export default class Krill {
    * @param cryped 
    */
   async prepare(cryped = false, pve = false, verbose = false) {
+    /**
+     * Check for disk presence
+     */
+    const drives = shx.exec('lsblk |grep disk|cut -f 1 "-d "', { silent: true }).stdout.trim().split('\n')
+    if (drives[0] === '') {
+      await Utils.pressKeyToExit(`No disk to install the system in this machine.\nkrill installer refuses to continue`)
+    }
 
     /**
-     * check lvm2
+     * check for lvm2
      */
     if (await this.pvExist()) {
-      Utils.warning(`There is a lvm2 volume in the system, remove it manually before installation.\nkrill installer refuses to continue`)
-      process.exit(0)
+      await Utils.pressKeyToExit(`There is a lvm2 volume in the system, remove it manually before installation.\nkrill installer refuses to continue`)
     }
 
     const oWelcome = await this.welcome()
@@ -77,7 +83,7 @@ export default class Krill {
    * WELCOME
    */
   async welcome(): Promise<IWelcome> {
-    
+
     let language = shx.exec(`grep LANG= < /etc/default/locale| cut -f2 -d=|cut -f1 -d.`, { silent: true }).stdout.trim()
     let welcomeElem: JSX.Element
     while (true) {
