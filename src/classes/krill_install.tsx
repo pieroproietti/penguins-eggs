@@ -55,7 +55,8 @@ import cliAutologin = require('../lib/cli-autologin')
 import Pacman from './pacman';
 import { installer } from './incubation/installer'
 import Xdg from './xdg';
-import Distro from './distro';
+import Distro from './distro'
+import Systemctl from './systemctl'
 
 import { IInstaller, IDevices, IDevice } from '../interfaces'
 import { ICalamaresModule, ILocation, IKeyboard, IPartitions, IUsers } from '../interfaces/i-krill'
@@ -159,6 +160,12 @@ export default class Hatching {
       this.verbose = verbose
 
       await this.settings.load()
+
+      // systemctl is-enabled
+      const systemdctl = new Systemctl()
+      if (await systemdctl.isEnabled('udisks2')) {
+         await exec(`chroot ${this.settings.work_dir.merged} systemctl stop udisks2`)
+      }      
 
       // partition
       let percent = 0.0
