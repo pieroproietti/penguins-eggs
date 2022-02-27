@@ -147,7 +147,6 @@ export default class Hatching {
       this.luksFile = `/run/live/medium/live/${this.luksName}`
       this.luksDevice = `/dev/mapper/${this.luksName}`
       this.luksMountpoint = `/mnt`
-
    }
 
    /**
@@ -163,9 +162,10 @@ export default class Hatching {
 
       // systemctl is-enabled
       const systemdctl = new Systemctl()
-      if (await systemdctl.isEnabled('udisks2')) {
-         await exec(`chroot ${this.settings.work_dir.merged} systemctl stop udisks2`)
-      }      
+      if (await systemdctl.isEnabled('udisks2.service')) {
+         systemdctl.disable('udisks2.service')
+         systemdctl.stop('udisks2.service')
+      }
 
       // partition
       let percent = 0.0
@@ -178,9 +178,7 @@ export default class Hatching {
          redraw(<Install message={message} percent={percent} />)
          isPartitioned = await this.partition()
       } catch (error) {
-         message += JSON.stringify(error)
-         redraw(<Install message={message} percent={percent} />)
-         await Utils.pressKeyToExit(message)
+         await Utils.pressKeyToExit(JSON.stringify(error))
       }
 
       if (isPartitioned) {
@@ -192,10 +190,7 @@ export default class Hatching {
             redraw(<Install message={message} percent={percent} />)
             await this.mkfs()
          } catch (error) {
-            message += JSON.stringify(error)
-            redraw(<Install message={message} percent={percent} />)
-            let canContinue = true
-            await Utils.pressKeyToExit(message, canContinue)
+            await Utils.pressKeyToExit(JSON.stringify(error))
          }
 
          // mountFs
@@ -205,10 +200,7 @@ export default class Hatching {
             redraw(<Install message={message} percent={percent} />)
             await this.mountFs()
          } catch (error) {
-            message += JSON.stringify(error)
-            redraw(<Install message={message} percent={percent} />)
-            let canContinue = true
-            await Utils.pressKeyToExit(message, canContinue)
+            await Utils.pressKeyToExit(JSON.stringify(error))
          }
 
          // mountVfs
@@ -218,10 +210,7 @@ export default class Hatching {
             redraw(<Install message={message} percent={percent} />)
             await this.mountVfs()
          } catch (error) {
-            message += JSON.stringify(error)
-            redraw(<Install message={message} percent={percent} />)
-            let canContinue = true
-            await Utils.pressKeyToExit(message, canContinue)
+            await Utils.pressKeyToExit(JSON.stringify(error))
          }
 
          // unpackfs
@@ -231,10 +220,7 @@ export default class Hatching {
             redraw(<Install message={message} percent={percent} spinner={true} />)
             await this.unpackfs()
          } catch (error) {
-            message += JSON.stringify(error)
-            redraw(<Install message={message} percent={percent} />)
-            let canContinue = true
-            await Utils.pressKeyToExit(message, canContinue)
+            await Utils.pressKeyToExit(JSON.stringify(error))
          }
 
          /**
@@ -249,10 +235,7 @@ export default class Hatching {
                redraw(<Install message={message} percent={percent} spinner={true} />)
                await exec('eggs syncfrom --rootdir /tmp/calamares-krill-root/')
             } catch (error) {
-               message += JSON.stringify(error)
-               redraw(<Install message={message} percent={percent} />)
-               let canContinue = true
-               await Utils.pressKeyToExit(message, canContinue)
+               await Utils.pressKeyToExit(JSON.stringify(error))
             }
          }
 
@@ -263,10 +246,7 @@ export default class Hatching {
             redraw(<Install message={message} percent={percent} spinner={true} />)
             await this.execCalamaresModule('sources-yolk')
          } catch (error) {
-            message += JSON.stringify(error)
-            redraw(<Install message={message} percent={percent} />)
-            let canContinue = true
-            await Utils.pressKeyToExit(message, canContinue)
+            await Utils.pressKeyToExit(JSON.stringify(error))
          }
 
          // machineid
@@ -276,10 +256,7 @@ export default class Hatching {
             redraw(<Install message={message} percent={percent} spinner={true} />)
             await this.machineId()
          } catch (error) {
-            message += JSON.stringify(error)
-            redraw(<Install message={message} percent={percent} />)
-            let canContinue = true
-            await Utils.pressKeyToExit(message, canContinue)
+            await Utils.pressKeyToExit(JSON.stringify(error))
          }
 
          // timezone
@@ -289,10 +266,7 @@ export default class Hatching {
             redraw(<Install message={message} percent={percent} />)
             await this.setTimezone()
          } catch (error) {
-            message += JSON.stringify(error)
-            redraw(<Install message={message} percent={percent} />)
-            let canContinue = true
-            await Utils.pressKeyToExit(message, canContinue)
+            await Utils.pressKeyToExit(JSON.stringify(error))
          }
 
 
@@ -303,10 +277,7 @@ export default class Hatching {
             redraw(<Install message={message} percent={percent} />)
             await this.fstab(this.partitions.installationDevice)
          } catch (error) {
-            message += JSON.stringify(error)
-            redraw(<Install message={message} percent={percent} />)
-            let canContinue = true
-            await Utils.pressKeyToExit(message, canContinue)
+            await Utils.pressKeyToExit(JSON.stringify(error))
          }
 
          // keyboard
@@ -315,10 +286,7 @@ export default class Hatching {
          try {
             this.setKeyboard()
          } catch (error) {
-            message += JSON.stringify(error)
-            redraw(<Install message={message} percent={percent} />)
-            let canContinue = true
-            await Utils.pressKeyToExit(message, canContinue)
+            await Utils.pressKeyToExit(JSON.stringify(error))
          }
 
          // networkcfg
@@ -327,10 +295,7 @@ export default class Hatching {
          try {
             this.networkcfg()
          } catch (error) {
-            message += JSON.stringify(error)
-            redraw(<Install message={message} percent={percent} />)
-            let canContinue = true
-            await Utils.pressKeyToExit(message, canContinue)
+            await Utils.pressKeyToExit(JSON.stringify(error))
          }
 
          // hostname
@@ -340,10 +305,7 @@ export default class Hatching {
             redraw(<Install message={message} percent={percent} />)
             await this.hostname()
          } catch (error) {
-            message += JSON.stringify(error)
-            redraw(<Install message={message} percent={percent} />)
-            let canContinue = true
-            await Utils.pressKeyToExit(message, canContinue)
+            await Utils.pressKeyToExit(JSON.stringify(error))
          }
 
          // hosts
@@ -353,10 +315,7 @@ export default class Hatching {
             redraw(<Install message={message} percent={percent} />)
             await this.hosts()
          } catch (error) {
-            message += JSON.stringify(error)
-            redraw(<Install message={message} percent={percent} />)
-            let canContinue = true
-            await Utils.pressKeyToExit(message, canContinue)
+            await Utils.pressKeyToExit(JSON.stringify(error))
          }
 
          // bootloader-config
@@ -366,10 +325,7 @@ export default class Hatching {
             redraw(<Install message={message} percent={percent} />)
             await this.execCalamaresModule('bootloader-config')
          } catch (error) {
-            message += JSON.stringify(error)
-            redraw(<Install message={message} percent={percent} />)
-            let canContinue = true
-            await Utils.pressKeyToExit(message, canContinue)
+            await Utils.pressKeyToExit(JSON.stringify(error))
          }
 
          // grubcfg
@@ -379,10 +335,7 @@ export default class Hatching {
             redraw(<Install message={message} percent={percent} />)
             await this.grubcfg()
          } catch (error) {
-            message += JSON.stringify(error)
-            redraw(<Install message={message} percent={percent} />)
-            let canContinue = true
-            await Utils.pressKeyToExit(message, canContinue)
+            await Utils.pressKeyToExit(JSON.stringify(error))
          }
 
          // bootloader
@@ -392,10 +345,7 @@ export default class Hatching {
             redraw(<Install message={message} percent={percent} />)
             await this.bootloader()
          } catch (error) {
-            message += JSON.stringify(error)
-            redraw(<Install message={message} percent={percent} />)
-            let canContinue = true
-            await Utils.pressKeyToExit(message, canContinue)
+            await Utils.pressKeyToExit(JSON.stringify(error))
          }
 
          // initramfsCfg
@@ -405,10 +355,7 @@ export default class Hatching {
             redraw(<Install message={message} percent={percent} />)
             this.initramfsCfg(this.partitions.installationDevice)
          } catch (error) {
-            message += JSON.stringify(error)
-            redraw(<Install message={message} percent={percent} />)
-            let canContinue = true
-            await Utils.pressKeyToExit(message, canContinue)
+            await Utils.pressKeyToExit(JSON.stringify(error))
          }
 
          // initramfs
@@ -418,10 +365,7 @@ export default class Hatching {
             redraw(<Install message={message} percent={percent} />)
             await this.initramfs()
          } catch (error) {
-            message += JSON.stringify(error)
-            redraw(<Install message={message} percent={percent} />)
-            let canContinue = true
-            await Utils.pressKeyToExit(message, canContinue)
+            await Utils.pressKeyToExit(JSON.stringify(error))
          }
 
          // delLiveUser
@@ -431,10 +375,7 @@ export default class Hatching {
             redraw(<Install message={message} percent={percent} />)
             await this.delLiveUser()
          } catch (error) {
-            message += JSON.stringify(error)
-            redraw(<Install message={message} percent={percent} />)
-            let canContinue = true
-            await Utils.pressKeyToExit(message, canContinue)
+            await Utils.pressKeyToExit(JSON.stringify(error))
          }
 
 
@@ -450,10 +391,7 @@ export default class Hatching {
                redraw(<Install message={message} percent={percent} />)
                await this.addUser(this.users.name, this.users.password, this.users.fullname, '', '', '')
             } catch (error) {
-               message += JSON.stringify(error)
-               redraw(<Install message={message} percent={percent} />)
-               let canContinue = true
-               await Utils.pressKeyToExit(message, canContinue)
+               await Utils.pressKeyToExit(JSON.stringify(error))
             }
 
             // changePassword
@@ -463,10 +401,7 @@ export default class Hatching {
                redraw(<Install message={message} percent={percent} />)
                await this.changePassword('root', this.users.rootPassword)
             } catch (error) {
-               message += JSON.stringify(error)
-               redraw(<Install message={message} percent={percent} />)
-               let canContinue = true
-               await Utils.pressKeyToExit(message, canContinue)
+               await Utils.pressKeyToExit(JSON.stringify(error))
             }
          }
 
@@ -479,10 +414,7 @@ export default class Hatching {
                await Xdg.autologin(Utils.getPrimaryUser(), this.users.name, this.installTarget)
                redraw(<Install message={message} percent={percent} />)
             } catch (error) {
-               message += JSON.stringify(error)
-               redraw(<Install message={message} percent={percent} />)
-               let canContinue = true
-               await Utils.pressKeyToExit(message, canContinue)
+               await Utils.pressKeyToExit(JSON.stringify(error))
             }
          } else { // autologin CLI remove DEFAULT
             message = "autologin CLI"
@@ -491,10 +423,7 @@ export default class Hatching {
                redraw(<Install message={message} percent={percent} />)
                await cliAutologin.remove(this.installTarget)
             } catch (error) {
-               message += JSON.stringify(error)
-               redraw(<Install message={message} percent={percent} />)
-               let canContinue = true
-               await Utils.pressKeyToExit(message, canContinue)
+               await Utils.pressKeyToExit(JSON.stringify(error))
             }
          }
 
@@ -510,10 +439,7 @@ export default class Hatching {
             redraw(<Install message={message} percent={percent} />)
             await this.removeInstaller()
          } catch (error) {
-            message += JSON.stringify(error)
-            redraw(<Install message={message} percent={percent} />)
-            let canContinue = true
-            await Utils.pressKeyToExit(message, canContinue)
+            await Utils.pressKeyToExit(JSON.stringify(error))
          }
 
          // sourcesYolkUmount
@@ -523,10 +449,7 @@ export default class Hatching {
             redraw(<Install message={message} percent={percent} />)
             await this.execCalamaresModule('sources-yolk-unmount')
          } catch (error) {
-            message += JSON.stringify(error)
-            redraw(<Install message={message} percent={percent} />)
-            let canContinue = true
-            await Utils.pressKeyToExit(message, canContinue)
+            await Utils.pressKeyToExit(JSON.stringify(error))
          }
 
          // umountVfs
@@ -536,10 +459,7 @@ export default class Hatching {
             redraw(<Install message={message} percent={percent} />)
             await this.umountVfs()
          } catch (error) {
-            message += JSON.stringify(error)
-            redraw(<Install message={message} percent={percent} />)
-            let canContinue = true
-            await Utils.pressKeyToExit(message, canContinue)
+            await Utils.pressKeyToExit(JSON.stringify(error))
          }
 
          // umount
@@ -549,10 +469,7 @@ export default class Hatching {
             redraw(<Install message={message} percent={percent} />)
             await this.umountFs()
          } catch (error) {
-            message += JSON.stringify(error)
-            redraw(<Install message={message} percent={percent} />)
-            let canContinue = true
-            await Utils.pressKeyToExit(message, canContinue)
+            await Utils.pressKeyToExit(JSON.stringify(error))
          }
 
          // finished
@@ -562,10 +479,7 @@ export default class Hatching {
             redraw(<Install message={message} percent={percent} />)
             await this.finished()
          } catch (error) {
-            message += JSON.stringify(error)
-            redraw(<Install message={message} percent={percent} />)
-            let canContinue = true
-            await Utils.pressKeyToExit(message, canContinue)
+            await Utils.pressKeyToExit(JSON.stringify(error))
          }
       }
    }
@@ -1656,7 +1570,7 @@ adduser ${name} \
     */
    async finished() {
       redraw(<Finished installationDevice={this.partitions.installationDevice} hostName={this.users.hostname} userName={this.users.name} />)
-      Utils.pressKeyToExit('Press a key to reboot...', true)
+      Utils.pressKeyToExit('Press a key to reboot...')
       shx.exec('reboot')
    }
 
