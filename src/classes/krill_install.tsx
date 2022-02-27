@@ -161,11 +161,8 @@ export default class Hatching {
       await this.settings.load()
 
       // systemctl is-enabled
-      const systemdctl = new Systemctl()
-      if (await systemdctl.isEnabled('udisks2.service')) {
-         systemdctl.disable('udisks2.service')
-         systemdctl.stop('udisks2.service')
-      }
+      await exec('systemctl stop udisks2.service')
+      await exec('systemctl disable udisks2.service')
 
       // partition
       let percent = 0.0
@@ -490,7 +487,7 @@ export default class Hatching {
     * setTimezone
     */
    private async setTimezone() {
-      const echo = { echo: false, ignore: false }
+      const echo = Utils.setEcho(this.verbose)
 
       if (fs.existsSync('/etc/localtime')) {
          const cmd = `chroot ${this.installTarget} unlink /etc/localtime`
@@ -510,7 +507,7 @@ export default class Hatching {
     * @param homePhone
     */
    private async addUser(name = 'live', password = 'evolution', fullName = '', roomNumber = '', workPhone = '', homePhone = ''): Promise<void> {
-      const echo = { echo: false, ignore: false }
+      const echo = Utils.setEcho(this.verbose)
 
       const cmd = `chroot ${this.installTarget} \
 adduser ${name} \
@@ -542,7 +539,7 @@ adduser ${name} \
     * va corretto con users.conf di calamares
     */
    async delLiveUser() {
-      const echo = { echo: false, ignore: false }
+      const echo = Utils.setEcho(this.verbose)
       const echoYes = { echo: false, ignore: true }
 
       if (Utils.isLive()) {
@@ -588,7 +585,7 @@ adduser ${name} \
     * initramfs()
     */
    private async initramfs() {
-      const echo = { echo: false, ignore: false }
+      const echo = Utils.setEcho(this.verbose)
       await exec('chroot ' + this.installTarget + ' mkinitramfs -o ~/initrd.img-$(uname -r)', echo)
       await exec('chroot ' + this.installTarget + ' mv ~/initrd.img-$(uname -r) /boot', echo)
    }
@@ -689,7 +686,7 @@ adduser ${name} \
       Utils.write(file, content)
 
       // lancio setupcon in chroot per salvare la tastiera
-      const echo = { echo: false, ignore: false }
+      const echo = Utils.setEcho(this.verbose)
       const cmd = 'chroot ' + this.installTarget + ' ' + 'setupcon ' + this.toNull
       try {
          await exec(cmd, echo)
@@ -737,7 +734,7 @@ adduser ${name} \
     * hostname
     */
    private async hostname() {
-      const echo = { echo: false, ignore: false }
+      const echo = Utils.setEcho(this.verbose)
 
       const file = this.installTarget + '/etc/hostname'
       const text = this.users.hostname
@@ -934,7 +931,7 @@ adduser ${name} \
     * mount
     */
    private async mountFs(): Promise<boolean> {
-      const echo = { echo: false, ignore: false }
+      const echo = { echo: false, ignore: this.verbose }
 
       if (!fs.existsSync(this.installTarget)) {
          await exec(`mkdir ${this.installTarget}` + this.toNull, echo)
@@ -973,7 +970,7 @@ adduser ${name} \
     * umountFs
     */
    private async umountFs(): Promise<boolean> {
-      const echo = { echo: false, ignore: false }
+      const echo = Utils.setEcho(this.verbose)
 
       // efi
       if (this.efi) {
@@ -1022,7 +1019,7 @@ adduser ${name} \
     * 
     */
    private async umountVfs() {
-      const echo = { echo: false, ignore: false }
+      const echo = Utils.setEcho(this.verbose)
 
       await this.umount(`${this.installTarget}/dev/pts`)
       await this.umount(`${this.installTarget}/dev`)
@@ -1040,7 +1037,7 @@ adduser ${name} \
     * @param mountpoint 
     */
    private async umount(mountPoint = '') {
-      const echo = { echo: false, ignore: false }
+      const echo = Utils.setEcho(this.verbose)
 
       let message = 'umount: ' + mountPoint
       if (Utils.isMountpoint(mountPoint)) {
@@ -1428,7 +1425,7 @@ adduser ${name} \
     * @param name 
     */
    private async execCalamaresModule(name: string) {
-      const echo = { echo: false, ignore: false }
+      const echo = Utils.setEcho(this.verbose)
 
       const moduleName = this.installer.multiarchModules + name + '/module.desc'
       if (fs.existsSync(moduleName)) {
@@ -1454,7 +1451,7 @@ adduser ${name} \
     * 
     */
    async bootloaderConfigUbuntu() {
-      const echo = { echo: false, ignore: false }
+      const echo = Utils.setEcho(this.verbose)
 
       let cmd = ''
       try {
