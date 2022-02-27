@@ -159,12 +159,26 @@ export default class Hatching {
 
       await this.settings.load()
 
+
       // partition
       let percent = 0.0
       let message = ""
       let isPartitioned = false
-      message = "Creating partitions"
+
+      // cleaning partition
+      message = "Cleaning device"
       percent = 0.00
+      try {
+         redraw(<Install message={message} percent={percent} />)
+         await exec(`sfdisk --delete ${this.partitions.installationDevice}`)
+      } catch (error) {
+         message += JSON.stringify(error)
+         redraw(<Install message={message} percent={percent} />)
+         await Utils.pressKeyToExit(message)
+      }
+
+      message = "Creating partitions"
+      percent = 0.01
       try {
          redraw(<Install message={message} percent={percent} />)
          isPartitioned = await this.partition()
@@ -178,7 +192,7 @@ export default class Hatching {
 
          // formatting
          message = "Formatting file system "
-         percent = 0.01
+         percent = 0.02
          try {
             redraw(<Install message={message} percent={percent} />)
             await this.mkfs()
@@ -244,7 +258,7 @@ export default class Hatching {
                redraw(<Install message={message} percent={percent} />)
                let canContinue = true
                await Utils.pressKeyToExit(message, canContinue)
-               }
+            }
          }
 
          // sources-yolk
@@ -445,7 +459,7 @@ export default class Hatching {
                redraw(<Install message={message} percent={percent} />)
                let canContinue = true
                await Utils.pressKeyToExit(message, canContinue)
-               }
+            }
 
             // changePassword
             message = "adding user password "
@@ -458,7 +472,7 @@ export default class Hatching {
                redraw(<Install message={message} percent={percent} />)
                let canContinue = true
                await Utils.pressKeyToExit(message, canContinue)
-               }
+            }
          }
 
 
@@ -474,7 +488,7 @@ export default class Hatching {
                redraw(<Install message={message} percent={percent} />)
                let canContinue = true
                await Utils.pressKeyToExit(message, canContinue)
-               }
+            }
          } else { // autologin CLI remove DEFAULT
             message = "autologin CLI"
             percent = 0.80
@@ -486,7 +500,7 @@ export default class Hatching {
                redraw(<Install message={message} percent={percent} />)
                let canContinue = true
                await Utils.pressKeyToExit(message, canContinue)
-               }
+            }
          }
 
          // cleanup
@@ -1105,6 +1119,8 @@ adduser ${name} \
       }
    }
 
+
+
    /**
     * 
     */
@@ -1618,7 +1634,8 @@ adduser ${name} \
     */
    async finished() {
       redraw(<Finished installationDevice={this.partitions.installationDevice} hostName={this.users.hostname} userName={this.users.name} />)
-      await Utils.pressKeyToExit('Press a key to reboot')
+      let canContinue = true
+      await Utils.pressKeyToExit('Press a key to reboot', canContinue)
       shx.exec('reboot')
    }
 

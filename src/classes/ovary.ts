@@ -401,6 +401,11 @@ export default class Ovary {
     await exec(`touch ${this.settings.work_dir.merged}/etc/fstab`, echo)
 
     /**
+     * Remove crypttab
+     */
+    await exec(`rm ${this.settings.work_dir.merged}/etc/crypttab`)
+
+    /**
      * Blank out systemd machine id. If it does not exist, systemd-journald
      * will fail, but if it exists and is empty, systemd will automatically
      * set up a new unique ID.
@@ -734,10 +739,11 @@ export default class Ovary {
 
     /**
      * exclude all the accurence of cryptdisks in rc0.d, etc
+     * Reintrodotto per problemi con TPM mette un avviso e non risolve
      */
     // let fexcludes = ["/boot/efi/EFI", "/etc/fstab", "/etc/mtab", "/etc/udev/rules.d/70-persistent-cd.rules", "/etc/udev/rules.d/70-persistent-net.rules"]
-    //  for (let i in fexcludes) {
-    //   this.addRemoveExclusion(true, fexcludes[i])
+    //   for (let i in fexcludes) {
+    //    this.addRemoveExclusion(true, fexcludes[i])
     // }
 
     /**
@@ -1455,7 +1461,7 @@ export default class Ovary {
 
     const grubDest = `${isoDir}/boot/grub/grub.cfg`
     const template = fs.readFileSync(grubTemplate, 'utf8')
-    
+
     // let rmModules = ''
     // if (this.settings.distro.versionLike === 'focal') {
     // rmModules = 'rmmod tpm'
