@@ -951,7 +951,8 @@ adduser ${name} \
     * mkfs
     */
    private async mkfs(): Promise<boolean> {
-      const echo = { echo: false, ignore: false }
+      // sto mostrando l'errore
+      const echo = Utils.setEcho(true)
 
       const result = true
 
@@ -965,11 +966,25 @@ adduser ${name} \
             this.devices.boot.fsType = `ext2`
             this.devices.boot.mountPoint = '/boot'
          }
-         await exec('mke2fs -Ft ' + this.devices.boot.fsType + ' ' + this.devices.boot.name + this.toNull, echo)
+         await this.ifMountedDismount(this.devices.boot.name)
+         try {
+            await exec('mke2fs -Ft ' + this.devices.boot.fsType + ' ' + this.devices.boot.name + this.toNull, echo)
+         } catch (error) {
+            let message = `Error formatting: ${this.devices.boot.name}`
+            let canContinue = true
+            await Utils.pressKeyToExit(message, canContinue)
+         }
       }
 
       if (this.devices.root.name !== 'none') {
-         await exec('mke2fs -Ft ' + this.devices.root.fsType + ' ' + this.devices.root.name + this.toNull, echo)
+         await this.ifMountedDismount(this.devices.root.name)
+         try {
+            await exec('mke2fs -Ft ' + this.devices.root.fsType + ' ' + this.devices.root.name + this.toNull, echo)
+         } catch (error) {
+            let message = `Error formatting: ${this.devices.root.name}`
+            let canContinue = true
+            await Utils.pressKeyToExit(message, canContinue)
+         }
       }
 
       if (this.devices.data.name !== 'none') {
@@ -980,6 +995,18 @@ adduser ${name} \
          await exec('mkswap ' + this.devices.swap.name + this.toNull, echo)
       }
       return result
+   }
+
+
+   /**
+    * 
+    * @param device 
+    */
+   async ifMountedDismount(device = '') {
+      if ((await exec(`findmnt -rno SOURCE ${device}`)).data.trim() === device) {
+         await exec(`umount ${device}`)
+         await exec('sleep 1')
+      }
    }
 
    /**
@@ -1131,7 +1158,7 @@ adduser ${name} \
       }
 
       const installMode = this.partitions.installationMode
-      await exec(`wipefs -a ${installDevice} ${this.toNull}`, echo)
+      // await exec(`wipefs -a ${installDevice} ${this.toNull}`, echo)
 
       if (installMode === 'standard' && !this.efi) {
 
@@ -1622,8 +1649,7 @@ adduser ${name} \
     */
    async finished() {
       redraw(<Finished installationDevice={this.partitions.installationDevice} hostName={this.users.hostname} userName={this.users.name} />)
-      
-      Utils.pressKeyToExit('Press a key to reboot...')
+      Utils.pressKeyToExit('Press a key to reboot...', true)
       shx.exec('reboot')
    }
 
