@@ -403,7 +403,8 @@ export default class Ovary {
     /**
      * Remove crypttab
      */
-    await exec(`rm ${this.settings.work_dir.merged}/etc/crypttab`)
+    await exec(`rm ${this.settings.work_dir.merged}/etc/crypttab`, echo)
+    await exec(`touch ${this.settings.work_dir.merged}/etc/crypttab`, echo)
 
     /**
      * Blank out systemd machine id. If it does not exist, systemd-journald
@@ -741,10 +742,10 @@ export default class Ovary {
      * exclude all the accurence of cryptdisks in rc0.d, etc
      * Reintrodotto per problemi con TPM mette un avviso e non risolve
      */
-    // let fexcludes = ["/boot/efi/EFI", "/etc/fstab", "/etc/mtab", "/etc/udev/rules.d/70-persistent-cd.rules", "/etc/udev/rules.d/70-persistent-net.rules"]
-    //   for (let i in fexcludes) {
-    //    this.addRemoveExclusion(true, fexcludes[i])
-    // }
+    let fexcludes = ["/boot/efi/EFI", "/etc/fstab", "/etc/mtab", "/etc/udev/rules.d/70-persistent-cd.rules", "/etc/udev/rules.d/70-persistent-net.rules"]
+       for (let i in fexcludes) {
+       this.addRemoveExclusion(true, fexcludes[i])
+    }
 
     /**
      * Non sò che fa, ma sicuro non serve per archlinux
