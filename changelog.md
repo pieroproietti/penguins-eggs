@@ -19,7 +19,7 @@ You can follow the project also consulting the [commit history](https://github.c
 Versions are listed on reverse order, the first is the last one.
 
 ### eggs-9.0.28-1
-* ovary: removed /etc/crypttab from squashfs
+* ovary: exclude all the accurence of cryptdisks in rc0.d, etc; removed and clean /etc/crypttab on iso
 
 ### eggs-9.0.27-1
 * krill: added check if not exist disk
