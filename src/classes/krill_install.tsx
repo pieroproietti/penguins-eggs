@@ -62,6 +62,7 @@ import { ICalamaresModule, ILocation, IKeyboard, IPartitions, IUsers } from '../
 import { ChildProcess, execSync } from 'child_process'
 import { exec } from '../lib/utils'
 
+
 /**
  * hatching: installazione o cova!!!
  */
@@ -1621,8 +1622,8 @@ adduser ${name} \
     */
    async finished() {
       redraw(<Finished installationDevice={this.partitions.installationDevice} hostName={this.users.hostname} userName={this.users.name} />)
-      let canContinue = true
-      await Utils.pressKeyToExit('Press a key to reboot', canContinue)
+      
+      Utils.pressKeyToExit('Press a key to reboot...')
       shx.exec('reboot')
    }
 
