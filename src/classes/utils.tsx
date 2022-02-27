@@ -751,7 +751,7 @@ unknown target format aarch64-efi
    /**
     * 
     */
-   static async pressKeyToExit(warming = 'Process will end', canContinue = false) {
+   static async pressKeyToExit(warming = 'Process will end', canContinue = true) {
       Utils.warning(warming)
       let msg = 'Press a key to exit...'
       if (canContinue) {
