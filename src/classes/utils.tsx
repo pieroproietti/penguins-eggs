@@ -15,9 +15,6 @@ import pjson from 'pjson'
 import inquirer from 'inquirer'
 import chalk from 'chalk'
 import Pacman from './pacman'
-// import child_process.spawnSync from 
-
-
 import { green, whiteBright } from 'chalk'
 import { ChildProcess, spawnSync } from 'child_process'
 
