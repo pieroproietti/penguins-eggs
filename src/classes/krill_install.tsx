@@ -159,23 +159,10 @@ export default class Hatching {
 
       await this.settings.load()
 
-
       // partition
       let percent = 0.0
       let message = ""
       let isPartitioned = false
-
-      // cleaning partition
-      message = "Cleaning device"
-      percent = 0.00
-      try {
-         redraw(<Install message={message} percent={percent} />)
-         await exec(`sfdisk --delete ${this.partitions.installationDevice}`)
-      } catch (error) {
-         message += JSON.stringify(error)
-         redraw(<Install message={message} percent={percent} />)
-         await Utils.pressKeyToExit(message)
-      }
 
       message = "Creating partitions"
       percent = 0.01
