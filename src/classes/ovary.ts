@@ -401,10 +401,12 @@ export default class Ovary {
     await exec(`touch ${this.settings.work_dir.merged}/etc/fstab`, echo)
 
     /**
-     * Remove crypttab
+     * Remove crypttab if exists
      */
-    await exec(`rm ${this.settings.work_dir.merged}/etc/crypttab`, echo)
-    await exec(`touch ${this.settings.work_dir.merged}/etc/crypttab`, echo)
+    if (fs.existsSync(`${this.settings.work_dir.merged}/etc/crypttab`)) {
+      await exec(`rm ${this.settings.work_dir.merged}/etc/crypttab`, echo)
+      await exec(`touch ${this.settings.work_dir.merged}/etc/crypttab`, echo)
+    }
 
     /**
      * Blank out systemd machine id. If it does not exist, systemd-journald

@@ -161,8 +161,8 @@ export default class Hatching {
       await this.settings.load()
 
       // systemctl is-enabled
-      await exec('systemctl stop udisks2.service')
-      await exec('systemctl disable udisks2.service')
+      // await exec('systemctl stop udisks2.service')
+      // await exec('systemctl disable udisks2.service')
 
       // partition
       let percent = 0.0
@@ -869,13 +869,13 @@ adduser ${name} \
     * mkfs
     */
    private async mkfs(): Promise<boolean> {
-      // sto mostrando l'errore
-      const echo = Utils.setEcho(true)
+      const echo = Utils.setEcho(this.verbose)
 
       const result = true
 
       if (this.efi) {
-         await exec(`mkdosfs -F 32 -I ${this.devices.efi.name}` + this.toNull, echo)
+         // await exec(`mkdosfs -F 32 -I ${this.devices.efi.name}` + this.toNull, echo)
+         await exec(`mkdosfs -F 32 -I ${this.devices.efi.name}`, echo)
       }
 
       if (this.devices.boot.name !== 'none') {
@@ -884,33 +884,19 @@ adduser ${name} \
             this.devices.boot.fsType = `ext2`
             this.devices.boot.mountPoint = '/boot'
          }
-         await this.ifMountedDismount(this.devices.boot.name)
-         try {
-            await exec('mke2fs -Ft ' + this.devices.boot.fsType + ' ' + this.devices.boot.name + this.toNull, echo)
-         } catch (error) {
-            let message = `Error formatting: ${this.devices.boot.name}`
-            let canContinue = true
-            await Utils.pressKeyToExit(message, canContinue)
-         }
+         await exec(`mke2fs -Ft ${this.devices.boot.fsType} ${this.devices.boot.name}`, echo)
       }
 
       if (this.devices.root.name !== 'none') {
-         await this.ifMountedDismount(this.devices.root.name)
-         try {
-            await exec('mke2fs -Ft ' + this.devices.root.fsType + ' ' + this.devices.root.name + this.toNull, echo)
-         } catch (error) {
-            let message = `Error formatting: ${this.devices.root.name}`
-            let canContinue = true
-            await Utils.pressKeyToExit(message, canContinue)
-         }
+         await exec(`mke2fs -Ft ${this.devices.root.fsType} ${this.devices.root.name}`, echo)
       }
 
       if (this.devices.data.name !== 'none') {
-         await exec('mke2fs -Ft ' + this.devices.data.fsType + ' ' + this.devices.data.name + this.toNull, echo)
+         await exec(`mke2fs -Ft ${this.devices.data.fsType} ${this.devices.data.name}`, echo)
       }
 
       if (this.devices.swap.name !== 'none') {
-         await exec('mkswap ' + this.devices.swap.name + this.toNull, echo)
+         await exec(`mkswap ${this.devices.swap.name}`, echo)
       }
       return result
    }
