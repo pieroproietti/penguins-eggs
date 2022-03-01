@@ -41,12 +41,19 @@ export default class Utils {
    * ma viene avviato con init
    */
    static isSystemd(): boolean {
-      // return (shx.exec(`pidof systemd`).stdout.trim() === '1')
-      return (shx.exec(`ps -p 1 -o comm=`).stdout.trim() === 'systemd')
+      const checkFile = '/tmp/checksystemd'
+      shx.exec(`ps -p 1 -o comm= >${checkFile}`)
+      return fs.readFileSync(checkFile).includes('systemd')
    }
+
+   /**
+    * 
+    * @returns 
+    */
    static isSysvinit(): boolean {
-      // return (shx.exec(`pidof systemd`).stdout.trim() === '1')
-      return (shx.exec(`ps -p 1 -o comm=`).stdout.trim() === 'init')
+      const checkFile = '/tmp/checkinit'
+      shx.exec(`ps -p 1 -o comm= >${checkFile}`)
+      return fs.readFileSync(checkFile).includes('init')
    }
 
    /**

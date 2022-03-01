@@ -8,57 +8,82 @@
  */
 
 import { exec } from '../lib/utils'
+import Utils from './utils'
+
 
 export default class SistemdCtl {
+
+  echo = Utils.setEcho(false)
+
+  constructor(verbose = false) {
+    const echo = Utils.setEcho(verbose)
+  }
 
   /**
    * 
    */
-   async daemonReload() {
-    await run('daemon-reload')
+   async reload(service: string) {
+    await exec(`systemctl reload ${service}`, this.echo)
   }
 
   /**
    * 
    */
    async disable(service: string) {
-    await run('disable', service)
+    await exec(`systemctl disable ${service}`, this.echo)
   }
 
   /**
    * 
    */
    async enable(service: string) {
-    await run('enable', service)
+    await exec(`systemctl enable ${service}`, this.echo)
   }
 
   /**
    * 
    */
    async restart(service: string) {
-    await run('restart', service)
+    await exec(`systemctl restart ${service}`, this.echo)
   }
 
   /**
    * 
    */
    async start(service: string) {
-    await run('start', service)
+    await exec(`systemctl start ${service}`, this.echo)
   }
 
   /**
    * 
    */
    async stop(service: string) {
-    await run('stop', service)
+    await exec(`systemctl stop ${service}`, this.echo)
   }
 
+  /**
+   * 
+   * @param service 
+   * @returns 
+   */
+  async isActive(service: string) {
+    return new Promise((resolve, reject) => {
+      exec(`systemctl is-active ${service}`, this.echo)
+        .then((result) => {
+          resolve(!result.data.includes('inactive'))
+        })
+        .catch(function (error) {
+          resolve(false)
+        })
+    })
+  }
+  
   /**
    * 
    */
    async isEnabled(service: string) {
     return new Promise((resolve, reject) => {
-      run('is-enabled', service)
+      exec(`systemctl is-enabled ${service}`, this.echo)
         .then((result) => {
           resolve(result.data.includes('enabled'))
         })
@@ -67,17 +92,4 @@ export default class SistemdCtl {
         })
     })
   }
-
-}
-
-/**
- * run
- */
-async function run(cmd: string, service = '') {
-  let command = 'systemctl ' + cmd
-
-  if (service !== '') {
-    command = command + ' ' + service
-  }
-  return await exec(command)
 }

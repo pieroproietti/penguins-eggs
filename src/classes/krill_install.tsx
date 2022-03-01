@@ -56,7 +56,6 @@ import Pacman from './pacman';
 import { installer } from './incubation/installer'
 import Xdg from './xdg';
 import Distro from './distro'
-import Systemctl from './systemctl'
 
 import { IInstaller, IDevices, IDevice } from '../interfaces'
 import { ICalamaresModule, ILocation, IKeyboard, IPartitions, IUsers } from '../interfaces/i-krill'
@@ -158,11 +157,15 @@ export default class Hatching {
    async install(verbose = false) {
       this.verbose = verbose
 
-      await this.settings.load()
+      if (this.verbose) {
+         this.toNull = ''
+      }
+      const echo = Utils.setEcho(this.verbose)
 
-      // systemctl is-enabled
-      // await exec('systemctl stop udisks2.service')
-      // await exec('systemctl disable udisks2.service')
+
+
+
+      await this.settings.load()
 
       // partition
       let percent = 0.0
@@ -230,7 +233,7 @@ export default class Hatching {
             percent = 0.37
             try {
                redraw(<Install message={message} percent={percent} spinner={true} />)
-               await exec('eggs syncfrom --rootdir /tmp/calamares-krill-root/')
+               await exec('eggs syncfrom --rootdir /tmp/calamares-krill-root/', echo)
             } catch (error) {
                await Utils.pressKeyToExit(JSON.stringify(error))
             }
@@ -900,7 +903,6 @@ adduser ${name} \
       }
       return result
    }
-
 
    /**
     * 

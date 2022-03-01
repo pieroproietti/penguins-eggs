@@ -3,6 +3,7 @@ import { render, RenderOptions } from 'ink'
 import Utils from './utils'
 import shx from 'shelljs'
 import fs from 'fs'
+import Systemctl from './systemctl'
 
 // libraries
 const exec = require('../lib/utils').exec
@@ -65,6 +66,14 @@ export default class Krill {
      */
     if (await this.pvExist()) {
       await Utils.pressKeyToExit(`There is a lvm2 volume in the system, remove it manually before installation.\nkrill installer refuses to continue`)
+    }
+
+    /**
+    * stop udisks2.service
+    */
+    const systemdCtl = new Systemctl(verbose)
+    if (await systemdCtl.isActive('udisks2.service')) {
+      await systemdCtl.stop('udisks2.service')
     }
 
     const oWelcome = await this.welcome()
