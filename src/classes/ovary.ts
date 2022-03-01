@@ -429,15 +429,17 @@ export default class Ovary {
      * Per tutte le distro systemd
      */
     if (Utils.isSystemd()) {
+      const systemdctl = new Systemctl(verbose)
+
       /**
        * SU UBUNTU E DERIVATE NON DISABILITARE systemd-resolved.service
        */
       if (this.settings.distro.distroLike !== 'Ubuntu') {
-        await exec(`chroot ${this.settings.work_dir.merged} systemctl disable systemd-resolved.service`)
+        if (await systemdctl.isEnabled('systemd-systemd-resolved.service')) {
+          await exec(`chroot ${this.settings.work_dir.merged} systemctl disable systemd-resolved.service`)
+        }
       }
 
-      // systemctl is-enabled
-      const systemdctl = new Systemctl()
       if (await systemdctl.isEnabled('systemd-networkd.service')) {
         await exec(`chroot ${this.settings.work_dir.merged} systemctl disable systemd-networkd.service`)
       }
