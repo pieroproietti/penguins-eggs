@@ -10,21 +10,55 @@
 import { exec } from '../lib/utils'
 
 export default class SistemdCtl {
-  async daemonReload() {
-    return run('daemon-reload')
+
+  /**
+   * 
+   */
+   async daemonReload() {
+    await run('daemon-reload')
   }
 
-  async disable(serviceName: string) {
-    return run('disable', serviceName)
+  /**
+   * 
+   */
+   async disable(service: string) {
+    await run('disable', service)
   }
 
-  async enable(serviceName: string) {
-    return run('enable', serviceName)
+  /**
+   * 
+   */
+   async enable(service: string) {
+    await run('enable', service)
   }
 
-  async isEnabled(serviceName: string) {
+  /**
+   * 
+   */
+   async restart(service: string) {
+    await run('restart', service)
+  }
+
+  /**
+   * 
+   */
+   async start(service: string) {
+    await run('start', service)
+  }
+
+  /**
+   * 
+   */
+   async stop(service: string) {
+    await run('stop', service)
+  }
+
+  /**
+   * 
+   */
+   async isEnabled(service: string) {
     return new Promise((resolve, reject) => {
-      run('is-enabled', serviceName)
+      run('is-enabled', service)
         .then((result) => {
           resolve(result.data.includes('enabled'))
         })
@@ -34,29 +68,16 @@ export default class SistemdCtl {
     })
   }
 
-  async restart(serviceName: string) {
-    return run('restart', serviceName)
-  }
-
-  start(serviceName: string) {
-    return run('start', serviceName)
-  }
-
-  stop(serviceName: string) {
-    return run('stop', serviceName)
-  }
 }
 
 /**
- *
+ * run
  */
-async function run(cmd: string, serviceName = '') {
+async function run(cmd: string, service = '') {
   let command = 'systemctl ' + cmd
 
-  if (serviceName !== '') {
-    command = command + ' ' + serviceName
+  if (service !== '') {
+    command = command + ' ' + service
   }
-
-  console.log(command)
-  return exec(command)
+  return await exec(command)
 }
