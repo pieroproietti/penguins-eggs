@@ -436,32 +436,32 @@ export default class Ovary {
        */
       if (this.settings.distro.distroLike !== 'Ubuntu') {
         if (await systemdctl.isEnabled('systemd-systemd-resolved.service')) {
-          await exec(`chroot ${this.settings.work_dir.merged} systemctl disable systemd-resolved.service`)
+          await exec(`chroot ${this.settings.work_dir.merged} systemctl disable systemd-resolved.service`, echo)
         }
       }
 
       if (await systemdctl.isEnabled('systemd-networkd.service')) {
-        await exec(`chroot ${this.settings.work_dir.merged} systemctl disable systemd-networkd.service`)
+        await exec(`chroot ${this.settings.work_dir.merged} systemctl disable systemd-networkd.service`, echo)
       }
 
       if (await systemdctl.isEnabled('remote-cryptsetup.target')) {
-        await exec(`chroot ${this.settings.work_dir.merged} systemctl disable remote-cryptsetup.target`)
+        await exec(`chroot ${this.settings.work_dir.merged} systemctl disable remote-cryptsetup.target`, echo)
       }
 
       if (await systemdctl.isEnabled('speech-dispatcherd.service')) {
-        await exec(`chroot ${this.settings.work_dir.merged} systemctl disable speech-dispatcherd.service`)
+        await exec(`chroot ${this.settings.work_dir.merged} systemctl disable speech-dispatcherd.service`, echo)
       }
 
       if (await systemdctl.isEnabled('wpa_supplicant-nl80211@.service')) {
-        await exec(`chroot ${this.settings.work_dir.merged} systemctl disable wpa_supplicant-nl80211@.service`)
+        await exec(`chroot ${this.settings.work_dir.merged} systemctl disable wpa_supplicant-nl80211@.service`, echo)
       }
 
       if (await systemdctl.isEnabled('wpa_supplicant@.service')) {
-        await exec(`chroot ${this.settings.work_dir.merged} systemctl disable wpa_supplicant@.service`)
+        await exec(`chroot ${this.settings.work_dir.merged} systemctl disable wpa_supplicant@.service`, echo)
       }
 
       if (await systemdctl.isEnabled('wpa_supplicant-wired@.service')) {
-        await exec(`chroot ${this.settings.work_dir.merged} systemctl disable wpa_supplicant-wired@.service`)
+        await exec(`chroot ${this.settings.work_dir.merged} systemctl disable wpa_supplicant-wired@.service`, echo)
       }
     }
 
