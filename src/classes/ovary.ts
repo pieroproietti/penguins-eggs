@@ -401,7 +401,8 @@ export default class Ovary {
     await exec(`touch ${this.settings.work_dir.merged}/etc/fstab`, echo)
 
     /**
-     * Remove crypttab if exists
+     * Remove crypttab if exists 
+     * this is crucial for tpm systems.
      */
     if (fs.existsSync(`${this.settings.work_dir.merged}/etc/crypttab`)) {
       await exec(`rm ${this.settings.work_dir.merged}/etc/crypttab`, echo)
@@ -409,8 +410,9 @@ export default class Ovary {
     }
 
     /**
-     * Blank out systemd machine id. If it does not exist, systemd-journald
-     * will fail, but if it exists and is empty, systemd will automatically
+     * Blank out systemd machine id. 
+     * If it does not exist, systemd-journald will fail, 
+     * but if it exists and is empty, systemd will automatically
      * set up a new unique ID.
      */
     if (fs.existsSync(`${this.settings.work_dir.merged}/etc/machine-id`)) {
@@ -429,6 +431,7 @@ export default class Ovary {
      * Per tutte le distro systemd
      */
     if (Utils.isSystemd()) {
+      
       const systemdctl = new Systemctl(verbose)
 
       /**
@@ -436,55 +439,37 @@ export default class Ovary {
        */
       if (this.settings.distro.distroLike !== 'Ubuntu') {
         if (await systemdctl.isEnabled('systemd-systemd-resolved.service')) {
-          await exec(`chroot ${this.settings.work_dir.merged} systemctl disable systemd-resolved.service`, echo)
+          await systemdctl.disable('systemd-systemd-resolved.service', this.settings.work_dir.merged, true)
         }
       }
 
       if (await systemdctl.isEnabled('systemd-networkd.service')) {
-        await exec(`chroot ${this.settings.work_dir.merged} systemctl disable systemd-networkd.service`, echo)
+        await systemdctl.disable('systemd-networkd.service', this.settings.work_dir.merged, true)
       }
 
       if (await systemdctl.isEnabled('remote-cryptsetup.target')) {
-        await exec(`chroot ${this.settings.work_dir.merged} systemctl disable remote-cryptsetup.target`, echo)
+        await systemdctl.disable('remote-cryptsetup.target', this.settings.work_dir.merged, true)
       }
 
       if (await systemdctl.isEnabled('speech-dispatcherd.service')) {
-        await exec(`chroot ${this.settings.work_dir.merged} systemctl disable speech-dispatcherd.service`, echo)
+        await systemdctl.disable('speech-dispatcherd.service', this.settings.work_dir.merged, true)
       }
 
       if (await systemdctl.isEnabled('wpa_supplicant-nl80211@.service')) {
-        await exec(`chroot ${this.settings.work_dir.merged} systemctl disable wpa_supplicant-nl80211@.service`, echo)
+        await systemdctl.disable('wpa_supplicant-nl80211@.service', this.settings.work_dir.merged, true)
       }
 
       if (await systemdctl.isEnabled('wpa_supplicant@.service')) {
-        await exec(`chroot ${this.settings.work_dir.merged} systemctl disable wpa_supplicant@.service`, echo)
+        await systemdctl.disable('wpa_supplicant@.service', this.settings.work_dir.merged, true)
       }
 
       if (await systemdctl.isEnabled('wpa_supplicant-wired@.service')) {
-        await exec(`chroot ${this.settings.work_dir.merged} systemctl disable wpa_supplicant-wired@.service`, echo)
-      }
-    }
-
-    // Probabilmente non necessario
-    // shx.touch(`${this.settings.work_dir.merged}/etc/resolv.conf`)
-
-    /**
-     * Clear configs from /etc/network/interfaces, wicd and NetworkManager
-     * and netman, so they aren't stealthily included in the snapshot.
-     */
-    if (this.familyId === 'debian') {
-      if (fs.existsSync(`${this.settings.work_dir.merged}/etc/network/interfaces`)) {
-        await exec(`rm ${this.settings.work_dir.merged}/etc/network/interfaces`, echo)
+        await systemdctl.disable('wpa_supplicant-wired@.service', this.settings.work_dir.merged, true)
       }
 
-      await exec(`touch ${this.settings.work_dir.merged}/etc/network/interfaces`, echo)
-      Utils.write(`${this.settings.work_dir.merged}/etc/network/interfaces`, 'auto lo\niface lo inet loopback')
-    }
-
-    /**
-     * Per tutte le distro systemd
-     */
-    if (Utils.isSystemd()) {
+      /**
+       * Per tutte le distro systemd
+       */
       await exec(`rm -f ${this.settings.work_dir.merged}/var/lib/wicd/configurations/*`, echo)
       await exec(`rm -f ${this.settings.work_dir.merged}/etc/wicd/wireless-settings.conf`, echo)
       await exec(`rm -f ${this.settings.work_dir.merged}/etc/NetworkManager/system-connections/*`, echo)
@@ -499,6 +484,27 @@ export default class Ovary {
         await exec(`rm -f ${this.settings.work_dir.merged}/etc/network/${cleanDir}/wpasupplicant`, echo)
       }
     }
+
+    /**
+     * cleaning /etc/resolv.conf
+     * /etc/resolv.conf -> ../run/systemd/resolve/stub-resolv.conf
+     */
+     shx.rm(`${this.settings.work_dir.merged}/etc/resolv.conf`)
+     shx.touch(`${this.settings.work_dir.merged}/etc/resolv.conf`)
+
+    /**
+     * Clear configs from /etc/network/interfaces, wicd and NetworkManager
+     * and netman, so they aren't stealthily included in the snapshot.
+     */
+    if (this.familyId === 'debian') {
+      if (fs.existsSync(`${this.settings.work_dir.merged}/etc/network/interfaces`)) {
+        await exec(`rm ${this.settings.work_dir.merged}/etc/network/interfaces`, echo)
+      }
+
+      await exec(`touch ${this.settings.work_dir.merged}/etc/network/interfaces`, echo)
+      Utils.write(`${this.settings.work_dir.merged}/etc/network/interfaces`, 'auto lo\niface lo inet loopback')
+    }
+
 
     /**
      * add some basic files to /dev
@@ -746,8 +752,8 @@ export default class Ovary {
      * exclude all the accurence of cryptdisks in rc0.d, etc
      */
     let fexcludes = ["/boot/efi/EFI", "/etc/fstab", "/etc/mtab", "/etc/udev/rules.d/70-persistent-cd.rules", "/etc/udev/rules.d/70-persistent-net.rules"]
-       for (let i in fexcludes) {
-       this.addRemoveExclusion(true, fexcludes[i])
+    for (let i in fexcludes) {
+      this.addRemoveExclusion(true, fexcludes[i])
     }
 
     /**

@@ -43,7 +43,9 @@ export default class Utils {
    static isSystemd(): boolean {
       const checkFile = '/tmp/checksystemd'
       shx.exec(`ps -p 1 -o comm= >${checkFile}`)
-      return fs.readFileSync(checkFile).includes('systemd')
+      const isSystemd = fs.readFileSync(checkFile).includes('systemd')
+      shx.exec(`rm ${checkFile}`)
+      return isSystemd
    }
 
    /**
@@ -53,7 +55,9 @@ export default class Utils {
    static isSysvinit(): boolean {
       const checkFile = '/tmp/checkinit'
       shx.exec(`ps -p 1 -o comm= >${checkFile}`)
-      return fs.readFileSync(checkFile).includes('init')
+      const isSysvinit = fs.readFileSync(checkFile).includes('init')
+      shx.exec(`rm ${checkFile}`)
+      return isSysvinit
    }
 
    /**

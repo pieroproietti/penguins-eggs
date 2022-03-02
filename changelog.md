@@ -18,6 +18,13 @@ You can follow the project also consulting the [commit history](https://github.c
 ## Changelog
 Versions are listed on reverse order, the first is the last one.
 
+### eggs-9.0.29-1
+Finally we end with the errors installing an iso from UEFI/crypted/tpm systems to another UEFI/crypted/tpm systems:
+* krill: stop udisk2.service during installation, you can install surelly also on a terminal in GUI;
+* krill: using verbose now we have almost all the informations on eventual installation problems
+* ovary: reintroduced /etc/resolv.con cleaning, using new systemctl library;
+* systemctl: completely rewrote, it became usable from system or chrooted system.
+
 ### eggs-9.0.28-1
 * ovary: exclude all the accurence of cryptdisks in rc0.d, etc; removed and clean /etc/crypttab on iso
 
