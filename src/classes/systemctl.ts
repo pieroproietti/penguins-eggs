@@ -12,52 +12,54 @@ import Utils from './utils'
 
 
 export default class SistemdCtl {
-
-  echo = Utils.setEcho(false)
+  echo = {}
 
   constructor(verbose = false) {
-    const echo = Utils.setEcho(verbose)
+    this.echo = Utils.setEcho(verbose)
   }
 
   /**
    * 
    */
-   async reload(service: string) {
+  async reload(service: string) {
     await exec(`systemctl reload ${service}`, this.echo)
   }
 
   /**
    * 
    */
-   async disable(service: string) {
-    await exec(`systemctl disable ${service}`, this.echo)
+  async disable(service: string, chroot = '/', report = false) {
+    await exec(`chroot ${chroot}} systemctl disable ${service}`, this.echo)
+    if (report){
+      console.log(`systemctl: disabled ${service} on ${chroot}`)
+    }
   }
 
   /**
    * 
    */
-   async enable(service: string) {
+  async enable(service: string) {
     await exec(`systemctl enable ${service}`, this.echo)
   }
 
   /**
    * 
    */
-   async restart(service: string) {
+  async restart(service: string) {
     await exec(`systemctl restart ${service}`, this.echo)
   }
 
   /**
    * 
    */
-   async start(service: string) {
+  async start(service: string) {
     await exec(`systemctl start ${service}`, this.echo)
   }
 
   /**
    * 
    */
-   async stop(service: string) {
+  async stop(service: string) {
     await exec(`systemctl stop ${service}`, this.echo)
   }
 
@@ -77,11 +79,11 @@ export default class SistemdCtl {
         })
     })
   }
-  
+
   /**
    * 
    */
-   async isEnabled(service: string) {
+  async isEnabled(service: string) {
     return new Promise((resolve, reject) => {
       exec(`systemctl is-enabled ${service}`, this.echo)
         .then((result) => {
