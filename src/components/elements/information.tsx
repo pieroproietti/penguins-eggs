@@ -102,15 +102,29 @@ export default async function information(verbose = false): Promise<void> {
     render(<GUI />)
 
 
+    let initType = ''
+    if (Utils.isSysvinit()) {
+        initType = 'sysvinit'
+    }
+    if (Utils.isSystemd()) {
+        if (initType === 'sysvinit') {
+            initType += '/'
+        }
+        initType = 'systemd'
+    }
+    const sysvinit = Utils.isSysvinit()
+    const systemd = Utils.isSystemd()
     const Checks = () => (
         <Box borderStyle="round" marginRight={2} flexDirection="row">
             <Box marginRight={2}><Text>dependencies: {dependencies ? <Ok /> : <Ko />}</Text></Box>
             <Box marginRight={2}><Text>configurations: {configurations ? <Ok /> : <Ko />}</Text></Box>
             <Box marginRight={2}><Text>installer: {installer ? <GUI /> : <CLI />}</Text></Box>
             <Box marginRight={2}><Text>uefi: {uefi ? <Ok /> : <Ko />}</Text></Box>
+            <Box marginRight={2}><Text>init: <Text color="cyan">{initType}</Text></Text></Box>
         </Box>
     )
     render(<Checks />)
+
 
     const Presentation = () => (
         <>
