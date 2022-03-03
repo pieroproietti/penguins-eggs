@@ -366,8 +366,6 @@ export default class Ovary {
       Utils.write(file, text)
     }
 
-    // sudo systemctl disable wpa_supplicant
-
     // Truncate logs, remove archived logs.
     let cmd = `find ${this.settings.work_dir.merged}/var/log -name "*gz" -print0 | xargs -0r rm -f`
     await exec(cmd, echo)
@@ -431,9 +429,9 @@ export default class Ovary {
      * Per tutte le distro systemd
      */
     if (Utils.isSystemd()) {
+      Utils.warning('systemd')
       
       const systemdctl = new Systemctl(verbose)
-
       /**
        * SU UBUNTU E DERIVATE NON DISABILITARE systemd-resolved.service
        */
@@ -468,15 +466,15 @@ export default class Ovary {
       }
 
       /**
-       * Per tutte le distro systemd
+       * All systemd distros rm
        */
       await exec(`rm -f ${this.settings.work_dir.merged}/var/lib/wicd/configurations/*`, echo)
       await exec(`rm -f ${this.settings.work_dir.merged}/etc/wicd/wireless-settings.conf`, echo)
       await exec(`rm -f ${this.settings.work_dir.merged}/etc/NetworkManager/system-connections/*`, echo)
       await exec(`rm -f ${this.settings.work_dir.merged}/etc/network/wifi/*`, echo)
       /**
-       * Andiamo a fare pulizia in /etc/network/:
-       * if-down.d  if-post-down.d  if-pre-up.d  if-up.d  interfaces  interfaces.d
+       * removing from /etc/network/:
+       * if-down.d if-post-down.d if-pre-up.d if-up.d interfaces interfaces.d
        */
       const cleanDirs = ['if-down.d', 'if-post-down.d', 'if-pre-up.d', 'if-up.d', 'interfaces.d']
       let cleanDir = ''

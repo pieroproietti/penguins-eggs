@@ -157,14 +157,13 @@ export default class Hatching {
    async install(verbose = false) {
       this.verbose = verbose
 
+      const echo = Utils.setEcho(this.verbose)
       if (this.verbose) {
          this.toNull = ''
       }
-      const echo = Utils.setEcho(this.verbose)
 
 
-
-
+      // start
       await this.settings.load()
 
       // partition
@@ -405,7 +404,6 @@ export default class Hatching {
             }
          }
 
-
          // autologin
          if (Pacman.isInstalledGui()) {
             try {
@@ -430,7 +428,6 @@ export default class Hatching {
          // cleanup
          await cliAutologin.msgRemove(`${this.installTarget}/etc/motd`)
          await cliAutologin.msgRemove(`${this.installTarget}/etc/issue`)
-
 
          // removeInstaller
          message = "remove installer"
@@ -547,7 +544,7 @@ adduser ${name} \
 
       if (Utils.isLive()) {
          const user: string = this.settings.config.user_opt
-         const cmd = `chroot ${this.installTarget} deluser --remove-home ${user}`
+         const cmd = `chroot ${this.installTarget} deluser --remove-home ${user} ${this.toNull}`
          await exec(cmd, echoYes)
       }
    }
@@ -558,9 +555,11 @@ adduser ${name} \
     * @param options
     */
    private async bootloader() {
-      await exec('chroot ' + this.installTarget + ' grub-install ' + this.partitions.installationDevice) // + this.toNull
-      await exec('chroot ' + this.installTarget + ' update-grub') // + this.toNull
-      await exec('sleep 1')  // + this.toNull
+      const echo = Utils.setEcho(this.verbose)
+
+      await exec(`chroot ${this.installTarget} grub-install ${this.partitions.installationDevice} ${this.toNull}`, echo)
+      await exec(`chroot ${this.installTarget} update-grub ${this.toNull}`, echo)
+      await exec(`sleep 1 ${this.toNull}`, echo)
    }
 
    /**
@@ -589,8 +588,8 @@ adduser ${name} \
     */
    private async initramfs() {
       const echo = Utils.setEcho(this.verbose)
-      await exec('chroot ' + this.installTarget + ' mkinitramfs -o ~/initrd.img-$(uname -r)', echo)
-      await exec('chroot ' + this.installTarget + ' mv ~/initrd.img-$(uname -r) /boot', echo)
+      await exec(`chroot ${this.installTarget} mkinitramfs -o ~/initrd.img-$(uname -r) ${this.toNull}`, echo)
+      await exec(`chroot ${this.installTarget} mv ~/initrd.img-$(uname -r) /boot ${this.toNull}`, echo)
    }
 
 
@@ -878,7 +877,7 @@ adduser ${name} \
 
       if (this.efi) {
          // await exec(`mkdosfs -F 32 -I ${this.devices.efi.name}` + this.toNull, echo)
-         await exec(`mkdosfs -F 32 -I ${this.devices.efi.name}`, echo)
+         await exec(`mkdosfs -F 32 -I ${this.devices.efi.name} ${this.toNull}`, echo)
       }
 
       if (this.devices.boot.name !== 'none') {
@@ -887,19 +886,19 @@ adduser ${name} \
             this.devices.boot.fsType = `ext2`
             this.devices.boot.mountPoint = '/boot'
          }
-         await exec(`mke2fs -Ft ${this.devices.boot.fsType} ${this.devices.boot.name}`, echo)
+         await exec(`mke2fs -Ft ${this.devices.boot.fsType} ${this.devices.boot.name} ${this.toNull}`, echo)
       }
 
       if (this.devices.root.name !== 'none') {
-         await exec(`mke2fs -Ft ${this.devices.root.fsType} ${this.devices.root.name}`, echo)
+         await exec(`mke2fs -Ft ${this.devices.root.fsType} ${this.devices.root.name} ${this.toNull}`, echo)
       }
 
       if (this.devices.data.name !== 'none') {
-         await exec(`mke2fs -Ft ${this.devices.data.fsType} ${this.devices.data.name}`, echo)
+         await exec(`mke2fs -Ft ${this.devices.data.fsType} ${this.devices.data.name} ${this.toNull}`, echo)
       }
 
       if (this.devices.swap.name !== 'none') {
-         await exec(`mkswap ${this.devices.swap.name}`, echo)
+         await exec(`mkswap ${this.devices.swap.name} ${this.toNull}`, echo)
       }
       return result
    }
@@ -910,7 +909,7 @@ adduser ${name} \
     */
    async ifMountedDismount(device = '') {
       if ((await exec(`findmnt -rno SOURCE ${device}`)).data.trim() === device) {
-         await exec(`umount ${device}`)
+         await exec(`umount ${device} ${this.toNull}`)
          await exec('sleep 1')
       }
    }
@@ -922,33 +921,33 @@ adduser ${name} \
       const echo = { echo: false, ignore: this.verbose }
 
       if (!fs.existsSync(this.installTarget)) {
-         await exec(`mkdir ${this.installTarget}` + this.toNull, echo)
+         await exec(`mkdir ${this.installTarget} ${this.toNull}`, echo)
       }
 
       // root
-      await exec(`mount ${this.devices.root.name} ${this.installTarget}${this.devices.root.mountPoint}` + this.toNull, echo)
-      await exec(`tune2fs -c 0 -i 0 ${this.devices.root.name}` + this.toNull, echo)
-      await exec(`rm -rf ${this.installTarget}/lost+found` + this.toNull, echo)
+      await exec(`mount ${this.devices.root.name} ${this.installTarget}${this.devices.root.mountPoint} ${this.toNull}`, echo)
+      await exec(`tune2fs -c 0 -i 0 ${this.devices.root.name} ${this.toNull}`, echo)
+      await exec(`rm -rf ${this.installTarget}/lost+found ${this.toNull}`, echo)
 
       // boot
       if (this.devices.boot.name !== `none`) {
-         await exec(`mkdir ${this.installTarget}/boot -p` + this.toNull)
-         await exec(`mount ${this.devices.boot.name} ${this.installTarget}${this.devices.boot.mountPoint}` + this.toNull, echo)
-         await exec(`tune2fs -c 0 -i 0 ${this.devices.boot.name}` + this.toNull, echo)
+         await exec(`mkdir ${this.installTarget}/boot -p ${this.toNull}`, echo)
+         await exec(`mount ${this.devices.boot.name} ${this.installTarget}${this.devices.boot.mountPoint} ${this.toNull}`, echo)
+         await exec(`tune2fs -c 0 -i 0 ${this.devices.boot.name} ${this.toNull}`, echo)
       }
 
       // data
       if (this.devices.data.name !== `none`) {
-         await exec(`mkdir ${this.installTarget}${this.devices.data.mountPoint} -p` + this.toNull)
-         await exec(`mount ${this.devices.data.name} ${this.installTarget}${this.devices.data.mountPoint}` + this.toNull, echo)
-         await exec(`tune2fs -c 0 -i 0 ${this.devices.data.name}` + this.toNull, echo)
+         await exec(`mkdir ${this.installTarget}${this.devices.data.mountPoint} -p ${this.toNull}`, echo)
+         await exec(`mount ${this.devices.data.name} ${this.installTarget}${this.devices.data.mountPoint} ${this.toNull}`, echo)
+         await exec(`tune2fs -c 0 -i 0 ${this.devices.data.name} ${this.toNull}`, echo)
       }
 
       // efi
       if (this.efi) {
          if (!fs.existsSync(this.installTarget + this.devices.efi.mountPoint)) {
-            await exec(`mkdir ${this.installTarget}${this.devices.efi.mountPoint} -p` + this.toNull, echo)
-            await exec(`mount ${this.devices.efi.name} ${this.installTarget}${this.devices.efi.mountPoint}` + this.toNull, echo)
+            await exec(`mkdir ${this.installTarget}${this.devices.efi.mountPoint} -p ${this.toNull}`, echo)
+            await exec(`mount ${this.devices.efi.name} ${this.installTarget}${this.devices.efi.mountPoint} ${this.toNull}`, echo)
          }
       }
       return true
@@ -987,20 +986,20 @@ adduser ${name} \
    private async mountVfs() {
       const echo = { echo: true, ignore: true }
 
-      await exec('mkdir ' + this.installTarget + '/dev' + this.toNull)
-      await exec('mkdir ' + this.installTarget + '/dev/pts' + this.toNull)
-      await exec('mkdir ' + this.installTarget + '/proc' + this.toNull)
-      await exec('mkdir ' + this.installTarget + '/sys' + this.toNull)
-      await exec('mkdir ' + this.installTarget + '/run' + this.toNull)
+      await exec(`mkdir ${this.installTarget}/dev ${this.toNull}`, echo)
+      await exec(`mkdir ${this.installTarget}/dev/pts ${this.toNull}`, echo)
+      await exec(`mkdir ${this.installTarget}/proc ${this.toNull}`, echo)
+      await exec(`mkdir ${this.installTarget}/sys ${this.toNull}`, echo)
+      await exec(`mkdir ${this.installTarget}/run ${ this.toNull}`, echo)
 
-      await exec(`mount -o bind /dev ${this.installTarget}/dev` + this.toNull, echo)
-      await exec(`mount -o bind /dev/pts ${this.installTarget}/dev/pts` + this.toNull, echo)
-      await exec(`mount -o bind /proc ${this.installTarget}/proc` + this.toNull, echo)
-      await exec(`mount -o bind /sys ${this.installTarget}/sys` + this.toNull, echo)
+      await exec(`mount -o bind /dev ${this.installTarget}/dev ${this.toNull}`, echo)
+      await exec(`mount -o bind /dev/pts ${this.installTarget}/dev/pts ${this.toNull}`, echo)
+      await exec(`mount -o bind /proc ${this.installTarget}/proc ${this.toNull}`, echo)
+      await exec(`mount -o bind /sys ${this.installTarget}/sys ${this.toNull}`, echo)
       if (this.efi) {
-         await exec(`mount -o bind /sys/firmware/efi/efivars ${this.installTarget}/sys/firmware/efi/efivars` + this.toNull, echo)
+         await exec(`mount -o bind /sys/firmware/efi/efivars ${this.installTarget}/sys/firmware/efi/efivars ${this.toNull}`, echo)
       }
-      await exec(`mount -o bind /run ${this.installTarget}/run` + this.toNull, echo)
+      await exec(`mount -o bind /run ${this.installTarget}/run ${this.toNull}`, echo)
    }
 
    /**
@@ -1030,7 +1029,7 @@ adduser ${name} \
       let message = 'umount: ' + mountPoint
       if (Utils.isMountpoint(mountPoint)) {
          try {
-            await exec(`umount ${mountPoint}` + this.toNull, echo)
+            await exec(`umount ${mountPoint} ${this.toNull}`, echo)
             await exec('sleep 1', echo)
          } catch (error) {
             message += + mountPoint + JSON.stringify(error)
