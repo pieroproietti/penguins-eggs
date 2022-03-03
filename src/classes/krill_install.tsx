@@ -990,7 +990,7 @@ adduser ${name} \
       await exec(`mkdir ${this.installTarget}/dev/pts ${this.toNull}`, echo)
       await exec(`mkdir ${this.installTarget}/proc ${this.toNull}`, echo)
       await exec(`mkdir ${this.installTarget}/sys ${this.toNull}`, echo)
-      await exec(`mkdir ${this.installTarget}/run ${ this.toNull}`, echo)
+      await exec(`mkdir ${this.installTarget}/run ${this.toNull}`, echo)
 
       await exec(`mount -o bind /dev ${this.installTarget}/dev ${this.toNull}`, echo)
       await exec(`mount -o bind /dev/pts ${this.installTarget}/dev/pts ${this.toNull}`, echo)
@@ -1414,22 +1414,20 @@ adduser ${name} \
    private async execCalamaresModule(name: string) {
       const echo = Utils.setEcho(this.verbose)
 
-      const moduleName = this.installer.multiarchModules + name + '/module.desc'
-      if (fs.existsSync(moduleName)) {
-         console.log('analyzing: ' + moduleName)
-         const calamaresModule = yaml.load(fs.readFileSync(moduleName, 'utf8')) as ICalamaresModule
-         let command = calamaresModule.command
-         console.log('command: ' + command)
-         if (command !== '' || command !== undefined) {
-            command += this.toNull
-            execSync(command)
-         }
+      /**
+       * patch per ubuntu sostituisce bootloader-config e bootloader
+       */
+      if (name === 'bootloader-config' && this.distro.distroLike === 'ubuntu') {
+         await this.bootloaderConfigUbuntu()
       } else {
-         /**
-          * patch per ubuntu sostituisce bootloader-config e bootloader
-          */
-         if (name === 'bootloader-config') {
-            await this.bootloaderConfigUbuntu()
+         const moduleName = this.installer.multiarchModules + name + '/module.desc'
+         if (fs.existsSync(moduleName)) {
+            const calamaresModule = yaml.load(fs.readFileSync(moduleName, 'utf8')) as ICalamaresModule
+            let command = calamaresModule.command
+            if (command !== '' || command !== undefined) {
+               command += this.toNull
+               await exec(command, echo)
+            }
          }
       }
    }
@@ -1442,72 +1440,78 @@ adduser ${name} \
 
       let cmd = ''
       try {
-         cmd = 'chroot ' + this.installTarget + ' ' + 'apt-get update -y ' + this.toNull
+         cmd = `chroot ${this.installTarget} apt-get update -y ${this.toNull}`
          await exec(cmd, echo)
       } catch (error) {
          console.log(error)
+         await Utils.pressKeyToExit(cmd, true)
       }
 
       try {
-         cmd = 'chroot ' + this.installTarget + ' sleep 1' + this.toNull
+         cmd = `chroot ${this.installTarget} sleep 1 ${this.toNull}`
          await exec(cmd, echo)
       } catch (error) {
          console.log(error)
+         await Utils.pressKeyToExit(cmd, true)
       }
 
       let aptInstallOptions = ' apt install -y --no-upgrade --allow-unauthenticated -o Acquire::gpgv::Options::=--ignore-time-conflict '
       if (this.efi) {
          try {
-            cmd = 'chroot ' + this.installTarget + aptInstallOptions + ' grub-efi-' + Utils.machineArch() + '  --allow-unauthenticated ' + this.toNull
+            cmd = `chroot ${this.installTarget} ${aptInstallOptions} grub-efi-${Utils.machineArch()} --allow-unauthenticated ${this.toNull}`
             await exec(cmd, echo)
          } catch (error) {
-            console.log('cmd: ' + cmd + ' error: ' + error)
+            console.log(error)
+            await Utils.pressKeyToExit(cmd, true)
          }
       } else {
          try {
-            cmd = 'chroot ' + this.installTarget + aptInstallOptions + ' grub-pc' + this.toNull
+            cmd = `chroot ${this.installTarget} ${aptInstallOptions} grub-pc ${this.toNull}`
             await exec(cmd, echo)
          } catch (error) {
-            console.log('cmd: ' + cmd + ' error: ' + error)
+            console.log(error)
+            await Utils.pressKeyToExit(cmd, true)
          }
       }
 
       try {
-         cmd = 'chroot ' + this.installTarget + ' sleep 1' + this.toNull
+         cmd = `chroot ${this.installTarget} sleep 1 ${this.toNull}`
          await exec(cmd, echo)
       } catch (error) {
-         console.log('cmd: ' + cmd + ' error: ' + error)
-      }
-
-
-      try {
-         cmd = 'chroot ' + this.installTarget + ' grub-install ' + this.partitions.installationDevice + this.toNull
-         await exec(cmd, echo)
-      } catch (error) {
-         console.log('cmd: ' + cmd + ' error: ' + error)
-      }
-
-
-      try {
-         cmd = 'chroot ' + this.installTarget + ' grub-mkconfig -o /boot/grub/grub.cfg' + this.toNull
-         await exec(cmd, echo)
-      } catch (error) {
-         console.log('cmd: ' + cmd + ' error: ' + error)
-      }
-      // await Utils.customConfirmAbort(cmd)
-
-      try {
-         cmd = 'chroot ' + this.installTarget + ' update-grub' + this.toNull
-         await exec(cmd, echo)
-      } catch (error) {
-         console.log('cmd: ' + cmd + ' error: ' + error)
+         console.log(error)
+         await Utils.pressKeyToExit(cmd, true)
       }
 
       try {
-         cmd = 'chroot ' + this.installTarget + ' sleep 1' + this.toNull
+         cmd = `chroot ${this.installTarget} grub-install ${this.partitions.installationDevice} ${this.toNull}`
          await exec(cmd, echo)
       } catch (error) {
-         console.log('cmd: ' + cmd + ' error: ' + error)
+         console.log(error)
+         await Utils.pressKeyToExit(cmd, true)
+      }
+
+      try {
+         cmd = `chroot ${this.installTarget} grub-mkconfig -o /boot/grub/grub.cfg ${this.toNull}`
+         await exec(cmd, echo)
+      } catch (error) {
+         console.log(error)
+         await Utils.pressKeyToExit(cmd, true)
+      }
+
+      try {
+         cmd = `chroot ${this.installTarget} update-grub ${this.toNull}`
+         await exec(cmd, echo)
+      } catch (error) {
+         console.log(error)
+         await Utils.pressKeyToExit(cmd, true)
+      }
+
+      try {
+         cmd = `chroot ${this.installTarget} sleep 1 ${this.toNull}`
+         await exec(cmd, echo)
+      } catch (error) {
+         console.log(error)
+         await Utils.pressKeyToExit(cmd, true)
       }
    }
 

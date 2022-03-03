@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# sources-yolk
 #
+# sources-yolk
 # utilizza solo la repository yolk durante l'installazione.
 # 
 # sources-yolk -u
@@ -28,16 +28,16 @@ function main {
 ##############################
 function backup_apt {
     if [ -d "$APT_BACKUP" ]; then
-        rm $APT_BACKUP -rf
+        rm "$APT_BACKUP" -rf
     fi
-    mkdir $APT_BACKUP -p
+    mkdir "$APT_BACKUP" -p
 
     if [ -f "$APT_ROOT/sources.list" ]; then
-        mv $APT_ROOT/sources.list $APT_BACKUP
+        mv "$APT_ROOT/sources.list" "$APT_BACKUP"
     else
         restore_apt
     fi
-    mv $APT_ROOT/sources.list.d/ $APT_BACKUP
+    mv "$APT_ROOT/sources.list.d/" "$APT_BACKUP"
 }
 
 ##############################
@@ -51,11 +51,11 @@ function restore_apt {
         rm "$APT_ROOT/sources.list"
     fi
     if [ -d "$APT_ROOT/sources.list.d" ]; then
-        rm $APT_ROOT/sources.list.d -rf
+        rm "$APT_ROOT/sources.list.d" -rf
     fi
 
-    mv $APT_BACKUP/sources.list $APT_ROOT
-    mv $APT_BACKUP/sources.list.d/ $APT_ROOT
+    mv "$APT_BACKUP/sources.list" "$APT_ROOT"
+    mv "$APT_BACKUP/sources.list.d/" "$APT_ROOT"
 }
 
 ##############################
@@ -65,10 +65,10 @@ function restore_apt {
 ##############################
 function yolk {
     mkdir "$APT_ROOT/sources.list.d"
-cat << EOF > $CHROOT/etc/apt/sources.list.d/yolk.list
+cat << EOF > "$CHROOT/etc/apt/sources.list.d/yolk.list"
 deb [trusted=yes] file:///var/local/yolk ./
 EOF
-chroot ${CHROOT} apt-get --allow-unauthenticated update -y
+chroot "${CHROOT}" apt-get --allow-unauthenticated update -y
 }
 
 # Lo script inizia qui
@@ -82,5 +82,5 @@ APT_BACKUP="/tmp/calamares-krill-temp"
 echo "APT_ROOT: $APT_ROOT"
 echo "APT_BACKUP: $APT_BACKUP"
 
-main $1
+main "$1"
 exit 0
