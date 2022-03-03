@@ -18,6 +18,9 @@ You can follow the project also consulting the [commit history](https://github.c
 ## Changelog
 Versions are listed on reverse order, the first is the last one.
 
+### eggs-9.0.30-1
+* krill: troubles with bootloader-config and sources-yolk, I home this fix
+
 ### eggs-9.0.29-1
 Finally we end with the errors installing an iso from UEFI/crypted/tpm systems to another UEFI/crypted/tpm systems:
 * krill: stop udisk2.service during installation, you can install surelly also on a terminal in GUI;
