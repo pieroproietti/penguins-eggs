@@ -582,7 +582,6 @@ adduser ${name} \
       await exec(`chroot ${this.installTarget} mv ~/initrd.img-$(uname -r) /boot ${this.toNull}`, this.echo)
    }
 
-
    /**
     * fstab()
     * @param devices
@@ -659,7 +658,6 @@ adduser ${name} \
       text += `# ${this.devices.swap.name} ${this.devices.swap.mountPoint} ${this.devices.swap.fsType} ${mountOptsSwap}\n`
       text += `UUID=${Utils.uuid(this.devices.swap.name)} ${this.devices.swap.mountPoint} ${this.devices.swap.fsType} ${mountOptsSwap}\n`
       Utils.write(fstab, text)
-
    }
 
    /**
@@ -739,7 +737,6 @@ adduser ${name} \
     * hosts
     */
    private async hosts() {
-
       const file = this.installTarget + '/etc/hosts'
       let text = '127.0.0.1 localhost localhost.localdomain\n'
       if (this.network.addressType === 'static') {
