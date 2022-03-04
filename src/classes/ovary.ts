@@ -132,12 +132,12 @@ export default class Ovary {
 
     if (this.familyId === 'debian') {
       const yolk = new Repo()
-      if (!yolk.exists()) {
+      if (!yolk.yolkExists()) {
         Utils.warning('local repo yolk creation...')
         await yolk.create(verbose)
       } else if (yolkRenew) {
         Utils.warning('force renew local repository yolk...')
-        yolk.clean()
+        yolk.yolkClean()
         await yolk.create(verbose)
       } else {
         Utils.warning('Using preesixent yolk...')
@@ -404,7 +404,7 @@ export default class Ovary {
      */
     if (fs.existsSync(`${this.settings.work_dir.merged}/etc/crypttab`)) {
       await exec(`rm ${this.settings.work_dir.merged}/etc/crypttab`, echo)
-      await exec(`touch ${this.settings.work_dir.merged}/etc/crypttab`, echo)
+      // await exec(`touch ${this.settings.work_dir.merged}/etc/crypttab`, echo)
     }
 
     /**
