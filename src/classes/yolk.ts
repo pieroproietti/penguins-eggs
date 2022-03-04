@@ -96,7 +96,7 @@ export default class Yolk {
    * Svuota la repo yolk
    */
   async yolkClean() {
-    await exec(`rm ${this.dir}/*`, this.echo)
+    await exec(`rm ${this.yolkDir}/*`, this.echo)
   }
 
   /**
@@ -118,6 +118,10 @@ export default class Yolk {
       if (depend !== '') {
         if (!Pacman.packageIsInstalled(depend)) {
           toDownloads.push(depend)
+        } else {
+          if (this.verbose) {
+            console.log(`eggs >>> already installed: ${depend}`)
+          }
         }
       }
     }
