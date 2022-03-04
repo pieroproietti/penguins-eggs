@@ -85,7 +85,7 @@ function yolk {
     mkdir "$APT_ROOT/sources.list.d"
 
 cat << EOF > "$CHROOT/etc/apt/sources.list.d/yolk.list"
-deb [trusted=yes] file:///var/local/yolk ./
+deb [trusted=yes] file:///var/local/yolk /
 EOF
 
     # apt-get update
