@@ -7,7 +7,6 @@
 import fs from 'fs'
 import Utils from './utils'
 import Pacman from './pacman'
-import { execSync } from 'child_process'
 import Bleach from './bleach'
 import { exec } from '../lib/utils'
 
@@ -15,36 +14,38 @@ import { exec } from '../lib/utils'
  *
  */
 export default class Yolk {
-  dir = '/var/local/yolk'
+  yolkDir = '/var/local/yolk'
+
+  verbose = false
+
+  echo = {}
 
   /**
    *
-   * @param verbose
    */
   async create(verbose = false) {
-    /**
-     * riga apt
-     *
-     * deb [trusted=yes] file:/var/local/yolk ./
-     *
-     */
+    this.verbose = verbose
+    this.echo = Utils.setEcho(verbose)
+
     Utils.warning('updating system...')
     if (!Pacman.commandIsInstalled('dpkg-scanpackages')) {
       process.exit(0)
     }
 
-    const echo = Utils.setEcho(verbose)
+    let cmd = ''
     try {
-      await exec('apt-get update --yes', echo)
-    } catch {
-      Utils.error('Yolk.create() apt-get update --yes ') // + e.error)
+      cmd = 'apt-get update --yes'
+      await exec(cmd, this.echo)
+    } catch (error) {
+      console.log(error)
+      await Utils.pressKeyToExit(cmd)
     }
 
-    if (!this.exists()) {
-      await exec(`mkdir ${this.dir} -p`, echo)
-      await exec(`chown _apt:root ${this.dir} -R`, echo)
+    if (!this.yolkExists()) {
+      await exec(`mkdir ${this.yolkDir} -p`, this.echo)
+      await exec(`chown _apt:root ${this.yolkDir} -R`, this.echo)
     } else {
-      this.clean()
+      await this.yolkClean()
     }
 
     /**
@@ -65,22 +66,20 @@ export default class Yolk {
     }
 
     // I Downloads avverranno nell directory corrente
-    process.chdir(this.dir)
+    process.chdir(this.yolkDir)
 
     // Per tutti i pacchetti cerca le dipendenze, controlla se non siano installate e le scarico.
     for (const package_ of packages) {
-      let cmd = ''
       Utils.warning(`downloading package ${package_} and it's dependencies...`)
       cmd = `apt-cache depends --recurse --no-recommends --no-suggests --no-conflicts --no-breaks --no-replaces --no-enhances ${package_} | grep "^\\w" | sort -u`
-      const depends = (await exec (cmd, {echo: false, capture: true})).data
+      const depends = (await exec(cmd, { echo: false, capture: true })).data
       await this.installDeps(depends.split('\n'))
     }
 
     // Creo Package.gz
-    // const cmd = 'dpkg-scanpackages -m . | gzip -c > Packages.gz'
-    const cmd = 'dpkg-scanpackages -h  md5,sha1,sha256 . | gzip -c > Packages.gz'
+    cmd = 'dpkg-scanpackages -h  md5,sha1,sha256 . | gzip -c > Packages.gz'
     Utils.warning(cmd)
-    await exec(cmd)
+    await exec(cmd, this.echo)
 
     // Creo Release
     const date = await exec('date -R -u')
@@ -96,15 +95,15 @@ export default class Yolk {
   /**
    * Svuota la repo yolk
    */
-  clean() {
-    execSync(`rm ${this.dir}/*`)
+  async yolkClean() {
+    await exec(`rm ${this.dir}/*`, this.echo)
   }
 
   /**
-   * Controllo l'esistenza
+   * Check if yoil exists and it's a repo
    */
-  exists(): boolean {
-    const check = `${this.dir}/Packages.gz`
+   yolkExists(): boolean {
+    const check = `${this.yolkDir}/Packages.gz`
     return fs.existsSync(check)
   }
 
@@ -125,10 +124,10 @@ export default class Yolk {
 
     // e li vado a scaricare in /var/local/yolk
     for (const toDownload of toDownloads) {
-      process.chdir(this.dir)
-        const cmd = `apt-get download ${toDownload}`
-        Utils.warning(`- ${cmd}`)
-        await exec(cmd)
+      process.chdir(this.yolkDir)
+      const cmd = `apt-get download ${toDownload}`
+      Utils.warning(`- ${cmd}`)
+      await exec(cmd, this.echo)
     }
   }
 }
