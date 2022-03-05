@@ -45,7 +45,13 @@ import Users from './users'
  * Ovary:
  */
 export default class Ovary {
-  toNull = ' > /dev/null 2>&1'
+  verbose = false
+
+  echo = {}
+
+  echoYes = {}
+
+  toNull = ''
 
   incubator = {} as Incubator
 
@@ -57,62 +63,38 @@ export default class Ovary {
 
   snapshot_basename = ''
 
-  theme = ''
-
   compression = ''
-
-  /**
-   * Egg
-   * @param compression
-   */
-  constructor(snapshot_prefix = '', snapshot_basename = '', theme = '', compression = '') {
-    this.settings = new Settings()
-
-    // I flags di produce hanno la preferenza
-    if (snapshot_prefix !== '') {
-      this.snapshot_prefix = snapshot_prefix
-    }
-
-    if (snapshot_basename !== '') {
-      this.snapshot_basename = snapshot_basename
-    }
-
-    if (theme !== '') {
-      this.theme = theme
-    }
-
-    if (compression !== '') {
-      this.compression = compression
-    }
-  }
 
   /**
    * @returns {boolean} success
    */
-  async fertilization(): Promise<boolean> {
+  async fertilization(snapshot_prefix = '', snapshot_basename = '', theme = '', compression = '') : Promise<boolean> {
+    this.settings = new Settings()
+
     if (await this.settings.load()) {
 
       this.familyId = this.settings.distro.familyId
 
-      if (this.snapshot_prefix !== '') {
-        this.settings.config.snapshot_prefix = this.snapshot_prefix
+      if (snapshot_prefix !== '') {
+        this.settings.config.snapshot_prefix = snapshot_prefix
       }
 
-      if (this.snapshot_basename !== '') {
-        this.settings.config.snapshot_basename = this.snapshot_basename
+      if (snapshot_basename !== '') {
+        this.settings.config.snapshot_basename = snapshot_basename
       }
 
-      if (this.theme !== '') {
-        this.settings.config.theme = this.theme
+      if (theme !== '') {
+        this.settings.config.theme = theme
       }
 
-      if (this.compression !== '') {
-        this.settings.config.compression = this.compression
+      if (compression !== '') {
+        this.settings.config.compression = compression
       }
-
 
       this.settings.listFreeSpace()
-      if (await Utils.customConfirm('Select yes to continue...')) return true
+      if (await Utils.customConfirm('Select yes to continue...')) {
+        return true
+      } 
     }
     return false
   }
@@ -122,22 +104,26 @@ export default class Ovary {
    * @param basename
    */
   async produce(backup = false, scriptOnly = false, yolkRenew = false, release = false, myAddons: IMyAddons, verbose = false) {
-    const echo = Utils.setEcho(verbose)
-    const echoYes = Utils.setEcho(true)
-
+    this.verbose = verbose
+    this.echo = Utils.setEcho(verbose)
+    this.echoYes = Utils.setEcho(true)
+    if (this.verbose) {
+      this.toNull = ' > /dev/null 2>&1'
+    }
+    
     let luksName = 'luks-eggs-backup'
     let luksFile = `/tmp/${luksName}`
-    let luksDevice = `/dev/mapper/${luksName}`
-    let luksMountpoint = `/mnt`
+    // let luksDevice = `/dev/mapper/${luksName}`
+    // let luksMountpoint = `/mnt`
 
     if (this.familyId === 'debian') {
       const yolk = new Repo()
-      if (!yolk.exists()) {
-        Utils.warning('local repo yolk creation...')
+      if (!yolk.yolkExists()) {
+        Utils.warning('local repository /var/local/yolk creation...')
         await yolk.create(verbose)
       } else if (yolkRenew) {
-        Utils.warning('force renew local repository yolk...')
-        yolk.clean()
+        Utils.warning('force renew local repository /var/local/yolk...')
+        yolk.yolkClean()
         await yolk.create(verbose)
       } else {
         Utils.warning('Using preesixent yolk...')
@@ -148,13 +134,13 @@ export default class Ovary {
       shx.mkdir('-p', this.settings.config.snapshot_dir)
     }
 
-    await this.settings.loadRemix(this.snapshot_basename, this.theme)
+    await this.settings.loadRemix(this.snapshot_basename,  this.settings.config.theme)
 
     if (Utils.isLive()) {
       console.log(chalk.red('>>> eggs: This is a live system! An egg cannot be produced from an egg!'))
     } else {
 
-      await this.liveCreateStructure(verbose)
+      await this.liveCreateStructure()
 
       if (this.settings.distro.isCalamaresAvailable && (Pacman.isInstalledGui()) && this.settings.config.force_installer && !(await Pacman.calamaresCheck())) {
         console.log('Installing ' + chalk.bgGray('calamares') + ' due force_installer=yes.')
@@ -164,10 +150,7 @@ export default class Ovary {
       }
 
       if (backup) {
-        /**
-         *  We will remove users and servers homes from ISO
-         */
-        console.log(`The following private data will removed from your ISO:`)
+        console.log(`eggs will remove all the users from live. Following servers datas will included on a crypted LUKS volume:`)
         const users = await this.usersFill()
         for (let i = 0; i < users.length; i++) {
           if (users[i].saveIt) {
@@ -178,10 +161,7 @@ export default class Ovary {
           }
         }
       } else {
-        /**
-         *  We will remove all the users from ISO, but servers and data will be included uncrypted
-         */
-        Utils.warning('eggs will remove all the users from ISO, but servers homes will be included uncrypted')
+        Utils.warning('eggs will remove all the users from live, but servers datas will be included uncrypted')
       }
 
       /**
@@ -198,31 +178,32 @@ export default class Ovary {
          * L'installer prende il tema da settings.remix.branding
          */
         this.incubator = new Incubator(this.settings.remix, this.settings.distro, this.settings.config.user_opt, verbose)
+
         await this.incubator.config(release)
 
-        await this.syslinux(verbose)
-        await this.isolinux(this.theme, verbose)
-        await this.kernelCopy(verbose)
+        await this.syslinux()
+        await this.isolinux(this.settings.config.theme)
+        await this.kernelCopy()
         /**
          * we need different behaviour on
          * initrd for different familis
          */
         if (this.familyId === 'debian') {
-          await this.initrdCopy(verbose)
+          await this.initrdCopy()
         } else if (this.familyId === 'archlinux') {
-          await this.initrdCreate(verbose)
+          await this.initrdCreate()
         }
 
         if (this.settings.config.make_efi) {
-          await this.makeEfi(this.theme, verbose)
+          await this.makeEfi(this.settings.config.theme)
         }
 
-        await this.bindLiveFs(verbose)
+        await this.bindLiveFs()
         await this.cleanUsersAccounts()
-        await this.createUserLive(verbose)
+        await this.createUserLive()
 
         if (Pacman.isInstalledGui()) {
-          await this.createXdgAutostart(this.theme, myAddons)
+          await this.createXdgAutostart(this.settings.config.theme, myAddons)
           if (displaymanager() === '') {
             // If GUI is installed and not Desktop manager
             cliAutologin.addIssue(this.settings.distro.distroId, this.settings.distro.versionId, this.settings.config.user_opt, this.settings.config.user_opt_passwd, this.settings.config.root_passwd, this.settings.work_dir.merged)
@@ -231,85 +212,68 @@ export default class Ovary {
         } else {
           cliAutologin.addAutologin(this.settings.distro.distroId, this.settings.distro.versionId, this.settings.config.user_opt, this.settings.config.user_opt_passwd, this.settings.config.root_passwd, this.settings.work_dir.merged)
         }
-        await this.editLiveFs(verbose)
-        await this.makeSquashfs(scriptOnly, verbose)
-        await this.uBindLiveFs(verbose) // Lo smonto prima della fase di backup
+        await this.editLiveFs()
+        await this.makeSquashfs(scriptOnly, )
+        await this.uBindLiveFs() // Lo smonto prima della fase di backup
       }
 
       if (backup) {
-        await exec('eggs syncto')
+        await exec('eggs syncto', this.echo)
         Utils.warning(`moving ${luksFile} in ${this.settings.config.snapshot_dir}ovarium/iso/live`)
-        await exec(`mv ${luksFile} ${this.settings.config.snapshot_dir}ovarium/iso/live`, echo)
+        await exec(`mv ${luksFile} ${this.settings.config.snapshot_dir}ovarium/iso/live`, this.echo)
       }
-      const xorrisoCommand = this.makeDotDisk(backup, verbose)
+      const xorrisoCommand = this.makeDotDisk(backup)
 
       /**
        * patch to emulate miso archilinux
        */
       if (this.familyId === 'archlinux') {
-        await exec(`mkdir ${this.settings.work_dir.pathIso}/live/x86_64`, echo)
-        await exec(`ln ${this.settings.work_dir.pathIso}/live/filesystem.squashfs ${this.settings.work_dir.pathIso}/live/x86_64/livefs.sfs`, echo)
+        await exec(`mkdir ${this.settings.work_dir.pathIso}/live/x86_64`, this.echo)
+        await exec(`ln ${this.settings.work_dir.pathIso}/live/filesystem.squashfs ${this.settings.work_dir.pathIso}/live/x86_64/livefs.sfs`, this.echo)
       }
-      await this.makeIso(xorrisoCommand, scriptOnly, verbose)
+      await this.makeIso(xorrisoCommand, scriptOnly)
     }
   }
 
   /**
    * Crea la struttura della workdir
    */
-  async liveCreateStructure(verbose = false) {
-    if (verbose) {
+  async liveCreateStructure() {
+    if (this.verbose) {
       console.log('Overy: liveCreateStructure')
     }
 
     Utils.warning(`Creating egg in ${this.settings.work_dir.path}`)
 
+    let cmd
     if (!fs.existsSync(this.settings.work_dir.path)) {
-      try {
-        shx.mkdir('-p', this.settings.work_dir.path)
-      } catch (error) {
-        console.log('error: ' + error + ' creating ' + this.settings.work_dir.path)
-      }
+      cmd = `mkdir -p ${this.settings.work_dir.path}`
+      this.tryCatch(cmd)
     }
 
     if (!fs.existsSync(this.settings.work_dir.path + '/README.md')) {
-      try {
-        shx.cp(path.resolve(__dirname, '../../conf/README.md'), this.settings.work_dir.path + 'README.md')
-      } catch (error) {
-        console.log('error: ' + error + ' creating ' + path.resolve(__dirname, '../../conf/README.md'), this.settings.work_dir.path + 'README.md')
-      }
+      cmd = `cp ${path.resolve(__dirname, '../../conf/README.md')} ${this.settings.work_dir.path}README.md}`
+      this.tryCatch(cmd)
     }
 
     if (!fs.existsSync(this.settings.work_dir.lowerdir)) {
-      try {
-        shx.mkdir('-p', this.settings.work_dir.lowerdir)
-      } catch (error) {
-        console.log('error: ' + error + ' creating ' + this.settings.work_dir.lowerdir)
-      }
+      cmd = `mkdir -p ${this.settings.work_dir.lowerdir}`
+      this.tryCatch(cmd)
     }
 
     if (!fs.existsSync(this.settings.work_dir.upperdir)) {
-      try {
-        shx.mkdir('-p', this.settings.work_dir.upperdir)
-      } catch (error) {
-        console.log('error: ' + error + ' creating ' + this.settings.work_dir.upperdir)
-      }
+      cmd = `mkdir -p ${this.settings.work_dir.upperdir}`
+      this.tryCatch(cmd)
     }
 
     if (!fs.existsSync(this.settings.work_dir.workdir)) {
-      try {
-        shx.mkdir('-p', this.settings.work_dir.workdir)
-      } catch (error) {
-        console.log('error: ' + error + ' creating ' + this.settings.work_dir.workdir)
-      }
+      cmd = `mkdir -p ${this.settings.work_dir.workdir}`
+      this.tryCatch(cmd)
     }
 
     if (!fs.existsSync(this.settings.work_dir.merged)) {
-      try {
-        shx.mkdir('-p', this.settings.work_dir.merged)
-      } catch (error) {
-        console.log('error: ' + error + ' creating ' + this.settings.work_dir.merged)
-      }
+      cmd = `mkdir -p ${this.settings.work_dir.merged}`
+      this.tryCatch(cmd)
     }
 
     /**
@@ -317,31 +281,32 @@ export default class Ovary {
      * precedentemente in isolinux
      */
     if (!fs.existsSync(this.settings.work_dir.pathIso)) {
-      try {
-        shx.mkdir('-p', this.settings.work_dir.pathIso + '/boot/grub/' + Utils.machineUEFI())
-      } catch (error) {
-        console.log('error: ' + error + ' creating ' + this.settings.work_dir.pathIso + '/boot/grub/' + Utils.machineUEFI())
-      }
+      cmd = `mkdir -p ${this.settings.work_dir.pathIso}/boot/grub/${Utils.machineUEFI()}`
+      this.tryCatch(cmd)
 
-      try {
-        shx.mkdir('-p', this.settings.work_dir.pathIso + '/efi/boot')
-      } catch (error) {
-        console.log('error: ' + error + ' creating ' + this.settings.work_dir.pathIso + '/efi/boot')
-      }
+      cmd = `mkdir -p ${this.settings.work_dir.pathIso}/efi/boot`
+      this.tryCatch(cmd)
 
-      try {
-        shx.mkdir('-p', this.settings.work_dir.pathIso + '/isolinux')
-      } catch {
-        shx.mkdir('-p', this.settings.work_dir.pathIso + '/isolinux')
-      }
+      cmd = `mkdir -p ${this.settings.work_dir.pathIso}/isolinux`
+      this.tryCatch(cmd)
 
-      try {
-        shx.mkdir('-p', this.settings.work_dir.pathIso + '/live')
-      } catch {
-        shx.mkdir('-p', this.settings.work_dir.pathIso + '/live')
-      }
+      cmd = `mkdir -p ${this.settings.work_dir.pathIso}/live`
+      this.tryCatch(cmd)
     }
   }
+
+  /**
+   * 
+   * @param cmd 
+   */
+  async tryCatch(cmd ='') {
+    try {
+      await exec(cmd, this.echo)
+    } catch (error) {
+      console.log(`Error: ${error}`)
+      await Utils.pressKeyToExit(cmd)
+    }
+   }
 
   /**
    * editLiveFs
@@ -353,9 +318,8 @@ export default class Ovary {
    * - Add some basic files to /dev
    * - Clear configs from /etc/network/interfaces, wicd and NetworkManager and netman
    */
-  async editLiveFs(verbose = false) {
-    const echo = Utils.setEcho(verbose)
-    if (verbose) {
+  async editLiveFs() {
+    if (this.verbose) {
       console.log('ovary: editLiveFs')
     }
 
@@ -368,43 +332,43 @@ export default class Ovary {
 
     // Truncate logs, remove archived logs.
     let cmd = `find ${this.settings.work_dir.merged}/var/log -name "*gz" -print0 | xargs -0r rm -f`
-    await exec(cmd, echo)
+    await exec(cmd, this.echo)
     cmd = `find ${this.settings.work_dir.merged}/var/log/ -type f -exec truncate -s 0 {} \\;`
-    await exec(cmd, echo)
+    await exec(cmd, this.echo)
 
     // Allow all fixed drives to be mounted with pmount
     if (this.settings.config.pmount_fixed && fs.existsSync(`${this.settings.work_dir.merged}/etc/pmount.allow`)) {
       // MX aggiunto /etc
-      await exec(`sed -i 's:#/dev/sd\[a-z\]:/dev/sd\[a-z\]:' ${this.settings.work_dir.merged}/etc/pmount.allow`, echo)
+      await exec(`sed -i 's:#/dev/sd\[a-z\]:/dev/sd\[a-z\]:' ${this.settings.work_dir.merged}/etc/pmount.allow`, this.echo)
     }
 
     // Enable or disable password login through ssh for users (not root)
     // Remove obsolete live-config file
     if (fs.existsSync(`${this.settings.work_dir.merged}lib/live/config/1161-openssh-server`)) {
-      await exec('rm -f "$work_dir"/myfs/lib/live/config/1161-openssh-server', echo)
+      await exec('rm -f "$work_dir"/myfs/lib/live/config/1161-openssh-server', this.echo)
     }
 
     if (fs.existsSync(`${this.settings.work_dir.merged}/etc/ssh/sshd_config`)) {
-      await exec(`sed -i 's/PermitRootLogin yes/PermitRootLogin prohibit-password/' ${this.settings.work_dir.merged}/etc/ssh/sshd_config`, echo)
+      await exec(`sed -i 's/PermitRootLogin yes/PermitRootLogin prohibit-password/' ${this.settings.work_dir.merged}/etc/ssh/sshd_config`, this.echo)
       await (this.settings.config.ssh_pass
-        ? exec(`sed -i 's|.*PasswordAuthentication.*no|PasswordAuthentication yes|' ${this.settings.work_dir.merged}/etc/ssh/sshd_config`, echo)
-        : exec(`sed -i 's|.*PasswordAuthentication.*yes|PasswordAuthentication no|' ${this.settings.work_dir.merged}/etc/ssh/sshd_config`, echo))
+        ? exec(`sed -i 's|.*PasswordAuthentication.*no|PasswordAuthentication yes|' ${this.settings.work_dir.merged}/etc/ssh/sshd_config`, this.echo)
+        : exec(`sed -i 's|.*PasswordAuthentication.*yes|PasswordAuthentication no|' ${this.settings.work_dir.merged}/etc/ssh/sshd_config`, this.echo))
     }
 
     /**
      * /etc/fstab should exist, even if it's empty,
      * to prevent error messages at boot
      */
-    await exec(`rm ${this.settings.work_dir.merged}/etc/fstab`, echo)
-    await exec(`touch ${this.settings.work_dir.merged}/etc/fstab`, echo)
+    await exec(`rm ${this.settings.work_dir.merged}/etc/fstab`, this.echo)
+    await exec(`touch ${this.settings.work_dir.merged}/etc/fstab`, this.echo)
 
     /**
      * Remove crypttab if exists 
      * this is crucial for tpm systems.
      */
     if (fs.existsSync(`${this.settings.work_dir.merged}/etc/crypttab`)) {
-      await exec(`rm ${this.settings.work_dir.merged}/etc/crypttab`, echo)
-      await exec(`touch ${this.settings.work_dir.merged}/etc/crypttab`, echo)
+      await exec(`rm ${this.settings.work_dir.merged}/etc/crypttab`, this.echo)
+      // await exec(`touch ${this.settings.work_dir.merged}/etc/crypttab`, echo)
     }
 
     /**
@@ -414,8 +378,8 @@ export default class Ovary {
      * set up a new unique ID.
      */
     if (fs.existsSync(`${this.settings.work_dir.merged}/etc/machine-id`)) {
-      await exec(`rm ${this.settings.work_dir.merged}/etc/machine-id`, echo)
-      await exec(`touch ${this.settings.work_dir.merged}/etc/machine-id`, echo)
+      await exec(`rm ${this.settings.work_dir.merged}/etc/machine-id`, this.echo)
+      await exec(`touch ${this.settings.work_dir.merged}/etc/machine-id`, this.echo)
       Utils.write(`${this.settings.work_dir.merged}/etc/machine-id`, ':')
     }
 
@@ -431,7 +395,7 @@ export default class Ovary {
     if (Utils.isSystemd()) {
       Utils.warning('systemd')
       
-      const systemdctl = new Systemctl(verbose)
+      const systemdctl = new Systemctl(this.verbose)
       /**
        * SU UBUNTU E DERIVATE NON DISABILITARE systemd-resolved.service
        */
@@ -468,10 +432,10 @@ export default class Ovary {
       /**
        * All systemd distros rm
        */
-      await exec(`rm -f ${this.settings.work_dir.merged}/var/lib/wicd/configurations/*`, echo)
-      await exec(`rm -f ${this.settings.work_dir.merged}/etc/wicd/wireless-settings.conf`, echo)
-      await exec(`rm -f ${this.settings.work_dir.merged}/etc/NetworkManager/system-connections/*`, echo)
-      await exec(`rm -f ${this.settings.work_dir.merged}/etc/network/wifi/*`, echo)
+      await exec(`rm -f ${this.settings.work_dir.merged}/var/lib/wicd/configurations/*`, this.echo)
+      await exec(`rm -f ${this.settings.work_dir.merged}/etc/wicd/wireless-settings.conf`, this.echo)
+      await exec(`rm -f ${this.settings.work_dir.merged}/etc/NetworkManager/system-connections/*`, this.echo)
+      await exec(`rm -f ${this.settings.work_dir.merged}/etc/network/wifi/*`, this.echo)
       /**
        * removing from /etc/network/:
        * if-down.d if-post-down.d if-pre-up.d if-up.d interfaces interfaces.d
@@ -479,7 +443,7 @@ export default class Ovary {
       const cleanDirs = ['if-down.d', 'if-post-down.d', 'if-pre-up.d', 'if-up.d', 'interfaces.d']
       let cleanDir = ''
       for (cleanDir of cleanDirs) {
-        await exec(`rm -f ${this.settings.work_dir.merged}/etc/network/${cleanDir}/wpasupplicant`, echo)
+        await exec(`rm -f ${this.settings.work_dir.merged}/etc/network/${cleanDir}/wpasupplicant`, this.echo)
       }
     }
 
@@ -496,79 +460,78 @@ export default class Ovary {
      */
     if (this.familyId === 'debian') {
       if (fs.existsSync(`${this.settings.work_dir.merged}/etc/network/interfaces`)) {
-        await exec(`rm ${this.settings.work_dir.merged}/etc/network/interfaces`, echo)
+        await exec(`rm ${this.settings.work_dir.merged}/etc/network/interfaces`, this.echo)
       }
 
-      await exec(`touch ${this.settings.work_dir.merged}/etc/network/interfaces`, echo)
+      await exec(`touch ${this.settings.work_dir.merged}/etc/network/interfaces`, this.echo)
       Utils.write(`${this.settings.work_dir.merged}/etc/network/interfaces`, 'auto lo\niface lo inet loopback')
     }
-
 
     /**
      * add some basic files to /dev
      */
     if (!fs.existsSync(`${this.settings.work_dir.merged}/dev/console`)) {
-      await exec(`mknod -m 622 ${this.settings.work_dir.merged}/dev/console c 5 1`, echo)
+      await exec(`mknod -m 622 ${this.settings.work_dir.merged}/dev/console c 5 1`, this.echo)
     }
 
     if (!fs.existsSync(`${this.settings.work_dir.merged}/dev/null`)) {
-      await exec(`mknod -m 666 ${this.settings.work_dir.merged}/dev/null c 1 3`, echo)
+      await exec(`mknod -m 666 ${this.settings.work_dir.merged}/dev/null c 1 3`, this.echo)
     }
 
     if (!fs.existsSync(`${this.settings.work_dir.merged}/dev/zero`)) {
-      await exec(`mknod -m 666 ${this.settings.work_dir.merged}/dev/zero c 1 5`, echo)
+      await exec(`mknod -m 666 ${this.settings.work_dir.merged}/dev/zero c 1 5`, this.echo)
     }
 
     if (!fs.existsSync(`${this.settings.work_dir.merged}/dev/ptmx`)) {
-      await exec(`mknod -m 666 ${this.settings.work_dir.merged}/dev/ptmx c 5 2`, echo)
+      await exec(`mknod -m 666 ${this.settings.work_dir.merged}/dev/ptmx c 5 2`, this.echo)
     }
 
     if (!fs.existsSync(`${this.settings.work_dir.merged}/dev/tty`)) {
-      await exec(`mknod -m 666 ${this.settings.work_dir.merged}/dev/tty c 5 0`, echo)
+      await exec(`mknod -m 666 ${this.settings.work_dir.merged}/dev/tty c 5 0`, this.echo)
     }
 
     if (!fs.existsSync(`${this.settings.work_dir.merged}/dev/random`)) {
-      await exec(`mknod -m 444 ${this.settings.work_dir.merged}/dev/random c 1 8`, echo)
+      await exec(`mknod -m 444 ${this.settings.work_dir.merged}/dev/random c 1 8`, this.echo)
     }
 
     if (!fs.existsSync(`${this.settings.work_dir.merged}/dev/urandom`)) {
-      await exec(`mknod -m 444 ${this.settings.work_dir.merged}/dev/urandom c 1 9`, echo)
+      await exec(`mknod -m 444 ${this.settings.work_dir.merged}/dev/urandom c 1 9`, this.echo)
     }
 
     if (!fs.existsSync(`${this.settings.work_dir.merged}/dev/{console,ptmx,tty}`)) {
-      await exec(`chown -v root:tty ${this.settings.work_dir.merged}/dev/{console,ptmx,tty}`, echo)
+      await exec(`chown -v root:tty ${this.settings.work_dir.merged}/dev/{console,ptmx,tty}`, this.echo)
     }
 
     if (!fs.existsSync(`${this.settings.work_dir.merged}/dev/fd`)) {
-      await exec(`ln -sv /proc/self/fd ${this.settings.work_dir.merged}/dev/fd`, echo)
+      await exec(`ln -sv /proc/self/fd ${this.settings.work_dir.merged}/dev/fd`, this.echo)
     }
 
     if (!fs.existsSync(`${this.settings.work_dir.merged}/dev/stdin`)) {
-      await exec(`ln -sv /proc/self/fd/0 ${this.settings.work_dir.merged}/dev/stdin`, echo)
+      await exec(`ln -sv /proc/self/fd/0 ${this.settings.work_dir.merged}/dev/stdin`, this.echo)
     }
 
     if (!fs.existsSync(`${this.settings.work_dir.merged}/dev/stdout`)) {
-      await exec(`ln -sv /proc/self/fd/1 ${this.settings.work_dir.merged}/dev/stdout`, echo)
+      await exec(`ln -sv /proc/self/fd/1 ${this.settings.work_dir.merged}/dev/stdout`, this.echo)
     }
 
     if (!fs.existsSync(`${this.settings.work_dir.merged}/dev/stderr`)) {
-      await exec(`ln -sv /proc/self/fd/2 ${this.settings.work_dir.merged}/dev/stderr`, echo)
+      await exec(`ln -sv /proc/self/fd/2 ${this.settings.work_dir.merged}/dev/stderr`, this.echo)
     }
 
     if (!fs.existsSync(`${this.settings.work_dir.merged}/dev/core`)) {
-      await exec(`ln -sv /proc/kcore ${this.settings.work_dir.merged}/dev/core`, echo)
+      await exec(`ln -sv /proc/kcore ${this.settings.work_dir.merged}/dev/core`, this.echo)
     }
 
     if (!fs.existsSync(`${this.settings.work_dir.merged}/dev/shm`)) {
-      await exec(`mkdir -v ${this.settings.work_dir.merged}/dev/shm`, echo)
+      await exec(`mkdir -v ${this.settings.work_dir.merged}/dev/shm`, this.echo)
     }
 
     if (!fs.existsSync(`${this.settings.work_dir.merged}/dev/pts`)) {
-      await exec(`mkdir -v ${this.settings.work_dir.merged}/dev/pts`, echo)
+      await exec(`mkdir -v ${this.settings.work_dir.merged}/dev/pts`, this.echo)
     }
 
     if (!fs.existsSync(`${this.settings.work_dir.merged}/dev/shm`)) {
-      await exec(`chmod 1777 ${this.settings.work_dir.merged}/dev/shm`, echo)
+      await exec(`chmod 1777 ${this.settings.work_dir.merged}/dev/shm`, this.echo)
     }
 
     /**
@@ -576,42 +539,40 @@ export default class Ovary {
      * creava problemi con MXLINUX
      */
     if (!fs.existsSync(`${this.settings.work_dir.merged}/tmp`)) {
-      await exec(`mkdir ${this.settings.work_dir.merged}/tmp`, echo)
+      await exec(`mkdir ${this.settings.work_dir.merged}/tmp`, this.echo)
     }
 
-    await exec(`chmod 1777 ${this.settings.work_dir.merged}/tmp`, echo)
+    await exec(`chmod 1777 ${this.settings.work_dir.merged}/tmp`, this.echo)
   }
 
   /**
    * syslinux
    */
-  async syslinux(verbose = false) {
-    const echo = Utils.setEcho(verbose)
-    if (verbose) {
+  async syslinux() {
+    if (this.verbose) {
       console.log('ovary: syslinux')
       console.log('syslinux path: ' + this.settings.distro.syslinuxPath)
     }
 
-    await exec(`cp ${this.settings.distro.syslinuxPath}/vesamenu.c32 ${this.settings.work_dir.pathIso}/isolinux/`, echo)
-    await exec(`cp ${this.settings.distro.syslinuxPath}/chain.c32 ${this.settings.work_dir.pathIso}/isolinux/`, echo)
+    await exec(`cp ${this.settings.distro.syslinuxPath}/vesamenu.c32 ${this.settings.work_dir.pathIso}/isolinux/`, this.echo)
+    await exec(`cp ${this.settings.distro.syslinuxPath}/chain.c32 ${this.settings.work_dir.pathIso}/isolinux/`, this.echo)
     /**
      * per openSuse non sono riusciuto a determinare
      * quale pacchetto installi:
      * ldllinux.c43, libcom32 e libutil.c32
      */
     if (this.familyId !== 'suse') {
-      await exec(`cp ${this.settings.distro.syslinuxPath}/ldlinux.c32 ${this.settings.work_dir.pathIso}/isolinux/`, echo)
-      await exec(`cp ${this.settings.distro.syslinuxPath}/libcom32.c32 ${this.settings.work_dir.pathIso}/isolinux/`, echo)
-      await exec(`cp ${this.settings.distro.syslinuxPath}/libutil.c32 ${this.settings.work_dir.pathIso}/isolinux/`, echo)
+      await exec(`cp ${this.settings.distro.syslinuxPath}/ldlinux.c32 ${this.settings.work_dir.pathIso}/isolinux/`, this.echo)
+      await exec(`cp ${this.settings.distro.syslinuxPath}/libcom32.c32 ${this.settings.work_dir.pathIso}/isolinux/`, this.echo)
+      await exec(`cp ${this.settings.distro.syslinuxPath}/libutil.c32 ${this.settings.work_dir.pathIso}/isolinux/`, this.echo)
     }
   }
 
   /**
    *  async isolinux
    */
-  async isolinux(theme = 'eggs', verbose = false) {
-    const echo = Utils.setEcho(verbose)
-    if (verbose) {
+  async isolinux(theme = 'eggs') {
+    if (this.verbose) {
       console.log('ovary: isolinux')
     }
 
@@ -619,7 +580,7 @@ export default class Ovary {
     /**
      * isolinux.bin
      */
-    await exec(`cp ${this.settings.distro.isolinuxPath}/isolinux.bin ${this.settings.work_dir.pathIso}/isolinux/`, echo)
+    await exec(`cp ${this.settings.distro.isolinuxPath}/isolinux.bin ${this.settings.work_dir.pathIso}/isolinux/`, this.echo)
 
     /**
      * isolinux.theme.cfg
@@ -673,15 +634,14 @@ export default class Ovary {
   /**
    * copy kernel
    */
-  async kernelCopy(verbose = false) {
-    const echo = Utils.setEcho(verbose)
-    if (verbose) {
+  async kernelCopy() {
+    if (this.verbose) {
       console.log('ovary: kernelCopy')
     }
 
     let lackVmlinuzImage = false
     if (fs.existsSync(this.settings.kernel_image)) {
-      await exec(`cp ${this.settings.kernel_image} ${this.settings.work_dir.pathIso}/live/`, echo)
+      await exec(`cp ${this.settings.kernel_image} ${this.settings.work_dir.pathIso}/live/`, this.echo)
     } else {
       Utils.error(`Cannot find ${this.settings.kernel_image}`)
       lackVmlinuzImage = true
@@ -695,32 +655,44 @@ export default class Ovary {
   }
 
   /**
-   * necessita di verbose
+   * necessita di echoYes
    */
-  async initrdCreate(verbose = false) {
-    verbose = true
-    const echo = Utils.setEcho(verbose)
+  async initrdCreate() {
     let initrdImg = Utils.initrdImg()
     initrdImg = initrdImg.substring(initrdImg.lastIndexOf('/') + 1)
     Utils.warning(`Creating ${initrdImg} in ${this.settings.work_dir.pathIso}/live/`)
-    // shx.cp(path.resolve(__dirname, '../../conf/README.md'), this.settings.work_dir.path + 'README.md')
-    await exec(`mkinitcpio -c ${path.resolve(__dirname, '../../mkinitcpio/manjaro/mkinitcpio.conf')} -g ${this.settings.work_dir.pathIso}/live/${initrdImg}`, echo)
+    await exec(`mkinitcpio -c ${path.resolve(__dirname, '../../mkinitcpio/manjaro/mkinitcpio.conf')} -g ${this.settings.work_dir.pathIso}/live/${initrdImg}`, this.echoYes)
   }
 
   /**
-   * 
-   * @param verbose 
+   * We must upgrade to initrdCreate for Debian/Ubuntu
    * @returns 
    */
   async initrdCopy(verbose = false) {
+    let isCrypted = false
+
+    Utils.warning(`initrdCreate`)
+    
+    if (fs.existsSync(`/etc/crypttab`)) {
+      isCrypted = true
+      await exec(`mv /etc/crypttab /etc/crypttab.saved`, this.echo)
+    }
+
+    await exec(`mkinitramfs -o ${this.settings.work_dir.pathIso}/live/initrd.img-$(uname -r) ${this.toNull}`, this.echo)
+
+    if (isCrypted){
+      await exec(`mv /etc/crypttab.saved /etc/crypttab`, this.echo)
+    }
+
+    /*
+
     Utils.warning(`initrdCopy`)
-    const echo = Utils.setEcho(verbose)
-    if (verbose) {
+    if (this.verbose) {
       console.log('ovary: initrdCopy')
     }
     let lackInitrdImage = false
     if (fs.existsSync(this.settings.initrd_image)) {
-      await exec(`cp ${this.settings.initrd_image} ${this.settings.work_dir.pathIso}/live/`, echo)
+      await exec(`cp ${this.settings.initrd_image} ${this.settings.work_dir.pathIso}/live/`, this.echo)
     } else {
       Utils.error(`Cannot find ${this.settings.initrdImg}`)
       lackInitrdImage = true
@@ -731,18 +703,14 @@ export default class Ovary {
       Utils.warning(`initrd_img: ${this.settings.initrd_image}`)
       process.exit(1)
     }
+    */
   }
 
   /**
    * squashFs: crea in live filesystem.squashfs
    */
-  async makeSquashfs(scriptOnly = false, verbose = false) {
-    let echo = { echo: false, ignore: false }
-    if (verbose) {
-      echo = { echo: true, ignore: false }
-    }
-
-    if (verbose) {
+  async makeSquashfs(scriptOnly = false) {
+    if (this.verbose) {
       console.log('ovary: makeSquashfs')
     }
 
@@ -787,7 +755,7 @@ export default class Ovary {
     Utils.writeX(`${this.settings.work_dir.path}mksquashfs`, cmd)
     if (!scriptOnly) {
       Utils.warning('squashing filesystem: ' + compression)
-      await exec(cmd, echo)
+      await exec(cmd, this.echoYes)
     }
   }
 
@@ -856,10 +824,8 @@ export default class Ovary {
    *
    * @param verbose
    */
-  async bindLiveFs(verbose = false) {
-    verbose = false
-    const echo = Utils.setEcho(verbose)
-    if (verbose) {
+  async bindLiveFs() {
+    if (this.verbose) {
       console.log('ovary: bindLiveFs')
     }
 
@@ -890,32 +856,32 @@ export default class Ovary {
              */
             cmds.push(`${cmd} need to be presente, and rw`, titleLine, '# create mountpoint lower')
             cmds.push(await makeIfNotExist(`${this.settings.work_dir.lowerdir}/${dir}`), `# first: mount /${dir} rw in ${this.settings.work_dir.lowerdir}/${dir}`)
-            cmds.push(await rexec(`mount --bind --make-slave /${dir} ${this.settings.work_dir.lowerdir}/${dir}`, verbose), '# now remount it ro')
-            cmds.push(await rexec(`mount -o remount,bind,ro ${this.settings.work_dir.lowerdir}/${dir}`, verbose), `\n# second: create mountpoint upper, work and ${this.settings.work_dir.merged} and mount ${dir}`)
-            cmds.push(await makeIfNotExist(`${this.settings.work_dir.upperdir}/${dir}`, verbose))
-            cmds.push(await makeIfNotExist(`${this.settings.work_dir.workdir}/${dir}`, verbose))
-            cmds.push(await makeIfNotExist(`${this.settings.work_dir.merged}/${dir}`, verbose), `\n# thirth: mount /${dir} rw in ${this.settings.work_dir.merged}`)
-            cmds.push(await rexec(`mount -t overlay overlay -o lowerdir=${this.settings.work_dir.lowerdir}/${dir},upperdir=${this.settings.work_dir.upperdir}/${dir},workdir=${this.settings.work_dir.workdir}/${dir} ${this.settings.work_dir.merged}/${dir}`, verbose))
+            cmds.push(await rexec(`mount --bind --make-slave /${dir} ${this.settings.work_dir.lowerdir}/${dir}`, this.verbose), '# now remount it ro')
+            cmds.push(await rexec(`mount -o remount,bind,ro ${this.settings.work_dir.lowerdir}/${dir}`, this.verbose), `\n# second: create mountpoint upper, work and ${this.settings.work_dir.merged} and mount ${dir}`)
+            cmds.push(await makeIfNotExist(`${this.settings.work_dir.upperdir}/${dir}`, this.verbose))
+            cmds.push(await makeIfNotExist(`${this.settings.work_dir.workdir}/${dir}`, this.verbose))
+            cmds.push(await makeIfNotExist(`${this.settings.work_dir.merged}/${dir}`, this.verbose), `\n# thirth: mount /${dir} rw in ${this.settings.work_dir.merged}`)
+            cmds.push(await rexec(`mount -t overlay overlay -o lowerdir=${this.settings.work_dir.lowerdir}/${dir},upperdir=${this.settings.work_dir.upperdir}/${dir},workdir=${this.settings.work_dir.workdir}/${dir} ${this.settings.work_dir.merged}/${dir}`, this.verbose))
           } else if (this.merged(dir)) {
             /*
              * merged creazione della directory e mount ro
              */
             cmds.push(`${cmd} need to be present, mount ro`, titleLine)
-            cmds.push(await makeIfNotExist(`${this.settings.work_dir.merged}/${dir}`, verbose))
-            cmds.push(await rexec(`mount --bind --make-slave /${dir} ${this.settings.work_dir.merged}/${dir}`, verbose))
-            cmds.push(await rexec(`mount -o remount,bind,ro ${this.settings.work_dir.merged}/${dir}`, verbose))
+            cmds.push(await makeIfNotExist(`${this.settings.work_dir.merged}/${dir}`, this.verbose))
+            cmds.push(await rexec(`mount --bind --make-slave /${dir} ${this.settings.work_dir.merged}/${dir}`, this.verbose))
+            cmds.push(await rexec(`mount -o remount,bind,ro ${this.settings.work_dir.merged}/${dir}`, this.verbose))
           } else {
             /**
              * normal solo la creazione della directory, nessun mount
              */
             cmds.push(`${cmd} need to be present, no mount`, titleLine)
-            cmds.push(await makeIfNotExist(`${this.settings.work_dir.merged}/${dir}`, verbose), `# mount -o bind /${dir} ${this.settings.work_dir.merged}/${dir}`)
+            cmds.push(await makeIfNotExist(`${this.settings.work_dir.merged}/${dir}`, this.verbose), `# mount -o bind /${dir} ${this.settings.work_dir.merged}/${dir}`)
           }
         }
       } else if (N8.isFile(dir)) {
         cmds.push(`# /${dir} is just a file`, titleLine)
         if (!fs.existsSync(`${this.settings.work_dir.merged}/${dir}`)) {
-          cmds.push(await rexec(`cp /${dir} ${this.settings.work_dir.merged}`, verbose))
+          cmds.push(await rexec(`cp /${dir} ${this.settings.work_dir.merged}`, this.verbose))
         } else {
           cmds.push('# file exist... skip')
         }
@@ -932,7 +898,7 @@ export default class Ovary {
           if (fs.existsSync(lnkDest)) {
             cmds.push(`ln -s ${this.settings.work_dir.merged}/${lnkDest} ${this.settings.work_dir.merged}/${lnkDest}`)
           } else {
-            cmds.push(await rexec(`cp -r /${dir} ${this.settings.work_dir.merged}`, verbose))
+            cmds.push(await rexec(`cp -r /${dir} ${this.settings.work_dir.merged}`, this.verbose))
           }
         } else {
           cmds.push('# SymbolicLink exist... skip')
@@ -949,9 +915,8 @@ export default class Ovary {
    * ubind del fs live
    * @param verbose
    */
-  async uBindLiveFs(verbose = false) {
-    const echo = Utils.setEcho(verbose)
-    if (verbose) {
+  async uBindLiveFs() {
+    if (this.verbose) {
       console.log('ovary: uBindLiveFs')
     }
 
@@ -973,10 +938,10 @@ export default class Ovary {
           cmds.push(`\n# directory: ${dirname}`)
           if (this.mergedAndOvelay(dirname)) {
             cmds.push(`\n# ${dirname} has overlay`, `\n# First, umount it from ${this.settings.work_dir.path}`)
-            cmds.push(await rexec(`umount ${this.settings.work_dir.merged}/${dirname}`, verbose), `\n# Second, umount it from ${this.settings.work_dir.lowerdir}`)
-            cmds.push(await rexec(`umount ${this.settings.work_dir.lowerdir}/${dirname}`, verbose))
+            cmds.push(await rexec(`umount ${this.settings.work_dir.merged}/${dirname}`, this.verbose), `\n# Second, umount it from ${this.settings.work_dir.lowerdir}`)
+            cmds.push(await rexec(`umount ${this.settings.work_dir.lowerdir}/${dirname}`, this.verbose))
           } else if (this.merged(dirname)) {
-            cmds.push(await rexec(`umount ${this.settings.work_dir.merged}/${dirname}`, verbose))
+            cmds.push(await rexec(`umount ${this.settings.work_dir.merged}/${dirname}`, this.verbose))
           }
 
           cmds.push(`\n# remove in ${this.settings.work_dir.merged} and ${this.settings.work_dir.lowerdir}`)
@@ -986,14 +951,14 @@ export default class Ovary {
            */
           let nest = this.settings.work_dir.path.split('/')
           if (dirname !== nest[1]) { // We can't remove first level nest
-            cmds.push(await rexec(`rm ${this.settings.work_dir.merged}/${dirname} -rf`, verbose))
+            cmds.push(await rexec(`rm ${this.settings.work_dir.merged}/${dirname} -rf`, this.verbose))
           }
         } else if (N8.isFile(dirname)) {
           cmds.push(`\n# ${dirname} = file`)
-          cmds.push(await rexec(`rm ${this.settings.work_dir.merged}/${dirname}`, verbose))
+          cmds.push(await rexec(`rm ${this.settings.work_dir.merged}/${dirname}`, this.verbose))
         } else if (N8.isSymbolicLink(dirname)) {
           cmds.push(`\n# ${dirname} = symbolicLink`)
-          cmds.push(await rexec(`rm ${this.settings.work_dir.merged}/${dirname}`, verbose))
+          cmds.push(await rexec(`rm ${this.settings.work_dir.merged}/${dirname}`, this.verbose))
         }
       }
     }
@@ -1004,7 +969,7 @@ export default class Ovary {
   /**
    * bind dei virtual file system
    */
-  async bindVfs(verbose = false) {
+  async bindVfs() {
     const cmds: string[] = []
     cmds.push(
       `mount -o bind /dev ${this.settings.work_dir.merged}/dev`,
@@ -1020,7 +985,7 @@ export default class Ovary {
    *
    * @param verbose
    */
-  async ubindVfs(verbose = false) {
+  async ubindVfs() {
     const cmds: string[] = []
     cmds.push(`umount ${this.settings.work_dir.merged}/dev/pts`, `umount ${this.settings.work_dir.merged}/dev`, `umount ${this.settings.work_dir.merged}/proc`, `umount ${this.settings.work_dir.merged}/run`, `umount ${this.settings.work_dir.merged}/sys`)
     Utils.writeXs(`${this.settings.work_dir.path}ubindvfs`, cmds)
@@ -1030,22 +995,21 @@ export default class Ovary {
    *
    * @param verbose
    */
-  async cleanUsersAccounts(verbose = false) {
-    const echo = Utils.setEcho(verbose)
+  async cleanUsersAccounts() {
     /**
      * delete all user in chroot
      */
     const cmds: string[] = []
     const cmd = `chroot ${this.settings.work_dir.merged} getent passwd {1000..60000} |awk -F: '{print $1}'`
     const result = await exec(cmd, {
-      echo: verbose,
+      echo: this.verbose,
       ignore: false,
       capture: true
     })
     const users: string[] = result.data.split('\n')
     for (let i = 0; i < users.length - 1; i++) {
       // cmds.push(await rexec(`chroot ${this.settings.work_dir.merged} deluser ${users[i]}`, verbose))
-      cmds.push(await rexec(`chroot ${this.settings.work_dir.merged} userdel ${users[i]}`, verbose))
+      cmds.push(await rexec(`chroot ${this.settings.work_dir.merged} userdel ${users[i]}`, this.verbose))
     }
   }
 
@@ -1054,56 +1018,54 @@ export default class Ovary {
    * create la home per user_opt
    * @param verbose
    */
-  async createUserLive(verbose = false) {
-    const echo = Utils.setEcho(verbose)
-    if (verbose) {
+  async createUserLive() {
+    if (this.verbose) {
       console.log('ovary: createUserLive')
     }
 
     const cmds: string[] = []
-    cmds.push(await rexec('chroot ' + this.settings.work_dir.merged + ' rm /home/' + this.settings.config.user_opt + ' -rf', verbose))
-    cmds.push(await rexec('chroot ' + this.settings.work_dir.merged + ' mkdir /home/' + this.settings.config.user_opt, verbose))
-    cmds.push(await rexec('chroot ' + this.settings.work_dir.merged + ' useradd ' + this.settings.config.user_opt + ' --home-dir /home/' + this.settings.config.user_opt + ' --shell /bin/bash ', verbose))
-    cmds.push(await rexec('chroot ' + this.settings.work_dir.merged + ' echo ' + this.settings.config.user_opt + ':' + this.settings.config.user_opt_passwd + '| chroot ' + this.settings.work_dir.merged + ' chpasswd', verbose))
-    cmds.push(await rexec('chroot  ' + this.settings.work_dir.merged + ' cp /etc/skel/. /home/' + this.settings.config.user_opt + ' -R', verbose))
+    cmds.push(await rexec('chroot ' + this.settings.work_dir.merged + ' rm /home/' + this.settings.config.user_opt + ' -rf', this.verbose))
+    cmds.push(await rexec('chroot ' + this.settings.work_dir.merged + ' mkdir /home/' + this.settings.config.user_opt, this.verbose))
+    cmds.push(await rexec('chroot ' + this.settings.work_dir.merged + ' useradd ' + this.settings.config.user_opt + ' --home-dir /home/' + this.settings.config.user_opt + ' --shell /bin/bash ', this.verbose))
+    cmds.push(await rexec('chroot ' + this.settings.work_dir.merged + ' echo ' + this.settings.config.user_opt + ':' + this.settings.config.user_opt_passwd + '| chroot ' + this.settings.work_dir.merged + ' chpasswd', this.verbose))
+    cmds.push(await rexec('chroot  ' + this.settings.work_dir.merged + ' cp /etc/skel/. /home/' + this.settings.config.user_opt + ' -R', this.verbose))
 
     // cmds.push(await rexec('chroot  ' + this.settings.work_dir.merged + ' cp /etc/skel/. /home/' + this.settings.config.user_opt + ' -R', verbose))
-    cmds.push(await rexec('chroot  ' + this.settings.work_dir.merged + ' chown ' + this.settings.config.user_opt + ':users' + ' /home/' + this.settings.config.user_opt + ' -R', verbose))
+    cmds.push(await rexec('chroot  ' + this.settings.work_dir.merged + ' chown ' + this.settings.config.user_opt + ':users' + ' /home/' + this.settings.config.user_opt + ' -R', this.verbose))
 
     if (this.familyId === 'debian') {
       // add user live to sudo
-      cmds.push(await rexec(`chroot ${this.settings.work_dir.merged} usermod -aG sudo ${this.settings.config.user_opt}`, verbose))
+      cmds.push(await rexec(`chroot ${this.settings.work_dir.merged} usermod -aG sudo ${this.settings.config.user_opt}`, this.verbose))
 
       // educaandos
-      if (this.theme === 'educaandos') {
-        cmds.push(await rexec(`chroot ${this.settings.work_dir.merged} usermod -aG adm ${this.settings.config.user_opt}`, verbose))
-        cmds.push(await rexec(`chroot ${this.settings.work_dir.merged} usermod -aG cdrom ${this.settings.config.user_opt}`, verbose))
-        cmds.push(await rexec(`chroot ${this.settings.work_dir.merged} usermod -aG dip ${this.settings.config.user_opt}`, verbose))
-        cmds.push(await rexec(`chroot ${this.settings.work_dir.merged} usermod -aG plugdev ${this.settings.config.user_opt}`, verbose))
-        cmds.push(await rexec(`chroot ${this.settings.work_dir.merged} usermod -aG lpadmin ${this.settings.config.user_opt}`, verbose))
-        cmds.push(await rexec(`chroot ${this.settings.work_dir.merged} usermod -aG sambashare ${this.settings.config.user_opt}`, verbose))
-        cmds.push(await rexec(`chroot ${this.settings.work_dir.merged} usermod -aG admin ${this.settings.config.user_opt}`, verbose))
+      if ( this.settings.config.theme === 'educaandos') {
+        cmds.push(await rexec(`chroot ${this.settings.work_dir.merged} usermod -aG adm ${this.settings.config.user_opt}`, this.verbose))
+        cmds.push(await rexec(`chroot ${this.settings.work_dir.merged} usermod -aG cdrom ${this.settings.config.user_opt}`, this.verbose))
+        cmds.push(await rexec(`chroot ${this.settings.work_dir.merged} usermod -aG dip ${this.settings.config.user_opt}`, this.verbose))
+        cmds.push(await rexec(`chroot ${this.settings.work_dir.merged} usermod -aG plugdev ${this.settings.config.user_opt}`, this.verbose))
+        cmds.push(await rexec(`chroot ${this.settings.work_dir.merged} usermod -aG lpadmin ${this.settings.config.user_opt}`, this.verbose))
+        cmds.push(await rexec(`chroot ${this.settings.work_dir.merged} usermod -aG sambashare ${this.settings.config.user_opt}`, this.verbose))
+        cmds.push(await rexec(`chroot ${this.settings.work_dir.merged} usermod -aG admin ${this.settings.config.user_opt}`, this.verbose))
       }
 
     } else if (this.familyId === 'archlinux') {
       // adduser live to wheel and autologin
-      cmds.push(await rexec(`chroot ${this.settings.work_dir.merged} usermod -aG wheel ${this.settings.config.user_opt}`, verbose))
+      cmds.push(await rexec(`chroot ${this.settings.work_dir.merged} usermod -aG wheel ${this.settings.config.user_opt}`, this.verbose))
       // in manjaro they use autologin group for the iso, if not exist create it
-      cmds.push(await rexec(`chroot ${this.settings.work_dir.merged} test $(grep "autologin" /etc/group) || groupadd -r autologin`, verbose))
-      cmds.push(await rexec(`chroot ${this.settings.work_dir.merged} usermod -aG autologin ${this.settings.config.user_opt}`, verbose))
+      cmds.push(await rexec(`chroot ${this.settings.work_dir.merged} test $(grep "autologin" /etc/group) || groupadd -r autologin`, this.verbose))
+      cmds.push(await rexec(`chroot ${this.settings.work_dir.merged} usermod -aG autologin ${this.settings.config.user_opt}`, this.verbose))
     }
 
     if (this.familyId === 'debian' || this.familyId === 'archlinux') {
-      cmds.push(await rexec('chroot ' + this.settings.work_dir.merged + ' echo root:' + this.settings.config.root_passwd + '| chroot ' + this.settings.work_dir.merged + ' chpasswd', verbose))
+      cmds.push(await rexec('chroot ' + this.settings.work_dir.merged + ' echo root:' + this.settings.config.root_passwd + '| chroot ' + this.settings.work_dir.merged + ' chpasswd', this.verbose))
     }
   }
 
   /**
    *
    */
-  async createXdgAutostart(theme = 'eggs', myAddons: IMyAddons, verbose = false) {
-    const echo = Utils.setEcho(verbose)
-    if (verbose) {
+  async createXdgAutostart(theme = 'eggs', myAddons: IMyAddons) {
+    if (this.verbose) {
       console.log('ovary: createXdgAutostart()')
     }
 
@@ -1224,7 +1186,7 @@ export default class Ovary {
       }
 
       fs.writeFileSync(script, text, 'utf8')
-      await exec(`chmod a+x ${script}`, echo)
+      await exec(`chmod a+x ${script}`, this.echo)
     }
 
     await Xdg.autologin(Utils.getPrimaryUser(), this.settings.config.user_opt, this.settings.work_dir.merged)
@@ -1273,9 +1235,8 @@ export default class Ovary {
    * makeEfi
   */
   // #######################################################################################
-  async makeEfi(theme = 'eggs', verbose = false) {
-    const echo = Utils.setEcho(verbose)
-    if (verbose) {
+  async makeEfi(theme = 'eggs') {
+    if (this.verbose) {
       console.log('ovary: makeEfi')
     }
 
@@ -1297,13 +1258,13 @@ export default class Ovary {
      * Creo o cancello e creo: memdiskDir
      */
     if (fs.existsSync(memdiskDir)) {
-      await exec(`rm ${memdiskDir} -rf`, echo)
+      await exec(`rm ${memdiskDir} -rf`, this.echo)
     }
 
     Utils.warning('creating memdiskDir: ' + memdiskDir)
     await exec(`mkdir ${memdiskDir}`)
-    await exec(`mkdir ${memdiskDir}/boot`, echo)
-    await exec(`mkdir ${memdiskDir}/boot/grub`, echo)
+    await exec(`mkdir ${memdiskDir}/boot`, this.echo)
+    await exec(`mkdir ${memdiskDir}/boot/grub`, this.echo)
 
     /**
      * for initial grub.cfg in memdisk
@@ -1321,16 +1282,16 @@ export default class Ovary {
      * start with empty efiWorkDir
      */
     if (fs.existsSync(efiWorkDir)) {
-      await exec(`rm ${efiWorkDir} -rf`, echo)
+      await exec(`rm ${efiWorkDir} -rf`, this.echo)
     }
 
     Utils.warning('creating efiWordDir: ' + efiWorkDir)
-    await exec(`mkdir ${efiWorkDir}`, echo)
-    await exec(`mkdir ${efiWorkDir}/boot`, echo)
-    await exec(`mkdir ${efiWorkDir}/boot/grub`, echo)
-    await exec(`mkdir ${efiWorkDir}/boot/grub/${Utils.machineUEFI()}`, echo)
-    await exec(`mkdir ${efiWorkDir}/efi`, echo)
-    await exec(`mkdir ${efiWorkDir}/efi/boot`, echo)
+    await exec(`mkdir ${efiWorkDir}`, this.echo)
+    await exec(`mkdir ${efiWorkDir}/boot`, this.echo)
+    await exec(`mkdir ${efiWorkDir}/boot/grub`, this.echo)
+    await exec(`mkdir ${efiWorkDir}/boot/grub/${Utils.machineUEFI()}`, this.echo)
+    await exec(`mkdir ${efiWorkDir}/efi`, this.echo)
+    await exec(`mkdir ${efiWorkDir}/efi/boot`, this.echo)
 
     /**
     * copy splash to efiWorkDir
@@ -1341,7 +1302,7 @@ export default class Ovary {
       Utils.warning('Cannot find: ' + splashSrc)
       process.exit()
     }
-    await exec(`cp ${splashSrc} ${splashDest}`)
+    await exec(`cp ${splashSrc} ${splashDest}`, this.echo)
 
 
     /**
@@ -1353,18 +1314,18 @@ export default class Ovary {
       Utils.warning('Cannot find: ' + themeSrc)
       process.exit()
     }
-    await exec(`cp ${themeSrc} ${themeDest}`)
+    await exec(`cp ${themeSrc} ${themeDest}`, this.echo)
 
     /**
      * second grub.cfg file in efiWork
      */
     //         for i in $(ls /usr/lib/grub/x86_64-efi            |grep part_|grep \.mod|sed 's/.mod//'); do echo "insmod $i" >>              boot/grub/x86_64-efi/grub.cfg; done
     let cmd = `for i in $(ls /usr/lib/grub/${Utils.machineUEFI()}|grep part_|grep \.mod|sed 's/.mod//'); do echo "insmod $i" >> ${efiWorkDir}boot/grub/${Utils.machineUEFI()}/grub.cfg; done`
-    await exec(cmd, echo)
+    await exec(cmd, this.echo)
     //     for i in efi_gop efi_uga ieee1275_fb vbe vga video_bochs video_cirrus jpeg png gfxterm ; do echo "insmod $i" >> boot/grub/x86_64-efi/grub.cfg ; done
     cmd = `for i in efi_gop efi_uga ieee1275_fb vbe vga video_bochs video_cirrus jpeg png gfxterm ; do echo "insmod $i" >> ${efiWorkDir}/boot/grub/${Utils.machineUEFI()}/grub.cfg ; done`
-    await exec(cmd, echo)
-    await exec(`echo "source /boot/grub/grub.cfg" >> ${efiWorkDir}/boot/grub/${Utils.machineUEFI()}/grub.cfg`, echo)
+    await exec(cmd, this.echo)
+    await exec(`echo "source /boot/grub/grub.cfg" >> ${efiWorkDir}/boot/grub/${Utils.machineUEFI()}/grub.cfg`, this.echo)
 
 
     /**
@@ -1378,7 +1339,7 @@ export default class Ovary {
      */
     const currentDir = process.cwd()
     process.chdir(memdiskDir)
-    await exec(`tar -cvf memdisk boot`, echo)
+    await exec(`tar -cvf memdisk boot`, this.echo)
     process.chdir(currentDir)
 
     // make the grub image
@@ -1389,48 +1350,48 @@ export default class Ovary {
     // -p, --prefix=DIR set prefix directory
     //                               --format=x86_64-efi         --memdisk=memdisk          --output=bootx64.efi           --prefix?DIR set prefix directory
     //          grub-mkimage         -O "x86_64-efi"             -m "memdisk"               -o "bootx64.efi"               -p '(memdisk)/boot/grub' search iso9660 configfile normal memdisk tar cat part_msdos part_gpt fat ext2 ntfs ntfscomp hfsplus chain boot linux
-    await exec(`${grubName}-mkimage  -O "${Utils.machineUEFI()}" -m "${memdiskDir}/memdisk" -o "${memdiskDir}/bootx64.efi" -p '(memdisk)/boot/grub' search iso9660 configfile normal memdisk tar cat part_msdos part_gpt fat ext2 ntfs ntfscomp hfsplus chain boot linux`, echo)
+    await exec(`${grubName}-mkimage  -O "${Utils.machineUEFI()}" -m "${memdiskDir}/memdisk" -o "${memdiskDir}/bootx64.efi" -p '(memdisk)/boot/grub' search iso9660 configfile normal memdisk tar cat part_msdos part_gpt fat ext2 ntfs ntfscomp hfsplus chain boot linux`, this.echo)
 
     // popd torna in efiWorkDir
 
     // copy the grub image to efi/boot (to go later in the device's root)
-    await exec(`cp ${memdiskDir}/bootx64.efi ${efiWorkDir}/efi/boot`, echo)
+    await exec(`cp ${memdiskDir}/bootx64.efi ${efiWorkDir}/efi/boot`, this.echo)
 
     // #######################
 
     // Do the boot image "boot/grub/efiboot.img"
 
-    await exec(`dd if=/dev/zero of=${efiWorkDir}/boot/grub/efiboot.img bs=1K count=1440`, echo)
-    await exec(`/sbin/mkdosfs -F 12 ${efiWorkDir}/boot/grub/efiboot.img`, echo)
+    await exec(`dd if=/dev/zero of=${efiWorkDir}/boot/grub/efiboot.img bs=1K count=1440`, this.echo)
+    await exec(`/sbin/mkdosfs -F 12 ${efiWorkDir}/boot/grub/efiboot.img`, this.echo)
 
-    await exec(`mkdir ${efiWorkDir}/img-mnt`, echo)
+    await exec(`mkdir ${efiWorkDir}/img-mnt`, this.echo)
 
-    await exec(`mount -o loop ${efiWorkDir}/boot/grub/efiboot.img ${efiWorkDir}/img-mnt`, echo)
+    await exec(`mount -o loop ${efiWorkDir}/boot/grub/efiboot.img ${efiWorkDir}/img-mnt`, this.echo)
 
-    await exec(`mkdir ${efiWorkDir}/img-mnt/efi`, echo)
-    await exec(`mkdir ${efiWorkDir}/img-mnt/efi/boot`, echo)
+    await exec(`mkdir ${efiWorkDir}/img-mnt/efi`, this.echo)
+    await exec(`mkdir ${efiWorkDir}/img-mnt/efi/boot`, this.echo)
 
     // era cp -r
-    await exec(`cp ${memdiskDir}/bootx64.efi ${efiWorkDir}/img-mnt/efi/boot`, echo)
+    await exec(`cp ${memdiskDir}/bootx64.efi ${efiWorkDir}/img-mnt/efi/boot`, this.echo)
 
     // #######################
 
     // copy modules and font
-    await exec(`cp -r /usr/lib/grub/${Utils.machineUEFI()}/* ${efiWorkDir}/boot/grub/${Utils.machineUEFI()}/`, echo)
+    await exec(`cp -r /usr/lib/grub/${Utils.machineUEFI()}/* ${efiWorkDir}/boot/grub/${Utils.machineUEFI()}/`, this.echo)
 
     // if this doesn't work try another font from the same place (grub's default, unicode.pf2, is much larger)
     // Either of these will work, and they look the same to me. Unicode seems to work with qemu. -fsr
     if (fs.existsSync('/usr/share/grub/unicode.pf2')) {
-      await exec(`cp /usr/share/grub/unicode.pf2 ${efiWorkDir}/boot/grub/font.pf2`, echo)
+      await exec(`cp /usr/share/grub/unicode.pf2 ${efiWorkDir}/boot/grub/font.pf2`, this.echo)
     } else if (fs.existsSync('/usr/share/grub2/ascii.pf2')) {
-      await exec(`cp /usr/share/grub2/ascii.pf2 ${efiWorkDir}/boot/grub/font.pf2`, echo)
+      await exec(`cp /usr/share/grub2/ascii.pf2 ${efiWorkDir}/boot/grub/font.pf2`, this.echo)
     }
 
     // doesn't need to be root-owned
     // chown -R 1000:1000 $(pwd) 2>/dev/null
 
     // Cleanup efi temps
-    await exec(`umount ${efiWorkDir}/img-mnt`, echo)
+    await exec(`umount ${efiWorkDir}/img-mnt`, this.echo)
     // await exec(`rmdir ${efiWorkDir}/img-mnt`, echo)
     // await exec(`rm ${memdiskDir}/img-mnt -rf`, echo)
 
@@ -1438,8 +1399,8 @@ export default class Ovary {
     //  popd
 
     // Copy efi files to iso
-    await exec(`rsync -avx  ${efiWorkDir}/boot ${isoDir}/`, echo)
-    await exec(`rsync -avx ${efiWorkDir}/efi  ${isoDir}/`, echo)
+    await exec(`rsync -avx  ${efiWorkDir}/boot ${isoDir}/`, this.echo)
+    await exec(`rsync -avx ${efiWorkDir}/efi  ${isoDir}/`, this.echo)
 
     // Do the main grub.cfg (which gets loaded last):
 
@@ -1498,7 +1459,7 @@ export default class Ovary {
    * create .disk/info, .disk/mksquashfs, .disk/mkiso
    * return mkiso
    */
-  makeDotDisk(backup = false, verbose = false): string {
+  makeDotDisk(backup = false): string {
     const dotDisk = this.settings.work_dir.pathIso + '/.disk'
     if (fs.existsSync(dotDisk)) {
       shx.rm('-rf', dotDisk)
@@ -1673,18 +1634,16 @@ export default class Ovary {
    * makeIso
    * cmd: cmd 4 xorirriso
    */
-  async makeIso(cmd: string, scriptOnly = false, verbose = false) {
-    let echo = { echo: false, ignore: false }
-    if (verbose) {
-      echo = { echo: true, ignore: false }
+  async makeIso(cmd: string, scriptOnly = false) {
+    //echo = { echo: true, ignore: false }
+
+    if (this.verbose) {
       console.log('ovary: makeIso')
     }
 
-    console.log(cmd)
-
     Utils.writeX(`${this.settings.work_dir.path}mkisofs`, cmd)
     if (!scriptOnly) {
-      await exec(cmd, echo)
+      await exec(cmd, this.echo)
     }
   }
 

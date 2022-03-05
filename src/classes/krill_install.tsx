@@ -74,6 +74,8 @@ export default class Hatching {
 
    verbose = false
 
+   echo = {}
+
    efi = false
 
    devices = {} as IDevices
@@ -105,8 +107,11 @@ export default class Hatching {
    distro = {} as IDistro
 
    luksName = ''
+
    luksFile = ''
+
    luksDevice = ''
+
    luksMountpoint = ''
 
    /**
@@ -156,8 +161,7 @@ export default class Hatching {
     */
    async install(verbose = false) {
       this.verbose = verbose
-
-      const echo = Utils.setEcho(this.verbose)
+      this.echo = Utils.setEcho(this.verbose)
       if (this.verbose) {
          this.toNull = ''
       }
@@ -232,7 +236,7 @@ export default class Hatching {
             percent = 0.37
             try {
                redraw(<Install message={message} percent={percent} spinner={true} />)
-               await exec('eggs syncfrom --rootdir /tmp/calamares-krill-root/', echo)
+               await exec('eggs syncfrom --rootdir /tmp/calamares-krill-root/', this.echo)
             } catch (error) {
                await Utils.pressKeyToExit(JSON.stringify(error))
             }
@@ -487,14 +491,12 @@ export default class Hatching {
     * setTimezone
     */
    private async setTimezone() {
-      const echo = Utils.setEcho(this.verbose)
-
       if (fs.existsSync('/etc/localtime')) {
          const cmd = `chroot ${this.installTarget} unlink /etc/localtime`
-         await exec(cmd, echo)
+         await exec(cmd, this.echo)
       }
       const cmd = `chroot ${this.installTarget} ln -sf /usr/share/zoneinfo/${this.region}/${this.zone} /etc/localtime`
-      await exec(cmd, echo)
+      await exec(cmd, this.echo)
    }
 
    /**
@@ -507,20 +509,19 @@ export default class Hatching {
     * @param homePhone
     */
    private async addUser(name = 'live', password = 'evolution', fullName = '', roomNumber = '', workPhone = '', homePhone = ''): Promise<void> {
-      const echo = Utils.setEcho(this.verbose)
 
       const cmd = `chroot ${this.installTarget} \
 adduser ${name} \
 --home /home/${name} \
 --shell /bin/bash \
 --disabled-password \
---gecos "${fullName},${roomNumber},${workPhone},${homePhone}"`
+--gecos "${fullName},${roomNumber},${workPhone},${homePhone}" ${this.toNull}`
 
-      await exec(cmd, echo)
+      await exec(cmd, this.echo)
 
-      await exec(`echo ${name}:${password} | chroot ${this.installTarget} chpasswd `, echo)
+      await exec(`echo ${name}:${password} | chroot ${this.installTarget} chpasswd ${this.toNull}`, this.echo)
 
-      await exec(`chroot ${this.installTarget} usermod -aG sudo ${name}`, echo)
+      await exec(`chroot ${this.installTarget} usermod -aG sudo ${name} ${this.toNull}`, this.echo)
    }
 
    /**
@@ -529,9 +530,8 @@ adduser ${name} \
     * @param newPassword
     */
    private async changePassword(name = 'live', newPassword = 'evolution') {
-      const echo = Utils.setEcho(this.verbose)
-      const cmd = `echo ${name}:${newPassword} | chroot ${this.installTarget} chpasswd `
-      await exec(cmd, echo)
+      const cmd = `echo ${name}:${newPassword} | chroot ${this.installTarget} chpasswd ${this.toNull}`
+      await exec(cmd, this.echo)
    }
 
    /**
@@ -539,13 +539,11 @@ adduser ${name} \
     * va corretto con users.conf di calamares
     */
    async delLiveUser() {
-      const echo = Utils.setEcho(this.verbose)
-      const echoYes = { echo: false, ignore: true }
 
       if (Utils.isLive()) {
          const user: string = this.settings.config.user_opt
          const cmd = `chroot ${this.installTarget} deluser --remove-home ${user} ${this.toNull}`
-         await exec(cmd, echoYes)
+         await exec(cmd, this.echo)
       }
    }
 
@@ -555,11 +553,9 @@ adduser ${name} \
     * @param options
     */
    private async bootloader() {
-      const echo = Utils.setEcho(this.verbose)
-
-      await exec(`chroot ${this.installTarget} grub-install ${this.partitions.installationDevice} ${this.toNull}`, echo)
-      await exec(`chroot ${this.installTarget} update-grub ${this.toNull}`, echo)
-      await exec(`sleep 1 ${this.toNull}`, echo)
+      await exec(`chroot ${this.installTarget} grub-install ${this.partitions.installationDevice} ${this.toNull}`, this.echo)
+      await exec(`chroot ${this.installTarget} update-grub ${this.toNull}`, this.echo)
+      await exec(`sleep 1 ${this.toNull}`, this.echo)
    }
 
    /**
@@ -576,22 +572,15 @@ adduser ${name} \
          text += 'RESUME=UUID=' + Utils.uuid(this.devices.swap.name)
       }
       Utils.write(file, text)
-
-      //
-
    }
-
-
 
    /**
     * initramfs()
     */
    private async initramfs() {
-      const echo = Utils.setEcho(this.verbose)
-      await exec(`chroot ${this.installTarget} mkinitramfs -o ~/initrd.img-$(uname -r) ${this.toNull}`, echo)
-      await exec(`chroot ${this.installTarget} mv ~/initrd.img-$(uname -r) /boot ${this.toNull}`, echo)
+      await exec(`chroot ${this.installTarget} mkinitramfs -o ~/initrd.img-$(uname -r) ${this.toNull}`, this.echo)
+      await exec(`chroot ${this.installTarget} mv ~/initrd.img-$(uname -r) /boot ${this.toNull}`, this.echo)
    }
-
 
    /**
     * fstab()
@@ -669,7 +658,6 @@ adduser ${name} \
       text += `# ${this.devices.swap.name} ${this.devices.swap.mountPoint} ${this.devices.swap.fsType} ${mountOptsSwap}\n`
       text += `UUID=${Utils.uuid(this.devices.swap.name)} ${this.devices.swap.mountPoint} ${this.devices.swap.fsType} ${mountOptsSwap}\n`
       Utils.write(fstab, text)
-
    }
 
    /**
@@ -687,13 +675,15 @@ adduser ${name} \
       content += 'BACKSPACE="guess"\n'
       Utils.write(file, content)
 
-      // lancio setupcon in chroot per salvare la tastiera
-      const echo = Utils.setEcho(this.verbose)
-      const cmd = 'chroot ' + this.installTarget + ' ' + 'setupcon ' + this.toNull
+      /**
+       * set keyboard
+       */
+      const cmd = `chroot ${this.installTarget} setupcon ${this.toNull}`
       try {
-         await exec(cmd, echo)
+         await exec(cmd, this.echo)
       } catch (error) {
          console.log(error)
+         Utils.pressKeyToExit(cmd, true)
       }
    }
 
@@ -736,12 +726,10 @@ adduser ${name} \
     * hostname
     */
    private async hostname() {
-      const echo = Utils.setEcho(this.verbose)
-
       const file = this.installTarget + '/etc/hostname'
       const text = this.users.hostname
 
-      await exec(`rm ${file} `, echo)
+      await exec(`rm ${file} `, this.echo)
       fs.writeFileSync(file, text)
    }
 
@@ -749,7 +737,6 @@ adduser ${name} \
     * hosts
     */
    private async hosts() {
-
       const file = this.installTarget + '/etc/hosts'
       let text = '127.0.0.1 localhost localhost.localdomain\n'
       if (this.network.addressType === 'static') {
@@ -799,16 +786,15 @@ adduser ${name} \
     * unpackfs
     */
    private async unpackfs(): Promise<void> {
-      const echo = Utils.setEcho(this.verbose)
-      const cmd = 'unsquashfs -d ' + this.installTarget + ' -f ' + this.distro.mountpointSquashFs
-      await exec(cmd)
+      const echoYes = Utils.setEcho(true)
+      const cmd = `unsquashfs -d ${this.installTarget} -f ${this.distro.mountpointSquashFs}`
+      await exec(cmd, echoYes)
    }
 
    /**
     * syncfs
     */
    private async syncfs(): Promise<void> {
-      const echo = Utils.setEcho(this.verbose)
 
       let cmd = ''
       let f = ''
@@ -861,9 +847,9 @@ adduser ${name} \
       --delete -excluded \
       --info=progress2 \
       ${f} \
-      / ${this.installTarget}`
+      / ${this.installTarget} ${this.toNull}`
 
-      await exec(cmd.trim())
+      await exec(cmd.trim(), this.echo)
    }
 
 
@@ -871,34 +857,30 @@ adduser ${name} \
     * mkfs
     */
    private async mkfs(): Promise<boolean> {
-      const echo = Utils.setEcho(this.verbose)
-
       const result = true
 
       if (this.efi) {
-         // await exec(`mkdosfs -F 32 -I ${this.devices.efi.name}` + this.toNull, echo)
-         await exec(`mkdosfs -F 32 -I ${this.devices.efi.name} ${this.toNull}`, echo)
+         await exec(`mkdosfs -F 32 -I ${this.devices.efi.name} ${this.toNull}`, this.echo)
       }
 
       if (this.devices.boot.name !== 'none') {
-         // controllare se non vada !== undefined
          if (this.devices.boot.fsType === undefined) {
             this.devices.boot.fsType = `ext2`
             this.devices.boot.mountPoint = '/boot'
          }
-         await exec(`mke2fs -Ft ${this.devices.boot.fsType} ${this.devices.boot.name} ${this.toNull}`, echo)
+         await exec(`mke2fs -Ft ${this.devices.boot.fsType} ${this.devices.boot.name} ${this.toNull}`, this.echo)
       }
 
       if (this.devices.root.name !== 'none') {
-         await exec(`mke2fs -Ft ${this.devices.root.fsType} ${this.devices.root.name} ${this.toNull}`, echo)
+         await exec(`mke2fs -Ft ${this.devices.root.fsType} ${this.devices.root.name} ${this.toNull}`, this.echo)
       }
 
       if (this.devices.data.name !== 'none') {
-         await exec(`mke2fs -Ft ${this.devices.data.fsType} ${this.devices.data.name} ${this.toNull}`, echo)
+         await exec(`mke2fs -Ft ${this.devices.data.fsType} ${this.devices.data.name} ${this.toNull}`, this.echo)
       }
 
       if (this.devices.swap.name !== 'none') {
-         await exec(`mkswap ${this.devices.swap.name} ${this.toNull}`, echo)
+         await exec(`mkswap ${this.devices.swap.name} ${this.toNull}`, this.echo)
       }
       return result
    }
@@ -908,9 +890,10 @@ adduser ${name} \
     * @param device 
     */
    async ifMountedDismount(device = '') {
+
       if ((await exec(`findmnt -rno SOURCE ${device}`)).data.trim() === device) {
-         await exec(`umount ${device} ${this.toNull}`)
-         await exec('sleep 1')
+         await exec(`umount ${device} ${this.toNull}`, this.echo)
+         await exec('sleep 1', this.echo)
       }
    }
 
@@ -918,36 +901,35 @@ adduser ${name} \
     * mount
     */
    private async mountFs(): Promise<boolean> {
-      const echo = { echo: false, ignore: this.verbose }
 
       if (!fs.existsSync(this.installTarget)) {
-         await exec(`mkdir ${this.installTarget} ${this.toNull}`, echo)
+         await exec(`mkdir ${this.installTarget} ${this.toNull}`, this.echo)
       }
 
       // root
-      await exec(`mount ${this.devices.root.name} ${this.installTarget}${this.devices.root.mountPoint} ${this.toNull}`, echo)
-      await exec(`tune2fs -c 0 -i 0 ${this.devices.root.name} ${this.toNull}`, echo)
-      await exec(`rm -rf ${this.installTarget}/lost+found ${this.toNull}`, echo)
+      await exec(`mount ${this.devices.root.name} ${this.installTarget}${this.devices.root.mountPoint} ${this.toNull}`, this.echo)
+      await exec(`tune2fs -c 0 -i 0 ${this.devices.root.name} ${this.toNull}`, this.echo)
+      await exec(`rm -rf ${this.installTarget}/lost+found ${this.toNull}`, this.echo)
 
       // boot
       if (this.devices.boot.name !== `none`) {
-         await exec(`mkdir ${this.installTarget}/boot -p ${this.toNull}`, echo)
-         await exec(`mount ${this.devices.boot.name} ${this.installTarget}${this.devices.boot.mountPoint} ${this.toNull}`, echo)
-         await exec(`tune2fs -c 0 -i 0 ${this.devices.boot.name} ${this.toNull}`, echo)
+         await exec(`mkdir ${this.installTarget}/boot -p ${this.toNull}`, this.echo)
+         await exec(`mount ${this.devices.boot.name} ${this.installTarget}${this.devices.boot.mountPoint} ${this.toNull}`, this.echo)
+         await exec(`tune2fs -c 0 -i 0 ${this.devices.boot.name} ${this.toNull}`, this.echo)
       }
 
       // data
       if (this.devices.data.name !== `none`) {
-         await exec(`mkdir ${this.installTarget}${this.devices.data.mountPoint} -p ${this.toNull}`, echo)
-         await exec(`mount ${this.devices.data.name} ${this.installTarget}${this.devices.data.mountPoint} ${this.toNull}`, echo)
-         await exec(`tune2fs -c 0 -i 0 ${this.devices.data.name} ${this.toNull}`, echo)
+         await exec(`mkdir ${this.installTarget}${this.devices.data.mountPoint} -p ${this.toNull}`, this.echo)
+         await exec(`mount ${this.devices.data.name} ${this.installTarget}${this.devices.data.mountPoint} ${this.toNull}`, this.echo)
+         await exec(`tune2fs -c 0 -i 0 ${this.devices.data.name} ${this.toNull}`, this.echo)
       }
 
       // efi
       if (this.efi) {
          if (!fs.existsSync(this.installTarget + this.devices.efi.mountPoint)) {
-            await exec(`mkdir ${this.installTarget}${this.devices.efi.mountPoint} -p ${this.toNull}`, echo)
-            await exec(`mount ${this.devices.efi.name} ${this.installTarget}${this.devices.efi.mountPoint} ${this.toNull}`, echo)
+            await exec(`mkdir ${this.installTarget}${this.devices.efi.mountPoint} -p ${this.toNull}`, this.echo)
+            await exec(`mount ${this.devices.efi.name} ${this.installTarget}${this.devices.efi.mountPoint} ${this.toNull}`, this.echo)
          }
       }
       return true
@@ -957,8 +939,6 @@ adduser ${name} \
     * umountFs
     */
    private async umountFs(): Promise<boolean> {
-      const echo = Utils.setEcho(this.verbose)
-
       // efi
       if (this.efi) {
          await this.umount(this.devices.efi.name)
@@ -984,30 +964,27 @@ adduser ${name} \
    * mountvfs()
    */
    private async mountVfs() {
-      const echo = { echo: true, ignore: true }
 
-      await exec(`mkdir ${this.installTarget}/dev ${this.toNull}`, echo)
-      await exec(`mkdir ${this.installTarget}/dev/pts ${this.toNull}`, echo)
-      await exec(`mkdir ${this.installTarget}/proc ${this.toNull}`, echo)
-      await exec(`mkdir ${this.installTarget}/sys ${this.toNull}`, echo)
-      await exec(`mkdir ${this.installTarget}/run ${this.toNull}`, echo)
+      await exec(`mkdir ${this.installTarget}/dev ${this.toNull}`, this.echo)
+      await exec(`mkdir ${this.installTarget}/dev/pts ${this.toNull}`, this.echo)
+      await exec(`mkdir ${this.installTarget}/proc ${this.toNull}`, this.echo)
+      await exec(`mkdir ${this.installTarget}/sys ${this.toNull}`, this.echo)
+      await exec(`mkdir ${this.installTarget}/run ${this.toNull}`, this.echo)
 
-      await exec(`mount -o bind /dev ${this.installTarget}/dev ${this.toNull}`, echo)
-      await exec(`mount -o bind /dev/pts ${this.installTarget}/dev/pts ${this.toNull}`, echo)
-      await exec(`mount -o bind /proc ${this.installTarget}/proc ${this.toNull}`, echo)
-      await exec(`mount -o bind /sys ${this.installTarget}/sys ${this.toNull}`, echo)
+      await exec(`mount -o bind /dev ${this.installTarget}/dev ${this.toNull}`, this.echo)
+      await exec(`mount -o bind /dev/pts ${this.installTarget}/dev/pts ${this.toNull}`, this.echo)
+      await exec(`mount -o bind /proc ${this.installTarget}/proc ${this.toNull}`, this.echo)
+      await exec(`mount -o bind /sys ${this.installTarget}/sys ${this.toNull}`, this.echo)
       if (this.efi) {
-         await exec(`mount -o bind /sys/firmware/efi/efivars ${this.installTarget}/sys/firmware/efi/efivars ${this.toNull}`, echo)
+         await exec(`mount -o bind /sys/firmware/efi/efivars ${this.installTarget}/sys/firmware/efi/efivars ${this.toNull}`, this.echo)
       }
-      await exec(`mount -o bind /run ${this.installTarget}/run ${this.toNull}`, echo)
+      await exec(`mount -o bind /run ${this.installTarget}/run ${this.toNull}`, this.echo)
    }
 
    /**
     * 
     */
    private async umountVfs() {
-      const echo = Utils.setEcho(this.verbose)
-
       await this.umount(`${this.installTarget}/dev/pts`)
       await this.umount(`${this.installTarget}/dev`)
       await this.umount(`${this.installTarget}/proc`)
@@ -1024,13 +1001,11 @@ adduser ${name} \
     * @param mountpoint 
     */
    private async umount(mountPoint = '') {
-      const echo = Utils.setEcho(this.verbose)
-
       let message = 'umount: ' + mountPoint
       if (Utils.isMountpoint(mountPoint)) {
          try {
-            await exec(`umount ${mountPoint} ${this.toNull}`, echo)
-            await exec('sleep 1', echo)
+            await exec(`umount ${mountPoint} ${this.toNull}`, this.echo)
+            await exec('sleep 1', this.echo)
          } catch (error) {
             message += + mountPoint + JSON.stringify(error)
             redraw(<Install message={message} percent={1} />)
@@ -1045,7 +1020,6 @@ adduser ${name} \
     * 
     */
    private async partition(): Promise<boolean> {
-      const echo = Utils.setEcho(this.verbose)
       let echoYes = Utils.setEcho(true)
 
       let retVal = false
@@ -1063,7 +1037,6 @@ adduser ${name} \
       }
 
       const installMode = this.partitions.installationMode
-      // await exec(`wipefs -a ${installDevice} ${this.toNull}`, echo)
 
       if (installMode === 'standard' && !this.efi) {
 
@@ -1072,11 +1045,11 @@ adduser ${name} \
           * BIOS: working
           * ===========================================================================================
           */
-         await exec(`parted --script ${installDevice} mklabel msdos`, echo)
-         await exec(`parted --script --align optimal ${installDevice} mkpart primary linux-swap    1MiB     8192MiB`, echo) //dev/sda1 swap
-         await exec(`parted --script --align optimal ${installDevice} mkpart primary ext4       8192MiB     100%`, echo) //dev/sda2 root
-         await exec(`parted ${installDevice} set 1 boot on`, echo)
-         await exec(`parted ${installDevice} set 1 esp on`, echo)
+         await exec(`parted --script ${installDevice} mklabel msdos`, this.echo)
+         await exec(`parted --script --align optimal ${installDevice} mkpart primary linux-swap    1MiB     8192MiB`, this.echo) //dev/sda1 swap
+         await exec(`parted --script --align optimal ${installDevice} mkpart primary ext4       8192MiB     100%`, this.echo) //dev/sda2 root
+         await exec(`parted ${installDevice} set 1 boot on`, this.echo)
+         await exec(`parted ${installDevice} set 1 esp on`, this.echo)
 
          // SWAP
 
@@ -1103,12 +1076,12 @@ adduser ${name} \
           * BIOS: full-encrypt: 
           * ===========================================================================================
           */
-         await exec(`parted --script ${installDevice} mklabel msdos`, echo)
-         await exec(`parted --script --align optimal ${installDevice} mkpart primary ext4          1MiB   512MiB`, echo) // sda1
-         await exec(`parted --script --align optimal ${installDevice} mkpart primary linux-swap  512MiB  8704MiB`, echo) // sda2
-         await exec(`parted --script --align optimal ${installDevice} mkpart primary ext4       8704MiB     100%`, echo) // sda3
-         await exec(`parted --script ${installDevice} set 1 boot on`, echo) // sda1
-         await exec(`parted --script ${installDevice} set 1 esp on`, echo) // sda1
+         await exec(`parted --script ${installDevice} mklabel msdos`, this.echo)
+         await exec(`parted --script --align optimal ${installDevice} mkpart primary ext4          1MiB   512MiB`, this.echo) // sda1
+         await exec(`parted --script --align optimal ${installDevice} mkpart primary linux-swap  512MiB  8704MiB`, this.echo) // sda2
+         await exec(`parted --script --align optimal ${installDevice} mkpart primary ext4       8704MiB     100%`, this.echo) // sda3
+         await exec(`parted --script ${installDevice} set 1 boot on`, this.echo) // sda1
+         await exec(`parted --script ${installDevice} set 1 esp on`, this.echo) // sda1
 
          // BOOT 512M
          this.devices.boot.name = `${installDevice}${p}1` // 'boot' 
@@ -1164,12 +1137,12 @@ adduser ${name} \
           * UEFI: working
           * ===========================================================================================
           */
-         await exec(`parted --script ${installDevice} mklabel gpt`, echo)
-         await exec(`parted --script ${installDevice} mkpart efi  fat32         34s   256MiB`, echo) // sda1 EFI
-         await exec(`parted --script ${installDevice} mkpart swap linux-swap 768MiB  8960MiB`, echo) // sda2 swap
-         await exec(`parted --script ${installDevice} mkpart root ext4      8960MiB     100%`, echo) // sda3 root
-         await exec(`parted --script ${installDevice} set 1 boot on`, echo) // sda1
-         await exec(`parted --script ${installDevice} set 1 esp on`, echo) // sda1
+         await exec(`parted --script ${installDevice} mklabel gpt`, this.echo)
+         await exec(`parted --script ${installDevice} mkpart efi  fat32         34s   256MiB`, this.echo) // sda1 EFI
+         await exec(`parted --script ${installDevice} mkpart swap linux-swap 768MiB  8960MiB`, this.echo) // sda2 swap
+         await exec(`parted --script ${installDevice} mkpart root ext4      8960MiB     100%`, this.echo) // sda3 root
+         await exec(`parted --script ${installDevice} set 1 boot on`, this.echo) // sda1
+         await exec(`parted --script ${installDevice} set 1 esp on`, this.echo) // sda1
 
          this.devices.efi.name = `${installDevice}${p}1`
          this.devices.efi.fsType = 'F 32 -I'
@@ -1197,13 +1170,13 @@ adduser ${name} \
           * UEFI, full-encrypt
           * ===========================================================================================
           */
-         await exec(`parted --script ${installDevice} mklabel gpt`, echo)
-         await exec(`parted --script ${installDevice} mkpart efi fat32           34s   256MiB`, echo) // sda1 EFI
-         await exec(`parted --script ${installDevice} mkpart boot ext4        256MiB   768MiB`, echo) // sda2 boot
-         await exec(`parted --script ${installDevice} mkpart swap linux-swap  768MiB  8960MiB`, echo) // sda3 swap
-         await exec(`parted --script ${installDevice} mkpart root ext4       8960MiB     100%`, echo) // sda4 root
-         await exec(`parted --script ${installDevice} set 1 boot on`, echo) // sda1
-         await exec(`parted --script ${installDevice} set 1 esp on`, echo) // sda1
+         await exec(`parted --script ${installDevice} mklabel gpt`, this.echo)
+         await exec(`parted --script ${installDevice} mkpart efi fat32           34s   256MiB`, this.echo) // sda1 EFI
+         await exec(`parted --script ${installDevice} mkpart boot ext4        256MiB   768MiB`, this.echo) // sda2 boot
+         await exec(`parted --script ${installDevice} mkpart swap linux-swap  768MiB  8960MiB`, this.echo) // sda3 swap
+         await exec(`parted --script ${installDevice} mkpart root ext4       8960MiB     100%`, this.echo) // sda4 root
+         await exec(`parted --script ${installDevice} set 1 boot on`, this.echo) // sda1
+         await exec(`parted --script ${installDevice} set 1 esp on`, this.echo) // sda1
 
          // EFI 256M
          this.devices.efi.name = `${installDevice}${p}1` // 'efi' 
@@ -1278,13 +1251,12 @@ adduser ${name} \
          * PROXMOX VE: BIOS and lvm2
          * ===========================================================================================
          */
-         await exec(`parted --script ${installDevice} mklabel msdos`)
-
          // Creo partizioni
-         await exec(`parted --script ${installDevice} mkpart primary ext2 1 512`) // sda1
-         await exec(`parted --script --align optimal ${installDevice} mkpart primary ext2 512 100%`) // sda2
-         await exec(`parted --script ${installDevice} set 1 boot on`, echo) // sda1
-         await exec(`parted --script ${installDevice} set 2 lvm on`, echo) // sda2
+         await exec(`parted --script ${installDevice} mklabel msdos`, this.echo)
+         await exec(`parted --script ${installDevice} mkpart primary ext2 1 512`, this.echo) // sda1
+         await exec(`parted --script --align optimal ${installDevice} mkpart primary ext2 512 100%`, this.echo) // sda2
+         await exec(`parted --script ${installDevice} set 1 boot on`, this.echo) // sda1
+         await exec(`parted --script ${installDevice} set 2 lvm on`, this.echo) // sda2
 
          const lvmPartInfo = await this.lvmPartInfo(installDevice)
          const lvmPartname = lvmPartInfo[0]
@@ -1292,13 +1264,13 @@ adduser ${name} \
          const lvmRootSize = lvmPartInfo[2]
          //const lvmDataSize = lvmPartInfo[3]
 
-         await exec(`pvcreate /dev/${lvmPartname}`)
-         await exec(`vgcreate pve /dev/${lvmPartname}`)
-         await exec(`vgchange -an`)
-         await exec(`lvcreate -L ${lvmSwapSize} -nswap pve`)
-         await exec(`lvcreate -L ${lvmRootSize} -nroot pve`)
-         await exec(`lvcreate -l 100%FREE -ndata pve`)
-         await exec(`vgchange -a y pve`)
+         await exec(`pvcreate /dev/${lvmPartname}`, this.echo)
+         await exec(`vgcreate pve /dev/${lvmPartname}`, this.echo)
+         await exec(`vgchange -an`, this.echo)
+         await exec(`lvcreate -L ${lvmSwapSize} -nswap pve`, this.echo)
+         await exec(`lvcreate -L ${lvmRootSize} -nroot pve`, this.echo)
+         await exec(`lvcreate -l 100%FREE -ndata pve`, this.echo)
+         await exec(`vgchange -a y pve`, this.echo)
 
          this.devices.efi.name = `none`
 
@@ -1325,13 +1297,13 @@ adduser ${name} \
          * PROXMOX VE: lvm2 and UEFI 
          * ===========================================================================================
          */
-         await exec(`parted --script ${installDevice} mklabel gpt`, echo)
-         await exec(`parted --script ${installDevice} mkpart efi  fat32    34s   256MiB`, echo) // sda1 EFI
-         await exec(`parted --script ${installDevice} mkpart boot ext2  256MiB   768MiB`, echo) // sda2 boot
-         await exec(`parted --script ${installDevice} mkpart lvm  ext4  768MiB     100%`, echo) // sda3 lmv2
-         await exec(`parted --script ${installDevice} set 1 boot on`, echo) // sda1
-         await exec(`parted --script ${installDevice} set 1 esp on`, echo)  // sda1
-         await exec(`parted --script ${installDevice} set 3 lvm on`) // sda3
+         await exec(`parted --script ${installDevice} mklabel gpt`, this.echo)
+         await exec(`parted --script ${installDevice} mkpart efi  fat32    34s   256MiB`, this.echo) // sda1 EFI
+         await exec(`parted --script ${installDevice} mkpart boot ext2  256MiB   768MiB`, this.echo) // sda2 boot
+         await exec(`parted --script ${installDevice} mkpart lvm  ext4  768MiB     100%`, this.echo) // sda3 lmv2
+         await exec(`parted --script ${installDevice} set 1 boot on`, this.echo) // sda1
+         await exec(`parted --script ${installDevice} set 1 esp on`, this.echo)  // sda1
+         await exec(`parted --script ${installDevice} set 3 lvm on`, this.echo) // sda3
 
          const lvmPartInfo = await this.lvmPartInfo(installDevice)
          const lvmPartname = lvmPartInfo[0]
@@ -1339,13 +1311,13 @@ adduser ${name} \
          const lvmRootSize = lvmPartInfo[2]
          //const lvmDataSize = lvmPartInfo[3]
 
-         await exec(`pvcreate /dev/${lvmPartname}`)
-         await exec(`vgcreate pve /dev/${lvmPartname}`)
-         await exec(`vgchange -an`)
-         await exec(`lvcreate -L ${lvmSwapSize} -nswap pve`)
-         await exec(`lvcreate -L ${lvmRootSize} -nroot pve`)
-         await exec(`lvcreate -l 100%FREE -ndata pve`)
-         await exec(`vgchange -a y pve`)
+         await exec(`pvcreate /dev/${lvmPartname}`, this.echo)
+         await exec(`vgcreate pve /dev/${lvmPartname}`, this.echo)
+         await exec(`vgchange -an`, this.echo)
+         await exec(`lvcreate -L ${lvmSwapSize} -nswap pve`, this.echo)
+         await exec(`lvcreate -L ${lvmRootSize} -nroot pve`, this.echo)
+         await exec(`lvcreate -l 100%FREE -ndata pve`, this.echo)
+         await exec(`vgchange -a y pve`, this.echo)
 
          this.devices.efi.name = `${installDevice}${p}1`
          this.devices.efi.fsType = 'F 32 -I'
@@ -1374,7 +1346,7 @@ adduser ${name} \
     * Return lvmPartname, lvmSwapSize, lvmRootSize
     */
    private async lvmPartInfo(installDevice = '/dev/sda'): Promise<[string, number, number, number]> {
-      // 
+
       // Partizione LVM
       const lvmPartname = shx.exec(`fdisk ${installDevice} -l | grep LVM | awk '{print $1}' | cut -d "/" -f3`).stdout.trim()
       const lvmByteSize = Number(shx.exec(`cat /proc/partitions | grep ${lvmPartname}| awk '{print $3}' | grep "[0-9]"`).stdout.trim())
@@ -1412,7 +1384,6 @@ adduser ${name} \
     * @param name 
     */
    private async execCalamaresModule(name: string) {
-      const echo = Utils.setEcho(this.verbose)
 
       /**
        * patch per ubuntu sostituisce bootloader-config e bootloader
@@ -1426,7 +1397,7 @@ adduser ${name} \
             let command = calamaresModule.command
             if (command !== '' || command !== undefined) {
                command += this.toNull
-               await exec(command, echo)
+               await exec(command, this.echo)
             }
          }
       }
@@ -1436,12 +1407,10 @@ adduser ${name} \
     * 
     */
    async bootloaderConfigUbuntu() {
-      const echo = Utils.setEcho(this.verbose)
-
       let cmd = ''
       try {
          cmd = `chroot ${this.installTarget} apt-get update -y ${this.toNull}`
-         await exec(cmd, echo)
+         await exec(cmd, this.echo)
       } catch (error) {
          console.log(error)
          await Utils.pressKeyToExit(cmd, true)
@@ -1449,7 +1418,7 @@ adduser ${name} \
 
       try {
          cmd = `chroot ${this.installTarget} sleep 1 ${this.toNull}`
-         await exec(cmd, echo)
+         await exec(cmd, this.echo)
       } catch (error) {
          console.log(error)
          await Utils.pressKeyToExit(cmd, true)
@@ -1459,7 +1428,7 @@ adduser ${name} \
       if (this.efi) {
          try {
             cmd = `chroot ${this.installTarget} ${aptInstallOptions} grub-efi-${Utils.machineArch()} --allow-unauthenticated ${this.toNull}`
-            await exec(cmd, echo)
+            await exec(cmd, this.echo)
          } catch (error) {
             console.log(error)
             await Utils.pressKeyToExit(cmd, true)
@@ -1467,7 +1436,7 @@ adduser ${name} \
       } else {
          try {
             cmd = `chroot ${this.installTarget} ${aptInstallOptions} grub-pc ${this.toNull}`
-            await exec(cmd, echo)
+            await exec(cmd, this.echo)
          } catch (error) {
             console.log(error)
             await Utils.pressKeyToExit(cmd, true)
@@ -1476,7 +1445,7 @@ adduser ${name} \
 
       try {
          cmd = `chroot ${this.installTarget} sleep 1 ${this.toNull}`
-         await exec(cmd, echo)
+         await exec(cmd, this.echo)
       } catch (error) {
          console.log(error)
          await Utils.pressKeyToExit(cmd, true)
@@ -1484,7 +1453,7 @@ adduser ${name} \
 
       try {
          cmd = `chroot ${this.installTarget} grub-install ${this.partitions.installationDevice} ${this.toNull}`
-         await exec(cmd, echo)
+         await exec(cmd, this.echo)
       } catch (error) {
          console.log(error)
          await Utils.pressKeyToExit(cmd, true)
@@ -1492,7 +1461,7 @@ adduser ${name} \
 
       try {
          cmd = `chroot ${this.installTarget} grub-mkconfig -o /boot/grub/grub.cfg ${this.toNull}`
-         await exec(cmd, echo)
+         await exec(cmd, this.echo)
       } catch (error) {
          console.log(error)
          await Utils.pressKeyToExit(cmd, true)
@@ -1500,7 +1469,7 @@ adduser ${name} \
 
       try {
          cmd = `chroot ${this.installTarget} update-grub ${this.toNull}`
-         await exec(cmd, echo)
+         await exec(cmd, this.echo)
       } catch (error) {
          console.log(error)
          await Utils.pressKeyToExit(cmd, true)
@@ -1508,7 +1477,7 @@ adduser ${name} \
 
       try {
          cmd = `chroot ${this.installTarget} sleep 1 ${this.toNull}`
-         await exec(cmd, echo)
+         await exec(cmd, this.echo)
       } catch (error) {
          console.log(error)
          await Utils.pressKeyToExit(cmd, true)
@@ -1548,7 +1517,7 @@ adduser ${name} \
    async machineId() {
       let file = `${this.installTarget}/etc/machine-id`
       if (fs.existsSync(file)) {
-         await exec(`rm ${file}`)
+         await exec(`rm ${file}`, this.echo)
       }
       await exec(`touch ${file}`)
    }

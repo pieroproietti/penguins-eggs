@@ -173,9 +173,9 @@ export default class Produce extends Command {
       }
 
       Utils.titles(this.id + ' ' + this.argv)
-      const ovary = new Ovary(prefix, basename, theme, compression)
+      const ovary = new Ovary()
       Utils.warning('Produce an egg...')
-      if (await ovary.fertilization()) {
+      if (await ovary.fertilization(prefix, basename, theme, compression)) {
         await ovary.produce(backup, scriptOnly, yolkRenew, release, myAddons, verbose)
         ovary.finished(scriptOnly)
       }
