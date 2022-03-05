@@ -19,8 +19,8 @@ You can follow the project also consulting the [commit history](https://github.c
 Versions are listed on reverse order, the first is the last one.
 
 ### eggs-9.0.31-1
-* ovary: aligned the way of --verbose work as was made in krill, createInitrd replace copyInitrd and remove find crypted partitions on live boot;
-* dad: changeg defaulut, now --fast --addons adapt --theme eggs
+* ovary: aligned the way of --verbose work as was made in krill, createInitrd replace copyInitrd and remove - during live boot - search forcrypted partitions;
+* dad: changed default to: --fast --addons adapt --theme eggs
 
 ### eggs-9.0.30-1
 * krill: troubles with bootloader-config and sources-yolk, I home this fix
