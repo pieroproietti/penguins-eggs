@@ -142,8 +142,8 @@ export default class Daddy {
        * produce
        */
       if (loadDefault) {
-        flags += ' --verbose'
-        verbose = true
+        flags += ' --addons adapt'
+        verbose = false
       }
 
       flags += ' --' + newConf.compression
@@ -151,13 +151,14 @@ export default class Daddy {
       Utils.titles('produce' + ' ' + flags)
       console.log(chalk.cyan('Daddy, what else did you leave for me?'))
       const myAddons = {} as IMyAddons
+      myAddons.adapt = true
       const backup = false
       const scriptOnly = false
       const yolkRenew = false
       const final = false
-      const ovary = new Ovary(config.snapshot_prefix, config.snapshot_basename, config.theme, config.compression)
+      const ovary = new Ovary()
       Utils.warning('Produce an egg...')
-      if (await ovary.fertilization()) {
+      if (await ovary.fertilization(config.snapshot_prefix, config.snapshot_basename, config.theme, config.compression)) {
         await ovary.produce(backup, scriptOnly, yolkRenew, final, myAddons, verbose)
         ovary.finished(scriptOnly)
       }
