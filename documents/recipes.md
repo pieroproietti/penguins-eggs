@@ -1,5 +1,27 @@
 # Recipes
 
+## Waydroid
+We start from naked and install plasma-workspace-wayland 
+
+```
+sudo apt install plasma-workspace-wayland 
+```
+Suggested packages:
+  squid-deb-proxy-client ubuntu-archive-keyring zstd shunit2 wodim cdrkit-doc
+  btrfs-progs lvm2 python3-lxc qemu-user-static apt-transport-tor
+  binfmt-support genext2fs perl-doc proot qemu-user squashfs-tools-ng
+
+Reccomanded packages  
+bridge-utils
+
+```
+export DISTRO="bookworm" && \
+sudo curl https://repo.waydro.id/waydroid.gpg --output /usr/share/keyrings/waydroid.gpg && \ 
+echo "deb [signed-by=/usr/share/keyrings/waydroid.gpg] https://repo.waydro.id/ $DISTRO main" > ~/waydroid.list && \
+sudo mv ~/waydroid.list /etc/apt/sources.list.d/waydroid.list && \
+sudo apt update
+```
+
 ## Dariusz light kde for Lenovo 
 
 ## Install naked
