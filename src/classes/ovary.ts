@@ -49,6 +49,8 @@ export default class Ovary {
 
   echo = {}
 
+  echoYes = {}
+
   toNull = ''
 
   incubator = {} as Incubator
@@ -104,6 +106,7 @@ export default class Ovary {
   async produce(backup = false, scriptOnly = false, yolkRenew = false, release = false, myAddons: IMyAddons, verbose = false) {
     this.verbose = verbose
     this.echo = Utils.setEcho(verbose)
+    this.echoYes = Utils.setEcho(true)
     if (this.verbose) {
       this.toNull = ' > /dev/null 2>&1'
     }
@@ -655,11 +658,10 @@ export default class Ovary {
    * necessita di echoYes
    */
   async initrdCreate() {
-    const echoYes = Utils.setEcho(true)
     let initrdImg = Utils.initrdImg()
     initrdImg = initrdImg.substring(initrdImg.lastIndexOf('/') + 1)
     Utils.warning(`Creating ${initrdImg} in ${this.settings.work_dir.pathIso}/live/`)
-    await exec(`mkinitcpio -c ${path.resolve(__dirname, '../../mkinitcpio/manjaro/mkinitcpio.conf')} -g ${this.settings.work_dir.pathIso}/live/${initrdImg}`, echoYes)
+    await exec(`mkinitcpio -c ${path.resolve(__dirname, '../../mkinitcpio/manjaro/mkinitcpio.conf')} -g ${this.settings.work_dir.pathIso}/live/${initrdImg}`, this.echoYes)
   }
 
   /**
@@ -753,7 +755,7 @@ export default class Ovary {
     Utils.writeX(`${this.settings.work_dir.path}mksquashfs`, cmd)
     if (!scriptOnly) {
       Utils.warning('squashing filesystem: ' + compression)
-      await exec(cmd, this.echo)
+      await exec(cmd, this.echoYes)
     }
   }
 
