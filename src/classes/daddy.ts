@@ -142,12 +142,11 @@ export default class Daddy {
        * produce
        */
       if (loadDefault) {
-        flags += ' --addons adapt'
         verbose = false
       }
 
       flags += ' --' + newConf.compression
-      flags += ' --theme=' + config.theme
+      flags += ' --addons adapt'
       Utils.titles('produce' + ' ' + flags)
       console.log(chalk.cyan('Daddy, what else did you leave for me?'))
       const myAddons = {} as IMyAddons
