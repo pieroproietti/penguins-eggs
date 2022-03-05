@@ -1641,8 +1641,6 @@ export default class Ovary {
       console.log('ovary: makeIso')
     }
 
-    console.log(cmd)
-
     Utils.writeX(`${this.settings.work_dir.path}mkisofs`, cmd)
     if (!scriptOnly) {
       await exec(cmd, this.echo)
