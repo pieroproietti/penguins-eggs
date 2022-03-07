@@ -256,41 +256,9 @@ export default class Xdg {
     await execIfExist('rm -rf', '/etc/skel/.config/yelp', verbose)
     await execIfExist('rm -rf', '/etc/skel/.config/zoomus.conf', verbose)
 
-    /**
-     * .local NON VIENE PIU copiata
-     * 
-    if (verbose) {
-      Utils.warning('Try to clean personal datas in /etc/skel/.local')
-    }
-    await execIfExist('rm -rf', '/etc/skel/.local/share/applications', verbose)
-    // await execIfExist(`rm -rf`, `/etc/skel/.local/share/cinnamon`, verbose)
-    await execIfExist('rm -rf', '/etc/skel/.local/share/data', verbose) // MEGAlink
-    await execIfExist('rm -rf', '/etc/skel/.local/share/desktop-directories', verbose)
-    await execIfExist('rm -rf', '/etc/skel/.local/share/gegl-0.4', verbose)
-    await execIfExist('rm -rf', '/etc/skel/.local/share/gnote', verbose)
-    await execIfExist('rm -rf', '/etc/skel/.local/share/grilo-plugins', verbose)
-    await execIfExist('rm -rf', '/etc/skel/.local/share/gsettings-data-convert', verbose)
-    await execIfExist('rm -rf', '/etc/skel/.local/share/gstreamer-1.0', verbose)
-    await execIfExist('rm -rf', '/etc/skel/.local/share/gvfs-metadata', verbose)
-    await execIfExist('rm -rf', '/etc/skel/.local/share/icc', verbose)
-    await execIfExist('rm -rf', '/etc/skel/.local/share/icons', verbose)
-    await execIfExist('rm -rf', '/etc/skel/.local/share/keyrings', verbose)
-    await execIfExist('rm -rf', '/etc/skel/.local/share/nemo', verbose)
-    if (!Pacman.packageIsInstalled('plank')) {
-      await execIfExist('rm -rf', '/etc/skel/.local/share/plank', verbose)
-    }
-    await execIfExist('rm -rf', '/etc/skel/.local/share/recently-used.xbel', verbose)
-    await execIfExist('rm -rf', '/etc/skel/.local/share/shotwell', verbose)
-    await execIfExist('rm -rf', '/etc/skel/.local/share/totem', verbose)
-    await execIfExist('rm -rf', '/etc/skel/.local/share/Trash', verbose)
-    await execIfExist('rm -rf', '/etc/skel/.local/share/webkitgtk', verbose)
-     * 
-    */
-
     if (verbose) {
       Utils.warning('change righs on /etc/skel')
     }
-
     await exec('chmod a+rwx,g-w,o-w /etc/skel/ -R', echo)
     execIfExist('chmod a+rwx,g-w-x,o-wx', '/etc/skel/.bashrc', verbose)
     execIfExist('chmod a+rwx,g-w-x,o-wx', '/etc/skel/.bash_logout', verbose)
