@@ -18,6 +18,10 @@ You can follow the project also consulting the [commit history](https://github.c
 ## Changelog
 Versions are listed on reverse order, the first is the last one.
 
+### eggs-9.0.32-1
+* ovary: changed the way we find path for vmlinux;
+* tools skel: removed dir .local and added mate, xfce4 (seem they use just .config like gnome)
+
 ### eggs-9.0.31-1
 * ovary: aligned the way of --verbose work as was made in krill, createInitrd replace copyInitrd and remove - during live boot - search forcrypted partitions;
 * dad: changed default to: --fast --addons adapt --theme eggs
