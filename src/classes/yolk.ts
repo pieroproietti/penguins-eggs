@@ -9,6 +9,7 @@ import Utils from './utils'
 import Pacman from './pacman'
 import Bleach from './bleach'
 import { exec } from '../lib/utils'
+import shx from 'shelljs'
 
 /**
  *
@@ -48,48 +49,83 @@ export default class Yolk {
       await this.yolkClean()
     }
 
-    /**
-     * I pacchetti che servono per l'installazione sono solo questi
-     */
+    // packages we need
     const packages = ['cryptsetup', 'keyutils']
 
-    // grub-pc solo per architettura CISC
+    // grub-pc just for amd64 or i386
     if (Utils.machineArch() === 'amd64' || Utils.machineArch() === 'i386') {
       packages.push('grub-pc')
     }
 
+    // if not i386
     if (Utils.machineArch() !== 'i386') {
-      // Aggiunto anche grub-efi-amd64 oltre a grub-efi-*-bin
-      // per la rimasterizzazione efi anche in bios
+      // add grub-efi-amd64
       packages.push('grub-efi-' + Utils.machineArch())
+      // add grub-efi-amd64-bin
       packages.push('grub-efi-' + Utils.machineArch() + '-bin')
     }
 
-    // I Downloads avverranno nell directory corrente
+    // chdir on yolkDir
     process.chdir(this.yolkDir)
 
-    // Per tutti i pacchetti cerca le dipendenze, controlla se non siano installate e le scarico.
+    // for all packages, find dependencies and check if are not installed
     for (const package_ of packages) {
       Utils.warning(`downloading package ${package_} and it's dependencies...`)
       cmd = `apt-cache depends --recurse --no-recommends --no-suggests --no-conflicts --no-breaks --no-replaces --no-enhances ${package_} | grep "^\\w" | sort -u`
       const depends = (await exec(cmd, { echo: false, capture: true })).data
-      await this.installDeps(depends.split('\n'))
+      //await this.installDeps(depends.split('\n'))
     }
 
-    // Creo Package.gz
+    // create Package.gz
     cmd = 'dpkg-scanpackages -h  md5,sha1,sha256 . | gzip -c > Packages.gz'
     Utils.warning(cmd)
     await exec(cmd, this.echo)
 
-    // Creo Release
-    const date = await exec('date -R -u')
+    // Create Release 
+    // Need shx.exec to get date
+    const date = shx.exec('date -R -u').stdout.trim()
     const content = 'Archive: stable\nComponent: yolk\nOrigin: penguins-eggs\nArchitecture: ' + Utils.machineArch() + '\nDate: ' + date + '\n'
     Utils.warning('Writing Release')
     fs.writeFileSync('Release', content)
 
+    // Cleaning
     Utils.warning('Cleaning apt cache')
     const bleach = new Bleach()
     await bleach.clean(verbose)
+  }
+
+  /**
+   * if depends are not Installed 
+   * download depends
+   * @param depends
+   */
+  async installDeps(depends: string[]) {
+
+    // select for downloads only packages NOT already installed
+    const toDownloads: string[] = []
+    for (const depend of depends) {
+      if (depend !== '') {
+        if (!Pacman.packageIsInstalled(depend)) {
+          toDownloads.push(depend)
+        }
+      }
+    }
+
+    // now we go to downloads them
+    for (const toDownload of toDownloads) {
+      process.chdir(this.yolkDir)
+      const cmd = `apt-get download ${toDownload}`
+      Utils.warning(`- ${cmd}`)
+      await exec(cmd, this.echo)
+    }
+  }
+
+ /**
+ * Check if yoil exists and it's a repo
+ */
+  yolkExists(): boolean {
+    const check = `${this.yolkDir}/Packages.gz`
+    return fs.existsSync(check)
   }
 
   /**
@@ -97,41 +133,5 @@ export default class Yolk {
    */
   async yolkClean() {
     await exec(`rm ${this.yolkDir}/*`, this.echo)
-  }
-
-  /**
-   * Check if yoil exists and it's a repo
-   */
-   yolkExists(): boolean {
-    const check = `${this.yolkDir}/Packages.gz`
-    return fs.existsSync(check)
-  }
-
-  /**
-   *
-   * @param depends
-   */
-  async installDeps(depends: string[]) {
-    // scarico solo le dipendenze non installate
-    const toDownloads: string[] = []
-    for (const depend of depends) {
-      if (depend !== '') {
-        if (!Pacman.packageIsInstalled(depend)) {
-          toDownloads.push(depend)
-        } else {
-          if (this.verbose) {
-            console.log(`eggs >>> already installed: ${depend}`)
-          }
-        }
-      }
-    }
-
-    // e li vado a scaricare in /var/local/yolk
-    for (const toDownload of toDownloads) {
-      process.chdir(this.yolkDir)
-      const cmd = `apt-get download ${toDownload}`
-      Utils.warning(`- ${cmd}`)
-      await exec(cmd, this.echo)
-    }
   }
 }
