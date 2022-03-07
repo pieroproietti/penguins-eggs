@@ -91,10 +91,10 @@ export default class Xdg {
 
       // lightdm
       if (Pacman.packageIsInstalled('lightdm')) {
-        if (fs.existsSync(`${chroot}/etc/lightdm/lightdm.conf`)){
+        if (fs.existsSync(`${chroot}/etc/lightdm/lightdm.conf`)) {
           shx.sed('-i', `autologin-user=${olduser}`, `autologin-user=${newuser}`, `${chroot}/etc/lightdm/lightdm.conf`)
         } else {
-          const autologin= `${chroot}/etc/lightdm/lightdm.conf`
+          const autologin = `${chroot}/etc/lightdm/lightdm.conf`
           const content = `[Seat:*]\nautologin-user=${newuser}`
           fs.writeFileSync(autologin, content, 'utf-8')
         }
@@ -156,17 +156,17 @@ export default class Xdg {
     if (verbose) {
       Utils.warning('removing /etc/skel')
     }
-
     await exec('rm /etc/skel -rf', echo)
 
     if (verbose) {
       Utils.warning('create an empty /etc/skel')
     }
-
     await exec('mkdir -p /etc/skel', echo)
 
-    const files = ['.bashrc', '.bash_logout', '.config', '.local', '.profile']
-
+    /**
+     * Tha we need: the only necessary directory seem to be .config
+     */
+    const files = [`.bash_logout`, `.bashrc`, `.config/`, `.gtkrc-2.0`, `.gtkrc-xfce`, `.profile`]
     let desktop = ''
     if (Pacman.packageIsInstalled('cinnamon-core')) {
       desktop = 'cinnamon'
@@ -176,24 +176,32 @@ export default class Xdg {
       desktop = 'lxde'
     } else if (Pacman.packageIsInstalled('lxqt-core')) {
       desktop = 'lxqt'
+    } else if (Pacman.packageIsInstalled('mate-session-manager')) {
+      desktop = 'mate'
+    } else if (Pacman.packageIsInstalled('xfce4-session')) {
+      desktop = 'xfce4'
     }
 
     Utils.warning(`desktop: ${desktop}`)
 
-    // Add Desktop Managenebt configuration dir: cinnamon
+    // Add Desktop Management configuration dir: cinnamon
     if (desktop === 'cinnamon') {
       files.push('.cinnamon')
     }
 
-    // Add Desktop Managet configuration: KDE
+    // Add Desktop Management configuration: KDE
     if (desktop === 'kde') {
       files.push('.kde')
     }
 
-    // Node version manager
+    // Add node version manager
     files.push('.nvm')
 
-    Utils.warning('copying hidden files')
+    /**
+     * GNOME, LXDE, LXQT, MATE and XFCE4 seem to NO ADD more .dofiles
+     */
+
+    Utils.warning('copying hidden files and dirs')
     for (const i in files) {
       if (fs.existsSync(`/home/${user}/${files[i]}`)) {
         await exec(`cp -r /home/${user}/${files[i]} /etc/skel/ `, echo)
@@ -201,9 +209,8 @@ export default class Xdg {
     }
 
     if (verbose) {
-      Utils.warning('Try to clean personal datas in /etc/skel/config...')
+      Utils.warning('Cleaning /etc/skel/config...')
     }
-
     await execIfExist('rm -rf', '/etc/skel/.config/balena-etcher-electron', verbose)
     await execIfExist('rm -rf', '/etc/skel/.config/bleachbit', verbose)
     await execIfExist('rm -rf', '/etc/skel/.config/cinnamon-session', verbose)
@@ -235,7 +242,6 @@ export default class Xdg {
     if (!Pacman.packageIsInstalled('plank')) {
       await execIfExist('rm -rf', '/etc/skel/.config/plank', verbose)
     }
-
     await execIfExist('rm -rf', '/etc/skel/.config/Postman', verbose)
     await execIfExist('rm -rf', '/etc/skel/.config/procps', verbose)
     // await execIfExist(`rm -rf`, `/etc/skel/.config/pulse`, verbose)
@@ -250,10 +256,12 @@ export default class Xdg {
     await execIfExist('rm -rf', '/etc/skel/.config/yelp', verbose)
     await execIfExist('rm -rf', '/etc/skel/.config/zoomus.conf', verbose)
 
+    /**
+     * .local NON VIENE PIU copiata
+     * 
     if (verbose) {
       Utils.warning('Try to clean personal datas in /etc/skel/.local')
     }
-
     await execIfExist('rm -rf', '/etc/skel/.local/share/applications', verbose)
     // await execIfExist(`rm -rf`, `/etc/skel/.local/share/cinnamon`, verbose)
     await execIfExist('rm -rf', '/etc/skel/.local/share/data', verbose) // MEGAlink
@@ -271,23 +279,19 @@ export default class Xdg {
     if (!Pacman.packageIsInstalled('plank')) {
       await execIfExist('rm -rf', '/etc/skel/.local/share/plank', verbose)
     }
-
     await execIfExist('rm -rf', '/etc/skel/.local/share/recently-used.xbel', verbose)
     await execIfExist('rm -rf', '/etc/skel/.local/share/shotwell', verbose)
     await execIfExist('rm -rf', '/etc/skel/.local/share/totem', verbose)
     await execIfExist('rm -rf', '/etc/skel/.local/share/Trash', verbose)
     await execIfExist('rm -rf', '/etc/skel/.local/share/webkitgtk', verbose)
+     * 
+    */
 
     if (verbose) {
       Utils.warning('change righs on /etc/skel')
     }
 
     await exec('chmod a+rwx,g-w,o-w /etc/skel/ -R', echo)
-
-    if (verbose) {
-      Utils.warning('change righs on /etc/skel (.bashrc, .bash_logout, .profile)')
-    }
-
     execIfExist('chmod a+rwx,g-w-x,o-wx', '/etc/skel/.bashrc', verbose)
     execIfExist('chmod a+rwx,g-w-x,o-wx', '/etc/skel/.bash_logout', verbose)
     execIfExist('chmod a+rwx,g-w-x,o-wx', '/etc/skel/.profile', verbose)
@@ -295,7 +299,6 @@ export default class Xdg {
     if (verbose) {
       Utils.warning('Change ower to root:root /etc/skel')
     }
-
     await exec('chown root:root /etc/skel -R', echo)
 
     // https://www.thegeekdiary.com/understanding-the-etc-skel-directory-in-linux/
