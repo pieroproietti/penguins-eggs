@@ -12,11 +12,11 @@ penguins-eggs
 
 # Penguin's eggs Debian package
 
-Usually the last version is the right one. Detailed instrunctions for usage are published on the [penguin's eggs book](https://penguins-eggs.net/book). 
+Usually the last version is the right one. Detailed instructions for usage are published on the [penguin's eggs book](https://penguins-eggs.net/book). 
 You can follow the project also consulting the [commit history](https://github.com/pieroproietti/penguins-eggs/commits/master). 
 
 ## Changelog
-Versions are listed on reverse order, the first is the last one.
+From time to time I remove old version to not get confised, you can find them on [oldest](https://sourceforge.net/projects/penguins-eggs/files/packages-deb/oldest/).Versions are listed on reverse order, the first is the last one. 
 
 ### eggs-9.0.32-1
 * ovary: changed the way we find path for vmlinux;
