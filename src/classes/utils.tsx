@@ -62,28 +62,47 @@ export default class Utils {
 
    /**
     * ricava path per vmlinuz
-    * BOOT_IMAGE=(hd0,msdos1)/vmlinuz-5.15.6-200.fc35.x86_64 root=UUID=91cf614e-62a1-464c-904f-38d0a1ceb7a7 ro rootflags=subvol=root rhgb quiet
+    * Normalmente cerca BOOT_IMAGE
+    * BOOT_IMAGE=/boot/vmlinuz-5.16.0-3-amd64 root=UUID=13768873-d6ba-4ae5-9e14-b5011f5aa31c ro quiet splash resume=UUID=beafb9b4-c429-4e1f-a268-4270b63a14e6
+    * se non è presente, come nel caso di Franco, cerca initrd e ricostruisce vmlinuz
+    * ro root=UUID=3dc0f202-8ac8-4686-9316-dddcec060c48 initrd=boot\initrd.img-5.15.0-0.bpo.3-amd64 // Conidi
     */
    static vmlinuz(): string {
-      const cmdline = fs.readFileSync('/proc/cmdline', 'utf8')
-      // start = find BOOT_IMAGE 
-      const start = cmdline.search('BOOT_IMAGE=/') + 11
-      // end first space after
-      const end = cmdline.substring(start).indexOf(' ')
-      let vmlinux = cmdline.substring(start, start + end)
+      let vmlinuz = ''
+
+      // find vmlinuz in /proc/cmdline
+      const cmdline = fs.readFileSync('/proc/cmdline', 'utf8').split(" ")
+      cmdline.forEach(cmd => {
+         if (cmd.includes('BOOT_IMAGE')) {
+            vmlinuz = cmd.substring(cmd.indexOf('=') + 1)
+         }
+      })
+
+      // If vmlinuz not found in /proc/cmdline, try to find initrd.img
+      if (vmlinuz === '') {
+         cmdline.forEach(cmd => {
+            if (cmd.includes('initrd.img')) {
+               vmlinuz = '/boot/vmlinuz' + cmd.substring(cmd.indexOf('initrd.img') + 10)
+            }
+         })
+      }
+
+      // if vmlinuz not found
+      if (vmlinuz === '') {
+         vmlinuz = '/path/to/vmlinuz'
+      }
 
       // btrfs
-      if (vmlinux.indexOf('@') > 0) {
-         vmlinux = vmlinux.substring(vmlinux.indexOf(' ') + 1)
+      if (vmlinuz.indexOf('@') > 0) {
+         vmlinuz = vmlinuz.substring(vmlinuz.indexOf(' ') + 1)
       }
 
-      if (!fs.existsSync(vmlinux)) {
-         if (fs.existsSync('/boot' + vmlinux)) {
-            vmlinux = '/boot' + vmlinux
+      if (!fs.existsSync(vmlinuz)) {
+         if (fs.existsSync('/boot' + vmlinuz)) {
+            vmlinuz = '/boot' + vmlinuz
          }
       }
-
-      return vmlinux
+      return vmlinuz
    }
 
    /**
@@ -768,7 +787,7 @@ unknown target format aarch64-efi
       if (canContinue) {
          msg = 'Press a key to continue...'
       }
-      
+
       console.log(msg)
       const pressKeyToExit = spawnSync('read _ ', { shell: true, stdio: [0, 1, 2] })
       if (!canContinue) {
