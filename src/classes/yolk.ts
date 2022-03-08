@@ -9,7 +9,6 @@ import Utils from './utils'
 import Pacman from './pacman'
 import Bleach from './bleach'
 import { exec } from '../lib/utils'
-import shx from 'shelljs'
 
 /**
  *
@@ -73,7 +72,7 @@ export default class Yolk {
       Utils.warning(`downloading package ${package_} and it's dependencies...`)
       cmd = `apt-cache depends --recurse --no-recommends --no-suggests --no-conflicts --no-breaks --no-replaces --no-enhances ${package_} | grep "^\\w" | sort -u`
       const depends = (await exec(cmd, { echo: false, capture: true })).data
-      //await this.installDeps(depends.split('\n'))
+      await this.installDeps(depends.split('\n'))
     }
 
     // create Package.gz
@@ -82,8 +81,7 @@ export default class Yolk {
     await exec(cmd, this.echo)
 
     // Create Release 
-    // Need shx.exec to get date
-    const date = shx.exec('date -R -u').stdout.trim()
+    const date = await exec('date -R -u')
     const content = 'Archive: stable\nComponent: yolk\nOrigin: penguins-eggs\nArchitecture: ' + Utils.machineArch() + '\nDate: ' + date + '\n'
     Utils.warning('Writing Release')
     fs.writeFileSync('Release', content)

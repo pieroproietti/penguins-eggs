@@ -46,6 +46,8 @@ class Distro implements IDistro {
   distroLike: string
   versionId: string
   versionLike: string
+  releaseId: string
+  releaseLike: string
   usrLibPath: string
   isolinuxPath: string
   syslinuxPath: string
@@ -61,6 +63,8 @@ class Distro implements IDistro {
     this.distroLike = ''
     this.versionId = ''
     this.versionLike = ''
+    this.releaseId = ''
+    this.releaseLike = ''
     this.usrLibPath = '/usr/lib'
     this.isolinuxPath = ''
     this.syslinuxPath = ''
@@ -106,9 +110,13 @@ class Distro implements IDistro {
      */
     this.versionId = shell.exec('lsb_release -cs', { silent: true }).stdout.toString().trim()
     this.distroId = shell.exec('lsb_release -is', { silent: true }).stdout.toString().trim()
+    this.releaseId = shell.exec('lsb_release -ir', { silent: true }).stdout.toString().trim()
 
     /**
      * Per casi equivoci conviene normalizzare versionId
+     *  -i, --id           show distributor ID
+     *  -r, --release      show release number of this distribution
+     *  -c, --codename     show code name of this distribution
      */
     switch (this.versionId) {
       case 'n/a': {
@@ -148,9 +156,9 @@ class Distro implements IDistro {
       // No default
     }
 
-    // Procedo analizzanto solo versionId...
-
-    // prima Debian, Devuan ed Ubuntu
+    /**
+     * Procedo analizzanto: versionId, prima Debian, Devuan ed Ubuntu poi gli altri
+     */
     switch (this.versionId) {
       case 'jessie': {
         // Debian 8 jessie
