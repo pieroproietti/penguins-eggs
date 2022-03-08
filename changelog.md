@@ -22,6 +22,10 @@ From time to time I remove old version to not get confised, you can find them on
 * ovary: changed the way we find path for vmlinux;
 * tools skel: removed dir .local and added mate, xfce4 (seem they use just .config like gnome)
 
+### eggs-9.0.32-1
+* yolk: it seem the problem of local repository yolk now it's solved;
+* changed from versionId to codenameId, added releaseId to better fit compatibility
+
 ### eggs-9.0.31-1
 * ovary: aligned the way of --verbose work as was made in krill, createInitrd replace copyInitrd and remove - during live boot - search forcrypted partitions;
 * dad: changed default to: --fast --addons adapt --theme eggs
