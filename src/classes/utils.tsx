@@ -78,7 +78,7 @@ export default class Utils {
          }
       })
 
-      // If vmlinuz not found in /proc/cmdline, try to find initrd.img
+      // If vmlinuz not found in /proc/cmdline, try to find version in initrd.img
       if (vmlinuz === '') {
          cmdline.forEach(cmd => {
             if (cmd.includes('initrd.img')) {
@@ -87,8 +87,15 @@ export default class Utils {
          })
       }
 
-      // if vmlinuz not found
-      if (vmlinuz === '') {
+      // if vmlinuz exist in /boot
+      if (!fs.existsSync(vmlinuz)) {
+         if (fs.existsSync('/boot' + vmlinuz)) {
+            vmlinuz = '/boot' + vmlinuz
+         }
+      }
+
+      // if vmlinux don't exist
+      if (!fs.existsSync(vmlinuz)) {
          vmlinuz = '/path/to/vmlinuz'
       }
 
@@ -97,11 +104,6 @@ export default class Utils {
          vmlinuz = vmlinuz.substring(vmlinuz.indexOf(' ') + 1)
       }
 
-      if (!fs.existsSync(vmlinuz)) {
-         if (fs.existsSync('/boot' + vmlinuz)) {
-            vmlinuz = '/boot' + vmlinuz
-         }
-      }
       return vmlinuz
    }
 
