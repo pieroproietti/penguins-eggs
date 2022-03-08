@@ -76,7 +76,7 @@ export function tryInstall(distro: IDistro): string {
   text += `    - hunspell-${lang}\n`
 
   // Pacchetti da installare a seconda della distribuzione
-  if (distro.versionLike === 'focal' || distro.versionLike === 'bionic') {
+  if (distro.codenameLikeId === 'focal' || distro.codenameLikeId === 'bionic') {
     text += `    - language-pack-${lang}\n`
   }
 

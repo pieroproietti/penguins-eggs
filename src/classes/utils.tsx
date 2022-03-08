@@ -27,10 +27,10 @@ export default class Utils {
    /**
     * Restituisce il prefisso della iso
     * @param distroId 
-    * @param versionId 
+    * @param codenameId 
     */
-   static snapshotPrefix(distroId: string, versionId: string): string {
-      let result = 'egg-of-' + distroId.toLowerCase() + '-' + versionId.toLowerCase() + '-'
+   static snapshotPrefix(distroId: string, codenameId: string): string {
+      let result = 'egg-of-' + distroId.toLowerCase() + '-' + codenameId.toLowerCase() + '-'
       result = result.replace(`/`, '-')
       return result
    }

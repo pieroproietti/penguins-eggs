@@ -27,7 +27,7 @@ export default class Debian {
    */
   static isInstalledXorg(): boolean {
     let test = 'xserver-xorg-core'
-    if (Pacman.distro().versionLike === 'bionic') {
+    if (Pacman.distro().codenameLikeId === 'bionic') {
       /**
        * BUT_ on Ubuntu bionic we have:
        * xserver-xorg-core-hwe-18.04
@@ -76,7 +76,7 @@ export default class Debian {
     }
 
     // Version e initType da controllare
-    const version = Pacman.distro().versionLike
+    const version = Pacman.distro().codenameLikeId
     for (const dep of depVersions) {
       if (dep.versions.includes(version)) {
         if (!this.packageIsInstalled(dep.package)) {
