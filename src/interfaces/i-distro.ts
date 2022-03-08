@@ -2,8 +2,8 @@ export interface IDistro {
   familyId: string
   distroId: string
   distroLike: string
-  versionId: string
-  versionLike: string
+  codenameId: string
+  codenameLikeId: string
   releaseId: string
   releaseLike: string
   usrLibPath: string

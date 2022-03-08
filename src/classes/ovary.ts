@@ -206,11 +206,11 @@ export default class Ovary {
           await this.createXdgAutostart(this.settings.config.theme, myAddons)
           if (displaymanager() === '') {
             // If GUI is installed and not Desktop manager
-            cliAutologin.addIssue(this.settings.distro.distroId, this.settings.distro.versionId, this.settings.config.user_opt, this.settings.config.user_opt_passwd, this.settings.config.root_passwd, this.settings.work_dir.merged)
-            cliAutologin.addMotd(this.settings.distro.distroId, this.settings.distro.versionId, this.settings.config.user_opt, this.settings.config.user_opt_passwd, this.settings.config.root_passwd, this.settings.work_dir.merged)
+            cliAutologin.addIssue(this.settings.distro.distroId, this.settings.distro.codenameId, this.settings.config.user_opt, this.settings.config.user_opt_passwd, this.settings.config.root_passwd, this.settings.work_dir.merged)
+            cliAutologin.addMotd(this.settings.distro.distroId, this.settings.distro.codenameId, this.settings.config.user_opt, this.settings.config.user_opt_passwd, this.settings.config.root_passwd, this.settings.work_dir.merged)
           }
         } else {
-          cliAutologin.addAutologin(this.settings.distro.distroId, this.settings.distro.versionId, this.settings.config.user_opt, this.settings.config.user_opt_passwd, this.settings.config.root_passwd, this.settings.work_dir.merged)
+          cliAutologin.addAutologin(this.settings.distro.distroId, this.settings.distro.codenameId, this.settings.config.user_opt, this.settings.config.user_opt_passwd, this.settings.config.root_passwd, this.settings.work_dir.merged)
         }
         await this.editLiveFs()
         await this.makeSquashfs(scriptOnly, )
@@ -1243,7 +1243,7 @@ export default class Ovary {
     const memdiskDir = this.settings.work_dir.path + 'memdiskDir'
     const efiWorkDir = this.settings.efi_work
     const isoDir = this.settings.work_dir.pathIso
-    const versionLike = this.settings.distro.versionLike
+    const codenameLikeId = this.settings.distro.codenameLikeId
 
     /**
      * il pachetto grub/grub2 DEVE essere presente
@@ -1432,7 +1432,7 @@ export default class Ovary {
     const template = fs.readFileSync(grubTemplate, 'utf8')
 
     // let rmModules = ''
-    // if (this.settings.distro.versionLike === 'focal') {
+    // if (this.settings.distro.codenameLikeId === 'focal') {
     // rmModules = 'rmmod tpm'
     // }
 
@@ -1501,7 +1501,7 @@ export default class Ovary {
 
     let command = ''
     const appid = `-appid "${this.settings.distro.distroId}" `
-    const publisher = `-publisher "${this.settings.distro.distroId}/${this.settings.distro.versionId}" `
+    const publisher = `-publisher "${this.settings.distro.distroId}/${this.settings.distro.codenameId}" `
     const preparer = '-preparer "prepared by eggs <https://penguins-eggs.net>" '
 
 

@@ -4,7 +4,7 @@
  * modules = configuration + 'modules/'
  * modulesMultiarch = '/usr/lib/' + arch-linux-gnu + '/' + installer + '/'
  *
- * template = '/etc/penguins-eggs/' + .distro.versionLike + '/' + installer + '/'
+ * template = '/etc/penguins-eggs/' + .distro.codenameLikeId + '/' + installer + '/'
  * templateModules = template + '/modules/'
  * templateMultiarch = template + installer + '-modules/'
  */

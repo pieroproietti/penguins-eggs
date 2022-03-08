@@ -57,7 +57,7 @@ export default class I18n {
       console.log('creating /etc/default.locale')
     }
 
-    const src = path.resolve(__dirname, `../../conf/distros/${this.settings.distro.versionId}/locales/locale.template`)
+    const src = path.resolve(__dirname, `../../conf/distros/${this.settings.distro.codenameId}/locales/locale.template`)
     const dest = '/etc/default/locale'
     const template = fs.readFileSync(src, 'utf8')
     const view = {
@@ -72,7 +72,7 @@ export default class I18n {
       console.log('creating /etc/locale.gen')
     }
 
-    const srcLocales = path.resolve(__dirname, `../../conf/distros/${this.settings.distro.versionId}/locales/locale.gen.template`)
+    const srcLocales = path.resolve(__dirname, `../../conf/distros/${this.settings.distro.codenameId}/locales/locale.gen.template`)
     const destLocales = '/etc/locale.gen'
     const templateLocales = fs.readFileSync(srcLocales, 'utf8')
     const viewLocales = { locales: [{}] }

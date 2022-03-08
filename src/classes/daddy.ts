@@ -61,7 +61,7 @@ export default class Daddy {
         jsonConf = await this.editConfig(config)
       } else {
         if (config.snapshot_prefix === '') {
-          config.snapshot_prefix = Utils.snapshotPrefix(this.settings.distro.distroId, this.settings.distro.versionId)
+          config.snapshot_prefix = Utils.snapshotPrefix(this.settings.distro.distroId, this.settings.distro.codenameId)
           config.compression = 'fast'
         }
 
@@ -178,7 +178,7 @@ export default class Daddy {
     }
 
     if (c.snapshot_prefix === '') {
-      c.snapshot_prefix = Utils.snapshotPrefix(this.settings.distro.distroId, this.settings.distro.versionId)
+      c.snapshot_prefix = Utils.snapshotPrefix(this.settings.distro.distroId, this.settings.distro.codenameId)
     }
 
     return new Promise(function (resolve) {

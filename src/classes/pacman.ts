@@ -475,8 +475,8 @@ export default class Pacman {
    * distroTemplateCheck
    */
   static distroTemplateCheck(): boolean {
-    const versionLike = this.distro().versionLike
-    return fs.existsSync(`/etc/penguins-eggs.d/distros/${versionLike}`)
+    const codenameLikeId = this.distro().codenameLikeId
+    return fs.existsSync(`/etc/penguins-eggs.d/distros/${codenameLikeId}`)
   }
 
   /**
@@ -490,7 +490,7 @@ export default class Pacman {
     const echo = Utils.setEcho(verbose)
 
     const rootPen = Utils.rootPenguin()
-    await exec(`mkdir /etc/penguins-eggs.d/distros/${this.distro().versionLike}`)
+    await exec(`mkdir /etc/penguins-eggs.d/distros/${this.distro().codenameLikeId}`)
 
     /**
      * Debian 10 - Buster: è il master per tutte le distro
@@ -500,7 +500,7 @@ export default class Pacman {
     /**
      * Debian 8 jessie:  eredita grub, isolinux e locales da buster, contiene krill al posto di calamares
      */
-    if (this.distro().versionLike === 'jessie') {
+    if (this.distro().codenameLikeId === 'jessie') {
       const dest = '/etc/penguins-eggs.d/distros/jessie'
       await exec(`cp -r ${buster}/locales ${dest}/locales`, echo)
       await exec(`cp -r ${rootPen}/conf/distros/jessie/krill ${dest}/krill`, echo)
@@ -508,7 +508,7 @@ export default class Pacman {
       /**
        * Debian 9 stretch:  eredita grub, isolinux e locales da buster, contiene krill al posto di calamares
        */
-    } else if (this.distro().versionLike === 'stretch') {
+    } else if (this.distro().codenameLikeId === 'stretch') {
       const dest = '/etc/penguins-eggs.d/distros/stretch'
       await exec(`cp -r ${buster}/locales ${dest}/locales`, echo)
       await exec(`cp -r ${rootPen}/conf/distros/jessie/krill ${dest}/krill`, echo)
@@ -516,7 +516,7 @@ export default class Pacman {
       /**
        * Debian 10 buster: eredita tutto da buster
        */
-    } else if (this.distro().versionLike === 'buster') {
+    } else if (this.distro().codenameLikeId === 'buster') {
       const dest = '/etc/penguins-eggs.d/distros/buster'
       await exec(`cp -r ${buster}/locales ${dest}/locales`, echo)
       await exec(`cp -r ${buster}/calamares ${dest}/calamares`, echo)
@@ -524,7 +524,7 @@ export default class Pacman {
       /**
        * Debian 11 bullseye: eredita tutto da buster
        */
-    } else if (this.distro().versionLike === 'bullseye') {
+    } else if (this.distro().codenameLikeId === 'bullseye') {
       const dest = '/etc/penguins-eggs.d/distros/bullseye'
       await exec(`cp -r ${buster}/locales ${dest}/locales`, echo)
       await exec(`cp -r ${buster}/calamares ${dest}/calamares`, echo)
@@ -532,7 +532,7 @@ export default class Pacman {
       /**
        * Debian 12 bookworm: eredita tutto da buster
        */
-    } else if (this.distro().versionLike === 'bookworm') {
+    } else if (this.distro().codenameLikeId === 'bookworm') {
       const dest = '/etc/penguins-eggs.d/distros/bookworm'
       await exec(`cp -r ${buster}/locales ${dest}/locales`, echo)
       await exec(`cp -r ${buster}/calamares ${dest}/calamares`, echo)
@@ -544,7 +544,7 @@ export default class Pacman {
       /**
        * Devuan beowulf: eredita tutto da buster
        */
-    } else if (this.distro().versionLike === 'beowulf') {
+    } else if (this.distro().codenameLikeId === 'beowulf') {
       const dest = '/etc/penguins-eggs.d/distros/beowulf'
       await exec(`cp -r ${buster}/locales ${dest}/locales`, echo)
       await exec(`cp -r ${buster}/calamares ${dest}/calamares`, echo)
@@ -552,7 +552,7 @@ export default class Pacman {
       /**
        * Devuan chimaera: eredita tutto da buster
        */
-    } else if (this.distro().versionLike === 'chimaera') {
+    } else if (this.distro().codenameLikeId === 'chimaera') {
       const dest = '/etc/penguins-eggs.d/distros/chimaera'
       await exec(`cp -r ${buster}/locales ${dest}/locales`, echo)
       await exec(`cp -r ${buster}/calamares ${dest}/calamares`, echo)
@@ -560,7 +560,7 @@ export default class Pacman {
       /**
        * Devuan daedalus: eredita tutto da buster
        */
-    } else if (this.distro().versionLike === 'daedalus') {
+    } else if (this.distro().codenameLikeId === 'daedalus') {
       const dest = '/etc/penguins-eggs.d/distros/daedalus'
       await exec(`cp -r ${buster}/locales ${dest}/locales`, echo)
       await exec(`cp -r ${buster}/calamares ${dest}/calamares`, echo)
@@ -572,7 +572,7 @@ export default class Pacman {
       /**
        * Ubuntu 10.04 bionic: eredita da bionic, focal grub ed isolinux, da buster i seguenti
        */
-    } else if (this.distro().versionLike === 'bionic') {
+    } else if (this.distro().codenameLikeId === 'bionic') {
       const dest = '/etc/penguins-eggs.d/distros/bionic'
 
       const bionic = `${rootPen}/conf/distros/bionic/*`
@@ -594,7 +594,7 @@ export default class Pacman {
       /**
        * Ubuntu focal: eredita da focal e buster
        */
-    } else if (this.distro().versionLike === 'focal') {
+    } else if (this.distro().codenameLikeId === 'focal') {
       const dest = '/etc/penguins-eggs.d/distros/focal'
       const focal = `${rootPen}/conf/distros/focal/*`
       await exec(`cp -r ${focal} ${dest}`, echo)
@@ -610,7 +610,7 @@ export default class Pacman {
       /**
        * Ubuntu 20.10 groovy: eredita da focal e buster
        */
-    } else if (this.distro().versionLike === 'groovy') {
+    } else if (this.distro().codenameLikeId === 'groovy') {
       const dest = '/etc/penguins-eggs.d/distros/groovy'
       const focal = `${rootPen}/conf/distros/focal/*`
       await exec(`cp -r ${focal} ${dest}`, echo)
@@ -626,7 +626,7 @@ export default class Pacman {
       /**
        * Ubuntu 21.04 hirsute: eredita da focal e buster
        */
-    } else if (this.distro().versionLike === 'hirsute') {
+    } else if (this.distro().codenameLikeId === 'hirsute') {
       const dest = '/etc/penguins-eggs.d/distros/hirsute'
       const focal = `${rootPen}/conf/distros/focal/*`
       await exec(`cp -r ${focal} ${dest}`, echo)
@@ -642,7 +642,7 @@ export default class Pacman {
       /**
        * Ubuntu 21.10 impish: eredita da focal e buster
        */
-    } else if (this.distro().versionLike === 'impish') {
+    } else if (this.distro().codenameLikeId === 'impish') {
       const dest = '/etc/penguins-eggs.d/distros/impish'
       const focal = `${rootPen}/conf/distros/focal/*`
       await exec(`cp -r ${focal} ${dest}`, echo)
@@ -658,7 +658,7 @@ export default class Pacman {
       /**
        * Ubuntu 22.04 jammy: eredita da focal e buster
        */
-    } else if (this.distro().versionLike === 'jammy') {
+    } else if (this.distro().codenameLikeId === 'jammy') {
       const dest = '/etc/penguins-eggs.d/distros/jammy'
       const focal = `${rootPen}/conf/distros/focal/*`
       await exec(`cp -r ${focal} ${dest}`, echo)
@@ -678,7 +678,7 @@ export default class Pacman {
       /**
        * Fedora 35 ThirtyFive: eredita da ThirtyFive
        */
-    } else if (this.distro().versionLike === 'thirtyfive') {
+    } else if (this.distro().codenameLikeId === 'thirtyfive') {
       const dest = '/etc/penguins-eggs.d/distros/thirtyfive/'
       const thirtytive = `${rootPen}/conf/distros/thirtyfive/*`
       await exec(`cp -r ${thirtytive} ${dest}`, echo)
@@ -690,7 +690,7 @@ export default class Pacman {
       /**
        * Endeavour rolling: eredita da rolling
        */
-    } else if (this.distro().versionLike === 'rolling') {
+    } else if (this.distro().codenameLikeId === 'rolling') {
       const dest = '/etc/penguins-eggs.d/distros/rolling/'
       const rolling = `${rootPen}/conf/distros/rolling/*`
       await exec(`cp -r ${rolling} ${dest}`, echo)
@@ -702,7 +702,7 @@ export default class Pacman {
       /**
        * openSUSE tumbleweed: eredita da tumbleweed
        */
-    } else if (this.distro().versionLike === 'tumbleweed') {
+    } else if (this.distro().codenameLikeId === 'tumbleweed') {
       const dest = '/etc/penguins-eggs.d/distros/tumbleweed/'
       const tumbleweed = `${rootPen}/conf/distros/tumbleweed/*`
       await exec(`cp -r ${tumbleweed} ${dest}`, echo)
