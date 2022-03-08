@@ -9,6 +9,7 @@ import Utils from './utils'
 import Pacman from './pacman'
 import Bleach from './bleach'
 import { exec } from '../lib/utils'
+import shx from 'shelljs'
 
 /**
  *
@@ -78,11 +79,11 @@ export default class Yolk {
     // create Package.gz
     cmd = 'dpkg-scanpackages -h  md5,sha1,sha256 . | gzip -c > Packages.gz'
     Utils.warning(cmd)
-    await exec(cmd, this.echo)
+    await exec(cmd, { echo: false, capture: true })
 
-    // Create Release 
-    const date = await exec('date -R -u')
-    const content = 'Archive: stable\nComponent: yolk\nOrigin: penguins-eggs\nArchitecture: ' + Utils.machineArch() + '\nDate: ' + date + '\n'
+    // Create Release date: Sat, 14 Aug 2021 07:42:00 UTC
+    const now = shx.exec('date -R -u').stdout.trim()
+    const content = `Archive: stable\nComponent: yolk\nOrigin: penguins-eggs\nArchitecture: ${Utils.machineArch()} \nDate: ${now}\n`
     Utils.warning('Writing Release')
     fs.writeFileSync('Release', content)
 
@@ -118,9 +119,9 @@ export default class Yolk {
     }
   }
 
- /**
- * Check if yoil exists and it's a repo
- */
+  /**
+  * Check if yoil exists and it's a repo
+  */
   yolkExists(): boolean {
     const check = `${this.yolkDir}/Packages.gz`
     return fs.existsSync(check)
@@ -133,3 +134,4 @@ export default class Yolk {
     await exec(`rm ${this.yolkDir}/*`, this.echo)
   }
 }
+

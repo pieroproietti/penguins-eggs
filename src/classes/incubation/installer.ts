@@ -6,7 +6,7 @@
  * modules = configuration + 'modules/'
  * modulesMultiarch = '/usr/lib/' + arch-linux-gnu + '/' + installer + '/'
  *
- * template = '/etc/penguins-eggs/' + .distro.versionLike + '/' + installer + '/'
+ * template = '/etc/penguins-eggs/' + .distro.codenameLikeId + '/' + installer + '/'
  * templateModules = template + '/modules/'
  * templateMultiarch = template + installer + '-modules/'
  *
@@ -37,11 +37,11 @@ export function installer(): IInstaller {
   const remix = {} as IRemix
   const distro = new Distro(remix)
   if (distro.isCalamaresAvailable) {
-    installer.template = '/etc/penguins-eggs.d/distros/' + distro.versionLike + '/calamares/'
+    installer.template = '/etc/penguins-eggs.d/distros/' + distro.codenameLikeId + '/calamares/'
     installer.templateModules = installer.template + 'modules/'
     installer.templateMultiarch = installer.template + 'calamares-modules/'
   } else {
-    installer.template = '/etc/penguins-eggs.d/distros/' + distro.versionLike + '/krill/'
+    installer.template = '/etc/penguins-eggs.d/distros/' + distro.codenameLikeId + '/krill/'
     installer.templateModules = installer.template + 'modules/'
     installer.templateMultiarch = installer.template + 'krill-modules/'
   }

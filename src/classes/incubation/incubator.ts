@@ -63,7 +63,7 @@ export default class Incubator {
     this.createInstallerDirs()
 
     // DEBIAN
-    switch (this.distro.versionLike) {
+    switch (this.distro.codenameLikeId) {
       case 'jessie': {
         const jessie = new Jessie(this.installer, this.remix, this.distro, release, this.user_opt, this.verbose)
         await jessie.create()
