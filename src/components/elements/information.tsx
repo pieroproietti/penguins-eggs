@@ -55,14 +55,13 @@ export default async function information(verbose = false): Promise<void> {
 
 
     const distroId = shx.exec('lsb_release -is', { silent: true }).stdout.trim()
-    const versionId = shx.exec('lsb_release -cs', { silent: true }).stdout.trim()
+    const releaseId = shx.exec('lsb_release -rs', { silent: true }).stdout.trim()
+    const codenameId = shx.exec('lsb_release -cs', { silent: true }).stdout.trim()
     const Distro = () => (
         <Box flexDirection='column'>
             <Box borderStyle="round" marginRight={2} flexDirection='row' >
-                <Box marginRight={2}><Text>distro: <Text color="cyan">{distroId}</Text></Text></Box>
-                <Box marginRight={2}><Text>version: <Text color="cyan">{versionId}</Text></Text></Box>
-                <Box marginRight={2}><Text>compatible: <Text color="cyan">{settings.distro.distroLike}</Text></Text></Box>
-                <Box marginRight={2}><Text>version: <Text color="cyan">{settings.distro.versionLike}</Text></Text></Box>
+                <Box marginRight={2}><Text>distro: <Text color="cyan">{distroId} {releaseId} {codenameId}</Text></Text></Box>
+                <Box marginRight={2}><Text>compatible: <Text color="cyan">{settings.distro.distroLike}/{settings.distro.releaseLike}/{settings.distro.codenameLikeId}</Text></Text></Box>
             </Box>
         </Box>
     )

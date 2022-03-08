@@ -229,7 +229,7 @@ eggs will run on armel and arm64 architecture, but we need to generate a new UEF
 * added .disk folder in iso with info, mkiso, etc. added version in calamares, isGui, and others
 
 ### eggs-7.8.31
-* bugfixes: check the presence of vmlinuz and initrd_img else stop, versionLike in rootTemplate of calamares (deprecated)
+* bugfixes: check the presence of vmlinuz and initrd_img else stop, codenameLikeId in rootTemplate of calamares (deprecated)
 
 ### eggs-7.8.30
 * rewrite of distros.ts class: cleanup and reorganization
@@ -500,7 +500,7 @@ After installation yolk is removed from apt sources.
 ### eggs-7.6.43.1_.deb deprecated
 * improvement: patch per bionic in calamares module grubcf, added check plymouth from successive version of calamares (in bionic calamares is quite old and not mantained);
 * improvment: actually is possible to use directly produce after the installation, eggs will propose the necessary operations to install prerequisites, calamares and so on;
-* bugfix: the previous version I put distro.versionId as productName in calamares, but due the fact who was used ad EFI name too, Debian refuse to boot. So I changed in branding.ts the line bootloaderEntryName=productName to bootloaderEntryName = distro.distroId.
+* bugfix: the previous version I put distro.codenameId as productName in calamares, but due the fact who was used ad EFI name too, Debian refuse to boot. So I changed in branding.ts the line bootloaderEntryName=productName to bootloaderEntryName = distro.distroId.
 
 ### eggs-7.6.42.1_.deb deprecated
 * removed open-infrastructure-system-config dependencies from ubuntu bionic. 

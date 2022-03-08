@@ -114,7 +114,7 @@ export default class Produce extends Command {
        * jessie e stretch will use gzip for fastest
       */
       const settings = new Settings()
-      if (settings.distro.versionLike === 'jessie' || settings.distro.versionLike === 'stretch') {
+      if (settings.distro.codenameLikeId === 'jessie' || settings.distro.codenameLikeId === 'stretch') {
         fastest = 'gzip'
       }
 

@@ -5,7 +5,7 @@
  * author: Piero Proietti
  * mail: piero.proietti@gmail.com
  */
- 
+
 /**
  * Debian 8 (jessie)
  * Debian 9 (stretch)
@@ -33,7 +33,6 @@
 'use strict'
 import fs from 'node:fs'
 import shell from 'shelljs'
-import inquirer from 'inquirer'
 
 import { IRemix, IDistro } from '../interfaces'
 
@@ -44,8 +43,8 @@ class Distro implements IDistro {
   familyId: string
   distroId: string
   distroLike: string
-  versionId: string
-  versionLike: string
+  codenameId: string
+  codenameLikeId: string
   releaseId: string
   releaseLike: string
   usrLibPath: string
@@ -61,8 +60,8 @@ class Distro implements IDistro {
     this.familyId = 'debian'
     this.distroId = ''
     this.distroLike = ''
-    this.versionId = ''
-    this.versionLike = ''
+    this.codenameId = ''
+    this.codenameLikeId = ''
     this.releaseId = ''
     this.releaseLike = ''
     this.usrLibPath = '/usr/lib'
@@ -108,26 +107,41 @@ class Distro implements IDistro {
     /**
      * lsb_release -cs per versione ed lsb_release -is per distribuzione
      */
-    this.versionId = shell.exec('lsb_release -cs', { silent: true }).stdout.toString().trim()
+    this.codenameId = shell.exec('lsb_release -cs', { silent: true }).stdout.toString().trim()
+    this.releaseId = shell.exec('lsb_release -rs', { silent: true }).stdout.toString().trim()
     this.distroId = shell.exec('lsb_release -is', { silent: true }).stdout.toString().trim()
-    this.releaseId = shell.exec('lsb_release -ir', { silent: true }).stdout.toString().trim()
+
 
     /**
-     * Per casi equivoci conviene normalizzare versionId
+     * releaseLike = releaseId
+     */
+     this.releaseLike = this.releaseId
+
+    /**
+     * Per casi equivoci conviene normalizzare codenameId
      *  -i, --id           show distributor ID
      *  -r, --release      show release number of this distribution
      *  -c, --codename     show code name of this distribution
      */
-    switch (this.versionId) {
+    if (this.distroId === 'Debian' && this.releaseId === 'unstable' && this.codenameId === 'sid') {
+      this.codenameId = 'bookworm'
+    } else if (this.distroId === 'Debian' && this.releaseId === 'testing/unstable') {
+      this.codenameId = 'bookworm'
+      this.releaseLike = 'unstable'
+    }
+
+
+    /*
+    switch (this.codenameId) {
       case 'n/a': {
         // può essere Deepin apricot
         if (this.distroId === 'Deepin') {
-          this.versionId = 'apricot'
+          this.codenameId = 'apricot'
         } else if (fs.existsSync('/etc/debian_version')) {
           // bookworm?
           const debianVersion = fs.readFileSync('/etc/debian_version', 'utf8')
           if (debianVersion.trim() === 'bookworm/sid') {
-            this.versionId = 'bookworm'
+            this.codenameId = 'bookworm'
           }
         }
 
@@ -139,7 +153,7 @@ class Distro implements IDistro {
         if (fs.existsSync('/etc/debian_version')) {
           const debianVersion = fs.readFileSync('/etc/debian_version', 'utf8')
           if (debianVersion.trim() === 'bullseye/sid') {
-            this.versionId = 'siduction'
+            this.codenameId = 'siduction'
           }
         }
 
@@ -148,22 +162,23 @@ class Distro implements IDistro {
 
       case 'testing': {
         if (this.distroId === 'Netrunner') {
-          this.versionId = 'buster/sid'
+          this.codenameId = 'buster/sid'
         }
 
         break
       }
       // No default
     }
+    */
 
     /**
-     * Procedo analizzanto: versionId, prima Debian, Devuan ed Ubuntu poi gli altri
+     * Procedo analizzanto: codenameId, prima Debian, Devuan ed Ubuntu poi gli altri
      */
-    switch (this.versionId) {
+    switch (this.codenameId) {
       case 'jessie': {
         // Debian 8 jessie
         this.distroLike = 'Debian'
-        this.versionLike = 'jessie'
+        this.codenameLikeId = 'jessie'
 
         break
       }
@@ -171,7 +186,7 @@ class Distro implements IDistro {
       case 'stretch': {
         // Debian 9 stretch
         this.distroLike = 'Debian'
-        this.versionLike = 'stretch'
+        this.codenameLikeId = 'stretch'
 
         break
       }
@@ -179,7 +194,7 @@ class Distro implements IDistro {
       case 'buster': {
         // Debian 10 buster
         this.distroLike = 'Debian'
-        this.versionLike = 'buster'
+        this.codenameLikeId = 'buster'
 
         break
       }
@@ -187,7 +202,7 @@ class Distro implements IDistro {
       case 'bullseye': {
         // Debian 11 bullseye
         this.distroLike = 'Debian'
-        this.versionLike = 'bullseye'
+        this.codenameLikeId = 'bullseye'
 
         break
       }
@@ -195,28 +210,28 @@ class Distro implements IDistro {
       case 'bookworm': {
         // Debian 11 bullseye
         this.distroLike = 'Debian'
-        this.versionLike = 'bookworm'
+        this.codenameLikeId = 'bookworm'
 
         break
       }
 
       case 'beowulf': {
         this.distroLike = 'Devuan'
-        this.versionLike = 'beowulf'
+        this.codenameLikeId = 'beowulf'
 
         break
       }
 
       case 'chimaera': {
         this.distroLike = 'Devuan'
-        this.versionLike = 'chimaera'
+        this.codenameLikeId = 'chimaera'
 
         break
       }
 
       case 'daedalus': {
         this.distroLike = 'Devuan'
-        this.versionLike = 'daedalus'
+        this.codenameLikeId = 'daedalus'
 
         break
       }
@@ -224,7 +239,7 @@ class Distro implements IDistro {
       case 'xenial': {
         // Ubuntu xenial
         this.distroLike = 'Ubuntu'
-        this.versionLike = 'xenial'
+        this.codenameLikeId = 'xenial'
 
         break
       }
@@ -232,7 +247,7 @@ class Distro implements IDistro {
       case 'bionic': {
         // Ubuntu 18.04 bionic LTS eol aprile 2023
         this.distroLike = 'Ubuntu'
-        this.versionLike = 'bionic'
+        this.codenameLikeId = 'bionic'
 
         break
       }
@@ -240,7 +255,7 @@ class Distro implements IDistro {
       case 'focal': {
         // Ubuntu 20.04 focal LTS
         this.distroLike = 'Ubuntu'
-        this.versionLike = 'focal'
+        this.codenameLikeId = 'focal'
 
         break
       }
@@ -248,7 +263,7 @@ class Distro implements IDistro {
       case 'groovy': {
         // Ubuntu 20.10 groovy
         this.distroLike = 'Ubuntu'
-        this.versionLike = 'groovy'
+        this.codenameLikeId = 'groovy'
 
         break
       }
@@ -256,7 +271,7 @@ class Distro implements IDistro {
       case 'hirsute': {
         // Ubuntu 21.04 hirsute
         this.distroLike = 'Ubuntu'
-        this.versionLike = 'hirsute'
+        this.codenameLikeId = 'hirsute'
 
         break
       }
@@ -264,7 +279,7 @@ class Distro implements IDistro {
       case 'impish': {
         // Ubuntu 21.10 impish
         this.distroLike = 'Ubuntu'
-        this.versionLike = 'impish'
+        this.codenameLikeId = 'impish'
 
         break
       }
@@ -272,7 +287,7 @@ class Distro implements IDistro {
       case 'jammy': {
         // Ubuntu 22.04 jammy
         this.distroLike = 'Ubuntu'
-        this.versionLike = 'jammy'
+        this.codenameLikeId = 'jammy'
 
         // quindi le derivate...
 
@@ -282,7 +297,7 @@ class Distro implements IDistro {
       case 'kali-rolling': {
         // Kali
         this.distroLike = 'Debian'
-        this.versionLike = 'bookworm'
+        this.codenameLikeId = 'bookworm'
 
         // UfficioZero roma
 
@@ -292,15 +307,15 @@ class Distro implements IDistro {
       case `jolnir`: {
         // Elementary
         this.distroLike = 'Ubuntu'
-        this.versionLike = 'focal'
+        this.codenameLikeId = 'focal'
 
         break
-      } 
+      }
 
       case 'roma': {
         // UfficioZero roma
         this.distroLike = 'Devuan'
-        this.versionLike = 'beowulf'
+        this.codenameLikeId = 'beowulf'
 
         break
       }
@@ -308,7 +323,7 @@ class Distro implements IDistro {
       case 'tropea': {
         // UfficioZero tropea
         this.distroLike = 'Ubuntu'
-        this.versionLike = 'focal'
+        this.codenameLikeId = 'focal'
 
         break
       }
@@ -316,7 +331,7 @@ class Distro implements IDistro {
       case 'vieste': {
         // UfficioZero tropea
         this.distroLike = 'Ubuntu'
-        this.versionLike = 'bionic'
+        this.codenameLikeId = 'bionic'
 
         break
       }
@@ -324,7 +339,7 @@ class Distro implements IDistro {
       case 'siena': {
         // UfficioZero siena
         this.distroLike = 'Debian'
-        this.versionLike = 'buster'
+        this.codenameLikeId = 'buster'
 
         break
       }
@@ -335,7 +350,7 @@ class Distro implements IDistro {
       case 'tricia': {
         // LinuxMint 19.x
         this.distroLike = 'Ubuntu'
-        this.versionLike = 'bionic'
+        this.codenameLikeId = 'bionic'
 
         break
       }
@@ -346,7 +361,7 @@ class Distro implements IDistro {
       case 'una': {
         // LinuxMint 20.x
         this.distroLike = 'Ubuntu'
-        this.versionLike = 'focal'
+        this.codenameLikeId = 'focal'
 
         break
       }
@@ -354,7 +369,7 @@ class Distro implements IDistro {
       case 'debbie': {
         // LMDE 4 debbie
         this.distroLike = 'Debian'
-        this.versionLike = 'buster'
+        this.codenameLikeId = 'buster'
 
         break
       }
@@ -362,7 +377,7 @@ class Distro implements IDistro {
       case 'elsie': {
         // LMDE 5 elsie
         this.distroLike = 'Debian'
-        this.versionLike = 'bullseye'
+        this.codenameLikeId = 'bullseye'
 
         break
       }
@@ -370,7 +385,7 @@ class Distro implements IDistro {
       case 'apricot': {
         // Deepin 20 apricot
         this.distroLike = 'Debian'
-        this.versionLike = 'bullseye'
+        this.codenameLikeId = 'bullseye'
 
         break
       }
@@ -378,7 +393,7 @@ class Distro implements IDistro {
       case 'siduction': {
         // Debian 11 Siduction
         this.distroLike = 'Debian'
-        this.versionLike = 'bullseye'
+        this.codenameLikeId = 'bullseye'
 
         break
       }
@@ -386,7 +401,7 @@ class Distro implements IDistro {
       case 'buster/sid': {
         // Netrunner
         this.distroLike = 'Debian'
-        this.versionLike = 'buster'
+        this.codenameLikeId = 'buster'
 
         /**
          * ArchLinux
@@ -397,26 +412,26 @@ class Distro implements IDistro {
       /**
        * GARUDA
        */
-       case 'Harpy-Eagle': {
+      case 'Harpy-Eagle': {
         this.familyId = 'archlinux'
         this.distroLike = 'Arch'
-        this.versionLike = 'rolling'
+        this.codenameLikeId = 'rolling'
         break
       }
       case 'White-tailed-eagle': {
         this.familyId = 'archlinux'
         this.distroLike = 'Arch'
-        this.versionLike = 'rolling'
+        this.codenameLikeId = 'rolling'
         break
       }
-      
+
       /**
        * Manjaro
        */
-       case 'Qonos': {
+      case 'Qonos': {
         this.familyId = 'archlinux'
         this.distroLike = 'Arch'
-        this.versionLike = 'rolling'
+        this.codenameLikeId = 'rolling'
         break
 
         /**
@@ -427,7 +442,7 @@ class Distro implements IDistro {
       case 'ThirtyFive': {
         this.familyId = 'fedora'
         this.distroLike = 'Fedora'
-        this.versionLike = 'thirtyfive'
+        this.codenameLikeId = 'thirtyfive'
         break
 
         /**
@@ -438,8 +453,8 @@ class Distro implements IDistro {
       case 'tumbleweed': {
         this.familyId = 'suse'
         this.distroLike = 'SUSE'
-        this.versionId = 'tumbleweed'
-        this.versionLike = 'tumbleweed'
+        this.codenameId = 'tumbleweed'
+        this.codenameLikeId = 'tumbleweed'
 
         break
       }
@@ -450,7 +465,7 @@ class Distro implements IDistro {
          */
         console.log("This distro is not yet recognized, I'll try Debian buster")
         this.distroLike = 'Debian'
-        this.versionLike = 'buster'
+        this.codenameLikeId = 'buster'
 
       }
     }
@@ -458,13 +473,13 @@ class Distro implements IDistro {
     /**
      * Selezione il mountpoint per squashfs
      */
-    if (this.versionLike === 'jessie' || this.versionLike === 'stretch' || this.versionLike === 'bionic' || this.versionLike === 'xenial') {
+    if (this.codenameLikeId === 'jessie' || this.codenameLikeId === 'stretch' || this.codenameLikeId === 'bionic' || this.codenameLikeId === 'xenial') {
       this.mountpointSquashFs = '/lib/live/mount/medium/live/filesystem.squashfs'
     } else {
       this.mountpointSquashFs = '/run/live/medium/live/filesystem.squashfs'
     }
     if (this.familyId === "archlinux") {
-      this.mountpointSquashFs="/run/miso/bootmnt/live/filesystem.squashfs"
+      this.mountpointSquashFs = "/run/miso/bootmnt/live/filesystem.squashfs"
     }
 
     /**
