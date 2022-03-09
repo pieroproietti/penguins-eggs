@@ -152,10 +152,9 @@ export default class Ovary {
         for (let i = 0; i < users.length; i++) {
           if (users[i].saveIt) {
             let utype = 'user   '
-            if (users[i].uid < "1000") {
+            if (parseInt(users[i].uid) < 1000) {
               utype = 'service'
             }
-
             console.log(`- ${utype}: ${users[i].login.padEnd(16)} \thome: ${users[i].home}`)
             if (users[i].login !== 'root') {
               this.addRemoveExclusion(true, users[i].home)
