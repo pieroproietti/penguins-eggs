@@ -22,7 +22,12 @@ export default class Syncfrom extends Command {
   static description = 'Restore users, server and datas from luks-eggs-backup'
 
   static flags = {
-    file: Flags.string({ char: 'f', description: "file with LUKS volume encrypted" }),
+    delete: Flags.string({ description: 'rsync --delete delete extraneous files from dest dirs' }),
+    exclude: Flags.string({ description: 'same as rsync --exclude=PATTERN exclude files matching PATTERN'}),
+    excludeFrom: Flags.string({ description: 'same as rsync --exclude-from=FILE read exclude patterns from FILE' }),
+    include: Flags.string({ description: 'same as rsync --include=PATTERN include files matching PATTERN'}),
+    includeFrom: Flags.string({ description: 'same as rsync --include-from=FILE read include patterns from FILE' }),
+    file: Flags.string({ char: 'f', description: "file LUKS volume encrypted" }),
     rootdir: Flags.string({ char: 'r', description: 'rootdir of the installed system, when used from live' }),
     help: Flags.help({ char: 'h' }),
     verbose: Flags.boolean({ char: 'v', description: 'verbose' })
