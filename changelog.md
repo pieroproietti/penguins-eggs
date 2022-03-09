@@ -18,6 +18,9 @@ You can follow the project also consulting the [commit history](https://github.c
 ## Changelog
 From time to time I remove old version to not get confised, you can find them on [oldest](https://sourceforge.net/projects/penguins-eggs/files/packages-deb/oldest/).Versions are listed on reverse order, the first is the last one. 
 
+### eggs-9.0.34-1
+* added flag --delete to syncto and syncfrom
+
 ### eggs-9.0.33-1
 * yolk: it seem the problem of local repository yolk now it's solved;
 * changed from versionId to codenameId, added releaseId to better fit compatibility

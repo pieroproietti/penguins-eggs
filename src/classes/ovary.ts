@@ -151,7 +151,12 @@ export default class Ovary {
         const users = await this.usersFill()
         for (let i = 0; i < users.length; i++) {
           if (users[i].saveIt) {
-            console.log(`- user: ${users[i].login.padEnd(16)} \thome: ${users[i].home}`)
+            let utype = 'user   '
+            if (users[i].uid < "1000") {
+              utype = 'service'
+            }
+
+            console.log(`- ${utype}: ${users[i].login.padEnd(16)} \thome: ${users[i].home}`)
             if (users[i].login !== 'root') {
               this.addRemoveExclusion(true, users[i].home)
             }
@@ -215,7 +220,7 @@ export default class Ovary {
       }
 
       if (backup) {
-        await exec('eggs syncto', this.echo)
+        await exec('eggs syncto', Utils.setEcho(true))
         Utils.warning(`moving ${luksFile} in ${this.settings.config.snapshot_dir}ovarium/iso/live`)
         await exec(`mv ${luksFile} ${this.settings.config.snapshot_dir}ovarium/iso/live`, this.echo)
       }
