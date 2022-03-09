@@ -172,7 +172,11 @@ export default class Syncto extends Command {
         for (let i = 0; i < users.length; i++) {
             if (users[i].login !== 'root') {
                 if (users[i].saveIt) {
-                    console.log(`user: ${users[i].login} \thome: ${users[i].home.padEnd(16)} \tsize: ${Utils.formatBytes(users[i].size)} \tBytes: ${users[i].size} `)
+                    let utype = 'user   '
+                    if (parseInt(users[i].uid) < 1000) {
+                      utype = 'service'
+                    }
+                    console.log(`- ${utype}: ${users[i].login.padEnd(16)} \thome: ${users[i].home} \tsize: ${Utils.formatBytes(users[i].size)} \tBytes: ${users[i].size} `)
                     totalSize += users[i].size
                 }
             }

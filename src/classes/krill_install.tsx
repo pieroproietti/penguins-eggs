@@ -237,7 +237,7 @@ export default class Hatching {
             percent = 0.37
             try {
                redraw(<Install message={message} percent={percent} spinner={true} />)
-               await exec('eggs syncfrom --rootdir /tmp/calamares-krill-root/', this.echo)
+               await exec('eggs syncfrom --rootdir /tmp/calamares-krill-root/', Utils.setEcho(true))
             } catch (error) {
                await Utils.pressKeyToExit(JSON.stringify(error))
             }
