@@ -29,7 +29,7 @@ const config_file = '/etc/penguins-eggs.d/eggs.yaml' as string
 const config_tools = '/etc/penguins-eggs.d/tools.yaml' as string
 
 /**
- * Utils: general porpourse utils
+ * Utils: general porpouse utils
  * @remarks all the utilities
  */
 export default class Pacman {

@@ -49,8 +49,6 @@ export default class Ovary {
 
   echo = {}
 
-  echoYes = {}
-
   toNull = ''
 
   incubator = {} as Incubator
@@ -106,7 +104,6 @@ export default class Ovary {
   async produce(backup = false, scriptOnly = false, yolkRenew = false, release = false, myAddons: IMyAddons, verbose = false) {
     this.verbose = verbose
     this.echo = Utils.setEcho(verbose)
-    this.echoYes = Utils.setEcho(true)
     if (this.verbose) {
       this.toNull = ' > /dev/null 2>&1'
     }
@@ -213,7 +210,7 @@ export default class Ovary {
           cliAutologin.addAutologin(this.settings.distro.distroId, this.settings.distro.codenameId, this.settings.config.user_opt, this.settings.config.user_opt_passwd, this.settings.config.root_passwd, this.settings.work_dir.merged)
         }
         await this.editLiveFs()
-        await this.makeSquashfs(scriptOnly, )
+        await this.makeSquashfs(scriptOnly)
         await this.uBindLiveFs() // Lo smonto prima della fase di backup
       }
 
@@ -661,7 +658,7 @@ export default class Ovary {
     let initrdImg = Utils.initrdImg()
     initrdImg = initrdImg.substring(initrdImg.lastIndexOf('/') + 1)
     Utils.warning(`Creating ${initrdImg} in ${this.settings.work_dir.pathIso}/live/`)
-    await exec(`mkinitcpio -c ${path.resolve(__dirname, '../../mkinitcpio/manjaro/mkinitcpio.conf')} -g ${this.settings.work_dir.pathIso}/live/${initrdImg}`, this.echoYes)
+    await exec(`mkinitcpio -c ${path.resolve(__dirname, '../../mkinitcpio/manjaro/mkinitcpio.conf')} -g ${this.settings.work_dir.pathIso}/live/${initrdImg}`, Utils.setEcho(true))
   }
 
   /**
@@ -755,7 +752,7 @@ export default class Ovary {
     Utils.writeX(`${this.settings.work_dir.path}mksquashfs`, cmd)
     if (!scriptOnly) {
       Utils.warning('squashing filesystem: ' + compression)
-      await exec(cmd, this.echoYes)
+      await exec(cmd, Utils.setEcho(true))
     }
   }
 
@@ -1115,7 +1112,7 @@ export default class Ovary {
     // pve
     if (myAddons.pve) {
       /**
-       * create service pve-lite
+       * create service pve-live
        */
       const pve = new PveLive()
       pve.create(this.settings.work_dir.merged)
@@ -1500,9 +1497,9 @@ export default class Ovary {
     const output = this.settings.config.snapshot_dir + this.settings.isoFilename
 
     let command = ''
-    const appid = `-appid "${this.settings.distro.distroId}" `
-    const publisher = `-publisher "${this.settings.distro.distroId}/${this.settings.distro.codenameId}" `
-    const preparer = '-preparer "prepared by eggs <https://penguins-eggs.net>" '
+    // const appid = `-appid "${this.settings.distro.distroId}" `
+    // const publisher = `-publisher "${this.settings.distro.distroId}/${this.settings.distro.codenameId}" `
+    // const preparer = '-preparer "prepared by eggs <https://penguins-eggs.net>" '
 
 
     let isoHybridMbr = ``
@@ -1526,7 +1523,6 @@ export default class Ovary {
       uefi_isohybridGptBasdat = '-isohybrid-gpt-basdat'
       uefi_noEmulBoot = '-no-emul-boot'
     }
-
 
     /**
       * info Debian GNU/Linux 10.8.0 "Buster" - Official i386 NETINST 20210206-10:54
@@ -1564,8 +1560,7 @@ export default class Ovary {
       * -isohybrid-gpt-basdat 
       *         isohybrid-apm-hfsplus 
       * boot1 CD1
-      */
-
+    
     command = `xorriso -as mkisofs \
      -r \
      -checksum_algorithm_iso md5,sha1,sha256,sha512 \
@@ -1585,6 +1580,7 @@ export default class Ovary {
      ${uefi_noEmulBoot} \
      ${uefi_isohybridGptBasdat}
      ${this.settings.work_dir.pathIso}`
+    */
 
     /**
      * how is made in refracta 
@@ -1643,7 +1639,7 @@ export default class Ovary {
 
     Utils.writeX(`${this.settings.work_dir.path}mkisofs`, cmd)
     if (!scriptOnly) {
-      await exec(cmd, this.echo)
+      await exec(cmd, Utils.setEcho(true))
     }
   }
 

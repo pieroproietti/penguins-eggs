@@ -131,46 +131,6 @@ class Distro implements IDistro {
     }
 
 
-    /*
-    switch (this.codenameId) {
-      case 'n/a': {
-        // può essere Deepin apricot
-        if (this.distroId === 'Deepin') {
-          this.codenameId = 'apricot'
-        } else if (fs.existsSync('/etc/debian_version')) {
-          // bookworm?
-          const debianVersion = fs.readFileSync('/etc/debian_version', 'utf8')
-          if (debianVersion.trim() === 'bookworm/sid') {
-            this.codenameId = 'bookworm'
-          }
-        }
-
-        break
-      }
-
-      case 'sid': {
-        // sinora ho trovato solo siduction
-        if (fs.existsSync('/etc/debian_version')) {
-          const debianVersion = fs.readFileSync('/etc/debian_version', 'utf8')
-          if (debianVersion.trim() === 'bullseye/sid') {
-            this.codenameId = 'siduction'
-          }
-        }
-
-        break
-      }
-
-      case 'testing': {
-        if (this.distroId === 'Netrunner') {
-          this.codenameId = 'buster/sid'
-        }
-
-        break
-      }
-      // No default
-    }
-    */
-
     /**
      * Procedo analizzanto: codenameId, prima Debian, Devuan ed Ubuntu poi gli altri
      */
@@ -298,8 +258,6 @@ class Distro implements IDistro {
         // Kali
         this.distroLike = 'Debian'
         this.codenameLikeId = 'bookworm'
-
-        // UfficioZero roma
 
         break
       }
