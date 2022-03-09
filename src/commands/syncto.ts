@@ -4,8 +4,24 @@
  * email: piero.proietti@gmail.com
  * license: MIT
  */
-import { Command, Flags } from '@oclif/core'
 
+/**
+ * 
+ * syncfrom (restore)
+ * --include-from file.list // if only include is provided everything from the list if used to update the system. 
+ * --exclude-from file-list // it just updates the system 
+ * --delete
+ * 
+* If both options are provided then it works as a combination as provided in the link above.
+* https://stackoverflow.com/questions/19296190/rsync-include-from-vs-exclude-from-what-is-the-actual-difference
+* 
+ * The same logic is applied for the syncto also.
+ * 
+ * On top of all of this the --delete option 
+ * if needed to be passed so that everything else is removed, but this 
+ * this should not be available by default
+ */
+import { Command, Flags } from '@oclif/core'
 import fs = require('fs')
 import path = require('path')
 import Utils from '../classes/utils'
@@ -15,8 +31,10 @@ import { exec } from '../lib/utils'
 import { access } from 'fs/promises'
 import { constants } from 'fs'
 import Users from '../classes/users'
-import { deepStrictEqual } from 'assert'
 
+/**
+ * 
+ */
 export default class Syncto extends Command {
     luksName = 'luks-eggs-backup'
     luksFile = `/run/live/medium/live/${this.luksName}`
@@ -26,7 +44,11 @@ export default class Syncto extends Command {
     static description = 'Backup users, server and datas to luks-eggs-backup'
 
     static flags = {
-        krill: Flags.boolean({ char: 'k', description: 'krill' }),
+        delete: Flags.string({ description: 'rsync --delete delete extraneous files from dest dirs' }),
+        exclude: Flags.string({ description: 'same as rsync --exclude=PATTERN exclude files matching PATTERN'}),
+        excludeFrom: Flags.string({ description: 'same as rsync --exclude-from=FILE read exclude patterns from FILE' }),
+        include: Flags.string({ description: 'same as rsync --include=PATTERN include files matching PATTERN'}),
+        includeFrom: Flags.string({ description: 'same as rsync --include-from=FILE read include patterns from FILE' }),
         file: Flags.string({ char: 'f', description: "file LUKS volume encrypted" }),
         help: Flags.help({ char: 'h' }),
         verbose: Flags.boolean({ char: 'v', description: 'verbose' })
@@ -34,7 +56,7 @@ export default class Syncto extends Command {
 
     static aliases = ['backup']
 
-    static examples = ['$ sudo eggs restore']
+    static examples = ['$ sudo eggs syncto']
 
     /**
      * 
