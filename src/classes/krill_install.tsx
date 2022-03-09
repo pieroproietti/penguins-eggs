@@ -545,12 +545,9 @@ adduser ${name} \
          const user: string = this.settings.config.user_opt
          let userExists = `#!/bin/sh\ngetent passwd "${user}"  > /dev/null`
          if ((await exec(userExists, this.echo)).code === 1) {
-            Utils.pressKeyToExit(`User ${user} exist!`)
-         } else {
-            Utils.pressKeyToExit(`User ${user} NOT exist!`)
+            const cmd = `chroot ${this.installTarget} deluser --remove-home ${user} ${this.toNull}`
+            await exec(cmd, this.echo)
          }
-         const cmd = `chroot ${this.installTarget} deluser --remove-home ${user} ${this.toNull}`
-         await exec(cmd, this.echo)
       }
    }
 
