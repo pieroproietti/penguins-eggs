@@ -1112,7 +1112,7 @@ export default class Ovary {
     // pve
     if (myAddons.pve) {
       /**
-       * create service pve-lite
+       * create service pve-live
        */
       const pve = new PveLive()
       pve.create(this.settings.work_dir.merged)
