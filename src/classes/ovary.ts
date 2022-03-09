@@ -147,7 +147,7 @@ export default class Ovary {
       }
 
       if (backup) {
-        console.log(`eggs will remove all the users from live. Following servers datas will included on a crypted LUKS volume:`)
+        console.log(`eggs will remove all users and service datas from live. Following datas will included on a crypted LUKS volume:`)
         const users = await this.usersFill()
         for (let i = 0; i < users.length; i++) {
           if (users[i].saveIt) {
@@ -162,7 +162,7 @@ export default class Ovary {
           }
         }
       } else {
-        Utils.warning('eggs will remove all the users from live, but servers datas will be included uncrypted')
+        Utils.warning('eggs will remove all the users from live, but all service datas will be included uncrypted')
       }
 
       /**
