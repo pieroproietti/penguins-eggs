@@ -117,6 +117,7 @@ export default class Syncto extends Command {
         if (this.verbose) {
             Utils.warning('backup')
         }
+        Utils.warning(`Coping users and services data on ${this.luksFile}`)
         const usersArray = await this.usersFill()
         const cmds: string[] = []
         for (let i = 0; i < usersArray.length; i++) {
@@ -181,7 +182,7 @@ export default class Syncto extends Command {
                 }
             }
         }
-        console.log(`Total\t\t\t\t\tSize: ${Utils.formatBytes(totalSize)} \tBytes: ${totalSize}`)
+        console.log(`Total\t\t\t\t\t\t\tsize: ${Utils.formatBytes(totalSize)} \tBytes: ${totalSize}`)
 
         /**
          * after we get size, we can start building luks-volume
