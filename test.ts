@@ -7,7 +7,6 @@
 
 import { exec } from './src/lib/utils'
 import Utils from './src/classes/utils'
-import { error } from 'node:console'
 
 console.clear()
 
