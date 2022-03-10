@@ -540,13 +540,20 @@ adduser ${name} \
     * va corretto con users.conf di calamares
     */
    async delLiveUser() {
-
       if (Utils.isLive()) {
          const user: string = this.settings.config.user_opt
-         let userExists = `#!/bin/sh\ngetent passwd "${user}"  > /dev/null`
-         if ((await exec(userExists, this.echo)).code === 1) {
-            const cmd = `chroot ${this.installTarget} deluser --remove-home ${user} ${this.toNull}`
-            await exec(cmd, this.echo)
+         let cmd = `#!/bin/sh\ngetent passwd "${user}"  > /dev/null`
+         let userExists = false
+         try {
+            await exec(cmd, Utils.setEcho(this.verbose))
+            userExists = true
+         } catch (error) {
+            // console.log(error)
+         } finally {
+            if (userExists) {
+               const cmd = `chroot ${this.installTarget} deluser --remove-home ${user} ${this.toNull}`
+               await exec(cmd, this.echo)
+            }
          }
       }
    }

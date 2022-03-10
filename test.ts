@@ -1,20 +1,32 @@
-import { exec, execSync } from 'child_process'
-import fs from 'fs'
+#!/usr/bin/npx ts-node
 
-let vmlinuz = ''
-const cmdline = `root=UUID=3dc0f202-8ac8-4686-9316-dddcec060c48 initrd=boot\initrd.img-5.15.0-0.bpo.3-amd64`.split(" ")
-//fs.readFileSync('/proc/cmdline', 'utf8').split(" ")
-cmdline.forEach(cmd => {
-   if (cmd.includes('BOOT_IMAGE')) {
-      vmlinuz = cmd.substring(cmd.indexOf('=') + 1)
-   }
-})
+/**
+ * run with: npx ts-node
+ * #!/usr/bin/npx ts-node
+ */
 
-if (vmlinuz === '') {
-   cmdline.forEach(cmd => {
-      if (cmd.includes('initrd')) {
-         vmlinuz = '/boot/vmlinuz' + cmd.substring(cmd.indexOf('initrd.img') + 10)
+import { exec } from './src/lib/utils'
+import Utils from './src/classes/utils'
+import { error } from 'node:console'
+
+console.clear()
+
+testuser('artisan')
+
+async function testuser (user = '') {
+   let cmd = `#!/bin/sh\ngetent passwd "${user}"  > /dev/null`
+   let userExists = false
+   try {
+      await exec(cmd, Utils.setEcho(false))
+      userExists = true
+   } catch (error) {
+      //console.log(error)
+   } finally {
+      if (userExists) {
+         console.log('user: ' + user + ' exists!')
+      } else {
+         console.log('user: ' + user + ', NOT exists!')
       }
-   })
+   }
+
 }
-console.log(vmlinuz)
