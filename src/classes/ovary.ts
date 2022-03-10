@@ -147,18 +147,22 @@ export default class Ovary {
       }
 
       if (backup) {
-        console.log(`eggs will remove all the users from live. Following servers datas will included on a crypted LUKS volume:`)
+        console.log(`eggs will remove all users and service datas from live. Following datas will included on a crypted LUKS volume:`)
         const users = await this.usersFill()
         for (let i = 0; i < users.length; i++) {
           if (users[i].saveIt) {
-            console.log(`- user: ${users[i].login.padEnd(16)} \thome: ${users[i].home}`)
+            let utype = 'user   '
+            if (parseInt(users[i].uid) < 1000) {
+              utype = 'service'
+            }
+            console.log(`- ${utype}: ${users[i].login.padEnd(16)} \thome: ${users[i].home}`)
             if (users[i].login !== 'root') {
               this.addRemoveExclusion(true, users[i].home)
             }
           }
         }
       } else {
-        Utils.warning('eggs will remove all the users from live, but servers datas will be included uncrypted')
+        Utils.warning('eggs will remove all the users from live, but all service datas will be included uncrypted')
       }
 
       /**
@@ -215,7 +219,7 @@ export default class Ovary {
       }
 
       if (backup) {
-        await exec('eggs syncto', this.echo)
+        await exec('eggs syncto', Utils.setEcho(true))
         Utils.warning(`moving ${luksFile} in ${this.settings.config.snapshot_dir}ovarium/iso/live`)
         await exec(`mv ${luksFile} ${this.settings.config.snapshot_dir}ovarium/iso/live`, this.echo)
       }

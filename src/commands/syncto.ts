@@ -4,8 +4,24 @@
  * email: piero.proietti@gmail.com
  * license: MIT
  */
-import { Command, Flags } from '@oclif/core'
 
+/**
+ * 
+ * syncfrom (restore)
+ * --include-from file.list // if only include is provided everything from the list if used to update the system. 
+ * --exclude-from file-list // it just updates the system 
+ * --delete
+ * 
+* If both options are provided then it works as a combination as provided in the link above.
+* https://stackoverflow.com/questions/19296190/rsync-include-from-vs-exclude-from-what-is-the-actual-difference
+* 
+ * The same logic is applied for the syncto also.
+ * 
+ * On top of all of this the --delete option 
+ * if needed to be passed so that everything else is removed, but this 
+ * this should not be available by default
+ */
+import { Command, Flags } from '@oclif/core'
 import fs = require('fs')
 import path = require('path')
 import Utils from '../classes/utils'
@@ -15,18 +31,28 @@ import { exec } from '../lib/utils'
 import { access } from 'fs/promises'
 import { constants } from 'fs'
 import Users from '../classes/users'
-import { deepStrictEqual } from 'assert'
 
+/**
+ * 
+ */
 export default class Syncto extends Command {
+
+    verbose = false
+
+    echo = {}
+
     luksName = 'luks-eggs-backup'
+
     luksFile = `/run/live/medium/live/${this.luksName}`
+
     luksDevice = `/dev/mapper/${this.luksName}`
+
     luksMountpoint = '/tmp/eggs-backup'
 
     static description = 'Backup users, server and datas to luks-eggs-backup'
 
     static flags = {
-        krill: Flags.boolean({ char: 'k', description: 'krill' }),
+        delete: Flags.string({ description: 'rsync --delete delete extraneous files from dest dirs' }),
         file: Flags.string({ char: 'f', description: "file LUKS volume encrypted" }),
         help: Flags.help({ char: 'h' }),
         verbose: Flags.boolean({ char: 'v', description: 'verbose' })
@@ -34,7 +60,7 @@ export default class Syncto extends Command {
 
     static aliases = ['backup']
 
-    static examples = ['$ sudo eggs restore']
+    static examples = ['$ sudo eggs syncto']
 
     /**
      * 
@@ -42,17 +68,22 @@ export default class Syncto extends Command {
     async run(): Promise<void> {
 
         const { flags } = await this.parse(Syncto)
-        let verbose = false
+
         if (flags.verbose) {
-            verbose = true
+            this.verbose = true
         }
+        this.echo = Utils.setEcho(this.verbose)
 
         let fileVolume = ''
         if (flags.file) {
             fileVolume = flags.file
         }
 
-        const echo = Utils.setEcho(verbose)
+        let destDelete = false
+        if (flags.delete) {
+            destDelete = true
+        }
+
         if (Utils.isRoot(this.id)) {
             /**
              * restore con file
@@ -66,27 +97,24 @@ export default class Syncto extends Command {
             this.luksDevice = `/dev/mapper/${this.luksName}`
             this.luksMountpoint = '/tmp/eggs-backup'
             if (!fs.existsSync(fileVolume)) {
-                await this.luksCreate(verbose)
+                await this.luksCreate()
             } else {
                 Utils.warning(`LUKS volume: ${this.luksFile} exist, don't need create`)
             }
             if (fs.existsSync(fileVolume)) {
-                await this.luksOpen(verbose)
-                await this.backup(verbose)
-                await this.luksClose(verbose)
+                await this.luksOpen()
+                await this.backup(destDelete)
+                await this.luksClose()
             }
         }
     }
 
 
-
     /**
      *
-     * @param verbose
      */
-    async backup(verbose = false) {
-        const echo = Utils.setEcho(verbose)
-        if (verbose) {
+    async backup(destDelete = false) {
+        if (this.verbose) {
             Utils.warning('backup')
         }
         const usersArray = await this.usersFill()
@@ -94,18 +122,22 @@ export default class Syncto extends Command {
         for (let i = 0; i < usersArray.length; i++) {
             if (usersArray[i].saveIt) {
                 if (fs.existsSync(usersArray[i].home)) {
-                    await exec(`mkdir -p ${this.luksMountpoint}/ROOT${usersArray[i].home}`, echo)
+                    await exec(`mkdir -p ${this.luksMountpoint}/ROOT${usersArray[i].home}`, this.echo)
                     const source = usersArray[i].home
                     let dest = this.luksMountpoint + '/ROOT' + usersArray[i].home
                     dest = dest.substring(0, dest.lastIndexOf('/'))
-                    await exec(`rsync --archive ${source} ${dest}`, echo)
+                    let cmd = `rsync --archive ${source} ${dest}`
+                    if (destDelete) {
+                        cmd = `rsync --archive --delete ${source} ${dest}`
+                    }
+                    await exec(cmd, this.echo)
                 }
             }
         }
-        await exec(`mkdir -p ${this.luksMountpoint}/etc`, echo)
-        await exec(`cp /etc/passwd ${this.luksMountpoint}/etc`, echo)
-        await exec(`cp /etc/shadow ${this.luksMountpoint}/etc`, echo)
-        await exec(`cp /etc/group ${this.luksMountpoint}/etc`, echo)
+        await exec(`mkdir -p ${this.luksMountpoint}/etc`, this.echo)
+        await exec(`cp /etc/passwd ${this.luksMountpoint}/etc`, this.echo)
+        await exec(`cp /etc/shadow ${this.luksMountpoint}/etc`, this.echo)
+        await exec(`cp /etc/group ${this.luksMountpoint}/etc`, this.echo)
     }
 
 
@@ -131,10 +163,7 @@ export default class Syncto extends Command {
     /**
      * 
      */
-    async luksCreate(verbose = false) {
-        const echo = Utils.setEcho(verbose)
-        const echoYes = Utils.setEcho(true)
-
+    async luksCreate() {
         Utils.warning(`Creating LUKS Volume on ${this.luksFile}`)
 
         let totalSize = 0
@@ -143,7 +172,11 @@ export default class Syncto extends Command {
         for (let i = 0; i < users.length; i++) {
             if (users[i].login !== 'root') {
                 if (users[i].saveIt) {
-                    console.log(`user: ${users[i].login} \thome: ${users[i].home.padEnd(16)} \tsize: ${Utils.formatBytes(users[i].size)} \tBytes: ${users[i].size} `)
+                    let utype = 'user   '
+                    if (parseInt(users[i].uid) < 1000) {
+                      utype = 'service'
+                    }
+                    console.log(`- ${utype}: ${users[i].login.padEnd(16)} \thome: ${users[i].home} \tsize: ${Utils.formatBytes(users[i].size)} \tBytes: ${users[i].size} `)
                     totalSize += users[i].size
                 }
             }
@@ -169,34 +202,31 @@ export default class Syncto extends Command {
         }
 
         Utils.warning(`Creating an encrypted file ${this.luksFile} blocks=${blocks}, block size: ${blockSize}, size: ${Utils.formatBytes(blocks * blockSize)}`)
-        await exec(`dd if=/dev/zero of=${this.luksFile} bs=${blockSize} count=${blocks}`, echo)
+        await exec(`dd if=/dev/zero of=${this.luksFile} bs=${blockSize} count=${blocks}`, this.echo)
 
         // find first unused device
-        let findFirstUnusedDevice = await exec(`losetup -f`, { echo: verbose, ignore: false, capture: true })
+        let findFirstUnusedDevice = await exec(`losetup -f`, { echo: this.verbose, ignore: false, capture: true })
         let firstUnusedDevice = ''
         if (findFirstUnusedDevice.code !== 0) {
-            Utils.warning(`Error: ${findFirstUnusedDevice.code} ${findFirstUnusedDevice.data}`)
-            process.exit(1)
+            Utils.pressKeyToExit(`Error: ${findFirstUnusedDevice.code} ${findFirstUnusedDevice.data}`)
         } else {
             firstUnusedDevice = findFirstUnusedDevice.data.trim()
         }
-        await exec(`losetup ${firstUnusedDevice} ${this.luksFile}`, echo)
+        await exec(`losetup ${firstUnusedDevice} ${this.luksFile}`, this.echo)
 
         Utils.warning('Enter a large string of random text below to setup the pre-encryption')
-        await exec(`cryptsetup -y -v --type luks2 luksFormat  ${this.luksFile}`, echoYes)
+        await exec(`cryptsetup -y -v --type luks2 luksFormat  ${this.luksFile}`, Utils.setEcho(true))
 
         Utils.warning(`Enter the desired passphrase for the encrypted ${this.luksName} below`)
-        let crytoSetup = await exec(`cryptsetup luksOpen --type luks2 ${this.luksFile} ${this.luksName}`, echoYes)
+        let crytoSetup = await exec(`cryptsetup luksOpen --type luks2 ${this.luksFile} ${this.luksName}`, Utils.setEcho(true))
         if (crytoSetup.code !== 0) {
-            Utils.warning(`Error: ${crytoSetup.code} ${crytoSetup.data}`)
-            process.exit(1)
+            Utils.pressKeyToExit(`Error: ${crytoSetup.code} ${crytoSetup.data}`)
         }
 
         Utils.warning(`Formatting ${this.luksDevice} to ext2`)
-        let formatting = await exec(`sudo mkfs.ext2 ${this.luksDevice}`, echo)
+        let formatting = await exec(`sudo mkfs.ext2 ${this.luksDevice}`, this.echo)
         if (formatting.code !== 0) {
-            Utils.warning(`Error: ${formatting.code} ${formatting.data}`)
-            process.exit(1)
+            Utils.pressKeyToExit(`Error: ${formatting.code} ${formatting.data}`)
         }
         // this.luksClose()
     }
@@ -205,24 +235,21 @@ export default class Syncto extends Command {
     /**
      * 
      */
-    async luksOpen(verbose = false) {
-        const echo = Utils.setEcho(verbose)
-        const echoYes = Utils.setEcho(true) // echoYes serve solo per cryptsetup luksOpen
-
+    async luksOpen() {
         if (!fs.existsSync(this.luksDevice)) {
             Utils.warning(`LUKS open volume: ${this.luksName}`)
-            await exec(`cryptsetup luksOpen --type luks2 ${this.luksFile} ${this.luksName}`, echoYes)
+            await exec(`cryptsetup luksOpen --type luks2 ${this.luksFile} ${this.luksName}`, Utils.setEcho(true))
         } else {
             Utils.warning(`LUKS volume: ${this.luksName} already open`)
         }
 
         if (!fs.existsSync(this.luksMountpoint)) {
-            await exec(`mkdir -p ${this.luksMountpoint}`, echo)
+            await exec(`mkdir -p ${this.luksMountpoint}`, this.echo)
         }
 
         if (!Utils.isMountpoint(this.luksMountpoint)) {
             Utils.warning(`mount volume: ${this.luksDevice} on ${this.luksMountpoint}`)
-            await exec(`mount ${this.luksDevice} ${this.luksMountpoint}`, echo)
+            await exec(`mount ${this.luksDevice} ${this.luksMountpoint}`, this.echo)
         } else {
             Utils.warning(`mount volume: ${this.luksDevice} already mounted on ${this.luksMountpoint}`)
         }
@@ -232,16 +259,14 @@ export default class Syncto extends Command {
     /**
     * 
     */
-    async luksClose(verbose = false) {
-        const echo = Utils.setEcho(verbose)
-
+    async luksClose() {
         if (Utils.isMountpoint(this.luksMountpoint)) {
-            await exec(`umount ${this.luksMountpoint}`, echo)
+            await exec(`umount ${this.luksMountpoint}`, this.echo)
         }
 
         if (fs.existsSync(this.luksDevice)) {
             Utils.warning(`LUKS close volume: ${this.luksName}`)
-            await exec(`cryptsetup luksClose ${this.luksName}`, echo)
+            await exec(`cryptsetup luksClose ${this.luksName}`, this.echo)
         }
     }
 

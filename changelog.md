@@ -12,11 +12,14 @@ penguins-eggs
 
 # Penguin's eggs Debian package
 
-Usually the last version is the right one. Detailed instructions for usage are published on the [penguin's eggs book](https://penguins-eggs.net/book). 
+Detailed instructions for usage are published on the [penguin's eggs book](https://penguins-eggs.net/book). 
 You can follow the project also consulting the [commit history](https://github.com/pieroproietti/penguins-eggs/commits/master). 
 
 ## Changelog
-From time to time I remove old version to not get confised, you can find them on [oldest](https://sourceforge.net/projects/penguins-eggs/files/packages-deb/oldest/).Versions are listed on reverse order, the first is the last one. 
+Versions are listed on reverse order, the first is the last one. Old versions are moved to [oldest](https://sourceforge.net/projects/penguins-eggs/files/packages-deb/oldest/). 
+
+### eggs-9.0.34-1
+* added flag --delete to syncto and syncfrom
 
 ### eggs-9.0.33-1
 * yolk: it seem the problem of local repository yolk now it's solved;
