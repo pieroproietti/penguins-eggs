@@ -235,11 +235,12 @@ export default class Hatching {
             // restoring users data
             message = "Restore private data from backup "
             percent = 0.37
+            let cmd ='eggs syncfrom --rootdir /tmp/calamares-krill-root/'
             try {
                redraw(<Install message={message} percent={percent} spinner={true} />)
-               await exec('eggs syncfrom --rootdir /tmp/calamares-krill-root/', Utils.setEcho(true))
+               await exec(cmd, Utils.setEcho(true))
             } catch (error) {
-               await Utils.pressKeyToExit(JSON.stringify(error))
+               await Utils.pressKeyToExit(cmd)
             }
          }
 
