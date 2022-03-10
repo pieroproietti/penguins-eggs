@@ -18,6 +18,9 @@ You can follow the project also consulting the [commit history](https://github.c
 ## Changelog
 Versions are listed on reverse order, the first is the last one. Old versions are moved to [oldest](https://sourceforge.net/projects/penguins-eggs/files/packages-deb/oldest/). 
 
+### eggs-9.0.35-1
+* krill: bugfix on removing user live on backup
+
 ### eggs-9.0.34-1
 * added flag --delete to syncto and syncfrom
 
