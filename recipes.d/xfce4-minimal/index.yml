@@ -1,0 +1,55 @@
+# recipe: xfce4 minimal installation
+# author: artisan
+---
+
+name: "xfce4-minimal-installation"
+author: "artisan"
+release: "0.0.1"
+applyTo: "naked" # A simple netinstall
+
+sequence:
+  - show:
+    - welcome
+
+  - exec:
+    - prepare-repository:
+      - sources-list
+      - sources-list.d
+      - debs
+      - command: apt-get update
+      - command: apt-get upgrade
+
+    - packages-from-repository:
+      - libxfce4ui-utils
+      - thunar
+      - xfce4-appfinder
+      - xfce4-panel
+      - xfce4-pulseaudio-plugin 
+      - xfce4-whiskermenu-plugin 
+      - xfce4-session 
+      - xfce4-settings 
+      - xfce4-terminal 
+      - xfconf 
+      - xfdesktop4 
+      - xfwm4 
+      - adwaita-qt 
+      - qt5ct 
+      - network-manager-openvpn
+      - network-manager-gnome 
+      - network-manager-openvpn-gnome
+
+  - packages-from-deb: false
+
+  - show:
+    - finished
+
+sources-list:
+  - component: main
+  - component: contrib
+  - component: non-free
+
+#sources.list.d:
+# commands to add thirf part repositories
+# - command: curl https://repo.waydro.id/waydroid.gpg --output /usr/share/keyrings/waydroid.gpg
+# - command: echo "deb [signed-by=/usr/share/keyrings/waydroid.gpg] https://repo.waydro.id/ $DISTRO main" > ~/waydroid.list
+# - command: mv ~/waydroid.list /etc/apt/sources.list.d/waydroid.list
