@@ -17,3 +17,6 @@ export { IInstaller } from './i-installer'
 export { IBranding } from './i-branding'
 export { ISettings } from './i-settings'
 export { IPartitions } from './i-partitions'
+
+// Repipes
+export { IRecipe } from './i-recipe'
