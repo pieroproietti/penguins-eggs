@@ -68,6 +68,7 @@
         "/lib",
         "/manpages",
         "/oclif.manifest.json",
+        "/recipes.d",
         "/scripts",
         "/templates"
     ],
