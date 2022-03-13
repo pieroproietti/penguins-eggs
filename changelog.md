@@ -18,6 +18,9 @@ You can follow the project also consulting the [commit history](https://github.c
 ## Changelog
 Versions are listed on reverse order, the first is the last one. Old versions are moved to [oldest](https://sourceforge.net/projects/penguins-eggs/files/packages-deb/oldest/). 
 
+### eggs-9.0.36-1
+* recipes: added recipes, simple automatic configuration on yaml, to descrive an installation. Inside /usr/lib/penguins-eggs/recipes.d you will find a simple recipe xfce4-minimal who consist just on a dir named ad the recipe and a index.yml file. Will be possible to make own recipes book and wrote personal recipes. 
+
 ### eggs-9.0.35-1
 * krill: bugfix on removing user live on backup
 
