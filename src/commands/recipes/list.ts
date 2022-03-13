@@ -36,18 +36,22 @@ export default class List extends Command {
 
     let book = `${path.resolve(__dirname, '../../../recipes.d')}`
 
+    let bookshelf = "internal"
     if (flags.book !== undefined) {
+      bookshelf = "extern"
       book = flags.book
     }
 
     const recipes = fs.readdirSync(book)
-    console.log(chalk.green('book:' + book))
+    console.log(chalk.green(`${bookshelf} book: ${book}`))
     console.log()
     recipes.forEach(recipe => {
-      console.log(`recipe: ${recipe}`)
-      const ingredients = yaml.load(fs.readFileSync(`${book}/${recipe}/index.yml`, 'utf-8')) as IRecipe
-      console.log(`description: ${ingredients.description}`)
-      console.log(`author: ${ingredients.author}`)
+      if (fs.existsSync(`${book}/${recipe}/index.yml`)) {
+        console.log(`recipe: ${recipe}`)
+        const ingredients = yaml.load(fs.readFileSync(`${book}/${recipe}/index.yml`, 'utf-8')) as IRecipe
+        console.log(`description: ${ingredients.description}`)
+        console.log(`author: ${ingredients.author}`)
+      }
     })
   }
 }
