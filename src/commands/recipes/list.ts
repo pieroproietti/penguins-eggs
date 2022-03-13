@@ -8,6 +8,7 @@ import { IRecipe } from '../../interfaces'
 // libraries
 import { exec } from '../../lib/utils'
 import { repository } from 'pjson'
+import chalk from 'chalk'
 
 /**
  * 
@@ -40,17 +41,13 @@ export default class List extends Command {
     }
 
     const recipes = fs.readdirSync(book)
+    console.log(chalk.green('book:' + book))
+    console.log()
     recipes.forEach(recipe => {
-      console.log(`>>> ${recipe} <<<`)
-      const ingrediends = yaml.load(fs.readFileSync(`${book}/${recipe}/index.yml`, 'utf-8')) as IRecipe
-      const repositories = 0
-      const packages = 1
-      const debs = 2
-
-      console.log(yaml.dump(ingrediends.sequence[repositories]))
-      console.log(yaml.dump(ingrediends.sequence[packages]))
-      console.log(yaml.dump(ingrediends.sequence[debs]))
-
+      console.log(`recipe: ${recipe}`)
+      const ingredients = yaml.load(fs.readFileSync(`${book}/${recipe}/index.yml`, 'utf-8')) as IRecipe
+      console.log(`description: ${ingredients.description}`)
+      console.log(`author: ${ingredients.author}`)
     })
   }
 }

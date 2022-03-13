@@ -1,6 +1,7 @@
 export interface IRecipe {
     name: string
     author: string
+    description: string
     release: string
     applyTo: string
     distroId: string
