@@ -579,7 +579,7 @@ DESCRIPTION
 
 ## `eggs recipes prepare`
 
-prepare recipes
+prepare recipe
 
 ```
 USAGE
@@ -591,7 +591,7 @@ FLAGS
   -v, --verbose
 
 DESCRIPTION
-  prepare recipes
+  prepare recipe
 ```
 
 ## `eggs remove`
