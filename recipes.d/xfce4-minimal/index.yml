@@ -3,6 +3,7 @@
 ---
 
 name: xfce4-minimal-installation
+description: a minimal xfce4 installation
 author: artisan
 release: 0.0.1
 applyTo: naked

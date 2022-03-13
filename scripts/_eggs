@@ -22,7 +22,7 @@ _eggs () {
 "mom:ask for mommy - gui helper"
 "produce:produce a live image from your system whithout your data"
 "recipes\:list:list, prepare recipes"
-"recipes\:prepare:prepare recipes"
+"recipes\:prepare:prepare the recipe: add repositoris, packages and so on to preparte your lunch"
 "remove:remove eggs and others stuff"
 "syncfrom:Restore users, server and datas from luks-eggs-backup"
 "syncto:Backup users, server and datas to luks-eggs-backup"
@@ -32,8 +32,8 @@ _eggs () {
 "tools\:stat:get statistics from sourceforge"
 "tools\:yolk:configure eggs to install without internet"
 "update:update the penguin's eggs tool"
-"help:Display help for <%= config.bin %>."
 "autocomplete:display autocomplete installation instructions"
+"help:Display help for <%= config.bin %>."
 "version:"
   )
 
@@ -253,15 +253,15 @@ update)
   )
 ;;
 
-help)
-  _command_flags=(
-    "--nested-commands[Include all nested commands in the output.]"
-  )
-;;
-
 autocomplete)
   _command_flags=(
     "--refresh-cache[Refresh cache (ignores displaying instructions)]"
+  )
+;;
+
+help)
+  _command_flags=(
+    "--nested-commands[Include all nested commands in the output.]"
   )
 ;;
 
