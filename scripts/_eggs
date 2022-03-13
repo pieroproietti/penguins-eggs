@@ -21,6 +21,8 @@ _eggs () {
 "kill:kill the eggs/free the nest"
 "mom:ask for mommy - gui helper"
 "produce:produce a live image from your system whithout your data"
+"recipes\:list:list, prepare recipes"
+"recipes\:prepare:prepare recipes"
 "remove:remove eggs and others stuff"
 "syncfrom:Restore users, server and datas from luks-eggs-backup"
 "syncto:Backup users, server and datas to luks-eggs-backup"
@@ -160,6 +162,22 @@ produce)
   )
 ;;
 
+recipes:list)
+  _command_flags=(
+    "--book=-[book of recipes]:"
+"--verbose[]"
+"--help[Show CLI help.]"
+  )
+;;
+
+recipes:prepare)
+  _command_flags=(
+    "--recipe=-[Recipe]:"
+"--verbose[]"
+"--help[Show CLI help.]"
+  )
+;;
+
 remove)
   _command_flags=(
     "--purge[remove eggs configurations files]"
@@ -171,7 +189,8 @@ remove)
 
 syncfrom)
   _command_flags=(
-    "--file=-[file with LUKS volume encrypted]:"
+    "--delete=-[rsync --delete delete extraneous files from dest dirs]:"
+"--file=-[file LUKS volume encrypted]:"
 "--rootdir=-[rootdir of the installed system, when used from live]:"
 "--help[Show CLI help.]"
 "--verbose[verbose]"
@@ -180,7 +199,7 @@ syncfrom)
 
 syncto)
   _command_flags=(
-    "--krill[krill]"
+    "--delete=-[rsync --delete delete extraneous files from dest dirs]:"
 "--file=-[file LUKS volume encrypted]:"
 "--help[Show CLI help.]"
 "--verbose[verbose]"
