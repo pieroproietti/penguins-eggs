@@ -6,16 +6,10 @@ export interface IRecipe {
     distroId: string
     codenameId: string
     releaseId: string
-    sourcelist: [
-        component: string
-    ]
-    sourcelistd: [
-        command: string
-    ]
-    sequence: [
-        repositories: string [],
-        packages: [],
-        debs: string,
-    ]
-    
+    sourceslist: string []
+    sourceslistd: string []
+    repositories: string[]
+    packages: string[]
+    debs: string
+    sequence: string[]
 }

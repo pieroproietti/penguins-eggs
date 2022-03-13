@@ -11,41 +11,48 @@ codenameId: booksworm
 releaseId: null
 
 sourceslist:
-  - component: main
-  - component: contrib
-  - component: non-free
+  - main
+  - contrib
+  - non-free
 
 sourceslistd:
-  - command: >-
+  - >-
       curl -s --compressed
       "https://pieroproietti.github.io/penguins-eggs-ppa/KEY.gpg" | sudo apt-key
       add -
-  - command: >-
+  - >-
       curl -s --compressed -o /etc/apt/sources.list.d/penguins-eggs-ppa.list
       "https://pieroproietti.github.io/penguins-eggs-ppa/penguins-eggs-ppa.list"
 
+repositories:
+  - sourceslist
+  - sourceslistd
+  - update
+  - full-upgrade
+
+packages:
+  - libxfce4ui-utils
+  - thunar
+  - xfce4-appfinder
+  - xfce4-panel
+  - xfce4-pulseaudio-plugin
+  - xfce4-whiskermenu-plugin
+  - xfce4-session
+  - xfce4-settings
+  - xfce4-terminal
+  - xfconf
+  - xfdesktop4
+  - xfwm4
+  - adwaita-qt
+  - qt5ct
+  - network-manager-openvpn
+  - network-manager-gnome
+  - network-manager-openvpn-gnome
+
+debs: debs
+
 sequence:
-  - repositories:
-    - sourceslist
-    - sourceslistd
-    - update
-    - full-upgrade
-  - packages:
-    - libxfce4ui-utils
-    - thunar
-    - xfce4-appfinder
-    - xfce4-panel
-    - xfce4-pulseaudio-plugin
-    - xfce4-whiskermenu-plugin
-    - xfce4-session
-    - xfce4-settings
-    - xfce4-terminal
-    - xfconf
-    - xfdesktop4
-    - xfwm4
-    - adwaita-qt
-    - qt5ct
-    - network-manager-openvpn
-    - network-manager-gnome
-    - network-manager-openvpn-gnome
-  - debs: none
+  - repositories
+  - packages
+  - debs
+ 

@@ -159,6 +159,8 @@ USAGE
 * [`eggs kill`](#eggs-kill)
 * [`eggs mom`](#eggs-mom)
 * [`eggs produce`](#eggs-produce)
+* [`eggs recipes list`](#eggs-recipes-list)
+* [`eggs recipes prepare`](#eggs-recipes-prepare)
 * [`eggs remove`](#eggs-remove)
 * [`eggs syncfrom`](#eggs-syncfrom)
 * [`eggs syncto`](#eggs-syncto)
@@ -557,6 +559,40 @@ EXAMPLES
 ```
 
 _See code: [src/commands/produce.ts](https://github.com/pieroproietti/penguins-eggs/blob/v9.0.35/src/commands/produce.ts)_
+
+## `eggs recipes list`
+
+list, prepare recipes
+
+```
+USAGE
+  $ eggs recipes list [-b <value>] [-v] [-h]
+
+FLAGS
+  -b, --book=<value>  book of recipes
+  -h, --help          Show CLI help.
+  -v, --verbose
+
+DESCRIPTION
+  list, prepare recipes
+```
+
+## `eggs recipes prepare`
+
+prepare recipes
+
+```
+USAGE
+  $ eggs recipes prepare [-r <value>] [-v] [-h]
+
+FLAGS
+  -h, --help            Show CLI help.
+  -r, --recipe=<value>  Recipe
+  -v, --verbose
+
+DESCRIPTION
+  prepare recipes
+```
 
 ## `eggs remove`
 

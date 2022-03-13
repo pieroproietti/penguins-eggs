@@ -25,9 +25,11 @@ install --cli --crypted --pve --help --verbose
 kill --help --verbose
 mom --help
 produce --prefix --basename --backup --fast --normal --max --verbose --yolk --script --help --theme --addons --release
+recipes:list --book --verbose --help
+recipes:prepare --recipe --verbose --help
 remove --purge --autoremove --help --verbose
-syncfrom --file --rootdir --help --verbose
-syncto --krill --file --help --verbose
+syncfrom --delete --file --rootdir --help --verbose
+syncto --delete --file --help --verbose
 tools:clean --help --verbose
 tools:locales --help --reinstall --verbose
 tools:skel --help --user --verbose

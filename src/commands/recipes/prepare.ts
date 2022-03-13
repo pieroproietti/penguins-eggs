@@ -4,11 +4,10 @@ import path from 'path'
 import yaml from 'js-yaml'
 import fs from 'fs'
 import { IRecipe } from '../../interfaces'
-
-import { exec } from '../../lib/utils'
+import Cooking from '../../classes/coocking'
 
 export default class Prepare extends Command {
-  static description = 'prepare recipes'
+  static description = 'prepare recipe'
 
   static flags = {
     recipe: Flags.string({ char: 'r', description: 'Recipe' }),
@@ -35,22 +34,8 @@ export default class Prepare extends Command {
     }
 
     const ingredients = yaml.load(fs.readFileSync(`${book}/${recipe}/index.yml`, 'utf-8')) as IRecipe
-    console.log(yaml.dump(ingredients))
-
-    console.log(`We start checking repositories`)
-    const repositories = 0
-    const packages = 1
-    const debs = 2
-    console.log(yaml.dump(ingredients.sequence[repositories]))
-    const rep = JSON.parse(yaml.dump(ingredients.sequence[repositories]))
-    console.log('rep'  + rep)
     
-
-
-
-
-
-    // console.log(yaml.dump(ingrediends.sequence[packages]))
-    // console.log(yaml.dump(ingrediends.sequence[debs]))
+    const cook = new Cooking(ingredients)
+    await cook.prepare(verbose)
   }
 }
