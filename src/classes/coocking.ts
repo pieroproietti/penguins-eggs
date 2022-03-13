@@ -95,7 +95,7 @@ export default class Cooking {
         Utils.warning('installing packages')
         const packages = this.ingredients.packages
 
-        let cmd = 'apt-get -y '
+        let cmd = 'apt-get install -y '
         const n = packages.length
         for (let i = 0; i < n; i++) {
             cmd += packages[i] + ' '// + '\n'
