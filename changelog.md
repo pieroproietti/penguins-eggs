@@ -33,9 +33,7 @@ Will be possible to make own local gardrobe too and wrote personal costumes. For
 
 It's a new feathure, so - as usual - you can find problems, lacks and so on. Suggestions and ideas are welcome too. 
 
-Together we can see your ideas can fit inside. 
-
-email: piero.proietti@gmail.com
+Together we can see your ideas can fit inside, you can open an issue on github - preferred - or contact me, email: piero.proietti@gmail.com
 
 ### eggs-9.0.35-1
 * krill: bugfix on removing user live on backup
