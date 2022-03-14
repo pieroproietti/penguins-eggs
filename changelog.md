@@ -19,7 +19,23 @@ You can follow the project also consulting the [commit history](https://github.c
 Versions are listed on reverse order, the first is the last one. Old versions are moved to [oldest](https://sourceforge.net/projects/penguins-eggs/files/packages-deb/oldest/). 
 
 ### eggs-9.0.36-1
-* recipes: added recipes, simple automatic configuration on yaml, to descrive an installation. Inside /usr/lib/penguins-eggs/recipes.d you will find a simple recipe xfce4-minimal who consist just on a dir named ad the recipe and a index.yml file. Will be possible to make own recipes book and wrote personal recipes. 
+added new commans: **dress***
+
+You can prepare your costumes to dress your poor naked penguins. to dress it is a simple automatic configuration on yaml.
+
+Inside /usr/lib/penguins-eggs/gardrobe.d you will find same examples: xfce4 and KDE costumes. 
+
+A costume consists just on a dir named after the costume and a index.yml file.
+
+Will be possible to make own local gardrobe too and wrote personal costumes. For your local gardrobe it is possible too add a shield debs inside your gardrobe, for your custom special debs you need.
+
+**NODE** This is not just limited to interface, it's possible to dress a system to be server for xampp for example. Or make an xfce4 installation specialized for eggs developer like my "hen" adding xfce4, nodejs16, git and code. Again you can dress your image with firmware you need, and so on.
+
+It's a new feathure, so - as usual - you can find problems, lacks and so on. Suggestions and ideas are welcome too. 
+
+Together we can see your ideas can fit inside. 
+
+email: piero.proietti@gmail.com
 
 ### eggs-9.0.35-1
 * krill: bugfix on removing user live on backup
