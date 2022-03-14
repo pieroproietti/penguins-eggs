@@ -19,21 +19,21 @@ You can follow the project also consulting the [commit history](https://github.c
 Versions are listed on reverse order, the first is the last one. Old versions are moved to [oldest](https://sourceforge.net/projects/penguins-eggs/files/packages-deb/oldest/). 
 
 ### eggs-9.0.37-1
-added new commans: **dress***
+eggs come with a new command: **dress**.
 
-You can prepare your costumes to dress your poor naked penguins. to dress it is a simple automatic configuration on yaml.
+You can prepare your costumes to dress your penguins, costumes are simple and  automatic configuration. A costume consists just on a dir named after the costume and an file index.yml, as you can note, we have large spaces for others future addictions: debs, icons, themes and so on.
 
-Inside /usr/lib/penguins-eggs/gardrobe.d you will find same examples: xfce4 and KDE costumes. 
+Inside /usr/lib/penguins-eggs/gardrobe.d you will find same simple examples: xfce4 and KDE costumes.
 
-A costume consists just on a dir named after the costume and a index.yml file.
+It's possible to create your own local gardrobe, and create personal costumes. In your costumes on your local gardrobe, you can add a place for debs, for your custom special debs you need.
 
-Will be possible to make own local gardrobe too and wrote personal costumes. For your local gardrobe it is possible too add a shield debs inside your gardrobe, for your custom special debs you need.
+Costumes are not limited to interface, Desktop Enviroment and so on. It's possible to dress a system to be server for xampp or others servers configuraration.  Again, you can make an xfce4 installation specialized for eggs developer and name it: hen, adding xfce4, nodejs-16.x, git and code. Of course, you can dress your image with the specila firmware you need, and so on.
 
-**NODE** This is not just limited to interface, it's possible to dress a system to be server for xampp for example. Or make an xfce4 installation specialized for eggs developer like my "hen" adding xfce4, nodejs16, git and code. Again you can dress your image with firmware you need, and so on.
+It's a new feathure, so - as usual - you can find problems, lacks and so on.
 
-It's a new feathure, so - as usual - you can find problems, lacks and so on. Suggestions and ideas are welcome too. 
+Suggestions and ideas are welcome: together we can see how your ideas can fit inside. 
 
-Together we can see your ideas can fit inside, you can open an issue on github - preferred - or contact me, email: piero.proietti@gmail.com
+Feel free to open an issue on github - preferred - or to email me at: piero.proietti@gmail.com
 
 ### eggs-9.0.35-1
 * krill: bugfix on removing user live on backup
