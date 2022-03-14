@@ -2,20 +2,50 @@
 # author: artisan
 ---
 
-name: xfce4-minimal-installation
-description: a minimal xfce4 installation
+# general informations
+name: xfce4
+description: minimal XFCE4 installation
 author: artisan
-release: 0.0.1
-applyTo: naked
+release: 0.0.2
+
+# distro/codename/release
 distroId: Debian
 codenameId: booksworm
 releaseId: null
 
+applyTo: naked
+
+#
+# We start here, step by step
+#
+sequence:
+  - repositories
+  - packages
+  - accessiories
+  - debs
+  - hostname
+  - reboot
+ 
+#
+# steps for repositories
+#
+repositories:
+  - sourceslist
+  # sourceslistd
+  - update
+  - full-upgrade
+
+#
+# components to be added to /etc/apt/sources.list
+#
 sourceslist:
   - main
   - contrib
   - non-free
 
+#
+# commands di add entries on /etc/apt/sources.list.d
+#
 sourceslistd:
   - >-
       curl -s --compressed
@@ -25,12 +55,9 @@ sourceslistd:
       curl -s --compressed -o /etc/apt/sources.list.d/penguins-eggs-ppa.list
       "https://pieroproietti.github.io/penguins-eggs-ppa/penguins-eggs-ppa.list"
 
-repositories:
-  - sourceslist
-  - sourceslistd
-  - update
-  - full-upgrade
-
+#
+# packages to be installed
+#
 packages:
   - libxfce4ui-utils
   - thunar
@@ -50,10 +77,14 @@ packages:
   - network-manager-gnome
   - network-manager-openvpn-gnome
 
+#
+# local dir with deb files to be installed
+#
 debs: debs
 
-sequence:
-  - repositories
-  - packages
-  - debs
- 
+#
+# suggested packages
+#
+accessiories:
+ - firefox-esr
+  
