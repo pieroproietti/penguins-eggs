@@ -19,21 +19,10 @@ You can follow the project also consulting the [commit history](https://github.c
 Versions are listed on reverse order, the first is the last one. Old versions are moved to [oldest](https://sourceforge.net/projects/penguins-eggs/files/packages-deb/oldest/). 
 
 ### eggs-9.0.37-1
-eggs come with a new command: **dress**.
+eggs come with a new command: **dress**. To get more information pleas read on the [blog](https://penguins-eggs.net/2022/03/14/dress/)
 
-You can prepare your costumes to dress your penguins, costumes are simple and  automatic configuration. A costume consists just on a dir named after the costume and an file index.yml, as you can note, we have large spaces for others future addictions: debs, icons, themes and so on.
-
-Inside /usr/lib/penguins-eggs/gardrobe.d you will find same simple examples: xfce4 and KDE costumes.
-
-It's possible to create your own local gardrobe, and create personal costumes. In your costumes on your local gardrobe, you can add a place for debs, for your custom special debs you need.
-
-Costumes are not limited to interface, Desktop Enviroment and so on. It's possible to dress a system to be server for xampp or others servers configuraration.  Again, you can make an xfce4 installation specialized for eggs developer and name it: hen, adding xfce4, nodejs-16.x, git and code. Of course, you can dress your image with the specila firmware you need, and so on.
-
-It's a new feathure, so - as usual - you can find problems, lacks and so on.
-
-Suggestions and ideas are welcome: together we can see how your ideas can fit inside. 
-
-Feel free to open an issue on github - preferred - or to email me at: piero.proietti@gmail.com
+### eggs-9.0.36-1
+* **experimental** version with command recipes. I decide to rename it to **dress** - more appropriate - to create a way to automatize creation of custom release of our penguins. 
 
 ### eggs-9.0.35-1
 * krill: bugfix on removing user live on backup
