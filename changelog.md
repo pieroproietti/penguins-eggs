@@ -18,7 +18,7 @@ You can follow the project also consulting the [commit history](https://github.c
 ## Changelog
 Versions are listed on reverse order, the first is the last one. Old versions are moved to [oldest](https://sourceforge.net/projects/penguins-eggs/files/packages-deb/oldest/). 
 
-### eggs-9.0.36-1
+### eggs-9.0.37-1
 added new commans: **dress***
 
 You can prepare your costumes to dress your poor naked penguins. to dress it is a simple automatic configuration on yaml.
