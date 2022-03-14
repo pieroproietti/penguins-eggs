@@ -1,4 +1,4 @@
-# recipe: xfce4 minimal installation
+# recipe: xfce4
 # author: artisan
 ---
 
@@ -22,10 +22,10 @@ sequence:
   - repositories
   - packages
   - accessiories
-  - debs
+  # debs
   - hostname
   - reboot
- 
+
 #
 # steps for repositories
 #
@@ -78,13 +78,13 @@ packages:
   - network-manager-openvpn-gnome
 
 #
-# local dir with deb files to be installed
-#
-debs: debs
-
-#
-# suggested packages
+# accessories for your dress
 #
 accessiories:
  - firefox-esr
-  
+
+#
+# local dir in YOUR gardrobe with local deb files to be installed
+#
+debs: debs
+

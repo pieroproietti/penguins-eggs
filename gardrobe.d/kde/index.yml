@@ -1,4 +1,4 @@
-# recipe: kde-minimal
+# recipe: kde
 # author: artisan
 ---
 
@@ -22,9 +22,10 @@ sequence:
   - repositories
   - packages
   - accessiories
-  - debs
+  # debs
+  - hostname
   - reboot
- 
+
 #
 # steps for repositories
 #
@@ -67,7 +68,7 @@ packages:
 debs: debs
 
 #
-# suggested packages
+# accessories for your dress
 #
 accessiories:
   - ark 
