@@ -13,9 +13,9 @@ import fs from 'fs'
  * src/commands/recipe/list -> src/commands/dress/list
  */
 export default class Tailor {
-    verbose = false
-    echo = {}
-    costume = {} as ICostume
+    private verbose = false
+    private echo = {}
+    private costume = {} as ICostume
 
     constructor(costume: ICostume, verbose = false) {
         this.costume = costume

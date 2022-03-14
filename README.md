@@ -150,6 +150,8 @@ USAGE
 * [`eggs calamares`](#eggs-calamares)
 * [`eggs config`](#eggs-config)
 * [`eggs dad`](#eggs-dad)
+* [`eggs dress list`](#eggs-dress-list)
+* [`eggs dress wear`](#eggs-dress-wear)
 * [`eggs export deb`](#eggs-export-deb)
 * [`eggs export docs`](#eggs-export-docs)
 * [`eggs export iso`](#eggs-export-iso)
@@ -159,8 +161,6 @@ USAGE
 * [`eggs kill`](#eggs-kill)
 * [`eggs mom`](#eggs-mom)
 * [`eggs produce`](#eggs-produce)
-* [`eggs recipes list`](#eggs-recipes-list)
-* [`eggs recipes prepare`](#eggs-recipes-prepare)
 * [`eggs remove`](#eggs-remove)
 * [`eggs syncfrom`](#eggs-syncfrom)
 * [`eggs syncto`](#eggs-syncto)
@@ -335,6 +335,40 @@ DESCRIPTION
 ```
 
 _See code: [src/commands/dad.ts](https://github.com/pieroproietti/penguins-eggs/blob/v9.0.36/src/commands/dad.ts)_
+
+## `eggs dress list`
+
+list, wear costumes
+
+```
+USAGE
+  $ eggs dress list [-g <value>] [-v] [-h]
+
+FLAGS
+  -g, --gardrobe=<value>  gardrobe
+  -h, --help              Show CLI help.
+  -v, --verbose
+
+DESCRIPTION
+  list, wear costumes
+```
+
+## `eggs dress wear`
+
+wear costume
+
+```
+USAGE
+  $ eggs dress wear [-c <value>] [-v] [-h]
+
+FLAGS
+  -c, --costume=<value>  Costume
+  -h, --help             Show CLI help.
+  -v, --verbose
+
+DESCRIPTION
+  wear costume
+```
 
 ## `eggs export deb`
 
@@ -559,40 +593,6 @@ EXAMPLES
 ```
 
 _See code: [src/commands/produce.ts](https://github.com/pieroproietti/penguins-eggs/blob/v9.0.36/src/commands/produce.ts)_
-
-## `eggs recipes list`
-
-list, prepare recipes
-
-```
-USAGE
-  $ eggs recipes list [-b <value>] [-v] [-h]
-
-FLAGS
-  -b, --book=<value>  book of recipes
-  -h, --help          Show CLI help.
-  -v, --verbose
-
-DESCRIPTION
-  list, prepare recipes
-```
-
-## `eggs recipes prepare`
-
-prepare the recipe: add repositoris, packages and so on to preparte your lunch
-
-```
-USAGE
-  $ eggs recipes prepare [-r <value>] [-v] [-h]
-
-FLAGS
-  -h, --help            Show CLI help.
-  -r, --recipe=<value>  Recipe
-  -v, --verbose
-
-DESCRIPTION
-  prepare the recipe: add repositoris, packages and so on to preparte your lunch
-```
 
 ## `eggs remove`
 

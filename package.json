@@ -65,10 +65,10 @@
         "/assistant",
         "/bin",
         "/conf",
+        "/gardrobe.d",
         "/lib",
         "/manpages",
         "/oclif.manifest.json",
-        "/recipes.d",
         "/scripts",
         "/templates"
     ],
