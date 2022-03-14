@@ -1,0 +1,78 @@
+# recipe: kde-minimal
+# author: artisan
+---
+
+# general informations
+name: kde
+description: minimal KDE installation
+author: artisan
+release: 0.0.2
+
+# distro/codename/release
+distroId: Debian
+codenameId: booksworm
+releaseId: null
+
+applyTo: naked
+
+#
+# We start here, step by step
+#
+sequence:
+  - repositories
+  - packages
+  - accessiories
+  - debs
+  - reboot
+ 
+#
+# steps for repositories
+#
+repositories:
+  - sourceslist
+  # sourceslistd
+  - update
+  - full-upgrade
+
+#
+# components to be added to /etc/apt/sources.list
+#
+sourceslist:
+  - main
+  - contrib
+  - non-free
+
+#
+# commands di add entries on /etc/apt/sources.list.d
+#
+sourceslistd:
+  - >-
+      curl -s --compressed
+      "https://pieroproietti.github.io/penguins-eggs-ppa/KEY.gpg" | sudo apt-key
+      add -
+  - >-
+      curl -s --compressed -o /etc/apt/sources.list.d/penguins-eggs-ppa.list
+      "https://pieroproietti.github.io/penguins-eggs-ppa/penguins-eggs-ppa.list"
+
+#
+# packages to be installed
+#
+packages:
+  - kde-plasma-desktop 
+  - plasma-nm
+
+#
+# local dir with deb files to be installed
+#
+debs: debs
+
+#
+# suggested packages
+#
+accessiories:
+  - ark 
+  - kate 
+  - kcalc 
+  - kde-spectacle
+  - firefox-esr
+  - okular

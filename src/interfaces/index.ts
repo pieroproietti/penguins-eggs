@@ -19,4 +19,4 @@ export { ISettings } from './i-settings'
 export { IPartitions } from './i-partitions'
 
 // Repipes
-export { IRecipe } from './i-recipe'
+export { ICostume } from './i-costume'

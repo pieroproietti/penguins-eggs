@@ -1,4 +1,4 @@
-export interface IRecipe {
+export interface ICostume {
     name: string
     author: string
     description: string
@@ -7,10 +7,11 @@ export interface IRecipe {
     distroId: string
     codenameId: string
     releaseId: string
-    sourceslist: string []
-    sourceslistd: string []
+    debs: string
+    sourcesList: string []
+    sourcesListD: string []
     repositories: string[]
     packages: string[]
-    debs: string
+    accessories: string[]
     sequence: string[]
 }
