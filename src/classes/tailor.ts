@@ -169,18 +169,15 @@ export default class Tailor {
     * hostname
     */
     private async hostname() {
-        const file = '/etc/hostname'
-        const text = this.costume.name
+        // hostname
+        let file = '/etc/hostname'
+        let text = this.costume.name
         await exec(`rm ${file} `, this.echo)
         fs.writeFileSync(file, text)
-    }
 
-    /**
-     * hosts
-     */
-    private async hosts() {
-        const file = '/etc/hosts'
-        let text = ''
+        // hosts
+        file = '/etc/hosts'
+        text = ''
         text += '127.0.0.1 localhost localhost.localdomain\n'
         text += `127.0.1.1 ${this.costume.name} \n`
         text += `# The following lines are desirable for IPv6 capable hosts\n`
