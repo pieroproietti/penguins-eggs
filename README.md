@@ -359,11 +359,12 @@ wear costume
 
 ```
 USAGE
-  $ eggs dress wear [-c <value>] [-v] [-h]
+  $ eggs dress wear [-c <value>] [-g <value>] [-v] [-h]
 
 FLAGS
-  -c, --costume=<value>  Costume
-  -h, --help             Show CLI help.
+  -c, --costume=<value>   Costume
+  -g, --gardrobe=<value>  Costume
+  -h, --help              Show CLI help.
   -v, --verbose
 
 DESCRIPTION
