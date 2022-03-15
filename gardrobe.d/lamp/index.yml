@@ -4,9 +4,9 @@
 
 # general informations
 name: lamp
-description: LAMP: linux, apache2, mysql, php server
+description: "a LAMP: (linux, apache2, mysql, php) example completely untested!"
 author: artisan
-release: 0.0.2
+release: 0.0.1
 
 # distro/codename/release
 distroId: Debian
@@ -21,7 +21,7 @@ applyTo: naked
 sequence:
   - repositories
   - packages
-  - accessiories
+  # accessiories
   # debs
   - hostname
   - reboot
@@ -51,14 +51,14 @@ sourceslistd:
   - wget -qO- https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor > packages.microsoft.gpg
   - install -o root -g root -m 644 packages.microsoft.gpg /etc/apt/trusted.gpg.d/
   - sh -c 'echo "deb [arch=amd64,arm64,armhf signed-by=/etc/apt/trusted.gpg.d/packages.microsoft.gpg] https://packages.microsoft.com/repos/code stable main" > /etc/apt/sources.list.d/vscode.list'
-  - rm -f packages.microsoft.gpg      
+  - rm -f packages.microsoft.gpg
 
 #
 # packages to be installed
 #
 packages:
   - apache2
-  - mysql-server 
+  - mysql-server
   - php
   - phpmyadmin
 
@@ -71,4 +71,5 @@ debs: debs
 # accessories for your dress
 #
 accessiories:
-- 
+
+
