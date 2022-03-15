@@ -11,6 +11,7 @@ export default class Wear extends Command {
 
   static flags = {
     costume: Flags.string({ char: 'c', description: 'Costume' }),
+    gardrobe: Flags.string({ char: 'g', description: 'Costume' }),
     verbose: Flags.boolean({ char: 'v' }),
     help: Flags.help({ char: 'h' }),
   }
@@ -27,6 +28,9 @@ export default class Wear extends Command {
     Utils.titles(this.id + ' ' + this.argv)
 
     let gardrobe = `${path.resolve(__dirname, '../../../gardrobe.d')}`
+    if (flags.gardrobe != undefined) {
+      gardrobe = flags.gardrobe
+    }
 
     let costume = 'xfce4'
     if (flags.costume !== undefined) {
