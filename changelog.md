@@ -18,6 +18,9 @@ You can follow the project also consulting the [commit history](https://github.c
 ## Changelog
 Versions are listed on reverse order, the first is the last one. Old versions are moved to [oldest](https://sourceforge.net/projects/penguins-eggs/files/packages-deb/oldest/). 
 
+### eggs-9.0.38-1
+dress: rewrote in more clear way tailor.ts, wear.ts, list.ts added show.ts and all costumes *.yml. Inserted a waydroid costume skeleton
+
 ### eggs-9.0.37-1
 eggs come with a new command: **dress**. To get more information pleas read on the [blog](https://penguins-eggs.net/2022/03/14/dress/)
 
