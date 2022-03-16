@@ -13,12 +13,12 @@ _eggs () {
 "calamares:calamares or install or configure it"
 "config:Configure and install prerequisites deb packages to run it"
 "dad:ask help from daddy - configuration helper"
-"dress\:list:list, wear costumes"
-"dress\:show:show costumes"
-"dress\:wear:wear costume"
 "export\:deb:export deb/docs/iso to the destination host"
 "export\:docs:remove and export docType documentation of the sources in the destination host"
 "export\:iso:export iso in the destination host"
+"gardrobe\:list:list, wear costumes"
+"gardrobe\:show:show costumes"
+"gardrobe\:wear:wear costume"
 "info:re-thinking for a different approach to CLI"
 "install:command-line system installer - the egg became a penguin!"
 "kill:kill the eggs/free the nest"
@@ -89,33 +89,6 @@ dad)
   )
 ;;
 
-dress:list)
-  _command_flags=(
-    "--gardrobe=-[gardrobe]:"
-"--verbose[]"
-"--help[Show CLI help.]"
-  )
-;;
-
-dress:show)
-  _command_flags=(
-    "--gardrobe=-[gardrobe]:"
-"--costume=-[costume]:"
-"--json[output JSON]"
-"--verbose[]"
-"--help[Show CLI help.]"
-  )
-;;
-
-dress:wear)
-  _command_flags=(
-    "--costume=-[Costume]:"
-"--gardrobe=-[Costume]:"
-"--verbose[]"
-"--help[Show CLI help.]"
-  )
-;;
-
 export:deb)
   _command_flags=(
     "--help[Show CLI help.]"
@@ -139,6 +112,33 @@ export:iso)
     "--help[Show CLI help.]"
 "--backup[export backup ISOs]"
 "--clean[delete old ISOs before to copy]"
+  )
+;;
+
+gardrobe:list)
+  _command_flags=(
+    "--gardrobe=-[gardrobe]:"
+"--verbose[]"
+"--help[Show CLI help.]"
+  )
+;;
+
+gardrobe:show)
+  _command_flags=(
+    "--gardrobe=-[gardrobe]:"
+"--costume=-[costume]:"
+"--json[output JSON]"
+"--verbose[]"
+"--help[Show CLI help.]"
+  )
+;;
+
+gardrobe:wear)
+  _command_flags=(
+    "--costume=-[Costume]:"
+"--gardrobe=-[Costume]:"
+"--verbose[]"
+"--help[Show CLI help.]"
   )
 ;;
 

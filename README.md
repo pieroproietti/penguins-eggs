@@ -150,12 +150,12 @@ USAGE
 * [`eggs calamares`](#eggs-calamares)
 * [`eggs config`](#eggs-config)
 * [`eggs dad`](#eggs-dad)
-* [`eggs dress list`](#eggs-dress-list)
-* [`eggs dress show`](#eggs-dress-show)
-* [`eggs dress wear`](#eggs-dress-wear)
 * [`eggs export deb`](#eggs-export-deb)
 * [`eggs export docs`](#eggs-export-docs)
 * [`eggs export iso`](#eggs-export-iso)
+* [`eggs gardrobe list`](#eggs-gardrobe-list)
+* [`eggs gardrobe show`](#eggs-gardrobe-show)
+* [`eggs gardrobe wear`](#eggs-gardrobe-wear)
 * [`eggs help [COMMAND]`](#eggs-help-command)
 * [`eggs info`](#eggs-info)
 * [`eggs install`](#eggs-install)
@@ -337,60 +337,6 @@ DESCRIPTION
 
 _See code: [src/commands/dad.ts](https://github.com/pieroproietti/penguins-eggs/blob/v9.0.38/src/commands/dad.ts)_
 
-## `eggs dress list`
-
-list, wear costumes
-
-```
-USAGE
-  $ eggs dress list [-g <value>] [-v] [-h]
-
-FLAGS
-  -g, --gardrobe=<value>  gardrobe
-  -h, --help              Show CLI help.
-  -v, --verbose
-
-DESCRIPTION
-  list, wear costumes
-```
-
-## `eggs dress show`
-
-show costumes
-
-```
-USAGE
-  $ eggs dress show [-g <value>] [-c <value>] [-j] [-v] [-h]
-
-FLAGS
-  -c, --costume=<value>   costume
-  -g, --gardrobe=<value>  gardrobe
-  -h, --help              Show CLI help.
-  -j, --json              output JSON
-  -v, --verbose
-
-DESCRIPTION
-  show costumes
-```
-
-## `eggs dress wear`
-
-wear costume
-
-```
-USAGE
-  $ eggs dress wear [-c <value>] [-g <value>] [-v] [-h]
-
-FLAGS
-  -c, --costume=<value>   Costume
-  -g, --gardrobe=<value>  Costume
-  -h, --help              Show CLI help.
-  -v, --verbose
-
-DESCRIPTION
-  wear costume
-```
-
 ## `eggs export deb`
 
 export deb/docs/iso to the destination host
@@ -442,6 +388,60 @@ FLAGS
 
 DESCRIPTION
   export iso in the destination host
+```
+
+## `eggs gardrobe list`
+
+list, wear costumes
+
+```
+USAGE
+  $ eggs gardrobe list [-g <value>] [-v] [-h]
+
+FLAGS
+  -g, --gardrobe=<value>  gardrobe
+  -h, --help              Show CLI help.
+  -v, --verbose
+
+DESCRIPTION
+  list, wear costumes
+```
+
+## `eggs gardrobe show`
+
+show costumes
+
+```
+USAGE
+  $ eggs gardrobe show [-g <value>] [-c <value>] [-j] [-v] [-h]
+
+FLAGS
+  -c, --costume=<value>   costume
+  -g, --gardrobe=<value>  gardrobe
+  -h, --help              Show CLI help.
+  -j, --json              output JSON
+  -v, --verbose
+
+DESCRIPTION
+  show costumes
+```
+
+## `eggs gardrobe wear`
+
+wear costume
+
+```
+USAGE
+  $ eggs gardrobe wear [-c <value>] [-g <value>] [-v] [-h]
+
+FLAGS
+  -c, --costume=<value>   Costume
+  -g, --gardrobe=<value>  Costume
+  -h, --help              Show CLI help.
+  -v, --verbose
+
+DESCRIPTION
+  wear costume
 ```
 
 ## `eggs help [COMMAND]`
