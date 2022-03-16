@@ -3,7 +3,7 @@ import Utils from '../../classes/utils'
 import path from 'path'
 import yaml from 'js-yaml'
 import fs from 'fs'
-import { ICostume } from '../../interfaces'
+import { IMaterial } from '../../interfaces'
 
 // libraries
 import chalk from 'chalk'
@@ -40,14 +40,12 @@ export default class List extends Command {
     }
 
     const costumes = fs.readdirSync(gardrobe)
-    console.log(chalk.green(`${position} gardrobe: ${gardrobe}`))
+    console.log(chalk.green(`${position} gardrobe: `) + gardrobe)
+    console.log()
     costumes.forEach(costume => {
       if (fs.existsSync(`${gardrobe}/${costume}/index.yml`)) {
-        console.log()
-        console.log(`costume: ${costume}`)
-        const ingredients = yaml.load(fs.readFileSync(`${gardrobe}/${costume}/index.yml`, 'utf-8')) as ICostume
-        console.log(`description: ${ingredients.description}`)
-        console.log(`author: ${ingredients.author}`)
+        const materials = yaml.load(fs.readFileSync(`${gardrobe}/${costume}/index.yml`, 'utf-8')) as IMaterial
+        console.log(chalk.cyan(costume) + ': ' + materials.description)
       }
     })
   }

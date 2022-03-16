@@ -3,6 +3,7 @@ export { IDevice, IDevices } from './i-devices'
 export { IRemix } from './i-remix'
 export { IUser } from './i-user'
 export { IApp } from './i-app'
+
 // export { IDriveList } from './i-drive-list'
 export { IDistro } from './i-distro'
 export { INet } from './i-net'
@@ -19,4 +20,5 @@ export { ISettings } from './i-settings'
 export { IPartitions } from './i-partitions'
 
 // Repipes
-export { ICostume } from './i-costume'
+export { IMaterial } from './i-material'
+

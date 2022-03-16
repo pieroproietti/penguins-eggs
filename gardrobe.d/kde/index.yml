@@ -1,79 +1,41 @@
 # recipe: kde
 # author: artisan
 ---
-
-# general informations
 name: kde
 description: minimal KDE installation
 author: artisan
-release: 0.0.2
-
-# distro/codename/release
+release: 0.0.3
 distroId: Debian
 codenameId: booksworm
-releaseId: null
-
+releaseId: sid
 applyTo: naked
-
-#
-# We start here, step by step
-#
 sequence:
-  - repositories
-  - packages
-  - accessiories
-  # debs
-  - hostname
-  - reboot
-
-#
-# steps for repositories
-#
-repositories:
-  - sourceslist
-  # sourceslistd
-  - update
-  - full-upgrade
-
-#
-# components to be added to /etc/apt/sources.list
-#
-sourceslist:
-  - main
-  - contrib
-  - non-free
-
-#
-# commands di add entries on /etc/apt/sources.list.d
-#
-sourceslistd:
-  - >-
-      curl -s --compressed
-      "https://pieroproietti.github.io/penguins-eggs-ppa/KEY.gpg" | sudo apt-key
-      add -
-  - >-
-      curl -s --compressed -o /etc/apt/sources.list.d/penguins-eggs-ppa.list
-      "https://pieroproietti.github.io/penguins-eggs-ppa/penguins-eggs-ppa.list"
-
-#
-# packages to be installed
-#
-packages:
-  - kde-plasma-desktop 
-  - plasma-nm
-
-#
-# local dir with deb files to be installed
-#
-debs: debs
-
-#
-# accessories for your dress
-#
-accessiories:
-  - ark 
-  - kate 
-  - kcalc 
-  - kde-spectacle
-  - firefox-esr
-  - okular
+  repositories:
+    sourcesList:
+      main: true
+      contrib: true
+      nonFree: false
+    sourcesListD:
+      - >-
+        curl -s --compressed
+        "https://pieroproietti.github.io/penguins-eggs-ppa/KEY.gpg" | sudo
+        apt-key add -
+      - >-
+        curl -s --compressed -o /etc/apt/sources.list.d/penguins-eggs-ppa.list
+        "https://pieroproietti.github.io/penguins-eggs-ppa/penguins-eggs-ppa.list"
+    update: true
+    full-upgrade: true
+  packages:
+    - kde-plasma-desktop
+    - plasma-nm
+  accessories:
+    - ark
+    - kate
+    - kcalc
+    - kde-spectacle
+    - firefox-esr
+    - okular
+  debs: false
+  hostname: true
+  reboot: true
+...
