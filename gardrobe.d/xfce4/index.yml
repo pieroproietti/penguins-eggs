@@ -1,7 +1,7 @@
 # recipe: xfce4
 # author: artisan
 ---
-ame: xfce4
+name: xfce4
 description: minimal XFCE4 installation
 author: artisan
 release: 0.0.2
@@ -18,8 +18,8 @@ sequence:
     sourcesListD:
       - >-
         curl -s --compressed
-        "https://pieroproietti.github.io/penguins-eggs-ppa/KEY.gpg" | sudo
-        apt-key add -
+        "https://pieroproietti.github.io/penguins-eggs-ppa/KEY.gpg" | apt-key
+        add -
       - >-
         curl -s --compressed -o /etc/apt/sources.list.d/penguins-eggs-ppa.list
         "https://pieroproietti.github.io/penguins-eggs-ppa/penguins-eggs-ppa.list"

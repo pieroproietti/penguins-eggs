@@ -15,6 +15,7 @@ _eggs () {
 "dad:ask help from daddy - configuration helper"
 "dress\:list:list, wear costumes"
 "dress\:show:show costumes"
+"dress\:wear:wear costume"
 "export\:deb:export deb/docs/iso to the destination host"
 "export\:docs:remove and export docType documentation of the sources in the destination host"
 "export\:iso:export iso in the destination host"
@@ -101,6 +102,15 @@ dress:show)
     "--gardrobe=-[gardrobe]:"
 "--costume=-[costume]:"
 "--json[output JSON]"
+"--verbose[]"
+"--help[Show CLI help.]"
+  )
+;;
+
+dress:wear)
+  _command_flags=(
+    "--costume=-[Costume]:"
+"--gardrobe=-[Costume]:"
 "--verbose[]"
 "--help[Show CLI help.]"
   )
