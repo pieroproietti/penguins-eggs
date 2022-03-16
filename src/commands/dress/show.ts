@@ -25,7 +25,10 @@ export default class Show extends Command {
     async run(): Promise<void> {
         const { args, flags } = await this.parse(Show)
 
-        let costume = flags.costume
+        let costume = "xfce4"
+        if (flags.costume !== undefined) {
+            costume = flags.costume
+        }
         let verbose = flags.verbose
         let json = flags.json
 
