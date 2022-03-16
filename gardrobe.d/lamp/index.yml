@@ -1,8 +1,8 @@
-# recipe: lamp
-# author: artisan
+# costume: lamp
+# tailor: artisan
 ---
 name: lamp
-description: 'LAMP (linux, apache2, mysql, php) example. Completely untested!'
+description: 'LAMP: linux, apache2, mysql, php example, completely untested!'
 author: artisan
 release: 0.0.2
 distroId: Debian
@@ -16,13 +16,8 @@ sequence:
       contrib: true
       nonFree: true
     sourcesListD:
-      - >-
-        curl -s --compressed
-        "https://pieroproietti.github.io/penguins-eggs-ppa/KEY.gpg" | apt-key
-        add -
-      - >-
-        curl -s --compressed -o /etc/apt/sources.list.d/penguins-eggs-ppa.list
-        "https://pieroproietti.github.io/penguins-eggs-ppa/penguins-eggs-ppa.list"
+      - curl -fsSL "https://pieroproietti.github.io/penguins-eggs-ppa/KEY.gpg" | gpg --dearmor -o /usr/share/keyrings/penguins-eggs-ppa.gpg
+      - echo "deb [signed-by=/usr/share/keyrings/penguins-eggs-ppa.gpg]  https://pieroproietti.github.io/penguins-eggs-ppa ./ " | tee /etc/apt/sources.list.d/penguins-eggs-ppa.list > /dev/null
     update: true
     full-upgrade: true
   packages:
