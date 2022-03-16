@@ -5,7 +5,8 @@ import { exec } from '../lib/utils'
 import fs from 'fs'
 import path from 'path'
 import yaml from 'js-yaml'
-import { ReadableByteStreamController } from 'stream/web'
+import Pacman from './pacman'
+
 
 /**
  * 
@@ -30,6 +31,14 @@ export default class Tailor {
         this.verbose = verbose
         this.echo = Utils.setEcho(verbose)
         Utils.warning(`preparing ${this.costume}`)
+
+        /**
+         * check curl presence
+         */
+        if (!Pacman.packageIsInstalled('curl')) {
+            Utils.pressKeyToExit('In this tailoring shop we use curl. sudo apt update | apt install curl')
+            process.exit()
+        }
 
         const tailorList = `${this.gardrobe}/${this.costume}/index.yml`
 
@@ -72,7 +81,11 @@ export default class Tailor {
             step = `adding repositories to /etc/apt/sources.list.d`
             Utils.warning(step)
             this.materials.sequence.repositories.sourcesListD.forEach(async cmd => {
-                await exec(cmd, this.echo)
+                try {
+                    await exec(cmd, this.echo)
+                } catch (error) {
+                    await Utils.pressKeyToExit(JSON.stringify(error))
+                }
             })
         }
 
