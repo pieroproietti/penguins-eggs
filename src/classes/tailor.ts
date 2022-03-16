@@ -36,7 +36,7 @@ export default class Tailor {
         if (fs.existsSync(tailorList)) {
             this.materials = yaml.load(fs.readFileSync(tailorList, 'utf-8')) as IMaterial
         } else {
-            console.log('costume '  + chalk.cyan(this.costume) + ' not found in gardrobe: ' + chalk.green(this.gardrobe))
+            console.log('costume ' + chalk.cyan(this.costume) + ' not found in gardrobe: ' + chalk.green(this.gardrobe))
         }
 
 
@@ -48,7 +48,8 @@ export default class Tailor {
         /**
         * sources.list
         */
-        Utils.warning(`analyzing /etc/apt/sources.list`)
+        let step = '/etc/apt/sources.list'
+        Utils.warning(step)
         let components = ''
 
         if (this.materials.sequence.repositories.sourcesList.main) {
@@ -67,24 +68,36 @@ export default class Tailor {
         /**
          * sources.list.d
          */
-        Utils.warning(`analyzing /etc/apt/sources.list.d`)
+        step = `analyzing /etc/apt/sources.list.d`
+        Utils.warning(step)
         this.materials.sequence.repositories.sourcesListD.forEach(async cmd => {
+            if (!this.verbose) {
+                console.log('wait for: ' + step)
+            }
             await exec(cmd, this.echo)
         })
 
         /**
          * apt-get update
          */
-        Utils.warning(`updating repositories`)
+        step = `updating repositories`
+        Utils.warning(step)
         if (this.materials.sequence.repositories.update) {
+            if (!this.verbose) {
+                console.log('wait for: ' + step)
+            }
             await exec('apt-get update', this.echo)
         }
 
         /**
          * apt-get full-upgrade
          */
-        Utils.warning(`apt-get full-upgrade`)
+        step = `apt-get full-upgrade`
+        Utils.warning(step)
         if (this.materials.sequence.repositories.fullUpgrade) {
+            if (!this.verbose) {
+                console.log('wait for: ' + step)
+            }
             await exec('apt-get full-upgrade -y', this.echo)
         }
 
@@ -92,12 +105,16 @@ export default class Tailor {
          * apt-get install packages
          */
         if (this.materials.sequence.packages[0] !== null) {
-            Utils.warning(`installing packages`)
+            step = `installing packages`
+            Utils.warning(step)
             let cmd = 'apt-get install -y '
             this.materials.sequence.packages.forEach(elem => {
                 cmd += ` ${elem}`
             })
             if (await Utils.customConfirm(cmd)) {
+                if (!this.verbose) {
+                    console.log('wait for: ' + step)
+                }
                 await exec(cmd, this.echo)
             }
         }
@@ -106,12 +123,16 @@ export default class Tailor {
         * apt-get install accessories
         */
         if (this.materials.sequence.accessories[0] !== null) {
-            Utils.warning(`installing packages accessories`)
+            step = `installing packages accessories`
+            Utils.warning(step))
             let cmd = 'apt-get install -y '
             this.materials.sequence.accessories.forEach(elem => {
                 cmd += ` ${elem}`
             })
             if (await Utils.customConfirm(cmd)) {
+                if (!this.verbose) {
+                    console.log('wait for: ' + step)
+                }
                 await exec(cmd, this.echo)
             }
         }
@@ -120,7 +141,11 @@ export default class Tailor {
          * dpkg -i *.deb
          */
         if (this.materials.sequence.debs) {
-            Utils.warning(`installing local packages`)
+            step = `installing local packages`
+            Utils.warning(step)
+            if (!this.verbose) {
+                console.log('wait for: ' + step)
+            }
             await exec(`dpkg -i ${this.gardrobe}\*.deb`)
         }
 
@@ -137,7 +162,7 @@ export default class Tailor {
          */
         if (this.materials.sequence.reboot) {
             Utils.warning(`Reboot`)
-            await Utils.pressKeyToExit('system need to reboot',true)
+            await Utils.pressKeyToExit('system need to reboot', true)
             await exec('reboot')
         }
     }

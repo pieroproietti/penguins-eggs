@@ -151,6 +151,7 @@ USAGE
 * [`eggs config`](#eggs-config)
 * [`eggs dad`](#eggs-dad)
 * [`eggs dress list`](#eggs-dress-list)
+* [`eggs dress show`](#eggs-dress-show)
 * [`eggs dress wear`](#eggs-dress-wear)
 * [`eggs export deb`](#eggs-export-deb)
 * [`eggs export docs`](#eggs-export-docs)
@@ -351,6 +352,25 @@ FLAGS
 
 DESCRIPTION
   list, wear costumes
+```
+
+## `eggs dress show`
+
+show costumes
+
+```
+USAGE
+  $ eggs dress show [-g <value>] [-c <value>] [-j] [-v] [-h]
+
+FLAGS
+  -c, --costume=<value>   costume
+  -g, --gardrobe=<value>  gardrobe
+  -h, --help              Show CLI help.
+  -j, --json              output JSON
+  -v, --verbose
+
+DESCRIPTION
+  show costumes
 ```
 
 ## `eggs dress wear`

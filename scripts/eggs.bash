@@ -18,7 +18,7 @@ calamares --help --verbose --install --final --remove --theme
 config --nointeractive --clean --help --verbose
 dad --help --clean --default --verbose
 dress:list --gardrobe --verbose --help
-dress:wear --costume --gardrobe --verbose --help
+dress:show --gardrobe --costume --json --verbose --help
 export:deb --help --clean --amd64 --i386 --armel --arm64 --all
 export:docs --help
 export:iso --help --backup --clean
