@@ -17,12 +17,12 @@ bro --help
 calamares --help --verbose --install --final --remove --theme
 config --nointeractive --clean --help --verbose
 dad --help --clean --default --verbose
-dress:list --gardrobe --verbose --help
-dress:show --gardrobe --costume --json --verbose --help
-dress:wear --costume --gardrobe --verbose --help
 export:deb --help --clean --amd64 --i386 --armel --arm64 --all
 export:docs --help
 export:iso --help --backup --clean
+gardrobe:list --gardrobe --verbose --help
+gardrobe:show --gardrobe --costume --json --verbose --help
+gardrobe:wear --costume --gardrobe --verbose --help
 info --verbose --help
 install --cli --crypted --pve --help --verbose
 kill --help --verbose
