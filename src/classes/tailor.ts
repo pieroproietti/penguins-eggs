@@ -68,14 +68,13 @@ export default class Tailor {
         /**
          * sources.list.d
          */
-        step = `analyzing /etc/apt/sources.list.d`
-        Utils.warning(step)
-        this.materials.sequence.repositories.sourcesListD.forEach(async cmd => {
-            if (!this.verbose) {
-                console.log('wait for: ' + step)
-            }
-            await exec(cmd, this.echo)
-        })
+        if (this.materials.sequence.repositories.sourcesListD[0] !== null) {
+            step = `adding repositories to /etc/apt/sources.list.d`
+            Utils.warning(step)
+            this.materials.sequence.repositories.sourcesListD.forEach(async cmd => {
+                await exec(cmd, this.echo)
+            })
+        }
 
         /**
          * apt-get update
@@ -124,7 +123,7 @@ export default class Tailor {
         */
         if (this.materials.sequence.accessories[0] !== null) {
             step = `installing packages accessories`
-            Utils.warning(step))
+            Utils.warning(step)
             let cmd = 'apt-get install -y '
             this.materials.sequence.accessories.forEach(elem => {
                 cmd += ` ${elem}`
