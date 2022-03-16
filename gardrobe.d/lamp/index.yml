@@ -1,75 +1,38 @@
 # recipe: lamp
 # author: artisan
 ---
-
-# general informations
 name: lamp
-description: "a LAMP: (linux, apache2, mysql, php) example completely untested!"
+description: 'LAMP (linux, apache2, mysql, php) example. Completely untested!'
 author: artisan
-release: 0.0.1
-
-# distro/codename/release
+release: 0.0.2
 distroId: Debian
 codenameId: booksworm
-releaseId: null
-
+releaseId: unstable
 applyTo: naked
-
-#
-# We start here, step by step
-#
 sequence:
-  - repositories
-  - packages
-  # accessiories
-  # debs
-  - hostname
-  - reboot
-
-#
-# steps for repositories
-#
-repositories:
-  - sourceslist
-  # sourceslistd
-  - update
-  - full-upgrade
-
-#
-# components to be added to /etc/apt/sources.list
-#
-sourceslist:
-  - main
-  - contrib
-  - non-free
-
-#
-# commands di add entries on /etc/apt/sources.list.d
-#
-sourceslistd:
-  - apt-get install wget gpg
-  - wget -qO- https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor > packages.microsoft.gpg
-  - install -o root -g root -m 644 packages.microsoft.gpg /etc/apt/trusted.gpg.d/
-  - sh -c 'echo "deb [arch=amd64,arm64,armhf signed-by=/etc/apt/trusted.gpg.d/packages.microsoft.gpg] https://packages.microsoft.com/repos/code stable main" > /etc/apt/sources.list.d/vscode.list'
-  - rm -f packages.microsoft.gpg
-
-#
-# packages to be installed
-#
-packages:
-  - apache2
-  - mysql-server
-  - php
-  - phpmyadmin
-
-#
-# local dir with deb files to be installed
-#
-debs: debs
-
-#
-# accessories for your dress
-#
-accessiories:
-
-
+  repositories:
+    sourcesList:
+      main: true
+      contrib: true
+      nonFree: true
+    sourcesListD:
+      - >-
+        curl -s --compressed
+        "https://pieroproietti.github.io/penguins-eggs-ppa/KEY.gpg" | sudo
+        apt-key add -
+      - >-
+        curl -s --compressed -o /etc/apt/sources.list.d/penguins-eggs-ppa.list
+        "https://pieroproietti.github.io/penguins-eggs-ppa/penguins-eggs-ppa.list"
+    update: true
+    full-upgrade: true
+  packages:
+    - apache2
+    - mysql-server
+    - php
+    - phpmyadmin
+  accessories:
+    - null
+  debs: false
+  hostname: true
+  reboot: true
+...

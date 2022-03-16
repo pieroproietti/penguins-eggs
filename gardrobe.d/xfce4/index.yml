@@ -1,90 +1,51 @@
 # recipe: xfce4
 # author: artisan
 ---
-
-# general informations
-name: xfce4
+ame: xfce4
 description: minimal XFCE4 installation
 author: artisan
 release: 0.0.2
-
-# distro/codename/release
 distroId: Debian
 codenameId: booksworm
 releaseId: null
-
 applyTo: naked
-
-#
-# We start here, step by step
-#
 sequence:
-  - repositories
-  - packages
-  - accessiories
-  # debs
-  - hostname
-  - reboot
-
-#
-# steps for repositories
-#
-repositories:
-  - sourceslist
-  # sourceslistd
-  - update
-  - full-upgrade
-
-#
-# components to be added to /etc/apt/sources.list
-#
-sourceslist:
-  - main
-  - contrib
-  - non-free
-
-#
-# commands di add entries on /etc/apt/sources.list.d
-#
-sourceslistd:
-  - >-
-      curl -s --compressed
-      "https://pieroproietti.github.io/penguins-eggs-ppa/KEY.gpg" | sudo apt-key
-      add -
-  - >-
-      curl -s --compressed -o /etc/apt/sources.list.d/penguins-eggs-ppa.list
-      "https://pieroproietti.github.io/penguins-eggs-ppa/penguins-eggs-ppa.list"
-
-#
-# packages to be installed
-#
-packages:
-  - libxfce4ui-utils
-  - thunar
-  - xfce4-appfinder
-  - xfce4-panel
-  - xfce4-pulseaudio-plugin
-  - xfce4-whiskermenu-plugin
-  - xfce4-session
-  - xfce4-settings
-  - xfce4-terminal
-  - xfconf
-  - xfdesktop4
-  - xfwm4
-  - adwaita-qt
-  - qt5ct
-  - network-manager-openvpn
-  - network-manager-gnome
-  - network-manager-openvpn-gnome
-
-#
-# accessories for your dress
-#
-accessiories:
- - firefox-esr
-
-#
-# local dir in YOUR gardrobe with local deb files to be installed
-#
-debs: debs
-
+  repositories:
+    sourcesList:
+      main: true
+      contrib: true
+      nonFree: false
+    sourcesListD:
+      - >-
+        curl -s --compressed
+        "https://pieroproietti.github.io/penguins-eggs-ppa/KEY.gpg" | sudo
+        apt-key add -
+      - >-
+        curl -s --compressed -o /etc/apt/sources.list.d/penguins-eggs-ppa.list
+        "https://pieroproietti.github.io/penguins-eggs-ppa/penguins-eggs-ppa.list"
+    update: true
+    full-upgrade: true
+  packages:
+    - libxfce4ui-utils
+    - thunar
+    - xfce4-appfinder
+    - xfce4-panel
+    - xfce4-pulseaudio-plugin
+    - xfce4-whiskermenu-plugin
+    - xfce4-session
+    - xfce4-settings
+    - xfce4-terminal
+    - xfconf
+    - xfdesktop4
+    - xfwm4
+    - adwaita-qt
+    - qt5ct
+    - network-manager-openvpn
+    - network-manager-gnome
+    - network-manager-openvpn-gnome
+  accessories:
+    - firefox-esr
+  debs: false
+  hostname: true
+  reboot: true
+...

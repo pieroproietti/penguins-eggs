@@ -1,9 +1,7 @@
 import { Command, Flags } from '@oclif/core'
+import chalk from 'chalk'
 import Utils from '../../classes/utils'
 import path from 'path'
-import yaml from 'js-yaml'
-import fs from 'fs'
-import { ICostume } from '../../interfaces'
 import Tailor from '../../classes/tailor'
 
 export default class Wear extends Command {
@@ -38,15 +36,11 @@ export default class Wear extends Command {
     }
 
     if (Utils.isRoot() && (await Utils.customConfirm(`Prepare your costume: ${costume}? Select yes to continue...`))) {
-      if (fs.existsSync(`${gardrobe}/${costume}/index.yml`)) {
-        const materials = yaml.load(fs.readFileSync(`${gardrobe}/${costume}/index.yml`, 'utf-8')) as ICostume
-
-        // Go to prepare!
-        const tailor = new Tailor(materials)
-        await tailor.prepare(verbose)
-      } else {
-        Utils.warning(`Cannot find: ${gardrobe}/${costume}/index.yml`)
-      }
+      const tailor = new Tailor(gardrobe, costume)
+      await tailor.prepare(verbose)
+    } else {
+      console.log('costume ' + chalk.cyan(costume) + ' not found in gardrobe: ' + chalk.green(gardrobe))
     }
   }
 }
+
