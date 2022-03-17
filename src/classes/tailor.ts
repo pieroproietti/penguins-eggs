@@ -15,12 +15,12 @@ export default class Tailor {
     private verbose = false
     private echo = {}
     private costume = ''
-    private gardrobe = ''
+    private wardrobe = ''
     materials = {} as IMaterial
 
-    constructor(gardrobe: string, costume: string, verbose = false) {
+    constructor(wardrobe: string, costume: string, verbose = false) {
         this.costume = costume
-        this.gardrobe = gardrobe
+        this.wardrobe = wardrobe
     }
 
 
@@ -40,7 +40,7 @@ export default class Tailor {
             process.exit()
         }
 
-        const tailorList = `${this.gardrobe}/${this.costume}/index.yml`
+        const tailorList = `${this.wardrobe}/${this.costume}/index.yml`
 
         if (fs.existsSync(tailorList)) {
             this.materials = yaml.load(fs.readFileSync(tailorList, 'utf-8')) as IMaterial

@@ -15,7 +15,7 @@ export default class Show extends Command {
     static description = 'show costumes'
 
     static flags = {
-        gardrobe: Flags.string({ char: 'g', description: 'gardrobe' }),
+        wardrobe: Flags.string({ char: 'w', description: 'wardrobe' }),
         costume: Flags.string({ char: 'c', description: 'costume' }),
         json: Flags.boolean({ char: 'j', description: 'output JSON' }),
         verbose: Flags.boolean({ char: 'v' }),
@@ -35,26 +35,26 @@ export default class Show extends Command {
         const echo = Utils.setEcho(verbose)
         Utils.titles(this.id + ' ' + this.argv)
 
-        let gardrobe = `${path.resolve(__dirname, '../../../gardrobe.d')}`
+        let wardrobe = `${path.resolve(__dirname, '../../../wardrobe.d')}`
 
         let position = "eggs"
-        if (flags.gardrobe !== undefined) {
+        if (flags.wardrobe !== undefined) {
             position = "external"
-            gardrobe = flags.gardrobe
+            wardrobe = flags.wardrobe
         }
 
-        console.log(chalk.green(`${position} gardrobe: `) + gardrobe)
+        console.log(chalk.green(`${position} wardrobe: `) + wardrobe)
         console.log()
 
-        if (fs.existsSync(`${gardrobe}/${costume}/index.yml`)) {
-            const materials = yaml.load(fs.readFileSync(`${gardrobe}/${costume}/index.yml`, 'utf-8')) as IMaterial
+        if (fs.existsSync(`${wardrobe}/${costume}/index.yml`)) {
+            const materials = yaml.load(fs.readFileSync(`${wardrobe}/${costume}/index.yml`, 'utf-8')) as IMaterial
             if (json) {
                 console.log(JSON.stringify(materials, null, ' '))
             } else {
                 console.log(yaml.dump(materials))
             }
         } else {
-            console.log('costume '  + chalk.cyan(costume) + ' not found in ' + position + ' gardrobe: ' + chalk.green(gardrobe))
+            console.log('costume '  + chalk.cyan(costume) + ' not found in ' + position + ' wardrobe: ' + chalk.green(wardrobe))
         }
     }
 }
