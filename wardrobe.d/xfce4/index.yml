@@ -16,8 +16,12 @@ sequence:
       contrib: true
       nonFree: false
     sourcesListD:
+      # penguins-eggs-ppa
       - curl -fsSL "https://pieroproietti.github.io/penguins-eggs-ppa/KEY.gpg" | gpg --dearmor -o /usr/share/keyrings/penguins-eggs-ppa.gpg
       - echo "deb [signed-by=/usr/share/keyrings/penguins-eggs-ppa.gpg]  https://pieroproietti.github.io/penguins-eggs-ppa ./ " | tee /etc/apt/sources.list.d/penguins-eggs-ppa.list > /dev/null
+      # anydesk-stable
+      - curl -fsSL "https://keys.anydesk.com/repos/DEB-GPG-KEY" | gpg --dearmor -o /usr/share/keyrings/anydesk-stable.gpg
+      - echo "deb [signed-by=/usr/share/keyrings/anydesk-stable.gpg] http://deb.anydesk.com/ all main" | tee /etc/apt/sources.list.d/anydesk-stable.list > /dev/null
     update: true
     full-upgrade: true
   packages:
