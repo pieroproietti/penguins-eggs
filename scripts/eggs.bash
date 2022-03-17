@@ -20,9 +20,6 @@ dad --help --clean --default --verbose
 export:deb --help --clean --amd64 --i386 --armel --arm64 --all
 export:docs --help
 export:iso --help --backup --clean
-gardrobe:list --gardrobe --verbose --help
-gardrobe:show --gardrobe --costume --json --verbose --help
-gardrobe:wear --costume --gardrobe --verbose --help
 info --verbose --help
 install --cli --crypted --pve --help --verbose
 kill --help --verbose
@@ -37,6 +34,9 @@ tools:skel --help --user --verbose
 tools:stat --help --month --year
 tools:yolk --help --verbose
 update --help --apt --basket --verbose
+wardrobe:list --wardrobe --verbose --help
+wardrobe:show --wardrobe --costume --json --verbose --help
+wardrobe:wear --costume --wardrobe --verbose --help
 autocomplete --refresh-cache
 help --nested-commands
 version 

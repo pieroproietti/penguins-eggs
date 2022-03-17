@@ -16,9 +16,6 @@ _eggs () {
 "export\:deb:export deb/docs/iso to the destination host"
 "export\:docs:remove and export docType documentation of the sources in the destination host"
 "export\:iso:export iso in the destination host"
-"gardrobe\:list:list, wear costumes"
-"gardrobe\:show:show costumes"
-"gardrobe\:wear:wear costume"
 "info:re-thinking for a different approach to CLI"
 "install:command-line system installer - the egg became a penguin!"
 "kill:kill the eggs/free the nest"
@@ -33,6 +30,9 @@ _eggs () {
 "tools\:stat:get statistics from sourceforge"
 "tools\:yolk:configure eggs to install without internet"
 "update:update the penguin's eggs tool"
+"wardrobe\:list:list, wear costumes"
+"wardrobe\:show:show costumes"
+"wardrobe\:wear:wear costume"
 "autocomplete:display autocomplete installation instructions"
 "help:Display help for <%= config.bin %>."
 "version:"
@@ -112,33 +112,6 @@ export:iso)
     "--help[Show CLI help.]"
 "--backup[export backup ISOs]"
 "--clean[delete old ISOs before to copy]"
-  )
-;;
-
-gardrobe:list)
-  _command_flags=(
-    "--gardrobe=-[gardrobe]:"
-"--verbose[]"
-"--help[Show CLI help.]"
-  )
-;;
-
-gardrobe:show)
-  _command_flags=(
-    "--gardrobe=-[gardrobe]:"
-"--costume=-[costume]:"
-"--json[output JSON]"
-"--verbose[]"
-"--help[Show CLI help.]"
-  )
-;;
-
-gardrobe:wear)
-  _command_flags=(
-    "--costume=-[Costume]:"
-"--gardrobe=-[Costume]:"
-"--verbose[]"
-"--help[Show CLI help.]"
   )
 ;;
 
@@ -262,6 +235,33 @@ update)
 "--apt[if eggs package is .deb, update from distro repositories]"
 "--basket[if eggs package is .deb, update from eggs basket]"
 "--verbose[verbose]"
+  )
+;;
+
+wardrobe:list)
+  _command_flags=(
+    "--wardrobe=-[wardrobe]:"
+"--verbose[]"
+"--help[Show CLI help.]"
+  )
+;;
+
+wardrobe:show)
+  _command_flags=(
+    "--wardrobe=-[wardrobe]:"
+"--costume=-[costume]:"
+"--json[output JSON]"
+"--verbose[]"
+"--help[Show CLI help.]"
+  )
+;;
+
+wardrobe:wear)
+  _command_flags=(
+    "--costume=-[Costume]:"
+"--wardrobe=-[wardrobe]:"
+"--verbose[]"
+"--help[Show CLI help.]"
   )
 ;;
 
