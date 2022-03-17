@@ -26,7 +26,7 @@ export default class Wear extends Command {
     Utils.titles(this.id + ' ' + this.argv)
 
     let wardrobe = `${path.resolve(__dirname, '../../../wardrobe.d')}`
-    if (flags.gardrobe != undefined) {
+    if (flags.wardrobe != undefined) {
       wardrobe = flags.wardrobe
     }
 

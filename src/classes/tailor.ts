@@ -45,7 +45,7 @@ export default class Tailor {
         if (fs.existsSync(tailorList)) {
             this.materials = yaml.load(fs.readFileSync(tailorList, 'utf-8')) as IMaterial
         } else {
-            console.log('costume ' + chalk.cyan(this.costume) + ' not found in gardrobe: ' + chalk.green(this.gardrobe))
+            console.log('costume ' + chalk.cyan(this.costume) + ' not found in wardrobe: ' + chalk.green(this.wardrobe))
         }
 
 
@@ -158,7 +158,7 @@ export default class Tailor {
             if (!this.verbose) {
                 console.log('wait for: ' + step)
             }
-            await exec(`dpkg -i ${this.gardrobe}\*.deb`)
+            await exec(`dpkg -i ${this.wardrobe}\*.deb`)
         }
 
         /**
