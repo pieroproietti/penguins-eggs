@@ -65,12 +65,12 @@
         "/assistant",
         "/bin",
         "/conf",
-        "/gardrobe.d",
         "/lib",
         "/manpages",
         "/oclif.manifest.json",
         "/scripts",
-        "/templates"
+        "/templates",
+        "/wardrobe.d"
     ],
     "homepage": "https://penguins-eggs.net/",
     "keywords": [
