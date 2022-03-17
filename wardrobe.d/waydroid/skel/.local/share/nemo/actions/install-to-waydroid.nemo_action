@@ -1,0 +1,9 @@
+[Nemo Action]
+Name=Install to Waydroid
+Comment=Install %N to Waydroid
+Exec=sudo waydroid app install "%F"
+Icon-Name=android-package-archive
+Selection=s
+Extensions=apk;
+EscapeSpaces=true
+Terminal=true

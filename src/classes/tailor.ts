@@ -162,10 +162,56 @@ export default class Tailor {
         }
 
         /**
+         * customizations/scripts
+         */
+        if (this.materials.sequence.customizations.scripts[0] !== null) {
+            step = `customizations scripts`
+            Utils.warning(step)
+            if (!this.verbose) {
+                console.log('wait for: ' + step)
+            }
+            this.materials.sequence.customizations.scripts.forEach(async script => {
+                await exec(script, this.echo)
+            })
+        }
+
+        /**
+         * customizations/skel
+         */
+         if (this.materials.sequence.customizations.skel) {
+            step = `customizations skel`
+            if (fs.existsSync(`${this.wardrobe}/skel`) {
+                Utils.warning(step)
+                if (!this.verbose) {
+                    console.log('wait for: ' + step)
+                }
+                await exec(`cp -r ${this.wardrobe}/skel /etc/`)
+            } else {
+                Utils.warning(`${this.wardrobe}/skel not found!`)
+            }
+        }
+
+        /**
+         * customizations/usr
+         */
+         if (this.materials.sequence.customizations.usr) {
+            step = `customizations usr`
+            if (fs.existsSync(`${this.wardrobe}/skel`) {
+                Utils.warning(step)
+                if (!this.verbose) {
+                    console.log('wait for: ' + step)
+                }
+                await exec(`cp -r ${this.wardrobe}/usr /usr`)
+            } else {
+                Utils.warning(`${this.wardrobe}/usr not found!`)
+            }
+        }
+
+        /**
          * hostname and hosts
          */
         if (this.materials.sequence.hostname) {
-            Utils.warning(`changing hostname=${this.materials.name}`)
+            Utils.warning(`changing hostname = ${this.materials.name}`)
             await this.hostname()
         }
 
