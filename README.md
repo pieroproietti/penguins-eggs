@@ -153,9 +153,6 @@ USAGE
 * [`eggs export deb`](#eggs-export-deb)
 * [`eggs export docs`](#eggs-export-docs)
 * [`eggs export iso`](#eggs-export-iso)
-* [`eggs gardrobe list`](#eggs-gardrobe-list)
-* [`eggs gardrobe show`](#eggs-gardrobe-show)
-* [`eggs gardrobe wear`](#eggs-gardrobe-wear)
 * [`eggs help [COMMAND]`](#eggs-help-command)
 * [`eggs info`](#eggs-info)
 * [`eggs install`](#eggs-install)
@@ -172,6 +169,9 @@ USAGE
 * [`eggs tools yolk`](#eggs-tools-yolk)
 * [`eggs update`](#eggs-update)
 * [`eggs version`](#eggs-version)
+* [`eggs wardrobe list`](#eggs-wardrobe-list)
+* [`eggs wardrobe show`](#eggs-wardrobe-show)
+* [`eggs wardrobe wear`](#eggs-wardrobe-wear)
 
 ## `eggs adapt`
 
@@ -388,60 +388,6 @@ FLAGS
 
 DESCRIPTION
   export iso in the destination host
-```
-
-## `eggs gardrobe list`
-
-list, wear costumes
-
-```
-USAGE
-  $ eggs gardrobe list [-g <value>] [-v] [-h]
-
-FLAGS
-  -g, --gardrobe=<value>  gardrobe
-  -h, --help              Show CLI help.
-  -v, --verbose
-
-DESCRIPTION
-  list, wear costumes
-```
-
-## `eggs gardrobe show`
-
-show costumes
-
-```
-USAGE
-  $ eggs gardrobe show [-g <value>] [-c <value>] [-j] [-v] [-h]
-
-FLAGS
-  -c, --costume=<value>   costume
-  -g, --gardrobe=<value>  gardrobe
-  -h, --help              Show CLI help.
-  -j, --json              output JSON
-  -v, --verbose
-
-DESCRIPTION
-  show costumes
-```
-
-## `eggs gardrobe wear`
-
-wear costume
-
-```
-USAGE
-  $ eggs gardrobe wear [-c <value>] [-g <value>] [-v] [-h]
-
-FLAGS
-  -c, --costume=<value>   Costume
-  -g, --gardrobe=<value>  Costume
-  -h, --help              Show CLI help.
-  -v, --verbose
-
-DESCRIPTION
-  wear costume
 ```
 
 ## `eggs help [COMMAND]`
@@ -829,6 +775,60 @@ USAGE
 ```
 
 _See code: [@oclif/plugin-version](https://github.com/oclif/plugin-version/blob/v1.0.4/src/commands/version.ts)_
+
+## `eggs wardrobe list`
+
+list, wear costumes
+
+```
+USAGE
+  $ eggs wardrobe list [-w <value>] [-v] [-h]
+
+FLAGS
+  -h, --help              Show CLI help.
+  -v, --verbose
+  -w, --wardrobe=<value>  wardrobe
+
+DESCRIPTION
+  list, wear costumes
+```
+
+## `eggs wardrobe show`
+
+show costumes
+
+```
+USAGE
+  $ eggs wardrobe show [-w <value>] [-c <value>] [-j] [-v] [-h]
+
+FLAGS
+  -c, --costume=<value>   costume
+  -h, --help              Show CLI help.
+  -j, --json              output JSON
+  -v, --verbose
+  -w, --wardrobe=<value>  wardrobe
+
+DESCRIPTION
+  show costumes
+```
+
+## `eggs wardrobe wear`
+
+wear costume
+
+```
+USAGE
+  $ eggs wardrobe wear [-c <value>] [-w <value>] [-v] [-h]
+
+FLAGS
+  -c, --costume=<value>   Costume
+  -h, --help              Show CLI help.
+  -v, --verbose
+  -w, --wardrobe=<value>  wardrobe
+
+DESCRIPTION
+  wear costume
+```
 <!-- commandsstop -->
 
 # Terminal samples
