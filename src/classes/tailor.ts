@@ -48,7 +48,6 @@ export default class Tailor {
             console.log('costume ' + chalk.cyan(this.costume) + ' not found in wardrobe: ' + chalk.green(this.wardrobe))
         }
 
-
         /**
          * Repositories
          */
@@ -112,6 +111,20 @@ export default class Tailor {
             }
             await exec('apt-get full-upgrade -y', this.echo)
         }
+
+        /**
+         * checking tools
+         */
+        if (this.materials.dependencies[0] !==  null) {
+            step = 'checking and installing dependencies'
+            Utils.warning(step)
+            let cmd = 'apt-get install -y '
+            this.materials.dependencies.forEach( dependence => {
+                cmd += ` ${dependence}`
+            })
+            await exec(cmd, this.echo)
+        }
+
 
         /**
          * apt-get install packages
@@ -180,7 +193,7 @@ export default class Tailor {
          */
          if (this.materials.sequence.customizations.skel) {
             step = `customizations skel`
-            if (fs.existsSync(`${this.wardrobe}/skel`) {
+            if (fs.existsSync(`${this.wardrobe}/skel`)) {
                 Utils.warning(step)
                 if (!this.verbose) {
                     console.log('wait for: ' + step)
@@ -196,7 +209,7 @@ export default class Tailor {
          */
          if (this.materials.sequence.customizations.usr) {
             step = `customizations usr`
-            if (fs.existsSync(`${this.wardrobe}/skel`) {
+            if (fs.existsSync(`${this.wardrobe}/skel`)) {
                 Utils.warning(step)
                 if (!this.verbose) {
                     console.log('wait for: ' + step)
