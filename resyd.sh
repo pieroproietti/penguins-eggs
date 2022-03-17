@@ -1,6 +1,6 @@
 #!/bin/sh
 clear
-echo "Installing eggs saving time..."
+echo "Re-onstall Eggs Saving Yolk... Developer"
 # yolk-restore
 sudo rm /var/local/yolk.saved -rf
 sudo mv /var/local/yolk /var/local/yolk.saved

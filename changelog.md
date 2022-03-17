@@ -25,7 +25,7 @@ wardrobe: rethinking and rewrote in more clear way tailor.ts, wear.ts, list.ts a
 eggs come with a new command: **wardrobe**. To get more information pleas read on the [blog](https://penguins-eggs.net/2022/03/14/dress/)
 
 ### eggs-9.0.36-1
-* **experimental** version with command recipes. I decide to rename it to **dress** - more appropriate - to create a way to automatize creation of custom release of our penguins. 
+* **experimental** version with command recipes. I decided later to change to **wardrobe** - more appropriate - to create a way to automatize creation of custom release of our penguins. 
 
 ### eggs-9.0.35-1
 * krill: bugfix on removing user live on backup
