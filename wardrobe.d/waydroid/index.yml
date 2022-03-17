@@ -1,28 +1,18 @@
-# preInstall
-# installDependenies
-# installpackages
-# setup
-# postInstall
-# userSetup
-# costume: lamp
-# tailor: Jon West
-# curl -fsSL  "https://repo.waydro.id/waydroid.gpg" | gpg --dearmor -o /usr/share/keyrings/waydroid.gpg
-# echo "deb [signed-by=/usr/share/keyrings/waydroid.gpg] https://repo.waydro.id/ bookworm main" | tee /etc/apt/sources.list.d/waydroid-ppa.list > /dev/null
-# curl -fsSL "https://pieroproietti.github.io/penguins-eggs-ppa/KEY.gpg" | gpg --dearmor -o /usr/share/keyrings/penguins-eggs-ppa.gpg
-# echo "deb [signed-by=/usr/share/keyrings/penguins-eggs-ppa.gpg]  https://pieroproietti.github.io/penguins-eggs-ppa ./ " | tee /etc/apt/sources.list.d/penguins-eggs-ppa.list > /dev/null
-# curl -fsSL https://download.docker.com/linux/debian/gpg | gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
-# echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/debian $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
-
+waydroid
 ---
 name: waydroid
-description: 'minimun waydroid installation'
+description: 'waydroid installation'
 author: Jon West
-release: 0.0.1
+release: "0.0.2"
 distroId: Debian
-codenameId: booksworm
+codenameId: bookworm
 releaseId: unstable
 applyTo: naked
 sequence:
+  dependencies:
+    - iptables
+    - lxc
+    - curl
   repositories:
     sourcesList:
       main: true
@@ -40,6 +30,11 @@ sequence:
   accessories:
     - null
   debs: false
+  customizations:
+    scripts:
+    - wget -O - https://raw.githubusercontent.com/axel358/Waydroid-Settings/main/install.sh | bash
+    skel: true
+    usr: true
   hostname: true
   reboot: true
 ...

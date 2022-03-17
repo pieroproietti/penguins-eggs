@@ -23,6 +23,11 @@ export interface IMaterial {
         packages: string [],
         accessories: string [],
         debs: boolean,
+        customizations: {
+            scripts: string [],
+            skel: boolean,
+            usr: boolean,
+        }
         hostname: boolean,
         reboot: boolean
     }
