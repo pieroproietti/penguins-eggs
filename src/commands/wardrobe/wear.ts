@@ -9,7 +9,7 @@ export default class Wear extends Command {
 
   static flags = {
     costume: Flags.string({ char: 'c', description: 'Costume' }),
-    gardrobe: Flags.string({ char: 'g', description: 'Costume' }),
+    wardrobe: Flags.string({ char: 'w', description: 'wardrobe' }),
     verbose: Flags.boolean({ char: 'v' }),
     help: Flags.help({ char: 'h' }),
   }
@@ -25,9 +25,9 @@ export default class Wear extends Command {
 
     Utils.titles(this.id + ' ' + this.argv)
 
-    let gardrobe = `${path.resolve(__dirname, '../../../gardrobe.d')}`
+    let wardrobe = `${path.resolve(__dirname, '../../../wardrobe.d')}`
     if (flags.gardrobe != undefined) {
-      gardrobe = flags.gardrobe
+      wardrobe = flags.wardrobe
     }
 
     let costume = 'xfce4'
@@ -36,10 +36,10 @@ export default class Wear extends Command {
     }
 
     if (Utils.isRoot() && (await Utils.customConfirm(`Prepare your costume: ${costume}? Select yes to continue...`))) {
-      const tailor = new Tailor(gardrobe, costume)
+      const tailor = new Tailor(wardrobe, costume)
       await tailor.prepare(verbose)
     } else {
-      console.log('costume ' + chalk.cyan(costume) + ' not found in gardrobe: ' + chalk.green(gardrobe))
+      console.log('costume ' + chalk.cyan(costume) + ' not found in wardrobe: ' + chalk.green(wardrobe))
     }
   }
 }

@@ -19,10 +19,10 @@ You can follow the project also consulting the [commit history](https://github.c
 Versions are listed on reverse order, the first is the last one. Old versions are moved to [oldest](https://sourceforge.net/projects/penguins-eggs/files/packages-deb/oldest/). 
 
 ### eggs-9.0.38-1
-gardrobe: rethinking and rewrote in more clear way tailor.ts, wear.ts, list.ts added show.ts and all costumes *.yml. Added a minimal waydroid costume
+wardrobe: rethinking and rewrote in more clear way tailor.ts, wear.ts, list.ts added show.ts and all costumes *.yml. Added a minimal waydroid costume
 
 ### eggs-9.0.37-1
-eggs come with a new command: **gardrobe**. To get more information pleas read on the [blog](https://penguins-eggs.net/2022/03/14/dress/)
+eggs come with a new command: **wardrobe**. To get more information pleas read on the [blog](https://penguins-eggs.net/2022/03/14/dress/)
 
 ### eggs-9.0.36-1
 * **experimental** version with command recipes. I decide to rename it to **dress** - more appropriate - to create a way to automatize creation of custom release of our penguins. 
