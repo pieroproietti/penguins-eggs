@@ -9,6 +9,7 @@ export interface IMaterial {
     distroId: string
     codenameId: string
     releaseId: string
+    dependencies: string []
     sequence: {
         repositories: {
             sourcesList: {

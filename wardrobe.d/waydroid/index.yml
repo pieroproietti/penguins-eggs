@@ -1,4 +1,4 @@
-waydroid
+# waydroid
 ---
 name: waydroid
 description: 'waydroid installation'
@@ -8,11 +8,17 @@ distroId: Debian
 codenameId: bookworm
 releaseId: unstable
 applyTo: naked
+
+# dependencies are installed AFTER 
+# repositories amd BEFORE packages
+dependencies:
+- iptables
+- lxc
+- curl
+- wget
+- git
+
 sequence:
-  dependencies:
-    - iptables
-    - lxc
-    - curl
   repositories:
     sourcesList:
       main: true
