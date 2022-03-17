@@ -97,7 +97,7 @@ export default class Tailor {
             if (!this.verbose) {
                 console.log('wait for: ' + step)
             }
-            await exec('apt-get update', this.echo)
+            await exec('apt-get update', Utils.setEcho(false))
         }
 
         /**
@@ -109,20 +109,24 @@ export default class Tailor {
             if (!this.verbose) {
                 console.log('wait for: ' + step)
             }
-            await exec('apt-get full-upgrade -y', this.echo)
+            await exec('apt-get full-upgrade -y', Utils.setEcho(false))
         }
 
         /**
          * checking tools
          */
         if (this.materials.dependencies[0] !==  null) {
-            step = 'checking and installing dependencies'
+            let dependenciesString = ''
+            this.materials.dependencies.forEach( dependence => {
+                dependenciesString += `, ${dependence}` 
+            })
+            step = `to prepare costume ${this.costume} we need  dependencies: ${dependenciesString.substring(1)}`
             Utils.warning(step)
             let cmd = 'apt-get install -y '
             this.materials.dependencies.forEach( dependence => {
                 cmd += ` ${dependence}`
             })
-            await exec(cmd, this.echo)
+            await exec(cmd, Utils.setEcho(false))
         }
 
 
@@ -184,7 +188,7 @@ export default class Tailor {
                 console.log('wait for: ' + step)
             }
             this.materials.sequence.customizations.scripts.forEach(async script => {
-                await exec(script, this.echo)
+                await exec(`${this.wardrobe}/${this.costume}/${script}`, Utils.setEcho(true))
             })
         }
 

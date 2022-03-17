@@ -38,7 +38,8 @@ sequence:
   debs: false
   customizations:
     scripts:
-    - wget -O - https://raw.githubusercontent.com/axel358/Waydroid-Settings/main/install.sh | bash
+    # wget -O - https://raw.githubusercontent.com/axel358/Waydroid-Settings/main/install.sh | bash
+    - install.sh
     skel: true
     usr: true
   hostname: true
