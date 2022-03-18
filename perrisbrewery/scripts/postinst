@@ -20,6 +20,10 @@ set -e
 
 case "$1" in
     configure)
+        # Add resy.sh (Reinstall Eggs Saving Yolk)
+        if [ -f "/usr/lib/penguins-eggs/scripts/resy.sh" ]; then
+            cp /usr/lib/penguins-eggs/scripts/resy.sh /usr/local/bin
+        fi
 
         # Adding bash-completion Debian/Devuan/Ubuntu /etc/bash_completion.d/
         if [ -d "/etc/bash_completion.d/" ]; then
