@@ -1,7 +1,8 @@
 clear
-echo "Re-onstall Eggs Saving Yolk..."
-sudo mv /var/local/yolk .
+echo ">>> Re-install Eggs Saving Yolk"
+tmp=`mktemp -d`
+sudo mv /var/local/yolk $tmp
 sudo apt purge eggs 
 sudo dpkg -i /tmp/eggs*.deb
-sudo mv ./yolk /var/loca
+sudo mv $tmp/yolk /var/local
 sudo eggs dad -d
