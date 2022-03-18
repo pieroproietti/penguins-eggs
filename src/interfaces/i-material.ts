@@ -9,7 +9,6 @@ export interface IMaterial {
     distroId: string
     codenameId: string
     releaseId: string
-    dependencies: string []
     sequence: {
         repositories: {
             sourcesList: {
@@ -21,8 +20,9 @@ export interface IMaterial {
             update: boolean,
             fullUpgrade: boolean,
         },
+        dependencies: string []
         packages: string [],
-        accessories: string [],
+        packagesNoInstallRecommends: string [],
         debs: boolean,
         customizations: {
             scripts: string [],
