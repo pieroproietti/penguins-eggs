@@ -156,11 +156,12 @@ export default class Tailor {
         /**
         * apt-get install accessories
         */
-        if (this.materials.sequence.accessories[0] !== null) {
-            step = `installing packages accessories`
+         
+        if (this.materials.sequence.noInstallRecommends[0] !== null) {
+            step = `installing packages --no-install-recommends`
             Utils.warning(step)
-            let cmd = 'apt-get install -y '
-            this.materials.sequence.accessories.forEach(elem => {
+            let cmd = 'apt-get install --no-install-recommends --no-install-suggest -y '
+            this.materials.sequence.noInstallRecommends.forEach(elem => {
                 cmd += ` ${elem}`
             })
             if (await Utils.customConfirm(cmd)) {
