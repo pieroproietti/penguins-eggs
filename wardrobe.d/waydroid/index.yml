@@ -63,6 +63,6 @@ sequence:
     usr: true
 
   hostname: true
-
+  
   reboot: true
 ...
