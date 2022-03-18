@@ -22,7 +22,7 @@ export interface IMaterial {
         },
         dependencies: string []
         packages: string [],
-        packagesNoInstallRecommends: string [],
+        noInstallRecommends: string [],
         debs: boolean,
         customizations: {
             scripts: string [],

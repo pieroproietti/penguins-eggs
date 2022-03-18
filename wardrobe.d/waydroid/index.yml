@@ -31,15 +31,21 @@ sequence:
   - wget
   - git
   
+  # no-install-suggest
+  # install-recommends
+  # no-install-recommends
   packages:
+  # install-suggest default
   - gir1.2-gtk-3.0
+  - gnome-terminal
   - python3
   - python3-gi
   - python3-gi-cairo
-  - python3-gtk3
   - waydroid
+  - weston
 
-  packagesNoInstallRecommends:
+  # --no-install-recommends --no-install-suggest
+  noInstallRecommends:
     - gdm3
 
   debs: false
