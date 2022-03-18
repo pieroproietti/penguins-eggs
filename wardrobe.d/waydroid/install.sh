@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+# removed sudo, here we are root
+
 # GTK app written in Python to control Waydroid settings
 # Run this installer to also update to the latest release
 # 
@@ -14,6 +16,7 @@ CLEANUP="false"
 if [ -f $HPATH/.local/share/waydroid-settings/waydroid-settings.sh ]; then
 	CLEANUP="true"
 fi
+
 if [ -f /usr/share/waydroid-settings/waydroid-settings.sh ]; then
 	read -p "Do you want to update Waydroid-Settings (y/n)?" choice
 	case "$choice" in 
@@ -21,11 +24,10 @@ if [ -f /usr/share/waydroid-settings/waydroid-settings.sh ]; then
 	  n|N ) echo "no" && echo "OK. You're the boss";;
 	  * ) echo "invalid";;
 	esac
-	
 fi
 
 if [ "$CLEANUP" == "true" ]; then
-	sudo rm -rf $HPATH/.cache/waydroid-settings  $HPATH/.local/share/applications/waydroid-settings.desktop $HPATH/.local/share/waydroid-settings /usr/share/waydroid-settings /usr/bin/waydroid-settings.sh /usr/local/share/applications/waydroid-settings.desktop /usr/local/share/applications/install-to-waydroid.desktop
+	rm -rf $HPATH/.cache/waydroid-settings  $HPATH/.local/share/applications/waydroid-settings.desktop $HPATH/.local/share/waydroid-settings /usr/share/waydroid-settings /usr/bin/waydroid-settings.sh /usr/local/share/applications/waydroid-settings.desktop /usr/local/share/applications/install-to-waydroid.desktop
 	echo "old versions of waydroid-settings are cleared. Moving on to installing updates"
 fi
 
@@ -39,13 +41,11 @@ else
 	git submodule init
 	git submodule update
 	cd ..
-	sudo mv waydroid-settings/ /usr/share/
+	sfsmv waydroid-settings/ /usr/share/
 fi
 
-# 
-sudo cp /usr/share/waydroid-settings/waydroid-settings.sh /usr/bin/
-sudo chmod +x /usr/bin/waydroid-settings.sh
-sudo cp /usr/share/waydroid-settings/icon2.png /usr/lib/waydroid/data/wd-settings-icon.png
-sudo cp /usr/share/waydroid-settings/*.desktop /usr/share/applications/
 
-echo "All set. Thanks for installing."
+cp /usr/share/waydroid-settings/waydroid-settings.sh /usr/bin/
+chmod +x /usr/bin/waydroid-settings.sh
+cp /usr/share/waydroid-settings/icon2.png /usr/lib/waydroid/data/wd-settings-icon.png
+cp /usr/share/waydroid-settings/*.desktop /usr/share/applications/
