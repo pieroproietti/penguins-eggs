@@ -30,12 +30,13 @@ sequence:
   - lxc
   - wget
   - git
-  
-  # no-install-suggest
+
+  # install-suggests
   # install-recommends
+  # no-install-suggests
   # no-install-recommends
   packages:
-  # install-suggest default
+  # install-suggests it the default
   - gir1.2-gtk-3.0
   - gnome-terminal
   - python3
@@ -44,7 +45,7 @@ sequence:
   - waydroid
   - weston
 
-  # --no-install-recommends --no-install-suggest
+  # --no-install-recommends --no-install-suggests
   noInstallRecommends:
     - gdm3
 

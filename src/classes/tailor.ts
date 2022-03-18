@@ -160,7 +160,7 @@ export default class Tailor {
         if (this.materials.sequence.noInstallRecommends[0] !== null) {
             step = `installing packages --no-install-recommends`
             Utils.warning(step)
-            let cmd = 'apt-get install --no-install-recommends --no-install-suggest -y '
+            let cmd = 'apt-get install --no-install-recommends --no-install-suggests -y '
             this.materials.sequence.noInstallRecommends.forEach(elem => {
                 cmd += ` ${elem}`
             })
