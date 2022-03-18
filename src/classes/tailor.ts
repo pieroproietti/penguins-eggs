@@ -115,18 +115,23 @@ export default class Tailor {
         /**
          * checking tools
          */
-        if (this.materials.dependencies[0] !==  null) {
+        if (this.materials.sequence.dependencies[0] !==  null) {
             let dependenciesString = ''
-            this.materials.dependencies.forEach( dependence => {
+            this.materials.sequence.dependencies.forEach( dependence => {
                 dependenciesString += `, ${dependence}` 
             })
             step = `to prepare costume ${this.costume} we need  dependencies: ${dependenciesString.substring(1)}`
             Utils.warning(step)
             let cmd = 'apt-get install -y '
-            this.materials.dependencies.forEach( dependence => {
+            this.materials.sequence.dependencies.forEach( dependence => {
                 cmd += ` ${dependence}`
             })
-            await exec(cmd, Utils.setEcho(false))
+            if (await Utils.customConfirm(cmd)) {
+                if (!this.verbose) {
+                    console.log('wait for: ' + step)
+                }
+                await exec(cmd, this.echo)
+            }
         }
 
 

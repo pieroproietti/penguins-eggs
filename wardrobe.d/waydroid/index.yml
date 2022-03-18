@@ -1,4 +1,5 @@
 # waydroid
+# pre-dependencies: tailor check ALWAYS curl presence
 ---
 name: waydroid
 description: 'waydroid installation'
@@ -9,21 +10,13 @@ codenameId: bookworm
 releaseId: unstable
 applyTo: naked
 
-# dependencies are installed AFTER 
-# repositories amd BEFORE packages
-dependencies:
-- iptables
-- lxc
-- curl
-- wget
-- git
-
 sequence:
   repositories:
     sourcesList:
       main: true
       contrib: true
       nonFree: true
+
     sourcesListD:
     - curl -fsSL  "https://repo.waydro.id/waydroid.gpg" | gpg --dearmor -o /usr/share/keyrings/waydroid.gpg
     - echo "deb [signed-by=/usr/share/keyrings/waydroid.gpg] https://repo.waydro.id/ bookworm main" | tee /etc/apt/sources.list.d/waydroid-ppa.list > /dev/null
@@ -31,17 +24,34 @@ sequence:
     - echo "deb [signed-by=/usr/share/keyrings/penguins-eggs-ppa.gpg]  https://pieroproietti.github.io/penguins-eggs-ppa ./ " | tee /etc/apt/sources.list.d/penguins-eggs-ppa.list > /dev/null
     update: true
     full-upgrade: true
+
+  dependencies:
+  - iptables
+  - lxc
+  - wget
+  - git
+  
   packages:
-    - waydroid
-  accessories:
-    - null
+  - gir1.2-gtk-3.0
+  - python3
+  - python3-gi
+  - python3-gi-cairo
+  - python3-gtk3
+  - waydroid
+
+  packagesNoInstallRecommends:
+    - gdm3
+
   debs: false
+
   customizations:
     scripts:
     # wget -O - https://raw.githubusercontent.com/axel358/Waydroid-Settings/main/install.sh | bash
     - install.sh
     skel: true
     usr: true
+
   hostname: true
+
   reboot: true
 ...
