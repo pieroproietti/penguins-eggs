@@ -14,6 +14,21 @@ penguins-eggs
 
 Pleas don't use this package for installations, they have just the pourpouse to be TESTED and can be extremally BUGGED!!!
 
+# Jon
+
+waydroid init it's a long question here... about 700 KB download, there is a way to specific a path to download the lineageimage?
+
+I added waydroid init at the end of install, and at last I decided to cut many stuffs, becouse here we are always on a new system
+
+I'm waiting the init finish before to leava.
+
+The present version is eggs-9-0-39-2_and64 and contain inside waydroid costume, I think to remove waydroid from wardrobe 
+to not add too much weight to eggs: icons, backgrounds and so on can easily add KB to eggs.  
+
+For the future, I think will be better to have differents wardrobes:  a small, simple internal
+wardrobe and one or meore externals.
+
+
 # Aravind
 
 I don't think it will work, but probably will partition the disk. As told you I don't have a NVMe hw, nor the possibility to emulate it in a VM on Proxmox VE.
