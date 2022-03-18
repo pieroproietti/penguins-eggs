@@ -208,7 +208,11 @@ export default class Tailor {
                 if (!this.verbose) {
                     console.log('wait for: ' + step)
                 }
-                await exec(`cp -r ${this.wardrobe}/skel /etc/`)
+                await exec(`rm /etc/skel -rf`)
+                await exec(`mkdir /etc/skel`)
+                await exec(`cp -r ${this.wardrobe}/skel/* /etc/skel/`)
+                // copy skel in current user
+                await exec(`cp -r ${this.wardrobe}/skel/* ~`)
             } else {
                 Utils.warning(`${this.wardrobe}/skel not found!`)
             }
@@ -224,7 +228,7 @@ export default class Tailor {
                 if (!this.verbose) {
                     console.log('wait for: ' + step)
                 }
-                await exec(`cp -r ${this.wardrobe}/usr /usr`)
+                await exec(`cp -r ${this.wardrobe}/usr/* /usr`)
             } else {
                 Utils.warning(`${this.wardrobe}/usr not found!`)
             }
