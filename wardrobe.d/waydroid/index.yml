@@ -37,7 +37,9 @@ sequence:
   # no-install-recommends
   packages:
   # install-suggests it the default
+  - desktop-base
   - gir1.2-gtk-3.0
+  - gnome-session
   - gnome-terminal
   - python3
   - python3-gi
