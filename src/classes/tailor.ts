@@ -115,23 +115,19 @@ export default class Tailor {
         /**
          * checking tools
          */
-        if (this.materials.sequence.dependencies[0] !==  null) {
-            let dependenciesString = ''
-            this.materials.sequence.dependencies.forEach( dependence => {
-                dependenciesString += `, ${dependence}` 
-            })
-            step = `to prepare costume ${this.costume} we need  dependencies: ${dependenciesString.substring(1)}`
-            Utils.warning(step)
+        if (this.materials.sequence.dependencies[0] !== null) {
             let cmd = 'apt-get install -y '
-            this.materials.sequence.dependencies.forEach( dependence => {
+            let dependencies = ''
+            this.materials.sequence.dependencies.forEach(dependence => {
                 cmd += ` ${dependence}`
+                dependencies += `, ${dependence}`
             })
-            if (await Utils.customConfirm(cmd)) {
-                if (!this.verbose) {
-                    console.log('wait for: ' + step)
-                }
-                await exec(cmd, this.echo)
+            step = `installing dependencies: ${dependencies.substring(1)}`
+            Utils.warning(step)
+            if (!this.verbose) {
+                console.log('wait for: ' + step)
             }
+            await exec(cmd, this.echo)
         }
 
 
@@ -139,37 +135,36 @@ export default class Tailor {
          * apt-get install packages
          */
         if (this.materials.sequence.packages[0] !== null) {
-            step = `installing packages`
-            Utils.warning(step)
+            let packages = ''
             let cmd = 'apt-get install -y '
             this.materials.sequence.packages.forEach(elem => {
                 cmd += ` ${elem}`
+                packages = `, ${elem}`
             })
-            if (await Utils.customConfirm(cmd)) {
-                if (!this.verbose) {
-                    console.log('wait for: ' + step)
-                }
-                await exec(cmd, this.echo)
+            step = `installing packages: ${packages.substring(1)}`
+            Utils.warning(step)
+            if (!this.verbose) {
+                console.log('wait for: ' + step)
             }
+            await exec(cmd, this.echo)
         }
 
         /**
-        * apt-get install accessories
+        * apt-get install --no-install-recommends --no-install-suggests
         */
-         
         if (this.materials.sequence.noInstallRecommends[0] !== null) {
-            step = `installing packages --no-install-recommends`
-            Utils.warning(step)
             let cmd = 'apt-get install --no-install-recommends --no-install-suggests -y '
+            let noInstallRecommends = ''
             this.materials.sequence.noInstallRecommends.forEach(elem => {
                 cmd += ` ${elem}`
+                noInstallRecommends += `, ${elem}`
             })
-            if (await Utils.customConfirm(cmd)) {
-                if (!this.verbose) {
-                    console.log('wait for: ' + step)
-                }
-                await exec(cmd, this.echo)
+            step = `installing packages --no-install-recommends --no-install-suggests ${noInstallRecommends.substring(1)}`
+            Utils.warning(step)
+            if (!this.verbose) {
+                console.log('wait for: ' + step)
             }
+            await exec(cmd, this.echo)
         }
 
         /**
@@ -201,7 +196,7 @@ export default class Tailor {
         /**
          * customizations/skel
          */
-         if (this.materials.sequence.customizations.skel) {
+        if (this.materials.sequence.customizations.skel) {
             step = `customizations skel`
             if (fs.existsSync(`${this.wardrobe}/skel`)) {
                 Utils.warning(step)
@@ -221,7 +216,7 @@ export default class Tailor {
         /**
          * customizations/usr
          */
-         if (this.materials.sequence.customizations.usr) {
+        if (this.materials.sequence.customizations.usr) {
             step = `customizations usr`
             if (fs.existsSync(`${this.wardrobe}/skel`)) {
                 Utils.warning(step)
