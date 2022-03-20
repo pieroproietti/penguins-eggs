@@ -108,9 +108,6 @@ export default class Tailor {
         let step = `updating repositories`
         Utils.warning(step)
         if (this.materials.sequence.repositories.update) {
-            if (!this.verbose) {
-                console.log('waiting for: ' + step)
-            }
             await exec('apt-get update', Utils.setEcho(false))
         }
 
@@ -183,7 +180,6 @@ export default class Tailor {
          * dpkg -i *.deb
          */
         if (this.materials.sequence.debs !== undefined) {
-
             if (this.materials.sequence.debs) {
                 let step = `installing local packages`
                 Utils.warning(step)
@@ -192,48 +188,52 @@ export default class Tailor {
         }
 
         /**
-         * customizations/scripts
+         * customizations
          */
-        if (this.materials.sequence.customizations.scripts !== undefined) {
-            if (this.materials.sequence.customizations.scripts[0] !== null) {
-                let step = `customizations scripts`
-                Utils.warning(step)
-                this.materials.sequence.customizations.scripts.forEach(async script => {
-                    await exec(`${this.wardrobe}/${this.costume}/${script}`, Utils.setEcho(true))
-                })
-            }
-        }
+        if (this.materials.sequence.customizations !== undefined) {
 
-        /**
-         * customizations/skel
-         */
-        if (this.materials.sequence.customizations.skel !== undefined) {
-            if (this.materials.sequence.customizations.skel) {
-                let step = `customizations skel`
-                if (fs.existsSync(`${this.wardrobe}/${this.costume}/skel`)) {
+            /**
+             * customizations/scripts
+             */
+            if (this.materials.sequence.customizations.scripts !== undefined) {
+                if (this.materials.sequence.customizations.scripts[0] !== null) {
+                    let step = `customizations scripts`
                     Utils.warning(step)
-                    await exec(`rm /etc/skel -rf`)
-                    await exec(`mkdir /etc/skel`)
-                    await exec(`cp -r ${this.wardrobe}/${this.costume}/skel/.* /etc/skel/`)
-                    // copy skel in current user
-                    // await exec(`cp -r ${this.wardrobe}/${this.costume}/skel/.* ~/ `)
-                } else {
-                    Utils.warning(`${this.wardrobe}/${this.costume}/skel not found!`)
+                    this.materials.sequence.customizations.scripts.forEach(async script => {
+                        await exec(`${this.wardrobe}/${this.costume}/${script}`, Utils.setEcho(true))
+                    })
                 }
             }
-        }
 
-        /**
-         * customizations/usr
-         */
-        if (this.materials.sequence.customizations.usr !== undefined) {
-            if (this.materials.sequence.customizations.usr) {
-                let step = `customizations usr`
-                if (fs.existsSync(`${this.wardrobe}/${this.costume}/usr`)) {
-                    Utils.warning(step)
-                    await exec(`cp -r ${this.wardrobe}/${this.costume}/usr/* /usr/`)
-                } else {
-                    Utils.warning(`${this.wardrobe}/${this.costume}/usr not found!`)
+            /**
+             * customizations/skel
+             */
+            if (this.materials.sequence.customizations.skel !== undefined) {
+                if (this.materials.sequence.customizations.skel) {
+                    let step = `customizations skel`
+                    if (fs.existsSync(`${this.wardrobe}/${this.costume}/skel`)) {
+                        Utils.warning(step)
+                        await exec(`rm /etc/skel -rf`)
+                        await exec(`mkdir /etc/skel`)
+                        await exec(`cp -r ${this.wardrobe}/${this.costume}/skel/.* /etc/skel/`)
+                    } else {
+                        Utils.warning(`${this.wardrobe}/${this.costume}/skel not found!`)
+                    }
+                }
+            }
+
+            /**
+             * customizations/usr
+             */
+            if (this.materials.sequence.customizations.usr !== undefined) {
+                if (this.materials.sequence.customizations.usr) {
+                    let step = `customizations usr`
+                    if (fs.existsSync(`${this.wardrobe}/${this.costume}/usr`)) {
+                        Utils.warning(step)
+                        await exec(`cp -r ${this.wardrobe}/${this.costume}/usr/* /usr/`)
+                    } else {
+                        Utils.warning(`${this.wardrobe}/${this.costume}/usr not found!`)
+                    }
                 }
             }
         }
@@ -250,16 +250,19 @@ export default class Tailor {
 
         /**
          * reboot
+         * mandatory
          */
-        if (this.materials.sequence.reboot !== undefined) {
-            if (this.materials.sequence.reboot) {
-                Utils.warning(`Reboot`)
-                await Utils.pressKeyToExit('system need to reboot', true)
-                await exec('reboot')
-            }
+        if (this.materials.sequence.reboot === undefined) {
+            this.materials.sequence.reboot = true
+        }
+        if (this.materials.sequence.reboot) {
+            Utils.warning(`Reboot`)
+            await Utils.pressKeyToExit('system need to reboot', true)
+            await exec('reboot')
         }
     }
 
+    
 
     /**
     * hostname and hosts
