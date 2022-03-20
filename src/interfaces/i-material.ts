@@ -23,6 +23,7 @@ export interface IMaterial {
         dependencies: string []
         packages: string [],
         noInstallRecommends: string [],
+        packagesPip: string [],
         debs: boolean,
         customizations: {
             scripts: string [],

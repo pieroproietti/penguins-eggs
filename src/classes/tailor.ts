@@ -6,6 +6,7 @@ import fs from 'fs'
 import path from 'path'
 import yaml from 'js-yaml'
 import Pacman from './pacman'
+import Tools from '../classes/tools'
 
 
 /**
@@ -87,7 +88,8 @@ export default class Tailor {
             if (this.materials.sequence.repositories.sourcesListD[0] !== null) {
                 let step = `adding repositories to /etc/apt/sources.list.d`
                 Utils.warning(step)
-                this.materials.sequence.repositories.sourcesListD.forEach(async cmd => {
+
+                for (const cmd of this.materials.sequence.repositories.sourcesListD) {
                     try {
                         await exec(cmd, this.echo)
                     } catch (error) {
@@ -130,7 +132,7 @@ export default class Tailor {
             if (this.materials.sequence.dependencies[0] !== null) {
                 let cmd = 'apt-get install -y '
                 let dependencies = ''
-                this.materials.sequence.dependencies.forEach(dependence => {
+                for (const dependence of materials.sequence.dependencies {
                     cmd += ` ${dependence}`
                     dependencies += `, ${dependence}`
                 })
@@ -148,7 +150,7 @@ export default class Tailor {
             if (this.materials.sequence.packages[0] !== null) {
                 let packages = ''
                 let cmd = 'apt-get install -y '
-                this.materials.sequence.packages.forEach(elem => {
+                for (const elem of this.materials.sequence.packages) {
                     cmd += ` ${elem}`
                     packages += `, ${elem}`
                 })
@@ -162,15 +164,31 @@ export default class Tailor {
         * apt-get install --no-install-recommends --no-install-suggests
         */
         if (this.materials.sequence.noInstallRecommends !== undefined) {
-
             if (this.materials.sequence.noInstallRecommends[0] !== null) {
                 let cmd = 'apt-get install --no-install-recommends --no-install-suggests -y '
                 let noInstallRecommends = ''
-                this.materials.sequence.noInstallRecommends.forEach(elem => {
+                for (const elem of this.materials.sequence.noInstallRecommends) {
                     cmd += ` ${elem}`
                     noInstallRecommends += `, ${elem}`
                 })
                 let step = `installing packages --no-install-recommends --no-install-suggests ${noInstallRecommends.substring(2)}`
+                Utils.warning(step)
+                await exec(cmd, this.echo)
+            }
+        }
+
+        /**
+        * pip packages
+        */
+        if (this.materials.sequence.packagesPip !== undefined) {
+            if (this.materials.sequence.packagesPip[0] !== null) {
+                let cmd = 'pip install -y'
+                let pip = ''
+                for (const elem of this.materials.sequence.packagesPip) {
+                    cmd += ` ${elem}`
+                    pip +=`, ${elem}`
+                }
+                let step = `installing python packages pip ${pip.substring(2)}`
                 Utils.warning(step)
                 await exec(cmd, this.echo)
             }
@@ -199,9 +217,9 @@ export default class Tailor {
                 if (this.materials.sequence.customizations.scripts[0] !== null) {
                     let step = `customizations scripts`
                     Utils.warning(step)
-                    this.materials.sequence.customizations.scripts.forEach(async script => {
+                    for (const script of this.materials.sequence.customizations.scripts) {
                         await exec(`${this.wardrobe}/${this.costume}/${script}`, Utils.setEcho(true))
-                    })
+                    }
                 }
             }
 
@@ -266,7 +284,7 @@ export default class Tailor {
         }
     }
 
-    
+
 
     /**
     * hostname and hosts
