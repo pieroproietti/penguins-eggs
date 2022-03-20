@@ -7,7 +7,7 @@ author: artisan
 release: 0.0.2
 distroId: Debian
 codenameId: booksworm
-releaseId: null
+releaseId: unstable
 applyTo: naked
 sequence:
   repositories:
@@ -42,7 +42,7 @@ sequence:
     - network-manager-openvpn
     - network-manager-gnome
     - network-manager-openvpn-gnome
-  accessories:
+    # accessories:
     - firefox-esr
   debs: false
   hostname: true

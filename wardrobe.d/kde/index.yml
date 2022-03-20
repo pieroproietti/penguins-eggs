@@ -23,7 +23,6 @@ sequence:
   packages:
     - kde-plasma-desktop
     - plasma-nm
-  accessories:
     - ark
     - kate
     - kcalc
