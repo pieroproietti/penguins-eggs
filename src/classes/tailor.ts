@@ -216,8 +216,8 @@ export default class Tailor {
                         await exec(`rm /etc/skel -rf`)
                         await exec(`mkdir /etc/skel`)
                         await exec(`cp -r ${this.wardrobe}/${this.costume}/skel/.local /etc/skel/`)
-                        // copy skep to home
-                        await exec(`cp -r ${this.wardrobe}/${this.costume}/skel/.local ~/.local`)
+                        // copy skep to home of the current user
+                        await exec(`cp -r ${this.wardrobe}/${this.costume}/skel/.local /home/${Utils.getPrimaryUser()}/.local`)
                     } else {
                         Utils.warning(`${this.wardrobe}/${this.costume}/skel not found!`)
                     }
