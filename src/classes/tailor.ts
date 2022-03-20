@@ -134,7 +134,7 @@ export default class Tailor {
                     cmd += ` ${dependence}`
                     dependencies += `, ${dependence}`
                 })
-                let step = `installing dependencies: ${dependencies.substring(1)}`
+                let step = `installing dependencies: ${dependencies.substring(2)}`
                 Utils.warning(step)
                 await exec(cmd, this.echo)
             }
@@ -215,7 +215,9 @@ export default class Tailor {
                         Utils.warning(step)
                         await exec(`rm /etc/skel -rf`)
                         await exec(`mkdir /etc/skel`)
-                        await exec(`cp -r ${this.wardrobe}/${this.costume}/skel/.* /etc/skel/`)
+                        await exec(`cp -r ${this.wardrobe}/${this.costume}/skel/.local /etc/skel/`)
+                        // copy skep to home
+                        await exec(`cp -r ${this.wardrobe}/${this.costume}/skel/.local ~/.local`)
                     } else {
                         Utils.warning(`${this.wardrobe}/${this.costume}/skel not found!`)
                     }
