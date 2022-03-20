@@ -132,10 +132,10 @@ export default class Tailor {
             if (this.materials.sequence.dependencies[0] !== null) {
                 let cmd = 'apt-get install -y '
                 let dependencies = ''
-                for (const dependence of materials.sequence.dependencies {
+                for (const dependence of this.materials.sequence.dependencies) {
                     cmd += ` ${dependence}`
                     dependencies += `, ${dependence}`
-                })
+                }
                 let step = `installing dependencies: ${dependencies.substring(2)}`
                 Utils.warning(step)
                 await exec(cmd, this.echo)
@@ -182,7 +182,7 @@ export default class Tailor {
         */
         if (this.materials.sequence.packagesPip !== undefined) {
             if (this.materials.sequence.packagesPip[0] !== null) {
-                let cmd = 'pip install -y'
+                let cmd = 'pip install '
                 let pip = ''
                 for (const elem of this.materials.sequence.packagesPip) {
                     cmd += ` ${elem}`
