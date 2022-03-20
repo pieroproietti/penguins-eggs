@@ -95,7 +95,7 @@ export default class Tailor {
                     } catch (error) {
                         await Utils.pressKeyToExit(JSON.stringify(error))
                     }
-                })
+                }
             }
         }
 
@@ -153,7 +153,7 @@ export default class Tailor {
                 for (const elem of this.materials.sequence.packages) {
                     cmd += ` ${elem}`
                     packages += `, ${elem}`
-                })
+                }
                 let step = `installing packages: ${packages.substring(2)}`
                 Utils.warning(step)
                 await exec(cmd, this.echo)
@@ -170,7 +170,7 @@ export default class Tailor {
                 for (const elem of this.materials.sequence.noInstallRecommends) {
                     cmd += ` ${elem}`
                     noInstallRecommends += `, ${elem}`
-                })
+                }
                 let step = `installing packages --no-install-recommends --no-install-suggests ${noInstallRecommends.substring(2)}`
                 Utils.warning(step)
                 await exec(cmd, this.echo)
