@@ -219,7 +219,7 @@ export default class Tailor {
                         // copy skep to home of the current user
                         const primaryUser = Utils.getPrimaryUser()
                         await exec(`cp -r ${this.wardrobe}/${this.costume}/skel/.local /home/${primaryUser}/.local`)
-                        await exec(`chown ${primaryUser};${primaryUser} /home/${primaryUser} -R`)
+                        await exec(`chown ${primaryUser}:${primaryUser} /home/${primaryUser} -R`)
                     } else {
                         Utils.warning(`${this.wardrobe}/${this.costume}/skel not found!`)
                     }
