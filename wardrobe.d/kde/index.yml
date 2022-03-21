@@ -30,6 +30,12 @@ sequence:
     - firefox-esr
     - okular
   debs: false
+  dirs: false
   hostname: true
+
+  customizations:
+    scripts:
+    - null
+
   reboot: true
 ...

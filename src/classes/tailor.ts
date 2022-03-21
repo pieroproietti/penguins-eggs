@@ -186,7 +186,7 @@ export default class Tailor {
                 let pip = ''
                 for (const elem of this.materials.sequence.packagesPip) {
                     cmd += ` ${elem}`
-                    pip +=`, ${elem}`
+                    pip += `, ${elem}`
                 }
                 let step = `installing python packages pip ${pip.substring(2)}`
                 Utils.warning(step)
@@ -202,6 +202,36 @@ export default class Tailor {
                 let step = `installing local packages`
                 Utils.warning(step)
                 await exec(`dpkg -i ${this.wardrobe}\*.deb`)
+            }
+        }
+
+        /**
+         * dirs
+         */
+        if (this.materials.sequence.dirs !== undefined) {
+            if (this.materials.sequence.dirs) {
+                let step = `copying dirs`
+                if (fs.existsSync(`${this.wardrobe}/${this.costume}/dirs`)) {
+                    Utils.warning(step)
+                    await exec(`cp -r ${this.wardrobe}/${this.costume}/dirs/ /`)
+
+                    // skel is copied on the user too
+                    const primaryUser = Utils.getPrimaryUser()
+                    await exec(`cp -r ${this.wardrobe}/${this.costume}/dirs/etc/skel/.local /home/${primaryUser}/.local`)
+                    await exec(`chown ${primaryUser}:${primaryUser} /home/${primaryUser} -R`)
+                } else {
+                    Utils.warning(`${this.wardrobe}/${this.costume}/skel not found!`)
+                }
+            }
+        }
+
+        /**
+         * hostname and hosts
+         */
+        if (this.materials.sequence.hostname !== undefined) {
+            if (this.materials.sequence.hostname) {
+                Utils.warning(`changing hostname = ${this.materials.name}`)
+                await this.hostname()
             }
         }
 
@@ -222,53 +252,8 @@ export default class Tailor {
                     }
                 }
             }
-
-            /**
-             * customizations/skel
-             */
-            if (this.materials.sequence.customizations.skel !== undefined) {
-                if (this.materials.sequence.customizations.skel) {
-                    let step = `customizations skel`
-                    if (fs.existsSync(`${this.wardrobe}/${this.costume}/skel`)) {
-                        Utils.warning(step)
-                        await exec(`rm /etc/skel -rf`)
-                        await exec(`mkdir /etc/skel`)
-                        await exec(`cp -r ${this.wardrobe}/${this.costume}/skel/.local /etc/skel/`)
-                        // copy skep to home of the current user
-                        const primaryUser = Utils.getPrimaryUser()
-                        await exec(`cp -r ${this.wardrobe}/${this.costume}/skel/.local /home/${primaryUser}/.local`)
-                        await exec(`chown ${primaryUser}:${primaryUser} /home/${primaryUser} -R`)
-                    } else {
-                        Utils.warning(`${this.wardrobe}/${this.costume}/skel not found!`)
-                    }
-                }
-            }
-
-            /**
-             * customizations/usr
-             */
-            if (this.materials.sequence.customizations.usr !== undefined) {
-                if (this.materials.sequence.customizations.usr) {
-                    let step = `customizations usr`
-                    if (fs.existsSync(`${this.wardrobe}/${this.costume}/usr`)) {
-                        Utils.warning(step)
-                        await exec(`cp -r ${this.wardrobe}/${this.costume}/usr/* /usr/`)
-                    } else {
-                        Utils.warning(`${this.wardrobe}/${this.costume}/usr not found!`)
-                    }
-                }
-            }
         }
 
-        /**
-         * hostname and hosts
-         */
-        if (this.materials.sequence.hostname !== undefined) {
-            if (this.materials.sequence.hostname) {
-                Utils.warning(`changing hostname = ${this.materials.name}`)
-                await this.hostname()
-            }
-        }
 
         /**
          * reboot

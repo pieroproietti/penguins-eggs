@@ -26,6 +26,10 @@ sequence:
     - php
     - phpmyadmin
   debs: false
+  dirs: false
   hostname: true
+  customizations:
+    scripts:
+    - null
   reboot: true
 ...
