@@ -105,7 +105,9 @@ class Distro implements IDistro {
     }
 
     /**
-     * lsb_release -cs per versione ed lsb_release -is per distribuzione
+     * lsb_release -cs per codename (version)
+     * lsb_release -is per distribuzione
+     * lsb_release -rs per release
      */
     this.codenameId = shell.exec('lsb_release -cs', { silent: true }).stdout.toString().trim()
     this.releaseId = shell.exec('lsb_release -rs', { silent: true }).stdout.toString().trim()
@@ -342,6 +344,14 @@ class Distro implements IDistro {
 
       case 'apricot': {
         // Deepin 20 apricot
+        this.distroLike = 'Debian'
+        this.codenameLikeId = 'bullseye'
+
+        break
+      }
+
+      case 'filadelfia': {
+        // SysLinuxOS
         this.distroLike = 'Debian'
         this.codenameLikeId = 'bullseye'
 
