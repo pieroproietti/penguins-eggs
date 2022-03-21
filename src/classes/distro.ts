@@ -117,7 +117,7 @@ class Distro implements IDistro {
     /**
      * releaseLike = releaseId
      */
-     this.releaseLike = this.releaseId
+    this.releaseLike = this.releaseId
 
     /**
      * Per casi equivoci conviene normalizzare codenameId
@@ -344,6 +344,14 @@ class Distro implements IDistro {
 
       case 'apricot': {
         // Deepin 20 apricot
+        this.distroLike = 'Debian'
+        this.codenameLikeId = 'bullseye'
+
+        break
+      }
+
+      case 'mierda': {
+        // Caraco
         this.distroLike = 'Debian'
         this.codenameLikeId = 'bullseye'
 

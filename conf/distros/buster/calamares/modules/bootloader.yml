@@ -42,7 +42,7 @@ efiBootMgr: "efibootmgr"
 # setting the option here, keep in mind that the name is sanitized
 # (problematic characters, see above, are replaced).
 #
-# efiBootloaderId: "dirname"
+#efiBootloaderId: "dirname"
 
 # Optionally install a copy of the GRUB EFI bootloader as the EFI
 # fallback loader (either bootx32.efi or bootx64.efi depending on
@@ -51,3 +51,5 @@ efiBootMgr: "efibootmgr"
 # to add another module to optionally install the fallback on those
 # boards that need it.
 installEFIFallback: false
+
+
