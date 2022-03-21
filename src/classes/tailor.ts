@@ -215,10 +215,12 @@ export default class Tailor {
                     Utils.warning(step)
                     await exec(`cp -r ${this.wardrobe}/${this.costume}/dirs/ /`)
 
-                    // skel is copied on the user too
-                    const primaryUser = Utils.getPrimaryUser()
-                    await exec(`cp -r ${this.wardrobe}/${this.costume}/dirs/etc/skel/.local /home/${primaryUser}/.local`)
-                    await exec(`chown ${primaryUser}:${primaryUser} /home/${primaryUser} -R`)
+                   // SPECIAL CASE: skel/.local is copied on the user too
+                   if (fs.existsSync(`${this.wardrobe}/${this.costume}/dirs/etc/skel/.local`)) {
+                        const primaryUser = Utils.getPrimaryUser()
+                        await exec(`cp -r ${this.wardrobe}/${this.costume}/dirs/etc/skel/.local /home/${primaryUser}/`)
+                        await exec(`chown ${primaryUser}:${primaryUser} /home/${primaryUser} -R`)
+                    }
                 } else {
                     Utils.warning(`${this.wardrobe}/${this.costume}/skel not found!`)
                 }
