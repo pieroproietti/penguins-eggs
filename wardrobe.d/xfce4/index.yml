@@ -45,6 +45,10 @@ sequence:
     # accessories:
     - firefox-esr
   debs: false
+  dirs: false
   hostname: true
+  customizations:
+    scripts:
+    - null
   reboot: true
 ...

@@ -25,12 +25,11 @@ export interface IMaterial {
         noInstallRecommends: string [],
         packagesPip: string [],
         debs: boolean,
+        dirs: boolean,
+        hostname: boolean,
         customizations: {
             scripts: string [],
-            skel: boolean,
-            usr: boolean,
         }
-        hostname: boolean,
         reboot: boolean
     }
 }
