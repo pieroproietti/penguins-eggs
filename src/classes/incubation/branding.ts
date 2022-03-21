@@ -31,11 +31,22 @@ export function branding(remix: IRemix, distro: IDistro, brand = '', verbose = f
 
   let bootloaderEntryName = distro.distroId
 
-  // Necessario: Devuan e LMDE devono avere EFI=Debian altrimenti non funziona EFI
-  if (bootloaderEntryName === 'Devuan') {
-    bootloaderEntryName = 'Debian'
-  } else if (bootloaderEntryName === 'LMDE') {
-    bootloaderEntryName = 'Debian'
+  // Necessario: Devuan, LMDE, caraco, syslinuxos devono avere EFI=Debian altrimenti non funziona EFI
+  switch (distro.distroId.toLowerCase()) {
+
+    case 'caraco': 
+    case 'devuan': 
+    case 'lmde':
+    case 'syslinuxos': {
+      bootloaderEntryName = 'Debian'
+
+      break
+    }
+
+    default: {
+      bootloaderEntryName = distro.distroId
+    }
+
   }
 
   const productUrl = homeUrl

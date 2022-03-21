@@ -18,6 +18,9 @@ You can follow the project also consulting the [commit history](https://github.c
 ## Changelog
 Versions are listed on reverse order, the first is the last one. Old versions are moved to [oldest](https://sourceforge.net/projects/penguins-eggs/files/packages-deb/oldest/). 
 
+### eggs-9.0.41-1
+* added SysLinuxOS by Franco Conidi
+
 ### eggs-9.0.40-1
 wardrobe: separate [wardrobe samples available](https://github.com/pieroproietti/penguins-wardrobe). I separate wardrobe from eggs to let user to create costumes with graphics, icons and so on. They can't stay indide eggs, becouse are quite eavvy compared to scripts;
 tailor: instroduced packagesPip on costumes to install python packages.

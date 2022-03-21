@@ -1244,7 +1244,7 @@ export default class Ovary {
     const memdiskDir = this.settings.work_dir.path + 'memdiskDir'
     const efiWorkDir = this.settings.efi_work
     const isoDir = this.settings.work_dir.pathIso
-    const codenameLikeId = this.settings.distro.codenameLikeId
+    // const codenameLikeId = this.settings.distro.codenameLikeId
 
     /**
      * il pachetto grub/grub2 DEVE essere presente
