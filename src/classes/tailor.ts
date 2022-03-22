@@ -228,7 +228,7 @@ export default class Tailor {
                 let step = `copying dirs`
                 if (fs.existsSync(`${this.wardrobe}/${this.costume}/dirs`)) {
                     Utils.warning(step)
-                    let cmd =`cp -r ${this.wardrobe}/${this.costume}/dirs/ /`
+                    let cmd =`cp -r ${this.wardrobe}/${this.costume}/dirs/* /`
                     if (verbose) {
                         Utils.pressKeyToExit(cmd, true)
                     }
