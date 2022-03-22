@@ -212,7 +212,7 @@ export default class Tailor {
             if (this.materials.sequence.debs) {
                 let step = `installing local packages`
                 Utils.warning(step)
-                let cmd =`dpkg -i ${this.wardrobe}\*.deb`
+                let cmd = `dpkg -i ${this.wardrobe}\*.deb`
                 if (verbose) {
                     Utils.pressKeyToExit(cmd, true)
                 }
@@ -228,16 +228,19 @@ export default class Tailor {
                 let step = `copying dirs`
                 if (fs.existsSync(`${this.wardrobe}/${this.costume}/dirs`)) {
                     Utils.warning(step)
-                    let cmd =`cp -r ${this.wardrobe}/${this.costume}/dirs/* /`
+                    let cmd = `cp -r ${this.wardrobe}/${this.costume}/dirs/* /`
                     if (verbose) {
                         Utils.pressKeyToExit(cmd, true)
                     }
                     await exec(cmd, this.echo)
 
-                   // SPECIAL CASE: skel/.local is copied on the user too
-                   const primaryUser = Utils.getPrimaryUser()
-                   if (fs.existsSync(`${this.wardrobe}/${this.costume}/dirs/etc/skel/.local`)) {
-                        let cmd = `cp -r ${this.wardrobe}/${this.costume}/dirs/etc/skel/.local /home/${primaryUser}/`
+                    // SPECIAL CASE: skel/.local is copied on the user too
+                    const primaryUser = Utils.getPrimaryUser()
+                    if (fs.existsSync(`${this.wardrobe}/${this.costume}/dirs/etc/skel/.local`)) {
+                        let cmd = `cp -r ${this.wardrobe}/${this.costume}/dirs/etc/skel/.local/ /home/${primaryUser}/`
+                        if (fs.existsSync(`/home/${primaryUser}/.local`)) {
+                            cmd = `cp -r ${this.wardrobe}/${this.costume}/dirs/etc/skel/.local/* /home/${primaryUser}/.local/`
+                        }
                         if (verbose) {
                             Utils.pressKeyToExit(cmd, true)
                         }
