@@ -224,7 +224,7 @@ export default class Tailor {
         if (this.materials.sequence.dirs !== undefined) {
             if (this.materials.sequence.dirs) {
                 let step = `copying dirs`
-                let cmd = `cp -r ${this.wardrobe}/${this.costume}/dirs/* /`
+                let cmd = `rsync -avx  ${this.wardrobe}/${this.costume}/dirs/* /`
                 if (verbose) {
                     Utils.pressKeyToExit(cmd, true)
                 }

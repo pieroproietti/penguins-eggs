@@ -144,22 +144,33 @@ USAGE
 # Commands
 <!-- commands -->
 * [`eggs adapt`](#eggs-adapt)
+* [`eggs adjust`](#eggs-adjust)
 * [`eggs analyze`](#eggs-analyze)
 * [`eggs autocomplete [SHELL]`](#eggs-autocomplete-shell)
+* [`eggs backup`](#eggs-backup)
 * [`eggs bro`](#eggs-bro)
 * [`eggs calamares`](#eggs-calamares)
+* [`eggs clean`](#eggs-clean)
 * [`eggs config`](#eggs-config)
 * [`eggs dad`](#eggs-dad)
 * [`eggs export deb`](#eggs-export-deb)
 * [`eggs export docs`](#eggs-export-docs)
 * [`eggs export iso`](#eggs-export-iso)
+* [`eggs hatch`](#eggs-hatch)
 * [`eggs help [COMMAND]`](#eggs-help-command)
 * [`eggs info`](#eggs-info)
 * [`eggs install`](#eggs-install)
 * [`eggs kill`](#eggs-kill)
+* [`eggs krill`](#eggs-krill)
+* [`eggs lay`](#eggs-lay)
 * [`eggs mom`](#eggs-mom)
+* [`eggs prerequisites`](#eggs-prerequisites)
 * [`eggs produce`](#eggs-produce)
 * [`eggs remove`](#eggs-remove)
+* [`eggs restore`](#eggs-restore)
+* [`eggs skel`](#eggs-skel)
+* [`eggs spawn`](#eggs-spawn)
+* [`eggs stat`](#eggs-stat)
 * [`eggs syncfrom`](#eggs-syncfrom)
 * [`eggs syncto`](#eggs-syncto)
 * [`eggs tools clean`](#eggs-tools-clean)
@@ -193,6 +204,25 @@ ALIASES
 ```
 
 _See code: [src/commands/adapt.ts](https://github.com/pieroproietti/penguins-eggs/blob/v9.0.42/src/commands/adapt.ts)_
+
+## `eggs adjust`
+
+adapt monitor resolution for VM only
+
+```
+USAGE
+  $ eggs adjust [-v] [-h]
+
+FLAGS
+  -h, --help     Show CLI help.
+  -v, --verbose
+
+DESCRIPTION
+  adapt monitor resolution for VM only
+
+ALIASES
+  $ eggs adjust
+```
 
 ## `eggs analyze`
 
@@ -244,6 +274,30 @@ EXAMPLES
 
 _See code: [@oclif/plugin-autocomplete](https://github.com/oclif/plugin-autocomplete/blob/v1.2.0/src/commands/autocomplete/index.ts)_
 
+## `eggs backup`
+
+Backup users, server and datas to luks-eggs-backup
+
+```
+USAGE
+  $ eggs backup [--delete <value>] [-f <value>] [-h] [-v]
+
+FLAGS
+  -f, --file=<value>  file LUKS volume encrypted
+  -h, --help          Show CLI help.
+  -v, --verbose       verbose
+  --delete=<value>    rsync --delete delete extraneous files from dest dirs
+
+DESCRIPTION
+  Backup users, server and datas to luks-eggs-backup
+
+ALIASES
+  $ eggs backup
+
+EXAMPLES
+  $ sudo eggs syncto
+```
+
 ## `eggs bro`
 
 bro: waydroid helper
@@ -289,6 +343,25 @@ EXAMPLES
 ```
 
 _See code: [src/commands/calamares.ts](https://github.com/pieroproietti/penguins-eggs/blob/v9.0.42/src/commands/calamares.ts)_
+
+## `eggs clean`
+
+clean system log, apt, etc
+
+```
+USAGE
+  $ eggs clean [-h] [-v]
+
+FLAGS
+  -h, --help     Show CLI help.
+  -v, --verbose  verbose
+
+DESCRIPTION
+  clean system log, apt, etc
+
+ALIASES
+  $ eggs clean
+```
 
 ## `eggs config`
 
@@ -390,6 +463,33 @@ DESCRIPTION
   export iso in the destination host
 ```
 
+## `eggs hatch`
+
+command-line system installer - the egg became a penguin!
+
+```
+USAGE
+  $ eggs hatch [-c] [-k] [-p] [-h] [-v]
+
+FLAGS
+  -c, --cli      force use CLI installer
+  -h, --help     Show CLI help.
+  -k, --crypted  crypted CLI installation
+  -p, --pve      Proxmox VE install
+  -v, --verbose  verbose
+
+DESCRIPTION
+  command-line system installer - the egg became a penguin!
+
+ALIASES
+  $ eggs hatch
+  $ eggs krill
+
+EXAMPLES
+  $ eggs install
+  Install the system using GUI or CLI installer
+```
+
 ## `eggs help [COMMAND]`
 
 Display help for eggs.
@@ -479,6 +579,96 @@ EXAMPLES
 
 _See code: [src/commands/kill.ts](https://github.com/pieroproietti/penguins-eggs/blob/v9.0.42/src/commands/kill.ts)_
 
+## `eggs krill`
+
+command-line system installer - the egg became a penguin!
+
+```
+USAGE
+  $ eggs krill [-c] [-k] [-p] [-h] [-v]
+
+FLAGS
+  -c, --cli      force use CLI installer
+  -h, --help     Show CLI help.
+  -k, --crypted  crypted CLI installation
+  -p, --pve      Proxmox VE install
+  -v, --verbose  verbose
+
+DESCRIPTION
+  command-line system installer - the egg became a penguin!
+
+ALIASES
+  $ eggs hatch
+  $ eggs krill
+
+EXAMPLES
+  $ eggs install
+  Install the system using GUI or CLI installer
+```
+
+## `eggs lay`
+
+produce a live image from your system whithout your data
+
+```
+USAGE
+  $ eggs lay [-p <value>] [--basename <value>] [-b] [-f] [-n] [-m] [-v] [-y] [-s] [-h] [--theme <value>]
+    [--addons <value>] [--release]
+
+FLAGS
+  -b, --backup          backup mode
+  -f, --fast            fast compression
+  -h, --help            Show CLI help.
+  -m, --max             max compression
+  -n, --normal          normal compression
+  -p, --prefix=<value>  prefix
+  -s, --script          script mode. Generate scripts to manage iso build
+  -v, --verbose         verbose
+  -y, --yolk            -y force yolk renew
+  --addons=<value>...   addons to be used: adapt, ichoice, pve, rsupport
+  --basename=<value>    basename
+  --release             release: configure GUI installer to remove eggs and calamares after installation
+  --theme=<value>       theme for livecd, calamares branding and partitions
+
+DESCRIPTION
+  produce a live image from your system whithout your data
+
+ALIASES
+  $ eggs spawn
+  $ eggs lay
+
+EXAMPLES
+  $ sudo eggs produce 
+  produce an ISO called [hostname]-[arch]-YYYY-MM-DD_HHMM.iso, compressed xz (standard compression).
+  If hostname=ugo and arch=i386 ugo-x86-2020-08-25_1215.iso
+
+  $ sudo eggs produce -v
+  same as previuos, but with --verbose output
+
+  $ sudo eggs produce -vf
+  same as previuos, compression zstd, lz4 or gzip (depend from system capability)
+
+  $ sudo eggs produce -vm
+  same as previuos, compression xz -Xbcj x86 (max compression, about 10%
+  more compressed)
+
+  $ sudo eggs produce -vf --basename leo --theme debian --addons adapt 
+  produce an ISO called leo-i386-2020-08-25_1215.iso compression fast,
+  using Debian theme and link to adapt
+
+  $ sudo eggs produce -v --basename leo --theme debian --addons rsupport 
+  produce an ISO called leo-i386-2020-08-25_1215.iso compression xz,
+  using Debian theme and link to dwagent
+
+  $ sudo eggs produce -v --basename leo --rsupport 
+  produce an ISO called leo-i386-2020-08-25_1215.iso compression xz, using eggs
+  theme and link to dwagent
+
+  $ sudo eggs produce -vs --basename leo --rsupport 
+  produce scripts to build an ISO as the previus example. Scripts can be found
+  in /home/eggs/ovarium and you can customize all you need
+```
+
 ## `eggs mom`
 
 ask for mommy - gui helper
@@ -495,6 +685,31 @@ DESCRIPTION
 ```
 
 _See code: [src/commands/mom.ts](https://github.com/pieroproietti/penguins-eggs/blob/v9.0.42/src/commands/mom.ts)_
+
+## `eggs prerequisites`
+
+Configure and install prerequisites deb packages to run it
+
+```
+USAGE
+  $ eggs prerequisites [-n] [-c] [-h] [-v]
+
+FLAGS
+  -c, --clean          remove old configuration before to create new one
+  -h, --help           Show CLI help.
+  -n, --nointeractive  assume yes
+  -v, --verbose        verbose
+
+DESCRIPTION
+  Configure and install prerequisites deb packages to run it
+
+ALIASES
+  $ eggs prerequisites
+
+EXAMPLES
+  ~$ sudo eggs config
+  Configure and install prerequisites deb packages to run it
+```
 
 ## `eggs produce`
 
@@ -590,6 +805,138 @@ EXAMPLES
 ```
 
 _See code: [src/commands/remove.ts](https://github.com/pieroproietti/penguins-eggs/blob/v9.0.42/src/commands/remove.ts)_
+
+## `eggs restore`
+
+Restore users, server and datas from luks-eggs-backup
+
+```
+USAGE
+  $ eggs restore [--delete <value>] [-f <value>] [-r <value>] [-h] [-v]
+
+FLAGS
+  -f, --file=<value>     file LUKS volume encrypted
+  -h, --help             Show CLI help.
+  -r, --rootdir=<value>  rootdir of the installed system, when used from live
+  -v, --verbose          verbose
+  --delete=<value>       rsync --delete delete extraneous files from dest dirs
+
+DESCRIPTION
+  Restore users, server and datas from luks-eggs-backup
+
+ALIASES
+  $ eggs restore
+
+EXAMPLES
+  $ sudo eggs restore
+```
+
+## `eggs skel`
+
+update skel from home configuration
+
+```
+USAGE
+  $ eggs skel [-h] [-u <value>] [-v]
+
+FLAGS
+  -h, --help          Show CLI help.
+  -u, --user=<value>  user to be used
+  -v, --verbose
+
+DESCRIPTION
+  update skel from home configuration
+
+ALIASES
+  $ eggs skel
+
+EXAMPLES
+  $ eggs skel --user mauro
+  desktop configuration of user mauro will get used as default
+```
+
+## `eggs spawn`
+
+produce a live image from your system whithout your data
+
+```
+USAGE
+  $ eggs spawn [-p <value>] [--basename <value>] [-b] [-f] [-n] [-m] [-v] [-y] [-s] [-h] [--theme <value>]
+    [--addons <value>] [--release]
+
+FLAGS
+  -b, --backup          backup mode
+  -f, --fast            fast compression
+  -h, --help            Show CLI help.
+  -m, --max             max compression
+  -n, --normal          normal compression
+  -p, --prefix=<value>  prefix
+  -s, --script          script mode. Generate scripts to manage iso build
+  -v, --verbose         verbose
+  -y, --yolk            -y force yolk renew
+  --addons=<value>...   addons to be used: adapt, ichoice, pve, rsupport
+  --basename=<value>    basename
+  --release             release: configure GUI installer to remove eggs and calamares after installation
+  --theme=<value>       theme for livecd, calamares branding and partitions
+
+DESCRIPTION
+  produce a live image from your system whithout your data
+
+ALIASES
+  $ eggs spawn
+  $ eggs lay
+
+EXAMPLES
+  $ sudo eggs produce 
+  produce an ISO called [hostname]-[arch]-YYYY-MM-DD_HHMM.iso, compressed xz (standard compression).
+  If hostname=ugo and arch=i386 ugo-x86-2020-08-25_1215.iso
+
+  $ sudo eggs produce -v
+  same as previuos, but with --verbose output
+
+  $ sudo eggs produce -vf
+  same as previuos, compression zstd, lz4 or gzip (depend from system capability)
+
+  $ sudo eggs produce -vm
+  same as previuos, compression xz -Xbcj x86 (max compression, about 10%
+  more compressed)
+
+  $ sudo eggs produce -vf --basename leo --theme debian --addons adapt 
+  produce an ISO called leo-i386-2020-08-25_1215.iso compression fast,
+  using Debian theme and link to adapt
+
+  $ sudo eggs produce -v --basename leo --theme debian --addons rsupport 
+  produce an ISO called leo-i386-2020-08-25_1215.iso compression xz,
+  using Debian theme and link to dwagent
+
+  $ sudo eggs produce -v --basename leo --rsupport 
+  produce an ISO called leo-i386-2020-08-25_1215.iso compression xz, using eggs
+  theme and link to dwagent
+
+  $ sudo eggs produce -vs --basename leo --rsupport 
+  produce scripts to build an ISO as the previus example. Scripts can be found
+  in /home/eggs/ovarium and you can customize all you need
+```
+
+## `eggs stat`
+
+get statistics from sourceforge
+
+```
+USAGE
+  $ eggs stat [-h] [-m] [-y]
+
+FLAGS
+  -h, --help   Show CLI help.
+  -m, --month  current month
+  -y, --year   current year
+
+DESCRIPTION
+  get statistics from sourceforge
+
+ALIASES
+  $ eggs stat
+```
 
 ## `eggs syncfrom`
 
