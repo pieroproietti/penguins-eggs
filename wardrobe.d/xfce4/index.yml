@@ -4,7 +4,7 @@
 name: xfce4
 description: minimal XFCE4 installation
 author: artisan
-release: 0.0.2
+release: "0.0.2"
 distroId: Debian
 codenameId: booksworm
 releaseId: unstable
@@ -42,7 +42,6 @@ sequence:
     - network-manager-openvpn
     - network-manager-gnome
     - network-manager-openvpn-gnome
-    # accessories:
     - firefox-esr
   debs: false
   dirs: false

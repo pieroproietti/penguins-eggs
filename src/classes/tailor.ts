@@ -6,8 +6,6 @@ import fs from 'fs'
 import path from 'path'
 import yaml from 'js-yaml'
 import Pacman from './pacman'
-import Tools from '../classes/tools'
-
 
 /**
  * 
@@ -226,31 +224,12 @@ export default class Tailor {
         if (this.materials.sequence.dirs !== undefined) {
             if (this.materials.sequence.dirs) {
                 let step = `copying dirs`
-                if (fs.existsSync(`${this.wardrobe}/${this.costume}/dirs`)) {
-                    Utils.warning(step)
-                    let cmd = `cp -r ${this.wardrobe}/${this.costume}/dirs/* /`
-                    if (verbose) {
-                        Utils.pressKeyToExit(cmd, true)
-                    }
-                    await exec(cmd, this.echo)
-
-                    // SPECIAL CASE: skel/.local is copied on the user too
-                    const primaryUser = Utils.getPrimaryUser()
-                    if (fs.existsSync(`${this.wardrobe}/${this.costume}/dirs/etc/skel/.local`)) {
-                        let cmd = `cp -r ${this.wardrobe}/${this.costume}/dirs/etc/skel/.local/ /home/${primaryUser}/`
-                        if (fs.existsSync(`/home/${primaryUser}/.local`)) {
-                            cmd = `cp -r ${this.wardrobe}/${this.costume}/dirs/etc/skel/.local/* /home/${primaryUser}/.local/`
-                        }
-                        if (verbose) {
-                            Utils.pressKeyToExit(cmd, true)
-                        }
-                        await exec(cmd, this.echo)
-                    }
-                    await exec(`chown ${primaryUser}:${primaryUser} /home/${primaryUser} -R`)
-
-                } else {
-                    Utils.warning(`${this.wardrobe}/${this.costume}/skel not found!`)
+                let cmd = `cp -r ${this.wardrobe}/${this.costume}/dirs/* /`
+                if (verbose) {
+                    Utils.pressKeyToExit(cmd, true)
                 }
+                await exec(cmd, this.echo)
+                this.skelToHome()
             }
         }
 
@@ -268,7 +247,6 @@ export default class Tailor {
          * customizations
          */
         if (this.materials.sequence.customizations !== undefined) {
-
             /**
              * customizations/scripts
              */
@@ -329,4 +307,43 @@ export default class Tailor {
         await exec(`rm ${file} `, this.echo)
         fs.writeFileSync(file, text)
     }
+
+
+    /**
+     * 
+     */
+    async skelToHome() {
+        // SPECIAL CASE: skel/.local .config are copied on the user too
+        const primaryUser = Utils.getPrimaryUser()
+        const dirsInSkel: string[] = []
+        const filesInSkel: string[] = []
+
+        for (const elem of fs.readdirSync(`${this.wardrobe}/${this.costume}/dirs/etc/skel/`, { withFileTypes: true })) {
+            if (elem.isDirectory()) {
+                dirsInSkel.push(path.basename(elem.name))
+            } else {
+                filesInSkel.push(path.basename(elem.name))
+            }
+        }
+        console.log(filesInSkel)
+        console.log(dirsInSkel)
+
+        // copy files
+        for (const fileInSkel of filesInSkel) {
+            let cmd = `cp ${this.wardrobe}/${this.costume}/dirs/etc/skel/${fileInSkel} /home/${primaryUser}/`
+            await exec(cmd, Utils.setEcho(true))
+        }
+
+        for (const dirInSkel of dirsInSkel) {
+            let cmd = `cp -r ${this.wardrobe}/${this.costume}/dirs/etc/skel/${dirInSkel}/ /home/${primaryUser}/`
+            if (fs.existsSync(`/home/${primaryUser}/${dirInSkel}`)) {
+                cmd = `cp -r ${this.wardrobe}/${this.costume}/dirs/etc/skel/${dirInSkel}/* /home/${primaryUser}/${dirInSkel}`
+            }
+            await exec(cmd, Utils.setEcho(true))
+        }
+        await exec(`chown ${primaryUser}:${primaryUser} /home/${primaryUser} -R`)
+
+    }
+
 }
+
