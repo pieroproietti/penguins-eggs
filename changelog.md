@@ -18,6 +18,9 @@ You can follow the project also consulting the [commit history](https://github.c
 ## Changelog
 Versions are listed on reverse order, the first is the last one. Old versions are moved to [oldest](https://sourceforge.net/projects/penguins-eggs/files/packages-deb/oldest/). 
 
+### eggs-9.0.43-1
+* wardrobe: introduced dirs in place of skel, usr and others. --verbose option now not only get verbose, but until user action
+
 ### eggs-9.0.41-1
 * added SysLinuxOS by Franco Conidi
 
