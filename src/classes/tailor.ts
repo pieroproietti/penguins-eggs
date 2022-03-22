@@ -24,7 +24,6 @@ export default class Tailor {
         this.wardrobe = wardrobe
     }
 
-
     /**
      * 
      */
@@ -138,6 +137,9 @@ export default class Tailor {
                 }
                 let step = `installing dependencies: ${dependencies.substring(2)}`
                 Utils.warning(step)
+                if (verbose) {
+                    Utils.pressKeyToExit(cmd, true)
+                }
                 await exec(cmd, this.echo)
             }
         }
@@ -156,6 +158,9 @@ export default class Tailor {
                 }
                 let step = `installing packages: ${packages.substring(2)}`
                 Utils.warning(step)
+                if (verbose) {
+                    Utils.pressKeyToExit(cmd, true)
+                }
                 await exec(cmd, this.echo)
             }
         }
@@ -173,6 +178,9 @@ export default class Tailor {
                 }
                 let step = `installing packages --no-install-recommends --no-install-suggests ${noInstallRecommends.substring(2)}`
                 Utils.warning(step)
+                if (verbose) {
+                    Utils.pressKeyToExit(cmd, true)
+                }
                 await exec(cmd, this.echo)
             }
         }
@@ -190,6 +198,9 @@ export default class Tailor {
                 }
                 let step = `installing python packages pip ${pip.substring(2)}`
                 Utils.warning(step)
+                if (verbose) {
+                    Utils.pressKeyToExit(cmd, true)
+                }
                 await exec(cmd, this.echo)
             }
         }
@@ -201,7 +212,11 @@ export default class Tailor {
             if (this.materials.sequence.debs) {
                 let step = `installing local packages`
                 Utils.warning(step)
-                await exec(`dpkg -i ${this.wardrobe}\*.deb`)
+                let cmd =`dpkg -i ${this.wardrobe}\*.deb`
+                if (verbose) {
+                    Utils.pressKeyToExit(cmd, true)
+                }
+                await exec(cmd)
             }
         }
 
@@ -213,14 +228,23 @@ export default class Tailor {
                 let step = `copying dirs`
                 if (fs.existsSync(`${this.wardrobe}/${this.costume}/dirs`)) {
                     Utils.warning(step)
-                    await exec(`cp -r ${this.wardrobe}/${this.costume}/dirs/ /`)
+                    let cmd =`cp -r ${this.wardrobe}/${this.costume}/dirs/ /`
+                    if (verbose) {
+                        Utils.pressKeyToExit(cmd, true)
+                    }
+                    await exec(cmd, this.echo)
 
                    // SPECIAL CASE: skel/.local is copied on the user too
+                   const primaryUser = Utils.getPrimaryUser()
                    if (fs.existsSync(`${this.wardrobe}/${this.costume}/dirs/etc/skel/.local`)) {
-                        const primaryUser = Utils.getPrimaryUser()
-                        await exec(`cp -r ${this.wardrobe}/${this.costume}/dirs/etc/skel/.local /home/${primaryUser}/`)
-                        await exec(`chown ${primaryUser}:${primaryUser} /home/${primaryUser} -R`)
+                        let cmd = `cp -r ${this.wardrobe}/${this.costume}/dirs/etc/skel/.local /home/${primaryUser}/`
+                        if (verbose) {
+                            Utils.pressKeyToExit(cmd, true)
+                        }
+                        await exec(cmd, this.echo)
                     }
+                    await exec(`chown ${primaryUser}:${primaryUser} /home/${primaryUser} -R`)
+
                 } else {
                     Utils.warning(`${this.wardrobe}/${this.costume}/skel not found!`)
                 }
@@ -255,7 +279,6 @@ export default class Tailor {
                 }
             }
         }
-
 
         /**
          * reboot
