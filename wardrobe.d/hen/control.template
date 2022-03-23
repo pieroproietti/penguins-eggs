@@ -1,0 +1,10 @@
+Package: {{{name}}}
+Version: {{{version}}}
+Maintainer: {{{mantainer}}}
+Architecture: {{{arch}}}
+Section: {{{section}}}
+Priority: {{{priority}}}
+Description: {{{description}}}
+Depends: {{{depends}}}
+Suggest: {{{suggest}}}
+Conflicts: {{{conflict}}}
