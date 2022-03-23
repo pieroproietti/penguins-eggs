@@ -1,0 +1,53 @@
+# This is Debian Policy version 4.6.0.1, released on 2021-08-18.
+# https://www.debian.org/doc/debian-policy/index.html
+---
+package: hen
+version: 0.1
+maintainer: Piero Proietti
+architecture: all
+description: hen the mother of eggs
+# buildDependencies:
+#   buildDepends:
+#     - null
+#   buildDependsIndep:
+#     - null
+#   buildDependsArch:
+#     - null
+binaryDependencies:
+  depends:
+  - thunar
+  - xfce4-appfinder
+  - xfce4-panel
+  - xfce4-pulseaudio-plugin
+  - xfce4-whiskermenu-plugin
+  - xfce4-session
+  - xfce4-settings
+  - xfce4-terminal
+  - xfconf
+  - xfdesktop4
+  - xfwm4
+  - adwaita-qt
+  - qt5ct
+  - network-manager-openvpn
+  - network-manager-gnome
+  - network-manager-openvpn-gnome
+  # icons themes
+  - tango-icon-theme
+  # tools
+  - firefox-esr
+  - code
+  - nodejs (>=16.14.0)
+#   recommends: 
+#     - null
+#   suggests:
+#     - null
+#   enhances:
+#     - null
+#   preDepends:
+#     - null
+
+# breack:
+#   - null
+
+# Conflicts:
+#   - null
