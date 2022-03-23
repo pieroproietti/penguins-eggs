@@ -315,6 +315,11 @@ export default class Tailor {
     async skelToHome() {
         // SPECIAL CASE: skel/.local .config are copied on the user too
         const primaryUser = Utils.getPrimaryUser()
+        let cmd = `rsync -avx  ${this.wardrobe}/${this.costume}/dirs/etc/skel /home/${primaryUser}/`
+        await exec(cmd, Utils.setEcho(true))
+        await exec(`chown ${primaryUser}:${primaryUser} /home/${primaryUser} -R`)
+
+        /*
         const dirsInSkel: string[] = []
         const filesInSkel: string[] = []
 
@@ -342,7 +347,7 @@ export default class Tailor {
             await exec(cmd, Utils.setEcho(true))
         }
         await exec(`chown ${primaryUser}:${primaryUser} /home/${primaryUser} -R`)
-
+        */
     }
 
 }
