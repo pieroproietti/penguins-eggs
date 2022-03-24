@@ -502,7 +502,7 @@ export default class Pacman {
      */
     if (this.distro().codenameLikeId === 'jessie') {
       const dest = '/etc/penguins-eggs.d/distros/jessie'
-      await exec(`cp -r ${buster}/locales ${dest}/locales`, echo)
+      // await exec(`cp -r ${buster}/locales ${dest}/locales`, echo)
       await exec(`cp -r ${rootPen}/conf/distros/jessie/krill ${dest}/krill`, echo)
 
       /**
@@ -510,7 +510,7 @@ export default class Pacman {
        */
     } else if (this.distro().codenameLikeId === 'stretch') {
       const dest = '/etc/penguins-eggs.d/distros/stretch'
-      await exec(`cp -r ${buster}/locales ${dest}/locales`, echo)
+      // await exec(`cp -r ${buster}/locales ${dest}/locales`, echo)
       await exec(`cp -r ${rootPen}/conf/distros/jessie/krill ${dest}/krill`, echo)
 
       /**
@@ -518,7 +518,7 @@ export default class Pacman {
        */
     } else if (this.distro().codenameLikeId === 'buster') {
       const dest = '/etc/penguins-eggs.d/distros/buster'
-      await exec(`cp -r ${buster}/locales ${dest}/locales`, echo)
+      // await exec(`cp -r ${buster}/locales ${dest}/locales`, echo)
       await exec(`cp -r ${buster}/calamares ${dest}/calamares`, echo)
 
       /**
@@ -526,7 +526,7 @@ export default class Pacman {
        */
     } else if (this.distro().codenameLikeId === 'bullseye') {
       const dest = '/etc/penguins-eggs.d/distros/bullseye'
-      await exec(`cp -r ${buster}/locales ${dest}/locales`, echo)
+      // await exec(`cp -r ${buster}/locales ${dest}/locales`, echo)
       await exec(`cp -r ${buster}/calamares ${dest}/calamares`, echo)
 
       /**
@@ -534,7 +534,7 @@ export default class Pacman {
        */
     } else if (this.distro().codenameLikeId === 'bookworm') {
       const dest = '/etc/penguins-eggs.d/distros/bookworm'
-      await exec(`cp -r ${buster}/locales ${dest}/locales`, echo)
+      // await exec(`cp -r ${buster}/locales ${dest}/locales`, echo)
       await exec(`cp -r ${buster}/calamares ${dest}/calamares`, echo)
 
       /***********************************************************************************
@@ -546,7 +546,7 @@ export default class Pacman {
        */
     } else if (this.distro().codenameLikeId === 'beowulf') {
       const dest = '/etc/penguins-eggs.d/distros/beowulf'
-      await exec(`cp -r ${buster}/locales ${dest}/locales`, echo)
+      // await exec(`cp -r ${buster}/locales ${dest}/locales`, echo)
       await exec(`cp -r ${buster}/calamares ${dest}/calamares`, echo)
 
       /**
@@ -554,7 +554,7 @@ export default class Pacman {
        */
     } else if (this.distro().codenameLikeId === 'chimaera') {
       const dest = '/etc/penguins-eggs.d/distros/chimaera'
-      await exec(`cp -r ${buster}/locales ${dest}/locales`, echo)
+      // await exec(`cp -r ${buster}/locales ${dest}/locales`, echo)
       await exec(`cp -r ${buster}/calamares ${dest}/calamares`, echo)
 
       /**
@@ -562,7 +562,7 @@ export default class Pacman {
        */
     } else if (this.distro().codenameLikeId === 'daedalus') {
       const dest = '/etc/penguins-eggs.d/distros/daedalus'
-      await exec(`cp -r ${buster}/locales ${dest}/locales`, echo)
+      // await exec(`cp -r ${buster}/locales ${dest}/locales`, echo)
       await exec(`cp -r ${buster}/calamares ${dest}/calamares`, echo)
 
       /***********************************************************************************

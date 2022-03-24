@@ -18,6 +18,11 @@ You can follow the project also consulting the [commit history](https://github.c
 ## Changelog
 Versions are listed on reverse order, the first is the last one. Old versions are moved to [oldest](https://sourceforge.net/projects/penguins-eggs/files/packages-deb/oldest/). 
 
+
+### eggs-9.0.45-1
+* rewrote command:  eggs tools locale;
+* krill: added all languages on the selection; 
+
 ### eggs-9.0.44-1
 * wardrobe: rewote copy skel to current user with rsync
 
