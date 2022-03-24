@@ -60,7 +60,6 @@ import Distro from './distro'
 
 import { IInstaller, IDevices, IDevice } from '../interfaces'
 import { ICalamaresModule, ILocation, IKeyboard, IPartitions, IUsers } from '../interfaces/i-krill'
-import { ChildProcess, execSync } from 'child_process'
 import { exec } from '../lib/utils'
 
 
@@ -285,6 +284,9 @@ export default class Hatching {
             await Utils.pressKeyToExit(JSON.stringify(error))
          }
 
+         // locale
+         
+
          // keyboard
          message = "settings keyboard "
          percent = 0.48
@@ -293,6 +295,16 @@ export default class Hatching {
          } catch (error) {
             await Utils.pressKeyToExit(JSON.stringify(error))
          }
+
+         // localeCfg
+         message = "localeCfg"
+         percent = 0.50
+         try {
+            this.localeCfg()
+         } catch (error) {
+            await Utils.pressKeyToExit(JSON.stringify(error))
+         }
+
 
          // networkcfg
          message = "networkcfg"
@@ -1541,6 +1553,15 @@ adduser ${name} \
       redraw(<Finished installationDevice={this.partitions.installationDevice} hostName={this.users.hostname} userName={this.users.name} />)
       Utils.pressKeyToExit('Press a key to reboot...')
       shx.exec('reboot')
+   }
+
+
+   /**
+    * localeCfg
+    */
+   async localeCfg() {
+      const i18n = new I18n(verbose)
+      i18n.generate(reinstall)
    }
 
 }
