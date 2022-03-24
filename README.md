@@ -133,7 +133,7 @@ $ npm install -g penguins-eggs
 $ eggs COMMAND
 running command...
 $ eggs (--version|-v)
-penguins-eggs/9.0.44 linux-x64 node-v16.14.0
+penguins-eggs/9.0.44 linux-x64 node-v16.14.2
 $ eggs --help [COMMAND]
 USAGE
   $ eggs COMMAND

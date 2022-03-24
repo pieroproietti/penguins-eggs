@@ -57,6 +57,7 @@ import Pacman from './pacman';
 import { installer } from './incubation/installer'
 import Xdg from './xdg';
 import Distro from './distro'
+import I18n from './i18n'
 
 import { IInstaller, IDevices, IDevice } from '../interfaces'
 import { ICalamaresModule, ILocation, IKeyboard, IPartitions, IUsers } from '../interfaces/i-krill'
@@ -1560,8 +1561,8 @@ adduser ${name} \
     * localeCfg
     */
    async localeCfg() {
-      const i18n = new I18n(verbose)
-      i18n.generate(reinstall)
+      const i18n = new I18n(this.installTarget, this.verbose)
+      i18n.generate(false, this.language, [this.language])
    }
 
 }

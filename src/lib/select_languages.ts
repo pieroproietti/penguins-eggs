@@ -6,8 +6,9 @@ import shx from 'shelljs'
 
 export default async function selectLanguages(): Promise<string> {
   const start = shx.exec('cat /etc/default/locale |cut -f2 -d=| cut -f1 -d-', { silent: true })
-  const languages = shx.exec('locale -a|cut -f1 -d.', { silent: true }).split('\n')
-
+  // const languages = shx.exec('locale -a|cut -f1 -d.', { silent: true }).split('\n')
+  const languages = shx.exec('cut -f1 -d. </usr/share/i18n/SUPPORTED', { silent: true }).split('\n')
+  
   const questions: Array<Record<string, any>> = [
     {
       type: 'list',
