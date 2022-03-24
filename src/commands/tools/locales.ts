@@ -5,6 +5,7 @@ import path = require('path')
 
 import Utils from '../../classes/utils'
 import I18n from '../../classes/i18n'
+import Location from '../../components/location'
 
 /**
  *
@@ -36,8 +37,12 @@ export default class Locales extends Command {
     const echo = Utils.setEcho(verbose)
 
     if (Utils.isRoot()) {
-      const i18n = new I18n(verbose)
-      i18n.generate(reinstall)
+      const i18n = new I18n( '/', verbose)
+      if (reinstall) {
+        await i18n.reinstall()
+      } else {
+        await i18n.generate(true)
+      }
     }
   }
 }
