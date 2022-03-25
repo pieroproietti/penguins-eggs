@@ -92,8 +92,8 @@ export default class Krill {
    * WELCOME
    */
   async welcome(): Promise<IWelcome> {
-
-    let language = shx.exec(`grep LANG= < /etc/default/locale| cut -f2 -d=|cut -f1 -d.`, { silent: true }).stdout.trim()
+    
+    let language = shx.exec(`cat /etc/default/locale|grep LANG|cut -f2 -d=`, { silent: true }).stdout.trim()
     let welcomeElem: JSX.Element
     while (true) {
       welcomeElem = <Welcome language={language} />
@@ -105,7 +105,7 @@ export default class Krill {
       welcomeElem = <Welcome language={language} />
       redraw(welcomeElem)
 
-      language = await selectLanguages()
+      language = await selectLanguages(language)
     }
     return { language: language }
   }

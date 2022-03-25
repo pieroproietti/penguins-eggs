@@ -1,44 +1,25 @@
 /**
- *
-item =  English (EEUU)
-cmd =minino-keyboard us
-icon = /usr/local/share/pixmaps/us.png
-
-item =  English (GB)
-cmd =minino-keyboard gb
-icon = /usr/local/share/pixmaps/gb.png
-
-item =  Italian (Italy)
-cmd =minino-keyboard it
-icon = /usr/local/share/pixmaps/it.png
-
-item =  Português (Brazil)
-cmd =minino-keyboard br
-icon = /usr/local/share/pixmaps/br.png
-
-item =  Português (Portugal)
-cmd =minino-keyboard pt
-icon = /usr/local/share/pixmaps/pt.png
-
-item =  Español (España)
-cmd =minino-keyboard es
-icon = /usr/local/share/pixmaps/es.png
-
-item =  Español (Latam)
-cmd =minino-keyboard latam
-icon = /usr/local/share/pixmaps/latam.png
+ * penguins-eggs
+ * selectKeyboardLayout
+ * author: Piero Proietti
  */
-
 import inquirer from 'inquirer'
+import shx from 'shelljs'
 
+/**
+ * 
+ */
 export default async function selectKeyboardLayout(): Promise<string> {
+  const choices = shx.exec('localectl list-x11-keymap-layouts').split('/n')
+  const choice = shx.exec(`localectl |grep "X11 Layout"| cut -d ':' -f2`)
+  
   const questions: Array<Record<string, any>> = [
     {
       type: 'list',
       name: 'layout',
       message: 'Select layout: ',
-      choices: ['br', 'gb', 'es', 'it', 'latam', 'pt', 'us'],
-      default: 'es'
+      choices: choices,
+      default: choice
     }
   ]
 
