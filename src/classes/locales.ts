@@ -13,7 +13,7 @@ export default class Locales {
         if (result.code === 0) {
             const lines = result.data.split('/n')
             for (const line of lines) {
-                enabledLocales.push(line.trim())
+                enabledLocales.push(line.replace(/"/g,'').replace(/'/g,'').trim())
             }
         }
         return enabledLocales
@@ -42,7 +42,7 @@ export default class Locales {
         if (fs.existsSync(file)) {
             const result = await exec(cmd, { capture: true, echo: false, ignore: false })
             if (result.code === 0) {
-                defaultLanguage = result.data
+                defaultLanguage = result.data.replace(/"/g,'').replace(/'/g,'').trim()
             }
         }
         return defaultLanguage

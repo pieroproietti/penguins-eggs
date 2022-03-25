@@ -3,18 +3,19 @@
  */
 import inquirer from 'inquirer'
 import shx from 'shelljs'
+import Locales from '../classes/locales'
 
-export default async function selectLanguages(choice: string): Promise<string> {
-  const choices = shx.exec('cut -f1 -d. </usr/share/i18n/SUPPORTED', { silent: true }).split('\n')
-  // const choice = shx.exec('cat /etc/default/locale|grep LANG|cut -f2 -d=', { silent: true })
+export default async function selectLanguages(selected: string): Promise<string> {
+  const locales = new Locales()
+  const supported = await locales.getSupported()
                            
   const questions: Array<Record<string, any>> = [
     {
       type: 'list',
       name: 'language',
       message: 'Select language: ',
-      choices: choices,
-      default: choice
+      choices: supported,
+      default: selected
     }
   ]
 
