@@ -14,7 +14,7 @@ export default class Keyboard {
         let keyboardOptions: string[] = []
         const result = await exec(cmd, { capture: true, echo: false, ignore: false })
         if (result.code === 0) {
-            const lines = result.data.split('/n')
+            const lines = result.data.split('\n')
             for (const line of lines) {
                 keyboardOptions.push(line.trim())
             }
@@ -30,7 +30,7 @@ export default class Keyboard {
         let keyboardVariants: string[] = []
         const result = await exec(cmd, { capture: true, echo: false, ignore: false })
         if (result.code === 0) {
-            const lines = result.data.split('/n')
+            const lines = result.data.split('\n')
             for (const line of lines) {
                 keyboardVariants.push(line.trim())
             }
@@ -46,7 +46,7 @@ export default class Keyboard {
         let keybordLayouts: string[] = []
         const result = await exec(cmd, { capture: true, echo: false, ignore: false })
         if (result.code === 0) {
-            const lines = result.data.split('/n')
+            const lines: string [] = result.data.split('\n')
             for (const line of lines) {
                 keybordLayouts.push(line.trim())
             }
@@ -61,7 +61,7 @@ export default class Keyboard {
         let keyboardModels: string[] = []
         const result = await exec(cmd, { capture: true, echo: false, ignore: false })
         if (result.code === 0) {
-            const lines = result.data.split('/n')
+            const lines = result.data.split('\n')
             for (const line of lines) {
                 keyboardModels.push(line.trim())
             }

@@ -17,9 +17,9 @@ async function main() {
     const supportedLocales = await locales.getSupported()
     const defaultLocale = await locales.getDefault()
 
-    console.log(`enabledLocales: ${yaml.dump(enabledLocales)}`)
-    console.log(`-supported: ${yaml.dump(supportedLocales)}`)
-    console.log(`defaultLocale: ${defaultLocale}`)
+    //console.log(`enabledLocales: ${yaml.dump(enabledLocales)}`)
+    // console.log(`-supported: ${yaml.dump(supportedLocales)}`)
+    //console.log(`defaultLocale: ${defaultLocale}`)
 
     const keyboard = new Keyboard()
     const keyboardModel = await  keyboard.getModel()
@@ -34,14 +34,16 @@ async function main() {
     const keyboardOptions = await keyboard.getOptions()
     
 
-    console.log(`keyboardModel: ${yaml.dump(keyboardModel)}`)
-    console.log(yaml.dump(keyBoardModels))
+
+    // console.log(`keyboardModel: ${yaml.dump(keyboardModel)}`)
+    // console.log(yaml.dump(keyBoardModels))
     console.log(`keyboardLayout: ${yaml.dump(keyboardLayout)}`)
-    console.log(yaml.dump(keyboardLayouts))
-    console.log(`keyboardVariant: ${yaml.dump(keyboardVariant)}`)
-    console.log(yaml.dump(keyboardVariants))
-    console.log(`keyboardOption: ${yaml.dump(keyboardOption)}`)
-    console.log(yaml.dump(keyboardOptions))
+    console.log(JSON.stringify(keyboardLayouts))
+    // console.log(`keyboardVariant: ${yaml.dump(keyboardVariant)}`)
+    // console.log(yaml.dump(keyboardVariants))
+    // console.log(`keyboardOption: ${yaml.dump(keyboardOption)}`)
+    // console.log(yaml.dump(keyboardOptions))
+
 }
 
 
