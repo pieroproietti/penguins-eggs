@@ -33,6 +33,7 @@ import getHostname from '../lib/get_hostname'
 import getPassword from '../lib/get_password'
 
 import selectKeyboardLayout from '../lib/select_keyboard_layout'
+import selectKeyboardVariant from '../lib/select_keyboard_variant'
 
 import selectInterface from '../lib/select_interface'
 import selectAddressType from '../lib/select_address_type'
@@ -99,6 +100,7 @@ export default class Krill {
   async welcome(): Promise<IWelcome> {
 
     let language = await this.locales.getDefault()
+    let selectedLanguage = language
     let welcomeElem: JSX.Element
     while (true) {
       welcomeElem = <Welcome language={language} />
@@ -110,7 +112,8 @@ export default class Krill {
       welcomeElem = <Welcome language={language} />
       redraw(welcomeElem)
 
-      language = await selectLanguages(language)
+      language = await selectLanguages(selectedLanguage)
+      selectedLanguage = language
     }
     return { language: language }
   }
@@ -153,9 +156,12 @@ export default class Krill {
   async keyboard(): Promise<IKeyboard> {
 
     let keyboardModel = await this.keyboards.getModel()
+    let selectedkeyboardModel = keyboardModel
     let keyboardLayout = await this.keyboards.getLayout()
+    let selectedkeyboardLayout = keyboardLayout
     let keyboardVariant = await this.keyboards.getVariant()
-    let keyboardOption = await this.keyboards.getOption()
+    let selectedkeyboardVariant = keyboardVariant
+    // let keyboardOption = await this.keyboards.getOption()
     let keyboardElem: JSX.Element
     while (true) {
       keyboardElem = <Keyboard keyboardModel={keyboardModel} keyboardLayout={keyboardLayout} keyboardVariant={keyboardVariant} />
@@ -166,7 +172,17 @@ export default class Krill {
         keyboardLayout = ''
         keyboardVariant = ''
       }
-      keyboardLayout = await selectKeyboardLayout()
+      keyboardElem = <Keyboard keyboardModel={keyboardModel} keyboardLayout={keyboardLayout} keyboardVariant={keyboardVariant} />
+      redraw(keyboardElem)
+      keyboardLayout = await selectKeyboardLayout(selectedkeyboardLayout)
+      selectedkeyboardLayout = keyboardLayout
+
+
+      keyboardElem = <Keyboard keyboardModel={keyboardModel} keyboardLayout={keyboardLayout} keyboardVariant={keyboardVariant} />
+      redraw(keyboardElem)
+      keyboardVariant = await selectKeyboardVariant(keyboardLayout)
+      selectedkeyboardVariant = keyboardVariant
+
     }
     return {
       keyboardModel: keyboardModel,

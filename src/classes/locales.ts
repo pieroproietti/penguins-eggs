@@ -11,7 +11,7 @@ export default class Locales {
         let enabledLocales: string[] = []
         const result = await exec(cmd, { capture: true, echo: false, ignore: false })
         if (result.code === 0) {
-            const lines = result.data.split('/n')
+            const lines = result.data.split('\n')
             for (const line of lines) {
                 enabledLocales.push(line.replace(/"/g,'').replace(/'/g,'').trim())
             }
@@ -26,10 +26,14 @@ export default class Locales {
         const file = '/usr/share/i18n/SUPPORTED'
         const cmd = `cut -f1 -d.|grep UTF-0 < ${file}`
         let lines: string[] = []
+        const retLines: string [] = []
         if (fs.existsSync(file)) {
             lines = fs.readFileSync(file, 'utf-8').split('\n')
+            for (const line of lines) {
+                retLines.push(line.replace(' UTF-8', ''))
+            }
         }
-        return lines
+        return retLines
     }
 
     /**
