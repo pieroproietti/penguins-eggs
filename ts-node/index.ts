@@ -5,11 +5,11 @@
  * #!/usr/bin/npx ts-node
  */
 
-import { exec } from './src/lib/utils'
-import Utils from './src/classes/utils'
+import { exec } from '../src/lib/utils'
+import Utils from '../src/classes/utils'
 import path from 'path'
 import fs from 'fs'
-import N8 from  './src/classes/n8'
+import N8 from  '../src/classes/n8'
 
 console.clear()
 
