@@ -4,6 +4,8 @@ import Utils from './utils'
 import shx from 'shelljs'
 import fs from 'fs'
 import Systemctl from './systemctl'
+import Locales from './locales'
+import Keyboards from './keyboard'
 
 // libraries
 const exec = require('../lib/utils').exec
@@ -47,6 +49,9 @@ import { IWelcome, ILocation, IKeyboard, IPartitions, IUsers } from '../interfac
 
 
 export default class Krill {
+
+  locales = new Locales()
+  keyboards = new Keyboards()
 
   /**
    * 
@@ -92,8 +97,8 @@ export default class Krill {
    * WELCOME
    */
   async welcome(): Promise<IWelcome> {
-    
-    let language = shx.exec(`cat /etc/default/locale|grep LANG|cut -f2 -d=`, { silent: true }).stdout.trim()
+
+    let language = await this.locales.getDefault()
     let welcomeElem: JSX.Element
     while (true) {
       welcomeElem = <Welcome language={language} />
@@ -146,13 +151,11 @@ export default class Krill {
   * KEYBOARD
   */
   async keyboard(): Promise<IKeyboard> {
-    let keyboardModel = shx.exec('grep XKBMODEL < /etc/default/keyboard |cut -f2 -d= | cut -f2 "-d\\""', { silent: true }).stdout.trim()
-    if (keyboardModel === '') {
-      keyboardModel = "pc105"
-    }
-    let keyboardLayout = shx.exec('grep XKBLAYOUT < /etc/default/keyboard | cut -f2 -d= | cut -f2 "-d\\""', { silent: true }).stdout.trim()
-    let keyboardVariant = shx.exec('grep XKBVARIANT < /etc/default/keyboard | cut -f2 -d=|cut -f2 "-d\\""', { silent: true }).stdout.trim()
-    let keyboardOptions = shx.exec('grep XKBOPTIONS < /etc/default/keyboard | cut -f2 -d= | cut -f2 "-d\\""', { silent: true }).stdout.trim()
+
+    let keyboardModel = await this.keyboards.getModel()
+    let keyboardLayout = await this.keyboards.getLayout()
+    let keyboardVariant = await this.keyboards.getVariant()
+    let keyboardOption = await this.keyboards.getOption()
     let keyboardElem: JSX.Element
     while (true) {
       keyboardElem = <Keyboard keyboardModel={keyboardModel} keyboardLayout={keyboardLayout} keyboardVariant={keyboardVariant} />
