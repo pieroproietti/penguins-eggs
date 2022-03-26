@@ -35,7 +35,7 @@ import getPassword from '../lib/get_password'
 import selectKeyboardModel from '../lib/select_keyboard_model'
 import selectKeyboardLayout from '../lib/select_keyboard_layout'
 import selectKeyboardVariant from '../lib/select_keyboard_variant'
-import selectKeyboardOption from  '../lib/select-keyboard-option'
+import selectKeyboardOption from  '../lib/select_keyboard_option'
 
 import selectInterface from '../lib/select_interface'
 import selectAddressType from '../lib/select_address_type'
