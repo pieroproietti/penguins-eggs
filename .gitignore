@@ -3,7 +3,7 @@
 /tmp
 /yarn.lock
 dist
-lib
+/lib
 # remove all in 
 manpages/doc/man/*
 # ... but not these files...
