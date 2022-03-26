@@ -32,8 +32,10 @@ import getUserfullname from '../lib/get_userfullname'
 import getHostname from '../lib/get_hostname'
 import getPassword from '../lib/get_password'
 
+import selectKeyboardModel from '../lib/select_keyboard_model'
 import selectKeyboardLayout from '../lib/select_keyboard_layout'
 import selectKeyboardVariant from '../lib/select_keyboard_variant'
+import selectKeyboardOption from  '../lib/select-keyboard-option'
 
 import selectInterface from '../lib/select_interface'
 import selectAddressType from '../lib/select_address_type'
@@ -100,20 +102,13 @@ export default class Krill {
   async welcome(): Promise<IWelcome> {
 
     let language = await this.locales.getDefault()
-    let selectedLanguage = language
     let welcomeElem: JSX.Element
     while (true) {
       welcomeElem = <Welcome language={language} />
       if (await confirm(welcomeElem, "Confirm Welcome datas?")) {
         break
-      } else {
-        language = ''
       }
-      welcomeElem = <Welcome language={language} />
-      redraw(welcomeElem)
-
-      language = await selectLanguages(selectedLanguage)
-      selectedLanguage = language
+      language = await selectLanguages(language)
     }
     return { language: language }
   }
@@ -129,17 +124,8 @@ export default class Krill {
       locationElem = <Location language={language} region={region} zone={zone} />
       if (await confirm(locationElem, "Confirm location datas?")) {
         break
-      } else {
-        region = ''
-        zone = ''
       }
-      locationElem = <Location language={language} region={region} zone={zone} />
-      redraw(locationElem)
-
-      region = await selectRegions()
-      locationElem = <Location language={language} region={region} zone={zone} />
-      redraw(locationElem)
-
+      region = await selectRegions(region)
       zone = await selectZones(region)
     }
 
@@ -156,38 +142,28 @@ export default class Krill {
   async keyboard(): Promise<IKeyboard> {
 
     let keyboardModel = await this.keyboards.getModel()
-    let selectedkeyboardModel = keyboardModel
     let keyboardLayout = await this.keyboards.getLayout()
-    let selectedkeyboardLayout = keyboardLayout
     let keyboardVariant = await this.keyboards.getVariant()
-    let selectedkeyboardVariant = keyboardVariant
-    // let keyboardOption = await this.keyboards.getOption()
+    let keyboardOption = await this.keyboards.getOption()
+
     let keyboardElem: JSX.Element
     while (true) {
-      keyboardElem = <Keyboard keyboardModel={keyboardModel} keyboardLayout={keyboardLayout} keyboardVariant={keyboardVariant} />
+      keyboardElem = <Keyboard keyboardModel={keyboardModel} keyboardLayout={keyboardLayout} keyboardVariant={keyboardVariant} keyboardOptions={keyboardOption}/>
       if (await confirm(keyboardElem, "Confirm Keyboard datas?")) {
         break
       } else {
         keyboardModel = 'pc105'
-        keyboardLayout = ''
-        keyboardVariant = ''
       }
-      keyboardElem = <Keyboard keyboardModel={keyboardModel} keyboardLayout={keyboardLayout} keyboardVariant={keyboardVariant} />
-      redraw(keyboardElem)
-      keyboardLayout = await selectKeyboardLayout(selectedkeyboardLayout)
-      selectedkeyboardLayout = keyboardLayout
-
-
-      keyboardElem = <Keyboard keyboardModel={keyboardModel} keyboardLayout={keyboardLayout} keyboardVariant={keyboardVariant} />
-      redraw(keyboardElem)
+      keyboardModel = await selectKeyboardModel(keyboardModel)
+      keyboardLayout = await selectKeyboardLayout(keyboardLayout)
       keyboardVariant = await selectKeyboardVariant(keyboardLayout)
-      selectedkeyboardVariant = keyboardVariant
-
+      keyboardOption = await selectKeyboardOption(keyboardOption)
     }
     return {
       keyboardModel: keyboardModel,
       keyboardLayout: keyboardLayout,
-      keyboardVariant: keyboardVariant
+      keyboardVariant: keyboardVariant,
+      keyboardOption: keyboardOption
     }
   }
 
@@ -228,22 +204,10 @@ export default class Krill {
         userSwapChoice = ''
       }
 
-      partitionsElem = <Partitions installationDevice={installationDevice} installationMode={installationMode} filesystemType={filesystemType} userSwapChoice={userSwapChoice} />
-      redraw(partitionsElem)
       installationDevice = await selectInstallationDevice()
-
-      partitionsElem = <Partitions installationDevice={installationDevice} installationMode={installationMode} filesystemType={filesystemType} userSwapChoice={userSwapChoice} />
-      redraw(partitionsElem)
       installationMode = await selectInstallationMode()
-
-      partitionsElem = <Partitions installationDevice={installationDevice} installationMode={installationMode} filesystemType={filesystemType} userSwapChoice={userSwapChoice} />
-      redraw(partitionsElem)
       filesystemType = await selectFileSystemType()
-
-      partitionsElem = <Partitions installationDevice={installationDevice} installationMode={installationMode} filesystemType={filesystemType} userSwapChoice={userSwapChoice} />
-      redraw(partitionsElem)
       userSwapChoice = await selectUserSwapChoice()
-
     }
     return {
       installationDevice: installationDevice,
@@ -270,21 +234,9 @@ export default class Krill {
       if (await confirm(usersElem, "Confirm Users datas?")) {
         break
       }
-
-      usersElem = <Users name={name} fullname={fullname} hostname={hostname} password={password} rootPassword={rootPassword} autologin={autologin} sameUserPassword={sameUserPassword} />
-      redraw(usersElem)
       name = await getUsername(name)
-
-      usersElem = <Users name={name} fullname={fullname} hostname={hostname} password={password} rootPassword={rootPassword} autologin={autologin} sameUserPassword={sameUserPassword} />
-      redraw(usersElem)
       fullname = await getUserfullname(fullname)
-
-      usersElem = <Users name={name} fullname={fullname} hostname={hostname} password={password} rootPassword={rootPassword} autologin={autologin} sameUserPassword={sameUserPassword} />
-      redraw(usersElem)
       password = await getPassword(password)
-
-      usersElem = <Users name={name} fullname={fullname} hostname={hostname} password={password} rootPassword={rootPassword} autologin={autologin} sameUserPassword={sameUserPassword} />
-      redraw(usersElem)
       hostname = await getHostname(hostname)
     }
 
@@ -407,9 +359,8 @@ async function confirm(elem: JSX.Element, msg = "Confirm") {
  */
 function redraw(elem: JSX.Element) {
   let opt: RenderOptions = {}
-
-  opt.patchConsole = false
-  opt.debug = false
+  opt.patchConsole = true
+  opt.debug = true
 
   shx.exec('clear')
   render(elem, opt)
