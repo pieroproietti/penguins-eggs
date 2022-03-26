@@ -12,6 +12,7 @@ export interface IKeyboard {
   keyboardModel: string
   keyboardLayout: string
   keyboardVariant: string
+  keyboardOption: string
 }
 
 export interface IPartitions {

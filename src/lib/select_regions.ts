@@ -1,14 +1,14 @@
 'use strict'
 import inquirer = require('inquirer')
 
-export default async function selectRegions(): Promise<string> {
+export default async function selectRegions(selected =''): Promise<string> {
   const questions: Array<Record<string, any>> = [
     {
       type: 'list',
       name: 'region',
       message: 'Select your region: ',
       choices: ['Atlantic', 'Africa', 'America', 'Antarctica', 'Artic', 'Australia', 'Europe', 'India', 'Europe', 'Pacific'],
-      default: 'Europe'
+      default: selected
     }
   ]
 
