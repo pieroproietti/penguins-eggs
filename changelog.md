@@ -19,6 +19,9 @@ You can follow the project also consulting the [commit history](https://github.c
 Versions are listed on reverse order, the first is the last one. Old versions are moved to [oldest](https://sourceforge.net/projects/penguins-eggs/files/packages-deb/oldest/). 
 
 
+### eggs-9.0.46-1
+° krill: added keyboard model, layout, variant and option selection
+
 ### eggs-9.0.45-1
 * rewrote command:  eggs tools locale;
 * krill: added all languages on the selection; 
