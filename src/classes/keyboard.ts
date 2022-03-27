@@ -2,7 +2,7 @@ import { exec } from '../lib/utils'
 import fs from 'fs'
 
 /**
- * 
+ * /usr/share/X11/xkb/rules/xorg.lst 
  */
 export default class Keyboard {
     
