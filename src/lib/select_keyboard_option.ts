@@ -4,14 +4,20 @@
  * author: Piero Proietti
  */
  import inquirer from 'inquirer'
- import Keyboards from '../classes/keyboard'
+ import Keyboards from '../classes/keyboards'
  
  /**
   * selectKeyboardOption
   */
  export default async function selectKeyboardOption(selected = ''): Promise<string> {
    const keyboards = new Keyboards()
-   const supported = await keyboards.getOptions()
+   const options = keyboards.getOptions()
+
+   const supported : string [] = []
+   for (const o of options ) {
+     supported.push(o.code)
+   }
+
  
    const questions: Array<Record<string, any>> = [
      {

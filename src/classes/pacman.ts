@@ -337,6 +337,7 @@ export default class Pacman {
    */
   static async configurationFresh() {
     const config = {} as IConfig
+
     config.version = Utils.getPackageVersion()
     config.snapshot_dir = '/home/eggs'
     config.snapshot_prefix = ''
@@ -352,12 +353,11 @@ export default class Pacman {
     config.make_isohybrid = true
     config.compression = 'xz'
     config.ssh_pass = true
-    config.timezone = 'Europe/Rome'
-    config.pmount_fixed = false
+    config.timezone= 'Europe/Rome'
     const env = process.env
     config.locales_default = env.LANG !== undefined ? env.LANG : 'en_US.UTF-8'
-
     config.locales = config.locales_default === 'en_US.UTF-8' ? ['en_US.UTF-8'] : [config.locales_default, 'en_US.UTF-8']
+    config.pmount_fixed = false
 
     if (!this.packageIsInstalled('calamares')) {
       config.force_installer = false
