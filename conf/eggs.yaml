@@ -74,17 +74,24 @@ compression: 'xz'
 # default true
 ssh_pass: true
 
+
+
 # timezone 
-# default Europe/Rome
 timezone: Europe/Rome
 
 # locales to be builded
 locales:
-  - en_US.UTF-8
   - it_IT.UTF-8
 
 # default locales
 locales_default: it_IT.UTF-8
+
+# keyboard
+keyboard:
+  XkbModel: "pc105"
+  XkbLayout: "it"
+  XkbVariant: ""
+  XkbOptions: ""
 
 ##
 # The following fields are actually not used in eggs

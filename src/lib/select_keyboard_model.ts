@@ -4,14 +4,21 @@
  * author: Piero Proietti
  */
  import inquirer from 'inquirer'
- import Keyboards from '../classes/keyboard'
- 
+ import Keyboards from '../classes/keyboards'
+ import {IXkbModel, IXkbLayout, IXkbVariant, IXkbOption} from '../interfaces/i-xkb-model'
+
  /**
   * 
   */
  export default async function selectKeyboardModel(selected = ''): Promise<string> {
    const keyboards = new Keyboards()
-   const supported = await keyboards.getModels()
+   const models = keyboards.getModels() as IXkbModel []
+
+   const supported : string [] = []
+   for (const m of models ) {
+     supported.push(m.code)
+   }
+
  
    const questions: Array<Record<string, any>> = [
      {

@@ -1,6 +1,3 @@
-/* eslint-disable valid-jsdoc */
-/* eslint-disable no-console */
-
 /**
  * penguins-eggs: ovary.ts VERSIONE DEBIAN-LIVE
  * author: Piero Proietti
@@ -52,9 +49,9 @@ export default class Settings {
 
   efi_work = ''
 
-  kernel_image = '' 
+  kernel_image = ''
 
-  initrd_image = '' 
+  initrd_image = ''
 
   vmlinuz = ''
 

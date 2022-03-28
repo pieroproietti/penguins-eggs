@@ -5,7 +5,7 @@ import shx from 'shelljs'
 import fs from 'fs'
 import Systemctl from './systemctl'
 import Locales from './locales'
-import Keyboards from './keyboard'
+import Keyboards from './keyboards'
 
 // libraries
 const exec = require('../lib/utils').exec
@@ -360,7 +360,7 @@ async function confirm(elem: JSX.Element, msg = "Confirm") {
 function redraw(elem: JSX.Element) {
   let opt: RenderOptions = {}
   opt.patchConsole = true
-  opt.debug = true
+  opt.debug = false
 
   shx.exec('clear')
   render(elem, opt)
