@@ -148,32 +148,4 @@ export default class I18n {
     // console.log(mustache.render(lct, view))
     fs.writeFileSync(destConf, mustache.render(lct, view))
   }
-
-  /**
- * setKeyboard
- */
-  private async setKeyboard() {
-    const file = '/etc/default/keyboard'
-    let content = '# KEYBOARD CONFIGURATION FILE\n\n'
-    content += '# Consult the keyboard(5) manual page.\n\n'
-    content += 'XKBMODEL="' + this.settings.config.keyboard.XkbLayout + '"\n'
-    content += 'XKBLAYOUT="' + this.settings.config.keyboard.XkbLayout + '"\n'
-    content += 'XKBVARIANT="' + this.settings.config.keyboard.XkbVariant + '"\n'
-    content += 'XKBOPTIONS=""\n'
-    content += '\n'
-    content += 'BACKSPACE="guess"\n'
-    Utils.write(file, content)
-
-    /**
-     * set keyboard
-     */
-    const cmd = `setupcon ${this.toNull}`
-    try {
-      await exec(cmd, this.echo)
-    } catch (error) {
-      console.log(error)
-      Utils.pressKeyToExit(cmd, true)
-    }
-  }
-
 }
