@@ -204,7 +204,7 @@ sequence:
       - usb-modeswitch-data
       - wvdial
   debs: false
-  dirs: true
+  dirs: false
   hostname: true
   customizations:
     scripts:
