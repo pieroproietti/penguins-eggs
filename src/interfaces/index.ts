@@ -20,5 +20,5 @@ export { ISettings } from './i-settings'
 export { IPartitions } from './i-partitions'
 
 // Repipes
-export { IMaterial } from './i-material'
+export { ICostume } from './i-costume'
 

@@ -1,6 +1,4 @@
-import { boolean } from "@oclif/core/lib/parser/flags"
-
-export interface IMaterial {
+export interface ICostume {
     name: string
     author: string
     description: string
@@ -24,6 +22,16 @@ export interface IMaterial {
         packages: string [],
         noInstallRecommends: string [],
         packagesPip: string [],
+        firmwares: {
+            codecs: string[],
+            drivers_graphics_tablet: string[],
+            drivers_network: string[],
+            drivers_various: string[],
+            drivers_video_amd: string[],
+            drivers_video_nvidia: string[],
+            drivers_wifi: string[],
+            drivers_printer: string[],
+        }
         debs: boolean,
         dirs: boolean,
         hostname: boolean,

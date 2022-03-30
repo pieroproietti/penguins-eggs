@@ -1,6 +1,6 @@
 import chalk from 'chalk'
 import Utils from './utils'
-import { IMaterial } from '../interfaces'
+import { ICostume } from '../interfaces'
 import { exec } from '../lib/utils'
 import fs from 'fs'
 import path from 'path'
@@ -15,7 +15,7 @@ export default class Tailor {
     private echo = {}
     private costume = ''
     private wardrobe = ''
-    materials = {} as IMaterial
+    materials = {} as ICostume
 
     constructor(wardrobe: string, costume: string, verbose = false) {
         this.costume = costume
@@ -41,7 +41,7 @@ export default class Tailor {
         const tailorList = `${this.wardrobe}/${this.costume}/index.yml`
 
         if (fs.existsSync(tailorList)) {
-            this.materials = yaml.load(fs.readFileSync(tailorList, 'utf-8')) as IMaterial
+            this.materials = yaml.load(fs.readFileSync(tailorList, 'utf-8')) as ICostume
         } else {
             console.log('costume ' + chalk.cyan(this.costume) + ' not found in wardrobe: ' + chalk.green(this.wardrobe))
         }
@@ -50,7 +50,7 @@ export default class Tailor {
          * Repositories
          */
         if (this.materials.sequence.repositories === undefined) {
-            console.log('repositiories, and repositories.update MUDE be defined on sequence ')
+            console.log('repositiories, and repositories.update MUST be defined on sequence ')
             process.exit()
         }
         Utils.warning(`analyzing repositories`)
@@ -200,6 +200,174 @@ export default class Tailor {
                     Utils.pressKeyToExit(cmd, true)
                 }
                 await exec(cmd, this.echo)
+            }
+        }
+
+
+        /**
+         * firmwares
+         */
+        if (this.materials.sequence.firmwares !== undefined) {
+            /**
+             * codecs
+             */
+            if (this.materials.sequence.firmwares.codecs !== undefined) {
+                if (this.materials.sequence.firmwares.codecs[0] !== null) {
+                    let cmd = 'apt-get install -y '
+                    let codecs = ''
+                    for (const elem of this.materials.sequence.firmwares.codecs) {
+                        cmd += ` ${elem}`
+                        codecs += `, ${elem}`
+                    }
+                    let step = `installing packages firmware codecs ${codecs.substring(2)}`
+                    Utils.warning(step)
+                    if (verbose) {
+                        Utils.pressKeyToExit(cmd, true)
+                    }
+                    await exec(cmd, this.echo)
+                }
+            }
+
+            /**
+             * drivers_graphics_tablet
+             */
+            if (this.materials.sequence.firmwares.drivers_graphics_tablet !== undefined) {
+                if (this.materials.sequence.firmwares.drivers_graphics_tablet[0] !== null) {
+                    let cmd = 'apt-get install -y '
+                    let drivers_graphics_tablet = ''
+                    for (const elem of this.materials.sequence.firmwares.drivers_graphics_tablet) {
+                        cmd += ` ${elem}`
+                        drivers_graphics_tablet += `, ${elem}`
+                    }
+                    let step = `installing packages firmware drivers_graphics_tablet ${drivers_graphics_tablet.substring(2)}`
+                    Utils.warning(step)
+                    if (verbose) {
+                        Utils.pressKeyToExit(cmd, true)
+                    }
+                    await exec(cmd, this.echo)
+                }
+            }
+
+            /**
+             * drivers_network
+             */
+            if (this.materials.sequence.firmwares.drivers_network !== undefined) {
+                if (this.materials.sequence.firmwares.drivers_network[0] !== null) {
+                    let cmd = 'apt-get install -y '
+                    let drivers_network = ''
+                    for (const elem of this.materials.sequence.firmwares.drivers_network) {
+                        cmd += ` ${elem}`
+                        drivers_network += `, ${elem}`
+                    }
+                    let step = `installing packages firmware drivers_network ${drivers_network.substring(2)}`
+                    Utils.warning(step)
+                    if (verbose) {
+                        Utils.pressKeyToExit(cmd, true)
+                    }
+                    await exec(cmd, this.echo)
+                }
+
+                /**
+                 * drivers_various
+                 */
+                if (this.materials.sequence.firmwares.drivers_various !== undefined) {
+                    if (this.materials.sequence.firmwares.drivers_various[0] !== null) {
+                        let cmd = 'apt-get install -y '
+                        let drivers_various = ''
+                        for (const elem of this.materials.sequence.firmwares.drivers_various) {
+                            cmd += ` ${elem}`
+                            drivers_various += `, ${elem}`
+                        }
+                        let step = `installing packages firmware drivers_network ${drivers_various.substring(2)}`
+                        Utils.warning(step)
+                        if (verbose) {
+                            Utils.pressKeyToExit(cmd, true)
+                        }
+                        await exec(cmd, this.echo)
+                    }
+                }
+            }
+
+            /**
+             * drivers_video_amd
+             */
+            if (this.materials.sequence.firmwares.drivers_video_amd !== undefined) {
+                if (this.materials.sequence.firmwares.drivers_video_amd[0] !== null) {
+                    let cmd = 'apt-get install -y '
+                    let drivers_video_amd = ''
+                    for (const elem of this.materials.sequence.firmwares.drivers_video_amd) {
+                        cmd += ` ${elem}`
+                        drivers_video_amd += `, ${elem}`
+                    }
+                    let step = `installing packages firmware drivers_network ${drivers_video_amd.substring(2)}`
+                    Utils.warning(step)
+                    if (verbose) {
+                        Utils.pressKeyToExit(cmd, true)
+                    }
+                    await exec(cmd, this.echo)
+                }
+            }
+
+            /**
+             * drivers_video_nvidia
+             */
+            if (this.materials.sequence.firmwares.drivers_video_nvidia !== undefined) {
+                if (this.materials.sequence.firmwares.drivers_video_nvidia[0] !== null) {
+                    let cmd = 'apt-get install -y '
+                    let drivers_video_nvidia = ''
+                    for (const elem of this.materials.sequence.firmwares.drivers_video_nvidia) {
+                        cmd += ` ${elem}`
+                        drivers_video_nvidia += `, ${elem}`
+                    }
+                    let step = `installing packages firmware drivers_network ${drivers_video_nvidia.substring(2)}`
+                    Utils.warning(step)
+                    if (verbose) {
+                        Utils.pressKeyToExit(cmd, true)
+                    }
+                    await exec(cmd, this.echo)
+                }
+            }
+
+            /**
+             * drivers_wifi
+             */
+            if (this.materials.sequence.firmwares.drivers_wifi !== undefined) {
+                if (this.materials.sequence.firmwares.drivers_wifi[0] !== null) {
+
+                    let cmd = 'apt-get install -y '
+                    let drivers_wifi = ''
+                    for (const elem of this.materials.sequence.firmwares.drivers_wifi) {
+                        cmd += ` ${elem}`
+                        drivers_wifi += `, ${elem}`
+                    }
+                    let step = `installing packages firmware drivers_network ${drivers_wifi.substring(2)}`
+                    Utils.warning(step)
+                    if (verbose) {
+                        Utils.pressKeyToExit(cmd, true)
+                    }
+                    await exec(cmd, this.echo)
+                }
+            }
+
+            /**
+             * drivers_printer
+             */
+            if (this.materials.sequence.firmwares.drivers_printer !== undefined) {
+                if (this.materials.sequence.firmwares.drivers_printer[0] !== null) {
+
+                    let cmd = 'apt-get install -y '
+                    let drivers_printer = ''
+                    for (const elem of this.materials.sequence.firmwares.drivers_printer) {
+                        cmd += ` ${elem}`
+                        drivers_printer += `, ${elem}`
+                    }
+                    let step = `installing packages firmware drivers_network ${drivers_printer.substring(2)}`
+                    Utils.warning(step)
+                    if (verbose) {
+                        Utils.pressKeyToExit(cmd, true)
+                    }
+                    await exec(cmd, this.echo)
+                }
             }
         }
 
