@@ -9,8 +9,6 @@ import { ICostume } from '../../interfaces'
 import { exec } from '../../lib/utils'
 
 
-
-
 /**
  * 
  */
@@ -63,7 +61,7 @@ export default class Ironing extends Command {
             sorted.release = orig.release
             sorted.distroId = orig.distroId
             sorted.codenameId = orig.codenameId
-            sorted.releaseId = orig.release
+            sorted.releaseId = orig.releaseId
             sorted.applyTo = orig.applyTo
 
             if (orig.sequence.repositories !== undefined) {
@@ -147,7 +145,7 @@ export default class Ironing extends Command {
             }
             sorted.sequence.reboot = sorted.sequence.reboot
 
-            const ironed = `# ${sorted.name}\n___\n` + yaml.dump(sorted)
+            const ironed = `# ${sorted.name}\n---\n` + yaml.dump(sorted)
             console.log(ironed)
         }
         // Well be usefull to have scrolling
