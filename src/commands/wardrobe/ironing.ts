@@ -6,7 +6,10 @@ import fs from 'fs'
 import { ICostume } from '../../interfaces'
 
 // libraries
-import chalk from 'chalk'
+import { exec } from '../../lib/utils'
+
+
+
 
 /**
  * 
@@ -31,6 +34,11 @@ export default class Ironing extends Command {
 
         const echo = Utils.setEcho(verbose)
         Utils.titles(this.id + ' ' + this.argv)
+
+        // Well be usefull to have scrolling
+        // Limit scrolling from line 0 to line 10.
+        // await exec(`printf '\e[5;24r'`)
+
 
         let costume = "xfce4"
         if (flags.costume !== undefined) {
@@ -138,7 +146,12 @@ export default class Ironing extends Command {
                 }
             }
             sorted.sequence.reboot = sorted.sequence.reboot
-            console.log(yaml.dump(sorted))
+
+            const ironed = `# ${sorted.name}\n___\n` + yaml.dump(sorted)
+            console.log(ironed)
         }
+        // Well be usefull to have scrolling
+        // Set scrolling margins back to default.
+        // await exec(`printf '\e[;r'`)
     }
 }
