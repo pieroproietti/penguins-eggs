@@ -182,6 +182,7 @@ USAGE
 * [`eggs tools yolk`](#eggs-tools-yolk)
 * [`eggs update`](#eggs-update)
 * [`eggs version`](#eggs-version)
+* [`eggs wardrobe ironing`](#eggs-wardrobe-ironing)
 * [`eggs wardrobe list`](#eggs-wardrobe-list)
 * [`eggs wardrobe show`](#eggs-wardrobe-show)
 * [`eggs wardrobe wear`](#eggs-wardrobe-wear)
@@ -1124,6 +1125,24 @@ USAGE
 ```
 
 _See code: [@oclif/plugin-version](https://github.com/oclif/plugin-version/blob/v1.0.4/src/commands/version.ts)_
+
+## `eggs wardrobe ironing`
+
+ironing costumes: sorting packages, firmwares and so on
+
+```
+USAGE
+  $ eggs wardrobe ironing [-c <value>] [-w <value>] [-v] [-h]
+
+FLAGS
+  -c, --costume=<value>   costume
+  -h, --help              Show CLI help.
+  -v, --verbose
+  -w, --wardrobe=<value>  wardrobe
+
+DESCRIPTION
+  ironing costumes: sorting packages, firmwares and so on
+```
 
 ## `eggs wardrobe list`
 
