@@ -136,6 +136,7 @@ export default class Tailor {
                 let step = `installing dependencies: ${dependencies.substring(2)}`
                 Utils.warning(step)
                 if (verbose) {
+                    Utils.titles()
                     Utils.pressKeyToExit(cmd, true)
                 }
                 await exec(cmd, this.echo)
@@ -157,6 +158,7 @@ export default class Tailor {
                 let step = `installing packages: ${packages.substring(2)}`
                 Utils.warning(step)
                 if (verbose) {
+                    Utils.titles()
                     Utils.pressKeyToExit(cmd, true)
                 }
                 await exec(cmd, this.echo)
@@ -177,6 +179,7 @@ export default class Tailor {
                 let step = `installing packages --no-install-recommends --no-install-suggests ${noInstallRecommends.substring(2)}`
                 Utils.warning(step)
                 if (verbose) {
+                    Utils.titles()
                     Utils.pressKeyToExit(cmd, true)
                 }
                 await exec(cmd, this.echo)
@@ -197,6 +200,7 @@ export default class Tailor {
                 let step = `installing python packages pip ${pip.substring(2)}`
                 Utils.warning(step)
                 if (verbose) {
+                    Utils.titles()
                     Utils.pressKeyToExit(cmd, true)
                 }
                 await exec(cmd, this.echo)
@@ -222,6 +226,7 @@ export default class Tailor {
                     let step = `installing packages firmware codecs ${codecs.substring(2)}`
                     Utils.warning(step)
                     if (verbose) {
+                        Utils.titles()
                         Utils.pressKeyToExit(cmd, true)
                     }
                     await exec(cmd, this.echo)
@@ -242,6 +247,7 @@ export default class Tailor {
                     let step = `installing packages firmware drivers_graphics_tablet ${drivers_graphics_tablet.substring(2)}`
                     Utils.warning(step)
                     if (verbose) {
+                        Utils.titles()
                         Utils.pressKeyToExit(cmd, true)
                     }
                     await exec(cmd, this.echo)
@@ -262,6 +268,7 @@ export default class Tailor {
                     let step = `installing packages firmware drivers_network ${drivers_network.substring(2)}`
                     Utils.warning(step)
                     if (verbose) {
+                        Utils.titles()
                         Utils.pressKeyToExit(cmd, true)
                     }
                     await exec(cmd, this.echo)
@@ -281,6 +288,7 @@ export default class Tailor {
                         let step = `installing packages firmware drivers_network ${drivers_various.substring(2)}`
                         Utils.warning(step)
                         if (verbose) {
+                            Utils.titles()
                             Utils.pressKeyToExit(cmd, true)
                         }
                         await exec(cmd, this.echo)
@@ -302,6 +310,7 @@ export default class Tailor {
                     let step = `installing packages firmware drivers_network ${drivers_video_amd.substring(2)}`
                     Utils.warning(step)
                     if (verbose) {
+                        Utils.titles()
                         Utils.pressKeyToExit(cmd, true)
                     }
                     await exec(cmd, this.echo)
@@ -322,6 +331,7 @@ export default class Tailor {
                     let step = `installing packages firmware drivers_network ${drivers_video_nvidia.substring(2)}`
                     Utils.warning(step)
                     if (verbose) {
+                        Utils.titles()
                         Utils.pressKeyToExit(cmd, true)
                     }
                     await exec(cmd, this.echo)
@@ -343,6 +353,7 @@ export default class Tailor {
                     let step = `installing packages firmware drivers_network ${drivers_wifi.substring(2)}`
                     Utils.warning(step)
                     if (verbose) {
+                        Utils.titles()
                         Utils.pressKeyToExit(cmd, true)
                     }
                     await exec(cmd, this.echo)
@@ -364,6 +375,7 @@ export default class Tailor {
                     let step = `installing packages firmware drivers_network ${drivers_printer.substring(2)}`
                     Utils.warning(step)
                     if (verbose) {
+                        Utils.titles()
                         Utils.pressKeyToExit(cmd, true)
                     }
                     await exec(cmd, this.echo)
@@ -380,6 +392,7 @@ export default class Tailor {
                 Utils.warning(step)
                 let cmd = `dpkg -i ${this.wardrobe}\*.deb`
                 if (verbose) {
+                    Utils.titles()
                     Utils.pressKeyToExit(cmd, true)
                 }
                 await exec(cmd)
@@ -391,20 +404,23 @@ export default class Tailor {
          */
         if (this.materials.sequence.dirs !== undefined) {
             if (this.materials.sequence.dirs) {
-                let step = `copying dirs`
-                let cmd = `rsync -avx  ${this.wardrobe}/${this.costume}/dirs/* /`
-                if (verbose) {
-                    Utils.pressKeyToExit(cmd, true)
-                }
-                await exec(cmd, this.echo)
+                if (fs.existsSync(`${this.wardrobe}/${this.costume}/dirs`)) {
+                    let step = `copying dirs`
+                    let cmd = `rsync -avx  ${this.wardrobe}/${this.costume}/dirs/* /`
+                    if (verbose) {
+                        Utils.titles()
+                        Utils.pressKeyToExit(cmd, true)
+                    }
+                    await exec(cmd, this.echo)
 
-                /**
-                 * Copyng skel in /home/user
-                 */
-                const user = Utils.getPrimaryUser()
-                cmd = `rsync -avx  ${this.wardrobe}/${this.costume}/dirs/etc/skel/.* /home/${user}/`
-                await exec(cmd, this.echo)
-                await exec(`chown ${user}:${user} /home/${user}/ -R`)
+                    /**
+                     * Copyng skel in /home/user
+                     */
+                    const user = Utils.getPrimaryUser()
+                    cmd = `rsync -avx  ${this.wardrobe}/${this.costume}/dirs/etc/skel/.* /home/${user}/`
+                    await exec(cmd, this.echo)
+                    await exec(`chown ${user}:${user} /home/${user}/ -R`)
+                }
             }
         }
 
@@ -481,45 +497,5 @@ export default class Tailor {
         text += `ff02:: 3 ip6 - allhosts\n`
         await exec(`rm ${file} `, this.echo)
         fs.writeFileSync(file, text)
-    }
-
-
-    /**
-     * NOT-USED
-     */
-    async skelToHome() {
-        // SPECIAL CASE: skel/.local .config are copied on the user too
-        const primaryUser = Utils.getPrimaryUser()
-        let cmd = `rsync -avx  ${this.wardrobe}/${this.costume}/dirs/etc/skel/ /home/${primaryUser}/`
-        await exec(cmd, Utils.setEcho(true))
-        await exec(`chown ${primaryUser}:${primaryUser} /home/${primaryUser} -R`)
-
-        const dirsInSkel: string[] = []
-        const filesInSkel: string[] = []
-
-        for (const elem of fs.readdirSync(`${this.wardrobe}/${this.costume}/dirs/etc/skel/`, { withFileTypes: true })) {
-            if (elem.isDirectory()) {
-                dirsInSkel.push(path.basename(elem.name))
-            } else {
-                filesInSkel.push(path.basename(elem.name))
-            }
-        }
-        console.log(filesInSkel)
-        console.log(dirsInSkel)
-
-        // copy files
-        for (const fileInSkel of filesInSkel) {
-            let cmd = `cp ${this.wardrobe}/${this.costume}/dirs/etc/skel/${fileInSkel} /home/${primaryUser}/`
-            await exec(cmd, Utils.setEcho(true))
-        }
-
-        for (const dirInSkel of dirsInSkel) {
-            let cmd = `cp -r ${this.wardrobe}/${this.costume}/dirs/etc/skel/${dirInSkel}/ /home/${primaryUser}/`
-            if (fs.existsSync(`/home/${primaryUser}/${dirInSkel}`)) {
-                cmd = `cp -r ${this.wardrobe}/${this.costume}/dirs/etc/skel/${dirInSkel}/* /home/${primaryUser}/${dirInSkel}`
-            }
-            await exec(cmd, Utils.setEcho(true))
-        }
-        await exec(`chown ${primaryUser}:${primaryUser} /home/${primaryUser} -R`)
     }
 }

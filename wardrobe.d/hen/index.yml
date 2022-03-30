@@ -3,10 +3,10 @@
 name: hen
 description: desktop xfce3, all I need to develop eggs and firmware
 author: artisan
-release: 0.0.2
+release: 0.0.3
 distroId: Debian
 codenameId: bullseye
-releaseId: 0.0.2
+releaseId: stable
 applyTo: naked
 sequence:
   repositories:
