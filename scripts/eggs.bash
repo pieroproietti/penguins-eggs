@@ -34,11 +34,12 @@ tools:skel --help --user --verbose
 tools:stat --help --month --year
 tools:yolk --help --verbose
 update --help --apt --basket --verbose
+wardrobe:ironing --costume --wardrobe --verbose --help
 wardrobe:list --wardrobe --verbose --help
 wardrobe:show --wardrobe --costume --json --verbose --help
 wardrobe:wear --costume --wardrobe --verbose --help
-autocomplete --refresh-cache
 help --nested-commands
+autocomplete --refresh-cache
 version 
 "
 
