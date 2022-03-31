@@ -180,7 +180,7 @@ export default class Tailor {
                 Utils.warning(step)
                 if (verbose) {
                     Utils.titles()
-                    Utils.pressKeyToExit(cmd, true)
+                    // Utils.pressKeyToExit(cmd, true)
                 }
                 await exec(cmd, this.echo)
             }
