@@ -137,7 +137,7 @@ export default class Tailor {
                 Utils.warning(step)
                 if (verbose) {
                     Utils.titles()
-                    Utils.pressKeyToExit(cmd, true)
+                    // Utils.pressKeyToExit(cmd, true)
                 }
                 await exec(cmd, this.echo)
             }
@@ -159,7 +159,7 @@ export default class Tailor {
                 Utils.warning(step)
                 if (verbose) {
                     Utils.titles()
-                    Utils.pressKeyToExit(cmd, true)
+                    //Utils.pressKeyToExit(cmd, true)
                 }
                 await exec(cmd, this.echo)
             }
@@ -201,7 +201,7 @@ export default class Tailor {
                 Utils.warning(step)
                 if (verbose) {
                     Utils.titles()
-                    Utils.pressKeyToExit(cmd, true)
+                    //Utils.pressKeyToExit(cmd, true)
                 }
                 await exec(cmd, this.echo)
             }
@@ -227,7 +227,7 @@ export default class Tailor {
                     Utils.warning(step)
                     if (verbose) {
                         Utils.titles()
-                        Utils.pressKeyToExit(cmd, true)
+                        //Utils.pressKeyToExit(cmd, true)
                     }
                     await exec(cmd, this.echo)
                 }
@@ -269,7 +269,7 @@ export default class Tailor {
                     Utils.warning(step)
                     if (verbose) {
                         Utils.titles()
-                        Utils.pressKeyToExit(cmd, true)
+                        //Utils.pressKeyToExit(cmd, true)
                     }
                     await exec(cmd, this.echo)
                 }
@@ -311,7 +311,7 @@ export default class Tailor {
                     Utils.warning(step)
                     if (verbose) {
                         Utils.titles()
-                        Utils.pressKeyToExit(cmd, true)
+                        // Utils.pressKeyToExit(cmd, true)
                     }
                     await exec(cmd, this.echo)
                 }
@@ -354,7 +354,7 @@ export default class Tailor {
                     Utils.warning(step)
                     if (verbose) {
                         Utils.titles()
-                        Utils.pressKeyToExit(cmd, true)
+                        // Utils.pressKeyToExit(cmd, true)
                     }
                     await exec(cmd, this.echo)
                 }
@@ -376,7 +376,7 @@ export default class Tailor {
                     Utils.warning(step)
                     if (verbose) {
                         Utils.titles()
-                        Utils.pressKeyToExit(cmd, true)
+                        // Utils.pressKeyToExit(cmd, true)
                     }
                     await exec(cmd, this.echo)
                 }
@@ -393,7 +393,7 @@ export default class Tailor {
                 let cmd = `dpkg -i ${this.wardrobe}\*.deb`
                 if (verbose) {
                     Utils.titles()
-                    Utils.pressKeyToExit(cmd, true)
+                    // Utils.pressKeyToExit(cmd, true)
                 }
                 await exec(cmd)
             }
@@ -409,7 +409,7 @@ export default class Tailor {
                     let cmd = `rsync -avx  ${this.wardrobe}/${this.costume}/dirs/* /`
                     if (verbose) {
                         Utils.titles()
-                        Utils.pressKeyToExit(cmd, true)
+                        // Utils.pressKeyToExit(cmd, true)
                     }
                     await exec(cmd, this.echo)
 
