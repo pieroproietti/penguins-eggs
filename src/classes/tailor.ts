@@ -49,78 +49,76 @@ export default class Tailor {
         /**
          * Repositories
          */
-        if (this.materials.sequence.repositories === undefined) {
-            console.log('repositiories, and repositories.update MUST be defined on sequence ')
-            process.exit()
-        }
-        Utils.warning(`analyzing repositories`)
+        if (this.materials.sequence.repositories !== undefined) {
+            Utils.warning(`analyzing repositories`)
+            /**
+            * sources.list
+            */
+            if (this.materials.sequence.repositories.sourcesList !== undefined) {
+                let step = '/etc/apt/sources.list'
 
-        /**
-        * sources.list
-        */
-        if (this.materials.sequence.repositories.sourcesList !== undefined) {
-            let step = '/etc/apt/sources.list'
-
-            Utils.warning(step)
-            let components = ''
-
-            if (this.materials.sequence.repositories.sourcesList.main) {
-                components += ' main'
-            }
-
-            if (this.materials.sequence.repositories.sourcesList.contrib) {
-                components += ' contrib'
-            }
-
-            if (this.materials.sequence.repositories.sourcesList.nonFree) {
-                components += ' non-free'
-            }
-            console.log(`using: ${components}`)
-        }
-
-        /**
-         * sources.list.d
-         */
-        if (this.materials.sequence.repositories.sourcesListD !== undefined) {
-            if (this.materials.sequence.repositories.sourcesListD[0] !== null) {
-                let step = `adding repositories to /etc/apt/sources.list.d`
                 Utils.warning(step)
+                let components = ''
 
-                for (const cmd of this.materials.sequence.repositories.sourcesListD) {
-                    try {
-                        await exec(cmd, this.echo)
-                    } catch (error) {
-                        await Utils.pressKeyToExit(JSON.stringify(error))
+                if (this.materials.sequence.repositories.sourcesList.main) {
+                    components += ' main'
+                }
+
+                if (this.materials.sequence.repositories.sourcesList.contrib) {
+                    components += ' contrib'
+                }
+
+                if (this.materials.sequence.repositories.sourcesList.nonFree) {
+                    components += ' non-free'
+                }
+                console.log(`using: ${components}`)
+            }
+
+            /**
+             * sources.list.d
+             */
+            if (this.materials.sequence.repositories.sourcesListD !== undefined) {
+                if (this.materials.sequence.repositories.sourcesListD[0] !== null) {
+                    let step = `adding repositories to /etc/apt/sources.list.d`
+                    Utils.warning(step)
+
+                    for (const cmd of this.materials.sequence.repositories.sourcesListD) {
+                        try {
+                            await exec(cmd, this.echo)
+                        } catch (error) {
+                            await Utils.pressKeyToExit(JSON.stringify(error))
+                        }
                     }
+                }
+            }
+
+
+            /**
+             * apt-get update
+             */
+            if (this.materials.sequence.repositories.update === undefined) {
+                console.log('repositiories, and repositories.update MUDE be defined on sequence ')
+                process.exit()
+            }
+            let step = `updating repositories`
+            Utils.warning(step)
+            if (this.materials.sequence.repositories.update) {
+                await exec('apt-get update', Utils.setEcho(false))
+            }
+
+
+            /**
+             * apt-get full-upgrade
+             */
+            if (this.materials.sequence.repositories.fullUpgrade !== undefined) {
+                let step = `apt-get full-upgrade`
+                Utils.warning(step)
+                if (this.materials.sequence.repositories.fullUpgrade) {
+                    await exec('apt-get full-upgrade -y', Utils.setEcho(false))
                 }
             }
         }
 
-
-        /**
-         * apt-get update
-         */
-        if (this.materials.sequence.repositories.update === undefined) {
-            console.log('repositiories, and repositories.update MUDE be defined on sequence ')
-            process.exit()
-        }
-        let step = `updating repositories`
-        Utils.warning(step)
-        if (this.materials.sequence.repositories.update) {
-            await exec('apt-get update', Utils.setEcho(false))
-        }
-
-
-        /**
-         * apt-get full-upgrade
-         */
-        if (this.materials.sequence.repositories.fullUpgrade !== undefined) {
-            let step = `apt-get full-upgrade`
-            Utils.warning(step)
-            if (this.materials.sequence.repositories.fullUpgrade) {
-                await exec('apt-get full-upgrade -y', Utils.setEcho(false))
-            }
-        }
 
         /**
          * checking dependencies
@@ -425,6 +423,19 @@ export default class Tailor {
         }
 
         /**
+         * accessories
+         */
+        if (this.materials.sequence.accessories !== undefined) {
+            if (this.materials.sequence.accessories[0] !== null) {
+                let step = `wearing accessories`
+                for (const elem of this.materials.sequence.accessories) {
+                    const tailor = new Tailor(this.wardrobe, `./accessories/${elem}`)
+                    await tailor.prepare(verbose)
+                }
+            }
+        }
+
+        /**
          * hostname and hosts
          */
         if (this.materials.sequence.hostname !== undefined) {
@@ -454,15 +465,16 @@ export default class Tailor {
 
         /**
          * reboot
-         * mandatory
          */
         if (this.materials.sequence.reboot === undefined) {
-            this.materials.sequence.reboot = true
+            this.materials.sequence.reboot = false // Accessories
         }
         if (this.materials.sequence.reboot) {
             Utils.warning(`Reboot`)
             await Utils.pressKeyToExit('system need to reboot', true)
             await exec('reboot')
+        } else {
+            console.log(`You look good with: ${this.materials.name}`)
         }
     }
 
