@@ -1,7 +1,7 @@
-# basic
+# eggs-dev
 ---
-name: basic
-description: "add nodejs, code, spice-vdagent. Repos: anydesk, eggs, code, nodejs"
+name: eggs-dev
+description: "add repositories: nodesource, code, install: nodejs, code"
 author: artisan
 release: 0.0.1
 distroId: Debian
@@ -15,20 +15,6 @@ sequence:
       contrib: true
       nonFree: true
     sourcesListD:
-      - >-
-        curl -fsSL "https://pieroproietti.github.io/penguins-eggs-ppa/KEY.gpg" |
-        gpg --dearmor -o /usr/share/keyrings/penguins-eggs-ppa.gpg
-      - >-
-        echo "deb [signed-by=/usr/share/keyrings/penguins-eggs-ppa.gpg] 
-        https://pieroproietti.github.io/penguins-eggs-ppa ./ " | tee
-        /etc/apt/sources.list.d/penguins-eggs-ppa.list > /dev/null
-      - >-
-        curl -fsSL "https://keys.anydesk.com/repos/DEB-GPG-KEY" | gpg --dearmor
-        -o /usr/share/keyrings/anydesk-stable.gpg
-      - >-
-        echo "deb [signed-by=/usr/share/keyrings/anydesk-stable.gpg]
-        http://deb.anydesk.com/ all main" | tee
-        /etc/apt/sources.list.d/anydesk-stable.list > /dev/null
       - >-
         curl -fsSL "https://packages.microsoft.com/keys/microsoft.asc" | gpg
         --dearmor -o /usr/share/keyrings/packages.microsoft.gpg
@@ -45,9 +31,6 @@ sequence:
         /etc/apt/sources.list.d/nodesource.list > /dev/null
     update: true
     full-upgrade: true
-  dependencies:
-    - null
   packages:
     - code
     - nodejs
-    - spice-vdagent
