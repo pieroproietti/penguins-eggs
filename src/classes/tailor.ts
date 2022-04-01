@@ -42,12 +42,16 @@ export default class Tailor {
             process.exit()
         }
 
-        const tailorList = `${this.wardrobe}/${this.costume}/index.yml`
-
+        let tailorList = `${this.wardrobe}/${this.costume}/index.yml`
         if (fs.existsSync(tailorList)) {
             this.materials = yaml.load(fs.readFileSync(tailorList, 'utf-8')) as ICostume
         } else {
-            console.log('costume ' + chalk.cyan(this.costume) + ' not found in wardrobe: ' + chalk.green(this.wardrobe))
+            tailorList = `${this.wardrobe}/accessories/${this.costume}/index.yml`
+            if (fs.existsSync(tailorList)) {
+                this.materials = yaml.load(fs.readFileSync(tailorList, 'utf-8')) as ICostume
+            } else {
+                console.log('costume ' + chalk.cyan(this.costume) + ' not found in wardrobe: ' + chalk.green(this.wardrobe) + ', not in accessories')
+            }
         }
 
         /**

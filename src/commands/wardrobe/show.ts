@@ -46,15 +46,20 @@ export default class Show extends Command {
         console.log(chalk.green(`${position} wardrobe: `) + wardrobe)
         console.log()
 
-        if (fs.existsSync(`${wardrobe}/${costume}/index.yml`)) {
-            const materials = yaml.load(fs.readFileSync(`${wardrobe}/${costume}/index.yml`, 'utf-8')) as ICostume
-            if (json) {
-                console.log(JSON.stringify(materials, null, ' '))
-            } else {
-                console.log(yaml.dump(materials))
+        let tailorList = `${wardrobe}/${costume}/index.yml`
+        if (!fs.existsSync(tailorList)) {
+            tailorList = `${wardrobe}/accessories/${costume}/index.yml`
+            if (!fs.existsSync(tailorList)) {
+                console.log('costume ' + chalk.cyan(costume) + ' not found in wardrobe: ' + chalk.green(wardrobe) + ', not in accessories')
+                process.exit()
             }
+        }
+
+        const materials = yaml.load(fs.readFileSync(tailorList, 'utf-8')) as ICostume
+        if (json) {
+            console.log(JSON.stringify(materials, null, ' '))
         } else {
-            console.log('costume '  + chalk.cyan(costume) + ' not found in ' + position + ' wardrobe: ' + chalk.green(wardrobe))
+            console.log(yaml.dump(materials))
         }
     }
 }
