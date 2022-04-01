@@ -31,8 +31,8 @@ export interface ICostume {
             drivers_video_nvidia: string[],
             drivers_wifi: string[],
         }
-        packagesPip: string [],
         debs: boolean,
+        packagesPip: string [],
         dirs: boolean,
         accessories: string[],
         hostname: boolean,
