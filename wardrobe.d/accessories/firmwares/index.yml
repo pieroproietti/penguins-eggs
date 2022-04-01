@@ -1,0 +1,115 @@
+# firmwares
+---
+name: firmwares
+description: "install firmware"
+author: artisan
+release: 0.0.1
+applyTo: all
+distroId: Debian
+codenameId: bullseye
+releaseId: stable
+sequence:
+  firmwares:
+    drivers_wifi:
+      - dahdi-firmware-nonfree
+      - dns323-firmware-tools
+      - firmware-adi
+      - firmware-amd-graphics
+      - firmware-atheros
+      - firmware-b43-installer
+      - firmware-b43legacy-installer
+      - firmware-bnx2
+      - firmware-bnx2x
+      - firmware-brcm80211
+      - firmware-cavium
+      - firmware-intel-sound
+      - firmware-intelwimax
+      - firmware-ipw2x00
+      - firmware-ivtv
+      - firmware-iwlwifi
+      - firmware-libertas
+      - firmware-linux
+      - firmware-linux-free
+      - firmware-linux-nonfree
+      - firmware-myricom
+      - firmware-netronome
+      - firmware-netxen
+      - firmware-qcom-media
+      - firmware-qlogic
+      - firmware-ralink
+      - firmware-realtek
+      - firmware-samsung
+      - firmware-siano
+      - firmware-ti-connectivity
+      - firmware-zd1211
+      - grub-firmware-qemu
+      - hdmi2usb-fx2-firmware
+      - sigrok-firmware-fx2lafw
+    codecs:
+      - unace-nonfree
+    drivers_various:
+      - null
+    drivers_video_nvidia:
+      - bumblebee
+    drivers_video_amd:
+      - libdrm-amdgpu1
+      - libvulkan1
+      - mesa-opencl-icd
+      - mesa-vulkan-drivers
+      - vulkan-tools
+      - vulkan-validationlayers
+      - xserver-xorg-video-amdgpu
+    drivers_graphics_tablet:
+      - null
+    drivers_printer:
+      - autoconf
+      - avahi-utils
+      - colord
+      - cups
+      - cups-bsd
+      - cups-client
+      - cups-filters
+      - cups-pdf
+      - cups-pdf
+      - cups-ppdc
+      - dc
+      - foomatic-db-compressed-ppds
+      - ghostscript-cups
+      - ghostscript-x
+      - gocr-tk
+      - gutenprint-locales
+      - ink
+      - libtool
+      - openprinting-ppds
+      - printer-driver-all
+      - printer-driver-brlaser
+      - printer-driver-c2050
+      - printer-driver-c2esp
+      - printer-driver-cjet
+      - printer-driver-cups-pdf
+      - printer-driver-dymo
+      - printer-driver-escpr
+      - printer-driver-fujixerox
+      - printer-driver-gutenprint
+      - printer-driver-m2300w
+      - printer-driver-min12xxw
+      - printer-driver-pnm2ppa
+      - printer-driver-ptouch
+      - printer-driver-pxljr
+      - printer-driver-sag-gdi
+      - printer-driver-splix
+      - sane
+      - sane-utils
+      - system-config-printer
+      - system-config-printer-udev
+      - system-config-printer-udev
+      - tix
+      - unpaper
+      - xsltproc
+    drivers_network:
+      - hardinfo
+      - mobile-broadband-provider-info
+      - pppconfig
+      - usb-modeswitch
+      - usb-modeswitch-data
+      - wvdial
