@@ -10,18 +10,17 @@ export default class Wear extends Command {
   static flags = {
     costume: Flags.string({ char: 'c', description: 'Costume' }),
     wardrobe: Flags.string({ char: 'w', description: 'wardrobe' }),
-    verbose: Flags.boolean({ char: 'v' }),
+    silent: Flags.boolean({ char: 's' }),
     help: Flags.help({ char: 'h' }),
   }
 
   async run(): Promise<void> {
     const { args, flags } = await this.parse(Wear)
 
-    let verbose = false
-    if (flags.verbose) {
+    let verbose = true
+    if (flags.silent) {
       verbose = true
     }
-    const echo = Utils.setEcho(verbose)
 
     Utils.titles(this.id + ' ' + this.argv)
 

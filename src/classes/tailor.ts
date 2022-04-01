@@ -17,7 +17,11 @@ export default class Tailor {
     private wardrobe = ''
     materials = {} as ICostume
 
-    constructor(wardrobe: string, costume: string, verbose = false) {
+    /**
+     * @param wardrobe 
+     * @param costume 
+     */
+    constructor(wardrobe: string, costume: string) {
         this.costume = costume
         this.wardrobe = wardrobe
     }
@@ -25,7 +29,7 @@ export default class Tailor {
     /**
      * 
      */
-    async prepare(verbose = false) {
+    async prepare(verbose = true) {
         this.verbose = verbose
         this.echo = Utils.setEcho(verbose)
         Utils.warning(`preparing ${this.costume}`)
@@ -51,27 +55,26 @@ export default class Tailor {
          */
         if (this.materials.sequence.repositories !== undefined) {
             Utils.warning(`analyzing repositories`)
+
             /**
             * sources.list
             */
             if (this.materials.sequence.repositories.sourcesList !== undefined) {
-                let step = '/etc/apt/sources.list'
-
+                let step = 'checking repository /etc/apt/sources.list'
                 Utils.warning(step)
-                let components = ''
 
+                let components = ''
                 if (this.materials.sequence.repositories.sourcesList.main) {
                     components += ' main'
                 }
-
                 if (this.materials.sequence.repositories.sourcesList.contrib) {
                     components += ' contrib'
                 }
-
                 if (this.materials.sequence.repositories.sourcesList.nonFree) {
                     components += ' non-free'
                 }
-                console.log(`using: ${components}`)
+
+                console.log(`we are using using: ${components}`)
             }
 
             /**
@@ -131,12 +134,8 @@ export default class Tailor {
                     cmd += ` ${dependence}`
                     dependencies += `, ${dependence}`
                 }
-                let step = `installing dependencies: ${dependencies.substring(2)}`
+                let step = `installing dependencies: ${dependencies.substring(2)}` 
                 Utils.warning(step)
-                if (verbose) {
-                    Utils.titles()
-                    // Utils.pressKeyToExit(cmd, true)
-                }
                 await exec(cmd, this.echo)
             }
         }
@@ -155,10 +154,6 @@ export default class Tailor {
                 }
                 let step = `installing packages: ${packages.substring(2)}`
                 Utils.warning(step)
-                if (verbose) {
-                    Utils.titles()
-                    //Utils.pressKeyToExit(cmd, true)
-                }
                 await exec(cmd, this.echo)
             }
         }
@@ -176,35 +171,9 @@ export default class Tailor {
                 }
                 let step = `installing packages --no-install-recommends --no-install-suggests ${noInstallRecommends.substring(2)}`
                 Utils.warning(step)
-                if (verbose) {
-                    Utils.titles()
-                    // Utils.pressKeyToExit(cmd, true)
-                }
                 await exec(cmd, this.echo)
             }
         }
-
-        /**
-        * pip packages
-        */
-        if (this.materials.sequence.packagesPip !== undefined) {
-            if (this.materials.sequence.packagesPip[0] !== null) {
-                let cmd = 'pip install '
-                let pip = ''
-                for (const elem of this.materials.sequence.packagesPip) {
-                    cmd += ` ${elem}`
-                    pip += `, ${elem}`
-                }
-                let step = `installing python packages pip ${pip.substring(2)}`
-                Utils.warning(step)
-                if (verbose) {
-                    Utils.titles()
-                    //Utils.pressKeyToExit(cmd, true)
-                }
-                await exec(cmd, this.echo)
-            }
-        }
-
 
         /**
          * firmwares
@@ -223,10 +192,6 @@ export default class Tailor {
                     }
                     let step = `installing packages firmware codecs ${codecs.substring(2)}`
                     Utils.warning(step)
-                    if (verbose) {
-                        Utils.titles()
-                        //Utils.pressKeyToExit(cmd, true)
-                    }
                     await exec(cmd, this.echo)
                 }
             }
@@ -244,10 +209,6 @@ export default class Tailor {
                     }
                     let step = `installing packages firmware drivers_graphics_tablet ${drivers_graphics_tablet.substring(2)}`
                     Utils.warning(step)
-                    if (verbose) {
-                        Utils.titles()
-                        // Utils.pressKeyToExit(cmd, true)
-                    }
                     await exec(cmd, this.echo)
                 }
             }
@@ -265,10 +226,6 @@ export default class Tailor {
                     }
                     let step = `installing packages firmware drivers_network ${drivers_network.substring(2)}`
                     Utils.warning(step)
-                    if (verbose) {
-                        Utils.titles()
-                        //Utils.pressKeyToExit(cmd, true)
-                    }
                     await exec(cmd, this.echo)
                 }
 
@@ -285,10 +242,6 @@ export default class Tailor {
                         }
                         let step = `installing packages firmware drivers_network ${drivers_various.substring(2)}`
                         Utils.warning(step)
-                        if (verbose) {
-                            Utils.titles()
-                            // Utils.pressKeyToExit(cmd, true)
-                        }
                         await exec(cmd, this.echo)
                     }
                 }
@@ -307,10 +260,6 @@ export default class Tailor {
                     }
                     let step = `installing packages firmware drivers_network ${drivers_video_amd.substring(2)}`
                     Utils.warning(step)
-                    if (verbose) {
-                        Utils.titles()
-                        // Utils.pressKeyToExit(cmd, true)
-                    }
                     await exec(cmd, this.echo)
                 }
             }
@@ -328,10 +277,6 @@ export default class Tailor {
                     }
                     let step = `installing packages firmware drivers_network ${drivers_video_nvidia.substring(2)}`
                     Utils.warning(step)
-                    if (verbose) {
-                        Utils.titles()
-                        // Utils.pressKeyToExit(cmd, true)
-                    }
                     await exec(cmd, this.echo)
                 }
             }
@@ -350,10 +295,6 @@ export default class Tailor {
                     }
                     let step = `installing packages firmware drivers_network ${drivers_wifi.substring(2)}`
                     Utils.warning(step)
-                    if (verbose) {
-                        Utils.titles()
-                        // Utils.pressKeyToExit(cmd, true)
-                    }
                     await exec(cmd, this.echo)
                 }
             }
@@ -372,10 +313,6 @@ export default class Tailor {
                     }
                     let step = `installing packages firmware drivers_network ${drivers_printer.substring(2)}`
                     Utils.warning(step)
-                    if (verbose) {
-                        Utils.titles()
-                        // Utils.pressKeyToExit(cmd, true)
-                    }
                     await exec(cmd, this.echo)
                 }
             }
@@ -384,16 +321,29 @@ export default class Tailor {
         /**
          * dpkg -i *.deb
          */
-        if (this.materials.sequence.debs !== undefined) {
+         if (this.materials.sequence.debs !== undefined) {
             if (this.materials.sequence.debs) {
                 let step = `installing local packages`
                 Utils.warning(step)
                 let cmd = `dpkg -i ${this.wardrobe}\*.deb`
-                if (verbose) {
-                    Utils.titles()
-                    // Utils.pressKeyToExit(cmd, true)
-                }
                 await exec(cmd)
+            }
+        }
+
+        /**
+        * packages python
+        */
+         if (this.materials.sequence.packagesPip !== undefined) {
+            if (this.materials.sequence.packagesPip[0] !== null) {
+                let cmd = 'pip install '
+                let pip = ''
+                for (const elem of this.materials.sequence.packagesPip) {
+                    cmd += ` ${elem}`
+                    pip += `, ${elem}`
+                }
+                let step = `installing python packages pip ${pip.substring(2)}`
+                Utils.warning(step)
+                await exec(cmd, this.echo)
             }
         }
 
@@ -404,17 +354,16 @@ export default class Tailor {
             if (this.materials.sequence.dirs) {
                 if (fs.existsSync(`${this.wardrobe}/${this.costume}/dirs`)) {
                     let step = `copying dirs`
+                    Utils.warning(step)
                     let cmd = `rsync -avx  ${this.wardrobe}/${this.costume}/dirs/* /`
-                    if (verbose) {
-                        Utils.titles()
-                        // Utils.pressKeyToExit(cmd, true)
-                    }
                     await exec(cmd, this.echo)
 
                     /**
                      * Copyng skel in /home/user
                      */
-                    const user = Utils.getPrimaryUser()
+                     const user = Utils.getPrimaryUser()
+                     step = `copying skel in /home/${user}/`
+                     Utils.warning(step)
                     cmd = `rsync -avx  ${this.wardrobe}/${this.costume}/dirs/etc/skel/.* /home/${user}/`
                     await exec(cmd, this.echo)
                     await exec(`chown ${user}:${user} /home/${user}/ -R`)
