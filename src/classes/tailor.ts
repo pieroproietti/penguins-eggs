@@ -71,21 +71,38 @@ export default class Tailor {
             * sources.list
             */
             if (this.materials.sequence.repositories.sourcesList !== undefined) {
-                let step = 'checking repository /etc/apt/sources.list'
+                let step = 'analyzing /etc/apt/sources.list'
                 Utils.warning(step)
 
-                let components = ''
+                let components : string [] =  []
                 if (this.materials.sequence.repositories.sourcesList.main) {
-                    components += ' main'
+                    components.push('main')
                 }
                 if (this.materials.sequence.repositories.sourcesList.contrib) {
-                    components += ' contrib'
+                    components.push('contrib')
                 }
                 if (this.materials.sequence.repositories.sourcesList.nonFree) {
-                    components += ' non-free'
+                    components.push('non-free')
                 }
 
-                console.log(`we are using using: ${components}`)
+                let checkRepos = await exec(`grep "deb http"</etc/apt/sources.list`)
+                let repos : string [] =  []
+                if (checkRepos.code === 0 ){
+                    repos = checkRepos.data.split('\n')
+                }
+
+                let repOk = true
+                for (const repo of repos ){
+                    for (const component of components) {
+                        if(!repo.includes(component)) {
+                            Utils.warning(`repository: ${repo} not include ${component}`)
+                            repOk = false
+                        }
+                    }
+                }
+                if (!repOk) {
+                    process.exit()
+                }
             }
 
             /**
@@ -138,9 +155,7 @@ export default class Tailor {
          * checking dependencies
          */
         if (this.materials.sequence.dependencies !== undefined) {
-            if (this.materials.sequence.dependencies[0] !== null) {
-                this.helper(this.materials.sequence.dependencies, 'dependencies')
-            }
+            await this.helper(this.materials.sequence.dependencies, 'dependencies')
         }
 
 
@@ -148,101 +163,84 @@ export default class Tailor {
          * apt-get install packages
          */
         if (this.materials.sequence.packages !== undefined) {
-            if (this.materials.sequence.packages[0] !== null) {
-                this.helper(this.materials.sequence.packages)
-            }
+            await this.helper(this.materials.sequence.packages)
         }
 
         /**
         * apt-get install --no-install-recommends --no-install-suggests
         */
         if (this.materials.sequence.noInstallRecommends !== undefined) {
-            if (this.materials.sequence.noInstallRecommends[0] !== null) {
-                this.helper(
-                    this.materials.sequence.noInstallRecommends,
-                    "packages without recommends and suggests",
-                    'apt-get install --no-install-recommends --no-install-suggests -y '
-                )
-            }
+            await this.helper(
+                this.materials.sequence.noInstallRecommends,
+                "packages without recommends and suggests",
+                'apt-get install --no-install-recommends --no-install-suggests -y '
+            )
         }
 
         /**
          * firmwares
          */
         if (this.materials.sequence.firmwares !== undefined) {
+
+
             /**
              * codecs
              */
             if (this.materials.sequence.firmwares.codecs !== undefined) {
-                if (this.materials.sequence.firmwares.codecs[0] !== null) {
-                    this.helper(this.materials.sequence.firmwares.codecs, 'codecs')
-
-                }
+                await this.helper(this.materials.sequence.firmwares.codecs, 'codecs')
             }
 
             /**
              * drivers_graphics_tablet
              */
             if (this.materials.sequence.firmwares.drivers_graphics_tablet !== undefined) {
-                if (this.materials.sequence.firmwares.drivers_graphics_tablet[0] !== null) {
-                    this.helper(this.materials.sequence.firmwares.drivers_graphics_tablet, "graphics tablet"))
-                }
+                await this.helper(this.materials.sequence.firmwares.drivers_graphics_tablet, "graphics tablet")
             }
 
             /**
              * drivers_network
              */
             if (this.materials.sequence.firmwares.drivers_network !== undefined) {
-                if (this.materials.sequence.firmwares.drivers_network[0] !== null) {
-                    this.helper(this.materials.sequence.firmwares.drivers_network, "network")
-                }
+                await this.helper(this.materials.sequence.firmwares.drivers_network, "network")
             }
 
             /**
              * drivers_various
              */
             if (this.materials.sequence.firmwares.drivers_various !== undefined) {
-                if (this.materials.sequence.firmwares.drivers_various[0] !== null) {
-                    this.helper(this.materials.sequence.firmwares.drivers_various, "various firmwares")
-                }
+                await this.helper(this.materials.sequence.firmwares.drivers_various, "various firmwares")
             }
 
             /**
              * drivers_video_amd
              */
             if (this.materials.sequence.firmwares.drivers_video_amd !== undefined) {
-                if (this.materials.sequence.firmwares.drivers_video_amd[0] !== null) {
-                    this.helper(this.materials.sequence.firmwares.drivers_video_amd, "video AMD")
-                }
+                await this.helper(this.materials.sequence.firmwares.drivers_video_amd, "video AMD")
             }
 
             /**
              * drivers_video_nvidia
              */
             if (this.materials.sequence.firmwares.drivers_video_nvidia !== undefined) {
-                if (this.materials.sequence.firmwares.drivers_video_nvidia[0] !== null) {
-                    this.helper(this.materials.sequence.firmwares.drivers_video_nvidia, "video NVIDIA")
-                }
+                await this.helper(this.materials.sequence.firmwares.drivers_video_nvidia, "video NVIDIA")
             }
 
             /**
              * drivers_wifi
              */
             if (this.materials.sequence.firmwares.drivers_wifi !== undefined) {
-                if (this.materials.sequence.firmwares.drivers_wifi[0] !== null) {
-                    this.helper(this.materials.sequence.firmwares.drivers_wifi, "wifi")
-                }
+                await this.helper(this.materials.sequence.firmwares.drivers_wifi, "wifi")
             }
 
             /**
              * drivers_printer
              */
             if (this.materials.sequence.firmwares.drivers_printer !== undefined) {
-                if (this.materials.sequence.firmwares.drivers_printer[0] !== null) {
-                    this.helper(this.materials.sequence.firmwares.drivers_printer, 'printers')
-                }
+                await this.helper(this.materials.sequence.firmwares.drivers_printer, 'printers')
             }
         }
+
+
 
         /**
          * dpkg -i *.deb
@@ -255,6 +253,8 @@ export default class Tailor {
                 await exec(cmd)
             }
         }
+
+
 
         /**
         * packages python
@@ -272,6 +272,8 @@ export default class Tailor {
                 await exec(cmd, this.echo)
             }
         }
+
+
 
         /**
          * dirs
@@ -297,6 +299,8 @@ export default class Tailor {
             }
         }
 
+
+
         /**
          * accessories
          */
@@ -310,6 +314,8 @@ export default class Tailor {
             }
         }
 
+
+
         /**
          * hostname and hosts
          */
@@ -319,6 +325,8 @@ export default class Tailor {
                 await this.hostname()
             }
         }
+
+
 
         /**
          * customizations
@@ -338,6 +346,8 @@ export default class Tailor {
             }
         }
 
+
+
         /**
          * reboot
          */
@@ -354,28 +364,32 @@ export default class Tailor {
     }
 
 
+    
+
     /**
-     * check if every package if installed
-     * if NOT fing packages to be installed SKIP
+     * - check if every package if installed
+     * - if find any packages to install
+     * - install packages
      */
-    helper(packages: string[], comment= 'packages', cmd = 'apt-get install -y ' ) {
-        let elements: string[] = []
-        let strElements = ''
-        for (const elem of packages) {
-            if (!Pacman.packageIsInstalled(elem)) {
-                elements.push(elem)
-                cmd += ` ${elem}`
-                strElements += `, ${elem}`
+    async helper(packages: string[], comment = 'packages', cmd = 'apt-get install -y ') {
+
+        if (packages[0] !== null) {
+            let elements: string[] = []
+            let strElements = ''
+            for (const elem of packages) {
+                if (!Pacman.packageIsInstalled(elem)) {
+                    elements.push(elem)
+                    cmd += ` ${elem}`
+                    strElements += `, ${elem}`
+                }
+            }
+            if (elements.length > 0) {
+                let step = `installing ${comment}: ${strElements.substring(2)}`
+                Utils.warning(step)
+                await exec(cmd, this.echo)
             }
         }
-        if (elements.length > 0)) {
-            let step = `installing ${comment}: ${strElements.substring(2)}`
-            Utils.warning(step)
-            await exec(cmd, this.echo)
-        }
-
     }
-
 
 
 
