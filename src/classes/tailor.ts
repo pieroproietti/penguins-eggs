@@ -71,6 +71,8 @@ export default class Tailor {
             * sources.list
             */
             if (this.materials.sequence.repositories.sourcesList !== undefined) {
+                //deb http://site.example.com/debian distribution component1 component2 component3
+
                 let step = 'analyzing /etc/apt/sources.list'
                 Utils.warning(step)
 
