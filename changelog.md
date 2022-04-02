@@ -24,7 +24,7 @@ wardrobe: introduced accessories for costumes, you can wear a costume and choose
 * eggs-dev, 
 * firmware
 
-Costume hen, now specific now just xfce4 configuration and take all the capabilities from base, eggs-dev and firmware. The same is for gwaydroid and gwaydroid, both are using base, eggs-dev and firmaware. in this case, it's evident who - a future accossory waydroid - can free us to configure twice it, one for gwaydroid and another to kwaydroid.
+Costume hen, now specific just xfce4 configuration and take all the capabilities from base, eggs-dev and firmware. The same happen on gwaydroid and kwaydroid: both are actually using accessiries. in this case, it's evident who - a future accessory waydroid, specifyng that it's need and mantained from tha authors - can lead to a better compatibility and free us to configure twice it.
 
 ### eggs-9.0.48-1
 * wardrobe: added firmwares: [drivers_wifi, codecs, drivers_various, drivers_video_nvidia, drivers_video_amd, drivers_graphics_tablet, drivers_printer, drivers_network];
