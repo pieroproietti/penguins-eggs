@@ -1,3 +1,10 @@
+/**
+ * penguins-eggs: tailor.ts
+ * author: Piero Proietti
+ * mail: piero.proietti@gmail.com
+ *
+ */
+
 import chalk from 'chalk'
 import Utils from './utils'
 import { ICostume } from '../interfaces'
@@ -134,11 +141,13 @@ export default class Tailor {
             if (this.materials.sequence.dependencies[0] !== null) {
                 let cmd = 'apt-get install -y '
                 let dependencies = ''
-                for (const dependence of this.materials.sequence.dependencies) {
-                    cmd += ` ${dependence}`
-                    dependencies += `, ${dependence}`
+                for (const elem of this.materials.sequence.dependencies) {
+                    if (!Pacman.packageIsInstalled(elem)) {
+                        cmd += ` ${elem}`
+                        dependencies += `, ${elem}`
+                    }
                 }
-                let step = `installing dependencies: ${dependencies.substring(2)}` 
+                let step = `installing dependencies: ${dependencies.substring(2)}`
                 Utils.warning(step)
                 await exec(cmd, this.echo)
             }
@@ -153,8 +162,10 @@ export default class Tailor {
                 let packages = ''
                 let cmd = 'apt-get install -y '
                 for (const elem of this.materials.sequence.packages) {
-                    cmd += ` ${elem}`
-                    packages += `, ${elem}`
+                    if (!Pacman.packageIsInstalled(elem)) {
+                        cmd += ` ${elem}`
+                        packages += `, ${elem}`
+                    }
                 }
                 let step = `installing packages: ${packages.substring(2)}`
                 Utils.warning(step)
@@ -170,8 +181,10 @@ export default class Tailor {
                 let cmd = 'apt-get install --no-install-recommends --no-install-suggests -y '
                 let noInstallRecommends = ''
                 for (const elem of this.materials.sequence.noInstallRecommends) {
-                    cmd += ` ${elem}`
-                    noInstallRecommends += `, ${elem}`
+                    if (!Pacman.packageIsInstalled(elem)) {
+                        cmd += ` ${elem}`
+                        noInstallRecommends += `, ${elem}`
+                    }
                 }
                 let step = `installing packages --no-install-recommends --no-install-suggests ${noInstallRecommends.substring(2)}`
                 Utils.warning(step)
@@ -191,8 +204,10 @@ export default class Tailor {
                     let cmd = 'apt-get install -y '
                     let codecs = ''
                     for (const elem of this.materials.sequence.firmwares.codecs) {
-                        cmd += ` ${elem}`
-                        codecs += `, ${elem}`
+                        if (!Pacman.packageIsInstalled(elem)) {
+                            cmd += ` ${elem}`
+                            codecs += `, ${elem}`
+                        }
                     }
                     let step = `installing packages firmware codecs ${codecs.substring(2)}`
                     Utils.warning(step)
@@ -208,8 +223,10 @@ export default class Tailor {
                     let cmd = 'apt-get install -y '
                     let drivers_graphics_tablet = ''
                     for (const elem of this.materials.sequence.firmwares.drivers_graphics_tablet) {
-                        cmd += ` ${elem}`
-                        drivers_graphics_tablet += `, ${elem}`
+                        if (!Pacman.packageIsInstalled(elem)) {
+                            cmd += ` ${elem}`
+                            drivers_graphics_tablet += `, ${elem}`
+                        }
                     }
                     let step = `installing packages firmware drivers_graphics_tablet ${drivers_graphics_tablet.substring(2)}`
                     Utils.warning(step)
@@ -225,29 +242,33 @@ export default class Tailor {
                     let cmd = 'apt-get install -y '
                     let drivers_network = ''
                     for (const elem of this.materials.sequence.firmwares.drivers_network) {
-                        cmd += ` ${elem}`
-                        drivers_network += `, ${elem}`
+                        if (!Pacman.packageIsInstalled(elem)) {
+                            cmd += ` ${elem}`
+                            drivers_network += `, ${elem}`
+                        }
                     }
                     let step = `installing packages firmware drivers_network ${drivers_network.substring(2)}`
                     Utils.warning(step)
                     await exec(cmd, this.echo)
                 }
+            }
 
-                /**
-                 * drivers_various
-                 */
-                if (this.materials.sequence.firmwares.drivers_various !== undefined) {
-                    if (this.materials.sequence.firmwares.drivers_various[0] !== null) {
-                        let cmd = 'apt-get install -y '
-                        let drivers_various = ''
-                        for (const elem of this.materials.sequence.firmwares.drivers_various) {
+            /**
+             * drivers_various
+             */
+            if (this.materials.sequence.firmwares.drivers_various !== undefined) {
+                if (this.materials.sequence.firmwares.drivers_various[0] !== null) {
+                    let cmd = 'apt-get install -y '
+                    let drivers_various = ''
+                    for (const elem of this.materials.sequence.firmwares.drivers_various) {
+                        if (!Pacman.packageIsInstalled(elem)) {
                             cmd += ` ${elem}`
                             drivers_various += `, ${elem}`
                         }
-                        let step = `installing packages firmware drivers_network ${drivers_various.substring(2)}`
-                        Utils.warning(step)
-                        await exec(cmd, this.echo)
                     }
+                    let step = `installing packages firmware drivers_network ${drivers_various.substring(2)}`
+                    Utils.warning(step)
+                    await exec(cmd, this.echo)
                 }
             }
 
@@ -259,8 +280,10 @@ export default class Tailor {
                     let cmd = 'apt-get install -y '
                     let drivers_video_amd = ''
                     for (const elem of this.materials.sequence.firmwares.drivers_video_amd) {
-                        cmd += ` ${elem}`
-                        drivers_video_amd += `, ${elem}`
+                        if (!Pacman.packageIsInstalled(elem)) {
+                            cmd += ` ${elem}`
+                            drivers_video_amd += `, ${elem}`
+                        }
                     }
                     let step = `installing packages firmware drivers_network ${drivers_video_amd.substring(2)}`
                     Utils.warning(step)
@@ -276,8 +299,10 @@ export default class Tailor {
                     let cmd = 'apt-get install -y '
                     let drivers_video_nvidia = ''
                     for (const elem of this.materials.sequence.firmwares.drivers_video_nvidia) {
-                        cmd += ` ${elem}`
-                        drivers_video_nvidia += `, ${elem}`
+                        if (!Pacman.packageIsInstalled(elem)) {
+                            cmd += ` ${elem}`
+                            drivers_video_nvidia += `, ${elem}`
+                        }
                     }
                     let step = `installing packages firmware drivers_network ${drivers_video_nvidia.substring(2)}`
                     Utils.warning(step)
@@ -294,8 +319,10 @@ export default class Tailor {
                     let cmd = 'apt-get install -y '
                     let drivers_wifi = ''
                     for (const elem of this.materials.sequence.firmwares.drivers_wifi) {
-                        cmd += ` ${elem}`
-                        drivers_wifi += `, ${elem}`
+                        if (!Pacman.packageIsInstalled(elem)) {
+                            cmd += ` ${elem}`
+                            drivers_wifi += `, ${elem}`
+                        }
                     }
                     let step = `installing packages firmware drivers_network ${drivers_wifi.substring(2)}`
                     Utils.warning(step)
@@ -312,8 +339,10 @@ export default class Tailor {
                     let cmd = 'apt-get install -y '
                     let drivers_printer = ''
                     for (const elem of this.materials.sequence.firmwares.drivers_printer) {
-                        cmd += ` ${elem}`
-                        drivers_printer += `, ${elem}`
+                        if (!Pacman.packageIsInstalled(elem)) {
+                            cmd += ` ${elem}`
+                            drivers_printer += `, ${elem}`
+                        }
                     }
                     let step = `installing packages firmware drivers_network ${drivers_printer.substring(2)}`
                     Utils.warning(step)
@@ -325,7 +354,7 @@ export default class Tailor {
         /**
          * dpkg -i *.deb
          */
-         if (this.materials.sequence.debs !== undefined) {
+        if (this.materials.sequence.debs !== undefined) {
             if (this.materials.sequence.debs) {
                 let step = `installing local packages`
                 Utils.warning(step)
@@ -337,7 +366,7 @@ export default class Tailor {
         /**
         * packages python
         */
-         if (this.materials.sequence.packagesPip !== undefined) {
+        if (this.materials.sequence.packagesPip !== undefined) {
             if (this.materials.sequence.packagesPip[0] !== null) {
                 let cmd = 'pip install '
                 let pip = ''
@@ -365,9 +394,9 @@ export default class Tailor {
                     /**
                      * Copyng skel in /home/user
                      */
-                     const user = Utils.getPrimaryUser()
-                     step = `copying skel in /home/${user}/`
-                     Utils.warning(step)
+                    const user = Utils.getPrimaryUser()
+                    step = `copying skel in /home/${user}/`
+                    Utils.warning(step)
                     cmd = `rsync -avx  ${this.wardrobe}/${this.costume}/dirs/etc/skel/.* /home/${user}/`
                     await exec(cmd, this.echo)
                     await exec(`chown ${user}:${user} /home/${user}/ -R`)
