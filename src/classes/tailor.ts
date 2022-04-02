@@ -87,7 +87,7 @@ export default class Tailor {
                     components.push('non-free')
                 }
 
-                let checkRepos = await exec(`grep "deb http"</etc/apt/sources.list`)
+                let checkRepos = await exec(`grep "deb http"</etc/apt/sources.list`,this.echo)
                 let repos : string [] =  []
                 if (checkRepos.code === 0 ){
                     repos = checkRepos.data.split('\n')
@@ -97,8 +97,8 @@ export default class Tailor {
                 for (const repo of repos ){
                     for (const component of components) {
                         if(!repo.includes(component)) {
-                            Utils.warning(`repository: ${repo} not include ${component}`)
                             repOk = false
+                            console.log(`repository: ${repo} not include ${component}`)
                         }
                     }
                 }
