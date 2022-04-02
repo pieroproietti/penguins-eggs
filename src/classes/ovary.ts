@@ -1,6 +1,3 @@
-/* eslint-disable valid-jsdoc */
-/* eslint-disable no-console */
-
 /**
  * penguins-eggs: ovary.ts
  * author: Piero Proietti
