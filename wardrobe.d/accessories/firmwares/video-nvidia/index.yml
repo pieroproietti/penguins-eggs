@@ -1,0 +1,13 @@
+# driver-nvidia
+---
+name: driver-nvidia
+description: "install driver-nvidia"
+author: artisan
+release: 0.0.1
+applyTo: all
+distroId: Debian
+codenameId: bullseye
+releaseId: stable
+sequence:
+  package:
+  - bumblebee

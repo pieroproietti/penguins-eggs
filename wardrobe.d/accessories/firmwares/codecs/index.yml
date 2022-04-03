@@ -1,0 +1,13 @@
+# codecs
+---
+name: codecs
+description: "install codecs"
+author: artisan
+release: 0.0.1
+applyTo: all
+distroId: Debian
+codenameId: bullseye
+releaseId: stable
+sequence:
+  packages:
+    - unace-nonfree

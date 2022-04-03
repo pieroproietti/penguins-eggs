@@ -1,4 +1,4 @@
-# firmwares
+# network drivers - to check
 ---
 name: firmwares
 description: "install firmware"
@@ -9,12 +9,10 @@ distroId: Debian
 codenameId: bullseye
 releaseId: stable
 sequence:
-  accessories:
-  - ./codecs
-  - ./network-cable
-  - ./network-wifi
-  - ./printers
-  - ./video-amd
-  - ./video-nvidia
-
-  
+  packages:
+  - hardinfo
+  - mobile-broadband-provider-info
+  - pppconfig
+  - usb-modeswitch
+  - usb-modeswitch-data
+  - wvdial

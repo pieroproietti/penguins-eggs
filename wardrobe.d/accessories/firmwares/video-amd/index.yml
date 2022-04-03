@@ -1,0 +1,19 @@
+# drivers-video-amd
+---
+name: firmwares
+description: "install drivers-video-amd"
+author: artisan
+release: 0.0.1
+applyTo: all
+distroId: Debian
+codenameId: bullseye
+releaseId: stable
+sequence:
+  drivers_video_amd:
+    - libdrm-amdgpu1
+    - libvulkan1
+    - mesa-opencl-icd
+    - mesa-vulkan-drivers
+    - vulkan-tools
+    - vulkan-validationlayers
+    - xserver-xorg-video-amdgpu

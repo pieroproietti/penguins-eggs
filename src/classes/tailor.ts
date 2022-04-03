@@ -171,8 +171,6 @@ export default class Tailor {
         }
 
 
-
-
         /**
          * checking dependencies
          */
@@ -199,69 +197,6 @@ export default class Tailor {
             )
         }
 
-        /**
-         * firmwares
-         */
-        if (this.materials.sequence.firmwares !== undefined) {
-
-            /**
-             * codecs
-             */
-            if (this.materials.sequence.firmwares.codecs !== undefined) {
-                await this.helper(this.materials.sequence.firmwares.codecs, 'codecs')
-            }
-
-            /**
-             * drivers_graphics_tablet
-             */
-            if (this.materials.sequence.firmwares.drivers_graphics_tablet !== undefined) {
-                await this.helper(this.materials.sequence.firmwares.drivers_graphics_tablet, "graphics tablet")
-            }
-
-            /**
-             * drivers_network
-             */
-            if (this.materials.sequence.firmwares.drivers_network !== undefined) {
-                await this.helper(this.materials.sequence.firmwares.drivers_network, "network")
-            }
-
-            /**
-             * drivers_various
-             */
-            if (this.materials.sequence.firmwares.drivers_various !== undefined) {
-                await this.helper(this.materials.sequence.firmwares.drivers_various, "various firmwares")
-            }
-
-            /**
-             * drivers_video_amd
-             */
-            if (this.materials.sequence.firmwares.drivers_video_amd !== undefined) {
-                await this.helper(this.materials.sequence.firmwares.drivers_video_amd, "video AMD")
-            }
-
-            /**
-             * drivers_video_nvidia
-             */
-            if (this.materials.sequence.firmwares.drivers_video_nvidia !== undefined) {
-                await this.helper(this.materials.sequence.firmwares.drivers_video_nvidia, "video NVIDIA")
-            }
-
-            /**
-             * drivers_wifi
-             */
-            if (this.materials.sequence.firmwares.drivers_wifi !== undefined) {
-                await this.helper(this.materials.sequence.firmwares.drivers_wifi, "wifi")
-            }
-
-            /**
-             * drivers_printer
-             */
-            if (this.materials.sequence.firmwares.drivers_printer !== undefined) {
-                await this.helper(this.materials.sequence.firmwares.drivers_printer, 'printers')
-            }
-        }
-
-
 
         /**
          * dpkg -i *.deb
@@ -274,7 +209,6 @@ export default class Tailor {
                 await exec(cmd)
             }
         }
-
 
 
         /**
@@ -294,6 +228,24 @@ export default class Tailor {
             }
         }
 
+
+        /**
+         * accessories
+         */
+        if (this.materials.sequence.accessories !== undefined) {
+            if (this.materials.sequence.accessories[0] !== null) {
+                let step = `wearing accessories`
+                for (const elem of this.materials.sequence.accessories) {
+                    if (elem.substring(0, 2) === './') {
+                        const tailor = new Tailor(this.wardrobe, `${this.costume}/${elem.substring(2)}`)
+                        await tailor.prepare(verbose)
+                    } else {
+                        const tailor = new Tailor(this.wardrobe, `./accessories/${elem}`)
+                        await tailor.prepare(verbose)
+                    }
+                }
+            }
+        }
 
 
         /**
@@ -316,21 +268,6 @@ export default class Tailor {
                     cmd = `rsync -avx  ${this.wardrobe}/${this.costume}/dirs/etc/skel/.* /home/${user}/`
                     await exec(cmd, this.echo)
                     await exec(`chown ${user}:${user} /home/${user}/ -R`)
-                }
-            }
-        }
-
-
-
-        /**
-         * accessories
-         */
-        if (this.materials.sequence.accessories !== undefined) {
-            if (this.materials.sequence.accessories[0] !== null) {
-                let step = `wearing accessories`
-                for (const elem of this.materials.sequence.accessories) {
-                    const tailor = new Tailor(this.wardrobe, `./accessories/${elem}`)
-                    await tailor.prepare(verbose)
                 }
             }
         }
