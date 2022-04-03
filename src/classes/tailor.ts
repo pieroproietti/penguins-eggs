@@ -13,6 +13,7 @@ import fs from 'fs'
 import path from 'path'
 import yaml from 'js-yaml'
 import Pacman from './pacman'
+import { emitWarning } from 'process'
 
 /**
  * 
@@ -67,16 +68,15 @@ export default class Tailor {
         if (this.materials.sequence.repositories !== undefined) {
             Utils.warning(`analyzing repositories`)
 
+
             /**
             * sources.list
             */
             if (this.materials.sequence.repositories.sourcesList !== undefined) {
-                //deb http://site.example.com/debian distribution component1 component2 component3
-
                 let step = 'analyzing /etc/apt/sources.list'
                 Utils.warning(step)
 
-                let components : string [] =  []
+                let components: string[] = []
                 if (this.materials.sequence.repositories.sourcesList.main) {
                     components.push('main')
                 }
@@ -87,25 +87,43 @@ export default class Tailor {
                     components.push('non-free')
                 }
 
-                let checkRepos = await exec(`grep "deb http"</etc/apt/sources.list`,this.echo)
-                let repos : string [] =  []
-                if (checkRepos.code === 0 ){
-                    repos = checkRepos.data.split('\n')
+                //deb http://site.example.com/debian distribution component1 component2 component3
+                let checkRepos = await exec(`grep "deb http"</etc/apt/sources.list`, { echo: false, capture: true })
+                let tmp: string[] = []
+                if (checkRepos.code === 0) {
+                    tmp = checkRepos.data.split('\n')
+                }
+
+                // remove empty line
+                let repos: string[] = []
+                for (const repo of tmp) {
+                    if (repo !== '') {
+                        repos.push(repo)
+                    }
                 }
 
                 let repOk = true
-                for (const repo of repos ){
+                const codenameId = this.materials.codenameId
+                for (const repo of repos) {
+                    if (!repo.includes(codenameId)) {
+                        console.log('codenameid: ' + chalk.green(codenameId) + ' it\'s not included in repo: ' + chalk.green(repo))
+                        repOk = false
+                    }
                     for (const component of components) {
-                        if(!repo.includes(component)) {
+                        if (!repo.includes(component)) {
+                            console.log('component: ' + chalk.green(component) + ' is not included in repo: ' + chalk.green(repo))
                             repOk = false
-                            console.log(`repository: ${repo} not include ${component}`)
                         }
                     }
                 }
-                if (!repOk) {
-                    process.exit()
+
+                if (repOk) {
+                    Utils.warning('repositories checked')
+                } else {
+                    Utils.pressKeyToExit('check your repositories: sudo /etc/apt/sources.list', true)
                 }
             }
+
 
             /**
              * sources.list.d
@@ -151,6 +169,8 @@ export default class Tailor {
                 }
             }
         }
+
+
 
 
         /**
@@ -366,7 +386,7 @@ export default class Tailor {
     }
 
 
-    
+
 
     /**
      * - check if every package if installed
