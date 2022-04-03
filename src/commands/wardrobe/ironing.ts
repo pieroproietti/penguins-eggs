@@ -108,41 +108,6 @@ export default class Ironing extends Command {
             }
         }
 
-        if (orig.sequence.firmwares !== undefined) {
-            if (orig.sequence.firmwares.codecs !== undefined) {
-                sorted.sequence.firmwares.codecs = orig.sequence.firmwares.codecs.sort()
-            }
-
-            if (orig.sequence.firmwares.drivers_graphics_tablet !== undefined) {
-                sorted.sequence.firmwares.drivers_graphics_tablet = orig.sequence.firmwares.drivers_graphics_tablet.sort()
-            }
-
-            if (orig.sequence.firmwares.drivers_network !== undefined) {
-                sorted.sequence.firmwares.drivers_network = orig.sequence.firmwares.drivers_network.sort()
-            }
-
-            if (orig.sequence.firmwares.drivers_various !== undefined) {
-                sorted.sequence.firmwares.drivers_various = orig.sequence.firmwares.drivers_various.sort()
-            }
-
-            if (orig.sequence.firmwares.drivers_video_amd !== undefined) {
-                sorted.sequence.firmwares.drivers_video_amd = orig.sequence.firmwares.drivers_video_amd.sort()
-            }
-
-            if (orig.sequence.firmwares.drivers_video_nvidia !== undefined) {
-                sorted.sequence.firmwares.drivers_video_nvidia = orig.sequence.firmwares.drivers_video_nvidia.sort()
-            }
-
-            if (orig.sequence.firmwares.drivers_wifi !== undefined) {
-                sorted.sequence.firmwares.drivers_wifi = orig.sequence.firmwares.drivers_wifi.sort()
-            }
-
-            if (orig.sequence.firmwares.drivers_printer !== undefined) {
-                sorted.sequence.firmwares.drivers_printer = orig.sequence.firmwares.drivers_printer.sort()
-            }
-
-        }
-
         sorted.sequence.debs = orig.sequence.debs
         sorted.sequence.dirs = orig.sequence.dirs
         sorted.sequence.hostname = orig.sequence.hostname
