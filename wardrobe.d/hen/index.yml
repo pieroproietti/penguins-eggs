@@ -51,8 +51,8 @@ sequence:
     - xfdesktop4
     - xfwm4
   accessories:
-    - base
-    - eggs-dev
+    # base
+    # eggs-dev
     - firmwares
   debs: false
   dirs: false
