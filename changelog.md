@@ -18,6 +18,16 @@ You can follow the project also consulting the [commit history](https://github.c
 ## Changelog
 Versions are listed on reverse order, the first is the last one. Old versions are moved to [oldest](https://sourceforge.net/projects/penguins-eggs/files/packages-deb/oldest/). 
 
+### eggs-9.1.0-1
+
+A breacking news!
+
+* wardrobe: after a bit of consolidation, I moved the suddivision of firmwares from the code to the wardrobe organization. ```firmwares``` now is a accessory with same own internal accessories. 
+* accessories: now accessories can be external and internal. Internal accessories live inside the costume, for example  inside firmwares live codecs, network-cable and so on. Internal accessories have suffix: ```./```: ```./codecs```, ```./network-cable```, etc.
+* If you open ```wardrobe.d/accessories/firmwares```, you can find inside: codecs, network-cable, printers, video-nvidia, network-wifi, video-amd and ou are free to add others. 
+
+This result in a great semplification of code and a improved organization. Just adding others firmware categories inside firmwares - such graphics-tables - add an index.yml with the packages you needs; note: if your packages need a specific repo, you can add it too. Add your new accessory on index.yml of firmares and eggs will load it, add the request repos then install yours packages.
+
 ### eggs-9.0.49-1
 wardrobe: introduced accessories for costumes, you can wear a costume and choose the accessories to wear with. 
 * base, 
@@ -28,7 +38,7 @@ Costume hen, now specific just xfce4 configuration and take all the capabilities
 
 ### eggs-9.0.48-1
 * wardrobe: added firmwares: [drivers_wifi, codecs, drivers_various, drivers_video_nvidia, drivers_video_amd, drivers_graphics_tablet, drivers_printer, drivers_network];
-* wardrobe: having a dress is pretty useless if it's not ironed, let's introduce **wardrobe ironing** to sort all sortables inside
+* wardrobe: having a dress is pretty useless if it's not ironed, let's introduce **wardrobe ironing** to sort all sortables
 
 ### eggs-9.0.47-1
 * krill: model, layout, variant and option are selected from ```/usr/share/X11/xkb/rules/xorg.lst``` to be compatible with not systemd systems
