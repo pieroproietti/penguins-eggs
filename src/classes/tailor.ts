@@ -105,43 +105,50 @@ export default class Tailor {
                 }
 
                 /**
-                 * if NOT distro.codenameLikeId is included in distributions
-                 * exit
+                 * Linuxmint non ha nessuna configurazione in /etc/apt/sources.list
                  */
-                const distro = new Distro()
-                let distroOk = false
-                for (const distribution of this.materials.distributions) {
-                    for (const repo of repos) {
-                        if (repo.includes(distro.codenameLikeId)) {
-                            distroOk = true
-                        }
-                    }
-                }
-                if (!distroOk) {
-                    console.log('You are on: ' + chalk.green(distro.distroId) + '/' + chalk.green(distro.codenameId))
-                    console.log('compatible with: ' + chalk.green(distro.distroLike) + '/' + chalk.green(distro.codenameLikeId))
-                    console.log(`This costume/accessory ${this.costume} or wardrobe: ${this.wardrobe} apply to: `)
-                    for (const distribution of this.materials.distributions) {
-                        console.log(`- ${distribution}`)
-                    }
-                    Utils.pressKeyToExit('distribution warming, check your /etc/apt/sources.list',true)
-                }
+                if (repos.length > 0) {
 
-                let componentsOk = true
-                for (const repo of repos) {
-                    for (const component of components) {
-                        if (!repo.includes(component)) {
-                            console.log('component: ' + chalk.green(component) + ' is not included in repo: ' + chalk.green(repo))
-                            componentsOk = false
+                    /**
+                     * if NOT distro.codenameLikeId is included in distributions
+                     * exit
+                     */
+                    const distro = new Distro()
+                    let distroOk = false
+                    for (const distribution of this.materials.distributions) {
+                        for (const repo of repos) {
+                            if (repo.includes(distro.codenameLikeId)) {
+                                distroOk = true
+                            }
                         }
                     }
+                    if (!distroOk) {
+                        console.log('You are on: ' + chalk.green(distro.distroId) + '/' + chalk.green(distro.codenameId))
+                        console.log('compatible with: ' + chalk.green(distro.distroLike) + '/' + chalk.green(distro.codenameLikeId))
+                        console.log(`This costume/accessory ${this.costume} or wardrobe: ${this.wardrobe} apply to: `)
+                        for (const distribution of this.materials.distributions) {
+                            console.log(`- ${distribution}`)
+                        }
+                        Utils.pressKeyToExit('distribution warming, check your /etc/apt/sources.list', true)
+                    }
+
+                    let componentsOk = true
+                    for (const repo of repos) {
+                        for (const component of components) {
+                            if (!repo.includes(component)) {
+                                console.log('component: ' + chalk.green(component) + ' is not included in repo: ' + chalk.green(repo))
+                                componentsOk = false
+                            }
+                        }
+                    }
+
+                    if (componentsOk) {
+                        Utils.warning('repositories checked')
+                    } else {
+                        Utils.pressKeyToExit('component warming, check your /etc/apt/sources.list', true)
+                    }
                 }
-                
-                if (componentsOk) {
-                    Utils.warning('repositories checked')
-                } else {
-                    Utils.pressKeyToExit('component warming, check your /etc/apt/sources.list', true)
-                }
+                // Fine constrollo /etc/apt/sources.list
             }
 
 
