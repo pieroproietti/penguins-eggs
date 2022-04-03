@@ -9,6 +9,18 @@ distroId: Debian
 codenameId: booksworm
 releaseId: unstable
 applyTo: naked
+# Debian
+- buster
+- bullseye
+- bookworm
+# Devuan
+- chimaera
+# Ubuntu
+- focal
+- groovy
+- hirsute
+- impish
+- jammy
 sequence:
   repositories:
     sourcesList:

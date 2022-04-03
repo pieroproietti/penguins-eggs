@@ -5,10 +5,6 @@ name: lamp
 description: 'LAMP: linux, apache2, mysql, php example, completely untested!'
 author: artisan
 release: 0.0.2
-distroId: Debian
-codenameId: booksworm
-releaseId: unstable
-applyTo: naked
 sequence:
   repositories:
     sourcesList:

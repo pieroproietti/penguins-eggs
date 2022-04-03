@@ -6,10 +6,19 @@ description: >-
   repos
 author: artisan
 release: 0.0.3
-distroId: Debian
-codenameId: bullseye
-releaseId: stable
-applyTo: naked
+distributions: 
+# Debian
+- buster
+- bullseye
+- bookworm
+# Devuan
+- chimaera
+# Ubuntu
+- focal
+- groovy
+- hirsute
+- impish
+- jammy
 sequence:
   repositories:
     sourcesList:
