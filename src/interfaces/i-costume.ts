@@ -21,16 +21,6 @@ export interface ICostume {
         dependencies: string []
         packages: string [],
         noInstallRecommends: string [],
-        firmwares: {
-            codecs: string[],
-            drivers_graphics_tablet: string[],
-            drivers_network: string[],
-            drivers_printer: string[],
-            drivers_various: string[],
-            drivers_video_amd: string[],
-            drivers_video_nvidia: string[],
-            drivers_wifi: string[],
-        }
         debs: boolean,
         packagesPip: string [],
         dirs: boolean,
