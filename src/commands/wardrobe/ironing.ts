@@ -67,10 +67,7 @@ export default class Ironing extends Command {
         sorted.description = orig.description
         sorted.author = orig.author
         sorted.release = orig.release
-        sorted.distroId = orig.distroId
-        sorted.codenameId = orig.codenameId
-        sorted.releaseId = orig.releaseId
-        sorted.applyTo = orig.applyTo
+        sorted.distributions = orig.distributions
 
         if (orig.sequence.repositories !== undefined) {
             sorted.sequence.repositories = orig.sequence.repositories

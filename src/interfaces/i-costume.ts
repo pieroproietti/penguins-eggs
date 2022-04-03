@@ -3,10 +3,7 @@ export interface ICostume {
     author: string
     description: string
     release: string
-    applyTo: string
-    distroId: string
-    codenameId: string
-    releaseId: string
+    distributions: string []
     sequence: {
         repositories: {
             sourcesList: {

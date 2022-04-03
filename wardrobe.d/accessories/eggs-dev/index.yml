@@ -4,10 +4,19 @@ name: eggs-dev
 description: "add repositories: nodesource, code, install: nodejs, code"
 author: artisan
 release: 0.0.1
-distroId: Debian
-codenameId: bullseye
-releaseId: stable
-applyTo: all
+distributions: 
+# Debian
+- buster
+- bullseye
+- bookworm
+# Devuan
+- chimaera
+# Ubuntu
+- focal
+- groovy
+- hirsute
+- impish
+- jammy
 sequence:
   repositories:
     sourcesList:

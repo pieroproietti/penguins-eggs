@@ -4,10 +4,19 @@ name: firmwares
 description: "install firmware"
 author: artisan
 release: 0.0.1
-applyTo: all
-distroId: Debian
-codenameId: bullseye
-releaseId: stable
+distributions: 
+# Debian
+- buster
+- bullseye
+- bookworm
+# Devuan
+- chimaera
+# Ubuntu
+- focal
+- groovy
+- hirsute
+- impish
+- jammy
 sequence:
   accessories:
   - ./codecs

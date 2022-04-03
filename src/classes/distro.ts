@@ -56,7 +56,7 @@ class Distro implements IDistro {
   bugReportUrl: string
   isCalamaresAvailable: boolean
 
-  constructor(remix: IRemix) {
+  constructor(remix = {} as IRemix ) {
     this.familyId = 'debian'
     this.distroId = ''
     this.distroLike = ''

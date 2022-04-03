@@ -13,7 +13,9 @@ import fs from 'fs'
 import path from 'path'
 import yaml from 'js-yaml'
 import Pacman from './pacman'
-import { emitWarning } from 'process'
+import Distro from './distro'
+import { captureRejections } from 'events'
+
 
 /**
  * 
@@ -102,25 +104,43 @@ export default class Tailor {
                     }
                 }
 
-                let repOk = true
-                const codenameId = this.materials.codenameId
-                for (const repo of repos) {
-                    if (!repo.includes(codenameId)) {
-                        console.log('codenameid: ' + chalk.green(codenameId) + ' it\'s not included in repo: ' + chalk.green(repo))
-                        repOk = false
-                    }
-                    for (const component of components) {
-                        if (!repo.includes(component)) {
-                            console.log('component: ' + chalk.green(component) + ' is not included in repo: ' + chalk.green(repo))
-                            repOk = false
+                /**
+                 * if NOT distro.codenameLikeId is included in distributions
+                 * exit
+                 */
+                const distro = new Distro()
+                let distroOk = false
+                for (const distribution of this.materials.distributions) {
+                    for (const repo of repos) {
+                        if (repo.includes(distro.codenameLikeId)) {
+                            distroOk = true
                         }
                     }
                 }
+                if (!distroOk) {
+                    console.log('You are on: ' + chalk.green(distro.distroId) + '/' + chalk.green(distro.codenameId))
+                    console.log('compatible with: ' + chalk.green(distro.distroLike) + '/' + chalk.green(distro.codenameLikeId))
+                    console.log(`This costume/accessory ${this.costume} or wardrobe: ${this.wardrobe} apply to: `)
+                    for (const distribution of this.materials.distributions) {
+                        console.log(`- ${distribution}`)
+                    }
+                    Utils.pressKeyToExit('distribution warming, check your /etc/apt/sources.list',true)
+                }
 
-                if (repOk) {
+                let componentsOk = true
+                for (const repo of repos) {
+                    for (const component of components) {
+                        if (!repo.includes(component)) {
+                            console.log('component: ' + chalk.green(component) + ' is not included in repo: ' + chalk.green(repo))
+                            componentsOk = false
+                        }
+                    }
+                }
+                
+                if (componentsOk) {
                     Utils.warning('repositories checked')
                 } else {
-                    Utils.pressKeyToExit('check your repositories: sudo /etc/apt/sources.list', true)
+                    Utils.pressKeyToExit('component warming, check your /etc/apt/sources.list', true)
                 }
             }
 
