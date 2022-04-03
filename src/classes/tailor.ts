@@ -204,7 +204,6 @@ export default class Tailor {
          */
         if (this.materials.sequence.firmwares !== undefined) {
 
-
             /**
              * codecs
              */
