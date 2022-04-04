@@ -9,7 +9,6 @@ import chalk from 'chalk'
 // libraries
 import { exec } from '../../lib/utils'
 
-
 /**
  * 
  */
@@ -22,7 +21,7 @@ export default class Ironing extends Command {
         verbose: Flags.boolean({ char: 'v' }),
         help: Flags.help({ char: 'h' })
     }
-
+ 
     async run(): Promise<void> {
         const { args, flags } = await this.parse(Ironing)
 
