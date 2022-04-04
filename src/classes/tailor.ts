@@ -70,7 +70,6 @@ export default class Tailor {
         if (this.materials.sequence.repositories !== undefined) {
             Utils.warning(`analyzing repositories`)
 
-
             /**
             * sources.list
             */
@@ -89,7 +88,7 @@ export default class Tailor {
                     components.push('non-free')
                 }
 
-                //deb http://site.example.com/debian distribution component1 component2 component3
+                // deb uri distribution [component1] [component2] [...]
                 let checkRepos = await exec(`grep "deb http"</etc/apt/sources.list`, { echo: false, capture: true })
                 let tmp: string[] = []
                 if (checkRepos.code === 0) {
@@ -111,9 +110,9 @@ export default class Tailor {
 
                     /**
                      * if NOT distro.codenameLikeId is included in distributions
-                     * exit
+                     * then emit warning
                      */
-                    const distro = new Distro()
+                     const distro = new Distro()
                     let distroOk = false
                     for (const distribution of this.materials.distributions) {
                         for (const repo of repos) {
@@ -132,7 +131,11 @@ export default class Tailor {
                         Utils.pressKeyToExit('distribution warming, check your /etc/apt/sources.list', true)
                     }
 
-                    let componentsOk = true
+                    /**
+                     * if NOT all components are included in distributions
+                     * then emit components warning
+                     */
+                     let componentsOk = true
                     for (const repo of repos) {
                         for (const component of components) {
                             if (!repo.includes(component)) {
@@ -239,7 +242,7 @@ export default class Tailor {
 
 
         /**
-        * packages python
+        * packages python pip
         */
         if (this.materials.sequence.packagesPip !== undefined) {
             if (this.materials.sequence.packagesPip[0] !== null) {

@@ -116,7 +116,6 @@ sudo dpkg -i eggs_8.17.17-1_i386.deb
 ## Upgrade eggs
 If you are using penguins-eggs-ppa You can ugrade eggs as others packages just: **sudo apt upgrade**.
 
-
 ### Upgrade from basket
 If you are using not the penguins-eggs-ppa, the fastest way to use sudo eggs update and choose basket. Eggs let you to select the last 4 versions on the [basket](https://sourceforge.net/projects/penguins-eggs/files/packages-deb/) and install it.
 
