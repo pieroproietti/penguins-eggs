@@ -372,9 +372,11 @@ export default class Tailor {
                 }
             }
             if (elements.length > 0) {
-                if (this.verbose) 
-
-                let step = `installing ${comment}: ${strElements.substring(2)}`
+                let step = `installing ${comment}: `
+                // if not verbose add strElements
+                if (!this.verbose) {
+                    step +=strElements.substring(2)
+                }
                 Utils.warning(step)
                 await exec(cmd, this.echo)
             }
