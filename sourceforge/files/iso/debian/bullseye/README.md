@@ -21,12 +21,18 @@ All ISOs are based on Debian buster, Debian bullseye
 # Debian bullseye
 
 * **naked** - just the juice, without GUI. You can start here to build your revolution!
-* **xfce** - it's not naked, but just dressed with xfce4 and firefox. 
-* **mate** - it's not naked, but just dressed with mate and firefox. 
-* **gnome** - it's not naked, but just dressed with gnome and firefox. 
-* **kde** - it's not naked, but just dressed with kde and conquetor. 
+* **colibri** - with colibri, a light xfce4 for developers you can easily start to improve eggs, 
+* **duck** - cinnamon probably is the desktop environment from where to start, plus office, gimp and vlc
 
 ## More informations:
+
+Note: you can build your colibri or duck, just starting from naked:
+- download the naked version and install it. ```sudo eggs install```
+- reboot the installed system and login with your credential
+- git clone https://github.com/pieroproietti/penguins-wardrobe
+' sudo eggs wardrobe wear --wardrobe penguins-wardrobe --costume colibri
+
+It's nice?
 
 * Repository: [penguins-eggs](https://github.com/pieroproietti/penguins-eggs)
 * Blog: [penguins-eggs](https://penguins-eggs.net)
