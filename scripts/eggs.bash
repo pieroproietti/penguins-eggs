@@ -33,13 +33,14 @@ tools:locales --help --reinstall --verbose
 tools:skel --help --user --verbose
 tools:stat --help --month --year
 tools:yolk --help --verbose
-update --help --apt --basket --verbose
+update --help --verbose
+wardrobe:get --repo --verbose --help
 wardrobe:ironing --costume --wardrobe --verbose --help
 wardrobe:list --wardrobe --verbose --help
 wardrobe:show --wardrobe --costume --json --verbose --help
-wardrobe:wear --costume --wardrobe --verbose --help
-help --nested-commands
+wardrobe:wear --costume --wardrobe --silent --help
 autocomplete --refresh-cache
+help --nested-commands
 version 
 "
 

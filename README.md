@@ -181,6 +181,7 @@ USAGE
 * [`eggs tools yolk`](#eggs-tools-yolk)
 * [`eggs update`](#eggs-update)
 * [`eggs version`](#eggs-version)
+* [`eggs wardrobe get`](#eggs-wardrobe-get)
 * [`eggs wardrobe ironing`](#eggs-wardrobe-ironing)
 * [`eggs wardrobe list`](#eggs-wardrobe-list)
 * [`eggs wardrobe show`](#eggs-wardrobe-show)
@@ -1098,10 +1099,9 @@ update the penguin's eggs tool
 
 ```
 USAGE
-  $ eggs update [-h] [-a] [-v]
+  $ eggs update [-h] [-v]
 
 FLAGS
-  -a, --apt      if eggs package is .deb, update from distro repositories
   -h, --help     Show CLI help.
   -v, --verbose  verbose
 
@@ -1123,6 +1123,23 @@ USAGE
 ```
 
 _See code: [@oclif/plugin-version](https://github.com/oclif/plugin-version/blob/v1.0.4/src/commands/version.ts)_
+
+## `eggs wardrobe get`
+
+get warorobe
+
+```
+USAGE
+  $ eggs wardrobe get [-r <value>] [-v] [-h]
+
+FLAGS
+  -h, --help          Show CLI help.
+  -r, --repo=<value>  repository wardrobe
+  -v, --verbose
+
+DESCRIPTION
+  get warorobe
+```
 
 ## `eggs wardrobe ironing`
 
