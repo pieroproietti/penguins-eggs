@@ -23,6 +23,7 @@ All ISOs are based on Debian buster, Debian bullseye
 * **naked** - just the juice, without GUI. You can start here to build your revolution!
 * **colibri** - with colibri, a light xfce4 for developers you can easily start to improve eggs, 
 * **duck** - cinnamon probably is the desktop environment from where to start, plus office, gimp and vlc
+* **owl** - xfce4 for graphics designers, this a simple/experimental bird, based on the work of Clarlie Martinez [quirinux](https://quirinux.org/)
 
 ## More informations:
 
