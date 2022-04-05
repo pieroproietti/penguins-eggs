@@ -27,6 +27,7 @@ function main {
          "documentation"   "book/book_translated/manual/man" \
          "export"          "deb/docs/iso" \
          "tools"           "clean/locales/skel/yolk" \
+         "wardrobe"        "get/ironing/list/show/wear" \
          "quit"            "exit" 3>&2 2>&1 1>&3
       )
 
@@ -72,6 +73,9 @@ function main {
 
          "tools")
             tools ;;
+
+         "wardrobe")
+            wardrobe ;;
 
          "update")
             update ;;
@@ -386,6 +390,68 @@ function update {
    sudo eggs update
    press_a_key_to_continue
 }
+
+################################
+function wardrobe {
+   answer=$(
+   whiptail --title "TOOLS" --menu "eggs companions tools" 22 75 14 \
+      "get"       "get warorobe" \
+      "ironing"   "ironing costumes: sorting packages" \
+      "list"      "list costumes" \
+      "show"      "show costumes" \
+      "wear"      "wear costume" \
+      "quit"      "previous" 3>&2 2>&1 1>&3
+   )
+
+   case "$answer" in 
+      "get")
+         wardrobe_get ;;
+
+      "ironing")
+         wardrobe_ironing ;;
+
+      "list")
+         wardrobe_list ;;
+
+      "show")
+         wardrobe_show ;;
+
+      "wear")
+         wardrobe_wear ;;
+   esac
+
+}
+
+################################
+function wardrobe_get {
+   eggs wardrobe get
+   press_a_key_to_continue
+}
+
+################################
+function wardrobe_ironing {
+   eggs wardrobe ironing
+   press_a_key_to_continue
+}
+
+################################
+function wardrobe_list {
+   eggs wardrobe list
+   press_a_key_to_continue
+}
+
+################################
+function wardrobe_show {
+   eggs wardrobe show
+   press_a_key_to_continue
+}
+
+################################
+function wardrobe_wear {
+   sudo eggs wardrobe wear
+   press_a_key_to_continue
+}
+
 
 
 function press_a_key_to_continue {
