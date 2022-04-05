@@ -25,7 +25,7 @@ export default class Show extends Command {
     async run(): Promise<void> {
         const { args, flags } = await this.parse(Show)
 
-        let costume = "xfce4"
+        let costume = "colibri"
         if (flags.costume !== undefined) {
             costume = flags.costume
         }
@@ -35,15 +35,12 @@ export default class Show extends Command {
         const echo = Utils.setEcho(verbose)
         Utils.titles(this.id + ' ' + this.argv)
 
-        let wardrobe = `${path.resolve(__dirname, '../../../wardrobe.d')}`
-
-        let position = "eggs"
+        let wardrobe = './penguins-wardrobe'
         if (flags.wardrobe !== undefined) {
-            position = "external"
             wardrobe = flags.wardrobe
         }
 
-        console.log(chalk.green(`${position} wardrobe: `) + wardrobe)
+        console.log(chalk.green(`wardrobe: `) + wardrobe)
         console.log()
 
         let tailorList = `${wardrobe}/${costume}/index.yml`

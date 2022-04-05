@@ -38,15 +38,13 @@ export default class Ironing extends Command {
         // await exec(`printf '\e[5;24r'`)
 
 
-        let costume = "xfce4"
+        let costume = "colibri"
         if (flags.costume !== undefined) {
             costume = flags.costume
         }
 
-        let wardrobe = `${path.resolve(__dirname, '../../../wardrobe.d')}`
-        let position = "eggs"
+        let wardrobe = './penguins-wardrobe'
         if (flags.wardrobe !== undefined) {
-            position = "external"
             wardrobe = flags.wardrobe
         }
 

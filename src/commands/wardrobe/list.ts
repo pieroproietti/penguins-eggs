@@ -31,12 +31,9 @@ export default class List extends Command {
     const echo = Utils.setEcho(verbose)
     Utils.titles(this.id + ' ' + this.argv)
 
-    let wardrobe = `${path.resolve(__dirname, '../../../wardrobe.d')}`
-
-    let position = "eggs"
+    let wardrobe = './penguins-wardrobe'
     if (flags.wardrobe !== undefined) {
-      position = "external"
-      wardrobe = flags.wardrobe
+        wardrobe = flags.wardrobe
     }
 
     if (!fs.existsSync(wardrobe)) {
@@ -45,7 +42,7 @@ export default class List extends Command {
     }
 
     const costumes = fs.readdirSync(wardrobe)
-    console.log(chalk.green(`${position} wardrobe: `) + wardrobe)
+    console.log(chalk.green(`wardrobe: `) + wardrobe)
     console.log()
     console.log(chalk.green(`costumes: `))
     costumes.forEach(costume => {

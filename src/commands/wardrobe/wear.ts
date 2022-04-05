@@ -24,12 +24,12 @@ export default class Wear extends Command {
 
     Utils.titles(this.id + ' ' + this.argv)
 
-    let wardrobe = `${path.resolve(__dirname, '../../../wardrobe.d')}`
+    let wardrobe = './penguins-wardrobe'
     if (flags.wardrobe != undefined) {
       wardrobe = flags.wardrobe
     }
 
-    let costume = 'xfce4'
+    let costume = 'colibri'
     if (flags.costume !== undefined) {
       costume = flags.costume
     }
