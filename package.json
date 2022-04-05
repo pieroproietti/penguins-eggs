@@ -23,7 +23,6 @@
         "mustache": "^4.2.0",
         "oclif": "github:pieroproietti/oclif",
         "npm": "^8.5.1",
-        "pjson": "github:pieroproietti/pjson",
         "react": "^17.0.2",
         "shelljs": "0.8.5",
         "tslib": "^2.3.1"

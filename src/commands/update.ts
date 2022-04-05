@@ -9,7 +9,6 @@ import shx = require('shelljs')
 import Utils from '../classes/utils'
 import Tools from '../classes/tools'
 import Pacman from '../classes/pacman'
-import Basket from '../classes/basket'
 import { exec } from '../lib/utils'
 import inquirer from 'inquirer'
 
@@ -23,8 +22,6 @@ export default class Update extends Command {
 
   static flags = {
     help: Flags.help({ char: 'h' }),
-    apt: Flags.boolean({ char: 'a', description: 'if eggs package is .deb, update from distro repositories' }),
-    basket: Flags.boolean({ char: 'b', description: 'if eggs package is .deb, update from eggs basket' }),
     verbose: Flags.boolean({ char: 'v', description: 'verbose' })
   }
 
@@ -40,38 +37,7 @@ export default class Update extends Command {
         Utils.warning(`You are on eggs-${Utils.getPackageVersion()} installed as package .deb`)
       }
 
-      let apt = false
-      let aptVersion = ''
-      if (await Pacman.packageAptAvailable('eggs')) {
-        apt = true
-        aptVersion = await Pacman.packageAptLast('eggs')
-        Utils.warning('eggs-' + aptVersion + ' is available via apt')
-      } else {
-        Utils.warning('eggs is not available your repositories')
-      }
-
-      const basket = new Basket()
-      const basketVersion = await basket.last()
-      if (basketVersion !== '') {
-        Utils.warning('eggs-' + basketVersion + '-1.deb available in basket')
-      }
-
-      /**
-       * Se è specificato il metodo di aggiornamento
-       * e, questo corrisponde al tipo di pacchetto
-       * installato
-       */
-      if (flags.apt || flags.basket) {
-        if (Utils.isDebPackage() && flags.apt) {
-          await this.getDebFromApt()
-        } else if (Utils.isDebPackage() && flags.basket) {
-          await basket.get()
-        } else {
-          await this.chooseUpdate()
-        }
-      } else {
-        await this.chooseUpdate()
-      }
+      await this.chooseUpdate()
     }
   }
 
@@ -81,20 +47,12 @@ export default class Update extends Command {
    * indipendentemente dal flag
    */
   async chooseUpdate() {
-    const basket = new Basket()
-
     console.log()
     const choose = await this.chosenDeb()
     Utils.titles(`updating via ${choose}`)
     switch (choose) {
       case 'apt': {
         await this.getDebFromApt()
-
-        break
-      }
-
-      case 'basket': {
-        await basket.get()
 
         break
       }
@@ -125,15 +83,8 @@ export default class Update extends Command {
    */
   async chosenDeb(): Promise<string> {
     const choices: string[] = ['abort']
-    choices.push('basket', 'lan', 'manual', 'sources')
+    choices.push('apt', 'lan', 'manual', 'sources')
 
-    /*
-     choices.push(new inquirer.Separator('exit from update'), 'basket')
-     choices.push(new inquirer.Separator('select, download and update from basket'), 'lan')
-     choices.push(new inquirer.Separator('automatic import and update from lan'), 'manual')
-     choices.push(new inquirer.Separator('manual download from sourceforge.net and update with dpkg'), 'sources')
-     choices.push(new inquirer.Separator('download sources from github.com'))
-    */
     const questions: Array<Record<string, any>> = [
       {
         type: 'list',
@@ -174,8 +125,7 @@ export default class Update extends Command {
   async getDebFromManual() {
     console.log('Download package from: \n\nhttps://sourceforge.net/projects/penguins-eggs/files/packages-deb/')
     console.log('\nand install it with:')
-    const basket = new Basket()
-    console.log('\nsudo dpkg -i eggs_' + (await basket.last()) + '-1.deb')
+    console.log('\nsudo dpkg -i eggs_x.x.x-1.deb')
   }
 
   /**
