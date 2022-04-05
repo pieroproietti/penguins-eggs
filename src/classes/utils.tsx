@@ -11,12 +11,13 @@ import fs from 'fs'
 import dns from 'dns'
 import path from 'path'
 import os from 'os'
-import pjson from 'pjson'
 import inquirer from 'inquirer'
 import chalk from 'chalk'
 import Pacman from './pacman'
 import { green, whiteBright } from 'chalk'
 import { ChildProcess, spawnSync } from 'child_process'
+
+const pjson = require('../../package.json')
 
 /**
  * Utils: general porpourse utils

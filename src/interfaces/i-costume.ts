@@ -6,11 +6,7 @@ export interface ICostume {
     distributions: string []
     sequence: {
         repositories: {
-            sourcesList: {
-                main: boolean,
-                contrib: boolean,
-                nonFree: boolean
-            },
+            sourcesList: string [],
             sourcesListD: string [],
             update: boolean,
             fullUpgrade: boolean,

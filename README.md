@@ -1098,11 +1098,10 @@ update the penguin's eggs tool
 
 ```
 USAGE
-  $ eggs update [-h] [-a] [-b] [-v]
+  $ eggs update [-h] [-a] [-v]
 
 FLAGS
   -a, --apt      if eggs package is .deb, update from distro repositories
-  -b, --basket   if eggs package is .deb, update from eggs basket
   -h, --help     Show CLI help.
   -v, --verbose  verbose
 

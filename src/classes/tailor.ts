@@ -77,17 +77,6 @@ export default class Tailor {
                 let step = 'analyzing /etc/apt/sources.list'
                 Utils.warning(step)
 
-                let components: string[] = []
-                if (this.materials.sequence.repositories.sourcesList.main) {
-                    components.push('main')
-                }
-                if (this.materials.sequence.repositories.sourcesList.contrib) {
-                    components.push('contrib')
-                }
-                if (this.materials.sequence.repositories.sourcesList.nonFree) {
-                    components.push('non-free')
-                }
-
                 // deb uri distribution [component1] [component2] [...]
                 let checkRepos = await exec(`grep "deb http"</etc/apt/sources.list`, { echo: false, capture: true })
                 let tmp: string[] = []
@@ -112,7 +101,7 @@ export default class Tailor {
                      * if NOT distro.codenameLikeId is included in distributions
                      * then emit warning
                      */
-                     const distro = new Distro()
+                    const distro = new Distro()
                     let distroOk = false
                     for (const distribution of this.materials.distributions) {
                         for (const repo of repos) {
@@ -135,12 +124,16 @@ export default class Tailor {
                      * if NOT all components are included in distributions
                      * then emit components warning
                      */
-                     let componentsOk = true
+                    const components = this.materials.sequence.repositories.sourcesList
+                    let componentsOk = true
                     for (const repo of repos) {
                         for (const component of components) {
-                            if (!repo.includes(component)) {
-                                console.log('component: ' + chalk.green(component) + ' is not included in repo: ' + chalk.green(repo))
-                                componentsOk = false
+                            // On security we need just main
+                            if (!repo.includes('security')) {
+                                if (!repo.includes(component)) {
+                                    console.log('component: ' + chalk.green(component) + ' is not included in repo: ' + chalk.green(repo))
+                                    componentsOk = false
+                                }
                             }
                         }
                     }
@@ -373,9 +366,9 @@ export default class Tailor {
             }
             if (elements.length > 0) {
                 let step = `installing ${comment}: `
-                // if not verbose add strElements
+                // if not verbose show strElements
                 if (!this.verbose) {
-                    step +=strElements.substring(2)
+                    step += strElements.substring(2)
                 }
                 Utils.warning(step)
                 await exec(cmd, this.echo)
