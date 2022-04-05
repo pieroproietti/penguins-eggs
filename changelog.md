@@ -21,8 +21,9 @@ Versions are listed on reverse order, the first is the last one. Old versions ar
 ### eggs-9.1.2-1
 * changed definition of sourcesList in costumes, now a simple string []
 * added command eggs wardrobe get to get the wardobe. --repo https://github.com/pieroproietti/penguins-wardrobe
+* update command mom adding wardrobe commands
 * added default to wardrobe commands: ironing, list, show, wear. Default --wardrobe ./penguins-wardrobe --costume colibri 
-* removed npm package pjson, removed basket not more necessaries
+* removed npm package pjson and class basket not more necessaries
 * update autocomplete scripts and man page
 
 ### eggs-9.1.1-1
