@@ -3,6 +3,7 @@ import Utils from '../../classes/utils'
 import path from 'path'
 import yaml from 'js-yaml'
 import fs from 'fs'
+import os from 'os'
 import { ICostume } from '../../interfaces'
 import chalk from 'chalk'
 
@@ -13,7 +14,7 @@ import { exec } from '../../lib/utils'
  * 
  */
 export default class Ironing extends Command {
-    static description = 'ironing costumes: sorting packages, firmwares and so on'
+    static description = 'ordered show of costumes or accessories in wardrobe'
 
     static flags = {
         costume: Flags.string({ char: 'c', description: 'costume' }),
@@ -21,7 +22,7 @@ export default class Ironing extends Command {
         verbose: Flags.boolean({ char: 'v' }),
         help: Flags.help({ char: 'h' })
     }
- 
+
     async run(): Promise<void> {
         const { args, flags } = await this.parse(Ironing)
 
@@ -43,7 +44,7 @@ export default class Ironing extends Command {
             costume = flags.costume
         }
 
-        let wardrobe = './penguins-wardrobe'
+        let wardrobe = `${os.homedir()}/.penguins-eggs/wardrobe.d`
         if (flags.wardrobe !== undefined) {
             wardrobe = flags.wardrobe
         }
@@ -64,18 +65,18 @@ export default class Ironing extends Command {
         sorted.description = orig.description
         sorted.author = orig.author
         sorted.release = orig.release
-        sorted.distributions = orig.distributions
+        sorted.distributions = orig.distributions.sort()
 
         if (orig.sequence.repositories !== undefined) {
             sorted.sequence.repositories = orig.sequence.repositories
-        }
 
-        if (orig.sequence.repositories.sourcesList !== undefined) {
-            sorted.sequence.repositories.sourcesList = orig.sequence.repositories.sourcesList
-        }
+            if (orig.sequence.repositories.sourcesList !== undefined) {
+                sorted.sequence.repositories.sourcesList = orig.sequence.repositories.sourcesList
+            }
 
-        if (orig.sequence.repositories.sourcesListD !== undefined) {
-            sorted.sequence.repositories.sourcesList = orig.sequence.repositories.sourcesList
+            if (orig.sequence.repositories.sourcesListD !== undefined) {
+                sorted.sequence.repositories.sourcesList = orig.sequence.repositories.sourcesList
+            }
         }
 
         if (orig.sequence.dependencies !== undefined) {

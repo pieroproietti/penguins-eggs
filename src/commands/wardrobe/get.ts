@@ -35,11 +35,10 @@ export default class Get extends Command {
       repo = flags.repo
     }
     
-    let wardrobe = basename(repo)
-    const result = await exec(`git clone --depth 1 ${repo}`)
+    let wardrobe = basename(repo) // ~/.eggs-wardrobe
+    const result = await exec(`git clone --depth 1 ${repo} ~/.penguins-eggs/wardrobe.d`)
     if(result.code === 0) {
-        Utils.warning(`you get new wardrobe: ${wardrobe} in ${process.cwd()}` )
+        Utils.warning(`you get new wardrobe: ${wardrobe} in ${process.cwd()}`)
     }
-
   }
 }
