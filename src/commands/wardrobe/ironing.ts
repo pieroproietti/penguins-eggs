@@ -102,6 +102,12 @@ export default class Ironing extends Command {
             }
         }
 
+        if (orig.sequence.accessories !== undefined) {
+            if (orig.sequence.accessories[0] !== null) {
+                sorted.sequence.accessories = orig.sequence.accessories.sort()
+            }
+        }
+
         sorted.sequence.debs = orig.sequence.debs
         sorted.sequence.dirs = orig.sequence.dirs
         sorted.sequence.hostname = orig.sequence.hostname
