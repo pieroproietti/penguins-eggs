@@ -3,7 +3,13 @@ import chalk from 'chalk'
 import Utils from '../../classes/utils'
 import os from 'os'
 import Tailor from '../../classes/tailor'
+// libraries
+import { exec } from '../../lib/utils'
 
+
+/**
+ * 
+ */
 export default class Wear extends Command {
   static description = 'wear costume/accessories from wardrobe'
 
@@ -24,7 +30,7 @@ export default class Wear extends Command {
 
     Utils.titles(this.id + ' ' + this.argv)
 
-    let wardrobe = `${os.homedir()}/.penguins-eggs/wardrobe.d`
+    let wardrobe = await Utils.wardrobe()
     if (flags.wardrobe != undefined) {
       wardrobe = flags.wardrobe
     }

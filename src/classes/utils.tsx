@@ -17,6 +17,10 @@ import Pacman from './pacman'
 import { green, whiteBright } from 'chalk'
 import { ChildProcess, spawnSync } from 'child_process'
 
+// libraries
+import { exec } from '../lib/utils'
+
+
 const pjson = require('../../package.json')
 
 /**
@@ -843,4 +847,21 @@ unknown target format aarch64-efi
 
       return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + sizes[i];
    }
+
+
+   /**
+    * 
+    * @returns wardrobe
+    */
+    static async wardrobe(): Promise<string> {
+      let wardrobe = `${os.homedir()}/.penguins-eggs/wardrobe.d`
+      if (Utils.isRoot()) {
+         let result = await exec(`echo $(logname)`, { echo: false, capture: true })
+         if (result.code === 0) {
+            wardrobe = `/home/${result.data.trim()}/.penguins-eggs/wardrobe.d`
+         }
+      }
+      return wardrobe
+   }
 }
+

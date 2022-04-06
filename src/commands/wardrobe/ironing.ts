@@ -44,7 +44,7 @@ export default class Ironing extends Command {
             costume = flags.costume
         }
 
-        let wardrobe = `${os.homedir()}/.penguins-eggs/wardrobe.d`
+        let wardrobe = await Utils.wardrobe()
         if (flags.wardrobe !== undefined) {
             wardrobe = flags.wardrobe
         }

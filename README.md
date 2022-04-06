@@ -1143,7 +1143,7 @@ DESCRIPTION
 
 ## `eggs wardrobe ironing`
 
-ironing costumes: sorting packages, firmwares and so on
+ordered show of costumes or accessories in wardrobe
 
 ```
 USAGE
@@ -1156,12 +1156,12 @@ FLAGS
   -w, --wardrobe=<value>  wardrobe
 
 DESCRIPTION
-  ironing costumes: sorting packages, firmwares and so on
+  ordered show of costumes or accessories in wardrobe
 ```
 
 ## `eggs wardrobe list`
 
-list, wear costumes
+list costumes and accessoires in wardrobe
 
 ```
 USAGE
@@ -1173,16 +1173,16 @@ FLAGS
   -w, --wardrobe=<value>  wardrobe
 
 DESCRIPTION
-  list, wear costumes
+  list costumes and accessoires in wardrobe
 ```
 
 ## `eggs wardrobe show`
 
-show costumes
+show costumes/accessories in wardrobe
 
 ```
 USAGE
-  $ eggs wardrobe show [-w <value>] [-c <value>] [-j] [-v] [-h]
+  $ eggs wardrobe show [-c <value>] [-w <value>] [-j] [-v] [-h]
 
 FLAGS
   -c, --costume=<value>   costume
@@ -1192,25 +1192,25 @@ FLAGS
   -w, --wardrobe=<value>  wardrobe
 
 DESCRIPTION
-  show costumes
+  show costumes/accessories in wardrobe
 ```
 
 ## `eggs wardrobe wear`
 
-wear costume
+wear costume/accessories from wardrobe
 
 ```
 USAGE
   $ eggs wardrobe wear [-c <value>] [-w <value>] [-s] [-h]
 
 FLAGS
-  -c, --costume=<value>   Costume
+  -c, --costume=<value>   costume
   -h, --help              Show CLI help.
   -s, --silent
   -w, --wardrobe=<value>  wardrobe
 
 DESCRIPTION
-  wear costume
+  wear costume/accessories from wardrobe
 ```
 <!-- commandsstop -->
 

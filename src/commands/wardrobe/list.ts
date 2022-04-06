@@ -32,7 +32,7 @@ export default class List extends Command {
     const echo = Utils.setEcho(verbose)
     Utils.titles(this.id + ' ' + this.argv)
 
-    let wardrobe = `${os.homedir()}/.penguins-eggs/wardrobe.d`
+    let wardrobe = await Utils.wardrobe()
     if (flags.wardrobe !== undefined) {
         wardrobe = flags.wardrobe
     }
