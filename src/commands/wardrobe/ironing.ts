@@ -119,7 +119,7 @@ export default class Ironing extends Command {
         }
         sorted.sequence.reboot = sorted.sequence.reboot
 
-        const ironed = `# ${sorted.name}\n---\n` + yaml.dump(sorted)
+        const ironed = `# wardrobe: ${wardrobe}\n# costume: /${costume}\n---\n` + yaml.dump(sorted)
         console.log(ironed)
 
         // Well be usefull to have scrolling
