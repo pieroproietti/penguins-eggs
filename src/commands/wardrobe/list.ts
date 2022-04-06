@@ -3,6 +3,7 @@ import Utils from '../../classes/utils'
 import path from 'path'
 import yaml from 'js-yaml'
 import fs from 'fs'
+import os from 'os'
 import { ICostume } from '../../interfaces'
 
 // libraries
@@ -12,7 +13,7 @@ import chalk from 'chalk'
  * 
  */
 export default class List extends Command {
-  static description = 'list, wear costumes'
+  static description = 'list costumes and accessoires in wardrobe'
 
   static flags = {
     wardrobe: Flags.string({ char: 'w', description: 'wardrobe' }),
@@ -31,7 +32,7 @@ export default class List extends Command {
     const echo = Utils.setEcho(verbose)
     Utils.titles(this.id + ' ' + this.argv)
 
-    let wardrobe = './penguins-wardrobe'
+    let wardrobe = `${os.homedir()}/.penguins-eggs/wardrobe.d`
     if (flags.wardrobe !== undefined) {
         wardrobe = flags.wardrobe
     }
