@@ -20,10 +20,11 @@ All ISOs are based on Debian buster, Debian bullseye
 
 # Debian bullseye
 
-* **naked** - just the juice, without GUI. You can start here to build your revolution!
-* **colibri** - with colibri, a light xfce4 for developers you can easily start to improve eggs, 
-* **duck** - cinnamon probably is the desktop environment from where to start, plus office, gimp and vlc
-* **owl** - xfce4 for graphics designers 5.17.0-1.2-liquorix-amd64 kernel, based on the work of Clarlie Martinez [quirinux](https://quirinux.org/)
+ * **naked** - just the juice, without GUI. You can start here to build your revolution!
+ * **colibri** - with colibri, a light xfce4 for developers you can easily start to improve eggs, 
+ * **duck** - cinnamon probably is the desktop environment from where to start, plus office, gimp and vlc
+ * **eagle** - xfce4 plus Proxmox VE, you must configure it with static ip, experimental
+ * **owl** - xfce4 for graphics designers and 5.17.0-1.2-liquorix-amd64 kernel, based on the work of Clarlie Martinez [quirinux](https://quirinux.org/)
 
 ## More informations:
 
