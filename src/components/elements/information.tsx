@@ -17,6 +17,13 @@ export default async function information(verbose = false): Promise<void> {
     const settings = new Settings()
     settings.load()
 
+    const Wait = () => (
+        <Box marginRight={2}>
+            <Box marginRight={2}><Text> E G G S: the reproductive system of penguins</Text></Box>
+        </Box>
+    )
+    render (<Wait/>)
+
     /**
      * nest
      */
@@ -27,7 +34,7 @@ export default async function information(verbose = false): Promise<void> {
             <Box marginRight={2}><Text>ovarium: <Text color="cyan">{settings.work_dir.path}</Text></Text></Box>
         </Box>
     )
-    //render(<Nest />)
+    // render(<Nest />)
 
 
     /**
@@ -40,7 +47,7 @@ export default async function information(verbose = false): Promise<void> {
             <Box marginRight={2}><Text>initrd.img: <Text color="cyan">{settings.initrd_image}</Text></Text></Box>
         </Box>
     )
-    render(<Boot />)
+    // render(<Boot />)
 
     /**
      * Live
@@ -51,7 +58,7 @@ export default async function information(verbose = false): Promise<void> {
             <Box marginRight={2}><Text>root passwd: <Text color="cyan">{settings.config.root_passwd}</Text></Text></Box>
         </Box>
     )
-    render(<Live />)
+    // render(<Live />)
 
 
     const distroId = shx.exec('lsb_release -is', { silent: true }).stdout.trim()
@@ -61,30 +68,30 @@ export default async function information(verbose = false): Promise<void> {
         <Box flexDirection='column'>
             <Box borderStyle="round" marginRight={2} flexDirection='row' >
                 <Box marginRight={2}><Text>distro: <Text color="cyan">{distroId} {releaseId} {codenameId}</Text></Text></Box>
-                <Box marginRight={2}><Text>compatible: <Text color="cyan">{settings.distro.distroLike}/{settings.distro.releaseLike}/{settings.distro.codenameLikeId}</Text></Text></Box>
+                <Box marginRight={2}><Text>compatible: <Text color="cyan">{settings.distro.distroLike} {settings.distro.releaseLike} {settings.distro.codenameLikeId}</Text></Text></Box>
             </Box>
         </Box>
     )
-    render(<Distro />)
+    // render(<Distro />)
 
     const dependencies = await Pacman.prerequisitesCheck()
     const configurations = Pacman.configurationCheck()
     let uefi = Pacman.isUefi()
 
     let installer = false
-    if (await Pacman.isInstalledGui()) {
+    if (Pacman.isInstalledGui()) {
         installer = await Pacman.calamaresCheck()
     }
 
     const Ok = () => (
         <Text backgroundColor="green">OK</Text>
     )
-    render(<Ok />)
+    // render(<Ok />)
 
     const Ko = () => (
         <Text backgroundColor="red" color="white">KO</Text>
     )
-    render(<Ko />)
+    // render(<Ko />)
 
     /** 
      * CLI va verde se naked, altrimenti giallo
@@ -93,12 +100,12 @@ export default async function information(verbose = false): Promise<void> {
     const CLI = () => (
         <Text backgroundColor="green">CLI</Text>
     )
-    render(<CLI />)
+    // render(<CLI />)
 
     const GUI = () => (
         <Text backgroundColor="green">GUI</Text>
     )
-    render(<GUI />)
+    // render(<GUI />)
 
 
     let initType = ''
@@ -122,7 +129,7 @@ export default async function information(verbose = false): Promise<void> {
             <Box marginRight={2}><Text>init: <Text color="cyan">{initType}</Text></Text></Box>
         </Box>
     )
-    render(<Checks />)
+    // render(<Checks />)
 
 
     const Presentation = () => (
@@ -130,8 +137,8 @@ export default async function information(verbose = false): Promise<void> {
             <Box ><Text> </Text></Box>
             <Box borderStyle="round" marginRight={2} flexDirection="column">
                 <Box ><Text>ISO images made with eggs can be installed with either the calamares GUI installer or the krill CLI installer. eggs includes krill installer inside.</Text></Box>
-                <Box><Text>krill installer is an opportunity if you are low on RAM, working on old distros or on architectures not yet supported by calamares.</Text></Box>
-                <Box><Text>Usage: sudo eggs install will allways run calamares if present, sudo eggs install --cli will force CLI installer.</Text></Box>
+                <Box><Text>Try the </Text><Text color="cyan">eggs wardrobe</Text><Text> to build your personal Linux version starting from a simple CLI system</Text></Box>
+                <Box><Text>Usage: eggs wardrobe get / list / wear</Text></Box>
                 <Box ><Text> </Text></Box>
                 <Box flexDirection="row">
                     <Box marginRight={1}><Text>Info: </Text></Box>
@@ -144,7 +151,7 @@ export default async function information(verbose = false): Promise<void> {
             </Box>
         </>
     )
-    render(<Presentation />)
+    // render(<Presentation />)
 
 
 

@@ -9,7 +9,7 @@ import information from '../components/elements/information'
  *
  */
 export default class Info extends Command {
-  static description = 're-thinking for a different approach to CLI'
+  static description = 'informations about eggs configuration'
 
   static flags = {
     verbose: Flags.boolean({ char: 'v' }),
