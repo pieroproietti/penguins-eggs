@@ -17,7 +17,6 @@ const pjson = require('../../package.json')
 // interfaces
 import { IRemix, IDistro, IApp, IWorkDir } from '../interfaces'
 
-// libraries
 
 // classes
 import Utils from './utils'

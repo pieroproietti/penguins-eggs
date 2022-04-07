@@ -1,9 +1,8 @@
-import pjson from 'pjson'
-
 import React from 'react'
 import { render, Text, Box, Newline } from 'ink'
-import Gradient from 'ink-gradient'
 
+// import package.json
+const pjson = require('../../../package.json')
 
 type TitleProps = {
    title?: string

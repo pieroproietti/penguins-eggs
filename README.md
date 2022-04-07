@@ -515,7 +515,7 @@ _See code: [@oclif/plugin-help](https://github.com/oclif/plugin-help/blob/v5.1.1
 
 ## `eggs info`
 
-re-thinking for a different approach to CLI
+informations about eggs configuration
 
 ```
 USAGE
@@ -526,7 +526,7 @@ FLAGS
   -v, --verbose
 
 DESCRIPTION
-  re-thinking for a different approach to CLI
+  informations about eggs configuration
 ```
 
 _See code: [src/commands/info.ts](https://github.com/pieroproietti/penguins-eggs/blob/v9.1.3/src/commands/info.ts)_
