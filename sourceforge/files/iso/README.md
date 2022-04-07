@@ -41,17 +41,9 @@ I work mostly on Debian, so here you can find more personal versions and other e
 ## bullseye
 
 * **naked** - just the juice, without GUI. You can start here to build your revolution! (i386 and amd64)
-* **hen** - with xfce, node-8.17.0, git and all the necessary to start to mantain eggs
-* **xfce** with xfce
-* **kde** with kde plasma
-* **gnome** with gnome3
 
 ## bookworm
 * **naked** - just the juice, without GUI. You can start here to build your revolution! (i386 and amd64)
-* **hen** - with xfce, node-8.17.0, git and all the necessary to start to mantain eggs
-* **xfce** with xfce
-* **kde** with kde plasma
-* **gnome** with gnome3
 
 # Ubuntu
 
@@ -60,10 +52,7 @@ I work mostly on Debian, so here you can find more personal versions and other e
 
 ## focal LTS
 * **naked** - Ubuntu 20.04 just the juice, without GUI. You can start here to build your revolution! (amd64)
-* **gnome** - Ubuntu 20.04 focal gnome, remastered with eggs, without any modifications. (amd64)
-
-## hirsute
-* **gnome3** - Ubuntu 21.04 hirsute gnome3, remastered with eggs, without any modifications. (amd64)
+* **gnome3** - Ubuntu 20.04 focal gnome, remastered with eggs, without any modifications. (amd64)
 
 ## impish
 * **gnome3** - Ubuntu 21.10 impish gnome3, remastered with eggs, without any modifications. (amd64)
@@ -71,17 +60,16 @@ I work mostly on Debian, so here you can find more personal versions and other e
 ## jammy
 * **gnome3** - Ubuntu 22.04 jammy gnome3, remastered with eggs, without any modifications. (amd64)
 
-
 # Devuan 
 
 ## beowulf
-**xfce** with xfce
+* **naked** - just the juice, without GUI. You can start here to build your revolution! (amd64)
 
 ## chimaera
-**xfce** with xfce
+* **naked** - just the juice, without GUI. You can start here to build your revolution! (amd64)
 
 ## daedalus
-**xfce** with xfce
+* **naked** - just the juice, without GUI. You can start here to build your revolution! (amd64)
 
 # manjaro Linux
 **xfce** with xfce
@@ -97,6 +85,7 @@ I work mostly on Debian, so here you can find more personal versions and other e
 * **uma** - Linux Mint 20.2 remastered with eggs, without any modifications except for wallpapers and develop tools. (amd64) 
 * **patricia** - Linux Mint 19.3 xfce, updated and remastered with eggs, without any modifications except for wallpapers. (i386/amd64))
 * **debbie** - LMDE4 Debbie, remastered with eggs, without any modifications except for wallpapers and develop tools. (i386/amd64)) based on Debian buster
+* **elsie** - LMDE5 Debbie, remastered with eggs, without any modifications except for wallpapers and develop tools. (i386/amd64)) based on Debian buster
 
 ## Neon
 The latest and greatest of [KDE](https://neon.kde.org/) community software packaged on a rock-solid base.
@@ -108,9 +97,6 @@ The latest and greatest of [KDE](https://neon.kde.org/) community software packa
 An italian school distro based on linuxmint with mate and complete for the school
 
 * **orizzonti-2025** [Sodilinux](https://sodilinux.itd.cnr.it/) 
-
-## Raspberry Pi OS
-* ** ** a remastered [Raspberry Pi OS](https://www.raspberrypi.org/software/) (amd64)
 
 ## TeLOS
 From Greece with love! All ISOs are based on [TeLOS](https://sourceforge.net/projects/teloslinux/),
@@ -133,7 +119,7 @@ Feel free to contact [me](https://gitter.im/penguins-eggs-1/community?source=org
 * mail: piero.proietti@gmail.com
 
 ## Copyright and licenses
-Copyright (c) 2017, 2020 [Piero Proietti](https://penguins-eggs.net/about-me.html), dual licensed under the MIT or GPL Version 2 licenses.
+Copyright (c) 2017, 2022 [Piero Proietti](https://penguins-eggs.net/about-me.html), dual licensed under the MIT or GPL Version 2 licenses.
 
 ## More informations:
 
