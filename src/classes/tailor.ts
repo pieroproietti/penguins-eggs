@@ -240,7 +240,7 @@ export default class Tailor {
                     const user = Utils.getPrimaryUser()
                     step = `copying skel in /home/${user}/`
                     Utils.warning(step)
-                    cmd = `rsync -avx  ${this.wardrobe}/${this.costume}/dirs/etc/skel/.* /home/${user}/`
+                    cmd = `rsync -avx  ${this.wardrobe}/${this.costume}/dirs/etc/skel/.config /home/${user}/`
                     await exec(cmd, this.echo)
                     await exec(`chown ${user}:${user} /home/${user}/ -R`)
                 }
