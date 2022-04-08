@@ -2,7 +2,8 @@ import { Command, Flags } from '@oclif/core'
 import chalk from 'chalk'
 import Utils from '../../classes/utils'
 import os from 'os'
-import Scientist from '../../classes/scientist'
+import Tailor from '../../classes/tailor'
+
 // libraries
 import { exec } from '../../lib/utils'
 
@@ -16,6 +17,7 @@ export default class Wear extends Command {
   static flags = {
     costume: Flags.string({ char: 'c', description: 'costume' }),
     wardrobe: Flags.string({ char: 'w', description: 'wardrobe' }),
+    no_accessories: Flags.boolean({ char: 'n', description: 'not install accessories' }),
     silent: Flags.boolean({ char: 's' }),
     help: Flags.help({ char: 'h' }),
   }
@@ -23,12 +25,17 @@ export default class Wear extends Command {
   async run(): Promise<void> {
     const { args, flags } = await this.parse(Wear)
 
+    Utils.titles(this.id + ' ' + this.argv)
+
     let verbose = true
     if (flags.silent) {
       verbose = true
     }
 
-    Utils.titles(this.id + ' ' + this.argv)
+    let no_accessories = false
+    if (flags.no_accessories) {
+      no_accessories = true
+    }
 
     let wardrobe = await Utils.wardrobe()
     if (flags.wardrobe != undefined) {
@@ -40,9 +47,12 @@ export default class Wear extends Command {
       costume = flags.costume
     }
 
-    if (Utils.isRoot() && (await Utils.customConfirm(`Prepare your costume: ${costume}? Select yes to continue...`))) {
-      const tailor = new Scientist(wardrobe, costume)
-      await tailor.prepare(verbose)
+
+    if (Utils.isRoot() {
+      if (await Utils.customConfirm(`Prepare your costume: ${costume}? Select yes to continue...`))) {
+        const tailor = new Tailor(wardrobe, costume)
+        await tailor.prepare(verbose, no_accessories)
+      }
     } else {
       console.log('costume ' + chalk.cyan(costume) + ' not found in wardrobe: ' + chalk.green(wardrobe))
     }

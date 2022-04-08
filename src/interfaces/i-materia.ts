@@ -4,7 +4,7 @@ export interface IMateria {
    description: string
    release: string
    distributions: string []
-   atom: {
+   sequence: {
        repositories: {
            sources_list: string []
            sources_list_d: string []

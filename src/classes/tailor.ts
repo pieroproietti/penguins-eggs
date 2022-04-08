@@ -7,14 +7,15 @@
 
 import chalk from 'chalk'
 import Utils from './utils'
-import { ICostume } from '../interfaces'
+import { IMateria } from '../interfaces'
 import { exec } from '../lib/utils'
 import fs from 'fs'
 import path from 'path'
 import yaml from 'js-yaml'
 import Pacman from './pacman'
 import Distro from './distro'
-import { captureRejections } from 'events'
+import SourcesList from './sources_list'
+
 
 
 /**
@@ -25,7 +26,7 @@ export default class Tailor {
     private echo = {}
     private costume = ''
     private wardrobe = ''
-    materials = {} as ICostume
+    materials = {} as IMateria
 
     /**
      * @param wardrobe 
@@ -39,7 +40,7 @@ export default class Tailor {
     /**
      * 
      */
-    async prepare(verbose = true) {
+    async prepare(verbose = true, no_accessories = false) {
         this.verbose = verbose
         this.echo = Utils.setEcho(verbose)
         Utils.warning(`preparing ${this.costume}`)
@@ -54,228 +55,179 @@ export default class Tailor {
 
         let tailorList = `${this.wardrobe}/${this.costume}/index.yml`
         if (fs.existsSync(tailorList)) {
-            this.materials = yaml.load(fs.readFileSync(tailorList, 'utf-8')) as ICostume
+            this.materials = yaml.load(fs.readFileSync(tailorList, 'utf-8')) as IMateria
         } else {
             tailorList = `${this.wardrobe}/accessories/${this.costume}/index.yml`
             if (fs.existsSync(tailorList)) {
-                this.materials = yaml.load(fs.readFileSync(tailorList, 'utf-8')) as ICostume
+                this.materials = yaml.load(fs.readFileSync(tailorList, 'utf-8')) as IMateria
             } else {
                 console.log('costume ' + chalk.cyan(this.costume) + ' not found in wardrobe: ' + chalk.green(this.wardrobe) + ', not in accessories')
             }
         }
 
+
         /**
-         * Repositories
+         * sequence
          */
-        if (this.materials.sequence.repositories !== undefined) {
-            Utils.warning(`analyzing repositories`)
+        if (this.materials.sequence !== undefined) {
 
             /**
-            * sources.list
-            */
-            if (this.materials.sequence.repositories.sourcesList !== undefined) {
-                let step = 'analyzing /etc/apt/sources.list'
-                Utils.warning(step)
-
-                // deb uri distribution [component1] [component2] [...]
-                let checkRepos = await exec(`grep "deb http"</etc/apt/sources.list`, { echo: false, capture: true })
-                let tmp: string[] = []
-                if (checkRepos.code === 0) {
-                    tmp = checkRepos.data.split('\n')
-                }
-
-                // remove empty line
-                let repos: string[] = []
-                for (const repo of tmp) {
-                    if (repo !== '') {
-                        repos.push(repo)
-                    }
-                }
+             * sequence/repositories
+             */
+            if (this.materials.sequence.repositories !== undefined) {
+                Utils.warning(`analyzing repositories`)
 
                 /**
-                 * Linuxmint non ha nessuna configurazione in /etc/apt/sources.list
-                 */
-                if (repos.length > 0) {
-
-                    /**
-                     * if NOT distro.codenameLikeId is included in distributions
-                     * then emit warning
-                     */
-                    const distro = new Distro()
-                    let distroOk = false
-                    for (const distribution of this.materials.distributions) {
-                        for (const repo of repos) {
-                            if (repo.includes(distro.codenameLikeId)) {
-                                distroOk = true
-                            }
-                        }
-                    }
-                    if (!distroOk) {
-                        console.log('You are on: ' + chalk.green(distro.distroId) + '/' + chalk.green(distro.codenameId))
-                        console.log('compatible with: ' + chalk.green(distro.distroLike) + '/' + chalk.green(distro.codenameLikeId))
-                        console.log(`This costume/accessory ${this.costume} or wardrobe: ${this.wardrobe} apply to: `)
-                        for (const distribution of this.materials.distributions) {
-                            console.log(`- ${distribution}`)
-                        }
-                        Utils.pressKeyToExit('distribution warming, check your /etc/apt/sources.list', true)
-                    }
-
-                    /**
-                     * if NOT all components are included in distributions
-                     * then emit components warning
-                     */
-                    const components = this.materials.sequence.repositories.sourcesList
-                    let componentsOk = true
-                    for (const repo of repos) {
-                        for (const component of components) {
-                            // On security we need just main
-                            if (!repo.includes('security')) {
-                                if (!repo.includes(component)) {
-                                    console.log('component: ' + chalk.green(component) + ' is not included in repo: ' + chalk.green(repo))
-                                    componentsOk = false
-                                }
-                            }
-                        }
-                    }
-
-                    if (componentsOk) {
-                        Utils.warning('repositories checked')
-                    } else {
-                        Utils.pressKeyToExit('component warming, check your /etc/apt/sources.list', true)
-                    }
-                }
-                // Fine constrollo /etc/apt/sources.list
-            }
-
-
-            /**
-             * sources.list.d
-             */
-            if (this.materials.sequence.repositories.sourcesListD !== undefined) {
-                if (this.materials.sequence.repositories.sourcesListD[0] !== null) {
-                    let step = `adding repositories to /etc/apt/sources.list.d`
+                * sequence/repositories/source_list_d
+                */
+                if (this.materials.sequence.repositories.sources_list !== undefined) {
+                    let step = 'analyzing /etc/apt/sources.list'
                     Utils.warning(step)
 
-                    for (const cmd of this.materials.sequence.repositories.sourcesListD) {
-                        try {
-                            await exec(cmd, this.echo)
-                        } catch (error) {
-                            await Utils.pressKeyToExit(JSON.stringify(error))
+                    const sources_list = new SourcesList()
+                    sources_list.distribution(this.materials.sequence.repositories.sources_list)
+                    sources_list.components(this.materials.sequence.repositories.sources_list)
+                }
+
+
+                /**
+                 * sequence/repositories/source_list_d
+                 */
+                if (this.materials.sequence.repositories.sources_list_d !== undefined) {
+                    if (this.materials.sequence.repositories.sources_list_d[0] !== null) {
+                        let step = `adding repositories to /etc/apt/sources.list.d`
+                        Utils.warning(step)
+
+                        for (const cmd of this.materials.sequence.repositories.sources_list_d) {
+                            try {
+                                await exec(cmd, this.echo)
+                            } catch (error) {
+                                await Utils.pressKeyToExit(JSON.stringify(error))
+                            }
+                        }
+                    }
+                }
+
+
+                /**
+                 * sequence/repositories/update
+                 */
+                if (this.materials.sequence.repositories.update === undefined) {
+                    console.log('repositiories, and repositories.update MUDE be defined on sequence ')
+                    process.exit()
+                }
+                let step = `updating repositories`
+                Utils.warning(step)
+                if (this.materials.sequence.repositories.update) {
+                    await exec('apt-get update', Utils.setEcho(false))
+                }
+
+
+                /**
+                 * sequence/repositories/upgrade
+                 */
+                if (this.materials.sequence.repositories.upgrade !== undefined) {
+                    let step = `apt-get full-upgrade`
+                    Utils.warning(step)
+                    if (this.materials.sequence.repositories.upgrade) {
+                        await exec('apt-get full-upgrade -y', Utils.setEcho(false))
+                    }
+                }
+            }
+
+
+            /**
+             * sequence/preinst
+             */
+            if (this.materials.sequence.preinst !== undefined) {
+                if (Array.isArray(this.materials.sequence.preinst)) {
+                    let step = `preinst scripts`
+                    Utils.warning(step)
+                    for (const script of this.materials.sequence.preinst) {
+                        await exec(`${this.wardrobe}/${this.costume}/${script}`, Utils.setEcho(true))
+                    }
+                }
+            }
+
+
+            /**
+             * apt-get install packages
+             */
+            if (this.materials.sequence.packages !== undefined) {
+                await this.helper(this.materials.sequence.packages)
+            }
+
+            /**
+            * sequence/packages_no_install_recommends
+            */
+            if (this.materials.sequence.packages_no_install_recommends !== undefined) {
+                await this.helper(
+                    this.materials.sequence.packages_no_install_recommends,
+                    "packages without recommends and suggests",
+                    'apt-get install --no-install-recommends --no-install-suggests -y '
+                )
+            }
+
+
+            /**
+             * sequence/debs
+             */
+            if (this.materials.sequence.debs !== undefined) {
+                if (this.materials.sequence.debs) {
+                    let step = `installing local packages`
+                    Utils.warning(step)
+                    let cmd = `dpkg -i ${this.wardrobe}\*.deb`
+                    await exec(cmd)
+                }
+            }
+
+
+            /**
+            * sequence/packages_python 
+            */
+            if (this.materials.sequence.packages_python !== undefined) {
+                if (Array.isArray(this.materials.sequence.packages_python)) {
+                    let cmd = 'pip install '
+                    let pip = ''
+                    for (const elem of this.materials.sequence.packages_python) {
+                        cmd += ` ${elem}`
+                        pip += `, ${elem}`
+                    }
+                    let step = `installing python packages pip ${pip.substring(2)}`
+                    Utils.warning(step)
+                    await exec(cmd, this.echo)
+                }
+            }
+
+
+            /**
+             * sequence/accessories
+             */
+            if (!no_accessories) {
+                if (this.materials.sequence.accessories !== undefined) {
+                    if (Array.isArray(this.materials.sequence.accessories)) {
+                        let step = `wearing accessories`
+                        for (const elem of this.materials.sequence.accessories) {
+                            if (elem.substring(0, 2) === './') {
+                                const tailor = new Tailor(this.wardrobe, `${this.costume}/${elem.substring(2)}`)
+                                await tailor.prepare(verbose)
+                            } else {
+                                const tailor = new Tailor(this.wardrobe, `./accessories/${elem}`)
+                                await tailor.prepare(verbose)
+                            }
                         }
                     }
                 }
             }
+        }
 
+        // customize è sempre indefinito
+        if (this.materials.customize !== undefined) {
 
             /**
-             * apt-get update
+             * customize/dirs
              */
-            if (this.materials.sequence.repositories.update === undefined) {
-                console.log('repositiories, and repositories.update MUDE be defined on sequence ')
-                process.exit()
-            }
-            let step = `updating repositories`
-            Utils.warning(step)
-            if (this.materials.sequence.repositories.update) {
-                await exec('apt-get update', Utils.setEcho(false))
-            }
-
-
-            /**
-             * apt-get full-upgrade
-             */
-            if (this.materials.sequence.repositories.fullUpgrade !== undefined) {
-                let step = `apt-get full-upgrade`
-                Utils.warning(step)
-                if (this.materials.sequence.repositories.fullUpgrade) {
-                    await exec('apt-get full-upgrade -y', Utils.setEcho(false))
-                }
-            }
-        }
-
-
-        /**
-         * checking dependencies
-         */
-        if (this.materials.sequence.dependencies !== undefined) {
-            await this.helper(this.materials.sequence.dependencies, 'dependencies')
-        }
-
-
-        /**
-         * apt-get install packages
-         */
-        if (this.materials.sequence.packages !== undefined) {
-            await this.helper(this.materials.sequence.packages)
-        }
-
-        /**
-        * apt-get install --no-install-recommends --no-install-suggests
-        */
-        if (this.materials.sequence.noInstallRecommends !== undefined) {
-            await this.helper(
-                this.materials.sequence.noInstallRecommends,
-                "packages without recommends and suggests",
-                'apt-get install --no-install-recommends --no-install-suggests -y '
-            )
-        }
-
-
-        /**
-         * dpkg -i *.deb
-         */
-        if (this.materials.sequence.debs !== undefined) {
-            if (this.materials.sequence.debs) {
-                let step = `installing local packages`
-                Utils.warning(step)
-                let cmd = `dpkg -i ${this.wardrobe}\*.deb`
-                await exec(cmd)
-            }
-        }
-
-
-        /**
-        * packages python pip
-        */
-        if (this.materials.sequence.packagesPip !== undefined) {
-            if (this.materials.sequence.packagesPip[0] !== null) {
-                let cmd = 'pip install '
-                let pip = ''
-                for (const elem of this.materials.sequence.packagesPip) {
-                    cmd += ` ${elem}`
-                    pip += `, ${elem}`
-                }
-                let step = `installing python packages pip ${pip.substring(2)}`
-                Utils.warning(step)
-                await exec(cmd, this.echo)
-            }
-        }
-
-
-        /**
-         * accessories
-         */
-        if (this.materials.sequence.accessories !== undefined) {
-            if (this.materials.sequence.accessories[0] !== null) {
-                let step = `wearing accessories`
-                for (const elem of this.materials.sequence.accessories) {
-                    if (elem.substring(0, 2) === './') {
-                        const tailor = new Tailor(this.wardrobe, `${this.costume}/${elem.substring(2)}`)
-                        await tailor.prepare(verbose)
-                    } else {
-                        const tailor = new Tailor(this.wardrobe, `./accessories/${elem}`)
-                        await tailor.prepare(verbose)
-                    }
-                }
-            }
-        }
-
-
-        /**
-         * dirs
-         */
-        if (this.materials.sequence.dirs !== undefined) {
-            if (this.materials.sequence.dirs) {
+            if (this.materials.customize.dirs) {
                 if (fs.existsSync(`${this.wardrobe}/${this.costume}/dirs`)) {
                     let step = `copying dirs`
                     Utils.warning(step)
@@ -293,34 +245,25 @@ export default class Tailor {
                     await exec(`chown ${user}:${user} /home/${user}/ -R`)
                 }
             }
-        }
 
 
 
-        /**
-         * hostname and hosts
-         */
-        if (this.materials.sequence.hostname !== undefined) {
-            if (this.materials.sequence.hostname) {
+            /**
+             * customize/hostname
+             */
+            if (this.materials.customize.hostname) {
                 Utils.warning(`changing hostname = ${this.materials.name}`)
                 await this.hostname()
             }
-        }
 
-
-
-        /**
-         * customizations
-         */
-        if (this.materials.sequence.customizations !== undefined) {
             /**
-             * customizations/scripts
+             * customize/scripts
              */
-            if (this.materials.sequence.customizations.scripts !== undefined) {
-                if (this.materials.sequence.customizations.scripts[0] !== null) {
-                    let step = `customizations scripts`
+            if (this.materials.customize.scripts !== undefined) {
+                if (Array.isArray(this.materials.customize.scripts)) {
+                    let step = `customize scripts`
                     Utils.warning(step)
-                    for (const script of this.materials.sequence.customizations.scripts) {
+                    for (const script of this.materials.customize.scripts) {
                         await exec(`${this.wardrobe}/${this.costume}/${script}`, Utils.setEcho(true))
                     }
                 }
@@ -332,10 +275,7 @@ export default class Tailor {
         /**
          * reboot
          */
-        if (this.materials.sequence.reboot === undefined) {
-            this.materials.sequence.reboot = false // Accessories
-        }
-        if (this.materials.sequence.reboot) {
+        if (this.materials.reboot) {
             Utils.warning(`Reboot`)
             await Utils.pressKeyToExit('system need to reboot', true)
             await exec('reboot')
@@ -408,6 +348,7 @@ export default class Tailor {
         await exec(`rm ${file} `, this.echo)
         fs.writeFileSync(file, text)
     }
+
 }
 
 
