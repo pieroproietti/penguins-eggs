@@ -17,11 +17,11 @@ export interface IMateria {
        debs: boolean
        packages_python: string []
        accessories: string[]
-   }
-   customize: {
+  }
+  customize: {
     dirs: boolean
     hostname: boolean
     scripts: string []
   }
-reboot: boolean
+  reboot: boolean
 }

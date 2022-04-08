@@ -2,7 +2,7 @@ import { Command, Flags } from '@oclif/core'
 import chalk from 'chalk'
 import Utils from '../../classes/utils'
 import os from 'os'
-import Tailor from '../../classes/tailor'
+import Scientist from '../../classes/scientist'
 // libraries
 import { exec } from '../../lib/utils'
 
@@ -41,7 +41,7 @@ export default class Wear extends Command {
     }
 
     if (Utils.isRoot() && (await Utils.customConfirm(`Prepare your costume: ${costume}? Select yes to continue...`))) {
-      const tailor = new Tailor(wardrobe, costume)
+      const tailor = new Scientist(wardrobe, costume)
       await tailor.prepare(verbose)
     } else {
       console.log('costume ' + chalk.cyan(costume) + ' not found in wardrobe: ' + chalk.green(wardrobe))

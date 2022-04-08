@@ -55,15 +55,16 @@ export default class Scientist {
 
         let tailorList = `${this.wardrobe}/${this.costume}/index.yml`
         if (fs.existsSync(tailorList)) {
-            this.materials = yaml.load(fs.readFileSync(tailorList, 'utf-8')) as ICostume
+            this.materials = yaml.load(fs.readFileSync(tailorList, 'utf-8')) as IMateria
         } else {
             tailorList = `${this.wardrobe}/accessories/${this.costume}/index.yml`
             if (fs.existsSync(tailorList)) {
-                this.materials = yaml.load(fs.readFileSync(tailorList, 'utf-8')) as ICostume
+                this.materials = yaml.load(fs.readFileSync(tailorList, 'utf-8')) as IMateria
             } else {
                 console.log('costume ' + chalk.cyan(this.costume) + ' not found in wardrobe: ' + chalk.green(this.wardrobe) + ', not in accessories')
             }
         }
+
 
         /**
          * atom
@@ -86,13 +87,6 @@ export default class Scientist {
                     const sources_list = new SourcesList()
                     sources_list.distribution(this.materials.atom.repositories.sources_list)
                     sources_list.components(this.materials.atom.repositories.sources_list)
-                    /**
-                     * Linuxmint non ha nessuna configurazione in /etc/apt/sources.list
-                    */
-                     if (repos.length > 0) {
-                        let sources_list_distribution = this.sources_list_distribution(repos)
-                        let sources_list_component = this.sources_list_components(repos)
-                    }
                 }
 
 
@@ -214,10 +208,10 @@ export default class Scientist {
                     let step = `wearing accessories`
                     for (const elem of this.materials.atom.accessories) {
                         if (elem.substring(0, 2) === './') {
-                            const tailor = new Tailor(this.wardrobe, `${this.costume}/${elem.substring(2)}`)
+                            const tailor = new Scientist(this.wardrobe, `${this.costume}/${elem.substring(2)}`)
                             await tailor.prepare(verbose)
                         } else {
-                            const tailor = new Tailor(this.wardrobe, `./accessories/${elem}`)
+                            const tailor = new Scientist(this.wardrobe, `./accessories/${elem}`)
                             await tailor.prepare(verbose)
                         }
                     }
@@ -225,32 +219,28 @@ export default class Scientist {
             }
         }
 
-        /**
-         * customize
-         */
+        // customize è sempre indefinito
         if (this.materials.customize !== undefined) {
 
             /**
              * customize/dirs
              */
-            if (this.materials.customize.dirs !== undefined) {
-                if (this.materials.customize.dirs) {
-                    if (fs.existsSync(`${this.wardrobe}/${this.costume}/dirs`)) {
-                        let step = `copying dirs`
-                        Utils.warning(step)
-                        let cmd = `rsync -avx  ${this.wardrobe}/${this.costume}/dirs/* /`
-                        await exec(cmd, this.echo)
+            if (this.materials.customize.dirs) {
+                if (fs.existsSync(`${this.wardrobe}/${this.costume}/dirs`)) {
+                    let step = `copying dirs`
+                    Utils.warning(step)
+                    let cmd = `rsync -avx  ${this.wardrobe}/${this.costume}/dirs/* /`
+                    await exec(cmd, this.echo)
 
-                        /**
-                         * Copyng skel in /home/user
-                         */
-                        const user = Utils.getPrimaryUser()
-                        step = `copying skel in /home/${user}/`
-                        Utils.warning(step)
-                        cmd = `rsync -avx  ${this.wardrobe}/${this.costume}/dirs/etc/skel/.* /home/${user}/`
-                        await exec(cmd, this.echo)
-                        await exec(`chown ${user}:${user} /home/${user}/ -R`)
-                    }
+                    /**
+                     * Copyng skel in /home/user
+                     */
+                    const user = Utils.getPrimaryUser()
+                    step = `copying skel in /home/${user}/`
+                    Utils.warning(step)
+                    cmd = `rsync -avx  ${this.wardrobe}/${this.costume}/dirs/etc/skel/.* /home/${user}/`
+                    await exec(cmd, this.echo)
+                    await exec(`chown ${user}:${user} /home/${user}/ -R`)
                 }
             }
 
@@ -259,19 +249,18 @@ export default class Scientist {
             /**
              * customize/hostname
              */
-            if (this.materials.customize.hostname !== undefined) {
-                if (this.materials.customize.hostname) {
-                    Utils.warning(`changing hostname = ${this.materials.name}`)
-                    await this.hostname()
-                }
+            if (this.materials.customize.hostname) {
+                Utils.warning(`changing hostname = ${this.materials.name}`)
+                await this.hostname()
             }
 
             /**
              * customize/scripts
              */
-            if (this.materials.customize.scripts !== undefined) {
+             console.log(this.materials.customize.scripts)
+             if (this.materials.customize.scripts !== undefined) {
                 if (this.materials.customize.scripts[0] !== null) {
-                    let step = `customizations scripts`
+                    let step = `customize scripts`
                     Utils.warning(step)
                     for (const script of this.materials.customize.scripts) {
                         await exec(`${this.wardrobe}/${this.costume}/${script}`, Utils.setEcho(true))
@@ -285,9 +274,6 @@ export default class Scientist {
         /**
          * reboot
          */
-        if (this.materials.reboot === undefined) {
-            this.materials.reboot = false // Accessories
-        }
         if (this.materials.reboot) {
             Utils.warning(`Reboot`)
             await Utils.pressKeyToExit('system need to reboot', true)

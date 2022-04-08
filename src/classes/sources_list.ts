@@ -27,33 +27,32 @@ export default class SourcesList {
     * @returns 
     */
    async distribution(distributions: string[]): Promise<boolean> {
-      const repos = await this.get()
 
       /**
       * Linuxmint non ha nessuna configurazione in /etc/apt/sources.list
       */
-      if (repos.length === 0) {
+      let checked = true
+      const repos = await this.get()
+      if (repos.length !== 0) {
+         checked = false
+         const distro = new Distro()
 
-      }
-
-      const distro = new Distro()
-
-      let checked = false
-      for (const distribution of distributions) {
-         for (const repo of repos) {
-            if (repo.includes(distro.codenameLikeId)) {
-               checked = true
+         for (const distribution of distributions) {
+            for (const repo of repos) {
+               if (repo.includes(distro.codenameLikeId)) {
+                  checked = true
+               }
             }
          }
-      }
-      if (!checked) {
-         console.log('You are on: ' + chalk.green(distro.distroId) + '/' + chalk.green(distro.codenameId))
-         console.log('compatible with: ' + chalk.green(distro.distroLike) + '/' + chalk.green(distro.codenameLikeId))
-         console.log(`This costume/accessory apply to: `)
-         for (const distribution of distributions) {
-            console.log(`- ${distribution}`)
+         if (!checked) {
+            console.log('You are on: ' + chalk.green(distro.distroId) + '/' + chalk.green(distro.codenameId))
+            console.log('compatible with: ' + chalk.green(distro.distroLike) + '/' + chalk.green(distro.codenameLikeId))
+            console.log(`This costume/accessory apply to: `)
+            for (const distribution of distributions) {
+               console.log(`- ${distribution}`)
+            }
+            Utils.pressKeyToExit('distribution warning, check your /etc/apt/sources.list', true)
          }
-         Utils.pressKeyToExit('distribution warning, check your /etc/apt/sources.list', true)
       }
       return checked
    }
@@ -64,24 +63,30 @@ export default class SourcesList {
     * @returns 
     */
    async components(components: string[]): Promise<boolean> {
-      const repos = await this.get()
+
+      /**
+      * Linuxmint non ha nessuna configurazione in /etc/apt/sources.list
+      */
       let checked = true
-      for (const repo of repos) {
-         for (const component of components) {
-            // On security we need just main
-            if (!repo.includes('security')) {
-               if (!repo.includes(component)) {
-                  console.log('component: ' + chalk.green(component) + ' is not included in repo: ' + chalk.green(repo))
-                  checked = false
+      const repos = await this.get()
+      if (repos.length !== 0) {
+         for (const repo of repos) {
+            for (const component of components) {
+               // On security we need just main
+               if (!repo.includes('security')) {
+                  if (!repo.includes(component)) {
+                     console.log('component: ' + chalk.green(component) + ' is not included in repo: ' + chalk.green(repo))
+                     checked = false
+                  }
                }
             }
          }
-      }
 
-      if (checked) {
-         Utils.warning('repositories checked')
-      } else {
-         Utils.pressKeyToExit('component warning, check your /etc/apt/sources.list', true)
+         if (checked) {
+            Utils.warning('repositories checked')
+         } else {
+            Utils.pressKeyToExit('component warning, check your /etc/apt/sources.list', true)
+         }
       }
       return checked
    }
