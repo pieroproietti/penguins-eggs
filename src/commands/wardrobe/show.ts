@@ -1,10 +1,8 @@
 import { Command, Flags } from '@oclif/core'
 import Utils from '../../classes/utils'
-import path from 'path'
 import yaml from 'js-yaml'
 import fs from 'fs'
-import os from 'os'
-import { ICostume } from '../../interfaces'
+import { IMateria } from '../../interfaces'
 
 // libraries
 import chalk from 'chalk'
@@ -57,7 +55,8 @@ export default class Show extends Command {
             }
         }
 
-        const materials = yaml.load(fs.readFileSync(tailorList, 'utf-8')) as ICostume
+        const materials = yaml.load(fs.readFileSync(tailorList, 'utf-8')) as IMateria
+        
         if (json) {
             console.log(JSON.stringify(materials, null, ' '))
         } else {

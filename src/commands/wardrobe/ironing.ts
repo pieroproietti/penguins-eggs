@@ -1,10 +1,8 @@
 import { Command, Flags } from '@oclif/core'
 import Utils from '../../classes/utils'
-import path from 'path'
 import yaml from 'js-yaml'
 import fs from 'fs'
-import os from 'os'
-import { ICostume } from '../../interfaces'
+import { IMateria } from '../../interfaces'
 import chalk from 'chalk'
 
 // libraries
@@ -58,8 +56,8 @@ export default class Ironing extends Command {
             }
         }
 
-        const orig = yaml.load(fs.readFileSync(tailorList, 'utf-8')) as ICostume
-        let sorted: ICostume = orig
+        const orig = yaml.load(fs.readFileSync(tailorList, 'utf-8')) as IMateria
+        let sorted: IMateria = orig
 
         sorted.name = orig.name
         sorted.description = orig.description
@@ -67,57 +65,76 @@ export default class Ironing extends Command {
         sorted.release = orig.release
         sorted.distributions = orig.distributions.sort()
 
-        if (orig.sequence.repositories !== undefined) {
-            sorted.sequence.repositories = orig.sequence.repositories
+        if (orig.sequence !== undefined) {
+            if (orig.sequence.repositories !== undefined) {
+                sorted.sequence.repositories = orig.sequence.repositories
 
-            if (orig.sequence.repositories.sourcesList !== undefined) {
-                sorted.sequence.repositories.sourcesList = orig.sequence.repositories.sourcesList
+                if (orig.sequence.repositories.sources_list !== undefined) {
+                    sorted.sequence.repositories.sources_list = orig.sequence.repositories.sources_list
+                }
+
+                if (orig.sequence.repositories.sources_list_d !== undefined) {
+                    sorted.sequence.repositories.sources_list_d = orig.sequence.repositories.sources_list_d
+                }
+                sorted.sequence.repositories.update = orig.sequence.repositories.update
+                sorted.sequence.repositories.upgrade = orig.sequence.repositories.upgrade
             }
 
-            if (orig.sequence.repositories.sourcesListD !== undefined) {
-                sorted.sequence.repositories.sourcesList = orig.sequence.repositories.sourcesList
+            if (orig.sequence.preinst !== undefined) {
+                sorted.sequence.preinst = orig.sequence.preinst
+            }
+
+
+            if (orig.sequence.packages !== undefined) {
+                if (Array.isArray(orig.sequence.packages)) {
+                    sorted.sequence.packages = orig.sequence.packages.sort()
+                }
+            }
+
+            if (orig.sequence.packages_no_install_recommends !== undefined) {
+                if (Array.isArray(orig.sequence.packages_no_install_recommends)) {
+                    sorted.sequence.packages_no_install_recommends = orig.sequence.packages_no_install_recommends.sort()
+                }
+            }
+
+            if (orig.sequence.debs !== undefined) {
+                sorted.sequence.debs = orig.sequence.debs
+            }
+
+            if (orig.sequence.packages_python !== undefined) {
+                if (Array.isArray(orig.sequence.packages_python)) {
+                    sorted.sequence.packages_python = orig.sequence.packages_python.sort()
+                }
+            }
+
+
+            if (orig.sequence.accessories !== undefined) {
+                if (Array.isArray(orig.sequence.accessories)) {
+                    sorted.sequence.accessories = orig.sequence.accessories.sort()
+                }
+
             }
         }
 
-        if (orig.sequence.dependencies !== undefined) {
-            if (orig.sequence.dependencies[0] !== null) {
-                sorted.sequence.dependencies = orig.sequence.dependencies.sort()
+        if (orig.customize !== undefined) {
+            sorted.customize = orig.customize
+            if (orig.customize.dirs !== undefined) {
+                sorted.customize.dirs = orig.customize.dirs
+            }
+
+            if (orig.customize.hostname !== undefined) {
+                sorted.customize.hostname = orig.customize.hostname
+            }
+
+            if (orig.customize.scripts !== undefined) {
+                orig.customize.scripts = orig.customize.scripts
             }
         }
 
-        if (orig.sequence.packages !== undefined) {
-            if (orig.sequence.packages[0] !== null) {
-                sorted.sequence.packages = orig.sequence.packages.sort()
-            }
-        }
 
-        if (orig.sequence.noInstallRecommends !== undefined) {
-            if (orig.sequence.noInstallRecommends[0] !== null) {
-                sorted.sequence.noInstallRecommends = orig.sequence.noInstallRecommends.sort()
-            }
+        if (orig.reboot !== undefined) {
+            sorted.reboot = orig.reboot
         }
-
-        if (orig.sequence.packagesPip !== undefined) {
-            if (orig.sequence.packagesPip[0] !== null) {
-                sorted.sequence.packagesPip = orig.sequence.packagesPip.sort()
-            }
-        }
-
-        if (orig.sequence.accessories !== undefined) {
-            if (orig.sequence.accessories[0] !== null) {
-                sorted.sequence.accessories = orig.sequence.accessories.sort()
-            }
-        }
-
-        sorted.sequence.debs = orig.sequence.debs
-        sorted.sequence.dirs = orig.sequence.dirs
-        sorted.sequence.hostname = orig.sequence.hostname
-
-        if (orig.sequence.customizations !== undefined) {
-            if (orig.sequence.customizations.scripts[0] !== null) {
-            }
-        }
-        sorted.sequence.reboot = sorted.sequence.reboot
 
         const ironed = `# wardrobe: ${wardrobe}\n# costume: /${costume}\n---\n` + yaml.dump(sorted)
         console.log(ironed)
