@@ -19,6 +19,7 @@ export { IBranding } from './i-branding'
 export { ISettings } from './i-settings'
 export { IPartitions } from './i-partitions'
 
-// Repipes
+// Costumes and Materia
 export { ICostume } from './i-costume'
+export { IMateria } from './i-materia'
 
