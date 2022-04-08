@@ -48,8 +48,8 @@ export default class Wear extends Command {
     }
 
 
-    if (Utils.isRoot() {
-      if (await Utils.customConfirm(`Prepare your costume: ${costume}? Select yes to continue...`))) {
+    if (Utils.isRoot()) {
+      if (await Utils.customConfirm(`Prepare your costume: ${costume}? Select yes to continue...`)) {
         const tailor = new Tailor(wardrobe, costume)
         await tailor.prepare(verbose, no_accessories)
       }

@@ -34,11 +34,17 @@ export default class Get extends Command {
     if (flags.repo !== undefined) {
       repo = flags.repo
     }
-    
-    let wardrobe = basename(repo) // ~/.eggs-wardrobe
-    const result = await exec(`git clone --depth 1 ${repo} ${await Utils.wardrobe()}`)
-    if(result.code === 0) {
-        Utils.warning(`you get new wardrobe from repo: ${repo} in ${await Utils.wardrobe()}`)
+
+    // No sudo for get
+    if (process.getuid && process.getuid() === 0) {
+      Utils.warning(`You must run: eggs wardrobe get without sudo`)
+      process.exit(0)
+    }
+
+      let wardrobe = basename(repo) // ~/.eggs-wardrobe
+      const result = await exec(`git clone --depth 1 ${repo} ${await Utils.wardrobe()}`)
+      if(result.code === 0) {
+          Utils.warning(`you get new wardrobe from repo: ${repo} in ${await Utils.wardrobe()}`)
     }
   }
 }

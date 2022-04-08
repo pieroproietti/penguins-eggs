@@ -36,7 +36,6 @@ export default class Ironing extends Command {
         // Limit scrolling from line 0 to line 10.
         // await exec(`printf '\e[5;24r'`)
 
-
         let costume = "colibri"
         if (flags.costume !== undefined) {
             costume = flags.costume

@@ -1201,11 +1201,12 @@ wear costume/accessories from wardrobe
 
 ```
 USAGE
-  $ eggs wardrobe wear [-c <value>] [-w <value>] [-s] [-h]
+  $ eggs wardrobe wear [-c <value>] [-w <value>] [-n] [-s] [-h]
 
 FLAGS
   -c, --costume=<value>   costume
   -h, --help              Show CLI help.
+  -n, --no_accessories    not install accessories
   -s, --silent
   -w, --wardrobe=<value>  wardrobe
 
