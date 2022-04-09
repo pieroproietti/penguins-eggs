@@ -37,8 +37,8 @@ update --help --verbose
 wardrobe:get --repo --verbose --help
 wardrobe:ironing --costume --wardrobe --verbose --help
 wardrobe:list --wardrobe --verbose --help
-wardrobe:show --wardrobe --costume --json --verbose --help
-wardrobe:wear --costume --wardrobe --silent --help
+wardrobe:show --costume --wardrobe --json --verbose --help
+wardrobe:wear --costume --wardrobe --no_accessories --silent --help
 autocomplete --refresh-cache
 help --nested-commands
 version 

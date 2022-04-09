@@ -16,7 +16,7 @@ _eggs () {
 "export\:deb:export deb/docs/iso to the destination host"
 "export\:docs:remove and export docType documentation of the sources in the destination host"
 "export\:iso:export iso in the destination host"
-"info:re-thinking for a different approach to CLI"
+"info:informations about eggs configuration"
 "install:command-line system installer - the egg became a penguin!"
 "kill:kill the eggs/free the nest"
 "mom:ask for mommy - gui helper"
@@ -31,10 +31,10 @@ _eggs () {
 "tools\:yolk:configure eggs to install without internet"
 "update:update the penguin's eggs tool"
 "wardrobe\:get:get warorobe"
-"wardrobe\:ironing:ironing costumes: sorting packages, firmwares and so on"
-"wardrobe\:list:list, wear costumes"
-"wardrobe\:show:show costumes"
-"wardrobe\:wear:wear costume"
+"wardrobe\:ironing:ordered show of costumes or accessories in wardrobe"
+"wardrobe\:list:list costumes and accessoires in wardrobe"
+"wardrobe\:show:show costumes/accessories in wardrobe"
+"wardrobe\:wear:wear costume/accessories from wardrobe"
 "autocomplete:display autocomplete installation instructions"
 "help:Display help for <%= config.bin %>."
 "version:"
@@ -265,8 +265,8 @@ wardrobe:list)
 
 wardrobe:show)
   _command_flags=(
-    "--wardrobe=-[wardrobe]:"
-"--costume=-[costume]:"
+    "--costume=-[costume]:"
+"--wardrobe=-[wardrobe]:"
 "--json[output JSON]"
 "--verbose[]"
 "--help[Show CLI help.]"
@@ -275,8 +275,9 @@ wardrobe:show)
 
 wardrobe:wear)
   _command_flags=(
-    "--costume=-[Costume]:"
+    "--costume=-[costume]:"
 "--wardrobe=-[wardrobe]:"
+"--no_accessories[not install accessories]"
 "--silent[]"
 "--help[Show CLI help.]"
   )
