@@ -159,7 +159,7 @@ export default class Xdg {
     await exec('rm /etc/skel -rf', echo)
     await exec('mkdir -p /etc/skel', echo)
 
-    // Add .bash_logout, .bashrc and .profile
+    // copy .bash_logout, .bashrc and .profile to /etc/skel
     await exec(`cp /home/${user}/.bash_logout /etc/skel`, echo)
     await exec(`cp /home/${user}/.bashrc /etc/skel`, echo)
     await exec(`cp /home/${user}/.profile /etc/skel`, echo)
@@ -167,18 +167,24 @@ export default class Xdg {
     /**
      * copy desktop configuration
      */
-    if (Pacman.packageIsInstalled('cinnamon-core')) {
+     if (Pacman.packageIsInstalled('gnome')) {
+       // we need a more clean solution
+       await exec (`rsync -avx /home/${user}/.config /etc/skel/`)
+    } else if (Pacman.packageIsInstalled('cinnamon-core')) {
       // use .cinnamon NOT cinnamon/ to copy the entire directory
       await exec (`rsync -avx /home/${user}/.cinnamon /etc/skel/`)
     } else if (Pacman.packageIsInstalled('plasma-desktop')) {
       // use .kde NOT .kde/ to copy the entire directory
       await exec (`rsync -avx /home/${user}/.kde /etc/skel/`)
     } else if (Pacman.packageIsInstalled('lxde-core')) {
-      // desktop = 'lxde'
+       // we need a more clean solution
+       await exec (`rsync -avx /home/${user}/.config /etc/skel/`)
     } else if (Pacman.packageIsInstalled('lxqt-core')) {
-      // desktop = 'lxqt'
+       // we need a more clean solution
+       await exec (`rsync -avx /home/${user}/.config /etc/skel/`)
     } else if (Pacman.packageIsInstalled('mate-session-manager')) {
-      // desktop = 'mate'
+       // we need a more clean solution
+       await exec (`rsync -avx /home/${user}/.config /etc/skel/`)
     } else if (Pacman.packageIsInstalled('xfce4-session')) {
       // use .config/xfce4 NOT .config/xfce4/ to copy the entire directory
       await exec (`rsync -avx /home/${user}/.config/xfce4 /etc/skel/.config `)
