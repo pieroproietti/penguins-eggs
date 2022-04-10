@@ -6,7 +6,7 @@
  */
 
 import shx from 'shelljs'
-import fs from 'node:fs'
+import fs, { utimesSync } from 'node:fs'
 import path from 'node:path'
 import Pacman from './pacman'
 import Utils from './utils'
@@ -21,6 +21,7 @@ const xdg_dirs = ['DESKTOP', 'DOWNLOAD', 'TEMPLATES', 'PUBLICSHARE', 'DOCUMENTS'
  * @remarks all the utilities
  */
 export default class Xdg {
+
   /**
    *
    * @param xdg_dir
@@ -38,7 +39,6 @@ export default class Xdg {
         }
       })
     }
-
     return retval
   }
 
@@ -63,9 +63,10 @@ export default class Xdg {
   }
 
   /**
-   *
-   * @param chroot
-   * @param pathPromise
+   * 
+   * @param chroot 
+   * @param path 
+   * @param verbose 
    */
   static async mk(chroot: string, path: string, verbose = false) {
     const echo = Utils.setEcho(verbose)
@@ -82,7 +83,8 @@ export default class Xdg {
    * @param chroot
    */
   static async autologin(olduser: string, newuser: string, chroot = '/') {
-    if (await Pacman.isInstalledGui()) {
+    if (Pacman.isInstalledGui()) {
+
       // slim
       if (Pacman.packageIsInstalled('slim')) {
         shx.sed('-i', 'auto_login no', 'auto_login yes', `${chroot}/etc/slim.conf`)
@@ -153,65 +155,76 @@ export default class Xdg {
   static async skel(user: string, verbose = false) {
     const echo = Utils.setEcho(verbose)
 
-    if (verbose) {
-      Utils.warning('removing /etc/skel')
-    }
+    // Remove and create /etc/skel
     await exec('rm /etc/skel -rf', echo)
-
-    if (verbose) {
-      Utils.warning('create an empty /etc/skel')
-    }
     await exec('mkdir -p /etc/skel', echo)
 
+    // Add .bash_logout, .bashrc and .profile
+    await exec(`cp /home/${user}/.bash_logout /etc/skel`, echo)
+    await exec(`cp /home/${user}/.bashrc /etc/skel`, echo)
+    await exec(`cp /home/${user}/.profile /etc/skel`, echo)
+
     /**
-     * Tha we need: the only necessary directory seem to be .config
+     * copy desktop configuration
      */
-    const files = [`.bash_logout`, `.bashrc`, `.config/`, `.gtkrc-2.0`, `.gtkrc-xfce`, `.profile`]
-    let desktop = ''
     if (Pacman.packageIsInstalled('cinnamon-core')) {
-      desktop = 'cinnamon'
+      // use .cinnamon NOT cinnamon/ to copy the entire directory
+      await exec (`rsync -avx /home/${user}/.cinnamon /etc/skel/`)
     } else if (Pacman.packageIsInstalled('plasma-desktop')) {
-      desktop = 'kde'
+      // use .kde NOT .kde/ to copy the entire directory
+      await exec (`rsync -avx /home/${user}/.kde /etc/skel/`)
     } else if (Pacman.packageIsInstalled('lxde-core')) {
-      desktop = 'lxde'
+      // desktop = 'lxde'
     } else if (Pacman.packageIsInstalled('lxqt-core')) {
-      desktop = 'lxqt'
+      // desktop = 'lxqt'
     } else if (Pacman.packageIsInstalled('mate-session-manager')) {
-      desktop = 'mate'
+      // desktop = 'mate'
     } else if (Pacman.packageIsInstalled('xfce4-session')) {
-      desktop = 'xfce4'
+      // use .config/xfce4 NOT .config/xfce4/ to copy the entire directory
+      await exec (`rsync -avx /home/${user}/.config/xfce4 /etc/skel/.config `)
     }
 
-    Utils.warning(`desktop: ${desktop}`)
+    await exec('chown root:root /etc/skel -R', echo)
+    await exec('chmod a+rwx,g-w,o-w /etc/skel/ -R', echo)
+    execIfExist('chmod a+rwx,g-w-x,o-wx', '/etc/skel/.bashrc', verbose)
+    execIfExist('chmod a+rwx,g-w-x,o-wx', '/etc/skel/.bash_logout', verbose)
+    execIfExist('chmod a+rwx,g-w-x,o-wx', '/etc/skel/.profile', verbose)
 
-    // Add Desktop Management configuration dir: cinnamon
-    if (desktop === 'cinnamon') {
-      files.push('.cinnamon')
-    }
+    // https://www.thegeekdiary.com/understanding-the-etc-skel-directory-in-linux/
+    // cat /etc/defualt/useradd
+    // ls -lart /etc/skel
+  }
+}
 
-    // Add Desktop Management configuration: KDE
-    if (desktop === 'kde') {
-      files.push('.kde')
-    }
+/**
+ * showAndExec
+ * @param cmd
+ * @param verbose
+ */
+async function showAndExec(cmd: string, verbose = false) {
+  const echo = Utils.setEcho(verbose)
 
-    // Add node version manager
-    files.push('.nvm')
+  if (verbose) console.log(cmd)
+  await exec(cmd, echo)
+}
 
-    /**
-     * GNOME, LXDE, LXQT, MATE and XFCE4 seem to NO ADD more .dofiles
-     */
+/**
+ * execIfExist
+ * @param cmd
+ * @param file
+ * @param verbose
+ */
+async function execIfExist(cmd: string, file: string, verbose = false) {
+  const echo = Utils.setEcho(verbose)
 
-    Utils.warning('copying hidden files and dirs')
-    for (const i in files) {
-      if (fs.existsSync(`/home/${user}/${files[i]}`)) {
-        await exec(`cp -r /home/${user}/${files[i]} /etc/skel/ `, echo)
-      }
-    }
+  if (fs.existsSync(file)) {
+    await exec(`${cmd} ${file}`, echo)
+  }
+}
 
-    if (verbose) {
-      Utils.warning('Cleaning /etc/skel/config...')
-    }
-    await execIfExist('rm -rf', '/etc/skel/.config/balena-etcher-electron', verbose)
+
+/**
+     await execIfExist('rm -rf', '/etc/skel/.config/balena-etcher-electron', verbose)
     await execIfExist('rm -rf', '/etc/skel/.config/bleachbit', verbose)
     await execIfExist('rm -rf', '/etc/skel/.config/cinnamon-session', verbose)
     await execIfExist('rm -rf', '/etc/skel/.config/Code', verbose)
@@ -256,47 +269,4 @@ export default class Xdg {
     await execIfExist('rm -rf', '/etc/skel/.config/yelp', verbose)
     await execIfExist('rm -rf', '/etc/skel/.config/zoomus.conf', verbose)
 
-    if (verbose) {
-      Utils.warning('change righs on /etc/skel')
-    }
-    await exec('chmod a+rwx,g-w,o-w /etc/skel/ -R', echo)
-    execIfExist('chmod a+rwx,g-w-x,o-wx', '/etc/skel/.bashrc', verbose)
-    execIfExist('chmod a+rwx,g-w-x,o-wx', '/etc/skel/.bash_logout', verbose)
-    execIfExist('chmod a+rwx,g-w-x,o-wx', '/etc/skel/.profile', verbose)
-
-    if (verbose) {
-      Utils.warning('Change ower to root:root /etc/skel')
-    }
-    await exec('chown root:root /etc/skel -R', echo)
-
-    // https://www.thegeekdiary.com/understanding-the-etc-skel-directory-in-linux/
-    // cat /etc/defualt/useradd
-    // ls -lart /etc/skel
-  }
-}
-
-/**
- * showAndExec
- * @param cmd
- * @param verbose
  */
-async function showAndExec(cmd: string, verbose = false) {
-  const echo = Utils.setEcho(verbose)
-
-  if (verbose) console.log(cmd)
-  await exec(cmd, echo)
-}
-
-/**
- * execIfExist
- * @param cmd
- * @param file
- * @param verbose
- */
-async function execIfExist(cmd: string, file: string, verbose = false) {
-  const echo = Utils.setEcho(verbose)
-
-  if (fs.existsSync(file)) {
-    await exec(`${cmd} ${file}`, echo)
-  }
-}
