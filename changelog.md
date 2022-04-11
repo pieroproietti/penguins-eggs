@@ -18,6 +18,9 @@ You can follow the project also consulting the [commit history](https://github.c
 ## Changelog
 Versions are listed on reverse order, the first is the last one. Old versions are moved to [oldest](https://sourceforge.net/projects/penguins-eggs/files/packages-deb/oldest/). 
 
+### eggs-9.1.5-1
+* wardrobe: try 5 times if apt-get install fail before to desist
+
 ### eggs-9.1.4-1
 * wardrobe: a bit restructured in costumes definitions, look costume colibri for more details and reference
 
