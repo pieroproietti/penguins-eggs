@@ -15,6 +15,8 @@ import yaml from 'js-yaml'
 import Pacman from './pacman'
 import Distro from './distro'
 import SourcesList from './sources_list'
+import { exit } from 'process'
+import Xdg from './xdg'
 
 
 
@@ -91,8 +93,8 @@ export default class Tailor {
 
 
                 /**
-                 * sequence/repositories/source_list_d
-                 */
+                * sequence/repositories/source_list_d
+                */
                 if (this.materials.sequence.repositories.sources_list_d !== undefined) {
                     if (this.materials.sequence.repositories.sources_list_d[0] !== null) {
                         let step = `adding repositories to /etc/apt/sources.list.d`
@@ -107,7 +109,6 @@ export default class Tailor {
                         }
                     }
                 }
-
 
                 /**
                  * sequence/repositories/update
@@ -164,7 +165,7 @@ export default class Tailor {
                 await this.helper(
                     this.materials.sequence.packages_no_install_recommends,
                     "packages without recommends and suggests",
-                    'apt-get install --no-install-recommends --no-install-suggests -y '
+                    'apt-get install --no-install-recommends --no-install-suggests -yq '
                 )
             }
 
@@ -263,8 +264,10 @@ export default class Tailor {
                 if (Array.isArray(this.materials.customize.scripts)) {
                     let step = `customize scripts`
                     Utils.warning(step)
+                    const user = process.env.SUDO_USER
+                    const desktop = `/home/${user}/${Xdg.traduce("DESKTOP")}`
                     for (const script of this.materials.customize.scripts) {
-                        await exec(`${this.wardrobe}/${this.costume}/${script}`, Utils.setEcho(true))
+                        await exec(`${this.wardrobe}/${this.costume}/${script} ${user} ${desktop}`, Utils.setEcho(true))
                     }
                 }
             }
@@ -292,7 +295,7 @@ export default class Tailor {
      * - if find any packages to install
      * - install packages
      */
-    async helper(packages: string[], comment = 'packages', cmd = 'apt-get install -y ') {
+    async helper(packages: string[], comment = 'packages', cmd = 'apt-get install -yq ') {
 
         if (packages[0] !== null) {
             let elements: string[] = []
@@ -310,8 +313,18 @@ export default class Tailor {
                 if (!this.verbose) {
                     step += strElements.substring(2)
                 }
-                Utils.warning(step)
-                await exec(cmd, this.echo)
+
+
+                /**
+                 * prova 3 volte
+                 */
+                for (let tempts = 1; tempts < 3; tempts++) {
+                    Utils.warning(step)
+                    Utils.warning(`tempts ${tempts} of 3`)
+                    if (await tryCheckSuccess(cmd, this.echo)) {
+                        break
+                    }
+                }
             }
         }
     }
@@ -351,4 +364,20 @@ export default class Tailor {
 
 }
 
-
+/**
+ * 
+ * @param cmd 
+ * @param echo 
+ * @returns 
+ */
+async function tryCheckSuccess(cmd: string, echo: {}): Promise<boolean> {
+    let success = false
+    try {
+        await exec(cmd, echo)
+        success = true
+    }
+    catch (e) {
+        success = false
+    }
+    return success
+}
