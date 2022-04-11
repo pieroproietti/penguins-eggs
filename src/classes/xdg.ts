@@ -171,10 +171,10 @@ export default class Xdg {
        // we need a more clean solution
        await exec (`rsync -avx /home/${user}/.config /etc/skel/`)
     } else if (Pacman.packageIsInstalled('cinnamon-core')) {
-      // use .cinnamon NOT cinnamon/ to copy the entire directory
+      // use .cinnamon NOT cinnamon/ 
       await exec (`rsync -avx /home/${user}/.cinnamon /etc/skel/`)
     } else if (Pacman.packageIsInstalled('plasma-desktop')) {
-      // use .kde NOT .kde/ to copy the entire directory
+      // use .kde NOT .kde/ 
       await exec (`rsync -avx /home/${user}/.kde /etc/skel/`)
     } else if (Pacman.packageIsInstalled('lxde-core')) {
        // we need a more clean solution
@@ -186,8 +186,10 @@ export default class Xdg {
        // we need a more clean solution
        await exec (`rsync -avx /home/${user}/.config /etc/skel/`)
     } else if (Pacman.packageIsInstalled('xfce4-session')) {
-      // use .config/xfce4 NOT .config/xfce4/ to copy the entire directory
-      await exec (`rsync -avx /home/${user}/.config/xfce4 /etc/skel/.config `)
+      // use .config/xfce4 NOT .config/xfce4/ 
+      await exec (`rsync -avx /home/${user}/.config/xfce4 /etc/skel/.config`)
+      await exec (`mkdir /etc/skel/.local/share -p`)
+      await exec (`rsync -avx /home/${user}/.local/share/recently-used.xbel /etc/skel/.local/share`)
     }
 
     await exec('chown root:root /etc/skel -R', echo)
@@ -227,52 +229,3 @@ async function execIfExist(cmd: string, file: string, verbose = false) {
     await exec(`${cmd} ${file}`, echo)
   }
 }
-
-
-/**
-     await execIfExist('rm -rf', '/etc/skel/.config/balena-etcher-electron', verbose)
-    await execIfExist('rm -rf', '/etc/skel/.config/bleachbit', verbose)
-    await execIfExist('rm -rf', '/etc/skel/.config/cinnamon-session', verbose)
-    await execIfExist('rm -rf', '/etc/skel/.config/Code', verbose)
-    // await execIfExist(`rm -rf`, `/etc/skel/.config/configstore`, verbose)
-    // await execIfExist(`rm -rf`, `/etc/skel/.config/dconf`, verbose)
-    await execIfExist('rm -rf', '/etc/skel/.config/dleyna-server-service.conf', verbose)
-    await execIfExist('rm -rf', '/etc/skel/.config/enchant', verbose)
-    await execIfExist('rm -rf', '/etc/skel/.config/eog', verbose)
-    await execIfExist('rm -rf', '/etc/skel/.config/filezilla', verbose)
-    await execIfExist('rm -rf', '/etc/skel/.config/gedit', verbose)
-    await execIfExist('rm -rf', '/etc/skel/.config/GIMP', verbose)
-    await execIfExist('rm -rf', '/etc/skel/.config/Gitter', verbose)
-    // await execIfExist(`rm -rf`, `/etc/skel/.config/gnote`, verbose)
-    // await execIfExist(`rm -rf`, `/etc/skel/.config/goa-1.0`, verbose)
-    await execIfExist('rm -rf', '/etc/skel/.config/google-chrome', verbose)
-    // await execIfExist(`rm -rf`, `/etc/skel/.config/gtk-2.0`, verbose)
-    // await execIfExist(`rm -rf`, `/etc/skel/.config/gtk-3.0`, verbose)
-    await execIfExist('rm -rf', '/etc/skel/.config/ibus', verbose)
-    await execIfExist('rm -rf', '/etc/skel/.config/inkscape', verbose)
-    await execIfExist('rm -rf', '/etc/skel/.config/kazam', verbose)
-    await execIfExist('rm -rf', '/etc/skel/.config/KeePass', verbose)
-    await execIfExist('rm -rf', '/etc/skel/.config/libreoffice', verbose)
-    // await execIfExist(`rm -rf`, `/etc/skel/.config/menus`, verbose)
-    await execIfExist('rm -rf', '/etc/skel/.config/mimeapps.list', verbose)
-    await execIfExist('rm -rf', '/etc/skel/.config/mpv', verbose)
-    // await execIfExist(`rm -rf`, `/etc/skel/.config/nemo`, verbose)
-    await execIfExist('rm -rf', '/etc/skel/.config/obs-studio', verbose)
-    if (!Pacman.packageIsInstalled('plank')) {
-      await execIfExist('rm -rf', '/etc/skel/.config/plank', verbose)
-    }
-    await execIfExist('rm -rf', '/etc/skel/.config/Postman', verbose)
-    await execIfExist('rm -rf', '/etc/skel/.config/procps', verbose)
-    // await execIfExist(`rm -rf`, `/etc/skel/.config/pulse`, verbose)
-    await execIfExist('rm -rf', '/etc/skel/.config/QtProject.conf', verbose)
-    await execIfExist('rm -rf', '/etc/skel/.config/Slack', verbose)
-    await execIfExist('rm -rf', '/etc/skel/.config/totem', verbose)
-    await execIfExist('rm -rf', '/etc/skel/.config/transmission', verbose)
-    await execIfExist('rm -rf', '/etc/skel/.config/Unknown Organization', verbose)
-    await execIfExist('rm -rf', '/etc/skel/.config/user-dirs.dirs', verbose)
-    await execIfExist('rm -rf', '/etc/skel/.config/user-dirs.locale', verbose)
-    await execIfExist('rm -rf', '/etc/skel/.config/virt-viewer', verbose)
-    await execIfExist('rm -rf', '/etc/skel/.config/yelp', verbose)
-    await execIfExist('rm -rf', '/etc/skel/.config/zoomus.conf', verbose)
-
- */

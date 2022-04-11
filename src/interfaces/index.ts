@@ -21,5 +21,5 @@ export { IPartitions } from './i-partitions'
 
 // Costumes and Materia
 export { ICostume } from './i-costume'
-export { IMateria } from './i-materia'
+export { IMateria, IRepos } from './i-materia'
 
