@@ -295,7 +295,7 @@ export default class Tailor {
      * - if find any packages to install
      * - install packages
      */
-    async helper(packages: string[], comment = 'packages', cmd = 'apt-get install -yq ') {
+    async helper(packages: string[], comment = 'packages', cmd = 'apt-get install -yqq ') {
 
         if (packages[0] !== null) {
             let elements: string[] = []
@@ -316,11 +316,11 @@ export default class Tailor {
 
 
                 /**
-                 * prova 3 volte
+                 * prova 5 volte
                  */
-                for (let tempts = 1; tempts < 3; tempts++) {
-                    Utils.warning(step)
-                    Utils.warning(`tempts ${tempts} of 3`)
+                for (let tempts = 1; tempts < 5; tempts++) {
+                    Utils.titles(step)
+                    Utils.warning(`tempts ${tempts} of 5`)
                     if (await tryCheckSuccess(cmd, this.echo)) {
                         break
                     }
