@@ -12,26 +12,31 @@ penguins-eggs
 
 # Debian remastered ISOs
 
-All ISOs are based on Debian varius versions
+All ISOs are based on Debian various versions
 
 # user/password
 * ```live/evolution```
 * ```root/evolution```
 
-* Debian 8 jessie (EOF LTS 2022-06-30)
+# Debian 8 jessie (EOF LTS 2022-06-30)
+* **naked** - just the juice, without GUI. You can start here to build your revolution!
 
-+ Debian 9 stretch (EOF 2022-06-30)
+# Debian 9 stretch (EOF 2022-06-30)
+* **naked** - just the juice, without GUI. You can start here to build your revolution!
 
-* Debian 10 buster (old-stable)
+# Debian 10 buster (old-stable)
+* **naked** - just the juice, without GUI. You can start here to build your revolution!
 
-* Debian 11 bullseye (stable)
+# Debian 11 bullseye (stable)
  * **naked** - just the juice, without GUI. You can start here to build your revolution!
  * **colibri** - a light xfce4 desktop for developers, with colibri you can start to improve [eggs](https://github.com/pieroproietti/penguins-eggs)
  * **duck** - cinnamon desktop, office, multimedia, graphics with 5.17.0-1.2-liquorix-amd64 kernel
  * **eagle** - xfce4 desktop plus [Proxmox VE](https://www.proxmox.com/en/proxmox-ve), install and configure it with static ip to enjoy KVM and containers virtualization
  * **owl** - xfce4, office, multimedia, graphics with 5.17.0-1.2-liquorix-amd64 kernel, based on the work of Clarlie Martinez [quirinux](https://quirinux.org/)
 ![colibri](https://a.fsdn.com/con/app/proj/penguins-eggs/screenshots/colibri.png)
-* Debian 12 bookworm (testing)
+
+# Debian 12 bookworm (testing)
+* **naked** - just the juice, without GUI. You can start here to build your revolution!
 
 ## More informations:
 
