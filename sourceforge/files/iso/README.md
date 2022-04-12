@@ -25,7 +25,11 @@ All the ISOs include eggs installed (deb package). You can update your eggs tool
 
 # ISOs
 
-I work mostly on Debian, so here you can find more personal versions and other examples.
+I work mostly on Debian stable (bullseye), so here you can find more versions and other examples. 
+
+Note: you can build the various colibri, duck and owl starting with an installed naked version of others distros using wardrobe wear.
+
+![colibri](https://a.fsdn.com/con/app/proj/penguins-eggs/screenshots/colibri.png)
 
 # Debian
 ## jessie 
@@ -40,13 +44,31 @@ I work mostly on Debian, so here you can find more personal versions and other e
 
 ## bullseye
 * **naked** - just the juice, without GUI. You can start here to build your revolution!
- * **colibri** - with colibri, a light xfce4 for developers you can easily start to improve eggs, 
- * **duck** - cinnamon, office, multimedia with 5.17.0-1.2-liquorix-amd64 kernel
- * **eagle** - xfce4 plus Proxmox VE, you must configure it with static ip, experimental
- * **owl** - xfce4 for graphics designers, with 5.17.0-1.2-liquorix-amd64 kernel, based on the work of Clarlie Martinez [quirinux](https://quirinux.org/)
+ * **colibri** - a light xfce4 desktop for developers, with colibri you can start to improve [eggs](https://github.com/pieroproietti/penguins-eggs)
+ * **duck** - cinnamon desktop, office, multimedia, graphics with 5.17.0-1.2-liquorix-amd64 kernel
+ * **eagle** - xfce4 desktop plus [Proxmox VE](https://www.proxmox.com/en/proxmox-ve), install and configure it with static ip to enjoy KVM and containers virtualization
+ * **owl** - xfce4, office, multimedia, graphics with 5.17.0-1.2-liquorix-amd64 kernel, based on the work of Clarlie Martinez [quirinux](https://quirinux.org/)
+
 
 ## bookworm
 * **naked** - just the juice, without GUI. You can start here to build your revolution! (i386 and amd64)
+
+# Devuan 
+
+## beowulf
+* **naked** - just the juice, without GUI. You can start here to build your revolution! (amd64)
+
+## chimaera
+* **naked** - just the juice, without GUI. You can start here to build your revolution! (amd64)
+
+## daedalus
+* **naked** - just the juice, without GUI. You can start here to build your revolution! (amd64)
+
+## Deepin
+* **deepin** deeping 20.2.1 remastered based on Debian buster. [deepin](https://www.deepin.org/en/) (amd64)
+
+# manjaro Linux
+**xfce** with xfce
 
 # Ubuntu
 
@@ -63,24 +85,8 @@ I work mostly on Debian, so here you can find more personal versions and other e
 ## jammy
 * **gnome3** - Ubuntu 22.04 jammy gnome3, remastered with eggs, without any modifications. (amd64)
 
-# Devuan 
-
-## beowulf
-* **naked** - just the juice, without GUI. You can start here to build your revolution! (amd64)
-
-## chimaera
-* **naked** - just the juice, without GUI. You can start here to build your revolution! (amd64)
-
-## daedalus
-* **naked** - just the juice, without GUI. You can start here to build your revolution! (amd64)
-
-# manjaro Linux
-**xfce** with xfce
 
 # Derivated distros
-
-## Deepin
-* **deepin** deeping 20.2.1 remastered based on Debian buster. [deepin](https://www.deepin.org/en/) (amd64)
 
 ## Linux Mint 
 * **ulyana** - Linux Mint 20.0 remastered with eggs, without any modifications except for wallpapers and develop tools. (amd64) 
@@ -107,7 +113,6 @@ TeLOS Linux is a project from our friend [Ion](https://sourceforge.net/u/telos/p
 
 * **egg-of-telos-bullseye-dev-x64** a remastered version of **TeLOS-mini**. Here You can find the [original](https://sourceforge.net/projects/lite.teloslinux.p/files/iso/)
 * **egg-of-telos-bullseye-dev-i386** an i386 version of **TeLOS-mini**. 
-
 
 # That's all Folks!
 No need other configurations, penguins-eggs are battery included or better, as in the real, live is inside! :-D
