@@ -26,11 +26,11 @@ All ISOs are based on Debian varius versions
 
 * Debian 11 bullseye (stable)
  * **naked** - just the juice, without GUI. You can start here to build your revolution!
- * **colibri** - with colibri, a light xfce4 for developers you can easily start to improve eggs, 
- * **duck** - cinnamon, office, multimedia with 5.17.0-1.2-liquorix-amd64 kernel
- * **eagle** - xfce4 plus Proxmox VE, you must configure it with static ip, experimental
- * **owl** - xfce4 for graphics designers, with 5.17.0-1.2-liquorix-amd64 kernel, based on the work of Clarlie Martinez [quirinux](https://quirinux.org/)
-
+ * **colibri** - a light xfce4 desktop for developers, with colibri you can start to improve [eggs](https://github.com/pieroproietti/penguins-eggs)
+ * **duck** - cinnamon desktop, office, multimedia, graphics with 5.17.0-1.2-liquorix-amd64 kernel
+ * **eagle** - xfce4 desktop plus [Proxmox VE](https://www.proxmox.com/en/proxmox-ve), install and configure it with static ip to enjoy KVM and containers virtualization
+ * **owl** - xfce4, office, multimedia, graphics with 5.17.0-1.2-liquorix-amd64 kernel, based on the work of Clarlie Martinez [quirinux](https://quirinux.org/)
+![colibri](https://a.fsdn.com/con/app/proj/penguins-eggs/screenshots/colibri.png)
 * Debian 12 bookworm (testing)
 
 ## More informations:
