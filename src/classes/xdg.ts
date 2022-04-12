@@ -170,6 +170,7 @@ export default class Xdg {
      if (Pacman.packageIsInstalled('gnome')) {
        // we need a more clean solution
        await exec (`rsync -avx /home/${user}/.config /etc/skel/`)
+       await exec (`rsync -avx /home/${user}/.local /etc/skel/`)
     } else if (Pacman.packageIsInstalled('cinnamon-core')) {
       // use .cinnamon NOT cinnamon/ 
       await exec (`rsync -avx /home/${user}/.cinnamon /etc/skel/`)
@@ -179,12 +180,15 @@ export default class Xdg {
     } else if (Pacman.packageIsInstalled('lxde-core')) {
        // we need a more clean solution
        await exec (`rsync -avx /home/${user}/.config /etc/skel/`)
+       await exec (`rsync -avx /home/${user}/.local /etc/skel/`)
     } else if (Pacman.packageIsInstalled('lxqt-core')) {
        // we need a more clean solution
        await exec (`rsync -avx /home/${user}/.config /etc/skel/`)
+       await exec (`rsync -avx /home/${user}/.local /etc/skel/`)
     } else if (Pacman.packageIsInstalled('mate-session-manager')) {
        // we need a more clean solution
        await exec (`rsync -avx /home/${user}/.config /etc/skel/`)
+       await exec (`rsync -avx /home/${user}/.local /etc/skel/`)
     } else if (Pacman.packageIsInstalled('xfce4-session')) {
       // use .config/xfce4 NOT .config/xfce4/ 
       await exec (`rsync -avx /home/${user}/.config/xfce4 /etc/skel/.config`)
