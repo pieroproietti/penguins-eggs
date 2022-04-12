@@ -25,13 +25,13 @@ All the ISOs include eggs installed (deb package). You can update your eggs tool
 
 # ISOs
 
+# Debian
 I work mostly on Debian stable (bullseye), so here you can find more versions and other examples. 
 
 Note: you can build the various colibri, duck and owl starting with an installed naked version of others distros using wardrobe wear.
 
 ![colibri](https://a.fsdn.com/con/app/proj/penguins-eggs/screenshots/colibri.png)
 
-# Debian
 ## jessie 
 * **naked** - just the juice, without GUI. You can start here to build your revolution! (i386/amd64)
 * **minino** - a remaster of [minino-tde](https://github.com/aosucas499/minino-TDE) a spanish remaster of [Minino Queiles 3.1](https://minino.galpon.org/es) (i386)
