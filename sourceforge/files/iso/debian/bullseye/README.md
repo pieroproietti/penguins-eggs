@@ -36,7 +36,7 @@ cinnamon, office, multimedia with 5.17.0-1.2-liquorix-amd64 kernel.
 ## **eagle**
 xfce4 desktop plus [Proxmox VE](https://www.proxmox.com/en/proxmox-ve), install and configure it with static ip to enjoy KVM and containers virtualization.
 
-![eagle](https://a.fsdn.com/con/app/proj/penguins-eggs/screenshots/colibri.png/245/183)
+![eagle](https://a.fsdn.com/con/app/proj/penguins-eggs/screenshots/eagle.png/245/183)
 
 ## **owl**
 xfce4 for graphics designers, with 5.17.0-1.2-liquorix-amd64 kernel, based on the work of Clarlie Martinez 
