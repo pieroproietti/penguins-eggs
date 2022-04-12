@@ -47,10 +47,11 @@ xfce4 for graphics designers, with 5.17.0-1.2-liquorix-amd64 kernel, based on th
 ## More informations:
 
 Note: you can build your colibri or duck, just starting from naked:
-- download the naked version and install it. ```sudo eggs install```
-- reboot the installed system and login with your credential
-- git clone https://github.com/pieroproietti/penguins-wardrobe
-' sudo eggs wardrobe wear --wardrobe penguins-wardrobe --costume colibri
+
+* download the naked version and install it. ```sudo eggs install```
+* reboot the installed system and login with your credential
+* git clone https://github.com/pieroproietti/penguins-wardrobe
+* sudo eggs wardrobe wear --wardrobe penguins-wardrobe --costume colibri
 
 It's nice?
 
