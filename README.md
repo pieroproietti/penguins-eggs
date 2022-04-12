@@ -72,6 +72,11 @@ I suggest to leave the default values unchanged during the development of your r
 ### yolk 
 yolk so called - staying on the subject of eggs - is a local repository included in the livecd that contains a minimum of indispensable packages during installation. Thanks to yolk, you can safely install your system without the need of an active internet connection.
 
+### wardrobe
+wardrobe was added to eggs on april 2022, it's is a way to guide and consolidate the processo of creating a custom version of Linux, starting from a CLI system. Actually after very short time all my personal editions are created using wardrobe and in this way I can organize, consolidate and manage better my work. I hope you will be interested in wardrobe too and end to fork the main repository and add your customizations: together will be possibile to make great steps impossible for an alone developer. 
+
+You can read more in wardrobe on [penguin's eggs blog](https://penguins-eggs.net/2022/04/12/wardrobe-colibri-duck-eagle-and-owl/).
+
 ## What distributions can I use?
 eggs was born on Debian strecth/buster, but actually full support Debian from jessie to bookworm/sid, Devuan beowulf, chimaera, daedalus, Ubuntu bionic, focal, , hirsute, impish, jammy and all derivatives including Linux mint, Deepin, neon KDE, etc. I continuisly try it against Debian various versions, before releases, I tried it successfully in LMDE 4 debbie, and deepin. eggs, generally must work with all the derivates from Debian, Devuan and Ubuntu.
 
