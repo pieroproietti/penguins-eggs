@@ -21,9 +21,13 @@ All ISOs are based on Debian buster, Debian bullseye
 # Debian bullseye
 
  * **naked** - just the juice, without GUI. You can start here to build your revolution!
+ ![colibri](https://a.fsdn.com/con/app/proj/penguins-eggs/screenshots/colibri.png/245/183)
  * **colibri** - with colibri, a light xfce4 for developers you can easily start to improve eggs, 
- * **duck** - cinnamon, office, multimedia with 5.17.0-1.2-liquorix-amd64 kernel
+ ![duck](https://a.fsdn.com/con/app/proj/penguins-eggs/screenshots/duck.png/245/183)
+  * **duck** - cinnamon, office, multimedia with 5.17.0-1.2-liquorix-amd64 kernel
+ ![eagle](https://a.fsdn.com/con/app/proj/penguins-eggs/screenshots/eagle.png/245/183)
  * **eagle** - xfce4 plus Proxmox VE, you must configure it with static ip, experimental
+ ![owl](https://a.fsdn.com/con/app/proj/penguins-eggs/screenshots/owl.png/245/183)
  * **owl** - xfce4 for graphics designers, with 5.17.0-1.2-liquorix-amd64 kernel, based on the work of Clarlie Martinez [quirinux](https://quirinux.org/)
 
 ## More informations:
