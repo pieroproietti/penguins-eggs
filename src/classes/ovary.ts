@@ -272,7 +272,6 @@ export default class Ovary {
     if (!fs.existsSync(this.settings.work_dir.merged)) {
       cmd = `mkdir -p ${this.settings.work_dir.merged}`
       this.tryCatch(cmd)
-      await exec(`cp /usr/penguins-eggs/assets/live-installer/filesystem.packages-remove ${this.settings.work_dir.pathIso}/live/`, this.echo)
     }
 
     /**
@@ -293,8 +292,9 @@ export default class Ovary {
       this.tryCatch(cmd)
 
       // live-installer
-      
-
+      //await exec(`cp /usr/lib/penguins-eggs/assets/live-installer/filesystem.packages-remove ${this.settings.work_dir.pathIso}/live/`, this.echo)
+      await exec(`touch ${this.settings.work_dir.pathIso}/live/filesystem.packages-remove`, this.echo)
+      await exec(`touch ${this.settings.work_dir.pathIso}/live/filesystem.packages`, this.echo)
     }
   }
 
