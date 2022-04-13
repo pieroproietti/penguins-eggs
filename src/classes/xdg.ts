@@ -167,7 +167,7 @@ export default class Xdg {
     /**
      * copy desktop configuration
      */
-     if (Pacman.packageIsInstalled('gnome')) {
+     if (Pacman.packageIsInstalled('gnome-session')) {
        // we need a more clean solution
        await exec (`rsync -avx /home/${user}/.config /etc/skel/`)
        await exec (`rsync -avx /home/${user}/.local /etc/skel/`)
