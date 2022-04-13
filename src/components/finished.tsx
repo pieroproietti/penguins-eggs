@@ -3,8 +3,6 @@
  */
 import React, { useState } from 'react'
 import { Box, Newline, Text } from 'ink'
-
-import pjson from 'pjson'
 import Title from './elements/title'
 import Steps from './elements/steps'
 
@@ -12,6 +10,7 @@ import yaml from 'js-yaml'
 import fs from 'fs'
 import { ISettings, IBranding } from '../interfaces'
 
+const pjson = require('../../package.json')
 
 
 type FinishedProps = {

@@ -13,6 +13,8 @@ import Utils from './utils'
 
 // libraries
 import { exec } from '../lib/utils'
+import { verify } from 'node:crypto'
+import { string } from '@oclif/core/lib/flags'
 
 const xdg_dirs = ['DESKTOP', 'DOWNLOAD', 'TEMPLATES', 'PUBLICSHARE', 'DOCUMENTS', 'MUSIC', 'PICTURES', 'VIDEOS']
 
@@ -167,40 +169,40 @@ export default class Xdg {
     /**
      * copy desktop configuration
      */
-     if (Pacman.packageIsInstalled('gnome-session')) {
-       // we need a more clean solution
-       await exec (`rsync -avx /home/${user}/.config /etc/skel/`)
-       await exec (`rsync -avx /home/${user}/.local /etc/skel/`)
+    if (Pacman.packageIsInstalled('gnome-session')) {
+      // we need a more clean solution
+      await rsyncIfExist(`/home/${user}/.config`, '/etc/skel', verbose)
+      await rsyncIfExist(`/home/${user}/.gtkrc-2.0`, '/etc/skel', verbose)
     } else if (Pacman.packageIsInstalled('cinnamon-core')) {
       // use .cinnamon NOT cinnamon/ 
-      await exec (`rsync -avx /home/${user}/.cinnamon /etc/skel/`)
+      await rsyncIfExist(`/home/${user}/.cinnamon`, '/etc/skel', verbose)
     } else if (Pacman.packageIsInstalled('plasma-desktop')) {
       // use .kde NOT .kde/ 
-      await exec (`rsync -avx /home/${user}/.kde /etc/skel/`)
+      await rsyncIfExist(`/home/${user}/.kde`, '/etc/skel', verbose)
     } else if (Pacman.packageIsInstalled('lxde-core')) {
-       // we need a more clean solution
-       await exec (`rsync -avx /home/${user}/.config /etc/skel/`)
-       await exec (`rsync -avx /home/${user}/.local /etc/skel/`)
+      // we need a more clean solution
+      await rsyncIfExist(`/home/${user}/.config`, '/etc/skel', verbose)
+      await rsyncIfExist(`/home/${user}/.gtkrc-2.0`, '/etc/skel', verbose)
     } else if (Pacman.packageIsInstalled('lxqt-core')) {
-       // we need a more clean solution
-       await exec (`rsync -avx /home/${user}/.config /etc/skel/`)
-       await exec (`rsync -avx /home/${user}/.local /etc/skel/`)
+      // we need a more clean solution
+      await rsyncIfExist(`/home/${user}/.config`, '/etc/skel', verbose)
+      await rsyncIfExist(`/home/${user}/.gtkrc-2.0`, '/etc/skel', verbose)
     } else if (Pacman.packageIsInstalled('mate-session-manager')) {
-       // we need a more clean solution
-       await exec (`rsync -avx /home/${user}/.config /etc/skel/`)
-       await exec (`rsync -avx /home/${user}/.local /etc/skel/`)
+      // we need a more clean solution
+      await rsyncIfExist(`/home/${user}/.config`, '/etc/skel', verbose)
+      await rsyncIfExist(`/home/${user}/.gtkrc-2.0`, '/etc/skel', verbose)
     } else if (Pacman.packageIsInstalled('xfce4-session')) {
       // use .config/xfce4 NOT .config/xfce4/ 
-      await exec (`rsync -avx /home/${user}/.config/xfce4 /etc/skel/.config`)
-      await exec (`mkdir /etc/skel/.local/share -p`)
-      await exec (`rsync -avx /home/${user}/.local/share/recently-used.xbel /etc/skel/.local/share`)
+      await rsyncIfExist(`/home/${user}/.config/xfce4`, '/etc/skel/.config', verbose)
+      await exec(`mkdir /etc/skel/.local/share -p`, echo)
+      await rsyncIfExist(`/home/${user}/.local/share/recently-used.xbel`, '/etc/skel/.local/share', verbose)
     }
 
     await exec('chown root:root /etc/skel -R', echo)
     await exec('chmod a+rwx,g-w,o-w /etc/skel/ -R', echo)
-    execIfExist('chmod a+rwx,g-w-x,o-wx', '/etc/skel/.bashrc', verbose)
-    execIfExist('chmod a+rwx,g-w-x,o-wx', '/etc/skel/.bash_logout', verbose)
-    execIfExist('chmod a+rwx,g-w-x,o-wx', '/etc/skel/.profile', verbose)
+    await execIfExist('chmod a+rwx,g-w-x,o-wx', '/etc/skel/.bashrc', verbose)
+    await execIfExist('chmod a+rwx,g-w-x,o-wx', '/etc/skel/.bash_logout', verbose)
+    await execIfExist('chmod a+rwx,g-w-x,o-wx', '/etc/skel/.profile', verbose)
 
     // https://www.thegeekdiary.com/understanding-the-etc-skel-directory-in-linux/
     // cat /etc/defualt/useradd
@@ -208,17 +210,6 @@ export default class Xdg {
   }
 }
 
-/**
- * showAndExec
- * @param cmd
- * @param verbose
- */
-async function showAndExec(cmd: string, verbose = false) {
-  const echo = Utils.setEcho(verbose)
-
-  if (verbose) console.log(cmd)
-  await exec(cmd, echo)
-}
 
 /**
  * execIfExist
@@ -231,5 +222,16 @@ async function execIfExist(cmd: string, file: string, verbose = false) {
 
   if (fs.existsSync(file)) {
     await exec(`${cmd} ${file}`, echo)
+  }
+}
+
+/**
+ * 
+ */
+async function rsyncIfExist(source: string, dest = '/etc/skel/', verbose = false) {
+
+  const echo = Utils.setEcho(verbose)
+  if (fs.existsSync(source)) {
+    await exec(`rsync -avx ${source} ${dest}`, echo)
   }
 }
