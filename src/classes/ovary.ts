@@ -1077,6 +1077,7 @@ export default class Ovary {
     // Copia icona penguins-eggs
     shx.cp(path.resolve(__dirname, '../../assets/eggs.png'), '/usr/share/icons/')
     shx.cp(path.resolve(__dirname, '../../assets/krill.svg'), '/usr/share/icons/')
+    shx.cp(path.resolve(__dirname, '../../assets/leaves.svg'), '/usr/share/icons/')
 
     /**
      * creazione dei link in /usr/share/applications
@@ -1088,9 +1089,17 @@ export default class Ovary {
     if (Pacman.packageIsInstalled('calamares')) {
       shx.cp(path.resolve(__dirname, `../../addons/${theme}/theme/applications/install-debian.desktop`), `${this.settings.work_dir.merged}/usr/share/applications/`)
     } else {
-      installerUrl = 'penguins-krill.desktop'
-      installerIcon = 'utilities-terminal'
-      shx.cp(path.resolve(__dirname, '../../assets/penguins-krill.desktop'), `${this.settings.work_dir.merged}/usr/share/applications/`)
+      if (Pacman.packageIsInstalled('live-installer')) {
+        shx.cp(path.resolve(__dirname, '../../assets/live-installer/filesystem.packages-remove'), `${this.settings.work_dir.pathIso}/live/`)
+
+        installerUrl = 'penguins-live-installer.desktop'
+        installerIcon = 'utilities-terminal'
+        shx.cp(path.resolve(__dirname, '../../assets/penguins-live-installer.desktop'), `${this.settings.work_dir.merged}/usr/share/applications/`)
+      } else {
+        installerUrl = 'penguins-krill.desktop'
+        installerIcon = 'utilities-terminal'
+        shx.cp(path.resolve(__dirname, '../../assets/penguins-krill.desktop'), `${this.settings.work_dir.merged}/usr/share/applications/`)
+      }
     }
 
     /**
