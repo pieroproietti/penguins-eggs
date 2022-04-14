@@ -151,6 +151,14 @@ export default class Debian {
   }
 
   /**
+   * 
+   */
+  static async liveInstallerPolicies() {
+    const policyFile = '/usr/share/polkit-1/actions/com.github.pieroproietti.penguins-eggs.policy'
+    await exec(`sed -i 's/auth_admin/yes/' ${policyFile}`)
+  }
+
+  /**
    *
    */
   static async calamaresInstall(verbose = true): Promise<void> {
@@ -171,7 +179,7 @@ export default class Debian {
   /**
    * calamaresPolicies
    */
-  static async calamaresPolicies() {
+   static async calamaresPolicies() {
     const policyFile = '/usr/share/polkit-1/actions/com.github.calamares.calamares.policy'
     await exec(`sed -i 's/auth_admin/yes/' ${policyFile}`)
   }

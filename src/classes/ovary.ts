@@ -290,11 +290,6 @@ export default class Ovary {
 
       cmd = `mkdir -p ${this.settings.work_dir.pathIso}/live`
       this.tryCatch(cmd)
-
-      // live-installer
-      //await exec(`cp /usr/lib/penguins-eggs/assets/live-installer/filesystem.packages-remove ${this.settings.work_dir.pathIso}/live/`, this.echo)
-      await exec(`touch ${this.settings.work_dir.pathIso}/live/filesystem.packages-remove`, this.echo)
-      await exec(`touch ${this.settings.work_dir.pathIso}/live/filesystem.packages`, this.echo)
     }
   }
 
@@ -1090,7 +1085,15 @@ export default class Ovary {
       shx.cp(path.resolve(__dirname, `../../addons/${theme}/theme/applications/install-debian.desktop`), `${this.settings.work_dir.merged}/usr/share/applications/`)
     } else {
       if (Pacman.packageIsInstalled('live-installer')) {
+        // carico la policy per live-installer
+        const policySource = path.resolve(__dirname, '../../assets/live-installer/com.github.pieroproietti.penguins-eggs.policy')
+        const policyDest = '/usr/share/polkit-1/actions/com.github.pieroproietti.penguins-eggs.policy'
+        shx.cp(policySource, policyDest)
+        await exec(`sed -i 's/auth_admin/yes/' ${policyDest}`)
+
+        // carico in filesystem.live packages-remove
         shx.cp(path.resolve(__dirname, '../../assets/live-installer/filesystem.packages-remove'), `${this.settings.work_dir.pathIso}/live/`)
+        shx.touch(`${this.settings.work_dir.pathIso}/live/filesystem.packages`)
 
         installerUrl = 'penguins-live-installer.desktop'
         installerIcon = 'utilities-terminal'
