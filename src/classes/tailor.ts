@@ -177,7 +177,7 @@ export default class Tailor {
                 if (this.materials.sequence.debs) {
                     let step = `installing local packages`
                     Utils.warning(step)
-                    let cmd = `dpkg -i ${this.wardrobe}\*.deb`
+                    let cmd = `dpkg -i ${this.wardrobe}/${this.costume}/debs/*.deb`
                     await exec(cmd)
                 }
             }
@@ -238,12 +238,14 @@ export default class Tailor {
                     /**
                      * Copyng skel in /home/user
                      */
-                    const user = Utils.getPrimaryUser()
-                    step = `copying skel in /home/${user}/`
-                    Utils.warning(step)
-                    cmd = `rsync -avx  ${this.wardrobe}/${this.costume}/dirs/etc/skel/.config /home/${user}/`
-                    await exec(cmd, this.echo)
-                    await exec(`chown ${user}:${user} /home/${user}/ -R`)
+                    if (fs.existsSync(`${this.wardrobe}/${this.costume}/dirs/etc/skel`)) {
+                        const user = Utils.getPrimaryUser()
+                        step = `copying skel in /home/${user}/`
+                        Utils.warning(step)
+                        cmd = `rsync -avx  ${this.wardrobe}/${this.costume}/dirs/etc/skel/.config /home/${user}/`
+                        await exec(cmd, this.echo)
+                        await exec(`chown ${user}:${user} /home/${user}/ -R`)
+                    }
                 }
             }
 
