@@ -32,7 +32,7 @@ interface editConf {
 export default class Daddy {
   settings = {} as Settings
 
-  async helpMe(loadDefault = false, verbose = false) {
+  async helpMe(loadDefault = false, verbose = false, skip = false) {
     // Controllo configurazione
     if (!Pacman.configurationCheck()) {
       console.log('- creating configuration dir...')
@@ -129,37 +129,40 @@ export default class Daddy {
           flags = '--verbose '
         }
 
-        Utils.titles('kill' + flags)
-        console.log(chalk.cyan('Daddy, what else did you leave for me?'))
-        await this.settings.listFreeSpace()
-        if (await Utils.customConfirm()) {
-          await exec(`rm ${this.settings.work_dir.path} -rf`)
-          await exec(`rm ${this.settings.config.snapshot_dir} -rf`)
+        // Se viene chiamato con skip termina
+        if (!skip) {
+          Utils.titles('kill' + flags)
+          console.log(chalk.cyan('Daddy, what else did you leave for me?'))
+          await this.settings.listFreeSpace()
+          if (await Utils.customConfirm()) {
+            await exec(`rm ${this.settings.work_dir.path} -rf`)
+            await exec(`rm ${this.settings.config.snapshot_dir} -rf`)
+          }
+
+          /**
+           * produce
+           */
+          if (loadDefault) {
+            verbose = false
+          }
+
+          flags += ' --' + newConf.compression
+          flags += ' --addons adapt'
+          Utils.titles('produce' + ' ' + flags)
+          console.log(chalk.cyan('Daddy, what else did you leave for me?'))
+          const myAddons = {} as IMyAddons
+          myAddons.adapt = true
+          const backup = false
+          const scriptOnly = false
+          const yolkRenew = false
+          const final = false
+          const ovary = new Ovary()
+          Utils.warning('Produce an egg...')
+          if (await ovary.fertilization(config.snapshot_prefix, config.snapshot_basename, config.theme, config.compression)) {
+            await ovary.produce(backup, scriptOnly, yolkRenew, final, myAddons, verbose)
+            ovary.finished(scriptOnly)
+          }
         }
-      }
-
-      /**
-       * produce
-       */
-      if (loadDefault) {
-        verbose = false
-      }
-
-      flags += ' --' + newConf.compression
-      flags += ' --addons adapt'
-      Utils.titles('produce' + ' ' + flags)
-      console.log(chalk.cyan('Daddy, what else did you leave for me?'))
-      const myAddons = {} as IMyAddons
-      myAddons.adapt = true
-      const backup = false
-      const scriptOnly = false
-      const yolkRenew = false
-      const final = false
-      const ovary = new Ovary()
-      Utils.warning('Produce an egg...')
-      if (await ovary.fertilization(config.snapshot_prefix, config.snapshot_basename, config.theme, config.compression)) {
-        await ovary.produce(backup, scriptOnly, yolkRenew, final, myAddons, verbose)
-        ovary.finished(scriptOnly)
       }
     }
   }
