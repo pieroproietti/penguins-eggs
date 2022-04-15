@@ -89,8 +89,10 @@ export default class Config extends Command {
     }
 
     if (!(await Pacman.calamaresCheck()) && Pacman.isInstalledGui() && Pacman.isCalamaresAvailable()) {
-      Utils.warning('config: you are on a graphic system, I suggest to install the GUI installer calamares')
-      i.calamares = nointeractive ? true : await Utils.customConfirm('Want You install calamares?')
+      if (! Pacman.packageIsInstalled('live-installer')) {
+        Utils.warning('config: you are on a graphic system, I suggest to install the GUI installer calamares')
+        i.calamares = nointeractive ? true : await Utils.customConfirm('Want You install calamares?')
+      }
     }
 
     i.configurationInstall = !Pacman.configurationCheck()

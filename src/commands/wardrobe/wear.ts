@@ -23,10 +23,10 @@ export default class Wear extends Command {
   }
 
   async run(): Promise<void> {
-    const { args, flags } = await this.parse(Wear)
+    const { argv, flags } = await this.parse(Wear)
 
     Utils.titles(this.id + ' ' + this.argv)
-
+ 
     let verbose = true
     if (flags.silent) {
       verbose = true
@@ -58,4 +58,3 @@ export default class Wear extends Command {
     }
   }
 }
-
