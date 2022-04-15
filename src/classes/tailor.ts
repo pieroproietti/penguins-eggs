@@ -235,6 +235,10 @@ export default class Tailor {
                     let cmd = `rsync -avx  ${this.wardrobe}/${this.costume}/dirs/* /`
                     await exec(cmd, this.echo)
 
+                    // chown root:root /etc -R
+                    cmd = "chown root:root /etc -R"
+                    await exec(cmd, this.echo)
+
                     /**
                      * Copyng skel in /home/user
                      */
