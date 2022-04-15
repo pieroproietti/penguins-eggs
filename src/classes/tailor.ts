@@ -17,7 +17,7 @@ import Distro from './distro'
 import SourcesList from './sources_list'
 import { exit } from 'process'
 import Xdg from './xdg'
-
+import Daddy from '../classes/daddy'
 
 
 /**
@@ -285,6 +285,15 @@ export default class Tailor {
          * reboot
          */
         if (this.materials.reboot) {
+            /**
+             * eggs dad -d before to reboot
+             */
+            const daddy = new Daddy()
+            const flagDefault = true
+            const flagVerbose = false
+            const flagSkip = true 
+            await daddy.helpMe(flagDefault, flagVerbose, flagSkip)
+
             Utils.warning(`Reboot`)
             await Utils.pressKeyToExit('system need to reboot', true)
             await exec('reboot')
