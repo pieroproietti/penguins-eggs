@@ -7,7 +7,7 @@
 
 import chalk from 'chalk'
 import Utils from './utils'
-import { IMateria } from '../interfaces'
+import { IMateria, IConfig } from '../interfaces'
 import { exec } from '../lib/utils'
 import fs from 'fs'
 import path from 'path'
@@ -261,6 +261,7 @@ export default class Tailor {
             if (this.materials.customize.hostname) {
                 Utils.warning(`changing hostname = ${this.materials.name}`)
                 await this.hostname()
+               
             }
 
             /**
@@ -285,14 +286,8 @@ export default class Tailor {
          * reboot
          */
         if (this.materials.reboot) {
-            /**
-             * eggs dad -d before to reboot
-             */
-            const daddy = new Daddy()
-            const flagDefault = true
-            const flagVerbose = false
-            const flagSkip = true 
-            await daddy.helpMe(flagDefault, flagVerbose, flagSkip)
+
+
 
             Utils.warning(`Reboot`)
             await Utils.pressKeyToExit('system need to reboot', true)
@@ -375,7 +370,17 @@ export default class Tailor {
         text += `ff02:: 3 ip6 - allhosts\n`
         await exec(`rm ${file} `, this.echo)
         fs.writeFileSync(file, text)
+
+        /**
+         * da inserire il cambio di hostname in
+         * /etc/penguins-eggs.d/eggs.conf
+         */
+        // const config_file = '/etc/penguins-eggs.d/eggs.yml'
+        // let config = yaml.load(fs.readFileSync(config_file, 'utf-8')) as IConfig
+        
     }
+
+
 
 }
 
