@@ -1,0 +1,3 @@
+
+
+# wardrobe\nfs.inotify.max_user_watches=524288

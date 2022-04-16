@@ -269,12 +269,18 @@ export default class Tailor {
              */
             if (this.materials.customize.scripts !== undefined) {
                 if (Array.isArray(this.materials.customize.scripts)) {
-                    let step = `customize scripts`
+                    let step = `customize cmdline/script`
                     Utils.warning(step)
                     const user = process.env.SUDO_USER
                     const desktop = `/home/${user}/${Xdg.traduce("DESKTOP")}`
                     for (const script of this.materials.customize.scripts) {
-                        await exec(`${this.wardrobe}/${this.costume}/${script} ${user} ${desktop}`, Utils.setEcho(true))
+                        if (fs.existsSync(`${this.wardrobe}/${this.costume}/${script}`)) {
+                            // exec script in wardrobe
+                            await exec(`${this.wardrobe}/${this.costume}/${script} ${user} ${desktop}`, Utils.setEcho(true))
+                        } else {
+                            // exec script real env
+                            await exec(`${script}`, Utils.setEcho(true))
+                        }
                     }
                 }
             }
@@ -286,9 +292,6 @@ export default class Tailor {
          * reboot
          */
         if (this.materials.reboot) {
-
-
-
             Utils.warning(`Reboot`)
             await Utils.pressKeyToExit('system need to reboot', true)
             await exec('reboot')
@@ -372,12 +375,12 @@ export default class Tailor {
         fs.writeFileSync(file, text)
 
         /**
-         * da inserire il cambio di hostname in
-         * /etc/penguins-eggs.d/eggs.conf
+         * chenge config.snapshot.basename
          */
-        // const config_file = '/etc/penguins-eggs.d/eggs.yml'
-        // let config = yaml.load(fs.readFileSync(config_file, 'utf-8')) as IConfig
-        
+        const config_file = '/etc/penguins-eggs.d/eggs.yaml'
+        let config = yaml.load(fs.readFileSync(config_file, 'utf-8')) as IConfig
+        config.snapshot_basename = this.materials.name
+        fs.writeFileSync(config_file, yaml.dump(config), 'utf-8')
     }
 
 
