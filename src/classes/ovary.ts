@@ -1312,7 +1312,7 @@ export default class Ovary {
     * copy splash to efiWorkDir
     */
     const splashDest = `${efiWorkDir}/boot/grub/splash.png`
-    const splashSrc = path.resolve(__dirname, `../../addons/${theme}/theme/livecd/splash.png`)
+    const splashSrc = olve(__dirname, `../../addons/${theme}/theme/livecd/splash.png`)
     if (!fs.existsSync(splashSrc)) {
       Utils.warning('Cannot find: ' + splashSrc)
       process.exit()

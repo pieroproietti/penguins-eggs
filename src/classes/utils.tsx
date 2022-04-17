@@ -551,7 +551,7 @@ unknown target format aarch64-efi
       if (process.getuid && process.getuid() === 0) {
          return true
       } else {
-         Utils.titles(pjson.shortName + ' ' + command + ` need to run with root privileges. Please, prefix it with sudo`)
+         // Utils.titles(pjson.shortName + ' ' + command + ` need to run with root privileges. Please, prefix it with sudo`)
       }
       return false
    }
