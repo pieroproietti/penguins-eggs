@@ -9,7 +9,7 @@ import { ICostume, IMateria } from '../../interfaces'
 export class Ironing extends Command {
   static description = 'ordered show of costumes or accessories in wardrobe'
 
-  static args = [{ name: 'costume', description: 'costume to iron', required: true }]
+  static args = [{ name: 'costume', description: 'costume to iron', required: false }]
 
   static flags = {
     wardrobe: Flags.string({ char: 'w', description: 'wardrobe' }),
@@ -44,18 +44,21 @@ export class Ironing extends Command {
     /**
      * costume
      */
-    const costume = wardrobe + this.argv[0]
-
+     let costume = wardrobe + this.argv[0]
+     if (costume===undefined) {
+       costume = 'colibri'
+     }
+ 
 
     /**
      * tailorList
      */
-    let tailorList = `${costume}/index.yml`
-    if (!fs.existsSync(tailorList)) {
-      Utils.warning(`index.yml not found in : ${costume}!`)
-      process.exit()
-    }
-
+     let tailorList = `${costume}/index.yml`
+     if (!fs.existsSync(tailorList)) {
+       Utils.warning(`index.yml not found in : ${costume}!`)
+       process.exit()
+     }
+ 
     const orig = yaml.load(fs.readFileSync(tailorList, 'utf-8')) as IMateria
     let sorted: IMateria = orig
 
