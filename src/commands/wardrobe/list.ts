@@ -36,6 +36,7 @@ export default class List extends Command {
     if (flags.wardrobe !== undefined) {
         wardrobe = flags.wardrobe
     }
+    wardrobe = `${path.resolve(process.cwd(), wardrobe)}/`
 
     if (!fs.existsSync(wardrobe)) {
       Utils.warning(`wardrobe: ${wardrobe} not found!`)
@@ -53,12 +54,13 @@ export default class List extends Command {
       }
     })
 
+    
     if (!fs.existsSync(`${wardrobe}/accessories/`)) {
       Utils.warning(`accessories not founf`)
       process.exit()
     }
     console.log()
-    console.log(chalk.green(`accessories department: `))
+    console.log(chalk.green(`accessories: `))
     const accessories = fs.readdirSync(`${wardrobe}/accessories/`)
     accessories.forEach(accessory => {
       if (fs.existsSync(`${wardrobe}/accessories/${accessory}/index.yml`)) {
