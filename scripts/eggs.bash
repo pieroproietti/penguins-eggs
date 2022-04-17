@@ -35,10 +35,10 @@ tools:stat --help --month --year
 tools:yolk --help --verbose
 update --help --verbose
 wardrobe:get --repo --verbose --help
-wardrobe:ironing --costume --wardrobe --verbose --help
+wardrobe:ironing --wardrobe --verbose --help
 wardrobe:list --wardrobe --verbose --help
-wardrobe:show --costume --wardrobe --json --verbose --help
-wardrobe:wear --costume --wardrobe --no_accessories --silent --help
+wardrobe:show --wardrobe --json --verbose --help
+wardrobe:wear --wardrobe --no_accessories --silent --verbose --help
 autocomplete --refresh-cache
 help --nested-commands
 version 

@@ -248,8 +248,7 @@ wardrobe:get)
 
 wardrobe:ironing)
   _command_flags=(
-    "--costume=-[costume]:"
-"--wardrobe=-[wardrobe]:"
+    "--wardrobe=-[wardrobe]:"
 "--verbose[]"
 "--help[Show CLI help.]"
   )
@@ -265,8 +264,7 @@ wardrobe:list)
 
 wardrobe:show)
   _command_flags=(
-    "--costume=-[costume]:"
-"--wardrobe=-[wardrobe]:"
+    "--wardrobe=-[wardrobe]:"
 "--json[output JSON]"
 "--verbose[]"
 "--help[Show CLI help.]"
@@ -275,10 +273,10 @@ wardrobe:show)
 
 wardrobe:wear)
   _command_flags=(
-    "--costume=-[costume]:"
-"--wardrobe=-[wardrobe]:"
+    "--wardrobe=-[wardrobe]:"
 "--no_accessories[not install accessories]"
 "--silent[]"
+"--verbose[]"
 "--help[Show CLI help.]"
   )
 ;;
