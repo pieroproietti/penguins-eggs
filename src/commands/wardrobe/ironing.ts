@@ -3,14 +3,13 @@ import Utils from '../../classes/utils'
 import path from 'path'
 import yaml from 'js-yaml'
 import fs from 'fs'
-import os from 'os'
 import { ICostume, IMateria } from '../../interfaces'
 
 
 export class Ironing extends Command {
   static description = 'ordered show of costumes or accessories in wardrobe'
 
-  static args = [{ name: 'pathCostume', description: 'path costume', required: true }]
+  static args = [{ name: 'costume', description: 'costume', required: true }]
 
   static flags = {
     wardrobe: Flags.string({ char: 'w', description: 'wardrobe' }),
@@ -40,12 +39,17 @@ export class Ironing extends Command {
       Utils.warning(`wardrobe: ${wardrobe} not found!`)
       process.exit()
     }
+    
+    const costume = `${path.resolve(process.cwd(), wardrobe)}/${this.argv[0]}`
 
-    let pathToCostume = wardrobe + this.argv[0]
-    // console.log(pathToCostume)
 
-
-    let tailorList = `${pathToCostume}/index.yml`
+    /**
+     * tailorList
+     */
+    let tailorList = `${costume}/index.yml`
+    if (!fs.existsSync(tailorList)) {
+      Utils.warning(`index.yml not found in : ${costume}!`)
+    }
 
     const orig = yaml.load(fs.readFileSync(tailorList, 'utf-8')) as IMateria
     let sorted: IMateria = orig
@@ -127,7 +131,7 @@ export class Ironing extends Command {
       sorted.reboot = orig.reboot
     }
 
-    const ironed = `# costume: ${path.resolve(process.cwd(), wardrobe)}\n---\n` + yaml.dump(sorted)
+    const ironed = `# costume: ${costume}\n---\n` + yaml.dump(sorted)
     console.log(ironed)
 
     // Well be usefull to have scrolling
