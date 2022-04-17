@@ -43,30 +43,34 @@ export default class List extends Command {
       process.exit()
     }
 
-    const costumes = fs.readdirSync(wardrobe)
     console.log(chalk.green(`wardrobe: `) + wardrobe)
     console.log()
+
+    /**
+    * costumes
+    */
+    const costumes = fs.readdirSync(`${wardrobe}costumes/`)
     console.log(chalk.green(`costumes: `))
     costumes.forEach(costume => {
-      if (fs.existsSync(`${wardrobe}/${costume}/index.yml`)) {
-        const materials = yaml.load(fs.readFileSync(`${wardrobe}/${costume}/index.yml`, 'utf-8')) as ICostume
+      if (fs.existsSync(`${wardrobe}costumes/${costume}/index.yml`)) {
+        const materials = yaml.load(fs.readFileSync(`${wardrobe}costumes/${costume}/index.yml`, 'utf-8')) as ICostume
         console.log(chalk.cyan(costume) + ': ' + materials.description)
       }
     })
-
-    
-    if (!fs.existsSync(`${wardrobe}/accessories/`)) {
-      Utils.warning(`accessories not founf`)
-      process.exit()
-    }
     console.log()
-    console.log(chalk.green(`accessories: `))
+
+    /**
+     * accessories
+     */
     const accessories = fs.readdirSync(`${wardrobe}/accessories/`)
+    console.log(chalk.green(`accessories: `))
     accessories.forEach(accessory => {
       if (fs.existsSync(`${wardrobe}/accessories/${accessory}/index.yml`)) {
         const materials = yaml.load(fs.readFileSync(`${wardrobe}/accessories/${accessory}/index.yml`, 'utf-8')) as ICostume
         console.log(chalk.cyan(accessory) + ': ' + materials.description)
       }
     })
+    console.log()
+
   }
 }
