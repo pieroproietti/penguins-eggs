@@ -31,6 +31,9 @@ export class Pippo extends Command {
     if (flags.wardrobe !== undefined) {
       wardrobe = flags.wardrobe
     }
+    if (!wardrobe.endsWith('/')) {
+      wardrobe += '/'
+    }
 
     if (!fs.existsSync(wardrobe)) {
       Utils.warning(`wardrobe: ${wardrobe} not found!`)
