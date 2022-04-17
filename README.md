@@ -189,10 +189,10 @@ USAGE
 * [`eggs update`](#eggs-update)
 * [`eggs version`](#eggs-version)
 * [`eggs wardrobe get`](#eggs-wardrobe-get)
-* [`eggs wardrobe ironing`](#eggs-wardrobe-ironing)
+* [`eggs wardrobe ironing [COSTUME]`](#eggs-wardrobe-ironing-costume)
 * [`eggs wardrobe list`](#eggs-wardrobe-list)
-* [`eggs wardrobe show`](#eggs-wardrobe-show)
-* [`eggs wardrobe wear`](#eggs-wardrobe-wear)
+* [`eggs wardrobe show COSTUME`](#eggs-wardrobe-show-costume)
+* [`eggs wardrobe wear COSTUME`](#eggs-wardrobe-wear-costume)
 
 ## `eggs adapt`
 
@@ -1148,16 +1148,18 @@ DESCRIPTION
   get warorobe
 ```
 
-## `eggs wardrobe ironing`
+## `eggs wardrobe ironing [COSTUME]`
 
 ordered show of costumes or accessories in wardrobe
 
 ```
 USAGE
-  $ eggs wardrobe ironing [-c <value>] [-w <value>] [-v] [-h]
+  $ eggs wardrobe ironing [COSTUME] [-w <value>] [-v] [-h]
+
+ARGUMENTS
+  COSTUME  costume to iron
 
 FLAGS
-  -c, --costume=<value>   costume
   -h, --help              Show CLI help.
   -v, --verbose
   -w, --wardrobe=<value>  wardrobe
@@ -1183,16 +1185,18 @@ DESCRIPTION
   list costumes and accessoires in wardrobe
 ```
 
-## `eggs wardrobe show`
+## `eggs wardrobe show COSTUME`
 
 show costumes/accessories in wardrobe
 
 ```
 USAGE
-  $ eggs wardrobe show [-c <value>] [-w <value>] [-j] [-v] [-h]
+  $ eggs wardrobe show [COSTUME] [-w <value>] [-j] [-v] [-h]
+
+ARGUMENTS
+  COSTUME  costume
 
 FLAGS
-  -c, --costume=<value>   costume
   -h, --help              Show CLI help.
   -j, --json              output JSON
   -v, --verbose
@@ -1202,19 +1206,22 @@ DESCRIPTION
   show costumes/accessories in wardrobe
 ```
 
-## `eggs wardrobe wear`
+## `eggs wardrobe wear COSTUME`
 
 wear costume/accessories from wardrobe
 
 ```
 USAGE
-  $ eggs wardrobe wear [-c <value>] [-w <value>] [-n] [-s] [-h]
+  $ eggs wardrobe wear [COSTUME] [-w <value>] [-n] [-s] [-v] [-h]
+
+ARGUMENTS
+  COSTUME  costume
 
 FLAGS
-  -c, --costume=<value>   costume
   -h, --help              Show CLI help.
   -n, --no_accessories    not install accessories
   -s, --silent
+  -v, --verbose
   -w, --wardrobe=<value>  wardrobe
 
 DESCRIPTION

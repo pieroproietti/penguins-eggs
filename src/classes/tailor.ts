@@ -34,9 +34,8 @@ export default class Tailor {
      * @param wardrobe 
      * @param costume 
      */
-    constructor(wardrobe: string, costume: string) {
+    constructor(costume: string) {
         this.costume = costume
-        this.wardrobe = wardrobe
     }
 
     /**
@@ -55,16 +54,9 @@ export default class Tailor {
             process.exit()
         }
 
-        let tailorList = `${this.wardrobe}/${this.costume}/index.yml`
+        let tailorList = `${this.costume}/index.yml`
         if (fs.existsSync(tailorList)) {
             this.materials = yaml.load(fs.readFileSync(tailorList, 'utf-8')) as IMateria
-        } else {
-            tailorList = `${this.wardrobe}/accessories/${this.costume}/index.yml`
-            if (fs.existsSync(tailorList)) {
-                this.materials = yaml.load(fs.readFileSync(tailorList, 'utf-8')) as IMateria
-            } else {
-                console.log('costume ' + chalk.cyan(this.costume) + ' not found in wardrobe: ' + chalk.green(this.wardrobe) + ', not in accessories')
-            }
         }
 
 
@@ -145,7 +137,7 @@ export default class Tailor {
                     let step = `preinst scripts`
                     Utils.warning(step)
                     for (const script of this.materials.sequence.preinst) {
-                        await exec(`${this.wardrobe}/${this.costume}/${script}`, Utils.setEcho(true))
+                        await exec(`${this.costume}/${script}`, Utils.setEcho(true))
                     }
                 }
             }
@@ -177,7 +169,7 @@ export default class Tailor {
                 if (this.materials.sequence.debs) {
                     let step = `installing local packages`
                     Utils.warning(step)
-                    let cmd = `dpkg -i ${this.wardrobe}/${this.costume}/debs/*.deb`
+                    let cmd = `dpkg -i ${this.costume}/debs/*.deb`
                     await exec(cmd)
                 }
             }
@@ -210,10 +202,10 @@ export default class Tailor {
                         let step = `wearing accessories`
                         for (const elem of this.materials.sequence.accessories) {
                             if (elem.substring(0, 2) === './') {
-                                const tailor = new Tailor(this.wardrobe, `${this.costume}/${elem.substring(2)}`)
+                                const tailor = new Tailor(`${this.costume}/${elem.substring(2)}`)
                                 await tailor.prepare(verbose)
                             } else {
-                                const tailor = new Tailor(this.wardrobe, `./accessories/${elem}`)
+                                const tailor = new Tailor(`${path.dirname(this.costume)}/accessories/${elem}`)
                                 await tailor.prepare(verbose)
                             }
                         }

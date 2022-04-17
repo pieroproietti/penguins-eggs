@@ -550,10 +550,16 @@ unknown target format aarch64-efi
    static isRoot(command = ''): boolean {
       if (process.getuid && process.getuid() === 0) {
          return true
-      } else {
-         // Utils.titles(pjson.shortName + ' ' + command + ` need to run with root privileges. Please, prefix it with sudo`)
       }
       return false
+   }
+
+   /**
+    * 
+    * @param command 
+    */
+   static useRoot(command = ''): void {
+      Utils.titles(pjson.shortName + ' ' + command + ` need to run with root privileges. Please, prefix it with sudo`)
    }
 
    /**
@@ -854,7 +860,7 @@ unknown target format aarch64-efi
     * @returns wardrobe
     */
     static async wardrobe(): Promise<string> {
-      let wardrobe = `${os.homedir()}/.penguins-eggs/wardrobe.d`
+      let wardrobe = `${os.homedir()}/wardrobe`
       if (Utils.isRoot()) {
          let result = await exec(`echo $(logname)`, { echo: false, capture: true })
          if (result.code === 0) {

@@ -14,7 +14,7 @@ import chalk from 'chalk'
 export default class Show extends Command {
     static description = 'show costumes/accessories in wardrobe'
 
-    static args = [{ name: 'costume', description: 'costume to show', required: false }]
+    static args = [{ name: 'costume', description: 'costume', required: true }]
 
     static flags = {
         wardrobe: Flags.string({ char: 'w', description: 'wardrobe' }),
@@ -45,12 +45,11 @@ export default class Show extends Command {
 
 
         console.log(chalk.green(`wardrobe: `) + wardrobe)
-        console.log()
 
         /**
          * costume
          */
-        let costume = wardrobe + this.argv[0]
+        let costume = wardrobe  + this.argv[0]
         if (!fs.existsSync(costume)) {
             console.log(`costume: ${chalk.green(path.basename(costume))} not found in wardrobe: ${chalk.green(wardrobe)}`)
             process.exit()
@@ -63,13 +62,6 @@ export default class Show extends Command {
         if (!fs.existsSync(tailorList)) {
             Utils.warning(`index.yml not found in : ${costume}!`)
             process.exit()
-        }
-        if (!fs.existsSync(tailorList)) {
-            tailorList = `${wardrobe}/accessories/${costume}/index.yml`
-            if (!fs.existsSync(tailorList)) {
-                console.log('costume ' + chalk.cyan(costume) + ' not found in wardrobe')
-                process.exit()
-            }
         }
 
         const materials = yaml.load(fs.readFileSync(tailorList, 'utf-8')) as IMateria
