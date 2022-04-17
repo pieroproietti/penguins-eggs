@@ -236,7 +236,7 @@ export default class Tailor {
                     await exec(cmd, this.echo)
 
                     // chown root:root /etc -R
-                    cmd = "chown root:root /etc -R"
+                    cmd = "chown root:root /etc/sudoers.d /etc/skel -R"
                     await exec(cmd, this.echo)
 
                     /**
