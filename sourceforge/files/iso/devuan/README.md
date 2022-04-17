@@ -23,15 +23,19 @@ All ISOs include eggs, you can udate it with: ```sudo eggs update```.
 
 # Devuan 
 
-**beowulf**
-oldstable Debian version buster
+## beowulf**
+* **naked** - just the juice, without GUI. You can start here to build your revolution!
+ 
+## chimaera
+ * **naked** - just the juice, without GUI. You can start here to build your revolution!
+ * **colibri** - a light xfce4 desktop for developers, with colibri you can start to improve [eggs](https://github.com/pieroproietti/penguins-eggs)
+ * **duck** - cinnamon desktop, office, multimedia, graphics with 5.17.0-1.2-liquorix-amd64 kernel
+ * **owl** - xfce4, office, multimedia, graphics with 5.17.0-1.2-liquorix-amd64 kernel, based on the work of Clarlie Martinez [quirinux](https://quirinux.org/)
+![colibri](https://a.fsdn.com/con/app/proj/penguins-eggs/screenshots/colibri.png)
 
-**chimaera**
-stable Debian version bullseye
-
-**daedalus**
-in development Debian version bookworm
-
+## daedalus
+* **naked** - just the juice, without GUI. You can start here to build your revolution!
+ 
 ## More informations:
 
 * Repository: [penguins-eggs](https://github.com/pieroproietti/penguins-eggs)
