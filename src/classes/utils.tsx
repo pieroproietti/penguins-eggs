@@ -860,11 +860,11 @@ unknown target format aarch64-efi
     * @returns wardrobe
     */
     static async wardrobe(): Promise<string> {
-      let wardrobe = `${os.homedir()}/wardrobe`
+      let wardrobe = `${os.homedir()}/.wardrobe`
       if (Utils.isRoot()) {
          let result = await exec(`echo $(logname)`, { echo: false, capture: true })
          if (result.code === 0) {
-            wardrobe = `/home/${result.data.trim()}/.penguins-eggs/wardrobe.d`
+            wardrobe = `/home/${result.data.trim()}/.wardrobe`
          }
       }
       return wardrobe

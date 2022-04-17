@@ -46,7 +46,6 @@ export default class Wear extends Command {
       Utils.warning(`wardrobe: ${wardrobe} not found!`)
       process.exit()
     }
-
     console.log(chalk.green(`wardrobe: `) + wardrobe)
 
     /**
