@@ -188,11 +188,11 @@ USAGE
 * [`eggs tools yolk`](#eggs-tools-yolk)
 * [`eggs update`](#eggs-update)
 * [`eggs version`](#eggs-version)
-* [`eggs wardrobe get`](#eggs-wardrobe-get)
+* [`eggs wardrobe get [REPO]`](#eggs-wardrobe-get-repo)
 * [`eggs wardrobe ironing [COSTUME]`](#eggs-wardrobe-ironing-costume)
 * [`eggs wardrobe list`](#eggs-wardrobe-list)
-* [`eggs wardrobe show COSTUME`](#eggs-wardrobe-show-costume)
-* [`eggs wardrobe wear COSTUME`](#eggs-wardrobe-wear-costume)
+* [`eggs wardrobe show [COSTUME]`](#eggs-wardrobe-show-costume)
+* [`eggs wardrobe wear [COSTUME]`](#eggs-wardrobe-wear-costume)
 
 ## `eggs adapt`
 
@@ -1131,17 +1131,19 @@ USAGE
 
 _See code: [@oclif/plugin-version](https://github.com/oclif/plugin-version/blob/v1.0.4/src/commands/version.ts)_
 
-## `eggs wardrobe get`
+## `eggs wardrobe get [REPO]`
 
 get warorobe
 
 ```
 USAGE
-  $ eggs wardrobe get [-r <value>] [-v] [-h]
+  $ eggs wardrobe get [REPO] [-v] [-h]
+
+ARGUMENTS
+  REPO  repository to get
 
 FLAGS
-  -h, --help          Show CLI help.
-  -r, --repo=<value>  repository wardrobe
+  -h, --help     Show CLI help.
   -v, --verbose
 
 DESCRIPTION
@@ -1185,7 +1187,7 @@ DESCRIPTION
   list costumes and accessoires in wardrobe
 ```
 
-## `eggs wardrobe show COSTUME`
+## `eggs wardrobe show [COSTUME]`
 
 show costumes/accessories in wardrobe
 
@@ -1206,7 +1208,7 @@ DESCRIPTION
   show costumes/accessories in wardrobe
 ```
 
-## `eggs wardrobe wear COSTUME`
+## `eggs wardrobe wear [COSTUME]`
 
 wear costume/accessories from wardrobe
 

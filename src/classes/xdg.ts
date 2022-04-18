@@ -175,9 +175,11 @@ export default class Xdg {
       await rsyncIfExist(`/home/${user}/.gtkrc-2.0`, '/etc/skel', verbose)
     } else if (Pacman.packageIsInstalled('cinnamon-core')) {
       // use .cinnamon NOT cinnamon/ 
+      await rsyncIfExist(`/home/${user}/.config`, '/etc/skel', verbose)
       await rsyncIfExist(`/home/${user}/.cinnamon`, '/etc/skel', verbose)
     } else if (Pacman.packageIsInstalled('plasma-desktop')) {
       // use .kde NOT .kde/ 
+      await rsyncIfExist(`/home/${user}/.config`, '/etc/skel', verbose)
       await rsyncIfExist(`/home/${user}/.kde`, '/etc/skel', verbose)
     } else if (Pacman.packageIsInstalled('lxde-core')) {
       // we need a more clean solution
