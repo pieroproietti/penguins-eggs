@@ -19,6 +19,7 @@ import { exit } from 'process'
 import Xdg from './xdg'
 import Daddy from '../classes/daddy'
 
+const pjson = require('../../package.json')
 
 /**
  * 
@@ -35,7 +36,13 @@ export default class Tailor {
      * @param costume 
      */
     constructor(costume: string) {
+        /**
+         * /home/artisan/.wardrobe/costumes/colibri
+         * /home/artisan/.wardrobe/costumes/
+         * /home/artisan/.wardrobe/
+         */
         this.costume = costume
+        this.wardrobe = path.dirname((path.dirname(costume)))
     }
 
     /**
@@ -205,7 +212,7 @@ export default class Tailor {
                                 const tailor = new Tailor(`${this.costume}/${elem.substring(2)}`)
                                 await tailor.prepare(verbose)
                             } else {
-                                const tailor = new Tailor(`${path.dirname(this.costume)}/accessories/${elem}`)
+                                const tailor = new Tailor(`${this.wardrobe}/accessories/${elem}`)
                                 await tailor.prepare(verbose)
                             }
                         }
@@ -324,7 +331,7 @@ export default class Tailor {
                  * prova 5 volte
                  */
                 for (let tempts = 1; tempts < 5; tempts++) {
-                    Utils.titles(step)
+                    this.titles(step)
                     Utils.warning(`tempts ${tempts} of 5`)
                     if (await tryCheckSuccess(cmd, this.echo)) {
                         break
@@ -376,6 +383,20 @@ export default class Tailor {
     }
 
 
+    /**
+     * 
+     * @param command 
+     */
+    titles(command = '') {
+        console.clear()
+        console.log('')
+        console.log(' E G G S: the reproductive system of penguins')
+        console.log('')
+        console.log(chalk.bgGreen.whiteBright('      ' + pjson.name + '      ') +
+        chalk.bgWhite.blue(" Perri's Brewery edition ") +
+        chalk.bgRed.whiteBright('       ver. ' + pjson.version + '       '))
+        console.log('wearing: ' + chalk.bgBlack.cyan(this.costume) + chalk.bgBlack.white(command) + '\n')
+    }
 
 }
 
@@ -396,3 +417,5 @@ async function tryCheckSuccess(cmd: string, echo: {}): Promise<boolean> {
     }
     return success
 }
+
+
