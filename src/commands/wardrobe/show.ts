@@ -14,7 +14,7 @@ import chalk from 'chalk'
 export default class Show extends Command {
     static description = 'show costumes/accessories in wardrobe'
 
-    static args = [{ name: 'costume', description: 'costume', required: true }]
+    static args = [{ name: 'costume', description: 'costume', required: false }]
 
     static flags = {
         wardrobe: Flags.string({ char: 'w', description: 'wardrobe' }),
@@ -49,7 +49,12 @@ export default class Show extends Command {
         /**
          * costume
          */
-        let costume = wardrobe  + this.argv[0]
+        let costume = 'costumes/colibri'
+        if (this.argv['0'] !== undefined) {
+        costume = this.argv['0']
+        }
+        costume = wardrobe + costume
+
         if (!fs.existsSync(costume)) {
             console.log(`costume: ${chalk.green(path.basename(costume))} not found in wardrobe: ${chalk.green(wardrobe)}`)
             process.exit()
