@@ -44,10 +44,11 @@ export class Ironing extends Command {
     /**
      * costume
      */
-     let costume = wardrobe + this.argv[0]
-     if (costume===undefined) {
-       costume = 'colibri'
+     let costume = 'costumes/colibri'
+     if (this.argv['0'] !== undefined) {
+       costume = this.argv['0']
      }
+     costume = wardrobe + costume
  
 
     /**

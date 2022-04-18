@@ -13,8 +13,9 @@ import { basename } from 'path'
 export default class Get extends Command {
   static description = 'get warorobe'
 
+  static args = [{ name: 'repo', description: 'repository to get', required: false }]
+
   static flags = {
-    repo: Flags.string({ char: 'r', description: 'repository wardrobe' }),
     verbose: Flags.boolean({ char: 'v' }),
     help: Flags.help({ char: 'h' })
   }
@@ -31,8 +32,8 @@ export default class Get extends Command {
     Utils.titles(this.id + ' ' + this.argv)
 
     let repo = 'https://github.com/pieroproietti/penguins-wardrobe'
-    if (flags.repo !== undefined) {
-      repo = flags.repo
+    if (this.argv['0'] !== undefined) {
+      repo = this.argv['0']
     }
 
     // No sudo for get
