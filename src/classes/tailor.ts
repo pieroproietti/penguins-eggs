@@ -36,11 +36,6 @@ export default class Tailor {
      * @param costume 
      */
     constructor(costume: string) {
-        /**
-         * /home/artisan/.wardrobe/costumes/colibri
-         * /home/artisan/.wardrobe/costumes/
-         * /home/artisan/.wardrobe/
-         */
         this.costume = costume
         this.wardrobe = path.dirname((path.dirname(costume)))
     }
@@ -228,10 +223,10 @@ export default class Tailor {
              * customize/dirs
              */
             if (this.materials.customize.dirs) {
-                if (fs.existsSync(`${this.wardrobe}/${this.costume}/dirs`)) {
+                if (fs.existsSync(`/${this.costume}/dirs`)) {
                     let step = `copying dirs`
                     Utils.warning(step)
-                    let cmd = `rsync -avx  ${this.wardrobe}/${this.costume}/dirs/* /`
+                    let cmd = `rsync -avx  ${this.costume}/dirs/* /`
                     await exec(cmd, this.echo)
 
                     // chown root:root /etc -R
@@ -241,11 +236,11 @@ export default class Tailor {
                     /**
                      * Copyng skel in /home/user
                      */
-                    if (fs.existsSync(`${this.wardrobe}/${this.costume}/dirs/etc/skel`)) {
+                    if (fs.existsSync(`${this.costume}/dirs/etc/skel`)) {
                         const user = Utils.getPrimaryUser()
                         step = `copying skel in /home/${user}/`
                         Utils.warning(step)
-                        cmd = `rsync -avx  ${this.wardrobe}/${this.costume}/dirs/etc/skel/.config /home/${user}/`
+                        cmd = `rsync -avx  ${this.costume}/dirs/etc/skel/.config /home/${user}/`
                         await exec(cmd, this.echo)
                         await exec(`chown ${user}:${user} /home/${user}/ -R`)
                     }
@@ -268,14 +263,14 @@ export default class Tailor {
              */
             if (this.materials.customize.scripts !== undefined) {
                 if (Array.isArray(this.materials.customize.scripts)) {
-                    let step = `customize cmdline/script`
+                    let step = `customize script`
                     Utils.warning(step)
                     const user = process.env.SUDO_USER
                     const desktop = `/home/${user}/${Xdg.traduce("DESKTOP")}`
                     for (const script of this.materials.customize.scripts) {
-                        if (fs.existsSync(`${this.wardrobe}/${this.costume}/${script}`)) {
-                            // exec script in wardrobe
-                            await exec(`${this.wardrobe}/${this.costume}/${script} ${user} ${desktop}`, Utils.setEcho(true))
+                        if (fs.existsSync(`${this.costume}/${script}`)) {
+                            // exec script in costume
+                            await exec(`${this.costume}/${script} ${user} ${desktop}`, Utils.setEcho(true))
                         } else {
                             // exec script real env
                             await exec(`${script}`, Utils.setEcho(true))
@@ -395,7 +390,7 @@ export default class Tailor {
         console.log(chalk.bgGreen.whiteBright('      ' + pjson.name + '      ') +
         chalk.bgWhite.blue(" Perri's Brewery edition ") +
         chalk.bgRed.whiteBright('       ver. ' + pjson.version + '       '))
-        console.log('wearing: ' + chalk.bgBlack.cyan(this.costume) + chalk.bgBlack.white(command) + '\n')
+        console.log('wearing: ' + chalk.bgBlack.cyan(this.costume) + ' ' + chalk.bgBlack.white(command) + '\n')
     }
 
 }
