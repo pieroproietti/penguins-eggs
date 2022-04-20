@@ -62,15 +62,28 @@ export default class List extends Command {
     /**
      * accessories
      */
-    const accessories = fs.readdirSync(`${wardrobe}/accessories/`)
-    console.log(chalk.green(`accessories: `))
-    accessories.forEach(accessory => {
-      if (fs.existsSync(`${wardrobe}/accessories/${accessory}/index.yml`)) {
-        const materials = yaml.load(fs.readFileSync(`${wardrobe}/accessories/${accessory}/index.yml`, 'utf-8')) as ICostume
-        console.log(chalk.cyan(accessory) + ': ' + materials.description)
-      }
-    })
-    console.log()
+     const accessories = fs.readdirSync(`${wardrobe}/accessories/`)
+     console.log(chalk.green(`accessories: `))
+     accessories.forEach(accessory => {
+       if (fs.existsSync(`${wardrobe}/accessories/${accessory}/index.yml`)) {
+         const materials = yaml.load(fs.readFileSync(`${wardrobe}/accessories/${accessory}/index.yml`, 'utf-8')) as ICostume
+         console.log(chalk.cyan(accessory) + ': ' + materials.description)
+       }
+     })
+     console.log()
 
+    /**
+     * servers
+     */
+     const servers = fs.readdirSync(`${wardrobe}/servers/`)
+     console.log(chalk.green(`servers: `))
+     servers.forEach(server => {
+       if (fs.existsSync(`${wardrobe}/accessories/${server}/index.yml`)) {
+         const materials = yaml.load(fs.readFileSync(`${wardrobe}/accessories/${server}/index.yml`, 'utf-8')) as ICostume
+         console.log(chalk.cyan(server) + ': ' + materials.description)
+       }
+     })
+     console.log()
+      
   }
 }
