@@ -52,7 +52,7 @@ export default class Show extends Command {
         let costume = 'costumes/colibri'
         if (this.argv['0'] !== undefined) {
             costume = this.argv['0']
-            if (costume.substring(0, 8) !== 'costumes' && costume.substring(0, 11) !== 'accessories') {
+            if (costume.substring(0,8) !== 'costumes' && costume.substring(0,11) !== 'accessories' && costume.substring(0,7) !== 'servers') {
                 costume = `costumes/${costume}`
             }
         }

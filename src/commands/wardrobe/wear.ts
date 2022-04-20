@@ -53,8 +53,8 @@ export default class Wear extends Command {
      */
     let costume = 'costumes/colibri'
     if (this.argv['0'] !== undefined) {
-      costume = this.argv['0']      //12345678                                  12345678901
-      if (costume.substring(0,8) !== 'costumes' && costume.substring(0,11) !== 'accessories') {
+      costume = this.argv['0']      //12345678                                  12345678901                                  1234567
+      if (costume.substring(0,8) !== 'costumes' && costume.substring(0,11) !== 'accessories' && costume.substring(0,7) !== 'servers') {
         costume = `costumes/${costume}`
       }
     }
