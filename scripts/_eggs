@@ -8,8 +8,7 @@ _eggs () {
   ## public cli commands & flags
   local -a _all_commands=(
 "adapt:adapt monitor resolution for VM only"
-"analyze:analyze situation"
-"bro:bro: waydroid helper"
+"analyze:analyze for syncto"
 "calamares:calamares or install or configure it"
 "config:Configure and install prerequisites deb packages to run it"
 "dad:ask help from daddy - configuration helper"
@@ -53,12 +52,6 @@ analyze)
   _command_flags=(
     "--help[Show CLI help.]"
 "--verbose[verbose]"
-  )
-;;
-
-bro)
-  _command_flags=(
-    "--help[Show CLI help.]"
   )
 ;;
 
