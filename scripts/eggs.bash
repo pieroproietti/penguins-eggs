@@ -13,7 +13,6 @@ _eggs_autocomplete()
   local commands="
 adapt --verbose --help
 analyze --help --verbose
-bro --help
 calamares --help --verbose --install --final --remove --theme
 config --nointeractive --clean --help --verbose
 dad --help --clean --default --verbose

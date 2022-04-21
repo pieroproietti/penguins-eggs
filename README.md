@@ -154,8 +154,6 @@ USAGE
 * [`eggs adapt`](#eggs-adapt)
 * [`eggs analyze`](#eggs-analyze)
 * [`eggs autocomplete [SHELL]`](#eggs-autocomplete-shell)
-* [`eggs backup`](#eggs-backup)
-* [`eggs bro`](#eggs-bro)
 * [`eggs calamares`](#eggs-calamares)
 * [`eggs config`](#eggs-config)
 * [`eggs dad`](#eggs-dad)
@@ -169,7 +167,6 @@ USAGE
 * [`eggs mom`](#eggs-mom)
 * [`eggs produce`](#eggs-produce)
 * [`eggs remove`](#eggs-remove)
-* [`eggs skel`](#eggs-skel)
 * [`eggs syncfrom`](#eggs-syncfrom)
 * [`eggs syncto`](#eggs-syncto)
 * [`eggs tools clean`](#eggs-tools-clean)
@@ -205,7 +202,7 @@ _See code: [src/commands/adapt.ts](https://github.com/pieroproietti/penguins-egg
 
 ## `eggs analyze`
 
-analyze situation
+analyze for syncto
 
 ```
 USAGE
@@ -216,7 +213,7 @@ FLAGS
   -v, --verbose  verbose
 
 DESCRIPTION
-  analyze situation
+  analyze for syncto
 
 EXAMPLES
   $ sudo eggs analyze
@@ -252,47 +249,6 @@ EXAMPLES
 ```
 
 _See code: [@oclif/plugin-autocomplete](https://github.com/oclif/plugin-autocomplete/blob/v1.2.0/src/commands/autocomplete/index.ts)_
-
-## `eggs backup`
-
-Backup users, server and datas to luks-eggs-backup
-
-```
-USAGE
-  $ eggs backup [--delete <value>] [-f <value>] [-h] [-v]
-
-FLAGS
-  -f, --file=<value>  file LUKS volume encrypted
-  -h, --help          Show CLI help.
-  -v, --verbose       verbose
-  --delete=<value>    rsync --delete delete extraneous files from dest dirs
-
-DESCRIPTION
-  Backup users, server and datas to luks-eggs-backup
-
-ALIASES
-  $ eggs backup
-
-EXAMPLES
-  $ sudo eggs syncto
-```
-
-## `eggs bro`
-
-bro: waydroid helper
-
-```
-USAGE
-  $ eggs bro [-h]
-
-FLAGS
-  -h, --help  Show CLI help.
-
-DESCRIPTION
-  bro: waydroid helper
-```
-
-_See code: [src/commands/bro.ts](https://github.com/pieroproietti/penguins-eggs/blob/v9.1.10/src/commands/bro.ts)_
 
 ## `eggs calamares`
 
@@ -613,30 +569,6 @@ EXAMPLES
 
 _See code: [src/commands/remove.ts](https://github.com/pieroproietti/penguins-eggs/blob/v9.1.10/src/commands/remove.ts)_
 
-## `eggs skel`
-
-update skel from home configuration
-
-```
-USAGE
-  $ eggs skel [-h] [-u <value>] [-v]
-
-FLAGS
-  -h, --help          Show CLI help.
-  -u, --user=<value>  user to be used
-  -v, --verbose
-
-DESCRIPTION
-  update skel from home configuration
-
-ALIASES
-  $ eggs skel
-
-EXAMPLES
-  $ eggs skel --user mauro
-  desktop configuration of user mauro will get used as default
-```
-
 ## `eggs syncfrom`
 
 Restore users, server and datas from luks-eggs-backup
@@ -677,9 +609,6 @@ FLAGS
 
 DESCRIPTION
   Backup users, server and datas to luks-eggs-backup
-
-ALIASES
-  $ eggs backup
 
 EXAMPLES
   $ sudo eggs syncto
@@ -735,9 +664,6 @@ FLAGS
 
 DESCRIPTION
   update skel from home configuration
-
-ALIASES
-  $ eggs skel
 
 EXAMPLES
   $ eggs skel --user mauro
