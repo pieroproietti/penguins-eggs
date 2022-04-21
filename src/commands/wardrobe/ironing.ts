@@ -9,7 +9,7 @@ import { ICostume, IMateria } from '../../interfaces'
 export class Ironing extends Command {
   static description = 'ordered show of costumes or accessories in wardrobe'
 
-  static args = [{ name: 'costume', description: 'costume to iron', required: false }]
+  static args = [{ name: 'costume', description: 'costume', required: false }]
 
   static flags = {
     wardrobe: Flags.string({ char: 'w', description: 'wardrobe' }),

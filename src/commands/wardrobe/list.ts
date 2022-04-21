@@ -15,8 +15,9 @@ import chalk from 'chalk'
 export default class List extends Command {
   static description = 'list costumes and accessoires in wardrobe'
 
+  static args = [{ name: 'wardrobe', description: 'wardrobe', required: false }]
+
   static flags = {
-    wardrobe: Flags.string({ char: 'w', description: 'wardrobe' }),
     verbose: Flags.boolean({ char: 'v' }),
     help: Flags.help({ char: 'h' })
   }
@@ -32,9 +33,12 @@ export default class List extends Command {
     const echo = Utils.setEcho(verbose)
     Utils.titles(this.id + ' ' + this.argv)
 
+    /**
+    * wardobe
+    */
     let wardrobe = await Utils.wardrobe()
-    if (flags.wardrobe !== undefined) {
-        wardrobe = flags.wardrobe
+    if (this.argv['0'] !== undefined) {
+      wardrobe = this.argv['0']
     }
     wardrobe = `${path.resolve(process.cwd(), wardrobe)}/`
 
@@ -62,28 +66,28 @@ export default class List extends Command {
     /**
      * accessories
      */
-     const accessories = fs.readdirSync(`${wardrobe}/accessories/`)
-     console.log(chalk.green(`accessories: `))
-     accessories.forEach(accessory => {
-       if (fs.existsSync(`${wardrobe}/accessories/${accessory}/index.yml`)) {
-         const materials = yaml.load(fs.readFileSync(`${wardrobe}/accessories/${accessory}/index.yml`, 'utf-8')) as ICostume
-         console.log(chalk.cyan(accessory) + ': ' + materials.description)
-       }
-     })
-     console.log()
+    const accessories = fs.readdirSync(`${wardrobe}/accessories/`)
+    console.log(chalk.green(`accessories: `))
+    accessories.forEach(accessory => {
+      if (fs.existsSync(`${wardrobe}/accessories/${accessory}/index.yml`)) {
+        const materials = yaml.load(fs.readFileSync(`${wardrobe}/accessories/${accessory}/index.yml`, 'utf-8')) as ICostume
+        console.log(chalk.cyan(accessory) + ': ' + materials.description)
+      }
+    })
+    console.log()
 
     /**
      * servers
      */
-     const servers = fs.readdirSync(`${wardrobe}/servers/`)
-     console.log(chalk.green(`servers: `))
-     servers.forEach(server => {
-       if (fs.existsSync(`${wardrobe}/servers/${server}/index.yml`)) {
-         const materials = yaml.load(fs.readFileSync(`${wardrobe}/servers/${server}/index.yml`, 'utf-8')) as ICostume
-         console.log(chalk.cyan(server) + ': ' + materials.description)
-       }
-     })
-     console.log()
-      
+    const servers = fs.readdirSync(`${wardrobe}/servers/`)
+    console.log(chalk.green(`servers: `))
+    servers.forEach(server => {
+      if (fs.existsSync(`${wardrobe}/servers/${server}/index.yml`)) {
+        const materials = yaml.load(fs.readFileSync(`${wardrobe}/servers/${server}/index.yml`, 'utf-8')) as ICostume
+        console.log(chalk.cyan(server) + ': ' + materials.description)
+      }
+    })
+    console.log()
+
   }
 }

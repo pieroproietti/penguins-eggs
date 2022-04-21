@@ -240,8 +240,7 @@ update)
 
 wardrobe:get)
   _command_flags=(
-    "--repo=-[repository wardrobe]:"
-"--verbose[]"
+    "--verbose[]"
 "--help[Show CLI help.]"
   )
 ;;
@@ -256,8 +255,7 @@ wardrobe:ironing)
 
 wardrobe:list)
   _command_flags=(
-    "--wardrobe=-[wardrobe]:"
-"--verbose[]"
+    "--verbose[]"
 "--help[Show CLI help.]"
   )
 ;;
