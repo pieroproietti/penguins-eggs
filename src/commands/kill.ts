@@ -38,7 +38,7 @@ export default class Kill extends Command {
 
     const echo = Utils.setEcho(verbose)
 
-    if (Utils.isRoot(this.id)) {
+    if (Utils.isRoot()) {
       // Utils.warning('Cleaning the nest...')
       const settings = new Settings()
       await settings.load()
@@ -47,6 +47,8 @@ export default class Kill extends Command {
         await exec(`rm ${settings.work_dir.path}/* -rf`, echo)
         await exec(`rm ${settings.config.snapshot_dir} -rf`, echo)
       }
+    } else {
+      Utils.useRoot(this.id)
     }
   }
 }

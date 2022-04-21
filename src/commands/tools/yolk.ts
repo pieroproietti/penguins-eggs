@@ -45,6 +45,8 @@ export default class DevYolk extends Command {
 
       const yolk = new Yolk()
       await yolk.create(verbose)
+    } else {
+      Utils.useRoot(this.id)
     }
   }
 }

@@ -19,7 +19,7 @@ export default class ToolsStat extends Command {
     year: Flags.boolean({ char: 'y', description: 'current year' })
   }
 
-  static aliases = ['stat']
+  //static aliases = ['stat']
 
   async run(): Promise<void> {
     const { args, flags } = await this.parse(ToolsStat)

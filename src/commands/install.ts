@@ -26,7 +26,7 @@ export default class Install extends Command {
 
   static description = 'command-line system installer - the egg became a penguin!'
 
-  static aliases = ['hatch', 'krill']
+  // static aliases = ['krill']
 
   static examples = ['$ eggs install\nInstall the system using GUI or CLI installer\n']
 
@@ -39,7 +39,7 @@ export default class Install extends Command {
     const { flags } = await this.parse(Install)
 
     let cli = false
-    if (flags.cli){
+    if (flags.cli) {
       cli = true
     }
 
@@ -60,7 +60,7 @@ export default class Install extends Command {
       verbose = true
     }
 
-    if (Utils.isRoot(this.id)) {
+    if (Utils.isRoot()) {
       if (Utils.isLive()) {
         if (Pacman.packageIsInstalled('calamares') && Pacman.isRunningGui() && !cli) {
           shx.exec('/usb/sbin/install-debian')
@@ -71,9 +71,11 @@ export default class Install extends Command {
           const krill = new Prepare()
           await krill.prepare(crypted, pve, verbose)
         }
+      } else {
+        Utils.warning('You are in an installed system!')
       }
     } else {
-      Utils.warning('You are in an installed system!')
+      Utils.useRoot(this.id)
     }
   }
 }

@@ -11,7 +11,7 @@ import Bleach from '../../classes/bleach'
 export default class Clean extends Command {
   static description = 'clean system log, apt, etc'
 
-  static aliases = ['clean']
+  // static aliases = ['clean']
 
   static flags = {
     help: Flags.help({ char: 'h' }),
@@ -27,9 +27,13 @@ export default class Clean extends Command {
       verbose = true
     }
 
-    if (Utils.isRoot() && (await Utils.customConfirm('Select yes to continue...'))) {
-      const bleach = new Bleach()
-      bleach.clean(verbose)
+    if (Utils.isRoot()) {
+      if (await Utils.customConfirm('Select yes to continue...')) {
+        const bleach = new Bleach()
+        bleach.clean(verbose)
+      }
+    } else {
+      Utils.useRoot(this.id)
     }
   }
 }

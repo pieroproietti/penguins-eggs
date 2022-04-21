@@ -5,7 +5,7 @@ import { exec } from '../lib/utils'
 
 export default class Adapt extends Command {
   static description = 'adapt monitor resolution for VM only'
-  static aliases = ['adjust']
+  // static aliases = ['adjust']
 
   static flags = {
     verbose: Flags.boolean({ char: 'v' }),

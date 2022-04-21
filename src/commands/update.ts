@@ -28,9 +28,9 @@ export default class Update extends Command {
   async run(): Promise<void> {
     Utils.titles(this.id + ' ' + this.argv)
     const { flags } = await this.parse(Update)
-    if (Utils.isRoot(this.id)) {
-      Utils.titles(this.id + ' ' + this.argv)
+    Utils.titles(this.id + ' ' + this.argv)
 
+    if (Utils.isRoot()) {
       if (Utils.isSources()) {
         Utils.warning(`You are on penguins-eggs v. ${Utils.getPackageVersion()} from sources`)
       } else if (Utils.isDebPackage()) {
@@ -38,6 +38,8 @@ export default class Update extends Command {
       }
 
       await this.chooseUpdate()
+    } else {
+      Utils.useRoot(this.id)
     }
   }
 

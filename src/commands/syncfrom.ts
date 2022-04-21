@@ -43,7 +43,7 @@ export default class Syncfrom extends Command {
     verbose: Flags.boolean({ char: 'v', description: 'verbose' })
   }
 
-  static aliases = ['restore']
+  // static aliases = ['restore']
 
   static examples = ['$ sudo eggs restore']
 
@@ -74,7 +74,7 @@ export default class Syncfrom extends Command {
       }
     }
 
-    if (Utils.isRoot(this.id)) {
+    if (Utils.isRoot()) {
       if (fileVolume === '') {
         fileVolume = '/run/live/medium/live/luks-eggs-backup'
       }
@@ -106,6 +106,8 @@ export default class Syncfrom extends Command {
         this.luksMountpoint = '/tmp/eggs-backup'
         await this.restorePrivateData()
       }
+    } else {
+      Utils.useRoot(this.id)
     }
   }
 
