@@ -37,7 +37,7 @@ export default class Produce extends Command {
 
   static description = 'produce a live image from your system whithout your data'
 
-  static aliases = ['spawn', 'lay']
+  // static aliases = ['spawn', 'lay']
 
   static examples = [
     '$ sudo eggs produce \nproduce an ISO called [hostname]-[arch]-YYYY-MM-DD_HHMM.iso, compressed xz (standard compression).\nIf hostname=ugo and arch=i386 ugo-x86-2020-08-25_1215.iso\n',
@@ -54,7 +54,7 @@ export default class Produce extends Command {
     Utils.titles(this.id + ' ' + this.argv)
 
     const { flags } = await this.parse(Produce)
-    if (Utils.isRoot(this.id)) {
+    if (Utils.isRoot()) {
       /**
        * ADDONS dei vendors
        * Fino a 3
@@ -179,6 +179,8 @@ export default class Produce extends Command {
         await ovary.produce(backup, scriptOnly, yolkRenew, release, myAddons, verbose)
         ovary.finished(scriptOnly)
       }
+    } else {
+      Utils.useRoot(this.id)
     }
   }
 }

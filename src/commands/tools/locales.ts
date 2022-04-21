@@ -37,12 +37,14 @@ export default class Locales extends Command {
     const echo = Utils.setEcho(verbose)
 
     if (Utils.isRoot()) {
-      const i18n = new I18n( '/', verbose)
+      const i18n = new I18n('/', verbose)
       if (reinstall) {
         await i18n.reinstall()
       } else {
         await i18n.generate(true)
       }
+    } else {
+      Utils.useRoot(this.id)
     }
   }
 }

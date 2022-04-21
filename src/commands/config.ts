@@ -20,7 +20,7 @@ import { exec } from '../lib/utils'
 export default class Config extends Command {
   static description = 'Configure and install prerequisites deb packages to run it'
 
-  static aliases = ['prerequisites']
+  // static aliases = ['prerequisites']
   static flags = {
     nointeractive: Flags.boolean({ char: 'n', description: 'assume yes' }),
     clean: Flags.boolean({ char: 'c', description: 'remove old configuration before to create new one' }),
@@ -71,6 +71,8 @@ export default class Config extends Command {
           await Config.install(i, nointeractive, verbose)
         }
       }
+    } else {
+      Utils.useRoot(this.id)
     }
   }
 
@@ -89,7 +91,7 @@ export default class Config extends Command {
     }
 
     if (!(await Pacman.calamaresCheck()) && Pacman.isInstalledGui() && Pacman.isCalamaresAvailable()) {
-      if (! Pacman.packageIsInstalled('live-installer')) {
+      if (!Pacman.packageIsInstalled('live-installer')) {
         Utils.warning('config: you are on a graphic system, I suggest to install the GUI installer calamares')
         i.calamares = nointeractive ? true : await Utils.customConfirm('Want You install calamares?')
       }

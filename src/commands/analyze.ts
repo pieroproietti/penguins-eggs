@@ -19,7 +19,7 @@ export default class Analyze extends Command {
   snapshot_dir = '' as string
   work_dir = {} as IWorkDir
 
-  static description = 'analyze situation'
+  static description = 'analyze for syncto'
 
   static flags = {
     help: Flags.help({ char: 'h' }),
@@ -49,6 +49,8 @@ export default class Analyze extends Command {
           totalSize += users[i].size
         }
       console.log(`Total\t\t\t\t\tSize: ${Utils.formatBytes(totalSize)} \tBytes: ${totalSize}`)
+    } else {
+      Utils.useRoot(this.id)
     }
   }
 

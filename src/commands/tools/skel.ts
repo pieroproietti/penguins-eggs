@@ -12,7 +12,7 @@ import Xdg from '../../classes/xdg'
 export default class Skel extends Command {
   static description = 'update skel from home configuration'
 
-  static aliases = ['skel']
+  // static aliases = ['skel']
 
   static examples = [
     `$ eggs skel --user mauro
@@ -50,6 +50,8 @@ desktop configuration of user mauro will get used as default`
     if (Utils.isRoot()) {
       Utils.titles('skel')
       Xdg.skel(user, verbose)
+    } else {
+      Utils.useRoot(this.id)
     }
   }
 }

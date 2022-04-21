@@ -86,6 +86,8 @@ export default class Remove extends Command {
 
         Utils.warning("You are using  eggs as sources. I'll NOT remove it")
       }
+    } else {
+      Utils.useRoot(this.id)
     }
   }
 }

@@ -32,6 +32,8 @@ export default class Dad extends Command {
 
       const daddy = new Daddy()
       daddy.helpMe(flags.default, flags.verbose)
+    } else {
+      Utils.useRoot(this.id)
     }
   }
 }

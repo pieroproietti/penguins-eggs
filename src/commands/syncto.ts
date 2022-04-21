@@ -58,7 +58,7 @@ export default class Syncto extends Command {
         verbose: Flags.boolean({ char: 'v', description: 'verbose' })
     }
 
-    static aliases = ['backup']
+    // static aliases = ['backup']
 
     static examples = ['$ sudo eggs syncto']
 
@@ -84,7 +84,7 @@ export default class Syncto extends Command {
             destDelete = true
         }
 
-        if (Utils.isRoot(this.id)) {
+        if (Utils.isRoot()) {
             /**
              * restore con file
              */
@@ -106,6 +106,8 @@ export default class Syncto extends Command {
                 await this.backup(destDelete)
                 await this.luksClose()
             }
+        } else {
+            Utils.useRoot(this.id)
         }
     }
 
@@ -175,7 +177,7 @@ export default class Syncto extends Command {
                 if (users[i].saveIt) {
                     let utype = 'user   '
                     if (parseInt(users[i].uid) < 1000) {
-                      utype = 'service'
+                        utype = 'service'
                     }
                     console.log(`- ${utype}: ${users[i].login.padEnd(16)} \thome: ${users[i].home} \tsize: ${Utils.formatBytes(users[i].size)} \tBytes: ${users[i].size} `)
                     totalSize += users[i].size
