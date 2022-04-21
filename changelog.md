@@ -18,8 +18,9 @@ You can follow the project also consulting the [commit history](https://github.c
 ## Changelog
 Versions are listed on reverse order, the first is the last one. Old versions are moved to [oldest](https://sourceforge.net/projects/penguins-eggs/files/packages-deb/oldest/). 
 
-### eggs-9.1.10-1
-* wardorbe: added servers section to wardrobe and a samba sample
+### eggs-9.1.11-1
+* wardrobe: added servers section to wardrobe and a samba sample
+* commands: removed command bro, removed all command aliases to reduce confusion, re-estabilish warming if a command need to be called with sudo
 
 ### eggs-9.1.9-1
 * wardrobe: add prefix costumes/ to COSTUME if not specified costumes/ or accessories/ in ironing, show and wear;
