@@ -34,9 +34,9 @@ tools:skel --help --user --verbose
 tools:stat --help --month --year
 tools:yolk --help --verbose
 update --help --verbose
-wardrobe:get --repo --verbose --help
+wardrobe:get --verbose --help
 wardrobe:ironing --wardrobe --verbose --help
-wardrobe:list --wardrobe --verbose --help
+wardrobe:list --verbose --help
 wardrobe:show --wardrobe --json --verbose --help
 wardrobe:wear --wardrobe --no_accessories --silent --verbose --help
 autocomplete --refresh-cache

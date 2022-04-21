@@ -190,7 +190,7 @@ USAGE
 * [`eggs version`](#eggs-version)
 * [`eggs wardrobe get [REPO]`](#eggs-wardrobe-get-repo)
 * [`eggs wardrobe ironing [COSTUME]`](#eggs-wardrobe-ironing-costume)
-* [`eggs wardrobe list`](#eggs-wardrobe-list)
+* [`eggs wardrobe list [WARDROBE]`](#eggs-wardrobe-list-wardrobe)
 * [`eggs wardrobe show [COSTUME]`](#eggs-wardrobe-show-costume)
 * [`eggs wardrobe wear [COSTUME]`](#eggs-wardrobe-wear-costume)
 
@@ -1159,7 +1159,7 @@ USAGE
   $ eggs wardrobe ironing [COSTUME] [-w <value>] [-v] [-h]
 
 ARGUMENTS
-  COSTUME  costume to iron
+  COSTUME  costume
 
 FLAGS
   -h, --help              Show CLI help.
@@ -1170,18 +1170,20 @@ DESCRIPTION
   ordered show of costumes or accessories in wardrobe
 ```
 
-## `eggs wardrobe list`
+## `eggs wardrobe list [WARDROBE]`
 
 list costumes and accessoires in wardrobe
 
 ```
 USAGE
-  $ eggs wardrobe list [-w <value>] [-v] [-h]
+  $ eggs wardrobe list [WARDROBE] [-v] [-h]
+
+ARGUMENTS
+  WARDROBE  wardrobe
 
 FLAGS
-  -h, --help              Show CLI help.
+  -h, --help     Show CLI help.
   -v, --verbose
-  -w, --wardrobe=<value>  wardrobe
 
 DESCRIPTION
   list costumes and accessoires in wardrobe
