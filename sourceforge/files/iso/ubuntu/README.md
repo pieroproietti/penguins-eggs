@@ -29,20 +29,27 @@ Ubuntu is a Linux distribution based on Debian mostly composed of free and open-
 # bionic 18.04 LTS
 Released on april 2018 this version is the first LTS Long Term Support.
 
-# jammy 22.04
-Still in devolpment, will be release on april 2022.
+# jammy 22.04 LTS
+Released on april 2022.
+## **naked**
+Just the juice, without GUI. You can start here to build your revolution!
 
-# impish 21.10
-Release on october 2021, this is the last version of Ubuntu.
+Note: I didn't find a clean way to get a clean Ubuntu 22.04 CLI only as I do with Debian/Devuan, I tryed with Ubuntu server edition minumun and stardard installation, but always there are delay on start of the live due a wait for networking. If someone know the issue can be kind do advice me for the problem.
 
-# hirsute 21.04
-Release on april 2021.
+##  colibri
+A light xfce4 for developers you can easily start to improve eggs installing colibri.
 
-# groovy 20.10
-Release on october 2020.
+## lxqt
+Just a lubuntu remastered with eggs
+
+## xfce
+Just a xubuntu remastered with eggs
+
+## kde
+Just a kubuntu remastered with eggs
 
 # focal 20.04 LTS
-Released on april 2020, this version is the last LTS Long Term 
+Released on april 2020
 
 # That's all Folks!
 No need other configurations, penguins-eggs are battery included or better, as in the real, live is inside! :-D
