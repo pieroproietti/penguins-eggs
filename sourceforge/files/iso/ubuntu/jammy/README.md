@@ -26,7 +26,29 @@ All the ISOs include nodejs and eggs installed (.npm package), so you can update
 # Ubuntu
 Ubuntu is a Linux distribution based on Debian mostly composed of free and open-source software. Ubuntu is officially released in three editions: Desktop, Server, and Core for Internet of things devices and robots. All the editions can run on the computer alone, or in a virtual machine. Ubuntu is a popular operating system for cloud computing, with support for OpenStack. Ubuntu's default desktop has been GNOME, since version 17.10.
 
-* **jammy** It's just a ubuntu 22.04 remastered with eggs.
+# Jammy
+Released on april 2022.
+
+## **naked**
+Just the juice, without GUI. You can start here to build your revolution!
+
+Note: I didn't find a clean way to get a clean Ubuntu 22.04 CLI only as I do with Debian/Devuan, I tryed with Ubuntu server edition minumun and stardard installation, but always there are delay on start of the live due a wait for networking. If someone know the issue can be kind do advice me for the problem.
+
+##  colibri
+A light xfce4 for developers you can easily start to improve eggs installing colibri.
+
+![colibri](https://a.fsdn.com/con/app/proj/penguins-eggs/screenshots/colibri.png/245/183)
+
+## lxqt
+Just a lubuntu remastered with eggs
+
+## xfce
+Just a xubuntu remastered with eggs
+
+## kde
+Just a kubuntu remastered with eggs
+
+
 
 __Note__: this version is made just to investigate compatibility beetwheen eggs and wayland.
 
