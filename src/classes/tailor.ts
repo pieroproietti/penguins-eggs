@@ -74,15 +74,20 @@ export default class Tailor {
                 Utils.warning(`analyzing repositories`)
 
                 /**
-                * sequence/repositories/source_list_d
+                * sequence/repositories/source_list
+                * solo per Debian/Devuan
                 */
-                if (this.materials.sequence.repositories.sources_list !== undefined) {
-                    let step = 'analyzing /etc/apt/sources.list'
-                    Utils.warning(step)
+                const distro = new Distro()
+                if (distro.distroId === 'Debian' || distro.distroId === 'Devuan') { 
+                    if (this.materials.sequence.repositories.sources_list !== undefined) {
 
-                    const sources_list = new SourcesList()
-                    sources_list.distribution(this.materials.sequence.repositories.sources_list)
-                    sources_list.components(this.materials.sequence.repositories.sources_list)
+                        let step = 'analyzing /etc/apt/sources.list'
+                        Utils.warning(step)
+
+                        const sources_list = new SourcesList()
+                        sources_list.distribution(this.materials.sequence.repositories.sources_list)
+                        sources_list.components(this.materials.sequence.repositories.sources_list)
+                    }
                 }
 
 
@@ -142,6 +147,14 @@ export default class Tailor {
                         await exec(`${this.costume}/${script}`, Utils.setEcho(true))
                     }
                 }
+            }
+
+
+            /**
+             * apt-get install dependencies
+             */
+            if (this.materials.sequence.dependencies !== undefined) {
+                await this.helper(this.materials.sequence.dependencies, "dependencies")
             }
 
 
@@ -255,7 +268,7 @@ export default class Tailor {
             if (this.materials.customize.hostname) {
                 Utils.warning(`changing hostname = ${this.materials.name}`)
                 await this.hostname()
-               
+
             }
 
             /**
@@ -388,8 +401,8 @@ export default class Tailor {
         console.log(' E G G S: the reproductive system of penguins')
         console.log('')
         console.log(chalk.bgGreen.whiteBright('      ' + pjson.name + '      ') +
-        chalk.bgWhite.blue(" Perri's Brewery edition ") +
-        chalk.bgRed.whiteBright('       ver. ' + pjson.version + '       '))
+            chalk.bgWhite.blue(" Perri's Brewery edition ") +
+            chalk.bgRed.whiteBright('       ver. ' + pjson.version + '       '))
         console.log('wearing: ' + chalk.bgBlack.cyan(this.costume) + ' ' + chalk.bgBlack.white(command) + '\n')
     }
 

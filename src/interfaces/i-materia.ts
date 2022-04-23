@@ -20,6 +20,7 @@ export interface IMateria {
       upgrade: boolean
     },
     preinst: string[]
+    dependencies: string[]
     packages: string[]
     packages_no_install_recommends: string[]
     debs: boolean
