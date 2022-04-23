@@ -81,14 +81,13 @@ Note: you can build the various colibri, duck and owl starting with an installed
 
 ## focal LTS
 * **naked** - Ubuntu 20.04 just the juice, without GUI. You can start here to build your revolution! (amd64)
-* **gnome3** - Ubuntu 20.04 focal gnome, remastered with eggs, without any modifications. (amd64)
-
-## impish
-* **gnome3** - Ubuntu 21.10 impish gnome3, remastered with eggs, without any modifications. (amd64)
 
 ## jammy
-* **gnome3** - Ubuntu 22.04 jammy gnome3, remastered with eggs, without any modifications. (amd64)
-
+* **naked** - just the juice, without GUI. You can start here to build your revolution!
+* **colibri** - a light xfce4 desktop for developers, with colibri you can start to improve [eggs](https://github.com/pieroproietti/penguins-eggs)
+* **lxqt** A simple Lubuntu 22.04 remaster
+* **xfce** A simple Xubuntu 22.04 remaster
+* **kde** A simple Kubuntu 22.04 remaster
 
 # Derivated distros
 
