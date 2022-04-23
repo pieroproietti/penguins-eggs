@@ -61,7 +61,12 @@ export const depCommon = [
   'squashfs-tools',
   'syslinux-common',
   'coreutils', // whoami
-  'xorriso'
+  'xorriso',
+  /**
+   * wardorbe
+   */
+  'git',
+  'curl'
 ]
 
 /**
