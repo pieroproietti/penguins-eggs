@@ -68,9 +68,6 @@ Note: you can build the various colibri, duck and owl starting with an installed
 ## daedalus
 * **naked** - just the juice, without GUI. You can start here to build your revolution! (amd64)
 
-## Deepin
-* **deepin** deeping 20.2.1 remastered based on Debian buster. [deepin](https://www.deepin.org/en/) (amd64)
-
 # manjaro Linux
 **xfce** with xfce
 
@@ -88,8 +85,12 @@ Note: you can build the various colibri, duck and owl starting with an installed
 * **lxqt** A simple Lubuntu 22.04 remaster
 * **xfce** A simple Xubuntu 22.04 remaster
 * **kde** A simple Kubuntu 22.04 remaster
+![colibri](https://a.fsdn.com/con/app/proj/penguins-eggs/screenshots/colibri.png)
 
 # Derivated distros
+
+## Deepin
+* **deepin** deeping 20.2.1 remastered based on Debian buster. [deepin](https://www.deepin.org/en/) (amd64)
 
 ## Linux Mint 
 * **ulyana** - Linux Mint 20.0 remastered with eggs, without any modifications except for wallpapers and develop tools. (amd64) 
@@ -103,7 +104,7 @@ Note: you can build the various colibri, duck and owl starting with an installed
 The latest and greatest of [KDE](https://neon.kde.org/) community software packaged on a rock-solid base.
 
 * **plasma** User Edition remastered with eggs
-* **plasma-testing** Testing Edition remastered with eggs
+* **developer** Testing Edition remastered with eggs
 
 ## Sodilinux
 An italian school distro based on linuxmint with mate and complete for the school
