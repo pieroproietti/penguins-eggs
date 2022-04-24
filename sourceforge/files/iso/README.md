@@ -48,6 +48,9 @@ Note: you can build the various colibri, duck and owl starting with an installed
 * **owl** - xfce4, office, multimedia, graphics with 5.17.0-1.2-liquorix-amd64 kernel, based on the work of Clarlie Martinez [quirinux](https://quirinux.org/)
 
 ![colibri](https://a.fsdn.com/con/app/proj/penguins-eggs/screenshots/colibri.png/245/183)
+![duck](https://a.fsdn.com/con/app/proj/penguins-eggs/screenshots/duck.png/245/183)
+![eagle](https://a.fsdn.com/con/app/proj/penguins-eggs/screenshots/eagle.png/245/183)
+![owl](https://a.fsdn.com/con/app/proj/penguins-eggs/screenshots/owl.png/245/183)
 
 ## bookworm
 * **naked** - just the juice, without GUI. You can start here to build your revolution! (i386 and amd64)
@@ -64,6 +67,8 @@ Note: you can build the various colibri, duck and owl starting with an installed
 * **owl** - xfce4, office, multimedia, graphics with 5.17.0-1.2-liquorix-amd64 kernel, based on the work of Clarlie Martinez [quirinux](https://quirinux.org/)
 
 ![colibri](https://a.fsdn.com/con/app/proj/penguins-eggs/screenshots/colibri.png/245/183)
+![duck](https://a.fsdn.com/con/app/proj/penguins-eggs/screenshots/duck.png/245/183)
+![owl](https://a.fsdn.com/con/app/proj/penguins-eggs/screenshots/owl.png/245/183)
 
 ## daedalus
 * **naked** - just the juice, without GUI. You can start here to build your revolution! (amd64)
@@ -89,6 +94,7 @@ Note: you can build the various colibri, duck and owl starting with an installed
 * **xfce** A simple Xubuntu 22.04 remaster
 
 ![colibri](https://a.fsdn.com/con/app/proj/penguins-eggs/screenshots/colibri.png/245/183)
+![owl](https://a.fsdn.com/con/app/proj/penguins-eggs/screenshots/owl.png/245/183)
 
 # Derivated distros
 
