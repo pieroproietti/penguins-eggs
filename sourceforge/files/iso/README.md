@@ -30,7 +30,7 @@ I work mostly on Debian stable (bullseye), so here you can find more versions an
 
 Note: you can build the various colibri, duck and owl starting with an installed naked version of others distros using wardrobe wear.
 
-![colibri](https://a.fsdn.com/con/app/proj/penguins-eggs/screenshots/colibri.png)
+![colibri](https://a.fsdn.com/con/app/proj/penguins-eggs/screenshots/colibri.png/245/183)
 
 ## jessie 
 * **naked** - just the juice, without GUI. You can start here to build your revolution! (i386/amd64)
@@ -63,7 +63,7 @@ Note: you can build the various colibri, duck and owl starting with an installed
 * **colibri** - a light xfce4 desktop for developers, with colibri you can start to improve [eggs](https://github.com/pieroproietti/penguins-eggs)
 * **duck** - cinnamon desktop, office, multimedia, graphics with 5.17.0-1.2-liquorix-amd64 kernel
 * **owl** - xfce4, office, multimedia, graphics with 5.17.0-1.2-liquorix-amd64 kernel, based on the work of Clarlie Martinez [quirinux](https://quirinux.org/)
-![colibri](https://a.fsdn.com/con/app/proj/penguins-eggs/screenshots/colibri.png)
+![colibri](https://a.fsdn.com/con/app/proj/penguins-eggs/screenshots/colibri.png/245/183)
 
 ## daedalus
 * **naked** - just the juice, without GUI. You can start here to build your revolution! (amd64)
@@ -83,10 +83,11 @@ Note: you can build the various colibri, duck and owl starting with an installed
 * **naked** - just the juice, without GUI. You can start here to build your revolution!
 * **colibri** - a light xfce4 desktop for developers, with colibri you can start to improve [eggs](https://github.com/pieroproietti/penguins-eggs)
 * **owl** - xfce4, office, multimedia, graphics with 5.17.0-1.2-liquorix-amd64 kernel, based on the work of Clarlie Martinez [quirinux](https://quirinux.org/)
+* **gnome** A simple Ubuntu 22.04 remaster
 * **lxqt** A simple Lubuntu 22.04 remaster
-* **xfce** A simple Xubuntu 22.04 remaster
 * **kde** A simple Kubuntu 22.04 remaster
-![colibri](https://a.fsdn.com/con/app/proj/penguins-eggs/screenshots/colibri.png)
+* **xfce** A simple Xubuntu 22.04 remaster
+![colibri](https://a.fsdn.com/con/app/proj/penguins-eggs/screenshots/colibri.png/245/183)
 
 # Derivated distros
 
