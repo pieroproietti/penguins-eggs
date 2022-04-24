@@ -39,6 +39,8 @@ Note: I didn't find a clean way to get a clean Ubuntu 22.04 CLI only as I do wit
 ##  colibri
 A light xfce4 for developers you can easily start to improve eggs installing colibri.
 
+![owl](https://a.fsdn.com/con/app/proj/penguins-eggs/screenshots/colibri.png/245/183)
+
 ##  owl
 xfce4 for graphics designers, with 5.17.0-1.2-liquorix-amd64 kernel, based on the work of Clarlie Martinez from [quirinux](https://quirinux.org/).
 
