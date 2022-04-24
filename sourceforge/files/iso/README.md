@@ -59,10 +59,10 @@ Note: you can build the various colibri, duck and owl starting with an installed
 * **naked** - just the juice, without GUI. You can start here to build your revolution! (amd64)
 
 ## chimaera
- * **naked** - just the juice, without GUI. You can start here to build your revolution!
- * **colibri** - a light xfce4 desktop for developers, with colibri you can start to improve [eggs](https://github.com/pieroproietti/penguins-eggs)
- * **duck** - cinnamon desktop, office, multimedia, graphics with 5.17.0-1.2-liquorix-amd64 kernel
- * **owl** - xfce4, office, multimedia, graphics with 5.17.0-1.2-liquorix-amd64 kernel, based on the work of Clarlie Martinez [quirinux](https://quirinux.org/)
+* **naked** - just the juice, without GUI. You can start here to build your revolution!
+* **colibri** - a light xfce4 desktop for developers, with colibri you can start to improve [eggs](https://github.com/pieroproietti/penguins-eggs)
+* **duck** - cinnamon desktop, office, multimedia, graphics with 5.17.0-1.2-liquorix-amd64 kernel
+* **owl** - xfce4, office, multimedia, graphics with 5.17.0-1.2-liquorix-amd64 kernel, based on the work of Clarlie Martinez [quirinux](https://quirinux.org/)
 ![colibri](https://a.fsdn.com/con/app/proj/penguins-eggs/screenshots/colibri.png)
 
 ## daedalus
@@ -82,6 +82,7 @@ Note: you can build the various colibri, duck and owl starting with an installed
 ## jammy
 * **naked** - just the juice, without GUI. You can start here to build your revolution!
 * **colibri** - a light xfce4 desktop for developers, with colibri you can start to improve [eggs](https://github.com/pieroproietti/penguins-eggs)
+* **owl** - xfce4, office, multimedia, graphics with 5.17.0-1.2-liquorix-amd64 kernel, based on the work of Clarlie Martinez [quirinux](https://quirinux.org/)
 * **lxqt** A simple Lubuntu 22.04 remaster
 * **xfce** A simple Xubuntu 22.04 remaster
 * **kde** A simple Kubuntu 22.04 remaster
@@ -93,12 +94,9 @@ Note: you can build the various colibri, duck and owl starting with an installed
 * **deepin** deeping 20.2.1 remastered based on Debian buster. [deepin](https://www.deepin.org/en/) (amd64)
 
 ## Linux Mint 
-* **ulyana** - Linux Mint 20.0 remastered with eggs, without any modifications except for wallpapers and develop tools. (amd64) 
-* **ulyssa** - Linux Mint 20.1 remastered with eggs, without any modifications except for wallpapers and develop tools. (amd64) 
 * **uma** - Linux Mint 20.2 remastered with eggs, without any modifications except for wallpapers and develop tools. (amd64) 
 * **patricia** - Linux Mint 19.3 xfce, updated and remastered with eggs, without any modifications except for wallpapers. (i386/amd64))
-* **debbie** - LMDE4 Debbie, remastered with eggs, without any modifications except for wallpapers and develop tools. (i386/amd64)) based on Debian buster
-* **elsie** - LMDE5 Debbie, remastered with eggs, without any modifications except for wallpapers and develop tools. (i386/amd64)) based on Debian buster
+* **elsie** - LMDE5 Debbie, remastered with eggs, without any modifications except for wallpapers and develop tools. (amd64)) based on Debian buster
 
 ## Neon
 The latest and greatest of [KDE](https://neon.kde.org/) community software packaged on a rock-solid base.
