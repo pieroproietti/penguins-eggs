@@ -18,14 +18,20 @@ All ISOs are based on Debian various versions
 * ```live/evolution```
 * ```root/evolution```
 
-# Debian 8 jessie (EOF LTS 2022-06-30)
-* **naked** - just the juice, without GUI. You can start here to build your revolution!
+# Debian 8 jessie
 
-# Debian 9 stretch (EOF 2022-06-30)
-* **naked** - just the juice, without GUI. You can start here to build your revolution!
+## naked
+Just the juice, without GUI. You can start here to build your revolution!
+
+# Debian 9 stretch
+
+## naked
+Just the juice, without GUI. You can start here to build your revolution!
 
 # Debian 10 buster (old-stable)
-* **naked** - just the juice, without GUI. You can start here to build your revolution!
+
+## naked
+Just the juice, without GUI. You can start here to build your revolution!
 
 # Debian 11 bullseye (stable)
 
@@ -64,4 +70,3 @@ xfce4, office, multimedia, graphics with 5.17.0-1.2-liquorix-amd64 kernel, based
 
 # Disclaim
 __Please note what this project is in no way connected to the original distro in any official way, it’s just my personal experiment.__
-
