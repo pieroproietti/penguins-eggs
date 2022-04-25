@@ -21,24 +21,34 @@ All ISOs are based on Devuan beowulf 3.1
 
 All ISOs include eggs, you can udate it with: ```sudo eggs update```.
 
-# Devuan 
+# Devuan beowulf
 
-## beowulf**
-* **naked** - just the juice, without GUI. You can start here to build your revolution!
+## naked
+Just the juice, without GUI. You can start here to build your revolution!
+
+# Devuan chimaera
+## naked
+Just the juice, without GUI. You can start here to build your revolution!
  
-## chimaera
- * **naked** - just the juice, without GUI. You can start here to build your revolution!
- * **colibri** - a light xfce4 desktop for developers, with colibri you can start to improve [eggs](https://github.com/pieroproietti/penguins-eggs)
- * **duck** - cinnamon desktop, office, multimedia, graphics with 5.17.0-1.2-liquorix-amd64 kernel
- * **owl** - xfce4, office, multimedia, graphics with 5.17.0-1.2-liquorix-amd64 kernel, based on the work of Clarlie Martinez [quirinux](https://quirinux.org/)
+## colibri
+A light xfce4 desktop for developers, with colibri you can start to improve [eggs](https://github.com/pieroproietti/penguins-eggs)
+ 
+## duck
+Cinnamon desktop, office, multimedia, graphics with 5.17.0-1.2-liquorix-amd64 kernel
+
+
+## owl
+xfce4, office, multimedia, graphics with 5.17.0-1.2-liquorix-amd64 kernel, based on the work of Clarlie Martinez [quirinux](https://quirinux.org/)
 
 ![colibri](https://a.fsdn.com/con/app/proj/penguins-eggs/screenshots/colibri.png/245/183)
 ![duck](https://a.fsdn.com/con/app/proj/penguins-eggs/screenshots/duck.png/245/183)
 ![owl](https://a.fsdn.com/con/app/proj/penguins-eggs/screenshots/owl.png/245/183)
 
 
-## daedalus
-* **naked** - just the juice, without GUI. You can start here to build your revolution!
+# Devuan daedalus
+
+## naked
+Just the juice, without GUI. You can start here to build your revolution!
  
 ## More informations:
 

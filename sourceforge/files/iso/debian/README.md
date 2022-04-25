@@ -57,7 +57,7 @@ xfce4, office, multimedia, graphics with 5.17.0-1.2-liquorix-amd64 kernel, based
 
 # Debian 12 bookworm (testing)
 
-## naked ## 
+## naked
  Just the juice, without GUI. You can start here to build your revolution!
 
 ## More informations:
