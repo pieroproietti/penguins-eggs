@@ -29,6 +29,9 @@ Ubuntu is a Linux distribution based on Debian mostly composed of free and open-
 # bionic 18.04 LTS
 Released on april 2018 this version is the first LTS Long Term Support.
 
+# focal 20.04 LTS
+Released on april 2020
+
 # jammy 22.04 LTS
 Released on april 2022.
 ## **naked**
@@ -39,13 +42,11 @@ Note: I didn't find a clean way to get a clean Ubuntu 22.04 CLI only as I do wit
 ##  colibri
 A light xfce4 for developers you can easily start to improve eggs installing colibri.
 
-![owl](https://a.fsdn.com/con/app/proj/penguins-eggs/screenshots/colibri.png/245/183)
-
 ##  owl
 xfce4 for graphics designers, with 5.17.0-1.2-liquorix-amd64 kernel, based on the work of Clarlie Martinez from [quirinux](https://quirinux.org/).
 
+![colibri](https://a.fsdn.com/con/app/proj/penguins-eggs/screenshots/colibri.png/245/183)
 ![owl](https://a.fsdn.com/con/app/proj/penguins-eggs/screenshots/owl.png/245/183)
-
 
 ## lxqt
 Just a lubuntu remastered with eggs
@@ -56,8 +57,6 @@ Just a xubuntu remastered with eggs
 ## kde
 Just a kubuntu remastered with eggs
 
-# focal 20.04 LTS
-Released on april 2020
 
 # That's all Folks!
 No need other configurations, penguins-eggs are battery included or better, as in the real, live is inside! :-D
