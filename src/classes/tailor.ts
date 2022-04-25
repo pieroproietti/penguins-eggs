@@ -15,9 +15,7 @@ import yaml from 'js-yaml'
 import Pacman from './pacman'
 import Distro from './distro'
 import SourcesList from './sources_list'
-import { exit } from 'process'
 import Xdg from './xdg'
-import Daddy from '../classes/daddy'
 
 const pjson = require('../../package.json')
 
@@ -75,7 +73,7 @@ export default class Tailor {
 
                 /**
                 * sequence/repositories/source_list
-                * solo per Debian/Devuan
+                *      solo per Debian/Devuan
                 */
                 const distro = new Distro()
                 if (distro.distroId === 'Debian' || distro.distroId === 'Devuan') { 
@@ -229,7 +227,9 @@ export default class Tailor {
             }
         }
 
-        // customize è sempre indefinito
+        /**
+         * customize
+         */
         if (this.materials.customize !== undefined) {
 
             /**
@@ -259,8 +259,6 @@ export default class Tailor {
                     }
                 }
             }
-
-
 
             /**
              * customize/hostname
@@ -312,8 +310,7 @@ export default class Tailor {
 
     /**
      * - check if every package if installed
-     * - if find any packages to install
-     * - install packages
+     * - if find any packages to install, install it
      */
     async helper(packages: string[], comment = 'packages', cmd = 'apt-get install -yqq ') {
 
@@ -336,11 +333,12 @@ export default class Tailor {
 
 
                 /**
-                 * prova 5 volte
+                 * prova 3 volte
                  */
-                for (let tempts = 1; tempts < 5; tempts++) {
+                let limit = 3
+                for (let tempts = 1; tempts < limit; tempts++) {
                     this.titles(step)
-                    Utils.warning(`tempts ${tempts} of 5`)
+                    Utils.warning(`tempts ${tempts} of ${limit}`)
                     if (await tryCheckSuccess(cmd, this.echo)) {
                         break
                     }
