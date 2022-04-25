@@ -30,19 +30,19 @@ All ISOs are based on Debian various versions
 # Debian 11 bullseye (stable)
 
 ## naked
- Just the juice, without GUI. You can start here to build your revolution!
+Just the juice, without GUI. You can start here to build your revolution!
  
- ## colibri
- A light xfce4 desktop for developers, with colibri you can start to improve [eggs](https://github.com/pieroproietti/penguins-eggs)
+## colibri
+A light xfce4 desktop for developers, with colibri you can start to improve [eggs](https://github.com/pieroproietti/penguins-eggs)
  
- ## duck
- Cinnamon desktop, office, multimedia, graphics with 5.17.0-1.2-liquorix-amd64 kernel
+## duck
+Cinnamon desktop, office, multimedia, graphics with 5.17.0-1.2-liquorix-amd64 kernel
 
- ## eagle
-  xfce4 desktop plus [Proxmox VE](https://www.proxmox.com/en/proxmox-ve), install and configure it with static ip to enjoy KVM and containers virtualization
+## eagle
+xfce4 desktop plus [Proxmox VE](https://www.proxmox.com/en/proxmox-ve), install and configure it with static ip to enjoy KVM and containers virtualization
  
- ## owl
- xfce4, office, multimedia, graphics with 5.17.0-1.2-liquorix-amd64 kernel, based on the work of Clarlie Martinez [quirinux](https://quirinux.org/)
+## owl
+xfce4, office, multimedia, graphics with 5.17.0-1.2-liquorix-amd64 kernel, based on the work of Clarlie Martinez [quirinux](https://quirinux.org/)
 
 ![colibri](https://a.fsdn.com/con/app/proj/penguins-eggs/screenshots/colibri.png/245/183)
 ![duck](https://a.fsdn.com/con/app/proj/penguins-eggs/screenshots/duck.png/245/183)
