@@ -30,6 +30,7 @@ function addIfExist(package2check: string): string {
   if (Pacman.packageIsInstalled(package2check)) {
     let displayManager = package2check
     if (package2check === 'gdm3') {
+      // gdm3 is treat as gdm
       displayManager = 'gdm'
     }
 

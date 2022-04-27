@@ -36,6 +36,6 @@ ls /etc/resolv.conf -l
 lrwxrwxrwx 1 root root 39 apr 27 07:49 /etc/resolv.conf -> ../run/systemd/resolve/stub-resolv.conf
 
 quindi:
-´´´
+
  ln -s /run/systemd/resolve/stub-resolv.conf /etc/resolv.conf
- ´´´
+ 
