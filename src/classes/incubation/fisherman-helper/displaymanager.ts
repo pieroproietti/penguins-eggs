@@ -25,7 +25,7 @@ export function displaymanager(): string {
  * @param package2check
  */
 function addIfExist(package2check: string): string {
-  let text = ''
+  let content = ''
 
   if (Pacman.packageIsInstalled(package2check)) {
     let displayManager = package2check
@@ -33,9 +33,8 @@ function addIfExist(package2check: string): string {
       // gdm3 is treat as gdm
       displayManager = 'gdm'
     }
-
-    text += text === '' ? `- ${displayManager}\n` : `                 - ${displayManager}\n`
+    content = `- ${displayManager}\n`
+    // text += text === '' ? `- ${displayManager}\n` : `                 - ${displayManager}\n`
   }
-
-  return text
+  return content
 }
