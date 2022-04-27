@@ -143,9 +143,9 @@ export default class Xdg {
       if (Pacman.packageIsInstalled('gdm3')) {
         let dirConf = `${chroot}/etc/gdm3`
         let gdmConf = ''
-        if (!fs.existsSync(`${dirConf}/custom.conf`)) {
+        if (fs.existsSync(`${dirConf}/custom.conf`)) {
           gdmConf = `${dirConf}/custom.conf`
-        } else if (!fs.existsSync(`${dirConf}/daemon.conf`)) {
+        } else if (fs.existsSync(`${dirConf}/daemon.conf`)) {
           gdmConf = `${dirConf}/daemon.conf`
         }
         // await exec(`echo "[daemon]\nAutomaticLoginEnable=true\nAutomaticLogin=${newuser} >> ${gdmConf}"`)
@@ -154,9 +154,9 @@ export default class Xdg {
       } else if (Pacman.packageIsInstalled('gdm')) {
         let dirConf = `${chroot}/etc/gdm`
         let gdmConf = ''
-        if (!fs.existsSync(`${dirConf}/custom.conf`)) {
+        if (fs.existsSync(`${dirConf}/custom.conf`)) {
           gdmConf = `${dirConf}/custom.conf`
-        } else if (!fs.existsSync(`${dirConf}/daemon.conf`)) {
+        } else if (fs.existsSync(`${dirConf}/daemon.conf`)) {
           gdmConf = `${dirConf}/daemon.conf`
         }
         // await exec(`echo "[daemon]\nAutomaticLoginEnable=true\nAutomaticLogin=${newuser} >> ${gdmConf}"`)
