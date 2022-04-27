@@ -141,19 +141,27 @@ export default class Xdg {
        * GDM
        */
       if (Pacman.packageIsInstalled('gdm3')) {
-        const customConf = `${chroot}/etc/gdm3/custom.conf`
-        if (fs.existsSync(customConf)) {
-          // await exec(`echo "[daemon]\nAutomaticLoginEnable=true\nAutomaticLogin=${newuser} >> ${customConf}"`)
-          shx.sed('-i', 'AutomaticLoginEnable=False', 'AutomaticLoginEnable=True', customConf)
-          shx.sed('-i', `AutomaticLogin=${olduser}`, `AutomaticLogin=${newuser}`, customConf)
+        let dirConf = `${chroot}/etc/gdm3`
+        let gdmConf = ''
+        if (!fs.existsSync(`${dirConf}/custom.conf`)) {
+          gdmConf = `${dirConf}/custom.conf`
+        } else if (!fs.existsSync(`${dirConf}/daemon.conf`)) {
+          gdmConf = `${dirConf}/daemon.conf`
         }
+        // await exec(`echo "[daemon]\nAutomaticLoginEnable=true\nAutomaticLogin=${newuser} >> ${gdmConf}"`)
+        shx.sed('-i', 'AutomaticLoginEnable=False', 'AutomaticLoginEnable=True', gdmConf)
+        shx.sed('-i', `AutomaticLogin=${olduser}`, `AutomaticLogin=${newuser}`, gdmConf)
       } else if (Pacman.packageIsInstalled('gdm')) {
-        const customConf = `${chroot}/etc/gdm/custom.conf`
-        if (fs.existsSync(customConf)) {
-          // await exec(`echo "[daemon]\nAutomaticLoginEnable=true\nAutomaticLogin=${newuser} >> ${customConf}"`)
-          shx.sed('-i', 'AutomaticLoginEnable=False', 'AutomaticLoginEnable=True', customConf)
-          shx.sed('-i', `AutomaticLogin=${olduser}`, `AutomaticLogin=${newuser}`, customConf)
+        let dirConf = `${chroot}/etc/gdm`
+        let gdmConf = ''
+        if (!fs.existsSync(`${dirConf}/custom.conf`)) {
+          gdmConf = `${dirConf}/custom.conf`
+        } else if (!fs.existsSync(`${dirConf}/daemon.conf`)) {
+          gdmConf = `${dirConf}/daemon.conf`
         }
+        // await exec(`echo "[daemon]\nAutomaticLoginEnable=true\nAutomaticLogin=${newuser} >> ${gdmConf}"`)
+        shx.sed('-i', 'AutomaticLoginEnable=False', 'AutomaticLoginEnable=True', gdmConf)
+        shx.sed('-i', `AutomaticLogin=${olduser}`, `AutomaticLogin=${newuser}`, gdmConf)
       }
 
     }
