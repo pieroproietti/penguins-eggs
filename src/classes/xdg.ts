@@ -87,13 +87,17 @@ export default class Xdg {
   static async autologin(olduser: string, newuser: string, chroot = '/') {
     if (Pacman.isInstalledGui()) {
 
-      // slim
+      /**
+       * SLIM
+       */
       if (Pacman.packageIsInstalled('slim')) {
         shx.sed('-i', 'auto_login no', 'auto_login yes', `${chroot}/etc/slim.conf`)
         shx.sed('-i', `default_user ${olduser}`, `default_user ${newuser}`, `${chroot}/etc/slim.conf`)
       }
 
-      // lightdm
+      /**
+       * LIGHTDM
+       */
       if (Pacman.packageIsInstalled('lightdm')) {
         if (fs.existsSync(`${chroot}/etc/lightdm/lightdm.conf`)) {
           shx.sed('-i', `autologin-user=${olduser}`, `autologin-user=${newuser}`, `${chroot}/etc/lightdm/lightdm.conf`)
@@ -105,7 +109,9 @@ export default class Xdg {
 
       }
 
-      // sddm
+      /**
+       * SDDM
+       */
       if (Pacman.packageIsInstalled('sddm')) {
         let sddmChanged = false
         // Cerco configurazione nel file sddm.conf
@@ -131,18 +137,22 @@ export default class Xdg {
         }
       }
 
-      // gdm3 in ubuntu, gdm in manjaro
+      /**
+       * GDM
+       */
       if (Pacman.packageIsInstalled('gdm3')) {
-        const gdm3Custom = `${chroot}/etc/gdm3/custom.conf`
-        if (fs.existsSync(gdm3Custom)) {
-          shx.sed('-i', 'AutomaticLoginEnable=False', 'AutomaticLoginEnable=True', gdm3Custom)
-          shx.sed('-i', `AutomaticLogin=${olduser}`, `AutomaticLogin=${newuser}`, gdm3Custom)
+        const customConf = `${chroot}/etc/gdm3/custom.conf`
+        if (fs.existsSync(customConf)) {
+          // await exec(`echo "[daemon]\nAutomaticLoginEnable=true\nAutomaticLogin=${newuser} >> ${customConf}"`)
+          shx.sed('-i', 'AutomaticLoginEnable=False', 'AutomaticLoginEnable=True', customConf)
+          shx.sed('-i', `AutomaticLogin=${olduser}`, `AutomaticLogin=${newuser}`, customConf)
         }
       } else if (Pacman.packageIsInstalled('gdm')) {
-        const gdmCustom = `${chroot}/etc/gdm/custom.conf`
-        if (fs.existsSync(gdmCustom)) {
-          shx.sed('-i', 'AutomaticLoginEnable=False', 'AutomaticLoginEnable=True', gdmCustom)
-          shx.sed('-i', `AutomaticLogin=${olduser}`, `AutomaticLogin=${newuser}`, gdmCustom)
+        const customConf = `${chroot}/etc/gdm/custom.conf`
+        if (fs.existsSync(customConf)) {
+          // await exec(`echo "[daemon]\nAutomaticLoginEnable=true\nAutomaticLogin=${newuser} >> ${customConf}"`)
+          shx.sed('-i', 'AutomaticLoginEnable=False', 'AutomaticLoginEnable=True', customConf)
+          shx.sed('-i', `AutomaticLogin=${olduser}`, `AutomaticLogin=${newuser}`, customConf)
         }
       }
 
