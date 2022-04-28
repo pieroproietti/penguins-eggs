@@ -25,8 +25,11 @@ All ISOs include eggs, you can udate it with: ```sudo eggs update```.
 
 * **egg-of-debian-bullseye-wagtail** - created from a cli debian adding all the necessary with costume wagtail from [penguins-wardrobe](https://github.com/pieroproietti/penguins-wardrobe)
 
+* **egg-of-debian-bullseye-warbler** - created from a cli debian adding all the necessary with costume warbler from [penguins-wardrobe](https://github.com/pieroproietti/penguins-wardrobe)
+![wagtail](https://a.fsdn.com/con/app/proj/penguins-eggs/screenshots/warbier.png/245/183)
 
 **NOTE** Here you will find my waydroid remaster made to test the latest versions of eggs, you can find more updated waydroid versions on their site [Waydroid](https://waydro.id/#wdlinux). Please use always ```--theme waydroid```
+![warbier](https://a.fsdn.com/con/app/proj/penguins-eggs/screenshots/warbier.png/245/183)
 
 **NOTE** All the versions are configured with no-hardware-accelleration to be used, modified and remastered under a virtializator (pve-proxmox, virtualbox or others)
 
