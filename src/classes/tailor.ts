@@ -76,7 +76,7 @@ export default class Tailor {
                 *      solo per Debian/Devuan
                 */
                 const distro = new Distro()
-                if (distro.distroId === 'Debian' || distro.distroId === 'Devuan') { 
+                if (distro.distroId === 'Debian' || distro.distroId === 'Devuan') {
                     if (this.materials.sequence.repositories.sources_list !== undefined) {
 
                         let step = 'analyzing /etc/apt/sources.list'
@@ -99,7 +99,13 @@ export default class Tailor {
 
                         for (const cmd of this.materials.sequence.repositories.sources_list_d) {
                             try {
-                                await exec(cmd, this.echo)
+                                // repeat 3 times if fail curl or others commands
+                                for (let i = 0; i < 2; i++) {
+                                    let result = await exec(cmd, this.echo)
+                                    if (result.code === 0) {
+                                        break
+                                    }
+                                }
                             } catch (error) {
                                 await Utils.pressKeyToExit(JSON.stringify(error))
                             }
