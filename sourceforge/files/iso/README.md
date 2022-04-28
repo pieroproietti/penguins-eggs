@@ -96,6 +96,12 @@ Note: you can build the various colibri, duck and owl starting with an installed
 ![colibri](https://a.fsdn.com/con/app/proj/penguins-eggs/screenshots/colibri.png/245/183)
 ![owl](https://a.fsdn.com/con/app/proj/penguins-eggs/screenshots/owl.png/245/183)
 
+# waydroid
+Actually I'm using Debian bullseye to install waydroid. We heve two species: wagtail (dnome) and warbler (kde)
+
+![warbier](https://a.fsdn.com/con/app/proj/penguins-eggs/screenshots/warbier.png/245/183)
+
+
 # Derivated distros
 
 ## Deepin
