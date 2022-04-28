@@ -23,9 +23,10 @@ All ISOs include eggs, you can udate it with: ```sudo eggs update```.
 
  A container-based approach to boot a full Android system on a regular GNU/Linux system like Ubuntu.
 
-* **egg-of-debian-bullseye-wagtail** - created from a cli debian adding all the necessary with costume wagtail from [penguins-wardrobe](https://github.com/pieroproietti/penguins-wardrobe)
+* **egg-of-debian-bullseye-wagtail** - (gnome) created from a cli debian using costume wagtail from [penguins-wardrobe](https://github.com/pieroproietti/penguins-wardrobe)
 
-* **egg-of-debian-bullseye-warbler** - created from a cli debian adding all the necessary with costume warbler from [penguins-wardrobe](https://github.com/pieroproietti/penguins-wardrobe)
+* **egg-of-debian-bullseye-warbler** - (kde) created from a cli debian using costume warbler from [penguins-wardrobe](https://github.com/pieroproietti/penguins-wardrobe)
+
 
 **NOTE** Here you will find my waydroid remaster made to test the latest versions of eggs, you can find more updated waydroid versions on their site [Waydroid](https://waydro.id/#wdlinux). Please use always ```--theme waydroid```
 
