@@ -27,12 +27,18 @@ All ISOs include eggs, you can udate it with: ```sudo eggs update```.
 
 * **egg-of-debian-bullseye-warbler** - (kde) created from a cli debian using costume warbler from [penguins-wardrobe](https://github.com/pieroproietti/penguins-wardrobe)
 
+* **egg-of-debian-bookworm-wagtail** - (gnome) created from a cli debian using costume wagtail from [penguins-wardrobe](https://github.com/pieroproietti/penguins-wardrobe)
+
+* **egg-of-debian-bookworm-warbler** - (kde) created from a cli debian using costume warbler from [penguins-wardrobe](https://github.com/pieroproietti/penguins-wardrobe)
+
+* **egg-of-ubuntu-jammy-wagtail** - (gnome) created from a minimal Ubuntu installation using costume wagtail from [penguins-wardrobe](https://github.com/pieroproietti/penguins-wardrobe)
+
 
 **NOTE** Here you will find my waydroid remaster made to test the latest versions of eggs, you can find more updated waydroid versions on their site [Waydroid](https://waydro.id/#wdlinux). Please use always ```--theme waydroid```
 
 ![warbler](https://a.fsdn.com/con/app/proj/penguins-eggs/screenshots/warbler.png/245/183)
 
-**NOTE** All the versions are configured with no-hardware-accelleration to be used, modified and remastered under a virtializator (pve-proxmox, virtualbox or others)
+**NOTE** All the versions are configured with no-hardware-accelleration to be used, modified and remastered under a virtializator (pve-proxmox, virtualbox or others), but work on real hardware too and probably your wifi card is included or you can ask.
 
 ## More informations:
 
