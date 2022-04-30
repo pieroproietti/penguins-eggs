@@ -37,6 +37,7 @@ import { displaymanager } from './incubation/fisherman-helper/displaymanager'
 import { access } from 'fs/promises'
 import { constants } from 'fs'
 import Users from './users'
+import { resolve } from 'path'
 
 /**
  * Ovary:
@@ -63,7 +64,7 @@ export default class Ovary {
   /**
    * @returns {boolean} success
    */
-  async fertilization(snapshot_prefix = '', snapshot_basename = '', theme = '', compression = '') : Promise<boolean> {
+  async fertilization(snapshot_prefix = '', snapshot_basename = '', theme = '', compression = ''): Promise<boolean> {
     this.settings = new Settings()
 
     if (await this.settings.load()) {
@@ -89,7 +90,7 @@ export default class Ovary {
       this.settings.listFreeSpace()
       if (await Utils.customConfirm('Select yes to continue...')) {
         return true
-      } 
+      }
     }
     return false
   }
@@ -104,7 +105,7 @@ export default class Ovary {
     if (this.verbose) {
       this.toNull = ' > /dev/null 2>&1'
     }
-    
+
     let luksName = 'luks-eggs-backup'
     let luksFile = `/tmp/${luksName}`
     // let luksDevice = `/dev/mapper/${luksName}`
@@ -128,7 +129,7 @@ export default class Ovary {
       shx.mkdir('-p', this.settings.config.snapshot_dir)
     }
 
-    await this.settings.loadRemix(this.snapshot_basename,  this.settings.config.theme)
+    await this.settings.loadRemix(this.snapshot_basename, this.settings.config.theme)
 
     if (Utils.isLive()) {
       console.log(chalk.red('>>> eggs: This is a live system! An egg cannot be produced from an egg!'))
@@ -297,14 +298,14 @@ export default class Ovary {
    * 
    * @param cmd 
    */
-  async tryCatch(cmd ='') {
+  async tryCatch(cmd = '') {
     try {
       await exec(cmd, this.echo)
     } catch (error) {
       console.log(`Error: ${error}`)
       await Utils.pressKeyToExit(cmd)
     }
-   }
+  }
 
   /**
    * editLiveFs
@@ -388,20 +389,30 @@ export default class Ovary {
     shx.cp(`${this.settings.work_dir.merged}/boot/grub/fonts/unicode.pf2`, `${this.settings.work_dir.merged}/boot/grub/fonts/UbuntuMono16.pf2`)
 
     /**
+     * cleaning /etc/resolv.conf
+     */
+    shx.rm(`${this.settings.work_dir.merged}/etc/resolv.conf`)
+
+    /**
      * Per tutte le distro systemd
      */
     if (Utils.isSystemd()) {
       Utils.warning('systemd')
-      
+
       const systemdctl = new Systemctl(this.verbose)
       /**
        * SU UBUNTU E DERIVATE NON DISABILITARE systemd-resolved.service
        */
-      if (this.settings.distro.distroLike !== 'Ubuntu') {
-        if (await systemdctl.isEnabled('systemd-systemd-resolved.service')) {
-          await systemdctl.disable('systemd-systemd-resolved.service', this.settings.work_dir.merged, true)
-        }
+      // if (this.settings.distro.distroLike !== 'Ubuntu') {
+      if (await systemdctl.isEnabled('systemd-systemd-resolved.service')) {
+        await systemdctl.disable('systemd-systemd-resolved.service', this.settings.work_dir.merged, true)
+        shx.exec(`ln -s ${this.settings.work_dir.merged}/usr/lib/systemd/resolv.conf ${this.settings.work_dir.merged}/etc/resolv.conf`)
+        // creare un 00-eggs.yaml con optional: true
+      } else {
+        // create a dummy resolv.conf
+        shx.touch(`${this.settings.work_dir.merged}/etc/resolv.conf`)        
       }
+      //}
 
       if (await systemdctl.isEnabled('systemd-networkd.service')) {
         await systemdctl.disable('systemd-networkd.service', this.settings.work_dir.merged, true)
@@ -445,17 +456,6 @@ export default class Ovary {
       }
     }
 
-    /**
-     * cleaning /etc/resolv.conf
-     * /etc/resolv.conf -> ../run/systemd/resolve/stub-resolv.conf
-     */
-     shx.rm(`${this.settings.work_dir.merged}/etc/resolv.conf`)
-     if (this.settings.distro.distroLike === 'jammy') {
-      // systemctl status systemd-resolvd
-      shx.exec(`ln -s /run/systemd/resolve/stub-resolv.conf /etc/resolv.conf`)
-     } else {
-      shx.touch(`${this.settings.work_dir.merged}/etc/resolv.conf`)
-     }
 
     /**
      * Clear configs from /etc/network/interfaces, wicd and NetworkManager
@@ -675,7 +675,7 @@ export default class Ovary {
     let isCrypted = false
 
     Utils.warning(`initrdCreate`)
-    
+
     if (fs.existsSync(`/etc/crypttab`)) {
       isCrypted = true
       await exec(`mv /etc/crypttab /etc/crypttab.saved`, this.echo)
@@ -683,7 +683,7 @@ export default class Ovary {
 
     await exec(`mkinitramfs -o ${this.settings.work_dir.pathIso}/live/initrd.img-$(uname -r) ${this.toNull}`, this.echo)
 
-    if (isCrypted){
+    if (isCrypted) {
       await exec(`mv /etc/crypttab.saved /etc/crypttab`, this.echo)
     }
 
@@ -1041,7 +1041,7 @@ export default class Ovary {
       cmds.push(await rexec(`chroot ${this.settings.work_dir.merged} usermod -aG sudo ${this.settings.config.user_opt}`, this.verbose))
 
       // educaandos
-      if ( this.settings.config.theme === 'educaandos') {
+      if (this.settings.config.theme === 'educaandos') {
         cmds.push(await rexec(`chroot ${this.settings.work_dir.merged} usermod -aG adm ${this.settings.config.user_opt}`, this.verbose))
         cmds.push(await rexec(`chroot ${this.settings.work_dir.merged} usermod -aG cdrom ${this.settings.config.user_opt}`, this.verbose))
         cmds.push(await rexec(`chroot ${this.settings.work_dir.merged} usermod -aG dip ${this.settings.config.user_opt}`, this.verbose))
