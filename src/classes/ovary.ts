@@ -450,7 +450,12 @@ export default class Ovary {
      * /etc/resolv.conf -> ../run/systemd/resolve/stub-resolv.conf
      */
      shx.rm(`${this.settings.work_dir.merged}/etc/resolv.conf`)
-     shx.touch(`${this.settings.work_dir.merged}/etc/resolv.conf`)
+     if (this.settings.distro.distroLike === 'jammy') {
+      // systemctl status systemd-resolvd
+      shx.exec(`ln -s /run/systemd/resolve/stub-resolv.conf /etc/resolv.conf`)
+     } else {
+      shx.touch(`${this.settings.work_dir.merged}/etc/resolv.conf`)
+     }
 
     /**
      * Clear configs from /etc/network/interfaces, wicd and NetworkManager
