@@ -38,6 +38,7 @@ import { access } from 'fs/promises'
 import { constants } from 'fs'
 import Users from './users'
 import { resolve } from 'path'
+import { sign } from 'crypto'
 
 /**
  * Ovary:
@@ -388,10 +389,12 @@ export default class Ovary {
      */
     shx.cp(`${this.settings.work_dir.merged}/boot/grub/fonts/unicode.pf2`, `${this.settings.work_dir.merged}/boot/grub/fonts/UbuntuMono16.pf2`)
 
+
     /**
-     * cleaning /etc/resolv.conf
-     */
+    * cleaning /etc/resolv.conf
+    */
     shx.rm(`${this.settings.work_dir.merged}/etc/resolv.conf`)
+    shx.touch(`${this.settings.work_dir.merged}/etc/resolv.conf`)
 
     /**
      * Per tutte le distro systemd
@@ -400,19 +403,55 @@ export default class Ovary {
       Utils.warning('systemd')
 
       const systemdctl = new Systemctl(this.verbose)
+
       /**
-       * SU UBUNTU E DERIVATE NON DISABILITARE systemd-resolved.service
+       * systemd-systemd-resolved
        */
-      // if (this.settings.distro.distroLike !== 'Ubuntu') {
-      if (await systemdctl.isEnabled('systemd-systemd-resolved.service')) {
-        await systemdctl.disable('systemd-systemd-resolved.service', this.settings.work_dir.merged, true)
-        shx.exec(`ln -s ${this.settings.work_dir.merged}/usr/lib/systemd/resolv.conf ${this.settings.work_dir.merged}/etc/resolv.conf`)
-        // creare un 00-eggs.yaml con optional: true
-      } else {
-        // create a dummy resolv.conf
-        shx.touch(`${this.settings.work_dir.merged}/etc/resolv.conf`)        
+      let resolvFile = `${this.settings.work_dir.merged}/etc/resolv.conf`
+      let resolvContent = ''
+      shx.rm(resolvFile)
+      if (await systemdctl.isActive('systemd-resolved.service')) {
+        await systemdctl.stop('systemd-resolved.service')
+        resolvContent = 'nameserver 127.0.0.53\noptions edns0 trust-ad\nsearch .\n'
       }
-      //}
+      fs.writeFileSync(resolvFile, resolvContent)
+
+      /**
+      # 00-eggs.yaml con optional: true
+      network:
+        version: 2
+        renderer: networkd
+        ethernets:
+          ens18:
+            dhcp4: true
+            optional: true
+
+      # this is the defailt in server iso
+      # /etc/netplan/50-cloud-init.yaml
+      network:
+        renderer: networkd
+        ethernets:
+          zz-all-en:
+            dhcp4: true
+            match: 
+              name: en*
+          zz-all-eth:
+            dhcp4: true
+            match: 
+              name: eth*
+        version: 2
+
+      # this is configuration in ubuntu desktop
+      # Let NetworkManager manage all devices on this system
+      network:
+        version: 2
+        renderer: NetworkManager
+
+    } else {
+      // create empty resolv.conf
+      shx.touch(`${this.settings.work_dir.merged}/etc/resolv.conf`)        
+    }
+      */
 
       if (await systemdctl.isEnabled('systemd-networkd.service')) {
         await systemdctl.disable('systemd-networkd.service', this.settings.work_dir.merged, true)
