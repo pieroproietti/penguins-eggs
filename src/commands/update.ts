@@ -5,7 +5,7 @@
  * license: MIT
  */
 import { Command, Flags } from '@oclif/core'
-import shx = require('shelljs')
+import shx from 'shelljs'
 import Utils from '../classes/utils'
 import Tools from '../classes/tools'
 import Pacman from '../classes/pacman'

@@ -49,10 +49,9 @@ import Finished from '../components/finished'
 
 import fs from 'fs'
 import yaml from 'js-yaml'
-import shx = require('shelljs')
+import shx from 'shelljs'
 import Utils from './utils'
 import cliAutologin = require('../lib/cli-autologin')
-
 import Pacman from './pacman';
 import { installer } from './incubation/installer'
 import Xdg from './xdg';

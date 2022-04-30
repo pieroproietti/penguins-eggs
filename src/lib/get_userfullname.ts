@@ -1,5 +1,5 @@
 'use strict'
-import inquirer = require('inquirer')
+import inquirer  from 'inquirer'
 
 export default async function getUserfullname(initial: string): Promise<string> {
   return new Promise(function (resolve) {

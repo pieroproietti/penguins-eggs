@@ -7,7 +7,7 @@
 import { Command, Flags } from '@oclif/core'
 import Utils from '../classes/utils'
 import Daddy from '../classes/daddy'
-import chalk = require('chalk')
+import chalk from 'chalk'
 
 import { exec } from '../lib/utils'
 

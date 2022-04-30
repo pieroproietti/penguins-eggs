@@ -1,6 +1,6 @@
 'use strict'
 'use strict'
-import inquirer = require('inquirer')
+import inquirer from 'inquirer'
 
 export default async function selectRegions(region = ''): Promise<string> {
   const africa = [

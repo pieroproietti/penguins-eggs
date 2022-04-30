@@ -1,5 +1,5 @@
 'use strict'
-import inquirer = require('inquirer')
+import inquirer from 'inquirer'
 
 export default async function geRootPassword(initial: string): Promise<string> {
   const requireLetterAndNumber = (value: string) => {

@@ -1,5 +1,5 @@
 'use strict'
-import inquirer = require('inquirer')
+import inquirer from 'inquirer'
 
 export default async function selectRegions(selected =''): Promise<string> {
   const questions: Array<Record<string, any>> = [
