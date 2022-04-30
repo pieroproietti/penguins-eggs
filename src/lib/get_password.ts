@@ -1,6 +1,6 @@
 'use strict'
 //import { option } from '@oclif/command/lib/flags'
-import inquirer = require('inquirer')
+import inquirer  from 'inquirer'
 
 export default async function getPassword(initial: string): Promise<string> {
   const requireLetterAndNumber = (value: string) => {

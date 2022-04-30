@@ -6,7 +6,7 @@
  */
 import { Command, Flags } from '@oclif/core'
 import Utils from '../../classes/utils'
-import fs = require('fs')
+import fs from 'fs'
 import Xdg from '../../classes/xdg'
 
 export default class Skel extends Command {

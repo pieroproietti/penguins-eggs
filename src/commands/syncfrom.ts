@@ -6,8 +6,8 @@
  */
 import { Command, Flags } from '@oclif/core'
 
-import fs = require('fs')
-import path = require('path')
+import fs from 'fs'
+import path  from 'path'
 import Utils from '../classes/utils'
 import { exec } from '../lib/utils'
 

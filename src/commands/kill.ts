@@ -6,7 +6,7 @@
  */
 import { Command, Flags } from '@oclif/core'
 
-import fs = require('fs')
+import fs from 'fs'
 import Utils from '../classes/utils'
 import Settings from '../classes/settings'
 import { IWorkDir } from '../interfaces/i-workdir'

@@ -1,5 +1,5 @@
 'use strict'
-import inquirer = require('inquirer')
+import inquirer from 'inquirer'
 import shx from 'shelljs'
 
 export default async function selectInstallationDevice(): Promise<string> {

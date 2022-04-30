@@ -1,7 +1,7 @@
 import { Command, Flags } from '@oclif/core'
 
-import shx = require('shelljs')
-import path = require('path')
+import shx from 'shelljs'
+import path  from 'path'
 
 import Utils from '../../classes/utils'
 import I18n from '../../classes/i18n'

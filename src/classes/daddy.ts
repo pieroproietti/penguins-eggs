@@ -9,10 +9,10 @@ import Pacman from '../classes/pacman'
 import Settings from '../classes/settings'
 import Ovary from '../classes/ovary'
 import Compressors from '../classes/compressors'
-import inquirer = require('inquirer')
+import inquirer from 'inquirer'
 import { IConfig } from '../interfaces'
 import yaml from 'js-yaml'
-import fs = require('fs')
+import fs from 'fs'
 
 import { IMyAddons } from '../interfaces'
 import chalk from 'chalk'
