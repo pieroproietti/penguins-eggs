@@ -32,26 +32,12 @@ export default class SourcesList {
       * Linuxmint non ha nessuna configurazione in /etc/apt/sources.list
       */
       let checked = true
-      const repos = await this.get()
-      if (repos.length !== 0) {
-         checked = false
-         const distro = new Distro()
+      checked = false
+      const distro = new Distro()
 
-         for (const distribution of distributions) {
-            for (const repo of repos) {
-               if (repo.includes(distro.codenameLikeId)) {
-                  checked = true
-               }
-            }
-         }
-         if (!checked) {
-            console.log('You are on: ' + chalk.green(distro.distroId) + '/' + chalk.green(distro.codenameId))
-            console.log('compatible with: ' + chalk.green(distro.distroLike) + '/' + chalk.green(distro.codenameLikeId))
-            console.log(`This costume/accessory apply to: `)
-            for (const distribution of distributions) {
-               console.log(`- ${distribution}`)
-            }
-            Utils.pressKeyToExit('distribution warning, check your /etc/apt/sources.list', true)
+      for (const distribution of distributions) {
+         if (distribution.includes(distro.codenameLikeId)) {
+            checked = true
          }
       }
       return checked
@@ -95,8 +81,13 @@ export default class SourcesList {
     * 
     */
    private async get(): Promise<string[]> {
+      let universalSourcesList = '/etc/apt/sources.list'
+      const distro = new Distro()
+      if (distro.distroId === 'Linuxmint') {
+         universalSourcesList = '/etc/apt/sources.list.d/official-package-repositories.list'
+      }
       // deb uri distribution [component1] [component2] [...]
-      let checkRepos = await exec(`grep "deb http"</etc/apt/sources.list`, { echo: false, capture: true })
+      let checkRepos = await exec(`grep "deb http"<${universalSourcesList}`, { echo: false, capture: true })
       let tmp: string[] = []
       if (checkRepos.code === 0) {
          tmp = checkRepos.data.split('\n')

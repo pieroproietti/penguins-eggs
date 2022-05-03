@@ -73,18 +73,19 @@ export default class Tailor {
 
                 /**
                 * sequence/repositories/source_list
-                *      solo per Debian/Devuan
                 */
                 const distro = new Distro()
-                if (distro.distroId === 'Debian' || distro.distroId === 'Devuan') {
-                    if (this.materials.sequence.repositories.sources_list !== undefined) {
+                if (this.materials.distributions !== undefined) {
 
-                        let step = 'analyzing /etc/apt/sources.list'
-                        Utils.warning(step)
+                    let step = 'analyzing /etc/apt/sources.list for distribution'
+                    Utils.warning(step)
 
-                        const sources_list = new SourcesList()
-                        sources_list.distribution(this.materials.sequence.repositories.sources_list)
-                        sources_list.components(this.materials.sequence.repositories.sources_list)
+                    const sources_list = new SourcesList()
+                    if (! await sources_list.distribution(this.materials.distributions)) {
+                        Utils.pressKeyToExit(`costume ${this, this.materials.name}, is not compatible with your ${distro.distroId}/${distro.codenameId}`, false)
+                    }
+                    if (distro.distroId === 'Debian' || distro.distroId === 'Devuan') {
+                        await sources_list.components(this.materials.sequence.repositories.sources_list)
                     }
                 }
 
@@ -109,7 +110,9 @@ export default class Tailor {
                             } catch (error) {
                                 await Utils.pressKeyToExit(JSON.stringify(error))
                             }
+
                         }
+
                     }
                 }
 
@@ -117,7 +120,7 @@ export default class Tailor {
                  * sequence/repositories/update
                  */
                 if (this.materials.sequence.repositories.update === undefined) {
-                    console.log('repositiories, and repositories.update MUDE be defined on sequence ')
+                    console.log('repositiories, and repositories.update MUST be defined on sequence ')
                     process.exit()
                 }
                 let step = `updating repositories`
@@ -429,5 +432,4 @@ async function tryCheckSuccess(cmd: string, echo: {}): Promise<boolean> {
     }
     return success
 }
-
 
