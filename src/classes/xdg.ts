@@ -138,33 +138,26 @@ export default class Xdg {
       }
 
       /**
-       * GDM
+       * GDM/GDM3
        */
       let gdmConf = `${chroot}/etc/gdm3`
       if (Pacman.packageIsInstalled('gdm3')) {
-        gdmConf = `/etc/gdm3`
+        gdmConf = `${chroot}/etc/gdm3`
       } else if (Pacman.packageIsInstalled('gdm')) {
-        gdmConf = `/etc/gdm`
+        gdmConf = `${chroot}/etc/gdm`
       }
 
 
       if (fs.existsSync(`${chroot}/etc/gdm3/custom.conf`)) {
-        gdmConf = `${chroot}/etc/gdm3/custom.conf`
+        gdmConf += '/custom.conf'
       } else if (fs.existsSync(`${chroot}/etc/gdm3/daemon.conf`)) {
-        gdmConf = `${chroot}/etc/gdm3/daemon.conf`
+        gdmConf += '/daemon.conf'
       } else {
-        gdmConf = `${chroot}/etc/gdm3/test.conf`
+        gdmConf = `${chroot}/etc/gdm3/custom.conf`
       }
 
-      console.log('gdmConf: ' + gdmConf)
-      
       const content = `[daemon]\nAutomaticLoginEnable=true\nAutomaticLogin=${newuser}\n`
       Utils.write(gdmConf, content)
-
-      // fs.writeFileSync(, content, 'utf-8')
-
-
-      // await exec(`echo "[daemon]\nAutomaticLoginEnable=true\nAutomaticLogin=${newuser} >> ${gdmConf}"`)
       // shx.sed('-i', 'AutomaticLoginEnable=False', 'AutomaticLoginEnable=True', gdmConf)
       // shx.sed('-i', `AutomaticLogin=${olduser}`, `AutomaticLogin=${newuser}`, gdmConf)
     }
