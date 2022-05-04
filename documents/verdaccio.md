@@ -19,3 +19,7 @@ sudo docker run -d --restart unless-stopped --name versaccio -p 4873:4873 verdac
 
 npm adduser --registry http://192.168.61.2:4873/
 npm set registry http://192.168.61.2:4873/
+
+
+docker container list
+
