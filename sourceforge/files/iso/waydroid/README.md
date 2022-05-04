@@ -31,7 +31,8 @@ All ISOs include eggs, you can udate it with: ```sudo eggs update```.
 
 * **egg-of-debian-bookworm-warbler** - (kde) created from a cli debian using costume warbler from [penguins-wardrobe](https://github.com/pieroproietti/penguins-wardrobe)
 
-* **egg-of-ubuntu-jammy-wagtail** - (gnome) created from a minimal Ubuntu installation using costume wagtail from [penguins-wardrobe](https://github.com/pieroproietti/penguins-wardrobe)
+* **egg-of-ubuntu-jammy-wagtail** - (gnome) created from a minimal Ubuntu 22.04  installation using costume wagtail **3.2 GB**
+* **egg-of-ubuntu-jammy-wagtail** - (gnome) created from a Ubuntu server 22.04 installation using costume wagtail **2.2 GB**
 
 
 **NOTE** Here you will find my waydroid remaster made to test the latest versions of eggs, you can find more updated waydroid versions on their site [Waydroid](https://waydro.id/#wdlinux). Please use always ```--theme waydroid```
