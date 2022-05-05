@@ -289,7 +289,7 @@ export default class Tailor {
                     const desktop = `/home/${user}/${Xdg.traduce("DESKTOP")}`
                     for (const script of this.materials.customize.scripts) {
                         if (fs.existsSync(`${this.costume}/${script}`)) {
-                            // exec script in costume
+                            // exec script in costume passing user and path-to-Desktop
                             await exec(`${this.costume}/${script} ${user} ${desktop}`, Utils.setEcho(true))
                         } else {
                             // exec script real env
