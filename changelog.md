@@ -18,6 +18,11 @@ You can follow the project also consulting the [commit history](https://github.c
 ## Changelog
 Versions are listed on reverse order, the first is the last one. Old versions are moved to [oldest](https://sourceforge.net/projects/penguins-eggs/files/packages-deb/oldest/). 
 
+### eggs-9.1.14-1
+I made some modifications in the way to build eggs, trying to reduce the times of compiling it:
+* using [verdaccio](https://verdaccio.org/) private proxy registry;
+* replacing npm with [pnpm](https://pnpm.io/) as package manager.
+
 ### eggs-9.1.13-1
 * gdm3 autologin in live for Debian/Devuan fix
 
