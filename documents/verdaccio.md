@@ -16,6 +16,12 @@ sudo docker container list
 sudo docker container logs 9f3ff0b8002b
 ```
 
+# connet to the container
+
+```
+sudo docker exec -u 0 -it 9f3ff0b8002b /bin/sh
+```
+
 # Settare npm per usare il registri privato
 
 Normalmente npm scarica i pacchetti da https://www.npmjs.com/,
