@@ -288,12 +288,11 @@ export default class Tailor {
                 if (Array.isArray(this.materials.customize.scripts)) {
                     let step = `customize script`
                     Utils.warning(step)
-                    const user = process.env.SUDO_USER
-                    const desktop = `/home/${user}/${Xdg.traduce("DESKTOP")}`
+
                     for (const script of this.materials.customize.scripts) {
                         if (fs.existsSync(`${this.costume}/${script}`)) {
-                            // exec script in costume passing user and path-to-Desktop
-                            await exec(`${this.costume}/${script} ${user} ${desktop}`, Utils.setEcho(true))
+                            // exec script in costume passing costume-name
+                            await exec(`${this.costume}/${script} ${this.materials.name}`, Utils.setEcho(true))
                         } else {
                             // exec script real env
                             await exec(`${script}`, Utils.setEcho(true))
