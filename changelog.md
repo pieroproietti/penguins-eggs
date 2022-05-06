@@ -18,6 +18,10 @@ You can follow the project also consulting the [commit history](https://github.c
 ## Changelog
 Versions are listed on reverse order, the first is the last one. Old versions are moved to [oldest](https://sourceforge.net/projects/penguins-eggs/files/packages-deb/oldest/). 
 
+
+### eggs-9.1.15-1
+* wardrobe: the configuration scripts of the various: gdm3, lightdm, sddm are now common to all costumes.
+
 ### eggs-9.1.14-1
 I made some modifications in the way to build eggs, trying to reduce the times of compiling it:
 * using [verdaccio](https://verdaccio.org/) private proxy registry;
