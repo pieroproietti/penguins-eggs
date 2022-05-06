@@ -85,7 +85,10 @@ export default class Tailor {
                         Utils.pressKeyToExit(`costume ${this, this.materials.name}, is not compatible with your ${distro.distroId}/${distro.codenameId}`, false)
                     }
                     if (distro.distroId === 'Debian' || distro.distroId === 'Devuan') {
-                        await sources_list.components(this.materials.sequence.repositories.sources_list)
+                        // evito di fallire se sources_list non serve, tipo base, etc
+                        if (this.materials.sequence.repositories.sources_list !== undefined) {
+                            await sources_list.components(this.materials.sequence.repositories.sources_list)
+                        }
                     }
                 }
 
