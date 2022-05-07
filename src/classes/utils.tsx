@@ -167,8 +167,11 @@ export default class Utils {
     * Return the primary user's name
     */
    static getPrimaryUser(): string {
-      // let primaryUser = shx.exec(`echo $(awk -F":" '/1000:1000/ { print $1 }' /etc/passwd)`, { silent: true }).stdout.trim()
-      const primaryUser = shx.exec('echo $SUDO_USER', { silent: true }).stdout.trim()
+      // const primaryUser = shx.exec('echo $SUDO_USER', { silent: true }).stdout.trim()
+      let primaryUser = ''
+      if (process.env.SUDO_USER !== undefined) {
+         primaryUser = process.env.SUDO_USER
+      }
       if (primaryUser === '') {
          console.log('Cannot find your user name. Log as normal user and run: $sudo eggs [COMMAND]')
          process.exit(1)
@@ -862,10 +865,12 @@ unknown target format aarch64-efi
     static async wardrobe(): Promise<string> {
       let wardrobe = `${os.homedir()}/.wardrobe`
       if (Utils.isRoot()) {
-         let result = await exec(`echo $(logname)`, { echo: false, capture: true })
-         if (result.code === 0) {
-            wardrobe = `/home/${result.data.trim()}/.wardrobe`
-         }
+         wardrobe = `/home/${Utils.getPrimaryUser()}/.wardrobe`
+         // let result = await exec(`echo $(logname)`, { echo: false, capture: true })
+         // let result = await exec(`echo $(SUDO_USER)`, { echo: false, capture: true })
+         //if (result.code === 0) {
+         //   wardrobe = `/home/${result.data.trim()}/.wardrobe`
+         //}
       }
       return wardrobe
    }

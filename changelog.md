@@ -19,6 +19,9 @@ You can follow the project also consulting the [commit history](https://github.c
 Versions are listed on reverse order, the first is the last one. Old versions are moved to [oldest](https://sourceforge.net/projects/penguins-eggs/files/packages-deb/oldest/). 
 
 
+### eggs-9.1.16-1
+* wardrobe: changed the way to get SUDO_USER this fix a bug finding ~/.wardrobe in Ubuntu
+
 ### eggs-9.1.15-1
 * wardrobe: the configuration scripts of the various: gdm3, lightdm, sddm are now common to all costumes.
 
