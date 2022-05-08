@@ -19,9 +19,11 @@ You can follow the project also consulting the [commit history](https://github.c
 Versions are listed on reverse order, the first is the last one. Old versions are moved to [oldest](https://sourceforge.net/projects/penguins-eggs/files/packages-deb/oldest/). 
 
 
+### eggs-9.1.17-1
+* wardrobe: wardrobe now install debs depending on the distro, this made possible to have an unique costume/accessory for more distros. Example: we have now just an accessory for waydroid not three differents versions (bullseye, bookworm, jammy). 
+
 ### eggs-9.1.16-1
 * wardrobe: changed the way to get SUDO_USER this fix a bug finding ~/.wardrobe in Ubuntu
-* dmidecode -s bios-version
 
 ### eggs-9.1.15-1
 * wardrobe: the configuration scripts of the various: gdm3, lightdm, sddm are now common to all costumes.

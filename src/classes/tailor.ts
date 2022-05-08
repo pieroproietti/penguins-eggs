@@ -60,6 +60,8 @@ export default class Tailor {
         }
 
 
+        const distro = new Distro()
+
         /**
          * sequence
          */
@@ -74,7 +76,6 @@ export default class Tailor {
                 /**
                 * sequence/repositories/source_list
                 */
-                const distro = new Distro()
                 if (this.materials.distributions !== undefined) {
 
                     let step = 'analyzing /etc/apt/sources.list for distribution'
@@ -194,8 +195,15 @@ export default class Tailor {
                 if (this.materials.sequence.debs) {
                     let step = `installing local packages`
                     Utils.warning(step)
-                    let cmd = `dpkg -i ${this.costume}/debs/*.deb`
-                    await exec(cmd)
+                    let pathDebs = `${this.costume}/debs/${distro.codenameLikeId}`
+                    if (!fs.existsSync(pathDebs)) {
+                        pathDebs = `${this.costume}/debs`
+                    }
+                    
+                    // if exists pathDebs
+                    if (fs.existsSync(pathDebs)) {
+                        await exec(`dpkg -i ${pathDebs}/*.deb`)
+                    }
                 }
             }
 
