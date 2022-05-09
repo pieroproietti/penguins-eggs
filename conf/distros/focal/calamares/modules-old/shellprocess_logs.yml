@@ -1,7 +1,0 @@
-# Ubuntu Focal
-# shellprocess_logs
----
-dontChroot: true
-timeout: 30
-script:
-  - calamares-logs-helper @@ROOT@@

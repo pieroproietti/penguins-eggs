@@ -1,7 +1,6 @@
-# Ubuntu Focal
-# settings
+# Ubuntu 22.04 jammy
 ---
-modules-search: [local]
+modules-search: [ local ]
 
 instances:
   - id: before_bootloader_mkdirs
@@ -54,7 +53,7 @@ sequence:
       - contextualprocess@before_bootloader
       - bootloader
       - contextualprocess@after_bootloader
-      #  - automirror
+      - automirror # reintroduced automirror
       - shellprocess@add386arch
       - packages
       - removeuser

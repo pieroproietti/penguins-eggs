@@ -1,7 +1,0 @@
-# Ubuntu Focal
-# shellprocess_bug-LP#1829805
----
-dontChroot: false
-timeout: 30
-script:
-  - "touch @@ROOT@@/boot/initrd.img-$(uname -r)"
