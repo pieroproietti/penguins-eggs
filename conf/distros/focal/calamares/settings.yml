@@ -53,7 +53,7 @@ sequence:
       - contextualprocess@before_bootloader
       - bootloader
       - contextualprocess@after_bootloader
-      - automirror # reintroduced automirror
+      # automirror
       - shellprocess@add386arch
       - packages
       - removeuser
