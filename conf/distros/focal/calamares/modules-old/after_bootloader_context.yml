@@ -1,4 +1,5 @@
-# Ubuntu jammy 22.04
+# Ubuntu Focal
+# after_bootloader_context
 # Workaround from ubiquity. Ubuntu's grub will want to look in EFI/ubuntu, so
 # let's make sure it can find something there.
 # This only copies the cfg and doesn't overwrite, this is specifically so
@@ -7,4 +8,4 @@
 dontChroot: false
 timeout: 120
 firmwareType:
-    "*": "-for i in `ls @@ROOT@@/home/`; do rm @@ROOT@@/home/$i/Desktop/lubuntu-calamares.desktop || exit 0; done"
+  "*": "-for i in `ls @@ROOT@@/home/`; do rm @@ROOT@@/home/$i/Desktop/lubuntu-calamares.desktop || exit 0; done"

@@ -1,10 +1,9 @@
-# Ubuntu Focal
-# locale
+# Ubuntu jammy 22.04
 ---
-region: "Europe"
-zone: "Rome"
+region: "America"
+zone: "New_York"
 localeGenPath: "/etc/locale.gen"
 geoip:
-  style: "json"
-  url: "https://ipapi.co/json"
-  selector: "timezone"
+    style: "xml"
+    url:   "https://geoip.ubuntu.com/lookup"
+    selector: "TimeZone"

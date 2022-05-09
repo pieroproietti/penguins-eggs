@@ -1,4 +1,5 @@
-# Ubuntu jammy 22.04
+# Ubuntu Focal
+# users
 ---
 doAutologin: false
 setRootPassword: false
@@ -9,9 +10,7 @@ defaultGroups:
     - dip
     - lpadmin
     - plugdev
-    - name: sambashare
-      must_exist: false
-      system: true
+    - sambashare
     - sudo
 passwordRequirements:
     minLength: 0

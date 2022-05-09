@@ -1,10 +1,8 @@
-# Ubuntu jammy 22.04
+# Ubuntu Focal
+# partition
 ---
 efiSystemPartition: "/boot/efi"
 enableLuksAutomatedPartitioning: true
-userSwapChoices:
-    - none
-    - file
-initialSwapChoice: file
+userSwapChoices: none
 drawNestedPartitions: true
 defaultFileSystemType: "ext4"
