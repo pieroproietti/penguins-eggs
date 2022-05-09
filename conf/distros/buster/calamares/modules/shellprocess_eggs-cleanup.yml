@@ -1,3 +1,4 @@
+# Ubuntu jammy 22.04
 ---
 dontChroot: false
 timeout: 30

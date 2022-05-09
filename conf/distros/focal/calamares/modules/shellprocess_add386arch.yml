@@ -1,7 +1,6 @@
-# Ubuntu Focal
-# shellprocess_add386arch
+# Ubuntu jammy 22.04
 ---
 dontChroot: false
 timeout: 30
 script:
-  - command: "/usr/bin/dpkg --add-architecture i386"
+    - command: "/usr/bin/dpkg --add-architecture i386"

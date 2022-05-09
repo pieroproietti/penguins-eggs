@@ -1,7 +1,6 @@
-# Ubuntu Focal
-# unpackfs
+# Ubuntu jammy 22.04
 ---
 unpack:
-    -   source: {{source}}
+    -   source: "/cdrom/casper/filesystem.squashfs"
         sourcefs: "squashfs"
         destination: ""
