@@ -23,6 +23,8 @@ export interface IMateria {
     dependencies: string[]
     packages: string[]
     packages_no_install_recommends: string[]
+    try_packages: string[]
+    try_packages_no_install_recommends: string[]
     debs: boolean
     packages_python: string[]
     accessories: string[]
