@@ -1,0 +1,6 @@
+---
+type:       "job"
+name:       "disable-dpkg-sync"
+interface:  "process"
+command:    "/usr/sbin/dpkg-unsafe-io.sh"
+timeout:    600

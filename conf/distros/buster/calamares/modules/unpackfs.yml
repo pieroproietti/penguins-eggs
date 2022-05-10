@@ -1,5 +1,4 @@
-# Debian Buster
-# unpackfs
+# Debian/bookworm
 ---
 unpack:
     -   source: {{source}}

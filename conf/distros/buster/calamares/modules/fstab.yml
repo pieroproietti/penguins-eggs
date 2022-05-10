@@ -1,5 +1,4 @@
-# Debian Buster
-# fstab
+# Debian/Bookworm
 ---
 mountOptions:
   default: defaults,noatime
