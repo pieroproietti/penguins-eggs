@@ -15,7 +15,6 @@ import yaml from 'js-yaml'
 import Pacman from './pacman'
 import Distro from './distro'
 import SourcesList from './sources_list'
-import Xdg from './xdg'
 
 const pjson = require('../../package.json')
 
@@ -189,6 +188,24 @@ export default class Tailor {
 
 
             /**
+             * apt-get TRY install packages
+             */
+            if (this.materials.sequence.try_packages !== undefined) {
+                await this.try_helper(this.materials.sequence.try_packages)
+            }
+
+            /**
+            * apt-get TRY packages_no_install_recommends
+            */
+            if (this.materials.sequence.try_packages_no_install_recommends !== undefined) {
+                await this.try_helper(
+                    this.materials.sequence.try_packages_no_install_recommends, 
+                    "packages without recommends and suggests",
+                    'apt-get install --no-install-recommends --no-install-suggests -yq '
+                )
+            }
+
+            /**
              * sequence/debs
              */
             if (this.materials.sequence.debs !== undefined) {
@@ -199,7 +216,7 @@ export default class Tailor {
                     if (!fs.existsSync(pathDebs)) {
                         pathDebs = `${this.costume}/debs`
                     }
-                    
+
                     // if exists pathDebs
                     if (fs.existsSync(pathDebs)) {
                         await exec(`dpkg -i ${pathDebs}/*.deb`)
@@ -421,6 +438,45 @@ export default class Tailor {
             chalk.bgWhite.blue(" Perri's Brewery edition ") +
             chalk.bgRed.whiteBright('       ver. ' + pjson.version + '       '))
         console.log('wearing: ' + chalk.bgBlack.cyan(this.costume) + ' ' + chalk.bgBlack.white(command) + '\n')
+    }
+
+
+    /**
+ * - check if every package if installed
+ * - if find any packages to install, install it
+ */
+    async try_helper(packages: string[], comment = 'packages', cmd = 'apt-get install -yqq ') {
+
+        comment += 'trying install '
+        if (packages[0] !== null) {
+            let elements: string[] = []
+            for (const elem of packages) {
+                if (!Pacman.packageIsInstalled(elem)) {
+                    elements.push(elem)
+                }
+            }
+
+            if (elements.length > 0) {
+                for (const elem of elements) {
+                    let step = `installing ${comment}: `
+                    if (!this.verbose) {
+                        step += elem
+                    }
+
+                    /**
+                     * prova 3 volte
+                     */
+                    let limit = 3
+                    for (let tempts = 1; tempts < limit; tempts++) {
+                        this.titles(step)
+                        Utils.warning(`tempts ${tempts} of ${limit}`)
+                        if (await tryCheckSuccess(cmd + elem, this.echo)) {
+                            break
+                        }
+                    }
+                }
+            }
+        }
     }
 
 }

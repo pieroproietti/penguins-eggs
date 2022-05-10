@@ -1,8 +1,6 @@
 # Debian/bookworm
-# QString::arg: Argument missing: Esegui il comando '1%'., /usr/sbin/bootloader-config.sh
 ---
 # "local" is LIBDIR/calamares/modules with settings in SHARE/calamares/modules
-modules-search: [local, /usr/lib/calamares/modules]
 modules-search: [ local, /usr/lib/calamares/modules ]
 
 # If this is set to true, Calamares refers to itself as a "setup program"
