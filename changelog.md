@@ -18,9 +18,12 @@ You can follow the project also consulting the [commit history](https://github.c
 ## Changelog
 Versions are listed on reverse order, the first is the last one. Old versions are moved to [oldest](https://sourceforge.net/projects/penguins-eggs/files/packages-deb/oldest/). 
 
+### eggs-9.1.18-1
+wardrobe: instroduced new sections: try_packages and try_packages_no_install_recommends on costumes;
+calamares: align calamares configurations files to [calamares_settings_debian](https://salsa.debian.org/live-team/calamares-settings-debian).
 
 ### eggs-9.1.17-1
-calamares: align calamares configurations files to Ubuntu 22.04 jammy, this solve the netwark issue [122](https://github.com/pieroproietti/penguins-eggs/issues/122)
+calamares: align calamares configurations files to Ubuntu 22.04 jammy [calamares_settings_lubuntu](https://github.com/lubuntu-team/calamares-settings-ubuntu), this solve the netwark issue [122](https://github.com/pieroproietti/penguins-eggs/issues/122)
 
 ### eggs-9.1.16-1
 * wardrobe: changed the way to get SUDO_USER this fix a bug finding ~/.wardrobe in Ubuntu
