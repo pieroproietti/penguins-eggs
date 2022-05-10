@@ -1,5 +1,6 @@
-# Debian Buster
-# displaymanager
+# Debian/bookworm
+# Configure one or more display managers (e.g. SDDM)
+# with a "best effort" approach.
 ---
 #The DM module attempts to set up all the DMs found in this list, in that precise order.
 #It also sets up autologin, if the feature is enabled in globalstorage.

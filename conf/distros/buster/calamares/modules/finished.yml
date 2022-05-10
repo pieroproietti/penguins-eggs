@@ -1,6 +1,6 @@
-# Debian Buster
-# finished
+# Debian/Bookworm
 ---
 restartNowEnabled: true
 restartNowChecked: true
-restartNowCommand: {{restartNowCommand}}
+# restartNowCommand: {{restartNowCommand}}
+restartNowCommand: "systemctl -i reboot"
