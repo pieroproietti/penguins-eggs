@@ -1,5 +1,4 @@
-# Debian Buster
-# users
+# Debian/bookworm
 ---
 userGroup: users
 defaultGroups:
@@ -16,5 +15,5 @@ defaultGroups:
   - bluetooth
 autologinGroup: autologin
 sudoersGroup: sudo
-setRootPassword: true
-doReusePassword: false
+setRootPassword: false
+# doReusePassword: false
