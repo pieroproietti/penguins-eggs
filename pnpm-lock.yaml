@@ -34,7 +34,7 @@ specifiers:
   mustache: ^4.2.0
   nyc: ^15.1.0
   oclif: github:pieroproietti/oclif
-  perrisbrewery: 0.5.3
+  perrisbrewery: 0.5.4
   react: ^17.0.2
   shelljs: 0.8.5
   tempfile: ^4.0.0
@@ -83,7 +83,7 @@ devDependencies:
   globby: 11.1.0
   mocha: 10.0.0
   nyc: 15.1.0
-  perrisbrewery: 0.5.3
+  perrisbrewery: 0.5.4
   ts-node: 10.7.0_7vfv75elicf7ijnl73ckmqo2cm
   typedoc: 0.22.15_typescript@4.6.4
   typescript: 4.6.4
@@ -4521,12 +4521,10 @@ packages:
     resolution: {integrity: sha512-Dp6zGqpTdETdR63lehJYPeIOqpiNBNtc7BpWSLrOje7UaIsE5aY92r/AunQA7rsXvet3lrJ3JnZX29UPTKXyKQ==}
     dev: true
 
-  /perrisbrewery/0.5.3:
-    resolution: {integrity: sha512-fQ5Ebsno2APA1/8UDK8nkvGbuBtk2lV52nvtrRKjHgHan8+2fKYAa5Hf/+PT7JlkkCfaQbBUNysvIEf2dtQZAA==}
+  /perrisbrewery/0.5.4:
+    resolution: {integrity: sha512-/M+f/aZ8uCDxTo3lP5PT5KMgRdxrQRl53VgG+k3PjbLWLm2xXbjX4piqcLnd+xcUq2U9nwUS8p1yMcllopM0Bg==}
     engines: {node: '>=14.0.0'}
     hasBin: true
-    peerDependencies:
-      '@typescript-eslint/parser': 5.0.0
     dependencies:
       '@oclif/core': 1.7.0
       '@oclif/plugin-autocomplete': 1.2.0
