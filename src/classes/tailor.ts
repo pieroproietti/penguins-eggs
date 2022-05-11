@@ -376,6 +376,7 @@ export default class Tailor {
                     strElements += `, ${elem}`
                 }
             }
+
             if (elements.length > 0) {
                 let step = `installing ${comment}: `
                 // if not verbose show strElements
@@ -496,11 +497,13 @@ async function packagesExists(packages: string[], verbose = false, section = '')
     fs.writeFileSync(packages_we_want, content, 'utf-8')
     if (verbose) {
         await exec(`apt-cache --no-generate pkgnames | sort | comm -13 - ${packages_we_want} > ${packages_not_exists}`)
-        const not_found_packages = fs.readFileSync(packages_not_exists, 'utf-8').split('\n')
-        if (not_found_packages.length > 0) {
+        const not_exist_packages = fs.readFileSync(packages_not_exists, 'utf-8').split('\n')
+        if (not_exist_packages.length > 0) {
             console.log(`Following packages from ${section} was not found:`)
-            for (const elem of not_found_packages) {
-                console.log(`-${elem}\n`)
+            for (const elem of not_exist_packages) {
+                if (elem !=='\n') {
+                    console.log(`-${elem}\n`)
+                }
             }
             Utils.pressKeyToExit('press a key to continue...', true)
         }
