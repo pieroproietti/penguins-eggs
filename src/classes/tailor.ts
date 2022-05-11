@@ -5,6 +5,7 @@
  *
  */
 
+// const tempfile=require('tempfile')
 import chalk from 'chalk'
 import Utils from './utils'
 import { IMateria, IConfig } from '../interfaces'
@@ -164,6 +165,7 @@ export default class Tailor {
              * apt-get install dependencies
              */
             if (this.materials.sequence.dependencies !== undefined) {
+                //await packagesExists(this.materials.sequence.dependencies)
                 await this.helper(this.materials.sequence.dependencies, "dependencies")
             }
 
@@ -199,7 +201,7 @@ export default class Tailor {
             */
             if (this.materials.sequence.try_packages_no_install_recommends !== undefined) {
                 await this.try_helper(
-                    this.materials.sequence.try_packages_no_install_recommends, 
+                    this.materials.sequence.try_packages_no_install_recommends,
                     "packages without recommends and suggests",
                     'apt-get install --no-install-recommends --no-install-suggests -yq '
                 )
@@ -497,5 +499,28 @@ async function tryCheckSuccess(cmd: string, echo: {}): Promise<boolean> {
         success = false
     }
     return success
+}
+
+/**
+ * 
+ * @param packages 
+ */
+async function packagesExists(packages: string[]) {
+
+        const packages_we_want = '/tpm/package_we_want' // tempfile()
+        let content = ''
+        packages.sort()
+        for (const elem of packages) {
+            content += elem + '\n'
+        }
+        fs.writeFileSync(packages_we_want, content, 'utf-8')
+
+        const packages_not_exists = '/tpm/package_npt_exists' // tempfile()
+        await exec(`apt-cache --no-generate pkgnames | sort | comm -13 - ${packages_we_want} > ${packages_not_exists}`)
+
+        const packages_exists = '/tpm/package_exists' // tempfile()
+        await exec(`apt-cache --no-generate pkgnames | sort | comm -12 - ${packages_we_want} > ${packages_exists}`)
+        console.log(packages_exists)
+        process.exit()
 }
 
