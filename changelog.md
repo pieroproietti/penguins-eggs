@@ -18,6 +18,9 @@ You can follow the project also consulting the [commit history](https://github.c
 ## Changelog
 Versions are listed on reverse order, the first is the last one. Old versions are moved to [oldest](https://sourceforge.net/projects/penguins-eggs/files/packages-deb/oldest/). 
 
+### eggs-9.1.19-1
+* wardrobe: all the package now are filtered if they exists in apt or not. If a package is in section packages or packages_not_install_recommend eggs will emit a warming, if the package was listed in try_packages or try_packages_not_install_recommend will just continue.
+
 ### eggs-9.1.18-1
 * wardrobe: instroduced new sections: try_packages and try_packages_no_install_recommends on costumes;
 * calamares: align calamares configurations files to [calamares_settings_debian](https://salsa.debian.org/live-team/calamares-settings-debian).
