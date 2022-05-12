@@ -60,6 +60,21 @@ export default class Tailor {
         let tailorList = `${this.costume}/index.yml`
         if (fs.existsSync(tailorList)) {
             this.materials = yaml.load(fs.readFileSync(tailorList, 'utf-8')) as IMateria
+        } else {
+            if (this.category === 'costume') {
+                this.titles(`${this.category}: ${this.costume}`)
+                console.log('Tailor\'s list ' + chalk.cyan(tailorList) + ' is not found \non your wardrobe ' + chalk.cyan(this.wardrobe)+ '.\n')
+                console.log('Costume will not be installed, operations will abort.\n')
+                Utils.pressKeyToExit()
+                process.exit()
+            } else if (this.category === 'accessory') {
+                this.titles(`${this.category}: ${this.costume}`)
+                console.log('Tailor\'s list ' + chalk.cyan(tailorList) + ' is not found \non your wardrobe ' + chalk.cyan(this.wardrobe)+ '.\n')
+                console.log('Accessory will not be installed, operations will continue.\n')
+                Utils.pressKeyToExit()
+                return
+            }
+
         }
 
 
@@ -87,12 +102,13 @@ export default class Tailor {
                     const sources_list = new SourcesList()
                     if (! await sources_list.distribution(this.materials.distributions)) {
                         if (this.category === 'costume') {
+                            this.titles('step')
                             console.log('Costume ' + chalk.cyan(this.materials.name) + ' is not compatible \nwith your ' + chalk.cyan(distro.distroId + '/' + distro.codenameId) + ' system.\n')
                             console.log('Costume will not be installed, operations will abort.\n')
                             Utils.pressKeyToExit()
                             process.exit()
                         } else if (this.category === 'accessory') {
-                            this.titles('tailor')
+                            this.titles('step')
                             console.log('Accessory ' + chalk.cyan(this.materials.name) + ' is not compatible \nwith your ' + chalk.cyan(distro.distroId + '/' + distro.codenameId) + ' system.\n')
                             console.log('Accessory will not be installed, operations will continue.\n')
                             Utils.pressKeyToExit()
