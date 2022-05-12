@@ -165,9 +165,9 @@ export default class Tailor {
              * apt-get install dependencies
              */
             if (this.materials.sequence.dependencies !== undefined) {
-                const filterExists = await packagesExists(this.materials.sequence.dependencies)
-                if (filterExists.length > 0) {
-                    await this.helper(this.materials.sequence.dependencies, "dependencies")
+                const dependencies = await this.helperExists(this.materials.sequence.dependencies)
+                if (dependencies.length > 0) {
+                    await this.helperInstall(dependencies, "dependencies")
                 }
             }
 
@@ -176,9 +176,9 @@ export default class Tailor {
              * apt-get install packages
              */
             if (this.materials.sequence.packages !== undefined) {
-                const filterExists = await packagesExists(this.materials.sequence.packages, true, 'packages')
-                if (filterExists.length > 0) {
-                    await this.helper(filterExists)
+                const packages = await this.helperExists(this.materials.sequence.packages, true, 'packages')
+                if (packages.length > 0) {
+                    await this.helperInstall(packages)
                 }
             }
 
@@ -186,10 +186,10 @@ export default class Tailor {
             * sequence/packages_no_install_recommends
             */
             if (this.materials.sequence.packages_no_install_recommends !== undefined) {
-                const filterExists = await packagesExists(this.materials.sequence.packages_no_install_recommends, true, 'packages_no_install_recommends')
-                if (filterExists.length > 0) {
-                    await this.helper(
-                        filterExists,
+                const packages_no_install_recommends = await this.helperExists(this.materials.sequence.packages_no_install_recommends, true, 'packages_no_install_recommends')
+                if (packages_no_install_recommends.length > 0) {
+                    await this.helperInstall(
+                        packages_no_install_recommends,
                         "packages without recommends and suggests",
                         'apt-get install --no-install-recommends --no-install-suggests -yq '
                     )
@@ -201,9 +201,9 @@ export default class Tailor {
              * apt-get TRY install packages
              */
             if (this.materials.sequence.try_packages !== undefined) {
-                const filterExists = await packagesExists(this.materials.sequence.try_packages, false)
-                if (filterExists.length > 0) {
-                    await this.helper(filterExists, 'try packages ')
+                const try_packages = await this.helperExists(this.materials.sequence.try_packages, false)
+                if (try_packages.length > 0) {
+                    await this.helperInstall(try_packages, 'try packages ')
                 }
             }
 
@@ -211,10 +211,10 @@ export default class Tailor {
             * apt-get TRY packages_no_install_recommends
             */
             if (this.materials.sequence.try_packages_no_install_recommends !== undefined) {
-                const filterExists = await packagesExists(this.materials.sequence.try_packages_no_install_recommends, false)
-                if (filterExists.length > 0) {
-                    await this.helper(
-                        filterExists,
+                const try_packages_no_install_recommends = await this.helperExists(this.materials.sequence.try_packages_no_install_recommends, false)
+                if (try_packages_no_install_recommends.length > 0) {
+                    await this.helperInstall(
+                        try_packages_no_install_recommends,
                         "try packages without recommends and suggests",
                         'apt-get install --no-install-recommends --no-install-suggests -yq '
                     )
@@ -357,24 +357,73 @@ export default class Tailor {
         }
     }
 
+    /**
+     * 
+     * @param packages 
+     * @param verbose 
+     * @param section 
+     * @returns 
+     */
+    async helperExists(packages: string[], verbose = false, section = ''): Promise<string[]> {
+        const packages_we_want = '/tmp/packages_we_want'
+        const packages_not_exists = '/tmp/packages_not_exists'
+        const packages_exists = '/tmp/packages_exists'
 
+        await exec(`rm -f ${packages_we_want}`)
+        await exec(`rm -f ${packages_not_exists}`)
+        await exec(`rm -f ${packages_exists}`)
 
+        /**
+         * packages_we_want
+         */
+        let content = ''
+        packages.sort()
+        for (const elem of packages) {
+            if (!Pacman.packageIsInstalled(elem)) {
+                content += elem + '\n'
+            }
+        }
+        fs.writeFileSync(packages_we_want, content, 'utf-8')
+
+        /**
+         * packages_exists
+         */
+        await exec(`apt-cache --no-generate pkgnames | sort | comm -12 - ${packages_we_want} > ${packages_exists}`)
+
+        /**
+         * packages_not_exists
+         */
+        if (verbose) {
+            await exec(`apt-cache --no-generate pkgnames | sort | comm -13 - ${packages_we_want} > ${packages_not_exists}`)
+            const not_exist_packages = fs.readFileSync(packages_not_exists, 'utf-8').split('\n')
+            if (not_exist_packages.length > 1) { // Una riga c'è sempre
+                let content = ''
+                for (const elem of not_exist_packages) {
+                    content += `${elem} `
+                }
+                this.titles('tailor')
+                console.log(`Following packages from ` + chalk.cyan(this.materials.name + '/' + section) + ` was not found:`)
+                console.log(content)
+                Utils.pressKeyToExit("Press a key to continue...")
+            }
+        }
+
+        return fs.readFileSync(packages_exists, 'utf-8').split('\n')
+    }
 
     /**
      * - check if every package if installed
      * - if find any packages to install, install it
      */
-    async helper(packages: string[], comment = 'packages', cmd = 'apt-get install -yqq ') {
+    async helperInstall(packages: string[], comment = 'packages', cmd = 'apt-get install -yqq ') {
 
         if (packages[0] !== null) {
             let elements: string[] = []
             let strElements = ''
             for (const elem of packages) {
-                if (!Pacman.packageIsInstalled(elem)) {
-                    elements.push(elem)
-                    cmd += ` ${elem}`
-                    strElements += `, ${elem}`
-                }
+                elements.push(elem)
+                cmd += ` ${elem}`
+                strElements += `, ${elem}`
             }
 
             if (elements.length > 0) {
@@ -474,41 +523,5 @@ async function tryCheckSuccess(cmd: string, echo: {}): Promise<boolean> {
         success = false
     }
     return success
-}
-
-/**
- * 
- * @param packages 
- */
-async function packagesExists(packages: string[], verbose = false, section = ''): Promise<string[]> {
-    const packages_we_want = '/tmp/packages_we_want'
-    const packages_not_exists = '/tmp/package_not_exists'
-    const packages_exists = '/tmp/packages_exists'
-
-    await exec(`rm -f ${packages_we_want}`)
-    await exec(`rm -f ${packages_not_exists}`)
-    await exec(`rm -f ${packages_exists}`)
-
-    let content = ''
-    packages.sort()
-    for (const elem of packages) {
-        content += elem + '\n'
-    }
-    fs.writeFileSync(packages_we_want, content, 'utf-8')
-    if (verbose) {
-        await exec(`apt-cache --no-generate pkgnames | sort | comm -13 - ${packages_we_want} > ${packages_not_exists}`)
-        const not_exist_packages = fs.readFileSync(packages_not_exists, 'utf-8').split('\n')
-        if (not_exist_packages.length > 0) {
-            console.log(`Following packages from ${section} was not found:`)
-            for (const elem of not_exist_packages) {
-                if (elem !=='\n') {
-                    console.log(`-${elem}\n`)
-                }
-            }
-            Utils.pressKeyToExit('press a key to continue...', true)
-        }
-    }
-    await exec(`apt-cache --no-generate pkgnames | sort | comm -12 - ${packages_we_want} > ${packages_exists}`)
-    return fs.readFileSync(packages_exists, 'utf-8').split('\n')
 }
 
