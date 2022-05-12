@@ -166,7 +166,7 @@ export default class Tailor {
              */
             if (this.materials.sequence.dependencies !== undefined) {
                 const dependencies = await this.helperExists(this.materials.sequence.dependencies)
-                if (dependencies.length > 0) {
+                if (dependencies.length > 1) {
                     await this.helperInstall(dependencies, "dependencies")
                 }
             }
@@ -177,7 +177,7 @@ export default class Tailor {
              */
             if (this.materials.sequence.packages !== undefined) {
                 const packages = await this.helperExists(this.materials.sequence.packages, true, 'packages')
-                if (packages.length > 0) {
+                if (packages.length > 1) {
                     await this.helperInstall(packages)
                 }
             }
@@ -187,7 +187,7 @@ export default class Tailor {
             */
             if (this.materials.sequence.packages_no_install_recommends !== undefined) {
                 const packages_no_install_recommends = await this.helperExists(this.materials.sequence.packages_no_install_recommends, true, 'packages_no_install_recommends')
-                if (packages_no_install_recommends.length > 0) {
+                if (packages_no_install_recommends.length > 1) {
                     await this.helperInstall(
                         packages_no_install_recommends,
                         "packages without recommends and suggests",
@@ -202,7 +202,7 @@ export default class Tailor {
              */
             if (this.materials.sequence.try_packages !== undefined) {
                 const try_packages = await this.helperExists(this.materials.sequence.try_packages, false)
-                if (try_packages.length > 0) {
+                if (try_packages.length > 1) {
                     await this.helperInstall(try_packages, 'try packages ')
                 }
             }
@@ -212,7 +212,7 @@ export default class Tailor {
             */
             if (this.materials.sequence.try_packages_no_install_recommends !== undefined) {
                 const try_packages_no_install_recommends = await this.helperExists(this.materials.sequence.try_packages_no_install_recommends, false)
-                if (try_packages_no_install_recommends.length > 0) {
+                if (try_packages_no_install_recommends.length > 1) {
                     await this.helperInstall(
                         try_packages_no_install_recommends,
                         "try packages without recommends and suggests",
@@ -398,11 +398,12 @@ export default class Tailor {
             const not_exist_packages = fs.readFileSync(packages_not_exists, 'utf-8').split('\n')
             if (not_exist_packages.length > 1) { // Una riga c'è sempre
                 let content = ''
-                for (const elem of not_exist_packages) {
-                    content += `${elem} `
+                // for (const elem of not_exist_packages) {
+                for (let i = 0; i < not_exist_packages.length - 1; i++) {
+                    content += `- ${not_exist_packages[i]}\n`
                 }
                 this.titles('tailor')
-                console.log(`Following packages from ` + chalk.cyan(this.materials.name + '/' + section) + ` was not found:`)
+                console.log(`Following packages from ` + chalk.cyan(this.materials.name) + ' section: ' + chalk.cyan(section) + `, was not found:`)
                 console.log(content)
                 Utils.pressKeyToExit("Press a key to continue...")
             }
