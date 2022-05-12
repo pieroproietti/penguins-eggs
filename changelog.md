@@ -18,8 +18,11 @@ You can follow the project also consulting the [commit history](https://github.c
 ## Changelog
 Versions are listed on reverse order, the first is the last one. Old versions are moved to [oldest](https://sourceforge.net/projects/penguins-eggs/files/packages-deb/oldest/). 
 
+### eggs-9.1.20-1
+* wardrobe: if a costume is not compatible with the system, wardrobe will end immidiatly, but if an accesory is not compatible with the system wardrobe will emit a warning and skip it going to the next, the same if an accessory will be not found.
+
 ### eggs-9.1.19-1
-* wardrobe: all the package now are filtered if they exists in apt or not. If a package is in section packages or packages_not_install_recommend eggs will emit a warming, if the package was listed in try_packages or try_packages_not_install_recommend will just continue.
+* wardrobe: all the packages are now filtered if they are availables on the repository. If a package is in sections: dependencies, packages or packages_not_install_recommend wardrobe will emit a warning, if the package is listed in sections: try_packages or try_packages_not_install_recommend wardrobe will skip it and just continue.
 
 ### eggs-9.1.18-1
 * wardrobe: instroduced new sections: try_packages and try_packages_no_install_recommends on costumes;
