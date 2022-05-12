@@ -27,15 +27,18 @@ export default class Tailor {
     private echo = {}
     private costume = ''
     private wardrobe = ''
+    private category = 'costume'
+
     materials = {} as IMateria
 
     /**
      * @param wardrobe 
      * @param costume 
      */
-    constructor(costume: string) {
+    constructor(costume: string, category = 'costume') {
         this.costume = costume
         this.wardrobe = path.dirname((path.dirname(costume)))
+        this.category = category
     }
 
     /**
@@ -83,7 +86,18 @@ export default class Tailor {
 
                     const sources_list = new SourcesList()
                     if (! await sources_list.distribution(this.materials.distributions)) {
-                        Utils.pressKeyToExit(`costume ${this, this.materials.name}, is not compatible with your ${distro.distroId}/${distro.codenameId}`, false)
+                        if (this.category === 'costume') {
+                            console.log('Costume ' + chalk.cyan(this.materials.name) + ' is not compatible \nwith your ' + chalk.cyan(distro.distroId + '/' + distro.codenameId) + ' system.\n')
+                            console.log('Costume will not be installed, operations will abort.\n')
+                            Utils.pressKeyToExit()
+                            process.exit()
+                        } else if (this.category === 'accessory') {
+                            this.titles('tailor')
+                            console.log('Accessory ' + chalk.cyan(this.materials.name) + ' is not compatible \nwith your ' + chalk.cyan(distro.distroId + '/' + distro.codenameId) + ' system.\n')
+                            console.log('Accessory will not be installed, operations will continue.\n')
+                            Utils.pressKeyToExit()
+                            return
+                        }
                     }
                     if (distro.distroId === 'Debian' || distro.distroId === 'Devuan') {
                         // evito di fallire se sources_list non serve, tipo base, etc
@@ -268,10 +282,10 @@ export default class Tailor {
                         let step = `wearing accessories`
                         for (const elem of this.materials.sequence.accessories) {
                             if (elem.substring(0, 2) === './') {
-                                const tailor = new Tailor(`${this.costume}/${elem.substring(2)}`)
+                                const tailor = new Tailor(`${this.costume}/${elem.substring(2)}`, 'accessory')
                                 await tailor.prepare(verbose)
                             } else {
-                                const tailor = new Tailor(`${this.wardrobe}/accessories/${elem}`)
+                                const tailor = new Tailor(`${this.wardrobe}/accessories/${elem}`, 'accessory')
                                 await tailor.prepare(verbose)
                             }
                         }
