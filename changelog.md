@@ -19,7 +19,7 @@ You can follow the project also consulting the [commit history](https://github.c
 Versions are listed on reverse order, the first is the last one. Old versions are moved to [oldest](https://sourceforge.net/projects/penguins-eggs/files/packages-deb/oldest/). 
 
 ### eggs-9.1.21-1
-* wardrobe: introduced try_accessories, if an accessory is not compatible with your system wardrobe will emit a warning and continue, if a try_accessory is not compatible the process will continue without any warning. This let to build universal accessories like liquorix, valid for all the varius distros. Consult liqorix in [èenguins-wardrobe](https://github.com/pieroproietti/penguins-wardrobe).
+* wardrobe: introduced try_accessories. If an accessory is not compatible with your system wardrobe will emit a warning and continue but for try_accessory the process will continue without any warning. This let to build universal accessories like liquorix, valid for all the varius distros. Consult accessories/liquorix in [penguins-wardrobe](https://github.com/pieroproietti/penguins-wardrobe).
 
 ### eggs-9.1.20-1
 * wardrobe: if a costume is not compatible with the system, wardrobe will end immidiatly, but if an accesory is not compatible with the system wardrobe will emit a warning and skip it going to the next, the same if an accessory will be not found.
