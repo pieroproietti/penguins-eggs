@@ -33,6 +33,9 @@ etc/crypttab
 etc/fstab
 etc/fstab.backup
 etc/ioctl.save
+# https://github.com/pieroproietti/penguins-eggs/issues/125 
+# added follow line to exclude
+etc/initramfs-tools/conf.d/resume
 etc/live/protect
 etc/machine-id
 etc/mailname
