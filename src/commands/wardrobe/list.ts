@@ -4,7 +4,7 @@ import path from 'path'
 import yaml from 'js-yaml'
 import fs from 'fs'
 import os from 'os'
-import { ICostume } from '../../interfaces'
+import { IMateria } from '../../interfaces'
 
 // libraries
 import chalk from 'chalk'
@@ -57,7 +57,7 @@ export default class List extends Command {
     console.log(chalk.green(`costumes: `))
     costumes.forEach(costume => {
       if (fs.existsSync(`${wardrobe}costumes/${costume}/index.yml`)) {
-        const materials = yaml.load(fs.readFileSync(`${wardrobe}costumes/${costume}/index.yml`, 'utf-8')) as ICostume
+        const materials = yaml.load(fs.readFileSync(`${wardrobe}costumes/${costume}/index.yml`, 'utf-8')) as IMateria
         console.log(chalk.cyan(costume) + ': ' + materials.description)
       }
     })
@@ -70,7 +70,7 @@ export default class List extends Command {
     console.log(chalk.green(`accessories: `))
     accessories.forEach(accessory => {
       if (fs.existsSync(`${wardrobe}/accessories/${accessory}/index.yml`)) {
-        const materials = yaml.load(fs.readFileSync(`${wardrobe}/accessories/${accessory}/index.yml`, 'utf-8')) as ICostume
+        const materials = yaml.load(fs.readFileSync(`${wardrobe}/accessories/${accessory}/index.yml`, 'utf-8')) as IMateria
         console.log(chalk.cyan(accessory) + ': ' + materials.description)
       }
     })
@@ -83,7 +83,7 @@ export default class List extends Command {
     console.log(chalk.green(`servers: `))
     servers.forEach(server => {
       if (fs.existsSync(`${wardrobe}/servers/${server}/index.yml`)) {
-        const materials = yaml.load(fs.readFileSync(`${wardrobe}/servers/${server}/index.yml`, 'utf-8')) as ICostume
+        const materials = yaml.load(fs.readFileSync(`${wardrobe}/servers/${server}/index.yml`, 'utf-8')) as IMateria
         console.log(chalk.cyan(server) + ': ' + materials.description)
       }
     })
