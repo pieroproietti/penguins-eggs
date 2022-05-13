@@ -3,7 +3,7 @@ import Utils from '../../classes/utils'
 import path from 'path'
 import yaml from 'js-yaml'
 import fs from 'fs'
-import { ICostume, IMateria } from '../../interfaces'
+import { IMateria } from '../../interfaces'
 
 
 export class Ironing extends Command {

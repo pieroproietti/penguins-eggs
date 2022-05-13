@@ -63,15 +63,17 @@ export default class Tailor {
         } else {
             if (this.category === 'costume') {
                 this.titles(`${this.category}: ${this.costume}`)
-                console.log('Tailor\'s list ' + chalk.cyan(tailorList) + ' is not found \non your wardrobe ' + chalk.cyan(this.wardrobe)+ '.\n')
+                console.log('Tailor\'s list ' + chalk.cyan(tailorList) + ' is not found \non your wardrobe ' + chalk.cyan(this.wardrobe) + '.\n')
                 console.log('Costume will not be installed, operations will abort.\n')
                 Utils.pressKeyToExit()
                 process.exit()
             } else if (this.category === 'accessory') {
                 this.titles(`${this.category}: ${this.costume}`)
-                console.log('Tailor\'s list ' + chalk.cyan(tailorList) + ' is not found \non your wardrobe ' + chalk.cyan(this.wardrobe)+ '.\n')
+                console.log('Tailor\'s list ' + chalk.cyan(tailorList) + ' is not found \non your wardrobe ' + chalk.cyan(this.wardrobe) + '.\n')
                 console.log('Accessory will not be installed, operations will continue.\n')
                 Utils.pressKeyToExit()
+                return
+            } else if (this.category === 'try_accessory') {
                 return
             }
 
@@ -112,6 +114,9 @@ export default class Tailor {
                             console.log('Accessory ' + chalk.cyan(this.materials.name) + ' is not compatible \nwith your ' + chalk.cyan(distro.distroId + '/' + distro.codenameId) + ' system.\n')
                             console.log('Accessory will not be installed, operations will continue.\n')
                             Utils.pressKeyToExit()
+                            return
+                        } else if (this.category === 'try_accessory') {
+                            console.log('Accessory ' + chalk.cyan(this.materials.name) + ' is not compatible \nwith your ' + chalk.cyan(distro.distroId + '/' + distro.codenameId) + ' system.\n')
                             return
                         }
                     }
@@ -293,6 +298,7 @@ export default class Tailor {
              * sequence/accessories
              */
             if (!no_accessories) {
+                // accessories
                 if (this.materials.sequence.accessories !== undefined) {
                     if (Array.isArray(this.materials.sequence.accessories)) {
                         let step = `wearing accessories`
@@ -302,6 +308,23 @@ export default class Tailor {
                                 await tailor.prepare(verbose)
                             } else {
                                 const tailor = new Tailor(`${this.wardrobe}/accessories/${elem}`, 'accessory')
+                                await tailor.prepare(verbose)
+                            }
+                        }
+                    }
+                }
+
+
+                // try_accessories
+                if (this.materials.sequence.try_accessories !== undefined) {
+                    if (Array.isArray(this.materials.sequence.try_accessories)) {
+                        let step = `wearing try_accessories`
+                        for (const elem of this.materials.sequence.try_accessories) {
+                            if (elem.substring(0, 2) === './') {
+                                const tailor = new Tailor(`${this.costume}/${elem.substring(2)}`, 'try_accessory')
+                                await tailor.prepare(verbose)
+                            } else {
+                                const tailor = new Tailor(`${this.wardrobe}/accessories/${elem}`, 'try_accessory')
                                 await tailor.prepare(verbose)
                             }
                         }

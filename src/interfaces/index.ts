@@ -20,6 +20,5 @@ export { ISettings } from './i-settings'
 export { IPartitions } from './i-partitions'
 
 // Costumes and Materia
-export { ICostume } from './i-costume'
 export { IMateria, IRepos } from './i-materia'
 

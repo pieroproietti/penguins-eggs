@@ -28,6 +28,7 @@ export interface IMateria {
     debs: boolean
     packages_python: string[]
     accessories: string[]
+    try_accessories: string[]
   }
   customize: {
     dirs: boolean
