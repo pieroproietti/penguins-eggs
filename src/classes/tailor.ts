@@ -116,7 +116,7 @@ export default class Tailor {
                             Utils.pressKeyToExit()
                             return
                         } else if (this.category === 'try_accessory') {
-                            console.log('Accessory ' + chalk.cyan(this.materials.name) + ' is not compatible \nwith your ' + chalk.cyan(distro.distroId + '/' + distro.codenameId) + ' system.\n')
+                            // console.log('Accessory ' + chalk.cyan(this.materials.name) + ' is not compatible \nwith your ' + chalk.cyan(distro.distroId + '/' + distro.codenameId) + ' system.\n')
                             return
                         }
                     }
