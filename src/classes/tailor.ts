@@ -339,8 +339,7 @@ export default class Tailor {
                     }
                 }
             }
-
-        }
+        } // no-accessories
 
         /**
          * customize
