@@ -22,7 +22,7 @@
         "inquirer": "^8.2.4",
         "js-yaml": "^4.1.0",
         "mustache": "^4.2.0",
-        "oclif": "github:pieroproietti/oclif",
+        "oclif": "../oclif",
         "react": "^17.0.2",
         "shelljs": "0.8.5",
         "tempfile": "^4.0.0",
