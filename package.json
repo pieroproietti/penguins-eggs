@@ -8,6 +8,8 @@
     },
     "bugs": "https://github.com/pieroproietti/penguins-eggs/issues",
     "dependencies": {
+        "@oclif/core": "^1.7.0",
+        "@oclif/test": "^2.1.0",
         "@oclif/plugin-autocomplete": "^1.2.0",
         "@oclif/plugin-help": "^5.1.12",
         "@oclif/plugin-not-found": "^2.3.1",
@@ -28,8 +30,6 @@
         "tslib": "^2.3.1"
     },
     "devDependencies": {
-        "@oclif/core": "^1.7.0",
-        "@oclif/test": "^2.1.0",
         "@types/chai": "^4.3.1",
         "@types/ink-big-text": "^1.2.1",
         "@types/ink-gradient": "^2.0.1",
