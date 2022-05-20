@@ -42,7 +42,7 @@ export default class Tailor {
     /**
      * 
      */
-    async prepare(verbose = true, no_accessories = false) {
+    async prepare(verbose = true, no_accessories = false, no_firmwares = false) {
         this.verbose = verbose
         this.echo = Utils.setEcho(verbose)
         Utils.warning(`preparing ${this.costume}`)
@@ -312,6 +312,9 @@ export default class Tailor {
                 if (Array.isArray(this.materials.sequence.accessories)) {
                     step = `wearing accessories`
                     for (const elem of this.materials.sequence.accessories) {
+                        if ((elem === 'firmwares' || elem === './firmwares') && no_firmwares) {
+                            continue
+                        }
                         if (elem.substring(0, 2) === './') {
                             const tailor = new Tailor(`${this.costume}/${elem.substring(2)}`, 'accessory')
                             await tailor.prepare(verbose)
@@ -329,6 +332,9 @@ export default class Tailor {
                 if (Array.isArray(this.materials.sequence.try_accessories)) {
                     step = `wearing try_accessories`
                     for (const elem of this.materials.sequence.try_accessories) {
+                        if ((elem === 'firmwares' || elem === './firmwares') && no_firmwares) {
+                            continue
+                        }
                         if (elem.substring(0, 2) === './') {
                             const tailor = new Tailor(`${this.costume}/${elem.substring(2)}`, 'try_accessory')
                             await tailor.prepare(verbose)

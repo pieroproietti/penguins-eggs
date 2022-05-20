@@ -14,7 +14,7 @@ import os from 'os'
 import inquirer from 'inquirer'
 import chalk from 'chalk'
 import Pacman from './pacman'
-import { green, whiteBright } from 'chalk'
+// import { green, whiteBright } from 'chalk'
 import { ChildProcess, spawnSync } from 'child_process'
 
 // libraries
