@@ -822,14 +822,15 @@ wear costume/accessories from wardrobe
 
 ```
 USAGE
-  $ eggs wardrobe wear [COSTUME] [-w <value>] [-n] [-s] [-v] [-h]
+  $ eggs wardrobe wear [COSTUME] [-w <value>] [-a] [-f] [-s] [-v] [-h]
 
 ARGUMENTS
   COSTUME  costume
 
 FLAGS
+  -a, --no_accessories    not install accessories
+  -f, --no_firmwares      not install firmwares
   -h, --help              Show CLI help.
-  -n, --no_accessories    not install accessories
   -s, --silent
   -v, --verbose
   -w, --wardrobe=<value>  wardrobe

@@ -1,7 +1,0 @@
-Package: python-minimal
-Version: 99:99
-Maintainer: Piero Proietti <piero.proietti@gmail.com>
-Architecture: all
-Description: dummy python-minimal package
- A dummy package with a version number so high that the real python-minimal packages
- will never reach it.

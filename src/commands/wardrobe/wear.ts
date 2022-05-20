@@ -19,7 +19,8 @@ export default class Wear extends Command {
 
   static flags = {
     wardrobe: Flags.string({ char: 'w', description: 'wardrobe' }),
-    no_accessories: Flags.boolean({ char: 'n', description: 'not install accessories' }),
+    no_accessories: Flags.boolean({ char: 'a', description: 'not install accessories' }),
+    no_firmwares: Flags.boolean({ char: 'f', description: 'not install firmwares' }),
     silent: Flags.boolean({ char: 's' }),
     verbose: Flags.boolean({ char: 'v' }),
     help: Flags.help({ char: 'h' })
@@ -34,6 +35,11 @@ export default class Wear extends Command {
     let no_accessories = false
     if (flags.no_accessories) {
       no_accessories = true
+    }
+
+    let no_firmwares = false
+    if (flags.no_firmwares) {
+      no_firmwares = true
     }
 
     let wardrobe = await Utils.wardrobe()
@@ -79,7 +85,7 @@ export default class Wear extends Command {
     if (await Utils.customConfirm(`Prepare your costume: ${costume}? Select yes to continue...`)) {
       if (Utils.isRoot()) {
         const tailor = new Tailor(costume)
-        await tailor.prepare(verbose, no_accessories)
+        await tailor.prepare(verbose, no_accessories, no_firmwares)
       } else {
         Utils.useRoot(this.id)
       }
