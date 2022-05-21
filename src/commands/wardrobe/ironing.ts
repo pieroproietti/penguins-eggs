@@ -6,6 +6,9 @@ import fs from 'fs'
 import { IMateria } from '../../interfaces'
 
 
+/**
+ * 
+ */
 export class Ironing extends Command {
   static description = 'ordered show of costumes or accessories in wardrobe'
 
@@ -44,31 +47,32 @@ export class Ironing extends Command {
     /**
      * costume
      */
-     let costume = 'costumes/colibri'
-     if (this.argv['0'] !== undefined) {
-       costume = this.argv['0']
-       if (costume.substring(0,8) !== 'costumes' && costume.substring(0,11) !== 'accessories' && costume.substring(0,7) !== 'servers') {
+    let costume = 'costumes/colibri'
+    if (this.argv['0'] !== undefined) {
+      costume = this.argv['0']
+      if (costume.substring(0, 8) !== 'costumes' && costume.substring(0, 11) !== 'accessories' && costume.substring(0, 7) !== 'servers') {
         costume = `costumes/${costume}`
       }
-     }
-     costume = wardrobe + costume
- 
+    }
+    costume = wardrobe + costume
+
 
     /**
      * tailorList
      */
-     let tailorList = `${costume}/index.yml`
-     if (!fs.existsSync(tailorList)) {
-       Utils.warning(`index.yml not found in : ${costume}!`)
-       process.exit()
-     }
- 
+    let tailorList = `${costume}/index.yml`
+    if (!fs.existsSync(tailorList)) {
+      Utils.warning(`index.yml not found in : ${costume}!`)
+      process.exit()
+    }
+
     const orig = yaml.load(fs.readFileSync(tailorList, 'utf-8')) as IMateria
     let sorted: IMateria = orig
 
+
     sorted.name = orig.name
-    sorted.description = orig.description
     sorted.author = orig.author
+    sorted.description = orig.description
     sorted.release = orig.release
     sorted.distributions = orig.distributions.sort()
 
@@ -91,6 +95,10 @@ export class Ironing extends Command {
         sorted.sequence.preinst = orig.sequence.preinst
       }
 
+      if (orig.sequence.dependencies !== undefined) {
+        sorted.sequence.dependencies = orig.sequence.dependencies.sort()
+      }
+
 
       if (orig.sequence.packages !== undefined) {
         if (Array.isArray(orig.sequence.packages)) {
@@ -104,6 +112,18 @@ export class Ironing extends Command {
         }
       }
 
+      if (orig.sequence.try_packages !== undefined) {
+        if (Array.isArray(orig.sequence.try_packages)) {
+          sorted.sequence.try_packages = orig.sequence.try_packages.sort()
+        }
+      }
+
+      if (orig.sequence.try_packages_no_install_recommends !== undefined) {
+        if (Array.isArray(orig.sequence.try_packages_no_install_recommends)) {
+          sorted.sequence.try_packages_no_install_recommends = orig.sequence.try_packages_no_install_recommends.sort()
+        }
+      }
+
       if (orig.sequence.debs !== undefined) {
         sorted.sequence.debs = orig.sequence.debs
       }
@@ -114,16 +134,21 @@ export class Ironing extends Command {
         }
       }
 
-
       if (orig.sequence.accessories !== undefined) {
         if (Array.isArray(orig.sequence.accessories)) {
           sorted.sequence.accessories = orig.sequence.accessories.sort()
         }
 
       }
+      if (orig.sequence.try_accessories !== undefined) {
+        if (Array.isArray(orig.sequence.try_accessories)) {
+          sorted.sequence.try_accessories = orig.sequence.try_accessories.sort()
+        }
+      }
     }
 
     if (orig.customize !== undefined) {
+
       sorted.customize = orig.customize
       if (orig.customize.dirs !== undefined) {
         sorted.customize.dirs = orig.customize.dirs
@@ -145,10 +170,6 @@ export class Ironing extends Command {
 
     const ironed = `# costume: ${costume}\n---\n` + yaml.dump(sorted)
     console.log(ironed)
-
-    // Well be usefull to have scrolling
-    // Set scrolling margins back to default.
-    // await exec(`printf '\e[;r'`)
   }
 
 }
