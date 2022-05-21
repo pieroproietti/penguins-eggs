@@ -10,7 +10,7 @@ penguins-eggs
 [![deb](https://img.shields.io/badge/deb-packages-orange)](https://sourceforge.net/projects/penguins-eggs/files/packages-deb)
 [![iso](https://img.shields.io/badge/iso-images-orange)](https://sourceforge.net/projects/penguins-eggs/files/iso)
 
-# Debian remastered ISOs
+# Kali Linux remastered ISOs
 
 All ISOs are based on Kali Linux 2022.2
 
@@ -27,7 +27,7 @@ All ISOs are based on Kali Linux 2022.2
 * Repository: [penguins-eggs](https://github.com/pieroproietti/penguins-eggs)
 * Blog: [penguins-eggs](https://penguins-eggs.net)
 
-* You can find more informations on this Linux distro at: [Keli Linux](https://www.kali.org/).
+* You can find more informations on this Linux distro at: [Kali Linux](https://www.kali.org/).
 
 # Disclaim
 __Please note what this project is in no way connected to the original distro in any official way, it’s just my personal experiment.__
