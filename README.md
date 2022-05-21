@@ -35,16 +35,32 @@ penguins-eggs, at the moment 2021 may is a mature tool and is extremely usefull,
 
 Try penguins-eggs, yes it is a console utility - no GUI - but don't be scared, penguins-eggs is a console command - really very simple - if you are able to open a terminal, you can use it and yours final users will enjoy of full gui and pratical installer to install your livecd.
 
-### addons
-Starting with version 7.6.x, an addons architecture was added to eggs, allowing third parties to develop extensions. Note that currently we have an extension for the theme that includes both branding calamares, link and installer icon. In addition, also as an addon has been developed choose between GUI or CLI installation, adjust the video resolution, remote support, etc.
+### mom and dad
+I've added two lightweight assistants integrated with eggs: mom and dad. While mom is a bash script with whiptail - and guides the user to the various commands and documentation, dad started as a short way to create isos. All you have to do is type **sudo eggs dad** and follow simple instructions. You can also shortcut the way to reset the configuration **sudo dad -c** or - even faster - reset the configuration, load defaults, kill created isos. Simply type **sudo eggs dad -d** and you will immediately be able to produce the egg in the default /home/eggs nest.
+
+### yolk 
+yolk so called - staying on the subject of eggs - is a local repository included in the livecd that contains a minimum of indispensable packages during installation. Thanks to yolk, you can safely install your system without the need of an active internet connection.
+
+### wardrobe
+wardrobe was added to eggs on april 2022, it's is a way to guide and consolidate the process of creating a custom version of Linux, starting from a CLI system. All my personal editions are passed to use wardrobe for their convenience, in that way I can organize, consolidate and manage better my work. I used birds names for my customizations, we have: colibri, duck, eagle, owl, wagtail and warbier. 
+
+I hope peoples will be interested in wardrobe and you will end to fork the main repository and add your customizations: together will be possibile to make great steps impossible for a single developer. 
+
+You can read more in wardrobe on [penguin's eggs blog](https://penguins-eggs.net/2022/04/12/wardrobe-colibri-duck-eagle-and-owl/). The result of mine customizations are under [ISOs/Debian/bullseys](https://sourceforge.net/projects/penguins-eggs/files/iso/debian/bullseye/) on my sourgeforce page.
+
+### krill
+eggs include a CLI installer named krill, this ley you to produce and install servers configurations. krill use a nice TUI interface using the same, configuration created by eggs for [calamares](calamares.io). This lead to have "about the same" experience installing, from old distros to new one and for GUI and CLI. To force using krill in place of calamares in a GUI system just: **sudo eggs install --cli**
+
+### addons and themes
+Addons are used mostly to let third parties to develop extensions. Note that currently we have an extension for the theme that includes both branding calamares, link and installer icon. In addition, also as an addon has been developed choose between GUI or CLI installation, adapt the video resolution, link to remote support, etc.
 
 ### backup
-From version 8.0.10 You can use the backup mode by simply adding --backup in the produce command. This way eggs will save your users data and accounts and will not add a live user, you will have to log in with the main user of your system with the his password. **Note:** since eggs always configures autologin, you may have a security risk with valuable data. Use this option only for your personal stuff and do not share the iso on the network.
+You can use the backup mode by simply adding --backup in the produce command. This way eggs will save your users data and accounts and will not add a live user, you will have to log in with the main user of your system with the his password. **Note:** since eggs always configures autologin, you may have a security risk with valuable data. Use this option only for your personal stuff and do not share the iso on the network.
 
 * ```eggs produce``` just remove users accounts and home. This let to have working servers examples;
 * ```eggs produce --backup``` remove servers and users data from live, and put them on a LUKS volume.
 
-From version 9.0.16 we have two new commands: ```eggs syncfrom``` (alias restore) and ```eggs syncto``` (alias backup).
+Since version 9.0.16 we have two new commands: ```eggs syncfrom``` (alias restore) and ```eggs syncto``` (alias backup).
 
 A working installation, can easily sync users and servers data to a luks-eggs-backup:
 * ```eggs syncto -f /tmp/luks-eggs-backup``` backup users and servers data to LUKS volume /tmp/luks-eggs-backup:
@@ -61,33 +77,13 @@ A new installation, can easyly get users and servers data from a luks-eggs-backu
 * ```syncfrom``` replace all users homes and all servers homes with data from the luck-eggs-backup, Force this data in not appropriate system can easily end in a long disaster recovery;
 * I want stress you again on the fact we are working with a **live filesystem** mounted binded to the **REAL filesystem**. This mean who removing a directory under the nest, usually ```/nest/ovarium/filesystem.squashfs```, mean remove it from the REAL filesystem. So, if something went wrong during the iso production and You remain with live filesystem again binded, the shortest way to solve the problem is simply reboot.
 
-### krill
-Starting with eggs 8.0.0 I included a new CLI installer named krill. krill let you to install your system in a nice CLI interface using the same, configuration created by eggs for [calamares](calamares.io). This lead to have "about the same" experience installing, from old distros to new one and for GUI and CLI. To force using krill in place of calamares in a GUI system just: **sudo eggs install --cli**
-
-### mom and dad
-I've added two lightweight assistants integrated with eggs: mom and dad. While mom is a bash script with whiptail - and guides the user to the various commands and documentation, dad started as a short way to create isos. All you have to do is type **sudo eggs dad** and follow simple instructions. You can also shortcut the way to reset the configuration **sudo dad -c** or - even faster - reset the configuration, load defaults, kill created isos. Simply type **sudo eggs dad -d** and you will immediately be able to produce the egg in the default /home/eggs nest.
-
-I suggest to leave the default values unchanged during the development of your remaster. You will be more fast in producing eggs, enjoy of dad after reinstalling eggs. If you need more space, simply mount your big device in /home/eggs.
-
-### yolk 
-yolk so called - staying on the subject of eggs - is a local repository included in the livecd that contains a minimum of indispensable packages during installation. Thanks to yolk, you can safely install your system without the need of an active internet connection.
-
-### wardrobe
-wardrobe was added to eggs on april 2022, it's is a way to guide and consolidate the processo of creating a custom version of Linux, starting from a CLI system. Actually - after very short time . all my personal editions are created using wardrobe. In this way I can organize, consolidate and manage better my work. 
-
-I hope peoples will be interested in wardrobe and you will end to fork the main repository and add your customizations: together will be possibile to make great steps impossible for an alone developer. 
-
-You can read more in wardrobe on [penguin's eggs blog](https://penguins-eggs.net/2022/04/12/wardrobe-colibri-duck-eagle-and-owl/). The result of mine customizations are under [ISOs/Debian/bullseys](https://sourceforge.net/projects/penguins-eggs/files/iso/debian/bullseye/) on my sourgeforce page.
-
 ## What distributions can I use?
-eggs was born on Debian strecth/buster, but actually full support Debian from jessie to bookworm/sid, Devuan beowulf, chimaera, daedalus, Ubuntu bionic, focal, , hirsute, impish, jammy and all derivatives including Linux mint, Deepin, neon KDE, etc. I continuisly try it against Debian various versions, before releases, I tried it successfully in LMDE 4 debbie, and deepin. eggs, generally must work with all the derivates from Debian, Devuan and Ubuntu.
+eggs was born on Debian strecth/buster, but actually full support Debian from jessie to bookworm/sid, Devuan beowulf, chimaera, daedalus, Ubuntu bionic, focal, jammy and all derivatives including Linux mint, Deepin, neon KDE, etc. Eggs is able to remaster and install manjaro linux too and derivated.
 
 You can read more on the [blog](https://penguins-eggs.net/2021/11/02/distros-that-can-be-remastered-with-eggs/), some examples of iso images remastered with eggs are in the [sourceforge page of the project](https://sourceforge.net/projects/penguins-eggs/files/iso/). 
 
 ## What architecture can I use?
 From eggs v. 8.0.4 I'm releasing eggs in 4 differents architectures: **i386**, **amd64**, **arm64** and **armel**. eggs - at the moment - produce in i386 and amd64, but can be installed already on arm64 and armel. This mean who it is possible to install it in [raspberrypi](https://www.raspberrypi.org/), but again not possible to produce a [Raspberry Pi OS](https://www.raspberrypi.org/software/) egg in armel or arm64. I'm working to complete this step, but need help and experience. 
-
-**Note:** Of course it is possible to produce iso for [Raspberry Pi Desktop](https://downloads.raspberrypi.org/rpd_x86/images/) amd64 based.
 
 # Packages
 eggs is released deb packages for i386, amd64, armel and arm64 architectures. Due the characteristic of eggs, they can installed in Debian, Devuan or Ubuntu based distros, withouth worries about different versions, except for the architecture. It include standard scripts for preinst, postinst, prerm and postrm.
@@ -112,7 +108,7 @@ Update your repositories: **sudo apt update** and install eggs: **sudo apt insta
 The simplest way to install eggs is download the [package eggs](https://sourceforge.net/projects/penguins-eggs/files/packages-deb/) from [sourceforge page of the project](https://sourceforge.net/projects/penguins-eggs/) and install it
 
 ```
-sudo dpkg -i eggs_9.0.16-1_amd64.deb
+sudo dpkg -i eggs_9.1.24_amd64.deb
 ```
 
 or, on a i386 system:
@@ -122,11 +118,6 @@ sudo dpkg -i eggs_8.17.17-1_i386.deb
 
 ## Upgrade eggs
 If you are using penguins-eggs-ppa You can ugrade eggs as others packages just: **sudo apt upgrade**.
-
-### Upgrade from basket
-If you are using not the penguins-eggs-ppa, the fastest way to use sudo eggs update and choose basket. Eggs let you to select the last 4 versions on the [basket](https://sourceforge.net/projects/penguins-eggs/files/packages-deb/) and install it.
-
-```sudo eggs update```
 
 ### Manual upgrade
 Simply download new versions of eggs from [sourgeforge page](https://sourceforge.net/projects/penguins-eggs/files/packages-deb/) and install it with the standard command **sudo dpkg -i eggs_8.17.x-1_amd64.deb**.
