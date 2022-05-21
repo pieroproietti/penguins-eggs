@@ -24,7 +24,7 @@ Versions are listed on reverse order, the first is the last one. Old versions ar
 ### eggs-9.1.23
 * building eggs: thanks a little patch to [oclif](https://github.com/pieroproietti/penguins-oclif), we switched to [pnpm](https://github.com/pnpm/pnpm) in place of [npm](https://github.com/npm/cli) to build eggs, this reduce a lot times for compiling, no changes on the usage. At the same time we moved from nodejs 16.x to nodejs 18.x.
 
-### eggs-8.17-17
+### eggs-8.17.17-1 (i386)
 * tested against devuan beowulf/chimaera, debian buster/bullseye/bookworm, neon developer (ubuntu focal). This is the last version for i386 architecture.
 
 ### Older versions 
