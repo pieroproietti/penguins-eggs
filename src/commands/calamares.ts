@@ -24,8 +24,8 @@ export default class Calamares extends Command {
     help: Flags.help({ char: 'h' }),
     verbose: Flags.boolean({ char: 'v' }),
     install: Flags.boolean({ char: 'i', description: "install calamares and it's dependencies" }),
-    final: Flags.boolean({ char: 'f', description: "final: remove calamares and all it's dependencies after the installation" }),
-    remove: Flags.boolean({ char: 'r', description: "remove calamares and it's dependencies" }),
+    release: Flags.boolean({ char: 'r', description: "release: remove calamares and all it's dependencies after the installation" }),
+    remove: Flags.boolean({ description: "remove calamares and it's dependencies" }),
     theme: Flags.string({ description: 'theme/branding for eggs and calamares' })
   }
 
@@ -52,9 +52,9 @@ export default class Calamares extends Command {
       install = true
     }
 
-    let final = false
-    if (flags.final) {
-      final = true
+    let release = false
+    if (flags.release) {
+      release = true
     }
 
     let theme = 'eggs'
@@ -93,7 +93,7 @@ export default class Calamares extends Command {
               Utils.warning('Configuring installer')
               await this.settings.loadRemix(this.settings.config.snapshot_basename, theme)
               this.incubator = new Incubator(this.settings.remix, this.settings.distro, this.settings.config.user_opt, verbose)
-              await this.incubator.config(final)
+              await this.incubator.config(release)
             }
           }
         } else {
@@ -112,7 +112,7 @@ export default class Calamares extends Command {
         Utils.warning('Configuring krill')
         await this.settings.loadRemix(this.settings.config.snapshot_basename, theme)
         this.incubator = new Incubator(this.settings.remix, this.settings.distro, this.settings.config.user_opt, verbose)
-        await this.incubator.config(final)
+        await this.incubator.config(release)
       }
     }
   }
