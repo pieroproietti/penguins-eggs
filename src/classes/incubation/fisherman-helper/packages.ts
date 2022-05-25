@@ -9,9 +9,25 @@ import Pacman from '../../pacman'
  *
  */
 export function remove(distro: IDistro): string {
-  let text = '  - remove:\n'
-  text += removeEggs(distro)
-  text += '\n'
+  let remove = true
+  let removePackages = Pacman.packages(remove)
+  removePackages.push("calamares")
+  removePackages.push("eggs")
+
+  const mustRemain = ["coreutils", "cryptsetup",  "curl", "dosfstools", "git","parted",  "rsync"]
+
+  let sorted= []
+  for (const elem of removePackages) {
+    if (!mustRemain.includes(elem)) {
+      sorted.push(elem)
+    }
+  }
+  sorted = sorted.sort()
+
+  let text = ''
+  for (const elem of sorted) {
+    text += `    - ${elem.trim()}\n`
+  }
   return text
 }
 
@@ -64,20 +80,5 @@ export function tryInstall(distro: IDistro): string {
   }
 
   return retVal
-}
-
-/**
- *
- * @param distro
- */
-function removeEggs(distro: IDistro): string {
-  const remove = true
-  const packages = Pacman.packages(remove)
-  let text = ''
-  for (const elem of packages) {
-    text += `    - ${elem.trim()}\n`
-  }
-  text += `    - calamares\n`
-  return text
 }
 
