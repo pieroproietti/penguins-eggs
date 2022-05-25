@@ -387,41 +387,6 @@ export default class Ovary {
      */
     shx.cp(`${this.settings.work_dir.merged}/boot/grub/fonts/unicode.pf2`, `${this.settings.work_dir.merged}/boot/grub/fonts/UbuntuMono16.pf2`)
 
-
-    /**
-    # 00-eggs.yaml con optional: true
-    network:
-      version: 2
-      renderer: networkd
-      ethernets:
-        ens18:
-          dhcp4: true
-          optional: true
-
-    # this is the defailt in server iso
-    # /etc/netplan/50-cloud-init.yaml
-    network:
-      renderer: networkd
-      ethernets:
-        zz-all-en:
-          dhcp4: true
-          match: 
-            name: en*
-        zz-all-eth:
-          dhcp4: true
-          match: 
-            name: eth*
-      version: 2
-
-    # this is configuration in ubuntu desktop
-    # Let NetworkManager manage all devices on this system
-    network:
-      version: 2
-      renderer: NetworkManager
-    */
-
-
-
     /**
     * cleaning /etc/resolv.conf
     */

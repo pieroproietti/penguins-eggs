@@ -76,7 +76,7 @@ export class Buster {
     await fisherman.buildCalamaresModule('bootloader-config', true)
     await fisherman.buildModule('grubcf')
     await fisherman.buildModule('bootloader')
-    await fisherman.modulePackages(this.distro, this.release) //
+    await fisherman.modulePackages(this.distro, this.release)
     await fisherman.buildModule('luksbootkeyfile')
     await fisherman.buildModule('plymouthcfg')
     await fisherman.buildModule('initramfscfg')

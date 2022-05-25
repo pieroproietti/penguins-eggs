@@ -247,14 +247,14 @@ calamares or install or configure it
 
 ```
 USAGE
-  $ eggs calamares [-h] [-v] [-i] [-f] [-r] [--theme <value>]
+  $ eggs calamares [-h] [-v] [-i] [-r] [--remove] [--theme <value>]
 
 FLAGS
-  -f, --final      final: remove calamares and all it's dependencies after the installation
   -h, --help       Show CLI help.
   -i, --install    install calamares and it's dependencies
-  -r, --remove     remove calamares and it's dependencies
+  -r, --release    release: remove calamares and all it's dependencies after the installation
   -v, --verbose
+  --remove         remove calamares and it's dependencies
   --theme=<value>  theme/branding for eggs and calamares
 
 DESCRIPTION
