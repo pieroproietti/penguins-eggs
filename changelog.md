@@ -18,6 +18,10 @@ You can follow the project also consulting the [commit history](https://github.c
 ## Changelog
 Versions are listed on reverse order, the first is the last one. Old versions are moved to [versions](https://sourceforge.net/projects/penguins-eggs/files/packages-deb/versions/). 
 
+### eggs-9.1.25
+* produce: flag --release now configure calamares to remove calamares. eggs and live* dependencies
+* calamares: renamed option --final to the more appropriate --release 
+
 ### eggs-9.1.24
 * wardrobe wear: added flag --no_firmwares to skip firmwares installation in case we are wearing a costume for a VMs:  most of the cases during developing.
 

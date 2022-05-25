@@ -24,7 +24,7 @@ export function remove(distro: IDistro): string {
   }
   sorted = sorted.sort()
 
-  let text = ''
+  let text = '  - remove:\n'
   for (const elem of sorted) {
     text += `    - ${elem.trim()}\n`
   }
@@ -42,7 +42,6 @@ export function remove(distro: IDistro): string {
  */
 export function tryInstall(distro: IDistro): string {
 
-  let try_install = '  - try_install:\n'
 
   let packages = ''
   /**
@@ -76,7 +75,7 @@ export function tryInstall(distro: IDistro): string {
 
   let retVal = ''
   if (packages !== '') {
-    retVal += try_install + packages
+    retVal += '  - try_install:\n' + packages
   }
 
   return retVal
