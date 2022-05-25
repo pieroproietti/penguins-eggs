@@ -54,31 +54,17 @@ export default class Debian {
     const toInstall: string[] = []
     const toRemove: string[] = []
 
-    if (!Utils.isDebPackage()) {
-      for (const elem of depCommon) {
-        if (!this.packageIsInstalled(elem)) {
-          toInstall.push(elem)
-        } else {
-          toRemove.push(elem)
-        }
-      }
-
-      const arch = Utils.machineArch()
-      for (const dep of depArch) {
-        if (dep.arch.includes(arch)) {
-          if (!this.packageIsInstalled(dep.package)) {
-            toInstall.push(dep.package)
-          } else {
-            toRemove.push(dep.package)
-          }
-        }
+    for (const elem of depCommon) {
+      if (!this.packageIsInstalled(elem)) {
+        toInstall.push(elem)
+      } else {
+        toRemove.push(elem)
       }
     }
 
-    // Version e initType da controllare
-    const version = Pacman.distro().codenameLikeId
-    for (const dep of depVersions) {
-      if (dep.versions.includes(version)) {
+    const arch = Utils.machineArch()
+    for (const dep of depArch) {
+      if (dep.arch.includes(arch)) {
         if (!this.packageIsInstalled(dep.package)) {
           toInstall.push(dep.package)
         } else {
@@ -86,6 +72,8 @@ export default class Debian {
         }
       }
     }
+
+
 
     const initType: string = shx.exec('ps --no-headers -o comm 1', { silent: !verbose }).trim()
     for (const dep of depInit) {
@@ -179,7 +167,7 @@ export default class Debian {
   /**
    * calamaresPolicies
    */
-   static async calamaresPolicies() {
+  static async calamaresPolicies() {
     const policyFile = '/usr/share/polkit-1/actions/com.github.calamares.calamares.policy'
     await exec(`sed -i 's/auth_admin/yes/' ${policyFile}`)
   }
