@@ -25,38 +25,45 @@ export function remove(distro: IDistro): string {
 
  */
 export function tryInstall(distro: IDistro): string {
-  let text = '  - try_install:\n'
 
+  let try_install = '  - try_install:\n'
+
+  let packages = ''
   /**
    * Depending on the distro
    */
   if (distro.distroLike === 'Ubuntu') {
-    text += '    - language-pack-$LOCALE\n'
+    packages += '    - language-pack-$LOCALE\n'
   }
 
   // Da localizzare se presenti
   if (Pacman.packageIsInstalled('hunspell')) {
-    text += 'hunspell-$LOCALE\n'
+    packages += 'hunspell-$LOCALE\n'
   }
 
   if (Pacman.packageIsInstalled('libreoffice-base-core')) {
-    text += `    - libreoffice-l10n-$LOCALE\n`
-    text += `    - libreoffice-help-$LOCALE\n`
+    packages += `    - libreoffice-l10n-$LOCALE\n`
+    packages += `    - libreoffice-help-$LOCALE\n`
   }
 
   if (Pacman.packageIsInstalled('firefox-esr')) {
-    text += `    - firefox-esr-$LOCALE\n`
+    packages += `    - firefox-esr-$LOCALE\n`
   }
 
   if (Pacman.packageIsInstalled('firefox')) {
-    text += `    - firefox-$LOCALE\n`
+    packages += `    - firefox-$LOCALE\n`
   }
 
   if (Pacman.packageIsInstalled('thunderbird')) {
-    text += `    - thunderbird-locale-$LOCALE\n`
+    packages += `    - thunderbird-locale-$LOCALE\n`
   }
 
-  return text
+  let retVal = ''
+  if (packages !== '') {
+    retVal += try_install + packages
+  }
+
+  return retVal
 }
 
 /**
@@ -67,25 +74,10 @@ function removeEggs(distro: IDistro): string {
   const remove = true
   const packages = Pacman.packages(remove)
   let text = ''
-  for (const i in packages) {
-    const deb2check = packages[i].trim()
-    text += addIfExist(deb2check)
+  for (const elem of packages) {
+    text += `    - ${elem.trim()}\n`
   }
-
-  text += addIfExist('calamares')
-
+  text += `    - calamares\n`
   return text
 }
 
-/*
- * @param package2check
- */
-function addIfExist(package2check: string): string {
-  let text = ''
-
-  if (Pacman.packageIsInstalled(package2check)) {
-    text += `    - ${package2check}\n`
-  }
-
-  return text
-}
