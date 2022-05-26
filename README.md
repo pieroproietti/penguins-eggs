@@ -161,7 +161,6 @@ USAGE
 * [`eggs syncfrom`](#eggs-syncfrom)
 * [`eggs syncto`](#eggs-syncto)
 * [`eggs tools clean`](#eggs-tools-clean)
-* [`eggs tools locales`](#eggs-tools-locales)
 * [`eggs tools skel`](#eggs-tools-skel)
 * [`eggs tools stat`](#eggs-tools-stat)
 * [`eggs tools yolk`](#eggs-tools-yolk)
@@ -621,23 +620,6 @@ FLAGS
 
 DESCRIPTION
   clean system log, apt, etc
-```
-
-## `eggs tools locales`
-
-install/clean locales
-
-```
-USAGE
-  $ eggs tools locales [-h] [-r] [-v]
-
-FLAGS
-  -h, --help       Show CLI help.
-  -r, --reinstall  reinstall locales
-  -v, --verbose    verbose
-
-DESCRIPTION
-  install/clean locales
 ```
 
 ## `eggs tools skel`

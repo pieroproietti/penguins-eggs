@@ -1563,7 +1563,6 @@ adduser ${name} \
       const i18n = new I18n(this.installTarget, this.verbose)
       i18n.generate(false, this.language, [this.language])
    }
-
 }
 
 const ifaces: string[] = fs.readdirSync('/sys/class/net/')
