@@ -20,7 +20,7 @@ Versions are listed on reverse order, the first is the last one. Old versions ar
 
 
 ### eggs-9.1.26
-* localization: rewrote locale.gen 
+* localization: rewrote completely the way to get/edit locale.gen due a prolem with calamares installer
 
 ### eggs-9.1.25
 * produce: flag --release now configure calamares to remove calamares. eggs and live* dependencies, bugfix enable links on desktop;
