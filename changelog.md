@@ -18,6 +18,10 @@ You can follow the project also consulting the [commit history](https://github.c
 ## Changelog
 Versions are listed on reverse order, the first is the last one. Old versions are moved to [versions](https://sourceforge.net/projects/penguins-eggs/files/packages-deb/versions/). 
 
+
+### eggs-9.1.26
+* localization: rewrote locale.gen 
+
 ### eggs-9.1.25
 * produce: flag --release now configure calamares to remove calamares. eggs and live* dependencies, bugfix enable links on desktop;
 * calamares: renamed option --final to the more appropriate --release.
