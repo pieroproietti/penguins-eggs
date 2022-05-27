@@ -33,7 +33,7 @@ Also, thanks to the wardrobe, you can create or use scripts to switch from a "na
 
 The whole thing is written in pure typescript, so ideally it can be used with different Linux distributions. Yes, there are major differences in terms of the package manager used, but not so much in the way bash works and the various programs used to build the isos.
 
-penguins-eggs, as of May 2022, is a mature tool and is extremely powerful: you can easily create your own custom iso or version of Linux for your organization/school and distribute it on your LAN, give it to your friends as a usb key, or post your images on the Internet!
+penguins-eggs, as of May 2022, is a mature tool and is extremely powerful: you can easily create your own custom version of Linux for your organization/school and distribute it on your LAN, give it to your friends as a usb key, or post your images on the Internet!
 
 Have no fear, yes eggs is a console utility - without a graphical user interface - but it is really simple - if you are able to open a terminal, you can use it and your end users will enjoy a complete help and fully graphical installation procedure.
 
@@ -51,7 +51,7 @@ I hope peoples will be interested in wardrobe and you will end to fork the main 
 You can read more in wardrobe on [penguin's eggs blog](https://penguins-eggs.net/2022/04/12/wardrobe-colibri-duck-eagle-and-owl/). The result of mine customizations are under [ISOs/Debian/bullseys](https://sourceforge.net/projects/penguins-eggs/files/iso/debian/bullseye/) on my sourgeforce page.
 
 ### krill
-eggs include a CLI installer named krill, this ley you to produce and install servers configurations. krill use a nice TUI interface using the same, configuration created by eggs for [calamares](calamares.io). This lead to have "about the same" experience installing, from old distros to new one and for GUI and CLI. To force using krill in place of calamares in a GUI system just: **sudo eggs install --cli**
+eggs include a CLI installer named krill, this let you to produce and install servers configurations. krill use a nice TUI interface using the same, configuration created by eggs for [calamares](calamares.io). This lead to have "about the same" experience installing, from old distros to new ones and for GUI and CLI. To force using krill in place of calamares in a GUI system just: **sudo eggs install --cli**
 
 ### addons and themes
 Addons are used mostly to let third parties to develop extensions. Note that currently we have an extension for the theme that includes both branding calamares, link and installer icon. In addition, also as an addon has been developed choose between GUI or CLI installation, adapt the video resolution, link to remote support, etc.
@@ -74,8 +74,8 @@ Or a new installation, can easyly get users and servers data from a luks-eggs-ba
 * installing with calamares: when installation is finished, you need to mount the rootdir of your installed system and, give the following command: ```sudo eggs syncfrom -f /path/to/luks-eggs-backup -r /path/to/rootdir```
 * it's possbile actually to change the nest directory, editing configuration file ```/etc/penguins-eggs.d/eggs.yaml```. Example: ```set snapshot_dir: '/opt/eggs/'```, but you can't use the following: /etc, /boot, /usr and /var.
 
-**DISCLAIM:** using this feathures can be dangerous for your data:
-* ```syncfrom``` replace all users homes and all servers homes with data from the luck-eggs-backup file, Force this data in a not appropriate system can easily end in a long disaster recovery;
+**DISCLAIM:** using this feathures in non appropriate way can be dangerous for your data:
+* ```syncfrom``` replace all users homes and all servers homes with data from the luck-eggs-backup file, Force this data in a not appropriate system can easily end in a long disaster recovery.
 
 ## What distributions can I use?
 eggs was born on Debian strecth, buster and following, actually full support Debian from jessie to bookworm/sid, Devuan beowulf, chimaera, daedalus, Ubuntu bionic, focal, jammy and all derivatives from them, including Linux mint, Deepin, neon KDE, etc. Eggs is able to remaster and install manjaro linux too and derivated, i need help to continue the effort to manjaro.
@@ -108,7 +108,7 @@ Update your repositories: **sudo apt update** and install eggs: **sudo apt insta
 The simplest way to install eggs is download the [package eggs](https://sourceforge.net/projects/penguins-eggs/files/packages-deb/) from [sourceforge page of the project](https://sourceforge.net/projects/penguins-eggs/) and install it
 
 ```
-sudo dpkg -i eggs_9.1.24_amd64.deb
+sudo dpkg -i eggs_9.1.26_amd64.deb
 ```
 
 or, on a i386 system:
