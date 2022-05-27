@@ -9,5 +9,4 @@ if [ -f "$CHROOT"/etc/issue ]; then
     /usr/bin/sed -i '/^eggs-start-message/,/^\eggs-end-message/{/^#/!{/^\$/!d;};}' "$CHROOT"/etc/issue
 fi
 
-# ex remove-link
 rm -r $CHROOT/usr/share/applications/install-debian.desktop
