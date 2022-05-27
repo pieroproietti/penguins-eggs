@@ -2,5 +2,5 @@
 ---
 restartNowEnabled: true
 restartNowChecked: true
-# restartNowCommand: {{restartNowCommand}}
-restartNowCommand: "systemctl -i reboot"
+restartNowCommand: {{restartNowCommand}}
+# restartNowCommand: "systemctl -i reboot"

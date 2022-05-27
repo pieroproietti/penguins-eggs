@@ -128,4 +128,3 @@ prompt-install: false
 #
 # YAML: boolean.
 dont-chroot: false
-
