@@ -83,9 +83,9 @@ export class Focal {
     await fisherman.shellprocess('add386arch')
     await fisherman.modulePackages(this.distro, this.release) //
     await fisherman.moduleRemoveuser(this.user_opt)
-    await fisherman.buildCalamaresModule('remove-link', true)
     await fisherman.buildCalamaresModule('sources-yolk', false)
     await fisherman.buildCalamaresModule('sources-yolk-unmount', false)
+    await fisherman.buildCalamaresModule('eggs-cleanup', true)
     await fisherman.buildModule('umount')
     await fisherman.buildModule('finished')
   }

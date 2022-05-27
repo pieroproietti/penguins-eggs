@@ -87,9 +87,8 @@ sequence:
       - initramfs
       # dpkg-unsafe-io-undo
       - removeuser
-      - shellprocess@eggs-cleanup
-      - remove-link
       - sources-yolk-unmount
+      - eggs-cleanup
       - umount
 
   # Phase 3 - postinstall.
