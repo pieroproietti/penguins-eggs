@@ -39,7 +39,7 @@ sequence:
       - add386arch
       - packages
       - removeuser
-      - remove-link
+      - eggs-cleanup
       - sources-yolk-unmount
       - umount
   - show:
