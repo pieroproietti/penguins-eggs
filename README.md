@@ -25,15 +25,17 @@ penguins-eggs
 <!-- tocstop -->
 
 # Presentation
-penguins-eggs is a console utility, in active development, who let you to remaster your system and redistribuite it as iso images or from the lan via PXE remote boot.
+penguins-eggs is a console utility, under continuous development, that allows you to remaster your system and redistribute it as iso images or via remote boot PXE.
 
-The scope of this project is to implement the process of remastering your version of Linux, generate it as ISO image to burn on a CD/DVD or copy to a usb key to boot your system. You can also boot your egg - via remote boot - on your LAN. You can easily install your live system with gui calamares installer or eggs cli installer.
+The purpose of this project is to implement the process of remastering your own version of Linux, generate it as an ISO image to burn to a CD/DVD or copy to a USB stick to boot your system. You can also boot your "egg" via remote booting-on your LAN. You can easily install your live system with the calamares installer or the eggs TUI installer.
 
-All it is written in pure typescript, so ideally can be used with differents Linux distros. Yes, there are big differences about package manager used, but not so much in the way to work of bash and in the various programs used to build the iso.
+Also, thanks to the wardrobe, you can create or use scripts to switch from a "naked" version - with only a CLI interface - and "wear" it with a GUI or server configurations. See [penguins-wardrobe](https://github.com/pieroproietti/penguins-wardrobe), fork it and adapt it to yours needs.
 
-penguins-eggs, at the moment 2021 may is a mature tool and is extremely usefull, You can easily create your personal customized iso or your organization/school version of Linux and deploy it on your LAN, give it to your friends as usb key or publish yours eggs in the internet!
+The whole thing is written in pure typescript, so ideally it can be used with different Linux distributions. Yes, there are major differences in terms of the package manager used, but not so much in the way bash works and the various programs used to build the isos.
 
-Try penguins-eggs, yes it is a console utility - no GUI - but don't be scared, penguins-eggs is a console command - really very simple - if you are able to open a terminal, you can use it and yours final users will enjoy of full gui and pratical installer to install your livecd.
+penguins-eggs, as of May 2022, is a mature tool and is extremely powerful: you can easily create your own custom iso or version of Linux for your organization/school and distribute it on your LAN, give it to your friends as a usb key, or post your images on the Internet!
+
+Have no fear, yes eggs is a console utility - without a graphical user interface - but it is really simple - if you are able to open a terminal, you can use it and your end users will enjoy a complete help and fully graphical installation procedure.
 
 ### mom and dad
 I've added two lightweight assistants integrated with eggs: mom and dad. While mom is a bash script with whiptail - and guides the user to the various commands and documentation, dad started as a short way to create isos. All you have to do is type **sudo eggs dad** and follow simple instructions. You can also shortcut the way to reset the configuration **sudo dad -c** or - even faster - reset the configuration, load defaults, kill created isos. Simply type **sudo eggs dad -d** and you will immediately be able to produce the egg in the default /home/eggs nest.
@@ -60,12 +62,11 @@ You can use the backup mode by simply adding --backup in the produce command. Th
 * ```eggs produce``` just remove users accounts and home. This let to have working servers examples;
 * ```eggs produce --backup``` remove servers and users data from live, and put them on a LUKS volume.
 
-Since version 9.0.16 we have two new commands: ```eggs syncfrom``` (alias restore) and ```eggs syncto``` (alias backup).
+We have another two commands for backup/restore: ```eggs syncfrom``` and ```eggs syncto```. A working installation, can easily sync users and servers data to a luks-eggs-backup file:
 
-A working installation, can easily sync users and servers data to a luks-eggs-backup:
 * ```eggs syncto -f /tmp/luks-eggs-backup``` backup users and servers data to LUKS volume /tmp/luks-eggs-backup:
 
-A new installation, can easyly get users and servers data from a luks-eggs-backup:
+Or a new installation, can easyly get users and servers data from a luks-eggs-backup:
 * ```eggs syncfrom from -f /tmp/luks-eggs-backup``` restore users and servers data from the LUKS volume /tmp/luks-eggs-backup.
 
 **NOTE:** 
@@ -73,17 +74,16 @@ A new installation, can easyly get users and servers data from a luks-eggs-backu
 * installing with calamares: when installation is finished, you need to mount the rootdir of your installed system and, give the following command: ```sudo eggs syncfrom -f /path/to/luks-eggs-backup -r /path/to/rootdir```
 * it's possbile actually to change the nest directory, editing configuration file ```/etc/penguins-eggs.d/eggs.yaml```. Example: ```set snapshot_dir: '/opt/eggs/'```, but you can't use the following: /etc, /boot, /usr and /var.
 
-**DISCLAIM:** using this new feathures can be dangerous for your data:
-* ```syncfrom``` replace all users homes and all servers homes with data from the luck-eggs-backup, Force this data in not appropriate system can easily end in a long disaster recovery;
-* I want stress you again on the fact we are working with a **live filesystem** mounted binded to the **REAL filesystem**. This mean who removing a directory under the nest, usually ```/nest/ovarium/filesystem.squashfs```, mean remove it from the REAL filesystem. So, if something went wrong during the iso production and You remain with live filesystem again binded, the shortest way to solve the problem is simply reboot.
+**DISCLAIM:** using this feathures can be dangerous for your data:
+* ```syncfrom``` replace all users homes and all servers homes with data from the luck-eggs-backup file, Force this data in a not appropriate system can easily end in a long disaster recovery;
 
 ## What distributions can I use?
-eggs was born on Debian strecth/buster, but actually full support Debian from jessie to bookworm/sid, Devuan beowulf, chimaera, daedalus, Ubuntu bionic, focal, jammy and all derivatives including Linux mint, Deepin, neon KDE, etc. Eggs is able to remaster and install manjaro linux too and derivated.
+eggs was born on Debian strecth, buster and following, actually full support Debian from jessie to bookworm/sid, Devuan beowulf, chimaera, daedalus, Ubuntu bionic, focal, jammy and all derivatives from them, including Linux mint, Deepin, neon KDE, etc. Eggs is able to remaster and install manjaro linux too and derivated, i need help to continue the effort to manjaro.
 
 You can read more on the [blog](https://penguins-eggs.net/2021/11/02/distros-that-can-be-remastered-with-eggs/), some examples of iso images remastered with eggs are in the [sourceforge page of the project](https://sourceforge.net/projects/penguins-eggs/files/iso/). 
 
 ## What architecture can I use?
-From eggs v. 8.0.4 I'm releasing eggs in 4 differents architectures: **i386**, **amd64**, **arm64** and **armel**. eggs - at the moment - produce in i386 and amd64, but can be installed already on arm64 and armel. This mean who it is possible to install it in [raspberrypi](https://www.raspberrypi.org/), but again not possible to produce a [Raspberry Pi OS](https://www.raspberrypi.org/software/) egg in armel or arm64. I'm working to complete this step, but need help and experience. 
+Eggs, can be released for differents architectures: **amd64**, **arm64** and **armel**. Actually I'm producing mainly for PCs (amd64) and armel. Someone want to contribute to bring eggs on [raspberrypi](https://www.raspberrypi.org/)?
 
 # Packages
 eggs is released deb packages for i386, amd64, armel and arm64 architectures. Due the characteristic of eggs, they can installed in Debian, Devuan or Ubuntu based distros, withouth worries about different versions, except for the architecture. It include standard scripts for preinst, postinst, prerm and postrm.
