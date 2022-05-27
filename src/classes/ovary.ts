@@ -1114,6 +1114,7 @@ export default class Ovary {
       const dirAddon = path.resolve(__dirname, `../../addons/eggs/adapt/`)
       shx.cp(`${dirAddon}/applications/eggs-adapt.desktop`, `${this.settings.work_dir.merged}/usr/share/applications/`)
       shx.cp(`${dirAddon}/bin/eggs-adapt.sh`, `${this.settings.work_dir.merged}/usr/local/bin/`)
+      shx.chmod('+x', `${this.settings.work_dir.merged}/usr/local/bin/eggs-adapt.sh`)
     }
 
     // ichoice
