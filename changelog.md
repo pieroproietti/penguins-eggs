@@ -21,6 +21,7 @@ Versions are listed on reverse order, the first is the last one. Old versions ar
 
 ### eggs-9.1.27
 * calamares: unified modules eggs-cleanup and remove-link on calamares module eggs-cleanup. This simplify a bit and let to check if /etc/issue and /etc/motd are not present.
+* adapt: the link to adapt the monitor to the size of the VM now work alone work now without eggs.
 
 ### eggs-9.1.26
 * localization: rewrote completely the way to get/edit locale.gen due a prolem with calamares installer
