@@ -47,8 +47,8 @@ sequence:
       - initramfscfg
       - initramfs
       - removeuser
-      - remove-link
       - sources-yolk-unmount
+      - eggs-cleanup
       - umount
 
   # Phase 3 - postinstall.

@@ -33,7 +33,6 @@
       - initramfscfg OK
       - initramfs OK
       - removeuser OK
-      - remove-link // OK
       - sources-yolk-unmount // execCalamaresModule('sources-yolk-unmount')
       - umount // this.umountVfs, this.umountFs
  */
