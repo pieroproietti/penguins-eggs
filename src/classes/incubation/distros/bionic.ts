@@ -84,7 +84,7 @@ export class Bionic {
     await fisherman.modulePackages(this.distro, this.release) //
     await fisherman.moduleRemoveuser(this.user_opt) //
     await fisherman.buildCalamaresModule('sources-yolk-unmount', false)
-    await fisherman.buildCalamaresModule('eggs-cleanup', true)
+    await fisherman.buildCalamaresModule('cleanup', true)
     await fisherman.buildModule('umount')
     await fisherman.buildModule('finished')
   }

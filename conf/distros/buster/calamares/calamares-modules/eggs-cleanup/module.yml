@@ -1,9 +1,0 @@
-# Debian Buster
-# remove-link
----
-type: "job"
-name: "eggs-cleanup"
-interface: "process"
-chroot: false
-command: "/usr/sbin/eggs-cleanup.sh"
-timeout: 8
