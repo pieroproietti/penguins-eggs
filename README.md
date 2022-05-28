@@ -48,7 +48,7 @@ wardrobe was added to eggs on april 2022, it's is a way to guide and consolidate
 
 I hope peoples will be interested in wardrobe and you will end to fork the main repository and add your customizations: together will be possibile to make great steps impossible for a single developer. 
 
-You can read more in wardrobe on [penguin's eggs blog](https://penguins-eggs.net/2022/04/12/wardrobe-colibri-duck-eagle-and-owl/). The result of mine customizations are mostly under [Debian bullseye](https://sourceforge.net/projects/penguins-eggs/files/iso/debian/bullseye/), [Devuan chimaera](https://sourceforge.net/projects/penguins-eggs/files/iso/devuan/chimaera/) and [Ubuntu jammy](https://sourceforge.net/projects/penguins-eggs/files/iso/ubuntu/jammy/) on my sourgeforce page.
+You can read more in wardrobe on [penguin's eggs blog](https://penguins-eggs.net/2022/04/12/wardrobe-colibri-duck-eagle-and-owl/). The results of mine customizations are mostly under [Debian bullseye](https://sourceforge.net/projects/penguins-eggs/files/iso/debian/bullseye/), [Devuan chimaera](https://sourceforge.net/projects/penguins-eggs/files/iso/devuan/chimaera/) and [Ubuntu jammy](https://sourceforge.net/projects/penguins-eggs/files/iso/ubuntu/jammy/) on my sourgeforce page.
 
 ### krill
 eggs include a CLI installer named krill, this let you to produce and install servers configurations. krill use a nice TUI interface using the same, configuration created by eggs for [calamares](calamares.io). This lead to have "about the same" experience installing, from old distros to new ones and for GUI and CLI. To force using krill in place of calamares in a GUI system just: **sudo eggs install --cli**
