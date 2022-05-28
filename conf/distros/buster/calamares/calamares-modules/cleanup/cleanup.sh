@@ -2,11 +2,11 @@
 CHROOT=$(mount | grep proc | grep calamares | awk '{print $3}' | sed -e "s#/proc##g")
 
 if [ -f "$CHROOT"/etc/motd ]; then
-    /usr/bin/sed -i '/^eggs-start-message/,/^\eggs-end-message/{/^#/!{/^\$/!d;};}' "$CHROOT"/etc/motd
+    sed -i '/^eggs-start-message/,/^\eggs-end-message/{/^#/!{/^\$/!d;};}' "$CHROOT"/etc/motd
 fi
 
 if [ -f "$CHROOT"/etc/issue ]; then
-    /usr/bin/sed -i '/^eggs-start-message/,/^\eggs-end-message/{/^#/!{/^\$/!d;};}' "$CHROOT"/etc/issue
+    sed -i '/^eggs-start-message/,/^\eggs-end-message/{/^#/!{/^\$/!d;};}' "$CHROOT"/etc/issue
 fi
 
 rm -r $CHROOT/usr/share/applications/install-debian.desktop

@@ -575,8 +575,7 @@ export default class Pacman {
       await exec(`cp -r ${focal} ${dest}`, echo)
 
       // Poi da buster
-      //await exec(`cp -r ${buster}/calamares/calamares-modules/remove-link ${dest}/calamares/calamares-modules/remove-link`, echo)
-      await exec(`cp -r ${buster}/calamares/calamares-modules/eggs-cleanup ${dest}/calamares/calamares-modules/eggs-cleanup`, echo)
+      await exec(`cp -r ${buster}/calamares/calamares-modules/cleanup ${dest}/calamares/calamares-modules/cleanup`, echo)
       await exec(`cp -r ${buster}/calamares/calamares-modules/sources-yolk ${dest}/calamares/calamares-modules/sources-yolk`, echo)
       await exec(`cp -r ${buster}/calamares/calamares-modules/sources-yolk-unmount ${dest}/calamares/calamares-modules/sources-yolk-unmount`, echo)
       await exec(`cp -r ${buster}/calamares/modules/packages.yml ${dest}/calamares/modules/packages.yml`, echo)
@@ -592,8 +591,7 @@ export default class Pacman {
       const focal = `${rootPen}/conf/distros/focal/*`
       await exec(`cp -r ${focal} ${dest}`, echo)
 
-      //await exec(`cp -r ${buster}/calamares/calamares-modules/remove-link ${dest}/calamares/calamares-modules/remove-link`, echo)
-      await exec(`cp -r ${buster}/calamares/calamares-modules/eggs-cleanup ${dest}/calamares/calamares-modules/eggs-cleanup`, echo)
+      await exec(`cp -r ${buster}/calamares/calamares-modules/cleanup ${dest}/calamares/calamares-modules/cleanup`, echo)
       await exec(`cp -r ${buster}/calamares/calamares-modules/sources-yolk ${dest}/calamares/calamares-modules/sources-yolk`, echo)
       await exec(`cp -r ${buster}/calamares/calamares-modules/sources-yolk-unmount ${dest}/calamares/calamares-modules/sources-yolk-unmount`, echo)
       await exec(`cp -r ${buster}/calamares/modules/packages.yml ${dest}/calamares/modules/packages.yml`, echo)
@@ -609,8 +607,7 @@ export default class Pacman {
       const focal = `${rootPen}/conf/distros/focal/*`
       await exec(`cp -r ${focal} ${dest}`, echo)
 
-      //await exec(`cp -r ${buster}/calamares/calamares-modules/remove-link ${dest}/calamares/calamares-modules/remove-link`, echo)
-      await exec(`cp -r ${buster}/calamares/calamares-modules/eggs-cleanup ${dest}/calamares/calamares-modules/eggs-cleanup`, echo)
+      await exec(`cp -r ${buster}/calamares/calamares-modules/cleanup ${dest}/calamares/calamares-modules/cleanup`, echo)
       await exec(`cp -r ${buster}/calamares/calamares-modules/sources-yolk ${dest}/calamares/calamares-modules/sources-yolk`, echo)
       await exec(`cp -r ${buster}/calamares/calamares-modules/sources-yolk-unmount ${dest}/calamares/calamares-modules/sources-yolk-unmount`, echo)
       await exec(`cp -r ${buster}/calamares/modules/packages.yml ${dest}/calamares/modules/packages.yml`, echo)
@@ -626,8 +623,7 @@ export default class Pacman {
       const focal = `${rootPen}/conf/distros/focal/*`
       await exec(`cp -r ${focal} ${dest}`, echo)
 
-      //await exec(`cp -r ${buster}/calamares/calamares-modules/remove-link ${dest}/calamares/calamares-modules/remove-link`, echo)
-      await exec(`cp -r ${buster}/calamares/calamares-modules/eggs-cleanup ${dest}/calamares/calamares-modules/eggs-cleanup`, echo)
+      await exec(`cp -r ${buster}/calamares/calamares-modules/cleanup ${dest}/calamares/calamares-modules/cleanup`, echo)
       await exec(`cp -r ${buster}/calamares/calamares-modules/sources-yolk ${dest}/calamares/calamares-modules/sources-yolk`, echo)
       await exec(`cp -r ${buster}/calamares/calamares-modules/sources-yolk-unmount ${dest}/calamares/calamares-modules/sources-yolk-unmount`, echo)
       await exec(`cp -r ${buster}/calamares/modules/packages.yml ${dest}/calamares/modules/packages.yml`, echo)
@@ -643,8 +639,7 @@ export default class Pacman {
       const focal = `${rootPen}/conf/distros/focal/*`
       await exec(`cp -r ${focal} ${dest}`, echo)
 
-      //await exec(`cp -r ${buster}/calamares/calamares-modules/remove-link ${dest}/calamares/calamares-modules/remove-link`, echo)
-      await exec(`cp -r ${buster}/calamares/calamares-modules/eggs-cleanup ${dest}/calamares/calamares-modules/eggs-cleanup`, echo)
+      await exec(`cp -r ${buster}/calamares/calamares-modules/cleanup ${dest}/calamares/calamares-modules/cleanup`, echo)
       await exec(`cp -r ${buster}/calamares/calamares-modules/sources-yolk ${dest}/calamares/calamares-modules/sources-yolk`, echo)
       await exec(`cp -r ${buster}/calamares/calamares-modules/sources-yolk-unmount ${dest}/calamares/calamares-modules/sources-yolk-unmount`, echo)
       await exec(`cp -r ${buster}/calamares/modules/packages.yml ${dest}/calamares/modules/packages.yml`, echo)
@@ -660,8 +655,7 @@ export default class Pacman {
       const focal = `${rootPen}/conf/distros/focal/*`
       await exec(`cp -r ${focal} ${dest}`, echo)
 
-      //await exec(`cp -r ${buster}/calamares/calamares-modules/remove-link ${dest}/calamares/calamares-modules/remove-link`, echo)
-      await exec(`cp -r ${buster}/calamares/calamares-modules/eggs-cleanup ${dest}/calamares/calamares-modules/eggs-cleanup`, echo)
+      await exec(`cp -r ${buster}/calamares/calamares-modules/cleanup ${dest}/calamares/calamares-modules/cleanup`, echo)
       await exec(`cp -r ${buster}/calamares/calamares-modules/sources-yolk ${dest}/calamares/calamares-modules/sources-yolk`, echo)
       await exec(`cp -r ${buster}/calamares/calamares-modules/sources-yolk-unmount ${dest}/calamares/calamares-modules/sources-yolk-unmount`, echo)
       await exec(`cp -r ${buster}/calamares/modules/packages.yml ${dest}/calamares/modules/packages.yml`, echo)

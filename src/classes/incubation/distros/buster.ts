@@ -84,7 +84,7 @@ export class Buster {
     await fisherman.moduleRemoveuser(this.user_opt)
     await fisherman.buildCalamaresModule('dpkg-unsafe-io-undo', false)
     await fisherman.buildCalamaresModule('sources-yolk-unmount', false)
-    await fisherman.buildCalamaresModule('eggs-cleanup', true)
+    await fisherman.buildCalamaresModule('cleanup', true)
     await fisherman.buildModule('umount')
     await fisherman.moduleFinished()
   }

@@ -38,9 +38,9 @@ disable-cancel-during-exec: false
 quit-at-end: false
 
 instances:
-- id:       eggs-cleanup
+- id:       cleanup
   module:   shellprocess
-  config:   shellprocess_eggs-cleanup.conf
+  config:   shellprocess_cleanup.conf
 
 sequence:
   # Phase 1 - prepare.
@@ -88,7 +88,7 @@ sequence:
       # dpkg-unsafe-io-undo
       - removeuser
       - sources-yolk-unmount
-      - eggs-cleanup
+      - cleanup
       - umount
 
   # Phase 3 - postinstall.

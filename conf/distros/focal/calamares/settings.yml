@@ -58,7 +58,7 @@ sequence:
       - packages
       - removeuser
       #  - shellprocess@logs
-      - eggs-cleanup
+      - cleanup
       - sources-yolk-unmount
       - umount
   - show:

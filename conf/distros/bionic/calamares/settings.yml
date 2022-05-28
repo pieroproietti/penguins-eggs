@@ -39,8 +39,8 @@ sequence:
       - add386arch
       - packages
       - removeuser
-      - eggs-cleanup
       - sources-yolk-unmount
+      - cleanup
       - umount
   - show:
       - finished
