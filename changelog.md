@@ -19,7 +19,7 @@ You can follow the project also consulting the [commit history](https://github.c
 Versions are listed on reverse order, the first is the last one. Old versions are moved to [versions](https://sourceforge.net/projects/penguins-eggs/files/packages-deb/versions/). 
 
 ### eggs-9.1.28
-* calamares: from eggs-cleanup to cleanup and remove path to sed in in the cleanup.sh script becouse live in different position on Devuan
+* calamares: renamed eggs-cleanup to cleanup; removed complete path to run sed in the script cleanup.sh, becouse a differents paths in Devuan and others
 
 ### eggs-9.1.27
 * calamares: unified modules eggs-cleanup and remove-link on calamares module eggs-cleanup. This simplify a bit and let to check if /etc/issue and /etc/motd are not present.
