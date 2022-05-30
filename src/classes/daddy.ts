@@ -106,8 +106,10 @@ export default class Daddy {
 
         case 'max': {
           const filter = 'x86'
-          if (process.arch === 'armel') {
-            const filter = 'ARM'
+          if (process.arch === 'arm') {
+            const filter = 'ARM' // to check
+          } else if (process.arch === 'arm64') {
+            const filter = 'ARM64' // to check
           }
 
           config.compression = 'xz -Xbcj ' + filter

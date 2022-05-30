@@ -252,7 +252,7 @@ export default class Pacman {
    */
   static isCalamaresAvailable(): boolean {
     let result = this.distro().isCalamaresAvailable
-    if (process.arch === 'armel' || process.arch === 'arm64') {
+    if (process.arch === 'arm' || process.arch === 'arm64') {
       result = false
     }
 
