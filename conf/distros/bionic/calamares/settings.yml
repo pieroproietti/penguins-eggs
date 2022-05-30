@@ -3,7 +3,7 @@
 # Syntax is YAML 1.2
 ---
 # "local" is LIBDIR/calamares/modules with settings in SHARE/calamares/modules
-modules-search: [local, /usr/lib/calamares/modules]
+modules-search: [local, /usr/lib/calamares/modules, /usr/lib/x86_64-linux-gnu/calamares/modules]
 
 sequence:
   - show:
@@ -18,7 +18,7 @@ sequence:
       - mount
       - unpackfs
       - sources-yolk
-      - {{hasSystemd}}machineid
+      {{hasSystemd}}machineid
       - fstab
       - locale
       - keyboard
