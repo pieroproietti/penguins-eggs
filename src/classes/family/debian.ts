@@ -27,13 +27,13 @@ export default class Debian {
    */
   static isInstalledXorg(): boolean {
     let test = 'xserver-xorg-core'
-    if (Pacman.distro().codenameLikeId === 'bionic') {
-      /**
+    // if (Pacman.distro().codenameLikeId === 'bionic') {
+      /*
        * BUT_ on Ubuntu bionic we have:
        * xserver-xorg-core-hwe-18.04
        */
-      test = 'xserver-xorg-core-hwe-18.04'
-    }
+      // test = 'xserver-xorg-core-hwe-18.04'
+    //}
 
     return this.packageIsInstalled(test)
   }
