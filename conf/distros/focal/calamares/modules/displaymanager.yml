@@ -1,4 +1,4 @@
-# Ubuntu jammy 22.04
+# Ubuntu bionic 18.04
 ---
 displaymanagers:
   - sddm
