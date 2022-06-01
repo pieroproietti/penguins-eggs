@@ -81,7 +81,7 @@ export default class Config extends Command {
    *
    * @param verbose
    */
-  static async thatWeNeed(nointeractive = false, verbose = false): Promise<IInstall> {
+  static async thatWeNeed(nointeractive = false, verbose = false, backup = false): Promise<IInstall> {
     const i = {} as IInstall
 
     i.distroTemplate = !Pacman.distroTemplateCheck()
@@ -90,12 +90,15 @@ export default class Config extends Command {
       i.efi = !Pacman.isUefi()
     }
 
-    if (!(await Pacman.calamaresCheck()) && Pacman.isInstalledGui() && Pacman.isCalamaresAvailable()) {
-      if (!Pacman.packageIsInstalled('live-installer')) {
-        Utils.warning('config: you are on a graphic system, I suggest to install the GUI installer calamares')
-        i.calamares = nointeractive ? true : await Utils.customConfirm('Want You install calamares?')
+    if (!backup) {
+      if (!(await Pacman.calamaresCheck()) && Pacman.isInstalledGui() && Pacman.isCalamaresAvailable()) {
+        if (!Pacman.packageIsInstalled('live-installer')) {
+          Utils.warning('config: you are on a graphic system, I suggest to install the GUI installer calamares')
+          i.calamares = nointeractive ? true : await Utils.customConfirm('Want You install calamares?')
+        }
       }
     }
+
 
     i.configurationInstall = !Pacman.configurationCheck()
     if (!i.configurationInstall) {

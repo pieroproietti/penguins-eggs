@@ -148,7 +148,8 @@ export default class Produce extends Command {
         theme = flags.theme
       }
 
-      const i = await Config.thatWeNeed(verbose)
+      const nointeractive = false
+      const i = await Config.thatWeNeed(nointeractive, verbose, backup)
       if ((i.needApt || i.configurationInstall || i.configurationRefresh || i.distroTemplate) && (await Utils.customConfirm('Select yes to continue...'))) {
         await Config.install(i, verbose)
       }

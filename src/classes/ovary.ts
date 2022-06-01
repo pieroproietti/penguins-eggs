@@ -217,6 +217,8 @@ export default class Ovary {
 
       if (backup) {
         await exec('eggs syncto', Utils.setEcho(true))
+        Utils.warning(`Waiting 10s, before to move ${luksFile} in ${this.settings.config.snapshot_dir}ovarium/iso/live`)
+        await exec('sleep 10', Utils.setEcho(false))
         Utils.warning(`moving ${luksFile} in ${this.settings.config.snapshot_dir}ovarium/iso/live`)
         await exec(`mv ${luksFile} ${this.settings.config.snapshot_dir}ovarium/iso/live`, this.echo)
       }
