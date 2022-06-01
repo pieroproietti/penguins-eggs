@@ -14,6 +14,13 @@ penguins-eggs
 
 Pleas don't use this package for installations, they have just the pourpouse to be TESTED and can be extremally BUGGED!!!
 
+# Marius
+
+This is eggs-9.1.29 tested against your machine. 
+
+To install just download it, and install with **dpkg -i eggs_9.1.29_amd64.deb++.
+
+
 # Jon
 
 waydroid init it's a long question here... about 700 KB download, there is a way to specific a path to download the lineageimage?
