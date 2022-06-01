@@ -184,6 +184,8 @@ export default class Syncto extends Command {
                 }
             }
         }
+        totalSize=totalSize*1.1
+        
         console.log(`Total\t\t\t\t\t\t\tsize: ${Utils.formatBytes(totalSize)} \tBytes: ${totalSize}`)
 
         /**
@@ -193,7 +195,7 @@ export default class Syncto extends Command {
         let volumeSize = totalSize * 1.2 + binaryHeaderSize
 
         // Deciding blockSize and blocks
-        let blockSize = 1024
+        let blockSize = 512
         let blocks = Math.ceil(volumeSize / blockSize)
 
         // We need a minimum size of 32 MB
