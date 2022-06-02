@@ -31,6 +31,7 @@ import { exec } from '../lib/utils'
 import { access } from 'fs/promises'
 import { constants } from 'fs'
 import Users from '../classes/users'
+import { use } from 'chai'
 
 /**
  * 
@@ -154,8 +155,10 @@ export default class Syncto extends Command {
             var line = passwd[i].split(':')
             const users = new Users(line[0], line[1], line[2], line[3], line[4], line[5], line[6])
             await users.getValues()
-            if (users.password !== undefined) {
-                usersArray.push(users)
+            if ( parseInt(users.uid) >= 1000) {
+                if (users.password !== undefined) {
+                    usersArray.push(users)
+                }
             }
         }
         return usersArray
