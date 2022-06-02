@@ -1,4 +1,4 @@
-9.enguins-eggs
+Penguins-eggs
 =============
 
 ## Penguin&#39;s eggs are generated and new birds are ready to fly...
@@ -10,13 +10,16 @@
 [![deb](https://img.shields.io/badge/deb-packages-orange)](https://sourceforge.net/projects/penguins-eggs/files/packages-deb)
 [![iso](https://img.shields.io/badge/iso-images-orange)](https://sourceforge.net/projects/penguins-eggs/files/iso)
 
-# Penguin's eggs Debian TESTING package
+# Penguin's eggs Debian TESTING packages
 
-Pleas don't use this package for installations, they have just the pourpouse to be TESTED and can be extremally BUGGED!!!
+Please, don't use this package for installations, they have just the pourpouse to be TESTED and can be extremally BUGGED!!!
 
-# Marius
+# For Marius
 
-## 2 Jun, 11:51 last version eggs-9.1.29-1.deb
+## 2 Jun, 17:23 eggs-9.1.29-2.deb
+Just a few cosmetic changes.
+
+## 2 Jun, 11:51 eggs-9.1.29-1.deb
 
 I just backup and reinstalled your kiosk without any issues.
 
