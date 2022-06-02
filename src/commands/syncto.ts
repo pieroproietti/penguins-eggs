@@ -50,7 +50,7 @@ export default class Syncto extends Command {
 
     luksMountpoint = '/tmp/eggs-backup'
 
-    static description = 'Backup users, server and datas to luks-eggs-backup'
+    static description = `saving users' datas and accounts on LUKS volume`
 
     static flags = {
         delete: Flags.string({ description: 'rsync --delete delete extraneous files from dest dirs' }),
@@ -120,7 +120,7 @@ export default class Syncto extends Command {
         if (this.verbose) {
             Utils.warning('backup')
         }
-        Utils.warning(`Coping users and services data on ${this.luksFile}`)
+        Utils.warning(`Saving users' data on ${this.luksFile}`)
         const usersArray = await this.usersFill()
         for (let i = 0; i < usersArray.length; i++) {
             if (usersArray[i].saveIt) {
@@ -137,6 +137,7 @@ export default class Syncto extends Command {
                 }
             }
         }
+        Utils.warning(`Saving users' accounts on ${this.luksFile}`)
         await exec(`mkdir -p ${this.luksMountpoint}/etc`, this.echo)
         await exec(`cp /etc/passwd ${this.luksMountpoint}/etc`, this.echo)
         await exec(`cp /etc/shadow ${this.luksMountpoint}/etc`, this.echo)
@@ -184,7 +185,6 @@ export default class Syncto extends Command {
                 }
             }
         }
-
         console.log(`Total\t\t\t\t\t\t\tsize: ${Utils.formatBytes(totalSize)} \tBytes: ${totalSize}`)
 
         /**
@@ -218,10 +218,10 @@ export default class Syncto extends Command {
         }
         await exec(`losetup ${firstUnusedDevice} ${this.luksFile}`, this.echo)
 
-        Utils.warning('Enter a large string of random text below to setup the pre-encryption')
+        // Utils.warning('Enter a large string of random text below to setup the pre-encryption')
         await exec(`cryptsetup -y -v --type luks2 luksFormat  ${this.luksFile}`, Utils.setEcho(true))
 
-        Utils.warning(`Enter the desired passphrase for the encrypted ${this.luksName} below`)
+        // Utils.warning(`Enter the desired passphrase for the encrypted ${this.luksName} below`)
         let crytoSetup = await exec(`cryptsetup luksOpen --type luks2 ${this.luksFile} ${this.luksName}`, Utils.setEcho(true))
         if (crytoSetup.code !== 0) {
             Utils.pressKeyToExit(`Error: ${crytoSetup.code} ${crytoSetup.data}`)
@@ -241,7 +241,7 @@ export default class Syncto extends Command {
      */
     async luksOpen() {
         if (!fs.existsSync(this.luksDevice)) {
-            Utils.warning(`LUKS open volume: ${this.luksName}`)
+            // Utils.warning(`LUKS open volume: ${this.luksName}`)
             await exec(`cryptsetup luksOpen --type luks2 ${this.luksFile} ${this.luksName}`, Utils.setEcho(true))
         } else {
             Utils.warning(`LUKS volume: ${this.luksName} already open`)
