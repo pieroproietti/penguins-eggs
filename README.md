@@ -585,7 +585,7 @@ _See code: [src/commands/syncfrom.ts](https://github.com/pieroproietti/penguins-
 
 ## `eggs syncto`
 
-Backup users, server and datas to luks-eggs-backup
+saving users' datas and accounts on LUKS volume
 
 ```
 USAGE
@@ -598,7 +598,7 @@ FLAGS
   --delete=<value>    rsync --delete delete extraneous files from dest dirs
 
 DESCRIPTION
-  Backup users, server and datas to luks-eggs-backup
+  saving users' datas and accounts on LUKS volume
 
 EXAMPLES
   $ sudo eggs syncto

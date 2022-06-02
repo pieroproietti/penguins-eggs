@@ -107,8 +107,6 @@ export default class Ovary {
 
     let luksName = 'luks-eggs-backup'
     let luksFile = `/tmp/${luksName}`
-    // let luksDevice = `/dev/mapper/${luksName}`
-    // let luksMountpoint = `/mnt`
 
     if (this.familyId === 'debian') {
       const yolk = new Repo()
@@ -143,8 +141,9 @@ export default class Ovary {
         await bleach.clean(verbose)
       }
 
+      Utils.warning('eggs will remove users accounts and datas from live')
       if (backup) {
-        console.log(`eggs will remove all users and services data from live. Following datas will included on a crypted LUKS volume:`)
+        console.log(`Follow users' data and accounts will be saved in a crypted LUKS volume:`)
         const users = await this.usersFill()
         for (let i = 0; i < users.length; i++) {
           if (users[i].saveIt) {
@@ -158,8 +157,6 @@ export default class Ovary {
             }
           }
         }
-      } else {
-        Utils.warning('eggs will remove all the users data from live, but all services data will be included uncrypted')
       }
 
       /**
