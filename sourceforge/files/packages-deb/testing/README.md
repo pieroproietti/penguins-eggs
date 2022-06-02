@@ -16,13 +16,13 @@ Pleas don't use this package for installations, they have just the pourpouse to 
 
 # Marius
 
-## 2 Jun, 11:51  last version eggs-9.1.29-a,deb
+## 2 Jun, 11:51 last version eggs-9.1.29-1.deb
 
 I just backup and reinstalled your kiosk without any issues.
 
-I solve the problem with lightdm, I don't had that in desktop versions before, but in all the ways it depend on the fact I was used to removed lightdm home, and, probably the line we add for user live.
+Solve the problem with lightdm, I don't had that in desktop versions before, but in all the ways it depend on the fact I was used to removed lightdm home, and - probably - the add of user live in the kiosk configuration.
 
-Again, trying to solve I make a little modification in ```/etc/lightdm/lightdm.conf```  SeatDefailt became [Seat.*]
+Again, trying to solve I make a little modification in ```/etc/lightdm/lightdm.conf```, [SeatDefailt] became [Seat.*]
 
 ```
 [Seat.*]
@@ -32,15 +32,7 @@ autologin-user-timeout=0
 autologin-session=lightdm-autologin
 ```
 
-
-
-
-
-
-
-This is eggs-9.1.29 tested against your machine. 
-
-To install just download it, and install with **dpkg -i eggs_9.1.29_amd64.deb++.
+Test it, and I think we can add it on stable, with name eggs-9.1.29.deb
 
 
 # Jon
