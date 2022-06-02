@@ -233,7 +233,7 @@ export default class Hatching {
             // restoring users data
             message = "Restore private data from backup "
             percent = 0.37
-            let cmd ='eggs syncfrom --rootdir /tmp/calamares-krill-root/'
+            let cmd = 'eggs syncfrom --rootdir /tmp/calamares-krill-root/'
             try {
                redraw(<Install message={message} percent={percent} spinner={true} />)
                await exec(cmd, Utils.setEcho(true))
@@ -284,7 +284,7 @@ export default class Hatching {
          }
 
          // locale
-         
+
 
          // keyboard
          message = "settings keyboard "
@@ -384,21 +384,20 @@ export default class Hatching {
             await Utils.pressKeyToExit(JSON.stringify(error))
          }
 
-         // delLiveUser
-         message = "Removing user live "
-         percent = 0.70
-         try {
-            redraw(<Install message={message} percent={percent} />)
-            await this.delLiveUser()
-         } catch (error) {
-            await Utils.pressKeyToExit(JSON.stringify(error))
-         }
-
 
          /**
-          * if NOT restore users data
+          * IF NOT RESTORE USERS DATA
           */
          if (!fs.existsSync(this.luksFile)) {
+            // delLiveUser
+            message = "Removing user live "
+            percent = 0.70
+            try {
+               redraw(<Install message={message} percent={percent} />)
+               await this.delLiveUser()
+            } catch (error) {
+               await Utils.pressKeyToExit(JSON.stringify(error))
+            }
 
             // addUser
             message = "Adding user "
@@ -554,13 +553,14 @@ adduser ${name} \
    async delLiveUser() {
       if (Utils.isLive()) {
          const user: string = this.settings.config.user_opt
-         let cmd = `#!/bin/sh\ngetent passwd "${user}"  > /dev/null`
+
          let userExists = false
          try {
+            const cmd = `#!/bin/sh\ngetent passwd "${user}"  > /dev/null`
             await exec(cmd, Utils.setEcho(this.verbose))
             userExists = true
          } catch (error) {
-            // console.log(error)
+            console.log(error)
          } finally {
             if (userExists) {
                const cmd = `chroot ${this.installTarget} deluser --remove-home ${user} ${this.toNull}`
