@@ -155,10 +155,8 @@ export default class Syncto extends Command {
             var line = passwd[i].split(':')
             const users = new Users(line[0], line[1], line[2], line[3], line[4], line[5], line[6])
             await users.getValues()
-            if ( parseInt(users.uid) >= 1000) {
-                if (users.password !== undefined) {
-                    usersArray.push(users)
-                }
+            if (users.password !== undefined) {
+                usersArray.push(users)
             }
         }
         return usersArray
@@ -186,7 +184,7 @@ export default class Syncto extends Command {
                 }
             }
         }
-        
+
         console.log(`Total\t\t\t\t\t\t\tsize: ${Utils.formatBytes(totalSize)} \tBytes: ${totalSize}`)
 
         /**
@@ -224,7 +222,7 @@ export default class Syncto extends Command {
         await exec(`cryptsetup -y -v --type luks2 luksFormat  ${this.luksFile}`, Utils.setEcho(true))
 
         Utils.warning(`Enter the desired passphrase for the encrypted ${this.luksName} below`)
-            let crytoSetup = await exec(`cryptsetup luksOpen --type luks2 ${this.luksFile} ${this.luksName}`, Utils.setEcho(true))
+        let crytoSetup = await exec(`cryptsetup luksOpen --type luks2 ${this.luksFile} ${this.luksName}`, Utils.setEcho(true))
         if (crytoSetup.code !== 0) {
             Utils.pressKeyToExit(`Error: ${crytoSetup.code} ${crytoSetup.data}`)
         }

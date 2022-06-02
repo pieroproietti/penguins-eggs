@@ -1,4 +1,4 @@
-penguins-eggs
+9.enguins-eggs
 =============
 
 ## Penguin&#39;s eggs are generated and new birds are ready to fly...
@@ -15,6 +15,28 @@ penguins-eggs
 Pleas don't use this package for installations, they have just the pourpouse to be TESTED and can be extremally BUGGED!!!
 
 # Marius
+
+## 2 Jun, 11:51  last version eggs-9.1.29-a,deb
+
+I just backup and reinstalled your kiosk without any issues.
+
+I solve the problem with lightdm, I don't had that in desktop versions before, but in all the ways it depend on the fact I was used to removed lightdm home, and, probably the line we add for user live.
+
+Again, trying to solve I make a little modification in ```/etc/lightdm/lightdm.conf```  SeatDefailt became [Seat.*]
+
+```
+[Seat.*]
+autologin-guest=false
+autologin-user=user
+autologin-user-timeout=0
+autologin-session=lightdm-autologin
+```
+
+
+
+
+
+
 
 This is eggs-9.1.29 tested against your machine. 
 
