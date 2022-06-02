@@ -20,9 +20,9 @@ Pleas don't use this package for installations, they have just the pourpouse to 
 
 I just backup and reinstalled your kiosk without any issues.
 
-Solve the problem with lightdm, I don't had that in desktop versions before, but in all the ways it depend on the fact I was used to removed lightdm home, and - probably - the add of user live in the kiosk configuration.
+We solved the problem with lightdm: I don't had this before in normal desktop versions, but in all the ways was depending on the fact I was used to removed lightdm home (/var/lib/lightdm), and - probably - it's necessary to add user live in the kiosk configuration.
 
-Again, trying to solve I make a little modification in ```/etc/lightdm/lightdm.conf```, [SeatDefailt] became [Seat.*]
+Again, trying to solve the problems, I make a little modification in ```/etc/lightdm/lightdm.conf```, [SeatDefailt] became [Seat.*]
 
 ```
 [Seat.*]
@@ -32,7 +32,7 @@ autologin-user-timeout=0
 autologin-session=lightdm-autologin
 ```
 
-Test it, and I think we can add it on stable, with name eggs-9.1.29.deb
+Test it, I think we can add it on stable, with name eggs-9.1.29.deb
 
 
 # Jon
