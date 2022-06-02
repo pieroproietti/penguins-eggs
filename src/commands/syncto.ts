@@ -121,7 +121,6 @@ export default class Syncto extends Command {
         }
         Utils.warning(`Coping users and services data on ${this.luksFile}`)
         const usersArray = await this.usersFill()
-        const cmds: string[] = []
         for (let i = 0; i < usersArray.length; i++) {
             if (usersArray[i].saveIt) {
                 if (fs.existsSync(usersArray[i].home)) {
@@ -184,7 +183,6 @@ export default class Syncto extends Command {
                 }
             }
         }
-        totalSize=totalSize*1.1
         
         console.log(`Total\t\t\t\t\t\t\tsize: ${Utils.formatBytes(totalSize)} \tBytes: ${totalSize}`)
 
@@ -192,7 +190,7 @@ export default class Syncto extends Command {
          * after we get size, we can start building luks-volume
          */
         const binaryHeaderSize = 4194304
-        let volumeSize = totalSize * 1.2 + binaryHeaderSize
+        let volumeSize = totalSize * 1.5 + binaryHeaderSize
 
         // Deciding blockSize and blocks
         let blockSize = 512
@@ -223,7 +221,7 @@ export default class Syncto extends Command {
         await exec(`cryptsetup -y -v --type luks2 luksFormat  ${this.luksFile}`, Utils.setEcho(true))
 
         Utils.warning(`Enter the desired passphrase for the encrypted ${this.luksName} below`)
-        let crytoSetup = await exec(`cryptsetup luksOpen --type luks2 ${this.luksFile} ${this.luksName}`, Utils.setEcho(true))
+            let crytoSetup = await exec(`cryptsetup luksOpen --type luks2 ${this.luksFile} ${this.luksName}`, Utils.setEcho(true))
         if (crytoSetup.code !== 0) {
             Utils.pressKeyToExit(`Error: ${crytoSetup.code} ${crytoSetup.data}`)
         }
