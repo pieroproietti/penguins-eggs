@@ -28,7 +28,6 @@ remove --purge --autoremove --help --verbose
 syncfrom --delete --file --rootdir --help --verbose
 syncto --delete --file --help --verbose
 tools:clean --help --verbose
-tools:locales --help --reinstall --verbose
 tools:skel --help --user --verbose
 tools:stat --help --month --year
 tools:yolk --help --verbose
@@ -38,8 +37,8 @@ wardrobe:ironing --wardrobe --verbose --help
 wardrobe:list --verbose --help
 wardrobe:show --wardrobe --json --verbose --help
 wardrobe:wear --wardrobe --no_accessories --no_firmwares --silent --verbose --help
-autocomplete --refresh-cache
 help --nested-commands
+autocomplete --refresh-cache
 version 
 "
 
