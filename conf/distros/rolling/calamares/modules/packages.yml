@@ -1,7 +1,7 @@
-# Debian Buster
+# manjaro
 # packages
 ---
-backend: apt
+backend: pamac
 
 operations:
 {{remove}}
