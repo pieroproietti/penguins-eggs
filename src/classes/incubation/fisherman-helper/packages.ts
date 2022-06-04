@@ -14,6 +14,10 @@ export function remove(distro: IDistro): string {
   removePackages.push("calamares")
   removePackages.push("eggs")
 
+  if (distro.distroLike === 'Arch') {
+    removePackages = ["calamares", "penguins-eggs"]
+  }
+
   const mustRemain = ["coreutils", "cryptsetup",  "curl", "dosfstools", "git","parted",  "rsync"]
 
   let sorted= []
