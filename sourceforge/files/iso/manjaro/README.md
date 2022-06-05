@@ -23,8 +23,28 @@ All ISOs include eggs, you can udate it with: ```sudo eggs update```.
 
 [Manjaro](https://manjaro.org/) is a professionally made operating system that is a suitable replacement for Windows or MacOS. Multiple Desktop Environments are available through our Official and Community editions.
 
-* **egg-of-manjarolinux-qonos-xfce** - remastered version from manjaro-xfce-21.2.1-220103-linux515.iso
-* **egg-of-manjarolinux-qonos-kde** - remastered version from manjaro-kde-21.2.1-220103-linux515.iso
+* **egg-of-manjarolinux-qonos-xfce**
+* **egg-of-manjarolinux-qonos-kde**
+* **egg-of-manjarolinux-qonos-gnome**
+* **egg-of-manjarolinux-qonos-colibri** (developer edition)
+
+To use colibri and contribute to eggs, install it on your computer or VM. After that:
+
+```
+git clone https://github.com/pieroproietti/penguins-eggs
+cd penguins-eggs
+pnpm i
+```
+At this point You can use eggs from the current directory, simply use ./eggs . Example:
+
+```
+sudo ./eggs dad -d
+sudo ./eggs calamares --install
+sudo ./eggs produce --fast
+```
+And will get your iso.
+
+
 
 ## More informations:
 
