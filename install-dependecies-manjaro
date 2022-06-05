@@ -1,0 +1,21 @@
+pamac install \
+vscode \
+nodejs \
+pnpm \
+manjaro-tools-iso \
+arch-install-scripts \
+awk \
+dosfstools \
+e2fsprogs \
+erofs-utils \
+findutils \
+gzip \
+libarchive \
+libisoburn \
+mtools \
+openssl \
+rsync \
+sed \
+syslinux \
+squashfs-tools
+
