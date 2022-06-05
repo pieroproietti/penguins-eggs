@@ -56,7 +56,7 @@ export default class Incubator {
   /**
    * config
    */
-  async config(release = true) {
+  async config(release = false) {
     const verbose = true
     const echo = Utils.setEcho(verbose)
 
@@ -127,6 +127,7 @@ export default class Incubator {
        * Manjaro
        */
       case 'rolling': {
+        release = true
         const rolling = new Rolling(this.installer, this.remix, this.distro, release, this.user_opt, this.verbose)
         await rolling.create()
 
