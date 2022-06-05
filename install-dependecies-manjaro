@@ -1,10 +1,10 @@
 # eggs develop tools
 #
-# sudo pamac install \
-# bash-completion \
-# nodejs \
-# pnpm \
-# vscode
+sudo pamac install \
+bash-completion \
+nodejs \
+pnpm \
+vscode
 
 
 # eggs dependencies
@@ -40,6 +40,6 @@ sudo ./eggs dad -d
 # calamares installation and configuration
 sudo ./eggs calamares --install
 
-# Finally we build out iso
-sudo ./eggs produce --fast
+# finally we build out iso
+sudo ./eggs produce --fast --addons adapt
 
