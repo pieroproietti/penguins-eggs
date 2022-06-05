@@ -1,11 +1,17 @@
-pamac install \
-vscode \
-nodejs \
-pnpm \
-bash-completion \
-manjaro-tools-iso \
-arch-install-scripts \
+# eggs develop tools
+#
+# sudo pamac install \
+# bash-completion \
+# nodejs \
+# pnpm \
+# vscode
+
+
+# eggs dependencies
+#
+sudo pamac install \
 awk \
+arch-install-scripts \
 dosfstools \
 e2fsprogs \
 erofs-utils \
@@ -13,10 +19,27 @@ findutils \
 gzip \
 libarchive \
 libisoburn \
+manjaro-tools-iso \
 mtools \
 openssl \
 rsync \
 sed \
 syslinux \
 squashfs-tools
+
+# all the follow commands
+# must run in ~/penguins-eggs
+cd ~/penguins-eggs
+
+# installing node modules
+pnpm i
+
+# default configuration for eggs
+sudo ./eggs dad -d
+
+# calamares installation and configuration
+sudo ./eggs calamares --install
+
+# Finally we build out iso
+sudo ./eggs produce --fast
 
