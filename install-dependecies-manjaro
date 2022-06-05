@@ -2,6 +2,7 @@ pamac install \
 vscode \
 nodejs \
 pnpm \
+bash-completion \
 manjaro-tools-iso \
 arch-install-scripts \
 awk \
