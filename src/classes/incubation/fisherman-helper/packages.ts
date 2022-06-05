@@ -15,7 +15,7 @@ export function remove(distro: IDistro): string {
   removePackages.push("eggs")
 
   if (distro.distroLike === 'Arch') {
-    removePackages = ["calamares", "penguins-eggs"]
+    removePackages = ["calamares"] // penguins-eggs, manjaro-tools-iso, arch-install-scripts 
   }
 
   const mustRemain = ["coreutils", "cryptsetup",  "curl", "dosfstools", "git","parted",  "rsync"]
