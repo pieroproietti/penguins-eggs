@@ -56,7 +56,7 @@ export default class Incubator {
   /**
    * config
    */
-  async config(release = false) {
+  async config(release = true) {
     const verbose = true
     const echo = Utils.setEcho(verbose)
 
