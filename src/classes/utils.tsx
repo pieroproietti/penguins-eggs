@@ -666,7 +666,8 @@ unknown target format aarch64-efi
       console.log(`addUser cmdPass: ${cmdPass}`)
       shx.exec(cmdPass)
 
-      const cmdSudo = `chroot ${target} addgroup ${username} sudo`
+      const cmdSudo = `chroot ${target} usermod  -G sudo -a ${username}`
+
       console.log(`addUser cmdSudo: ${cmdSudo}`)
       shx.exec(cmdSudo, { silent: true })
    }
