@@ -139,6 +139,7 @@ export default class Xdg {
 
       /**
        * GDM/GDM3
+       * in manjaro è /etc/gdm/custom.conf
        */
       if (Pacman.packageIsInstalled('gdm') || Pacman.packageIsInstalled('gdm3')) {
         let gdmConf = `${chroot}/etc/gdm3`
@@ -149,12 +150,12 @@ export default class Xdg {
         }
 
 
-        if (fs.existsSync(`${chroot}/etc/gdm3/custom.conf`)) {
+        if (fs.existsSync(`${gdmConf}/custom.conf`)) {
           gdmConf += '/custom.conf'
-        } else if (fs.existsSync(`${chroot}/etc/gdm3/daemon.conf`)) {
+        } else if (fs.existsSync(`${gdmConf}/daemon.conf`)) {
           gdmConf += '/daemon.conf'
         } else {
-          gdmConf = `${chroot}/etc/gdm3/custom.conf`
+          gdmConf = `}/etc/${gdmConf}/custom.conf`
         }
 
         const content = `[daemon]\nAutomaticLoginEnable=true\nAutomaticLogin=${newuser}\n`
