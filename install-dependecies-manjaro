@@ -45,20 +45,26 @@ sudo cp ~/penguins-eggs/scripts/eggs.bash /usr/share/bash-completion/completions
 sudo cp ~/penguins-eggs/scripts/_eggs /usr/share/zsh/functions/Completion/Zsh/
 # sudo cp ~/penguins-eggs/manpages/doc/man/eggs.1.gz /usr/share/man/man1
 
-exit
+
 # all the follow commands
 # must run in ~/penguins-eggs
 cd ~/penguins-eggs
 
 # installing node modules
 pnpm i
+pnpm build
 
-# default configuration for eggs
-sudo ./eggs dad -d
-
-# calamares installation and configuration
-sudo ./eggs calamares --install
-
-# finally we build out iso
-sudo ./eggs produce --fast --addons adapt
+clear
+./eggs version
+echo 
+echo "to produce an iso:"
+echo 
+echo "1 create default configuration for eggs"
+echo "sudo ./eggs dad -d"
+echo 
+echo "2 install calamares "
+sudo "./eggs calamares --install"
+echo 
+echo "3 finally we build our iso"
+echo "sudo ./eggs produce --fast --addons adapt"
 
