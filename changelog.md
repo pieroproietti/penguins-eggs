@@ -22,6 +22,8 @@ Versions are listed on reverse order, the first is the last one. Old versions ar
 * nodejs: restart to use node v. 16.x to be compatible with Ubuntu bionic glibc.2.27 
 * focal, bionic: rebuild naked CLI version for focal and bionic and added some species:
 * manjaro: bug fix module packages.conf
+* package: added lvm2 to dependencies
+. distros: added linuxmint vanessa
 
 ### eggs-9.1.28
 * calamares: renamed eggs-cleanup to cleanup; removed complete path to run sed in the script cleanup.sh, becouse a differents paths in Devuan and others

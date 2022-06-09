@@ -44,29 +44,20 @@ export function array2spaced(packages: string[]) {
  */
 export const depCommon = [
   'cryptsetup',
-  'dosfstools',
-  'dpkg-dev', // occorre per creare la repository yolk
-  'isolinux',
-  /**
-   * live-boot-initramfs-tools, live-boot
-   */
-  'live-boot',
-  'live-boot-initramfs-tools',
-  /**
-   * dracut
-   */
-  // 'dracut',
-  'parted',
-  'rsync',
-  'squashfs-tools',
-  'syslinux-common',
+  'curl', // wardrobe
+  'dosfstools', // eggs
+  'dpkg-dev', // yolk
+  'isolinux', // eggs
+  'git', // wardrobe
+  'live-boot', // eggs
+  'live-boot-initramfs-tools', // eggs
+  'lvm2', // pvdisplay in krill
+  'parted', // eggs
+  'rsync', // eggs
+  'squashfs-tools', // eggs
+  'syslinux-common', // eggs
   'coreutils', // whoami
-  'xorriso',
-  /**
-   * wardorbe
-   */
-  'git',
-  'curl'
+  'xorriso' // eggs
 ]
 
 /**
