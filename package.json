@@ -23,7 +23,7 @@
         "inquirer": "^8.2.4",
         "js-yaml": "^4.1.0",
         "mustache": "^4.2.0",
-        "penguins-oclif": "^3.0.1",
+        "penguins-oclif": "^3.0.1-1",
         "react": "^17.0.2",
         "shelljs": "0.8.5",
         "tslib": "^2.4.0"
@@ -47,7 +47,7 @@
         "globby": "^11.1.0",
         "mocha": "^10.0.0",
         "nyc": "^15.1.0",
-        "perrisbrewery": "^0.6.0",
+        "perrisbrewery": "^0.6.3-1",
         "ts-node": "^10.7.0",
         "typedoc": "^0.22.15",
         "typescript": "^4.6.4"
