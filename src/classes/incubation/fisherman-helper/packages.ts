@@ -18,7 +18,7 @@ export function remove(distro: IDistro): string {
     removePackages = ["calamares"] // penguins-eggs, manjaro-tools-iso, arch-install-scripts 
   }
 
-  const mustRemain = ["coreutils", "cryptsetup",  "curl", "dosfstools", "git","parted",  "rsync"]
+  const mustRemain = ["coreutils", "cryptsetup",  "curl", "dosfstools", "git","parted",  "rsync", "lvm2"]
 
   let sorted= []
   for (const elem of removePackages) {
