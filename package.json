@@ -70,8 +70,7 @@
         "/manpages",
         "/oclif.manifest.json",
         "/scripts",
-        "/templates",
-        "/wardrobe.d"
+        "/templates"
     ],
     "homepage": "https://penguins-eggs.net/",
     "keywords": [
