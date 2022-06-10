@@ -50,7 +50,7 @@ export default class Yolk {
     }
 
     // packages we need
-    const packages = ['cryptsetup', 'keyutils']
+    const packages = ['cryptsetup', 'keyutils', 'shim-signed' ] // addes shim-signed
 
     // grub-pc just for amd64 or i386
     if (Utils.machineArch() === 'amd64' || Utils.machineArch() === 'i386') {
