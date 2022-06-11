@@ -1,8 +1,0 @@
-# manjaro
-# packages
----
-backend: pamac
-
-operations:
-{{remove}}
-{{try_install}}
