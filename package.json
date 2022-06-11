@@ -68,8 +68,7 @@
         "/lib",
         "/manpages",
         "mkinitcpio",
-        "/scripts",
-        "/templates"
+        "/scripts"
     ],
     "homepage": "https://penguins-eggs.net/",
     "keywords": [
