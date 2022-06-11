@@ -1,4 +1,6 @@
+# Debian Buster
+# finished
 ---
 restartNowEnabled: true
-restartNowChecked: false
-restartNowCommand: "systemctl reboot"
+restartNowChecked: true
+restartNowCommand: {{restartNowCommand}}
