@@ -61,13 +61,13 @@
         "node": ">=14.0.0"
     },
     "files": [
-        "/assets",
         "/addons",
+        "/assets",
         "/bin",
         "/conf",
         "/lib",
         "/manpages",
-        "/oclif.manifest.json",
+        "mkinitcpio",
         "/scripts",
         "/templates"
     ],
