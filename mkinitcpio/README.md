@@ -1,9 +1,6 @@
-# mkinitcpio-squashfs
+# Hic sunt leones...
 
-## installation
-* ```git clone https://github.com/RegalisTechnologies/mkinitcpio-squashfs```
-* ```cd mkinitcpio-squashfs/dist/archlinux```
-* ```makepkg -si```
+Trying to remove manjaro-tools-iso dependencies.
 
 # manjaro
 edit ```/etc/mkinitcpio.conf``` replaca HOOKS with:
