@@ -25,7 +25,7 @@ export default class Bleach {
     const distro = new Distro()
     if (distro.distroLike === 'Debian' || distro.distroLike === 'Devuan' || (distro.distroLike === 'Ubuntu')) {
       await this.cleanApt(verbose)
-    } else if (distro.distroLike === 'Manjaro') {
+    } else if (distro.distroLike === 'Arch') {
       await exec('paccache -ruk0')
     }
 
