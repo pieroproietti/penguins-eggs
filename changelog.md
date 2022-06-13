@@ -18,7 +18,7 @@ You can follow the project also consulting the [commit history](https://github.c
 ## Changelog
 Versions are listed on reverse order, the first is the last one. Old versions are moved to [versions](https://sourceforge.net/projects/penguins-eggs/files/packages-deb/versions/). 
 
-### eggs-9.1.30
+### eggs-9.1.31
 * focal/jammy: removed in before_bootloader_contest.yml command apt-cd:
 * manjaro: a lot of work on dependencies and package
 * all distros: bugfix module calamares package.yml
