@@ -19,7 +19,9 @@ You can follow the project also consulting the [commit history](https://github.c
 Versions are listed on reverse order, the first is the last one. Old versions are moved to [versions](https://sourceforge.net/projects/penguins-eggs/files/packages-deb/versions/). 
 
 ### eggs-9.1.30
-* removed in before_bootloader_contest.yml command apt-cd
+* focal/jammy: removed in before_bootloader_contest.yml command apt-cd:
+* manjaro: a lot of work on dependencies and package
+* all distros: bugfix module calamares package.yml
 
 ### eggs-9.1.29
 * nodejs: restart to use node v. 16.x to be compatible with Ubuntu bionic glibc.2.27 
