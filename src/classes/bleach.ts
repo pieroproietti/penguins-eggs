@@ -11,6 +11,7 @@ import Utils from './utils'
 
 // libraries
 import { exec } from '../lib/utils'
+import Distro from './distro'
 
 /**
  * Bleach:
@@ -21,7 +22,13 @@ export default class Bleach {
    * @param verbose
    */
   async clean(verbose = false) {
-    await this.cleanApt(verbose)
+    const distro = new Distro()
+    if (distro.distroLike === 'Debian' || distro.distroLike === 'Devuan' || (distro.distroLike === 'Ubuntu')) {
+      await this.cleanApt(verbose)
+    } else if (distro.distroLike === 'Manjaro') {
+      await exec('paccache -ruk0')
+    }
+
     await this.cleanHistory(verbose)
     await this.cleanJournal(verbose)
     await this.cleanSystemCache(verbose)
