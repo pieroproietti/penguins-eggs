@@ -6,3 +6,4 @@ backend: pamac
 operations:
 {{remove}}
 {{try_install}}
+

@@ -57,7 +57,7 @@ export function tryInstall(distro: IDistro): string {
 
   // Da localizzare se presenti
   if (Pacman.packageIsInstalled('hunspell')) {
-    packages += 'hunspell-$LOCALE\n'
+    packages += '    - hunspell-$LOCALE\n'
   }
 
   if (Pacman.packageIsInstalled('libreoffice-base-core')) {
