@@ -16,7 +16,6 @@ sudo cp manjaro-tools/initcpio/script/miso_shutdown /etc/initcpio/
 
 necessary files are:
 
-
 * hooks/miso
 * hooks/miso_pxe_common
 * hooks/miso_pxe_nbd
@@ -25,13 +24,15 @@ necessary files are:
 * hooks/miso_pxe_http
 * hooks/miso_pxe_nf
 
+
 * install/miso
-* installmiso_loop_mnt
+* install/miso_loop_mnt
 * install/ miso_pxe_http
 * install/miso_pxe_nfs
 * install/miso_kms
 * install/miso_pxe_common
 * install/miso_pxe_nbd
 * install/miso_shutdown
+
 
 * script/miso_shutdown
