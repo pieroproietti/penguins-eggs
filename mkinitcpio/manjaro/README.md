@@ -27,4 +27,13 @@ wget https://raw.githubusercontent.com/pieroproietti/penguins-eggs-manjaro/main/
 makepkg -srcCi
 ```
 
-panguins-eggs on [manjaro-forum](https://forum.manjaro.org/t/penguins-eggs-help-needed-for-manjaro-compatibility/96799)
+# Develop and collaborations link
+* penguins-eggs discussion on [manjaro-forum](https://forum.manjaro.org/t/penguins-eggs-help-needed-for-manjaro-compatibility/96799)
+* penguins-eggs PKGBUILD on [community](https://gitlab.manjaro.org/packages/community/penguins-eggs)
+* penguins-eggs PKGBUILD [my proposal](https://github.com/pieroproietti/penguins-eggs-manjaro) (*)
+* penguins-eggs [sources](https://github.com/pieroproietti/penguins-eggs)
+* penguins-eggs [book](https://penguins-eggs.net/book/)
+* penguins-eggs [blog](https://penguins-eggs.net)
+
+(*) Here we refere always to that
+
