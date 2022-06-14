@@ -309,10 +309,7 @@ export default class Hatching {
          message = "networkcfg"
          percent = 0.50
          try {
-
-            if (this.distro.familyId !== 'archlinux') {
-               this.networkcfg()
-            }
+            this.networkcfg()
          } catch (error) {
             await Utils.pressKeyToExit(JSON.stringify(error))
          }
@@ -715,24 +712,30 @@ adduser ${name} \
 
    /**
     * networkcfg
+    * 
+    * we have: 
+    * - debian: /etc/network/interface
+    * - ubuntu: netplan
+    * - manjaro: ? // ip address add 192.168.61/24 + dev enp6s18
     */
    private async networkcfg() {
-
-      const file = this.installTarget + '/etc/network/interfaces'
-      let content = '# created by eggs\n\n'
-      content += 'auto lo\n'
-      content += 'iface lo inet loopback\n\n'
-      // if netplan, don't create entries in /etc/network/interfaces
-      if (!Pacman.packageIsInstalled('netplan.io')) {
-         content += 'auto ' + this.network.iface + '\n'
-         content += 'iface ' + this.network.iface + ' inet ' + this.network.addressType + '\n'
-         if (this.network.addressType !== 'dhcp') {
-            content += '    address ' + this.network.address + '\n'
-            content += '    netmask ' + this.network.netmask + '\n'
-            content += '    gateway ' + this.network.gateway + '\n'
+      if (this.distro.familyId === 'debian') {
+         // if netplan, don't create entries in /etc/network/interfaces
+         if (!Pacman.packageIsInstalled('netplan.io')) {
+            const file = this.installTarget + '/etc/network/interfaces'
+            let content = '# created by eggs\n\n'
+            content += 'auto lo\n'
+            content += 'iface lo inet loopback\n\n'
+            content += 'auto ' + this.network.iface + '\n'
+            content += 'iface ' + this.network.iface + ' inet ' + this.network.addressType + '\n'
+            if (this.network.addressType !== 'dhcp') {
+               content += '    address ' + this.network.address + '\n'
+               content += '    netmask ' + this.network.netmask + '\n'
+               content += '    gateway ' + this.network.gateway + '\n'
+            }
+            Utils.write(file, content)
          }
       }
-      Utils.write(file, content)
 
       /**
        * resolv.conf
