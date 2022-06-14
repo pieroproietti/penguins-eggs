@@ -523,7 +523,8 @@ unknown target format aarch64-efi
       const paths = [
          '/lib/live/mount', // debian-live
          '/lib/live/mount/rootfs/filesystem.squashfs', // ubuntu bionic
-         '/live/aufs' // mx-linux
+         '/live/aufs',  // mx-linux
+         '/run/miso/sfs/livefs' // manjaro qonos
       ]
 
       for (let i = 0; i < paths.length; i++) {
