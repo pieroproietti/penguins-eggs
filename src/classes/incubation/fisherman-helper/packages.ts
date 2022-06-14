@@ -11,11 +11,13 @@ import Pacman from '../../pacman'
 export function remove(distro: IDistro): string {
   let remove = true
   let removePackages = Pacman.packages(remove)
-  removePackages.push("calamares")
-  removePackages.push("eggs")
 
   if (distro.distroLike === 'Arch') {
-    removePackages = ["calamares"] // penguins-eggs, manjaro-tools-iso, arch-install-scripts 
+    removePackages = ["calamares"]
+    removePackages = ["penguins-eggs"]
+  } else {
+    removePackages.push("calamares")
+    removePackages.push("eggs")
   }
 
   const mustRemain = ["coreutils", "cryptsetup",  "curl", "dosfstools", "git","parted",  "rsync", "lvm2"]
