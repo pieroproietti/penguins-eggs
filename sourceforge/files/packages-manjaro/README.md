@@ -17,6 +17,7 @@ Copy and paste follow instructions
 mkdir try-penguins-eggs
 cd try-penguins-eggs
 wget https://raw.githubusercontent.com/pieroproietti/penguins-eggs-manjaro/main/PKGBUILD
+wget https://raw.githubusercontent.com/pieroproietti/penguins-eggs-manjaro/main/penguins-eggs.install
 makepkg -srcCi
 ```
 
