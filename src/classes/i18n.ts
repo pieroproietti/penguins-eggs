@@ -13,6 +13,7 @@ import Utils from './utils'
 
 // libraries
 import { exec } from '../lib/utils'
+import Distro from './distro'
 
 /**
  * I18n
@@ -61,7 +62,15 @@ export default class I18n {
    * localeGen
    */
   private async localeGen(locales: string[]) {
-    let supporteds = fs.readFileSync('/usr/share/i18n/SUPPORTED','utf-8').split('\n')
+    const distro = new Distro()
+    let supporteds: string [] =  []
+    if (distro.familyId === 'debian') {
+      supporteds = fs.readFileSync('/usr/share/i18n/SUPPORTED','utf-8').split('\n')
+    } else if (distro.familyId === 'archlinux') {
+      supporteds = await (await exec('locale -a')).data.split('\n')
+    }
+
+    // let supporteds = fs.readFileSync('/usr/share/i18n/SUPPORTED','utf-8').split('\n')
     locales=['it_IT.UTF-8', 'en_US.UTF-8']
     let lgt = ''
     lgt += '# -------------------------------\n'
