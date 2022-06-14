@@ -309,7 +309,10 @@ export default class Hatching {
          message = "networkcfg"
          percent = 0.50
          try {
-            this.networkcfg()
+
+            if (this.distro.familyId !== 'archlinux') {
+               this.networkcfg()
+            }
          } catch (error) {
             await Utils.pressKeyToExit(JSON.stringify(error))
          }
