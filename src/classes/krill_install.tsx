@@ -543,12 +543,16 @@ adduser ${name} \
 --shell /bin/bash \
 --disabled-password \
 --gecos "${fullName},${roomNumber},${workPhone},${homePhone}" ${this.toNull}`
-
+      
+      console.log(cmd)
       await exec(cmd, this.echo)
 
+      console.log(cmd)
       await exec(`echo ${name}:${password} | chroot ${this.installTarget} chpasswd ${this.toNull}`, this.echo)
 
+      console.log(cmd)
       await exec(`chroot ${this.installTarget} usermod -aG sudo ${name} ${this.toNull}`, this.echo)
+      Utils.pressKeyToExit("Controlla: ", false)
    }
 
    /**
