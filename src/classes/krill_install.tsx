@@ -230,7 +230,8 @@ export default class Hatching {
          message = "Unpacking filesystem "
          percent = 0.10
          try {
-            redraw(<Install message={message} percent={percent} spinner={true} />)
+            //  spinner={true}
+            redraw(<Install message={message} percent={percent} />)
             await this.unpackfs()
          } catch (error) {
             await Utils.pressKeyToExit(JSON.stringify(error))
@@ -545,8 +546,9 @@ adduser ${name} \
 --gecos "${fullName},${roomNumber},${workPhone},${homePhone}" ${this.toNull}`
 
       if (this.distro.familyId==='archlinux') {
-         cmd = `useradd --create-home --shell /bin/bash ${name}`
+         cmd = `useradd --create-home --shell /bin/bash ${name} ${this.toNull}`
       }
+      console.log(cmd)
       await exec(cmd, this.echo)
 
       await exec(`echo ${name}:${password} | chroot ${this.installTarget} chpasswd ${this.toNull}`, this.echo)
@@ -629,8 +631,12 @@ adduser ${name} \
     * initramfs()
     */
    private async initramfs() {
-      await exec(`chroot ${this.installTarget} mkinitramfs -o ~/initrd.img-$(uname -r) ${this.toNull}`, this.echo)
-      await exec(`chroot ${this.installTarget} mv ~/initrd.img-$(uname -r) /boot ${this.toNull}`, this.echo)
+      if (this.distro.familyId==='debian') {
+         await exec(`chroot ${this.installTarget} mkinitramfs -o ~/initrd.img-$(uname -r) ${this.toNull}`, this.echo)
+         await exec(`chroot ${this.installTarget} mv ~/initrd.img-$(uname -r) /boot ${this.toNull}`, this.echo)
+      } else if (this.distro.familyId==='debian') {
+         console.log('initramfs skipped')
+      }
    }
 
    /**
@@ -841,7 +847,7 @@ adduser ${name} \
     * unpackfs
     */
    private async unpackfs(): Promise<void> {
-      const echoYes = Utils.setEcho(true)
+      const echoYes = Utils.setEcho(false)
       const cmd = `unsquashfs -d ${this.installTarget} -f ${this.distro.mountpointSquashFs}`
       await exec(cmd, echoYes)
    }
