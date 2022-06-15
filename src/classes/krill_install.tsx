@@ -341,7 +341,7 @@ export default class Hatching {
          percent = 0.62
          try {
             redraw(<Install message={message} percent={percent} />)
-            await this.execCalamaresModule('bootloader-config')
+            await this.bootloaderConfig()
          } catch (error) {
             await Utils.pressKeyToExit(JSON.stringify(error))
          }
@@ -1412,34 +1412,39 @@ adduser ${name} \
    }
 
    /**
-    * execCalamaresModule
-    * 
-    * @param name 
+    * bootloaderConfig
     */
-   private async execCalamaresModule(name: string) {
-
-      /**
-       * patch per ubuntu sostituisce bootloader-config e bootloader
-       */
-      if (name === 'bootloader-config' && this.distro.distroLike === 'ubuntu') {
-         await this.bootloaderConfigUbuntu()
-      } else {
-         const moduleName = this.installer.multiarchModules + name + '/module.desc'
-         if (fs.existsSync(moduleName)) {
-            const calamaresModule = yaml.load(fs.readFileSync(moduleName, 'utf8')) as ICalamaresModule
-            let command = calamaresModule.command
-            if (command !== '' || command !== undefined) {
-               command += this.toNull
-               await exec(command, this.echo)
-            }
+   private async bootloaderConfig() {
+      if (this.distro.familyId === 'debian') {
+         if (this.distro.distroLike === 'ubuntu') {
+            this.bootloaderConfig_Ubuntu()
+         } else {
+            this.bootloaderConfig_Debian()
          }
+      } else if (this.distro.familyId === 'archlinux') {
+         this.bootloaderConfig_Arch()
       }
    }
 
    /**
     * 
     */
-   async bootloaderConfigUbuntu() {
+    async bootloaderConfig_Debian() {
+      this.execCalamaresModule('bootloader-config')
+   }
+
+   /**
+    * 
+    */
+   async bootloaderConfig_Arch() {
+      console.log('bootloader Arch to do!')
+   }
+
+
+   /**
+    * 
+    */
+   async bootloaderConfig_Ubuntu() {
       let cmd = ''
       try {
          cmd = `chroot ${this.installTarget} apt-get update -y ${this.toNull}`
@@ -1514,6 +1519,21 @@ adduser ${name} \
       } catch (error) {
          console.log(error)
          await Utils.pressKeyToExit(cmd, true)
+      }
+   }
+
+   /**
+    * 
+    */
+   async execCalamaresModule(name: string) {
+      const moduleName = this.installer.multiarchModules + name + '/module.desc'
+      if (fs.existsSync(moduleName)) {
+         const calamaresModule = yaml.load(fs.readFileSync(moduleName, 'utf8')) as ICalamaresModule
+         let command = calamaresModule.command
+         if (command !== '' || command !== undefined) {
+            command += this.toNull
+            await exec(command, this.echo)
+         }
       }
    }
 
