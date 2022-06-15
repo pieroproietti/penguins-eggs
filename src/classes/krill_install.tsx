@@ -546,7 +546,7 @@ adduser ${name} \
 --gecos "${fullName},${roomNumber},${workPhone},${homePhone}" ${this.toNull}`
 
       if (this.distro.familyId==='archlinux') {
-         cmd = `useradd --create-home --shell /bin/bash ${name} ${this.toNull}`
+         cmd = `chroot ${this.installTarget} useradd --create-home --shell /bin/bash ${name} ${this.toNull}`
       }
       console.log(cmd)
       await exec(cmd, this.echo)
@@ -847,8 +847,8 @@ adduser ${name} \
     * unpackfs
     */
    private async unpackfs(): Promise<void> {
-      const echoYes = Utils.setEcho(false)
       const cmd = `unsquashfs -d ${this.installTarget} -f ${this.distro.mountpointSquashFs}`
+      const echoYes = Utils.setEcho(true)
       await exec(cmd, echoYes)
    }
 
