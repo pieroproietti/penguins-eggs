@@ -513,8 +513,6 @@ export default class Hatching {
       }
    }
 
-
-
    /**
     * setTimezone
     */
