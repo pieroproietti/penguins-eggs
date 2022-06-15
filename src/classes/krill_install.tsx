@@ -545,16 +545,16 @@ adduser ${name} \
 --disabled-password \
 --gecos "${fullName},${roomNumber},${workPhone},${homePhone}" ${this.toNull}`
 
-      if (this.distro.familyId==='archlinux') {
+      if (this.distro.familyId === 'archlinux') {
          cmd = `chroot ${this.installTarget} useradd --create-home --shell /bin/bash ${name} ${this.toNull}`
       }
-      console.log(cmd)
       await exec(cmd, this.echo)
 
-      await exec(`echo ${name}:${password} | chroot ${this.installTarget} chpasswd ${this.toNull}`, this.echo)
+      cmd = `echo ${name}:${password} | chroot ${this.installTarget} chpasswd ${this.toNull}`
+      await exec(cmd, this.echo)
 
-      await exec(`chroot ${this.installTarget} usermod -aG sudo ${name} ${this.toNull}`, this.echo)
-      Utils.pressKeyToExit("Controlla: ", false)
+      cmd = `chroot ${this.installTarget} usermod -aG sudo ${name} ${this.toNull}`
+      await exec(cmd, this.echo)
    }
 
    /**
@@ -586,7 +586,7 @@ adduser ${name} \
             if (userExists) {
                // debian family
                let cmd = `chroot ${this.installTarget} deluser --remove-home ${user} ${this.toNull}`
-               if (this.distro.familyId==='archlinux') {
+               if (this.distro.familyId === 'archlinux') {
                   cmd = `chroot ${this.installTarget} sudo userdel -r ${user} ${this.toNull}`
                }
                await exec(cmd, this.echo)
@@ -609,7 +609,7 @@ adduser ${name} \
    /**
     * 
    */
-    initramfsCfg(installDevice: string) {
+   initramfsCfg(installDevice: string) {
       if (this.distro.familyId === 'debian') {
          // userSwapChoices = ['none', 'small', 'suspend', 'file']
          const file = this.installTarget + '/etc/initramfs-tools/conf.d/resume'
@@ -620,7 +620,7 @@ adduser ${name} \
             text += 'RESUME=UUID=' + Utils.uuid(this.devices.swap.name)
          }
          Utils.write(file, text)
-      } else       if (this.distro.familyId === 'archlinux') {
+      } else if (this.distro.familyId === 'archlinux') {
          console.log('initramfsCfg skipped')
       }
 
@@ -631,10 +631,10 @@ adduser ${name} \
     * initramfs()
     */
    private async initramfs() {
-      if (this.distro.familyId==='debian') {
+      if (this.distro.familyId === 'debian') {
          await exec(`chroot ${this.installTarget} mkinitramfs -o ~/initrd.img-$(uname -r) ${this.toNull}`, this.echo)
          await exec(`chroot ${this.installTarget} mv ~/initrd.img-$(uname -r) /boot ${this.toNull}`, this.echo)
-      } else if (this.distro.familyId==='debian') {
+      } else if (this.distro.familyId === 'debian') {
          console.log('initramfs skipped')
       }
    }
