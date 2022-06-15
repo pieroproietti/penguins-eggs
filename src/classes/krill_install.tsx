@@ -7,6 +7,17 @@
  */
 
 /**
+ * problemi:
+ * unpackfs visualizzazione
+ * eggs >>> chroot /tmp/calamares-krill-root setupcon  > /dev/null 2>&1.
+ * eggs >>> {"errno":-2,"syscall":"open","code":"ENOENT","path":"/tmp/calamares-krill-root/etc/initramfs-tools/conf.d/resume"}.
+ * eggs >>> {"errno":-2,"syscall":"open","code":"ENOENT","path":"/tmp/calamares-krill-root/etc/initramfs-tools/conf.d/resume"}. initrarmfs
+ * removing user live
+
+ */
+
+
+/**
  * Ideally, I want to respect calamares way, remplementing the same (SEMPLIFIED) steps for CLI
  * 
       - partition OK
@@ -567,7 +578,11 @@ adduser ${name} \
             console.log(error)
          } finally {
             if (userExists) {
-               const cmd = `chroot ${this.installTarget} deluser --remove-home ${user} ${this.toNull}`
+               // debian family
+               let cmd = `chroot ${this.installTarget} deluser --remove-home ${user} ${this.toNull}`
+               if (this.distro.familyId==='archlinux') {
+                  cmd = `chroot ${this.installTarget} sudo userdel -r ${user} ${this.toNull}`
+               }
                await exec(cmd, this.echo)
             }
          }
@@ -588,17 +603,22 @@ adduser ${name} \
    /**
     * 
    */
-   initramfsCfg(installDevice: string) {
-      // userSwapChoices = ['none', 'small', 'suspend', 'file']
-
-      const file = this.installTarget + '/etc/initramfs-tools/conf.d/resume'
-      let text = ''
-      if (this.partitions.userSwapChoice === 'none' || this.partitions.userSwapChoice === 'file') {
-         text += '#RESUME=none\n'
-      } else {
-         text += 'RESUME=UUID=' + Utils.uuid(this.devices.swap.name)
+    initramfsCfg(installDevice: string) {
+      if (this.distro.familyId === 'debian') {
+         // userSwapChoices = ['none', 'small', 'suspend', 'file']
+         const file = this.installTarget + '/etc/initramfs-tools/conf.d/resume'
+         let text = ''
+         if (this.partitions.userSwapChoice === 'none' || this.partitions.userSwapChoice === 'file') {
+            text += '#RESUME=none\n'
+         } else {
+            text += 'RESUME=UUID=' + Utils.uuid(this.devices.swap.name)
+         }
+         Utils.write(file, text)
+      } else       if (this.distro.familyId === 'archlinux') {
+         console.log('initramfsCfg skipped')
       }
-      Utils.write(file, text)
+
+
    }
 
    /**
@@ -705,12 +725,14 @@ adduser ${name} \
       /**
        * set keyboard
        */
-      const cmd = `chroot ${this.installTarget} setupcon ${this.toNull}`
-      try {
-         await exec(cmd, this.echo)
-      } catch (error) {
-         console.log(error)
-         Utils.pressKeyToExit(cmd, true)
+      if (this.distro.familyId === 'debian') {
+         const cmd = `chroot ${this.installTarget} setupcon ${this.toNull}`
+         try {
+            await exec(cmd, this.echo)
+         } catch (error) {
+            console.log(error)
+            Utils.pressKeyToExit(cmd, true)
+         }
       }
    }
 
@@ -759,11 +781,7 @@ adduser ${name} \
     * hostname
     */
    private async hostname() {
-      const file = this.installTarget + '/etc/hostname'
-      const text = this.users.hostname
-
-      await exec(`rm ${file} `, this.echo)
-      fs.writeFileSync(file, text)
+      await exec(`echo ${this.installTarget + '/etc/hostname'} > ${this.users.hostname} `, this.echo)
    }
 
    /**
@@ -1429,7 +1447,7 @@ adduser ${name} \
    /**
     * 
     */
-    async bootloaderConfig_Debian() {
+   async bootloaderConfig_Debian() {
       this.execCalamaresModule('bootloader-config')
    }
 
