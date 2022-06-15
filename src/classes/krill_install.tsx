@@ -542,7 +542,7 @@ adduser ${name} \
 --home /home/${name} \
 --shell /bin/bash \
 --disabled-password \
---gecos "${fullName},${roomNumber},${workPhone},${homePhone}"`} // ${this.toNull}`
+--gecos "${fullName},${roomNumber},${workPhone},${homePhone}"}` // ${this.toNull}`
       
       console.log(cmd)
       await exec(cmd, this.echo)
