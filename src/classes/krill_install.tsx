@@ -537,20 +537,20 @@ export default class Hatching {
     */
    private async addUser(name = 'live', password = 'evolution', fullName = '', roomNumber = '', workPhone = '', homePhone = ''): Promise<void> {
 
-      const cmd = `chroot ${this.installTarget} \
+      let cmd = `chroot ${this.installTarget} \
 adduser ${name} \
 --home /home/${name} \
 --shell /bin/bash \
 --disabled-password \
---gecos "${fullName},${roomNumber},${workPhone},${homePhone}"}` // ${this.toNull}`
-      
-      console.log(cmd)
+--gecos "${fullName},${roomNumber},${workPhone},${homePhone}" ${this.toNull}`
+
+      if (this.distro.familyId==='archlinux') {
+         cmd = `useradd --create-home --shell /bin/bash ${name}`
+      }
       await exec(cmd, this.echo)
 
-      console.log(cmd)
       await exec(`echo ${name}:${password} | chroot ${this.installTarget} chpasswd ${this.toNull}`, this.echo)
 
-      console.log(cmd)
       await exec(`chroot ${this.installTarget} usermod -aG sudo ${name} ${this.toNull}`, this.echo)
       Utils.pressKeyToExit("Controlla: ", false)
    }
