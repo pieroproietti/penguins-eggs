@@ -536,17 +536,10 @@ export default class Hatching {
     */
    private async addUser(name = 'live', password = 'evolution', fullName = '', roomNumber = '', workPhone = '', homePhone = ''): Promise<void> {
 
-      let cmd = `chroot ${this.installTarget} \
-adduser ${name} \
---home /home/${name} \
---shell /bin/bash \
---disabled-password \
---gecos "${fullName},${roomNumber},${workPhone},${homePhone}" ${this.toNull}`
-
+      // Debian 
+      let cmd = `chroot ${this.installTarget} adduser ${name} --home /home/${name} --shell /bin/bash --disabled-password --gecos "${fullName},${roomNumber},${workPhone},${homePhone}" ${this.toNull}`
       if (this.distro.familyId === 'archlinux') {
          cmd = `chroot ${this.installTarget} useradd --create-home --shell /bin/bash ${name} ${this.toNull}`
-         cmd = `chroot ${this.settings.work_dir.merged} usermod -aG wheel ${this.settings.config.user_opt}`
-
       }
       await exec(cmd, this.echo)
 
@@ -559,7 +552,6 @@ adduser ${name} \
          cmd = `chroot ${this.installTarget} usermod -aG wheel ${this.settings.config.user_opt}`
       }
       await exec(cmd, this.echo)
-
    }
 
    /**
