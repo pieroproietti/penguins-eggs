@@ -641,7 +641,7 @@ export default class Hatching {
       } else if (this.distro.familyId === 'archlinux') {
          let initrdImg = Utils.initrdImg()
          initrdImg = initrdImg.substring(initrdImg.lastIndexOf('/') + 1)
-         const cmd = `mkinitcpio -c ${path.resolve(__dirname, '../../mkinitcpio/manjaro/mkinitcpio.conf')} -g ${this.installTarget}/boot/${initrdImg}` // ${this.toNull}
+         const cmd = `mkinitcpio -c ${path.resolve(__dirname, '../../mkinitcpio/manjaro/mkinitpip-krill-inst.conf')} -g ${this.installTarget}/boot/${initrdImg}` // ${this.toNull}
          try {
             await exec(cmd, Utils.setEcho(true))
          } catch (error) {
