@@ -545,14 +545,21 @@ adduser ${name} \
 
       if (this.distro.familyId === 'archlinux') {
          cmd = `chroot ${this.installTarget} useradd --create-home --shell /bin/bash ${name} ${this.toNull}`
+         cmd = `chroot ${this.settings.work_dir.merged} usermod -aG wheel ${this.settings.config.user_opt}`
+
       }
       await exec(cmd, this.echo)
 
       cmd = `echo ${name}:${password} | chroot ${this.installTarget} chpasswd ${this.toNull}`
       await exec(cmd, this.echo)
 
+      // Debian
       cmd = `chroot ${this.installTarget} usermod -aG sudo ${name} ${this.toNull}`
+      if (this.distro.familyId === 'archlinux') {
+         cmd = `chroot ${this.installTarget} usermod -aG wheel ${this.settings.config.user_opt}`
+      }
       await exec(cmd, this.echo)
+
    }
 
    /**
@@ -632,9 +639,12 @@ adduser ${name} \
       if (this.distro.familyId === 'debian') {
          await exec(`chroot ${this.installTarget} mkinitramfs -o ~/initrd.img-$(uname -r) ${this.toNull}`, this.echo)
          await exec(`chroot ${this.installTarget} mv ~/initrd.img-$(uname -r) /boot ${this.toNull}`, this.echo)
-      } else if (this.distro.familyId === 'debian') {
+      } else if (this.distro.familyId === 'archlinux') {
+         let initrdImg = Utils.initrdImg()
+         initrdImg = initrdImg.substring(initrdImg.lastIndexOf('/') + 1)
+         // await exec(`mkinitcpio -c ${path.resolve(__dirname, '../../mkinitcpio/manjaro/mkinitcpio.conf')} -g ${this.settings.work_dir.pathIso}/live/${initrdImg}`, Utils.setEcho(true))
          console.log('initramfs skipped')
-      }
+      } 
    }
 
    /**
