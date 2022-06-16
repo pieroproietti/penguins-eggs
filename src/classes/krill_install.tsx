@@ -48,6 +48,7 @@
       - umount // this.umountVfs, this.umountFs
  */
 
+import path from 'path'
 
 import { IRemix, IDistro, INet } from '../interfaces'
 import Settings from './settings'
