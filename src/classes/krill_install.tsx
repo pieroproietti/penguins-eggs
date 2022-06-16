@@ -544,14 +544,20 @@ export default class Hatching {
       await exec(cmd, this.echo)
 
       cmd = `echo ${name}:${password} | chroot ${this.installTarget} chpasswd ${this.toNull}`
+      //  echo ${name}:${password} | chroot ${this.installTarget} chpasswd ${this.toNull}
       await exec(cmd, this.echo)
 
       // Debian
       cmd = `chroot ${this.installTarget} usermod -aG sudo ${name} ${this.toNull}`
       if (this.distro.familyId === 'archlinux') {
-         cmd = `chroot ${this.installTarget} usermod -aG wheel ${this.settings.config.user_opt}`
+         cmd = `chroot ${this.installTarget} usermod -aG wheel ${name}`
       }
-      await exec(cmd, this.echo)
+
+      try {
+         await exec(cmd, this.echo)
+      } catch (error) {
+         await Utils.pressKeyToExit(cmd)
+      }
    }
 
    /**
@@ -636,7 +642,7 @@ export default class Hatching {
          initrdImg = initrdImg.substring(initrdImg.lastIndexOf('/') + 1)
          // await exec(`mkinitcpio -c ${path.resolve(__dirname, '../../mkinitcpio/manjaro/mkinitcpio.conf')} -g ${this.settings.work_dir.pathIso}/live/${initrdImg}`, Utils.setEcho(true))
          console.log('initramfs skipped')
-      } 
+      }
    }
 
    /**
