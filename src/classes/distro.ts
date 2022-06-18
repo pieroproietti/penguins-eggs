@@ -405,11 +405,14 @@ class Distro implements IDistro {
       /**
        * Manjaro
        */
-      case 'Qonos': {
+      case 'Qonos': 
+      case 'Ruah': {
         this.familyId = 'archlinux'
         this.distroLike = 'Arch'
         this.codenameLikeId = 'rolling'
         break
+
+      
 
         /**
          * Fedora
