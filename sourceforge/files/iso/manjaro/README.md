@@ -23,27 +23,23 @@ All ISOs include eggs, you can udate it with: ```sudo eggs update```.
 
 [Manjaro](https://manjaro.org/) is a professionally made operating system that is a suitable replacement for Windows or MacOS. Multiple Desktop Environments are available through our Official and Community editions.
 
-* **egg-of-manjarolinux-qonos-xfce-minimun**
-* **egg-of-manjarolinux-qonos-kde-minimun**
-* **egg-of-manjarolinux-qonos-gnome-minimun**
+* **egg-of-manjarolinux-ruah-naked**
+* **egg-of-manjarolinux-ruah-xfce-minimal**
+* **egg-of-manjarolinux-ruah-kde-minimal**
+* **egg-of-manjarolinux-ruah-gnome-minimal**
 
 All this isos, was created installing the original stable and:
 
 ```
-git clone https://github.com/pieroproietti/penguins-eggs
-cd penguins-eggs
-./install-dependencies-manjaro
+git clone https://github.com/pieroproietti/penguins-eggs-manjaro
+cd penguins-eggs-manjaro
+makepkg -srcCi
 ```
-At this point You can use eggs from the current directory, simply use ./eggs . Example:
+then:
+* ```sudo eggs calamares --install```
+* ```sudo eggs produce --fast```
 
-```
-sudo ./eggs dad -d
-sudo ./eggs calamares --install
-sudo ./eggs produce --fast
-```
-And will get your remasterd iso.
-
-
+and You will get your remasterd iso.
 
 ## More informations:
 
