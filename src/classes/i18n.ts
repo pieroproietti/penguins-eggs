@@ -65,9 +65,10 @@ export default class I18n {
     const distro = new Distro()
     let supporteds: string [] =  []
     if (distro.familyId === 'debian') {
+
       supporteds = fs.readFileSync('/usr/share/i18n/SUPPORTED','utf-8').split('\n')
     } else if (distro.familyId === 'archlinux') {
-      const findlocales = fs.readFileSync('/etc/locale.gen').split('\n')
+      const findlocales = fs.readFileSync('/etc/locale.gen', 'utf-8').split('\n')
       for (let locale in findlocales ) {
         if (locale.substring(1,2) === '##') {
           // discard
