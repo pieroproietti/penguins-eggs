@@ -7,6 +7,8 @@ export default class Locales {
      * 
      */
      async getEnabled(): Promise<string[]> {
+        // Restituisce i locales abilitati in Debian, per manjaro quelli presenti
+        // in /etc/locale.gen anche se #disabilitati
         const cmd = `localectl list-locales`
         let enabledLocales: string[] = []
         const result = await exec(cmd, { capture: true, echo: false, ignore: false })

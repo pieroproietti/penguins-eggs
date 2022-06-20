@@ -18,13 +18,13 @@ zone:                       "Rome"
 # System locales are detected in the following order:
 #
 #  - /usr/share/i18n/SUPPORTED
-#  - localeGenPath (defaults to /etc/locale.gen if not set)
+#  - localeGenPath (defaults to /etc/ if not set)
 #  - 'locale -a' output
 #
 # Enable only when your Distribution is using an
-# custom path for locale.gen
+# custom path for 
 #
-#localeGenPath:             "PATH_TO/locale.gen"
+#localeGenPath:             "PATH_TO/"
 
 # GeoIP based Language settings: Leave commented out to disable GeoIP.
 #
