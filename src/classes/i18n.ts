@@ -74,6 +74,7 @@ export default class I18n {
         } else if (locale.substring(1,2) === '#a') {
           locale = locale.substring(2)
           supporteds.push(locale)
+        }
       }
     }
 
@@ -100,6 +101,7 @@ export default class I18n {
     // console.log(lgt)
     fs.writeFileSync(destGen, lgt)
   }
+
 
   /**
    * /etc/locale.conf
