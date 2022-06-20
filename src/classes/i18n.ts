@@ -67,9 +67,13 @@ export default class I18n {
     if (distro.familyId === 'debian') {
       supporteds = fs.readFileSync('/usr/share/i18n/SUPPORTED','utf-8').split('\n')
     } else if (distro.familyId === 'archlinux') {
-      const result = await exec('locale -a')
-      if (result.code === 0) {
-        supporteds = result.data.split('\n')
+      const findlocales = fs.readFileSync('/etc/locale.gen').split('\n')
+      for (let locale in findlocales ) {
+        if (locale.substring(1,2) === '##') {
+          // discard
+        } else if (locale.substring(1,2) === '#a') {
+          locale = locale.substring(2)
+          supporteds.push(locale)
       }
     }
 
