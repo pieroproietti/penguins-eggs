@@ -1,5 +1,6 @@
 import { exec } from '../lib/utils'
 import fs from 'fs'
+import Distro from './distro'
 
 export default class Locales {
 
@@ -25,16 +26,26 @@ export default class Locales {
      * 
      */
      async getSupported(): Promise<string[]> {
-        const file = '/usr/share/i18n/SUPPORTED'
-        const cmd = `cut -f1 -d.|grep UTF-0 < ${file}`
+
+        const distro = new Distro()
+        let supporteds: string [] =  []
+        if (distro.familyId === 'debian') {
+          supporteds = fs.readFileSync('/usr/share/i18n/SUPPORTED','utf-8').split('\n')
+        } else if (distro.familyId === 'archlinux') {
+          supporteds = (await exec('localectl list-locales')).data.split('\n')
+        }
+    
+        // const file = '/usr/share/i18n/SUPPORTED'
+        // const cmd = `cut -f1 -d.|grep UTF-0 < ${file}`
         let lines: string[] = []
         const retLines: string [] = []
-        if (fs.existsSync(file)) {
-            lines = fs.readFileSync(file, 'utf-8').split('\n')
+        // if (fs.existsSync(file)) {
+            //lines = fs.readFileSync(file, 'utf-8').split('\n')
+            lines = supporteds
             for (const line of lines) {
                 retLines.push(line.replace(' UTF-8', ''))
             }
-        }
+        //}
         return retLines
     }
 
