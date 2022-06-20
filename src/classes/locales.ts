@@ -7,7 +7,7 @@ export default class Locales {
     /**
      * 
      */
-     async getEnabled(): Promise<string[]> {
+    async getEnabled(): Promise<string[]> {
         // Restituisce i locales abilitati in Debian, per manjaro quelli presenti
         // in /etc/locale.gen anche se #disabilitati
         const cmd = `localectl list-locales`
@@ -16,7 +16,7 @@ export default class Locales {
         if (result.code === 0) {
             const lines = result.data.split('\n')
             for (const line of lines) {
-                enabledLocales.push(line.replace(/"/g,'').replace(/'/g,'').trim())
+                enabledLocales.push(line.replace(/"/g, '').replace(/'/g, '').trim())
             }
         }
         return enabledLocales
@@ -25,41 +25,35 @@ export default class Locales {
     /**
      * 
      */
-     async getSupported(): Promise<string[]> {
+    async getSupported(): Promise<string[]> {
 
         const distro = new Distro()
-        let supporteds: string [] =  []
+        let supporteds: string[] = []
         if (distro.familyId === 'debian') {
-          supporteds = fs.readFileSync('/usr/share/i18n/SUPPORTED','utf-8').split('\n')
+            supporteds = fs.readFileSync('/usr/share/i18n/SUPPORTED', 'utf-8').split('\n')
         } else if (distro.familyId === 'archlinux') {
-          supporteds = (await exec('localectl list-locales')).data.split('\n')
+            supporteds = (await exec('localectl list-locales')).data.split('\n')
         }
-    
-        // const file = '/usr/share/i18n/SUPPORTED'
-        // const cmd = `cut -f1 -d.|grep UTF-0 < ${file}`
         let lines: string[] = []
-        const retLines: string [] = []
-        // if (fs.existsSync(file)) {
-            //lines = fs.readFileSync(file, 'utf-8').split('\n')
-            lines = supporteds
-            for (const line of lines) {
-                retLines.push(line.replace(' UTF-8', ''))
-            }
-        //}
+        const retLines: string[] = []
+        lines = supporteds
+        for (const line of lines) {
+            retLines.push(line.replace(' UTF-8', ''))
+        }
         return retLines
     }
 
     /**
      * 
      */
-     async getDefault(): Promise<string> {
+    async getDefault(): Promise<string> {
         const file = '/etc/default/locale'
         const cmd = `grep LANG < ${file}|cut -f2 -d=`
         let defaultLanguage = ""
         if (fs.existsSync(file)) {
             const result = await exec(cmd, { capture: true, echo: false, ignore: false })
             if (result.code === 0) {
-                defaultLanguage = result.data.replace(/"/g,'').replace(/'/g,'').trim()
+                defaultLanguage = result.data.replace(/"/g, '').replace(/'/g, '').trim()
             }
         }
         return defaultLanguage
