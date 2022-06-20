@@ -68,15 +68,7 @@ export default class I18n {
 
       supporteds = fs.readFileSync('/usr/share/i18n/SUPPORTED','utf-8').split('\n')
     } else if (distro.familyId === 'archlinux') {
-      const findlocales = fs.readFileSync('/etc/locale.gen', 'utf-8').split('\n')
-      for (let locale in findlocales ) {
-        if (locale.substring(1,2) === '##') {
-          // discard
-        } else if (locale.substring(1,2) === '#a') {
-          locale = locale.substring(2)
-          supporteds.push(locale)
-        }
-      }
+      supporteds = (await exec('localectl list-locales')).data.split('\n')
     }
 
     locales=['it_IT.UTF-8', 'en_US.UTF-8']
