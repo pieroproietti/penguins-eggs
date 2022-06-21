@@ -67,13 +67,11 @@ export default class Keyboard {
                 }
             }
         }
-
     }
 
 
     /**
-     * 
-     * @returns 
+     * XKBMODEL[]
      */
     getModels(): IXkbModel[] {
         // 0123456789012345678901234567890123456789
@@ -89,12 +87,9 @@ export default class Keyboard {
     }
 
     /**
-     * 012345678901234567890123456789
-     * us              English (US)
+     * XKBLAYOUT=[]
      */
     getLayouts(): IXkbLayout[] {
-        // 0123456789012345678901234567890123456789
-        // us              English (US)
         const oLayouts: IXkbLayout[] = []
         for (const layout of this.layouts) {
             const l = {} as IXkbLayout
@@ -106,7 +101,7 @@ export default class Keyboard {
     }
 
     /**
-     * 
+     * IXkbVariant[]
      */
     getVariants(layout: string): IXkbVariant[] {
         // 0123456789012345678901234567890123456789
@@ -125,7 +120,7 @@ export default class Keyboard {
     }
 
     /**
-     * 
+     * XKBOPTIONS[]
      */
     getOptions(): IXkbOption[] {
         // 0123456789012345678901234567890123456789
@@ -141,14 +136,49 @@ export default class Keyboard {
     }
 
 
+
+
     /**
-     * 
+     * XKBMODEL='pc105'
+     */
+     async getModel(): Promise<string> {
+        const file = '/etc/default/keyboard'
+        const cmd = `grep XKBMODEL < ${file} |cut -f2 -d= | cut -f2 "-d\\""`
+        let keyboardModel = 'pc105'
+        if (fs.existsSync(file)) {
+            const result = await exec(cmd, { capture: true, echo: false, ignore: false })
+            if (result.code === 0) {
+                keyboardModel = result.data.trim()
+            }
+        }
+        return keyboardModel
+    }
+
+    /**
+     * XKBLAYOUT='us'
+     */
+     async getLayout(): Promise<string> {
+        const file = '/etc/default/keyboard'
+
+        const cmd = `grep XKBLAYOUT < /etc/default/keyboard | cut -f2 -d= | cut -f2 "-d\\""`
+        let keyboardLayout = 'us'
+        if (fs.existsSync(file)) {
+            const result = await exec(cmd, { capture: true, echo: false, ignore: false })
+            if (result.code === 0) {
+                keyboardLayout = result.data.trim()
+            }
+        }
+        return keyboardLayout
+    }
+
+    /**
+     * XKBVARIANT=''
      */
     async getVariant(): Promise<string> {
         const file = '/etc/default/keyboard'
 
         const cmd = `grep XKBVARIANT < ${file} | cut -f2 -d=|cut -f2 "-d\\""`
-        let keyboardVariant = 'pc195'
+        let keyboardVariant = ''
         if (fs.existsSync(file)) {
             const result = await exec(cmd, { capture: true, echo: false, ignore: false })
             if (result.code === 0) {
@@ -160,40 +190,7 @@ export default class Keyboard {
 
 
     /**
-     * 
-     */
-    async getLayout(): Promise<string> {
-        const file = '/etc/default/keyboard'
-
-        const cmd = `grep XKBLAYOUT < /etc/default/keyboard | cut -f2 -d= | cut -f2 "-d\\""`
-        let keyboardLayout = 'pc195'
-        if (fs.existsSync(file)) {
-            const result = await exec(cmd, { capture: true, echo: false, ignore: false })
-            if (result.code === 0) {
-                keyboardLayout = result.data.trim()
-            }
-        }
-        return keyboardLayout
-    }
-
-    /**
-     * 
-     */
-    async getModel(): Promise<string> {
-        const file = '/etc/default/keyboard'
-        const cmd = `grep XKBMODEL < ${file} |cut -f2 -d= | cut -f2 "-d\\""`
-        let keyboardModel = 'pc195'
-        if (fs.existsSync(file)) {
-            const result = await exec(cmd, { capture: true, echo: false, ignore: false })
-            if (result.code === 0) {
-                keyboardModel = result.data.trim()
-            }
-        }
-        return keyboardModel
-    }
-
-    /**
-     * 
+     * XKBOPTIONS=''
      */
     async getOption(): Promise<string> {
         const file = '/etc/default/keyboard'
