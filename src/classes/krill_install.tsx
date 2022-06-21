@@ -1630,7 +1630,7 @@ export default class Hatching {
     */
    async localeCfg() {
       const i18n = new I18n(this.installTarget, this.verbose)
-      i18n.generate(false, this.language, [this.language])
+      i18n.generate(this.language, [this.language])
    }
 }
 
