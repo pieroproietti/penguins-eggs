@@ -14,6 +14,7 @@ import Utils from './utils'
 // libraries
 import { exec } from '../lib/utils'
 import Distro from './distro'
+import shx from 'shelljs'
 
 /**
  * I18n
@@ -42,16 +43,8 @@ export default class I18n {
   /**
    * 
    */
-  async generate(fromSettings = true, defaultLocale = 'en_EN.UTF-8', locales = ['en_EN.UTF-8']) {
-    if (fromSettings) {
-      this.settings.load()
-      defaultLocale = this.settings.config.locales_default
-      locales = []
-      for (let i = 0; i < this.settings.config.locales.length; i++) {
-        locales.push(this.settings.config.locales[i])
-      }
-    }
-   
+  async generate(defaultLocale = 'en_EN.UTF-8', locales = ['en_EN.UTF-8']) {
+    console.log(locales)
     await this.localeGen(locales)
     await this.defaultLocale(defaultLocale)
     await this.localeConf(defaultLocale)
@@ -67,9 +60,12 @@ export default class I18n {
     if (distro.familyId === 'debian') {
       supporteds = fs.readFileSync('/usr/share/i18n/SUPPORTED','utf-8').split('\n')
     } else if (distro.familyId === 'archlinux') {
-      supporteds = (await exec('localectl list-locales')).data.split('\n')
+      // with await exec don't work! 
+      shx.exec('localectl list-locales > /tmp/SUPPORTED')
+      supporteds = fs.readFileSync('/tmp/SUPPORTED','utf-8').split('\n')
     }
-    // locales=['it_IT.UTF-8', 'en_US.UTF-8']
+
+
     let lgt = ''
     lgt += '###\n'
     lgt += '#\n'
@@ -77,9 +73,7 @@ export default class I18n {
     for (const supported of supporteds) {
       for (const locale of locales){
         if (supported.includes(locale)) {
-          lgt += `${supported}\n`
-        } else {
-          lgt += `# ${supported}\n`
+          lgt += `${locale}\n`
         }
       }
     }
@@ -89,7 +83,7 @@ export default class I18n {
 
     // append to `${this.chroot}/etc/locale.gen`
     const destGen = `${this.chroot}/etc/locale.gen`
-    fs.writeFileSync(destGen, lgt)
+    fs.appendFileSync(destGen, lgt)
   }
 
 
