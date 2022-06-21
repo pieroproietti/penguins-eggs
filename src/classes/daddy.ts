@@ -11,12 +11,8 @@ import Ovary from '../classes/ovary'
 import Compressors from '../classes/compressors'
 import inquirer from 'inquirer'
 import { IConfig } from '../interfaces'
-import yaml from 'js-yaml'
-import fs from 'fs'
-
 import { IMyAddons } from '../interfaces'
 import chalk from 'chalk'
-
 import { exec } from '../lib/utils'
 
 interface editConf {
@@ -64,7 +60,6 @@ export default class Daddy {
           config.snapshot_prefix = Utils.snapshotPrefix(this.settings.distro.distroId, this.settings.distro.codenameId)
           config.compression = 'fast'
         }
-
         jsonConf = JSON.stringify(config)
       }
 
@@ -79,26 +74,15 @@ export default class Daddy {
       config.theme = newConf.theme
 
       /**
-       * Analisi del tipo di compressione del kernel
-       *
+       * Analisi del tipo di compressione disponibile
        */
       const compressors = new Compressors()
       await compressors.populate()
-      switch (newConf.compression) {
-        case 'fast': {
-          config.compression = compressors.fast()
-          break
-        }
-
-        case 'normal': {
-          config.compression = compressors.normal()
-          break
-        }
-
-        case 'max': {
-          config.compression = compressors.max()
-          break
-        }
+      config.compression = compressors.normal()
+      if (newConf.compression === 'fast') {
+        config.compression = compressors.fast()
+      } else if (newConf.compression === 'max') {
+        config.compression = compressors.max()
       }
 
       await this.settings.save(config)

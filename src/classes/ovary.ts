@@ -741,13 +741,13 @@ export default class Ovary {
 
     this.addRemoveExclusion(true, this.settings.config.snapshot_dir /* .absolutePath() */)
 
-    const compression = `-comp ${this.settings.config.compression}`
     if (fs.existsSync(`${this.settings.work_dir.pathIso}/live/filesystem.squashfs`)) {
       fs.unlinkSync(`${this.settings.work_dir.pathIso}/live/filesystem.squashfs`)
     }
 
-    // let cmd = `mksquashfs ${this.settings.work_dir.merged} ${this.settings.work_dir.pathIso}live/filesystem.squashfs ${compression} -wildcards -ef ${this.settings.config.snapshot_excludes} ${this.settings.session_excludes} `
-    let cmd = `mksquashfs ${this.settings.work_dir.merged} ${this.settings.work_dir.pathIso}live/filesystem.squashfs ${compression} -wildcards -ef ${this.settings.config.snapshot_excludes} ${this.settings.session_excludes} `
+    const compression = `-comp ${this.settings.config.compression}`
+
+    let cmd = `mksquashfs ${this.settings.work_dir.merged} ${this.settings.work_dir.pathIso}live/filesystem.squashfs ${compression} -wildcards -ef ${this.settings.config.snapshot_excludes} ${this.settings.session_excludes}`
     cmd = cmd.replace(/\s\s+/g, ' ')
     Utils.writeX(`${this.settings.work_dir.path}mksquashfs`, cmd)
     if (!scriptOnly) {

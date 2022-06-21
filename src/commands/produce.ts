@@ -107,6 +107,10 @@ export default class Produce extends Command {
         compression = compressors.fast()
       }
 
+      const release = flags.release
+      if (release) {
+        compression = compressors.max()
+      }
 
       const backup = flags.backup
 
@@ -116,10 +120,6 @@ export default class Produce extends Command {
 
       const yolkRenew = flags.yolk
 
-      const release = flags.release
-      if (release) {
-        compression = compressors.max()
-      }
 
       /**
        * theme: if not defined will use eggs
