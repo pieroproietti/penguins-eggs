@@ -745,12 +745,11 @@ export default class Hatching {
       // Debian default
       let cmd = `chroot ${this.installTarget} setupcon ${this.toNull}`
       if (this.distro.familyId === 'archlinux') {
-         // manjaro
          cmd = `chroot ${this.installTarget} localectl set-keymap --no-convert ${this.keyboardLayout} ${this.toNull}`
       }
 
       try {
-         await exec(cmd, this.echo)
+         await exec(cmd, Utils.setEcho(true))
       } catch (error) {
          console.log(error)
          Utils.pressKeyToExit(cmd, true)
