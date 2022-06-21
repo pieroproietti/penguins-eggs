@@ -97,35 +97,16 @@ export default class Produce extends Command {
         basename = flags.basename
       }
 
-      /**
-       * Analisi del tipo di compressione del kernel
-       *
-       */
       const compressors = new Compressors()
       await compressors.populate()
-      let fastest = 'gzip'
-      if (compressors.isEnabled.zstd) {
-        fastest = 'zstd -Xcompression-level 1 -b 262144'
-      } else if (compressors.isEnabled.lz4) {
-        fastest = 'lz4'
+
+      let compression = compressors.normal()
+      if (flags.max) {
+        compression = compressors.max()
+      } else if (flags.fast) {
+        compression = compressors.fast()
       }
 
-      /**
-       * jessie e stretch will use gzip for fastest
-      */
-      const settings = new Settings()
-      if (settings.distro.codenameLikeId === 'jessie' || settings.distro.codenameLikeId === 'stretch') {
-        fastest = 'gzip'
-      }
-
-      let compression = '' // se vuota, compression viene definita da loadsettings, default xz
-      if (flags.fast) {
-        compression = fastest
-      } else if (flags.normal) {
-        compression = '-Xcompression-level 20'
-      } else if (flags.max) {
-        compression = '-Xbcj x86'
-      }
 
       const backup = flags.backup
 
@@ -137,7 +118,7 @@ export default class Produce extends Command {
 
       const release = flags.release
       if (release) {
-        compression = '-Xbcj x86'
+        compression = compressors.max()
       }
 
       /**

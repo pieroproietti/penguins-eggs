@@ -84,39 +84,21 @@ export default class Daddy {
        */
       const compressors = new Compressors()
       await compressors.populate()
-      let fastest = 'gzip'
-      if (compressors.isEnabled.zstd) {
-        fastest = 'zstd -Xcompression-level 1 -b 262144'
-      } else if (compressors.isEnabled.lz4) {
-        fastest = 'lz4'
-      }
-
       switch (newConf.compression) {
         case 'fast': {
-          config.compression = fastest
-
+          config.compression = compressors.fast()
           break
         }
 
         case 'normal': {
-          config.compression = 'xz'
-
+          config.compression = compressors.normal()
           break
         }
 
         case 'max': {
-          const filter = 'x86'
-          if (process.arch === 'arm') {
-            const filter = 'ARM' // to check
-          } else if (process.arch === 'arm64') {
-            const filter = 'ARM64' // to check
-          }
-
-          config.compression = '-Xcompression-level 20 ' + filter
-
+          config.compression = compressors.max()
           break
         }
-        // No default
       }
 
       await this.settings.save(config)
