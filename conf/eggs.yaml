@@ -63,8 +63,8 @@ make_isohybrid: true
 
 # Compression algorithm
 # Allowed values are, in order of speed-size tradeoff: lz4, lzo, gzip, xz  
-# default xz
-compression: 'xz'
+# default -b 256K -Xcompression-level 20
+compression: '-b 256K -Xcompression-level 20'
 
 # Allow password login to ssh for users (not root).
 # If ssh_pass=true, then PasswordAuthentication will be set to true

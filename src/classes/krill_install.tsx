@@ -7,13 +7,8 @@
  */
 
 /**
- * problemi:
- * unpackfs visualizzazione
- * eggs >>> chroot /tmp/calamares-krill-root setupcon  > /dev/null 2>&1.
- * eggs >>> {"errno":-2,"syscall":"open","code":"ENOENT","path":"/tmp/calamares-krill-root/etc/initramfs-tools/conf.d/resume"}.
- * eggs >>> {"errno":-2,"syscall":"open","code":"ENOENT","path":"/tmp/calamares-krill-root/etc/initramfs-tools/conf.d/resume"}. initrarmfs
- * removing user live
-
+ * problems:
+ * 
  */
 
 
