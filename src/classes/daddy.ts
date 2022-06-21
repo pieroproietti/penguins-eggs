@@ -112,7 +112,7 @@ export default class Daddy {
             const filter = 'ARM64' // to check
           }
 
-          config.compression = 'xz -Xbcj ' + filter
+          config.compression = '-Xcompression-level 20 ' + filter
 
           break
         }
