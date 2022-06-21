@@ -751,7 +751,7 @@ export default class Hatching {
       let cmd = `chroot ${this.installTarget} setupcon ${this.toNull}`
       if (this.distro.familyId === 'archlinux') {
          // manjaro
-         cmd = `chroot ${this.installTarget} localectl set-keymap --no-convert ${this.keyboardLayout} ${this.toNull}`)
+         cmd = `chroot ${this.installTarget} localectl set-keymap --no-convert ${this.keyboardLayout} ${this.toNull}`
       }
 
       try {
@@ -761,7 +761,6 @@ export default class Hatching {
          Utils.pressKeyToExit(cmd, true)
       }
    }
-}
 
    /**
     * networkcfg
@@ -772,109 +771,109 @@ export default class Hatching {
     * - manjaro: ? // ip address add 192.168.61/24 + dev enp6s18
     */
    private async networkcfg() {
-   if (this.distro.familyId === 'debian') {
-      // if netplan, don't create entries in /etc/network/interfaces
-      if (!Pacman.packageIsInstalled('netplan.io')) {
-         const file = this.installTarget + '/etc/network/interfaces'
+      if (this.distro.familyId === 'debian') {
+         // if netplan, don't create entries in /etc/network/interfaces
+         if (!Pacman.packageIsInstalled('netplan.io')) {
+            const file = this.installTarget + '/etc/network/interfaces'
+            let content = '# created by eggs\n\n'
+            content += 'auto lo\n'
+            content += 'iface lo inet loopback\n\n'
+            content += 'auto ' + this.network.iface + '\n'
+            content += 'iface ' + this.network.iface + ' inet ' + this.network.addressType + '\n'
+            if (this.network.addressType !== 'dhcp') {
+               content += '    address ' + this.network.address + '\n'
+               content += '    netmask ' + this.network.netmask + '\n'
+               content += '    gateway ' + this.network.gateway + '\n'
+            }
+            Utils.write(file, content)
+         }
+      }
+
+      /**
+       * resolv.conf
+       */
+      if (this.network.addressType !== 'dhcp') {
+         const file = this.installTarget + '/etc/resolv.conf'
          let content = '# created by eggs\n\n'
-         content += 'auto lo\n'
-         content += 'iface lo inet loopback\n\n'
-         content += 'auto ' + this.network.iface + '\n'
-         content += 'iface ' + this.network.iface + ' inet ' + this.network.addressType + '\n'
-         if (this.network.addressType !== 'dhcp') {
-            content += '    address ' + this.network.address + '\n'
-            content += '    netmask ' + this.network.netmask + '\n'
-            content += '    gateway ' + this.network.gateway + '\n'
+         content += 'domain ' + this.network.domain + '\n'
+         for (const element of this.network.dns) {
+            content += 'nameserver ' + element + '\n'
          }
          Utils.write(file, content)
       }
    }
 
    /**
-    * resolv.conf
-    */
-   if (this.network.addressType !== 'dhcp') {
-      const file = this.installTarget + '/etc/resolv.conf'
-      let content = '# created by eggs\n\n'
-      content += 'domain ' + this.network.domain + '\n'
-      for (const element of this.network.dns) {
-         content += 'nameserver ' + element + '\n'
-      }
-      Utils.write(file, content)
-   }
-}
-
-   /**
     * hostname
     */
    private async hostname() {
-   await exec(`echo ${this.installTarget + '/etc/hostname'} > ${this.users.hostname} `, this.echo)
-}
+      await exec(`echo ${this.installTarget + '/etc/hostname'} > ${this.users.hostname} `, this.echo)
+   }
 
    /**
     * hosts
     */
    private async hosts() {
-   const file = this.installTarget + '/etc/hosts'
-   let text = '127.0.0.1 localhost localhost.localdomain\n'
-   if (this.network.addressType === 'static') {
-      text += `${this.network.address} ${this.users.hostname} pvelocalhost\n`
-   } else {
-      text += `127.0.1.1 ${this.users.hostname} \n`
+      const file = this.installTarget + '/etc/hosts'
+      let text = '127.0.0.1 localhost localhost.localdomain\n'
+      if (this.network.addressType === 'static') {
+         text += `${this.network.address} ${this.users.hostname} pvelocalhost\n`
+      } else {
+         text += `127.0.1.1 ${this.users.hostname} \n`
+      }
+      text += `# The following lines are desirable for IPv6 capable hosts\n`
+      text += `:: 1     ip6 - localhost ip6 - loopback\n`
+      text += `fe00:: 0 ip6 - localnet\n`
+      text += `ff00:: 0 ip6 - mcastprefix\n`
+      text += `ff02:: 1 ip6 - allnodes\n`
+      text += `ff02:: 2 ip6 - allrouters\n`
+      text += `ff02:: 3 ip6 - allhosts\n`
+      fs.writeFileSync(file, text)
    }
-   text += `# The following lines are desirable for IPv6 capable hosts\n`
-   text += `:: 1     ip6 - localhost ip6 - loopback\n`
-   text += `fe00:: 0 ip6 - localnet\n`
-   text += `ff00:: 0 ip6 - mcastprefix\n`
-   text += `ff02:: 1 ip6 - allnodes\n`
-   text += `ff02:: 2 ip6 - allrouters\n`
-   text += `ff02:: 3 ip6 - allhosts\n`
-   fs.writeFileSync(file, text)
-}
 
    /**
     * removeInstaller
     */
    private async removeInstaller() {
-   let file = `${this.installTarget}/usr/bin/penguins-links-add.sh`
-   let lines = []
-   let content = ''
-   if (fs.existsSync(file)) {
-      lines = fs.readFileSync(file, { encoding: 'utf8', flag: 'r' }).split('\n')
-      for (let i = 0; i < lines.length; i++) {
+      let file = `${this.installTarget}/usr/bin/penguins-links-add.sh`
+      let lines = []
+      let content = ''
+      if (fs.existsSync(file)) {
+         lines = fs.readFileSync(file, { encoding: 'utf8', flag: 'r' }).split('\n')
+         for (let i = 0; i < lines.length; i++) {
 
-         if (lines[i]) {
-            if (lines[i].search('penguins-krill.desktop') !== -1) {
-               lines[i] += '#'
+            if (lines[i]) {
+               if (lines[i].search('penguins-krill.desktop') !== -1) {
+                  lines[i] += '#'
+               }
+               if (lines[i].search('penguins-clinstaller.desktop') !== -1) {
+                  lines[i] += '#'
+               }
+               if (lines[i].search('install-debian.desktop') !== -1) {
+                  lines[i] += '#'
+               }
+               content += lines[i] + '\n'
             }
-            if (lines[i].search('penguins-clinstaller.desktop') !== -1) {
-               lines[i] += '#'
-            }
-            if (lines[i].search('install-debian.desktop') !== -1) {
-               lines[i] += '#'
-            }
-            content += lines[i] + '\n'
          }
       }
+      fs.writeFileSync(file, content)
    }
-   fs.writeFileSync(file, content)
-}
 
    /**
     * unpackfs
     */
-   private async unpackfs(): Promise < void> {
-   const cmd = `unsquashfs -d ${this.installTarget} -f ${this.distro.mountpointSquashFs}`
+   private async unpackfs(): Promise<void> {
+      const cmd = `unsquashfs -d ${this.installTarget} -f ${this.distro.mountpointSquashFs}`
       const echoYes = Utils.setEcho(true)
       await exec(cmd, echoYes)
-}
+   }
 
    /**
     * syncfs
     */
-   private async syncfs(): Promise < void> {
+   private async syncfs(): Promise<void> {
 
-   let cmd = ''
+      let cmd = ''
       let f = ''
       f += ' --filter="- /cdrom/*"'
       f += ' --filter="- /dev/*"'
@@ -928,39 +927,39 @@ export default class Hatching {
       / ${this.installTarget} ${this.toNull}`
 
       await exec(cmd.trim(), this.echo)
-}
+   }
 
 
    /**
     * mkfs
     */
-   private async mkfs(): Promise < boolean > {
-   const result = true
+   private async mkfs(): Promise<boolean> {
+      const result = true
 
-      if(this.efi) {
-   await exec(`mkdosfs -F 32 -I ${this.devices.efi.name} ${this.toNull}`, this.echo)
-}
+      if (this.efi) {
+         await exec(`mkdosfs -F 32 -I ${this.devices.efi.name} ${this.toNull}`, this.echo)
+      }
 
-if (this.devices.boot.name !== 'none') {
-   if (this.devices.boot.fsType === undefined) {
-      this.devices.boot.fsType = `ext2`
-      this.devices.boot.mountPoint = '/boot'
-   }
-   await exec(`mke2fs -Ft ${this.devices.boot.fsType} ${this.devices.boot.name} ${this.toNull}`, this.echo)
-}
+      if (this.devices.boot.name !== 'none') {
+         if (this.devices.boot.fsType === undefined) {
+            this.devices.boot.fsType = `ext2`
+            this.devices.boot.mountPoint = '/boot'
+         }
+         await exec(`mke2fs -Ft ${this.devices.boot.fsType} ${this.devices.boot.name} ${this.toNull}`, this.echo)
+      }
 
-if (this.devices.root.name !== 'none') {
-   await exec(`mke2fs -Ft ${this.devices.root.fsType} ${this.devices.root.name} ${this.toNull}`, this.echo)
-}
+      if (this.devices.root.name !== 'none') {
+         await exec(`mke2fs -Ft ${this.devices.root.fsType} ${this.devices.root.name} ${this.toNull}`, this.echo)
+      }
 
-if (this.devices.data.name !== 'none') {
-   await exec(`mke2fs -Ft ${this.devices.data.fsType} ${this.devices.data.name} ${this.toNull}`, this.echo)
-}
+      if (this.devices.data.name !== 'none') {
+         await exec(`mke2fs -Ft ${this.devices.data.fsType} ${this.devices.data.name} ${this.toNull}`, this.echo)
+      }
 
-if (this.devices.swap.name !== 'none') {
-   await exec(`mkswap ${this.devices.swap.name} ${this.toNull}`, this.echo)
-}
-return result
+      if (this.devices.swap.name !== 'none') {
+         await exec(`mkswap ${this.devices.swap.name} ${this.toNull}`, this.echo)
+      }
+      return result
    }
 
    /**
@@ -969,73 +968,73 @@ return result
     */
    async ifMountedDismount(device = '') {
 
-   if ((await exec(`findmnt -rno SOURCE ${device}`)).data.trim() === device) {
-      await exec(`umount ${device} ${this.toNull}`, this.echo)
-      await exec('sleep 1', this.echo)
+      if ((await exec(`findmnt -rno SOURCE ${device}`)).data.trim() === device) {
+         await exec(`umount ${device} ${this.toNull}`, this.echo)
+         await exec('sleep 1', this.echo)
+      }
    }
-}
 
    /**
     * mount
     */
-   private async mountFs(): Promise < boolean > {
+   private async mountFs(): Promise<boolean> {
 
-   if(!fs.existsSync(this.installTarget)) {
-   await exec(`mkdir ${this.installTarget} ${this.toNull}`, this.echo)
-}
+      if (!fs.existsSync(this.installTarget)) {
+         await exec(`mkdir ${this.installTarget} ${this.toNull}`, this.echo)
+      }
 
-// root
-await exec(`mount ${this.devices.root.name} ${this.installTarget}${this.devices.root.mountPoint} ${this.toNull}`, this.echo)
-await exec(`tune2fs -c 0 -i 0 ${this.devices.root.name} ${this.toNull}`, this.echo)
-await exec(`rm -rf ${this.installTarget}/lost+found ${this.toNull}`, this.echo)
+      // root
+      await exec(`mount ${this.devices.root.name} ${this.installTarget}${this.devices.root.mountPoint} ${this.toNull}`, this.echo)
+      await exec(`tune2fs -c 0 -i 0 ${this.devices.root.name} ${this.toNull}`, this.echo)
+      await exec(`rm -rf ${this.installTarget}/lost+found ${this.toNull}`, this.echo)
 
-// boot
-if (this.devices.boot.name !== `none`) {
-   await exec(`mkdir ${this.installTarget}/boot -p ${this.toNull}`, this.echo)
-   await exec(`mount ${this.devices.boot.name} ${this.installTarget}${this.devices.boot.mountPoint} ${this.toNull}`, this.echo)
-   await exec(`tune2fs -c 0 -i 0 ${this.devices.boot.name} ${this.toNull}`, this.echo)
-}
+      // boot
+      if (this.devices.boot.name !== `none`) {
+         await exec(`mkdir ${this.installTarget}/boot -p ${this.toNull}`, this.echo)
+         await exec(`mount ${this.devices.boot.name} ${this.installTarget}${this.devices.boot.mountPoint} ${this.toNull}`, this.echo)
+         await exec(`tune2fs -c 0 -i 0 ${this.devices.boot.name} ${this.toNull}`, this.echo)
+      }
 
-// data
-if (this.devices.data.name !== `none`) {
-   await exec(`mkdir ${this.installTarget}${this.devices.data.mountPoint} -p ${this.toNull}`, this.echo)
-   await exec(`mount ${this.devices.data.name} ${this.installTarget}${this.devices.data.mountPoint} ${this.toNull}`, this.echo)
-   await exec(`tune2fs -c 0 -i 0 ${this.devices.data.name} ${this.toNull}`, this.echo)
-}
+      // data
+      if (this.devices.data.name !== `none`) {
+         await exec(`mkdir ${this.installTarget}${this.devices.data.mountPoint} -p ${this.toNull}`, this.echo)
+         await exec(`mount ${this.devices.data.name} ${this.installTarget}${this.devices.data.mountPoint} ${this.toNull}`, this.echo)
+         await exec(`tune2fs -c 0 -i 0 ${this.devices.data.name} ${this.toNull}`, this.echo)
+      }
 
-// efi
-if (this.efi) {
-   if (!fs.existsSync(this.installTarget + this.devices.efi.mountPoint)) {
-      await exec(`mkdir ${this.installTarget}${this.devices.efi.mountPoint} -p ${this.toNull}`, this.echo)
-      await exec(`mount ${this.devices.efi.name} ${this.installTarget}${this.devices.efi.mountPoint} ${this.toNull}`, this.echo)
-   }
-}
-return true
+      // efi
+      if (this.efi) {
+         if (!fs.existsSync(this.installTarget + this.devices.efi.mountPoint)) {
+            await exec(`mkdir ${this.installTarget}${this.devices.efi.mountPoint} -p ${this.toNull}`, this.echo)
+            await exec(`mount ${this.devices.efi.name} ${this.installTarget}${this.devices.efi.mountPoint} ${this.toNull}`, this.echo)
+         }
+      }
+      return true
    }
 
    /**
     * umountFs
     */
-   private async umountFs(): Promise < boolean > {
-   // efi
-   if(this.efi) {
-   await this.umount(this.devices.efi.name)
-}
+   private async umountFs(): Promise<boolean> {
+      // efi
+      if (this.efi) {
+         await this.umount(this.devices.efi.name)
+      }
 
-// data
-if (this.devices.data.name !== `none`) {
-   await this.umount(this.devices.data.name)
-}
+      // data
+      if (this.devices.data.name !== `none`) {
+         await this.umount(this.devices.data.name)
+      }
 
-// boot
-if (this.devices.boot.name !== `none`) {
-   await this.umount(this.devices.boot.name)
-}
+      // boot
+      if (this.devices.boot.name !== `none`) {
+         await this.umount(this.devices.boot.name)
+      }
 
-// root
-await this.umount(this.devices.root.name)
+      // root
+      await this.umount(this.devices.root.name)
 
-return true
+      return true
    }
 
    /**
@@ -1043,35 +1042,35 @@ return true
    */
    private async mountVfs() {
 
-   await exec(`mkdir ${this.installTarget}/dev ${this.toNull}`, this.echo)
-   await exec(`mkdir ${this.installTarget}/dev/pts ${this.toNull}`, this.echo)
-   await exec(`mkdir ${this.installTarget}/proc ${this.toNull}`, this.echo)
-   await exec(`mkdir ${this.installTarget}/sys ${this.toNull}`, this.echo)
-   await exec(`mkdir ${this.installTarget}/run ${this.toNull}`, this.echo)
+      await exec(`mkdir ${this.installTarget}/dev ${this.toNull}`, this.echo)
+      await exec(`mkdir ${this.installTarget}/dev/pts ${this.toNull}`, this.echo)
+      await exec(`mkdir ${this.installTarget}/proc ${this.toNull}`, this.echo)
+      await exec(`mkdir ${this.installTarget}/sys ${this.toNull}`, this.echo)
+      await exec(`mkdir ${this.installTarget}/run ${this.toNull}`, this.echo)
 
-   await exec(`mount -o bind /dev ${this.installTarget}/dev ${this.toNull}`, this.echo)
-   await exec(`mount -o bind /dev/pts ${this.installTarget}/dev/pts ${this.toNull}`, this.echo)
-   await exec(`mount -o bind /proc ${this.installTarget}/proc ${this.toNull}`, this.echo)
-   await exec(`mount -o bind /sys ${this.installTarget}/sys ${this.toNull}`, this.echo)
-   if (this.efi) {
-      await exec(`mount -o bind /sys/firmware/efi/efivars ${this.installTarget}/sys/firmware/efi/efivars ${this.toNull}`, this.echo)
+      await exec(`mount -o bind /dev ${this.installTarget}/dev ${this.toNull}`, this.echo)
+      await exec(`mount -o bind /dev/pts ${this.installTarget}/dev/pts ${this.toNull}`, this.echo)
+      await exec(`mount -o bind /proc ${this.installTarget}/proc ${this.toNull}`, this.echo)
+      await exec(`mount -o bind /sys ${this.installTarget}/sys ${this.toNull}`, this.echo)
+      if (this.efi) {
+         await exec(`mount -o bind /sys/firmware/efi/efivars ${this.installTarget}/sys/firmware/efi/efivars ${this.toNull}`, this.echo)
+      }
+      await exec(`mount -o bind /run ${this.installTarget}/run ${this.toNull}`, this.echo)
    }
-   await exec(`mount -o bind /run ${this.installTarget}/run ${this.toNull}`, this.echo)
-}
 
    /**
     * 
     */
    private async umountVfs() {
-   await this.umount(`${this.installTarget}/dev/pts`)
-   await this.umount(`${this.installTarget}/dev`)
-   await this.umount(`${this.installTarget}/proc`)
-   await this.umount(`${this.installTarget}/run`)
-   if (this.efi) {
-      await this.umount(`${this.installTarget}/sys/firmware/efi/efivars`)
+      await this.umount(`${this.installTarget}/dev/pts`)
+      await this.umount(`${this.installTarget}/dev`)
+      await this.umount(`${this.installTarget}/proc`)
+      await this.umount(`${this.installTarget}/run`)
+      if (this.efi) {
+         await this.umount(`${this.installTarget}/sys/firmware/efi/efivars`)
+      }
+      await this.umount(`${this.installTarget}/sys`)
    }
-   await this.umount(`${this.installTarget}/sys`)
-}
 
 
    /**
@@ -1079,26 +1078,26 @@ return true
     * @param mountpoint 
     */
    private async umount(mountPoint = '') {
-   let message = 'umount: ' + mountPoint
-   if (Utils.isMountpoint(mountPoint)) {
-      try {
-         await exec(`umount ${mountPoint} ${this.toNull}`, this.echo)
-         await exec('sleep 1', this.echo)
-      } catch (error) {
-         message += + mountPoint + JSON.stringify(error)
-         redraw(<Install message={message} percent={1} />)
-         await Utils.pressKeyToExit(message)
+      let message = 'umount: ' + mountPoint
+      if (Utils.isMountpoint(mountPoint)) {
+         try {
+            await exec(`umount ${mountPoint} ${this.toNull}`, this.echo)
+            await exec('sleep 1', this.echo)
+         } catch (error) {
+            message += + mountPoint + JSON.stringify(error)
+            redraw(<Install message={message} percent={1} />)
+            await Utils.pressKeyToExit(message)
+         }
       }
    }
-}
 
 
 
    /**
     * 
     */
-   private async partition(): Promise < boolean > {
-   let echoYes = Utils.setEcho(true)
+   private async partition(): Promise<boolean> {
+      let echoYes = Utils.setEcho(true)
 
       let retVal = false
 
@@ -1110,501 +1109,501 @@ return true
        * /dev/sda1 = /dev/nvme0n1p1
        */
       let p = ''
-      if(installDevice.includes('nvme')) {
-   p = 'p'
-}
+      if (installDevice.includes('nvme')) {
+         p = 'p'
+      }
 
-const installMode = this.partitions.installationMode
+      const installMode = this.partitions.installationMode
 
-if (installMode === 'standard' && !this.efi) {
+      if (installMode === 'standard' && !this.efi) {
 
-   /**
-    * ===========================================================================================
-    * BIOS: working
-    * ===========================================================================================
-    */
-   await exec(`parted --script ${installDevice} mklabel msdos`, this.echo)
-   await exec(`parted --script --align optimal ${installDevice} mkpart primary linux-swap    1MiB     8192MiB`, this.echo) //dev/sda1 swap
-   await exec(`parted --script --align optimal ${installDevice} mkpart primary ext4       8192MiB     100%`, this.echo) //dev/sda2 root
-   await exec(`parted ${installDevice} set 1 boot on`, this.echo)
-   await exec(`parted ${installDevice} set 1 esp on`, this.echo)
+         /**
+          * ===========================================================================================
+          * BIOS: working
+          * ===========================================================================================
+          */
+         await exec(`parted --script ${installDevice} mklabel msdos`, this.echo)
+         await exec(`parted --script --align optimal ${installDevice} mkpart primary linux-swap    1MiB     8192MiB`, this.echo) //dev/sda1 swap
+         await exec(`parted --script --align optimal ${installDevice} mkpart primary ext4       8192MiB     100%`, this.echo) //dev/sda2 root
+         await exec(`parted ${installDevice} set 1 boot on`, this.echo)
+         await exec(`parted ${installDevice} set 1 esp on`, this.echo)
 
-   // SWAP
+         // SWAP
 
-   this.devices.swap.name = `${installDevice}${p}1`
-   this.devices.swap.fsType = 'swap'
-   this.devices.swap.mountPoint = 'none'
+         this.devices.swap.name = `${installDevice}${p}1`
+         this.devices.swap.fsType = 'swap'
+         this.devices.swap.mountPoint = 'none'
 
-   // ROOT
-   this.devices.root.name = `${installDevice}${p}2`
-   this.devices.root.fsType = 'ext4'
-   this.devices.root.mountPoint = '/'
+         // ROOT
+         this.devices.root.name = `${installDevice}${p}2`
+         this.devices.root.fsType = 'ext4'
+         this.devices.root.mountPoint = '/'
 
-   // BOOT/DATA/EFI
-   this.devices.boot.name = `none`
-   this.devices.data.name = `none`
-   this.devices.efi.name = `none`
+         // BOOT/DATA/EFI
+         this.devices.boot.name = `none`
+         this.devices.data.name = `none`
+         this.devices.efi.name = `none`
 
-   retVal = true
+         retVal = true
 
-} else if (installMode === 'full-encrypted' && !this.efi) {
+      } else if (installMode === 'full-encrypted' && !this.efi) {
 
-   /**
-    * ===========================================================================================
-    * BIOS: full-encrypt: 
-    * ===========================================================================================
-    */
-   await exec(`parted --script ${installDevice} mklabel msdos`, this.echo)
-   await exec(`parted --script --align optimal ${installDevice} mkpart primary ext4          1MiB   512MiB`, this.echo) // sda1
-   await exec(`parted --script --align optimal ${installDevice} mkpart primary linux-swap  512MiB  8704MiB`, this.echo) // sda2
-   await exec(`parted --script --align optimal ${installDevice} mkpart primary ext4       8704MiB     100%`, this.echo) // sda3
-   await exec(`parted --script ${installDevice} set 1 boot on`, this.echo) // sda1
-   await exec(`parted --script ${installDevice} set 1 esp on`, this.echo) // sda1
+         /**
+          * ===========================================================================================
+          * BIOS: full-encrypt: 
+          * ===========================================================================================
+          */
+         await exec(`parted --script ${installDevice} mklabel msdos`, this.echo)
+         await exec(`parted --script --align optimal ${installDevice} mkpart primary ext4          1MiB   512MiB`, this.echo) // sda1
+         await exec(`parted --script --align optimal ${installDevice} mkpart primary linux-swap  512MiB  8704MiB`, this.echo) // sda2
+         await exec(`parted --script --align optimal ${installDevice} mkpart primary ext4       8704MiB     100%`, this.echo) // sda3
+         await exec(`parted --script ${installDevice} set 1 boot on`, this.echo) // sda1
+         await exec(`parted --script ${installDevice} set 1 esp on`, this.echo) // sda1
 
-   // BOOT 512M
-   this.devices.boot.name = `${installDevice}${p}1` // 'boot' 
-   this.devices.boot.fsType = 'ext4'
-   this.devices.boot.mountPoint = '/boot'
+         // BOOT 512M
+         this.devices.boot.name = `${installDevice}${p}1` // 'boot' 
+         this.devices.boot.fsType = 'ext4'
+         this.devices.boot.mountPoint = '/boot'
 
-   // SWAP 8G
-   redraw(<Install message={`Formatting LUKS ${installDevice}2`} percent={0} />)
-   let crytoSwap = await exec(`cryptsetup -y -v luksFormat --type luks2 ${installDevice}${p}2`, echoYes)
-   if (crytoSwap.code !== 0) {
-      Utils.warning(`Error: ${crytoSwap.code} ${crytoSwap.data}`)
-      process.exit(1)
-   }
-   redraw(<Install message={`Opening ${installDevice}${p}2 as swap_crypted`} percent={0} />)
-   let crytoSwapOpen = await exec(`cryptsetup luksOpen --type luks2 ${installDevice}${p}2 swap_crypted`, echoYes)
-   if (crytoSwapOpen.code !== 0) {
-      Utils.warning(`Error: ${crytoSwapOpen.code} ${crytoSwapOpen.data}`)
-      process.exit(1)
-   }
-   this.devices.swap.name = '/dev/mapper/swap_crypted'
-   this.devices.swap.cryptedFrom = `${installDevice}${p}2`
-   this.devices.swap.fsType = 'swap'
-   this.devices.swap.mountPoint = 'none'
+         // SWAP 8G
+         redraw(<Install message={`Formatting LUKS ${installDevice}2`} percent={0} />)
+         let crytoSwap = await exec(`cryptsetup -y -v luksFormat --type luks2 ${installDevice}${p}2`, echoYes)
+         if (crytoSwap.code !== 0) {
+            Utils.warning(`Error: ${crytoSwap.code} ${crytoSwap.data}`)
+            process.exit(1)
+         }
+         redraw(<Install message={`Opening ${installDevice}${p}2 as swap_crypted`} percent={0} />)
+         let crytoSwapOpen = await exec(`cryptsetup luksOpen --type luks2 ${installDevice}${p}2 swap_crypted`, echoYes)
+         if (crytoSwapOpen.code !== 0) {
+            Utils.warning(`Error: ${crytoSwapOpen.code} ${crytoSwapOpen.data}`)
+            process.exit(1)
+         }
+         this.devices.swap.name = '/dev/mapper/swap_crypted'
+         this.devices.swap.cryptedFrom = `${installDevice}${p}2`
+         this.devices.swap.fsType = 'swap'
+         this.devices.swap.mountPoint = 'none'
 
-   // ROOT
-   redraw(<Install message={`Formatting LUKS ${installDevice}${p}3`} percent={0} />)
-   let crytoRoot = await exec(`cryptsetup -y -v luksFormat --type luks2 ${installDevice}${p}3`, echoYes)
-   if (crytoRoot.code !== 0) {
-      Utils.warning(`Error: ${crytoRoot.code} ${crytoRoot.data}`)
-      process.exit(1)
-   }
-   redraw(<Install message={`Opening ${installDevice}${p}3 as root_crypted`} percent={0} />)
-   let crytoRootOpen = await exec(`cryptsetup luksOpen --type luks2 ${installDevice}${p}3 root_crypted`, echoYes)
-   if (crytoRootOpen.code !== 0) {
-      Utils.warning(`Error: ${crytoRootOpen.code} ${crytoRootOpen.data}`)
-      process.exit(1)
-   }
-   this.devices.root.name = '/dev/mapper/root_crypted'
-   this.devices.root.cryptedFrom = `${installDevice}${p}3`
-   this.devices.root.fsType = 'ext4'
-   this.devices.root.mountPoint = '/'
+         // ROOT
+         redraw(<Install message={`Formatting LUKS ${installDevice}${p}3`} percent={0} />)
+         let crytoRoot = await exec(`cryptsetup -y -v luksFormat --type luks2 ${installDevice}${p}3`, echoYes)
+         if (crytoRoot.code !== 0) {
+            Utils.warning(`Error: ${crytoRoot.code} ${crytoRoot.data}`)
+            process.exit(1)
+         }
+         redraw(<Install message={`Opening ${installDevice}${p}3 as root_crypted`} percent={0} />)
+         let crytoRootOpen = await exec(`cryptsetup luksOpen --type luks2 ${installDevice}${p}3 root_crypted`, echoYes)
+         if (crytoRootOpen.code !== 0) {
+            Utils.warning(`Error: ${crytoRootOpen.code} ${crytoRootOpen.data}`)
+            process.exit(1)
+         }
+         this.devices.root.name = '/dev/mapper/root_crypted'
+         this.devices.root.cryptedFrom = `${installDevice}${p}3`
+         this.devices.root.fsType = 'ext4'
+         this.devices.root.mountPoint = '/'
 
-   // BOOT/DATA/EFI
-   this.devices.data.name = `none`
-   this.devices.efi.name = `none`
+         // BOOT/DATA/EFI
+         this.devices.data.name = `none`
+         this.devices.efi.name = `none`
 
-   retVal = true
+         retVal = true
 
-} else if (installMode === 'standard' && this.efi) {
+      } else if (installMode === 'standard' && this.efi) {
 
-   /**
-    * ===========================================================================================
-    * UEFI: working
-    * ===========================================================================================
-    */
-   await exec(`parted --script ${installDevice} mklabel gpt`, this.echo)
-   await exec(`parted --script ${installDevice} mkpart efi  fat32         34s   256MiB`, this.echo) // sda1 EFI
-   await exec(`parted --script ${installDevice} mkpart swap linux-swap 768MiB  8960MiB`, this.echo) // sda2 swap
-   await exec(`parted --script ${installDevice} mkpart root ext4      8960MiB     100%`, this.echo) // sda3 root
-   await exec(`parted --script ${installDevice} set 1 boot on`, this.echo) // sda1
-   await exec(`parted --script ${installDevice} set 1 esp on`, this.echo) // sda1
+         /**
+          * ===========================================================================================
+          * UEFI: working
+          * ===========================================================================================
+          */
+         await exec(`parted --script ${installDevice} mklabel gpt`, this.echo)
+         await exec(`parted --script ${installDevice} mkpart efi  fat32         34s   256MiB`, this.echo) // sda1 EFI
+         await exec(`parted --script ${installDevice} mkpart swap linux-swap 768MiB  8960MiB`, this.echo) // sda2 swap
+         await exec(`parted --script ${installDevice} mkpart root ext4      8960MiB     100%`, this.echo) // sda3 root
+         await exec(`parted --script ${installDevice} set 1 boot on`, this.echo) // sda1
+         await exec(`parted --script ${installDevice} set 1 esp on`, this.echo) // sda1
 
-   this.devices.efi.name = `${installDevice}${p}1`
-   this.devices.efi.fsType = 'F 32 -I'
-   this.devices.efi.mountPoint = '/boot/efi'
-   this.devices.boot.name = `none`
+         this.devices.efi.name = `${installDevice}${p}1`
+         this.devices.efi.fsType = 'F 32 -I'
+         this.devices.efi.mountPoint = '/boot/efi'
+         this.devices.boot.name = `none`
 
-   this.devices.swap.name = `${installDevice}${p}2`
-   this.devices.swap.fsType = 'swap'
+         this.devices.swap.name = `${installDevice}${p}2`
+         this.devices.swap.fsType = 'swap'
 
-   this.devices.root.name = `${installDevice}${p}3`
-   this.devices.root.fsType = 'ext4'
-   this.devices.root.mountPoint = '/'
+         this.devices.root.name = `${installDevice}${p}3`
+         this.devices.root.fsType = 'ext4'
+         this.devices.root.mountPoint = '/'
 
-   // BOOT/DATA/EFI
-   this.devices.boot.name = `none`
-   this.devices.data.name = `none`
-   // this.devices.efi.name = `none`
+         // BOOT/DATA/EFI
+         this.devices.boot.name = `none`
+         this.devices.data.name = `none`
+         // this.devices.efi.name = `none`
 
-   retVal = true
+         retVal = true
 
-} else if (installMode === 'full-encrypted' && this.efi) {
+      } else if (installMode === 'full-encrypted' && this.efi) {
 
-   /**
-    * ===========================================================================================
-    * UEFI, full-encrypt
-    * ===========================================================================================
-    */
-   await exec(`parted --script ${installDevice} mklabel gpt`, this.echo)
-   await exec(`parted --script ${installDevice} mkpart efi fat32           34s   256MiB`, this.echo) // sda1 EFI
-   await exec(`parted --script ${installDevice} mkpart boot ext4        256MiB   768MiB`, this.echo) // sda2 boot
-   await exec(`parted --script ${installDevice} mkpart swap linux-swap  768MiB  8960MiB`, this.echo) // sda3 swap
-   await exec(`parted --script ${installDevice} mkpart root ext4       8960MiB     100%`, this.echo) // sda4 root
-   await exec(`parted --script ${installDevice} set 1 boot on`, this.echo) // sda1
-   await exec(`parted --script ${installDevice} set 1 esp on`, this.echo) // sda1
+         /**
+          * ===========================================================================================
+          * UEFI, full-encrypt
+          * ===========================================================================================
+          */
+         await exec(`parted --script ${installDevice} mklabel gpt`, this.echo)
+         await exec(`parted --script ${installDevice} mkpart efi fat32           34s   256MiB`, this.echo) // sda1 EFI
+         await exec(`parted --script ${installDevice} mkpart boot ext4        256MiB   768MiB`, this.echo) // sda2 boot
+         await exec(`parted --script ${installDevice} mkpart swap linux-swap  768MiB  8960MiB`, this.echo) // sda3 swap
+         await exec(`parted --script ${installDevice} mkpart root ext4       8960MiB     100%`, this.echo) // sda4 root
+         await exec(`parted --script ${installDevice} set 1 boot on`, this.echo) // sda1
+         await exec(`parted --script ${installDevice} set 1 esp on`, this.echo) // sda1
 
-   // EFI 256M
-   this.devices.efi.name = `${installDevice}${p}1` // 'efi' 
-   this.devices.efi.fsType = 'F 32 -I'
-   this.devices.efi.mountPoint = '/boot/efi'
+         // EFI 256M
+         this.devices.efi.name = `${installDevice}${p}1` // 'efi' 
+         this.devices.efi.fsType = 'F 32 -I'
+         this.devices.efi.mountPoint = '/boot/efi'
 
-   // BOOT 512M
-   this.devices.boot.name = `${installDevice}${p}2` // 'boot' 
-   this.devices.boot.fsType = 'ext4'
-   this.devices.boot.mountPoint = '/boot'
+         // BOOT 512M
+         this.devices.boot.name = `${installDevice}${p}2` // 'boot' 
+         this.devices.boot.fsType = 'ext4'
+         this.devices.boot.mountPoint = '/boot'
 
-   /**
-    *  cryptsetup return codes are: 
-    * 
-    * 1 wrong parameters, 
-    * 2 no permission (bad passphrase), 
-    * 3 out of memory, 
-    * 4 wrong device specified, 
-    * 5 device already exists or device is busy.
-    * 
-    * sometime due scarce memory 2GB, we can have the process killed
-    */
+         /**
+          *  cryptsetup return codes are: 
+          * 
+          * 1 wrong parameters, 
+          * 2 no permission (bad passphrase), 
+          * 3 out of memory, 
+          * 4 wrong device specified, 
+          * 5 device already exists or device is busy.
+          * 
+          * sometime due scarce memory 2GB, we can have the process killed
+          */
 
-   // SWAP 8G
-   redraw(<Install message={`Formatting LUKS ${installDevice}${p}3`} percent={0} />)
-   let crytoSwap = await exec(`cryptsetup -y -v luksFormat --type luks2 ${installDevice}${p}3`, echoYes)
-   if (crytoSwap.code !== 0) {
-      Utils.warning(`Error: ${crytoSwap.code} ${crytoSwap.data}`)
-      process.exit(1)
-   }
-   redraw(<Install message={`Opening ${installDevice}${p}3 as swap_crypted`} percent={0} />)
-   let crytoSwapOpen = await exec(`cryptsetup luksOpen --type luks2 ${installDevice}${p}3 swap_crypted`, echoYes)
-   if (crytoSwapOpen.code !== 0) {
-      Utils.warning(`Error: ${crytoSwapOpen.code} ${crytoSwapOpen.data}`)
-      process.exit(1)
-   }
-   this.devices.swap.name = '/dev/mapper/swap_crypted'
-   this.devices.swap.cryptedFrom = `${installDevice}${p}3`
-   this.devices.swap.fsType = 'swap'
-   this.devices.swap.mountPoint = 'none'
+         // SWAP 8G
+         redraw(<Install message={`Formatting LUKS ${installDevice}${p}3`} percent={0} />)
+         let crytoSwap = await exec(`cryptsetup -y -v luksFormat --type luks2 ${installDevice}${p}3`, echoYes)
+         if (crytoSwap.code !== 0) {
+            Utils.warning(`Error: ${crytoSwap.code} ${crytoSwap.data}`)
+            process.exit(1)
+         }
+         redraw(<Install message={`Opening ${installDevice}${p}3 as swap_crypted`} percent={0} />)
+         let crytoSwapOpen = await exec(`cryptsetup luksOpen --type luks2 ${installDevice}${p}3 swap_crypted`, echoYes)
+         if (crytoSwapOpen.code !== 0) {
+            Utils.warning(`Error: ${crytoSwapOpen.code} ${crytoSwapOpen.data}`)
+            process.exit(1)
+         }
+         this.devices.swap.name = '/dev/mapper/swap_crypted'
+         this.devices.swap.cryptedFrom = `${installDevice}${p}3`
+         this.devices.swap.fsType = 'swap'
+         this.devices.swap.mountPoint = 'none'
 
-   // ROOT
-   redraw(<Install message={`Formatting LUKS ${installDevice}${p}4`} percent={0} />)
-   let crytoRoot = await exec(`cryptsetup -y -v luksFormat --type luks2 ${installDevice}${p}4`, echoYes)
-   if (crytoRoot.code !== 0) {
-      Utils.warning(`Error: ${crytoRoot.code} ${crytoRoot.data}`)
-      process.exit(1)
-   }
-   redraw(<Install message={`Opening ${installDevice}${p}4 as root_crypted`} percent={0} />)
-   let crytoRootOpen = await exec(`cryptsetup luksOpen --type luks2 ${installDevice}${p}4 root_crypted`, echoYes)
-   if (crytoRootOpen.code !== 0) {
-      Utils.warning(`Error: ${crytoRootOpen.code} ${crytoRootOpen.data}`)
-      process.exit(1)
-   }
-   this.devices.root.name = '/dev/mapper/root_crypted'
-   this.devices.root.cryptedFrom = `${installDevice}${p}4`
-   this.devices.root.fsType = 'ext4'
-   this.devices.root.mountPoint = '/'
+         // ROOT
+         redraw(<Install message={`Formatting LUKS ${installDevice}${p}4`} percent={0} />)
+         let crytoRoot = await exec(`cryptsetup -y -v luksFormat --type luks2 ${installDevice}${p}4`, echoYes)
+         if (crytoRoot.code !== 0) {
+            Utils.warning(`Error: ${crytoRoot.code} ${crytoRoot.data}`)
+            process.exit(1)
+         }
+         redraw(<Install message={`Opening ${installDevice}${p}4 as root_crypted`} percent={0} />)
+         let crytoRootOpen = await exec(`cryptsetup luksOpen --type luks2 ${installDevice}${p}4 root_crypted`, echoYes)
+         if (crytoRootOpen.code !== 0) {
+            Utils.warning(`Error: ${crytoRootOpen.code} ${crytoRootOpen.data}`)
+            process.exit(1)
+         }
+         this.devices.root.name = '/dev/mapper/root_crypted'
+         this.devices.root.cryptedFrom = `${installDevice}${p}4`
+         this.devices.root.fsType = 'ext4'
+         this.devices.root.mountPoint = '/'
 
 
-   // BOOT/DATA/EFI
-   // this.devices.boot.name = `none`
-   this.devices.data.name = `none`
-   // this.devices.efi.name = `none`
+         // BOOT/DATA/EFI
+         // this.devices.boot.name = `none`
+         this.devices.data.name = `none`
+         // this.devices.efi.name = `none`
 
-   retVal = true
+         retVal = true
 
-} else if (installMode === 'lvm2' && !this.efi) {
+      } else if (installMode === 'lvm2' && !this.efi) {
 
-   /**
-   * ===========================================================================================
-   * PROXMOX VE: BIOS and lvm2
-   * ===========================================================================================
-   */
-   // Creo partizioni
-   await exec(`parted --script ${installDevice} mklabel msdos`, this.echo)
-   await exec(`parted --script ${installDevice} mkpart primary ext2 1 512`, this.echo) // sda1
-   await exec(`parted --script --align optimal ${installDevice} mkpart primary ext2 512 100%`, this.echo) // sda2
-   await exec(`parted --script ${installDevice} set 1 boot on`, this.echo) // sda1
-   await exec(`parted --script ${installDevice} set 2 lvm on`, this.echo) // sda2
+         /**
+         * ===========================================================================================
+         * PROXMOX VE: BIOS and lvm2
+         * ===========================================================================================
+         */
+         // Creo partizioni
+         await exec(`parted --script ${installDevice} mklabel msdos`, this.echo)
+         await exec(`parted --script ${installDevice} mkpart primary ext2 1 512`, this.echo) // sda1
+         await exec(`parted --script --align optimal ${installDevice} mkpart primary ext2 512 100%`, this.echo) // sda2
+         await exec(`parted --script ${installDevice} set 1 boot on`, this.echo) // sda1
+         await exec(`parted --script ${installDevice} set 2 lvm on`, this.echo) // sda2
 
-   const lvmPartInfo = await this.lvmPartInfo(installDevice)
-   const lvmPartname = lvmPartInfo[0]
-   const lvmSwapSize = lvmPartInfo[1]
-   const lvmRootSize = lvmPartInfo[2]
-   //const lvmDataSize = lvmPartInfo[3]
+         const lvmPartInfo = await this.lvmPartInfo(installDevice)
+         const lvmPartname = lvmPartInfo[0]
+         const lvmSwapSize = lvmPartInfo[1]
+         const lvmRootSize = lvmPartInfo[2]
+         //const lvmDataSize = lvmPartInfo[3]
 
-   await exec(`pvcreate /dev/${lvmPartname}`, this.echo)
-   await exec(`vgcreate pve /dev/${lvmPartname}`, this.echo)
-   await exec(`vgchange -an`, this.echo)
-   await exec(`lvcreate -L ${lvmSwapSize} -nswap pve`, this.echo)
-   await exec(`lvcreate -L ${lvmRootSize} -nroot pve`, this.echo)
-   await exec(`lvcreate -l 100%FREE -ndata pve`, this.echo)
-   await exec(`vgchange -a y pve`, this.echo)
+         await exec(`pvcreate /dev/${lvmPartname}`, this.echo)
+         await exec(`vgcreate pve /dev/${lvmPartname}`, this.echo)
+         await exec(`vgchange -an`, this.echo)
+         await exec(`lvcreate -L ${lvmSwapSize} -nswap pve`, this.echo)
+         await exec(`lvcreate -L ${lvmRootSize} -nroot pve`, this.echo)
+         await exec(`lvcreate -l 100%FREE -ndata pve`, this.echo)
+         await exec(`vgchange -a y pve`, this.echo)
 
-   this.devices.efi.name = `none`
+         this.devices.efi.name = `none`
 
-   this.devices.boot.name = `${installDevice}${p}1`
-   this.devices.root.fsType = 'ext2'
-   this.devices.root.mountPoint = '/boot'
+         this.devices.boot.name = `${installDevice}${p}1`
+         this.devices.root.fsType = 'ext2'
+         this.devices.root.mountPoint = '/boot'
 
-   this.devices.root.name = `/dev/pve/root`
-   this.devices.root.fsType = 'ext4'
-   this.devices.root.mountPoint = '/'
+         this.devices.root.name = `/dev/pve/root`
+         this.devices.root.fsType = 'ext4'
+         this.devices.root.mountPoint = '/'
 
-   this.devices.data.name = `/dev/pve/data`
-   this.devices.data.fsType = 'ext4'
-   this.devices.data.mountPoint = '/var/lib/vz'
+         this.devices.data.name = `/dev/pve/data`
+         this.devices.data.fsType = 'ext4'
+         this.devices.data.mountPoint = '/var/lib/vz'
 
-   this.devices.swap.name = `/dev/pve/swap`
+         this.devices.swap.name = `/dev/pve/swap`
 
-   retVal = true
+         retVal = true
 
-} else if (this.partitions.installationMode === 'lvm2' && this.efi) {
+      } else if (this.partitions.installationMode === 'lvm2' && this.efi) {
 
-   /**
-   * ===========================================================================================
-   * PROXMOX VE: lvm2 and UEFI 
-   * ===========================================================================================
-   */
-   await exec(`parted --script ${installDevice} mklabel gpt`, this.echo)
-   await exec(`parted --script ${installDevice} mkpart efi  fat32    34s   256MiB`, this.echo) // sda1 EFI
-   await exec(`parted --script ${installDevice} mkpart boot ext2  256MiB   768MiB`, this.echo) // sda2 boot
-   await exec(`parted --script ${installDevice} mkpart lvm  ext4  768MiB     100%`, this.echo) // sda3 lmv2
-   await exec(`parted --script ${installDevice} set 1 boot on`, this.echo) // sda1
-   await exec(`parted --script ${installDevice} set 1 esp on`, this.echo)  // sda1
-   await exec(`parted --script ${installDevice} set 3 lvm on`, this.echo) // sda3
+         /**
+         * ===========================================================================================
+         * PROXMOX VE: lvm2 and UEFI 
+         * ===========================================================================================
+         */
+         await exec(`parted --script ${installDevice} mklabel gpt`, this.echo)
+         await exec(`parted --script ${installDevice} mkpart efi  fat32    34s   256MiB`, this.echo) // sda1 EFI
+         await exec(`parted --script ${installDevice} mkpart boot ext2  256MiB   768MiB`, this.echo) // sda2 boot
+         await exec(`parted --script ${installDevice} mkpart lvm  ext4  768MiB     100%`, this.echo) // sda3 lmv2
+         await exec(`parted --script ${installDevice} set 1 boot on`, this.echo) // sda1
+         await exec(`parted --script ${installDevice} set 1 esp on`, this.echo)  // sda1
+         await exec(`parted --script ${installDevice} set 3 lvm on`, this.echo) // sda3
 
-   const lvmPartInfo = await this.lvmPartInfo(installDevice)
-   const lvmPartname = lvmPartInfo[0]
-   const lvmSwapSize = lvmPartInfo[1]
-   const lvmRootSize = lvmPartInfo[2]
-   //const lvmDataSize = lvmPartInfo[3]
+         const lvmPartInfo = await this.lvmPartInfo(installDevice)
+         const lvmPartname = lvmPartInfo[0]
+         const lvmSwapSize = lvmPartInfo[1]
+         const lvmRootSize = lvmPartInfo[2]
+         //const lvmDataSize = lvmPartInfo[3]
 
-   await exec(`pvcreate /dev/${lvmPartname}`, this.echo)
-   await exec(`vgcreate pve /dev/${lvmPartname}`, this.echo)
-   await exec(`vgchange -an`, this.echo)
-   await exec(`lvcreate -L ${lvmSwapSize} -nswap pve`, this.echo)
-   await exec(`lvcreate -L ${lvmRootSize} -nroot pve`, this.echo)
-   await exec(`lvcreate -l 100%FREE -ndata pve`, this.echo)
-   await exec(`vgchange -a y pve`, this.echo)
+         await exec(`pvcreate /dev/${lvmPartname}`, this.echo)
+         await exec(`vgcreate pve /dev/${lvmPartname}`, this.echo)
+         await exec(`vgchange -an`, this.echo)
+         await exec(`lvcreate -L ${lvmSwapSize} -nswap pve`, this.echo)
+         await exec(`lvcreate -L ${lvmRootSize} -nroot pve`, this.echo)
+         await exec(`lvcreate -l 100%FREE -ndata pve`, this.echo)
+         await exec(`vgchange -a y pve`, this.echo)
 
-   this.devices.efi.name = `${installDevice}${p}1`
-   this.devices.efi.fsType = 'F 32 -I'
-   this.devices.efi.mountPoint = '/boot/efi'
+         this.devices.efi.name = `${installDevice}${p}1`
+         this.devices.efi.fsType = 'F 32 -I'
+         this.devices.efi.mountPoint = '/boot/efi'
 
-   this.devices.boot.name = `${installDevice}${p}2`
-   this.devices.boot.fsType = 'ext4'
-   this.devices.boot.mountPoint = '/boot'
+         this.devices.boot.name = `${installDevice}${p}2`
+         this.devices.boot.fsType = 'ext4'
+         this.devices.boot.mountPoint = '/boot'
 
-   this.devices.root.name = `/dev/pve/root`
-   this.devices.root.fsType = 'ext4'
-   this.devices.root.mountPoint = '/'
+         this.devices.root.name = `/dev/pve/root`
+         this.devices.root.fsType = 'ext4'
+         this.devices.root.mountPoint = '/'
 
-   this.devices.data.name = `/dev/pve/data`
-   this.devices.data.fsType = 'ext4'
-   this.devices.data.mountPoint = '/var/lib/vz'
+         this.devices.data.name = `/dev/pve/data`
+         this.devices.data.fsType = 'ext4'
+         this.devices.data.mountPoint = '/var/lib/vz'
 
-   this.devices.swap.name = `/dev/pve/swap`
+         this.devices.swap.name = `/dev/pve/swap`
 
-   retVal = true
-}
-return retVal
+         retVal = true
+      }
+      return retVal
    }
 
    /**
     * Return lvmPartname, lvmSwapSize, lvmRootSize
     */
-   private async lvmPartInfo(installDevice = '/dev/sda'): Promise < [string, number, number, number] > {
+   private async lvmPartInfo(installDevice = '/dev/sda'): Promise<[string, number, number, number]> {
 
-   // Partizione LVM
-   const lvmPartname = shx.exec(`fdisk ${installDevice} -l | grep LVM | awk '{print $1}' | cut -d "/" -f3`).stdout.trim()
+      // Partizione LVM
+      const lvmPartname = shx.exec(`fdisk ${installDevice} -l | grep LVM | awk '{print $1}' | cut -d "/" -f3`).stdout.trim()
       const lvmByteSize = Number(shx.exec(`cat /proc/partitions | grep ${lvmPartname}| awk '{print $3}' | grep "[0-9]"`).stdout.trim())
       const lvmSize = lvmByteSize / 1024
 
       // La partizione di root viene posta ad 1/4 della partizione LVM, limite max 100 GB
       const lvmSwapSize = 8192
       let lvmRootSize = lvmSize / 8
-      if(lvmRootSize < 20480) {
-      lvmRootSize = 20480
-   }
+      if (lvmRootSize < 20480) {
+         lvmRootSize = 20480
+      }
       const lvmDataSize = lvmSize - lvmRootSize - lvmSwapSize
       return [lvmPartname, lvmSwapSize, lvmRootSize, lvmDataSize]
-}
+   }
 
    /**
     * isRotational
     * @param device
     */
-   private async isRotational(device: string): Promise < boolean > {
-   device = device.substring(4)
+   private async isRotational(device: string): Promise<boolean> {
+      device = device.substring(4)
       let response: any
       let retVal = false
 
       response = shx.exec(`cat /sys/block/${device}/queue/rotational`, { silent: this.verbose }).stdout.trim()
-      if(response === '1') {
-   retVal = true
-}
-return retVal
+      if (response === '1') {
+         retVal = true
+      }
+      return retVal
    }
 
    /**
     * bootloaderConfig
     */
    private async bootloaderConfig() {
-   if (this.distro.familyId === 'debian') {
-      if (this.distro.distroLike === 'ubuntu') {
-         this.bootloaderConfig_Ubuntu()
-      } else {
-         this.bootloaderConfig_Debian()
+      if (this.distro.familyId === 'debian') {
+         if (this.distro.distroLike === 'ubuntu') {
+            this.bootloaderConfig_Ubuntu()
+         } else {
+            this.bootloaderConfig_Debian()
+         }
+      } else if (this.distro.familyId === 'archlinux') {
+         this.bootloaderConfig_Arch()
       }
-   } else if (this.distro.familyId === 'archlinux') {
-      this.bootloaderConfig_Arch()
    }
-}
 
    /**
     * 
     */
    async bootloaderConfig_Debian() {
-   this.execCalamaresModule('bootloader-config')
-}
+      this.execCalamaresModule('bootloader-config')
+   }
 
    /**
     * 
     */
    async bootloaderConfig_Arch() {
-   console.log('bootloader Arch to do!')
-}
+      console.log('bootloader Arch to do!')
+   }
 
 
    /**
     * 
     */
    async bootloaderConfig_Ubuntu() {
-   let cmd = ''
-   try {
-      cmd = `chroot ${this.installTarget} apt-get update -y ${this.toNull}`
-      await exec(cmd, this.echo)
-   } catch (error) {
-      console.log(error)
-      await Utils.pressKeyToExit(cmd, true)
-   }
-
-   try {
-      cmd = `chroot ${this.installTarget} sleep 1 ${this.toNull}`
-      await exec(cmd, this.echo)
-   } catch (error) {
-      console.log(error)
-      await Utils.pressKeyToExit(cmd, true)
-   }
-
-   let aptInstallOptions = ' apt install -y --no-upgrade --allow-unauthenticated -o Acquire::gpgv::Options::=--ignore-time-conflict '
-   if (this.efi) {
+      let cmd = ''
       try {
-         cmd = `chroot ${this.installTarget} ${aptInstallOptions} grub-efi-${Utils.machineArch()} --allow-unauthenticated ${this.toNull}`
+         cmd = `chroot ${this.installTarget} apt-get update -y ${this.toNull}`
          await exec(cmd, this.echo)
       } catch (error) {
          console.log(error)
          await Utils.pressKeyToExit(cmd, true)
       }
-   } else {
+
       try {
-         cmd = `chroot ${this.installTarget} ${aptInstallOptions} grub-pc ${this.toNull}`
+         cmd = `chroot ${this.installTarget} sleep 1 ${this.toNull}`
+         await exec(cmd, this.echo)
+      } catch (error) {
+         console.log(error)
+         await Utils.pressKeyToExit(cmd, true)
+      }
+
+      let aptInstallOptions = ' apt install -y --no-upgrade --allow-unauthenticated -o Acquire::gpgv::Options::=--ignore-time-conflict '
+      if (this.efi) {
+         try {
+            cmd = `chroot ${this.installTarget} ${aptInstallOptions} grub-efi-${Utils.machineArch()} --allow-unauthenticated ${this.toNull}`
+            await exec(cmd, this.echo)
+         } catch (error) {
+            console.log(error)
+            await Utils.pressKeyToExit(cmd, true)
+         }
+      } else {
+         try {
+            cmd = `chroot ${this.installTarget} ${aptInstallOptions} grub-pc ${this.toNull}`
+            await exec(cmd, this.echo)
+         } catch (error) {
+            console.log(error)
+            await Utils.pressKeyToExit(cmd, true)
+         }
+      }
+
+      try {
+         cmd = `chroot ${this.installTarget} sleep 1 ${this.toNull}`
+         await exec(cmd, this.echo)
+      } catch (error) {
+         console.log(error)
+         await Utils.pressKeyToExit(cmd, true)
+      }
+
+      try {
+         cmd = `chroot ${this.installTarget} grub-install ${this.partitions.installationDevice} ${this.toNull}`
+         await exec(cmd, this.echo)
+      } catch (error) {
+         console.log(error)
+         await Utils.pressKeyToExit(cmd, true)
+      }
+
+      try {
+         cmd = `chroot ${this.installTarget} grub-mkconfig -o /boot/grub/grub.cfg ${this.toNull}`
+         await exec(cmd, this.echo)
+      } catch (error) {
+         console.log(error)
+         await Utils.pressKeyToExit(cmd, true)
+      }
+
+      try {
+         cmd = `chroot ${this.installTarget} update-grub ${this.toNull}`
+         await exec(cmd, this.echo)
+      } catch (error) {
+         console.log(error)
+         await Utils.pressKeyToExit(cmd, true)
+      }
+
+      try {
+         cmd = `chroot ${this.installTarget} sleep 1 ${this.toNull}`
          await exec(cmd, this.echo)
       } catch (error) {
          console.log(error)
          await Utils.pressKeyToExit(cmd, true)
       }
    }
-
-   try {
-      cmd = `chroot ${this.installTarget} sleep 1 ${this.toNull}`
-      await exec(cmd, this.echo)
-   } catch (error) {
-      console.log(error)
-      await Utils.pressKeyToExit(cmd, true)
-   }
-
-   try {
-      cmd = `chroot ${this.installTarget} grub-install ${this.partitions.installationDevice} ${this.toNull}`
-      await exec(cmd, this.echo)
-   } catch (error) {
-      console.log(error)
-      await Utils.pressKeyToExit(cmd, true)
-   }
-
-   try {
-      cmd = `chroot ${this.installTarget} grub-mkconfig -o /boot/grub/grub.cfg ${this.toNull}`
-      await exec(cmd, this.echo)
-   } catch (error) {
-      console.log(error)
-      await Utils.pressKeyToExit(cmd, true)
-   }
-
-   try {
-      cmd = `chroot ${this.installTarget} update-grub ${this.toNull}`
-      await exec(cmd, this.echo)
-   } catch (error) {
-      console.log(error)
-      await Utils.pressKeyToExit(cmd, true)
-   }
-
-   try {
-      cmd = `chroot ${this.installTarget} sleep 1 ${this.toNull}`
-      await exec(cmd, this.echo)
-   } catch (error) {
-      console.log(error)
-      await Utils.pressKeyToExit(cmd, true)
-   }
-}
 
    /**
     * 
     */
    async execCalamaresModule(name: string) {
-   const moduleName = this.installer.multiarchModules + name + '/module.desc'
-   if (fs.existsSync(moduleName)) {
-      const calamaresModule = yaml.load(fs.readFileSync(moduleName, 'utf8')) as ICalamaresModule
-      let command = calamaresModule.command
-      if (command !== '' || command !== undefined) {
-         command += this.toNull
-         await exec(command, this.echo)
-      }
-   }
-}
-
-/**
- * grubcfg
- * - open /etc/default/grub
- * - find GRUB_CMDLINE_LINUX_DEFAULT=
- * - replace with GRUB_CMDLINE_LINUX_DEFAULT=
- * 's/GRUB_CMDLINE_LINUX_DEFAULT=.*$/GRUB_CMDLINE_LINUX_DEFAULT=/g'
- */
-grubcfg() {
-   let file = `${this.installTarget}/etc/default/grub`
-   let content = ''
-   const grubs = fs.readFileSync(file, 'utf-8').split('\n')
-   for (let i = 0; i < grubs.length; i++) {
-      if (grubs[i].includes('GRUB_CMDLINE_LINUX_DEFAULT=')) {
-         if (this.partitions.installationMode === 'full-encrypted') {
-            grubs[i] = `GRUB_CMDLINE_LINUX_DEFAULT="resume=UUID=${Utils.uuid(this.devices.swap.name)}"`
-         } else {
-            grubs[i] = `GRUB_CMDLINE_LINUX_DEFAULT="quiet splash resume=UUID=${Utils.uuid(this.devices.swap.name)}"`
+      const moduleName = this.installer.multiarchModules + name + '/module.desc'
+      if (fs.existsSync(moduleName)) {
+         const calamaresModule = yaml.load(fs.readFileSync(moduleName, 'utf8')) as ICalamaresModule
+         let command = calamaresModule.command
+         if (command !== '' || command !== undefined) {
+            command += this.toNull
+            await exec(command, this.echo)
          }
       }
-      content += grubs[i] + '\n'
    }
-   fs.writeFileSync(file, content, 'utf-8')
-}
+
+   /**
+    * grubcfg
+    * - open /etc/default/grub
+    * - find GRUB_CMDLINE_LINUX_DEFAULT=
+    * - replace with GRUB_CMDLINE_LINUX_DEFAULT=
+    * 's/GRUB_CMDLINE_LINUX_DEFAULT=.*$/GRUB_CMDLINE_LINUX_DEFAULT=/g'
+    */
+   grubcfg() {
+      let file = `${this.installTarget}/etc/default/grub`
+      let content = ''
+      const grubs = fs.readFileSync(file, 'utf-8').split('\n')
+      for (let i = 0; i < grubs.length; i++) {
+         if (grubs[i].includes('GRUB_CMDLINE_LINUX_DEFAULT=')) {
+            if (this.partitions.installationMode === 'full-encrypted') {
+               grubs[i] = `GRUB_CMDLINE_LINUX_DEFAULT="resume=UUID=${Utils.uuid(this.devices.swap.name)}"`
+            } else {
+               grubs[i] = `GRUB_CMDLINE_LINUX_DEFAULT="quiet splash resume=UUID=${Utils.uuid(this.devices.swap.name)}"`
+            }
+         }
+         content += grubs[i] + '\n'
+      }
+      fs.writeFileSync(file, content, 'utf-8')
+   }
 
 
    /**
@@ -1613,30 +1612,30 @@ grubcfg() {
     * https://unix.stackexchange.com/questions/402999/is-it-ok-to-change-etc-machine-id
     */
    async machineId() {
-   let file = `${this.installTarget}/etc/machine-id`
-   if (fs.existsSync(file)) {
-      await exec(`rm ${file}`, this.echo)
+      let file = `${this.installTarget}/etc/machine-id`
+      if (fs.existsSync(file)) {
+         await exec(`rm ${file}`, this.echo)
+      }
+      await exec(`touch ${file}`)
    }
-   await exec(`touch ${file}`)
-}
 
    /**
     * only show the result
     */
    async finished() {
-   redraw(<Finished installationDevice={this.partitions.installationDevice} hostName={this.users.hostname} userName={this.users.name} />)
-   Utils.pressKeyToExit('Press a key to reboot...')
-   shx.exec('reboot')
-}
+      redraw(<Finished installationDevice={this.partitions.installationDevice} hostName={this.users.hostname} userName={this.users.name} />)
+      Utils.pressKeyToExit('Press a key to reboot...')
+      shx.exec('reboot')
+   }
 
 
    /**
     * localeCfg
     */
    async localeCfg() {
-   const i18n = new I18n(this.installTarget, this.verbose)
-   i18n.generate(this.language, [this.language])
-}
+      const i18n = new I18n(this.installTarget, this.verbose)
+      i18n.generate(this.language, [this.language])
+   }
 }
 
 const ifaces: string[] = fs.readdirSync('/sys/class/net/')
