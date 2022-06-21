@@ -1,5 +1,5 @@
 /**
- * test i compressori disponibili
+ * test available compressors
  */
 import shx from 'shelljs'
 
@@ -27,6 +27,45 @@ export default class Compressors {
     this.isEnabled.zstd = await this.check('zstd')
     await this.removeCheck()
   }
+
+  // fastest
+  fast(): string {
+    let comp = 'gzip'
+    if (this.isEnabled.zstd) {
+      comp = 'zstd -Xcompression-level 1'
+    } else if (this.isEnabled.lz4) {
+      comp = 'lz4'
+    }
+    return comp
+  }
+
+  // normal
+  normal(): string {
+    let comp = "xz"
+    if (this.isEnabled.zstd) {
+      comp = 'zstd -Xcompression-level 20'
+    } else {
+      comp = 'xz'
+    }
+    return comp
+  }
+
+  /**
+   * max
+   * @returns 
+   */
+  max(): string {
+    let comp = 'xz -Xbcj '
+    const filter = 'x86'
+    if (process.arch === 'arm') {
+      const filter = 'ARM' // to check
+    } else if (process.arch === 'arm64') {
+      const filter = 'ARM64' // to check
+    }
+    return comp + filter
+  }
+
+
 
   private async prepareCheck() {
     shx.exec('rm -rf ' + this.source, { silent: true })
