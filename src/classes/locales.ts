@@ -32,15 +32,14 @@ export default class Locales {
         if (distro.familyId === 'debian') {
             supporteds = fs.readFileSync('/usr/share/i18n/SUPPORTED', 'utf-8').split('\n')
         } else if (distro.familyId === 'archlinux') {
-            supporteds = (await exec('localectl list-locales')).data.split('\n')
+            supporteds = (await exec('localectl list-locales', { capture: true, echo: false, ignore: false })).data.split('\n')
         }
-        let lines: string[] = []
-        const retLines: string[] = []
-        lines = supporteds
-        for (const line of lines) {
-            retLines.push(line.replace(' UTF-8', ''))
+
+        const elements: string[] = []
+        for (const elem of supporteds) {
+            elements.push(elem.replace(' UTF-8', ''))
         }
-        return retLines
+        return elements
     }
 
     /**
