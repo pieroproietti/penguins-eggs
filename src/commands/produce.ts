@@ -122,9 +122,9 @@ export default class Produce extends Command {
       if (flags.fast) {
         compression = fastest
       } else if (flags.normal) {
-        compression = '-b 256K -Xcompression-level 20'
+        compression = '-Xcompression-level 20'
       } else if (flags.max) {
-        compression = '-b 256K -Xbcj x86'
+        compression = '-Xbcj x86'
       }
 
       const backup = flags.backup
@@ -137,7 +137,7 @@ export default class Produce extends Command {
 
       const release = flags.release
       if (release) {
-        compression = '-b 256K -Xbcj x86'
+        compression = '-Xbcj x86'
       }
 
       /**
