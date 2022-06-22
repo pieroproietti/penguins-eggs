@@ -754,10 +754,10 @@ export default class Hatching {
       } else if (this.distro.familyId === 'archlinux') {
          // cmd = `chroot ${this.installTarget} localectl set-keymap --no-convert ${this.keyboardLayout}`
          const file = this.installTarget + '/etc/vconsole.conf'
-         let text = ''
-         text += `KEYMAP=${this.keyboardLayout}\n`
-         text += 'FONT=\n'
-         text += 'FONT_MAP=\n'
+         let content = ''
+         content += `KEYMAP=${this.keyboardLayout}\n`
+         content += 'FONT=\n'
+         content += 'FONT_MAP=\n'
          Utils.write(file, content)
       }
    }
