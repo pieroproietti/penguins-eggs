@@ -35,7 +35,7 @@ import getPassword from '../lib/get_password'
 import selectKeyboardModel from '../lib/select_keyboard_model'
 import selectKeyboardLayout from '../lib/select_keyboard_layout'
 import selectKeyboardVariant from '../lib/select_keyboard_variant'
-import selectKeyboardOption from  '../lib/select_keyboard_option'
+import selectKeyboardOption from '../lib/select_keyboard_option'
 
 import selectInterface from '../lib/select_interface'
 import selectAddressType from '../lib/select_address_type'
@@ -148,16 +148,18 @@ export default class Krill {
 
     let keyboardElem: JSX.Element
     while (true) {
-      keyboardElem = <Keyboard keyboardModel={keyboardModel} keyboardLayout={keyboardLayout} keyboardVariant={keyboardVariant} keyboardOptions={keyboardOption}/>
+      keyboardElem = <Keyboard keyboardModel={keyboardModel} keyboardLayout={keyboardLayout} keyboardVariant={keyboardVariant} keyboardOptions={keyboardOption} />
       if (await confirm(keyboardElem, "Confirm Keyboard datas?")) {
         break
       } else {
-        keyboardModel = 'pc105'
+        keyboardModel = await selectKeyboardModel(keyboardModel)
+        keyboardLayout = await selectKeyboardLayout(keyboardLayout)
+        keyboardVariant = await selectKeyboardVariant(keyboardLayout)
+        keyboardOption = await selectKeyboardOption(keyboardOption)
+        if (keyboardModel === '') {
+          keyboardModel = 'pc105'
+        }
       }
-      keyboardModel = await selectKeyboardModel(keyboardModel)
-      keyboardLayout = await selectKeyboardLayout(keyboardLayout)
-      keyboardVariant = await selectKeyboardVariant(keyboardLayout)
-      keyboardOption = await selectKeyboardOption(keyboardOption)
     }
     return {
       keyboardModel: keyboardModel,

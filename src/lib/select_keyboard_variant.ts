@@ -15,6 +15,7 @@ import selectKeyboardOption from './select_keyboard_option'
    const keyboards = new Keyboards()
    const variants = keyboards.getVariants(keyboardLayout)
    const supported : string [] = []
+   supported.push('') // inserisce una varian nulla
    for (const v of variants ) {
      supported.push(v.code)
    }
