@@ -746,7 +746,7 @@ export default class Hatching {
       if (this.distro.familyId === 'debian') {
          let cmd = `chroot ${this.installTarget} setupcon ${this.toNull}`
          try {
-            await exec(cmd, Utils.setEcho(true))
+            await exec(cmd, this.echo)
          } catch (error) {
             console.log(error)
             Utils.pressKeyToExit(cmd, true)
