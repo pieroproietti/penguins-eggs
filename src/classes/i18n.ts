@@ -43,7 +43,7 @@ export default class I18n {
   /**
    * 
    */
-  async generate(defaultLocale = 'en_EN.UTF-8', locales = ['en_EN.UTF-8']) {
+  async generate(defaultLocale = 'en_US.UTF-8', locales = ['en_US.UTF-8']) {
     console.log(locales)
     await this.etcLocaleGen(locales)
     //await this.etcLocaleConf(defaultLocale)
