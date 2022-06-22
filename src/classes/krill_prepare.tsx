@@ -152,9 +152,16 @@ export default class Krill {
       if (await confirm(keyboardElem, "Confirm Keyboard datas?")) {
         break
       } else {
+        keyboardModel = 'pc105'
         keyboardModel = await selectKeyboardModel(keyboardModel)
+
+        keyboardLayout = 'us'
         keyboardLayout = await selectKeyboardLayout(keyboardLayout)
+
+        keyboardVariant = ''
         keyboardVariant = await selectKeyboardVariant(keyboardLayout)
+
+        keyboardOption = ''
         keyboardOption = await selectKeyboardOption(keyboardOption)
         if (keyboardModel === '') {
           keyboardModel = 'pc105'
