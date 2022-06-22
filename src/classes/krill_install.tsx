@@ -732,20 +732,20 @@ export default class Hatching {
       let locale = 'en_EN.UTF-8'
       let file = this.installTarget + '/etc/default/locale'
       let content = ``
-      content +=`LANG=${locale}`
-      content +=`LC_CTYPE=${locale}`
-      content +=`LC_NUMERIC=${locale}`
-      content +=`LC_TIME=${locale}`
-      content +=`LC_COLLATE=${locale}`
-      content +=`LC_MONETARY=${locale}`
-      content +=`LC_MESSAGES=${locale}`
-      content +=`LC_PAPER=${locale}`
-      content +=`LC_NAME=${locale}`
-      content +=`LC_ADDRESS=${locale}`
-      content +=`LC_TELEPHONE=${locale}`
-      content +=`LC_MEASUREMENT=${locale}`
-      content +=`LC_IDENTIFICATION=${locale}`
-      content +=`LC_ALL=${locale}`
+      content +=`LANG=${locale}\n`
+      content +=`LC_CTYPE=${locale}\n`
+      content +=`LC_NUMERIC=${locale}\n`
+      content +=`LC_TIME=${locale}\n`
+      content +=`LC_COLLATE=${locale}\n`
+      content +=`LC_MONETARY=${locale}\n`
+      content +=`LC_MESSAGES=${locale}\n`
+      content +=`LC_PAPER=${locale}\n`
+      content +=`LC_NAME=${locale}\n`
+      content +=`LC_ADDRESS=${locale}\n`
+      content +=`LC_TELEPHONE=${locale}\n`
+      content +=`LC_MEASUREMENT=${locale}\n`
+      content +=`LC_IDENTIFICATION=${locale}\n`
+      content +=`LC_ALL=${locale}\n`
       Utils.write(file, content)
 
       // /etc/locale.conf
