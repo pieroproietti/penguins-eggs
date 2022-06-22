@@ -743,17 +743,23 @@ export default class Hatching {
        * set /etc/vconsole.conf
        */
       // Debian default
-      let cmd = `chroot ${this.installTarget} setupcon ${this.toNull}`
-      if (this.distro.familyId === 'archlinux') {
-         cmd = `chroot ${this.installTarget} localectl set-keymap --no-convert ${this.keyboardLayout}`
+      if (this.distro.familyId === 'debian') {
+         let cmd = `chroot ${this.installTarget} setupcon ${this.toNull}`
+         try {
+            await exec(cmd, Utils.setEcho(true))
+         } catch (error) {
+            console.log(error)
+            Utils.pressKeyToExit(cmd, true)
+         }
+      } else if (this.distro.familyId === 'archlinux') {
+         // cmd = `chroot ${this.installTarget} localectl set-keymap --no-convert ${this.keyboardLayout}`
+         const file = this.installTarget + '/etc/vconsole.conf'
+         let text = ''
+         text += `KEYMAP=${this.keyboardLayout}\n`
+         text += 'FONT=\n'
+         text += 'FONT_MAP=\n'
+         Utils.write(file, content)
       }
-      try {
-         await exec(cmd, Utils.setEcho(true))
-      } catch (error) {
-         console.log(error)
-         Utils.pressKeyToExit(cmd, true)
-      }
-      Utils.pressKeyToExit(cmd, true)
    }
 
    /**
