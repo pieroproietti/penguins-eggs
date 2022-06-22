@@ -744,8 +744,8 @@ export default class Hatching {
        */
       // Debian default
       if (this.distro.familyId === 'debian') {
-         let cmd = `chroot ${this.installTarget} localectl set-keymap ${this.toNull}`
-         // Devuam
+         let cmd = `chroot ${this.installTarget} localectl set-keymap --no-convert ${this.keyboardLayout} ${this.toNull}`
+         // Devuan
          if (!Utils.isSystemd()) {
             cmd = `chroot ${this.installTarget} setupcon ${this.toNull}`
          }
