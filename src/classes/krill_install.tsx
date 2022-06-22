@@ -22,9 +22,9 @@
       - sources-yolk // call execCalamaresModule('sources-yolk')
       - machineid OK
       - fstab OK
-      - locale // to do
-      - keyboard // this.setKeyboard OK
-      - localecfg // to do
+      - locale // making it
+      - keyboard // OK
+      - localecfg // OK
       - users OK
       - displaymanager // this.autologin OK
       - networkcfg OK
@@ -730,7 +730,7 @@ export default class Hatching {
    */
    private async locale() {
       let locale = 'en_EN.UTF-8'
-      const file = this.installTarget + '/etc/default/locale'
+      let file = this.installTarget + '/etc/default/locale'
       let content = ``
       content +=`LANG=${locale}`
       content +=`LC_CTYPE=${locale}`
@@ -747,6 +747,12 @@ export default class Hatching {
       content +=`LC_IDENTIFICATION=${locale}`
       content +=`LC_ALL=${locale}`
       Utils.write(file, content)
+
+      // /etc/locale.conf
+      file = this.installTarget + '/etc/locale.conf'
+      Utils.write(file, content)
+
+
 
       // Spostata timezone in locale
       try {

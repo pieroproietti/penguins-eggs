@@ -46,8 +46,8 @@ export default class I18n {
   async generate(defaultLocale = 'en_EN.UTF-8', locales = ['en_EN.UTF-8']) {
     console.log(locales)
     await this.etcLocaleGen(locales)
-    await this.etcLocaleConf(defaultLocale)
-    await this.etcDefaultLocale(defaultLocale)
+    //await this.etcLocaleConf(defaultLocale)
+    //await this.etcDefaultLocale(defaultLocale)
     await exec(`chroot ${this.chroot} /usr/sbin/locale-gen`, this.echo)
   }
 
@@ -70,12 +70,12 @@ export default class I18n {
     lgt += '###\n'
     lgt += '#\n'
     lgt += '# Locales enabled by Krill\n'
-    for (const supported of supporteds) {
+    //for (const supported of supporteds) {
       for (const locale of locales) {
-        if (supported.includes(locale)) {
+        // if (supported.includes(locale)) {
           lgt += `${locale}\n`
-        }
-      }
+        // 
+      //}
     }
     lgt += '###\n'
     lgt += '#\n'
@@ -90,7 +90,7 @@ export default class I18n {
   /**
    * /etc/locale.conf
    */
-  private async etcLocaleConf(defaultLocale: string) {
+  private async etcLocaleConf(defaultLocale = 'en_US.UTF-8') {
 
     let lct = ''
     lct += 'LANG={{{locale}}}\n'
