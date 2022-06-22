@@ -272,17 +272,6 @@ export default class Hatching {
             await Utils.pressKeyToExit(JSON.stringify(error))
          }
 
-         // timezone
-         message = "Setting time zone "
-         percent = 0.43
-         try {
-            redraw(<Install message={message} percent={percent} />)
-            await this.setTimezone()
-         } catch (error) {
-            await Utils.pressKeyToExit(JSON.stringify(error))
-         }
-
-
          // fstab
          message = "Creating fstab "
          percent = 0.47
@@ -294,7 +283,14 @@ export default class Hatching {
          }
 
          // locale
-
+         message = "Locale "
+         percent = 0.47
+         try {
+            redraw(<Install message={message} percent={percent} />)
+            await this.locale()
+         } catch (error) {
+            await Utils.pressKeyToExit(JSON.stringify(error))
+         }
 
          // keyboard
          message = "settings keyboard "
@@ -725,6 +721,43 @@ export default class Hatching {
    }
 
    /**
+    * locale
+    *  System locales are detected in the following order:
+    * 
+    *  - /usr/share/i18n/SUPPORTED
+    *  - localeGenPath (defaults to /etc/locale.gen if not set)
+    *  - `locale -a` output
+   */
+   private async locale() {
+      let locale = 'en_EN.UTF-8'
+      const file = this.installTarget + '/etc/default/locale'
+      let content = ``
+      content +=`LANG=${locale}`
+      content +=`LC_CTYPE=${locale}`
+      content +=`LC_NUMERIC=${locale}`
+      content +=`LC_TIME=${locale}`
+      content +=`LC_COLLATE=${locale}`
+      content +=`LC_MONETARY=${locale}`
+      content +=`LC_MESSAGES=${locale}`
+      content +=`LC_PAPER=${locale}`
+      content +=`LC_NAME=${locale}`
+      content +=`LC_ADDRESS=${locale}`
+      content +=`LC_TELEPHONE=${locale}`
+      content +=`LC_MEASUREMENT=${locale}`
+      content +=`LC_IDENTIFICATION=${locale}`
+      content +=`LC_ALL=${locale}`
+      Utils.write(file, content)
+
+      // Spostata timezone in locale
+      try {
+         await this.setTimezone()
+      } catch (error) {
+         await Utils.pressKeyToExit(JSON.stringify(error))
+      }
+   }
+
+
+   /**
     * setKeyboard
     */
    private async setKeyboard() {
@@ -756,16 +789,27 @@ export default class Hatching {
             Utils.pressKeyToExit(cmd, true)
          }
       } else if (this.distro.familyId === 'archlinux') {
-         // cmd = `chroot ${this.installTarget} localectl set-keymap --no-convert ${this.keyboardLayout}`
-         const file = this.installTarget + '/etc/vconsole.conf'
-         let content = ''
-         content += `KEYMAP=${this.keyboardLayout}\n`
-         content += 'FONT=\n'
-         content += 'FONT_MAP=\n'
-         Utils.write(file, content)
+         let cmd = `chroot ${this.installTarget} localectl set-keymap --no-convert ${this.keyboardLayout}`
+         try {
+            await exec(cmd, this.echo)
+         } catch (error) {
+            console.log(error)
+            Utils.pressKeyToExit(cmd, true)
+         }
       }
    }
 
+   /**
+    * localeCfg
+    * Enable the configured locales (those set by the user on the
+    * user page) in /etc/locale.gen, if they are available in the
+    * target system.
+    */
+       async localeCfg() {
+         const i18n = new I18n(this.installTarget, this.verbose)
+         i18n.generate(this.language, [this.language])
+      }
+   
    /**
     * networkcfg
     * 
@@ -1630,15 +1674,6 @@ export default class Hatching {
       redraw(<Finished installationDevice={this.partitions.installationDevice} hostName={this.users.hostname} userName={this.users.name} />)
       Utils.pressKeyToExit('Press a key to reboot...')
       shx.exec('reboot')
-   }
-
-
-   /**
-    * localeCfg
-    */
-   async localeCfg() {
-      const i18n = new I18n(this.installTarget, this.verbose)
-      i18n.generate(this.language, [this.language])
    }
 }
 
