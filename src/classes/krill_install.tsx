@@ -745,9 +745,8 @@ export default class Hatching {
       // Debian default
       let cmd = `chroot ${this.installTarget} setupcon ${this.toNull}`
       if (this.distro.familyId === 'archlinux') {
-         cmd = `chroot ${this.installTarget} localectl set-keymap --no-convert ${this.keyboardLayout} ${this.toNull}`
+         cmd = `chroot ${this.installTarget} localectl set-keymap --no-convert ${this.keyboardLayout}`
       }
-      Utils.pressKeyToExit("prima di eseguire: " + cmd,true)
       try {
          await exec(cmd, Utils.setEcho(true))
       } catch (error) {
