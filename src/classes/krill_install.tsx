@@ -753,6 +753,7 @@ export default class Hatching {
          console.log(error)
          Utils.pressKeyToExit(cmd, true)
       }
+      Utils.pressKeyToExit(cmd, true)
    }
 
    /**
@@ -856,8 +857,7 @@ export default class Hatching {
     * unpackfs
     */
    private async unpackfs(): Promise<void> {
-      // ${this.toNull}` to not have ...
-      const cmd = `unsquashfs -d ${this.installTarget} -f ${this.distro.mountpointSquashFs} ${this.toNull}`
+      const cmd = `unsquashfs -d ${this.installTarget} -f ${this.distro.mountpointSquashFs}`
       const echoYes = Utils.setEcho(true)
       await exec(cmd, echoYes)
    }
