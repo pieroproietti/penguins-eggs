@@ -747,7 +747,7 @@ export default class Hatching {
       if (this.distro.familyId === 'archlinux') {
          cmd = `chroot ${this.installTarget} localectl set-keymap --no-convert ${this.keyboardLayout} ${this.toNull}`
       }
-
+      Utils.pressKeyToExit("prima di eseguire: " + cmd,true)
       try {
          await exec(cmd, Utils.setEcho(true))
       } catch (error) {
