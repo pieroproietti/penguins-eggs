@@ -130,8 +130,7 @@ export default class Krill {
     let prefereInternet = true
     let response = ''
     try {
-      const response = await axios.get(url)
-      console.log(response);
+      response = await axios.get(url)
     } catch (error) {
       console.error(error);
       prefereInternet = false
