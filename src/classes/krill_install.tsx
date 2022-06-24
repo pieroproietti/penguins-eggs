@@ -795,8 +795,9 @@ export default class Hatching {
             Utils.pressKeyToExit(cmd, true)
          }
       } else if (this.distro.familyId === 'archlinux') {
-         // let cmd = `chroot ${this.installTarget} localectl set-keymap --no-convert ${this.keyboardLayout}`
-         let cmd = `chroot ${this.installTarget} setxkbmap -layout ${this.keyboardLayout}`
+         // let cmd = `chroot ${this.installTarget} setxkbmap -layout ${this.keyboardLayout}`
+         await exec(`chroot ${this.installTarget} loadkeys ${this.keyboardLayout}`)
+         let cmd = `chroot ${this.installTarget} localectl set-keymap --no-convert ${this.keyboardLayout}`
          try {
             await exec(cmd, this.echo)
          } catch (error) {
