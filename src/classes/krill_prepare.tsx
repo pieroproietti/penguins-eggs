@@ -119,30 +119,22 @@ export default class Krill {
    * LOCATION
    */
   async location(language: string): Promise<ILocation> {
-    /**
-     * 
-     * return json in form:
-     * {
-     *  time_zone: "Europe/Rome"
-     * }
-     */
-    const url = `https://geoip.kde.org/v1/calamares`
-    let prefereInternet = true
-    let response = ''
-    try {
-      response = await axios.get(url)
-    } catch (error) {
-      console.error(error);
-      prefereInternet = false
-    }
-
-    let timezone: string = fs.readFileSync('/etc/timezone', 'utf8')
+    // get timezone local
     let region = shx.exec('cut -f1 -d/ < /etc/timezone', { silent: true }).stdout.trim()
     let zone = shx.exec('cut -f2 -d/ < /etc/timezone', { silent: true }).stdout.trim()
-    if (prefereInternet) {
-      timezone = JSON.parse(response)
-      region = timezone.substring(0,timezone.indexOf('/'))
-      zone = timezone.substring(timezone.indexOf('/'))
+
+    // Try to auto-configure timezone by internet
+    const url = `https://geoip.kde.org/v1/calamares`
+    try {
+      const response = await axios.get(url)
+      if (response.statusText === 'OK') {
+        const data = JSON.stringify(response.data)
+        const obj = JSON.parse(data)
+        region = obj.time_zone.substring(0, obj.time_zone.indexOf('/'))
+        zone = obj.time_zone.substring(obj.time_zone.indexOf('/') + 1)
+      }
+    } catch (error) {
+      console.error('error: ' + error)
     }
 
     let locationElem: JSX.Element
