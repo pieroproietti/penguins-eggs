@@ -48,7 +48,7 @@ export default class I18n {
     await this.etcLocaleGen(locales)
     //await this.etcLocaleConf(defaultLocale)
     //await this.etcDefaultLocale(defaultLocale)
-    await exec(`chroot ${this.chroot} /usr/sbin/locale-gen`, this.echo)
+    //await exec(`chroot ${this.chroot} /usr/sbin/locale-gen`, this.echo)
   }
 
   /**
@@ -70,12 +70,12 @@ export default class I18n {
     lgt += '###\n'
     lgt += '#\n'
     lgt += '# Locales enabled by Krill\n'
-    //for (const supported of supporteds) {
+    for (const supported of supporteds) {
       for (const locale of locales) {
-        // if (supported.includes(locale)) {
+        if (supported.includes(locale)) {
           lgt += `${locale}\n`
-        // 
-      //}
+        }
+      }
     }
     lgt += '###\n'
     lgt += '#\n'
@@ -91,6 +91,7 @@ export default class I18n {
    * /etc/locale.conf
    */
   private async etcLocaleConf(defaultLocale = 'en_US.UTF-8') {
+    const destConf = `${this.chroot}/etc/locale.conf`
 
     let lct = ''
     lct += 'LANG={{{locale}}}\n'
@@ -103,11 +104,9 @@ export default class I18n {
     lct += 'LC_PAPER={{{locale}}}\n'
     lct += 'LC_TELEPHONE={{{locale}}}\n'
     lct += 'LC_TIME={{{locale}}}\n'
-    const destConf = `${this.chroot}/etc/locale.conf`
     const view = {
       locale: defaultLocale
     }
-    // console.log(mustache.render(lct, view))
     fs.writeFileSync(destConf, mustache.render(lct, view))
   }
 
@@ -115,6 +114,8 @@ export default class I18n {
   * /etc/default/locale
   */
   private async etcDefaultLocale(defaultLocale: string) {
+    const destConf = `${this.chroot}/etc/default/locale`
+
     let lct = ''
     lct += 'LANG={{{locale}}}\n'
     lct += 'LC_ADDRESS={{{locale}}}\n'
@@ -126,7 +127,6 @@ export default class I18n {
     lct += 'LC_PAPER={{{locale}}}\n'
     lct += 'LC_TELEPHONE={{{locale}}}\n'
     lct += 'LC_TIME={{{locale}}}\n'
-    const destConf = `${this.chroot}/etc/default/locale`
     const view = {
       locale: defaultLocale
     }

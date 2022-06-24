@@ -18,7 +18,7 @@ main()
 process.exit()
 
 async function main() {
-    const i18n = new I18n
+   const i18n = new I18n
 
    await i18n.generate('it_IT', ['it_IT'])
     
