@@ -7,45 +7,44 @@
 
 import { exec } from '../src/lib/utils'
 import Utils from '../src/classes/utils'
-import fs, { unwatchFile } from 'fs'
-import axios from 'axios'
+import fs from 'fs'
 import shx from 'shelljs'
-import { restoreDefaultPrompts } from 'inquirer'
 
-console.clear()
+import axios from 'axios'
+import https from 'node:https'
+const agent = new https.Agent({
+  rejectUnauthorized: false
+})
+
+
+Utils.titles('testing')
+
 main()
-process.exit()
+// process.exit()
 
 async function main() {
+  let timezone: string = fs.readFileSync('/etc/timezone', 'utf8')
+  let region = shx.exec('cut -f1 -d/ < /etc/timezone', { silent: true }).stdout.trim()
+  let zone = shx.exec('cut -f2 -d/ < /etc/timezone', { silent: true }).stdout.trim()
+  console.log('file region: ' + region)
+  console.log('file zone: ' + zone)
+  const url = `https://geoip.kde.org/v1/calamares`
 
-   Utils.titles('test')
+  try {
+    const response = await axios.get(url)
 
-   const url = `https://geoip.kde.org/v1/calamares`
-   let prefereInternet = true
-   let response = 'vuota'
-   console.log(response)
-   try {
-     response = await axios.get(url)
-   } catch (error) {
-     console.error(error);
-     prefereInternet = false
-   }
-   console.log(response)
+    if (response.statusText === 'OK') {
+      const data = JSON.stringify(response.data)
+      const obj = JSON.parse(data)
+      region = obj.time_zone.substring(0, obj.time_zone.indexOf('/'))
+      zone = obj.time_zone.substring(obj.time_zone.indexOf('/') + 1)
+    }
 
-   process.exit()
-   let timezone: string = fs.readFileSync('/etc/timezone', 'utf8')
-   let region = shx.exec('cut -f1 -d/ < /etc/timezone', { silent: true }).stdout.trim()
-   let zone = shx.exec('cut -f2 -d/ < /etc/timezone', { silent: true }).stdout.trim()
-   if (prefereInternet) {
-     timezone = JSON.parse(response)
-     region = timezone.substring(0,timezone.indexOf('/'))
-     zone = timezone.substring(timezone.indexOf('/'))
-     console.log(region)
-     console.log(zone)
-     
-   }
-    
+  } catch (error) {
+    console.error('error: ' + error)
+  }
+
+  console.log('region: ' + region)
+  console.log('zone: ' + zone)
+
 }
-
-
-
