@@ -729,7 +729,7 @@ export default class Hatching {
     *  - `locale -a` output
    */
    private async locale() {
-      let locale = 'en_EN.UTF-8'
+      let locale = 'en_US.UTF-8'
       let file = this.installTarget + '/etc/default/locale'
       let content = ``
       content +=`LANG=${locale}\n`
