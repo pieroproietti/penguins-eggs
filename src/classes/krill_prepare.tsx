@@ -1,6 +1,7 @@
 import React from 'react';
 import { render, RenderOptions } from 'ink'
 import Utils from './utils'
+import axios from 'axios'
 import shx from 'shelljs'
 import fs from 'fs'
 import Systemctl from './systemctl'
@@ -49,6 +50,7 @@ import Hatching from './krill_install'
 
 import { INet } from '../interfaces'
 import { IWelcome, ILocation, IKeyboard, IPartitions, IUsers } from '../interfaces/i-krill'
+import { fileURLToPath } from 'url';
 
 
 export default class Krill {
@@ -117,8 +119,33 @@ export default class Krill {
    * LOCATION
    */
   async location(language: string): Promise<ILocation> {
+    /**
+     * 
+     * return json in form:
+     * {
+     *  time_zone: "Europe/Rome"
+     * }
+     */
+    const url = `https://geoip.kde.org/v1/calamares`
+    let prefereInternet = true
+    let response = ''
+    try {
+      const response = await axios.get(url)
+      console.log(response);
+    } catch (error) {
+      console.error(error);
+      prefereInternet = false
+    }
+
+    let timezone: string = fs.readFileSync('/etc/timezone', 'utf8')
     let region = shx.exec('cut -f1 -d/ < /etc/timezone', { silent: true }).stdout.trim()
     let zone = shx.exec('cut -f2 -d/ < /etc/timezone', { silent: true }).stdout.trim()
+    if (prefereInternet) {
+      timezone = JSON.parse(response)
+      region = timezone.substring(0,timezone.indexOf('/'))
+      zone = timezone.substring(timezone.indexOf('/'))
+    }
+
     let locationElem: JSX.Element
     while (true) {
       locationElem = <Location language={language} region={region} zone={zone} />
