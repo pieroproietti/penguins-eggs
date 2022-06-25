@@ -798,8 +798,10 @@ export default class Hatching {
          }
 
          // x11-keymap
-         
+
          // this must to be not necessary but...
+         // change etc/default/keyboard but don't work the same
+         // check font not found during installation
          const file = this.installTarget + '/etc/default/keyboard'
          let content = '# KEYBOARD CONFIGURATION FILE\n\n'
          content += '# Consult the keyboard(5) manual page.\n\n'
