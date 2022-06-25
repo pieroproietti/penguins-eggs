@@ -62,7 +62,6 @@ import Pacman from './pacman';
 import { installer } from './incubation/installer'
 import Xdg from './xdg';
 import Distro from './distro'
-import I18n from './i18n'
 
 import { IInstaller, IDevices, IDevice } from '../interfaces'
 import { ICalamaresModule, ILocation, IKeyboard, IPartitions, IUsers } from '../interfaces/i-krill'
@@ -729,23 +728,25 @@ export default class Hatching {
     *  - `locale -a` output
    */
    private async locale() {
-      let locale = 'en_US.UTF-8'
+      let defaultLocale = 'en_US.UTF-8'
+
+      // /etc/default/locale
       let file = this.installTarget + '/etc/default/locale'
       let content = ``
-      content +=`LANG=${locale}\n`
-      content +=`LC_CTYPE=${locale}\n`
-      content +=`LC_NUMERIC=${locale}\n`
-      content +=`LC_TIME=${locale}\n`
-      content +=`LC_COLLATE=${locale}\n`
-      content +=`LC_MONETARY=${locale}\n`
-      content +=`LC_MESSAGES=${locale}\n`
-      content +=`LC_PAPER=${locale}\n`
-      content +=`LC_NAME=${locale}\n`
-      content +=`LC_ADDRESS=${locale}\n`
-      content +=`LC_TELEPHONE=${locale}\n`
-      content +=`LC_MEASUREMENT=${locale}\n`
-      content +=`LC_IDENTIFICATION=${locale}\n`
-      content +=`LC_ALL=${locale}\n`
+      content +=`LANG=${defaultLocale}\n`
+      content +=`LC_CTYPE=${defaultLocale}\n`
+      content +=`LC_NUMERIC=${defaultLocale}\n`
+      content +=`LC_TIME=${defaultLocale}\n`
+      content +=`LC_COLLATE=${defaultLocale}\n`
+      content +=`LC_MONETARY=${defaultLocale}\n`
+      content +=`LC_MESSAGES=${defaultLocale}\n`
+      content +=`LC_PAPER=${defaultLocale}\n`
+      content +=`LC_NAME=${defaultLocale}\n`
+      content +=`LC_ADDRESS=${defaultLocale}\n`
+      content +=`LC_TELEPHONE=${defaultLocale}\n`
+      content +=`LC_MEASUREMENT=${defaultLocale}\n`
+      content +=`LC_IDENTIFICATION=${defaultLocale}\n`
+      content +=`LC_ALL=${defaultLocale}\n`
       Utils.write(file, content)
 
       // /etc/locale.conf
@@ -767,6 +768,7 @@ export default class Hatching {
     * setKeyboard
     */
    private async setKeyboard() {
+      /*
       const file = this.installTarget + '/etc/default/keyboard'
       let content = '# KEYBOARD CONFIGURATION FILE\n\n'
       content += '# Consult the keyboard(5) manual page.\n\n'
@@ -777,9 +779,10 @@ export default class Hatching {
       content += '\n'
       content += 'BACKSPACE="guess"\n'
       Utils.write(file, content)
+      */
 
       /**
-       * set /etc/vconsole.conf
+       * /etc/vconsole.conf
        */
       // Debian default
       if (this.distro.familyId === 'debian') {
@@ -814,10 +817,15 @@ export default class Hatching {
     * target system.
     */
        async localeCfg() {
-         const i18n = new I18n(this.installTarget, this.verbose)
-         const defaultLocale = 
-         i18n.generate(this.language, [this.language])
-      }
+         let supporteds: string[] = []
+         if (this.distro.familyId === 'debian') {
+            supporteds = fs.readFileSync('/usr/share/i18n/SUPPORTED', 'utf-8').split('\n')
+          } else if (this.distro.familyId === 'archlinux') {
+            // with await exec don't work! 
+            shx.exec('localectl list-locales > /tmp/SUPPORTED')
+            supporteds = fs.readFileSync('/tmp/SUPPORTED', 'utf-8').split('\n')
+          }
+     }
    
    /**
     * networkcfg
