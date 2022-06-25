@@ -733,20 +733,20 @@ export default class Hatching {
       // /etc/default/locale
       let file = this.installTarget + '/etc/default/locale'
       let content = ``
-      content +=`LANG=${defaultLocale}\n`
-      content +=`LC_CTYPE=${defaultLocale}\n`
-      content +=`LC_NUMERIC=${defaultLocale}\n`
-      content +=`LC_TIME=${defaultLocale}\n`
-      content +=`LC_COLLATE=${defaultLocale}\n`
-      content +=`LC_MONETARY=${defaultLocale}\n`
-      content +=`LC_MESSAGES=${defaultLocale}\n`
-      content +=`LC_PAPER=${defaultLocale}\n`
-      content +=`LC_NAME=${defaultLocale}\n`
-      content +=`LC_ADDRESS=${defaultLocale}\n`
-      content +=`LC_TELEPHONE=${defaultLocale}\n`
-      content +=`LC_MEASUREMENT=${defaultLocale}\n`
-      content +=`LC_IDENTIFICATION=${defaultLocale}\n`
-      content +=`LC_ALL=${defaultLocale}\n`
+      content += `LANG=${defaultLocale}\n`
+      content += `LC_CTYPE=${defaultLocale}\n`
+      content += `LC_NUMERIC=${defaultLocale}\n`
+      content += `LC_TIME=${defaultLocale}\n`
+      content += `LC_COLLATE=${defaultLocale}\n`
+      content += `LC_MONETARY=${defaultLocale}\n`
+      content += `LC_MESSAGES=${defaultLocale}\n`
+      content += `LC_PAPER=${defaultLocale}\n`
+      content += `LC_NAME=${defaultLocale}\n`
+      content += `LC_ADDRESS=${defaultLocale}\n`
+      content += `LC_TELEPHONE=${defaultLocale}\n`
+      content += `LC_MEASUREMENT=${defaultLocale}\n`
+      content += `LC_IDENTIFICATION=${defaultLocale}\n`
+      content += `LC_ALL=${defaultLocale}\n`
       Utils.write(file, content)
 
       // /etc/locale.conf
@@ -768,25 +768,14 @@ export default class Hatching {
     * setKeyboard
     */
    private async setKeyboard() {
-      /*
-      const file = this.installTarget + '/etc/default/keyboard'
-      let content = '# KEYBOARD CONFIGURATION FILE\n\n'
-      content += '# Consult the keyboard(5) manual page.\n\n'
-      content += 'XKBMODEL="' + this.keyboardModel + '"\n'
-      content += 'XKBLAYOUT="' + this.keyboardLayout + '"\n'
-      content += 'XKBVARIANT="' + this.keyboardVariant + '"\n'
-      content += 'XKBOPTIONS=""\n'
-      content += '\n'
-      content += 'BACKSPACE="guess"\n'
-      Utils.write(file, content)
-      */
 
       /**
        * /etc/vconsole.conf
        */
       // Debian default
       if (this.distro.familyId === 'debian') {
-         let cmd = `chroot ${this.installTarget} localectl set-keymap --no-convert ${this.keyboardLayout} ${this.toNull}`
+         // set-keymap without --no-convert, to convert x11-keymap too
+         let cmd = `chroot ${this.installTarget} localectl set-keymap ${this.keyboardLayout} ${this.toNull}`
          // Devuan
          if (!Utils.isSystemd()) {
             cmd = `chroot ${this.installTarget} setupcon ${this.toNull}`
@@ -798,10 +787,9 @@ export default class Hatching {
             Utils.pressKeyToExit(cmd, true)
          }
       } else if (this.distro.familyId === 'archlinux') {
-
-         // set-keymap 
+         // set-keymap without --no-convert, to convert x11-keymap too
          await exec(`chroot ${this.installTarget} loadkeys ${this.keyboardLayout}`)
-         let cmd = `chroot ${this.installTarget} localectl set-keymap --no-convert ${this.keyboardLayout}`
+         let cmd = `chroot ${this.installTarget} localectl set-keymap ${this.keyboardLayout}`
          try {
             await exec(cmd, this.echo)
          } catch (error) {
@@ -810,13 +798,18 @@ export default class Hatching {
          }
 
          // x11-keymap
-         cmd = `chroot ${this.installTarget} localectl set-x11-keymap --no-convert ${this.keyboardLayout}`
-         try {
-            await exec(cmd, this.echo)
-         } catch (error) {
-            console.log(error)
-            Utils.pressKeyToExit(cmd, true)
-         }
+         
+         // this must to be not necessary but...
+         const file = this.installTarget + '/etc/default/keyboard'
+         let content = '# KEYBOARD CONFIGURATION FILE\n\n'
+         content += '# Consult the keyboard(5) manual page.\n\n'
+         content += 'XKBMODEL="' + this.keyboardModel + '"\n'
+         content += 'XKBLAYOUT="' + this.keyboardLayout + '"\n'
+         content += 'XKBVARIANT="' + this.keyboardVariant + '"\n'
+         content += 'XKBOPTIONS=""\n'
+         content += '\n'
+         content += 'BACKSPACE="guess"\n'
+         Utils.write(file, content)
       }
    }
 
@@ -826,17 +819,17 @@ export default class Hatching {
     * user page) in /etc/locale.gen, if they are available in the
     * target system.
     */
-       async localeCfg() {
-         let supporteds: string[] = []
-         if (this.distro.familyId === 'debian') {
-            supporteds = fs.readFileSync('/usr/share/i18n/SUPPORTED', 'utf-8').split('\n')
-          } else if (this.distro.familyId === 'archlinux') {
-            // with await exec don't work! 
-            shx.exec('localectl list-locales > /tmp/SUPPORTED')
-            supporteds = fs.readFileSync('/tmp/SUPPORTED', 'utf-8').split('\n')
-          }
-     }
-   
+   async localeCfg() {
+      let supporteds: string[] = []
+      if (this.distro.familyId === 'debian') {
+         supporteds = fs.readFileSync('/usr/share/i18n/SUPPORTED', 'utf-8').split('\n')
+      } else if (this.distro.familyId === 'archlinux') {
+         // with await exec don't work! 
+         shx.exec('localectl list-locales > /tmp/SUPPORTED')
+         supporteds = fs.readFileSync('/tmp/SUPPORTED', 'utf-8').split('\n')
+      }
+   }
+
    /**
     * networkcfg
     * 
