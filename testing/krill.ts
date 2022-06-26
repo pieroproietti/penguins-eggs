@@ -1,6 +1,8 @@
 #!/usr/bin/pnpx ts-node
 
 import Prepare from '../src/classes/krill_prepare'
+import Hatching from '../src/classes/krill_install'
+import Utils from '../src/classes/utils'
 
 const krill = new Prepare()
 
@@ -11,6 +13,6 @@ async function start() {
     const pve = false
     const verbose = false
 
-    await krill.prepare(kripted, pve, verbose)
+    const prepare = await krill.prepare(kripted, pve, verbose)
 }
 
