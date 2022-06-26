@@ -66,6 +66,7 @@ import Distro from './distro'
 import { IInstaller, IDevices, IDevice } from '../interfaces'
 import { ICalamaresModule, ILocation, IKeyboard, IPartitions, IUsers } from '../interfaces/i-krill'
 import { exec } from '../lib/utils'
+import { exit } from 'process';
 
 
 /**
@@ -831,21 +832,28 @@ export default class Hatching {
          // Format: en_US.UTF-8
       }
 
-      const locales= [this.language, 'en_US.UTF-8'] // Aggiunge sempre en_US
-      // Append to /etc/locale.gen
-      let lgt = ''
-      lgt += '###\n'
-      lgt += '#\n'
-      lgt += '# Locales enabled by Krill\n'
+      const localeGenSource = fs.readFileSync(`${this.installTarget}/etc/locale.gen`, 'utf-8').split('\n')
+      let localeGenDest = ''
+      const krillBookmark = '### Locales enabled by krill\n'
+      for (let i = 0; i < localeGenSource.length; i++) {
+         if (localeGenSource[i].includes(krillBookmark)) {
+            break
+         }
+         localeGenDest += localeGenSource[i] + '\n'
+      }
+
+      localeGenDest += '\n'
+      localeGenDest += krillBookmark
+      const locales = [this.language, 'en_US.UTF-8'] // Aggiunge sempre en_US
       for (const supported of supporteds) {
          for (const locale of locales) {
             if (supported.includes(locale)) {
-               lgt += `${supported}\n`
+               localeGenDest += `${supported}\n`
             }
          }
       }
-      const destGen = `${this.installTarget }/etc/locale.gen`
-      fs.appendFileSync(destGen, lgt)
+      const destGen = `${this.installTarget}/etc/locale.gen`
+      fs.writeFileSync(destGen, localeGenDest)
    }
 
    /**
