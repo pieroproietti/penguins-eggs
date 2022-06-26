@@ -828,8 +828,18 @@ export default class Hatching {
          supporteds = fs.readFileSync('/usr/share/i18n/SUPPORTED', 'utf-8').split('\n')
       } else if (this.distro.familyId === 'archlinux') {
          //shx.exec('localectl list-locales > /tmp/SUPPORTED') // with await exec don't work! 
-         supporteds = fs.readFileSync('/etc/locale.gen', 'utf-8').split('\n')
-         // Format: en_US.UTF-8
+         const supportedsSource = fs.readFileSync('/etc/locale.gen', 'utf-8').split('\n')
+         // Format: #en_US.UTF-8 UTF-8  
+         for (let supported in supportedsSource) {
+            let lineAdd = ''
+            if (supported.substring(0,2) !== "# ") { // se non è un commento
+               lineAdd = supported.substring(1) // Rimuove #
+            } else {
+               lineAdd = supported
+            }
+            supporteds.push(lineAdd)
+         }
+         // Format: en_US.UTF-8 UTF-8  
       }
 
       const localeGenSource = fs.readFileSync(`${this.installTarget}/etc/locale.gen`, 'utf-8').split('\n')
