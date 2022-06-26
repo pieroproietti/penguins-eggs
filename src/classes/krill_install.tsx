@@ -827,8 +827,8 @@ export default class Hatching {
          // Format: en_US.UTF-8 UTF-8
          supporteds = fs.readFileSync('/usr/share/i18n/SUPPORTED', 'utf-8').split('\n')
       } else if (this.distro.familyId === 'archlinux') {
-         shx.exec('localectl list-locales > /tmp/SUPPORTED') // with await exec don't work! 
-         supporteds = fs.readFileSync('/tmp/SUPPORTED', 'utf-8').split('\n')
+         //shx.exec('localectl list-locales > /tmp/SUPPORTED') // with await exec don't work! 
+         supporteds = fs.readFileSync('/etc/locale.gen', 'utf-8').split('\n')
          // Format: en_US.UTF-8
       }
 
@@ -844,7 +844,11 @@ export default class Hatching {
 
       localeGenDest += '\n'
       localeGenDest += krillBookmark
-      const locales = [this.language, 'en_US.UTF-8'] // Aggiunge sempre en_US
+
+      const locales = [this.language]
+      if (this.language !== 'en_US.UTF-8') {
+         locales.push('en_US.UTF-8')
+      }
       for (const supported of supporteds) {
          for (const locale of locales) {
             if (supported.includes(locale)) {
