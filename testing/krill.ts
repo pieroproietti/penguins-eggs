@@ -1,4 +1,4 @@
-#!/usr/bin/npx ts-node
+#!/usr/bin/pnpx ts-node
 
 import Prepare from '../src/classes/krill_prepare'
 

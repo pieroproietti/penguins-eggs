@@ -844,7 +844,7 @@ export default class Hatching {
 
       const localeGenSource = fs.readFileSync(`${this.installTarget}/etc/locale.gen`, 'utf-8').split('\n')
       let localeGenDest = ''
-      const krillBookmark = '### Locales enabled by krill\n'
+      const krillBookmark = '#   Locales enabled by krill\n'
       for (let i = 0; i < localeGenSource.length; i++) {
          if (localeGenSource[i].includes(krillBookmark)) {
             break
