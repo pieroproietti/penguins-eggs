@@ -823,24 +823,26 @@ export default class Hatching {
        */
       let supporteds: string[] = []
       if (this.distro.familyId === 'debian') {
+         // Format: en_US.UTF-8 UTF-8
          supporteds = fs.readFileSync('/usr/share/i18n/SUPPORTED', 'utf-8').split('\n')
       } else if (this.distro.familyId === 'archlinux') {
-         // with await exec don't work! 
-         shx.exec('localectl list-locales > /tmp/SUPPORTED')
+         shx.exec('localectl list-locales > /tmp/SUPPORTED') // with await exec don't work! 
          supporteds = fs.readFileSync('/tmp/SUPPORTED', 'utf-8').split('\n')
+         // Format: en_US.UTF-8
       }
 
+      const locales= [this.language, 'en_US.UTF-8'] // Aggiunge sempre en_US
       // Append to /etc/locale.gen
       let lgt = ''
       lgt += '###\n'
       lgt += '#\n'
       lgt += '# Locales enabled by Krill\n'
       for (const supported of supporteds) {
-         // for (const locale of locales) {
+         for (const locale of locales) {
             if (supported.includes(locale)) {
                lgt += `${locale}\n`
             }
-         // }
+         }
       }
       const destGen = `${this.installTarget }/etc/locale.gen`
       fs.appendFileSync(destGen, lgt)
