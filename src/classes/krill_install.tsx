@@ -840,7 +840,7 @@ export default class Hatching {
       for (const supported of supporteds) {
          for (const locale of locales) {
             if (supported.includes(locale)) {
-               lgt += `${locale}\n`
+               lgt += `${supported}\n`
             }
          }
       }
