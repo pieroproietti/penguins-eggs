@@ -721,13 +721,13 @@ export default class Hatching {
 
    /**
     * locale
-    *  System locales are detected in the following order:
-    * 
-    *  - /usr/share/i18n/SUPPORTED
-    *  - localeGenPath (defaults to /etc/locale.gen if not set)
-    *  - `locale -a` output
    */
    private async locale() {
+      /**
+       * influcence: - /etc/default/locale
+       *             - /etc/locale.conf
+       *             - /etc/timezone
+       */
       let defaultLocale = 'en_US.UTF-8'
 
       // /etc/default/locale
@@ -753,9 +753,7 @@ export default class Hatching {
       file = this.installTarget + '/etc/locale.conf'
       Utils.write(file, content)
 
-
-
-      // Spostata timezone in locale
+      // timezone
       try {
          await this.setTimezone()
       } catch (error) {
@@ -768,11 +766,10 @@ export default class Hatching {
     * setKeyboard
     */
    private async setKeyboard() {
-
       /**
-       * /etc/vconsole.conf
-       */
-      // Debian default
+      * influence: - /etc/default/keyboard (x11)
+      *            - /etc/vconsole.conf (console) 
+      */
       if (this.distro.familyId === 'debian') {
          // set-keymap without --no-convert, to convert x11-keymap too
          let cmd = `chroot ${this.installTarget} localectl set-keymap ${this.keyboardLayout} ${this.toNull}`
@@ -797,21 +794,20 @@ export default class Hatching {
             Utils.pressKeyToExit(cmd, true)
          }
 
-         // x11-keymap
-
          // this must to be not necessary but...
          // change etc/default/keyboard but don't work the same
          // check font not found during installation
-         const file = this.installTarget + '/etc/default/keyboard'
-         let content = '# KEYBOARD CONFIGURATION FILE\n\n'
-         content += '# Consult the keyboard(5) manual page.\n\n'
-         content += 'XKBMODEL="' + this.keyboardModel + '"\n'
-         content += 'XKBLAYOUT="' + this.keyboardLayout + '"\n'
-         content += 'XKBVARIANT="' + this.keyboardVariant + '"\n'
-         content += 'XKBOPTIONS=""\n'
-         content += '\n'
-         content += 'BACKSPACE="guess"\n'
-         Utils.write(file, content)
+
+         // const file = this.installTarget + '/etc/default/keyboard'
+         // let content = '# KEYBOARD CONFIGURATION FILE\n\n'
+         // content += '# Consult the keyboard(5) manual page.\n\n'
+         // content += 'XKBMODEL="' + this.keyboardModel + '"\n'
+         // content += 'XKBLAYOUT="' + this.keyboardLayout + '"\n'
+         // content += 'XKBVARIANT="' + this.keyboardVariant + '"\n'
+         // content += 'XKBOPTIONS=""\n'
+         // content += '\n'
+         // content += 'BACKSPACE="guess"\n'
+         // Utils.write(file, content)
       }
    }
 
@@ -822,6 +818,9 @@ export default class Hatching {
     * target system.
     */
    async localeCfg() {
+      /** 
+       * influence: - locale-gen
+       */
       let supporteds: string[] = []
       if (this.distro.familyId === 'debian') {
          supporteds = fs.readFileSync('/usr/share/i18n/SUPPORTED', 'utf-8').split('\n')
@@ -830,6 +829,21 @@ export default class Hatching {
          shx.exec('localectl list-locales > /tmp/SUPPORTED')
          supporteds = fs.readFileSync('/tmp/SUPPORTED', 'utf-8').split('\n')
       }
+
+      // Append to /etc/locale.gen
+      let lgt = ''
+      lgt += '###\n'
+      lgt += '#\n'
+      lgt += '# Locales enabled by Krill\n'
+      for (const supported of supporteds) {
+         // for (const locale of locales) {
+            if (supported.includes(locale)) {
+               lgt += `${locale}\n`
+            }
+         // }
+      }
+      const destGen = `${this.installTarget }/etc/locale.gen`
+      fs.appendFileSync(destGen, lgt)
    }
 
    /**
