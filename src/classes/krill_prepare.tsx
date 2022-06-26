@@ -51,6 +51,7 @@ import Hatching from './krill_install'
 import { INet } from '../interfaces'
 import { IWelcome, ILocation, IKeyboard, IPartitions, IUsers } from '../interfaces/i-krill'
 import { fileURLToPath } from 'url';
+import { ok } from 'assert';
 
 
 export default class Krill {
@@ -93,6 +94,8 @@ export default class Krill {
     const oUsers = await this.users()
     const oNetwork = await this.network()
     await this.summary(oLocation, oKeyboard, oPartitions)
+
+    // installation
     await this.install(oLocation, oKeyboard, oPartitions, oUsers, oNetwork, verbose)
   }
 
