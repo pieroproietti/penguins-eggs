@@ -6,10 +6,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
   </head>
   <body>
-    <h1>eggs(1) -- the reproductive system of penguins: eggs v9.0.18-1</h1>
+    <h1>eggs(1) -- the reproductive system of penguins: eggs v9.1.32</h1>
     <h1>SYNOPSIS</h1>
     <p>deb package</p>
-    <pre><code>$ sudo dpkg -i eggs_9.0.18-1_amd64.deb
+    <pre><code>$ sudo dpkg -i eggs_9.1.32_amd64.deb
 </code></pre>
     <p>npm package</p>
     <pre><code>$ npm install -g penguins-eggs
@@ -17,7 +17,7 @@ $ eggs COMMAND
 running command...
 $ eggs (-v|--version|version)
 
-penguins-eggs/9.0.18-1 linux-x64 node-v16.13.2
+penguins-eggs/9.1.32 linux-x64 node-v16.15.1
 $ eggs --help [COMMAND]
 
 USAGE
@@ -42,7 +42,6 @@ sudo eggs dad
       <li><a href="#eggs-adapt"><code>eggs adapt</code></a></li>
       <li><a href="#eggs-analyze"><code>eggs analyze</code></a></li>
       <li><a href="#eggs-autocomplete-shell"><code>eggs autocomplete [SHELL]</code></a></li>
-      <li><a href="#eggs-bro"><code>eggs bro</code></a></li>
       <li><a href="#eggs-calamares"><code>eggs calamares</code></a></li>
       <li><a href="#eggs-config"><code>eggs config</code></a></li>
       <li><a href="#eggs-dad"><code>eggs dad</code></a></li>
@@ -51,20 +50,24 @@ sudo eggs dad
       <li><a href="#eggs-export-iso"><code>eggs export iso</code></a></li>
       <li><a href="#eggs-help-command"><code>eggs help [COMMAND]</code></a></li>
       <li><a href="#eggs-info"><code>eggs info</code></a></li>
-      <li><a href="#eggs-install"><code>eggs install</code></a></li>
       <li><a href="#eggs-kill"><code>eggs kill</code></a></li>
+      <li><a href="#eggs-krill"><code>eggs krill</code></a></li>
       <li><a href="#eggs-mom"><code>eggs mom</code></a></li>
       <li><a href="#eggs-produce"><code>eggs produce</code></a></li>
       <li><a href="#eggs-remove"><code>eggs remove</code></a></li>
       <li><a href="#eggs-syncfrom"><code>eggs syncfrom</code></a></li>
       <li><a href="#eggs-syncto"><code>eggs syncto</code></a></li>
       <li><a href="#eggs-tools-clean"><code>eggs tools clean</code></a></li>
-      <li><a href="#eggs-tools-locales"><code>eggs tools locales</code></a></li>
       <li><a href="#eggs-tools-skel"><code>eggs tools skel</code></a></li>
       <li><a href="#eggs-tools-stat"><code>eggs tools stat</code></a></li>
       <li><a href="#eggs-tools-yolk"><code>eggs tools yolk</code></a></li>
       <li><a href="#eggs-update"><code>eggs update</code></a></li>
       <li><a href="#eggs-version"><code>eggs version</code></a></li>
+      <li><a href="#eggs-wardrobe-get-repo"><code>eggs wardrobe get [REPO]</code></a></li>
+      <li><a href="#eggs-wardrobe-ironing-costume"><code>eggs wardrobe ironing [COSTUME]</code></a></li>
+      <li><a href="#eggs-wardrobe-list-wardrobe"><code>eggs wardrobe list [WARDROBE]</code></a></li>
+      <li><a href="#eggs-wardrobe-show-costume"><code>eggs wardrobe show [COSTUME]</code></a></li>
+      <li><a href="#eggs-wardrobe-wear-costume"><code>eggs wardrobe wear [COSTUME]</code></a></li>
     </ul>
     <h2><code>eggs adapt</code></h2>
     <p>adapt monitor resolution for VM only</p>
@@ -77,12 +80,9 @@ FLAGS
 
 DESCRIPTION
   adapt monitor resolution for VM only
-
-ALIASES
-  $ eggs adjust
 </code></pre>
     <h2><code>eggs analyze</code></h2>
-    <p>analyze situation</p>
+    <p>analyze for syncto</p>
     <pre><code>USAGE
   $ eggs analyze [-h] [-v]
 
@@ -91,7 +91,7 @@ FLAGS
   -v, --verbose  verbose
 
 DESCRIPTION
-  analyze situation
+  analyze for syncto
 
 EXAMPLES
   $ sudo eggs analyze
@@ -119,28 +119,17 @@ EXAMPLES
 
   $ eggs autocomplete --refresh-cache
 </code></pre>
-    <h2><code>eggs bro</code></h2>
-    <p>bro: waydroid helper</p>
-    <pre><code>USAGE
-  $ eggs bro [-h]
-
-FLAGS
-  -h, --help  Show CLI help.
-
-DESCRIPTION
-  bro: waydroid helper
-</code></pre>
     <h2><code>eggs calamares</code></h2>
     <p>calamares or install or configure it</p>
     <pre><code>USAGE
-  $ eggs calamares [-h] [-v] [-i] [-f] [-r] [--theme &#x3C;value>]
+  $ eggs calamares [-h] [-v] [-i] [-r] [--remove] [--theme &#x3C;value>]
 
 FLAGS
-  -f, --final      final: remove calamares and all it's dependencies after the installation
   -h, --help       Show CLI help.
   -i, --install    install calamares and it's dependencies
-  -r, --remove     remove calamares and it's dependencies
+  -r, --release    release: remove calamares and all it's dependencies after the installation
   -v, --verbose
+  --remove         remove calamares and it's dependencies
   --theme=&#x3C;value>  theme/branding for eggs and calamares
 
 DESCRIPTION
@@ -166,9 +155,6 @@ FLAGS
 
 DESCRIPTION
   Configure and install prerequisites deb packages to run it
-
-ALIASES
-  $ eggs prerequisites
 
 EXAMPLES
   ~$ sudo eggs config
@@ -244,7 +230,7 @@ DESCRIPTION
   Display help for eggs.
 </code></pre>
     <h2><code>eggs info</code></h2>
-    <p>re-thinking for a different approach to CLI</p>
+    <p>informations about eggs configuration</p>
     <pre><code>USAGE
   $ eggs info [-v] [-h]
 
@@ -253,29 +239,7 @@ FLAGS
   -v, --verbose
 
 DESCRIPTION
-  re-thinking for a different approach to CLI
-</code></pre>
-    <h2><code>eggs install</code></h2>
-    <p>command-line system installer - the egg became a penguin!</p>
-    <pre><code>USAGE
-  $ eggs install [-c] [-k] [-h] [-v]
-
-FLAGS
-  -c, --cli      force use CLI installer
-  -h, --help     Show CLI help.
-  -k, --crypted  crypted CLI installation
-  -v, --verbose  verbose
-
-DESCRIPTION
-  command-line system installer - the egg became a penguin!
-
-ALIASES
-  $ eggs hatch
-  $ eggs krill
-
-EXAMPLES
-  $ eggs install
-  Install the system using GUI or CLI installer
+  informations about eggs configuration
 </code></pre>
     <h2><code>eggs kill</code></h2>
     <p>kill the eggs/free the nest</p>
@@ -292,6 +256,25 @@ DESCRIPTION
 EXAMPLES
   $ eggs kill
   kill the eggs/free the nest
+</code></pre>
+    <h2><code>eggs krill</code></h2>
+    <p>command-line system installer - the egg became a penguin!</p>
+    <pre><code>USAGE
+  $ eggs krill [-c] [-k] [-p] [-h] [-v]
+
+FLAGS
+  -c, --cli      force use CLI installer
+  -h, --help     Show CLI help.
+  -k, --crypted  crypted CLI installation
+  -p, --pve      Proxmox VE install
+  -v, --verbose  verbose
+
+DESCRIPTION
+  command-line system installer - the egg became a penguin!
+
+EXAMPLES
+  $ eggs install
+  Install the system using GUI or CLI installer
 </code></pre>
     <h2><code>eggs mom</code></h2>
     <p>ask for mommy - gui helper</p>
@@ -327,10 +310,6 @@ FLAGS
 
 DESCRIPTION
   produce a live image from your system whithout your data
-
-ALIASES
-  $ eggs spawn
-  $ eggs lay
 
 EXAMPLES
   $ sudo eggs produce 
@@ -390,42 +369,37 @@ EXAMPLES
     <h2><code>eggs syncfrom</code></h2>
     <p>Restore users, server and datas from luks-eggs-backup</p>
     <pre><code>USAGE
-  $ eggs syncfrom [-f &#x3C;value>] [-r &#x3C;value>] [-h] [-v]
+  $ eggs syncfrom [--delete &#x3C;value>] [-f &#x3C;value>] [-r &#x3C;value>] [-h] [-v]
 
 FLAGS
-  -f, --file=&#x3C;value>     file with LUKS volume encrypted
+  -f, --file=&#x3C;value>     file LUKS volume encrypted
   -h, --help             Show CLI help.
   -r, --rootdir=&#x3C;value>  rootdir of the installed system, when used from live
   -v, --verbose          verbose
+  --delete=&#x3C;value>       rsync --delete delete extraneous files from dest dirs
 
 DESCRIPTION
   Restore users, server and datas from luks-eggs-backup
-
-ALIASES
-  $ eggs restore
 
 EXAMPLES
   $ sudo eggs restore
 </code></pre>
     <h2><code>eggs syncto</code></h2>
-    <p>Backup users, server and datas to luks-eggs-backup</p>
+    <p>saving users' datas and accounts on LUKS volume</p>
     <pre><code>USAGE
-  $ eggs syncto [-k] [-f &#x3C;value>] [-h] [-v]
+  $ eggs syncto [--delete &#x3C;value>] [-f &#x3C;value>] [-h] [-v]
 
 FLAGS
   -f, --file=&#x3C;value>  file LUKS volume encrypted
   -h, --help          Show CLI help.
-  -k, --krill         krill
   -v, --verbose       verbose
+  --delete=&#x3C;value>    rsync --delete delete extraneous files from dest dirs
 
 DESCRIPTION
-  Backup users, server and datas to luks-eggs-backup
-
-ALIASES
-  $ eggs backup
+  saving users' datas and accounts on LUKS volume
 
 EXAMPLES
-  $ sudo eggs restore
+  $ sudo eggs syncto
 </code></pre>
     <h2><code>eggs tools clean</code></h2>
     <p>clean system log, apt, etc</p>
@@ -438,22 +412,6 @@ FLAGS
 
 DESCRIPTION
   clean system log, apt, etc
-
-ALIASES
-  $ eggs clean
-</code></pre>
-    <h2><code>eggs tools locales</code></h2>
-    <p>install/clean locales</p>
-    <pre><code>USAGE
-  $ eggs tools locales [-h] [-r] [-v]
-
-FLAGS
-  -h, --help       Show CLI help.
-  -r, --reinstall  reinstall locales
-  -v, --verbose    verbose
-
-DESCRIPTION
-  install/clean locales
 </code></pre>
     <h2><code>eggs tools skel</code></h2>
     <p>update skel from home configuration</p>
@@ -467,9 +425,6 @@ FLAGS
 
 DESCRIPTION
   update skel from home configuration
-
-ALIASES
-  $ eggs skel
 
 EXAMPLES
   $ eggs skel --user mauro
@@ -487,9 +442,6 @@ FLAGS
 
 DESCRIPTION
   get statistics from sourceforge
-
-ALIASES
-  $ eggs stat
 </code></pre>
     <h2><code>eggs tools yolk</code></h2>
     <p>configure eggs to install without internet</p>
@@ -509,11 +461,9 @@ EXAMPLES
     <h2><code>eggs update</code></h2>
     <p>update the penguin's eggs tool</p>
     <pre><code>USAGE
-  $ eggs update [-h] [-a] [-b] [-v]
+  $ eggs update [-h] [-v]
 
 FLAGS
-  -a, --apt      if eggs package is .deb, update from distro repositories
-  -b, --basket   if eggs package is .deb, update from eggs basket
   -h, --help     Show CLI help.
   -v, --verbose  verbose
 
@@ -527,6 +477,88 @@ EXAMPLES
     <h2><code>eggs version</code></h2>
     <pre><code>USAGE
   $ eggs version
+</code></pre>
+    <h2><code>eggs wardrobe get [REPO]</code></h2>
+    <p>get warorobe</p>
+    <pre><code>USAGE
+  $ eggs wardrobe get [REPO] [-v] [-h]
+
+ARGUMENTS
+  REPO  repository to get
+
+FLAGS
+  -h, --help     Show CLI help.
+  -v, --verbose
+
+DESCRIPTION
+  get warorobe
+</code></pre>
+    <h2><code>eggs wardrobe ironing [COSTUME]</code></h2>
+    <p>ordered show of costumes or accessories in wardrobe</p>
+    <pre><code>USAGE
+  $ eggs wardrobe ironing [COSTUME] [-w &#x3C;value>] [-v] [-h]
+
+ARGUMENTS
+  COSTUME  costume
+
+FLAGS
+  -h, --help              Show CLI help.
+  -v, --verbose
+  -w, --wardrobe=&#x3C;value>  wardrobe
+
+DESCRIPTION
+  ordered show of costumes or accessories in wardrobe
+</code></pre>
+    <h2><code>eggs wardrobe list [WARDROBE]</code></h2>
+    <p>list costumes and accessoires in wardrobe</p>
+    <pre><code>USAGE
+  $ eggs wardrobe list [WARDROBE] [-v] [-h]
+
+ARGUMENTS
+  WARDROBE  wardrobe
+
+FLAGS
+  -h, --help     Show CLI help.
+  -v, --verbose
+
+DESCRIPTION
+  list costumes and accessoires in wardrobe
+</code></pre>
+    <h2><code>eggs wardrobe show [COSTUME]</code></h2>
+    <p>show costumes/accessories in wardrobe</p>
+    <pre><code>USAGE
+  $ eggs wardrobe show [COSTUME] [-w &#x3C;value>] [-j] [-v] [-h]
+
+ARGUMENTS
+  COSTUME  costume
+
+FLAGS
+  -h, --help              Show CLI help.
+  -j, --json              output JSON
+  -v, --verbose
+  -w, --wardrobe=&#x3C;value>  wardrobe
+
+DESCRIPTION
+  show costumes/accessories in wardrobe
+</code></pre>
+    <h2><code>eggs wardrobe wear [COSTUME]</code></h2>
+    <p>wear costume/accessories from wardrobe</p>
+    <pre><code>USAGE
+  $ eggs wardrobe wear [COSTUME] [-w &#x3C;value>] [-a] [-f] [-s] [-v] [-h]
+
+ARGUMENTS
+  COSTUME  costume
+
+FLAGS
+  -a, --no_accessories    not install accessories
+  -f, --no_firmwares      not install firmwares
+  -h, --help              Show CLI help.
+  -s, --silent
+  -v, --verbose
+  -w, --wardrobe=&#x3C;value>  wardrobe
+
+DESCRIPTION
+  wear costume/accessories from wardrobe
 </code></pre>
     <h1>FILES</h1>
     <pre><code>  /etc/penguins-eggs.d
