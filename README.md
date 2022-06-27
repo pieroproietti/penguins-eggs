@@ -153,8 +153,8 @@ USAGE
 * [`eggs export iso`](#eggs-export-iso)
 * [`eggs help [COMMAND]`](#eggs-help-command)
 * [`eggs info`](#eggs-info)
-* [`eggs install`](#eggs-install)
 * [`eggs kill`](#eggs-kill)
+* [`eggs krill`](#eggs-krill)
 * [`eggs mom`](#eggs-mom)
 * [`eggs produce`](#eggs-produce)
 * [`eggs remove`](#eggs-remove)
@@ -404,31 +404,6 @@ DESCRIPTION
 
 _See code: [src/commands/info.ts](https://github.com/pieroproietti/penguins-eggs/blob/v9.1.32/src/commands/info.ts)_
 
-## `eggs install`
-
-command-line system installer - the egg became a penguin!
-
-```
-USAGE
-  $ eggs install [-c] [-k] [-p] [-h] [-v]
-
-FLAGS
-  -c, --cli      force use CLI installer
-  -h, --help     Show CLI help.
-  -k, --crypted  crypted CLI installation
-  -p, --pve      Proxmox VE install
-  -v, --verbose  verbose
-
-DESCRIPTION
-  command-line system installer - the egg became a penguin!
-
-EXAMPLES
-  $ eggs install
-  Install the system using GUI or CLI installer
-```
-
-_See code: [src/commands/install.ts](https://github.com/pieroproietti/penguins-eggs/blob/v9.1.32/src/commands/install.ts)_
-
 ## `eggs kill`
 
 kill the eggs/free the nest
@@ -450,6 +425,31 @@ EXAMPLES
 ```
 
 _See code: [src/commands/kill.ts](https://github.com/pieroproietti/penguins-eggs/blob/v9.1.32/src/commands/kill.ts)_
+
+## `eggs krill`
+
+command-line system installer - the egg became a penguin!
+
+```
+USAGE
+  $ eggs krill [-c] [-k] [-p] [-h] [-v]
+
+FLAGS
+  -c, --cli      force use CLI installer
+  -h, --help     Show CLI help.
+  -k, --crypted  crypted CLI installation
+  -p, --pve      Proxmox VE install
+  -v, --verbose  verbose
+
+DESCRIPTION
+  command-line system installer - the egg became a penguin!
+
+EXAMPLES
+  $ eggs install
+  Install the system using GUI or CLI installer
+```
+
+_See code: [src/commands/krill.ts](https://github.com/pieroproietti/penguins-eggs/blob/v9.1.32/src/commands/krill.ts)_
 
 ## `eggs mom`
 
