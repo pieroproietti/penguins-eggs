@@ -293,6 +293,16 @@ export default class Hatching {
          }
 
          // keyboard
+         /**
+         * properties: in Calamares
+         * xOrgConfFileName: { type: string }
+         * convertedKeymapPath: { type: string }
+         * writeEtcDefaultKeyboard: { type: boolean, default: true }
+         * required: [ xOrgConfFileName, convertedKeymapPath ]
+         * 
+         * xOrgConfFileName: "/etc/X11/xorg.conf.d/00-keyboard.conf"
+         * convertedKeymapPath: "/lib/kbd/keymaps/xkb"
+         */
          message = "settings keyboard "
          percent = 0.48
          try {
@@ -770,8 +780,9 @@ export default class Hatching {
       /**
       * influence: - /etc/default/keyboard (x11)
       *            - /etc/vconsole.conf (console) 
+      *            - /etc/X11/xorg.conf.d/00-keyboard.conf
       * 
-      * Problem: Actually don't update /etc/default/keyboard nor /etc/vconsole.conf (console) 
+      * Problem: Actually don't update /etc/default/keyboard (x11) nor /etc/vconsole.conf (console) 
       */
 
       // systemd as default
