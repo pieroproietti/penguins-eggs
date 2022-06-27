@@ -776,6 +776,8 @@ export default class Hatching {
          let cmd = `chroot ${this.installTarget} localectl set-keymap ${this.keyboardLayout} ${this.toNull}`
          // Devuan
          if (!Utils.isSystemd()) {
+            // setupcon is a program for fast and easy setup of the font 
+            // and the keyboard on the console 
             cmd = `chroot ${this.installTarget} setupcon ${this.toNull}`
          }
          try {
@@ -784,9 +786,9 @@ export default class Hatching {
             console.log(error)
             Utils.pressKeyToExit(cmd, true)
          }
+
       } else if (this.distro.familyId === 'archlinux') {
-         // set-keymap without --no-convert, to convert x11-keymap too
-         await exec(`chroot ${this.installTarget} loadkeys ${this.keyboardLayout}`)
+         // await exec(`chroot ${this.installTarget} loadkeys ${this.keyboardLayout}`)
          let cmd = `chroot ${this.installTarget} localectl set-keymap ${this.keyboardLayout}`
          try {
             await exec(cmd, this.echo)
@@ -829,16 +831,18 @@ export default class Hatching {
       } else if (this.distro.familyId === 'archlinux') {
          //shx.exec('localectl list-locales > /tmp/SUPPORTED') // with await exec don't work! 
          const supportedsSource = fs.readFileSync('/etc/locale.gen', 'utf-8').split('\n')
-         // Format: #en_US.UTF-8 UTF-8  
+         // Original Format: #en_US.UTF-8 UTF-8  
          for (let supported in supportedsSource) {
             let lineAdd = ''
-            if (supported.substring(0,2) !== "# ") { // se non è un commento
+            if (supported.substring(0, 2) !== "# ") { // se non è un commento
                lineAdd = supported.substring(1) // Rimuove #
             } else {
                lineAdd = supported
             }
             supporteds.push(lineAdd)
          }
+         console.log(supporteds)
+         process.exit()
          // Format: en_US.UTF-8 UTF-8  
       }
 
