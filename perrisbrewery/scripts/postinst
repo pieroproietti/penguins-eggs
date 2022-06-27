@@ -46,6 +46,11 @@ case "$1" in
             fi
         fi
 
+        # revitalize mom
+        if [ -f "/usr/lib/penguins-eggs/scripts/mom-cli.sh" ]; then  
+            chmod +x /usr/lib/penguins-eggs/scripts/mom-cli.sh
+        fi
+
         # Adding man page
         if [ ! -d "/usr/share/man/man1" ]; then
             mkdir /usr/share/man/man1 -p
