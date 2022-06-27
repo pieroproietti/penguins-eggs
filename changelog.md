@@ -19,13 +19,12 @@ You can follow the project also consulting the [commit history](https://github.c
 Versions are listed on reverse order, the first is the last one. Old versions are moved to [versions](https://sourceforge.net/projects/penguins-eggs/files/packages-deb/versions/). 
 
 ### eggs-9.1.32
-* krill: renamed command install -> krill
+* krill: command install became krill
 * krill: added autoconfiguration from internet for timezone;
 * krill: now /etc/locale.gen seem to be OK on manjaro
 * krill: command localectl set-keymap [map] in krill-sequence don't update /etc/default/keyboard, I tried to force that, but again don't work
 * krill: as workaround it' possible to reconfigure keyboard after the installation
          
-
 ### eggs-9.1.31
 * focal/jammy: removed in before_bootloader_contest.yml command apt-cd:
 * manjaro: a lot of work on dependencies and package

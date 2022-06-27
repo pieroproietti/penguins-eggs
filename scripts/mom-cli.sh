@@ -53,11 +53,11 @@ function main {
          "info")
             info ;;
          
-         "install")
-            install ;;
-
          "kill")
             kill ;;
+
+         "krill")
+            krill ;;
 
          "produce")
             produce ;;
@@ -245,14 +245,14 @@ function info {
 }
 
 ################################
-function install {
-   sudo eggs install 
+function kill {
+   sudo eggs kill
    press_a_key_to_continue
 }
 
 ################################
-function kill {
-   sudo eggs kill
+function krill {
+   sudo eggs krill --cli
    press_a_key_to_continue
 }
 
