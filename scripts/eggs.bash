@@ -20,8 +20,8 @@ export:deb --help --clean --amd64 --i386 --armel --arm64 --all
 export:docs --help
 export:iso --help --backup --clean
 info --verbose --help
-install --cli --crypted --pve --help --verbose
 kill --help --verbose
+krill --cli --crypted --pve --help --verbose
 mom --help
 produce --prefix --basename --backup --fast --normal --max --verbose --yolk --script --help --theme --addons --release
 remove --purge --autoremove --help --verbose

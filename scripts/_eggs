@@ -16,8 +16,8 @@ _eggs () {
 "export\:docs:remove and export docType documentation of the sources in the destination host"
 "export\:iso:export iso in the destination host"
 "info:informations about eggs configuration"
-"install:command-line system installer - the egg became a penguin!"
 "kill:kill the eggs/free the nest"
+"krill:command-line system installer - the egg became a penguin!"
 "mom:ask for mommy - gui helper"
 "produce:produce a live image from your system whithout your data"
 "remove:remove eggs and others stuff"
@@ -116,19 +116,19 @@ info)
   )
 ;;
 
-install)
+kill)
+  _command_flags=(
+    "--help[Show CLI help.]"
+"--verbose[verbose]"
+  )
+;;
+
+krill)
   _command_flags=(
     "--cli[force use CLI installer]"
 "--crypted[crypted CLI installation]"
 "--pve[Proxmox VE install]"
 "--help[Show CLI help.]"
-"--verbose[verbose]"
-  )
-;;
-
-kill)
-  _command_flags=(
-    "--help[Show CLI help.]"
 "--verbose[verbose]"
   )
 ;;

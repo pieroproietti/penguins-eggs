@@ -1,3 +1,23 @@
+/**
+ * penguins-eggs: krill
+ *
+ * author: Piero Proietti
+ * mail: piero.proietti@gmail.com
+ *
+ */
+
+/**
+ * problems:
+ * 
+ */
+
+
+/**
+ * Ideally, I want to respect calamares way, remplementing the same (SEMPLIFIED) steps for CLI
+ * in krill-prepare we have views
+*/
+
+
 import React from 'react';
 import { render, RenderOptions } from 'ink'
 import Utils from './utils'
@@ -46,12 +66,10 @@ import getGateway from '../lib/get_gateway'
 import getDomain from '../lib/get_domain'
 import getDns from '../lib/get_dns'
 
-import Hatching from './krill_install'
+import Sequence from './krill_sequence'
 
 import { INet } from '../interfaces'
 import { IWelcome, ILocation, IKeyboard, IPartitions, IUsers } from '../interfaces/i-krill'
-import { fileURLToPath } from 'url';
-import { ok } from 'assert';
 
 
 export default class Krill {
@@ -346,8 +364,8 @@ export default class Krill {
    * INSTALL
    */
   async install(location: ILocation, keyboard: IKeyboard, partitions: IPartitions, users: IUsers, network: INet, verbose = false) {
-    const hatching = new Hatching(location, keyboard, partitions, users, network)
-    hatching.install(verbose)
+    const sequence = new Sequence(location, keyboard, partitions, users, network)
+    sequence.install(verbose)
   }
 
   /**

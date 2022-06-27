@@ -1,5 +1,5 @@
 /**
- * penguins-eggs: krill_install
+ * penguins-eggs: krill_sequence
  *
  * author: Piero Proietti
  * mail: piero.proietti@gmail.com
@@ -7,8 +7,8 @@
  */
 
 /**
- * problems:
- * 
+ * Note: I'm using REACT here to get a TUI, 
+ *       via ink library https://github.com/vadimdemedes/ink
  */
 
 
@@ -72,7 +72,7 @@ import { exit } from 'process';
 /**
  * hatching: installazione o cova!!!
  */
-export default class Hatching {
+export default class Sequence {
 
    installer = {} as IInstaller
 
