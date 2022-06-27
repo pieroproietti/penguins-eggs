@@ -19,8 +19,8 @@ function main {
          "dad"             "ask help from daddy - configuration helper" \
          "help"            "display help for eggs" \
          "info"            "informations about system and eggs" \
-         "install"         "system installer - the egg becomes a penguin" \
          "kill"            "kill the eggs/free the nest" \
+         "krill"           "krill TUI system installer - the egg becomes a chick" \
          "produce"         "the system produces an egg: iso image of your system" \
          "remove"          "remove eggs and others stuff" \
          "update"          "update the penguin's eggs tool" \
