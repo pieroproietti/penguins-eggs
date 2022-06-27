@@ -7,7 +7,7 @@
 import { Command, Flags, flush } from '@oclif/core'
 import shx from 'shelljs'
 import Utils from '../classes/utils'
-import Prepare from '../classes/krill_prepare'
+import Krill from '../classes/krill-views'
 import Pacman from '../classes/pacman'
 import chalk from 'chalk'
 
@@ -24,8 +24,6 @@ export default class Install extends Command {
   }
 
   static description = 'command-line system installer - the egg became a penguin!'
-
-  // static aliases = ['krill']
 
   static examples = ['$ eggs install\nInstall the system using GUI or CLI installer\n']
 
@@ -67,8 +65,8 @@ export default class Install extends Command {
           Utils.warning('Calamares installer is present, start GUI and choose calamares to install the system')
           Utils.warning('If you still want to use krill, type: ' + chalk.bold('sudo eggs install --cli'))
         } else {
-          const krill = new Prepare()
-          await krill.prepare(crypted, pve, verbose)
+          const krill = new Krill()
+          await krill.prepare (crypted, pve, verbose)
         }
       } else {
         Utils.warning('You are in an installed system!')
