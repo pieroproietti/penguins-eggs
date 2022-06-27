@@ -116,12 +116,12 @@ export async function remove(chroot = '/') {
 export async function addMotd(distro: string, version: string, user: string, userPasswd: string, rootPasswd: string, chroot = '/') {
   const fileMotd = `${chroot}/etc/motd`
 
-  let installer = 'sudo eggs install'
+  let installer = 'sudo eggs krill'
   if (Pacman.packageIsInstalled('calamares')) {
     if (Pacman.packageIsInstalled('plasma-desktop')) {
-      installer = 'startplasma-wayland to run GUI and launch calamares, or from terminal sudo eggs install -c'
+      installer = 'startplasma-wayland to run GUI and launch calamares, or from terminal sudo eggs krill -c'
     } else if (Pacman.packageIsInstalled('xfce4')) {
-      installer = 'startxfce4 to run GUI and launch calamares, or from terminal sudo eggs install -c'
+      installer = 'startxfce4 to run GUI and launch calamares, or from terminal sudo eggs krill -c'
     }
   }
 
