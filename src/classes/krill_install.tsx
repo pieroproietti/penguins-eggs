@@ -791,7 +791,8 @@ export default class Hatching {
          // await exec(`chroot ${this.installTarget} loadkeys ${this.keyboardLayout}`)
          let cmd = `chroot ${this.installTarget} localectl set-keymap ${this.keyboardLayout}`
          try {
-            await exec(cmd, this.echo)
+            await exec(cmd, Utils.setEcho(true))
+            process.exit()
          } catch (error) {
             console.log(error)
             Utils.pressKeyToExit(cmd, true)
