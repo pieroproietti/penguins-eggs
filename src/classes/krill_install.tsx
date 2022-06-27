@@ -798,6 +798,27 @@ export default class Hatching {
          console.log(error)
          Utils.pressKeyToExit(cmd, true)
       }
+
+      /**
+       * this must to be not necessary but...
+       * 
+       * force change /etc/default/keyboard (x11)
+       * force change /etc/vconsole.conf
+       */
+      let content = '# KEYBOARD CONFIGURATION FILE\n\n'
+      content += '# Consult the keyboard(5) manual page.\n\n'
+      content += 'XKBMODEL="' + this.keyboardModel + '"\n'
+      content += 'XKBLAYOUT="' + this.keyboardLayout + '"\n'
+      content += 'XKBVARIANT="' + this.keyboardVariant + '"\n'
+      content += 'XKBOPTIONS=""\n'
+      content += '\n'
+      content += 'BACKSPACE="guess"\n'
+      Utils.write(this.installTarget + '/etc/default/keyboard', content)
+
+      content = 'KEYMAP=' +  + this.keyboardModel + '"\n'
+      content += 'FONT=\n'
+      content += 'FONT_MAP=\n'
+      Utils.write(this.installTarget + '/etc/vconsole.conf', content)
    }
 
    /**
