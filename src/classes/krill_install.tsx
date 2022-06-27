@@ -852,11 +852,11 @@ export default class Hatching {
       const localeGenSource = fs.readFileSync(`${this.installTarget}/etc/locale.gen`, 'utf-8').split('\n')
       let localeGenDest = ''
       const krillBookmark = '#   Locales enabled by krill\n'
-      for (let i = 0; i < localeGenSource.length; i++) {
-         if (localeGenSource[i].includes(krillBookmark)) {
+      for (let line of localeGenSource) {
+         if (line.includes(krillBookmark)) {
             break
          }
-         localeGenDest += localeGenSource[i] + '\n'
+         localeGenDest += line + '\n'
       }
 
       localeGenDest += '\n'
@@ -873,8 +873,7 @@ export default class Hatching {
             }
          }
       }
-      const destGen = `${this.installTarget}/etc/locale.gen`
-      fs.writeFileSync(destGen, localeGenDest)
+      fs.writeFileSync(`${this.installTarget}/etc/locale.gen`, localeGenDest)
    }
 
    /**
