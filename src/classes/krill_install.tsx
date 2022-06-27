@@ -782,7 +782,8 @@ export default class Hatching {
       *            - /etc/vconsole.conf (console) 
       *            - /etc/X11/xorg.conf.d/00-keyboard.conf
       * 
-      * Problem: Actually don't update /etc/default/keyboard (x11) nor /etc/vconsole.conf (console) 
+      * Problem: Actually don't update /etc/default/keyboard (x11)s
+      *          /etc/vconsole.conf is update in installed syste,
       */
 
       // systemd as default
