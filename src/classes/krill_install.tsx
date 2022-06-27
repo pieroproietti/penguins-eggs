@@ -770,48 +770,21 @@ export default class Hatching {
       /**
       * influence: - /etc/default/keyboard (x11)
       *            - /etc/vconsole.conf (console) 
+      * 
+      * Problem: Actually don't update /etc/default/keyboard nor /etc/vconsole.conf (console) 
       */
-      if (this.distro.familyId === 'debian') {
-         // set-keymap without --no-convert, to convert x11-keymap too
-         let cmd = `chroot ${this.installTarget} localectl set-keymap ${this.keyboardLayout} ${this.toNull}`
-         // Devuan
-         if (!Utils.isSystemd()) {
-            // setupcon is a program for fast and easy setup of the font 
-            // and the keyboard on the console 
-            cmd = `chroot ${this.installTarget} setupcon ${this.toNull}`
-         }
-         try {
-            await exec(cmd, this.echo)
-         } catch (error) {
-            console.log(error)
-            Utils.pressKeyToExit(cmd, true)
-         }
 
-      } else if (this.distro.familyId === 'archlinux') {
-         // await exec(`chroot ${this.installTarget} loadkeys ${this.keyboardLayout}`)
-         let cmd = `chroot ${this.installTarget} localectl set-keymap ${this.keyboardLayout}`
-         try {
-            await exec(cmd, Utils.setEcho(true))
-            process.exit()
-         } catch (error) {
-            console.log(error)
-            Utils.pressKeyToExit(cmd, true)
-         }
+      // systemd as default
+      let cmd = `chroot ${this.installTarget} localectl set-keymap ${this.keyboardLayout} ${this.toNull}`
+      if (!Utils.isSystemd()) {
+         cmd = `chroot ${this.installTarget} setupcon ${this.toNull}`
+      }
 
-         // this must to be not necessary but...
-         // change etc/default/keyboard but don't work the same
-         // check font not found during installation
-
-         // const file = this.installTarget + '/etc/default/keyboard'
-         // let content = '# KEYBOARD CONFIGURATION FILE\n\n'
-         // content += '# Consult the keyboard(5) manual page.\n\n'
-         // content += 'XKBMODEL="' + this.keyboardModel + '"\n'
-         // content += 'XKBLAYOUT="' + this.keyboardLayout + '"\n'
-         // content += 'XKBVARIANT="' + this.keyboardVariant + '"\n'
-         // content += 'XKBOPTIONS=""\n'
-         // content += '\n'
-         // content += 'BACKSPACE="guess"\n'
-         // Utils.write(file, content)
+      try {
+         await exec(cmd, this.echo)
+      } catch (error) {
+         console.log(error)
+         Utils.pressKeyToExit(cmd, true)
       }
    }
 
