@@ -600,10 +600,12 @@ export default class Ovary {
       process.exit()
     }
 
-    let kernel_parameters = `boot=live components locales=${process.env.LANG}`
+    // let kernel_parameters = `boot=live components locales=${process.env.LANG}`
+    let kernel_parameters = `boot=live`
     let volid = Utils.getVolid(this.settings.remix.name)
     if (this.familyId === "archlinux") {
-      kernel_parameters = `misobasedir=live misolabel=${volid} boot=live locales=${process.env.LANG}`
+      // kernel_parameters = `misobasedir=live misolabel=${volid} boot=live locales=${process.env.LANG}`
+      kernel_parameters = `misobasedir=live misolabel=${volid} boot=live`
     }
 
     const template = fs.readFileSync(isolinuxTemplate, 'utf8')
