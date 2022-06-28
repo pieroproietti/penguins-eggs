@@ -15,32 +15,34 @@
 /**
  * Ideally, I want to respect calamares way, remplementing the same (SEMPLIFIED) steps for CLI
  * 
-      - partition OK
-      - mount this.mountFs, this.mountVfs OK
-      - unpackfs OK
-      - Restore private data from backup 
-      - sources-yolk // call execCalamaresModule('sources-yolk')
-      - machineid OK
-      - fstab OK
-      - locale // making it
-      - keyboard // OK
-      - localecfg // OK
-      - users OK
-      - displaymanager // this.autologin OK
-      - networkcfg OK
-      - hwclock // to do
-      - services-systemd // to do
-      - bootloader-config // call execCalamaresModule('bootloader-config')
-      - grubcfg OK
-      - bootloader OK
-      - packages // to do
-      - luksbootkeyfile // to do
-      - plymouthcfg // to do
-      - initramfscfg OK
-      - initramfs OK
-      - removeuser OK
-      - sources-yolk-unmount // execCalamaresModule('sources-yolk-unmount')
-      - umount // this.umountVfs, this.umountFs
+ * Phase 2 - install.
+ * 
+ *  - partition:     partitions
+ *  - mount:         mountFs, mountVfs
+ *  - unpackfs:      unpackfs 
+ *  - _restore:      eggs syncfrom --rootdir /tmp/calamares-krill-root/
+ *  - sources-yolk:  execCalamaresModule('sources-yolk')
+ *  - machineid:     machineid
+ *  - fstab:         fstab
+ *  - locale         locale
+ *  - keyboard:      keyboard
+ *  - localecfg:     localecfg
+ *  - users:         users
+ *  - displaymanager: autologin
+ *  - networkcfg:    networkcfg
+ *  - hwclock:
+ *  - services-systemd:
+ *  - bootloader-config: execCalamaresModule('bootloader-config')
+ *  - grubcfg:       grubcfg
+ *  - bootloader:    bootloaded
+ *  - packages:      removeInstaller
+ *  - luksbootkeyfile:
+ *  - plymouthcfg;
+ *  - initramfscfg:  initramfscfg
+ *  - initramfs:     initramfs
+ *  - removeuser:    removeuser
+ *  - sources-yolk-unmount: execCalamaresModule('sources-yolk-unmount')
+ *  - umount:     umountVfs, this.umountFs
  */
 
 import path from 'path'
@@ -66,7 +68,6 @@ import Distro from './distro'
 import { IInstaller, IDevices, IDevice } from '../interfaces'
 import { ICalamaresModule, ILocation, IKeyboard, IPartitions, IUsers } from '../interfaces/i-krill'
 import { exec } from '../lib/utils'
-import { exit } from 'process';
 
 
 /**
@@ -293,16 +294,6 @@ export default class Sequence {
          }
 
          // keyboard
-         /**
-         * properties: in Calamares
-         * xOrgConfFileName: { type: string }
-         * convertedKeymapPath: { type: string }
-         * writeEtcDefaultKeyboard: { type: boolean, default: true }
-         * required: [ xOrgConfFileName, convertedKeymapPath ]
-         * 
-         * xOrgConfFileName: "/etc/X11/xorg.conf.d/00-keyboard.conf"
-         * convertedKeymapPath: "/lib/kbd/keymaps/xkb"
-         */
          message = "settings keyboard "
          percent = 0.48
          try {
@@ -1759,4 +1750,3 @@ function redraw(elem: JSX.Element) {
    shx.exec('clear')
    render(elem, opt)
 }
-

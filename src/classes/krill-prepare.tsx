@@ -7,16 +7,26 @@
  */
 
 /**
+ * Ideally, I want to respect calamares way, remplementing the same (SEMPLIFIED) steps
+ * for CLI
+ * 
+ * Phase 1 - prepare.
+ * View modules are shown as UI pages, jobs from job modules
+ * are executed immediately in the background.
+ *   - welcome
+ *   - locale
+ *   - keyboard
+ *   - partition
+ *   - keyboard
+ *   - users
+ *   - network
+ *   - summary
+*/
+
+/**
  * problems:
  * 
  */
-
-
-/**
- * Ideally, I want to respect calamares way, remplementing the same (SEMPLIFIED) steps for CLI
- * in krill-prepare we have views
-*/
-
 
 import React from 'react';
 import { render, RenderOptions } from 'ink'
@@ -66,7 +76,7 @@ import getGateway from '../lib/get_gateway'
 import getDomain from '../lib/get_domain'
 import getDns from '../lib/get_dns'
 
-import Sequence from './krill_sequence'
+import Sequence from './krill_install'
 
 import { INet } from '../interfaces'
 import { IWelcome, ILocation, IKeyboard, IPartitions, IUsers } from '../interfaces/i-krill'
