@@ -45,7 +45,6 @@
  *  - umount:     umountVfs, this.umountFs
  */
 
-import path from 'path'
 
 import { IRemix, IDistro, INet } from '../interfaces'
 import Settings from '../classes/settings'
@@ -71,36 +70,89 @@ import { exec } from '../lib/utils'
 
 // import krill modules
 import partition from './modules/partitions'
-import bootloaderConfig from './modules/bootloader-config'
-import bootloaderConfigArch from './modules/bootloader-config-arch'
-import bootloaderConfigUbuntu from './modules/bootloader-config-ubuntu'
-import initramfsCfg from './modules/initramfs-cfg'
-import setTimezone from './modules/set-timezone'
-import addUser from './modules/add-user'
-import changePassword from './modules/change-password'
-import delLiveUser from './modules/del-live-user'
-import bootloader from './modules/bootloader'
-import initramfs from './modules/initramfs'
+import {mountFs, umountFs} from './modules/mount-fs'
+import {mountVfs, umountVfs} from './modules/mount-vfs'
+import unpackfs from './modules/unpackfs'
+import machineId from './modules/machine-id'
 import fstab from './modules/fstab'
 import locale from './modules/locale'
 import setKeyboard from './modules/set-keyboard'
 import localeCfg from './modules/lòcale-cfg'
+// users
+import addUser from './modules/add-user'
+import changePassword from './modules/change-password'
+// displaymanager: autologin
 import networkCfg from './modules/network-cfg'
-import {mountFs, umountFs} from './modules/mount-fs'
-import {mountVfs, umountVfs} from './modules/mount-vfs'
-import umount from './modules/umount'
-import unpackfs from './modules/unpackfs'
-import mkfs from './modules/mkfs'
+// hwclock:
+// services-systemd:
+// bootloader-config
+import bootloaderConfig from './modules/bootloader-config'
+import bootloaderConfigArch from './modules/bootloader-config-arch'
+import bootloaderConfigUbuntu from './modules/bootloader-config-ubuntu'
+//
 import grubcfg from './modules/grubcfg'
+import bootloader from './modules/bootloader'
+// packages: removeInstallerLink
+import removeInstallerLink from './modules/remove-installer-link'
+// luksbootkeyfile:
+// plymouthcfg;
+import initramfsCfg from './modules/initramfs-cfg'
+import initramfs from './modules/initramfs'
+import delLiveUser from './modules/del-live-user'
+// umount already imported
+
+// to order in same wat
+import setTimezone from './modules/set-timezone'
+import umount from './modules/umount'
+import mkfs from './modules/mkfs'
 import hostname from './modules/hostname'
 import hosts from './modules/hosts'
-import removeInstallerLink from './modules/remove-installer-link'
-import machineId from './modules/machine-id'
 
 /**
  * hatching: installazione o cova!!!
  */
 export default class Sequence {
+   public partition = partition
+   // mount
+   public mountFs = mountFs
+   public mountVfs = mountVfs
+   //
+   public unpackfs = unpackfs
+   public machineId = machineId
+   public fstab = fstab
+   public locale = locale
+   public setKeyboard = setKeyboard
+   public localeCfg = localeCfg
+   // users
+   public addUser = addUser
+   public changePassword = changePassword
+   // displaumanager: autologin
+   public networkCfg = networkCfg 
+   // hwclock:
+   // services-systemd:
+   // bootloader-config
+   public bootloaderConfig = bootloaderConfig
+   public bootloaderConfigArch = bootloaderConfigArch
+   public bootloaderConfigUbuntu = bootloaderConfigUbuntu
+   // 
+   public grubcfg = grubcfg
+   public bootloader = bootloader
+   // packages: removeInstallerLink
+   public removeInstallerLink = removeInstallerLink
+   // luksbootkeyfile:
+   // plymouthcfg;
+   public initramfsCfg = initramfsCfg
+   public initramfs = initramfs
+   public delLiveUser = delLiveUser
+   public umountFs = umountFs
+   public umountVfs = umountVfs
+   // to order in same wat
+   public setTimezone = setTimezone
+   public umount = umount
+   public mkfs = mkfs
+   public hostname = hostname
+   public hosts = hosts
+   
 
    installer = {} as IInstaller
 
@@ -148,34 +200,6 @@ export default class Sequence {
 
    luksMountpoint = ''
 
-   public partition = partition
-   public bootloaderConfig = bootloaderConfig
-   public bootloaderConfigArch = bootloaderConfigArch
-   public bootloaderConfigUbuntu = bootloaderConfigUbuntu
-   public initramfsCfg = initramfsCfg
-   public setTimezone = setTimezone
-   public addUser = addUser
-   public changePassword = changePassword
-   public delLiveUser = delLiveUser
-   public bootloader = bootloader
-   public initramfs = initramfs
-   public fstab = fstab
-   public locale = locale
-   public setKeyboard = setKeyboard
-   public localeCfg = localeCfg
-   public networkCfg = networkCfg
-   public mountFs = mountFs
-   public umountFs = umountFs
-   public mountVfs = mountVfs
-   public umountVfs = umountVfs
-   public umount = umount
-   public unpackfs = unpackfs
-   public mkfs = mkfs
-   public grubcfg = grubcfg
-   public hostname = hostname
-   public hosts = hosts
-   public removeInstallerLink = removeInstallerLink
-   public machineId = machineId
 
    /**
     * constructor
