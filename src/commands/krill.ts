@@ -23,6 +23,8 @@ export default class Install extends Command {
     verbose: Flags.boolean({ char: 'v', description: 'verbose' })
   }
 
+  static aliases = [`install`]
+
   static description = 'command-line system installer - the egg became a penguin!'
 
   static examples = ['$ eggs install\nInstall the system using GUI or CLI installer\n']
