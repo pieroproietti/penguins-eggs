@@ -2,7 +2,7 @@
  * https://stackoverflow.com/questions/23876782/how-do-i-split-a-typescript-class-into-multiple-files
  */
 
-import Sequence from '../../classes/krill-install'
+import Sequence from '../../classes/krill-sequence'
 import { IWelcome, ILocation, IKeyboard, IPartitions, IUsers } from '../../interfaces/i-krill'
 import { exec } from '../../lib/utils'
 import Utils from './../../classes/utils'
