@@ -96,7 +96,6 @@ import hostname from './modules/hostname'
 import hosts from './modules/hosts'
 import removeInstallerLink from './modules/remove-installer-link'
 import machineId from './modules/machine-id'
-import lvmPartInfo from './modules/lvm-part-info'
 import redraw from './modules/redraw'
 
 /**
@@ -178,7 +177,6 @@ export default class Sequence {
    public hosts = hosts
    public removeInstallerLink = removeInstallerLink
    public machineId = machineId
-   public lvmPartInfo = lvmPartInfo
    public redraw = redraw
 
    /**
@@ -593,4 +591,19 @@ export default class Sequence {
    }
 }
 
-const ifaces: string[] = fs.readdirSync('/sys/class/net/')
+// const ifaces: string[] = fs.readdirSync('/sys/class/net/')
+
+/**
+ * 
+ * @param elem 
+ */
+function redraw(elem: JSX.Element) {
+   let opt: RenderOptions = {}
+
+   opt.patchConsole = false
+   opt.debug = false
+
+   shx.exec('clear')
+   render(elem, opt)
+}
+
