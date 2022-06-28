@@ -7,7 +7,7 @@
 import { Command, Flags, flush } from '@oclif/core'
 import shx from 'shelljs'
 import Utils from '../classes/utils'
-import Krill from '../classes/krill-prepare'
+import Krill from '../krill/krill-prepare'
 import Pacman from '../classes/pacman'
 import chalk from 'chalk'
 
