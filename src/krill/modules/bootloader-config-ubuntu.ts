@@ -2,10 +2,10 @@
  * https://stackoverflow.com/questions/23876782/how-do-i-split-a-typescript-class-into-multiple-files
  */
 
-import Sequence from '../../classes/krill-sequence'
+import Sequence from '../krill-sequence'
 import { IWelcome, ILocation, IKeyboard, IPartitions, IUsers } from '../../interfaces/i-krill'
 import { exec } from '../../lib/utils'
-import Utils from './../../classes/utils'
+import Utils from '../../classes/utils'
 import Install from '../../components/install'
 import shx from 'shelljs'
 import React from 'react';
@@ -15,37 +15,8 @@ import { render, RenderOptions } from 'ink'
  * 
  * @param this 
  */
-export default async function bootloaderConfig(this: Sequence): Promise<void> {
-    if (this.distro.familyId === 'debian') {
-        if (this.distro.distroLike === 'ubuntu') {
-            this.bootloaderConfig_Ubuntu()
-        } else {
-            this.bootloaderConfig_Debian()
-        }
-    } else if (this.distro.familyId === 'archlinux') {
-        this.bootloaderConfig_Arch()
-    }
-}
 
-/**
- * 
- */
-async function bootloaderConfig_Debian(this: Sequence) {
-    this.execCalamaresModule('bootloader-config')
-}
-
-/**
- * 
- */
-async function bootloaderConfig_Arch(this: Sequence) {
-    console.log('bootloader Arch to do!')
-}
-
-
-/**
- * 
- */
-async function bootloaderConfig_Ubuntu(this: Sequence) {
+export default async function bootloaderConfigUbuntu(this: Sequence) {
     let cmd = ''
     try {
         cmd = `chroot ${this.installTarget} apt-get update -y ${this.toNull}`
@@ -120,20 +91,5 @@ async function bootloaderConfig_Ubuntu(this: Sequence) {
     } catch (error) {
         console.log(error)
         await Utils.pressKeyToExit(cmd, true)
-    }
-}
-
-/**
- * 
- */
-async function execCalamaresModule(, this: Sequence, name: string) {
-    const moduleName = this.installer.multiarchModules + name + '/module.desc'
-    if (fs.existsSync(moduleName)) {
-        const calamaresModule = yaml.load(fs.readFileSync(moduleName, 'utf8')) as ICalamaresModule
-        let command = calamaresModule.command
-        if (command !== '' || command !== undefined) {
-            command += this.toNull
-            await exec(command, this.echo)
-        }
     }
 }
