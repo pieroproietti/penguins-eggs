@@ -974,7 +974,7 @@ export default class Sequence {
    }
 
    /**
-    * syncfs
+    * syncfs NOT-USED MORE
     */
    private async syncfs(): Promise<void> {
 

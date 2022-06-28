@@ -76,7 +76,7 @@ import getGateway from '../lib/get_gateway'
 import getDomain from '../lib/get_domain'
 import getDns from '../lib/get_dns'
 
-import Sequence from './krill_install'
+import Sequence from './krill-install'
 
 import { INet } from '../interfaces'
 import { IWelcome, ILocation, IKeyboard, IPartitions, IUsers } from '../interfaces/i-krill'
