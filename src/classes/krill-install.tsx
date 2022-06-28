@@ -69,6 +69,7 @@ import { IInstaller, IDevices, IDevice } from '../interfaces'
 import { ICalamaresModule, ILocation, IKeyboard, IPartitions, IUsers } from '../interfaces/i-krill'
 import { exec } from '../lib/utils'
 
+import partition from '../lib/krill-modules/partitions'
 
 /**
  * hatching: installazione o cova!!!
@@ -120,6 +121,9 @@ export default class Sequence {
    luksDevice = ''
 
    luksMountpoint = ''
+
+   public partition = partition
+
 
    /**
     * constructor
@@ -1199,7 +1203,7 @@ export default class Sequence {
    /**
     * 
     */
-   private async partition(): Promise<boolean> {
+   private async partitionInside(): Promise<boolean> {
       let echoYes = Utils.setEcho(true)
 
       let retVal = false
@@ -1525,7 +1529,7 @@ export default class Sequence {
    /**
     * Return lvmPartname, lvmSwapSize, lvmRootSize
     */
-   private async lvmPartInfo(installDevice = '/dev/sda'): Promise<[string, number, number, number]> {
+   public async lvmPartInfo(installDevice = '/dev/sda'): Promise<[string, number, number, number]> {
 
       // Partizione LVM
       const lvmPartname = shx.exec(`fdisk ${installDevice} -l | grep LVM | awk '{print $1}' | cut -d "/" -f3`).stdout.trim()
