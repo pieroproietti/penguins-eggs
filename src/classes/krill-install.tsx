@@ -619,8 +619,6 @@ export default class Sequence {
       } else if (this.distro.familyId === 'archlinux') {
          console.log('initramfsCfg skipped')
       }
-
-
    }
 
    /**
