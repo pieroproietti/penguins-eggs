@@ -96,7 +96,6 @@ import hostname from './modules/hostname'
 import hosts from './modules/hosts'
 import removeInstallerLink from './modules/remove-installer-link'
 import machineId from './modules/machine-id'
-import redraw from './modules/redraw'
 
 /**
  * hatching: installazione o cova!!!
@@ -177,7 +176,6 @@ export default class Sequence {
    public hosts = hosts
    public removeInstallerLink = removeInstallerLink
    public machineId = machineId
-   public redraw = redraw
 
    /**
     * constructor
