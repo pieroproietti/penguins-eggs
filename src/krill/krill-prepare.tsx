@@ -30,13 +30,13 @@
 
 import React from 'react';
 import { render, RenderOptions } from 'ink'
-import Utils from './utils'
+import Utils from '../classes/utils'
 import axios from 'axios'
 import shx from 'shelljs'
 import fs from 'fs'
-import Systemctl from './systemctl'
-import Locales from './locales'
-import Keyboards from './keyboards'
+import Systemctl from '../classes/systemctl'
+import Locales from '../classes/locales'
+import Keyboards from '../classes/keyboards'
 
 // libraries
 const exec = require('../lib/utils').exec

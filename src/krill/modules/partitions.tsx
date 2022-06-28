@@ -2,12 +2,12 @@
  * https://stackoverflow.com/questions/23876782/how-do-i-split-a-typescript-class-into-multiple-files
  */
 
-import Sequence from '../../classes/krill-sequence'
+import Sequence from '../krill-sequence'
 import { IWelcome, ILocation, IKeyboard, IPartitions, IUsers } from '../../interfaces/i-krill'
 import { exec } from '../../lib/utils'
-import Utils from './../../classes/utils'
+import Utils from '../../classes/utils'
 import Install from '../../components/install'
-import shx from 'shelljs'
+
 import React from 'react';
 import { render, RenderOptions } from 'ink'
 
@@ -85,13 +85,13 @@ export default async function partition(this: Sequence): Promise<boolean> {
         this.devices.boot.mountPoint = '/boot'
 
         // SWAP 8G
-        redraw(<Install message={`Formatting LUKS ${installDevice}2`} percent={0} />)
+        this.redraw(<Install message={`Formatting LUKS ${installDevice}2`} percent={0} />)
         let crytoSwap = await exec(`cryptsetup -y -v luksFormat --type luks2 ${installDevice}${p}2`, echoYes)
         if (crytoSwap.code !== 0) {
             Utils.warning(`Error: ${crytoSwap.code} ${crytoSwap.data}`)
             process.exit(1)
         }
-        redraw(<Install message={`Opening ${installDevice}${p}2 as swap_crypted`} percent={0} />)
+        this.redraw(<Install message={`Opening ${installDevice}${p}2 as swap_crypted`} percent={0} />)
         let crytoSwapOpen = await exec(`cryptsetup luksOpen --type luks2 ${installDevice}${p}2 swap_crypted`, echoYes)
         if (crytoSwapOpen.code !== 0) {
             Utils.warning(`Error: ${crytoSwapOpen.code} ${crytoSwapOpen.data}`)
@@ -103,13 +103,13 @@ export default async function partition(this: Sequence): Promise<boolean> {
         this.devices.swap.mountPoint = 'none'
 
         // ROOT
-        redraw(<Install message={`Formatting LUKS ${installDevice}${p}3`} percent={0} />)
+        this.redraw(<Install message={`Formatting LUKS ${installDevice}${p}3`} percent={0} />)
         let crytoRoot = await exec(`cryptsetup -y -v luksFormat --type luks2 ${installDevice}${p}3`, echoYes)
         if (crytoRoot.code !== 0) {
             Utils.warning(`Error: ${crytoRoot.code} ${crytoRoot.data}`)
             process.exit(1)
         }
-        redraw(<Install message={`Opening ${installDevice}${p}3 as root_crypted`} percent={0} />)
+        this.redraw(<Install message={`Opening ${installDevice}${p}3 as root_crypted`} percent={0} />)
         let crytoRootOpen = await exec(`cryptsetup luksOpen --type luks2 ${installDevice}${p}3 root_crypted`, echoYes)
         if (crytoRootOpen.code !== 0) {
             Utils.warning(`Error: ${crytoRootOpen.code} ${crytoRootOpen.data}`)
@@ -203,7 +203,7 @@ export default async function partition(this: Sequence): Promise<boolean> {
             Utils.warning(`Error: ${crytoSwap.code} ${crytoSwap.data}`)
             process.exit(1)
         }
-        redraw(<Install message={`Opening ${installDevice}${p}3 as swap_crypted`} percent={0} />)
+        this.redraw(<Install message={`Opening ${installDevice}${p}3 as swap_crypted`} percent={0} />)
         let crytoSwapOpen = await exec(`cryptsetup luksOpen --type luks2 ${installDevice}${p}3 swap_crypted`, echoYes)
         if (crytoSwapOpen.code !== 0) {
             Utils.warning(`Error: ${crytoSwapOpen.code} ${crytoSwapOpen.data}`)
@@ -215,13 +215,13 @@ export default async function partition(this: Sequence): Promise<boolean> {
         this.devices.swap.mountPoint = 'none'
 
         // ROOT
-        redraw(<Install message={`Formatting LUKS ${installDevice}${p}4`} percent={0} />)
+        this.redraw(<Install message={`Formatting LUKS ${installDevice}${p}4`} percent={0} />)
         let crytoRoot = await exec(`cryptsetup -y -v luksFormat --type luks2 ${installDevice}${p}4`, echoYes)
         if (crytoRoot.code !== 0) {
             Utils.warning(`Error: ${crytoRoot.code} ${crytoRoot.data}`)
             process.exit(1)
         }
-        redraw(<Install message={`Opening ${installDevice}${p}4 as root_crypted`} percent={0} />)
+        this.redraw(<Install message={`Opening ${installDevice}${p}4 as root_crypted`} percent={0} />)
         let crytoRootOpen = await exec(`cryptsetup luksOpen --type luks2 ${installDevice}${p}4 root_crypted`, echoYes)
         if (crytoRootOpen.code !== 0) {
             Utils.warning(`Error: ${crytoRootOpen.code} ${crytoRootOpen.data}`)
@@ -301,7 +301,7 @@ export default async function partition(this: Sequence): Promise<boolean> {
         await exec(`parted --script ${installDevice} set 1 esp on`, this.echo)  // sda1
         await exec(`parted --script ${installDevice} set 3 lvm on`, this.echo) // sda3
 
-        const lvmPartInfo = await this.lvmPartInfo(installDevice)
+        const lvmPartInfo = await lvmPartInfo(installDevice)
         const lvmPartname = lvmPartInfo[0]
         const lvmSwapSize = lvmPartInfo[1]
         const lvmRootSize = lvmPartInfo[2]
@@ -337,20 +337,3 @@ export default async function partition(this: Sequence): Promise<boolean> {
     }
     return retVal
 }
-
-
-/**
- * Occorre farglierlo rigenerare a forza
- * anche quando NON cambiano i dati
- * forceUpdate
- */
- function redraw(elem: JSX.Element) {
-    let opt: RenderOptions = {}
- 
-    opt.patchConsole = false
-    opt.debug = false
- 
-    shx.exec('clear')
-    render(elem, opt)
- }
- 
