@@ -3,13 +3,12 @@
  */
 
 import Sequence from '../krill-sequence'
-import { IWelcome, ILocation, IKeyboard, IPartitions, IUsers } from '../../interfaces/i-krill'
 import { exec } from '../../lib/utils'
 import Utils from '../../classes/utils'
-import Install from '../../components/install'
+import shx from 'shelljs'
 
-import React from 'react';
-import { render, RenderOptions } from 'ink'
+// import React from 'react';
+// import { render, RenderOptions } from 'ink'
 
 /**
  * 
@@ -85,13 +84,13 @@ export default async function partition(this: Sequence): Promise<boolean> {
         this.devices.boot.mountPoint = '/boot'
 
         // SWAP 8G
-        this.redraw(<Install message={`Formatting LUKS ${installDevice}2`} percent={0} />)
+        // this.redraw(<Install message={`Formatting LUKS ${installDevice}2`} percent={0} />)
         let crytoSwap = await exec(`cryptsetup -y -v luksFormat --type luks2 ${installDevice}${p}2`, echoYes)
         if (crytoSwap.code !== 0) {
             Utils.warning(`Error: ${crytoSwap.code} ${crytoSwap.data}`)
             process.exit(1)
         }
-        this.redraw(<Install message={`Opening ${installDevice}${p}2 as swap_crypted`} percent={0} />)
+        // this.redraw(<Install message={`Opening ${installDevice}${p}2 as swap_crypted`} percent={0} />)
         let crytoSwapOpen = await exec(`cryptsetup luksOpen --type luks2 ${installDevice}${p}2 swap_crypted`, echoYes)
         if (crytoSwapOpen.code !== 0) {
             Utils.warning(`Error: ${crytoSwapOpen.code} ${crytoSwapOpen.data}`)
@@ -103,13 +102,13 @@ export default async function partition(this: Sequence): Promise<boolean> {
         this.devices.swap.mountPoint = 'none'
 
         // ROOT
-        this.redraw(<Install message={`Formatting LUKS ${installDevice}${p}3`} percent={0} />)
+        // this.redraw(<Install message={`Formatting LUKS ${installDevice}${p}3`} percent={0} />)
         let crytoRoot = await exec(`cryptsetup -y -v luksFormat --type luks2 ${installDevice}${p}3`, echoYes)
         if (crytoRoot.code !== 0) {
             Utils.warning(`Error: ${crytoRoot.code} ${crytoRoot.data}`)
             process.exit(1)
         }
-        this.redraw(<Install message={`Opening ${installDevice}${p}3 as root_crypted`} percent={0} />)
+        // this.redraw(<Install message={`Opening ${installDevice}${p}3 as root_crypted`} percent={0} />)
         let crytoRootOpen = await exec(`cryptsetup luksOpen --type luks2 ${installDevice}${p}3 root_crypted`, echoYes)
         if (crytoRootOpen.code !== 0) {
             Utils.warning(`Error: ${crytoRootOpen.code} ${crytoRootOpen.data}`)
@@ -197,13 +196,13 @@ export default async function partition(this: Sequence): Promise<boolean> {
          */
 
         // SWAP 8G
-        redraw(<Install message={`Formatting LUKS ${installDevice}${p}3`} percent={0} />)
+        // redraw(<Install message={`Formatting LUKS ${installDevice}${p}3`} percent={0} />)
         let crytoSwap = await exec(`cryptsetup -y -v luksFormat --type luks2 ${installDevice}${p}3`, echoYes)
         if (crytoSwap.code !== 0) {
             Utils.warning(`Error: ${crytoSwap.code} ${crytoSwap.data}`)
             process.exit(1)
         }
-        this.redraw(<Install message={`Opening ${installDevice}${p}3 as swap_crypted`} percent={0} />)
+        // this.redraw(<Install message={`Opening ${installDevice}${p}3 as swap_crypted`} percent={0} />)
         let crytoSwapOpen = await exec(`cryptsetup luksOpen --type luks2 ${installDevice}${p}3 swap_crypted`, echoYes)
         if (crytoSwapOpen.code !== 0) {
             Utils.warning(`Error: ${crytoSwapOpen.code} ${crytoSwapOpen.data}`)
@@ -215,13 +214,13 @@ export default async function partition(this: Sequence): Promise<boolean> {
         this.devices.swap.mountPoint = 'none'
 
         // ROOT
-        this.redraw(<Install message={`Formatting LUKS ${installDevice}${p}4`} percent={0} />)
+        // this.redraw(<Install message={`Formatting LUKS ${installDevice}${p}4`} percent={0} />)
         let crytoRoot = await exec(`cryptsetup -y -v luksFormat --type luks2 ${installDevice}${p}4`, echoYes)
         if (crytoRoot.code !== 0) {
             Utils.warning(`Error: ${crytoRoot.code} ${crytoRoot.data}`)
             process.exit(1)
         }
-        this.redraw(<Install message={`Opening ${installDevice}${p}4 as root_crypted`} percent={0} />)
+        // this.redraw(<Install message={`Opening ${installDevice}${p}4 as root_crypted`} percent={0} />)
         let crytoRootOpen = await exec(`cryptsetup luksOpen --type luks2 ${installDevice}${p}4 root_crypted`, echoYes)
         if (crytoRootOpen.code !== 0) {
             Utils.warning(`Error: ${crytoRootOpen.code} ${crytoRootOpen.data}`)
@@ -254,11 +253,10 @@ export default async function partition(this: Sequence): Promise<boolean> {
         await exec(`parted --script ${installDevice} set 1 boot on`, this.echo) // sda1
         await exec(`parted --script ${installDevice} set 2 lvm on`, this.echo) // sda2
 
-        const lvmPartInfo = await this.lvmPartInfo(installDevice)
-        const lvmPartname = lvmPartInfo[0]
-        const lvmSwapSize = lvmPartInfo[1]
-        const lvmRootSize = lvmPartInfo[2]
-        //const lvmDataSize = lvmPartInfo[3]
+        const partInfo = await lvmPartInfo(installDevice)
+        const lvmPartname = partInfo[0]
+        const lvmSwapSize = partInfo[1]
+        const lvmRootSize = partInfo[2]
 
         await exec(`pvcreate /dev/${lvmPartname}`, this.echo)
         await exec(`vgcreate pve /dev/${lvmPartname}`, this.echo)
@@ -301,11 +299,10 @@ export default async function partition(this: Sequence): Promise<boolean> {
         await exec(`parted --script ${installDevice} set 1 esp on`, this.echo)  // sda1
         await exec(`parted --script ${installDevice} set 3 lvm on`, this.echo) // sda3
 
-        const lvmPartInfo = await lvmPartInfo(installDevice)
-        const lvmPartname = lvmPartInfo[0]
-        const lvmSwapSize = lvmPartInfo[1]
-        const lvmRootSize = lvmPartInfo[2]
-        //const lvmDataSize = lvmPartInfo[3]
+        const partInfo = await lvmPartInfo(installDevice)
+        const lvmPartname = partInfo[0]
+        const lvmSwapSize = partInfo[1]
+        const lvmRootSize = partInfo[2]
 
         await exec(`pvcreate /dev/${lvmPartname}`, this.echo)
         await exec(`vgcreate pve /dev/${lvmPartname}`, this.echo)
@@ -336,4 +333,26 @@ export default async function partition(this: Sequence): Promise<boolean> {
         retVal = true
     }
     return retVal
+}
+
+/**
+ * 
+ * @param installDevice 
+ * @returns 
+ */
+export async function lvmPartInfo(installDevice = '/dev/sda'): Promise<[string, number, number, number]> {
+
+    // Partizione LVM
+    const lvmPartname = shx.exec(`fdisk ${installDevice} -l | grep LVM | awk '{print $1}' | cut -d "/" -f3`).stdout.trim()
+    const lvmByteSize = Number(shx.exec(`cat /proc/partitions | grep ${lvmPartname}| awk '{print $3}' | grep "[0-9]"`).stdout.trim())
+    const lvmSize = lvmByteSize / 1024
+
+    // La partizione di root viene posta ad 1/4 della partizione LVM, limite max 100 GB
+    const lvmSwapSize = 8192
+    let lvmRootSize = lvmSize / 8
+    if (lvmRootSize < 20480) {
+        lvmRootSize = 20480
+    }
+    const lvmDataSize = lvmSize - lvmRootSize - lvmSwapSize
+    return [lvmPartname, lvmSwapSize, lvmRootSize, lvmDataSize]
 }
