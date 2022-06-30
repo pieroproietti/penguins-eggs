@@ -37,6 +37,7 @@ import { displaymanager } from './incubation/fisherman-helper/displaymanager'
 import { access } from 'fs/promises'
 import { constants } from 'fs'
 import Users from './users'
+import Distro from './distro'
 
 /**
  * Ovary:
@@ -638,6 +639,7 @@ export default class Ovary {
 
     let lackVmlinuzImage = false
     if (fs.existsSync(this.settings.kernel_image)) {
+      console.log('kernel image:' + this.settings.kernel_image)
       await exec(`cp ${this.settings.kernel_image} ${this.settings.work_dir.pathIso}/live/`, this.echo)
     } else {
       Utils.error(`Cannot find ${this.settings.kernel_image}`)
@@ -658,7 +660,11 @@ export default class Ovary {
     let initrdImg = Utils.initrdImg()
     initrdImg = initrdImg.substring(initrdImg.lastIndexOf('/') + 1)
     Utils.warning(`Creating ${initrdImg} in ${this.settings.work_dir.pathIso}/live/`)
-    await exec(`mkinitcpio -c ${path.resolve(__dirname, '../../mkinitcpio/manjaro/mkinitcpio-produce.conf')} -g ${this.settings.work_dir.pathIso}/live/${initrdImg}`, Utils.setEcho(true))
+    if (this.settings.distro.distroId=== 'manjarolinux') {
+      await exec(`mkinitcpio -c ${path.resolve(__dirname, '../../mkinitcpio/manjaro/mkinitcpio-produce.conf')} -g ${this.settings.work_dir.pathIso}/live/${initrdImg}`, Utils.setEcho(true))
+    } else if (this.settings.distro.distroId === 'Arch Linux') {
+      await exec(`mkinitcpio -c ${path.resolve(__dirname, '../../mkinitcpio/archlinux/mkinitcpio-produce.conf')} -g ${this.settings.work_dir.pathIso}/live/${initrdImg}`, Utils.setEcho(true))
+    }
   }
 
   /**
