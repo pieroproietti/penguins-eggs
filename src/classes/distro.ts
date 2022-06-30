@@ -380,12 +380,21 @@ class Distro implements IDistro {
         this.distroLike = 'Debian'
         this.codenameLikeId = 'buster'
 
-        /**
-         * ArchLinux
-         */
-
         break
       }
+
+      /**
+       * Archlinux
+       */
+      case 'n/a': {
+        // distroId= "Arch Linux"
+        this.familyId = 'archlinux'
+        this.distroLike = 'Arch'
+        this.codenameLikeId = 'buster'
+      }
+
+
+
       /**
        * GARUDA
        */
@@ -405,7 +414,6 @@ class Distro implements IDistro {
       /**
        * Manjaro
        */
-       case 'n/a': 
        case 'Qonos': 
        case 'Ruah': {
         this.familyId = 'archlinux'
