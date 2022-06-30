@@ -658,7 +658,7 @@ export default class Ovary {
     let initrdImg = Utils.initrdImg()
     initrdImg = initrdImg.substring(initrdImg.lastIndexOf('/') + 1)
     Utils.warning(`Creating ${initrdImg} in ${this.settings.work_dir.pathIso}/live/`)
-    await exec(`mkinitcpio -c ${path.resolve(__dirname, '../../mkinitcpio/manjaro/mkinitcpio.conf')} -g ${this.settings.work_dir.pathIso}/live/${initrdImg}`, Utils.setEcho(true))
+    await exec(`mkinitcpio -c ${path.resolve(__dirname, '../../mkinitcpio/manjaro/mkinitcpio-produce.conf')} -g ${this.settings.work_dir.pathIso}/live/${initrdImg}`, Utils.setEcho(true))
   }
 
   /**
