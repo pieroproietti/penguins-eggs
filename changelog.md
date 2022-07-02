@@ -18,6 +18,30 @@ You can follow the project also consulting the [commit history](https://github.c
 ## Changelog
 Versions are listed on reverse order, the first is the last one. Old versions are moved to [versions](https://sourceforge.net/projects/penguins-eggs/files/packages-deb/versions/). 
 
+### eggs-9.1.34
+Arch: I started to try to use eggs against Arch Linux original, using archiso hooks, here is the [BUILDPKG](https://github.com/pieroproietti/penguins-eggs-archlinux). I have problems mounting lower a binded directory with overlayfs: example:
+
+```
+mount --bind --make-slave /boot /home/eggs/ovarium/.overlay/lowerdir/boot
+mount -o remount,bind,ro /home/eggs/ovarium/.overlay/lowerdir/boot
+ovary: makeIfNotExist(/home/eggs/ovarium/.overlay/upperdir/boot)
+mkdir /home/eggs/ovarium/.overlay/upperdir/boot -p
+ovary: makeIfNotExist(/home/eggs/ovarium/.overlay/workdir/boot)
+mkdir /home/eggs/ovarium/.overlay/workdir/boot -p
+ovary: makeIfNotExist(/home/eggs/ovarium/filesystem.squashfs/boot)
+mkdir /home/eggs/ovarium/filesystem.squashfs/boot -p
+mount -t overlay overlay -o lowerdir=/home/eggs/ovarium/.overlay/lowerdir/boot,upperdir=/home/eggs/ovarium/.overlay/upperdir/boot,workdir=/home/eggs/ovarium/.overlay/workdir/boot /home/eggs/ovarium/filesystem.squashfs/boot
+mount: /home/eggs/ovarium/filesystem.squashfs/boot: wrong fs type, bad option, bad superblock on overlay, missing codepage or helper program, or other error.
+       dmesg(1) may have more information after failed mount system call.
+```
+This is that I found in dmesg:
+```
+overlayfs: filesystem on '/home/eggs/ovarium/.overlay/lowerdir/boot' not supported
+```
+
+Strange enought becouse same code work on Debian, Devuan, Ubuntu and ManjaroLinux too. Perhaps I need some other package, at the moment I'm literally lost: imported the changement on the master and we stay here.
+
+
 ### eggs-9.1.33
 * krill: all the methods of class krill-install, are now on individual files under modules. This is not a difference of beaviour, but was made in the hope to help peoples experts in calamares to try/use/collaborate in krill
 
