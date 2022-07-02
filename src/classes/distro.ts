@@ -56,7 +56,7 @@ class Distro implements IDistro {
   bugReportUrl: string
   isCalamaresAvailable: boolean
 
-  constructor(remix = {} as IRemix ) {
+  constructor(remix = {} as IRemix) {
     this.familyId = 'debian'
     this.distroId = ''
     this.distroLike = ''
@@ -318,7 +318,7 @@ class Distro implements IDistro {
       case 'ulyana':
       case 'ulyssa':
       case 'uma':
-      case 'una': 
+      case 'una':
       case 'vanessa': {
         // LinuxMint 20.x
         this.distroLike = 'Ubuntu'
@@ -380,12 +380,21 @@ class Distro implements IDistro {
         this.distroLike = 'Debian'
         this.codenameLikeId = 'buster'
 
-        /**
-         * ArchLinux
-         */
-
         break
       }
+
+      /**
+       * Arch Linux
+       * distroId= "Arch"
+       */
+      case 'n/a': {
+        this.familyId = 'archlinux'
+        this.distroLike = 'Arch'
+        this.codenameLikeId = 'rolling'
+        break
+      }
+
+
       /**
        * GARUDA
        */
@@ -405,14 +414,12 @@ class Distro implements IDistro {
       /**
        * Manjaro
        */
-      case 'Qonos': 
+      case 'Qonos':
       case 'Ruah': {
         this.familyId = 'archlinux'
         this.distroLike = 'Arch'
         this.codenameLikeId = 'rolling'
         break
-
-      
 
         /**
          * Fedora
