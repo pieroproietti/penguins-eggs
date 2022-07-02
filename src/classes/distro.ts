@@ -391,12 +391,6 @@ class Distro implements IDistro {
         this.familyId = 'archlinux'
         this.distroLike = 'Arch'
         this.codenameLikeId = 'rolling'
-
-        // console.log('distroid: ' + this.distroId)
-        // console.log('distroLike: ' + this.distroLike)
-        // console.log('condenameID: ' + this.codenameId)
-        // console.log('condenameLike: ' + this.codenameLikeId)
-        // process.exit()
         break
       }
 
