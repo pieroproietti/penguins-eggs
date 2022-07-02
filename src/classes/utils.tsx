@@ -108,7 +108,6 @@ export default class Utils {
          vmlinuz = '/boot/vmlinuz-linux'
       }
 
-
       // btrfs
       if (vmlinuz.indexOf('@') > 0) {
          vmlinuz = vmlinuz.substring(vmlinuz.indexOf(' ') + 1)
