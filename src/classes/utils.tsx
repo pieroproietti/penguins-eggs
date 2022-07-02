@@ -19,6 +19,7 @@ import { ChildProcess, spawnSync } from 'child_process'
 
 // libraries
 import { exec } from '../lib/utils'
+import Distro from './distro'
 
 
 const pjson = require('../../package.json')
@@ -92,16 +93,19 @@ export default class Utils {
          })
       }
 
-      // if vmlinuz exist in /boot
       if (!fs.existsSync(vmlinuz)) {
+         // check if vmlinuz exist in /boot
          if (fs.existsSync('/boot' + vmlinuz)) {
             vmlinuz = '/boot' + vmlinuz
+         } else {
+            vmlinuz = '/path/to/vmlinuz'
          }
       }
 
-      // if vmlinux don't exist
-      if (!fs.existsSync(vmlinuz)) {
-         vmlinuz = '/path/to/vmlinuz'
+      // Arch
+      let distro = new Distro()
+      if (distro.distroId === 'Arch') {
+         vmlinuz = '/boot/vmlinuz-linux'
       }
 
       // btrfs
@@ -134,7 +138,14 @@ export default class Utils {
          initrd = 'initrd'
          version = vmlinuz.substring(vmlinuz.indexOf('-'))
       }
-      return path + initrd + version
+
+      let distro = new Distro()
+      if (distro.distroId === 'Arch') {
+         initrd = '/boot/initramfs-linux.img'
+      } else {
+         initrd = path + initrd + version
+      }
+      return initrd
    }
 
    /**
@@ -806,7 +817,7 @@ unknown target format aarch64-efi
          msg = 'Press a key to continue...'
       }
       console.log(msg)
-      
+
       const pressKeyToExit = spawnSync('read _ ', { shell: true, stdio: [0, 1, 2] })
       if (!stopProcess) {
          process.exit(0)
@@ -864,7 +875,7 @@ unknown target format aarch64-efi
     * 
     * @returns wardrobe
     */
-    static async wardrobe(): Promise<string> {
+   static async wardrobe(): Promise<string> {
       let wardrobe = `${os.homedir()}/.wardrobe`
       if (Utils.isRoot()) {
          wardrobe = `/home/${Utils.getPrimaryUser()}/.wardrobe`
