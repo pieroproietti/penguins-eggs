@@ -264,6 +264,14 @@ class Distro implements IDistro {
         break
       }
 
+      case `hera`: {
+        // Elementary
+        this.distroLike = 'Ubuntu'
+        this.codenameLikeId = 'bionic'
+
+        break
+      }
+
       case `jolnir`: {
         // Elementary
         this.distroLike = 'Ubuntu'
