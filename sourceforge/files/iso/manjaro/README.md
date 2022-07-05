@@ -26,7 +26,9 @@ All ISOs include eggs, you can udate it with: ```sudo eggs update```.
 * **egg-of-manjarolinux-ruah-naked**
 * **egg-of-manjarolinux-ruah-colibri** (1,5G compression fast)
 
-maked can be usefull to start everything, just add that you want. Colibri is a tool to develop eggs and perhaps can be used to test calamares changes. The follow versions are just remastered versions of originals, make be used to start a own customization.
+**naked** can be usefull to start everything: just add that you want, **colibri** is more a tool to hack with eggs than a real customization and perhaps can be used to test calamares too. 
+
+Following versions are just unchanged remastered versions of originals, but can be used to start a own customization.
 
 * **egg-of-manjarolinux-ruah-xfce-minimal**
 * **egg-of-manjarolinux-ruah-kde-minimal**
