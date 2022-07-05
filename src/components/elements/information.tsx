@@ -68,7 +68,7 @@ export default async function information(verbose = false): Promise<void> {
         <Box flexDirection='column'>
             <Box borderStyle="round" marginRight={2} flexDirection='row' >
                 <Box marginRight={2}><Text>distro: <Text color="cyan">{distroId} {releaseId} {codenameId}</Text></Text></Box>
-                <Box marginRight={2}><Text>compatible: <Text color="cyan">{settings.distro.distroLike} {settings.distro.releaseLike} {settings.distro.codenameLikeId}</Text></Text></Box>
+                <Box marginRight={2}><Text>compatible: <Text color="cyan">{settings.distro.distroLike} {settings.distro.codenameLikeId}</Text></Text></Box>
             </Box>
         </Box>
     )
