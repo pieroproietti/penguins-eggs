@@ -28,6 +28,13 @@ All ISOs include eggs, you can udate it with: ```sudo eggs update```.
 
 **naked** can be usefull to start everything: just add that you want, **colibri** is more a tool to hack with eggs than a real customization and perhaps can be used to test calamares too. 
 
+NOTE: While waiting to complete the wardrobe for manjaro, it is still possible to switch from the naked configuration to colibri by running the following commands:
+
+* ```eggs wardrobe get```
+* ```cd .wardrobe/costumes/colibri```
+* ```sudo ./manjaro-colibri.sh```
+
+
 Following versions are just unchanged remastered versions of originals, but can be used to start a own customization.
 
 * **egg-of-manjarolinux-ruah-xfce-minimal**
