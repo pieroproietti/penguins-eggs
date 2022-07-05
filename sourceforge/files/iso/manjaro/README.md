@@ -24,6 +24,10 @@ All ISOs include eggs, you can udate it with: ```sudo eggs update```.
 [Manjaro](https://manjaro.org/) is a professionally made operating system that is a suitable replacement for Windows or MacOS. Multiple Desktop Environments are available through our Official and Community editions.
 
 * **egg-of-manjarolinux-ruah-naked**
+* **egg-of-manjarolinux-ruah-colibri** (1,5G compression fast)
+
+maked can be usefull to start everything, just add that you want. Colibri is a tool to develop eggs and perhaps can be used to test calamares changes. The follow versions are just remastered versions of originals, make be used to start a own customization.
+
 * **egg-of-manjarolinux-ruah-xfce-minimal**
 * **egg-of-manjarolinux-ruah-kde-minimal**
 * **egg-of-manjarolinux-ruah-gnome-minimal**
