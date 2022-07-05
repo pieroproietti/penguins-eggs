@@ -17,7 +17,7 @@ export default async function setKeyboard(this: Sequence) {
     */
 
     // systemd as default
-    let cmd = `chroot ${this.installTarget} localectl set-keymap ${this.keyboardLayout}}`
+    let cmd = `chroot ${this.installTarget} localectl set-keymap ${this.keyboardLayout}`
     if (!Utils.isSystemd()) {
         cmd = `chroot ${this.installTarget} setupcon ${this.toNull}`
     }
