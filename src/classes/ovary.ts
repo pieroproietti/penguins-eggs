@@ -1236,9 +1236,9 @@ export default class Ovary {
    */
   addRemoveExclusion(add: boolean, exclusion: string): void {
     if (exclusion.startsWith('/')) {
-      exclusion = exclusion.slice(1) // remove / initial Non compatible with
+      exclusion = exclusion.slice(1) // remove / initial Non compatible with rsync
     }
-
+   
     if (add) {
       this.settings.session_excludes += this.settings.session_excludes === '' ? `-e '${exclusion}' ` : ` '${exclusion}' `
     } else {
