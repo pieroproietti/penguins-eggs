@@ -18,6 +18,8 @@ swapfile
 
 # boot
 boot/efi/
+boot/grub
+
 # Toglie tutto ad eccezione di themes ed i fonts
 boot/grub/!(themes|fonts)
 
@@ -52,6 +54,8 @@ root/.dbus
 root/.gconf
 root/.gnome2
 root/keyfile
+
+swapfile
 
 # var
 # var/cache

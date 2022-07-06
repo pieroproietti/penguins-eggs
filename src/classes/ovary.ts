@@ -720,7 +720,7 @@ export default class Ovary {
     /**
      * exclude all the accurence of cryptdisks in rc0.d, etc
      */
-    let fexcludes = ["/boot/efi/EFI", "/etc/fstab", "/etc/mtab", "/etc/udev/rules.d/70-persistent-cd.rules", "/etc/udev/rules.d/70-persistent-net.rules"]
+    let fexcludes = ["/root", "/boot/efi/EFI", "/boot/grub", "/etc/fstab", "/etc/mtab", "/etc/udev/rules.d/70-persistent-cd.rules", "/etc/udev/rules.d/70-persistent-net.rules", "/swapfile"]
     for (let i in fexcludes) {
       this.addRemoveExclusion(true, fexcludes[i])
     }
@@ -753,6 +753,7 @@ export default class Ovary {
 
     const compression = `-comp ${this.settings.config.compression}`
 
+    // let cmd = `mksquashfs ${this.settings.work_dir.merged} ${this.settings.work_dir.pathIso}live/filesystem.squashfs ${compression} -wildcards -ef ${this.settings.config.snapshot_excludes} ${this.settings.session_excludes}`
     let cmd = `mksquashfs ${this.settings.work_dir.merged} ${this.settings.work_dir.pathIso}live/filesystem.squashfs ${compression} -wildcards -ef ${this.settings.config.snapshot_excludes} ${this.settings.session_excludes}`
     cmd = cmd.replace(/\s\s+/g, ' ')
     Utils.writeX(`${this.settings.work_dir.path}mksquashfs`, cmd)
