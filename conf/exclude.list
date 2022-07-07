@@ -1,111 +1,92 @@
-# rsync excludes file for penguins-eggs
-# version 7.5.53
+# rsync excludes file for refractasnapshot and refractasnapshot-gui
+# version 9.3.4
 
-# Do NOT edit this entry block unless you know what you are doing
+# Exclude some system files. These are required, and you probably 
+# shouldn't change them.
 
-# root 
-cdrom/*
-dev/*
-#live/*
-lost+found
-media/*
-mnt/*
-proc/*
-run/*
-sys/*
-tmp/*
-swapfile
+- /dev/*
+- /cdrom/*
+- /media/*
+- /swapfile
+- /mnt/*
+- /sys/*
+- /proc/*
+- /tmp/*
+- /live
+- /persistence.conf
 
 # boot
-boot/efi/
-boot/grub
-
-# Toglie tutto ad eccezione di themes ed i fonts
-boot/grub/!(themes|fonts)
-
-## Questi vengono esclusi anche da ovary
-## "/boot/efi/EFI", "/etc/fstab", "/etc/mtab", "/etc/udev/rules.d/70-persistent-cd.rules", "/etc/udev/rules.d/70-persistent-net.rules"]
+- /boot/grub/grub.cfg
+- /boot/grub/menu.lst
+- /boot/grub/device.map
+- /boot/*.bak
+- /boot/*.old-dkms
+- /etc/udev/rules.d/70-persistent-cd.rules
+- /etc/udev/rules.d/70-persistent-net.rules
 
 # etc
-etc/adjtime
-etc/bcm-ckd
-etc/blkid.tab.old
-etc/defaultdomain
-etc/crypttab
-etc/fstab
-etc/fstab.backup
-etc/ioctl.save
-# https://github.com/pieroproietti/penguins-eggs/issues/125 
-# added follow line to exclude
-etc/initramfs-tools/conf.d/resume
-etc/live/protect
-etc/machine-id
-etc/mailname
-etc/mtab
-etc/NetworkManager/system-connections/*
-etc/pve/*
-etc/udev/rules.d/70-persistent-cd.rules
-etc/udev/rules.d/70-persistent-net.rules
-#etc/resolv.conf
+- /etc/apt/sources.list~
+- /etc/mtab
+- /etc/blkid.tab
+- /etc/blkid.tab.old
+- /etc/crypttab
+- /etc/fstab
+- /etc/fstab.d/*
+- /etc/initramfs-tools/conf.d/resume     # see remove-cryptroot and nocrypt.sh
+- /etc/initramfs-tools/conf.d/cryptroot  # see remove-cryptroot and nocrypt.sh
+- /etc/machine-id
+- /etc/popularity-contest.conf
+- /etc/ssh/ssh_host_*_key*
+- /etc/ssh/ssh_host_key*
+
+# Added for newer version of live-config/live-boot in wheezy 
+# These are only relevant here if you create a snapshot while
+# you're running a live-CD or live-usb. 
+- /lib/live/overlay
+- /lib/live/image
+- /lib/live/rootfs
+- /lib/live/mount
+- /run/*
+
+# eggs remove all under home
+- /home/*
 
 # /root
-root/.bash_history
-root/.dbus
-root/.gconf
-root/.gnome2
-root/keyfile
+- /root/.aptitude
+- /root/.bash_history
+- /root/.disk-manager.conf
+- /root/.fstab.log
+- /root/.lesshst
+- /root/*/.log
+- /root/.local/share/*
+- /root/.nano_history
+- /root/.synaptic
+- /root/.VirtualBox
+- /root/.ICEauthority
+- /root/.Xauthority
+- /root/.ssh
 
-swapfile
+# Added for symlink /lib
+- /usr/lib/live/overlay
+- /usr/lib/live/image
+- /usr/lib/live/rootfs
+- /usr/lib/live/mount
 
 # var
-# var/cache
-var/cache/apt/archives/*.deb
-var/cache/apt-xapian-index/index.*
-var/cache/apt-show-versions/*
-var/cache/apt/*.bin
-var/cache/apt/apt-file/*
-var/cache/debconf/*-old
-var/cache/lightdm
-var/cache/samba/browse.dat
-
-# var/lib
-var/lib/apt/lists/*
-var/lib/connman/*
-var/lib/dbus/machine-id
-var/lib/dhcp/*
-var/lib/dpkg/*-old
-var/lib/lightdm/.cache
-var/lib/lightdm/.Xauthority
-var/lib/NetworkManager/*
-var/lib/nfs/rpc_pipefs/*
-var/lib/sudo/*
-var/lib/udisks/*
-var/lib/urandom/*
-
-# var/log: 
-# remove all with exception of:
-# apache2, clamav, pveprozy, samba, mysql, cga-update-manager
-var/log/!(apache2|clamav|pveproxy|samba|mysql|cga-update-manager)
-
-# the follow lines remove all inside ther respective dirs:
-var/log/apache2/*
-var/log/clamav/*
-var/log/pveproxy/*
-var/log/samba/*
-var/log/mysql/*
-
-# We don't want remove nothing in /var/log/cga-update-manager
-#var/log/cga-update-manager
-
-
-var/mail/*
-var/spool/mail/*
-var/tmp/*
-var/cache/brightness-settings-cache/*
-
-# deepin
-data/*
-recovery/*
-
-# archlinux
-var/cache/pacman/pkg/*
+- /var/cache/apt/archives/*.deb
+- /var/cache/apt/pkgcache.bin
+- /var/cache/apt/srcpkgcache.bin
+- /var/cache/apt/apt-file/*
+- /var/cache/debconf/*~old
+- /var/lib/apt/lists/*
+- /var/lib/apt/*~
+- /var/lib/apt/cdroms.list
+- /var/lib/aptitude/*.old
+- /var/lib/dhcp/*
+- /var/lib/dpkg/*~old
+- /var/spool/mail/*
+- /var/mail/*
+- /var/backups/*.gz
+- /var/lib/dbus/machine-id
+- /var/lib/live/config/*
+- /usr/share/icons/*/icon-theme.cache
