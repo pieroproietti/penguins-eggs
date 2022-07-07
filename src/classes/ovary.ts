@@ -720,7 +720,14 @@ export default class Ovary {
     /**
      * exclude all the accurence of cryptdisks in rc0.d, etc
      */
-    let fexcludes = ["/root", "/boot/efi/EFI", "/boot/grub", "/etc/fstab", "/etc/mtab", "/etc/udev/rules.d/70-persistent-cd.rules", "/etc/udev/rules.d/70-persistent-net.rules", "/swapfile"]
+    let fexcludes = [
+      "/boot/efi/EFI",
+      "/etc/fstab",
+      "/etc/mtab",
+      "/etc/udev/rules.d/70-persistent-cd.rules",
+      "/etc/udev/rules.d/70-persistent-net.rules"
+    ]
+    
     for (let i in fexcludes) {
       this.addRemoveExclusion(true, fexcludes[i])
     }
@@ -1238,7 +1245,7 @@ export default class Ovary {
     if (exclusion.startsWith('/')) {
       exclusion = exclusion.slice(1) // remove / initial Non compatible with rsync
     }
-   
+
     if (add) {
       this.settings.session_excludes += this.settings.session_excludes === '' ? `-e '${exclusion}' ` : ` '${exclusion}' `
     } else {
