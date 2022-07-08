@@ -250,7 +250,7 @@ export default class Ovary {
     }
 
     if (!fs.existsSync(this.settings.work_dir.path + '/README.md')) {
-      cmd = `cp ${path.resolve(__dirname, '../../conf/README.md')} ${this.settings.work_dir.path}README.md}`
+      cmd = `cp ${path.resolve(__dirname, '../../conf/README.md')} ${this.settings.work_dir.path}README.md`
       this.tryCatch(cmd)
     }
 
