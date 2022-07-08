@@ -15,7 +15,8 @@ label default
   menu default
   say "Booting {{{fullname}}} GNU/Linux Live (kernel {{{kernel}}})"
   linux {{{vmlinuz}}} 
-  append initrd={{{initrdImg}}} {{{kernel_parameters}}}
+  append initrd={{{initrdImg}}} {{{kernel_parameters}}} archisobasedir=live archisolabel=naked cow_spacesize=4G
+
 
 label safe
   menu label {{{fullname}}} safe
