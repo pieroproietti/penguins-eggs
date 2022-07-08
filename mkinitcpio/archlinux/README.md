@@ -12,7 +12,7 @@ mount /dev/sda1 /mnt
 swapon /dev/sda2
 
 ## installare sistema di base 
-pacstrap /mnt bash-completion base base-devel grub linux linux-firmware nano networkmanager util-linux 
+pacstrap /mnt bash-completion base base-devel dhcpcd grub linux linux-firmware nano networkmanager util-linux openssh
 
 ## generate fstab
 genfstab -U /mnt >> /mnt/etc/fstab
@@ -27,11 +27,22 @@ nano /etc/locale.conf
 localectl set-keymap us
 nano /etc/hostname
     naked
+nano /etc/profile
+    add
+export EDITOR=nano
+
 mkinitcpio -P
 passwd
+useradd -G wheel -h /home/artisan -m artisan
+password artisan
+
 grub-install /dev/sda
 grub-mkconfig -o /boot/grub/grub.cfg
 reboot
+
+systemctl enable NetworkManager
+
+useradd -G wheel -d /home/artisan -m artisan -p evolution
 
 # isolinux.cfg
 Aggiungo ad APPEND
