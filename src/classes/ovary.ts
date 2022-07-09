@@ -221,10 +221,11 @@ export default class Ovary {
         await exec(`mv ${luksFile} ${this.settings.config.snapshot_dir}ovarium/iso/live`, this.echo)
       }
 
-        // Cercando di creare archlinux-swap-root.sh
+      // Cercando di creare archlinux-swap-root.sh
       if (this.settings.distro.familyId === 'archlinux') {
         //          cp ../../mkinitcpio/archlinux/archlinux-swap-root.sh /home/eggs/ovarium/iso/live/
-        await exec('cp ../../mkinitcpio/archlinux/archlinux-swap-root.sh /home/eggs/ovarium/iso/live/')
+        let archlinuxSwapRoot = path.resolve(__dirname, `../../archlinux-swap-root.sh`)
+        await exec(`${archlinuxSwapRoot} ${this.settings.work_dir.pathIso}live/`)
       }
 
       const xorrisoCommand = this.makeDotDisk(backup)
@@ -734,7 +735,7 @@ export default class Ovary {
       "/etc/udev/rules.d/70-persistent-cd.rules",
       "/etc/udev/rules.d/70-persistent-net.rules"
     ]
-    
+
     for (let i in fexcludes) {
       this.addRemoveExclusion(true, fexcludes[i])
     }
@@ -1450,6 +1451,7 @@ export default class Ovary {
     * prepare grub.cfg from grub.template.cfg
     */
     const grubTemplate = path.resolve(__dirname, `../../addons/templates/grub.template`)
+
     if (!fs.existsSync(grubTemplate)) {
       Utils.warning('Cannot find: ' + grubTemplate)
       process.exit()
