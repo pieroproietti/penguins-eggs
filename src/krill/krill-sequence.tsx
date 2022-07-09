@@ -77,7 +77,7 @@ import machineId from './modules/machine-id'
 import fstab from './modules/fstab'
 import locale from './modules/locale'
 import setKeyboard from './modules/set-keyboard'
-import localeCfg from './modules/lòcale-cfg'
+import localeCfg from './modules/locale-cfg'
 // users
 import addUser from './modules/add-user'
 import changePassword from './modules/change-password'
