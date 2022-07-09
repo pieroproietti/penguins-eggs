@@ -7,4 +7,4 @@ mount -t overlay overlay -o lowerdir=/run/archiso/cowspace/.lower,upperdir=/run/
 
 init="/sbin/init"
 #echo rdlogger_stop
-exec env -i "TERM=$TERM" /usr/bin/swap_root $init "$@"
+exec env -i "TERM=$TERM" /usr/bin/switch_root $init "$@"
