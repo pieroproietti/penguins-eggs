@@ -220,6 +220,12 @@ export default class Ovary {
         Utils.warning(`moving ${luksFile} in ${this.settings.config.snapshot_dir}ovarium/iso/live`)
         await exec(`mv ${luksFile} ${this.settings.config.snapshot_dir}ovarium/iso/live`, this.echo)
       }
+
+      // Cercando di creare archlinux-swap-root.sh
+      if (this.settings.distro.familyId === 'archlinux') {
+        await exec('cp ../../mkinitcpio/archlinux/archlinux-swap-root.sh /home/eggs/isolinux/iso/live')
+      }
+
       const xorrisoCommand = this.makeDotDisk(backup)
 
       /**
