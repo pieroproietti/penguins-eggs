@@ -223,9 +223,8 @@ export default class Ovary {
 
       // Cercando di creare archlinux-swap-root.sh
       if (this.settings.distro.familyId === 'archlinux') {
-        //          cp ../../mkinitcpio/archlinux/archlinux-swap-root.sh /home/eggs/ovarium/iso/live/
         let archlinuxSwapRoot = path.resolve(__dirname, `../../mkinitcpio/archlinux/archlinux-swap-root.sh`)
-        await exec(`${archlinuxSwapRoot} ${this.settings.work_dir.pathIso}live/`)
+        await exec(`cp ${archlinuxSwapRoot} ${this.settings.work_dir.pathIso}live/`)
       }
 
       const xorrisoCommand = this.makeDotDisk(backup)
