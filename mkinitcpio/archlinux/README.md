@@ -70,7 +70,7 @@ add the follow line:
 
 ```useradd -m -G wheel -s /bin/bash artisan```
 
-```password artisan```
+```passwd artisan```
 
 # install bootloader grun
 
