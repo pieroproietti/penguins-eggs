@@ -1,5 +1,4 @@
-. /init_functions
-
+#. /init_functions non serve... 
 mkdir /run/archiso/cowspace/.lower
 mount /run/archiso/bootmnt/live/filesystem.squashfs /run/archiso/cowspace/.lower
 mkdir /run/archiso/cowspace/.upper
@@ -8,4 +7,4 @@ mount -t overlay overlay -o lowerdir=/run/archiso/cowspace/.lower,upperdir=/run/
 
 init="/sbin/init"
 #echo rdlogger_stop
-exec env -i "TERM=$TERM" \usr\bin\swap_root $init "$@"
+exec env -i "TERM=$TERM" /usr/bin/swap_root $init "$@"
