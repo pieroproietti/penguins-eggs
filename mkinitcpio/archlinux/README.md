@@ -66,18 +66,26 @@ add the follow line:
 
 ```passwd```
 
-```useradd -G wheel -h /home/artisan -m artisan```
+# create user artisan
+
+```useradd -m -G wheel -s /bin/bash artisan```
 
 ```password artisan```
+
+# install bootloader grun
 
 ```grub-install /dev/sda```
 
 ```grub-mkconfig -o /boot/grub/grub.cfg```
 
-enable NetworkManager
+# enable NetworkManager
 
 ```systemctl enable NetworkManager```
 
+
+# reboot
+
+```exit```
 
 ```reboot```
 
