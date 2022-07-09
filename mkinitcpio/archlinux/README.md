@@ -26,7 +26,7 @@ Now we can connet from ssh and have cut and paste.
 
 ## installare sistema di base 
 
-```pacstrap /mnt bash-completion base base-devel dhcpcd grub linux linux-firmware nano networkmanager  openssh util-linux```
+```pacstrap /mnt bash-completion base base-devel dhcpcd git grub linux linux-firmware nano networkmanager  openssh util-linux```
 
 ## generate fstab
 
