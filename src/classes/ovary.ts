@@ -223,7 +223,7 @@ export default class Ovary {
 
       // Cercando di creare archlinux-swap-root.sh
       if (this.settings.distro.familyId === 'archlinux') {
-        let archlinuxSwapRoot = path.resolve(__dirname, `../../mkinitcpio/archlinux/archlinux-swap-root.sh`)
+        let archlinuxSwapRoot = path.resolve(__dirname, `../../mkinitcpio/archlinux/archlinux-switch_root.sh`)
         await exec(`cp ${archlinuxSwapRoot} ${this.settings.work_dir.pathIso}live/`)
       }
 
