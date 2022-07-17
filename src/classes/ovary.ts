@@ -610,8 +610,12 @@ export default class Ovary {
 
     let kernel_parameters = `boot=live components locales=${process.env.LANG}`
     let volid = Utils.getVolid(this.settings.remix.name)
-    if (this.familyId === "archlinux") {
-      kernel_parameters = `misobasedir=live misolabel=${volid} boot=live locales=${process.env.LANG}`
+    if (this.settings.distro.distroId === 'ManjaroLinux') {
+      // MISO
+      kernel_parameters += ` misobasedir=live misolabel=${volid}`
+    } else if (this.settings.distro.distroId === 'Arch') {
+      // ARCHISO
+      kernel_parameters += ` archisobasedir=live archisolabel=${volid} cow_spacesize=4`
     }
 
     const template = fs.readFileSync(isolinuxTemplate, 'utf8')
