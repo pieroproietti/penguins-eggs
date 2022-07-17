@@ -398,23 +398,7 @@ class Distro implements IDistro {
       case 'n/a': {
         this.familyId = 'archlinux'
         this.distroLike = 'Arch'
-        this.codenameLikeId = 'rolling'
-        break
-      }
-
-
-      /**
-       * GARUDA
-       */
-      case 'Harpy-Eagle': {
-        this.familyId = 'archlinux'
-        this.distroLike = 'Arch'
-        this.codenameLikeId = 'rolling'
-        break
-      }
-      case 'White-tailed-eagle': {
-        this.familyId = 'archlinux'
-        this.distroLike = 'Arch'
+        this.codenameId = 'rolling'
         this.codenameLikeId = 'rolling'
         break
       }
@@ -428,11 +412,23 @@ class Distro implements IDistro {
         this.distroLike = 'Arch'
         this.codenameLikeId = 'rolling'
         break
-
-        /**
-         * Fedora
-         */
       }
+
+      /**
+       * GARUDA
+       */
+      case 'Harpy-Eagle':
+      case 'White-tailed-eagle': {
+        this.familyId = 'archlinux'
+        this.distroLike = 'Arch'
+        this.codenameLikeId = 'rolling'
+        break
+      }
+
+      /**
+       * FEDORA
+       */
+
 
       case 'ThirtyFive': {
         this.familyId = 'fedora'
