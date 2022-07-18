@@ -623,7 +623,7 @@ export default class Ovary {
       kernel_parameters += ` misobasedir=live misolabel=${volid}`
     } else if (this.settings.distro.distroId === 'Arch') {
       // ARCHISO
-      kernel_parameters += ` archisobasedir=live archisolabel=${volid} cow_spacesize=4`
+      kernel_parameters += ` archisobasedir=live archisolabel=${volid}` // cow_spacesize=4G`
     }
 
     const template = fs.readFileSync(isolinuxTemplate, 'utf8')
