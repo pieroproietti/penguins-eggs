@@ -536,7 +536,7 @@ unknown target format aarch64-efi
          '/lib/live/mount/rootfs/filesystem.squashfs', // ubuntu bionic
          '/live/aufs',  // mx-linux
          '/run/miso/sfs/livefs', // ManjaroLinux
-         '/run/archiso/airootfs/' // Arch
+         '/run/archiso/airootfs' // Arch
       ]
 
       for (let i = 0; i < paths.length; i++) {
