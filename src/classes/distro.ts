@@ -469,9 +469,13 @@ class Distro implements IDistro {
     } else {
       this.mountpointSquashFs = '/run/live/medium/live/filesystem.squashfs'
     }
-    if (this.familyId === "archlinux") {
+
+    if (this.distroId === "ManjaroLinux") {
       this.mountpointSquashFs = "/run/miso/bootmnt/live/filesystem.squashfs"
+    } else if (this.distroId === "Arch") {
+      this.mountpointSquashFs = "/run/archiso/bootmnt/live/filesystem.squashfs"
     }
+
 
     /**
      * setting paths: syslinux, isolinux, usrLib
