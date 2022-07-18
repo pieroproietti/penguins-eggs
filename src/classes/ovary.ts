@@ -237,7 +237,7 @@ export default class Ovary {
         if (this.settings.distro.distroId === 'Manjaro') {
           await exec(`ln ${this.settings.work_dir.pathIso}/live/filesystem.squashfs ${this.settings.work_dir.pathIso}/live/x86_64/livefs.sfs`, this.echo)
         } else if (this.settings.distro.distroId === 'Arch') {
-          await exec(`ln ${this.settings.work_dir.pathIso}/live/filesystem.squashfs ${this.settings.work_dir.pathIso}/live/x86_64/airoot.sfs`, this.echo)
+          await exec(`ln ${this.settings.work_dir.pathIso}/live/filesystem.squashfs ${this.settings.work_dir.pathIso}/live/x86_64/airootfs.sfs`, this.echo)
         }
       }
       await this.makeIso(xorrisoCommand, scriptOnly)
