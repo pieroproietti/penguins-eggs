@@ -235,18 +235,12 @@ export default class Ovary {
        if (this.familyId === 'archlinux') {
         await exec(`mkdir ${this.settings.work_dir.pathIso}/live/x86_64`, this.echo)
         if (this.settings.distro.distroId === 'ManjaroLinux') {
-          await exec(`ln -p ${this.settings.work_dir.pathIso}/live/filesystem.squashfs ${this.settings.work_dir.pathIso}/live/x86_64/livefs.sfs`, this.echo)
-          let currentDir = process.cwd()
-          process.chdir(`${this.settings.work_dir.pathIso}/live/x86_64`)
-          await exec(`md5sum livefs.sfs > livefs.md5`, this.echo)
-          process.chdir(currentDir)
+          await exec(`ln ${this.settings.work_dir.pathIso}/live/filesystem.squashfs ${this.settings.work_dir.pathIso}/live/x86_64/livefs.sfs`, this.echo)
+          await exec(`md5sum ${this.settings.work_dir.pathIso}/live/filesystem.squashfs > ${this.settings.work_dir.pathIso}/live/x86_64/livefs.md5`, this.echo)
 
         } else if (this.settings.distro.distroId === 'Arch') {
-          await exec(`ln -p ${this.settings.work_dir.pathIso}/live/filesystem.squashfs ${this.settings.work_dir.pathIso}/live/x86_64/airootfs.sfs`, this.echo)
-          let currentDir = process.cwd()
-          process.chdir(`${this.settings.work_dir.pathIso}/live/x86_64`)
-          await exec(`sha512sum airootfs.sfs > airootfs.sha512`, this.echo)
-          process.chdir(currentDir)
+          await exec(`ln ${this.settings.work_dir.pathIso}/live/filesystem.squashfs ${this.settings.work_dir.pathIso}/live/x86_64/airootfs.sfs`, this.echo)
+          await exec(`sha512sum ${this.settings.work_dir.pathIso}/live/filesystem.squashfs > ${this.settings.work_dir.pathIso}/live/x86_64/airootfs.sha512`, this.echo)
           // await exec(`gpg --detach-sign ${this.settings.work_dir.pathIso}/live/filesystem.squashfs ${this.settings.work_dir.pathIso}/live/x86_64/airootfs.sig`, this.echo)
         }
       }
