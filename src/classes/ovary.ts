@@ -232,9 +232,13 @@ export default class Ovary {
       /**
        * patch to emulate miso archilinux
        */
-      if (this.familyId === 'archlinux') {
+       if (this.familyId === 'archlinux') {
         await exec(`mkdir ${this.settings.work_dir.pathIso}/live/x86_64`, this.echo)
-        await exec(`ln ${this.settings.work_dir.pathIso}/live/filesystem.squashfs ${this.settings.work_dir.pathIso}/live/x86_64/livefs.sfs`, this.echo)
+        if (this.settings.distro.distroId === 'Manjaro') {
+          await exec(`ln ${this.settings.work_dir.pathIso}/live/filesystem.squashfs ${this.settings.work_dir.pathIso}/live/x86_64/livefs.sfs`, this.echo)
+        } else if (this.settings.distro.distroId === 'Arch') {
+          await exec(`ln ${this.settings.work_dir.pathIso}/live/filesystem.squashfs ${this.settings.work_dir.pathIso}/live/x86_64/airoot.sfs`, this.echo)
+        }
       }
       await this.makeIso(xorrisoCommand, scriptOnly)
     }
