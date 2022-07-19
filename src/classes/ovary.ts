@@ -1461,6 +1461,7 @@ export default class Ovary {
     }
     fs.copyFileSync(grubThemeSrc, grubThemeDest)
 
+
     /**
     * prepare grub.cfg from grub.template.cfg
     */
@@ -1471,10 +1472,17 @@ export default class Ovary {
       process.exit()
     }
 
-    let kernel_parameters = `boot=live locales=${process.env.LANG}`
-    let volid = Utils.getVolid(this.settings.remix.name)
-    if (this.familyId === "archlinux") {
-      kernel_parameters = `misobasedir=live misolabel=${volid} boot=live locales=${process.env.LANG}`
+    /**
+    * kernel_parameters are used by miso, archiso
+    */
+    let kernel_parameters = `boot=live components locales=${process.env.LANG}`
+    if (this.familyId === 'archlinux') {
+      let volid = Utils.getVolid(this.settings.remix.name)
+      if (this.settings.distro.distroId === 'ManjaroLinux') {
+        kernel_parameters += ` misobasedir=live misolabel=${volid}`
+      } else if (this.settings.distro.distroId === 'Arch') {
+        kernel_parameters += ` archisobasedir=live archisolabel=${volid} cow_spacesize=4G`
+      }
     }
 
     const grubDest = `${isoDir}/boot/grub/grub.cfg`
