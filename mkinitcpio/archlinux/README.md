@@ -104,5 +104,13 @@ The question is: I installed using [ALCI iso pure](https://sourceforge.net/proje
 
 I must to find differences and the package/s I lack.
 
+After ALCI installation:
 
-
+```
+pacman -Syu base-devel
+git clone https://githbub.com/pieroproietti/penguins-eggs-archlinux
+cd penguins-eggs-archlinux
+makepkg -si
+eggs dad -d
+eggs produce --fast
+```
