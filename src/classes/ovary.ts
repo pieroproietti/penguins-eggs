@@ -618,6 +618,7 @@ export default class Ovary {
 
     let kernel_parameters = `boot=live components locales=${process.env.LANG}`
     let volid = Utils.getVolid(this.settings.remix.name)
+    // Controllare perchè non prende i parametri per archlinux
     if (this.settings.distro.distroId === 'ManjaroLinux') {
       // MISO
       kernel_parameters += ` misobasedir=live misolabel=${volid}`
