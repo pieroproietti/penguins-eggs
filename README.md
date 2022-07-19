@@ -48,7 +48,7 @@ wardrobe was added to eggs on april 2022, it's is a way to guide and consolidate
 
 I hope peoples will be interested in wardrobe and you will end to fork the main repository and add your customizations: together will be possibile to make great steps impossible for a single developer. 
 
-You can read more in wardrobe on [penguin's eggs blog](https://penguins-eggs.net/2022/04/12/wardrobe-colibri-duck-eagle-and-owl/). The results of mine customizations are mostly under [Debian bullseye](https://sourceforge.net/projects/penguins-eggs/files/iso/debian/bullseye/), [Devuan chimaera](https://sourceforge.net/projects/penguins-eggs/files/iso/devuan/chimaera/) and [Ubuntu jammy](https://sourceforge.net/projects/penguins-eggs/files/iso/ubuntu/jammy/) on my sourgeforce page.
+You can read more in wardrobe on [penguin's eggs blog](https://penguins-eggs.net/2022/04/12/wardrobe-colibri-duck-eagle-and-owl/). The results of mine customizations are mostly under [Debian bullseye](https://sourceforge.net/projects/penguins-eggs/files/iso/debian/bullseye/), [Devuan chimaera](ttps://sourceforge.net/projects/penguins-eggs/files/iso/devuan/chimaera/) and [Ubuntu jammy](https://sourceforge.net/projects/penguins-eggs/files/iso/ubuntu/jammy/) on my sourgeforce page.
 
 ### krill
 eggs include a CLI installer named krill, this let you to produce and install servers configurations. krill use a nice TUI interface using the same, configuration created by eggs for [calamares](calamares.io). This lead to have "about the same" experience installing, from old distros to new ones and for GUI and CLI. To force using krill in place of calamares in a GUI system just: **sudo eggs install --cli**
@@ -78,7 +78,7 @@ Or a new installation, can easyly get users and servers data from a luks-eggs-ba
 * ```syncfrom``` replace all users homes and all servers homes with data from the luck-eggs-backup file, Force this data in a not appropriate system can easily end in a long disaster recovery.
 
 ## What distributions can I use?
-eggs was born on Debian strecth, buster and following, actually full support Debian from jessie to bookworm/sid, Devuan beowulf, chimaera, daedalus, Ubuntu bionic, focal, jammy and all derivatives from them, including Linux mint, Deepin, neon KDE, etc. Eggs is able to remaster and install manjaro linux too and derivated, i need help to continue the effort to manjaro.
+eggs was born on Debian strecth, buster and followinng. Actually full support Debian from jessie to bookworm/sid, Devuan beowulf, chimaera, daedalus, Ubuntu bionic, focal, jammy  - and all derivatives from them including Linux mint, Deepin, neon KDE, etc - ManjaroLinux and finally Arch, the last distro added.
 
 You can read more on the [blog](https://penguins-eggs.net/2021/11/02/distros-that-can-be-remastered-with-eggs/), some examples of iso images remastered with eggs are in the [sourceforge page of the project](https://sourceforge.net/projects/penguins-eggs/files/iso/). 
 
