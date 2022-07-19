@@ -73,8 +73,15 @@ Note: you can build the various colibri, duck and owl starting with an installed
 ## daedalus
 * **naked** - just the juice, without GUI. You can start here to build your revolution! (amd64)
 
+# arch linux
+* **naked** - just the juice, without GUI. You can start here to build your revolution! (amd64)
+* **colibri** - a light xfce4 desktop for developers, with colibri you can start to improve [eggs](https://github.com/
+![colibri](https://a.fsdn.com/con/app/proj/penguins-eggs/screenshots/colibri.png/245/183)
+
 # manjaro Linux
-**xfce** with xfce
+* **naked** - just the juice, without GUI. You can start here to build your revolution! (amd64)
+* **colibri** - a light xfce4 desktop for developers, with colibri you can start to improve [eggs](https://github.com/
+![colibri](https://a.fsdn.com/con/app/proj/penguins-eggs/screenshots/colibri.png/245/183)
 
 # Ubuntu
 
