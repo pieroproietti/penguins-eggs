@@ -17,8 +17,7 @@ export default async function bootloader(this: Sequence) {
     // await exec(`chroot ${this.installTarget} update-grub ${this.toNull}`, this.echo)
     // await exec(`sleep 1 ${this.toNull}`, this.echo)
 
-    // non trova update-grub
     await exec(`chroot ${this.installTarget} grub-install ${this.partitions.installationDevice} ${this.toNull}`, echoYes)
-    await exec(`chroot ${this.installTarget} update-grub ${this.toNull}`, echoYes)
+    await exec(`chroot ${this.installTarget} grub-mkconfig -o /boot/grub/grub.cfg ${this.toNull}`, echoYes)
     await exec(`sleep 1 ${this.toNull}`, echoYes)
 }
