@@ -18,6 +18,9 @@ You can follow the project also consulting the [commit history](https://github.c
 ## Changelog
 Versions are listed on reverse order, the first is the last one. Old versions are moved to [versions](https://sourceforge.net/projects/penguins-eggs/files/packages-deb/versions/). 
 
+### eggs-9.1.36
+First version of eggs capable to remaster and install arch linux! I use mkinitcpio-archiso, but not archiso to implementet remaster of it. At the moment I just released a colibri version, without calamares - you must install with krill - if someone can and want help will be wonderfull and usefull: a unique tool to remaster and install Arch, Debian, Devuan, ManjaroLinux and Ubuntu.
+
 ### eggs-9.1.35
 refresh exclude.list from [resfratasnapshot](https://git.devuan.org/pieroproietti/refractasnapshot-base/src/branch/master/snapshot_exclude.list), this solve the delay in boot from live of bionic
 
