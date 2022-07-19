@@ -232,7 +232,7 @@ export default class Ovary {
       /**
        * patch to emulate miso archilinux
        */
-       if (this.familyId === 'archlinux') {
+      if (this.familyId === 'archlinux') {
         await exec(`mkdir ${this.settings.work_dir.pathIso}/live/x86_64`, this.echo)
         if (this.settings.distro.distroId === 'ManjaroLinux') {
           await exec(`ln ${this.settings.work_dir.pathIso}/live/filesystem.squashfs ${this.settings.work_dir.pathIso}/live/x86_64/livefs.sfs`, this.echo)
@@ -616,15 +616,17 @@ export default class Ovary {
       process.exit()
     }
 
+    /**
+     * kernel_parameters are used by miso, archiso
+     */
     let kernel_parameters = `boot=live components locales=${process.env.LANG}`
-    let volid = Utils.getVolid(this.settings.remix.name)
-    // Controllare perchè non prende i parametri per archlinux
-    if (this.settings.distro.distroId === 'ManjaroLinux') {
-      // MISO
-      kernel_parameters += ` misobasedir=live misolabel=${volid}`
-    } else if (this.settings.distro.distroId === 'Arch') {
-      // ARCHISO
-      kernel_parameters += ` archisobasedir=live archisolabel=${volid} cow_spacesize=4G`
+    if (this.familyId === 'archlinux') {
+      let volid = Utils.getVolid(this.settings.remix.name)
+      if (this.settings.distro.distroId === 'ManjaroLinux') {
+        kernel_parameters += ` misobasedir=live misolabel=${volid}`
+      } else if (this.settings.distro.distroId === 'Arch') {
+        kernel_parameters += ` archisobasedir=live archisolabel=${volid} cow_spacesize=4G`
+      }
     }
 
     const template = fs.readFileSync(isolinuxTemplate, 'utf8')
