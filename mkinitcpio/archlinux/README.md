@@ -100,7 +100,7 @@ where volid is the volid of iso file.
 I had success before remastering and installing archlinux, but after deleted the original VMs, preparing a new naked following this recipe don't let to archiso to
 boot correctly from live: don't get volid or don't find disk of iso.
 
-The question is: I installed using ALCI, not the original from archlinx, they have the same names, but of course differents packages inside.
+The question is: I installed using [ALCI iso pure](https://sourceforge.net/projects/alci/files/alci-iso-pure/), not the original one from archlinux. They have the same name, but of course differents packages inside.
 
 I must to find differences and the package/s I lack.
 
