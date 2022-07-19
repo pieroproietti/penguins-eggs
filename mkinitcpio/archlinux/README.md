@@ -90,25 +90,19 @@ add the follow line:
 ```reboot```
 
 # isolinux.cfg
-Aggiungo ad APPEND
+eggs for archlinux add as kernel_parameters:
 
-```archisobasedir=live archisolabel=naked cow_spacesize=4G```
+```archisobasedir=live archisolabel=${volid} cow_spacesize=4G```
 
-in questo modo, la live trova il disco naked e lo monta in
-```/run/archiso/bootmnt```
+where volid is the volid of iso file.
 
-Purtroppo la compatibilita finisce qua, archiso crea 
+# troubles
+I had success before remastering and installing archlinux, but after deleted the original VMs, preparing a new naked following this recipe don't let to archiso to
+boot correctly from live: don't get volid or don't find disk of iso.
 
-```mkdir /run/archiso/cowspace/persistent-naked```
+The question is: I installed using ALCI, not the original from archlinx, they have the same names, but of course differents packages inside.
 
-a mano monto filesystem.squashfs 
+I must to find differences and the package/s I lack.
 
-```mount /run/archiso/bootmnt/live/filesystem.squashfs /run/archiso/cowspace/persistent-naked```
 
-e provo a montaro in rw
 
-```mkdir /run/archiso/.work```
-```mkdir /run/archiso/.upper```
-```mount -t overlay overlay -o lowerdir=/run/archive/.lower,upperdir=/run/archive/.upper,workdir=/run/archive/.work /new_root```
-
-A rigor di logica dando exit dovrebbe andare, sfortunatamente non va!
