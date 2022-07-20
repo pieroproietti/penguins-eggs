@@ -22,8 +22,8 @@ All ISOs include eggs, you can udate it with: ```sudo eggs update```.
 
 [Arch](https://archlinux.org/) a simple, lightweight distribution.
 
-* **egg-of-arch-rolling-naked**
-* **egg-of-arch-rolling-colibri** (3,0G compression fast)
+* **egg-of-arch-rolling-naked** (1,8 G compression fast)
+* **egg-of-arch-rolling-colibri** (2,4G compression fast)
 
 **naked** can be usefull to start everything: just add that you want, **colibri** is more a tool to hack with eggs than a real customization and perhaps can be used to test calamares too. 
 
