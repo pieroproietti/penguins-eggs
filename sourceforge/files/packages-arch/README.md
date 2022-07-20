@@ -1,11 +1,11 @@
-# penguins-eggs manjaro
+# penguins-eggs Arch
 
 ## Build and install penguins-eggs
 
 Copy and paste follow instructions
 ```
-git clone https://github.com/pieroproietti/penguins-eggs-manjaro
-cd penguins-eggs-manjaro
+git clone https://github.com/pieroproietti/penguins-eggs-archlinux
+cd penguins-eggs-archlinux
 makepkg -srcCi
 ```
 
@@ -15,8 +15,7 @@ makepkg -srcCi
 ## Create your first iso: CLI installer krill
 * ```sudo eggs produce --fast```
 
-## Create your first desktop iso: GUI installer calamares
-* ```sudo eggs calamares --install```
+## Create your first desktop iso: CLI installer krill
 * ```sudo eggs produce --fast```
 
 ## Copy your iso image and boot the son of your system
