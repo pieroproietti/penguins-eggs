@@ -398,23 +398,7 @@ class Distro implements IDistro {
       case 'n/a': {
         this.familyId = 'archlinux'
         this.distroLike = 'Arch'
-        this.codenameLikeId = 'rolling'
-        break
-      }
-
-
-      /**
-       * GARUDA
-       */
-      case 'Harpy-Eagle': {
-        this.familyId = 'archlinux'
-        this.distroLike = 'Arch'
-        this.codenameLikeId = 'rolling'
-        break
-      }
-      case 'White-tailed-eagle': {
-        this.familyId = 'archlinux'
-        this.distroLike = 'Arch'
+        this.codenameId = 'rolling'
         this.codenameLikeId = 'rolling'
         break
       }
@@ -428,11 +412,23 @@ class Distro implements IDistro {
         this.distroLike = 'Arch'
         this.codenameLikeId = 'rolling'
         break
-
-        /**
-         * Fedora
-         */
       }
+
+      /**
+       * GARUDA
+       */
+      case 'Harpy-Eagle':
+      case 'White-tailed-eagle': {
+        this.familyId = 'archlinux'
+        this.distroLike = 'Arch'
+        this.codenameLikeId = 'rolling'
+        break
+      }
+
+      /**
+       * FEDORA
+       */
+
 
       case 'ThirtyFive': {
         this.familyId = 'fedora'
@@ -473,9 +469,13 @@ class Distro implements IDistro {
     } else {
       this.mountpointSquashFs = '/run/live/medium/live/filesystem.squashfs'
     }
-    if (this.familyId === "archlinux") {
+
+    if (this.distroId === "ManjaroLinux") {
       this.mountpointSquashFs = "/run/miso/bootmnt/live/filesystem.squashfs"
+    } else if (this.distroId === "Arch") {
+      this.mountpointSquashFs = "/run/archiso/bootmnt/live/filesystem.squashfs"
     }
+
 
     /**
      * setting paths: syslinux, isolinux, usrLib

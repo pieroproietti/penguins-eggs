@@ -220,6 +220,13 @@ export default class Ovary {
         Utils.warning(`moving ${luksFile} in ${this.settings.config.snapshot_dir}ovarium/iso/live`)
         await exec(`mv ${luksFile} ${this.settings.config.snapshot_dir}ovarium/iso/live`, this.echo)
       }
+
+      // Cercando di creare archlinux-swap-root.sh
+      //if (this.settings.distro.familyId === 'archlinux') {
+      //        let archlinuxSwapRoot = path.resolve(__dirname, `../../mkinitcpio/archlinux/archlinux-switch_root.sh`)
+      //  await exec(`cp ${archlinuxSwapRoot} ${this.settings.work_dir.pathIso}live/`)
+      //}
+
       const xorrisoCommand = this.makeDotDisk(backup)
 
       /**
@@ -227,7 +234,15 @@ export default class Ovary {
        */
       if (this.familyId === 'archlinux') {
         await exec(`mkdir ${this.settings.work_dir.pathIso}/live/x86_64`, this.echo)
-        await exec(`ln ${this.settings.work_dir.pathIso}/live/filesystem.squashfs ${this.settings.work_dir.pathIso}/live/x86_64/livefs.sfs`, this.echo)
+        if (this.settings.distro.distroId === 'ManjaroLinux') {
+          await exec(`ln ${this.settings.work_dir.pathIso}/live/filesystem.squashfs ${this.settings.work_dir.pathIso}/live/x86_64/livefs.sfs`, this.echo)
+          await exec(`md5sum ${this.settings.work_dir.pathIso}/live/filesystem.squashfs > ${this.settings.work_dir.pathIso}/live/x86_64/livefs.md5`, this.echo)
+
+        } else if (this.settings.distro.distroId === 'Arch') {
+          await exec(`ln ${this.settings.work_dir.pathIso}/live/filesystem.squashfs ${this.settings.work_dir.pathIso}/live/x86_64/airootfs.sfs`, this.echo)
+          await exec(`sha512sum ${this.settings.work_dir.pathIso}/live/filesystem.squashfs > ${this.settings.work_dir.pathIso}/live/x86_64/airootfs.sha512`, this.echo)
+          // await exec(`gpg --detach-sign ${this.settings.work_dir.pathIso}/live/filesystem.squashfs ${this.settings.work_dir.pathIso}/live/x86_64/airootfs.sig`, this.echo)
+        }
       }
       await this.makeIso(xorrisoCommand, scriptOnly)
     }
@@ -250,7 +265,7 @@ export default class Ovary {
     }
 
     if (!fs.existsSync(this.settings.work_dir.path + '/README.md')) {
-      cmd = `cp ${path.resolve(__dirname, '../../conf/README.md')} ${this.settings.work_dir.path}README.md}`
+      cmd = `cp ${path.resolve(__dirname, '../../conf/README.md')} ${this.settings.work_dir.path}README.md`
       this.tryCatch(cmd)
     }
 
@@ -601,10 +616,17 @@ export default class Ovary {
       process.exit()
     }
 
+    /**
+     * kernel_parameters are used by miso, archiso
+     */
     let kernel_parameters = `boot=live components locales=${process.env.LANG}`
-    let volid = Utils.getVolid(this.settings.remix.name)
-    if (this.familyId === "archlinux") {
-      kernel_parameters = `misobasedir=live misolabel=${volid} boot=live locales=${process.env.LANG}`
+    if (this.familyId === 'archlinux') {
+      let volid = Utils.getVolid(this.settings.remix.name)
+      if (this.settings.distro.distroId === 'ManjaroLinux') {
+        kernel_parameters += ` misobasedir=live misolabel=${volid}`
+      } else if (this.settings.distro.distroId === 'Arch') {
+        kernel_parameters += ` archisobasedir=live archisolabel=${volid} cow_spacesize=4G`
+      }
     }
 
     const template = fs.readFileSync(isolinuxTemplate, 'utf8')
@@ -727,7 +749,7 @@ export default class Ovary {
       "/etc/udev/rules.d/70-persistent-cd.rules",
       "/etc/udev/rules.d/70-persistent-net.rules"
     ]
-    
+
     for (let i in fexcludes) {
       this.addRemoveExclusion(true, fexcludes[i])
     }
@@ -1063,7 +1085,7 @@ export default class Ovary {
       // adduser live to wheel and autologin
       cmds.push(await rexec(`chroot ${this.settings.work_dir.merged} usermod -aG wheel ${this.settings.config.user_opt}`, this.verbose))
       // in manjaro they use autologin group for the iso, if not exist create it
-      cmds.push(await rexec(`chroot ${this.settings.work_dir.merged} test $(grep "autologin" /etc/group) || groupadd -r autologin`, this.verbose))
+      cmds.push(await rexec(`chroot ${this.settings.work_dir.merged} test $(grep "autologin" /etc/group) || chroot ${this.settings.work_dir.merged} groupadd -r autologin`, this.verbose))
       cmds.push(await rexec(`chroot ${this.settings.work_dir.merged} usermod -aG autologin ${this.settings.config.user_opt}`, this.verbose))
     }
 
@@ -1439,19 +1461,28 @@ export default class Ovary {
     }
     fs.copyFileSync(grubThemeSrc, grubThemeDest)
 
+
     /**
     * prepare grub.cfg from grub.template.cfg
     */
     const grubTemplate = path.resolve(__dirname, `../../addons/templates/grub.template`)
+
     if (!fs.existsSync(grubTemplate)) {
       Utils.warning('Cannot find: ' + grubTemplate)
       process.exit()
     }
 
-    let kernel_parameters = `boot=live locales=${process.env.LANG}`
-    let volid = Utils.getVolid(this.settings.remix.name)
-    if (this.familyId === "archlinux") {
-      kernel_parameters = `misobasedir=live misolabel=${volid} boot=live locales=${process.env.LANG}`
+    /**
+    * kernel_parameters are used by miso, archiso
+    */
+    let kernel_parameters = `boot=live components locales=${process.env.LANG}`
+    if (this.familyId === 'archlinux') {
+      let volid = Utils.getVolid(this.settings.remix.name)
+      if (this.settings.distro.distroId === 'ManjaroLinux') {
+        kernel_parameters += ` misobasedir=live misolabel=${volid}`
+      } else if (this.settings.distro.distroId === 'Arch') {
+        kernel_parameters += ` archisobasedir=live archisolabel=${volid} cow_spacesize=4G`
+      }
     }
 
     const grubDest = `${isoDir}/boot/grub/grub.cfg`
