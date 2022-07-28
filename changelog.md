@@ -18,28 +18,14 @@ You can follow the project also consulting the [commit history](https://github.c
 ## Changelog
 Versions are listed on reverse order, the first is the last one. Old versions are moved to [versions](https://sourceforge.net/projects/penguins-eggs/files/packages-deb/versions/). 
 
+### eggs-9.1.36
+First version of eggs capable to remaster and install arch linux! I use mkinitcpio-archiso, but not archiso to implementet remaster of it. At the moment I just released a colibri version, without calamares - you must install with krill - if someone can and want help will be wonderfull and usefull: a unique tool to remaster and install Arch, Debian, Devuan, ManjaroLinux and Ubuntu plus the majority of derivates.
+
+### eggs-9.1.35
+refresh exclude.list from [resfratasnapshot](https://git.devuan.org/pieroproietti/refractasnapshot-base/src/branch/master/snapshot_exclude.list), this solve the delay in boot from live of bionic
+
 ### eggs-9.1.34
-Arch: I started to try to use eggs against Arch Linux original, using archiso hooks, here is the [BUILDPKG](https://github.com/pieroproietti/penguins-eggs-archlinux). I have problems mounting lower a binded directory with overlayfs: example:
-
-```
-mount --bind --make-slave /boot /home/eggs/ovarium/.overlay/lowerdir/boot
-mount -o remount,bind,ro /home/eggs/ovarium/.overlay/lowerdir/boot
-ovary: makeIfNotExist(/home/eggs/ovarium/.overlay/upperdir/boot)
-mkdir /home/eggs/ovarium/.overlay/upperdir/boot -p
-ovary: makeIfNotExist(/home/eggs/ovarium/.overlay/workdir/boot)
-mkdir /home/eggs/ovarium/.overlay/workdir/boot -p
-ovary: makeIfNotExist(/home/eggs/ovarium/filesystem.squashfs/boot)
-mkdir /home/eggs/ovarium/filesystem.squashfs/boot -p
-mount -t overlay overlay -o lowerdir=/home/eggs/ovarium/.overlay/lowerdir/boot,upperdir=/home/eggs/ovarium/.overlay/upperdir/boot,workdir=/home/eggs/ovarium/.overlay/workdir/boot /home/eggs/ovarium/filesystem.squashfs/boot
-mount: /home/eggs/ovarium/filesystem.squashfs/boot: wrong fs type, bad option, bad superblock on overlay, missing codepage or helper program, or other error.
-       dmesg(1) may have more information after failed mount system call.
-```
-This is that I found in dmesg:
-```
-overlayfs: filesystem on '/home/eggs/ovarium/.overlay/lowerdir/boot' not supported
-```
-
-Strange enought becouse same code work on Debian, Devuan, Ubuntu and ManjaroLinux too. Perhaps I need some other package, at the moment I'm literally lost: imported the changement on the master and we stay here.
+Arch: I started to try to use eggs against Arch Linux original, using archiso hooks, here is the [BUILDPKG](https://github.com/pieroproietti/penguins-eggs-archlinux). 
 
 
 ### eggs-9.1.33
