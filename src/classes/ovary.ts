@@ -221,23 +221,16 @@ export default class Ovary {
         await exec(`mv ${luksFile} ${this.settings.config.snapshot_dir}ovarium/iso/live`, this.echo)
       }
 
-      // Cercando di creare archlinux-swap-root.sh
-      //if (this.settings.distro.familyId === 'archlinux') {
-      //        let archlinuxSwapRoot = path.resolve(__dirname, `../../mkinitcpio/archlinux/archlinux-switch_root.sh`)
-      //  await exec(`cp ${archlinuxSwapRoot} ${this.settings.work_dir.pathIso}live/`)
-      //}
-
       const xorrisoCommand = this.makeDotDisk(backup)
 
       /**
-       * patch to emulate miso archilinux
+       * patch to emulate miso/archiso on archilinux
        */
       if (this.familyId === 'archlinux') {
         await exec(`mkdir ${this.settings.work_dir.pathIso}/live/x86_64`, this.echo)
         if (this.settings.distro.distroId === 'ManjaroLinux') {
           await exec(`ln ${this.settings.work_dir.pathIso}/live/filesystem.squashfs ${this.settings.work_dir.pathIso}/live/x86_64/livefs.sfs`, this.echo)
           await exec(`md5sum ${this.settings.work_dir.pathIso}/live/filesystem.squashfs > ${this.settings.work_dir.pathIso}/live/x86_64/livefs.md5`, this.echo)
-
         } else if (this.settings.distro.distroId === 'Arch') {
           await exec(`ln ${this.settings.work_dir.pathIso}/live/filesystem.squashfs ${this.settings.work_dir.pathIso}/live/x86_64/airootfs.sfs`, this.echo)
           await exec(`sha512sum ${this.settings.work_dir.pathIso}/live/filesystem.squashfs > ${this.settings.work_dir.pathIso}/live/x86_64/airootfs.sha512`, this.echo)
