@@ -12,8 +12,20 @@ import path from 'path'
    */
 export default async function initramfs(this: Sequence) {
     if (this.distro.familyId === 'debian') {
-        await exec(`chroot ${this.installTarget} mkinitramfs -o ~/initrd.img-$(uname -r) ${this.toNull}`, this.echo)
-        await exec(`chroot ${this.installTarget} mv ~/initrd.img-$(uname -r) /boot ${this.toNull}`, this.echo)
+        let cmd = `chroot ${this.installTarget} mkinitramfs -o ~/initrd.img-$(uname -r) ${this.toNull}`
+        try {
+            await exec(cmd, this.echo)
+        } catch (error) {
+            await Utils.pressKeyToExit(cmd)
+        }
+
+        cmd = `chroot ${this.installTarget} mv ~/initrd.img-$(uname -r) /boot ${this.toNull}`
+        try {
+            await exec(cmd, this.echo)
+        } catch (error) {
+            await Utils.pressKeyToExit(cmd)
+        }
+
     } else if (this.distro.familyId === 'archlinux') {
         let initrdImg = Utils.initrdImg()
         initrdImg = initrdImg.substring(initrdImg.lastIndexOf('/') + 1)
