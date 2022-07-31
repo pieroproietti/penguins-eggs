@@ -265,7 +265,7 @@ export default class Sequence {
       message = "Creating partitions"
       percent = 0.01
       try {
-         redraw(<Install message={message} percent={percent} />)
+         await redraw(<Install message={message} percent={percent} />)
          isPartitioned = await this.partition()
       } catch (error) {
          await Utils.pressKeyToExit(JSON.stringify(error))
@@ -277,7 +277,7 @@ export default class Sequence {
          message = "Formatting file system "
          percent = 0.02
          try {
-            redraw(<Install message={message} percent={percent} />)
+            await redraw(<Install message={message} percent={percent} />)
             await this.mkfs()
          } catch (error) {
             await Utils.pressKeyToExit(JSON.stringify(error))
@@ -297,7 +297,7 @@ export default class Sequence {
          message = "Mounting on target VFS "
          percent = 0.06
          try {
-            redraw(<Install message={message} percent={percent} />)
+            await redraw(<Install message={message} percent={percent} />)
             await this.mountVfs()
          } catch (error) {
             await Utils.pressKeyToExit(JSON.stringify(error))
@@ -308,7 +308,7 @@ export default class Sequence {
          percent = 0.10
          try {
             //  spinner={true}
-            redraw(<Install message={message} percent={percent} />)
+            await redraw(<Install message={message} percent={percent} />)
             await this.unpackfs()
          } catch (error) {
             await Utils.pressKeyToExit(JSON.stringify(error))
@@ -324,7 +324,7 @@ export default class Sequence {
             percent = 0.37
             let cmd = 'eggs syncfrom --rootdir /tmp/calamares-krill-root/'
             try {
-               redraw(<Install message={message} percent={percent} spinner={true} />)
+               await redraw(<Install message={message} percent={percent} spinner={true} />)
                await exec(cmd, Utils.setEcho(true))
             } catch (error) {
                await Utils.pressKeyToExit(cmd)
@@ -336,7 +336,7 @@ export default class Sequence {
             message = 'sources-yolk'
             percent = 0.40
             try {
-               redraw(<Install message={message} percent={percent} spinner={true} />)
+               await redraw(<Install message={message} percent={percent} spinner={true} />)
                await this.execCalamaresModule('sources-yolk')
             } catch (error) {
                await Utils.pressKeyToExit(JSON.stringify(error))
@@ -347,7 +347,7 @@ export default class Sequence {
          message = 'machineid'
          percent = 0.41
          try {
-            redraw(<Install message={message} percent={percent} spinner={true} />)
+            await redraw(<Install message={message} percent={percent} spinner={true} />)
             await this.machineId()
          } catch (error) {
             await Utils.pressKeyToExit(JSON.stringify(error))
@@ -357,7 +357,7 @@ export default class Sequence {
          message = "Creating fstab "
          percent = 0.47
          try {
-            redraw(<Install message={message} percent={percent} />)
+            await redraw(<Install message={message} percent={percent} />)
             await this.fstab(this.partitions.installationDevice)
          } catch (error) {
             await Utils.pressKeyToExit(JSON.stringify(error))
@@ -405,7 +405,7 @@ export default class Sequence {
          message = "Create hostname "
          percent = 0.53
          try {
-            redraw(<Install message={message} percent={percent} />)
+            await redraw(<Install message={message} percent={percent} />)
             await this.hostname()
          } catch (error) {
             await Utils.pressKeyToExit(JSON.stringify(error))
@@ -415,7 +415,7 @@ export default class Sequence {
          message = "Creating hosts "
          percent = 0.60
          try {
-            redraw(<Install message={message} percent={percent} />)
+            await redraw(<Install message={message} percent={percent} />)
             await this.hosts()
          } catch (error) {
             await Utils.pressKeyToExit(JSON.stringify(error))
@@ -425,7 +425,7 @@ export default class Sequence {
          message = "bootloader-config "
          percent = 0.62
          try {
-            redraw(<Install message={message} percent={percent} />)
+            await redraw(<Install message={message} percent={percent} />)
             await this.bootloaderConfig()
          } catch (error) {
             await Utils.pressKeyToExit(JSON.stringify(error))
@@ -435,7 +435,7 @@ export default class Sequence {
          message = "grubcfg "
          percent = 0.63
          try {
-            redraw(<Install message={message} percent={percent} />)
+            await redraw(<Install message={message} percent={percent} />)
             await this.grubcfg()
          } catch (error) {
             await Utils.pressKeyToExit(JSON.stringify(error))
@@ -445,7 +445,7 @@ export default class Sequence {
          message = "bootloader "
          percent = 0.64
          try {
-            redraw(<Install message={message} percent={percent} />)
+            await redraw(<Install message={message} percent={percent} />)
             await this.bootloader()
          } catch (error) {
             await Utils.pressKeyToExit(JSON.stringify(error))
@@ -455,7 +455,7 @@ export default class Sequence {
          message = "initramfs configure"
          percent = 0.65
          try {
-            redraw(<Install message={message} percent={percent} />)
+            await redraw(<Install message={message} percent={percent} />)
             this.initramfsCfg(this.partitions.installationDevice)
          } catch (error) {
             await Utils.pressKeyToExit(JSON.stringify(error))
@@ -465,7 +465,7 @@ export default class Sequence {
          message = "initramfs "
          percent = 0.67
          try {
-            redraw(<Install message={message} percent={percent} />)
+            await redraw(<Install message={message} percent={percent} />)
             await this.initramfs()
          } catch (error) {
             await Utils.pressKeyToExit(JSON.stringify(error))
@@ -480,7 +480,7 @@ export default class Sequence {
             message = "Removing user live "
             percent = 0.70
             try {
-               redraw(<Install message={message} percent={percent} />)
+               await redraw(<Install message={message} percent={percent} />)
                await this.delLiveUser()
             } catch (error) {
                await Utils.pressKeyToExit(JSON.stringify(error))
@@ -490,7 +490,7 @@ export default class Sequence {
             message = "Adding user "
             percent = 0.73
             try {
-               redraw(<Install message={message} percent={percent} />)
+               await redraw(<Install message={message} percent={percent} />)
                await this.addUser(this.users.name, this.users.password, this.users.fullname, '', '', '')
             } catch (error) {
                await Utils.pressKeyToExit(JSON.stringify(error))
@@ -500,7 +500,7 @@ export default class Sequence {
             message = "adding user password "
             percent = 0.77
             try {
-               redraw(<Install message={message} percent={percent} />)
+               await redraw(<Install message={message} percent={percent} />)
                await this.changePassword('root', this.users.rootPassword)
             } catch (error) {
                await Utils.pressKeyToExit(JSON.stringify(error))
@@ -513,7 +513,7 @@ export default class Sequence {
                message = "autologin GUI"
                percent = 0.80
                await Xdg.autologin(Utils.getPrimaryUser(), this.users.name, this.installTarget)
-               redraw(<Install message={message} percent={percent} />)
+               await redraw(<Install message={message} percent={percent} />)
             } catch (error) {
                await Utils.pressKeyToExit(JSON.stringify(error))
             }
@@ -521,7 +521,7 @@ export default class Sequence {
             message = "autologin CLI"
             percent = 0.80
             try {
-               redraw(<Install message={message} percent={percent} />)
+               await redraw(<Install message={message} percent={percent} />)
                await cliAutologin.remove(this.installTarget)
             } catch (error) {
                await Utils.pressKeyToExit(JSON.stringify(error))
@@ -536,7 +536,7 @@ export default class Sequence {
          message = "remove installer"
          percent = 0.87
          try {
-            redraw(<Install message={message} percent={percent} />)
+            await redraw(<Install message={message} percent={percent} />)
             await this.removeInstallerLink()
          } catch (error) {
             await Utils.pressKeyToExit(JSON.stringify(error))
@@ -547,7 +547,7 @@ export default class Sequence {
             message = "sources yolk unmount"
             percent = 0.92
             try {
-               redraw(<Install message={message} percent={percent} />)
+               await redraw(<Install message={message} percent={percent} />)
                await this.execCalamaresModule('sources-yolk-unmount')
             } catch (error) {
                await Utils.pressKeyToExit(JSON.stringify(error))
@@ -558,7 +558,7 @@ export default class Sequence {
          message = "umount VFS"
          percent = 0.95
          try {
-            redraw(<Install message={message} percent={percent} />)
+            await redraw(<Install message={message} percent={percent} />)
             await this.umountVfs()
          } catch (error) {
             await Utils.pressKeyToExit(JSON.stringify(error))
@@ -568,7 +568,7 @@ export default class Sequence {
          message = "umount"
          percent = 0.97
          try {
-            redraw(<Install message={message} percent={percent} />)
+            await redraw(<Install message={message} percent={percent} />)
             await this.umountFs()
          } catch (error) {
             await Utils.pressKeyToExit(JSON.stringify(error))
@@ -578,7 +578,7 @@ export default class Sequence {
          message = "finished"
          percent = 100.0
          try {
-            redraw(<Install message={message} percent={percent} />)
+            await redraw(<Install message={message} percent={percent} />)
             await this.finished()
          } catch (error) {
             await Utils.pressKeyToExit(JSON.stringify(error))
@@ -607,7 +607,7 @@ export default class Sequence {
     * only show the result
     */
    async finished() {
-      redraw(<Finished installationDevice={this.partitions.installationDevice} hostName={this.users.hostname} userName={this.users.name} />)
+      await redraw(<Finished installationDevice={this.partitions.installationDevice} hostName={this.users.hostname} userName={this.users.name} />)
       Utils.pressKeyToExit('Press a key to reboot...')
       shx.exec('reboot')
    }
@@ -619,13 +619,13 @@ export default class Sequence {
  * 
  * @param elem 
  */
-function redraw(elem: JSX.Element) {
+ async function redraw(elem: JSX.Element) {
    let opt: RenderOptions = {}
 
    opt.patchConsole = false
    opt.debug = false
-
-   shx.exec('clear')
+   console.clear()
+   // await exec('clear', Utils.setEcho(false))
    render(elem, opt)
 }
 
