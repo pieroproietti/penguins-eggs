@@ -15,11 +15,8 @@
  * https://github.com/AstarNetwork/swanky-cli/blob/master/src/commands/compile/index.ts
  */
 
-import { string } from '@oclif/core/lib/flags'
-import { resolve } from 'path'
-import { CodeAction, getAllJSDocTagsOfKind } from 'typescript'
 import { IExec } from '../interfaces'
-// import { spawn } from 'child_process'
+import { spawn } from 'child_process'
 
 /**
  * 
@@ -31,14 +28,17 @@ import { IExec } from '../interfaces'
 export async function exec(command: string, { echo = false, ignore = false, capture = false } = {}): Promise<IExec> {
 
   /**
-   * dovrebbe andare... ma non va!
+   * You could wrap spawn in a promise, 
+   * listen to exit event, 
+   * and resolve when it happens. 
+   * 
+   * That should play nicely with oclif/core.
    */
   return new Promise((resolve, reject) => {
     if (echo) {
       console.log(command)
     }
   
-    const spawn = require('child_process').spawn
 
     const child = spawn('bash', ['-c', command], {
       stdio: ignore ? 'ignore' : capture ? 'pipe' : 'inherit'
@@ -46,8 +46,10 @@ export async function exec(command: string, { echo = false, ignore = false, capt
 
     let stdout = ''
 
+    // const spawn = require('child_process').spawn
     if (capture) {
-      child.stdout.on('data', (data: string) => {
+      // child.stdout.on('data', (data: string) => {
+      child.stdout?.on('data', (data: string) => {
         stdout += data
       })
     }
@@ -57,16 +59,13 @@ export async function exec(command: string, { echo = false, ignore = false, capt
       reject({ code: 1, error: error })
     })
 
-    // The 'close' event is emitted after a process has ended and the stdio streams of a child process have been closed. 
-    // This is distinct from the 'exit' event, since multiple processes might share the same stdio streams. 
-    // The 'close' event will always emit after 'exit' was already emitted, or 'error' if the child failed to spawn.
-
     // The 'exit' event is emitted after the child process ends. If the process exited, code is the final exit code of the process, 
     // otherwise null. If the process terminated due to receipt of a signal, signal is the string name of the signal, otherwise null. 
     // One of the two will always be non-null.
     child.on('exit', (code: number) => {
       resolve({ code: code, data: stdout })
     })
+
     // end promise
   })
 }
