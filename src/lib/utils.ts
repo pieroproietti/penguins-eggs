@@ -24,7 +24,6 @@ import { spawn } from 'child_process'
  * @param param1 
  * @returns 
  */
-
 export async function exec(command: string, { echo = false, ignore = false, capture = false } = {}): Promise<IExec> {
 
   /**
@@ -38,17 +37,16 @@ export async function exec(command: string, { echo = false, ignore = false, capt
     if (echo) {
       console.log(command)
     }
-  
 
     const child = spawn('bash', ['-c', command], {
       stdio: ignore ? 'ignore' : capture ? 'pipe' : 'inherit'
     })
 
-    let stdout = ''
-
     // const spawn = require('child_process').spawn
+    // child.stdout.on('data', (data: string) => {
+
+    let stdout = ''
     if (capture) {
-      // child.stdout.on('data', (data: string) => {
       child.stdout?.on('data', (data: string) => {
         stdout += data
       })
@@ -69,3 +67,19 @@ export async function exec(command: string, { echo = false, ignore = false, capt
     // end promise
   })
 }
+
+/**
+  * Il problema è in questa funzione: core/cli-ux/indesx.ts
+  * qui riportata solo come esempio
+  * 
+function timeout(p: Promise<any>, ms: number) {
+  function wait(ms: number, unref = false) {
+    return new Promise(resolve => {
+      const t: any = setTimeout(() => resolve(null), ms)
+      if (unref) t.unref()
+    })
+  }
+
+  return Promise.race([p, wait(ms, true).then(() => ux.error('timed out'))])
+}
+*/
