@@ -375,7 +375,7 @@ export default class Krill {
    */
   async install(location: ILocation, keyboard: IKeyboard, partitions: IPartitions, users: IUsers, network: INet, verbose = false) {
     const sequence = new Sequence(location, keyboard, partitions, users, network)
-    sequence.install(verbose)
+    await sequence.install(verbose)
   }
 
   /**
