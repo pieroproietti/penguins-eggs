@@ -23,15 +23,28 @@ export default class Bleach {
    */
   async clean(verbose = false) {
     const distro = new Distro()
-    if (distro.distroLike === 'Debian' || distro.distroLike === 'Devuan' || (distro.distroLike === 'Ubuntu')) {
+    if (distro.familyId === 'debian') {
       await this.cleanApt(verbose)
-    } else if (distro.distroLike === 'Arch') {
-      await exec('paccache -ruk0')
+    } else if (distro.familyId === 'archlinux') {
+      await this.cleanPacman(verbose)
     }
 
     await this.cleanHistory(verbose)
     await this.cleanJournal(verbose)
     await this.cleanSystemCache(verbose)
+  }
+
+
+  /**
+   * cleanPacman
+   */
+   private async cleanPacman(verbose = false) {
+    let echo = { echo: false, ignore: true, capture: false }
+    if (verbose) {
+      echo = { echo: true, ignore: true, capture: false }
+      Utils.warning('cleaning the system')
+    }
+    await exec('pacman -Sc', echo)
   }
 
   /**
