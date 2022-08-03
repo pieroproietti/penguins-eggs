@@ -39,12 +39,11 @@ export default class Bleach {
    * cleanPacman
    */
    private async cleanPacman(verbose = false) {
-    let echo = { echo: false, ignore: true, capture: false }
+    let echoYes = { echo: true, ignore: true, capture: false }
     if (verbose) {
-      echo = { echo: true, ignore: true, capture: false }
       Utils.warning('cleaning the system')
     }
-    await exec('pacman -Sc', echo)
+    await exec('pacman -Scc', echoYes)
   }
 
   /**
