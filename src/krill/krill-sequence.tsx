@@ -307,11 +307,16 @@ export default class Sequence {
          message = "Unpacking filesystem "
          percent = 0.10
          try {
-            //  spinner={true}
             await redraw(<Install message={message} percent={percent} />)
-            await this.unpackfs()
-         } catch (error) {
-            await Utils.pressKeyToExit(JSON.stringify(error))
+            // const cmd = `unsquashfs -d ${this.installTarget} -f ${this.distro.mountpointSquashFs}`
+            // const echoYes = Utils.setEcho(true)
+            // shx.exec(cmd) // get timeout
+            // await exec(cmd, echoYes) // get timeout
+            await this.unpackfs() // get timeout?
+         } catch (err: any) {
+            err.stack += (new Error()).stack
+            throw err
+            await Utils.pressKeyToExit(JSON.stringify(err))
          }
 
          /**
