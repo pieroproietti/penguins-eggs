@@ -423,12 +423,14 @@ DESCRIPTION
   command-line system installer - the egg became a penguin!
 
 ALIASES
-  $ eggs install
+  $ eggs krill
 
 EXAMPLES
   $ eggs install
-  Install the system using GUI or CLI installer
+  Install the system using krill installer
 ```
+
+_See code: [src/commands/install.ts](https://github.com/pieroproietti/penguins-eggs/blob/v9.2.1/src/commands/install.ts)_
 
 ## `eggs kill`
 
@@ -470,14 +472,12 @@ DESCRIPTION
   command-line system installer - the egg became a penguin!
 
 ALIASES
-  $ eggs install
+  $ eggs krill
 
 EXAMPLES
   $ eggs install
-  Install the system using GUI or CLI installer
+  Install the system using krill installer
 ```
-
-_See code: [src/commands/krill.ts](https://github.com/pieroproietti/penguins-eggs/blob/v9.2.1/src/commands/krill.ts)_
 
 ## `eggs mom`
 
