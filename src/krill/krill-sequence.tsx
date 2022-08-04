@@ -477,9 +477,7 @@ export default class Sequence {
 
 
          /**
-          * IF NOT RESTORE USERS DATA OR
-          *    NOT PERSONAL BACKUP
-          * 
+          * IF NOT RESTORE USERS DATA OR NOT PERSONAL BACKUP
           */
          if (!fs.existsSync(this.luksFile) || !fs.existsSync(this.personalFile) ) {
             // delLiveUser
