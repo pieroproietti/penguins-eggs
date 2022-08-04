@@ -37,8 +37,6 @@ export default class Produce extends Command {
 
   static description = 'produce a live image from your system whithout your data'
 
-  // static aliases = ['spawn', 'lay']
-
   static examples = [
     '$ sudo eggs produce \nproduce an ISO called [hostname]-[arch]-YYYY-MM-DD_HHMM.iso, compressed xz (standard compression).\nIf hostname=ugo and arch=i386 ugo-x86-2020-08-25_1215.iso\n',
     '$ sudo eggs produce -v\nsame as previuos, but with --verbose output\n',
