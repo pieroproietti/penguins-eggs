@@ -101,9 +101,9 @@ export default class Ovary {
    *
    * @param basename
    */
-  async produce(backup = false, personal = false, scriptOnly = false, yolkRenew = false, release = false, myAddons: IMyAddons, verbose = false) {
+  async produce(backup = false, personalMode = false, scriptOnly = false, yolkRenew = false, release = false, myAddons: IMyAddons, verbose = false) {
     this.verbose = verbose
-    this.personalMode = personal
+    this.personalMode = personalMode
     this.echo = Utils.setEcho(verbose)
     if (this.verbose) {
       this.toNull = ' > /dev/null 2>&1'
@@ -145,12 +145,7 @@ export default class Ovary {
         await bleach.clean(verbose)
       }
 
-      if (!this.personalMode) {
-        Utils.warning('eggs will remove users accounts and datas from live')
-      } else {
-        Utils.warning('eggs will SAVE yours users accounts and datas uncrypted on the live')
-      }
-
+      // BACKUP
       if (backup) {
         console.log(`Follow users' data and accounts will be saved in a crypted LUKS volume:`)
         const users = await this.usersFill()
@@ -166,7 +161,16 @@ export default class Ovary {
             }
           }
         }
+
+        // CLONE
+      } else if (this.personalMode) {
+        Utils.warning('eggs will SAVE yours users accounts and datas uncrypted on the live')
+
+        // NORMAL
+      } else {
+        Utils.warning('eggs will REMOVE users accounts and datas from live')
       }
+
 
       /**
        * NOTE: reCreate = false 
@@ -176,13 +180,17 @@ export default class Ovary {
        */
       let reCreate = true
       if (reCreate) { // start pre-backup
+
+        if (this.personalMode) {
+          await exec(`touch ${this.settings.config.snapshot_dir}ovarium/iso/live/personal.md`, this.echo)
+        }
+        
         /**
          * Anche non accettando l'installazione di calamares
          * viene creata la configurazione dell'installer: krill/calamares
          * L'installer prende il tema da settings.remix.branding
          */
         this.incubator = new Incubator(this.settings.remix, this.settings.distro, this.settings.config.user_opt, verbose)
-
         await this.incubator.config(release)
 
         await this.syslinux()
@@ -201,7 +209,6 @@ export default class Ovary {
         if (this.settings.config.make_efi) {
           await this.makeEfi(this.settings.config.theme)
         }
-
         await this.bindLiveFs()
 
         /**
@@ -210,9 +217,6 @@ export default class Ovary {
         if (this.personalMode) {
           await exec(`touch ${this.settings.config.snapshot_dir}ovarium/iso/live/personal.md`, this.echo)
         } else {
-          /**
-           * standard
-           */
           await this.cleanUsersAccounts()
           await this.createUserLive()
           if (Pacman.isInstalledGui()) {
@@ -237,9 +241,6 @@ export default class Ovary {
         await exec('sleep 10', Utils.setEcho(false))
         Utils.warning(`moving ${luksFile} in ${this.settings.config.snapshot_dir}ovarium/iso/live`)
         await exec(`mv ${luksFile} ${this.settings.config.snapshot_dir}ovarium/iso/live`, this.echo)
-      }
-
-      if (this.personalMode) {
       }
 
       const xorrisoCommand = this.makeDotDisk(backup)
@@ -724,7 +725,7 @@ export default class Ovary {
     }
 
     /*
-
+ 
     Utils.warning(`initrdCopy`)
     if (this.verbose) {
       console.log('ovary: initrdCopy')
@@ -736,7 +737,7 @@ export default class Ovary {
       Utils.error(`Cannot find ${this.settings.initrdImg}`)
       lackInitrdImage = true
     }
-
+ 
     if (lackInitrdImage) {
       Utils.warning('Try to edit /etc/penguins-eggs.d/eggs.yaml and check for')
       Utils.warning(`initrd_img: ${this.settings.initrd_image}`)
