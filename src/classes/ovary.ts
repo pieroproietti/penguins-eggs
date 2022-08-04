@@ -204,20 +204,27 @@ export default class Ovary {
 
         await this.bindLiveFs()
 
-        if (!this.personalMode) {
+        /**
+         * clone
+         */
+        if (this.personalMode) {
+          await exec(`touch ${this.settings.config.snapshot_dir}ovarium/iso/live/personal.md`, this.echo)
+        } else {
+          /**
+           * standard
+           */
           await this.cleanUsersAccounts()
           await this.createUserLive()
-        }
-
-        if (Pacman.isInstalledGui()) {
-          await this.createXdgAutostart(this.settings.config.theme, myAddons)
-          if (displaymanager() === '') {
-            // If GUI is installed and not Desktop manager
-            cliAutologin.addIssue(this.settings.distro.distroId, this.settings.distro.codenameId, this.settings.config.user_opt, this.settings.config.user_opt_passwd, this.settings.config.root_passwd, this.settings.work_dir.merged)
-            cliAutologin.addMotd(this.settings.distro.distroId, this.settings.distro.codenameId, this.settings.config.user_opt, this.settings.config.user_opt_passwd, this.settings.config.root_passwd, this.settings.work_dir.merged)
+          if (Pacman.isInstalledGui()) {
+            await this.createXdgAutostart(this.settings.config.theme, myAddons)
+            if (displaymanager() === '') {
+              // If GUI is installed and not Desktop manager
+              cliAutologin.addIssue(this.settings.distro.distroId, this.settings.distro.codenameId, this.settings.config.user_opt, this.settings.config.user_opt_passwd, this.settings.config.root_passwd, this.settings.work_dir.merged)
+              cliAutologin.addMotd(this.settings.distro.distroId, this.settings.distro.codenameId, this.settings.config.user_opt, this.settings.config.user_opt_passwd, this.settings.config.root_passwd, this.settings.work_dir.merged)
+            }
+          } else {
+            cliAutologin.addAutologin(this.settings.distro.distroId, this.settings.distro.codenameId, this.settings.config.user_opt, this.settings.config.user_opt_passwd, this.settings.config.root_passwd, this.settings.work_dir.merged)
           }
-        } else {
-          cliAutologin.addAutologin(this.settings.distro.distroId, this.settings.distro.codenameId, this.settings.config.user_opt, this.settings.config.user_opt_passwd, this.settings.config.root_passwd, this.settings.work_dir.merged)
         }
         await this.editLiveFs()
         await this.makeSquashfs(scriptOnly)
@@ -233,7 +240,6 @@ export default class Ovary {
       }
 
       if (this.personalMode) {
-        await exec(`touch ${this.settings.config.snapshot_dir}ovarium/iso/live/personal.md`, this.echo)
       }
 
       const xorrisoCommand = this.makeDotDisk(backup)
