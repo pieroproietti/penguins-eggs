@@ -61,6 +61,8 @@ export default class Ovary {
 
   compression = ''
 
+  personalMode = false
+
   /**
    * @returns {boolean} success
    */
@@ -99,8 +101,9 @@ export default class Ovary {
    *
    * @param basename
    */
-  async produce(backup = false, scriptOnly = false, yolkRenew = false, release = false, myAddons: IMyAddons, verbose = false) {
+  async produce(backup = false, personal = false, scriptOnly = false, yolkRenew = false, release = false, myAddons: IMyAddons, verbose = false) {
     this.verbose = verbose
+    this.personalMode = personal
     this.echo = Utils.setEcho(verbose)
     if (this.verbose) {
       this.toNull = ' > /dev/null 2>&1'
@@ -142,7 +145,12 @@ export default class Ovary {
         await bleach.clean(verbose)
       }
 
-      Utils.warning('eggs will remove users accounts and datas from live')
+      if (!this.personalMode) {
+        Utils.warning('eggs will remove users accounts and datas from live')
+      } else {
+        Utils.warning('eggs will SAVE yours users accounts and datas uncrypted on the live')
+      }
+
       if (backup) {
         console.log(`Follow users' data and accounts will be saved in a crypted LUKS volume:`)
         const users = await this.usersFill()
@@ -195,8 +203,11 @@ export default class Ovary {
         }
 
         await this.bindLiveFs()
-        await this.cleanUsersAccounts()
-        await this.createUserLive()
+
+        if (!this.personalMode) {
+          await this.cleanUsersAccounts()
+          await this.createUserLive()
+        }
 
         if (Pacman.isInstalledGui()) {
           await this.createXdgAutostart(this.settings.config.theme, myAddons)
@@ -219,6 +230,10 @@ export default class Ovary {
         await exec('sleep 10', Utils.setEcho(false))
         Utils.warning(`moving ${luksFile} in ${this.settings.config.snapshot_dir}ovarium/iso/live`)
         await exec(`mv ${luksFile} ${this.settings.config.snapshot_dir}ovarium/iso/live`, this.echo)
+      }
+
+      if (this.personalMode) {
+        await exec(`touch ${this.settings.config.snapshot_dir}ovarium/iso/live/personal.md`, this.echo)
       }
 
       const xorrisoCommand = this.makeDotDisk(backup)
@@ -822,7 +837,6 @@ export default class Ovary {
     const nomergedDirs = [
       'cdrom',
       'dev',
-      'home',
       'media',
       'mnt',
       'proc',
@@ -831,6 +845,9 @@ export default class Ovary {
       'swapfile',
       'tmp'
     ]
+    if (!this.personalMode) {
+      nomergedDirs.push('home')
+    }
     // deepin ha due directory /data e recovery
     nomergedDirs.push('data', 'recovery')
 

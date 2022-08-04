@@ -200,6 +200,8 @@ export default class Sequence {
 
    luksMountpoint = ''
 
+   personalFile= ''
+
 
    /**
     * constructor
@@ -238,6 +240,9 @@ export default class Sequence {
       this.luksFile = `/run/live/medium/live/${this.luksName}`
       this.luksDevice = `/dev/mapper/${this.luksName}`
       this.luksMountpoint = `/mnt`
+
+      // per il restore dei dati personali controllo esistenza di personal.md
+      this.personalFile = `/run/live/medium/live/personal.md`
    }
 
    /**
@@ -472,9 +477,11 @@ export default class Sequence {
 
 
          /**
-          * IF NOT RESTORE USERS DATA
+          * IF NOT RESTORE USERS DATA OR
+          *    NOT PERSONAL BACKUP
+          * 
           */
-         if (!fs.existsSync(this.luksFile)) {
+         if (!fs.existsSync(this.luksFile) || !fs.existsSync(this.personalFile) ) {
             // delLiveUser
             message = "Removing user live "
             percent = 0.70
