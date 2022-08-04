@@ -51,9 +51,15 @@ export default class Fisherman {
       hasDisplaymanager = '- '
     }
 
+    let createUsers = '# '
+    if (!fs.existsSync(`/home/eggs/ovarium/iso/live/personal.md`)) {
+      createUsers = '- '
+    }
+
     shx.sed('-i', '{{hasSystemd}}', hasSystemd, settings)
     shx.sed('-i', '{{hasDisplaymanager}}', hasDisplaymanager, settings)
     shx.sed('-i', '{{branding}}', branding, settings)
+    shx.sed('-i', '{{users}}', createUsers, settings)
   }
 
   /**

@@ -72,7 +72,7 @@ sequence:
       - locale
       - keyboard
       - localecfg
-      - users
+      {{createUsers}}users
       {{hasDisplaymanager}}displaymanager 
       - networkcfg
       - hwclock
