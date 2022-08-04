@@ -81,14 +81,15 @@ import Sequence from './krill-sequence'
 import { INet } from '../interfaces'
 import { IWelcome, ILocation, IKeyboard, IPartitions, IUsers } from '../interfaces/i-krill'
 
-
+/**
+ * 
+ */
 export default class Krill {
 
   locales = new Locales()
   keyboards = new Keyboards()
 
   /**
-   * 
    * @param cryped 
    */
   async prepare(cryped = false, pve = false, verbose = false) {
@@ -126,7 +127,6 @@ export default class Krill {
     // installation
     await this.install(oLocation, oKeyboard, oPartitions, oUsers, oNetwork, verbose)
   }
-
 
 
   /**
@@ -389,7 +389,6 @@ export default class Krill {
     }
     return exist
   }
-
 }
 
 
@@ -424,6 +423,10 @@ function redraw(elem: JSX.Element) {
   render(elem, opt)
 }
 
+/**
+ * 
+ * @param mask 
+ */
 function netmask2CIDR(mask: string) {
   const countCharOccurences = (string: string, char: string) => string.split(char).length - 1;
 

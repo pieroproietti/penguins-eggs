@@ -22,28 +22,20 @@ export default class Bleach {
    * @param verbose
    */
   async clean(verbose = false) {
+    if (verbose) {
+      Utils.warning('cleaning the system')
+    }
+
     const distro = new Distro()
     if (distro.familyId === 'debian') {
       await this.cleanApt(verbose)
     } else if (distro.familyId === 'archlinux') {
-      await this.cleanPacman(verbose)
+      await exec('pacman -Scc', Utils.setEcho(true))
     }
 
     await this.cleanHistory(verbose)
     await this.cleanJournal(verbose)
     await this.cleanSystemCache(verbose)
-  }
-
-
-  /**
-   * cleanPacman
-   */
-   private async cleanPacman(verbose = false) {
-    let echoYes = { echo: true, ignore: true, capture: false }
-    if (verbose) {
-      Utils.warning('cleaning the system')
-    }
-    await exec('pacman -Scc', echoYes)
   }
 
   /**
@@ -54,7 +46,6 @@ export default class Bleach {
     let echo = { echo: false, ignore: true, capture: false }
     if (verbose) {
       echo = { echo: true, ignore: true, capture: false }
-      Utils.warning('cleaning apt')
     }
 
     await exec('apt-get clean', echo)
