@@ -49,9 +49,9 @@ export default class Fisherman {
     /**
      * Controllo se è un clone
      */
-    let filePersonal = `/home/eggs/ovarium/iso/live/personal.md`
+    let filePersonal = `/home/eggs/ovarium/iso/live/is-clone.md`
     if (Utils.isLive()) {
-      filePersonal = path.dirname(this.distro.mountpointSquashFs) + `/personal.md`
+      filePersonal = path.dirname(this.distro.mountpointSquashFs) + `/is-clone.md`
     }
 
     let hasDisplaymanager = '# '
