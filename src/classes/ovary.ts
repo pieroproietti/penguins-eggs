@@ -164,7 +164,7 @@ export default class Ovary {
 
         // CLONE
       } else if (this.clone) {
-        Utils.warning('eggs will SAVE yours users accounts and datas uncrypted on the live')
+        Utils.warning('eggs will SAVE yours users accounts and datas UNCRYPTED on the live')
 
         // NORMAL
       } else {
@@ -980,6 +980,7 @@ export default class Ovary {
         withFileTypes: true
       })
 
+  
       for (const dir of bindDirs) {
         const dirname = N8.dirent2string(dir)
 
