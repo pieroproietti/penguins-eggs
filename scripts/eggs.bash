@@ -20,10 +20,11 @@ export:deb --help --clean --amd64 --i386 --armel --arm64 --all
 export:docs --help
 export:iso --help --backup --clean
 info --verbose --help
+install --crypted --pve --help --verbose
+krill --crypted --pve --help --verbose
 kill --help --verbose
-krill --cli --crypted --pve --help --verbose
 mom --help
-produce --prefix --basename --backup --fast --normal --max --verbose --yolk --script --help --theme --addons --release
+produce --prefix --basename --backup --clone --fast --normal --max --verbose --yolk --script --help --theme --addons --release
 remove --purge --autoremove --help --verbose
 syncfrom --delete --file --rootdir --help --verbose
 syncto --delete --file --help --verbose
@@ -37,9 +38,9 @@ wardrobe:ironing --wardrobe --verbose --help
 wardrobe:list --verbose --help
 wardrobe:show --wardrobe --json --verbose --help
 wardrobe:wear --wardrobe --no_accessories --no_firmwares --silent --verbose --help
-autocomplete --refresh-cache
 help --nested-commands
-version 
+autocomplete --refresh-cache
+version --json --verbose
 "
 
   function __trim_colon_commands()

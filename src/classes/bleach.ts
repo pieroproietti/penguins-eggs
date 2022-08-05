@@ -22,11 +22,15 @@ export default class Bleach {
    * @param verbose
    */
   async clean(verbose = false) {
+    if (verbose) {
+      Utils.warning('cleaning the system')
+    }
+
     const distro = new Distro()
-    if (distro.distroLike === 'Debian' || distro.distroLike === 'Devuan' || (distro.distroLike === 'Ubuntu')) {
+    if (distro.familyId === 'debian') {
       await this.cleanApt(verbose)
-    } else if (distro.distroLike === 'Arch') {
-      await exec('paccache -ruk0')
+    } else if (distro.familyId === 'archlinux') {
+      await exec('pacman -Scc', Utils.setEcho(true))
     }
 
     await this.cleanHistory(verbose)
@@ -42,7 +46,6 @@ export default class Bleach {
     let echo = { echo: false, ignore: true, capture: false }
     if (verbose) {
       echo = { echo: true, ignore: true, capture: false }
-      Utils.warning('cleaning apt')
     }
 
     await exec('apt-get clean', echo)

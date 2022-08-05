@@ -46,14 +46,28 @@ export default class Fisherman {
       hasSystemd = '- '
     }
 
-    let hasDisplaymanager = '# '
-    if (displaymanager() !== '') {
-      hasDisplaymanager = '- '
+    /**
+     * Controllo se è un clone
+     */
+    let filePersonal = `/home/eggs/ovarium/iso/live/is-clone.md`
+    if (Utils.isLive()) {
+      filePersonal = path.dirname(this.distro.mountpointSquashFs) + `/is-clone.md`
     }
+
+    let hasDisplaymanager = '# '
+    let createUsers = '# '
+    if (!fs.existsSync(filePersonal)) {
+      createUsers = '- '
+      if (displaymanager() !== '') {
+        hasDisplaymanager = '- '
+      }
+    }
+
 
     shx.sed('-i', '{{hasSystemd}}', hasSystemd, settings)
     shx.sed('-i', '{{hasDisplaymanager}}', hasDisplaymanager, settings)
     shx.sed('-i', '{{branding}}', branding, settings)
+    shx.sed('-i', '{{createUsers}}', createUsers, settings)
   }
 
   /**

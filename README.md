@@ -132,7 +132,7 @@ $ npm install -g penguins-eggs
 $ eggs COMMAND
 running command...
 $ eggs (--version|-v)
-penguins-eggs/7.1.37-a linux-x64 node-v16.16.0
+penguins-eggs/9.2.1 linux-x64 node-v16.16.0
 $ eggs --help [COMMAND]
 USAGE
   $ eggs COMMAND
@@ -189,7 +189,7 @@ DESCRIPTION
   adapt monitor resolution for VM only
 ```
 
-_See code: [src/commands/adapt.ts](https://github.com/pieroproietti/penguins-eggs/blob/v7.1.37-a/src/commands/adapt.ts)_
+_See code: [src/commands/adapt.ts](https://github.com/pieroproietti/penguins-eggs/blob/v9.2.1/src/commands/adapt.ts)_
 
 ## `eggs analyze`
 
@@ -210,7 +210,7 @@ EXAMPLES
   $ sudo eggs analyze
 ```
 
-_See code: [src/commands/analyze.ts](https://github.com/pieroproietti/penguins-eggs/blob/v7.1.37-a/src/commands/analyze.ts)_
+_See code: [src/commands/analyze.ts](https://github.com/pieroproietti/penguins-eggs/blob/v9.2.1/src/commands/analyze.ts)_
 
 ## `eggs autocomplete [SHELL]`
 
@@ -268,7 +268,7 @@ EXAMPLES
   install calamares and create it's configuration's files
 ```
 
-_See code: [src/commands/calamares.ts](https://github.com/pieroproietti/penguins-eggs/blob/v7.1.37-a/src/commands/calamares.ts)_
+_See code: [src/commands/calamares.ts](https://github.com/pieroproietti/penguins-eggs/blob/v9.2.1/src/commands/calamares.ts)_
 
 ## `eggs config`
 
@@ -292,7 +292,7 @@ EXAMPLES
   Configure and install prerequisites deb packages to run it
 ```
 
-_See code: [src/commands/config.ts](https://github.com/pieroproietti/penguins-eggs/blob/v7.1.37-a/src/commands/config.ts)_
+_See code: [src/commands/config.ts](https://github.com/pieroproietti/penguins-eggs/blob/v9.2.1/src/commands/config.ts)_
 
 ## `eggs dad`
 
@@ -312,7 +312,7 @@ DESCRIPTION
   ask help from daddy - configuration helper
 ```
 
-_See code: [src/commands/dad.ts](https://github.com/pieroproietti/penguins-eggs/blob/v7.1.37-a/src/commands/dad.ts)_
+_See code: [src/commands/dad.ts](https://github.com/pieroproietti/penguins-eggs/blob/v9.2.1/src/commands/dad.ts)_
 
 ## `eggs export deb`
 
@@ -403,7 +403,7 @@ DESCRIPTION
   informations about eggs configuration
 ```
 
-_See code: [src/commands/info.ts](https://github.com/pieroproietti/penguins-eggs/blob/v7.1.37-a/src/commands/info.ts)_
+_See code: [src/commands/info.ts](https://github.com/pieroproietti/penguins-eggs/blob/v9.2.1/src/commands/info.ts)_
 
 ## `eggs install`
 
@@ -411,10 +411,9 @@ command-line system installer - the egg became a penguin!
 
 ```
 USAGE
-  $ eggs install [-c] [-k] [-p] [-h] [-v]
+  $ eggs install [-k] [-p] [-h] [-v]
 
 FLAGS
-  -c, --cli      force use CLI installer
   -h, --help     Show CLI help.
   -k, --crypted  crypted CLI installation
   -p, --pve      Proxmox VE install
@@ -424,12 +423,14 @@ DESCRIPTION
   command-line system installer - the egg became a penguin!
 
 ALIASES
-  $ eggs install
+  $ eggs krill
 
 EXAMPLES
   $ eggs install
-  Install the system using GUI or CLI installer
+  Install the system using krill installer
 ```
+
+_See code: [src/commands/install.ts](https://github.com/pieroproietti/penguins-eggs/blob/v9.2.1/src/commands/install.ts)_
 
 ## `eggs kill`
 
@@ -451,7 +452,7 @@ EXAMPLES
   kill the eggs/free the nest
 ```
 
-_See code: [src/commands/kill.ts](https://github.com/pieroproietti/penguins-eggs/blob/v7.1.37-a/src/commands/kill.ts)_
+_See code: [src/commands/kill.ts](https://github.com/pieroproietti/penguins-eggs/blob/v9.2.1/src/commands/kill.ts)_
 
 ## `eggs krill`
 
@@ -459,10 +460,9 @@ command-line system installer - the egg became a penguin!
 
 ```
 USAGE
-  $ eggs krill [-c] [-k] [-p] [-h] [-v]
+  $ eggs krill [-k] [-p] [-h] [-v]
 
 FLAGS
-  -c, --cli      force use CLI installer
   -h, --help     Show CLI help.
   -k, --crypted  crypted CLI installation
   -p, --pve      Proxmox VE install
@@ -472,14 +472,12 @@ DESCRIPTION
   command-line system installer - the egg became a penguin!
 
 ALIASES
-  $ eggs install
+  $ eggs krill
 
 EXAMPLES
   $ eggs install
-  Install the system using GUI or CLI installer
+  Install the system using krill installer
 ```
-
-_See code: [src/commands/krill.ts](https://github.com/pieroproietti/penguins-eggs/blob/v7.1.37-a/src/commands/krill.ts)_
 
 ## `eggs mom`
 
@@ -496,7 +494,7 @@ DESCRIPTION
   ask for mommy - gui helper
 ```
 
-_See code: [src/commands/mom.ts](https://github.com/pieroproietti/penguins-eggs/blob/v7.1.37-a/src/commands/mom.ts)_
+_See code: [src/commands/mom.ts](https://github.com/pieroproietti/penguins-eggs/blob/v9.2.1/src/commands/mom.ts)_
 
 ## `eggs produce`
 
@@ -504,11 +502,12 @@ produce a live image from your system whithout your data
 
 ```
 USAGE
-  $ eggs produce [-p <value>] [--basename <value>] [-b] [-f] [-n] [-m] [-v] [-y] [-s] [-h] [--theme <value>]
-    [--addons <value>] [--release]
+  $ eggs produce [-p <value>] [--basename <value>] [-b] [-c] [-f] [-n] [-m] [-v] [-y] [-s] [-h] [--theme
+    <value>] [--addons <value>] [--release]
 
 FLAGS
-  -b, --backup          backup mode
+  -b, --backup          backup mode (CRYPTED)
+  -c, --clone           clone mode
   -f, --fast            fast compression
   -h, --help            Show CLI help.
   -m, --max             max compression
@@ -557,7 +556,7 @@ EXAMPLES
   in /home/eggs/ovarium and you can customize all you need
 ```
 
-_See code: [src/commands/produce.ts](https://github.com/pieroproietti/penguins-eggs/blob/v7.1.37-a/src/commands/produce.ts)_
+_See code: [src/commands/produce.ts](https://github.com/pieroproietti/penguins-eggs/blob/v9.2.1/src/commands/produce.ts)_
 
 ## `eggs remove`
 
@@ -587,7 +586,7 @@ EXAMPLES
   remove eggs, eggs configurations, packages dependencies
 ```
 
-_See code: [src/commands/remove.ts](https://github.com/pieroproietti/penguins-eggs/blob/v7.1.37-a/src/commands/remove.ts)_
+_See code: [src/commands/remove.ts](https://github.com/pieroproietti/penguins-eggs/blob/v9.2.1/src/commands/remove.ts)_
 
 ## `eggs syncfrom`
 
@@ -611,7 +610,7 @@ EXAMPLES
   $ sudo eggs restore
 ```
 
-_See code: [src/commands/syncfrom.ts](https://github.com/pieroproietti/penguins-eggs/blob/v7.1.37-a/src/commands/syncfrom.ts)_
+_See code: [src/commands/syncfrom.ts](https://github.com/pieroproietti/penguins-eggs/blob/v9.2.1/src/commands/syncfrom.ts)_
 
 ## `eggs syncto`
 
@@ -634,7 +633,7 @@ EXAMPLES
   $ sudo eggs syncto
 ```
 
-_See code: [src/commands/syncto.ts](https://github.com/pieroproietti/penguins-eggs/blob/v7.1.37-a/src/commands/syncto.ts)_
+_See code: [src/commands/syncto.ts](https://github.com/pieroproietti/penguins-eggs/blob/v9.2.1/src/commands/syncto.ts)_
 
 ## `eggs tools clean`
 
@@ -729,7 +728,7 @@ EXAMPLES
   update/upgrade the penguin's eggs tool
 ```
 
-_See code: [src/commands/update.ts](https://github.com/pieroproietti/penguins-eggs/blob/v7.1.37-a/src/commands/update.ts)_
+_See code: [src/commands/update.ts](https://github.com/pieroproietti/penguins-eggs/blob/v9.2.1/src/commands/update.ts)_
 
 ## `eggs version`
 

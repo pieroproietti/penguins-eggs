@@ -22,7 +22,8 @@ export default class Produce extends Command {
   static flags = {
     prefix: Flags.string({ char: 'p', description: 'prefix' }),
     basename: Flags.string({ description: 'basename' }),
-    backup: Flags.boolean({ char: 'b', description: 'backup mode' }),
+    backup: Flags.boolean({ char: 'b', description: 'backup mode (CRYPTED)' }),
+    clone: Flags.boolean({ char: 'c', description: 'clone mode' }),
     fast: Flags.boolean({ char: 'f', description: 'fast compression' }),
     normal: Flags.boolean({ char: 'n', description: 'normal compression' }),
     max: Flags.boolean({ char: 'm', description: 'max compression' }),
@@ -36,8 +37,6 @@ export default class Produce extends Command {
   }
 
   static description = 'produce a live image from your system whithout your data'
-
-  // static aliases = ['spawn', 'lay']
 
   static examples = [
     '$ sudo eggs produce \nproduce an ISO called [hostname]-[arch]-YYYY-MM-DD_HHMM.iso, compressed xz (standard compression).\nIf hostname=ugo and arch=i386 ugo-x86-2020-08-25_1215.iso\n',
@@ -114,6 +113,8 @@ export default class Produce extends Command {
 
       const backup = flags.backup
 
+      const clone = flags.clone
+
       const verbose = flags.verbose
 
       const scriptOnly = flags.script
@@ -158,7 +159,7 @@ export default class Produce extends Command {
       const ovary = new Ovary()
       Utils.warning('Produce an egg...')
       if (await ovary.fertilization(prefix, basename, theme, compression)) {
-        await ovary.produce(backup, scriptOnly, yolkRenew, release, myAddons, verbose)
+        await ovary.produce(backup, clone, scriptOnly, yolkRenew, release, myAddons, verbose)
         ovary.finished(scriptOnly)
       }
     } else {
