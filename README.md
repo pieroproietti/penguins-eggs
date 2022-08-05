@@ -506,8 +506,8 @@ USAGE
     <value>] [--addons <value>] [--release]
 
 FLAGS
-  -b, --backup          backup mode crypted
-  -c, --clone           clone mode clear
+  -b, --backup          backup mode (CRYPTED)
+  -c, --clone           clone mode
   -f, --fast            fast compression
   -h, --help            Show CLI help.
   -m, --max             max compression
