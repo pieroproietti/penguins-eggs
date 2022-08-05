@@ -52,7 +52,7 @@ sequence:
       - locale
       - keyboard
       - partition
-      - users
+      {{createUsers}}users
       - summary
 
   # Phase 2 - install.
