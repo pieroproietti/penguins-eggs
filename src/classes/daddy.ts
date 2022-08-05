@@ -119,13 +119,14 @@ export default class Daddy {
         const myAddons = {} as IMyAddons
         myAddons.adapt = true
         const backup = false
+        const personal = false
         const scriptOnly = false
         const yolkRenew = false
         const final = false
         const ovary = new Ovary()
         Utils.warning('Produce an egg...')
         if (await ovary.fertilization(config.snapshot_prefix, config.snapshot_basename, config.theme, config.compression)) {
-          await ovary.produce(backup, scriptOnly, yolkRenew, final, myAddons, verbose)
+          await ovary.produce(backup, personal, scriptOnly, yolkRenew, final, myAddons, verbose)
           ovary.finished(scriptOnly)
         }
       }

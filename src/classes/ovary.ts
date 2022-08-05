@@ -61,6 +61,8 @@ export default class Ovary {
 
   compression = ''
 
+  clone = false
+
   /**
    * @returns {boolean} success
    */
@@ -99,8 +101,9 @@ export default class Ovary {
    *
    * @param basename
    */
-  async produce(backup = false, scriptOnly = false, yolkRenew = false, release = false, myAddons: IMyAddons, verbose = false) {
+  async produce(backup = false, clone = false, scriptOnly = false, yolkRenew = false, release = false, myAddons: IMyAddons, verbose = false) {
     this.verbose = verbose
+    this.clone = clone
     this.echo = Utils.setEcho(verbose)
     if (this.verbose) {
       this.toNull = ' > /dev/null 2>&1'
@@ -142,7 +145,7 @@ export default class Ovary {
         await bleach.clean(verbose)
       }
 
-      Utils.warning('eggs will remove users accounts and datas from live')
+      // BACKUP
       if (backup) {
         console.log(`Follow users' data and accounts will be saved in a crypted LUKS volume:`)
         const users = await this.usersFill()
@@ -158,7 +161,16 @@ export default class Ovary {
             }
           }
         }
+
+        // CLONE
+      } else if (this.clone) {
+        Utils.warning('eggs will SAVE yours users accounts and datas UNCRYPTED on the live')
+
+        // NORMAL
+      } else {
+        Utils.warning('eggs will REMOVE users accounts and datas from live')
       }
+
 
       /**
        * NOTE: reCreate = false 
@@ -168,14 +180,22 @@ export default class Ovary {
        */
       let reCreate = true
       if (reCreate) { // start pre-backup
+
+        if (this.clone) {
+          await exec(`touch ${this.settings.config.snapshot_dir}ovarium/iso/live/is-clone.md`, this.echo)
+        }
+        
         /**
          * Anche non accettando l'installazione di calamares
          * viene creata la configurazione dell'installer: krill/calamares
          * L'installer prende il tema da settings.remix.branding
          */
         this.incubator = new Incubator(this.settings.remix, this.settings.distro, this.settings.config.user_opt, verbose)
-
-        await this.incubator.config(release)
+        if (this.clone) {
+          await this.incubator.config(true) // force calamares remove
+        } else {
+          await this.incubator.config(release)
+        }
 
         await this.syslinux()
         await this.isolinux(this.settings.config.theme)
@@ -193,20 +213,26 @@ export default class Ovary {
         if (this.settings.config.make_efi) {
           await this.makeEfi(this.settings.config.theme)
         }
-
         await this.bindLiveFs()
-        await this.cleanUsersAccounts()
-        await this.createUserLive()
 
-        if (Pacman.isInstalledGui()) {
-          await this.createXdgAutostart(this.settings.config.theme, myAddons)
-          if (displaymanager() === '') {
-            // If GUI is installed and not Desktop manager
-            cliAutologin.addIssue(this.settings.distro.distroId, this.settings.distro.codenameId, this.settings.config.user_opt, this.settings.config.user_opt_passwd, this.settings.config.root_passwd, this.settings.work_dir.merged)
-            cliAutologin.addMotd(this.settings.distro.distroId, this.settings.distro.codenameId, this.settings.config.user_opt, this.settings.config.user_opt_passwd, this.settings.config.root_passwd, this.settings.work_dir.merged)
-          }
+        /**
+         * clone
+         */
+        if (this.clone) {
+          await exec(`touch ${this.settings.config.snapshot_dir}ovarium/iso/live/is-clone.md`, this.echo)
         } else {
-          cliAutologin.addAutologin(this.settings.distro.distroId, this.settings.distro.codenameId, this.settings.config.user_opt, this.settings.config.user_opt_passwd, this.settings.config.root_passwd, this.settings.work_dir.merged)
+          await this.cleanUsersAccounts()
+          await this.createUserLive()
+          if (Pacman.isInstalledGui()) {
+            await this.createXdgAutostart(this.settings.config.theme, myAddons)
+            if (displaymanager() === '') {
+              // If GUI is installed and not Desktop manager
+              cliAutologin.addIssue(this.settings.distro.distroId, this.settings.distro.codenameId, this.settings.config.user_opt, this.settings.config.user_opt_passwd, this.settings.config.root_passwd, this.settings.work_dir.merged)
+              cliAutologin.addMotd(this.settings.distro.distroId, this.settings.distro.codenameId, this.settings.config.user_opt, this.settings.config.user_opt_passwd, this.settings.config.root_passwd, this.settings.work_dir.merged)
+            }
+          } else {
+            cliAutologin.addAutologin(this.settings.distro.distroId, this.settings.distro.codenameId, this.settings.config.user_opt, this.settings.config.user_opt_passwd, this.settings.config.root_passwd, this.settings.work_dir.merged)
+          }
         }
         await this.editLiveFs()
         await this.makeSquashfs(scriptOnly)
@@ -703,7 +729,7 @@ export default class Ovary {
     }
 
     /*
-
+ 
     Utils.warning(`initrdCopy`)
     if (this.verbose) {
       console.log('ovary: initrdCopy')
@@ -715,7 +741,7 @@ export default class Ovary {
       Utils.error(`Cannot find ${this.settings.initrdImg}`)
       lackInitrdImage = true
     }
-
+ 
     if (lackInitrdImage) {
       Utils.warning('Try to edit /etc/penguins-eggs.d/eggs.yaml and check for')
       Utils.warning(`initrd_img: ${this.settings.initrd_image}`)
@@ -822,7 +848,6 @@ export default class Ovary {
     const nomergedDirs = [
       'cdrom',
       'dev',
-      'home',
       'media',
       'mnt',
       'proc',
@@ -831,6 +856,9 @@ export default class Ovary {
       'swapfile',
       'tmp'
     ]
+    if (!this.clone) {
+      nomergedDirs.push('home')
+    }
     // deepin ha due directory /data e recovery
     nomergedDirs.push('data', 'recovery')
 
@@ -956,6 +984,7 @@ export default class Ovary {
         withFileTypes: true
       })
 
+  
       for (const dir of bindDirs) {
         const dirname = N8.dirent2string(dir)
 

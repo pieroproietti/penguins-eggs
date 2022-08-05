@@ -811,16 +811,16 @@ unknown target format aarch64-efi
    /**
     * 
     */
-   static async pressKeyToExit(warming = 'Process will end', stopProcess = true) {
+   static async pressKeyToExit(warming = 'Process will end', procContinue = true) {
       Utils.warning(warming)
       let msg = 'Press a key to exit...'
-      if (stopProcess) {
+      if (procContinue) {
          msg = 'Press a key to continue...'
       }
       console.log(msg)
 
       const pressKeyToExit = spawnSync('read _ ', { shell: true, stdio: [0, 1, 2] })
-      if (!stopProcess) {
+      if (!procContinue) {
          process.exit(0)
       }
    }
