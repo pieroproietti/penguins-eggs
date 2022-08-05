@@ -22,8 +22,8 @@ export default class Produce extends Command {
   static flags = {
     prefix: Flags.string({ char: 'p', description: 'prefix' }),
     basename: Flags.string({ description: 'basename' }),
-    backup: Flags.boolean({ char: 'b', description: 'backup mode crypted' }),
-    clone: Flags.boolean({ char: 'c', description: 'clone mode clear' }),
+    backup: Flags.boolean({ char: 'b', description: 'backup mode (CRYPTED)' }),
+    clone: Flags.boolean({ char: 'c', description: 'clone mode' }),
     fast: Flags.boolean({ char: 'f', description: 'fast compression' }),
     normal: Flags.boolean({ char: 'n', description: 'normal compression' }),
     max: Flags.boolean({ char: 'm', description: 'max compression' }),

@@ -502,16 +502,16 @@ produce a live image from your system whithout your data
 
 ```
 USAGE
-  $ eggs produce [-p <value>] [--basename <value>] [-b] [-p] [-f] [-n] [-m] [-v] [-y] [-s] [-h] [--theme
+  $ eggs produce [-p <value>] [--basename <value>] [-b] [-c] [-f] [-n] [-m] [-v] [-y] [-s] [-h] [--theme
     <value>] [--addons <value>] [--release]
 
 FLAGS
-  -b, --backup          backup mode
+  -b, --backup          backup mode crypted
+  -c, --clone           clone mode clear
   -f, --fast            fast compression
   -h, --help            Show CLI help.
   -m, --max             max compression
   -n, --normal          normal compression
-  -p, --personal        personal mode
   -p, --prefix=<value>  prefix
   -s, --script          script mode. Generate scripts to manage iso build
   -v, --verbose         verbose
