@@ -16,8 +16,9 @@ _eggs () {
 "export\:docs:remove and export docType documentation of the sources in the destination host"
 "export\:iso:export iso in the destination host"
 "info:informations about eggs configuration"
-"kill:kill the eggs/free the nest"
+"install:command-line system installer - the egg became a penguin!"
 "krill:command-line system installer - the egg became a penguin!"
+"kill:kill the eggs/free the nest"
 "mom:ask for mommy - gui helper"
 "produce:produce a live image from your system whithout your data"
 "remove:remove eggs and others stuff"
@@ -33,8 +34,8 @@ _eggs () {
 "wardrobe\:list:list costumes and accessoires in wardrobe"
 "wardrobe\:show:show costumes/accessories in wardrobe"
 "wardrobe\:wear:wear costume/accessories from wardrobe"
-"autocomplete:display autocomplete installation instructions"
 "help:Display help for <%= config.bin %>."
+"autocomplete:display autocomplete installation instructions"
 "version:"
   )
 
@@ -116,19 +117,27 @@ info)
   )
 ;;
 
-kill)
+install)
   _command_flags=(
-    "--help[Show CLI help.]"
+    "--crypted[crypted CLI installation]"
+"--pve[Proxmox VE install]"
+"--help[Show CLI help.]"
 "--verbose[verbose]"
   )
 ;;
 
 krill)
   _command_flags=(
-    "--cli[force use CLI installer]"
-"--crypted[crypted CLI installation]"
+    "--crypted[crypted CLI installation]"
 "--pve[Proxmox VE install]"
 "--help[Show CLI help.]"
+"--verbose[verbose]"
+  )
+;;
+
+kill)
+  _command_flags=(
+    "--help[Show CLI help.]"
 "--verbose[verbose]"
   )
 ;;
@@ -143,7 +152,8 @@ produce)
   _command_flags=(
     "--prefix=-[prefix]:"
 "--basename=-[basename]:"
-"--backup[backup mode]"
+"--backup[backup mode crypted]"
+"--clone[clone mode clear]"
 "--fast[fast compression]"
 "--normal[normal compression]"
 "--max[max compression]"
@@ -264,21 +274,22 @@ wardrobe:wear)
   )
 ;;
 
-autocomplete)
-  _command_flags=(
-    "--refresh-cache[Refresh cache (ignores displaying instructions)]"
-  )
-;;
-
 help)
   _command_flags=(
     "--nested-commands[Include all nested commands in the output.]"
   )
 ;;
 
+autocomplete)
+  _command_flags=(
+    "--refresh-cache[Refresh cache (ignores displaying instructions)]"
+  )
+;;
+
 version)
   _command_flags=(
-    
+    "--json[Format output as json.]"
+"--verbose[Additionally shows the architecture, node version, operating system, and versions of plugins that the CLI is using.]"
   )
 ;;
 
