@@ -6,7 +6,7 @@
  */
 
 // packages
-import fs from 'fs'
+import fs, { Dir, Dirent } from 'fs'
 import path from 'node:path'
 import os from 'node:os'
 import shx from 'shelljs'
@@ -184,7 +184,7 @@ export default class Ovary {
         if (this.clone) {
           await exec(`touch ${this.settings.config.snapshot_dir}ovarium/iso/live/is-clone.md`, this.echo)
         }
-        
+
         /**
          * Anche non accettando l'installazione di calamares
          * viene creata la configurazione dell'installer: krill/calamares
@@ -223,6 +223,7 @@ export default class Ovary {
         } else {
           await this.cleanUsersAccounts()
           await this.createUserLive()
+          // createXdgAutostart anche per clone
           if (Pacman.isInstalledGui()) {
             await this.createXdgAutostart(this.settings.config.theme, myAddons)
             if (displaymanager() === '') {
@@ -234,6 +235,8 @@ export default class Ovary {
             cliAutologin.addAutologin(this.settings.distro.distroId, this.settings.distro.codenameId, this.settings.config.user_opt, this.settings.config.user_opt_passwd, this.settings.config.root_passwd, this.settings.work_dir.merged)
           }
         }
+
+
         await this.editLiveFs()
         await this.makeSquashfs(scriptOnly)
         await this.uBindLiveFs() // Lo smonto prima della fase di backup
@@ -859,6 +862,7 @@ export default class Ovary {
     if (!this.clone) {
       nomergedDirs.push('home')
     }
+
     // deepin ha due directory /data e recovery
     nomergedDirs.push('data', 'recovery')
 
@@ -984,7 +988,7 @@ export default class Ovary {
         withFileTypes: true
       })
 
-  
+
       for (const dir of bindDirs) {
         const dirname = N8.dirent2string(dir)
 
@@ -1017,6 +1021,10 @@ export default class Ovary {
         }
       }
     }
+    if (this.clone) {
+      cmds.push(await rexec(`umount ${this.settings.work_dir.path}/filesystem.squashfs/home`, this.verbose))
+    }
+
 
     Utils.writeXs(`${this.settings.work_dir.path}ubind`, cmds)
   }
