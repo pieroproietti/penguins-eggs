@@ -25,7 +25,7 @@ Using this flag all user accounts and data will be included uncrypted on the liv
 
 Example:   '''sudo eggs produce --fast --clone```
 
-You will get on live and installed exactly the same system you clone, but you can reinstall it changing hostname and other parameters.
+You will get on live and installed exactly the same system you cloned.
 
 ### eggs-9.1.37
 * penguins-oclif and perrisbrewery take now the same version number of eggs, in this cave 9.1.37. We solve the previous error, to read [more](https://github.com/oclif/core/issues/453)
