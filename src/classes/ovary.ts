@@ -223,19 +223,19 @@ export default class Ovary {
         } else {
           await this.cleanUsersAccounts()
           await this.createUserLive()
+          // createXdgAutostart anche per clone
+          if (Pacman.isInstalledGui()) {
+            await this.createXdgAutostart(this.settings.config.theme, myAddons)
+            if (displaymanager() === '') {
+              // If GUI is installed and not Desktop manager
+              cliAutologin.addIssue(this.settings.distro.distroId, this.settings.distro.codenameId, this.settings.config.user_opt, this.settings.config.user_opt_passwd, this.settings.config.root_passwd, this.settings.work_dir.merged)
+              cliAutologin.addMotd(this.settings.distro.distroId, this.settings.distro.codenameId, this.settings.config.user_opt, this.settings.config.user_opt_passwd, this.settings.config.root_passwd, this.settings.work_dir.merged)
+            }
+          } else {
+            cliAutologin.addAutologin(this.settings.distro.distroId, this.settings.distro.codenameId, this.settings.config.user_opt, this.settings.config.user_opt_passwd, this.settings.config.root_passwd, this.settings.work_dir.merged)
+          }
         }
 
-        // createXdgAutostart anche per clone
-        if (Pacman.isInstalledGui()) {
-          await this.createXdgAutostart(this.settings.config.theme, myAddons)
-          if (displaymanager() === '') {
-            // If GUI is installed and not Desktop manager
-            cliAutologin.addIssue(this.settings.distro.distroId, this.settings.distro.codenameId, this.settings.config.user_opt, this.settings.config.user_opt_passwd, this.settings.config.root_passwd, this.settings.work_dir.merged)
-            cliAutologin.addMotd(this.settings.distro.distroId, this.settings.distro.codenameId, this.settings.config.user_opt, this.settings.config.user_opt_passwd, this.settings.config.root_passwd, this.settings.work_dir.merged)
-          }
-        } else {
-          cliAutologin.addAutologin(this.settings.distro.distroId, this.settings.distro.codenameId, this.settings.config.user_opt, this.settings.config.user_opt_passwd, this.settings.config.root_passwd, this.settings.work_dir.merged)
-        }
 
         await this.editLiveFs()
         await this.makeSquashfs(scriptOnly)
