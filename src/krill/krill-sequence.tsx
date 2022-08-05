@@ -241,8 +241,8 @@ export default class Sequence {
       this.luksDevice = `/dev/mapper/${this.luksName}`
       this.luksMountpoint = `/mnt`
 
-      // per il restore dei dati personali controllo esistenza di personal.md
-      this.personalFile = `/run/live/medium/live/personal.md`
+      // per il restore dei dati personali controllo esistenza di is-clone.md
+      this.personalFile = `/run/live/medium/live/is-clone.md`
    }
 
    /**

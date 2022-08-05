@@ -22,8 +22,8 @@ export default class Produce extends Command {
   static flags = {
     prefix: Flags.string({ char: 'p', description: 'prefix' }),
     basename: Flags.string({ description: 'basename' }),
-    backup: Flags.boolean({ char: 'b', description: 'backup mode' }),
-    personal: Flags.boolean({ char: 'p', description: 'personal mode' }),
+    backup: Flags.boolean({ char: 'b', description: 'backup mode crypted' }),
+    clone: Flags.boolean({ char: 'c', description: 'clone mode clear' }),
     fast: Flags.boolean({ char: 'f', description: 'fast compression' }),
     normal: Flags.boolean({ char: 'n', description: 'normal compression' }),
     max: Flags.boolean({ char: 'm', description: 'max compression' }),
@@ -113,7 +113,7 @@ export default class Produce extends Command {
 
       const backup = flags.backup
 
-      const personal = flags.personal
+      const clone = flags.clone
 
       const verbose = flags.verbose
 
@@ -159,7 +159,7 @@ export default class Produce extends Command {
       const ovary = new Ovary()
       Utils.warning('Produce an egg...')
       if (await ovary.fertilization(prefix, basename, theme, compression)) {
-        await ovary.produce(backup, personal, scriptOnly, yolkRenew, release, myAddons, verbose)
+        await ovary.produce(backup, clone, scriptOnly, yolkRenew, release, myAddons, verbose)
         ovary.finished(scriptOnly)
       }
     } else {

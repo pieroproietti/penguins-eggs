@@ -61,7 +61,7 @@ export default class Ovary {
 
   compression = ''
 
-  personalMode = false
+  clone = false
 
   /**
    * @returns {boolean} success
@@ -101,9 +101,9 @@ export default class Ovary {
    *
    * @param basename
    */
-  async produce(backup = false, personalMode = false, scriptOnly = false, yolkRenew = false, release = false, myAddons: IMyAddons, verbose = false) {
+  async produce(backup = false, clone = false, scriptOnly = false, yolkRenew = false, release = false, myAddons: IMyAddons, verbose = false) {
     this.verbose = verbose
-    this.personalMode = personalMode
+    this.clone = clone
     this.echo = Utils.setEcho(verbose)
     if (this.verbose) {
       this.toNull = ' > /dev/null 2>&1'
@@ -163,7 +163,7 @@ export default class Ovary {
         }
 
         // CLONE
-      } else if (this.personalMode) {
+      } else if (this.clone) {
         Utils.warning('eggs will SAVE yours users accounts and datas uncrypted on the live')
 
         // NORMAL
@@ -181,8 +181,8 @@ export default class Ovary {
       let reCreate = true
       if (reCreate) { // start pre-backup
 
-        if (this.personalMode) {
-          await exec(`touch ${this.settings.config.snapshot_dir}ovarium/iso/live/personal.md`, this.echo)
+        if (this.clone) {
+          await exec(`touch ${this.settings.config.snapshot_dir}ovarium/iso/live/is-clone.md`, this.echo)
         }
         
         /**
@@ -214,8 +214,8 @@ export default class Ovary {
         /**
          * clone
          */
-        if (this.personalMode) {
-          await exec(`touch ${this.settings.config.snapshot_dir}ovarium/iso/live/personal.md`, this.echo)
+        if (this.clone) {
+          await exec(`touch ${this.settings.config.snapshot_dir}ovarium/iso/live/is-clone.md`, this.echo)
         } else {
           await this.cleanUsersAccounts()
           await this.createUserLive()
@@ -852,7 +852,7 @@ export default class Ovary {
       'swapfile',
       'tmp'
     ]
-    if (!this.personalMode) {
+    if (!this.clone) {
       nomergedDirs.push('home')
     }
     // deepin ha due directory /data e recovery
