@@ -81,7 +81,7 @@
      // await fisherman.buildModule('initramfscfg')
      // await fisherman.buildModule('initramfs')
      await fisherman.moduleRemoveuser(this.user_opt)
-     await fisherman.shellprocess('remove-link')
+     await fisherman.shellprocess('remove_link')
      await fisherman.buildModule('umount')
      await fisherman.moduleFinished()
    }
