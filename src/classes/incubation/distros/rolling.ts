@@ -81,6 +81,7 @@
      // await fisherman.buildModule('initramfscfg')
      // await fisherman.buildModule('initramfs')
      await fisherman.moduleRemoveuser(this.user_opt)
+     await fisherman.buildCalamaresModule('cleanup', true)     
      // await fisherman.buildCalamaresModule('sources-yolk-unmount', false)
      // await fisherman.buildCalamaresModule('remove-link')
      await fisherman.buildModule('umount')
