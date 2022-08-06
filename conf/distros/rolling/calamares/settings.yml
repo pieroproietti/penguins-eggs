@@ -46,7 +46,7 @@ sequence:
       - luksbootkeyfile
       - plymouthcfg
       - removeuser
-      - shellprocess@remove_link
+      - shellprocess@rminstall
       - umount
 
   # Phase 3 - postinstall.
