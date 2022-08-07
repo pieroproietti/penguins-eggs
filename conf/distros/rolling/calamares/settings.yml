@@ -31,7 +31,7 @@ sequence:
       - partition
       - mount
       - unpackfs
-      #{{hasSystemd}}machineid
+      - machineid
       - fstab
       - locale
       - keyboard
@@ -46,7 +46,7 @@ sequence:
       - luksbootkeyfile
       - plymouthcfg
       - removeuser
-      - shellprocess@removelink
+      # shellprocess removelink
       - umount
 
   # Phase 3 - postinstall.
