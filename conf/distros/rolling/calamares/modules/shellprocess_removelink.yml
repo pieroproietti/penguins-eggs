@@ -4,3 +4,4 @@ timeout: 30
 script:
     - "rm -r @@ROOT@@/usr/share/applications/install-debian.desktop"
     
+    
