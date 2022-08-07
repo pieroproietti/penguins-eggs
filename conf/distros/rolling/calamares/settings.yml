@@ -18,7 +18,7 @@ sequence:
       - locale
       - keyboard
       - partition
-      - users
+      {{createUsers}}users
       - summary
 
   # Phase 2 - install.
@@ -31,29 +31,22 @@ sequence:
       - partition
       - mount
       - unpackfs
-      # sources-yolk
-      #{{hasSystemd}}machineid
+      - machineid
       - fstab
       - locale
       - keyboard
       - localecfg
-      - users
+      {{createUsers}}users
       {{hasDisplaymanager}}displaymanager 
       - networkcfg
       - hwclock
-      #{{hasSystemd}}services-systemd 
-      #- bootloader-config
       - grubcfg
       - bootloader
       - packages
       - luksbootkeyfile
       - plymouthcfg
-      #- initramfscfg
-      #- initramfs
       - removeuser
-      #- shellprocess@cleanup
-      #- remove-link
-      #- sources-yolk-unmount
+      # shellprocess removelink
       - umount
 
   # Phase 3 - postinstall.
