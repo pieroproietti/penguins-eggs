@@ -28,7 +28,7 @@ sequence:
       - locale
       - keyboard
       - partition
-      - users
+      {{createUsers}}users
       - summary
   - exec:
       - partition
@@ -41,7 +41,7 @@ sequence:
       - keyboard
       - localecfg
       - luksbootkeyfile
-      - users
+      {{createUsers}}users
       {{hasDisplaymanager}}displaymanager
       - networkcfg
       - hwclock
