@@ -63,7 +63,6 @@ export default class Fisherman {
       }
     }
 
-
     shx.sed('-i', '{{hasSystemd}}', hasSystemd, settings)
     shx.sed('-i', '{{hasDisplaymanager}}', hasDisplaymanager, settings)
     shx.sed('-i', '{{branding}}', branding, settings)
