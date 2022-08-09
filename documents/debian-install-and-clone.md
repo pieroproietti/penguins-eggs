@@ -1,42 +1,47 @@
 # Debian install and clone
 
-Inizieremo con un preesitente installazione di Debian, probabilmente il nostro sistema che vogliamo rendere riproducibile.
-
+c
 
 ## Scaricare l'ultimo pacchetto 
 
-* Scaricate l'ultimo pacchetto eggs disponibile dalla pagina [debs](https://sourceforge.net/projects/penguins-eggs/files/packages-deb/) del progetto su sourceforge. Nel nostro caso l'ultima versione disponibile è la eggs_9.2.1_amd64.deb.
+* Download the latest available eggs package from the project's [debs](https://sourceforge.net/projects/penguins-eggs/files/packages-deb/) page on sourceforge. In our case the latest available version is eggs_9.2.1_amd64.deb.
 
-eggs necessita di alcune dipendenze, quindi conviene in primo luogo lanciare un comando per l'aggiornamento:
+* eggs needs some dependencies, so it is convenient to first run a command to upgrade:
 
 ```sudo apt update```
 
-A questo punto, avviamo l'installazione con il comando:
+* it is also advisable to perform apt full-upgrade and eventual reboot, in case of kernel upgrade
+
+```sudo apt full-upgrade```
+
+```sudo reboot```
+
+* At this point, we start the eggs installation with the command:
 
 ```sudo dpkg -i eggs_9.2.1_amd64.deb```
 
-Molto probilmente troverete un errore per la mancanza di dipendenze, niente paura, basterà un comando per sistemare il tutto:
+* Most likely you will find an error for lack of dependencies. Don't worry, just a command will fix it:
 
 ```sudo apt install -f```
 
 A questo punto il pacchetto eggs è installato e disponibile.
 
 ## Configurazione
-Qua saremo brevi, ci faremo aitare da dad e richiederemo i default:
+* We will be brief, get help from dad and request default values, there will be time to see the possibilities:
 
 ```sudo eggs dad -d```
 
-Se desiderate utilizzare l'installer grafico calamares, queste sono le istruzioni per installarlo:
+* If you wish to use the calamares graphical installer, these are the instructions for installing it:
 
 ```sudo eggs calamares --install```
 
 
 ## Uso
 
-### normale veloce (rimuove gli utenti)
+### normal and fast (remove all users)
 
 ```sudo eggs produce --fast```
 
-### clone veloce (gli utenti saranno messi sul live)
+### clone and fast (users are saved uncrypted on the live and will be restored too)
 
 ```sudo eggs produce --fast --clone```
