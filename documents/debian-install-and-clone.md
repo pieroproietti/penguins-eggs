@@ -1,6 +1,6 @@
-# Debian install and clone
+# Debian stable: install eggs and clone the system
 
-c
+We will start with a pre-existing installation of Debian-probably our system that we want to make reproducible. 
 
 ## Scaricare l'ultimo pacchetto 
 
