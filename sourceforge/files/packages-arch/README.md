@@ -24,7 +24,7 @@ You can use simple USB or USB with ventoy, iso file with proxmox ve, virtualbox,
 
 # Developer and collaboration links
 * penguins-eggs discussion on [facebook](https://www.facebook.com/groups/128861437762355) [telegram](https://web.telegram.org/z/#-1447280458)
-* penguins-eggs PKGBUILD on [AUR](https://aur.archlinux.org/packages/eggs)
+* penguins-eggs PKGBUILD on [AUR](https://aur.archlinux.org/packages/eggs) (not aligned for now)
 * penguins-eggs PKGBUILD on [github](https://github.com/pieroproietti/penguins-eggs-arch)
 * penguins-eggs [sources](https://github.com/pieroproietti/penguins-eggs)
 * penguins-eggs [book](https://penguins-eggs.net/book/)
