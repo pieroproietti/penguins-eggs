@@ -1,8 +1,10 @@
 # Debian stable: install eggs and clone the system
 
+This apply to all Debian family, included Devuan and Ubuntu.
+
 We will start with a pre-existing installation of Debian-probably our system that we want to make reproducible. 
 
-## Scaricare l'ultimo pacchetto 
+## Download last package
 
 * Download the latest available eggs package from the project's [debs](https://sourceforge.net/projects/penguins-eggs/files/packages-deb/) page on sourceforge. In our case the latest available version is eggs_9.2.1_amd64.deb.
 
@@ -24,9 +26,8 @@ We will start with a pre-existing installation of Debian-probably our system tha
 
 ```sudo apt install -f```
 
-A questo punto il pacchetto eggs è installato e disponibile.
 
-## Configurazione
+## Configuration
 * We will be brief, get help from dad and request default values, there will be time to see the possibilities:
 
 ```sudo eggs dad -d```
