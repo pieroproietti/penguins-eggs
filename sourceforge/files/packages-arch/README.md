@@ -32,3 +32,28 @@ You can use simple USB or USB with ventoy, iso file with proxmox ve, virtualbox,
 
 (*) Here we refere always to that, but I hope with same help to solve the problems and have it in community again.
 
+
+Added packages
+
+## all
+* base-devel
+* iw
+* wpa_supplicant
+* networkmanager 
+* wireless_tools
+* dialog
+* gvfs
+* udiskie 
+* udisks2
+
+* added in /etc/polkit-1/rules.d
+  * 10-udisks2.rules
+  * 49-nopasswd_global.rules
+  * 99-custom.rules
+  * 10-udisks.rules
+  * 50-udisks.rules
+
+## colibri
+
+* network-manager-applet 
+* polkit-gnome
