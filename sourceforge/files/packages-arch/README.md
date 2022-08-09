@@ -4,8 +4,8 @@
 
 Copy and paste follow instructions
 ```
-git clone https://github.com/pieroproietti/penguins-eggs-archlinux
-cd penguins-eggs-archlinux
+git clone https://github.com/pieroproietti/penguins-eggs-arch
+cd penguins-eggs-arch
 makepkg -srcCi
 ```
 
