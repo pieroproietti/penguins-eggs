@@ -48,8 +48,7 @@ Community: currently the biggest problem with this software is the lack of a com
 If you like eggs, please rate this project on sourgeforce and help to spread it's diffusion. 
 
 Feel free to contact me for any suggestions.
-
-<a href='https://t.me/penguinseggs'>telegram</a>
+<a href='https://t.me/penguins_eggs'>telegram</a>
 https://twitter.com/pieroproietti
 <a href='https://gitter.im/penguins-eggs-1/community'>gitter</a>
 
