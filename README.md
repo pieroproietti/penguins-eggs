@@ -866,7 +866,7 @@ There is a [Penguin's eggs official book](https://penguins-eggs.net/book/) and s
 * [blog](https://penguins-eggs.net)    
 * [facebook penguin's eggs group](https://www.facebook.com/groups/128861437762355/)
 * [sources](https://github.com/pieroproietti/penguins-krill)
-* [telegram](telegram.me/PieroProietti)
+* [telegram](https://t.me/penguins_eggs) penguin's eggs channel
 * [twitter](https://twitter.com/pieroproietti)
 
 You can contact me at pieroproietti@gmail.com or [meet me](https://meet.jit.si/PenguinsEggsMeeting)
