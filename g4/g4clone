@@ -1,3 +1,4 @@
 #!/bin/sh
-git clone http://github.com/pieroproietti/$1 --depth 1
+s# git clone http://github.com/pieroproietti/$1 --depth 1
+git clone http://github.com/pieroproietti/$1
 
