@@ -38,6 +38,7 @@ import { access } from 'fs/promises'
 import { constants } from 'fs'
 import Users from './users'
 import Distro from './distro'
+import { runInNewContext } from 'vm'
 
 /**
  * Ovary:
@@ -1117,6 +1118,7 @@ export default class Ovary {
       // in manjaro they use autologin group for the iso, if not exist create it
       cmds.push(await rexec(`chroot ${this.settings.work_dir.merged} test $(grep "autologin" /etc/group) || chroot ${this.settings.work_dir.merged} groupadd -r autologin`, this.verbose))
       cmds.push(await rexec(`chroot ${this.settings.work_dir.merged} usermod -aG autologin ${this.settings.config.user_opt}`, this.verbose))
+      cmds.push(await rexec(`chroot ${this.settings.work_dir.merged} gpasswd -a ${this.settings.config.user_opt} autologin`, this.verbose))
     }
 
     if (this.familyId === 'debian' || this.familyId === 'archlinux') {
