@@ -185,11 +185,11 @@ export default class Pacman {
     if (this.distro().familyId === 'debian') {
       packages = Debian.packages(remove, verbose)
     } else if (this.distro().familyId === 'fedora') {
-      packages = Fedora.packages(remove, verbose)
+      packages = [] // Fedora.packages(remove, verbose)
     } else if (this.distro().familyId === 'archlinux') {
-      packages = Archlinux.packages(remove, verbose)
+      packages = [] // Archlinux.packages(remove, verbose)
     } else if (this.distro().familyId === 'suse') {
-      packages = Suse.packages(remove, verbose)
+      packages = [] // packages = Suse.packages(remove, verbose)
     }
 
     return packages
