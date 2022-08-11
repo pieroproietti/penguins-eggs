@@ -40,7 +40,8 @@ export default class Archlinux {
    */
   static packages(remove = false, verbose = false): string[] {
     // non può essere pacman è universalmente presente
-    const packages = ['arch-install-scripts', 'awk', 'dosfstools', 'e2fsprogs', 'erofs-utils', 'findutils', 'gzip', 'libarchive', 'libisoburn', 'mtools', 'openssl', 'pacman', 'rsync', 'sed', 'syslinux', 'squashfs-tools']
+    // 'pacman', 'awk'
+    const packages = ['arch-install-scripts',  'dosfstools', 'e2fsprogs', 'erofs-utils', 'findutils', 'gzip', 'libarchive', 'libisoburn', 'mtools', 'openssl', 'rsync', 'sed', 'syslinux', 'squashfs-tools']
 
     const toInstall: string[] = []
     const toRemove: string[] = []
