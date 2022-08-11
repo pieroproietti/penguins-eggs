@@ -13,8 +13,8 @@ export function remove(distro: IDistro): string {
   let removePackages = Pacman.packages(remove)
 
   if (distro.distroLike === 'Arch') {
-    removePackages = ["calamares"]
-    removePackages = ["penguins-eggs"]
+    // removePackages = ["calamares"]
+    // removePackages = ["penguins-eggs"]
   } else {
     removePackages.push("calamares")
     removePackages.push("eggs")
@@ -86,4 +86,3 @@ export function tryInstall(distro: IDistro): string {
 
   return retVal
 }
-
