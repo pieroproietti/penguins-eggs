@@ -1,33 +1,5 @@
-import { O_APPEND } from 'node:constants'
 import { IDistro } from '../../../interfaces'
 /**
- * 
-WHY in ARCH I get this?
-
-# manjaro
-# packages
----
-backend: pacman
-
-operations:
-  - remove:
-    - arch-install-scripts
-    - awk
-    - e2fsprogs
-    - erofs-utils
-    - findutils
-    - gzip
-    - libarchive
-    - libisoburn
-    - mtools
-    - openssl
-    - pacman
-    - sed
-    - squashfs-tools
-    - syslinux
-
-  - try_install:
-
  * 
  */
 import Pacman from '../../pacman'
