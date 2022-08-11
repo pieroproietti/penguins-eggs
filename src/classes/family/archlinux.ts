@@ -39,9 +39,12 @@ export default class Archlinux {
    * Crea array pacchetti da installare/rimuovere
    */
   static packages(remove = false, verbose = false): string[] {
+    /**
+     * praticamente non serve, perche prende dal pacchetto o da pkgbuild
+     */
     // non può essere pacman è universalmente presente
-    // 'pacman', 'awk'
-    const packages = ['arch-install-scripts',  'dosfstools', 'e2fsprogs', 'erofs-utils', 'findutils', 'gzip', 'libarchive', 'libisoburn', 'mtools', 'openssl', 'rsync', 'sed', 'syslinux', 'squashfs-tools']
+    // 'pacman', 'awk', 'dosfstools'
+    const packages = [''] // 'arch-install-scripts',  'e2fsprogs', 'erofs-utils', 'findutils', 'gzip', 'libarchive', 'libisoburn', 'mtools', 'openssl', 'rsync', 'sed', 'syslinux', 'squashfs-tools']
 
     const toInstall: string[] = []
     const toRemove: string[] = []

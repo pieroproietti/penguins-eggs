@@ -39,13 +39,12 @@ export function remove(distro: IDistro): string {
   let remove = true
   let removePackages = Pacman.packages(remove)
 
-  if (distro.distroLike === 'Arch') {
-    // removePackages = ["calamares"]
-    // removePackages = ["penguins-eggs"]
+  if (distro.familyId='archlinux') {
+    removePackages.push("penguins-eggs")
   } else {
-    removePackages.push("calamares")
     removePackages.push("eggs")
   }
+  removePackages.push("calamares")
 
   const mustRemain = ["coreutils", "cryptsetup",  "curl", "dosfstools", "git","parted",  "rsync", "lvm2"]
 
