@@ -249,11 +249,11 @@ function krill {
 function produce {
    answer=$(
    whiptail --title "produce" --menu "Choose the prefered method of production..." 22 75 14 \
-      "fast"    "create fast an ISO" \
-      "standard"  "create an ISO standard compression (xz compression)" \
-      "max"  "create an ISO max compression (xz -Xbcj x86)" \
-      "clone"    "create a live clone with user's data" \
-      "quit"   "previous" 3>&2 2>&1 1>&3
+      "fast"      "create an ISO fast compression" \
+      "standard"  "create an ISO standard compression" \
+      "max"       "create an ISO max compression" \
+      "clone"     "create a live clone with user's data" \
+      "quit"     "previous" 3>&2 2>&1 1>&3
    )
 
    case "$answer" in 
@@ -296,9 +296,9 @@ function clone {
 function tools {
    answer=$(
    whiptail --title "TOOLS" --menu "eggs companions tools" 22 75 14 \
-      "clean"     "clean system logs, apt cache, etc" \
-      "skel"      "update /etc/skel from current user or user configuration" \
-      "yolk"      "configure an internal apt repository in /var/local/yolk" \
+      "clean"  "clean system logs, packages manager cache, etc" \
+      "skel"   "update /etc/skel from current user" \
+      "yolk"   "configure an internal apt repository in /var/local/yolk" \
       "quit"   "previous" 3>&2 2>&1 1>&3
    )
 
@@ -344,7 +344,6 @@ function wardrobe {
    answer=$(
    whiptail --title "TOOLS" --menu "eggs companions tools" 22 75 14 \
       "get"       "get warorobe" \
-      "ironing"   "ironing costumes: sorting packages" \
       "list"      "list costumes" \
       "show"      "show costumes" \
       "wear"      "wear costume" \
