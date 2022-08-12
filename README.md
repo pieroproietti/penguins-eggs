@@ -559,7 +559,7 @@ _See code: [src/commands/produce.ts](https://github.com/pieroproietti/penguins-e
 
 ## `eggs syncfrom`
 
-Restore users, server and datas from luks-eggs-backup
+Restore users and user data from a LUKS volumes
 
 ```
 USAGE
@@ -573,7 +573,7 @@ FLAGS
   --delete=<value>       rsync --delete delete extraneous files from dest dirs
 
 DESCRIPTION
-  Restore users, server and datas from luks-eggs-backup
+  Restore users and user data from a LUKS volumes
 
 EXAMPLES
   $ sudo eggs restore
@@ -583,7 +583,7 @@ _See code: [src/commands/syncfrom.ts](https://github.com/pieroproietti/penguins-
 
 ## `eggs syncto`
 
-saving users' datas and accounts on LUKS volume
+saves users and user data in a LUKS volume inside the iso
 
 ```
 USAGE
@@ -596,7 +596,7 @@ FLAGS
   --delete=<value>    rsync --delete delete extraneous files from dest dirs
 
 DESCRIPTION
-  saving users' datas and accounts on LUKS volume
+  saves users and user data in a LUKS volume inside the iso
 
 EXAMPLES
   $ sudo eggs syncto

@@ -21,8 +21,8 @@ _eggs () {
 "kill:kill the eggs/free the nest"
 "mom:ask for mommy - gui helper"
 "produce:produce a live image from your system whithout your data"
-"syncfrom:Restore users, server and datas from luks-eggs-backup"
-"syncto:saving users' datas and accounts on LUKS volume"
+"syncfrom:restore users and user data from a LUKS volumes"
+"syncto:saves users and user data in a LUKS volume inside the iso"
 "tools\:clean:clean system log, apt, etc"
 "tools\:skel:update skel from home configuration"
 "tools\:stat:get statistics from sourceforge"
@@ -33,8 +33,8 @@ _eggs () {
 "wardrobe\:list:list costumes and accessoires in wardrobe"
 "wardrobe\:show:show costumes/accessories in wardrobe"
 "wardrobe\:wear:wear costume/accessories from wardrobe"
-"help:Display help for <%= config.bin %>."
 "autocomplete:display autocomplete installation instructions"
+"help:Display help for <%= config.bin %>."
 "version:"
   )
 
@@ -264,15 +264,15 @@ wardrobe:wear)
   )
 ;;
 
-help)
-  _command_flags=(
-    "--nested-commands[Include all nested commands in the output.]"
-  )
-;;
-
 autocomplete)
   _command_flags=(
     "--refresh-cache[Refresh cache (ignores displaying instructions)]"
+  )
+;;
+
+help)
+  _command_flags=(
+    "--nested-commands[Include all nested commands in the output.]"
   )
 ;;
 
