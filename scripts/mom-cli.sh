@@ -260,9 +260,10 @@ function krill {
 function produce {
    answer=$(
    whiptail --title "produce" --menu "Choose the prefered method of production..." 22 75 14 \
-      "fast"    "create fast an ISO (lz4 compression)" \
+      "fast"    "create fast an ISO" \
       "standard"  "create an ISO standard compression (xz compression)" \
-      "compress"  "create an ISO max compression (xz -Xbcj x86)" \
+      "max"  "create an ISO max compression (xz -Xbcj x86)" \
+      "clone"    "create a live clone with user's data" \
       "quit"   "previous" 3>&2 2>&1 1>&3
    )
 
@@ -273,24 +274,33 @@ function produce {
       "standard")
          standard ;;
 
-      "compress")
-         compress ;;
+      "max")
+         max ;;
+
+      "clone")
+         clone;;
+      
    esac
 }
 
 ################################
 function fast {
-   sudo eggs produce --fast --verbose
+   sudo eggs produce --fast
 }
 
 ################################
 function standard {
-   sudo eggs produce --verbose
+   sudo eggs produce
 }
 
 ################################
-function compress {
-   sudo eggs produce --compress --verbose
+function max {
+   sudo eggs produce --max
+}
+
+################################
+function clone {
+   sudo eggs produce --fast --clone 
 }
 
 ################################
