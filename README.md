@@ -559,7 +559,7 @@ _See code: [src/commands/produce.ts](https://github.com/pieroproietti/penguins-e
 
 ## `eggs syncfrom`
 
-Restore users and user data from a LUKS volumes
+restore users and user data from a LUKS volumes
 
 ```
 USAGE
@@ -573,7 +573,7 @@ FLAGS
   --delete=<value>       rsync --delete delete extraneous files from dest dirs
 
 DESCRIPTION
-  Restore users and user data from a LUKS volumes
+  restore users and user data from a LUKS volumes
 
 EXAMPLES
   $ sudo eggs restore

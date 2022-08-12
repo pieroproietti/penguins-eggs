@@ -12,10 +12,12 @@ import Pacman from '../../pacman'
  * dependencies actually are removed by package managers
  */
 export function remove(distro: IDistro): string {
+
   let removePackages = ["calamares"]
-  if (distro.familyId = 'archlinux') {
+    
+  if (distro.familyId === 'archlinux') {
     removePackages.push("penguins-eggs")
-  } if (distro.familyId = 'debian') {
+  } if (distro.familyId === 'debian') {
     removePackages.push("eggs")
   }
 
