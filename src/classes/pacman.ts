@@ -183,7 +183,7 @@ export default class Pacman {
   static packages(remove = false, verbose = false): string[] {
     let packages: string[] = []
     if (this.distro().familyId === 'debian') {
-      packages = Debian.packages(remove, verbose)
+      packages = [] // Debian.packages(remove, verbose)
     } else if (this.distro().familyId === 'fedora') {
       packages = [] // Fedora.packages(remove, verbose)
     } else if (this.distro().familyId === 'archlinux') {

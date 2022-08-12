@@ -5,31 +5,22 @@ import { IDistro } from '../../../interfaces'
 import Pacman from '../../pacman'
 
 /**
- *
+ * Work only with:
+ * - calamares
+ * - penguins-eggs
+ * 
+ * dependencies actually are removed by package managers
  */
 export function remove(distro: IDistro): string {
-  let remove = true
-  let removePackages = Pacman.packages(remove)
-
-  if (distro.familyId='archlinux') {
+  let removePackages = ["calamares"]
+  if (distro.familyId = 'archlinux') {
     removePackages.push("penguins-eggs")
-  } else {
+  } if (distro.familyId = 'debian') {
     removePackages.push("eggs")
   }
-  removePackages.push("calamares")
-
-  const mustRemain = ["coreutils", "cryptsetup",  "curl", "dosfstools", "git","parted",  "rsync", "lvm2"]
-
-  let sorted= []
-  for (const elem of removePackages) {
-    if (!mustRemain.includes(elem)) {
-      sorted.push(elem)
-    }
-  }
-  sorted = sorted.sort()
 
   let text = '  - remove:\n'
-  for (const elem of sorted) {
+  for (const elem of removePackages) {
     text += `    - ${elem.trim()}\n`
   }
   return text
