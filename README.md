@@ -158,7 +158,6 @@ USAGE
 * [`eggs krill`](#eggs-krill)
 * [`eggs mom`](#eggs-mom)
 * [`eggs produce`](#eggs-produce)
-* [`eggs remove`](#eggs-remove)
 * [`eggs syncfrom`](#eggs-syncfrom)
 * [`eggs syncto`](#eggs-syncto)
 * [`eggs tools clean`](#eggs-tools-clean)
@@ -557,36 +556,6 @@ EXAMPLES
 ```
 
 _See code: [src/commands/produce.ts](https://github.com/pieroproietti/penguins-eggs/blob/v9.2.2/src/commands/produce.ts)_
-
-## `eggs remove`
-
-remove eggs and others stuff
-
-```
-USAGE
-  $ eggs remove [-p] [-a] [-h] [-v]
-
-FLAGS
-  -a, --autoremove  remove eggs packages dependencies
-  -h, --help        Show CLI help.
-  -p, --purge       remove eggs configurations files
-  -v, --verbose     verbose
-
-DESCRIPTION
-  remove eggs and others stuff
-
-EXAMPLES
-  $ sudo eggs remove 
-  remove eggs
-
-  $ sudo eggs remove --purge 
-  remove eggs, eggs configurations, configuration's files
-
-  $ sudo eggs remove --autoremove 
-  remove eggs, eggs configurations, packages dependencies
-```
-
-_See code: [src/commands/remove.ts](https://github.com/pieroproietti/penguins-eggs/blob/v9.2.2/src/commands/remove.ts)_
 
 ## `eggs syncfrom`
 
