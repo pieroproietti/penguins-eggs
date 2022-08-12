@@ -34,8 +34,8 @@ _eggs () {
 "wardrobe\:list:list costumes and accessoires in wardrobe"
 "wardrobe\:show:show costumes/accessories in wardrobe"
 "wardrobe\:wear:wear costume/accessories from wardrobe"
-"help:Display help for <%= config.bin %>."
 "autocomplete:display autocomplete installation instructions"
+"help:Display help for <%= config.bin %>."
 "version:"
   )
 
@@ -152,8 +152,8 @@ produce)
   _command_flags=(
     "--prefix=-[prefix]:"
 "--basename=-[basename]:"
-"--backup[backup mode crypted]"
-"--clone[clone mode clear]"
+"--backup[backup mode (CRYPTED)]"
+"--clone[clone mode]"
 "--fast[fast compression]"
 "--normal[normal compression]"
 "--max[max compression]"
@@ -163,7 +163,7 @@ produce)
 "--help[Show CLI help.]"
 "--theme=-[theme for livecd, calamares branding and partitions]:"
 "--addons=-[addons to be used: adapt, ichoice, pve, rsupport]:"
-"--release[release: configure GUI installer to remove eggs and calamares after installation]"
+"--release[release: max compression, remove penguins-eggs and calamares after installation]"
   )
 ;;
 
@@ -274,15 +274,15 @@ wardrobe:wear)
   )
 ;;
 
-help)
-  _command_flags=(
-    "--nested-commands[Include all nested commands in the output.]"
-  )
-;;
-
 autocomplete)
   _command_flags=(
     "--refresh-cache[Refresh cache (ignores displaying instructions)]"
+  )
+;;
+
+help)
+  _command_flags=(
+    "--nested-commands[Include all nested commands in the output.]"
   )
 ;;
 
