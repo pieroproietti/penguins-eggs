@@ -37,8 +37,6 @@ import { displaymanager } from './incubation/fisherman-helper/displaymanager'
 import { access } from 'fs/promises'
 import { constants } from 'fs'
 import Users from './users'
-import Distro from './distro'
-import { runInNewContext } from 'vm'
 
 /**
  * Ovary:
@@ -192,10 +190,13 @@ export default class Ovary {
          * L'installer prende il tema da settings.remix.branding
          */
         this.incubator = new Incubator(this.settings.remix, this.settings.distro, this.settings.config.user_opt, verbose)
-        if (this.clone) {
-          await this.incubator.config(true) // force calamares remove
-        } else {
-          await this.incubator.config(release)
+
+        /**
+         * remove calamares and eggs
+         * for clone and release
+         */
+        if (this.clone || release) {
+          await this.incubator.config(true)
         }
 
         await this.syslinux()
@@ -237,7 +238,6 @@ export default class Ovary {
           }
         }
 
-
         await this.editLiveFs()
         await this.makeSquashfs(scriptOnly)
         await this.uBindLiveFs() // Lo smonto prima della fase di backup
@@ -263,8 +263,8 @@ export default class Ovary {
           await exec(`md5sum ${this.settings.work_dir.pathIso}/live/filesystem.squashfs > ${this.settings.work_dir.pathIso}/live/x86_64/livefs.md5`, this.echo)
         } else if (this.settings.distro.distroId === 'Arch') {
           await exec(`ln ${this.settings.work_dir.pathIso}/live/filesystem.squashfs ${this.settings.work_dir.pathIso}/live/x86_64/airootfs.sfs`, this.echo)
-          await exec(`sha512sum ${this.settings.work_dir.pathIso}/live/filesystem.squashfs > ${this.settings.work_dir.pathIso}/live/x86_64/airootfs.sha512`, this.echo)
-          // await exec(`gpg --detach-sign ${this.settings.work_dir.pathIso}/live/filesystem.squashfs ${this.settings.work_dir.pathIso}/live/x86_64/airootfs.sig`, this.echo)
+          await exec(`sha512sum ${this.settings.work_dir.pathIso}/live/filesystem.squashfs > ${this.settings.work_dir.pathIso}/live/x86_64/fs.sha512`, this.echo)
+          // await exec(`gpg --detach-sign ${this.settings.work_dir.pathIso}/live/filesystem.squashfs ${this.settings.work_dir.pathIso}/live/x86_64/fs.sig`, this.echo)
         }
       }
       await this.makeIso(xorrisoCommand, scriptOnly)

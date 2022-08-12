@@ -27,6 +27,10 @@
  * Ubuntu 21.04 (hirsute) active
  * Ubuntu 21.10 (impish) active
  * Ubuntu 22.04 (jammy) LTS
+ * 
+ * Arch
+ * Manjaro Qonos
+ * Manjaro Ruah
  *
  */
 
