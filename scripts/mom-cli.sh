@@ -13,7 +13,6 @@ function main {
       # 20 righe. 75 caratteri, 16 altezza menu list
       answer=$(
       whiptail --title "mommy" --menu "Mama's gonna keep baby cozy and warm..." 22 75 16 \
-         "config"          "configure eggs, install prerequisites" \
          "adapt"           "adapt monitor resolution for VM only" \
          "calamares"       "configure calamares or install and configure it" \
          "dad"             "ask help from daddy - configuration helper" \
@@ -22,12 +21,11 @@ function main {
          "kill"            "kill the eggs/free the nest" \
          "krill"           "krill TUI system installer - the egg becomes a chick" \
          "produce"         "the system produces an egg: iso image of your system" \
-         "remove"          "remove eggs and others stuff" \
          "update"          "update the penguin's eggs tool" \
          "documentation"   "book/book_translated/manual/man" \
          "export"          "deb/docs/iso" \
-         "tools"           "clean/locales/skel/yolk" \
-         "wardrobe"        "get/ironing/list/show/wear" \
+         "tools"           "clean/skel/yolk" \
+         "wardrobe"        "get/list/show/wear" \
          "quit"            "exit" 3>&2 2>&1 1>&3
       )
 
@@ -62,9 +60,6 @@ function main {
          "produce")
             produce ;;
 
-         "remove")
-            remove ;;
-
          "documentation")
             documentation ;;
 
@@ -87,13 +82,7 @@ function main {
 
 ################################
 function adapt {
-   eggs adapt
-}
-
-################################
-function config {
-   sudo eggs config
-   press_a_key_to_continue
+   adapt
 }
 
 ################################
@@ -304,52 +293,10 @@ function clone {
 }
 
 ################################
-function remove {
-   answer=$(
-   whiptail --title "remove" --menu "Remove prerequisites, eggs or purge..." 22 75 14 \
-      "all"             "remove eggs, prerequisites and purge" \
-      "purge"           "remove eggs and purge"  \
-      "autoremove"      "remove eggs and prerequisites" \
-      "quit"   "previous" 3>&2 2>&1 1>&3
-   )
-
-   case "$answer" in 
-      "all")
-         remove_all ;;
-
-      "autoremove")
-         remove_autoremove ;;
-
-      "purge")
-         remove_purge ;;
-   esac
-}
-
-################################
-function remove_all {
-   sudo eggs remove --autoremove --purge
-   press_a_key_to_continue
-}
-
-################################
-function remove_autoremove {
-   sudo eggs remove --autoremove
-   press_a_key_to_continue
-}
-
-
-################################
-function remove_purge {
-   sudo eggs remove --purge
-   press_a_key_to_continue
-}
-
-################################
 function tools {
    answer=$(
    whiptail --title "TOOLS" --menu "eggs companions tools" 22 75 14 \
       "clean"     "clean system logs, apt cache, etc" \
-      "locales"   "install/clean locales" \
       "skel"      "update /etc/skel from current user or user configuration" \
       "yolk"      "configure an internal apt repository in /var/local/yolk" \
       "quit"   "previous" 3>&2 2>&1 1>&3
@@ -358,9 +305,6 @@ function tools {
    case "$answer" in 
       "clean")
          tools_clean ;;
-
-      "locales")
-         tools_locales ;;
 
       "skel")
          tools_skel ;;
@@ -374,12 +318,6 @@ function tools {
 ################################
 function tools_clean {
    sudo eggs tools:clean
-   press_a_key_to_continue
-}
-
-################################
-function tools_locales {
-   sudo eggs tools:locales
    press_a_key_to_continue
 }
 
@@ -416,9 +354,6 @@ function wardrobe {
    case "$answer" in 
       "get")
          wardrobe_get ;;
-
-      "ironing")
-         wardrobe_ironing ;;
 
       "list")
          wardrobe_list ;;
