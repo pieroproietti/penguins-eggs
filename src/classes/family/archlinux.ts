@@ -114,11 +114,11 @@ export default class Archlinux {
   static async calamaresInstall(verbose = false): Promise<void> {
     verbose = true // serve per pacman
     const echo = Utils.setEcho(verbose)
+    let cmd = `pacman -Sy --noconfirm ${array2spaced(this.packs4calamares)}`
     try {
-      // inserito flag --noconfirm
-      await exec(`pacman -Sy --noconfirm ${array2spaced(this.packs4calamares)}`, echo)
+      await exec(cmd, echo)
     } catch {
-      Utils.error(`Archlinux.calamaresInstall() pacman -Sy ${array2spaced(this.packs4calamares)}`) // + e.error)
+      Utils.error(`Archlinux.calamaresInstall(): ${cmd}`) // + e.error)
     }
   }
 
