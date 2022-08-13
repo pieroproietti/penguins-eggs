@@ -37,7 +37,6 @@ import { displaymanager } from './incubation/fisherman-helper/displaymanager'
 import { access } from 'fs/promises'
 import { constants } from 'fs'
 import Users from './users'
-import Distro from './distro'
 
 /**
  * Ovary:
@@ -191,11 +190,7 @@ export default class Ovary {
          * L'installer prende il tema da settings.remix.branding
          */
         this.incubator = new Incubator(this.settings.remix, this.settings.distro, this.settings.config.user_opt, verbose)
-        if (this.clone) {
-          await this.incubator.config(true) // force calamares remove
-        } else {
-          await this.incubator.config(release)
-        }
+        await this.incubator.config(release)
 
         await this.syslinux()
         await this.isolinux(this.settings.config.theme)
@@ -236,7 +231,6 @@ export default class Ovary {
           }
         }
 
-
         await this.editLiveFs()
         await this.makeSquashfs(scriptOnly)
         await this.uBindLiveFs() // Lo smonto prima della fase di backup
@@ -262,8 +256,8 @@ export default class Ovary {
           await exec(`md5sum ${this.settings.work_dir.pathIso}/live/filesystem.squashfs > ${this.settings.work_dir.pathIso}/live/x86_64/livefs.md5`, this.echo)
         } else if (this.settings.distro.distroId === 'Arch') {
           await exec(`ln ${this.settings.work_dir.pathIso}/live/filesystem.squashfs ${this.settings.work_dir.pathIso}/live/x86_64/airootfs.sfs`, this.echo)
-          await exec(`sha512sum ${this.settings.work_dir.pathIso}/live/filesystem.squashfs > ${this.settings.work_dir.pathIso}/live/x86_64/airootfs.sha512`, this.echo)
-          // await exec(`gpg --detach-sign ${this.settings.work_dir.pathIso}/live/filesystem.squashfs ${this.settings.work_dir.pathIso}/live/x86_64/airootfs.sig`, this.echo)
+          await exec(`sha512sum ${this.settings.work_dir.pathIso}/live/filesystem.squashfs > ${this.settings.work_dir.pathIso}/live/x86_64/fs.sha512`, this.echo)
+          // await exec(`gpg --detach-sign ${this.settings.work_dir.pathIso}/live/filesystem.squashfs ${this.settings.work_dir.pathIso}/live/x86_64/fs.sig`, this.echo)
         }
       }
       await this.makeIso(xorrisoCommand, scriptOnly)
@@ -1113,10 +1107,13 @@ export default class Ovary {
 
     } else if (this.familyId === 'archlinux') {
       // adduser live to wheel and autologin
-      cmds.push(await rexec(`chroot ${this.settings.work_dir.merged} usermod -aG wheel ${this.settings.config.user_opt}`, this.verbose))
+      // cmds.push(await rexec(`chroot ${this.settings.work_dir.merged} usermod -aG wheel ${this.settings.config.user_opt}`, this.verbose))
       // in manjaro they use autologin group for the iso, if not exist create it
-      cmds.push(await rexec(`chroot ${this.settings.work_dir.merged} test $(grep "autologin" /etc/group) || chroot ${this.settings.work_dir.merged} groupadd -r autologin`, this.verbose))
-      cmds.push(await rexec(`chroot ${this.settings.work_dir.merged} usermod -aG autologin ${this.settings.config.user_opt}`, this.verbose))
+      // cmds.push(await rexec(`chroot ${this.settings.work_dir.merged} test $(grep "autologin" /etc/group) || chroot ${this.settings.work_dir.merged} groupadd -r autologin`, this.verbose))
+      // cmds.push(await rexec(`chroot ${this.settings.work_dir.merged} usermod -aG autologin ${this.settings.config.user_opt}`, this.verbose))
+      cmds.push(await rexec(`chroot ${this.settings.work_dir.merged} gpasswd -a ${this.settings.config.user_opt} wheel`, this.verbose))
+      cmds.push(await rexec(`chroot ${this.settings.work_dir.merged} gpasswd -a ${this.settings.config.user_opt} sudo`, this.verbose))
+      cmds.push(await rexec(`chroot ${this.settings.work_dir.merged} gpasswd -a ${this.settings.config.user_opt} autologin`, this.verbose))
     }
 
     if (this.familyId === 'debian' || this.familyId === 'archlinux') {

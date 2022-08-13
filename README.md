@@ -56,26 +56,21 @@ eggs include a CLI installer named krill, this let you to produce and install se
 ### addons and themes
 Addons are used mostly to let third parties to develop extensions. Note that currently we have an extension for the theme that includes both branding calamares, link and installer icon. In addition, also as an addon has been developed choose between GUI or CLI installation, adapt the video resolution, link to remote support, etc.
 
-### backup
-You can use the backup mode by simply adding --backup in the produce command. This way eggs will save your users data and accounts and will not add a live user, you will have to log in with the main user of your system with the his password. **Note:** since eggs always configures autologin, you may have a security risk with valuable data. Use this option only for your personal stuff and do not share the iso on the network.
+### backup/clone
 
-* ```eggs produce``` just remove users accounts and home. This let to have working servers examples;
-* ```eggs produce --backup``` remove servers and users data from live, and put them on a LUKS volume.
+We have two methods to save in the live systema all our data: clone and backup.
 
-We have another two commands for backup/restore: ```eggs syncfrom``` and ```eggs syncto```. A working installation, can easily sync users and servers data to a luks-eggs-backup file:
+```eggs produces --fast --clone``` saves our users and our data directly in the generated iso. The data will be visible directly from the live and accessible to anyone who gets a copy.
 
-* ```eggs syncto -f /tmp/luks-eggs-backup``` backup users and servers data to LUKS volume /tmp/luks-eggs-backup:
+```eggs produces --fast --backup``` saves our data within the generated iso using a LUKS volume. Our data will NOT be visible in the live system but can be reinstalled automatically with krill installer. Even having the generated image available, our data will be protected by the LUKS passphrase.
 
-Or a new installation, can easyly get users and servers data from a luks-eggs-backup:
-* ```eggs syncfrom from -f /tmp/luks-eggs-backup``` restore users and servers data from the LUKS volume /tmp/luks-eggs-backup.
+* ```eggs produce``` just users accounts and homes.
+* ```eggs produce --clone``` include all users data UNCRYPTED directly on the live.
+* ```eggs produce --backup``` include all users data CRYPTED on a LUKS volume inside the iso.
 
 **NOTE:** 
-* krill: ```sudo eggs install --cli``` will restore users and servers data automatically;
-* installing with calamares: when installation is finished, you need to mount the rootdir of your installed system and, give the following command: ```sudo eggs syncfrom -f /path/to/luks-eggs-backup -r /path/to/rootdir```
-* it's possbile actually to change the nest directory, editing configuration file ```/etc/penguins-eggs.d/eggs.yaml```. Example: ```set snapshot_dir: '/opt/eggs/'```, but you can't use the following: /etc, /boot, /usr and /var.
+Using ```sudo eggs krill --cli``` will restore your CRYPTED backup automatically. Of course the original passphrase will be request.
 
-**DISCLAIM:** using this feathures in non appropriate way can be dangerous for your data:
-* ```syncfrom``` replace all users homes and all servers homes with data from the luck-eggs-backup file, Force this data in a not appropriate system can easily end in a long disaster recovery.
 
 ## What distributions can I use?
 eggs was born on Debian strecth, buster and followinng. Actually full support Debian from jessie to bookworm/sid, Devuan beowulf, chimaera, daedalus, Ubuntu bionic, focal, jammy  - and all derivatives from them including Linux mint, Deepin, neon KDE, etc - ManjaroLinux and finally Arch, the last distro added.
@@ -132,7 +127,7 @@ $ npm install -g penguins-eggs
 $ eggs COMMAND
 running command...
 $ eggs (--version|-v)
-penguins-eggs/9.2.1 linux-x64 node-v16.16.0
+penguins-eggs/9.2.2 linux-x64 node-v16.16.0
 $ eggs --help [COMMAND]
 USAGE
   $ eggs COMMAND
@@ -158,7 +153,6 @@ USAGE
 * [`eggs krill`](#eggs-krill)
 * [`eggs mom`](#eggs-mom)
 * [`eggs produce`](#eggs-produce)
-* [`eggs remove`](#eggs-remove)
 * [`eggs syncfrom`](#eggs-syncfrom)
 * [`eggs syncto`](#eggs-syncto)
 * [`eggs tools clean`](#eggs-tools-clean)
@@ -189,7 +183,7 @@ DESCRIPTION
   adapt monitor resolution for VM only
 ```
 
-_See code: [src/commands/adapt.ts](https://github.com/pieroproietti/penguins-eggs/blob/v9.2.1/src/commands/adapt.ts)_
+_See code: [src/commands/adapt.ts](https://github.com/pieroproietti/penguins-eggs/blob/v9.2.2/src/commands/adapt.ts)_
 
 ## `eggs analyze`
 
@@ -210,7 +204,7 @@ EXAMPLES
   $ sudo eggs analyze
 ```
 
-_See code: [src/commands/analyze.ts](https://github.com/pieroproietti/penguins-eggs/blob/v9.2.1/src/commands/analyze.ts)_
+_See code: [src/commands/analyze.ts](https://github.com/pieroproietti/penguins-eggs/blob/v9.2.2/src/commands/analyze.ts)_
 
 ## `eggs autocomplete [SHELL]`
 
@@ -268,7 +262,7 @@ EXAMPLES
   install calamares and create it's configuration's files
 ```
 
-_See code: [src/commands/calamares.ts](https://github.com/pieroproietti/penguins-eggs/blob/v9.2.1/src/commands/calamares.ts)_
+_See code: [src/commands/calamares.ts](https://github.com/pieroproietti/penguins-eggs/blob/v9.2.2/src/commands/calamares.ts)_
 
 ## `eggs config`
 
@@ -292,7 +286,7 @@ EXAMPLES
   Configure and install prerequisites deb packages to run it
 ```
 
-_See code: [src/commands/config.ts](https://github.com/pieroproietti/penguins-eggs/blob/v9.2.1/src/commands/config.ts)_
+_See code: [src/commands/config.ts](https://github.com/pieroproietti/penguins-eggs/blob/v9.2.2/src/commands/config.ts)_
 
 ## `eggs dad`
 
@@ -312,7 +306,7 @@ DESCRIPTION
   ask help from daddy - configuration helper
 ```
 
-_See code: [src/commands/dad.ts](https://github.com/pieroproietti/penguins-eggs/blob/v9.2.1/src/commands/dad.ts)_
+_See code: [src/commands/dad.ts](https://github.com/pieroproietti/penguins-eggs/blob/v9.2.2/src/commands/dad.ts)_
 
 ## `eggs export deb`
 
@@ -403,7 +397,7 @@ DESCRIPTION
   informations about eggs configuration
 ```
 
-_See code: [src/commands/info.ts](https://github.com/pieroproietti/penguins-eggs/blob/v9.2.1/src/commands/info.ts)_
+_See code: [src/commands/info.ts](https://github.com/pieroproietti/penguins-eggs/blob/v9.2.2/src/commands/info.ts)_
 
 ## `eggs install`
 
@@ -430,7 +424,7 @@ EXAMPLES
   Install the system using krill installer
 ```
 
-_See code: [src/commands/install.ts](https://github.com/pieroproietti/penguins-eggs/blob/v9.2.1/src/commands/install.ts)_
+_See code: [src/commands/install.ts](https://github.com/pieroproietti/penguins-eggs/blob/v9.2.2/src/commands/install.ts)_
 
 ## `eggs kill`
 
@@ -452,7 +446,7 @@ EXAMPLES
   kill the eggs/free the nest
 ```
 
-_See code: [src/commands/kill.ts](https://github.com/pieroproietti/penguins-eggs/blob/v9.2.1/src/commands/kill.ts)_
+_See code: [src/commands/kill.ts](https://github.com/pieroproietti/penguins-eggs/blob/v9.2.2/src/commands/kill.ts)_
 
 ## `eggs krill`
 
@@ -494,7 +488,7 @@ DESCRIPTION
   ask for mommy - gui helper
 ```
 
-_See code: [src/commands/mom.ts](https://github.com/pieroproietti/penguins-eggs/blob/v9.2.1/src/commands/mom.ts)_
+_See code: [src/commands/mom.ts](https://github.com/pieroproietti/penguins-eggs/blob/v9.2.2/src/commands/mom.ts)_
 
 ## `eggs produce`
 
@@ -518,7 +512,7 @@ FLAGS
   -y, --yolk            -y force yolk renew
   --addons=<value>...   addons to be used: adapt, ichoice, pve, rsupport
   --basename=<value>    basename
-  --release             release: configure GUI installer to remove eggs and calamares after installation
+  --release             release: max compression, remove penguins-eggs and calamares after installation
   --theme=<value>       theme for livecd, calamares branding and partitions
 
 DESCRIPTION
@@ -556,41 +550,11 @@ EXAMPLES
   in /home/eggs/ovarium and you can customize all you need
 ```
 
-_See code: [src/commands/produce.ts](https://github.com/pieroproietti/penguins-eggs/blob/v9.2.1/src/commands/produce.ts)_
-
-## `eggs remove`
-
-remove eggs and others stuff
-
-```
-USAGE
-  $ eggs remove [-p] [-a] [-h] [-v]
-
-FLAGS
-  -a, --autoremove  remove eggs packages dependencies
-  -h, --help        Show CLI help.
-  -p, --purge       remove eggs configurations files
-  -v, --verbose     verbose
-
-DESCRIPTION
-  remove eggs and others stuff
-
-EXAMPLES
-  $ sudo eggs remove 
-  remove eggs
-
-  $ sudo eggs remove --purge 
-  remove eggs, eggs configurations, configuration's files
-
-  $ sudo eggs remove --autoremove 
-  remove eggs, eggs configurations, packages dependencies
-```
-
-_See code: [src/commands/remove.ts](https://github.com/pieroproietti/penguins-eggs/blob/v9.2.1/src/commands/remove.ts)_
+_See code: [src/commands/produce.ts](https://github.com/pieroproietti/penguins-eggs/blob/v9.2.2/src/commands/produce.ts)_
 
 ## `eggs syncfrom`
 
-Restore users, server and datas from luks-eggs-backup
+restore users and user data from a LUKS volumes
 
 ```
 USAGE
@@ -604,17 +568,17 @@ FLAGS
   --delete=<value>       rsync --delete delete extraneous files from dest dirs
 
 DESCRIPTION
-  Restore users, server and datas from luks-eggs-backup
+  restore users and user data from a LUKS volumes
 
 EXAMPLES
   $ sudo eggs restore
 ```
 
-_See code: [src/commands/syncfrom.ts](https://github.com/pieroproietti/penguins-eggs/blob/v9.2.1/src/commands/syncfrom.ts)_
+_See code: [src/commands/syncfrom.ts](https://github.com/pieroproietti/penguins-eggs/blob/v9.2.2/src/commands/syncfrom.ts)_
 
 ## `eggs syncto`
 
-saving users' datas and accounts on LUKS volume
+saves users and user data in a LUKS volume inside the iso
 
 ```
 USAGE
@@ -627,13 +591,13 @@ FLAGS
   --delete=<value>    rsync --delete delete extraneous files from dest dirs
 
 DESCRIPTION
-  saving users' datas and accounts on LUKS volume
+  saves users and user data in a LUKS volume inside the iso
 
 EXAMPLES
   $ sudo eggs syncto
 ```
 
-_See code: [src/commands/syncto.ts](https://github.com/pieroproietti/penguins-eggs/blob/v9.2.1/src/commands/syncto.ts)_
+_See code: [src/commands/syncto.ts](https://github.com/pieroproietti/penguins-eggs/blob/v9.2.2/src/commands/syncto.ts)_
 
 ## `eggs tools clean`
 
@@ -728,7 +692,7 @@ EXAMPLES
   update/upgrade the penguin's eggs tool
 ```
 
-_See code: [src/commands/update.ts](https://github.com/pieroproietti/penguins-eggs/blob/v9.2.1/src/commands/update.ts)_
+_See code: [src/commands/update.ts](https://github.com/pieroproietti/penguins-eggs/blob/v9.2.2/src/commands/update.ts)_
 
 ## `eggs version`
 
@@ -866,7 +830,7 @@ There is a [Penguin's eggs official book](https://penguins-eggs.net/book/) and s
 * [blog](https://penguins-eggs.net)    
 * [facebook penguin's eggs group](https://www.facebook.com/groups/128861437762355/)
 * [sources](https://github.com/pieroproietti/penguins-krill)
-* [telegram](telegram.me/PieroProietti)
+* [telegram](https://t.me/penguins_eggs) penguin's eggs channel
 * [twitter](https://twitter.com/pieroproietti)
 
 You can contact me at pieroproietti@gmail.com or [meet me](https://meet.jit.si/PenguinsEggsMeeting)

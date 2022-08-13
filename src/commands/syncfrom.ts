@@ -31,7 +31,7 @@ export default class Syncfrom extends Command {
   luksMountpoint = '/tmp/eggs-backup'
 
 
-  static description = 'Restore users, server and datas from luks-eggs-backup'
+  static description = 'restore users and user data from a LUKS volumes'
 
   static flags = {
     delete: Flags.string({ description: 'rsync --delete delete extraneous files from dest dirs' }),

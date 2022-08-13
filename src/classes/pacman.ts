@@ -183,13 +183,13 @@ export default class Pacman {
   static packages(remove = false, verbose = false): string[] {
     let packages: string[] = []
     if (this.distro().familyId === 'debian') {
-      packages = Debian.packages(remove, verbose)
+      packages = [] // Debian.packages(remove, verbose)
     } else if (this.distro().familyId === 'fedora') {
-      packages = Fedora.packages(remove, verbose)
+      packages = [] // Fedora.packages(remove, verbose)
     } else if (this.distro().familyId === 'archlinux') {
-      packages = Archlinux.packages(remove, verbose)
+      packages = [] // Archlinux.packages(remove, verbose)
     } else if (this.distro().familyId === 'suse') {
-      packages = Suse.packages(remove, verbose)
+      packages = [] // packages = Suse.packages(remove, verbose)
     }
 
     return packages
@@ -262,7 +262,7 @@ export default class Pacman {
   /**
    *
    */
-  static async calamaresInstall(verbose = true): Promise<void> {
+  static async calamaresInstall(verbose = false): Promise<void> {
     if (this.isInstalledGui()) {
       if (this.distro().familyId === 'debian') {
         await Debian.calamaresInstall(verbose)

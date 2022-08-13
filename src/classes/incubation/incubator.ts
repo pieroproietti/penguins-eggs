@@ -65,14 +65,14 @@ export default class Incubator {
     // DEBIAN
     switch (this.distro.codenameLikeId) {
       case 'jessie': {
-        const jessie = new Jessie(this.installer, this.remix, this.distro, release, this.user_opt, this.verbose)
+        const jessie = new Jessie(this.installer, this.remix, this.distro, this.user_opt, release, this.verbose)
         await jessie.create()
 
         break
       }
 
       case 'stretch': {
-        const stretch = new Jessie(this.installer, this.remix, this.distro, release, this.user_opt, this.verbose)
+        const stretch = new Jessie(this.installer, this.remix, this.distro, this.user_opt, release, this.verbose)
         await stretch.create()
 
         break
@@ -80,103 +80,106 @@ export default class Incubator {
 
 
       case 'buster': {
-        const buster = new Buster(this.installer, this.remix, this.distro, release, this.user_opt, this.verbose)
+        const buster = new Buster(this.installer, this.remix, this.distro, this.user_opt, release, this.verbose)
         await buster.create()
 
         break
       }
       case 'bullseye': {
-        const bullseye = new Buster(this.installer, this.remix, this.distro, release, this.user_opt, this.verbose)
+        const bullseye = new Buster(this.installer, this.remix, this.distro, this.user_opt, release, this.verbose)
         await bullseye.create()
 
         break
       }
 
       case 'bookworm': {
-        const bookworm = new Buster(this.installer, this.remix, this.distro, release, this.user_opt, this.verbose)
+        const bookworm = new Buster(this.installer, this.remix, this.distro, this.user_opt, release, this.verbose)
         await bookworm.create()
         // DEVUAN
 
         break
       }
 
+      /**
+       * DEVUAL
+       */
       case 'beowulf': {
-        const beowulf = new Buster(this.installer, this.remix, this.distro, release, this.user_opt, this.verbose)
+        const beowulf = new Buster(this.installer, this.remix, this.distro, this.user_opt, release, this.verbose)
         await beowulf.create()
 
         break
       }
 
       case 'chimaera': {
-        const chimaera = new Buster(this.installer, this.remix, this.distro, release, this.user_opt, this.verbose)
+        const chimaera = new Buster(this.installer, this.remix, this.distro, this.user_opt, release, this.verbose)
         await chimaera.create()
 
         break
       }
 
       case 'daedalus': {
-        const daedalus = new Buster(this.installer, this.remix, this.distro, release, this.user_opt, this.verbose)
+        const daedalus = new Buster(this.installer, this.remix, this.distro, this.user_opt, release, this.verbose)
         await daedalus.create()
-
-        // UBUNTU
 
         break
       }
 
       /**
-       * Manjaro
+       * UBUNTU
        */
-      case 'rolling': {
-        release = true
-        const rolling = new Rolling(this.installer, this.remix, this.distro, release, this.user_opt, this.verbose)
-        await rolling.create()
-
-        break
-      }
-
       case 'focal': {
-        const focal = new Focal(this.installer, this.remix, this.distro, release, this.user_opt, this.verbose)
+        const focal = new Focal(this.installer, this.remix, this.distro, this.user_opt, release, this.verbose)
         await focal.create()
 
         break
       }
 
       case 'groovy': {
-        const groovy = new Focal(this.installer, this.remix, this.distro, release, this.user_opt, this.verbose)
+        const groovy = new Focal(this.installer, this.remix, this.distro, this.user_opt, release, this.verbose)
         await groovy.create()
 
         break
       }
 
       case 'hirsute': {
-        const hirsute = new Focal(this.installer, this.remix, this.distro, release, this.user_opt, this.verbose)
+        const hirsute = new Focal(this.installer, this.remix, this.distro, this.user_opt, release, this.verbose)
         await hirsute.create()
 
         break
       }
 
       case 'impish': {
-        const impish = new Focal(this.installer, this.remix, this.distro, release, this.user_opt, this.verbose)
+        const impish = new Focal(this.installer, this.remix, this.distro, this.user_opt, release, this.verbose)
         await impish.create()
 
         break
       }
 
       case 'jammy': {
-        const jammy = new Focal(this.installer, this.remix, this.distro, release, this.user_opt, this.verbose)
+        const jammy = new Focal(this.installer, this.remix, this.distro, this.user_opt, release, this.verbose)
         await jammy.create()
 
         break
       }
 
       case 'bionic': {
-        const bionic = new Bionic(this.installer, this.remix, this.distro, release, this.user_opt, this.verbose)
+        const bionic = new Bionic(this.installer, this.remix, this.distro, this.user_opt, release, this.verbose)
         await bionic.create()
 
         break
       }
 
-     
+      /**
+       * Arch
+       */
+       case 'rolling': {
+        release = true
+        const rolling = new Rolling(this.installer, this.remix, this.distro, this.user_opt, release, this.verbose)
+        await rolling.create()
+
+        break
+      }
+
       // No default
     }
 
