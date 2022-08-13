@@ -632,4 +632,3 @@ export default class Sequence {
    // await exec('clear', Utils.setEcho(false))
    render(elem, opt)
 }
-

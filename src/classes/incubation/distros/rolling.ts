@@ -41,8 +41,7 @@
     * @param verbose
     */
    constructor(installer: IInstaller, remix: IRemix, distro: IDistro, user_opt: string, release = false, verbose = false) {
-    console.log('rolling release: ' + release)
-
+    
      this.installer = installer
  
      this.remix = remix
@@ -77,7 +76,7 @@
      // await fisherman.buildCalamaresModule('bootloader-config', true)
      await fisherman.buildModule('grubcf')
      await fisherman.buildModule('bootloader')
-     await fisherman.modulePackages(this.distro, this.release) //
+     await fisherman.modulePackages(this.distro, this.release)
      await fisherman.buildModule('luksbootkeyfile')
      await fisherman.buildModule('plymouthcfg')
      // await fisherman.buildModule('initramfscfg')
