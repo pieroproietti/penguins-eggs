@@ -93,7 +93,6 @@ export default class Calamares extends Command {
               Utils.warning('Configuring installer')
               await this.settings.loadRemix(this.settings.config.snapshot_basename, theme)
               this.incubator = new Incubator(this.settings.remix, this.settings.distro, this.settings.config.user_opt, verbose)
-               console.log('calamares relase: ' + release)
               await this.incubator.config(release)
             }
           }

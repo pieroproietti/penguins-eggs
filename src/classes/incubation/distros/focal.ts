@@ -41,7 +41,7 @@ export class Focal {
    * @param displaymanager
    * @param verbose
    */
-  constructor(installer: IInstaller, remix: IRemix, distro: IDistro, release: boolean, user_opt: string, verbose = false) {
+  constructor(installer: IInstaller, remix: IRemix, distro: IDistro, user_opt: string, release = false, verbose = false) {
     this.installer = installer
     this.remix = remix
     this.distro = distro

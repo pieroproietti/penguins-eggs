@@ -261,7 +261,6 @@ export default class Fisherman {
    * usa i moduli-ts
    */
   async modulePackages(distro: IDistro, release = false) {
-    console.log('release: ' + release)
     const name = 'packages'
     const removePackages = require('./fisherman-helper/packages').remove
     const tryInstall = require('./fisherman-helper/packages').tryInstall
