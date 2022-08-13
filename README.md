@@ -64,14 +64,12 @@ We have two methods to save in the live systema all our data: clone and backup.
 
 ```eggs produces --fast --backup``` saves our data within the generated iso using a LUKS volume. Our data will NOT be visible in the live system but can be reinstalled automatically with krill installer. Even having the generated image available, our data will be protected by the LUKS passphrase.
 
-You can use the backup mode by simply adding --backup in the produce command. This way eggs will save your users data and accounts and will not add a live user, you will have to log in with the main user of your system with the his password. **Note:** since eggs always configures autologin, you may have a security risk with valuable data. 
-
 * ```eggs produce``` just users accounts and homes.
 * ```eggs produce --clone``` include all users data UNCRYPTED directly on the live.
 * ```eggs produce --backup``` include all users data CRYPTED on a LUKS volume inside the iso.
 
 **NOTE:** 
-* krill: ```sudo eggs krill --cli``` will restore your CRYPTED backup automatically. Of course the original passphrase will be request.
+Using ```sudo eggs krill --cli``` will restore your CRYPTED backup automatically. Of course the original passphrase will be request.
 
 
 ## What distributions can I use?
