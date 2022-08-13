@@ -124,7 +124,7 @@ export default class Incubator {
       }
 
       /**
-       * Manjaro
+       * Arch/Manjato
        */
       case 'rolling': {
         release = true
