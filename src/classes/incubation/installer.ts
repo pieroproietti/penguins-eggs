@@ -14,7 +14,6 @@
 import { IInstaller, IRemix } from '../../interfaces'
 import Distro from '../../classes/distro'
 import Pacman from '../../classes/pacman'
-import Utils from '../utils'
 
 export function installer(): IInstaller {
   const installer = {} as IInstaller

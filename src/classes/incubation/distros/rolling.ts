@@ -40,7 +40,7 @@
     * @param displaymanager
     * @param verbose
     */
-   constructor(installer: IInstaller, remix: IRemix, distro: IDistro, release = false, user_opt: string, verbose = false) {
+   constructor(installer: IInstaller, remix: IRemix, distro: IDistro, user_opt: string, release = false, verbose = false) {
     console.log('rolling release: ' + release)
 
      this.installer = installer
