@@ -56,26 +56,23 @@ eggs include a CLI installer named krill, this let you to produce and install se
 ### addons and themes
 Addons are used mostly to let third parties to develop extensions. Note that currently we have an extension for the theme that includes both branding calamares, link and installer icon. In addition, also as an addon has been developed choose between GUI or CLI installation, adapt the video resolution, link to remote support, etc.
 
-### backup
-You can use the backup mode by simply adding --backup in the produce command. This way eggs will save your users data and accounts and will not add a live user, you will have to log in with the main user of your system with the his password. **Note:** since eggs always configures autologin, you may have a security risk with valuable data. Use this option only for your personal stuff and do not share the iso on the network.
+### backup/clone
 
-* ```eggs produce``` just remove users accounts and home. This let to have working servers examples;
-* ```eggs produce --backup``` remove servers and users data from live, and put them on a LUKS volume.
+We have two methods to save in the live systema all our data: clone and backup.
 
-We have another two commands for backup/restore: ```eggs syncfrom``` and ```eggs syncto```. A working installation, can easily sync users and servers data to a luks-eggs-backup file:
+```eggs produces --fast --clone``` saves our users and our data directly in the generated iso. The data will be visible directly from the live and accessible to anyone who gets a copy.
 
-* ```eggs syncto -f /tmp/luks-eggs-backup``` backup users and servers data to LUKS volume /tmp/luks-eggs-backup:
+```eggs produces --fast --backup``` saves our data within the generated iso using a LUKS volume. Our data will NOT be visible in the live system but can be reinstalled automatically with krill installer. Even having the generated image available, our data will be protected by the LUKS passphrase.
 
-Or a new installation, can easyly get users and servers data from a luks-eggs-backup:
-* ```eggs syncfrom from -f /tmp/luks-eggs-backup``` restore users and servers data from the LUKS volume /tmp/luks-eggs-backup.
+You can use the backup mode by simply adding --backup in the produce command. This way eggs will save your users data and accounts and will not add a live user, you will have to log in with the main user of your system with the his password. **Note:** since eggs always configures autologin, you may have a security risk with valuable data. 
+
+* ```eggs produce``` just users accounts and homes.
+* ```eggs produce --clone``` include all users data UNCRYPTED directly on the live.
+* ```eggs produce --backup``` include all users data CRYPTED on a LUKS volume inside the iso.
 
 **NOTE:** 
-* krill: ```sudo eggs install --cli``` will restore users and servers data automatically;
-* installing with calamares: when installation is finished, you need to mount the rootdir of your installed system and, give the following command: ```sudo eggs syncfrom -f /path/to/luks-eggs-backup -r /path/to/rootdir```
-* it's possbile actually to change the nest directory, editing configuration file ```/etc/penguins-eggs.d/eggs.yaml```. Example: ```set snapshot_dir: '/opt/eggs/'```, but you can't use the following: /etc, /boot, /usr and /var.
+* krill: ```sudo eggs krill --cli``` will restore your CRYPTED backup automatically. Of course the original passphrase will be request.
 
-**DISCLAIM:** using this feathures in non appropriate way can be dangerous for your data:
-* ```syncfrom``` replace all users homes and all servers homes with data from the luck-eggs-backup file, Force this data in a not appropriate system can easily end in a long disaster recovery.
 
 ## What distributions can I use?
 eggs was born on Debian strecth, buster and followinng. Actually full support Debian from jessie to bookworm/sid, Devuan beowulf, chimaera, daedalus, Ubuntu bionic, focal, jammy  - and all derivatives from them including Linux mint, Deepin, neon KDE, etc - ManjaroLinux and finally Arch, the last distro added.

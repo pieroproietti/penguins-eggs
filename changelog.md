@@ -18,6 +18,10 @@ You can follow the project also consulting the [commit history](https://github.c
 ## Changelog
 Versions are listed on reverse order, the first is the last one. Old versions are moved to [versions](https://sourceforge.net/projects/penguins-eggs/files/packages-deb/versions/). 
 
+### eggs-9.2.2
+* bugfix flag --release, actually passing release to produce correctly configurare calamares to remove penguins-eggs and itself from the installed system;
+* removed same commands actually unusefull: eggs config and eggs remove (config is includede in dad and remove fully became a problem of package manager).
+
 ### eggs-9.2.1
 * produce: added flag --clone. 
 
