@@ -190,14 +190,7 @@ export default class Ovary {
          * L'installer prende il tema da settings.remix.branding
          */
         this.incubator = new Incubator(this.settings.remix, this.settings.distro, this.settings.config.user_opt, verbose)
-
-        /**
-         * remove calamares and eggs
-         * for clone and release
-         */
-        if (this.clone || release) {
-          await this.incubator.config(true)
-        }
+        await this.incubator.config(release)
 
         await this.syslinux()
         await this.isolinux(this.settings.config.theme)

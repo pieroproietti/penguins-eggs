@@ -262,7 +262,7 @@ export default class Pacman {
   /**
    *
    */
-  static async calamaresInstall(verbose = true): Promise<void> {
+  static async calamaresInstall(verbose = false): Promise<void> {
     if (this.isInstalledGui()) {
       if (this.distro().familyId === 'debian') {
         await Debian.calamaresInstall(verbose)
