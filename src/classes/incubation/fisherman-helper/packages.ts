@@ -4,6 +4,8 @@ import { IDistro } from '../../../interfaces'
  */
 import Pacman from '../../pacman'
 
+
+
 /**
  * Work only with:
  * - calamares
@@ -14,7 +16,6 @@ import Pacman from '../../pacman'
 export function remove(distro: IDistro): string {
 
   let removePackages = ["calamares"]
-    
   if (distro.familyId === 'archlinux') {
     removePackages.push("penguins-eggs")
   } if (distro.familyId === 'debian') {

@@ -260,19 +260,25 @@ export default class Fisherman {
   /**
    * usa i moduli-ts
    */
-  async modulePackages(distro: IDistro, remove = false) {
+  async modulePackages(distro: IDistro, release = false) {
+    console.log('release: ' + release)
     const name = 'packages'
     const removePackages = require('./fisherman-helper/packages').remove
     const tryInstall = require('./fisherman-helper/packages').tryInstall
     this.buildModule(name)
-    if (remove) {
-      shx.sed('-i', '{{remove}}', removePackages(distro), this.installer.modules + name + '.conf')
-    } else {
-      shx.sed('-i', '{{remove}}', '', this.installer.modules + name + '.conf')
+
+    let toRemove = ''
+    if (release) {
+      toRemove = removePackages(distro)
     }
 
-    shx.sed('-i', '{{try_install}}', tryInstall(distro), this.installer.modules + name + '.conf')
+    let toInstall = tryInstall(distro)
+
+    shx.sed('-i', '{{remove}}', toRemove, this.installer.modules + name + '.conf')
+    shx.sed('-i', '{{try_install}}', toInstall , this.installer.modules + name + '.conf')
+   
   }
+
 
   /**
    * Al momento rimane con la vecchia configurazione
