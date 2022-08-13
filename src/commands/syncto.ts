@@ -50,7 +50,7 @@ export default class Syncto extends Command {
 
     luksMountpoint = '/tmp/eggs-backup'
 
-    static description = `saving users' datas and accounts on LUKS volume`
+    static description = `saves users and user data in a LUKS volume inside the iso`
 
     static flags = {
         delete: Flags.string({ description: 'rsync --delete delete extraneous files from dest dirs' }),

@@ -148,7 +148,7 @@ Feel free to contact [me](https://gitter.im/penguins-eggs-1/community?source=org
 * [facebook](https://www.facebook.com/groups/128861437762355/) Penguin's eggs group
 * [mail](mailto://piero.proietti@gmail.com): piero.proietti@gmail.com
 * [sources](https://github.com/pieroproietti/penguins-krill)
-* [telegram](telegram.me/PieroProietti) PieroProietti
+* [telegram](https://t.me/penguins_eggs) penguin's eggs channel
 * [twitter](https://twitter.com/pieroproietti) pieroproietti
 
 ## Copyright and licenses

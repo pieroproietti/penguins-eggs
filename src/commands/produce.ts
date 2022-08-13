@@ -1,6 +1,3 @@
-/* eslint-disable unicorn/no-process-exit */
-/* eslint-disable no-process-exit */
-/* eslint-disable no-console */
 /**
  * penguins-eggs-v7 based on Debian live
  * author: Piero Proietti
@@ -16,7 +13,7 @@ import chalk from 'chalk'
 import { IMyAddons } from '../interfaces'
 import fs from 'node:fs'
 import path from 'node:path'
-import Settings from '../classes/settings'
+
 
 export default class Produce extends Command {
   static flags = {
@@ -33,7 +30,7 @@ export default class Produce extends Command {
     help: Flags.help({ char: 'h' }),
     theme: Flags.string({ description: 'theme for livecd, calamares branding and partitions' }),
     addons: Flags.string({ multiple: true, description: 'addons to be used: adapt, ichoice, pve, rsupport' }),
-    release: Flags.boolean({ description: 'release: configure GUI installer to remove eggs and calamares after installation' })
+    release: Flags.boolean({ description: 'release: max compression, remove penguins-eggs and calamares after installation' })
   }
 
   static description = 'produce a live image from your system whithout your data'

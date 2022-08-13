@@ -25,7 +25,6 @@ krill --crypted --pve --help --verbose
 kill --help --verbose
 mom --help
 produce --prefix --basename --backup --clone --fast --normal --max --verbose --yolk --script --help --theme --addons --release
-remove --purge --autoremove --help --verbose
 syncfrom --delete --file --rootdir --help --verbose
 syncto --delete --file --help --verbose
 tools:clean --help --verbose
@@ -38,8 +37,8 @@ wardrobe:ironing --wardrobe --verbose --help
 wardrobe:list --verbose --help
 wardrobe:show --wardrobe --json --verbose --help
 wardrobe:wear --wardrobe --no_accessories --no_firmwares --silent --verbose --help
-help --nested-commands
 autocomplete --refresh-cache
+help --nested-commands
 version --json --verbose
 "
 
