@@ -105,6 +105,7 @@ export default class Fisherman {
    * @param replaces [['search','replace']]
    */
   async buildModule(name: string, vendor = '') {
+    console.log('creating... ' + name)
     let moduleSource = path.resolve(__dirname, this.installer.templateModules + name + '.yml')
 
     /**
@@ -132,7 +133,9 @@ export default class Fisherman {
 
     const moduleDest = this.installer.modules + name + '.conf'
     if (fs.existsSync(moduleSource)) {
-      if (this.verbose) this.show(name, 'module', moduleDest)
+      if (this.verbose) {
+        this.show(name, 'module', moduleDest)
+      }
       shx.cp(moduleSource, moduleDest)
     } else if (this.verbose) {
       console.log('unchanged: ' + chalk.greenBright(name))
@@ -274,8 +277,8 @@ export default class Fisherman {
     let toInstall = tryInstall(distro)
 
     shx.sed('-i', '{{remove}}', toRemove, this.installer.modules + name + '.conf')
-    shx.sed('-i', '{{try_install}}', toInstall , this.installer.modules + name + '.conf')
-   
+    shx.sed('-i', '{{try_install}}', toInstall, this.installer.modules + name + '.conf')
+
   }
 
 

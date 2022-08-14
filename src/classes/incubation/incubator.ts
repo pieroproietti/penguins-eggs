@@ -173,7 +173,6 @@ export default class Incubator {
        * Arch
        */
        case 'rolling': {
-        release = true
         const rolling = new Rolling(this.installer, this.remix, this.distro, this.user_opt, release, this.verbose)
         await rolling.create()
 
