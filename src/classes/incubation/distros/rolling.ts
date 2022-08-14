@@ -22,17 +22,18 @@
   *
   */
  export class Rolling {
-   verbose = false
- 
    installer = {} as IInstaller
  
    remix: IRemix
  
    distro: IDistro
  
+   user_opt: string
+ 
    release = false
  
-   user_opt: string
+   verbose = false
+ 
  
    /**
     * @param remix
@@ -74,7 +75,7 @@
      await fisherman.buildModule('hwclock')
      // await fisherman.buildModule('services-systemd')
      // await fisherman.buildCalamaresModule('bootloader-config', true)
-     await fisherman.buildModule('grubcf')
+     await fisherman.buildModule('grubcf')  
      await fisherman.buildModule('bootloader')
      await fisherman.modulePackages(this.distro, this.release)
      await fisherman.buildModule('luksbootkeyfile')
