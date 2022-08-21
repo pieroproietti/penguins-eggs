@@ -91,7 +91,8 @@ eggs has been present in AUR for a long time, even without my knowledge. I am cu
 
 To install eggs on Arch, simply ```git clone https://github.com/pieroproietti/penguins-eggs-arch```, ```cd penguins-eggs-arch```, then  ```makepkg -si```.
 
-The same for manjaroLinux: ```git clone https://github.com/pieroproietti/penguins-eggs-manjaro```, ```cd penguins-eggs-arch```, then  ```makepkg -si```.
+
+The same for manjaroLinux: ```git clone https://github.com/pieroproietti/penguins-eggs-manjaro```, ```cd penguins-eggs-manjaro```, then  ```makepkg -si```.
 
 ## features
 
