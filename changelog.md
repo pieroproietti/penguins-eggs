@@ -20,7 +20,7 @@ Versions are listed on reverse order, the first is the last one. Old versions ar
 
 ### eggs-9.2.2
 * bugfix flag --release, actually passing release to produce correctly configurare calamares to remove penguins-eggs and itself from the installed system;
-* removed same commands actually unusefull: eggs config and eggs remove (config is includede in dad and remove fully became a problem of package manager).
+* removed same commands actually unusefull: eggs config and eggs remove (config is included in dad and remove fully became a problem of package manager).
 
 ### eggs-9.2.1
 * produce: added flag --clone. 
