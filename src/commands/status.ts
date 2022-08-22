@@ -8,8 +8,8 @@ import information from '../components/elements/information'
 /**
  *
  */
-export default class Info extends Command {
-  static description = 'informations about eggs configuration'
+export default class Status extends Command {
+  static description = 'informations about eggs status'
 
   static flags = {
     verbose: Flags.boolean({ char: 'v' }),
@@ -20,7 +20,7 @@ export default class Info extends Command {
    *
    */
   async run(): Promise<void> {
-    const { flags } = await this.parse(Info)
+    const { flags } = await this.parse(Status)
 
     let verbose = false
     if (flags.verbose) {
