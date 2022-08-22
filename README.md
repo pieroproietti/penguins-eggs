@@ -18,7 +18,6 @@ penguins-eggs
 <!-- toc -->
 * [Index](#index)
 * [Presentation](#presentation)
-* [Packages](#packages)
 * [Usage](#usage)
 * [Commands](#commands)
 * [Terminal samples](#terminal-samples)
@@ -111,7 +110,7 @@ I hope peoples will be interested in wardrobe and you will end to fork the main 
 You can read more in wardrobe on [penguin's eggs blog](https://penguins-eggs.net/2022/04/12/wardrobe-colibri-duck-eagle-and-owl/). The results of mine customizations are mostly under [Debian bullseye](https://sourceforge.net/projects/penguins-eggs/files/ISOS/debian/bullseye/), [Devuan chimaera](ttps://sourceforge.net/projects/penguins-eggs/files/ISOS/devuan/chimaera/) and [Ubuntu jammy](https://sourceforge.net/projects/penguins-eggs/files/ISOS/ubuntu/jammy/) on my sourgeforce page.
 
 ### krill
-eggs include a CLI installer named krill, this let you to produce and install servers configurations. krill use a nice TUI interface using the same, configuration created by eggs for [calamares](calamares.io). This lead to have "about the same" experience installing, from old distros to new ones and for GUI and CLI. To force using krill in place of calamares in a GUI system just: **sudo eggs install --cli**
+eggs include a CLI installer named krill, this let you to produce and install servers configurations. krill use a nice TUI interface using the same, configuration created by eggs for [calamares](calamares.io). This lead to have "about the same" experience installing, from old distros to new ones and for GUI and CLI. It's possible with krill to do unattended installations, simply add ```--unattended``` flag and the values in ```/etc/penguins-eggs.d/krill.yaml``` will be used for installation.
 
 ### addons and themes
 Addons are used mostly to let third parties to develop extensions. Note that currently we have an extension for the theme that includes both branding calamares, link and installer icon. In addition, also as an addon has been developed choose between GUI or CLI installation, adapt the video resolution, link to remote support, etc.
@@ -144,7 +143,7 @@ $ npm install -g penguins-eggs
 $ eggs COMMAND
 running command...
 $ eggs (--version|-v)
-penguins-eggs/9.2.2 linux-x64 node-v16.16.0
+penguins-eggs/9.2.3 linux-x64 node-v16.16.0
 $ eggs --help [COMMAND]
 USAGE
   $ eggs COMMAND
@@ -164,12 +163,11 @@ USAGE
 * [`eggs export docs`](#eggs-export-docs)
 * [`eggs export iso`](#eggs-export-iso)
 * [`eggs help [COMMAND]`](#eggs-help-command)
-* [`eggs info`](#eggs-info)
 * [`eggs install`](#eggs-install)
 * [`eggs kill`](#eggs-kill)
-* [`eggs krill`](#eggs-krill)
 * [`eggs mom`](#eggs-mom)
 * [`eggs produce`](#eggs-produce)
+* [`eggs status`](#eggs-status)
 * [`eggs syncfrom`](#eggs-syncfrom)
 * [`eggs syncto`](#eggs-syncto)
 * [`eggs tools clean`](#eggs-tools-clean)
@@ -200,7 +198,7 @@ DESCRIPTION
   adapt monitor resolution for VM only
 ```
 
-_See code: [src/commands/adapt.ts](https://github.com/pieroproietti/penguins-eggs/blob/v9.2.2/src/commands/adapt.ts)_
+_See code: [src/commands/adapt.ts](https://github.com/pieroproietti/penguins-eggs/blob/v9.2.3/src/commands/adapt.ts)_
 
 ## `eggs analyze`
 
@@ -221,7 +219,7 @@ EXAMPLES
   $ sudo eggs analyze
 ```
 
-_See code: [src/commands/analyze.ts](https://github.com/pieroproietti/penguins-eggs/blob/v9.2.2/src/commands/analyze.ts)_
+_See code: [src/commands/analyze.ts](https://github.com/pieroproietti/penguins-eggs/blob/v9.2.3/src/commands/analyze.ts)_
 
 ## `eggs autocomplete [SHELL]`
 
@@ -279,7 +277,7 @@ EXAMPLES
   install calamares and create it's configuration's files
 ```
 
-_See code: [src/commands/calamares.ts](https://github.com/pieroproietti/penguins-eggs/blob/v9.2.2/src/commands/calamares.ts)_
+_See code: [src/commands/calamares.ts](https://github.com/pieroproietti/penguins-eggs/blob/v9.2.3/src/commands/calamares.ts)_
 
 ## `eggs config`
 
@@ -303,7 +301,7 @@ EXAMPLES
   Configure and install prerequisites deb packages to run it
 ```
 
-_See code: [src/commands/config.ts](https://github.com/pieroproietti/penguins-eggs/blob/v9.2.2/src/commands/config.ts)_
+_See code: [src/commands/config.ts](https://github.com/pieroproietti/penguins-eggs/blob/v9.2.3/src/commands/config.ts)_
 
 ## `eggs dad`
 
@@ -323,7 +321,7 @@ DESCRIPTION
   ask help from daddy - configuration helper
 ```
 
-_See code: [src/commands/dad.ts](https://github.com/pieroproietti/penguins-eggs/blob/v9.2.2/src/commands/dad.ts)_
+_See code: [src/commands/dad.ts](https://github.com/pieroproietti/penguins-eggs/blob/v9.2.3/src/commands/dad.ts)_
 
 ## `eggs export deb`
 
@@ -398,50 +396,30 @@ DESCRIPTION
 
 _See code: [@oclif/plugin-help](https://github.com/oclif/plugin-help/blob/v5.1.12/src/commands/help.ts)_
 
-## `eggs info`
-
-informations about eggs configuration
-
-```
-USAGE
-  $ eggs info [-v] [-h]
-
-FLAGS
-  -h, --help     Show CLI help.
-  -v, --verbose
-
-DESCRIPTION
-  informations about eggs configuration
-```
-
-_See code: [src/commands/info.ts](https://github.com/pieroproietti/penguins-eggs/blob/v9.2.2/src/commands/info.ts)_
-
 ## `eggs install`
 
 command-line system installer - the egg became a penguin!
 
 ```
 USAGE
-  $ eggs install [-k] [-p] [-h] [-v]
+  $ eggs install [-u] [-k] [-p] [-h] [-v]
 
 FLAGS
-  -h, --help     Show CLI help.
-  -k, --crypted  crypted CLI installation
-  -p, --pve      Proxmox VE install
-  -v, --verbose  verbose
+  -h, --help        Show CLI help.
+  -k, --crypted     crypted CLI installation
+  -p, --pve         Proxmox VE install
+  -u, --unattended  unattended CLI installation
+  -v, --verbose     verbose
 
 DESCRIPTION
   command-line system installer - the egg became a penguin!
-
-ALIASES
-  $ eggs krill
 
 EXAMPLES
   $ eggs install
   Install the system using krill installer
 ```
 
-_See code: [src/commands/install.ts](https://github.com/pieroproietti/penguins-eggs/blob/v9.2.2/src/commands/install.ts)_
+_See code: [src/commands/install.ts](https://github.com/pieroproietti/penguins-eggs/blob/v9.2.3/src/commands/install.ts)_
 
 ## `eggs kill`
 
@@ -463,32 +441,7 @@ EXAMPLES
   kill the eggs/free the nest
 ```
 
-_See code: [src/commands/kill.ts](https://github.com/pieroproietti/penguins-eggs/blob/v9.2.2/src/commands/kill.ts)_
-
-## `eggs krill`
-
-command-line system installer - the egg became a penguin!
-
-```
-USAGE
-  $ eggs krill [-k] [-p] [-h] [-v]
-
-FLAGS
-  -h, --help     Show CLI help.
-  -k, --crypted  crypted CLI installation
-  -p, --pve      Proxmox VE install
-  -v, --verbose  verbose
-
-DESCRIPTION
-  command-line system installer - the egg became a penguin!
-
-ALIASES
-  $ eggs krill
-
-EXAMPLES
-  $ eggs install
-  Install the system using krill installer
-```
+_See code: [src/commands/kill.ts](https://github.com/pieroproietti/penguins-eggs/blob/v9.2.3/src/commands/kill.ts)_
 
 ## `eggs mom`
 
@@ -505,7 +458,7 @@ DESCRIPTION
   ask for mommy - gui helper
 ```
 
-_See code: [src/commands/mom.ts](https://github.com/pieroproietti/penguins-eggs/blob/v9.2.2/src/commands/mom.ts)_
+_See code: [src/commands/mom.ts](https://github.com/pieroproietti/penguins-eggs/blob/v9.2.3/src/commands/mom.ts)_
 
 ## `eggs produce`
 
@@ -567,7 +520,25 @@ EXAMPLES
   in /home/eggs/ovarium and you can customize all you need
 ```
 
-_See code: [src/commands/produce.ts](https://github.com/pieroproietti/penguins-eggs/blob/v9.2.2/src/commands/produce.ts)_
+_See code: [src/commands/produce.ts](https://github.com/pieroproietti/penguins-eggs/blob/v9.2.3/src/commands/produce.ts)_
+
+## `eggs status`
+
+informations about eggs status
+
+```
+USAGE
+  $ eggs status [-v] [-h]
+
+FLAGS
+  -h, --help     Show CLI help.
+  -v, --verbose
+
+DESCRIPTION
+  informations about eggs status
+```
+
+_See code: [src/commands/status.ts](https://github.com/pieroproietti/penguins-eggs/blob/v9.2.3/src/commands/status.ts)_
 
 ## `eggs syncfrom`
 
@@ -591,7 +562,7 @@ EXAMPLES
   $ sudo eggs restore
 ```
 
-_See code: [src/commands/syncfrom.ts](https://github.com/pieroproietti/penguins-eggs/blob/v9.2.2/src/commands/syncfrom.ts)_
+_See code: [src/commands/syncfrom.ts](https://github.com/pieroproietti/penguins-eggs/blob/v9.2.3/src/commands/syncfrom.ts)_
 
 ## `eggs syncto`
 
@@ -614,7 +585,7 @@ EXAMPLES
   $ sudo eggs syncto
 ```
 
-_See code: [src/commands/syncto.ts](https://github.com/pieroproietti/penguins-eggs/blob/v9.2.2/src/commands/syncto.ts)_
+_See code: [src/commands/syncto.ts](https://github.com/pieroproietti/penguins-eggs/blob/v9.2.3/src/commands/syncto.ts)_
 
 ## `eggs tools clean`
 
@@ -709,7 +680,7 @@ EXAMPLES
   update/upgrade the penguin's eggs tool
 ```
 
-_See code: [src/commands/update.ts](https://github.com/pieroproietti/penguins-eggs/blob/v9.2.2/src/commands/update.ts)_
+_See code: [src/commands/update.ts](https://github.com/pieroproietti/penguins-eggs/blob/v9.2.3/src/commands/update.ts)_
 
 ## `eggs version`
 

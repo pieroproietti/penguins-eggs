@@ -12,8 +12,7 @@ penguins-eggs PKGBUILD
 
 # Arch
 
-## Build and install penguins-eggs
-
+## Development repository
 Copy and paste follow instructions
 ```
 git clone https://github.com/pieroproietti/penguins-eggs-arch
@@ -21,9 +20,19 @@ cd penguins-eggs-arch
 makepkg -srcCi
 ```
 
+## AUR repository
+Copy and paste follow instructions
+```
+git clone https://aur.archlinux.org/packages/penguins-eggs
+cd penguins-eggs
+makepkg -srcCi
+```
+
+You can vote for penguins-eggs in the AUR repository, and suggest my a way to bring it in chaotic-aur, thanks.
+
 # Manjaro
 
-## Build and install penguins-eggs
+## Development repository
 
 Copy and paste follow instructions
 ```

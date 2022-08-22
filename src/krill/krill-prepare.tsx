@@ -8,7 +8,7 @@
 
 /**
  * Ideally, I want to respect calamares way, remplementing the same (SEMPLIFIED) steps
- * for CLI
+ * in a TUI interface
  * 
  * Phase 1 - prepare.
  * View modules are shown as UI pages, jobs from job modules
@@ -23,10 +23,8 @@
  *   - summary
 */
 
-/**
- * problems:
- * 
- */
+import yaml from 'js-yaml'
+import { IUnattended } from '../interfaces/i-unattended'
 
 import React from 'react';
 import { render, RenderOptions } from 'ink'
@@ -81,6 +79,8 @@ import Sequence from './krill-sequence'
 import { INet } from '../interfaces'
 import { IWelcome, ILocation, IKeyboard, IPartitions, IUsers } from '../interfaces/i-krill'
 
+const config_file = '/etc/penguins-eggs.d/krill.yaml' as string
+
 /**
  * 
  */
@@ -92,7 +92,7 @@ export default class Krill {
   /**
    * @param cryped 
    */
-  async prepare(cryped = false, pve = false, verbose = false) {
+  async prepare(unattended = false, cryped = false, pve = false, verbose = false) {
     /**
      * Check for disk presence
      */
@@ -116,15 +116,88 @@ export default class Krill {
       await systemdCtl.stop('udisks2.service')
     }
 
-    const oWelcome = await this.welcome()
-    const oLocation = await this.location(oWelcome.language)
-    const oKeyboard = await this.keyboard()
-    const oPartitions = await this.partitions(cryped, pve)
-    const oUsers = await this.users()
-    const oNetwork = await this.network()
+    let oWelcome = {} as IWelcome
+    let oLocation = {} as ILocation
+    let oKeyboard = {} as IKeyboard
+    let oPartitions = {} as IPartitions
+    let oUsers = {} as IUsers
+    let oNetwork = {} as INet
+
+    if (unattended) {
+      /**
+       * load default values
+       */
+      if (!fs.existsSync(config_file)) {
+        console.log(`cannot find configuration file ${config_file},`)
+        process.exit(1)
+      }
+      let unattended = yaml.load(fs.readFileSync(config_file, 'utf-8')) as IUnattended
+
+      oWelcome = { language: unattended.language }
+
+      oLocation = {
+        language: unattended.language,
+        region: unattended.region,
+        zone: unattended.zone
+      }
+
+      oKeyboard = {
+        keyboardModel: unattended.keyboardModel,
+        keyboardLayout: unattended.keyboardLayout,
+        keyboardVariant: unattended.keyboardVariant,
+        keyboardOption: unattended.keyboardOption
+      }
+
+      const drives = shx.exec('lsblk |grep disk|cut -f 1 "-d "', { silent: true }).stdout.trim().split('\n')
+      const driveList: string[] = []
+      drives.forEach((element: string) => {
+        driveList.push('/dev/' + element)
+      })
+  
+      oPartitions = {
+        installationDevice: driveList[0],
+        installationMode: unattended.installationMode,
+        filesystemType: unattended.filesystemType,
+        userSwapChoice: unattended.userSwapChoice
+      }
+
+      oUsers = {
+        name: unattended.name,
+        fullname: unattended.fullname,
+        password: unattended.password,
+        rootPassword: unattended.rootPassword,
+        autologin: unattended.autologin,
+        hostname: unattended.hostname
+      }
+
+      oNetwork = 
+        {
+          iface: Utils.iface(),
+          addressType: unattended.addressType,
+          address: Utils.address(),
+          netmask: Utils.netmask(),
+          gateway: Utils.gateway(),
+          dns: Utils.getDns(),
+          domain: Utils.getDomain()
+        }
+
+    } else {
+      oWelcome = await this.welcome()
+      oLocation = await this.location(oWelcome.language)
+      oKeyboard = await this.keyboard()
+      oPartitions = await this.partitions(cryped, pve)
+      oUsers = await this.users()
+      oNetwork = await this.network()
+    }
+
+    /**
+     * summary
+     */
     await this.summary(oLocation, oKeyboard, oPartitions)
 
-    // installation
+    /**
+    * installation
+    */
     await this.install(oLocation, oKeyboard, oPartitions, oUsers, oNetwork, verbose)
   }
 
