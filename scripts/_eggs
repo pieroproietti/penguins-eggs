@@ -15,12 +15,11 @@ _eggs () {
 "export\:deb:export deb/docs/iso to the destination host"
 "export\:docs:remove and export docType documentation of the sources in the destination host"
 "export\:iso:export iso in the destination host"
-"info:informations about eggs configuration"
 "install:command-line system installer - the egg became a penguin!"
-"krill:command-line system installer - the egg became a penguin!"
 "kill:kill the eggs/free the nest"
 "mom:ask for mommy - gui helper"
 "produce:produce a live image from your system whithout your data"
+"status:informations about eggs status"
 "syncfrom:restore users and user data from a LUKS volumes"
 "syncto:saves users and user data in a LUKS volume inside the iso"
 "tools\:clean:clean system log, apt, etc"
@@ -109,25 +108,10 @@ export:iso)
   )
 ;;
 
-info)
-  _command_flags=(
-    "--verbose[]"
-"--help[Show CLI help.]"
-  )
-;;
-
 install)
   _command_flags=(
-    "--crypted[crypted CLI installation]"
-"--pve[Proxmox VE install]"
-"--help[Show CLI help.]"
-"--verbose[verbose]"
-  )
-;;
-
-krill)
-  _command_flags=(
-    "--crypted[crypted CLI installation]"
+    "--unattended[unattended CLI installation]"
+"--crypted[crypted CLI installation]"
 "--pve[Proxmox VE install]"
 "--help[Show CLI help.]"
 "--verbose[verbose]"
@@ -163,6 +147,13 @@ produce)
 "--theme=-[theme for livecd, calamares branding and partitions]:"
 "--addons=-[addons to be used: adapt, ichoice, pve, rsupport]:"
 "--release[release: max compression, remove penguins-eggs and calamares after installation]"
+  )
+;;
+
+status)
+  _command_flags=(
+    "--verbose[]"
+"--help[Show CLI help.]"
   )
 ;;
 
