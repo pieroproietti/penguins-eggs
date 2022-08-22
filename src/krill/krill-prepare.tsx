@@ -167,13 +167,14 @@ export default class Krill {
       oNetwork = 
         {
           iface: Utils.iface(),
-          addressType: 'dhcp',
-          address: '',
-          netmask: '',
-          gateway: '',
-          dns: [ '' ],
-          domain: ''
+          addressType: unattended.addressType,
+          address: Utils.address(),
+          netmask: Utils.netmask(),
+          gateway: Utils.gateway(),
+          dns: Utils.getDns(),
+          domain: Utils.getDomain()
         }
+
     } else {
       oWelcome = await this.welcome()
       oLocation = await this.location(oWelcome.language)
