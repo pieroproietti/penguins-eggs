@@ -4,13 +4,14 @@ penguins-eggs
 =============
 
 ### Penguin&#39;s eggs are generated and new birds are ready to fly...
-[![sources](https://img.shields.io/badge/github-sources-blue)](https://github.com/pieroproietti/penguins-eggs)
-[![blog](https://img.shields.io/badge/blog-penguin's%20eggs-blue)](https://penguins-eggs.net)
-[![sources-documentation](https://img.shields.io/badge/sources-documentation-blue)](https://penguins-eggs.sourceforge.io/)
-[![guide](https://img.shields.io/badge/guide-penguin's%20eggs-blue)](https://penguins-eggs.net/book/)
+[![sources](https://img.shields.io/badge/github-sources-cyan)](https://github.com/pieroproietti/penguins-eggs)
+[![blog](https://img.shields.io/badge/blog-penguin's%20eggs-cyan)](https://penguins-eggs.net)
+[![sources-documentation](https://img.shields.io/badge/sources-documentation-cyan)](https://penguins-eggs.sourceforge.io/)
+[![guide](https://img.shields.io/badge/guide-penguin's%20eggs-cyan)](https://penguins-eggs.net/book/)
 [![npm version](https://img.shields.io/npm/v/penguins-eggs.svg)](https://npmjs.org/package/penguins-eggs)
-[![deb](https://img.shields.io/badge/deb-packages-orange)](https://sourceforge.net/projects/penguins-eggs/files/packages-deb)
-[![iso](https://img.shields.io/badge/iso-images-orange)](https://sourceforge.net/projects/penguins-eggs/files/iso)
+[![deb](https://img.shields.io/badge/deb-packages-blue)](https://sourceforge.net/projects/penguins-eggs/files/DEBS)
+[![pkgbuild](https://img.shields.io/badge/pkgbuild-packages-blue)](https://sourceforge.net/projects/penguins-eggs/files/PKGBUILD)
+[![iso](https://img.shields.io/badge/iso-images-cyan)](https://sourceforge.net/projects/penguins-eggs/files/ISOS)
 
 
 # Index
@@ -25,17 +26,76 @@ penguins-eggs
 <!-- tocstop -->
 
 # Presentation
-penguins-eggs is a console utility, under continuous development, that allows you to remaster your system and redistribute it as iso images or via remote boot PXE.
+penguins-eggs is a console utility, under continuous development, that allows you to remaster your system and redistribute it as iso images.
 
-The purpose of this project is to implement the process of remastering your own version of Linux, generate it as an ISO image to burn to a CD/DVD or copy to a USB stick to boot your system. You can also boot your "egg" via remote booting-on your LAN. You can easily install your live system with the calamares installer or the eggs TUI installer.
+The purpose of this project is to implement the process of remastering your own version of Linux, generate it as an ISO image to burn to a CD/DVD or copy to a USB stick to boot your system. The default behavior is total removal of the system's data and users, but it is also possible to remaster the system including the data and accounts of present users, use flag **--clone**. It is also possible to keep the users and files present in an encrypted LUKS file within the same resulting iso file, flag **--backup**.
+
+You can easily install the resulting live system with the calamares installer or the internal TUI krill installer.
 
 Also, thanks to the wardrobe, you can create or use scripts to switch from a "naked" version - with only a CLI interface - and "wear" it with a GUI or server configurations. See [penguins-wardrobe](https://github.com/pieroproietti/penguins-wardrobe), fork it and adapt it to yours needs.
 
-The whole thing is written in pure typescript, so ideally it can be used with different Linux distributions. Yes, there are major differences in terms of the package manager used, but not so much in the way bash works and the various programs used to build the isos.
 
-penguins-eggs, as of May 2022, is a mature tool and is extremely powerful: you can easily create your own custom version of Linux for your organization/school and distribute it on your LAN, give it to your friends as a usb key, or post your images on the Internet!
+## Tecnology
 
-Have no fear, yes eggs is a console utility - without a graphical user interface - but it is really simple - if you are able to open a terminal, you can use it and your end users will enjoy a complete help and fully graphical installation procedure.
+The whole thing is written in pure typescript, so ideally it can be used with different Linux distributions. Yes, there are major differences in terms of the package manager used, but not so much on the way the various programs used to build the isos work. Actually eggs support: Debian, Devuan, Ubuntu, Arch and ManjaroLinux.
+
+### What distributions can I use?
+eggs was born on Debian strecth, buster and followinng. Actually full support Debian from jessie to bookworm/sid, Devuan beowulf, chimaera, daedalus, Ubuntu bionic, focal, jammy  - and all derivatives from them including Linux mint, Deepin, neon KDE, etc - Arch and ManjaroLinux.
+
+You can read more on the [blog](https://penguins-eggs.net/2021/11/02/distros-that-can-be-remastered-with-eggs/), some examples of iso images remastered with eggs are in the [sourceforge page of the project](https://sourceforge.net/projects/penguins-eggs/files/iso/). 
+
+### What architecture can I use?
+Eggs, can be released for differents architectures: **amd64**, **arm64** and **armel**. Actually I'm producing mainly for PCs (amd64). Someone want to contribute to bring eggs on [raspberrypi](https://www.raspberrypi.org/)?
+
+## Packages
+Supporting various distributions, we need to have different packages. Debian, Devuan and Ubuntu share the .deb package of eggs, while for Arch Linux and ManjaroLinux they use their PKGBUILD.
+
+### Packages .deb
+eggs is released deb packages for amd64, armel and arm64 architectures. Due the characteristic of eggs, they can installed in Debian, Devuan or Ubuntu based distros, withouth worries about different versions, except for the architecture. It include standard scripts for preinst, postinst, prerm and postrm.
+The packages usually go before in sourgeforce page of eggs, (unstable version) and later in ppa (stable version).
+
+#### Install eggs
+There are more than a way to install eggs, the most common it's to use penguins-eggs-ppa.
+
+##### Using penguins-eggs-ppa (stable version)
+
+eggs have it's repository ppa, You can use it, copy and paste in a terminal window the following two lines:
+
+```
+curl -SsL  https://pieroproietti.github.io/penguins-eggs-ppa/KEY.gpg | gpg --dearmor | sudo tee /usr/share/keyrings/penguins-eggs-ppa-keyring.gpg
+sudo curl -s --compressed -o /etc/apt/sources.list.d/penguins-eggs-ppa.list "https://pieroproietti.github.io/penguins-eggs-ppa/penguins-eggs-ppa.list"
+```
+
+Update your repositories: **sudo apt update** and install eggs: **sudo apt install eggs**.
+
+##### Download the package and install with dpkg
+
+The simplest way to install eggs is download the [package eggs](https://sourceforge.net/projects/penguins-eggs/files/DEBS/) from [sourceforge page of the project](https://sourceforge.net/projects/penguins-eggs/) and install it
+
+```
+sudo dpkg -i eggs_9.1.26_amd64.deb
+```
+
+or, on a i386 system:
+```
+sudo dpkg -i eggs_8.17.17-1_i386.deb
+```
+
+#### Upgrade eggs
+If you are using penguins-eggs-ppa You can ugrade eggs as others packages just: **sudo apt upgrade**.
+
+##### Manual upgrade
+Simply download new versions of eggs from [sourgeforge page](https://sourceforge.net/projects/penguins-eggs/files/DEBS/) and install it with the standard command **sudo dpkg -i eggs_8.17.x-1_amd64.deb**.
+
+### PKGBUILD (Arch and ManjaroLinux)
+eggs has been present in AUR for a long time, even without my knowledge thanks the support of Arch peoples. I am currently directly maintaining the AUR version of [penguins-eggs](https://aur.archlinux.org/packages/penguins-eggs) for Arch linux, however you can refer to the versions for Arch and manjaroLinux in their respective repositories on github.
+
+To install eggs on Arch, simply ```git clone https://github.com/pieroproietti/penguins-eggs-arch```, ```cd penguins-eggs-arch```, then  ```makepkg -si```.
+
+
+The same for manjaroLinux: ```git clone https://github.com/pieroproietti/penguins-eggs-manjaro```, ```cd penguins-eggs-manjaro```, then  ```makepkg -si```.
+
+## features
 
 ### mom and dad
 I've added two lightweight assistants integrated with eggs: mom and dad. While mom is a bash script with whiptail - and guides the user to the various commands and documentation, dad started as a short way to create isos. All you have to do is type **sudo eggs dad** and follow simple instructions. You can also shortcut the way to reset the configuration **sudo dad -c** or - even faster - reset the configuration, load defaults, kill created isos: simply type **sudo eggs dad -d** and you will immediately be able to produce the egg in the default /home/eggs nest.
@@ -48,7 +108,7 @@ wardrobe was added to eggs on april 2022, it's is a way to guide and consolidate
 
 I hope peoples will be interested in wardrobe and you will end to fork the main repository and add your customizations: together will be possibile to make great steps impossible for a single developer. 
 
-You can read more in wardrobe on [penguin's eggs blog](https://penguins-eggs.net/2022/04/12/wardrobe-colibri-duck-eagle-and-owl/). The results of mine customizations are mostly under [Debian bullseye](https://sourceforge.net/projects/penguins-eggs/files/iso/debian/bullseye/), [Devuan chimaera](ttps://sourceforge.net/projects/penguins-eggs/files/iso/devuan/chimaera/) and [Ubuntu jammy](https://sourceforge.net/projects/penguins-eggs/files/iso/ubuntu/jammy/) on my sourgeforce page.
+You can read more in wardrobe on [penguin's eggs blog](https://penguins-eggs.net/2022/04/12/wardrobe-colibri-duck-eagle-and-owl/). The results of mine customizations are mostly under [Debian bullseye](https://sourceforge.net/projects/penguins-eggs/files/ISOS/debian/bullseye/), [Devuan chimaera](ttps://sourceforge.net/projects/penguins-eggs/files/ISOS/devuan/chimaera/) and [Ubuntu jammy](https://sourceforge.net/projects/penguins-eggs/files/ISOS/ubuntu/jammy/) on my sourgeforce page.
 
 ### krill
 eggs include a CLI installer named krill, this let you to produce and install servers configurations. krill use a nice TUI interface using the same, configuration created by eggs for [calamares](calamares.io). This lead to have "about the same" experience installing, from old distros to new ones and for GUI and CLI. To force using krill in place of calamares in a GUI system just: **sudo eggs install --cli**
@@ -72,50 +132,7 @@ We have two methods to save in the live systema all our data: clone and backup.
 Using ```sudo eggs krill --cli``` will restore your CRYPTED backup automatically. Of course the original passphrase will be request.
 
 
-## What distributions can I use?
-eggs was born on Debian strecth, buster and followinng. Actually full support Debian from jessie to bookworm/sid, Devuan beowulf, chimaera, daedalus, Ubuntu bionic, focal, jammy  - and all derivatives from them including Linux mint, Deepin, neon KDE, etc - ManjaroLinux and finally Arch, the last distro added.
 
-You can read more on the [blog](https://penguins-eggs.net/2021/11/02/distros-that-can-be-remastered-with-eggs/), some examples of iso images remastered with eggs are in the [sourceforge page of the project](https://sourceforge.net/projects/penguins-eggs/files/iso/). 
-
-## What architecture can I use?
-Eggs, can be released for differents architectures: **amd64**, **arm64** and **armel**. Actually I'm producing mainly for PCs (amd64) and armel. Someone want to contribute to bring eggs on [raspberrypi](https://www.raspberrypi.org/)?
-
-# Packages
-eggs is released deb packages for i386, amd64, armel and arm64 architectures. Due the characteristic of eggs, they can installed in Debian, Devuan or Ubuntu based distros, withouth worries about different versions, except for the architecture. It include standard scripts for preinst, postinst, prerm and postrm.
-The packages usually go before in sourgeforce page of eggs, (unstable version) and later in ppa (stable version).
-
-## Install eggs
-There are more than a way to install eggs, the most common it's to use penguins-eggs-ppa.
-
-### Using penguins-eggs-ppa (stable version)
-
-eggs have it's repository ppa, You can use it, copy and paste in a terminal window the following two lines:
-
-```
-curl -SsL  https://pieroproietti.github.io/penguins-eggs-ppa/KEY.gpg | gpg --dearmor | sudo tee /usr/share/keyrings/penguins-eggs-ppa-keyring.gpg
-sudo curl -s --compressed -o /etc/apt/sources.list.d/penguins-eggs-ppa.list "https://pieroproietti.github.io/penguins-eggs-ppa/penguins-eggs-ppa.list"
-```
-
-Update your repositories: **sudo apt update** and install eggs: **sudo apt install eggs**.
-
-### Download the package and install with dpkg
-
-The simplest way to install eggs is download the [package eggs](https://sourceforge.net/projects/penguins-eggs/files/packages-deb/) from [sourceforge page of the project](https://sourceforge.net/projects/penguins-eggs/) and install it
-
-```
-sudo dpkg -i eggs_9.1.26_amd64.deb
-```
-
-or, on a i386 system:
-```
-sudo dpkg -i eggs_8.17.17-1_i386.deb
-```
-
-## Upgrade eggs
-If you are using penguins-eggs-ppa You can ugrade eggs as others packages just: **sudo apt upgrade**.
-
-### Manual upgrade
-Simply download new versions of eggs from [sourgeforge page](https://sourceforge.net/projects/penguins-eggs/files/packages-deb/) and install it with the standard command **sudo dpkg -i eggs_8.17.x-1_amd64.deb**.
 
 
 # Usage
