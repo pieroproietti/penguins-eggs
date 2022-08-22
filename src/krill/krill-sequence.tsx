@@ -251,7 +251,7 @@ export default class Sequence {
     * @param umount 
     * @returns 
     */
-   async install(verbose = false) {
+   async install(unattended = false, verbose = false) {
       this.verbose = verbose
       this.echo = Utils.setEcho(this.verbose)
       if (this.verbose) {
@@ -583,7 +583,7 @@ export default class Sequence {
          percent = 100.0
          try {
             await redraw(<Install message={message} percent={percent} />)
-            await this.finished()
+            await this.finished(unattended)
          } catch (error) {
             await Utils.pressKeyToExit(JSON.stringify(error))
          }
@@ -610,9 +610,11 @@ export default class Sequence {
    /**
     * only show the result
     */
-   async finished() {
+   async finished(unattended = false) {
       await redraw(<Finished installationDevice={this.partitions.installationDevice} hostName={this.users.hostname} userName={this.users.name} />)
-      Utils.pressKeyToExit('Press a key to reboot...')
+      if (!unattended) {
+         Utils.pressKeyToExit('Press a key to reboot...')
+      }
       shx.exec('reboot')
    }
 }
