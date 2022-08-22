@@ -167,7 +167,7 @@ export default class Krill {
         password: unattended.password,
         rootPassword: unattended.rootPassword,
         autologin: unattended.autologin,
-        hostname: unattended.hostname
+        hostname: shx.exec('cat /etc/hostname').trim()
       }
 
       oNetwork = 
