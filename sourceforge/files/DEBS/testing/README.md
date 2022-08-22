@@ -10,7 +10,7 @@ Penguins-eggs
 [![deb](https://img.shields.io/badge/deb-packages-orange)](https://sourceforge.net/projects/penguins-eggs/files/DEBS)
 [![pkgbuild](https://img.shields.io/badge/pkgbuild-packages-orange)](https://sourceforge.net/projects/penguins-eggs/files/PKGBUILD)
 [![pkgbuild](https://img.shields.io/badge/pkgbuild-packages-orange)](https://sourceforge.net/projects/penguins-eggs/files/PKGBUILD)
-[![iso](https://img.shields.io/badge/iso-images-orange)](https://sourceforge.net/projects/penguins-eggs/files/ISOS)
+[![iso](https://img.shields.io/badge/iso-images-cyan)](https://sourceforge.net/projects/penguins-eggs/files/ISOS)
 
 # Penguin's eggs Debian TESTING packages
 
