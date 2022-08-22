@@ -148,8 +148,14 @@ export default class Krill {
         keyboardOption: unattended.keyboardOption
       }
 
+      const drives = shx.exec('lsblk |grep disk|cut -f 1 "-d "', { silent: true }).stdout.trim().split('\n')
+      const driveList: string[] = []
+      drives.forEach((element: string) => {
+        driveList.push('/dev/' + element)
+      })
+  
       oPartitions = {
-        installationDevice: unattended.installationDevice,
+        installationDevice: driveList[0],
         installationMode: unattended.installationMode,
         filesystemType: unattended.filesystemType,
         userSwapChoice: unattended.userSwapChoice
