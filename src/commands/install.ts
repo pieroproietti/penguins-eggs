@@ -10,7 +10,7 @@ import Utils from '../classes/utils'
 import Krill from '../krill/krill-prepare'
 
 /**
- * Class Install
+ * Class Krill
  */
 export default class Install extends Command {
   static flags = {
@@ -20,8 +20,6 @@ export default class Install extends Command {
     help: Flags.help({ char: 'h' }),
     verbose: Flags.boolean({ char: 'v', description: 'verbose' })
   }
-
-  static aliases = [`krill`]
 
   static description = 'command-line system installer - the egg became a penguin!'
 
@@ -47,7 +45,7 @@ export default class Install extends Command {
     let verbose = flags.verbose
 
     if (Utils.isRoot()) {
-      if (!Utils.isLive()) {
+      if (Utils.isLive()) {
         const krill = new Krill()
         await krill.prepare(unattended, crypted, pve, verbose)
       } else {

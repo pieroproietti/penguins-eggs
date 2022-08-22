@@ -164,10 +164,16 @@ export default class Krill {
         hostname: unattended.hostname
       }
 
-      oNetwork = {
-        
-      }
-
+      oNetwork = 
+        {
+          iface: Utils.iface(),
+          addressType: 'dhcp',
+          address: '',
+          netmask: '',
+          gateway: '',
+          dns: [ '' ],
+          domain: ''
+        }
     } else {
       oWelcome = await this.welcome()
       oLocation = await this.location(oWelcome.language)
@@ -181,7 +187,6 @@ export default class Krill {
      * summary
      */
     await this.summary(oLocation, oKeyboard, oPartitions)
-    process.exit()
 
     /**
     * installation
