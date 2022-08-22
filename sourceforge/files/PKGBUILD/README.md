@@ -28,6 +28,7 @@ cd penguins-eggs
 makepkg -srcCi
 ```
 
+You can vote for penguins-eggs in the AUR repository, and suggest my a way to bring it in chaotic-aur, thanks.
 
 # Manjaro
 
