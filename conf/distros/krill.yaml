@@ -1,0 +1,37 @@
+# krill installer defaults
+---
+# welcome
+language: "en_US.UTF-8"
+
+# location
+region: "Europe"
+zone: "Rome"
+
+# keyboard
+keyboardModel: "pc105"
+keyboardLayout: "us"
+keyboardVariant: ""
+keyboardOption: ""
+
+# partition
+installationDevice: "/dev/sda1"
+installationMode: "standard"
+filesystemType: "ext4"
+userSwapChoice: "small"
+
+# users
+name: "artisan"
+fullname: "artisan"
+password: "evolution"
+rootPassword: "evolution"
+autologin: true
+hostname: "colibri"
+
+# network
+iface: ""
+addressType: 'dhcp'
+address: ""
+netmask: ""
+gateway: ""
+domain: ""
+dns: ""
