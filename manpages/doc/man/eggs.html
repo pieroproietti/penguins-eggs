@@ -6,18 +6,31 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
   </head>
   <body>
-    <h1>eggs(1) -- the reproductive system of penguins: eggs v9.1.32</h1>
+    <h1>eggs(1) -- the reproductive system of penguins: eggs v9.2.3</h1>
     <h1>SYNOPSIS</h1>
-    <p>deb package</p>
-    <pre><code>$ sudo dpkg -i eggs_9.1.32_amd64.deb
+    <p>Install Debian families (debian/devuan/ubuntu)</p>
+    <pre><code>$ sudo dpkg -i eggs_9.2.3_amd64.deb
 </code></pre>
-    <p>npm package</p>
-    <pre><code>$ npm install -g penguins-eggs
-$ eggs COMMAND
-running command...
-$ eggs (-v|--version|version)
+    <p>Install Arch families (Arch, manjaro Linux)</p>
+    <p>Arch from AUR</p>
+    <pre><code>$ git clone https://aur.archlinux.org/penguins-eggs.git
+$ cd penguins-eggs.git
+$ makepkg -si
+</code></pre>
+    <p>Arch from development repo</p>
+    <pre><code>$ git clone https://github.com/pieroproietti/penguins-eggs-arch
+$ cd penguins-eggs-arch
+$ makepkg -si
+</code></pre>
+    <p>Manjaro from development repo</p>
+    <pre><code>$ git clone https://github.com/pieroproietti/penguins-eggs-manjaro
+$ cd penguins-eggs-manjaro
+$ makepkg -si
+</code></pre>
+    <h1>USAGE</h1>
+    <pre><code>$ eggs (-v|--version|version)
 
-penguins-eggs/9.1.32 linux-x64 node-v16.15.1
+penguins-eggs/9.2.3 linux-x64 node-v16.16.0
 $ eggs --help [COMMAND]
 
 USAGE
@@ -25,18 +38,20 @@ $ eggs COMMAND
 </code></pre>
     <p>Most of the commands of eggs need sudo, but there are exceptions for export, info and mom.</p>
     <p>examples:</p>
-    <pre><code>sudo eggs config
-sudo eggs produce
+    <pre><code>sudo eggs produce --fast
+sudo eggs produce --fast --clone
+sudo eggs produce --fast --backup
 sudo eggs kill
 </code></pre>
     <p>There are too, two interactive helpers:</p>
     <pre><code>eggs mom
 sudo eggs dad
+sudo eggs dad -d
 </code></pre>
-    <p>Help yorself signing in the forum or in facebook group page or asking me.</p>
+    <p>Help yorself signing on telegram https://t.me/penguins_eggs or in facebook group page or asking me.</p>
     <h1>DESCRIPTION</h1>
     <p>eggs is a console utility, in active development, who let you to remaster your system and redistribuite it as iso image.</p>
-    <p>The scope of this project is to implement the process of remastering your version of Linux, generate it as ISO image to burn on a CD/DVD or copy to a usb key to boot your system. You can easily install your live system with gui installer (calamares) or eggs cle installer (krill).</p>
+    <p>The scope of this project is to implement the process of remastering your version of Linux, generate it as ISO image to burn on a CD/DVD or copy to a usb key to boot your system. You can easily install your live system with gui installer (calamares) or eggs CLI installer (krill).</p>
     <h1>COMMANDS</h1>
     <ul>
       <li><a href="#eggs-adapt"><code>eggs adapt</code></a></li>
@@ -49,12 +64,11 @@ sudo eggs dad
       <li><a href="#eggs-export-docs"><code>eggs export docs</code></a></li>
       <li><a href="#eggs-export-iso"><code>eggs export iso</code></a></li>
       <li><a href="#eggs-help-command"><code>eggs help [COMMAND]</code></a></li>
-      <li><a href="#eggs-info"><code>eggs info</code></a></li>
+      <li><a href="#eggs-install"><code>eggs install</code></a></li>
       <li><a href="#eggs-kill"><code>eggs kill</code></a></li>
-      <li><a href="#eggs-krill"><code>eggs krill</code></a></li>
       <li><a href="#eggs-mom"><code>eggs mom</code></a></li>
       <li><a href="#eggs-produce"><code>eggs produce</code></a></li>
-      <li><a href="#eggs-remove"><code>eggs remove</code></a></li>
+      <li><a href="#eggs-status"><code>eggs status</code></a></li>
       <li><a href="#eggs-syncfrom"><code>eggs syncfrom</code></a></li>
       <li><a href="#eggs-syncto"><code>eggs syncto</code></a></li>
       <li><a href="#eggs-tools-clean"><code>eggs tools clean</code></a></li>
@@ -229,17 +243,24 @@ FLAGS
 DESCRIPTION
   Display help for eggs.
 </code></pre>
-    <h2><code>eggs info</code></h2>
-    <p>informations about eggs configuration</p>
+    <h2><code>eggs install</code></h2>
+    <p>command-line system installer - the egg became a penguin!</p>
     <pre><code>USAGE
-  $ eggs info [-v] [-h]
+  $ eggs install [-u] [-k] [-p] [-h] [-v]
 
 FLAGS
-  -h, --help     Show CLI help.
-  -v, --verbose
+  -h, --help        Show CLI help.
+  -k, --crypted     crypted CLI installation
+  -p, --pve         Proxmox VE install
+  -u, --unattended  unattended CLI installation
+  -v, --verbose     verbose
 
 DESCRIPTION
-  informations about eggs configuration
+  command-line system installer - the egg became a penguin!
+
+EXAMPLES
+  $ eggs install
+  Install the system using krill installer
 </code></pre>
     <h2><code>eggs kill</code></h2>
     <p>kill the eggs/free the nest</p>
@@ -257,25 +278,6 @@ EXAMPLES
   $ eggs kill
   kill the eggs/free the nest
 </code></pre>
-    <h2><code>eggs krill</code></h2>
-    <p>command-line system installer - the egg became a penguin!</p>
-    <pre><code>USAGE
-  $ eggs krill [-c] [-k] [-p] [-h] [-v]
-
-FLAGS
-  -c, --cli      force use CLI installer
-  -h, --help     Show CLI help.
-  -k, --crypted  crypted CLI installation
-  -p, --pve      Proxmox VE install
-  -v, --verbose  verbose
-
-DESCRIPTION
-  command-line system installer - the egg became a penguin!
-
-EXAMPLES
-  $ eggs install
-  Install the system using GUI or CLI installer
-</code></pre>
     <h2><code>eggs mom</code></h2>
     <p>ask for mommy - gui helper</p>
     <pre><code>USAGE
@@ -290,11 +292,12 @@ DESCRIPTION
     <h2><code>eggs produce</code></h2>
     <p>produce a live image from your system whithout your data</p>
     <pre><code>USAGE
-  $ eggs produce [-p &#x3C;value>] [--basename &#x3C;value>] [-b] [-f] [-n] [-m] [-v] [-y] [-s] [-h] [--theme &#x3C;value>]
-    [--addons &#x3C;value>] [--release]
+  $ eggs produce [-p &#x3C;value>] [--basename &#x3C;value>] [-b] [-c] [-f] [-n] [-m] [-v] [-y] [-s] [-h] [--theme
+    &#x3C;value>] [--addons &#x3C;value>] [--release]
 
 FLAGS
-  -b, --backup          backup mode
+  -b, --backup          backup mode (CRYPTED)
+  -c, --clone           clone mode
   -f, --fast            fast compression
   -h, --help            Show CLI help.
   -m, --max             max compression
@@ -305,7 +308,7 @@ FLAGS
   -y, --yolk            -y force yolk renew
   --addons=&#x3C;value>...   addons to be used: adapt, ichoice, pve, rsupport
   --basename=&#x3C;value>    basename
-  --release             release: configure GUI installer to remove eggs and calamares after installation
+  --release             release: max compression, remove penguins-eggs and calamares after installation
   --theme=&#x3C;value>       theme for livecd, calamares branding and partitions
 
 DESCRIPTION
@@ -342,32 +345,20 @@ EXAMPLES
   produce scripts to build an ISO as the previus example. Scripts can be found
   in /home/eggs/ovarium and you can customize all you need
 </code></pre>
-    <h2><code>eggs remove</code></h2>
-    <p>remove eggs and others stuff</p>
+    <h2><code>eggs status</code></h2>
+    <p>informations about eggs status</p>
     <pre><code>USAGE
-  $ eggs remove [-p] [-a] [-h] [-v]
+  $ eggs status [-v] [-h]
 
 FLAGS
-  -a, --autoremove  remove eggs packages dependencies
-  -h, --help        Show CLI help.
-  -p, --purge       remove eggs configurations files
-  -v, --verbose     verbose
+  -h, --help     Show CLI help.
+  -v, --verbose
 
 DESCRIPTION
-  remove eggs and others stuff
-
-EXAMPLES
-  $ sudo eggs remove 
-  remove eggs
-
-  $ sudo eggs remove --purge 
-  remove eggs, eggs configurations, configuration's files
-
-  $ sudo eggs remove --autoremove 
-  remove eggs, eggs configurations, packages dependencies
+  informations about eggs status
 </code></pre>
     <h2><code>eggs syncfrom</code></h2>
-    <p>Restore users, server and datas from luks-eggs-backup</p>
+    <p>restore users and user data from a LUKS volumes</p>
     <pre><code>USAGE
   $ eggs syncfrom [--delete &#x3C;value>] [-f &#x3C;value>] [-r &#x3C;value>] [-h] [-v]
 
@@ -379,13 +370,13 @@ FLAGS
   --delete=&#x3C;value>       rsync --delete delete extraneous files from dest dirs
 
 DESCRIPTION
-  Restore users, server and datas from luks-eggs-backup
+  restore users and user data from a LUKS volumes
 
 EXAMPLES
   $ sudo eggs restore
 </code></pre>
     <h2><code>eggs syncto</code></h2>
-    <p>saving users' datas and accounts on LUKS volume</p>
+    <p>saves users and user data in a LUKS volume inside the iso</p>
     <pre><code>USAGE
   $ eggs syncto [--delete &#x3C;value>] [-f &#x3C;value>] [-h] [-v]
 
@@ -396,7 +387,7 @@ FLAGS
   --delete=&#x3C;value>    rsync --delete delete extraneous files from dest dirs
 
 DESCRIPTION
-  saving users' datas and accounts on LUKS volume
+  saves users and user data in a LUKS volume inside the iso
 
 EXAMPLES
   $ sudo eggs syncto
@@ -476,7 +467,18 @@ EXAMPLES
 </code></pre>
     <h2><code>eggs version</code></h2>
     <pre><code>USAGE
-  $ eggs version
+  $ eggs version [--json] [--verbose]
+
+FLAGS
+  --verbose  Show additional information about the CLI.
+
+GLOBAL FLAGS
+  --json  Format output as json.
+
+FLAG DESCRIPTIONS
+  --verbose  Show additional information about the CLI.
+
+    Additionally shows the architecture, node version, operating system, and versions of plugins that the CLI is using.
 </code></pre>
     <h2><code>eggs wardrobe get [REPO]</code></h2>
     <p>get warorobe</p>
@@ -569,29 +571,16 @@ DESCRIPTION
 
   /usr/lib/penguins-eggs (deb package)
     here eggs is installed
-  OR
-  /usr/lib/node_modules/penguins-eggs/ (npm package)
-    here eggs is installed
 </code></pre>
     <h1>TROUBLES</h1>
-    <ul>
-      <li><strong>sudo eggs update</strong> # select basket, choose the version and download it but not install. The package will saver in /tmp;</li>
-    </ul>
-    <p>remove old version:</p>
-    <ul>
-      <li><strong>sudo apt --purge eggs</strong> # remove eggs</li>
-    </ul>
-    <p>and, finally install the new one:</p>
-    <ul>
-      <li><strong>sudo dpkg -i /tmp/eggs_7.7.9-1_amd64.deb</strong> # install eggs from downloaded package</li>
-    </ul>
     <h2>BUGS</h2>
     <p>Report problems o new ideas in: <a href="https://github.com/pieroproietti/penguins-eggs/issues">https://github.com/pieroproietti/penguins-eggs/issues</a></p>
     <h1>RESOURCES AND DOCUMENTATION</h1>
-    <p>Consult website to find documentation, forum. There is a facebook gruop and page too.</p>
+    <p>Consult website to find documentation</p>
     <ul>
       <li>website: <strong>https://penguins-eggs.net</strong></li>
       <li>gitHub repository: <strong>https://github.com/pieroproietti/penguins-eggs</strong></li>
+      <li>telegram: <strong>https://t.me/penguins_eggs</strong></li>
     </ul>
     <h1>AUTHOR</h1>
     <p>Piero Proietti <a href="mailto:piero.proietti@gmail.com">piero.proietti@gmail.com</a></p>
