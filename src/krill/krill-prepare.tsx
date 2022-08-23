@@ -131,21 +131,22 @@ export default class Krill {
         console.log(`cannot find configuration file ${config_file},`)
         process.exit(1)
       }
-      let unattended = yaml.load(fs.readFileSync(config_file, 'utf-8')) as IUnattended
 
-      oWelcome = { language: unattended.language }
+      let unattendedConf = yaml.load(fs.readFileSync(config_file, 'utf-8')) as IUnattended
+
+      oWelcome = { language: unattendedConf.language }
 
       oLocation = {
-        language: unattended.language,
-        region: unattended.region,
-        zone: unattended.zone
+        language: unattendedConf.language,
+        region: unattendedConf.region,
+        zone: unattendedConf.zone
       }
 
       oKeyboard = {
-        keyboardModel: unattended.keyboardModel,
-        keyboardLayout: unattended.keyboardLayout,
-        keyboardVariant: unattended.keyboardVariant,
-        keyboardOption: unattended.keyboardOption
+        keyboardModel: unattendedConf.keyboardModel,
+        keyboardLayout: unattendedConf.keyboardLayout,
+        keyboardVariant: unattendedConf.keyboardVariant,
+        keyboardOption: unattendedConf.keyboardOption
       }
 
       const drives = shx.exec('lsblk |grep disk|cut -f 1 "-d "', { silent: true }).stdout.trim().split('\n')
@@ -156,24 +157,24 @@ export default class Krill {
   
       oPartitions = {
         installationDevice: driveList[0],
-        installationMode: unattended.installationMode,
-        filesystemType: unattended.filesystemType,
-        userSwapChoice: unattended.userSwapChoice
+        installationMode: unattendedConf.installationMode,
+        filesystemType: unattendedConf.filesystemType,
+        userSwapChoice: unattendedConf.userSwapChoice
       }
 
       oUsers = {
-        name: unattended.name,
-        fullname: unattended.fullname,
-        password: unattended.password,
-        rootPassword: unattended.rootPassword,
-        autologin: unattended.autologin,
-        hostname: unattended.hostname
+        name: unattendedConf.name,
+        fullname: unattendedConf.fullname,
+        password: unattendedConf.password,
+        rootPassword: unattendedConf.rootPassword,
+        autologin: unattendedConf.autologin,
+        hostname: shx.exec('cat /etc/hostname').trim()
       }
 
       oNetwork = 
         {
           iface: Utils.iface(),
-          addressType: unattended.addressType,
+          addressType: unattendedConf.addressType,
           address: Utils.address(),
           netmask: Utils.netmask(),
           gateway: Utils.gateway(),
@@ -198,7 +199,7 @@ export default class Krill {
     /**
     * installation
     */
-    await this.install(oLocation, oKeyboard, oPartitions, oUsers, oNetwork, verbose)
+    await this.install(oLocation, oKeyboard, oPartitions, oUsers, oNetwork, unattended, verbose)
   }
 
 
@@ -446,9 +447,9 @@ export default class Krill {
   /**
    * INSTALL
    */
-  async install(location: ILocation, keyboard: IKeyboard, partitions: IPartitions, users: IUsers, network: INet, verbose = false) {
+  async install(location: ILocation, keyboard: IKeyboard, partitions: IPartitions, users: IUsers, network: INet, unattended=false, verbose = false) {
     const sequence = new Sequence(location, keyboard, partitions, users, network)
-    await sequence.install(verbose)
+    await sequence.install(unattended, verbose)
   }
 
   /**
