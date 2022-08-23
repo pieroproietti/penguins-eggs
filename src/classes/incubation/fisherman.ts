@@ -105,7 +105,7 @@ export default class Fisherman {
    * @param replaces [['search','replace']]
    */
   async buildModule(name: string, vendor = '') {
-    console.log('creating... ' + name)
+    // console.log('creating calamares module ' + name)
     let moduleSource = path.resolve(__dirname, this.installer.templateModules + name + '.yml')
 
     /**
