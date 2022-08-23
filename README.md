@@ -19,7 +19,7 @@ penguins-eggs
 * [Index](#index)
 * [Presentation](#presentation)
 * [Tecnology](#tecnology)
-* [Feathures](#feathures)
+* [features](#features)
 * [Packages](#packages)
 * [Usage](#usage)
 * [Commands](#commands)

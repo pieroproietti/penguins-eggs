@@ -4,16 +4,37 @@ eggs(1) -- the reproductive system of penguins: eggs v{{{sourceVersion}}}
 {{toc}}
 
 # SYNOPSIS
-deb package
+Install Debian families (debian/devuan/ubuntu)
 ```
 $ sudo dpkg -i eggs_{{{sourceVersion}}}_amd64.deb
 ```
 
-npm package
+Install Arch families (Arch, manjaro Linux)
+
+Arch from AUR
 ```
-$ npm install -g penguins-eggs
-$ eggs COMMAND
-running command...
+$ git clone https://aur.archlinux.org/penguins-eggs.git
+$ cd penguins-eggs.git
+$ makepkg -si
+```
+
+Arch from development repo
+```
+$ git clone https://github.com/pieroproietti/penguins-eggs-arch
+$ cd penguins-eggs-arch
+$ makepkg -si
+```
+
+Manjaro from development repo
+```
+$ git clone https://github.com/pieroproietti/penguins-eggs-manjaro
+$ cd penguins-eggs-manjaro
+$ makepkg -si
+```
+
+# USAGE
+
+```
 $ eggs (-v|--version|version)
 
 penguins-eggs/{{{sourceVersion}}} {{{linuxVersion}}} node-{{{nodeVersion}}}
@@ -28,8 +49,9 @@ Most of the commands of eggs need sudo, but there are exceptions for export, inf
 examples:
 
 ```
-sudo eggs config
-sudo eggs produce
+sudo eggs produce --fast
+sudo eggs produce --fast --clone
+sudo eggs produce --fast --backup
 sudo eggs kill
 ```
 
@@ -38,16 +60,17 @@ There are too, two interactive helpers:
 ```
 eggs mom
 sudo eggs dad
+sudo eggs dad -d
 ```
 
-Help yorself signing in the forum or in facebook group page or asking me.
+Help yorself signing on telegram https://t.me/penguins_eggs or in facebook group page or asking me.
 
 
 # DESCRIPTION
 
 eggs is a console utility, in active development, who let you to remaster your system and redistribuite it as iso image.
 
-The scope of this project is to implement the process of remastering your version of Linux, generate it as ISO image to burn on a CD/DVD or copy to a usb key to boot your system. You can easily install your live system with gui installer (calamares)  or eggs cle installer (krill).
+The scope of this project is to implement the process of remastering your version of Linux, generate it as ISO image to burn on a CD/DVD or copy to a usb key to boot your system. You can easily install your live system with gui installer (calamares)  or eggs CLI installer (krill).
 
 # COMMANDS
 
@@ -62,32 +85,19 @@ The scope of this project is to implement the process of remastering your versio
 
       /usr/lib/penguins-eggs (deb package)
         here eggs is installed
-      OR
-      /usr/lib/node_modules/penguins-eggs/ (npm package)
-        here eggs is installed
-
 
 # TROUBLES
-
-* **sudo eggs update** # select basket, choose the version and download it but not install. The package will saver in /tmp;
-
-remove old version:
-
-* **sudo apt --purge eggs** # remove eggs
-
-and, finally install the new one:
-
-* **sudo dpkg -i /tmp/eggs_7.7.9-1_amd64.deb** # install eggs from downloaded package
 
 ## BUGS
 
 Report problems o new ideas in: <https://github.com/pieroproietti/penguins-eggs/issues>
 
 # RESOURCES AND DOCUMENTATION
-Consult website to find  documentation, forum. There is a facebook gruop and page too.
+Consult website to find  documentation
 
 * website: **https://penguins-eggs.net**
 * gitHub repository: **https://github.com/pieroproietti/penguins-eggs**
+* telegram: **https://t.me/penguins_eggs**
 
 # AUTHOR
 
