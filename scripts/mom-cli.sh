@@ -17,10 +17,10 @@ function main {
          "calamares"       "configure calamares or install and configure it" \
          "dad"             "ask help from daddy - configuration helper" \
          "help"            "display help for eggs" \
-         "info"            "informations about system and eggs" \
          "kill"            "kill the eggs/free the nest" \
-         "krill"           "krill TUI system installer - the egg becomes a chick" \
+         "install"         "krill TUI system installer - the egg becomes a chick" \
          "produce"         "the system produces an egg: iso image of your system" \
+         "status"          "eggs status and informations" \
          "update"          "update the penguin's eggs tool" \
          "documentation"   "book/book_translated/manual/man" \
          "export"          "deb/docs/iso" \
@@ -48,17 +48,17 @@ function main {
          "help")
             help ;;
 
-         "info")
-            info ;;
-         
          "kill")
             kill ;;
 
-         "krill")
-            krill ;;
+         "install")
+            install ;;
 
          "produce")
             produce ;;
+
+         "status")
+            status ;;
 
          "documentation")
             documentation ;;
@@ -228,8 +228,8 @@ function help {
 }
 
 ################################
-function info {
-   eggs info
+function status {
+   eggs status
    press_a_key_to_continue
 }
 
@@ -240,8 +240,8 @@ function kill {
 }
 
 ################################
-function krill {
-   sudo eggs krill --cli
+function install {
+   sudo eggs install
    press_a_key_to_continue
 }
 
