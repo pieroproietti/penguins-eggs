@@ -27,6 +27,7 @@ import yaml from 'js-yaml'
 import { IUnattended } from '../interfaces/i-unattended'
 
 import React from 'react';
+import { Box, Text } from 'ink'
 import { render, RenderOptions } from 'ink'
 import Utils from '../classes/utils'
 import axios from 'axios'
@@ -434,14 +435,18 @@ export default class Krill {
   /**
    * SUMMARY
    */
-  async summary(location: ILocation, keyboard: IKeyboard, partitions: IPartitions, users: IUsers, unattemded = false) {
+  async summary(location: ILocation, keyboard: IKeyboard, partitions: IPartitions, users: IUsers, unattended = false) {
     let summaryElem: JSX.Element
+
+    let message = ""
+    if (unattended) {
+      message ="Unattended installation will start in 30 seconds, press CTRL-C to abort!"
+    }
+      
     while (true) {
-      summaryElem = <Summary name={users.name} password={users.password} rootPassword={users.rootPassword} hostname={users.hostname} region={location.region} zone={location.zone} language={location.language} keyboardModel={keyboard.keyboardModel} keyboardLayout={keyboard.keyboardLayout} installationDevice={partitions.installationDevice} />
-      if (unattemded) {
+      summaryElem = <Summary name={users.name} password={users.password} rootPassword={users.rootPassword} hostname={users.hostname} region={location.region} zone={location.zone} language={location.language} keyboardModel={keyboard.keyboardModel} keyboardLayout={keyboard.keyboardLayout} installationDevice={partitions.installationDevice} message={message}/>
+      if (unattended) {
         redraw(summaryElem)
-        console.log("Unattended installation will start in 30 seconds...")
-        console.log("Press CTRL-C to abort")
         await sleep(30000)
         break
       } else if (await confirm(summaryElem, "Confirm Summary datas?")) {
