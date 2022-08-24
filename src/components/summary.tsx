@@ -14,9 +14,7 @@ import { ISettings, IBranding } from '../interfaces'
 
 type SummaryProps = {
 
-  // From welcome
   language: string,
-  // From location
   region: string,
   zone: string,
   // dateNumbers: string,
@@ -25,11 +23,9 @@ type SummaryProps = {
   keyboardLayout: string,
   //keyboardVariant: string,
   //keyboardOptions: string,
-  //  from partitions
   installationDevice: string,
   // filesystemType: string,
   // userSwapChoice: string,
-  // from users
   name: string,
   // fullname: string,
   password: string,
@@ -39,7 +35,6 @@ type SummaryProps = {
   // sameUserPassword: boolean,
 }
 
-//summaryElem = <Summary user={users.name} passwd={users.password} root passwd={users.rootPassword} region={location.region} zone={location.zone} language={location.language} keyboardModel={keyboard.keyboardModel} keyboardLayout={keyboard.keyboardLayout} installationDevice={partitions.installationDevice} />
 export default function Summary({ name, password, rootPassword, hostname, region, zone, language, keyboardModel, keyboardLayout, installationDevice }: SummaryProps) {
   let productName = 'unknown'
   let version = 'x.x.x'
@@ -68,8 +63,8 @@ export default function Summary({ name, password, rootPassword, hostname, region
             <Steps step={7} />
             <Box flexDirection="column">
               <Box>
-                <Text>Username </Text><Text color="green">{name}</Text><Text>/</Text><Text color="green"> password</Text>
-                <Text>Username </Text><Text color="red">{rootPassword}</Text>
+                <Text>User </Text><Text color="green">{name} </Text><Text>password </Text><Text color="red"> {password} </Text>
+                <Text>Root pwd </Text><Text color="red">{rootPassword} </Text>
                 <Text>Hostname </Text><Text color="cyan">{hostname}</Text>
               </Box>
               <Box><Text>Set timezone to </Text><Text color="green">{region}/{zone}</Text></Box>

@@ -154,7 +154,7 @@ export default class Krill {
       drives.forEach((element: string) => {
         driveList.push('/dev/' + element)
       })
-  
+
       oPartitions = {
         installationDevice: driveList[0],
         installationMode: unattendedConf.installationMode,
@@ -171,16 +171,16 @@ export default class Krill {
         hostname: shx.exec('cat /etc/hostname').trim()
       }
 
-      oNetwork = 
-        {
-          iface: Utils.iface(),
-          addressType: unattendedConf.addressType,
-          address: Utils.address(),
-          netmask: Utils.netmask(),
-          gateway: Utils.gateway(),
-          dns: Utils.getDns(),
-          domain: Utils.getDomain()
-        }
+      oNetwork =
+      {
+        iface: Utils.iface(),
+        addressType: unattendedConf.addressType,
+        address: Utils.address(),
+        netmask: Utils.netmask(),
+        gateway: Utils.gateway(),
+        dns: Utils.getDns(),
+        domain: Utils.getDomain()
+      }
 
     } else {
       oWelcome = await this.welcome()
@@ -438,10 +438,14 @@ export default class Krill {
     let summaryElem: JSX.Element
     while (true) {
       summaryElem = <Summary name={users.name} password={users.password} rootPassword={users.rootPassword} hostname={users.hostname} region={location.region} zone={location.zone} language={location.language} keyboardModel={keyboard.keyboardModel} keyboardLayout={keyboard.keyboardLayout} installationDevice={partitions.installationDevice} />
-      if (!unattemded) {
-        if (await confirm(summaryElem, "Confirm Summary datas?")) {
-          break
-        }
+      if (unattemded) {
+        redraw(summaryElem)
+        console.log("Unattended installation will start in 30 seconds...")
+        console.log("Press CTRL-C to abort")
+        await sleep(30000)
+        break
+      } else if (await confirm(summaryElem, "Confirm Summary datas?")) {
+        break
       }
     }
   }
@@ -449,7 +453,7 @@ export default class Krill {
   /**
    * INSTALL
    */
-  async install(location: ILocation, keyboard: IKeyboard, partitions: IPartitions, users: IUsers, network: INet, unattended=false, verbose = false) {
+  async install(location: ILocation, keyboard: IKeyboard, partitions: IPartitions, users: IUsers, network: INet, unattended = false, verbose = false) {
     const sequence = new Sequence(location, keyboard, partitions, users, network)
     await sequence.install(unattended, verbose)
   }
@@ -514,4 +518,15 @@ function netmask2CIDR(mask: string) {
         .join(''),
       '1'
     );
+}
+
+/**
+ * 
+ * @param ms 
+ * @returns 
+ */
+function sleep(ms = 0) {
+  return new Promise((resolve) => {
+    setTimeout(resolve, ms);
+  });
 }
