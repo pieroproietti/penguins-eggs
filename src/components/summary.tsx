@@ -13,6 +13,7 @@ import { ISettings, IBranding } from '../interfaces'
 
 
 type SummaryProps = {
+
   // From welcome
   language: string,
   // From location
@@ -29,22 +30,22 @@ type SummaryProps = {
   // filesystemType: string,
   // userSwapChoice: string,
   // from users
-  // name: string,
+  name: string,
   // fullname: string,
-  // password: string,
-  // rootPassword: string,
-  // hostname: string,
+  password: string,
+  rootPassword: string,
+  hostname: string,
   // autologin: boolean,
   // sameUserPassword: boolean,
 }
 
-
-export default function Summary({ region, zone, language, keyboardModel, keyboardLayout, installationDevice }: SummaryProps) {
+//summaryElem = <Summary user={users.name} passwd={users.password} root passwd={users.rootPassword} region={location.region} zone={location.zone} language={location.language} keyboardModel={keyboard.keyboardModel} keyboardLayout={keyboard.keyboardLayout} installationDevice={partitions.installationDevice} />
+export default function Summary({ user, passwd, rootPasswd, region, zone, language, keyboardModel, keyboardLayout, installationDevice }: SummaryProps) {
   let productName = 'unknown'
   let version = 'x.x.x'
   let configRoot = '/etc/penguins-eggs.d/krill/'
   if (fs.existsSync('/etc/calamares/settings.conf')) {
-      configRoot = '/etc/calamares/'
+    configRoot = '/etc/calamares/'
   }
   const settings = yaml.load(fs.readFileSync(configRoot + 'settings.conf', 'utf-8')) as unknown as ISettings
   const branding = settings.branding
@@ -52,11 +53,11 @@ export default function Summary({ region, zone, language, keyboardModel, keyboar
   productName = calamares.strings.productName
   version = calamares.strings.version
 
-   /**
-   * totale width=74
-   * step width=15
-   * finestra with=59
-   */
+  /**
+  * totale width=74
+  * step width=15
+  * finestra with=59
+  */
   return (
     <>
       <Title title={productName} />
@@ -66,6 +67,7 @@ export default function Summary({ region, zone, language, keyboardModel, keyboar
           <Box flexDirection="row">
             <Steps step={7} />
             <Box flexDirection="column">
+              <Box><Text>Username </Text><Text color="green">{user}</Text> <Text> passwd </Text><Text color="green"> passwd</Text></Box>
               <Box><Text>Set timezone to </Text><Text color="green">{region}/{zone}</Text></Box>
               <Box><Text>The system language will be set to </Text><Text color="green">{language}</Text></Box>
               <Box><Text>The numbers and date locale will be set to </Text><Text color="green">{language}</Text></Box>
