@@ -163,13 +163,18 @@ export default class Krill {
         userSwapChoice: unattendedConf.userSwapChoice
       }
 
+      let hostname = oUsers.hostname
+      if (hostname === "hostname") {
+        hostname = shx.exec('cat /etc/hostname').trim()
+      }
+      
       oUsers = {
         name: unattendedConf.name,
         fullname: unattendedConf.fullname,
         password: unattendedConf.password,
         rootPassword: unattendedConf.rootPassword,
         autologin: unattendedConf.autologin,
-        hostname: shx.exec('cat /etc/hostname').trim()
+        hostname: hostname
       }
 
       oNetwork =
@@ -440,11 +445,11 @@ export default class Krill {
 
     let message = ""
     if (unattended) {
-      message ="Unattended installation will start in 30 seconds, press CTRL-C to abort!"
+      message = "Unattended installation will start in 30 seconds, press CTRL-C to abort!"
     }
-      
+
     while (true) {
-      summaryElem = <Summary name={users.name} password={users.password} rootPassword={users.rootPassword} hostname={users.hostname} region={location.region} zone={location.zone} language={location.language} keyboardModel={keyboard.keyboardModel} keyboardLayout={keyboard.keyboardLayout} installationDevice={partitions.installationDevice} message={message}/>
+      summaryElem = <Summary name={users.name} password={users.password} rootPassword={users.rootPassword} hostname={users.hostname} region={location.region} zone={location.zone} language={location.language} keyboardModel={keyboard.keyboardModel} keyboardLayout={keyboard.keyboardLayout} installationDevice={partitions.installationDevice} message={message} />
       if (unattended) {
         redraw(summaryElem)
         await sleep(30000)

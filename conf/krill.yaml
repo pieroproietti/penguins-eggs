@@ -25,7 +25,7 @@ fullname: "artisan"
 password: "evolution"
 rootPassword: "evolution"
 autologin: true
-hostname: "colibri"
+hostname: "hostname" # 
 
 # network (leave it unchanged)
 iface: ""
