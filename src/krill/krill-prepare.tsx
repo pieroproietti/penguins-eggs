@@ -194,7 +194,7 @@ export default class Krill {
     /**
      * summary
      */
-    await this.summary(oLocation, oKeyboard, oPartitions)
+    await this.summary(oLocation, oKeyboard, oPartitions, oUsers, unattended)
 
     /**
     * installation
@@ -434,12 +434,14 @@ export default class Krill {
   /**
    * SUMMARY
    */
-  async summary(location: ILocation, keyboard: IKeyboard, partitions: IPartitions) {
+  async summary(location: ILocation, keyboard: IKeyboard, partitions: IPartitions, users: IUsers, unattemded = false) {
     let summaryElem: JSX.Element
     while (true) {
-      summaryElem = <Summary region={location.region} zone={location.zone} language={location.language} keyboardModel={keyboard.keyboardModel} keyboardLayout={keyboard.keyboardLayout} installationDevice={partitions.installationDevice} />
-      if (await confirm(summaryElem, "Confirm Summary datas?")) {
-        break
+      summaryElem = <Summary name={users.name} password={users.password} rootPassword={users.rootPassword} hostname={users.hostname} region={location.region} zone={location.zone} language={location.language} keyboardModel={keyboard.keyboardModel} keyboardLayout={keyboard.keyboardLayout} installationDevice={partitions.installationDevice} />
+      if (!unattemded) {
+        if (await confirm(summaryElem, "Confirm Summary datas?")) {
+          break
+        }
       }
     }
   }
@@ -464,7 +466,6 @@ export default class Krill {
     return exist
   }
 }
-
 
 /**
  * confirm
