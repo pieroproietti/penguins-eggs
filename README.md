@@ -128,7 +128,7 @@ The same for manjaroLinux: ```git clone https://github.com/pieroproietti/penguin
 
 Once the package has been installed, you can have the new ``eggs`` command. Typing ``eggs`` will get the list of commands, typing ``eggs produces --help`` will get the eggs command help screen. You can also use the command autocomplete with the TABS key, you will get the possible choices for each command. In addition, there is a man page, so by typing ``man eggs`` you will get that help as well.
 
-## Use cases
+## Examples
 
 * Create a live system without user data:
 
