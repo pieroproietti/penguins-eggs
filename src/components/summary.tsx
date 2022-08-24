@@ -40,7 +40,7 @@ type SummaryProps = {
 }
 
 //summaryElem = <Summary user={users.name} passwd={users.password} root passwd={users.rootPassword} region={location.region} zone={location.zone} language={location.language} keyboardModel={keyboard.keyboardModel} keyboardLayout={keyboard.keyboardLayout} installationDevice={partitions.installationDevice} />
-export default function Summary({ user, passwd, rootPasswd, region, zone, language, keyboardModel, keyboardLayout, installationDevice }: SummaryProps) {
+export default function Summary({ name, password, rootPassword, hostname, region, zone, language, keyboardModel, keyboardLayout, installationDevice }: SummaryProps) {
   let productName = 'unknown'
   let version = 'x.x.x'
   let configRoot = '/etc/penguins-eggs.d/krill/'
@@ -67,7 +67,11 @@ export default function Summary({ user, passwd, rootPasswd, region, zone, langua
           <Box flexDirection="row">
             <Steps step={7} />
             <Box flexDirection="column">
-              <Box><Text>Username </Text><Text color="green">{user}</Text> <Text> passwd </Text><Text color="green"> passwd</Text></Box>
+              <Box>
+                <Text>Username </Text><Text color="green">{name}</Text><Text>/</Text><Text color="green"> password</Text>
+                <Text>Username </Text><Text color="red">{rootPassword}</Text>
+                <Text>Hostname </Text><Text color="cyan">{hostname}</Text>
+              </Box>
               <Box><Text>Set timezone to </Text><Text color="green">{region}/{zone}</Text></Box>
               <Box><Text>The system language will be set to </Text><Text color="green">{language}</Text></Box>
               <Box><Text>The numbers and date locale will be set to </Text><Text color="green">{language}</Text></Box>
