@@ -126,7 +126,7 @@ The same for manjaroLinux: ```git clone https://github.com/pieroproietti/penguin
 
 # Usage
 
-Once the package has been installed, you can have the new ``eggs`` command. Typing ``eggs`` will get the list of commands, typing ``eggs produces --help`` will get the eggs produce command help screen. You can also use the command autocomplete with the TABS key, you will get the possible choices for each command. In addition, there is a man page, so by typing ``man eggs`` you will get that help as well. A more guided approach can be made usind ```eggs mom```, will present a menu with various commands.
+Once the package has been installed, you can have the new ```eggs``` command. Typing ```eggs``` will get the list of commands, typing ```eggs produces --help``` will get the eggs produce command help screen. You can also use the command autocomplete with the TABS key, you will get the possible choices for each command. In addition, there is a man page, so by typing ```man eggs``` you will get that help as well. A more guided approach can be made usind ```eggs mom```, will present a menu with various commands.
 
 ## Examples
 
@@ -142,7 +142,7 @@ Once the package has been installed, you can have the new ``eggs`` command. Typi
 
 ```sudo eggs produce --fast --backup```
 
-Especially during the first trials, you should always use the --fast flag that will ensure a fast creation of the ISO, later you can use ```--max``` flag and get ISOs more compressed.
+Especially during the first trials, you should always use the ```--fast``` flag that will ensure a fast creation of the ISO, later you can use ```--max``` flag and get ISOs more compressed.
 
 In addition to the description of the commands in this README, you can consult the [Penguin's eggs official book](https://penguins-eggs.net/book/).
 
