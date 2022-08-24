@@ -19,7 +19,7 @@ penguins-eggs
 * [Index](#index)
 * [Presentation](#presentation)
 * [Tecnology](#tecnology)
-* [features](#features)
+* [Features](#features)
 * [Packages](#packages)
 * [Usage](#usage)
 * [Commands](#commands)
@@ -43,7 +43,7 @@ The whole thing is written in pure typescript, so ideally it can be used with di
 
 You can read more on the [blog](https://penguins-eggs.net/2021/11/02/distros-that-can-be-remastered-with-eggs/), some examples of iso images remastered with eggs are in the [sourceforge page of the project](https://sourceforge.net/projects/penguins-eggs/files/iso/). 
 
-# features
+# Features
 
 ## helper: mom and dad
 I've added two lightweight assistants integrated with eggs: mom and dad. While mom is a bash script with whiptail - and guides the user to the various commands and documentation, dad started as a short way to create isos. All you have to do is type **sudo eggs dad** and follow simple instructions. You can also shortcut the way to reset the configuration **sudo dad -c** or - even faster - reset the configuration, load defaults, kill created isos: simply type **sudo eggs dad -d** and you will immediately be able to produce the egg in the default /home/eggs nest.
