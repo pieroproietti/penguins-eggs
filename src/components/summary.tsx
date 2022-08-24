@@ -63,7 +63,7 @@ export default function Summary({ name, password, rootPassword, hostname, region
             <Steps step={7} />
             <Box flexDirection="column">
               <Box>
-                <Text>User </Text><Text color="green">{name} </Text><Text>password </Text><Text color="red"> {password} </Text>
+                <Text>User </Text><Text color="green">{name}</Text> <Text>/</Text> <Text color="red">{password}</Text>
                 <Text>Root pwd </Text><Text color="red">{rootPassword} </Text>
                 <Text>Hostname </Text><Text color="cyan">{hostname}</Text>
               </Box>
