@@ -13,9 +13,8 @@ import { ISettings, IBranding } from '../interfaces'
 
 
 type SummaryProps = {
-  // From welcome
+
   language: string,
-  // From location
   region: string,
   zone: string,
   // dateNumbers: string,
@@ -24,27 +23,26 @@ type SummaryProps = {
   keyboardLayout: string,
   //keyboardVariant: string,
   //keyboardOptions: string,
-  //  from partitions
   installationDevice: string,
   // filesystemType: string,
   // userSwapChoice: string,
-  // from users
-  // name: string,
+  name: string,
   // fullname: string,
-  // password: string,
-  // rootPassword: string,
-  // hostname: string,
+  password: string,
+  rootPassword: string,
+  hostname: string,
   // autologin: boolean,
   // sameUserPassword: boolean,
+
+  message: string
 }
 
-
-export default function Summary({ region, zone, language, keyboardModel, keyboardLayout, installationDevice }: SummaryProps) {
+export default function Summary({ name, password, rootPassword, hostname, region, zone, language, keyboardModel, keyboardLayout, installationDevice, message}: SummaryProps) {
   let productName = 'unknown'
   let version = 'x.x.x'
   let configRoot = '/etc/penguins-eggs.d/krill/'
   if (fs.existsSync('/etc/calamares/settings.conf')) {
-      configRoot = '/etc/calamares/'
+    configRoot = '/etc/calamares/'
   }
   const settings = yaml.load(fs.readFileSync(configRoot + 'settings.conf', 'utf-8')) as unknown as ISettings
   const branding = settings.branding
@@ -52,11 +50,12 @@ export default function Summary({ region, zone, language, keyboardModel, keyboar
   productName = calamares.strings.productName
   version = calamares.strings.version
 
-   /**
-   * totale width=74
-   * step width=15
-   * finestra with=59
-   */
+
+  /**
+  * totale width=74
+  * step width=15
+  * finestra with=59
+  */
   return (
     <>
       <Title title={productName} />
@@ -66,12 +65,18 @@ export default function Summary({ region, zone, language, keyboardModel, keyboar
           <Box flexDirection="row">
             <Steps step={7} />
             <Box flexDirection="column">
+              <Box>
+                <Text>User </Text><Text color="green">{name}</Text><Text>/</Text><Text color="red">{password}</Text>
+                <Text>Root pwd </Text><Text color="red">{rootPassword} </Text>
+                <Text>Hostname </Text><Text color="cyan">{hostname}</Text>
+              </Box>
               <Box><Text>Set timezone to </Text><Text color="green">{region}/{zone}</Text></Box>
               <Box><Text>The system language will be set to </Text><Text color="green">{language}</Text></Box>
               <Box><Text>The numbers and date locale will be set to </Text><Text color="green">{language}</Text></Box>
               <Box><Text>Set keyboard model to </Text><Text color="green">{keyboardModel}</Text></Box>
               <Box><Text>Set keyboard layout to </Text><Text color="green">{keyboardLayout}</Text></Box>
               <Box><Text bold={true}>Erase disk </Text><Text color="green">{installationDevice}</Text><Text>, install </Text><Text color="green">{productName}</Text></Box>
+              <Box><Text color="red">{message}</Text></Box>
             </Box>
           </Box>
         </Box>

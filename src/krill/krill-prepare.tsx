@@ -27,6 +27,7 @@ import yaml from 'js-yaml'
 import { IUnattended } from '../interfaces/i-unattended'
 
 import React from 'react';
+import { Box, Text } from 'ink'
 import { render, RenderOptions } from 'ink'
 import Utils from '../classes/utils'
 import axios from 'axios'
@@ -154,7 +155,7 @@ export default class Krill {
       drives.forEach((element: string) => {
         driveList.push('/dev/' + element)
       })
-  
+
       oPartitions = {
         installationDevice: driveList[0],
         installationMode: unattendedConf.installationMode,
@@ -171,16 +172,16 @@ export default class Krill {
         hostname: shx.exec('cat /etc/hostname').trim()
       }
 
-      oNetwork = 
-        {
-          iface: Utils.iface(),
-          addressType: unattendedConf.addressType,
-          address: Utils.address(),
-          netmask: Utils.netmask(),
-          gateway: Utils.gateway(),
-          dns: Utils.getDns(),
-          domain: Utils.getDomain()
-        }
+      oNetwork =
+      {
+        iface: Utils.iface(),
+        addressType: unattendedConf.addressType,
+        address: Utils.address(),
+        netmask: Utils.netmask(),
+        gateway: Utils.gateway(),
+        dns: Utils.getDns(),
+        domain: Utils.getDomain()
+      }
 
     } else {
       oWelcome = await this.welcome()
@@ -194,7 +195,7 @@ export default class Krill {
     /**
      * summary
      */
-    await this.summary(oLocation, oKeyboard, oPartitions)
+    await this.summary(oLocation, oKeyboard, oPartitions, oUsers, unattended)
 
     /**
     * installation
@@ -434,11 +435,21 @@ export default class Krill {
   /**
    * SUMMARY
    */
-  async summary(location: ILocation, keyboard: IKeyboard, partitions: IPartitions) {
+  async summary(location: ILocation, keyboard: IKeyboard, partitions: IPartitions, users: IUsers, unattended = false) {
     let summaryElem: JSX.Element
+
+    let message = ""
+    if (unattended) {
+      message ="Unattended installation will start in 30 seconds, press CTRL-C to abort!"
+    }
+      
     while (true) {
-      summaryElem = <Summary region={location.region} zone={location.zone} language={location.language} keyboardModel={keyboard.keyboardModel} keyboardLayout={keyboard.keyboardLayout} installationDevice={partitions.installationDevice} />
-      if (await confirm(summaryElem, "Confirm Summary datas?")) {
+      summaryElem = <Summary name={users.name} password={users.password} rootPassword={users.rootPassword} hostname={users.hostname} region={location.region} zone={location.zone} language={location.language} keyboardModel={keyboard.keyboardModel} keyboardLayout={keyboard.keyboardLayout} installationDevice={partitions.installationDevice} message={message}/>
+      if (unattended) {
+        redraw(summaryElem)
+        await sleep(30000)
+        break
+      } else if (await confirm(summaryElem, "Confirm Summary datas?")) {
         break
       }
     }
@@ -447,7 +458,7 @@ export default class Krill {
   /**
    * INSTALL
    */
-  async install(location: ILocation, keyboard: IKeyboard, partitions: IPartitions, users: IUsers, network: INet, unattended=false, verbose = false) {
+  async install(location: ILocation, keyboard: IKeyboard, partitions: IPartitions, users: IUsers, network: INet, unattended = false, verbose = false) {
     const sequence = new Sequence(location, keyboard, partitions, users, network)
     await sequence.install(unattended, verbose)
   }
@@ -464,7 +475,6 @@ export default class Krill {
     return exist
   }
 }
-
 
 /**
  * confirm
@@ -513,4 +523,15 @@ function netmask2CIDR(mask: string) {
         .join(''),
       '1'
     );
+}
+
+/**
+ * 
+ * @param ms 
+ * @returns 
+ */
+function sleep(ms = 0) {
+  return new Promise((resolve) => {
+    setTimeout(resolve, ms);
+  });
 }
