@@ -163,7 +163,7 @@ export default class Krill {
         userSwapChoice: unattendedConf.userSwapChoice
       }
 
-      let hostname = oUsers.hostname
+      let hostname = unattendedConf.hostname
       if (hostname === "hostname") {
         hostname = shx.exec('cat /etc/hostname').trim()
       }
