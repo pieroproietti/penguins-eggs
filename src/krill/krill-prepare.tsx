@@ -216,7 +216,11 @@ export default class Krill {
    */
   async welcome(): Promise<IWelcome> {
 
-    let language = 'en_US.UTF-8' // await this.locales.getDefault()
+    let language = this.unattendedConf.language
+    if (language === '') {
+      language = await this.locales.getDefault() // 'en_US.UTF-8' 
+    } 
+
     let welcomeElem: JSX.Element
     while (true) {
       welcomeElem = <Welcome language={language} />
