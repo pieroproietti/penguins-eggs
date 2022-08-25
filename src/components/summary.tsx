@@ -67,8 +67,8 @@ export default function Summary({ name, password, rootPassword, hostname, region
             <Box flexDirection="column">
               <Box>
                 <Text>User </Text><Text color="green">{name}</Text><Text>/</Text><Text color="green">{password} </Text>
-                <Text>Root pwd </Text><Text color="red">{rootPassword} </Text>
-                <Text>Hostname </Text><Text color="cyan">{hostname}</Text>
+                <Text>root pwd </Text><Text color="green">{rootPassword} </Text>
+                <Text>hostname </Text><Text color="green">{hostname}</Text>
               </Box>
               <Box><Text>Set timezone to </Text><Text color="green">{region}/{zone}</Text></Box>
               <Box><Text>The system language will be set to </Text><Text color="green">{language}</Text></Box>
