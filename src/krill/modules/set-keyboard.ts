@@ -12,8 +12,8 @@ export default async function setKeyboard(this: Sequence) {
     *            - /etc/vconsole.conf (console) 
     *            - /etc/X11/xorg.conf.d/00-keyboard.conf
     * 
-    * Problem: Actually don't update /etc/default/keyboard (x11)s
-    *          /etc/vconsole.conf is update in installed syste,
+    * Problem: Actually don't update /etc/default/keyboard (x11)
+    *          /etc/vconsole.conf is update in installed systems
     */
 
     // systemd as default
@@ -43,11 +43,11 @@ export default async function setKeyboard(this: Sequence) {
     content += 'XKBOPTIONS=""\n'
     content += '\n'
     content += 'BACKSPACE="guess"\n'
-    // Utils.write(this.installTarget + '/etc/default/keyboard', content)
+    Utils.write(this.installTarget + '/etc/default/keyboard', content)
 
-    content = 'KEYMAP=' + + this.keyboardModel + '"\n'
+    content = 'KEYMAP="' + this.keyboardModel + '"\n'
     content += 'FONT=\n'
     content += 'FONT_MAP=\n'
-    // Utils.write(this.installTarget + '/etc/vconsole.conf', content)
+    Utils.write(this.installTarget + '/etc/vconsole.conf', content)
 }
 
