@@ -1,37 +1,37 @@
 # krill installer defaults
 ---
 # welcome (put your language, example: it_IT.UTF-8)
-language: "en_US.UTF-8"
+language: 'en_US.UTF-8'
 
 # location (put your location, example region: "Europe", zone: "Rome")
-region: "Europe"
-zone: "Rome"
+region: 'Europe'
+zone: 'Rome'
 
 # keyboard (put your values example: keyboardModel: "pc105", keyboardLayout: "it")
-keyboardModel: "pc105"
-keyboardLayout: "us"
-keyboardVariant: ""
-keyboardOption: ""
+keyboardModel: 'pc105'
+keyboardLayout: 'us'
+keyboardVariant: ''
+keyboardOption: ''
 
 # partition (leave it unchanged)
-installationDevice: "first-disk" # usually /dev/sda
-installationMode: "standard"
-filesystemType: "ext4"
-userSwapChoice: "small"
+installationDevice: ''
+installationMode: ''
+filesystemType: ''
+userSwapChoice: 'small'
 
 # users (Here you can put your default user, password, etc)
-name: "artisan"
-fullname: "artisan"
-password: "evolution"
-rootPassword: "evolution"
+name: 'artisan'
+fullname: 'artisan'
+password: 'evolution'
+rootPassword: 'evolution'
 autologin: true
-hostname: "hostname" # 
+hostname: ''
 
 # network (leave it unchanged)
 iface: ""
 addressType: 'dhcp'
-address: ""
-netmask: ""
-gateway: ""
-domain: ""
-dns: ""
+address: ''
+netmask: ''
+gateway: ''
+domain: ''
+dns: ''
