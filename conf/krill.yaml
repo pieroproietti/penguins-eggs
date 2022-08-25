@@ -16,8 +16,8 @@ keyboardOption: ''
 
 # partition (leave it unchanged)
 installationDevice: ''
-installationMode: ''
-filesystemType: ''
+installationMode: 'standard'
+filesystemType: 'ext4'
 userSwapChoice: 'small'
 
 # users (Here you can put your default user, password, etc)
