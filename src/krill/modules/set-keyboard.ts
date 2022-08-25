@@ -37,6 +37,7 @@ export default async function setKeyboard(this: Sequence) {
      */
     let content = '# KEYBOARD CONFIGURATION FILE\n\n'
     content += '# Consult the keyboard(5) manual page.\n\n'
+    content += '# See penguins-eggs/src/krill/modules/set-keyboard.ts'
     content += 'XKBMODEL="' + this.keyboardModel + '"\n'
     content += 'XKBLAYOUT="' + this.keyboardLayout + '"\n'
     content += 'XKBVARIANT="' + this.keyboardVariant + '"\n'
@@ -45,7 +46,8 @@ export default async function setKeyboard(this: Sequence) {
     content += 'BACKSPACE="guess"\n'
     Utils.write(this.installTarget + '/etc/default/keyboard', content)
 
-    content = 'KEYMAP="' + this.keyboardModel + '"\n'
+    content = 'KEYMAP="' + this.keyboardLayout + '"\n'
+    content += '# See penguins-eggs/src/krill/modules/set-keyboard.ts'
     content += 'FONT=\n'
     content += 'FONT_MAP=\n'
     Utils.write(this.installTarget + '/etc/vconsole.conf', content)
