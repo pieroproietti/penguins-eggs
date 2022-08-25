@@ -4,8 +4,8 @@
 language: 'en_US.UTF-8'
 
 # location (put your location, example region: "Europe", zone: "Rome")
-region: 'Europe'
-zone: 'Rome'
+region: 'America'
+zone: 'New_York'
 
 # keyboard (put your values example: keyboardModel: "pc105", keyboardLayout: "it")
 keyboardModel: 'pc105'
@@ -20,10 +20,10 @@ filesystemType: ''
 userSwapChoice: 'small'
 
 # users (Here you can put your default user, password, etc)
-name: 'artisan'
-fullname: 'artisan'
-password: 'evolution'
-rootPassword: 'evolution'
+name: 'user'
+fullname: 'user'
+password: 'password'
+rootPassword: 'password'
 autologin: true
 hostname: ''
 
