@@ -1,4 +1,4 @@
-export interface IUnattended {
+export interface IKrillConfig {
     language: string
     region: string
     zone: string

@@ -23,7 +23,7 @@ import Utils from './utils'
 import Incubator from './incubation/incubator'
 import Distro from './distro'
 import Pacman from './pacman'
-import { IConfig } from '../interfaces'
+import { IEggsConfig } from '../interfaces'
 
 const config_file = '/etc/penguins-eggs.d/eggs.yaml' as string
 
@@ -34,7 +34,7 @@ export default class Settings {
 
   app = {} as IApp
 
-  config = {} as IConfig
+  config = {} as IEggsConfig
 
   remix = {} as IRemix
 
@@ -79,7 +79,7 @@ export default class Settings {
    *
    * @param config
    */
-  async save(config: IConfig) {
+  async save(config: IEggsConfig) {
     fs.writeFileSync(config_file, yaml.dump(config), 'utf-8')
   }
 
@@ -96,7 +96,7 @@ export default class Settings {
       process.exit(1)
     }
 
-    this.config = yaml.load(fs.readFileSync(config_file, 'utf-8')) as IConfig
+    this.config = yaml.load(fs.readFileSync(config_file, 'utf-8')) as IEggsConfig
 
     this.session_excludes = ''
     if (!this.config.snapshot_dir.endsWith('/')) {

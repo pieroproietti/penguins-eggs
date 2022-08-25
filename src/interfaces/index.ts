@@ -11,8 +11,8 @@ export { IInitrd } from './i-initrd'
 export { IWorkDir } from './i-workdir'
 export { IInstall } from './i-install'
 export { IExec } from './i-exec'
-export { IConfig } from './i-config'
 export { IInstaller } from './i-installer'
+export { IEggsConfig } from './i-eggs-config'
 
 // Per krill
 export { IBranding } from './i-branding'
@@ -21,4 +21,3 @@ export { IPartitions } from './i-partitions'
 
 // Costumes and Materia
 export { IMateria, IRepos } from './i-materia'
-

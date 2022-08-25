@@ -1,4 +1,4 @@
-export interface IConfigTools {
+export interface IEggsConfigTools {
   remoteHost: string
   remoteUser: string
   remotePathDeb: string

@@ -12,7 +12,7 @@ import yaml from 'js-yaml'
 import Settings from './settings'
 import Utils from './utils'
 
-interface IConfigTools {
+interface IEggsConfigTools {
   remoteHost: string
   remoteUser: string
   remotePathDeb: string
@@ -35,7 +35,7 @@ export default class Tools {
 
   snapshot_name = ''
 
-  config = {} as IConfigTools
+  config = {} as IEggsConfigTools
 
   /*
    * Load configuration from /etc/penguins-eggs.yaml
@@ -46,7 +46,7 @@ export default class Tools {
 
     if (fs.existsSync(this.tools_yaml)) {
       foundSettings = true
-      const loaded = yaml.load(fs.readFileSync(this.tools_yaml, 'utf-8')) as IConfigTools
+      const loaded = yaml.load(fs.readFileSync(this.tools_yaml, 'utf-8')) as IEggsConfigTools
       this.config.remoteHost = loaded.remoteHost
       this.config.remoteUser = loaded.remoteUser
       this.config.remotePathDeb = loaded.remotePathDeb
