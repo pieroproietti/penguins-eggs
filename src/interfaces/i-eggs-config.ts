@@ -1,4 +1,4 @@
-export interface IConfig {
+export interface IEggsConfig {
   version: string
   snapshot_dir: string
   snapshot_basename: string
@@ -15,11 +15,9 @@ export interface IConfig {
   compression: string
   ssh_pass: boolean
   timezone: string
-  locales: string[]
   locales_default: string
+  locales: string[]
   pmount_fixed: boolean
-  netconfig_opt: string
-  ifnames_opt: string
   machine_id: string
   vmlinuz: string
   initrd_img: string

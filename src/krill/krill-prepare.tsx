@@ -24,7 +24,7 @@
 */
 
 import yaml from 'js-yaml'
-import { IUnattended } from '../interfaces/i-unattended'
+import { IKrillConfig } from '../interfaces/i-krill-config'
 
 import React from 'react';
 import { Box, Text } from 'ink'
@@ -87,7 +87,7 @@ const config_file = '/etc/penguins-eggs.d/krill.yaml' as string
  */
 export default class Krill {
 
-  unattendedConf = {} as IUnattended
+  krillConfig = {} as IKrillConfig
 
   locales = new Locales()
   keyboards = new Keyboards()
@@ -134,22 +134,22 @@ export default class Krill {
       process.exit(1)
     }
 
-    this.unattendedConf = yaml.load(fs.readFileSync(config_file, 'utf-8')) as IUnattended
+    this.krillConfig = yaml.load(fs.readFileSync(config_file, 'utf-8')) as IKrillConfig
 
     if (unattended) {
-      oWelcome = { language: this.unattendedConf.language }
+      oWelcome = { language: this.krillConfig.language }
 
       oLocation = {
-        language: this.unattendedConf.language,
-        region: this.unattendedConf.region,
-        zone: this.unattendedConf.zone
+        language: this.krillConfig.language,
+        region: this.krillConfig.region,
+        zone: this.krillConfig.zone
       }
 
       oKeyboard = {
-        keyboardModel: this.unattendedConf.keyboardModel,
-        keyboardLayout: this.unattendedConf.keyboardLayout,
-        keyboardVariant: this.unattendedConf.keyboardVariant,
-        keyboardOption: this.unattendedConf.keyboardOption
+        keyboardModel: this.krillConfig.keyboardModel,
+        keyboardLayout: this.krillConfig.keyboardLayout,
+        keyboardVariant: this.krillConfig.keyboardVariant,
+        keyboardOption: this.krillConfig.keyboardOption
       }
 
       const drives = shx.exec('lsblk |grep disk|cut -f 1 "-d "', { silent: true }).stdout.trim().split('\n')
@@ -160,29 +160,29 @@ export default class Krill {
 
       oPartitions = {
         installationDevice: driveList[0],
-        installationMode: this.unattendedConf.installationMode,
-        filesystemType: this.unattendedConf.filesystemType,
-        userSwapChoice: this.unattendedConf.userSwapChoice
+        installationMode: this.krillConfig.installationMode,
+        filesystemType: this.krillConfig.filesystemType,
+        userSwapChoice: this.krillConfig.userSwapChoice
       }
 
-      let hostname = this.unattendedConf.hostname
+      let hostname = this.krillConfig.hostname
       if (hostname === '') {
         hostname = shx.exec('cat /etc/hostname').trim()
       }
 
       oUsers = {
-        name: this.unattendedConf.name,
-        fullname: this.unattendedConf.fullname,
-        password: this.unattendedConf.password,
-        rootPassword: this.unattendedConf.rootPassword,
-        autologin: this.unattendedConf.autologin,
+        name: this.krillConfig.name,
+        fullname: this.krillConfig.fullname,
+        password: this.krillConfig.password,
+        rootPassword: this.krillConfig.rootPassword,
+        autologin: this.krillConfig.autologin,
         hostname: hostname
       }
 
       oNetwork =
       {
         iface: Utils.iface(),
-        addressType: this.unattendedConf.addressType,
+        addressType: this.krillConfig.addressType,
         address: Utils.address(),
         netmask: Utils.netmask(),
         gateway: Utils.gateway(),
@@ -216,7 +216,7 @@ export default class Krill {
    */
   async welcome(): Promise<IWelcome> {
 
-    let language = this.unattendedConf.language
+    let language = this.krillConfig.language
     if (language === '') {
       language = await this.locales.getDefault() // 'en_US.UTF-8' 
     } 
@@ -236,11 +236,11 @@ export default class Krill {
    * LOCATION
    */
   async location(language: string): Promise<ILocation> {
-    let region = this.unattendedConf.region
+    let region = this.krillConfig.region
     if (region === '') {
       let region = shx.exec('cut -f1 -d/ < /etc/timezone', { silent: true }).stdout.trim()
     }
-    let zone = this.unattendedConf.zone
+    let zone = this.krillConfig.zone
     if (zone === '') {
       zone = shx.exec('cut -f2 -d/ < /etc/timezone', { silent: true }).stdout.trim()
     }
@@ -280,22 +280,22 @@ export default class Krill {
   * KEYBOARD
   */
   async keyboard(): Promise<IKeyboard> {
-    let keyboardModel = this.unattendedConf.keyboardModel
+    let keyboardModel = this.krillConfig.keyboardModel
     if (keyboardModel === '') {
       keyboardModel = await this.keyboards.getModel()
     }
 
-    let keyboardLayout = this.unattendedConf.keyboardLayout
+    let keyboardLayout = this.krillConfig.keyboardLayout
     if (keyboardLayout === '') {
       keyboardLayout = await this.keyboards.getLayout()
     }
 
-    let keyboardVariant = this.unattendedConf.keyboardVariant
+    let keyboardVariant = this.krillConfig.keyboardVariant
     if (keyboardVariant === '') {
       keyboardVariant = await this.keyboards.getVariant()
     }
 
-    let keyboardOption = this.unattendedConf.keyboardOption
+    let keyboardOption = this.krillConfig.keyboardOption
     if (keyboardOption === '') {
       keyboardOption = await this.keyboards.getOption()
     }
@@ -342,7 +342,7 @@ export default class Krill {
     })
     let installationDevice = driveList[0] // it was just /dev/sda before
     
-    let installationMode = this.unattendedConf.installationMode
+    let installationMode = this.krillConfig.installationMode
     if (installationMode === '') {
       installationMode = 'standard'
     }
@@ -390,27 +390,27 @@ export default class Krill {
    */
   async users(): Promise<IUsers> {
 
-    let name = this.unattendedConf.name 
+    let name = this.krillConfig.name 
     if (name === '') {
       name = 'artisan'
     }
 
-    let fullname = this.unattendedConf.fullname
+    let fullname = this.krillConfig.fullname
     if (fullname === '') {
       fullname = 'artisan'
     }
 
-    let password = this.unattendedConf.password
+    let password = this.krillConfig.password
     if (password === '') {
       password = 'evolution'
     }
 
-    let rootPassword = this.unattendedConf.rootPassword
+    let rootPassword = this.krillConfig.rootPassword
     if (rootPassword === '') {
       rootPassword = 'evolution'
     }
 
-    let hostname = this.unattendedConf.hostname
+    let hostname = this.krillConfig.hostname
     if (hostname === '') {
       hostname = shx.exec('cat /etc/hostname').trim()
     }

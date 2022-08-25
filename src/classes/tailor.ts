@@ -6,7 +6,7 @@
  */
 import chalk from 'chalk'
 import Utils from './utils'
-import { IMateria, IConfig } from '../interfaces'
+import { IMateria, IEggsConfig } from '../interfaces'
 import { exec } from '../lib/utils'
 import fs from 'fs'
 import path from 'path'
@@ -553,7 +553,7 @@ export default class Tailor {
          * chenge config.snapshot.basename
          */
         const config_file = '/etc/penguins-eggs.d/eggs.yaml'
-        let config = yaml.load(fs.readFileSync(config_file, 'utf-8')) as IConfig
+        let config = yaml.load(fs.readFileSync(config_file, 'utf-8')) as IEggsConfig
         config.snapshot_basename = this.materials.name
         fs.writeFileSync(config_file, yaml.dump(config), 'utf-8')
     }

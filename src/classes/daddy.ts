@@ -10,7 +10,7 @@ import Settings from '../classes/settings'
 import Ovary from '../classes/ovary'
 import Compressors from '../classes/compressors'
 import inquirer from 'inquirer'
-import { IConfig } from '../interfaces'
+import { IEggsConfig } from '../interfaces'
 import { IMyAddons } from '../interfaces'
 import chalk from 'chalk'
 import { exec } from '../lib/utils'
@@ -49,7 +49,7 @@ export default class Daddy {
 
     // show and edit configuration
     this.settings = new Settings()
-    let config = {} as IConfig
+    let config = {} as IEggsConfig
     if (await this.settings.load()) {
       config = this.settings.config
       let jsonConf: string
@@ -137,7 +137,7 @@ export default class Daddy {
    *
    * @param c
    */
-  editConfig(c: IConfig): Promise<string> {
+  editConfig(c: IEggsConfig): Promise<string> {
     console.log(chalk.cyan('Edit and save LiveCD parameters'))
     let compressionOpt = 0
     if (c.compression === 'xz') {

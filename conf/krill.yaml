@@ -1,4 +1,5 @@
-# krill installer defaults
+# Penguin's eggs
+# krill.yaml
 ---
 # welcome (put your language, example: it_IT.UTF-8)
 language: 'en_US.UTF-8'
@@ -20,10 +21,10 @@ filesystemType: ''
 userSwapChoice: 'small'
 
 # users (Here you can put your default user, password, etc)
-name: 'user'
-fullname: 'user'
-password: 'password'
-rootPassword: 'password'
+name: 'artisan'
+fullname: 'artisan'
+password: 'evolution'
+rootPassword: 'evolution'
 autologin: true
 hostname: ''
 

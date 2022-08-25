@@ -17,7 +17,7 @@ import Utils from './utils'
 import Distro from './distro'
 import Settings from './settings'
 import { execSync } from 'node:child_process'
-import { IConfig } from '../interfaces'
+import { IEggsConfig } from '../interfaces'
 import { exec } from '../lib/utils'
 
 import Debian from './family/debian'
@@ -336,7 +336,7 @@ export default class Pacman {
    *
    */
   static async configurationFresh() {
-    const config = {} as IConfig
+    const config = {} as IEggsConfig
 
     config.version = Utils.getPackageVersion()
     config.snapshot_dir = '/home/eggs'
