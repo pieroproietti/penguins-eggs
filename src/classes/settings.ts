@@ -112,7 +112,8 @@ export default class Settings {
     this.efi_work = this.work_dir.path + 'efi-work/'
     this.work_dir.pathIso = this.work_dir.path + 'iso/'
 
-    if (this.config.snapshot_basename === 'hostname') {
+    // remember: before was hostname, not empty
+    if (this.config.snapshot_basename === '') {
       this.config.snapshot_basename = os.hostname()
     }
 
