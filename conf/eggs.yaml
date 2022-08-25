@@ -6,22 +6,22 @@ version: ''
 # eggs nest, default: /home/eggs
 snapshot_dir: /home/eggs/
 
-# It's used? Default: ''
+# Default '', dad -d put it at egg-of-distro-version-
 snapshot_prefix: ''
 
 # You can edit this rsync excludes file
 snapshot_excludes: /usr/local/share/penguins-eggs/exclude.list
 
-# snapshot_basename, default: 
+# snapshot_basename, default: ''
 snapshot_basename: ''
 
-# user to be used in the liveCd, default: live
+# user liveCD, default: live
 user_opt: live
 
-# user password to be used in live, default: evolution
+# user liveCD password, default: evolution
 user_opt_passwd: evolution
 
-# root password to be used in live, default: evolution
+# root liveCD password, default: evolution
 root_passwd: evolution
 
 # theme to be used, default: eggs
@@ -30,13 +30,13 @@ theme: eggs
 # Ask for installation calamares
 force_installer: true
 
-# Set to true to create boot files for uefi.
-# default true if grub_efi_amd64 package is installed
+# make_efi, default: true
 make_efi: true
 
 # Create md5sum file, default true
 make_md5sum: true
 
+# make_isohybrid, default true
 make_isohybrid: true
 
 # Compression algorithm, default xz
@@ -48,18 +48,21 @@ ssh_pass: true
 # timezone
 timezone: Europe/Rome
 
-# locales_default
-locales_default: en_US.UTF-8
+# locales_default, default env.LANG or en_US.UTF-8
+locales_default: 
 
-# locales
+# locales, default: locales_default + en_US.UTF-8
 locales:
   - en_US.UTF-8
 
-# it's used?
+# it's still used?
 pmount_fixed: false
 
+# machine_id: default /etc/machine-id
 machine_id: ''
 
+# vmlinuz, default: /path/to/vmlinuz
 vmlinuz: ''
 
+# initrd_img, default: /path/to/initrd_img
 initrd_img: ''

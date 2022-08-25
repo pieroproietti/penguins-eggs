@@ -342,7 +342,7 @@ export default class Pacman {
     config.snapshot_dir = '/home/eggs'
     config.snapshot_prefix = ''
     config.snapshot_excludes = '/usr/local/share/penguins-eggs/exclude.list'
-    config.snapshot_basename = 'hostname'
+    config.snapshot_basename = '' // before default was hostname
     config.user_opt = 'live'
     config.user_opt_passwd = 'evolution'
     config.root_passwd = 'evolution'
@@ -353,7 +353,7 @@ export default class Pacman {
     config.make_isohybrid = true
     config.compression = 'xz'
     config.ssh_pass = true
-    config.timezone= 'Europe/Rome'
+    config.timezone= 'America/New_York'
     const env = process.env
     config.locales_default = env.LANG !== undefined ? env.LANG : 'en_US.UTF-8'
     config.locales = config.locales_default === 'en_US.UTF-8' ? ['en_US.UTF-8'] : [config.locales_default, 'en_US.UTF-8']
