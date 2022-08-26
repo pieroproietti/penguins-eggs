@@ -1,24 +1,13 @@
 /**
- * packages.ts
+ * calamares module packages
  */
-export interface Packages {
-    name: string
-    version: string
-    mantainer: string
-    architecture: string
-    description: string
-//    buildDependencies: {
-//        buildDepends: string[]
-//        buildDependsIndep: string[]
-//        buildDependsArch: string[]
-//    }
-    binaryDependencies: {
-        depends: string[]
-//        recommends: string[]
-//        suggests: string[]
-//        enhances: string[]
-//        preDepends: string[]
-    }
-//    breack: string[]
-//    conflics: string[]
+
+export interface IOperations {
+  remove: string[]
+  try_install: string[]
+}
+
+export interface IPackages {
+  backend: string
+  operations: IOperations
 }
