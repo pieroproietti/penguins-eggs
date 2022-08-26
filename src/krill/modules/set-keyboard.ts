@@ -30,14 +30,14 @@ export default async function setKeyboard(this: Sequence) {
     }
 
 
-    if (!Utils.isSystemd()) {
-        /**
-         * this must to be not necessary but...
-         * 
-        * force change /etc/default/keyboard (x11)
-        * force change /etc/vconsole.conf
-        * force change /etc/X11/xorg.conf.d/00-keyboard.conf
-        */
+    /**
+     * this must to be not necessary but...
+     * 
+    * force change /etc/default/keyboard (x11)
+    * force change /etc/vconsole.conf
+    * force change /etc/X11/xorg.conf.d/00-keyboard.conf
+    */
+    if (Utils.isSystemd()) {
         let content = '# KEYBOARD CONFIGURATION FILE\n\n'
         content += '# Consult the keyboard(5) manual page.\n\n'
         content += '# See penguins-eggs/src/krill/modules/set-keyboard.ts\n\n'

@@ -92,7 +92,7 @@ import bootloaderConfigUbuntu from './modules/bootloader-config-ubuntu'
 //
 import grubcfg from './modules/grubcfg'
 import bootloader from './modules/bootloader'
-// packages: removeInstallerLink
+import packages from './modules/packages'
 import removeInstallerLink from './modules/remove-installer-link'
 // luksbootkeyfile:
 // plymouthcfg;
@@ -137,7 +137,7 @@ export default class Sequence {
    // 
    public grubcfg = grubcfg
    public bootloader = bootloader
-   // packages: removeInstallerLink
+   public packages = packages
    public removeInstallerLink = removeInstallerLink
    // luksbootkeyfile:
    // plymouthcfg;
@@ -538,6 +538,17 @@ export default class Sequence {
          await cliAutologin.msgRemove(`${this.installTarget}/etc/motd`)
          await cliAutologin.msgRemove(`${this.installTarget}/etc/issue`)
 
+         // packages
+         message = "add/remove packages"
+         percent = 0.87
+         try {
+            await redraw(<Install message={message} percent={percent} />)
+            await this.packages()
+         } catch (error) {
+            await Utils.pressKeyToExit(JSON.stringify(error))
+         }
+
+         /*
          // removeInstaller
          message = "remove installer"
          percent = 0.87
@@ -547,6 +558,7 @@ export default class Sequence {
          } catch (error) {
             await Utils.pressKeyToExit(JSON.stringify(error))
          }
+         */         
 
          // sourcesYolkUmount
          if (this.distro.familyId === 'debian') {
