@@ -190,6 +190,7 @@ export default class Krill {
         domain: Utils.getDomain()
       }
 
+
     } else {
       oWelcome = await this.welcome()
       oLocation = await this.location(oWelcome.language)
