@@ -20,40 +20,25 @@ export default async function packages(this: Sequence): Promise<void> {
     const config_file = `${this.installTarget}/etc/calamares/modules/packages.conf`
     if (fs.existsSync(config_file)) {
         const packages = yaml.load(fs.readFileSync(config_file, 'utf-8')) as IPackages
-        let operations = packages.operations
-        let remove = packages.operations.remove
-        let try_install = packages.operations.try_install
-        
-        console.log(packages)
-        console.log("operations: " + operations)
-        console.log("remove: " + remove)
-        console.log("try_install: " + try_install)
-        /*
-        {
-            backend: 'apt',
-            operations: [ { remove: [Array] }, { try_install: [Array] } ]
-            }
-            operations: [object Object],[object Object]
-            remove: undefined
-            try_install: undefined
-        */
-        await Utils.pressKeyToExit()
+
 
         if (packages.backend === 'apt') {
-            for (const packToRemove of remove) {
-                let cmd =`chroot ${this.installTarget} apt purge -y ${packToRemove}`
-                await exec (cmd, echoYes)
-                await Utils.pressKeyToExit(cmd)
+            let operations = JSON.parse(JSON.stringify(packages.operations))
+            if (operations.length === 2) {
+                for (const remPack of operations[0].remove) {
+                    await exec(`chroot ${this.installTarget} apt-get purge -y ${remPack}`, echoYes)
+                }
+                for (const addPack of operations[1].try_install) {
+                    await exec(`chroot ${this.installTarget} apt-get install -y ${addPack}`, this.echo)
+                }
+            } else {
+                for (const addPack of operations[0].try_install) {
+                    await exec(`chroot ${this.installTarget} apt-get install -y ${addPack}`, this.echo)
+                }
             }
-            for (const packToInstall of try_install) {
-                let cmd =`chroot ${this.installTarget} apt install -y ${packToInstall}`
-                await exec(cmd, echoYes)
-                await Utils.pressKeyToExit(cmd)
-            }
-            await Utils.pressKeyToExit('end packages')
         } else if (packages.backend === 'pacman') {
         }
-    
+
     }
 
 }

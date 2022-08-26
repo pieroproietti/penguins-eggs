@@ -104,9 +104,9 @@ export default class Produce extends Command {
       }
 
       const release = flags.release
-      if (release) {
-        compression = compressors.max()
-      }
+      // if (release) {
+        // compression = compressors.max()
+      // }
 
       const backup = flags.backup
 
