@@ -53,11 +53,11 @@ export default async function packages(this: Sequence): Promise<void> {
 
         } else if (packages.backend === 'pacman') {
             if (packagesToRemove.length > 0) {
-                let ctr = `chroot ${this.installTarget} pacman 'S `
+                let ctr = `chroot ${this.installTarget} pacman -S `
                 for (const packageToRemove of packagesToRemove) {
                     ctr += packageToRemove + ' '
                 }
-                await exec(`${ctr} ${this.toNull}`, this.echo)
+                await exec(`${ctr} ${echoYes}`, this.echo)
             }
 
             for (const packageToInstall of packagesToInstall) {
