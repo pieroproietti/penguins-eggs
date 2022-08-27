@@ -22,7 +22,7 @@ Versions are listed on reverse order, the first is the last one. Old versions ar
 ### eggs-9.2.3
 Introduced unattended installation: ```sudo eggs install --unattended```:
 * values configured in /etc/penguins-eggs.d/krill.yaml are used both for unattended installation and as default values for standard installation;
-* empty variables in in krill.yaml will take their value from the live system. Example: hostname = '' take the same hostname of the live;
+* empty variables in in krill.yaml will take their value from the live system. Example: ```hostname = ''``` take the same hostname of the live;
 * created a new module in krill: packages who take cure to add and remove packages during installation according on that specified on ```/etc/calamares/modules/packages.conf```;
 * unattended install now wait 30 seconds, before to run without any prompt;
 * bugfixes in module setKeyboard, autologin and others.
