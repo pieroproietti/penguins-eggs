@@ -69,7 +69,7 @@ import { ICalamaresModule, ILocation, IKeyboard, IPartitions, IUsers } from '../
 import { exec } from '../lib/utils'
 
 // import krill modules
-import partition from './modules/partitions'
+import partition from './modules/partition'
 import {mountFs, umountFs} from './modules/mount-fs'
 import {mountVfs, umountVfs} from './modules/mount-vfs'
 import unpackfs from './modules/unpackfs'
