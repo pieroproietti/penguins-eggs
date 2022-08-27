@@ -457,7 +457,7 @@ export default class Sequence {
 
          // packages
          message = "add/remove packages"
-         percent = 0.87
+         percent = 0.65
          try {
             await redraw(<Install message={message} percent={percent} />)
             await this.packages()
@@ -467,7 +467,7 @@ export default class Sequence {
 
          // initramfsCfg
          message = "initramfs configure"
-         percent = 0.65
+         percent = 0.66
          try {
             await redraw(<Install message={message} percent={percent} />)
             this.initramfsCfg(this.partitions.installationDevice)

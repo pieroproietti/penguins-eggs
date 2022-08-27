@@ -3,14 +3,12 @@
  */
 
 import React, {useState, useEffect} from 'react'
-
 import { render, Text, Box } from 'ink'
-// import Spinner from 'ink-spinner';
 import Title from './elements/title'
 import Steps from './elements/steps'
-
 import yaml from 'js-yaml'
 import fs from 'fs'
+
 import { ISettings, IBranding, IUser } from '../interfaces'
 
 type UsersProps = {
@@ -24,7 +22,7 @@ type UsersProps = {
 }
 
 
-//create your forceUpdate hook
+// create your forceUpdate hook
 function useForceUpdate(){
     const [value, setValue] = useState(0); // integer state
     return () => setValue((value:number) => value + 1); // update the state to force render
@@ -54,10 +52,11 @@ export default function Users({ name, fullname, password, rootPassword, hostname
      * finestra with=59
      */
 
-     let charAutologin = " "
+    let charAutologin = "[x] "
     if (autologin) {
-        charAutologin = "x"
+        charAutologin = "[ ]"
     }
+
     if (sameUserPassword) {
         rootPassword = password
     }

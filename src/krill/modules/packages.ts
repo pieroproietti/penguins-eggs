@@ -12,9 +12,7 @@ import { exec } from '../../lib/utils'
 import Utils from '../../classes/utils'
 import fs from 'fs'
 import yaml from 'js-yaml'
-
 import { IPackages } from '../../interfaces/i-packages'
-import { string } from '@oclif/core/lib/flags'
 
 /**
  * 
@@ -26,6 +24,9 @@ export default async function packages(this: Sequence): Promise<void> {
     if (fs.existsSync(config_file)) {
         const packages = yaml.load(fs.readFileSync(config_file, 'utf-8')) as IPackages
 
+        /**
+         * we can do better, but work
+         */
         let operations = JSON.parse(JSON.stringify(packages.operations))
         let packagesToRemove: string[] = []
         let packagesTryInstall: string[] = []
