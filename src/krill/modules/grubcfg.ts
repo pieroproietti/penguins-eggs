@@ -1,4 +1,9 @@
 /**
+ * krill: module grubcfg
+ *
+ * author: Piero Proietti
+ * mail: piero.proietti@gmail.com
+ *
  * https://stackoverflow.com/questions/23876782/how-do-i-split-a-typescript-class-into-multiple-files
  */
 

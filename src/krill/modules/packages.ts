@@ -1,11 +1,15 @@
 /**
+ * krill: module packages (use /etc/calamares/modules/packages.conf)
+ *
+ * author: Piero Proietti
+ * mail: piero.proietti@gmail.com
+ *
  * https://stackoverflow.com/questions/23876782/how-do-i-split-a-typescript-class-into-multiple-files
  */
 
 import Sequence from '../krill-sequence'
 import { exec } from '../../lib/utils'
 import Utils from '../../classes/utils'
-import shx from 'shelljs'
 import fs from 'fs'
 import yaml from 'js-yaml'
 
@@ -48,14 +52,18 @@ export default async function packages(this: Sequence): Promise<void> {
             }
 
         } else if (packages.backend === 'pacman') {
-            for (const packageToRemove of packagesToRemove) {
-                await exec(`chroot ${this.installTarget} pacman -S ${packageToRemove}`, echoYes)
+            if (packagesToRemove.length > 0) {
+                let ctr = `chroot ${this.installTarget} pacman 'S `
+                for (const packageToRemove of packagesToRemove) {
+                    ctr += packageToRemove + ' '
+                }
+                await exec(`${ctr} ${this.toNull}`, this.echo)
             }
+
             for (const packageToInstall of packagesToInstall) {
                 await exec(`chroot ${this.installTarget} pacman -S ${packageToInstall}`, echoYes)
             }
         }
     }
-
 }
 

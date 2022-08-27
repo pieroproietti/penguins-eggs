@@ -37,7 +37,7 @@ type SummaryProps = {
   message: string
 }
 
-export default function Summary({ name, password, rootPassword, hostname, region, zone, language, keyboardModel, keyboardLayout, installationDevice, message}: SummaryProps) {
+export default function Summary({ name, password, rootPassword, hostname, region, zone, language, keyboardModel, keyboardLayout, installationDevice, message }: SummaryProps) {
   let productName = 'unknown'
   let version = 'x.x.x'
   let configRoot = '/etc/penguins-eggs.d/krill/'
@@ -66,16 +66,22 @@ export default function Summary({ name, password, rootPassword, hostname, region
             <Steps step={7} />
             <Box flexDirection="column">
               <Box>
+                <Text>Installing </Text><Text color="green">{productName}</Text>
+              </Box>
+              <Box>
                 <Text>User </Text><Text color="green">{name}</Text><Text>/</Text><Text color="green">{password} </Text>
                 <Text>root pwd </Text><Text color="green">{rootPassword} </Text>
                 <Text>hostname </Text><Text color="green">{hostname}</Text>
               </Box>
               <Box><Text>Set timezone to </Text><Text color="green">{region}/{zone}</Text></Box>
               <Box><Text>The system language will be set to </Text><Text color="green">{language}</Text></Box>
-              <Box><Text>The numbers and date locale will be set to </Text><Text color="green">{language}</Text></Box>
-              <Box><Text>Set keyboard model to </Text><Text color="green">{keyboardModel}</Text></Box>
-              <Box><Text>Set keyboard layout to </Text><Text color="green">{keyboardLayout}</Text></Box>
-              <Box><Text bold={true}>Erase disk </Text><Text color="green">{installationDevice}</Text><Text>, install </Text><Text color="green">{productName}</Text></Box>
+              <Box><Text>Numbers and date locale will be set to </Text><Text color="green">{language}</Text></Box>
+              <Box><Text>Set keyboard model to </Text>
+                <Text color="green">{keyboardModel} </Text>
+                <Text>layout </Text>
+                <Text color="green">{keyboardLayout}</Text>
+              </Box>
+              <Box><Text bold={true}>Erase disk </Text><Text color="green">{installationDevice}</Text></Box>
               <Box><Text color="red">{message}</Text></Box>
             </Box>
           </Box>
