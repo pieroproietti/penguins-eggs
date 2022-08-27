@@ -23,24 +23,29 @@ export default async function packages(this: Sequence): Promise<void> {
         const packages = yaml.load(fs.readFileSync(config_file, 'utf-8')) as IPackages
 
         let operations = JSON.parse(JSON.stringify(packages.operations))
-        let packagesToRemove: string [] = []
-        let packagesToInstall: string [] = []
+        let packagesToRemove: string[] = []
+        let packagesToInstall: string[] = []
 
-        if (operations[0].remove.length === 0) {
+        if (operations.length > 1) {
             packagesToRemove = operations[0].remove
-            packagesToInstall = operations[1].install 
+            packagesToInstall = operations[1].install
         } else {
-            packagesToInstall = operations[0].install 
+            packagesToInstall = operations[0].install
         }
 
         if (packages.backend === 'apt') {
-            for (const packageToRemove of packagesToRemove) {
-                await exec(`chroot ${this.installTarget} apt-get purge -y ${packageToRemove} ${this.toNull}`, this.echo)
+            if (packagesToRemove.length > 0) {
+                let ctr = `chroot ${this.installTarget} apt-get purge -y `
+                for (const packageToRemove of packagesToRemove) {
+                    ctr += packageToRemove + ' '
+                }
+                await exec(`${ctr} ${this.toNull}`, this.echo)
+                await exec(`chroot ${this.installTarget} apt-get autoremove -y ${this.toNull}`, this.echo)
             }
+
             for (const packageToInstall of packagesToInstall) {
                 await exec(`chroot ${this.installTarget} apt-get purge -y ${packageToInstall} ${this.toNull}`, this.echo)
             }
-            await exec(`chroot ${this.installTarget} apt-get autoremove -y ${this.toNull}`, this.echo)
 
         } else if (packages.backend === 'pacman') {
             for (const packageToRemove of packagesToRemove) {
