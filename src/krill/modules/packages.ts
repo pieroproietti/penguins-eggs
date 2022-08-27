@@ -10,6 +10,7 @@ import fs from 'fs'
 import yaml from 'js-yaml'
 
 import { IPackages } from '../../interfaces/i-packages'
+import { string } from '@oclif/core/lib/flags'
 
 /**
  * 
@@ -21,24 +22,34 @@ export default async function packages(this: Sequence): Promise<void> {
     if (fs.existsSync(config_file)) {
         const packages = yaml.load(fs.readFileSync(config_file, 'utf-8')) as IPackages
 
+        let operations = JSON.parse(JSON.stringify(packages.operations))
+        let packagesToRemove: string [] = []
+        let packagesToInstall: string [] = []
 
-        if (packages.backend === 'apt') {
-            let operations = JSON.parse(JSON.stringify(packages.operations))
-            if (operations.length === 2) {
-                for (const remPack of operations[0].remove) {
-                    await exec(`chroot ${this.installTarget} apt-get purge -y ${remPack}`, echoYes)
-                }
-                for (const addPack of operations[1].try_install) {
-                    await exec(`chroot ${this.installTarget} apt-get install -y ${addPack}`, this.echo)
-                }
-            } else {
-                for (const addPack of operations[0].try_install) {
-                    await exec(`chroot ${this.installTarget} apt-get install -y ${addPack}`, this.echo)
-                }
-            }
-        } else if (packages.backend === 'pacman') {
+        if (operations[0].remove.length === 0) {
+            packagesToRemove = operations[0].remove
+            packagesToInstall = operations[1].install 
+        } else {
+            packagesToInstall = operations[0].install 
         }
 
+        if (packages.backend === 'apt') {
+            for (const packageToRemove of packagesToRemove) {
+                await exec(`chroot ${this.installTarget} apt-get purge -y ${packageToRemove} ${this.toNull}`, this.echo)
+            }
+            for (const packageToInstall of packagesToInstall) {
+                await exec(`chroot ${this.installTarget} apt-get purge -y ${packageToInstall} ${this.toNull}`, this.echo)
+            }
+            await exec(`chroot ${this.installTarget} apt-get autoremove -y ${this.toNull}`, this.echo)
+
+        } else if (packages.backend === 'pacman') {
+            for (const packageToRemove of packagesToRemove) {
+                await exec(`chroot ${this.installTarget} pacman -S ${packageToRemove}`, echoYes)
+            }
+            for (const packageToInstall of packagesToInstall) {
+                await exec(`chroot ${this.installTarget} pacman -S ${packageToInstall}`, echoYes)
+            }
+        }
     }
 
 }
