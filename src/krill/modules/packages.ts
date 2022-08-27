@@ -28,13 +28,13 @@ export default async function packages(this: Sequence): Promise<void> {
 
         let operations = JSON.parse(JSON.stringify(packages.operations))
         let packagesToRemove: string[] = []
-        let packagesToInstall: string[] = []
+        let packagesTryInstall: string[] = []
 
         if (operations.length > 1) {
             packagesToRemove = operations[0].remove
-            packagesToInstall = operations[1].install
+            packagesTryInstall = operations[1].try_install
         } else {
-            packagesToInstall = operations[0].install
+            packagesTryInstall = operations[0].try_install
         }
 
         if (packages.backend === 'apt') {
@@ -47,7 +47,7 @@ export default async function packages(this: Sequence): Promise<void> {
                 await exec(`chroot ${this.installTarget} apt-get autoremove -y ${this.toNull}`, this.echo)
             }
 
-            for (const packageToInstall of packagesToInstall) {
+            for (const packageToInstall of packagesTryInstall) {
                 await exec(`chroot ${this.installTarget} apt-get purge -y ${packageToInstall} ${this.toNull}`, this.echo)
             }
 
@@ -60,7 +60,7 @@ export default async function packages(this: Sequence): Promise<void> {
                 await exec(`${ctr} ${echoYes}`, this.echo)
             }
 
-            for (const packageToInstall of packagesToInstall) {
+            for (const packageToInstall of packagesTryInstall) {
                 await exec(`chroot ${this.installTarget} pacman -S ${packageToInstall}`, echoYes)
             }
         }
