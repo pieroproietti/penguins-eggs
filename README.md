@@ -802,11 +802,13 @@ DESCRIPTION
 <!-- commandsstop -->
 
 # Manual
+The original edition of the eggs manual is released in Italian, of course other languages can be accessed using machine translation.
 
 * [English manual 9.2.x](https://penguins--eggs-net.translate.goog/book/italiano9.2?_x_tr_sl=auto&_x_tr_tl=en&_x_tr_hl=en)
 * [Manuale in italiano 9.2.x](https://penguins-eggs.net/book/italiano9.2.html)
 * [Manual em espanhol9.2.x](https://penguins--eggs-net.translate.goog/book/italiano9.2?_x_tr_sl=auto&_x_tr_tl=es&_x_tr_hl=en)
 * [Manual em português 9.2.x](https://penguins--eggs-net.translate.goog/book/italiano9.2?_x_tr_sl=auto&_x_tr_tl=pt&_x_tr_hl=en)
+
 
 ![terminal samples](https://github.com/pieroproietti/penguins-eggs/blob/master/documents/terminal-lessons/eggs_help.gif?raw=true)
 
