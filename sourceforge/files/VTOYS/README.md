@@ -17,16 +17,18 @@ penguins-eggs
 
 [Ventoy](https://www.ventoy.net/en/index.html) is an open source tool to create bootable USB drive for ISO/WIM/IMG/VHD(x)/EFI files.
 
-Here we are using the RAW format for the virtual disks of our VMs. The images I am releasing are absolutely experimental and consist of a system image, placed on an 8GB RAW disk, on which the operating system and the patch for Ventoy was installed. Later the same file was zipped compressed for faster enjoyment via the Internet.
+Here we are using virtual disk in raw format for our VMs. The images I am releasing are absolutely experimental and consists of the system image patched for Ventoy, placed on an 8GB RAW virtual disk. To save upload/download time, after that I just zipped them.
 
 I currently created two images:
 
-* arch-books
-* debian-books
+* arch-colibri
+* debian-colibri
 
-Copy the images on top of a flash drive with Ventoy already installed and you will have in addition to your isos, machines that while limited, are R/W until the disk is replenished.
+Unzip the images on a flash drive with Ventoy already installed, or inside your hard disk. Boot with your prepared Ventoy USB and select the system to start (press F2 to find images on hard disk). 
 
-The possibilities for use are endless, as are those for customization, as you can add packages and data.
+You will run this full system under real hardware.
+
+The possible applications of this method are almost infinite and, therefore, we are looking for ideas.
 
 Enjoy
 
