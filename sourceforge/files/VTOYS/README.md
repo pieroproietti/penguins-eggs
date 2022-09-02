@@ -32,7 +32,7 @@ The possible applications of this method are almost infinite and, therefore, we 
 
 The possible applications of this method are almost infinite and, therefore, we are looking for ideas.
 
-In this video called [Multi-loading Swiss Army Knife: Ventoy Review and Experimentation]s(https://www.youtube.com/watch?v=izxGcys2N7A), you will see Windows 10 and RedHat Linux boot directly from Virtual Box virtual disks.
+In this video called [Multi-loading Swiss Army Knife: Ventoy Review and Experimentation](https://www.youtube.com/watch?v=izxGcys2N7A), you will see Windows 10 and RedHat Linux boot directly from Virtual Box virtual disks.
 
 
 Enjoy
