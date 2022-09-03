@@ -55,6 +55,11 @@ function dnsmasq() {
   let dhcpRange=`192.168.1.160,192.168.1.200,255.255.255.0,2h`
   console.log(`cut and past to /etc/dnsmasq.conf`)
 
+  console.log()
+  console.log(`# Don't function as a DNS server:\nport=0\n`)
+  console.log(`# Log lots of extra information about DHCP transactions.\nlog-dhcp\n`)
+  
+
   console.log(`interface=${iface},lo`)
   console.log(`bind-interfaces`)
   console.log(`domain=${domain}`)
@@ -63,28 +68,42 @@ function dnsmasq() {
   console.log(`# dns\ndhcp-option=6,${Utils.getDns()}`)
   
   /**
-  
-  
-  #-- dns Forwarder info
-  server=8.8.8.8
-  
-  #----------------------#
-  # Specify TFTP Options #
-  #----------------------#
-  
-  #--location of the pxeboot file
-  dhcp-boot=/bios/pxelinux.0,pxeserver,192.168.1.150
-  
-  #--enable tftp service
-  enable-tftp
-  
-  #-- Root folder for tftp
-  tftp-root=/tftp
-  
-  #--Detect architecture and send the correct bootloader file
-  dhcp-match=set:efi-x86_64,option:client-arch,7 
-  dhcp-boot=tag:efi-x86_64,grub/bootx64.efi
-  `
+   * 
+   * https://serverfault.com/questions/829068/trouble-with-dnsmasq-dhcp-proxy-pxe-for-uefi-clients
+   * 
+# Don't function as a DNS server:
+port=0
+
+# Log lots of extra information about DHCP transactions.
+log-dhcp
+
+# Set the root directory for files available via FTP.
+tftp-root=/tftpboot
+
+# Disable re-use of the DHCP servername and filename fields as extra
+# option space. That's to avoid confusing some old or broken DHCP clients.
+dhcp-no-override
+
+# The boot filename, Server name, Server Ip Address
+dhcp-boot=bios/pxelinux,,192.168.1.200
+
+# PXE menu.  The first part is the text displayed to the user.  The second is the timeout, in seconds.
+# pxe-prompt="Booting PXE Client", 1
+
+# The known types are x86PC, PC98, IA64_EFI, Alpha, Arc_x86,
+# Intel_Lean_Client, IA32_EFI, ARM_EFI, BC_EFI, Xscale_EFI and X86-64_EFI
+# This option is first and will be the default if there is no input from the user.
+
+# PXEClient:Arch:00000
+pxe-service=X86PC, "Boot BIOS PXE", bios/pxelinux
+
+# PXEClient:Arch:00007
+pxe-service=BC_EFI, "Boot UEFI PXE-BC", efi64/syslinux.efi
+
+# PXEClient:Arch:00009
+pxe-service=X86-64_EFI, "Boot UEFI PXE-64", efi64/syslinux.efi
+
+dhcp-range=192.168.1.200,proxy,255.255.255.0
     )
    */
 }
