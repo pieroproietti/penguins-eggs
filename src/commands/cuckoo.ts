@@ -73,6 +73,7 @@ function dnsmasq() {
   content += `dhcp-range=${Utils.address()},proxy,${Utils.netmask()}\n\n`
 
   console.log(content)
+  console.log('copy and paste in /etc/dnsmasq.conf')
 
   /**
    * https://serverfault.com/questions/829068/trouble-with-dnsmasq-dhcp-proxy-pxe-for-uefi-clients
