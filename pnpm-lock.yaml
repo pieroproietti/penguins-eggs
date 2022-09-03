@@ -22,6 +22,7 @@ specifiers:
   axios: ^0.27.2
   chai: ^4.3.6
   chalk: ^4.1.2
+  dhcp: 0.2.20
   eslint: ^7.32.0
   eslint-config-oclif: ^4.0.0
   eslint-config-oclif-typescript: ^1.0.2
@@ -53,6 +54,7 @@ dependencies:
   '@oclif/test': 2.1.1
   axios: 0.27.2
   chalk: 4.1.2
+  dhcp: 0.2.20
   ink: 3.2.0_k33vb7fucsny7mu5lic4ab3hri
   ink-big-text: 1.2.0_ink@3.2.0+react@17.0.2
   ink-gradient: 2.0.0_ink@3.2.0+react@17.0.2
@@ -2056,6 +2058,14 @@ packages:
       asap: 2.0.6
       wrappy: 1.0.2
     dev: true
+
+  /dhcp/0.2.20:
+    resolution: {integrity: sha512-SfKVTg5qqe5aXSrSAXABM1yJl3OjekhSg6ryJyLjK1015waNj9fmMq8SrHI6qWuICtiprfYbh/f55giBJcC9Ag==}
+    engines: {node: '>=5.10.0'}
+    hasBin: true
+    dependencies:
+      minimist: 1.2.6
+    dev: false
 
   /diff/4.0.2:
     resolution: {integrity: sha512-58lmxKSA4BNyLz+HHMUzlOEpg09FV+ev6ZMe3vJihgdxzgcwZ8VoEEPmALCZG9LmqfVoNMMKpttIYTVG6uDY7A==}
@@ -4122,7 +4132,6 @@ packages:
 
   /minimist/1.2.6:
     resolution: {integrity: sha512-Jsjnk4bw3YJqYzbdyBiNsPWHPfO++UGG749Cxs6peCu5Xg4nrena6OVxOYxrQTqww0Jmwt+Ref8rggumkTLz9Q==}
-    dev: true
 
   /minipass-collect/1.0.2:
     resolution: {integrity: sha512-6T6lH0H8OG9kITm/Jm6tdooIbogG9e0tLgpY6mphXSm/A9u8Nq1ryBG+Qspiub9LjWlBPsPS3tWQ/Botq4FdxA==}
@@ -5998,6 +6007,7 @@ packages:
   /unified/9.2.2:
     resolution: {integrity: sha512-Sg7j110mtefBD+qunSLO1lqOEKdrwBFBrR6Qd8f4uwkhWNlbkaqwHse6e7QvD3AP/MNoJdEDLaf8OxYyoWgorQ==}
     dependencies:
+      '@types/unist': 2.0.6
       bail: 1.0.5
       extend: 3.0.2
       is-buffer: 2.0.5
