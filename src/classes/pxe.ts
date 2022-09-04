@@ -77,17 +77,23 @@ export default class Pxe {
         let dhcpRange = `192.168.1.160,192.168.1.200,255.255.255.0,2h`
 
         let content = ``
+        content += `port=0\n`
+        content += `log-dhcp\n`
+        content += `log-queries\n`
+        content += `log-facility=/tmp/dnsmasq.log\n`
+
         content += `# copy and paste in /etc/dnsmasq.conf\n\n`
         content += `interface=${Utils.iface()}\n\n`
         content += `bind-interfaces\n\n`
         content += `domain=${domain}\n\n`
-        content += `dhcp-range=${Utils.iface()},192.168.1.1,proxy,${Utils.netmask()}\n\n`
+        content += `dhcp-range=${Utils.iface()},192.168.1.1,proxy,255.255.255.0\n\n`
+        content += `# next\n`
+        content += `dhcp-option=option:next,192.168.1.19\n\n`
         content += `# router\n`
         content += `dhcp-option=option:router,192.168.1.1\n\n`
         content += `# dns\n`
         content += `dhcp-option=option:dns-server,192.168.1.1\n\n`
         content += `dhcp-option=option:dns-server,8.8.8.8\n\n`
-
         content += `enable-tftp\n\n`
         content += `tftp-root=${this.pxeRoot}\n\n`
         content += `# boot config for BIOS systems\n\n`
@@ -116,6 +122,7 @@ export default class Pxe {
         console.log(content)
 
         /**
+         * https://linuxhint.com/pxe_boot_ubuntu_server/#6
          * https://serverfault.com/questions/829068/trouble-with-dnsmasq-dhcp-proxy-pxe-for-uefi-clients
          */
 
