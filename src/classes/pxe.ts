@@ -41,9 +41,9 @@ export default class Pxe {
         let iface = Utils.iface()
         let domain = `penguins-eggs.lan`
         let dhcpRange = `192.168.1.160,192.168.1.200,255.255.255.0,2h`
-        console.log(`cut and past to /etc/dnsmasq.conf`)
 
         let content = ``
+        content += `# copy and paste in /etc/dnsmasq.conf\n\n`
         content += `# Don't function as a DNS server:\nport=0\n\n`
         content += `# Log lots of extra information about DHCP transactions.\nlog-dhcp\n\n`
         content += `# Disable re-use of the DHCP servername and filename fields as extra\n# option space. That's to avoid confusing some old or broken DHCP clients.\ndhcp-no-override\n\n`
@@ -61,7 +61,6 @@ export default class Pxe {
         content += `dhcp-range=${Utils.address()},proxy,${Utils.netmask()}\n\n`
 
         console.log(content)
-        console.log('copy and paste in /etc/dnsmasq.conf')
 
         /**
          * https://serverfault.com/questions/829068/trouble-with-dnsmasq-dhcp-proxy-pxe-for-uefi-clients
