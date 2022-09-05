@@ -57,6 +57,11 @@ export default class Pxe {
             this.tryCatch(`mkdir -p ${this.pxeIsos}`)
         }
 
+        if (!fs.existsSync(`${this.pxeIsos}vmlinuz`)) {
+            this.tryCatch(`cp /home/eggs/ovarium/iso/live/vmlinuz-5.10.0-16-amd64 /home/eggs/pxe/isos/vmlinuz`)
+            this.tryCatch(`cp /home/eggs/ovarium/iso/live/initrd.img-5.10.0-16-amd64 /home/eggs/pxe/isos/initrd.img`)
+        }
+
         // git clone https://github.com/ipxe/ipxe.git
         // create bootconfig.ipxe
         /*
