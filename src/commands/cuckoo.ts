@@ -41,7 +41,7 @@ export default class Cuckoo extends Command {
     const pxe = new Pxe()
     await pxe.fertilization()
     pxe.structure()
-    pxe.dnsMasq()
+    await pxe.dnsMasq()
   }
 }
 

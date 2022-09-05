@@ -588,7 +588,7 @@ unknown target format aarch64-efi
    /**
     * return the name of network device
     */
-   static iface(): string {
+   static async  iface(): Promise <string> {
       // return shx.exec(`ifconfig | awk 'FNR==1 { print $1 }' | tr --d :`, { silent: true }).stdout.trim()
       const interfaces: any = Object.keys(os.networkInterfaces())
       let netDeviceName = ''
