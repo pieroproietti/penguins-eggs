@@ -9,7 +9,8 @@ import Utils from '../classes/utils'
 import Settings from '../classes/settings'
 
 import { exec } from '../lib/utils'
-import  path  from 'node:path'
+import path, { dirname } from 'node:path'
+import { dir } from 'node:console'
 
 
 /**
@@ -21,56 +22,77 @@ export default class Pxe {
     echo = {}
 
     settings = {} as Settings
-    eggsHome = '/'
-    pxeRoot = '/pxe'
+    pxeRoot = '/pxe/'
     pxeConfig = '/config'
     pxeFirmware = '/firmware'
     pxeIsos = '/isos'
 
 
     async fertilization() {
-        this.settings = new Settings()        
+        this.settings = new Settings()
         await this.settings.load()
-        this.eggsHome = path.dirname(this.settings.work_dir.path)
     }
 
-    structure() {
-        if (!fs.existsSync(this.eggsHome)) {
-            let cmd = `mkdir -p ${this.eggsHome}`
-            this.tryCatch(cmd)
+    async structure() {
+        /**
+         * /home/eggs/ovarium
+         *           /pxe/config 
+         *           /pxe/firmware cp /usr/lib/PXELINUX/pxelinux.0 /pxe/firmware
+         *           /pxe/isos cp ../ovarium/live/vmlinuz .
+         * 
+         */
+
+        this.pxeRoot = path.dirname(this.settings.work_dir.path) + '/pxe'
+        if (fs.existsSync(this.pxeRoot)) {
+            await exec(`rm ${this.pxeRoot} -rf`)
         }
+        let cmd = `mkdir -p ${this.pxeRoot}`
+        await this.tryCatch(cmd)
 
-        this.pxeRoot = this.eggsHome + this.pxeRoot
-        this.pxeConfig = this.pxeRoot  + this.pxeConfig
-        this.pxeFirmware = this.pxeRoot  + this.pxeFirmware
-        this.pxeIsos = this.pxeRoot  + this.pxeIsos
-
+        this.pxeConfig = this.pxeRoot + this.pxeConfig
         if (!fs.existsSync(this.pxeConfig)) {
-            this.tryCatch(`mkdir -p ${this.pxeConfig}`)
+            await this.tryCatch(`mkdir -p ${this.pxeConfig}`)
         }
 
+        this.pxeFirmware = this.pxeRoot + this.pxeFirmware
         if (!fs.existsSync(this.pxeFirmware)) {
-            this.tryCatch(`mkdir -p ${this.pxeFirmware}`)
+            await this.tryCatch(`mkdir -p ${this.pxeFirmware}`)
+            await this.tryCatch(`cp /usr/lib/PXELINUX/pxelinux.0 ${this.pxeFirmware}`)
+            await this.tryCatch(`cp /usr/lib/PXELINUX/lpxelinux.0 ${this.pxeFirmware}`)
+            await this.tryCatch(`cp /usr/lib/syslinux/modules/bios/ldlinux.c32 ${this.pxeFirmware}`)
+            await this.tryCatch(`cp /usr/lib/syslinux/modules/bios/vesamenu.c32 ${this.pxeFirmware}`)
+            await this.tryCatch(`cp /usr/lib/syslinux/modules/bios/libcom32.c32 ${this.pxeFirmware}`)
+            await this.tryCatch(`cp /usr/lib/syslinux/modules/bios/libutil.c32 ${this.pxeFirmware}`)
+            await this.tryCatch(`cp /home/eggs/ovarium/iso/isolinux/isolinux.theme.cfg ${this.pxeFirmware}`)
+            await this.tryCatch(`cp /home/eggs/ovarium/iso/isolinux/splash.png ${this.pxeFirmware}`)
+
+            await this.tryCatch(`mkdir ${this.pxeFirmware}/pxelinux.cfg`)
+            let content = ``
+            content +=`# eggs: pxelinux.cfg/default\n`
+            content +=`# search path for the c32 support libraries (libcom32, libutil etc.)\n`
+            content +=`path\n`
+            content +=`include isolinux.theme.cfg\n`
+            content +=`UI vesamenu.c32\n`
+            content +=`PROMPT 0\n`
+            content +=`TIMEOUT 0\n`
+            content +=`MENU TITLE penguins-eggs\n`
+            content +=`MENU DEFAULT iso\n`
+            content +=`LABEL iso\n`
+            content +=`    DEFAULT memdisk\n`
+            content +=`    INITRD egg-of-debian-bullseye-colibri-amd64_2022-09-06_0318.iso\n`
+
+            let file = `${this.pxeFirmware}/pxelinux.cfg/default`
+            fs.writeFileSync(file, content)
+            await this.tryCatch(`cp /usr/lib/syslinux/memdisk ${this.pxeFirmware}`)
+            await this.tryCatch(`ln /home/eggs/egg-of-debian-bullseye-colibri-amd64_2022-09-06_0318.iso  /home/eggs/pxe/firmware/egg-of-debian-bullseye-colibri-amd64_2022-09-06_0318.iso`)
         }
 
+        this.pxeIsos = this.pxeRoot + this.pxeIsos
         if (!fs.existsSync(this.pxeIsos)) {
             this.tryCatch(`mkdir -p ${this.pxeIsos}`)
+            this.tryCatch(`cp /home/eggs/ovarium/iso/live/vmlinuz-5.10.0-16-amd64 ${this.pxeIsos}/vmlinuz`)
+            this.tryCatch(`cp /home/eggs/ovarium/iso/live/initrd.img-5.10.0-16-amd64 ${this.pxeIsos}/initrd.img`)
         }
-
-        if (!fs.existsSync(`${this.pxeIsos}vmlinuz`)) {
-            this.tryCatch(`cp /home/eggs/ovarium/iso/live/vmlinuz-5.10.0-16-amd64 /home/eggs/pxe/isos/vmlinuz`)
-            this.tryCatch(`cp /home/eggs/ovarium/iso/live/initrd.img-5.10.0-16-amd64 /home/eggs/pxe/isos/initrd.img`)
-        }
-
-        // git clone https://github.com/ipxe/ipxe.git
-        // create bootconfig.ipxe
-        /*
-        #!ipxe
-        dhcp
-        chain tftp://192.168.1.19/config/boot.ipxe
-        */
-        // make bin/ipxe.pxe bin/undionly.kpxe bin/undionly.kkpxe bin/undionly.kkkpxe bin-x86_64-efi/ipxe.efi EMBED=bootconfig.ipxe
-        // sudo cp -v bin/{ipxe.pxe,undionly.kpxe,undionly.kkpxe,undionly.kkkpxe} bin-x86_64-efi/ipxe.efi /home/eggs/pxe/firmware/
     }
 
     /**
@@ -109,28 +131,23 @@ export default class Pxe {
         content += `pxe-prompt="Booting PXE Client", 5\n\n`
         content += `# boot config for BIOS systems\n\n`
         content += `dhcp-match=set:bios-x86,option:client-arch,0\n\n`
-        content += `dhcp-boot=tag:bios-x86,firmware/ipxe.pxe\n\n`
+        content += `dhcp-boot=tag:bios-x86,firmware/lpxelinux.0\n\n`
         content += `# boot config for UEFI systems\n\n`
         content += `dhcp-match=set:efi-x86_64,option:client-arch,7\n\n`
         content += `dhcp-match=set:efi-x86_64,option:client-arch,9\n\n`
-        content += `dhcp-boot=tag:efi-x86_64,firmware/ipxe.efi\n\n`
+        //content += `dhcp-boot=tag:efi-x86_64,firmware/ipxe.efi\n\n`
+        content += `dhcp-boot=tag:efi-x86_64,firmware/lpxelinux.0\n\n`
 
         let file = '/etc/dnsmasq.d/cuckoo.conf'
         fs.writeFileSync(file, content)
 
-        await exec (`systemctl stop dnsmasq.service`)
-        await exec (`rm /home/artisan/dnsmasq.log\n`)
+        await exec(`systemctl stop dnsmasq.service`)
+        await exec(`rm /home/artisan/dnsmasq.log\n`)
 
-        await exec (`systemctl start dnsmasq.service`)
-        await exec (`systemctl status dnsmasq.service`)
-        
+        await exec(`systemctl start dnsmasq.service`)
+        await exec(`systemctl status dnsmasq.service`)
+
         console.log(content)
-
-        /**
-         * https://linuxhint.com/pxe_boot_ubuntu_server/#6
-         * https://serverfault.com/questions/829068/trouble-with-dnsmasq-dhcp-proxy-pxe-for-uefi-clients
-         */
-
     }
 
     /**
