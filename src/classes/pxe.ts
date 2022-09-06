@@ -66,6 +66,9 @@ export default class Pxe {
             await this.tryCatch(`cp /home/eggs/ovarium/iso/isolinux/isolinux.theme.cfg ${this.pxeFirmware}`)
             await this.tryCatch(`cp /home/eggs/ovarium/iso/isolinux/splash.png ${this.pxeFirmware}`)
 
+            await this.tryCatch(`cp /usr/lib/syslinux/memdisk ${this.pxeFirmware}`)
+            await this.tryCatch(`ln /home/eggs/egg-of-debian-bullseye-colibri-amd64_2022-09-06_1241.iso  /home/eggs/pxe/firmware/egg-of-debian-bullseye-colibri-amd64_2022-09-06_1241.iso`)
+
             await this.tryCatch(`mkdir ${this.pxeFirmware}/pxelinux.cfg`)
             let content = ``
             content +=`# eggs: pxelinux.cfg/default\n`
@@ -75,16 +78,21 @@ export default class Pxe {
             content +=`UI vesamenu.c32\n`
             content +=`PROMPT 0\n`
             content +=`TIMEOUT 0\n`
-            content +=`MENU TITLE penguins-eggs\n`
-            content +=`MENU DEFAULT iso\n`
-            content +=`LABEL iso\n`
-            content +=`    DEFAULT memdisk\n`
-            content +=`    INITRD egg-of-debian-bullseye-colibri-amd64_2022-09-06_0318.iso\n`
+            content +=`MENU DEFAULT eggs\n`
+
+
+            content +=`LABEL eggs\n`
+            content +=`MENU LABEL eggs current iso (Memdisk)\n`
+            content +=`KERNEL memdisk\n`
+            content +=`APPEND iso initrd=egg-of-debian-bullseye-colibri-amd64_2022-09-06_1241.iso\n`
+
+            content +=`MENU SEPARATOR\n`
+            content +=`LABEL other\n`
+            content +=`MENU LABEL other\n`
 
             let file = `${this.pxeFirmware}/pxelinux.cfg/default`
             fs.writeFileSync(file, content)
-            await this.tryCatch(`cp /usr/lib/syslinux/memdisk ${this.pxeFirmware}`)
-            await this.tryCatch(`ln /home/eggs/egg-of-debian-bullseye-colibri-amd64_2022-09-06_0318.iso  /home/eggs/pxe/firmware/egg-of-debian-bullseye-colibri-amd64_2022-09-06_0318.iso`)
+
         }
 
         this.pxeIsos = this.pxeRoot + this.pxeIsos
