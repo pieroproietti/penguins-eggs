@@ -11,6 +11,7 @@ import Settings from '../classes/settings'
 import { exec } from '../lib/utils'
 import path, { dirname } from 'node:path'
 import { dir } from 'node:console'
+import { isPropertyAccessExpression } from 'typescript'
 
 
 /**
@@ -26,12 +27,19 @@ export default class Pxe {
     pxeConfig = '/config'
     pxeFirmware = '/firmware'
     pxeIsos = '/isos'
+    isoFileName = ''
 
 
     async fertilization() {
         this.settings = new Settings()
         await this.settings.load()
-    }
+        let isos = fs.readdirSync(`/home/eggs/`)
+        for (const iso of isos) {
+            if (path.extname(iso) === ".iso") {
+                this.isoFileName = iso
+            }
+        }
+}
 
     async structure() {
         /**
@@ -54,6 +62,7 @@ export default class Pxe {
             await this.tryCatch(`mkdir -p ${this.pxeConfig}`)
         }
 
+
         this.pxeFirmware = this.pxeRoot + this.pxeFirmware
         if (!fs.existsSync(this.pxeFirmware)) {
             await this.tryCatch(`mkdir -p ${this.pxeFirmware}`)
@@ -65,30 +74,29 @@ export default class Pxe {
             await this.tryCatch(`cp /usr/lib/syslinux/modules/bios/libutil.c32 ${this.pxeFirmware}`)
             await this.tryCatch(`cp /home/eggs/ovarium/iso/isolinux/isolinux.theme.cfg ${this.pxeFirmware}`)
             await this.tryCatch(`cp /home/eggs/ovarium/iso/isolinux/splash.png ${this.pxeFirmware}`)
-
             await this.tryCatch(`cp /usr/lib/syslinux/memdisk ${this.pxeFirmware}`)
-            await this.tryCatch(`ln /home/eggs/egg-of-debian-bullseye-colibri-amd64_2022-09-06_1241.iso  /home/eggs/pxe/firmware/egg-of-debian-bullseye-colibri-amd64_2022-09-06_1241.iso`)
-
+    
+            await this.tryCatch(`ln /home/eggs/${this.isoFileName} /home/eggs/pxe/firmware/${this.isoFileName}`)
             await this.tryCatch(`mkdir ${this.pxeFirmware}/pxelinux.cfg`)
             let content = ``
-            content +=`# eggs: pxelinux.cfg/default\n`
-            content +=`# search path for the c32 support libraries (libcom32, libutil etc.)\n`
-            content +=`path\n`
-            content +=`include isolinux.theme.cfg\n`
-            content +=`UI vesamenu.c32\n`
-            content +=`PROMPT 0\n`
-            content +=`TIMEOUT 0\n`
-            content +=`MENU DEFAULT eggs\n`
+            content += `# eggs: pxelinux.cfg/default\n`
+            content += `# search path for the c32 support libraries (libcom32, libutil etc.)\n`
+            content += `path\n`
+            content += `include isolinux.theme.cfg\n`
+            content += `UI vesamenu.c32\n`
+            content += `PROMPT 0\n`
+            content += `TIMEOUT 0\n`
+            content += `MENU DEFAULT eggs\n`
 
 
-            content +=`LABEL eggs\n`
-            content +=`MENU LABEL eggs current iso (Memdisk)\n`
-            content +=`KERNEL memdisk\n`
-            content +=`APPEND iso initrd=egg-of-debian-bullseye-colibri-amd64_2022-09-06_1241.iso\n`
+            content += `LABEL eggs\n`
+            content += `MENU LABEL eggs current iso (Memdisk)\n`
+            content += `KERNEL memdisk\n`
+            content += `APPEND iso initrd=${this.isoFileName}\n`
 
-            content +=`MENU SEPARATOR\n`
-            content +=`LABEL other\n`
-            content +=`MENU LABEL other\n`
+            content += `MENU SEPARATOR\n`
+            content += `LABEL other\n`
+            content += `MENU LABEL other\n`
 
             let file = `${this.pxeFirmware}/pxelinux.cfg/default`
             fs.writeFileSync(file, content)
@@ -156,6 +164,7 @@ export default class Pxe {
         await exec(`systemctl status dnsmasq.service`)
 
         console.log(content)
+
     }
 
     /**
