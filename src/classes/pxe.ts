@@ -50,9 +50,10 @@ export default class Pxe {
      */
     async httpStart() {
         const port = 80
-        const pxeRoot = this.pxeFirmware 
-        http.createServer(function (req, res) {
-            fs.readFile(pxeRoot + req, function (err, data) {
+        const pxeRoot = this.pxeRoot
+        console.log(pxeRoot)
+        http.createServer(function (req: IncomingMessage, res: ServerResponse) {
+            fs.readFile(pxeRoot + '/' + req.url, function (err, data) {
                 if (err) {
                     res.writeHead(404)
                     res.end(JSON.stringify(err))
