@@ -8,7 +8,7 @@ import { Command, Flags } from '@oclif/core'
 import os from 'node:os'
 import fs from 'fs'
 import Utils from '../classes/utils'
-import Pxe from  '../classes/pxe'
+import Pxe from '../classes/pxe'
 
 import { IWorkDir } from '../interfaces/i-workdir'
 
@@ -37,12 +37,13 @@ export default class Cuckoo extends Command {
     let verbose = flags.verbose
     const echo = Utils.setEcho(verbose)
 
-    // if (Utils.isRoot()) {
-    const pxe = new Pxe()
-    await pxe.fertilization()
-    await pxe.structure()
-    await pxe.dnsMasq()
-    await pxe.httpStart()
+    if (Utils.isRoot()) {
+      const pxe = new Pxe()
+      await pxe.fertilization()
+      await pxe.structure()
+      await pxe.dnsMasq()
+      await pxe.httpStart()
+    }
   }
 }
 
