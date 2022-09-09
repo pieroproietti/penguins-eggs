@@ -40,8 +40,9 @@ export default class Cuckoo extends Command {
     // if (Utils.isRoot()) {
     const pxe = new Pxe()
     await pxe.fertilization()
-    pxe.structure()
+    await pxe.structure()
     await pxe.dnsMasq()
+    await pxe.httpStart()
   }
 }
 
