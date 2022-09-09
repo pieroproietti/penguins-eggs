@@ -11,12 +11,8 @@ import Settings from '../classes/settings'
 import http from 'http'
 
 import { IncomingMessage, ServerResponse } from 'http';
-
-import url from 'url'
-
 import { exec } from '../lib/utils'
 import path, { dirname } from 'node:path'
-
 
 
 /**
@@ -64,6 +60,7 @@ export default class Pxe {
             });
         }).listen(80)
     }
+
 
     /**
      * 
@@ -128,10 +125,10 @@ export default class Pxe {
             content += `KERNEL memdisk\n`
             content += `APPEND iso initrd=http://${Utils.address()}/firmware/${this.isoFileName}\n`
 
-            content += `LABEL https\n`
-            content += `MENU LABEL ${this.isoFileName} (https)\n`
-            content += `KERNEL memdisk\n`
-            content += `APPEND iso initrd=https://${Utils.address()}/firmware/${this.isoFileName}\n`
+            content += `LABEL filesystem\n`
+            content += `MENU LABEL ${this.isoFileName} (filesystem)\n`
+            content += `KERNEL http://${Utils.address()}/isos/vmlinuz\n`
+            content += `APPEND initrd=https://${Utils.address()}/firmware/${this.isoFileName}\n`
 
             content += `MENU SEPARATOR\n`
             content += `LABEL other\n`
@@ -139,17 +136,14 @@ export default class Pxe {
 
             let file = `${this.pxeFirmware}/pxelinux.cfg/default`
             fs.writeFileSync(file, content)
-
         }
 
-        /**
         this.pxeIsos = this.pxeRoot + this.pxeIsos
         if (!fs.existsSync(this.pxeIsos)) {
             this.tryCatch(`mkdir -p ${this.pxeIsos}`)
             this.tryCatch(`cp /home/eggs/ovarium/iso/live/vmlinuz-5.10.0-16-amd64 ${this.pxeIsos}/vmlinuz`)
             this.tryCatch(`cp /home/eggs/ovarium/iso/live/initrd.img-5.10.0-16-amd64 ${this.pxeIsos}/initrd.img`)
         }
-        */
     }
 
     /**
