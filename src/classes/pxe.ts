@@ -25,6 +25,8 @@ export default class Pxe {
     settings = {} as Settings
     pxeRoot = ''
     isos: string[] = []
+    vmlinuz = ''
+    initrd = ''
 
     /**
      * fertilization()
@@ -37,6 +39,17 @@ export default class Pxe {
         for (const iso of isos) {
             if (path.extname(iso) === ".iso") {
                 this.isos.push(iso)
+            }
+        }
+
+        let files = fs.readdirSync(path.dirname(this.settings.work_dir.path)+ '/ovarium/iso/live')
+        for (const file of files) {
+            // console.log(path.basename(file).substring(0,7))
+            if (path.basename(file).substring(0,7) === 'vmlinuz'){
+                this.vmlinuz = path.basename(file)
+            }
+            if (path.basename(file).substring(0,6) === 'initrd') {
+                this.initrd = path.basename(file)
             }
         }
     }
@@ -53,8 +66,6 @@ export default class Pxe {
 
         const distro = new Distro()
         distro.syslinuxPath
-        console.log("syslinux: " + distro.syslinuxPath)
-        console.log("pxelinux: " + distro.pxelinuxPath)
 
         await this.tryCatch(`mkdir -p ${this.pxeRoot}`)
         await this.tryCatch(`cp ${distro.pxelinuxPath}pxelinux.0 ${this.pxeRoot}`)
@@ -82,6 +93,14 @@ export default class Pxe {
         content += `PROMPT 0\n`
         content += `TIMEOUT 0\n`
         content += `MENU DEFAULT tftp\n`
+
+        await this.tryCatch(`ln /home/eggs/ovarium/iso/live/filesystem.squashfs ${this.pxeRoot}/filesystem.squashfs`)
+        await this.tryCatch(`ln /home/eggs/ovarium/iso/live/${this.vmlinuz} ${this.pxeRoot}/vmlinuz`)
+        await this.tryCatch(`ln /home/eggs/ovarium/iso/live/${this.initrd} ${this.pxeRoot}/initrd.img`)
+
+        console.log(this.vmlinuz)
+        console.log(this.initrd)
+        
 
         for (const iso of this.isos) {
             content += `LABEL http\n`
