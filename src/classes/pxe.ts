@@ -9,11 +9,9 @@ import Utils from '../classes/utils'
 import Settings from '../classes/settings'
 
 import http from 'http'
-
 import { IncomingMessage, ServerResponse } from 'http';
 import { exec } from '../lib/utils'
 import path, { dirname } from 'node:path'
-
 
 /**
 * Pxe:
@@ -24,126 +22,70 @@ export default class Pxe {
     echo = {}
 
     settings = {} as Settings
-    pxeRoot = '/pxe/'
-    pxeConfig = '/config'
-    pxeFirmware = '/firmware'
-    pxeIsos = '/isos'
-    isoFileName = ''
+    pxeRoot = ''
+    isos: string[] = []
 
+
+    /**
+     * fertilization()
+     */
     async fertilization() {
         this.settings = new Settings()
         await this.settings.load()
+        this.pxeRoot = path.dirname(this.settings.work_dir.path) + '/pxe/'
+
         let isos = fs.readdirSync(`/home/eggs/`)
         for (const iso of isos) {
             if (path.extname(iso) === ".iso") {
-                this.isoFileName = iso
+                this.isos.push(iso)
             }
         }
     }
 
     /**
-     * start http server
-     */
-    async httpStart() {
-        const port = 80
-        const pxeRoot = this.pxeRoot
-        console.log(pxeRoot)
-        http.createServer(function (req: IncomingMessage, res: ServerResponse) {
-            fs.readFile(pxeRoot + '/' + req.url, function (err, data) {
-                if (err) {
-                    res.writeHead(404)
-                    res.end(JSON.stringify(err))
-                    return
-                }
-                res.writeHead(200)
-                res.end(data)
-            });
-        }).listen(80)
-    }
-
-
-    /**
-     * 
+     * structure
      */
     async structure() {
-        /**
-             * /home/eggs/ovarium
-             *           /pxe/config 
-             *           /pxe/firmware cp /usr/lib/PXELINUX/pxelinux.0 /pxe/firmware
-             *           /pxe/isos cp ../ovarium/live/vmlinuz .
-             * 
-             */
-
-        this.pxeRoot = path.dirname(this.settings.work_dir.path) + '/pxe'
         if (fs.existsSync(this.pxeRoot)) {
-            await exec(`rm ${this.pxeRoot} -rf`)
+            await this.tryCatch(`rm ${this.pxeRoot} -rf`)
         }
         let cmd = `mkdir -p ${this.pxeRoot}`
         await this.tryCatch(cmd)
 
-        /*
-        this.pxeConfig = this.pxeRoot + this.pxeConfig
-        if (!fs.existsSync(this.pxeConfig)) {
-            await this.tryCatch(`mkdir -p ${this.pxeConfig}`)
+        await this.tryCatch(`mkdir -p ${this.pxeRoot}`)
+        await this.tryCatch(`cp /usr/lib/PXELINUX/pxelinux.0 ${this.pxeRoot}`)
+        await this.tryCatch(`cp /usr/lib/PXELINUX/lpxelinux.0 ${this.pxeRoot}`)
+        await this.tryCatch(`cp /usr/lib/syslinux/modules/bios/ldlinux.c32 ${this.pxeRoot}`)
+        await this.tryCatch(`cp /usr/lib/syslinux/modules/bios/vesamenu.c32 ${this.pxeRoot}`)
+        await this.tryCatch(`cp /usr/lib/syslinux/modules/bios/libcom32.c32 ${this.pxeRoot}`)
+        await this.tryCatch(`cp /usr/lib/syslinux/modules/bios/libutil.c32 ${this.pxeRoot}`)
+        await this.tryCatch(`cp /home/eggs/ovarium/iso/isolinux/isolinux.theme.cfg ${this.pxeRoot}`)
+        await this.tryCatch(`cp /home/eggs/ovarium/iso/isolinux/splash.png ${this.pxeRoot}`)
+        await this.tryCatch(`cp /usr/lib/syslinux/memdisk ${this.pxeRoot}`)
+        for (const iso of this.isos) {
+            await this.tryCatch(`ln /home/eggs/${iso} ${this.pxeRoot}/${iso}`)
         }
-        */
+        await this.tryCatch(`mkdir ${this.pxeRoot}/pxelinux.cfg`)
+        let content = ``
+        content += `# eggs: pxelinux.cfg/default\n`
+        content += `# search path for the c32 support libraries (libcom32, libutil etc.)\n`
+        content += `path\n`
+        content += `include isolinux.theme.cfg\n`
+        content += `UI vesamenu.c32\n`
+        content += `menu title Penguin's eggs - Perri's brewery edition - ${Utils.address()}\n`
+        content += `PROMPT 0\n`
+        content += `TIMEOUT 0\n`
+        content += `MENU DEFAULT tftp\n`
 
-
-        this.pxeFirmware = this.pxeRoot + this.pxeFirmware
-        if (!fs.existsSync(this.pxeFirmware)) {
-            await this.tryCatch(`mkdir -p ${this.pxeFirmware}`)
-            await this.tryCatch(`cp /usr/lib/PXELINUX/pxelinux.0 ${this.pxeFirmware}`)
-            await this.tryCatch(`cp /usr/lib/PXELINUX/lpxelinux.0 ${this.pxeFirmware}`)
-            await this.tryCatch(`cp /usr/lib/syslinux/modules/bios/ldlinux.c32 ${this.pxeFirmware}`)
-            await this.tryCatch(`cp /usr/lib/syslinux/modules/bios/vesamenu.c32 ${this.pxeFirmware}`)
-            await this.tryCatch(`cp /usr/lib/syslinux/modules/bios/libcom32.c32 ${this.pxeFirmware}`)
-            await this.tryCatch(`cp /usr/lib/syslinux/modules/bios/libutil.c32 ${this.pxeFirmware}`)
-            await this.tryCatch(`cp /home/eggs/ovarium/iso/isolinux/isolinux.theme.cfg ${this.pxeFirmware}`)
-            await this.tryCatch(`cp /home/eggs/ovarium/iso/isolinux/splash.png ${this.pxeFirmware}`)
-            await this.tryCatch(`cp /usr/lib/syslinux/memdisk ${this.pxeFirmware}`)
-
-            await this.tryCatch(`ln /home/eggs/${this.isoFileName} /home/eggs/pxe/firmware/${this.isoFileName}`)
-            await this.tryCatch(`mkdir ${this.pxeFirmware}/pxelinux.cfg`)
-            let content = ``
-            content += `# eggs: pxelinux.cfg/default\n`
-            content += `# search path for the c32 support libraries (libcom32, libutil etc.)\n`
-            content += `path\n`
-            content += `include isolinux.theme.cfg\n`
-            content += `UI vesamenu.c32\n`
-            content += `menu title Penguin's eggs - Perri's brewery edition - ${Utils.address()}\n`
-            content += `PROMPT 0\n`
-            content += `TIMEOUT 0\n`
-            content += `MENU DEFAULT tftp\n`
-
-            content += `LABEL tftp\n`
-            content += `MENU LABEL ${this.isoFileName} (tftp)\n`
-            content += `KERNEL memdisk\n`
-            content += `APPEND iso initrd=${this.isoFileName}\n`
-
+        for (const iso of this.isos) {
             content += `LABEL http\n`
-            content += `MENU LABEL ${this.isoFileName} (http)\n`
+            content += `MENU LABEL ${iso}\n`
             content += `KERNEL memdisk\n`
-            content += `APPEND iso initrd=http://${Utils.address()}/firmware/${this.isoFileName}\n`
-
-            content += `LABEL filesystem\n`
-            content += `MENU LABEL ${this.isoFileName} (filesystem)\n`
-            content += `KERNEL http://${Utils.address()}/isos/vmlinuz\n`
-            content += `APPEND initrd=https://${Utils.address()}/firmware/${this.isoFileName}\n`
-
-            content += `MENU SEPARATOR\n`
-            content += `LABEL other\n`
-            content += `MENU LABEL other\n`
-
-            let file = `${this.pxeFirmware}/pxelinux.cfg/default`
-            fs.writeFileSync(file, content)
+            content += `APPEND iso initrd=http://${Utils.address()}/${iso}\n`
         }
 
-        this.pxeIsos = this.pxeRoot + this.pxeIsos
-        if (!fs.existsSync(this.pxeIsos)) {
-            this.tryCatch(`mkdir -p ${this.pxeIsos}`)
-            this.tryCatch(`cp /home/eggs/ovarium/iso/live/vmlinuz-5.10.0-16-amd64 ${this.pxeIsos}/vmlinuz`)
-            this.tryCatch(`cp /home/eggs/ovarium/iso/live/initrd.img-5.10.0-16-amd64 ${this.pxeIsos}/initrd.img`)
-        }
+        let file = `${this.pxeRoot}/pxelinux.cfg/default`
+        fs.writeFileSync(file, content)
     }
 
     /**
@@ -182,11 +124,11 @@ export default class Pxe {
         content += `pxe-prompt="Booting PXE Client", 5\n\n`
         content += `# boot config for BIOS systems\n\n`
         content += `dhcp-match=set:bios-x86,option:client-arch,0\n\n`
-        content += `dhcp-boot=tag:bios-x86,firmware/lpxelinux.0\n\n`
+        content += `dhcp-boot=tag:bios-x86,lpxelinux.0\n\n`
         content += `# boot config for UEFI systems\n\n`
         content += `dhcp-match=set:efi-x86_64,option:client-arch,7\n\n`
         content += `dhcp-match=set:efi-x86_64,option:client-arch,9\n\n`
-        content += `dhcp-boot=tag:efi-x86_64,firmware/lpxelinux.0\n\n`
+        content += `dhcp-boot=tag:efi-x86_64,lpxelinux.0\n\n`
 
         let file = '/etc/dnsmasq.d/cuckoo.conf'
         fs.writeFileSync(file, content)
@@ -195,10 +137,8 @@ export default class Pxe {
         await exec(`rm /home/artisan/dnsmasq.log\n`)
 
         await exec(`systemctl start dnsmasq.service`)
-        await exec(`systemctl status dnsmasq.service`)
-
-        console.log(content)
-
+        // await exec(`systemctl status dnsmasq.service`)
+        // console.log(content)
     }
 
     /**
@@ -212,5 +152,24 @@ export default class Pxe {
             console.log(`Error: ${error}`)
             await Utils.pressKeyToExit(cmd)
         }
+    }
+
+    /**
+     * start http server
+     */
+    async httpStart() {
+        const port = 80
+        const pxeRoot = this.pxeRoot + "/"
+        http.createServer(function (req: IncomingMessage, res: ServerResponse) {
+            fs.readFile(pxeRoot + req.url, function (err, data) {
+                if (err) {
+                    res.writeHead(404)
+                    res.end(JSON.stringify(err))
+                    return
+                }
+                res.writeHead(200)
+                res.end(data)
+            });
+        }).listen(80)
     }
 }

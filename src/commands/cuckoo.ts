@@ -14,6 +14,7 @@ import { IWorkDir } from '../interfaces/i-workdir'
 
 import { exec } from '../lib/utils'
 import { fileURLToPath } from 'url'
+import Pacman from '../classes/pacman'
 
 export default class Cuckoo extends Command {
   config_file = '/etc/penguins-eggs.d/eggs.yaml' as string
@@ -38,12 +39,20 @@ export default class Cuckoo extends Command {
     const echo = Utils.setEcho(verbose)
 
     if (Utils.isRoot()) {
-      const pxe = new Pxe()
-      await pxe.fertilization()
-      await pxe.structure()
-      await pxe.dnsMasq()
-      await pxe.httpStart()
-    }
+      if (!Pacman.packageIsInstalled('dnsmasq')) {
+        console.log('installing dnsmasq...')
+        await exec ('sudo apt install dnsmasq')
+      }
+      if (!Pacman.packageIsInstalled("pxelinux")) {
+        console.log('installing pxelinux')
+        await exec ('sudo apt install pxelinux')
+      }
+        const pxe = new Pxe()
+        await pxe.fertilization()
+        await pxe.structure()
+        await pxe.dnsMasq()
+        await pxe.httpStart()
+      }
   }
 }
 
