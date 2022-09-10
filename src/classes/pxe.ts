@@ -83,6 +83,11 @@ export default class Pxe {
             await this.tryCatch(`ln /home/eggs/${iso} ${this.pxeRoot}/${iso}`)
         }
         await this.tryCatch(`mkdir ${this.pxeRoot}/pxelinux.cfg`)
+
+        await this.tryCatch(`ln /home/eggs/ovarium/iso/live/filesystem.squashfs ${this.pxeRoot}/filesystem.squashfs`)
+        await this.tryCatch(`ln /home/eggs/ovarium/iso/live/${this.vmlinuz} ${this.pxeRoot}/${this.vmlinuz}`)
+        await this.tryCatch(`ln /home/eggs/ovarium/iso/live/${this.initrd} ${this.pxeRoot}/${this.initrd}`)
+
         let content = ``
         content += `# eggs: pxelinux.cfg/default\n`
         content += `# search path for the c32 support libraries (libcom32, libutil etc.)\n`
@@ -92,15 +97,12 @@ export default class Pxe {
         content += `menu title Penguin's eggs - Perri's brewery edition - ${Utils.address()}\n`
         content += `PROMPT 0\n`
         content += `TIMEOUT 0\n`
-        content += `MENU DEFAULT tftp\n`
 
-        await this.tryCatch(`ln /home/eggs/ovarium/iso/live/filesystem.squashfs ${this.pxeRoot}/filesystem.squashfs`)
-        await this.tryCatch(`ln /home/eggs/ovarium/iso/live/${this.vmlinuz} ${this.pxeRoot}/vmlinuz`)
-        await this.tryCatch(`ln /home/eggs/ovarium/iso/live/${this.initrd} ${this.pxeRoot}/initrd.img`)
-
-        console.log(this.vmlinuz)
-        console.log(this.initrd)
-        
+        content += `LABEL test\n`
+        content += `MENU LABEL test\n`
+        content += `KERNEL http://${Utils.address()}/${this.vmlinuz}\n`
+        content += `APPEND initrd=http://${Utils.address()}/${this.initrd} boot=live config noswap noprompt fetch=http://${Utils.address()}/filesystem.squashfs\n`
+        content += `IPAPPEND 1\n`
 
         for (const iso of this.isos) {
             content += `LABEL http\n`
@@ -111,6 +113,7 @@ export default class Pxe {
 
         let file = `${this.pxeRoot}/pxelinux.cfg/default`
         fs.writeFileSync(file, content)
+        // await exec (`cp /home/artisan/penguins-eggs/default /home/eggs/pxe/pxelinux.cfg/`)
     }
 
     /**
