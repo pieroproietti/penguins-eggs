@@ -154,6 +154,7 @@ In addition to the description of the commands in this README, you can consult t
 * [`eggs autocomplete [SHELL]`](#eggs-autocomplete-shell)
 * [`eggs calamares`](#eggs-calamares)
 * [`eggs config`](#eggs-config)
+* [`eggs cuckoo`](#eggs-cuckoo)
 * [`eggs dad`](#eggs-dad)
 * [`eggs export deb`](#eggs-export-deb)
 * [`eggs export docs`](#eggs-export-docs)
@@ -298,6 +299,28 @@ EXAMPLES
 ```
 
 _See code: [src/commands/config.ts](https://github.com/pieroproietti/penguins-eggs/blob/v9.2.3/src/commands/config.ts)_
+
+## `eggs cuckoo`
+
+cuckoo start a boot server on the LAN sharing iso on the nest
+
+```
+USAGE
+  $ eggs cuckoo [-h] [-v]
+
+FLAGS
+  -h, --help     Show CLI help.
+  -v, --verbose  verbose
+
+DESCRIPTION
+  cuckoo start a boot server on the LAN sharing iso on the nest
+
+EXAMPLES
+  $ eggs cuckoo
+  cuckoo start a boot server sharing eggs on the nest
+```
+
+_See code: [src/commands/cuckoo.ts](https://github.com/pieroproietti/penguins-eggs/blob/v9.2.3/src/commands/cuckoo.ts)_
 
 ## `eggs dad`
 
