@@ -12,6 +12,7 @@ import http from 'http'
 import { IncomingMessage, ServerResponse } from 'http';
 import { exec } from '../lib/utils'
 import path, { dirname } from 'node:path'
+import Distro from './distro'
 
 /**
 * Pxe:
@@ -25,7 +26,6 @@ export default class Pxe {
     pxeRoot = ''
     isos: string[] = []
 
-
     /**
      * fertilization()
      */
@@ -33,8 +33,7 @@ export default class Pxe {
         this.settings = new Settings()
         await this.settings.load()
         this.pxeRoot = path.dirname(this.settings.work_dir.path) + '/pxe/'
-
-        let isos = fs.readdirSync(`/home/eggs/`)
+        let isos = fs.readdirSync(path.dirname(this.settings.work_dir.path))
         for (const iso of isos) {
             if (path.extname(iso) === ".iso") {
                 this.isos.push(iso)
@@ -52,16 +51,23 @@ export default class Pxe {
         let cmd = `mkdir -p ${this.pxeRoot}`
         await this.tryCatch(cmd)
 
+        const distro = new Distro()
+        distro.syslinuxPath
+        console.log("syslinux: " + distro.syslinuxPath)
+        console.log("pxelinux: " + distro.pxelinuxPath)
+
         await this.tryCatch(`mkdir -p ${this.pxeRoot}`)
-        await this.tryCatch(`cp /usr/lib/PXELINUX/pxelinux.0 ${this.pxeRoot}`)
-        await this.tryCatch(`cp /usr/lib/PXELINUX/lpxelinux.0 ${this.pxeRoot}`)
-        await this.tryCatch(`cp /usr/lib/syslinux/modules/bios/ldlinux.c32 ${this.pxeRoot}`)
-        await this.tryCatch(`cp /usr/lib/syslinux/modules/bios/vesamenu.c32 ${this.pxeRoot}`)
-        await this.tryCatch(`cp /usr/lib/syslinux/modules/bios/libcom32.c32 ${this.pxeRoot}`)
-        await this.tryCatch(`cp /usr/lib/syslinux/modules/bios/libutil.c32 ${this.pxeRoot}`)
+        await this.tryCatch(`cp ${distro.pxelinuxPath}pxelinux.0 ${this.pxeRoot}`)
+        await this.tryCatch(`cp ${distro.pxelinuxPath}lpxelinux.0 ${this.pxeRoot}`)
+
+        await this.tryCatch(`cp ${distro.syslinuxPath}ldlinux.c32 ${this.pxeRoot}`)
+        await this.tryCatch(`cp ${distro.syslinuxPath}vesamenu.c32 ${this.pxeRoot}`)
+        await this.tryCatch(`cp ${distro.syslinuxPath}libcom32.c32 ${this.pxeRoot}`)
+        await this.tryCatch(`cp ${distro.syslinuxPath}libutil.c32 ${this.pxeRoot}`)
+        await this.tryCatch(`cp /usr/lib/syslinux/memdisk ${this.pxeRoot}`)
+
         await this.tryCatch(`cp /home/eggs/ovarium/iso/isolinux/isolinux.theme.cfg ${this.pxeRoot}`)
         await this.tryCatch(`cp /home/eggs/ovarium/iso/isolinux/splash.png ${this.pxeRoot}`)
-        await this.tryCatch(`cp /usr/lib/syslinux/memdisk ${this.pxeRoot}`)
         for (const iso of this.isos) {
             await this.tryCatch(`ln /home/eggs/${iso} ${this.pxeRoot}/${iso}`)
         }
@@ -100,8 +106,8 @@ export default class Pxe {
         content += `# Don't function as a DNS server:\n`
         content += `port=0\n\n`
         content += `# Log lots of extra information about DHCP transactions.\n`
-        content += `log-dhcp\n\n`
-        content += `log-queries\n\n`
+        // content += `log-dhcp\n\n`
+        // content += `log-queries\n\n`
         content += `log-facility=/home/artisan/dnsmasq.log\n\n`
         content += `interface=${await Utils.iface()}\n\n`
         content += `bind-interfaces\n\n`
@@ -110,8 +116,8 @@ export default class Pxe {
         // dhcp-full
         content += `dhcp-range=${await Utils.iface()},192.168.1.1,192.168.1.254,255.255.255.0,8h\n\n`
 
-        // dhcp-proxy
-        //content += `dhcp-range=${await Utils.iface()},192.168.1.1,proxy\n\n`
+        // dhcp - proxy
+        // content += `dhcp-range=${await Utils.iface()},192.168.1.1,proxy\n\n`
 
         content += `# router\n`
         content += `dhcp-option=option:router,192.168.1.1\n\n`
@@ -155,13 +161,13 @@ export default class Pxe {
     }
 
     /**
-     * start http server
+     * start http server for images
      */
     async httpStart() {
         const port = 80
-        const pxeRoot = this.pxeRoot + "/"
+        const httpRoot = this.pxeRoot + "/"
         http.createServer(function (req: IncomingMessage, res: ServerResponse) {
-            fs.readFile(pxeRoot + req.url, function (err, data) {
+            fs.readFile(httpRoot + req.url, function (err, data) {
                 if (err) {
                     res.writeHead(404)
                     res.end(JSON.stringify(err))
@@ -171,5 +177,6 @@ export default class Pxe {
                 res.end(data)
             });
         }).listen(80)
+
     }
 }

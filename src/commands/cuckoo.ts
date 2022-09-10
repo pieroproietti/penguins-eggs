@@ -13,9 +13,11 @@ import Pxe from '../classes/pxe'
 import { IWorkDir } from '../interfaces/i-workdir'
 
 import { exec } from '../lib/utils'
-import { fileURLToPath } from 'url'
 import Pacman from '../classes/pacman'
 
+/**
+ * 
+ */
 export default class Cuckoo extends Command {
   config_file = '/etc/penguins-eggs.d/eggs.yaml' as string
   snapshot_dir = '' as string
@@ -41,18 +43,19 @@ export default class Cuckoo extends Command {
     if (Utils.isRoot()) {
       if (!Pacman.packageIsInstalled('dnsmasq')) {
         console.log('installing dnsmasq...')
-        await exec ('sudo apt install dnsmasq')
+        await exec('sudo apt install dnsmasq')
       }
       if (!Pacman.packageIsInstalled("pxelinux")) {
         console.log('installing pxelinux')
-        await exec ('sudo apt install pxelinux')
+        await exec('sudo apt install pxelinux')
       }
-        const pxe = new Pxe()
-        await pxe.fertilization()
-        await pxe.structure()
-        await pxe.dnsMasq()
-        await pxe.httpStart()
-      }
+      const pxe = new Pxe()
+      await pxe.fertilization()
+      await pxe.structure()
+      await pxe.dnsMasq()
+      await pxe.httpStart()
+      console.log('Serving PXE ')
+    }
   }
 }
 

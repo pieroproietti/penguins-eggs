@@ -54,6 +54,7 @@ class Distro implements IDistro {
   usrLibPath: string
   isolinuxPath: string
   syslinuxPath: string
+  pxelinuxPath: string 
   mountpointSquashFs: string
   homeUrl: string
   supportUrl: string
@@ -71,6 +72,7 @@ class Distro implements IDistro {
     this.usrLibPath = '/usr/lib'
     this.isolinuxPath = ''
     this.syslinuxPath = ''
+    this.pxelinuxPath = ''
     this.mountpointSquashFs = ''
     this.homeUrl = ''
     this.supportUrl = ''
@@ -488,6 +490,7 @@ class Distro implements IDistro {
       case 'debian': {
         this.isolinuxPath = '/usr/lib/ISOLINUX/'
         this.syslinuxPath = '/usr/lib/syslinux/modules/bios/'
+        this.pxelinuxPath = '/usr/lib/PXELINUX/'
         this.usrLibPath = '/usr/lib/x86_64-linux-gnu/'
         if (process.arch === 'ia32') {
           this.usrLibPath = '/usr/lib/i386-linux-gnu/'
