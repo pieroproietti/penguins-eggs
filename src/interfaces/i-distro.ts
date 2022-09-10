@@ -9,6 +9,7 @@ export interface IDistro {
   usrLibPath: string
   isolinuxPath: string
   syslinuxPath: string
+  pxelinuxPath: string
   mountpointSquashFs: string
   homeUrl: string
   supportUrl: string
