@@ -27,6 +27,7 @@ export default class Cuckoo extends Command {
   static description = 'cuckoo start a boot server on the LAN sharing iso on the nest'
 
   static flags = {
+    full: Flags.boolean({ char: 'f' }),
     help: Flags.help({ char: 'h' }),
     verbose: Flags.boolean({ char: 'v', description: 'verbose' })
   }
@@ -40,6 +41,8 @@ export default class Cuckoo extends Command {
     let verbose = flags.verbose
     const echo = Utils.setEcho(verbose)
 
+    let full = flags.full
+
     if (Utils.isRoot()) {
       if (!Pacman.packageIsInstalled('dnsmasq')) {
         console.log('installing dnsmasq...')
@@ -52,7 +55,7 @@ export default class Cuckoo extends Command {
       const pxe = new Pxe()
       await pxe.fertilization()
       await pxe.structure()
-      await pxe.dnsMasq()
+      await pxe.dnsMasq(full)
       await pxe.httpStart()
       console.log('Serving PXE')
     }
