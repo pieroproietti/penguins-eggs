@@ -35,6 +35,10 @@ export default class Pxe {
         this.settings = new Settings()
         await this.settings.load()
         this.pxeRoot = path.dirname(this.settings.work_dir.path) + '/pxe/'
+        if (!fs.existsSync(this.pxeRoot)){ 
+            await exec(`mkdir ${this.pxeRoot} -p`)
+        }
+
         let isos = fs.readdirSync(path.dirname(this.settings.work_dir.path))
         for (const iso of isos) {
             if (path.extname(iso) === ".iso") {
@@ -42,9 +46,13 @@ export default class Pxe {
             }
         }
 
-        let files = fs.readdirSync(path.dirname(this.settings.work_dir.path) + '/ovarium/iso/live')
+        let pathFiles = path.dirname(this.settings.work_dir.path) + '/ovarium/iso/live'
+        if (Utils.isLive()) {
+            pathFiles = '/run/live/medium/live/'
+        }
+
+        let files = fs.readdirSync(pathFiles)
         for (const file of files) {
-            // console.log(path.basename(file).substring(0,7))
             if (path.basename(file).substring(0, 7) === 'vmlinuz') {
                 this.vmlinuz = path.basename(file)
             }
@@ -66,8 +74,7 @@ export default class Pxe {
 
         const distro = new Distro()
 
-        await this.tryCatch(`mkdir -p ${this.pxeRoot}`)
-        await this.tryCatch(`mkdir -p ${this.pxeRoot}/lib`)
+        await this.tryCatch(`mkdir ${this.pxeRoot} -p`)
 
         await this.tryCatch(`ln ${distro.pxelinuxPath}pxelinux.0 ${this.pxeRoot}/pxelinux.0`)
         await this.tryCatch(`ln ${distro.pxelinuxPath}lpxelinux.0 ${this.pxeRoot}/lpxelinux.0`)
@@ -78,17 +85,25 @@ export default class Pxe {
         await this.tryCatch(`ln ${distro.syslinuxPath}libutil.c32 ${this.pxeRoot}/libutil.c32`)
         await this.tryCatch(`ln /usr/lib/syslinux/memdisk ${this.pxeRoot}/memdisk`)
 
-        await this.tryCatch(`ln /home/eggs/ovarium/iso/isolinux/isolinux.theme.cfg ${this.pxeRoot}/isolinux.theme.cfg`)
-        await this.tryCatch(`ln /home/eggs/ovarium/iso/isolinux/splash.png ${this.pxeRoot}/splash.png`)
-        for (const iso of this.isos) {
-            await this.tryCatch(`ln /home/eggs/${iso} ${this.pxeRoot}/${iso}`)
-        }
         await this.tryCatch(`mkdir ${this.pxeRoot}/pxelinux.cfg`)
 
-        await this.tryCatch(`ln /home/eggs/ovarium/iso/live/filesystem.squashfs ${this.pxeRoot}/filesystem.squashfs`)
-        await this.tryCatch(`ln /home/eggs/ovarium/iso/live/${this.vmlinuz} ${this.pxeRoot}/${this.vmlinuz}`)
-        await this.tryCatch(`ln /home/eggs/ovarium/iso/live/${this.initrd} ${this.pxeRoot}/${this.initrd}`)
-        await this.tryCatch(`ln -s /home/eggs/ovarium/iso/.disk/ ${this.pxeRoot}/.disk`)
+        if (Utils.isLive()) {
+            await this.tryCatch(`ln -s /run/live/medium/isolinux/isolinux.theme.cfg ${this.pxeRoot}/isolinux.theme.cfg`)
+            await this.tryCatch(`ln -s /run/live/medium/isolinux/splash.png ${this.pxeRoot}/splash.png`)
+            await this.tryCatch(`ln -s /run/live/medium/live/filesystem.squashfs ${this.pxeRoot}/filesystem.squashfs`)
+            await this.tryCatch(`ln -s /run/live/medium/live/${this.vmlinuz} ${this.pxeRoot}/${this.vmlinuz}`)
+            await this.tryCatch(`ln -s /run/live/medium/live/${this.initrd} ${this.pxeRoot}/${this.initrd}`)
+        } else {
+            await this.tryCatch(`ln /home/eggs/ovarium/iso/isolinux/isolinux.theme.cfg ${this.pxeRoot}/isolinux.theme.cfg`)
+            await this.tryCatch(`ln /home/eggs/ovarium/iso/isolinux/splash.png ${this.pxeRoot}/splash.png`)
+            await this.tryCatch(`ln /home/eggs/ovarium/iso/live/filesystem.squashfs ${this.pxeRoot}/filesystem.squashfs`)
+            await this.tryCatch(`ln /home/eggs/ovarium/iso/live/${this.vmlinuz} ${this.pxeRoot}/${this.vmlinuz}`)
+            await this.tryCatch(`ln /home/eggs/ovarium/iso/live/${this.initrd} ${this.pxeRoot}/${this.initrd}`)
+            await this.tryCatch(`ln -s /home/eggs/ovarium/iso/.disk/ ${this.pxeRoot}/.disk`)
+            for (const iso of this.isos) {
+                await this.tryCatch(`ln /home/eggs/${iso} ${this.pxeRoot}/${iso}`)
+            }
+        }
 
         let content = ``
         content += `# eggs: pxelinux.cfg/default\n`
@@ -147,7 +162,7 @@ export default class Pxe {
         content += `# Log lots of extra information about DHCP transactions.\n`
         // content += `log-dhcp\n\n`
         // content += `log-queries\n\n`
-        content += `log-facility=/home/artisan/dnsmasq.log\n\n`
+        // content += `log-facility=/tmp/dnsmasq.log\n\n`
         content += `interface=${await Utils.iface()}\n\n`
         content += `bind-interfaces\n\n`
         content += `domain=${domain}\n\n`
@@ -172,14 +187,14 @@ export default class Pxe {
          * https://thekelleys.org.uk/dnsmasq/CHANGELOG
          * 
          * Don't do any PXE processing, even for clients with the 
-	     * correct vendorclass, unless at least one pxe-prompt or 
-	     * pxe-service option is given. This stops dnsmasq 
-	     * interfering with proxy PXE subsystems when it is just 
-	     * the DHCP server. Thanks to Spencer Clark for spotting this.
+         * correct vendorclass, unless at least one pxe-prompt or 
+         * pxe-service option is given. This stops dnsmasq 
+         * interfering with proxy PXE subsystems when it is just 
+         * the DHCP server. Thanks to Spencer Clark for spotting this.
          */
-         // content += `pxe-service=X86PC, "Boot x86 BIOS Installer", pxelinux.0\n`
-         content += `pxe-service=X86PC, "penguins'eggs cuckoo", pxelinux.0\n`
-         if (full) {
+        // content += `pxe-service=X86PC, "Boot x86 BIOS Installer", pxelinux.0\n`
+        content += `pxe-service=X86PC, "penguins'eggs cuckoo", pxelinux.0\n`
+        if (full) {
             content += `dhcp-range=${await Utils.iface()},192.168.1.1,192.168.1.254,255.255.255.0,8h\n\n`
         } else {
             content += `dhcp-range=${await Utils.iface()},${Utils.address()},proxy,255.255.255.0,${Utils.broadcast()}\n\n`
@@ -189,8 +204,6 @@ export default class Pxe {
         fs.writeFileSync(file, content)
 
         await exec(`systemctl stop dnsmasq.service`)
-        await exec(`rm /home/artisan/dnsmasq.log\n`)
-
         await exec(`systemctl start dnsmasq.service`)
     }
 
