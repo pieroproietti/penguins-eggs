@@ -88,7 +88,7 @@ export default class Pxe {
         await this.tryCatch(`ln /home/eggs/ovarium/iso/live/filesystem.squashfs ${this.pxeRoot}/filesystem.squashfs`)
         await this.tryCatch(`ln /home/eggs/ovarium/iso/live/${this.vmlinuz} ${this.pxeRoot}/${this.vmlinuz}`)
         await this.tryCatch(`ln /home/eggs/ovarium/iso/live/${this.initrd} ${this.pxeRoot}/${this.initrd}`)
-        await this.tryCatch(`ln -s /home/eggs/ovarium/iso/.disk/ ${this.pxeRoot}/.disk`)
+        // await this.tryCatch(`ln -s /home/eggs/ovarium/iso/.disk/ ${this.pxeRoot}/.disk`)
 
         let content = ``
         content += `# eggs: pxelinux.cfg/default\n`
