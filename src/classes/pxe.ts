@@ -160,9 +160,9 @@ export default class Pxe {
         content += `# Don't function as a DNS server:\n`
         content += `port=0\n\n`
         content += `# Log lots of extra information about DHCP transactions.\n`
-        // content += `log-dhcp\n\n`
-        // content += `log-queries\n\n`
-        // content += `log-facility=/tmp/dnsmasq.log\n\n`
+        content += `log-dhcp\n\n`
+        content += `log-queries\n\n`
+        content += `log-facility=/tmp/dnsmasq.log\n\n`
         content += `interface=${await Utils.iface()}\n\n`
         content += `bind-interfaces\n\n`
         content += `domain=${domain}\n\n`
@@ -192,7 +192,6 @@ export default class Pxe {
          * interfering with proxy PXE subsystems when it is just 
          * the DHCP server. Thanks to Spencer Clark for spotting this.
          */
-        // content += `pxe-service=X86PC, "Boot x86 BIOS Installer", pxelinux.0\n`
         content += `pxe-service=X86PC, "penguins'eggs cuckoo", pxelinux.0\n`
         if (full) {
             content += `dhcp-range=${await Utils.iface()},192.168.1.1,192.168.1.254,255.255.255.0,8h\n\n`
