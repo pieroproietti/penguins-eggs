@@ -306,9 +306,10 @@ cuckoo start a boot server on the LAN sharing iso on the nest
 
 ```
 USAGE
-  $ eggs cuckoo [-h] [-v]
+  $ eggs cuckoo [-f] [-h] [-v]
 
 FLAGS
+  -f, --full
   -h, --help     Show CLI help.
   -v, --verbose  verbose
 
