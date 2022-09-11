@@ -21,7 +21,6 @@ export default class Pxe {
     verbose = false
 
     echo = {}
-
     settings = {} as Settings
     pxeRoot = ''
     isos: string[] = []
@@ -34,11 +33,19 @@ export default class Pxe {
     async fertilization() {
         this.settings = new Settings()
         await this.settings.load()
+
+
+        /**
+         * se pxeRoot non esiste viene creato
+         */
         this.pxeRoot = path.dirname(this.settings.work_dir.path) + '/pxe/'
         if (!fs.existsSync(this.pxeRoot)){ 
             await exec(`mkdir ${this.pxeRoot} -p`)
         }
 
+        /**
+         * Ricerca delle immagini ISO
+         */
         let isos = fs.readdirSync(path.dirname(this.settings.work_dir.path))
         for (const iso of isos) {
             if (path.extname(iso) === ".iso") {
@@ -46,11 +53,14 @@ export default class Pxe {
             }
         }
 
+        /**
+         * installed: /home/eggs/ovarium/iso/live
+         * live: /run/live/medium/live/ 
+         */
         let pathFiles = path.dirname(this.settings.work_dir.path) + '/ovarium/iso/live'
         if (Utils.isLive()) {
             pathFiles = '/run/live/medium/live/'
         }
-
         let files = fs.readdirSync(pathFiles)
         for (const file of files) {
             if (path.basename(file).substring(0, 7) === 'vmlinuz') {
@@ -155,34 +165,26 @@ export default class Pxe {
         let domain = `penguins-eggs.lan`
 
         let content = ``
-        content += `# copy and paste in /etc/dnsmasq.conf\n\n`
-        content += `#\n`
-        content += `# Don't function as a DNS server:\n`
-        content += `port=0\n\n`
-        content += `# Log lots of extra information about DHCP transactions.\n`
-        content += `log-dhcp\n\n`
-        content += `log-queries\n\n`
-        content += `log-facility=/tmp/dnsmasq.log\n\n`
-        content += `interface=${await Utils.iface()}\n\n`
-        content += `bind-interfaces\n\n`
-        content += `domain=${domain}\n\n`
+        content += `# cuckoo.conf\n`
+        content += `port=0\n`
+        content += `interface=${await Utils.iface()}\n`
+        content += `bind-interfaces\n`
+        content += `domain=${domain}\n`
         content += `dhcp-no-override\n`
-        content += `# router\n`
-        content += `dhcp-option=option:router,192.168.1.1\n\n`
-        content += `# dns\n`
-        content += `dhcp-option=option:dns-server,192.168.1.1\n\n`
-        content += `dhcp-option=option:dns-server,8.8.8.8\n\n`
-        content += `dhcp-option=option:dns-server,8.8.4.4\n\n`
-        content += `enable-tftp\n\n`
-        content += `tftp-root=${this.pxeRoot}\n\n`
-        content += `pxe-prompt="Booting PXE Client", 5\n\n`
-        content += `# boot config for BIOS systems\n\n`
-        content += `dhcp-match=set:bios-x86,option:client-arch,0\n\n`
-        content += `dhcp-boot=tag:bios-x86,lpxelinux.0\n\n`
-        content += `# boot config for UEFI systems\n\n`
-        content += `dhcp-match=set:efi-x86_64,option:client-arch,7\n\n`
-        content += `dhcp-match=set:efi-x86_64,option:client-arch,9\n\n`
-        content += `dhcp-boot=tag:efi-x86_64,lpxelinux.0\n\n`
+        content += `dhcp-option=option:router,192.168.1.1\n`
+        content += `dhcp-option=option:dns-server,192.168.1.1\n`
+        content += `dhcp-option=option:dns-server,8.8.8.8\n`
+        content += `dhcp-option=option:dns-server,8.8.4.4\n`
+        content += `enable-tftp\n`
+        content += `tftp-root=${this.pxeRoot}\n`
+        content += `pxe-prompt="Booting PXE Client",5\n`
+        content += `# boot config for BIOS\n`
+        content += `dhcp-match=set:bios-x86,option:client-arch,0\n`
+        content += `dhcp-boot=tag:bios-x86,lpxelinux.0\n`
+        content += `# boot config for UEFI\n`
+        content += `dhcp-match=set:efi-x86_64,option:client-arch,7\n`
+        content += `dhcp-match=set:efi-x86_64,option:client-arch,9\n`
+        content += `dhcp-boot=tag:efi-x86_64,lpxelinux.0\n`
         /**
          * https://thekelleys.org.uk/dnsmasq/CHANGELOG
          * 
@@ -192,15 +194,17 @@ export default class Pxe {
          * interfering with proxy PXE subsystems when it is just 
          * the DHCP server. Thanks to Spencer Clark for spotting this.
          */
-        content += `pxe-service=X86PC, "penguins'eggs cuckoo", pxelinux.0\n`
+        content += `pxe-service=X86PC,"penguin's eggs cuckoo",pxelinux.0\n`
         if (full) {
-            content += `dhcp-range=${await Utils.iface()},192.168.1.1,192.168.1.254,255.255.255.0,8h\n\n`
+            content += `dhcp-range=${await Utils.iface()},192.168.1.1,192.168.1.254,255.255.255.0,8h\n`
         } else {
-            content += `dhcp-range=${await Utils.iface()},${Utils.address()},proxy,255.255.255.0,${Utils.broadcast()}\n\n`
+            content += `dhcp-range=${await Utils.iface()},${Utils.address()},proxy,255.255.255.0,${Utils.broadcast()} # dhcp proxy\n`
         }
 
         let file = '/etc/dnsmasq.d/cuckoo.conf'
         fs.writeFileSync(file, content)
+
+        console.log(content)
 
         await exec(`systemctl stop dnsmasq.service`)
         await exec(`systemctl start dnsmasq.service`)
