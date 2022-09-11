@@ -65,20 +65,21 @@ export default class Pxe {
         await this.tryCatch(cmd)
 
         const distro = new Distro()
-        distro.syslinuxPath
 
         await this.tryCatch(`mkdir -p ${this.pxeRoot}`)
-        await this.tryCatch(`cp ${distro.pxelinuxPath}pxelinux.0 ${this.pxeRoot}`)
-        await this.tryCatch(`cp ${distro.pxelinuxPath}lpxelinux.0 ${this.pxeRoot}`)
+        await this.tryCatch(`mkdir -p ${this.pxeRoot}/lib`)
+        
+        await this.tryCatch(`ln ${distro.pxelinuxPath}pxelinux.0 ${this.pxeRoot}/pxelinux.0`)
+        await this.tryCatch(`ln ${distro.pxelinuxPath}lpxelinux.0 ${this.pxeRoot}/lpxelinux.0`)
 
-        await this.tryCatch(`cp ${distro.syslinuxPath}ldlinux.c32 ${this.pxeRoot}`)
-        await this.tryCatch(`cp ${distro.syslinuxPath}vesamenu.c32 ${this.pxeRoot}`)
-        await this.tryCatch(`cp ${distro.syslinuxPath}libcom32.c32 ${this.pxeRoot}`)
-        await this.tryCatch(`cp ${distro.syslinuxPath}libutil.c32 ${this.pxeRoot}`)
-        await this.tryCatch(`cp /usr/lib/syslinux/memdisk ${this.pxeRoot}`)
+        await this.tryCatch(`ln ${distro.syslinuxPath}ldlinux.c32 ${this.pxeRoot}/ldlinux.c32`)
+        await this.tryCatch(`ln ${distro.syslinuxPath}vesamenu.c32 ${this.pxeRoot}/vesamenu.c32`)
+        await this.tryCatch(`ln ${distro.syslinuxPath}libcom32.c32 ${this.pxeRoot}/libcom32.c32`)
+        await this.tryCatch(`ln ${distro.syslinuxPath}libutil.c32 ${this.pxeRoot}/libutil.c32`)
+        await this.tryCatch(`ln /usr/lib/syslinux/memdisk ${this.pxeRoot}/memdisk`)
 
-        await this.tryCatch(`cp /home/eggs/ovarium/iso/isolinux/isolinux.theme.cfg ${this.pxeRoot}`)
-        await this.tryCatch(`cp /home/eggs/ovarium/iso/isolinux/splash.png ${this.pxeRoot}`)
+        await this.tryCatch(`ln /home/eggs/ovarium/iso/isolinux/isolinux.theme.cfg ${this.pxeRoot}/isolinux.theme.cfg`)
+        await this.tryCatch(`ln /home/eggs/ovarium/iso/isolinux/splash.png ${this.pxeRoot}/splash.png`)
         for (const iso of this.isos) {
             await this.tryCatch(`ln /home/eggs/${iso} ${this.pxeRoot}/${iso}`)
         }
@@ -95,19 +96,25 @@ export default class Pxe {
         content += `path\n`
         content += `include isolinux.theme.cfg\n`
         content += `UI vesamenu.c32\n`
+        content += `\n`
         content += `menu title Penguin's eggs - Perri's brewery edition - ${Utils.address()}\n`
         content += `PROMPT 0\n`
         content += `TIMEOUT 0\n`
 
-        content += `LABEL filesystem.squashfs\n`
-        content += `MENU LABEL filesystem.squashfs\n`
+        content += `\n`
+        content += `LABEL filesystem\n`
+        content += `MENU LABEL ${this.isos[0]}\n`
         content += `KERNEL http://${Utils.address()}/${this.vmlinuz}\n`
-        content += `IPAPPEND 1\n`
         content += `APPEND initrd=http://${Utils.address()}/${this.initrd} boot=live config noswap noprompt fetch=http://${Utils.address()}/filesystem.squashfs\n`
+        content += `SYSAPPEND 3\n`
+
+        content += `\n`
+        content += `MENU SEPARATOR\n`
 
         for (const iso of this.isos) {
-            content += `LABEL http\n`
-            content += `MENU LABEL ${iso}\n`
+            content += `\n`
+            content += `LABEL isos\n`
+            content += `MENU LABEL ${iso} (memdisk)\n`
             content += `KERNEL memdisk\n`
             content += `APPEND iso initrd=http://${Utils.address()}/${iso}\n`
         }
@@ -115,7 +122,6 @@ export default class Pxe {
         let file = `${this.pxeRoot}/pxelinux.cfg/default`
         fs.writeFileSync(file, content)
         console.log(content)
-        // await exec (`cp /home/artisan/penguins-eggs/default /home/eggs/pxe/pxelinux.cfg/`)
     }
 
     /**
