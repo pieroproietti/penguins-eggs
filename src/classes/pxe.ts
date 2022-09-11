@@ -42,13 +42,13 @@ export default class Pxe {
             }
         }
 
-        let files = fs.readdirSync(path.dirname(this.settings.work_dir.path)+ '/ovarium/iso/live')
+        let files = fs.readdirSync(path.dirname(this.settings.work_dir.path) + '/ovarium/iso/live')
         for (const file of files) {
             // console.log(path.basename(file).substring(0,7))
-            if (path.basename(file).substring(0,7) === 'vmlinuz'){
+            if (path.basename(file).substring(0, 7) === 'vmlinuz') {
                 this.vmlinuz = path.basename(file)
             }
-            if (path.basename(file).substring(0,6) === 'initrd') {
+            if (path.basename(file).substring(0, 6) === 'initrd') {
                 this.initrd = path.basename(file)
             }
         }
@@ -68,7 +68,7 @@ export default class Pxe {
 
         await this.tryCatch(`mkdir -p ${this.pxeRoot}`)
         await this.tryCatch(`mkdir -p ${this.pxeRoot}/lib`)
-        
+
         await this.tryCatch(`ln ${distro.pxelinuxPath}pxelinux.0 ${this.pxeRoot}/pxelinux.0`)
         await this.tryCatch(`ln ${distro.pxelinuxPath}lpxelinux.0 ${this.pxeRoot}/lpxelinux.0`)
 
@@ -89,7 +89,7 @@ export default class Pxe {
         await this.tryCatch(`ln /home/eggs/ovarium/iso/live/${this.vmlinuz} ${this.pxeRoot}/${this.vmlinuz}`)
         await this.tryCatch(`ln /home/eggs/ovarium/iso/live/${this.initrd} ${this.pxeRoot}/${this.initrd}`)
         await this.tryCatch(`ln -s /home/eggs/ovarium/iso/.disk/ ${this.pxeRoot}/.disk`)
-        
+
         let content = ``
         content += `# eggs: pxelinux.cfg/default\n`
         content += `# search path for the c32 support libraries (libcom32, libutil etc.)\n`
@@ -100,17 +100,14 @@ export default class Pxe {
         content += `menu title Penguin's eggs - Perri's brewery edition - ${Utils.address()}\n`
         content += `PROMPT 0\n`
         content += `TIMEOUT 0\n`
-
         content += `\n`
         content += `LABEL filesystem\n`
         content += `MENU LABEL ${this.isos[0]}\n`
         content += `KERNEL http://${Utils.address()}/${this.vmlinuz}\n`
         content += `APPEND initrd=http://${Utils.address()}/${this.initrd} boot=live config noswap noprompt fetch=http://${Utils.address()}/filesystem.squashfs\n`
         content += `SYSAPPEND 3\n`
-
         content += `\n`
         content += `MENU SEPARATOR\n`
-
         for (const iso of this.isos) {
             content += `\n`
             content += `LABEL isos\n`
@@ -118,10 +115,22 @@ export default class Pxe {
             content += `KERNEL memdisk\n`
             content += `APPEND iso initrd=http://${Utils.address()}/${iso}\n`
         }
-
         let file = `${this.pxeRoot}/pxelinux.cfg/default`
         fs.writeFileSync(file, content)
         console.log(content)
+
+        file = `${this.pxeRoot}/index.html`
+        content = ``
+        content += `<html><title>Penguin's eggs PXE server</title>`
+        content += `<div style="background-image:url('/splash.png');background-repeat:no-repeat;width: 640;height:480;padding:5px;border:1px solid black;">`
+        content += `<h1>Penguin's eggs PXE server</h1>`
+        content += `<body>address: <a href=http://${Utils.address()}>${Utils.address()}</a><br/>`
+        content += `serving: <a href='http://${Utils.address()}/${this.isos[0]}'>${this.isos[0]}</a><br/><br/>`
+        content += `source: <a href='https://github.com/pieroproietti/penguins-eggs'>https://github.com/pieroproietti/penguins-eggs</a><br/>`
+        content += `manual: <a href='https://penguins-eggs.net/book/italiano9.2.html'>italiano</a>, <a href='https://penguins--eggs-net.translate.goog/book/italiano9.2?_x_tr_sl=auto&_x_tr_tl=en&_x_tr_hl=en'>translated</a><br/>`
+        content += `discuss: <a href='https://t.me/penguins_eggs'>Telegram group<br/></body</html>`
+        fs.writeFileSync(file, content)
+
     }
 
     /**
@@ -173,8 +182,6 @@ export default class Pxe {
         await exec(`rm /home/artisan/dnsmasq.log\n`)
 
         await exec(`systemctl start dnsmasq.service`)
-        // await exec(`systemctl status dnsmasq.service`)
-        // console.log(content)
     }
 
     /**
@@ -197,6 +204,10 @@ export default class Pxe {
         const port = 80
         const httpRoot = this.pxeRoot + "/"
         http.createServer(function (req: IncomingMessage, res: ServerResponse) {
+            if (req.url === '/') {
+                req.url = '/index.html'
+            }
+            
             fs.readFile(httpRoot + req.url, function (err, data) {
                 if (err) {
                     res.writeHead(404)
@@ -207,6 +218,5 @@ export default class Pxe {
                 res.end(data)
             });
         }).listen(80)
-
     }
 }

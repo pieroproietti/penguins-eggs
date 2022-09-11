@@ -54,7 +54,7 @@ export default class Cuckoo extends Command {
       await pxe.structure()
       await pxe.dnsMasq()
       await pxe.httpStart()
-      console.log('Serving PXE ')
+      console.log('Serving PXE')
     }
   }
 }
