@@ -55,6 +55,7 @@ class Distro implements IDistro {
   isolinuxPath: string
   syslinuxPath: string
   pxelinuxPath: string 
+  liveMediumPath: string
   mountpointSquashFs: string
   homeUrl: string
   supportUrl: string
@@ -73,6 +74,7 @@ class Distro implements IDistro {
     this.isolinuxPath = ''
     this.syslinuxPath = ''
     this.pxelinuxPath = ''
+    this.liveMediumPath = `/run/live/medium/`
     this.mountpointSquashFs = ''
     this.homeUrl = ''
     this.supportUrl = ''
@@ -147,6 +149,7 @@ class Distro implements IDistro {
         // Debian 8 jessie
         this.distroLike = 'Debian'
         this.codenameLikeId = 'jessie'
+        this.liveMediumPath = '/lib/live/mount/medium/'
 
         break
       }
@@ -155,6 +158,7 @@ class Distro implements IDistro {
         // Debian 9 stretch
         this.distroLike = 'Debian'
         this.codenameLikeId = 'stretch'
+        this.liveMediumPath = '/lib/live/mount/medium/'
 
         break
       }
@@ -216,6 +220,7 @@ class Distro implements IDistro {
         // Ubuntu 18.04 bionic LTS eol aprile 2023
         this.distroLike = 'Ubuntu'
         this.codenameLikeId = 'bionic'
+        this.liveMediumPath = '/lib/live/mount/medium/'
 
         break
       }

@@ -28,6 +28,7 @@ export default class Pxe {
     settings = {} as Settings
     pxeRoot = ''
     isos: string[] = []
+    lmp = ''
     vmlinuz = ''
     initrd = ''
 
@@ -37,6 +38,7 @@ export default class Pxe {
     async fertilization() {
         this.settings = new Settings()
         await this.settings.load()
+        this.lmp = this.settings.distro.liveMediumPath
 
         if (!Utils.isLive() && !fs.existsSync(this.settings.work_dir.path)) {
             console.log('no image available, build an image with: sudo eggs produce')
@@ -51,6 +53,7 @@ export default class Pxe {
             await exec(`mkdir ${this.pxeRoot} -p`)
         }
 
+
         /**
          * Ricerca delle immagini ISO
          */
@@ -63,16 +66,16 @@ export default class Pxe {
                 }
             }
         } else {
-            this.isos.push(fs.readFileSync('/run/live/medium/.disk/info', 'utf-8'))
+            this.isos.push(fs.readFileSync(`${this.lmp}.disk/info`, 'utf-8'))
         }
 
         /**
          * installed: /home/eggs/ovarium/iso/live
-         * live: /run/live/medium/live/ 
+         * live: this.lmp
          */
         let pathFiles = path.dirname(this.settings.work_dir.path) + '/ovarium/iso/live'
         if (Utils.isLive()) {
-            pathFiles = '/run/live/medium/live/'
+            pathFiles = this.lmp
         }
         let files = fs.readdirSync(pathFiles)
         for (const file of files) {
@@ -112,11 +115,11 @@ export default class Pxe {
         await this.tryCatch(`mkdir ${this.pxeRoot}/pxelinux.cfg`)
 
         if (Utils.isLive()) {
-            await this.tryCatch(`ln -s /run/live/medium/isolinux/isolinux.theme.cfg ${this.pxeRoot}/isolinux.theme.cfg`)
-            await this.tryCatch(`ln -s /run/live/medium/isolinux/splash.png ${this.pxeRoot}/splash.png`)
-            await this.tryCatch(`ln -s /run/live/medium/live/filesystem.squashfs ${this.pxeRoot}/filesystem.squashfs`)
-            await this.tryCatch(`ln -s /run/live/medium/live/${this.vmlinuz} ${this.pxeRoot}/${this.vmlinuz}`)
-            await this.tryCatch(`ln -s /run/live/medium/live/${this.initrd} ${this.pxeRoot}/${this.initrd}`)
+            await this.tryCatch(`ln -s ${this.lmp}isolinux/isolinux.theme.cfg ${this.pxeRoot}/isolinux.theme.cfg`)
+            await this.tryCatch(`ln -s ${this.lmp}isolinux/splash.png ${this.pxeRoot}/splash.png`)
+            await this.tryCatch(`ln -s ${this.lmp}live/filesystem.squashfs ${this.pxeRoot}/filesystem.squashfs`)
+            await this.tryCatch(`ln -s ${this.lmp}live/${this.vmlinuz} ${this.pxeRoot}/${this.vmlinuz}`)
+            await this.tryCatch(`ln -s ${this.lmp}live/${this.initrd} ${this.pxeRoot}/${this.initrd}`)
         } else {
             await this.tryCatch(`ln /home/eggs/ovarium/iso/isolinux/isolinux.theme.cfg ${this.pxeRoot}/isolinux.theme.cfg`)
             await this.tryCatch(`ln /home/eggs/ovarium/iso/isolinux/splash.png ${this.pxeRoot}/splash.png`)
