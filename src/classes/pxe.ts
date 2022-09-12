@@ -156,7 +156,6 @@ export default class Pxe {
         }
         let file = `${this.pxeRoot}/pxelinux.cfg/default`
         fs.writeFileSync(file, content)
-        // console.log(content)
 
         file = `${this.pxeRoot}/index.html`
         content = ``
@@ -164,7 +163,9 @@ export default class Pxe {
         content += `<div style="background-image:url('/splash.png');background-repeat:no-repeat;width: 640;height:480;padding:5px;border:1px solid black;">`
         content += `<h1>Penguin's eggs PXE server</h1>`
         content += `<body>address: <a href=http://${Utils.address()}>${Utils.address()}</a><br/>`
-        content += `serving: <a href='http://${Utils.address()}/${this.isos[0]}'>${this.isos[0]}</a><br/><br/>`
+        if (!Utils.isLive()) {
+            content += `download: <a href='http://${Utils.address()}/${this.isos[0]}'>${this.isos[0]}</a><br/>`
+        }
         content += `source: <a href='https://github.com/pieroproietti/penguins-eggs'>https://github.com/pieroproietti/penguins-eggs</a><br/>`
         content += `manual: <a href='https://penguins-eggs.net/book/italiano9.2.html'>italiano</a>, <a href='https://penguins--eggs-net.translate.goog/book/italiano9.2?_x_tr_sl=auto&_x_tr_tl=en&_x_tr_hl=en'>translated</a><br/>`
         content += `discuss: <a href='https://t.me/penguins_eggs'>Telegram group<br/></body</html>`
