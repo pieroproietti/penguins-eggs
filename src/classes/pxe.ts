@@ -38,6 +38,10 @@ export default class Pxe {
         this.settings = new Settings()
         await this.settings.load()
 
+        if (!Utils.isLive() && !fs.existsSync(this.settings.work_dir.path)) {
+            console.log('no image available, build an image with: sudo eggs produce')
+            process.exit()
+        }
 
         /**
          * se pxeRoot non esiste viene creato
@@ -85,6 +89,7 @@ export default class Pxe {
      * structure
      */
     async structure() {
+
         if (fs.existsSync(this.pxeRoot)) {
             await this.tryCatch(`rm ${this.pxeRoot} -rf`)
         }
