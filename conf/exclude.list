@@ -32,6 +32,7 @@
 - /etc/crypttab
 - /etc/fstab
 - /etc/fstab.d/*
+- /etc/dnsmasq.d/cuckoo.conf
 - /etc/initramfs-tools/conf.d/resume     # see remove-cryptroot and nocrypt.sh
 - /etc/initramfs-tools/conf.d/cryptroot  # see remove-cryptroot and nocrypt.sh
 - /etc/machine-id

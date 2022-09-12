@@ -23,3 +23,19 @@ The cuckoo lays its eggs in the nests of other birds, and the eggs are hatched b
 This is the first implementation of cuckoo, based on dnsmasq. I would have liked to implement it interament in node, so far it has not been possible.
 
 Given the need to install the dnsmaq and pxelinux packages cuckoo is currently only available for Debian/Devuan/Ubuntu. I plan to externalize its compatibility to manjaro and Arch distributions soon.
+
+# TO DO
+
+## exclude 
+/etc/dnsmasq.d/cuckoo.conf OK
+
+## Arch, manjaro
+Install dnsmasq and pxelinux
+
+## LIVE system, path to CDROM content
+* bionic: /lib/live/mount/medium/
+* bullseye: /run/live/medium/
+
+## path to pxelinux
+* bionic, bullseye: /usr/lib/PXELINUX/
+
