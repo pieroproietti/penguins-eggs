@@ -13,7 +13,7 @@ import Utils from '../classes/utils'
 import Settings from '../classes/settings'
 
 import http from 'http'
-import { IncomingMessage, ServerResponse } from 'http';
+import { IncomingMessage, ServerResponse } from 'http'
 import { exec } from '../lib/utils'
 import path, { dirname } from 'node:path'
 import Distro from './distro'
@@ -63,7 +63,7 @@ export default class Pxe {
                 }
             }
         } else {
-            this.isos.push('You are booting from PXE a live image')
+            this.isos.push(fs.readFileSync('/run/live/medium/.disk/info', 'utf-8'))
         }
 
         /**
