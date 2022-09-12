@@ -26,16 +26,13 @@ Given the need to install the dnsmaq and pxelinux packages cuckoo is currently o
 
 # TO DO
 
-## exclude 
-/etc/dnsmasq.d/cuckoo.conf OK
-
 ## Arch, manjaro
 Install dnsmasq and pxelinux
 
 ## LIVE system, path to CDROM content
 * bionic: /lib/live/mount/medium/
-* bullseye: /run/live/medium/
+* bullseye, jammy: /run/live/medium/
 
 ## path to pxelinux
-* bionic, bullseye: /usr/lib/PXELINUX/
+* bionic, bullseye, jammy: /usr/lib/PXELINUX/
 
