@@ -64,8 +64,7 @@ export default class Cuckoo extends Command {
         console.log(`CTRL-z to stop`)
       }
     } else {
-      console.log(`Sorry: actually cuckoo is enabled just for debian family!`
+      console.log(`Sorry: actually cuckoo is enabled just for debian family!`)
     }
   }
 }
-

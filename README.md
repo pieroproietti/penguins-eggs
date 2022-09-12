@@ -304,7 +304,7 @@ _See code: [src/commands/config.ts](https://github.com/pieroproietti/penguins-eg
 
 ## `eggs cuckoo`
 
-cuckoo start a boot server on the LAN sharing iso on the nest
+cuckoo start a PXE boot server serving the live image
 
 ```
 USAGE
@@ -316,11 +316,11 @@ FLAGS
   -v, --verbose  verbose
 
 DESCRIPTION
-  cuckoo start a boot server on the LAN sharing iso on the nest
+  cuckoo start a PXE boot server serving the live image
 
 EXAMPLES
-  $ eggs cuckoo
-  cuckoo start a boot server sharing eggs on the nest
+  $ sudo eggs cuckoo
+  start a PXE boot server
 ```
 
 _See code: [src/commands/cuckoo.ts](https://github.com/pieroproietti/penguins-eggs/blob/v9.2.4/src/commands/cuckoo.ts)_
