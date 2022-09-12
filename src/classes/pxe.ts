@@ -165,7 +165,10 @@ export default class Pxe {
         content += `<body>address: <a href=http://${Utils.address()}>${Utils.address()}</a><br/>`
         if (!Utils.isLive()) {
             content += `download: <a href='http://${Utils.address()}/${this.isos[0]}'>${this.isos[0]}</a><br/>`
+        } else {
+            content += `started from live iso image<br/>`
         }
+        content += `<br/>`
         content += `source: <a href='https://github.com/pieroproietti/penguins-eggs'>https://github.com/pieroproietti/penguins-eggs</a><br/>`
         content += `manual: <a href='https://penguins-eggs.net/book/italiano9.2.html'>italiano</a>, <a href='https://penguins--eggs-net.translate.goog/book/italiano9.2?_x_tr_sl=auto&_x_tr_tl=en&_x_tr_hl=en'>translated</a><br/>`
         content += `discuss: <a href='https://t.me/penguins_eggs'>Telegram group<br/></body</html>`
