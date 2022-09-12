@@ -63,6 +63,8 @@ We have two methods to save in the live system all our data: clone and backup.
 **NOTE:** 
 Using ```sudo eggs install``` will automaticaly restore your CRYPTED backup automatically. Of course the original passphrase will be request.
 
+## cuckoo
+The cuckoo lays its eggs in the nests of other birds, and the eggs are hatched by the latter. Similarly eggs can start a self-configuring PXE service to allow you to boot and install your iso on third party networked computers. Command cuckoo can be used either to deploy a newly created iso on an installed system or by live booting the iso itself. 
 
 ## yolk 
 yolk - so called staying on the subject of eggs - is a local repository included in the livecd that contains a minimum of indispensable packages during installation. Thanks to yolk, you can safely install your system without the need of an active internet connection. Yolk, It is used only for Debian families and derivated.

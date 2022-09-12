@@ -3,8 +3,12 @@
  * author: Piero Proietti
  * mail: piero.proietti@gmail.com
  */
+
+// import {createHttpTerminator } from 'http-terminator'
+  
 import os from 'node:os'
 import fs from 'fs'
+import {Netmask} from 'netmask'
 import Utils from '../classes/utils'
 import Settings from '../classes/settings'
 
@@ -46,11 +50,16 @@ export default class Pxe {
         /**
          * Ricerca delle immagini ISO
          */
-        let isos = fs.readdirSync(path.dirname(this.settings.work_dir.path))
-        for (const iso of isos) {
-            if (path.extname(iso) === ".iso") {
-                this.isos.push(iso)
+        let isos: string[] = []
+        if (!Utils.isLive()){
+            let isos = fs.readdirSync(path.dirname(this.settings.work_dir.path))
+            for (const iso of isos) {
+                if (path.extname(iso) === ".iso") {
+                    this.isos.push(iso)
+                }
             }
+        } else {
+            this.isos.push('You are booting from PXE a live image')
         }
 
         /**
@@ -142,7 +151,7 @@ export default class Pxe {
         }
         let file = `${this.pxeRoot}/pxelinux.cfg/default`
         fs.writeFileSync(file, content)
-        console.log(content)
+        // console.log(content)
 
         file = `${this.pxeRoot}/index.html`
         content = ``
@@ -164,6 +173,8 @@ export default class Pxe {
     async dnsMasq(full = false) {
         let domain = `penguins-eggs.lan`
 
+        let n = new Netmask(`${Utils.address()}/${Utils.netmask()}`)
+
         let content = ``
         content += `# cuckoo.conf\n`
         content += `port=0\n`
@@ -171,13 +182,12 @@ export default class Pxe {
         content += `bind-interfaces\n`
         content += `domain=${domain}\n`
         content += `dhcp-no-override\n`
-        content += `dhcp-option=option:router,192.168.1.1\n`
-        content += `dhcp-option=option:dns-server,192.168.1.1\n`
+        content += `dhcp-option=option:router,${n.first}\n`
+        content += `dhcp-option=option:dns-server,${n.first}\n`
         content += `dhcp-option=option:dns-server,8.8.8.8\n`
         content += `dhcp-option=option:dns-server,8.8.4.4\n`
         content += `enable-tftp\n`
         content += `tftp-root=${this.pxeRoot}\n`
-        content += `pxe-prompt="Booting PXE Client",5\n`
         content += `# boot config for BIOS\n`
         content += `dhcp-match=set:bios-x86,option:client-arch,0\n`
         content += `dhcp-boot=tag:bios-x86,lpxelinux.0\n`
@@ -195,16 +205,17 @@ export default class Pxe {
          * the DHCP server. Thanks to Spencer Clark for spotting this.
          */
         content += `pxe-service=X86PC,"penguin's eggs cuckoo",pxelinux.0\n`
+
         if (full) {
-            content += `dhcp-range=${await Utils.iface()},192.168.1.1,192.168.1.254,255.255.255.0,8h\n`
+            content += `dhcp-range=${await Utils.iface()},${n.first},${n.last},${n.mask},8h\n`
         } else {
-            content += `dhcp-range=${await Utils.iface()},${Utils.address()},proxy,255.255.255.0,${Utils.broadcast()} # dhcp proxy\n`
+            content += `dhcp-range=${await Utils.iface()},${Utils.address()},proxy,${n.mask},${Utils.broadcast()} # dhcp proxy\n`
         }
 
         let file = '/etc/dnsmasq.d/cuckoo.conf'
         fs.writeFileSync(file, content)
 
-        console.log(content)
+        // console.log(content)
 
         await exec(`systemctl stop dnsmasq.service`)
         await exec(`systemctl start dnsmasq.service`)
@@ -225,6 +236,9 @@ export default class Pxe {
 
     /**
      * start http server for images
+     * 
+     * We have a limit of 2GB... bad!
+     * 
      */
     async httpStart() {
         const port = 80
