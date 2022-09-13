@@ -28,7 +28,7 @@ export default class Pxe {
     settings = {} as Settings
     pxeRoot = ''
     isos: string[] = []
-    lmp = ''
+    iso = ''
     vmlinuz = ''
     initrd = ''
 
@@ -38,7 +38,11 @@ export default class Pxe {
     async fertilization() {
         this.settings = new Settings()
         await this.settings.load()
-        this.lmp = this.settings.distro.liveMediumPath
+        if (Utils.isLive()) {
+            this.iso = this.settings.distro.liveMediumPath
+        } else {
+            this.iso = path.dirname(this.settings.work_dir.path) + '/ovarium/iso/'
+        }
 
         if (!Utils.isLive() && !fs.existsSync(this.settings.work_dir.path)) {
             console.log('no image available, build an image with: sudo eggs produce')
@@ -66,17 +70,14 @@ export default class Pxe {
                 }
             }
         } else {
-            this.isos.push(fs.readFileSync(`${this.lmp}.disk/info`, 'utf-8'))
+            this.isos.push(fs.readFileSync(`${this.iso}.disk/info`, 'utf-8'))
         }
 
         /**
          * installed: /home/eggs/ovarium/iso/live
-         * live: this.lmp
+         * live: this.iso/live
          */
-        let pathFiles = path.dirname(this.settings.work_dir.path) + '/ovarium/iso/live'
-        if (Utils.isLive()) {
-            pathFiles = this.lmp
-        }
+        let pathFiles = this.iso + '/live'
         let files = fs.readdirSync(pathFiles)
         for (const file of files) {
             if (path.basename(file).substring(0, 7) === 'vmlinuz') {
@@ -86,6 +87,7 @@ export default class Pxe {
                 this.initrd = path.basename(file)
             }
         }
+        
     }
 
     /**
@@ -103,33 +105,32 @@ export default class Pxe {
 
         await this.tryCatch(`mkdir ${this.pxeRoot} -p`)
 
+        // boot  efi  isolinux  live .disk
+        await this.tryCatch(`ln -s ${this.iso}boot ${this.pxeRoot}/boot`)
+        await this.tryCatch(`ln -s ${this.iso}efi ${this.pxeRoot}/efi`)
+        await this.tryCatch(`ln -s ${this.iso}isolinux ${this.pxeRoot}/isolinux`)
+        await this.tryCatch(`ln -s ${this.iso}live ${this.pxeRoot}/live`)
+        await this.tryCatch(`ln -s ${this.iso}.disk ${this.pxeRoot}/.disk`)
+
+        // isolinux.theme.cfg must to be in the root
+        await this.tryCatch(`ln -s ${this.iso}isolinux/isolinux.theme.cfg ${this.pxeRoot}/isolinux.theme.cfg`)
+        await this.tryCatch(`ln -s ${this.iso}isolinux/splash.png ${this.pxeRoot}/splash.png`)
+
+        // pxe
         await this.tryCatch(`ln ${distro.pxelinuxPath}pxelinux.0 ${this.pxeRoot}/pxelinux.0`)
         await this.tryCatch(`ln ${distro.pxelinuxPath}lpxelinux.0 ${this.pxeRoot}/lpxelinux.0`)
 
+        // syslinux
         await this.tryCatch(`ln ${distro.syslinuxPath}ldlinux.c32 ${this.pxeRoot}/ldlinux.c32`)
         await this.tryCatch(`ln ${distro.syslinuxPath}vesamenu.c32 ${this.pxeRoot}/vesamenu.c32`)
         await this.tryCatch(`ln ${distro.syslinuxPath}libcom32.c32 ${this.pxeRoot}/libcom32.c32`)
         await this.tryCatch(`ln ${distro.syslinuxPath}libutil.c32 ${this.pxeRoot}/libutil.c32`)
         await this.tryCatch(`ln /usr/lib/syslinux/memdisk ${this.pxeRoot}/memdisk`)
-
         await this.tryCatch(`mkdir ${this.pxeRoot}/pxelinux.cfg`)
 
-        if (Utils.isLive()) {
-            await this.tryCatch(`ln -s ${this.lmp}isolinux/isolinux.theme.cfg ${this.pxeRoot}/isolinux.theme.cfg`)
-            await this.tryCatch(`ln -s ${this.lmp}isolinux/splash.png ${this.pxeRoot}/splash.png`)
-            await this.tryCatch(`ln -s ${this.lmp}live/filesystem.squashfs ${this.pxeRoot}/filesystem.squashfs`)
-            await this.tryCatch(`ln -s ${this.lmp}live/${this.vmlinuz} ${this.pxeRoot}/${this.vmlinuz}`)
-            await this.tryCatch(`ln -s ${this.lmp}live/${this.initrd} ${this.pxeRoot}/${this.initrd}`)
-        } else {
-            await this.tryCatch(`ln /home/eggs/ovarium/iso/isolinux/isolinux.theme.cfg ${this.pxeRoot}/isolinux.theme.cfg`)
-            await this.tryCatch(`ln /home/eggs/ovarium/iso/isolinux/splash.png ${this.pxeRoot}/splash.png`)
-            await this.tryCatch(`ln /home/eggs/ovarium/iso/live/filesystem.squashfs ${this.pxeRoot}/filesystem.squashfs`)
-            await this.tryCatch(`ln /home/eggs/ovarium/iso/live/${this.vmlinuz} ${this.pxeRoot}/${this.vmlinuz}`)
-            await this.tryCatch(`ln /home/eggs/ovarium/iso/live/${this.initrd} ${this.pxeRoot}/${this.initrd}`)
-            await this.tryCatch(`ln -s /home/eggs/ovarium/iso/.disk/ ${this.pxeRoot}/.disk`)
-            for (const iso of this.isos) {
-                await this.tryCatch(`ln /home/eggs/${iso} ${this.pxeRoot}/${iso}`)
-            }
+        // link iso images in pxe
+        for (const iso of this.isos) {
+            await this.tryCatch(`ln /home/eggs/${iso} ${this.pxeRoot}/${iso}`)
         }
 
         let content = ``
@@ -145,8 +146,8 @@ export default class Pxe {
         content += `\n`
         content += `LABEL filesystem\n`
         content += `MENU LABEL ${this.isos[0]}\n`
-        content += `KERNEL http://${Utils.address()}/${this.vmlinuz}\n`
-        content += `APPEND initrd=http://${Utils.address()}/${this.initrd} boot=live config noswap noprompt fetch=http://${Utils.address()}/filesystem.squashfs\n`
+        content += `KERNEL http://${Utils.address()}/live/${this.vmlinuz}\n`
+        content += `APPEND initrd=http://${Utils.address()}/live/${this.initrd} boot=live config noswap noprompt fetch=http://${Utils.address()}/live/filesystem.squashfs\n`
         content += `SYSAPPEND 3\n`
         content += `\n`
         content += `MENU SEPARATOR\n`
