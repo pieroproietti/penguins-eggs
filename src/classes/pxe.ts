@@ -13,6 +13,7 @@ import Utils from '../classes/utils'
 import Settings from '../classes/settings'
 
 import http from 'http'
+import nodeStatic from 'node-static'
 import { IncomingMessage, ServerResponse } from 'http'
 import { exec } from '../lib/utils'
 import path, { dirname } from 'node:path'
@@ -116,9 +117,12 @@ export default class Pxe {
         await this.tryCatch(`ln -s ${this.iso}isolinux/isolinux.theme.cfg ${this.pxeRoot}/isolinux.theme.cfg`)
         await this.tryCatch(`ln -s ${this.iso}isolinux/splash.png ${this.pxeRoot}/splash.png`)
 
+        /**
+         * tftp comunque non funge
+         */
         // When http is not available, vmlinuz and initrd MUST to be on root
-        await this.tryCatch(`ln -s ${this.iso}live/${this.vmlinuz} ${this.pxeRoot}/${this.vmlinuz}`)
-        await this.tryCatch(`ln -s ${this.iso}live/${this.initrd} ${this.pxeRoot}/${this.initrd}`)
+        // await this.tryCatch(`ln ${this.iso}live/${this.vmlinuz} ${this.pxeRoot}/vmlinuz`)
+        // await this.tryCatch(`ln ${this.iso}live/${this.initrd} ${this.pxeRoot}/initrd.img`)
 
         // pxe
         await this.tryCatch(`ln ${distro.pxelinuxPath}pxelinux.0 ${this.pxeRoot}/pxelinux.0`)
@@ -149,17 +153,19 @@ export default class Pxe {
         content += `TIMEOUT 0\n`
         content += `\n`
 
-        content += `MENU DEFAULT http\n`
-
-        content += `LABEL tftp\n`
-        content += `MENU LABEL tftp ${this.isos[0]}\n`
-        content += `KERNEL ${this.vmlinuz}\n`
-        content += `APPEND initrd=${this.initrd} boot=live config noswap noprompt fetch=http://${Utils.address()}/live/filesystem.squashfs\n`
-        content += `SYSAPPEND 3\n`
-        content += `\n`
+        /**
+         * tftp comunque non funge
+         */
+        // content += `LABEL tftp\n`
+        // content += `MENU LABEL tftp ${this.isos[0]}\n`
+        // content += `KERNEL tftp://${Utils.address()}/vmlinuz\n`
+        // content += `APPEND initrd=tftp://${Utils.address()}/initrd.img boot=live config noswap noprompt fetch=http://${Utils.address()}/live/filesystem.squashfs\n`
+        // content += `SYSAPPEND 3\n`
+        // content += `\n`
 
         content += `LABEL http\n`
         content += `MENU LABEL http ${this.isos[0]}\n`
+        content += `MENU DEFAULT\n`
         content += `KERNEL http://${Utils.address()}/live/${this.vmlinuz}\n`
         content += `APPEND initrd=http://${Utils.address()}/live/${this.initrd} boot=live config noswap noprompt fetch=http://${Utils.address()}/live/filesystem.squashfs\n`
         content += `SYSAPPEND 3\n`
@@ -265,26 +271,14 @@ export default class Pxe {
     /**
      * start http server for images
      * 
-     * We have a limit of 2GB... bad!
-     * 
      */
     async httpStart() {
         const port = 80
         const httpRoot = this.pxeRoot + "/"
+       
+        var file = new(nodeStatic.Server)(httpRoot)
         http.createServer(function (req: IncomingMessage, res: ServerResponse) {
-            if (req.url === '/') {
-                req.url = '/index.html'
-            }
-
-            fs.readFile(httpRoot + req.url, function (err, data) {
-                if (err) {
-                    res.writeHead(404)
-                    res.end(JSON.stringify(err))
-                    return
-                }
-                res.writeHead(200)
-                res.end(data)
-            });
-        }).listen(80)
+            file.serve(req, res)
+        }).listen(port)
     }
 }
