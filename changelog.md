@@ -19,6 +19,13 @@ You can follow the project also consulting the [commit history](https://github.c
 ## Changelog
 Versions are listed on reverse order, the first is the last one. Old versions are moved to [versions](https://sourceforge.net/projects/penguins-eggs/files/packages-deb/versions/). 
 
+### eggs-9.2.4
+Added a new command: ```sudo eggs cuckoo```
+
+This command launches a complete PXE server--automatically configured--that allows the ISO image to boot across the local network. It can be started, either from a live or from an installed system in which an iso image has been precendently created. 
+
+I am still working on it and at the moment it is only guaranteed to work for Debian/Devuan/Ubuntu, but not for Ubuntu bionic.
+
 ### eggs-9.2.3
 Introduced unattended installation: ```sudo eggs install --unattended```:
 * values configured in /etc/penguins-eggs.d/krill.yaml are used both for unattended installation and as default values for standard installation;
