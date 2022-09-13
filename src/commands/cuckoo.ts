@@ -61,7 +61,7 @@ export default class Cuckoo extends Command {
         await pxe.httpStart()
 
         console.log(`Serving PXE boot, read more at: http://${Utils.address()}`)
-        console.log(`CTRL-z to stop`)
+        console.log(`CTRL-c to quit`)
       }
     } else {
       console.log(`Sorry: actually cuckoo is enabled just for debian family!`)
