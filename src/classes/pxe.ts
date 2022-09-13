@@ -117,8 +117,8 @@ export default class Pxe {
         await this.tryCatch(`ln -s ${this.iso}isolinux/splash.png ${this.pxeRoot}/splash.png`)
 
         // When http is not available, vmlinuz and initrd MUST to be on root
-        await this.tryCatch(`ln -s ${this.iso}live/isolinux.theme.cfg ${this.pxeRoot}/${this.vmlinuz}`)
-        await this.tryCatch(`ln -s ${this.iso}live/splash.png ${this.pxeRoot}/${this.initrd}`)
+        await this.tryCatch(`ln ${this.iso}live/${this.vmlinuz} ${this.pxeRoot}/${this.vmlinuz}`)
+        await this.tryCatch(`ln ${this.iso}live/${this.initrd} ${this.pxeRoot}/${this.initrd}`)
 
         // pxe
         await this.tryCatch(`ln ${distro.pxelinuxPath}pxelinux.0 ${this.pxeRoot}/pxelinux.0`)
@@ -154,7 +154,7 @@ export default class Pxe {
         content += `LABEL tftp\n`
         content += `MENU LABEL tftp ${this.isos[0]}\n`
         content += `KERNEL ${this.vmlinuz}\n`
-        content += `APPEND initrd=${Utils.address()}/${this.initrd} boot=live config noswap noprompt fetch=http://${Utils.address()}/live/filesystem.squashfs\n`
+        content += `APPEND initrd=${this.initrd} boot=live config noswap noprompt fetch=http://${Utils.address()}/live/filesystem.squashfs\n`
         content += `SYSAPPEND 3\n`
         content += `\n`
 
