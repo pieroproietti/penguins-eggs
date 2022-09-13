@@ -117,8 +117,8 @@ export default class Pxe {
         await this.tryCatch(`ln -s ${this.iso}isolinux/splash.png ${this.pxeRoot}/splash.png`)
 
         // When http is not available, vmlinuz and initrd MUST to be on root
-        await this.tryCatch(`ln ${this.iso}live/${this.vmlinuz} ${this.pxeRoot}/${this.vmlinuz}`)
-        await this.tryCatch(`ln ${this.iso}live/${this.initrd} ${this.pxeRoot}/${this.initrd}`)
+        await this.tryCatch(`ln -s ${this.iso}live/${this.vmlinuz} ${this.pxeRoot}/${this.vmlinuz}`)
+        await this.tryCatch(`ln -s ${this.iso}live/${this.initrd} ${this.pxeRoot}/${this.initrd}`)
 
         // pxe
         await this.tryCatch(`ln ${distro.pxelinuxPath}pxelinux.0 ${this.pxeRoot}/pxelinux.0`)
