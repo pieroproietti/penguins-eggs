@@ -22,9 +22,7 @@ Versions are listed on reverse order, the first is the last one. Old versions ar
 ### eggs-9.2.4
 Added a new command: ```sudo eggs cuckoo```
 
-This command launches a complete PXE server--automatically configured--that allows the ISO image to boot across the local network. It can be started, either from a live or from an installed system in which an iso image has been precendently created. 
-
-I am still working on it and at the moment it is only guaranteed to work for Debian/Devuan/Ubuntu, but not for Ubuntu bionic.
+This command launches a complete PXE server -automatically configured- that allows the ISO image to boot across the local network. It works directly from the live system by installing the dnsmasq and pxelinux packages. Its main limitation is the inability to operate in UEFI mode, but I decided to release it anyway to have it tested and to be able to start a new clean branch for the UEFI features planned for the next release.
 
 ### eggs-9.2.3
 Introduced unattended installation: ```sudo eggs install --unattended```:
