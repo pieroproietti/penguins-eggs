@@ -16,6 +16,10 @@ Penguins-eggs
 
 Please, don't use this package for installations, they have just the pourpouse to be TESTED and can be extremally BUGGED!!!
 
+# Discussion
+
+You can partecipate to discussion joining on [telegram channel](https://t.me/penguins_eggs().
+
 # eggs cuckoo
 
 The cuckoo lays its eggs in the nests of other birds, and the eggs are hatched by the latter. Similarly eggs can start a self-configuring PXE service to allow you to boot and install your iso on third party networked computers. Command cuckoo can be used either to deploy a newly created iso on an installed system or by live booting the iso itself. 
@@ -26,13 +30,6 @@ Given the need to install the dnsmaq and pxelinux packages cuckoo is currently o
 
 # TO DO
 
-## Arch, manjaro
-Install dnsmasq and pxelinux
-
-## LIVE system, path to CDROM content
-* bionic: /lib/live/mount/medium/
-* bullseye, jammy: /run/live/medium/
-
-## path to pxelinux
-* bionic, bullseye, jammy: /usr/lib/PXELINUX/
+* add UEFI capabilities
+* add Arch and manjaro compatibility
 
