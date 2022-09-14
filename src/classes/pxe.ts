@@ -3,11 +3,9 @@
  * author: Piero Proietti
  * mail: piero.proietti@gmail.com
  */
-
-// import {createHttpTerminator } from 'http-terminator'
   
-import os from 'node:os'
-import fs from 'fs'
+ import os from 'os'
+ import fs from 'fs'
 import {Netmask} from 'netmask'
 import Utils from '../classes/utils'
 import Settings from '../classes/settings'
@@ -27,9 +25,10 @@ export default class Pxe {
 
     echo = {}
     settings = {} as Settings
+    mainLabel = ''
     pxeRoot = ''
+    isoRoot = ''
     isos: string[] = []
-    iso = ''
     vmlinuz = ''
     initrd = ''
 
@@ -40,9 +39,9 @@ export default class Pxe {
         this.settings = new Settings()
         await this.settings.load()
         if (Utils.isLive()) {
-            this.iso = this.settings.distro.liveMediumPath
+            this.isoRoot = this.settings.distro.liveMediumPath
         } else {
-            this.iso = path.dirname(this.settings.work_dir.path) + '/ovarium/iso/'
+            this.isoRoot = path.dirname(this.settings.work_dir.path) + '/ovarium/iso/'
         }
 
         if (!Utils.isLive() && !fs.existsSync(this.settings.work_dir.path)) {
@@ -70,15 +69,13 @@ export default class Pxe {
                     this.isos.push(iso)
                 }
             }
-        } else {
-            this.isos.push(fs.readFileSync(`${this.iso}.disk/info`, 'utf-8'))
         }
 
         /**
          * installed: /home/eggs/ovarium/iso/live
          * live: this.iso/live
          */
-        let pathFiles = this.iso + '/live'
+        let pathFiles = this.isoRoot + '/live'
         let files = fs.readdirSync(pathFiles)
         for (const file of files) {
             if (path.basename(file).substring(0, 7) === 'vmlinuz') {
@@ -88,7 +85,11 @@ export default class Pxe {
                 this.initrd = path.basename(file)
             }
         }
-        
+
+        /**
+         * bootLabel
+         */
+        this.mainLabel = this.settings.config.snapshot_prefix + Utils.getVolid(os.hostname())
     }
 
     /**
@@ -107,22 +108,15 @@ export default class Pxe {
         await this.tryCatch(`mkdir ${this.pxeRoot} -p`)
 
         // boot  efi  isolinux  live .disk
-        await this.tryCatch(`ln -s ${this.iso}boot ${this.pxeRoot}/boot`)
-        await this.tryCatch(`ln -s ${this.iso}efi ${this.pxeRoot}/efi`)
-        await this.tryCatch(`ln -s ${this.iso}isolinux ${this.pxeRoot}/isolinux`)
-        await this.tryCatch(`ln -s ${this.iso}live ${this.pxeRoot}/live`)
-        await this.tryCatch(`ln -s ${this.iso}.disk ${this.pxeRoot}/.disk`)
+        await this.tryCatch(`ln -s ${this.isoRoot}boot ${this.pxeRoot}/boot`)
+        await this.tryCatch(`ln -s ${this.isoRoot}efi ${this.pxeRoot}/efi`)
+        await this.tryCatch(`ln -s ${this.isoRoot}isolinux ${this.pxeRoot}/isolinux`)
+        await this.tryCatch(`ln -s ${this.isoRoot}live ${this.pxeRoot}/live`)
+        await this.tryCatch(`ln -s ${this.isoRoot}.disk ${this.pxeRoot}/.disk`)
 
         // isolinux.theme.cfg, splash.png MUST to be on root
-        await this.tryCatch(`ln -s ${this.iso}isolinux/isolinux.theme.cfg ${this.pxeRoot}/isolinux.theme.cfg`)
-        await this.tryCatch(`ln -s ${this.iso}isolinux/splash.png ${this.pxeRoot}/splash.png`)
-
-        /**
-         * tftp comunque non funge
-         */
-        // When http is not available, vmlinuz and initrd MUST to be on root
-        // await this.tryCatch(`ln ${this.iso}live/${this.vmlinuz} ${this.pxeRoot}/vmlinuz`)
-        // await this.tryCatch(`ln ${this.iso}live/${this.initrd} ${this.pxeRoot}/initrd.img`)
+        await this.tryCatch(`ln -s ${this.isoRoot}isolinux/isolinux.theme.cfg ${this.pxeRoot}/isolinux.theme.cfg`)
+        await this.tryCatch(`ln -s ${this.isoRoot}isolinux/splash.png ${this.pxeRoot}/splash.png`)
 
         // pxe
         await this.tryCatch(`ln ${distro.pxelinuxPath}pxelinux.0 ${this.pxeRoot}/pxelinux.0`)
@@ -153,18 +147,8 @@ export default class Pxe {
         content += `TIMEOUT 0\n`
         content += `\n`
 
-        /**
-         * tftp comunque non funge
-         */
-        // content += `LABEL tftp\n`
-        // content += `MENU LABEL tftp ${this.isos[0]}\n`
-        // content += `KERNEL tftp://${Utils.address()}/vmlinuz\n`
-        // content += `APPEND initrd=tftp://${Utils.address()}/initrd.img boot=live config noswap noprompt fetch=http://${Utils.address()}/live/filesystem.squashfs\n`
-        // content += `SYSAPPEND 3\n`
-        // content += `\n`
-
         content += `LABEL http\n`
-        content += `MENU LABEL http ${this.isos[0]}\n`
+        content += `MENU LABEL ${this.mainLabel}\n`
         content += `MENU DEFAULT\n`
         content += `KERNEL http://${Utils.address()}/live/${this.vmlinuz}\n`
         content += `APPEND initrd=http://${Utils.address()}/live/${this.initrd} boot=live config noswap noprompt fetch=http://${Utils.address()}/live/filesystem.squashfs\n`
@@ -175,7 +159,7 @@ export default class Pxe {
         for (const iso of this.isos) {
             content += `\n`
             content += `LABEL isos\n`
-            content += `MENU LABEL ${iso} (memdisk)\n`
+            content += `MENU LABEL ${iso}\n`
             content += `KERNEL memdisk\n`
             content += `APPEND iso initrd=http://${Utils.address()}/${iso}\n`
         }
@@ -205,8 +189,9 @@ export default class Pxe {
      * 
      */
     async dnsMasq(full = false) {
-        let domain = `penguins-eggs.lan`
+        await exec(`systemctl stop dnsmasq.service`)
 
+        let domain = `penguins-eggs.lan`
         let n = new Netmask(`${Utils.address()}/${Utils.netmask()}`)
 
         let content = ``
@@ -250,8 +235,6 @@ export default class Pxe {
         fs.writeFileSync(file, content)
 
         // console.log(content)
-
-        await exec(`systemctl stop dnsmasq.service`)
         await exec(`systemctl start dnsmasq.service`)
     }
 

@@ -44,15 +44,17 @@ export default class Cuckoo extends Command {
     const distro = new Distro()
     if (distro.familyId === 'debian') {
       if (Utils.isRoot()) {
-        if (!Pacman.packageIsInstalled('dnsmasq')) {
-          console.log('installing dnsmasq...')
-          await exec('sudo apt-get update -y')
-          await exec('sudo apt-get install dnsmasq -y')
-        }
-        if (!Pacman.packageIsInstalled("pxelinux")) {
-          console.log('installing pxelinux')
-          await exec('sudo apt-get update -y')
-          await exec('sudo apt-get install pxelinux -y')
+        if (!Pacman.packageIsInstalled('dnsmasq') ||
+          (!Pacman.packageIsInstalled("pxelinux"))) {
+          console.log('eggs cuckoo need to nstall dnsmasq and pxelinux.')
+          if (await Utils.customConfirm()) {
+            console.log('Installing dnsmasq and pxelinux... wait a moment')
+            await exec('sudo apt-get update -y', Utils.setEcho(false))
+            await exec('sudo apt-get install dnsmasq pxelinux -y', Utils.setEcho(false))
+          } else {
+            console.log('You need to install dnsmasq to start cuckoo PXE server')
+            process.exit()
+          }
         }
         const pxe = new Pxe()
         await pxe.fertilization()
