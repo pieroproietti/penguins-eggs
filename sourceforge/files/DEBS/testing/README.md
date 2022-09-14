@@ -18,7 +18,7 @@ Please, don't use this package for installations, they have just the pourpouse t
 
 # Discussion
 
-You can partecipate to discussion joining on [telegram channel](https://t.me/penguins_eggs().
+You can partecipate to discussion joining on [telegram channel](https://t.me/penguins_eggs).
 
 # eggs cuckoo
 
