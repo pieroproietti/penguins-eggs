@@ -15,6 +15,7 @@ adapt --verbose --help
 analyze --help --verbose
 calamares --help --verbose --install --release --remove --theme
 config --nointeractive --clean --help --verbose
+cuckoo --help --verbose
 dad --help --clean --default --verbose
 export:deb --help --clean --amd64 --i386 --armel --arm64 --all
 export:docs --help
@@ -36,8 +37,8 @@ wardrobe:ironing --wardrobe --verbose --help
 wardrobe:list --verbose --help
 wardrobe:show --wardrobe --json --verbose --help
 wardrobe:wear --wardrobe --no_accessories --no_firmwares --silent --verbose --help
-autocomplete --refresh-cache
 help --nested-commands
+autocomplete --refresh-cache
 version --json --verbose
 "
 
