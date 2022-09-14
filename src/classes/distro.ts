@@ -54,6 +54,8 @@ class Distro implements IDistro {
   usrLibPath: string
   isolinuxPath: string
   syslinuxPath: string
+  pxelinuxPath: string 
+  liveMediumPath: string
   mountpointSquashFs: string
   homeUrl: string
   supportUrl: string
@@ -71,6 +73,8 @@ class Distro implements IDistro {
     this.usrLibPath = '/usr/lib'
     this.isolinuxPath = ''
     this.syslinuxPath = ''
+    this.pxelinuxPath = ''
+    this.liveMediumPath = `/run/live/medium/`
     this.mountpointSquashFs = ''
     this.homeUrl = ''
     this.supportUrl = ''
@@ -145,6 +149,7 @@ class Distro implements IDistro {
         // Debian 8 jessie
         this.distroLike = 'Debian'
         this.codenameLikeId = 'jessie'
+        this.liveMediumPath = '/lib/live/mount/medium/'
 
         break
       }
@@ -153,6 +158,7 @@ class Distro implements IDistro {
         // Debian 9 stretch
         this.distroLike = 'Debian'
         this.codenameLikeId = 'stretch'
+        this.liveMediumPath = '/lib/live/mount/medium/'
 
         break
       }
@@ -214,6 +220,7 @@ class Distro implements IDistro {
         // Ubuntu 18.04 bionic LTS eol aprile 2023
         this.distroLike = 'Ubuntu'
         this.codenameLikeId = 'bionic'
+        this.liveMediumPath = '/lib/live/mount/medium/'
 
         break
       }
@@ -488,6 +495,7 @@ class Distro implements IDistro {
       case 'debian': {
         this.isolinuxPath = '/usr/lib/ISOLINUX/'
         this.syslinuxPath = '/usr/lib/syslinux/modules/bios/'
+        this.pxelinuxPath = '/usr/lib/PXELINUX/'
         this.usrLibPath = '/usr/lib/x86_64-linux-gnu/'
         if (process.arch === 'ia32') {
           this.usrLibPath = '/usr/lib/i386-linux-gnu/'

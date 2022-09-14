@@ -181,7 +181,7 @@ export default class Krill {
 
       oNetwork =
       {
-        iface: Utils.iface(),
+        iface: await Utils.iface(),
         addressType: this.krillConfig.addressType,
         address: Utils.address(),
         netmask: Utils.netmask(),
@@ -449,7 +449,7 @@ export default class Krill {
     const i = {} as INet
 
     const ifaces: string[] = fs.readdirSync('/sys/class/net/')
-    i.iface = Utils.iface()
+    i.iface = await Utils.iface()
     i.addressType = 'dhcp'
     i.address = Utils.address()
     i.netmask = Utils.netmask()

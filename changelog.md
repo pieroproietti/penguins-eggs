@@ -19,6 +19,13 @@ You can follow the project also consulting the [commit history](https://github.c
 ## Changelog
 Versions are listed on reverse order, the first is the last one. Old versions are moved to [versions](https://sourceforge.net/projects/penguins-eggs/files/packages-deb/versions/). 
 
+### eggs-9.2.4
+Added a new command: ```sudo eggs cuckoo```
+
+This command launches a complete PXE server -automatically configured- that allows the ISO image to boot across the local network. It works directly from the live system by installing the dnsmasq and pxelinux packages. Its main limitation is the inability to operate in UEFI mode, but I decided to release it anyway to have it tested and to be able to start a new clean branch for the UEFI features planned for the next release. 
+
+You can partecipate to discussion joining on [telegram channel](https://t.me/penguins_eggs).
+
 ### eggs-9.2.3
 Introduced unattended installation: ```sudo eggs install --unattended```:
 * values configured in /etc/penguins-eggs.d/krill.yaml are used both for unattended installation and as default values for standard installation;
