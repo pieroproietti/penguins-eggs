@@ -3,19 +3,19 @@
  * author: Piero Proietti
  * mail: piero.proietti@gmail.com
  */
-  
- import os from 'os'
- import fs from 'fs'
-import {Netmask} from 'netmask'
+
+import os from 'os'
+import fs from 'fs'
+import { Netmask } from 'netmask'
+import nodeStatic from 'node-static'
+import http, { IncomingMessage, ServerResponse } from 'http'
+import path, { dirname } from 'node:path'
+
 import Utils from '../classes/utils'
 import Settings from '../classes/settings'
-
-import http from 'http'
-import nodeStatic from 'node-static'
-import { IncomingMessage, ServerResponse } from 'http'
 import { exec } from '../lib/utils'
-import path, { dirname } from 'node:path'
 import Distro from './distro'
+import { throws } from 'assert'
 
 /**
 * Pxe:
@@ -25,12 +25,12 @@ export default class Pxe {
 
     echo = {}
     settings = {} as Settings
-    mainLabel = ''
+    bootLabel = ''
     pxeRoot = ''
     isoRoot = ''
-    isos: string[] = []
     vmlinuz = ''
     initrd = ''
+    isos: string[] = []
 
     /**
      * fertilization()
@@ -53,16 +53,15 @@ export default class Pxe {
          * se pxeRoot non esiste viene creato
          */
         this.pxeRoot = path.dirname(this.settings.work_dir.path) + '/pxe/'
-        if (!fs.existsSync(this.pxeRoot)){ 
+        if (!fs.existsSync(this.pxeRoot)) {
             await exec(`mkdir ${this.pxeRoot} -p`)
         }
-
 
         /**
          * Ricerca delle immagini ISO
          */
         let isos: string[] = []
-        if (!Utils.isLive()){
+        if (!Utils.isLive()) {
             let isos = fs.readdirSync(path.dirname(this.settings.work_dir.path))
             for (const iso of isos) {
                 if (path.extname(iso) === ".iso") {
@@ -89,7 +88,10 @@ export default class Pxe {
         /**
          * bootLabel
          */
-        this.mainLabel = this.settings.config.snapshot_prefix + Utils.getVolid(os.hostname())
+        const a = fs.readFileSync(this.isoRoot + '/.disk/mkisofs', "utf-8")
+        const b = a.substring(a.indexOf('-o ') + 3)
+        const c = b.substring(0, b.indexOf(' '))
+        this.bootLabel = c.substring(c.lastIndexOf('/') + 1)
     }
 
     /**
@@ -148,7 +150,7 @@ export default class Pxe {
         content += `\n`
 
         content += `LABEL http\n`
-        content += `MENU LABEL ${this.mainLabel}\n`
+        content += `MENU LABEL ${this.bootLabel}\n`
         content += `MENU DEFAULT\n`
         content += `KERNEL http://${Utils.address()}/live/${this.vmlinuz}\n`
         content += `APPEND initrd=http://${Utils.address()}/live/${this.initrd} boot=live config noswap noprompt fetch=http://${Utils.address()}/live/filesystem.squashfs\n`
@@ -258,8 +260,8 @@ export default class Pxe {
     async httpStart() {
         const port = 80
         const httpRoot = this.pxeRoot + "/"
-       
-        var file = new(nodeStatic.Server)(httpRoot)
+
+        var file = new (nodeStatic.Server)(httpRoot)
         http.createServer(function (req: IncomingMessage, res: ServerResponse) {
             file.serve(req, res)
         }).listen(port)
