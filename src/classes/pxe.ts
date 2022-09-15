@@ -110,8 +110,8 @@ export default class Pxe {
         await this.tryCatch(`mkdir ${this.pxeRoot} -p`)
 
         // link boot, efi, isolinuxm live and .disk
-        await this.tryCatch(`ln -s ${this.isoRoot}boot ${this.pxeRoot}/boot`)
-        await this.tryCatch(`ln -s ${this.isoRoot}efi ${this.pxeRoot}/efi`)
+        // await this.tryCatch(`ln -s ${this.isoRoot}boot ${this.pxeRoot}/boot`)
+        // await this.tryCatch(`ln -s ${this.isoRoot}efi ${this.pxeRoot}/efi`)
         await this.tryCatch(`ln -s ${this.isoRoot}isolinux ${this.pxeRoot}/isolinux`)
         await this.tryCatch(`ln -s ${this.isoRoot}live ${this.pxeRoot}/live`)
         await this.tryCatch(`ln -s ${this.isoRoot}.disk ${this.pxeRoot}/.disk`)
