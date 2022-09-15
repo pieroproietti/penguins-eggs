@@ -109,12 +109,86 @@ export default class Pxe {
 
         await this.tryCatch(`mkdir ${this.pxeRoot} -p`)
 
-        // boot  efi  isolinux  live .disk
+        // link boot, efi, isolinuxm live and .disk
         await this.tryCatch(`ln -s ${this.isoRoot}boot ${this.pxeRoot}/boot`)
         await this.tryCatch(`ln -s ${this.isoRoot}efi ${this.pxeRoot}/efi`)
         await this.tryCatch(`ln -s ${this.isoRoot}isolinux ${this.pxeRoot}/isolinux`)
         await this.tryCatch(`ln -s ${this.isoRoot}live ${this.pxeRoot}/live`)
         await this.tryCatch(`ln -s ${this.isoRoot}.disk ${this.pxeRoot}/.disk`)
+
+        // UEFI:                   /usr/lib/shim/shimx64.efi.signed
+        // await this.tryCatch(`ln -s /usr/lib/shim/shimx64.efi.signed ${this.pxeRoot}/bootx64.efi`)
+        await this.tryCatch(`cp /usr/lib/shim/shimx64.efi.signed ${this.pxeRoot}/bootx64.efi`)
+        // UEFI:                   /usr/lib/grub/x86_64-efi-signed/grubnetx64.efi.signed
+        // await this.tryCatch(`ln -s /usr/lib/grub/x86_64-efi-signed/grubnetx64.efi.signed ${this.pxeRoot}/grubx64.efi`)
+        await this.tryCatch(`cp /usr/lib/grub/x86_64-efi-signed/grubnetx64.efi.signed ${this.pxeRoot}/grubx64.efi`)
+
+        // unicode.pf2 installed as grub/fonts/unicode.pf2
+        await this.tryCatch(`mkdir ${this.pxeRoot}grub/fonts -p`)
+        await this.tryCatch(`mkdir ${this.pxeRoot}grub/x86_64-efi -p`)
+
+        if (fs.existsSync('/usr/share/grub/unicode.pf2')) {
+            await this.tryCatch(`ln -s /usr/share/grub/unicode.pf2 ${this.pxeRoot}/grub/fonts/unicode.pf2`)
+        }
+
+        // creating grub/grub.cfg
+        let grubContent = ''
+        grubContent += `set default="0"\n`
+        grubContent += `set timeout=-1\n`
+        grubContent += `\n`
+        grubContent += `if loadfont unicode ; then\n`
+        grubContent += `  set gfxmode=auto\n`
+        grubContent += `  set locale_dir=$prefix/locale\n`
+        grubContent += `  set lang=en_US\n`
+        grubContent += `fi\n`
+        grubContent += `terminal_output gfxterm\n`
+        grubContent += `\n`
+        grubContent += `set menu_color_normal=white/black\n`
+        grubContent += `set menu_color_highlight=black/light-gray\n`
+        grubContent += `if background_color 44,0,30; then\n`
+        grubContent += `  clear\n`
+        grubContent += `fi\n`
+        grubContent += `\n`
+        grubContent += `function gfxmode {\n`
+        grubContent += `\n`
+        grubContent += `  set gfxpayload="${1}"\n`
+        grubContent += `  if [ "${1}" = "keep" ]; then\n`
+        grubContent += `    set vt_handoff=vt.handoff=7\n`
+        grubContent += `  else\n`
+        grubContent += `    set vt_handoff=\n`
+        grubContent += `  fi\n`
+        grubContent += `}\n`
+        grubContent += `set linux_gfx_mode=keep\n`
+        grubContent += `\n`
+        grubContent += `export linux_gfx_mode\n`
+        grubContent += `\n`
+
+        grubContent += `if loadfont $prefix/font.pf2 ; then\n`
+        grubContent += `set gfxmode=640x480\n`
+        grubContent += `insmod efi_gop\n`
+        grubContent += `insmod efi_uga\n`
+        grubContent += `insmod video_bochs\n`
+        grubContent += `insmod video_cirrus\n`
+        grubContent += `insmod gfxterm\n`
+        grubContent += `insmod jpeg\n`
+        grubContent += `insmod png\n`
+        grubContent += `terminal_output gfxterm\n`
+        grubContent += `fi\n`
+        grubContent += `set theme=/boot/grub/theme.cfg\n`
+      
+        grubContent += `menuentry '${this.bootLabel}' {\n`
+        grubContent += `  gfxmode $linux_gfx_mode\n`
+        grubContent += `  linux http://${Utils.address()}/live/${this.vmlinuz}\n`
+        grubContent += `  initrd http://${Utils.address()}/live/${this.initrd} boot=live config noswap noprompt fetch=http://${Utils.address()}/live/filesystem.squashfs\n`
+        grubContent += `}\n`
+
+        // look in /grub/grub.cfg or /grub/x86_64-efi/grub.cfg 
+        let grubFile = `${this.pxeRoot}grub.cfg`
+        fs.writeFileSync(grubFile, grubContent)
+        grubFile = `${this.pxeRoot}grub/grub.cfg`
+        fs.writeFileSync(grubFile, grubContent)
+        grubFile = `${this.pxeRoot}grub/x86_64-efi/grub.cfg`
+        fs.writeFileSync(grubFile, grubContent)
 
         // isolinux.theme.cfg, splash.png MUST to be on root
         await this.tryCatch(`ln -s ${this.isoRoot}isolinux/isolinux.theme.cfg ${this.pxeRoot}/isolinux.theme.cfg`)
@@ -157,13 +231,15 @@ export default class Pxe {
         content += `SYSAPPEND 3\n`
         content += `\n`
 
-        content += `MENU SEPARATOR\n`
-        for (const iso of this.isos) {
-            content += `\n`
-            content += `LABEL isos\n`
-            content += `MENU LABEL ${iso}\n`
-            content += `KERNEL memdisk\n`
-            content += `APPEND iso initrd=http://${Utils.address()}/${iso}\n`
+        if (this.isos.length > 0) {
+            content += `MENU SEPARATOR\n`
+            for (const iso of this.isos) {
+                content += `\n`
+                content += `LABEL isos\n`
+                content += `MENU LABEL memdisk ${iso}\n`
+                content += `KERNEL memdisk\n`
+                content += `APPEND iso initrd=http://${Utils.address()}/${iso}\n`
+            }
         }
         let file = `${this.pxeRoot}/pxelinux.cfg/default`
         fs.writeFileSync(file, content)
@@ -215,7 +291,9 @@ export default class Pxe {
         content += `# boot config for UEFI\n`
         content += `dhcp-match=set:efi-x86_64,option:client-arch,7\n`
         content += `dhcp-match=set:efi-x86_64,option:client-arch,9\n`
-        content += `dhcp-boot=tag:efi-x86_64,lpxelinux.0\n`
+        content += `dhcp-boot=tag:efi-x86_64,/bootx64.efi\n`
+        // Here we are OK Starting grub
+
         /**
          * https://thekelleys.org.uk/dnsmasq/CHANGELOG
          * 
@@ -267,3 +345,4 @@ export default class Pxe {
         }).listen(port)
     }
 }
+
