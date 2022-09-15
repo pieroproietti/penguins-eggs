@@ -129,7 +129,9 @@ export default class Pxe {
             await this.tryCatch(`ln -s /usr/share/grub/unicode.pf2 ${this.pxeRoot}/grub/fonts/unicode.pf2`)
         }
 
-        // creating /grub.cfg, /grub/grub.cfg and /grub/x86_64-efi/grub.cfg
+        /**
+         * creating /grub/grub.cfg
+         */
         let grubContent = ''
         grubContent += `set default="0"\n`
         grubContent += `set timeout=-1\n`
@@ -179,7 +181,6 @@ export default class Pxe {
         grubContent += `  linux http://${Utils.address()}/live/${this.vmlinuz}\n`
         grubContent += `  initrd http://${Utils.address()}/live/${this.initrd} boot=live config noswap noprompt fetch=http://${Utils.address()}/live/filesystem.squashfs\n`
         grubContent += `}\n`
-
         let grubFile = `${this.pxeRoot}grub/grub.cfg`
         fs.writeFileSync(grubFile, grubContent)
 
@@ -259,7 +260,7 @@ export default class Pxe {
     /**
      * 
      */
-    async dnsMasq(full = false) {
+    async dnsMasq(real = false) {
         await exec(`systemctl stop dnsmasq.service`)
 
         let domain = `penguins-eggs.lan`
@@ -298,10 +299,10 @@ export default class Pxe {
          */
         content += `pxe-service=X86PC,"penguin's eggs cuckoo",pxelinux.0\n`
 
-        if (full) {
+        if (real) {
             content += `dhcp-range=${await Utils.iface()},${n.first},${n.last},${n.mask},8h\n`
         } else {
-            content += `dhcp-range=${await Utils.iface()},${n.base},proxy,${n.mask},${Utils.broadcast()} # dhcp proxy\n`
+            content += `dhcp-range=${await Utils.iface()},${n.base},proxy,${n.mask},${n.broadcast} # dhcp proxy\n`
         }
 
         let file = '/etc/dnsmasq.d/cuckoo.conf'
