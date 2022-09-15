@@ -127,68 +127,7 @@ export default class Pxe {
         // UEFI:                   /usr/lib/grub/x86_64-efi-signed/grubnetx64.efi.signed
         await this.tryCatch(`ln -s /usr/lib/grub/x86_64-efi-signed/grubnetx64.efi.signed ${this.pxeRoot}/grubx64.efi`)
 
-        // Copia spash.png, theme.cfg in /grub
-        await this.tryCatch(`ln -s ${this.isoRoot}boot/grub/splash.png ${this.pxeRoot}/grub/splash.png`)
-        await this.tryCatch(`ln -s ${this.isoRoot}boot/grub/theme.cfg ${this.pxeRoot}/grub/theme.cfg`)
-
-        /**
-         * creating /grub/grub.cfg
-         */
-        let grubContent = ''
-        grubContent += `set default="0"\n`
-        grubContent += `set timeout=-1\n`
-        grubContent += `\n`
-        grubContent += `if loadfont unicode ; then\n`
-        grubContent += `  set gfxmode=auto\n`
-        grubContent += `  set locale_dir=$prefix/locale\n`
-        grubContent += `  set lang=en_US\n`
-        grubContent += `fi\n`
-        grubContent += `terminal_output gfxterm\n`
-        grubContent += `\n`
-        grubContent += `set menu_color_normal=white/black\n`
-        grubContent += `set menu_color_highlight=black/light-gray\n`
-        grubContent += `if background_color 44,0,30; then\n`
-        grubContent += `  clear\n`
-        grubContent += `fi\n`
-        grubContent += `\n`
-        grubContent += `function gfxmode {\n`
-        grubContent += `\n`
-        grubContent += `  set gfxpayload="${1}"\n`
-        grubContent += `  if [ "${1}" = "keep" ]; then\n`
-        grubContent += `    set vt_handoff=vt.handoff=7\n`
-        grubContent += `  else\n`
-        grubContent += `    set vt_handoff=\n`
-        grubContent += `  fi\n`
-        grubContent += `}\n`
-        grubContent += `set linux_gfx_mode=keep\n`
-        grubContent += `\n`
-        grubContent += `export linux_gfx_mode\n`
-        grubContent += `\n`
-
-        grubContent += `if loadfont $prefix/font.pf2 ; then\n`
-        grubContent += `  set gfxmode=640x480\n`
-        grubContent += `  insmod efi_gop\n`
-        grubContent += `  insmod efi_uga\n`
-        grubContent += `  insmod video_bochs\n`
-        grubContent += `  insmod video_cirrus\n`
-        grubContent += `  insmod gfxterm\n`
-        grubContent += `  insmod jpeg\n`
-        grubContent += `  insmod png\n`
-        grubContent += `  terminal_output gfxterm\n`
-        grubContent += `fi\n`
-        grubContent += `set theme=/grub/theme.cfg\n`
-      
-        grubContent += `menuentry '${this.bootLabel}' {\n`
-        grubContent += `  gfxmode $linux_gfx_mode\n`
-        // grubContent += `  linux http://${Utils.address()}/live/${this.vmlinuz}\n`
-        // grubContent += `  initrd http://${Utils.address()}/live/${this.initrd} boot=live config noswap noprompt fetch=http://${Utils.address()}/live/filesystem.squashfs\n`
-        grubContent += `  linux (http) ${Utils.address()}/live/${this.vmlinuz}\n`
-        grubContent += `  initrd (http) ${Utils.address()}/live/${this.initrd}\n`
-        // grubContent += `  append boot=live config noswap noprompt fetch=http://${Utils.address()}/live/filesystem.squashfs\n`
-
-        grubContent += `}\n`
-        let grubFile = `${this.pxeRoot}grub/grub.cfg`
-        fs.writeFileSync(grubFile, grubContent)
+        this.configureGrub()
 
         // isolinux.theme.cfg, splash.png MUST to be on root
         await this.tryCatch(`ln -s ${this.isoRoot}isolinux/isolinux.theme.cfg ${this.pxeRoot}/isolinux.theme.cfg`)
@@ -211,41 +150,20 @@ export default class Pxe {
             await this.tryCatch(`ln /home/eggs/${iso} ${this.pxeRoot}/${iso}`)
         }
 
+        this.configurePxelinux()
+
+
+        this.configureHtml()
+
+    }
+
+    /**
+     * 
+     */
+    configureHtml() {
+
+        let file = `${this.pxeRoot}/index.html`
         let content = ``
-        content += `# eggs: pxelinux.cfg/default\n`
-        content += `# search path for the c32 support libraries (libcom32, libutil etc.)\n`
-        content += `path\n`
-        content += `include isolinux.theme.cfg\n`
-        content += `UI vesamenu.c32\n`
-        content += `\n`
-        content += `menu title Penguin's eggs - Perri's brewery edition - ${Utils.address()}\n`
-        content += `PROMPT 0\n`
-        content += `TIMEOUT 0\n`
-        content += `\n`
-
-        content += `LABEL http\n`
-        content += `MENU LABEL ${this.bootLabel}\n`
-        content += `MENU DEFAULT\n`
-        content += `KERNEL http://${Utils.address()}/live/${this.vmlinuz}\n`
-        content += `APPEND initrd=http://${Utils.address()}/live/${this.initrd} boot=live config noswap noprompt fetch=http://${Utils.address()}/live/filesystem.squashfs\n`
-        content += `SYSAPPEND 3\n`
-        content += `\n`
-
-        if (this.isos.length > 0) {
-            content += `MENU SEPARATOR\n`
-            for (const iso of this.isos) {
-                content += `\n`
-                content += `LABEL isos\n`
-                content += `MENU LABEL memdisk ${iso}\n`
-                content += `KERNEL memdisk\n`
-                content += `APPEND iso initrd=http://${Utils.address()}/${iso}\n`
-            }
-        }
-        let file = `${this.pxeRoot}/pxelinux.cfg/default`
-        fs.writeFileSync(file, content)
-
-        file = `${this.pxeRoot}/index.html`
-        content = ``
         content += `<html><title>Penguin's eggs PXE server</title>`
         content += `<div style="background-image:url('/splash.png');background-repeat:no-repeat;width: 640;height:480;padding:5px;border:1px solid black;">`
         content += `<h1>Penguin's eggs PXE server</h1>`
@@ -260,7 +178,6 @@ export default class Pxe {
         content += `manual: <a href='https://penguins-eggs.net/book/italiano9.2.html'>italiano</a>, <a href='https://penguins--eggs-net.translate.goog/book/italiano9.2?_x_tr_sl=auto&_x_tr_tl=en&_x_tr_hl=en'>translated</a><br/>`
         content += `discuss: <a href='https://t.me/penguins_eggs'>Telegram group<br/></body</html>`
         fs.writeFileSync(file, content)
-
     }
 
     /**
@@ -329,6 +246,115 @@ export default class Pxe {
             console.log(`Error: ${error}`)
             await Utils.pressKeyToExit(cmd)
         }
+    }
+
+
+    /**
+     * 
+     */
+    async configureGrub() {
+        // Copia spash.png, theme.cfg in /grub
+        await this.tryCatch(`ln -s ${this.isoRoot}boot/grub/splash.png ${this.pxeRoot}/grub/splash.png`)
+        await this.tryCatch(`ln -s ${this.isoRoot}boot/grub/theme.cfg ${this.pxeRoot}/grub/theme.cfg`)
+
+        /**
+         * creating /grub/grub.cfg
+         */
+        let grubContent = ''
+        grubContent += `set default="0"\n`
+        grubContent += `set timeout=-1\n`
+        grubContent += `\n`
+        grubContent += `if loadfont unicode ; then\n`
+        grubContent += `  set gfxmode=auto\n`
+        grubContent += `  set locale_dir=$prefix/locale\n`
+        grubContent += `  set lang=en_US\n`
+        grubContent += `fi\n`
+        grubContent += `terminal_output gfxterm\n`
+        grubContent += `\n`
+        grubContent += `set menu_color_normal=white/black\n`
+        grubContent += `set menu_color_highlight=black/light-gray\n`
+        grubContent += `if background_color 44,0,30; then\n`
+        grubContent += `  clear\n`
+        grubContent += `fi\n`
+        grubContent += `\n`
+        grubContent += `function gfxmode {\n`
+        grubContent += `\n`
+        grubContent += `  set gfxpayload="${1}"\n`
+        grubContent += `  if [ "${1}" = "keep" ]; then\n`
+        grubContent += `    set vt_handoff=vt.handoff=7\n`
+        grubContent += `  else\n`
+        grubContent += `    set vt_handoff=\n`
+        grubContent += `  fi\n`
+        grubContent += `}\n`
+        grubContent += `set linux_gfx_mode=keep\n`
+        grubContent += `\n`
+        grubContent += `export linux_gfx_mode\n`
+        grubContent += `\n`
+
+        grubContent += `if loadfont $prefix/font.pf2 ; then\n`
+        grubContent += `  set gfxmode=640x480\n`
+        grubContent += `  insmod efi_gop\n`
+        grubContent += `  insmod efi_uga\n`
+        grubContent += `  insmod video_bochs\n`
+        grubContent += `  insmod video_cirrus\n`
+        grubContent += `  insmod gfxterm\n`
+        grubContent += `  insmod jpeg\n`
+        grubContent += `  insmod png\n`
+        grubContent += `  terminal_output gfxterm\n`
+        grubContent += `fi\n`
+        grubContent += `set theme=/grub/theme.cfg\n`
+
+        grubContent += `menuentry '${this.bootLabel}' {\n`
+        grubContent += `  gfxmode $linux_gfx_mode\n`
+        // grubContent += `  linux http://${Utils.address()}/live/${this.vmlinuz}\n`
+        // grubContent += `  initrd http://${Utils.address()}/live/${this.initrd} boot=live config noswap noprompt fetch=http://${Utils.address()}/live/filesystem.squashfs\n`
+        grubContent += `  linux (http) ${Utils.address()}/live/${this.vmlinuz}\n`
+        grubContent += `  initrd (http) ${Utils.address()}/live/${this.initrd}\n`
+        // grubContent += `  append boot=live config noswap noprompt fetch=http://${Utils.address()}/live/filesystem.squashfs\n`
+
+        grubContent += `}\n`
+        let grubFile = `${this.pxeRoot}grub/grub.cfg`
+        fs.writeFileSync(grubFile, grubContent)
+
+    }
+
+
+    /**
+     * 
+     */
+    configurePxelinux() {
+        let content = ``
+        content += `# eggs: pxelinux.cfg/default\n`
+        content += `# search path for the c32 support libraries (libcom32, libutil etc.)\n`
+        content += `path\n`
+        content += `include isolinux.theme.cfg\n`
+        content += `UI vesamenu.c32\n`
+        content += `\n`
+        content += `menu title Penguin's eggs - Perri's brewery edition - ${Utils.address()}\n`
+        content += `PROMPT 0\n`
+        content += `TIMEOUT 0\n`
+        content += `\n`
+
+        content += `LABEL http\n`
+        content += `MENU LABEL ${this.bootLabel}\n`
+        content += `MENU DEFAULT\n`
+        content += `KERNEL http://${Utils.address()}/live/${this.vmlinuz}\n`
+        content += `APPEND initrd=http://${Utils.address()}/live/${this.initrd} boot=live config noswap noprompt fetch=http://${Utils.address()}/live/filesystem.squashfs\n`
+        content += `SYSAPPEND 3\n`
+        content += `\n`
+
+        if (this.isos.length > 0) {
+            content += `MENU SEPARATOR\n`
+            for (const iso of this.isos) {
+                content += `\n`
+                content += `LABEL isos\n`
+                content += `MENU LABEL memdisk ${iso}\n`
+                content += `KERNEL memdisk\n`
+                content += `APPEND iso initrd=http://${Utils.address()}/${iso}\n`
+            }
+        }
+        let file = `${this.pxeRoot}/pxelinux.cfg/default`
+        fs.writeFileSync(file, content)
     }
 
     /**
