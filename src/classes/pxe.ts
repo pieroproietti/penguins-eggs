@@ -180,8 +180,12 @@ export default class Pxe {
       
         grubContent += `menuentry '${this.bootLabel}' {\n`
         grubContent += `  gfxmode $linux_gfx_mode\n`
-        grubContent += `  linux http://${Utils.address()}/live/${this.vmlinuz}\n`
-        grubContent += `  initrd http://${Utils.address()}/live/${this.initrd} boot=live config noswap noprompt fetch=http://${Utils.address()}/live/filesystem.squashfs\n`
+        // grubContent += `  linux http://${Utils.address()}/live/${this.vmlinuz}\n`
+        // grubContent += `  initrd http://${Utils.address()}/live/${this.initrd} boot=live config noswap noprompt fetch=http://${Utils.address()}/live/filesystem.squashfs\n`
+        grubContent += `  linux (http) ${Utils.address()}/live/${this.vmlinuz}\n`
+        grubContent += `  initrd (http) ${Utils.address()}/live/${this.initrd}\n`
+        // grubContent += `  append boot=live config noswap noprompt fetch=http://${Utils.address()}/live/filesystem.squashfs\n`
+
         grubContent += `}\n`
         let grubFile = `${this.pxeRoot}grub/grub.cfg`
         fs.writeFileSync(grubFile, grubContent)
