@@ -162,15 +162,15 @@ export default class Pxe {
         grubContent += `\n`
 
         grubContent += `if loadfont $prefix/font.pf2 ; then\n`
-        grubContent += `set gfxmode=640x480\n`
-        grubContent += `insmod efi_gop\n`
-        grubContent += `insmod efi_uga\n`
-        grubContent += `insmod video_bochs\n`
-        grubContent += `insmod video_cirrus\n`
-        grubContent += `insmod gfxterm\n`
-        grubContent += `insmod jpeg\n`
-        grubContent += `insmod png\n`
-        grubContent += `terminal_output gfxterm\n`
+        grubContent += `  set gfxmode=640x480\n`
+        grubContent += `  insmod efi_gop\n`
+        grubContent += `  insmod efi_uga\n`
+        grubContent += `  insmod video_bochs\n`
+        grubContent += `  insmod video_cirrus\n`
+        grubContent += `  insmod gfxterm\n`
+        grubContent += `  insmod jpeg\n`
+        grubContent += `  insmod png\n`
+        grubContent += `  terminal_output gfxterm\n`
         grubContent += `fi\n`
         grubContent += `set theme=/boot/grub/theme.cfg\n`
       
@@ -264,7 +264,6 @@ export default class Pxe {
 
         let domain = `penguins-eggs.lan`
         let n = new Netmask(`${Utils.address()}/${Utils.netmask()}`)
-        console.log(n)
 
         let content = ``
         content += `# cuckoo.conf\n`
