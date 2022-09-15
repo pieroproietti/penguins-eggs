@@ -180,12 +180,7 @@ export default class Pxe {
         grubContent += `  initrd http://${Utils.address()}/live/${this.initrd} boot=live config noswap noprompt fetch=http://${Utils.address()}/live/filesystem.squashfs\n`
         grubContent += `}\n`
 
-        // look in /grub/grub.cfg or /grub/x86_64-efi/grub.cfg 
-        // let grubFile = `${this.pxeRoot}grub.cfg`
-        // fs.writeFileSync(grubFile, grubContent)
-        // grubFile = `${this.pxeRoot}grub/grub.cfg`
-        // fs.writeFileSync(grubFile, grubContent)
-        let grubFile = `${this.pxeRoot}grub/x86_64-efi/grub.cfg`
+        let grubFile = `${this.pxeRoot}grub/grub.cfg`
         fs.writeFileSync(grubFile, grubContent)
 
         // isolinux.theme.cfg, splash.png MUST to be on root
@@ -269,6 +264,7 @@ export default class Pxe {
 
         let domain = `penguins-eggs.lan`
         let n = new Netmask(`${Utils.address()}/${Utils.netmask()}`)
+        console.log(n)
 
         let content = ``
         content += `# cuckoo.conf\n`
@@ -306,7 +302,7 @@ export default class Pxe {
         if (full) {
             content += `dhcp-range=${await Utils.iface()},${n.first},${n.last},${n.mask},8h\n`
         } else {
-            content += `dhcp-range=${await Utils.iface()},${Utils.address()},proxy,${n.mask},${Utils.broadcast()} # dhcp proxy\n`
+            content += `dhcp-range=${await Utils.iface()},${n.base},proxy,${n.mask},${Utils.broadcast()} # dhcp proxy\n`
         }
 
         let file = '/etc/dnsmasq.d/cuckoo.conf'
