@@ -308,11 +308,11 @@ cuckoo start a PXE boot server serving the live image
 
 ```
 USAGE
-  $ eggs cuckoo [-f] [-h] [-v]
+  $ eggs cuckoo [-r] [-h] [-v]
 
 FLAGS
-  -f, --full
   -h, --help     Show CLI help.
+  -r, --real     start a real dhcp server
   -v, --verbose  verbose
 
 DESCRIPTION
