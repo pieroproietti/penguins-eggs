@@ -116,18 +116,20 @@ export default class Pxe {
         await this.tryCatch(`ln -s ${this.isoRoot}live ${this.pxeRoot}/live`)
         await this.tryCatch(`ln -s ${this.isoRoot}.disk ${this.pxeRoot}/.disk`)
 
+
+        await this.tryCatch(`mkdir ${this.pxeRoot}/grub`)
+        if (fs.existsSync('/usr/share/grub/unicode.pf2')) {
+            await this.tryCatch(`ln -s /usr/share/grub/unicode.pf2 ${this.pxeRoot}grub/font.pf2`)
+        }
+
         // UEFI:                   /usr/lib/shim/shimx64.efi.signed
         await this.tryCatch(`ln -s /usr/lib/shim/shimx64.efi.signed ${this.pxeRoot}/bootx64.efi`)
         // UEFI:                   /usr/lib/grub/x86_64-efi-signed/grubnetx64.efi.signed
         await this.tryCatch(`ln -s /usr/lib/grub/x86_64-efi-signed/grubnetx64.efi.signed ${this.pxeRoot}/grubx64.efi`)
 
-        // unicode.pf2 installed as grub/fonts/unicode.pf2
-        await this.tryCatch(`mkdir ${this.pxeRoot}grub/fonts -p`)
-        await this.tryCatch(`mkdir ${this.pxeRoot}grub/x86_64-efi -p`)
-
-        if (fs.existsSync('/usr/share/grub/unicode.pf2')) {
-            await this.tryCatch(`ln -s /usr/share/grub/unicode.pf2 ${this.pxeRoot}/grub/fonts/unicode.pf2`)
-        }
+        // Copia spash.png, theme.cfg in /grub
+        await this.tryCatch(`ln -s ${this.isoRoot}boot/grub/splash.png ${this.pxeRoot}/grub/splash.png`)
+        await this.tryCatch(`ln -s ${this.isoRoot}boot/grub/theme.cfg ${this.pxeRoot}/grub/theme.cfg`)
 
         /**
          * creating /grub/grub.cfg
@@ -174,7 +176,7 @@ export default class Pxe {
         grubContent += `  insmod png\n`
         grubContent += `  terminal_output gfxterm\n`
         grubContent += `fi\n`
-        grubContent += `set theme=/boot/grub/theme.cfg\n`
+        grubContent += `set theme=/grub/theme.cfg\n`
       
         grubContent += `menuentry '${this.bootLabel}' {\n`
         grubContent += `  gfxmode $linux_gfx_mode\n`
