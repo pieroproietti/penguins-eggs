@@ -117,11 +117,9 @@ export default class Pxe {
         await this.tryCatch(`ln -s ${this.isoRoot}.disk ${this.pxeRoot}/.disk`)
 
         // UEFI:                   /usr/lib/shim/shimx64.efi.signed
-        // await this.tryCatch(`ln -s /usr/lib/shim/shimx64.efi.signed ${this.pxeRoot}/bootx64.efi`)
-        await this.tryCatch(`cp /usr/lib/shim/shimx64.efi.signed ${this.pxeRoot}/bootx64.efi`)
+        await this.tryCatch(`ln -s /usr/lib/shim/shimx64.efi.signed ${this.pxeRoot}/bootx64.efi`)
         // UEFI:                   /usr/lib/grub/x86_64-efi-signed/grubnetx64.efi.signed
-        // await this.tryCatch(`ln -s /usr/lib/grub/x86_64-efi-signed/grubnetx64.efi.signed ${this.pxeRoot}/grubx64.efi`)
-        await this.tryCatch(`cp /usr/lib/grub/x86_64-efi-signed/grubnetx64.efi.signed ${this.pxeRoot}/grubx64.efi`)
+        await this.tryCatch(`ln -s /usr/lib/grub/x86_64-efi-signed/grubnetx64.efi.signed ${this.pxeRoot}/grubx64.efi`)
 
         // unicode.pf2 installed as grub/fonts/unicode.pf2
         await this.tryCatch(`mkdir ${this.pxeRoot}grub/fonts -p`)
@@ -131,7 +129,7 @@ export default class Pxe {
             await this.tryCatch(`ln -s /usr/share/grub/unicode.pf2 ${this.pxeRoot}/grub/fonts/unicode.pf2`)
         }
 
-        // creating grub/grub.cfg
+        // creating /grub.cfg, /grub/grub.cfg and /grub/x86_64-efi/grub.cfg
         let grubContent = ''
         grubContent += `set default="0"\n`
         grubContent += `set timeout=-1\n`
@@ -183,11 +181,11 @@ export default class Pxe {
         grubContent += `}\n`
 
         // look in /grub/grub.cfg or /grub/x86_64-efi/grub.cfg 
-        let grubFile = `${this.pxeRoot}grub.cfg`
-        fs.writeFileSync(grubFile, grubContent)
-        grubFile = `${this.pxeRoot}grub/grub.cfg`
-        fs.writeFileSync(grubFile, grubContent)
-        grubFile = `${this.pxeRoot}grub/x86_64-efi/grub.cfg`
+        // let grubFile = `${this.pxeRoot}grub.cfg`
+        // fs.writeFileSync(grubFile, grubContent)
+        // grubFile = `${this.pxeRoot}grub/grub.cfg`
+        // fs.writeFileSync(grubFile, grubContent)
+        let grubFile = `${this.pxeRoot}grub/x86_64-efi/grub.cfg`
         fs.writeFileSync(grubFile, grubContent)
 
         // isolinux.theme.cfg, splash.png MUST to be on root
