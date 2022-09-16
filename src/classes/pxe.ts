@@ -248,10 +248,8 @@ export default class Pxe {
            
             grubContent += `menuentry '${this.bootLabel}' {\n`
             grubContent += `  gfxmode $linux_gfx_mode\n`
-            // grubContent += `  set gfxpayload=keep\n`
-            grubContent += `  linuxefi vmlinuz  boot=live config noswap noprompt fetch=http://${Utils.address()}/live/filesystem.squashfs quiet splash\n`
-            grubContent += `  initrdefi initrd \n`
-            grubContent += `  SYSAPPEND 3\n`
+            grubContent += `  linuxefi vmlinuz boot=live config noswap noprompt fetch=http://${Utils.address()}/live/filesystem.squashfs quiet splash sysappend 0x40000\n`
+            grubContent += `  initrdefi initrd\n`
     
             grubContent += `}\n`
             let grubFile = `${this.pxeRoot}grub/grub.cfg`
