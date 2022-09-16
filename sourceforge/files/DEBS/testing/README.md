@@ -26,10 +26,11 @@ The cuckoo lays its eggs in the nests of other birds, and the eggs are hatched b
 
 This is the first implementation of cuckoo, based on dnsmasq. I would have liked to implement it interament in node, so far it has not been possible.
 
-Given the need to install the dnsmaq and pxelinux packages cuckoo is currently only available for Debian/Devuan/Ubuntu. I plan to externalize its compatibility to manjaro and Arch distributions soon.
+Given the need to install the dnsmaq and pxelinux packages cuckoo is currently only available for Debian/Devuan/Ubuntu. I plan to extend its compatibility to manjaro and Arch distributions soon.
+
+cuckoo since version eggs-9.2.5 september 2022, is capable to boot BIOS and UEFI machines, however due to a bug in [slim](https://github.com/rhboot/shim/issues/165) package, using ```sudo eggs cuckoo``` in dhcp-proxy version will not get the machines to boot. Instead, use: sudo eggs cuckoo --real.
 
 # TO DO
 
-* add UEFI capabilities
 * add Arch and manjaro compatibility
 
