@@ -45,7 +45,7 @@ You can read more on the [blog](https://penguins-eggs.net/2021/11/02/distros-tha
 
 # Features
 
-## cuckoo
+## cuckoo (PXE server)
 The cuckoo lays its eggs in the nests of other birds, and the eggs are hatched by the latter. Similarly eggs can start a self-configuring PXE service to allow you to boot and install your iso on third party networked computers. Command cuckoo can be used either to deploy a newly created iso on an installed system or by live booting the iso itself. 
 
 ## backup/clone

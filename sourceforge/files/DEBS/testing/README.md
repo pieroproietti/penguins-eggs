@@ -24,11 +24,14 @@ You can partecipate to discussion joining on [telegram channel](https://t.me/pen
 
 The cuckoo lays its eggs in the nests of other birds, and the eggs are hatched by the latter. Similarly eggs can start a self-configuring PXE service to allow you to boot and install your iso on third party networked computers. Command cuckoo can be used either to deploy a newly created iso on an installed system or by live booting the iso itself. 
 
+```cuckoo``` since version **eggs-9.2.5**, 16 on **september 2022**, is capable to boot BIOS and UEFI machines via PXE on the LAN, however due to a bug in slim package, using sudo eggs cuckoo in dhcp-proxy version will not get UEFI machines to boot. Instead, use: sudo eggs cuckoo --real. 
+
+__Warning__: using ``eggs cuckpp --real`` adds additional dhcp to the network, this may lead to problems or be prohibited by your organization,
+
 This is the first implementation of cuckoo, based on dnsmasq. I would have liked to implement it interament in node, so far it has not been possible.
 
 Given the need to install the dnsmaq and pxelinux packages cuckoo is currently only available for Debian/Devuan/Ubuntu. I plan to extend its compatibility to manjaro and Arch distributions soon.
 
-cuckoo since version eggs-9.2.5 september 2022, is capable to boot BIOS and UEFI machines, however due to a bug in [slim](https://github.com/rhboot/shim/issues/165) package, using ```sudo eggs cuckoo``` in dhcp-proxy version will not get the machines to boot. Instead, use: ```sudo eggs cuckoo --real```.
 
 # TO DO
 
