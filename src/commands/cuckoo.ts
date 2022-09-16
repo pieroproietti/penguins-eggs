@@ -25,7 +25,7 @@ export default class Cuckoo extends Command {
   static description = 'cuckoo start a PXE boot server serving the live image'
 
   static flags = {
-    full: Flags.boolean({ char: 'f' }),
+    real: Flags.boolean({ char: 'r' , description: 'start a real dhcp server' }),
     help: Flags.help({ char: 'h' }),
     verbose: Flags.boolean({ char: 'v', description: 'verbose' })
   }
@@ -39,7 +39,7 @@ export default class Cuckoo extends Command {
     let verbose = flags.verbose
     const echo = Utils.setEcho(verbose)
 
-    let full = flags.full
+    let real = flags.real
 
     const distro = new Distro()
     if (distro.familyId === 'debian') {
@@ -58,8 +58,9 @@ export default class Cuckoo extends Command {
         }
         const pxe = new Pxe()
         await pxe.fertilization()
-        await pxe.structure()
-        await pxe.dnsMasq(full)
+        await pxe.build()
+        let dnsmasq = true
+        await pxe.dhcp(real, dnsmasq)
         await pxe.httpStart()
 
         console.log(`Serving PXE boot, read more at: http://${Utils.address()}`)

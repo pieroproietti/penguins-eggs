@@ -45,8 +45,8 @@ You can read more on the [blog](https://penguins-eggs.net/2021/11/02/distros-tha
 
 # Features
 
-## helper: mom and dad
-I've added two lightweight assistants integrated with eggs: mom and dad. While mom is a bash script with whiptail - and guides the user to the various commands and documentation, dad started as a short way to create isos. All you have to do is type **sudo eggs dad** and follow simple instructions. You can also shortcut the way to reset the configuration **sudo dad -c** or - even faster - reset the configuration, load defaults, kill created isos: simply type **sudo eggs dad -d** and you will immediately be able to produce the egg in the default /home/eggs nest.
+## cuckoo
+The cuckoo lays its eggs in the nests of other birds, and the eggs are hatched by the latter. Similarly eggs can start a self-configuring PXE service to allow you to boot and install your iso on third party networked computers. Command cuckoo can be used either to deploy a newly created iso on an installed system or by live booting the iso itself. 
 
 ## backup/clone
 
@@ -56,21 +56,21 @@ We have two methods to save in the live system all our data: clone and backup.
 
 ```eggs produces --fast --backup``` saves our data within the generated iso using a LUKS volume. Our data will NOT be visible in the live system but can be reinstalled automatically with krill installer. Even having the generated image available, our data will be protected by the LUKS passphrase.
 
-* ```eggs produce``` just users accounts and homes.
+* ```eggs produce``` this is the default: all private data are removed on the live.
 * ```eggs produce --clone``` include all users data UNCRYPTED directly on the live.
 * ```eggs produce --backup``` include all users data CRYPTED on a LUKS volume inside the iso.
 
-**NOTE:** 
-Using ```sudo eggs install``` will automaticaly restore your CRYPTED backup automatically. Of course the original passphrase will be request.
-
-## cuckoo
-The cuckoo lays its eggs in the nests of other birds, and the eggs are hatched by the latter. Similarly eggs can start a self-configuring PXE service to allow you to boot and install your iso on third party networked computers. Command cuckoo can be used either to deploy a newly created iso on an installed system or by live booting the iso itself. 
+Using ```sudo eggs install --cli``` will automaticaly restore your CRYPTED backup automatically during the installation.
 
 ## yolk 
 yolk - so called staying on the subject of eggs - is a local repository included in the livecd that contains a minimum of indispensable packages during installation. Thanks to yolk, you can safely install your system without the need of an active internet connection. Yolk, It is used only for Debian families and derivated.
 
-## krill installer
-eggs include a CLI installer named krill, this let you to produce and install servers configurations. krill use a nice TUI interface using the same, configuration created by eggs for [calamares](calamares.io). This lead to have "about the same" experience installing, from old distros to new ones and for GUI and CLI. It's possible with krill to do unattended installations, simply add ```--unattended``` flag and the values in ```/etc/penguins-eggs.d/krill.yaml``` will be used for installation.
+## GUI calamares or TUI krill installer
+eggs include a TUI installer named krill, this let you to produce and install servers configurations. krill use a nice TUI interface using the same, configuration created by eggs for [calamares](calamares.io). This lead to have "about the same" experience installing, from old distros to new ones and for GUI and CLI. It's possible with krill to do unattended installations, simply add ```--unattended``` flag and the values in ```/etc/penguins-eggs.d/krill.yaml``` will be used for installation.
+
+## helper: mom and dad
+I've added two lightweight assistants integrated with eggs: mom and dad. While mom is a bash script with whiptail - and guides the user to the various commands and documentation, dad started as a short way to create isos. All you have to do is type **sudo eggs dad** and follow simple instructions. You can also shortcut the way to reset the configuration **sudo dad -c** or - even faster - reset the configuration, load defaults, kill created isos: simply type **sudo eggs dad -d** and you will immediately be able to produce the egg in the default /home/eggs nest.
+
 
 ## addons and themes
 Addons are used mostly to let third parties to develop extensions. Note that currently we have an extension for the theme that includes both branding calamares, link and installer icon. In addition, also as an addon has been developed choose between GUI or CLI installation, adapt the video resolution, link to remote support, etc.
@@ -197,7 +197,7 @@ DESCRIPTION
   adapt monitor resolution for VM only
 ```
 
-_See code: [src/commands/adapt.ts](https://github.com/pieroproietti/penguins-eggs/blob/v9.2.4/src/commands/adapt.ts)_
+_See code: [src/commands/adapt.ts](https://github.com/pieroproietti/penguins-eggs/blob/v9.2.5/src/commands/adapt.ts)_
 
 ## `eggs analyze`
 
@@ -218,7 +218,7 @@ EXAMPLES
   $ sudo eggs analyze
 ```
 
-_See code: [src/commands/analyze.ts](https://github.com/pieroproietti/penguins-eggs/blob/v9.2.4/src/commands/analyze.ts)_
+_See code: [src/commands/analyze.ts](https://github.com/pieroproietti/penguins-eggs/blob/v9.2.5/src/commands/analyze.ts)_
 
 ## `eggs autocomplete [SHELL]`
 
@@ -276,7 +276,7 @@ EXAMPLES
   install calamares and create it's configuration's files
 ```
 
-_See code: [src/commands/calamares.ts](https://github.com/pieroproietti/penguins-eggs/blob/v9.2.4/src/commands/calamares.ts)_
+_See code: [src/commands/calamares.ts](https://github.com/pieroproietti/penguins-eggs/blob/v9.2.5/src/commands/calamares.ts)_
 
 ## `eggs config`
 
@@ -300,7 +300,7 @@ EXAMPLES
   Configure and install prerequisites deb packages to run it
 ```
 
-_See code: [src/commands/config.ts](https://github.com/pieroproietti/penguins-eggs/blob/v9.2.4/src/commands/config.ts)_
+_See code: [src/commands/config.ts](https://github.com/pieroproietti/penguins-eggs/blob/v9.2.5/src/commands/config.ts)_
 
 ## `eggs cuckoo`
 
@@ -308,11 +308,11 @@ cuckoo start a PXE boot server serving the live image
 
 ```
 USAGE
-  $ eggs cuckoo [-f] [-h] [-v]
+  $ eggs cuckoo [-r] [-h] [-v]
 
 FLAGS
-  -f, --full
   -h, --help     Show CLI help.
+  -r, --real     start a real dhcp server
   -v, --verbose  verbose
 
 DESCRIPTION
@@ -323,7 +323,7 @@ EXAMPLES
   start a PXE boot server
 ```
 
-_See code: [src/commands/cuckoo.ts](https://github.com/pieroproietti/penguins-eggs/blob/v9.2.4/src/commands/cuckoo.ts)_
+_See code: [src/commands/cuckoo.ts](https://github.com/pieroproietti/penguins-eggs/blob/v9.2.5/src/commands/cuckoo.ts)_
 
 ## `eggs dad`
 
@@ -343,7 +343,7 @@ DESCRIPTION
   ask help from daddy - configuration helper
 ```
 
-_See code: [src/commands/dad.ts](https://github.com/pieroproietti/penguins-eggs/blob/v9.2.4/src/commands/dad.ts)_
+_See code: [src/commands/dad.ts](https://github.com/pieroproietti/penguins-eggs/blob/v9.2.5/src/commands/dad.ts)_
 
 ## `eggs export deb`
 
@@ -441,7 +441,7 @@ EXAMPLES
   Install the system using krill installer
 ```
 
-_See code: [src/commands/install.ts](https://github.com/pieroproietti/penguins-eggs/blob/v9.2.4/src/commands/install.ts)_
+_See code: [src/commands/install.ts](https://github.com/pieroproietti/penguins-eggs/blob/v9.2.5/src/commands/install.ts)_
 
 ## `eggs kill`
 
@@ -463,7 +463,7 @@ EXAMPLES
   kill the eggs/free the nest
 ```
 
-_See code: [src/commands/kill.ts](https://github.com/pieroproietti/penguins-eggs/blob/v9.2.4/src/commands/kill.ts)_
+_See code: [src/commands/kill.ts](https://github.com/pieroproietti/penguins-eggs/blob/v9.2.5/src/commands/kill.ts)_
 
 ## `eggs mom`
 
@@ -480,7 +480,7 @@ DESCRIPTION
   ask for mommy - gui helper
 ```
 
-_See code: [src/commands/mom.ts](https://github.com/pieroproietti/penguins-eggs/blob/v9.2.4/src/commands/mom.ts)_
+_See code: [src/commands/mom.ts](https://github.com/pieroproietti/penguins-eggs/blob/v9.2.5/src/commands/mom.ts)_
 
 ## `eggs produce`
 
@@ -542,7 +542,7 @@ EXAMPLES
   in /home/eggs/ovarium and you can customize all you need
 ```
 
-_See code: [src/commands/produce.ts](https://github.com/pieroproietti/penguins-eggs/blob/v9.2.4/src/commands/produce.ts)_
+_See code: [src/commands/produce.ts](https://github.com/pieroproietti/penguins-eggs/blob/v9.2.5/src/commands/produce.ts)_
 
 ## `eggs status`
 
@@ -560,7 +560,7 @@ DESCRIPTION
   informations about eggs status
 ```
 
-_See code: [src/commands/status.ts](https://github.com/pieroproietti/penguins-eggs/blob/v9.2.4/src/commands/status.ts)_
+_See code: [src/commands/status.ts](https://github.com/pieroproietti/penguins-eggs/blob/v9.2.5/src/commands/status.ts)_
 
 ## `eggs syncfrom`
 
@@ -584,7 +584,7 @@ EXAMPLES
   $ sudo eggs restore
 ```
 
-_See code: [src/commands/syncfrom.ts](https://github.com/pieroproietti/penguins-eggs/blob/v9.2.4/src/commands/syncfrom.ts)_
+_See code: [src/commands/syncfrom.ts](https://github.com/pieroproietti/penguins-eggs/blob/v9.2.5/src/commands/syncfrom.ts)_
 
 ## `eggs syncto`
 
@@ -607,7 +607,7 @@ EXAMPLES
   $ sudo eggs syncto
 ```
 
-_See code: [src/commands/syncto.ts](https://github.com/pieroproietti/penguins-eggs/blob/v9.2.4/src/commands/syncto.ts)_
+_See code: [src/commands/syncto.ts](https://github.com/pieroproietti/penguins-eggs/blob/v9.2.5/src/commands/syncto.ts)_
 
 ## `eggs tools clean`
 
@@ -702,7 +702,7 @@ EXAMPLES
   update/upgrade the penguin's eggs tool
 ```
 
-_See code: [src/commands/update.ts](https://github.com/pieroproietti/penguins-eggs/blob/v9.2.4/src/commands/update.ts)_
+_See code: [src/commands/update.ts](https://github.com/pieroproietti/penguins-eggs/blob/v9.2.5/src/commands/update.ts)_
 
 ## `eggs version`
 
