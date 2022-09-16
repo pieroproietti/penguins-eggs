@@ -314,7 +314,12 @@ export default class Pxe {
      * @param real 
      */
     private async dnsmasq(real = false) {
-        await exec(`systemctl stop dnsmasq.service`)
+
+        if (Utils.isSystemd()) {
+            await exec(`systemctl stop dnsmasq.service`)
+        } else {
+            await exec(`service dnsmasq stop`)
+        }
 
         let domain = `penguins-eggs.lan`
         let n = new Netmask(`${Utils.address()}/${Utils.netmask()}`)
@@ -362,7 +367,11 @@ export default class Pxe {
         fs.writeFileSync(file, content)
 
         // console.log(content)
-        await exec(`systemctl start dnsmasq.service`)
+        if (Utils.isSystemd()) {
+            await exec(`systemctl start dnsmasq.service`)
+        } else {
+            await exec(`service dnsmasq start`)
+        }
     }
 
     /**
