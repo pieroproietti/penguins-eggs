@@ -28,9 +28,10 @@ This is the first implementation of cuckoo, based on dnsmasq. I would have liked
 
 Given the need to install the dnsmaq and pxelinux packages cuckoo is currently only available for Debian/Devuan/Ubuntu. I plan to extend its compatibility to manjaro and Arch distributions soon.
 
-cuckoo since version eggs-9.2.5 september 2022, is capable to boot BIOS and UEFI machines, however due to a bug in [slim](https://github.com/rhboot/shim/issues/165) package, using ```sudo eggs cuckoo``` in dhcp-proxy version will not get the machines to boot. Instead, use: sudo eggs cuckoo --real.
+cuckoo since version eggs-9.2.5 september 2022, is capable to boot BIOS and UEFI machines, however due to a bug in [slim](https://github.com/rhboot/shim/issues/165) package, using ```sudo eggs cuckoo``` in dhcp-proxy version will not get the machines to boot. Instead, use: ```sudo eggs cuckoo --real```.
 
 # TO DO
 
-* add Arch and manjaro compatibility
+* minor cleaning;
+* add Arch and manjaro compatibility.
 
