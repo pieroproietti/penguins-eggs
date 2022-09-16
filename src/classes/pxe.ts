@@ -110,9 +110,11 @@ export default class Pxe {
         await this.tryCatch(`mkdir ${this.pxeRoot} -p`)
         await this.tryCatch(`ln -s ${this.isoRoot}live ${this.pxeRoot}/live`)
         await this.tryCatch(`ln -s ${this.isoRoot}.disk ${this.pxeRoot}/.disk`)
-        await this.tryCatch(`ln -s ${this.isoRoot}live/${this.vmlinuz} ${this.pxeRoot}/vmlinuz`)
+
+        // Qua copio vmlinuz e initrd per renderli scrivibili
+        await this.tryCatch(`cp ${this.isoRoot}live/${this.vmlinuz} ${this.pxeRoot}/vmlinuz`)
         await this.tryCatch(`chmod 777 ${this.pxeRoot}/vmlinuz`)
-        await this.tryCatch(`ln -s ${this.isoRoot}live/${this.initrd} ${this.pxeRoot}/initrd`)
+        await this.tryCatch(`cp ${this.isoRoot}live/${this.initrd} ${this.pxeRoot}/initrd`)
         await this.tryCatch(`chmod 777 ${this.pxeRoot}/initrd`)
 
         // link iso images in pxe
