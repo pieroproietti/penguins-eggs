@@ -58,8 +58,9 @@ export default class Cuckoo extends Command {
         }
         const pxe = new Pxe()
         await pxe.fertilization()
-        await pxe.structure()
-        await pxe.dnsMasq(real)
+        await pxe.build()
+        let dnsmasq = true
+        await pxe.dhcp(real, dnsmasq)
         await pxe.httpStart()
 
         console.log(`Serving PXE boot, read more at: http://${Utils.address()}`)
