@@ -163,8 +163,14 @@ export default class Pxe {
         content += `LABEL http\n`
         content += `MENU LABEL ${this.bootLabel}\n`
         content += `MENU DEFAULT\n`
-        content += `KERNEL http://${Utils.address()}/live/${this.vmlinuz}\n`
-        content += `APPEND initrd=http://${Utils.address()}/live/${this.initrd} boot=live config noswap noprompt fetch=http://${Utils.address()}/live/filesystem.squashfs\n`
+        let clid = this.settings.distro.codenameLikeId
+        if ( clid === 'bionic' || clid === 'stretch' || clid === 'jessie') {
+            content += `KERNEL vmlinuz\n`
+            content += `APPEND initrd=initrd boot=live config noswap noprompt fetch=http://${Utils.address()}/live/filesystem.squashfs\n`
+        } else {
+            content += `KERNEL http://${Utils.address()}/vmlinuz\n`
+            content += `APPEND initrd=http://${Utils.address()}/initrd boot=live config noswap noprompt fetch=http://${Utils.address()}/live/filesystem.squashfs\n`
+        }
         content += `SYSAPPEND 3\n`
         content += `\n`
 
