@@ -15,13 +15,23 @@ penguins-eggs
 
 All ISOs are based on Arch, Debian, Devuan, Linuxmin, manjaro and Ubuntu.
 
-You can install them booting from an usb key -  using Ventoy is a great opportunity - or via PXE, booting from LAN.
+You can boot this live images burning them on USB key - using [Ventoy](https://www.ventoy.net/en/index.html) is a great opportunity - or via PXE, booting from LAN, just ```sudo eggs cuckoo``` or  ```sudo eggs cuckoo --real```
+
+To install the system you have:
+
+* GUI installer calamares
+* TUI installer krill
+* unattended
 
 ## user/password
 * ```live/evolution```
 * ```root/evolution```
 
-All the ISOs include eggs >= 9.2.5 installed (cuckoo)
+All the ISOs include eggs >= 9.2.5 installed
+
+I removed a lot of old images to have all the production capable to boot in traditional way or by PXE just launch: ```sudo eggs cuckoo` and boot other machine on the LAN from the network.
+
+Arch and manjaro images are at the moment excluded from cuckoo, soon I will include them.
 
 ```sudo eggs update```
 
@@ -32,9 +42,9 @@ All the ISOs include eggs >= 9.2.5 installed (cuckoo)
 
 ## Debian
 * stretch 
-* buster (old stable)
-* bullseye (stable)
-* bookworm (sid)
+* buster 
+* bullseye 
+* bookworm
 
 ## Linuxmint
 * vanessa
