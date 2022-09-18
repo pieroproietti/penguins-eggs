@@ -10,6 +10,7 @@
 import Sequence from '../krill-sequence'
 import Utils from '../../classes/utils'
 import { exec } from '../../lib/utils'
+import fs from 'fs'
 
 export default async function setKeyboard(this: Sequence) {
     /**
@@ -68,7 +69,10 @@ export default async function setKeyboard(this: Sequence) {
         content += `        MatchIsKeyboard "on"\n`
         content += `        Option "XkbLayout" "` + this.keyboardLayout + `"\n`
         content += `EndSection\n`
-        Utils.write(this.installTarget + '/etc/X11/xorg.conf.d/00-keyboard.conf', content)
+        // Not always exist /etc/X11/xorg.conf.d
+        if (fs.existsSync(`this.installTarget + '/etc/X11/xorg.conf.d`)) {
+            Utils.write(this.installTarget + '/etc/X11/xorg.conf.d/00-keyboard.conf', content)
+        }
     }
 }
 
