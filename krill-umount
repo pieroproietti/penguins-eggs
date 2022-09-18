@@ -1,7 +1,0 @@
-sudo umount -R /tmp/calamares-krill-toot
-#sudo umount /tmp/calamares-krill-root/dev/pts
-#sudo umount /tmp/calamares-krill-root/dev
-#sudo umount /tmp/calamares-krill-root/proc
-#sudo umount /tmp/calamares-krill-root/sys
-#sudo umount /tmp/calamares-krill-root/run
-#sudo umount /tmp/calamares-krill-root/
