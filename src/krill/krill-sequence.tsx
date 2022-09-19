@@ -106,7 +106,6 @@ import setTimezone from './modules/set-timezone'
 import umount from './modules/umount'
 import mkfs from './modules/mkfs'
 import hostname from './modules/hostname'
-import hosts from './modules/hosts'
 
 /**
  * hatching: installazione o cova!!!
@@ -151,8 +150,7 @@ export default class Sequence {
    public umount = umount
    public mkfs = mkfs
    public hostname = hostname
-   public hosts = hosts
-   
+      
 
    installer = {} as IInstaller
 
@@ -202,11 +200,14 @@ export default class Sequence {
 
    personalFile= ''
 
+   unattended = false
+
 
    /**
     * constructor
     */
    constructor(location: ILocation, keyboard: IKeyboard, partitions: IPartitions, users: IUsers, network: INet) {
+
 
       this.installer = installer()
       this.settings = new Settings()
@@ -252,6 +253,8 @@ export default class Sequence {
     * @returns 
     */
    async install(unattended = false, verbose = false) {
+      this.unattended = unattended
+
       this.verbose = verbose
       this.echo = Utils.setEcho(this.verbose)
       if (this.verbose) {
@@ -411,16 +414,6 @@ export default class Sequence {
          try {
             await redraw(<Install message={message} percent={percent} />)
             await this.hostname()
-         } catch (error) {
-            await Utils.pressKeyToExit(JSON.stringify(error))
-         }
-
-         // hosts
-         message = "Creating hosts "
-         percent = 0.60
-         try {
-            await redraw(<Install message={message} percent={percent} />)
-            await this.hosts()
          } catch (error) {
             await Utils.pressKeyToExit(JSON.stringify(error))
          }
@@ -595,7 +588,7 @@ export default class Sequence {
          percent = 100.0
          try {
             await redraw(<Install message={message} percent={percent} />)
-            await this.finished(unattended)
+            await this.finished()
          } catch (error) {
             await Utils.pressKeyToExit(JSON.stringify(error))
          }
@@ -622,9 +615,9 @@ export default class Sequence {
    /**
     * only show the result
     */
-   async finished(unattended = false) {
+   async finished() {
       await redraw(<Finished installationDevice={this.partitions.installationDevice} hostName={this.users.hostname} userName={this.users.name} />)
-      if (!unattended) {
+      if (!this.unattended) {
          Utils.pressKeyToExit('Press a key to reboot...')
       }
       shx.exec('reboot')

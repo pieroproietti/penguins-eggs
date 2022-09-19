@@ -424,10 +424,11 @@ command-line system installer - the egg became a penguin!
 
 ```
 USAGE
-  $ eggs install [-u] [-k] [-p] [-h] [-v]
+  $ eggs install [-u] [-i] [-k] [-p] [-h] [-v]
 
 FLAGS
   -h, --help        Show CLI help.
+  -i, --ip          add ip to hostname
   -k, --crypted     crypted CLI installation
   -p, --pve         Proxmox VE install
   -u, --unattended  unattended CLI installation
