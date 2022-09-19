@@ -36,8 +36,8 @@ export default async function partition(this: Sequence): Promise<boolean> {
     }
 
     const installMode = this.partitions.installationMode
-    let swapSize = Math.round(os.totalmem()/1024/1024) * 1024
-     
+    let swapSize = Math.round(os.totalmem()/1073741824) * 1024
+   
     if (this.partitions.userSwapChoice === 'none') {
         swapSize = 0
     } else if (this.partitions.userSwapChoice === 'small') {

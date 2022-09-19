@@ -171,7 +171,7 @@ export default class Krill {
       }
 
       if (ip) {
-        hostname += '--' + Utils.address().replaceAll('.', '-')
+        hostname = 'ip-' + Utils.address().replaceAll('.', '-')
       }
 
       oUsers = {
