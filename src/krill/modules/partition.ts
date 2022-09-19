@@ -7,13 +7,12 @@
  * https://stackoverflow.com/questions/23876782/how-do-i-split-a-typescript-class-into-multiple-files
  */
 
+import { IPartitions } from '../../interfaces/i-partitions'
 import Sequence from '../krill-sequence'
 import { exec } from '../../lib/utils'
 import Utils from '../../classes/utils'
 import shx from 'shelljs'
-
-// import React from 'react';
-// import { render, RenderOptions } from 'ink'
+import os from 'os'
 
 /**
  * 
@@ -37,8 +36,20 @@ export default async function partition(this: Sequence): Promise<boolean> {
     }
 
     const installMode = this.partitions.installationMode
+    let swapSize = Math.round(os.totalmem()/1024/1024) * 1024
+     
+    if (this.partitions.userSwapChoice === 'none') {
+        swapSize = 0
+    } else if (this.partitions.userSwapChoice === 'small') {
+
+    } else if (this.partitions.userSwapChoice === 'suspend') {
+        swapSize *= 2
+    } else if (this.partitions.userSwapChoice === 'file') {
+        swapSize = 0
+    }
 
     if (installMode === 'standard' && !this.efi) {
+
 
         /**
          * ===========================================================================================
@@ -46,8 +57,8 @@ export default async function partition(this: Sequence): Promise<boolean> {
          * ===========================================================================================
          */
         await exec(`parted --script ${installDevice} mklabel msdos`, this.echo)
-        await exec(`parted --script --align optimal ${installDevice} mkpart primary linux-swap    1MiB     8192MiB`, this.echo) //dev/sda1 swap
-        await exec(`parted --script --align optimal ${installDevice} mkpart primary ext4       8192MiB     100%`, this.echo) //dev/sda2 root
+        await exec(`parted --script --align optimal ${installDevice} mkpart primary linux-swap       1MiB    ${swapSize+1}MiB`, this.echo) //dev/sda1 swap
+        await exec(`parted --script --align optimal ${installDevice} mkpart primary ext4 ${swapSize+1}MiB                100%`, this.echo) //dev/sda2 root
         await exec(`parted ${installDevice} set 1 boot on`, this.echo)
         await exec(`parted ${installDevice} set 1 esp on`, this.echo)
 
@@ -77,9 +88,9 @@ export default async function partition(this: Sequence): Promise<boolean> {
          * ===========================================================================================
          */
         await exec(`parted --script ${installDevice} mklabel msdos`, this.echo)
-        await exec(`parted --script --align optimal ${installDevice} mkpart primary ext4          1MiB   512MiB`, this.echo) // sda1
-        await exec(`parted --script --align optimal ${installDevice} mkpart primary linux-swap  512MiB  8704MiB`, this.echo) // sda2
-        await exec(`parted --script --align optimal ${installDevice} mkpart primary ext4       8704MiB     100%`, this.echo) // sda3
+        await exec(`parted --script --align optimal ${installDevice} mkpart primary ext4         1MiB        512MiB`, this.echo) // sda1
+        await exec(`parted --script --align optimal ${installDevice} mkpart primary linux-swap 512MiB        ${swapSize+512}MiB`, this.echo) // sda2
+        await exec(`parted --script --align optimal ${installDevice} mkpart primary ext4 ${swapSize+512}MiB                100%`, this.echo) // sda3
         await exec(`parted --script ${installDevice} set 1 boot on`, this.echo) // sda1
         await exec(`parted --script ${installDevice} set 1 esp on`, this.echo) // sda1
 
@@ -138,9 +149,9 @@ export default async function partition(this: Sequence): Promise<boolean> {
          * ===========================================================================================
          */
         await exec(`parted --script ${installDevice} mklabel gpt`, this.echo)
-        await exec(`parted --script ${installDevice} mkpart efi  fat32         34s   256MiB`, this.echo) // sda1 EFI
-        await exec(`parted --script ${installDevice} mkpart swap linux-swap 768MiB  8960MiB`, this.echo) // sda2 swap
-        await exec(`parted --script ${installDevice} mkpart root ext4      8960MiB     100%`, this.echo) // sda3 root
+        await exec(`parted --script ${installDevice} mkpart efi  fat32      34s                256MiB`, this.echo) // sda1 EFI
+        await exec(`parted --script ${installDevice} mkpart swap linux-swap 256MiB ${swapSize+256}Mib`, this.echo) // sda2 swap
+        await exec(`parted --script ${installDevice} mkpart root ext4 ${swapSize+256}MiB         100%`, this.echo) // sda3 root
         await exec(`parted --script ${installDevice} set 1 boot on`, this.echo) // sda1
         await exec(`parted --script ${installDevice} set 1 esp on`, this.echo) // sda1
 
@@ -171,10 +182,10 @@ export default async function partition(this: Sequence): Promise<boolean> {
          * ===========================================================================================
          */
         await exec(`parted --script ${installDevice} mklabel gpt`, this.echo)
-        await exec(`parted --script ${installDevice} mkpart efi fat32           34s   256MiB`, this.echo) // sda1 EFI
-        await exec(`parted --script ${installDevice} mkpart boot ext4        256MiB   768MiB`, this.echo) // sda2 boot
-        await exec(`parted --script ${installDevice} mkpart swap linux-swap  768MiB  8960MiB`, this.echo) // sda3 swap
-        await exec(`parted --script ${installDevice} mkpart root ext4       8960MiB     100%`, this.echo) // sda4 root
+        await exec(`parted --script ${installDevice} mkpart efi fat32               34s               256MiB`, this.echo) // sda1 EFI
+        await exec(`parted --script ${installDevice} mkpart boot ext4             256MiB              768MiB`, this.echo) // sda2 boot
+        await exec(`parted --script ${installDevice} mkpart swap linux-swap       768MiB  ${swapSize+768}MiB`, this.echo) // sda3 swap
+        await exec(`parted --script ${installDevice} mkpart root ext4 ${swapSize+768}MiB                100%`, this.echo) // sda4 root
         await exec(`parted --script ${installDevice} set 1 boot on`, this.echo) // sda1
         await exec(`parted --script ${installDevice} set 1 esp on`, this.echo) // sda1
 

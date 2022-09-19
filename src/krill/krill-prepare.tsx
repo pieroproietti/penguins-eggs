@@ -95,7 +95,7 @@ export default class Krill {
   /**
    * @param cryped 
    */
-  async prepare(unattended = false, cryped = false, pve = false, verbose = false) {
+  async prepare(unattended = false, ip = false, cryped = false, pve = false, verbose = false) {
     /**
      * Check for disk presence
      */
@@ -170,6 +170,10 @@ export default class Krill {
         hostname = shx.exec('cat /etc/hostname').trim()
       }
 
+      if (ip) {
+        hostname += '--' + Utils.address().replaceAll('.', '-')
+      }
+
       oUsers = {
         name: this.krillConfig.name,
         fullname: this.krillConfig.fullname,
@@ -220,7 +224,7 @@ export default class Krill {
     let language = this.krillConfig.language
     if (language === '') {
       language = await this.locales.getDefault() // 'en_US.UTF-8' 
-    } 
+    }
 
     let welcomeElem: JSX.Element
     while (true) {
@@ -342,7 +346,7 @@ export default class Krill {
       driveList.push('/dev/' + element)
     })
     let installationDevice = driveList[0] // it was just /dev/sda before
-    
+
     let installationMode = this.krillConfig.installationMode
     if (installationMode === '') {
       installationMode = 'standard'
@@ -391,7 +395,7 @@ export default class Krill {
    */
   async users(): Promise<IUsers> {
 
-    let name = this.krillConfig.name 
+    let name = this.krillConfig.name
     if (name === '') {
       name = 'artisan'
     }
@@ -499,14 +503,14 @@ export default class Krill {
 
     let message = ""
     if (unattended) {
-      message = "Unattended installation will start in 30 seconds, press CTRL-C to abort!"
+      message = "Unattended installation will start in 5 seconds, press CTRL-C to abort!"
     }
 
     while (true) {
       summaryElem = <Summary name={users.name} password={users.password} rootPassword={users.rootPassword} hostname={users.hostname} region={location.region} zone={location.zone} language={location.language} keyboardModel={keyboard.keyboardModel} keyboardLayout={keyboard.keyboardLayout} installationDevice={partitions.installationDevice} message={message} />
       if (unattended) {
         redraw(summaryElem)
-        await sleep(30000)
+        await sleep(5000)
         break
       } else if (await confirm(summaryElem, "Confirm Summary datas?")) {
         break

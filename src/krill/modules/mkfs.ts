@@ -9,6 +9,7 @@
 
 import Sequence from '../krill-sequence'
 import { exec } from '../../lib/utils'
+import Utils from '../../classes/utils'
 
 /**
 * mkfs
