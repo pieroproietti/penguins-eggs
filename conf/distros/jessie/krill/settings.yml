@@ -1,8 +1,46 @@
-# Debian buster, Debian bullseye, Devuan beowulf
-# settings
+# Debian jessie, stretch
 ---
 # "local" is LIBDIR/calamares/modules with settings in SHARE/calamares/modules
-modules-search: [local, /usr/lib/calamares/modules]
+modules-search: [ local, /usr/lib/calamares/modules ]
+
+# If this is set to true, Calamares refers to itself as a "setup program"
+# rather than an "installer". Defaults to the value of dont-chroot, but
+# Calamares will complain if this is not explicitly set.
+oem-setup: false
+
+# If this is set to true, the "Cancel" button will be disabled entirely.
+# The button is also hidden from view.
+#
+# This can be useful if when e.g. Calamares is used as a post-install
+# configuration tool and you require the user to go through all the
+# configuration steps.
+#
+# Default is false, but Calamares will complain if this is not explicitly set.
+#
+# YAML: boolean.
+disable-cancel: false
+
+# If this is set to true, the "Cancel" button will be disabled once
+# you start the 'Installation', meaning there won't be a way to cancel
+# the Installation until it has finished or installation has failed.
+#
+# Default is false, but Calamares will complain if this is not explicitly set.
+#
+# YAML: boolean.
+disable-cancel-during-exec: false
+
+# If this is set to true, then once the end of the sequence has
+# been reached, the quit (done) button is clicked automatically
+# and Calamares will close. Default is false: the user will see
+# that the end of installation has been reached, and that things are ok.
+#
+#
+quit-at-end: false
+
+instances:
+- id:       cleanup
+  module:   shellprocess
+  config:   shellprocess_cleanup.conf
 
 sequence:
   # Phase 1 - prepare.
@@ -14,7 +52,7 @@ sequence:
       - locale
       - keyboard
       - partition
-      - users
+      {{createUsers}}users
       - summary
 
   # Phase 2 - install.
@@ -27,17 +65,18 @@ sequence:
       - partition
       - mount
       - unpackfs
+      # dpkg-unsafe-io
       - sources-yolk
-      {{s}}machineid
+      {{hasSystemd}}machineid
       - fstab
       - locale
       - keyboard
       - localecfg
-      - users
-      - displaymanager
+      {{createUsers}}users
+      {{hasDisplaymanager}}displaymanager 
       - networkcfg
       - hwclock
-      {{s}}services-systemd
+      {{hasSystemd}}services-systemd 
       - bootloader-config
       - grubcfg
       - bootloader
@@ -46,6 +85,7 @@ sequence:
       - plymouthcfg
       - initramfscfg
       - initramfs
+      # dpkg-unsafe-io-undo
       - removeuser
       - sources-yolk-unmount
       - cleanup
@@ -88,4 +128,3 @@ prompt-install: false
 #
 # YAML: boolean.
 dont-chroot: false
-

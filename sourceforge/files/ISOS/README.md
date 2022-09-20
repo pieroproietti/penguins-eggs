@@ -8,7 +8,7 @@ penguins-eggs
 [![npm version](https://img.shields.io/npm/v/penguins-eggs.svg)](https://npmjs.org/package/penguins-eggs)
 [![deb](https://img.shields.io/badge/deb-packages-blue)](https://sourceforge.net/projects/penguins-eggs/files/DEBS)
 [![pkgbuild](https://img.shields.io/badge/pkgbuild-packages-blue)](https://sourceforge.net/projects/penguins-eggs/files/PKGBUILD)[![iso](https://img.shields.io/badge/iso-images-cyan)](https://sourceforge.net/projects/penguins-eggs/files/ISOS)
-[![telegram](https://img.shields.io/badge/telegram-group-green)](https://t.me/penguins_eggs)
+[![telegram](https://img.shields.io/badge/telegram-group-red)](https://t.me/penguins_eggs)
 
 
 # Penguin's eggs remixes ISOs

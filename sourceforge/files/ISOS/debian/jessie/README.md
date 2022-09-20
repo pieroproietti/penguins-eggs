@@ -4,30 +4,35 @@ penguins-eggs
 ## Penguin&#39;s eggs are generated and new birds are ready to fly...
 [![sources](https://img.shields.io/badge/github-sources-cyan)](https://github.com/pieroproietti/penguins-eggs)
 [![blog](https://img.shields.io/badge/blog-penguin's%20eggs-cyan)](https://penguins-eggs.net)
-[![sources-documentation](https://img.shields.io/badge/sources-documentation-blue)](https://penguins-eggs.net/sources-documentation/index.html)
 [![guide](https://img.shields.io/badge/guide-penguin's%20eggs-cyan)](https://penguins-eggs.net/book/)
 [![npm version](https://img.shields.io/npm/v/penguins-eggs.svg)](https://npmjs.org/package/penguins-eggs)
 [![deb](https://img.shields.io/badge/deb-packages-blue)](https://sourceforge.net/projects/penguins-eggs/files/DEBS)
 [![pkgbuild](https://img.shields.io/badge/pkgbuild-packages-blue)](https://sourceforge.net/projects/penguins-eggs/files/PKGBUILD)[![iso](https://img.shields.io/badge/iso-images-cyan)](https://sourceforge.net/projects/penguins-eggs/files/ISOS)
+[![telegram](https://img.shields.io/badge/telegram-group-red)](https://t.me/penguins_eggs)
 
-# Debian remastered ISOs
+# Debian remastered isos
 
 All ISOs are based on Debian jessie
 
-# user/password
+You can boot this live images burning them on USB key - using [Ventoy](https://www.ventoy.net/en/index.html) is a great opportunity - or via PXE, booting from LAN, just ```sudo eggs cuckoo``` or  ```sudo eggs cuckoo --real```
+
+To install the system you have:
+
+* GUI installer calamares
+* TUI installer krill
+* unattended
+
+
+
+## user/password
 * ```live/evolution```
 * ```root/evolution```
 
 # Debian jessie
 
-* **naked** - just the juice, without GUI. You can start here to build your revolution! (i386 and amd64)
-* **mate** - as naked but dressed with mate. (i386 and amd64)
+* naked: just the juice, without GUI. You can start here to build your revolution!
 
-## Note on Debian 8 jessie
-On Debian 8 jessie it is not possible, due the lack of overlayfs on the original kernel 3.16.0, to use eggs. This feature: overlayfs, is available only from the kernel 3.19.x. I managed, however, to produce the iso, after installing a backported kernel (4.9.0-0.bpo.12-amd64) who suppert overlayfs.
-
-We need to update live-tools packages too to create an initrd.img capable to use overlayfs in place of the previus aufs, so I tested the live packages from stretch version, and it work.
-
+You can use eggs wardrobe to dress it!
 
 ### update kernel from ubuntu mainline
 After same temptatives with kernel 4.x.x-bpo from the same repository of jessie, I decided to try another kernel more adapt. Both, aosucas499 from [guadalinex](https://distrowatch.com/table.php?distribution=guadalinex) and Mugiwara Luffy from OpenOS-Neon telegram group suggest me to look in [ubuntu mailine](https://kernel.ubuntu.com/~kernel-ppa/mainline/linux-3.19.y.z-review/current/).

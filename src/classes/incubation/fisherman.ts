@@ -30,8 +30,8 @@ export default class Fisherman {
   verbose = false
 
   constructor(distro: IDistro, installer: IInstaller, verbose = false) {
-    this.installer = installer
     this.distro = distro
+    this.installer = installer
     this.verbose = verbose
   }
 
