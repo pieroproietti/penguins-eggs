@@ -23,6 +23,7 @@ Versions are listed on reverse order, the first is the last one. Old versions ar
 Mostly a stabilitation version, with same add:
 * eggs install --unattanded --ip, added flag --ip, put hostname as ip-x-x-x-x. Example: ip 192.168.1.2 will have hostname ip-192-168-1-12
 * swap 'small' size swap the same of RAM, swap 'suspend' size swap = 2 * RAM
+* tested on: Debian: jessie, stretch, buster, bullseye, bookwork, Ubuntu bionic, focal, jammy, Devuan chimaera.
 
 ### eggs-9.2.5
 ```cuckoo``` since version **eggs-9.2.5**, 16 on **september 2022**, is capable to boot BIOS and UEFI machines via PXE on the LAN, however due to a bug in slim package, using sudo eggs cuckoo in dhcp-proxy version will not get UEFI machines to boot. Instead, use: sudo eggs cuckoo --real. 
