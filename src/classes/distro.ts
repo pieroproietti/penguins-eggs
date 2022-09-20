@@ -150,6 +150,7 @@ class Distro implements IDistro {
         this.distroLike = 'Debian'
         this.codenameLikeId = 'jessie'
         this.liveMediumPath = '/lib/live/mount/medium/'
+        this.isCalamaresAvailable = false
 
         break
       }
@@ -159,6 +160,7 @@ class Distro implements IDistro {
         this.distroLike = 'Debian'
         this.codenameLikeId = 'stretch'
         this.liveMediumPath = '/lib/live/mount/medium/'
+        this.isCalamaresAvailable = false
 
         break
       }

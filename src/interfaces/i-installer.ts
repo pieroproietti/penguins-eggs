@@ -1,6 +1,6 @@
 /**
  * name  = 'calamares' oppure 'krill'
- * configuration = '/etc/calamares/' oppure '/etc/penguins-eggs.d/krill/'
+ * configuration = '/etc/calamares/' o '/etc/penguins-eggs.d/krill/'
  * modules = configuration + 'modules/'
  * modulesMultiarch = '/usr/lib/' + arch-linux-gnu + '/' + installer + '/'
  *

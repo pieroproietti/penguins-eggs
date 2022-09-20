@@ -7,11 +7,6 @@
  * mail: piero.proietti@gmail.com
  */
 
-import fs from 'node:fs'
-import shx from 'shelljs'
-import yaml from 'js-yaml'
-import path from 'node:path'
-
 import { IRemix, IDistro } from '../../../interfaces'
 import { IInstaller } from '../../../interfaces/i-installer'
 import Fisherman from '../fisherman'
@@ -46,7 +41,7 @@ export class Jessie {
     this.distro = distro
     this.user_opt = user_opt
     this.verbose = verbose
-    this.release = release
+    this.release = release // nel senso di --final 
   }
 
   /**
@@ -54,7 +49,7 @@ export class Jessie {
    */
   async create() {
     const fisherman = new Fisherman(this.distro, this.installer, this.verbose)
-
+    
     await fisherman.settings(this.remix.branding)
 
     await fisherman.buildModule('partition', this.remix.branding)
