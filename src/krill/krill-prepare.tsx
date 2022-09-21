@@ -95,7 +95,7 @@ export default class Krill {
   /**
    * @param cryped 
    */
-  async prepare(unattended = false, ip = false, cryped = false, pve = false, verbose = false) {
+  async prepare(unattended = false, ip = false, random = false, suspend = false, small = false, none = false, cryped = false, pve = false, verbose = false) {
     /**
      * Check for disk presence
      */
@@ -164,6 +164,13 @@ export default class Krill {
         filesystemType: this.krillConfig.filesystemType,
         userSwapChoice: this.krillConfig.userSwapChoice
       }
+      if (suspend) {
+        oPartitions.userSwapChoice = 'suspend'
+      } else if (small) {
+        oPartitions.userSwapChoice = 'small'
+      } else if (none) {
+        oPartitions.userSwapChoice = 'none'
+      }
 
       let hostname = this.krillConfig.hostname
       if (hostname === '') {
@@ -172,6 +179,13 @@ export default class Krill {
 
       if (ip) {
         hostname = 'ip-' + Utils.address().replaceAll('.', '-')
+      }
+
+      if (random) {
+        const fl = shx.exec(`tr -dc a-z </dev/urandom | head -c 2 ; echo ''`, { silent: true }).trim()
+        const n = shx.exec(`tr -dc 0-9 </dev/urandom | head -c 3 ; echo ''`, { silent: true }).trim()
+        const sl = shx.exec(`tr -dc a-z </dev/urandom | head -c 2 ; echo ''`, { silent: true }).trim()
+        hostname = `${fl}${n}${sl}`
       }
 
       oUsers = {
