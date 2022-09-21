@@ -146,7 +146,7 @@ export default class Pxe {
         await this.tryCatch(`ln ${distro.syslinuxPath}vesamenu.c32 ${this.pxeRoot}/vesamenu.c32`)
         await this.tryCatch(`ln ${distro.syslinuxPath}libcom32.c32 ${this.pxeRoot}/libcom32.c32`)
         await this.tryCatch(`ln ${distro.syslinuxPath}libutil.c32 ${this.pxeRoot}/libutil.c32`)
-        await this.tryCatch(`ln /usr/lib/syslinux/memdisk ${this.pxeRoot}/memdisk`)
+        await this.tryCatch(`ln ${distro.memdiskPath}memdisk ${this.pxeRoot}/memdisk`)
         await this.tryCatch(`mkdir ${this.pxeRoot}/pxelinux.cfg`)
 
         let content = ``

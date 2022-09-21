@@ -25,7 +25,7 @@ export default class Cuckoo extends Command {
   static description = 'cuckoo start a PXE boot server serving the live image'
 
   static flags = {
-    real: Flags.boolean({ char: 'r' , description: 'start a real dhcp server' }),
+    real: Flags.boolean({ char: 'r', description: 'start a real dhcp server' }),
     help: Flags.help({ char: 'h' }),
     verbose: Flags.boolean({ char: 'v', description: 'verbose' })
   }
@@ -42,18 +42,17 @@ export default class Cuckoo extends Command {
     let real = flags.real
 
     const distro = new Distro()
-    if (distro.familyId === 'debian') {
+    if ((distro.familyId === 'debian') || (distro.familyId === 'archlinux')) {
       if (Utils.isRoot()) {
-        if (!Pacman.packageIsInstalled('dnsmasq') ||
-          (!Pacman.packageIsInstalled("pxelinux"))) {
-          console.log('eggs cuckoo need to nstall dnsmasq and pxelinux.')
-          if (await Utils.customConfirm()) {
-            console.log('Installing dnsmasq and pxelinux... wait a moment')
-            await exec('sudo apt-get update -y', Utils.setEcho(false))
-            await exec('sudo apt-get install dnsmasq pxelinux -y', Utils.setEcho(false))
-          } else {
-            console.log('You need to install dnsmasq to start cuckoo PXE server')
-            process.exit()
+        if (distro.familyId === 'debian') {
+          if (!Pacman.packageIsInstalled('dnsmasq') ||
+            (!Pacman.packageIsInstalled("pxelinux"))) {
+            console.log('eggs cuckoo need to nstall dnsmasq and pxelinux.')
+            if (await Utils.customConfirm()) {
+              console.log('Installing dnsmasq and pxelinux... wait a moment')
+              await exec('sudo apt-get update -y', Utils.setEcho(false))
+              await exec('sudo apt-get install dnsmasq pxelinux -y', Utils.setEcho(false))
+            }
           }
         }
         const pxe = new Pxe()

@@ -55,6 +55,7 @@ class Distro implements IDistro {
   isolinuxPath: string
   syslinuxPath: string
   pxelinuxPath: string 
+  memdiskPath: string
   liveMediumPath: string
   mountpointSquashFs: string
   homeUrl: string
@@ -74,6 +75,7 @@ class Distro implements IDistro {
     this.isolinuxPath = ''
     this.syslinuxPath = ''
     this.pxelinuxPath = ''
+    this.memdiskPath  = ''
     this.liveMediumPath = `/run/live/medium/`
     this.mountpointSquashFs = ''
     this.homeUrl = ''
@@ -499,6 +501,7 @@ class Distro implements IDistro {
         this.syslinuxPath = '/usr/lib/syslinux/modules/bios/'
         this.pxelinuxPath = '/usr/lib/PXELINUX/'
         this.usrLibPath = '/usr/lib/x86_64-linux-gnu/'
+        this.memdiskPath ='/usr/lib/syslinux/'
         if (process.arch === 'ia32') {
           this.usrLibPath = '/usr/lib/i386-linux-gnu/'
         }
@@ -514,6 +517,8 @@ class Distro implements IDistro {
 
       case 'archlinux': {
         this.syslinuxPath = '/usr/lib/syslinux/bios/'
+        this.pxelinuxPath = this.syslinuxPath 
+        this.memdiskPath = this.syslinuxPath 
         this.isolinuxPath = this.syslinuxPath
 
         break
