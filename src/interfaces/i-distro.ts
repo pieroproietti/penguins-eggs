@@ -10,6 +10,7 @@ export interface IDistro {
   isolinuxPath: string
   syslinuxPath: string
   pxelinuxPath: string
+  memdiskPath: string
   liveMediumPath: string
   mountpointSquashFs: string
   homeUrl: string
