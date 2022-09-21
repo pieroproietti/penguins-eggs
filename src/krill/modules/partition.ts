@@ -39,7 +39,7 @@ export default async function partition(this: Sequence): Promise<boolean> {
     let swapSize = Math.round(os.totalmem()/1073741824) * 1024
    
     if (this.partitions.userSwapChoice === 'none') {
-        swapSize = 0
+        swapSize = 256
     } else if (this.partitions.userSwapChoice === 'small') {
 
     } else if (this.partitions.userSwapChoice === 'suspend') {

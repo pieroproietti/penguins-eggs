@@ -170,7 +170,7 @@ export default class Pxe {
             content += `APPEND initrd=initrd boot=live config noswap noprompt fetch=http://${Utils.address()}/live/filesystem.squashfs\n`
         } else {
             content += `KERNEL http://${Utils.address()}/vmlinuz\n`
-            content += `APPEND initrd=http://${Utils.address()}/initrd boot=live config noswap noprompt fetch=http://${Utils.address()}/live/filesystem.squashfs\n`
+            content += `APPEND initrd=http://${Utils.address()}/initrd boot=live config noswap noprompt fetch=http://${Utils.address()}/live/filesystem.squashfs systemd.hostname=pippo\n`
         }
         content += `SYSAPPEND 3\n`
         content += `\n`
