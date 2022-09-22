@@ -424,19 +424,20 @@ command-line system installer - the egg became a penguin!
 
 ```
 USAGE
-  $ eggs install [-u] [-i] [-r] [-S] [-S] [-n] [-k] [-p] [-h] [-v]
+  $ eggs install [-u] [-i] [-r] [-d <value>] [-S] [-s] [-n] [-k] [-p] [-h] [-v]
 
 FLAGS
-  -S, --small       small: swap size = RAM
-  -S, --suspend     suspend: swap siza = RAM x 2
-  -h, --help        Show CLI help.
-  -i, --ip          add ip to hostname
-  -k, --crypted     crypted CLI installation
-  -n, --none        nome: swap size = 256M
-  -p, --pve         Proxmox VE install
-  -r, --random      add random to hostname
-  -u, --unattended  unattended CLI installation
-  -v, --verbose     verbose
+  -S, --suspend         Swap suspend: RAM x 2
+  -d, --domain=<value>  Domain name, defult: .local
+  -h, --help            Show CLI help.
+  -i, --ip              hostname as ip, eg: ip-192-168-1-33
+  -k, --crypted         Crypted CLI installation
+  -n, --none            Swap none: 256M
+  -p, --pve             Proxmox VE install
+  -r, --random          Add random to hostname, eg: colibri-ay412dt
+  -s, --small           Swap small: RAM
+  -u, --unattended      Unattended installation
+  -v, --verbose         Verbose
 
 DESCRIPTION
   command-line system installer - the egg became a penguin!

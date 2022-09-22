@@ -76,7 +76,7 @@ import unpackfs from './modules/unpackfs'
 import machineId from './modules/machine-id'
 import fstab from './modules/fstab'
 import locale from './modules/locale'
-import setKeyboard from './modules/set-keyboard'
+import mKeyboard from './modules/m-keyboard'
 import localeCfg from './modules/locale-cfg'
 // users
 import addUser from './modules/add-user'
@@ -102,7 +102,7 @@ import delLiveUser from './modules/del-live-user'
 // umount already imported
 
 // to order in same wat
-import setTimezone from './modules/set-timezone'
+import mTimezone from './modules/m-timezone'
 import umount from './modules/umount'
 import mkfs from './modules/mkfs'
 import hostname from './modules/hostname'
@@ -120,7 +120,7 @@ export default class Sequence {
    public machineId = machineId
    public fstab = fstab
    public locale = locale
-   public setKeyboard = setKeyboard
+   public keyboard = mKeyboard
    public localeCfg = localeCfg
    // users
    public addUser = addUser
@@ -146,7 +146,7 @@ export default class Sequence {
    public umountFs = umountFs
    public umountVfs = umountVfs
    // to order in same wat
-   public setTimezone = setTimezone
+   public timezone = mTimezone
    public umount = umount
    public mkfs = mkfs
    public hostname = hostname
@@ -384,7 +384,7 @@ export default class Sequence {
          message = "settings keyboard "
          percent = 0.48
          try {
-            this.setKeyboard()
+            this.keyboard()
          } catch (error) {
             await Utils.pressKeyToExit(JSON.stringify(error))
          }

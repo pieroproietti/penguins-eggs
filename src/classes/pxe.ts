@@ -338,20 +338,14 @@ export default class Pxe {
             await exec(`service dnsmasq stop`)
         }
 
-        let domain = `ui.local`
-        const na = Utils.address()
-        const nm = Utils.netmask()
-        console.log(`address: ${na}`)
-        console.log(`netmask: ${nm}`)
-        const net = `${na}/${nm}`
+        let n = new Netmask(Utils.cidr())
 
-        let n = new Netmask(net)
         let content = ``
         content += `# cuckoo.conf\n`
         content += `port=0\n`
         content += `interface=${await Utils.iface()}\n`
         content += `bind-interfaces\n`
-        content += `domain=${domain}\n`
+        content += `domain=.local\n`
         content += `dhcp-no-override\n`
         content += `dhcp-option=option:router,${n.first}\n`
         content += `dhcp-option=option:dns-server,${n.first}\n`

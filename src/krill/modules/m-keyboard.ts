@@ -1,5 +1,5 @@
 /**
- * krill: module setKeyboard
+ * krill: module keyboard
  *
  * author: Piero Proietti
  * mail: piero.proietti@gmail.com
@@ -12,7 +12,11 @@ import Utils from '../../classes/utils'
 import { exec } from '../../lib/utils'
 import fs from 'fs'
 
-export default async function setKeyboard(this: Sequence) {
+/**
+ * 
+ * @param this 
+ */
+export default async function mKeyboard(this: Sequence): Promise<void> {
     /**
     * influence: - /etc/default/keyboard (x11)
     *            - /etc/vconsole.conf (console) 

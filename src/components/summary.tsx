@@ -69,8 +69,8 @@ export default function Summary({ name, password, rootPassword, hostname, region
                 <Text>Installing </Text><Text color="green">{productName}</Text>
               </Box>
               <Box>
-                <Text>User </Text><Text color="green">{name}</Text><Text>/</Text><Text color="green">{password} </Text>
-                <Text>root pwd </Text><Text color="green">{rootPassword} </Text>
+                <Text></Text><Text color="green">{name}</Text><Text>/</Text><Text color="green">{password} </Text>
+                <Text>pwd root </Text><Text color="green">{rootPassword} </Text>
                 <Text>hostname </Text><Text color="green">{hostname}</Text>
               </Box>
               <Box><Text>Set timezone to </Text><Text color="green">{region}/{zone}</Text></Box>
