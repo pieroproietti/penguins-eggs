@@ -16,6 +16,7 @@ import chalk from 'chalk'
 import Pacman from './pacman'
 // import { green, whiteBright } from 'chalk'
 import { ChildProcess, spawnSync } from 'child_process'
+import { Netmask } from 'netmask'
 
 // libraries
 import { exec } from '../lib/utils'
@@ -665,14 +666,45 @@ unknown target format aarch64-efi
 
    /**
     * 
-    * @returns 
+    * @returns 192.169.1.2/24
     */
+   static cidr(): string {
+      const interfaces = os.networkInterfaces()
+      let cidr = ''
+      if (interfaces !== undefined) {
+         for (const devName in interfaces) {
+            const iface = interfaces[devName]
+            if (iface !== undefined) {
+               for (const alias of iface) {
+                  if (
+                     alias.family === 'IPv4' &&
+                     alias.address !== '127.0.0.1' &&
+                     !alias.internal
+                  ) {
+                     // take just the first!
+                     if (cidr === '') {
+                        if (alias.cidr !== null) {
+                           cidr = alias.cidr
+                        }
+                     }
+                  }
+               }
+            }
+         }
+      }
+      return cidr
+   }
+
+   /**
+    * 
+    * @returns 
+   * ip a | grep -w inet |grep -v 127.0.0.1| awk '{print $4}' 
+   * ifconfig | grep -w inet |grep -v 127.0.0.1| awk '{print $6}' | cut -d ":" -f 2
+   */
    static broadcast(): string {
-      /**
-       * ip a | grep -w inet |grep -v 127.0.0.1| awk '{print $4}' 
-       * ifconfig | grep -w inet |grep -v 127.0.0.1| awk '{print $6}' | cut -d ":" -f 2
-       */
-      return shx.exec(`ip a | grep -w inet |grep -v 127.0.0.1| awk '{print $4}'`, { silent: true }).stdout.trim()
+      let n = new Netmask(Utils.cidr())
+      return n.broadcast
+      // return shx.exec(`ip a | grep -w inet |grep -v 127.0.0.1| awk '{print $4}'`, { silent: true }).stdout.trim()
    }
 
    /**

@@ -24,6 +24,7 @@
 */
 
 import yaml from 'js-yaml'
+import os from 'os'
 import { IKrillConfig } from '../interfaces/i-krill-config'
 
 import React from 'react';
@@ -95,7 +96,7 @@ export default class Krill {
   /**
    * @param cryped 
    */
-  async prepare(unattended = false, ip = false, random = false, suspend = false, small = false, none = false, cryped = false, pve = false, verbose = false) {
+  async prepare(unattended = false, ip = false, random = false, domain = '.local', suspend = false, small = false, none = false, cryped = false, pve = false, verbose = false) {
     /**
      * Check for disk presence
      */
@@ -185,7 +186,7 @@ export default class Krill {
         const fl = shx.exec(`tr -dc a-z </dev/urandom | head -c 2 ; echo ''`, { silent: true }).trim()
         const n = shx.exec(`tr -dc 0-9 </dev/urandom | head -c 3 ; echo ''`, { silent: true }).trim()
         const sl = shx.exec(`tr -dc a-z </dev/urandom | head -c 2 ; echo ''`, { silent: true }).trim()
-        hostname = `${fl}${n}${sl}`
+        hostname = `${os.hostname()}-${fl}${n}${sl}`
       }
 
       oUsers = {

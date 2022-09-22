@@ -47,7 +47,7 @@ export default async function locale(this: Sequence) {
 
     // timezone
     try {
-        await this.setTimezone()
+        await this.timezone()
     } catch (error) {
         await Utils.pressKeyToExit(JSON.stringify(error))
     }
