@@ -588,7 +588,7 @@ unknown target format aarch64-efi
    /**
     * return the name of network device
     */
-   static async  iface(): Promise <string> {
+   static async iface(): Promise<string> {
       // return shx.exec(`ifconfig | awk 'FNR==1 { print $1 }' | tr --d :`, { silent: true }).stdout.trim()
       const interfaces: any = Object.keys(os.networkInterfaces())
       let netDeviceName = ''
@@ -609,8 +609,29 @@ unknown target format aarch64-efi
        * ifconfig | grep -w inet |grep -v 127.0.0.1| awk '{print $2}' | cut -d ":" -f 2`
        * 
       */
-      return shx.exec(`ip a | grep -w inet |grep -v 127.0.0.1| awk '{print $2}' | cut -d "/" -f 1`, { silent: true }).stdout.trim()
-   }
+      const interfaces = os.networkInterfaces()
+      let retVal = ``
+      if (interfaces !== undefined) {
+         for (const devName in interfaces) {
+            const iface = interfaces[devName]
+            if (iface !== undefined) {
+               for (const alias of iface) {
+                  if (
+                     alias.family === 'IPv4' &&
+                     alias.address !== '127.0.0.1' &&
+                     !alias.internal
+                  ) {
+                     // take the first!
+                     if (retVal === `` ){
+                        retVal = alias.address
+                     }
+                  }
+               }
+            }
+         }
+         return retVal
+         //return shx.exec(`ip a | grep -w inet |grep -v 127.0.0.1| awk '{print $2}' | cut -d "/" -f 1`, { silent: true }).stdout.trim()
+      }
 
    /**
     * netmask
