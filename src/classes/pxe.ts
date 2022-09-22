@@ -78,11 +78,21 @@ export default class Pxe {
         let pathFiles = this.isoRoot + '/live'
         let files = fs.readdirSync(pathFiles)
         for (const file of files) {
-            if (path.basename(file).substring(0, 7) === 'vmlinuz') {
-                this.vmlinuz = path.basename(file)
-            }
-            if (path.basename(file).substring(0, 6) === 'initrd') {
-                this.initrd = path.basename(file)
+            if (this.settings.distro.familyId === 'debian') {
+                if (path.basename(file).substring(0, 7) === 'vmlinuz') {
+                    this.vmlinuz = path.basename(file)
+                }
+                if (path.basename(file).substring(0, 6) === 'initrd') {
+                    this.initrd = path.basename(file)
+                }
+            } else if (this.settings.distro.familyId === 'archlinux') {
+                
+                if (path.basename(file).substring(0, 7) === 'vmlinuz') {
+                    this.vmlinuz = path.basename(file)
+                }
+                if (path.basename(file) === 'initramfs-linux.img') {
+                    this.initrd = path.basename(file)
+                }
             }
         }
 
@@ -328,9 +338,14 @@ export default class Pxe {
             await exec(`service dnsmasq stop`)
         }
 
-        let domain = `penguins-eggs.lan`
-        let n = new Netmask(`${Utils.address()}/${Utils.netmask()}`)
+        let domain = `ui.local`
+        const na = Utils.address()
+        const nm = Utils.netmask()
+        console.log(`address: ${na}`)
+        console.log(`netmask: ${nm}`)
+        const net = `${na}/${nm}`
 
+        let n = new Netmask(net)
         let content = ``
         content += `# cuckoo.conf\n`
         content += `port=0\n`
