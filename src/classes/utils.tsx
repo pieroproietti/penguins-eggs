@@ -602,15 +602,13 @@ unknown target format aarch64-efi
 
    /**
     * address
+    * ip a | grep -w inet |grep -v 127.0.0.1| awk '{print $2}' | cut -d "/" -f 1
+    * ifconfig | grep -w inet |grep -v 127.0.0.1| awk '{print $2}' | cut -d ":" -f 2`
+    * 
     */
    static address(): string {
-      /**
-       * ip a | grep -w inet |grep -v 127.0.0.1| awk '{print $2}' | cut -d "/" -f 1
-       * ifconfig | grep -w inet |grep -v 127.0.0.1| awk '{print $2}' | cut -d ":" -f 2`
-       * 
-      */
       const interfaces = os.networkInterfaces()
-      let retVal = ``
+      let address = ''
       if (interfaces !== undefined) {
          for (const devName in interfaces) {
             const iface = interfaces[devName]
@@ -621,27 +619,48 @@ unknown target format aarch64-efi
                      alias.address !== '127.0.0.1' &&
                      !alias.internal
                   ) {
-                     // take the first!
-                     if (retVal === `` ){
-                        retVal = alias.address
+                     // take just the first!
+                     if (address === '') {
+                        address = alias.address
                      }
                   }
                }
             }
          }
-         return retVal
-         //return shx.exec(`ip a | grep -w inet |grep -v 127.0.0.1| awk '{print $2}' | cut -d "/" -f 1`, { silent: true }).stdout.trim()
       }
+      return address
+      //return shx.exec(`ip a | grep -w inet |grep -v 127.0.0.1| awk '{print $2}' | cut -d "/" -f 1`, { silent: true }).stdout.trim()
+   }
 
    /**
     * netmask
+    * ip a | grep -w inet |grep -v 127.0.0.1| awk '{print $2}' | cut -d "/" -f 2
+    * ifconfig | grep -w inet |grep -v 127.0.0.1| awk '{print $4}' | cut -d ":" -f 2
     */
    static netmask(): string {
-      /**
-       * ip a | grep -w inet |grep -v 127.0.0.1| awk '{print $2}' | cut -d "/" -f 2
-       * ifconfig | grep -w inet |grep -v 127.0.0.1| awk '{print $4}' | cut -d ":" -f 2
-       */
-      return shx.exec(`ip a | grep -w inet |grep -v 127.0.0.1| awk '{print $2}' | cut -d "/" -f 2`, { silent: true }).stdout.trim()
+       const interfaces = os.networkInterfaces()
+       let netmask = ''
+       if (interfaces !== undefined) {
+          for (const devName in interfaces) {
+             const iface = interfaces[devName]
+             if (iface !== undefined) {
+                for (const alias of iface) {
+                   if (
+                      alias.family === 'IPv4' &&
+                      alias.address !== '127.0.0.1' &&
+                      !alias.internal
+                   ) {
+                      // take just the first!
+                      if (netmask === '') {
+                        netmask = alias.netmask
+                      }
+                   }
+                }
+             }
+          }
+       }
+       return netmask
+       // return shx.exec(`ip a | grep -w inet |grep -v 127.0.0.1| awk '{print $2}' | cut -d "/" -f 2`, { silent: true }).stdout.trim()
    }
 
    /**
