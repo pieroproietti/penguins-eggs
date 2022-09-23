@@ -15,7 +15,7 @@ import fs from 'fs'
 /**
  * hostname
  */
-export default async function hostname(this: Sequence): Promise<void> {
+export default async function hostname(this: Sequence, domain = 'local'): Promise<void> {
 
     let hostname = this.users.hostname
 
@@ -37,7 +37,7 @@ export default async function hostname(this: Sequence): Promise<void> {
         if (this.network.addressType === 'static') {
             text += `${this.network.address} ${hostname} pvelocalhost\n`
         } else {
-            text += `127.0.1.1 ${hostname} \n`
+            text += `127.0.1.1 ${hostname}.${domain} ${hostname} \n`
         }
         text += `# The following lines are desirable for IPv6 capable hosts\n`
         text += `:: 1     ip6 - localhost ip6 - loopback\n`

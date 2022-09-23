@@ -252,7 +252,7 @@ export default class Sequence {
     * @param umount 
     * @returns 
     */
-   async install(unattended = false, verbose = false) {
+   async start(unattended = false, domain = 'local', verbose = false) {
       this.unattended = unattended
 
       this.verbose = verbose
@@ -413,7 +413,7 @@ export default class Sequence {
          percent = 0.53
          try {
             await redraw(<Install message={message} percent={percent} />)
-            await this.hostname()
+            await this.hostname(domain)
          } catch (error) {
             await Utils.pressKeyToExit(JSON.stringify(error))
          }

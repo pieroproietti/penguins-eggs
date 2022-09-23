@@ -20,7 +20,7 @@ dad --help --clean --default --verbose
 export:deb --help --clean --amd64 --i386 --armel --arm64 --all
 export:docs --help
 export:iso --help --backup --clean
-install --unattended --crypted --pve --help --verbose
+install --unattended --ip --random --domain --suspend --small --none --crypted --pve --help --verbose
 kill --help --verbose
 mom --help
 produce --prefix --basename --backup --clone --fast --normal --max --verbose --yolk --script --help --theme --addons --release

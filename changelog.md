@@ -19,6 +19,11 @@ You can follow the project also consulting the [commit history](https://github.c
 ## Changelog
 Versions are listed on reverse order, the first is the last one. Old versions are moved to [versions](https://sourceforge.net/projects/penguins-eggs/files/packages-deb/versions/). 
 
+### eggs-9.2.7
+install:
+* added flag --domain to pass domain for unattended installation, eg: ```sudo eggs install unrd penguins-eggs.net```
+* added flag --none create a minimun swap partition of 256M
+
 ### eggs-9.2.6
 Mostly a stabilitation version, with same add:
 * eggs install --unattanded --ip, added flag --ip, put hostname as ip-x-x-x-x. Example: ip 192.168.1.2 will have hostname ip-192-168-1-12
