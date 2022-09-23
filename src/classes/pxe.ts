@@ -185,6 +185,8 @@ export default class Pxe {
         content += `SYSAPPEND 3\n`
         content += `\n`
 
+        /**
+         * removed iso images
         if (this.isos.length > 0) {
             content += `MENU SEPARATOR\n`
             for (const iso of this.isos) {
@@ -195,6 +197,8 @@ export default class Pxe {
                 content += `APPEND iso initrd=http://${Utils.address()}/${iso}\n`
             }
         }
+        */
+
         let file = `${this.pxeRoot}/pxelinux.cfg/default`
         fs.writeFileSync(file, content)
     }

@@ -119,11 +119,17 @@ export:iso)
 
 install)
   _command_flags=(
-    "--unattended[unattended CLI installation]"
-"--crypted[crypted CLI installation]"
+    "--unattended[Unattended installation]"
+"--ip[hostname as ip, eg: ip-192-168-1-33]"
+"--random[Add random to hostname, eg: colibri-ay412dt]"
+"--domain=-[Domain name, defult: .local]:"
+"--suspend[Swap suspend: RAM x 2]"
+"--small[Swap small: RAM]"
+"--none[Swap none: 256M]"
+"--crypted[Crypted CLI installation]"
 "--pve[Proxmox VE install]"
 "--help[Show CLI help.]"
-"--verbose[verbose]"
+"--verbose[Verbose]"
   )
 ;;
 

@@ -96,7 +96,7 @@ export default class Krill {
   /**
    * @param cryped 
    */
-  async prepare(unattended = false, ip = false, random = false, domain = '.local', suspend = false, small = false, none = false, cryped = false, pve = false, verbose = false) {
+  async prepare(unattended = false, ip = false, random = false, domain = 'local', suspend = false, small = false, none = false, cryped = false, pve = false, verbose = false) {
     /**
      * Check for disk presence
      */
@@ -227,7 +227,7 @@ export default class Krill {
     /**
     * installation
     */
-    await this.install(oLocation, oKeyboard, oPartitions, oUsers, oNetwork, unattended, verbose)
+    await this.install(oLocation, oKeyboard, oPartitions, oUsers, oNetwork, unattended, domain, verbose) 
   }
 
 
@@ -536,9 +536,9 @@ export default class Krill {
   /**
    * INSTALL
    */
-  async install(location: ILocation, keyboard: IKeyboard, partitions: IPartitions, users: IUsers, network: INet, unattended = false, verbose = false) {
+  async install(location: ILocation, keyboard: IKeyboard, partitions: IPartitions, users: IUsers, network: INet, unattended = false, domain = 'local', verbose = false) {
     const sequence = new Sequence(location, keyboard, partitions, users, network)
-    await sequence.install(unattended, verbose)
+    await sequence.start(unattended, domain, verbose)
   }
 
   /**
