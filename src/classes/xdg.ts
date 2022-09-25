@@ -15,6 +15,7 @@ import Utils from './utils'
 import { exec } from '../lib/utils'
 import { verify } from 'node:crypto'
 import { string } from '@oclif/core/lib/flags'
+import { dir } from 'node:console'
 
 const xdg_dirs = ['DESKTOP', 'DOWNLOAD', 'TEMPLATES', 'PUBLICSHARE', 'DOCUMENTS', 'MUSIC', 'PICTURES', 'VIDEOS']
 
@@ -124,16 +125,22 @@ export default class Xdg {
           }
         }
 
-        // Se non l'ho trovato, modifico /etc/sddm.conf.d/autologin.conf
+        // Se non l'ho trovato, cerco in /etc/sddm.conf.d/
         if (!sddmChanged) {
-          const dirConf = `${chroot}/etc/sddm.conf.d`
-          const autologin = `${dirConf}/autologin.conf`
-          if (fs.existsSync(autologin)) {
-            shx.sed('-i', `User=${olduser}`, `User=${newuser}`, autologin)
-          } else {
-            const content = `[Autologin]\nUser=${newuser}\n`
-            fs.writeFileSync(autologin, content, 'utf-8')
+          const dirConf = `${chroot}/etc/sddm.conf.d/`
+          let confs = fs.readdirSync(dirConf)
+          if (confs.length > 0) {
+            for (const conf of confs) {
+              const fileConf = dirConf + conf
+              if (fs.existsSync(fileConf)) {
+                shx.sed('-i', `User=${olduser}`, `User=${newuser}`, fileConf)
+              }
+            }
           }
+          // if (!sddmChanged) {
+          // const content = `[Autologin]\nUser=${newuser}\n`
+          // fs.writeFileSync(`${chroot}/etc/sddm.conf.d/autologin.conf`, content, 'utf-8')
+          // }
         }
       }
 
