@@ -100,13 +100,15 @@ export default class Xdg {
        * LIGHTDM
        */
       if (Pacman.packageIsInstalled('lightdm')) {
-        let lightdmConf = `${chroot}/etc/lightdm/lightdm.conf`
-        let lightdmConfAutologin = `${chroot}/etc/lightdm/lightdm.conf.d/lightdm-autologin-greeter.conf`
-
-        if (fs.existsSync(lightdmConfAutologin)) {
-          shx.sed('-i', `autologin-user=${olduser}`, `autologin-user=${newuser}`, lightdmConfAutologin)
-        } else if (fs.existsSync(lightdmConf)) {
-          shx.sed('-i', `autologin-user=${olduser}`, `autologin-user=${newuser}`, lightdmConf)
+        let dc = `${chroot}/etc/lightdm/`
+        let files = fs.readdirSync(dc)
+        for (const elem of files) {
+          const curFile = dc + elem
+          let content = fs.readFileSync(curFile, 'utf8')
+          let find = `[Seat:*]`
+          if (content.includes(find)) {
+            shx.sed('-i', `autologin-user=${olduser}`, `autologin-user=${newuser}`, curFile)
+          }
         }
       }
 
@@ -115,32 +117,25 @@ export default class Xdg {
        */
       if (Pacman.packageIsInstalled('sddm')) {
         let sddmChanged = false
-        // Cerco configurazione nel file sddm.conf
-        const fileConf = `${chroot}/etc/sddm.conf`
-        if (fs.existsSync(fileConf)) {
-          const content = fs.readFileSync(fileConf)
-          if (content.includes('[Autologin]')) {
-            shx.sed('-i', `User=${olduser}`, `User=${newuser}`, fileConf)
-            sddmChanged = true
-          }
+        let curFile = `${chroot}/etc/sddm.conf`
+        let content = fs.readFileSync(curFile, 'utf8')
+        let find = `[Autologin]`
+        if (content.includes(find)) {
+          shx.sed('-i', `User=${olduser}`, `User=${newuser}`, curFile)
+          sddmChanged = true
         }
 
-        // Se non l'ho trovato, cerco in /etc/sddm.conf.d/
         if (!sddmChanged) {
-          const dirConf = `${chroot}/etc/sddm.conf.d/`
-          let confs = fs.readdirSync(dirConf)
-          if (confs.length > 0) {
-            for (const conf of confs) {
-              const fileConf = dirConf + conf
-              if (fs.existsSync(fileConf)) {
-                shx.sed('-i', `User=${olduser}`, `User=${newuser}`, fileConf)
-              }
+          let dc = `${chroot}/etc/sddm.conf.d/`
+          let files = fs.readdirSync(dc)
+          for (const elem of files) {
+            const curFile = dc + elem
+            let content = fs.readFileSync(curFile, 'utf8')
+            if (content.includes(find)) {
+              shx.sed('-i', `User=${olduser}`, `User=${newuser}`, curFile)
+              sddmChanged = true
             }
           }
-          // if (!sddmChanged) {
-          // const content = `[Autologin]\nUser=${newuser}\n`
-          // fs.writeFileSync(`${chroot}/etc/sddm.conf.d/autologin.conf`, content, 'utf-8')
-          // }
         }
       }
 
@@ -156,7 +151,6 @@ export default class Xdg {
           gdmConf = `${chroot}/etc/gdm`
         }
 
-
         if (fs.existsSync(`${gdmConf}/custom.conf`)) {
           gdmConf += '/custom.conf'
         } else if (fs.existsSync(`${gdmConf}/daemon.conf`)) {
@@ -167,8 +161,6 @@ export default class Xdg {
 
         const content = `[daemon]\nAutomaticLoginEnable=true\nAutomaticLogin=${newuser}\n`
         Utils.write(gdmConf, content)
-        // shx.sed('-i', 'AutomaticLoginEnable=False', 'AutomaticLoginEnable=True', gdmConf)
-        // shx.sed('-i', `AutomaticLogin=${olduser}`, `AutomaticLogin=${newuser}`, gdmConf)
       }
 
     }
