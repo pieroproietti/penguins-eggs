@@ -23,6 +23,9 @@ Versions are listed on reverse order, the first is the last one. Old versions ar
 install:
 * added flag --domain to pass domain for unattended installation, eg: ```sudo eggs install unrd penguins-eggs.net```
 * added flag --none create a minimun swap partition of 256M
+* rewrote routines autologin for sddm and lightdm. 
+
+Note: to have autologin on the live your current used MUST to be configured with autologin.
 
 ### eggs-9.2.6
 Mostly a stabilitation version, with same add:
