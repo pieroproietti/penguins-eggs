@@ -19,6 +19,9 @@ You can follow the project also consulting the [commit history](https://github.c
 ## Changelog
 Versions are listed on reverse order, the first is the last one. Old versions are moved to [versions](https://sourceforge.net/projects/penguins-eggs/files/packages-deb/versions/). 
 
+### eggs-9.2.8
+krill installer: Trying to solve a problem on mac-mini (T2 chip), I moved the grub installation to the end of the installation process itself, to still have the installation working even in case of an error.
+
 ### eggs-9.2.7
 install:
 * added flag --domain to pass domain for unattended installation, eg: ```sudo eggs install unrd penguins-eggs.net```
