@@ -87,7 +87,6 @@ import networkCfg from './modules/network-cfg'
 // services-systemd:
 // bootloader-config
 import bootloaderConfig from './modules/bootloader-config'
-import bootloaderConfigArch from './modules/bootloader-config-arch'
 import bootloaderConfigUbuntu from './modules/bootloader-config-ubuntu'
 //
 import grubcfg from './modules/grubcfg'
@@ -131,7 +130,6 @@ export default class Sequence {
    // services-systemd:
    // bootloader-config
    public bootloaderConfig = bootloaderConfig
-   public bootloaderConfigArch = bootloaderConfigArch
    public bootloaderConfigUbuntu = bootloaderConfigUbuntu
    // 
    public grubcfg = grubcfg
@@ -145,7 +143,7 @@ export default class Sequence {
    public delLiveUser = delLiveUser
    public umountFs = umountFs
    public umountVfs = umountVfs
-   // to order in same wat
+   // to order in same way
    public timezone = mTimezone
    public umount = umount
    public mkfs = mkfs
@@ -501,17 +499,7 @@ export default class Sequence {
          await cliAutologin.msgRemove(`${this.installTarget}/etc/motd`)
          await cliAutologin.msgRemove(`${this.installTarget}/etc/issue`)
 
-         // removeInstallerLink
-         message = "remove installer link"
-         percent = 0.67
-         try {
-            await redraw(<Install message={message} percent={percent} />)
-            await this.removeInstallerLink()
-         } catch (error) {
-            await Utils.pressKeyToExit(JSON.stringify(error))
-         }
-
-         // bootloader-config [move to the end]
+         // bootloader-config [moved to the end]
          message = "bootloader-config "
          percent = 0.70
          try {
@@ -521,7 +509,7 @@ export default class Sequence {
             await Utils.pressKeyToExit(JSON.stringify(error))
          }
 
-         // grubcfg [move to the end]
+         // grubcfg [moved to the end]
          message = "grubcfg "
          percent = 0.75
          try {
@@ -531,7 +519,7 @@ export default class Sequence {
             await Utils.pressKeyToExit(JSON.stringify(error))
          }
 
-         // bootloader [move to the end]
+         // bootloader (grub-install) [moved to the end)
          message = "bootloader "
          percent = 0.80
          try {
@@ -556,7 +544,7 @@ export default class Sequence {
 
          // packages
          message = "add/remove packages"
-         percent = 0.92
+         percent = 0.91
          try {
             await redraw(<Install message={message} percent={percent} />)
             await this.packages()
@@ -564,6 +552,20 @@ export default class Sequence {
             await Utils.pressKeyToExit(JSON.stringify(error))
          }
 
+         /**
+          * removeInstallerLink
+          */
+         if (await Pacman.calamaresCheck()) {
+            message = "remove installer link"
+            percent = 0.93
+            try {
+               await redraw(<Install message={message} percent={percent} />)
+               await this.removeInstallerLink()
+            } catch (error) {
+               await Utils.pressKeyToExit(JSON.stringify(error))
+            }
+         }
+ 
 
          // umountVfs
          message = "umount VFS"
