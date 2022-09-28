@@ -5,7 +5,6 @@
 import Sequence from '../krill-sequence'
 import { exec } from '../../lib/utils'
 import Utils from '../../classes/utils'
-import { cat } from 'shelljs'
 
 /**
    * bootloader
@@ -35,11 +34,4 @@ export default async function bootloader(this: Sequence) {
   } catch (error) {
     await Utils.pressKeyToExit(cmd)
   }
-
-  await exec(`sleep 1 ${this.toNull}`, this.echo)
-
-  // let echoYes = Utils.setEcho(true)
-  // await exec(`chroot ${this.installTarget} grub-install ${this.partitions.installationDevice} ${this.toNull}`, echoYes)
-  // await exec(`chroot ${this.installTarget} grub-mkconfig -o /boot/grub/grub.cfg ${this.toNull}`, echoYes)
-  // await exec(`sleep 1 ${this.toNull}`, echoYes)
 }
