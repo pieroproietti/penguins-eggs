@@ -13,7 +13,7 @@ penguins-eggs
 
 # Penguin's eggs remastered ISOs
 
-All ISOs are based on Ubuntu bionic
+All ISOs are based on Ubuntu 22.04 jammy
 
 # user/password
 * ```live/evolution```
@@ -26,16 +26,32 @@ All the ISOs include nodejs and eggs installed (.npm package), so you can update
 # Ubuntu
 Ubuntu is a Linux distribution based on Debian mostly composed of free and open-source software. Ubuntu is officially released in three editions: Desktop, Server, and Core for Internet of things devices and robots. All the editions can run on the computer alone, or in a virtual machine. Ubuntu is a popular operating system for cloud computing, with support for OpenStack. Ubuntu's default desktop has been GNOME, since version 17.10.
 
+# Jammy
+Released on april 2022.
+
 ## **naked**
 Just the juice, without GUI. You can start here to build your revolution!
 
-##  colibri (*)
+Note: I didn't find a clean way to get a clean Ubuntu 22.04 CLI only as I do with Debian/Devuan, I tryed with Ubuntu server edition minumun and stardard installation, but always there are delay on start of the live due a wait for networking. If someone know the issue can be kind do advice me for the problem.
+
+##  **colibri**
 A light xfce4 for developers you can easily start to improve eggs installing colibri.
 
 ![colibri](https://a.fsdn.com/con/app/proj/penguins-eggs/screenshots/colibri.png/245/183)
 
-(*) Here we use nodejs 16.x to be compatible with glibc 2.27 and there is not calamares installer, just krill.
+## **duck**
+cinnamon, office, multimedia with 5.17.0-1.2-liquorix-amd64 kernel.
 
+![duck](https://a.fsdn.com/con/app/proj/penguins-eggs/screenshots/duck.png/245/183)
+ 
+## **owl**
+xfce4 for graphics designers, with 5.17.0-1.2-liquorix-amd64 kernel, based on the work of Clarlie Martinez 
+ [quirinux](https://quirinux.org/).
+
+![owl](https://a.fsdn.com/con/app/proj/penguins-eggs/screenshots/owl.png/245/183)
+
+# That's all Folks!
+No need other configurations, penguins-eggs are battery included or better, as in the real, live is inside! :-D
 
 ## More informations:
 

@@ -19,14 +19,9 @@
  *
  * Ubuntu 16.04 (xenial) LTS  active
  * Ubuntu 18.04 (bionic) LTS  active
- * Ubuntu 18.10 (cosmic) expired
- * Ubuntu 19.04 (disco)  expired
- * Ubuntu 19.10 (eoan)   expired
  * Ubuntu 20.04 (focal) LTS active
- * Ubuntu 20.10 (groovy) active
- * Ubuntu 21.04 (hirsute) active
- * Ubuntu 21.10 (impish) active
  * Ubuntu 22.04 (jammy) LTS
+ * Ubuntu 22.10 (kinetic)
  * 
  * Arch
  * Manjaro Qonos
@@ -212,13 +207,9 @@ class Distro implements IDistro {
         break
       }
 
-      case 'xenial': {
-        // Ubuntu xenial
-        this.distroLike = 'Ubuntu'
-        this.codenameLikeId = 'xenial'
-
-        break
-      }
+      /**
+       * Ubuntu LTS + actual
+       */
 
       case 'bionic': {
         // Ubuntu 18.04 bionic LTS eol aprile 2023
@@ -237,39 +228,25 @@ class Distro implements IDistro {
         break
       }
 
-      case 'groovy': {
-        // Ubuntu 20.10 groovy
-        this.distroLike = 'Ubuntu'
-        this.codenameLikeId = 'groovy'
-
-        break
-      }
-
-      case 'hirsute': {
-        // Ubuntu 21.04 hirsute
-        this.distroLike = 'Ubuntu'
-        this.codenameLikeId = 'hirsute'
-
-        break
-      }
-
-      case 'impish': {
-        // Ubuntu 21.10 impish
-        this.distroLike = 'Ubuntu'
-        this.codenameLikeId = 'impish'
-
-        break
-      }
 
       case 'jammy': {
         // Ubuntu 22.04 jammy
         this.distroLike = 'Ubuntu'
         this.codenameLikeId = 'jammy'
 
+        break
+      }
+
+      case 'kinetic': {
+        // Ubuntu 22.10 kinetic
+        this.distroLike = 'Ubuntu'
+        this.codenameLikeId = 'kinetic'
+
         // quindi le derivate...
 
         break
       }
+
 
       case 'kali-rolling': {
         // Kali

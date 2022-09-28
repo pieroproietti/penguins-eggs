@@ -3,13 +3,9 @@
  */
 
 import Sequence from '../krill-sequence'
-import { IWelcome, ILocation, IKeyboard, IPartitions, IUsers } from '../../interfaces/i-krill'
 import { exec } from '../../lib/utils'
 import Utils from '../../classes/utils'
-import Install from '../../components/install'
-import shx from 'shelljs'
-import React from 'react';
-import { render, RenderOptions } from 'ink'
+
 
 /**
  * 

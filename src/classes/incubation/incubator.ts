@@ -101,7 +101,7 @@ export default class Incubator {
       }
 
       /**
-       * DEVUAL
+       * DEVUAN
        */
       case 'beowulf': {
         const beowulf = new Buster(this.installer, this.remix, this.distro, this.user_opt, release, this.verbose)
@@ -127,30 +127,16 @@ export default class Incubator {
       /**
        * UBUNTU
        */
+       case 'bionic': {
+        const bionic = new Bionic(this.installer, this.remix, this.distro, this.user_opt, release, this.verbose)
+        await bionic.create()
+
+        break
+      }
+
       case 'focal': {
         const focal = new Focal(this.installer, this.remix, this.distro, this.user_opt, release, this.verbose)
         await focal.create()
-
-        break
-      }
-
-      case 'groovy': {
-        const groovy = new Focal(this.installer, this.remix, this.distro, this.user_opt, release, this.verbose)
-        await groovy.create()
-
-        break
-      }
-
-      case 'hirsute': {
-        const hirsute = new Focal(this.installer, this.remix, this.distro, this.user_opt, release, this.verbose)
-        await hirsute.create()
-
-        break
-      }
-
-      case 'impish': {
-        const impish = new Focal(this.installer, this.remix, this.distro, this.user_opt, release, this.verbose)
-        await impish.create()
 
         break
       }
@@ -162,9 +148,9 @@ export default class Incubator {
         break
       }
 
-      case 'bionic': {
-        const bionic = new Bionic(this.installer, this.remix, this.distro, this.user_opt, release, this.verbose)
-        await bionic.create()
+      case 'kinetic': {
+        const kinetic = new Focal(this.installer, this.remix, this.distro, this.user_opt, release, this.verbose)
+        await kinetic.create()
 
         break
       }
