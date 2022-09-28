@@ -615,8 +615,24 @@ export default class Pacman {
       /**
        * Ubuntu 22.04 jammy: eredita da focal e buster
        */
-    } else if (this.distro().codenameLikeId === 'jammy') {
+     } else if (this.distro().codenameLikeId === 'jammy') {
       const dest = '/etc/penguins-eggs.d/distros/jammy'
+      const focal = `${rootPen}/conf/distros/focal/*`
+      await exec(`cp -r ${focal} ${dest}`, echo)
+
+      await exec(`cp -r ${buster}/calamares/calamares-modules/cleanup ${dest}/calamares/calamares-modules/cleanup`, echo)
+      await exec(`cp -r ${buster}/calamares/calamares-modules/sources-yolk ${dest}/calamares/calamares-modules/sources-yolk`, echo)
+      await exec(`cp -r ${buster}/calamares/calamares-modules/sources-yolk-unmount ${dest}/calamares/calamares-modules/sources-yolk-unmount`, echo)
+      await exec(`cp -r ${buster}/calamares/modules/packages.yml ${dest}/calamares/modules/packages.yml`, echo)
+      await exec(`cp -r ${buster}/calamares/modules/removeuser.yml ${dest}/calamares/modules/removeuser.yml`, echo)
+      await exec(`cp -r ${buster}/calamares/modules/unpackfs.yml ${dest}/calamares/modules/unpackfs.yml`, echo)
+      await exec(`cp -r ${buster}/calamares/modules/displaymanager.yml ${dest}/calamares/modules/displaymanager.yml`, echo)
+
+      /**
+       * Ubuntu 22.10 kinetic: eredita da focal e buster
+       */
+     } else if (this.distro().codenameLikeId === 'kinetic') {
+      const dest = '/etc/penguins-eggs.d/distros/kinetic'
       const focal = `${rootPen}/conf/distros/focal/*`
       await exec(`cp -r ${focal} ${dest}`, echo)
 
