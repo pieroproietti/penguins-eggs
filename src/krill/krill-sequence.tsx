@@ -70,8 +70,8 @@ import { exec } from '../lib/utils'
 
 // import krill modules
 import partition from './modules/partition'
-import {mountFs, umountFs} from './modules/mount-fs'
-import {mountVfs, umountVfs} from './modules/mount-vfs'
+import { mountFs, umountFs } from './modules/mount-fs'
+import { mountVfs, umountVfs } from './modules/mount-vfs'
 import unpackfs from './modules/unpackfs'
 import machineId from './modules/machine-id'
 import fstab from './modules/fstab'
@@ -87,7 +87,6 @@ import networkCfg from './modules/network-cfg'
 // services-systemd:
 // bootloader-config
 import bootloaderConfig from './modules/bootloader-config'
-import bootloaderConfigArch from './modules/bootloader-config-arch'
 import bootloaderConfigUbuntu from './modules/bootloader-config-ubuntu'
 //
 import grubcfg from './modules/grubcfg'
@@ -126,12 +125,11 @@ export default class Sequence {
    public addUser = addUser
    public changePassword = changePassword
    // displaumanager: autologin
-   public networkCfg = networkCfg 
+   public networkCfg = networkCfg
    // hwclock:
    // services-systemd:
    // bootloader-config
    public bootloaderConfig = bootloaderConfig
-   public bootloaderConfigArch = bootloaderConfigArch
    public bootloaderConfigUbuntu = bootloaderConfigUbuntu
    // 
    public grubcfg = grubcfg
@@ -145,12 +143,12 @@ export default class Sequence {
    public delLiveUser = delLiveUser
    public umountFs = umountFs
    public umountVfs = umountVfs
-   // to order in same wat
+   // to order in same way
    public timezone = mTimezone
    public umount = umount
    public mkfs = mkfs
    public hostname = hostname
-      
+
 
    installer = {} as IInstaller
 
@@ -198,7 +196,7 @@ export default class Sequence {
 
    luksMountpoint = ''
 
-   personalFile= ''
+   personalFile = ''
 
    unattended = false
 
@@ -418,49 +416,9 @@ export default class Sequence {
             await Utils.pressKeyToExit(JSON.stringify(error))
          }
 
-         // bootloader-config
-         message = "bootloader-config "
-         percent = 0.62
-         try {
-            await redraw(<Install message={message} percent={percent} />)
-            await this.bootloaderConfig()
-         } catch (error) {
-            await Utils.pressKeyToExit(JSON.stringify(error))
-         }
-
-         // grubcfg
-         message = "grubcfg "
-         percent = 0.63
-         try {
-            await redraw(<Install message={message} percent={percent} />)
-            await this.grubcfg()
-         } catch (error) {
-            await Utils.pressKeyToExit(JSON.stringify(error))
-         }
-
-         // bootloader
-         message = "bootloader "
-         percent = 0.64
-         try {
-            await redraw(<Install message={message} percent={percent} />)
-            await this.bootloader()
-         } catch (error) {
-            await Utils.pressKeyToExit(JSON.stringify(error))
-         }
-
-         // packages
-         message = "add/remove packages"
-         percent = 0.65
-         try {
-            await redraw(<Install message={message} percent={percent} />)
-            await this.packages()
-         } catch (error) {
-            await Utils.pressKeyToExit(JSON.stringify(error))
-         }
-
          // initramfsCfg
          message = "initramfs configure"
-         percent = 0.66
+         percent = 0.55
          try {
             await redraw(<Install message={message} percent={percent} />)
             this.initramfsCfg(this.partitions.installationDevice)
@@ -470,7 +428,7 @@ export default class Sequence {
 
          // initramfs
          message = "initramfs "
-         percent = 0.67
+         percent = 0.60
          try {
             await redraw(<Install message={message} percent={percent} />)
             await this.initramfs()
@@ -482,10 +440,10 @@ export default class Sequence {
          /**
           * IF NOT RESTORE USERS DATA OR PERSONAL BACKUP
           */
-         if (!fs.existsSync(this.luksFile) || fs.existsSync(this.personalFile) ) {
+         if (!fs.existsSync(this.luksFile) || fs.existsSync(this.personalFile)) {
             // delLiveUser
             message = "Removing user live "
-            percent = 0.70
+            percent = 0.61
             try {
                await redraw(<Install message={message} percent={percent} />)
                await this.delLiveUser()
@@ -495,7 +453,7 @@ export default class Sequence {
 
             // addUser
             message = "Adding user "
-            percent = 0.73
+            percent = 0.62
             try {
                await redraw(<Install message={message} percent={percent} />)
                await this.addUser(this.users.name, this.users.password, this.users.fullname, '', '', '')
@@ -505,7 +463,7 @@ export default class Sequence {
 
             // changePassword
             message = "adding user password "
-            percent = 0.77
+            percent = 0.63
             try {
                await redraw(<Install message={message} percent={percent} />)
                await this.changePassword('root', this.users.rootPassword)
@@ -518,7 +476,7 @@ export default class Sequence {
          if (Pacman.isInstalledGui()) {
             try {
                message = "autologin GUI"
-               percent = 0.80
+               percent = 0.65
                if (this.users.autologin) {
                   await Xdg.autologin(Utils.getPrimaryUser(), this.users.name, this.installTarget)
                }
@@ -528,7 +486,7 @@ export default class Sequence {
             }
          } else { // autologin CLI remove DEFAULT
             message = "autologin CLI"
-            percent = 0.80
+            percent = 0.66
             try {
                await redraw(<Install message={message} percent={percent} />)
                await cliAutologin.remove(this.installTarget)
@@ -541,20 +499,41 @@ export default class Sequence {
          await cliAutologin.msgRemove(`${this.installTarget}/etc/motd`)
          await cliAutologin.msgRemove(`${this.installTarget}/etc/issue`)
 
-         // removeInstallerLink
-         message = "remove installer link"
-         percent = 0.87
+         // bootloader-config [moved to the end]
+         message = "bootloader-config "
+         percent = 0.70
          try {
             await redraw(<Install message={message} percent={percent} />)
-            await this.removeInstallerLink()
+            await this.bootloaderConfig()
          } catch (error) {
             await Utils.pressKeyToExit(JSON.stringify(error))
          }
 
+         // grubcfg [moved to the end]
+         message = "grubcfg "
+         percent = 0.75
+         try {
+            await redraw(<Install message={message} percent={percent} />)
+            await this.grubcfg()
+         } catch (error) {
+            await Utils.pressKeyToExit(JSON.stringify(error))
+         }
+
+         // bootloader (grub-install) [moved to the end)
+         message = "bootloader "
+         percent = 0.80
+         try {
+            await redraw(<Install message={message} percent={percent} />)
+            await this.bootloader()
+         } catch (error) {
+            await Utils.pressKeyToExit(JSON.stringify(error))
+         }
+
+
          // sourcesYolkUmount
          if (this.distro.familyId === 'debian') {
             message = "sources yolk unmount"
-            percent = 0.92
+            percent = 0.90
             try {
                await redraw(<Install message={message} percent={percent} />)
                await this.execCalamaresModule('sources-yolk-unmount')
@@ -562,6 +541,31 @@ export default class Sequence {
                await Utils.pressKeyToExit(JSON.stringify(error))
             }
          }
+
+         // packages
+         message = "add/remove packages"
+         percent = 0.91
+         try {
+            await redraw(<Install message={message} percent={percent} />)
+            await this.packages()
+         } catch (error) {
+            await Utils.pressKeyToExit(JSON.stringify(error))
+         }
+
+         /**
+          * removeInstallerLink
+          */
+         if (await Pacman.calamaresCheck()) {
+            message = "remove installer link"
+            percent = 0.93
+            try {
+               await redraw(<Install message={message} percent={percent} />)
+               await this.removeInstallerLink()
+            } catch (error) {
+               await Utils.pressKeyToExit(JSON.stringify(error))
+            }
+         }
+ 
 
          // umountVfs
          message = "umount VFS"
@@ -630,7 +634,7 @@ export default class Sequence {
  * 
  * @param elem 
  */
- async function redraw(elem: JSX.Element) {
+async function redraw(elem: JSX.Element) {
    let opt: RenderOptions = {}
 
    opt.patchConsole = false
