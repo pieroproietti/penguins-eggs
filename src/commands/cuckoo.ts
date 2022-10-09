@@ -1,72 +1,76 @@
 /**
- * penguins-eggs-v7 based on Debian live
- * author: Piero Proietti
- * email: piero.proietti@gmail.com
- * license: MIT
+ * cuckoo: proxy
  */
+
 import { Command, Flags } from '@oclif/core'
+import network from '../classes/network'
 import Utils from '../classes/utils'
-import Pacman from '../classes/pacman'
-import Pxe from '../classes/pxe'
+import GreatTit from '../classes/great-tit'
+const dhcpd = require('../dhcpd/dhcpd')
+// import dhcpd from '../dhcpd/dhcpd'
+import { ITftpOptions, IDhcpOptions } from '../interfaces/i-pxe-options'
 
-import { IWorkDir } from '../interfaces/i-workdir'
-import { exec } from '../lib/utils'
-import Distro from '../classes/distro'
+const tftp = require('tftp')
+import http, { IncomingMessage, ServerResponse } from 'http'
+import { getImpliedNodeFormatForFile } from 'typescript'
 
-/**
- * 
- */
 export default class Cuckoo extends Command {
-  config_file = '/etc/penguins-eggs.d/eggs.yaml' as string
-  snapshot_dir = '' as string
-  work_dir = {} as IWorkDir
+  static description = 'PXE start with proxy-dhcp'
 
-
-  static description = 'cuckoo start a PXE boot server serving the live image'
+  static examples = [
+    `$ sudo eggs cuckoo
+start a PXE server with dhcp-proxy (can coexists with a real dhcp server)
+`,
+  ]
 
   static flags = {
-    real: Flags.boolean({ char: 'r', description: 'start a real dhcp server' }),
-    help: Flags.help({ char: 'h' }),
-    verbose: Flags.boolean({ char: 'v', description: 'verbose' })
+    from: Flags.string({ char: 'f', description: 'Who is saying hello', required: false }),
   }
 
-  static examples = ['$ sudo eggs cuckoo\nstart a PXE boot server']
+  async run(nest = '/home/eggs'): Promise<void> {
+    const { args, flags } = await this.parse(Cuckoo)
 
-  async run(): Promise<void> {
     Utils.titles(this.id + ' ' + this.argv)
+    if (Utils.isRoot()) {
+      const pxeRoot = nest + '/pxe'
+      const gt = new GreatTit()
+      await gt.fertilization()
+      await gt.build()
 
-    const { flags } = await this.parse(Cuckoo)
-    let verbose = flags.verbose
-    const echo = Utils.setEcho(verbose)
-
-    let real = flags.real
-
-    const distro = new Distro()
-    if ((distro.familyId === 'debian') || (distro.familyId === 'archlinux')) {
-      if (Utils.isRoot()) {
-        if (distro.familyId === 'debian') {
-          if (!Pacman.packageIsInstalled('dnsmasq') ||
-            (!Pacman.packageIsInstalled("pxelinux"))) {
-            console.log('eggs cuckoo need to nstall dnsmasq and pxelinux.')
-            if (await Utils.customConfirm()) {
-              console.log('Installing dnsmasq and pxelinux... wait a moment')
-              await exec('sudo apt-get update -y', Utils.setEcho(false))
-              await exec('sudo apt-get install dnsmasq pxelinux -y', Utils.setEcho(false))
-            }
-          }
-        }
-        const pxe = new Pxe()
-        await pxe.fertilization()
-        await pxe.build()
-        let dnsmasq = true
-        await pxe.dhcp(real, dnsmasq)
-        await pxe.httpStart()
-
-        console.log(`Serving PXE boot, read more at: http://${Utils.address()}`)
-        console.log(`CTRL-c to quit`)
+      const n = new network()
+      
+      /**
+       * service proxy-dhcp
+       */
+       let dhcpOptions: IDhcpOptions = {
+        subnet: n.cidr,
+        host: n.address,
+        tftpserver: n.address,
+        bios_filename: 'lpxelinux.0',
+        efi32_filename: 'ipxe32.efi',
+        efi64_filename: 'ipxe.efi'
       }
+      let dhcpdProxy = new dhcpd(dhcpOptions)
+
+      /**
+       * service tftp
+       */
+       let tftpOptions: ITftpOptions = {
+        "host": n.address,
+        "port": 69,
+        "root": pxeRoot,
+        "denyPUT": true
+      }
+      await gt.tftpStart(tftpOptions)
+
+      /**
+       * service http
+       */
+      await gt.httpStart()
+
     } else {
-      console.log(`Sorry: actually cuckoo is enabled just for debian family!`)
+      Utils.useRoot(this.id)
     }
   }
 }
+
