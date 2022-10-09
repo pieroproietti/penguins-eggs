@@ -43,6 +43,7 @@ specifiers:
   perrisbrewery: ^9.1.37
   react: ^17.0.2
   shelljs: 0.8.5
+  tftp: ^0.1.2
   ts-node: ^10.8.1
   tslib: ^2.4.0
   typedoc: ^0.23.10
@@ -68,6 +69,7 @@ dependencies:
   node-static: 0.7.11
   react: 17.0.2
   shelljs: 0.8.5
+  tftp: 0.1.2
   tslib: 2.4.0
 
 devDependencies:
@@ -1334,6 +1336,11 @@ packages:
   /arg/4.1.3:
     resolution: {integrity: sha512-58S9QDqG0Xx27YwPSt9fJxivjYl432YCwfDMfZ+71RAqUrZef7LrKQZ3LHLOwCS4FLNBplP533Zx895SeOCHvA==}
     dev: true
+
+  /argp/1.0.4:
+    resolution: {integrity: sha512-dBwgZOneFCvOmuPsde14fGvdgv8eEGlFPSbHlcPb+6i0491pbnbnlp9SVxF745hlK9akq9MGtNFLO0gl6HFxLA==}
+    engines: {node: '>=0.10'}
+    dev: false
 
   /argparse/1.0.10:
     resolution: {integrity: sha512-o5Roy6tNG4SL/FOkCAN6RzjiakZS25RLYFrcMttJqbdd8BWrnA+fGz57iN5Pb06pvBGvl5gQ0B48dJlslXvoTg==}
@@ -4986,6 +4993,11 @@ packages:
       fromentries: 1.3.2
     dev: true
 
+  /progress-bar-formatter/2.0.1:
+    resolution: {integrity: sha512-sQ5mPzh8FdliwxVqdZihcX8O6JJHZjg2ZS2L2DR89dp+Jc+lnxHduJRuYIygAj+It30w29Ke7D0nqPE455LfQQ==}
+    engines: {node: '>=0.10'}
+    dev: false
+
   /progress/2.0.3:
     resolution: {integrity: sha512-7PiHtLll5LdnKIMw100I+8xJXR5gW2QwWYkT6iJva0bXitZKa/XMrSbdmg3r2Xnaidz9Qumd0VPaMrZlF9V9sA==}
     engines: {node: '>=0.4.0'}
@@ -5630,6 +5642,13 @@ packages:
       escape-string-regexp: 2.0.0
     dev: false
 
+  /status-bar/2.0.3:
+    resolution: {integrity: sha512-OfZfcnCB+q/QrcgUfgMlarzfcQqdeiOLRjiL3OccOR1o4TSDYcwgocDZGzR4s6UtuACz/f4gbTCaovUMyyTLCA==}
+    engines: {node: '>=0.10'}
+    dependencies:
+      progress-bar-formatter: 2.0.1
+    dev: false
+
   /stdout-stderr/0.1.13:
     resolution: {integrity: sha512-Xnt9/HHHYfjZ7NeQLvuQDyL1LnbsbddgMFKCuaQKwGCdJm8LnstZIXop+uOY36UR1UXXoHXfMbC1KlVdVd2JLA==}
     engines: {node: '>=8.0.0'}
@@ -5868,6 +5887,15 @@ packages:
     resolution: {integrity: sha512-MeqZRHLuaGamUXGuVn2ivtU3LA3mLCCIO5kUGoohTCoGmCBg/+8yPhWVX9WSl9telvVd8erftjFk9Fwb2dD6rw==}
     engines: {node: '>=0.8'}
     dev: true
+
+  /tftp/0.1.2:
+    resolution: {integrity: sha512-sopSHHZSH7b+dFFgUoQJMXhK4bh/4kCtCD6fc6XydQ1qoCteaD5VWOuaI0TWw2htv+Dk4/4PT0cUDbLHaBvAFQ==}
+    engines: {node: '>=0.10'}
+    hasBin: true
+    dependencies:
+      argp: 1.0.4
+      status-bar: 2.0.3
+    dev: false
 
   /through/2.3.8:
     resolution: {integrity: sha512-w89qg7PI8wAdvX60bMDP+bFoD5Dvhm9oLheFp5O4a2QF0cSBGsBX4qZmadPMvVqlLJBBci+WqGGOAPvcDeNSVg==}
