@@ -25,6 +25,7 @@
         "mustache": "^4.2.0",
         "netmask": "^2.0.2",
         "node-static": "^0.7.11",
+        "penguins-oclif": "^9.1.37",
         "react": "^17.0.2",
         "shelljs": "0.8.5",
         "tftp": "^0.1.2",
@@ -52,7 +53,6 @@
         "globby": "^11",
         "mocha": "^10.0.0",
         "nyc": "^15.1.0",
-        "penguins-oclif": "^9.1.37",
         "perrisbrewery": "^9.1.37",
         "ts-node": "^10.8.1",
         "typedoc": "^0.23.10",
@@ -61,7 +61,7 @@
     "peerDependencies": {
         "@typescript-eslint/parser": "^5.0.0",
         "@typescript-eslint/plugin": "^5.0.0",
-        "typescript": "^4.6.0"
+        "typescript": "^4.8.4"
     },
     "dirname": "eggs",
     "engines": {
@@ -72,7 +72,7 @@
         "/assets",
         "/bin",
         "/conf",
-        "/lib",
+        "/dist",
         "/manpages",
         "mkinitcpio",
         "/scripts"
@@ -85,10 +85,10 @@
         "systemback"
     ],
     "license": "MIT",
-    "main": "./lib/index.js",
+    "main": "./dist/index.js",
     "oclif": {
         "bin": "eggs",
-        "commands": "./lib/commands",
+        "commands": "./dist/commands",
         "plugins": [
             "@oclif/plugin-autocomplete",
             "@oclif/plugin-help",
@@ -113,12 +113,11 @@
         "lint-and-fix": "eslint . --ext .ts --fix --config .eslintrc",
         "postpack": "rm -f oclif.manifest.json",
         "posttest": "eslint . --ext .ts --config .eslintrc",
-        "prepack": "rm lib -rf && tsc -b && oclif manifest && oclif readme",
+        "prepack": "rm dist -rf && tsc -b && oclif manifest && oclif readme",
         "prettier-format": "prettier --config .prettierrc 'src/**/*.ts' --write",
         "tarballs": "oclif pack:tarballs --root=. --targets=linux-x64 --no-xz",
         "test": "nyc --extension .ts mocha --forbid-only \"test/**/*.test.ts\"",
         "version": "oclif readme && git add README.md"
     },
-    "shortName": "eggs",
-    "types": "lib/index.d.ts"
+    "shortName": "eggs"
 }
