@@ -247,7 +247,7 @@ EXAMPLES
   $ eggs autocomplete --refresh-cache
 ```
 
-_See code: [@oclif/plugin-autocomplete](https://github.com/oclif/plugin-autocomplete/blob/v1.3.0/src/commands/autocomplete/index.ts)_
+_See code: [@oclif/plugin-autocomplete](https://github.com/oclif/plugin-autocomplete/blob/v1.3.2/src/commands/autocomplete/index.ts)_
 
 ## `eggs calamares`
 
