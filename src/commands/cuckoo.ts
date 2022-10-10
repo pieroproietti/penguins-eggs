@@ -5,11 +5,8 @@
 import { Command, Flags } from '@oclif/core'
 import network from '../classes/network'
 import Utils from '../classes/utils'
-import GreatTit from '../classes/great-tit'
-const dhcpd = require('../dhcpd/dhcpd')
-// import dhcpd from '../dhcpd/dhcpd'
+import Pxe from '../classes/pxe'
 import { ITftpOptions, IDhcpOptions } from '../interfaces/i-pxe-options'
-
 const tftp = require('tftp')
 import http, { IncomingMessage, ServerResponse } from 'http'
 import { getImpliedNodeFormatForFile } from 'typescript'
@@ -24,7 +21,7 @@ start a PXE server with dhcp-proxy (can coexists with a real dhcp server)
   ]
 
   static flags = {
-    from: Flags.string({ char: 'f', description: 'Who is saying hello', required: false }),
+    help: Flags.help({ char: 'h' }),
   }
 
   async run(nest = '/home/eggs'): Promise<void> {
@@ -33,9 +30,9 @@ start a PXE server with dhcp-proxy (can coexists with a real dhcp server)
     Utils.titles(this.id + ' ' + this.argv)
     if (Utils.isRoot()) {
       const pxeRoot = nest + '/pxe'
-      const gt = new GreatTit()
-      await gt.fertilization()
-      await gt.build()
+      const pxe = new Pxe()
+      await pxe.fertilization()
+      await pxe.build()
 
       const n = new network()
       
@@ -50,7 +47,7 @@ start a PXE server with dhcp-proxy (can coexists with a real dhcp server)
         efi32_filename: 'ipxe32.efi',
         efi64_filename: 'ipxe.efi'
       }
-      let dhcpdProxy = new dhcpd(dhcpOptions)
+      pxe.dhcpStart(dhcpOptions)
 
       /**
        * service tftp
@@ -61,12 +58,12 @@ start a PXE server with dhcp-proxy (can coexists with a real dhcp server)
         "root": pxeRoot,
         "denyPUT": true
       }
-      await gt.tftpStart(tftpOptions)
+      await pxe.tftpStart(tftpOptions)
 
       /**
        * service http
        */
-      await gt.httpStart()
+      await pxe.httpStart()
 
     } else {
       Utils.useRoot(this.id)
