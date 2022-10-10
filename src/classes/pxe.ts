@@ -234,17 +234,17 @@ export default class Pxe {
         const serverRootVars = '${server_root}'
         content += `menu cuckoo: when you need a flying PXE server! ${Utils.address()}\n`
         content += 'item --gap boot from ovarium\n'
-        content += `item egg      ${this.bootLabel}\n`
+        content += `item egg \${space} ${this.bootLabel}\n`
         if (this.isos.length > 0) {
             content += 'item --gap boot iso images\n'
             for (const iso of this.isos) {
                 const menu = iso.replace('.iso', '')
                 const label = menu
-                content += `item ${menu}      ${label}\n`
+                content += `item ${menu} \${space} ${label}\n`
             }
         }
         content += 'item --gap boot from internet\n'
-        content += `item netboot     netboot\n`
+        content += `item netboot \${space} netboot\n`
 
         content += 'choose target || goto start\n'
         content += 'goto ${target}\n'
@@ -252,8 +252,8 @@ export default class Pxe {
 
         content += `:egg\n`
         content += `kernel http://${Utils.address()}/vmlinuz\n`
-        content += `initrd http://${Utils.address()}/initrd \n`
-        content += `imgargs vmlinuz boot=live debug=1 netboot config noswap noprompt httpfs=http://${Utils.address()}/live/filesystem.squashfs\n`
+        content += `initrd http://${Utils.address()}/initrd\n`
+        content += `imgargs vmlinuz boot=live ip=dhcp config noswap noprompt debug=1 httpfs=http://${Utils.address()}/live/filesystem.squashfs\n`
         content += `boot || goto start\n\n`
 
         if (this.isos.length > 0) {
