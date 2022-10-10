@@ -61,7 +61,7 @@
     },
     "peerDependencies": {
         "@typescript-eslint/parser": "^5.0.0",
-        "@typescript-eslint/plugin": "^5.0.0"
+        "@typescript-eslint/plugin": "5.0.0"
     },
     "dirname": "eggs",
     "engines": {
