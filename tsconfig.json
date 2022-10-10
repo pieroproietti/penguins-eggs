@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
     "jsx": "react",
-    "declaration": true,
+    "allowJs": true,
     "importHelpers": true,
     "esModuleInterop": true,
     "module": "commonjs",

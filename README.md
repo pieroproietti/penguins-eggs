@@ -304,23 +304,21 @@ _See code: [src/commands/config.ts](https://github.com/pieroproietti/penguins-eg
 
 ## `eggs cuckoo`
 
-cuckoo start a PXE boot server serving the live image
+PXE start with proxy-dhcp
 
 ```
 USAGE
-  $ eggs cuckoo [-r] [-h] [-v]
+  $ eggs cuckoo [-f <value>]
 
 FLAGS
-  -h, --help     Show CLI help.
-  -r, --real     start a real dhcp server
-  -v, --verbose  verbose
+  -f, --from=<value>  Who is saying hello
 
 DESCRIPTION
-  cuckoo start a PXE boot server serving the live image
+  PXE start with proxy-dhcp
 
 EXAMPLES
   $ sudo eggs cuckoo
-  start a PXE boot server
+  start a PXE server with dhcp-proxy (can coexists with a real dhcp server)
 ```
 
 _See code: [src/commands/cuckoo.ts](https://github.com/pieroproietti/penguins-eggs/blob/v9.2.8/src/commands/cuckoo.ts)_
@@ -416,7 +414,7 @@ DESCRIPTION
   Display help for eggs.
 ```
 
-_See code: [@oclif/plugin-help](https://github.com/oclif/plugin-help/blob/v5.1.12/src/commands/help.ts)_
+_See code: [@oclif/plugin-help](https://github.com/oclif/plugin-help/blob/v5.1.15/src/commands/help.ts)_
 
 ## `eggs install`
 
@@ -728,7 +726,7 @@ FLAG DESCRIPTIONS
     Additionally shows the architecture, node version, operating system, and versions of plugins that the CLI is using.
 ```
 
-_See code: [@oclif/plugin-version](https://github.com/oclif/plugin-version/blob/v1.1.1/src/commands/version.ts)_
+_See code: [@oclif/plugin-version](https://github.com/oclif/plugin-version/blob/v1.1.3/src/commands/version.ts)_
 
 ## `eggs wardrobe get [REPO]`
 
