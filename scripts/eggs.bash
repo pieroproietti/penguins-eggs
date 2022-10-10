@@ -15,7 +15,7 @@ adapt --verbose --help
 analyze --help --verbose
 calamares --help --verbose --install --release --remove --theme
 config --nointeractive --clean --help --verbose
-cuckoo --real --help --verbose
+cuckoo --from
 dad --help --clean --default --verbose
 export:deb --help --clean --amd64 --i386 --armel --arm64 --all
 export:docs --help

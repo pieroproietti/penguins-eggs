@@ -11,7 +11,7 @@ _eggs () {
 "analyze:analyze for syncto"
 "calamares:calamares or install or configure it"
 "config:Configure and install prerequisites deb packages to run it"
-"cuckoo:cuckoo start a PXE boot server serving the live image"
+"cuckoo:PXE start with proxy-dhcp"
 "dad:ask help from daddy - configuration helper"
 "export\:deb:export deb/docs/iso to the destination host"
 "export\:docs:remove and export docType documentation of the sources in the destination host"
@@ -76,9 +76,7 @@ config)
 
 cuckoo)
   _command_flags=(
-    "--real[start a real dhcp server]"
-"--help[Show CLI help.]"
-"--verbose[verbose]"
+    "--from=-[Who is saying hello]:"
   )
 ;;
 
