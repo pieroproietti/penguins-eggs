@@ -12,14 +12,13 @@ import Distro from './distro'
 import Settings from './settings'
 import { exec } from '../lib/utils'
 const tftp = require('tftp')
-import { ITftpOptions } from '../interfaces/i-pxe-options'
-import ts from 'typescript'
-import bootloader from '../krill/modules/bootloader'
+const dhcpd = require('../dhcpd/dhcpd')
+import { ITftpOptions, IDhcpOptions } from '../interfaces/i-pxe-options'
 
 /**
 * Pxe:
 */
-export default class GreatTit {
+export default class Pxe {
     verbose = false
 
     echo = {}
@@ -324,6 +323,14 @@ export default class GreatTit {
         content += `manual: <a href='https://penguins-eggs.net/book/italiano9.2.html'>italiano</a>, <a href='https://penguins--eggs-net.translate.goog/book/italiano9.2?_x_tr_sl=auto&_x_tr_tl=en&_x_tr_hl=en'>translated</a><br/>`
         content += `discuss: <a href='https://t.me/penguins_eggs'>Telegram group<br/></body</html>`
         fs.writeFileSync(file, content)
+    }
+
+    /**
+     * 
+     * @param dhcpOptions 
+     */
+    dhcpStart(dhcpOptions: IDhcpOptions) {
+        let dhcpdProxy = new dhcpd(dhcpOptions)
     }
 
     /**
