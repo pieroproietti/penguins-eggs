@@ -224,74 +224,58 @@ export default class Pxe {
         console.log('creating cuckoo configuration pxe: UEFI')
 
         let content = "#!ipxe\n"
+        content += `dhcp\n`
+        content += `set net0/ip=dhcp\n`
+        content += `console --picture http://${Utils.address()}/splash.png -x 1024 -y 768\n`
+        content += "goto start ||\n"
+        content += "\n"
+        content += ':start\n'
+        content += `set server_root http://${Utils.address()}:80/\n`
+        const serverRootVars = '${server_root}'
+        content += `menu cuckoo: when you need a flying PXE server! ${Utils.address()}\n`
+        content += 'item --gap boot from ovarium\n'
+        content += `item egg      ${this.bootLabel}\n`
         if (this.isos.length > 0) {
-            content += `dhcp\n`
-            content += `set net0/ip=dhcp\n`
-            content += `console --picture http://${Utils.address()}/splash.png -x 1024 -y 768\n`
-            content += "goto start ||\n"
-            content += "\n"
-            content += ':start\n'
-            content += `set server_root http://${Utils.address()}:80/\n`
-            const serverRootVars = '${server_root}'
-            content += `menu cuckoo: when you need a flying PXE server! ${Utils.address()}\n`
-            content += 'item --gap boot from ovarium\n'
-            content += `item egg      ${this.bootLabel}\n`
-
-            /*
             content += 'item --gap boot iso images\n'
             for (const iso of this.isos) {
                 const menu = iso.replace('.iso', '')
                 const label = menu
                 content += `item ${menu}      ${label}\n`
             }
-            */
-            content += 'item --gap boot from internet\n'
-            content += `item netboot     netboot\n`
-            // content += `item salstar     salstar\n`
+        }
+        content += 'item --gap boot from internet\n'
+        content += `item netboot     netboot\n`
 
-            content += 'choose target || goto start\n'
-            content += 'goto ${target}\n'
-            content += '\n'
+        content += 'choose target || goto start\n'
+        content += 'goto ${target}\n'
+        content += '\n'
 
-            content += `:egg\n`
-            content += `kernel http://${Utils.address()}/vmlinuz\n`
-            content += `initrd http://${Utils.address()}/initrd \n`
-            content += `imgargs vmlinuz boot=live config noswap noprompt fetch=http://${Utils.address()}/live/filesystem.squashfs SYSAPPEND 3\n`
-            content += `boot || goto start\n\n`
+        content += `:egg\n`
+        content += `kernel http://${Utils.address()}/vmlinuz\n`
+        content += `initrd http://${Utils.address()}/initrd \n`
+        content += `imgargs vmlinuz boot=live debug=1 netboot config noswap noprompt httpfs=http://${Utils.address()}/live/filesystem.squashfs\n`
+        content += `boot || goto start\n\n`
 
-            /*
+        if (this.isos.length > 0) {
             for (const iso of this.isos) {
                 const menu = iso.replace('.iso', '')
                 content += `:${menu}\n`
                 content += `sanboot ${serverRootVars}/${iso}\n`
-                // content += `kernel ${serverRootVars}bullseye/vmlinuz\n`
-                // content += `initrd ${serverRootVars}bullseye/initrd\n`
-                // content += `imgargs vmlinuz initrd=initrd root=/dev/ram0 ip=dhcp ramdisk_size=4194304 url=${serverRootVars}${iso} locale=en_US ro syslinux=3\n`
                 content += `boot || goto start\n\n`
             }
-            */
-
-            /**
-             * netboot.xyz
-             */
-            content += `:netboot\n`
-            content += `ifopen net0\n`
-            content += `set conn_type https\n`
-            content += `chain --autofree https://boot.netboot.xyz/menu.ipxe || echo HTTPS failed... attempting HTTP...\n`
-            content += `set conn_type http\n`
-            content += `chain --autofree http://boot.netboot.xyz/menu.ipxe || echo HTTP failed, localbooting...\n`
-            content += `goto start\n\n`
-
-            /*
-            content += `:salstar\n`
-            content += `ifopen net0\n`
-            content += `set conn_type https\n`
-            content += `chain --autofree https://boot.salstar.sk/menu.ipxe || echo HTTPS failed... attempting HTTP...\n`
-            content += `set conn_type http\n`
-            content += `chain --autofree http://boot.salstar.sk/menu.ipxe || echo HTTP failed, localbooting...\n`
-            content += `goto start\n\n`
-            */
         }
+
+        /**
+         * netboot.xyz
+         */
+        content += `:netboot\n`
+        content += `ifopen net0\n`
+        content += `set conn_type https\n`
+        content += `chain --autofree https://boot.netboot.xyz/menu.ipxe || echo HTTPS failed... attempting HTTP...\n`
+        content += `set conn_type http\n`
+        content += `chain --autofree http://boot.netboot.xyz/menu.ipxe || echo HTTP failed, localbooting...\n`
+        content += `goto start\n\n`
+
         let file = `${this.pxeRoot}/autoexec.ipxe`
         fs.writeFileSync(file, content)
     }
