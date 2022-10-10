@@ -189,17 +189,18 @@ export default class GreatTit {
         content += `PROMPT 0\n`
         content += `TIMEOUT 0\n`
         content += `\n`
-        
-        content += `menu label egg\n`
+        content += `label egg\n`
+        content += `menu label ${this.bootLabel}\n`
         let clid = this.settings.distro.codenameLikeId
         if (clid === 'bionic' || clid === 'stretch' || clid === 'jessie') {
             content += `kernel vmlinuz\n`
             content += `append initrd=initrd boot=live config noswap noprompt fetch=http://${Utils.address()}/live/filesystem.squashfs\n`
         } else {
             content += `kernel http://${Utils.address()}/vmlinuz\n`
-            content += `append initrd=http://${Utils.address()}/initrd boot=live config noswap noprompt fetch=http://${Utils.address()}/live/filesystem.squashfs systemd.hostname=pippo\n`
+            content += `append initrd=http://${Utils.address()}/initrd boot=live config noswap noprompt fetch=http://${Utils.address()}/live/filesystem.squashfs\n`
         }
         content += `SYSAPPEND 3\n`
+        content += `\n`
 
         /*
         if (this.isos.length > 0) {
@@ -237,15 +238,17 @@ export default class GreatTit {
             content += 'item --gap boot from ovarium\n'
             content += `item egg      ${this.bootLabel}\n`
 
+            /*
             content += 'item --gap boot iso images\n'
             for (const iso of this.isos) {
                 const menu = iso.replace('.iso', '')
                 const label = menu
                 content += `item ${menu}      ${label}\n`
             }
+            */
             content += 'item --gap boot from internet\n'
             content += `item netboot     netboot\n`
-            content += `item salstar     salstar\n`
+            // content += `item salstar     salstar\n`
 
             content += 'choose target || goto start\n'
             content += 'goto ${target}\n'
@@ -253,18 +256,21 @@ export default class GreatTit {
 
             content += `:egg\n`
             content += `kernel http://${Utils.address()}/vmlinuz\n`
-            content += `append initrd=http://${Utils.address()}/initrd boot=live config noswap noprompt fetch=http://${Utils.address()}/live/filesystem.squashfs sysappend 0x40000\n`
-            //content += `boot || goto start\n\n`
+            content += `initrd http://${Utils.address()}/initrd \n`
+            content += `imgargs vmlinuz boot=live config noswap noprompt fetch=http://${Utils.address()}/live/filesystem.squashfs SYSAPPEND 3\n`
+            content += `boot || goto start\n\n`
 
+            /*
             for (const iso of this.isos) {
                 const menu = iso.replace('.iso', '')
                 content += `:${menu}\n`
                 content += `sanboot ${serverRootVars}/${iso}\n`
                 // content += `kernel ${serverRootVars}bullseye/vmlinuz\n`
                 // content += `initrd ${serverRootVars}bullseye/initrd\n`
-                // content += `imgargs vmlinuz initrd=initrd root=/dev/ram0 ip=dhcp ramdisk_size=4194304 url=${serverRootVars}${iso} locale=en_US ro\n`
+                // content += `imgargs vmlinuz initrd=initrd root=/dev/ram0 ip=dhcp ramdisk_size=4194304 url=${serverRootVars}${iso} locale=en_US ro syslinux=3\n`
                 content += `boot || goto start\n\n`
             }
+            */
 
             /**
              * netboot.xyz
@@ -277,6 +283,7 @@ export default class GreatTit {
             content += `chain --autofree http://boot.netboot.xyz/menu.ipxe || echo HTTP failed, localbooting...\n`
             content += `goto start\n\n`
 
+            /*
             content += `:salstar\n`
             content += `ifopen net0\n`
             content += `set conn_type https\n`
@@ -284,7 +291,7 @@ export default class GreatTit {
             content += `set conn_type http\n`
             content += `chain --autofree http://boot.salstar.sk/menu.ipxe || echo HTTP failed, localbooting...\n`
             content += `goto start\n\n`
-
+            */
         }
         let file = `${this.pxeRoot}/autoexec.ipxe`
         fs.writeFileSync(file, content)
