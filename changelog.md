@@ -19,6 +19,9 @@ You can follow the project also consulting the [commit history](https://github.c
 ## Changelog
 Versions are listed on reverse order, the first is the last one. Old versions are moved to [versions](https://sourceforge.net/projects/penguins-eggs/files/packages-deb/versions/). 
 
+### ### eggs-9.2.9
+I have completely or nearly completely rewritten the pxe.ts library for the cuckoo command, replacing the dnsmasq package with a node library, so as not to add any additional dependencies. in addition, using iPXE I was also able to remove the problem of needing a real dhcp server for UEFI machine installation. In the boot screen via PXE I also added the ability to boot through the netbootxyz server. this is really a great addition to eggs and will allow you to boot networked computers through a live system launched on any machine on the network itself.
+
 ### eggs-9.2.8
 * added ubunti 22.10 kinetic
 * krill installer: Trying to solve a problem on mac-mini (T2 chip), I moved the grub installation to the end of the installation process itself, to still have the installation working even in case of an error.
