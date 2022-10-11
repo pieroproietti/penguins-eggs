@@ -201,8 +201,8 @@ export default class Pxe {
         content += `SYSAPPEND 3\n`
         content += `\n`
 
-        /*
         if (this.isos.length > 0) {
+            content += `menu separator\n`
             for (const iso of this.isos) {
                 content += `\n`
                 content += `label ${iso}\n`
@@ -212,7 +212,6 @@ export default class Pxe {
                 content += `append  iso raw\n`
             }
         }
-        */
         let file = `${this.pxeRoot}/pxelinux.cfg/default`
         fs.writeFileSync(file, content)
     }
@@ -234,13 +233,14 @@ export default class Pxe {
         const serverRootVars = '${server_root}'
         content += `menu cuckoo: when you need a flying PXE server! ${Utils.address()}\n`
         content += 'item --gap boot from ovarium\n'
-        content += `item egg \${space} ${this.bootLabel}\n`
+        content += `item egg-menu \${space} ${this.bootLabel.replaceAll('.iso','')}\n\n`
+        
         if (this.isos.length > 0) {
             content += 'item --gap boot iso images\n'
             for (const iso of this.isos) {
-                const menu = iso.replace('.iso', '')
+                const menu = iso
                 const label = menu
-                content += `item ${menu} \${space} ${label}\n`
+                content += `item ${menu} \${space} ${label}\n\n`
             }
         }
         content += 'item --gap boot from internet\n'
@@ -250,10 +250,11 @@ export default class Pxe {
         content += 'goto ${target}\n'
         content += '\n'
 
-        content += `:egg\n`
+        content += `:egg-menu\n`
         content += `kernel http://${Utils.address()}/vmlinuz\n`
         content += `initrd http://${Utils.address()}/initrd\n`
-        content += `imgargs vmlinuz boot=live ip=dhcp config noswap noprompt debug=1 httpfs=http://${Utils.address()}/live/filesystem.squashfs\n`
+        content += `imgargs initrd=initrd fetch=http://${Utils.address()}/live/filesystem.squashfs boot=live dhcp vga=791 ro quiet 2\n`
+        content += `sleep 10\n`
         content += `boot || goto start\n\n`
 
         if (this.isos.length > 0) {
