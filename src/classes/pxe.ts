@@ -253,7 +253,11 @@ export default class Pxe {
         content += `:egg-menu\n`
         content += `kernel http://${Utils.address()}/vmlinuz\n`
         content += `initrd http://${Utils.address()}/initrd\n`
-        content += `imgargs initrd=initrd fetch=http://${Utils.address()}/live/filesystem.squashfs boot=live dhcp vga=791 ro quiet 2\n`
+        /**
+         * CORRECT:
+         * content += `imgargs vmlinuz fetch=http://${Utils.address()}/live/filesystem.squashfs boot=live dhcp initrd=initrd ro\n`
+         */
+        content += `imgargs vmlinuz fetch=http://${Utils.address()}/live/filesystem.squashfs boot=live dhcp initrd=initrd ro\n`
         content += `sleep 10\n`
         content += `boot || goto start\n\n`
 
