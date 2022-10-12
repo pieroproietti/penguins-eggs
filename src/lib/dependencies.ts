@@ -53,6 +53,7 @@ export const depCommon = [
   'live-boot-initramfs-tools', // eggs
   'lvm2', // pvdisplay in krill
   'parted', // eggs
+  "pxelinux", // cuckoo
   'rsync', // eggs
   'squashfs-tools', // eggs
   'syslinux-common', // eggs
