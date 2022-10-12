@@ -55,7 +55,7 @@
         "globby": "^11",
         "mocha": "^10.0.0",
         "nyc": "^15.1.0",
-        "perrisbrewery": "^9.1.37",
+        "perrisbrewery": "^9.1.38",
         "ts-node": "^10.8.1",
         "typedoc": "^0.23.10"
     },
