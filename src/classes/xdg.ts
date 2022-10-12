@@ -14,7 +14,7 @@ import Utils from './utils'
 // libraries
 import { exec } from '../lib/utils'
 import { verify } from 'node:crypto'
-import { string } from '@oclif/core/lib/flags'
+import { file, string } from '@oclif/core/lib/flags'
 import { dir } from 'node:console'
 
 const xdg_dirs = ['DESKTOP', 'DOWNLOAD', 'TEMPLATES', 'PUBLICSHARE', 'DOCUMENTS', 'MUSIC', 'PICTURES', 'VIDEOS']
@@ -101,7 +101,12 @@ export default class Xdg {
        */
       if (Pacman.packageIsInstalled('lightdm')) {
         let dc = `${chroot}/etc/lightdm/`
-        let files = fs.readdirSync(dc)
+        /*
+        * let files = fs.readdirSync(dc, { withFileTypes: true })
+        */
+        let files = fs.readdirSync(dc, { withFileTypes: true }).filter(dirent => dirent.isFile())
+        
+        console.log(files)
         for (const elem of files) {
           const curFile = dc + elem
           let content = fs.readFileSync(curFile, 'utf8')
