@@ -53,9 +53,9 @@ export default class Pxe {
 
         this.nest = '/home/eggs'
         this.pxeRoot = this.nest + '/pxe'
-        console.log('nest: ' + this.nest)
-        console.log('pxeRoot: ' + this.pxeRoot)
-        console.log('eggRoot: ' + this.eggRoot)
+        // console.log('nest: ' + this.nest)
+        // console.log('pxeRoot: ' + this.pxeRoot)
+        // console.log('eggRoot: ' + this.eggRoot)
 
         /**
          * se pxeRoot non esiste viene creato
@@ -258,7 +258,7 @@ export default class Pxe {
          * content += `imgargs vmlinuz fetch=http://${Utils.address()}/live/filesystem.squashfs boot=live dhcp initrd=initrd ro\n`
          */
         content += `imgargs vmlinuz fetch=http://${Utils.address()}/live/filesystem.squashfs boot=live dhcp initrd=initrd ro\n`
-        content += `sleep 10\n`
+        content += `sleep 5\n`
         content += `boot || goto start\n\n`
 
         if (this.isos.length > 0) {
