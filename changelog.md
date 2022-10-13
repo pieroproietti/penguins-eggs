@@ -20,8 +20,8 @@ You can follow the project also consulting the [commit history](https://github.c
 Versions are listed on reverse order, the first is the last one. Old versions are moved to [versions](https://sourceforge.net/projects/penguins-eggs/files/packages-deb/versions/). 
 
 ### eggs-9.3.1
-tools: added command ```sudo eggs tools ppa``` to add or remove penguins-eggs-ppa to the trusted repositories of the system;
-bugfix: xdg.ts, lightdm configuration, line 107
+* tools: added command ```sudo eggs tools ppa``` to add or remove penguins-eggs-ppa to the trusted repositories of the system;
+* bugfix: xdg.ts, lightdm configuration, line 107
 
 ### eggs-9.3.0
 bugfix: in version 9.2.9 I had forgotten to add the pxelinux package to the dependencies, to be added if not already present in the distro.
