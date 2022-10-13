@@ -102,13 +102,10 @@ export default class Xdg {
        */
       if (Pacman.packageIsInstalled('lightdm')) {
         let dc = `${chroot}/etc/lightdm/`
-        /*
-        * patch isDir
-        */
         let files = fs.readdirSync(dc)
         for (const elem of files) {
-          if (!N8.isDirectory(elem)) {
-            const curFile = dc + elem
+          const curFile = dc + elem
+          if (!N8.isDirectory(curFile)) {
             let content = fs.readFileSync(curFile, 'utf8')
             let find = `[Seat:*]`
             if (content.includes(find)) {
