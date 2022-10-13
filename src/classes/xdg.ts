@@ -10,6 +10,7 @@ import fs, { utimesSync } from 'node:fs'
 import path from 'node:path'
 import Pacman from './pacman'
 import Utils from './utils'
+import N8 from './n8'
 
 // libraries
 import { exec } from '../lib/utils'
@@ -102,17 +103,17 @@ export default class Xdg {
       if (Pacman.packageIsInstalled('lightdm')) {
         let dc = `${chroot}/etc/lightdm/`
         /*
-        * let files = fs.readdirSync(dc, { withFileTypes: true })
+        * patch isDir
         */
-        let files = fs.readdirSync(dc, { withFileTypes: true }).filter(dirent => dirent.isFile())
-        
-        console.log(files)
+        let files = fs.readdirSync(dc)
         for (const elem of files) {
-          const curFile = dc + elem
-          let content = fs.readFileSync(curFile, 'utf8')
-          let find = `[Seat:*]`
-          if (content.includes(find)) {
-            shx.sed('-i', `autologin-user=${olduser}`, `autologin-user=${newuser}`, curFile)
+          if (!N8.isDirectory(elem)) {
+            const curFile = dc + elem
+            let content = fs.readFileSync(curFile, 'utf8')
+            let find = `[Seat:*]`
+            if (content.includes(find)) {
+              shx.sed('-i', `autologin-user=${olduser}`, `autologin-user=${newuser}`, curFile)
+            }
           }
         }
       }
