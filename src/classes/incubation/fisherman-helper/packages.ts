@@ -14,7 +14,6 @@ import Pacman from '../../pacman'
  * dependencies actually are removed by package managers
  */
 export function remove(distro: IDistro): string {
-
   let removePackages = ["calamares"]
   if (distro.familyId === 'archlinux') {
     removePackages.push("penguins-eggs")

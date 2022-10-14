@@ -1,8 +1,6 @@
-# Debian/Bookworm
+# Debian/Buster et others
 # packages
 ---
 backend: apt
 
-operations:
-{{remove}}
-{{try_install}}
+{{operations}}
