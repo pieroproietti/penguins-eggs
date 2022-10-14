@@ -189,7 +189,7 @@ export default class Pxe {
         content += `TIMEOUT 0\n`
         content += `\n`
         content += `label egg\n`
-        content += `menu label ${this.bootLabel}\n`
+        content += `menu label ${this.bootLabel.replace('.iso', '')}\n`
         let clid = this.settings.distro.codenameLikeId
         if (clid === 'bionic' || clid === 'stretch' || clid === 'jessie') {
             content += `kernel vmlinuz\n`
@@ -198,7 +198,7 @@ export default class Pxe {
             content += `kernel http://${Utils.address()}/vmlinuz\n`
             content += `append initrd=http://${Utils.address()}/initrd boot=live config noswap noprompt fetch=http://${Utils.address()}/live/filesystem.squashfs\n`
         }
-        content += `SYSAPPEND 3\n`
+        content += `sysappend 3\n`
         content += `\n`
 
         if (this.isos.length > 0) {
@@ -209,7 +209,7 @@ export default class Pxe {
                 content += `menu label ${iso}\n`
                 content += `kernel http://${Utils.address()}/memdisk\n`
                 content += `initrd http://${Utils.address()}/${iso}\n`
-                content += `append  iso raw\n`
+                content += `append  iso raw sysappend 3\n`
             }
         }
         let file = `${this.pxeRoot}/pxelinux.cfg/default`
