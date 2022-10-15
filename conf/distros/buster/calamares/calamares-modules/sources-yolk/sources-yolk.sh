@@ -9,10 +9,10 @@
 # sources-yolk.sh -u
 # remove yolk, restore sourceslist, sourceslist.d ed esegue apt non autenticato
 
+#
+#
+#
 function main {
-    #####################################################################
-    # unmount: remove yolk.list
-    #####################################################################
     if [ "$1" = "-u" ]; then
         remove_yolk
     else
@@ -20,8 +20,9 @@ function main {
     fi
 }
 
-
-#####################################################################
+#
+#
+#
 function backup {
     if [ -f "$SOURCESLIST_BACKUP" ]; then
         rm -f "$SOURCESLIST_BACKUP"
@@ -34,6 +35,9 @@ function backup {
     mv "$SOURCESLIST_D" "$SOURCESLIST_D_BACKUP"
 }
 
+#
+#
+#
 function restore {
     if [ -f "$SOURCESLIST" ]; then
         rm -f "$SOURCESLIST" 
@@ -46,26 +50,31 @@ function restore {
     mv "$SOURCESLIST_D_BACKUP" "$SOURCESLIST_D"
 }
 
-
+#
+#
+#
 function add_yolk {
     backup
 
-cat << 'EOF' >> $CHROOT/etc/apt/sources.list.d/yolk.list
+cat << "EOF" >> "$CHROOT"/etc/apt/sources.list.d/yolk.list
 # yolk repo
 deb [trusted=yes] file:/var/local/yolk ./
 EOF
 
-    chroot $CHROOT apt-get --allow-unauthenticated update -y
+    chroot "$CHROOT apt-get --allow-unauthenticated update -y"
 }
 
+#
+#
+#
 function remove_yolk {
     restore
-    chroot $CHROOT apt-get update -y
+    chroot "$CHROOT" apt-get update -y
 }
 
-
-
-# Lo script inizia qui
+#
+# START HERE
+#
 CHROOT=$(mount | grep proc | grep calamares | awk '{print $3}' | sed -e "s#/proc##g")
 
 SOURCESLIST="$CHROOT/etc/apt/sources.list"
@@ -74,5 +83,5 @@ SOURCESLIST_BACKUP="$SOURCESLIST.backup"
 SOURCESLIST_D="$CHROOT/etc/apt/sources.list.d"
 SOURCESLIST_D_BACKUP="$SOURCESLIST_D.backup"
 
-main $1
+main "$1"
 exit 0
