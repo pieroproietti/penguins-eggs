@@ -268,30 +268,17 @@ export default class Fisherman {
     const removePackages = require('./fisherman-helper/packages').remove
     const tryInstall = require('./fisherman-helper/packages').tryInstall
     this.buildModule(name)
-    // operations:
-    // {{remove}}
-    // {{try_install}}
-    // operations:
-    // - remove:
-    //   - calamares
-    //   - eggs
-    // - try_install:
-    //   - package1
-    //   - package2
-    
-    let operations = ''
-    let toRemove = ''
+   
+    let yamlInstall = tryInstall(distro)
+
+    let yamlRemove = ''
     if (release) {
-      toRemove = removePackages(distro)
+      yamlRemove = removePackages(distro)
     }
 
-    console.log("toRemove:"  + toRemove)
-
-    let toInstall = tryInstall(distro)
-    console.log("toInstall:"  + toInstall)
-
-    if (toRemove !== "" || toInstall !== "" ) {
-      operations = "operations:\n" + toRemove + toInstall
+    let operations = ''
+    if (yamlRemove !== '' || yamlInstall !== '' ) {
+      operations = "operations:\n" + yamlRemove + yamlInstall
     }
     shx.sed('-i', '{{operations}}', operations, this.installer.modules + name + '.conf')
   }
