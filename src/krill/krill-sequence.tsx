@@ -534,6 +534,7 @@ export default class Sequence {
          if (this.distro.familyId === 'debian') {
             message = "sources yolk unmount"
             percent = 0.90
+            await Utils.pressKeyToExit('check: sudo sources-yolk -u')
             try {
                await redraw(<Install message={message} percent={percent} />)
                await this.execCalamaresModule('sources-yolk-unmount')

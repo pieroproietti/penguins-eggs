@@ -1,79 +1,72 @@
-import { IDistro } from '../../../interfaces'
 /**
- * 
+ * packages.ts
  */
+import { IDistro } from '../../../interfaces'
 import Pacman from '../../pacman'
 
-
-
 /**
- * Work only with:
- * - calamares
- * - penguins-eggs
  * 
- * dependencies actually are removed by package managers
+ * @param distro 
+ * @returns yaml-string
  */
 export function remove(distro: IDistro): string {
-  let removePackages = ["calamares"]
+  let packages = ["calamares"]
   if (distro.familyId === 'archlinux') {
-    removePackages.push("penguins-eggs")
+    packages.push("penguins-eggs")
   } if (distro.familyId === 'debian') {
-    removePackages.push("eggs")
+    packages.push("eggs")
   }
 
-  let text = '  - remove:\n'
-  for (const elem of removePackages) {
-    text += `    - ${elem.trim()}\n`
+  let yaml = ''
+  for (const elem of packages) {
+    yaml += `    - ${elem.trim()}\n`
   }
-  return text
+
+  if (yaml !== '') {
+    yaml = '- remove:\n' + yaml
+  }
+  return yaml
 }
 
 /**
  *
  * @param distro
-   - try_install:
-      - language-pack-$LOCALE
-      - hunspell-$LOCALE
-      - libreoffice-help-$LOCALE
-
+ * @returns yaml-string
  */
 export function tryInstall(distro: IDistro): string {
-
-
-  let packages = ''
+  let yaml = ''
   /**
    * Depending on the distro
    */
   if (distro.distroLike === 'Ubuntu') {
-    packages += '    - language-pack-$LOCALE\n'
+    yaml += '    - language-pack-$LOCALE\n'
   }
 
   // Da localizzare se presenti
   if (Pacman.packageIsInstalled('hunspell')) {
-    packages += '    - hunspell-$LOCALE\n'
+    yaml += '    - hunspell-$LOCALE\n'
   }
 
   if (Pacman.packageIsInstalled('libreoffice-base-core')) {
-    packages += `    - libreoffice-l10n-$LOCALE\n`
-    packages += `    - libreoffice-help-$LOCALE\n`
+    yaml += `    - libreoffice-l10n-$LOCALE\n`
+    yaml += `    - libreoffice-help-$LOCALE\n`
   }
 
   if (Pacman.packageIsInstalled('firefox-esr')) {
-    packages += `    - firefox-esr-$LOCALE\n`
+    yaml += `    - firefox-esr-$LOCALE\n`
   }
 
   if (Pacman.packageIsInstalled('firefox')) {
-    packages += `    - firefox-$LOCALE\n`
+    yaml += `    - firefox-$LOCALE\n`
   }
 
   if (Pacman.packageIsInstalled('thunderbird')) {
-    packages += `    - thunderbird-locale-$LOCALE\n`
+    yaml += `    - thunderbird-locale-$LOCALE\n`
   }
 
-  let retVal = ''
-  if (packages !== '') {
-    retVal += '  - try_install:\n' + packages
+  if (yaml !== '') {
+    yaml = '  - try_install:\n' + yaml
   }
 
-  return retVal
+  return yaml
 }
