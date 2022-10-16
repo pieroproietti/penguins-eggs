@@ -279,8 +279,8 @@ export default class Fisherman {
     let operations = ''
     if (yamlRemove !== '' || yamlInstall !== '' ) {
       operations = "operations:\n" + yamlRemove + yamlInstall
+      shx.sed('-i', '{{operations}}', operations, this.installer.modules + name + '.conf')
     }
-    shx.sed('-i', '{{operations}}', operations, this.installer.modules + name + '.conf')
   }
 
 
