@@ -18,7 +18,7 @@ penguins-eggs
 <!-- toc -->
 * [Index](#index)
 * [Presentation](#presentation)
-* [Tecnology](#tecnology)
+* [Technology](#technology)
 * [Features](#features)
 * [Packages](#packages)
 * [Usage](#usage)
@@ -37,7 +37,7 @@ You can easily install the resulting live system with the calamares installer or
 Thanks to the wardrobe, you can create or use scripts to switch from a "naked" version - with only a CLI interface - and "wear" it with a full GUI or server configurations. See [penguins-wardrobe](https://github.com/pieroproietti/penguins-wardrobe), fork it and adapt it to yours needs.
 
 
-# Tecnology
+# Technology
 
 The whole thing is written in pure typescript, so ideally it can be used with different Linux distributions. Yes, there are major differences in terms of the package manager used, but not so much on the way the various programs used to build the isos work. Actually eggs support: Debian, Devuan, Ubuntu, Arch and ManjaroLinux.
 
@@ -52,9 +52,9 @@ The cuckoo lays its eggs in the nests of other birds, and the eggs are hatched b
 
 We have two methods to save in the live system all our data: clone and backup.
 
-```eggs produces --fast --clone``` saves our users and our data directly in the generated iso. The data will be visible directly from the live and accessible to anyone who gets a copy.
+```eggs produce --fast --clone``` saves our users and our data directly in the generated iso. The data will be visible directly from the live and accessible to anyone who gets a copy.
 
-```eggs produces --fast --backup``` saves our data within the generated iso using a LUKS volume. Our data will NOT be visible in the live system but can be reinstalled automatically with krill installer. Even having the generated image available, our data will be protected by the LUKS passphrase.
+```eggs produce --fast --backup``` saves our data within the generated iso using a LUKS volume. Our data will NOT be visible in the live system but can be reinstalled automatically with krill installer. Even having the generated image available, our data will be protected by the LUKS passphrase.
 
 * ```eggs produce``` this is the default: all private data are removed on the live.
 * ```eggs produce --clone``` include all users data UNCRYPTED directly on the live.
@@ -66,7 +66,7 @@ Using ```sudo eggs install --cli``` will automaticaly restore your CRYPTED backu
 yolk - so called staying on the subject of eggs - is a local repository included in the livecd that contains a minimum of indispensable packages during installation. Thanks to yolk, you can safely install your system without the need of an active internet connection. Yolk, It is used only for Debian families and derivated.
 
 ## GUI calamares or TUI krill installer
-eggs include a TUI installer named krill, this let you to produce and install servers configurations. krill use a nice TUI interface using the same, configuration created by eggs for [calamares](calamares.io). This lead to have "about the same" experience installing, from old distros to new ones and for GUI and CLI. It's possible with krill to do unattended installations, simply add ```--unattended``` flag and the values in ```/etc/penguins-eggs.d/krill.yaml``` will be used for installation.
+eggs include a TUI installer named krill, this let you to produce and install servers configurations. krill use a nice TUI interface using the same, configuration created by eggs for [calamares](https://calamares.io/). This lead to have "about the same" experience installing, from old distros to new ones and for GUI and CLI. It's possible with krill to do unattended installations, simply add ```--unattended``` flag and the values in ```/etc/penguins-eggs.d/krill.yaml``` will be used for installation.
 
 ## helper: mom and dad
 I've added two lightweight assistants integrated with eggs: mom and dad. While mom is a bash script with whiptail - and guides the user to the various commands and documentation, dad started as a short way to create isos. All you have to do is type **sudo eggs dad** and follow simple instructions. You can also shortcut the way to reset the configuration **sudo dad -c** or - even faster - reset the configuration, load defaults, kill created isos: simply type **sudo eggs dad -d** and you will immediately be able to produce the egg in the default /home/eggs nest.
@@ -97,10 +97,18 @@ eggs have it's repository ppa, You can use it, copy and paste in a terminal wind
 
 ```
 curl -SsL  https://pieroproietti.github.io/penguins-eggs-ppa/KEY.gpg | gpg --dearmor | sudo tee /usr/share/keyrings/penguins-eggs-ppa-keyring.gpg
+
 sudo curl -s --compressed -o /etc/apt/sources.list.d/penguins-eggs-ppa.list "https://pieroproietti.github.io/penguins-eggs-ppa/penguins-eggs-ppa.list"
 ```
 
-Update your repositories: **sudo apt update** and install eggs: **sudo apt install eggs**.
+Update your repositories and install eggs:
+
+```
+sudo apt update
+
+sudo apt install eggs
+```
+
 
 #### Download the package and install with dpkg
 
@@ -128,7 +136,7 @@ The same for manjaroLinux: ```git clone https://github.com/pieroproietti/penguin
 
 # Usage
 
-Once the package has been installed, you can have the new ```eggs``` command. Typing ```eggs``` will get the list of commands, typing ```eggs produces --help``` will get the eggs produce command help screen. You can also use the command autocomplete with the TABS key, you will get the possible choices for each command. In addition, there is a man page, so by typing ```man eggs``` you will get that help as well. A more guided approach can be made usind ```eggs mom```, will present a menu with various commands.
+Once the package has been installed, you can have the new ```eggs``` command. Typing ```eggs``` will get the list of commands, typing ```eggs produce --help``` will get the eggs produce command help screen. You can also use the command autocomplete with the TABS key, you will get the possible choices for each command. In addition, there is a man page, so by typing ```man eggs``` you will get that help as well. A more guided approach can be made usind ```eggs mom```, will present a menu with various commands.
 
 ## Examples
 
