@@ -61,7 +61,7 @@ cat << "EOF" >> "$CHROOT"/etc/apt/sources.list.d/yolk.list
 deb [trusted=yes] file:/var/local/yolk ./
 EOF
 
-    chroot "$CHROOT apt-get --allow-unauthenticated update -y"
+    chroot "$CHROOT" apt-get --allow-unauthenticated update -y
 }
 
 #
@@ -69,7 +69,7 @@ EOF
 #
 function remove_yolk {
     restore
-    chroot "$CHROOT" apt-get update -y
+    # no_need chroot "$CHROOT" apt-get update -y
 }
 
 #
@@ -77,11 +77,11 @@ function remove_yolk {
 #
 CHROOT=$(mount | grep proc | grep calamares | awk '{print $3}' | sed -e "s#/proc##g")
 
-SOURCESLIST="$CHROOT/etc/apt/sources.list"
-SOURCESLIST_BACKUP="$SOURCESLIST.backup"
+SOURCESLIST="$CHROOT"/etc/apt/sources.list
+SOURCESLIST_BACKUP="$SOURCESLIST".backup"
 
-SOURCESLIST_D="$CHROOT/etc/apt/sources.list.d"
-SOURCESLIST_D_BACKUP="$SOURCESLIST_D.backup"
+SOURCESLIST_D="$CHROOT"/etc/apt/sources.list.d
+SOURCESLIST_D_BACKUP="$SOURCESLIST_D".backup
 
 main "$1"
 exit 0
