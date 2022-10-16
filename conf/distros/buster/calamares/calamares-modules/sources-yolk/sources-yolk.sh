@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 #
 # We use just yolk during installation
@@ -12,7 +12,7 @@
 #
 #
 #
-function main {
+main() {
     if [ "$1" = "-u" ]; then
         restore
     else
@@ -23,7 +23,7 @@ function main {
 #
 #
 #
-function backup {
+backup() {
     if [ -f "$SOURCESLIST_BACKUP" ]; then
         rm -f "$SOURCESLIST_BACKUP"
     fi
@@ -38,7 +38,7 @@ function backup {
 #
 #
 #
-function restore {
+restore() {
     if [ -f "$SOURCESLIST" ]; then
         rm -f "$SOURCESLIST"
     fi
@@ -53,10 +53,10 @@ function restore {
 #
 #
 #
-function add_yolk {
+add_yolk() {
     backup
 
-cat << "EOF" >> "$CHROOT"/etc/apt/sources.list.d/yolk.list
+cat << EOF >> "$CHROOT"/etc/apt/sources.list.d/yolk.list
 # yolk repo
 deb [trusted=yes] file:/var/local/yolk ./
 EOF
@@ -65,7 +65,7 @@ EOF
 }
 
 #
-# START HERE
+# WE START HERE
 #
 CHROOT=$(mount | grep proc | grep calamares | awk '{print $3}' | sed -e "s#/proc##g")
 
