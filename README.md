@@ -18,7 +18,7 @@ penguins-eggs
 <!-- toc -->
 * [Index](#index)
 * [Presentation](#presentation)
-* [Tecnology](#tecnology)
+* [Technology](#technology)
 * [Features](#features)
 * [Packages](#packages)
 * [Usage](#usage)
@@ -37,7 +37,7 @@ You can easily install the resulting live system with the calamares installer or
 Thanks to the wardrobe, you can create or use scripts to switch from a "naked" version - with only a CLI interface - and "wear" it with a full GUI or server configurations. See [penguins-wardrobe](https://github.com/pieroproietti/penguins-wardrobe), fork it and adapt it to yours needs.
 
 
-# Tecnology
+# Technology
 
 The whole thing is written in pure typescript, so ideally it can be used with different Linux distributions. Yes, there are major differences in terms of the package manager used, but not so much on the way the various programs used to build the isos work. Actually eggs support: Debian, Devuan, Ubuntu, Arch and ManjaroLinux.
 
