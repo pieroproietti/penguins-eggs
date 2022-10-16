@@ -499,7 +499,7 @@ export default class Sequence {
          await cliAutologin.msgRemove(`${this.installTarget}/etc/motd`)
          await cliAutologin.msgRemove(`${this.installTarget}/etc/issue`)
 
-         // bootloader-config [moved to the end]
+         // bootloader-config
          message = "bootloader-config "
          percent = 0.70
          try {
@@ -509,7 +509,7 @@ export default class Sequence {
             await Utils.pressKeyToExit(JSON.stringify(error))
          }
 
-         // grubcfg [moved to the end]
+         // grubcfg 
          message = "grubcfg "
          percent = 0.75
          try {
@@ -519,7 +519,7 @@ export default class Sequence {
             await Utils.pressKeyToExit(JSON.stringify(error))
          }
 
-         // bootloader (grub-install) [moved to the end)
+         // bootloader (grub-install)
          message = "bootloader "
          percent = 0.80
          try {
@@ -530,11 +530,12 @@ export default class Sequence {
          }
 
 
-         // sourcesYolkUmount
+         // sources-yolk-umount
          if (this.distro.familyId === 'debian') {
             message = "sources yolk unmount"
             percent = 0.90
             try {
+               // non riesce a fare update perche manca /etc/resolv.conf
                await redraw(<Install message={message} percent={percent} />)
                await this.execCalamaresModule('sources-yolk-unmount')
             } catch (error) {
