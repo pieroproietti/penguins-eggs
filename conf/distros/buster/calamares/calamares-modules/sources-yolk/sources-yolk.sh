@@ -14,7 +14,7 @@
 #
 function main {
     if [ "$1" = "-u" ]; then
-        remove_yolk
+        restore
     else
         add_yolk
     fi
@@ -40,13 +40,13 @@ function backup {
 #
 function restore {
     if [ -f "$SOURCESLIST" ]; then
-        rm -f "$SOURCESLIST" 
+    s    rm -f "$SOURCESLIST"
     fi
     mv "$SOURCESLIST_BACKUP" "$SOURCESLIST"
 
     if [ -d "$SOURCESLIST_D" ]; then
-        rm -rf "$SOURCESLIST_D" 
-    fi        
+        rm -rf "$SOURCESLIST_D"
+    fi
     mv "$SOURCESLIST_D_BACKUP" "$SOURCESLIST_D"
 }
 
@@ -65,23 +65,15 @@ EOF
 }
 
 #
-#
-#
-function remove_yolk {
-    restore
-    # no_need chroot "$CHROOT" apt-get update -y
-}
-
-#
 # START HERE
 #
 CHROOT=$(mount | grep proc | grep calamares | awk '{print $3}' | sed -e "s#/proc##g")
 
-SOURCESLIST="$CHROOT"/etc/apt/sources.list
-SOURCESLIST_BACKUP="$SOURCESLIST".backup"
+SOURCESLIST="$CHROOT/etc/apt/sources.list"
+SOURCESLIST_BACKUP="$SOURCESLIST.backup"
 
-SOURCESLIST_D="$CHROOT"/etc/apt/sources.list.d
-SOURCESLIST_D_BACKUP="$SOURCESLIST_D".backup
+SOURCESLIST_D="$CHROOT/etc/apt/sources.list.d"
+SOURCESLIST_D_BACKUP="$SOURCESLIST_D.backup"
 
 main "$1"
 exit 0
