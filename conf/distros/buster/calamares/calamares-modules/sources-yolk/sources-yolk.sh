@@ -40,7 +40,7 @@ function backup {
 #
 function restore {
     if [ -f "$SOURCESLIST" ]; then
-    s    rm -f "$SOURCESLIST"
+        rm -f "$SOURCESLIST"
     fi
     mv "$SOURCESLIST_BACKUP" "$SOURCESLIST"
 
