@@ -13,6 +13,8 @@ penguins-eggs
 
 # Penguin's eggs Debian package
 
+Note: **eggs_9.x.x_armel.deb** __is compiled for armel and could also be released for arm64, however it is not working. I am releasing it to look for someone who has the skills and wants to collaborate on the development__.
+
 Detailed instructions for usage are published on the [penguin's eggs book](https://penguins-eggs.net/book). 
 You can follow the project also consulting the [commit history](https://github.com/pieroproietti/penguins-eggs/commits/master). 
 

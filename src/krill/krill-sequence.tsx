@@ -544,9 +544,6 @@ export default class Sequence {
          }
 
          // packages
-         /**
-          * packaged need internet connection
-          */
          message = "add/remove packages"
          percent = 0.91
          try {
