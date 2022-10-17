@@ -4,10 +4,10 @@
 # We use just yolk during installation
 #
 # sources-yolk.sh
-# add yolk, rimuove sourceslist, sourceslist.d ed esegue apt non autenticato
+# add yolk, rimuove LIST, LIST.d ed esegue apt non autenticato
 #
 # sources-yolk.sh -u
-# remove yolk, restore sourceslist, sourceslist.d ed esegue apt non autenticato
+# remove yolk, restore LIST, LIST.d ed esegue apt non autenticato
 
 #
 #
@@ -16,7 +16,8 @@ main() {
     if [ "$1" = "-u" ]; then
         restore
     else
-        add_yolk
+        backup
+        yolk
     fi
 }
 
@@ -24,43 +25,41 @@ main() {
 #
 #
 backup() {
-    if [ -f "$SOURCESLIST_BACKUP" ]; then
-        rm -f "$SOURCESLIST_BACKUP"
+    if [ -f "$BACKUP" ]; then
+        rm -f "$BACKUP"
     fi
-    mv "$SOURCESLIST" "$SOURCESLIST_BACKUP"
 
-    if [ -d "$SOURCESLIST_D_BACKUP" ]; then
-        rm -rf "$SOURCESLIST_D_BACKUP"
+    if [ -d "$BACKUP_D" ]; then
+        rm -rf "$BACKUP_D"
     fi
-    mv "$SOURCESLIST_D" "$SOURCESLIST_D_BACKUP"
+
+    mv "$LIST" "$BACKUP"
+
+    mv "$LIST_D" "$BACKUP_D"
 }
 
 #
 #
 #
 restore() {
-    if [ -f "$SOURCESLIST" ]; then
-        rm -f "$SOURCESLIST"
+    if [ -f "$LIST" ]; then
+        rm -f "$LIST"
     fi
-    mv "$SOURCESLIST_BACKUP" "$SOURCESLIST"
 
-    if [ -d "$SOURCESLIST_D" ]; then
-        rm -rf "$SOURCESLIST_D"
+    if [ -d "$LIST_D" ]; then
+        rm -rf "$LIST_D"
     fi
-    mv "$SOURCESLIST_D_BACKUP" "$SOURCESLIST_D"
+
+    mv "$BACKUP" "$LIST"
+
+    mv "$BACKUP_D" "$LIST_D"
 }
 
 #
 #
 #
-add_yolk() {
-    backup
-
-cat << EOF >> "$CHROOT"/etc/apt/sources.list.d/yolk.list
-# yolk repo
-deb [trusted=yes] file:/var/local/yolk ./
-EOF
-
+yolk() {
+    echo "deb [trusted=yes] file:/var/local/yolk ./" > "$CHROOT/etc/apt/sources.list.d/yolk.list"
     chroot "$CHROOT" apt-get --allow-unauthenticated update -y
 }
 
@@ -69,11 +68,11 @@ EOF
 #
 CHROOT=$(mount | grep proc | grep calamares | awk '{print $3}' | sed -e "s#/proc##g")
 
-SOURCESLIST="$CHROOT/etc/apt/sources.list"
-SOURCESLIST_BACKUP="$SOURCESLIST.backup"
+LIST="$CHROOT/etc/apt/sources.list"
+BACKUP="$LIST.backup"
 
-SOURCESLIST_D="$CHROOT/etc/apt/sources.list.d"
-SOURCESLIST_D_BACKUP="$SOURCESLIST_D.backup"
+LIST_D="$CHROOT/etc/apt/sources.list.d"
+BACKUP_D="$LIST_D.backup"
 
 main "$1"
 exit 0
