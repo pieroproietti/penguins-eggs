@@ -19,6 +19,7 @@ main() {
         backup
         yolk
     fi
+    sync
     exit 0
 }
 

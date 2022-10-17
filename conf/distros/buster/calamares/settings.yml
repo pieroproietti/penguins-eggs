@@ -65,7 +65,7 @@ sequence:
       - partition
       - mount
       - unpackfs
-      # dpkg-unsafe-io
+      - dpkg-unsafe-io
       - sources-yolk
       {{hasSystemd}}machineid
       - fstab
@@ -85,7 +85,7 @@ sequence:
       - plymouthcfg
       - initramfscfg
       - initramfs
-      # dpkg-unsafe-io-undo
+      - dpkg-unsafe-io-undo
       - removeuser
       - sources-yolk-unmount
       - cleanup
