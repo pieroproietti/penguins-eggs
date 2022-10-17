@@ -67,6 +67,6 @@ export function tryInstall(distro: IDistro): string {
   if (yaml !== '') {
     yaml = '  - try_install:\n' + yaml
   }
-
+  
   return yaml
 }

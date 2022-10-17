@@ -319,6 +319,16 @@ export default class Sequence {
             await Utils.pressKeyToExit(JSON.stringify(error))
          }
 
+         // dpkg-unsafe-io
+         message = "dpkg-unsafe-io"
+         percent = 0.11
+         try {
+            await redraw(<Install message={message} percent={percent} />)
+            await this.execCalamaresModule('dpkg-unsafe-io')
+         } catch (error) {
+            await Utils.pressKeyToExit(JSON.stringify(error))
+         }
+
          /**
           * IF RESTORE USERS DATA
           */
@@ -437,6 +447,15 @@ export default class Sequence {
             await Utils.pressKeyToExit(JSON.stringify(error))
          }
 
+         // dpkg-unsafe-io
+         message = "dpkg-unsafe-io-undo"
+         percent = 0.61
+         try {
+            await redraw(<Install message={message} percent={percent} />)
+            await this.execCalamaresModule('dpkg-unsafe-io-undo')
+         } catch (error) {
+            await Utils.pressKeyToExit(JSON.stringify(error))
+         }
 
          /**
           * IF NOT RESTORE USERS DATA OR PERSONAL BACKUP

@@ -1,6 +1,6 @@
 ---
 type:       "job"
-name:       "re-enable-dpkg-sync"
+name:       "dpkg-unsafe-io-undo"
 interface:  "process"
 command:    "/usr/sbin/dpkg-unsafe-io.sh -u"
 timeout:    600
