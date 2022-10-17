@@ -19,6 +19,7 @@ main() {
         backup
         yolk
     fi
+    exit 0
 }
 
 #
@@ -61,7 +62,8 @@ restore() {
 yolk() {
     mkdir -p "$LIST_D"
     echo "deb [trusted=yes] file:/var/local/yolk ./" > "$LIST_D/yolk.list"
-    chroot "$CHROOT" apt-get --allow-unauthenticated update -y
+    touch "$LIST"
+    chroot "$CHROOT" apt-get update
 }
 
 #
@@ -76,4 +78,4 @@ LIST_D="$LIST.d"
 BACKUP_D="$LIST_D.backup"
 
 main "$1"
-exit 0
+
