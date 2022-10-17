@@ -46,11 +46,11 @@ export default async function packages(this: Sequence): Promise<void> {
 
             if (packages.backend === 'apt') {
                 if (packagesToRemove.length > 0) {
-                    let ctr = `chroot ${this.installTarget} apt-get purge -y `
+                    let cmd = `chroot ${this.installTarget} apt-get purge -y\n`
                     for (const packageToRemove of packagesToRemove) {
-                        ctr += packageToRemove + ' '
+                        cmd += packageToRemove + ' '
                     }
-                    await exec(`${ctr} ${this.toNull}`, this.echo)
+                    await exec(`${cmd} ${this.toNull}`, this.echo)
                     await exec(`chroot ${this.installTarget} apt-get autoremove -y ${this.toNull}`, this.echo)
                 }
 
@@ -60,11 +60,11 @@ export default async function packages(this: Sequence): Promise<void> {
 
             } else if (packages.backend === 'pacman') {
                 if (packagesToRemove.length > 0) {
-                    let ctr = `chroot ${this.installTarget} pacman -S `
+                    let cmd = `chroot ${this.installTarget} pacman -S\n`
                     for (const packageToRemove of packagesToRemove) {
-                        ctr += packageToRemove + ' '
+                        cmd += packageToRemove + ' '
                     }
-                    await exec(`${ctr} ${echoYes}`, this.echo)
+                    await exec(`${cmd} ${echoYes}`, this.echo)
                 }
 
                 for (const packageToInstall of packagesTryInstall) {

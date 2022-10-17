@@ -539,11 +539,14 @@ export default class Sequence {
                await redraw(<Install message={message} percent={percent} />)
                await this.execCalamaresModule('sources-yolk-unmount')
             } catch (error) {
-               // await Utils.pressKeyToExit(JSON.stringify(error))
+               await Utils.pressKeyToExit(JSON.stringify(error))
             }
          }
 
          // packages
+         /**
+          * packaged need internet connection
+          */
          message = "add/remove packages"
          percent = 0.91
          try {
