@@ -59,7 +59,8 @@ restore() {
 #
 #
 yolk() {
-    echo "deb [trusted=yes] file:/var/local/yolk ./" > "$CHROOT/etc/apt/sources.list.d/yolk.list"
+    mkdir -p "$LIST_D"
+    echo "deb [trusted=yes] file:/var/local/yolk ./" > "$LIST_D/yolk.list"
     chroot "$CHROOT" apt-get --allow-unauthenticated update -y
 }
 
@@ -71,7 +72,7 @@ CHROOT=$(mount | grep proc | grep calamares | awk '{print $3}' | sed -e "s#/proc
 LIST="$CHROOT/etc/apt/sources.list"
 BACKUP="$LIST.backup"
 
-LIST_D="$CHROOT/etc/apt/sources.list.d"
+LIST_D="$LIST.d"
 BACKUP_D="$LIST_D.backup"
 
 main "$1"
