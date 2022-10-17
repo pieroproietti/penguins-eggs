@@ -336,6 +336,7 @@ export default class Sequence {
             }
          }
 
+
          // sources-yolk
          if (this.distro.familyId === 'debian') {
             message = 'sources-yolk'
@@ -532,14 +533,13 @@ export default class Sequence {
 
          // sources-yolk-umount
          if (this.distro.familyId === 'debian') {
-            message = "sources yolk unmount"
+            message = "sources-yolk-unmount"
             percent = 0.90
             try {
-               // non riesce a fare update perche manca /etc/resolv.conf
                await redraw(<Install message={message} percent={percent} />)
                await this.execCalamaresModule('sources-yolk-unmount')
             } catch (error) {
-               await Utils.pressKeyToExit(JSON.stringify(error))
+               // await Utils.pressKeyToExit(JSON.stringify(error))
             }
          }
 
