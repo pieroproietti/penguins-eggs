@@ -87,7 +87,7 @@ sequence:
       - initramfs
       # dpkg-unsafe-io-undo
       - removeuser
-      - sources-yolk-unmount
+      - sources-yolk-undo
       - cleanup
       - umount
 

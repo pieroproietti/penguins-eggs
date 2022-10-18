@@ -13,7 +13,7 @@ It take all configuration of Debian buster
 * /calamares/calamares-modules/grubcfg original
 * /calamares/calamares-modules/remove-link from buster
 * /calamares/calamares-modules/sources-yolk from buster
-* /calamares/calamares-modules/sources-yolk-unmount from buster
+* /calamares/calamares-modules/sources-yolk-undo from buster
 
 * /calamares/modules/bootloader.yml original
 * /calamares/modules/displaymanager.yml from focal

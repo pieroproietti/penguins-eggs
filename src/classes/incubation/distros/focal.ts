@@ -84,7 +84,7 @@ export class Focal {
     await fisherman.modulePackages(this.distro, this.release) //
     await fisherman.moduleRemoveuser(this.user_opt)
     await fisherman.buildCalamaresModule('sources-yolk', false)
-    await fisherman.buildCalamaresModule('sources-yolk-unmount', false)
+    await fisherman.buildCalamaresModule('sources-yolk-undo', false)
     await fisherman.buildCalamaresModule('cleanup', true)
     await fisherman.buildModule('umount')
     await fisherman.buildModule('finished')
