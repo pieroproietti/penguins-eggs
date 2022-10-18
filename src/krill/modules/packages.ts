@@ -36,7 +36,7 @@ export default async function packages(this: Sequence): Promise<void> {
                 /**
                  * apt: Debian/Devuan/Ubuntu
                  */
-                 if (packages.operations.remove.length > 0) {
+                if (packages.operations.remove !== undefined) {
                     let cmd = `chroot ${this.installTarget} apt-get purge -y `
                     for (const elem of packages.operations.remove) {
                         cmd += elem + ' '
@@ -44,7 +44,7 @@ export default async function packages(this: Sequence): Promise<void> {
                     await exec(`${cmd} ${this.toNull}`, this.echo)
                 }
 
-                if (packages.operations.try_install.length > 0) {
+                if (packages.operations.try_install !== undefined) {
                     let cmd = `chroot ${this.installTarget} apt-get install -y `
                     for (const elem of packages.operations.try_install) {
                         cmd += elem + ' '
@@ -52,11 +52,11 @@ export default async function packages(this: Sequence): Promise<void> {
                     await exec(`chroot ${this.installTarget} apt-get update ${this.toNull}`, this.echo)
                     await exec(`${cmd} ${this.toNull}`, this.echo)
                 }
-             } else if (packages.backend === 'pacman') {
+            } else if (packages.backend === 'pacman') {
                 /**
                  * pacman: arch/manjaro
                  */
-                if (packages.operations.remove.length > 0) {
+                if (packages.operations.remove !== undefined) {
                     let cmd = `chroot ${this.installTarget} pacman -R\n`
                     for (const elem of packages.operations.remove) {
                         cmd += elem + ' '
@@ -64,7 +64,7 @@ export default async function packages(this: Sequence): Promise<void> {
                     await exec(`${cmd} ${echoYes}`, this.echo)
                 }
 
-                if (packages.operations.try_install.length > 0) {
+                if (packages.operations.try_install !== undefined) {
                     for (const elem of packages.operations.try_install) {
                         await exec(`chroot ${this.installTarget} pacman -S ${elem}`, echoYes)
                     }
