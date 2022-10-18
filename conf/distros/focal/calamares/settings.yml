@@ -59,7 +59,7 @@ sequence:
       - removeuser
       #  - shellprocess@logs
       - cleanup
-      - sources-yolk-unmount
+      - sources-yolk-undo
       - umount
   - show:
       - finished

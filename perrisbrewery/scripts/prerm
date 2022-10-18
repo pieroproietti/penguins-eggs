@@ -31,14 +31,14 @@ fi
         rm -rf /usr/lib/x86_64-linux-gnu/calamares/modules/bootloader-config  
         rm -rf /usr/lib/x86_64-linux-gnu/calamares/modules/remove-link  
         rm -rf /usr/lib/x86_64-linux-gnu/calamares/modules/sources-yolk  
-        rm -rf /usr/lib/x86_64-linux-gnu/calamares/modules/sources-yolk-unmount
+        rm -rf /usr/lib/x86_64-linux-gnu/calamares/modules/sources-yolk-undo
         rm -rf /usr/lib/x86_64-linux-gnu/calamares/modules/cleanup
 
         # remove eggs calamares-modules i386
         rm -rf /usr/lib/i386-linux-gnu/calamares/modules/bootloader-config  
         rm -rf /usr/lib/i386-linux-gnu/calamares/modules/remove-link  
         rm -rf /usr/lib/i386-linux-gnu/calamares/modules/sources-yolk  
-        rm -rf /usr/lib/i386-linux-gnu/calamares/modules/sources-yolk-unmount
+        rm -rf /usr/lib/i386-linux-gnu/calamares/modules/sources-yolk-undo
         rm -rf /usr/lib/i386-linux-gnu/calamares/modules/cleanup
 
         # no calamares in armel and arm64

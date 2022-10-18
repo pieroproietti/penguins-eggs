@@ -41,7 +41,7 @@
  *  - initramfscfg:  initramfscfg
  *  - initramfs:     initramfs
  *  - removeuser:    removeuser
- *  - sources-yolk-unmount: execCalamaresModule('sources-yolk-unmount')
+ *  - sources-yolk-undo: execCalamaresModule('sources-yolk-undo')
  *  - umount:     umountVfs, this.umountFs
  */
 
@@ -550,15 +550,15 @@ export default class Sequence {
          }
 
 
-         // sources-yolk-umount
+         // sources-yolk-undo
          if (this.distro.familyId === 'debian') {
-            message = "sources-yolk-unmount"
+            message = "sources-yolk-undo"
             percent = 0.90
             try {
                await redraw(<Install message={message} percent={percent} />)
-               await this.execCalamaresModule('sources-yolk-unmount')
+               await this.execCalamaresModule('sources-yolk-undo')
             } catch (error) {
-               // await Utils.pressKeyToExit(JSON.stringify(error))
+               await Utils.pressKeyToExit(JSON.stringify(error))
             }
          }
 

@@ -55,6 +55,6 @@ export class Jessie {
     await fisherman.buildModule('partition', this.remix.branding)
     await fisherman.buildCalamaresModule('sources-yolk', true)
     await fisherman.moduleRemoveuser(this.user_opt)
-    await fisherman.buildCalamaresModule('sources-yolk-unmount', false)
+    await fisherman.buildCalamaresModule('sources-yolk-undo', false)
   }
 }
