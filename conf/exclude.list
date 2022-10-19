@@ -4,6 +4,7 @@
 # Exclude some system files. These are required, and you probably 
 # shouldn't change them.
 
+- /.snapshots/*
 - /dev/*
 - /cdrom/*
 - /media/*
