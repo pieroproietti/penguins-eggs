@@ -28,11 +28,11 @@ penguins-eggs
 <!-- tocstop -->
 
 # Presentation
-penguins-eggs is a console utility, under continuous development, that allows you to remaster your system and redistribute it as iso images.
+**penguins-eggs** is a console utility, under continuous development, that allows you to remaster your system and redistribute it as iso images.
 
 The purpose of this project is to implement the process of remastering your own version of Linux, generate it as an ISO image to burn to a CD/DVD or copy to a USB stick to boot your system. The default behavior is total removal of the system's data and users, but it is also possible to remaster the system including the data and accounts of present users, use flag **--clone**. It is also possible to keep the users and files present under an encrypted LUKS file within the same resulting iso file, flag **--backup**.
 
-You can easily install the resulting live system with the calamares installer or the internal TUI krill installer. It is possible to have also unattended installation using --unattended flag.
+You can easily install the resulting live system with the calamares installer or the internal TUI krill installer. It is possible to have also unattended installation using **--unattended** flag.
 
 Thanks to the wardrobe, you can create or use scripts to switch from a "naked" version - with only a CLI interface - and "wear" it with a full GUI or server configurations. See [penguins-wardrobe](https://github.com/pieroproietti/penguins-wardrobe), fork it and adapt it to yours needs.
 
