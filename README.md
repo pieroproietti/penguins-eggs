@@ -86,7 +86,7 @@ You can read more in wardrobe on [penguin's eggs blog](https://penguins-eggs.net
 Supporting various distributions, we need to have different packages. Debian, Devuan and Ubuntu share the .deb packages of eggs, while for Arch Linux and ManjaroLinux they use their PKGBUILD.
 
 ## Debian families
-eggs is released deb packages for amd64, armel and arm64 architectures. Due the characteristic of eggs, they can installed in Debian, Devuan or Ubuntu based distros, withouth worries about different versions, except for the architecture. It include standard scripts for preinst, postinst, prerm and postrm. 
+eggs is released deb packages for amd64, armel and arm64 architectures. Due the characteristic of eggs, they can installed in Debian, Devuan or Ubuntu based distros, without worries about different versions, except for the architecture. It include standard scripts for preinst, postinst, prerm and postrm. 
 
 ### Install eggs
 There are more than a way to install eggs as .deb package, the most common it's to add and use penguins-eggs-ppa.
