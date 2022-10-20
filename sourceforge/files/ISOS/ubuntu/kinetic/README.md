@@ -28,7 +28,7 @@ Ubuntu is a Linux distribution based on Debian mostly composed of free and open-
 
 ## Ubuntu 22.10 kinetic
 
-* **egg-of-ubuntu-kinetic-gnome**  a remaster of Ubuntu 22.10.
+* **egg-of-ubuntu-kinetic-gnome**  just a remaster of Ubuntu 22.10, but you can install it via PXE in a lot of machines!
 
 ![kinetic](https://a.fsdn.com/con/app/proj/penguins-eggs/screenshots/kinetic.png/245/183)
 
