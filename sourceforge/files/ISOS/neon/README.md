@@ -13,7 +13,7 @@ penguins-eggs
 
 # Penguin's eggs remastered ISOs
 
-All ISOs are based on KDE Neon User Edition and KDE Neon developer edition. 
+All ISOs are based on KDE Neon User Edition
 
 # user/password
 * ```live/evolution```
@@ -21,10 +21,10 @@ All ISOs are based on KDE Neon User Edition and KDE Neon developer edition.
 
 All ISOs include eggs, you can udate it with: ```sudo eggs update```.
 
-# KDE 
+# KDE Neon
 * **egg-of-ubuntu-focal-user** - a remaster of neon-user-20221020-0947.iso with eggs, unchanded. 
 
-* **egg-of-ubuntu-focal-developer** - just a remaster of neon-user-20221020-0947.iso and tools to develop eggs.
+* **egg-of-ubuntu-focal-developer** - a remaster of neon-user-20221020-0947.iso plus tools to develop eggs.
 
 ## More informations:
 
