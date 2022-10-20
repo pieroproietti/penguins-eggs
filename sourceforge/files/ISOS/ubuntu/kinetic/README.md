@@ -30,7 +30,7 @@ Ubuntu is a Linux distribution based on Debian mostly composed of free and open-
 
 * **egg-of-ubuntu-kinetic-gnome**  just a remaster of Ubuntu 22.10, but you can install it via PXE in a lot of machines!
 
-![kinetic](https://a.fsdn.com/con/app/proj/penguins-eggs/screenshots/kinetic.png/245/183)
+![kinetic](https://a.fsdn.com/con/app/proj/penguins-eggs/screenshots/kinetic.png/800/600)
 
 # That's all Folks!
 No need other configurations, penguins-eggs are battery included or better, as in the real, live is inside! :-D
