@@ -30,6 +30,8 @@ Ubuntu is a Linux distribution based on Debian mostly composed of free and open-
 
 * **egg-of-ubuntu-kinetic-gnome**  a remaster of Ubuntu 22.10.
 
+![kinetic](https://a.fsdn.com/con/app/proj/penguins-eggs/screenshots/kinetic.png/245/183)
+
 # That's all Folks!
 No need other configurations, penguins-eggs are battery included or better, as in the real, live is inside! :-D
 
