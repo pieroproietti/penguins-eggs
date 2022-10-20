@@ -31,7 +31,7 @@ All ISOs include eggs, you can udate it with: ```sudo eggs update```.
 * Repository: [penguins-eggs](https://github.com/pieroproietti/penguins-eggs)
 * Blog: [penguins-eggs](https://penguins-eggs.net)
 
-* You can find more informations on this Linux distro at: [KDE Neon](https://https://neon.kde.org/).
+* You can find more informations on this Linux distro at: [KDE Neon](https://neon.kde.org/).
 
 # Disclaim
 __Please note what this project is in no way connected to the original distro in any official way, it’s just my personal experiment.__
