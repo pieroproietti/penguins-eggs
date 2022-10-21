@@ -13,54 +13,24 @@ penguins-eggs
 
 # Penguin's eggs remixes ISOs
 
-All ISOs are based on Arch, Debian, Devuan, Linuxmin, manjaro and Ubuntu.
+All ISOs are based on Arch, Debian, Devuan, Manjaro, Ubuntu or derivates (LinuxFx, Linuxmint, MX-Linux, SpiralLinux, etc).
 
 You can boot this live images burning them on USB key - using [Ventoy](https://www.ventoy.net/en/index.html) is a great opportunity - or via PXE, booting from LAN, just ```sudo eggs cuckoo``` or  ```sudo eggs cuckoo --real```
 
-To install the system you have:
+To install the system you have 3 ways:
 
 * GUI installer calamares
 * TUI installer krill
-* unattended
+* TUI installer krill --unattended
 
 ## user/password
 * ```live/evolution```
 * ```root/evolution```
 
-All the ISOs include eggs >= 9.2.5 installed
+All the ISOs include eggs >= 9.3.x
 
-I removed a lot of old images to have all the production capable to boot in traditional way or by PXE just launch: ```sudo eggs cuckoo` and boot other machine on the LAN from the network.
-
-Arch and manjaro images are at the moment excluded from cuckoo, soon I will include them.
-
-```sudo eggs update```
-
-# ISOs
-
-## Arch
-* rolling
-
-## Debian
-* stretch 
-* buster 
-* bullseye 
-* bookworm
-
-## Linuxmint
-* vanessa
-* elsie
-
-## Devuan 
-* chimaera
-
-## manjaro Linux
-* rolling
-
-## Ubuntu
-* bionic
-* focal
-* jammy
-
+# ISOS
+Open the directory list.
 
 # That's all Folks!
 No need other configurations, penguins-eggs are battery included or better, as in the real, live is inside! :-D
@@ -84,4 +54,3 @@ Copyright (c) 2017, 2022 [Piero Proietti](https://penguins-eggs.net/about-me.htm
 
 # Disclaim
 __Please note what this project is in no way connected to the original distro in any official way, it’s just my personal experiment.__
-

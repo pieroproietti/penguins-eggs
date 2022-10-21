@@ -276,7 +276,8 @@ export default class Incubator {
       }
 
       // script di avvio
-      shx.cp(path.resolve(__dirname, '../../../assets/calamares/install-debian'), '/sbin/install-debian')
+      shx.cp(path.resolve(__dirname, '../../../assets/calamares/install-debian'), '/usr/sbin/install-debian')
+      shx.chmod('+x','/usr/sbin/install-debian')
     }
   }
 

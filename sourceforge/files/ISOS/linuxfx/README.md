@@ -10,37 +10,30 @@ penguins-eggs
 [![deb](https://img.shields.io/badge/deb-packages-blue)](https://sourceforge.net/projects/penguins-eggs/files/DEBS)
 [![pkgbuild](https://img.shields.io/badge/pkgbuild-packages-blue)](https://sourceforge.net/projects/penguins-eggs/files/PKGBUILD)[![iso](https://img.shields.io/badge/iso-images-cyan)](https://sourceforge.net/projects/penguins-eggs/files/ISOS)
 
-
 # Penguin's eggs remastered ISOs
-
-All ISOs are based on Ubuntu 22.04 jammy
 
 # user/password
 * ```live/evolution```
 * ```root/evolution```
 
-All the ISOs include nodejs and eggs installed (.npm package), so you can update your eggs tool with the command:
+All ISOs include eggs, you can udate it with: ```sudo eggs update```.
 
-```sudo eggs update```
+# LinuxFX
 
-# Ubuntu
-Ubuntu is a Linux distribution based on Debian mostly composed of free and open-source software. Ubuntu is officially released in three editions: Desktop, Server, and Core for Internet of things devices and robots. All the editions can run on the computer alone, or in a virtual machine. Ubuntu is a popular operating system for cloud computing, with support for OpenStack. Ubuntu's default desktop has been GNOME, since version 17.10.
+[LunuxFX](https://www.windowsfx.org/) LinuxFX is a Brazilian distribution, currently based on Ubuntu jammy and, therefore, very up-to-date. What characterizes it is mainly the graphics in full Windows 11 style, but the capabilities should not be underestimated - to run Windows applications. It is currently ranked 22 on distrowatch, and for this kind of distribution it is certainly a good position. Without thinking too much about it I come to suggest it for facilitating the transition of users from Windows to Linux in companies, remastered with eggs it naturally allows installation via PXE and unattended and, for that may be even more interesting.
 
-## Ubuntu 22.10 kinetic
+I lack information about real compatibility with Windows programs, generally many vertical applications developed with Visual Basic 6 and using ADO, should not work, I hope to be proven wrong.
 
-* **egg-of-ubuntu-kinetic-gnome**  just a remaster of Ubuntu 22.10, but you can install it via PXE in a lot of machines!
-
-![kinetic](https://a.fsdn.com/con/app/proj/penguins-eggs/screenshots/kinetic.png/1024/768)
-
-# That's all Folks!
-No need other configurations, penguins-eggs are battery included or better, as in the real, live is inside! :-D
+* **egg-of-ubuntu-jammy-plasma**
 
 ## More informations:
 
 * Repository: [penguins-eggs](https://github.com/pieroproietti/penguins-eggs)
 * Blog: [penguins-eggs](https://penguins-eggs.net)
 
-* You can find more informations on this Linux distro at: [Ubuntu](https://ubuntu.com).
+* You can find more informations on this Linux distro at: [manjaro](https://manjaro.org/).
 
-# Disclaim
+
+Disclaim
+
 __Please note what this project is in no way connected to the original distro in any official way, it’s just my personal experiment.__
