@@ -28,11 +28,11 @@ penguins-eggs
 <!-- tocstop -->
 
 # Presentation
-penguins-eggs is a console utility, under continuous development, that allows you to remaster your system and redistribute it as iso images.
+**penguins-eggs** is a console utility, under continuous development, that allows you to remaster your system and redistribute it as iso images.
 
 The purpose of this project is to implement the process of remastering your own version of Linux, generate it as an ISO image to burn to a CD/DVD or copy to a USB stick to boot your system. The default behavior is total removal of the system's data and users, but it is also possible to remaster the system including the data and accounts of present users, use flag **--clone**. It is also possible to keep the users and files present under an encrypted LUKS file within the same resulting iso file, flag **--backup**.
 
-You can easily install the resulting live system with the calamares installer or the internal TUI krill installer. It is possible to have also unattended installation using --unattended flag.
+You can easily install the resulting live system with the calamares installer or the internal TUI krill installer. It is possible to have also unattended installation using **--unattended** flag.
 
 Thanks to the wardrobe, you can create or use scripts to switch from a "naked" version - with only a CLI interface - and "wear" it with a full GUI or server configurations. See [penguins-wardrobe](https://github.com/pieroproietti/penguins-wardrobe), fork it and adapt it to yours needs.
 
@@ -86,7 +86,7 @@ You can read more in wardrobe on [penguin's eggs blog](https://penguins-eggs.net
 Supporting various distributions, we need to have different packages. Debian, Devuan and Ubuntu share the .deb packages of eggs, while for Arch Linux and ManjaroLinux they use their PKGBUILD.
 
 ## Debian families
-eggs is released deb packages for amd64, armel and arm64 architectures. Due the characteristic of eggs, they can installed in Debian, Devuan or Ubuntu based distros, withouth worries about different versions, except for the architecture. It include standard scripts for preinst, postinst, prerm and postrm. 
+eggs is released deb packages for amd64, armel and arm64 architectures. Due the characteristic of eggs, they can installed in Debian, Devuan or Ubuntu based distros, without worries about different versions, except for the architecture. It include standard scripts for preinst, postinst, prerm and postrm. 
 
 ### Install eggs
 There are more than a way to install eggs as .deb package, the most common it's to add and use penguins-eggs-ppa.
@@ -96,17 +96,14 @@ There are more than a way to install eggs as .deb package, the most common it's 
 eggs have it's repository ppa, You can use it, copy and paste in a terminal window the following two lines:
 
 ```
-curl -SsL  https://pieroproietti.github.io/penguins-eggs-ppa/KEY.gpg | gpg --dearmor | sudo tee /usr/share/keyrings/penguins-eggs-ppa-keyring.gpg
-
-sudo curl -s --compressed -o /etc/apt/sources.list.d/penguins-eggs-ppa.list "https://pieroproietti.github.io/penguins-eggs-ppa/penguins-eggs-ppa.list"
+curl -fsSL https://pieroproietti.github.io/penguins-eggs-ppa/KEY.gpg | sudo gpg --dearmor -o /etc/apt/trusted.gpg.d/penguins-eggs.gpg
+echo "deb [arch=$(dpkg --print-architecture)] https://pieroproietti.github.io/penguins-eggs-ppa ./" | sudo tee /etc/apt/sources.list.d/penguins-eggs.list > /dev/null
 ```
 
 Update your repositories and install eggs:
 
 ```
-sudo apt update
-
-sudo apt install eggs
+sudo apt update && sudo apt install eggs
 ```
 
 
