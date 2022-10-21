@@ -21,6 +21,9 @@ You can follow the project also consulting the [commit history](https://github.c
 ## Changelog
 Versions are listed on reverse order, the first is the last one. Old versions are moved to [versions](https://sourceforge.net/projects/penguins-eggs/files/packages-deb/versions/). 
 
+### eggs-9.3.3
+* various bug fixes and README revision from [Sunu Aziz](https://github.com/sunuazizrahayu)
+
 ### eggs-9.3.2
 * calamares/krill: readded module dpkg-unsafe-io, dpkg-unsafe-io-undo; changed modules sources-yolk, sources-yolk-undo
 * calamares/krill: changed packages.ts to build module packages.conf
