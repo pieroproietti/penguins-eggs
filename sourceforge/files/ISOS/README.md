@@ -33,11 +33,12 @@ All the ISOs include eggs >= 9.3.x
 
 One feature of ISO images made with eggs is the ability to be used for network installation . All you have to do is boot the ISO to be installed, open a terminal window and type the command: 
 
-```sudo eggs cuckoo``.
+```sudo eggs cuckoo```.
 
 Then all you have to do is boot from the network the machines to be installed and start the calamares or krill installer.
 
-It is also possible to do an unattended installation with krill, see the manual.
+You can also perform an unattended installation with krill, see the [manual](https://penguins-eggs.net/book/) or, find assistance in the [telegram penguin's eggs](https://t.me/penguins_eggs) group.
+
 
 ![kinetic](https://a.fsdn.com/con/app/proj/penguins-eggs/screenshots/kinetic.png/1024/768)
 
