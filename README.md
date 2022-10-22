@@ -355,16 +355,13 @@ export deb/docs/iso to the destination host
 
 ```
 USAGE
-  $ eggs export deb [-h] [-c] [--amd64] [--i386] [--armel] [--arm64] [-a]
+  $ eggs export deb [-h] [-a] [-c] [-v]
 
 FLAGS
-  -a, --all    export all archs
-  -c, --clean  remove old .deb before to copy
-  -h, --help   Show CLI help.
-  --amd64      export amd64 arch
-  --arm64      export arm64 arch
-  --armel      export armel arch
-  --i386       export i386 arch
+  -a, --all      export all archs
+  -c, --clean    remove old .deb before to copy
+  -h, --help     Show CLI help.
+  -v, --verbose  verbose
 
 DESCRIPTION
   export deb/docs/iso to the destination host
@@ -376,10 +373,11 @@ remove and export docType documentation of the sources in the destination host
 
 ```
 USAGE
-  $ eggs export docs [-h]
+  $ eggs export docs [-v] [-h]
 
 FLAGS
-  -h, --help  Show CLI help.
+  -h, --help     Show CLI help.
+  -v, --verbose  verbose
 
 DESCRIPTION
   remove and export docType documentation of the sources in the destination host
@@ -391,12 +389,13 @@ export iso in the destination host
 
 ```
 USAGE
-  $ eggs export iso [-h] [-b] [-c]
+  $ eggs export iso [-h] [-b] [-c] [-v]
 
 FLAGS
-  -b, --backup  export backup ISOs
-  -c, --clean   delete old ISOs before to copy
-  -h, --help    Show CLI help.
+  -b, --backup   export backup ISOs
+  -c, --clean    delete old ISOs before to copy
+  -h, --help     Show CLI help.
+  -v, --verbose  verbose
 
 DESCRIPTION
   export iso in the destination host
@@ -420,7 +419,7 @@ DESCRIPTION
   Display help for eggs.
 ```
 
-_See code: [@oclif/plugin-help](https://github.com/oclif/plugin-help/blob/v5.1.15/src/commands/help.ts)_
+_See code: [@oclif/plugin-help](https://github.com/oclif/plugin-help/blob/v5.1.16/src/commands/help.ts)_
 
 ## `eggs install`
 

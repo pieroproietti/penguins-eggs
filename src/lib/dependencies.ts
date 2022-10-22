@@ -55,6 +55,7 @@ export const depCommon = [
   'parted', // eggs
   "pxelinux", // cuckoo
   'rsync', // eggs
+  'sshfs', // eggs
   'squashfs-tools', // eggs
   'syslinux-common', // eggs
   'coreutils', // whoami
