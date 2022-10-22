@@ -10,9 +10,9 @@ remoteHost: 192.168.1.2
 remoteUser: root
 
 # path in remote host
-remotePathDeb: /home/artisan/sourceforge/packages-deb/
+remotePathDeb: /eggs/
 remotePathDoc: /home/artisan/sourceforge/DOCS/
-remotePathIso: /home/artisan/sourceforge/iso/
+remotePathIso: /eggs/
 
 
 # local directories - only for developers 
