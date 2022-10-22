@@ -164,7 +164,6 @@ In addition to the description of the commands in this README, you can consult t
 * [`eggs cuckoo`](#eggs-cuckoo)
 * [`eggs dad`](#eggs-dad)
 * [`eggs export deb`](#eggs-export-deb)
-* [`eggs export docs`](#eggs-export-docs)
 * [`eggs export iso`](#eggs-export-iso)
 * [`eggs help [COMMAND]`](#eggs-help-command)
 * [`eggs install`](#eggs-install)
@@ -365,22 +364,6 @@ FLAGS
 
 DESCRIPTION
   export deb/docs/iso to the destination host
-```
-
-## `eggs export docs`
-
-remove and export docType documentation of the sources in the destination host
-
-```
-USAGE
-  $ eggs export docs [-v] [-h]
-
-FLAGS
-  -h, --help     Show CLI help.
-  -v, --verbose  verbose
-
-DESCRIPTION
-  remove and export docType documentation of the sources in the destination host
 ```
 
 ## `eggs export iso`

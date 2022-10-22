@@ -15,11 +15,10 @@ adapt --verbose --help
 analyze --help --verbose
 calamares --help --verbose --install --release --remove --theme
 config --nointeractive --clean --help --verbose
-cuckoo --from
+cuckoo --help
 dad --help --clean --default --verbose
-export:deb --help --clean --amd64 --i386 --armel --arm64 --all
-export:docs --help
-export:iso --help --backup --clean
+export:deb --help --all --clean --verbose
+export:iso --help --backup --clean --verbose
 install --unattended --ip --random --domain --suspend --small --none --crypted --pve --help --verbose
 kill --help --verbose
 mom --help
@@ -28,6 +27,7 @@ status --verbose --help
 syncfrom --delete --file --rootdir --help --verbose
 syncto --delete --file --help --verbose
 tools:clean --help --verbose
+tools:ppa --help --add --remove --verbose
 tools:skel --help --user --verbose
 tools:stat --help --month --year
 tools:yolk --help --verbose
