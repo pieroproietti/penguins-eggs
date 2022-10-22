@@ -12,28 +12,36 @@ export default class ExportIso extends Command {
   static flags = {
     help: Flags.help({ char: 'h' }),
     backup: Flags.boolean({ char: 'b', description: 'export backup ISOs' }),
-    clean: Flags.boolean({ char: 'c', description: 'delete old ISOs before to copy' })
+    clean: Flags.boolean({ char: 'c', description: 'delete old ISOs before to copy' }),
+    verbose: Flags.boolean({ char: 'v', description: 'verbose' })
   }
 
   async run(): Promise<void> {
     const { flags } = await this.parse(ExportIso)
     Utils.titles(this.id + ' ' + this.argv)
+    Utils.warning(ExportIso.description)
 
     const Tu = new Tools()
-    Utils.warning(ExportIso.description)
     await Tu.loadSettings()
+
+    const echo = Utils.setEcho(flags.verbose)
+
     if (flags.backup) {
       Tu.snapshot_name = Tu.snapshot_name.slice(0, 7) === 'egg-of-' ? 'egg-eb-' + Tu.snapshot_name.slice(7) : 'backup-' + Tu.snapshot_name
     }
 
-    let cmd = `ssh root@${Tu.config.remoteHost} rm -rf ${Tu.config.remotePathIso}${Tu.snapshot_name}*`
-    if (flags.clean) {
-      Utils.warning('cleaning destination...')
-      await exec(cmd, { echo: true, capture: true })
+    const rmount = `/tmp/eggs-${(Math.random() + 1).toString(36).substring(7)}`
+    let cmd = `rm -f ${rmount}\n`
+    cmd += `mkdir ${rmount}\n`
+    cmd += `sshfs ${Tu.config.remoteUser}@${Tu.config.remoteHost}:${Tu.config.remotePathIso} ${rmount}\n`
+    if (flags.clean){
+      cmd += `rm -f ${rmount}/${Tu.snapshot_name}*\n`
     }
-
-    Utils.warning('copy to destination...')
-    cmd = `scp ${Tu.snapshot_dir}${Tu.snapshot_name}* root@${Tu.config.remoteHost}:${Tu.config.remotePathIso}`
-    await exec(cmd, { echo: true, capture: true })
+    cmd += `cp ${Tu.snapshot_dir}${Tu.snapshot_name}* ${rmount}\n`
+    cmd += `sync\n`
+    cmd += `umount ${rmount}\n`
+    cmd += `rm -f ${rmount}\m`
+    
+    await exec(cmd, echo)
   }
 }
