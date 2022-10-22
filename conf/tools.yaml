@@ -7,9 +7,9 @@ penguins_eggs_conf: /etc/penguins-eggs.d/eggs.yaml
 remoteHost: 192.168.1.2
 
 # path to remote host
-remotePathDeb: /home/artisan/sourceforge/DEBS/
-remotePathDoc: /home/artisan/sourceforge/DOCS/
-remotePathIso: /home/artisan/sourceforge/ISOS/
+remotePathDeb: /eggs/DEBS/
+remotePathDoc: /eggs/DOCS/
+remotePathIso: /var/lib/vz/template/iso/
 
 # always root
 remoteUser: root
