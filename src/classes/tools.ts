@@ -47,6 +47,7 @@ export default class Tools {
     if (fs.existsSync(this.tools_yaml)) {
       foundSettings = true
       const loaded = yaml.load(fs.readFileSync(this.tools_yaml, 'utf-8')) as IEggsConfigTools
+      console.log(loaded)
       this.config.remoteHost = loaded.remoteHost
       this.config.remoteUser = loaded.remoteUser
       this.config.remotePathDeb = loaded.remotePathDeb
