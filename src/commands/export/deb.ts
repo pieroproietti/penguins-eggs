@@ -26,10 +26,10 @@ export default class ExportDeb extends Command {
 
     let script = ''
     let arch = Utils.eggsArch()
-    if (flags.clean) {
-      if (flags.all) {
-        arch = '*'
-      }
+    if (flags.all) {
+      arch = '*'
+    }
+  if (flags.clean) {
       arch += '.deb'
       script += ``
     }
@@ -45,7 +45,12 @@ export default class ExportDeb extends Command {
     cmd += `sync\n`
     cmd += `umount ${rmount}\n`
     cmd += `rm -f ${rmount}\m`
-
+    if (!flags.verbose) {
+      if (flags.clean){
+        console.log(`remove: ${Tu.config.remoteUser}@${Tu.config.remoteHost}:${Tu.config.filterDeb}${arch}`)
+      }
+      console.log(`copy: ${Tu.config.localPathDeb}${Tu.config.filterDeb}${arch} to ${Tu.config.remoteUser}@${Tu.config.remoteHost}:${Tu.config.remotePathDeb}`)
+    }
     await exec(cmd, echo)
   }
 }
