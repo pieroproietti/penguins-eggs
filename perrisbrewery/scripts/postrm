@@ -27,6 +27,11 @@ case "$1" in
     ;;
 
     purge|remove|upgrade|failed-upgrade|abort-install|abort-upgrade|disappear)
+        # scripts
+        rm -f /usr/local/bin/g4*
+        rm -f /usr/bin/adapt
+        rm -f /usr/sbin/resy
+
         # pulizia dei link non rimovibili da apt
         rm -rf /usr/lib/penguins-eggs/distros
         rm -rf /usr/lib/penguins-eggs/krill
@@ -45,7 +50,6 @@ case "$1" in
         rm -f /etc/systemd/system/pve-live.service
 
         # remove yolk
-        #rm -rf /var/local/yolk
         rm -rf /var/local/yolk
 
         # remove penguins-eggs multiarch (krill-modules)
