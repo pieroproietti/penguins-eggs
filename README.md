@@ -22,7 +22,7 @@ penguins-eggs
 * [Features](#features)
 * [Packages](#packages)
 * [Usage](#usage)
-* [Manual](#manual)
+* [Penguin's eggs official book](#penguins-eggs-official-book)
 * [Commands](#commands)
 * [That's all Folks!](#thats-all-folks)
 <!-- tocstop -->
