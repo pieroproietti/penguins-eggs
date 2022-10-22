@@ -69,7 +69,6 @@ export default class ToolsStat extends Command {
 
     const res = await axios.get(url, { httpsAgent: agent })
 
-    //await res.data.countries[0].sort()
     console.log(type)
     for (const country of res.data.countries) {
       console.log('- ' + country[0] +': ' + country[1] )
