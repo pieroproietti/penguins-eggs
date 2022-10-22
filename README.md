@@ -22,8 +22,8 @@ penguins-eggs
 * [Features](#features)
 * [Packages](#packages)
 * [Usage](#usage)
-* [Commands](#commands)
 * [Manual](#manual)
+* [Commands](#commands)
 * [That's all Folks!](#thats-all-folks)
 <!-- tocstop -->
 
@@ -153,6 +153,14 @@ Especially during the first trials, you should always use the ```--fast``` flag 
 
 In addition to the description of the commands in this README, you can consult the [Penguin's eggs official book](https://penguins-eggs.net/book/).
 
+# Penguin's eggs official book
+The original edition of the eggs manual is released in Italian, of course other languages can be accessed using machine translation.
+
+* [Manuale in italiano 9.3.x](https://penguins-eggs.net/book/italiano9.3.html)
+* [English manual 9.3.x](https://penguins--eggs-net.translate.goog/book/italiano9.3?_x_tr_sl=auto&_x_tr_tl=en&_x_tr_hl=en)
+
+
+![terminal samples](https://github.com/pieroproietti/penguins-eggs/blob/master/documents/terminal-lessons/eggs_help.gif?raw=true)
 
 # Commands
 <!-- commands -->
@@ -836,15 +844,6 @@ DESCRIPTION
   wear costume/accessories from wardrobe
 ```
 <!-- commandsstop -->
-
-# Manual
-The original edition of the eggs manual is released in Italian, of course other languages can be accessed using machine translation.
-
-* [Manuale in italiano 9.2.x](https://penguins-eggs.net/book/italiano9.2.html)
-* [English manual 9.2.x](https://penguins--eggs-net.translate.goog/book/italiano9.2?_x_tr_sl=auto&_x_tr_tl=en&_x_tr_hl=en)
-
-
-![terminal samples](https://github.com/pieroproietti/penguins-eggs/blob/master/documents/terminal-lessons/eggs_help.gif?raw=true)
 
 # That's all Folks!
 No need other configurations, penguins-eggs are battery included or better, as in the real, live is inside! :-D
