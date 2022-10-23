@@ -12,7 +12,6 @@ penguins-eggs
 [![deb](https://img.shields.io/badge/deb-packages-blue)](https://sourceforge.net/projects/penguins-eggs/files/DEBS)
 [![pkgbuild](https://img.shields.io/badge/pkgbuild-packages-blue)](https://sourceforge.net/projects/penguins-eggs/files/PKGBUILD)
 [![iso](https://img.shields.io/badge/iso-images-cyan)](https://sourceforge.net/projects/penguins-eggs/files/ISOS)
-[![Download Penguin's eggs](https://img.shields.io/sourceforge/dd/penguins-eggs.svg)](https://sourceforge.net/projects/penguins-eggs/files/latest/download)
 
 # Index
 <!-- toc -->
@@ -22,8 +21,8 @@ penguins-eggs
 * [Features](#features)
 * [Packages](#packages)
 * [Usage](#usage)
+* [Penguin's eggs official book](#penguins-eggs-official-book)
 * [Commands](#commands)
-* [Manual](#manual)
 * [That's all Folks!](#thats-all-folks)
 <!-- tocstop -->
 
@@ -68,7 +67,7 @@ yolk - so called staying on the subject of eggs - is a local repository included
 ## GUI calamares or TUI krill installer
 eggs include a TUI installer named krill, this let you to produce and install servers configurations. krill use a nice TUI interface using the same, configuration created by eggs for [calamares](https://calamares.io/). This lead to have "about the same" experience installing, from old distros to new ones and for GUI and CLI. It's possible with krill to do unattended installations, simply add ```--unattended``` flag and the values in ```/etc/penguins-eggs.d/krill.yaml``` will be used for installation.
 
-## helper: mom and dad
+## mom and dad
 I've added two lightweight assistants integrated with eggs: mom and dad. While mom is a bash script with whiptail - and guides the user to the various commands and documentation, dad started as a short way to create isos. All you have to do is type **sudo eggs dad** and follow simple instructions. You can also shortcut the way to reset the configuration **sudo dad -c** or - even faster - reset the configuration, load defaults, kill created isos: simply type **sudo eggs dad -d** and you will immediately be able to produce the egg in the default /home/eggs nest.
 
 
@@ -153,6 +152,14 @@ Especially during the first trials, you should always use the ```--fast``` flag 
 
 In addition to the description of the commands in this README, you can consult the [Penguin's eggs official book](https://penguins-eggs.net/book/).
 
+# Penguin's eggs official book
+The original edition of the eggs manual is released in Italian, of course other languages can be accessed using machine translation.
+
+* [Manuale in italiano 9.3.x](https://penguins-eggs.net/book/italiano9.3.html)
+* [English manual 9.3.x](https://penguins--eggs-net.translate.goog/book/italiano9.3?_x_tr_sl=auto&_x_tr_tl=en&_x_tr_hl=en)
+
+
+![terminal samples](https://github.com/pieroproietti/penguins-eggs/blob/master/documents/terminal-lessons/eggs_help.gif?raw=true)
 
 # Commands
 <!-- commands -->
@@ -164,7 +171,6 @@ In addition to the description of the commands in this README, you can consult t
 * [`eggs cuckoo`](#eggs-cuckoo)
 * [`eggs dad`](#eggs-dad)
 * [`eggs export deb`](#eggs-export-deb)
-* [`eggs export docs`](#eggs-export-docs)
 * [`eggs export iso`](#eggs-export-iso)
 * [`eggs help [COMMAND]`](#eggs-help-command)
 * [`eggs install`](#eggs-install)
@@ -355,34 +361,16 @@ export deb/docs/iso to the destination host
 
 ```
 USAGE
-  $ eggs export deb [-h] [-c] [--amd64] [--i386] [--armel] [--arm64] [-a]
+  $ eggs export deb [-h] [-a] [-c] [-v]
 
 FLAGS
-  -a, --all    export all archs
-  -c, --clean  remove old .deb before to copy
-  -h, --help   Show CLI help.
-  --amd64      export amd64 arch
-  --arm64      export arm64 arch
-  --armel      export armel arch
-  --i386       export i386 arch
+  -a, --all      export all archs
+  -c, --clean    remove old .deb before to copy
+  -h, --help     Show CLI help.
+  -v, --verbose  verbose
 
 DESCRIPTION
   export deb/docs/iso to the destination host
-```
-
-## `eggs export docs`
-
-remove and export docType documentation of the sources in the destination host
-
-```
-USAGE
-  $ eggs export docs [-h]
-
-FLAGS
-  -h, --help  Show CLI help.
-
-DESCRIPTION
-  remove and export docType documentation of the sources in the destination host
 ```
 
 ## `eggs export iso`
@@ -391,12 +379,13 @@ export iso in the destination host
 
 ```
 USAGE
-  $ eggs export iso [-h] [-b] [-c]
+  $ eggs export iso [-h] [-b] [-c] [-v]
 
 FLAGS
-  -b, --backup  export backup ISOs
-  -c, --clean   delete old ISOs before to copy
-  -h, --help    Show CLI help.
+  -b, --backup   export backup ISOs
+  -c, --clean    delete old ISOs before to copy
+  -h, --help     Show CLI help.
+  -v, --verbose  verbose
 
 DESCRIPTION
   export iso in the destination host
@@ -420,7 +409,7 @@ DESCRIPTION
   Display help for eggs.
 ```
 
-_See code: [@oclif/plugin-help](https://github.com/oclif/plugin-help/blob/v5.1.15/src/commands/help.ts)_
+_See code: [@oclif/plugin-help](https://github.com/oclif/plugin-help/blob/v5.1.16/src/commands/help.ts)_
 
 ## `eggs install`
 
@@ -854,15 +843,6 @@ DESCRIPTION
   wear costume/accessories from wardrobe
 ```
 <!-- commandsstop -->
-
-# Manual
-The original edition of the eggs manual is released in Italian, of course other languages can be accessed using machine translation.
-
-* [Manuale in italiano 9.2.x](https://penguins-eggs.net/book/italiano9.2.html)
-* [English manual 9.2.x](https://penguins--eggs-net.translate.goog/book/italiano9.2?_x_tr_sl=auto&_x_tr_tl=en&_x_tr_hl=en)
-
-
-![terminal samples](https://github.com/pieroproietti/penguins-eggs/blob/master/documents/terminal-lessons/eggs_help.gif?raw=true)
 
 # That's all Folks!
 No need other configurations, penguins-eggs are battery included or better, as in the real, live is inside! :-D

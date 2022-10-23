@@ -19,8 +19,9 @@ export default class ToolsStat extends Command {
     year: Flags.boolean({ char: 'y', description: 'current year' })
   }
 
-  //static aliases = ['stat']
-
+  /**
+   * 
+   */
   async run(): Promise<void> {
     const { args, flags } = await this.parse(ToolsStat)
     Utils.titles(this.id + ' ' + this.argv)
@@ -50,19 +51,27 @@ export default class ToolsStat extends Command {
     }
 
     this.log('start: ' + start + ', end: ' + end + '\n')
-    await this.show(start, end, 'packages-deb')
-    await this.show(start, end, 'iso')
+    await this.show(start, end, 'DEBS')
+    console.log()
+    await this.show(start, end, 'ISOS')
   }
 
-  async show(start: string, end: string, type = 'packages-deb') {
+  /**
+   * 
+   * @param start 
+   * @param end 
+   * @param type 
+   */
+  async show(start: string, end: string, type = 'DEBS') {
     let url = `https://sourceforge.net/projects/penguins-eggs/files/${type}/stats/json`
     const request = '?start_date=' + start + '&end_date=' + end
     url += request
-    console.log(type)
-    // const axios = require('axios').default
+
     const res = await axios.get(url, { httpsAgent: agent })
-    const data = res.data
-    console.log(data.countries)
-    // console.log(yaml.dump(data))
+
+    console.log(type)
+    for (const country of res.data.countries) {
+      console.log('- ' + country[0] +': ' + country[1] )
+    }
   }
 }

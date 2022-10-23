@@ -9,12 +9,9 @@ export default class ExportDeb extends Command {
 
   static flags = {
     help: Flags.help({ char: 'h' }),
+    all: Flags.boolean({ char: 'a', description: 'export all archs' }),
     clean: Flags.boolean({ char: 'c', description: 'remove old .deb before to copy' }),
-    amd64: Flags.boolean({ description: 'export amd64 arch' }),
-    i386: Flags.boolean({ description: 'export i386 arch' }),
-    armel: Flags.boolean({ description: 'export armel arch' }),
-    arm64: Flags.boolean({ description: 'export arm64 arch' }),
-    all: Flags.boolean({ char: 'a', description: 'export all archs' })
+    verbose: Flags.boolean({ char: 'v', description: 'verbose' })
   }
 
   async run(): Promise<void> {
@@ -25,29 +22,35 @@ export default class ExportDeb extends Command {
     Utils.warning(ExportDeb.description)
     await Tu.loadSettings()
 
-    // rimozione
-    if (flags.clean) {
-      console.log('cleaning remote host')
+    const echo = Utils.setEcho(flags.verbose)
 
-      let arch = Utils.eggsArch()
-      if (flags.all) {
-        arch = '*'
-      }
-
-      arch += '.deb'
-      const cmd = 'ssh ' + Tu.config.remoteUser + '@' + Tu.config.remoteHost + ' rm -rf ' + Tu.config.remotePathDeb + Tu.config.filterDeb + arch
-      await exec(cmd, { echo: true, capture: true })
-    }
-
-    // esportazione
-    console.log('copy to remote host...')
+    let script = ''
     let arch = Utils.eggsArch()
     if (flags.all) {
       arch = '*'
     }
-
-    arch += '.deb'
-    const cmd = 'scp ' + Tu.config.localPathDeb + Tu.config.filterDeb + arch + ' root@' + Tu.config.remoteHost + ':' + Tu.config.remotePathDeb
-    await exec(cmd, { echo: true, capture: true })
+  if (flags.clean) {
+      arch += '.deb'
+      script += ``
+    }
+    
+    const rmount = `/tmp/eggs-${(Math.random() + 1).toString(36).substring(7)}`
+    let cmd = `rm -f ${rmount}\n`
+    cmd += `mkdir ${rmount}\n`
+    cmd += `sshfs ${Tu.config.remoteUser}@${Tu.config.remoteHost}:${Tu.config.remotePathDeb} ${rmount}\n`
+    if (flags.clean){
+      cmd += `rm -f ${rmount}/${Tu.config.filterDeb}${arch}\n`
+    }
+    cmd += `cp ${Tu.config.localPathDeb}${Tu.config.filterDeb}${arch}  ${rmount}\n`
+    cmd += `sync\n`
+    cmd += `umount ${rmount}\n`
+    cmd += `rm -f ${rmount}\m`
+    if (!flags.verbose) {
+      if (flags.clean){
+        console.log(`remove: ${Tu.config.remoteUser}@${Tu.config.remoteHost}:${Tu.config.filterDeb}${arch}`)
+      }
+      console.log(`copy: ${Tu.config.localPathDeb}${Tu.config.filterDeb}${arch} to ${Tu.config.remoteUser}@${Tu.config.remoteHost}:${Tu.config.remotePathDeb}`)
+    }
+    await exec(cmd, echo)
   }
 }
