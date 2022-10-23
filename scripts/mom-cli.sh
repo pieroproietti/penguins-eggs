@@ -186,7 +186,6 @@ function Export {
       answer=$(
       whiptail --title "EXPORT" --menu "Export your eggs or packages in remote host..." 22 75 14 \
          "deb"    "export package eggs-v7-x-x-1.deb in the destination host" \
-         "docs"   "export docType source's documentation in the destination host" \
          "iso"    "export iso image in the destination host" \
          "quit"   "previous" 3>&2 2>&1 1>&3
       )
@@ -194,9 +193,6 @@ function Export {
       case "$answer" in 
          "deb")
             export_deb ;;
-
-         "docs")
-            export_docs ;;
 
          "iso")
             export_iso ;;
@@ -250,18 +246,14 @@ function produce {
    answer=$(
    whiptail --title "produce" --menu "Choose the prefered method of production..." 22 75 14 \
       "fast"      "create an ISO fast compression" \
-      "standard"  "create an ISO standard compression" \
       "max"       "create an ISO max compression" \
       "clone"     "create a live clone with user's data" \
-      "quit"     "previous" 3>&2 2>&1 1>&3
+      "quit"      "previous" 3>&2 2>&1 1>&3
    )
 
    case "$answer" in 
       "fast")
          fast ;;
-
-      "standard")
-         standard ;;
 
       "max")
          max ;;

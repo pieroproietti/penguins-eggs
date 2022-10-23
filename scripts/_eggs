@@ -14,7 +14,6 @@ _eggs () {
 "cuckoo:PXE start with proxy-dhcp"
 "dad:ask help from daddy - configuration helper"
 "export\:deb:export deb/docs/iso to the destination host"
-"export\:docs:remove and export docType documentation of the sources in the destination host"
 "export\:iso:export iso in the destination host"
 "install:command-line system installer - the egg became a penguin!"
 "kill:kill the eggs/free the nest"
@@ -24,6 +23,7 @@ _eggs () {
 "syncfrom:restore users and user data from a LUKS volumes"
 "syncto:saves users and user data in a LUKS volume inside the iso"
 "tools\:clean:clean system log, apt, etc"
+"tools\:ppa:add/remove PPA repositories (Debian family)"
 "tools\:skel:update skel from home configuration"
 "tools\:stat:get statistics from sourceforge"
 "tools\:yolk:configure eggs to install without internet"
@@ -76,7 +76,7 @@ config)
 
 cuckoo)
   _command_flags=(
-    "--from=-[Who is saying hello]:"
+    "--help[Show CLI help.]"
   )
 ;;
 
@@ -92,18 +92,9 @@ dad)
 export:deb)
   _command_flags=(
     "--help[Show CLI help.]"
-"--clean[remove old .deb before to copy]"
-"--amd64[export amd64 arch]"
-"--i386[export i386 arch]"
-"--armel[export armel arch]"
-"--arm64[export arm64 arch]"
 "--all[export all archs]"
-  )
-;;
-
-export:docs)
-  _command_flags=(
-    "--help[Show CLI help.]"
+"--clean[remove old .deb before to copy]"
+"--verbose[verbose]"
   )
 ;;
 
@@ -112,6 +103,7 @@ export:iso)
     "--help[Show CLI help.]"
 "--backup[export backup ISOs]"
 "--clean[delete old ISOs before to copy]"
+"--verbose[verbose]"
   )
 ;;
 
@@ -192,6 +184,15 @@ syncto)
 tools:clean)
   _command_flags=(
     "--help[Show CLI help.]"
+"--verbose[verbose]"
+  )
+;;
+
+tools:ppa)
+  _command_flags=(
+    "--help[Show CLI help.]"
+"--add[add penguins-eggs PPA repository]"
+"--remove[remove penguins-eggs PPA repository]"
 "--verbose[verbose]"
   )
 ;;

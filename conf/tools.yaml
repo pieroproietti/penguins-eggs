@@ -1,23 +1,22 @@
 # Penguin's eggs
-# eggs.yaml
+# tools.yaml
 ---
 penguins_eggs_conf: /etc/penguins-eggs.d/eggs.yaml
 
 # you can adapt this configuration to your needs
 remoteHost: 192.168.1.2
 
-# user to be used in remote host
+# path to remote host
+remotePathDeb: /eggs/DEBS/
+remotePathDoc: /eggs/DOCS/
+remotePathIso: /var/lib/vz/template/iso/
+
+# always root
 remoteUser: root
 
-# path in remote host
-remotePathDeb: /home/artisan/sourceforge/packages-deb/
-remotePathDoc: /home/artisan/sourceforge/DOCS/
-remotePathIso: /home/artisan/sourceforge/iso/
-
-
-# local directories - only for developers 
-localPathDeb: ~/penguins-eggs/perrisbrewery/workdir/
-localPathDoc: ~/penguins-eggs/docs
+# path to local host
+localPathDeb: /home/artisan/penguins-eggs/perrisbrewery/workdir/
+localPathDoc: /home/artisan/penguins-eggs/docs
 localPathIso: /home/eggs
 
 # filter package files
