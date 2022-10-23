@@ -21,6 +21,13 @@ You can follow the project also consulting the [commit history](https://github.c
 ## Changelog
 Versions are listed on reverse order, the first is the last one. Old versions are moved to [versions](https://sourceforge.net/projects/penguins-eggs/files/packages-deb/versions/). 
 
+### eggs-9.3.4
+* added to dependencies sshfs, I'm now using it to export isos and debs, I previously used the commands: ssh and scp which involved entering two passwords;
+* various adjustments in export paths with new defaults in tools.yaml
+* removal of the ``eggs export docs`` command and removal of the generation of source documentation, in the end it was useless;
+* updating the **mom-cli.sh** script used by the command ``eggs mom`` aligning it with the current edition
+* Cleanup and path change for **adapt** and **resy** scripts (re-install eggs saving yolk) previously located in ``/usr/local/bin`` and moved to ``/usr/bin``
+
 ### eggs-9.3.3
 * various bug fixes and README revision from [Sunu Aziz](https://github.com/sunuazizrahayu)
 
