@@ -19,7 +19,7 @@ export function remove(distro: IDistro): string {
 
   let yaml = ''
   for (const elem of packages) {
-    yaml += `    - ${elem.trim()}\n`
+    yaml += `  - ${elem.trim()}\n`
   }
 
   if (yaml !== '') {
@@ -39,33 +39,33 @@ export function tryInstall(distro: IDistro): string {
    * Depending on the distro
    */
   if (distro.distroLike === 'Ubuntu') {
-    yaml += '    - language-pack-$LOCALE\n'
+    yaml += '  - language-pack-$LOCALE\n'
   }
 
   // Da localizzare se presenti
   if (Pacman.packageIsInstalled('hunspell')) {
-    yaml += '    - hunspell-$LOCALE\n'
+    yaml += '  - hunspell-$LOCALE\n'
   }
 
   if (Pacman.packageIsInstalled('libreoffice-base-core')) {
-    yaml += `    - libreoffice-l10n-$LOCALE\n`
-    yaml += `    - libreoffice-help-$LOCALE\n`
+    yaml += `  - libreoffice-l10n-$LOCALE\n`
+    yaml += `  - libreoffice-help-$LOCALE\n`
   }
 
   if (Pacman.packageIsInstalled('firefox-esr')) {
-    yaml += `    - firefox-esr-$LOCALE\n`
+    yaml += `  - firefox-esr-$LOCALE\n`
   }
 
   if (Pacman.packageIsInstalled('firefox')) {
-    yaml += `    - firefox-$LOCALE\n`
+    yaml += `  - firefox-$LOCALE\n`
   }
 
   if (Pacman.packageIsInstalled('thunderbird')) {
-    yaml += `    - thunderbird-locale-$LOCALE\n`
+    yaml += `  - thunderbird-locale-$LOCALE\n`
   }
 
   if (yaml !== '') {
-    yaml = '  - try_install:\n' + yaml
+    yaml = '- try_install:\n' + yaml
   }
   
   return yaml
