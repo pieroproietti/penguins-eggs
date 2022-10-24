@@ -21,6 +21,9 @@ You can follow the project also consulting the [commit history](https://github.c
 ## Changelog
 Versions are listed on reverse order, the first is the last one. Old versions are moved to [versions](https://sourceforge.net/projects/penguins-eggs/files/packages-deb/versions/). 
 
+### eggs-9.3.4-1
+calamares: just a bugfix on module /etc/calamares/modules/packages.conf
+
 ### eggs-9.3.4
 * added to dependencies sshfs, I'm now using it to export isos and debs, I previously used the commands: ssh and scp which involved entering two passwords;
 * various adjustments in export paths with new defaults in tools.yaml
