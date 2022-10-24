@@ -42,7 +42,7 @@ You can also perform an unattended installation with krill, see the [manual](htt
 * Repository: [penguins-eggs](https://github.com/pieroproietti/penguins-eggs)
 * Blog: [penguins-eggs](https://penguins-eggs.net)
 
-* You can find more informations on this Linux distro at: [mxlinux](https://mxlinux.org/).
+* You can find more informations on this Linux distro at: [MX Linux](https://mxlinux.org/).
 
 
 Disclaim
