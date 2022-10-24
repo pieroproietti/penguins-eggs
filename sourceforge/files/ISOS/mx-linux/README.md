@@ -22,7 +22,7 @@ All ISOs include eggs, you can udate it with: ```sudo eggs update```.
 
 [MX Linux](https://mxlinux.org/) is a cooperative venture between the [antiX](https://antixlinux.com/) and MX Linux communities. It is a family of operating systems that are designed to combine elegant and efficient desktops with high stability and solid performance.  MX’s graphical tools provide an easy way to do a wide variety of tasks, while the Live USB and snapshot tools inherited from antiX add impressive portability and remastering capabilities. Extensive support is available through videos, documentation and a very friendly Forum.
 
-* **egg-of-mx-bullseye--xfce** - remastered version from MX21
+* **egg-of-mx-bullseye-xfce** - remastered version from MX21
 
 # Installing MX Linux via PXE
 
