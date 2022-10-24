@@ -51,9 +51,13 @@ Addons are used mostly to let third parties to develop extensions. Note that cur
 
 We have two methods to save in the live system all our data: clone and backup.
 
-```eggs produce --fast --clone``` saves our users and our data directly in the generated iso. The data will be visible directly from the live and accessible to anyone who gets a copy.
+```eggs produce --fast --clone``` 
 
-```eggs produce --fast --backup``` saves our data within the generated iso using a LUKS volume. Our data will NOT be visible in the live system but can be reinstalled automatically with krill installer. Even having the generated image available, our data will be protected by the LUKS passphrase.
+saves our users and our data directly in the generated iso. The data will be visible directly from the live and accessible to anyone who gets a copy.
+
+```eggs produce --fast --backup``` 
+
+saves our data within the generated iso using a LUKS volume. Our data will NOT be visible in the live system but can be reinstalled automatically with krill installer. Even having the generated image available, our data will be protected by the LUKS passphrase.
 
 * ```eggs produce``` this is the default: all private data are removed on the live.
 * ```eggs produce --clone``` include all users data UNCRYPTED directly on the live.
