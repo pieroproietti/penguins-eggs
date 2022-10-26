@@ -1,5 +1,0 @@
-sudo rm -rf /home/archiso
-sudo mkdir /home/archiso
-sudo mkdir /home/archiso/work
-sudo mkdir /home/archiso/out
-sudo mkarchiso -v -w /home/archiso/work -o /home/archiso/out  /usr/share/archiso/configs/releng/
