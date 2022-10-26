@@ -641,7 +641,7 @@ export default class Ovary {
       if (this.settings.distro.distroId === 'ManjaroLinux') {
         kernel_parameters += ` misobasedir=live misolabel=${volid}`
       } else if (this.settings.distro.distroId === 'Arch') {
-        kernel_parameters += ` archisobasedir=live archisolabel=${volid} cow_spacesize=4G archiso_nbd_srv=\${pxeserver}`
+        kernel_parameters += ` archisobasedir=live archisolabel=${volid} cow_spacesize=4G archiso_http_srv=\${pxeserver}`
       }
     }
 
