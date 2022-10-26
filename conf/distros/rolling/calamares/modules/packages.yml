@@ -3,7 +3,4 @@
 ---
 backend: pacman
 
-operations:
-{{remove}}
-{{try_install}}
-
+{{operations}}
