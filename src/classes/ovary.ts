@@ -641,7 +641,7 @@ export default class Ovary {
       if (this.settings.distro.distroId === 'ManjaroLinux') {
         kernel_parameters += ` misobasedir=live misolabel=${volid}`
       } else if (this.settings.distro.distroId === 'Arch') {
-        kernel_parameters += ` archisobasedir=live archisolabel=${volid} cow_spacesize=4G archiso_http_srv=\${pxeserver}`
+        kernel_parameters += ` archisobasedir=live archisolabel=${volid} cow_spacesize=4G` //  archiso_http_srv=\${pxeserver}
       }
     }
 
@@ -805,7 +805,6 @@ export default class Ovary {
     if (!scriptOnly) {
       Utils.warning('squashing filesystem: ' + compression)
       await exec(cmd, Utils.setEcho(true))
-      await exec(`ln -s ${this.settings.work_dir.pathIso}live/filesystem.squashfs) ${this.settings.work_dir.pathIso}live/airootfs.sfs`)
     }
   }
 
@@ -1468,9 +1467,8 @@ export default class Ovary {
 
     // Cleanup efi temps
     await exec(`umount ${efiWorkDir}/img-mnt`, this.echo)
-    // await exec(`rmdir ${efiWorkDir}/img-mnt`, echo)
-    // await exec(`rm ${memdiskDir}/img-mnt -rf`, echo)
-
+    await exec(`rmdir ${efiWorkDir}/img-mnt`, this.echo)
+    await exec(`rm ${memdiskDir}/img-mnt -rf`, this.echo)
 
     //  popd
 
@@ -1509,17 +1507,12 @@ export default class Ovary {
       if (this.settings.distro.distroId === 'ManjaroLinux') {
         kernel_parameters += ` misobasedir=live misolabel=${volid}`
       } else if (this.settings.distro.distroId === 'Arch') {
-        kernel_parameters += ` archisobasedir=live archisolabel=${volid} cow_spacesize=4G archiso_http_srv=\${pxeserver}`
+        kernel_parameters += ` archisobasedir=live archisolabel=${volid} cow_spacesize=4G` // archiso_http_srv=\${pxeserver}`
       }
     }
 
     const grubDest = `${isoDir}/boot/grub/grub.cfg`
     const template = fs.readFileSync(grubTemplate, 'utf8')
-
-    // let rmModules = ''
-    // if (this.settings.distro.codenameLikeId === 'focal') {
-    // rmModules = 'rmmod tpm'
-    // }
 
     const view = {
       fullname: this.settings.remix.fullname.toUpperCase(),

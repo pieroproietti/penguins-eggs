@@ -257,7 +257,12 @@ export default class Pxe {
          * CORRECT:
          * content += `imgargs vmlinuz fetch=http://${Utils.address()}/live/filesystem.squashfs boot=live dhcp initrd=initrd ro\n`
          */
-        content += `imgargs vmlinuz fetch=http://${Utils.address()}/live/filesystem.squashfs boot=live dhcp initrd=initrd ro\n`
+         if (this.settings.distro.familyId === 'debian') {
+            content += `imgargs vmlinuz fetch=http://${Utils.address()}/live/filesystem.squashfs boot=live dhcp initrd=initrd ro\n`
+        } else if (this.settings.distro.familyId === 'arch') {
+            content += `imgargs vmlinuz archiso_http_srv=${Utils.address()} boot=live dhcp initrd=initrd ro\n`
+        }
+
         content += `sleep 5\n`
         content += `boot || goto start\n\n`
 
