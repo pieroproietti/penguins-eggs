@@ -805,6 +805,7 @@ export default class Ovary {
     if (!scriptOnly) {
       Utils.warning('squashing filesystem: ' + compression)
       await exec(cmd, Utils.setEcho(true))
+      await exec(`ln -s ${this.settings.work_dir.pathIso}live/filesystem.squashfs) ${this.settings.work_dir.pathIso}live/airootfs.sfs`)
     }
   }
 
