@@ -21,6 +21,9 @@ You can follow the project also consulting the [commit history](https://github.c
 ## Changelog
 Versions are listed on reverse order, the first is the last one. Old versions are moved to [versions](https://sourceforge.net/projects/penguins-eggs/files/packages-deb/versions/). 
 
+### eggs-9.3.5
+Released eggs-9.3.5 version to manjaro and arch, it is working except PXE boot (cannot load http://${pxeserver}/filesystem.squashfs, I hope someone have suggestions)
+
 ### eggs-9.3.4-1
 calamares: just a bugfix on module /etc/calamares/modules/packages.conf
 
