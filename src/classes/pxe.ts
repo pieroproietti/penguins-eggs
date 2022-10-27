@@ -53,9 +53,6 @@ export default class Pxe {
 
         this.nest = '/home/eggs'
         this.pxeRoot = this.nest + '/pxe'
-        // console.log('nest: ' + this.nest)
-        // console.log('pxeRoot: ' + this.pxeRoot)
-        // console.log('eggRoot: ' + this.eggRoot)
 
         /**
          * se pxeRoot non esiste viene creato
@@ -93,11 +90,10 @@ export default class Pxe {
                     this.initrd = path.basename(file)
                 }
             } else if (this.settings.distro.familyId === 'archlinux') {
-
                 if (path.basename(file).substring(0, 7) === 'vmlinuz') {
                     this.vmlinuz = path.basename(file)
                 }
-                if (path.basename(file) === 'initramfs-linux.img') {
+                if (path.basename(file).substring(0,9) === 'initramfs') {
                     this.initrd = path.basename(file)
                 }
             }
