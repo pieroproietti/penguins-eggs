@@ -250,16 +250,17 @@ export default class Ovary {
        * patch to emulate miso/archiso on archilinux
        */
       if (this.familyId === 'archlinux') {
-        await exec(`mkdir ${this.settings.work_dir.pathIso}/live/x86_64`, this.echo)
+        // await exec(`mkdir ${this.settings.work_dir.pathIso}/live/x86_64`, this.echo)
+        await exec(`mkdir ${this.settings.work_dir.pathIso}/live/arch/x86_64 -p`, this.echo)
         if (this.settings.distro.distroId === 'ManjaroLinux') {
-          await exec(`ln ${this.settings.work_dir.pathIso}/live/filesystem.squashfs ${this.settings.work_dir.pathIso}/live/x86_64/livefs.sfs`, this.echo)
-          await exec(`md5sum ${this.settings.work_dir.pathIso}/live/filesystem.squashfs > ${this.settings.work_dir.pathIso}/live/x86_64/livefs.md5`, this.echo)
+          await exec(`ln ${this.settings.work_dir.pathIso}/live/filesystem.squashfs ${this.settings.work_dir.pathIso}/live/arch/x86_64/livefs.sfs`, this.echo)
+          await exec(`md5sum ${this.settings.work_dir.pathIso}/live/filesystem.squashfs > ${this.settings.work_dir.pathIso}/live/arch/x86_64/livefs.md5`, this.echo)
         } else if (this.settings.distro.distroId === 'Arch') {
-          await exec(`ln ${this.settings.work_dir.pathIso}/live/filesystem.squashfs ${this.settings.work_dir.pathIso}/live/x86_64/airootfs.sfs`, this.echo)
-          await exec(`sha512sum ${this.settings.work_dir.pathIso}/live/filesystem.squashfs > ${this.settings.work_dir.pathIso}/live/x86_64/fs.sha512`, this.echo)
-          // await exec(`gpg --detach-sign ${this.settings.work_dir.pathIso}/live/filesystem.squashfs ${this.settings.work_dir.pathIso}/live/x86_64/fs.sig`, this.echo)
+          await exec(`ln ${this.settings.work_dir.pathIso}/live/filesystem.squashfs          ${this.settings.work_dir.pathIso}/live/arch/x86_64/airootfs.sfs`, this.echo)
+          await exec(`sha512sum ${this.settings.work_dir.pathIso}live/filesystem.squashfs > ${this.settings.work_dir.pathIso}/live/arch/x86_64/airootfs.sha512`, this.echo)          
+          // https://github.com/archlinux/archiso/blob/master/archiso/mkarchiso we lack checksum verify          
         }
-      }
+    }
       await this.makeIso(xorrisoCommand, scriptOnly)
     }
   }
@@ -639,9 +640,9 @@ export default class Ovary {
     if (this.familyId === 'archlinux') {
       let volid = Utils.getVolid(this.settings.remix.name)
       if (this.settings.distro.distroId === 'ManjaroLinux') {
-        kernel_parameters += ` misobasedir=live misolabel=${volid}`
+        kernel_parameters += ` misobasedir=live/arch misolabel=${volid}`
       } else if (this.settings.distro.distroId === 'Arch') {
-        kernel_parameters += ` archisobasedir=live archisolabel=${volid} cow_spacesize=4G` //  archiso_http_srv=\${pxeserver}
+        kernel_parameters += ` archisobasedir=live/arch archisolabel=${volid} cow_spacesize=4G`
       }
     }
 
@@ -1505,9 +1506,9 @@ export default class Ovary {
     if (this.familyId === 'archlinux') {
       let volid = Utils.getVolid(this.settings.remix.name)
       if (this.settings.distro.distroId === 'ManjaroLinux') {
-        kernel_parameters += ` misobasedir=live misolabel=${volid}`
+        kernel_parameters += ` misobasedir=live/arch misolabel=${volid}`
       } else if (this.settings.distro.distroId === 'Arch') {
-        kernel_parameters += ` archisobasedir=live archisolabel=${volid} cow_spacesize=4G`
+        kernel_parameters += ` archisobasedir=live/arch archisolabel=${volid} cow_spacesize=4G`
       }
     }
 
@@ -1557,7 +1558,6 @@ export default class Ovary {
     file = dotDisk + '/mkisofs'
     fs.writeFileSync(file, content, 'utf-8')
     return content
-
   }
 
   /**

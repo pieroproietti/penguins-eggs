@@ -93,7 +93,7 @@ export default class Pxe {
                 if (path.basename(file).substring(0, 7) === 'vmlinuz') {
                     this.vmlinuz = path.basename(file)
                 }
-                if (path.basename(file).substring(0,9) === 'initramfs') {
+                if (path.basename(file).substring(0, 9) === 'initramfs') {
                     this.initrd = path.basename(file)
                 }
             }
@@ -186,13 +186,20 @@ export default class Pxe {
         content += `\n`
         content += `label egg\n`
         content += `menu label ${this.bootLabel.replace('.iso', '')}\n`
-        let clid = this.settings.distro.codenameLikeId
-        if (clid === 'bionic' || clid === 'stretch' || clid === 'jessie') {
-            content += `kernel vmlinuz\n`
-            content += `append initrd=initrd boot=live config noswap noprompt fetch=http://${Utils.address()}/live/filesystem.squashfs\n`
-        } else {
+        if (this.settings.distro.familyId === 'debian') {
+            let clid = this.settings.distro.codenameLikeId
+            if (clid === 'bionic' || clid === 'stretch' || clid === 'jessie') {
+                content += `kernel vmlinuz\n`
+                content += `append initrd=initrd boot=live config noswap noprompt fetch=http://${Utils.address()}/live/filesystem.squashfs\n`
+            } else {
+                content += `kernel http://${Utils.address()}/vmlinuz\n`
+                content += `append initrd=http://${Utils.address()}/initrd boot=live config noswap noprompt fetch=http://${Utils.address()}/live/filesystem.squashfs\n`
+            }
+
+        } else if (distro.familyId === 'archlinux') { 
             content += `kernel http://${Utils.address()}/vmlinuz\n`
-            content += `append initrd=http://${Utils.address()}/initrd boot=live config noswap noprompt fetch=http://${Utils.address()}/live/filesystem.squashfs\n`
+            // we lack: checksum verify
+            content += `append initrd=http://${Utils.address()}/initrd boot=live config noswap noprompt archiso_http_srv=http://${Utils.address()}/live/\n` 
         }
         content += `sysappend 3\n`
         content += `\n`
@@ -229,8 +236,8 @@ export default class Pxe {
         const serverRootVars = '${server_root}'
         content += `menu cuckoo: when you need a flying PXE server! ${Utils.address()}\n`
         content += 'item --gap boot from ovarium\n'
-        content += `item egg-menu \${space} ${this.bootLabel.replaceAll('.iso','')}\n\n`
-        
+        content += `item egg-menu \${space} ${this.bootLabel.replaceAll('.iso', '')}\n\n`
+
         if (this.isos.length > 0) {
             content += 'item --gap boot iso images\n'
             for (const iso of this.isos) {
@@ -253,7 +260,7 @@ export default class Pxe {
          * CORRECT:
          * content += `imgargs vmlinuz fetch=http://${Utils.address()}/live/filesystem.squashfs boot=live dhcp initrd=initrd ro\n`
          */
-         if (this.settings.distro.familyId === 'debian') {
+        if (this.settings.distro.familyId === 'debian') {
             content += `imgargs vmlinuz fetch=http://${Utils.address()}/live/filesystem.squashfs boot=live dhcp initrd=initrd ro\n`
         } else if (this.settings.distro.familyId === 'archlinux') {
             content += `imgargs vmlinuz archiso_http_srv=http://${Utils.address()}/ boot=live dhcp initrd=initrd ro\n`
