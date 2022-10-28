@@ -196,13 +196,16 @@ export default class Pxe {
                 content += `append initrd=http://${Utils.address()}/initrd boot=live config noswap noprompt fetch=http://${Utils.address()}/live/filesystem.squashfs\n`
             }
 
-        } else if (distro.familyId === 'archlinux') { 
+        } else if (distro.familyId === 'archlinux') {
+            let tool = 'archiso'
+            if (distro.codenameId === 'Qonos' || distro.codenameId === 'Ruah' || distro.codenameId === 'Sikaris') {
+                tool = 'miso'
+            }
             content += `kernel http://${Utils.address()}/vmlinuz\n`
-            // we lack: checksum verify
-            content += `append initrd=http://${Utils.address()}/initrd boot=live config noswap noprompt archiso_http_srv=http://${Utils.address()}/live/\n` 
+            content += `append initrd=http://${Utils.address()}/initrd boot=live config noswap noprompt ${tool}_http_srv=http://${Utils.address()}/live/\n`
+            content += `sysappend 3\n`
+            content += `\n`
         }
-        content += `sysappend 3\n`
-        content += `\n`
 
         if (this.isos.length > 0) {
             content += `menu separator\n`
