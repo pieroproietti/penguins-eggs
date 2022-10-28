@@ -256,8 +256,8 @@ export default class Ovary {
           await exec(`ln ${this.settings.work_dir.pathIso}/live/filesystem.squashfs ${this.settings.work_dir.pathIso}/live/arch/x86_64/livefs.sfs`, this.echo)
           await exec(`md5sum ${this.settings.work_dir.pathIso}/live/filesystem.squashfs > ${this.settings.work_dir.pathIso}/live/arch/x86_64/livefs.md5`, this.echo)
         } else if (this.settings.distro.distroId === 'Arch') {
-          await exec(`ln ${this.settings.work_dir.pathIso}/live/filesystem.squashfs          ${this.settings.work_dir.pathIso}/live/arch/x86_64/airootfs.sfs`, this.echo)
-          await exec(`sha512sum ${this.settings.work_dir.pathIso}live/filesystem.squashfs > ${this.settings.work_dir.pathIso}/live/arch/x86_64/airootfs.sha512`, this.echo)          
+          await exec(`ln ${this.settings.work_dir.pathIso}live/filesystem.squashfs          ${this.settings.work_dir.pathIso}live/arch/x86_64/airootfs.sfs`, this.echo)
+          await exec(`sha512sum ${this.settings.work_dir.pathIso}live/arch/x86_64/airootfs.sfs > ${this.settings.work_dir.pathIso}live/arch/x86_64/airootfs.sha512`, this.echo)          
           // https://github.com/archlinux/archiso/blob/master/archiso/mkarchiso we lack checksum verify          
         }
     }
