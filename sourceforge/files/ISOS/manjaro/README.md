@@ -22,25 +22,32 @@ All ISOs include eggs, you can udate it with: ```sudo eggs update```.
 
 [Manjaro](https://manjaro.org/) is a professionally made operating system that is a suitable replacement for Windows or MacOS. Multiple Desktop Environments are available through our Official and Community editions.
 
-* **egg-of-manjarolinux-ruah-naked**
-* **egg-of-manjarolinux-ruah-colibri** (1,5G compression fast)
+* **egg-of-manjarolinux-sikaris-colibri**
 
 **naked** can be usefull to start everything: just add that you want, **colibri** is more a tool to hack with eggs than a real customization and perhaps can be used to test calamares too. 
 
-NOTE: While waiting to complete the wardrobe for manjaro, it is still possible to switch from the naked configuration to colibri by running the following commands:
+# Installing manjaro Linux via PXE
 
-* ```eggs wardrobe get```
-* ```cd .wardrobe/costumes/colibri```
-* ```sudo ./manjaro-colibri.sh```
+One feature of ISO images made with eggs is the ability to be used for network installation . All you have to do is boot the ISO to be installed, open a terminal window and type the command: 
 
+```sudo eggs cuckoo```.
 
-Following versions are just unchanged remastered versions of originals, but can be used to start a own customization.
+Then all you have to do is boot from the network the machines to be installed and start the calamares or krill installer.
 
-* **egg-of-manjarolinux-ruah-xfce-minimal**
-* **egg-of-manjarolinux-ruah-kde-minimal**
-* **egg-of-manjarolinux-ruah-gnome-minimal**
+You can also perform an unattended installation with krill, see the [manual](https://penguins-eggs.net/book/) or, find assistance in the [telegram penguin's eggs](https://t.me/penguins_eggs) group.
 
-All this isos, was created installing the original stable and:
+## important
+In manjaro - at the moment - I was able to boot via PXE just on BIOS system not UEFI.
+
+Due differents paths where miso-tools mount the live image, from DVD or from PXE, before to install manjaro with calamares or krill 
+create the follow link:
+
+```mkdir /run/miso/bootmnt/manjaro/x86_64/ -p```
+
+```ln -s /run/miso/bootmnt/live/manjaro/x86_64/livefs.sfs /run/miso/bootmnt/manjaro/x86_64/livefs.sfs```
+
+I hope someone can suggest a way to fix that and boot via PXE on UEFI machines too.
+
 
 ```
 git clone https://github.com/pieroproietti/penguins-eggs-manjaro
