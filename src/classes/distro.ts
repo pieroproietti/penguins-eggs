@@ -465,8 +465,12 @@ class Distro implements IDistro {
 
 
     if (this.distroId === 'ManjaroLinux') {
+      // pxe: /run/miso/bootmnt/manjaro/x86_64/livefs.sfs
+      // iso: /run/miso/bootmnt/live/manjaro/x86_64/livefs.sfs
       this.mountpointSquashFs = '/run/miso/bootmnt/manjaro/x86_64/livefs.sfs'
     } else if (this.distroId === 'Arch') {
+      // pxe: /run/archiso/httpspace/arch/x86_64/airootfs.sfs
+      // iso: /run/archiso/bootmnt/live/arch/x86_64/airootfs.sfs
       this.mountpointSquashFs = '/run/archiso/bootmnt/arch/x86_64/airootfs.sfs'
     }
 
