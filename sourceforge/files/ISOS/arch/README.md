@@ -50,6 +50,7 @@ Due differents paths where archiso mount the live image, from DVD or from PXE, b
 create the follow link:
 
 ```mkdir /run/archiso/bootmnt/live/arch/x86_64/ -p```
+
 ```ln -s /run/archiso/httpspace/arch/x86_64/airootfs.sfs /run/archiso/bootmnt/live/arch/x86_64/airootfs.sfs```
 
 I hope someone can suggest a way to fix that and boot via PXE on UEFI machines too.
