@@ -390,6 +390,7 @@ class Distro implements IDistro {
       case 'n/a': {
         this.familyId = 'archlinux'
         this.distroLike = 'Arch'
+        this.liveMediumPath = `/run/miso/bootmnt/`
         this.codenameId = 'rolling'
         this.codenameLikeId = 'rolling'
         break
