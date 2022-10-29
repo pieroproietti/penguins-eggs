@@ -471,7 +471,7 @@ class Distro implements IDistro {
     } else if (this.distroId === 'Arch') {
       // pxe: /run/archiso/httpspace/arch/x86_64/airootfs.sfs
       // iso: /run/archiso/bootmnt/live/arch/x86_64/airootfs.sfs
-      this.mountpointSquashFs = '/run/archiso/bootmnt/arch/x86_64/airootfs.sfs'
+      this.mountpointSquashFs = '/run/archiso/bootmnt/live/arch/x86_64/airootfs.sfs'
     }
 
 
