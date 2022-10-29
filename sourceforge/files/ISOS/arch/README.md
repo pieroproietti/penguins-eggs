@@ -33,6 +33,28 @@ NOTE: While waiting to complete the wardrobe for arch, it is still possible to s
 * ```cd .wardrobe/costumes/colibri```
 * ```sudo ./arch-colibri.sh```
 
+# Installing Arch Linux via PXE
+
+One feature of ISO images made with eggs is the ability to be used for network installation . All you have to do is boot the ISO to be installed, open a terminal window and type the command: 
+
+```sudo eggs cuckoo```.
+
+Then all you have to do is boot from the network the machines to be installed and start the calamares or krill installer.
+
+You can also perform an unattended installation with krill, see the [manual](https://penguins-eggs.net/book/) or, find assistance in the [telegram penguin's eggs](https://t.me/penguins_eggs) group.
+
+## important
+In Arch - at the moment - I was able to boot via PXE just on BIOS system not UEFI.
+
+Due differents paths where archiso mount the live image, from DVD or from PXE, before to install Arch with calamares or krill 
+create the follow link:
+
+```mkdir /run/archiso/bootmnt/live/arch/x86_64/ -p```
+```ln -s /run/archiso/httpspace/arch/x86_64/airootfs.sfs /run/archiso/bootmnt/live/arch/x86_64/airootfs.sfs```
+
+I hope someone can suggest a way to fix that and boot via PXE on UEFI machines too.
+
+
 ## More informations:
 
 * Repository: [penguins-eggs](https://github.com/pieroproietti/penguins-eggs)
