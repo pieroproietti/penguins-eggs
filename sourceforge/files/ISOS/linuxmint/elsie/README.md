@@ -21,7 +21,7 @@ All ISOs include eggs, you can udate it with: ```sudo eggs update```.
 
 # Linux Mint - elsie
 
-* **egg-of-linuxmint-elsie-cinnamon** - LMDE 5.0 (based on Debian bullseye), cinnamon (amd64 and i386)
+* **egg-of-linuxmint-elsie-cinnamon** - LMDE 5.0 (based on Debian bullseye), cinnamon
 
 # Installing LMDE 5.0 via PXE
 
