@@ -31,13 +31,19 @@ It's community-driven. Users are encouraged to send feedback to the project so t
 Based on Debian and Ubuntu, it provides about 30,000 packages and one of the best software managers.
 It's safe and reliable. Thanks to a conservative approach to software updates, a unique Update Manager and the robustness of its Linux architecture, Linux Mint requires very little maintenance (no regressions, no antivirus, no anti-spyware...etc).
 
-* **debbie** - LMDE4 (based on Debian buster)
-* **tricia** - Linux Mint 19.3 (based on Ubuntu bionic)
-* **ulyana** - Linux Mint 20 (based on Ubuntu focal)
-* **ulyssa** - Linux Mint 20.1 (based on Ubuntu focal)
-* **uma** - Linux Mint 20.2 (based on Ubuntu focal)
-* **una** - Linux Mint 20.3 (based on Ubuntu focal)
-* **xfce** - Linux Mint 19.3 (based on Ubuntu bionic), xfce (amd64 and i386)
+* **elsie** - LMDE5 (based on Debian bullseye)
+* **vanessa** - Linuxmint 21 cinnamon (based on Ubuntu jammy)
+
+# Installing Linuxmint via PXE
+
+One feature of ISO images made with eggs is the ability to be used for network installation . All you have to do is boot the ISO to be installed, open a terminal window and type the command: 
+
+```sudo eggs cuckoo```.
+
+Then all you have to do is boot from the network the machines to be installed and start the calamares or krill installer.
+
+You can also perform an unattended installation with krill, see the [manual](https://penguins-eggs.net/book/) or, find assistance in the [telegram penguin's eggs](https://t.me/penguins_eggs) group.
+
 
 ## More informations:
 

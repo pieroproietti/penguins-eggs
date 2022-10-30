@@ -19,16 +19,13 @@ penguins-eggs
 
 All ISOs include eggs, you can udate it with: ```sudo eggs update```.
 
-# Linux Mint - tricia
+# Linux Mint - una
 
-* **xfce** - Linux Mint 19.3 (based on Ubuntu bionic), xfce (amd64 and i386)
+* **cinnamon** - Linux Mint 21 (based on Ubuntu jammy), cinnamon (amd64)
 
-## More informations:
+## More informations
 
-* Repository: [penguins-eggs](https://github.com/pieroproietti/penguins-eggs)
-* Blog: [penguins-eggs](https://penguins-eggs.net)
-
-* You can find more informations on this Linux distro at: [Linux Mint](https://linuxmint.com/).
+You can find more informations at [Linux Mint](https://linuxmint.com/).
 
 # Disclaim
 __Please note what this project is in no way connected to the original distro in any official way, it’s just my personal experiment.__
