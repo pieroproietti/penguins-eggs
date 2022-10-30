@@ -17,13 +17,24 @@ penguins-eggs
 * ```live/evolution```
 * ```root/evolution```
 
-All the ISOs include nodejs and eggs installed (.npm package), so you can update your eggs tool with the command:
+All the ISOs include eggs installed, so you can update your eggs tool with the command:
 
 ```sudo eggs update```
 
 # Pop!-OS
+[Pop!_OS](https://pop.system76.com/) is an operating system for STEM and creative professionals who use their computer as a tool to discover and create. Unleash your potential on secure, reliable open source software. Based on your exceptional curiosity, we sense you have a lot of it.
 
-* **pop-os_20.10_amd64_intel_4.iso**  Just a remaster of Pop!-OS 20.10 installabe with calamares
+* **egg-of-pop-jammy-pop**  Just a remaster of Pop!-OS 22.04 LTS installabe with calamares
+
+# Installing Pop!-OS via PXE
+
+One feature of ISO images made with eggs is the ability to be used for network installation . All you have to do is boot the ISO to be installed, open a terminal window and type the command: 
+
+```sudo eggs cuckoo```.
+
+Then all you have to do is boot from the network the machines to be installed and start the calamares or krill installer.
+
+You can also perform an unattended installation with krill, see the [manual](https://penguins-eggs.net/book/) or, find assistance in the [telegram penguin's eggs](https://t.me/penguins_eggs) group.
 
 ## More informations:
 
