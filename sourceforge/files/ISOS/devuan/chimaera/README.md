@@ -42,6 +42,16 @@ xfce4 for graphics designers, with 5.17.0-1.2-liquorix-amd64 kernel, based on th
 
 ![owl](https://a.fsdn.com/con/app/proj/penguins-eggs/screenshots/owl.png/245/183)
 
+# Installing Devuan via PXE
+
+One feature of ISO images made with eggs is the ability to be used for network installation . All you have to do is boot the ISO to be installed, open a terminal window and type the command: 
+
+```sudo eggs cuckoo```.
+
+Then all you have to do is boot from the network the machines to be installed and start the calamares or krill installer.
+
+You can also perform an unattended installation with krill, see the [manual](https://penguins-eggs.net/book/) or, find assistance in the [telegram penguin's eggs](https://t.me/penguins_eggs) group.
+
 
 ## More informations:
 

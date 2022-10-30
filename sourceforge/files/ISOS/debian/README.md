@@ -28,13 +28,13 @@ To install the system you have:
 * unattended
 
 # Debian 8 jessie
-* naked
+* naked: Just the juice, without GUI. You can start here to build your revolution!
 
 ## Debian 9 stretch
-* naked
+* naked: Just the juice, without GUI. You can start here to build your revolution!
 
 ## Debian 10 buster (old-stable)
-* naked
+* naked: Just the juice, without GUI. You can start here to build your revolution!
 
 ## Debian 11 bullseye (stable)
 * naked

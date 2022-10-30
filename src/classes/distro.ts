@@ -385,7 +385,6 @@ class Distro implements IDistro {
 
       /**
        * Arch Linux
-       * distroId= "Arch"
        */
       case 'n/a': {
         this.familyId = 'archlinux'
