@@ -403,7 +403,9 @@ class Distro implements IDistro {
         case 'Sikaris': {
         this.familyId = 'archlinux'
         this.distroLike = 'Arch'
-        this.liveMediumPath = `/run/miso/bootmnt/`
+        // this.liveMediumPath = `/run/miso/bootmnt/`
+        this.liveMediumPath = `/run/archiso/copytoram/`
+        // this.liveMediumPath = `/run/archiso/airootfs/`
         this.codenameLikeId = 'rolling'
         break
       }
