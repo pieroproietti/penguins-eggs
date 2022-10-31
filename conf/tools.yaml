@@ -4,7 +4,7 @@
 penguins_eggs_conf: /etc/penguins-eggs.d/eggs.yaml
 
 # you can adapt this configuration to your needs
-remoteHost: 192.168.1.2
+remoteHost: 192.168.61.2
 
 # path to remote host
 remotePathDeb: /eggs/
