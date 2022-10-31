@@ -404,8 +404,8 @@ class Distro implements IDistro {
         this.familyId = 'archlinux'
         this.distroLike = 'Arch'
         // this.liveMediumPath = `/run/miso/bootmnt/`
-        this.liveMediumPath = `/run/archiso/copytoram/`
         // this.liveMediumPath = `/run/archiso/airootfs/`
+        this.liveMediumPath = `/run/archiso/copytoram/`
         this.codenameLikeId = 'rolling'
         break
       }
