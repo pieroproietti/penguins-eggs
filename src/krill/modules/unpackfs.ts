@@ -15,7 +15,7 @@ import { exec } from '../../lib/utils'
 * unpackfs
 */
 export default async function unpackfs(this: Sequence): Promise<void> {
-    const cmd = `unsquashfs -d ${this.installTarget} -f ${this.distro.mountpointSquashFs}`
+    const cmd = `unsquashfs -d ${this.installTarget} -f ${this.distro.liveMediumPath}`
     const echoYes = Utils.setEcho(true)
     await exec(cmd, echoYes)
 }

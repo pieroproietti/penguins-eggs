@@ -62,7 +62,7 @@
  
      await fisherman.buildModule('partition', this.remix.branding)
      await fisherman.buildModule('mount')
-     await fisherman.moduleUnpackfs()
+     await fisherman.moduleUnpackfs(this.distro.squashfs)
      // await fisherman.buildCalamaresModule('sources-yolk', true)
      // await fisherman.buildModule('machineid')
      await fisherman.buildModule('fstab')

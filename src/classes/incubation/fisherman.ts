@@ -51,7 +51,7 @@ export default class Fisherman {
      */
     let filePersonal = `/home/eggs/ovarium/iso/live/is-clone.md`
     if (Utils.isLive()) {
-      filePersonal = path.dirname(this.distro.mountpointSquashFs) + `/is-clone.md`
+      filePersonal = path.dirname(this.distro.liveMediumPath) + `/is-clone.md`
     }
 
     let hasDisplaymanager = '# '
@@ -244,10 +244,10 @@ export default class Fisherman {
   /**
    * Al momento rimane con la vecchia configurazione
    */
-  async moduleUnpackfs() {
+  async moduleUnpackfs(squashfs='') {
     const name = 'unpackfs'
     this.buildModule(name)
-    shx.sed('-i', '{{source}}', this.distro.mountpointSquashFs, this.installer.modules + name + '.conf')
+    shx.sed('-i', '{{source}}', this.distro.liveMediumPath + squashfs, this.installer.modules + name + '.conf')
   }
 
   /**

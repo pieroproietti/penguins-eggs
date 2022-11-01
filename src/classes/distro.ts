@@ -52,7 +52,7 @@ class Distro implements IDistro {
   pxelinuxPath: string 
   memdiskPath: string
   liveMediumPath: string
-  mountpointSquashFs: string
+  squashfs: string
   homeUrl: string
   supportUrl: string
   bugReportUrl: string
@@ -72,7 +72,7 @@ class Distro implements IDistro {
     this.pxelinuxPath = ''
     this.memdiskPath  = ''
     this.liveMediumPath = `/run/live/medium/`
-    this.mountpointSquashFs = ''
+    this.squashfs = `live/squashfs`
     this.homeUrl = ''
     this.supportUrl = ''
     this.bugReportUrl = ''
@@ -461,20 +461,20 @@ class Distro implements IDistro {
      * Selezione il mountpoint per squashfs
      */
     if (this.codenameLikeId === 'jessie' || this.codenameLikeId === 'stretch' || this.codenameLikeId === 'bionic' || this.codenameLikeId === 'xenial') {
-      this.mountpointSquashFs = '/lib/live/mount/medium/live/filesystem.squashfs'
+      this.liveMediumPath = '/lib/live/mount/medium/live/filesystem.squashfs'
     } else {
-      this.mountpointSquashFs = '/run/live/medium/live/filesystem.squashfs'
+      this.liveMediumPath = '/run/live/medium/live/filesystem.squashfs'
     }
 
 
     if (this.distroId === 'ManjaroLinux') {
       // pxe: /run/miso/bootmnt/manjaro/x86_64/livefs.sfs
       // iso: /run/miso/bootmnt/live/manjaro/x86_64/livefs.sfs
-      this.mountpointSquashFs = '/run/miso/bootmnt/live/manjaro/x86_64/livefs.sfs'
+      this.liveMediumPath = '/run/miso/bootmnt/live/manjaro/x86_64/livefs.sfs'
     } else if (this.distroId === 'Arch') {
       // pxe: /run/archiso/httpspace/arch/x86_64/airootfs.sfs
       // iso: /run/archiso/bootmnt/live/arch/x86_64/airootfs.sfs
-      this.mountpointSquashFs = '/run/archiso/bootmnt/live/arch/x86_64/airootfs.sfs'
+      this.liveMediumPath = '/run/archiso/bootmnt/live/arch/x86_64/airootfs.sfs'
     }
 
 
