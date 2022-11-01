@@ -12,7 +12,7 @@ export interface IDistro {
   pxelinuxPath: string
   memdiskPath: string
   liveMediumPath: string
-  mountpointSquashFs: string
+  squashfs: string
   homeUrl: string
   supportUrl: string
   bugReportUrl: string
