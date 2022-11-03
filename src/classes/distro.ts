@@ -462,11 +462,11 @@ class Distro implements IDistro {
      */
      if (this.distroId === 'ManjaroLinux') {
       this.liveMediumPath = '/run/miso/bootmnt/'
-      this.squashfs = `manjaro/x86_64/livefs.sfs`
+      this.squashfs = `live/manjaro/x86_64/livefs.sfs`
 
     } else if (this.distroId === 'Arch') {
       this.liveMediumPath = '/run/archiso/bootmnt/'
-      this.squashfs = `arch/x86_64/airootfs.sfs`
+      this.squashfs = `live/arch/x86_64/airootfs.sfs`
     }
 
 
