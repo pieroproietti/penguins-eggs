@@ -251,9 +251,9 @@ export default class Ovary {
        */
       if (this.familyId === 'archlinux') {
         if (this.settings.distro.distroId === 'ManjaroLinux') {
-          await exec(`mkdir ${this.settings.work_dir.pathIso}live/manjaro/x86_64 -p`, this.echo)
-          await exec(`ln ${this.settings.work_dir.pathIso}live/filesystem.squashfs ${this.settings.work_dir.pathIso}live/manjaro/x86_64/livefs.sfs`, this.echo)
-          await exec(`md5sum ${this.settings.work_dir.pathIso}live/filesystem.squashfs > ${this.settings.work_dir.pathIso}live/manjaro/x86_64/livefs.md5`, this.echo)
+          await exec(`mkdir ${this.settings.work_dir.pathIso}manjaro/x86_64 -p`, this.echo)
+          await exec(`ln ${this.settings.work_dir.pathIso}live/filesystem.squashfs ${this.settings.work_dir.pathIso}manjaro/x86_64/livefs.sfs`, this.echo)
+          await exec(`md5sum ${this.settings.work_dir.pathIso}live/filesystem.squashfs > ${this.settings.work_dir.pathIso}manjaro/x86_64/livefs.md5`, this.echo)
         } else if (this.settings.distro.distroId === 'Arch') {
           await exec(`mkdir ${this.settings.work_dir.pathIso}/live/arch/x86_64 -p`, this.echo)
           await exec(`ln ${this.settings.work_dir.pathIso}live/filesystem.squashfs               ${this.settings.work_dir.pathIso}live/arch/x86_64/airootfs.sfs`, this.echo)
@@ -317,10 +317,11 @@ export default class Ovary {
       cmd = `mkdir -p ${this.settings.work_dir.pathIso}/efi/boot`
       this.tryCatch(cmd)
 
+      let liveBsseDir = 'live'
       cmd = `mkdir -p ${this.settings.work_dir.pathIso}/isolinux`
       this.tryCatch(cmd)
 
-      cmd = `mkdir -p ${this.settings.work_dir.pathIso}/live`
+      cmd = `mkdir -p ${this.settings.work_dir.pathIso}live`
       this.tryCatch(cmd)
     }
   }
@@ -640,7 +641,7 @@ export default class Ovary {
     if (this.familyId === 'archlinux') {
       let volid = Utils.getVolid(this.settings.remix.name)
       if (this.settings.distro.distroId === 'ManjaroLinux') {
-        kernel_parameters += ` misobasedir=live/manjaro misolabel=${volid}`
+        kernel_parameters += ` misobasedir=manjaro misolabel=${volid}`
       } else if (this.settings.distro.distroId === 'Arch') {
         kernel_parameters += ` archisobasedir=live/arch archisolabel=${volid} cow_spacesize=4G`
       }
@@ -1506,7 +1507,7 @@ export default class Ovary {
     if (this.familyId === 'archlinux') {
       let volid = Utils.getVolid(this.settings.remix.name)
       if (this.settings.distro.distroId === 'ManjaroLinux') {
-        kernel_parameters += ` misobasedir=live/arch misolabel=${volid}`
+        kernel_parameters += ` misobasedir=manjaro misolabel=${volid}`
       } else if (this.settings.distro.distroId === 'Arch') {
         kernel_parameters += ` archisobasedir=live/arch archisolabel=${volid} cow_spacesize=4G`
       }

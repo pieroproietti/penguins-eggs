@@ -202,7 +202,7 @@ export default class Pxe {
                 tool = 'miso'
             }
             content += `kernel http://${Utils.address()}/vmlinuz\n`
-            content += `append initrd=http://${Utils.address()}/initrd boot=live config noswap noprompt ${tool}_http_srv=http://${Utils.address()}/live/\n`
+            content += `append initrd=http://${Utils.address()}/initrd boot=live config noswap noprompt ${tool}_http_srv=http://${Utils.address()}/\n`
             content += `sysappend 3\n`
             content += `\n`
         }
@@ -266,7 +266,11 @@ export default class Pxe {
         if (this.settings.distro.familyId === 'debian') {
             content += `imgargs vmlinuz fetch=http://${Utils.address()}/live/filesystem.squashfs boot=live dhcp initrd=initrd ro\n`
         } else if (this.settings.distro.familyId === 'archlinux') {
-            content += `imgargs vmlinuz archiso_http_srv=http://${Utils.address()}/live/ boot=live dhcp initrd=initrd ro\n`
+            let tool = 'archiso'
+            if (this.settings.distro.codenameId === 'Qonos' || this.settings.distro.codenameId === 'Ruah' || this.settings.distro.codenameId === 'Sikaris') {
+                tool = 'miso'
+            }
+            content += `imgargs vmlinuz ${tool}_http_srv=http://${Utils.address()}/ boot=live dhcp initrd=initrd ro\n`
             //content += 'ipappend 3\n'
         }
 
