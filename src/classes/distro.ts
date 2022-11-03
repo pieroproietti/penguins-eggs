@@ -390,10 +390,10 @@ class Distro implements IDistro {
       case 'n/a': {
         this.familyId = 'archlinux'
         this.distroLike = 'Arch'
-        this.liveMediumPath = `/run/archiso/bootmnt/`
-        this.squashfs = `arch/x86_64/airootfs.sfs`        
         this.codenameId = 'rolling'
         this.codenameLikeId = 'rolling'
+        this.liveMediumPath = `/run/archiso/bootmnt/`
+        this.squashfs = `arch/x86_64/airootfs.sfs`        
         break
       }
 
@@ -405,9 +405,9 @@ class Distro implements IDistro {
         case 'Sikaris': {
         this.familyId = 'archlinux'
         this.distroLike = 'Arch'
+        this.codenameLikeId = 'rolling'
         this.liveMediumPath = `/run/miso/bootmnt/`
         this.squashfs = `manjaro/x86_64/livefs.sfs`
-        this.codenameLikeId = 'rolling'
         break
       }
 
