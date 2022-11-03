@@ -461,13 +461,12 @@ class Distro implements IDistro {
      * Selezione il mountpoint per squashfs
      */
      if (this.distroId === 'ManjaroLinux') {
-      // pxe: /run/miso/bootmnt/manjaro/x86_64/livefs.sfs
-      // iso: /run/miso/bootmnt/live/manjaro/x86_64/livefs.sfs
-      this.liveMediumPath = '/run/miso/bootmnt/live/manjaro/x86_64/livefs.sfs'
+      this.liveMediumPath = '/run/miso/bootmnt/'
+      this.squashfs = `manjaro/x86_64/livefs.sfs`
+
     } else if (this.distroId === 'Arch') {
-      // pxe: /run/archiso/httpspace/arch/x86_64/airootfs.sfs
-      // iso: /run/archiso/bootmnt/live/arch/x86_64/airootfs.sfs
-      this.liveMediumPath = '/run/archiso/bootmnt/live/arch/x86_64/airootfs.sfs'
+      this.liveMediumPath = '/run/archiso/bootmnt/'
+      this.squashfs = `arch/x86_64/airootfs.sfs`
     }
 
 
