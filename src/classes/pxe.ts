@@ -127,6 +127,11 @@ export default class Pxe {
         await this.tryCatch(`ln -s ${this.eggRoot}/live ${this.pxeRoot}/live`)
         await this.tryCatch(`ln -s ${this.nest}.disk ${this.pxeRoot}/.disk`)
 
+        // Dovremmo aggiungre per arch
+        if (this.settings.distro.codenameId === 'Qonos' || this.settings.distro.codenameId === 'Ruah' || this.settings.distro.codenameId === 'Sikaris') {
+            await this.tryCatch(`ln -s ${this.nest}manjarp ${this.pxeRoot}/manjaro`)
+        }
+
         if (fs.existsSync(this.eggRoot)) {
             await this.tryCatch(`cp ${this.eggRoot}live/${this.vmlinuz} ${this.pxeRoot}/vmlinuz`)
             await this.tryCatch(`chmod 777 ${this.pxeRoot}/vmlinuz`)
