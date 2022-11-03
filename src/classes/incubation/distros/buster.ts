@@ -60,7 +60,7 @@ export class Buster {
 
     await fisherman.buildModule('partition', this.remix.branding)
     await fisherman.buildModule('mount')
-    await fisherman.moduleUnpackfs(this.distro.squashfs)
+    await fisherman.moduleUnpackfs()
     await fisherman.buildCalamaresModule('dpkg-unsafe-io', true)
     await fisherman.buildCalamaresModule('sources-yolk', true)
     await fisherman.buildModule('machineid')

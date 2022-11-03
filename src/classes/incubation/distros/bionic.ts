@@ -62,7 +62,7 @@ export class Bionic {
 
     await fisherman.buildModule('partition', this.remix.branding)
     await fisherman.buildModule('mount')
-    await fisherman.moduleUnpackfs(this.distro.squashfs) //
+    await fisherman.moduleUnpackfs() //
     await fisherman.buildModule('machineid')
     await fisherman.buildModule('fstab')
     await fisherman.buildModule('locale')

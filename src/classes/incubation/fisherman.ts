@@ -244,10 +244,10 @@ export default class Fisherman {
   /**
    * Al momento rimane con la vecchia configurazione
    */
-  async moduleUnpackfs(squashfs='') {
+  async moduleUnpackfs() {
     const name = 'unpackfs'
     this.buildModule(name)
-    shx.sed('-i', '{{source}}', this.distro.liveMediumPath + squashfs, this.installer.modules + name + '.conf')
+    shx.sed('-i', '{{source}}', this.distro.liveMediumPath + this.distro.squashfs, this.installer.modules + name + '.conf')
   }
 
   /**
