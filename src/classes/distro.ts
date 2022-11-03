@@ -383,6 +383,7 @@ class Distro implements IDistro {
         break
       }
 
+
       /**
        * Arch Linux
        */
@@ -390,6 +391,7 @@ class Distro implements IDistro {
         this.familyId = 'archlinux'
         this.distroLike = 'Arch'
         this.liveMediumPath = `/run/archiso/bootmnt/`
+        this.squashfs = `arch/x86_64/airootfs.sfs`        
         this.codenameId = 'rolling'
         this.codenameLikeId = 'rolling'
         break
@@ -403,9 +405,8 @@ class Distro implements IDistro {
         case 'Sikaris': {
         this.familyId = 'archlinux'
         this.distroLike = 'Arch'
-        // this.liveMediumPath = `/run/miso/bootmnt/`
-        // this.liveMediumPath = `/run/archiso/airootfs/`
-        this.liveMediumPath = `/run/archiso/copytoram/`
+        this.liveMediumPath = `/run/archiso/bootmnt/`
+        this.squashfs = `manjaro/x86_64/livefs.sfs`
         this.codenameLikeId = 'rolling'
         break
       }
@@ -457,17 +458,6 @@ class Distro implements IDistro {
       }
     }
 
-    /**
-     * Selezione il mountpoint per squashfs
-     */
-     if (this.distroId === 'ManjaroLinux') {
-      this.liveMediumPath = '/run/miso/bootmnt/'
-      this.squashfs = `live/manjaro/x86_64/livefs.sfs`
-
-    } else if (this.distroId === 'Arch') {
-      this.liveMediumPath = '/run/archiso/bootmnt/'
-      this.squashfs = `live/arch/x86_64/airootfs.sfs`
-    }
 
 
     /**
