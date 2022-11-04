@@ -128,9 +128,9 @@ export default class Pxe {
         await this.tryCatch(`ln -s ${this.nest}.disk ${this.pxeRoot}/.disk`)
 
         // Dovremmo aggiungre per arch, o no?
-        //if (this.settings.distro.codenameId === 'Qonos' || this.settings.distro.codenameId === 'Ruah' || this.settings.distro.codenameId === 'Sikaris') {
-        //    await this.tryCatch(`ln -s ${this.nest}manjarp ${this.pxeRoot}/manjaro`)
-        //}
+        if (this.settings.distro.codenameId === 'Qonos' || this.settings.distro.codenameId === 'Ruah' || this.settings.distro.codenameId === 'Sikaris') {
+            await this.tryCatch(`ln -s ${this.nest}manjaro ${this.pxeRoot}/manjaro`)
+        }
 
         if (fs.existsSync(this.eggRoot)) {
             await this.tryCatch(`cp ${this.eggRoot}live/${this.vmlinuz} ${this.pxeRoot}/vmlinuz`)
