@@ -124,12 +124,13 @@ export default class Pxe {
         await this.tryCatch(`mkdir ${this.pxeRoot} -p`)
 
         await this.tryCatch(`mkdir ${this.pxeRoot} -p`)
-        await this.tryCatch(`ln -s ${this.eggRoot}/live ${this.pxeRoot}/live`)
+        await this.tryCatch(`ln -s ${this.eggRoot}live ${this.pxeRoot}/live`)
         await this.tryCatch(`ln -s ${this.nest}.disk ${this.pxeRoot}/.disk`)
 
         // Dovremmo aggiungre per arch, o no?
         if (this.settings.distro.codenameId === 'Qonos' || this.settings.distro.codenameId === 'Ruah' || this.settings.distro.codenameId === 'Sikaris') {
-            await this.tryCatch(`ln -s ${this.nest}manjaro ${this.pxeRoot}/manjaro`)
+            // ln -s /run/miso/bootmnt/manjaro/ manjaro
+            await this.tryCatch(`ln -s ${this.eggRoot}manjaro ${this.pxeRoot}/manjaro`)
         }
 
         if (fs.existsSync(this.eggRoot)) {
