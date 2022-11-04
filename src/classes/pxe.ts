@@ -192,6 +192,9 @@ export default class Pxe {
         content += `label egg\n`
         content += `menu label ${this.bootLabel.replace('.iso', '')}\n`
         if (this.settings.distro.familyId === 'debian') {
+            /**
+             * DEBIAN
+             */
             let clid = this.settings.distro.codenameLikeId
             if (clid === 'bionic' || clid === 'stretch' || clid === 'jessie') {
                 content += `kernel vmlinuz\n`
@@ -202,6 +205,9 @@ export default class Pxe {
             }
 
         } else if (distro.familyId === 'archlinux') {
+            /**
+             * ARCH LINUX
+             */
             let tool = 'archiso'
             if (distro.codenameId === 'Qonos' || distro.codenameId === 'Ruah' || distro.codenameId === 'Sikaris') {
                 tool = 'miso'
@@ -269,9 +275,15 @@ export default class Pxe {
          * content += `imgargs vmlinuz fetch=http://${Utils.address()}/live/filesystem.squashfs boot=live dhcp initrd=initrd ro\n`
          */
         if (this.settings.distro.familyId === 'debian') {
-            content += `imgargs vmlinuz fetch=http://${Utils.address()}/live/filesystem.squashfs boot=live dhcp initrd=initrd ro\n`
+            /**
+             * DEBIAN
+             */
+             content += `imgargs vmlinuz fetch=http://${Utils.address()}/live/filesystem.squashfs boot=live dhcp initrd=initrd ro\n`
         } else if (this.settings.distro.familyId === 'archlinux') {
-            let tool = 'archiso'
+            /**
+             * ARCH LINUX
+             */
+             let tool = 'archiso'
             if (this.settings.distro.codenameId === 'Qonos' || this.settings.distro.codenameId === 'Ruah' || this.settings.distro.codenameId === 'Sikaris') {
                 tool = 'miso'
             }
