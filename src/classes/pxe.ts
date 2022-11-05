@@ -129,7 +129,7 @@ export default class Pxe {
 
         if (this.settings.distro.codenameId === 'Qonos' || this.settings.distro.codenameId === 'Ruah' || this.settings.distro.codenameId === 'Sikaris') {
             await this.tryCatch(`ln -s ${this.eggRoot}manjaro ${this.pxeRoot}/manjaro`)
-        } else if ((this.settings.distro.codenameId === 'rolling') {
+        } else if (this.settings.distro.codenameId === 'rolling') {
             await this.tryCatch(`ln -s ${this.eggRoot}arch ${this.pxeRoot}/arch`)
         }
 
