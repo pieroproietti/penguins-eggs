@@ -127,10 +127,10 @@ export default class Pxe {
         await this.tryCatch(`ln -s ${this.eggRoot}live ${this.pxeRoot}/live`)
         await this.tryCatch(`ln -s ${this.nest}.disk ${this.pxeRoot}/.disk`)
 
-        // Dovremmo aggiungre per arch, o no?
         if (this.settings.distro.codenameId === 'Qonos' || this.settings.distro.codenameId === 'Ruah' || this.settings.distro.codenameId === 'Sikaris') {
-            // ln -s /run/miso/bootmnt/manjaro/ manjaro
             await this.tryCatch(`ln -s ${this.eggRoot}manjaro ${this.pxeRoot}/manjaro`)
+        } else if ((this.settings.distro.codenameId === 'rolling') {
+            await this.tryCatch(`ln -s ${this.eggRoot}arch ${this.pxeRoot}/arch`)
         }
 
         if (fs.existsSync(this.eggRoot)) {
