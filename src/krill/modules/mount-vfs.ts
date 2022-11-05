@@ -27,7 +27,7 @@ export async function mountVfs(this: Sequence) {
     if (this.efi) {
         await exec(`mount -o bind /sys/firmware/efi/efivars ${this.installTarget}/sys/firmware/efi/efivars ${this.toNull}`, this.echo)
     }
-    await exec(`mount -o bind /run ${this.installTarget}/run ${this.toNull}`, this.echo)
+    await exec(`mount -o rbind /run ${this.installTarget}/run ${this.toNull}`, this.echo)
 }
 
 /**
