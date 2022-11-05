@@ -465,6 +465,7 @@ export default class Sequence {
           * IF NOT RESTORE USERS DATA OR PERSONAL BACKUP
           */
          if (!fs.existsSync(this.luksFile) || fs.existsSync(this.personalFile)) {
+
             // delLiveUser
             message = "Removing user live "
             percent = 0.61
