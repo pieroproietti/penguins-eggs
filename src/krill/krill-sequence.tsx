@@ -320,13 +320,15 @@ export default class Sequence {
          }
 
          // dpkg-unsafe-io
-         message = "dpkg-unsafe-io"
-         percent = 0.11
-         try {
-            await redraw(<Install message={message} percent={percent} />)
-            await this.execCalamaresModule('dpkg-unsafe-io')
-         } catch (error) {
-            await Utils.pressKeyToExit(JSON.stringify(error))
+         if (this.distro.familyId === 'debian') {
+            message = "dpkg-unsafe-io"
+            percent = 0.11
+            try {
+               await redraw(<Install message={message} percent={percent} />)
+               await this.execCalamaresModule('dpkg-unsafe-io')
+            } catch (error) {
+               await Utils.pressKeyToExit(JSON.stringify(error))
+            }
          }
 
          /**
@@ -447,14 +449,16 @@ export default class Sequence {
             await Utils.pressKeyToExit(JSON.stringify(error))
          }
 
-         // dpkg-unsafe-io
-         message = "dpkg-unsafe-io-undo"
-         percent = 0.61
-         try {
-            await redraw(<Install message={message} percent={percent} />)
-            await this.execCalamaresModule('dpkg-unsafe-io-undo')
-         } catch (error) {
-            await Utils.pressKeyToExit(JSON.stringify(error))
+         // dpkg-unsafe-io-undo
+         if (this.distro.familyId === 'debian') {
+            message = "dpkg-unsafe-io-undo"
+            percent = 0.61
+            try {
+               await redraw(<Install message={message} percent={percent} />)
+               await this.execCalamaresModule('dpkg-unsafe-io-undo')
+            } catch (error) {
+               await Utils.pressKeyToExit(JSON.stringify(error))
+            }
          }
 
          /**
@@ -585,7 +589,7 @@ export default class Sequence {
                await Utils.pressKeyToExit(JSON.stringify(error))
             }
          }
- 
+
 
          // umountVfs
          message = "umount VFS"
