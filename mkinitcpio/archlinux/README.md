@@ -1,5 +1,16 @@
-# install Archlinux
 
+# archinstall
+
+used archinstall. 
+Added packages:
+
+```nano git os-prober efibootmgr```
+
+Unfortunately, grub-mkconfig cant create linux entry!
+
+
+
+# install Archlinux
 ```password```
 
 ```systemctl start sshd```
