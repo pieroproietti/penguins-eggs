@@ -390,7 +390,7 @@ class Distro implements IDistro {
       case 'n/a': {
         this.familyId = 'archlinux'
         this.distroLike = 'Arch'
-        this.codenameId = ''
+        this.codenameId = 'rolling'
         this.codenameLikeId = 'rolling'
         this.liveMediumPath = `/run/archiso/copytoram/`
         this.squashfs = `airootfs.sfs`
