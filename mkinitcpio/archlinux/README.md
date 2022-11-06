@@ -1,13 +1,31 @@
 
 # archinstall
 
-used archinstall. 
-Added packages:
+use archinstall:
 
-```nano git os-prober efibootmgr```
+Add packages:
+
+```nano git os-prober efibootmgr bash-completion```
 
 Unfortunately, grub-mkconfig cant create linux entry!
 
+## adding fstab
+```genfstab -U /mnt >> /mnt/etc/fstab```
+```ln -sf /proc/self/mounts /etc/mtab```
+
+## visudo
+```export EDITOR=nano```
+```visudo```
+remove # before %wheel
+
+## install penguins-eggs
+```git clone https://github.com/pieroproietti/penguins-eggs-arch```
+```cd penguins-eggs-arch```
+```./build```
+
+## run eggs
+```eggs dad -d```
+```eggs produce --fast```
 
 
 # install Archlinux
