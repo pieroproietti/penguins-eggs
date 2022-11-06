@@ -5,9 +5,64 @@ use archinstall:
 
 Add packages:
 
-```nano git os-prober efibootmgr bash-completion```
+```bash-completion git nano openssh``` #os-prober efibootmgr 
+
+## reboot
+
+### visudo
+```sudo su```
+
+```export EDITOR=nano```
+
+```visudo```
+
+find line:
+```
+## Uncomment to allow members of group wheel to execute any command
+# %wheel ALL=(ALL:ALL) ALL
+```
+and remove # before %wheel
+
+### install penguins-eggs
+```git clone https://github.com/pieroproietti/penguins-eggs-arch```
+
+```cd penguins-eggs-arch```
+
+```./build```
+
+### run eggs
+```eggs dad -d```
+
+```eggs produce --fast```
+
+### workaround
+
+I tryed to reinstall grub, starting from the initial archiso.
+
+
+```ssh root@192.168.61.102```
+
+```
+root@archiso ~ # lsblk 
+NAME   MAJ:MIN RM   SIZE RO TYPE MOUNTPOINTS
+loop0    7:0    0   671M  1 loop /run/archiso/airootfs
+sda      8:0    0    40G  0 disk 
+├─sda1   8:1    0   256M  0 part 
+├─sda2   8:2    0     4G  0 part 
+└─sda3   8:3    0  35.7G  0 part 
+sr0     11:0    1 782.3M  0 rom  
+root@archiso ~ # mount /dev/sda3 /mnt
+root@archiso ~ # ls /mnt/boot/efi
+root@archiso ~ # mount /dev/sda1 /mnt/boot/efi 
+root@archiso ~ # arch-chroot /mnt
+```
+and give:
+```grub-mkconfig -o /boot/grub/grub.cfg```
+
 
 Unfortunately, grub-mkconfig cant create linux entry!
+
+
 
 ## adding fstab
 ```genfstab -U /mnt >> /mnt/etc/fstab```
@@ -15,25 +70,6 @@ Unfortunately, grub-mkconfig cant create linux entry!
 ```arch-chroot /mnt```
 
 ```ln -sf /proc/self/mounts /etc/mtab```
-
-## visudo
-```export EDITOR=nano```
-
-```visudo```
-
-remove # before %wheel
-
-## install penguins-eggs
-```git clone https://github.com/pieroproietti/penguins-eggs-arch```
-
-```cd penguins-eggs-arch```
-
-```./build```
-
-## run eggs
-```eggs dad -d```
-
-```eggs produce --fast```
 
 
 # install Archlinux
