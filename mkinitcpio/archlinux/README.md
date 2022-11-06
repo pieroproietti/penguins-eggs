@@ -11,20 +11,28 @@ Unfortunately, grub-mkconfig cant create linux entry!
 
 ## adding fstab
 ```genfstab -U /mnt >> /mnt/etc/fstab```
+
+```arch-chroot /mnt```
+
 ```ln -sf /proc/self/mounts /etc/mtab```
 
 ## visudo
 ```export EDITOR=nano```
+
 ```visudo```
+
 remove # before %wheel
 
 ## install penguins-eggs
 ```git clone https://github.com/pieroproietti/penguins-eggs-arch```
+
 ```cd penguins-eggs-arch```
+
 ```./build```
 
 ## run eggs
 ```eggs dad -d```
+
 ```eggs produce --fast```
 
 
