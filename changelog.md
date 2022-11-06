@@ -21,6 +21,9 @@ You can follow the project also consulting the [commit history](https://github.c
 ## Changelog
 Versions are listed on reverse order, the first is the last one. Old versions are moved to [versions](https://sourceforge.net/projects/penguins-eggs/files/packages-deb/versions/). 
 
+### eggs-9.3.7
+Finally we get both: Arch and Manjaro booting and installing via PXE booting from a live system, just: ```sudo eggs cuckoo``` to start serve the inserted iso via PXE on the net. Remain to solve PXE boot on UEFI systems and find a working calamares pkgbuild for Arch.
+
 ### eggs-9.3.6
 - cuckoo: arch and manjaro are correcty booting on PXE, at moment only on BIOS systems;
 * calamares: differents mountpoints of the iso (from DVD vs PXE) create a problem in calamares/krill module unpack.conf (cannot find airootfs.sfs / livefs.sfs). You must edit ```/etc/calamares/modules/unpack.conf``` and adapt the path, before to run calamares/krill in case of PXE boot.
