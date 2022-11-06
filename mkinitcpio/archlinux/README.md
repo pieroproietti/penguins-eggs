@@ -1,13 +1,17 @@
 
 # archinstall
 
-use archinstall:
+Here I'm using archinstall, minimum installation, you can find configuration files in 
+[archinstall](./archinstall).
+I added this packages:
 
-Add packages:
+```bash-completion git nano openssh```
 
-```bash-completion git nano openssh``` #os-prober efibootmgr 
+and completed the installation.
+
 
 ## reboot
+Here I enabled members of group wheel to sudo, after I just installed penguins-eggs:
 
 ### visudo
 ```sudo su```
@@ -35,6 +39,24 @@ and remove # before %wheel
 
 ```eggs produce --fast```
 
+The iso was generated and I exported it to boot from the new iso.
+
+## booting from eggs generated iso
+boot is successfully, and I tryed to install with:
+
+```sudo eggs install -u```
+
+No signs of problems.
+
+
+## booting from the new installed machine
+
+grub start with just the option:
+
+```
+UEFI firmware settings
+```
+
 ### workaround
 
 I tryed to reinstall grub, starting from the initial archiso.
@@ -59,8 +81,9 @@ root@archiso ~ # arch-chroot /mnt
 and give:
 ```grub-mkconfig -o /boot/grub/grub.cfg```
 
+Agein, it seem all OK, but grub-mkconfig cant create linux entry!
 
-Unfortunately, grub-mkconfig cant create linux entry!
+Saoeone can help?
 
 
 
