@@ -143,9 +143,9 @@ export default class Pxe {
         }
 
         if (fs.existsSync(this.eggRoot)) {
-            await this.tryCatch(`cp ${this.eggRoot}live/${this.vmlinuz} ${this.pxeRoot}/vmlinuz}`, true)
+            await this.tryCatch(`cp ${this.eggRoot}live/${this.vmlinuz} ${this.pxeRoot}/vmlinuz`, true)
             await this.tryCatch(`chmod 777 ${this.pxeRoot}/vmlinuz`)
-            await this.tryCatch(`cp ${this.eggRoot}live/${this.initrdImg} ${this.pxeRoot}/initrd}`, true)
+            await this.tryCatch(`cp ${this.eggRoot}live/${this.initrdImg} ${this.pxeRoot}/initrd`, true)
             await this.tryCatch(`chmod 777 ${this.pxeRoot}/initrd`)
         }
 
