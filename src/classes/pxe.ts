@@ -44,9 +44,9 @@ export default class Pxe {
             this.eggRoot = this.settings.distro.liveMediumPath
         } else {
             if (this.settings.distro.distroId === 'Arch') {
-                await exec('mkdir /tmp/eggRoot')
-                await exec('mount /dev/sr0 /tmp/eggRoot')
-                this.eggRoot='/tmp/eggRoot'
+                this.eggRoot='/run/archiso/bootmnt/'
+                await exec(`mkdir ${this.eggRoot} -p`)
+                await exec(`mount /dev/sr0 ${this.eggRoot}`)
             } else {
                 this.eggRoot = path.dirname(this.settings.work_dir.path) + '/ovarium/iso/'
             }
