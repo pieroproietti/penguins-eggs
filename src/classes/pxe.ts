@@ -43,7 +43,13 @@ export default class Pxe {
         if (Utils.isLive()) {
             this.eggRoot = this.settings.distro.liveMediumPath
         } else {
-            this.eggRoot = path.dirname(this.settings.work_dir.path) + '/ovarium/iso/'
+            if (this.settings.distro.distroId === 'Arch') {
+                await exec('mkdir /tmp/eggRoot')
+                await exec('mount /dev/sr0 /tmp/eggRoot')
+                this.eggRoot='/tmp/eggRoot'
+            } else {
+                this.eggRoot = path.dirname(this.settings.work_dir.path) + '/ovarium/iso/'
+            }
         }
 
         if (!Utils.isLive() && !fs.existsSync(this.settings.work_dir.path)) {
@@ -102,13 +108,12 @@ export default class Pxe {
         /**
          * bootLabel
          */
+        this.bootLabel = 'not-found'
         if (fs.existsSync(this.eggRoot + '/.disk/mkisofs')){
             const a = fs.readFileSync(this.eggRoot + '/.disk/mkisofs', "utf-8")
             const b = a.substring(a.indexOf('-o ') + 3)
             const c = b.substring(0, b.indexOf(' '))
             this.bootLabel = c.substring(c.lastIndexOf('/') + 1)
-        } else {
-            this.bootLabel = 'Arch'
         }
 
         console.log(this.bootLabel)
