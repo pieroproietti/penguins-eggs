@@ -85,7 +85,7 @@ export default class Pxe {
          * installed: /home/eggs/ovarium/iso/live
          * live: this.iso/live
          */
-        let pathFiles = this.eggRoot + 'live'
+        let pathFiles = this.eggRoot // + 'live'
         let files = fs.readdirSync(pathFiles)
         for (const file of files) {
             if (this.settings.distro.familyId === 'debian') {
