@@ -79,7 +79,7 @@ export default class Pxe {
          * installed: /home/eggs/ovarium/iso/live
          * live: this.iso/live
          */
-        let pathFiles = this.eggRoot + '/live'
+        let pathFiles = this.eggRoot + 'live'
         let files = fs.readdirSync(pathFiles)
         for (const file of files) {
             if (this.settings.distro.familyId === 'debian') {
@@ -127,9 +127,9 @@ export default class Pxe {
         await this.tryCatch(`ln -s ${this.eggRoot}live ${this.pxeRoot}/live`)
         await this.tryCatch(`ln -s ${this.nest}.disk ${this.pxeRoot}/.disk`)
 
-        if (this.settings.distro.codenameId === 'Qonos' || this.settings.distro.codenameId === 'Ruah' || this.settings.distro.codenameId === 'Sikaris') {
+        if (this.settings.distro.distroId === 'ManjaroLinux') {
             await this.tryCatch(`ln -s ${this.eggRoot}manjaro ${this.pxeRoot}/manjaro`)
-        } else if (this.settings.distro.codenameId === 'rolling') {
+        } else if (this.settings.distro.distroId === 'Arch') {
             await this.tryCatch(`ln -s ${this.eggRoot}arch ${this.pxeRoot}/arch`)
         }
 
