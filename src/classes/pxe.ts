@@ -143,9 +143,9 @@ export default class Pxe {
         }
 
         if (fs.existsSync(this.eggRoot)) {
-            await this.tryCatch(`cp ${this.eggRoot}live/${this.vmlinuz} ${this.pxeRoot}/vmlinuz}`)
+            await this.tryCatch(`cp ${this.eggRoot}live/${this.vmlinuz} ${this.pxeRoot}/vmlinuz}`, true)
             await this.tryCatch(`chmod 777 ${this.pxeRoot}/vmlinuz`)
-            await this.tryCatch(`cp ${this.eggRoot}live/${this.initrdImg} ${this.pxeRoot}/initrd}`)
+            await this.tryCatch(`cp ${this.eggRoot}live/${this.initrdImg} ${this.pxeRoot}/initrd}`, true)
             await this.tryCatch(`chmod 777 ${this.pxeRoot}/initrd`)
         }
 
@@ -407,8 +407,11 @@ export default class Pxe {
      * 
      * @param cmd 
      */
-    async tryCatch(cmd = '') {
+    async tryCatch(cmd = '', echo = false) {
         try {
+            if(echo) {
+                console.log(cmd)
+            }
             await exec(cmd, this.echo)
         } catch (error) {
             console.log(`Error: ${error}`)
