@@ -102,7 +102,7 @@ export default class Pxe {
         /**
          * bootLabel
          */
-        if (fs.existsSync((this.eggRoot + '/.disk/mkisofs')){
+        if (fs.existsSync(this.eggRoot + '/.disk/mkisofs')){
             const a = fs.readFileSync(this.eggRoot + '/.disk/mkisofs', "utf-8")
             const b = a.substring(a.indexOf('-o ') + 3)
             const c = b.substring(0, b.indexOf(' '))
