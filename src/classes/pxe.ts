@@ -102,6 +102,8 @@ export default class Pxe {
                 if (path.basename(file).substring(0, 9) === 'initramfs') {
                     this.initrdImg = path.basename(file)
                 }
+                console.log(this.vmlinuz)
+                console.log(this.initrdImg)
             }
         }
 
