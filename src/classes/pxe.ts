@@ -96,6 +96,7 @@ export default class Pxe {
                     this.initrdImg = path.basename(file)
                 }
             } else if (this.settings.distro.familyId === 'archlinux') {
+                console.log(file)
                 if (path.basename(file).substring(0, 7) === 'vmlinuz') {
                     this.vmlinuz = path.basename(file)
                 }
