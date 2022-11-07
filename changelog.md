@@ -22,7 +22,11 @@ You can follow the project also consulting the [commit history](https://github.c
 Versions are listed on reverse order, the first is the last one. Old versions are moved to [versions](https://sourceforge.net/projects/penguins-eggs/files/packages-deb/versions/). 
 
 ### eggs-9.3.7
-Finally we get both: Arch and Manjaro booting and installing via PXE booting from a live system, just: ```sudo eggs cuckoo``` to start serve the inserted iso via PXE on the net. Remain to solve PXE boot on UEFI systems and find a working calamares pkgbuild for Arch.
+Finally we get both Arch and Manjaro versions of eggs aligned with Debian/Devuan/Ubuntu. You can boot and install other computers via PXE booting from a live system! 
+
+Just: ```sudo eggs cuckoo``` start to serve the inserted iso on your network. 
+
+Remain to solve PXE boot on UEFI systems and find a working calamares pkgbuild for Arch.
 
 ### eggs-9.3.6
 - cuckoo: arch and manjaro are correcty booting on PXE, at moment only on BIOS systems;
