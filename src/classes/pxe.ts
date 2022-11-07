@@ -40,11 +40,11 @@ export default class Pxe {
     async fertilization() {
         this.settings = new Settings()
         await this.settings.load()
-       
+
         if (Utils.isLive()) {
             this.eggRoot = this.settings.distro.liveMediumPath
             if (this.settings.distro.distroId === 'Arch') {
-                this.eggRoot='/run/archiso/bootmnt/'
+                this.eggRoot = '/run/archiso/bootmnt/'
                 await exec(`mkdir ${this.eggRoot} -p`)
                 await exec(`mount /dev/sr0 ${this.eggRoot}`)
             }
@@ -96,7 +96,6 @@ export default class Pxe {
                     this.initrdImg = path.basename(file)
                 }
             } else if (this.settings.distro.familyId === 'archlinux') {
-                console.log(file)
                 if (path.basename(file).substring(0, 7) === 'vmlinuz') {
                     this.vmlinuz = path.basename(file)
                 }
@@ -104,24 +103,22 @@ export default class Pxe {
                     this.initrdImg = path.basename(file)
                 }
             }
-    }
-    console.log("vmlinuz: " + this.vmlinuz)
-    console.log("initrdImg: " + this.initrdImg)
+        }
 
         /**
          * bootLabel
          */
         this.bootLabel = 'not found'
-        if (fs.existsSync(this.eggRoot + '/.disk/mkisofs')){
+        if (fs.existsSync(this.eggRoot + '/.disk/mkisofs')) {
             const a = fs.readFileSync(this.eggRoot + '/.disk/mkisofs', "utf-8")
             const b = a.substring(a.indexOf('-o ') + 3)
             const c = b.substring(0, b.indexOf(' '))
             this.bootLabel = c.substring(c.lastIndexOf('/') + 1)
         }
 
-        console.log(this.bootLabel)
-        console.log(this.vmlinuz)
-        console.log(this.initrdImg)
+        console.log(`bootLabel: ${this.bootLabel}`)
+        console.log(`vmlinuz: ${this.vmlinuz}`)
+        console.log(`initrd: ${this.initrdImg}`)
     }
 
 
@@ -290,12 +287,12 @@ export default class Pxe {
             /**
              * DEBIAN
              */
-             content += `imgargs vmlinuz fetch=http://${Utils.address()}/live/filesystem.squashfs boot=live dhcp initrd=initrd ro\n`
+            content += `imgargs vmlinuz fetch=http://${Utils.address()}/live/filesystem.squashfs boot=live dhcp initrd=initrd ro\n`
         } else if (this.settings.distro.familyId === 'archlinux') {
             /**
              * ARCH LINUX
              */
-             let tool = 'archiso'
+            let tool = 'archiso'
             if (this.settings.distro.codenameId === 'Qonos' || this.settings.distro.codenameId === 'Ruah' || this.settings.distro.codenameId === 'Sikaris') {
                 tool = 'miso'
             }
@@ -412,7 +409,7 @@ export default class Pxe {
      */
     async tryCatch(cmd = '', echo = false) {
         try {
-            if(echo) {
+            if (echo) {
                 console.log(cmd)
             }
             await exec(cmd, this.echo)
