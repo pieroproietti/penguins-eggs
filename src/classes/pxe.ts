@@ -103,9 +103,9 @@ export default class Pxe {
                     this.initrdImg = path.basename(file)
                 }
             }
-            console.log("vmlinuz: " + this.vmlinuz)
-            console.log("initrdImg: " + this.initrdImg)
     }
+    console.log("vmlinuz: " + this.vmlinuz)
+    console.log("initrdImg: " + this.initrdImg)
 
         /**
          * bootLabel
