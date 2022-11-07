@@ -47,12 +47,10 @@ export default class Pxe {
                 this.eggRoot='/run/archiso/bootmnt/'
                 await exec(`mkdir ${this.eggRoot} -p`)
                 await exec(`mount /dev/sr0 ${this.eggRoot}`)
-                Utils.pressKeyToExit('eggRoot: ' + this.eggRoot, true)
             }
         } else {
             this.eggRoot = path.dirname(this.settings.work_dir.path) + '/ovarium/iso/'
         }
-        Utils.pressKeyToExit('eggRoot: ' + this.eggRoot, true)
 
         if (!Utils.isLive() && !fs.existsSync(this.settings.work_dir.path)) {
             console.log('no image available, build an image with: sudo eggs produce')
@@ -110,7 +108,7 @@ export default class Pxe {
         /**
          * bootLabel
          */
-        this.bootLabel = 'not-found'
+        this.bootLabel = 'not found'
         if (fs.existsSync(this.eggRoot + '/.disk/mkisofs')){
             const a = fs.readFileSync(this.eggRoot + '/.disk/mkisofs', "utf-8")
             const b = a.substring(a.indexOf('-o ') + 3)
@@ -145,12 +143,11 @@ export default class Pxe {
         }
 
         if (fs.existsSync(this.eggRoot)) {
-            await this.tryCatch(`cp ${this.eggRoot}live/${this.vmlinuz} ${this.pxeRoot}/vmlinuz`)
+            await this.tryCatch(`cp ${this.eggRoot}live/${path.basename(this.settings.vmlinuz)} ${this.pxeRoot}/vmlinuz`)
             await this.tryCatch(`chmod 777 ${this.pxeRoot}/vmlinuz`)
-            await this.tryCatch(`cp ${this.eggRoot}live/${this.initrd} ${this.pxeRoot}/initrd`)
+            await this.tryCatch(`cp ${this.eggRoot}live/${path.basename(this.settings.initrdImg)} ${this.pxeRoot}/initrd`)
             await this.tryCatch(`chmod 777 ${this.pxeRoot}/initrd`)
         }
-
 
         // link iso images in pxe
         for (const iso of this.isos) {
