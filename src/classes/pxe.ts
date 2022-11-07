@@ -102,10 +102,14 @@ export default class Pxe {
         /**
          * bootLabel
          */
-        const a = fs.readFileSync(this.eggRoot + '/.disk/mkisofs', "utf-8")
-        const b = a.substring(a.indexOf('-o ') + 3)
-        const c = b.substring(0, b.indexOf(' '))
-        this.bootLabel = c.substring(c.lastIndexOf('/') + 1)
+        if (fs.existsSync((this.eggRoot + '/.disk/mkisofs')){
+            const a = fs.readFileSync(this.eggRoot + '/.disk/mkisofs', "utf-8")
+            const b = a.substring(a.indexOf('-o ') + 3)
+            const c = b.substring(0, b.indexOf(' '))
+            this.bootLabel = c.substring(c.lastIndexOf('/') + 1)
+        } else {
+            this.bootLabel = 'Arch'
+        }
 
         console.log(this.bootLabel)
         console.log(this.vmlinuz)
