@@ -29,7 +29,7 @@ export default class Pxe {
     pxeRoot = ''
     eggRoot = ''
     vmlinuz = ''
-    initrd = ''
+    initrdImg = ''
     isos: string[] = []
 
     /**
@@ -40,7 +40,7 @@ export default class Pxe {
     async fertilization() {
         this.settings = new Settings()
         await this.settings.load()
-
+       
         if (Utils.isLive()) {
             this.eggRoot = this.settings.distro.liveMediumPath
             if (this.settings.distro.distroId === 'Arch') {
@@ -93,14 +93,14 @@ export default class Pxe {
                     this.vmlinuz = path.basename(file)
                 }
                 if (path.basename(file).substring(0, 6) === 'initrd') {
-                    this.initrd = path.basename(file)
+                    this.initrdImg = path.basename(file)
                 }
             } else if (this.settings.distro.familyId === 'archlinux') {
                 if (path.basename(file).substring(0, 7) === 'vmlinuz') {
                     this.vmlinuz = path.basename(file)
                 }
                 if (path.basename(file).substring(0, 9) === 'initramfs') {
-                    this.initrd = path.basename(file)
+                    this.initrdImg = path.basename(file)
                 }
             }
         }
@@ -118,7 +118,7 @@ export default class Pxe {
 
         console.log(this.bootLabel)
         console.log(this.vmlinuz)
-        console.log(this.initrd)
+        console.log(this.initrdImg)
     }
 
 
@@ -143,9 +143,9 @@ export default class Pxe {
         }
 
         if (fs.existsSync(this.eggRoot)) {
-            await this.tryCatch(`cp ${this.eggRoot}live/${path.basename(this.settings.vmlinuz)} ${this.pxeRoot}/vmlinuz`)
+            await this.tryCatch(`cp ${this.eggRoot}live/${this.vmlinuz} ${this.pxeRoot}/vmlinuz}`)
             await this.tryCatch(`chmod 777 ${this.pxeRoot}/vmlinuz`)
-            await this.tryCatch(`cp ${this.eggRoot}live/${path.basename(this.settings.initrdImg)} ${this.pxeRoot}/initrd`)
+            await this.tryCatch(`cp ${this.eggRoot}live/${this.initrdImg} ${this.pxeRoot}/initrd}`)
             await this.tryCatch(`chmod 777 ${this.pxeRoot}/initrd`)
         }
 
