@@ -33,6 +33,21 @@ NOTE: While waiting to complete the wardrobe for arch, it is still possible to s
 * ```cd .wardrobe/costumes/colibri```
 * ```sudo ./arch-colibri.sh```
 
+# Installing eggs and producing an iso
+```
+git clone https://aur.archlinux.org/packages/penguins-eggs
+cd penguins-eggs-manjaro
+makepkg -srcCi
+```
+and You will get your remasterd iso installable with krill.
+
+## Note
+As krill is a CLI installer you can prepare a CLI iso, something like a "naked ape" to dress later as you want after the installation.
+
+I need help or advise to build and mantain a PKGBUILD for calamares for GUI versions.
+
+
+
 # Installing Arch Linux via PXE
 
 One feature of ISO images made with eggs is the ability to be used for network installation . All you have to do is boot the ISO to be installed, open a terminal window and type the command: 
