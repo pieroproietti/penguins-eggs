@@ -37,16 +37,7 @@ Then all you have to do is boot from the network the machines to be installed an
 You can also perform an unattended installation with krill, see the [manual](https://penguins-eggs.net/book/) or, find assistance in the [telegram penguin's eggs](https://t.me/penguins_eggs) group.
 
 ## important
-In manjaro - at the moment - I was able to boot via PXE just on BIOS system not UEFI.
-
-Due differents paths where miso-tools mount the live image, from DVD or from PXE, before to install manjaro with calamares or krill 
-create the follow link:
-
-```mkdir /run/miso/bootmnt/manjaro/x86_64/ -p```
-
-```ln -s /run/miso/bootmnt/live/manjaro/x86_64/livefs.sfs /run/miso/bootmnt/manjaro/x86_64/livefs.sfs```
-
-I hope someone can suggest a way to fix that and boot via PXE on UEFI machines too.
+In manjaro - at the moment - I was able to boot via PXE just on BIOS system not UEFI. I hope someone can suggest a way to fix that and boot via PXE on UEFI machines too.
 
 
 ```
