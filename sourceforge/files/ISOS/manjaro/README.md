@@ -26,17 +26,7 @@ All ISOs include eggs, you can udate it with: ```sudo eggs update```.
 
 **naked** can be usefull to start everything: just add that you want, **colibri** is more a tool to hack with eggs than a real customization and perhaps can be used to test calamares too. 
 
-# Installing manjaro Linux via PXE
-
-One feature of ISO images made with eggs is the ability to be used for network installation . All you have to do is boot the ISO to be installed, open a terminal window and type the command: 
-
-```sudo eggs cuckoo```.
-
-Then all you have to do is boot from the network the machines to be installed and start the calamares or krill installer.
-
-You can also perform an unattended installation with krill, see the [manual](https://penguins-eggs.net/book/) or, find assistance in the [telegram penguin's eggs](https://t.me/penguins_eggs) group.
-
-
+# Installing eggs and producing an iso
 ```
 git clone https://github.com/pieroproietti/penguins-eggs-manjaro
 cd penguins-eggs-manjaro
@@ -47,6 +37,18 @@ then:
 * ```sudo eggs produce --fast```
 
 and You will get your remasterd iso.
+
+
+# Installing manjaro Linux via PXE
+
+One feature of ISO images made with eggs is the ability to be used for network installation . All you have to do is boot the ISO to be installed, open a terminal window and type the command: 
+
+```sudo eggs cuckoo```.
+
+Then all you have to do is boot from the network the machines to be installed and start the calamares or krill installer.
+
+You can also perform an unattended installation with krill, see the [manual](https://penguins-eggs.net/book/) or, find assistance in the [telegram penguin's eggs](https://t.me/penguins_eggs) group.
+
 
 ## Note
 In manjaro - at the moment - I was able to boot via PXE just on BIOS system not UEFI. I hope someone can suggest a way to fix that and boot via PXE on UEFI machines too.
