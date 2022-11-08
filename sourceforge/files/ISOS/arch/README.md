@@ -43,7 +43,7 @@ Then all you have to do is boot from the network the machines to be installed an
 
 You can also perform an unattended installation with krill, see the [manual](https://penguins-eggs.net/book/) or, find assistance in the [telegram penguin's eggs](https://t.me/penguins_eggs) group.
 
-## important
+## Note
 In Arch - at the moment - I was able to boot via PXE just on BIOS system not UEFI. I hope someone can suggest a way to fix that and boot via PXE on UEFI machines too.
 
 
