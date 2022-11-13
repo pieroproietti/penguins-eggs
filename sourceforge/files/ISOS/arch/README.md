@@ -42,11 +42,11 @@ makepkg -srcCi
 ```
 and You will get your remasterd iso installable with krill.
 
-## calamares
+# Installing calamares
 
-# PROCEDURE
+## installing prerequisites
 
-## ttf-comfortaa
+### ttf-comfortaa
 ```
 git clone https://aur.archlinux.org/ttf-comfortaa.git
 
@@ -55,7 +55,7 @@ cd ttf-comfortaa
 makepkg -srcCi
 ```
 
-## ckbcomp
+### ckbcomp
 ```
 git clone https://aur.archlinux.org/ckbcomp.git
 
@@ -64,7 +64,7 @@ cd ckbcomp
 makepkg -srcCi
 ```
 
-## mkinitcpio-openswap
+### mkinitcpio-openswap
 
 ```
 git clone https://aur.archlinux.org/mkinitcpio-openswap.git
@@ -74,7 +74,7 @@ cd mkinitcpio-openswap
 makepkg -srcCi
 '''
 
-## calamares
+## build calamares
 ```
 git clone https://gitlab.manjaro.org/packages/extra/calamares
 
