@@ -40,11 +40,29 @@ git clone https://aur.archlinux.org/packages/penguins-eggs
 cd penguins-eggs-manjaro
 makepkg -srcCi
 ```
+
+Eggs, is installed!
+
+We can autoconfigure it, with the help of dad:
+
+```
+sudo eggs dad -d
+```
+
+And produce our iso:
+
+```
+sudo eggs produce --fast
+```
+
 and You will get your remasterd iso installable with krill.
 
 # Installing calamares
 
-## installing prerequisites
+## prerequisites
+We need: ttf-comfortaa, ckbcomp and mkinitcpio-openswap as they are dependencies.
+
+Let's install them.
 
 ### ttf-comfortaa
 ```
@@ -72,7 +90,7 @@ git clone https://aur.archlinux.org/mkinitcpio-openswap.git
 cd mkinitcpio-openswap
 
 makepkg -srcCi
-'''
+```
 
 ## build calamares
 ```
@@ -82,7 +100,6 @@ cd calamares
 
 makepkg -srcCi
 ```
-
 
 # Installing Arch Linux via PXE
 
