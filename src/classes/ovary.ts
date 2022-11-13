@@ -1097,12 +1097,16 @@ export default class Ovary {
 
       // educaandos
       if (this.settings.config.theme === 'educaandos') {
+        // artisan adm dialout cdrom dip plugdev lpadmin sambashare tde admin
+
         cmds.push(await rexec(`chroot ${this.settings.work_dir.merged} usermod -aG adm ${this.settings.config.user_opt}`, this.verbose))
+        cmds.push(await rexec(`chroot ${this.settings.work_dir.merged} usermod -aG dialout ${this.settings.config.user_opt}`, this.verbose))
         cmds.push(await rexec(`chroot ${this.settings.work_dir.merged} usermod -aG cdrom ${this.settings.config.user_opt}`, this.verbose))
         cmds.push(await rexec(`chroot ${this.settings.work_dir.merged} usermod -aG dip ${this.settings.config.user_opt}`, this.verbose))
         cmds.push(await rexec(`chroot ${this.settings.work_dir.merged} usermod -aG plugdev ${this.settings.config.user_opt}`, this.verbose))
         cmds.push(await rexec(`chroot ${this.settings.work_dir.merged} usermod -aG lpadmin ${this.settings.config.user_opt}`, this.verbose))
         cmds.push(await rexec(`chroot ${this.settings.work_dir.merged} usermod -aG sambashare ${this.settings.config.user_opt}`, this.verbose))
+        cmds.push(await rexec(`chroot ${this.settings.work_dir.merged} usermod -aG tde ${this.settings.config.user_opt}`, this.verbose))
         cmds.push(await rexec(`chroot ${this.settings.work_dir.merged} usermod -aG admin ${this.settings.config.user_opt}`, this.verbose))
       }
 
