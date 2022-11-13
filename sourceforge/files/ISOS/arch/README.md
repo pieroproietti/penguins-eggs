@@ -33,7 +33,8 @@ NOTE: While waiting to complete the wardrobe for arch, it is still possible to s
 * ```cd .wardrobe/costumes/colibri```
 * ```sudo ./arch-colibri.sh```
 
-# Installing eggs and producing an iso
+# Installing eggs and producing an iso 
+
 ```
 git clone https://aur.archlinux.org/packages/penguins-eggs
 cd penguins-eggs-manjaro
@@ -41,11 +42,46 @@ makepkg -srcCi
 ```
 and You will get your remasterd iso installable with krill.
 
-## Note
-As krill is a CLI installer you can prepare a CLI iso, something like a "naked ape" to dress later as you want after the installation.
+## calamares
 
-I need help or advise to build and mantain a PKGBUILD for calamares for GUI versions.
+# PROCEDURE
 
+## ttf-comfortaa
+```
+git clone https://aur.archlinux.org/ttf-comfortaa.git
+
+cd ttf-comfortaa
+
+makepkg -srcCi
+```
+
+## ckbcomp
+```
+git clone https://aur.archlinux.org/ckbcomp.git
+
+cd ckbcomp
+
+makepkg -srcCi
+```
+
+## mkinitcpio-openswap
+
+```
+git clone https://aur.archlinux.org/mkinitcpio-openswap.git
+
+cd mkinitcpio-openswap
+
+makepkg -srcCi
+'''
+
+## calamares
+```
+git clone https://gitlab.manjaro.org/packages/extra/calamares
+
+cd calamares
+
+makepkg -srcCi
+```
 
 
 # Installing Arch Linux via PXE
