@@ -101,6 +101,32 @@ cd calamares
 makepkg -srcCi
 ```
 
+At this point we need to reconfigure eggs:
+
+```
+sudo eggs dad -d
+```
+
+and let eggs to configure calamares to get used without password:
+
+```
+sudo eggs calamares --install
+```
+
+At this point we are ready to create our iso:
+
+```
+sudo eggs produce --fast
+```
+
+If you want calamares and eggs to be removed during installation, simply use:
+
+```
+sudo eggs produce --fast --release
+```
+
+
+
 # Installing Arch Linux via PXE
 
 One feature of ISO images made with eggs is the ability to be used for network installation . All you have to do is boot the ISO to be installed, open a terminal window and type the command: 
