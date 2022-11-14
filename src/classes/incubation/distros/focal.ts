@@ -13,6 +13,7 @@ import { IInstaller, IRemix, IDistro } from '../../../interfaces'
 import Fisherman from '../fisherman'
 
 import { exec } from '../../../lib/utils'
+import { throws } from 'node:assert'
 
 interface IReplaces {
   search: string
@@ -51,25 +52,24 @@ export class Focal {
   }
 
   /**
-   *
+   * locale, partitions, users come from themes
    */
   async create() {
     const fisherman = new Fisherman(this.distro, this.installer, this.verbose)
 
-    // console.log('creating settings: ' + this.remix.branding)
     await fisherman.settings(this.remix.branding)
-    // console.log('creating modules: ' + this.remix.branding)
+
     await fisherman.buildModule('partition', this.remix.branding)
     await fisherman.buildModule('mount')
     await fisherman.moduleUnpackfs()
     await fisherman.buildCalamaresModule('sources-yolk', true)
     await fisherman.buildModule('machineid')
     await fisherman.buildModule('fstab')
-    await fisherman.buildModule('locale')
+    await fisherman.buildModule('locale', this.remix.branding)
     await fisherman.buildModule('keyboard')
     await fisherman.buildModule('localecfg')
     await fisherman.buildModule('luksbootkeyfile')
-    await fisherman.buildModule('users')
+    await fisherman.buildModule('users', this.remix.branding)
     await fisherman.moduleDisplaymanager()
     await fisherman.buildModule('networkcfg')
     await fisherman.buildModule('hwclock')
@@ -88,5 +88,7 @@ export class Focal {
     await fisherman.buildCalamaresModule('cleanup', true)
     await fisherman.buildModule('umount')
     await fisherman.buildModule('finished')
+
+
   }
 }
