@@ -10,8 +10,9 @@ Work in progress...
 
 * updated applications/install-debian.desktop (you don't need to use sudo with calamares it you installed it with ```sudo eggs calaamres --install```. This command not only install calamares and dependencies but also configure policy for it.
 
- ## general modifications:
-* I use to configure my user with autologin, simply edit /etc/gdm/custom.conf
+## general modifications:
+
+I use to configure my user with autologin, simply edit ```/etc/gdm/custom.conf``` and add:
 
 ```
 [daemon]
@@ -22,8 +23,6 @@ AutomaticLogin=artisan
 In this way You will get the live user to autologin too.
 
 * Note: I call just a sed command, so don't use spaces: AutomaticLogin=artisan
-
-
 
 * copied your ```users.yml``` to /usr/lib/penguins-eggs/conf/distros/focal/calamares/modules/users.yml
 
