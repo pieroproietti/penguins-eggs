@@ -28,7 +28,7 @@ More informations:
 * [EducaAndOS-plus](https://github.com/aosucas499/guadalinex) by [aosucas499](https://github.com/aosucas499)
 
 
-* **EducaAndOS-plus** A renastered version of EducaAndOS 20.04 from 
+* **EducaAndOS-plus** A remastered version of EducaAndOS 20.04 from aosucas499
 
 # Installing EducaAndOS-plus via PXE
 
