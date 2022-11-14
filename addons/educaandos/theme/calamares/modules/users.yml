@@ -1,0 +1,24 @@
+# theme: educandos
+# users
+---
+doAutologin: false
+setRootPassword: true
+doReusePassword: true
+sudoersGroup: sudo
+defaultGroups:
+    - adm
+    - cdrom
+    - dip
+    - lpadmin
+    - plugdev
+    - sambashare
+    - sudo
+    - admin
+    - dialout
+    - tde
+passwordRequirements:
+    minLength: 0
+    maxLength: 0
+# Explicitly set the shell instead of deferring to Calamares. We have a platform
+# expectation derived from Ubuntu here.
+userShell: /bin/bash
