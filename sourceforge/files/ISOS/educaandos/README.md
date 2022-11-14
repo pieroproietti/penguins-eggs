@@ -22,13 +22,15 @@ All ISOs include eggs, you can udate it with: ```sudo eggs update```.
 
 A spanish educational distro, based on ubuntu 20.04.
 
+__EducaAndOS 20.04 Slim es la primera versión ligera de la nueva distribución educativa EducaAndOS, desarrollada por el Centro de Gestión Avanzado (CGA) de la Consejería de Educación y Deporte de la Junta de Andalucía. Siguiendo la estela de su antecesora, Guadalinex Edu, ofrece un catálogo de aplicaciones educativas y herramientas para su uso diario en las escuelas andaluzas.__
+
 More informations:
 
-* [EducaAndOS 20.04](http://www.juntadeandalucia.es/educacion/cga/portal/?page_id=7886) 
+* [Junta de Andalucia - EducaAndOS 20.04](http://www.juntadeandalucia.es/educacion/cga/portal/?page_id=7886) 
 * [EducaAndOS-plus](https://github.com/aosucas499/guadalinex) by [aosucas499](https://github.com/aosucas499)
 
 
-* **EducaAndOS-plus** A remastered version of EducaAndOS 20.04 from aosucas499
+* **EducaAndOS-plus** A remastered version of EducaAndOS 20.04 from [aosucas499](https://github.com/aosucas499)
 
 # Installing EducaAndOS-plus via PXE
 
