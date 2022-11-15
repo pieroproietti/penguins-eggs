@@ -53,7 +53,7 @@ export class Bionic {
   }
 
   /**
-   *
+   * locale, partitions, users can come from themes
    */
   async create() {
     const fisherman = new Fisherman(this.distro, this.installer, this.verbose)
@@ -65,11 +65,11 @@ export class Bionic {
     await fisherman.moduleUnpackfs() //
     await fisherman.buildModule('machineid')
     await fisherman.buildModule('fstab')
-    await fisherman.buildModule('locale')
+    await fisherman.buildModule('locale', this.remix.branding)
     await fisherman.buildModule('keyboard')
     await fisherman.buildModule('localecfg')
     await fisherman.buildModule('luksbootkeyfile')
-    await fisherman.buildModule('users')
+    await fisherman.buildModule('users', this.remix.branding)
     await fisherman.moduleDisplaymanager() //
     await fisherman.buildModule('networkcfg')
     await fisherman.buildModule('hwclock')
