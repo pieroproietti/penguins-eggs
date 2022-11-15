@@ -52,7 +52,7 @@ export class Focal {
   }
 
   /**
-   * locale, partitions, users come from themes
+   * locale, partitions, users can come from themes
    */
   async create() {
     const fisherman = new Fisherman(this.distro, this.installer, this.verbose)

@@ -45,9 +45,9 @@ export class Jessie {
   }
 
   /**
-   *
+   * partitions can come from themes
    */
-  async create() {
+   async create() {
     const fisherman = new Fisherman(this.distro, this.installer, this.verbose)
     await fisherman.settings(this.remix.branding)
 
