@@ -54,8 +54,6 @@ export default class Settings {
 
   initrd_image = ''
 
-  theme = ''
-
   vmlinuz = ''
 
   initrdImg = ''
@@ -262,7 +260,7 @@ export default class Settings {
     this.remix.versionNumber = Utils.getPackageVersion()
     this.remix.kernel = Utils.kernelVersion()
 
-    this.remix.branding = theme === '' ? 'eggs' : theme
+    this.remix.branding = theme === '' ? 'eggs' : this.remix.branding = theme.substring(theme.lastIndexOf('/')+1)  
 
     this.remix.name = this.config.snapshot_basename
     let name = this.config.snapshot_prefix + this.config.snapshot_basename

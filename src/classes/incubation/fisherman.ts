@@ -38,7 +38,13 @@ export default class Fisherman {
   /**
    * write setting
    */
-  async settings(branding = 'eggs') {
+  async settings(vendor = 'eggs') {
+    let branding = vendor
+    if (vendor !== 'eggs') {
+      if (vendor.includes('/')) {
+        branding = vendor.substring(vendor.lastIndexOf('/'))
+      }
+    }
 
     const settings = this.installer.configuration + 'settings.conf'
 
