@@ -143,21 +143,21 @@ export default class Incubator {
       }
 
       case 'focal': {
-        const focal = new Focal(this.installer, this.remix, this.distro, this.user_opt, release, this.verbose)
+        const focal = new Focal(this.installer, this.remix, this.distro, this.user_opt, release, this.theme, this.verbose)
         await focal.create()
 
         break
       }
 
       case 'jammy': {
-        const jammy = new Focal(this.installer, this.remix, this.distro, this.user_opt, release, this.verbose)
+        const jammy = new Focal(this.installer, this.remix, this.distro, this.user_opt, release, this.theme, this.verbose)
         await jammy.create()
 
         break
       }
 
       case 'kinetic': {
-        const kinetic = new Focal(this.installer, this.remix, this.distro, this.user_opt, release, this.verbose)
+        const kinetic = new Focal(this.installer, this.remix, this.distro, this.user_opt, release, this.theme, this.verbose)
         await kinetic.create()
 
         break
