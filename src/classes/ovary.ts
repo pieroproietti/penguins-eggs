@@ -1403,7 +1403,7 @@ export default class Ovary {
     const themeDest = `${efiWorkDir}/boot/grub/theme.cfg`
     let themeSrc = path.resolve(__dirname, `../../addons/${theme}/theme/livecd/grub.theme.cfg`)
     if (this.theme.includes('/')) {
-      themeSrc = `${theme}/theme/livecd/grub.theme.cfg`
+        themeSrc = `${theme}/theme/livecd/grub.theme.cfg`
     }
 
     if (!fs.existsSync(themeSrc)) {
@@ -1500,7 +1500,10 @@ export default class Ovary {
     // Do the main grub.cfg (which gets loaded last):
 
     // grub.theme.cfg
-    const grubThemeSrc = path.resolve(__dirname, `../../addons/${theme}/theme/livecd/grub.theme.cfg`)
+    let grubThemeSrc = path.resolve(__dirname, `../../addons/${theme}/theme/livecd/grub.theme.cfg`)
+    if (this.theme.includes('/')) {
+      grubThemeSrc = `${theme}/theme/livecd/grub.theme.cfg`
+    }
     const grubThemeDest = `${isoDir}/boot/grub/theme.cfg`
     if (!fs.existsSync(grubThemeSrc)) {
       Utils.warning('Cannot find: ' + grubThemeSrc)
