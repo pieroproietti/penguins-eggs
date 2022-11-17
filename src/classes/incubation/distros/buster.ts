@@ -34,13 +34,15 @@ export class Buster {
 
   user_opt: string
 
+  theme: string
+
   /**
    * @param remix
    * @param distro
    * @param displaymanager
    * @param verbose
    */
-  constructor(installer: IInstaller, remix: IRemix, distro: IDistro, user_opt: string, release = false, verbose = false) {
+  constructor(installer: IInstaller, remix: IRemix, distro: IDistro, user_opt: string, release = false, theme = 'eggs', verbose = false) {
     this.installer = installer
 
     this.remix = remix
@@ -48,6 +50,7 @@ export class Buster {
     this.user_opt = user_opt
     this.verbose = verbose
     this.release = release
+    this.theme = theme
   }
 
   /**
@@ -56,19 +59,19 @@ export class Buster {
   async create() {
     const fisherman = new Fisherman(this.distro, this.installer, this.verbose)
 
-    await fisherman.settings(this.remix.branding)
+    await fisherman.settings(this.theme)
 
-    await fisherman.buildModule('partition', this.remix.branding)
+    await fisherman.buildModule('partition', this.theme)
     await fisherman.buildModule('mount')
     await fisherman.moduleUnpackfs()
     await fisherman.buildCalamaresModule('dpkg-unsafe-io', true)
     await fisherman.buildCalamaresModule('sources-yolk', true)
     await fisherman.buildModule('machineid')
     await fisherman.buildModule('fstab')
-    await fisherman.buildModule('locale', this.remix.branding)
+    await fisherman.buildModule('locale', this.theme)
     await fisherman.buildModule('keyboard')
     await fisherman.buildModule('localecfg')
-    await fisherman.buildModule('users', this.remix.branding)
+    await fisherman.buildModule('users', this.theme)
     await fisherman.moduleDisplaymanager()
     await fisherman.buildModule('networkcfg')
     await fisherman.buildModule('hwclock')

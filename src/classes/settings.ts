@@ -54,6 +54,8 @@ export default class Settings {
 
   initrd_image = ''
 
+  theme = ''
+
   vmlinuz = ''
 
   initrdImg = ''

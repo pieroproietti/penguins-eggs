@@ -92,7 +92,7 @@ export default class Calamares extends Command {
             if (await this.settings.load()) {
               Utils.warning('Configuring installer')
               await this.settings.loadRemix(this.settings.config.snapshot_basename, theme)
-              this.incubator = new Incubator(this.settings.remix, this.settings.distro, this.settings.config.user_opt, verbose)
+              this.incubator = new Incubator(this.settings.remix, this.settings.distro, this.settings.config.user_opt, theme, verbose)
               await this.incubator.config(release)
             }
           }
@@ -111,7 +111,7 @@ export default class Calamares extends Command {
       } else if ((await Utils.customConfirm('Select yes to continue...')) && (await this.settings.load())) {
         Utils.warning('Configuring krill')
         await this.settings.loadRemix(this.settings.config.snapshot_basename, theme)
-        this.incubator = new Incubator(this.settings.remix, this.settings.distro, this.settings.config.user_opt, verbose)
+        this.incubator = new Incubator(this.settings.remix, this.settings.distro, this.settings.config.user_opt, theme, verbose)
         console.log('calamares relase: ' + release)
         await this.incubator.config(release)
       }
