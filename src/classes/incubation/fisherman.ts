@@ -39,7 +39,9 @@ export default class Fisherman {
    * write setting
    */
   async settings(branding = 'eggs') {
+
     const settings = this.installer.configuration + 'settings.conf'
+
     shx.cp(this.installer.template + 'settings.yml', settings)
     let hasSystemd = '# '
     if (Utils.isSystemd()) {
@@ -125,7 +127,11 @@ export default class Fisherman {
      *
      */
     if (vendor !== '') {
-      const customModuleSource = path.resolve(__dirname, `../../../addons/${vendor}/theme/calamares/modules/${name}.yml`)
+      let customModuleSource = path.resolve(__dirname, `../../../addons/${vendor}/theme/calamares/modules/${name}.yml`)
+      if (vendor.includes('/')) {
+        customModuleSource = path.resolve(__dirname, `${vendor}/theme/calamares/modules/${name}.yml`)
+      }
+      
       if (fs.existsSync(customModuleSource)) {
         moduleSource = customModuleSource
       }

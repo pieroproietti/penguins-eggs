@@ -21,6 +21,7 @@ import { installer } from './installer'
 import { IInstaller } from '../../interfaces/i-installer'
 
 import { exec } from '../../lib/utils'
+import { threadId } from 'node:worker_threads'
 
 /**
  *
@@ -36,17 +37,20 @@ export default class Incubator {
 
   user_opt: string
 
+  theme: string
+
   /**
    *
    * @param remix
    * @param distro
    * @param verbose
    */
-  constructor(remix: IRemix, distro: IDistro, user_opt = 'live', verbose = false) {
+  constructor(remix: IRemix, distro: IDistro, user_opt = 'live', theme = '', verbose = false) {
     this.installer = installer()
     this.remix = remix
     this.distro = distro
     this.user_opt = user_opt
+    this.theme = theme
     this.verbose = verbose
     if (remix.branding === undefined) {
       remix.branding = 'eggs'
@@ -80,20 +84,20 @@ export default class Incubator {
 
 
       case 'buster': {
-        const buster = new Buster(this.installer, this.remix, this.distro, this.user_opt, release, this.verbose)
+        const buster = new Buster(this.installer, this.remix, this.distro, this.user_opt, release, this.theme, this.verbose)
         await buster.create()
 
         break
       }
       case 'bullseye': {
-        const bullseye = new Buster(this.installer, this.remix, this.distro, this.user_opt, release, this.verbose)
+        const bullseye = new Buster(this.installer, this.remix, this.distro, this.user_opt, release, this.theme, this.verbose)
         await bullseye.create()
 
         break
       }
 
       case 'bookworm': {
-        const bookworm = new Buster(this.installer, this.remix, this.distro, this.user_opt, release, this.verbose)
+        const bookworm = new Buster(this.installer, this.remix, this.distro, this.user_opt, release, this.theme, this.verbose)
         await bookworm.create()
         // DEVUAN
 
@@ -104,21 +108,21 @@ export default class Incubator {
        * DEVUAN
        */
       case 'beowulf': {
-        const beowulf = new Buster(this.installer, this.remix, this.distro, this.user_opt, release, this.verbose)
+        const beowulf = new Buster(this.installer, this.remix, this.distro, this.user_opt, release, this.theme, this.verbose)
         await beowulf.create()
 
         break
       }
 
       case 'chimaera': {
-        const chimaera = new Buster(this.installer, this.remix, this.distro, this.user_opt, release, this.verbose)
+        const chimaera = new Buster(this.installer, this.remix, this.distro, this.user_opt, release, this.theme, this.verbose)
         await chimaera.create()
 
         break
       }
 
       case 'daedalus': {
-        const daedalus = new Buster(this.installer, this.remix, this.distro, this.user_opt, release, this.verbose)
+        const daedalus = new Buster(this.installer, this.remix, this.distro, this.user_opt, release, this.theme, this.verbose)
         await daedalus.create()
 
         break
@@ -243,7 +247,12 @@ export default class Incubator {
      * ADDONS (only for calamares)
      */
     if (this.installer.name === 'calamares') {
-      const calamaresBranding = path.resolve(__dirname, `../../../addons/${this.remix.branding}/theme/calamares/branding`)
+      let calamaresBranding = path.resolve(__dirname, `../../../addons/${this.remix.branding}/theme/calamares/branding`)
+      if (this.theme.includes('/')) {
+        console.log(`theme: ${this.theme}`)
+        calamaresBranding = `${this.theme}/theme/calamares/branding`
+      }
+
       if (fs.existsSync(calamaresBranding)) {
         if (!fs.existsSync(this.installer.configuration + `branding/${this.remix.branding}`)) {
           try {
@@ -255,23 +264,29 @@ export default class Incubator {
 
         shx.cp(calamaresBranding + '/*', this.installer.configuration + `branding/${this.remix.branding}/`)
       } else {
-        console.log(`${calamaresBranding} not found!`)
+        console.log(`${calamaresBranding} branding not found!`)
         process.exit()
       }
 
-      const calamaresIcon = path.resolve(__dirname, `../../../addons/${this.remix.branding}/theme/artwork/install-debian.png`)
+      let calamaresIcon = path.resolve(__dirname, `../../../addons/${this.remix.branding}/theme/artwork/install-debian.png`)
+      if (this.theme.includes('/')) {
+        calamaresIcon = `${this.theme}/theme/artwork/install-debian.png`
+      }
       if (fs.existsSync(calamaresIcon)) {
         shx.cp(calamaresIcon, '/usr/share/icons/')
       } else {
-        console.log(`${calamaresIcon} not found!`)
+        console.log(`${calamaresIcon} icon not found!`)
         process.exit()
       }
 
-      const calamaresLauncher = path.resolve(__dirname, `../../../addons/${this.remix.branding}/theme/applications/install-debian.desktop`)
+      let calamaresLauncher = path.resolve(__dirname, `../../../addons/${this.remix.branding}/theme/applications/install-debian.desktop`)
+      if (this.theme.includes('/')) {
+        calamaresLauncher = `${this.theme}/theme/applications/install-debian.desktop`
+      }
       if (fs.existsSync(calamaresLauncher)) {
         shx.cp(calamaresLauncher, '/usr/share/applications/')
       } else {
-        console.log(`${calamaresLauncher} not found!`)
+        console.log(`${calamaresLauncher} launcher not found!`)
         process.exit()
       }
 
