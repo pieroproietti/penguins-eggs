@@ -196,7 +196,7 @@ export default class Ovary {
         await this.incubator.config(release)
 
         await this.syslinux()
-        await this.isolinux(this.settings.config.theme)
+        await this.isolinux(this.theme)
         await this.kernelCopy()
         /**
          * we need different behaviour on
@@ -209,7 +209,7 @@ export default class Ovary {
         }
 
         if (this.settings.config.make_efi) {
-          await this.makeEfi(this.settings.config.theme)
+          await this.makeEfi(this.theme)
         }
         await this.bindLiveFs()
 
@@ -619,7 +619,10 @@ export default class Ovary {
      * isolinux.theme.cfg
      */
     const isolinuxThemeDest = this.settings.work_dir.pathIso + 'isolinux/isolinux.theme.cfg'
-    const isolinuxThemeSrc = path.resolve(__dirname, `../../addons/${theme}/theme/livecd/isolinux.theme.cfg`)
+    let isolinuxThemeSrc = path.resolve(__dirname, `../../addons/${theme}/theme/livecd/isolinux.theme.cfg`)
+    if (this.theme.includes('/')) {
+      isolinuxThemeSrc = `${theme}/theme/livecd/isolinux.theme.cfg`
+    }
     if (!fs.existsSync(isolinuxThemeSrc)) {
       Utils.warning('Cannot find: ' + isolinuxThemeSrc)
       process.exit()
@@ -663,7 +666,10 @@ export default class Ovary {
      * splash
      */
     const splashDest = `${this.settings.work_dir.pathIso}/isolinux/splash.png`
-    const splashSrc = path.resolve(__dirname, `../../addons/${theme}/theme/livecd/splash.png`)
+    let splashSrc = path.resolve(__dirname, `../../addons/${theme}/theme/livecd/splash.png`)
+    if (this.theme.includes('/')) {
+      splashSrc = path.resolve(`${theme}/theme/livecd/splash.png`)
+    }
     if (!fs.existsSync(splashSrc)) {
       Utils.warning('Cannot find: ' + splashSrc)
       process.exit()
@@ -1380,7 +1386,10 @@ export default class Ovary {
     * copy splash to efiWorkDir
     */
     const splashDest = `${efiWorkDir}/boot/grub/splash.png`
-    const splashSrc = path.resolve(__dirname, `../../addons/${theme}/theme/livecd/splash.png`)
+    let splashSrc = path.resolve(__dirname, `../../addons/${theme}/theme/livecd/splash.png`)
+    if (this.theme.includes('/')) {
+      splashSrc = `${theme}/theme/livecd/splash.png`
+    }
     if (!fs.existsSync(splashSrc)) {
       Utils.warning('Cannot find: ' + splashSrc)
       process.exit()
@@ -1392,7 +1401,11 @@ export default class Ovary {
      * copy theme
      */
     const themeDest = `${efiWorkDir}/boot/grub/theme.cfg`
-    const themeSrc = path.resolve(__dirname, `../../addons/${theme}/theme/livecd/grub.theme.cfg`)
+    let themeSrc = path.resolve(__dirname, `../../addons/${theme}/theme/livecd/grub.theme.cfg`)
+    if (this.theme.includes('/')) {
+      themeSrc = `${theme}/theme/livecd/grub.theme.cfg`
+    }
+
     if (!fs.existsSync(themeSrc)) {
       Utils.warning('Cannot find: ' + themeSrc)
       process.exit()
