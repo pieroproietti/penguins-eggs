@@ -8,12 +8,14 @@ import yaml from 'js-yaml'
 import { IRemix, IDistro } from '../../interfaces'
 
 /**
- *
- * @param remix
- * @param oses
- * @param verbose
+ * 
+ * @param remix 
+ * @param distro 
+ * @param theme 
+ * @param verbose 
+ * @returns 
  */
-export function branding(remix: IRemix, distro: IDistro, brand = '', verbose = false): string {
+export function branding(remix: IRemix, distro: IDistro, theme = '', verbose = false): string {
   const homeUrl: string = distro.homeUrl
   const supportUrl: string = distro.supportUrl
   const bugReportUrl = 'https://github.com/pieroproietti/penguins-eggs/issues'

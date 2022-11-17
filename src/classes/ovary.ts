@@ -60,6 +60,8 @@ export default class Ovary {
 
   compression = ''
 
+  theme = ''
+
   clone = false
 
   /**
@@ -81,8 +83,7 @@ export default class Ovary {
       }
 
       if (theme !== '') {
-        console.log(theme)
-        this.settings.config.theme = theme
+        this.theme = theme
       }
 
       if (compression !== '') {
@@ -130,7 +131,7 @@ export default class Ovary {
       shx.mkdir('-p', this.settings.config.snapshot_dir)
     }
 
-    await this.settings.loadRemix(this.snapshot_basename, this.settings.config.theme)
+    await this.settings.loadRemix(this.snapshot_basename, this.theme)
 
     if (Utils.isLive()) {
       console.log(chalk.red('>>> eggs: This is a live system! An egg cannot be produced from an egg!'))
@@ -190,7 +191,8 @@ export default class Ovary {
          * viene creata la configurazione dell'installer: krill/calamares
          * L'installer prende il tema da settings.remix.branding
          */
-        this.incubator = new Incubator(this.settings.remix, this.settings.distro, this.settings.config.user_opt, this.settings.theme, verbose)
+        console.log('theme ovary: ' + this.theme)
+        this.incubator = new Incubator(this.settings.remix, this.settings.distro, this.settings.config.user_opt, this.theme, verbose)
         await this.incubator.config(release)
 
         await this.syslinux()

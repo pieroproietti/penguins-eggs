@@ -22,6 +22,7 @@ import { IInstaller } from '../../interfaces/i-installer'
 
 import { exec } from '../../lib/utils'
 import { threadId } from 'node:worker_threads'
+import { lastIndexOf } from '../../dhcpd/packet/types'
 
 /**
  *
@@ -52,8 +53,12 @@ export default class Incubator {
     this.user_opt = user_opt
     this.theme = theme
     this.verbose = verbose
+    console.log("remix branding: " + remix.branding)
     if (remix.branding === undefined) {
-      remix.branding = 'eggs'
+      if (theme.includes('/')) {
+        this.remix.branding = theme.substring(theme.lastIndexOf('/')+1)
+      }
+      this.remix.branding = 'eggs'
     }
   }
 
@@ -247,12 +252,12 @@ export default class Incubator {
      * ADDONS (only for calamares)
      */
     if (this.installer.name === 'calamares') {
+      console.log('theme: ' + this.theme)
       let calamaresBranding = path.resolve(__dirname, `../../../addons/${this.remix.branding}/theme/calamares/branding`)
       if (this.theme.includes('/')) {
-        console.log(`theme: ${this.theme}`)
         calamaresBranding = `${this.theme}/theme/calamares/branding`
       }
-
+      
       if (fs.existsSync(calamaresBranding)) {
         if (!fs.existsSync(this.installer.configuration + `branding/${this.remix.branding}`)) {
           try {
