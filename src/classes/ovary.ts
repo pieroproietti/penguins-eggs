@@ -191,7 +191,6 @@ export default class Ovary {
          * viene creata la configurazione dell'installer: krill/calamares
          * L'installer prende il tema da settings.remix.branding
          */
-        console.log('theme ovary: ' + this.theme)
         this.incubator = new Incubator(this.settings.remix, this.settings.distro, this.settings.config.user_opt, this.theme, verbose)
         await this.incubator.config(release)
 

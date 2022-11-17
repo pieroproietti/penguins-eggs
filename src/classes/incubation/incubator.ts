@@ -53,7 +53,6 @@ export default class Incubator {
     this.user_opt = user_opt
     this.theme = theme
     this.verbose = verbose
-    console.log("remix branding: " + remix.branding)
     if (remix.branding === undefined) {
       if (theme.includes('/')) {
         this.remix.branding = theme.substring(theme.lastIndexOf('/')+1)
