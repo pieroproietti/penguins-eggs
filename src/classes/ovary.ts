@@ -6,7 +6,8 @@
  */
 
 // packages
-import fs, { Dir, Dirent } from 'fs'
+import fs, { Dir, Dirent, exists } from 'fs'
+import yaml from 'js-yaml'
 import path from 'node:path'
 import os from 'node:os'
 import shx from 'shelljs'
@@ -15,7 +16,7 @@ import mustache from 'mustache'
 import PveLive from './pve-live'
 
 // interfaces
-import { IMyAddons } from '../interfaces'
+import { IMyAddons, IUser } from '../interfaces'
 
 // libraries
 import { exec } from '../lib/utils'
@@ -37,6 +38,7 @@ import { displaymanager } from './incubation/fisherman-helper/displaymanager'
 import { access } from 'fs/promises'
 import { constants } from 'fs'
 import Users from './users'
+import { YAMLException } from 'js-yaml'
 
 /**
  * Ovary:
@@ -1103,8 +1105,45 @@ export default class Ovary {
       // add user live to sudo
       cmds.push(await rexec(`chroot ${this.settings.work_dir.merged} usermod -aG sudo ${this.settings.config.user_opt}`, this.verbose))
 
-      // educaandos
-      if (this.settings.config.theme === 'educaandos') {
+      // educaandos and others themes with users.yml
+      let usersConf = path.resolve(__dirname, `../../addons/${this.theme}/theme/calamares/users.yml`)
+      if (this.theme.includes('/')) {
+        usersConf = `${this.theme}/theme/calamares/modules/users.yml`
+      }
+      if (fs.existsSync(usersConf)) {
+        interface IUserCalamares {
+          doAutologin: boolean
+          setRootPassword: boolean
+          doReusePassword: boolean
+          sudoersGroup: string
+          defaultGroups: string[]
+          passwordRequirements: number[]
+          userShell: string
+        }
+        let groups = yaml.load(fs.readFileSync(usersConf, 'utf-8')) // as IUserCalamares
+        console.log(groups)
+        /**
+
+  doAutologin: false,
+  setRootPassword: true,
+  doReusePassword: true,
+  sudoersGroup: 'sudo',
+  defaultGroups: [
+    'adm',     'cdrom',
+    'dip',     'lpadmin',
+    'plugdev', 'sambashare',
+    'sudo',    'admin',
+    'dialout', 'tde'
+  ],
+  passwordRequirements: { minLength: 0, maxLength: 0 },
+  userShell: '/bin/bash'
+}
+         * 
+         */
+        process.exit()
+      }
+
+      if (this.theme === 'educaandos') {
         // artisan adm dialout cdrom dip plugdev lpadmin sambashare tde admin
 
         cmds.push(await rexec(`chroot ${this.settings.work_dir.merged} usermod -aG adm ${this.settings.config.user_opt}`, this.verbose))
