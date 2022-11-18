@@ -37,7 +37,7 @@ sudo eggs produce --fast --theme ../path/to/theme
 ```
 ## example
 
-Clone this theme:
+Clone the theme:
 
 ```
 git clone https://github.com/pieroproietti/theme-educaandos-plus educaandos-plus```

@@ -261,9 +261,9 @@ export default class Ovary {
         } else if (this.settings.distro.distroId === 'Arch') {
           await exec(`mkdir ${this.settings.work_dir.pathIso}arch/x86_64 -p`, this.echo)
           await exec(`ln ${this.settings.work_dir.pathIso}live/filesystem.squashfs          ${this.settings.work_dir.pathIso}arch/x86_64/airootfs.sfs`, this.echo)
-          await exec(`sha512sum ${this.settings.work_dir.pathIso}live/filesystem.squashfs > ${this.settings.work_dir.pathIso}arch/x86_64/airootfs.sha512`, this.echo)          
+          await exec(`sha512sum ${this.settings.work_dir.pathIso}live/filesystem.squashfs > ${this.settings.work_dir.pathIso}arch/x86_64/airootfs.sha512`, this.echo)
         }
-    }
+      }
       await this.makeIso(xorrisoCommand, scriptOnly)
     }
   }
@@ -688,7 +688,6 @@ export default class Ovary {
 
     let lackVmlinuzImage = false
     if (fs.existsSync(this.settings.kernel_image)) {
-      console.log('kernel image:' + this.settings.kernel_image)
       await exec(`cp ${this.settings.kernel_image} ${this.settings.work_dir.pathIso}/live/`, this.echo)
     } else {
       Utils.error(`Cannot find ${this.settings.kernel_image}`)
@@ -1104,59 +1103,6 @@ export default class Ovary {
     if (this.familyId === 'debian') {
       // add user live to sudo
       cmds.push(await rexec(`chroot ${this.settings.work_dir.merged} usermod -aG sudo ${this.settings.config.user_opt}`, this.verbose))
-
-      // educaandos and others themes with users.yml
-      let usersConf = path.resolve(__dirname, `../../addons/${this.theme}/theme/calamares/users.yml`)
-      if (this.theme.includes('/')) {
-        usersConf = `${this.theme}/theme/calamares/modules/users.yml`
-      }
-      if (fs.existsSync(usersConf)) {
-        interface IUserCalamares {
-          doAutologin: boolean
-          setRootPassword: boolean
-          doReusePassword: boolean
-          sudoersGroup: string
-          defaultGroups: string[]
-          passwordRequirements: number[]
-          userShell: string
-        }
-        let groups = yaml.load(fs.readFileSync(usersConf, 'utf-8')) // as IUserCalamares
-        console.log(groups)
-        /**
-
-  doAutologin: false,
-  setRootPassword: true,
-  doReusePassword: true,
-  sudoersGroup: 'sudo',
-  defaultGroups: [
-    'adm',     'cdrom',
-    'dip',     'lpadmin',
-    'plugdev', 'sambashare',
-    'sudo',    'admin',
-    'dialout', 'tde'
-  ],
-  passwordRequirements: { minLength: 0, maxLength: 0 },
-  userShell: '/bin/bash'
-}
-         * 
-         */
-        process.exit()
-      }
-
-      if (this.theme === 'educaandos') {
-        // artisan adm dialout cdrom dip plugdev lpadmin sambashare tde admin
-
-        cmds.push(await rexec(`chroot ${this.settings.work_dir.merged} usermod -aG adm ${this.settings.config.user_opt}`, this.verbose))
-        cmds.push(await rexec(`chroot ${this.settings.work_dir.merged} usermod -aG dialout ${this.settings.config.user_opt}`, this.verbose))
-        cmds.push(await rexec(`chroot ${this.settings.work_dir.merged} usermod -aG cdrom ${this.settings.config.user_opt}`, this.verbose))
-        cmds.push(await rexec(`chroot ${this.settings.work_dir.merged} usermod -aG dip ${this.settings.config.user_opt}`, this.verbose))
-        cmds.push(await rexec(`chroot ${this.settings.work_dir.merged} usermod -aG plugdev ${this.settings.config.user_opt}`, this.verbose))
-        cmds.push(await rexec(`chroot ${this.settings.work_dir.merged} usermod -aG lpadmin ${this.settings.config.user_opt}`, this.verbose))
-        cmds.push(await rexec(`chroot ${this.settings.work_dir.merged} usermod -aG sambashare ${this.settings.config.user_opt}`, this.verbose))
-        cmds.push(await rexec(`chroot ${this.settings.work_dir.merged} usermod -aG tde ${this.settings.config.user_opt}`, this.verbose))
-        cmds.push(await rexec(`chroot ${this.settings.work_dir.merged} usermod -aG admin ${this.settings.config.user_opt}`, this.verbose))
-      }
-
     } else if (this.familyId === 'archlinux') {
       // adduser live to wheel and autologin
       // cmds.push(await rexec(`chroot ${this.settings.work_dir.merged} usermod -aG wheel ${this.settings.config.user_opt}`, this.verbose))
@@ -1170,6 +1116,33 @@ export default class Ovary {
 
     if (this.familyId === 'debian' || this.familyId === 'archlinux') {
       cmds.push(await rexec('chroot ' + this.settings.work_dir.merged + ' echo root:' + this.settings.config.root_passwd + '| chroot ' + this.settings.work_dir.merged + ' chpasswd', this.verbose))
+    }
+
+    /**
+     * educaandos and others themes with users.yml
+     */
+    let usersConf = path.resolve(__dirname, `../../addons/${this.theme}/theme/calamares/users.yml`)
+    if (this.theme.includes('/')) {
+      usersConf = `${this.theme}/theme/calamares/modules/users.yml`
+    }
+    
+    if (fs.existsSync(usersConf)) {
+      interface IUserCalamares {
+        doAutologin: boolean
+        setRootPassword: boolean
+        doReusePassword: boolean
+        sudoersGroup: string
+        defaultGroups: string[]
+        passwordRequirements: {
+          minLenght: Number
+          maxLenght: Number
+        }
+        userShell: string
+      }
+      const o = yaml.load(fs.readFileSync(usersConf, 'utf-8')) as IUserCalamares
+      for (const group of o.defaultGroups) {
+        cmds.push(await rexec(`chroot ${this.settings.work_dir.merged} usermod -aG ${group} ${this.settings.config.user_opt}`, this.verbose))
+      }
     }
   }
 
@@ -1441,7 +1414,7 @@ export default class Ovary {
     const themeDest = `${efiWorkDir}/boot/grub/theme.cfg`
     let themeSrc = path.resolve(__dirname, `../../addons/${theme}/theme/livecd/grub.theme.cfg`)
     if (this.theme.includes('/')) {
-        themeSrc = `${theme}/theme/livecd/grub.theme.cfg`
+      themeSrc = `${theme}/theme/livecd/grub.theme.cfg`
     }
 
     if (!fs.existsSync(themeSrc)) {
