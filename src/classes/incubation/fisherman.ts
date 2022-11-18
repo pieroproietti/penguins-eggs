@@ -135,7 +135,7 @@ export default class Fisherman {
     if (vendor !== '') {
       let customModuleSource = path.resolve(__dirname, `../../../addons/${vendor}/theme/calamares/modules/${name}.yml`)
       if (vendor.includes('/')) {
-        customModuleSource = path.resolve(__dirname, `${vendor}/theme/calamares/modules/${name}.yml`)
+        customModuleSource = `${vendor}/theme/calamares/modules/${name}.yml`
       }
       
       if (fs.existsSync(customModuleSource)) {

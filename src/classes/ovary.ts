@@ -1094,38 +1094,33 @@ export default class Ovary {
     cmds.push(await rexec('chroot ' + this.settings.work_dir.merged + ' rm /home/' + this.settings.config.user_opt + ' -rf', this.verbose))
     cmds.push(await rexec('chroot ' + this.settings.work_dir.merged + ' mkdir /home/' + this.settings.config.user_opt, this.verbose))
     cmds.push(await rexec('chroot ' + this.settings.work_dir.merged + ' useradd ' + this.settings.config.user_opt + ' --home-dir /home/' + this.settings.config.user_opt + ' --shell /bin/bash ', this.verbose))
-    cmds.push(await rexec('chroot ' + this.settings.work_dir.merged + ' echo ' + this.settings.config.user_opt + ':' + this.settings.config.user_opt_passwd + '| chroot ' + this.settings.work_dir.merged + ' chpasswd', this.verbose))
     cmds.push(await rexec('chroot  ' + this.settings.work_dir.merged + ' cp /etc/skel/. /home/' + this.settings.config.user_opt + ' -R', this.verbose))
-
-    // cmds.push(await rexec('chroot  ' + this.settings.work_dir.merged + ' cp /etc/skel/. /home/' + this.settings.config.user_opt + ' -R', verbose))
     cmds.push(await rexec('chroot  ' + this.settings.work_dir.merged + ' chown ' + this.settings.config.user_opt + ':users' + ' /home/' + this.settings.config.user_opt + ' -R', this.verbose))
 
+    // live password
+    cmds.push(await rexec('chroot ' + this.settings.work_dir.merged + ' echo ' + this.settings.config.user_opt + ':' + this.settings.config.user_opt_passwd + '| chroot ' + this.settings.work_dir.merged + ' chpasswd', this.verbose))
+
+    // root password
+    cmds.push(await rexec('chroot ' + this.settings.work_dir.merged + ' echo root:' + this.settings.config.root_passwd + '| chroot ' + this.settings.work_dir.merged + ' chpasswd', this.verbose))
+
     if (this.familyId === 'debian') {
-      // add user live to sudo
       cmds.push(await rexec(`chroot ${this.settings.work_dir.merged} usermod -aG sudo ${this.settings.config.user_opt}`, this.verbose))
     } else if (this.familyId === 'archlinux') {
-      // adduser live to wheel and autologin
-      // cmds.push(await rexec(`chroot ${this.settings.work_dir.merged} usermod -aG wheel ${this.settings.config.user_opt}`, this.verbose))
-      // in manjaro they use autologin group for the iso, if not exist create it
-      // cmds.push(await rexec(`chroot ${this.settings.work_dir.merged} test $(grep "autologin" /etc/group) || chroot ${this.settings.work_dir.merged} groupadd -r autologin`, this.verbose))
-      // cmds.push(await rexec(`chroot ${this.settings.work_dir.merged} usermod -aG autologin ${this.settings.config.user_opt}`, this.verbose))
       cmds.push(await rexec(`chroot ${this.settings.work_dir.merged} gpasswd -a ${this.settings.config.user_opt} wheel`, this.verbose))
       cmds.push(await rexec(`chroot ${this.settings.work_dir.merged} gpasswd -a ${this.settings.config.user_opt} sudo`, this.verbose))
       cmds.push(await rexec(`chroot ${this.settings.work_dir.merged} gpasswd -a ${this.settings.config.user_opt} autologin`, this.verbose))
     }
 
-    if (this.familyId === 'debian' || this.familyId === 'archlinux') {
-      cmds.push(await rexec('chroot ' + this.settings.work_dir.merged + ' echo root:' + this.settings.config.root_passwd + '| chroot ' + this.settings.work_dir.merged + ' chpasswd', this.verbose))
-    }
 
     /**
-     * educaandos and others themes with users.yml
+     * educaandos and others themes
+     * users.yml
      */
     let usersConf = path.resolve(__dirname, `../../addons/${this.theme}/theme/calamares/users.yml`)
     if (this.theme.includes('/')) {
       usersConf = `${this.theme}/theme/calamares/modules/users.yml`
     }
-    
+
     if (fs.existsSync(usersConf)) {
       interface IUserCalamares {
         doAutologin: boolean

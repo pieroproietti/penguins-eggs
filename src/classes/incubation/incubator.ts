@@ -46,18 +46,16 @@ export default class Incubator {
    * @param distro
    * @param verbose
    */
-  constructor(remix: IRemix, distro: IDistro, user_opt = 'live', theme = '', verbose = false) {
+  constructor(remix: IRemix, distro: IDistro, user_opt = 'live', theme = 'eggs', verbose = false) {
     this.installer = installer()
     this.remix = remix
     this.distro = distro
     this.user_opt = user_opt
     this.theme = theme
     this.verbose = verbose
-    if (remix.branding === undefined) {
-      if (theme.includes('/')) {
-        this.remix.branding = theme.substring(theme.lastIndexOf('/')+1)
-      }
-      this.remix.branding = 'eggs'
+    this.remix.branding = theme
+    if (theme.includes('/')) {
+      this.remix.branding = theme.substring(theme.lastIndexOf('/') + 1)
     }
   }
 
@@ -135,7 +133,7 @@ export default class Incubator {
       /**
        * UBUNTU
        */
-       case 'bionic': {
+      case 'bionic': {
         const bionic = new Bionic(this.installer, this.remix, this.distro, this.user_opt, release, this.verbose)
         await bionic.create()
 
@@ -166,7 +164,7 @@ export default class Incubator {
       /**
        * Arch
        */
-       case 'rolling': {
+      case 'rolling': {
         const rolling = new Rolling(this.installer, this.remix, this.distro, this.user_opt, release, this.verbose)
         await rolling.create()
 
@@ -256,7 +254,7 @@ export default class Incubator {
       if (this.theme.includes('/')) {
         calamaresBranding = `${this.theme}/theme/calamares/branding`
       }
-      
+
       if (fs.existsSync(calamaresBranding)) {
         if (!fs.existsSync(this.installer.configuration + `branding/${this.remix.branding}`)) {
           try {
@@ -296,7 +294,7 @@ export default class Incubator {
 
       // script di avvio
       shx.cp(path.resolve(__dirname, '../../../assets/calamares/install-debian'), '/usr/sbin/install-debian')
-      shx.chmod('+x','/usr/sbin/install-debian')
+      shx.chmod('+x', '/usr/sbin/install-debian')
     }
   }
 
