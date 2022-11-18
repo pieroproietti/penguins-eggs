@@ -1,6 +1,5 @@
-# Ubuntu jammy 22.04 - take values from buster
+# Ubuntu jammy 22.04
 ---
-
 userGroup: users
 defaultGroups:
   - cdrom
@@ -18,24 +17,3 @@ autologinGroup: autologin
 sudoersGroup: sudo
 setRootPassword: false
 # doReusePassword: false
-
-
-# doAutologin: false
-# setRootPassword: false
-# sudoersGroup: sudo
-# defaultGroups:
-    # - adm
-    # - cdrom
-    # - dip
-    # - lpadmin
-    # - plugdev
-    # - name: sambashare
-    # - must_exist: false
-    # system: true
-    # - sudo
-# passwordRequirements:
-    # minLength: 0
-    # maxLength: 0
-# Explicitly set the shell instead of deferring to Calamares. We have a platform
-# expectation derived from Ubuntu here.
-# userShell: /bin/bash
