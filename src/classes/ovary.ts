@@ -258,7 +258,7 @@ export default class Ovary {
           await exec(`mkdir ${this.settings.work_dir.pathIso}manjaro/x86_64 -p`, this.echo)
           await exec(`ln ${this.settings.work_dir.pathIso}live/filesystem.squashfs ${this.settings.work_dir.pathIso}manjaro/x86_64/livefs.sfs`, this.echo)
           await exec(`md5sum ${this.settings.work_dir.pathIso}live/filesystem.squashfs > ${this.settings.work_dir.pathIso}manjaro/x86_64/livefs.md5`, this.echo)
-        } else if (this.settings.distro.distroId === 'Arch') {
+        } else if (this.settings.distro.distroId === 'Arch' || this.settings.distro.distroId === 'RebornOS') {
           await exec(`mkdir ${this.settings.work_dir.pathIso}arch/x86_64 -p`, this.echo)
           await exec(`ln ${this.settings.work_dir.pathIso}live/filesystem.squashfs          ${this.settings.work_dir.pathIso}arch/x86_64/airootfs.sfs`, this.echo)
           await exec(`sha512sum ${this.settings.work_dir.pathIso}live/filesystem.squashfs > ${this.settings.work_dir.pathIso}arch/x86_64/airootfs.sha512`, this.echo)
@@ -648,7 +648,7 @@ export default class Ovary {
       let volid = Utils.getVolid(this.settings.remix.name)
       if (this.settings.distro.distroId === 'ManjaroLinux') {
         kernel_parameters += ` misobasedir=manjaro misolabel=${volid}`
-      } else if (this.settings.distro.distroId === 'Arch') {
+      } else if (this.settings.distro.distroId === 'Arch' || this.settings.distro.distroId === 'RebornOS' ) {
         kernel_parameters += ` archisobasedir=arch archisolabel=${volid} cow_spacesize=4G`
       }
     }
@@ -710,7 +710,7 @@ export default class Ovary {
     Utils.warning(`Creating ${initrdImg} in ${this.settings.work_dir.pathIso}/live/`)
     if (this.settings.distro.distroId === 'ManjaroLinux') {
       await exec(`mkinitcpio -c ${path.resolve(__dirname, '../../mkinitcpio/manjaro/mkinitcpio-produce.conf')} -g ${this.settings.work_dir.pathIso}/live/${initrdImg}`, Utils.setEcho(true))
-    } else if (this.settings.distro.distroId === 'Arch') {
+    } else if (this.settings.distro.distroId === 'Arch' || this.settings.distro.distroId === 'RebornOS') {
       await exec(`mkinitcpio -c ${path.resolve(__dirname, '../../mkinitcpio/archlinux/mkinitcpio-produce.conf')} -g ${this.settings.work_dir.pathIso}/live/${initrdImg}`, Utils.setEcho(true))
     }
   }
@@ -1536,7 +1536,7 @@ export default class Ovary {
       let volid = Utils.getVolid(this.settings.remix.name)
       if (this.settings.distro.distroId === 'ManjaroLinux') {
         kernel_parameters += ` misobasedir=manjaro misolabel=${volid}`
-      } else if (this.settings.distro.distroId === 'Arch') {
+      } else if (this.settings.distro.distroId === 'Arch' || this.settings.distro.distroId === 'RebornOS') {
         kernel_parameters += ` archisobasedir=arch archisolabel=${volid} cow_spacesize=4G`
       }
     }

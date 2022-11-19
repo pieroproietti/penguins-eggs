@@ -43,7 +43,7 @@ export default class Pxe {
 
         if (Utils.isLive()) {
             this.eggRoot = this.settings.distro.liveMediumPath
-            if (this.settings.distro.distroId === 'Arch') {
+            if (this.settings.distro.distroId === 'Arch' || this.settings.distro.distroId === 'RebornOS') {
                 this.eggRoot = '/run/archiso/bootmnt/'
                 await exec(`mkdir ${this.eggRoot} -p`)
                 await exec(`mount /dev/sr0 ${this.eggRoot}`)
@@ -138,7 +138,7 @@ export default class Pxe {
 
         if (this.settings.distro.distroId === 'ManjaroLinux') {
             await this.tryCatch(`ln -s ${this.eggRoot}manjaro ${this.pxeRoot}/manjaro`)
-        } else if (this.settings.distro.distroId === 'Arch') {
+        } else if (this.settings.distro.distroId === 'Arch' || this.settings.distro.distroId === 'RebornOS') {
             await this.tryCatch(`ln -s ${this.eggRoot}arch ${this.pxeRoot}/arch`)
         }
 

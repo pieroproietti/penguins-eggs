@@ -105,7 +105,7 @@ export default class Utils {
 
       // Arch
       let distro = new Distro()
-      if (distro.distroId === 'Arch') {
+      if (distro.distroId === 'Arch' || distro.distroId === 'RebornOS') {
          vmlinuz = '/boot/vmlinuz-linux'
       }
 
@@ -141,7 +141,7 @@ export default class Utils {
       }
 
       let distro = new Distro()
-      if (distro.distroId === 'Arch') {
+      if (distro.distroId === 'Arch' || distro.distroId === 'RebornOS') {
          initrd = '/boot/initramfs-linux.img'
       } else {
          initrd = path + initrd + version
