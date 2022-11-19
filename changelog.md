@@ -25,7 +25,7 @@ Versions are listed on reverse order, the first is the last one. Old versions ar
 
 * theme: introduced possibility to define and use themes outside of eggs, You can pass a ```--theme ./path/to/theme``` to use them;
 
-* theme: calamares modules locale, partition and users can now be included in the theme. eg: EducaAndOS need a different configuration in calamares module users.conf, this informations will come from ```/educancos/theme/calamares/modules/users.yml
+* theme: calamares modules ```locale```, ```partition``` and ```users``` can now be included in the theme. eg: EducaAndOS need a different configuration in calamares module ```users.conf```, this informations will come from ```/educancos/theme/calamares/modules/users.yml```.
 
 Example: 
 ```
