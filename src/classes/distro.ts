@@ -49,7 +49,7 @@ class Distro implements IDistro {
   usrLibPath: string
   isolinuxPath: string
   syslinuxPath: string
-  pxelinuxPath: string 
+  pxelinuxPath: string
   memdiskPath: string
   liveMediumPath: string
   squashfs: string
@@ -70,7 +70,7 @@ class Distro implements IDistro {
     this.isolinuxPath = ''
     this.syslinuxPath = ''
     this.pxelinuxPath = ''
-    this.memdiskPath  = ''
+    this.memdiskPath = ''
     this.liveMediumPath = `/run/live/medium/`
     this.squashfs = `live/filesystem.squashfs`
     this.homeUrl = ''
@@ -385,7 +385,7 @@ class Distro implements IDistro {
 
 
       /**
-       * Arch Linux
+       * Arch Linux / RebornOS
        */
       case 'n/a': {
         this.familyId = 'archlinux'
@@ -398,11 +398,16 @@ class Distro implements IDistro {
       }
 
       /**
+      
+      */
+
+
+      /**
        * Manjaro
        */
       case 'Qonos':
-        case 'Ruah': 
-        case 'Sikaris': {
+      case 'Ruah':
+      case 'Sikaris': {
         this.familyId = 'archlinux'
         this.distroLike = 'Arch'
         this.codenameLikeId = 'rolling'
@@ -469,7 +474,7 @@ class Distro implements IDistro {
         this.syslinuxPath = '/usr/lib/syslinux/modules/bios/'
         this.pxelinuxPath = '/usr/lib/PXELINUX/'
         this.usrLibPath = '/usr/lib/x86_64-linux-gnu/'
-        this.memdiskPath ='/usr/lib/syslinux/'
+        this.memdiskPath = '/usr/lib/syslinux/'
         if (process.arch === 'ia32') {
           this.usrLibPath = '/usr/lib/i386-linux-gnu/'
         }
@@ -485,8 +490,8 @@ class Distro implements IDistro {
 
       case 'archlinux': {
         this.syslinuxPath = '/usr/lib/syslinux/bios/'
-        this.pxelinuxPath = this.syslinuxPath 
-        this.memdiskPath = this.syslinuxPath 
+        this.pxelinuxPath = this.syslinuxPath
+        this.memdiskPath = this.syslinuxPath
         this.isolinuxPath = this.syslinuxPath
 
         break
