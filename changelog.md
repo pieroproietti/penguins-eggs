@@ -34,7 +34,7 @@ sudo eggs produce --fast --theme ./penguins-addons/educaandos
 ```
 Themes now can include more customizations, not only livecd and calamares brand, but user definition too and - with same time and experience - much more.
 
-All the actual themes are now removed inside eggs and included in the [penguins-addons](https://github.com/pieroproietti/penguins-addons) repository. You can request [me](https://t.me/penguins_eggs) to be added as a collaborator to this repository and thus participate in the development. 
+All the addictional themes are now removed from eggs and included in the [penguins-addons](https://github.com/pieroproietti/penguins-addons) repository. You can request [me](https://t.me/penguins_eggs) to be added as a collaborator to this repository and thus participate in the development. 
 
 ### eggs-9.3.7
 Finally we get both Arch and Manjaro versions of eggs aligned with Debian/Devuan/Ubuntu. You can boot and install other computers via PXE booting from a live system! 
