@@ -23,9 +23,7 @@ Versions are listed on reverse order, the first is the last one. Old versions ar
 
 ### eggs-9.3.8
 
-* theme: introduced themes outside of eggs. Now You can pass a path/to/theme to use and external theme;
-
-* theme: I thought to facilitate the development of themes and addons to bring everything together in one repository: [penguins-addons](https://github.com/pieroproietti/penguins-addons), you can request to be included as contributors.
+* theme: introduced possibility to define and use themes outside of eggs, You can pass a ```--theme ./path/to/theme``` to use them;
 
 * theme: calamares modules locale, partition and users can now be included in the theme. eg: EducaAndOS need a different configuration in calamares module users.conf, this informations will come from ```/educancos/theme/calamares/modules/users.yml
 
@@ -36,7 +34,7 @@ sudo eggs produce --fast --theme ./penguins-addons/educaandos
 ```
 Themes now can include more customizations, not only livecd and calamares brand, but user definition too and - with same time and experience - much more.
 
-All the actual themes of eggs are now removed and included in the [penguins-addons](https://github.com/pieroproietti/penguins-addons) repository.
+All the actual themes are now removed inside eggs and included in the [penguins-addons](https://github.com/pieroproietti/penguins-addons) repository. you can request to be included as collaborator. 
 
 ### eggs-9.3.7
 Finally we get both Arch and Manjaro versions of eggs aligned with Debian/Devuan/Ubuntu. You can boot and install other computers via PXE booting from a live system! 
