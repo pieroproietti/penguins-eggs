@@ -393,9 +393,7 @@ class Distro implements IDistro {
         this.distroLike = 'Arch'
         this.codenameId = 'rolling'
         this.codenameLikeId = 'rolling'
-        this.liveMediumPath = '/run/archiso/bootmnt/'
-        // this.liveMediumPath = '/run/archiso/bootmnt/arch/boot/x86_64/vmlinuz-linux'
-        // this.liveMediumPath = `/run/archiso/copytoram/`
+        this.liveMediumPath = '/run/archiso/bootmnt/' // run/archiso/bootmnt/live/filesystem.squashfs
         this.squashfs = `airootfs.sfs`
         break
       }
