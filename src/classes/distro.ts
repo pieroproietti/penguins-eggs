@@ -386,6 +386,7 @@ class Distro implements IDistro {
 
       /**
        * Arch Linux / RebornOS
+       * calamares rebornOS: Reborn-OS/calamares-core-git
        */
       case 'n/a': {
         this.familyId = 'archlinux'
