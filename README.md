@@ -258,3 +258,4 @@ You can contact me at pieroproietti@gmail.com or [meet me](https://meet.jit.si/P
 
 ## Copyright and licenses
 Copyright (c) 2017, 2022 [Piero Proietti](https://penguins-eggs.net/about-me.html), dual licensed under the MIT or GPL Version 2 licenses.
+
