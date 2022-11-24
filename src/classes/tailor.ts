@@ -370,7 +370,7 @@ export default class Tailor {
                      * Copyng skel in /home/user
                      */
                     if (fs.existsSync(`${this.costume}/dirs/etc/skel`)) {
-                        const user = Utils.getPrimaryUser()
+                        const user = await Utils.getPrimaryUser()
                         step = `copying skel in /home/${user}/`
                         Utils.warning(step)
                         cmd = `rsync -avx  ${this.costume}/dirs/etc/skel/.config /home/${user}/`

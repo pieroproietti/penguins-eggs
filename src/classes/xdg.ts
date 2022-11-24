@@ -39,7 +39,7 @@ export default class Xdg {
     } else {
       xdg_dirs.forEach(async (dir) => {
         if (dir === xdg_dir) {
-          retval = path.basename(shx.exec(`sudo -u ${Utils.getPrimaryUser()} xdg-user-dir ${dir}`, { silent: true }).stdout.trim())
+          retval = path.basename(shx.exec(`sudo -u ${await Utils.getPrimaryUser()} xdg-user-dir ${dir}`, { silent: true }).stdout.trim())
         }
       })
     }
