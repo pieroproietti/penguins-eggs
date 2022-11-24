@@ -905,7 +905,7 @@ export default class Ovary {
     let cmd = ''
     const cmds: string[] = []
     cmds.push('# NOTE: cdrom, dev, live, media, mnt, proc, run, sys and tmp', `#       need just a mkdir in ${this.settings.work_dir.merged}`)
-    cmds.push(`# host: ${os.hostname()} user: ${Utils.getPrimaryUser()}\n`)
+    cmds.push(`# host: ${os.hostname()} user: ${await Utils.getPrimaryUser()}\n`)
 
     for (const dir of dirs) {
       cmds.push(startLine)
@@ -984,7 +984,7 @@ export default class Ovary {
 
     const cmds: string[] = []
     cmds.push('# NOTE: home, cdrom, dev, live, media, mnt, proc, run, sys and tmp', `#       need just to be removed in ${this.settings.work_dir.merged}`)
-    cmds.push(`# host: ${os.hostname()} user: ${Utils.getPrimaryUser()}\n`)
+    cmds.push(`# host: ${os.hostname()} user: ${await Utils.getPrimaryUser()}\n`)
 
     // await exec(`/usr/bin/pkill mksquashfs; /usr/bin/pkill md5sum`, {echo: true})
     if (fs.existsSync(this.settings.work_dir.merged)) {
@@ -1284,7 +1284,7 @@ export default class Ovary {
       await exec(`chmod a+x ${script}`, this.echo)
     }
 
-    await Xdg.autologin(Utils.getPrimaryUser(), this.settings.config.user_opt, this.settings.work_dir.merged)
+    await Xdg.autologin(await Utils.getPrimaryUser(), this.settings.config.user_opt, this.settings.work_dir.merged)
   }
 
   /**

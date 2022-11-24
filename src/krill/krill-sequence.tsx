@@ -503,7 +503,7 @@ export default class Sequence {
                message = "autologin GUI"
                percent = 0.65
                if (this.users.autologin) {
-                  await Xdg.autologin(Utils.getPrimaryUser(), this.users.name, this.installTarget)
+                  await Xdg.autologin(await Utils.getPrimaryUser(), this.users.name, this.installTarget)
                }
                await redraw(<Install message={message} percent={percent} />)
             } catch (error) {
