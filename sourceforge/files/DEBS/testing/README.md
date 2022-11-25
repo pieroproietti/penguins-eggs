@@ -22,4 +22,4 @@ You can partecipate to discussion joining on [telegram channel](https://t.me/pen
 
 # eggs-9.3.9 testing
 
-* added compatibility to doas
+* added compatibility to [doas](https://wiki.archlinux.org/title/Doas)
