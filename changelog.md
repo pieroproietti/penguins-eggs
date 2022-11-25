@@ -21,6 +21,9 @@ You can follow the project also consulting the [commit history](https://github.c
 ## Changelog
 Versions are listed on reverse order, the first is the last one. Old versions are moved to [versions](https://sourceforge.net/projects/penguins-eggs/files/packages-deb/versions/). 
 
+### eggs-9.3.9
+* produce: now eggs can be used with **sudo** or **doas**. Thanks to Roy Reynolds.
+
 ### eggs-9.3.8
 
 * theme: introduced possibility to define and use themes outside of eggs, You can pass a ```--theme ./path/to/theme``` to use them;
