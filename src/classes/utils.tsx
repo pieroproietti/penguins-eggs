@@ -178,18 +178,21 @@ export default class Utils {
    /**
     * Return the primary user's name
     */
-   static async  getPrimaryUser(): Promise <string> {
-      // const primaryUser = shx.exec('echo $SUDO_USER', { silent: true }).stdout.trim()
+   static async getPrimaryUser(): Promise<string> {
       let primaryUser = ''
       if (process.env.SUDO_USER !== undefined) {
          primaryUser = process.env.SUDO_USER
       }
+
+      // patch for doas 
       if (primaryUser === '') {
          primaryUser = (await exec('/usr/bin/logname')).data
-         // console.log('Cannot find your user name. Log as normal user and run: $sudo eggs [COMMAND]')
-         // process.exit(1)
+         if (primaryUser === '') {
+            console.log('Cannot find your user name. Log as normal user and run: $sudo eggs [COMMAND]')
+            process.exit(1)
+         }
       }
-         return primaryUser
+      return primaryUser
    }
 
    /**
@@ -640,29 +643,29 @@ unknown target format aarch64-efi
     * ifconfig | grep -w inet |grep -v 127.0.0.1| awk '{print $4}' | cut -d ":" -f 2
     */
    static netmask(): string {
-       const interfaces = os.networkInterfaces()
-       let netmask = ''
-       if (interfaces !== undefined) {
-          for (const devName in interfaces) {
-             const iface = interfaces[devName]
-             if (iface !== undefined) {
-                for (const alias of iface) {
-                   if (
-                      alias.family === 'IPv4' &&
-                      alias.address !== '127.0.0.1' &&
-                      !alias.internal
-                   ) {
-                      // take just the first!
-                      if (netmask === '') {
+      const interfaces = os.networkInterfaces()
+      let netmask = ''
+      if (interfaces !== undefined) {
+         for (const devName in interfaces) {
+            const iface = interfaces[devName]
+            if (iface !== undefined) {
+               for (const alias of iface) {
+                  if (
+                     alias.family === 'IPv4' &&
+                     alias.address !== '127.0.0.1' &&
+                     !alias.internal
+                  ) {
+                     // take just the first!
+                     if (netmask === '') {
                         netmask = alias.netmask
-                      }
-                   }
-                }
-             }
-          }
-       }
-       return netmask
-       // return shx.exec(`ip a | grep -w inet |grep -v 127.0.0.1| awk '{print $2}' | cut -d "/" -f 2`, { silent: true }).stdout.trim()
+                     }
+                  }
+               }
+            }
+         }
+      }
+      return netmask
+      // return shx.exec(`ip a | grep -w inet |grep -v 127.0.0.1| awk '{print $2}' | cut -d "/" -f 2`, { silent: true }).stdout.trim()
    }
 
    /**
