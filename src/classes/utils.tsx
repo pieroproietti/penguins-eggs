@@ -179,18 +179,10 @@ export default class Utils {
     * Return the primary user's name
     */
    static async getPrimaryUser(): Promise<string> {
-      let primaryUser = ''
-      if (process.env.SUDO_USER !== undefined) {
-         primaryUser = process.env.SUDO_USER
-      }
-
-      // patch for doas 
+      let primaryUser = (await exec('/usr/bin/logname', { echo: false, ignore: false, capture: true })).data.trim()
       if (primaryUser === '') {
-         primaryUser = (await exec('/usr/bin/logname')).data
-         if (primaryUser === '') {
-            console.log('Cannot find your user name. Log as normal user and run: $sudo eggs [COMMAND]')
-            process.exit(1)
-         }
+         console.log(`Cannot find your user name!\nUse: sudo eggs\nor\ndoas eggs`)
+         process.exit(1)
       }
       return primaryUser
    }
