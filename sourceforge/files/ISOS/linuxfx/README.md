@@ -45,7 +45,7 @@ You can also perform an unattended installation with krill, see the [manual](htt
 * Repository: [penguins-eggs](https://github.com/pieroproietti/penguins-eggs)
 * Blog: [penguins-eggs](https://penguins-eggs.net)
 
-* You can find more informations on this Linux distro at: [manjaro](https://manjaro.org/).
+* You can find more informations on this Linux distro at: [LinuxFX](https://www.linuxfx.org/).
 
 
 Disclaim
