@@ -24,8 +24,8 @@ All ISOs include eggs, you can udate it with: ```sudo eggs update```.
 
 I lack information about real compatibility with Windows programs, generally many vertical applications developed with Visual Basic 6 and using ADO, should not work, I hope to be proven wrong.
 
-* **egg-of-linuxfx-jammy-plasma** A renastered version of LinuxFX theme plasma
-* **egg-of-linuxfx-jammy-cinnamon** A renastered version of LinuxFX theme cinnamon
+* **egg-of-linuxfx-jammy-plasma** A remastered version of LinuxFX theme plasma
+* **egg-of-linuxfx-jammy-cinnamon** A remastered version of LinuxFX theme cinnamon
 
 **Note:** there are same problems to install this remastered version of LinuxFX using GUI installer calamares, I can-t be sure of the reason, You can try to install it with CLI installer krill> **sudo eggs install**
 
