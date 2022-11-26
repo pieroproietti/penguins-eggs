@@ -125,12 +125,14 @@ export default class Produce extends Command {
       let theme = 'eggs'
       if (flags.theme !== undefined) {
         theme = flags.theme
-        if (theme.endsWith('/')) {
-          theme = theme.substring(0, theme.length -1)
-        }
-        if (!fs.existsSync(theme + '/theme')) {
-          console.log('Cannot find theme: ' + theme)
-          process.exit()
+        if (theme.includes('/')) {
+          if (theme.endsWith('/')) {
+            theme = theme.substring(0, theme.length -1)
+          }
+          if (!fs.existsSync(theme + '/theme')) {
+            console.log('Cannot find theme: ' + theme)
+            process.exit()
+          }
         }
       }
 
