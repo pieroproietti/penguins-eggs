@@ -7,9 +7,9 @@
 sudo mv /etc/fstab /etc/fstab.orig.calamares
 
 # Access control to run calamares as root for xwayland
-#xhost +si:localuser:root
+xhost +si:localuser:root
 pkexec calamares
-#xhost -si:localuser:root
+xhost -si:localuser:root
 
 # Restore stale fstab, for what it's worth
 sudo mv /etc/fstab.orig.calamares /etc/fstab
