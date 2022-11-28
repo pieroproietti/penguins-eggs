@@ -22,7 +22,11 @@ You can follow the project also consulting the [commit history](https://github.c
 Versions are listed on reverse order, the first is the last one. Old versions are moved to [versions](https://sourceforge.net/projects/penguins-eggs/files/packages-deb/versions/). 
 
 ### eggs-9.3.9
-* produce: now eggs can be used with **sudo** or **doas**. Thanks to Roy Reynolds.
+Working with LinuxFX, which impressed me with its ability to mimic the look of Windows 11:
+* eggs: added compatibility to [doas](https://wiki.archlinux.org/title/Doas), thanks to Roy Reynolds:
+* produce: now remove the last slash from the theme (passed as path) and checks the existence of the theme itself;
+* calamares: changed line Exec in install-debian.desktop ^^Exec=install-debian^^
+* skel: added file .linuxfx if exist in home for linuxfx
 
 ### eggs-9.3.8
 
