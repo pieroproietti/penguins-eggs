@@ -221,6 +221,9 @@ export default class Xdg {
       await rsyncIfExist(`/home/${user}/.local/share/recently-used.xbel`, '/etc/skel/.local/share', verbose)
     }
 
+    // .linuxfx we need it for linuxfx
+    await rsyncIfExist(`/home/${user}/.linuxfx`, `/etc/skel`, verbose)
+
     await exec('chown root:root /etc/skel -R', echo)
     await exec('chmod a+rwx,g-w,o-w /etc/skel/ -R', echo)
     await execIfExist('chmod a+rwx,g-w-x,o-wx', '/etc/skel/.bashrc', verbose)

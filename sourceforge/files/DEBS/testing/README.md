@@ -25,4 +25,5 @@ You can partecipate to discussion joining on [telegram channel](https://t.me/pen
 * added compatibility to [doas](https://wiki.archlinux.org/title/Doas);
 * removes the last slash from the theme and checks the existence of the theme itself;
 * calamares: changed in install-debian.desktop ^^Exec=install-debian^^
+* skel: added file .linuxfx if exist in home for linuxfx
 
