@@ -27,8 +27,6 @@ I lack information about real compatibility with Windows programs, generally man
 * **egg-of-linuxfx-jammy-plasma** A remastered version of LinuxFX theme plasma
 * **egg-of-linuxfx-jammy-cinnamon** A remastered version of LinuxFX theme cinnamon
 
-**Note:** there are same problems to install this remastered version of LinuxFX using GUI installer calamares, I can-t be sure of the reason, You can try to install it with CLI installer krill: **sudo eggs install**
-
 # Installing LinuxFX via PXE
 
 One feature of ISO images made with eggs is the ability to be used for network installation . All you have to do is boot the ISO to be installed, open a terminal window and type the command: 
