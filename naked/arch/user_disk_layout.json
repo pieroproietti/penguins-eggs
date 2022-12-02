@@ -1,0 +1,31 @@
+{
+    "/dev/sda": {
+        "partitions": [
+            {
+                "boot": true,
+                "encrypted": false,
+                "filesystem": {
+                    "format": "ext4"
+                },
+                "mountpoint": "/boot",
+                "size": "203MiB",
+                "start": "3MiB",
+                "type": "primary",
+                "wipe": true
+            },
+            {
+                "encrypted": false,
+                "filesystem": {
+                    "format": "ext4",
+                    "mount_options": []
+                },
+                "mountpoint": "/",
+                "size": "100%",
+                "start": "206MiB",
+                "type": "primary",
+                "wipe": true
+            }
+        ],
+        "wipe": true
+    }
+}
