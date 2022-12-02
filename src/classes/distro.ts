@@ -393,17 +393,12 @@ class Distro implements IDistro {
         this.distroLike = 'Arch'
         this.codenameId = 'rolling'
         this.codenameLikeId = 'rolling'
-        this.liveMediumPath = '/run/archiso/bootmnt/'
-        this.squashfs = `arch/x86_64/airootfs.sfs`
-        // #this.squashfs = `/xairootfs.sfs`
+        this.liveMediumPath = '/run/archiso/copytoram/'
+        this.squashfs = `/airootfs.sfs`
+        //this.squashfs = `arch/x86_64/airootfs.sfs`
 
         break
       }
-
-      /**
-      
-      */
-
 
       /**
        * Manjaro
@@ -419,41 +414,6 @@ class Distro implements IDistro {
         break
       }
 
-      /**
-       * GARUDA
-       */
-      case 'Harpy-Eagle':
-      case 'White-tailed-eagle': {
-        this.familyId = 'archlinux'
-        this.distroLike = 'Arch'
-        this.codenameLikeId = 'rolling'
-        break
-      }
-
-      /**
-       * FEDORA
-       */
-
-
-      case 'ThirtyFive': {
-        this.familyId = 'fedora'
-        this.distroLike = 'Fedora'
-        this.codenameLikeId = 'thirtyfive'
-        break
-
-        /**
-         * openSuse
-         */
-      }
-
-      case 'tumbleweed': {
-        this.familyId = 'suse'
-        this.distroLike = 'SUSE'
-        this.codenameId = 'tumbleweed'
-        this.codenameLikeId = 'tumbleweed'
-
-        break
-      }
 
       default: {
         /**
