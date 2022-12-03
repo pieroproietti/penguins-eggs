@@ -20,10 +20,10 @@ Please, don't use this package for installations, they have just the pourpouse t
 
 You can partecipate to discussion joining on [telegram channel](https://t.me/penguins_eggs).
 
-# eggs-9.3.9 testing
+# eggs-9.3.10 testing
 
-* added compatibility to [doas](https://wiki.archlinux.org/title/Doas);
-* removes the last slash from the theme and checks the existence of the theme itself;
-* calamares: changed in install-debian.desktop ^^Exec=install-debian^^
-* skel: added file .linuxfx if exist in home for linuxfx
+* changed ```liveMediumPath = '/run/archiso/copytoram/'``` and ```squashfs = '/airootfs.sfs'``` for archlinux, aligned to archiso
+* created configuration on ```naked/arch``` for archinstall. 
+
+
 
