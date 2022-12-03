@@ -125,6 +125,8 @@ If you want calamares and eggs to be removed during installation, simply use:
 sudo eggs produce --fast --release
 ```
 
+# Creating naked starting from archiso
+See [arch-naked](https://penguins--eggs-net.translate.goog/book/arch-naked?_x_tr_sl=auto&_x_tr_tl=en&_x_tr_hl=en)
 
 
 # Installing Arch Linux via PXE
