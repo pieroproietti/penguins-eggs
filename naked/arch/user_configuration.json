@@ -1,12 +1,12 @@
 {
-    "archinstall-language": "Italian",
+    "archinstall-language": "English",
     "config_version": "2.5.1",
     "debug": false,
     "harddrives": [
         "/dev/sda"
     ],
     "hostname": "naked",
-    "keyboard-layout": "it",
+    "keyboard-layout": "us",
     "mirror-region": {
         "Italy": {
             "http://archlinux.mirror.garr.it/archlinux/$repo/os/$arch": true,
@@ -35,7 +35,7 @@
     },
     "script": "guided",
     "silent": false,
-    "sys-language": "it_IT.UTF-8",
+    "sys-language": "en_US.UTF-8",
     "timezone": "Europe/Rome",
     "version": "2.5.1"
 }
