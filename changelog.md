@@ -21,6 +21,11 @@ You can follow the project also consulting the [commit history](https://github.c
 ## Changelog
 Versions are listed on reverse order, the first is the last one. Old versions are moved to [versions](https://sourceforge.net/projects/penguins-eggs/files/packages-deb/versions/). 
 
+### eggs-9.3.10
+* changed ```liveMediumPath = '/run/archiso/copytoram/'``` and ```squashfs = '/airootfs.sfs'``` for archlinux, aligned to archiso;
+* created configuration on ```naked/arch``` for archinstall for a [Arch naked](https://penguins-eggs.net/book/arch-naked.html) version;
+
+
 ### eggs-9.3.9
 Working with [LinuxFX](https://www.linuxfx.org/), which impressed me with its ability to mimic the look of Windows 11:
 
