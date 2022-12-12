@@ -40,8 +40,8 @@ specifiers:
   netmask: ^2.0.2
   node-static: ^0.7.11
   nyc: ^15.1.0
-  oclif: ^3.4.2
-  perrisbrewery: ^9.3.11
+  oclif-pnpm: ^3.4.2
+  perrisbrewery: ^9.3.12
   react: ^17.0.2
   shelljs: 0.8.5
   tftp: ^0.1.2
@@ -67,7 +67,7 @@ dependencies:
   mustache: 4.2.0
   netmask: 2.0.2
   node-static: 0.7.11
-  oclif: 3.4.2
+  oclif-pnpm: 3.4.2
   react: 17.0.2
   shelljs: 0.8.5
   tftp: 0.1.2
@@ -97,7 +97,7 @@ devDependencies:
   globby: 11.1.0
   mocha: 10.2.0
   nyc: 15.1.0
-  perrisbrewery: 9.3.11_vsejax3imjndpzuqzew26kbdzm
+  perrisbrewery: 9.3.12_vsejax3imjndpzuqzew26kbdzm
   ts-node: 10.9.1_73migmg77y47omm5253gettkxi
 
 packages:
@@ -1442,8 +1442,8 @@ packages:
     engines: {node: '>= 0.4'}
     dev: false
 
-  /aws-sdk/2.1272.0:
-    resolution: {integrity: sha512-vJmRzqqInIB7nl2eVWlphEJlVJZwgITKB0DL773FNww3w+nBxKuTtkoOhHYqbHuFtl5gFkL33DPA2MB6PpQLbw==}
+  /aws-sdk/2.1273.0:
+    resolution: {integrity: sha512-QF37fm1DfUxjw+IJtDMTDBckVwAOf8EHQjs4NxJp5TtRkeqtWkxNzq/ViI8kAS+0n8JZaom8Oenmy8ufGfLMAQ==}
     engines: {node: '>= 10.0.0'}
     dependencies:
       buffer: 4.9.2
@@ -4519,8 +4519,8 @@ packages:
     resolution: {integrity: sha512-EFVjAYfzWqWsBMRHPMAXLCDIJnpMhdWAqR7xG6M6a2cs6PMFpl/+Z20w9zDW4vkxOFfddegBKq9Rehd0bxWE7A==}
     engines: {node: '>= 10'}
 
-  /oclif/3.4.2:
-    resolution: {integrity: sha512-YF7zqHCEWiRvfuXkqyPuQsC4PiEJuXLQWIMXOtdJgOnIKqBh9Sp3e4xFsSal9QheVsCwO5kM3Nhe+G430hk/mA==}
+  /oclif-pnpm/3.4.2:
+    resolution: {integrity: sha512-9CrAIGjpR8N0iTPB5iBgVq+fuQsaTq2UQFjuJ4ODq+cSl4PnGy3PgRzorLaG2AsqEoEY1ZM9VraTaicAxV6JXQ==}
     engines: {node: '>=12.0.0'}
     hasBin: true
     dependencies:
@@ -4528,7 +4528,7 @@ packages:
       '@oclif/plugin-help': 5.1.20
       '@oclif/plugin-not-found': 2.3.9
       '@oclif/plugin-warn-if-update-available': 2.0.16
-      aws-sdk: 2.1272.0
+      aws-sdk: 2.1273.0
       concurrently: 7.6.0
       debug: 4.3.4
       find-yarn-workspace-root: 2.0.0
@@ -4797,8 +4797,8 @@ packages:
     resolution: {integrity: sha512-Dp6zGqpTdETdR63lehJYPeIOqpiNBNtc7BpWSLrOje7UaIsE5aY92r/AunQA7rsXvet3lrJ3JnZX29UPTKXyKQ==}
     dev: true
 
-  /perrisbrewery/9.3.11_vsejax3imjndpzuqzew26kbdzm:
-    resolution: {integrity: sha512-lqxsXJP2Qoj2uGGEpItjmSghvPCfxUTBwQIgE079HPCHyJGTQDv+BKsTkW89gs0VkQS7bz2sN9O3fZrVAwCsHw==}
+  /perrisbrewery/9.3.12_vsejax3imjndpzuqzew26kbdzm:
+    resolution: {integrity: sha512-X9DmPmzDS4KH7Nmrxiz7ElF7ez0TyKwSLXqqFhfd8Q7lzCCRAap765WZacxOJ9AevdL+cE5+HlSDAmIW5UTyzg==}
     engines: {node: '>=16.0.0'}
     hasBin: true
     peerDependencies:
