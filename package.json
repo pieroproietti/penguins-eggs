@@ -25,7 +25,7 @@
         "mustache": "^4.2.0",
         "netmask": "^2.0.2",
         "node-static": "^0.7.11",
-        "oclif": "../oclif-pnpm",
+        "oclif": "^3.4.2",
         "react": "^17.0.2",
         "shelljs": "0.8.5",
         "tftp": "^0.1.2",
@@ -55,7 +55,7 @@
         "globby": "^11.1.0",
         "mocha": "^10.2.0",
         "nyc": "^15.1.0",
-        "perrisbrewery": "../perrisbrewery",
+        "perrisbrewery": "^9.3.11",
         "ts-node": "^10.9.1"
     },
     "peerDependencies": {
