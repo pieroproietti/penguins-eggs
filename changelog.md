@@ -21,6 +21,9 @@ You can follow the project also consulting the [commit history](https://github.c
 ## Changelog
 Versions are listed on reverse order, the first is the last one. Old versions are moved to [versions](https://sourceforge.net/projects/penguins-eggs/files/packages-deb/versions/). 
 
+### eggs-9.3.11
+* oclif: passed to oclif-pnpm@3.4.2, a mime - little modified version of oclif@3.4.2 - with the scope of use pnpm. I hope to remain aligned with original oclif, if someome have mine same need: use oclif with pnpm, will be nice to collaborate.
+
 ### eggs-9.3.10
 * changed ```liveMediumPath = '/run/archiso/copytoram/'``` and ```squashfs = '/airootfs.sfs'``` for archlinux, aligned to archiso;
 * created configuration on ```naked/arch``` for archinstall for a [Arch naked](https://penguins-eggs.net/book/arch-naked.html) version;
