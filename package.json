@@ -108,7 +108,7 @@
     "repository": "https://github.com/pieroproietti/penguins-eggs",
     "scripts": {
         "build": "tsc -p .",
-        "deb": "rm tmp -rf && oclif pack:deb && pb deb ./",
+        "deb": "oclif pack:deb && pb deb ./",
         "docs": "rm docs -rf && npx typedoc src --out docs",
         "lint": "eslint . --ext .ts --config .eslintrc",
         "lint-and-fix": "eslint . --ext .ts --fix --config .eslintrc",
