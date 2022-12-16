@@ -1,1 +1,1 @@
-../node_modules/oclif/lib/tarballs/config.js
+../node_modules/oclif-pnpm/lib/tarballs/config.js
