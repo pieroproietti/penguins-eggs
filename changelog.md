@@ -21,6 +21,10 @@ You can follow the project also consulting the [commit history](https://github.c
 ## Changelog
 Versions are listed on reverse order, the first is the last one. Old versions are moved to [versions](https://sourceforge.net/projects/penguins-eggs/files/packages-deb/versions/). 
 
+### eggs-9.3.12
+* linuxmint: just added linuxmint vera;
+* oclif: working to integrate pnpm package manager inside oclif.
+
 ### eggs-9.3.11
 * oclif: passed to [oclif-pnpm](https://github.com/pieroproietti/oclif-pnpm)@[3.4.2](https://www.npmjs.com/package/oclif-pnpm), a mime - little modified version of [oclif](https://github.com/oclif/oclif)@[3.4.2](https://www.npmjs.com/package/oclif) - with the scope of use pnpm. I hope to remain aligned with original, but really I like [pnpm](https://pnpm.io/) and it's feathures, if someome have mine same need - use [oclif](https://oclif.io/) with [pnpm](https://pnpm.io/) - will be nice to collaborate.
 
