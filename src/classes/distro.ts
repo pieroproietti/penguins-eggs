@@ -319,8 +319,9 @@ class Distro implements IDistro {
       case 'ulyssa':
       case 'uma':
       case 'una':
-      case 'vanessa': {
-        // LinuxMint 20.x
+        case 'vanessa': 
+        case 'vera': {
+        // LinuxMint 21.x
         this.distroLike = 'Ubuntu'
         this.codenameLikeId = 'jammy'
 
