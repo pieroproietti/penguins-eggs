@@ -22,7 +22,7 @@ You can follow the project also consulting the [commit history](https://github.c
 Versions are listed on reverse order, the first is the last one. Old versions are moved to [versions](https://sourceforge.net/projects/penguins-eggs/files/packages-deb/versions/). 
 
 ### eggs-9.3.13
-* logname: workaround to mitigate a logname problem. This happen just in same circustances, we know almost two cases: xubuntu 22.04 and linuxmint 21.1 mate. With such systems logname return in an empty string then we use env SUDO_USER.
+* logname: workaround for limiting a curious problem with the logname command. In some circumstances-at least on xubuntu 22.04 and linuxmint 21.1 mate-the logname command returns an empty string instead of the correct user name. In the case where logname fails to return the user name correctly, the environment variable SUDO_USER is examined before to fail.
 
 ### eggs-9.3.12
 * linuxmint: just added linuxmint vera;
