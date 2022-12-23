@@ -21,6 +21,9 @@ You can follow the project also consulting the [commit history](https://github.c
 ## Changelog
 Versions are listed on reverse order, the first is the last one. Old versions are moved to [versions](https://sourceforge.net/projects/penguins-eggs/files/packages-deb/versions/). 
 
+### eggs-9.3.13
+* logname: workaround to mitigate a logname problem. This happen just in same circustances, we know almost two cases: xubuntu 22.04 and linuxmint 21.1 mate. With such systems logname return in an empty string then we use env SUDO_USER.
+
 ### eggs-9.3.12
 * linuxmint: just added linuxmint vera;
 * oclif: working to integrate pnpm package manager inside oclif.
