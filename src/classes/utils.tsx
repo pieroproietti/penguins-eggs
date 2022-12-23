@@ -180,6 +180,9 @@ export default class Utils {
     */
    static async getPrimaryUser(): Promise<string> {
       let primaryUser = (await exec('/usr/bin/logname', { echo: false, ignore: false, capture: true })).data.trim()
+      if (primaryUser.startsWith('logname:')) {
+         primaryUser = (await exec(`echo $(SUDO_USER)`, { echo: false, capture: true })).data.trim()
+      }
       if (primaryUser === '') {
          console.log(`Cannot find your user name...`)
          process.exit(1)

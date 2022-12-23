@@ -54,8 +54,8 @@
         "globby": "^11.1.0",
         "mocha": "^10.2.0",
         "nyc": "^15.1.0",
-        "oclif": "3.4.2-1-local",
-        "perrisbrewery": "^9",
+        "oclif": "3.4.2-local",
+        "perrisbrewery": "9.3.12-local",
         "ts-node": "^10.9.1"
     },
     "peerDependencies": {
