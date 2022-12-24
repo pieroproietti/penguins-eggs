@@ -2,7 +2,7 @@ lockfileVersion: 5.4
 
 specifiers:
   '@oclif/core': ^1.21.0
-  '@oclif/plugin-autocomplete': 1.3.7
+  '@oclif/plugin-autocomplete': 1.3.8
   '@oclif/plugin-help': ^5.1.20
   '@oclif/plugin-not-found': ^2.3.9
   '@oclif/plugin-version': ^1.1.3
@@ -40,8 +40,8 @@ specifiers:
   netmask: ^2.0.2
   node-static: ^0.7.11
   nyc: ^15.1.0
-  oclif: 3.4.2-local
-  perrisbrewery: 9.3.12-local
+  oclif-pnpm: 3.4.2-10
+  perrisbrewery: 9.3.13
   react: ^17.0.2
   shelljs: 0.8.5
   tftp: ^0.1.2
@@ -51,7 +51,7 @@ specifiers:
 
 dependencies:
   '@oclif/core': 1.22.0
-  '@oclif/plugin-autocomplete': 1.3.7
+  '@oclif/plugin-autocomplete': 1.3.8
   '@oclif/plugin-help': 5.1.20
   '@oclif/plugin-not-found': 2.3.11
   '@oclif/plugin-version': 1.1.3
@@ -96,8 +96,8 @@ devDependencies:
   globby: 11.1.0
   mocha: 10.2.0
   nyc: 15.1.0
-  oclif: 3.4.2-local
-  perrisbrewery: 9.3.12-local_z6f2pmj6irx4lvzl46kkfxteta
+  oclif-pnpm: 3.4.2-10
+  perrisbrewery: 9.3.13_z6f2pmj6irx4lvzl46kkfxteta
   ts-node: 10.9.1_moeqx3xmzxqxagf2sz6mqkbb7m
 
 packages:
@@ -656,8 +656,8 @@ packages:
   /@oclif/linewrap/1.0.0:
     resolution: {integrity: sha512-Ups2dShK52xXa8w6iBWLgcjPJWjais6KPJQq3gQ/88AY6BXoTX+MIGFPrWQO1KLMiQfoTpcLnUwloN4brrVUHw==}
 
-  /@oclif/plugin-autocomplete/1.3.7:
-    resolution: {integrity: sha512-bJMf/ieHhnU5+2IPCFZl85ym/XVJ4IIN891R80pNs9KvUdOdE4RwFrYv+nCOp5k+aqteY903tIWmV1xI6A8YgA==}
+  /@oclif/plugin-autocomplete/1.3.8:
+    resolution: {integrity: sha512-jDJAoyCoyFwlxtGasRM/3HwdjUTIL4AnIuqG4/AJhw4XjfyPayE0JILqqnpggOJQ1oc/XcDV94wVJvwlWeUXzQ==}
     engines: {node: '>=12.0.0'}
     dependencies:
       '@oclif/core': 1.22.0
@@ -1553,7 +1553,7 @@ packages:
     resolution: {integrity: sha512-xq+q3SRMOxGivLhBNaUdC64hDTQwejJ+H0T/NB1XMtTVEwNTrfFF3gAxiyW0Bu/xWEGhjVKgUcMhCrUy2+uCWg==}
     dependencies:
       base64-js: 1.5.1
-      ieee754: 1.1.13
+      ieee754: 1.2.1
       isarray: 1.0.0
     dev: true
 
@@ -4547,8 +4547,8 @@ packages:
     resolution: {integrity: sha512-EFVjAYfzWqWsBMRHPMAXLCDIJnpMhdWAqR7xG6M6a2cs6PMFpl/+Z20w9zDW4vkxOFfddegBKq9Rehd0bxWE7A==}
     engines: {node: '>= 10'}
 
-  /oclif/3.4.2-local:
-    resolution: {integrity: sha512-8rj2ILMxrj7my+/qjSqPzWQ8ULO4EdYdgfSn4fxE4Ny1uAKpCFwq5lCjP6qu6AmmhWzGhW1h//2q5wnF1HhD2w==}
+  /oclif-pnpm/3.4.2-10:
+    resolution: {integrity: sha512-E6zE+1jseVxNtKlPQse1qaKShzosR+HMkvTp4+6E675W+GA/udrvN75/h1V+HLl/uMGzBxaMuNVwi9ov6kNciA==}
     engines: {node: '>=12.0.0'}
     hasBin: true
     dependencies:
@@ -4833,8 +4833,8 @@ packages:
     resolution: {integrity: sha512-Dp6zGqpTdETdR63lehJYPeIOqpiNBNtc7BpWSLrOje7UaIsE5aY92r/AunQA7rsXvet3lrJ3JnZX29UPTKXyKQ==}
     dev: true
 
-  /perrisbrewery/9.3.12-local_z6f2pmj6irx4lvzl46kkfxteta:
-    resolution: {integrity: sha512-35rAsPXSl3C6yri2KFfmH6lR3N/XpH9hzl4cEEi+HbPYIe7Ch02LnrM3c1MAxJF09V3HnQ8tczVX+X3s63+hIA==}
+  /perrisbrewery/9.3.13_z6f2pmj6irx4lvzl46kkfxteta:
+    resolution: {integrity: sha512-PDKcNBOO5JzmwhYp47LG0ElTbAASrM5N/WdxCRwWn4QL61cPKx0FdtVptY5JwQDjMYRgSkIGE8JGbXIoEv9ffQ==}
     engines: {node: '>=16.0.0'}
     hasBin: true
     peerDependencies:
@@ -4843,7 +4843,7 @@ packages:
       typescript: ^4.6.0
     dependencies:
       '@oclif/core': 1.22.0
-      '@oclif/plugin-autocomplete': 1.3.7
+      '@oclif/plugin-autocomplete': 1.3.8
       '@oclif/plugin-help': 5.1.20
       '@oclif/plugin-not-found': 2.3.11
       '@oclif/plugin-version': 1.1.3
