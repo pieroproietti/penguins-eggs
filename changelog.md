@@ -21,6 +21,11 @@ You can follow the project also consulting the [commit history](https://github.c
 ## Changelog
 Versions are listed on reverse order, the first is the last one. Old versions are moved to [versions](https://sourceforge.net/projects/penguins-eggs/files/packages-deb/versions/). 
 
+### eggs-9.3.14
+* calamares: bugfix in desktop icon;
+* oclif: updated to [oclif-pnpm@3.4.3-1](https://www.npmjs.com/package/oclif-pnpm)
+
+
 ### eggs-9.3.13
 * logname: workaround for limiting a curious problem with the logname command. In some circumstances-at least on xubuntu 22.04 and linuxmint 21.1 mate-the logname command returns an empty string instead of the correct user name. In the case where logname fails to return the user name correctly, the environment variable SUDO_USER is examined before to fail.
 
