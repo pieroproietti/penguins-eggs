@@ -7,52 +7,55 @@
 # check here snapshots
 - /.snapshots/**
 
-- /dev/*
+# /
 - /cdrom/*
-- /media/*
-- /swapfile
-- /mnt/*
-- /sys/*
-- /proc/*
-- /tmp/*
+- /dev/*
 - /live
+- /media/*
+- /mnt/*
 - /persistence.conf
+- /proc/*
+- /swapfile
+- /sys/*
+- /tmp/*
 
-# boot
-- /boot/grub/grub.cfg
-- /boot/grub/menu.lst
-- /boot/grub/device.map
+# /boot
 - /boot/*.bak
 - /boot/*.old-dkms
-- /etc/udev/rules.d/70-persistent-cd.rules
-- /etc/udev/rules.d/70-persistent-net.rules
+- /boot/grub/device.map
+- /boot/grub/grub.cfg
+- /boot/grub/menu.lst
 
-# etc
+# /etc
 - /etc/apt/sources.list~
-- /etc/mtab
 - /etc/blkid.tab
 - /etc/blkid.tab.old
 - /etc/crypttab
+- /etc/dnsmasq.d/cuckoo.conf
 - /etc/fstab
 - /etc/fstab.d/*
-- /etc/dnsmasq.d/cuckoo.conf
-- /etc/initramfs-tools/conf.d/resume     # see remove-cryptroot and nocrypt.sh
 - /etc/initramfs-tools/conf.d/cryptroot  # see remove-cryptroot and nocrypt.sh
+- /etc/initramfs-tools/conf.d/resume     # see remove-cryptroot and nocrypt.sh
 - /etc/machine-id
+- /etc/mtab
 - /etc/popularity-contest.conf
 - /etc/ssh/ssh_host_*_key*
 - /etc/ssh/ssh_host_key*
+- /etc/udev/rules.d/70-persistent-cd.rules
+- /etc/udev/rules.d/70-persistent-net.rules
 
+# /lib
+#
 # Added for newer version of live-config/live-boot in wheezy 
 # These are only relevant here if you create a snapshot while
 # you're running a live-CD or live-usb. 
-- /lib/live/overlay
 - /lib/live/image
-- /lib/live/rootfs
 - /lib/live/mount
+- /lib/live/overlay
+- /lib/live/rootfs
 - /run/*
 
-# eggs remove all under home
+# /home eggs remove all under /home
 - /home/*
 
 # /root
@@ -60,37 +63,37 @@
 - /root/.bash_history
 - /root/.disk-manager.conf
 - /root/.fstab.log
+- /root/.ICEauthority
 - /root/.lesshst
-- /root/*/.log
 - /root/.local/share/*
 - /root/.nano_history
+- /root/.ssh
 - /root/.synaptic
 - /root/.VirtualBox
-- /root/.ICEauthority
 - /root/.Xauthority
-- /root/.ssh
+- /root/*/.log
 
 # Added for symlink /lib
-- /usr/lib/live/overlay
 - /usr/lib/live/image
-- /usr/lib/live/rootfs
 - /usr/lib/live/mount
+- /usr/lib/live/overlay
+- /usr/lib/live/rootfs
+- /usr/share/icons/*/icon-theme.cache
 
 # var
+- /var/backups/*.gz
+- /var/cache/apt/apt-file/*
 - /var/cache/apt/archives/*.deb
 - /var/cache/apt/pkgcache.bin
 - /var/cache/apt/srcpkgcache.bin
-- /var/cache/apt/apt-file/*
 - /var/cache/debconf/*~old
-- /var/lib/apt/lists/*
 - /var/lib/apt/*~
 - /var/lib/apt/cdroms.list
+- /var/lib/apt/lists/*
 - /var/lib/aptitude/*.old
+- /var/lib/dbus/machine-id
 - /var/lib/dhcp/*
 - /var/lib/dpkg/*~old
-- /var/spool/mail/*
-- /var/mail/*
-- /var/backups/*.gz
-- /var/lib/dbus/machine-id
 - /var/lib/live/config/*
-- /usr/share/icons/*/icon-theme.cache
+- /var/mail/*
+- /var/spool/mail/*
