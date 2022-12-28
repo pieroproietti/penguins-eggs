@@ -21,6 +21,10 @@ You can follow the project also consulting the [commit history](https://github.c
 ## Changelog
 Versions are listed on reverse order, the first is the last one. Old versions are moved to [versions](https://sourceforge.net/projects/penguins-eggs/files/packages-deb/versions/). 
 
+### eggs-9.3.15
+* LinuxFX: adapterd ```eggs tools skel``` to the particularity of LinuxFX plasma;
+* LinuxFX: created a new linuxfx theme in penguins-addons.
+
 ### eggs-9.3.14
 * calamares: bugfix in desktop icon;
 * oclif: updated to [oclif-pnpm@3.4.3-1](https://www.npmjs.com/package/oclif-pnpm)

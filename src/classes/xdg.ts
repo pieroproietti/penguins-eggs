@@ -17,6 +17,7 @@ import { exec } from '../lib/utils'
 import { verify } from 'node:crypto'
 import { file, string } from '@oclif/core/lib/flags'
 import { dir } from 'node:console'
+import { execSync } from 'node:child_process'
 
 const xdg_dirs = ['DESKTOP', 'DOWNLOAD', 'TEMPLATES', 'PUBLICSHARE', 'DOCUMENTS', 'MUSIC', 'PICTURES', 'VIDEOS']
 
@@ -232,6 +233,14 @@ export default class Xdg {
       await rsyncIfExist(`/home/${user}/.kde`, '/etc/skel', verbose)
       await rsyncIfExist(`/home/${user}/.linuxfx`, `/etc/skel`, verbose)
       await rsyncIfExist(`/home/${user}/.local`, '/etc/skel', verbose)
+      // Create dirs - we try in this way... 
+      // await exec(`mkdir /etc/skel/Desktop`)
+      // await exec(`mkdir /etc/skel/Downloads`)
+      // await exec(`mkdir /etc/skel/OneDrive`)
+      // await exec(`mkdir /etc/skel/Pictures`)
+      // await exec(`mkdir /etc/skel/Public`)
+      // await exec(`mkdir /etc/skel/Template`)
+      // await exec(`mkdir /etc/skel/Videos`)
     }
 
     await exec('chown root:root /etc/skel -R', echo)
