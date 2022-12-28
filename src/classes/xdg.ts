@@ -221,8 +221,15 @@ export default class Xdg {
       await rsyncIfExist(`/home/${user}/.local/share/recently-used.xbel`, '/etc/skel/.local/share', verbose)
     }
 
-    // .linuxfx we need it for linuxfx
-    await rsyncIfExist(`/home/${user}/.linuxfx`, `/etc/skel`, verbose)
+    // linuxFX special cases
+    if (fs.existsSync(`/home/${user}/.linuxfx`)) {
+      // we need to copy: .linuxfx ,kde and ,cinnamon
+      await rsyncIfExist(`/home/${user}/.linuxfx`, `/etc/skel`, verbose)
+      await rsyncIfExist(`/home/${user}/.kde`, '/etc/skel', verbose)
+      await rsyncIfExist(`/home/${user}/.cinnamon`, '/etc/skel', verbose)
+    }
+
+    // 
 
     await exec('chown root:root /etc/skel -R', echo)
     await exec('chmod a+rwx,g-w,o-w /etc/skel/ -R', echo)
