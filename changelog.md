@@ -22,7 +22,7 @@ You can follow the project also consulting the [commit history](https://github.c
 Versions are listed on reverse order, the first is the last one. Old versions are moved to [versions](https://sourceforge.net/projects/penguins-eggs/files/packages-deb/versions/). 
 
 ### eggs-9.3.15
-* LinuxFX: adapterd ```eggs tools skel``` to the particularity of LinuxFX plasma;
+* LinuxFX: adapt ```eggs tools skel``` to the particularity of LinuxFX plasma;
 * LinuxFX: created a new linuxfx theme in penguins-addons.
 
 ### eggs-9.3.14
