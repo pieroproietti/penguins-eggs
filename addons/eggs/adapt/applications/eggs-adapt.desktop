@@ -3,7 +3,7 @@
 Encoding=UTF-8
 Name=adapt resolution
 Type=Application
-Exec=/usr/bin/adapt
+Exec=adapt
 Icon=video-display
 Categories=GNOME;GTK;Utility;
 Name[it]=Adatta risoluzione
