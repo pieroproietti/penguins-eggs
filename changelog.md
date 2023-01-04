@@ -21,6 +21,9 @@ You can follow the project also consulting the [commit history](https://github.c
 ## Changelog
 Versions are listed on reverse order, the first is the last one. Old versions are moved to [versions](https://sourceforge.net/projects/penguins-eggs/files/packages-deb/versions/). 
 
+### eggs-9.3.16
+* I added a new configuration file /etc/penguins-eggs.d/derivaties.yaml to allow easier addition of new compatible distributions . The Ubuntu makululu linux distribution was added on this occasion.
+
 ### eggs-9.3.15
 * LinuxFX: adapt ```eggs tools skel``` to the particularity of LinuxFX plasma;
 * LinuxFX: created a new linuxfx theme in penguins-addons.
