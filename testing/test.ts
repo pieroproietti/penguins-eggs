@@ -11,21 +11,23 @@ import fs from 'fs'
 
 startPoint()
 
-interface IDerived {
+interface IDerivative {
    id: string,
    distro: string,
-   deriveds: string []
+   derivatives: string []
 }
 
-interface IDeriveds {
-   distro: IDerived
-}
+
+
 
 async function startPoint() {
    Utils.titles('test')
 
    const file = 'conf/distros.yaml'
    const content = fs.readFileSync(file, 'utf8')
-   let distros =  yaml.load(content) as IDeriveds
+   let distros =  yaml.load(content) as IDerivative
+
    console.log(distros)
+
+
 }
