@@ -20,11 +20,9 @@ interface IDistros {
 async function startPoint() {
    Utils.titles('test')
 
-   const file = 'conf/distros.yaml'
+   const file = 'conf/derivatives.yaml'
    const content = fs.readFileSync(file, 'utf8')
    let distros = yaml.load(content) as IDistros[]
-
-   // console.log(distros)
    let codename = 'jolnir'
    for (let i = 0; i < distros.length; i++) {
       for (let n = 0; n < distros[i].derivatives.length; n++) {

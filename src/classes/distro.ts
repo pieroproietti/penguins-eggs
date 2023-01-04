@@ -9,7 +9,7 @@
 'use strict'
 import fs from 'node:fs'
 import shell from 'shelljs'
-
+import yaml from 'js-yaml'
 import { IRemix, IDistro } from '../interfaces'
 
 /**
@@ -256,147 +256,38 @@ class Distro implements IDistro {
         break
       }
 
-      /**
-       * Derivate
-       */
-
-      case 'kali-rolling': {
-        // Kali
-        this.distroLike = 'Debian'
-        this.codenameLikeId = 'bookworm'
-
-        break
-      }
-
-      case `hera`: {
-        // Elementary
-        this.distroLike = 'Ubuntu'
-        this.codenameLikeId = 'bionic'
-
-        break
-      }
-
-      case `jolnir`: {
-        // Elementary
-        this.distroLike = 'Ubuntu'
-        this.codenameLikeId = 'focal'
-
-        break
-      }
-
-      case 'roma': {
-        // UfficioZero roma
-        this.distroLike = 'Devuan'
-        this.codenameLikeId = 'beowulf'
-
-        break
-      }
-
-      case 'tropea': {
-        // UfficioZero tropea
-        this.distroLike = 'Ubuntu'
-        this.codenameLikeId = 'focal'
-
-        break
-      }
-
-      case 'vieste': {
-        // UfficioZero tropea
-        this.distroLike = 'Ubuntu'
-        this.codenameLikeId = 'bionic'
-
-        break
-      }
-
-      case 'siena': {
-        // UfficioZero siena
-        this.distroLike = 'Debian'
-        this.codenameLikeId = 'buster'
-
-        break
-      }
-
-      case 'tara':
-      case 'tessa':
-      case 'tina':
-      case 'tricia': {
-        // LinuxMint 19.x
-        this.distroLike = 'Ubuntu'
-        this.codenameLikeId = 'bionic'
-
-        break
-      }
-
-      case 'ulyana':
-      case 'ulyssa':
-      case 'uma':
-      case 'una':
-        case 'vanessa': 
-        case 'vera': {
-        // LinuxMint 21.x
-        this.distroLike = 'Ubuntu'
-        this.codenameLikeId = 'jammy'
-
-        break
-      }
-
-      case 'debbie': {
-        // LMDE 4 debbie
-        this.distroLike = 'Debian'
-        this.codenameLikeId = 'buster'
-
-        break
-      }
-
-      case 'elsie': {
-        // LMDE 5 elsie
-        this.distroLike = 'Debian'
-        this.codenameLikeId = 'bullseye'
-
-        break
-      }
-
-      case 'apricot': {
-        // Deepin 20 apricot
-        this.distroLike = 'Debian'
-        this.codenameLikeId = 'bullseye'
-
-        break
-      }
-
-      case 'filadelfia': {
-        // SysLinuxOS
-        this.distroLike = 'Debian'
-        this.codenameLikeId = 'bullseye'
-
-        break
-      }
-
-      case 'siduction': {
-        // Debian 11 Siduction
-        this.distroLike = 'Debian'
-        this.codenameLikeId = 'bullseye'
-
-        break
-      }
-
-      case 'buster/sid': {
-        // Netrunner
-        this.distroLike = 'Debian'
-        this.codenameLikeId = 'buster'
-
-        break
-      }
-
-
       default: {
         /**
-         * se proprio non riesco provo con Debian buster
+         * find in ./conf/derivaties
          */
-        console.log("This distro is not yet recognized, I'll try Debian buster")
-        this.distroLike = 'Debian'
-        this.codenameLikeId = 'buster'
+        interface IDistros {
+          id: string,
+          distro: string,
+          derivatives: string[]
+        }
 
+        let found = false
+        const file = '/etc/penguins-eggs.d/derivatives.yaml'
+        const content = fs.readFileSync(file, 'utf8')
+        let distros = yaml.load(content) as IDistros[]
+        for (let i = 0; i < distros.length; i++) {
+          for (let n = 0; n < distros[i].derivatives.length; n++) {
+            if (this.codenameId === distros[i].derivatives[n]) {
+              found = true
+              this.distroLike = distros[i].distro
+              this.codenameLikeId = distros[i].id
+              this.familyId = 'debian'
+            }
+          }
+        }
+        if (!found) {
+          console.log(`This distro ${this.distroId}/${this.codenameId} is not yet recognized!`)
+          console.log(``)
+          console.log(`You can edit /usr/lib/penguins-eggs/derivaties.yaml to add it -`)
+          console.log(`after that - run: sudo eggs dad -d to reconfigure.`)
+          console.log(`If you can create your new iso, you can contribute to the project by suggesting your modification`)
+          process.exit(0)
+        }
       }
     }
 
