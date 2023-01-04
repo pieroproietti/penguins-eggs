@@ -1,0 +1,67 @@
+# Penguin's eggs
+# 
+# distros.yaml
+---
+#
+# DEBIAN
+#
+# buster derivated
+- id: buster
+  distro: Debian
+  deriveds: [
+    siena, # Ufficiozero siena
+  ]  
+
+# bullseye derivated
+- id: bullseye
+  distro: Debian
+  deriveds: [
+    elsie, # LMDE elsie
+    filadelfia # SysLinuxOS
+  ]
+
+# bootkworm derivated
+- id: bookworm
+  distro: Debian
+  deriveds: [
+    kali-rolling # kali
+]
+
+#
+# DEVUAN
+# 
+
+# beowulf derivated
+- id: beowulf
+  distro: Devuan
+  deriveds: [
+    roma # Ufficiozero roma
+  ]
+
+#
+# UBUNTU
+#
+
+# bionic derivated
+- id: bionic
+  distro: Ubuntu
+  deriveds: [
+    hera, # Elementary hera
+    tara, tessa, tina, tricia, # Linux Mint
+    vieste # Ufficiozero vieste
+  ]
+
+# focal derivated
+- id: focal
+  distro: Ubuntu
+  deriveds: [
+    tropea # UfficioZero tropea
+  ]
+
+# jammy derivated
+- id: jammy
+  distro: Ubuntu
+  deriveds: [
+    ulyana, ulyssa, uma, una, vanessa, vera, # Linux Mint
+    jolnir # Elementary jolnir
+  ]
