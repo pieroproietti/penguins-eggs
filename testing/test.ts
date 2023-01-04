@@ -6,29 +6,26 @@
  */
 
 import Utils from '../src/classes/utils'
-import shx from 'shelljs'
-import { networkInterfaces } from 'os'
+import yaml from 'js-yaml'
 import fs from 'fs'
-import ini from 'ini'
 
 startPoint()
 
+interface IDerived {
+   id: string,
+   distro: string,
+   deriveds: string []
+}
 
+interface IDeriveds {
+   distro: IDerived
+}
 
 async function startPoint() {
    Utils.titles('test')
 
-   const dirConf = '/etc/lightdm/'
-   let confs = fs.readdirSync(dirConf)
-   for (const conf of confs) {
-      
-      if (conf === 'lightdm.conf') {
-         console.log('\nconf: ' + conf)
-         let fc = dirConf + conf
-         console.log(fs.readFileSync(fc, 'utf-8'))
-         let config = ini.parse(fs.readFileSync(fc, 'utf-8'))
-         console.log("autologin-user: " + config["Seat:*"]["autologin-user"])
-
-      }
-   }
+   const file = 'conf/distros.yaml'
+   const content = fs.readFileSync(file, 'utf8')
+   let distros =  yaml.load(content) as IDeriveds
+   console.log(distros)
 }

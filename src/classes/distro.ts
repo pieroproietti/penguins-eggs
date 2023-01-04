@@ -6,29 +6,6 @@
  * mail: piero.proietti@gmail.com
  */
 
-/**
- * Debian 8 (jessie)
- * Debian 9 (stretch)
- * Debian 10 (buster) — old-stable
- * Debian 11 bullseye - stable
- * Debian 12 bookworm - testing/unstable
- *
- * Devuan ASCII
- * Devuan beowlf - old-stable
- * Devuan Chimaera - stable
- *
- * Ubuntu 16.04 (xenial) LTS  active
- * Ubuntu 18.04 (bionic) LTS  active
- * Ubuntu 20.04 (focal) LTS active
- * Ubuntu 22.04 (jammy) LTS
- * Ubuntu 22.10 (kinetic)
- * 
- * Arch
- * Manjaro Qonos
- * Manjaro Ruah
- *
- */
-
 'use strict'
 import fs from 'node:fs'
 import shell from 'shelljs'
@@ -139,7 +116,7 @@ class Distro implements IDistro {
 
 
     /**
-     * Procedo analizzanto: codenameId, prima Debian, Devuan ed Ubuntu poi gli altri
+     * Procedo analizzanto: codenameId
      */
     switch (this.codenameId) {
       case 'jessie': {
@@ -179,7 +156,7 @@ class Distro implements IDistro {
       }
 
       case 'bookworm': {
-        // Debian 11 bullseye
+        // Debian 12 bookworm 
         this.distroLike = 'Debian'
         this.codenameLikeId = 'bookworm'
 
@@ -187,6 +164,7 @@ class Distro implements IDistro {
       }
 
       case 'beowulf': {
+        // Devuab 3 beowulf 
         this.distroLike = 'Devuan'
         this.codenameLikeId = 'beowulf'
 
@@ -194,6 +172,7 @@ class Distro implements IDistro {
       }
 
       case 'chimaera': {
+        // Devuab 4 chimaera
         this.distroLike = 'Devuan'
         this.codenameLikeId = 'chimaera'
 
@@ -201,6 +180,7 @@ class Distro implements IDistro {
       }
 
       case 'daedalus': {
+        // Devuan 5 daedalus
         this.distroLike = 'Devuan'
         this.codenameLikeId = 'daedalus'
 
@@ -230,7 +210,7 @@ class Distro implements IDistro {
 
 
       case 'jammy': {
-        // Ubuntu 22.04 jammy
+        // Ubuntu 22.04 jammy LTS
         this.distroLike = 'Ubuntu'
         this.codenameLikeId = 'jammy'
 
@@ -247,6 +227,38 @@ class Distro implements IDistro {
         break
       }
 
+      /**
+       * Arch Linux / RebornOS
+       * calamares rebornOS: Reborn-OS/calamares-core-git
+       */
+      case 'n/a': {
+        // ARCH rolling
+        this.familyId = 'archlinux'
+        this.distroLike = 'Arch'
+        this.codenameId = 'rolling'
+        this.codenameLikeId = 'rolling'
+        this.liveMediumPath = '/run/archiso/copytoram/'
+        this.squashfs = `/airootfs.sfs`
+        //this.squashfs = `arch/x86_64/airootfs.sfs`
+
+        break
+      }
+
+      case 'Qonos':
+      case 'Ruah':
+      case 'Sikaris': {
+        // Manjaro Linux
+        this.familyId = 'archlinux'
+        this.distroLike = 'Arch'
+        this.codenameLikeId = 'rolling'
+        this.liveMediumPath = `/run/miso/bootmnt/`
+        this.squashfs = `manjaro/x86_64/livefs.sfs`
+        break
+      }
+
+      /**
+       * Derivate
+       */
 
       case 'kali-rolling': {
         // Kali
@@ -352,14 +364,6 @@ class Distro implements IDistro {
         break
       }
 
-      case 'mierda': {
-        // Caraco
-        this.distroLike = 'Debian'
-        this.codenameLikeId = 'bullseye'
-
-        break
-      }
-
       case 'filadelfia': {
         // SysLinuxOS
         this.distroLike = 'Debian'
@@ -381,37 +385,6 @@ class Distro implements IDistro {
         this.distroLike = 'Debian'
         this.codenameLikeId = 'buster'
 
-        break
-      }
-
-
-      /**
-       * Arch Linux / RebornOS
-       * calamares rebornOS: Reborn-OS/calamares-core-git
-       */
-      case 'n/a': {
-        this.familyId = 'archlinux'
-        this.distroLike = 'Arch'
-        this.codenameId = 'rolling'
-        this.codenameLikeId = 'rolling'
-        this.liveMediumPath = '/run/archiso/copytoram/'
-        this.squashfs = `/airootfs.sfs`
-        //this.squashfs = `arch/x86_64/airootfs.sfs`
-
-        break
-      }
-
-      /**
-       * Manjaro
-       */
-      case 'Qonos':
-      case 'Ruah':
-      case 'Sikaris': {
-        this.familyId = 'archlinux'
-        this.distroLike = 'Arch'
-        this.codenameLikeId = 'rolling'
-        this.liveMediumPath = `/run/miso/bootmnt/`
-        this.squashfs = `manjaro/x86_64/livefs.sfs`
         break
       }
 
