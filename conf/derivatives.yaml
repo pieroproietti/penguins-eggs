@@ -64,5 +64,6 @@
   distro: Ubuntu
   derivatives: [
     ulyana, ulyssa, uma, una, vanessa, vera, # Linux Mint
-    jolnir # Elementary jolnir
+    jolnir, # Elementary jolnir
+    ShiFt # Makululu
   ]
