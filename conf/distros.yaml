@@ -9,6 +9,7 @@
 - id: buster
   distro: Debian
   derivatives: [
+    debbie, # LMDE4
     siena, # Ufficiozero siena
   ]  
 
