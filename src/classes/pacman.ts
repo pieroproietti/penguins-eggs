@@ -389,24 +389,37 @@ export default class Pacman {
     }
 
     const addons = `${confRoot}/addons`
-    const distros = `${confRoot}/distros`
     if (fs.existsSync(addons)) {
       execSync(`rm -rf ${addons}`)
     }
 
+    const distros = `${confRoot}/distros`
     if (fs.existsSync(distros)) {
       execSync(`rm -rf ${distros}`)
     }
-
     execSync(`mkdir -p ${distros}`)
+
+    /**
+     * We use /etc/penguins-eggs.d/init for our init scripts:
+     * # unattended.sh -> eggs install --unattended
+     * # cuckoo ->        eggs cuckoo
+     */
+    const init = `${confRoot}/init`
+    if (fs.existsSync(init)) {
+      execSync(`rm -rf ${init}`)
+    }
+    execSync(`mkdir -p ${init}`)
 
     shx.ln('-s', path.resolve(__dirname, '../../addons'), addons)
     shx.cp(path.resolve(__dirname, '../../conf/README.md'), '/etc/penguins-eggs.d/')
     shx.cp(path.resolve(__dirname, '../../conf/tools.yaml'), config_tools)
     shx.cp(path.resolve(__dirname, '../../conf/krill.yaml'), '/etc/penguins-eggs.d/krill.yaml')
     shx.cp(path.resolve(__dirname, '../../conf/derivatives.yaml'), '/etc/penguins-eggs.d/')
-    shx.cp(path.resolve(__dirname, '../../conf/unattended.sh'), '/etc/penguins-eggs.d/')
-    shx.chmod('+x', '/etc/penguins-eggs.d/unattended.sh')
+    // init
+    shx.cp(path.resolve(__dirname, '../../conf/init/unattended.sh'), '/etc/penguins-eggs.d/init')
+    shx.chmod('+x', '/etc/penguins-eggs.d/init/unattended.sh')
+    shx.cp(path.resolve(__dirname, '../../conf/init/cuckoo.sh'), '/etc/penguins-eggs.d/init')
+    shx.chmod('+x', '/etc/penguins-eggs.d/init/cuckoo.sh')
 
     // creazione del file delle esclusioni
     shx.mkdir('-p', '/usr/local/share/penguins-eggs/')
