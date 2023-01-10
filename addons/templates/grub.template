@@ -22,9 +22,9 @@ menuentry "{{{fullname}}} (kernel {{{kernel}}})" {
     linux {{{vmlinuz}}} {{{kernel_parameters}}} quiet splash
     initrd {{{initrdImg}}} 
 }
-menuentry "{{{fullname}}} safe" {
+menuentry "{{{fullname}}} unattended" {
   set gfxpayload=keep
   {{{rmModules}}}
   linux {{{vmlinuz}}} {{{kernel_parameters}}}
-  initrd {{{initrdImg}}} 
+  initrd {{{initrdImg}}} init=/etc/penguins-eggs.d/unattended
 }
