@@ -17,11 +17,17 @@ label default
   linux {{{vmlinuz}}} 
   append initrd={{{initrdImg}}} {{{kernel_parameters}}}
 
+label cuckoo
+  menu label {{{fullname}}} cuckoo
+  say "Booting {{{fullname}}} GNU/Linux Live (kernel {{{kernel}}})"
+  linux {{{vmlinuz}}} 
+  append initrd={{{initrdImg}}} {{{kernel_parameters}}} init=/etc/penguins-eggs.d/init/cuckoo.sh
+
 label unattended
   menu label {{{fullname}}} unattended
   say "Booting {{{fullname}}} GNU/Linux Live (kernel {{{kernel}}})"
   linux {{{vmlinuz}}} 
-  append initrd={{{initrdImg}}} {{{kernel_parameters}}} init=/etc/penguins-eggs.d/unattended
+  append initrd={{{initrdImg}}} {{{kernel_parameters}}} init=/etc/penguins-eggs.d/init/unattended.sh
 
 label boot from local disk
   com32 chain.c32

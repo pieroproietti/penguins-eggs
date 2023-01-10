@@ -22,9 +22,17 @@ menuentry "{{{fullname}}} (kernel {{{kernel}}})" {
     linux {{{vmlinuz}}} {{{kernel_parameters}}} quiet splash
     initrd {{{initrdImg}}} 
 }
+
 menuentry "{{{fullname}}} unattended" {
   set gfxpayload=keep
   {{{rmModules}}}
   linux {{{vmlinuz}}} {{{kernel_parameters}}}
-  initrd {{{initrdImg}}} init=/etc/penguins-eggs.d/unattended
+  initrd {{{initrdImg}}} init=/etc/penguins-eggs.d/init/unattended.sh
+}
+
+menuentry "{{{fullname}}} cuckoo" {
+  set gfxpayload=keep
+  {{{rmModules}}}
+  linux {{{vmlinuz}}} {{{kernel_parameters}}}
+  initrd {{{initrdImg}}} init=/etc/penguins-eggs.d/init/cuckoo.sh
 }
