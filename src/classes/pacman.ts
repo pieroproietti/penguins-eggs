@@ -405,6 +405,8 @@ export default class Pacman {
     shx.cp(path.resolve(__dirname, '../../conf/tools.yaml'), config_tools)
     shx.cp(path.resolve(__dirname, '../../conf/krill.yaml'), '/etc/penguins-eggs.d/krill.yaml')
     shx.cp(path.resolve(__dirname, '../../conf/derivatives.yaml'), '/etc/penguins-eggs.d/')
+    shx.cp(path.resolve(__dirname, '../../conf/unattended.sh'), '/etc/penguins-eggs.d/')
+    shx.chmod('+x', '/etc/penguins-eggs.d/unattended.sh')
 
     // creazione del file delle esclusioni
     shx.mkdir('-p', '/usr/local/share/penguins-eggs/')
