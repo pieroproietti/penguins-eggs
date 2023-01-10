@@ -17,11 +17,11 @@ label default
   linux {{{vmlinuz}}} 
   append initrd={{{initrdImg}}} {{{kernel_parameters}}}
 
-label safe
-  menu label {{{fullname}}} safe
+label unattended
+  menu label {{{fullname}}} unattended
   say "Booting {{{fullname}}} GNU/Linux Live (kernel {{{kernel}}})"
   linux {{{vmlinuz}}} 
-  append initrd={{{initrdImg}}} {{{kernel_parameters}}}
+  append initrd={{{initrdImg}}} {{{kernel_parameters}}} init=/etc/penguins-eggs.d/unattended
 
 label boot from local disk
   com32 chain.c32
