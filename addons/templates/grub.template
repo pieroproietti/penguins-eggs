@@ -16,23 +16,16 @@ fi
 
 set theme=/boot/grub/theme.cfg
 
-menuentry "{{{fullname}}} (kernel {{{kernel}}})" {
+menuentry "{{{fullname}}} GUI" {
     set gfxpayload=keep
     {{{rmModules}}}
     linux {{{vmlinuz}}} {{{kernel_parameters}}} quiet splash
     initrd {{{initrdImg}}} 
 }
 
-menuentry "{{{fullname}}} cuckoo" {
+menuentry "{{{fullname}}} CLI" {
   set gfxpayload=keep
   {{{rmModules}}}
   linux {{{vmlinuz}}} {{{kernel_parameters}}}
-  initrd {{{initrdImg}}} init=/etc/penguins-eggs.d/init/cuckoo.sh
-}
-
-menuentry "{{{fullname}}} unattended" {
-  set gfxpayload=keep
-  {{{rmModules}}}
-  linux {{{vmlinuz}}} {{{kernel_parameters}}}
-  initrd {{{initrdImg}}} init=/etc/penguins-eggs.d/init/unattended.sh
+  initrd {{{initrdImg}}} 3
 }

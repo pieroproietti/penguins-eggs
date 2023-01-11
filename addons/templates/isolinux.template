@@ -10,24 +10,18 @@ timeout 200
 #
 #
 
-label default
-  menu label {{{fullname}}} (kernel {{{kernel}}})
+label GUI
+  menu label {{{fullname}}} GUI
   menu default
   say "Booting {{{fullname}}} GNU/Linux Live (kernel {{{kernel}}})"
   linux {{{vmlinuz}}} 
   append initrd={{{initrdImg}}} {{{kernel_parameters}}}
 
-label cuckoo
-  menu label {{{fullname}}} cuckoo
+label CLI
+  menu label {{{fullname}}} CLI
   say "Booting {{{fullname}}} GNU/Linux Live (kernel {{{kernel}}})"
   linux {{{vmlinuz}}} 
-  append initrd={{{initrdImg}}} {{{kernel_parameters}}} init=/etc/penguins-eggs.d/init/cuckoo.sh
-
-label unattended
-  menu label {{{fullname}}} unattended
-  say "Booting {{{fullname}}} GNU/Linux Live (kernel {{{kernel}}})"
-  linux {{{vmlinuz}}} 
-  append initrd={{{initrdImg}}} {{{kernel_parameters}}} init=/etc/penguins-eggs.d/init/unattended.sh
+  append initrd={{{initrdImg}}} {{{kernel_parameters}}} 3
 
 label boot from local disk
   com32 chain.c32

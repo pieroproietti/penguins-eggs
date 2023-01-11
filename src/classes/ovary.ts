@@ -222,17 +222,23 @@ export default class Ovary {
         } else {
           await this.cleanUsersAccounts()
           await this.createUserLive()
-          // createXdgAutostart anche per clone
+
+          // create XdgAutostart
           if (Pacman.isInstalledGui()) {
             await this.createXdgAutostart(this.settings.config.theme, myAddons)
+
+            /**
+             * GUI installed but NOT Desktop Manager: just create motd and issue
+             */ 
             if (displaymanager() === '') {
-              // If GUI is installed and not Desktop manager
               cliAutologin.addIssue(this.settings.distro.distroId, this.settings.distro.codenameId, this.settings.config.user_opt, this.settings.config.user_opt_passwd, this.settings.config.root_passwd, this.settings.work_dir.merged)
               cliAutologin.addMotd(this.settings.distro.distroId, this.settings.distro.codenameId, this.settings.config.user_opt, this.settings.config.user_opt_passwd, this.settings.config.root_passwd, this.settings.work_dir.merged)
             }
           } else {
             cliAutologin.addAutologin(this.settings.distro.distroId, this.settings.distro.codenameId, this.settings.config.user_opt, this.settings.config.user_opt_passwd, this.settings.config.root_passwd, this.settings.work_dir.merged)
           }
+          // Here we are forcing alwats cliAutologin
+          cliAutologin.addAutologin(this.settings.distro.distroId, this.settings.distro.codenameId, this.settings.config.user_opt, this.settings.config.user_opt_passwd, this.settings.config.root_passwd, this.settings.work_dir.merged)
         }
 
         await this.editLiveFs()
@@ -648,7 +654,7 @@ export default class Ovary {
       let volid = Utils.getVolid(this.settings.remix.name)
       if (this.settings.distro.distroId === 'ManjaroLinux') {
         kernel_parameters += ` misobasedir=manjaro misolabel=${volid}`
-      } else if (this.settings.distro.distroId === 'Arch' || this.settings.distro.distroId === 'RebornOS' ) {
+      } else if (this.settings.distro.distroId === 'Arch' || this.settings.distro.distroId === 'RebornOS') {
         kernel_parameters += ` archisobasedir=arch archisolabel=${volid} cow_spacesize=4G`
       }
     }
