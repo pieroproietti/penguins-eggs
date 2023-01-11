@@ -119,9 +119,9 @@ export async function addMotd(distro: string, version: string, user: string, use
   let installer = 'sudo eggs install'
   if (Pacman.packageIsInstalled('calamares')) {
     if (Pacman.packageIsInstalled('plasma-desktop')) {
-      installer = 'startplasma-wayland to run GUI and launch calamares, or from terminal sudo eggs krill -c'
+      installer = 'startplasma-wayland to run GUI and launch calamares'
     } else if (Pacman.packageIsInstalled('xfce4')) {
-      installer = 'startxfce4 to run GUI and launch calamares, or from terminal sudo eggs krill -c'
+      installer = 'startxfce4 to run GUI and launch calamares installer'
     }
   }
 
@@ -133,8 +133,10 @@ export async function addMotd(distro: string, version: string, user: string, use
 
   let eggsMotd = fs.readFileSync(fileMotd, 'utf-8')
   eggsMotd += startMessage + '\n'
-  eggsMotd += 'You are logged as: ' + chalk.bold(user) + ' your password is: ' + chalk.bold(userPasswd) + ', root password: ' + chalk.bold(rootPasswd) + '\n'
-  eggsMotd += `to install the system: ${installer}\n`
+  eggsMotd += 'You are logged as: ' + chalk.bold(user) + ' your password is: ' + chalk.bold(userPasswd) + ', root password: ' + chalk.bold(rootPasswd) + '\n\n'
+  eggsMotd += `- install    : ` + chalk.bold(installer) + `\n`
+  eggsMotd += `- unattended : ` + chalk.bold(`sudo eggs install -u [https://address/sample.yaml]`) + `\n`
+  eggsMotd += `- PXE server : ` + chalk.bold(`sudo eggs cuckoo`) + `\n`
   eggsMotd += stopMessage + '\n'
   fs.writeFileSync(fileMotd, eggsMotd)
 }
