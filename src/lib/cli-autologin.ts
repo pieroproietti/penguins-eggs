@@ -4,6 +4,7 @@ import path from 'path'
 import Utils from '../classes/utils'
 import Pacman from '../classes/pacman'
 import chalk from 'chalk'
+const pjson = require('../../package.json')
 
 // libraries
 import { exec } from '../lib/utils'
@@ -133,6 +134,7 @@ export async function addMotd(distro: string, version: string, user: string, use
 
   let eggsMotd = fs.readFileSync(fileMotd, 'utf-8')
   eggsMotd += startMessage + '\n'
+  eggsMotd += Utils.flag() + '\n'
   eggsMotd += 'You are logged as: ' + chalk.bold(user) + ' your password is: ' + chalk.bold(userPasswd) + ', root password: ' + chalk.bold(rootPasswd) + '\n\n'
   eggsMotd += `- install    : ` + chalk.bold(installer) + `\n`
   eggsMotd += `- unattended : ` + chalk.bold(`sudo eggs install -u [https://address/sample.yaml]`) + `\n`

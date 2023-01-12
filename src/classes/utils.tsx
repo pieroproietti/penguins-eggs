@@ -906,10 +906,18 @@ unknown target format aarch64-efi
       console.log('')
       console.log(' E G G S: the reproductive system of penguins')
       console.log('')
-      console.log(chalk.bgGreen.whiteBright('      ' + pjson.name + '      ') +
-         chalk.bgWhite.blue(" Perri's Brewery edition ") +
-         chalk.bgRed.whiteBright('       ver. ' + pjson.version + '       '))
+      console.log(Utils.flag())
       console.log('command: ' + chalk.bgBlack.white(command) + '\n')
+   }
+
+   /**
+    * 
+    * @returns flag
+    */
+   static flag() : string {
+      return chalk.bgGreen.whiteBright('      ' + pjson.name + '      ') +
+      chalk.bgWhite.blue(" Perri's Brewery edition ") +
+      chalk.bgRed.whiteBright('       ver. ' + pjson.version + '       ')
    }
 
 

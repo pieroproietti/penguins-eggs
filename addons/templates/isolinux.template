@@ -23,7 +23,7 @@ label CLI
   linux {{{vmlinuz}}} 
   append initrd={{{initrdImg}}} {{{kernel_parameters}}} 3
 
-label boot from local disk
+label Boot from local
   com32 chain.c32
   append hd1 1 swap
   
