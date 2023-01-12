@@ -96,7 +96,7 @@ export default class Krill {
   /**
    * @param cryped 
    */
-  async prepare(unattended = false, ip = false, random = false, domain = 'local', suspend = false, small = false, none = false, cryped = false, pve = false, verbose = false) {
+  async prepare(unattended = false, krillConfig = {} as IKrillConfig, ip = false, random = false, domain = 'local', suspend = false, small = false, none = false, cryped = false, pve = false, verbose = false) {
     /**
      * Check for disk presence
      */
@@ -135,7 +135,7 @@ export default class Krill {
       process.exit(1)
     }
 
-    this.krillConfig = yaml.load(fs.readFileSync(config_file, 'utf-8')) as IKrillConfig
+    this.krillConfig = krillConfig // yaml.load(fs.readFileSync(config_file, 'utf-8')) as IKrillConfig
 
     if (unattended) {
       oWelcome = { language: this.krillConfig.language }
