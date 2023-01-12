@@ -137,7 +137,7 @@ export async function addMotd(distro: string, version: string, user: string, use
   eggsMotd += Utils.flag() + '\n'
   eggsMotd += 'You are logged as: ' + chalk.bold(user) + ' your password is: ' + chalk.bold(userPasswd) + ', root password: ' + chalk.bold(rootPasswd) + '\n\n'
   eggsMotd += `- install    : ` + chalk.bold(installer) + `\n`
-  eggsMotd += `- unattended : ` + chalk.bold(`sudo eggs install -u [https://address/sample.yaml]`) + `\n`
+  eggsMotd += `- unattended : ` + chalk.bold(`sudo eggs install --unattended [ https://your-address/your-config.yaml ]`) + `\n`
   eggsMotd += `- PXE server : ` + chalk.bold(`sudo eggs cuckoo`) + `\n`
   eggsMotd += stopMessage + '\n'
   fs.writeFileSync(fileMotd, eggsMotd)
