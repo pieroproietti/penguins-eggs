@@ -413,10 +413,11 @@ command-line system installer - the egg became a penguin!
 
 ```
 USAGE
-  $ eggs install [-u] [-i] [-r] [-d <value>] [-S] [-s] [-n] [-k] [-p] [-h] [-v]
+  $ eggs install [-u] [-c <value>] [-i] [-r] [-d <value>] [-S] [-s] [-n] [-k] [-p] [-h] [-v]
 
 FLAGS
   -S, --suspend         Swap suspend: RAM x 2
+  -c, --config=<value>  custom configuration
   -d, --domain=<value>  Domain name, defult: .local
   -h, --help            Show CLI help.
   -i, --ip              hostname as ip, eg: ip-192-168-1-33
