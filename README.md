@@ -417,7 +417,7 @@ USAGE
 
 FLAGS
   -S, --suspend         Swap suspend: RAM x 2
-  -c, --config=<value>  custom configuration
+  -c, --custom=<value>  custom unattended configuration
   -d, --domain=<value>  Domain name, defult: .local
   -h, --help            Show CLI help.
   -i, --ip              hostname as ip, eg: ip-192-168-1-33
