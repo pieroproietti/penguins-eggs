@@ -1491,8 +1491,8 @@ export default class Ovary {
     // Either of these will work, and they look the same to me. Unicode seems to work with qemu. -fsr
     if (fs.existsSync('/usr/share/grub/unicode.pf2')) {
       await exec(`cp /usr/share/grub/unicode.pf2 ${efiWorkDir}/boot/grub/font.pf2`, this.echo)
-    } else if (fs.existsSync('/usr/share/grub2/ascii.pf2')) {
-      await exec(`cp /usr/share/grub2/ascii.pf2 ${efiWorkDir}/boot/grub/font.pf2`, this.echo)
+    } else if (fs.existsSync('/usr/share/grub/ascii.pf2')) {
+      await exec(`cp /usr/share/grub/ascii.pf2 ${efiWorkDir}/boot/grub/font.pf2`, this.echo)
     }
 
     // doesn't need to be root-owned
