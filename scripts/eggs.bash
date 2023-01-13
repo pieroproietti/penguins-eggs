@@ -19,7 +19,7 @@ cuckoo --help
 dad --help --clean --default --verbose
 export:deb --help --all --clean --verbose
 export:iso --help --backup --clean --verbose
-install --unattended --ip --random --domain --suspend --small --none --crypted --pve --help --verbose
+install --unattended --config --ip --random --domain --suspend --small --none --crypted --pve --help --verbose
 kill --help --verbose
 mom --help
 produce --prefix --basename --backup --clone --fast --normal --max --verbose --yolk --script --help --theme --addons --release
@@ -37,8 +37,8 @@ wardrobe:ironing --wardrobe --verbose --help
 wardrobe:list --verbose --help
 wardrobe:show --wardrobe --json --verbose --help
 wardrobe:wear --wardrobe --no_accessories --no_firmwares --silent --verbose --help
-autocomplete --refresh-cache
 help --nested-commands
+autocomplete --refresh-cache
 version --json --verbose
 "
 

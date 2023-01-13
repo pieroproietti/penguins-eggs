@@ -19,7 +19,6 @@ const agent = new https.Agent({
   rejectUnauthorized: false
 })
 import { IKrillConfig } from '../interfaces/i-krill-config'
-import { isPropertyAccessExpression } from 'typescript'
 
 
 /**
@@ -28,7 +27,7 @@ import { isPropertyAccessExpression } from 'typescript'
 export default class Install extends Command {
   static flags = {
     unattended: Flags.boolean({ char: 'u', description: 'Unattended installation' }),
-    config: Flags.string({ char: 'c', description: 'custom configuration' }),
+    custom: Flags.string({ char: 'c', description: 'custom unattended configuration' }),
 
     // hostname
     ip: Flags.boolean({ char: 'i', description: 'hostname as ip, eg: ip-192-168-1-33' }),
@@ -60,17 +59,17 @@ export default class Install extends Command {
 
     const { flags } = await this.parse(Install)
 
-    let config = flags.config!
+    let custom = flags.custom!
 
     let unattended = flags.unattended
     if (unattended) {
-      config = 'us'
+      custom = 'us'
     }
 
     // krillConfig
     let krillConfig = {} as IKrillConfig
-    if (config !== undefined) {
-      let fname = path.basename(config)
+    if (custom !== undefined) {
+      let fname = path.basename(custom)
       unattended = true
       let url = `https://raw.githubusercontent.com/pieroproietti/penguins-wardrobe/main/config/${fname}.yaml`
       let res: AxiosResponse
