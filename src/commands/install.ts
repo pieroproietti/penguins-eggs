@@ -13,7 +13,13 @@ import { exec } from '../lib/utils'
 import path from 'node:path'
 import yaml from 'js-yaml'
 import fs from 'fs'
+import axios, { AxiosResponse } from 'axios'
+import https from 'node:https'
+const agent = new https.Agent({
+  rejectUnauthorized: false
+})
 import { IKrillConfig } from '../interfaces/i-krill-config'
+import { isPropertyAccessExpression } from 'typescript'
 
 
 /**
@@ -61,19 +67,23 @@ export default class Install extends Command {
       config = 'us'
     }
 
+    // krillConfig
     let krillConfig = {} as IKrillConfig
     if (config !== undefined) {
+      let fname = path.basename(config)
       unattended = true
-      const fName = path.basename(config)
-      let cmd = `curl -L -O https://raw.githubusercontent.com/pieroproietti/penguins-wardrobe/main/config/${fName}.yaml`
-      console.log(cmd)
-      let curDir = process.cwd()
-      process.chdir('/tmp')
-      await exec(cmd)
-      krillConfig = yaml.load(fs.readFileSync(`/tmp/${fName}.yaml`, 'utf-8')) as IKrillConfig
-      process.chdir(curDir)
+      let url = `https://raw.githubusercontent.com/pieroproietti/penguins-wardrobe/main/config/${fname}.yaml`
+      let res: AxiosResponse
+      await axios.get(url, { httpsAgent: agent })
+      .then(function (response) {
+        krillConfig = yaml.load(response.data) as IKrillConfig
+      })
+      .catch(function (error) {
+        const content = fs.readFileSync('/etc/penguins-eggs.d/krill.yaml', 'utf8')
+        krillConfig = yaml.load(content) as IKrillConfig        
+      })
     }
-    
+
     // hostname
     let ip = flags.ip
     let random = flags.random
