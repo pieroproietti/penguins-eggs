@@ -51,6 +51,7 @@ export const depCommon = [
   'git', // wardrobe
   'live-boot', // eggs
   'live-boot-initramfs-tools', // eggs
+  'lsb-release', // eggs
   'lvm2', // pvdisplay in krill
   'parted', // eggs
   "pxelinux", // cuckoo
