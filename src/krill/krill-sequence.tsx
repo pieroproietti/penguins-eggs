@@ -577,7 +577,6 @@ export default class Sequence {
          } catch (error) {
             await Utils.pressKeyToExit(JSON.stringify(error))
          }
-         await Utils.pressKeyToExit('add/remove packages')
 
          /**
           * 

@@ -1351,7 +1351,7 @@ export default class Ovary {
      */
     const grubName = Pacman.whichGrubIsInstalled()
     if (grubName === '') {
-      Utils.error('Something went wrong! Cannot find grub')
+      Utils.error('Something went wrong! Cannot find grub! Run lsb_release -a and check the result')
       process.exit(1)
     }
 
