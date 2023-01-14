@@ -42,6 +42,7 @@ export default async function packages(this: Sequence): Promise<void> {
                         cmd += elem + ' '
                     }
                     await exec(`${cmd} ${this.toNull}`, this.echo)
+                    Utils.pressKeyToExit(cmd, true)
                 }
 
                 if (packages.operations.try_install !== undefined) {
@@ -51,6 +52,7 @@ export default async function packages(this: Sequence): Promise<void> {
                     }
                     await exec(`chroot ${this.installTarget} apt-get update ${this.toNull}`, this.echo)
                     await exec(`${cmd} ${this.toNull}`, this.echo)
+                    Utils.pressKeyToExit(cmd, true)
                 }
             } else if (packages.backend === 'pacman') {
                 /**
