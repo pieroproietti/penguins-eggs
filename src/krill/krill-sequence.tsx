@@ -15,7 +15,6 @@
 /**
  * Ideally, I want to respect calamares way, remplementing the same (SEMPLIFIED) steps for CLI
  * 
- * Phase 2 - install.
  * 
  *  - partition:     partitions
  *  - mount:         mountFs, mountVfs
@@ -486,7 +485,7 @@ export default class Sequence {
                await Utils.pressKeyToExit(JSON.stringify(error))
             }
 
-            // changePassword
+            // changePassword root
             message = "adding user password "
             percent = 0.63
             try {
@@ -495,6 +494,7 @@ export default class Sequence {
             } catch (error) {
                await Utils.pressKeyToExit(JSON.stringify(error))
             }
+
          }
 
          // autologin
@@ -577,9 +577,11 @@ export default class Sequence {
          } catch (error) {
             await Utils.pressKeyToExit(JSON.stringify(error))
          }
+         await Utils.pressKeyToExit('add/remove packages')
 
          /**
-          * removeInstallerLink
+          * 
+          * if calamares is present, remove link Installers
           */
          if (await Pacman.calamaresCheck()) {
             message = "remove installer link"

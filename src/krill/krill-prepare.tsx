@@ -4,10 +4,6 @@
  * author: Piero Proietti
  * mail: piero.proietti@gmail.com
  *
- */
-
-/**
- * 
  * OEM Installation (https://github.com/calamares/calamares/issues/871)
  * 
  * Thanks to Adriaan De Groot (calamares author)
@@ -55,7 +51,7 @@
  * should be upstreamed), add some user configuration (e.g. Plasma LNF if you're a 
  * KDE-shipping-distro). To get all that you just need Calamares installed and the 
  * relevant /etc/calamares/ files.
- /
+ */
 
 import yaml from 'js-yaml'
 import os from 'os'
