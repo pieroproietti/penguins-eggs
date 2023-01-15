@@ -29,7 +29,7 @@ export default async function packages(this: Sequence): Promise<void> {
     const config_file = `${this.installTarget}${modulePath}modules/packages.conf`
     let remove: string[] = []
     let install: string[] = []
-    
+
     if (fs.existsSync(config_file)) {
         const packages = yaml.load(fs.readFileSync(config_file, 'utf-8')) as IPackages
         let operations = JSON.parse(JSON.stringify(packages.operations))
@@ -37,13 +37,12 @@ export default async function packages(this: Sequence): Promise<void> {
         if (operations.length > 1) {
             install = operations[1].install
         }
-        
+
         if (operations !== undefined) {
             if (packages.backend === 'apt') {
                 /**
                  * apt: Debian/Devuan/Ubuntu
                  */
-
                 if (remove.length > 0) {
                     let cmd = `chroot ${this.installTarget} apt-get purge -y `
                     for (const elem of remove) {
@@ -83,30 +82,3 @@ export default async function packages(this: Sequence): Promise<void> {
         }
     }
 }
-
-
-/*
-const packages = yaml.load(fs.readFileSync(config_file, 'utf-8')) as IPackages
-let operations = JSON.parse(JSON.stringify(packages.operations))
-let remove: string[] = []
-let install: string[] = []
-
-remove = operations[0].remove
-if (operations.length > 1) {
-    install = operations[1].install
-}
-
-if (operations !== undefined) {
-    if (packages.backend === 'apt') {
-
-        if (remove.length > 0) {
-            let ctr = `chroot apt-get purge -y `
-            for (const elem of remove) {
-                ctr += elem + ' '
-            }
-            console.log(`${ctr}`)
-            console.log(`apt-get autoremove -y `)
-        }
-    }
-}
-*/
