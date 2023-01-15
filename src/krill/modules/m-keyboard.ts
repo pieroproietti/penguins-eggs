@@ -74,7 +74,7 @@ export default async function mKeyboard(this: Sequence): Promise<void> {
         content += `        Option "XkbLayout" "` + this.keyboardLayout + `"\n`
         content += `EndSection\n`
         // Not always exist /etc/X11/xorg.conf.d
-        if (fs.existsSync(`this.installTarget + '/etc/X11/xorg.conf.d`)) {
+        if (fs.existsSync(this.installTarget + '/etc/X11/xorg.conf.d')) {
             Utils.write(this.installTarget + '/etc/X11/xorg.conf.d/00-keyboard.conf', content)
         }
     }
