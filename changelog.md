@@ -21,6 +21,11 @@ You can follow the project also consulting the [commit history](https://github.c
 ## Changelog
 Versions are listed on reverse order, the first is the last one. Old versions are moved to [versions](https://sourceforge.net/projects/penguins-eggs/files/packages-deb/versions/). 
 
+### eggs-9.3.18
+* iso: boot in GUI or CLI
+* krill: added new motd with explanations
+* krill: bugfix keyboard, bugfix add/remove packages.
+
 ### eggs-9.3.16
 * I added a new configuration file /etc/penguins-eggs.d/derivaties.yaml to allow easier addition of new compatible distributions . The Ubuntu makululu linux distribution was added on this occasion.
 

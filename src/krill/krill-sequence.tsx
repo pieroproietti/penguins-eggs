@@ -553,8 +553,6 @@ export default class Sequence {
          } catch (error) {
             await Utils.pressKeyToExit(JSON.stringify(error))
          }
-         // await Utils.pressKeyToExit('check bootloaded and continue...')
-
 
          // sources-yolk-undo
          if (this.distro.familyId === 'debian') {
