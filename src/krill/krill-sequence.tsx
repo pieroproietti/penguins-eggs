@@ -573,7 +573,8 @@ export default class Sequence {
             await redraw(<Install message={message} percent={percent} />)
             await this.packages()
          } catch (error) {
-            await Utils.pressKeyToExit(JSON.stringify(error))
+            console.log(JSON.stringify(error))
+            // await Utils.pressKeyToExit(JSON.stringify(error))
          }
 
          /**

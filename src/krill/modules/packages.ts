@@ -33,6 +33,7 @@ export default async function packages(this: Sequence): Promise<void> {
     if (fs.existsSync(config_file)) {
         const packages = yaml.load(fs.readFileSync(config_file, 'utf-8')) as IPackages
         let operations = JSON.parse(JSON.stringify(packages.operations))
+
         remove = operations[0].remove
         if (operations.length > 1) {
             install = operations[1].install
