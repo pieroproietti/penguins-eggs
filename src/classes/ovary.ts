@@ -69,7 +69,7 @@ export default class Ovary {
   /**
    * @returns {boolean} success
    */
-  async fertilization(snapshot_prefix = '', snapshot_basename = '', theme = '', compression = ''): Promise<boolean> {
+  async fertilization(snapshot_prefix = '', snapshot_basename = '', theme = '', compression = '', notinteratctive = false): Promise<boolean> {
     this.settings = new Settings()
 
     if (await this.settings.load()) {
@@ -92,9 +92,13 @@ export default class Ovary {
         this.settings.config.compression = compression
       }
 
+      if (!notinteratctive) {
+        return true
+      }
+
       this.settings.listFreeSpace()
       if (await Utils.customConfirm('Select yes to continue...')) {
-        return true
+          return true
       }
     }
     return false
@@ -104,7 +108,7 @@ export default class Ovary {
    *
    * @param basename
    */
-  async produce(backup = false, clone = false, scriptOnly = false, yolkRenew = false, release = false, myAddons: IMyAddons, verbose = false) {
+  async produce(backup = false, clone = false, scriptOnly = false, yolkRenew = false, release = false, myAddons: IMyAddons, nointeractive=false, verbose = false) {
     this.verbose = verbose
     this.clone = clone
     this.echo = Utils.setEcho(verbose)
@@ -581,6 +585,7 @@ export default class Ovary {
 
       await exec(`chmod 1777 ${this.settings.work_dir.merged}/tmp`, this.echo)
     }
+  }
 
   /**
    * syslinux

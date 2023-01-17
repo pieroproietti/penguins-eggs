@@ -484,8 +484,8 @@ produce a live image from your system whithout your data
 
 ```
 USAGE
-  $ eggs produce [-p <value>] [--basename <value>] [-b] [-c] [-f] [-n] [-m] [-v] [-y] [-s] [-h] [--theme
-    <value>] [--addons <value>] [--release]
+  $ eggs produce [-p <value>] [--basename <value>] [-b] [-c] [-f] [-m] [-v] [-y] [-s] [-h] [--theme <value>]
+    [--addons <value>] [--release] [-n]
 
 FLAGS
   -b, --backup          backup mode (CRYPTED)
@@ -493,7 +493,7 @@ FLAGS
   -f, --fast            fast compression
   -h, --help            Show CLI help.
   -m, --max             max compression
-  -n, --normal          normal compression
+  -n, --nointeractive   don't ask for user interctions
   -p, --prefix=<value>  prefix
   -s, --script          script mode. Generate scripts to manage iso build
   -v, --verbose         verbose
