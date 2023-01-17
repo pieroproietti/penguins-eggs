@@ -1,7 +1,7 @@
 {
     "name": "penguins-eggs",
     "description": "Perri's Brewery edition: remaster your system and distribuite it",
-    "version": "9.3.18",
+    "version": "0.3.19-a",
     "author": "Piero Proietti @pieroproietti",
     "bin": {
         "eggs": "bin/run"
