@@ -22,7 +22,7 @@ export default class Produce extends Command {
     backup: Flags.boolean({ char: 'b', description: 'backup mode (CRYPTED)' }),
     clone: Flags.boolean({ char: 'c', description: 'clone mode' }),
     fast: Flags.boolean({ char: 'f', description: 'fast compression' }),
-    normal: Flags.boolean({ char: 'n', description: 'normal compression' }),
+    // normal: Flags.boolean({ char: 'n', description: 'normal compression' }),
     max: Flags.boolean({ char: 'm', description: 'max compression' }),
     verbose: Flags.boolean({ char: 'v', description: 'verbose' }),
     yolk: Flags.boolean({ char: 'y', description: '-y force yolk renew' }),
@@ -30,7 +30,8 @@ export default class Produce extends Command {
     help: Flags.help({ char: 'h' }),
     theme: Flags.string({ description: 'theme for livecd, calamares branding and partitions' }),
     addons: Flags.string({ multiple: true, description: 'addons to be used: adapt, ichoice, pve, rsupport' }),
-    release: Flags.boolean({ description: 'release: max compression, remove penguins-eggs and calamares after installation' })
+    release: Flags.boolean({ description: 'release: max compression, remove penguins-eggs and calamares after installation' }),
+    nointeractive: Flags.boolean({ char: 'n', description: 'don\'t ask for user interctions' })
   }
 
   static description = 'produce a live image from your system whithout your data'
@@ -118,6 +119,9 @@ export default class Produce extends Command {
 
       const yolkRenew = flags.yolk
 
+      const nointeractive = flags.nointeractive
+        
+
 
       /**
        * theme: if not defined will use eggs
@@ -136,7 +140,7 @@ export default class Produce extends Command {
         }
       }
 
-      const nointeractive = false
+
       const i = await Config.thatWeNeed(nointeractive, verbose, backup)
       if ((i.needApt || i.configurationInstall || i.configurationRefresh || i.distroTemplate) && (await Utils.customConfirm('Select yes to continue...'))) {
         await Config.install(i, verbose)
@@ -164,8 +168,8 @@ export default class Produce extends Command {
       Utils.titles(this.id + ' ' + this.argv)
       const ovary = new Ovary()
       Utils.warning('Produce an egg...')
-      if (await ovary.fertilization(prefix, basename, theme, compression)) {
-        await ovary.produce(backup, clone, scriptOnly, yolkRenew, release, myAddons, verbose)
+      if (await ovary.fertilization(prefix, basename, theme, compression, !nointeractive)) {
+        await ovary.produce(backup, clone, scriptOnly, yolkRenew, release, myAddons, nointeractive, verbose)
         ovary.finished(scriptOnly)
       }
     } else {
