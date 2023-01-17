@@ -22,7 +22,7 @@ export:iso --help --backup --clean --verbose
 install --unattended --custom --ip --random --domain --suspend --small --none --crypted --pve --help --verbose
 kill --help --verbose
 mom --help
-produce --prefix --basename --backup --clone --fast --normal --max --verbose --yolk --script --help --theme --addons --release
+produce --prefix --basename --backup --clone --fast --max --verbose --yolk --script --help --theme --addons --release --nointeractive
 status --verbose --help
 syncfrom --delete --file --rootdir --help --verbose
 syncto --delete --file --help --verbose
@@ -38,8 +38,8 @@ wardrobe:list --verbose --help
 wardrobe:show --wardrobe --json --verbose --help
 wardrobe:wear --wardrobe --no_accessories --no_firmwares --silent --verbose --help
 autocomplete --refresh-cache
-version --json --verbose
 help --nested-commands
+version --json --verbose
 "
 
   function __trim_colon_commands()
