@@ -34,8 +34,8 @@ _eggs () {
 "wardrobe\:show:show costumes/accessories in wardrobe"
 "wardrobe\:wear:wear costume/accessories from wardrobe"
 "autocomplete:display autocomplete installation instructions"
-"version:"
 "help:Display help for <%= config.bin %>."
+"version:"
   )
 
   _set_flags () {
@@ -144,7 +144,6 @@ produce)
 "--backup[backup mode (CRYPTED)]"
 "--clone[clone mode]"
 "--fast[fast compression]"
-"--normal[normal compression]"
 "--max[max compression]"
 "--verbose[verbose]"
 "--yolk[-y force yolk renew]"
@@ -153,6 +152,7 @@ produce)
 "--theme=-[theme for livecd, calamares branding and partitions]:"
 "--addons=-[addons to be used: adapt, ichoice, pve, rsupport]:"
 "--release[release: max compression, remove penguins-eggs and calamares after installation]"
+"--nointeractive[don't ask for user interctions]"
   )
 ;;
 
@@ -276,16 +276,16 @@ autocomplete)
   )
 ;;
 
+help)
+  _command_flags=(
+    "--nested-commands[Include all nested commands in the output.]"
+  )
+;;
+
 version)
   _command_flags=(
     "--json[Format output as json.]"
 "--verbose[Additionally shows the architecture, node version, operating system, and versions of plugins that the CLI is using.]"
-  )
-;;
-
-help)
-  _command_flags=(
-    "--nested-commands[Include all nested commands in the output.]"
   )
 ;;
 
