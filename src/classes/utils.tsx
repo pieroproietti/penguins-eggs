@@ -33,8 +33,8 @@ export default class Utils {
 
    /**
     * Restituisce il prefisso della iso
-    * @param distroId 
-    * @param codenameId 
+    * @param distroId
+    * @param codenameId
     */
    static snapshotPrefix(distroId: string, codenameId: string): string {
       let result = 'egg-of-' + distroId.toLowerCase() + '-' + codenameId.toLowerCase() + '-'
@@ -56,8 +56,8 @@ export default class Utils {
    }
 
    /**
-    * 
-    * @returns 
+    *
+    * @returns
     */
    static isSysvinit(): boolean {
       const checkFile = '/tmp/checkinit'
@@ -318,8 +318,8 @@ unknown target format aarch64-efi
    }
 
    /**
-    * eggsArch 
-    * @returns 
+    * eggsArch
+    * @returns
     */
    static eggsArch(): string {
       let arch = ''
@@ -336,10 +336,10 @@ unknown target format aarch64-efi
    }
 
    /**
-    * 
-    * @param prefix 
-    * @param backup 
-    * @returns 
+    *
+    * @param prefix
+    * @param backup
+    * @returns
     */
    static getPrefix(prefix: string, backup = false) {
       if (backup) {
@@ -353,8 +353,8 @@ unknown target format aarch64-efi
    }
 
    /**
-    * 
-    * @param volid 
+    *
+    * @param volid
     */
    static getVolid(volid = 'unknown') {
       // // 28 +  4 .iso = 32 lunghezza max di volid
@@ -487,7 +487,7 @@ unknown target format aarch64-efi
    }
 
    /**
-    * 
+    *
     */
    static rootPenguin(): string {
       return path.resolve(__dirname, '../../')
@@ -572,8 +572,8 @@ unknown target format aarch64-efi
    }
 
    /**
-    * 
-    * @param command 
+    *
+    * @param command
     */
    static useRoot(command = ''): void {
       Utils.titles(pjson.shortName + ' ' + command + ` need to run with root privileges. Please, prefix it with sudo`)
@@ -605,7 +605,7 @@ unknown target format aarch64-efi
     * address
     * ip a | grep -w inet |grep -v 127.0.0.1| awk '{print $2}' | cut -d "/" -f 1
     * ifconfig | grep -w inet |grep -v 127.0.0.1| awk '{print $2}' | cut -d ":" -f 2`
-    * 
+    *
     */
    static address(): string {
       const interfaces = os.networkInterfaces()
@@ -665,7 +665,7 @@ unknown target format aarch64-efi
    }
 
    /**
-    * 
+    *
     * @returns 192.169.1.2/24
     */
    static cidr(): string {
@@ -696,9 +696,9 @@ unknown target format aarch64-efi
    }
 
    /**
-    * 
-    * @returns 
-   * ip a | grep -w inet |grep -v 127.0.0.1| awk '{print $4}' 
+    *
+    * @returns
+   * ip a | grep -w inet |grep -v 127.0.0.1| awk '{print $4}'
    * ifconfig | grep -w inet |grep -v 127.0.0.1| awk '{print $6}' | cut -d ":" -f 2
    */
    static broadcast(): string {
@@ -881,7 +881,7 @@ unknown target format aarch64-efi
 
 
    /**
-    * 
+    *
     */
    static async pressKeyToExit(warming = 'Process will end', procContinue = true) {
       Utils.warning(warming)
@@ -911,7 +911,7 @@ unknown target format aarch64-efi
    }
 
    /**
-    * 
+    *
     * @returns flag
     */
    static flag() : string {
@@ -934,10 +934,10 @@ unknown target format aarch64-efi
    }
 
    /**
-    * 
-    * @param bytes 
-    * @param decimals 
-    * @returns 
+    *
+    * @param bytes
+    * @param decimals
+    * @returns
     */
    static formatBytes(bytes: number, decimals = 2): string {
       if (bytes === 0) return '0 Bytes';
@@ -953,7 +953,7 @@ unknown target format aarch64-efi
 
 
    /**
-    * 
+    *
     * @returns wardrobe
     */
    static async wardrobe(): Promise<string> {
