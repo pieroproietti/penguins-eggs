@@ -179,7 +179,7 @@ export default class Utils {
     * Return the primary user's name
     */
    static async getPrimaryUser(): Promise<string> {
-      let primaryUser = (await exec('/usr/bin/logname', { echo: false, ignore: false, capture: true })).data.trim()
+      let primaryUser = (await exec('/usr/bin/logname 2>/dev/null || echo ${SUDO_USER:-${USER}}', { echo: false, ignore: false, capture: true })).data.trim()
       // if logname don't work seem we get '' so:
       if (primaryUser === '') {
          primaryUser = shx.exec('echo $SUDO_USER', { silent: true }).stdout.trim()
