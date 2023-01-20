@@ -36,6 +36,8 @@ At the moment I'm looked to find a way to read/write local configuration files a
 So I was asking you if you have knowledge of this matter in order to collaborate in the construction of the application.
 
 * repo: [sepia](https://github.com/pieroproietti/sepia)
+* more info: [OEM installation](https://penguins-eggs.net/2023/01/15/oem-installation/)
+* contact: piero.proiett@gmail.com
 
 ## Our mascote
 
