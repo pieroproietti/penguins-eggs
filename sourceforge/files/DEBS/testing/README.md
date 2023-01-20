@@ -16,6 +16,24 @@ Penguins-eggs
 
 Please, don't use this package for installations, they have just the pourpouse to be TESTED and can be extremally BUGGED!!!
 
+# OEM Installation
+I'm trying to create an OEM installation for eggs, in order to allow configuring pre-installed computers where the user gets a simple configuration program on first boot.
+
+## Krill
+An OEM installation is divided into two phases, the first to be carried out in the company is the pre-installation which installs the operating system by configuring it with a live user, the second is the final configuration phase which takes place after delivery to the user.
+
+The first phase can be performed very well by krill that I have cleaned and prepared for the purpose and takes place in CLI, unattend and configurable mode. On this side I'm already at a good point. 
+
+We will have: ```sudo eggs install --oem```
+
+## Sepia: first access system configurator
+For the second phase I'm writing a dedicated program using nodejs, typescript, react, electron.io and material-ui.
+
+Since krill is already - albeit with a CLI interface - it was written with react, I already have a clear idea of what needs to be done and I progress quite quickly, but of course I run into the lack of experience in the GUI world.
+
+So I was asking you if you have knowledge or if any of your employees have knowledge of this matter in order to collaborate in the construction of the application.
+
+
 # Discussion
 
 You can partecipate to discussion joining on [telegram channel](https://t.me/penguins_eggs).
