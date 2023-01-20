@@ -31,9 +31,19 @@ For the second phase I'm writing a dedicated program using nodejs, typescript, r
 
 Since krill is already - albeit with a CLI interface - it was written with react, I already have a clear idea of what needs to be done and I progress quite quickly, but of course I run into the lack of experience in the GUI world.
 
-So I was asking you if you have knowledge or if any of your employees have knowledge of this matter in order to collaborate in the construction of the application.
+At the moment I'm looked to find a way to read/write local configuration files and how to add i10n to the program. Yes, here I'm absolutely beginner, but like and have great ideas in this platform.
 
+So I was asking you if you have knowledge of this matter in order to collaborate in the construction of the application.
 
-# Discussion
+* repo: [sepia](https://github.com/pieroproietti/sepia)
 
-You can partecipate to discussion joining on [telegram channel](https://t.me/penguins_eggs).
+## Our mascote
+
+Chasing [calamares](https://calamares.io/), I have already chosen as a mascot for my CLI installer the name of [krill](https://penguins-eggs), continuing in the line here is [sepia](https://github.com/pieroproietti/sepia)
+
+[Sepia oficinalis](https://en.wikipedia.org/wiki/Common_cuttlefish)
+![sepia](https://github.com/pieroproietti/sepia/assets/sepia.png)
+
+## License
+
+MIT © 2023 [Piero Proietti](https://github.com/pieroproietti/LICENZE)
