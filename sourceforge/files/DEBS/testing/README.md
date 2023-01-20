@@ -42,6 +42,7 @@ So I was asking you if you have knowledge of this matter in order to collaborate
 Chasing [calamares](https://calamares.io/), I have already chosen as a mascot for my CLI installer the name of [krill](https://penguins-eggs), continuing in the line here is [sepia](https://github.com/pieroproietti/sepia)
 
 [Sepia oficinalis](https://en.wikipedia.org/wiki/Common_cuttlefish)
+
 ![sepia](https://github.com/pieroproietti/sepia/assets/sepia.png)
 
 ## License
