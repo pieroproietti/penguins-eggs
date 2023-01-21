@@ -205,8 +205,6 @@ DESCRIPTION
   adapt monitor resolution for VM only
 ```
 
-_See code: [dist/commands/adapt.js](https://github.com/pieroproietti/penguins-eggs/blob/v9.3.19-b/dist/commands/adapt.js)_
-
 ## `eggs analyze`
 
 analyze for syncto
@@ -225,8 +223,6 @@ DESCRIPTION
 EXAMPLES
   $ sudo eggs analyze
 ```
-
-_See code: [dist/commands/analyze.js](https://github.com/pieroproietti/penguins-eggs/blob/v9.3.19-b/dist/commands/analyze.js)_
 
 ## `eggs autocomplete [SHELL]`
 
@@ -284,8 +280,6 @@ EXAMPLES
   install calamares and create it's configuration's files
 ```
 
-_See code: [dist/commands/calamares.js](https://github.com/pieroproietti/penguins-eggs/blob/v9.3.19-b/dist/commands/calamares.js)_
-
 ## `eggs config`
 
 Configure and install prerequisites deb packages to run it
@@ -308,8 +302,6 @@ EXAMPLES
   Configure and install prerequisites deb packages to run it
 ```
 
-_See code: [dist/commands/config.js](https://github.com/pieroproietti/penguins-eggs/blob/v9.3.19-b/dist/commands/config.js)_
-
 ## `eggs cuckoo`
 
 PXE start with proxy-dhcp
@@ -329,8 +321,6 @@ EXAMPLES
   start a PXE server with dhcp-proxy (can coexists with a real dhcp server)
 ```
 
-_See code: [dist/commands/cuckoo.js](https://github.com/pieroproietti/penguins-eggs/blob/v9.3.19-b/dist/commands/cuckoo.js)_
-
 ## `eggs dad`
 
 ask help from daddy - configuration helper
@@ -348,8 +338,6 @@ FLAGS
 DESCRIPTION
   ask help from daddy - configuration helper
 ```
-
-_See code: [dist/commands/dad.js](https://github.com/pieroproietti/penguins-eggs/blob/v9.3.19-b/dist/commands/dad.js)_
 
 ## `eggs export deb`
 
@@ -437,8 +425,6 @@ EXAMPLES
   Install the system using krill installer
 ```
 
-_See code: [dist/commands/install.js](https://github.com/pieroproietti/penguins-eggs/blob/v9.3.19-b/dist/commands/install.js)_
-
 ## `eggs kill`
 
 kill the eggs/free the nest
@@ -459,8 +445,6 @@ EXAMPLES
   kill the eggs/free the nest
 ```
 
-_See code: [dist/commands/kill.js](https://github.com/pieroproietti/penguins-eggs/blob/v9.3.19-b/dist/commands/kill.js)_
-
 ## `eggs mom`
 
 ask for mommy - gui helper
@@ -475,8 +459,6 @@ FLAGS
 DESCRIPTION
   ask for mommy - gui helper
 ```
-
-_See code: [dist/commands/mom.js](https://github.com/pieroproietti/penguins-eggs/blob/v9.3.19-b/dist/commands/mom.js)_
 
 ## `eggs produce`
 
@@ -538,8 +520,6 @@ EXAMPLES
   in /home/eggs/ovarium and you can customize all you need
 ```
 
-_See code: [dist/commands/produce.js](https://github.com/pieroproietti/penguins-eggs/blob/v9.3.19-b/dist/commands/produce.js)_
-
 ## `eggs status`
 
 informations about eggs status
@@ -555,8 +535,6 @@ FLAGS
 DESCRIPTION
   informations about eggs status
 ```
-
-_See code: [dist/commands/status.js](https://github.com/pieroproietti/penguins-eggs/blob/v9.3.19-b/dist/commands/status.js)_
 
 ## `eggs syncfrom`
 
@@ -580,8 +558,6 @@ EXAMPLES
   $ sudo eggs restore
 ```
 
-_See code: [dist/commands/syncfrom.js](https://github.com/pieroproietti/penguins-eggs/blob/v9.3.19-b/dist/commands/syncfrom.js)_
-
 ## `eggs syncto`
 
 saves users and user data in a LUKS volume inside the iso
@@ -602,8 +578,6 @@ DESCRIPTION
 EXAMPLES
   $ sudo eggs syncto
 ```
-
-_See code: [dist/commands/syncto.js](https://github.com/pieroproietti/penguins-eggs/blob/v9.3.19-b/dist/commands/syncto.js)_
 
 ## `eggs tools clean`
 
@@ -715,8 +689,6 @@ EXAMPLES
   $ eggs update
   update/upgrade the penguin's eggs tool
 ```
-
-_See code: [dist/commands/update.js](https://github.com/pieroproietti/penguins-eggs/blob/v9.3.19-b/dist/commands/update.js)_
 
 ## `eggs version`
 
