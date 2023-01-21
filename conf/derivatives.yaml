@@ -1,5 +1,5 @@
 # Penguin's eggs
-# 
+#
 # distros.yaml
 ---
 #
@@ -11,14 +11,15 @@
   derivatives: [
     debbie, # LMDE4
     siena, # Ufficiozero siena
-  ]  
+  ]
 
 # bullseye derivated
 - id: bullseye
   distro: Debian
   derivatives: [
     elsie, # LMDE elsie
-    filadelfia # SysLinuxOS
+    filadelfia, # SysLinuxOS
+    desktop # Netrunner Desktop 23
   ]
 
 # bootkworm derivated
@@ -30,7 +31,7 @@
 
 #
 # DEVUAN
-# 
+#
 
 # beowulf derivated
 - id: beowulf
