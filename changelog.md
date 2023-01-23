@@ -23,7 +23,7 @@ Versions are listed on reverse order, the first is the last one. Old versions ar
 
 ### eggs-9.3.19
 * grub:  now we have a new default resolution ```set gfxmode=1024x768```, and bugfix for Ubuntu on the option CLI boot;
-* added SysLinuxOS filadelfia, Netrunner Desktop 23;
+* added new distros: SysLinuxOS filadelfia, Netrunner Desktop 23;
 * same changes on krill ```eggs install --unattended``` and ```eggs install config [your-unattended-configuration]``` in prevision to [sepia](https://github.com/pieroproietti/sepia) to get an OEM installation.
 
 ### eggs-9.3.18
