@@ -3,7 +3,7 @@
 #
 
 if loadfont $prefix/font.pf2 ; then
-  set gfxmode=1024x768x32
+  set gfxmode=1024x768
   insmod efi_gop
   insmod efi_uga
   insmod video_bochs
@@ -26,6 +26,6 @@ menuentry "{{{fullname}}} GUI" {
 menuentry "{{{fullname}}} CLI" {
   set gfxpayload=keep
   {{{rmModules}}}
-  linux {{{vmlinuz}}} {{{kernel_parameters}}}
-  initrd {{{initrdImg}}} 3
+  linux {{{vmlinuz}}} {{{kernel_parameters}}} 3
+  initrd {{{initrdImg}}}
 }
