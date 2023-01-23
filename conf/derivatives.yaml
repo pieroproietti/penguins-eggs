@@ -18,7 +18,7 @@
   distro: Debian
   derivatives: [
     elsie, # LMDE elsie
-    filadelfia, # SysLinuxOS
+    filadelfia, # SysLinuxOS filadelfia
     desktop # Netrunner Desktop 23
   ]
 
