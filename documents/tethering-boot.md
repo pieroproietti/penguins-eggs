@@ -30,5 +30,20 @@ The result is an iso file who I used with ventoy, it boot, but don't see my teth
 
 God know why!
 
+# Il mio telefonino come è visto?
+
+```
+  description: Wireless interface
+  product: SDM660-MTP _SN:64302735
+  vendor: Xiaomi
+  physical id: b
+  bus info: usb@1:b
+  version: 4.04
+  serial: 12573e51
+  capabilities: usb-2.00
+  configuration: driver=rndis_host maxpower=500mA speed=480Mbit/s
+```
+
+
 
 
