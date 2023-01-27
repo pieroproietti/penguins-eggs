@@ -44,6 +44,6 @@ God know why!
   configuration: driver=rndis_host maxpower=500mA speed=480Mbit/s
 ```
 
-
-
+usbmuxd
+EasyTether 
 
