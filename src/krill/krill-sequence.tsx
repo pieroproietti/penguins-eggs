@@ -7,18 +7,18 @@
  */
 
 /**
- * Note: I'm using REACT here to get a TUI, 
+ * Note: I'm using REACT here to get a TUI,
  *       via ink library https://github.com/vadimdemedes/ink
  */
 
 
 /**
  * Ideally, I want to respect calamares way, remplementing the same (SEMPLIFIED) steps for CLI
- * 
- * 
+ *
+ *
  *  - partition:     partitions
  *  - mount:         mountFs, mountVfs
- *  - unpackfs:      unpackfs 
+ *  - unpackfs:      unpackfs
  *  - _restore:      eggs syncfrom --rootdir /tmp/calamares-krill-root/
  *  - sources-yolk:  execCalamaresModule('sources-yolk')
  *  - machineid:     machineid
@@ -130,7 +130,7 @@ export default class Sequence {
    // bootloader-config
    public bootloaderConfig = bootloaderConfig
    public bootloaderConfigUbuntu = bootloaderConfigUbuntu
-   // 
+   //
    public grubcfg = grubcfg
    public bootloader = bootloader
    public packages = packages
@@ -245,9 +245,9 @@ export default class Sequence {
 
    /**
     * install
-    * @param verbose 
-    * @param umount 
-    * @returns 
+    * @param verbose
+    * @param umount
+    * @returns
     */
    async start(unattended = false, domain = 'local', verbose = false) {
       this.unattended = unattended
@@ -523,6 +523,7 @@ export default class Sequence {
          // cleanup
          await cliAutologin.msgRemove(`${this.installTarget}/etc/motd`)
          await cliAutologin.msgRemove(`${this.installTarget}/etc/issue`)
+         await cliAutologin.remove(this.installTarget)
 
          // bootloader-config
          message = "bootloader-config "
@@ -534,7 +535,7 @@ export default class Sequence {
             await Utils.pressKeyToExit(JSON.stringify(error))
          }
 
-         // grubcfg 
+         // grubcfg
          message = "grubcfg "
          percent = 0.75
          try {
@@ -578,7 +579,7 @@ export default class Sequence {
          }
 
          /**
-          * 
+          *
           * if calamares is present, remove link Installers
           */
          if (await Pacman.calamaresCheck()) {
@@ -628,7 +629,7 @@ export default class Sequence {
 
 
    /**
-    * 
+    *
     */
    async execCalamaresModule(name: string) {
       const moduleName = this.installer.multiarchModules + name + '/module.desc'
@@ -657,8 +658,8 @@ export default class Sequence {
 // const ifaces: string[] = fs.readdirSync('/sys/class/net/')
 
 /**
- * 
- * @param elem 
+ *
+ * @param elem
  */
 async function redraw(elem: JSX.Element) {
    let opt: RenderOptions = {}
