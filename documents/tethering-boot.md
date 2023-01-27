@@ -21,8 +21,14 @@ make bin/<rom-name>.<output-format>
 build usb
 make bin-x86_64-efi/snp--ecm--ncm--acm.usb
 
+424K bin-x86_64-efi/snp--ecm--ncm--acm.usb
+
 build iso
 make bin-x86_64-efi/snp--ecm--ncm--acm.iso
 
-This is the result, but how to use it?
-424K bin-x86_64-efi/snp--ecm--ncm--acm.usb
+The result is an iso file who I used with ventoy, it boot, but don't see my tethering via USB as a cable network.
+
+God know why!
+
+
+
