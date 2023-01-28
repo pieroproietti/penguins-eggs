@@ -27,10 +27,10 @@ A light xfce4 for developers you can easily start to improve eggs installing col
 ![colibri](https://a.fsdn.com/con/app/proj/penguins-eggs/screenshots/colibri.png/245/183)
 
 
-##  **warbler**
+##  **wagtail**
 A light wayland/gnome/waydroid for developers
 
-##  **wagtail**
+##  **warbler**
 A light wayland/kde/waydroid for developers
 
 
