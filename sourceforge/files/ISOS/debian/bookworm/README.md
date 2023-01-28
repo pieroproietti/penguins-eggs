@@ -24,8 +24,8 @@ Just the juice, without GUI. You can start here to build your revolution!
 
 ##  **colibri**
 A light xfce4 for developers you can easily start to improve eggs installing colibri.
-![colibri](https://a.fsdn.com/con/app/proj/penguins-eggs/screenshots/colibri.png/245/183)
 
+![colibri](https://a.fsdn.com/con/app/proj/penguins-eggs/screenshots/colibri.png/245/183)
 
 ##  **wagtail**
 A light wayland/gnome/waydroid for developers
