@@ -33,8 +33,8 @@ _eggs () {
 "wardrobe\:list:list costumes and accessoires in wardrobe"
 "wardrobe\:show:show costumes/accessories in wardrobe"
 "wardrobe\:wear:wear costume/accessories from wardrobe"
-"autocomplete:display autocomplete installation instructions"
 "help:Display help for <%= config.bin %>."
+"autocomplete:display autocomplete installation instructions"
 "version:"
   )
 
@@ -271,15 +271,15 @@ wardrobe:wear)
   )
 ;;
 
-autocomplete)
-  _command_flags=(
-    "--refresh-cache[Refresh cache (ignores displaying instructions)]"
-  )
-;;
-
 help)
   _command_flags=(
     "--nested-commands[Include all nested commands in the output.]"
+  )
+;;
+
+autocomplete)
+  _command_flags=(
+    "--refresh-cache[Refresh cache (ignores displaying instructions)]"
   )
 ;;
 

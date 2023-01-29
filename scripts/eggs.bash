@@ -37,8 +37,8 @@ wardrobe:ironing --wardrobe --verbose --help
 wardrobe:list --verbose --help
 wardrobe:show --wardrobe --json --verbose --help
 wardrobe:wear --wardrobe --no_accessories --no_firmwares --silent --verbose --help
-autocomplete --refresh-cache
 help --nested-commands
+autocomplete --refresh-cache
 version --json --verbose
 "
 
