@@ -28,6 +28,7 @@ export default class Install extends Command {
   static flags = {
     unattended: Flags.boolean({ char: 'u', description: 'Unattended installation' }),
     custom: Flags.string({ char: 'c', description: 'custom unattended configuration' }),
+    nointeractive: Flags.boolean({ char: 'n', description: 'assume yes' }),
 
     // hostname
     ip: Flags.boolean({ char: 'i', description: 'hostname as ip, eg: ip-192-168-1-33' }),
@@ -38,8 +39,8 @@ export default class Install extends Command {
     // swap: Flags.string({char: 's', description: 'swap: none, small, suspend'}),
     suspend: Flags.boolean({ char: 'S', description: 'Swap suspend: RAM x 2' }),
     small: Flags.boolean({ char: 's', description: 'Swap small: RAM' }),
-    none: Flags.boolean({ char: 'n', description: 'Swap none: 256M' }),
-    // 
+    none: Flags.boolean({ char: 'N', description: 'Swap none: 256M' }),
+    //
     crypted: Flags.boolean({ char: 'k', description: 'Crypted CLI installation' }),
     pve: Flags.boolean({ char: 'p', description: 'Proxmox VE install' }),
     // generic
@@ -79,9 +80,12 @@ export default class Install extends Command {
       })
       .catch(function (error) {
         const content = fs.readFileSync('/etc/penguins-eggs.d/krill.yaml', 'utf8')
-        krillConfig = yaml.load(content) as IKrillConfig        
+        krillConfig = yaml.load(content) as IKrillConfig
       })
     }
+
+    // noninteractive
+    let noninteractive = flags.nointeractive
 
     // hostname
     let ip = flags.ip
@@ -109,7 +113,7 @@ export default class Install extends Command {
     if (Utils.isRoot()) {
       if (Utils.isLive()) {
         const krill = new Krill()
-        await krill.prepare(unattended, krillConfig, ip, random, domain, suspend, small, none, crypted, pve, verbose)
+        await krill.prepare(unattended, noninteractive, krillConfig, ip, random, domain, suspend, small, none, crypted, pve, verbose)
       } else {
         Utils.warning('You are in an installed system!')
       }
