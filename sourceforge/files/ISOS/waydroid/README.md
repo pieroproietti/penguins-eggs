@@ -23,7 +23,20 @@ All ISOs include eggs, you can udate it with: ```sudo eggs update```.
 
  A container-based approach to boot a full Android system on a regular GNU/Linux system like Ubuntu.
 
-* **egg-of-ubuntu-jammy-waydroid** based on ubuntu 22.04 jammy
+# 
+##  **wagtail**
+A light wayland/gnome/waydroid for developers
+
+##  **warbler**
+A light wayland/kde/waydroid for developers
+
+##  **whipbird**
+An ultra light wayland/weston/waydroid for developers
+
+You can find thats customizations on [Debian/bookworm](https://sourceforge.net/projects/penguins-eggs/files/ISOS/debian/bookworm/), 
+[Ubuntu/jammy](https://sourceforge.net/projects/penguins-eggs/files/ISOS/ubuntu/jammy/), 
+[Ubuntu/kinetic](https://sourceforge.net/projects/penguins-eggs/files/ISOS/ubuntu/kinetic/)
+
 
 **NOTE** Here you will find my waydroid remaster made to test the latest versions of eggs, you can find more updated waydroid versions on their site [Waydroid](https://waydro.id/#wdlinux). Please use always ```--theme waydroid```
 
