@@ -111,6 +111,7 @@ install)
   _command_flags=(
     "--unattended[Unattended installation]"
 "--custom=-[custom unattended configuration]:"
+"--nointeractive[assume yes]"
 "--ip[hostname as ip, eg: ip-192-168-1-33]"
 "--random[Add random to hostname, eg: colibri-ay412dt]"
 "--domain=-[Domain name, defult: .local]:"

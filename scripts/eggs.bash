@@ -19,7 +19,7 @@ cuckoo --help
 dad --help --clean --default --verbose
 export:deb --help --all --clean --verbose
 export:iso --help --backup --clean --verbose
-install --unattended --custom --ip --random --domain --suspend --small --none --crypted --pve --help --verbose
+install --unattended --custom --nointeractive --ip --random --domain --suspend --small --none --crypted --pve --help --verbose
 kill --help --verbose
 mom --help
 produce --prefix --basename --backup --clone --fast --max --verbose --yolk --script --help --theme --addons --release --nointeractive
