@@ -40,9 +40,7 @@ You can find thats customizations on [Debian/bookworm](https://sourceforge.net/p
 
 **NOTE** Here you will find my waydroid remaster made to test the latest versions of eggs, you can find more updated waydroid versions on their site [Waydroid](https://waydro.id/#wdlinux). Please use always ```--theme waydroid```
 
-![warbler](https://a.fsdn.com/con/app/proj/penguins-eggs/screenshots/warbler.png/245/183)
-
-**NOTE** All the versions are configured with no-hardware-accelleration to be used, modified and remastered under a virtializator (pve-proxmox, virtualbox or others), but work on real hardware too and probably your wifi card is included or you can ask.
+**NOTE** All the versions are configured with no-hardware-accelleration to be used, modified and remastered under a virtializator: proxmox-ve, virtualbox or others, but will work on real hardware too and probably your wifi card is included or you can ask.
 
 # Installing Waydroit via PXE
 
