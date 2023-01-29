@@ -550,12 +550,12 @@ export default class Krill {
     let message = ""
     if (unattended) {
       message = "Unattended installation will start in 5 seconds, press CTRL-C to abort!"
-      summaryElem = <Summary name={users.name} password={users.password} rootPassword={users.rootPassword} hostname={users.hostname} region={location.region} zone={location.zone} language={location.language} keyboardModel={keyboard.keyboardModel} keyboardLayout={keyboard.keyboardLayout} installationDevice={partitions.installationDevice} message={message} />
-      redraw(summaryElem)
       if (!noninteractive) {
-       if (! await Utils.customConfirm("Select yes to confirm")){
-        process.exit()
-       }
+        summaryElem = <Summary name={users.name} password={users.password} rootPassword={users.rootPassword} hostname={users.hostname} region={location.region} zone={location.zone} language={location.language} keyboardModel={keyboard.keyboardModel} keyboardLayout={keyboard.keyboardLayout} installationDevice={partitions.installationDevice} message={message} />
+        redraw(summaryElem)
+        if (! await Utils.customConfirm("Select yes to confirm")){
+          process.exit()
+        }
       }
     }
 
