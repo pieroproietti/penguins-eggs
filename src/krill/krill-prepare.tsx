@@ -5,21 +5,21 @@
  * mail: piero.proietti@gmail.com
  *
  * OEM Installation (https://github.com/calamares/calamares/issues/871)
- * 
+ *
  * Thanks to Adriaan De Groot (calamares author)
- * 
- * There are two phases involved here, both of which could confusingly be called "OEM mode". 
- * To be clear, the goal of the two phases is to end up with Linux (some distro) installed 
- * on a piece of hardware which is passed to a customer's hands. On first boot, the 
+ *
+ * There are two phases involved here, both of which could confusingly be called "OEM mode".
+ * To be clear, the goal of the two phases is to end up with Linux (some distro) installed
+ * on a piece of hardware which is passed to a customer's hands. On first boot, the
  * hardware is (re)configured with user input.
- * 
+ *
  * Phase 1, OEM preparation
- * is about creating the image that will be used on first boot; so that is a normal partition, 
- * create a standard user (e.g. "live") with autologin, populate a default desktop with a big 
- * icon "first run this" or set up autostart of the configurator. 
- * It is roughly a standard installation, with a little more configuration of the desktop 
+ * is about creating the image that will be used on first boot; so that is a normal partition,
+ * create a standard user (e.g. "live") with autologin, populate a default desktop with a big
+ * icon "first run this" or set up autostart of the configurator.
+ * It is roughly a standard installation, with a little more configuration of the desktop
  * of the live user.
- * 
+ *
  *   - welcome    - no need
  *   - locale     - en_US.UTF-8
  *   - keyboard   - us
@@ -27,29 +27,29 @@
  *   - users      - live/evolution root/evolution
  *   - network    - dhcp
  *   - summary    - no need
- * 
- * Phase 2, "OEM user" 
- * Set User Information on first Boot, from the "live" user, a new user for actual login -- 
+ *
+ * Phase 2, "OEM user"
+ * Set User Information on first Boot, from the "live" user, a new user for actual login --
  * along with whatever other configurations are wanted for the distro for the actual user.
- * 
- *   - welcome    
- *   - locale     
- *   - keyboard   
+ *
+ *   - welcome
+ *   - locale
+ *   - keyboard
  *   - partition  - no need
- *   - users      
- *   - network    
- *   - summary    
- * 
- * Phase one should allow an empty password for the live user, and it would be useful to read 
- * configuration from a file instead of having to go through the UI. It should install a 
- * phase-2-configured Calamares into the target system 
+ *   - users
+ *   - network
+ *   - summary
+ *
+ * Phase one should allow an empty password for the live user, and it would be useful to read
+ * configuration from a file instead of having to go through the UI. It should install a
+ * phase-2-configured Calamares into the target system
  * (either through a package, or as part of the image).
- * 
- * Phase two is possible with the "dont-chroot" flag and (again) careful configuration. 
- * Typically you drop the partition module (that was done in phase 1) and keep the users 
+ *
+ * Phase two is possible with the "dont-chroot" flag and (again) careful configuration.
+ * Typically you drop the partition module (that was done in phase 1) and keep the users
  * module, add in a delete-calamares script (note to downstreams: that kind of module
- * should be upstreamed), add some user configuration (e.g. Plasma LNF if you're a 
- * KDE-shipping-distro). To get all that you just need Calamares installed and the 
+ * should be upstreamed), add some user configuration (e.g. Plasma LNF if you're a
+ * KDE-shipping-distro). To get all that you just need Calamares installed and the
  * relevant /etc/calamares/ files.
  */
 
@@ -110,11 +110,12 @@ import Sequence from './krill-sequence'
 
 import { INet } from '../interfaces'
 import { IWelcome, ILocation, IKeyboard, IPartitions, IUsers } from '../interfaces/i-krill'
+import utils from '../dhcpd/utils';
 
 const config_file = '/etc/penguins-eggs.d/krill.yaml' as string
 
 /**
- * 
+ *
  */
 export default class Krill {
 
@@ -124,9 +125,9 @@ export default class Krill {
   keyboards = new Keyboards()
 
   /**
-   * @param cryped 
+   * @param cryped
    */
-  async prepare(unattended = false, krillConfig = {} as IKrillConfig, ip = false, random = false, domain = 'local', suspend = false, small = false, none = false, cryped = false, pve = false, verbose = false) {
+  async prepare(unattended = false, noninteractive = false, krillConfig = {} as IKrillConfig, ip = false, random = false, domain = 'local', suspend = false, small = false, none = false, cryped = false, pve = false, verbose = false) {
     /**
      * Check for disk presence
      */
@@ -252,12 +253,12 @@ export default class Krill {
     /**
      * summary
      */
-    await this.summary(oLocation, oKeyboard, oPartitions, oUsers, unattended)
+    await this.summary(oLocation, oKeyboard, oPartitions, oUsers, unattended, noninteractive)
 
     /**
     * installation
     */
-    await this.install(oLocation, oKeyboard, oPartitions, oUsers, oNetwork, unattended, domain, verbose) 
+    await this.install(oLocation, oKeyboard, oPartitions, oUsers, oNetwork, unattended, domain, verbose)
   }
 
 
@@ -268,7 +269,7 @@ export default class Krill {
 
     let language = this.krillConfig.language
     if (language === '') {
-      language = await this.locales.getDefault() // 'en_US.UTF-8' 
+      language = await this.locales.getDefault() // 'en_US.UTF-8'
     }
 
     let welcomeElem: JSX.Element
@@ -543,12 +544,19 @@ export default class Krill {
   /**
    * SUMMARY
    */
-  async summary(location: ILocation, keyboard: IKeyboard, partitions: IPartitions, users: IUsers, unattended = false) {
+  async summary(location: ILocation, keyboard: IKeyboard, partitions: IPartitions, users: IUsers, unattended = false, noninteractive = false) {
     let summaryElem: JSX.Element
 
     let message = ""
     if (unattended) {
       message = "Unattended installation will start in 5 seconds, press CTRL-C to abort!"
+      summaryElem = <Summary name={users.name} password={users.password} rootPassword={users.rootPassword} hostname={users.hostname} region={location.region} zone={location.zone} language={location.language} keyboardModel={keyboard.keyboardModel} keyboardLayout={keyboard.keyboardLayout} installationDevice={partitions.installationDevice} message={message} />
+      redraw(summaryElem)
+      if (noninteractive) {
+       if (! await Utils.customConfirm("Select yes to confirm")){
+        process.exit()
+       }
+      }
     }
 
     while (true) {
@@ -586,7 +594,7 @@ export default class Krill {
 
 /**
  * confirm
- * @returns 
+ * @returns
  */
 async function confirm(elem: JSX.Element, msg = "Confirm") {
   redraw(elem)
@@ -616,8 +624,8 @@ function redraw(elem: JSX.Element) {
 }
 
 /**
- * 
- * @param mask 
+ *
+ * @param mask
  */
 function netmask2CIDR(mask: string) {
   const countCharOccurences = (string: string, char: string) => string.split(char).length - 1;
@@ -634,9 +642,9 @@ function netmask2CIDR(mask: string) {
 }
 
 /**
- * 
- * @param ms 
- * @returns 
+ *
+ * @param ms
+ * @returns
  */
 function sleep(ms = 0) {
   return new Promise((resolve) => {

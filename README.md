@@ -413,16 +413,17 @@ command-line system installer - the egg became a penguin!
 
 ```
 USAGE
-  $ eggs install [-u] [-c <value>] [-i] [-r] [-d <value>] [-S] [-s] [-n] [-k] [-p] [-h] [-v]
+  $ eggs install [-u] [-c <value>] [-n] [-i] [-r] [-d <value>] [-S] [-s] [-N] [-k] [-p] [-h] [-v]
 
 FLAGS
+  -N, --none            Swap none: 256M
   -S, --suspend         Swap suspend: RAM x 2
   -c, --custom=<value>  custom unattended configuration
   -d, --domain=<value>  Domain name, defult: .local
   -h, --help            Show CLI help.
   -i, --ip              hostname as ip, eg: ip-192-168-1-33
   -k, --crypted         Crypted CLI installation
-  -n, --none            Swap none: 256M
+  -n, --nointeractive   assume yes
   -p, --pve             Proxmox VE install
   -r, --random          Add random to hostname, eg: colibri-ay412dt
   -s, --small           Swap small: RAM
