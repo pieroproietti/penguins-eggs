@@ -547,15 +547,13 @@ export default class Krill {
   async summary(location: ILocation, keyboard: IKeyboard, partitions: IPartitions, users: IUsers, unattended = false, noninteractive = false) {
     let summaryElem: JSX.Element
 
-    summaryElem = <Summary name={users.name} password={users.password} rootPassword={users.rootPassword} hostname={users.hostname} region={location.region} zone={location.zone} language={location.language} keyboardModel={keyboard.keyboardModel} keyboardLayout={keyboard.keyboardLayout} installationDevice={partitions.installationDevice} message={message} />
     let message = ""
-    if (unattended) {
-      if (noninteractive) {
-        message = "Unattended installation will start in 5 seconds, press CTRL-C to abort!"
-      } else {
-        if (! await confirm(summaryElem, "Read the summary and confirm your unattended installation")) {
-          process.exit()
-        }
+    summaryElem = <Summary name={users.name} password={users.password} rootPassword={users.rootPassword} hostname={users.hostname} region={location.region} zone={location.zone} language={location.language} keyboardModel={keyboard.keyboardModel} keyboardLayout={keyboard.keyboardLayout} installationDevice={partitions.installationDevice} message={message} />
+    if (unattended && noninteractive) {
+      message = "Unattended installation will start in 5 seconds, press CTRL-C to abort!"
+    } else if (unattended && !noninteractive) {
+      if (! await confirm(summaryElem, "Read the summary and confirm or abort your installation")) {
+        process.exit()
       }
     }
 
