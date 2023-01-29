@@ -184,7 +184,6 @@ In addition to the description of the commands in this README, you can consult t
 * [`eggs update`](#eggs-update)
 * [`eggs version`](#eggs-version)
 * [`eggs wardrobe get [REPO]`](#eggs-wardrobe-get-repo)
-* [`eggs wardrobe ironing [COSTUME]`](#eggs-wardrobe-ironing-costume)
 * [`eggs wardrobe list [WARDROBE]`](#eggs-wardrobe-list-wardrobe)
 * [`eggs wardrobe show [COSTUME]`](#eggs-wardrobe-show-costume)
 * [`eggs wardrobe wear [COSTUME]`](#eggs-wardrobe-wear-costume)
@@ -756,26 +755,6 @@ FLAGS
 
 DESCRIPTION
   get warorobe
-```
-
-## `eggs wardrobe ironing [COSTUME]`
-
-ordered show of costumes or accessories in wardrobe
-
-```
-USAGE
-  $ eggs wardrobe ironing [COSTUME] [-w <value>] [-v] [-h]
-
-ARGUMENTS
-  COSTUME  costume
-
-FLAGS
-  -h, --help              Show CLI help.
-  -v, --verbose
-  -w, --wardrobe=<value>  wardrobe
-
-DESCRIPTION
-  ordered show of costumes or accessories in wardrobe
 ```
 
 ## `eggs wardrobe list [WARDROBE]`

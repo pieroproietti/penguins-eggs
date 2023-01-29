@@ -33,7 +33,6 @@ tools:stat --help --month --year
 tools:yolk --help --verbose
 update --help --verbose
 wardrobe:get --verbose --help
-wardrobe:ironing --wardrobe --verbose --help
 wardrobe:list --verbose --help
 wardrobe:show --wardrobe --json --verbose --help
 wardrobe:wear --wardrobe --no_accessories --no_firmwares --silent --verbose --help
