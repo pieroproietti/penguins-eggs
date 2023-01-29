@@ -38,11 +38,10 @@ You can find thats customizations on [Debian/bookworm](https://sourceforge.net/p
 [Ubuntu/kinetic](https://sourceforge.net/projects/penguins-eggs/files/ISOS/ubuntu/kinetic/)
 
 
-**NOTE** Here you will find my waydroid remaster made to test the latest versions of eggs, you can find more official waydroid versions on their site [Waydroid](https://waydro.id/#wdlinux). 
-
-You can remaster using theme [waydroid](https://github.com/pieroproietti/penguins-addons) adding  ```--theme ./path/to/theme/waydroid``` to your produce command.
-
-**NOTE** All the versions are configured with ``no-hardware-accelleration`` to be used, modified and remastered under a virtializator: proxmox-ve, virtualbox or others.
+**NOTE** 
+* Here you will find my waydroid remaster made to test the latest versions of eggs, you can find more official waydroid versions on their site [Waydroid](https://waydro.id/#wdlinux). 
+* All the versions are configured with ``no-hardware-accelleration`` to be used, modified and remastered under a virtializator: [proxmox-ve](https://www.proxmox.com/en/proxmox-ve), virtualbox or others.
+* You can remaster using theme [waydroid](https://github.com/pieroproietti/penguins-addons) adding  ```--theme ./path/to/theme/waydroid``` to your produce command.
 
 # Installing Linux Waydroid via PXE
 
