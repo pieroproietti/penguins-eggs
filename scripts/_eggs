@@ -29,7 +29,6 @@ _eggs () {
 "tools\:yolk:configure eggs to install without internet"
 "update:update the penguin's eggs tool"
 "wardrobe\:get:get warorobe"
-"wardrobe\:ironing:ordered show of costumes or accessories in wardrobe"
 "wardrobe\:list:list costumes and accessoires in wardrobe"
 "wardrobe\:show:show costumes/accessories in wardrobe"
 "wardrobe\:wear:wear costume/accessories from wardrobe"
@@ -232,14 +231,6 @@ update)
 wardrobe:get)
   _command_flags=(
     "--verbose[]"
-"--help[Show CLI help.]"
-  )
-;;
-
-wardrobe:ironing)
-  _command_flags=(
-    "--wardrobe=-[wardrobe]:"
-"--verbose[]"
 "--help[Show CLI help.]"
   )
 ;;
