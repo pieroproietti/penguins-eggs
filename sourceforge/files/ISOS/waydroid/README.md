@@ -38,11 +38,13 @@ You can find thats customizations on [Debian/bookworm](https://sourceforge.net/p
 [Ubuntu/kinetic](https://sourceforge.net/projects/penguins-eggs/files/ISOS/ubuntu/kinetic/)
 
 
-**NOTE** Here you will find my waydroid remaster made to test the latest versions of eggs, you can find more updated waydroid versions on their site [Waydroid](https://waydro.id/#wdlinux). Please use always ```--theme waydroid```
+**NOTE** Here you will find my waydroid remaster made to test the latest versions of eggs, you can find more official waydroid versions on their site [Waydroid](https://waydro.id/#wdlinux). 
 
-**NOTE** All the versions are configured with no-hardware-accelleration to be used, modified and remastered under a virtializator: proxmox-ve, virtualbox or others, but will work on real hardware too and probably your wifi card is included or you can ask.
+You can remaster using theme [waydroid](https://github.com/pieroproietti/penguins-addons) adding  ```--theme ./path/to/theme/waydroid``` to your produce command.
 
-# Installing Waydroit via PXE
+**NOTE** All the versions are configured with ``no-hardware-accelleration`` to be used, modified and remastered under a virtializator: proxmox-ve, virtualbox or others.
+
+# Installing Linux Waydroid via PXE
 
 One feature of ISO images made with eggs is the ability to be used for network installation . All you have to do is boot the ISO to be installed, open a terminal window and type the command: 
 
