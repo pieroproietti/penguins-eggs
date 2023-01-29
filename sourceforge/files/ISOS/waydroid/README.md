@@ -38,9 +38,9 @@ A light wayland/kde/waydroid for developers
 ##  **whipbird**
 An ultra light wayland/weston/waydroid for developers
 
-**NOTE** 
+### NOTE
 
-* Here you will find my waydroid remastered to test the latest versions of eggs, you can find more official waydroid versions on their site [Waydroid](https://waydro.id/#wdlinux). 
+* Here you will find my waydroid remastered against latest versions of eggs, you can find more official waydroid versions on their site [Waydroid](https://waydro.id/#wdlinux). 
 
 * All the versions are configured with ``no-hardware-accelleration`` to be used, modified and remastered under a virtializator: [proxmox-ve](https://www.proxmox.com/en/proxmox-ve), virtualbox or others.
 
