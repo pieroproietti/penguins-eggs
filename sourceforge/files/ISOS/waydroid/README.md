@@ -39,8 +39,11 @@ A light wayland/kde/waydroid for developers
 An ultra light wayland/weston/waydroid for developers
 
 **NOTE** 
+
 * Here you will find my waydroid remaster made to test the latest versions of eggs, you can find more official waydroid versions on their site [Waydroid](https://waydro.id/#wdlinux). 
+
 * All the versions are configured with ``no-hardware-accelleration`` to be used, modified and remastered under a virtializator: [proxmox-ve](https://www.proxmox.com/en/proxmox-ve), virtualbox or others.
+
 * You can remaster using theme [waydroid](https://github.com/pieroproietti/penguins-addons) adding  ```--theme ./path/to/theme/waydroid``` to your produce command.
 
 # Installing Linux Waydroid via PXE
