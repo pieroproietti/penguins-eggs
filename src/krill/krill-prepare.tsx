@@ -52,8 +52,6 @@
  * KDE-shipping-distro). To get all that you just need Calamares installed and the
  * relevant /etc/calamares/ files.
  */
-
-import yaml from 'js-yaml'
 import os from 'os'
 import { IKrillConfig } from '../interfaces/i-krill-config'
 
@@ -110,7 +108,6 @@ import Sequence from './krill-sequence'
 
 import { INet } from '../interfaces'
 import { IWelcome, ILocation, IKeyboard, IPartitions, IUsers } from '../interfaces/i-krill'
-import utils from '../dhcpd/utils';
 
 const config_file = '/etc/penguins-eggs.d/krill.yaml' as string
 
@@ -239,7 +236,7 @@ export default class Krill {
         dns: Utils.getDns(),
         domain: Utils.getDomain()
       }
-
+      // end unattended!
 
     } else {
       oWelcome = await this.welcome()
@@ -544,28 +541,34 @@ export default class Krill {
   /**
    * SUMMARY
    */
-  async summary(location: ILocation, keyboard: IKeyboard, partitions: IPartitions, users: IUsers, unattended = false, noninteractive = false) {
+  async summary(location: ILocation,
+    keyboard: IKeyboard,
+    partitions: IPartitions,
+    users: IUsers,
+    unattended = false,
+    noninteractive = false)
+  {
+    //
     let summaryElem: JSX.Element
 
-    let message = ""
-    summaryElem = <Summary name={users.name} password={users.password} rootPassword={users.rootPassword} hostname={users.hostname} region={location.region} zone={location.zone} language={location.language} keyboardModel={keyboard.keyboardModel} keyboardLayout={keyboard.keyboardLayout} installationDevice={partitions.installationDevice} message={message} />
+    let message = "Double check the installation disk: " + partitions.installationDevice
     if (unattended && noninteractive) {
       message = "Unattended installation will start in 5 seconds, press CTRL-C to abort!"
-    } else if (unattended && !noninteractive) {
-      if (! await confirm(summaryElem, "Read the summary and confirm or abort your installation")) {
-        process.exit()
-      }
     }
 
-    /**
-     * ciclo
-     */
+
     while (true) {
       summaryElem = <Summary name={users.name} password={users.password} rootPassword={users.rootPassword} hostname={users.hostname} region={location.region} zone={location.zone} language={location.language} keyboardModel={keyboard.keyboardModel} keyboardLayout={keyboard.keyboardLayout} installationDevice={partitions.installationDevice} message={message} />
-      if (unattended) {
+      if (unattended && noninteractive) {
         redraw(summaryElem)
         await sleep(5000)
         break
+      } else if (unattended && !noninteractive) {
+        if (await confirm(summaryElem, "Read the Summary, confirm or abort")) {
+          break
+        } else {
+          process.exit(0)
+        }
       } else if (await confirm(summaryElem, "Confirm Summary datas?")) {
         break
       }
@@ -619,8 +622,8 @@ function redraw(elem: JSX.Element) {
   let opt: RenderOptions = {}
   opt.patchConsole = true
   opt.debug = false
-
-  shx.exec('clear')
+  console.clear()
+  // shx.exec('clear')
   render(elem, opt)
 }
 

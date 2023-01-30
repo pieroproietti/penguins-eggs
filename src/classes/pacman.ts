@@ -273,6 +273,8 @@ export default class Pacman {
       } else if (this.distro().familyId === 'suse') {
         await Suse.calamaresInstall(verbose)
       }
+      // remove calamares link
+      await exec ('rm -f /usr/share/applications/calamares.desktop')
     }
   }
 
