@@ -21,6 +21,12 @@ You can follow the project also consulting the [commit history](https://github.c
 ## Changelog
 Versions are listed on reverse order, the first is the last one. Old versions are moved to [versions](https://sourceforge.net/projects/penguins-eggs/files/packages-deb/versions/). 
 
+### eggs-9.3.20
+* produce: if not present sddm.conf and package sddm is installed eggs will create it in production for autologin with Session=plasma-wayland or Session=plasma and user = live;
+* krill: added confirm button or abort before to erase disk for --unattended and new option --noninteractive for scripts;
+* tons of add/remove/fixes on penguins-wardrobe: we have now 3 new birds: wagtail, warbler and whispbird. You can build them from a naked iso installing and running: ```eggs wardrobe get```, ```sudo eggs wardrove wear wagtail```, ...;
+* waydroid: added copy waydroid-package-manager to skel.
+
 ### eggs-9.3.19
 * grub:  now we have a new default resolution ```set gfxmode=1024x768```, and bugfix for Ubuntu on the option CLI boot;
 * added new distros: SysLinuxOS filadelfia, Netrunner Desktop 23;

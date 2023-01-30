@@ -18,6 +18,7 @@ import { verify } from 'node:crypto'
 import { file, string } from '@oclif/core/lib/flags'
 import { dir } from 'node:console'
 import { execSync } from 'node:child_process'
+import ts from 'typescript'
 
 const xdg_dirs = ['DESKTOP', 'DOWNLOAD', 'TEMPLATES', 'PUBLICSHARE', 'DOCUMENTS', 'MUSIC', 'PICTURES', 'VIDEOS']
 
@@ -68,10 +69,10 @@ export default class Xdg {
   }
 
   /**
-   * 
-   * @param chroot 
-   * @param path 
-   * @param verbose 
+   *
+   * @param chroot
+   * @param path
+   * @param verbose
    */
   static async mk(chroot: string, path: string, verbose = false) {
     const echo = Utils.setEcho(verbose)
@@ -122,24 +123,40 @@ export default class Xdg {
       if (Pacman.packageIsInstalled('sddm')) {
         let sddmChanged = false
         let curFile = `${chroot}/etc/sddm.conf`
-        let content = fs.readFileSync(curFile, 'utf8')
-        let find = `[Autologin]`
-        if (content.includes(find)) {
-          shx.sed('-i', `User=${olduser}`, `User=${newuser}`, curFile)
-          sddmChanged = true
+        if (fs.existsSync(curFile)) {
+          let content = fs.readFileSync(curFile, 'utf8')
+          let find = `[Autologin]`
+          if (content.includes(find)) {
+            shx.sed('-i', `User=${olduser}`, `User=${newuser}`, curFile)
+            sddmChanged = true
+          }
         }
 
         if (!sddmChanged) {
           let dc = `${chroot}/etc/sddm.conf.d/`
-          let files = fs.readdirSync(dc)
-          for (const elem of files) {
-            const curFile = dc + elem
-            let content = fs.readFileSync(curFile, 'utf8')
-            if (content.includes(find)) {
-              shx.sed('-i', `User=${olduser}`, `User=${newuser}`, curFile)
-              sddmChanged = true
+          if (fs.existsSync(dc)) {
+            let files = fs.readdirSync(dc)
+            for (const elem of files) {
+              const curFile = dc + elem
+              let content = fs.readFileSync(curFile, 'utf8')
+              let find = `[Autologin]`
+              if (content.includes(find)) {
+                shx.sed('-i', `User=${olduser}`, `User=${newuser}`, curFile)
+                sddmChanged = true
+              }
             }
           }
+        }
+
+        // sddm.conf don't exists, generate it
+        if (!sddmChanged){
+          let session="plasma"
+          if (Pacman.isInstalledWayland()) {
+            session="plasma-wayland"
+          }
+          let content=`[Autologin]\nUser=${newuser}\nSession=${session}\n`
+          let curFile = `${chroot}/etc/sddm.conf`
+          fs.writeFileSync(curFile, content, 'utf8')
         }
       }
 
@@ -196,11 +213,11 @@ export default class Xdg {
       await rsyncIfExist(`/home/${user}/.config`, '/etc/skel', verbose)
       await rsyncIfExist(`/home/${user}/.gtkrc-2.0`, '/etc/skel', verbose)
     } else if (Pacman.packageIsInstalled('cinnamon-core')) {
-      // use .cinnamon NOT cinnamon/ 
+      // use .cinnamon NOT cinnamon/
       await rsyncIfExist(`/home/${user}/.config`, '/etc/skel', verbose)
       await rsyncIfExist(`/home/${user}/.cinnamon`, '/etc/skel', verbose)
     } else if (Pacman.packageIsInstalled('plasma-desktop')) {
-      // use .kde NOT .kde/ 
+      // use .kde NOT .kde/
       await rsyncIfExist(`/home/${user}/.config`, '/etc/skel', verbose)
       await rsyncIfExist(`/home/${user}/.kde`, '/etc/skel', verbose)
     } else if (Pacman.packageIsInstalled('lxde-core')) {
@@ -216,7 +233,7 @@ export default class Xdg {
       await rsyncIfExist(`/home/${user}/.config`, '/etc/skel', verbose)
       await rsyncIfExist(`/home/${user}/.gtkrc-2.0`, '/etc/skel', verbose)
     } else if (Pacman.packageIsInstalled('xfce4-session')) {
-      // use .config/xfce4 NOT .config/xfce4/ 
+      // use .config/xfce4 NOT .config/xfce4/
       await rsyncIfExist(`/home/${user}/.config/xfce4`, '/etc/skel/.config', verbose)
       await exec(`mkdir /etc/skel/.local/share -p`, echo)
       await rsyncIfExist(`/home/${user}/.local/share/recently-used.xbel`, '/etc/skel/.local/share', verbose)
@@ -225,6 +242,10 @@ export default class Xdg {
     /**
      * special cases
      */
+    // waydroid
+    if (fs.existsSync(`/home/${user}/waydroid-package-manager`)) {
+      await rsyncIfExist(`/home/${user}/waydroid-package-manager`, '/etc/skel', verbose)
+    }
 
     // LinuxFX
     if (fs.existsSync(`/home/${user}/.linuxfx`)) {
@@ -233,14 +254,6 @@ export default class Xdg {
       await rsyncIfExist(`/home/${user}/.kde`, '/etc/skel', verbose)
       await rsyncIfExist(`/home/${user}/.linuxfx`, `/etc/skel`, verbose)
       await rsyncIfExist(`/home/${user}/.local`, '/etc/skel', verbose)
-      // Create dirs - we try in this way... 
-      // await exec(`mkdir /etc/skel/Desktop`)
-      // await exec(`mkdir /etc/skel/Downloads`)
-      // await exec(`mkdir /etc/skel/OneDrive`)
-      // await exec(`mkdir /etc/skel/Pictures`)
-      // await exec(`mkdir /etc/skel/Public`)
-      // await exec(`mkdir /etc/skel/Template`)
-      // await exec(`mkdir /etc/skel/Videos`)
     }
 
     await exec('chown root:root /etc/skel -R', echo)
@@ -271,7 +284,7 @@ async function execIfExist(cmd: string, file: string, verbose = false) {
 }
 
 /**
- * 
+ *
  */
 async function rsyncIfExist(source: string, dest = '/etc/skel/', verbose = false) {
 
