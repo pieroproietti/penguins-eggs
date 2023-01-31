@@ -194,7 +194,7 @@ adapt monitor resolution for VM only
 
 ```
 USAGE
-  $ eggs adapt [-v] [-h]
+  $ eggs adapt [-h] [-v]
 
 FLAGS
   -h, --help     Show CLI help.
@@ -262,7 +262,7 @@ calamares or install or configure it
 
 ```
 USAGE
-  $ eggs calamares [-h] [-v] [-i] [-r] [--remove] [--theme <value>]
+  $ eggs calamares [-h] [-i] [-r] [--remove] [--theme <value>] [-v]
 
 FLAGS
   -h, --help       Show CLI help.
@@ -291,7 +291,7 @@ Configure and install prerequisites deb packages to run it
 
 ```
 USAGE
-  $ eggs config [-n] [-c] [-h] [-v]
+  $ eggs config [-c] [-h] [-n] [-v]
 
 FLAGS
   -c, --clean          remove old configuration before to create new one
@@ -336,7 +336,7 @@ ask help from daddy - configuration helper
 
 ```
 USAGE
-  $ eggs dad [-h] [-c] [-d] [-v]
+  $ eggs dad [-c] [-d] [-h] [-v]
 
 FLAGS
   -c, --clean    remove old configuration before to create
@@ -356,7 +356,7 @@ export deb/docs/iso to the destination host
 
 ```
 USAGE
-  $ eggs export deb [-h] [-a] [-c] [-v]
+  $ eggs export deb [-a] [-c] [-h] [-v]
 
 FLAGS
   -a, --all      export all archs
@@ -374,7 +374,7 @@ export iso in the destination host
 
 ```
 USAGE
-  $ eggs export iso [-h] [-b] [-c] [-v]
+  $ eggs export iso [-b] [-c] [-h] [-v]
 
 FLAGS
   -b, --backup   export backup ISOs
@@ -412,7 +412,7 @@ command-line system installer - the egg became a penguin!
 
 ```
 USAGE
-  $ eggs install [-u] [-c <value>] [-n] [-i] [-r] [-d <value>] [-S] [-s] [-N] [-k] [-p] [-h] [-v]
+  $ eggs install [-k] [-c <value>] [-d <value>] [-h] [-i] [-n] [-N] [-p] [-r] [-s] [-S] [-u] [-v]
 
 FLAGS
   -N, --none            Swap none: 256M
@@ -484,8 +484,8 @@ produce a live image from your system whithout your data
 
 ```
 USAGE
-  $ eggs produce [-p <value>] [--basename <value>] [-b] [-c] [-f] [-m] [-v] [-y] [-s] [-h] [--theme <value>]
-    [--addons <value>] [--release] [-n]
+  $ eggs produce [--addons <value>] [-b] [--basename <value>] [-c] [-f] [-h] [-m] [-n] [-p <value>]
+    [--release] [-s] [--theme <value>] [-v] [-y]
 
 FLAGS
   -b, --backup          backup mode (CRYPTED)
@@ -546,7 +546,7 @@ informations about eggs status
 
 ```
 USAGE
-  $ eggs status [-v] [-h]
+  $ eggs status [-h] [-v]
 
 FLAGS
   -h, --help     Show CLI help.
@@ -564,7 +564,7 @@ restore users and user data from a LUKS volumes
 
 ```
 USAGE
-  $ eggs syncfrom [--delete <value>] [-f <value>] [-r <value>] [-h] [-v]
+  $ eggs syncfrom [--delete <value>] [-f <value>] [-h] [-r <value>] [-v]
 
 FLAGS
   -f, --file=<value>     file LUKS volume encrypted
@@ -627,7 +627,7 @@ add/remove PPA repositories (Debian family)
 
 ```
 USAGE
-  $ eggs tools ppa [-h] [-a] [-r] [-v]
+  $ eggs tools ppa [-a] [-h] [-r] [-v]
 
 FLAGS
   -a, --add      add penguins-eggs PPA repository
@@ -744,7 +744,7 @@ get warorobe
 
 ```
 USAGE
-  $ eggs wardrobe get [REPO] [-v] [-h]
+  $ eggs wardrobe get [REPO] [-h] [-v]
 
 ARGUMENTS
   REPO  repository to get
@@ -763,7 +763,7 @@ list costumes and accessoires in wardrobe
 
 ```
 USAGE
-  $ eggs wardrobe list [WARDROBE] [-v] [-h]
+  $ eggs wardrobe list [WARDROBE] [-h] [-v]
 
 ARGUMENTS
   WARDROBE  wardrobe
@@ -782,7 +782,7 @@ show costumes/accessories in wardrobe
 
 ```
 USAGE
-  $ eggs wardrobe show [COSTUME] [-w <value>] [-j] [-v] [-h]
+  $ eggs wardrobe show [COSTUME] [-h] [-j] [-v] [-w <value>]
 
 ARGUMENTS
   COSTUME  costume
@@ -803,7 +803,7 @@ wear costume/accessories from wardrobe
 
 ```
 USAGE
-  $ eggs wardrobe wear [COSTUME] [-w <value>] [-a] [-f] [-s] [-v] [-h]
+  $ eggs wardrobe wear [COSTUME] [-h] [-a] [-f] [-s] [-v] [-w <value>]
 
 ARGUMENTS
   COSTUME  costume
