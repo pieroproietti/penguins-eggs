@@ -17,21 +17,20 @@ import path from 'node:path'
 
 export default class Produce extends Command {
   static flags = {
-    prefix: Flags.string({ char: 'p', description: 'prefix' }),
-    basename: Flags.string({ description: 'basename' }),
+    addons: Flags.string({ multiple: true, description: 'addons to be used: adapt, ichoice, pve, rsupport' }),
     backup: Flags.boolean({ char: 'b', description: 'backup mode (CRYPTED)' }),
+    basename: Flags.string({ description: 'basename' }),
     clone: Flags.boolean({ char: 'c', description: 'clone mode' }),
     fast: Flags.boolean({ char: 'f', description: 'fast compression' }),
-    // normal: Flags.boolean({ char: 'n', description: 'normal compression' }),
+    help: Flags.help({ char: 'h' }),
     max: Flags.boolean({ char: 'm', description: 'max compression' }),
+    nointeractive: Flags.boolean({ char: 'n', description: 'don\'t ask for user interctions' })
+    prefix: Flags.string({ char: 'p', description: 'prefix' }),
+    release: Flags.boolean({ description: 'release: max compression, remove penguins-eggs and calamares after installation' }),
+    script: Flags.boolean({ char: 's', description: 'script mode. Generate scripts to manage iso build' }),
+    theme: Flags.string({ description: 'theme for livecd, calamares branding and partitions' }),
     verbose: Flags.boolean({ char: 'v', description: 'verbose' }),
     yolk: Flags.boolean({ char: 'y', description: '-y force yolk renew' }),
-    script: Flags.boolean({ char: 's', description: 'script mode. Generate scripts to manage iso build' }),
-    help: Flags.help({ char: 'h' }),
-    theme: Flags.string({ description: 'theme for livecd, calamares branding and partitions' }),
-    addons: Flags.string({ multiple: true, description: 'addons to be used: adapt, ichoice, pve, rsupport' }),
-    release: Flags.boolean({ description: 'release: max compression, remove penguins-eggs and calamares after installation' }),
-    nointeractive: Flags.boolean({ char: 'n', description: 'don\'t ask for user interctions' })
   }
 
   static description = 'produce a live image from your system whithout your data'
@@ -120,7 +119,7 @@ export default class Produce extends Command {
       const yolkRenew = flags.yolk
 
       const nointeractive = flags.nointeractive
-        
+
 
 
       /**

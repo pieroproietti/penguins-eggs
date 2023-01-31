@@ -10,7 +10,7 @@ import { IMateria } from '../../interfaces'
 import chalk from 'chalk'
 
 /**
- * 
+ *
  */
 export default class List extends Command {
   static description = 'list costumes and accessoires in wardrobe'
@@ -18,8 +18,8 @@ export default class List extends Command {
   static args = [{ name: 'wardrobe', description: 'wardrobe', required: false }]
 
   static flags = {
-    verbose: Flags.boolean({ char: 'v' }),
-    help: Flags.help({ char: 'h' })
+    help: Flags.help({ char: 'h' }),
+    verbose: Flags.boolean({ char: 'v' })
   }
 
   async run(): Promise<void> {

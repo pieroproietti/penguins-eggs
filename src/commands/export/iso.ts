@@ -10,9 +10,9 @@ export default class ExportIso extends Command {
   static description = 'export iso in the destination host'
 
   static flags = {
-    help: Flags.help({ char: 'h' }),
     backup: Flags.boolean({ char: 'b', description: 'export backup ISOs' }),
     clean: Flags.boolean({ char: 'c', description: 'delete old ISOs before to copy' }),
+    help: Flags.help({ char: 'h' }),
     verbose: Flags.boolean({ char: 'v', description: 'verbose' })
   }
 
@@ -42,7 +42,7 @@ export default class ExportIso extends Command {
     cmd += `sync\n`
     cmd += `umount ${rmount}\n`
     cmd += `rm -f ${rmount}\m`
-    
+
     if (!flags.verbose) {
       if (flags.clean){
         console.log(`remove: ${Tu.config.remoteUser}@${Tu.config.remoteHost}:${Tu.config.remotePathIso}${Tu.snapshot_name}${filter}`)

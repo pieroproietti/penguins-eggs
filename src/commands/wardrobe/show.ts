@@ -9,7 +9,7 @@ import path from 'path'
 import chalk from 'chalk'
 
 /**
- * 
+ *
  */
 export default class Show extends Command {
     static description = 'show costumes/accessories in wardrobe'
@@ -17,10 +17,10 @@ export default class Show extends Command {
     static args = [{ name: 'costume', description: 'costume', required: false }]
 
     static flags = {
-        wardrobe: Flags.string({ char: 'w', description: 'wardrobe' }),
+        help: Flags.help({ char: 'h' })
         json: Flags.boolean({ char: 'j', description: 'output JSON' }),
         verbose: Flags.boolean({ char: 'v' }),
-        help: Flags.help({ char: 'h' })
+        wardrobe: Flags.string({ char: 'w', description: 'wardrobe' }),
     }
 
     async run(): Promise<void> {

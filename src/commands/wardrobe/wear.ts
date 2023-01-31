@@ -10,7 +10,7 @@ import { exec } from '../../lib/utils'
 
 
 /**
- * 
+ *
  */
 export default class Wear extends Command {
   static description = 'wear costume/accessories from wardrobe'
@@ -18,12 +18,12 @@ export default class Wear extends Command {
   static args = [{ name: 'costume', description: 'costume', required: false }]
 
   static flags = {
-    wardrobe: Flags.string({ char: 'w', description: 'wardrobe' }),
+    help: Flags.help({ char: 'h' }),
     no_accessories: Flags.boolean({ char: 'a', description: 'not install accessories' }),
     no_firmwares: Flags.boolean({ char: 'f', description: 'not install firmwares' }),
     silent: Flags.boolean({ char: 's' }),
     verbose: Flags.boolean({ char: 'v' }),
-    help: Flags.help({ char: 'h' })
+    wardrobe: Flags.string({ char: 'w', description: 'wardrobe' }),
   }
 
   async run(): Promise<void> {
