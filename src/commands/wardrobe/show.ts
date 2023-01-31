@@ -17,7 +17,7 @@ export default class Show extends Command {
     static args = [{ name: 'costume', description: 'costume', required: false }]
 
     static flags = {
-        help: Flags.help({ char: 'h' })
+        help: Flags.help({ char: 'h' }),
         json: Flags.boolean({ char: 'j', description: 'output JSON' }),
         verbose: Flags.boolean({ char: 'v' }),
         wardrobe: Flags.string({ char: 'w', description: 'wardrobe' }),
