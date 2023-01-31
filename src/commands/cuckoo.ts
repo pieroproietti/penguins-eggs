@@ -8,8 +8,6 @@ import Utils from '../classes/utils'
 import Pxe from '../classes/pxe'
 import { ITftpOptions, IDhcpOptions } from '../interfaces/i-pxe-options'
 const tftp = require('tftp')
-import http, { IncomingMessage, ServerResponse } from 'http'
-import { getImpliedNodeFormatForFile } from 'typescript'
 
 export default class Cuckoo extends Command {
   static description = 'PXE start with proxy-dhcp'
@@ -35,7 +33,7 @@ start a PXE server with dhcp-proxy (can coexists with a real dhcp server)
       await pxe.build()
 
       const n = new network()
-      
+
       /**
        * service proxy-dhcp
        */

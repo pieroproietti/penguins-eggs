@@ -8,9 +8,9 @@ export default class ExportDeb extends Command {
   static description = 'export deb/docs/iso to the destination host'
 
   static flags = {
-    help: Flags.help({ char: 'h' }),
     all: Flags.boolean({ char: 'a', description: 'export all archs' }),
     clean: Flags.boolean({ char: 'c', description: 'remove old .deb before to copy' }),
+    help: Flags.help({ char: 'h' }),
     verbose: Flags.boolean({ char: 'v', description: 'verbose' })
   }
 
@@ -33,7 +33,7 @@ export default class ExportDeb extends Command {
       arch += '.deb'
       script += ``
     }
-    
+
     const rmount = `/tmp/eggs-${(Math.random() + 1).toString(36).substring(7)}`
     let cmd = `rm -f ${rmount}\n`
     cmd += `mkdir ${rmount}\n`

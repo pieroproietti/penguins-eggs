@@ -15,14 +15,14 @@ const fkey = `/etc/apt/trusted.gpg.d/penguins-eggs-key.gpg`
 const flist = '/etc/apt/sources.list.d/penguins-eggs-ppa.list'
 
 /**
- * 
+ *
  */
 export default class Ppa extends Command {
     static description = 'add/remove PPA repositories (Debian family)'
 
     static flags = {
-        help: Flags.help({ char: 'h' }),
         add: Flags.boolean({ char: 'a', description: 'add penguins-eggs PPA repository' }),
+        help: Flags.help({ char: 'h' }),
         remove: Flags.boolean({ char: 'r', description: 'remove penguins-eggs PPA repository' }),
         verbose: Flags.boolean({ char: 'v', description: 'verbose' })
     }
@@ -79,7 +79,7 @@ async function remove() {
 }
 
 /**
- * 
+ *
  */
 async function clean() {
     await exec(`rm -f    /etc/apt/trusted.gpg.d/penguins-eggs*`)

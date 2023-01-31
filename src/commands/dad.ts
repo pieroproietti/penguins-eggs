@@ -15,9 +15,9 @@ export default class Dad extends Command {
   static description = 'ask help from daddy - configuration helper'
 
   static flags = {
-    help: Flags.help({ char: 'h' }),
     clean: Flags.boolean({ char: 'c', description: 'remove old configuration before to create' }),
     default: Flags.boolean({ char: 'd', description: 'remove old configuration and force default' }),
+    help: Flags.help({ char: 'h' }),
     verbose: Flags.boolean({ char: 'v' })
   }
 

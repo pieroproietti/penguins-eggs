@@ -6,19 +6,19 @@
  */
 
 /**
- * 
+ *
  * syncfrom (restore)
- * --include-from file.list // if only include is provided everything from the list if used to update the system. 
- * --exclude-from file-list // it just updates the system 
+ * --include-from file.list // if only include is provided everything from the list if used to update the system.
+ * --exclude-from file-list // it just updates the system
  * --delete
- * 
+ *
 * If both options are provided then it works as a combination as provided in the link above.
 * https://stackoverflow.com/questions/19296190/rsync-include-from-vs-exclude-from-what-is-the-actual-difference
-* 
+*
  * The same logic is applied for the syncto also.
- * 
- * On top of all of this the --delete option 
- * if needed to be passed so that everything else is removed, but this 
+ *
+ * On top of all of this the --delete option
+ * if needed to be passed so that everything else is removed, but this
  * this should not be available by default
  */
 import { Command, Flags } from '@oclif/core'
@@ -34,7 +34,7 @@ import Users from '../classes/users'
 import { use } from 'chai'
 
 /**
- * 
+ *
  */
 export default class Syncto extends Command {
 
@@ -64,7 +64,7 @@ export default class Syncto extends Command {
     static examples = ['$ sudo eggs syncto']
 
     /**
-     * 
+     *
      */
     async run(): Promise<void> {
 
@@ -165,7 +165,7 @@ export default class Syncto extends Command {
 
 
     /**
-     * 
+     *
      */
     async luksCreate() {
         Utils.warning(`Creating LUKS Volume on ${this.luksFile}`)
@@ -237,7 +237,7 @@ export default class Syncto extends Command {
 
 
     /**
-     * 
+     *
      */
     async luksOpen() {
         if (!fs.existsSync(this.luksDevice)) {
@@ -261,7 +261,7 @@ export default class Syncto extends Command {
 
 
     /**
-    * 
+    *
     */
     async luksClose() {
         if (Utils.isMountpoint(this.luksMountpoint)) {

@@ -13,7 +13,7 @@ import { exec } from '../lib/utils'
 
 
 /**
- * 
+ *
  */
 export default class Syncfrom extends Command {
   verbose = false
@@ -35,11 +35,9 @@ export default class Syncfrom extends Command {
 
   static flags = {
     delete: Flags.string({ description: 'rsync --delete delete extraneous files from dest dirs' }),
-    // excludeFrom: Flags.string({ description: 'same as rsync --exclude-from=FILE read exclude patterns from FILE' }),
-    // includeFrom: Flags.string({ description: 'same as rsync --include-from=FILE read include patterns from FILE' }),
     file: Flags.string({ char: 'f', description: "file LUKS volume encrypted" }),
-    rootdir: Flags.string({ char: 'r', description: 'rootdir of the installed system, when used from live' }),
     help: Flags.help({ char: 'h' }),
+    rootdir: Flags.string({ char: 'r', description: 'rootdir of the installed system, when used from live' }),
     verbose: Flags.boolean({ char: 'v', description: 'verbose' })
   }
 
@@ -113,8 +111,8 @@ export default class Syncfrom extends Command {
 
 
   /**
-   * 
-   * @param verbose 
+   *
+   * @param verbose
    */
   private async restorePrivateData(destDelete = false) {
 
@@ -150,7 +148,7 @@ export default class Syncfrom extends Command {
   }
 
   /**
-   * 
+   *
    */
   async luksOpen() {
 
@@ -174,7 +172,7 @@ export default class Syncfrom extends Command {
   }
 
   /**
-  * 
+  *
   */
   async luksClose() {
     if (Utils.isMountpoint(this.luksMountpoint)) {

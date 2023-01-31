@@ -6,10 +6,8 @@
  */
 
 import { Command, Flags, flush } from '@oclif/core'
-import { setMaxIdleHTTPParsers } from 'node:http'
 import Utils from '../classes/utils'
 import Krill from '../krill/krill-prepare'
-import { exec } from '../lib/utils'
 import path from 'node:path'
 import yaml from 'js-yaml'
 import fs from 'fs'
@@ -26,25 +24,18 @@ import { IKrillConfig } from '../interfaces/i-krill-config'
  */
 export default class Install extends Command {
   static flags = {
-    unattended: Flags.boolean({ char: 'u', description: 'Unattended installation' }),
-    custom: Flags.string({ char: 'c', description: 'custom unattended configuration' }),
-    nointeractive: Flags.boolean({ char: 'n', description: 'assume yes' }),
-
-    // hostname
-    ip: Flags.boolean({ char: 'i', description: 'hostname as ip, eg: ip-192-168-1-33' }),
-    random: Flags.boolean({ char: 'r', description: 'Add random to hostname, eg: colibri-ay412dt' }),
-    // append: Flags.string({char: 'a', description: 'append to hostname: ip, random'}),
-    domain: Flags.string({ char: 'd', description: 'Domain name, defult: .local' }),
-    // swap
-    // swap: Flags.string({char: 's', description: 'swap: none, small, suspend'}),
-    suspend: Flags.boolean({ char: 'S', description: 'Swap suspend: RAM x 2' }),
-    small: Flags.boolean({ char: 's', description: 'Swap small: RAM' }),
-    none: Flags.boolean({ char: 'N', description: 'Swap none: 256M' }),
-    //
     crypted: Flags.boolean({ char: 'k', description: 'Crypted CLI installation' }),
-    pve: Flags.boolean({ char: 'p', description: 'Proxmox VE install' }),
-    // generic
+    custom: Flags.string({ char: 'c', description: 'custom unattended configuration' }),
+    domain: Flags.string({ char: 'd', description: 'Domain name, defult: .local' }),
     help: Flags.help({ char: 'h' }),
+    ip: Flags.boolean({ char: 'i', description: 'hostname as ip, eg: ip-192-168-1-33' }),
+    nointeractive: Flags.boolean({ char: 'n', description: 'assume yes' }),
+    none: Flags.boolean({ char: 'N', description: 'Swap none: 256M' }),
+    pve: Flags.boolean({ char: 'p', description: 'Proxmox VE install' }),
+    random: Flags.boolean({ char: 'r', description: 'Add random to hostname, eg: colibri-ay412dt' }),
+    small: Flags.boolean({ char: 's', description: 'Swap small: RAM' }),
+    suspend: Flags.boolean({ char: 'S', description: 'Swap suspend: RAM x 2' }),
+    unattended: Flags.boolean({ char: 'u', description: 'Unattended installation' }),
     verbose: Flags.boolean({ char: 'v', description: 'Verbose' })
   }
 

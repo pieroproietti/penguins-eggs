@@ -12,8 +12,8 @@ export default class Status extends Command {
   static description = 'informations about eggs status'
 
   static flags = {
-    verbose: Flags.boolean({ char: 'v' }),
-    help: Flags.help({ char: 'h' })
+    help: Flags.help({ char: 'h' }),
+    verbose: Flags.boolean({ char: 'v' })
   }
 
   /**

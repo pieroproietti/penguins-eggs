@@ -22,11 +22,11 @@ export default class Calamares extends Command {
 
   static flags = {
     help: Flags.help({ char: 'h' }),
-    verbose: Flags.boolean({ char: 'v' }),
     install: Flags.boolean({ char: 'i', description: "install calamares and it's dependencies" }),
     release: Flags.boolean({ char: 'r', description: "release: remove calamares and all it's dependencies after the installation" }),
     remove: Flags.boolean({ description: "remove calamares and it's dependencies" }),
-    theme: Flags.string({ description: 'theme/branding for eggs and calamares' })
+    theme: Flags.string({ description: 'theme/branding for eggs and calamares' }),
+    verbose: Flags.boolean({ char: 'v' })
   }
 
   static examples = ["~$ sudo eggs calamares \ncreate/renew calamares configuration's files\n", "~$ sudo eggs calamares -i \ninstall calamares and create it's configuration's files\n"]

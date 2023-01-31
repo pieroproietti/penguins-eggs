@@ -8,7 +8,7 @@ import { basename } from 'path'
 
 
 /**
- * 
+ *
  */
 export default class Get extends Command {
   static description = 'get warorobe'
@@ -16,8 +16,8 @@ export default class Get extends Command {
   static args = [{ name: 'repo', description: 'repository to get', required: false }]
 
   static flags = {
-    verbose: Flags.boolean({ char: 'v' }),
-    help: Flags.help({ char: 'h' })
+    help: Flags.help({ char: 'h' }),
+    verbose: Flags.boolean({ char: 'v' })
   }
 
   async run(): Promise<void> {

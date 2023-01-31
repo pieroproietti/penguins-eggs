@@ -8,8 +8,8 @@ export default class Adapt extends Command {
   // static aliases = ['adjust']
 
   static flags = {
-    verbose: Flags.boolean({ char: 'v' }),
-    help: Flags.help({ char: 'h' })
+    help: Flags.help({ char: 'h' }),
+    verbose: Flags.boolean({ char: 'v' })
   }
 
   async run(): Promise<void> {

@@ -22,9 +22,9 @@ export default class Config extends Command {
 
   // static aliases = ['prerequisites']
   static flags = {
-    nointeractive: Flags.boolean({ char: 'n', description: 'assume yes' }),
     clean: Flags.boolean({ char: 'c', description: 'remove old configuration before to create new one' }),
     help: Flags.help({ char: 'h' }),
+    nointeractive: Flags.boolean({ char: 'n', description: 'assume yes' }),
     verbose: Flags.boolean({ char: 'v', description: 'verbose' })
   }
 
