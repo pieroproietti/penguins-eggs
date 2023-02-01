@@ -8,64 +8,64 @@
 # buster derivated
 - id: buster
   distro: Debian
-  derivatives: [
-    debbie, # LMDE4
-    siena, # Ufficiozero siena
-  ]
+  derivatives:
+    - debbie, # LMDE4
+    - siena, # Ufficiozero siena
 
 # bullseye derivated
 - id: bullseye
   distro: Debian
-  derivatives: [
-    elsie, # LMDE elsie
-    filadelfia, # SysLinuxOS filadelfia
-    desktop # Netrunner Desktop 23
-  ]
+  derivatives:
+    - desktop # Netrunner Desktop 23
+    - elsie, # LMDE5
+    - filadelfia, # SysLinuxOS filadelfia
 
 # bootkworm derivated
 - id: bookworm
   distro: Debian
-  derivatives: [
-    kali-rolling # kali
-]
+  derivatives:
+    - kali-rolling # kali
 
 #
 # DEVUAN
 #
-
 # beowulf derivated
 - id: beowulf
   distro: Devuan
-  derivatives: [
-    roma # Ufficiozero roma
-  ]
+  derivatives:
+    - roma # Ufficiozero roma
 
 #
 # UBUNTU
 #
-
 # bionic derivated
 - id: bionic
   distro: Ubuntu
-  derivatives: [
-    hera, # Elementary hera
-    tara, tessa, tina, tricia, # Linux Mint
-    vieste # Ufficiozero vieste
-  ]
+  derivatives:
+    - hera # Elementary hera
+    - tara # Linux Mint
+    - tessa # Linux Mint
+    - tina # Linux Mint
+    - tricia # Linux Mint
+    - vieste # Ufficiozero vieste
 
 # focal derivated
 - id: focal
   distro: Ubuntu
-  derivatives: [
-    tropea # UfficioZero tropea
-  ]
+  derivatives:
+    - tropea # UfficioZero tropea
 
 # jammy derivated
 - id: jammy
   distro: Ubuntu
-  derivatives: [
-    ulyana, ulyssa, uma, una, vanessa, vera, # Linux Mint
-    jolnir, # Elementary jolnir
-    ShiFt, # Makululu
-    lunar # Ubuntu rolling
-  ]
+  derivatives:
+    - horus # elementary OS 7 Horus
+    - jolnir, # Elementary jolnir
+    - lunar # Ubuntu rolling
+    - ShiFt, # Makululu
+    - ulyana # Linux Mint
+    - ulyssa # Linux Mint
+    - uma # Linux Mint
+    - una # Linux Mint
+    - vanessa # Linux Mint
+    - vera, # Linux Mint
