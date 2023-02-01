@@ -8,6 +8,7 @@
 
 'use strict'
 import fs from 'node:fs'
+import path from 'node:path'
 import shell from 'shelljs'
 import yaml from 'js-yaml'
 import { IRemix, IDistro } from '../interfaces'
@@ -113,7 +114,6 @@ class Distro implements IDistro {
       this.codenameId = 'bookworm'
       this.releaseLike = 'unstable'
     }
-
 
     /**
      * Procedo analizzanto: codenameId
@@ -270,7 +270,7 @@ class Distro implements IDistro {
          * patch per Roy
          */
         let found = false
-        let file = '../../conf/derivatives.yaml'
+        let file = path.resolve(__dirname, '../../conf/derivatives.yaml')
         if (fs.existsSync('/etc/penguins-eggs.d/derivatives.yaml')) {
           file = "/etc/penguins-eggs.d/derivatives.yaml"
         }

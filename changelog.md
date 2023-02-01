@@ -21,6 +21,10 @@ You can follow the project also consulting the [commit history](https://github.c
 ## Changelog
 Versions are listed on reverse order, the first is the last one. Old versions are moved to [versions](https://sourceforge.net/projects/penguins-eggs/files/packages-deb/versions/). 
 
+### eggs-9.3.21
+* bugfix on ```/etc/penguins-eggs.d/derivaties.yaml```
+* added elementary OS 7 Horus;
+
 ### eggs-9.3.20
 * krill: added confirm button or abort before to erase disk for --unattended and new option --noninteractive for scripts;
 * produce: if not present sddm.conf and package sddm is installed eggs will create it in production for autologin with ```Session=plasma-wayland``` or ```Session=plasma``` and ```User=live```;
