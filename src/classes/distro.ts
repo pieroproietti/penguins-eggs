@@ -156,7 +156,7 @@ class Distro implements IDistro {
       }
 
       case 'bookworm': {
-        // Debian 12 bookworm 
+        // Debian 12 bookworm
         this.distroLike = 'Debian'
         this.codenameLikeId = 'bookworm'
 
@@ -164,7 +164,7 @@ class Distro implements IDistro {
       }
 
       case 'beowulf': {
-        // Devuab 3 beowulf 
+        // Devuab 3 beowulf
         this.distroLike = 'Devuan'
         this.codenameLikeId = 'beowulf'
 
@@ -266,8 +266,15 @@ class Distro implements IDistro {
           derivatives: string[]
         }
 
+        /**
+         * patch per Roy
+         */
         let found = false
-        const file = '/etc/penguins-eggs.d/derivatives.yaml'
+        let file = '../../conf/derivatives.yaml'
+        if (fs.existsSync('/etc/penguins-eggs.d/derivatives.yaml')) {
+          file = "/etc/penguins-eggs.d/derivatives.yaml"
+        }
+
         const content = fs.readFileSync(file, 'utf8')
         let distros = yaml.load(content) as IDistros[]
         for (let i = 0; i < distros.length; i++) {
