@@ -9,15 +9,15 @@
 - id: buster
   distro: Debian
   derivatives:
-    - debbie, # LMDE4
-    - siena, # Ufficiozero siena
+    - debbie # LMDE4
+    - siena # Ufficiozero siena
 
 # bullseye derivated
 - id: bullseye
   distro: Debian
   derivatives:
     - desktop # Netrunner Desktop 23
-    - elsie, # LMDE5
+    - elsie # LMDE5
     - filadelfia, # SysLinuxOS filadelfia
 
 # bootkworm derivated
@@ -60,12 +60,13 @@
   distro: Ubuntu
   derivatives:
     - horus # elementary OS 7 Horus
-    - jolnir, # Elementary jolnir
+    - jolnir # Elementary jolnir
     - lunar # Ubuntu rolling
-    - ShiFt, # Makululu
+    - ShiFt # Makululu
     - ulyana # Linux Mint
     - ulyssa # Linux Mint
     - uma # Linux Mint
     - una # Linux Mint
     - vanessa # Linux Mint
-    - vera, # Linux Mint
+    - vera # Linux Mint
+    - victoria # Linux Mint
