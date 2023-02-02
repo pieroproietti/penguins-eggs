@@ -21,6 +21,9 @@ You can follow the project also consulting the [commit history](https://github.c
 ## Changelog
 Versions are listed on reverse order, the first is the last one. Old versions are moved to [versions](https://sourceforge.net/projects/penguins-eggs/files/packages-deb/versions/). 
 
+### eggs-9.3.22
+* due a bug - I forgot to remove "," in the new derivatives.yaml - I release this new version with Linuxmind victoria added.
+
 ### eggs-9.3.21
 * bugfix on ```/etc/penguins-eggs.d/derivaties.yaml```
 * added elementary OS 7 Horus;
