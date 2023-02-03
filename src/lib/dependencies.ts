@@ -43,24 +43,25 @@ export function array2spaced(packages: string[]) {
  * sudo apt purge cryptsetup dosfstools dpkg-dev isolinux live-boot live-boot-initramfs-tools  squashfs-tools syslinux-common coreutils xorriso
  */
 export const depCommon = [
+  'coreutils', // whoami
   'cryptsetup',
   'curl', // wardrobe
   'dosfstools', // eggs
   'dpkg-dev', // yolk
-  'isolinux', // eggs
   'git', // wardrobe
-  'live-boot', // eggs
+  'isolinux', // eggs
   'live-boot-initramfs-tools', // eggs
+  'live-boot', // eggs
   'lsb-release', // eggs
   'lvm2', // pvdisplay in krill
   'parted', // eggs
-  "pxelinux", // cuckoo
+  'pxelinux', // cuckoo
   'rsync', // eggs
-  'sshfs', // eggs
   'squashfs-tools', // eggs
+  'sshfs', // eggs
   'syslinux-common', // eggs
-  'coreutils', // whoami
-  'xorriso' // eggs
+  'xorriso', // eggs
+  'yq', // mom restored
 ]
 
 /**

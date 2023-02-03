@@ -52,8 +52,8 @@ case "$1" in
         fi
 
         # revitalize mom
-        if [ -f "/usr/lib/penguins-eggs/scripts/mom-cli.sh" ]; then  
-            chmod +x /usr/lib/penguins-eggs/scripts/mom-cli.sh
+        if [ -f "/usr/lib/penguins-eggs/scripts/mom.sh" ]; then  
+            chmod +x /usr/lib/penguins-eggs/scripts/mom.sh
         fi
 
         # Adding man page
