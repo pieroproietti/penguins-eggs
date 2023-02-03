@@ -597,7 +597,9 @@ DESCRIPTION
   restore users and user data from a LUKS volumes
 
 EXAMPLES
-  $ sudo eggs restore
+  sudo eggs restore
+
+  sudo eggs restore --file /path/to/fileLUKS
 ```
 
 _See code: [dist/commands/syncfrom.js](https://github.com/pieroproietti/penguins-eggs/blob/v9.3.22/dist/commands/syncfrom.js)_
