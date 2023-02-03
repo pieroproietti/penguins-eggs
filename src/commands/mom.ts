@@ -30,7 +30,7 @@ export default class Mom extends Command {
       process.exit(0)
     }
 
-    const cmd = path.resolve(__dirname, '../../scripts/mom-cli.sh')
+    const cmd = path.resolve(__dirname, '../../scripts/mom.sh')
     await exec(cmd)
   }
 }
