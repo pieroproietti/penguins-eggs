@@ -9,7 +9,7 @@ import Distro from '../../classes/distro'
 import Utils from '../../classes/utils'
 import { exec } from '../../lib/utils'
 import fs from 'fs'
-import Clean from './clean'
+import { Example } from '@oclif/core/lib/interfaces'
 
 const fkey = `/etc/apt/trusted.gpg.d/penguins-eggs-key.gpg`
 const flist = '/etc/apt/sources.list.d/penguins-eggs-ppa.list'
@@ -18,14 +18,17 @@ const flist = '/etc/apt/sources.list.d/penguins-eggs-ppa.list'
  *
  */
 export default class Ppa extends Command {
-    static description = 'add/remove PPA repositories (Debian family)'
-
     static flags = {
         add: Flags.boolean({ char: 'a', description: 'add penguins-eggs PPA repository' }),
         help: Flags.help({ char: 'h' }),
         remove: Flags.boolean({ char: 'r', description: 'remove penguins-eggs PPA repository' }),
         verbose: Flags.boolean({ char: 'v', description: 'verbose' })
     }
+    static description = 'add/remove PPA repositories (Debian family)'
+    static examples = [
+        "sudo eggs tools ppa --add",
+        "sudo eggs tools ppa --remove",
+    ]
 
     async run(): Promise<void> {
         const { flags } = await this.parse(Ppa)

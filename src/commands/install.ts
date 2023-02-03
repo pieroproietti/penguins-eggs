@@ -38,10 +38,13 @@ export default class Install extends Command {
     unattended: Flags.boolean({ char: 'u', description: 'Unattended installation' }),
     verbose: Flags.boolean({ char: 'v', description: 'Verbose' })
   }
+  static description = 'krill: the CLI system installer - the egg became a penguin!'
 
-  static description = 'command-line system installer - the egg became a penguin!'
-
-  static examples = ['$ eggs install\nInstall the system using krill installer\n']
+  static examples = [
+    "sudo eggs install", 
+    "sudo eggs install --unattended", 
+    "sudo eggs install --custom it"
+  ]
 
   /**
    * Execute

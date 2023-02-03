@@ -14,14 +14,15 @@ import Yolk from '../../classes/yolk'
  *
  */
 export default class DevYolk extends Command {
-  static description = 'configure eggs to install without internet'
-
-  static examples = ['$ eggs yolk -v']
-
   static flags = {
     help: Flags.help({ char: 'h' }),
     verbose: Flags.boolean({ char: 'v' })
   }
+  static description = 'configure eggs to install without internet'
+  static examples = [
+    "sudo eggs yolk"
+    ]
+
 
   static dir = '/var/local/yolk'
 

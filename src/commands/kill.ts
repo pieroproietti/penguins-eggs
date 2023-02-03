@@ -14,18 +14,19 @@ import { IWorkDir } from '../interfaces/i-workdir'
 import { exec } from '../lib/utils'
 
 export default class Kill extends Command {
-  config_file = '/etc/penguins-eggs.d/eggs.yaml' as string
-  snapshot_dir = '' as string
-  work_dir = {} as IWorkDir
-
-  static description = 'kill the eggs/free the nest'
-
   static flags = {
     help: Flags.help({ char: 'h' }),
     verbose: Flags.boolean({ char: 'v', description: 'verbose' })
   }
+  static description = 'kill the eggs/free the nest'
+  static examples = [
+    "sudo eggs kill"
+  ]
 
-  static examples = ['$ eggs kill\nkill the eggs/free the nest']
+  config_file = '/etc/penguins-eggs.d/eggs.yaml' as string
+  snapshot_dir = '' as string
+  work_dir = {} as IWorkDir
+
 
   async run(): Promise<void> {
     await Utils.titles(this.id + ' ' + this.argv)

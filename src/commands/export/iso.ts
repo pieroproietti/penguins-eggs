@@ -7,15 +7,18 @@ import Utils from '../../classes/utils'
 import { exec } from '../../lib/utils'
 
 export default class ExportIso extends Command {
-  static description = 'export iso in the destination host'
-
   static flags = {
     backup: Flags.boolean({ char: 'b', description: 'export backup ISOs' }),
     clean: Flags.boolean({ char: 'c', description: 'delete old ISOs before to copy' }),
     help: Flags.help({ char: 'h' }),
     verbose: Flags.boolean({ char: 'v', description: 'verbose' })
   }
-
+  static description = 'export iso in the destination host'
+  static examples = [
+    "eggs export iso",
+    "eggs export iso --clean",
+    "eggs export iso --backup"
+  ]
   async run(): Promise<void> {
     const { flags } = await this.parse(ExportIso)
     Utils.titles(this.id + ' ' + this.argv)

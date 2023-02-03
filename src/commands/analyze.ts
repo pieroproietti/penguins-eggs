@@ -15,18 +15,17 @@ import Users from '../classes/users'
 
 
 export default class Analyze extends Command {
-  config_file = '/etc/penguins-eggs.d/eggs.yaml' as string
-  snapshot_dir = '' as string
-  work_dir = {} as IWorkDir
-
-  static description = 'analyze for syncto'
 
   static flags = {
     help: Flags.help({ char: 'h' }),
     verbose: Flags.boolean({ char: 'v', description: 'verbose' })
   }
+  static description = 'analyze for syncto'
+  static examples = ['sudo eggs analyze']
 
-  static examples = ['$ sudo eggs analyze']
+  config_file = '/etc/penguins-eggs.d/eggs.yaml' as string
+  snapshot_dir = '' as string
+  work_dir = {} as IWorkDir
 
   async run(): Promise<void> {
     Utils.titles(this.id + ' ' + this.argv)

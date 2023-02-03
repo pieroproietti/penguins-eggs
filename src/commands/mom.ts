@@ -5,17 +5,22 @@
  * license: MIT
  */
 import { Command, Flags } from '@oclif/core'
+import { Example } from '@oclif/core/lib/interfaces'
 import path from 'node:path'
 import Utils from '../classes/utils'
 
 import { exec } from '../lib/utils'
 
 export default class Mom extends Command {
-  static description = 'ask for mommy - gui helper'
-
   static flags = {
     help: Flags.help({ char: 'h' })
   }
+  static description = 'ask help from mommy - TUI helper'
+  static examples = [
+    "eggs mom"
+  ]
+
+
 
   async run(): Promise<void> {
     Utils.titles(this.id + ' ' + this.argv)

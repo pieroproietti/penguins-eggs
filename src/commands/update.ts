@@ -16,14 +16,15 @@ import inquirer from 'inquirer'
  *
  */
 export default class Update extends Command {
-  static description = "update the penguin's eggs tool"
-
-  static examples = ["$ eggs update\nupdate/upgrade the penguin's eggs tool"]
-
   static flags = {
     help: Flags.help({ char: 'h' }),
     verbose: Flags.boolean({ char: 'v', description: 'verbose' })
   }
+  static description = "update the penguin's eggs tool"
+  static examples = [
+    "eggs update"
+  ]
+
 
   async run(): Promise<void> {
     Utils.titles(this.id + ' ' + this.argv)

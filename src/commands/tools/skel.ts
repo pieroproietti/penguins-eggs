@@ -10,20 +10,17 @@ import fs from 'fs'
 import Xdg from '../../classes/xdg'
 
 export default class Skel extends Command {
-  static description = 'update skel from home configuration'
-
-  // static aliases = ['skel']
-
-  static examples = [
-    `$ eggs skel --user mauro
-desktop configuration of user mauro will get used as default`
-  ]
-
   static flags = {
     help: Flags.help({ char: 'h' }),
     user: Flags.string({ char: 'u', description: 'user to be used' }),
     verbose: Flags.boolean({ char: 'v' })
   }
+  static description = 'update skel from home configuration'
+  static examples = [
+    "sudo eggs skel",
+    "sudo eggs skel --user user-to-be-copied"
+  ]
+
 
   async run(): Promise<void> {
     Utils.titles(this.id + ' ' + this.argv)
