@@ -18,17 +18,18 @@ import { exec } from '../lib/utils'
  *
  */
 export default class Config extends Command {
-  static description = 'Configure and install prerequisites deb packages to run it'
-
-  // static aliases = ['prerequisites']
   static flags = {
     clean: Flags.boolean({ char: 'c', description: 'remove old configuration before to create new one' }),
     help: Flags.help({ char: 'h' }),
     nointeractive: Flags.boolean({ char: 'n', description: 'assume yes' }),
     verbose: Flags.boolean({ char: 'v', description: 'verbose' })
   }
-
-  static examples = ['~$ sudo eggs config\nConfigure and install prerequisites deb packages to run it']
+  static description = 'Configure and install prerequisites deb packages to run it'
+  static examples = [
+    "sudo eggs config",
+    "sudo eggs config --clean",
+    "sudo eggs config --clean --noninteractive"
+  ]    
 
   async run(): Promise<void> {
     const { flags } = await this.parse(Config)

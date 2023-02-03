@@ -12,14 +12,6 @@ import Pacman from '../classes/pacman'
 import { IRemix } from '../interfaces'
 
 export default class Calamares extends Command {
-  static description = 'calamares or install or configure it'
-
-  remix = {} as IRemix
-
-  incubator = {} as Incubator
-
-  settings = {} as Settings
-
   static flags = {
     help: Flags.help({ char: 'h' }),
     install: Flags.boolean({ char: 'i', description: "install calamares and it's dependencies" }),
@@ -28,8 +20,20 @@ export default class Calamares extends Command {
     theme: Flags.string({ description: 'theme/branding for eggs and calamares' }),
     verbose: Flags.boolean({ char: 'v' })
   }
+  static description = 'configure calamares or install or configure it'
+  static examples = [
+    "sudo eggs calamares",
+    "sudo eggs calamares --install",
+    "sudo eggs calamares --install --theme=/path/to/theme",
+    "sudo eggs calamares --remove"
+  ]
 
-  static examples = ["~$ sudo eggs calamares \ncreate/renew calamares configuration's files\n", "~$ sudo eggs calamares -i \ninstall calamares and create it's configuration's files\n"]
+  remix = {} as IRemix
+
+  incubator = {} as Incubator
+
+  settings = {} as Settings
+
 
   async run(): Promise<void> {
     Utils.titles(this.id + ' ' + this.argv)

@@ -202,6 +202,9 @@ FLAGS
 
 DESCRIPTION
   adapt monitor resolution for VM only
+
+EXAMPLES
+  $ eggs adapt
 ```
 
 _See code: [dist/commands/adapt.js](https://github.com/pieroproietti/penguins-eggs/blob/v9.3.22/dist/commands/adapt.js)_
@@ -222,7 +225,7 @@ DESCRIPTION
   analyze for syncto
 
 EXAMPLES
-  $ sudo eggs analyze
+  sudo eggs analyze
 ```
 
 _See code: [dist/commands/analyze.js](https://github.com/pieroproietti/penguins-eggs/blob/v9.3.22/dist/commands/analyze.js)_
@@ -258,7 +261,7 @@ _See code: [@oclif/plugin-autocomplete](https://github.com/oclif/plugin-autocomp
 
 ## `eggs calamares`
 
-calamares or install or configure it
+configure calamares or install or configure it
 
 ```
 USAGE
@@ -273,14 +276,16 @@ FLAGS
   --theme=<value>  theme/branding for eggs and calamares
 
 DESCRIPTION
-  calamares or install or configure it
+  configure calamares or install or configure it
 
 EXAMPLES
-  ~$ sudo eggs calamares 
-  create/renew calamares configuration's files
+  sudo eggs calamares
 
-  ~$ sudo eggs calamares -i 
-  install calamares and create it's configuration's files
+  sudo eggs calamares --install
+
+  sudo eggs calamares --install --theme=/path/to/theme
+
+  sudo eggs calamares --remove
 ```
 
 _See code: [dist/commands/calamares.js](https://github.com/pieroproietti/penguins-eggs/blob/v9.3.22/dist/commands/calamares.js)_
@@ -303,8 +308,11 @@ DESCRIPTION
   Configure and install prerequisites deb packages to run it
 
 EXAMPLES
-  ~$ sudo eggs config
-  Configure and install prerequisites deb packages to run it
+  sudo eggs config
+
+  sudo eggs config --clean
+
+  sudo eggs config --clean --noninteractive
 ```
 
 _See code: [dist/commands/config.js](https://github.com/pieroproietti/penguins-eggs/blob/v9.3.22/dist/commands/config.js)_
@@ -324,15 +332,14 @@ DESCRIPTION
   PXE start with proxy-dhcp
 
 EXAMPLES
-  $ sudo eggs cuckoo
-  start a PXE server with dhcp-proxy (can coexists with a real dhcp server)
+  sudo eggs cuckoo
 ```
 
 _See code: [dist/commands/cuckoo.js](https://github.com/pieroproietti/penguins-eggs/blob/v9.3.22/dist/commands/cuckoo.js)_
 
 ## `eggs dad`
 
-ask help from daddy - configuration helper
+ask help from daddy - TUI configuration helper
 
 ```
 USAGE
@@ -345,7 +352,14 @@ FLAGS
   -v, --verbose
 
 DESCRIPTION
-  ask help from daddy - configuration helper
+  ask help from daddy - TUI configuration helper
+
+EXAMPLES
+  sudo dad
+
+  sudo dad --clean
+
+  sudo dad --default
 ```
 
 _See code: [dist/commands/dad.js](https://github.com/pieroproietti/penguins-eggs/blob/v9.3.22/dist/commands/dad.js)_
@@ -366,6 +380,13 @@ FLAGS
 
 DESCRIPTION
   export deb/docs/iso to the destination host
+
+EXAMPLES
+  $ eggs export deb
+
+  $ eggs export deb --clean
+
+  $ eggs export deb --all
 ```
 
 ## `eggs export iso`
@@ -384,6 +405,13 @@ FLAGS
 
 DESCRIPTION
   export iso in the destination host
+
+EXAMPLES
+  $ eggs export iso
+
+  $ eggs export iso --clean
+
+  $ eggs export iso --backup
 ```
 
 ## `eggs help [COMMAND]`
@@ -408,7 +436,7 @@ _See code: [@oclif/plugin-help](https://github.com/oclif/plugin-help/blob/v5.1.2
 
 ## `eggs install`
 
-command-line system installer - the egg became a penguin!
+krill: the CLI system installer - the egg became a penguin!
 
 ```
 USAGE
@@ -430,11 +458,14 @@ FLAGS
   -v, --verbose         Verbose
 
 DESCRIPTION
-  command-line system installer - the egg became a penguin!
+  krill: the CLI system installer - the egg became a penguin!
 
 EXAMPLES
-  $ eggs install
-  Install the system using krill installer
+  sudo eggs install
+
+  sudo eggs install --unattended
+
+  sudo eggs install --custom it
 ```
 
 _See code: [dist/commands/install.js](https://github.com/pieroproietti/penguins-eggs/blob/v9.3.22/dist/commands/install.js)_
@@ -455,15 +486,14 @@ DESCRIPTION
   kill the eggs/free the nest
 
 EXAMPLES
-  $ eggs kill
-  kill the eggs/free the nest
+  sudo eggs kill
 ```
 
 _See code: [dist/commands/kill.js](https://github.com/pieroproietti/penguins-eggs/blob/v9.3.22/dist/commands/kill.js)_
 
 ## `eggs mom`
 
-ask for mommy - gui helper
+ask help from mommy - TUI helper
 
 ```
 USAGE
@@ -473,7 +503,10 @@ FLAGS
   -h, --help  Show CLI help.
 
 DESCRIPTION
-  ask for mommy - gui helper
+  ask help from mommy - TUI helper
+
+EXAMPLES
+  $ eggs mom
 ```
 
 _See code: [dist/commands/mom.js](https://github.com/pieroproietti/penguins-eggs/blob/v9.3.22/dist/commands/mom.js)_
@@ -507,35 +540,19 @@ DESCRIPTION
   produce a live image from your system whithout your data
 
 EXAMPLES
-  $ sudo eggs produce 
-  produce an ISO called [hostname]-[arch]-YYYY-MM-DD_HHMM.iso, compressed xz (standard compression).
-  If hostname=ugo and arch=i386 ugo-x86-2020-08-25_1215.iso
+  sudo eggs produce
 
-  $ sudo eggs produce -v
-  same as previuos, but with --verbose output
+  sudo eggs produce --fast
 
-  $ sudo eggs produce -vf
-  same as previuos, compression zstd, lz4 or gzip (depend from system capability)
+  sudo eggs produce --max
 
-  $ sudo eggs produce -vm
-  same as previuos, compression xz -Xbcj x86 (max compression, about 10%
-  more compressed)
+  sudo eggs produce --fast --basename=colibri
 
-  $ sudo eggs produce -vf --basename leo --theme debian --addons adapt 
-  produce an ISO called leo-i386-2020-08-25_1215.iso compression fast,
-  using Debian theme and link to adapt
+  sudo eggs produce --fast --basename=colibri --theme /path/to/theme --addons adapt
 
-  $ sudo eggs produce -v --basename leo --theme debian --addons rsupport 
-  produce an ISO called leo-i386-2020-08-25_1215.iso compression xz,
-  using Debian theme and link to dwagent
+  sudo eggs produce --fast --clone
 
-  $ sudo eggs produce -v --basename leo --rsupport 
-  produce an ISO called leo-i386-2020-08-25_1215.iso compression xz, using eggs
-  theme and link to dwagent
-
-  $ sudo eggs produce -vs --basename leo --rsupport 
-  produce scripts to build an ISO as the previus example. Scripts can be found
-  in /home/eggs/ovarium and you can customize all you need
+  sudo eggs produce --fast --backup
 ```
 
 _See code: [dist/commands/produce.js](https://github.com/pieroproietti/penguins-eggs/blob/v9.3.22/dist/commands/produce.js)_
@@ -554,6 +571,9 @@ FLAGS
 
 DESCRIPTION
   informations about eggs status
+
+EXAMPLES
+  $ eggs status
 ```
 
 _See code: [dist/commands/status.js](https://github.com/pieroproietti/penguins-eggs/blob/v9.3.22/dist/commands/status.js)_
@@ -600,7 +620,9 @@ DESCRIPTION
   saves users and user data in a LUKS volume inside the iso
 
 EXAMPLES
-  $ sudo eggs syncto
+  sudo eggs syncto
+
+  sudo eggs syncto --file /path/to/fileLUKS
 ```
 
 _See code: [dist/commands/syncto.js](https://github.com/pieroproietti/penguins-eggs/blob/v9.3.22/dist/commands/syncto.js)_
@@ -619,6 +641,9 @@ FLAGS
 
 DESCRIPTION
   clean system log, apt, etc
+
+EXAMPLES
+  sudo eggs tools clean
 ```
 
 ## `eggs tools ppa`
@@ -637,6 +662,11 @@ FLAGS
 
 DESCRIPTION
   add/remove PPA repositories (Debian family)
+
+EXAMPLES
+  sudo eggs tools ppa --add
+
+  sudo eggs tools ppa --remove
 ```
 
 ## `eggs tools skel`
@@ -656,8 +686,9 @@ DESCRIPTION
   update skel from home configuration
 
 EXAMPLES
-  $ eggs skel --user mauro
-  desktop configuration of user mauro will get used as default
+  sudo eggs skel
+
+  sudo eggs skel --user user-to-be-copied
 ```
 
 ## `eggs tools stat`
@@ -675,6 +706,13 @@ FLAGS
 
 DESCRIPTION
   get statistics from sourceforge
+
+EXAMPLES
+  $ eggs tools stat
+
+  $ eggs tools stat --month
+
+  $ eggs tools stat --year
 ```
 
 ## `eggs tools yolk`
@@ -693,7 +731,7 @@ DESCRIPTION
   configure eggs to install without internet
 
 EXAMPLES
-  $ eggs yolk -v
+  sudo eggs yolk
 ```
 
 ## `eggs update`
@@ -713,7 +751,6 @@ DESCRIPTION
 
 EXAMPLES
   $ eggs update
-  update/upgrade the penguin's eggs tool
 ```
 
 _See code: [dist/commands/update.js](https://github.com/pieroproietti/penguins-eggs/blob/v9.3.22/dist/commands/update.js)_

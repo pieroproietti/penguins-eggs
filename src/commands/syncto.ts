@@ -37,6 +37,17 @@ import { use } from 'chai'
  *
  */
 export default class Syncto extends Command {
+    static flags = {
+        delete: Flags.string({ description: 'rsync --delete delete extraneous files from dest dirs' }),
+        file: Flags.string({ char: 'f', description: "file LUKS volume encrypted" }),
+        help: Flags.help({ char: 'h' }),
+        verbose: Flags.boolean({ char: 'v', description: 'verbose' })
+    }
+    static description = `saves users and user data in a LUKS volume inside the iso`
+    static examples = [
+        "sudo eggs syncto",
+        "sudo eggs syncto --file /path/to/fileLUKS"
+    ]
 
     verbose = false
 
@@ -49,19 +60,6 @@ export default class Syncto extends Command {
     luksDevice = `/dev/mapper/${this.luksName}`
 
     luksMountpoint = '/tmp/eggs-backup'
-
-    static description = `saves users and user data in a LUKS volume inside the iso`
-
-    static flags = {
-        delete: Flags.string({ description: 'rsync --delete delete extraneous files from dest dirs' }),
-        file: Flags.string({ char: 'f', description: "file LUKS volume encrypted" }),
-        help: Flags.help({ char: 'h' }),
-        verbose: Flags.boolean({ char: 'v', description: 'verbose' })
-    }
-
-    // static aliases = ['backup']
-
-    static examples = ['$ sudo eggs syncto']
 
     /**
      *

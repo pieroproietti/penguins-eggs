@@ -34,16 +34,14 @@ export default class Produce extends Command {
   }
 
   static description = 'produce a live image from your system whithout your data'
-
   static examples = [
-    '$ sudo eggs produce \nproduce an ISO called [hostname]-[arch]-YYYY-MM-DD_HHMM.iso, compressed xz (standard compression).\nIf hostname=ugo and arch=i386 ugo-x86-2020-08-25_1215.iso\n',
-    '$ sudo eggs produce -v\nsame as previuos, but with --verbose output\n',
-    '$ sudo eggs produce -vf\nsame as previuos, compression zstd, lz4 or gzip (depend from system capability)\n',
-    '$ sudo eggs produce -vm\nsame as previuos, compression xz -Xbcj x86 (max compression, about 10%\nmore compressed)\n',
-    '$ sudo eggs produce -vf --basename leo --theme debian --addons adapt \nproduce an ISO called leo-i386-2020-08-25_1215.iso compression fast,\nusing Debian theme and link to adapt\n',
-    '$ sudo eggs produce -v --basename leo --theme debian --addons rsupport \nproduce an ISO called leo-i386-2020-08-25_1215.iso compression xz,\nusing Debian theme and link to dwagent\n',
-    '$ sudo eggs produce -v --basename leo --rsupport \nproduce an ISO called leo-i386-2020-08-25_1215.iso compression xz, using eggs\ntheme and link to dwagent\n',
-    '$ sudo eggs produce -vs --basename leo --rsupport \nproduce scripts to build an ISO as the previus example. Scripts can be found\nin /home/eggs/ovarium and you can customize all you need\n'
+    "sudo eggs produce",
+    "sudo eggs produce --fast",
+    "sudo eggs produce --max",
+    "sudo eggs produce --fast --basename=colibri",
+    "sudo eggs produce --fast --basename=colibri --theme /path/to/theme --addons adapt",
+    "sudo eggs produce --fast --clone",
+    "sudo eggs produce --fast --backup",
   ]
 
   async run(): Promise<void> {

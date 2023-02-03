@@ -10,17 +10,14 @@ import { ITftpOptions, IDhcpOptions } from '../interfaces/i-pxe-options'
 const tftp = require('tftp')
 
 export default class Cuckoo extends Command {
-  static description = 'PXE start with proxy-dhcp'
-
-  static examples = [
-    `$ sudo eggs cuckoo
-start a PXE server with dhcp-proxy (can coexists with a real dhcp server)
-`,
-  ]
-
   static flags = {
     help: Flags.help({ char: 'h' }),
   }
+  static description = 'PXE start with proxy-dhcp'
+  static examples = [
+    "sudo eggs cuckoo"
+  ]
+
 
   async run(nest = '/home/eggs'): Promise<void> {
     const { args, flags } = await this.parse(Cuckoo)

@@ -12,14 +12,18 @@ import chalk from 'chalk'
 import { exec } from '../lib/utils'
 
 export default class Dad extends Command {
-  static description = 'ask help from daddy - configuration helper'
-
   static flags = {
     clean: Flags.boolean({ char: 'c', description: 'remove old configuration before to create' }),
     default: Flags.boolean({ char: 'd', description: 'remove old configuration and force default' }),
     help: Flags.help({ char: 'h' }),
     verbose: Flags.boolean({ char: 'v' })
   }
+  static description = 'ask help from daddy - TUI configuration helper'
+  static examples = [
+    "sudo dad", 
+    "sudo dad --clean", 
+    "sudo dad --default"
+  ]
 
   async run(): Promise<void> {
     Utils.titles(this.id + ' ' + this.argv)
