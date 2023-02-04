@@ -9,8 +9,9 @@ export default class Adapt extends Command {
     verbose: Flags.boolean({ char: 'v' })
   }
   static description = 'adapt monitor resolution for VM only'
-  static examples = [`eggs adapt`]
-
+  static examples = [
+    `eggs adapt`
+  ]
 
   async run(): Promise<void> {
     const { args, flags } = await this.parse(Adapt)

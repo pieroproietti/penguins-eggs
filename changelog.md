@@ -24,7 +24,7 @@ Versions are listed on reverse order, the first is the last one. Old versions ar
 ### eggs-9.3.23
 * mom: a revamped mom to be used interactively as a help viewer of eggs commands;
 * usage, description and examples renewed or added for all eggs commands;
-* please note that the USAGE section found in the README can be used as a cheat sheet of eggs.
+* please NOTE that the USAGE section found in the README, the command: ```man eggs``` and the command ```eggs mom``` share always the same UPDATED informations.
 
 ### eggs-9.3.22
 * due a bug - I forgot to remove "," in the new derivatives.yaml - I release this new version with Linuxmind victoria added.
