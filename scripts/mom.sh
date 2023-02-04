@@ -49,51 +49,60 @@ function config() {
 }
 
 ################################
-function documentation {
+function documentation() {
    while true; do
 
-      menu "book" "book_transtated" "manual" "man" "quit"
+      menu "book" "manual" "man" "repository" "sourceforge" "quit"
       choose=$(0< "${dir_tmp}/${file_tmp}" )
 
       case "$choose" in 
          book)
             documentation_book ;;
-         book_translated)
-            documentation_book_translated ;;
          manual)
             documentation_html ;;
          man)
             documentation_man ;;
+         repository)
+            documentation_repository ;;
+         sourceforge)
+            documentation_sourceforge ;;
          quit)
-            exit 0 ;;
+            break ;;
       esac
    done
 }
 
 ################################
-function documentation_book {
+function documentation_book() {
    xdg-open "https://penguins-eggs.net/book/italiano"
 }
 
 ################################
-function documentation_book_translated {
-   xdg-open "https://translate.google.com/translate?hl=en&sl=auto&tl=en&u=https%3A%2F%2Fpenguins-eggs.net%2Fbook%2Fitaliano"
-}
-
-################################
-function documentation_site {
+function documentation_site() {
    xdg-open "https://penguins-eggs.net"
 }
 
 ################################
-function documentation_man {
-   "man eggs"
+function documentation_html() {
+   xdg-open "file:///usr/lib/penguins-eggs/manpages/doc/man/eggs.html"
 }
 
 ################################
-function documentation_html {
-   xdg-open "file:///usr/lib/penguins-eggs/manpages/doc/man/eggs.html"
+function documentation_man() {
+   man eggs
 }
+
+################################
+function documentation_repository() {
+   xdg-open "https://github.com/pieroproietti/penguins-eggs"
+}
+
+################################
+function documentation_sourceforge() {
+   xdg-open "https://sourceforge.com/project/penguins-eggs"
+}
+
+
 
 ################################
 function press_a_key_to_continue {
