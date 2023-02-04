@@ -8,19 +8,22 @@ import { IMateria } from '../../interfaces'
 
 // libraries
 import chalk from 'chalk'
+import { Example } from '@oclif/core/lib/interfaces'
 
 /**
  *
  */
 export default class List extends Command {
-  static description = 'list costumes and accessoires in wardrobe'
-
-  static args = [{ name: 'wardrobe', description: 'wardrobe', required: false }]
-
   static flags = {
     help: Flags.help({ char: 'h' }),
     verbose: Flags.boolean({ char: 'v' })
   }
+  static args = [{ name: 'wardrobe', description: 'wardrobe', required: false }]
+  static description = 'list costumes and accessoires in wardrobe'
+  static examples=[
+    "eggs wardrobe list",
+    "eggs wardrobe list your-wardrove",
+  ]
 
   async run(): Promise<void> {
     const { args, flags } = await this.parse(List)

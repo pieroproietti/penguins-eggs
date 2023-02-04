@@ -12,16 +12,19 @@ import chalk from 'chalk'
  *
  */
 export default class Show extends Command {
-    static description = 'show costumes/accessories in wardrobe'
-
-    static args = [{ name: 'costume', description: 'costume', required: false }]
-
     static flags = {
         help: Flags.help({ char: 'h' }),
         json: Flags.boolean({ char: 'j', description: 'output JSON' }),
         verbose: Flags.boolean({ char: 'v' }),
         wardrobe: Flags.string({ char: 'w', description: 'wardrobe' }),
     }
+    static description = 'show costumes/accessories in wardrobe'
+    static args = [{ name: 'costume', description: 'costume', required: false }]
+    static example=[
+        "eggs wardrobe show colibri",
+        "eggs wardrobe show accessories/firmwares",
+        "eggs wardrobe show accessories/"
+    ]
 
     async run(): Promise<void> {
         const { args, flags } = await this.parse(Show)

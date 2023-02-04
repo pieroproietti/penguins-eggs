@@ -5,18 +5,10 @@ import path from 'path'
 import fs from 'fs'
 import Tailor from '../../classes/tailor'
 
-// libraries
-import { exec } from '../../lib/utils'
-
-
 /**
  *
  */
 export default class Wear extends Command {
-  static description = 'wear costume/accessories from wardrobe'
-
-  static args = [{ name: 'costume', description: 'costume', required: false }]
-
   static flags = {
     help: Flags.help({ char: 'h' }),
     no_accessories: Flags.boolean({ char: 'a', description: 'not install accessories' }),
@@ -25,6 +17,14 @@ export default class Wear extends Command {
     verbose: Flags.boolean({ char: 'v' }),
     wardrobe: Flags.string({ char: 'w', description: 'wardrobe' }),
   }
+  static description = 'wear costume/accessories from wardrobe'
+  static args = [{ name: 'costume', description: 'costume', required: false }]
+  static examples=[
+    "sudo eggs wardrobe wear duck",
+    "sudo eggs wardrobe wear accessories/firmwares",
+    "sudo eggs wardrobe wear wagtail/waydroid"
+  ]
+
 
   async run(): Promise<void> {
     const { argv, flags } = await this.parse(Wear)

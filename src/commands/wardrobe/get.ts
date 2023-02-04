@@ -11,14 +11,16 @@ import { basename } from 'path'
  *
  */
 export default class Get extends Command {
-  static description = 'get warorobe'
-
-  static args = [{ name: 'repo', description: 'repository to get', required: false }]
-
   static flags = {
     help: Flags.help({ char: 'h' }),
     verbose: Flags.boolean({ char: 'v' })
   }
+  static args = [{ name: 'repo', description: 'repository to get', required: false }]
+  static description = 'get warorobe'
+  static examples=[
+    "eggs wardrobe get",
+    "eggs wardrobe get your-wardrobe"
+  ]
 
   async run(): Promise<void> {
     const { args, flags } = await this.parse(Get)
