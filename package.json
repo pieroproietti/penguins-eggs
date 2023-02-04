@@ -55,7 +55,7 @@
         "mocha": "^10.2.0",
         "nyc": "^15.1.0",
         "oclif-pnpm": "^3.4.3-1",
-        "perrisbrewery": "^9.3.14",
+        "perrisbrewery": "^9.3.15",
         "ts-node": "^10.9.1"
     },
     "peerDependencies": {
@@ -110,8 +110,8 @@
         "build": "tsc -p .",
         "deb": "oclif pack:deb && pb deb ./",
         "docs": "rm docs -rf && npx typedoc src --out docs",
-        "lint": "eslint . --ext .ts --config .eslintrc",
         "lint-and-fix": "eslint . --ext .ts --fix --config .eslintrc",
+        "lint": "eslint . --ext .ts --config .eslintrc",
         "postpack": "rm -f oclif.manifest.json",
         "posttest": "eslint . --ext .ts --config .eslintrc",
         "prepack": "rm dist -rf && tsc -b && oclif manifest && oclif readme",

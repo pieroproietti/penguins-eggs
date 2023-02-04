@@ -21,6 +21,11 @@ You can follow the project also consulting the [commit history](https://github.c
 ## Changelog
 Versions are listed on reverse order, the first is the last one. Old versions are moved to [versions](https://sourceforge.net/projects/penguins-eggs/files/packages-deb/versions/). 
 
+### eggs-9.3.23
+* mom: a revamped mom to be used interactively as a help viewer of eggs commands;
+* usage, description and examples renewed or added for all eggs commands;
+* please note that the USAGE section found in the README can be used as a cheat sheet of eggs.
+
 ### eggs-9.3.22
 * due a bug - I forgot to remove "," in the new derivatives.yaml - I release this new version with Linuxmind victoria added.
 

@@ -794,6 +794,11 @@ FLAGS
 
 DESCRIPTION
   get warorobe
+
+EXAMPLES
+  $ eggs wardrobe get
+
+  $ eggs wardrobe get your-wardrobe
 ```
 
 ## `eggs wardrobe list [WARDROBE]`
@@ -813,6 +818,11 @@ FLAGS
 
 DESCRIPTION
   list costumes and accessoires in wardrobe
+
+EXAMPLES
+  $ eggs wardrobe list
+
+  $ eggs wardrobe list your-wardrove
 ```
 
 ## `eggs wardrobe show [COSTUME]`
@@ -834,6 +844,13 @@ FLAGS
 
 DESCRIPTION
   show costumes/accessories in wardrobe
+
+EXAMPLES
+  $ eggs wardrobe show colibri
+
+  $ eggs wardrobe show accessories/firmwares
+
+  $ eggs wardrobe show accessories/
 ```
 
 ## `eggs wardrobe wear [COSTUME]`
@@ -857,6 +874,13 @@ FLAGS
 
 DESCRIPTION
   wear costume/accessories from wardrobe
+
+EXAMPLES
+  sudo eggs wardrobe wear duck
+
+  sudo eggs wardrobe wear accessories/firmwares
+
+  sudo eggs wardrobe wear wagtail/waydroid
 ```
 <!-- commandsstop -->
 

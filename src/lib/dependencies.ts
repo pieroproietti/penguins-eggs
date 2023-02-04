@@ -50,6 +50,7 @@ export const depCommon = [
   'dpkg-dev', // yolk
   'git', // wardrobe
   'isolinux', // eggs
+  'jq', // mom restored
   'live-boot-initramfs-tools', // eggs
   'live-boot', // eggs
   'lsb-release', // eggs
@@ -61,7 +62,6 @@ export const depCommon = [
   'sshfs', // eggs
   'syslinux-common', // eggs
   'xorriso', // eggs
-  'yq', // mom restored
 ]
 
 /**
