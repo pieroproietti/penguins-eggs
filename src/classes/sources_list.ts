@@ -9,10 +9,6 @@ import chalk from 'chalk'
 import Utils from './utils'
 import { IMateria } from '../interfaces'
 import { exec } from '../lib/utils'
-import fs from 'fs'
-import path from 'path'
-import yaml from 'js-yaml'
-import Pacman from './pacman'
 import Distro from './distro'
 
 
