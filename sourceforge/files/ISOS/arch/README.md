@@ -148,7 +148,7 @@ In Arch - at the moment - I was able to boot via PXE just on BIOS system not UEF
 * Repository: [penguins-eggs](https://github.com/pieroproietti/penguins-eggs)
 * Blog: [penguins-eggs](https://penguins-eggs.net)
 
-* You can find more informations on this Linux distro at: [manjaro](https://manjaro.org/).
+* You can find more informations on this Linux distro at: [Arch](https://archlinux.org/).
 
 
 Disclaim
