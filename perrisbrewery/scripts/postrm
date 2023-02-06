@@ -28,7 +28,6 @@ case "$1" in
 
     purge|remove|upgrade|failed-upgrade|abort-install|abort-upgrade|disappear)
         # scripts
-        rm -f /usr/local/bin/g4*
         rm -f /usr/bin/adapt
         rm -f /usr/sbin/resy
 
