@@ -57,9 +57,10 @@ If you want remaster your customized version, just:
 
 `sudo eggs produce --fast theme ./wardrobe/themes/waydroid`
 
-* All the versions are configured with ``no-hardware-accelleration`` to be used, modified and remastered under a virtializator: [proxmox-ve](https://www.proxmox.com/en/proxmox-ve), virtualbox or others.
+* All the versions are configured with ``no-hardware-accelleration`` to be used, modified and remastered under a virtualizator: [proxmox-ve](https://www.proxmox.com/en/proxmox-ve), virtualbox or others.
 
 * Support and feedback: https://t.me/penguins_eggs
+
 
 # Installing Linux Waydroid via PXE
 
