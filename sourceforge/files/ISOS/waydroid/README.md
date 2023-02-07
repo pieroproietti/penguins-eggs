@@ -58,13 +58,13 @@ An ultra light wayland/weston/waydroid for developers
 
 * All the versions are configured with ``no-hardware-accelleration`` to be used, modified and remastered under a virtializator: [proxmox-ve](https://www.proxmox.com/en/proxmox-ve), virtualbox or others.
 
-* You can remaster using theme [waydroid](https://github.com/pieroproietti/penguins-addons) adding  ```--theme ./path/to/theme/waydroid``` to your produce command.
+* You can remaster using theme [waydroid](https://github.com/pieroproietti/penguins-addons) adding  ``--theme ./path/to/theme/waydroid`` to your produce command.
 
 # Installing Linux Waydroid via PXE
 
 One feature of ISO images made with eggs is the ability to be used for network installation . All you have to do is boot the ISO to be installed, open a terminal window and type the command: 
 
-```sudo eggs cuckoo```.
+``sudo eggs cuckoo``.
 
 Then all you have to do is boot from the network the machines to be installed and start the calamares or krill installer.
 
