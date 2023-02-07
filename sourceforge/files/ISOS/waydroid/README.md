@@ -23,24 +23,6 @@ All ISOs include eggs, you can udate it with: ```sudo eggs update```.
 
 A container-based approach to boot a full Android system on a regular GNU/Linux system like Ubuntu.
 
-Note: this waydroid customization are made mostly for developers. so we put inside just firmware for wifi to let you to be able to get what you need more.
-
-
-I use an automatic method to build this iso, just install a minimal Debian bookworm version add eggs and give basically the following commands:
-
-`eggs wardrobe get`
-
-`sudo eggs wardrobe wear wagtail / warbler / wispbird`
-
-After that reboot!
-
-To rebuild your customized version with waydroid theme, just:
-
-`sudo eggs calamares --install`
-
-`sudo eggs tools clean`
-
-`sudo eggs produce --fast theme ./wardrobe/themes/waydroid`
 
 # 
 ##  **wagtail**
@@ -52,9 +34,28 @@ A light wayland/kde/waydroid for developers
 ##  **whipbird**
 An ultra light wayland/weston/waydroid for developers
 
+
+* If you want the official waydroid version look at [Waydroid](https://waydro.id/#wdlinux). 
+
 ### NOTE
 
-* Here you will find my waydroid remastered against latest versions of eggs, you can find more official waydroid versions on their site [Waydroid](https://waydro.id/#wdlinux). 
+This waydroid customization are made mostly for developers. so we put inside just firmware for wifi to let you to be able to get what you need more.
+
+I'm using an automatic method to build this iso: just install a minimal Debian bookworm version add eggs and - basically - give the following commands:
+
+`eggs wardrobe get`
+
+`sudo eggs wardrobe wear wagtail / warbler / wispbird`
+
+After that reboot, You are ready!
+
+If you want remaster your customized version, just:
+
+`sudo eggs calamares --install`
+
+`sudo eggs tools clean`
+
+`sudo eggs produce --fast theme ./wardrobe/themes/waydroid`
 
 * All the versions are configured with ``no-hardware-accelleration`` to be used, modified and remastered under a virtializator: [proxmox-ve](https://www.proxmox.com/en/proxmox-ve), virtualbox or others.
 
