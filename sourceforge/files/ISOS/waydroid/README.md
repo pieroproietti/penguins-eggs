@@ -28,19 +28,19 @@ Note: this waydroid customization are made mostly for developers. so we put insi
 
 I use an automatic method to build this iso, just install a minimal Debian bookworm version add eggs and give basically the following commands:
 
-eggs wardrobe get
+`eggs wardrobe get`
 
-sudo eggs wardrobe wear wagtail/warbler/wispbird
+`sudo eggs wardrobe wear wagtail / warbler / wispbird`
 
 After that reboot!
 
 To rebuild your customized version with waydroid theme, just:
 
-sudo eggs calamares --install
+`sudo eggs calamares --install`
 
-sudo eggs tools clean
+`sudo eggs tools clean`
 
-sudo eggs produce --fast theme ./wardrobe/themes/waydroid
+`sudo eggs produce --fast theme ./wardrobe/themes/waydroid`
 
 # 
 ##  **wagtail**
