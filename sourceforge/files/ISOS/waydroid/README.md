@@ -45,7 +45,7 @@ I'm using an automatic method to build this iso: just install a minimal Debian b
 
 `eggs wardrobe get`
 
-`sudo eggs wardrobe wear wagtail / warbler / wispbird`
+`sudo eggs wardrobe wear wagtail / warbler / whipbird`
 
 After that reboot, You are ready!
 
@@ -59,7 +59,7 @@ If you want remaster your customized version, just:
 
 * All the versions are configured with ``no-hardware-accelleration`` to be used, modified and remastered under a virtualizator: [proxmox-ve](https://www.proxmox.com/en/proxmox-ve), virtualbox or others.
 
-* Support and feedback: https://t.me/penguins_eggs
+* Support me and give feedback: https://t.me/penguins_eggs
 
 
 # Installing Linux Waydroid via PXE
