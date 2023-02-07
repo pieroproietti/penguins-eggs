@@ -57,7 +57,7 @@ If you want remaster your customized version, just:
 
 `sudo eggs produce --fast theme ./wardrobe/themes/waydroid`
 
-**Support me and give feedback: https://t.me/penguins_eggs**
+**Support me and give feedback please: https://t.me/penguins_eggs**
 
 
 # Installing Linux Waydroid via PXE
