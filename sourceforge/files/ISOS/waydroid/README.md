@@ -21,12 +21,26 @@ All ISOs include eggs, you can udate it with: ```sudo eggs update```.
 
 # [Waydroid - Container-based Android for Linux](https://waydro.id/)
 
- A container-based approach to boot a full Android system on a regular GNU/Linux system like Ubuntu.
+A container-based approach to boot a full Android system on a regular GNU/Linux system like Ubuntu.
+
+Note: this waydroid customization are made mostly for developers. so we put inside just firmware for wifi to let you to be able to get what you need more.
 
 
-You can find this customizations under [Debian/bookworm](https://sourceforge.net/projects/penguins-eggs/files/ISOS/debian/bookworm/), 
-[Ubuntu/jammy](https://sourceforge.net/projects/penguins-eggs/files/ISOS/ubuntu/jammy/), 
-[Ubuntu/kinetic](https://sourceforge.net/projects/penguins-eggs/files/ISOS/ubuntu/kinetic/)
+I use an automatic method to build this iso, just install a minimal Debian bookworm version add eggs and give basically the following commands:
+
+eggs wardrobe get
+
+sudo eggs wardrobe wear wagtail/warbler/wispbird
+
+After that reboot!
+
+To rebuild your customized version with waydroid theme, just:
+
+sudo eggs calamares --install
+
+sudo eggs tools clean
+
+sudo eggs produce --fast theme ./wardrobe/themes/waydroid
 
 # 
 ##  **wagtail**
