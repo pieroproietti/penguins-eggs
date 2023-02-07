@@ -59,7 +59,7 @@ If you want remaster your customized version, just:
 
 * All the versions are configured with ``no-hardware-accelleration`` to be used, modified and remastered under a virtualizator: [proxmox-ve](https://www.proxmox.com/en/proxmox-ve), virtualbox or others.
 
-* Support me and give feedback: https://t.me/penguins_eggs
+**Support me and give feedback: https://t.me/penguins_eggs**
 
 
 # Installing Linux Waydroid via PXE
