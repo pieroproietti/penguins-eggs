@@ -39,9 +39,9 @@ An ultra light wayland/weston/waydroid for developers
 
 ### NOTE
 
-This waydroid customization are made mostly for developers. so we put inside just firmware for wifi to let you to be able to get what you need more.
+This waydroid customization are made mostly for developers. so I put inside just firmware for wifi to let you to be able to get what else you need. All the versions are configured with ``no-hardware-accelleration`` to be used, modified and remastered under a virtualizator: [proxmox-ve](https://www.proxmox.com/en/proxmox-ve), virtualbox or others.
 
-I'm using an automatic method to build this iso: just install a minimal Debian bookworm version add eggs and - basically - give the following commands:
+I'm using an automatic method to build this iso: I just start with a minimal Debian bookworm CLI, add eggs and - basically - give the following commands:
 
 `eggs wardrobe get`
 
@@ -56,8 +56,6 @@ If you want remaster your customized version, just:
 `sudo eggs tools clean`
 
 `sudo eggs produce --fast theme ./wardrobe/themes/waydroid`
-
-* All the versions are configured with ``no-hardware-accelleration`` to be used, modified and remastered under a virtualizator: [proxmox-ve](https://www.proxmox.com/en/proxmox-ve), virtualbox or others.
 
 **Support me and give feedback: https://t.me/penguins_eggs**
 
