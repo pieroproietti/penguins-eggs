@@ -10,48 +10,34 @@ penguins-eggs
 [![deb](https://img.shields.io/badge/deb-packages-blue)](https://sourceforge.net/projects/penguins-eggs/files/DEBS)
 [![pkgbuild](https://img.shields.io/badge/pkgbuild-packages-blue)](https://sourceforge.net/projects/penguins-eggs/files/PKGBUILD)[![iso](https://img.shields.io/badge/iso-images-cyan)](https://sourceforge.net/projects/penguins-eggs/files/ISOS)
 
-# Debian remastered ISOs
-
-All ISOs are based on Debian buster, Debian bullseye
+# Chick
 
 # user/password
 * ```live/evolution```
 * ```root/evolution```
 
-# Debian bullseye
+# Debian bullseye chick
+# Ubuntu jammy chick
 
-## **naked**
-Just the juice, without GUI. You can start here to build your revolution!
+Cercando si essere leggeri con xfce4, leggere customizzazioni e programmi per la scuola.
 
-##  **colibri**
-A light xfce4 for developers you can easily start to improve eggs installing colibri.
-
-![colibri](https://a.fsdn.com/con/app/proj/penguins-eggs/screenshots/colibri.png/245/183)
-
-## **duck**
-cinnamon, office, multimedia with 5.17.0-1.2-liquorix-amd64 kernel.
-
-![duck](https://a.fsdn.com/con/app/proj/penguins-eggs/screenshots/duck.png/245/183)
- 
-## **eagle**
-xfce4 desktop plus [Proxmox VE](https://www.proxmox.com/en/proxmox-ve), install and configure it with static ip to enjoy KVM and containers virtualization.
-
-![eagle](https://a.fsdn.com/con/app/proj/penguins-eggs/screenshots/eagle.png/245/183)
-
-## **owl**
-xfce4 for graphics designers, with 5.17.0-1.2-liquorix-amd64 kernel, based on the work of Clarlie Martinez 
- [quirinux](https://quirinux.org/).
-
-![owl](https://a.fsdn.com/con/app/proj/penguins-eggs/screenshots/owl.png/245/183)
 
 ## More informations:
 
-Note: you can build your colibri or duck, just starting from naked:
+Note: you can build both: Ubuntu and Debian chick using eggs and wardrobe
+
+# Ubuntu jammy chick
+
+* install xubuntu 22.04 minimun and install eggs
+* ```eggs wardrobe get```
+* ```sudo eggs wardrobe wear accessories/chick```
+
+# Debian bullseye chick
 
 * download the naked version and install it. ```sudo eggs install```
 * reboot the installed system and login with your credential
 * ```eggs wardrobe get```
-* ```sudo eggs wardrobe wear colibri```
+* ```sudo eggs wardrobe wear chick```
 
 It's nice?
 
