@@ -16,10 +16,10 @@ penguins-eggs
 * ```live/evolution```
 * ```root/evolution```
 
-# Debian bullseye chick
+# Ubuntu jammy chick
 XFCE4, leggera customizzazione e programmi per la scuola.
 
-# Ubuntu jammy chick
+# Debian bullseye chick
 XFCE4, leggera customizzazione e programmi per la scuola.
 
 ## More informations:
