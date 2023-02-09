@@ -17,14 +17,14 @@ penguins-eggs
 * ```root/evolution```
 
 # Debian bullseye chick
+XFCE4, leggera customizzazione e programmi per la scuola.
+
 # Ubuntu jammy chick
-
-Cercando si essere leggeri con xfce4, leggere customizzazioni e programmi per la scuola.
-
+XFCE4, leggera customizzazione e programmi per la scuola.
 
 ## More informations:
 
-Note: you can build both: Ubuntu and Debian chick using eggs and wardrobe
+Note: you can build both versions using eggs and wardrobe
 
 # Ubuntu jammy chick
 
