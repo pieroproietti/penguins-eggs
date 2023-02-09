@@ -908,4 +908,4 @@ There is a [Penguin's eggs official book](https://penguins-eggs.net/book/) and s
 You can contact me at pieroproietti@gmail.com or [meet me](https://meet.jit.si/PenguinsEggsMeeting)
 
 ## Copyright and licenses
-Copyright (c) 2017, 2022 [Piero Proietti](https://penguins-eggs.net/about-me.html), dual licensed under the MIT or GPL Version 2 licenses.
+Copyright (c) 2017, 2023 [Piero Proietti](https://penguins-eggs.net/about-me.html), dual licensed under the MIT or GPL Version 2 licenses.
