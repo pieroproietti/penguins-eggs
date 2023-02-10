@@ -10,7 +10,8 @@ penguins-eggs
 [![deb](https://img.shields.io/badge/deb-packages-blue)](https://sourceforge.net/projects/penguins-eggs/files/DEBS)
 [![pkgbuild](https://img.shields.io/badge/pkgbuild-packages-blue)](https://sourceforge.net/projects/penguins-eggs/files/PKGBUILD)[![iso](https://img.shields.io/badge/iso-images-cyan)](https://sourceforge.net/projects/penguins-eggs/files/ISOS)
 
-# Chick
+# Plastilinux
+Plastilinux vorrebbe diventare una meta-distribuzione per la scuola ed essere basata su differenti distribuzioni Linux e su customizzata utilizzando configurazioni gestite con il wardrobe di eggs.
 
 # user/password
 * ```live/evolution```
