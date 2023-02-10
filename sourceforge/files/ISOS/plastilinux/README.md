@@ -13,6 +13,8 @@ penguins-eggs
 # Plastilinux
 Plastilinux vorrebbe diventare una meta-distribuzione per la scuola ed essere basata su differenti distribuzioni Linux e customizzate utilizzando il [wardrobe](https://github.com/pieroproietti/penguins-wardrobe/tree/main/DOCUMENTATION#penguins-wardrobe) di [eggs](https://github.com/pieroproietti/penguins-eggs).
 
+![chick](http://penguins-eggs.net/images/chick.png)
+
 # user/password
 * ```live/evolution```
 * ```root/evolution```
@@ -29,7 +31,7 @@ Note: you can build both using the original distro, eggs and wardrobe
 
 # Ubuntu jammy chick
 
-* install xubuntu 22.04 minimun and install eggs
+* installa xubuntu 22.04 minimo, quindi installa eggs
 * ```eggs wardrobe get```
 * ```sudo eggs wardrobe wear accessories/chick```
 
