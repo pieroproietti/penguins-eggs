@@ -25,7 +25,7 @@ XFCE4, leggera customizzazione e programmi per la scuola.
 
 ## More informations:
 
-Note: you can build both versions using eggs and wardrobe
+Note: you can build both using the original distro, eggs and wardrobe
 
 # Ubuntu jammy chick
 
@@ -35,12 +35,15 @@ Note: you can build both versions using eggs and wardrobe
 
 # Debian bullseye chick
 
-* download the naked version and install it. ```sudo eggs install```
-* reboot the installed system and login with your credential
+* esegui una installazione minimale di [Debian bullseye](https://www.debian.org/releases/bullseye/debian-installer/) minima;
+* scarica ed installa eggs;
+* in alternativa: scarica ed installa con ```sudo eggs install``` la versione [naked](https://sourceforge.net/projects/penguins-eggs/files/ISOS/debian/bullseye/) di Debian bullseye. 
+
+* riavvia il sistema e loggati con le tue credenziali, dai i seguenti comandi:
 * ```eggs wardrobe get```
 * ```sudo eggs wardrobe wear chick```
 
-It's nice?
+Figo no?
 
 * Repository: [penguins-eggs](https://github.com/pieroproietti/penguins-eggs)
 * Blog: [penguins-eggs](https://penguins-eggs.net)
