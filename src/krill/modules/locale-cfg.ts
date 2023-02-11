@@ -50,10 +50,11 @@ export default async function localeCfg(this: Sequence) {
    localeGenDest += '\n'
    localeGenDest += krillBookmark
 
-   const locales = [this.language]
+   const locales: string []  = []
    if (this.language !== 'en_US.UTF-8') {
       locales.push('en_US.UTF-8')
    }
+   locales.push(this.language)
    for (const supported of supporteds) {
       for (const locale of locales) {
          if (supported.includes(locale)) {

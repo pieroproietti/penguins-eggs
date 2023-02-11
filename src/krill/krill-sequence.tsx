@@ -394,7 +394,7 @@ export default class Sequence {
          message = "settings keyboard "
          percent = 0.48
          try {
-            this.keyboard()
+            await this.keyboard()
          } catch (error) {
             await Utils.pressKeyToExit(JSON.stringify(error))
          }
@@ -403,7 +403,8 @@ export default class Sequence {
          message = "localeCfg"
          percent = 0.50
          try {
-            this.localeCfg()
+            await this.localeCfg()
+            await exec('locale-gen')
          } catch (error) {
             await Utils.pressKeyToExit(JSON.stringify(error))
          }
@@ -413,7 +414,7 @@ export default class Sequence {
          message = "networkcfg"
          percent = 0.50
          try {
-            this.networkCfg()
+            await this.networkCfg()
          } catch (error) {
             await Utils.pressKeyToExit(JSON.stringify(error))
          }
@@ -433,7 +434,7 @@ export default class Sequence {
          percent = 0.55
          try {
             await redraw(<Install message={message} percent={percent} />)
-            this.initramfsCfg(this.partitions.installationDevice)
+            await this.initramfsCfg(this.partitions.installationDevice)
          } catch (error) {
             await Utils.pressKeyToExit(JSON.stringify(error))
          }
