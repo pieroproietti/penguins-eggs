@@ -404,7 +404,7 @@ export default class Sequence {
          percent = 0.50
          try {
             await this.localeCfg()
-            await exec('locale-gen')
+            await exec("chroot " + this.installTarget + " locale-gen")
          } catch (error) {
             await Utils.pressKeyToExit(JSON.stringify(error))
          }
