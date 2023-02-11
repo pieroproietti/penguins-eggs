@@ -20,7 +20,7 @@ export default async function locale(this: Sequence) {
      *             - /etc/locale.conf
      *             - /etc/timezone
      */
-    let defaultLocale = 'en_US.UTF-8'
+    let defaultLocale = this.language
 
     // /etc/default/locale
     let file = this.installTarget + '/etc/default/locale'

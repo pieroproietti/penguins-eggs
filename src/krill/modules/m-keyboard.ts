@@ -50,7 +50,7 @@ export default async function mKeyboard(this: Sequence): Promise<void> {
     if (Utils.isSystemd()) {
         let content = '# KEYBOARD CONFIGURATION FILE\n\n'
         content += '# Consult the keyboard(5) manual page.\n\n'
-        content += '# See penguins-eggs/src/krill/modules/set-keyboard.ts\n\n'
+        content += '# See penguins-eggs/src/krill/modules/m-keyboard.ts\n\n'
         content += 'XKBMODEL="' + this.keyboardModel + '"\n'
         content += 'XKBLAYOUT="' + this.keyboardLayout + '"\n'
         content += 'XKBVARIANT="' + this.keyboardVariant + '"\n'
