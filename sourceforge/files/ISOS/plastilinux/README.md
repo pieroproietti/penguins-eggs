@@ -13,11 +13,11 @@ penguins-eggs
 # Plastilinux
 Plastilinux vorrebbe diventare una meta-distribuzione per la scuola ed essere basata su differenti distribuzioni Linux e customizzate utilizzando il [wardrobe](https://github.com/pieroproietti/penguins-wardrobe/tree/main/DOCUMENTATION#penguins-wardrobe) di [eggs](https://github.com/pieroproietti/penguins-eggs).
 
-![chick](http://penguins-eggs.net/images/chick.png)
+![chick](https://penguins-eggs.net/images/chick.png)
 
 Ho inserito in eggs una funzione di integrazione con [epoptes](https://epoptes.org/), grazie alla quale da una macchina installata, creando una immagine con ```sudo eggs produce --fast``` ed avviando ```sudo eggs cuckoo``` le macchine avviate via PXE possono essere controllate con epoptes.
 
-![chick-epoptes](http://penguins-eggs.net/images/chick-epoptes.png)
+![chick-epoptes](https://penguins-eggs.net/images/chick-epoptes.png)
 
 Questo apre ad una grande varietà di applicazioni.
 
