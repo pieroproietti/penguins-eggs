@@ -15,6 +15,10 @@ Plastilinux vorrebbe diventare una meta-distribuzione per la scuola ed essere ba
 
 ![chick](http://penguins-eggs.net/images/chick.png)
 
+Ho inserito in eggs una funzione di integrazione con [epoptes](https://epoptes.org/), grazie alla quale da una macchina installata, creando una immagine con ```sudo eggs produce --fast``` ed avviando ```sudo eggs cuckoo``` le macchine avviate via PXE possono essere controllate con epoptes.
+
+Questo apre ad una grande varietà di applicazioni.
+
 # user/password
 * ```live/evolution```
 * ```root/evolution```
