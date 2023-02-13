@@ -52,6 +52,13 @@ Note: you can build both using the original distro, eggs and wardrobe
 * ```eggs wardrobe get```
 * ```sudo eggs wardrobe wear chick```
 
+# Sodilinux orizzonti
+Ho inserito anche So.Di.Linux Orizzonti 2005, come per Ubuntu anche qua c'è un problema di grandezza dell'immagine - circa 3,8 GB . per poter operare con PXE
+ma potrebbe costituire una ottima traccia. Inoltre, su macchine con 8 GB anche l'installazione e l'uso via PXE nonchè il controllo con [epoptes](https://epoptes.org/) funzionano benissimo.
+
+![sodilinux](https://penguins-eggs.net/images/sodilinux.png)
+
+
 Figo no?
 
 * Repository: [penguins-eggs](https://github.com/pieroproietti/penguins-eggs)
