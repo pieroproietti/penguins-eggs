@@ -367,7 +367,17 @@ export default class Ovary {
       console.log('ovary: editLiveFs')
     }
 
+    /**
+     * add epoptes server
+     */
+    if(Pacman.packageIsInstalled('epoptes')) {
+      const file = '/etc/default/epoptes-client'
+      const text = `SERVER=${os.hostname}.local\n`
+      fs.writeFileSync(file, text)
+    }
+
     if (this.familyId === 'debian') {
+
       // Aggiungo UMASK=0077 in /etc/initramfs-tools/conf.d/calamares-safe-initramfs.conf
       const text = 'UMASK=0077\n'
       const file = '/etc/initramfs-tools/conf.d/eggs-safe-initramfs.conf'

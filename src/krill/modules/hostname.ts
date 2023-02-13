@@ -8,7 +8,6 @@
  */
 
 import Sequence from '../krill-sequence'
-import { exec } from '../../lib/utils'
 import fs from 'fs'
 
 
