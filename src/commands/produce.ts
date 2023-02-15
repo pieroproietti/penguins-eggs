@@ -20,7 +20,7 @@ export default class Produce extends Command {
     addons: Flags.string({ multiple: true, description: 'addons to be used: adapt, ichoice, pve, rsupport' }),
     clonecrypted: Flags.boolean({ char: 'C', description: 'clone crypted' }),
     basename: Flags.string({ description: 'basename' }),
-    clone: Flags.boolean({ char: 'c', description: 'clone uncryptes' }),
+    clone: Flags.boolean({ char: 'c', description: 'clone' }),
     fast: Flags.boolean({ char: 'f', description: 'fast compression' }),
     help: Flags.help({ char: 'h' }),
     max: Flags.boolean({ char: 'm', description: 'max compression' }),

@@ -22,7 +22,7 @@ export:iso --backup --clean --help --verbose
 install --crypted --custom --domain --help --ip --nointeractive --none --pve --random --small --suspend --unattended --verbose
 kill --help --verbose
 mom --help
-produce --addons --backup --basename --clone --fast --help --max --nointeractive --prefix --release --script --theme --verbose --yolk
+produce --addons --clonecrypted --basename --clone --fast --help --max --nointeractive --prefix --release --script --theme --verbose --yolk
 status --help --verbose
 syncfrom --delete --file --help --rootdir --verbose
 syncto --delete --file --help --verbose
@@ -36,8 +36,8 @@ wardrobe:get --help --verbose
 wardrobe:list --help --verbose
 wardrobe:show --help --json --verbose --wardrobe
 wardrobe:wear --help --no_accessories --no_firmwares --silent --verbose --wardrobe
-help --nested-commands
 autocomplete --refresh-cache
+help --nested-commands
 version --json --verbose
 "
 

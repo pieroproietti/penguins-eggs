@@ -517,12 +517,12 @@ produce a live image from your system whithout your data
 
 ```
 USAGE
-  $ eggs produce [--addons <value>] [-b] [--basename <value>] [-c] [-f] [-h] [-m] [-n] [-p <value>]
+  $ eggs produce [--addons <value>] [-C] [--basename <value>] [-c] [-f] [-h] [-m] [-n] [-p <value>]
     [--release] [-s] [--theme <value>] [-v] [-y]
 
 FLAGS
-  -b, --backup          backup mode (CRYPTED)
-  -c, --clone           clone mode
+  -C, --clonecrypted    clone crypted
+  -c, --clone           clone uncryptes
   -f, --fast            fast compression
   -h, --help            Show CLI help.
   -m, --max             max compression
