@@ -38,7 +38,6 @@ import { displaymanager } from './incubation/fisherman-helper/displaymanager'
 import { access } from 'fs/promises'
 import { constants } from 'fs'
 import Users from './users'
-import { YAMLException } from 'js-yaml'
 
 /**
  * Ovary:
@@ -108,7 +107,7 @@ export default class Ovary {
    *
    * @param basename
    */
-  async produce(backup = false, clone = false, scriptOnly = false, yolkRenew = false, release = false, myAddons: IMyAddons, nointeractive=false, verbose = false) {
+  async produce(clonecrypted = false, clone = false, scriptOnly = false, yolkRenew = false, release = false, myAddons: IMyAddons, nointeractive=false, verbose = false) {
     this.verbose = verbose
     this.clone = clone
     this.echo = Utils.setEcho(verbose)
@@ -153,7 +152,7 @@ export default class Ovary {
       }
 
       // BACKUP
-      if (backup) {
+      if (clonecrypted) {
         console.log(`Follow users' data and accounts will be saved in a crypted LUKS volume:`)
         const users = await this.usersFill()
         for (let i = 0; i < users.length; i++) {
@@ -250,7 +249,7 @@ export default class Ovary {
         await this.uBindLiveFs() // Lo smonto prima della fase di backup
       }
 
-      if (backup) {
+      if (clonecrypted) {
         await exec('eggs syncto', Utils.setEcho(true))
         Utils.warning(`Waiting 10s, before to move ${luksFile} in ${this.settings.config.snapshot_dir}ovarium/iso/live`)
         await exec('sleep 10', Utils.setEcho(false))
@@ -258,7 +257,7 @@ export default class Ovary {
         await exec(`mv ${luksFile} ${this.settings.config.snapshot_dir}ovarium/iso/live`, this.echo)
       }
 
-      const xorrisoCommand = this.makeDotDisk(backup)
+      const xorrisoCommand = this.makeDotDisk(clonecrypted)
 
       /**
        * patch to emulate miso/archiso on archilinux
@@ -1584,7 +1583,7 @@ export default class Ovary {
    * create .disk/info, .disk/mksquashfs, .disk/mkiso
    * return mkiso
    */
-  makeDotDisk(backup = false): string {
+  makeDotDisk(clonecrypted = false): string {
     const dotDisk = this.settings.work_dir.pathIso + '/.disk'
     if (fs.existsSync(dotDisk)) {
       shx.rm('-rf', dotDisk)
@@ -1601,7 +1600,7 @@ export default class Ovary {
     shx.cp(scripts + '/mksquashfs', dotDisk + '/mksquashfs')
 
     // .disk/mkisofs
-    content = this.xorrisoCommand(backup).replace(/\s\s+/g, ' ')
+    content = this.xorrisoCommand(clonecrypted).replace(/\s\s+/g, ' ')
     file = dotDisk + '/mkisofs'
     fs.writeFileSync(file, content, 'utf-8')
     return content
@@ -1609,14 +1608,14 @@ export default class Ovary {
 
   /**
    *
-   * @param backup
+   * @param clonecrypted
    * @returns cmd 4 mkiso
    */
-  xorrisoCommand(backup = false): string {
+  xorrisoCommand(clonecrypted = false): string {
     const volid = Utils.getVolid(this.settings.remix.name)
 
     let prefix = this.settings.config.snapshot_prefix
-    if (backup) {
+    if (clonecrypted) {
       prefix = prefix.slice(0, 7) === 'egg-of-' ? 'egg-eb-' + prefix.slice(7) : 'egg-eb-' + prefix
     }
 
