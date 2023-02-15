@@ -142,7 +142,7 @@ produce)
     "--addons=-[addons to be used: adapt, ichoice, pve, rsupport]:"
 "--clonecrypted[clone crypted]"
 "--basename=-[basename]:"
-"--clone[clone uncryptes]"
+"--clone[clone]"
 "--fast[fast compression]"
 "--help[Show CLI help.]"
 "--max[max compression]"
