@@ -115,7 +115,7 @@ export default class Ovary {
       this.toNull = ' > /dev/null 2>&1'
     }
 
-    let luksName = 'luks-eggs-backup'
+    let luksName = 'luks-eggs-data'
     let luksFile = `/tmp/${luksName}`
 
     if (this.familyId === 'debian') {

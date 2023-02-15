@@ -34,13 +34,13 @@ export default class Syncfrom extends Command {
 
   rootDir = '/'
 
-  luksName = 'luks-eggs-backup'
+  luksName = 'luks-eggs-data'
 
   luksFile = `/run/live/medium/live/${this.luksName}`
 
   luksDevice = `/dev/mapper/${this.luksName}`
 
-  luksMountpoint = '/tmp/eggs-backup'
+  luksMountpoint = '/tmp/eggs-data'
 
   async run(): Promise<void> {
 
