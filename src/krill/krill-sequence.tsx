@@ -380,35 +380,37 @@ export default class Sequence {
             await Utils.pressKeyToExit(JSON.stringify(error))
          }
 
-         // locale
-         message = "Locale "
-         percent = 0.47
-         try {
-            redraw(<Install message={message} percent={percent} />)
-            await this.locale()
-         } catch (error) {
-            await Utils.pressKeyToExit(JSON.stringify(error))
-         }
+         // locale, keyboared e localeCfg solo se NON clone
+         if (!fs.existsSync(this.personalFile)) {
+            // locale
+            message = "Locale "
+            percent = 0.47
+            try {
+               redraw(<Install message={message} percent={percent} />)
+               await this.locale()
+            } catch (error) {
+               await Utils.pressKeyToExit(JSON.stringify(error))
+            }
 
-         // keyboard
-         message = "settings keyboard "
-         percent = 0.48
-         try {
-            await this.keyboard()
-         } catch (error) {
-            await Utils.pressKeyToExit(JSON.stringify(error))
-         }
+            // keyboard
+            message = "settings keyboard "
+            percent = 0.48
+            try {
+               await this.keyboard()
+            } catch (error) {
+               await Utils.pressKeyToExit(JSON.stringify(error))
+            }
 
-         // localeCfg
-         message = "localeCfg"
-         percent = 0.50
-         try {
-            await this.localeCfg()
-            await exec("chroot " + this.installTarget + " locale-gen")
-         } catch (error) {
-            await Utils.pressKeyToExit(JSON.stringify(error))
+            // localeCfg
+            message = "localeCfg"
+            percent = 0.50
+            try {
+               await this.localeCfg()
+               await exec("chroot " + this.installTarget + " locale-gen")
+            } catch (error) {
+               await Utils.pressKeyToExit(JSON.stringify(error))
+            }
          }
-
 
          // networkcfg
          message = "networkcfg"
@@ -464,7 +466,7 @@ export default class Sequence {
          /**
           * IF NOT RESTORE USERS DATA OR PERSONAL BACKUP
           */
-         if (!fs.existsSync(this.luksFile) || fs.existsSync(this.personalFile)) {
+         if (!fs.existsSync(this.luksFile) && !fs.existsSync(this.personalFile)) {
 
             // delLiveUser
             message = "Removing user live "
@@ -496,31 +498,29 @@ export default class Sequence {
                await Utils.pressKeyToExit(JSON.stringify(error))
             }
 
-         }
-
-         // autologin
-         if (Pacman.isInstalledGui()) {
-            try {
-               message = "autologin GUI"
-               percent = 0.65
-               if (this.users.autologin) {
-                  await Xdg.autologin(await Utils.getPrimaryUser(), this.users.name, this.installTarget)
+            // autologin
+            if (Pacman.isInstalledGui()) {
+               try {
+                  message = "autologin GUI"
+                  percent = 0.65
+                  if (this.users.autologin) {
+                     await Xdg.autologin(await Utils.getPrimaryUser(), this.users.name, this.installTarget)
+                  }
+                  await redraw(<Install message={message} percent={percent} />)
+               } catch (error) {
+                  await Utils.pressKeyToExit(JSON.stringify(error))
                }
-               await redraw(<Install message={message} percent={percent} />)
-            } catch (error) {
-               await Utils.pressKeyToExit(JSON.stringify(error))
-            }
-         } else { // autologin CLI remove DEFAULT
-            message = "autologin CLI"
-            percent = 0.66
-            try {
-               await redraw(<Install message={message} percent={percent} />)
-               await cliAutologin.remove(this.installTarget)
-            } catch (error) {
-               await Utils.pressKeyToExit(JSON.stringify(error))
+            } else { // autologin CLI remove DEFAULT
+               message = "autologin CLI"
+               percent = 0.66
+               try {
+                  await redraw(<Install message={message} percent={percent} />)
+                  await cliAutologin.remove(this.installTarget)
+               } catch (error) {
+                  await Utils.pressKeyToExit(JSON.stringify(error))
+               }
             }
          }
-
          // cleanup
          await cliAutologin.msgRemove(`${this.installTarget}/etc/motd`)
          await cliAutologin.msgRemove(`${this.installTarget}/etc/issue`)
