@@ -32,8 +32,8 @@ _eggs () {
 "wardrobe\:list:list costumes and accessoires in wardrobe"
 "wardrobe\:show:show costumes/accessories in wardrobe"
 "wardrobe\:wear:wear costume/accessories from wardrobe"
-"help:Display help for <%= config.bin %>."
 "autocomplete:display autocomplete installation instructions"
+"help:Display help for <%= config.bin %>."
 "version:"
   )
 
@@ -140,9 +140,9 @@ mom)
 produce)
   _command_flags=(
     "--addons=-[addons to be used: adapt, ichoice, pve, rsupport]:"
-"--backup[backup mode (CRYPTED)]"
+"--clonecrypted[clone crypted]"
 "--basename=-[basename]:"
-"--clone[clone mode]"
+"--clone[clone uncryptes]"
 "--fast[fast compression]"
 "--help[Show CLI help.]"
 "--max[max compression]"
@@ -262,15 +262,15 @@ wardrobe:wear)
   )
 ;;
 
-help)
-  _command_flags=(
-    "--nested-commands[Include all nested commands in the output.]"
-  )
-;;
-
 autocomplete)
   _command_flags=(
     "--refresh-cache[Refresh cache (ignores displaying instructions)]"
+  )
+;;
+
+help)
+  _command_flags=(
+    "--nested-commands[Include all nested commands in the output.]"
   )
 ;;
 
