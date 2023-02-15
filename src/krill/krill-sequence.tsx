@@ -234,7 +234,7 @@ export default class Sequence {
       this.efi = fs.existsSync('/sys/firmware/efi/efivars')
 
       // Per il restore dei dati
-      this.luksName = 'luks-eggs-backup'
+      this.luksName = 'luks-eggs-data'
       this.luksFile = `/run/live/medium/live/${this.luksName}`
       this.luksDevice = `/dev/mapper/${this.luksName}`
       this.luksMountpoint = `/mnt`

@@ -88,13 +88,13 @@ export default class Syncto extends Command {
              * restore con file
              */
             if (fileVolume === '') {
-                fileVolume = '/tmp/luks-eggs-backup'
+                fileVolume = '/tmp/luks-eggs-data'
             }
 
             this.luksName = path.basename(fileVolume)
             this.luksFile = fileVolume
             this.luksDevice = `/dev/mapper/${this.luksName}`
-            this.luksMountpoint = '/tmp/eggs-backup'
+            this.luksMountpoint = '/tmp/eggs-data'
             if (!fs.existsSync(fileVolume)) {
                 await this.luksCreate()
             } else {
