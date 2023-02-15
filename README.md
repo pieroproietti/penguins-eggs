@@ -517,11 +517,11 @@ produce a live image from your system whithout your data
 
 ```
 USAGE
-  $ eggs produce [--addons <value>] [-C] [--basename <value>] [-c] [-f] [-h] [-m] [-n] [-p <value>]
+  $ eggs produce [--addons <value>] [--basename <value>] [-c] [-C] [-f] [-h] [-m] [-n] [-p <value>]
     [--release] [-s] [--theme <value>] [-v] [-y]
 
 FLAGS
-  -C, --clonecrypted    clone crypted
+  -C, --cryptedclone    crypted clone
   -c, --clone           clone
   -f, --fast            fast compression
   -h, --help            Show CLI help.
@@ -552,7 +552,7 @@ EXAMPLES
 
   sudo eggs produce --fast --clone
 
-  sudo eggs produce --fast --backup
+  sudo eggs produce --fast --cryptedclone
 ```
 
 _See code: [dist/commands/produce.js](https://github.com/pieroproietti/penguins-eggs/blob/v9.3.25/dist/commands/produce.js)_
