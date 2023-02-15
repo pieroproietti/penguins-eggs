@@ -140,9 +140,9 @@ mom)
 produce)
   _command_flags=(
     "--addons=-[addons to be used: adapt, ichoice, pve, rsupport]:"
-"--clonecrypted[clone crypted]"
 "--basename=-[basename]:"
 "--clone[clone]"
+"--cryptedclone[crypted clone]"
 "--fast[fast compression]"
 "--help[Show CLI help.]"
 "--max[max compression]"

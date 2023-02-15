@@ -22,7 +22,7 @@ export:iso --backup --clean --help --verbose
 install --crypted --custom --domain --help --ip --nointeractive --none --pve --random --small --suspend --unattended --verbose
 kill --help --verbose
 mom --help
-produce --addons --clonecrypted --basename --clone --fast --help --max --nointeractive --prefix --release --script --theme --verbose --yolk
+produce --addons --basename --clone --cryptedclone --fast --help --max --nointeractive --prefix --release --script --theme --verbose --yolk
 status --help --verbose
 syncfrom --delete --file --help --rootdir --verbose
 syncto --delete --file --help --verbose

@@ -103,7 +103,8 @@ export default class Produce extends Command {
 
       const release = flags.release
 
-      const clonecrypted = flags.clonecrypted
+      const cryptedclone = flags.cryptedclone
+
 
       const clone = flags.clone
 
@@ -135,7 +136,7 @@ export default class Produce extends Command {
       }
 
 
-      const i = await Config.thatWeNeed(nointeractive, verbose, clonecrypted)
+      const i = await Config.thatWeNeed(nointeractive, verbose, cryptedclone)
       if ((i.needApt || i.configurationInstall || i.configurationRefresh || i.distroTemplate) && (await Utils.customConfirm('Select yes to continue...'))) {
         await Config.install(i, verbose)
       }
@@ -163,7 +164,7 @@ export default class Produce extends Command {
       const ovary = new Ovary()
       Utils.warning('Produce an egg...')
       if (await ovary.fertilization(prefix, basename, theme, compression, !nointeractive)) {
-        await ovary.produce(clonecrypted, clone, scriptOnly, yolkRenew, release, myAddons, nointeractive, verbose)
+        await ovary.produce(cryptedclone, clone, scriptOnly, yolkRenew, release, myAddons, nointeractive, verbose)
         ovary.finished(scriptOnly)
       }
     } else {
