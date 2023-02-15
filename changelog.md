@@ -23,7 +23,7 @@ Versions are listed on reverse order, the first is the last one. Old versions ar
 
 ### eggs-9.3.25
 * Just discovered a nice companion of eggs: [epoptes](https://epoptes.org/). If you need to build classrooms, just install epoptes, run ```sudo eggs produce --fast``` and in minutes you will have classroom ready;
-* krill: now for installing a clone we don't touch more: locale, localecfg, keyboard, user and autologin;
+* krill: now installing a clone, we don't touch more: locale, localecfg, keyboard, user and autologin;
 
 ### eggs-9.3.24
 * krill: bugfix on locale and locales configuration;
