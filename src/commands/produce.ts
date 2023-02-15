@@ -18,9 +18,9 @@ import path from 'node:path'
 export default class Produce extends Command {
   static flags = {
     addons: Flags.string({ multiple: true, description: 'addons to be used: adapt, ichoice, pve, rsupport' }),
-    backup: Flags.boolean({ char: 'b', description: 'backup mode (CRYPTED)' }),
+    clonecrypted: Flags.boolean({ char: 'C', description: 'clone crypted' }),
     basename: Flags.string({ description: 'basename' }),
-    clone: Flags.boolean({ char: 'c', description: 'clone mode' }),
+    clone: Flags.boolean({ char: 'c', description: 'clone uncryptes' }),
     fast: Flags.boolean({ char: 'f', description: 'fast compression' }),
     help: Flags.help({ char: 'h' }),
     max: Flags.boolean({ char: 'm', description: 'max compression' }),
@@ -103,7 +103,7 @@ export default class Produce extends Command {
 
       const release = flags.release
 
-      const backup = flags.backup
+      const clonecrypted = flags.clonecrypted
 
       const clone = flags.clone
 
@@ -135,7 +135,7 @@ export default class Produce extends Command {
       }
 
 
-      const i = await Config.thatWeNeed(nointeractive, verbose, backup)
+      const i = await Config.thatWeNeed(nointeractive, verbose, clonecrypted)
       if ((i.needApt || i.configurationInstall || i.configurationRefresh || i.distroTemplate) && (await Utils.customConfirm('Select yes to continue...'))) {
         await Config.install(i, verbose)
       }
@@ -163,7 +163,7 @@ export default class Produce extends Command {
       const ovary = new Ovary()
       Utils.warning('Produce an egg...')
       if (await ovary.fertilization(prefix, basename, theme, compression, !nointeractive)) {
-        await ovary.produce(backup, clone, scriptOnly, yolkRenew, release, myAddons, nointeractive, verbose)
+        await ovary.produce(clonecrypted, clone, scriptOnly, yolkRenew, release, myAddons, nointeractive, verbose)
         ovary.finished(scriptOnly)
       }
     } else {

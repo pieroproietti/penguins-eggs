@@ -11,31 +11,31 @@ _eggs_autocomplete()
   COMPREPLY=()
 
   local commands="
-adapt --verbose --help
+adapt --help --verbose
 analyze --help --verbose
-calamares --help --verbose --install --release --remove --theme
-config --nointeractive --clean --help --verbose
+calamares --help --install --release --remove --theme --verbose
+config --clean --help --nointeractive --verbose
 cuckoo --help
-dad --help --clean --default --verbose
-export:deb --help --all --clean --verbose
-export:iso --help --backup --clean --verbose
-install --unattended --custom --nointeractive --ip --random --domain --suspend --small --none --crypted --pve --help --verbose
+dad --clean --default --help --verbose
+export:deb --all --clean --help --verbose
+export:iso --backup --clean --help --verbose
+install --crypted --custom --domain --help --ip --nointeractive --none --pve --random --small --suspend --unattended --verbose
 kill --help --verbose
 mom --help
-produce --prefix --basename --backup --clone --fast --max --verbose --yolk --script --help --theme --addons --release --nointeractive
-status --verbose --help
-syncfrom --delete --file --rootdir --help --verbose
+produce --addons --backup --basename --clone --fast --help --max --nointeractive --prefix --release --script --theme --verbose --yolk
+status --help --verbose
+syncfrom --delete --file --help --rootdir --verbose
 syncto --delete --file --help --verbose
 tools:clean --help --verbose
-tools:ppa --help --add --remove --verbose
+tools:ppa --add --help --remove --verbose
 tools:skel --help --user --verbose
 tools:stat --help --month --year
 tools:yolk --help --verbose
 update --help --verbose
-wardrobe:get --verbose --help
-wardrobe:list --verbose --help
-wardrobe:show --wardrobe --json --verbose --help
-wardrobe:wear --wardrobe --no_accessories --no_firmwares --silent --verbose --help
+wardrobe:get --help --verbose
+wardrobe:list --help --verbose
+wardrobe:show --help --json --verbose --wardrobe
+wardrobe:wear --help --no_accessories --no_firmwares --silent --verbose --wardrobe
 help --nested-commands
 autocomplete --refresh-cache
 version --json --verbose

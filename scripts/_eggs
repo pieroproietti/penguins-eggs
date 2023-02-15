@@ -9,15 +9,15 @@ _eggs () {
   local -a _all_commands=(
 "adapt:adapt monitor resolution for VM only"
 "analyze:analyze for syncto"
-"calamares:calamares or install or configure it"
+"calamares:configure calamares or install or configure it"
 "config:Configure and install prerequisites deb packages to run it"
 "cuckoo:PXE start with proxy-dhcp"
-"dad:ask help from daddy - configuration helper"
+"dad:ask help from daddy - TUI configuration helper"
 "export\:deb:export deb/docs/iso to the destination host"
 "export\:iso:export iso in the destination host"
-"install:command-line system installer - the egg became a penguin!"
+"install:krill: the CLI system installer - the egg became a penguin!"
 "kill:kill the eggs/free the nest"
-"mom:ask for mommy - gui helper"
+"mom:ask help from mommy - TUI helper"
 "produce:produce a live image from your system whithout your data"
 "status:informations about eggs status"
 "syncfrom:restore users and user data from a LUKS volumes"
@@ -41,8 +41,8 @@ _eggs () {
     case $_command_id in
 adapt)
   _command_flags=(
-    "--verbose[]"
-"--help[Show CLI help.]"
+    "--help[Show CLI help.]"
+"--verbose[]"
   )
 ;;
 
@@ -56,19 +56,19 @@ analyze)
 calamares)
   _command_flags=(
     "--help[Show CLI help.]"
-"--verbose[]"
 "--install[install calamares and it's dependencies]"
 "--release[release: remove calamares and all it's dependencies after the installation]"
 "--remove[remove calamares and it's dependencies]"
 "--theme=-[theme/branding for eggs and calamares]:"
+"--verbose[]"
   )
 ;;
 
 config)
   _command_flags=(
-    "--nointeractive[assume yes]"
-"--clean[remove old configuration before to create new one]"
+    "--clean[remove old configuration before to create new one]"
 "--help[Show CLI help.]"
+"--nointeractive[assume yes]"
 "--verbose[verbose]"
   )
 ;;
@@ -81,45 +81,45 @@ cuckoo)
 
 dad)
   _command_flags=(
-    "--help[Show CLI help.]"
-"--clean[remove old configuration before to create]"
+    "--clean[remove old configuration before to create]"
 "--default[remove old configuration and force default]"
+"--help[Show CLI help.]"
 "--verbose[]"
   )
 ;;
 
 export:deb)
   _command_flags=(
-    "--help[Show CLI help.]"
-"--all[export all archs]"
+    "--all[export all archs]"
 "--clean[remove old .deb before to copy]"
+"--help[Show CLI help.]"
 "--verbose[verbose]"
   )
 ;;
 
 export:iso)
   _command_flags=(
-    "--help[Show CLI help.]"
-"--backup[export backup ISOs]"
+    "--backup[export backup ISOs]"
 "--clean[delete old ISOs before to copy]"
+"--help[Show CLI help.]"
 "--verbose[verbose]"
   )
 ;;
 
 install)
   _command_flags=(
-    "--unattended[Unattended installation]"
+    "--crypted[Crypted CLI installation]"
 "--custom=-[custom unattended configuration]:"
-"--nointeractive[assume yes]"
-"--ip[hostname as ip, eg: ip-192-168-1-33]"
-"--random[Add random to hostname, eg: colibri-ay412dt]"
 "--domain=-[Domain name, defult: .local]:"
-"--suspend[Swap suspend: RAM x 2]"
-"--small[Swap small: RAM]"
-"--none[Swap none: 256M]"
-"--crypted[Crypted CLI installation]"
-"--pve[Proxmox VE install]"
 "--help[Show CLI help.]"
+"--ip[hostname as ip, eg: ip-192-168-1-33]"
+"--nointeractive[assume yes]"
+"--none[Swap none: 256M]"
+"--pve[Proxmox VE install]"
+"--random[Add random to hostname, eg: colibri-ay412dt]"
+"--small[Swap small: RAM]"
+"--suspend[Swap suspend: RAM x 2]"
+"--unattended[Unattended installation]"
 "--verbose[Verbose]"
   )
 ;;
@@ -139,27 +139,27 @@ mom)
 
 produce)
   _command_flags=(
-    "--prefix=-[prefix]:"
-"--basename=-[basename]:"
+    "--addons=-[addons to be used: adapt, ichoice, pve, rsupport]:"
 "--backup[backup mode (CRYPTED)]"
+"--basename=-[basename]:"
 "--clone[clone mode]"
 "--fast[fast compression]"
+"--help[Show CLI help.]"
 "--max[max compression]"
+"--nointeractive[don't ask for user interctions]"
+"--prefix=-[prefix]:"
+"--release[release: max compression, remove penguins-eggs and calamares after installation]"
+"--script[script mode. Generate scripts to manage iso build]"
+"--theme=-[theme for livecd, calamares branding and partitions]:"
 "--verbose[verbose]"
 "--yolk[-y force yolk renew]"
-"--script[script mode. Generate scripts to manage iso build]"
-"--help[Show CLI help.]"
-"--theme=-[theme for livecd, calamares branding and partitions]:"
-"--addons=-[addons to be used: adapt, ichoice, pve, rsupport]:"
-"--release[release: max compression, remove penguins-eggs and calamares after installation]"
-"--nointeractive[don't ask for user interctions]"
   )
 ;;
 
 status)
   _command_flags=(
-    "--verbose[]"
-"--help[Show CLI help.]"
+    "--help[Show CLI help.]"
+"--verbose[]"
   )
 ;;
 
@@ -167,8 +167,8 @@ syncfrom)
   _command_flags=(
     "--delete=-[rsync --delete delete extraneous files from dest dirs]:"
 "--file=-[file LUKS volume encrypted]:"
-"--rootdir=-[rootdir of the installed system, when used from live]:"
 "--help[Show CLI help.]"
+"--rootdir=-[rootdir of the installed system, when used from live]:"
 "--verbose[verbose]"
   )
 ;;
@@ -191,8 +191,8 @@ tools:clean)
 
 tools:ppa)
   _command_flags=(
-    "--help[Show CLI help.]"
-"--add[add penguins-eggs PPA repository]"
+    "--add[add penguins-eggs PPA repository]"
+"--help[Show CLI help.]"
 "--remove[remove penguins-eggs PPA repository]"
 "--verbose[verbose]"
   )
@@ -230,35 +230,35 @@ update)
 
 wardrobe:get)
   _command_flags=(
-    "--verbose[]"
-"--help[Show CLI help.]"
+    "--help[Show CLI help.]"
+"--verbose[]"
   )
 ;;
 
 wardrobe:list)
   _command_flags=(
-    "--verbose[]"
-"--help[Show CLI help.]"
+    "--help[Show CLI help.]"
+"--verbose[]"
   )
 ;;
 
 wardrobe:show)
   _command_flags=(
-    "--wardrobe=-[wardrobe]:"
+    "--help[Show CLI help.]"
 "--json[output JSON]"
 "--verbose[]"
-"--help[Show CLI help.]"
+"--wardrobe=-[wardrobe]:"
   )
 ;;
 
 wardrobe:wear)
   _command_flags=(
-    "--wardrobe=-[wardrobe]:"
+    "--help[Show CLI help.]"
 "--no_accessories[not install accessories]"
 "--no_firmwares[not install firmwares]"
 "--silent[]"
 "--verbose[]"
-"--help[Show CLI help.]"
+"--wardrobe=-[wardrobe]:"
   )
 ;;
 
