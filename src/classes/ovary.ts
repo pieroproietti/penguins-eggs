@@ -151,7 +151,7 @@ export default class Ovary {
         await bleach.clean(verbose)
       }
 
-      // BACKUP
+      // CLONECRYPTED
       if (clonecrypted) {
         console.log(`Follow users' data and accounts will be saved in a crypted LUKS volume:`)
         const users = await this.usersFill()
@@ -185,7 +185,7 @@ export default class Ovary {
        * put reCreate = true in release
        */
       let reCreate = true
-      if (reCreate) { // start pre-backup
+      if (reCreate) { // start pre-clone
 
         if (this.clone) {
           await exec(`touch ${this.settings.config.snapshot_dir}ovarium/iso/live/is-clone.md`, this.echo)

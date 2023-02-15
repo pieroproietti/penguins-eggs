@@ -18,9 +18,9 @@ import path from 'node:path'
 export default class Produce extends Command {
   static flags = {
     addons: Flags.string({ multiple: true, description: 'addons to be used: adapt, ichoice, pve, rsupport' }),
-    clonecrypted: Flags.boolean({ char: 'C', description: 'clone crypted' }),
     basename: Flags.string({ description: 'basename' }),
     clone: Flags.boolean({ char: 'c', description: 'clone' }),
+    cryptedclone: Flags.boolean({ char: 'C', description: 'crypted clone' }),
     fast: Flags.boolean({ char: 'f', description: 'fast compression' }),
     help: Flags.help({ char: 'h' }),
     max: Flags.boolean({ char: 'm', description: 'max compression' }),
@@ -41,7 +41,7 @@ export default class Produce extends Command {
     "sudo eggs produce --fast --basename=colibri",
     "sudo eggs produce --fast --basename=colibri --theme /path/to/theme --addons adapt",
     "sudo eggs produce --fast --clone",
-    "sudo eggs produce --fast --backup",
+    "sudo eggs produce --fast --cryptedclone",
   ]
 
   async run(): Promise<void> {

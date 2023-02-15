@@ -522,7 +522,7 @@ USAGE
 
 FLAGS
   -C, --clonecrypted    clone crypted
-  -c, --clone           clone uncryptes
+  -c, --clone           clone
   -f, --fast            fast compression
   -h, --help            Show CLI help.
   -m, --max             max compression
