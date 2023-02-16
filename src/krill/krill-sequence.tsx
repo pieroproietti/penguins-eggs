@@ -332,7 +332,7 @@ export default class Sequence {
             message = "Restore private data from crypted clone "
             if (fs.existsSync(this.luksFile)) {
                percent = 0.37
-               let cmd = 'eggs syncfrom --rootdir /tmp/calamares-krill-root/'
+               let cmd = `eggs syncfrom --rootdir /tmp/calamares-krill-root/ --file ${this.luksFile}`
                try {
                   await redraw(<Install message={message} percent={percent} spinner={true} />)
                   await exec(cmd, Utils.setEcho(true))
