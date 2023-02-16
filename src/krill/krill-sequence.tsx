@@ -197,8 +197,10 @@ export default class Sequence {
    luksMountpoint = `/mnt`
 
    // Clone (Uncrypted)
-   is_clone = '/etc/penguins-eggs/is_clone'
+   is_clone = fs.existsSync('/etc/penguins-eggs.d/is_clone')
 
+   is_crypted_clone = fs.existsSync('/etc/penguins-eggs.d/is_crypted_clone')
+   
    unattended = false
 
 
@@ -243,6 +245,7 @@ export default class Sequence {
     * @returns
     */
    async start(unattended = false, domain = 'local', verbose = false) {
+
       this.unattended = unattended
 
       this.verbose = verbose
@@ -371,7 +374,7 @@ export default class Sequence {
          }
 
          // locale, keyboared e localeCfg solo se NON clone
-         if (!fs.existsSync(this.is_clone)) {
+         if (!this.is_clone) {
             // locale
             message = "Locale "
             percent = 0.47
@@ -456,7 +459,7 @@ export default class Sequence {
          /**
           * IF NOT RESTORE USERS DATA OR PERSONAL BACKUP
           */
-         if (!fs.existsSync(this.luksFile) && !fs.existsSync(this.is_clone)) {
+         if (!fs.existsSync(this.luksFile) && !this.is_clone) {
 
             // delLiveUser
             message = "Removing user live "
