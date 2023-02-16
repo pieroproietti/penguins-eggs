@@ -328,15 +328,19 @@ export default class Sequence {
          /**
           * CryptedClone exec eggs syncfrom
           */
-         if (fs.existsSync(this.luksFile)) {
+         if (this.is_crypted_clone) {
             message = "Restore private data from crypted clone "
-            percent = 0.37
-            let cmd = 'eggs syncfrom --rootdir /tmp/calamares-krill-root/'
-            try {
-               await redraw(<Install message={message} percent={percent} spinner={true} />)
-               await exec(cmd, Utils.setEcho(true))
-            } catch (error) {
-               await Utils.pressKeyToExit(cmd)
+            if (fs.existsSync(this.luksFile)) {
+               percent = 0.37
+               let cmd = 'eggs syncfrom --rootdir /tmp/calamares-krill-root/'
+               try {
+                  await redraw(<Install message={message} percent={percent} spinner={true} />)
+                  await exec(cmd, Utils.setEcho(true))
+               } catch (error) {
+                  await Utils.pressKeyToExit(cmd)
+               }
+            } else {
+               await Utils.pressKeyToExit(J`cannot find ${this.luksFile}`)               
             }
          }
          
