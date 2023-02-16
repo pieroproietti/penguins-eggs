@@ -55,16 +55,13 @@ export default class Fisherman {
     }
 
     /**
-     * Controllo se è un clone
+     * Controllo se è un clone: ovary, fisherman, krill
      */
-    let filePersonal = `/home/eggs/ovarium/iso/live/is-clone.md`
-    if (Utils.isLive()) {
-      filePersonal = path.dirname(this.distro.liveMediumPath) + `/is-clone.md`
-    }
+    let is_clone = '/etc/penguins-eggs/is_clone'
 
     let hasDisplaymanager = '# '
     let createUsers = '# '
-    if (!fs.existsSync(filePersonal)) {
+    if (!fs.existsSync(is_clone)) {
       createUsers = '- '
       if (displaymanager() !== '') {
         hasDisplaymanager = '- '

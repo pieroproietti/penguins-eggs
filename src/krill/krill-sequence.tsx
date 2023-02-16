@@ -187,15 +187,17 @@ export default class Sequence {
 
    distro = {} as IDistro
 
-   luksName = ''
+   // Crypted Clone
+   luksName = 'luks-eggs-data'
 
-   luksFile = ''
+   luksFile = `/run/live/medium/live/${this.luksName}`
 
-   luksDevice = ''
+   luksDevice = `/dev/mapper/${this.luksName}`
 
-   luksMountpoint = ''
+   luksMountpoint = `/mnt`
 
-   personalFile = ''
+   // Clone (Uncrypted)
+   is_clone = '/etc/penguins-eggs/is_clone'
 
    unattended = false
 
@@ -232,14 +234,6 @@ export default class Sequence {
 
       this.efi = fs.existsSync('/sys/firmware/efi/efivars')
 
-      // Crypted Clone
-      this.luksName = 'luks-eggs-data'
-      this.luksFile = `/run/live/medium/live/${this.luksName}`
-      this.luksDevice = `/dev/mapper/${this.luksName}`
-      this.luksMountpoint = `/mnt`
-
-      // Clone (Uncrypted)
-      this.personalFile = `/run/live/medium/live/is-clone.md`
    }
 
    /**
@@ -377,7 +371,7 @@ export default class Sequence {
          }
 
          // locale, keyboared e localeCfg solo se NON clone
-         if (!fs.existsSync(this.personalFile)) {
+         if (!fs.existsSync(this.is_clone)) {
             // locale
             message = "Locale "
             percent = 0.47
@@ -462,7 +456,7 @@ export default class Sequence {
          /**
           * IF NOT RESTORE USERS DATA OR PERSONAL BACKUP
           */
-         if (!fs.existsSync(this.luksFile) && !fs.existsSync(this.personalFile)) {
+         if (!fs.existsSync(this.luksFile) && !fs.existsSync(this.is_clone)) {
 
             // delLiveUser
             message = "Removing user live "

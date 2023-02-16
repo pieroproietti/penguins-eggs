@@ -110,13 +110,20 @@ export default class Ovary {
   async produce(cryptedclone = false, clone = false, scriptOnly = false, yolkRenew = false, release = false, myAddons: IMyAddons, nointeractive=false, verbose = false) {
     this.verbose = verbose
     this.clone = clone
+    
     this.echo = Utils.setEcho(verbose)
     if (this.verbose) {
       this.toNull = ' > /dev/null 2>&1'
     }
 
     let luksName = 'luks-eggs-data'
+
     let luksFile = `/tmp/${luksName}`
+ 
+    // let luksDevice = `/dev/mapper/${this.luksName}`
+    
+    // let luksMountpoint = `/mnt`
+ 
 
     if (this.familyId === 'debian') {
       const yolk = new Repo()
@@ -153,7 +160,7 @@ export default class Ovary {
 
       // CRYPTEDCLONE
       if (cryptedclone) {
-        console.log(`Follow users' data and accounts will be saved in a crypted LUKS volume:`)
+        console.log(`Users and the user data will be saved in an encrypted LUKS volume`)
         const users = await this.usersFill()
         for (let i = 0; i < users.length; i++) {
           if (users[i].saveIt) {
@@ -170,11 +177,11 @@ export default class Ovary {
 
         // CLONE
       } else if (this.clone) {
-        Utils.warning('eggs will SAVE yours users accounts and datas UNCRYPTED on the live')
+        Utils.warning('eggs will SAVE users and users\' data UNCRYPTED on the live')
 
         // NORMAL
       } else {
-        Utils.warning('eggs will REMOVE users accounts and datas from live')
+        Utils.warning('eggs will REMOVE users and users\' from live')
       }
 
 
@@ -186,10 +193,6 @@ export default class Ovary {
        */
       let reCreate = true
       if (reCreate) { // start pre-clone
-
-        if (this.clone) {
-          await exec(`touch ${this.settings.config.snapshot_dir}ovarium/iso/live/is-clone.md`, this.echo)
-        }
 
         /**
          * Anche non accettando l'installazione di calamares
@@ -217,12 +220,7 @@ export default class Ovary {
         }
         await this.bindLiveFs()
 
-        /**
-         * clone
-         */
-        if (this.clone) {
-          await exec(`touch ${this.settings.config.snapshot_dir}ovarium/iso/live/is-clone.md`, this.echo)
-        } else {
+        if (!this.clone) {
           await this.cleanUsersAccounts()
           await this.createUserLive()
 
@@ -244,7 +242,7 @@ export default class Ovary {
           cliAutologin.addAutologin(this.settings.distro.distroId, this.settings.distro.codenameId, this.settings.config.user_opt, this.settings.config.user_opt_passwd, this.settings.config.root_passwd, this.settings.work_dir.merged)
         }
 
-        await this.editLiveFs()
+        await this.editLiveFs(clone)
         await this.makeSquashfs(scriptOnly)
         await this.uBindLiveFs() // Lo smonto prima della fase di backup
       }
@@ -361,9 +359,16 @@ export default class Ovary {
    * - Add some basic files to /dev
    * - Clear configs from /etc/network/interfaces, wicd and NetworkManager and netman
    */
-  async editLiveFs() {
+  async editLiveFs(clone=false) {
     if (this.verbose) {
       console.log('ovary: editLiveFs')
+    }
+
+    /**
+     * new is_clone written just on live
+     */
+    if (clone) {
+      await exec(`touch /etc/penguins-eggs.d/is_clone`, this.echo)
     }
 
     /**
