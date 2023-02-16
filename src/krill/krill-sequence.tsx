@@ -340,7 +340,7 @@ export default class Sequence {
                   await Utils.pressKeyToExit(cmd)
                }
             } else {
-               await Utils.pressKeyToExit(J`cannot find ${this.luksFile}`)               
+               await Utils.pressKeyToExit(`Cannot find LUKS file ${this.luksFile}`)               
             }
          }
          
