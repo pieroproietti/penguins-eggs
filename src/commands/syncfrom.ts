@@ -71,7 +71,7 @@ export default class Syncfrom extends Command {
 
     if (Utils.isRoot()) {
       if (fileVolume === '') {
-        fileVolume = '/run/live/medium/live/luks-eggs-backup'
+        fileVolume = '/run/live/medium/live/luks-eggs-dada'
       }
 
       if (!Utils.isLive()) {
@@ -82,7 +82,7 @@ export default class Syncfrom extends Command {
           this.luksName = path.basename(fileVolume)
           this.luksFile = fileVolume
           this.luksDevice = `/dev/mapper/${this.luksName}`
-          this.luksMountpoint = '/tmp/eggs-backup'
+          this.luksMountpoint = '/tmp/eggs-data'
 
           await this.restorePrivateData()
           if (await Utils.customConfirm(`Your system was updated! Press a key to reboot`)) {
@@ -98,7 +98,7 @@ export default class Syncfrom extends Command {
         this.luksName = path.basename(fileVolume)
         this.luksFile = fileVolume
         this.luksDevice = `/dev/mapper/${this.luksName}`
-        this.luksMountpoint = '/tmp/eggs-backup'
+        this.luksMountpoint = '/tmp/eggs-data'
         await this.restorePrivateData()
       }
     } else {
@@ -134,7 +134,7 @@ export default class Syncfrom extends Command {
       }
     }
 
-    Utils.warning('Restoring backup data')
+    Utils.warning('Restoring crypted data')
     let cmd = `rsync -a ${this.luksMountpoint}/ROOT/ ${this.rootDir}/`
     if (destDelete) {
         cmd = `rsync --archive --delete ${this.luksMountpoint}/ROOT/ ${this.rootDir}/`

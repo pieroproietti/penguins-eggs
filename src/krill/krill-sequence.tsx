@@ -205,7 +205,6 @@ export default class Sequence {
     */
    constructor(location: ILocation, keyboard: IKeyboard, partitions: IPartitions, users: IUsers, network: INet) {
 
-
       this.installer = installer()
       this.settings = new Settings()
 
@@ -233,13 +232,13 @@ export default class Sequence {
 
       this.efi = fs.existsSync('/sys/firmware/efi/efivars')
 
-      // Per il restore dei dati
+      // Crypted Clone
       this.luksName = 'luks-eggs-data'
       this.luksFile = `/run/live/medium/live/${this.luksName}`
       this.luksDevice = `/dev/mapper/${this.luksName}`
       this.luksMountpoint = `/mnt`
 
-      // per il restore dei dati personali controllo esistenza di is-clone.md
+      // Clone (Uncrypted)
       this.personalFile = `/run/live/medium/live/is-clone.md`
    }
 
@@ -257,7 +256,6 @@ export default class Sequence {
       if (this.verbose) {
          this.toNull = ''
       }
-
 
       // start
       await this.settings.load()
@@ -331,12 +329,10 @@ export default class Sequence {
          }
 
          /**
-          * IF RESTORE USERS DATA
+          * CryptedClone exec eggs syncfrom
           */
          if (fs.existsSync(this.luksFile)) {
-
-            // restoring users data
-            message = "Restore private data from backup "
+            message = "Restore private data from crypted clone "
             percent = 0.37
             let cmd = 'eggs syncfrom --rootdir /tmp/calamares-krill-root/'
             try {
@@ -346,7 +342,7 @@ export default class Sequence {
                await Utils.pressKeyToExit(cmd)
             }
          }
-
+         
 
          // sources-yolk
          if (this.distro.familyId === 'debian') {
