@@ -8,7 +8,6 @@ import { exec } from '../../lib/utils'
 
 export default class ExportIso extends Command {
   static flags = {
-    backup: Flags.boolean({ char: 'b', description: 'export backup ISOs' }),
     clean: Flags.boolean({ char: 'c', description: 'delete old ISOs before to copy' }),
     help: Flags.help({ char: 'h' }),
     verbose: Flags.boolean({ char: 'v', description: 'verbose' })
@@ -17,7 +16,6 @@ export default class ExportIso extends Command {
   static examples = [
     "eggs export iso",
     "eggs export iso --clean",
-    "eggs export iso --backup"
   ]
   async run(): Promise<void> {
     const { flags } = await this.parse(ExportIso)
@@ -28,10 +26,6 @@ export default class ExportIso extends Command {
     await Tu.loadSettings()
 
     const echo = Utils.setEcho(flags.verbose)
-
-    if (flags.backup) {
-      Tu.snapshot_name = Tu.snapshot_name.slice(0, 7) === 'egg-of-' ? 'egg-eb-' + Tu.snapshot_name.slice(7) : 'backup-' + Tu.snapshot_name
-    }
 
     const rmount = `/tmp/eggs-${(Math.random() + 1).toString(36).substring(7)}`
     let cmd = `rm -f ${rmount}\n`

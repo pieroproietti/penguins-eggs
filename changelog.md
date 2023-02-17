@@ -26,7 +26,8 @@ Versions are listed on reverse order, the first is the last one. Old versions ar
 * produce: changed flag --backup to --cryptoclone;
 * moved inside /etc/penguins-eggs.d files is_clone and is_crypted clone to solve the problem with PXE they was not visible during installation;
 * ovary/krill: generally speacking producing a clone or installing a clone, we don't touch more: locale, keyboard, localeCfg, delLiveUser, adduser and autologin. Remain to save and restore autologin for cryptedclone;
-* it seem working reinstalling from ISO, PXE, clone and cryptedclone.
+* standard iso denomination: egg-of-distro-codebase-host_ /clone/crypted-arch
+- it seem working reinstalling from ISO, PXE, clone and cryptedclone.
 
 ### eggs-9.3.24
 * krill: bugfix on locale and locales configuration;

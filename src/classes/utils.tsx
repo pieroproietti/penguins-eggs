@@ -370,7 +370,7 @@ unknown target format aarch64-efi
     * @returns eggName
     */
    static getPostfix(): string {
-      let postfix = '-' + this.machineArch() + '_' + Utils.formatDate(new Date()) + '.iso'
+      let postfix = '_' + this.machineArch() + '_' + Utils.formatDate(new Date()) + '.iso'
       return postfix
    }
 
