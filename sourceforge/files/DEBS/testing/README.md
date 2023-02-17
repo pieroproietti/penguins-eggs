@@ -12,17 +12,12 @@ Penguins-eggs
 [![pkgbuild](https://img.shields.io/badge/pkgbuild-packages-blue)](https://sourceforge.net/projects/penguins-eggs/files/PKGBUILD)
 [![iso](https://img.shields.io/badge/iso-images-cyan)](https://sourceforge.net/projects/penguins-eggs/files/ISOS)
 
+# Last version
+eggs_9.3.25 was released 
+
 # Penguin's eggs Debian TESTING packages
 
 Please, don't use this package for installations, they have just the pourpouse to be TESTED and can be extremally BUGGED!!!
-
-# eggs-9.3.25c TESTING CHANGELOG
-* Just discovered a nice companion of eggs: [epoptes](https://epoptes.org/). If you need to build classrooms, just install epoptes, run ```sudo eggs produce --fast``` and in minutes you will have classroom ready;
-* produce: changed flag --backup to --cryptoclone;
-* moved inside /etc/penguins-eggs.d files is_clone and is_crypted clone to solve the problem with PXE they was not visible during installation;
-* ovary/krill: generally speacking producing a clone or installing a clone, we don't touch more: locale, keyboard, localeCfg, delLiveUser, adduser and autologin. Remain to save and restore autologin for cryptedclone;
-* it seem working reinstalling from ISO or via PXE for normal and clone, from ISO for cryptedclone;
-* to be continued...
 
 # OEM Installation
 I'm trying to create an OEM installation for eggs, in order to allow configuring pre-installed computers where the user gets a simple configuration program on first boot.
