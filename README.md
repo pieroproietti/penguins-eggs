@@ -152,7 +152,7 @@ Once the package has been installed, you can have the new ```eggs``` command. Ty
 
 ```sudo eggs produce --cryptedclone```
 
-Currently eggs uses the default fast compression which provides yna faster compression speed, for final compression it is worth using the ``--max`` flag to get more compressed ISOs.
+At the moment eggs uses the default fast compression, which provides a faster compression speed, for the final compression it is worth using the --max flag to get more compressed ISOs.
 
 In addition to the description of the commands in this README, you can consult the [Penguin's eggs official book](#penguins-eggs-official-book).
 
