@@ -24,10 +24,11 @@ Versions are listed on reverse order, the first is the last one. Old versions ar
 ### eggs-9.3.25
 * Just discovered a nice companion of eggs: [epoptes](https://epoptes.org/). If you need to build classrooms, just install epoptes, run ```sudo eggs produce --fast``` and in minutes you will have classroom ready;
 * produce: changed flag --backup to --cryptoclone;
+* produce: changed default compression to fast if not specified
 * moved inside /etc/penguins-eggs.d files is_clone and is_crypted clone to solve the problem with PXE they was not visible during installation;
-* ovary/krill: generally speacking producing a clone or installing a clone, we don't touch more: locale, keyboard, localeCfg, delLiveUser, adduser and autologin. Remain to save and restore autologin for cryptedclone;
-* standard iso denomination: egg-of-distro-codebase-host_ /clone/crypted-arch
-- it seem working reinstalling from ISO, PXE, clone and cryptedclone.
+* ovary/krill: generally speacking producing a clone or installing a clone, we don't touch more: locale, keyboard, localecfg, delLiveUser, adduser and autologin. Remain to save and restore autologin for cryptedclone;
+* iso denomination changed from ```egg-of-distro-codebase-host-arch``` to ```egg-of-distro-codebase-host-arch_type_arch``` where type can be: ``, `clone` or `crypted`;
+* it seem working reinstalling from ISO, PXE, clone and cryptedclone.
 
 ### eggs-9.3.24
 * krill: bugfix on locale and locales configuration;

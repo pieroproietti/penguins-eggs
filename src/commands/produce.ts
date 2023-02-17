@@ -21,13 +21,13 @@ export default class Produce extends Command {
     basename: Flags.string({ description: 'basename' }),
     clone: Flags.boolean({ char: 'c', description: 'clone' }),
     cryptedclone: Flags.boolean({ char: 'C', description: 'crypted clone' }),
-    fast: Flags.boolean({ char: 'f', description: 'fast compression' }),
     help: Flags.help({ char: 'h' }),
     max: Flags.boolean({ char: 'm', description: 'max compression' }),
     nointeractive: Flags.boolean({ char: 'n', description: 'don\'t ask for user interctions' }),
     prefix: Flags.string({ char: 'p', description: 'prefix' }),
     release: Flags.boolean({ description: 'release: max compression, remove penguins-eggs and calamares after installation' }),
     script: Flags.boolean({ char: 's', description: 'script mode. Generate scripts to manage iso build' }),
+    standard: Flags.boolean({ char: 'f', description: 'standard compression' }),
     theme: Flags.string({ description: 'theme for livecd, calamares branding and partitions' }),
     verbose: Flags.boolean({ char: 'v', description: 'verbose' }),
     yolk: Flags.boolean({ char: 'y', description: '-y force yolk renew' }),
@@ -36,12 +36,13 @@ export default class Produce extends Command {
   static description = 'produce a live image from your system whithout your data'
   static examples = [
     "sudo eggs produce",
-    "sudo eggs produce --fast",
+    "sudo eggs produce --standard",
     "sudo eggs produce --max",
-    "sudo eggs produce --fast --basename=colibri",
-    "sudo eggs produce --fast --basename=colibri --theme /path/to/theme --addons adapt",
-    "sudo eggs produce --fast --clone",
-    "sudo eggs produce --fast --cryptedclone",
+    "sudo eggs produce --max --basename=colibri",
+    "sudo eggs produce --cryptedclone",
+    "sudo eggs produce --clone",
+    "sudo eggs produce --basename=colibri",
+    "sudo eggs produce --basename=colibri --theme /path/to/theme --addons adapt",
   ]
 
   async run(): Promise<void> {
@@ -94,11 +95,11 @@ export default class Produce extends Command {
       const compressors = new Compressors()
       await compressors.populate()
 
-      let compression = compressors.normal()
+      let compression = compressors.fast()
       if (flags.max) {
         compression = compressors.max()
-      } else if (flags.fast) {
-        compression = compressors.fast()
+      } else if (flags.standard) {
+        compression = compressors.normal()
       }
 
       const release = flags.release
