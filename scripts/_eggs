@@ -32,8 +32,8 @@ _eggs () {
 "wardrobe\:list:list costumes and accessoires in wardrobe"
 "wardrobe\:show:show costumes/accessories in wardrobe"
 "wardrobe\:wear:wear costume/accessories from wardrobe"
-"help:Display help for <%= config.bin %>."
 "autocomplete:display autocomplete installation instructions"
+"help:Display help for <%= config.bin %>."
 "version:"
   )
 
@@ -145,10 +145,10 @@ produce)
 "--help[Show CLI help.]"
 "--max[max compression]"
 "--nointeractive[don't ask for user interctions]"
-"--normal[normal compression]"
 "--prefix=-[prefix]:"
 "--release[release: max compression, remove penguins-eggs and calamares after installation]"
 "--script[script mode. Generate scripts to manage iso build]"
+"--standard[standard compression]"
 "--theme=-[theme for livecd, calamares branding and partitions]:"
 "--verbose[verbose]"
 "--yolk[-y force yolk renew]"
@@ -261,15 +261,15 @@ wardrobe:wear)
   )
 ;;
 
-help)
-  _command_flags=(
-    "--nested-commands[Include all nested commands in the output.]"
-  )
-;;
-
 autocomplete)
   _command_flags=(
     "--refresh-cache[Refresh cache (ignores displaying instructions)]"
+  )
+;;
+
+help)
+  _command_flags=(
+    "--nested-commands[Include all nested commands in the output.]"
   )
 ;;
 
