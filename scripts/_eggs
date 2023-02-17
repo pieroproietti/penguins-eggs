@@ -32,8 +32,8 @@ _eggs () {
 "wardrobe\:list:list costumes and accessoires in wardrobe"
 "wardrobe\:show:show costumes/accessories in wardrobe"
 "wardrobe\:wear:wear costume/accessories from wardrobe"
-"autocomplete:display autocomplete installation instructions"
 "help:Display help for <%= config.bin %>."
+"autocomplete:display autocomplete installation instructions"
 "version:"
   )
 
@@ -99,8 +99,7 @@ export:deb)
 
 export:iso)
   _command_flags=(
-    "--backup[export backup ISOs]"
-"--clean[delete old ISOs before to copy]"
+    "--clean[delete old ISOs before to copy]"
 "--help[Show CLI help.]"
 "--verbose[verbose]"
   )
@@ -143,10 +142,10 @@ produce)
 "--basename=-[basename]:"
 "--clone[clone]"
 "--cryptedclone[crypted clone]"
-"--fast[fast compression]"
 "--help[Show CLI help.]"
 "--max[max compression]"
 "--nointeractive[don't ask for user interctions]"
+"--normal[normal compression]"
 "--prefix=-[prefix]:"
 "--release[release: max compression, remove penguins-eggs and calamares after installation]"
 "--script[script mode. Generate scripts to manage iso build]"
@@ -262,15 +261,15 @@ wardrobe:wear)
   )
 ;;
 
-autocomplete)
-  _command_flags=(
-    "--refresh-cache[Refresh cache (ignores displaying instructions)]"
-  )
-;;
-
 help)
   _command_flags=(
     "--nested-commands[Include all nested commands in the output.]"
+  )
+;;
+
+autocomplete)
+  _command_flags=(
+    "--refresh-cache[Refresh cache (ignores displaying instructions)]"
   )
 ;;
 

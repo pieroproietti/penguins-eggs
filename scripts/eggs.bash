@@ -18,11 +18,11 @@ config --clean --help --nointeractive --verbose
 cuckoo --help
 dad --clean --default --help --verbose
 export:deb --all --clean --help --verbose
-export:iso --backup --clean --help --verbose
+export:iso --clean --help --verbose
 install --crypted --custom --domain --help --ip --nointeractive --none --pve --random --small --suspend --unattended --verbose
 kill --help --verbose
 mom --help
-produce --addons --basename --clone --cryptedclone --fast --help --max --nointeractive --prefix --release --script --theme --verbose --yolk
+produce --addons --basename --clone --cryptedclone --help --max --nointeractive --normal --prefix --release --script --theme --verbose --yolk
 status --help --verbose
 syncfrom --delete --file --help --rootdir --verbose
 syncto --delete --file --help --verbose
@@ -36,8 +36,8 @@ wardrobe:get --help --verbose
 wardrobe:list --help --verbose
 wardrobe:show --help --json --verbose --wardrobe
 wardrobe:wear --help --no_accessories --no_firmwares --silent --verbose --wardrobe
-autocomplete --refresh-cache
 help --nested-commands
+autocomplete --refresh-cache
 version --json --verbose
 "
 
