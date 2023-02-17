@@ -377,38 +377,6 @@ export default class Sequence {
             }
          }
 
-         // locale, keyboared e localeCfg solo se NON clone
-         if (!this.is_clone) {
-            // locale
-            message = "Locale "
-            percent = 0.47
-            try {
-               redraw(<Install message={message} percent={percent} />)
-               await this.locale()
-            } catch (error) {
-               await Utils.pressKeyToExit(JSON.stringify(error))
-            }
-
-            // keyboard
-            message = "settings keyboard "
-            percent = 0.48
-            try {
-               await this.keyboard()
-            } catch (error) {
-               await Utils.pressKeyToExit(JSON.stringify(error))
-            }
-
-            // localeCfg
-            message = "localeCfg"
-            percent = 0.50
-            try {
-               await this.localeCfg()
-               await exec("chroot " + this.installTarget + " locale-gen")
-            } catch (error) {
-               await Utils.pressKeyToExit(JSON.stringify(error))
-            }
-         }
-
          // networkcfg
          message = "networkcfg"
          percent = 0.50
@@ -461,9 +429,42 @@ export default class Sequence {
          }
 
          /**
-          * IF NOT RESTORE USERS DATA OR PERSONAL BACKUP
+          * locale, 
+          * keyboard
+          * localeCfg
+          * delLiveUser
+          * adduser
+          * autologin solo se NON clone
           */
-         if (!fs.existsSync(this.luksFile) && !this.is_clone) {
+         if (!this.is_clone) {
+            // locale
+            message = "Locale "
+            percent = 0.47
+            try {
+               redraw(<Install message={message} percent={percent} />)
+               await this.locale()
+            } catch (error) {
+               await Utils.pressKeyToExit(JSON.stringify(error))
+            }
+
+            // keyboard
+            message = "settings keyboard "
+            percent = 0.48
+            try {
+               await this.keyboard()
+            } catch (error) {
+               await Utils.pressKeyToExit(JSON.stringify(error))
+            }
+
+            // localeCfg
+            message = "localeCfg"
+            percent = 0.50
+            try {
+               await this.localeCfg()
+               await exec("chroot " + this.installTarget + " locale-gen")
+            } catch (error) {
+               await Utils.pressKeyToExit(JSON.stringify(error))
+            }
 
             // delLiveUser
             message = "Removing user live "
@@ -518,6 +519,7 @@ export default class Sequence {
                }
             }
          }
+
          // cleanup
          await cliAutologin.msgRemove(`${this.installTarget}/etc/motd`)
          await cliAutologin.msgRemove(`${this.installTarget}/etc/issue`)
