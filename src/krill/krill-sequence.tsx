@@ -596,7 +596,8 @@ export default class Sequence {
          percent = 0.94
          try {
             await redraw(<Install message={message} percent={percent} />)
-            await exec(`rm -f ${this.installTarget}/etc/penguins-eggs.d/is_clone*`)
+            await exec(`rm -f ${this.installTarget}/etc/penguins-eggs.d/is_clone`)
+            await exec(`rm -f ${this.installTarget}/etc/penguins-eggs.d/is_crypted_clone`)
          } catch (error) {
             await Utils.pressKeyToExit(JSON.stringify(error))
          }

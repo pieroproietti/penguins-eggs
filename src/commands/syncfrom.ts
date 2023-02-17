@@ -25,8 +25,8 @@ export default class Syncfrom extends Command {
   }
   static description = 'restore users and user data from a LUKS volumes'
   static examples = [
-    'sudo eggs restore',
-    'sudo eggs restore --file /path/to/fileLUKS',
+    'sudo eggs syncfrom',
+    'sudo eggs syncfrom --file /path/to/fileLUKS',
   ]
   verbose = false
 
