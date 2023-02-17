@@ -514,13 +514,13 @@ produce a live image from your system whithout your data
 
 ```
 USAGE
-  $ eggs produce [--addons <value>] [--basename <value>] [-c] [-C] [-f] [-h] [-m] [-n] [-p <value>]
+  $ eggs produce [--addons <value>] [--basename <value>] [-c] [-C] [-h] [-m] [-n] [-f] [-p <value>]
     [--release] [-s] [--theme <value>] [-v] [-y]
 
 FLAGS
   -C, --cryptedclone    crypted clone
   -c, --clone           clone
-  -f, --fast            fast compression
+  -f, --normal          normal compression
   -h, --help            Show CLI help.
   -m, --max             max compression
   -n, --nointeractive   don't ask for user interctions
@@ -539,17 +539,19 @@ DESCRIPTION
 EXAMPLES
   sudo eggs produce
 
-  sudo eggs produce --fast
+  sudo eggs produce --normal
 
   sudo eggs produce --max
 
-  sudo eggs produce --fast --basename=colibri
+  sudo eggs produce --max --basename=colibri
 
-  sudo eggs produce --fast --basename=colibri --theme /path/to/theme --addons adapt
+  sudo eggs produce --cryptedclone
 
-  sudo eggs produce --fast --clone
+  sudo eggs produce --clone
 
-  sudo eggs produce --fast --cryptedclone
+  sudo eggs produce --basename=colibri
+
+  sudo eggs produce --basename=colibri --theme /path/to/theme --addons adapt
 ```
 
 _See code: [dist/commands/produce.js](https://github.com/pieroproietti/penguins-eggs/blob/v9.3.25/dist/commands/produce.js)_
