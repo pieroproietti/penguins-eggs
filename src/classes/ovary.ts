@@ -220,7 +220,7 @@ export default class Ovary {
         }
         await this.bindLiveFs()
 
-        if (!this.clone) {
+        if (!this.clone) { // aggiungere crypetdclone
           await this.cleanUsersAccounts()
           await this.createUserLive()
 

@@ -200,7 +200,7 @@ export default class Sequence {
    is_clone = fs.existsSync('/etc/penguins-eggs.d/is_clone')
 
    is_crypted_clone = fs.existsSync('/etc/penguins-eggs.d/is_crypted_clone')
-   
+
    unattended = false
 
 
@@ -373,7 +373,7 @@ export default class Sequence {
                   await Utils.pressKeyToExit(cmd)
                }
             } else {
-               await Utils.pressKeyToExit(`Cannot find LUKS file ${this.luksFile}`)               
+               await Utils.pressKeyToExit(`Cannot find LUKS file ${this.luksFile}`)
             }
          }
 
@@ -428,17 +428,19 @@ export default class Sequence {
             }
          }
 
+
          /**
-          * locale, 
-          * keyboard
-          * localeCfg
-          * delLiveUser
-          * adduser
-          * autologin solo se NON clone
+          * IF NOT CLONE:
+          * - locale
+          * - keyboard
+          * - localeCfg
+          * - delLiveUser
+          * - adduser
+          * - autologin 
           */
          if (!this.is_clone) {
             // locale
-            message = "Locale "
+            message = "Locale"
             percent = 0.47
             try {
                redraw(<Install message={message} percent={percent} />)
@@ -448,7 +450,7 @@ export default class Sequence {
             }
 
             // keyboard
-            message = "settings keyboard "
+            message = "settings keyboard"
             percent = 0.48
             try {
                await this.keyboard()
@@ -457,7 +459,7 @@ export default class Sequence {
             }
 
             // localeCfg
-            message = "localeCfg"
+            message = "Locale Configuration"
             percent = 0.50
             try {
                await this.localeCfg()
@@ -467,7 +469,7 @@ export default class Sequence {
             }
 
             // delLiveUser
-            message = "Removing user live "
+            message = "Remove user LIVE"
             percent = 0.61
             try {
                await redraw(<Install message={message} percent={percent} />)
@@ -477,7 +479,7 @@ export default class Sequence {
             }
 
             // addUser
-            message = "Adding user "
+            message = "Add user"
             percent = 0.62
             try {
                await redraw(<Install message={message} percent={percent} />)
@@ -487,7 +489,7 @@ export default class Sequence {
             }
 
             // changePassword root
-            message = "adding user password "
+            message = "Add user password"
             percent = 0.63
             try {
                await redraw(<Install message={message} percent={percent} />)
@@ -499,7 +501,7 @@ export default class Sequence {
             // autologin
             if (Pacman.isInstalledGui()) {
                try {
-                  message = "autologin GUI"
+                  message = "Autologin GUI"
                   percent = 0.65
                   if (this.users.autologin) {
                      await Xdg.autologin(await Utils.getPrimaryUser(), this.users.name, this.installTarget)
@@ -508,22 +510,19 @@ export default class Sequence {
                } catch (error) {
                   await Utils.pressKeyToExit(JSON.stringify(error))
                }
-            } else { // autologin CLI remove DEFAULT
-               message = "autologin CLI"
-               percent = 0.66
-               try {
-                  await redraw(<Install message={message} percent={percent} />)
-                  await cliAutologin.remove(this.installTarget)
-               } catch (error) {
-                  await Utils.pressKeyToExit(JSON.stringify(error))
-               }
             }
-         }
+         } // IF NOT CLONE END
 
-         // cleanup
-         await cliAutologin.msgRemove(`${this.installTarget}/etc/motd`)
-         await cliAutologin.msgRemove(`${this.installTarget}/etc/issue`)
-         await cliAutologin.remove(this.installTarget)
+
+         // Remove autologin CLI
+         message = "Remove autologin CLI"
+         percent = 0.66
+         try {
+            await redraw(<Install message={message} percent={percent} />)
+            await cliAutologin.remove(this.installTarget)
+         } catch (error) {
+            await Utils.pressKeyToExit(JSON.stringify(error))
+         }
 
          // bootloader-config
          message = "bootloader-config "
@@ -575,7 +574,6 @@ export default class Sequence {
             await this.packages()
          } catch (error) {
             console.log(JSON.stringify(error))
-            // await Utils.pressKeyToExit(JSON.stringify(error))
          }
 
          /**
@@ -593,6 +591,8 @@ export default class Sequence {
             }
          }
 
+         // remove /etc/penguins_eggs.d/is_clone*
+         await exec(`rm -f ${this.installTarget}/etc/penguins-eggs.d/is_clone*`)
 
          // umountVfs
          message = "umount VFS"
