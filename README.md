@@ -514,13 +514,13 @@ produce a live image from your system whithout your data
 
 ```
 USAGE
-  $ eggs produce [--addons <value>] [--basename <value>] [-c] [-C] [-h] [-m] [-n] [-f] [-p <value>]
-    [--release] [-s] [--theme <value>] [-v] [-y]
+  $ eggs produce [--addons <value>] [--basename <value>] [-c] [-C] [-h] [-m] [-n] [-p <value>] [--release]
+    [-s] [-f] [--theme <value>] [-v] [-y]
 
 FLAGS
   -C, --cryptedclone    crypted clone
   -c, --clone           clone
-  -f, --normal          normal compression
+  -f, --standard        standard compression
   -h, --help            Show CLI help.
   -m, --max             max compression
   -n, --nointeractive   don't ask for user interctions
@@ -539,7 +539,7 @@ DESCRIPTION
 EXAMPLES
   sudo eggs produce
 
-  sudo eggs produce --normal
+  sudo eggs produce --standard
 
   sudo eggs produce --max
 
