@@ -325,26 +325,6 @@ export default class Sequence {
             }
          }
 
-         /**
-          * CryptedClone exec eggs syncfrom
-          */
-         if (this.is_crypted_clone) {
-            message = "Restore private data from crypted clone "
-            if (fs.existsSync(this.luksFile)) {
-               percent = 0.37
-               let cmd = `eggs syncfrom --rootdir /tmp/calamares-krill-root/ --file ${this.luksFile}`
-               try {
-                  await redraw(<Install message={message} percent={percent} spinner={true} />)
-                  await exec(cmd, Utils.setEcho(true))
-               } catch (error) {
-                  await Utils.pressKeyToExit(cmd)
-               }
-            } else {
-               await Utils.pressKeyToExit(`Cannot find LUKS file ${this.luksFile}`)               
-            }
-         }
-         
-
          // sources-yolk
          if (this.distro.familyId === 'debian') {
             message = 'sources-yolk'
@@ -375,6 +355,26 @@ export default class Sequence {
             await this.fstab(this.partitions.installationDevice)
          } catch (error) {
             await Utils.pressKeyToExit(JSON.stringify(error))
+         }
+
+         /**
+          * CryptedClone exec eggs syncfrom
+          */
+         if (this.is_crypted_clone) {
+            message = "Restore private data from crypted clone "
+            if (fs.existsSync(this.luksFile)) {
+               percent = 0.37
+               let cmd = `eggs syncfrom --rootdir /tmp/calamares-krill-root/ --file ${this.luksFile}`
+               try {
+                  await redraw(<Install message={message} percent={percent} spinner={true} />)
+                  await exec(cmd, Utils.setEcho(true))
+                  this.is_clone = true // Adesso è un clone
+               } catch (error) {
+                  await Utils.pressKeyToExit(cmd)
+               }
+            } else {
+               await Utils.pressKeyToExit(`Cannot find LUKS file ${this.luksFile}`)               
+            }
          }
 
          // locale, keyboared e localeCfg solo se NON clone
