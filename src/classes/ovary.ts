@@ -224,11 +224,11 @@ export default class Ovary {
         }
         await this.bindLiveFs()
 
-        if (!this.clone) { 
+        if (!this.clone) {
           /**
            * ANCHE per cryptedclone
            */
-          await this.cleanUsersAccounts() 
+          await this.cleanUsersAccounts()
           await this.createUserLive()
           if (Pacman.isInstalledGui()) {
             await this.createXdgAutostart(this.settings.config.theme, myAddons)
@@ -260,7 +260,7 @@ export default class Ovary {
         await exec(`mv ${luksFile} ${this.settings.config.snapshot_dir}ovarium/iso/live`, this.echo)
       }
 
-      const xorrisoCommand = this.makeDotDisk(cryptedclone)
+      const xorrisoCommand = this.makeDotDisk(clone, cryptedclone)
 
       /**
        * patch to emulate miso/archiso on archilinux
@@ -1597,7 +1597,7 @@ export default class Ovary {
    * create .disk/info, .disk/mksquashfs, .disk/mkiso
    * return mkiso
    */
-  makeDotDisk(cryptedclone = false): string {
+  makeDotDisk(clone = false, cryptedclone = false): string {
     const dotDisk = this.settings.work_dir.pathIso + '/.disk'
     if (fs.existsSync(dotDisk)) {
       shx.rm('-rf', dotDisk)
@@ -1614,7 +1614,7 @@ export default class Ovary {
     shx.cp(scripts + '/mksquashfs', dotDisk + '/mksquashfs')
 
     // .disk/mkisofs
-    content = this.xorrisoCommand(cryptedclone).replace(/\s\s+/g, ' ')
+    content = this.xorrisoCommand(clone, cryptedclone).replace(/\s\s+/g, ' ')
     file = dotDisk + '/mkisofs'
     fs.writeFileSync(file, content, 'utf-8')
     return content
@@ -1625,16 +1625,22 @@ export default class Ovary {
    * @param cryptedclone
    * @returns cmd 4 mkiso
    */
-  xorrisoCommand(cryptedclone = false): string {
+  xorrisoCommand(clone = false, cryptedclone = false): string {
     const volid = Utils.getVolid(this.settings.remix.name)
 
     let prefix = this.settings.config.snapshot_prefix
-    if (cryptedclone) {
-      prefix = prefix.slice(0, 7) === 'egg-of-' ? 'egg-eb-' + prefix.slice(7) : 'egg-eb-' + prefix
-    }
 
+    let typology = ""
+    // typology is applied only with standard egg-of
+    if (prefix.slice(0, 7) === 'egg-of-') {
+      if (clone) {
+        typology = "_clone"
+      } else if (cryptedclone) {
+        typology = "_crypted"
+      }
+    }
     const postfix = Utils.getPostfix()
-    this.settings.isoFilename = prefix + volid + postfix
+    this.settings.isoFilename = prefix + volid + typology + postfix
     const output = this.settings.config.snapshot_dir + this.settings.isoFilename
 
     let command = ''

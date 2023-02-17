@@ -395,10 +395,9 @@ export iso in the destination host
 
 ```
 USAGE
-  $ eggs export iso [-b] [-c] [-h] [-v]
+  $ eggs export iso [-c] [-h] [-v]
 
 FLAGS
-  -b, --backup   export backup ISOs
   -c, --clean    delete old ISOs before to copy
   -h, --help     Show CLI help.
   -v, --verbose  verbose
@@ -410,8 +409,6 @@ EXAMPLES
   $ eggs export iso
 
   $ eggs export iso --clean
-
-  $ eggs export iso --backup
 ```
 
 ## `eggs help [COMMAND]`
