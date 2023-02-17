@@ -21,7 +21,7 @@ Please, don't use this package for installations, they have just the pourpouse t
 * produce: changed flag --backup to --cryptoclone;
 * moved inside /etc/penguins-eggs.d files is_clone and is_crypted clone to solve the problem with PXE they was not visible during installation;
 * ovary/krill: generally speacking producing a clone or installing a clone, we don't touch more: locale, keyboard, localeCfg, delLiveUser, adduser and autologin. Remain to save and restore autologin for cryptedclone;
-* it seem working reinstalling from ISO, PXE, clone and cryptedclone;
+* it seem working reinstalling from ISO or via PXE for normal and clone, from ISO for cryptedclone;
 * to be continued...
 
 # OEM Installation
