@@ -29,7 +29,7 @@ penguins-eggs
 # Presentation
 **penguins-eggs** is a console utility, under continuous development, that allows you to remaster your system and redistribute it as iso images.
 
-The purpose of this project is to implement the process of remastering your own version of Linux, generate it as an ISO image to burn to a CD/DVD or copy to a USB stick to boot your system. The default behavior is total removal of the system's data and users, but it is also possible to remaster the system including the data and accounts of present users, use flag **--clone**. It is also possible to keep the users and files present under an encrypted LUKS file within the same resulting iso file, flag **--backup**.
+The purpose of this project is to implement the process of remastering your own version of Linux, generate it as an ISO image to burn to a CD/DVD or copy to a USB stick to boot your system. The default behavior is total removal of the system's data and users, but it is also possible to remaster the system including the data and accounts of present users, use flag **--clone**. It is also possible to keep the users and files present under an encrypted LUKS file within the same resulting iso file, flag **--cryptedclone**.
 
 You can easily install the resulting live system with the calamares installer or the internal TUI krill installer. It is possible to have also unattended installation using **--unattended** flag.
 
@@ -47,23 +47,23 @@ You can read more on the [blog](https://penguins-eggs.net/2021/11/02/distros-tha
 ## addons and themes
 Addons are used mostly to let third parties to develop extensions. Note that currently we have an extension for the theme that includes both branding calamares, link and installer icon. In addition, also as an addon has been developed choose between GUI or CLI installation, adapt the video resolution, link to remote support, etc.
 
-## backup/clone
+## clone/cryptedclone
 
-We have two methods to save in the live system all our data: clone and backup.
+We have two methods to save in the live system all our data: clone and cryptedclone.
 
-```eggs produce --fast --clone``` 
+```eggs produce --clone``` 
 
 saves our users and our data directly in the generated iso. The data will be visible directly from the live and accessible to anyone who gets a copy.
 
-```eggs produce --fast --backup``` 
+```eggs produce --cryptedclone``` 
 
 saves our data within the generated iso using a LUKS volume. Our data will NOT be visible in the live system but can be reinstalled automatically with krill installer. Even having the generated image available, our data will be protected by the LUKS passphrase.
 
 * ```eggs produce``` this is the default: all private data are removed on the live.
 * ```eggs produce --clone``` include all users data UNCRYPTED directly on the live.
-* ```eggs produce --backup``` include all users data CRYPTED on a LUKS volume inside the iso.
+* ```eggs produce --cryptedclone``` include all users data CRYPTED on a LUKS volume inside the iso.
 
-Using ```sudo eggs install --cli``` will automaticaly restore your CRYPTED backup automatically during the installation.
+Using ```sudo eggs install --cli``` will automaticaly restore your CRYPTED clone automatically during the installation.
 
 ## calamares and krill
 eggs was developed to use the excellent [calamares](https://calamares.io) as a system installer and allows customization. It also includes its own installer called krill, which allows you to produce and install CLI systems such as servers. krill uses a CLI interface that mimics calamares and uses the same configuration files created by eggs for calamares itself. This results in having "about the same" installation experience from old distros to new ones, desktop or server installations. With krill it is also possible to have unattended installations, simply by adding the ``--unattended`` flag, the configuration values can be changed in ``/etc/penguins-eggs.d/krill.yaml`` and they will be used for the configuration.
@@ -142,17 +142,17 @@ Once the package has been installed, you can have the new ```eggs``` command. Ty
 
 * Create a live system without user data:
 
-```sudo eggs produce --fast```
+```sudo eggs produce ```
 
 * Create a live system with user data uncrypted.
 
-```sudo eggs produce --fast --clone```
+```sudo eggs produce --clone```
 
 * Create a live system with the encrypted user data.
 
-```sudo eggs produce --fast --backup```
+```sudo eggs produce --cryptedclone```
 
-Especially during the first trials, you should always use the ```--fast``` flag that will ensure a fast creation of the ISO, later you can use ```--max``` flag and get ISOs more compressed.
+Currently eggs uses the default fast compression which provides yna faster compression speed, for final compression it is worth using the ``--max`` flag to get more compressed ISOs.
 
 In addition to the description of the commands in this README, you can consult the [Penguin's eggs official book](#penguins-eggs-official-book).
 
