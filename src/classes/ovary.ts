@@ -38,6 +38,7 @@ import { displaymanager } from './incubation/fisherman-helper/displaymanager'
 import { access } from 'fs/promises'
 import { constants } from 'fs'
 import Users from './users'
+import { createTextChangeRange } from 'typescript'
 
 /**
  * Ovary:
@@ -64,6 +65,8 @@ export default class Ovary {
   theme = ''
 
   clone = false
+
+  cryptedclone = false
 
   /**
    * @returns {boolean} success
@@ -109,12 +112,14 @@ export default class Ovary {
    */
   async produce(clone = false, cryptedclone = false, scriptOnly = false, yolkRenew = false, release = false, myAddons: IMyAddons, nointeractive = false, verbose = false) {
     this.verbose = verbose
-    this.clone = clone
-
     this.echo = Utils.setEcho(verbose)
     if (this.verbose) {
       this.toNull = ' > /dev/null 2>&1'
     }
+
+    this.clone = clone
+
+    this.cryptedclone = cryptedclone
 
     let luksName = 'luks-eggs-data'
 
@@ -123,7 +128,6 @@ export default class Ovary {
     // let luksDevice = `/dev/mapper/${this.luksName}`
 
     // let luksMountpoint = `/mnt`
-
 
     if (this.familyId === 'debian') {
       const yolk = new Repo()
@@ -220,11 +224,12 @@ export default class Ovary {
         }
         await this.bindLiveFs()
 
-        if (!this.clone) { // aggiungere crypetdclone
-          await this.cleanUsersAccounts()
+        if (!this.clone) { 
+          /**
+           * ANCHE per cryptedclone
+           */
+          await this.cleanUsersAccounts() 
           await this.createUserLive()
-
-          // create XdgAutostart
           if (Pacman.isInstalledGui()) {
             await this.createXdgAutostart(this.settings.config.theme, myAddons)
 
