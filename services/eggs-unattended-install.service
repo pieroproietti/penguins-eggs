@@ -1,0 +1,11 @@
+[Unit]
+Description=eggs unattended install service
+After=network.target
+
+[Service]
+Type=simple
+ExecStart=/bin/bash /usr/bin/eggs install -un
+TimeoutStartSec=0
+
+[Install]
+WantedBy=default.target
