@@ -515,7 +515,7 @@ export default class Sequence {
          } // IF NOT CLONE END
 
 
-         // Remove autologin CLI
+         // Remove ALWAYS autologin CLI
          message = "Remove autologin CLI"
          percent = 0.80
          try {
@@ -579,10 +579,10 @@ export default class Sequence {
 
          /**
           *
-          * if calamares is present, remove link Installers
+          * if calamares is present: remove GUI installer link
           */
          if (await Pacman.calamaresCheck()) {
-            message = "remove installer link"
+            message = "remove GUI installer link"
             percent = 0.92
             try {
                await redraw(<Install message={message} percent={percent} />)
