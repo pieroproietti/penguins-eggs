@@ -26,10 +26,10 @@ export default async function removeInstallerLink(this: Sequence): Promise<void>
                     lines[i] += '#'
                 }
                 if (lines[i].search('penguins-clinstaller.desktop') !== -1) {
-                    lines[i] += '#'
+                    lines[i] = '#' + lines[i]
                 }
                 if (lines[i].search('install-debian.desktop') !== -1) {
-                    lines[i] += '#'
+                    lines[i] = '#' + lines[i]
                 }
                 content += lines[i] + '\n'
             }
