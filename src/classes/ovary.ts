@@ -1267,54 +1267,46 @@ export default class Ovary {
      * configuro add-penguins-desktop-icons in /etc/xdg/autostart
      */
     const dirAutostart = `${this.settings.work_dir.merged}/etc/xdg/autostart`
-    const dirRun = '/usr/bin'
     if (fs.existsSync(dirAutostart)) {
       // Creo l'avviatore xdg DEVE essere add-penguins-links.desktop
       shx.cp(path.resolve(__dirname, '../../assets/penguins-links-add.desktop'), dirAutostart)
 
-      // Creo lo script add-penguins-links.sh
-      const script = `${dirRun}/penguins-links-add.sh`
+      // create /usr/bin/penguins-links-add.sh
+      const script = `/usr/bin/penguins-links-add.sh`
       let text = ''
       text += '#!/bin/sh\n'
       text += 'DESKTOP=$(xdg-user-dir DESKTOP)\n'
-      text += '# Create ~/Desktop just in case this runs before the xdg folder creation script\n'
-      text += 'mkdir -p $DESKTOP\n'
-      // Anche se in lxde rimane il problema della conferma dell'avvio
-      // per l'installer, lo tolgo altrimenti su LXDE riappare comunque
-      text += `cp /usr/share/applications/${installerUrl} $DESKTOP\n`
+      text += 'test -d "$DESKTOP" && mkdir -p "$DESKTOP"\n'
+      text += `cp /usr/share/applications/${installerUrl} "$DESKTOP"\n`
       if (Pacman.packageIsInstalled('lxde-core')) {
         text += this.lxdeLink('penguins-eggs.desktop', "penguin's eggs", 'eggs')
         if (myAddons.adapt) text += this.lxdeLink('eggs-adapt.desktop', 'Adapt', 'video-display')
         if (myAddons.pve) text += this.lxdeLink('eggs-pve.desktop', 'Proxmox VE', 'proxmox-ve')
         if (myAddons.rsupport) text += this.lxdeLink('eggs-rsupport.desktop', 'Remote assistance', 'remote-assistance')
       } else {
-        text += 'cp /usr/share/applications/penguins-eggs.desktop $DESKTOP\n'
-        if (myAddons.adapt) text += 'cp /usr/share/applications/eggs-adapt.desktop $DESKTOP\n'
-        if (myAddons.pve) text += 'cp /usr/share/applications/eggs-pve.desktop $DESKTOP\n'
-        if (myAddons.rsupport) text += 'cp /usr/share/applications/eggs-rsupport.desktop $DESKTOP\n'
+        text += `cp /usr/share/applications/penguins-eggs.desktop "$DESKTOP"\n`
+        if (myAddons.adapt) text += `cp /usr/share/applications/eggs-adapt.desktop "$DESKTOP"\n`
+        if (myAddons.pve) text += `cp /usr/share/applications/eggs-pve.desktop "$DESKTOP"\n`
+        if (myAddons.rsupport) text += `cp /usr/share/applications/eggs-rsupport.desktop "$DESKTOP"\n`
       }
-
       /**
        * enable desktop links
        */
       if (Pacman.packageIsInstalled('gdm3') || Pacman.packageIsInstalled('gdm')) {
         // GNOME
-        text += `test -f /usr/share/applications/penguins-eggs.desktop && cp /usr/share/applications/penguins-eggs.desktop $DESKTOP\n`
-        text += `test -f "$DESKTOP/penguins-eggs.desktop" && chmod a+x "$DESKTOP/penguins-eggs.desktop"\n`
-        text += `test -f "$DESKTOP/penguins-eggs.desktop" && gio set "$DESKTOP/penguins-eggs.desktop" metadata::trusted true\n`
-
-        text += `test -f /usr/share/applications/install-debian.desktop && cp /usr/share/applications/install-debian.desktop $DESKTOP\n`
-        text += `test -f "$DESKTOP/install-debian.desktop" && chmod a+x $DESKTOP/install-debian.desktop\n`
-        text += `test -f "$DESKTOP/install-debian.desktop" && gio set "$DESKTOP/install-debian.desktop" metadata::trusted true\n`
+        text += `test -f /usr/share/applications/penguins-eggs.desktop && cp /usr/share/applications/penguins-eggs.desktop "$DESKTOP"\n`
+        text += `test -f "$DESKTOP"/penguins-eggs.desktop && chmod a+x "$DESKTOP"/penguins-eggs.desktop\n`
+        text += `test -f "$DESKTOP"/penguins-eggs.desktop && gio set "$DESKTOP"/penguins-eggs.desktop metadata::trusted true\n`
+        text += `test -f /usr/share/applications/${installerUrl} && cp /usr/share/applications/${installerUrl} "$DESKTOP"\n`
+        text += `test -f "$DESKTOP"/${installerUrl} && chmod a+x "$DESKTOP"/${installerUrl}\n`
+        text += `test -f "$DESKTOP"/${installerUrl} && gio set "$DESKTOP"/${installerUrl} metadata::trusted true\n`
       } else {
         // OTHERS: CINNAMON/KDE/ETC
-        text += `chmod +x $DESKTOP/*.desktop`
+        text += `chmod +x "$DESKTOP"/*.desktop`
       }
-
       fs.writeFileSync(script, text, 'utf8')
       await exec(`chmod a+x ${script}`, this.echo)
     }
-
     await Xdg.autologin(await Utils.getPrimaryUser(), this.settings.config.user_opt, this.settings.work_dir.merged)
   }
 
