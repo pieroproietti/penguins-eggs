@@ -1,10 +1,10 @@
 [Unit]
-Description=eggs unattended install service
+Description=eui: eggs unattended install service
 After=network.target
 
 [Service]
 Type=simple
-ExecStart=/bin/bash /usr/bin/eggs install -un
+ExecStart=/bin/bash /opt/eui.sh
 TimeoutStartSec=0
 
 [Install]
