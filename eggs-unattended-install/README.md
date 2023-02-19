@@ -10,6 +10,7 @@ Inzomma... Huston, abbiamo un problema!
 
 1) rendere visibile e stoppabile l'evento
 2) a termine dell'installazione il sistema si resetta ed esegue di nuovo il boot. Se la priorità è il boot da rete, il sistema andrebbe ancora una volta ad installare e NON è quello che vogliamo.
+3) probabilmente sarebbe più "sano" configurare le macchine per il boot locale e, se non presente, avviare il boot da rete. Occorrerebbe, però farsi il giro delle macchine per selezionare il boot PXE per quelle che si vogliono installare.
 
 Servono idee
 
