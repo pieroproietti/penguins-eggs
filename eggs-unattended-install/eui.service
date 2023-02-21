@@ -5,10 +5,8 @@ After=network.target
 [Service]
 Type=simple
 ExecStart=
-ExecStart=-/bin/bash /opt/eggs-unattended-install
+ExecStart=/usr/bin/gnome-terminal -e "/opt/eui-start.sh"
 TimeoutStartSec=0
 
-
 [Install]
-WantedBy=default.target
-
+WantedBy=multi-user.target
