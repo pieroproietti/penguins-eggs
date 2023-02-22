@@ -1,2 +1,1 @@
-localadmin ALL=NOPASSWD: /usr/bin/eui-start.sh
 live ALL=NOPASSWD: /usr/bin/eui-start.sh
