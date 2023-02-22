@@ -1,6 +1,7 @@
 # eggs unattended install
 
-Eggs unattended install è basato su semplici script ed, al momento, funziona così:
+Eggs unattended install è basato su semplici script ed, al momento, 
+per creare una ISO con possibilità di unattended-install, procedere come segue:
 
 ```
 cd /usr/lib/penguins-eggs/eui
@@ -8,9 +9,17 @@ cd /usr/lib/penguins-eggs/eui
 ```
 Verrà generata una immagine fast, quindi abbastanza veloce, e lanciato il comando cuckoo.
 
-# Modifiche necessarie
 
+# Modifiche necessarie rispetto ad una normale immagine
+
+Sono coinvolti 3 file:
 * /etc/sudoers.d/eui-users
+* /etc/xdg/autostart/eui.desktop
+* /usr/bin/eui-start.ch
+
+Vediamoli uno ad uno
+
+## /etc/sudoers.d/eui-users
 
 Create a file:
 ```
@@ -27,7 +36,7 @@ Change permissions to /etc/sudoers.d/eui-users
 chmod 0440 /etc/sudoers.d/eui-users
 ```
 
-* /etc/xdg/autostart/eui.desktop
+##  /etc/xdg/autostart/eui.desktop
 
 ```
 [Desktop Entry]
@@ -37,4 +46,27 @@ Exec=sudo /usr/bin/eui-start.sh
 StartupNotify=false
 NoDisplay=true
 Terminal=true  #basically will open terminal and people can see the script executing
+```
+
+## /usr/bin/eui-start.sh
+
+```
+#!/bin/env bash
+if mountpoint -q "/lib/live/mount"; then 
+    # isLive
+
+    # try to read /etc/hostname from /dev/sda
+    sudo mount "/dev/sda2" "/mnt"
+    OS_HOSTNAME=$(/usr/bin/cat /mnt/etc/hostname)
+    sudo umount "/dev/sda2"
+    sudo echo "I will completely format local system: ${OS_HOSTNAME}"
+    echo -n "Wait a minute for installation or CTRL-C to abort.";
+    for _ in {1..60}; do read -rs -n1 -t1 || printf ".";done;echo
+    sudo eggs install -unrd .local
+else  
+    # isInstalled
+    sudo rm /etc/sudoers.d/eui-users
+    sudo rm /usr/bin/eui-start.sh
+    sudo rm /etc/xdg/autostart/eui.desktop
+fi
 ```
