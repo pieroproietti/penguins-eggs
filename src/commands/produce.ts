@@ -118,7 +118,6 @@ export default class Produce extends Command {
       const nointeractive = flags.nointeractive
 
 
-
       /**
        * theme: if not defined will use eggs
        */

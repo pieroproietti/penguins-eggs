@@ -28,7 +28,7 @@ export default class Config extends Command {
   static examples = [
     "sudo eggs config",
     "sudo eggs config --clean",
-    "sudo eggs config --clean --noninteractive"
+    "sudo eggs config --clean --nointeractive"
   ]    
 
   async run(): Promise<void> {

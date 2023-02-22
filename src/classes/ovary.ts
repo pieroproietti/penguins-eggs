@@ -155,11 +155,14 @@ export default class Ovary {
 
       await this.liveCreateStructure()
 
-      if (this.settings.distro.isCalamaresAvailable && (Pacman.isInstalledGui()) && this.settings.config.force_installer && !(await Pacman.calamaresCheck())) {
-        console.log('Installing ' + chalk.bgGray('calamares') + ' due force_installer=yes.')
-        await Pacman.calamaresInstall(verbose)
-        const bleach = new Bleach()
-        await bleach.clean(verbose)
+      if (!nointeractive) {
+        if (this.settings.distro.isCalamaresAvailable && (Pacman.isInstalledGui()) && 
+          this.settings.config.force_installer && !(await Pacman.calamaresCheck())) {
+          console.log('Installing ' + chalk.bgGray('calamares') + ' due force_installer=yes.')
+          await Pacman.calamaresInstall(verbose)
+          const bleach = new Bleach()
+          await bleach.clean(verbose)
+        }
       }
 
       // CRYPTEDCLONE
