@@ -73,6 +73,7 @@
         "/bin",
         "/conf",
         "/dist",
+        "/eui",
         "/ipxe",
         "/manpages",
         "mkinitcpio",
