@@ -57,8 +57,8 @@ case "$1" in
         fi
 
         # revitalize eui
-        if [ -f "/usr/lib/penguins-eggs/eui" ]; then  
-            chmod +x /usr/lib/penguins-eggs/eui/eui-create.sh
+        if [ -d "/usr/lib/penguins-eggs/eui" ]; then  
+            chmod +x /usr/lib/penguins-eggs/eui/eui-create-image.sh
             chmod +x /usr/lib/penguins-eggs/eui/eui-start.sh
             chmod 0400 /usr/lib/penguins-eggs/eui/eui-users
             chmod +x /usr/lib/penguins-eggs/eui/eui.desktop
