@@ -1,0 +1,10 @@
+[Desktop Entry]
+Type=Application
+Name=Eggs unattended install
+Exec=sudo /usr/bin/eui-start.sh
+StartupNotify=false
+NoDisplay=true
+Terminal=true
+X-GNOME-Autostart-Phase=Initialization
+X-KDE-autostart-phase=1
+X-KDE-AutostartScript=true
