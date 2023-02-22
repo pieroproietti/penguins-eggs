@@ -33,6 +33,7 @@ case "$1" in
 
         # pulizia dei link non rimovibili da apt
         rm -rf /usr/lib/penguins-eggs/distros
+        rm -rf /usr/lib/penguins-eggs/eui
         rm -rf /usr/lib/penguins-eggs/krill
 
         # sanitize applications links
