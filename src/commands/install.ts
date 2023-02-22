@@ -78,8 +78,8 @@ export default class Install extends Command {
       })
     }
 
-    // noninteractive
-    let noninteractive = flags.nointeractive
+    // nointeractive
+    let nointeractive = flags.nointeractive
 
     // hostname
     let ip = flags.ip
@@ -107,7 +107,7 @@ export default class Install extends Command {
     if (Utils.isRoot()) {
       if (Utils.isLive()) {
         const krill = new Krill()
-        await krill.prepare(unattended, noninteractive, krillConfig, ip, random, domain, suspend, small, none, crypted, pve, verbose)
+        await krill.prepare(unattended, nointeractive, krillConfig, ip, random, domain, suspend, small, none, crypted, pve, verbose)
       } else {
         Utils.warning('You are in an installed system!')
       }

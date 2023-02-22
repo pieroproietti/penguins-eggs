@@ -1,6 +1,6 @@
 #!/bin/env bash
 if mountpoint -q "/lib/live/mount"; then 
-    # isLive
+    # if isLive
 
     # try to read /etc/hostname from /dev/sda
     sudo mount "/dev/sda2" "/mnt"
@@ -9,6 +9,11 @@ if mountpoint -q "/lib/live/mount"; then
     sudo echo "I will completely format local system: ${OS_HOSTNAME}"
     echo -n "Wait a minute for installation or CTRL-C to abort.";
     for _ in {1..60}; do read -rs -n1 -t1 || printf ".";done;echo
+
+    # add section remove in packages.conf
+    sudo eggs calamares --release -n
+
+    # install system
     sudo eggs install -unrd .local
 else  
     # isInstalled

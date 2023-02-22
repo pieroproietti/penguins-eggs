@@ -124,7 +124,7 @@ export default class Krill {
   /**
    * @param cryped
    */
-  async prepare(unattended = false, noninteractive = false, krillConfig = {} as IKrillConfig, ip = false, random = false, domain = 'local', suspend = false, small = false, none = false, cryped = false, pve = false, verbose = false) {
+  async prepare(unattended = false, nointeractive = false, krillConfig = {} as IKrillConfig, ip = false, random = false, domain = 'local', suspend = false, small = false, none = false, cryped = false, pve = false, verbose = false) {
     /**
      * Check for disk presence
      */
@@ -250,7 +250,7 @@ export default class Krill {
     /**
      * summary
      */
-    await this.summary(oLocation, oKeyboard, oPartitions, oUsers, unattended, noninteractive)
+    await this.summary(oLocation, oKeyboard, oPartitions, oUsers, unattended, nointeractive)
 
     /**
     * installation
@@ -546,24 +546,24 @@ export default class Krill {
     partitions: IPartitions,
     users: IUsers,
     unattended = false,
-    noninteractive = false)
+    nointeractive = false)
   {
     //
     let summaryElem: JSX.Element
 
     let message = "Double check the installation disk: " + partitions.installationDevice
-    if (unattended && noninteractive) {
+    if (unattended && nointeractive) {
       message = "Unattended installation will start in 5 seconds, press CTRL-C to abort!"
     }
 
 
     while (true) {
       summaryElem = <Summary name={users.name} password={users.password} rootPassword={users.rootPassword} hostname={users.hostname} region={location.region} zone={location.zone} language={location.language} keyboardModel={keyboard.keyboardModel} keyboardLayout={keyboard.keyboardLayout} installationDevice={partitions.installationDevice} message={message} />
-      if (unattended && noninteractive) {
+      if (unattended && nointeractive) {
         redraw(summaryElem)
         await sleep(5000)
         break
-      } else if (unattended && !noninteractive) {
+      } else if (unattended && !nointeractive) {
         if (await confirm(summaryElem, "Read the Summary, confirm or abort")) {
           break
         } else {

@@ -265,15 +265,16 @@ configure calamares or install or configure it
 
 ```
 USAGE
-  $ eggs calamares [-h] [-i] [-r] [--remove] [--theme <value>] [-v]
+  $ eggs calamares [-h] [-i] [-n] [-r] [--remove] [--theme <value>] [-v]
 
 FLAGS
-  -h, --help       Show CLI help.
-  -i, --install    install calamares and it's dependencies
-  -r, --release    release: remove calamares and all it's dependencies after the installation
+  -h, --help           Show CLI help.
+  -i, --install        install calamares and it's dependencies
+  -n, --nointeractive  don't ask for user interctions
+  -r, --release        release: remove calamares and all it's dependencies after the installation
   -v, --verbose
-  --remove         remove calamares and it's dependencies
-  --theme=<value>  theme/branding for eggs and calamares
+  --remove             remove calamares and it's dependencies
+  --theme=<value>      theme/branding for eggs and calamares
 
 DESCRIPTION
   configure calamares or install or configure it
@@ -312,7 +313,7 @@ EXAMPLES
 
   sudo eggs config --clean
 
-  sudo eggs config --clean --noninteractive
+  sudo eggs config --clean --nointeractive
 ```
 
 _See code: [dist/commands/config.js](https://github.com/pieroproietti/penguins-eggs/blob/v9.3.26/dist/commands/config.js)_

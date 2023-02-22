@@ -22,7 +22,7 @@ You can follow the project also consulting the [commit history](https://github.c
 Versions are listed on reverse order, the first is the last one. Old versions are moved to [versions](https://sourceforge.net/projects/penguins-eggs/files/packages-deb/versions/). 
 
 ### eggs-9.3.26
-* kill: added --noninteractive flag for scripts;
+* kill: added --nointeractive flag for scripts;
 * eggs-unattended-install: It's a bit long to explain and not yet stable, I will try: we want get able to format laboratories or classroom of computers where all the computers are configured with defalt PXE boot ad first option. In this way, is we start a PXE in the laboratory, we will automatically get all computers installed: supposed them will boot after the boot of the PXE server, this can be just a machine with an egg, started with command cuckoo.
 
 I get idea from Matteo and precious informations from Hakim who previusly a similar approach to install tons of system in his country, that I need more it's a better way to recognize the system and let or not eui to automatically start, but for experimental situation can be already good.
@@ -63,7 +63,7 @@ Enjoy! But remember to use just in places where you know can't create problems! 
 * added elementary OS 7 Horus;
 
 ### eggs-9.3.20
-* krill: added confirm button or abort before to erase disk for --unattended and new option --noninteractive for scripts;
+* krill: added confirm button or abort before to erase disk for --unattended and new option --nointeractive for scripts;
 * produce: if not present sddm.conf and package sddm is installed eggs will create it in production for autologin with ```Session=plasma-wayland``` or ```Session=plasma``` and ```User=live```;
 * tools skel: added copy waydroid-package-manager to skel if present.
 * wardrobe: removed command ironing and tons of add/remove/fixes on penguins-wardrobe;

@@ -38,7 +38,7 @@ export default class Kill extends Command {
       verbose = true
     }
 
-    let noninteractive = flags.nointeractive
+    let nointeractive = flags.nointeractive
 
     const echo = Utils.setEcho(verbose)
 
@@ -47,7 +47,7 @@ export default class Kill extends Command {
       const settings = new Settings()
       await settings.load()
       await settings.listFreeSpace()
-      if (noninteractive || await Utils.customConfirm()) {
+      if (nointeractive || await Utils.customConfirm()) {
         await exec(`rm ${settings.work_dir.path}/* -rf`, echo)
         await exec(`rm ${settings.config.snapshot_dir} -rf`, echo)
       }
