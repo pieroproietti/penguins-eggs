@@ -56,6 +56,14 @@ case "$1" in
             chmod +x /usr/lib/penguins-eggs/scripts/mom.sh
         fi
 
+        # revitalize eui
+        if [ -f "/usr/lib/penguins-eggs/eui" ]; then  
+            chmod +x /usr/lib/penguins-eggs/eui/eui-create.sh
+            chmod +x /usr/lib/penguins-eggs/eui/eui-start.sh
+            chmod 0400 /usr/lib/penguins-eggs/eui/eui-users
+            chmod +x /usr/lib/penguins-eggs/eui/eui.desktop
+        fi
+
         # Adding man page
         if [ ! -d "/usr/share/man/man1" ]; then
             mkdir /usr/share/man/man1 -p
