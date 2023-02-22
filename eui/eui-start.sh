@@ -10,9 +10,6 @@ if mountpoint -q "/lib/live/mount"; then
     echo -n "Wait a minute for installation or CTRL-C to abort.";
     for _ in {1..60}; do read -rs -n1 -t1 || printf ".";done;echo
 
-    # add section remove in packages.conf
-    sudo eggs calamares --release -n
-
     # install system
     sudo eggs install -unrd .local
 else  
