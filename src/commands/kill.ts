@@ -16,6 +16,7 @@ import { exec } from '../lib/utils'
 export default class Kill extends Command {
   static flags = {
     help: Flags.help({ char: 'h' }),
+    nointeractive: Flags.boolean({ char: 'n', description: 'assume yes' }),
     verbose: Flags.boolean({ char: 'v', description: 'verbose' })
   }
   static description = 'kill the eggs/free the nest'
@@ -37,6 +38,8 @@ export default class Kill extends Command {
       verbose = true
     }
 
+    let noninteractive = flags.nointeractive
+
     const echo = Utils.setEcho(verbose)
 
     if (Utils.isRoot()) {
@@ -44,7 +47,7 @@ export default class Kill extends Command {
       const settings = new Settings()
       await settings.load()
       await settings.listFreeSpace()
-      if (await Utils.customConfirm()) {
+      if (noninteractive || await Utils.customConfirm()) {
         await exec(`rm ${settings.work_dir.path}/* -rf`, echo)
         await exec(`rm ${settings.config.snapshot_dir} -rf`, echo)
       }

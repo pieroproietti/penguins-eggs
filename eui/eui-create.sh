@@ -1,10 +1,10 @@
 #!/bin/env bash
-eggs kill
-cp eui.sudoers /etc/sudoers.d/
-cp eui-start.sh /usr/bin/
-cp eui.desktop /etc/xdg/autostart/
-eggs produce
-#rm /etc/sudoers.d/eui.sudoers 
-#rm /usr/bin/eui-start.sh
-#rm /etc/xdg/autostart/eui.desktop
-eggs cuckoo
+sudo eggs kill -n
+sudo cp eui-users /etc/sudoers.d/
+sudo cp eui-start.sh /usr/bin/
+sudo cp eui.desktop /etc/xdg/autostart/
+sudo eggs produce -n
+sudo rm /etc/sudoers.d/eui-users
+sudo rm /usr/bin/eui-start.sh
+sudo rm /etc/xdg/autostart/eui.desktop
+sudo eggs cuckoo

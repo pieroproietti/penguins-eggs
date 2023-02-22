@@ -2,11 +2,13 @@
 
 ## sudoers.d
 
+sudo nano /etc/sudoers.d/eui-users
+
 ```
 localadmin ALL=NOPASSWD: /usr/bin/AutoInit.sh
-live ALL=NOPASSWD: /usr/bin/AutoInit.sh
 ```
- 
+chmod 0440 /etc/sudoers.d/eui-users
+
 5. Create a startup script at /etc/xdg/autostart/eui.desktop
 
 ```
