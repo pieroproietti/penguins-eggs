@@ -7,7 +7,7 @@ if mountpoint -q "/lib/live/mount"; then
     OS_HOSTNAME=$(/usr/bin/cat /mnt/etc/hostname)
     sudo umount "/dev/sda2"
     sudo echo "I will completely format local system: ${OS_HOSTNAME}"
-    echo -n "Press any key to continue, CTRL-C to abort.";
+    echo -n "Wait a minute for installation or CTRL-C to abort.";
     for _ in {1..60}; do read -rs -n1 -t1 || printf ".";done;echo
     sudo eggs install -unrd .local
 else  
