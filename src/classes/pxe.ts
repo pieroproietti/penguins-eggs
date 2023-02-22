@@ -196,7 +196,7 @@ export default class Pxe {
         content += `\n`
         content += `menu title cuckoo: when you need a flying PXE server! ${Utils.address()}\n`
         content += `PROMPT 0\n`
-        content += `TIMEOUT 0\n`
+        content += `TIMEOUT 200\n`
         content += `\n`
         content += `label egg\n`
         content += `menu label ${this.bootLabel.replace('.iso', '')}\n`

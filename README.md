@@ -473,11 +473,12 @@ kill the eggs/free the nest
 
 ```
 USAGE
-  $ eggs kill [-h] [-v]
+  $ eggs kill [-h] [-n] [-v]
 
 FLAGS
-  -h, --help     Show CLI help.
-  -v, --verbose  verbose
+  -h, --help           Show CLI help.
+  -n, --nointeractive  assume yes
+  -v, --verbose        verbose
 
 DESCRIPTION
   kill the eggs/free the nest
