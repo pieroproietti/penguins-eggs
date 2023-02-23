@@ -4,7 +4,7 @@ if mountpoint -q "/lib/live/mount"; then
     # if isLive
     echo "E G G S: the reproductive system of penguins"
     echo
-    echo "WARMING: A fully automated system installation is about to start,"
+    echo "WARNING: A fully automated system installation is about to start,"
     echo "         ALL data on the hard drive present will be ERASED!"
     echo
 
