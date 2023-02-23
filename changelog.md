@@ -22,20 +22,10 @@ You can follow the project also consulting the [commit history](https://github.c
 Versions are listed on reverse order, the first is the last one. Old versions are moved to [versions](https://sourceforge.net/projects/penguins-eggs/files/packages-deb/versions/). 
 
 ### eggs-9.3.26
-* kill: added --nointeractive flag for scripts;
-* eggs-unattended-install: It's a bit long to explain and not yet stable, I will try: we want get able to format laboratories or classroom of computers where all the computers are configured with defalt PXE boot ad first option. In this way, is we start a PXE in the laboratory, we will automatically get all computers installed: supposed them will boot after the boot of the PXE server, this can be just a machine with an egg, started with command cuckoo.
-
-I get idea from Matteo and precious informations from Hakim who previusly a similar approach to install tons of system in his country, that I need more it's a better way to recognize the system and let or not eui to automatically start, but for experimental situation can be already good.
-
-If You use it on a system configured with epoptes, you will have possibility to control yours machines from the first boot, but - of course - this need again a little sperimentation on real environment.
-
-I will prepare two version called chicks and pulcini  from Debian bullseye and Ubuntu jammy, ready to experiment. 
-
-Pulcini and chicks, just differ from the language: pulcini is the italian of chicks and viceversa.
-
-You will find them on [plastilinux](https://sourceforge.net/projects/penguins-eggs/files/ISOS/plastilinux/)
-
-Enjoy! But remember to use just in places where you know can't create problems! Thanks.
+* kill: added --nointeractive flag;
+* various command: uniformed --nointeractive flag for all commands;
+* mom: little adjustments;
+* eggs unattended install: see [uei](/documents/uei.md).
 
 ### eggs-9.3.25
 * Just discovered a nice companion of eggs: [epoptes](https://epoptes.org/). If you need to build classrooms, just install epoptes, run ```sudo eggs produce --fast``` and in minutes you will have classroom ready;
