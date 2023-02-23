@@ -13,14 +13,14 @@ _eggs_autocomplete()
   local commands="
 adapt --help --verbose
 analyze --help --verbose
-calamares --help --install --release --remove --theme --verbose
+calamares --help --install --nointeractive --release --remove --theme --verbose
 config --clean --help --nointeractive --verbose
 cuckoo --help
 dad --clean --default --help --verbose
 export:deb --all --clean --help --verbose
 export:iso --clean --help --verbose
 install --crypted --custom --domain --help --ip --nointeractive --none --pve --random --small --suspend --unattended --verbose
-kill --help --verbose
+kill --help --nointeractive --verbose
 mom --help
 produce --addons --basename --clone --cryptedclone --help --max --nointeractive --prefix --release --script --standard --theme --verbose --yolk
 status --help --verbose
@@ -37,8 +37,8 @@ wardrobe:list --help --verbose
 wardrobe:show --help --json --verbose --wardrobe
 wardrobe:wear --help --no_accessories --no_firmwares --silent --verbose --wardrobe
 autocomplete --refresh-cache
-help --nested-commands
 version --json --verbose
+help --nested-commands
 "
 
   function __trim_colon_commands()
