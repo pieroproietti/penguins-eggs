@@ -30,7 +30,7 @@ export default class Kill extends Command {
 
 
   async run(): Promise<void> {
-    await Utils.titles(this.id + ' ' + this.argv)
+    Utils.titles(this.id + ' ' + this.argv)
 
     const { flags } = await this.parse(Kill)
     let verbose = false
