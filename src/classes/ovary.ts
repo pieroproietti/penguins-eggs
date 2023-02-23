@@ -71,7 +71,7 @@ export default class Ovary {
   /**
    * @returns {boolean} success
    */
-  async fertilization(snapshot_prefix = '', snapshot_basename = '', theme = '', compression = '', notinteratctive = false): Promise<boolean> {
+  async fertilization(snapshot_prefix = '', snapshot_basename = '', theme = '', compression = '', nointeratctive = false): Promise<boolean> {
     this.settings = new Settings()
 
     if (await this.settings.load()) {
@@ -94,7 +94,7 @@ export default class Ovary {
         this.settings.config.compression = compression
       }
 
-      if (!notinteratctive) {
+      if (!nointeratctive) {
         return true
       }
 
@@ -154,8 +154,7 @@ export default class Ovary {
     } else {
 
       await this.liveCreateStructure()
-
-      if (!nointeractive) {
+      if (! nointeractive) {
         if (this.settings.distro.isCalamaresAvailable && (Pacman.isInstalledGui()) && 
           this.settings.config.force_installer && !(await Pacman.calamaresCheck())) {
           console.log('Installing ' + chalk.bgGray('calamares') + ' due force_installer=yes.')

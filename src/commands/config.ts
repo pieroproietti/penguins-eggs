@@ -21,7 +21,7 @@ export default class Config extends Command {
   static flags = {
     clean: Flags.boolean({ char: 'c', description: 'remove old configuration before to create new one' }),
     help: Flags.help({ char: 'h' }),
-    nointeractive: Flags.boolean({ char: 'n', description: 'assume yes' }),
+    nointeractive: Flags.boolean({ char: 'n', description: 'no user interaction' }),
     verbose: Flags.boolean({ char: 'v', description: 'verbose' })
   }
   static description = 'Configure and install prerequisites deb packages to run it'

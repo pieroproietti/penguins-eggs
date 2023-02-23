@@ -29,7 +29,7 @@ export default class Install extends Command {
     domain: Flags.string({ char: 'd', description: 'Domain name, defult: .local' }),
     help: Flags.help({ char: 'h' }),
     ip: Flags.boolean({ char: 'i', description: 'hostname as ip, eg: ip-192-168-1-33' }),
-    nointeractive: Flags.boolean({ char: 'n', description: 'assume yes' }),
+    nointeractive: Flags.boolean({ char: 'n', description: 'no user interaction' }),
     none: Flags.boolean({ char: 'N', description: 'Swap none: 256M' }),
     pve: Flags.boolean({ char: 'p', description: 'Proxmox VE install' }),
     random: Flags.boolean({ char: 'r', description: 'Add random to hostname, eg: colibri-ay412dt' }),

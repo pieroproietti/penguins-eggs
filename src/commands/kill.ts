@@ -16,7 +16,7 @@ import { exec } from '../lib/utils'
 export default class Kill extends Command {
   static flags = {
     help: Flags.help({ char: 'h' }),
-    nointeractive: Flags.boolean({ char: 'n', description: 'assume yes' }),
+    nointeractive: Flags.boolean({ char: 'n', description: 'no user interaction' }),
     verbose: Flags.boolean({ char: 'v', description: 'verbose' })
   }
   static description = 'kill the eggs/free the nest'

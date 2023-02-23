@@ -8,7 +8,6 @@
 import { array2spaced, depCommon, depArch, depVersions, depInit } from '../lib/dependencies'
 
 import fs from 'node:fs'
-import os from 'node:os'
 import path from 'node:path'
 import shx from 'shelljs'
 import { IRemix, IDistro } from '../interfaces'

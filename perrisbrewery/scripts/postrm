@@ -35,6 +35,7 @@ case "$1" in
         rm -rf /usr/lib/penguins-eggs/distros
         rm -rf /usr/lib/penguins-eggs/eui
         rm -rf /usr/lib/penguins-eggs/krill
+        rm -rf /usr/lib/penguins-eggs/node_modules
 
         # sanitize applications links
         rm -f /usr/share/applications/penguins-adapt.destop
