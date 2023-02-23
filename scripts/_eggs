@@ -33,8 +33,8 @@ _eggs () {
 "wardrobe\:show:show costumes/accessories in wardrobe"
 "wardrobe\:wear:wear costume/accessories from wardrobe"
 "autocomplete:display autocomplete installation instructions"
-"version:"
 "help:Display help for <%= config.bin %>."
+"version:"
   )
 
   _set_flags () {
@@ -186,6 +186,7 @@ syncto)
 tools:clean)
   _command_flags=(
     "--help[Show CLI help.]"
+"--nointeractive[no user interaction]"
 "--verbose[verbose]"
   )
 ;;
@@ -194,6 +195,7 @@ tools:ppa)
   _command_flags=(
     "--add[add penguins-eggs PPA repository]"
 "--help[Show CLI help.]"
+"--nointeractive[no user interaction]"
 "--remove[remove penguins-eggs PPA repository]"
 "--verbose[verbose]"
   )
@@ -269,16 +271,16 @@ autocomplete)
   )
 ;;
 
+help)
+  _command_flags=(
+    "--nested-commands[Include all nested commands in the output.]"
+  )
+;;
+
 version)
   _command_flags=(
     "--json[Format output as json.]"
 "--verbose[Additionally shows the architecture, node version, operating system, and versions of plugins that the CLI is using.]"
-  )
-;;
-
-help)
-  _command_flags=(
-    "--nested-commands[Include all nested commands in the output.]"
   )
 ;;
 

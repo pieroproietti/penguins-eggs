@@ -26,8 +26,8 @@ produce --addons --basename --clone --cryptedclone --help --max --nointeractive 
 status --help --verbose
 syncfrom --delete --file --help --rootdir --verbose
 syncto --delete --file --help --verbose
-tools:clean --help --verbose
-tools:ppa --add --help --remove --verbose
+tools:clean --help --nointeractive --verbose
+tools:ppa --add --help --nointeractive --remove --verbose
 tools:skel --help --user --verbose
 tools:stat --help --month --year
 tools:yolk --help --verbose
@@ -37,8 +37,8 @@ wardrobe:list --help --verbose
 wardrobe:show --help --json --verbose --wardrobe
 wardrobe:wear --help --no_accessories --no_firmwares --silent --verbose --wardrobe
 autocomplete --refresh-cache
-version --json --verbose
 help --nested-commands
+version --json --verbose
 "
 
   function __trim_colon_commands()

@@ -636,11 +636,12 @@ clean system log, apt, etc
 
 ```
 USAGE
-  $ eggs tools clean [-h] [-v]
+  $ eggs tools clean [-h] [-n] [-v]
 
 FLAGS
-  -h, --help     Show CLI help.
-  -v, --verbose  verbose
+  -h, --help           Show CLI help.
+  -n, --nointeractive  no user interaction
+  -v, --verbose        verbose
 
 DESCRIPTION
   clean system log, apt, etc
@@ -655,13 +656,14 @@ add/remove PPA repositories (Debian family)
 
 ```
 USAGE
-  $ eggs tools ppa [-a] [-h] [-r] [-v]
+  $ eggs tools ppa [-a] [-h] [-n] [-r] [-v]
 
 FLAGS
-  -a, --add      add penguins-eggs PPA repository
-  -h, --help     Show CLI help.
-  -r, --remove   remove penguins-eggs PPA repository
-  -v, --verbose  verbose
+  -a, --add            add penguins-eggs PPA repository
+  -h, --help           Show CLI help.
+  -n, --nointeractive  no user interaction
+  -r, --remove         remove penguins-eggs PPA repository
+  -v, --verbose        verbose
 
 DESCRIPTION
   add/remove PPA repositories (Debian family)
