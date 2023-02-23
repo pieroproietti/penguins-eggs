@@ -33,8 +33,8 @@ _eggs () {
 "wardrobe\:show:show costumes/accessories in wardrobe"
 "wardrobe\:wear:wear costume/accessories from wardrobe"
 "autocomplete:display autocomplete installation instructions"
-"help:Display help for <%= config.bin %>."
 "version:"
+"help:Display help for <%= config.bin %>."
   )
 
   _set_flags () {
@@ -57,6 +57,7 @@ calamares)
   _command_flags=(
     "--help[Show CLI help.]"
 "--install[install calamares and it's dependencies]"
+"--nointeractive[no user interaction]"
 "--release[release: remove calamares and all it's dependencies after the installation]"
 "--remove[remove calamares and it's dependencies]"
 "--theme=-[theme/branding for eggs and calamares]:"
@@ -68,7 +69,7 @@ config)
   _command_flags=(
     "--clean[remove old configuration before to create new one]"
 "--help[Show CLI help.]"
-"--nointeractive[assume yes]"
+"--nointeractive[no user interaction]"
 "--verbose[verbose]"
   )
 ;;
@@ -112,7 +113,7 @@ install)
 "--domain=-[Domain name, defult: .local]:"
 "--help[Show CLI help.]"
 "--ip[hostname as ip, eg: ip-192-168-1-33]"
-"--nointeractive[assume yes]"
+"--nointeractive[no user interaction]"
 "--none[Swap none: 256M]"
 "--pve[Proxmox VE install]"
 "--random[Add random to hostname, eg: colibri-ay412dt]"
@@ -126,6 +127,7 @@ install)
 kill)
   _command_flags=(
     "--help[Show CLI help.]"
+"--nointeractive[no user interaction]"
 "--verbose[verbose]"
   )
 ;;
@@ -144,7 +146,7 @@ produce)
 "--cryptedclone[crypted clone]"
 "--help[Show CLI help.]"
 "--max[max compression]"
-"--nointeractive[don't ask for user interctions]"
+"--nointeractive[no user interaction]"
 "--prefix=-[prefix]:"
 "--release[release: max compression, remove penguins-eggs and calamares after installation]"
 "--script[script mode. Generate scripts to manage iso build]"
@@ -267,16 +269,16 @@ autocomplete)
   )
 ;;
 
-help)
-  _command_flags=(
-    "--nested-commands[Include all nested commands in the output.]"
-  )
-;;
-
 version)
   _command_flags=(
     "--json[Format output as json.]"
 "--verbose[Additionally shows the architecture, node version, operating system, and versions of plugins that the CLI is using.]"
+  )
+;;
+
+help)
+  _command_flags=(
+    "--nested-commands[Include all nested commands in the output.]"
   )
 ;;
 
