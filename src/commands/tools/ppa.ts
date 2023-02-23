@@ -9,7 +9,6 @@ import Distro from '../../classes/distro'
 import Utils from '../../classes/utils'
 import { exec } from '../../lib/utils'
 import fs from 'fs'
-import { Example } from '@oclif/core/lib/interfaces'
 
 const fkey = `/etc/apt/trusted.gpg.d/penguins-eggs-key.gpg`
 const flist = '/etc/apt/sources.list.d/penguins-eggs-ppa.list'
@@ -21,6 +20,7 @@ export default class Ppa extends Command {
     static flags = {
         add: Flags.boolean({ char: 'a', description: 'add penguins-eggs PPA repository' }),
         help: Flags.help({ char: 'h' }),
+        nointeractive: Flags.boolean({ char: 'n', description: 'no user interaction' }),        
         remove: Flags.boolean({ char: 'r', description: 'remove penguins-eggs PPA repository' }),
         verbose: Flags.boolean({ char: 'v', description: 'verbose' })
     }
@@ -38,19 +38,20 @@ export default class Ppa extends Command {
         if (flags.verbose) {
             verbose = true
         }
+        let nointeractive = flags.nointeractive
 
         const distro = new Distro()
         if (distro.familyId === 'debian') {
             if (Utils.isRoot()) {
                 if (flags.remove) {
                     Utils.warning(`Are you sure to remove ${flist} to your repositories?`)
-                    if (await Utils.customConfirm('Select yes to continue...')) {
+                    if (!nointeractive || await Utils.customConfirm('Select yes to continue...')) {
                         await remove()
                     }
                 }
                 if (flags.add) {
                     Utils.warning(`Are you sure to add ${flist} to your repositories?`)
-                    if (await Utils.customConfirm('Select yes to continue...')) {
+                    if (!nointeractive || await Utils.customConfirm('Select yes to continue...')) {
                         await clean()
                         await add()
                     }
