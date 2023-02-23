@@ -23,7 +23,7 @@ export default class Produce extends Command {
     cryptedclone: Flags.boolean({ char: 'C', description: 'crypted clone' }),
     help: Flags.help({ char: 'h' }),
     max: Flags.boolean({ char: 'm', description: 'max compression' }),
-    nointeractive: Flags.boolean({ char: 'n', description: 'don\'t ask for user interctions' }),
+    nointeractive: Flags.boolean({ char: 'n', description: 'no user interaction' }),
     prefix: Flags.string({ char: 'p', description: 'prefix' }),
     release: Flags.boolean({ description: 'release: max compression, remove penguins-eggs and calamares after installation' }),
     script: Flags.boolean({ char: 's', description: 'script mode. Generate scripts to manage iso build' }),
