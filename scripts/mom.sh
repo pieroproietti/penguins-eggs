@@ -4,18 +4,17 @@ function main() {
 
     # root    
     root=$(cat /usr/lib/penguins-eggs/.oclif.manifest.json | jq .)
-    result=$(echo ${root} | jq ".commands[].id")
-    result+=("documentation" "quit")
+	COMMANDS=$(echo ${root} | jq ".commands[].id")
+    result=("DOCUMENTATION" ${COMMANDS} "QUIT")
 
     while true; do
         clear
-        # NOTE [@]
         menu ${result[@]}
         answer=$(0< "${dir_tmp}/${file_tmp}" )
         case "$answer" in 
-            quit)
+            QUIT)
                 exit ;;
-            documentation)
+            DOCUMENTATION)
                 documentation ;;
             *)
                 eggs $answer --help
@@ -31,7 +30,7 @@ function main() {
 function documentation() {
    while true; do
 
-      menu "book" "manual" "man" "repository" "sourceforge" "quit"
+      menu "book" "manual" "man" "repository" "sourceforge" "QUIT"
       choose=$(0< "${dir_tmp}/${file_tmp}" )
 
       case "$choose" in 
@@ -45,7 +44,7 @@ function documentation() {
             documentation_repository ;;
          sourceforge)
             documentation_sourceforge ;;
-         quit)
+         QUIT)
             break ;;
       esac
    done
