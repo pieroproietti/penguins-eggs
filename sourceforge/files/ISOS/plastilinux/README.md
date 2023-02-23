@@ -33,9 +33,9 @@ XFCE4, leggera customizzazione e programmi per la scuola.
 Ho inserito anche So.Di.Linux Orizzonti 2005, come per Ubuntu anche qua c'è un problema di grandezza dell'immagine - circa 3,8 GB . per poter operare con PXE
 ma potrebbe costituire una ottima traccia. Inoltre, su macchine con 8 GB anche l'installazione e l'uso via PXE nonchè il controllo con [epoptes](https://epoptes.org/) funzionano benissimo.
 
-# More informations:
+# Crea da solo la tua immagine
 
-Note: you can build both using the original distro, eggs and wardrobe
+E' possibile creare queste immagini a partire dalla distribuzione originale ed utilizzando eggs ed il wardrobe.
 
 ## Ubuntu jammy chicks
 
@@ -60,6 +60,8 @@ oppure:
 * riavvia il sistema e loggati con le tue credenziali, dai i seguenti comandi:
 * ```eggs wardrobe get```
 * ```sudo eggs wardrobe wear chick```
+
+## More informations:
 
 * Repository: [penguins-eggs](https://github.com/pieroproietti/penguins-eggs)
 * Blog: [penguins-eggs](https://penguins-eggs.net)
