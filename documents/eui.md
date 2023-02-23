@@ -24,7 +24,7 @@ All this script does is produce a system image that will auto-start the installa
 
 I got the idea from Matteo from LUG Rimini and valuable information from Hakim - a Malaysian entrepreneur and developer - who has previously used the more traditional approach to install hundreds of systems.
 
-In my opinion, the method is already good for experimentation, but it could be improved if we could find a method to: detect the installed system, report it by epoptes to the installer on the server machine, and let the human to decide whether to proceed or not. At the moment, the system runs automatically, and so care must be taken.
+In my opinion, the method is already good for experimentation, but it could be improved if we could find a method to: detect the installed system, report it by [epoptes](https://epoptes.org/) to the installer on the server machine, and let the human to decide whether to proceed or not. At the moment, the system runs automatically, and so care must be taken.
 
 If you use it on a system configured with epoptes, you will have the ability to control your machines from the first boot, but - of course - this still requires some experimentation in a real environment.
 
