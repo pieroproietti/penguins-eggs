@@ -18,10 +18,6 @@ Plastilinux vorrebbe diventare una meta-distribuzione per la scuola ed essere ba
 # Integrazione con epoptes
 Ho inserito in eggs una funzione di integrazione con [epoptes](https://epoptes.org/), grazie alla quale da una macchina installata, creando una immagine con ```sudo eggs produce --fast``` ed avviando ```sudo eggs cuckoo``` le macchine avviate via PXE possono essere controllate con [epoptes](https://epoptes.org/).
 
-![chick-epoptes](https://penguins-eggs.net/images/chick-epoptes.png)
-
-Questo apre ad una grande varietà di applicazioni.
-
 # user/password
 * ```live/evolution```
 * ```root/evolution```
@@ -37,16 +33,14 @@ XFCE4, leggera customizzazione e programmi per la scuola.
 Ho inserito anche So.Di.Linux Orizzonti 2005, come per Ubuntu anche qua c'è un problema di grandezza dell'immagine - circa 3,8 GB . per poter operare con PXE
 ma potrebbe costituire una ottima traccia. Inoltre, su macchine con 8 GB anche l'installazione e l'uso via PXE nonchè il controllo con [epoptes](https://epoptes.org/) funzionano benissimo.
 
-![sodilinux](https://penguins-eggs.net/images/sodilinux.png)
-
-
 # More informations:
 
 Note: you can build both using the original distro, eggs and wardrobe
+
 ## Ubuntu jammy chicks
 
-Crea da solo la tua versione!
-* installa xubuntu 22.04 minimo, quindi installa eggs
+* esegui ed installa una configurazione minima di xubuntu 22.04
+* scarica ed installa eggs
 * ```eggs wardrobe get```
 * ```sudo eggs wardrobe wear accessories/chicks```
 
