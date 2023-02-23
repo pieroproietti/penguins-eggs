@@ -135,10 +135,9 @@ export default class Produce extends Command {
         }
       }
 
-
       const i = await Config.thatWeNeed(nointeractive, verbose, cryptedclone)
       if ((i.needApt || i.configurationInstall || i.configurationRefresh || i.distroTemplate) && (await Utils.customConfirm('Select yes to continue...'))) {
-        await Config.install(i, verbose)
+        await Config.install(i, nointeractive, verbose)
       }
 
       const myAddons = {} as IMyAddons
