@@ -270,7 +270,7 @@ USAGE
 FLAGS
   -h, --help           Show CLI help.
   -i, --install        install calamares and it's dependencies
-  -n, --nointeractive  don't ask for user interctions
+  -n, --nointeractive  no user interaction
   -r, --release        release: remove calamares and all it's dependencies after the installation
   -v, --verbose
   --remove             remove calamares and it's dependencies
@@ -302,7 +302,7 @@ USAGE
 FLAGS
   -c, --clean          remove old configuration before to create new one
   -h, --help           Show CLI help.
-  -n, --nointeractive  assume yes
+  -n, --nointeractive  no user interaction
   -v, --verbose        verbose
 
 DESCRIPTION
@@ -448,7 +448,7 @@ FLAGS
   -h, --help            Show CLI help.
   -i, --ip              hostname as ip, eg: ip-192-168-1-33
   -k, --crypted         Crypted CLI installation
-  -n, --nointeractive   assume yes
+  -n, --nointeractive   no user interaction
   -p, --pve             Proxmox VE install
   -r, --random          Add random to hostname, eg: colibri-ay412dt
   -s, --small           Swap small: RAM
@@ -478,7 +478,7 @@ USAGE
 
 FLAGS
   -h, --help           Show CLI help.
-  -n, --nointeractive  assume yes
+  -n, --nointeractive  no user interaction
   -v, --verbose        verbose
 
 DESCRIPTION
@@ -525,7 +525,7 @@ FLAGS
   -f, --standard        standard compression
   -h, --help            Show CLI help.
   -m, --max             max compression
-  -n, --nointeractive   don't ask for user interctions
+  -n, --nointeractive   no user interaction
   -p, --prefix=<value>  prefix
   -s, --script          script mode. Generate scripts to manage iso build
   -v, --verbose         verbose
