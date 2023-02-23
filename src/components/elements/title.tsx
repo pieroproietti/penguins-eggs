@@ -16,7 +16,7 @@ export default function Title({ title = "krill" }) {
             <Box>
             </Box>
             <Box>
-               <Text> E G G S: the reproductive system of penguins</Text>
+               <Text>E G G S: the reproductive system of penguins</Text>
             </Box>
             <Box>
                <Newline />

@@ -1,6 +1,8 @@
 #!/bin/env bash
 if mountpoint -q "/lib/live/mount"; then 
     # if isLive
+    echo "E G G S: the reproductive system of penguins\n"
+    echo "WARMING: A fully automated system installation is about to start, ALL data on the hard drive present will be ERASED!\n"
 
     # try to read /etc/hostname from /dev/sda
     sudo mount "/dev/sda2" "/mnt"
