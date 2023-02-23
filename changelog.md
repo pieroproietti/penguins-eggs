@@ -23,9 +23,9 @@ Versions are listed on reverse order, the first is the last one. Old versions ar
 
 ### eggs-9.3.26
 * kill: added --nointeractive flag;
-* various command: uniformed --nointeractive flag for all commands;
+* various commands: uniformed --nointeractive flag for all commands;
 * mom: little adjustments;
-* eggs unattended install: see [eui](/documents/eui.md), or [eui](https://github.com/pieroproietti/penguins-eggs/blob/master/documents/eui.md).
+* eggs unattended install: see [eui](/documents/eui.md) or [here](https://github.com/pieroproietti/penguins-eggs/blob/master/documents/eui.md).
 
 ### eggs-9.3.25
 * Just discovered a nice companion of eggs: [epoptes](https://epoptes.org/). If you need to build classrooms, just install epoptes, run ```sudo eggs produce --fast``` and in minutes you will have classroom ready;
