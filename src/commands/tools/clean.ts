@@ -30,7 +30,7 @@ export default class Clean extends Command {
     let nointeractive = flags.nointeractive
 
     if (Utils.isRoot()) {
-      if (!nointeractive || await Utils.customConfirm('Select yes to continue...')) {
+      if (nointeractive || await Utils.customConfirm('Select yes to continue...')) {
         const bleach = new Bleach()
         bleach.clean(verbose)
       }

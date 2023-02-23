@@ -45,13 +45,13 @@ export default class Ppa extends Command {
             if (Utils.isRoot()) {
                 if (flags.remove) {
                     Utils.warning(`Are you sure to remove ${flist} to your repositories?`)
-                    if (!nointeractive || await Utils.customConfirm('Select yes to continue...')) {
+                    if (nointeractive || await Utils.customConfirm('Select yes to continue...')) {
                         await remove()
                     }
                 }
                 if (flags.add) {
                     Utils.warning(`Are you sure to add ${flist} to your repositories?`)
-                    if (!nointeractive || await Utils.customConfirm('Select yes to continue...')) {
+                    if (nointeractive || await Utils.customConfirm('Select yes to continue...')) {
                         await clean()
                         await add()
                     }
