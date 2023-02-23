@@ -28,7 +28,7 @@ In my opinion, the method is already good for experimentation, but it could be i
 
 If you use it on a system configured with epoptes, you will have the ability to control your machines from the first boot, but - of course - this still requires some experimentation in a real environment.
 
-I have prepared two versions called chicks and chicks from Debian bullseye and Ubuntu jammy, ready for use to evaluate the approach, but of course you can create your own uei. 
+I have prepared two versions called chicks and pulcini from Debian bullseye and Ubuntu jammy, ready for use to evaluate the approach, but of course you can create your own uei. 
 
-You will find them at [plastilinux](https://sourceforge.net/projects/penguins-eggs/files/ISOS).
+You will find them at [plastilinux](https://sourceforge.net/projects/penguins-eggs/files/ISOS/plastilinux).
 
