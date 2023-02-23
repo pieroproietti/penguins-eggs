@@ -11,7 +11,7 @@ penguins-eggs
 [![pkgbuild](https://img.shields.io/badge/pkgbuild-packages-blue)](https://sourceforge.net/projects/penguins-eggs/files/PKGBUILD)[![iso](https://img.shields.io/badge/iso-images-cyan)](https://sourceforge.net/projects/penguins-eggs/files/ISOS)
 
 # Plastilinux
-Plastilinux vorrebbe diventare una meta-distribuzione per la scuola ed essere basata su differenti distribuzioni Linux e customizzate utilizzando il [wardrobe](https://github.com/pieroproietti/penguins-wardrobe/tree/main/DOCUMENTATION#penguins-wardrobe) di [eggs](https://github.com/pieroproietti/penguins-eggs).
+Plastilinux vorrebbe diventare una meta-distribuzione per la scuola ed essere basata su differenti distribuzioni Linux customizzate utilizzando il [wardrobe](https://github.com/pieroproietti/penguins-wardrobe/tree/main/DOCUMENTATION#penguins-wardrobe) di [eggs](https://github.com/pieroproietti/penguins-eggs).
 
 ![chick](https://penguins-eggs.net/images/chick.png)
 
@@ -26,23 +26,38 @@ Questo apre ad una grande varietà di applicazioni.
 * ```live/evolution```
 * ```root/evolution```
 
-# Ubuntu jammy chick
+# Debian bullseye chicks
 XFCE4, leggera customizzazione e programmi per la scuola.
 
-# Debian bullseye chick
+# Ubuntu jammy pulcini
 XFCE4, leggera customizzazione e programmi per la scuola.
 
-## More informations:
+
+# Sodilinux orizzonti
+Ho inserito anche So.Di.Linux Orizzonti 2005, come per Ubuntu anche qua c'è un problema di grandezza dell'immagine - circa 3,8 GB . per poter operare con PXE
+ma potrebbe costituire una ottima traccia. Inoltre, su macchine con 8 GB anche l'installazione e l'uso via PXE nonchè il controllo con [epoptes](https://epoptes.org/) funzionano benissimo.
+
+![sodilinux](https://penguins-eggs.net/images/sodilinux.png)
+
+
+# More informations:
 
 Note: you can build both using the original distro, eggs and wardrobe
+## Ubuntu jammy chicks
 
-# Ubuntu jammy chick
-
+Crea da solo la tua versione!
 * installa xubuntu 22.04 minimo, quindi installa eggs
 * ```eggs wardrobe get```
-* ```sudo eggs wardrobe wear accessories/chick```
+* ```sudo eggs wardrobe wear accessories/chicks```
 
-# Debian bullseye chick
+oppure: 
+
+* scarica egg-of-ubuntu-jammy dalla pagina penguins-eggs du [sourceforge](https://sourceforge.net/projects/penguins-eggs/files/ISOS/ubuntu/jammy/);
+* avvia ed installa con: ```sudo eggs install -un```
+* riavvia la macchine e scarica il wardrobe: ```eggs wardrobe get```
+* indossa il vestito chicks: ```sudo eggs wardrobe wear chicks```.
+
+## Debian bullseye chicks
 
 * esegui una installazione minimale di [Debian bullseye](https://www.debian.org/releases/bullseye/debian-installer/) minima;
 * scarica ed installa eggs;
@@ -52,20 +67,10 @@ Note: you can build both using the original distro, eggs and wardrobe
 * ```eggs wardrobe get```
 * ```sudo eggs wardrobe wear chick```
 
-# Sodilinux orizzonti
-Ho inserito anche So.Di.Linux Orizzonti 2005, come per Ubuntu anche qua c'è un problema di grandezza dell'immagine - circa 3,8 GB . per poter operare con PXE
-ma potrebbe costituire una ottima traccia. Inoltre, su macchine con 8 GB anche l'installazione e l'uso via PXE nonchè il controllo con [epoptes](https://epoptes.org/) funzionano benissimo.
-
-![sodilinux](https://penguins-eggs.net/images/sodilinux.png)
-
-
-Figo no?
-
 * Repository: [penguins-eggs](https://github.com/pieroproietti/penguins-eggs)
 * Blog: [penguins-eggs](https://penguins-eggs.net)
 
 * You can find more informations on this Linux distro at: [Debian](https://debian.org/).
-
 
 # Disclaim
 __Please note what this project is in no way connected to the original distro in any official way, it’s just my personal experiment.__
