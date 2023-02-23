@@ -11,6 +11,7 @@ import Bleach from '../../classes/bleach'
 export default class Clean extends Command {
   static flags = {
     help: Flags.help({ char: 'h' }),
+    nointeractive: Flags.boolean({ char: 'n', description: 'no user interaction' }),
     verbose: Flags.boolean({ char: 'v', description: 'verbose' })
   }
   static description = 'clean system log, apt, etc'
@@ -26,9 +27,10 @@ export default class Clean extends Command {
     if (flags.verbose) {
       verbose = true
     }
+    let nointeractive = flags.nointeractive
 
     if (Utils.isRoot()) {
-      if (await Utils.customConfirm('Select yes to continue...')) {
+      if (!nointeractive || await Utils.customConfirm('Select yes to continue...')) {
         const bleach = new Bleach()
         bleach.clean(verbose)
       }

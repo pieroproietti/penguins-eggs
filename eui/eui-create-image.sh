@@ -1,4 +1,5 @@
 #!/bin/env bash
+sudo eggs tools clean -n
 sudo eggs kill -n
 sudo cp eui-users /etc/sudoers.d/
 sudo cp eui-start.sh /usr/bin/
