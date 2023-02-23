@@ -12,17 +12,17 @@ The second solution, on the other hand, is more traditional: we configure our co
 
 Eggs unattended install basically applies to a solution of the first type and provides a fully automated installation of the machines on first boot. Where it is applicable, you have to decide.
 
-In most cases it is sufficient to use traditional eggs images, considering that you will still have a pre-configured PXE server by simply booting the iso and running the command: sudo eggs cuckoo.
+In most cases it is sufficient to use traditional eggs images, considering that you will still have a pre-configured PXE server by simply booting the iso and running the command: `sudo eggs cuckoo`.
 
 It is possible, however, to further facilitate multiple installations by configuring where possible - default PXE boot machines and using an eui image.
 
 # eui images
 
-Creating an eui image is done through the script: uei-create-image.sh that you find inside the eggs installation folder, normally /usr/lib/penguins-eggs/uei.
+Creating an eui image is done through the script: `uei-create-image.sh` that you find inside the eggs installation folder, normally `/usr/lib/penguins-eggs/uei`.
 
 All this script does is produce a system image that will auto-start the installation when the system boots.
 
-I got the idea from Mattheo and valuable information from Hakim - a Malaysian entrepreneur and developer - who has previously used the more traditional approach to install hundreds of systems.
+I got the idea from Matteo from LUG Rimini and valuable information from Hakim - a Malaysian entrepreneur and developer - who has previously used the more traditional approach to install hundreds of systems.
 
 In my opinion, the method is already good for experimentation, but it could be improved if we could find a method to: detect the installed system, report it by epoptes to the installer on the server machine, and let the human to decide whether to proceed or not. At the moment, the system runs automatically, and so care must be taken.
 
