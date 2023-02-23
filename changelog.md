@@ -25,7 +25,7 @@ Versions are listed on reverse order, the first is the last one. Old versions ar
 * kill: added --nointeractive flag;
 * various command: uniformed --nointeractive flag for all commands;
 * mom: little adjustments;
-* eggs unattended install: see [uei](/documents/uei.md).
+* eggs unattended install: see [uei](/documents/eui.md).
 
 ### eggs-9.3.25
 * Just discovered a nice companion of eggs: [epoptes](https://epoptes.org/). If you need to build classrooms, just install epoptes, run ```sudo eggs produce --fast``` and in minutes you will have classroom ready;
