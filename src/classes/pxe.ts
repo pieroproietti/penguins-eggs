@@ -235,7 +235,7 @@ export default class Pxe {
                 content += `menu label ${iso}\n`
                 content += `kernel http://${Utils.address()}/memdisk\n`
                 content += `initrd http://${Utils.address()}/${iso}\n`
-                content += `append  iso raw sysappend 3\n`
+                content += `append iso raw sysappend 3\n`
             }
         }
         let file = `${this.pxeRoot}/pxelinux.cfg/default`

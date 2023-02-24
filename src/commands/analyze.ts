@@ -13,6 +13,7 @@ import { access } from 'fs/promises'
 import { constants } from 'fs'
 import Users from '../classes/users'
 
+import si from 'systeminformation'
 
 export default class Analyze extends Command {
 
@@ -39,6 +40,41 @@ export default class Analyze extends Command {
     const echo = Utils.setEcho(verbose)
     let totalSize = 0
     if (Utils.isRoot(this.id)) {
+      const audio = await si.audio()
+      const bios = await si.bios()
+      const blockDevices = await si.blockDevices()
+      const chassis = await si.chassis()
+      const cpu = await si.cpu()
+      const diskLayout = await si.diskLayout()
+      const mem = await si.mem()
+      const usb = await si.usb()
+
+      console.log(`chassis: ${chassis.manufacturer} model: ${chassis.manufacturer}`)
+      console.log(`bios vendor: ${bios.vendor} version: ${bios.version} revision: ${bios.revision}`)
+      console.log(`processor: ${cpu.brand} core: ${cpu.cores} ` )
+      if (diskLayout[0].device !== undefined) {
+        console.log(`disk0: ${diskLayout[0].device}`)
+      }
+      if (diskLayout[1] !== undefined) {
+        console.log(`disk1: ${diskLayout[1].device}`)
+      }
+      if (diskLayout[2] !== undefined) {
+        console.log(`disk1: ${diskLayout[2].device}`)
+      }
+
+      console.log(`name: ${blockDevices[0].name} fs: ${blockDevices[0].fsType}`)
+      console.log(`name: ${blockDevices[1].name} fs: ${blockDevices[1].fsType}`)
+      console.log(`name: ${blockDevices[2].name} fs: ${blockDevices[2].fsType}`)
+      console.log(`name: ${blockDevices[3].name} fs: ${blockDevices[3].fsType}`)
+
+      console.log(`usb: ${usb[0].name}`)      
+
+      /**
+       * Windows: "/Documents and Settings", "/Programs", "/AppData"
+       * MacOS: "/Users"
+       * Linux: "/home"
+       */
+
       Utils.warning('eggs will analyze your system, to get users and servers data')
       const users = await this.fill()
       for (let i = 0; i < users.length; i++)
