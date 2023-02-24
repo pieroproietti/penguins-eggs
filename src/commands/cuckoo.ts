@@ -6,7 +6,7 @@ import { Command, Flags } from '@oclif/core'
 import network from '../classes/network'
 import Utils from '../classes/utils'
 import Pxe from '../classes/pxe'
-import { ITftpOptions, IDhcpOptions } from '../interfaces/i-pxe-options'
+import { ITftpOptions, IDhcpOptions } from '../interfaces/i-pxe'
 const tftp = require('tftp')
 
 export default class Cuckoo extends Command {

@@ -1,15 +1,18 @@
-/*
-  penguins-eggs: Eggs.js
-  author: Piero Proietti
-  mail: piero.proietti@gmail.com
+export interface ITftpOptions {
+  "host": string
+  "port": number
+  "root": string
+  "denyPUT": boolean
+}
 
-  interface per classe dhcpd
-
-  https://blog.logrocket.com/when-how-use-interfaces-classes-typescript/
-  
-  We can only contain declarations of variables and
-  methods in the body of the interface. 
-*/
+export interface IDhcpOptions {
+  subnet: string
+  host: string
+  tftpserver: string
+  bios_filename: string
+  efi32_filename: string
+  efi64_filename: string
+}
 
 export interface IDhcpd {
 	// constructor(opts) 

@@ -13,7 +13,7 @@ import Settings from './settings'
 import { exec } from '../lib/utils'
 const tftp = require('tftp')
 import dhcpd from '../dhcpd/dhcpd'
-import { ITftpOptions, IDhcpOptions } from '../interfaces/i-pxe-options'
+import { ITftpOptions, IDhcpOptions } from '../interfaces/i-pxe'
 
 
 /**
