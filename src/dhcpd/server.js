@@ -1,6 +1,15 @@
-var util = require('util');
-var dhcp = require('./index');
-var Socket = require('dgram').Socket;
+/**
+ * server.js
+ * 
+ * implement DHCPServer
+ * 
+ * author: Piero Proietti <piero.proietti@gmail.com>
+ * 
+ */
+
+import { log, inherits } from 'util';
+import { Packet, MessageTypes } from './index';
+import { Socket } from 'dgram';
 
 /**
  * 
@@ -15,13 +24,13 @@ class DHCPServer {
     });
     this.on('message', function (buffer, remote) {
       var event_name, packet, type;
-      packet = dhcp.Packet.fromBuffer(buffer);
+      packet = Packet.fromBuffer(buffer);
       if (packet.op === 1) {
         type = {
           id: packet.options[53] || 0,
-          name: dhcp.MessageTypes[packet.options[53] || 0]
+          name: MessageTypes[packet.options[53] || 0]
         };
-        util.log(("Got " + type.name + " from") + (" " + remote.address + ":" + remote.port + " (" + packet.chaddr + ") ") + (" with packet length of " + buffer.length + " bytes"));
+        log(("Got " + type.name + " from") + (" " + remote.address + ":" + remote.port + " (" + packet.chaddr + ") ") + (" with packet length of " + buffer.length + " bytes"));
         event_name = type.name.replace('DHCP', '').toLowerCase();
         packet.remote = remote;
         return _this._emitPacket(event_name, packet);
@@ -60,7 +69,7 @@ class DHCPServer {
   _send(event_name, ip, packet) {
     var buffer, _this = this;
     buffer = packet.toBuffer();
-    util.log(("Sending " + dhcp.MessageTypes[packet.options[53]]) + (" to " + ip + ":68 (" + packet.chaddr + ")") + (" with packet length of " + buffer.length + " bytes"));
+    log(("Sending " + MessageTypes[packet.options[53]]) + (" to " + ip + ":68 (" + packet.chaddr + ")") + (" with packet length of " + buffer.length + " bytes"));
     this.emit(event_name, packet);
     return this.send(buffer, 0, buffer.length, 68, ip, function (err, bytes) {
       if (err) {
@@ -153,8 +162,8 @@ class DHCPServer {
     return this._send('inform', packet.ciaddr, packet);
   }
 }
-util.inherits(DHCPServer, Socket);
+inherits(DHCPServer, Socket);
 
-DHCPServer.Packet = dhcp.Packet;
-module.exports = DHCPServer;
+DHCPServer.Packet = Packet;
+export default DHCPServer;
 

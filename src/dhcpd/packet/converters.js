@@ -1,14 +1,30 @@
 /**
  * converters.js
+ * 
+ * used by dhcpd-proxy
  */
-var utils = require('../utils');
-var sprintf = require('../sprintf');
+import { writeIp, readIp, writeInt32, readInt32, writeString, readString, writeInt8, readInt8, writeBytes, writeInt16, readInt16, toString } from '../utils';
+import sprintf from '../sprintf';
 
+/**
+ * definisce un oggetto:
+ *  {
+ *   1: {
+ *     encode: function(),
+ *     decole: function()
+ *   }
+ *   2: {
+ *     encode: function(),
+ *     decole: function()
+ *   }
+ *  }
+ */
 var converters = {
+
   // option 1: subnet mask
   1: {
-    encode: utils.writeIp,
-    decode: utils.readIp
+    encode: writeIp,
+    decode: readIp
   },
 
   // option 2: time offset
@@ -16,11 +32,11 @@ var converters = {
     encode: function encode(buf, num, value, offset) {
       buf[offset++] = num;
       buf[offset++] = 4;
-      utils.writeInt32(buf, value, offset);
+      writeInt32(buf, value, offset);
       return offset + 4;
     },
     decode:function decode(buf) {
-      return utils.readInt32(buf, 0);
+      return readInt32(buf, 0);
     }
   },
 
@@ -92,20 +108,20 @@ var converters = {
 
   // option 12: hostname
   12: {
-    encode: utils.writeString,
-    decode: utils.readString
+    encode: writeString,
+    decode: readString
   },
 
   // option 15: dns domain name
   15: {
-    encode: utils.writeString,
-    decode: utils.readString
+    encode: writeString,
+    decode: readString
   },
 
   // option 28: broadcast address
   28: {
-    encode: utils.writeIp,
-    decode: utils.readIp
+    encode: writeIp,
+    decode: readIp
   },
 
   // option 31: router discovery
@@ -113,12 +129,12 @@ var converters = {
     encode: function(buf, num, value, offset) {
       buf[offset++] = num;
       buf[offset++] = 1;
-      utils.writeInt8(buf, value, offset);
+      writeInt8(buf, value, offset);
       return offset + 1;
     },
 
     decode: function(buf) {
-      return utils.readInt8(buf, 0);
+      return readInt8(buf, 0);
     }
   },
 
@@ -220,26 +236,26 @@ var converters = {
 
   // option 47: netbios node type
   47: {
-    encode: utils.writeString,
-    decode: utils.readString
+    encode: writeString,
+    decode: readString
   },
 
   // option 50: requested ip address
   50: {
-    encode: utils.writeIp,
-    decode: utils.readIp
+    encode: writeIp,
+    decode: readIp
   },
 
   // option 51: lease time
   51: {
     decode: function(buf) {
-      return utils.readInt32(buf, 0);
+      return readInt32(buf, 0);
     },
 
     encode: function(buf, num, value, offset) {
       buf[offset++] = num;
       buf[offset++] = 4;
-      utils.writeInt32(buf, value, offset);
+      writeInt32(buf, value, offset);
       return offset + 4;
     }
   },
@@ -259,9 +275,9 @@ var converters = {
 
   // option 54: server identifier
   54: {
-    encode: utils.writeIp,
+    encode: writeIp,
     decode: function decode(buf) {
-      return utils.readIp(buf, 0);
+      return readIp(buf, 0);
     }
   },
 
@@ -281,7 +297,7 @@ var converters = {
     encode: function encode(buf, num, data, offset) {
       buf[offset++] = num;
       buf[offset++] = data.length;
-	  utils.writeBytes(buf, data, offset);
+	  writeBytes(buf, data, offset);
 //      var i = 0;
 //      while(i < data.length) {
 //        utils.writeBytes(buf, data[i], offset);
@@ -297,19 +313,19 @@ var converters = {
     encode: function(buf, num, value, offset) {
       buf[offset++] = 57;
       buf[offset++] = 2;
-      utils.writeInt16(buf, value, offset);
+      writeInt16(buf, value, offset);
       return offset + 2;
     },
 
     decode: function(buf) {
-      return utils.readInt16(buf, 0);
+      return readInt16(buf, 0);
     }
   },
 
   // option 60: vendor class identifier
   60: {
-    encode: utils.writeString,
-    decode: utils.readString
+    encode: writeString,
+    decode: readString
   },
 
 
@@ -334,13 +350,13 @@ var converters = {
 
   // option 67: bootfile name
   67: {
-    encode: utils.writeString,
-    decode: utils.readString
+    encode: writeString,
+    decode: readString
   },
 
   // option 77: user class information
   77: {
-    encode: utils.writeString,
+    encode: writeString,
     decode: function(buf) {
       var records = [];
       var offset = 0;
@@ -366,7 +382,7 @@ var converters = {
       ret += sprintf("%d", buf[0]) + "-";
       ret += sprintf("%d", buf[1]) + "-";
       ret += sprintf("%d", buf[2]) + " ";
-      ret += utils.toString(buf.slice(3));
+      ret += toString(buf.slice(3));
       return ret;
     }
   },
@@ -392,7 +408,7 @@ var converters = {
   // option 255: end
   255: {
     encode: function(buf, num, value, offset){
-      utils.writeInt8(buf, 255, offset);
+      writeInt8(buf, 255, offset);
       return offset + 1;
     },
     decode: function(buf) {
@@ -413,8 +429,10 @@ var stub = {
   }
 };
 
-module.exports = function(i) {
-  //console.log("GET CONVERTER FOR " + i);
+export default function(i) {
+  if (i == 67 || i == 66) {
+    // console.log("GET CONVERTER FOR " + i);
+  }
   return (i in converters) ? converters[i] : stub;
 };
 

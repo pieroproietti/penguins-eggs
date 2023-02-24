@@ -12,7 +12,7 @@ import Distro from './distro'
 import Settings from './settings'
 import { exec } from '../lib/utils'
 const tftp = require('tftp')
-const dhcpd = require('../dhcpd/dhcpd')
+import dhcpd from '../dhcpd/dhcpd'
 import { ITftpOptions, IDhcpOptions } from '../interfaces/i-pxe-options'
 
 

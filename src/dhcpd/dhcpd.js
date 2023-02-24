@@ -1,11 +1,19 @@
-var dhcp_server = require('./server');
-var dhcp_proxy = require('./proxy');
-var netmask = require('netmask').Netmask;
-var ee = require('events').EventEmitter;
-var util = require('util');
-const { file } = require('@oclif/core/lib/parser');
-const { createNoSubstitutionTemplateLiteral } = require('typescript');
-const { json } = require('stream/consumers');
+/**
+ * dhcpd
+ * 
+ * configured for dhcp-proxy
+ * 
+ * I toke that from: https://github.com/FOGProject/node-dhcproxy
+ *         based on: https://github.com/glaszig/node-dhcpd/
+ * 
+ * author: Piero Proietti <piero.proietti@gmail.com>
+ * 
+ */
+import dhcp_server from './server';
+import dhcp_proxy from './proxy';
+import { Netmask as netmask } from 'netmask';
+import { EventEmitter as ee } from 'events';
+import { inherits } from 'util';
 
 const
 	BOOTREQUEST = 1,
@@ -202,20 +210,11 @@ class dhcpd {
 		if (pkt.options['60'] !== undefined) {
 			var arch = pkt.options['60'];
 			if (arch.indexOf('00009') === 15 || arch.indexOf('00007') === 15) {
-				// var next = '192.168.1.17'
 				var fname = self.efi64_filename;
 				if (pkt.options["77"] === "iPXE") {
 					fname = `autoexec.ipxe`
 				}
 				pkt.fname = fname
-				// pkt.fname = self.efi_filename // vecchio
-				/*
-				console.log('====================================')
-				console.log('pkt: ' + JSON.stringify(pkt, '', 3))
-				console.log('====================================')
-				console.log('offer: ' + JSON.stringify(offer, '', 3))
-				console.log('====================================')
-				*/
 			}
 			else if (arch.indexOf('00006') === 15) {
 				pkt.fname = self.efi32_filename;
@@ -231,7 +230,7 @@ class dhcpd {
 /**
  * 
  */
-util.inherits(dhcpd, ee);
+inherits(dhcpd, ee);
 
 /**
  * 
@@ -243,4 +242,4 @@ function _get_option(pkt, opt) {
 	return (opt in pkt.options) ? pkt.options[opt] : undefined;
 }
 
-module.exports = dhcpd;
+export default dhcpd;
