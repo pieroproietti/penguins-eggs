@@ -1,8 +1,8 @@
 export interface ITftpOptions {
-  "host": string
-  "port": number
-  "root": string
-  "denyPUT": boolean
+  host : string
+  port : number
+  root : string
+  denyPUT : boolean
 }
 
 export interface IDhcpOptions {
@@ -25,12 +25,12 @@ export interface IDhcpd {
 
 export interface IProxy {
   // constructor(type, opts) 
-  bind: (port: any, addr: any, cb: any) =>  IPacket
+  bind: (port: number, addr: string, cb: any) =>  IPacket
 }
 
 export interface IServer {
   // constructor(type, opts) 
-  bind: (port: any, addr: any, cb: any) => IPacket
+  bind: (port: number, addr: string, cb: any) => IPacket
 }
 
 export interface IPacket {

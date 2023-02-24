@@ -26,6 +26,8 @@ const
 	DHCP_REQUESTED_IP = 0x32,
 	DHCP_HOST_NAME = 0x0c;
 
+import {IDhcpOptions, IDhcpd, IPacket} from '../interfaces/i-pxe'	
+
 /**
  * 
  * @param opts 
@@ -39,13 +41,13 @@ class dhcpd {
 	 * @returns 
 	 */
 	constructor(opts) {
-		let self = this;
+		var self = this;
 		if (!(self instanceof dhcpd)) {
-			return new dhcpd(opts);
+			return new dhcpd(opts)
 		}
 		ee.call(self);
 		if (opts.subnet) {
-			var block = new netmask(opts.subnet);
+			let block = new netmask(opts.subnet)
 			if (block) {
 				self.network = block.base;
 				self.netmask = block.mask;
