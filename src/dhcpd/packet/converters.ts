@@ -3,21 +3,11 @@
  * 
  * used by dhcpd-proxy
  */
-import { writeIp, readIp, writeInt32, readInt32, writeString, readString, writeInt8, readInt8, writeBytes, writeInt16, readInt16, toString } from '../utils';
-import sprintf from '../sprintf';
+import { writeIp, readIp, writeInt32, readInt32, writeString, readString, writeInt8, readInt8, writeBytes, writeInt16, readInt16 } from '../utils';
+import { sprintf } from '../sprintf';
 
 /**
- * definisce un oggetto:
- *  {
- *   1: {
- *     encode: function(),
- *     decole: function()
- *   }
- *   2: {
- *     encode: function(),
- *     decole: function()
- *   }
- *  }
+ * converters
  */
 var converters = {
 
@@ -29,20 +19,20 @@ var converters = {
 
   // option 2: time offset
   2: {
-    encode: function encode(buf, num, value, offset) {
+    encode: function encode(buf: any, num: any, value: any, offset: any) {
       buf[offset++] = num;
       buf[offset++] = 4;
       writeInt32(buf, value, offset);
       return offset + 4;
     },
-    decode:function decode(buf) {
+    decode: function decode(buf: any) {
       return readInt32(buf, 0);
     }
   },
 
   // option 3: routers
   3: {
-    decode: function decode(buf) {
+    decode: function decode(buf: any) {
       var i, numRecords, pos, records;
       numRecords = buf.length / 4;
       pos = 0;
@@ -55,13 +45,13 @@ var converters = {
       return records;
     },
 
-    encode: function encode(buf, num, data, offset) {
+    encode: function encode(buf: any, num: any, data: any, offset: any) {
       var routers;
       routers = data;
       buf[offset++] = num;
       buf[offset++] = routers.length * 4;
-      routers.forEach(function(ip) {
-        return ip.split(".").forEach(function(item) {
+      routers.forEach(function (ip: any) {
+        return ip.split(".").forEach(function (item: any) {
           buf[offset++] = item;
         });
       });
@@ -71,7 +61,7 @@ var converters = {
 
   // option 6: dns servers
   6: {
-    decode: function(buf) {
+    decode: function (buf: any) {
       var i, numRecords, pos, records;
       numRecords = buf.length / 4;
       pos = 0;
@@ -84,13 +74,13 @@ var converters = {
       return records;
     },
 
-    encode: function(buf, num, data, offset) {
+    encode: function (buf: any, num: any, data: any, offset: any) {
       var routers;
       routers = data.split(",");
       buf[offset++] = num;
       buf[offset++] = routers.length * 4;
-      routers.forEach(function(ip) {
-        return ip.split(".").forEach(function(item) {
+      routers.forEach(function (ip: any) {
+        return ip.split(".").forEach(function (item: any) {
           buf[offset++] = item;
         });
       });
@@ -126,21 +116,21 @@ var converters = {
 
   // option 31: router discovery
   31: {
-    encode: function(buf, num, value, offset) {
+    encode: function (buf: any, num: any, value: any, offset: any) {
       buf[offset++] = num;
       buf[offset++] = 1;
       writeInt8(buf, value, offset);
       return offset + 1;
     },
 
-    decode: function(buf) {
+    decode: function (buf) {
       return readInt8(buf, 0);
     }
   },
 
   // option 33: static routes
   33: {
-    decode: function decode(buf) {
+    decode: function decode(buf: any) {
       var i, numRecords, pos, records;
       numRecords = buf.length / 4;
       pos = 0;
@@ -153,13 +143,13 @@ var converters = {
       return records;
     },
 
-    encode: function encode(buf, num, data, offset) {
+    encode: function encode(buf: any, num: any, data: any, offset: any) {
       var routers;
       routers = data.split(",");
       buf[offset++] = num;
       buf[offset++] = routers.length * 4;
-      routers.forEach(function(ip) {
-        return ip.split(".").forEach(function(item) {
+      routers.forEach(function (ip: any) {
+        return ip.split(".").forEach(function (item: any) {
           buf[offset++] = item;
         });
       });
@@ -170,21 +160,21 @@ var converters = {
 
   // option 43: vendor specific information
   43: {
-    decode: function(buf) {
+    decode: function (buf: any) {
       var records = [];
       var i = 0;
       var len = buf.length;
       while (i < len) {
-		records.push(sprintf("%02x", buf[i]));
+        records.push(sprintf("%02x", buf[i]));
         i++;
       }
       return records.join(':');
     },
-    encode: function(buf, num, data, offset) {
-	  vendorinfo = data.split(":");	
+    encode: function (buf: any, num: any, data: any, offset: any) {
+      let vendorinfo = data.split(":");
       buf[offset++] = num;
       buf[offset++] = vendorinfo.length;
-      vendorinfo.forEach(function(hex) {
+      vendorinfo.forEach(function (hex: any) {
         buf[offset++] = parseInt(hex, 16);
       });
       return offset;
@@ -194,7 +184,7 @@ var converters = {
 
   // option 44: netbios name servers
   44: {
-    decode: function(buf) {
+    decode: function (buf: any) {
       var i, numRecords, pos, records;
       numRecords = buf.length / 4;
       pos = 0;
@@ -207,13 +197,13 @@ var converters = {
       return records;
     },
 
-    encode: function(buf, num, data, offset) {
+    encode: function (buf: any, num: any, data: any, offset: any) {
       var routers;
       routers = data.split(",");
       buf[offset++] = num;
       buf[offset++] = routers.length * 4;
-      routers.forEach(function(ip) {
-        return ip.split(".").forEach(function(item) {
+      routers.forEach(function (ip) {
+        return ip.split(".").forEach(function (item) {
           buf[offset++] = item;
         });
       });
@@ -223,10 +213,10 @@ var converters = {
 
   // option 46: netbios node type
   46: {
-    decode: function(buf) {
+    decode: function (buf: any) {
       return parseInt(buf[0], 16);
     },
-    encode: function(buf, num, value, offset) {
+    encode: function (buf: any, num: any, value: any, offset: any) {
       buf[offset++] = num;
       buf[offset++] = 1;
       buf[offset++] = parseInt(buf[0], 10).toString(16);
@@ -248,11 +238,11 @@ var converters = {
 
   // option 51: lease time
   51: {
-    decode: function(buf) {
+    decode: function (buf: any) {
       return readInt32(buf, 0);
     },
 
-    encode: function(buf, num, value, offset) {
+    encode: function (buf: any, num: any, value: any, offset: any) {
       buf[offset++] = num;
       buf[offset++] = 4;
       writeInt32(buf, value, offset);
@@ -262,10 +252,10 @@ var converters = {
 
   // option 53: message type
   53: {
-    decode: function(buf) {
+    decode: function (buf: any) {
       return parseInt(buf[0], 10);
     },
-    encode: function(buf, num, value, offset) {
+    encode: function (buf: any, num: any, value: any, offset: any) {
       buf[offset++] = 53;
       buf[offset++] = 1;
       buf[offset++] = value;
@@ -276,14 +266,14 @@ var converters = {
   // option 54: server identifier
   54: {
     encode: writeIp,
-    decode: function decode(buf) {
+    decode: function decode(buf: any) {
       return readIp(buf, 0);
     }
   },
 
   // option 55: parameter request list
   55: {
-    decode: function decode(buf) {
+    decode: function decode(buf: any) {
       var records = [];
       var i = 0;
       var len = buf.length;
@@ -294,30 +284,30 @@ var converters = {
       return records;
     },
 
-    encode: function encode(buf, num, data, offset) {
+    encode: function encode(buf: any, num: any, data: any, offset: any) {
       buf[offset++] = num;
       buf[offset++] = data.length;
-	  writeBytes(buf, data, offset);
-//      var i = 0;
-//      while(i < data.length) {
-//        utils.writeBytes(buf, data[i], offset);
-//        i++;
-//        offset++;
-//      }
+      writeBytes(buf, data, offset);
+      //      var i = 0;
+      //      while(i < data.length) {
+      //        utils.writeBytes(buf, data[i], offset);
+      //        i++;
+      //        offset++;
+      //      }
       return offset;
     }
   },
 
   // option 57: max message size
   57: {
-    encode: function(buf, num, value, offset) {
+    encode: function (buf: any, num: any, value: any, offset: any) {
       buf[offset++] = 57;
       buf[offset++] = 2;
       writeInt16(buf, value, offset);
       return offset + 2;
     },
 
-    decode: function(buf) {
+    decode: function (buf: any) {
       return readInt16(buf, 0);
     }
   },
@@ -331,11 +321,11 @@ var converters = {
 
   // option 61: client identifier
   61: {
-    encode: function(buf, num, value, offset) {
+    encode: function (buf: any, num: any, value: any, offset: any) {
       return offset;
     },
 
-    decode: function(buf) {
+    decode: function (buf: any) {
       var j, s, type;
       s = [];
       type = buf[0];
@@ -357,10 +347,10 @@ var converters = {
   // option 77: user class information
   77: {
     encode: writeString,
-    decode: function(buf) {
+    decode: function (buf: any) {
       var records = [];
       var offset = 0;
-      while(buf[offset]){
+      while (buf[offset]) {
         var uc_len = buf[offset];
         var uc_data = buf.slice(offset++, uc_len);
         offset += uc_len;
@@ -372,11 +362,11 @@ var converters = {
 
   // option 83: client fqdn
   83: {
-    encode: function(buf, num, value, offset) {
+    encode: function (buf: any, num: any, value: any, offset: any) {
       return offset;
     },
 
-    decode: function(buf) {
+    decode: function (buf: any) {
       var ret;
       ret = "";
       ret += sprintf("%d", buf[0]) + "-";
@@ -389,11 +379,11 @@ var converters = {
 
   // option 175: etherboot
   175: {
-    encode: function(buf, num, value, offset) {
+    encode: function (buf: any, num: any, value: any, offset: any) {
       return offset;
     },
 
-    decode: function(buf) {
+    decode: function (buf: any) {
       var j, s;
       s = [];
       j = 1;
@@ -407,32 +397,46 @@ var converters = {
 
   // option 255: end
   255: {
-    encode: function(buf, num, value, offset){
+    encode: function (buf: any, num: any, value: any, offset: any) {
       writeInt8(buf, 255, offset);
       return offset + 1;
     },
-    decode: function(buf) {
+    decode: function (buf: any) {
       return undefined;
     }
   }
 };
 
 var stub = {
-  encode: function(buf, num, value, offset) {
-//    console.error("[dhcproxy] encoder for option " + num + " not found");
+  encode: function (buf: any, num: any, value: any, offset: any) {
+    //    console.error("[dhcproxy] encoder for option " + num + " not found");
     return offset;
   },
-  decode: function(buf, num) {
-//    console.error("[dhcproxy] decoder for option  " + num + " not found");
-//    console.log("  buffer:", buf);
+  decode: function (buf: any, num: any) {
+    //    console.error("[dhcproxy] decoder for option  " + num + " not found");
+    //    console.log("  buffer:", buf);
     return null;
   }
 };
 
-export default function(i) {
+/**
+ * 
+ * @param i 
+ * @returns converter
+ */
+export default function (i: any) {
   if (i == 67 || i == 66) {
-    // console.log("GET CONVERTER FOR " + i);
+    console.log("GET CONVERTER FOR " + i);
   }
+  /**
+   * L'elemento contiene implicitamente un tipo 'any' perché 
+   * non è possibile ysare l'espressione di tipo 'any' 
+   * per indicizzare il tipo: 
+   * '{ 1: { encode: () => any; decode: () => any},
+   *  { 2: { encode: () => any; decode: () => any},
+   *  { 2: { encode: () => any; decode: () => any},
+   *  }
+   */
   return (i in converters) ? converters[i] : stub;
 };
 
