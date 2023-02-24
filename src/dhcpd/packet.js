@@ -1,5 +1,11 @@
-var utils = require('./utils');
-var get_convert = require('./packet/converters');
+/**
+ * packet.js
+ * 
+ * author: Piero Proietti <piero.proietti@gmail.com>
+ * 
+ */
+import { readIp, readMacAddress } from './utils';
+import get_convert from './packet/converters';
 
 /**
  * 
@@ -187,11 +193,11 @@ var fromBuffer = function(b) {
     xid: b.readUInt32BE(4),
     secs: b.readUInt16BE(8),
     flags: b.readUInt16BE(10),
-    ciaddr: utils.readIp(b, 12),
-    yiaddr: utils.readIp(b, 16),
-    siaddr: utils.readIp(b, 20),
-    giaddr: utils.readIp(b, 24),
-    chaddr: utils.readMacAddress(b.slice(28, 28 + b.readUInt8(2))),
+    ciaddr: readIp(b, 12),
+    yiaddr: readIp(b, 16),
+    siaddr: readIp(b, 20),
+    giaddr: readIp(b, 24),
+    chaddr: readMacAddress(b.slice(28, 28 + b.readUInt8(2))),
     sname: stripBinNull(b.toString('ascii', 44, 108)),
     fname: stripBinNull(b.toString('ascii', 108, 236)),
     options: {}
@@ -263,23 +269,6 @@ Packet.fromBuffer = fromBuffer;
 Packet.prototype.toBuffer = toBuffer;
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-module.exports = {
-  Packet: Packet,
-  fromBuffer: fromBuffer,
-  toBuffer: toBuffer
-};
+export const Packet = Packet;
+export const fromBuffer = fromBuffer;
+export const toBuffer = toBuffer;

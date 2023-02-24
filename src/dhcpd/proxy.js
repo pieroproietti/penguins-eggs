@@ -1,11 +1,28 @@
-var util = require('util');
-var dhcp = require('./index');
-var Socket = require('dgram').Socket;
+/**
+ * proxy.js
+ * 
+ * implement DHCPProxy
+ * 
+ * author: Piero Proietti <piero.proietti@gmail.com>
+ * 
+ */
+
+import { log, inherits } from 'util';
+import { Packet, MessageTypes } from './index';
+import { Socket } from 'dgram';
 
 /**
  * 
  */
 class DHCPProxy {
+  
+  /**
+   * 
+   * @param {*} type :string
+   * @param {*} opts :dhcpd
+   * @returns 
+   */
+
   constructor(type, opts) {
     var _this = this;
     DHCPProxy.super_.apply(this, [type]);
@@ -15,13 +32,13 @@ class DHCPProxy {
     });
     this.on('message', function (buffer, remote) {
       var event_name, packet, type;
-      packet = dhcp.Packet.fromBuffer(buffer);
+      packet = Packet.fromBuffer(buffer);
       if (packet.op === 1) {
         type = {
           id: packet.options[53] || 0,
-          name: dhcp.MessageTypes[packet.options[53] || 0]
+          name: MessageTypes[packet.options[53] || 0]
         };
-        util.log(("Proxy: Got " + type.name + " from") + (" " + remote.address + ":" + remote.port + " (" + packet.chaddr + ") ") + (" with packet length of " + buffer.length + " bytes"));
+        log(("Proxy: Got " + type.name + " from") + (" " + remote.address + ":" + remote.port + " (" + packet.chaddr + ") ") + (" with packet length of " + buffer.length + " bytes"));
         event_name = type.name.replace('DHCP', '').toLowerCase();
         packet.remote = remote;
         return _this._emitPacket(event_name, packet);
@@ -60,7 +77,7 @@ class DHCPProxy {
   _send(event_name, ip, packet) {
     var buffer, _this = this;
     buffer = packet.toBuffer();
-    util.log(("Proxy: Sending " + dhcp.MessageTypes[packet.options[53]]) + (" to " + ip + ":" + packet.remote.port + " (" + packet.chaddr + ")") + (" with packet length of " + buffer.length + " bytes"));
+    log(("Proxy: Sending " + MessageTypes[packet.options[53]]) + (" to " + ip + ":" + packet.remote.port + " (" + packet.chaddr + ")") + (" with packet length of " + buffer.length + " bytes"));
     this.emit(event_name, packet);
     return this.send(buffer, 0, buffer.length, packet.remote.port, ip, function (err, bytes) {
       if (err) {
@@ -153,8 +170,8 @@ class DHCPProxy {
     return this._send('inform', packet.ciaddr, packet);
   }
 }
-util.inherits(DHCPProxy, Socket);
+inherits(DHCPProxy, Socket);
 
-DHCPProxy.Packet = dhcp.Packet;
-module.exports = DHCPProxy;
+DHCPProxy.Packet = Packet;
+export default DHCPProxy;
 

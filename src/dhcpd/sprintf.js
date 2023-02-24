@@ -1,4 +1,12 @@
-function sprintf () {
+/**
+ * sprintf.js
+ * 
+ * used in dhcpd 
+ * 
+ * called from utils
+ * 
+ */
+export function sprintf () {
     // Return a formatted string
     //
     // version: 1107.2516
@@ -175,4 +183,5 @@ function sprintf () {
     return format.replace(regex, doFormat);
 }
 
+// necessaria
 module.exports = sprintf;

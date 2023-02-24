@@ -22,7 +22,6 @@ import { IInstaller } from '../../interfaces/i-installer'
 
 import { exec } from '../../lib/utils'
 import { threadId } from 'node:worker_threads'
-import { lastIndexOf } from '../../dhcpd/packet/types'
 
 /**
  *
