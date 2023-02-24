@@ -15,14 +15,13 @@ import { Socket } from 'dgram';
  * 
  */
 class DHCPProxy {
-  
+
   /**
    * 
-   * @param {*} type :string
-   * @param {*} opts :dhcpd
+   * @param {*} type 
+   * @param {*} opts 
    * @returns 
    */
-
   constructor(type, opts) {
     var _this = this;
     DHCPProxy.super_.apply(this, [type]);
