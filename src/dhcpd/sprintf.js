@@ -6,7 +6,7 @@
  * called from utils
  * 
  */
-export function sprintf () {
+export default function sprintf () {
     // Return a formatted string
     //
     // version: 1107.2516

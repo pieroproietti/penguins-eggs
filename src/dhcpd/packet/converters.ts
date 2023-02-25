@@ -4,13 +4,16 @@
  * used by dhcpd-proxy
  */
 import { writeIp, readIp, writeInt32, readInt32, writeString, readString, writeInt8, readInt8, writeBytes, writeInt16, readInt16 } from '../utils';
-import { sprintf } from '../sprintf';
+import sprintf from '../sprintf';
+
+interface IStringIndex {
+  [key: string]: any
+}
 
 /**
  * converters
  */
-var converters = {
-
+const converters: IStringIndex = {
   // option 1: subnet mask
   1: {
     encode: writeIp,
@@ -123,7 +126,7 @@ var converters = {
       return offset + 1;
     },
 
-    decode: function (buf) {
+    decode: function (buf: any) {
       return readInt8(buf, 0);
     }
   },
@@ -202,8 +205,8 @@ var converters = {
       routers = data.split(",");
       buf[offset++] = num;
       buf[offset++] = routers.length * 4;
-      routers.forEach(function (ip) {
-        return ip.split(".").forEach(function (item) {
+      routers.forEach(function (ip: any) {
+        return ip.split(".").forEach(function (item: any) {
           buf[offset++] = item;
         });
       });
@@ -372,7 +375,9 @@ var converters = {
       ret += sprintf("%d", buf[0]) + "-";
       ret += sprintf("%d", buf[1]) + "-";
       ret += sprintf("%d", buf[2]) + " ";
-      ret += toString(buf.slice(3));
+      // CHECK
+      //ret += utils.toString(buf.slice(3));      
+      ret += (buf.slice(3)).toString()
       return ret;
     }
   },
@@ -407,6 +412,7 @@ var converters = {
   }
 };
 
+
 var stub = {
   encode: function (buf: any, num: any, value: any, offset: any) {
     //    console.error("[dhcproxy] encoder for option " + num + " not found");
@@ -419,24 +425,20 @@ var stub = {
   }
 };
 
-/**
- * 
- * @param i 
- * @returns converter
- */
-export default function (i: any) {
+export default function (i: any): any {
   if (i == 67 || i == 66) {
     console.log("GET CONVERTER FOR " + i);
   }
-  /**
-   * L'elemento contiene implicitamente un tipo 'any' perché 
-   * non è possibile ysare l'espressione di tipo 'any' 
-   * per indicizzare il tipo: 
-   * '{ 1: { encode: () => any; decode: () => any},
-   *  { 2: { encode: () => any; decode: () => any},
-   *  { 2: { encode: () => any; decode: () => any},
-   *  }
-   */
   return (i in converters) ? converters[i] : stub;
 };
 
+/**
+ * error TS7053: Element implicitly has an 'any' type because expression 
+ * of type 'any' can't be used to index type: 
+{
+  '1': { encode: [Function: writeIp], decode: [Function: readIp] },
+  '2': { encode: [Function: encode], decode: [Function: decode] },
+  ...
+  '255': { encode: [Function: encode], decode: [Function: decode] }
+}
+*/
