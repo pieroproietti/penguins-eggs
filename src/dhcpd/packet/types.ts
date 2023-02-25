@@ -5,13 +5,13 @@
  * 
  */
 export default [
-    "unknown dhcp message type", 
-    "DHCPDISCOVER", 
-    "DHCPOFFER", 
-    "DHCPREQUEST", 
-    "DHCPDECLINE", 
-    "DHCPACK", 
-    "DHCPNAK", 
-    "DHCPRELEASE", 
+    "unknown dhcp message type",
+    "DHCPDISCOVER",
+    "DHCPOFFER",
+    "DHCPREQUEST",
+    "DHCPDECLINE",
+    "DHCPACK",
+    "DHCPNAK",
+    "DHCPRELEASE",
     "DHCPINFORM"
 ]
