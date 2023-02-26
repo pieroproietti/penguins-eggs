@@ -290,7 +290,7 @@ class Distro implements IDistro {
         if (!found) {
           console.log(`This distro ${this.distroId}/${this.codenameId} is not yet recognized!`)
           console.log(``)
-          console.log(`You can edit /usr/lib/penguins-eggs/derivaties.yaml to add it -`)
+          console.log(`You can edit /usr/lib/penguins-eggs/conf/derivaties.yaml to add it -`)
           console.log(`after that - run: sudo eggs dad -d to reconfigure.`)
           console.log(`If you can create your new iso, you can contribute to the project by suggesting your modification`)
           process.exit(0)
