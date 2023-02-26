@@ -35,11 +35,12 @@
   derivatives:
     - roma # Ufficiozero roma
 
-# daedalus derivated    
-- id: "daedalus"
+# daedalus derivated
+- id: daedalus
   distro: Devuan
-  derivaties:
-    - "daedalus ceres"
+  derivatives:
+    - daedalus-ceres # "daedalus ceres"
+    # -"daedalus ceres" # NOTE: this not working, edit /etc/os-release
 
 #
 # UBUNTU
