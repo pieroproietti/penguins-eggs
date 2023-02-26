@@ -35,6 +35,12 @@
   derivatives:
     - roma # Ufficiozero roma
 
+# daedalus derivated    
+- id: "daedalus"
+  distro: Devuan
+  derivaties:
+    - "daedalus ceres"
+
 #
 # UBUNTU
 #
