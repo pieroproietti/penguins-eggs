@@ -1,28 +1,22 @@
 /**
- * sprintf.js
+ * util.ts
  * 
  * used in dhcpd 
  * 
  */
 
-import { off } from "process";
-
-var sprintf : any
-
-sprintf = require("./sprintf");
+import sprintf from "./sprintf";
 
 /**
  * 
- * @param {*} _buffer 
- * @param {*} byteArray 
- * @param {*} offset 
+ * @param _buffer 
+ * @param byteArray 
+ * @param offset 
  * @returns 
  */
-//export function writeBytes(_buffer: any, byteArray: any, offset: number) {
 export const writeBytes = (_buffer: any, byteArray: any, offset: number) => {
-    let _bytesWritten =0
-    var i
-    i = 0;
+    let _bytesWritten = 0
+    let i = 0;
     while (i < byteArray.length) {
         _buffer[offset++] = byteArray[i];
         i++;
@@ -35,9 +29,9 @@ export const writeBytes = (_buffer: any, byteArray: any, offset: number) => {
 
 /**
  * 
- * @param {*} _buffer 
- * @param {*} integer 
- * @param {*} offset 
+ * @param _buffer 
+ * @param integer 
+ * @param offset 
  * @returns 
  */
 export function writeInt32(_buffer: any, integer: number, offset: number) {
@@ -50,9 +44,9 @@ export function writeInt32(_buffer: any, integer: number, offset: number) {
 
 /**
  * 
- * @param {*} _buffer 
- * @param {*} integer 
- * @param {*} offset 
+ * @param _buffer 
+ * @param integer 
+ * @param offset 
  * @returns 
  */
 export function writeInt16(_buffer: any, integer: number, offset: number) {
@@ -62,7 +56,8 @@ export function writeInt16(_buffer: any, integer: number, offset: number) {
 }
 
 /**
-  * @param _buffer ojct
+ * 
+ * @param _buffer 
  * @param integer 
  * @param offset 
  * @returns 
@@ -74,10 +69,10 @@ export function writeInt8(_buffer: any, integer: number, offset: number) {
 
 /**
  * 
- * @param {*} _buffer 
- * @param {*} length 
- * @param {*} copy 
- * @param {*} offset 
+ * @param _buffer 
+ * @param length 
+ * @param copy 
+ * @param offset 
  * @returns 
  */
 export function readBytes(_buffer: any, length: number, copy: any, offset: number) {
@@ -93,8 +88,8 @@ export function readBytes(_buffer: any, length: number, copy: any, offset: numbe
 
 /**
  * 
- * @param {*} _buffer 
- * @param {*} offset 
+ * @param _buffer 
+ * @param offset 
  * @returns 
  */
 export function readInt32(_buffer: any, offset: number) {
@@ -103,8 +98,8 @@ export function readInt32(_buffer: any, offset: number) {
 
 /**
  * 
- * @param {*} _buffer 
- * @param {*} offset 
+ * @param _buffer 
+ * @param offset 
  * @returns 
  */
 export function readInt16(_buffer: any, offset: number) {
@@ -113,8 +108,8 @@ export function readInt16(_buffer: any, offset: number) {
 
 /**
  * 
- * @param {*} _buffer 
- * @param {*} offset 
+ * @param _buffer 
+ * @param offset 
  * @returns 
  */
 export function readInt8(_buffer: any, offset: number) {
@@ -123,7 +118,7 @@ export function readInt8(_buffer: any, offset: number) {
 
 /**
  * 
- * @param {*} buf 
+ * @param buf 
  * @returns 
  */
 export function readString(buf: any) {
@@ -139,7 +134,7 @@ export function readString(buf: any) {
 
 /**
  * 
- * @param {*} buf 
+ * @param buf 
  * @returns 
  */
 export function readHex(buf: any) {
@@ -156,7 +151,7 @@ export function readHex(buf: any) {
 
 /**
  * 
- * @param {*} buf 
+ * @param buf 
  * @returns 
  */
 export function readHexAddress(buf: any) {
@@ -172,8 +167,8 @@ export function readHexAddress(buf: any) {
 
 /**
  * 
- * @param {*} buffer 
- * @param {*} offset 
+ * @param buffer 
+ * @param offset 
  * @returns 
  */
 export function readIp(buffer: any, offset: number) {
@@ -201,7 +196,7 @@ export function readIp(buffer: any, offset: number) {
 
 /**
  * 
- * @param {*} buffer 
+ * @param buffer 
  * @returns 
  */
 export function readMacAddress(buffer: any) {
@@ -219,10 +214,10 @@ export function readMacAddress(buffer: any) {
 
 /**
  * 
- * @param {*} buf 
- * @param {*} num 
- * @param {*} offsetHours 
- * @param {*} offset 
+ * @param buf 
+ * @param num 
+ * @param offsetHours 
+ * @param offset 
  * @returns 
  */
 export function writeTimeOffset(buf: any, num: any, offsetHours: any, offset: number) {
@@ -232,10 +227,10 @@ export function writeTimeOffset(buf: any, num: any, offsetHours: any, offset: nu
 
 /**
  * 
- * @param {*} buf 
- * @param {*} num 
- * @param {*} ip 
- * @param {*} offset 
+ * @param buf 
+ * @param num 
+ * @param ip 
+ * @param offset 
  * @returns 
  */
 export function writeIp(buf: any, num: string, ip: any, offset: number) {
@@ -252,10 +247,10 @@ export function writeIp(buf: any, num: string, ip: any, offset: number) {
 
 /**
  * 
- * @param {*} buf 
- * @param {*} num 
- * @param {*} hostname 
- * @param {*} offset 
+ * @param buf 
+ * @param num 
+ * @param hostname 
+ * @param offset 
  * @returns 
  */
 export function writeString(buf: any, num: string, hostname: string, offset: number) {
@@ -270,4 +265,3 @@ export function writeString(buf: any, num: string, hostname: string, offset: num
     });
     return offset;
 }
-

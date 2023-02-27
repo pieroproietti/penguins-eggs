@@ -8,16 +8,19 @@
  */
 
 import { log, inherits } from 'util';
-import { Packet, MessageTypes } from './index';
-import { Socket } from 'dgram';
+import {Packet} from './packet'
+import MessageTypes from './packet/message-types'
+import { createSocket, Socket } from 'dgram';
 
 /**
  * 
  */
-class DHCPServer {
+class DHCPServer extends Socket {
     constructor(type, opts) {
+        super(type)
+        createSocket(type)
         var _this = this;
-        DHCPServer.super_.apply(this, [type]);
+        // DHCPServer.super_.apply(this, [type]);
         _this.broadcast = opts.broadcast;
         this.on('error', function (err) {
             console.dir(err);
@@ -52,6 +55,7 @@ class DHCPServer {
         var self = this;
         var res;
         res = DHCPServer.super_.prototype.bind.call(this, port, addr, function () {
+            // res = DHCPServer.Socket.bind.call(this, port, addr, function () {
             this.setBroadcast(true);
             if (cb instanceof Function)
                 cb();
