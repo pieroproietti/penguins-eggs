@@ -8,13 +8,14 @@
  */
 
 import { log, inherits } from 'util';
-import { Packet, MessageTypes } from './index';
+import {Packet} from './packet'
+import MessageTypes from './packet/message-types'
 import { Socket } from 'dgram';
 
 /**
  * 
  */
-class DHCPProxy {
+class DHCPProxy extends Socket {
 
     /**
      * 
@@ -23,8 +24,9 @@ class DHCPProxy {
      * @returns 
      */
     constructor(type, opts) {
+        super('udp4')
         var _this = this;
-        DHCPProxy.super_.apply(this, [type]);
+        //DHCPProxy.super_.apply(this, [type]);
         _this.broadcast = opts.broadcast;
         this.on('error', function (err) {
             console.dir(err);
@@ -169,6 +171,7 @@ class DHCPProxy {
         return this._send('inform', packet.ciaddr, packet);
     }
 }
+
 inherits(DHCPProxy, Socket);
 
 DHCPProxy.Packet = Packet;
