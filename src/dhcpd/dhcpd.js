@@ -28,6 +28,7 @@ const
 
 import { IDhcpOptions, IDhcpd, IPacket } from '../interfaces/i-pxe'
 
+
 /**
  * 
  * @param opts 
@@ -147,15 +148,8 @@ class dhcpd {
      */
     request(pkt) {
         var self = this;
-        console.log('Ignoring received REQUEST from ' + pkt.chaddr + ' as we are only a proxy');
-        return;
-        var offer = {};
-        offer.siaddr = self.host;
-        offer.options = {};
-        offer.options['54'] = self.host;
-        offer.options['255'] = null;
-        self.pre_init(pkt);
-        return self.s.ack(pkt, offer);
+        console.log('Ignoring received REQUEST from ' + pkt.chaddr + ' as we are only a proxy')
+        return
     }
 
     /**
