@@ -1,16 +1,12 @@
 /**
  * server.js
  * 
- * implement DHCPServer
- * 
- * author: Piero Proietti <piero.proietti@gmail.com>
- * 
  */
 
-import { log, inherits } from 'util';
-import {Packet} from './packet'
+import { Socket } from 'dgram';
+import { Packet } from './packet'
 import MessageTypes from './packet/message-types'
-import { createSocket, Socket } from 'dgram';
+import { log, inherits } from 'util';
 
 /**
  * 
@@ -18,30 +14,28 @@ import { createSocket, Socket } from 'dgram';
 class DHCPServer extends Socket {
     constructor(type, opts) {
         super(type)
-        createSocket(type)
-        var _this = this;
-        // DHCPServer.super_.apply(this, [type]);
-        _this.broadcast = opts.broadcast;
+        var _this = this
+        _this.broadcast = opts.broadcast
         this.on('error', function (err) {
-            console.dir(err);
-        });
+            console.dir(err)
+        })
         this.on('message', function (buffer, remote) {
-            var event_name, packet, type;
-            packet = Packet.fromBuffer(buffer);
+            var event_name, packet, type
+            packet = Packet.fromBuffer(buffer)
             if (packet.op === 1) {
                 type = {
                     id: packet.options[53] || 0,
                     name: MessageTypes[packet.options[53] || 0]
                 };
-                log(("Got " + type.name + " from") + (" " + remote.address + ":" + remote.port + " (" + packet.chaddr + ") ") + (" with packet length of " + buffer.length + " bytes"));
-                event_name = type.name.replace('DHCP', '').toLowerCase();
-                packet.remote = remote;
-                return _this._emitPacket(event_name, packet);
+                log(("Got " + type.name + " from") + (" " + remote.address + ":" + remote.port + " (" + packet.chaddr + ") ") + (" with packet length of " + buffer.length + " bytes"))
+                event_name = type.name.replace('DHCP', '').toLowerCase()
+                packet.remote = remote
+                return _this._emitPacket(event_name, packet)
             } else {
-                return console.log("  Unsupported message format");
+                return console.log("  Unsupported message format")
             }
-        });
-        return _this;
+        })
+        return _this
     }
 
     /**
@@ -54,8 +48,8 @@ class DHCPServer extends Socket {
     bind(port, addr, cb) {
         var self = this;
         var res;
+        // Andrebbe sostituito... 
         res = DHCPServer.super_.prototype.bind.call(this, port, addr, function () {
-            // res = DHCPServer.Socket.bind.call(this, port, addr, function () {
             this.setBroadcast(true);
             if (cb instanceof Function)
                 cb();
@@ -166,6 +160,14 @@ class DHCPServer extends Socket {
         return this._send('inform', packet.ciaddr, packet);
     }
 }
+
+/**
+ * Poichè DHCPServer extents Socket non dovrebbe essere
+ * più necessario, lo mantengo, finchè non trovo il 
+ * modo di sostituire:
+ * 
+ * res = DHCPServer.super_.prototype.bind.call(this, port, addr, function () {
+  */
 inherits(DHCPServer, Socket);
 
 DHCPServer.Packet = Packet;

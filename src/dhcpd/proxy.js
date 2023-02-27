@@ -172,6 +172,13 @@ class DHCPProxy extends Socket {
     }
 }
 
+/**
+ * Poichè DHCPServer extents Socket non dovrebbe essere
+ * più necessario, lo mantengo, finchè non trovo il 
+ * modo di sostituire:
+ * 
+ * res = DHCPProxy.super_.prototype.bind.call(this, port, addr, function () {
+ */
 inherits(DHCPProxy, Socket);
 
 DHCPProxy.Packet = Packet;
