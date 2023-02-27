@@ -5,7 +5,9 @@
  * 
  */
 
-var sprintf;
+import { off } from "process";
+
+var sprintf : any
 
 sprintf = require("./sprintf");
 
@@ -16,8 +18,10 @@ sprintf = require("./sprintf");
  * @param {*} offset 
  * @returns 
  */
-export function writeBytes(_buffer, byteArray, offset) {
-    var i, _bytesWritten;
+//export function writeBytes(_buffer: any, byteArray: any, offset: number) {
+export const writeBytes = (_buffer: any, byteArray: any, offset: number) => {
+    let _bytesWritten =0
+    var i
     i = 0;
     while (i < byteArray.length) {
         _buffer[offset++] = byteArray[i];
@@ -36,7 +40,7 @@ export function writeBytes(_buffer, byteArray, offset) {
  * @param {*} offset 
  * @returns 
  */
-export function writeInt32(_buffer, integer, offset) {
+export function writeInt32(_buffer: any, integer: number, offset: number) {
     _buffer[offset++] = integer >>> 24;
     _buffer[offset++] = integer >>> 16;
     _buffer[offset++] = integer >>> 8;
@@ -51,12 +55,19 @@ export function writeInt32(_buffer, integer, offset) {
  * @param {*} offset 
  * @returns 
  */
-export function writeInt16(_buffer, integer, offset) {
+export function writeInt16(_buffer: any, integer: number, offset: number) {
     _buffer[offset++] = integer >>> 8;
     _buffer[offset++] = integer;
     return offset;
 }
-export function writeInt8(_buffer, integer, offset) {
+
+/**
+  * @param _buffer ojct
+ * @param integer 
+ * @param offset 
+ * @returns 
+ */
+export function writeInt8(_buffer: any, integer: number, offset: number) {
     _buffer[offset++] = integer;
     return offset;
 }
@@ -69,7 +80,7 @@ export function writeInt8(_buffer, integer, offset) {
  * @param {*} offset 
  * @returns 
  */
-export function readBytes(_buffer, length, copy, offset) {
+export function readBytes(_buffer: any, length: number, copy: any, offset: number) {
     var bufCopy;
     if (copy) {
         bufCopy = new Buffer(length);
@@ -86,7 +97,7 @@ export function readBytes(_buffer, length, copy, offset) {
  * @param {*} offset 
  * @returns 
  */
-export function readInt32(_buffer, offset) {
+export function readInt32(_buffer: any, offset: number) {
     return (_buffer[offset++] << 24) | (_buffer[offset++] << 16) | (_buffer[offset++] << 8) | _buffer[offset++];
 }
 
@@ -96,7 +107,7 @@ export function readInt32(_buffer, offset) {
  * @param {*} offset 
  * @returns 
  */
-export function readInt16(_buffer, offset) {
+export function readInt16(_buffer: any, offset: number) {
     return (_buffer[offset++] << 8) | _buffer[offset++];
 }
 
@@ -106,7 +117,7 @@ export function readInt16(_buffer, offset) {
  * @param {*} offset 
  * @returns 
  */
-export function readInt8(_buffer, offset) {
+export function readInt8(_buffer: any, offset: number) {
     return _buffer[offset++];
 }
 
@@ -115,7 +126,7 @@ export function readInt8(_buffer, offset) {
  * @param {*} buf 
  * @returns 
  */
-export function readString(buf) {
+export function readString(buf: any) {
     var j, s;
     s = "";
     j = 0;
@@ -131,12 +142,13 @@ export function readString(buf) {
  * @param {*} buf 
  * @returns 
  */
-export function readHex(buf) {
+export function readHex(buf: any) {
     var j, s;
     s = "";
     j = 0;
     while (j < buf.length) {
-        s += sprintf("%02x", b[j]);
+        // check was b not buf
+        s += sprintf("%02x", buf[j]);
         j++;
     }
     return s;
@@ -147,7 +159,7 @@ export function readHex(buf) {
  * @param {*} buf 
  * @returns 
  */
-export function readHexAddress(buf) {
+export function readHexAddress(buf: any) {
     var j, s;
     s = [];
     j = 0;
@@ -164,7 +176,7 @@ export function readHexAddress(buf) {
  * @param {*} offset 
  * @returns 
  */
-export function readIp(buffer, offset) {
+export function readIp(buffer: any, offset: number) {
     var stop;
     if (offset === null) {
         offset = 0;
@@ -192,7 +204,7 @@ export function readIp(buffer, offset) {
  * @param {*} buffer 
  * @returns 
  */
-export function readMacAddress(buffer) {
+export function readMacAddress(buffer: any) {
     var byte;
     return ((function () {
         var _i, _len, _results;
@@ -213,7 +225,7 @@ export function readMacAddress(buffer) {
  * @param {*} offset 
  * @returns 
  */
-export function writeTimeOffset(buf, num, offsetHours, offset) {
+export function writeTimeOffset(buf: any, num: any, offsetHours: any, offset: number) {
     buf[offset++] = 0;
     return offset;
 }
@@ -226,13 +238,13 @@ export function writeTimeOffset(buf, num, offsetHours, offset) {
  * @param {*} offset 
  * @returns 
  */
-export function writeIp(buf, num, ip, offset) {
+export function writeIp(buf: any, num: string, ip: any, offset: number) {
     buf[offset++] = num;
     buf[offset++] = 4;
     if ((typeof ip !== 'string' && !(ip instanceof String)) || ip.indexOf('.') === -1) {
         ip = "0.0.0.0";
     }
-    ip.split(".").forEach(function (item) {
+    ip.split(".").forEach(function (item: any) {
         buf[offset++] = item;
     });
     return offset;
@@ -246,13 +258,16 @@ export function writeIp(buf, num, ip, offset) {
  * @param {*} offset 
  * @returns 
  */
-export function writeString(buf, num, hostname, offset) {
+export function writeString(buf: any, num: string, hostname: string, offset: number) {
     var charArr;
     charArr = hostname.split("");
     buf[offset++] = num;
     buf[offset++] = charArr.length;
     charArr.forEach(function (chr) {
-        buf[offset++] = chr.charCodeAt();
+        // charCodeAt(index: number): number
+        //buf[offset++] = chr.charCodeAt() original
+        buf[offset++] = chr.charCodeAt(0)
     });
     return offset;
 }
+
