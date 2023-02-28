@@ -102,7 +102,6 @@ export default class Ovary {
         return true
       }
     }
-
     return false
   }
 
