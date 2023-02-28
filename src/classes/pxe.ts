@@ -12,15 +12,8 @@ import nodeStatic from 'node-static'
 import path, { dirname } from 'node:path'
 import Settings from './settings'
 import Utils from './utils'
-
-/**
- * Huston, abbiamo un problema...
- */
-
-// @ts-ignore
 import tftp from 'tftp'
-
-import dhcpd from 'penguins-dhcpd-proxy'
+import etrick from 'etrick'
 
 /**
 * Pxe:
@@ -372,7 +365,7 @@ export default class Pxe {
      * @param dhcpOptions
      */
     dhcpStart(dhcpOptions: IDhcpOptions) {
-        const dhcpdProxy = new dhcpd(dhcpOptions)
+        new etrick(dhcpOptions)
     }
 
     /**

@@ -29,6 +29,7 @@ specifiers:
   eslint: ^7.32.0
   eslint-config-oclif: ^4.0.0
   eslint-config-oclif-typescript: ^1.0.3
+  etrick: ../etrick
   globby: ^11.1.0
   ink: ^3.2.0
   ink-big-text: ^1.2.0
@@ -41,7 +42,6 @@ specifiers:
   node-static: ^0.7.11
   nyc: ^15.1.0
   oclif-pnpm: ^3.4.3-1
-  penguins-dhcpd-proxy: ../penguins-dhcpd-proxy
   perrisbrewery: ^9.3.15
   react: ^17.0.2
   shelljs: 0.8.5
@@ -57,10 +57,11 @@ dependencies:
   '@oclif/plugin-help': 5.2.6
   '@oclif/plugin-not-found': 2.3.21
   '@oclif/plugin-version': 1.2.1
-  '@oclif/plugin-warn-if-update-available': 2.0.28
+  '@oclif/plugin-warn-if-update-available': 2.0.29
   '@oclif/test': 2.3.8
   axios: 1.3.4
   chalk: 4.1.2
+  etrick: link:../etrick
   ink: 3.2.0_jguntkfjozdfrzd4l22x7bdnx4
   ink-big-text: 1.2.0_ink@3.2.0+react@17.0.2
   ink-gradient: 2.0.0_ink@3.2.0+react@17.0.2
@@ -69,7 +70,6 @@ dependencies:
   mustache: 4.2.0
   netmask: 2.0.2
   node-static: 0.7.11
-  penguins-dhcpd-proxy: link:../penguins-dhcpd-proxy
   react: 17.0.2
   shelljs: 0.8.5
   systeminformation: 5.17.12
@@ -658,8 +658,8 @@ packages:
       widest-line: 3.1.0
       wrap-ansi: 7.0.0
 
-  /@oclif/core/2.3.1:
-    resolution: {integrity: sha512-18CkjjF16hwhBd/42z+0CHAwvZlBfpyCmdZxpasN/od8c/hdm0oDEJvVB33/xD0LDYg8glKoQ5zVNVvPM/uJ/Q==}
+  /@oclif/core/2.3.2:
+    resolution: {integrity: sha512-cZe0VaOne13gaWat8d/ZQv85r+oGl6Ou0fB32SLwiUxFD5q2axxYQWsnms7mKiiDPPE5nUUJ1GrkLnqO5vg6fA==}
     engines: {node: '>=14.0.0'}
     dependencies:
       '@types/cli-progress': 3.11.0
@@ -709,14 +709,14 @@ packages:
     resolution: {integrity: sha512-nvpSbIOGtPIct3+OqXca3OIu5liyIynascncAXZy4JDD7z8rIGZ3NYJH2M4JhMVyGxCDZxQuLVsdALyIt67G5g==}
     engines: {node: '>=12.0.0'}
     dependencies:
-      '@oclif/core': 2.3.1
+      '@oclif/core': 2.3.2
 
   /@oclif/plugin-not-found/2.3.21:
     resolution: {integrity: sha512-6N0gTWQhl5nuE5bXipv5+8vH5cHyGgEd3MKJHQYxFnHIFwwb9jJnFl0BZ0fo7Jrjd9HZYCLT7rjnouS7p1Dl1w==}
     engines: {node: '>=12.0.0'}
     dependencies:
       '@oclif/color': 1.0.4
-      '@oclif/core': 2.3.1
+      '@oclif/core': 2.3.2
       fast-levenshtein: 3.0.0
       lodash: 4.17.21
 
@@ -724,13 +724,13 @@ packages:
     resolution: {integrity: sha512-Xb7MECv9uSaxIuzPbgJnOZEf0gnHlcLdncBkJCn5vsMnt1hC91j65feGeY8c68vsrAi6SumOfI8C63v8gC+FEA==}
     engines: {node: '>=14.0.0'}
     dependencies:
-      '@oclif/core': 2.3.1
+      '@oclif/core': 2.3.2
 
-  /@oclif/plugin-warn-if-update-available/2.0.28:
-    resolution: {integrity: sha512-j1xZYlYfz9arRGwwlxT0jPWqZX1SqZV0jmqDUBLSEPRu7Zsh9UNX2NxuNQx96wO4K0paPg/hFvx9McAEaS4+gQ==}
+  /@oclif/plugin-warn-if-update-available/2.0.29:
+    resolution: {integrity: sha512-F69P5DwKzKYQgIND//ekFWTo7IGHhSOgC9mC3SieImP0+X8catxnyxSHZZA1uElSntK4xqGyd9ZPuURilBTJOw==}
     engines: {node: '>=12.0.0'}
     dependencies:
-      '@oclif/core': 2.3.1
+      '@oclif/core': 2.3.2
       chalk: 4.1.2
       debug: 4.3.4
       fs-extra: 9.1.0
@@ -749,7 +749,7 @@ packages:
     resolution: {integrity: sha512-usE2GeE2S+feOgf8uFLUUVDKt0N3orH+pc1bKkKQtCNAFDvdyAdAMcBS+1PnmCn+cSxaez0bCQ6xOpxA9s7x3A==}
     engines: {node: '>=12.0.0'}
     dependencies:
-      '@oclif/core': 2.3.1
+      '@oclif/core': 2.3.2
       fancy-test: 2.0.12
     transitivePeerDependencies:
       - supports-color
@@ -4630,7 +4630,7 @@ packages:
       '@oclif/core': 1.26.2
       '@oclif/plugin-help': 5.2.6
       '@oclif/plugin-not-found': 2.3.21
-      '@oclif/plugin-warn-if-update-available': 2.0.28
+      '@oclif/plugin-warn-if-update-available': 2.0.29
       aws-sdk: 2.1324.0
       concurrently: 7.6.0
       debug: 4.3.4
@@ -4923,7 +4923,7 @@ packages:
       '@oclif/plugin-help': 5.2.6
       '@oclif/plugin-not-found': 2.3.21
       '@oclif/plugin-version': 1.2.1
-      '@oclif/plugin-warn-if-update-available': 2.0.28
+      '@oclif/plugin-warn-if-update-available': 2.0.29
       '@typescript-eslint/parser': 5.54.0_jofidmxrjzhj7l6vknpw5ecvfe
       chalk: 4.1.2
       inquirer: 8.2.4

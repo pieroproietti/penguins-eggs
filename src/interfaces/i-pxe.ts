@@ -14,10 +14,10 @@ export interface IDhcpOptions {
   efi64_filename: string
 }
 
-export interface IDhcpd {
-	// constructor(opts)
+/*
+export interface IEtrick {
   pre_init: (pkt: IPacket) => void
-	discover: (pkt: IPacket) => void
+  discover: (pkt: IPacket) => void
   request: (pkt: IPacket) => void
   inform: (pkt: IPacket) => void
   proxy_request: (pkt: IPacket) =>  IPacket
@@ -50,3 +50,4 @@ export interface IPacket {
   fname: (fname: any) => IPacket // set fname
   options:(options: any) => IPacket
 }
+*/
