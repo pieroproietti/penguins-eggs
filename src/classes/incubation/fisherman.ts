@@ -9,13 +9,13 @@ import fs from 'node:fs'
 import shx from 'shelljs'
 import path from 'node:path'
 
-import { IRemix, IDistro } from '../../interfaces'
+import {IRemix, IDistro} from '../../interfaces'
 import chalk from 'chalk'
 import Utils from '../utils'
-import { IInstaller } from '../../interfaces'
-import { displaymanager } from './fisherman-helper/displaymanager'
+import {IInstaller} from '../../interfaces'
+import {displaymanager} from './fisherman-helper/displaymanager'
 
-import { exec } from '../../lib/utils'
+import {exec} from '../../lib/utils'
 
 interface IReplaces {
   search: string
@@ -40,10 +40,8 @@ export default class Fisherman {
    */
   async settings(vendor = 'eggs') {
     let branding = vendor
-    if (vendor !== 'eggs') {
-      if (vendor.includes('/')) {
-        branding = vendor.substring(vendor.lastIndexOf('/'))
-      }
+    if (vendor !== 'eggs' && vendor.includes('/')) {
+      branding = vendor.slice(Math.max(0, vendor.lastIndexOf('/')))
     }
 
     const settings = this.installer.configuration + 'settings.conf'
@@ -57,7 +55,7 @@ export default class Fisherman {
     /**
      * Controllo se è un clone: ovary, fisherman, krill
      */
-    let is_clone = '/etc/penguins-eggs/is_clone'
+    const is_clone = '/etc/penguins-eggs/is_clone'
 
     let hasDisplaymanager = '# '
     let createUsers = '# '
@@ -134,7 +132,7 @@ export default class Fisherman {
       if (vendor.includes('/')) {
         customModuleSource = `${vendor}/theme/calamares/modules/${name}.yml`
       }
-      
+
       if (fs.existsSync(customModuleSource)) {
         moduleSource = customModuleSource
       }
@@ -145,6 +143,7 @@ export default class Fisherman {
       if (this.verbose) {
         this.show(name, 'module', moduleDest)
       }
+
       shx.cp(moduleSource, moduleDest)
     } else if (this.verbose) {
       console.log('unchanged: ' + chalk.greenBright(name))
@@ -207,29 +206,29 @@ export default class Fisherman {
    */
   show(name: string, type: string, path: string) {
     switch (type) {
-      case 'module': {
-        console.log('fisherman: ' + chalk.yellow(name) + ' module in ' + chalk.yellow(path))
+    case 'module': {
+      console.log('fisherman: ' + chalk.yellow(name) + ' module in ' + chalk.yellow(path))
 
-        break
-      }
+      break
+    }
 
-      case 'calamares_module': {
-        console.log('fisherman: ' + chalk.cyanBright(name) + ' calamares_module in ' + chalk.cyanBright(path))
+    case 'calamares_module': {
+      console.log('fisherman: ' + chalk.cyanBright(name) + ' calamares_module in ' + chalk.cyanBright(path))
 
-        break
-      }
+      break
+    }
 
-      case 'shellprocess': {
-        console.log('fisherman: ' + chalk.green(name) + ' shellprocess in ' + chalk.green(path))
+    case 'shellprocess': {
+      console.log('fisherman: ' + chalk.green(name) + ' shellprocess in ' + chalk.green(path))
 
-        break
-      }
+      break
+    }
 
-      case 'contextualprocess': {
-        console.log('fisherman: ' + chalk.cyanBright(name) + ' shellprocess in ' + chalk.cyanBright(path))
+    case 'contextualprocess': {
+      console.log('fisherman: ' + chalk.cyanBright(name) + ' shellprocess in ' + chalk.cyanBright(path))
 
-        break
-      }
+      break
+    }
       // No default
     }
   }
@@ -277,8 +276,8 @@ export default class Fisherman {
     const removePackages = require('./fisherman-helper/packages').remove
     const tryInstall = require('./fisherman-helper/packages').tryInstall
     this.buildModule(name)
-   
-    let yamlInstall = tryInstall(distro)
+
+    const yamlInstall = tryInstall(distro)
 
     let yamlRemove = ''
     if (release) {
@@ -286,12 +285,12 @@ export default class Fisherman {
     }
 
     let operations = ''
-    if (yamlRemove !== '' || yamlInstall !== '' ) {
-      operations = "operations:\n" + yamlRemove + yamlInstall
+    if (yamlRemove !== '' || yamlInstall !== '') {
+      operations = 'operations:\n' + yamlRemove + yamlInstall
     }
+
     shx.sed('-i', '{{operations}}', operations, this.installer.modules + name + '.conf')
   }
-
 
   /**
    * Al momento rimane con la vecchia configurazione

@@ -4,35 +4,36 @@
  * email: piero.proietti@gmail.com
  * license: MIT
  */
-import { Command, Flags } from '@oclif/core'
+import {Command, Flags} from '@oclif/core'
 import chalk from 'chalk'
 import Utils from '../classes/utils'
 import Pacman from '../classes/pacman'
 import Bleach from '../classes/bleach'
-import { IInstall } from '../interfaces'
-import { array2spaced } from '../lib/dependencies'
+import {IInstall} from '../interfaces'
+import {array2spaced} from '../lib/dependencies'
 
-import { exec } from '../lib/utils'
+import {exec} from '../lib/utils'
 
 /**
  *
  */
 export default class Config extends Command {
   static flags = {
-    clean: Flags.boolean({ char: 'c', description: 'remove old configuration before to create new one' }),
-    help: Flags.help({ char: 'h' }),
-    nointeractive: Flags.boolean({ char: 'n', description: 'no user interaction' }),
-    verbose: Flags.boolean({ char: 'v', description: 'verbose' })
+    clean: Flags.boolean({char: 'c', description: 'remove old configuration before to create new one'}),
+    help: Flags.help({char: 'h'}),
+    nointeractive: Flags.boolean({char: 'n', description: 'no user interaction'}),
+    verbose: Flags.boolean({char: 'v', description: 'verbose'}),
   }
+
   static description = 'Configure and install prerequisites deb packages to run it'
   static examples = [
-    "sudo eggs config",
-    "sudo eggs config --clean",
-    "sudo eggs config --clean --nointeractive"
-  ]    
+    'sudo eggs config',
+    'sudo eggs config --clean',
+    'sudo eggs config --clean --nointeractive',
+  ]
 
   async run(): Promise<void> {
-    const { flags } = await this.parse(Config)
+    const {flags} = await this.parse(Config)
     const nointeractive = flags.nointeractive
     const verbose = flags.verbose
 
@@ -91,16 +92,11 @@ export default class Config extends Command {
       i.efi = !Pacman.isUefi()
     }
 
-    if (!cryptedclone) {
-      if (!(await Pacman.calamaresCheck()) && Pacman.isInstalledGui() && Pacman.isCalamaresAvailable()) {
-        if (!Pacman.packageIsInstalled('live-installer')) {
-          Utils.warning('Config: you are on a graphic system, I suggest to install the GUI installer calamares')
-          // se nointeractive i.calamares=false
-          i.calamares = nointeractive ? false : await Utils.customConfirm('Want You install calamares?')
-        }
-      }
+    if (!cryptedclone && !(await Pacman.calamaresCheck()) && Pacman.isInstalledGui() && Pacman.isCalamaresAvailable() && !Pacman.packageIsInstalled('live-installer')) {
+      Utils.warning('Config: you are on a graphic system, I suggest to install the GUI installer calamares')
+      // se nointeractive i.calamares=false
+      i.calamares = nointeractive ? false : await Utils.customConfirm('Want You install calamares?')
     }
-
 
     i.configurationInstall = !Pacman.configurationCheck()
     if (!i.configurationInstall) {

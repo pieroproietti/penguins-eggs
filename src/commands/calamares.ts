@@ -4,29 +4,30 @@
  * email: piero.proietti@gmail.com
  * license: MIT
  */
-import { Command, Flags } from '@oclif/core'
+import {Command, Flags} from '@oclif/core'
 import Utils from '../classes/utils'
 import Settings from '../classes/settings'
 import Incubator from '../classes/incubation/incubator'
 import Pacman from '../classes/pacman'
-import { IRemix } from '../interfaces'
+import {IRemix} from '../interfaces'
 
 export default class Calamares extends Command {
   static flags = {
-    help: Flags.help({ char: 'h' }),
-    install: Flags.boolean({ char: 'i', description: "install calamares and it's dependencies" }),
-    nointeractive: Flags.boolean({ char: 'n', description: 'no user interaction' }),
-    release: Flags.boolean({ char: 'r', description: "release: remove calamares and all it's dependencies after the installation" }),
-    remove: Flags.boolean({ description: "remove calamares and it's dependencies" }),
-    theme: Flags.string({ description: 'theme/branding for eggs and calamares' }),
-    verbose: Flags.boolean({ char: 'v' })
+    help: Flags.help({char: 'h'}),
+    install: Flags.boolean({char: 'i', description: "install calamares and it's dependencies"}),
+    nointeractive: Flags.boolean({char: 'n', description: 'no user interaction'}),
+    release: Flags.boolean({char: 'r', description: "release: remove calamares and all it's dependencies after the installation"}),
+    remove: Flags.boolean({description: "remove calamares and it's dependencies"}),
+    theme: Flags.string({description: 'theme/branding for eggs and calamares'}),
+    verbose: Flags.boolean({char: 'v'}),
   }
+
   static description = 'configure calamares or install or configure it'
   static examples = [
-    "sudo eggs calamares",
-    "sudo eggs calamares --install",
-    "sudo eggs calamares --install --theme=/path/to/theme",
-    "sudo eggs calamares --remove"
+    'sudo eggs calamares',
+    'sudo eggs calamares --install',
+    'sudo eggs calamares --install --theme=/path/to/theme',
+    'sudo eggs calamares --remove',
   ]
 
   remix = {} as IRemix
@@ -35,13 +36,12 @@ export default class Calamares extends Command {
 
   settings = {} as Settings
 
-
   async run(): Promise<void> {
     Utils.titles(this.id + ' ' + this.argv)
 
     this.settings = new Settings()
 
-    const { flags } = await this.parse(Calamares)
+    const {flags} = await this.parse(Calamares)
     let verbose = false
     if (flags.verbose) {
       verbose = true
@@ -67,7 +67,7 @@ export default class Calamares extends Command {
       theme = flags.theme
     }
 
-    let nointeractive = flags.nointeractive
+    const nointeractive = flags.nointeractive
 
     console.log(`theme: ${theme}`)
 

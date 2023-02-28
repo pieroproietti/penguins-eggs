@@ -8,7 +8,7 @@ import fs from 'fs'
 import Utils from './utils'
 import Pacman from './pacman'
 import Bleach from './bleach'
-import { exec } from '../lib/utils'
+import {exec} from '../lib/utils'
 import shx from 'shelljs'
 
 /**
@@ -50,7 +50,7 @@ export default class Yolk {
     }
 
     // packages we need
-    const packages = ['cryptsetup', 'keyutils', 'shim-signed' ] // addes shim-signed
+    const packages = ['cryptsetup', 'keyutils', 'shim-signed'] // addes shim-signed
 
     // grub-pc just for amd64 or i386
     if (Utils.machineArch() === 'amd64' || Utils.machineArch() === 'i386') {
@@ -72,14 +72,14 @@ export default class Yolk {
     for (const package_ of packages) {
       Utils.warning(`downloading package ${package_} and it's dependencies...`)
       cmd = `apt-cache depends --recurse --no-recommends --no-suggests --no-conflicts --no-breaks --no-replaces --no-enhances ${package_} | grep "^\\w" | sort -u`
-      const depends = (await exec(cmd, { echo: false, capture: true })).data
+      const depends = (await exec(cmd, {echo: false, capture: true})).data
       await this.installDeps(depends.split('\n'))
     }
 
     // create Package.gz
     cmd = 'dpkg-scanpackages -h  md5,sha1,sha256 . | gzip -c > Packages.gz'
     Utils.warning(cmd)
-    await exec(cmd, { echo: false, capture: true })
+    await exec(cmd, {echo: false, capture: true})
 
     // Create Release date: Sat, 14 Aug 2021 07:42:00 UTC
     const now = shx.exec('date -R -u').stdout.trim()
@@ -94,19 +94,16 @@ export default class Yolk {
   }
 
   /**
-   * if depends are not Installed 
+   * if depends are not Installed
    * download depends
    * @param depends
    */
   async installDeps(depends: string[]) {
-
     // select for downloads only packages NOT already installed
     const toDownloads: string[] = []
     for (const depend of depends) {
-      if (depend !== '') {
-        if (!Pacman.packageIsInstalled(depend)) {
-          toDownloads.push(depend)
-        }
+      if (depend !== '' && !Pacman.packageIsInstalled(depend)) {
+        toDownloads.push(depend)
       }
     }
 

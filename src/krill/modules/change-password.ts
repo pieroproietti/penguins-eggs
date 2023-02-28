@@ -3,7 +3,7 @@
  */
 
 import Sequence from '../krill-sequence'
-import { exec } from '../../lib/utils'
+import {exec} from '../../lib/utils'
 
 /**
    * changePassword
@@ -11,6 +11,6 @@ import { exec } from '../../lib/utils'
    * @param newPassword
    */
 export default async function changePassword(this: Sequence, name = 'live', newPassword = 'evolution') {
-    const cmd = `echo ${name}:${newPassword} | chroot ${this.installTarget} chpasswd ${this.toNull}`
-    await exec(cmd, this.echo)
+  const cmd = `echo ${name}:${newPassword} | chroot ${this.installTarget} chpasswd ${this.toNull}`
+  await exec(cmd, this.echo)
 }

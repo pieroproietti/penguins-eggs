@@ -4,51 +4,50 @@
  * email: piero.proietti@gmail.com
  * license: MIT
  */
-import { Command, Flags } from '@oclif/core'
+import {Command, Flags} from '@oclif/core'
 import Utils from '../classes/utils'
 import Ovary from '../classes/ovary'
 import Compressors from '../classes/compressors'
 import Config from './config'
 import chalk from 'chalk'
-import { IMyAddons } from '../interfaces'
+import {IMyAddons} from '../interfaces'
 import fs from 'node:fs'
 import path from 'node:path'
 
-
 export default class Produce extends Command {
   static flags = {
-    addons: Flags.string({ multiple: true, description: 'addons to be used: adapt, ichoice, pve, rsupport' }),
-    basename: Flags.string({ description: 'basename' }),
-    clone: Flags.boolean({ char: 'c', description: 'clone' }),
-    cryptedclone: Flags.boolean({ char: 'C', description: 'crypted clone' }),
-    help: Flags.help({ char: 'h' }),
-    max: Flags.boolean({ char: 'm', description: 'max compression' }),
-    nointeractive: Flags.boolean({ char: 'n', description: 'no user interaction' }),
-    prefix: Flags.string({ char: 'p', description: 'prefix' }),
-    release: Flags.boolean({ description: 'release: max compression, remove penguins-eggs and calamares after installation' }),
-    script: Flags.boolean({ char: 's', description: 'script mode. Generate scripts to manage iso build' }),
-    standard: Flags.boolean({ char: 'f', description: 'standard compression' }),
-    theme: Flags.string({ description: 'theme for livecd, calamares branding and partitions' }),
-    verbose: Flags.boolean({ char: 'v', description: 'verbose' }),
-    yolk: Flags.boolean({ char: 'y', description: '-y force yolk renew' }),
+    addons: Flags.string({multiple: true, description: 'addons to be used: adapt, ichoice, pve, rsupport'}),
+    basename: Flags.string({description: 'basename'}),
+    clone: Flags.boolean({char: 'c', description: 'clone'}),
+    cryptedclone: Flags.boolean({char: 'C', description: 'crypted clone'}),
+    help: Flags.help({char: 'h'}),
+    max: Flags.boolean({char: 'm', description: 'max compression'}),
+    nointeractive: Flags.boolean({char: 'n', description: 'no user interaction'}),
+    prefix: Flags.string({char: 'p', description: 'prefix'}),
+    release: Flags.boolean({description: 'release: max compression, remove penguins-eggs and calamares after installation'}),
+    script: Flags.boolean({char: 's', description: 'script mode. Generate scripts to manage iso build'}),
+    standard: Flags.boolean({char: 'f', description: 'standard compression'}),
+    theme: Flags.string({description: 'theme for livecd, calamares branding and partitions'}),
+    verbose: Flags.boolean({char: 'v', description: 'verbose'}),
+    yolk: Flags.boolean({char: 'y', description: '-y force yolk renew'}),
   }
 
   static description = 'produce a live image from your system whithout your data'
   static examples = [
-    "sudo eggs produce",
-    "sudo eggs produce --standard",
-    "sudo eggs produce --max",
-    "sudo eggs produce --max --basename=colibri",
-    "sudo eggs produce --cryptedclone",
-    "sudo eggs produce --clone",
-    "sudo eggs produce --basename=colibri",
-    "sudo eggs produce --basename=colibri --theme /path/to/theme --addons adapt",
+    'sudo eggs produce',
+    'sudo eggs produce --standard',
+    'sudo eggs produce --max',
+    'sudo eggs produce --max --basename=colibri',
+    'sudo eggs produce --cryptedclone',
+    'sudo eggs produce --clone',
+    'sudo eggs produce --basename=colibri',
+    'sudo eggs produce --basename=colibri --theme /path/to/theme --addons adapt',
   ]
 
   async run(): Promise<void> {
     Utils.titles(this.id + ' ' + this.argv)
 
-    const { flags } = await this.parse(Produce)
+    const {flags} = await this.parse(Produce)
     if (Utils.isRoot()) {
       /**
        * ADDONS dei vendors
@@ -106,7 +105,6 @@ export default class Produce extends Command {
 
       const cryptedclone = flags.cryptedclone
 
-
       const clone = flags.clone
 
       const verbose = flags.verbose
@@ -117,7 +115,6 @@ export default class Produce extends Command {
 
       const nointeractive = flags.nointeractive
 
-
       /**
        * theme: if not defined will use eggs
        */
@@ -126,8 +123,9 @@ export default class Produce extends Command {
         theme = flags.theme
         if (theme.includes('/')) {
           if (theme.endsWith('/')) {
-            theme = theme.substring(0, theme.length -1)
+            theme = theme.slice(0, Math.max(0, theme.length - 1))
           }
+
           if (!fs.existsSync(theme + '/theme')) {
             console.log('Cannot find theme: ' + theme)
             process.exit()

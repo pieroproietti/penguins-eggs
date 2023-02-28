@@ -8,18 +8,19 @@
  */
 
 import Sequence from '../krill-sequence'
-import { exec } from '../../lib/utils'
+import {exec} from '../../lib/utils'
 import fs from 'fs'
 
 /**
- * On Ubuntu 
+ * On Ubuntu
  * /etc/machine-id must exist to be re-created
  * https://unix.stackexchange.com/questions/402999/is-it-ok-to-change-etc-machine-id
  */
 export default async function machineId(this: Sequence): Promise<void> {
-    let file = `${this.installTarget}/etc/machine-id`
-    if (fs.existsSync(file)) {
-        await exec(`rm ${file}`, this.echo)
-    }
-    await exec(`touch ${file}`)
+  const file = `${this.installTarget}/etc/machine-id`
+  if (fs.existsSync(file)) {
+    await exec(`rm ${file}`, this.echo)
+  }
+
+  await exec(`touch ${file}`)
 }

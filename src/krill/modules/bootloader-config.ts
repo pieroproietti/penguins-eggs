@@ -3,22 +3,22 @@
  */
 
 import Sequence from '../krill-sequence'
-import { exec } from '../../lib/utils'
+import {exec} from '../../lib/utils'
 import Utils from '../../classes/utils'
 
 /**
- * 
- * @param this 
+ *
+ * @param this
  */
 export default async function bootloaderConfig(this: Sequence): Promise<void> {
-    if (this.distro.familyId === 'debian') {
-        if (this.distro.distroLike === 'ubuntu') {
-            this.bootloaderConfigUbuntu()
-        } else {
-            this.execCalamaresModule('bootloader-config')
-        }
-    } else if (this.distro.familyId === 'archlinux') {
-        // nothing
+  if (this.distro.familyId === 'debian') {
+    if (this.distro.distroLike === 'ubuntu') {
+      this.bootloaderConfigUbuntu()
+    } else {
+      this.execCalamaresModule('bootloader-config')
     }
+  } else if (this.distro.familyId === 'archlinux') {
+    // nothing
+  }
 }
 

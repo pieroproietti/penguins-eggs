@@ -15,15 +15,14 @@ import chalk from 'chalk'
 const pjson = require('../../package.json')
 
 // interfaces
-import { IRemix, IDistro, IApp, IWorkDir } from '../interfaces'
-
+import {IRemix, IDistro, IApp, IWorkDir} from '../interfaces'
 
 // classes
 import Utils from './utils'
 import Incubator from './incubation/incubator'
 import Distro from './distro'
 import Pacman from './pacman'
-import { IEggsConfig } from '../interfaces'
+import {IEggsConfig} from '../interfaces'
 
 const config_file = '/etc/penguins-eggs.d/eggs.yaml' as string
 
@@ -31,7 +30,6 @@ const config_file = '/etc/penguins-eggs.d/eggs.yaml' as string
  * Setting
  */
 export default class Settings {
-
   app = {} as IApp
 
   config = {} as IEggsConfig
@@ -151,7 +149,7 @@ export default class Settings {
     }
 
     if (this.config.timezone === undefined || this.config.timezone === '') {
-      this.config.timezone = shx.exec('cat /etc/timezone', { silent: true }).stdout.trim()
+      this.config.timezone = shx.exec('cat /etc/timezone', {silent: true}).stdout.trim()
     }
 
     return foundSettings
@@ -231,10 +229,10 @@ export default class Settings {
 
     spaceAvailable = Number(
       shx
-        .exec(`df "${path}" | /usr/bin/awk 'NR==2 {print $4}'`, {
-          silent: true
-        })
-        .stdout.trim()
+      .exec(`df "${path}" | /usr/bin/awk 'NR==2 {print $4}'`, {
+        silent: true,
+      })
+      .stdout.trim(),
     )
     console.log(`Space available: ${Math.round((spaceAvailable / gb) * 10) / 10} GB`)
     console.log(`There are ${Utils.getSnapshotCount(this.config.snapshot_dir)} snapshots taking ${Math.round((Utils.getSnapshotSize() / gb) * 10) / 10} GB of disk space.`)
@@ -260,7 +258,7 @@ export default class Settings {
     this.remix.versionNumber = Utils.getPackageVersion()
     this.remix.kernel = Utils.kernelVersion()
 
-    this.remix.branding = theme === '' ? 'eggs' : this.remix.branding = theme.substring(theme.lastIndexOf('/')+1)  
+    this.remix.branding = theme === '' ? 'eggs' : this.remix.branding = theme.slice(Math.max(0, theme.lastIndexOf('/') + 1))
 
     this.remix.name = this.config.snapshot_basename
     let name = this.config.snapshot_prefix + this.config.snapshot_basename

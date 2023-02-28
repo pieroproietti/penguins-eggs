@@ -5,15 +5,15 @@
  * mail: piero.proietti@gmail.com
  */
 import yaml from 'js-yaml'
-import { IRemix, IDistro } from '../../interfaces'
+import {IRemix, IDistro} from '../../interfaces'
 
 /**
- * 
- * @param remix 
- * @param distro 
- * @param theme 
- * @param verbose 
- * @returns 
+ *
+ * @param remix
+ * @param distro
+ * @param theme
+ * @param verbose
+ * @returns
  */
 export function branding(remix: IRemix, distro: IDistro, theme = '', verbose = false): string {
   const homeUrl: string = distro.homeUrl
@@ -35,20 +35,18 @@ export function branding(remix: IRemix, distro: IDistro, theme = '', verbose = f
 
   // Necessario: Devuan, LMDE, caraco, syslinuxos devono avere EFI=Debian altrimenti non funziona EFI
   switch (distro.distroId.toLowerCase()) {
+  case 'caraco':
+  case 'devuan':
+  case 'lmde':
+  case 'syslinuxos': {
+    bootloaderEntryName = 'Debian'
 
-    case 'caraco': 
-    case 'devuan': 
-    case 'lmde':
-    case 'syslinuxos': {
-      bootloaderEntryName = 'Debian'
+    break
+  }
 
-      break
-    }
-
-    default: {
-      bootloaderEntryName = distro.distroId
-    }
-
+  default: {
+    bootloaderEntryName = distro.distroId
+  }
   }
 
   const productUrl = homeUrl
@@ -72,20 +70,20 @@ export function branding(remix: IRemix, distro: IDistro, theme = '', verbose = f
       productUrl: productUrl,
       supportUrl: supportUrl,
       bugReportUrl: bugReportUrl,
-      releaseNotesUrl: releaseNotesUrl
+      releaseNotesUrl: releaseNotesUrl,
     },
     images: {
       productLogo: productLogo,
       productIcon: productIcon,
-      productWelcome: productWelcome
+      productWelcome: productWelcome,
     },
     slideshowAPI: 1,
     slideshow: slideshow,
     style: {
       sidebarBackground: '#2c3133',
       sidebarText: '#FFFFFF',
-      sidebarTextSelect: '#4d7079'
-    }
+      sidebarTextSelect: '#4d7079',
+    },
   }
   return yaml.dump(branding)
 }

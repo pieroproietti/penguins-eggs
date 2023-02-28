@@ -9,8 +9,8 @@ export default async function selectInstallationMode(): Promise<string> {
       type: 'list',
       name: 'installationMode',
       message: 'Select the installation mode: ',
-      choices: modes
-    }
+      choices: modes,
+    },
   ]
 
   return new Promise(function (resolve) {

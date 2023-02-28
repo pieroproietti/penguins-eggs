@@ -3,7 +3,7 @@ import inquirer  from 'inquirer'
 import shx from 'shelljs'
 import yaml from 'js-yaml'
 import fs from 'node:fs'
-import { IPartitions } from '../interfaces'
+import {IPartitions} from '../interfaces'
 
 export default async function selectFileSystemType(): Promise<string> {
   let partitions = {} as IPartitions
@@ -19,8 +19,8 @@ export default async function selectFileSystemType(): Promise<string> {
       name: 'fileSystemChoices',
       message: 'Select file system tyèe',
       choices: ['btrfs', 'ext', 'ext2', 'ext3', 'ext4', 'ReiserFS', 'Reiser4', 'zfs'],
-      default: partitions.defaultFileSystemType
-    }
+      default: partitions.defaultFileSystemType,
+    },
   ]
 
   return new Promise(function (resolve) {

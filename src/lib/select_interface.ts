@@ -10,8 +10,8 @@ export default async function selectInterface(iface = 'eth0', ifaces: string[]):
       name: 'option',
       message: 'Select interface: ',
       choices: ifaces,
-      default: iface
-    }
+      default: iface,
+    },
   ]
 
   return new Promise(function (resolve) {

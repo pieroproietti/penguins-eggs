@@ -1,4 +1,4 @@
-import { stringify } from "node:querystring"
+import {stringify} from 'node:querystring'
 
 export interface IRepos {
     name: string

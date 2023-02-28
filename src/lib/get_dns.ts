@@ -8,8 +8,8 @@ export default async function getDns(initial: string): Promise<string> {
         type: 'input',
         name: 'dns',
         message: 'use ; to separe: ',
-        default: initial
-      }
+        default: initial,
+      },
     ]
 
     inquirer.prompt(questions).then(function (options) {

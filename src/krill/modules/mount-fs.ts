@@ -9,69 +9,67 @@
 
 import Sequence from '../krill-sequence'
 import Utils from '../../classes/utils'
-import { exec } from '../../lib/utils'
+import {exec} from '../../lib/utils'
 import fs from 'fs'
 
 /**
    * mountFs
    */
 export async function mountFs(this: Sequence): Promise<boolean> {
+  if (!fs.existsSync(this.installTarget)) {
+    await exec(`mkdir ${this.installTarget} ${this.toNull}`, this.echo)
+  }
 
-    if (!fs.existsSync(this.installTarget)) {
-        await exec(`mkdir ${this.installTarget} ${this.toNull}`, this.echo)
-    }
+  // root
+  await exec(`mount ${this.devices.root.name} ${this.installTarget}${this.devices.root.mountPoint} ${this.toNull}`, this.echo)
+  await exec(`tune2fs -c 0 -i 0 ${this.devices.root.name} ${this.toNull}`, this.echo)
+  await exec(`rm -rf ${this.installTarget}/lost+found ${this.toNull}`, this.echo)
 
-    // root
-    await exec(`mount ${this.devices.root.name} ${this.installTarget}${this.devices.root.mountPoint} ${this.toNull}`, this.echo)
-    await exec(`tune2fs -c 0 -i 0 ${this.devices.root.name} ${this.toNull}`, this.echo)
-    await exec(`rm -rf ${this.installTarget}/lost+found ${this.toNull}`, this.echo)
+  // boot
+  if (this.devices.boot.name !== 'none') {
+    await exec(`mkdir ${this.installTarget}/boot -p ${this.toNull}`, this.echo)
+    await exec(`mount ${this.devices.boot.name} ${this.installTarget}${this.devices.boot.mountPoint} ${this.toNull}`, this.echo)
+    await exec(`tune2fs -c 0 -i 0 ${this.devices.boot.name} ${this.toNull}`, this.echo)
+  }
 
-    // boot
-    if (this.devices.boot.name !== `none`) {
-        await exec(`mkdir ${this.installTarget}/boot -p ${this.toNull}`, this.echo)
-        await exec(`mount ${this.devices.boot.name} ${this.installTarget}${this.devices.boot.mountPoint} ${this.toNull}`, this.echo)
-        await exec(`tune2fs -c 0 -i 0 ${this.devices.boot.name} ${this.toNull}`, this.echo)
-    }
+  // data
+  if (this.devices.data.name !== 'none') {
+    await exec(`mkdir ${this.installTarget}${this.devices.data.mountPoint} -p ${this.toNull}`, this.echo)
+    await exec(`mount ${this.devices.data.name} ${this.installTarget}${this.devices.data.mountPoint} ${this.toNull}`, this.echo)
+    await exec(`tune2fs -c 0 -i 0 ${this.devices.data.name} ${this.toNull}`, this.echo)
+  }
 
-    // data
-    if (this.devices.data.name !== `none`) {
-        await exec(`mkdir ${this.installTarget}${this.devices.data.mountPoint} -p ${this.toNull}`, this.echo)
-        await exec(`mount ${this.devices.data.name} ${this.installTarget}${this.devices.data.mountPoint} ${this.toNull}`, this.echo)
-        await exec(`tune2fs -c 0 -i 0 ${this.devices.data.name} ${this.toNull}`, this.echo)
-    }
+  // efi
+  if (this.efi && !fs.existsSync(this.installTarget + this.devices.efi.mountPoint)) {
+    await exec(`mkdir ${this.installTarget}${this.devices.efi.mountPoint} -p ${this.toNull}`, this.echo)
+    await exec(`mount ${this.devices.efi.name} ${this.installTarget}${this.devices.efi.mountPoint} ${this.toNull}`, this.echo)
+  }
 
-    // efi
-    if (this.efi) {
-        if (!fs.existsSync(this.installTarget + this.devices.efi.mountPoint)) {
-            await exec(`mkdir ${this.installTarget}${this.devices.efi.mountPoint} -p ${this.toNull}`, this.echo)
-            await exec(`mount ${this.devices.efi.name} ${this.installTarget}${this.devices.efi.mountPoint} ${this.toNull}`, this.echo)
-        }
-    }
-    return true
+  return true
 }
 
 /**
  * umountFs
  */
 export async function umountFs(this: Sequence): Promise<boolean> {
-    // efi
-    if (this.efi) {
-        await this.umount(this.devices.efi.name)
-    }
+  // efi
+  if (this.efi) {
+    await this.umount(this.devices.efi.name)
+  }
 
-    // data
-    if (this.devices.data.name !== `none`) {
-        await this.umount(this.devices.data.name)
-    }
+  // data
+  if (this.devices.data.name !== 'none') {
+    await this.umount(this.devices.data.name)
+  }
 
-    // boot
-    if (this.devices.boot.name !== `none`) {
-        await this.umount(this.devices.boot.name)
-    }
+  // boot
+  if (this.devices.boot.name !== 'none') {
+    await this.umount(this.devices.boot.name)
+  }
 
-    // root
-    await this.umount(this.devices.root.name)
+  // root
+  await this.umount(this.devices.root.name)
 
-    return true
+  return true
 }
 

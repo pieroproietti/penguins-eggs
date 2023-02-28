@@ -11,7 +11,7 @@ export default class Compressors {
     lzo: false,
     lz4: false,
     xz: false,
-    zstd: false
+    zstd: false,
   }
 
   source = '/tmp/eggs-mksquash-test'
@@ -36,51 +36,52 @@ export default class Compressors {
     } else if (this.isEnabled.lz4) {
       comp = 'lz4'
     }
+
     return comp
   }
 
   // normal
   normal(): string {
-    let comp = "xz"
+    let comp = 'xz'
     if (this.isEnabled.zstd) {
       comp = 'zstd -b 256K -Xcompression-level 20'
     } else {
       comp = 'xz -b 256K'
     }
+
     return comp
   }
 
   /**
    * max
-   * @returns 
+   * @returns
    */
   max(): string {
-    let comp = 'xz -b 256K -Xbcj '
+    const comp = 'xz -b 256K -Xbcj '
     const filter = 'x86'
     if (process.arch === 'arm') {
       const filter = 'ARM' // to check
     } else if (process.arch === 'arm64') {
       const filter = 'ARM64' // to check
     }
+
     return comp + filter
   }
 
-
-
   private async prepareCheck() {
-    shx.exec('rm -rf ' + this.source, { silent: true })
-    shx.exec('mkdir ' + this.source, { silent: true })
+    shx.exec('rm -rf ' + this.source, {silent: true})
+    shx.exec('mkdir ' + this.source, {silent: true})
   }
 
   private async removeCheck() {
-    shx.exec('rm -rf ' + this.source, { silent: true })
-    shx.exec('rm -f  ' + this.dest, { silent: true })
+    shx.exec('rm -rf ' + this.source, {silent: true})
+    shx.exec('rm -f  ' + this.dest, {silent: true})
   }
 
   private async check(compressor: string): Promise<boolean> {
     let result = false
 
-    const stderr = shx.exec('mksquashfs ' + this.source + ' ' + this.dest + ' -comp ' + compressor + ' -ef ' + this.dest, { silent: true }).stderr
+    const stderr = shx.exec('mksquashfs ' + this.source + ' ' + this.dest + ' -comp ' + compressor + ' -ef ' + this.dest, {silent: true}).stderr
     if (stderr === '') {
       result = true
     }

@@ -6,7 +6,7 @@
  */
 
 // packages
-import fs, { Dir, Dirent, exists } from 'fs'
+import fs, {Dir, Dirent, exists} from 'fs'
 import yaml from 'js-yaml'
 import path from 'node:path'
 import os from 'node:os'
@@ -16,10 +16,10 @@ import mustache from 'mustache'
 import PveLive from './pve-live'
 
 // interfaces
-import { IMyAddons, IUser } from '../interfaces'
+import {IMyAddons, IUser} from '../interfaces'
 
 // libraries
-import { exec } from '../lib/utils'
+import {exec} from '../lib/utils'
 
 // classes
 import Utils from './utils'
@@ -32,13 +32,13 @@ import Systemctl from './systemctl'
 import Bleach from './bleach'
 import Repo from './yolk'
 import cliAutologin = require('../lib/cli-autologin')
-import { displaymanager } from './incubation/fisherman-helper/displaymanager'
+import {displaymanager} from './incubation/fisherman-helper/displaymanager'
 
 // backup
-import { access } from 'fs/promises'
-import { constants } from 'fs'
+import {access} from 'fs/promises'
+import {constants} from 'fs'
 import Users from './users'
-import { createTextChangeRange } from 'typescript'
+import {createTextChangeRange} from 'typescript'
 
 /**
  * Ovary:
@@ -75,7 +75,6 @@ export default class Ovary {
     this.settings = new Settings()
 
     if (await this.settings.load()) {
-
       this.familyId = this.settings.distro.familyId
 
       if (snapshot_prefix !== '') {
@@ -103,6 +102,7 @@ export default class Ovary {
         return true
       }
     }
+
     return false
   }
 
@@ -121,9 +121,9 @@ export default class Ovary {
 
     this.cryptedclone = cryptedclone
 
-    let luksName = 'luks-eggs-data'
+    const luksName = 'luks-eggs-data'
 
-    let luksFile = `/tmp/${luksName}`
+    const luksFile = `/tmp/${luksName}`
 
     // let luksDevice = `/dev/mapper/${this.luksName}`
 
@@ -152,31 +152,29 @@ export default class Ovary {
     if (Utils.isLive()) {
       console.log(chalk.red('>>> eggs: This is a live system! An egg cannot be produced from an egg!'))
     } else {
-
       await this.liveCreateStructure()
-      if (!nointeractive) {
-        if (this.settings.distro.isCalamaresAvailable && (Pacman.isInstalledGui()) && 
+      if (!nointeractive && this.settings.distro.isCalamaresAvailable && (Pacman.isInstalledGui()) &&
           this.settings.config.force_installer && !(await Pacman.calamaresCheck())) {
-          console.log('Installing ' + chalk.bgGray('calamares') + ' due force_installer=yes.')
-          await Pacman.calamaresInstall(verbose)
-          const bleach = new Bleach()
-          await bleach.clean(verbose)
-        }
+        console.log('Installing ' + chalk.bgGray('calamares') + ' due force_installer=yes.')
+        await Pacman.calamaresInstall(verbose)
+        const bleach = new Bleach()
+        await bleach.clean(verbose)
       }
 
       // CRYPTEDCLONE
       if (cryptedclone) {
-        console.log(`Users and the user data will be saved in an encrypted LUKS volume`)
+        console.log('Users and the user data will be saved in an encrypted LUKS volume')
         const users = await this.usersFill()
-        for (let i = 0; i < users.length; i++) {
-          if (users[i].saveIt) {
+        for (const user of users) {
+          if (user.saveIt) {
             let utype = 'user   '
-            if (parseInt(users[i].uid) < 1000) {
+            if (Number.parseInt(user.uid) < 1000) {
               utype = 'service'
             }
-            console.log(`- ${utype}: ${users[i].login.padEnd(16)} \thome: ${users[i].home}`)
-            if (users[i].login !== 'root') {
-              this.addRemoveExclusion(true, users[i].home)
+
+            console.log(`- ${utype}: ${user.login.padEnd(16)} \thome: ${user.home}`)
+            if (user.login !== 'root') {
+              this.addRemoveExclusion(true, user.home)
             }
           }
         }
@@ -190,16 +188,14 @@ export default class Ovary {
         Utils.warning('eggs will REMOVE users and users\' from live')
       }
 
-
       /**
-       * NOTE: reCreate = false 
-       * 
+       * NOTE: reCreate = false
+       *
        * reCreate = false is just for develop
        * put reCreate = true in release
        */
-      let reCreate = true
+      const reCreate = true
       if (reCreate) { // start pre-clone
-
         /**
          * Anche non accettando l'installazione di calamares
          * viene creata la configurazione dell'installer: krill/calamares
@@ -224,6 +220,7 @@ export default class Ovary {
         if (this.settings.config.make_efi) {
           await this.makeEfi(this.theme)
         }
+
         await this.bindLiveFs()
 
         if (!this.clone) {
@@ -245,6 +242,7 @@ export default class Ovary {
           } else {
             cliAutologin.addAutologin(this.settings.distro.distroId, this.settings.distro.codenameId, this.settings.config.user_opt, this.settings.config.user_opt_passwd, this.settings.config.root_passwd, this.settings.work_dir.merged)
           }
+
           // Here we are forcing alwats cliAutologin
           cliAutologin.addAutologin(this.settings.distro.distroId, this.settings.distro.codenameId, this.settings.config.user_opt, this.settings.config.user_opt_passwd, this.settings.config.root_passwd, this.settings.work_dir.merged)
         }
@@ -278,6 +276,7 @@ export default class Ovary {
           await exec(`sha512sum ${this.settings.work_dir.pathIso}live/filesystem.squashfs > ${this.settings.work_dir.pathIso}arch/x86_64/airootfs.sha512`, this.echo)
         }
       }
+
       await this.makeIso(xorrisoCommand, scriptOnly)
     }
   }
@@ -334,7 +333,7 @@ export default class Ovary {
       cmd = `mkdir -p ${this.settings.work_dir.pathIso}/efi/boot`
       this.tryCatch(cmd)
 
-      let liveBsseDir = 'live'
+      const liveBsseDir = 'live'
       cmd = `mkdir -p ${this.settings.work_dir.pathIso}/isolinux`
       this.tryCatch(cmd)
 
@@ -344,8 +343,8 @@ export default class Ovary {
   }
 
   /**
-   * 
-   * @param cmd 
+   *
+   * @param cmd
    */
   async tryCatch(cmd = '') {
     try {
@@ -392,7 +391,6 @@ export default class Ovary {
     }
 
     if (this.familyId === 'debian') {
-
       // Aggiungo UMASK=0077 in /etc/initramfs-tools/conf.d/calamares-safe-initramfs.conf
       const text = 'UMASK=0077\n'
       const file = '/etc/initramfs-tools/conf.d/eggs-safe-initramfs.conf'
@@ -419,9 +417,9 @@ export default class Ovary {
 
     if (fs.existsSync(`${this.settings.work_dir.merged}/etc/ssh/sshd_config`)) {
       await exec(`sed -i 's/PermitRootLogin yes/PermitRootLogin prohibit-password/' ${this.settings.work_dir.merged}/etc/ssh/sshd_config`, this.echo)
-      await (this.settings.config.ssh_pass
-        ? exec(`sed -i 's|.*PasswordAuthentication.*no|PasswordAuthentication yes|' ${this.settings.work_dir.merged}/etc/ssh/sshd_config`, this.echo)
-        : exec(`sed -i 's|.*PasswordAuthentication.*yes|PasswordAuthentication no|' ${this.settings.work_dir.merged}/etc/ssh/sshd_config`, this.echo))
+      await (this.settings.config.ssh_pass ?
+        exec(`sed -i 's|.*PasswordAuthentication.*no|PasswordAuthentication yes|' ${this.settings.work_dir.merged}/etc/ssh/sshd_config`, this.echo) :
+        exec(`sed -i 's|.*PasswordAuthentication.*yes|PasswordAuthentication no|' ${this.settings.work_dir.merged}/etc/ssh/sshd_config`, this.echo))
     }
 
     /**
@@ -432,7 +430,7 @@ export default class Ovary {
     await exec(`touch ${this.settings.work_dir.merged}/etc/fstab`, this.echo)
 
     /**
-     * Remove crypttab if exists 
+     * Remove crypttab if exists
      * this is crucial for tpm systems.
      */
     if (fs.existsSync(`${this.settings.work_dir.merged}/etc/crypttab`)) {
@@ -441,8 +439,8 @@ export default class Ovary {
     }
 
     /**
-     * Blank out systemd machine id. 
-     * If it does not exist, systemd-journald will fail, 
+     * Blank out systemd machine id.
+     * If it does not exist, systemd-journald will fail,
      * but if it exists and is empty, systemd will automatically
      * set up a new unique ID.
      */
@@ -461,7 +459,7 @@ export default class Ovary {
     /**
     * cleaning /etc/resolv.conf
     */
-    let resolvFile = `${this.settings.work_dir.merged}/etc/resolv.conf`
+    const resolvFile = `${this.settings.work_dir.merged}/etc/resolv.conf`
     shx.rm(resolvFile)
 
     /**
@@ -478,6 +476,7 @@ export default class Ovary {
         await systemdctl.stop('systemd-resolved.service')
         resolvContent = 'nameserver 127.0.0.53\noptions edns0 trust-ad\nsearch .\n'
       }
+
       fs.writeFileSync(resolvFile, resolvContent)
 
       if (await systemdctl.isEnabled('systemd-networkd.service')) {
@@ -521,7 +520,6 @@ export default class Ovary {
         await exec(`rm -f ${this.settings.work_dir.merged}/etc/network/${cleanDir}/wpasupplicant`, this.echo)
       }
     }
-
 
     /**
      * Clear configs from /etc/network/interfaces, wicd and NetworkManager
@@ -643,7 +641,6 @@ export default class Ovary {
       console.log('ovary: isolinux')
     }
 
-
     /**
      * isolinux.bin
      */
@@ -657,17 +654,19 @@ export default class Ovary {
     if (this.theme.includes('/')) {
       isolinuxThemeSrc = `${theme}/theme/livecd/isolinux.theme.cfg`
     }
+
     if (!fs.existsSync(isolinuxThemeSrc)) {
       Utils.warning('Cannot find: ' + isolinuxThemeSrc)
       process.exit()
     }
+
     fs.copyFileSync(isolinuxThemeSrc, isolinuxThemeDest)
 
     /**
      * isolinux.cfg from isolinux.template.cfg
      */
     const isolinuxDest = this.settings.work_dir.pathIso + 'isolinux/isolinux.cfg'
-    let isolinuxTemplate = path.resolve(__dirname, `../../addons/templates/isolinux.template`)
+    const isolinuxTemplate = path.resolve(__dirname, '../../addons/templates/isolinux.template')
     if (!fs.existsSync(isolinuxTemplate)) {
       Utils.warning('Cannot find: ' + isolinuxTemplate)
       process.exit()
@@ -678,7 +677,7 @@ export default class Ovary {
      */
     let kernel_parameters = `boot=live components locales=${process.env.LANG}`
     if (this.familyId === 'archlinux') {
-      let volid = Utils.getVolid(this.settings.remix.name)
+      const volid = Utils.getVolid(this.settings.remix.name)
       if (this.settings.distro.distroId === 'ManjaroLinux') {
         kernel_parameters += ` misobasedir=manjaro misolabel=${volid}`
       } else if (this.settings.distro.distroId === 'Arch' || this.settings.distro.distroId === 'RebornOS') {
@@ -704,10 +703,12 @@ export default class Ovary {
     if (this.theme.includes('/')) {
       splashSrc = path.resolve(`${theme}/theme/livecd/splash.png`)
     }
+
     if (!fs.existsSync(splashSrc)) {
       Utils.warning('Cannot find: ' + splashSrc)
       process.exit()
     }
+
     fs.copyFileSync(splashSrc, splashDest)
   }
 
@@ -739,7 +740,7 @@ export default class Ovary {
    */
   async initrdCreate() {
     let initrdImg = Utils.initrdImg()
-    initrdImg = initrdImg.substring(initrdImg.lastIndexOf('/') + 1)
+    initrdImg = initrdImg.slice(Math.max(0, initrdImg.lastIndexOf('/') + 1))
     Utils.warning(`Creating ${initrdImg} in ${this.settings.work_dir.pathIso}/live/`)
     if (this.settings.distro.distroId === 'ManjaroLinux') {
       await exec(`mkinitcpio -c ${path.resolve(__dirname, '../../mkinitcpio/manjaro/mkinitcpio-produce.conf')} -g ${this.settings.work_dir.pathIso}/live/${initrdImg}`, Utils.setEcho(true))
@@ -750,26 +751,26 @@ export default class Ovary {
 
   /**
    * We must upgrade to initrdCreate for Debian/Ubuntu
-   * @returns 
+   * @returns
    */
   async initrdCopy(verbose = false) {
     let isCrypted = false
 
-    Utils.warning(`initrdCreate`)
+    Utils.warning('initrdCreate')
 
-    if (fs.existsSync(`/etc/crypttab`)) {
+    if (fs.existsSync('/etc/crypttab')) {
       isCrypted = true
-      await exec(`mv /etc/crypttab /etc/crypttab.saved`, this.echo)
+      await exec('mv /etc/crypttab /etc/crypttab.saved', this.echo)
     }
 
     await exec(`mkinitramfs -o ${this.settings.work_dir.pathIso}/live/initrd.img-$(uname -r) ${this.toNull}`, this.echo)
 
     if (isCrypted) {
-      await exec(`mv /etc/crypttab.saved /etc/crypttab`, this.echo)
+      await exec('mv /etc/crypttab.saved /etc/crypttab', this.echo)
     }
 
     /*
- 
+
     Utils.warning(`initrdCopy`)
     if (this.verbose) {
       console.log('ovary: initrdCopy')
@@ -781,7 +782,7 @@ export default class Ovary {
       Utils.error(`Cannot find ${this.settings.initrdImg}`)
       lackInitrdImage = true
     }
- 
+
     if (lackInitrdImage) {
       Utils.warning('Try to edit /etc/penguins-eggs.d/eggs.yaml and check for')
       Utils.warning(`initrd_img: ${this.settings.initrd_image}`)
@@ -801,15 +802,15 @@ export default class Ovary {
     /**
      * exclude all the accurence of cryptdisks in rc0.d, etc
      */
-    let fexcludes = [
-      "/boot/efi/EFI",
-      "/etc/fstab",
-      "/etc/mtab",
-      "/etc/udev/rules.d/70-persistent-cd.rules",
-      "/etc/udev/rules.d/70-persistent-net.rules"
+    const fexcludes = [
+      '/boot/efi/EFI',
+      '/etc/fstab',
+      '/etc/mtab',
+      '/etc/udev/rules.d/70-persistent-cd.rules',
+      '/etc/udev/rules.d/70-persistent-net.rules',
     ]
 
-    for (let i in fexcludes) {
+    for (const i in fexcludes) {
       this.addRemoveExclusion(true, fexcludes[i])
     }
 
@@ -829,8 +830,8 @@ export default class Ovary {
       }
     }
 
-    if (shx.exec('/usr/bin/test -L /etc/localtime', { silent: true }) && shx.exec('cat /etc/timezone', { silent: true }) !== 'Europe/Rome') {
-      //this.addRemoveExclusion(true, '/etc/localtime')
+    if (shx.exec('/usr/bin/test -L /etc/localtime', {silent: true}) && shx.exec('cat /etc/timezone', {silent: true}) !== 'Europe/Rome') {
+      // this.addRemoveExclusion(true, '/etc/localtime')
     }
 
     this.addRemoveExclusion(true, this.settings.config.snapshot_dir /* .absolutePath() */)
@@ -894,7 +895,7 @@ export default class Ovary {
       'run',
       'sys',
       'swapfile',
-      'tmp'
+      'tmp',
     ]
     if (!this.clone) {
       nomergedDirs.push('home')
@@ -987,7 +988,7 @@ export default class Ovary {
           '# we need just to recreate it',
           `# ln -s ${this.settings.work_dir.merged}/${lnkDest} ${this.settings.work_dir.merged}/${lnkDest}`,
           "# but we don't know if the destination exist, and I'm too lazy today. So, for now: ",
-          titleLine
+          titleLine,
         )
         if (!fs.existsSync(`${this.settings.work_dir.merged}/${dir}`)) {
           if (fs.existsSync(lnkDest)) {
@@ -1022,9 +1023,8 @@ export default class Ovary {
     // await exec(`/usr/bin/pkill mksquashfs; /usr/bin/pkill md5sum`, {echo: true})
     if (fs.existsSync(this.settings.work_dir.merged)) {
       const bindDirs = fs.readdirSync(this.settings.work_dir.merged, {
-        withFileTypes: true
+        withFileTypes: true,
       })
-
 
       for (const dir of bindDirs) {
         const dirname = N8.dirent2string(dir)
@@ -1045,7 +1045,7 @@ export default class Ovary {
           /**
            * We can't remove the nest!!!
            */
-          let nest = this.settings.work_dir.path.split('/')
+          const nest = this.settings.work_dir.path.split('/')
           if (dirname !== nest[1]) { // We can't remove first level nest
             cmds.push(await rexec(`rm ${this.settings.work_dir.merged}/${dirname} -rf`, this.verbose))
           }
@@ -1058,10 +1058,10 @@ export default class Ovary {
         }
       }
     }
+
     if (this.clone) {
       cmds.push(await rexec(`umount ${this.settings.work_dir.path}/filesystem.squashfs/home`, this.verbose))
     }
-
 
     Utils.writeXs(`${this.settings.work_dir.path}ubind`, cmds)
   }
@@ -1076,7 +1076,7 @@ export default class Ovary {
       `mount -o bind /dev/pts ${this.settings.work_dir.merged}/dev/pts`,
       `mount -o bind /proc ${this.settings.work_dir.merged}/proc`,
       `mount -o bind /sys ${this.settings.work_dir.merged}/sys`,
-      `mount -o bind /run ${this.settings.work_dir.merged}/run`
+      `mount -o bind /run ${this.settings.work_dir.merged}/run`,
     )
     Utils.writeXs(`${this.settings.work_dir.path}bindvfs`, cmds)
   }
@@ -1104,7 +1104,7 @@ export default class Ovary {
     const result = await exec(cmd, {
       echo: this.verbose,
       ignore: false,
-      capture: true
+      capture: true,
     })
     const users: string[] = result.data.split('\n')
     for (let i = 0; i < users.length - 1; i++) {
@@ -1144,7 +1144,6 @@ export default class Ovary {
       cmds.push(await rexec(`chroot ${this.settings.work_dir.merged} gpasswd -a ${this.settings.config.user_opt} autologin`, this.verbose))
     }
 
-
     /**
      * educaandos and others themes
      * users.yml
@@ -1162,8 +1161,8 @@ export default class Ovary {
         sudoersGroup: string
         defaultGroups: string[]
         passwordRequirements: {
-          minLenght: Number
-          maxLenght: Number
+          minLenght: number
+          maxLenght: number
         }
         userShell: string
       }
@@ -1198,26 +1197,24 @@ export default class Ovary {
     let installerIcon = 'install-debian'
     if (Pacman.packageIsInstalled('calamares')) {
       shx.cp(path.resolve(__dirname, `../../addons/${theme}/theme/applications/install-debian.desktop`), `${this.settings.work_dir.merged}/usr/share/applications/`)
+    } else if (Pacman.packageIsInstalled('live-installer')) {
+      // carico la policy per live-installer
+      const policySource = path.resolve(__dirname, '../../assets/live-installer/com.github.pieroproietti.penguins-eggs.policy')
+      const policyDest = '/usr/share/polkit-1/actions/com.github.pieroproietti.penguins-eggs.policy'
+      shx.cp(policySource, policyDest)
+      await exec(`sed -i 's/auth_admin/yes/' ${policyDest}`)
+
+      // carico in filesystem.live packages-remove
+      shx.cp(path.resolve(__dirname, '../../assets/live-installer/filesystem.packages-remove'), `${this.settings.work_dir.pathIso}/live/`)
+      shx.touch(`${this.settings.work_dir.pathIso}/live/filesystem.packages`)
+
+      installerUrl = 'penguins-live-installer.desktop'
+      installerIcon = 'utilities-terminal'
+      shx.cp(path.resolve(__dirname, '../../assets/penguins-live-installer.desktop'), `${this.settings.work_dir.merged}/usr/share/applications/`)
     } else {
-      if (Pacman.packageIsInstalled('live-installer')) {
-        // carico la policy per live-installer
-        const policySource = path.resolve(__dirname, '../../assets/live-installer/com.github.pieroproietti.penguins-eggs.policy')
-        const policyDest = '/usr/share/polkit-1/actions/com.github.pieroproietti.penguins-eggs.policy'
-        shx.cp(policySource, policyDest)
-        await exec(`sed -i 's/auth_admin/yes/' ${policyDest}`)
-
-        // carico in filesystem.live packages-remove
-        shx.cp(path.resolve(__dirname, '../../assets/live-installer/filesystem.packages-remove'), `${this.settings.work_dir.pathIso}/live/`)
-        shx.touch(`${this.settings.work_dir.pathIso}/live/filesystem.packages`)
-
-        installerUrl = 'penguins-live-installer.desktop'
-        installerIcon = 'utilities-terminal'
-        shx.cp(path.resolve(__dirname, '../../assets/penguins-live-installer.desktop'), `${this.settings.work_dir.merged}/usr/share/applications/`)
-      } else {
-        installerUrl = 'penguins-krill.desktop'
-        installerIcon = 'utilities-terminal'
-        shx.cp(path.resolve(__dirname, '../../assets/penguins-krill.desktop'), `${this.settings.work_dir.merged}/usr/share/applications/`)
-      }
+      installerUrl = 'penguins-krill.desktop'
+      installerIcon = 'utilities-terminal'
+      shx.cp(path.resolve(__dirname, '../../assets/penguins-krill.desktop'), `${this.settings.work_dir.merged}/usr/share/applications/`)
     }
 
     /**
@@ -1226,7 +1223,7 @@ export default class Ovary {
 
     // adapt
     if (myAddons.adapt) {
-      const dirAddon = path.resolve(__dirname, `../../addons/eggs/adapt/`)
+      const dirAddon = path.resolve(__dirname, '../../addons/eggs/adapt/')
       shx.cp(`${dirAddon}/applications/eggs-adapt.desktop`, `${this.settings.work_dir.merged}/usr/share/applications/`)
       shx.cp(`${dirAddon}/bin/adapt`, `${this.settings.work_dir.merged}/usr/bin/`)
       shx.chmod('+x', `${this.settings.work_dir.merged}/usr/bin/adapt`)
@@ -1274,7 +1271,7 @@ export default class Ovary {
       shx.cp(path.resolve(__dirname, '../../assets/penguins-links-add.desktop'), dirAutostart)
 
       // create /usr/bin/penguins-links-add.sh
-      const script = `/usr/bin/penguins-links-add.sh`
+      const script = '/usr/bin/penguins-links-add.sh'
       let text = ''
       text += '#!/bin/sh\n'
       text += 'DESKTOP=$(xdg-user-dir DESKTOP)\n'
@@ -1286,29 +1283,32 @@ export default class Ovary {
         if (myAddons.pve) text += this.lxdeLink('eggs-pve.desktop', 'Proxmox VE', 'proxmox-ve')
         if (myAddons.rsupport) text += this.lxdeLink('eggs-rsupport.desktop', 'Remote assistance', 'remote-assistance')
       } else {
-        text += `cp /usr/share/applications/penguins-eggs.desktop "$DESKTOP"\n`
-        if (myAddons.adapt) text += `cp /usr/share/applications/eggs-adapt.desktop "$DESKTOP"\n`
-        if (myAddons.pve) text += `cp /usr/share/applications/eggs-pve.desktop "$DESKTOP"\n`
-        if (myAddons.rsupport) text += `cp /usr/share/applications/eggs-rsupport.desktop "$DESKTOP"\n`
+        text += 'cp /usr/share/applications/penguins-eggs.desktop "$DESKTOP"\n'
+        if (myAddons.adapt) text += 'cp /usr/share/applications/eggs-adapt.desktop "$DESKTOP"\n'
+        if (myAddons.pve) text += 'cp /usr/share/applications/eggs-pve.desktop "$DESKTOP"\n'
+        if (myAddons.rsupport) text += 'cp /usr/share/applications/eggs-rsupport.desktop "$DESKTOP"\n'
       }
+
       /**
        * enable desktop links
        */
       if (Pacman.packageIsInstalled('gdm3') || Pacman.packageIsInstalled('gdm')) {
         // GNOME
-        text += `test -f /usr/share/applications/penguins-eggs.desktop && cp /usr/share/applications/penguins-eggs.desktop "$DESKTOP"\n`
-        text += `test -f "$DESKTOP"/penguins-eggs.desktop && chmod a+x "$DESKTOP"/penguins-eggs.desktop\n`
-        text += `test -f "$DESKTOP"/penguins-eggs.desktop && gio set "$DESKTOP"/penguins-eggs.desktop metadata::trusted true\n`
+        text += 'test -f /usr/share/applications/penguins-eggs.desktop && cp /usr/share/applications/penguins-eggs.desktop "$DESKTOP"\n'
+        text += 'test -f "$DESKTOP"/penguins-eggs.desktop && chmod a+x "$DESKTOP"/penguins-eggs.desktop\n'
+        text += 'test -f "$DESKTOP"/penguins-eggs.desktop && gio set "$DESKTOP"/penguins-eggs.desktop metadata::trusted true\n'
         text += `test -f /usr/share/applications/${installerUrl} && cp /usr/share/applications/${installerUrl} "$DESKTOP"\n`
         text += `test -f "$DESKTOP"/${installerUrl} && chmod a+x "$DESKTOP"/${installerUrl}\n`
         text += `test -f "$DESKTOP"/${installerUrl} && gio set "$DESKTOP"/${installerUrl} metadata::trusted true\n`
       } else {
         // OTHERS: CINNAMON/KDE/ETC
-        text += `chmod +x "$DESKTOP"/*.desktop`
+        text += 'chmod +x "$DESKTOP"/*.desktop'
       }
+
       fs.writeFileSync(script, text, 'utf8')
       await exec(`chmod a+x ${script}`, this.echo)
     }
+
     await Xdg.autologin(await Utils.getPrimaryUser(), this.settings.config.user_opt, this.settings.work_dir.merged)
   }
 
@@ -1421,12 +1421,13 @@ export default class Ovary {
     if (this.theme.includes('/')) {
       splashSrc = `${theme}/theme/livecd/splash.png`
     }
+
     if (!fs.existsSync(splashSrc)) {
       Utils.warning('Cannot find: ' + splashSrc)
       process.exit()
     }
-    await exec(`cp ${splashSrc} ${splashDest}`, this.echo)
 
+    await exec(`cp ${splashSrc} ${splashDest}`, this.echo)
 
     /**
      * copy theme
@@ -1441,6 +1442,7 @@ export default class Ovary {
       Utils.warning('Cannot find: ' + themeSrc)
       process.exit()
     }
+
     await exec(`cp ${themeSrc} ${themeDest}`, this.echo)
 
     /**
@@ -1454,19 +1456,18 @@ export default class Ovary {
     await exec(cmd, this.echo)
     await exec(`echo "source /boot/grub/grub.cfg" >> ${efiWorkDir}/boot/grub/${Utils.machineUEFI()}/grub.cfg`, this.echo)
 
-
     /**
      * andiamo in memdiskDir
      */
 
     /**
      * make a tarred "memdisk" to embed in the grub image
-     * 
+     *
      * NOTE: it's CRUCIAL to chdir before tar!!!
      */
     const currentDir = process.cwd()
     process.chdir(memdiskDir)
-    await exec(`tar -cvf memdisk boot`, this.echo)
+    await exec('tar -cvf memdisk boot', this.echo)
     process.chdir(currentDir)
 
     // make the grub image
@@ -1535,18 +1536,19 @@ export default class Ovary {
     if (this.theme.includes('/')) {
       grubThemeSrc = `${theme}/theme/livecd/grub.theme.cfg`
     }
+
     const grubThemeDest = `${isoDir}/boot/grub/theme.cfg`
     if (!fs.existsSync(grubThemeSrc)) {
       Utils.warning('Cannot find: ' + grubThemeSrc)
       process.exit()
     }
-    fs.copyFileSync(grubThemeSrc, grubThemeDest)
 
+    fs.copyFileSync(grubThemeSrc, grubThemeDest)
 
     /**
     * prepare grub.cfg from grub.template.cfg
     */
-    const grubTemplate = path.resolve(__dirname, `../../addons/templates/grub.template`)
+    const grubTemplate = path.resolve(__dirname, '../../addons/templates/grub.template')
 
     if (!fs.existsSync(grubTemplate)) {
       Utils.warning('Cannot find: ' + grubTemplate)
@@ -1558,7 +1560,7 @@ export default class Ovary {
     */
     let kernel_parameters = `boot=live components locales=${process.env.LANG}`
     if (this.familyId === 'archlinux') {
-      let volid = Utils.getVolid(this.settings.remix.name)
+      const volid = Utils.getVolid(this.settings.remix.name)
       if (this.settings.distro.distroId === 'ManjaroLinux') {
         kernel_parameters += ` misobasedir=manjaro misolabel=${volid}`
       } else if (this.settings.distro.distroId === 'Arch' || this.settings.distro.distroId === 'RebornOS') {
@@ -1596,6 +1598,7 @@ export default class Ovary {
     if (fs.existsSync(dotDisk)) {
       shx.rm('-rf', dotDisk)
     }
+
     shx.mkdir('-p', dotDisk)
 
     // .disk/info
@@ -1622,17 +1625,18 @@ export default class Ovary {
   xorrisoCommand(clone = false, cryptedclone = false): string {
     const volid = Utils.getVolid(this.settings.remix.name)
 
-    let prefix = this.settings.config.snapshot_prefix
+    const prefix = this.settings.config.snapshot_prefix
 
-    let typology = ""
+    let typology = ''
     // typology is applied only with standard egg-of
     if (prefix.slice(0, 7) === 'egg-of-') {
       if (clone) {
-        typology = "_clone"
+        typology = '_clone'
       } else if (cryptedclone) {
-        typology = "_crypted"
+        typology = '_crypted'
       }
     }
+
     const postfix = Utils.getPostfix()
     this.settings.isoFilename = prefix + volid + typology + postfix
     const output = this.settings.config.snapshot_dir + this.settings.isoFilename
@@ -1642,8 +1646,7 @@ export default class Ovary {
     // const publisher = `-publisher "${this.settings.distro.distroId}/${this.settings.distro.codenameId}" `
     // const preparer = '-preparer "prepared by eggs <https://penguins-eggs.net>" '
 
-
-    let isoHybridMbr = ``
+    let isoHybridMbr = ''
     if (this.settings.config.make_isohybrid) {
       const isolinuxFile = this.settings.distro.isolinuxPath + 'isohdpfx.bin'
       if (fs.existsSync(isolinuxFile)) {
@@ -1667,41 +1670,41 @@ export default class Ovary {
 
     /**
       * info Debian GNU/Linux 10.8.0 "Buster" - Official i386 NETINST 20210206-10:54
-      * mkisofs xorriso -as mkisofs 
-      * -r 
-      * -checksum_algorithm_iso md5,sha1,sha256,sha512 
-      * -V 'Debian 10.8.0 i386 n' 
-      * -o /srv/cdbuilder.debian.org/dst/deb-cd/out/2busteri386/debian-10.8.0-i386-NETINST-1.iso 
-      *       -jigdo-jigdo /srv/cdbuilder.debian.org/dst/deb-cd/out/2busteri386/debian-10.8.0-i386-NETINST-1.jigdo 
-      *       -jigdo-template /srv/cdbuilder.debian.org/dst/deb-cd/out/2busteri386/debian-10.8.0-i386-NETINST-1.template 
-      *       -jigdo-map Debian=/srv/cdbuilder.debian.org/src/ftp/debian/ 
-      *       -jigdo-exclude boot1 
-      *       -md5-list /srv/cdbuilder.debian.org/src/deb-cd/tmp/2busteri386/buster/md5-check 
-      *       -jigdo-min-file-size 1024 
-      *       -jigdo-exclude 'README*' 
-      *       -jigdo-exclude /doc/ 
-      *       -jigdo-exclude /md5sum.txt 
-      *       -jigdo-exclude /.disk/ 
-      *       -jigdo-exclude /pics/ 
-      *       -jigdo-exclude 'Release*' 
-      *       -jigdo-exclude 'Packages*' 
-      *       -jigdo-exclude 'Sources*' 
-      * -J 
-      * -joliet-long 
-      * -cache-inodes 
-      * -isohybrid-mbr syslinux/usr/lib/ISOLINUX/isohdpfx.bin 
-      * -b isolinux/isolinux.bin                 
-      * -c isolinux/boot.cat 
-      * -boot-load-size 4 
-      * -boot-info-table 
-      * -no-emul-boot 
-      * -eltorito-alt-boot 
-      * -e boot/grub/efi.img 
-      * -no-emul-boot 
-      * -isohybrid-gpt-basdat 
-      *         isohybrid-apm-hfsplus 
+      * mkisofs xorriso -as mkisofs
+      * -r
+      * -checksum_algorithm_iso md5,sha1,sha256,sha512
+      * -V 'Debian 10.8.0 i386 n'
+      * -o /srv/cdbuilder.debian.org/dst/deb-cd/out/2busteri386/debian-10.8.0-i386-NETINST-1.iso
+      *       -jigdo-jigdo /srv/cdbuilder.debian.org/dst/deb-cd/out/2busteri386/debian-10.8.0-i386-NETINST-1.jigdo
+      *       -jigdo-template /srv/cdbuilder.debian.org/dst/deb-cd/out/2busteri386/debian-10.8.0-i386-NETINST-1.template
+      *       -jigdo-map Debian=/srv/cdbuilder.debian.org/src/ftp/debian/
+      *       -jigdo-exclude boot1
+      *       -md5-list /srv/cdbuilder.debian.org/src/deb-cd/tmp/2busteri386/buster/md5-check
+      *       -jigdo-min-file-size 1024
+      *       -jigdo-exclude 'README*'
+      *       -jigdo-exclude /doc/
+      *       -jigdo-exclude /md5sum.txt
+      *       -jigdo-exclude /.disk/
+      *       -jigdo-exclude /pics/
+      *       -jigdo-exclude 'Release*'
+      *       -jigdo-exclude 'Packages*'
+      *       -jigdo-exclude 'Sources*'
+      * -J
+      * -joliet-long
+      * -cache-inodes
+      * -isohybrid-mbr syslinux/usr/lib/ISOLINUX/isohdpfx.bin
+      * -b isolinux/isolinux.bin
+      * -c isolinux/boot.cat
+      * -boot-load-size 4
+      * -boot-info-table
+      * -no-emul-boot
+      * -eltorito-alt-boot
+      * -e boot/grub/efi.img
+      * -no-emul-boot
+      * -isohybrid-gpt-basdat
+      *         isohybrid-apm-hfsplus
       * boot1 CD1
-    
+
     command = `xorriso -as mkisofs \
      -r \
      -checksum_algorithm_iso md5,sha1,sha256,sha512 \
@@ -1724,11 +1727,11 @@ export default class Ovary {
     */
 
     /**
-     * how is made in refracta 
-     * 
+     * how is made in refracta
+     *
      * -isohybrid-mbr /usr/lib/ISOLINUX/isohdpfx.bin
      * uefi_opt="-eltorito-alt-boot -e boot/grub/efiboot.img -isohybrid-gpt-basdat -no-emul-boot"
-     * 
+     *
      * xorriso -as mkisofs -r \
      * -J \
      * -joliet-long \
@@ -1743,7 +1746,7 @@ export default class Ovary {
      * -boot-load-size 4 \
      * -boot-info-table \
      * ${uefi_opt} \
-     * -o "$snapshot_dir"/"$filename" iso/ 
+     * -o "$snapshot_dir"/"$filename" iso/
      */
     command = `xorriso -as mkisofs \
      -J \
@@ -1772,7 +1775,7 @@ export default class Ovary {
    * cmd: cmd 4 xorirriso
    */
   async makeIso(cmd: string, scriptOnly = false) {
-    //echo = { echo: true, ignore: false }
+    // echo = { echo: true, ignore: false }
 
     if (this.verbose) {
       console.log('ovary: makeIso')
@@ -1815,16 +1818,17 @@ export default class Ovary {
   */
   async usersFill(): Promise<Users[]> {
     const usersArray = []
-    await access('/etc/passwd', constants.R_OK | constants.W_OK);
+    await access('/etc/passwd', constants.R_OK | constants.W_OK)
     const passwd = fs.readFileSync('/etc/passwd', 'utf-8').split('\n')
-    for (let i = 0; i < passwd.length; i++) {
-      var line = passwd[i].split(':')
+    for (const element of passwd) {
+      const line = element.split(':')
       const users = new Users(line[0], line[1], line[2], line[3], line[4], line[5], line[6])
       await users.getValues()
       if (users.password !== undefined) {
         usersArray.push(users)
       }
     }
+
     return usersArray
   }
 }
@@ -1844,6 +1848,7 @@ async function makeIfNotExist(path: string, verbose = false): Promise<string> {
     cmd = `mkdir ${path} -p`
     await exec(cmd, echo)
   }
+
   return cmd
 }
 

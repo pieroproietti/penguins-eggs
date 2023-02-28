@@ -9,8 +9,8 @@ import fs from 'node:fs'
 import shx from 'shelljs'
 import Utils from '../utils'
 import Pacman from '../pacman'
-import { array2spaced } from '../../lib/dependencies'
-import { exec } from '../../lib/utils'
+import {array2spaced} from '../../lib/dependencies'
+import {exec} from '../../lib/utils'
 
 /**
  * Utils: general porpourse utils
@@ -114,7 +114,7 @@ export default class Archlinux {
   static async calamaresInstall(verbose = false): Promise<void> {
     verbose = true // serve per pacman
     const echo = Utils.setEcho(verbose)
-    let cmd = `pacman -Sy --noconfirm ${array2spaced(this.packs4calamares)}`
+    const cmd = `pacman -Sy --noconfirm ${array2spaced(this.packs4calamares)}`
     try {
       await exec(cmd, echo)
     } catch {
@@ -153,7 +153,7 @@ export default class Archlinux {
   static packageIsInstalled(packageName: string): boolean {
     let installed = false
     const cmd = `/usr/bin/pacman -Qi ${packageName}`
-    const stdout = shx.exec(cmd, { silent: true }).stdout.trim()
+    const stdout = shx.exec(cmd, {silent: true}).stdout.trim()
     if (stdout.includes(packageName)) {
       installed = true
     }
@@ -168,7 +168,7 @@ export default class Archlinux {
    */
   static async packageInstall(packageName: string): Promise<boolean> {
     let retVal = false
-    if (shx.exec(`/usr/bin/pacman -Si ${packageName}`, { silent: true }) === '0') {
+    if (shx.exec(`/usr/bin/pacman -Si ${packageName}`, {silent: true}) === '0') {
       retVal = true
     }
 
@@ -182,7 +182,7 @@ export default class Archlinux {
   static async packageAptAvailable(packageName: string): Promise<boolean> {
     let available = false
     const cmd = `/usr/bin/pacman -Q ${packageName} | grep Package:`
-    const stdout = shx.exec(cmd, { silent: true }).stdout.trim()
+    const stdout = shx.exec(cmd, {silent: true}).stdout.trim()
     if (stdout.includes(packageName)) {
       available = true
     }
@@ -198,7 +198,7 @@ export default class Archlinux {
   static async packageAptLast(packageName: string): Promise<string> {
     let version = ''
     const cmd = `/usr/bin/pacman -Q ${packageName} | grep Version:`
-    const stdout = shx.exec(cmd, { silent: true }).stdout.trim()
+    const stdout = shx.exec(cmd, {silent: true}).stdout.trim()
     version = stdout.slice(9)
     // console.log('===================================')
     // console.log('[' + version + ']')

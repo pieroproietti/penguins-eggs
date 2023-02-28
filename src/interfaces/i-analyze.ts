@@ -1,5 +1,5 @@
 /**
- * Al momento 
+ * Al momento
  */
 export default class IAnalyze {
   login =''

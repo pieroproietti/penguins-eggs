@@ -9,8 +9,8 @@ import fs from 'node:fs'
 import shx from 'shelljs'
 import Utils from '../utils'
 import Pacman from '../pacman'
-import { array2spaced } from '../../lib/dependencies'
-import { exec } from '../../lib/utils'
+import {array2spaced} from '../../lib/dependencies'
+import {exec} from '../../lib/utils'
 
 /**
  * Utils: general porpourse utils
@@ -150,7 +150,7 @@ export default class Suse {
     let installed = false
     // rpm -qa | grep -i nano
     const cmd = `/usr/bin/zypper search --installed-only ${packageName}`
-    const stdout = shx.exec(cmd, { silent: true }).stdout.trim()
+    const stdout = shx.exec(cmd, {silent: true}).stdout.trim()
     if (stdout.includes(packageName)) {
       installed = true
     }
@@ -165,7 +165,7 @@ export default class Suse {
    */
   static async packageInstall(packageName: string): Promise<boolean> {
     let retVal = false
-    if (shx.exec(`/usr/bin/zypper install ${packageName}`, { silent: true }) === '0') {
+    if (shx.exec(`/usr/bin/zypper install ${packageName}`, {silent: true}) === '0') {
       retVal = true
     }
 
@@ -179,7 +179,7 @@ export default class Suse {
   static async packageAvailable(packageName: string): Promise<boolean> {
     let available = false
     const cmd = `/usr/bin/zypper --not-installed-only ${packageName} | grep Package:`
-    const stdout = shx.exec(cmd, { silent: true }).stdout.trim()
+    const stdout = shx.exec(cmd, {silent: true}).stdout.trim()
     if (stdout.includes(packageName)) {
       available = true
     }

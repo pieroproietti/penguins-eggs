@@ -8,20 +8,20 @@ import fs from 'node:fs'
 import path from 'node:path'
 import shx from 'shelljs'
 import Utils from '../utils'
-import { IRemix, IDistro } from '../../interfaces'
+import {IRemix, IDistro} from '../../interfaces'
 
-import { Jessie } from './distros/jessie'
-import { Buster } from './distros/buster'
-import { Focal } from './distros/focal'
-import { Bionic } from './distros/bionic'
-import { Rolling } from './distros/rolling'
+import {Jessie} from './distros/jessie'
+import {Buster} from './distros/buster'
+import {Focal} from './distros/focal'
+import {Bionic} from './distros/bionic'
+import {Rolling} from './distros/rolling'
 
 import Pacman from '../pacman'
-import { installer } from './installer'
-import { IInstaller } from '../../interfaces/i-installer'
+import {installer} from './installer'
+import {IInstaller} from '../../interfaces/i-installer'
 
-import { exec } from '../../lib/utils'
-import { threadId } from 'node:worker_threads'
+import {exec} from '../../lib/utils'
+import {threadId} from 'node:worker_threads'
 
 /**
  *
@@ -54,7 +54,7 @@ export default class Incubator {
     this.verbose = verbose
     this.remix.branding = theme
     if (theme.includes('/')) {
-      this.remix.branding = theme.substring(theme.lastIndexOf('/') + 1)
+      this.remix.branding = theme.slice(Math.max(0, theme.lastIndexOf('/') + 1))
     }
   }
 
@@ -69,106 +69,106 @@ export default class Incubator {
 
     // DEBIAN
     switch (this.distro.codenameLikeId) {
-      case 'jessie': {
-        const jessie = new Jessie(this.installer, this.remix, this.distro, this.user_opt, release, this.verbose)
-        await jessie.create()
+    case 'jessie': {
+      const jessie = new Jessie(this.installer, this.remix, this.distro, this.user_opt, release, this.verbose)
+      await jessie.create()
 
-        break
-      }
+      break
+    }
 
-      case 'stretch': {
-        const stretch = new Jessie(this.installer, this.remix, this.distro, this.user_opt, release, this.verbose)
-        await stretch.create()
+    case 'stretch': {
+      const stretch = new Jessie(this.installer, this.remix, this.distro, this.user_opt, release, this.verbose)
+      await stretch.create()
 
-        break
-      }
+      break
+    }
 
+    case 'buster': {
+      const buster = new Buster(this.installer, this.remix, this.distro, this.user_opt, release, this.theme, this.verbose)
+      await buster.create()
 
-      case 'buster': {
-        const buster = new Buster(this.installer, this.remix, this.distro, this.user_opt, release, this.theme, this.verbose)
-        await buster.create()
+      break
+    }
 
-        break
-      }
-      case 'bullseye': {
-        const bullseye = new Buster(this.installer, this.remix, this.distro, this.user_opt, release, this.theme, this.verbose)
-        await bullseye.create()
+    case 'bullseye': {
+      const bullseye = new Buster(this.installer, this.remix, this.distro, this.user_opt, release, this.theme, this.verbose)
+      await bullseye.create()
 
-        break
-      }
+      break
+    }
 
-      case 'bookworm': {
-        const bookworm = new Buster(this.installer, this.remix, this.distro, this.user_opt, release, this.theme, this.verbose)
-        await bookworm.create()
-        // DEVUAN
+    case 'bookworm': {
+      const bookworm = new Buster(this.installer, this.remix, this.distro, this.user_opt, release, this.theme, this.verbose)
+      await bookworm.create()
+      // DEVUAN
 
-        break
-      }
+      break
+    }
 
-      /**
+    /**
        * DEVUAN
        */
-      case 'beowulf': {
-        const beowulf = new Buster(this.installer, this.remix, this.distro, this.user_opt, release, this.theme, this.verbose)
-        await beowulf.create()
+    case 'beowulf': {
+      const beowulf = new Buster(this.installer, this.remix, this.distro, this.user_opt, release, this.theme, this.verbose)
+      await beowulf.create()
 
-        break
-      }
+      break
+    }
 
-      case 'chimaera': {
-        const chimaera = new Buster(this.installer, this.remix, this.distro, this.user_opt, release, this.theme, this.verbose)
-        await chimaera.create()
+    case 'chimaera': {
+      const chimaera = new Buster(this.installer, this.remix, this.distro, this.user_opt, release, this.theme, this.verbose)
+      await chimaera.create()
 
-        break
-      }
+      break
+    }
 
-      case 'daedalus': {
-        const daedalus = new Buster(this.installer, this.remix, this.distro, this.user_opt, release, this.theme, this.verbose)
-        await daedalus.create()
+    case 'daedalus': {
+      const daedalus = new Buster(this.installer, this.remix, this.distro, this.user_opt, release, this.theme, this.verbose)
+      await daedalus.create()
 
-        break
-      }
+      break
+    }
 
-      /**
+    /**
        * UBUNTU
        */
-      case 'bionic': {
-        const bionic = new Bionic(this.installer, this.remix, this.distro, this.user_opt, release, this.verbose)
-        await bionic.create()
+    case 'bionic': {
+      const bionic = new Bionic(this.installer, this.remix, this.distro, this.user_opt, release, this.verbose)
+      await bionic.create()
 
-        break
-      }
+      break
+    }
 
-      case 'focal': {
-        const focal = new Focal(this.installer, this.remix, this.distro, this.user_opt, release, this.theme, this.verbose)
-        await focal.create()
+    case 'focal': {
+      const focal = new Focal(this.installer, this.remix, this.distro, this.user_opt, release, this.theme, this.verbose)
+      await focal.create()
 
-        break
-      }
+      break
+    }
 
-      case 'jammy': {
-        const jammy = new Focal(this.installer, this.remix, this.distro, this.user_opt, release, this.theme, this.verbose)
-        await jammy.create()
+    case 'jammy': {
+      const jammy = new Focal(this.installer, this.remix, this.distro, this.user_opt, release, this.theme, this.verbose)
+      await jammy.create()
 
-        break
-      }
+      break
+    }
 
-      case 'kinetic': {
-        const kinetic = new Focal(this.installer, this.remix, this.distro, this.user_opt, release, this.theme, this.verbose)
-        await kinetic.create()
+    case 'kinetic': {
+      const kinetic = new Focal(this.installer, this.remix, this.distro, this.user_opt, release, this.theme, this.verbose)
+      await kinetic.create()
 
-        break
-      }
+      break
+    }
 
-      /**
+    /**
        * Arch
        */
-      case 'rolling': {
-        const rolling = new Rolling(this.installer, this.remix, this.distro, this.user_opt, release, this.verbose)
-        await rolling.create()
+    case 'rolling': {
+      const rolling = new Rolling(this.installer, this.remix, this.distro, this.user_opt, release, this.verbose)
+      await rolling.create()
 
-        break
-      }
+      break
+    }
 
       // No default
     }
@@ -273,6 +273,7 @@ export default class Incubator {
       if (this.theme.includes('/')) {
         calamaresIcon = `${this.theme}/theme/artwork/install-debian.png`
       }
+
       if (fs.existsSync(calamaresIcon)) {
         shx.cp(calamaresIcon, '/usr/share/icons/')
       } else {
@@ -284,6 +285,7 @@ export default class Incubator {
       if (this.theme.includes('/')) {
         calamaresLauncher = `${this.theme}/theme/applications/install-debian.desktop`
       }
+
       if (fs.existsSync(calamaresLauncher)) {
         shx.cp(calamaresLauncher, '/usr/share/applications/')
       } else {

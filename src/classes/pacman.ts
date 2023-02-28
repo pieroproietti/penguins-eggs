@@ -5,19 +5,19 @@
  * license: MIT
  */
 
-import { array2spaced, depCommon, depArch, depVersions, depInit } from '../lib/dependencies'
+import {array2spaced, depCommon, depArch, depVersions, depInit} from '../lib/dependencies'
 
 import fs from 'node:fs'
 import path from 'node:path'
 import shx from 'shelljs'
-import { IRemix, IDistro } from '../interfaces'
+import {IRemix, IDistro} from '../interfaces'
 
 import Utils from './utils'
 import Distro from './distro'
 import Settings from './settings'
-import { execSync } from 'node:child_process'
-import { IEggsConfig } from '../interfaces'
-import { exec } from '../lib/utils'
+import {execSync} from 'node:child_process'
+import {IEggsConfig} from '../interfaces'
+import {exec} from '../lib/utils'
 
 import Debian from './family/debian'
 import Fedora from './family/fedora'
@@ -272,8 +272,9 @@ export default class Pacman {
       } else if (this.distro().familyId === 'suse') {
         await Suse.calamaresInstall(verbose)
       }
+
       // remove calamares link
-      await exec ('rm -f /usr/share/applications/calamares.desktop')
+      await exec('rm -f /usr/share/applications/calamares.desktop')
     }
   }
 
@@ -354,7 +355,7 @@ export default class Pacman {
     config.make_isohybrid = true
     config.compression = 'xz'
     config.ssh_pass = true
-    config.timezone= 'America/New_York'
+    config.timezone = 'America/New_York'
     const env = process.env
     config.locales_default = env.LANG !== undefined ? env.LANG : 'en_US.UTF-8'
     config.locales = config.locales_default === 'en_US.UTF-8' ? ['en_US.UTF-8'] : [config.locales_default, 'en_US.UTF-8']
@@ -398,6 +399,7 @@ export default class Pacman {
     if (fs.existsSync(distros)) {
       execSync(`rm -rf ${distros}`)
     }
+
     execSync(`mkdir -p ${distros}`)
 
     /**
@@ -409,6 +411,7 @@ export default class Pacman {
     if (fs.existsSync(init)) {
       execSync(`rm -rf ${init}`)
     }
+
     execSync(`mkdir -p ${init}`)
 
     shx.ln('-s', path.resolve(__dirname, '../../addons'), addons)
@@ -462,26 +465,25 @@ export default class Pacman {
           await exec(`cp ${__dirname}/../../scripts/eggs.bash /etc/bash_completion.d/`)
         }
       }
-    } else if (this.distro().familyId === 'archlinux') {
-      if (Pacman.packageIsInstalled('bash-completion')) {
-        await exec(`cp ${__dirname}/../../scripts/eggs.bash /usr/share/bash-completion/completions/`)
-      }
+    } else if (this.distro().familyId === 'archlinux' && Pacman.packageIsInstalled('bash-completion')) {
+      await exec(`cp ${__dirname}/../../scripts/eggs.bash /usr/share/bash-completion/completions/`)
     }
   }
 
   /**
    * Installa manPage
    */
-   static async manPageInstall(verbose = false) {
+  static async manPageInstall(verbose = false) {
     const manPageSrc = path.resolve(__dirname, '../../manpages/doc/man/eggs.roll.gz')
     if (fs.existsSync(manPageSrc)) {
       const man1Dir = '/usr/share/man/man1/'
       if (!fs.existsSync(man1Dir)) {
         exec(`mkdir ${man1Dir} -p`)
       }
+
       const manPageDest = man1Dir + 'eggs.1.gz'
       exec(`cp ${manPageSrc} ${manPageDest}`)
-      if (shx.exec('which mandb', { silent: true }).stdout.trim() !== '') {
+      if (shx.exec('which mandb', {silent: true}).stdout.trim() !== '') {
         await exec('mandb > /dev/null')
         if (verbose) {
           console.log('manPage eggs installed...')
@@ -633,7 +635,7 @@ export default class Pacman {
       /**
        * Ubuntu 22.04 jammy: eredita da focal e buster
        */
-     } else if (this.distro().codenameLikeId === 'jammy') {
+    } else if (this.distro().codenameLikeId === 'jammy') {
       const dest = '/etc/penguins-eggs.d/distros/jammy'
       const focal = `${rootPen}/conf/distros/focal/*`
       await exec(`cp -r ${focal} ${dest}`, echo)
@@ -649,7 +651,7 @@ export default class Pacman {
       /**
        * Ubuntu 22.10 kinetic: eredita da focal e buster
        */
-     } else if (this.distro().codenameLikeId === 'kinetic') {
+    } else if (this.distro().codenameLikeId === 'kinetic') {
       const dest = '/etc/penguins-eggs.d/distros/kinetic'
       const focal = `${rootPen}/conf/distros/focal/*`
       await exec(`cp -r ${focal} ${dest}`, echo)
@@ -748,7 +750,7 @@ export default class Pacman {
   }
 
   static async packageNpmLast(packageNpm = 'penguins-eggs'): Promise<string> {
-    return shx.exec('npm show ' + packageNpm + ' version', { silent: true }).stdout.trim()
+    return shx.exec('npm show ' + packageNpm + ' version', {silent: true}).stdout.trim()
   }
 
   /**
@@ -758,7 +760,7 @@ export default class Pacman {
   static async commandIsInstalled(cmd: string): Promise<boolean> {
     let installed = false
 
-    const stdout = shx.exec(`command -v ${cmd}`, { silent: true }).stdout.trim()
+    const stdout = shx.exec(`command -v ${cmd}`, {silent: true}).stdout.trim()
     if (stdout !== '') {
       installed = true
     } else {

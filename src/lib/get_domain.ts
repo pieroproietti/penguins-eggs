@@ -8,8 +8,8 @@ export default async function getDomain(initial: string): Promise<string> {
         type: 'input',
         name: 'domain',
         message: 'What is domain of this network? ',
-        default: initial
-      }
+        default: initial,
+      },
     ]
 
     inquirer.prompt(questions).then(function (options) {

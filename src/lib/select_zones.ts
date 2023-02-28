@@ -56,7 +56,7 @@ export default async function selectRegions(region = ''): Promise<string> {
     'Timbuktu',
     'Tripoli',
     'Tunis',
-    'Windhoek'
+    'Windhoek',
   ]
 
   const america = [
@@ -215,7 +215,7 @@ export default async function selectRegions(region = ''): Promise<string> {
     'Whitehorse',
     'Winnipeg',
     'Yakutat',
-    'Yellowknife'
+    'Yellowknife',
   ]
 
   const antartica = ['Casey', 'Davis', 'DumontDUrville', 'Macquarie', 'Mawson', 'McMurdo', 'Palmer', 'Rothera', 'Syowa', 'Troll', 'Vostok']
@@ -314,7 +314,7 @@ export default async function selectRegions(region = ''): Promise<string> {
     'Yakutsk',
     'Yangon',
     'Yekaterinburg',
-    'Yerevan'
+    'Yerevan',
   ]
 
   const atlantic = ['Azores', 'Bermuda', 'Canary', 'Cape_Verde', 'Faroe', 'Jan_Mayen', 'Madeira', 'Reykjavik', 'South_Georgia', 'St_Helena', 'Stanley']
@@ -379,7 +379,7 @@ export default async function selectRegions(region = ''): Promise<string> {
     'Warsaw',
     'Zagreb',
     'Zaporozhye',
-    'Zurich'
+    'Zurich',
   ]
 
   const indian = ['Antananarivo', 'Chagos', 'Christmas', 'Cocos', 'Comoro', 'Kerguelen', 'Mahe', 'Maldives', 'Mauritius', 'Mayotte', 'Reunion']
@@ -427,7 +427,7 @@ export default async function selectRegions(region = ''): Promise<string> {
     'Truk',
     'Wake',
     'Wallis',
-    'Yap'
+    'Yap',
   ]
 
   const us = ['Alaska', 'Aleutian', 'Arizona', 'Central', 'Eastern', 'Hawaii', 'Indiana-Starke', 'Michigan', 'Mountain', 'Pacific', 'Samoa']
@@ -467,65 +467,65 @@ export default async function selectRegions(region = ''): Promise<string> {
     'UCT',
     'UTC',
     'Universal',
-    'Zulu'
+    'Zulu',
   ]
 
   let zone = [] as string[]
 
   switch (region) {
-    case 'Atlantic': {
-      zone = atlantic
+  case 'Atlantic': {
+    zone = atlantic
 
-      break
-    }
+    break
+  }
 
-    case 'Africa': {
-      zone = africa
+  case 'Africa': {
+    zone = africa
 
-      break
-    }
+    break
+  }
 
-    case 'America': {
-      zone = america
+  case 'America': {
+    zone = america
 
-      break
-    }
+    break
+  }
 
-    case 'Antarctica': {
-      zone = antartica
+  case 'Antarctica': {
+    zone = antartica
 
-      break
-    }
+    break
+  }
 
-    case 'Artic': {
-      zone = artic
+  case 'Artic': {
+    zone = artic
 
-      break
-    }
+    break
+  }
 
-    case 'Australia': {
-      zone = australia
+  case 'Australia': {
+    zone = australia
 
-      break
-    }
+    break
+  }
 
-    case 'Europe': {
-      zone = europe
+  case 'Europe': {
+    zone = europe
 
-      break
-    }
+    break
+  }
 
-    case 'India': {
-      zone = indian
+  case 'India': {
+    zone = indian
 
-      break
-    }
+    break
+  }
 
-    case 'Pacific': {
-      zone = pacific
+  case 'Pacific': {
+    zone = pacific
 
-      break
-    }
+    break
+  }
     // No default
   }
 
@@ -534,8 +534,8 @@ export default async function selectRegions(region = ''): Promise<string> {
       type: 'list',
       name: 'zone',
       message: 'Please select the city or region corresponding to your time zone: ',
-      choices: zone
-    }
+      choices: zone,
+    },
   ]
 
   return new Promise(function (resolve) {

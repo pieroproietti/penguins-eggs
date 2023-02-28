@@ -4,30 +4,31 @@
  * email: piero.proietti@gmail.com
  * license: MIT
  */
-import { Command, Flags } from '@oclif/core'
+import {Command, Flags} from '@oclif/core'
 
 import fs from 'fs'
 import path  from 'path'
 import Utils from '../classes/utils'
-import { exec } from '../lib/utils'
-
+import {exec} from '../lib/utils'
 
 /**
  *
  */
 export default class Syncfrom extends Command {
   static flags = {
-    delete: Flags.string({ description: 'rsync --delete delete extraneous files from dest dirs' }),
-    file: Flags.string({ char: 'f', description: "file LUKS volume encrypted" }),
-    help: Flags.help({ char: 'h' }),
-    rootdir: Flags.string({ char: 'r', description: 'rootdir of the installed system, when used from live' }),
-    verbose: Flags.boolean({ char: 'v', description: 'verbose' })
+    delete: Flags.string({description: 'rsync --delete delete extraneous files from dest dirs'}),
+    file: Flags.string({char: 'f', description: 'file LUKS volume encrypted'}),
+    help: Flags.help({char: 'h'}),
+    rootdir: Flags.string({char: 'r', description: 'rootdir of the installed system, when used from live'}),
+    verbose: Flags.boolean({char: 'v', description: 'verbose'}),
   }
+
   static description = 'restore users and user data from a LUKS volumes'
   static examples = [
     'sudo eggs syncfrom',
     'sudo eggs syncfrom --file /path/to/fileLUKS',
   ]
+
   verbose = false
 
   echo = {}
@@ -43,12 +44,12 @@ export default class Syncfrom extends Command {
   luksMountpoint = '/tmp/eggs-data'
 
   async run(): Promise<void> {
-
-    const { flags } = await this.parse(Syncfrom)
+    const {flags} = await this.parse(Syncfrom)
 
     if (flags.verbose) {
       this.verbose = true
     }
+
     this.echo = Utils.setEcho(this.verbose)
 
     let fileVolume = ''
@@ -58,14 +59,14 @@ export default class Syncfrom extends Command {
 
     let destDelete = false
     if (flags.delete) {
-        destDelete = true
+      destDelete = true
     }
 
     if (Utils.isLive()) {
       if (flags.rootdir) {
         this.rootDir = flags.rootdir
       } else {
-        Utils.pressKeyToExit(`Argument --rootdir is mandatory, when running live! Process will terminate`)
+        Utils.pressKeyToExit('Argument --rootdir is mandatory, when running live! Process will terminate')
       }
     }
 
@@ -85,7 +86,7 @@ export default class Syncfrom extends Command {
           this.luksMountpoint = '/tmp/eggs-data'
 
           await this.restorePrivateData()
-          if (await Utils.customConfirm(`Your system was updated! Press a key to reboot`)) {
+          if (await Utils.customConfirm('Your system was updated! Press a key to reboot')) {
             await exec('reboot')
           }
         } else {
@@ -106,13 +107,11 @@ export default class Syncfrom extends Command {
     }
   }
 
-
   /**
    *
    * @param verbose
    */
   private async restorePrivateData(destDelete = false) {
-
     if (!fs.existsSync(this.luksMountpoint)) {
       await exec(`mkdir ${this.luksMountpoint}`, this.echo)
     }
@@ -123,22 +122,21 @@ export default class Syncfrom extends Command {
      * ONLY FROM LIVE
      * rm home, subst /etc/passwd, /etc/shadow, /etc/groups
      */
-    if (Utils.isLive()) {
-      if (this.rootDir !== '/') {
-        Utils.warning('Removing live user on destination system')
-        await exec(`rm -rf ${this.rootDir}/home/*`, this.echo)
-        Utils.warning('Restoring accounts')
-        await exec(`cp ${this.luksMountpoint}/etc/passwd ${this.rootDir}/etc/`, this.echo)
-        await exec(`cp ${this.luksMountpoint}/etc/shadow ${this.rootDir}/etc/`, this.echo)
-        await exec(`cp ${this.luksMountpoint}/etc/group ${this.rootDir}/etc/`, this.echo)
-      }
+    if (Utils.isLive() && this.rootDir !== '/') {
+      Utils.warning('Removing live user on destination system')
+      await exec(`rm -rf ${this.rootDir}/home/*`, this.echo)
+      Utils.warning('Restoring accounts')
+      await exec(`cp ${this.luksMountpoint}/etc/passwd ${this.rootDir}/etc/`, this.echo)
+      await exec(`cp ${this.luksMountpoint}/etc/shadow ${this.rootDir}/etc/`, this.echo)
+      await exec(`cp ${this.luksMountpoint}/etc/group ${this.rootDir}/etc/`, this.echo)
     }
 
     Utils.warning('Restoring crypted data')
     let cmd = `rsync -a ${this.luksMountpoint}/ROOT/ ${this.rootDir}/`
     if (destDelete) {
-        cmd = `rsync --archive --delete ${this.luksMountpoint}/ROOT/ ${this.rootDir}/`
+      cmd = `rsync --archive --delete ${this.luksMountpoint}/ROOT/ ${this.rootDir}/`
     }
+
     await exec(cmd, this.echo)
 
     await this.luksClose()
@@ -148,7 +146,6 @@ export default class Syncfrom extends Command {
    *
    */
   async luksOpen() {
-
     if (!fs.existsSync(this.luksDevice)) {
       Utils.warning(`LUKS open volume: ${this.luksName}`)
       await exec(`cryptsetup luksOpen --type luks2 ${this.luksFile} ${this.luksName}`, Utils.setEcho(true))
@@ -175,11 +172,11 @@ export default class Syncfrom extends Command {
     if (Utils.isMountpoint(this.luksMountpoint)) {
       await exec(`umount ${this.luksMountpoint}`, this.echo)
     }
+
     if (fs.existsSync(this.luksDevice)) {
       Utils.warning(`LUKS close volume: ${this.luksName}`)
       await exec(`cryptsetup luksClose ${this.luksName}`, this.echo)
     }
   }
-
 }
 

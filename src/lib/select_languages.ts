@@ -5,7 +5,7 @@ import inquirer from 'inquirer'
 import shx from 'shelljs'
 import Locales from '../classes/locales'
 
-export default async function selectLanguages(selectedLanguage =""): Promise<string> {
+export default async function selectLanguages(selectedLanguage = ''): Promise<string> {
   const locales = new Locales()
   const supported = await locales.getSupported()
   const selected = selectedLanguage
@@ -16,8 +16,8 @@ export default async function selectLanguages(selectedLanguage =""): Promise<str
       name: 'language',
       message: 'Select language: ',
       choices: supported,
-      default: selected
-    }
+      default: selected,
+    },
   ]
 
   return new Promise(function (resolve) {
