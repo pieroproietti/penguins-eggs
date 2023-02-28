@@ -20,7 +20,6 @@ import Utils from './utils'
 // @ts-ignore
 import tftp from 'tftp'
 
-// @ts-ignore
 import dhcpd from 'penguins-dhcpd-proxy'
 
 /**
