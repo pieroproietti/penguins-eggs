@@ -7,11 +7,11 @@
  * mail: piero.proietti@gmail.com
  */
 
-import { IRemix, IDistro } from '../../../interfaces'
-import { IInstaller } from '../../../interfaces/i-installer'
+import {IRemix, IDistro} from '../../../interfaces'
+import {IInstaller} from '../../../interfaces/i-installer'
 import Fisherman from '../fisherman'
 
-import { exec } from '../../../lib/utils'
+import {exec} from '../../../lib/utils'
 
 /**
  *
@@ -41,13 +41,13 @@ export class Jessie {
     this.distro = distro
     this.user_opt = user_opt
     this.verbose = verbose
-    this.release = release // nel senso di --final 
+    this.release = release // nel senso di --final
   }
 
   /**
    * partitions can come from themes
    */
-   async create() {
+  async create() {
     const fisherman = new Fisherman(this.distro, this.installer, this.verbose)
     await fisherman.settings(this.remix.branding)
 

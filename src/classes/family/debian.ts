@@ -11,8 +11,8 @@ import path from 'node:path'
 import shx from 'shelljs'
 import Utils from '../utils'
 import Pacman from '../pacman'
-import { exec } from '../../lib/utils'
-import { array2spaced, depCommon, depArch, depVersions, depInit } from '../../lib/dependencies'
+import {exec} from '../../lib/utils'
+import {array2spaced, depCommon, depArch, depVersions, depInit} from '../../lib/dependencies'
 
 /**
  * Utils: general porpourse utils
@@ -26,14 +26,14 @@ export default class Debian {
    * @returns true if xorg is installed
    */
   static isInstalledXorg(): boolean {
-    let test = 'xserver-xorg-core'
+    const test = 'xserver-xorg-core'
     // if (Pacman.distro().codenameLikeId === 'bionic') {
-      /*
+    /*
        * BUT_ on Ubuntu bionic we have:
        * xserver-xorg-core-hwe-18.04
        */
-      // test = 'xserver-xorg-core-hwe-18.04'
-    //}
+    // test = 'xserver-xorg-core-hwe-18.04'
+    // }
 
     return this.packageIsInstalled(test)
   }
@@ -73,9 +73,7 @@ export default class Debian {
       }
     }
 
-
-
-    const initType: string = shx.exec('ps --no-headers -o comm 1', { silent: !verbose }).trim()
+    const initType: string = shx.exec('ps --no-headers -o comm 1', {silent: !verbose}).trim()
     for (const dep of depInit) {
       if (dep.init.includes(initType)) {
         if (!this.packageIsInstalled(dep.package)) {
@@ -139,7 +137,7 @@ export default class Debian {
   }
 
   /**
-   * 
+   *
    */
   static async liveInstallerPolicies() {
     const policyFile = '/usr/share/polkit-1/actions/com.github.pieroproietti.penguins-eggs.policy'
@@ -195,7 +193,7 @@ export default class Debian {
   static packageIsInstalled(debPackage: string): boolean {
     let installed = false
     const cmd = `/usr/bin/dpkg -s ${debPackage} | grep Status:`
-    const stdout = shx.exec(cmd, { silent: true }).stdout.trim()
+    const stdout = shx.exec(cmd, {silent: true}).stdout.trim()
     if (stdout === 'Status: install ok installed') {
       installed = true
     }
@@ -210,7 +208,7 @@ export default class Debian {
    */
   static async packageInstall(packageName: string): Promise<boolean> {
     let retVal = false
-    if (shx.exec(`/usr/bin/apt-get install -y ${packageName}`, { silent: true }) === '0') {
+    if (shx.exec(`/usr/bin/apt-get install -y ${packageName}`, {silent: true}) === '0') {
       retVal = true
     }
 
@@ -225,7 +223,7 @@ export default class Debian {
     let available = false
     const cmd = `apt-cache show ${packageName} | grep Package:`
     const test = `Package: ${packageName}`
-    const stdout = shx.exec(cmd, { silent: true }).stdout.trim()
+    const stdout = shx.exec(cmd, {silent: true}).stdout.trim()
     if (stdout === test) {
       available = true
     }
@@ -236,7 +234,7 @@ export default class Debian {
   static async packageAptLast(debPackage: string): Promise<string> {
     let version = ''
     const cmd = `apt-cache show ${debPackage} | grep Version:`
-    const stdout = shx.exec(cmd, { silent: true }).stdout.trim()
+    const stdout = shx.exec(cmd, {silent: true}).stdout.trim()
     version = stdout.slice(9)
     // console.log('===================================')
     // console.log('[' + version + ']')

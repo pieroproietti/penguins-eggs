@@ -10,8 +10,8 @@ export default async function selectAddressType(): Promise<string> {
       name: 'option',
       message: 'Select address type: ',
       choices: ['dhcp', 'static'],
-      default: 'dhcp'
-    }
+      default: 'dhcp',
+    },
   ]
 
   return new Promise(function (resolve) {

@@ -14,26 +14,29 @@ import fs from 'fs'
    * removeInstallerLink
    */
 export default async function removeInstallerLink(this: Sequence): Promise<void> {
-    let file = `${this.installTarget}/usr/bin/penguins-links-add.sh`
-    let lines = []
-    let content = ''
-    if (fs.existsSync(file)) {
-        lines = fs.readFileSync(file, { encoding: 'utf8', flag: 'r' }).split('\n')
-        for (let i = 0; i < lines.length; i++) {
-
-            if (lines[i]) {
-                if (lines[i].search('penguins-krill.desktop') !== -1) {
-                    lines[i] += '#'
-                }
-                if (lines[i].search('penguins-clinstaller.desktop') !== -1) {
-                    lines[i] = '#' + lines[i]
-                }
-                if (lines[i].search('install-debian.desktop') !== -1) {
-                    lines[i] = '#' + lines[i]
-                }
-                content += lines[i] + '\n'
-            }
+  const file = `${this.installTarget}/usr/bin/penguins-links-add.sh`
+  let lines = []
+  let content = ''
+  if (fs.existsSync(file)) {
+    lines = fs.readFileSync(file, {encoding: 'utf8', flag: 'r'}).split('\n')
+    for (let i = 0; i < lines.length; i++) {
+      if (lines[i]) {
+        if (lines[i].search('penguins-krill.desktop') !== -1) {
+          lines[i] += '#'
         }
+
+        if (lines[i].search('penguins-clinstaller.desktop') !== -1) {
+          lines[i] = '#' + lines[i]
+        }
+
+        if (lines[i].search('install-debian.desktop') !== -1) {
+          lines[i] = '#' + lines[i]
+        }
+
+        content += lines[i] + '\n'
+      }
     }
-    fs.writeFileSync(file, content)
+  }
+
+  fs.writeFileSync(file, content)
 }

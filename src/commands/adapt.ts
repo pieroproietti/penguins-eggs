@@ -1,20 +1,21 @@
-import { Command, Flags } from '@oclif/core'
+import {Command, Flags} from '@oclif/core'
 import Utils from '../classes/utils'
 
-import { exec } from '../lib/utils'
+import {exec} from '../lib/utils'
 
 export default class Adapt extends Command {
   static flags = {
-    help: Flags.help({ char: 'h' }),
-    verbose: Flags.boolean({ char: 'v' })
+    help: Flags.help({char: 'h'}),
+    verbose: Flags.boolean({char: 'v'}),
   }
+
   static description = 'adapt monitor resolution for VM only'
   static examples = [
-    `eggs adapt`
+    'eggs adapt',
   ]
 
   async run(): Promise<void> {
-    const { args, flags } = await this.parse(Adapt)
+    const {args, flags} = await this.parse(Adapt)
 
     let verbose = false
     if (flags.verbose) {

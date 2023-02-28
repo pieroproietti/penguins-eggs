@@ -8,8 +8,8 @@ export default async function getUsername(initial: string): Promise<string> {
         type: 'input',
         name: 'name',
         message: 'What is your name? ',
-        default: initial
-      }
+        default: initial,
+      },
     ]
 
     inquirer.prompt(questions).then(function (options) {

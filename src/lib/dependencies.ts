@@ -70,12 +70,12 @@ export const depCommon = [
 export const depArch = [
   {
     package: 'syslinux',
-    arch: ['amd64', 'i386']
+    arch: ['amd64', 'i386'],
   },
   {
     package: 'syslinux-efi',
-    arch: ['arm64', 'armel']
-  }
+    arch: ['arm64', 'armel'],
+  },
 ]
 
 /**
@@ -85,20 +85,20 @@ export const depArch = [
 export const depVersions = [
   {
     package: 'live-config',
-    versions: ['jessie', 'stretch'] // jessie and stretch need it
+    versions: ['jessie', 'stretch'], // jessie and stretch need it
   },
   {
     package: 'live-config-systemd',
-    versions: ['jessie', 'stretch', 'buster'] // jessie, stretch and buster need it
+    versions: ['jessie', 'stretch', 'buster'], // jessie, stretch and buster need it
   },
   {
     package: 'live-config-sysvinit',
-    versions: ['beowulf'] // only Devuan beowulf
+    versions: ['beowulf'], // only Devuan beowulf
   },
   {
     package: 'open-infrastructure-system-config',
-    versions: ['bionic'] // only Ubuntu bionic
-  }
+    versions: ['bionic'], // only Ubuntu bionic
+  },
 ]
 
 /**
@@ -111,6 +111,6 @@ export const depVersions = [
 export const depInit = [
   {
     package: 'live-config-sysvinit',
-    init: 'sysvinit'
-  }
+    init: 'sysvinit',
+  },
 ]

@@ -8,7 +8,7 @@
  */
 
 import Sequence from '../krill-sequence'
-import { exec } from '../../lib/utils'
+import {exec} from '../../lib/utils'
 import Utils from '../../classes/utils'
 import path from 'path'
 
@@ -16,33 +16,32 @@ import path from 'path'
    * initramfs()
    */
 export default async function initramfs(this: Sequence) {
-    if (this.distro.familyId === 'debian') {
-        let cmd = `chroot ${this.installTarget} mkinitramfs -o ~/initrd.img-$(uname -r) ${this.toNull}`
-        try {
-            await exec(cmd, this.echo)
-        } catch (error) {
-            await Utils.pressKeyToExit(cmd)
-        }
-
-        cmd = `chroot ${this.installTarget} mv ~/initrd.img-$(uname -r) /boot ${this.toNull}`
-        try {
-            await exec(cmd, this.echo)
-        } catch (error) {
-            await Utils.pressKeyToExit(cmd)
-        }
-
-    } else if (this.distro.familyId === 'archlinux') {
-        let initrdImg = Utils.initrdImg()
-        initrdImg = initrdImg.substring(initrdImg.lastIndexOf('/') + 1)
-        let cmd = `mkinitcpio -c ${path.resolve(__dirname, '../../../mkinitcpio/arch/mkinitcpio-install.conf')} -g ${this.installTarget}/boot/${initrdImg}` // ${this.toNull}
-        if (this.distro.codenameId === 'Qonos' || this.distro.codenameId === 'Ruah' || this.distro.codenameId === 'Sikaris' ) {
-            cmd = `mkinitcpio -c ${path.resolve(__dirname, '../../../mkinitcpio/manjaro/mkinitcpio-install.conf')} -g ${this.installTarget}/boot/${initrdImg}` // ${this.toNull}
-        }
-        try {
-            await exec(cmd, Utils.setEcho(true))
-        } catch (error) {
-            await Utils.pressKeyToExit(cmd)
-        }
-
+  if (this.distro.familyId === 'debian') {
+    let cmd = `chroot ${this.installTarget} mkinitramfs -o ~/initrd.img-$(uname -r) ${this.toNull}`
+    try {
+      await exec(cmd, this.echo)
+    } catch {
+      await Utils.pressKeyToExit(cmd)
     }
+
+    cmd = `chroot ${this.installTarget} mv ~/initrd.img-$(uname -r) /boot ${this.toNull}`
+    try {
+      await exec(cmd, this.echo)
+    } catch {
+      await Utils.pressKeyToExit(cmd)
+    }
+  } else if (this.distro.familyId === 'archlinux') {
+    let initrdImg = Utils.initrdImg()
+    initrdImg = initrdImg.slice(Math.max(0, initrdImg.lastIndexOf('/') + 1))
+    let cmd = `mkinitcpio -c ${path.resolve(__dirname, '../../../mkinitcpio/arch/mkinitcpio-install.conf')} -g ${this.installTarget}/boot/${initrdImg}` // ${this.toNull}
+    if (this.distro.codenameId === 'Qonos' || this.distro.codenameId === 'Ruah' || this.distro.codenameId === 'Sikaris') {
+      cmd = `mkinitcpio -c ${path.resolve(__dirname, '../../../mkinitcpio/manjaro/mkinitcpio-install.conf')} -g ${this.installTarget}/boot/${initrdImg}` // ${this.toNull}
+    }
+
+    try {
+      await exec(cmd, Utils.setEcho(true))
+    } catch {
+      await Utils.pressKeyToExit(cmd)
+    }
+  }
 }

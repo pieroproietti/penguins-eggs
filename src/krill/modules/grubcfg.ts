@@ -19,18 +19,20 @@ import fs from 'fs'
     * 's/GRUB_CMDLINE_LINUX_DEFAULT=.*$/GRUB_CMDLINE_LINUX_DEFAULT=/g'
     */
 export default async function grubcfg(this: Sequence) {
-    let file = `${this.installTarget}/etc/default/grub`
-    let content = ''
-    const grubs = fs.readFileSync(file, 'utf-8').split('\n')
-    for (let i = 0; i < grubs.length; i++) {
-        if (grubs[i].includes('GRUB_CMDLINE_LINUX_DEFAULT=')) {
-            if (this.partitions.installationMode === 'full-encrypted') {
-                grubs[i] = `GRUB_CMDLINE_LINUX_DEFAULT="resume=UUID=${Utils.uuid(this.devices.swap.name)}"`
-            } else {
-                grubs[i] = `GRUB_CMDLINE_LINUX_DEFAULT="quiet splash resume=UUID=${Utils.uuid(this.devices.swap.name)}"`
-            }
-        }
-        content += grubs[i] + '\n'
+  const file = `${this.installTarget}/etc/default/grub`
+  let content = ''
+  const grubs = fs.readFileSync(file, 'utf-8').split('\n')
+  for (let i = 0; i < grubs.length; i++) {
+    if (grubs[i].includes('GRUB_CMDLINE_LINUX_DEFAULT=')) {
+      if (this.partitions.installationMode === 'full-encrypted') {
+        grubs[i] = `GRUB_CMDLINE_LINUX_DEFAULT="resume=UUID=${Utils.uuid(this.devices.swap.name)}"`
+      } else {
+        grubs[i] = `GRUB_CMDLINE_LINUX_DEFAULT="quiet splash resume=UUID=${Utils.uuid(this.devices.swap.name)}"`
+      }
     }
-    fs.writeFileSync(file, content, 'utf-8')
+
+    content += grubs[i] + '\n'
+  }
+
+  fs.writeFileSync(file, content, 'utf-8')
 }

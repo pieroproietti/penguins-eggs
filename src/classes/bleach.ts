@@ -10,7 +10,7 @@ import fs from 'node:fs'
 import Utils from './utils'
 
 // libraries
-import { exec } from '../lib/utils'
+import {exec} from '../lib/utils'
 import Distro from './distro'
 
 /**
@@ -43,9 +43,9 @@ export default class Bleach {
    * @param verbose
    */
   private async cleanApt(verbose = false) {
-    let echo = { echo: false, ignore: true, capture: false }
+    let echo = {echo: false, ignore: true, capture: false}
     if (verbose) {
-      echo = { echo: true, ignore: true, capture: false }
+      echo = {echo: true, ignore: true, capture: false}
     }
 
     await exec('apt-get clean', echo)
@@ -74,9 +74,9 @@ export default class Bleach {
    * @param verbose
    */
   private async cleanJournal(verbose = false) {
-    let echo = { echo: false, ignore: true, capture: false }
+    let echo = {echo: false, ignore: true, capture: false}
     if (verbose) {
-      echo = { echo: true, ignore: true, capture: false }
+      echo = {echo: true, ignore: true, capture: false}
       Utils.warning('cleaning journald')
     }
 
@@ -99,9 +99,9 @@ export default class Bleach {
    * @param verbose
    */
   private async cleanSystemCache(verbose = false) {
-    let echo = { echo: false, ignore: true, capture: false }
+    let echo = {echo: false, ignore: true, capture: false}
     if (verbose) {
-      echo = { echo: true, ignore: true, capture: false }
+      echo = {echo: true, ignore: true, capture: false}
       Utils.warning('cleaning system cache')
     }
 
@@ -121,9 +121,9 @@ export default class Bleach {
  * @param dest
  */
 async function rm(dest = '', verbose = false) {
-  let echo = { echo: false, ignore: true, capture: false }
+  let echo = {echo: false, ignore: true, capture: false}
   if (verbose) {
-    echo = { echo: true, ignore: true, capture: false }
+    echo = {echo: true, ignore: true, capture: false}
   }
 
   if (fs.existsSync(dest)) {
@@ -134,9 +134,9 @@ async function rm(dest = '', verbose = false) {
 }
 
 async function rmdir(dest = '', verbose = false) {
-  let echo = { echo: false, ignore: true, capture: false }
+  let echo = {echo: false, ignore: true, capture: false}
   if (verbose) {
-    echo = { echo: true, ignore: true, capture: false }
+    echo = {echo: true, ignore: true, capture: false}
   }
 
   const result: string[] = fs.readdirSync(dest)

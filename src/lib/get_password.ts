@@ -1,5 +1,5 @@
 'use strict'
-//import { option } from '@oclif/command/lib/flags'
+// import { option } from '@oclif/command/lib/flags'
 import inquirer  from 'inquirer'
 
 export default async function getPassword(initial: string): Promise<string> {
@@ -15,16 +15,16 @@ export default async function getPassword(initial: string): Promise<string> {
         type: 'password',
         message: 'Choose a password to keep your account safe: ',
         name: 'password',
-        default: initial
+        default: initial,
         // validate: requireLetterAndNumber,
       },
       {
         type: 'password',
         message: 'Confirm your password: ',
         name: 'confirmPassword',
-        default: initial
+        default: initial,
         // validate: requireLetterAndNumber,
-      }
+      },
     ]
 
     inquirer.prompt(questions).then(function (options) {

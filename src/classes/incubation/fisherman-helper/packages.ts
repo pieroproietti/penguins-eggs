@@ -1,20 +1,22 @@
 /**
  * packages.ts
  */
-import { IDistro } from '../../../interfaces'
+import {IDistro} from '../../../interfaces'
 import Pacman from '../../pacman'
 
 /**
- * 
- * @param distro 
+ *
+ * @param distro
  * @returns yaml-string
  */
 export function remove(distro: IDistro): string {
-  let packages = ["calamares"]
+  const packages = ['calamares']
   if (distro.familyId === 'archlinux') {
-    packages.push("penguins-eggs")
-  } if (distro.familyId === 'debian') {
-    packages.push("eggs")
+    packages.push('penguins-eggs')
+  }
+
+  if (distro.familyId === 'debian') {
+    packages.push('eggs')
   }
 
   let yaml = ''
@@ -25,6 +27,7 @@ export function remove(distro: IDistro): string {
   if (yaml !== '') {
     yaml = '- remove:\n' + yaml
   }
+
   return yaml
 }
 
@@ -48,25 +51,25 @@ export function tryInstall(distro: IDistro): string {
   }
 
   if (Pacman.packageIsInstalled('libreoffice-base-core')) {
-    yaml += `  - libreoffice-l10n-$LOCALE\n`
-    yaml += `  - libreoffice-help-$LOCALE\n`
+    yaml += '  - libreoffice-l10n-$LOCALE\n'
+    yaml += '  - libreoffice-help-$LOCALE\n'
   }
 
   if (Pacman.packageIsInstalled('firefox-esr')) {
-    yaml += `  - firefox-esr-$LOCALE\n`
+    yaml += '  - firefox-esr-$LOCALE\n'
   }
 
   if (Pacman.packageIsInstalled('firefox')) {
-    yaml += `  - firefox-$LOCALE\n`
+    yaml += '  - firefox-$LOCALE\n'
   }
 
   if (Pacman.packageIsInstalled('thunderbird')) {
-    yaml += `  - thunderbird-locale-$LOCALE\n`
+    yaml += '  - thunderbird-locale-$LOCALE\n'
   }
 
   if (yaml !== '') {
     yaml = '- try_install:\n' + yaml
   }
-  
+
   return yaml
 }

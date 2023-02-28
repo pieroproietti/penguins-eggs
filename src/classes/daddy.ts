@@ -10,10 +10,10 @@ import Settings from '../classes/settings'
 import Ovary from '../classes/ovary'
 import Compressors from '../classes/compressors'
 import inquirer from 'inquirer'
-import { IEggsConfig } from '../interfaces'
-import { IMyAddons } from '../interfaces'
+import {IEggsConfig} from '../interfaces'
+import {IMyAddons} from '../interfaces'
 import chalk from 'chalk'
-import { exec } from '../lib/utils'
+import {exec} from '../lib/utils'
 
 interface editConf {
   snapshot_basename: string
@@ -60,6 +60,7 @@ export default class Daddy {
           config.snapshot_prefix = Utils.snapshotPrefix(this.settings.distro.distroId, this.settings.distro.codenameId)
           config.compression = 'fast'
         }
+
         jsonConf = JSON.stringify(config)
       }
 
@@ -156,45 +157,45 @@ export default class Daddy {
           type: 'input',
           name: 'snapshot_prefix',
           message: 'LiveCD iso prefix: ',
-          default: c.snapshot_prefix
+          default: c.snapshot_prefix,
         },
         {
           type: 'input',
           name: 'snapshot_basename',
           message: 'LiveCD iso basename: ',
-          default: c.snapshot_basename
+          default: c.snapshot_basename,
         },
         {
           type: 'input',
           name: 'user_opt',
           message: 'LiveCD user:',
-          default: c.user_opt
+          default: c.user_opt,
         },
         {
           type: 'input',
           name: 'user_opt_passwd',
           message: 'LiveCD user password: ',
-          default: c.user_opt_passwd
+          default: c.user_opt_passwd,
         },
         {
           type: 'input',
           name: 'root_passwd',
           message: 'LiveCD root password: ',
-          default: c.root_passwd
+          default: c.root_passwd,
         },
         {
           type: 'input',
           name: 'theme',
           message: 'LiveCD theme: ',
-          default: c.theme
+          default: c.theme,
         },
         {
           type: 'list',
           name: 'compression',
           message: 'LiveCD compression: ',
           choices: ['fast', 'normal', 'max'],
-          default: compressionOpt
-        }
+          default: compressionOpt,
+        },
       ]
       inquirer.prompt(questions).then(function (options) {
         resolve(JSON.stringify(options))

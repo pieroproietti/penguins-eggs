@@ -4,41 +4,41 @@
  * email: piero.proietti@gmail.com
  * license: MIT
  */
-import { Command, Flags } from '@oclif/core'
+import {Command, Flags} from '@oclif/core'
 
 import fs from 'fs'
 import Utils from '../classes/utils'
 import Settings from '../classes/settings'
-import { IWorkDir } from '../interfaces/i-workdir'
+import {IWorkDir} from '../interfaces/i-workdir'
 
-import { exec } from '../lib/utils'
+import {exec} from '../lib/utils'
 
 export default class Kill extends Command {
   static flags = {
-    help: Flags.help({ char: 'h' }),
-    nointeractive: Flags.boolean({ char: 'n', description: 'no user interaction' }),
-    verbose: Flags.boolean({ char: 'v', description: 'verbose' })
+    help: Flags.help({char: 'h'}),
+    nointeractive: Flags.boolean({char: 'n', description: 'no user interaction'}),
+    verbose: Flags.boolean({char: 'v', description: 'verbose'}),
   }
+
   static description = 'kill the eggs/free the nest'
   static examples = [
-    "sudo eggs kill"
+    'sudo eggs kill',
   ]
 
   config_file = '/etc/penguins-eggs.d/eggs.yaml' as string
   snapshot_dir = '' as string
   work_dir = {} as IWorkDir
 
-
   async run(): Promise<void> {
     Utils.titles(this.id + ' ' + this.argv)
 
-    const { flags } = await this.parse(Kill)
+    const {flags} = await this.parse(Kill)
     let verbose = false
     if (flags.verbose) {
       verbose = true
     }
 
-    let nointeractive = flags.nointeractive
+    const nointeractive = flags.nointeractive
 
     const echo = Utils.setEcho(verbose)
 

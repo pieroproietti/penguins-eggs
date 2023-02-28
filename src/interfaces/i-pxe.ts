@@ -15,7 +15,7 @@ export interface IDhcpOptions {
 }
 
 export interface IDhcpd {
-	// constructor(opts) 
+	// constructor(opts)
   pre_init: (pkt: IPacket) => void
 	discover: (pkt: IPacket) => void
   request: (pkt: IPacket) => void
@@ -24,12 +24,12 @@ export interface IDhcpd {
 }
 
 export interface IProxy {
-  // constructor(type, opts) 
+  // constructor(type, opts)
   bind: (port: number, addr: string, cb: any) =>  IPacket
 }
 
 export interface IServer {
-  // constructor(type, opts) 
+  // constructor(type, opts)
   bind: (port: number, addr: string, cb: any) => IPacket
 }
 

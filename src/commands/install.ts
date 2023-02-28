@@ -5,45 +5,45 @@
  * license: MIT
  */
 
-import { Command, Flags, flush } from '@oclif/core'
+import {Command, Flags, flush} from '@oclif/core'
 import Utils from '../classes/utils'
 import Krill from '../krill/krill-prepare'
 import path from 'node:path'
 import yaml from 'js-yaml'
 import fs from 'fs'
-import axios, { AxiosResponse } from 'axios'
+import axios, {AxiosResponse} from 'axios'
 import https from 'node:https'
 const agent = new https.Agent({
-  rejectUnauthorized: false
+  rejectUnauthorized: false,
 })
-import { IKrillConfig } from '../interfaces/i-krill-config'
-
+import {IKrillConfig} from '../interfaces/i-krill-config'
 
 /**
  * Class Krill
  */
 export default class Install extends Command {
   static flags = {
-    crypted: Flags.boolean({ char: 'k', description: 'Crypted CLI installation' }),
-    custom: Flags.string({ char: 'c', description: 'custom unattended configuration' }),
-    domain: Flags.string({ char: 'd', description: 'Domain name, defult: .local' }),
-    help: Flags.help({ char: 'h' }),
-    ip: Flags.boolean({ char: 'i', description: 'hostname as ip, eg: ip-192-168-1-33' }),
-    nointeractive: Flags.boolean({ char: 'n', description: 'no user interaction' }),
-    none: Flags.boolean({ char: 'N', description: 'Swap none: 256M' }),
-    pve: Flags.boolean({ char: 'p', description: 'Proxmox VE install' }),
-    random: Flags.boolean({ char: 'r', description: 'Add random to hostname, eg: colibri-ay412dt' }),
-    small: Flags.boolean({ char: 's', description: 'Swap small: RAM' }),
-    suspend: Flags.boolean({ char: 'S', description: 'Swap suspend: RAM x 2' }),
-    unattended: Flags.boolean({ char: 'u', description: 'Unattended installation' }),
-    verbose: Flags.boolean({ char: 'v', description: 'Verbose' })
+    crypted: Flags.boolean({char: 'k', description: 'Crypted CLI installation'}),
+    custom: Flags.string({char: 'c', description: 'custom unattended configuration'}),
+    domain: Flags.string({char: 'd', description: 'Domain name, defult: .local'}),
+    help: Flags.help({char: 'h'}),
+    ip: Flags.boolean({char: 'i', description: 'hostname as ip, eg: ip-192-168-1-33'}),
+    nointeractive: Flags.boolean({char: 'n', description: 'no user interaction'}),
+    none: Flags.boolean({char: 'N', description: 'Swap none: 256M'}),
+    pve: Flags.boolean({char: 'p', description: 'Proxmox VE install'}),
+    random: Flags.boolean({char: 'r', description: 'Add random to hostname, eg: colibri-ay412dt'}),
+    small: Flags.boolean({char: 's', description: 'Swap small: RAM'}),
+    suspend: Flags.boolean({char: 'S', description: 'Swap suspend: RAM x 2'}),
+    unattended: Flags.boolean({char: 'u', description: 'Unattended installation'}),
+    verbose: Flags.boolean({char: 'v', description: 'Verbose'}),
   }
+
   static description = 'krill: the CLI system installer - the egg became a penguin!'
 
   static examples = [
-    "sudo eggs install", 
-    "sudo eggs install --unattended", 
-    "sudo eggs install --custom it"
+    'sudo eggs install',
+    'sudo eggs install --unattended',
+    'sudo eggs install --custom it',
   ]
 
   /**
@@ -52,7 +52,7 @@ export default class Install extends Command {
   async run(): Promise<void> {
     Utils.titles(this.id + ' ' + this.argv)
 
-    const { flags } = await this.parse(Install)
+    const {flags} = await this.parse(Install)
 
     let custom = flags.custom!
 
@@ -64,11 +64,11 @@ export default class Install extends Command {
     // krillConfig
     let krillConfig = {} as IKrillConfig
     if (custom !== undefined) {
-      let fname = path.basename(custom)
+      const fname = path.basename(custom)
       unattended = true
-      let url = `https://raw.githubusercontent.com/pieroproietti/penguins-wardrobe/main/config/${fname}.yaml`
+      const url = `https://raw.githubusercontent.com/pieroproietti/penguins-wardrobe/main/config/${fname}.yaml`
       let res: AxiosResponse
-      await axios.get(url, { httpsAgent: agent })
+      await axios.get(url, {httpsAgent: agent})
       .then(function (response) {
         krillConfig = yaml.load(response.data) as IKrillConfig
       })
@@ -79,11 +79,11 @@ export default class Install extends Command {
     }
 
     // nointeractive
-    let nointeractive = flags.nointeractive
+    const nointeractive = flags.nointeractive
 
     // hostname
-    let ip = flags.ip
-    let random = flags.random
+    const ip = flags.ip
+    const random = flags.random
 
     let domain = '.local'
     if (flags.domain) {
@@ -91,18 +91,18 @@ export default class Install extends Command {
     }
 
     // swap
-    let suspend = flags.suspend
-    let small = flags.small
-    let none = flags.none
+    const suspend = flags.suspend
+    const small = flags.small
+    const none = flags.none
 
     let crypted = flags.crypted
 
-    let pve = flags.pve
+    const pve = flags.pve
     if (pve) {
       crypted = false
     }
 
-    let verbose = flags.verbose
+    const verbose = flags.verbose
 
     if (Utils.isRoot()) {
       if (Utils.isLive()) {

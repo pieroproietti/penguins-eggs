@@ -8,8 +8,8 @@ export default async function getNetmask(initial: string): Promise<string> {
         type: 'input',
         name: 'netmask',
         message: 'What is netmask of this computer? ',
-        default: initial
-      }
+        default: initial,
+      },
     ]
 
     inquirer.prompt(questions).then(function (options) {

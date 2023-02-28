@@ -7,7 +7,7 @@ import chalk from 'chalk'
 const pjson = require('../../package.json')
 
 // libraries
-import { exec } from '../lib/utils'
+import {exec} from '../lib/utils'
 
 // Comando per avviare ubiquity: sudo --preserve-env DBUS_SESSION_BUS_ADDRESS, XDG_RUNTIME sh -c 'calamares'
 
@@ -126,22 +126,22 @@ export async function addMotd(distro: string, version: string, user: string, use
     }
   }
 
-  if (!fs.existsSync(fileMotd)){
+  if (!fs.existsSync(fileMotd)) {
     await exec(`touch ${fileMotd}`)
   }
-  
+
   msgRemove(fileMotd)
 
   let eggsMotd = fs.readFileSync(fileMotd, 'utf-8')
   eggsMotd += startMessage + '\n'
   eggsMotd += Utils.flag() + '\n'
   eggsMotd += 'You are logged as: ' + chalk.bold(user) + ' your password is: ' + chalk.bold(userPasswd) + ', root password: ' + chalk.bold(rootPasswd) + '\n\n'
-  eggsMotd += `install              : ` + chalk.bold(installer) + `\n`
-  eggsMotd += `  unattended         : ` + chalk.bold(`sudo eggs install --unattended  # us configuration`) + `\n`
-  eggsMotd += `  unattended custom  : ` + chalk.bold(`sudo eggs install --custom [ br | it | yours ]`) + `\n`
-  eggsMotd += `PXE server           : ` + chalk.bold(`sudo eggs cuckoo`) + `\n`
-  eggsMotd += `(*) to get your custom unattended configuration: fork https://github.com/pieroproietti/penguins-wardrobe` + `\n`
-  eggsMotd += `    create your configuration in /config and ask for a Pull Request` + `\n`
+  eggsMotd += 'install              : ' + chalk.bold(installer) + '\n'
+  eggsMotd += '  unattended         : ' + chalk.bold('sudo eggs install --unattended  # us configuration') + '\n'
+  eggsMotd += '  unattended custom  : ' + chalk.bold('sudo eggs install --custom [ br | it | yours ]') + '\n'
+  eggsMotd += 'PXE server           : ' + chalk.bold('sudo eggs cuckoo') + '\n'
+  eggsMotd += '(*) to get your custom unattended configuration: fork https://github.com/pieroproietti/penguins-wardrobe' + '\n'
+  eggsMotd += '    create your configuration in /config and ask for a Pull Request' + '\n'
   eggsMotd += stopMessage + '\n'
   fs.writeFileSync(fileMotd, eggsMotd)
 }
@@ -159,7 +159,7 @@ export async function addIssue(distro: string, version: string, user: string, us
   const fileIssue = `${chroot}/etc/issue`
   msgRemove(fileIssue)
 
-  let eggsIssue = fs.readFileSync(fileIssue, 'utf-8')
+  const eggsIssue = fs.readFileSync(fileIssue, 'utf-8')
   // eggsIssue += startMessage + '\n'
   // eggsIssue += `This is a ${distro}/${version} system created by penguin's eggs.\n`
   // eggsIssue += 'You can login with user: ' + chalk.bold(user) + ' and password: ' + chalk.bold(userPasswd) + ', root password: ' + chalk.bold(rootPasswd) + '\n'

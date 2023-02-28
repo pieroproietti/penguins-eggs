@@ -8,8 +8,8 @@ export default async function getGateway(initial: string): Promise<string> {
         type: 'input',
         name: 'gateway',
         message: 'What is gateway of this network? ',
-        default: initial
-      }
+        default: initial,
+      },
     ]
 
     inquirer.prompt(questions).then(function (options) {

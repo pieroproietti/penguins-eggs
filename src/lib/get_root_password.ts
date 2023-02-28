@@ -14,16 +14,16 @@ export default async function geRootPassword(initial: string): Promise<string> {
         type: 'password',
         message: 'Repeat password: ',
         name: 'password',
-        default: initial
+        default: initial,
         // validate: requireLetterAndNumber,
       },
       {
         type: 'password',
         message: 'Choose a password to keep your account safe: ',
         name: 'confirmPassword',
-        default: initial
+        default: initial,
         // validate: requireLetterAndNumber,
-      }
+      },
     ]
 
     inquirer.prompt(questions).then(function (options) {

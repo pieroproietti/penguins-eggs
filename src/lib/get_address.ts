@@ -8,8 +8,8 @@ export default async function getAddress(initial: string): Promise<string> {
         type: 'input',
         name: 'address',
         message: 'What is ip address of this computer? ',
-        default: initial
-      }
+        default: initial,
+      },
     ]
 
     inquirer.prompt(questions).then(function (options) {

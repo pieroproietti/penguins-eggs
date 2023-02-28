@@ -6,18 +6,18 @@
  */
 
 import shx from 'shelljs'
-import fs, { utimesSync } from 'node:fs'
+import fs, {utimesSync} from 'node:fs'
 import path from 'node:path'
 import Pacman from './pacman'
 import Utils from './utils'
 import N8 from './n8'
 
 // libraries
-import { exec } from '../lib/utils'
-import { verify } from 'node:crypto'
-import { file, string } from '@oclif/core/lib/flags'
-import { dir } from 'node:console'
-import { execSync } from 'node:child_process'
+import {exec} from '../lib/utils'
+import {verify} from 'node:crypto'
+import {file, string} from '@oclif/core/lib/flags'
+import {dir} from 'node:console'
+import {execSync} from 'node:child_process'
 import ts from 'typescript'
 
 const xdg_dirs = ['DESKTOP', 'DOWNLOAD', 'TEMPLATES', 'PUBLICSHARE', 'DOCUMENTS', 'MUSIC', 'PICTURES', 'VIDEOS']
@@ -27,7 +27,6 @@ const xdg_dirs = ['DESKTOP', 'DOWNLOAD', 'TEMPLATES', 'PUBLICSHARE', 'DOCUMENTS'
  * @remarks all the utilities
  */
 export default class Xdg {
-
   /**
    *
    * @param xdg_dir
@@ -39,12 +38,13 @@ export default class Xdg {
       retval = xdg_dir.charAt(0).toUpperCase() + xdg_dir.slice(1).toLowerCase()
       console.log(retval)
     } else {
-      xdg_dirs.forEach(async (dir) => {
+      xdg_dirs.forEach(async dir => {
         if (dir === xdg_dir) {
-          retval = path.basename(shx.exec(`sudo -u ${await Utils.getPrimaryUser()} xdg-user-dir ${dir}`, { silent: true }).stdout.trim())
+          retval = path.basename(shx.exec(`sudo -u ${await Utils.getPrimaryUser()} xdg-user-dir ${dir}`, {silent: true}).stdout.trim())
         }
       })
     }
+
     return retval
   }
 
@@ -61,7 +61,7 @@ export default class Xdg {
      * Creo solo la cartella DESKTOP perchè serve per i link, eventualmente posso creare le altre
      * ma c'è il problema di traduce/non traduce
      */
-    xdg_dirs.forEach(async (dir) => {
+    xdg_dirs.forEach(async dir => {
       if (dir === 'DESKTOP') {
         await Xdg.mk(chroot, `/home/${user}/` + this.traduce(dir, traduce), verbose)
       }
@@ -90,7 +90,6 @@ export default class Xdg {
    */
   static async autologin(olduser: string, newuser: string, chroot = '/') {
     if (Pacman.isInstalledGui()) {
-
       /**
        * SLIM
        */
@@ -103,13 +102,13 @@ export default class Xdg {
        * LIGHTDM
        */
       if (Pacman.packageIsInstalled('lightdm')) {
-        let dc = `${chroot}/etc/lightdm/`
-        let files = fs.readdirSync(dc)
+        const dc = `${chroot}/etc/lightdm/`
+        const files = fs.readdirSync(dc)
         for (const elem of files) {
           const curFile = dc + elem
           if (!N8.isDirectory(curFile)) {
-            let content = fs.readFileSync(curFile, 'utf8')
-            let find = `[Seat:*]`
+            const content = fs.readFileSync(curFile, 'utf8')
+            const find = '[Seat:*]'
             if (content.includes(find)) {
               shx.sed('-i', `autologin-user=${olduser}`, `autologin-user=${newuser}`, curFile)
             }
@@ -122,10 +121,10 @@ export default class Xdg {
        */
       if (Pacman.packageIsInstalled('sddm')) {
         let sddmChanged = false
-        let curFile = `${chroot}/etc/sddm.conf`
+        const curFile = `${chroot}/etc/sddm.conf`
         if (fs.existsSync(curFile)) {
-          let content = fs.readFileSync(curFile, 'utf8')
-          let find = `[Autologin]`
+          const content = fs.readFileSync(curFile, 'utf8')
+          const find = '[Autologin]'
           if (content.includes(find)) {
             shx.sed('-i', `User=${olduser}`, `User=${newuser}`, curFile)
             sddmChanged = true
@@ -133,13 +132,13 @@ export default class Xdg {
         }
 
         if (!sddmChanged) {
-          let dc = `${chroot}/etc/sddm.conf.d/`
+          const dc = `${chroot}/etc/sddm.conf.d/`
           if (fs.existsSync(dc)) {
-            let files = fs.readdirSync(dc)
+            const files = fs.readdirSync(dc)
             for (const elem of files) {
               const curFile = dc + elem
-              let content = fs.readFileSync(curFile, 'utf8')
-              let find = `[Autologin]`
+              const content = fs.readFileSync(curFile, 'utf8')
+              const find = '[Autologin]'
               if (content.includes(find)) {
                 shx.sed('-i', `User=${olduser}`, `User=${newuser}`, curFile)
                 sddmChanged = true
@@ -149,13 +148,14 @@ export default class Xdg {
         }
 
         // sddm.conf don't exists, generate it
-        if (!sddmChanged){
-          let session="plasma"
+        if (!sddmChanged) {
+          let session = 'plasma'
           if (Pacman.isInstalledWayland()) {
-            session="plasma-wayland"
+            session = 'plasma-wayland'
           }
-          let content=`[Autologin]\nUser=${newuser}\nSession=${session}\n`
-          let curFile = `${chroot}/etc/sddm.conf`
+
+          const content = `[Autologin]\nUser=${newuser}\nSession=${session}\n`
+          const curFile = `${chroot}/etc/sddm.conf`
           fs.writeFileSync(curFile, content, 'utf8')
         }
       }
@@ -183,9 +183,7 @@ export default class Xdg {
         const content = `[daemon]\nAutomaticLoginEnable=true\nAutomaticLogin=${newuser}\n`
         Utils.write(gdmConf, content)
       }
-
     }
-
   }
 
   /**
@@ -235,7 +233,7 @@ export default class Xdg {
     } else if (Pacman.packageIsInstalled('xfce4-session')) {
       // use .config/xfce4 NOT .config/xfce4/
       await rsyncIfExist(`/home/${user}/.config/xfce4`, '/etc/skel/.config', verbose)
-      await exec(`mkdir /etc/skel/.local/share -p`, echo)
+      await exec('mkdir /etc/skel/.local/share -p', echo)
       await rsyncIfExist(`/home/${user}/.local/share/recently-used.xbel`, '/etc/skel/.local/share', verbose)
     }
 
@@ -252,7 +250,7 @@ export default class Xdg {
       // we need to copy: .linuxfx ,kde and ,cinnamon
       await rsyncIfExist(`/home/${user}/.cinnamon`, '/etc/skel', verbose)
       await rsyncIfExist(`/home/${user}/.kde`, '/etc/skel', verbose)
-      await rsyncIfExist(`/home/${user}/.linuxfx`, `/etc/skel`, verbose)
+      await rsyncIfExist(`/home/${user}/.linuxfx`, '/etc/skel', verbose)
       await rsyncIfExist(`/home/${user}/.local`, '/etc/skel', verbose)
     }
 
@@ -267,7 +265,6 @@ export default class Xdg {
     // ls -lart /etc/skel
   }
 }
-
 
 /**
  * execIfExist
@@ -287,7 +284,6 @@ async function execIfExist(cmd: string, file: string, verbose = false) {
  *
  */
 async function rsyncIfExist(source: string, dest = '/etc/skel/', verbose = false) {
-
   const echo = Utils.setEcho(verbose)
   if (fs.existsSync(source)) {
     await exec(`rsync -avx ${source} ${dest}`, echo)

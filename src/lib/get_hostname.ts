@@ -8,8 +8,8 @@ export default async function getHostname(initial: string): Promise<string> {
         type: 'input',
         name: 'hostname',
         message: 'Choose a name for this computer? ',
-        default: initial
-      }
+        default: initial,
+      },
     ]
 
     inquirer.prompt(questions).then(function (options) {

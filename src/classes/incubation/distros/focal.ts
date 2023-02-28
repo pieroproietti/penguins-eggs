@@ -9,11 +9,11 @@ import fs from 'node:fs'
 import shx from 'shelljs'
 import yaml from 'js-yaml'
 import path from 'node:path'
-import { IInstaller, IRemix, IDistro } from '../../../interfaces'
+import {IInstaller, IRemix, IDistro} from '../../../interfaces'
 import Fisherman from '../fisherman'
 
-import { exec } from '../../../lib/utils'
-import { throws } from 'node:assert'
+import {exec} from '../../../lib/utils'
+import {throws} from 'node:assert'
 
 interface IReplaces {
   search: string
@@ -51,7 +51,7 @@ export class Focal {
     this.user_opt = user_opt
     this.verbose = verbose
     this.release = release
-    this.theme = theme    
+    this.theme = theme
   }
 
   /**
@@ -91,7 +91,5 @@ export class Focal {
     await fisherman.buildCalamaresModule('cleanup', true)
     await fisherman.buildModule('umount')
     await fisherman.buildModule('finished')
-
-
   }
 }
