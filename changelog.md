@@ -22,14 +22,13 @@ You can follow the project also consulting the [commit history](https://github.c
 Versions are listed on reverse order, the first is the last one. Old versions are moved to [versions](https://sourceforge.net/projects/penguins-eggs/files/packages-deb/versions/). 
 
 ### eggs-9.3.27
-This package make exactly the same things of the previous one, but I changed the way I use dhcpd-proxy for cuckoo - this has not impact on the usage of eggs, is more a refactoring of eggs itself.
+This package does exactly the same as the previous one, but I changed the way I use dhcpd-proxy for cuckoo - this has no impact on the usage of eggs - is more a refactoring of eggs itself.
 
-When I implemented cuckoo, the PXE sevice included in eggs, was thanks a little package from FOGProject [node-dhcproxy](https://github.com/FOGProject/node-dhcproxy) and simply adapt it for my usage. The problem is who that package last commit was on Sep 21, 2019, and from that age many things changed, and we need to have control on it. 
+When I implemented cuckoo, the PXE service included in eggs, I used a small package from the FOGProject [node-dhcproxy](https://github.com/FOGProject/node-dhcproxy)  and simply adapted it to my usage. The problem is that the last commit of that package was on September 21, 2019, and since then many things have changed, and we need to have some control over it.
 
-So I decide to rewrite it, convert it to typescript and create another package named [etrick](https://github.com/pieroproietti/etrick) not just have the code inside eggs as was before. In future I will move on it code for tftp and https too, to get all PXE services together, for now is ok we are just starting.
+So I decided to rewrite it, convert it to typescript and create another package called [etrick](https://github.com/pieroproietti/etrick), without just having the code inside the eggs as it was before. In the future I will also move it to the code for tftp and https, to have all the PXE services together, for now it's okay, we are just starting.
 
-I was undecided if publish this version or not - there are not new interesting feathures not great news for the users, all the changes are just hidden - but at last I thought to publish almost to stabilize it, have a master branch working - for peoples who want collaborate - and create a new development branch.
-
+I was undecided whether to publish this version or not - there are no interesting new features, no big changes for users, all the changes are just hidden - but in the end I thought I would publish it almost to stabilize it, have a working master branch - for those who want to collaborate - and create a new development branch.
 
 ### eggs-9.3.26
 * kill: added --nointeractive flag;
