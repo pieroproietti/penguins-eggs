@@ -1,7 +1,7 @@
 {
     "name": "penguins-eggs",
     "description": "Perri's Brewery edition: remaster your system and distribuite it",
-    "version": "9.3.26",
+    "version": "9.3.27",
     "author": "Piero Proietti @pieroproietti",
     "bin": {
         "eggs": "bin/run"
@@ -25,7 +25,7 @@
         "mustache": "^4.2.0",
         "netmask": "^2.0.2",
         "node-static": "^0.7.11",
-        "etrick" : "^0.0.2",
+        "etrick": "^0.0.2",
         "react": "^17.0.2",
         "shelljs": "0.8.5",
         "systeminformation": "^5.17.9",
@@ -86,7 +86,8 @@
         "oclif",
         "refracta",
         "remastersys",
-        "systemback"
+        "systemback",
+        "pxe"
     ],
     "license": "MIT",
     "main": "./dist/index.js",
