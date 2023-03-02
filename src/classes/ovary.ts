@@ -31,7 +31,6 @@ import Settings from './settings.js'
 import Systemctl from './systemctl.js'
 import Bleach from './bleach.js'
 import Repo from './yolk.js'
-import {cliAutologin} from '../lib/cli-autologin.js'
 import {displaymanager} from './incubation/fisherman-helper/displaymanager.js'
 
 // backup
@@ -39,6 +38,7 @@ import {access} from 'fs/promises'
 import {constants} from 'fs'
 import Users from './users.js'
 import {createTextChangeRange} from 'typescript'
+import CliAutologin from '../lib/cli-autologin.js'
 
 /**
  * Ovary:
@@ -68,12 +68,14 @@ export default class Ovary {
 
   cryptedclone = false
 
+  cliAutologin = new CliAutologin()
+
   /**
    * @returns {boolean} success
    */
   async fertilization(snapshot_prefix = '', snapshot_basename = '', theme = '', compression = '', nointeratctive = false): Promise<boolean> {
     this.settings = new Settings()
-
+    
     if (await this.settings.load()) {
       this.familyId = this.settings.distro.familyId
 
@@ -236,15 +238,15 @@ export default class Ovary {
              * GUI installed but NOT Desktop Manager: just create motd and issue
              */
             if (displaymanager() === '') {
-              cliAutologin.addIssue(this.settings.distro.distroId, this.settings.distro.codenameId, this.settings.config.user_opt, this.settings.config.user_opt_passwd, this.settings.config.root_passwd, this.settings.work_dir.merged)
-              cliAutologin.addMotd(this.settings.distro.distroId, this.settings.distro.codenameId, this.settings.config.user_opt, this.settings.config.user_opt_passwd, this.settings.config.root_passwd, this.settings.work_dir.merged)
+              this.cliAutologin.addIssue(this.settings.distro.distroId, this.settings.distro.codenameId, this.settings.config.user_opt, this.settings.config.user_opt_passwd, this.settings.config.root_passwd, this.settings.work_dir.merged)
+              this.cliAutologin.addMotd(this.settings.distro.distroId, this.settings.distro.codenameId, this.settings.config.user_opt, this.settings.config.user_opt_passwd, this.settings.config.root_passwd, this.settings.work_dir.merged)
             }
           } else {
-            cliAutologin.addAutologin(this.settings.distro.distroId, this.settings.distro.codenameId, this.settings.config.user_opt, this.settings.config.user_opt_passwd, this.settings.config.root_passwd, this.settings.work_dir.merged)
+            this.cliAutologin.addAutologin(this.settings.distro.distroId, this.settings.distro.codenameId, this.settings.config.user_opt, this.settings.config.user_opt_passwd, this.settings.config.root_passwd, this.settings.work_dir.merged)
           }
 
           // Here we are forcing alwats cliAutologin
-          cliAutologin.addAutologin(this.settings.distro.distroId, this.settings.distro.codenameId, this.settings.config.user_opt, this.settings.config.user_opt_passwd, this.settings.config.root_passwd, this.settings.work_dir.merged)
+          this.cliAutologin.addAutologin(this.settings.distro.distroId, this.settings.distro.codenameId, this.settings.config.user_opt, this.settings.config.user_opt_passwd, this.settings.config.root_passwd, this.settings.work_dir.merged)
         }
 
         await this.editLiveFs(clone, cryptedclone)
