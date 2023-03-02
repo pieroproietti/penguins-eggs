@@ -15,7 +15,7 @@
  * https://github.com/AstarNetwork/swanky-cli/blob/master/src/commands/compile/index.ts
  */
 
-import {IExec} from '../interfaces'
+import {IExec} from '../interfaces/index.js'
 import {spawn} from 'child_process'
 
 /**

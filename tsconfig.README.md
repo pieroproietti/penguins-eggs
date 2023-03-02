@@ -1,3 +1,9 @@
+# tsconfig
+
+Se inseriamo "moduleResolution": "node16" abbiamo errore anche su inquirer@^8.0.0 nonostante sia raccomandato per la risoluzione commonjs
+
+
+```
 {
   "compilerOptions": {
     "jsx": "react",
@@ -17,3 +23,4 @@
     "src/**/*"
   ]
 }
+```

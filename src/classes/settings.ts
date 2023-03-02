@@ -15,14 +15,14 @@ import chalk from 'chalk'
 const pjson = require('../../package.json')
 
 // interfaces
-import {IRemix, IDistro, IApp, IWorkDir} from '../interfaces'
+import {IRemix, IDistro, IApp, IWorkDir} from '../interfaces/index.js'
 
 // classes
-import Utils from './utils'
-import Incubator from './incubation/incubator'
-import Distro from './distro'
-import Pacman from './pacman'
-import {IEggsConfig} from '../interfaces'
+import Utils from './utils.js'
+import Incubator from './incubation/incubator.js'
+import Distro from './distro.js'
+import Pacman from './pacman.js'
+import {IEggsConfig} from '../interfaces/index.js'
 
 const config_file = '/etc/penguins-eggs.d/eggs.yaml' as string
 

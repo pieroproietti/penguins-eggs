@@ -7,21 +7,21 @@
 import fs from 'node:fs'
 import path from 'node:path'
 import shx from 'shelljs'
-import Utils from '../utils'
-import {IRemix, IDistro} from '../../interfaces'
+import Utils from '../utils.js'
+import {IRemix, IDistro} from '../../interfaces/index.js'
 
-import {Jessie} from './distros/jessie'
-import {Buster} from './distros/buster'
-import {Focal} from './distros/focal'
-import {Bionic} from './distros/bionic'
-import {Rolling} from './distros/rolling'
+import {Jessie} from './distros/jessie.js'
+import {Buster} from './distros/buster.js'
+import {Focal} from './distros/focal.js'
+import {Bionic} from './distros/bionic.js'
+import {Rolling} from './distros/rolling.js'
 
-import Pacman from '../pacman'
-import {installer} from './installer'
-import {IInstaller} from '../../interfaces/i-installer'
+import Pacman from '../pacman.js'
+import {installer} from './installer.js'
+import {IInstaller} from '../../interfaces/i-installer.js'
 
-import {exec} from '../../lib/utils'
-import {threadId} from 'node:worker_threads'
+import {exec} from '../../lib/utils.js'
+
 
 /**
  *

@@ -4,8 +4,8 @@
  * author: Piero Proietti
  */
 import inquirer from 'inquirer'
-import Keyboards from '../classes/keyboards'
-import {IXkbModel, IXkbLayout, IXkbVariant, IXkbOption} from '../interfaces/i-xkb-model'
+import Keyboards from '../classes/keyboards.js'
+import {IXkbModel, IXkbLayout, IXkbVariant, IXkbOption} from '../interfaces/i-xkb-model.js'
 
 /**
   *

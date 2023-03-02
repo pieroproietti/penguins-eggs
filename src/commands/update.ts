@@ -6,10 +6,10 @@
  */
 import {Command, Flags} from '@oclif/core'
 import shx from 'shelljs'
-import Utils from '../classes/utils'
-import Tools from '../classes/tools'
-import Pacman from '../classes/pacman'
-import {exec} from '../lib/utils'
+import Utils from '../classes/utils.js'
+import Tools from '../classes/tools.js'
+import Pacman from '../classes/pacman.js'
+import {exec} from '../lib/utils.js'
 import inquirer from 'inquirer'
 
 /**
