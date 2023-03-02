@@ -9,13 +9,13 @@ import fs from 'node:fs'
 import shx from 'shelljs'
 import path from 'node:path'
 
-import {IRemix, IDistro} from '../../interfaces'
+import {IRemix, IDistro} from '../../interfaces/index.js'
 import chalk from 'chalk'
-import Utils from '../utils'
-import {IInstaller} from '../../interfaces'
-import {displaymanager} from './fisherman-helper/displaymanager'
+import Utils from '../utils.js'
+import {IInstaller} from '../../interfaces/index.js'
+import {displaymanager} from './fisherman-helper/displaymanager.js'
 
-import {exec} from '../../lib/utils'
+import {exec} from '../../lib/utils.js'
 
 interface IReplaces {
   search: string

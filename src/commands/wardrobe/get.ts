@@ -1,9 +1,9 @@
 import {Command, Flags} from '@oclif/core'
-import Utils from '../../classes/utils'
+import Utils from '../../classes/utils.js'
 import chalk from 'chalk'
 
 // libraries
-import {exec} from '../../lib/utils'
+import {exec} from '../../lib/utils.js'
 import {basename} from 'path'
 
 /**

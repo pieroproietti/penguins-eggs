@@ -4,7 +4,7 @@
  * author: Piero Proietti
  */
 import inquirer from 'inquirer'
-import Keyboards from '../classes/keyboards'
+import Keyboards from '../classes/keyboards.js'
 
 /**
   * selectKeyboardOption

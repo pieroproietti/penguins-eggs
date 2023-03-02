@@ -4,7 +4,7 @@
 
 import {Command, Flags} from '@oclif/core'
 import {Example} from '@oclif/core/lib/interfaces'
-import information from '../components/elements/information'
+import information from '../components/elements/information.js'
 
 /**
  *

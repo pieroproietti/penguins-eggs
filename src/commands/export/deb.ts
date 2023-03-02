@@ -1,8 +1,8 @@
 import {Command, Flags} from '@oclif/core'
-import Tools from '../../classes/tools'
-import Utils from '../../classes/utils'
+import Tools from '../../classes/tools.js'
+import Utils from '../../classes/utils.js'
 
-import {exec} from '../../lib/utils'
+import {exec} from '../../lib/utils.js'
 
 export default class ExportDeb extends Command {
   static flags = {

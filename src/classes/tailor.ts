@@ -5,15 +5,15 @@
  *
  */
 import chalk from 'chalk'
-import Utils from './utils'
-import {IMateria, IEggsConfig} from '../interfaces'
-import {exec} from '../lib/utils'
+import Utils from './utils.js'
+import {IMateria, IEggsConfig} from '../interfaces/index.js'
+import {exec} from '../lib/utils.js'
 import fs from 'fs'
 import path from 'path'
 import yaml from 'js-yaml'
-import Pacman from './pacman'
-import Distro from './distro'
-import SourcesList from './sources_list'
+import Pacman from './pacman.js'
+import Distro from './distro.js'
+import SourcesList from './sources_list.js'
 
 const pjson = require('../../package.json')
 

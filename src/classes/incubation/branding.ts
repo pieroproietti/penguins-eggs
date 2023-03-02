@@ -5,7 +5,7 @@
  * mail: piero.proietti@gmail.com
  */
 import yaml from 'js-yaml'
-import {IRemix, IDistro} from '../../interfaces'
+import {IRemix, IDistro} from '../../interfaces/index.js'
 
 /**
  *

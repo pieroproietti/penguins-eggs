@@ -1,4 +1,4 @@
-import {exec} from '../lib/utils'
+import {exec} from '../lib/utils.js'
 import fs from 'fs'
 import {IXkbModel, IXkbLayout, IXkbVariant, IXkbOption} from '../interfaces/i-xkb-model'
 

@@ -1,13 +1,13 @@
 import shx from 'shelljs'
 import fs from 'fs'
 import path from 'path'
-import Utils from '../classes/utils'
-import Pacman from '../classes/pacman'
+import Utils from '../classes/utils.js'
+import Pacman from '../classes/pacman.js'
 import chalk from 'chalk'
 const pjson = require('../../package.json')
 
 // libraries
-import {exec} from '../lib/utils'
+import {exec} from '../lib/utils.js'
 
 // Comando per avviare ubiquity: sudo --preserve-env DBUS_SESSION_BUS_ADDRESS, XDG_RUNTIME sh -c 'calamares'
 

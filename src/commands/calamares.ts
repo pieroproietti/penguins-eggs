@@ -5,11 +5,11 @@
  * license: MIT
  */
 import {Command, Flags} from '@oclif/core'
-import Utils from '../classes/utils'
-import Settings from '../classes/settings'
-import Incubator from '../classes/incubation/incubator'
-import Pacman from '../classes/pacman'
-import {IRemix} from '../interfaces'
+import Utils from '../classes/utils.js'
+import Settings from '../classes/settings.js'
+import Incubator from '../classes/incubation/incubator.js'
+import Pacman from '../classes/pacman.js'
+import {IRemix} from '../interfaces/index.js'
 
 export default class Calamares extends Command {
   static flags = {

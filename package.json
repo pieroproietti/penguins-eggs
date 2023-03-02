@@ -3,6 +3,8 @@
     "description": "Perri's Brewery edition: remaster your system and distribuite it",
     "version": "9.3.27",
     "author": "Piero Proietti @pieroproietti",
+    "type": "module",
+    "exports": "./index.js",
     "bin": {
         "eggs": "bin/run"
     },
@@ -17,7 +19,7 @@
         "@oclif/test": "^2.2.21",
         "axios": "^1.2.1",
         "chalk": "^4.1.2",
-        "ink": "^3.2.0",
+        "ink": "^4.0.0",
         "ink-big-text": "^1.2.0",
         "ink-gradient": "^2.0.0",
         "inquirer": "^8.2.4",
@@ -26,7 +28,7 @@
         "netmask": "^2.0.2",
         "node-static": "^0.7.11",
         "etrick": "^0.0.2",
-        "react": "^17.0.2",
+        "react": "^18.2.0",
         "shelljs": "0.8.5",
         "systeminformation": "^5.17.9",
         "tftp": "^0.1.2",
@@ -66,7 +68,7 @@
     },
     "dirname": "eggs",
     "engines": {
-        "node": ">=16.0.0"
+        "node": ">=14.16"
     },
     "files": [
         ".oclif.manifest.json",

@@ -7,11 +7,11 @@
  */
 
 import fs from 'node:fs'
-import Utils from './utils'
+import Utils from './utils.js'
 
 // libraries
-import {exec} from '../lib/utils'
-import Distro from './distro'
+import {exec} from '../lib/utils.js'
+import Distro from './distro.js'
 
 /**
  * Bleach:

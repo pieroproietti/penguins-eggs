@@ -8,8 +8,8 @@ import {Command, Flags} from '@oclif/core'
 
 import fs from 'fs'
 import path  from 'path'
-import Utils from '../classes/utils'
-import {exec} from '../lib/utils'
+import Utils from '../classes/utils.js'
+import {exec} from '../lib/utils.js'
 
 /**
  *

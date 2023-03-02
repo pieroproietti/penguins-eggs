@@ -3,7 +3,7 @@
  */
 import inquirer from 'inquirer'
 import shx from 'shelljs'
-import Locales from '../classes/locales'
+import Locales from '../classes/locales.js'
 
 export default async function selectLanguages(selectedLanguage = ''): Promise<string> {
   const locales = new Locales()
