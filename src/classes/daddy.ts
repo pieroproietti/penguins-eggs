@@ -14,7 +14,7 @@ import {IEggsConfig} from '../interfaces/i-eggs-config.js'
 import {IMyAddons} from '../interfaces/index.js'
 import chalk from 'chalk'
 import {exec} from '../lib/utils.js'
-import {interfaces} from 'mocha'
+
 
 interface editConf {
   snapshot_basename: string

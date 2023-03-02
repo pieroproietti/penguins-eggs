@@ -6,7 +6,7 @@
     "bin": {
         "eggs": "bin/run"
     },
-    "type": "module",
+    "type": "commonjs",
     "bugs": "https://github.com/pieroproietti/penguins-eggs/issues",
     "dependencies": {
         "@oclif/core": "^1.21.0",
@@ -21,7 +21,7 @@
         "ink": "^4.0.0",
         "ink-big-text": "^1.2.0",
         "ink-gradient": "^2.0.0",
-        "inquirer": "^8.2.4",
+        "inquirer": "^9.1.4",
         "js-yaml": "^4.1.0",
         "mustache": "^4.2.0",
         "netmask": "^2.0.2",
