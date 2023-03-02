@@ -6,10 +6,10 @@
  */
 
 import chalk from 'chalk'
-import Utils from './utils'
-import {IMateria} from '../interfaces'
-import {exec} from '../lib/utils'
-import Distro from './distro'
+import Utils from './utils.js'
+import {IMateria} from '../interfaces/index.js'
+import {exec} from '../lib/utils.js'
+import Distro from './distro.js'
 
 /**
  *

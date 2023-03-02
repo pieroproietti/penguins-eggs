@@ -13,31 +13,31 @@ import os from 'node:os'
 import shx from 'shelljs'
 import chalk from 'chalk'
 import mustache from 'mustache'
-import PveLive from './pve-live'
+import PveLive from './pve-live.js'
 
 // interfaces
-import {IMyAddons, IUser} from '../interfaces'
+import {IMyAddons, IUser} from '../interfaces/index.js'
 
 // libraries
-import {exec} from '../lib/utils'
+import {exec} from '../lib/utils.js'
 
 // classes
-import Utils from './utils'
-import N8 from './n8'
-import Incubator from './incubation/incubator'
-import Xdg from './xdg'
-import Pacman from './pacman'
-import Settings from './settings'
-import Systemctl from './systemctl'
-import Bleach from './bleach'
-import Repo from './yolk'
-import cliAutologin = require('../lib/cli-autologin')
-import {displaymanager} from './incubation/fisherman-helper/displaymanager'
+import Utils from './utils.js'
+import N8 from './n8.js'
+import Incubator from './incubation/incubator.js'
+import Xdg from './xdg.js'
+import Pacman from './pacman.js'
+import Settings from './settings.js'
+import Systemctl from './systemctl.js'
+import Bleach from './bleach.js'
+import Repo from './yolk.js'
+import {cliAutologin} from '../lib/cli-autologin.js'
+import {displaymanager} from './incubation/fisherman-helper/displaymanager.js'
 
 // backup
 import {access} from 'fs/promises'
 import {constants} from 'fs'
-import Users from './users'
+import Users from './users.js'
 import {createTextChangeRange} from 'typescript'
 
 /**
@@ -102,6 +102,7 @@ export default class Ovary {
         return true
       }
     }
+
     return false
   }
 

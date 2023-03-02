@@ -7,9 +7,9 @@
 import {Command, Flags} from '@oclif/core'
 import {Example} from '@oclif/core/lib/interfaces'
 import path from 'node:path'
-import Utils from '../classes/utils'
+import Utils from '../classes/utils.js'
 
-import {exec} from '../lib/utils'
+import {exec} from '../lib/utils.js'
 
 export default class Mom extends Command {
   static flags = {

@@ -7,10 +7,10 @@
 
 import fs from 'node:fs'
 import shx from 'shelljs'
-import Utils from '../utils'
-import Pacman from '../pacman'
-import {array2spaced} from '../../lib/dependencies'
-import {exec} from '../../lib/utils'
+import Utils from '../utils.js'
+import Pacman from '../pacman.js'
+import {array2spaced} from '../../lib/dependencies.js'
+import {exec} from '../../lib/utils.js'
 
 /**
  * Utils: general porpourse utils

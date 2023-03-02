@@ -15,7 +15,7 @@
  * This will remove the symbolic link that indicated that the service should be started automatically.
  */
 
-import Systemctl from './systemctl'
+import Systemctl from './systemctl.js'
 import path from 'path'
 import shx from 'shelljs'
 

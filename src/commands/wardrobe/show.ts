@@ -1,8 +1,8 @@
 import {Command, Flags} from '@oclif/core'
-import Utils from '../../classes/utils'
+import Utils from '../../classes/utils.js'
 import yaml from 'js-yaml'
 import fs from 'fs'
-import {IMateria} from '../../interfaces'
+import {IMateria} from '../../interfaces/index.js'
 import path from 'path'
 
 // libraries

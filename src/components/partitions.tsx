@@ -3,12 +3,12 @@
  */
 import React from 'react'
 import { render, Text, Box, Newline } from 'ink'
-import Title from './elements/title'
-import Steps from './elements/steps'
+import Title from './elements/title.js'
+import Steps from './elements/steps.js'
 
 import yaml from 'js-yaml'
 import fs from 'fs'
-import { ISettings, IBranding, IPartitions } from '../interfaces'
+import { ISettings, IBranding, IPartitions } from '../interfaces/index.js'
 
 type partitionsProps = {
     installationDevice?: string,

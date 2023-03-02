@@ -5,9 +5,9 @@
  * license: MIT
  */
 import {Command, Flags} from '@oclif/core'
-import Distro from '../../classes/distro'
-import Utils from '../../classes/utils'
-import {exec} from '../../lib/utils'
+import Distro from '../../classes/distro.js'
+import Utils from '../../classes/utils.js'
+import {exec} from '../../lib/utils.js'
 import fs from 'fs'
 
 const fkey = '/etc/apt/trusted.gpg.d/penguins-eggs-key.gpg'

@@ -1,10 +1,10 @@
 import shx from 'shelljs'
 import React from 'react'
 import { render, Text, Box } from 'ink'
-import Settings from '../../classes/settings'
-import Pacman from '../../classes/pacman'
-import Utils from '../../classes/utils'
-import Title from './title'
+import Settings from '../../classes/settings.js'
+import Pacman from '../../classes/pacman.js'
+import Utils from '../../classes/utils.js'
+import Title from './title.js'
 
 /**
  * 

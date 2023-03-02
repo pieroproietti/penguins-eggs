@@ -5,11 +5,11 @@
  * license: MIT
  */
 import {Command, Flags} from '@oclif/core'
-import Utils from '../classes/utils'
-import Daddy from '../classes/daddy'
+import Utils from '../classes/utils.js'
+import Daddy from '../classes/daddy.js'
 import chalk from 'chalk'
 
-import {exec} from '../lib/utils'
+import {exec} from '../lib/utils.js'
 
 export default class Dad extends Command {
   static flags = {

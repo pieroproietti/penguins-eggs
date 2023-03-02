@@ -6,8 +6,8 @@
  */
 
 import {Command, Flags, flush} from '@oclif/core'
-import Utils from '../classes/utils'
-import Krill from '../krill/krill-prepare'
+import Utils from '../classes/utils.js'
+import Krill from '../krill/krill-prepare.js'
 import path from 'node:path'
 import yaml from 'js-yaml'
 import fs from 'fs'
@@ -16,7 +16,7 @@ import https from 'node:https'
 const agent = new https.Agent({
   rejectUnauthorized: false,
 })
-import {IKrillConfig} from '../interfaces/i-krill-config'
+import {IKrillConfig} from '../interfaces/i-krill-config.js'
 
 /**
  * Class Krill

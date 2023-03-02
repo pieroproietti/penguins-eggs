@@ -7,11 +7,11 @@
 import {Command, Flags} from '@oclif/core'
 
 import fs from 'fs'
-import Utils from '../classes/utils'
-import Settings from '../classes/settings'
-import {IWorkDir} from '../interfaces/i-workdir'
+import Utils from '../classes/utils.js'
+import Settings from '../classes/settings.js'
+import {IWorkDir} from '../interfaces/i-workdir.js'
 
-import {exec} from '../lib/utils'
+import {exec} from '../lib/utils.js'
 
 export default class Kill extends Command {
   static flags = {
