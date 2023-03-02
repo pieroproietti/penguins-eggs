@@ -43,9 +43,9 @@ case "$1" in
         rm -f /usr/share/applications/penguins-eggs.destop
 
         # sanitize xdg links
-        rm -f /etc/xdg/autostart/add-penguins-desktop-icons.desktop
-        rm -f /etc/xdg/autostart/add-penguins-links.desktop
-
+        rm -f /etc/xdg/autostart/penguins-links-add.desktop
+        rm -f /usr/bin/penguins-links-add.sh
+        
         # sanitize others
         rm -f /usr/bin/pve-live.sh
         rm -f /etc/systemd/system/pve-live.service
