@@ -3,11 +3,10 @@
     "description": "Perri's Brewery edition: remaster your system and distribuite it",
     "version": "9.3.27",
     "author": "Piero Proietti @pieroproietti",
-    "type": "module",
-    "exports": "./index.js",
     "bin": {
         "eggs": "bin/run"
     },
+    "type": "module",
     "bugs": "https://github.com/pieroproietti/penguins-eggs/issues",
     "dependencies": {
         "@oclif/core": "^1.21.0",

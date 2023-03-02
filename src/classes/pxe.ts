@@ -13,6 +13,7 @@ import path, {dirname} from 'node:path'
 import Settings from './settings.js'
 import Utils from './utils.js'
 import tftp from 'tftp'
+// @ts-ignore
 import etrick from 'etrick'
 
 /**

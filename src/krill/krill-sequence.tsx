@@ -58,7 +58,7 @@ import fs from 'fs'
 import yaml from 'js-yaml'
 import shx from 'shelljs'
 import Utils from '../classes/utils.js'
-import cliAutologin = require('../lib/cli-autologin.js')
+import CliAutologin from '../lib/cli-autologin.js'
 import Pacman from '../classes/pacman.js';
 import { installer } from '../classes/incubation/installer.js'
 import Xdg from '../classes/xdg.js';
@@ -203,6 +203,8 @@ export default class Sequence {
    is_crypted_clone = fs.existsSync('/etc/penguins-eggs.d/is_crypted_clone')
 
    unattended = false
+
+   cliAutologin = new CliAutologin()
 
 
    /**
@@ -520,7 +522,7 @@ export default class Sequence {
          percent = 0.80
          try {
             await redraw(<Install message={message} percent={percent} />)
-            await cliAutologin.remove(this.installTarget)
+            await this.cliAutologin.remove(this.installTarget)
          } catch (error) {
             await Utils.pressKeyToExit(JSON.stringify(error))
          }
