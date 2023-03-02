@@ -2,7 +2,7 @@
  *
  */
 
-import Pacman from '../../pacman'
+import Pacman from '../../pacman.js'
 
 /**
  * restituisce displaymanagers in uso

@@ -10,7 +10,7 @@
 // packages
 import fs from 'node:fs'
 import shx from 'shelljs'
-import {IInitrd} from '../interfaces'
+import {IInitrd} from '../interfaces/index.js'
 
 /**
  * initrd

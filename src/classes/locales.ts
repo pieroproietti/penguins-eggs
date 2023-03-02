@@ -1,6 +1,6 @@
-import {exec} from '../lib/utils'
+import {exec} from '../lib/utils.js'
 import fs from 'fs'
-import Distro from './distro'
+import Distro from './distro.js'
 
 export default class Locales {
   /**

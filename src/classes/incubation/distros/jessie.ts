@@ -7,11 +7,11 @@
  * mail: piero.proietti@gmail.com
  */
 
-import {IRemix, IDistro} from '../../../interfaces'
-import {IInstaller} from '../../../interfaces/i-installer'
-import Fisherman from '../fisherman'
+import {IRemix, IDistro} from '../../../interfaces/index.js'
+import {IInstaller} from '../../../interfaces/i-installer.js'
+import Fisherman from '../fisherman.js'
 
-import {exec} from '../../../lib/utils'
+import {exec} from '../../../lib/utils.js'
 
 /**
  *

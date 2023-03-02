@@ -1,1 +1,1 @@
-declare module "tftp";
+declare module 'tftp';

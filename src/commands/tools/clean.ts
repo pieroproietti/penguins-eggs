@@ -5,8 +5,8 @@
  * license: MIT
  */
 import {Command, Flags} from '@oclif/core'
-import Utils from '../../classes/utils'
-import Bleach from '../../classes/bleach'
+import Utils from '../../classes/utils.js'
+import Bleach from '../../classes/bleach.js'
 
 export default class Clean extends Command {
   static flags = {

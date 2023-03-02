@@ -1,7 +1,7 @@
 import {Command, Flags} from '@oclif/core'
-import Utils from '../classes/utils'
+import Utils from '../classes/utils.js'
 
-import {exec} from '../lib/utils'
+import {exec} from '../lib/utils.js'
 
 export default class Adapt extends Command {
   static flags = {

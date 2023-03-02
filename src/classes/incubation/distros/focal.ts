@@ -9,10 +9,10 @@ import fs from 'node:fs'
 import shx from 'shelljs'
 import yaml from 'js-yaml'
 import path from 'node:path'
-import {IInstaller, IRemix, IDistro} from '../../../interfaces'
-import Fisherman from '../fisherman'
+import {IInstaller, IRemix, IDistro} from '../../../interfaces/index.js'
+import Fisherman from '../fisherman.js'
 
-import {exec} from '../../../lib/utils'
+import {exec} from '../../../lib/utils.js'
 import {throws} from 'node:assert'
 
 interface IReplaces {

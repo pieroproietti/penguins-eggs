@@ -7,7 +7,7 @@
  * https://stackoverflow.com/questions/23876782/how-do-i-split-a-typescript-class-into-multiple-files
  */
 
-import Sequence from '../krill-sequence'
+import Sequence from '../krill-sequence.js'
 import fs from 'fs'
 
 /* localeCfg

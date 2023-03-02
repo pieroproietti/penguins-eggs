@@ -3,12 +3,12 @@
  */
 import React, { useState } from 'react'
 import { Box, Newline, Text } from 'ink'
-import Title from './elements/title'
-import Steps from './elements/steps'
+import Title from './elements/title.js'
+import Steps from './elements/steps.js'
 
 import yaml from 'js-yaml'
 import fs from 'fs'
-import { ISettings, IBranding } from '../interfaces'
+import { ISettings, IBranding } from '../interfaces/index.js'
 
 const pjson = require('../../package.json')
 
