@@ -1,6 +1,6 @@
 import {exec} from '../lib/utils.js'
 import fs from 'fs'
-import {IXkbModel, IXkbLayout, IXkbVariant, IXkbOption} from '../interfaces/i-xkb-model'
+import {IXkbModel, IXkbLayout, IXkbVariant, IXkbOption} from '../interfaces/i-xkb-model.js'
 
 // XkbModel - name of the model of your keyboard type
 // XkbLayout - layout(s) you intend to use
