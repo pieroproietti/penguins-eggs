@@ -890,31 +890,32 @@ export default class Ovary {
    * - mergedAndOverlay creazione directory, overlay e mount rw
    */
   merged(dir: string): boolean {
-    const nomergedDirs = [
-      'cdrom',
-      'dev',
-      'media',
-      'mnt',
-      'proc',
-      'run',
-      'sys',
-      'swapfile',
-      'tmp',
-    ]
-    if (!this.clone) {
-      nomergedDirs.push('home')
-    }
-
-    // deepin ha due directory /data e recovery
-    nomergedDirs.push('data', 'recovery')
-
     let merged = true
-    for (const nomergedDir of nomergedDirs) {
-      if (dir === nomergedDir) {
-        merged = false
+
+    if (dir === 'home') {
+      merged = this.clone
+    } else {
+      const noMergeDirs = [
+        'cdrom',
+        'dev',
+        'media',
+        'mnt',
+        'proc',
+        'run',
+        'swapfile',
+        'sys',
+        'tmp',
+      ]
+
+      // deepin
+      noMergeDirs.push('data', 'recovery')
+
+      for (const noMergeDir of noMergeDirs) {
+        if (dir === noMergeDir) {
+          merged = false
+        }
       }
     }
-
     return merged
   }
 
@@ -1864,7 +1865,7 @@ async function rexec(cmd: string, verbose = false): Promise<string> {
   if (check.code !== 0) {
     console.log(`command: ${chalk.cyan(cmd)} ended with code ${chalk.cyan(check.code)}`)
     console.log()
-    await Utils.pressKeyToExit("eggs caused an error in the previous operation, press enter to continue",true)
+    await Utils.pressKeyToExit("eggs caused an error in the previous operation, press enter to continue", true)
   }
   // command: umount /home/eggs/ovarium/filesystem.squashfs/home ended with code 32
   return cmd
