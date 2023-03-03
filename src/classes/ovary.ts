@@ -1064,6 +1064,9 @@ export default class Ovary {
       }
     }
 
+    if (this.clone) {
+      cmds.push(await rexec(`umount ${this.settings.work_dir.merged}/home`, this.verbose))      
+    }
     Utils.writeXs(`${this.settings.work_dir.path}ubind`, cmds)
   }
 
@@ -1862,11 +1865,12 @@ async function rexec(cmd: string, verbose = false): Promise<string> {
   const echo = Utils.setEcho(verbose)
 
   const check = await exec(cmd, echo)
-  if (check.code !== 0) {
-    console.log(`command: ${chalk.cyan(cmd)} ended with code ${chalk.cyan(check.code)}`)
-    console.log()
-    await Utils.pressKeyToExit("eggs caused an error in the previous operation, press enter to continue", true)
+  if (!cmd.startsWith('umount')) { // skip umount errors
+    if (check.code !== 0) {
+      console.log(`command: ${chalk.cyan(cmd)} ended with code ${chalk.cyan(check.code)}`)
+      console.log()
+      await Utils.pressKeyToExit("eggs caused an error in the previous operation, press enter to continue", true)
+    }
   }
-  // command: umount /home/eggs/ovarium/filesystem.squashfs/home ended with code 32
   return cmd
 }
