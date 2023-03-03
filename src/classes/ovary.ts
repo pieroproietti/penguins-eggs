@@ -6,7 +6,7 @@
  */
 
 // packages
-import fs, {Dir, Dirent, exists} from 'fs'
+import fs, { Dir, Dirent, exists } from 'fs'
 import yaml from 'js-yaml'
 import path from 'node:path'
 import os from 'node:os'
@@ -16,10 +16,10 @@ import mustache from 'mustache'
 import PveLive from './pve-live.js'
 
 // interfaces
-import {IMyAddons, IUser} from '../interfaces/index.js'
+import { IMyAddons, IUser } from '../interfaces/index.js'
 
 // libraries
-import {exec} from '../lib/utils.js'
+import { exec } from '../lib/utils.js'
 
 // classes
 import Utils from './utils.js'
@@ -31,13 +31,13 @@ import Settings from './settings.js'
 import Systemctl from './systemctl.js'
 import Bleach from './bleach.js'
 import Repo from './yolk.js'
-import {displaymanager} from './incubation/fisherman-helper/displaymanager.js'
+import { displaymanager } from './incubation/fisherman-helper/displaymanager.js'
 
 // backup
-import {access} from 'fs/promises'
-import {constants} from 'fs'
+import { access } from 'fs/promises'
+import { constants } from 'fs'
 import Users from './users.js'
-import {createTextChangeRange} from 'typescript'
+import { createTextChangeRange } from 'typescript'
 import CliAutologin from '../lib/cli-autologin.js'
 
 /**
@@ -75,7 +75,7 @@ export default class Ovary {
    */
   async fertilization(snapshot_prefix = '', snapshot_basename = '', theme = '', compression = '', nointeratctive = false): Promise<boolean> {
     this.settings = new Settings()
-    
+
     if (await this.settings.load()) {
       this.familyId = this.settings.distro.familyId
 
@@ -156,7 +156,7 @@ export default class Ovary {
     } else {
       await this.liveCreateStructure()
       if (!nointeractive && this.settings.distro.isCalamaresAvailable && (Pacman.isInstalledGui()) &&
-          this.settings.config.force_installer && !(await Pacman.calamaresCheck())) {
+        this.settings.config.force_installer && !(await Pacman.calamaresCheck())) {
         console.log('Installing ' + chalk.bgGray('calamares') + ' due force_installer=yes.')
         await Pacman.calamaresInstall(verbose)
         const bleach = new Bleach()
@@ -832,7 +832,7 @@ export default class Ovary {
       }
     }
 
-    if (shx.exec('/usr/bin/test -L /etc/localtime', {silent: true}) && shx.exec('cat /etc/timezone', {silent: true}) !== 'Europe/Rome') {
+    if (shx.exec('/usr/bin/test -L /etc/localtime', { silent: true }) && shx.exec('cat /etc/timezone', { silent: true }) !== 'Europe/Rome') {
       // this.addRemoveExclusion(true, '/etc/localtime')
     }
 
@@ -1862,6 +1862,10 @@ async function makeIfNotExist(path: string, verbose = false): Promise<string> {
 async function rexec(cmd: string, verbose = false): Promise<string> {
   const echo = Utils.setEcho(verbose)
 
-  await exec(cmd, echo)
+  const check = await exec(cmd, echo)
+  if (check.code !== 0) {
+    console.log(`command: "${cmd}" ended with code ${check.code}`)
+    process.exit(check.code)
+  }
   return cmd
 }
