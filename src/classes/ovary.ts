@@ -278,7 +278,6 @@ export default class Ovary {
           await exec(`sha512sum ${this.settings.work_dir.pathIso}live/filesystem.squashfs > ${this.settings.work_dir.pathIso}arch/x86_64/airootfs.sha512`, this.echo)
         }
       }
-
       await this.makeIso(xorrisoCommand, scriptOnly)
     }
   }
@@ -373,18 +372,21 @@ export default class Ovary {
     }
 
     /**
-     * new is_clone written just on live
+     * /etc/penguins-eggs.d/is_clone file created on live
      */
     if (clone) {
       await exec(`touch ${this.settings.work_dir.merged}/etc/penguins-eggs.d/is_clone`, this.echo)
     }
 
+    /**
+     * /etc/penguins-eggs.d/is_crypted_clone file created on live
+     */
     if (cryptedclone) {
       await exec(`touch ${this.settings.work_dir.merged}/etc/penguins-eggs.d/is_crypted_clone`, this.echo)
     }
 
     /**
-     * add epoptes server just on live
+     * /etc/default/epoptes-client created on live
      */
     if (Pacman.packageIsInstalled('epoptes')) {
       const file = `${this.settings.work_dir.merged}/etc/default/epoptes-client`
@@ -1059,10 +1061,6 @@ export default class Ovary {
           cmds.push(await rexec(`rm ${this.settings.work_dir.merged}/${dirname}`, this.verbose))
         }
       }
-    }
-
-    if (this.clone) {
-      cmds.push(await rexec(`umount ${this.settings.work_dir.path}/filesystem.squashfs/home`, this.verbose))
     }
 
     Utils.writeXs(`${this.settings.work_dir.path}ubind`, cmds)
@@ -1864,8 +1862,10 @@ async function rexec(cmd: string, verbose = false): Promise<string> {
 
   const check = await exec(cmd, echo)
   if (check.code !== 0) {
-    console.log(`command: "${cmd}" ended with code ${check.code}`)
-    process.exit(check.code)
+    console.log(`command: ${chalk.cyan(cmd)} ended with code ${chalk.cyan(check.code)}`)
+    console.log()
+    await Utils.pressKeyToExit("eggs caused an error in the previous operation, press enter to continue",true)
   }
+  // command: umount /home/eggs/ovarium/filesystem.squashfs/home ended with code 32
   return cmd
 }
