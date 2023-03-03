@@ -21,6 +21,10 @@ You can follow the project also consulting the [commit history](https://github.c
 ## Changelog
 Versions are listed on reverse order, the first is the last one. Old versions are moved to [versions](https://sourceforge.net/projects/penguins-eggs/files/packages-deb/versions/). 
 
+### eggs-9.3.29
+* fix: produce --clone unmount all binded mounts;
+* fix: in case of errors, now produces shows the error and pauses before to end.
+
 ### eggs-9.3.28
 * fix: penguins-eggs.desktop will be removed on installed system if we use: ```sudo eggs produce --release```;
 
