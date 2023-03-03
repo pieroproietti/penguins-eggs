@@ -1,3 +1,10 @@
+/**
+ * penguins-eggs: wardrobe wear
+ * author: Piero Proietti
+ * email: piero.proietti@gmail.com
+ * license: MIT
+ */
+
 import {Command, Flags} from '@oclif/core'
 import chalk from 'chalk'
 import Utils from '../../classes/utils.js'
