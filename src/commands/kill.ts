@@ -43,7 +43,6 @@ export default class Kill extends Command {
     const echo = Utils.setEcho(verbose)
 
     if (Utils.isRoot()) {
-      // Utils.warning('Cleaning the nest...')
       const settings = new Settings()
       await settings.load()
       await settings.listFreeSpace()

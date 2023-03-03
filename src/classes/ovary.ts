@@ -6,7 +6,7 @@
  */
 
 // packages
-import fs, {Dir, Dirent, exists} from 'fs'
+import fs, { Dir, Dirent, exists } from 'fs'
 import yaml from 'js-yaml'
 import path from 'node:path'
 import os from 'node:os'
@@ -16,10 +16,10 @@ import mustache from 'mustache'
 import PveLive from './pve-live.js'
 
 // interfaces
-import {IMyAddons, IUser} from '../interfaces/index.js'
+import { IMyAddons, IUser } from '../interfaces/index.js'
 
 // libraries
-import {exec} from '../lib/utils.js'
+import { exec } from '../lib/utils.js'
 
 // classes
 import Utils from './utils.js'
@@ -31,13 +31,13 @@ import Settings from './settings.js'
 import Systemctl from './systemctl.js'
 import Bleach from './bleach.js'
 import Repo from './yolk.js'
-import {displaymanager} from './incubation/fisherman-helper/displaymanager.js'
+import { displaymanager } from './incubation/fisherman-helper/displaymanager.js'
 
 // backup
-import {access} from 'fs/promises'
-import {constants} from 'fs'
+import { access } from 'fs/promises'
+import { constants } from 'fs'
 import Users from './users.js'
-import {createTextChangeRange} from 'typescript'
+import { createTextChangeRange } from 'typescript'
 import CliAutologin from '../lib/cli-autologin.js'
 
 /**
@@ -75,7 +75,7 @@ export default class Ovary {
    */
   async fertilization(snapshot_prefix = '', snapshot_basename = '', theme = '', compression = '', nointeratctive = false): Promise<boolean> {
     this.settings = new Settings()
-    
+
     if (await this.settings.load()) {
       this.familyId = this.settings.distro.familyId
 
@@ -156,7 +156,7 @@ export default class Ovary {
     } else {
       await this.liveCreateStructure()
       if (!nointeractive && this.settings.distro.isCalamaresAvailable && (Pacman.isInstalledGui()) &&
-          this.settings.config.force_installer && !(await Pacman.calamaresCheck())) {
+        this.settings.config.force_installer && !(await Pacman.calamaresCheck())) {
         console.log('Installing ' + chalk.bgGray('calamares') + ' due force_installer=yes.')
         await Pacman.calamaresInstall(verbose)
         const bleach = new Bleach()
@@ -278,7 +278,6 @@ export default class Ovary {
           await exec(`sha512sum ${this.settings.work_dir.pathIso}live/filesystem.squashfs > ${this.settings.work_dir.pathIso}arch/x86_64/airootfs.sha512`, this.echo)
         }
       }
-
       await this.makeIso(xorrisoCommand, scriptOnly)
     }
   }
@@ -373,18 +372,21 @@ export default class Ovary {
     }
 
     /**
-     * new is_clone written just on live
+     * /etc/penguins-eggs.d/is_clone file created on live
      */
     if (clone) {
       await exec(`touch ${this.settings.work_dir.merged}/etc/penguins-eggs.d/is_clone`, this.echo)
     }
 
+    /**
+     * /etc/penguins-eggs.d/is_crypted_clone file created on live
+     */
     if (cryptedclone) {
       await exec(`touch ${this.settings.work_dir.merged}/etc/penguins-eggs.d/is_crypted_clone`, this.echo)
     }
 
     /**
-     * add epoptes server just on live
+     * /etc/default/epoptes-client created on live
      */
     if (Pacman.packageIsInstalled('epoptes')) {
       const file = `${this.settings.work_dir.merged}/etc/default/epoptes-client`
@@ -832,7 +834,7 @@ export default class Ovary {
       }
     }
 
-    if (shx.exec('/usr/bin/test -L /etc/localtime', {silent: true}) && shx.exec('cat /etc/timezone', {silent: true}) !== 'Europe/Rome') {
+    if (shx.exec('/usr/bin/test -L /etc/localtime', { silent: true }) && shx.exec('cat /etc/timezone', { silent: true }) !== 'Europe/Rome') {
       // this.addRemoveExclusion(true, '/etc/localtime')
     }
 
@@ -888,31 +890,32 @@ export default class Ovary {
    * - mergedAndOverlay creazione directory, overlay e mount rw
    */
   merged(dir: string): boolean {
-    const nomergedDirs = [
-      'cdrom',
-      'dev',
-      'media',
-      'mnt',
-      'proc',
-      'run',
-      'sys',
-      'swapfile',
-      'tmp',
-    ]
-    if (!this.clone) {
-      nomergedDirs.push('home')
-    }
-
-    // deepin ha due directory /data e recovery
-    nomergedDirs.push('data', 'recovery')
-
     let merged = true
-    for (const nomergedDir of nomergedDirs) {
-      if (dir === nomergedDir) {
-        merged = false
+
+    if (dir === 'home') {
+      merged = this.clone
+    } else {
+      const noMergeDirs = [
+        'cdrom',
+        'dev',
+        'media',
+        'mnt',
+        'proc',
+        'run',
+        'swapfile',
+        'sys',
+        'tmp',
+      ]
+
+      // deepin
+      noMergeDirs.push('data', 'recovery')
+
+      for (const noMergeDir of noMergeDirs) {
+        if (dir === noMergeDir) {
+          merged = false
+        }
       }
     }
-
     return merged
   }
 
@@ -1062,9 +1065,8 @@ export default class Ovary {
     }
 
     if (this.clone) {
-      cmds.push(await rexec(`umount ${this.settings.work_dir.path}/filesystem.squashfs/home`, this.verbose))
+      cmds.push(await rexec(`umount ${this.settings.work_dir.merged}/home`, this.verbose))      
     }
-
     Utils.writeXs(`${this.settings.work_dir.path}ubind`, cmds)
   }
 
@@ -1862,6 +1864,13 @@ async function makeIfNotExist(path: string, verbose = false): Promise<string> {
 async function rexec(cmd: string, verbose = false): Promise<string> {
   const echo = Utils.setEcho(verbose)
 
-  await exec(cmd, echo)
+  const check = await exec(cmd, echo)
+  if (!cmd.startsWith('umount')) { // skip umount errors
+    if (check.code !== 0) {
+      console.log(`command: ${chalk.cyan(cmd)} ended with code ${chalk.cyan(check.code)}`)
+      console.log()
+      await Utils.pressKeyToExit("eggs caused an error in the previous operation, press enter to continue", true)
+    }
+  }
   return cmd
 }
