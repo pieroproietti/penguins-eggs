@@ -25,6 +25,9 @@ Ho inserito in eggs una funzione di integrazione con [epoptes](https://epoptes.o
 # Debian bullseye chicks
 XFCE4, leggera customizzazione e programmi per la scuola.
 
+# Devuan daedalus ceres chicks
+XFCE4, leggera customizzazione e programmi per la scuola.
+
 # Ubuntu jammy pulcini
 XFCE4, leggera customizzazione e programmi per la scuola.
 
@@ -60,6 +63,12 @@ oppure:
 * riavvia il sistema e loggati con le tue credenziali, dai i seguenti comandi:
 * ```eggs wardrobe get```
 * ```sudo eggs wardrobe wear chick```
+
+## Devuan daedalus chicks
+Come per Debian bullseye, ma scaricando la versione [naked](https://sourceforge.net/projects/penguins-eggs/files/ISOS/devuan/daedalus/) di Devuan daedalus ceres 
+
+# E le altre?
+Si, è possibile ottenere anche versioni basate su Debian buster e non solo, arch linux  e manjaro!
 
 ## More informations:
 
