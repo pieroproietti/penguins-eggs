@@ -23,14 +23,14 @@ Versions are listed on reverse order, the first is the last one. Old versions ar
 
 
 ### eggs-9.3.30
-* produce --clone: now calamares - when configured for clone - no longer asks for user configuration and previous users are used. You can also install with krill; the advantage is that it will be faster and will respect the autologin configuration, which is reset by calamares to the default.
+* ```sudo produce --clone```: now calamares - when configured for clone - no longer asks for user configuration and previous users are used. You can also install with krill; the advantage is that it will be faster and will respect the autologin configuration, which is reset by calamares to the default.
 
 ### eggs-9.3.29
 * fix: ```sudo produce --clone``` unmount all binded mounts;
 * fix: in case of errors, now ```sudo eggs produce``` shows the error and pauses before to end.
 
 ### eggs-9.3.28
-* fix: penguins-eggs.desktop will be removed on installed system if we use: ```sudo eggs produce --release```;
+* fix: penguins-eggs.desktop will be removed on installed system if you use: ```sudo eggs produce --release```;
 
 ### eggs-9.3.27
 This package does exactly the same as the previous one, but I changed the way I use dhcpd-proxy for cuckoo - this has no impact on the usage of eggs - is more a refactoring of eggs itself.
