@@ -9,10 +9,10 @@ import fs from 'node:fs'
 import os from 'node:os'
 import path from 'node:path'
 import shx from 'shelljs'
-import Utils from '../utils.js'
-import Pacman from '../pacman.js'
-import {exec} from '../../lib/utils.js'
-import {array2spaced, depCommon, depArch, depVersions, depInit} from '../../lib/dependencies.js'
+import Utils from '../utils'
+import Pacman from '../pacman'
+import {exec} from '../../lib/utils'
+import {array2spaced, depCommon, depArch, depVersions, depInit} from '../../lib/dependencies'
 
 /**
  * Utils: general porpourse utils

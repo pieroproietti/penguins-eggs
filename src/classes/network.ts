@@ -1,3 +1,10 @@
+/**
+ * penguins-eggs: network
+ * author: Piero Proietti
+ * email: piero.proietti@gmail.com
+ * license: MIT
+ */
+
 import {Netmask} from 'netmask'
 import os from 'os'
 

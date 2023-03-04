@@ -1,8 +1,8 @@
 /**
  * packages.ts
  */
-import {IDistro} from '../../../interfaces/index.js'
-import Pacman from '../../pacman.js'
+import {IDistro} from '../../../interfaces/index'
+import Pacman from '../../pacman'
 
 /**
  *

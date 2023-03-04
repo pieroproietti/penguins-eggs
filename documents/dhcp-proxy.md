@@ -31,7 +31,7 @@ in options.js
 I tried this example:
 
 ```
-var dhcpd = require('../lib/dhcp.js');
+var dhcpd = require('../lib/dhcp');
 
 var s = dhcpd.createServer({
   // System settings

@@ -11,7 +11,7 @@ import fs from 'node:fs'
 import path from 'node:path'
 import shell from 'shelljs'
 import yaml from 'js-yaml'
-import {IRemix, IDistro} from '../interfaces/index.js'
+import {IRemix, IDistro} from '../interfaces/index'
 
 /**
  * Classe

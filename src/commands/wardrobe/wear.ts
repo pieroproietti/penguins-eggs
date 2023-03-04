@@ -7,10 +7,10 @@
 
 import {Command, Flags} from '@oclif/core'
 import chalk from 'chalk'
-import Utils from '../../classes/utils.js'
+import Utils from '../../classes/utils'
 import path from 'path'
 import fs from 'fs'
-import Tailor from '../../classes/tailor.js'
+import Tailor from '../../classes/tailor'
 
 /**
  *

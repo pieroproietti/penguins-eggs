@@ -7,11 +7,11 @@
 import {Command, Flags} from '@oclif/core'
 
 import fs from 'fs'
-import Utils from '../classes/utils.js'
-import {IWorkDir} from '../interfaces/i-workdir.js'
+import Utils from '../classes/utils'
+import {IWorkDir} from '../interfaces/i-workdir'
 import {access} from 'fs/promises'
 import {constants} from 'fs'
-import Users from '../classes/users.js'
+import Users from '../classes/users'
 
 import si from 'systeminformation'
 

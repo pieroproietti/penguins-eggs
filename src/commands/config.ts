@@ -6,13 +6,13 @@
  */
 import {Command, Flags} from '@oclif/core'
 import chalk from 'chalk'
-import Utils from '../classes/utils.js'
-import Pacman from '../classes/pacman.js'
-import Bleach from '../classes/bleach.js'
-import {IInstall} from '../interfaces/index.js'
-import {array2spaced} from '../lib/dependencies.js'
+import Utils from '../classes/utils'
+import Pacman from '../classes/pacman'
+import Bleach from '../classes/bleach'
+import {IInstall} from '../interfaces/index'
+import {array2spaced} from '../lib/dependencies'
 
-import {exec} from '../lib/utils.js'
+import {exec} from '../lib/utils'
 
 /**
  *

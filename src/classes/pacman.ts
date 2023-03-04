@@ -5,24 +5,24 @@
  * license: MIT
  */
 
-import {array2spaced, depCommon, depArch, depVersions, depInit} from '../lib/dependencies.js'
+import {array2spaced, depCommon, depArch, depVersions, depInit} from '../lib/dependencies'
 
 import fs from 'node:fs'
 import path from 'node:path'
 import shx from 'shelljs'
-import {IRemix, IDistro} from '../interfaces/index.js'
+import {IRemix, IDistro} from '../interfaces/index'
 
-import Utils from './utils.js'
-import Distro from './distro.js'
-import Settings from './settings.js'
+import Utils from './utils'
+import Distro from './distro'
+import Settings from './settings'
 import {execSync} from 'node:child_process'
-import {IEggsConfig} from '../interfaces/index.js'
-import {exec} from '../lib/utils.js'
+import {IEggsConfig} from '../interfaces/index'
+import {exec} from '../lib/utils'
 
-import Debian from './family/debian.js'
-import Fedora from './family/fedora.js'
-import Archlinux from './family/archlinux.js'
-import Suse from './family/suse.js'
+import Debian from './family/debian'
+import Fedora from './family/fedora'
+import Archlinux from './family/archlinux'
+import Suse from './family/suse'
 
 const config_file = '/etc/penguins-eggs.d/eggs.yaml' as string
 const config_tools = '/etc/penguins-eggs.d/tools.yaml' as string

@@ -1,5 +1,5 @@
 /**
- * penguins-eggs-v7
+ * penguins-eggs: n8
  * author: Piero Proietti
  * email: piero.proietti@gmail.com
  * license: MIT
