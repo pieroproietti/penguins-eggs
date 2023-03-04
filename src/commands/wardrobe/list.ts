@@ -6,12 +6,12 @@
  */
 
 import {Command, Flags} from '@oclif/core'
-import Utils from '../../classes/utils.js'
+import Utils from '../../classes/utils'
 import path from 'path'
 import yaml from 'js-yaml'
 import fs from 'fs'
 import os from 'os'
-import {IMateria} from '../../interfaces/index.js'
+import {IMateria} from '../../interfaces/index'
 
 // libraries
 import chalk from 'chalk'

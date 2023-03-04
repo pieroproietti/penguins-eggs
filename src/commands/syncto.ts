@@ -24,13 +24,13 @@
 import {Command, Flags} from '@oclif/core'
 import fs from 'fs'
 import path from 'path'
-import Utils from '../classes/utils.js'
-import {exec} from '../lib/utils.js'
+import Utils from '../classes/utils'
+import {exec} from '../lib/utils'
 
 // backup
 import {access} from 'fs/promises'
 import {constants} from 'fs'
-import Users from '../classes/users.js'
+import Users from '../classes/users'
 import {use} from 'chai'
 
 /**

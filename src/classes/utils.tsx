@@ -13,14 +13,16 @@ import path from 'path'
 import os from 'os'
 import inquirer from 'inquirer'
 import chalk from 'chalk'
-import Pacman from './pacman.js'
+import Pacman from './pacman'
 // import { green, whiteBright } from 'chalk'
 import { ChildProcess, spawnSync } from 'child_process'
 import { Netmask } from 'netmask'
 
 // libraries
-import { exec } from '../lib/utils.js'
-import Distro from './distro.js'
+import { exec } from '../lib/utils'
+import Distro from './distro'
+import Settings from './settings'
+import { settings } from '@oclif/core'
 
 
 const pjson = require('../../package.json')

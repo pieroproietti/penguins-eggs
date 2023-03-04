@@ -7,8 +7,8 @@
  * Presa da https://github.com/VolantisDev/node-systemctl
  */
 
-import {exec} from '../lib/utils.js'
-import Utils from './utils.js'
+import {exec} from '../lib/utils'
+import Utils from './utils'
 
 export default class SistemdCtl {
   echo = {}

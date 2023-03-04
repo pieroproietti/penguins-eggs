@@ -13,32 +13,32 @@ import os from 'node:os'
 import shx from 'shelljs'
 import chalk from 'chalk'
 import mustache from 'mustache'
-import PveLive from './pve-live.js'
+import PveLive from './pve-live'
 
 // interfaces
-import { IMyAddons, IUser } from '../interfaces/index.js'
+import { IMyAddons, IUser } from '../interfaces/index'
 
 // libraries
-import { exec } from '../lib/utils.js'
+import { exec } from '../lib/utils'
 
 // classes
-import Utils from './utils.js'
-import N8 from './n8.js'
-import Incubator from './incubation/incubator.js'
-import Xdg from './xdg.js'
-import Pacman from './pacman.js'
-import Settings from './settings.js'
-import Systemctl from './systemctl.js'
-import Bleach from './bleach.js'
-import Repo from './yolk.js'
-import { displaymanager } from './incubation/fisherman-helper/displaymanager.js'
+import Utils from './utils'
+import N8 from './n8'
+import Incubator from './incubation/incubator'
+import Xdg from './xdg'
+import Pacman from './pacman'
+import Settings from './settings'
+import Systemctl from './systemctl'
+import Bleach from './bleach'
+import Repo from './yolk'
+import { displaymanager } from './incubation/fisherman-helper/displaymanager'
 
 // backup
 import { access } from 'fs/promises'
 import { constants } from 'fs'
-import Users from './users.js'
+import Users from './users'
 import { createTextChangeRange } from 'typescript'
-import CliAutologin from '../lib/cli-autologin.js'
+import CliAutologin from '../lib/cli-autologin'
 
 /**
  * Ovary:
@@ -75,7 +75,7 @@ export default class Ovary {
    */
   async fertilization(snapshot_prefix = '', snapshot_basename = '', theme = '', compression = '', nointeratctive = false): Promise<boolean> {
     this.settings = new Settings()
-
+    
     if (await this.settings.load()) {
       this.familyId = this.settings.distro.familyId
 
@@ -199,11 +199,9 @@ export default class Ovary {
       const reCreate = true
       if (reCreate) { // start pre-clone
         /**
-         * Anche non accettando l'installazione di calamares
-         * viene creata la configurazione dell'installer: krill/calamares
-         * L'installer prende il tema da settings.remix.branding
+         * installer
          */
-        this.incubator = new Incubator(this.settings.remix, this.settings.distro, this.settings.config.user_opt, this.theme, verbose)
+        this.incubator = new Incubator(this.settings.remix, this.settings.distro, this.settings.config.user_opt, this.theme, this.clone, verbose)
         await this.incubator.config(release)
 
         await this.syslinux()

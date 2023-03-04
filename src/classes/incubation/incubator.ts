@@ -7,20 +7,20 @@
 import fs from 'node:fs'
 import path from 'node:path'
 import shx from 'shelljs'
-import Utils from '../utils.js'
-import {IRemix, IDistro} from '../../interfaces/index.js'
+import Utils from '../utils'
+import {IRemix, IDistro} from '../../interfaces/index'
 
-import {Jessie} from './distros/jessie.js'
-import {Buster} from './distros/buster.js'
-import {Focal} from './distros/focal.js'
-import {Bionic} from './distros/bionic.js'
-import {Rolling} from './distros/rolling.js'
+import {Jessie} from './distros/jessie'
+import {Buster} from './distros/buster'
+import {Focal} from './distros/focal'
+import {Bionic} from './distros/bionic'
+import {Rolling} from './distros/rolling'
 
-import Pacman from '../pacman.js'
-import {installer} from './installer.js'
-import {IInstaller} from '../../interfaces/i-installer.js'
+import Pacman from '../pacman'
+import {installer} from './installer'
+import {IInstaller} from '../../interfaces/i-installer'
 
-import {exec} from '../../lib/utils.js'
+import {exec} from '../../lib/utils'
 
 
 /**
@@ -39,13 +39,15 @@ export default class Incubator {
 
   theme: string
 
+  isClone: boolean
+
   /**
    *
    * @param remix
    * @param distro
    * @param verbose
    */
-  constructor(remix: IRemix, distro: IDistro, user_opt = 'live', theme = 'eggs', verbose = false) {
+  constructor(remix: IRemix, distro: IDistro, user_opt = 'live', theme = 'eggs', isClone = false, verbose = false) {
     this.installer = installer()
     this.remix = remix
     this.distro = distro
@@ -53,6 +55,7 @@ export default class Incubator {
     this.theme = theme
     this.verbose = verbose
     this.remix.branding = theme
+    this.isClone = isClone
     if (theme.includes('/')) {
       this.remix.branding = theme.slice(Math.max(0, theme.lastIndexOf('/') + 1))
     }
@@ -84,21 +87,21 @@ export default class Incubator {
     }
 
     case 'buster': {
-      const buster = new Buster(this.installer, this.remix, this.distro, this.user_opt, release, this.theme, this.verbose)
+      const buster = new Buster(this.installer, this.remix, this.distro, this.user_opt, release, this.theme, this.isClone, this.verbose)
       await buster.create()
 
       break
     }
 
     case 'bullseye': {
-      const bullseye = new Buster(this.installer, this.remix, this.distro, this.user_opt, release, this.theme, this.verbose)
+      const bullseye = new Buster(this.installer, this.remix, this.distro, this.user_opt, release, this.theme, this.isClone, this.verbose)
       await bullseye.create()
 
       break
     }
 
     case 'bookworm': {
-      const bookworm = new Buster(this.installer, this.remix, this.distro, this.user_opt, release, this.theme, this.verbose)
+      const bookworm = new Buster(this.installer, this.remix, this.distro, this.user_opt, release, this.theme, this.isClone, this.verbose)
       await bookworm.create()
       // DEVUAN
 
@@ -109,21 +112,21 @@ export default class Incubator {
        * DEVUAN
        */
     case 'beowulf': {
-      const beowulf = new Buster(this.installer, this.remix, this.distro, this.user_opt, release, this.theme, this.verbose)
+      const beowulf = new Buster(this.installer, this.remix, this.distro, this.user_opt, release, this.theme, this.isClone, this.verbose)
       await beowulf.create()
 
       break
     }
 
     case 'chimaera': {
-      const chimaera = new Buster(this.installer, this.remix, this.distro, this.user_opt, release, this.theme, this.verbose)
+      const chimaera = new Buster(this.installer, this.remix, this.distro, this.user_opt, release, this.theme, this.isClone, this.verbose)
       await chimaera.create()
 
       break
     }
 
     case 'daedalus': {
-      const daedalus = new Buster(this.installer, this.remix, this.distro, this.user_opt, release, this.theme, this.verbose)
+      const daedalus = new Buster(this.installer, this.remix, this.distro, this.user_opt, release, this.theme, this.isClone, this.verbose)
       await daedalus.create()
 
       break
@@ -133,28 +136,28 @@ export default class Incubator {
        * UBUNTU
        */
     case 'bionic': {
-      const bionic = new Bionic(this.installer, this.remix, this.distro, this.user_opt, release, this.verbose)
+      const bionic = new Bionic(this.installer, this.remix, this.distro, this.user_opt, release, this.isClone, this.verbose)
       await bionic.create()
 
       break
     }
 
     case 'focal': {
-      const focal = new Focal(this.installer, this.remix, this.distro, this.user_opt, release, this.theme, this.verbose)
+      const focal = new Focal(this.installer, this.remix, this.distro, this.user_opt, release, this.theme, this.isClone, this.verbose)
       await focal.create()
 
       break
     }
 
     case 'jammy': {
-      const jammy = new Focal(this.installer, this.remix, this.distro, this.user_opt, release, this.theme, this.verbose)
+      const jammy = new Focal(this.installer, this.remix, this.distro, this.user_opt, release, this.theme, this.isClone, this.verbose)
       await jammy.create()
 
       break
     }
 
     case 'kinetic': {
-      const kinetic = new Focal(this.installer, this.remix, this.distro, this.user_opt, release, this.theme, this.verbose)
+      const kinetic = new Focal(this.installer, this.remix, this.distro, this.user_opt, release, this.theme, this.isClone, this.verbose)
       await kinetic.create()
 
       break
@@ -164,7 +167,7 @@ export default class Incubator {
        * Arch
        */
     case 'rolling': {
-      const rolling = new Rolling(this.installer, this.remix, this.distro, this.user_opt, release, this.verbose)
+      const rolling = new Rolling(this.installer, this.remix, this.distro, this.user_opt, release, this.isClone, this.verbose)
       await rolling.create()
 
       break

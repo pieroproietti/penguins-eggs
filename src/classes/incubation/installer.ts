@@ -11,9 +11,9 @@
  * templateMultiarch = template + installer + '-modules/'
  *
  */
-import {IInstaller, IRemix} from '../../interfaces/index.js'
-import Distro from '../../classes/distro.js'
-import Pacman from '../../classes/pacman.js'
+import {IInstaller, IRemix} from '../../interfaces/index'
+import Distro from '../../classes/distro'
+import Pacman from '../../classes/pacman'
 
 export function installer(): IInstaller {
   const installer = {} as IInstaller
