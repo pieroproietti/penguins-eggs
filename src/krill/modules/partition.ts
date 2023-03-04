@@ -7,10 +7,10 @@
  * https://stackoverflow.com/questions/23876782/how-do-i-split-a-typescript-class-into-multiple-files
  */
 
-import {IPartitions} from '../../interfaces/i-partitions.js'
-import Sequence from '../krill-sequence.js'
-import {exec} from '../../lib/utils.js'
-import Utils from '../../classes/utils.js'
+import {IPartitions} from '../../interfaces/i-partitions'
+import Sequence from '../krill-sequence'
+import {exec} from '../../lib/utils'
+import Utils from '../../classes/utils'
 import shx from 'shelljs'
 import os from 'os'
 

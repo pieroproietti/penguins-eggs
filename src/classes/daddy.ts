@@ -4,16 +4,16 @@
  * email: piero.proietti@gmail.com
  * license: MIT
  */
-import Utils from '../classes/utils.js'
-import Pacman from '../classes/pacman.js'
-import Settings from '../classes/settings.js'
-import Ovary from '../classes/ovary.js'
-import Compressors from '../classes/compressors.js'
+import Utils from '../classes/utils'
+import Pacman from '../classes/pacman'
+import Settings from '../classes/settings'
+import Ovary from '../classes/ovary'
+import Compressors from '../classes/compressors'
 import inquirer from 'inquirer'
-import {IEggsConfig} from '../interfaces/i-eggs-config.js'
-import {IMyAddons} from '../interfaces/index.js'
+import {IEggsConfig} from '../interfaces/i-eggs-config'
+import {IMyAddons} from '../interfaces/index'
 import chalk from 'chalk'
-import {exec} from '../lib/utils.js'
+import {exec} from '../lib/utils'
 
 
 interface editConf {

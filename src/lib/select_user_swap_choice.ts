@@ -2,7 +2,7 @@
 import inquirer  from 'inquirer'
 import yaml from 'js-yaml'
 import fs from 'node:fs'
-import {IPartitions} from '../interfaces/index.js'
+import {IPartitions} from '../interfaces/index'
 
 export default async function selectUserSwapChoice(): Promise<string> {
   let partitions = {} as IPartitions

@@ -3,15 +3,15 @@
  * author: Piero Proietti
  * mail: piero.proietti@gmail.com
  */
-import {exec} from '../lib/utils.js'
-import {ITftpOptions, IDhcpOptions} from '../interfaces/i-pxe.js'
-import Distro from './distro.js'
+import {exec} from '../lib/utils'
+import {ITftpOptions, IDhcpOptions} from '../interfaces/i-pxe'
+import Distro from './distro'
 import fs from 'fs'
 import http, {IncomingMessage, ServerResponse} from 'http'
 import nodeStatic from 'node-static'
 import path, {dirname} from 'node:path'
-import Settings from './settings.js'
-import Utils from './utils.js'
+import Settings from './settings'
+import Utils from './utils'
 import tftp from 'tftp'
 // @ts-ignore
 import etrick from 'etrick'

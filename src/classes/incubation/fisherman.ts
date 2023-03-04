@@ -9,13 +9,14 @@ import fs from 'node:fs'
 import shx from 'shelljs'
 import path from 'node:path'
 
-import {IRemix, IDistro} from '../../interfaces/index.js'
+import { IRemix, IDistro } from '../../interfaces/index'
 import chalk from 'chalk'
-import Utils from '../utils.js'
-import {IInstaller} from '../../interfaces/index.js'
-import {displaymanager} from './fisherman-helper/displaymanager.js'
+import Utils from '../utils'
+import { IInstaller } from '../../interfaces/index'
+import { displaymanager } from './fisherman-helper/displaymanager'
 
-import {exec} from '../../lib/utils.js'
+import { exec } from '../../lib/utils'
+import Settings from '../settings'
 
 interface IReplaces {
   search: string
@@ -38,7 +39,7 @@ export default class Fisherman {
   /**
    * write setting
    */
-  async settings(vendor = 'eggs') {
+  async settings(vendor = 'eggs', isClone = false) {
     let branding = vendor
     if (vendor !== 'eggs' && vendor.includes('/')) {
       branding = vendor.slice(Math.max(0, vendor.lastIndexOf('/')))
@@ -52,18 +53,14 @@ export default class Fisherman {
       hasSystemd = '- '
     }
 
-    /**
-     * Controllo se è un clone: ovary, fisherman, krill
-     */
-    const is_clone = '/etc/penguins-eggs/is_clone'
+    let createUsers = '- '
+    if (isClone) {
+      createUsers = '# '
+    }
 
     let hasDisplaymanager = '# '
-    let createUsers = '# '
-    if (!fs.existsSync(is_clone)) {
-      createUsers = '- '
-      if (displaymanager() !== '') {
-        hasDisplaymanager = '- '
-      }
+    if (displaymanager() !== '') {
+      hasDisplaymanager = '- '
     }
 
     shx.sed('-i', '{{hasSystemd}}', hasSystemd, settings)
@@ -206,29 +203,29 @@ export default class Fisherman {
    */
   show(name: string, type: string, path: string) {
     switch (type) {
-    case 'module': {
-      console.log('fisherman: ' + chalk.yellow(name) + ' module in ' + chalk.yellow(path))
+      case 'module': {
+        console.log('fisherman: ' + chalk.yellow(name) + ' module in ' + chalk.yellow(path))
 
-      break
-    }
+        break
+      }
 
-    case 'calamares_module': {
-      console.log('fisherman: ' + chalk.cyanBright(name) + ' calamares_module in ' + chalk.cyanBright(path))
+      case 'calamares_module': {
+        console.log('fisherman: ' + chalk.cyanBright(name) + ' calamares_module in ' + chalk.cyanBright(path))
 
-      break
-    }
+        break
+      }
 
-    case 'shellprocess': {
-      console.log('fisherman: ' + chalk.green(name) + ' shellprocess in ' + chalk.green(path))
+      case 'shellprocess': {
+        console.log('fisherman: ' + chalk.green(name) + ' shellprocess in ' + chalk.green(path))
 
-      break
-    }
+        break
+      }
 
-    case 'contextualprocess': {
-      console.log('fisherman: ' + chalk.cyanBright(name) + ' shellprocess in ' + chalk.cyanBright(path))
+      case 'contextualprocess': {
+        console.log('fisherman: ' + chalk.cyanBright(name) + ' shellprocess in ' + chalk.cyanBright(path))
 
-      break
-    }
+        break
+      }
       // No default
     }
   }

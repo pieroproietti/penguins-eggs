@@ -10,11 +10,11 @@ import shx from 'shelljs'
 import yaml from 'js-yaml'
 import path from 'node:path'
 
-import {IInstaller, IRemix, IDistro} from '../../../interfaces/index.js'
+import {IInstaller, IRemix, IDistro} from '../../../interfaces/index'
 
-import Fisherman from '../fisherman.js'
+import Fisherman from '../fisherman'
 
-import {exec} from '../../../lib/utils.js'
+import {exec} from '../../../lib/utils'
 
 interface IReplaces {
   search: string
@@ -37,19 +37,22 @@ export class Bionic {
 
   user_opt: string
 
+  isClone: boolean
+
   /**
    * @param remix
    * @param distro
    * @param release
    * @param verbose
    */
-  constructor(installer: IInstaller, remix: IRemix, distro: IDistro, user_opt: string, release = false, verbose = false) {
+  constructor(installer: IInstaller, remix: IRemix, distro: IDistro, user_opt: string, release = false, isClone = false, verbose = false) {
     this.installer = installer
     this.remix = remix
     this.distro = distro
     this.user_opt = user_opt
     this.verbose = verbose
     this.release = release
+    this.isClone = isClone
   }
 
   /**
@@ -58,7 +61,7 @@ export class Bionic {
   async create() {
     const fisherman = new Fisherman(this.distro, this.installer, this.verbose)
 
-    await fisherman.settings(this.remix.branding)
+    await fisherman.settings(this.remix.branding, this.isClone)
 
     await fisherman.buildModule('partition', this.remix.branding)
     await fisherman.buildModule('mount')
