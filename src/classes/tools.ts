@@ -9,8 +9,8 @@ import os from 'node:os'
 import fs from 'node:fs'
 import yaml from 'js-yaml'
 
-import Settings from './settings.js'
-import Utils from './utils.js'
+import Settings from './settings'
+import Utils from './utils'
 
 interface IEggsConfigTools {
   remoteHost: string

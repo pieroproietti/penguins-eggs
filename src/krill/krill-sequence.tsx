@@ -46,65 +46,65 @@
  */
 
 
-import { IRemix, IDistro, INet } from '../interfaces/index.js'
-import Settings from '../classes/settings.js'
+import { IRemix, IDistro, INet } from '../interfaces/index'
+import Settings from '../classes/settings'
 
 import React from 'react';
 import { render, RenderOptions } from 'ink'
-import Install from '../components/install.js'
-import Finished from '../components/finished.js'
+import Install from '../components/install'
+import Finished from '../components/finished'
 
 import fs from 'fs'
 import yaml from 'js-yaml'
 import shx from 'shelljs'
-import Utils from '../classes/utils.js'
-import CliAutologin from '../lib/cli-autologin.js'
-import Pacman from '../classes/pacman.js';
-import { installer } from '../classes/incubation/installer.js'
-import Xdg from '../classes/xdg.js';
-import Distro from '../classes/distro.js'
+import Utils from '../classes/utils'
+import CliAutologin from '../lib/cli-autologin'
+import Pacman from '../classes/pacman';
+import { installer } from '../classes/incubation/installer'
+import Xdg from '../classes/xdg';
+import Distro from '../classes/distro'
 
-import { IInstaller, IDevices, IDevice } from '../interfaces/index.js'
-import { ICalamaresModule, ILocation, IKeyboard, IPartitions, IUsers } from '../interfaces/i-krill.js'
-import { exec } from '../lib/utils.js'
+import { IInstaller, IDevices, IDevice } from '../interfaces/index'
+import { ICalamaresModule, ILocation, IKeyboard, IPartitions, IUsers } from '../interfaces/i-krill'
+import { exec } from '../lib/utils'
 
 // import krill modules
-import partition from './modules/partition.js'
-import { mountFs, umountFs } from './modules/mount-fs.js'
-import { mountVfs, umountVfs } from './modules/mount-vfs.js'
-import unpackfs from './modules/unpackfs.js'
-import machineId from './modules/machine-id.js'
-import fstab from './modules/fstab.js'
-import locale from './modules/locale.js'
-import mKeyboard from './modules/m-keyboard.js'
-import localeCfg from './modules/locale-cfg.js'
+import partition from './modules/partition'
+import { mountFs, umountFs } from './modules/mount-fs'
+import { mountVfs, umountVfs } from './modules/mount-vfs'
+import unpackfs from './modules/unpackfs'
+import machineId from './modules/machine-id'
+import fstab from './modules/fstab'
+import locale from './modules/locale'
+import mKeyboard from './modules/m-keyboard'
+import localeCfg from './modules/locale-cfg'
 // users
-import addUser from './modules/add-user.js'
-import changePassword from './modules/change-password.js'
+import addUser from './modules/add-user'
+import changePassword from './modules/change-password'
 // displaymanager: autologin
-import networkCfg from './modules/network-cfg.js'
+import networkCfg from './modules/network-cfg'
 // hwclock:
 // services-systemd:
 // bootloader-config
-import bootloaderConfig from './modules/bootloader-config.js'
-import bootloaderConfigUbuntu from './modules/bootloader-config-ubuntu.js'
+import bootloaderConfig from './modules/bootloader-config'
+import bootloaderConfigUbuntu from './modules/bootloader-config-ubuntu'
 //
-import grubcfg from './modules/grubcfg.js'
-import bootloader from './modules/bootloader.js'
-import packages from './modules/packages.js'
-import removeInstallerLink from './modules/remove-installer-link.js'
+import grubcfg from './modules/grubcfg'
+import bootloader from './modules/bootloader'
+import packages from './modules/packages'
+import removeInstallerLink from './modules/remove-installer-link'
 // luksbootkeyfile:
 // plymouthcfg;
-import initramfsCfg from './modules/initramfs-cfg.js'
-import initramfs from './modules/initramfs.js'
-import delLiveUser from './modules/del-live-user.js'
+import initramfsCfg from './modules/initramfs-cfg'
+import initramfs from './modules/initramfs'
+import delLiveUser from './modules/del-live-user'
 // umount already imported
 
 // to order in same wat
-import mTimezone from './modules/m-timezone.js'
-import umount from './modules/umount.js'
-import mkfs from './modules/mkfs.js'
-import hostname from './modules/hostname.js'
+import mTimezone from './modules/m-timezone'
+import umount from './modules/umount'
+import mkfs from './modules/mkfs'
+import hostname from './modules/hostname'
 
 /**
  * hatching: installazione o cova!!!

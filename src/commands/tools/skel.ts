@@ -5,9 +5,9 @@
  * license: MIT
  */
 import {Command, Flags} from '@oclif/core'
-import Utils from '../../classes/utils.js'
+import Utils from '../../classes/utils'
 import fs from 'fs'
-import Xdg from '../../classes/xdg.js'
+import Xdg from '../../classes/xdg'
 
 export default class Skel extends Command {
   static flags = {

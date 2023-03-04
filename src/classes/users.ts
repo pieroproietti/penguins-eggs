@@ -1,10 +1,10 @@
 /**
  * User
  */
-import {integer} from '@oclif/core/lib/parser/flags.js'
-import {flagUsage} from '@oclif/core/lib/parser/help.js'
+import {integer} from '@oclif/core/lib/parser/flags'
+import {flagUsage} from '@oclif/core/lib/parser/help'
 import fs from 'fs'
-import {exec} from '../lib/utils.js'
+import {exec} from '../lib/utils'
 import {access} from 'fs/promises'
 import {constants} from 'fs'
 

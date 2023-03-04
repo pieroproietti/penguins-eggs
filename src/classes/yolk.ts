@@ -5,10 +5,10 @@
  * license: MIT
  */
 import fs from 'fs'
-import Utils from './utils.js'
-import Pacman from './pacman.js'
-import Bleach from './bleach.js'
-import {exec} from '../lib/utils.js'
+import Utils from './utils'
+import Pacman from './pacman'
+import Bleach from './bleach'
+import {exec} from '../lib/utils'
 import shx from 'shelljs'
 
 /**

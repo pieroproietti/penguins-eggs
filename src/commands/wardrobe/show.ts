@@ -9,8 +9,8 @@ import fs from 'fs'
 import path from 'path'
 import chalk from 'chalk'
 
-import Utils from '../../classes/utils.js'
-import { IMateria } from '../../interfaces/index.js'
+import Utils from '../../classes/utils'
+import { IMateria } from '../../interfaces/index'
 
 /**
  *

@@ -1,13 +1,13 @@
 import shx from 'shelljs'
 import fs from 'fs'
 import path from 'path'
-import Utils from '../classes/utils.js'
-import Pacman from '../classes/pacman.js'
+import Utils from '../classes/utils'
+import Pacman from '../classes/pacman'
 import chalk from 'chalk'
 const pjson = require('../../package.json')
 
 // libraries
-import { exec } from '../lib/utils.js'
+import { exec } from '../lib/utils'
 const startMessage = 'eggs-start-message'
 const stopMessage = 'eggs-stop-message'
 

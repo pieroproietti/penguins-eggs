@@ -53,61 +53,61 @@
  * relevant /etc/calamares/ files.
  */
 import os from 'os'
-import { IKrillConfig } from '../interfaces/i-krill-config.js'
+import { IKrillConfig } from '../interfaces/i-krill-config'
 
 import React from 'react';
 import { Box, Text } from 'ink'
 import { render, RenderOptions } from 'ink'
-import Utils from '../classes/utils.js'
+import Utils from '../classes/utils'
 import axios from 'axios'
 import shx from 'shelljs'
 import fs from 'fs'
-import Systemctl from '../classes/systemctl.js'
-import Locales from '../classes/locales.js'
-import Keyboards from '../classes/keyboards.js'
+import Systemctl from '../classes/systemctl'
+import Locales from '../classes/locales'
+import Keyboards from '../classes/keyboards'
 
 // libraries
-const exec = require('../lib/utils.js').exec
+const exec = require('../lib/utils').exec
 
-import Welcome from '../components/welcome.js'
-import Location from '../components/location.js'
-import Partitions from '../components/partitions.js'
-import Keyboard from '../components/keyboard.js'
-import Users from '../components/users.js'
-import Network from '../components/network.js'
-import Summary from '../components/summary.js'
+import Welcome from '../components/welcome'
+import Location from '../components/location'
+import Partitions from '../components/partitions'
+import Keyboard from '../components/keyboard'
+import Users from '../components/users'
+import Network from '../components/network'
+import Summary from '../components/summary'
 
-import selectLanguages from '../lib/select_languages.js'
-import selectRegions from '../lib/select_regions.js'
-import selectZones from '../lib/select_zones.js'
+import selectLanguages from '../lib/select_languages'
+import selectRegions from '../lib/select_regions'
+import selectZones from '../lib/select_zones'
 
-import selectInstallationDevice from '../lib/select_installation_device.js'
-import selectInstallationMode from '../lib/select_installation_mode.js'
-import selectUserSwapChoice from '../lib/select_user_swap_choice.js'
-import selectFileSystemType from '../lib/select_filesystem_type.js'
+import selectInstallationDevice from '../lib/select_installation_device'
+import selectInstallationMode from '../lib/select_installation_mode'
+import selectUserSwapChoice from '../lib/select_user_swap_choice'
+import selectFileSystemType from '../lib/select_filesystem_type'
 
-import getUsername from '../lib/get_username.js'
-import getUserfullname from '../lib/get_userfullname.js'
-import getHostname from '../lib/get_hostname.js'
-import getPassword from '../lib/get_password.js'
+import getUsername from '../lib/get_username'
+import getUserfullname from '../lib/get_userfullname'
+import getHostname from '../lib/get_hostname'
+import getPassword from '../lib/get_password'
 
-import selectKeyboardModel from '../lib/select_keyboard_model.js'
-import selectKeyboardLayout from '../lib/select_keyboard_layout.js'
-import selectKeyboardVariant from '../lib/select_keyboard_variant.js'
-import selectKeyboardOption from '../lib/select_keyboard_option.js'
+import selectKeyboardModel from '../lib/select_keyboard_model'
+import selectKeyboardLayout from '../lib/select_keyboard_layout'
+import selectKeyboardVariant from '../lib/select_keyboard_variant'
+import selectKeyboardOption from '../lib/select_keyboard_option'
 
-import selectInterface from '../lib/select_interface.js'
-import selectAddressType from '../lib/select_address_type.js'
-import getAddress from '../lib/get_address.js'
-import getNetmask from '../lib/get_netmask.js'
-import getGateway from '../lib/get_gateway.js'
-import getDomain from '../lib/get_domain.js'
-import getDns from '../lib/get_dns.js'
+import selectInterface from '../lib/select_interface'
+import selectAddressType from '../lib/select_address_type'
+import getAddress from '../lib/get_address'
+import getNetmask from '../lib/get_netmask'
+import getGateway from '../lib/get_gateway'
+import getDomain from '../lib/get_domain'
+import getDns from '../lib/get_dns'
 
-import Sequence from './krill-sequence.js'
+import Sequence from './krill-sequence'
 
-import { INet } from '../interfaces/index.js'
-import { IWelcome, ILocation, IKeyboard, IPartitions, IUsers } from '../interfaces/i-krill.js'
+import { INet } from '../interfaces/index'
+import { IWelcome, ILocation, IKeyboard, IPartitions, IUsers } from '../interfaces/i-krill'
 
 const config_file = '/etc/penguins-eggs.d/krill.yaml' as string
 

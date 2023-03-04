@@ -1,5 +1,5 @@
 import {Command, Flags} from '@oclif/core'
-import Utils from '../../classes/utils.js'
+import Utils from '../../classes/utils'
 import axios from 'axios'
 import https from 'node:https'
 const agent = new https.Agent({
