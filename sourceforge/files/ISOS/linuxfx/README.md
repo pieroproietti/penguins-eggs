@@ -25,7 +25,7 @@ All ISOs include eggs, you can udate it with: ```sudo eggs update```.
 I lack information about real compatibility with Windows programs, generally many vertical applications developed with Visual Basic 6 and using ADO, should not work, I hope to be proven wrong.
 
 ## HOWTO
-I wrote this fast howto to give same explanations: [HOWTO](https://github.com/pieroproietti/sourceforge/ISOS/linuxfx/HOWTO.rd)
+I wrote this fast howto to give same explanations: [HOWTO](https://github.com/pieroproietti/penguins-eggs/tree/master/sourceforge/files/ISOS/linuxfx/HOWTO.md)
 
 * **egg-of-linuxfx-jammy-plasma** A remastered version of LinuxFX theme plasma
 * **egg-of-linuxfx-jammy-cinnamon** A remastered version of LinuxFX theme cinnamon
