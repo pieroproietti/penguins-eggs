@@ -26,4 +26,3 @@ label CLI
 label Boot from local
   com32 chain.c32
   append hd1 1 swap
-  

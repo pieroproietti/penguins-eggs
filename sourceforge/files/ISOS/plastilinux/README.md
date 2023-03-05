@@ -22,20 +22,20 @@ Ho inserito in eggs una funzione di integrazione con [epoptes](https://epoptes.o
 * ```live/evolution```
 * ```root/evolution```
 
-# Debian bullseye chicks
+# chicks
 XFCE4, leggera customizzazione e programmi per la scuola.
 
-# Ubuntu jammy pulcini
-XFCE4, leggera customizzazione e programmi per la scuola.
+Disponibile come: 
 
+* Debian buster/bullseye/bookworm;
 
-# Sodilinux orizzonti
-Ho inserito anche So.Di.Linux Orizzonti 2005, come per Ubuntu anche qua c'è un problema di grandezza dell'immagine - circa 3,8 GB . per poter operare con PXE
-ma potrebbe costituire una ottima traccia. Inoltre, su macchine con 8 GB anche l'installazione e l'uso via PXE nonchè il controllo con [epoptes](https://epoptes.org/) funzionano benissimo.
+* Devuan beowulf/chimaera/daedalus;
+
+* Ubuntu jammy.
 
 # Crea da solo la tua immagine
 
-E' possibile creare queste immagini a partire dalla distribuzione originale ed utilizzando eggs ed il wardrobe.
+E' possibile creare e customizzare queste immagini a partire dalle distribuzioni originali ed utilizzando eggs ed il wardrobe.
 
 ## Ubuntu jammy chicks
 
@@ -61,6 +61,19 @@ oppure:
 * ```eggs wardrobe get```
 * ```sudo eggs wardrobe wear chick```
 
+## Debian buster chicks
+Come per Debian bullseye, ma scaricando la versione [naked](https://sourceforge.net/projects/penguins-eggs/files/ISOS/debian/buster /) di Debian buster.
+
+## Devuan chimaera chicks
+Come per Debian bullseye, ma scaricando la versione [naked](https://sourceforge.net/projects/penguins-eggs/files/ISOS/devuan/chimaera /) di Devuan chimaera 
+
+
+## Devuan daedalus chicks
+Come per Debian bullseye, ma scaricando la versione [naked](https://sourceforge.net/projects/penguins-eggs/files/ISOS/devuan/daedalus/) di Devuan daedalus ceres 
+
+# ... e le altre?
+Si, sarebbe possibile ottenere anche versioni basate su altre distribuzioni come arch e manjaro, ma occorre la vostra collaborazione!
+
 ## More informations:
 
 * Repository: [penguins-eggs](https://github.com/pieroproietti/penguins-eggs)
@@ -71,3 +84,6 @@ oppure:
 # Disclaim
 __Please note what this project is in no way connected to the original distro in any official way, it’s just my personal experiment.__
 
+# Sodilinux orizzonti
+Ho inserito anche So.Di.Linux Orizzonti 2005, come per Ubuntu anche qua c'è un problema di grandezza dell'immagine - circa 3,8 GB . per poter operare con PXE
+ma potrebbe costituire una ottima traccia. Inoltre, su macchine con 8 GB anche l'installazione e l'uso via PXE nonchè il controllo con [epoptes](https://epoptes.org/) funzionano benissimo.

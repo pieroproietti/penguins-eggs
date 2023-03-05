@@ -13,7 +13,7 @@ penguins-eggs
 
 # Penguin's eggs remastered ISOs
 
-All ISOs are based on Devuan beowulf 3.1
+All ISOs are based on Devuan chimaera
 
 # user/password
 * ```live/evolution```
@@ -21,37 +21,9 @@ All ISOs are based on Devuan beowulf 3.1
 
 All ISOs include eggs, you can udate it with: ```sudo eggs update```.
 
-# Devuan chimaera
+# Devuan daedalus
 
-## **naked**
-Just the juice, without GUI. You can start here to build your revolution!
-
-##  **colibri**
-A light xfce4 for developers you can easily start to improve eggs installing colibri.
-
-![colibri](https://a.fsdn.com/con/app/proj/penguins-eggs/screenshots/colibri.png/245/183)
-
-## **duck**
-cinnamon, office, multimedia with 5.17.0-1.2-liquorix-amd64 kernel.
-
-![duck](https://a.fsdn.com/con/app/proj/penguins-eggs/screenshots/duck.png/245/183)
- 
-## **owl**
-xfce4 for graphics designers, with 5.17.0-1.2-liquorix-amd64 kernel, based on the work of Clarlie Martinez 
- [quirinux](https://quirinux.org/).
-
-![owl](https://a.fsdn.com/con/app/proj/penguins-eggs/screenshots/owl.png/245/183)
-
-# Installing Devuan via PXE
-
-One feature of ISO images made with eggs is the ability to be used for network installation . All you have to do is boot the ISO to be installed, open a terminal window and type the command: 
-
-```sudo eggs cuckoo```.
-
-Then all you have to do is boot from the network the machines to be installed and start the calamares or krill installer.
-
-You can also perform an unattended installation with krill, see the [manual](https://penguins-eggs.net/book/) or, find assistance in the [telegram penguin's eggs](https://t.me/penguins_eggs) group.
-
+## **naked** - just the juice, without GUI. You can start here to build your revolution!
 
 ## More informations:
 
