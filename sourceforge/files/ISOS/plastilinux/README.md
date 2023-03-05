@@ -26,8 +26,11 @@ Ho inserito in eggs una funzione di integrazione con [epoptes](https://epoptes.o
 XFCE4, leggera customizzazione e programmi per la scuola.
 
 Disponibile come: 
+
 * Debian buster/bullseye/bookworm;
+
 * Devuan beowulf/chimaera/daedalus;
+
 * Ubuntu jammy.
 
 # Crea da solo la tua immagine
