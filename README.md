@@ -45,7 +45,14 @@ You can read more on the [blog](https://penguins-eggs.net/2021/11/02/distros-tha
 # Features
 
 ## wardrobe, themes and addons
-Addons and themes have been grouped under the penguins-wardrobe, use wardrobe for your customizations. 
+
+wardrobe was added to eggs on april 2022, it's is a way to guide and consolidate the process of creating a custom version of Linux, starting from a CLI system. All my personal editions are passed to use wardrobe for their convenience, in that way I can organize, consolidate and manage better my work. I used birds names for my customizations, we have: colibri, duck, eagle, owl, wagtail, warbier and chicks under [plastilinux](https://sourceforge.net/projects/penguins-eggs/files/ISOS/plastilinux/). 
+
+I hope peoples will be interested in wardrobe and you will end to fork the main repository and add your customizations: together will be possibile to make great steps impossible for a single developer. 
+
+You can read more in wardrobe on [penguin's eggs blog](https://penguins-eggs.net/2022/04/12/wardrobe-colibri-duck-eagle-and-owl/). The results of mine customizations are mostly under [Debian bullseye](https://sourceforge.net/projects/penguins-eggs/files/ISOS/debian/bullseye/), [Devuan chimaera](https://sourceforge.net/projects/penguins-eggs/files/ISOS/devuan/chimaera/) and [Ubuntu jammy](https://sourceforge.net/projects/penguins-eggs/files/ISOS/ubuntu/jammy/) on my sourgeforce page.
+
+Addons and themes have been grouped under the penguins-wardrobe, use wardrobe for all your customizations. 
 
 ## clone/cryptedclone
 You can create your live to distribute it - the default mode - or with datas using clone and clonecrypted:
