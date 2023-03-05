@@ -64,11 +64,18 @@ oppure:
 * ```eggs wardrobe get```
 * ```sudo eggs wardrobe wear chick```
 
+## Debian buster chicks
+Come per Debian bullseye, ma scaricando la versione [naked](https://sourceforge.net/projects/penguins-eggs/files/ISOS/debian/buster /) di Debian buster.
+
+## Devuan chimaera chicks
+Come per Debian bullseye, ma scaricando la versione [naked](https://sourceforge.net/projects/penguins-eggs/files/ISOS/devuan/chimaera /) di Devuan chimaera 
+
+
 ## Devuan daedalus chicks
 Come per Debian bullseye, ma scaricando la versione [naked](https://sourceforge.net/projects/penguins-eggs/files/ISOS/devuan/daedalus/) di Devuan daedalus ceres 
 
-# E le altre?
-Si, è possibile ottenere anche versioni basate su Debian buster e non solo, arch linux  e manjaro!
+# ... e le altre?
+Si, sarebbe possibile ottenere anche versioni basate su altre distribuzioni come arch e manjaro, ma occorre la vostra collaborazione!
 
 ## More informations:
 
