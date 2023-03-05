@@ -48,7 +48,7 @@ You can read more on the [blog](https://penguins-eggs.net/2021/11/02/distros-tha
 Addons and themes have been grouped under the penguins-wardrobe, use wardrobe for your customizations. 
 
 ## clone/cryptedclone
-You can create your live to distribute it without user data. the default mode or use clone and clonecrypted:
+You can create your live to distribute it - the default mode - or with datas using clone and clonecrypted:
 
 ```eggs produce``` 
 
