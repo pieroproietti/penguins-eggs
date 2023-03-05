@@ -84,16 +84,8 @@ The cuckoo lays its eggs in the nests of other birds, and the eggs are hatched b
 ## mom and dad
 I've added two lightweight assistants integrated with eggs: mom and dad. While mom is a bash script with whiptail - and guides the user to the various commands and documentation, dad started as a short way to create isos. All you have to do is type **sudo eggs dad** and follow simple instructions. You can also shortcut the way to reset the configuration **sudo dad -c** or - even faster - reset the configuration, load defaults, kill created isos: simply type **sudo eggs dad -d** and you will immediately be able to produce the egg in the default /home/eggs nest.
 
-## wardrobe
-wardrobe was added to eggs on april 2022, it's is a way to guide and consolidate the process of creating a custom version of Linux, starting from a CLI system. All my personal editions are passed to use wardrobe for their convenience, in that way I can organize, consolidate and manage better my work. I used birds names for my customizations, we have: colibri, duck, eagle, owl, wagtail and warbier. 
-
-I hope peoples will be interested in wardrobe and you will end to fork the main repository and add your customizations: together will be possibile to make great steps impossible for a single developer. 
-
-You can read more in wardrobe on [penguin's eggs blog](https://penguins-eggs.net/2022/04/12/wardrobe-colibri-duck-eagle-and-owl/). The results of mine customizations are mostly under [Debian bullseye](https://sourceforge.net/projects/penguins-eggs/files/ISOS/debian/bullseye/), [Devuan chimaera](https://sourceforge.net/projects/penguins-eggs/files/ISOS/devuan/chimaera/) and [Ubuntu jammy](https://sourceforge.net/projects/penguins-eggs/files/ISOS/ubuntu/jammy/) on my sourgeforce page.
-
 ## yolk 
 yolk - so called staying on the subject of eggs - is a local repository included in the livecd that contains a minimum of indispensable packages during installation. Thanks to yolk, you can safely install your system without the need of an active internet connection. Yolk, It is used only for Debian families and derivated.
-
 
 # Packages
 Supporting various distributions, we need to have different packages. Debian, Devuan and Ubuntu share the .deb packages of eggs, while for Arch Linux and ManjaroLinux they use their PKGBUILD.
