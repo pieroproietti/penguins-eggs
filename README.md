@@ -38,7 +38,7 @@ Thanks to the wardrobe, you can create or use scripts to switch from a "naked" v
 
 # Technology
 
-The whole thing is written in pure typescript, so ideally it can be used with different Linux distributions. Yes, there are major differences in terms of the package manager used, but not so much on the way the various programs used to build the isos work. Actually eggs support: Debian, Devuan, Ubuntu, Arch and ManjaroLinux.
+eggs is written in pure typescript and ideally can be used with different Linux distributions. Yes, there are big differences in terms of package manager used, path, etc, but basically the various programs used to build the live are the same. Currently eggs supports: Debian, Devuan, Ubuntu, Arch and ManjaroLinux.
 
 You can read more on the [blog](https://penguins-eggs.net/2021/11/02/distros-that-can-be-remastered-with-eggs/), some examples of iso images remastered with eggs are in the [sourceforge page of the project](https://sourceforge.net/projects/penguins-eggs/files/ISOS/). 
 
@@ -49,6 +49,7 @@ Addons and themes have been grouped under the penguins-wardrobe, use wardrobe fo
 
 ## clone/cryptedclone
 You can create your live to distribute it without user data. the default mode or use clone and clonecrypted:
+
 ```eggs produce``` 
 Completely removes user data from live, this is the preset mode
 
