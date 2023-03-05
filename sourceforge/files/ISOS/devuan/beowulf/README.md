@@ -13,7 +13,7 @@ penguins-eggs
 
 # Penguin's eggs remastered ISOs
 
-All ISOs are based on Devuan beowulf 3.1
+All ISOs are based on Devuan beowulf
 
 # user/password
 * ```live/evolution```
@@ -21,9 +21,9 @@ All ISOs are based on Devuan beowulf 3.1
 
 All ISOs include eggs, you can udate it with: ```sudo eggs update```.
 
-# Devuan 
+# Devuan beowulf
 
-**beowulf**
+## **naked** - just the juice, without GUI. You can start here to build your revolution!
 
 ## More informations:
 
@@ -33,5 +33,5 @@ All ISOs include eggs, you can udate it with: ```sudo eggs update```.
 * You can find more informations on this Linux distro at: [Devuan](https://devuan.org/).
 
 # Disclaim
-__Please note what this project is in no way connected to Devuan in any official way, it’s just my personal experiment__.
+__Please note what this project is in no way connected to the original distro in any official way, it’s just my personal experiment.__
 

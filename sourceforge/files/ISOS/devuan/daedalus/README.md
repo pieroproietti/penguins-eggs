@@ -13,7 +13,7 @@ penguins-eggs
 
 # Penguin's eggs remastered ISOs
 
-All ISOs are based on Devuan beowulf 3.1
+All ISOs are based on Devuan daedalus
 
 # user/password
 * ```live/evolution```
@@ -24,11 +24,6 @@ All ISOs include eggs, you can udate it with: ```sudo eggs update```.
 # Devuan daedalus
 
 ## **naked** - just the juice, without GUI. You can start here to build your revolution!
-##  **colibri**
-A light xfce4 for developers you can easily start to improve eggs installing colibri.
-
-![colibri](https://a.fsdn.com/con/app/proj/penguins-eggs/screenshots/colibri.png/245/183)
-
 
 ## More informations:
 
