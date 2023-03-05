@@ -44,20 +44,21 @@ You can read more on the [blog](https://penguins-eggs.net/2021/11/02/distros-tha
 
 # Features
 
-## addons and themes
-Addons are used mostly to let third parties to develop extensions. Note that currently we have an extension for the theme that includes both branding calamares, link and installer icon. In addition, also as an addon has been developed choose between GUI or CLI installation, adapt the video resolution, link to remote support, etc.
+## wardrobe, themes and addons
+Addons and themes have been grouped under the penguins-wardrobe, use wardrobe for your customizations. 
 
 ## clone/cryptedclone
-
-We have two methods to save in the live system all our data: clone and cryptedclone.
+You can create your live to distribute it without user data. the default mode or use clone and clonecrypted:
+```eggs produce``` 
+Completely removes user data from live, this is the preset mode
 
 ```eggs produce --clone``` 
 
-saves our users and our data directly in the generated iso. The data will be visible directly from the live and accessible to anyone who gets a copy.
+Saves our users and our data directly in the generated iso. The data will be visible directly from the live and accessible to anyone who gets a copy.
 
 ```eggs produce --cryptedclone``` 
 
-saves our data within the generated iso using a LUKS volume. Our data will NOT be visible in the live system but can be reinstalled automatically with krill installer. Even having the generated image available, our data will be protected by the LUKS passphrase.
+Saves our data within the generated iso using a LUKS volume. Our data will NOT be visible in the live system but can be reinstalled automatically with krill installer. Even having the generated image available, our data will be protected by the LUKS passphrase.
 
 * ```eggs produce``` this is the default: all private data are removed on the live.
 * ```eggs produce --clone``` include all users data UNCRYPTED directly on the live.
@@ -66,7 +67,7 @@ saves our data within the generated iso using a LUKS volume. Our data will NOT b
 Using ```sudo eggs install --cli``` will automaticaly restore your CRYPTED clone automatically during the installation.
 
 ## calamares and krill
-eggs was developed to use the excellent [calamares](https://calamares.io) as a system installer and allows customization. It also includes its own installer called krill, which allows you to produce and install CLI systems such as servers. krill uses a CLI interface that mimics calamares and uses the same configuration files created by eggs for calamares itself. This results in having "about the same" installation experience from old distros to new ones, desktop or server installations. With krill it is also possible to have unattended installations, simply by adding the ``--unattended`` flag, the configuration values can be changed in ``/etc/penguins-eggs.d/krill.yaml`` and they will be used for the configuration.
+eggs was developed to use [calamares](https://calamares.io) as the system installer and allows its customization with themes. It also includes its own installer, called krill, which allows you to produce and install CLI systems such as servers. krill uses a CLI interface that mimics calamares and uses the same configuration files created by eggs for calamares. This provides a "roughly similar" installation experience for both desktop and server installations. With krill it is also possible to have unattended installations, simply by adding the ``--unattended`` flag, the configuration values can be changed in ``/etc/penguins-eggs.d/krill.yaml`` and will then be used for automatic installation.
 
 ## cuckoo
 The cuckoo lays its eggs in the nests of other birds, and the eggs are hatched by the latter. Similarly eggs can start a self-configuring PXE service to allow you to boot and install your iso on third party networked computers. Command cuckoo can be used either to deploy a newly created iso on an installed system or by live booting the iso itself. 
