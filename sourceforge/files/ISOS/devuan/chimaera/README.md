@@ -21,7 +21,7 @@ All ISOs are based on Devuan chimaera
 
 All ISOs include eggs, you can udate it with: ```sudo eggs update```.
 
-# Devuan daedalus
+# Devuan chimaera
 
 ## **naked** - just the juice, without GUI. You can start here to build your revolution!
 
