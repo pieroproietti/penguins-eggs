@@ -27,7 +27,7 @@ _eggs () {
 "tools\:skel:update skel from home configuration"
 "tools\:stat:get statistics from sourceforge"
 "tools\:yolk:configure eggs to install without internet"
-"update:update the penguin's eggs tool"
+"update:update the Penguins' eggs tool"
 "wardrobe\:get:get warorobe"
 "wardrobe\:list:list costumes and accessoires in wardrobe"
 "wardrobe\:show:show costumes/accessories in wardrobe"

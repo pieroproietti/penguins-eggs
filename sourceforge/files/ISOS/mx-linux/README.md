@@ -10,7 +10,7 @@ penguins-eggs
 [![deb](https://img.shields.io/badge/deb-packages-blue)](https://sourceforge.net/projects/penguins-eggs/files/DEBS)
 [![pkgbuild](https://img.shields.io/badge/pkgbuild-packages-blue)](https://sourceforge.net/projects/penguins-eggs/files/PKGBUILD)[![iso](https://img.shields.io/badge/iso-images-cyan)](https://sourceforge.net/projects/penguins-eggs/files/ISOS)
 
-# Penguin's eggs remastered ISOs
+# Penguins' eggs remastered ISOs
 
 # user/password
 * ```live/evolution```
@@ -32,7 +32,7 @@ One feature of ISO images made with eggs is the ability to be used for network i
 
 Then all you have to do is boot from the network the machines to be installed and start the calamares or krill installer.
 
-You can also perform an unattended installation with krill, see the [manual](https://penguins-eggs.net/book/) or, find assistance in the [telegram penguin's eggs](https://t.me/penguins_eggs) group.
+You can also perform an unattended installation with krill, see the [manual](https://penguins-eggs.net/book/) or, find assistance in the [telegram Penguins' eggs](https://t.me/penguins_eggs) group.
 
 
 ![mx-linux-cuckoo](https://a.fsdn.com/con/app/proj/penguins-eggs/screenshots/mx-linux-cuckoo.png/1024/768)

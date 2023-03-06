@@ -11,7 +11,7 @@ penguins-eggs
 [![telegram](https://img.shields.io/badge/telegram-group-red)](https://t.me/penguins_eggs)
 
 
-# Penguin's eggs remixes ISOs
+# Penguins' eggs remixes ISOs
 
 All ISOs are based on Arch, Debian, Devuan, Manjaro, Ubuntu or derivates (LinuxFx, Linuxmint, MX-Linux, SpiralLinux, etc).
 
@@ -37,7 +37,7 @@ One feature of ISO images made with eggs is the ability to be used for network i
 
 Then all you have to do is boot from the network the machines to be installed and start the calamares or krill installer.
 
-You can also perform an unattended installation with krill, see the [manual](https://penguins-eggs.net/book/) or, find assistance in the [telegram penguin's eggs](https://t.me/penguins_eggs) group.
+You can also perform an unattended installation with krill, see the [manual](https://penguins-eggs.net/book/) or, find assistance in the [telegram Penguins' eggs](https://t.me/penguins_eggs) group.
 
 
 ![kinetic](https://a.fsdn.com/con/app/proj/penguins-eggs/screenshots/kinetic.png/1024/768)
@@ -48,7 +48,7 @@ No need other configurations, penguins-eggs are battery included or better, as i
 
 ## More informations
 
-You can find more informations at [Penguin's eggs blog](https://penguins-eggs.net).
+You can find more informations at [Penguins' eggs blog](https://penguins-eggs.net).
 
 ## Contacts
 Feel free to contact [me](https://gitter.im/penguins-eggs-1/community?source=orgpage) or open an issue on [github](https://github.com/pieroproietti/penguins-eggs/issues).

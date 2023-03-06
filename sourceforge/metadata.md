@@ -3,7 +3,7 @@
 # English
 
 # name
-Penguin's eggs
+Penguins' eggs
 
 # Homepage
 https://penguins-eggs.net
@@ -15,7 +15,7 @@ www.youtube.com/embed/teG6EKcuPuI?rel=0
 On the road of Remastersys, SystemBack and father Knoppix!
 
 # Full Description
-Penguin's eggs is a terminal utility, in active development, which allows you to remaster your system and redistribute it as an ISO image.
+Penguins' eggs is a terminal utility, in active development, which allows you to remaster your system and redistribute it as an ISO image.
 
 # Installation
 Download the package according your architecture, **sudo apt install eggs_7.8.41-amd64.deb** and **sudo apt install -f**.

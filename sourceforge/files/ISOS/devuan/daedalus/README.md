@@ -11,7 +11,7 @@ penguins-eggs
 [![pkgbuild](https://img.shields.io/badge/pkgbuild-packages-blue)](https://sourceforge.net/projects/penguins-eggs/files/PKGBUILD)[![iso](https://img.shields.io/badge/iso-images-cyan)](https://sourceforge.net/projects/penguins-eggs/files/ISOS)
 
 
-# Penguin's eggs remastered ISOs
+# Penguins' eggs remastered ISOs
 
 All ISOs are based on Devuan daedalus
 
