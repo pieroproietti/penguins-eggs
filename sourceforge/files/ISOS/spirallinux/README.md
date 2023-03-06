@@ -11,7 +11,7 @@ penguins-eggs
 [![pkgbuild](https://img.shields.io/badge/pkgbuild-packages-blue)](https://sourceforge.net/projects/penguins-eggs/files/PKGBUILD)[![iso](https://img.shields.io/badge/iso-images-cyan)](https://sourceforge.net/projects/penguins-eggs/files/ISOS)
 
 
-# Penguin's eggs remastered ISOs
+# Penguins' eggs remastered ISOs
 
 # user/password
 * ```live/evolution```
@@ -65,7 +65,7 @@ penguins-eggs
 [![sources-documentation](https://img.shields.io/badge/sources-documentation-blue)](https://penguins-eggs.net/sources-documentation/index.html)
 [![guide](https://img.shields.io/badge/guide-penguin's%20eggs-cyan)](https://penguins-eggs.net/book/)
 [![npm version](https://img.shields.io/npm/v/penguins-eggs.svg)](https://npmjs.org/package/penguins-eggs)
-[![Download Penguin's eggs](https://img.shields.io/sourceforge/dd/penguins-eggs.svg)](https://sourceforge.net/projects/penguins-eggs/files/latest/download)
+[![Download Penguins' eggs](https://img.shields.io/sourceforge/dd/penguins-eggs.svg)](https://sourceforge.net/projects/penguins-eggs/files/latest/download)
 [![deb](https://img.shields.io/badge/deb-packages-blue)](https://sourceforge.net/projects/penguins-eggs/files/DEBS)
 [![pkgbuild](https://img.shields.io/badge/pkgbuild-packages-blue)](https://sourceforge.net/projects/penguins-eggs/files/PKGBUILD)[![iso](https://img.shields.io/badge/iso-images-cyan)](https://sourceforge.net/projects/penguins-eggs/files/ISOS)
 

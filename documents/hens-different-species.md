@@ -85,11 +85,11 @@ create an eggs.yml and a tools.yml in /etc/penguins-eggs.d.
 
 
 # Contacts
-* [blog Penguin's eggs](https://penguins-eggs.net)    
-* [facebook penguin's eggs group](https://www.facebook.com/groups/128861437762355/)
+* [blog Penguins' eggs](https://penguins-eggs.net)    
+* [facebook Penguins' eggs group](https://www.facebook.com/groups/128861437762355/)
 * [mail piero.proietti@gmail.com](mailto://pieroproietti@gmail.com)
 * [sources](https://github.com/pieroproietti/penguins-krill)
-* [telegram](https://t.me/penguins_eggs) penguin's eggs channel
+* [telegram](https://t.me/penguins_eggs) Penguins' eggs channel
 * [twitter](https://twitter.com/pieroproietti)
 
 

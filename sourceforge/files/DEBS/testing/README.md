@@ -15,7 +15,7 @@ Penguins-eggs
 # Last version
 eggs_9.3.25 was released 
 
-# Penguin's eggs Debian TESTING packages
+# Penguins' eggs Debian TESTING packages
 
 Please, don't use this package for installations, they have just the pourpouse to be TESTED and can be extremally BUGGED!!!
 

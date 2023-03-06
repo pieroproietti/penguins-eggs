@@ -21,7 +21,7 @@ export default class Update extends Command {
     verbose: Flags.boolean({char: 'v', description: 'verbose'}),
   }
 
-  static description = "update the penguin's eggs tool"
+  static description = "update the Penguins' eggs tool"
   static examples = [
     'eggs update',
   ]

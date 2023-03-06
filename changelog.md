@@ -11,11 +11,11 @@ penguins-eggs
 [![pkgbuild](https://img.shields.io/badge/pkgbuild-packages-blue)](https://sourceforge.net/projects/penguins-eggs/files/PKGBUILD)
 [![iso](https://img.shields.io/badge/iso-images-cyan)](https://sourceforge.net/projects/penguins-eggs/files/ISOS)
 
-# Penguin's eggs Debian package
+# Penguins' eggs Debian package
 
 Note: **eggs_9.x.x_armel.deb** __is compiled for armel and could also be released for arm64, however it is not working. I am releasing it to look for someone who has the skills and wants to collaborate on the development__.
 
-Detailed instructions for usage are published on the [penguin's eggs book](https://penguins-eggs.net/book). 
+Detailed instructions for usage are published on the [Penguins' eggs book](https://penguins-eggs.net/book). 
 You can follow the project also consulting the [commit history](https://github.com/pieroproietti/penguins-eggs/commits/master). 
 
 ## Changelog
@@ -309,11 +309,11 @@ No need other configurations, penguins-eggs are battery included or better, as i
 # More informations
 * site: [penguins-eggs.net](https://penguins-eggs.net)
 * meeting: [jitsi meet](https://meet.jit.si/PenguinsEggsMeeting)
-* gitter: [penguin's eggs chat](https://gitter.im/penguins-eggs-1/community?source=orgpage)
+* gitter: [Penguins' eggs chat](https://gitter.im/penguins-eggs-1/community?source=orgpage)
 * issues: [github](https://github.com/pieroproietti/penguins-eggs/issues).
 * facebook:  
-   * [penguin's eggs Group](https://www.facebook.com/groups/128861437762355/)
-   * [penguin's eggs Page](https://www.facebook.com/penguinseggs)
+   * [Penguins' eggs Group](https://www.facebook.com/groups/128861437762355/)
+   * [Penguins' eggs Page](https://www.facebook.com/penguinseggs)
    * mail: piero.proietti@gmail.com
 
 # Copyright and licenses
