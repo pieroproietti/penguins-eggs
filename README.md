@@ -46,11 +46,9 @@ You can read more on the [blog](https://penguins-eggs.net/2021/11/02/distros-tha
 
 ## wardrobe, themes and addons
 
-wardrobe was added to eggs on april 2022, it's is a way to guide and consolidate the process of creating a custom version of Linux, starting from a CLI system. All my personal editions are passed to use wardrobe for their convenience, in that way I can organize, consolidate and manage better my work. I used birds names for my customizations, we have: colibri, duck, eagle, owl, wagtail, warbier and chicks under [plastilinux](https://sourceforge.net/projects/penguins-eggs/files/ISOS/plastilinux/). 
+wardrobe was added to eggs on april 2022, it's is a way to guide and consolidate the process of creating a custom version of Linux, starting from a CLI system. All my personal editions are passed to use wardrobe for their convenience, in that way I can organize, consolidate and manage better my work. I used birds names for my customizations, we have: colibri, duck, eagle, owl, wagtail, warbier and chicks mostly under [plastilinux](https://sourceforge.net/projects/penguins-eggs/files/ISOS/plastilinux/), [waydroid](https://sourceforge.net/projects/penguins-eggs/files/ISOS/waydroid/) or [bullseye](https://sourceforge.net/projects/penguins-eggs/files/ISOS/debian/bullseye/) on eggs' sourceforge page.
 
-I hope peoples will be interested in wardrobe and you will end to fork the main repository and add your customizations: together will be possibile to make great steps impossible for a single developer. 
-
-You can read more in wardrobe on [penguin's eggs blog](https://penguins-eggs.net/2022/04/12/wardrobe-colibri-duck-eagle-and-owl/). The results of mine customizations are mostly under [Debian bullseye](https://sourceforge.net/projects/penguins-eggs/files/ISOS/debian/bullseye/), [Devuan chimaera](https://sourceforge.net/projects/penguins-eggs/files/ISOS/devuan/chimaera/) and [Ubuntu jammy](https://sourceforge.net/projects/penguins-eggs/files/ISOS/ubuntu/jammy/) on my sourgeforce page.
+I hope peoples will be interested in wardrobe and you will end to fork the main repository and add your customizations: together will be possibile to make great steps impossible for a single developer. You can read more in wardrobe on [penguin's eggs blog](https://penguins-eggs.net/2022/04/12/wardrobe-colibri-duck-eagle-and-owl/).
 
 Addons and themes have been grouped under the penguins-wardrobe, use wardrobe for all your customizations. 
 
@@ -82,7 +80,7 @@ eggs was developed to use [calamares](https://calamares.io) as the system instal
 The cuckoo lays its eggs in the nests of other birds, and the eggs are hatched by the latter. Similarly eggs can start a self-configuring PXE service to allow you to boot and install your iso on third party networked computers. Command cuckoo can be used either to deploy a newly created iso on an installed system or by live booting the iso itself. 
 
 ## mom and dad
-I added two built-in assistants with eggs: mom and dad. While mom is a script based on [easybashgui](https://github.com/BashGui/easybashgui) that explains the various commands and documentation, dad started as a shortcut to properly configure eggs: just type **sudo eggs dad** and follow simple instructions. Even faster, using °°sudo eggs dad -d** you will resets the configuration, loads defaults, deletes created isos. At this point, with eggs configured: just type **sudo produce** to produce your iso.
+I added two built-in assistants with eggs: mom and dad. While mom is a script based on [easybashgui](https://github.com/BashGui/easybashgui) that explains the various commands and documentation, dad started as a shortcut to properly configure eggs: just type **sudo eggs dad** and follow simple instructions. Even faster, using **sudo eggs dad -d** you will resets the configuration, loads defaults, deletes created isos. At this point, with eggs configured: just type **sudo produce** to generate your live.
 
 ## yolk 
 yolk - so called staying on the subject of eggs - is a local repository included in the livecd that contains a minimum of indispensable packages during installation. Thanks to yolk, you can safely install your system without the need of an active internet connection.
