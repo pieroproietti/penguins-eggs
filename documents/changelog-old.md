@@ -19,6 +19,116 @@ You can follow the project also consulting the [commit history](https://github.c
 ## Changelog [deprecated] versions 
 Versions are listed on reverse order, the first is the last one.
 
+### eggs-9.2.8
+* added ubunti 22.10 kinetic
+* krill installer: Trying to solve a problem on mac-mini (T2 chip), I moved the grub installation to the end of the installation process itself, to still have the installation working even in case of an error.
+
+### eggs-9.2.7
+install:
+* added flag --domain to pass domain for unattended installation, eg: ```sudo eggs install unrd penguins-eggs.net```
+* added flag --none create a minimun swap partition of 256M
+* rewrote routines autologin for sddm and lightdm. 
+
+Note: to have autologin on the live your current used MUST to be configured with autologin.
+
+### eggs-9.2.6
+Mostly a stabilitation version, with same add:
+* eggs install --unattanded --ip, added flag --ip, put hostname as ip-x-x-x-x. Example: ip 192.168.1.2 will have hostname ip-192-168-1-12
+* swap 'small' size swap the same of RAM, swap 'suspend' size swap = 2 * RAM
+* tested on: Debian: jessie, stretch, buster, bullseye, bookwork, Ubuntu bionic, focal, jammy, Devuan chimaera.
+
+### eggs-9.2.5
+```cuckoo``` since version **eggs-9.2.5**, 16 on **september 2022**, is capable to boot BIOS and UEFI machines via PXE on the LAN, however due to a bug in slim package, using sudo eggs cuckoo in dhcp-proxy version will not get UEFI machines to boot. Instead, use: sudo eggs cuckoo --real. 
+
+__Warning__: using ``eggs cuckpp --real`` adds additional dhcp to the network, this may lead to problems or be prohibited by your organization,
+
+### eggs-9.2.4
+Added a new command: ```sudo eggs cuckoo```
+
+This command launches a complete PXE server -automatically configured- that allows the ISO image to boot across the local network. It works directly from the live system by installing the dnsmasq and pxelinux packages. Its main limitation is the inability to operate in UEFI mode, but I decided to release it anyway to have it tested and to be able to start a new clean branch for the UEFI features planned for the next release. 
+
+You can partecipate to discussion joining on [telegram channel](https://t.me/penguins_eggs).
+
+### eggs-9.2.3
+Introduced unattended installation: ```sudo eggs install --unattended```:
+* values configured in /etc/penguins-eggs.d/krill.yaml are used both for unattended installation and as default values for standard installation;
+* empty variables in in krill.yaml will take their value from the live system. Example: ```hostname = ''``` take the same hostname of the live;
+* created a new module in krill: packages who take cure to add and remove packages during installation according on that specified on ```/etc/calamares/modules/packages.conf```;
+* unattended install now wait 30 seconds, before to run without any prompt;
+* bugfixes in module setKeyboard, autologin and others.
+
+### eggs-9.2.2
+* bugfix flag --release, actually passing release to produce correctly configurare calamares to remove penguins-eggs and itself from the installed system;
+* removed same commands actually unusefull: eggs config and eggs remove (config is included in dad and remove fully became a problem of package manager).
+
+### eggs-9.2.1
+* produce: added flag --clone. 
+
+Using this flag all user accounts and data will be included uncrypted on the live system and will be possible to install the live system with calamares or krill. 
+
+Example:   '''sudo eggs produce --fast --clone```
+
+You will get on live and installed exactly the same system you cloned.
+
+### eggs-9.1.37
+* penguins-oclif and perrisbrewery take now the same version number of eggs, in this cave 9.1.37. We solve the previous error, to read [more](https://github.com/oclif/core/issues/453)
+
+It must work on archlinux, debian, devuan, manjaro, ubuntu and derivates.
+
+### eggs-9.1.36 (*)
+First version of eggs capable to remaster and install arch linux! I use mkinitcpio-archiso, but not archiso to implementet remaster of it. At the moment I just released a colibri version, without calamares - you must install with krill - if someone can and want help will be wonderfull and usefull: a unique tool to remaster and install Arch, Debian, Devuan, ManjaroLinux and Ubuntu plus the majority of derivates.
+
+(*) This version was never released, due a problem arise woth oclif. I started to get a timeout error during krill installation and, it was terribly long to find the bug.
+
+### eggs-9.1.35
+refresh exclude.list from [resfratasnapshot](https://git.devuan.org/pieroproietti/refractasnapshot-base/src/branch/master/snapshot_exclude.list), this solve the delay in boot from live of bionic
+
+### eggs-9.1.34
+Arch: I started to try to use eggs against Arch Linux original, using archiso hooks, here is the [BUILDPKG](https://github.com/pieroproietti/penguins-eggs-archlinux). 
+
+
+### eggs-9.1.33
+* krill: all the methods of class krill-install, are now on individual files under modules. This is not a difference of beaviour, but was made in the hope to help peoples experts in calamares to try/use/collaborate in krill
+
+### eggs-9.1.32
+* krill: command install became krill
+* krill: added autoconfiguration from internet for timezone;
+* krill: now /etc/locale.gen seem to be OK on manjaro
+* krill: command localectl set-keymap [map] in krill-sequence don't update /etc/default/keyboard, I tried to force that, but again don't work
+* krill: as workaround it' possible to reconfigure keyboard after the installation
+         
+### eggs-9.1.31
+* focal/jammy: removed in before_bootloader_contest.yml command apt-cd:
+* manjaro: a lot of work on dependencies and package
+* all distros: bugfix module calamares package.yml
+
+### eggs-9.1.29
+* nodejs: restart to use node v. 16.x to be compatible with Ubuntu bionic glibc.2.27 
+* focal, bionic: rebuild naked CLI version for focal and bionic and added some species:
+* manjaro: bug fix module packages.conf
+* package: added lvm2 to dependencies
+. distros: added linuxmint vanessa
+
+### eggs-9.1.28
+* calamares: renamed eggs-cleanup to cleanup; removed complete path to run sed in the script cleanup.sh, becouse a differents paths in Devuan and others
+
+### eggs-9.1.27
+* calamares: unified modules eggs-cleanup and remove-link on calamares module eggs-cleanup. This simplify a bit and let to check if /etc/issue and /etc/motd are not present.
+* adapt: the link to adapt the monitor to the size of the VM now work alone work now without eggs.
+
+### eggs-9.1.26
+* localization: rewrote completely the way to get/edit locale.gen due a prolem with calamares installer
+
+### eggs-9.1.25
+* produce: flag --release now configure calamares to remove calamares. eggs and live* dependencies, bugfix enable links on desktop;
+* calamares: renamed option --final to the more appropriate --release.
+
+### eggs-9.1.24
+* wardrobe wear: added flag --no_firmwares to skip firmwares installation in case we are wearing a costume for a VMs:  most of the cases during developing.
+
+### eggs-9.1.23
+* building eggs: thanks a little patch to [oclif](https://github.com/pieroproietti/penguins-oclif), we switched to [pnpm](https://github.com/pnpm/pnpm) in place of [npm](https://github.com/npm/cli) to build eggs, this reduce a lot times for compiling, no changes on the usage. At the same time we moved from nodejs 16.x to nodejs 18.x.
+
 ### eggs-9.1.22-1
 * XDG: lightdm configuration
 * exclusion: added /etc/initramfs-tools/conf.d/resume to exclude.list
