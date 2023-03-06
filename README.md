@@ -22,7 +22,7 @@ penguins-eggs
 * [Packages](#packages)
 * [Usage](#usage)
 * [Commands](#commands)
-* [Penguin's eggs official book](#penguins-eggs-official-book)
+* [Penguins' eggs official book](#penguins-eggs-official-book)
 * [That's all Folks!](#thats-all-folks)
 <!-- tocstop -->
 
@@ -48,7 +48,7 @@ You can read more on the [blog](https://penguins-eggs.net/2021/11/02/distros-tha
 
 wardrobe was added to eggs on april 2022, it's is a way to guide and consolidate the process of creating a custom version of Linux, starting from a CLI system. All my personal editions are passed to use wardrobe for their convenience, in that way I can organize, consolidate and manage better my work. I used birds names for my customizations, we have: colibri, duck, eagle, owl, wagtail, warbier and chicks mostly under [plastilinux](https://sourceforge.net/projects/penguins-eggs/files/ISOS/plastilinux/), [waydroid](https://sourceforge.net/projects/penguins-eggs/files/ISOS/waydroid/) or [bullseye](https://sourceforge.net/projects/penguins-eggs/files/ISOS/debian/bullseye/) on eggs' sourceforge page.
 
-I hope peoples will be interested in wardrobe and you will end to fork the main repository and add your customizations: together will be possibile to make great steps impossible for a single developer. You can read more in wardrobe on [penguin's eggs blog](https://penguins-eggs.net/2022/04/12/wardrobe-colibri-duck-eagle-and-owl/).
+I hope peoples will be interested in wardrobe and you will end to fork the main repository and add your customizations: together will be possibile to make great steps impossible for a single developer. You can read more in wardrobe on [Penguins' eggs blog](https://penguins-eggs.net/2022/04/12/wardrobe-colibri-duck-eagle-and-owl/).
 
 Addons and themes have been grouped under the penguins-wardrobe, use wardrobe for all your customizations. 
 
@@ -154,7 +154,7 @@ Once the package has been installed, you can have the new ```eggs``` command. Ty
 
 At the moment eggs uses the default fast compression, which provides a faster compression speed, for the final compression it is worth using the --max flag to get more compressed ISOs.
 
-In addition to the description of the commands in this README, you can consult the [Penguin's eggs official book](#penguins-eggs-official-book).
+In addition to the description of the commands in this README, you can consult the [Penguins' eggs official book](#penguins-eggs-official-book).
 
 
 # Commands
@@ -741,7 +741,7 @@ EXAMPLES
 
 ## `eggs update`
 
-update the penguin's eggs tool
+update the Penguins' eggs tool
 
 ```
 USAGE
@@ -752,7 +752,7 @@ FLAGS
   -v, --verbose  verbose
 
 DESCRIPTION
-  update the penguin's eggs tool
+  update the Penguins' eggs tool
 
 EXAMPLES
   $ eggs update
@@ -887,7 +887,7 @@ EXAMPLES
 ```
 <!-- commandsstop -->
 
-# Penguin's eggs official book
+# Penguins' eggs official book
 The original edition of the eggs manual is released in Italian, of course other languages can be accessed using machine translation.
 
 * [Manuale in italiano 9.3.x](https://penguins-eggs.net/book/italiano9.3.html)
@@ -900,11 +900,11 @@ The original edition of the eggs manual is released in Italian, of course other 
 No need other configurations, penguins-eggs are battery included or better, as in the real, live is inside! :-D
 
 ## More informations
-There is a [Penguin's eggs official book](https://penguins-eggs.net/book/) and same other documentation - mostly for developers - on [penguins-eggs repo](https://github.com/pieroproietti/penguins-eggs) under **documents** and **i386**, in particular we have [hens, differents species](https://github.com/pieroproietti/penguins-eggs/blob/master/documents/hens-different-species.md) who descrive how to use eggs in manjaro.
+There is a [Penguins' eggs official book](https://penguins-eggs.net/book/) and same other documentation - mostly for developers - on [penguins-eggs repo](https://github.com/pieroproietti/penguins-eggs) under **documents** and **i386**, in particular we have [hens, differents species](https://github.com/pieroproietti/penguins-eggs/blob/master/documents/hens-different-species.md) who descrive how to use eggs in manjaro.
 
 * [blog](https://penguins-eggs.net)    
-* [facebook penguin's eggs group](https://www.facebook.com/groups/128861437762355/)
-* [telegram penguin's eggs channel](https://t.me/penguins_eggs) 
+* [facebook Penguins' eggs group](https://www.facebook.com/groups/128861437762355/)
+* [telegram Penguins' eggs channel](https://t.me/penguins_eggs) 
 * [twitter](https://twitter.com/pieroproietti)
 * [sources](https://github.com/pieroproietti/penguins-krill)
 

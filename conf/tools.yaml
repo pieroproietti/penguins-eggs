@@ -1,4 +1,4 @@
-# Penguin's eggs
+# Penguins' eggs
 # tools.yaml
 ---
 penguins_eggs_conf: /etc/penguins-eggs.d/eggs.yaml

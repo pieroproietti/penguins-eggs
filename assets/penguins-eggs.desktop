@@ -1,24 +1,24 @@
 #!/usr/bin/env xdg-open
 [Desktop Entry]
 Encoding=UTF-8
-Name=Penguin's eggs book
+Name=Penguins' eggs book
 Type=Application
 Exec=xdg-open https://penguins-eggs.net/book
 Icon=eggs
 Categories=GNOME;GTK;Utility;
-Name[it]=Penguin's eggs
-GenericName[it]=Penguin's eggs
+Name[it]=Penguins' eggs
+GenericName[it]=Penguins' eggs
 Comment[it]=Manuale penguin's egg
-Name[en]=Penguin's eggs
-GenericName[en]=Penguin's eggs
-Comment[en]=Penguin's eggs book
-Name[es]=Penguin's eggs
-GenericName[es]=Penguin's eggs
-Comment[es]=libro de penguin's eggs
-Name[pt]=Penguin's eggs
-GenericName[pt]=Penguin's eggs
-Comment[pt]=livro dos penguin's eggs
-Name[fr]=Penguin's eggs
-GenericName[fr]=Penguin's eggs
-Comment[fr]=livre sur penguin's eggs
+Name[en]=Penguins' eggs
+GenericName[en]=Penguins' eggs
+Comment[en]=Penguins' eggs book
+Name[es]=Penguins' eggs
+GenericName[es]=Penguins' eggs
+Comment[es]=libro de Penguins' eggs
+Name[pt]=Penguins' eggs
+GenericName[pt]=Penguins' eggs
+Comment[pt]=livro dos Penguins' eggs
+Name[fr]=Penguins' eggs
+GenericName[fr]=Penguins' eggs
+Comment[fr]=livre sur Penguins' eggs
 
