@@ -18,6 +18,8 @@ Detailed instructions for usage are published on the [Penguins' eggs book](https
 ## Changelog
 Versions are listed on reverse order, the first is the last one. Old versions are moved to [versions](https://sourceforge.net/projects/penguins-eggs/files/packages-deb/versions/). 
 
+### eggs-9.4.0
+Ad un certo punto occorre eseguire il salto di versione - i numeri lunghi si ricordano male - ed è più semplice ricordare 9.4.0 invece di 9.3.31. In questo caso, per sottolineare il cambiamento ho fatto soprattutto una revisione dei testi in inglese che, non è la mia madrelingua. Spero - con l'aiuto di [deepl Translator](https://www.deepl.com/) - di esserci riuscito e che qualcuno voglia dare una mano.
 
 ### eggs-9.3.30
 * ```sudo produce --clone```: now calamares - when configured for clone - no longer asks for user configuration and previous users are used. You can also install with krill; the advantage is that it will be faster and will respect the autologin configuration, which is reset by calamares to the default.
