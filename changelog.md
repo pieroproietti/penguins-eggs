@@ -11,12 +11,9 @@ penguins-eggs
 [![pkgbuild](https://img.shields.io/badge/pkgbuild-packages-blue)](https://sourceforge.net/projects/penguins-eggs/files/PKGBUILD)
 [![iso](https://img.shields.io/badge/iso-images-cyan)](https://sourceforge.net/projects/penguins-eggs/files/ISOS)
 
-# Penguins' eggs Debian package
+# Penguins' eggs releases
 
-Note: **eggs_9.x.x_armel.deb** __is compiled for armel and could also be released for arm64, however it is not working. I am releasing it to look for someone who has the skills and wants to collaborate on the development__.
-
-Detailed instructions for usage are published on the [Penguins' eggs book](https://penguins-eggs.net/book). 
-You can follow the project also consulting the [commit history](https://github.com/pieroproietti/penguins-eggs/commits/master). 
+Detailed instructions for usage are published on the [Penguins' eggs book](https://penguins-eggs.net/book). You can follow the project also consulting the [commit history](https://github.com/pieroproietti/penguins-eggs/commits/master) and asking for support on [telegram channel](https://t.me/penguins_eggs). 
 
 ## Changelog
 Versions are listed on reverse order, the first is the last one. Old versions are moved to [versions](https://sourceforge.net/projects/penguins-eggs/files/packages-deb/versions/). 
@@ -303,18 +300,23 @@ You can find older versions on the [penguins-eggs repo](https://github.com/piero
 # Help
 Don't esitate to ask me for suggestions and help. I hope to receive [feedback](https://github.com/pieroproietti/penguins-eggs/issues).
 
+## Packages armel/arm64
+eggs is compiled for armel and could also be released for arm64, however actually it is not tested.
+
+I am releasing it to look for someone who has the skills and the will to collaborate for testing support and suggestions.
+
 # That's all Folks!
 No need other configurations, penguins-eggs are battery included or better, as in the real, live is inside! :-D
 
 # More informations
 * site: [penguins-eggs.net](https://penguins-eggs.net)
-* meeting: [jitsi meet](https://meet.jit.si/PenguinsEggsMeeting)
-* gitter: [Penguins' eggs chat](https://gitter.im/penguins-eggs-1/community?source=orgpage)
 * issues: [github](https://github.com/pieroproietti/penguins-eggs/issues).
+* telegram: [telegram channel](https://t.me/penguins_eggs)
 * facebook:  
    * [Penguins' eggs Group](https://www.facebook.com/groups/128861437762355/)
    * [Penguins' eggs Page](https://www.facebook.com/penguinseggs)
    * mail: piero.proietti@gmail.com
+* meeting: [jitsi meet](https://meet.jit.si/PenguinsEggsMeeting)
 
 # Copyright and licenses
 Copyright (c) 2017, 2021 [Piero Proietti](https://penguins-eggs.net/about-me.html), dual licensed under the MIT or GPL Version 2 licenses.
