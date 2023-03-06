@@ -115,7 +115,7 @@ sudo apt update && sudo apt install eggs
 The simplest way to install eggs is download the [package eggs](https://sourceforge.net/projects/penguins-eggs/files/DEBS/) from [sourceforge page of the project](https://sourceforge.net/projects/penguins-eggs/) and install it
 
 ```
-sudo dpkg -i eggs_9.2.2_amd64.deb
+sudo dpkg -i eggs_9.4.0_amd64.deb
 ```
 
 or, on a i386 system:
@@ -207,7 +207,7 @@ EXAMPLES
   $ eggs adapt
 ```
 
-_See code: [dist/commands/adapt.js](https://github.com/pieroproietti/penguins-eggs/blob/v9.3.26/dist/commands/adapt.js)_
+_See code: [dist/commands/adapt.js](https://github.com/pieroproietti/penguins-eggs/blob/v9.4.0/dist/commands/adapt.js)_
 
 ## `eggs analyze`
 
@@ -228,7 +228,7 @@ EXAMPLES
   sudo eggs analyze
 ```
 
-_See code: [dist/commands/analyze.js](https://github.com/pieroproietti/penguins-eggs/blob/v9.3.26/dist/commands/analyze.js)_
+_See code: [dist/commands/analyze.js](https://github.com/pieroproietti/penguins-eggs/blob/v9.4.0/dist/commands/analyze.js)_
 
 ## `eggs autocomplete [SHELL]`
 
@@ -289,7 +289,7 @@ EXAMPLES
   sudo eggs calamares --remove
 ```
 
-_See code: [dist/commands/calamares.js](https://github.com/pieroproietti/penguins-eggs/blob/v9.3.26/dist/commands/calamares.js)_
+_See code: [dist/commands/calamares.js](https://github.com/pieroproietti/penguins-eggs/blob/v9.4.0/dist/commands/calamares.js)_
 
 ## `eggs config`
 
@@ -316,7 +316,7 @@ EXAMPLES
   sudo eggs config --clean --nointeractive
 ```
 
-_See code: [dist/commands/config.js](https://github.com/pieroproietti/penguins-eggs/blob/v9.3.26/dist/commands/config.js)_
+_See code: [dist/commands/config.js](https://github.com/pieroproietti/penguins-eggs/blob/v9.4.0/dist/commands/config.js)_
 
 ## `eggs cuckoo`
 
@@ -336,7 +336,7 @@ EXAMPLES
   sudo eggs cuckoo
 ```
 
-_See code: [dist/commands/cuckoo.js](https://github.com/pieroproietti/penguins-eggs/blob/v9.3.26/dist/commands/cuckoo.js)_
+_See code: [dist/commands/cuckoo.js](https://github.com/pieroproietti/penguins-eggs/blob/v9.4.0/dist/commands/cuckoo.js)_
 
 ## `eggs dad`
 
@@ -363,7 +363,7 @@ EXAMPLES
   sudo dad --default
 ```
 
-_See code: [dist/commands/dad.js](https://github.com/pieroproietti/penguins-eggs/blob/v9.3.26/dist/commands/dad.js)_
+_See code: [dist/commands/dad.js](https://github.com/pieroproietti/penguins-eggs/blob/v9.4.0/dist/commands/dad.js)_
 
 ## `eggs export deb`
 
@@ -466,7 +466,7 @@ EXAMPLES
   sudo eggs install --custom it
 ```
 
-_See code: [dist/commands/install.js](https://github.com/pieroproietti/penguins-eggs/blob/v9.3.26/dist/commands/install.js)_
+_See code: [dist/commands/install.js](https://github.com/pieroproietti/penguins-eggs/blob/v9.4.0/dist/commands/install.js)_
 
 ## `eggs kill`
 
@@ -488,7 +488,7 @@ EXAMPLES
   sudo eggs kill
 ```
 
-_See code: [dist/commands/kill.js](https://github.com/pieroproietti/penguins-eggs/blob/v9.3.26/dist/commands/kill.js)_
+_See code: [dist/commands/kill.js](https://github.com/pieroproietti/penguins-eggs/blob/v9.4.0/dist/commands/kill.js)_
 
 ## `eggs mom`
 
@@ -508,7 +508,7 @@ EXAMPLES
   $ eggs mom
 ```
 
-_See code: [dist/commands/mom.js](https://github.com/pieroproietti/penguins-eggs/blob/v9.3.26/dist/commands/mom.js)_
+_See code: [dist/commands/mom.js](https://github.com/pieroproietti/penguins-eggs/blob/v9.4.0/dist/commands/mom.js)_
 
 ## `eggs produce`
 
@@ -556,7 +556,7 @@ EXAMPLES
   sudo eggs produce --basename=colibri --theme /path/to/theme --addons adapt
 ```
 
-_See code: [dist/commands/produce.js](https://github.com/pieroproietti/penguins-eggs/blob/v9.3.26/dist/commands/produce.js)_
+_See code: [dist/commands/produce.js](https://github.com/pieroproietti/penguins-eggs/blob/v9.4.0/dist/commands/produce.js)_
 
 ## `eggs status`
 
@@ -577,7 +577,7 @@ EXAMPLES
   $ eggs status
 ```
 
-_See code: [dist/commands/status.js](https://github.com/pieroproietti/penguins-eggs/blob/v9.3.26/dist/commands/status.js)_
+_See code: [dist/commands/status.js](https://github.com/pieroproietti/penguins-eggs/blob/v9.4.0/dist/commands/status.js)_
 
 ## `eggs syncfrom`
 
@@ -603,7 +603,7 @@ EXAMPLES
   sudo eggs syncfrom --file /path/to/fileLUKS
 ```
 
-_See code: [dist/commands/syncfrom.js](https://github.com/pieroproietti/penguins-eggs/blob/v9.3.26/dist/commands/syncfrom.js)_
+_See code: [dist/commands/syncfrom.js](https://github.com/pieroproietti/penguins-eggs/blob/v9.4.0/dist/commands/syncfrom.js)_
 
 ## `eggs syncto`
 
@@ -628,7 +628,7 @@ EXAMPLES
   sudo eggs syncto --file /path/to/fileLUKS
 ```
 
-_See code: [dist/commands/syncto.js](https://github.com/pieroproietti/penguins-eggs/blob/v9.3.26/dist/commands/syncto.js)_
+_See code: [dist/commands/syncto.js](https://github.com/pieroproietti/penguins-eggs/blob/v9.4.0/dist/commands/syncto.js)_
 
 ## `eggs tools clean`
 
@@ -758,7 +758,7 @@ EXAMPLES
   $ eggs update
 ```
 
-_See code: [dist/commands/update.js](https://github.com/pieroproietti/penguins-eggs/blob/v9.3.26/dist/commands/update.js)_
+_See code: [dist/commands/update.js](https://github.com/pieroproietti/penguins-eggs/blob/v9.4.0/dist/commands/update.js)_
 
 ## `eggs version`
 
