@@ -73,7 +73,7 @@ Saves our data within the generated iso using a LUKS volume. Our data will NOT b
 * ```eggs produce --clone``` include all users data UNCRYPTED directly on the live.
 * ```eggs produce --cryptedclone``` include all users data CRYPTED on a LUKS volume inside the iso.
 
-Using ```sudo eggs install --cli``` will automaticaly restore your CRYPTED clone automatically during the installation.
+Using krill: ```sudo eggs install --cli``` will automaticaly restore your CRYPTED clone during the installation.
 
 ## calamares and krill
 eggs was developed to use [calamares](https://calamares.io) as the system installer and allows its customization with themes. It also includes its own installer, called krill, which allows you to produce and install CLI systems such as servers. krill uses a CLI interface that mimics calamares and uses the same configuration files created by eggs for calamares. This provides a "roughly similar" installation experience for both desktop and server installations. With krill it is also possible to have unattended installations, simply by adding the ``--unattended`` flag, the configuration values can be changed in ``/etc/penguins-eggs.d/krill.yaml`` and will then be used for automatic installation.
@@ -82,10 +82,10 @@ eggs was developed to use [calamares](https://calamares.io) as the system instal
 The cuckoo lays its eggs in the nests of other birds, and the eggs are hatched by the latter. Similarly eggs can start a self-configuring PXE service to allow you to boot and install your iso on third party networked computers. Command cuckoo can be used either to deploy a newly created iso on an installed system or by live booting the iso itself. 
 
 ## mom and dad
-I've added two lightweight assistants integrated with eggs: mom and dad. While mom is a bash script with whiptail - and guides the user to the various commands and documentation, dad started as a short way to create isos. All you have to do is type **sudo eggs dad** and follow simple instructions. You can also shortcut the way to reset the configuration **sudo dad -c** or - even faster - reset the configuration, load defaults, kill created isos: simply type **sudo eggs dad -d** and you will immediately be able to produce the egg in the default /home/eggs nest.
+I added two built-in assistants with eggs: mom and dad. While mom is a script based on [easybashgui](https://github.com/BashGui/easybashgui) that explains the various commands and documentation, dad started as a shortcut to properly configure eggs: just type **sudo eggs dad** and follow simple instructions. Even faster, using °°sudo eggs dad -d** you will resets the configuration, loads defaults, deletes created isos. At this point, with eggs configured: just type **sudo produce** to produce your iso.
 
 ## yolk 
-yolk - so called staying on the subject of eggs - is a local repository included in the livecd that contains a minimum of indispensable packages during installation. Thanks to yolk, you can safely install your system without the need of an active internet connection. Yolk, It is used only for Debian families and derivated.
+yolk - so called staying on the subject of eggs - is a local repository included in the livecd that contains a minimum of indispensable packages during installation. Thanks to yolk, you can safely install your system without the need of an active internet connection.
 
 # Packages
 Supporting various distributions, we need to have different packages. Debian, Devuan and Ubuntu share the .deb packages of eggs, while for Arch Linux and ManjaroLinux they use their PKGBUILD.
