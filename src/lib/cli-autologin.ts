@@ -162,7 +162,7 @@ export default class CliAutologin {
 
     const eggsIssue = fs.readFileSync(fileIssue, 'utf-8')
     // eggsIssue += startMessage + '\n'
-    // eggsIssue += `This is a ${distro}/${version} system created by penguin's eggs.\n`
+    // eggsIssue += `This is a ${distro}/${version} system created by Penguins' eggs.\n`
     // eggsIssue += 'You can login with user: ' + chalk.bold(user) + ' and password: ' + chalk.bold(userPasswd) + ', root password: ' + chalk.bold(rootPasswd) + '\n'
     // eggsIssue += stopMessage + '\n'
     fs.writeFileSync(fileIssue, eggsIssue)

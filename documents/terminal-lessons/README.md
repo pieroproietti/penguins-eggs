@@ -71,10 +71,10 @@ There is [user's manual](https://penguins-eggs.net/book/) and same other documen
 
 Contact me via [gitter](https://gitter.im/penguins-eggs-1/community), or open an [issue](https://github.com/pieroproietti/penguins-eggs/issues) on github.
 
-* penguin's eggs site: [penguin's eggs](https://penguins-eggs.net)
+* Penguins' eggs site: [Penguins' eggs](https://penguins-eggs.net)
 * facebook personal: [Piero Proietti](https://www.facebook.com/thewind61)
-* facebook group:  [Penguin's Eggs](https://www.facebook.com/groups/128861437762355/)
-* facebook page:  [Penguin's Eggs](https://www.facebook.com/penguinseggs)
+* facebook group:  [Penguins' eggs](https://www.facebook.com/groups/128861437762355/)
+* facebook page:  [Penguins' eggs](https://www.facebook.com/penguinseggs)
 * mail: piero.proietti@gmail.com
 
 

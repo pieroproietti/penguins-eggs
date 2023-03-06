@@ -7,7 +7,7 @@
 ##
 function main() {
       answer=$(
-      whiptail --title "penguin's eggs" --menu "Choose the system installer" 22 75 10 \
+      whiptail --title "Penguins' eggs" --menu "Choose the system installer" 22 75 10 \
          "gui"      "use gui installer calamares (reccomanded)" \
          "cli"      "use CLI installer eggs (servers just CLI)" \
          "quit"     "exit" 3>&2 2>&1 1>&3

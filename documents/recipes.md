@@ -139,16 +139,16 @@ No need other configurations, penguins-eggs are battery included or better, as i
 
 ## More informations
 
-You can find more informations at [Penguin's eggs blog](https://penguins-eggs.net).
+You can find more informations at [Penguins' eggs blog](https://penguins-eggs.net).
 
 ## Contacts
 Feel free to contact [me](https://gitter.im/penguins-eggs-1/community?source=orgpage) or open an issue on [github](https://github.com/pieroproietti/penguins-eggs/issues).
 
 * [blog](https://penguins-eggs.net)    
-* [facebook](https://www.facebook.com/groups/128861437762355/) Penguin's eggs group
+* [facebook](https://www.facebook.com/groups/128861437762355/) Penguins' eggs group
 * [mail](mailto://piero.proietti@gmail.com): piero.proietti@gmail.com
 * [sources](https://github.com/pieroproietti/penguins-krill)
-* [telegram](https://t.me/penguins_eggs) penguin's eggs channel
+* [telegram](https://t.me/penguins_eggs) Penguins' eggs channel
 * [twitter](https://twitter.com/pieroproietti) pieroproietti
 
 ## Copyright and licenses

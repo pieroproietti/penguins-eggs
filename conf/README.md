@@ -1,4 +1,4 @@
-# Penguin's eggs configurazione
+# Penguins' eggs configurazione
 
 ## Cartella penguins-eggs.d
 

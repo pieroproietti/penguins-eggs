@@ -11,9 +11,9 @@ penguins-eggs
 [![pkgbuild](https://img.shields.io/badge/pkgbuild-packages-blue)](https://sourceforge.net/projects/penguins-eggs/files/PKGBUILD)
 [![iso](https://img.shields.io/badge/iso-images-cyan)](https://sourceforge.net/projects/penguins-eggs/files/ISOS)
 
-# Penguin's eggs Debian package
+# Penguins' eggs Debian package
 
-Usually the last version is the right one. Detailed instrunctions for usage are published on the [penguin's eggs book](https://penguins-eggs.net/book). 
+Usually the last version is the right one. Detailed instrunctions for usage are published on the [Penguins' eggs book](https://penguins-eggs.net/book). 
 You can follow the project also consulting the [commit history](https://github.com/pieroproietti/penguins-eggs/commits/master). 
 
 ## Changelog [deprecated] versions 
@@ -286,7 +286,7 @@ The first version of eggs fully functional on Debian, Devuan, Ubuntu and... Manj
 
 A preview of eggs version 9.x! Even if the aspect remains substantially unchanged, internally a lot has changed: we have moved to node 16 and the new version of oclif. Everything has been done to create a way to manage even more distributions, not only Debian, Devuan, Ubuntu and derivatives, but also Fedora and Arch Linux. This version however does NOT yet include Fedora, nor Arch Linux, I have to solve the problems related to the use of dracut instead of initramfs-tools of Debian.
 
-If you wand follow penguin's eggs evolution, You can follow [Discussion](https://github.com/pieroproietti/penguins-eggs/discussions).
+If you wand follow Penguins' eggs evolution, You can follow [Discussion](https://github.com/pieroproietti/penguins-eggs/discussions).
 
 I wish You Merry Christmas and Happy New Year
 
@@ -910,7 +910,7 @@ eggs now completely support - remaster the system and use GUI installer calamare
 * Lubuntu 18.04 (i386/amd64)
 * Ubuntu 18.04 bionic (i386/amd64)
 
-You will find new examples of the ISOs on [Penguin's eggs sourceforge](https://sourceforge.net/projects/penguins-eggs/files/iso/)
+You will find new examples of the ISOs on [Penguins' eggs sourceforge](https://sourceforge.net/projects/penguins-eggs/files/iso/)
 
 
 ### eggs-7.5.129-1 deprecated
@@ -1112,7 +1112,7 @@ No need other configurations, penguins-eggs are battery included or better, as i
 
 ## More informations
 
-You can find more informations at [Penguin's eggs blog](https://penguins-eggs.net).
+You can find more informations at [Penguins' eggs blog](https://penguins-eggs.net).
 
 ## Contacts
 Feel free to contact [me](https://gitter.im/penguins-eggs-1/community?source=orgpage) or open an issue on [github](https://github.com/pieroproietti/penguins-eggs/issues).

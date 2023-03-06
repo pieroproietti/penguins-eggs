@@ -1280,7 +1280,7 @@ export default class Ovary {
       text += 'test -d "$DESKTOP" && mkdir -p "$DESKTOP"\n'
       text += `cp /usr/share/applications/${installerUrl} "$DESKTOP"\n`
       if (Pacman.packageIsInstalled('lxde-core')) {
-        text += this.lxdeLink('penguins-eggs.desktop', "penguin's eggs", 'eggs')
+        text += this.lxdeLink('penguins-eggs.desktop', "Penguins' eggs", 'eggs')
         if (myAddons.adapt) text += this.lxdeLink('eggs-adapt.desktop', 'Adapt', 'video-display')
         if (myAddons.pve) text += this.lxdeLink('eggs-pve.desktop', 'Proxmox VE', 'proxmox-ve')
         if (myAddons.rsupport) text += this.lxdeLink('eggs-rsupport.desktop', 'Remote assistance', 'remote-assistance')
