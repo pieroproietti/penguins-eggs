@@ -67,15 +67,20 @@ It is possible to create and customize these images from the original distributi
 * ```sudo eggs wardrobe wear accessories/chicks``
 
 or: 
+
 * download egg-of-ubuntu-jammy-naked from the penguins-eggs du [sourceforge](https://sourceforge.net/projects/penguins-eggs/files/ISOS/ubuntu/jammy/) page;
+
 * boot and install with: ``sudo eggs install -un``.
 * restart the machine and download the wardrobe: ``eggs wardrobe get``.
-* wear chicks outfit: ```sudo eggs wardrobe wear chicks``.
+* ```sudo eggs wardrobe wear chicks``.
 
 ## Debian bullseye chicks.
 * perform a minimal installation of [Debian bullseye](https://www.debian.org/releases/bullseye/debian-installer/) minimal;
 * download and install eggs;
-* alternatively: download and install with ``sudo eggs install`` the [naked](https://sourceforge.net/projects/penguins-eggs/files/ISOS/debian/bullseye/) version of Debian bullseye. 
+
+alternatively:
+
+* download and install with ``sudo eggs install`` the [naked](https://sourceforge.net/projects/penguins-eggs/files/ISOS/debian/bullseye/) version of Debian bullseye. 
 
 * reboot the system and log in with your credentials, give the following commands:
 * ``eggs wardrobe get``.
