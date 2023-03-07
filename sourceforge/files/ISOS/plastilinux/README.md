@@ -39,7 +39,7 @@ A light xfce4 for developers you can easily start to improve eggs by installing 
 ![colibri](https://a.fsdn.com/con/app/proj/penguins-eggs/screenshots/colibri.png/245/183)
 
 ## **duck**
-cinnamon, office, multimedia with 5.17.0-1.2-liquorix-amd64 kernel.
+cinnamon, office, multimedia and all that is needed for most users
 
 ![duck](https://a.fsdn.com/con/app/proj/penguins-eggs/screenshots/duck.png/245/183)
  
@@ -49,7 +49,7 @@ xfce4 desktop plus [Proxmox VE](https://www.proxmox.com/en/proxmox-ve), install 
 ![eagle](https://a.fsdn.com/con/app/proj/penguins-eggs/screenshots/eagle.png/245/183)
 
 ## **owl**
-xfce4 for graphics designers, with 5.17.0-1.2-liquorix-amd64 kernel, based on the work of Clarlie Martinez 
+xfce4 for graphics designers, with 6.1.15-2-liquorix-amd64 kernel, based on the work of Clarlie Martinez 
  [quirinux](https://quirinux.org/).
 
 ![owl](https://a.fsdn.com/con/app/proj/penguins-eggs/screenshots/owl.png/245/183)
