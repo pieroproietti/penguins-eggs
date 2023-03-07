@@ -11,21 +11,21 @@ penguins-eggs
 [![pkgbuild](https://img.shields.io/badge/pkgbuild-packages-blue)](https://sourceforge.net/projects/penguins-eggs/files/PKGBUILD)[![iso](https://img.shields.io/badge/iso-images-cyan)](https://sourceforge.net/projects/penguins-eggs/files/ISOS)
 
 # Plastilinux
-Plastilinux vorrebbe diventare una meta-distribuzione per la scuola ed essere basata su differenti distribuzioni Linux customizzate utilizzando il [wardrobe](https://github.com/pieroproietti/penguins-wardrobe/tree/main/DOCUMENTATION#penguins-wardrobe) di [eggs](https://github.com/pieroproietti/penguins-eggs).
+Plastilinux would like to become a meta-distribution for school and be based on different custom Linux distributions using the [wardrobe](https://github.com/pieroproietti/penguins-wardrobe/tree/main/DOCUMENTATION#penguins-wardrobe) of [eggs](https://github.com/pieroproietti/penguins-eggs).
 
 ![chick](https://penguins-eggs.net/images/chick.png)
 
-# Integrazione con epoptes
-Ho inserito in eggs una funzione di integrazione con [epoptes](https://epoptes.org/), grazie alla quale da una macchina installata, creando una immagine con ```sudo eggs produce --fast``` ed avviando ```sudo eggs cuckoo``` le macchine avviate via PXE possono essere controllate con [epoptes](https://epoptes.org/).
+# Integration with epoptes.
+I have included in eggs an integration function with [epoptes](https://epoptes.org/), thanks to which from an installed machine, creating an image with ```sudo eggs produces --fast`` and starting ``sudo eggs cuckoo`` the machines started via PXE can be controlled with [epoptes](https://epoptes.org/).
 
-# user/password
-* ```live/evolution```
+* user/password
+* ```live/evolution``
 * ```root/evolution```
 
 # chicks
-XFCE4, leggera customizzazione e programmi per la scuola.
+XFCE4, light customization and school programs.
 
-Disponibile come: 
+Available as: 
 
 * Debian buster/bullseye/bookworm;
 
@@ -33,57 +33,77 @@ Disponibile come:
 
 * Ubuntu jammy.
 
-# Crea da solo la tua immagine
+# **colibri**
+A light xfce4 for developers you can easily start to improve eggs by installing colibri.
 
-E' possibile creare e customizzare queste immagini a partire dalle distribuzioni originali ed utilizzando eggs ed il wardrobe.
+![colibri](https://a.fsdn.com/con/app/proj/penguins-eggs/screenshots/colibri.png/245/183)
 
-## Ubuntu jammy chicks
+## **duck**
+cinnamon, office, multimedia with 5.17.0-1.2-liquorix-amd64 kernel.
 
-* esegui ed installa una configurazione minima di xubuntu 22.04
-* scarica ed installa eggs
-* ```eggs wardrobe get```
-* ```sudo eggs wardrobe wear accessories/chicks```
+![duck](https://a.fsdn.com/con/app/proj/penguins-eggs/screenshots/duck.png/245/183)
+ 
+## **eagle**
+xfce4 desktop plus [Proxmox VE](https://www.proxmox.com/en/proxmox-ve), install and configure it with static ip to enjoy KVM and containers virtualization.
 
-oppure: 
+![eagle](https://a.fsdn.com/con/app/proj/penguins-eggs/screenshots/eagle.png/245/183)
 
-* scarica egg-of-ubuntu-jammy dalla pagina penguins-eggs du [sourceforge](https://sourceforge.net/projects/penguins-eggs/files/ISOS/ubuntu/jammy/);
-* avvia ed installa con: ```sudo eggs install -un```
-* riavvia la macchine e scarica il wardrobe: ```eggs wardrobe get```
-* indossa il vestito chicks: ```sudo eggs wardrobe wear chicks```.
+## **owl**
+xfce4 for graphics designers, with 5.17.0-1.2-liquorix-amd64 kernel, based on the work of Clarlie Martinez 
+ [quirinux](https://quirinux.org/).
 
-## Debian bullseye chicks
+![owl](https://a.fsdn.com/con/app/proj/penguins-eggs/screenshots/owl.png/245/183)
 
-* esegui una installazione minimale di [Debian bullseye](https://www.debian.org/releases/bullseye/debian-installer/) minima;
-* scarica ed installa eggs;
-* in alternativa: scarica ed installa con ```sudo eggs install``` la versione [naked](https://sourceforge.net/projects/penguins-eggs/files/ISOS/debian/bullseye/) di Debian bullseye. 
+# Create your own image.
 
-* riavvia il sistema e loggati con le tue credenziali, dai i seguenti comandi:
-* ```eggs wardrobe get```
-* ```sudo eggs wardrobe wear chick```
+It is possible to create and customize these images from the original distributions and using eggs and wardrobe.
+
+## Ubuntu jammy chicks.
+* run and install a minimum configuration of xubuntu 22.04.
+* download and install eggs
+* ``eggs wardrobe get```
+* ```sudo eggs wardrobe wear accessories/chicks``
+
+or: 
+* download egg-of-ubuntu-jammy from the penguins-eggs du [sourceforge](https://sourceforge.net/projects/penguins-eggs/files/ISOS/ubuntu/jammy/) page;
+* boot and install with: ``sudo eggs install -un``.
+* restart the machines and download the wardrobe: ``eggs wardrobe get``.
+* wear chicks outfit: ```sudo eggs wardrobe wear chicks``.
+
+## Debian bullseye chicks.
+* perform a minimal installation of [Debian bullseye](https://www.debian.org/releases/bullseye/debian-installer/) minimal;
+* download and install eggs;
+* alternatively: download and install with ``sudo eggs install`` the [naked](https://sourceforge.net/projects/penguins-eggs/files/ISOS/debian/bullseye/) version of Debian bullseye. 
+
+* reboot the system and log in with your credentials, give the following commands:
+* ``eggs wardrobe get``.
+* ```sudo eggs wardrobe wear chick``.
 
 ## Debian buster chicks
-Come per Debian bullseye, ma scaricando la versione [naked](https://sourceforge.net/projects/penguins-eggs/files/ISOS/debian/buster /) di Debian buster.
+Same as Debian bullseye, but downloading the [naked](https://sourceforge.net/projects/penguins-eggs/files/ISOS/debian/buster /) version of Debian buster.
 
-## Devuan chimaera chicks
-Come per Debian bullseye, ma scaricando la versione [naked](https://sourceforge.net/projects/penguins-eggs/files/ISOS/devuan/chimaera /) di Devuan chimaera 
+## Devuan chimaera chicks.
+Same as for Debian bullseye, but downloading the [naked](https://sourceforge.net/projects/penguins-eggs/files/ISOS/devuan/chimaera /) version of Devuan chimaera 
 
+## Devuan daedalus chicks.
+As for Debian bullseye, but downloading the [naked](https://sourceforge.net/projects/penguins-eggs/files/ISOS/devuan/daedalus/) version of Devuan daedalus ceres 
 
-## Devuan daedalus chicks
-Come per Debian bullseye, ma scaricando la versione [naked](https://sourceforge.net/projects/penguins-eggs/files/ISOS/devuan/daedalus/) di Devuan daedalus ceres 
+# ... and the others?
+Yes, it would also be possible to get versions based on other distributions such as arch and manjaro, but your cooperation is needed!
 
-# ... e le altre?
-Si, sarebbe possibile ottenere anche versioni basate su altre distribuzioni come arch e manjaro, ma occorre la vostra collaborazione!
+## More informations
+There is a [Penguins' eggs official book](https://penguins-eggs.net/book/) and same other documentation - mostly for developers - on [penguins-eggs repo](https://github.com/pieroproietti/penguins-eggs) under **documents** and **i386**, in particular we have [hens, differents species](https://github.com/pieroproietti/penguins-eggs/blob/master/documents/hens-different-species.md) who descrive how to use eggs in manjaro.
 
-## More informations:
+* [blog](https://penguins-eggs.net)    
+* [facebook Penguins' eggs group](https://www.facebook.com/groups/128861437762355/)
+* [telegram Penguins' eggs channel](https://t.me/penguins_eggs) 
+* [twitter](https://twitter.com/pieroproietti)
+* [sources](https://github.com/pieroproietti/penguins-krill)
 
-* Repository: [penguins-eggs](https://github.com/pieroproietti/penguins-eggs)
-* Blog: [penguins-eggs](https://penguins-eggs.net)
+You can contact me at pieroproietti@gmail.com or [meet me](https://meet.jit.si/PenguinsEggsMeeting)
 
-* You can find more informations on this Linux distro at: [Debian](https://debian.org/).
+## Copyright and licenses
+Copyright (c) 2017, 2023 [Piero Proietti](https://penguins-eggs.net/about-me.html), dual licensed under the MIT or GPL Version 2 licenses.
 
-# Disclaim
-__Please note what this project is in no way connected to the original distro in any official way, it’s just my personal experiment.__
-
-# Sodilinux orizzonti
-Ho inserito anche So.Di.Linux Orizzonti 2005, come per Ubuntu anche qua c'è un problema di grandezza dell'immagine - circa 3,8 GB . per poter operare con PXE
-ma potrebbe costituire una ottima traccia. Inoltre, su macchine con 8 GB anche l'installazione e l'uso via PXE nonchè il controllo con [epoptes](https://epoptes.org/) funzionano benissimo.
+* Disclaim
+__Please note what this project is in no way connected to the original distro in any official way, it's just my personal experiment.__

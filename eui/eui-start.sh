@@ -18,10 +18,16 @@ if mountpoint -q "/lib/live/mount"; then
     echo "Installation will start in one minute, press CTRL-C to abort!"
     echo 
     echo -n "Waiting... ";
-    for _ in {1..60}; do read -rs -n1 -t1 || printf ".";done;echo
+    for _ in {1..58}; do read -rs -n1 -t1 || printf ".";done;echo
 
-    # install system
-    sudo eggs install -unrd .local
+    # install system italiano
+    sudo eggs install -c it -nrd .local
+
+    # install system brasilian
+    # sudo eggs install -c br -nrd .local
+
+    # install system en_US
+    # sudo eggs install -unrd .local
 else  
     # isInstalled
     sudo rm -f /etc/sudoers.d/eui-users
