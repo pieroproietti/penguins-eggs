@@ -67,9 +67,9 @@ It is possible to create and customize these images from the original distributi
 * ```sudo eggs wardrobe wear accessories/chicks``
 
 or: 
-* download egg-of-ubuntu-jammy from the penguins-eggs du [sourceforge](https://sourceforge.net/projects/penguins-eggs/files/ISOS/ubuntu/jammy/) page;
+* download egg-of-ubuntu-jammy-naked from the penguins-eggs du [sourceforge](https://sourceforge.net/projects/penguins-eggs/files/ISOS/ubuntu/jammy/) page;
 * boot and install with: ``sudo eggs install -un``.
-* restart the machines and download the wardrobe: ``eggs wardrobe get``.
+* restart the machine and download the wardrobe: ``eggs wardrobe get``.
 * wear chicks outfit: ```sudo eggs wardrobe wear chicks``.
 
 ## Debian bullseye chicks.
