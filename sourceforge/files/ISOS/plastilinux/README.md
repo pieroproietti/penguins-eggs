@@ -13,7 +13,7 @@ penguins-eggs
 # Plastilinux
 Plastilinux would like to become a meta-distribution for school and be based on different custom Linux distributions using the [wardrobe](https://github.com/pieroproietti/penguins-wardrobe/tree/main/DOCUMENTATION#penguins-wardrobe) of [eggs](https://github.com/pieroproietti/penguins-eggs).
 
-![chick](https://penguins-eggs.net/images/chick.png)
+![chicks](https://penguins-eggs.net/images/chicks.png)
 
 # Integration with epoptes.
 I have included in eggs an integration function with [epoptes](https://epoptes.org/), thanks to which from an installed machine, creating an image with ```sudo eggs produces --fast`` and starting ``sudo eggs cuckoo`` the machines started via PXE can be controlled with [epoptes](https://epoptes.org/).
@@ -24,6 +24,8 @@ I have included in eggs an integration function with [epoptes](https://epoptes.o
 
 # chicks
 XFCE4, light customization and school programs.
+
+![chicks](https://penguins-eggs.net/images/chicks-245x183.png)
 
 Available as: 
 
