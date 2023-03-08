@@ -1,12 +1,21 @@
 # eggs unattended install
 
-Eggs unattended install è basato su semplici script ed, al momento, 
-per creare una ISO con possibilità di unattended-install, procedere come segue:
+Eggs unattended install è basato su semplici script:
+* ```eui-create-image.sh``` crea l'immagine;
+* ```eui-start.sh``` viene copiato in ```/usr/bin/```
+* ```eui-users``` lista degli utenti abilitati a sudo SENZA password, viene copiato in ```/etc/sudoers.d/```;
+* ```eui.desktop``` avvia l'installazione automatica al login e viene copiato in ```/etc/xdg/autostart```.
+
+I tre file eui-start.sh, eui-users ed eui.desktop vengono eliminati dalla directory di destinazione non appena completata la produzione dell'immagine.
+
+# Creazione di una ISO eui
+Per creare una ISO con possibilità di unattended-install, procedere come segue:
 
 ```
 cd /usr/lib/penguins-eggs/eui
 ./eui-create-image.sh
 ```
+
 Verrà generata una immagine fast, quindi abbastanza veloce, e lanciato il comando cuckoo.
 
 
@@ -60,6 +69,11 @@ if mountpoint -q "/lib/live/mount"; then
     OS_HOSTNAME=$(/usr/bin/cat /mnt/etc/hostname)
     sudo umount "/dev/sda2"
     sudo echo "I will completely format local system: ${OS_HOSTNAME}"
+
+    # we need to reset connection    
+    nmcli networking off
+    nmcli networking on
+
     echo -n "Wait a minute for installation or CTRL-C to abort.";
     for _ in {1..60}; do read -rs -n1 -t1 || printf ".";done;echo
     sudo eggs install -unrd .local
