@@ -12,14 +12,19 @@ Penguins-eggs
 [![pkgbuild](https://img.shields.io/badge/pkgbuild-packages-blue)](https://sourceforge.net/projects/penguins-eggs/files/PKGBUILD)
 [![iso](https://img.shields.io/badge/iso-images-cyan)](https://sourceforge.net/projects/penguins-eggs/files/ISOS)
 
-# Last version
-eggs_9.3.25 was released 
+# eggs-9.4.1 in development
+Here I'm working to improve eui (eggs unattended installation)
+
+It's almost ready, you can find an explanation on [README uei](/eui/README.md).
+
+Here we solve:
+* eui: solved the problem of network configuration on computers booted with PXE resetting the network connection with ```nmcli networking off``` and ```nmcli networking on``` during boot;
 
 # Penguins' eggs Debian TESTING packages
 
 Please, don't use this package for installations, they have just the pourpouse to be TESTED and can be extremally BUGGED!!!
 
-# OEM Installation
+# OEM Installation (soon I hope)
 I'm trying to create an OEM installation for eggs, in order to allow configuring pre-installed computers where the user gets a simple configuration program on first boot.
 
 ## Krill
