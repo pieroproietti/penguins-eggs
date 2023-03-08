@@ -58,29 +58,62 @@ Terminal=true  #basically will open terminal and people can see the script execu
 ```
 
 ## /usr/bin/eui-start.sh
+Al momento, la customizzazione dell'installazione, DEVE essere effettuata modificando questo file:
 
 ```
-#!/bin/env bash
+#!/bin/bash
+set -Eeuo pipefail
+
 if mountpoint -q "/lib/live/mount"; then 
-    # isLive
+    # if isLive
+    echo "E G G S: the reproductive system of penguins"
+    echo
+    echo "WARNING: A fully automated system installation is about to start,"
+    echo "         ALL data on the hard drive present will be ERASED!"
+    echo
 
     # try to read /etc/hostname from /dev/sda
     sudo mount "/dev/sda2" "/mnt"
     OS_HOSTNAME=$(/usr/bin/cat /mnt/etc/hostname)
     sudo umount "/dev/sda2"
-    sudo echo "I will completely format local system: ${OS_HOSTNAME}"
 
     # we need to reset connection    
     nmcli networking off
     nmcli networking on
+    
+    echo "I will completely format local system: ${OS_HOSTNAME}"
+    echo
+    echo "Installation will start in one minute, press CTRL-C to abort!"
+    echo 
+    echo -n "Waiting...";
+    for _ in {1..59}; do read -rs -n1 -t1 || printf ".";done;echo
 
-    echo -n "Wait a minute for installation or CTRL-C to abort.";
-    for _ in {1..60}; do read -rs -n1 -t1 || printf ".";done;echo
-    sudo eggs install -unrd .local
+    ##################################################
+    # At the moment we need to configure manually here
+    ##################################################
+    # USAGE
+    #
+    # $ eggs install [-k] [-c <value>] [-d <value>] [-h] [-i] [-n] [-N] [-p] [-r] [-s] [-S] [-u] [-v]
+    #
+    # FLAGS
+    # -N, --none            Swap none: 256M
+    # -S, --suspend         Swap suspend: RAM x 2
+    # -c, --custom=<value>  custom unattended configuration
+    # -d, --domain=<value>  Domain name, defult: .local
+    # -h, --help            Show CLI help.
+    # -i, --ip              hostname as ip, eg: ip-192-168-1-33
+    # -k, --crypted         Crypted CLI installation
+    # -n, --nointeractive   no user interaction
+    # -p, --pve             Proxmox VE install
+    # -r, --random          Add random to hostname, eg: colibri-ay420dt
+    # -s, --small           Swap small: RAM
+    # -u, --unattended      Unattended installation
+    # -v, --verbose         Verbose
+    eggs install --custom=it --domain=.local --random --nointeractive
 else  
     # isInstalled
-    sudo rm /etc/sudoers.d/eui-users
-    sudo rm /usr/bin/eui-start.sh
-    sudo rm /etc/xdg/autostart/eui.desktop
+    sudo rm -f /etc/sudoers.d/eui-users
+    sudo rm -f /usr/bin/eui-start.sh
+    sudo rm -f /etc/xdg/autostart/eui.desktop
 fi
 ```
