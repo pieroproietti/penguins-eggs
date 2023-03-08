@@ -51,4 +51,8 @@ Installo linuxfx-11.2.22.04.7-win11-theme-plasma-wxd-13.0.iso, scelgo come utent
 
 Il "trucco", sta in /home/linuxfx che è la skel di linuxfx, e nei file .first e .linuxfx. 
 
-Una volta spostata /home/linuxfx /etc/skel, il file .first va rimosso, altrimenti cerca di copiare /home/linuxfx nella home dell'utente e quindi riavvia il sistema. Il file .linuxfx, invece bisogna crearlo, sempre per le stesse ragioni. 
+Una volta ridenominata /home/linuxfx come /etc/skel, il file .first va rimosso, altrimenti cerca di copiare /home/linuxfx nella home dell'utente e quindi riavvia il sistema. Il file .linuxfx, invece bisogna crearlo, sempre per le stesse ragioni. 
+
+Ovviamente, per le stesse ragioni, rimasterizzando una linuxfx, non va assolutamente utilizzato il comando ```sudo eggs tools skel```.
+
+Questa guida vale per la prima rimasterizzazione, una volta ottenuta questa le rimasterizzazioni successive non avranno bisogno delle medesime operazioni.
