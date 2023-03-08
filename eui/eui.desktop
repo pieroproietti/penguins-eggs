@@ -8,3 +8,4 @@ Terminal=true
 X-GNOME-Autostart-Phase=Initialization
 X-KDE-autostart-phase=1
 X-KDE-AutostartScript=true
+Hidden=true

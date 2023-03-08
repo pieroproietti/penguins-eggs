@@ -23,7 +23,7 @@ I have included in eggs an integration function with [epoptes](https://epoptes.o
 * ```root/evolution```
 
 # chicks
-XFCE4, light customization and school programs.
+XFCE4, light customization office, code, nodejs and school programs.
 
 ![chicks](https://penguins-eggs.net/images/chicks-245x183.png)
 
