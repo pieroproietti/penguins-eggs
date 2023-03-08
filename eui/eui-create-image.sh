@@ -10,3 +10,4 @@ sudo rm /etc/sudoers.d/eui-users
 sudo rm /usr/bin/eui-start.sh
 sudo rm /etc/xdg/autostart/eui.desktop
 sudo eggs cuckoo
+
