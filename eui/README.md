@@ -22,11 +22,23 @@ Verrà generata una immagine fast, quindi abbastanza veloce, e lanciato il coman
 # Modifiche necessarie rispetto ad una normale immagine
 
 Sono coinvolti 3 file:
+
 * /etc/sudoers.d/eui-users
 * /etc/xdg/autostart/eui.desktop
 * /usr/bin/eui-start.ch
 
-Vediamoli uno ad uno
+E' possibile selezionare una particolare customizzazione o crearne una propria, al momento sto cercando di adattare la customizzazione alle varie lingue ed abbiamo:
+
+* bg (bulgaro)
+* br (portoghese brasiliano)
+* de (tedesco)
+* es (spagnolo)
+* fr (francese)
+* it (italiano)
+* nl (olandese)
+* pe (spagnolo perù)
+* ru (russo)
+* uk (ucraino)
 
 ## /etc/sudoers.d/eui-users
 
@@ -46,15 +58,21 @@ chmod 0440 /etc/sudoers.d/eui-users
 ```
 
 ##  /etc/xdg/autostart/eui.desktop
+Serve per avviare l'installazione non appena effettuato il login. Al momento funziona su XFCE, per qualche motivo non avvia l'installazione con cinnamon. Gli altri DE sono da testare.
 
 ```
 [Desktop Entry]
-Type=Application
+Encoding=UTF-8
 Name=Eggs unattended install
+Comment=Start unattended installation
+Icon=cinnamon-symbolic
 Exec=sudo /usr/bin/eui-start.sh
-StartupNotify=false
-NoDisplay=true
-Terminal=true  #basically will open terminal and people can see the script executing
+Terminal=true
+Type=Application
+Categories=
+X-GNOME-Autostart-Phase=Initialization
+X-KDE-autostart-phase=1
+X-KDE-AutostartScript=true
 ```
 
 ## /usr/bin/eui-start.sh
