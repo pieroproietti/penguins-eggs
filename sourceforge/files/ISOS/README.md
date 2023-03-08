@@ -13,7 +13,7 @@ penguins-eggs
 
 # Penguins' eggs remixes ISOs
 
-All ISOs are based on Arch, Debian, Devuan, Manjaro, Ubuntu or derivates (LinuxFx, Linuxmint, MX-Linux, SpiralLinux, etc).
+All ISOs are based on Arch, Debian, Devuan, Manjaro, Ubuntu or derivates (LinuxFx, Linuxmint, MX-Linux, RebornOS, SpiralLinux, etc).
 
 You can boot this live images burning them on USB key - using [Ventoy](https://www.ventoy.net/en/index.html) is a great opportunity - or via PXE, booting from LAN, just ```sudo eggs cuckoo``` or  ```sudo eggs cuckoo --real```
 
