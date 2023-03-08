@@ -13,6 +13,10 @@ Per creare una ISO con possibilità di unattended-install, procedere come segue:
 
 ```
 cd /usr/lib/penguins-eggs/eui
+```
+Modificare eventualmente il file eui-start.sh per selezionare la lingua, swap e gli altri parametri riportati nel sorgente. Salvare ed avviare la creazione dell'immagine:
+
+```
 ./eui-create-image.sh
 ```
 
