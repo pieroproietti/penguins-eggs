@@ -1,4 +1,4 @@
-#!/bin/env bash
+#!/bin/bash
 sudo eggs tools clean -n
 sudo eggs tools ppa -n
 sudo eggs kill -n

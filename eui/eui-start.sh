@@ -1,4 +1,4 @@
-#!/bin/env bash
+#!/bin/bash
 if mountpoint -q "/lib/live/mount"; then 
 
     # if isLive
@@ -20,8 +20,11 @@ if mountpoint -q "/lib/live/mount"; then
     echo -n "Waiting... ";
     for _ in {1..58}; do read -rs -n1 -t1 || printf ".";done;echo
 
+    # install system spanish
+    sudo eggs install -c es -nrd .local
+
     # install system italiano
-    sudo eggs install -c it -nrd .local
+    #sudo eggs install -c it -nrd .local
 
     # install system brasilian
     # sudo eggs install -c br -nrd .local
