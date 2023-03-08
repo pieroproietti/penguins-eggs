@@ -13,12 +13,16 @@ if mountpoint -q "/lib/live/mount"; then
     OS_HOSTNAME=$(/usr/bin/cat /mnt/etc/hostname)
     sudo umount "/dev/sda2"
 
+    # we need to reset connection    
+    nmcli networking off
+    nmcli networking on
+    
     echo "I will completely format local system: ${OS_HOSTNAME}"
     echo
     echo "Installation will start in one minute, press CTRL-C to abort!"
     echo 
     echo -n "Waiting... ";
-    for _ in {1..58}; do read -rs -n1 -t1 || printf ".";done;echo
+    for _ in {1..57}; do read -rs -n1 -t1 || printf ".";done;echo
 
     # install system spanish
     sudo eggs install -c es -nrd .local

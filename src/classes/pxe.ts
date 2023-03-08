@@ -71,6 +71,7 @@ export default class Pxe {
            * Ricerca delle uova
            */
       const isos: string[] = []
+      /*
       if (!Utils.isLive()) {
         const isos = fs.readdirSync(this.nest)
         for (const iso of isos) {
@@ -81,6 +82,7 @@ export default class Pxe {
           this.isos = this.isos.sort()
         }
       }
+      */
 
       /**
            * installed: /home/eggs/ovarium/iso/live
