@@ -1,6 +1,7 @@
 #!/bin/bash
-if mountpoint -q "/lib/live/mount"; then 
+set -Eeuo pipefail
 
+if mountpoint -q "/lib/live/mount"; then 
     # if isLive
     echo "E G G S: the reproductive system of penguins"
     echo
@@ -21,20 +22,31 @@ if mountpoint -q "/lib/live/mount"; then
     echo
     echo "Installation will start in one minute, press CTRL-C to abort!"
     echo 
-    echo -n "Waiting... ";
-    for _ in {1..57}; do read -rs -n1 -t1 || printf ".";done;echo
+    echo -n "Waiting...";
+    for _ in {1..59}; do read -rs -n1 -t1 || printf ".";done;echo
 
-    # install system spanish
-    sudo eggs install -c es -nrd .local
-
-    # install system italiano
-    #sudo eggs install -c it -nrd .local
-
-    # install system brasilian
-    # sudo eggs install -c br -nrd .local
-
-    # install system en_US
-    # sudo eggs install -unrd .local
+    ##################################################
+    # At the moment we need to configure manually here
+    ##################################################
+    # USAGE
+    #
+    # $ eggs install [-k] [-c <value>] [-d <value>] [-h] [-i] [-n] [-N] [-p] [-r] [-s] [-S] [-u] [-v]
+    #
+    # FLAGS
+    # -N, --none            Swap none: 256M
+    # -S, --suspend         Swap suspend: RAM x 2
+    # -c, --custom=<value>  custom unattended configuration
+    # -d, --domain=<value>  Domain name, defult: .local
+    # -h, --help            Show CLI help.
+    # -i, --ip              hostname as ip, eg: ip-192-168-1-33
+    # -k, --crypted         Crypted CLI installation
+    # -n, --nointeractive   no user interaction
+    # -p, --pve             Proxmox VE install
+    # -r, --random          Add random to hostname, eg: colibri-ay420dt
+    # -s, --small           Swap small: RAM
+    # -u, --unattended      Unattended installation
+    # -v, --verbose         Verbose
+    eggs install --custom=it --domain=.local --random --nointeractive
 else  
     # isInstalled
     sudo rm -f /etc/sudoers.d/eui-users
