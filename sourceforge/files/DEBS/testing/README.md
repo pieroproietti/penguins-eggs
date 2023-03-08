@@ -15,7 +15,7 @@ Penguins-eggs
 # eggs-9.4.1 in development
 Here I'm working to improve eui (eggs unattended installation)
 
-It's almost ready, you can find an explanation on [README uei](/eui/README.md).
+It's almost ready, you can find an explanation on [README uei](https://github.com/pieroproietti/penguins-eggs/blob/master/eui/README.md).
 
 Here we solve:
 * eui: solved the problem of network configuration on computers booted with PXE resetting the network connection with ```nmcli networking off``` and ```nmcli networking on``` during boot;
