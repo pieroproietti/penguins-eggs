@@ -20,9 +20,11 @@ It's almost ready, you can find an explanation on [README uei](https://github.co
 
 changelog:
 
-* eui: solved the problem of network configuration on computers booted with PXE resetting the network connection with ```nmcli networking off``` and ```nmcli networking on``` during boot;
-* eui: to prevent further installation when the machine is configured with the PXE option as the first boot device, I added ```eggs install --flag halt```, so the system will be halted after the installation;
-* eui: fixed poweroff on Devuan.
+Working on EUI (Eggs Unattende Installations):
+* solved the problem of network configuration on computers booted with PXE resetting the network connection with ```nmcli networking off``` and ```nmcli networking on``` during boot;
+* to prevent further installation when the machine is configured with the PXE option as the first boot device, I added ```eggs install --flag halt```, so the system will be halted after the installation;
+* fixed poweroff on Devuan;
+* producing an EUI iso result in a iso filename with postfix _EUI.
 
 # Penguins' eggs Debian TESTING packages
 

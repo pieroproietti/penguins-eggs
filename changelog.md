@@ -19,9 +19,11 @@ Detailed instructions for usage are published on the [Penguins' eggs book](https
 Versions are listed on reverse order, the first is the last one. Old versions are moved to [versions](https://sourceforge.net/projects/penguins-eggs/files/packages-deb/versions/). 
 
 ### eggs-9.4.1
-* eui: solved the problem of network configuration on computers booted with PXE resetting the network connection with ```nmcli networking off``` and ```nmcli networking on``` during boot;
-* eui: to prevent further installation when the machine is configured with the PXE option as the first boot device, I added ```eggs install --flag halt```, so the system will be halted after the installation;
-* eui: fixed poweroff on Devuan.
+Working on EUI (Eggs Unattende Installations):
+* solved the problem of network configuration on computers booted with PXE resetting the network connection with ```nmcli networking off``` and ```nmcli networking on``` during boot;
+* to prevent further installation when the machine is configured with the PXE option as the first boot device, I added ```eggs install --flag halt```, so the system will be halted after the installation;
+* fixed poweroff on Devuan;
+* producing an EUI iso result in a iso filename with postfix _EUI.
 
 ### eggs-9.4.0
 Ad un certo punto occorre eseguire il salto di versione - i numeri lunghi si ricordano male - ed è più semplice ricordare 9.4.0 invece di 9.3.31. In questo caso, per sottolineare il cambiamento ho fatto soprattutto una revisione dei testi in inglese che, non è la mia madrelingua. Spero - con l'aiuto di [deepl Translator](https://www.deepl.com/) - di esserci riuscito e che qualcuno voglia dare una mano.
