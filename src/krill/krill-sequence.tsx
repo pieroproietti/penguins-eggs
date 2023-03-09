@@ -669,21 +669,22 @@ export default class Sequence {
 
       if (this.unattended) {
          if (this.halt) {
+            const distro = new Distro()
             let cmd = "shutdown now"
-            if (!Utils.isSystemd()) {
-               cmd = "shutdown now"
+            if (distro.distroLike == "Devuan") {
+               cmd = "halt"
             }
             console.log(`The system will be halted now, with: ${cmd}`)
             await sleep(5000)
-            await exec(cmd, {echo: true})
+            await exec(cmd, { echo: true })
          } else {
             console.log("The system will reboot")
             await sleep(5000)
-            await exec('reboot', {echo: true})
+            await exec('reboot', { echo: true })
          }
       }
       Utils.pressKeyToExit('Press a key to reboot')
-      await exec('reboot', {echo: true})
+      await exec('reboot', { echo: true })
    }
 }
 
