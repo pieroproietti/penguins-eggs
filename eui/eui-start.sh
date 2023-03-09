@@ -9,10 +9,11 @@ if mountpoint -q "/lib/live/mount"; then
     echo "         ALL data on the hard drive present will be ERASED!"
     echo
 
-    # try to read /etc/hostname from /dev/sda
-    sudo mount "/dev/sda2" "/mnt"
-    OS_HOSTNAME=$(/usr/bin/cat /mnt/etc/hostname)
-    sudo umount "/dev/sda2"
+
+    OS_HOSTNAME="NOT-CHECKED"
+    # we must to check in same wat that we are formatting
+
+    # TO DO
 
     # we need to reset connection    
     nmcli networking off
@@ -33,6 +34,7 @@ if mountpoint -q "/lib/live/mount"; then
     # $ eggs install [-k] [-c <value>] [-d <value>] [-h] [-i] [-n] [-N] [-p] [-r] [-s] [-S] [-u] [-v]
     #
     # FLAGS
+    # -H, --halt            Halt the system after installation
     # -N, --none            Swap none: 256M
     # -S, --suspend         Swap suspend: RAM x 2
     # -c, --custom=<value>  custom unattended configuration
@@ -46,7 +48,7 @@ if mountpoint -q "/lib/live/mount"; then
     # -s, --small           Swap small: RAM
     # -u, --unattended      Unattended installation
     # -v, --verbose         Verbose
-    eggs install --custom=it --domain=.local --random --nointeractive
+    eggs install --custom=it --domain=.local --random --nointeractive --halt
 else  
     # isInstalled
     sudo rm -f /etc/sudoers.d/eui-users
