@@ -438,9 +438,10 @@ krill: the CLI system installer - the egg became a penguin!
 
 ```
 USAGE
-  $ eggs install [-k] [-c <value>] [-d <value>] [-h] [-i] [-n] [-N] [-p] [-r] [-s] [-S] [-u] [-v]
+  $ eggs install [-k] [-c <value>] [-d <value>] [-H] [-h] [-i] [-n] [-N] [-p] [-r] [-s] [-S] [-u] [-v]
 
 FLAGS
+  -H, --halt            Halt the system after installation
   -N, --none            Swap none: 256M
   -S, --suspend         Swap suspend: RAM x 2
   -c, --custom=<value>  custom unattended configuration
