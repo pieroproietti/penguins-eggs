@@ -667,10 +667,12 @@ export default class Sequence {
    async finished() {
       await redraw(<Finished installationDevice={this.partitions.installationDevice} hostName={this.users.hostname} userName={this.users.name} />)
 
-      if (this.halt) {
-         shx.exec('poweroff')
-      } else if (this.unattended) {
-         shx.exec('reboot')
+      if (this.unattended) {
+         if (this.halt) {
+            shx.exec('poweroff')
+         } else {
+            shx.exec('reboot')
+         }
       }
       Utils.pressKeyToExit('Press a key to halt')
       shx.exec('reboot')

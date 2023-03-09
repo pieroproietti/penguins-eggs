@@ -62,8 +62,6 @@ export default class Install extends Command {
       custom = 'us'
     }
 
-    let halt = flags.halt
-
     // krillConfig
     let krillConfig = {} as IKrillConfig
     if (custom !== undefined) {
@@ -83,6 +81,9 @@ export default class Install extends Command {
 
     // nointeractive
     const nointeractive = flags.nointeractive
+
+    // halt
+    let halt = flags.halt
 
     // hostname
     const ip = flags.ip
