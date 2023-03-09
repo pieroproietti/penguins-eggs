@@ -667,24 +667,19 @@ export default class Sequence {
    async finished() {
       await redraw(<Finished installationDevice={this.partitions.installationDevice} hostName={this.users.hostname} userName={this.users.name} />)
 
-      if (this.unattended) {
-         if (this.halt) {
-            const distro = new Distro()
-            let cmd = "shutdown now"
-            if (distro.distroLike == "Devuan") {
-               cmd = "halt"
-            }
-            console.log(`The system will be halted now, with: ${cmd}`)
-            await sleep(5000)
-            await exec(cmd, { echo: true })
-         } else {
-            console.log("The system will reboot")
-            await sleep(5000)
-            await exec('reboot', { echo: true })
-         }
+      let cmd = "reboot"
+      if (this.halt) {
+         cmd = "poweroff"
       }
-      Utils.pressKeyToExit('Press a key to reboot')
-      await exec('reboot', { echo: true })
+
+      if (this.unattended && this.nointeractive) {
+         console.log(`System will ${cmd} in 5 seconds...`)
+         await sleep(5000)
+         await exec(cmd, { echo: true })
+      } else {
+         Utils.pressKeyToExit(`Press a key to ${cmd}`)
+         await exec(cmd, { echo: true })
+      }
    }
 }
 
