@@ -1637,10 +1637,16 @@ export default class Ovary {
       } else if (cryptedclone) {
         typology = '_crypted'
       }
+
+      if (fs.existsSync('/usr/bin/eui-start.sh')) {
+        typology+="_EUI"
+      }
+
     }
 
     const postfix = Utils.getPostfix()
     this.settings.isoFilename = prefix + volid + typology + postfix
+    // 
     const output = this.settings.config.snapshot_dir + this.settings.isoFilename
 
     let command = ''

@@ -119,12 +119,41 @@ export default class Krill {
   krillConfig = {} as IKrillConfig
 
   locales = new Locales()
+
   keyboards = new Keyboards()
 
+  unattended = false
+
+  nointeractive = false
+  
+  halt = false
+
   /**
-   * @param cryped
+   * constructor
+   * @param unattended 
+   * @param nointeractive 
+   * @param halt 
    */
-  async prepare(unattended = false, nointeractive = false, krillConfig = {} as IKrillConfig, ip = false, random = false, domain = 'local', suspend = false, small = false, none = false, cryped = false, pve = false, verbose = false) {
+  constructor(unattended = false, nointeractive = false, halt = false) {
+    this.unattended = unattended
+    this.nointeractive = nointeractive
+    this.halt = halt
+  }
+
+  /**
+   * 
+   * @param krillConfig 
+   * @param ip 
+   * @param random 
+   * @param domain 
+   * @param suspend 
+   * @param small 
+   * @param none 
+   * @param cryped 
+   * @param pve 
+   * @param verbose 
+   */
+  async prepare(krillConfig = {} as IKrillConfig, ip = false, random = false, domain = 'local', suspend = false, small = false, none = false, cryped = false, pve = false, verbose = false) {
     /**
      * Check for disk presence
      */
@@ -165,7 +194,7 @@ export default class Krill {
 
     this.krillConfig = krillConfig // yaml.load(fs.readFileSync(config_file, 'utf-8')) as IKrillConfig
 
-    if (unattended) {
+    if (this.unattended) {
       oWelcome = { language: this.krillConfig.language }
 
       oLocation = {
@@ -250,14 +279,14 @@ export default class Krill {
     /**
      * summary
      */
-    await this.summary(oLocation, oKeyboard, oPartitions, oUsers, unattended, nointeractive)
+    await this.summary(oLocation, oKeyboard, oPartitions, oUsers)
 
     /**
-    * installation
-    */
-    await this.install(oLocation, oKeyboard, oPartitions, oUsers, oNetwork, unattended, domain, verbose)
+     * INSTALL
+     */
+    const sequence = new Sequence(oLocation, oKeyboard, oPartitions, oUsers, oNetwork)
+    await sequence.start(domain, this.unattended, this.nointeractive, this.halt, verbose)
   }
-
 
   /**
    * WELCOME
@@ -541,29 +570,22 @@ export default class Krill {
   /**
    * SUMMARY
    */
-  async summary(location: ILocation,
-    keyboard: IKeyboard,
-    partitions: IPartitions,
-    users: IUsers,
-    unattended = false,
-    nointeractive = false)
-  {
-    //
-    let summaryElem: JSX.Element
+  async summary(location: ILocation, keyboard: IKeyboard, partitions: IPartitions, users: IUsers) {
+      let summaryElem: JSX.Element
 
     let message = "Double check the installation disk: " + partitions.installationDevice
-    if (unattended && nointeractive) {
+    if (this.unattended && this.nointeractive) {
       message = "Unattended installation will start in 5 seconds, press CTRL-C to abort!"
     }
 
 
     while (true) {
       summaryElem = <Summary name={users.name} password={users.password} rootPassword={users.rootPassword} hostname={users.hostname} region={location.region} zone={location.zone} language={location.language} keyboardModel={keyboard.keyboardModel} keyboardLayout={keyboard.keyboardLayout} installationDevice={partitions.installationDevice} message={message} />
-      if (unattended && nointeractive) {
+      if (this.unattended && this.nointeractive) {
         redraw(summaryElem)
         await sleep(5000)
         break
-      } else if (unattended && !nointeractive) {
+      } else if (this.unattended && !this.nointeractive) {
         if (await confirm(summaryElem, "Read the Summary, confirm or abort")) {
           break
         } else {
@@ -573,14 +595,6 @@ export default class Krill {
         break
       }
     }
-  }
-
-  /**
-   * INSTALL
-   */
-  async install(location: ILocation, keyboard: IKeyboard, partitions: IPartitions, users: IUsers, network: INet, unattended = false, domain = 'local', verbose = false) {
-    const sequence = new Sequence(location, keyboard, partitions, users, network)
-    await sequence.start(unattended, domain, verbose)
   }
 
   /**
@@ -623,7 +637,6 @@ function redraw(elem: JSX.Element) {
   opt.patchConsole = true
   opt.debug = false
   console.clear()
-  // shx.exec('clear')
   render(elem, opt)
 }
 
