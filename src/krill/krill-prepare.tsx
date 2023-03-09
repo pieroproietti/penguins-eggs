@@ -119,10 +119,13 @@ export default class Krill {
   krillConfig = {} as IKrillConfig
 
   locales = new Locales()
+
   keyboards = new Keyboards()
 
   unattended = false
+
   nointeractive = false
+  
   halt = false
 
   /**

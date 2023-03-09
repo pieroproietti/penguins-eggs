@@ -669,13 +669,21 @@ export default class Sequence {
 
       if (this.unattended) {
          if (this.halt) {
-            shx.exec('poweroff')
+            let cmd = "shutdown now"
+            if (!Utils.isSystemd()) {
+               cmd = "shutdown now"
+            }
+            console.log(`The system will be halted now, with: ${cmd}`)
+            await sleep(5000)
+            await exec(cmd, {echo: true})
          } else {
-            shx.exec('reboot')
+            console.log("The system will reboot")
+            await sleep(5000)
+            await exec('reboot', {echo: true})
          }
       }
-      Utils.pressKeyToExit('Press a key to halt')
-      shx.exec('reboot')
+      Utils.pressKeyToExit('Press a key to reboot')
+      await exec('reboot', {echo: true})
    }
 }
 
@@ -693,4 +701,15 @@ async function redraw(elem: JSX.Element) {
    console.clear()
    // await exec('clear', Utils.setEcho(false))
    render(elem, opt)
+}
+
+/**
+ *
+ * @param ms
+ * @returns
+ */
+function sleep(ms = 0) {
+   return new Promise((resolve) => {
+      setTimeout(resolve, ms);
+   });
 }
