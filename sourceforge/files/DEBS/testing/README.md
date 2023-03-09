@@ -13,14 +13,16 @@ Penguins-eggs
 [![iso](https://img.shields.io/badge/iso-images-cyan)](https://sourceforge.net/projects/penguins-eggs/files/ISOS)
 
 # eggs-9.4.1 in development
-Here I'm working to improve eui (eggs unattended installation)
+
+Here I'm working to improve eui (eggs unattended installation).
 
 It's almost ready, you can find an explanation on [README uei](https://github.com/pieroproietti/penguins-eggs/blob/master/eui/README.md).
 
-Here we solved:
+changelog:
 
 * eui: solved the problem of network configuration on computers booted with PXE resetting the network connection with ```nmcli networking off``` and ```nmcli networking on``` during boot;
-* added various information on README.md on folder uei;
+* eui: to prevent further installation when the machine is configured with the PXE option as the first boot device, I added ```eggs install --flag halt```, so the system will be halted after the installation;
+* eui: fixed poweroff on Devuan.
 
 # Penguins' eggs Debian TESTING packages
 
