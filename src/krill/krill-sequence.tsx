@@ -105,6 +105,7 @@ import mTimezone from './modules/m-timezone'
 import umount from './modules/umount'
 import mkfs from './modules/mkfs'
 import hostname from './modules/hostname'
+import { ReadableByteStreamController } from 'stream/web';
 
 /**
  * hatching: installazione o cova!!!
@@ -204,6 +205,10 @@ export default class Sequence {
 
    unattended = false
 
+   nointeractive = false
+
+   halt = false
+
    cliAutologin = new CliAutologin()
 
 
@@ -247,9 +252,11 @@ export default class Sequence {
     * @param umount
     * @returns
     */
-   async start(unattended = false, domain = 'local', verbose = false) {
+   async start(domain = 'local', unattended = false, nointeractive = false, halt = false, verbose = false) {
 
       this.unattended = unattended
+      this.nointeractive = nointeractive
+      this.halt = halt
 
       this.verbose = verbose
       this.echo = Utils.setEcho(this.verbose)
@@ -659,9 +666,13 @@ export default class Sequence {
     */
    async finished() {
       await redraw(<Finished installationDevice={this.partitions.installationDevice} hostName={this.users.hostname} userName={this.users.name} />)
-      if (!this.unattended) {
-         Utils.pressKeyToExit('Press a key to reboot...')
+
+      if (this.halt) {
+         shx.exec('poweroff')
+      } else if (this.unattended) {
+         shx.exec('reboot')
       }
+      Utils.pressKeyToExit('Press a key to halt')
       shx.exec('reboot')
    }
 }

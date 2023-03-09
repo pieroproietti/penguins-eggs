@@ -26,6 +26,7 @@ export default class Install extends Command {
     crypted: Flags.boolean({char: 'k', description: 'Crypted CLI installation'}),
     custom: Flags.string({char: 'c', description: 'custom unattended configuration'}),
     domain: Flags.string({char: 'd', description: 'Domain name, defult: .local'}),
+    halt: Flags.boolean({char: 'H', description: 'Halt the system after installation'}),    
     help: Flags.help({char: 'h'}),
     ip: Flags.boolean({char: 'i', description: 'hostname as ip, eg: ip-192-168-1-33'}),
     nointeractive: Flags.boolean({char: 'n', description: 'no user interaction'}),
@@ -42,7 +43,7 @@ export default class Install extends Command {
 
   static examples = [
     'sudo eggs install',
-    'sudo eggs install --unattended',
+    'sudo eggs install --unattended --halt',
     'sudo eggs install --custom it',
   ]
 
@@ -60,6 +61,8 @@ export default class Install extends Command {
     if (unattended) {
       custom = 'us'
     }
+
+    let halt = flags.halt
 
     // krillConfig
     let krillConfig = {} as IKrillConfig
@@ -106,8 +109,8 @@ export default class Install extends Command {
 
     if (Utils.isRoot()) {
       if (Utils.isLive()) {
-        const krill = new Krill()
-        await krill.prepare(unattended, nointeractive, krillConfig, ip, random, domain, suspend, small, none, crypted, pve, verbose)
+        const krill = new Krill(unattended, nointeractive, halt)
+        await krill.prepare(krillConfig, ip, random, domain, suspend, small, none, crypted, pve, verbose)
       } else {
         Utils.warning('You are in an installed system!')
       }
