@@ -3,8 +3,12 @@ Encoding=UTF-8
 Name=Eggs unattended install
 Comment=Start unattended installation
 Icon=cinnamon-symbolic
-Exec=sudo /usr/bin/eui-start.sh
+# OK per xfce
+Exec=/usr/bin/eui-start.sh
 Terminal=true
+# cinnamon terminal=false altrimenti non parte
+#Exec=/usr/bin/gnome-terminal -- /usr/bin/bash -c /usr/bin/eui-start.sh
+#Terminal=false
 Type=Application
 Categories=
 X-GNOME-Autostart-Phase=Initialization

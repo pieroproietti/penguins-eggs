@@ -48,7 +48,10 @@ if mountpoint -q "/lib/live/mount"; then
     # -s, --small           Swap small: RAM
     # -u, --unattended      Unattended installation
     # -v, --verbose         Verbose
-    eggs install --custom=it --domain=.local --random --nointeractive --halt
+    # xfce accetta come sudo
+    # eggs install --custom=it --domain=.local --random --nointeractive --halt
+    # cinnamon necessita sudo
+    sudo eggs install --custom=it --domain=.local --random --nointeractive --halt
 else  
     # isInstalled
     sudo rm -f /etc/sudoers.d/eui-users
