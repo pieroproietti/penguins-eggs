@@ -22,9 +22,9 @@ All ISOs are based on KDE Neon User Edition
 All ISOs include eggs, you can udate it with: ```sudo eggs update```.
 
 # KDE Neon
-* **egg-of-ubuntu-focal-user** - a remaster of neon-user-20221020-0947.iso with eggs, unchanded. 
+* **egg-of-neon-jammy-user** - a remaster of neon-user-20230214-1145.iso with eggs, unchanded. 
 
-* **egg-of-ubuntu-focal-developer** - a remaster of neon-user-20221020-0947.iso plus tools to develop eggs.
+* **egg-of-neon-jammy--developer** - a remaster of neon-user-20221020-0947.iso plus tools to develop eggs.
 
 # Installing KDE Neon via PXE
 
