@@ -48,7 +48,8 @@ if mountpoint -q "/lib/live/mount"; then
     # -s, --small           Swap small: RAM
     # -u, --unattended      Unattended installation
     # -v, --verbose         Verbose
-    eggs install --custom=it --domain=.local --random --nointeractive --halt
+    # XFCE OK, cimmanon ask for password!!! 
+    sudo eggs install --custom=it --domain=.local --random --nointeractive --halt
 else  
     # isInstalled
     sudo rm -f /etc/sudoers.d/eui-users
