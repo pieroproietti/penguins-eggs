@@ -1,2 +1,0 @@
-live ALL=(ALL) NOPASSWD: /usr/bin/eui-start.sh
-artisan ALL=(ALL) NOPASSWD: /usr/bin/eui-start.sh
